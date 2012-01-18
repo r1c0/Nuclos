@@ -241,7 +241,8 @@ public class ParameterPanel extends JPanel {
 				}
 			}
 			catch (NumberFormatException ex) {
-				throw new CommonValidationException(CommonLocaleDelegate.getMessage("ParameterPanel.1", "''{0}'' ist keine g\u00fcltige Zahl.", ((JTextField) comp).getText()), ex);
+				throw new CommonValidationException(CommonLocaleDelegate.getInstance().getMessage(
+						"ParameterPanel.1", "''{0}'' ist keine g\u00fcltige Zahl.", ((JTextField) comp).getText()), ex);
 			}
 		}
 	}

@@ -46,10 +46,11 @@ public class ColorChooserButton extends JButton {
 		addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				final CommonLocaleDelegate cld = CommonLocaleDelegate.getInstance();
 				JPanel contentPanel = new JPanel(new BorderLayout());
 				JPanel actionsPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 2));
-				JButton btSave = new JButton(CommonLocaleDelegate.getMessage("ColorChooserButton.2","Speichern"));
-				JButton btCancel = new JButton(CommonLocaleDelegate.getMessage("ColorChooserButton.3","Abbrechen"));
+				JButton btSave = new JButton(cld.getMessage("ColorChooserButton.2","Speichern"));
+				JButton btCancel = new JButton(cld.getMessage("ColorChooserButton.3","Abbrechen"));
 				actionsPanel.add(btSave);
 				actionsPanel.add(btCancel);
 				contentPanel.add(actionsPanel, BorderLayout.SOUTH);
@@ -59,14 +60,14 @@ public class ColorChooserButton extends JButton {
 				
 				final JDialog dialog;
 				if (parent==null) {
-					dialog = new JDialog(Main.getMainFrame(), CommonLocaleDelegate.getMessage("ColorChooserButton.1","Farbe ändern"), true);
+					dialog = new JDialog(Main.getInstance().getMainFrame(), cld.getMessage("ColorChooserButton.1","Farbe ändern"), true);
 				} else {
-					dialog = new JDialog(parent, CommonLocaleDelegate.getMessage("ColorChooserButton.1","Farbe ändern"), true);
+					dialog = new JDialog(parent, cld.getMessage("ColorChooserButton.1","Farbe ändern"), true);
 				}
 				dialog.setContentPane(contentPanel);
 				dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 				dialog.getRootPane().setDefaultButton(btSave);
-				Rectangle mfBounds = Main.getMainFrame().getBounds();
+				Rectangle mfBounds = Main.getInstance().getMainFrame().getBounds();
 				dialog.setBounds(mfBounds.x+(mfBounds.width/2)-300, mfBounds.y+(mfBounds.height/2)-200, 600, 400);
 				dialog.setResizable(false);
 				

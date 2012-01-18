@@ -225,7 +225,8 @@ public class QueryBuilderController extends AbstractController implements ShapeM
 	private class DeleteTableAction extends AbstractAction {
 
 		DeleteTableAction() {
-			super(CommonLocaleDelegate.getMessage("QueryBuilderController.1", "Ausgew\u00e4hlte Tabelle l\u00f6schen"));
+			super(CommonLocaleDelegate.getInstance().getMessage(
+					"QueryBuilderController.1", "Ausgew\u00e4hlte Tabelle l\u00f6schen"));
 		}
 
 		@Override
@@ -237,7 +238,8 @@ public class QueryBuilderController extends AbstractController implements ShapeM
 	private class DeleteRelationAction extends AbstractAction {
 
 		DeleteRelationAction() {
-			super(CommonLocaleDelegate.getMessage("QueryBuilderController.2", "Relation l\u00f6schen"));
+			super(CommonLocaleDelegate.getInstance().getMessage(
+					"QueryBuilderController.2", "Relation l\u00f6schen"));
 		}
 
 		@Override
@@ -251,7 +253,8 @@ public class QueryBuilderController extends AbstractController implements ShapeM
 		private final RelationConnector connector;
 
 		EditRelationAction(RelationConnector shape) {
-			super(CommonLocaleDelegate.getMessage("QueryBuilderController.3", "Eigenschaften..."));
+			super(CommonLocaleDelegate.getInstance().getMessage(
+					"QueryBuilderController.3", "Eigenschaften..."));
 			connector = shape;
 		}
 
@@ -946,7 +949,8 @@ public class QueryBuilderController extends AbstractController implements ShapeM
 				break;
 		}
 
-		if (JOptionPane.showConfirmDialog(UIUtils.getFrameForComponent(editor), pnlJoin, CommonLocaleDelegate.getMessage("QueryBuilderController.4", "Eigenschaften von Relation"),
+		if (JOptionPane.showConfirmDialog(UIUtils.getFrameForComponent(editor), pnlJoin, CommonLocaleDelegate.getInstance().getMessage(
+				"QueryBuilderController.4", "Eigenschaften von Relation"),
 				JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE, null) == JOptionPane.OK_OPTION) {
 			connector.setJoinType(pnlJoin.getJoinType());
 			viewer.getModel().fireModelChanged();

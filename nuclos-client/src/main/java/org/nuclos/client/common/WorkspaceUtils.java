@@ -1073,7 +1073,8 @@ public class WorkspaceUtils {
 		} else {
 			final WorkspaceDescription assignedWd = getPrefsFacade().getWorkspace(assignedWorkspaceId).getWoDesc();
 			if (getPrefsFacade().isWorkspaceStructureChanged(assignedWorkspaceId, MainFrame.getWorkspace().getId())) {
-				throw new CommonBusinessException(CommonLocaleDelegate.getMessage("Desktop.not.restoreable", "Desktop kann nicht zurückgesetzt werden. Die Struktur der Vorlage entspricht nicht der aktuellen Arbeitsumgebung."));
+				throw new CommonBusinessException(CommonLocaleDelegate.getInstance().getMessage(
+						"Desktop.not.restoreable", "Desktop kann nicht zurückgesetzt werden. Die Struktur der Vorlage entspricht nicht der aktuellen Arbeitsumgebung."));
 			} else {
 				// find tabbed in current workspace...
 				Desktop dsktpAssigned = getDesktopFromTargetWorkspace(

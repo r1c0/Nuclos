@@ -259,7 +259,8 @@ public class CollectableListOfValues extends LabeledCollectableComponentWithVLP 
 	public JPopupMenu newJPopupMenu() {
 		final JPopupMenu result = super.newJPopupMenu();
 		if (!this.isSearchComponent()) {
-			final JMenuItem miClear = new JMenuItem(CommonLocaleDelegate.getMessage("CollectableFileNameChooserBase.1","Zur\u00fccksetzen"));
+			final JMenuItem miClear = new JMenuItem(
+					CommonLocaleDelegate.getInstance().getMessage("CollectableFileNameChooserBase.1","Zur\u00fccksetzen"));
 			boolean bClearEnabled;
 			try {
 				bClearEnabled = this.getBrowseButton().isEnabled() && (this.getField().getValueId() != null);

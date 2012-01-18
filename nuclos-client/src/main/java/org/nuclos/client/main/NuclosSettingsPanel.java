@@ -64,6 +64,8 @@ public class NuclosSettingsPanel extends JPanel {
 
 	public NuclosSettingsPanel(final MainFrame frm) {
 		//setBackground(Color.WHITE);
+		final CommonLocaleDelegate cld = CommonLocaleDelegate.getInstance();
+		
 		setBorder(new TitledBorder(""));
 
 		TableLayout layout = new TableLayout(settingslayout);
@@ -72,14 +74,14 @@ public class NuclosSettingsPanel extends JPanel {
 		setLayout(layout);
 
 		JPanel explorerSettingsPanel = new JPanel();
-		explorerSettingsPanel.setBorder(new TitledBorder(CommonLocaleDelegate.getText("settings.explorer.title")));
+		explorerSettingsPanel.setBorder(new TitledBorder(cld.getText("settings.explorer.title")));
 
 		layout = new TableLayout(explorerSettingslayout);
 		layout.setVGap(5);
         layout.setHGap(5);
         explorerSettingsPanel.setLayout(layout);
 
-		JLabel lbDoubleClickObjectNode = new JLabel(CommonLocaleDelegate.getText("settings.explorer.actions.default.objectnode"));
+		JLabel lbDoubleClickObjectNode = new JLabel(cld.getText("settings.explorer.actions.default.objectnode"));
 		explorerSettingsPanel.add(lbDoubleClickObjectNode, "0,0");
 
 		modelObjectNodeAction = new KeyEnumComboBoxModel<ObjectNodeAction>(ObjectNodeAction.values());
@@ -87,7 +89,7 @@ public class NuclosSettingsPanel extends JPanel {
 		JComboBox cbDoubleClickObjectNode = new JComboBox(modelObjectNodeAction);
 		explorerSettingsPanel.add(cbDoubleClickObjectNode, "1,0");
 
-		JLabel lbDoubleClickFolderNode = new JLabel(CommonLocaleDelegate.getText("settings.explorer.actions.default.foldernode"));
+		JLabel lbDoubleClickFolderNode = new JLabel(cld.getText("settings.explorer.actions.default.foldernode"));
 		explorerSettingsPanel.add(lbDoubleClickFolderNode, "0,1");
 
 		modelFolderNodeAction = new KeyEnumComboBoxModel<FolderNodeAction>(FolderNodeAction.values());
@@ -100,14 +102,14 @@ public class NuclosSettingsPanel extends JPanel {
 		// clear search history
 		Box clearHistBox = Box.createVerticalBox();
 		clearHistBox.setAlignmentX(CENTER_ALIGNMENT);
-		clearHistBox.setBorder(new TitledBorder(CommonLocaleDelegate.getMessage("R00022913", "Client-Daten")));
+		clearHistBox.setBorder(new TitledBorder(cld.getMessage("R00022913", "Client-Daten")));
 		JButton btClearHistory = new JButton();
-		btClearHistory.setAction(new AbstractAction(CommonLocaleDelegate.getMessage("R00022898", "Suchhistorie l\u00f6schen")) {
+		btClearHistory.setAction(new AbstractAction(cld.getMessage("R00022898", "Suchhistorie l\u00f6schen")) {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if(JOptionPane.showConfirmDialog(frm,
-					CommonLocaleDelegate.getMessage("R00022910", "Suchhistorie wirklich l\u00f6schen?"), "",
+					cld.getMessage("R00022910", "Suchhistorie wirklich l\u00f6schen?"), "",
 					JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
 					UIUtils.runCommand(NuclosSettingsPanel.this, new Runnable() {
 
@@ -126,7 +128,8 @@ public class NuclosSettingsPanel extends JPanel {
 											MessageExchangeListener.MessageType.REFRESH);
 									}
 								}
-								JOptionPane.showMessageDialog(frm, CommonLocaleDelegate.getMessage("R00022901", "Die Suchhistorie wurde gel\u00f6scht."));
+								JOptionPane.showMessageDialog(frm, cld.getMessage(
+										"R00022901", "Die Suchhistorie wurde gel\u00f6scht."));
 							}
 							catch(/* BackingStore */ Exception e1) {
 								/*dann halt nicht*/

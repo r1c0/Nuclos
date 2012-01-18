@@ -21,7 +21,6 @@ import java.io.IOException;
 
 import org.nuclos.client.report.reportrunner.AbstractReportExporter;
 import org.nuclos.common.csvparser.ExcelCSVPrinter;
-import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.server.report.NuclosReportException;
 import org.nuclos.server.report.NuclosReportPrintJob;
 import org.nuclos.server.report.print.CSVPrintJob;
@@ -118,7 +117,8 @@ public class CSVExport extends AbstractReportExporter {
 
 		}
 		catch (IOException ex) {
-			throw new NuclosReportException(CommonLocaleDelegate.getMessage("CSVExport.1", "Fehler beim Erzeugen der Datei: {0}", sFileName));
+			throw new NuclosReportException(getCommonLocaleDelegate().getMessage(
+					"CSVExport.1", "Fehler beim Erzeugen der Datei: {0}", sFileName));
 		}
 
 		return sFileName;

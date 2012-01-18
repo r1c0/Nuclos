@@ -34,7 +34,6 @@ import org.nuclos.common.security.Permission;
 import org.nuclos.common.transport.GzipMap;
 import org.nuclos.common2.IdUtils;
 import org.nuclos.common2.InternalTimestamp;
-import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.server.common.AttributeCache;
 import org.nuclos.server.common.MasterDataPermissions;

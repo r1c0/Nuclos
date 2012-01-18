@@ -118,7 +118,8 @@ public class NuclosCollectControllerFactory {
 			if(sm == null) {
 				JOptionPane.showMessageDialog(
 					parent,
-					CommonLocaleDelegate.getMessage("NuclosCollectControllerFactory.2", "Es ist kein Statusmodell definiert. Das Modul kann nicht geöffnet werden.\nDie Statusmodellverwaltung finden Sie im Menü Konfiguration."),
+					CommonLocaleDelegate.getInstance().getMessage(
+							"NuclosCollectControllerFactory.2", "Es ist kein Statusmodell definiert. Das Modul kann nicht geöffnet werden.\nDie Statusmodellverwaltung finden Sie im Menü Konfiguration."),
 					sEntityName,
 					JOptionPane.WARNING_MESSAGE);
 				return null;
@@ -166,7 +167,7 @@ public class NuclosCollectControllerFactory {
 					case DBSOURCE:
 						return factory.newDbSourceCollectController(parent, tabIfAny);
 					case ENTITYRELATION:
-						return factory.newEntityRelationShipCollectController(parent, Main.getMainFrame(), tabIfAny);
+						return factory.newEntityRelationShipCollectController(parent, Main.getInstance().getMainFrame(), tabIfAny);
 					case LDAPSERVER:
 						return factory.newLdapServerCollectController(parent, tabIfAny);
 					case CODE:
@@ -178,7 +179,10 @@ public class NuclosCollectControllerFactory {
 				// if there is no MasterDataCollectController for this entity, an exception will be thrown here.
 				return newMasterDataCollectController(parent, sEntityName, tabIfAny);
 			} else {
-				throw new CommonPermissionException(CommonLocaleDelegate.getMessage("NuclosCollectControllerFactory.1", "Sie haben kein Recht in der Entit\u00e4t ''{0}'' zu lesen.", CommonLocaleDelegate.getLabelFromMetaDataVO(MasterDataDelegate.getInstance().getMetaData(sEntityName))));
+				throw new CommonPermissionException(CommonLocaleDelegate.getInstance().getMessage(
+						"NuclosCollectControllerFactory.1", "Sie haben kein Recht in der Entit\u00e4t ''{0}'' zu lesen.", 
+						CommonLocaleDelegate.getInstance().getLabelFromMetaDataVO(
+								MasterDataDelegate.getInstance().getMetaData(sEntityName))));
 					//"Sie haben kein Recht in der Entit\u00e4t \"" + CommonLocaleDelegate.getLabelFromMetaDataVO(MasterDataDelegate.getInstance().getMetaData(sEntityName)) + "\" zu lesen.");
 			}
 		}

@@ -16,13 +16,14 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.wizard.steps;
 
-import static org.nuclos.common2.CommonLocaleDelegate.getMessage;
 import info.clearthought.layout.TableLayout;
 
 import javax.swing.Icon;
 import javax.swing.JLabel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+
+import org.nuclos.common2.CommonLocaleDelegate;
 
 /**
 * <br>
@@ -77,16 +78,15 @@ public class NuclosEntityFinalStep extends NuclosEntityAbstractStep {
 	public void prepare() {
 		super.prepare();
 		if(this.model.isEditMode()) {
-			this.lbName.setText(getMessage("wizard.step.final.1", "Entit\u00e4t {0} ge\u00e4ndert", this.model.getEntityName()) + " ...");
+			this.lbName.setText(CommonLocaleDelegate.getInstance().getMessage(
+					"wizard.step.final.1", "Entit\u00e4t {0} ge\u00e4ndert", this.model.getEntityName()) + " ...");
 		}
 		else {
-			this.lbName.setText(getMessage("wizard.step.final.2", "Entit\u00e4t {0} erstellt", this.model.getEntityName()) + " ...");
+			this.lbName.setText(CommonLocaleDelegate.getInstance().getMessage(
+					"wizard.step.final.2", "Entit\u00e4t {0} erstellt", this.model.getEntityName()) + " ...");
 		}
 		ta.setText(getResultText());		
-		ta.setCaretPosition(0);
-		
-		
-		
+		ta.setCaretPosition(0);	
 	}
 	
 	private String getResultText() {

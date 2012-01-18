@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.PostConstruct;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageListener;
@@ -39,6 +40,8 @@ import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonFinderException;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
 
 /**
  * Caches whole contents from master data entities. It is not used for data dependant on a foreign key.
@@ -51,7 +54,7 @@ import org.nuclos.server.masterdata.valueobject.MasterDataVO;
  * @version 01.00.00
  * @todo the caller has to decide whether an entity is cacheable or not. This is bad.
  */
-
+@Configurable
 public class MasterDataCache {
 	private final Logger log = Logger.getLogger(this.getClass());
 
@@ -63,6 +66,8 @@ public class MasterDataCache {
 	private final Map<String, List<MasterDataVO>> mp = CollectionUtils.newHashMap();
 
 	private final Map<CollectableFieldsByNameKey, List<CollectableField>> mpCollectableFieldsByName = CollectionUtils.newHashMap();
+	
+	private TopicNotificationReceiver tnr;
 
 	private final MessageListener messagelistener = new MessageListener() {
 		@Override
@@ -96,7 +101,16 @@ public class MasterDataCache {
 	}
 
 	private MasterDataCache() {
-		TopicNotificationReceiver.subscribe(JMSConstants.TOPICNAME_MASTERDATACACHE, messagelistener);
+	}
+	
+	@PostConstruct
+	void init() {
+		tnr.subscribe(JMSConstants.TOPICNAME_MASTERDATACACHE, messagelistener);
+	}
+	
+	@Autowired
+	void setTopicNotificationReceiver(TopicNotificationReceiver tnr) {
+		this.tnr = tnr;
 	}
 
 	/**

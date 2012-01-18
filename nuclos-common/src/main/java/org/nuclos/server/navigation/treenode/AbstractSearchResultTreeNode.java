@@ -17,7 +17,6 @@
 package org.nuclos.server.navigation.treenode;
 
 import org.nuclos.common.collect.collectable.searchcondition.CollectableSearchCondition;
-import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.exception.CommonFinderException;
 
@@ -58,7 +57,7 @@ public abstract class AbstractSearchResultTreeNode extends AbstractTreeNode<Obje
 
 	@Override
 	public String getLabel() {
-		return CommonLocaleDelegate.getMessage("GenericObjectCollectController.93","Suchergebnis ({0})", this.getFilterName()); 
+		return getCommonLocaleDelegate().getMessage("GenericObjectCollectController.93","Suchergebnis ({0})", this.getFilterName()); 
 		//MessageFormat.format(locale.getResourceById(locale.getUserLocaleId(), "searchresult.treenode.label"), this.getFilterName());
 		//"Suchergebnis (" + this.getFilterName() + ')';
 	}

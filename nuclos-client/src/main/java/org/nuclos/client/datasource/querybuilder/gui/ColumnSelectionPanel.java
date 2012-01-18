@@ -58,7 +58,7 @@ public class ColumnSelectionPanel extends JPanel {
 	private class ClearColumnAction extends AbstractAction {
 
 		ClearColumnAction() {
-			super(CommonLocaleDelegate.getMessage("ColumnSelectionPanel.2","Spalte zur\u00fccksetzen"));
+			super(CommonLocaleDelegate.getInstance().getMessage("ColumnSelectionPanel.2","Spalte zur\u00fccksetzen"));
 		}
 
 		@Override
@@ -70,7 +70,7 @@ public class ColumnSelectionPanel extends JPanel {
 	private class ClearAllColumnsAction extends AbstractAction {
 
 		ClearAllColumnsAction() {
-			super(CommonLocaleDelegate.getMessage("ColumnSelectionPanel.1","Alle Spalten zur\u00fccksetzen"));
+			super(CommonLocaleDelegate.getInstance().getMessage("ColumnSelectionPanel.1","Alle Spalten zur\u00fccksetzen"));
 		}
 
 		@Override

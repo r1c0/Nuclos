@@ -71,7 +71,8 @@ public class StatusCollectableFieldsProvider implements CollectableFieldsProvide
 				}
 			}
 			catch (Exception ex) {
-				throw new NuclosFatalException(CommonLocaleDelegate.getMessage("ProcessCollectableFieldsProvider.1", "Der Parameter \"module\" muss den Namen einer Modul-Entit\u00e4t enthalten.\n\"{0}\" ist keine g\u00fcltige Modul-Entit\u00e4t.", oValue), ex);
+				throw new NuclosFatalException(CommonLocaleDelegate.getInstance().getMessage(
+						"ProcessCollectableFieldsProvider.1", "Der Parameter \"module\" muss den Namen einer Modul-Entit\u00e4t enthalten.\n\"{0}\" ist keine g\u00fcltige Modul-Entit\u00e4t.", oValue), ex);
 			}
 		}
 		else if (sName.equals("process")) {

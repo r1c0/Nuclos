@@ -90,7 +90,7 @@ public class FrameUtils {
 		internalframe.addInternalFrameListener(internalFrameAdapter);
 
 		window.addWindowListener(new WindowAdapter() {
-			final MainFrame mainframe = Main.getMainFrame();
+			final MainFrame mainframe = Main.getInstance().getMainFrame();
 			@Override
 			public void windowClosing(WindowEvent e) {
 				ext2int.remove(int2ext.remove(internalframe));

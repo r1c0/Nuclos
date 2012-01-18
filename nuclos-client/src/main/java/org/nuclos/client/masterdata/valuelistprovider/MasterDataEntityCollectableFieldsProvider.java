@@ -83,7 +83,7 @@ public class MasterDataEntityCollectableFieldsProvider implements CollectableFie
 		final List<CollectableField> result = CollectionUtils.transform(colmdmVO_menupath, new Transformer<MasterDataMetaVO, CollectableField>() {
 			@Override
 			public CollectableField transform(MasterDataMetaVO mdmVO) {
-				String label = CommonLocaleDelegate.getLabelFromMetaDataVO(mdmVO); 
+				String label = CommonLocaleDelegate.getInstance().getLabelFromMetaDataVO(mdmVO); 
 				//String label = CommonLocaleDelegate.getText(mdmVO);
 				if (Modules.getInstance().isModuleEntity(mdmVO.getEntityName()))
 					label += " (Modul)";

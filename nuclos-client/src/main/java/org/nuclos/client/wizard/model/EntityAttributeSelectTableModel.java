@@ -16,12 +16,12 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.wizard.model;
 
-import static org.nuclos.common2.CommonLocaleDelegate.getMessage;
-
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.table.AbstractTableModel;
+
+import org.nuclos.common2.CommonLocaleDelegate;
 
 public class EntityAttributeSelectTableModel extends AbstractTableModel {
 	
@@ -112,19 +112,20 @@ public class EntityAttributeSelectTableModel extends AbstractTableModel {
 
 	@Override
 	public String getColumnName(int column) {
+		final CommonLocaleDelegate cld = CommonLocaleDelegate.getInstance();
 		switch (column) {
 		case 0:
-			return getMessage("wizard.datatype.7", "\u00dcbernehmen");
+			return cld.getMessage("wizard.datatype.7", "\u00dcbernehmen");
 		case 1:
-			return getMessage("wizard.step.attributeproperties.1", "Anzeigename");
+			return cld.getMessage("wizard.step.attributeproperties.1", "Anzeigename");
 		case 2:
-			return getMessage("wizard.step.attributeproperties.2", "Beschreibung");
+			return cld.getMessage("wizard.step.attributeproperties.2", "Beschreibung");
 		case 3:
-			return getMessage("wizard.step.attributeproperties.3", "Datentyp");		
+			return cld.getMessage("wizard.step.attributeproperties.3", "Datentyp");		
 		case 4:
-			return getMessage("wizard.datatype.3", "Feldbreite");
+			return cld.getMessage("wizard.datatype.3", "Feldbreite");
 		case 5:
-			return getMessage("wizard.datatype.4", "Nachkommastellen");
+			return cld.getMessage("wizard.datatype.4", "Nachkommastellen");
 
 		default:			
 			return "";

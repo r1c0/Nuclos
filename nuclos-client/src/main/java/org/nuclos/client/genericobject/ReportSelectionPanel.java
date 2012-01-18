@@ -49,10 +49,11 @@ public class ReportSelectionPanel extends JXPanel {
 	protected class ReportSelectionTableModel extends AbstractTableModel {
 
 		protected final String[] captions = {
-			CommonLocaleDelegate.getMessage("ReportSelectionPanel.1", "Formular"),
-			CommonLocaleDelegate.getMessage("R00011618", "Vorlage"),
-			CommonLocaleDelegate.getMessage("ReportSelectionPanel.2", "Format"), 
-			CommonLocaleDelegate.getMessage("ReportSelectionPanel.3", "Ausgabemedium")};
+			CommonLocaleDelegate.getInstance().getMessage("ReportSelectionPanel.1", "Formular"),
+			CommonLocaleDelegate.getInstance().getMessage("R00011618", "Vorlage"),
+			CommonLocaleDelegate.getInstance().getMessage("ReportSelectionPanel.2", "Format"), 
+			CommonLocaleDelegate.getInstance().getMessage("ReportSelectionPanel.3", "Ausgabemedium")};
+		
 		protected ArrayList<ReportEntry> lstReports = new ArrayList<ReportEntry>();
 
 		@Override
@@ -79,7 +80,7 @@ public class ReportSelectionPanel extends JXPanel {
 					case 3:
 						String sResult = "";
 						if (entry.getOutput() != null) {
-							sResult += CommonLocaleDelegate.getText(entry.getOutput().getDestination());
+							sResult += CommonLocaleDelegate.getInstance().getText(entry.getOutput().getDestination());
 							if (entry.getOutput().getParameter() != null &&
 									entry.getOutput().getParameter().length() > 0) {
 								sResult += (" (" + entry.getOutput().getParameter() + ")");
@@ -140,7 +141,8 @@ public class ReportSelectionPanel extends JXPanel {
 	private ReportSelectionTableModel model = new ReportSelectionTableModel();
 	private JTable tblReports = new JTable(model);
 	private JScrollPane scrReports = new JScrollPane(tblReports);
-	private JCheckBox cbAttachReport = new JCheckBox(CommonLocaleDelegate.getMessage("ReportSelectionPanel.4", "Dokument anh\u00e4ngen"));
+	private JCheckBox cbAttachReport = new JCheckBox(CommonLocaleDelegate.getInstance().getMessage(
+			"ReportSelectionPanel.4", "Dokument anh\u00e4ngen"));
 
 	public ReportSelectionPanel() {
 		this(false);

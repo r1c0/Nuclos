@@ -94,7 +94,8 @@ public abstract class CollectableDocumentFileChooserBase extends AbstractCollect
 	@Override
 	public JPopupMenu newJPopupMenu() {
 		final JPopupMenu popupmenu = new JPopupMenu();
-		final JMenuItem miOpen = new JMenuItem(CommonLocaleDelegate.getMessage("CollectableDocumentFileChooserBase.1","\u00d6ffnen"));
+		final JMenuItem miOpen = new JMenuItem(CommonLocaleDelegate.getInstance().getMessage(
+				"CollectableDocumentFileChooserBase.1","\u00d6ffnen"));
 		popupmenu.add(miOpen);
 		miOpen.addActionListener(new ActionListener() {
 			@Override
@@ -102,7 +103,8 @@ public abstract class CollectableDocumentFileChooserBase extends AbstractCollect
 				cmdOpenFile();
 			}
 		});
-		final JMenuItem miSaveAs = new JMenuItem(CommonLocaleDelegate.getMessage("CollectableDocumentFileChooserBase.2","Speichern unter..."));
+		final JMenuItem miSaveAs = new JMenuItem(CommonLocaleDelegate.getInstance().getMessage(
+				"CollectableDocumentFileChooserBase.2","Speichern unter..."));
 		popupmenu.add(miSaveAs);
 		miSaveAs.addActionListener(new ActionListener() {
 			@Override
@@ -110,7 +112,8 @@ public abstract class CollectableDocumentFileChooserBase extends AbstractCollect
 				cmdSaveAs();
 			}
 		});
-		final JMenuItem miReset = new JMenuItem(CommonLocaleDelegate.getMessage("CollectableFileNameChooserBase.1","Zur\u00fccksetzen"));
+		final JMenuItem miReset = new JMenuItem(CommonLocaleDelegate.getInstance().getMessage(
+				"CollectableFileNameChooserBase.1","Zur\u00fccksetzen"));
 		popupmenu.add(miReset);
 		miReset.addActionListener(new ActionListener() {
 			@Override
@@ -162,7 +165,8 @@ public abstract class CollectableDocumentFileChooserBase extends AbstractCollect
 					if (file1 != null) {
 						final byte[] abContents = file1.getContents();
 						if (abContents == null) {
-							throw new NuclosBusinessException(CommonLocaleDelegate.getMessage("CollectableDocumentFileChooserBase.3","Die Datei ist leer."));
+							throw new NuclosBusinessException(CommonLocaleDelegate.getInstance().getMessage(
+									"CollectableDocumentFileChooserBase.3","Die Datei ist leer."));
 						}
 						String sFileName = file1.getFilename();
 						sFileName = sFileName.replaceAll("\\s", "");
@@ -189,7 +193,8 @@ public abstract class CollectableDocumentFileChooserBase extends AbstractCollect
 				if (file1 != null) {
 					final byte[] abContents = file1.getContents();
 					if (abContents == null) {
-						throw new NuclosBusinessException(CommonLocaleDelegate.getMessage("CollectableDocumentFileChooserBase.3","Die Datei ist leer."));
+						throw new NuclosBusinessException(CommonLocaleDelegate.getInstance().getMessage(
+								"CollectableDocumentFileChooserBase.3","Die Datei ist leer."));
 					}
 
 					final Preferences prefs = getPreferences();
@@ -431,7 +436,10 @@ public abstract class CollectableDocumentFileChooserBase extends AbstractCollect
 		}
 		catch(PointerException e){
         	LOG.warn("visitDrop fails with PointerException: " + e);
-			Bubble bubble = new Bubble(CollectableDocumentFileChooserBase.this.getControlComponent(), CommonLocaleDelegate.getMessage("details.subform.controller.2", "Diese Funktion wird nur unter Microsoft Windows unterstützt!"),5, Bubble.Position.NW);
+			Bubble bubble = new Bubble(CollectableDocumentFileChooserBase.this.getControlComponent(), 
+					CommonLocaleDelegate.getInstance().getMessage(
+							"details.subform.controller.2", "Diese Funktion wird nur unter Microsoft Windows unterstützt!"),
+					5, Bubble.Position.NW);
 			bubble.setVisible(true);
 		}
 		catch (Exception e) {

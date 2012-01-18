@@ -82,7 +82,8 @@ public class StateModelEditPanel extends JPanel {
 
 	private static JPanel newUsagePanel(JComponent subformUsages) {
 		final JPanel pnlUsages = new JPanel(new BorderLayout());
-		final JLabel labUsages = new JLabel(CommonLocaleDelegate.getMessage("StateModelEditPanel.1","Verwendungen"));
+		final JLabel labUsages = new JLabel(CommonLocaleDelegate.getInstance().getMessage(
+				"StateModelEditPanel.1","Verwendungen"));
 		labUsages.setBorder(BorderFactory.createEmptyBorder(2, 5, 2, 5));
 		pnlUsages.add(labUsages, BorderLayout.NORTH);
 		pnlUsages.add(subformUsages, BorderLayout.CENTER);

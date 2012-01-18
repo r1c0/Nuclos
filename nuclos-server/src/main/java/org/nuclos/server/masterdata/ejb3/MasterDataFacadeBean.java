@@ -84,7 +84,6 @@ import org.nuclos.server.attribute.ejb3.LayoutFacadeLocal;
 import org.nuclos.server.autosync.XMLEntities;
 import org.nuclos.server.common.MasterDataMetaCache;
 import org.nuclos.server.common.NuclosSystemParameters;
-import org.nuclos.server.common.RecordGrantUtils;
 import org.nuclos.server.common.RuleCache;
 import org.nuclos.server.common.SecurityCache;
 import org.nuclos.server.common.ServerParameterProvider;

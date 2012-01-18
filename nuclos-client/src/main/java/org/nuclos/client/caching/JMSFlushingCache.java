@@ -19,6 +19,7 @@
  */
 package org.nuclos.client.caching;
 
+import javax.annotation.PostConstruct;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageListener;
@@ -27,18 +28,34 @@ import javax.jms.TextMessage;
 import org.apache.log4j.Logger;
 import org.nuclos.client.common.TopicNotificationReceiver;
 import org.nuclos.common.caching.GenCache;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
 
-
+@Configurable
 public class JMSFlushingCache<K, V> extends GenCache<K, V> implements MessageListener {
 	
 	private static final Logger LOG = Logger.getLogger(JMSFlushingCache.class);
 	
 	private String pat;
+	
+	private String topic;
+	
+	private TopicNotificationReceiver tnr;
 
 	public JMSFlushingCache(String topic, String messagePattern, LookupProvider<K, V> lookupProvider) {
 		super(lookupProvider);
-		pat = messagePattern;
-		TopicNotificationReceiver.subscribe(topic, this);
+		this.pat = messagePattern;
+		this.topic = topic;
+	}
+	
+	@PostConstruct
+	void init() {
+		tnr.subscribe(topic, this);
+	}
+	
+	@Autowired
+	void setTopicNotificationReceiver(TopicNotificationReceiver tnr) {
+		this.tnr = tnr;
 	}
 
 	@Override

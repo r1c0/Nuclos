@@ -27,7 +27,6 @@ import org.nuclos.common.entityobject.CollectableEOEntity;
 import org.nuclos.common.genericobject.CollectableGenericObjectEntityField;
 import org.nuclos.common.masterdata.CollectableMasterDataEntity;
 import org.nuclos.common2.IdUtils;
-import org.nuclos.common2.LangUtils;
 import org.nuclos.server.masterdata.valueobject.MasterDataMetaVO;
 
 /**

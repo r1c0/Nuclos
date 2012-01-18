@@ -79,7 +79,6 @@ import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.DefaultValueObjectList;
 import org.nuclos.common.collection.ValueObjectList;
 import org.nuclos.common.dal.vo.EntityObjectVO;
-import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.CommonRunnable;
 import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
@@ -170,8 +169,10 @@ public class MasterDataSubFormController extends DetailsSubFormController<Collec
 			public void run() {
 				JButton clone = new JButton(Icons.getInstance().getIconClone16());
 				clone.setSize(16,16);
-				clone.setToolTipText(CommonLocaleDelegate.getMessage("MasterDataSubFormController.1", "Datensatz klonen"));
-				JMenuItem miClone = new JMenuItem(CommonLocaleDelegate.getMessage("MasterDataSubFormController.1", "Datensatz klonen"), Icons.getInstance().getIconClone16());
+				clone.setToolTipText(getCommonLocaleDelegate().getMessage(
+						"MasterDataSubFormController.1", "Datensatz klonen"));
+				JMenuItem miClone = new JMenuItem(getCommonLocaleDelegate().getMessage(
+						"MasterDataSubFormController.1", "Datensatz klonen"), Icons.getInstance().getIconClone16());
 				getSubForm().addToolbarFunction(TB_CLONE, clone, miClone, 1);
 				getSubForm().setToolbarFunctionState(TB_CLONE, SubForm.ToolbarFunctionState.DISABLED);
 			}
@@ -188,8 +189,10 @@ public class MasterDataSubFormController extends DetailsSubFormController<Collec
 			public void doPopup(MouseEvent e) {
 				final JPopupMenu result = new JPopupMenu();
 
-				JMenuItem miDetails = new JMenuItem(CommonLocaleDelegate.getMessage("AbstractCollectableComponent.7","Details anzeigen..."));
-				JMenuItem miEdit = new JMenuItem(CommonLocaleDelegate.getMessage("AbstractCollectableComponent.21","Zelle bearbeiten"));
+				JMenuItem miDetails = new JMenuItem(getCommonLocaleDelegate().getMessage(
+						"AbstractCollectableComponent.7","Details anzeigen..."));
+				JMenuItem miEdit = new JMenuItem(getCommonLocaleDelegate().getMessage(
+						"AbstractCollectableComponent.21","Zelle bearbeiten"));
 
 				miDetails.addActionListener(new ActionListener() {
 					@Override
@@ -305,7 +308,8 @@ public class MasterDataSubFormController extends DetailsSubFormController<Collec
 			ctlGenericObject.runViewSingleCollectable(CollectableGenericObjectWithDependants.newCollectableGenericObject(govo));
 		}
 		catch(CommonFatalException ex){
-			throw new CommonFatalException(CommonLocaleDelegate.getMessage("DynamicEntitySubFormController.2", "Der Datensatz kann nicht angezeigt werden. Bitte tragen Sie in der Datenquelle für die dynamische Entität, die Entität ein, die angezeigt werden soll!"));
+			throw new CommonFatalException(getCommonLocaleDelegate().getMessage(
+					"DynamicEntitySubFormController.2", "Der Datensatz kann nicht angezeigt werden. Bitte tragen Sie in der Datenquelle für die dynamische Entität, die Entität ein, die angezeigt werden soll!"));
 		}
 	}
 
@@ -434,8 +438,10 @@ public class MasterDataSubFormController extends DetailsSubFormController<Collec
 
 					int result = JOptionPane.NO_OPTION;
 					if (hasDependantData) {
-						String sMessage = CommonLocaleDelegate.getMessage("MasterDataSubFormController.2", "Der zu klonende Datensatz besitzt abh\u00e4ngige Unterformulardaten. Sollen diese auch geklont werden?");
-						result = JOptionPane.showConfirmDialog(getParent(), sMessage, CommonLocaleDelegate.getMessage("MasterDataSubFormController.1", "Datensatz klonen"), JOptionPane.YES_NO_OPTION);
+						String sMessage = getCommonLocaleDelegate().getMessage(
+								"MasterDataSubFormController.2", "Der zu klonende Datensatz besitzt abh\u00e4ngige Unterformulardaten. Sollen diese auch geklont werden?");
+						result = JOptionPane.showConfirmDialog(getParent(), sMessage, 
+								getCommonLocaleDelegate().getMessage("MasterDataSubFormController.1", "Datensatz klonen"), JOptionPane.YES_NO_OPTION);
 					}
 
 					try {
@@ -711,8 +717,9 @@ public class MasterDataSubFormController extends DetailsSubFormController<Collec
 
 	private CollectableEntityObject insertNewRow(CollectableEntityObject clct) throws NuclosBusinessException {
 		if (this.isChildSubForm() && this.getCollectableParent() == null) {
-			String sMessage = CommonLocaleDelegate.getMessage("MasterDataSubFormController.3", "Es kann kein Bezug zu einem \u00dcbergeordneten Datensatz hergestellt werden. "+
-			"Bitte w\u00e4hlen Sie zuerst einen Datensatz aus dem \u00fcbergeordneten Unterformular aus.");
+			String sMessage = getCommonLocaleDelegate().getMessage(
+					"MasterDataSubFormController.3", "Es kann kein Bezug zu einem \u00dcbergeordneten Datensatz hergestellt werden. "+
+					"Bitte w\u00e4hlen Sie zuerst einen Datensatz aus dem \u00fcbergeordneten Unterformular aus.");
 			throw new NuclosBusinessException(sMessage);
 		}
 

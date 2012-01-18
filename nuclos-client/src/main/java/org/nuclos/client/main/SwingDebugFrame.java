@@ -28,6 +28,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.PostConstruct;
 import javax.swing.AbstractAction;
 import javax.swing.JButton;
 import javax.swing.JEditorPane;
@@ -53,6 +54,8 @@ import org.nuclos.client.ui.collect.component.model.CollectableComponentModel;
 import org.nuclos.client.ui.collect.model.CollectableEntityFieldBasedTableModel;
 import org.nuclos.common.ApplicationProperties;
 import org.nuclos.server.console.ejb3.ConsoleFacadeRemote;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
 
 /**
  * A Frame with system information for administrative and debugging purposes.
@@ -63,15 +66,22 @@ import org.nuclos.server.console.ejb3.ConsoleFacadeRemote;
  * @author	<a href="mailto:uwe.allner@novabit.de">uwe.allner</a>
  * @version 01.00.00
  */
+@Configurable
 public class SwingDebugFrame extends JFrame {
 
 	private JScrollPane scrl;
 	private JEditorPane text;
 	private MainController ctrl;
+	
+	private ClientParameterProvider clientParameterProvider;
 
 	SwingDebugFrame(MainController ctrl) {
 		super();
 		this.ctrl = ctrl;
+	}
+	
+	@PostConstruct
+	void init() {
 		text = new JEditorPane("text/html", "<html>No component</html>");
 		text.setEditable(false);
 
@@ -143,6 +153,11 @@ public class SwingDebugFrame extends JFrame {
 		setAlwaysOnTop(true);
 		setVisible(false);
 	}
+	
+	@Autowired
+	void setClientParameterProvider(ClientParameterProvider clientParameterProvider) {
+		this.clientParameterProvider = clientParameterProvider;
+	}
 
 	private String cmdDbInfo() {
 		try {
@@ -179,7 +194,7 @@ public class SwingDebugFrame extends JFrame {
 		final StringBuilder sbClient = new StringBuilder();
 		sbClient.append("<html><b>T_AD_PARAMETER Settings (from Cache):</b>");
 		sbClient.append("<table border=\"1\">");
-		Map<String, String> mpParameters = ClientParameterProvider.getInstance().getAllParameters();
+		Map<String, String> mpParameters = clientParameterProvider.getAllParameters();
 		List<String>lstSortedKeys = new ArrayList<String>(mpParameters.keySet());
 		Collections.sort(lstSortedKeys);
 		for (String sKey : lstSortedKeys) {

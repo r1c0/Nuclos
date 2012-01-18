@@ -16,14 +16,13 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.customcomp.wizard;
 
-import static org.nuclos.common2.CommonLocaleDelegate.getText;
-
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.table.AbstractTableModel;
 
 import org.nuclos.common.TranslationVO;
+import org.nuclos.common2.CommonLocaleDelegate;
 
 public class CustomComponentTranslationTableModel extends AbstractTableModel {
 
@@ -97,13 +96,14 @@ public class CustomComponentTranslationTableModel extends AbstractTableModel {
 
 	@Override
 	public String getColumnName(int column) {
+		final CommonLocaleDelegate cld = CommonLocaleDelegate.getInstance();
 		switch(column) {
 			case 0:
-				return getText("nuclos.resplan.l10n.language");
+				return cld.getText("nuclos.resplan.l10n.language");
 			case 1:
-				return getText("nuclos.resplan.l10n.label");
+				return cld.getText("nuclos.resplan.l10n.label");
 			case 2:
-				return getText("nuclos.resplan.l10n.menupath");
+				return cld.getText("nuclos.resplan.l10n.menupath");
 			default:
 				return "";
 		}

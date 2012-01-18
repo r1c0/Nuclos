@@ -66,6 +66,7 @@ public class SaveFilterController {
 	 * @return the executed command (None, Overwrite, New)
 	 */
 	public Command runSave(final SearchFilter filterSelected, SearchFilter filterCurrent) throws NuclosBusinessException {
+		final CommonLocaleDelegate cld = CommonLocaleDelegate.getInstance();
 		Command result = Command.None;
 
 		final boolean bRegularFilterSelected = (filterSelected != null && !filterSelected.isDefaultFilter());
@@ -81,12 +82,15 @@ public class SaveFilterController {
 			// Ask the user if he wants to overwrite the selected filter or add a new one:
 			final SaveNameDescriptionPanel pnl = new SaveNameDescriptionPanel();
 
-			pnl.getRadioButtonOverwrite().setText(CommonLocaleDelegate.getMessage("SaveFilterController.9", "Bestehenden Filter \"{0}\" \u00e4ndern", filterSelected.getName()));
-			pnl.getRadioButtonNew().setText(CommonLocaleDelegate.getMessage("SaveFilterController.7","Neuen Filter anlegen"));
+			pnl.getRadioButtonOverwrite().setText(cld.getMessage(
+					"SaveFilterController.9", "Bestehenden Filter \"{0}\" \u00e4ndern", filterSelected.getName()));
+			pnl.getRadioButtonNew().setText(cld.getMessage(
+					"SaveFilterController.7","Neuen Filter anlegen"));
 			// default is overwrite:
 			pnl.getRadioButtonOverwrite().setSelected(true);
 
-			final String sTitle = CommonLocaleDelegate.getMessage("SaveFilterController.1","Aktuelle Sucheinstellung speichern");
+			final String sTitle = cld.getMessage(
+					"SaveFilterController.1","Aktuelle Sucheinstellung speichern");
 
 			final int iBtn = JOptionPane.showConfirmDialog(parent, pnl, sTitle, JOptionPane.OK_CANCEL_OPTION,
 				JOptionPane.PLAIN_MESSAGE);
@@ -98,7 +102,8 @@ public class SaveFilterController {
 
 		if (result != Command.None) {
 			if (result == Command.Overwrite && !filterSelected.isEditable()) {
-				throw new NuclosBusinessException(CommonLocaleDelegate.getMessage("SaveFilterController.4","Der Suchfilter darf von Ihnen nicht ge\u00e4ndert werden."));
+				throw new NuclosBusinessException(cld.getMessage(
+						"SaveFilterController.4","Der Suchfilter darf von Ihnen nicht ge\u00e4ndert werden."));
 			}
 
 			final EnterNameDescriptionPanel pnlEnterFilter = new EnterNameDescriptionPanel();
@@ -107,10 +112,10 @@ public class SaveFilterController {
 
 			switch (result) {
 			case New:
-				sTitleEnterFilter = CommonLocaleDelegate.getMessage("SaveFilterController.8","Neuen Filter anlegen");
+				sTitleEnterFilter = cld.getMessage("SaveFilterController.8","Neuen Filter anlegen");
 				break;
 			case Overwrite:
-				sTitleEnterFilter = CommonLocaleDelegate.getMessage("SaveFilterController.2","Bestehenden Filter \u00e4ndern");
+				sTitleEnterFilter = cld.getMessage("SaveFilterController.2","Bestehenden Filter \u00e4ndern");
 				pnlEnterFilter.getTextFieldName().setText(filterSelected.getName());
 				pnlEnterFilter.getTextFieldDescription().setText(filterSelected.getDescription());
 				break;
@@ -150,7 +155,7 @@ public class SaveFilterController {
 					getSearchFilters().put(filterCurrent);
 				}
 				catch (PreferencesException ex) {
-					final String sMessage = CommonLocaleDelegate.getMessage("SaveFilterController.5","Die Benutzereinstellungen konnten nicht geschrieben werden") + ".";
+					final String sMessage = cld.getMessage("SaveFilterController.5","Die Benutzereinstellungen konnten nicht geschrieben werden") + ".";
 					throw new NuclosFatalException(sMessage, ex);
 				}
 			}
@@ -169,7 +174,8 @@ public class SaveFilterController {
 			protected void validateInput() throws ErrorInfo {
 				final String sFilterName = pnlEnterFilter.getTextFieldName().getText();
 				if (StringUtils.isNullOrEmpty(sFilterName)) {
-					throw new ErrorInfo(CommonLocaleDelegate.getMessage("SaveFilterController.3","Bitte geben Sie einen Namen f\u00fcr den Filter an") + ".", pnlEnterFilter.getTextFieldName());
+					throw new ErrorInfo(CommonLocaleDelegate.getInstance().getMessage(
+							"SaveFilterController.3","Bitte geben Sie einen Namen f\u00fcr den Filter an") + ".", pnlEnterFilter.getTextFieldName());
 				}
 				try {
 					SearchFilter.validate(sFilterName);
@@ -184,7 +190,8 @@ public class SaveFilterController {
 				boolean bMustCheckUniqueness = cmd == Command.New || (cmd == Command.Overwrite && !LangUtils.equals(oldName, pnlEnterFilter.getTextFieldName().getText()));
 
 				if (bMustCheckUniqueness && SearchFilterCache.getInstance().filterExists(sFilterName)) {
-					throw new ErrorInfo(CommonLocaleDelegate.getMessage("SaveFilterController.6","Ein Filter mit diesem Namen existiert bereits") + ".", pnlEnterFilter.getTextFieldName());
+					throw new ErrorInfo(CommonLocaleDelegate.getInstance().getMessage(
+							"SaveFilterController.6","Ein Filter mit diesem Namen existiert bereits") + ".", pnlEnterFilter.getTextFieldName());
 				}
 			}
 		};

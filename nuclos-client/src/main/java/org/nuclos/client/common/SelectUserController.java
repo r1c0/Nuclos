@@ -51,8 +51,10 @@ public class SelectUserController<T extends MasterDataVO> extends SelectObjectsC
 
 			this.btnLeft.setToolTipText(text3);
 			this.btnRight.setToolTipText(text4);
-			this.btnUp.setToolTipText(CommonLocaleDelegate.getMessage("SelectUserController.1", "Markierte Benutzer nach oben verschieben"));
-			this.btnDown.setToolTipText(CommonLocaleDelegate.getMessage("SelectUserController.2", "Markierte Benutzer nach unten verschieben"));
+			this.btnUp.setToolTipText(CommonLocaleDelegate.getInstance().getMessage(
+					"SelectUserController.1", "Markierte Benutzer nach oben verschieben"));
+			this.btnDown.setToolTipText(CommonLocaleDelegate.getInstance().getMessage(
+					"SelectUserController.2", "Markierte Benutzer nach unten verschieben"));
 
 			this.btnUp.setVisible(false);
 			this.btnDown.setVisible(false);
@@ -69,10 +71,10 @@ public class SelectUserController<T extends MasterDataVO> extends SelectObjectsC
 		this.getPanel().getJListSelectedObjects().setCellRenderer(new ColorCellRenderer());
 
 		String tooltipTxt = "<html>";
-		tooltipTxt += CommonLocaleDelegate.getMessage("SelectUserController.3", "Beim Synchronisieren:") + "<br>";
-		tooltipTxt += CommonLocaleDelegate.getMessage("SelectUserController.4", "gelb - Benutzer wird in Nuclos angelegt.") + "<br>";
-		tooltipTxt += CommonLocaleDelegate.getMessage("SelectUserController.5", "blau - Benutzerdaten werden in Nuclos aktualisiert.") + "<br>";
-		tooltipTxt += CommonLocaleDelegate.getMessage("SelectUserController.6", "rot  - Benutzer wird in Nuclos gel\u00f6scht.") + "<br>";
+		tooltipTxt += getCommonLocaleDelegate().getMessage("SelectUserController.3", "Beim Synchronisieren:") + "<br>";
+		tooltipTxt += getCommonLocaleDelegate().getMessage("SelectUserController.4", "gelb - Benutzer wird in Nuclos angelegt.") + "<br>";
+		tooltipTxt += getCommonLocaleDelegate().getMessage("SelectUserController.5", "blau - Benutzerdaten werden in Nuclos aktualisiert.") + "<br>";
+		tooltipTxt += getCommonLocaleDelegate().getMessage("SelectUserController.6", "rot  - Benutzer wird in Nuclos gel\u00f6scht.") + "<br>";
 		tooltipTxt += "</html>";
 		this.getPanel().getJListAvailableObjects().setToolTipText(tooltipTxt);
 		this.getPanel().getJListSelectedObjects().setToolTipText(tooltipTxt);

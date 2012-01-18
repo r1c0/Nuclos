@@ -20,6 +20,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.annotation.PostConstruct;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageListener;
@@ -34,6 +35,8 @@ import org.nuclos.common.NuclosEntity;
 import org.nuclos.common2.CommonRunnable;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.server.masterdata.valueobject.MasterDataMetaVO;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
 
 
 /**
@@ -47,12 +50,16 @@ import org.nuclos.server.masterdata.valueobject.MasterDataMetaVO;
  * @version 01.00.00
  *
  */
+@Configurable
 public class MetaDataCache {
 
 	private final Logger log = Logger.getLogger(this.getClass());
+
+	private static MetaDataCache singleton;
+	
 	private Map<String, MasterDataMetaVO> mp;
 	
-	private static MetaDataCache singleton;
+	private TopicNotificationReceiver tnr;
 	
 	private final MessageListener messagelistener = new MessageListener() {
 		@Override
@@ -63,10 +70,10 @@ public class MetaDataCache {
 				try {
 					NuclosEntity entity = NuclosEntity.getByName(((TextMessage)msg).getText());
 					if (!(entity == NuclosEntity.DYNAMICENTITY || entity == NuclosEntity.LAYOUT))
-						UIUtils.runCommandLater(Main.getMainFrame(), new CommonRunnable() {			
+						UIUtils.runCommandLater(Main.getInstance().getMainFrame(), new CommonRunnable() {			
 							@Override
 							public void run() throws CommonBusinessException {
-								Main.getMainController().refreshMenus();
+								Main.getInstance().getMainController().refreshMenus();
 							}
 						});
 				}
@@ -89,7 +96,11 @@ public class MetaDataCache {
 	}
 	
 	public MetaDataCache() {
-		TopicNotificationReceiver.subscribe(JMSConstants.TOPICNAME_METADATACACHE, messagelistener);
+	}
+	
+	@PostConstruct
+	void init() {
+		tnr.subscribe(JMSConstants.TOPICNAME_METADATACACHE, messagelistener);
 		log.debug("Initializing metadata cache");
 		final Collection<MasterDataMetaVO> coll = MasterDataDelegate.getInstance().getMetaData();
 		this.mp = new HashMap<String, MasterDataMetaVO>(coll.size());
@@ -97,7 +108,12 @@ public class MetaDataCache {
 			this.mp.put(mdmetavo.getEntityName(), mdmetavo);
 		}
 	}
-
+	
+	@Autowired
+	void setTopicNotificationReceiver(TopicNotificationReceiver tnr) {
+		this.tnr = tnr;
+	}
+	
 	/**
 	 * @return the meta data for all master data tables.
 	 */

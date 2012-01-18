@@ -183,7 +183,7 @@ public class PointerCollection implements Serializable{
 		if (p.message == null)
 			return null;
 		
-		return CommonLocaleDelegate.getMessage(p.message, p.message, p.localizeParameter);
+		return CommonLocaleDelegate.getInstance().getMessage(p.message, p.message, p.localizeParameter);
 	}
 	
 	public static class Pointer implements Serializable{

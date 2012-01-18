@@ -122,7 +122,8 @@ public class QueueNotificationReceiver {
 				container.setMessageListener(this);
 			}
 			catch (Exception ex) {
-				throw new NuclosFatalException(CommonLocaleDelegate.getMessage("TopicNotificationReceiver.4", "Der JMS-Abonnent f\u00fcr die Queue {0} konnte nicht registriert werden.", queuename), ex);
+				throw new NuclosFatalException(CommonLocaleDelegate.getInstance().getMessage(
+						"TopicNotificationReceiver.4", "Der JMS-Abonnent f\u00fcr die Queue {0} konnte nicht registriert werden.", queuename), ex);
 			}
 		}
 
@@ -141,7 +142,8 @@ public class QueueNotificationReceiver {
 				}
 			}
 			catch(JMSException e) {
-				throw new NuclosFatalException(CommonLocaleDelegate.getMessage("QueueNotificationReceiver.3", "Der JMS-Abonnent f\u00fcr die Queue {0} konnte nicht registriert werden.", queuename), e);
+				throw new NuclosFatalException(CommonLocaleDelegate.getInstance().getMessage(
+						"QueueNotificationReceiver.3", "Der JMS-Abonnent f\u00fcr die Queue {0} konnte nicht registriert werden.", queuename), e);
 			}
 		}
 

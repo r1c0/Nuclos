@@ -34,7 +34,7 @@ import org.nuclos.client.common.NuclosCollectControllerFactory;
 import org.nuclos.client.genericobject.CollectableGenericObjectWithDependants;
 import org.nuclos.client.genericobject.GenericObjectDelegate;
 import org.nuclos.client.genericobject.Modules;
-import org.nuclos.client.main.MainController;
+import org.nuclos.client.main.Main;
 import org.nuclos.client.main.mainframe.MainFrameTab;
 import org.nuclos.client.statemodel.StateDelegate;
 import org.nuclos.client.ui.Controller;
@@ -85,7 +85,7 @@ public class StateHistoryController extends Controller {
 
 		final String sTitle = getTitle(sGenericObjectIdentifier, iGenericObjectId, iModuleId);
 
-		final MainFrameTab ifrm = MainController.newMainFrameTab(null, sTitle);
+		final MainFrameTab ifrm = Main.getInstance().getMainController().newMainFrameTab(null, sTitle);
 		//ifrm.setContentPane(pnlHistory);
 		ifrm.setLayeredComponent(pnlHistory);
 		parent.add(ifrm);
@@ -141,10 +141,12 @@ public class StateHistoryController extends Controller {
 	}
 
 	private static String getTitle(String sGenericObjectIdentifier, int iGenericObjectId, int iModuleId) {
-		final StringBuffer sbTitle = new StringBuffer(CommonLocaleDelegate.getMessage("StateHistoryController.1", "Statushistorie f\u00fcr") + " ");
+		final StringBuffer sbTitle = new StringBuffer(CommonLocaleDelegate.getInstance().getMessage(
+				"StateHistoryController.1", "Statushistorie f\u00fcr") + " ");
 
 		if (sGenericObjectIdentifier == null) {
-			sbTitle.append(CommonLocaleDelegate.getMessage("LogbookController.13", "das Objekt mit der Id") + " ");
+			sbTitle.append(CommonLocaleDelegate.getInstance().getMessage(
+					"LogbookController.13", "das Objekt mit der Id") + " ");
 			sbTitle.append(Integer.toString(iGenericObjectId));
 		}
 		else {

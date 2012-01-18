@@ -119,7 +119,7 @@ public final class CollectableComparison extends AtomicCollectableSearchConditio
 		String format = field.getFormatOutput();
 		if (format == null) {
 			if (Date.class.isAssignableFrom(field.getJavaClass())) {
-				return CommonLocaleDelegate.getDateFormat().format(comparand.getValue());
+				return CommonLocaleDelegate.getInstance().getDateFormat().format(comparand.getValue());
 			}
 		}
 		if (format == null) {

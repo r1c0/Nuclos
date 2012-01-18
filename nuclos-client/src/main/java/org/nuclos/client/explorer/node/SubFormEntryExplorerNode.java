@@ -49,7 +49,6 @@ import org.nuclos.client.ui.UIUtils;
 import org.nuclos.client.ui.tree.TreeNodeAction;
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.dal.vo.EntityObjectVO;
-import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.CommonRunnable;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonFinderException;
@@ -106,7 +105,8 @@ public class SubFormEntryExplorerNode<TN extends SubFormEntryTreeNode> extends E
     	private String sSubFormEntity = null;
 
         public RemoveAction(JTree tree) {
-			super(ACTIONCOMMAND_REMOVE, CommonLocaleDelegate.getMessage("MasterDataExplorerNode.1", "L\u00f6schen")+ "...", tree);
+			super(ACTIONCOMMAND_REMOVE, 
+					getCommonLocaleDelegate().getMessage("MasterDataExplorerNode.1", "L\u00f6schen")+ "...", tree);
 
 			javax.swing.tree.TreeNode tnParent = SubFormEntryExplorerNode.this.getParent();
 			if (tnParent instanceof SubFormExplorerNode && ((SubFormExplorerNode) tnParent).getTreeNode() instanceof SubFormTreeNode) {
@@ -151,8 +151,9 @@ public class SubFormEntryExplorerNode<TN extends SubFormEntryTreeNode> extends E
 		public void askAndRemove() {
 			if (isEnabled()) {
 				final String sName = getTreeNode().getLabel();
-				final String sMessage = CommonLocaleDelegate.getMessage("SubFormEntryExplorerNode.3", "Wollen Sie den Unterformulareintrag \"{0}\" wirklich l\u00f6schen?", sName);
-				final int iBtn = JOptionPane.showConfirmDialog(this.getParent(), sMessage, CommonLocaleDelegate.getMessage("SubFormEntryExplorerNode.2", "Unterformulareintrag l\u00f6schen"),
+				final String sMessage = getCommonLocaleDelegate().getMessage("SubFormEntryExplorerNode.3", "Wollen Sie den Unterformulareintrag \"{0}\" wirklich l\u00f6schen?", sName);
+				final int iBtn = JOptionPane.showConfirmDialog(this.getParent(), sMessage, 
+						getCommonLocaleDelegate().getMessage("SubFormEntryExplorerNode.2", "Unterformulareintrag l\u00f6schen"),
 						JOptionPane.OK_CANCEL_OPTION);
 				if (iBtn == JOptionPane.OK_OPTION) {
 					remove(getJTree());
@@ -232,7 +233,9 @@ public class SubFormEntryExplorerNode<TN extends SubFormEntryTreeNode> extends E
 		private final Integer id;
 
 		ShowReferenceAction(final String entityName, final Integer id, JTree tree, String action) {
-			super(action, CommonLocaleDelegate.getMessage("SubFormEntryExplorerNode.1", "{0} öffnen", CommonLocaleDelegate.getLabelFromMetaDataVO(MetaDataClientProvider.getInstance().getEntity(entityName))), tree);
+			super(action, 
+					getCommonLocaleDelegate().getMessage("SubFormEntryExplorerNode.1", "{0} öffnen", 
+					getCommonLocaleDelegate().getLabelFromMetaDataVO(MetaDataClientProvider.getInstance().getEntity(entityName))), tree);
 			this.entityName = entityName;
 			this.id = id;
 		}
@@ -250,7 +253,7 @@ public class SubFormEntryExplorerNode<TN extends SubFormEntryTreeNode> extends E
 			UIUtils.runCommand(this.getParent(), new CommonRunnable() {
 				@Override
 				public void run() throws CommonBusinessException {
-					Main.getMainController().showDetails(entityName, id);
+					Main.getInstance().getMainController().showDetails(entityName, id);
 				}
 			});
 		}
@@ -281,7 +284,7 @@ public class SubFormEntryExplorerNode<TN extends SubFormEntryTreeNode> extends E
 		Integer resId = MetaDataClientProvider.getInstance().getEntity(getTreeNode().getEntityName()).getResourceId();
 		String nuclosResource = MetaDataClientProvider.getInstance().getEntity(getTreeNode().getEntityName()).getNuclosResource();
 		if(resId != null) {
-			ImageIcon standardIcon = ResourceCache.getIconResource(resId);
+			ImageIcon standardIcon = ResourceCache.getInstance().getIconResource(resId);
 			return MainFrame.resizeAndCacheTabIcon(standardIcon);
 		} else if (nuclosResource != null){
 			ImageIcon nuclosIcon = NuclosResourceCache.getNuclosResourceIcon(nuclosResource);

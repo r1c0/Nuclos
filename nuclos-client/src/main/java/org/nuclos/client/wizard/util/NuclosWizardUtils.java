@@ -120,7 +120,8 @@ public class NuclosWizardUtils {
 			}
 		}
 		if(typ == null) {
-			 typ = new DataTyp(CommonLocaleDelegate.getText("wizard.datatype.individual"), inputFormat, outputFormat, null, scale, precision, javaType);
+			 typ = new DataTyp(CommonLocaleDelegate.getInstance().getText("wizard.datatype.individual"), 
+					 inputFormat, outputFormat, null, scale, precision, javaType);
 		}
 		return typ;
 	}
@@ -238,7 +239,7 @@ public class NuclosWizardUtils {
 
 			@Override
 			public String transform(EntityMetaDataVO i) {
-				String menu = CommonLocaleDelegate.getResource(i.getLocaleResourceIdForMenuPath(), "");
+				String menu = CommonLocaleDelegate.getInstance().getResource(i.getLocaleResourceIdForMenuPath(), "");
 				return org.nuclos.common2.StringUtils.emptyIfNull(menu);
 			}
 

@@ -416,6 +416,7 @@ public final class CollectStateModel <Clct extends Collectable> implements Colle
 	 * @param iDetailsMode
 	 */
 	private void performVersionCheck(int iDetailsMode) {
+		final CommonLocaleDelegate cld = CommonLocaleDelegate.getInstance();
 		try {
 			final Clct clctOld = this.ctlCollect.getSelectedCollectable();
 			final Integer iNewVersion;
@@ -423,12 +424,14 @@ public final class CollectStateModel <Clct extends Collectable> implements Colle
 				iNewVersion = this.ctlCollect.getVersionOfCollectableById(this.ctlCollect.getEntityName(), clctOld.getId());
 			}
 			catch (CommonFinderException ex) {
-				final String sMessage = CommonLocaleDelegate.getMessage("CollectStateModel.7","Der Datensatz wurde zwischenzeitlich gel\u00f6scht.");
+				final String sMessage = cld.getMessage(
+						"CollectStateModel.7","Der Datensatz wurde zwischenzeitlich gel\u00f6scht.");
 				/** @todo performVersionCheck should throw CommonFinderException! */
 				throw new CommonFatalException(sMessage, ex);
 			}
 			catch (CommonBusinessException ex) {
-				final String sMessage = CommonLocaleDelegate.getMessage("CollectStateModel.3","Beim Pr\u00fcfen der Version des Datensatzes ist ein Fehler aufgetreten.");
+				final String sMessage = cld.getMessage(
+						"CollectStateModel.3","Beim Pr\u00fcfen der Version des Datensatzes ist ein Fehler aufgetreten.");
 				throw new CommonFatalException(sMessage, ex);
 				// this must not happen
 			}
@@ -443,12 +446,15 @@ public final class CollectStateModel <Clct extends Collectable> implements Colle
 			}
 			else {
 				if (iNewVersion < iOldVersion) {
-					throw new CommonFatalException(CommonLocaleDelegate.getMessage("CollectStateModel.9","Neuere Version erwartet."));
+					throw new CommonFatalException(cld.getMessage(
+							"CollectStateModel.9","Neuere Version erwartet."));
 				}
 				assert iNewVersion > iOldVersion;
 				
-				String sMessage = CommonLocaleDelegate.getMessage("CollectStateModel.6","Der Datensatz wurde zwischenzeitlich ge\u00e4ndert. Soll der Datensatz neu geladen werden?");
-				int result = JOptionPane.showConfirmDialog(this.ctlCollect.parent, sMessage, CommonLocaleDelegate.getMessage("CollectStateModel.5","Datensatz ge\u00e4ndert"),
+				String sMessage = cld.getMessage(
+						"CollectStateModel.6","Der Datensatz wurde zwischenzeitlich ge\u00e4ndert. Soll der Datensatz neu geladen werden?");
+				int result = JOptionPane.showConfirmDialog(this.ctlCollect.parent, sMessage, 
+						cld.getMessage("CollectStateModel.5","Datensatz ge\u00e4ndert"),
 						JOptionPane.YES_NO_OPTION);
 				
 				if (result == JOptionPane.YES_OPTION) {
@@ -458,12 +464,14 @@ public final class CollectStateModel <Clct extends Collectable> implements Colle
 						clctNew = this.ctlCollect.readSelectedCollectable();
 					}
 					catch (CommonFinderException ex) {
-						sMessage = CommonLocaleDelegate.getMessage("CollectStateModel.8","Der Datensatz wurde zwischenzeitlich gel\u00f6scht.");
+						sMessage = cld.getMessage(
+								"CollectStateModel.8","Der Datensatz wurde zwischenzeitlich gel\u00f6scht.");
 						/** @todo performVersionCheck should throw CommonFinderException! */
 						throw new CommonFatalException(sMessage, ex);
 					}
 					catch (CommonBusinessException ex) {
-						sMessage = CommonLocaleDelegate.getMessage("CollectStateModel.2","Beim Laden des Datensatzes ist ein Fehler aufgetreten.");
+						sMessage = cld.getMessage(
+								"CollectStateModel.2","Beim Laden des Datensatzes ist ein Fehler aufgetreten.");
 						throw new CommonFatalException(sMessage, ex);
 						// this must not happen
 					}
@@ -474,7 +482,8 @@ public final class CollectStateModel <Clct extends Collectable> implements Colle
 						this.ctlCollect.safeFillDetailsPanel(clctNew);
 					}
 					catch (CommonBusinessException ex) {
-						sMessage = CommonLocaleDelegate.getMessage("CollectStateModel.1","Beim erneuten F\u00fcllen der Maske ist ein Fehler aufgetreten.");
+						sMessage = cld.getMessage(
+								"CollectStateModel.1","Beim erneuten F\u00fcllen der Maske ist ein Fehler aufgetreten.");
 						throw new CommonFatalException(sMessage, ex);
 						// this will be caught further down.
 					}
@@ -499,7 +508,8 @@ public final class CollectStateModel <Clct extends Collectable> implements Colle
 			this.iDetailsMode = iDetailsMode;
 		}
 		catch (RuntimeException ex) {
-			final String sErrorMsg = CommonLocaleDelegate.getMessage("CollectStateModel.4","Das Bearbeiten dieses Datensatzes ist zur Zeit nicht m\u00f6glich.");
+			final String sErrorMsg = cld.getMessage(
+					"CollectStateModel.4","Das Bearbeiten dieses Datensatzes ist zur Zeit nicht m\u00f6glich.");
 			Errors.getInstance().showExceptionDialog(this.pnlCollect, sErrorMsg, ex);
 			/** @todo Treat "Datensatz wurde zwischenzeitlich gel\u00f6scht" as a special case. */
 			assert this.getDetailsMode() == DETAILSMODE_VIEW;

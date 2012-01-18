@@ -118,7 +118,7 @@ public class WorkflowWizardPanel extends JPanel {
 						
 						EntitySearchFilter filter = filters.get(f.getName(), sUsername);
 						
-						TaskController taskCtrl = Main.getMainController().getExplorerController().getTaskController();
+						TaskController taskCtrl = Main.getInstance().getMainController().getExplorerController().getTaskController();
 						taskCtrl.cmdShowFilterInTaskPanel(filter);
 						
 					}

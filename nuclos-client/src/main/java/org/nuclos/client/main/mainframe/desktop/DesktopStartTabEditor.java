@@ -65,6 +65,7 @@ public class DesktopStartTabEditor {
 	private String sResourceMenuBackground, sResourceMenuBackgroundHover, sResourceBackground;
 	
 	public DesktopStartTabEditor(WorkspaceDescription.Desktop desktopPrefs) {
+		final CommonLocaleDelegate cld = CommonLocaleDelegate.getInstance();
 		iLayout = desktopPrefs.getLayout();
 		iHorizontalGap = desktopPrefs.getHorizontalGap();
 		iVerticalGap = desktopPrefs.getVerticalGap();
@@ -79,7 +80,8 @@ public class DesktopStartTabEditor {
 		sResourceMenuBackgroundHover = desktopPrefs.getResourceMenuBackgroundHover();
 		sResourceBackground = desktopPrefs.getResourceBackground();
 		
-		dialog = new JDialog(Main.getMainFrame(), CommonLocaleDelegate.getMessage("DesktopStartTabEditor.1","Desktop bearbeiten"), true);
+		dialog = new JDialog(Main.getInstance().getMainFrame(), cld.getMessage(
+				"DesktopStartTabEditor.1","Desktop bearbeiten"), true);
 		contentPanel = new JPanel();
 		initJPanel(contentPanel,
 				new double[] {TableLayout.PREFERRED, 10, TableLayout.FILL},
@@ -97,11 +99,11 @@ public class DesktopStartTabEditor {
 							  TableLayout.PREFERRED});
 		contentPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 		
-		JLabel lbLayout = new JLabel(CommonLocaleDelegate.getMessage("DesktopStartTabEditor.2","Layout"), JLabel.TRAILING);
+		JLabel lbLayout = new JLabel(cld.getMessage("DesktopStartTabEditor.2","Layout"), JLabel.TRAILING);
         contentPanel.add(lbLayout, "0, 0");
         ButtonGroup bgLayout = new ButtonGroup();
-        rbOneRowLayout = new JRadioButton(CommonLocaleDelegate.getMessage("DesktopStartTabEditor.3","Einzeilig zentriert"));
-        rbWrapLayout = new JRadioButton(CommonLocaleDelegate.getMessage("DesktopStartTabEditor.4","Mit Umbruch"));
+        rbOneRowLayout = new JRadioButton(cld.getMessage("DesktopStartTabEditor.3","Einzeilig zentriert"));
+        rbWrapLayout = new JRadioButton(cld.getMessage("DesktopStartTabEditor.4","Mit Umbruch"));
         bgLayout.add(rbOneRowLayout);
         bgLayout.add(rbWrapLayout);
         switch (iLayout) {
@@ -118,14 +120,15 @@ public class DesktopStartTabEditor {
         contentPanel.add(layoutPanel, "2, 0");
         
         JPanel backgroundPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        btResourceBackground = new ResourceIconChooser.Button(CommonLocaleDelegate.getMessage("DesktopStartTabEditor.21","Hintergrundbild"), sResourceBackground);
+        btResourceBackground = new ResourceIconChooser.Button(cld.getMessage(
+        		"DesktopStartTabEditor.21","Hintergrundbild"), sResourceBackground);
         backgroundPanel.add(btResourceBackground);
         contentPanel.add(backgroundPanel, "2, 1");
         
-        JLabel lbGabs = new JLabel(CommonLocaleDelegate.getMessage("DesktopStartTabEditor.5","Abstände"), JLabel.TRAILING);
+        JLabel lbGabs = new JLabel(cld.getMessage("DesktopStartTabEditor.5","Abstände"), JLabel.TRAILING);
         contentPanel.add(lbGabs, "0, 2");
-        JLabel lbHorizontal = new JLabel(CommonLocaleDelegate.getMessage("DesktopStartTabEditor.6","Horizontal"), JLabel.TRAILING);
-        JLabel lbVertical = new JLabel(CommonLocaleDelegate.getMessage("DesktopStartTabEditor.7","Vertikal"), JLabel.TRAILING);
+        JLabel lbHorizontal = new JLabel(cld.getMessage("DesktopStartTabEditor.6","Horizontal"), JLabel.TRAILING);
+        JLabel lbVertical = new JLabel(cld.getMessage("DesktopStartTabEditor.7","Vertikal"), JLabel.TRAILING);
         tfHorizontalGab = new JTextField(iHorizontalGap+"", 5);
         tfVerticalGap = new JTextField(iVerticalGap+"", 5);
         JPanel gapsPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
@@ -137,12 +140,14 @@ public class DesktopStartTabEditor {
         
         contentPanel.add(new JSeparator(JSeparator.HORIZONTAL), "2, 3, 2, 3");
         
-        JLabel lbMenuButtonLabel = new JLabel(CommonLocaleDelegate.getMessage("DesktopStartTabEditor.8","Menu Button Beschriftung"), JLabel.TRAILING);
+        JLabel lbMenuButtonLabel = new JLabel(cld.getMessage("DesktopStartTabEditor.8","Menu Button Beschriftung"), JLabel.TRAILING);
         contentPanel.add(lbMenuButtonLabel, "0, 4");
-        JLabel lbFontSize = new JLabel(CommonLocaleDelegate.getMessage("DesktopStartTabEditor.10","Größe"), JLabel.TRAILING);
+        JLabel lbFontSize = new JLabel(cld.getMessage("DesktopStartTabEditor.10","Größe"), JLabel.TRAILING);
         tfMenuItemTextSize = new JTextField(iMenuItemTextSize + "", 5);
-        btMenuItemTextColor = new ColorChooserButton(CommonLocaleDelegate.getMessage("DesktopStartTabEditor.9","Farbe"), colorMenuItemText, dialog);
-        btMenuItemTextHoverColor = new ColorChooserButton(CommonLocaleDelegate.getMessage("DesktopStartTabEditor.11","Mouseover"), colorMenuItemTextHover, dialog);
+        btMenuItemTextColor = new ColorChooserButton(cld.getMessage(
+        		"DesktopStartTabEditor.9","Farbe"), colorMenuItemText, dialog);
+        btMenuItemTextHoverColor = new ColorChooserButton(cld.getMessage(
+        		"DesktopStartTabEditor.11","Mouseover"), colorMenuItemTextHover, dialog);
         JPanel menuButtonPanel1 = new JPanel(new FlowLayout(FlowLayout.LEFT));
         menuButtonPanel1.add(lbFontSize);
         menuButtonPanel1.add(tfMenuItemTextSize);
@@ -151,9 +156,12 @@ public class DesktopStartTabEditor {
         contentPanel.add(menuButtonPanel1, "2, 4");
         
         ButtonGroup bgMenuItemTextAlignment = new ButtonGroup();
-        rbMenuItemTextHorizontalAlignLeft = new JRadioButton(CommonLocaleDelegate.getMessage("DesktopStartTabEditor.17","Links"));
-        rbMenuItemTextHorizontalAlignCenter = new JRadioButton(CommonLocaleDelegate.getMessage("DesktopStartTabEditor.18","Zentriert"));
-        rbMenuItemTextHorizontalAlignRight = new JRadioButton(CommonLocaleDelegate.getMessage("DesktopStartTabEditor.19","Rechts"));
+        rbMenuItemTextHorizontalAlignLeft = new JRadioButton(
+        		cld.getMessage("DesktopStartTabEditor.17","Links"));
+        rbMenuItemTextHorizontalAlignCenter = new JRadioButton(
+        		cld.getMessage("DesktopStartTabEditor.18","Zentriert"));
+        rbMenuItemTextHorizontalAlignRight = new JRadioButton(
+        		cld.getMessage("DesktopStartTabEditor.19","Rechts"));
         bgMenuItemTextAlignment.add(rbMenuItemTextHorizontalAlignLeft);
         bgMenuItemTextAlignment.add(rbMenuItemTextHorizontalAlignCenter);
         bgMenuItemTextAlignment.add(rbMenuItemTextHorizontalAlignRight);
@@ -174,20 +182,24 @@ public class DesktopStartTabEditor {
         menuButtonPanel4.add(rbMenuItemTextHorizontalAlignRight);
         contentPanel.add(menuButtonPanel4, "2, 5");
         
-        JLabel lbMenuItemTextHorizontalPadding = new JLabel(CommonLocaleDelegate.getMessage("DesktopStartTabEditor.20","Horizontaler Abstand"), JLabel.TRAILING);
+        JLabel lbMenuItemTextHorizontalPadding = new JLabel(cld.getMessage(
+        		"DesktopStartTabEditor.20","Horizontaler Abstand"), JLabel.TRAILING);
         tfMenuItemTextHorizontalPadding = new JTextField(iMenuItemTextHorizontalPadding + "", 5);
         JPanel menuButtonPanel5 = new JPanel(new FlowLayout(FlowLayout.LEFT));
         menuButtonPanel5.add(lbMenuItemTextHorizontalPadding);
         menuButtonPanel5.add(tfMenuItemTextHorizontalPadding);
         contentPanel.add(menuButtonPanel5, "2, 6");
         
-        JLabel lbMenuItemBackground = new JLabel(CommonLocaleDelegate.getMessage("DesktopStartTabEditor.22","Menu Button Hintergründe"), JLabel.TRAILING);
+        JLabel lbMenuItemBackground = new JLabel(cld.getMessage(
+        		"DesktopStartTabEditor.22","Menu Button Hintergründe"), JLabel.TRAILING);
         contentPanel.add(lbMenuItemBackground, "0, 7");
-        btResourceMenuBackground = new ResourceIconChooser.Button(CommonLocaleDelegate.getMessage("DesktopStartTabEditor.12","Bild"), sResourceMenuBackground);
+        btResourceMenuBackground = new ResourceIconChooser.Button(cld.getMessage(
+        		"DesktopStartTabEditor.12","Bild"), sResourceMenuBackground);
         JPanel menuButtonPanel2 = new JPanel(new FlowLayout(FlowLayout.LEFT));
         menuButtonPanel2.add(btResourceMenuBackground);
         contentPanel.add(menuButtonPanel2, "2, 7");
-        btResourceMenuBackgroundHover = new ResourceIconChooser.Button(CommonLocaleDelegate.getMessage("DesktopStartTabEditor.13","Bild Mouseover"), sResourceMenuBackgroundHover);
+        btResourceMenuBackgroundHover = new ResourceIconChooser.Button(cld.getMessage(
+        		"DesktopStartTabEditor.13","Bild Mouseover"), sResourceMenuBackgroundHover);
         JPanel menuButtonPanel3 = new JPanel(new FlowLayout(FlowLayout.LEFT));
         menuButtonPanel3.add(btResourceMenuBackgroundHover);
         contentPanel.add(menuButtonPanel3, "2, 8");
@@ -196,8 +208,8 @@ public class DesktopStartTabEditor {
         contentPanel.add(new JSeparator(JSeparator.HORIZONTAL), "0, 10, 2, 10");
         
 		JPanel actionsPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 2));
-		btSave = new JButton(CommonLocaleDelegate.getMessage("DesktopStartTabEditor.14","Speichern"));
-		btCancel = new JButton(CommonLocaleDelegate.getMessage("DesktopStartTabEditor.15","Abbrechen"));
+		btSave = new JButton(cld.getMessage("DesktopStartTabEditor.14","Speichern"));
+		btCancel = new JButton(cld.getMessage("DesktopStartTabEditor.15","Abbrechen"));
 		actionsPanel.add(btSave);
 		actionsPanel.add(btCancel);
 		contentPanel.add(actionsPanel, "0, 11, 2, 11");
@@ -205,7 +217,7 @@ public class DesktopStartTabEditor {
 		dialog.setContentPane(contentPanel);
 		dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		dialog.getRootPane().setDefaultButton(btSave);
-		Rectangle mfBounds = Main.getMainFrame().getBounds();
+		Rectangle mfBounds = Main.getInstance().getMainFrame().getBounds();
 		dialog.setBounds(mfBounds.x+(mfBounds.width/2)-300, mfBounds.y+(mfBounds.height/2)-200, 600, 400);
 		dialog.setResizable(false);
 		
@@ -228,7 +240,8 @@ public class DesktopStartTabEditor {
 					iMenuItemTextSize = Integer.parseInt(tfMenuItemTextSize.getText());
 					iMenuItemTextHorizontalPadding = Integer.parseInt(tfMenuItemTextHorizontalPadding.getText());
 				} catch (Exception ex) {
-					JOptionPane.showMessageDialog(contentPanel, CommonLocaleDelegate.getMessage("DesktopStartTabEditor.16","Abstände und Schriftgröße dürfen nur Zahlen enthalten!"));
+					JOptionPane.showMessageDialog(contentPanel, CommonLocaleDelegate.getInstance().getMessage(
+							"DesktopStartTabEditor.16","Abstände und Schriftgröße dürfen nur Zahlen enthalten!"));
 					return;
 				}
 				if (rbWrapLayout.isSelected()) {

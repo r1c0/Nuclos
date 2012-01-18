@@ -67,7 +67,7 @@ public class ShowAsDialog extends JDialog {
 	private EntityObjectVO     object;
 	
 	public ShowAsDialog(JFrame owner, EntityObjectVO object, List<EntityFieldMetaDataVO> possibleReferences) {
-		super(owner, CommonLocaleDelegate.getResource("livesearch.showasdiag.title", "Frage"), false);
+		super(owner, CommonLocaleDelegate.getInstance().getResource("livesearch.showasdiag.title", "Frage"), false);
 		this.object = object;
 		
 		List<Pair<EntityFieldMetaDataVO, String>> withLabel
@@ -79,7 +79,8 @@ public class ShowAsDialog extends JDialog {
 	                    public Pair<EntityFieldMetaDataVO, String> transform(EntityFieldMetaDataVO i) {
 		                    return new Pair<EntityFieldMetaDataVO, String>(
 		                    	i,
-		                    	CommonLocaleDelegate.getLabelFromMetaDataVO(MetaDataClientProvider.getInstance().getEntity(i.getForeignEntity())));
+		                    	CommonLocaleDelegate.getInstance().getLabelFromMetaDataVO(
+		                    			MetaDataClientProvider.getInstance().getEntity(i.getForeignEntity())));
 	                    }
 					}),
 				new Comparator<Pair<EntityFieldMetaDataVO, String>>() {
@@ -102,7 +103,8 @@ public class ShowAsDialog extends JDialog {
 		}
 		checkPane.setBorder(new CompoundBorder(new EmptyBorder(10, 30, 10, 30), new LineBorder(Color.GRAY)));
 		
-		JLabel label = new JLabel(CommonLocaleDelegate.getResource("livesearch.showasdiag.text", "<html><br>Das Objekt repräsentiert einen Detaildatensatz, zu dem kein eindeutiges Layout bestimmt werden konnte.<br>In welchem Modul soll die Ansicht geöffnet werden?</html>"));
+		JLabel label = new JLabel(CommonLocaleDelegate.getInstance().getResource(
+				"livesearch.showasdiag.text", "<html><br>Das Objekt repräsentiert einen Detaildatensatz, zu dem kein eindeutiges Layout bestimmt werden konnte.<br>In welchem Modul soll die Ansicht geöffnet werden?</html>"));
 		label.setBorder(new EmptyBorder(10, 10, 10, 10));
 		
 		add(label, BorderLayout.NORTH);
@@ -129,7 +131,7 @@ public class ShowAsDialog extends JDialog {
 	}
 	
 	
-	private Action okAction = new AbstractAction(CommonLocaleDelegate.getResource("livesearch.showasdiag.ok", "OK")) {
+	private Action okAction = new AbstractAction(CommonLocaleDelegate.getInstance().getResource("livesearch.showasdiag.ok", "OK")) {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
@@ -137,7 +139,7 @@ public class ShowAsDialog extends JDialog {
 				if(b.isSelected()) {
 					EntityFieldMetaDataVO fm = (EntityFieldMetaDataVO) b.getClientProperty(META_VO);
 					try {
-	                    Main.getMainController().showDetails(
+	                    Main.getInstance().getMainController().showDetails(
 	                    	fm.getForeignEntity(),
 	                    	object.getFieldIds().get(fm.getField()));
                     }
@@ -149,7 +151,7 @@ public class ShowAsDialog extends JDialog {
 		}
 	};
 
-	private Action cancelAction = new AbstractAction(CommonLocaleDelegate.getResource("livesearch.showasdiag.cancel", "Cancel")) {
+	private Action cancelAction = new AbstractAction(CommonLocaleDelegate.getInstance().getResource("livesearch.showasdiag.cancel", "Cancel")) {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {

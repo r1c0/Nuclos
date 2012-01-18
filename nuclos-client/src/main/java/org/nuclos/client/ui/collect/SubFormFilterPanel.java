@@ -80,7 +80,8 @@ public class SubFormFilterPanel extends JXCollapsiblePane {
 		if (fixedTable) {
 			resetFilterButtonPanel.setPreferredSize(new Dimension(SubformRowHeader.COLUMN_SIZE, 20));
 			resetFilterButton.setIcon(Icons.getInstance().getIconClearSearch16());
-			resetFilterButton.setToolTipText(CommonLocaleDelegate.getMessage("subform.filter.tooltip", "Filterkriterien l\u00f6schen"));
+			resetFilterButton.setToolTipText(CommonLocaleDelegate.getInstance().getMessage(
+					"subform.filter.tooltip", "Filterkriterien l\u00f6schen"));
 			resetFilterButtonPanel.add(resetFilterButton, BorderLayout.CENTER);
 		}
 		

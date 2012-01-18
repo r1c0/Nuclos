@@ -56,7 +56,6 @@ import org.nuclos.common.collect.collectable.searchcondition.SearchConditionUtil
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Transformer;
 import org.nuclos.common.masterdata.CollectableMasterDataEntity;
-import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.CommonRunnable;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
@@ -83,8 +82,10 @@ public class DynamicEntitySubFormController extends MasterDataSubFormController 
 
 	private static final Logger LOG = Logger.getLogger(DynamicEntitySubFormController.class);
 	
-	private JMenuItem miDetails = new JMenuItem(CommonLocaleDelegate.getMessage("AbstractCollectableComponent.7","Details anzeigen..."));
-	private JMenuItem miDefineAsNewSearchResult = new JMenuItem(CommonLocaleDelegate.getMessage("DynamicEntitySubFormController.1", "In Liste anzeigen"));
+	private JMenuItem miDetails = new JMenuItem(getCommonLocaleDelegate().getMessage(
+			"AbstractCollectableComponent.7","Details anzeigen..."));
+	private JMenuItem miDefineAsNewSearchResult = new JMenuItem(getCommonLocaleDelegate().getMessage(
+			"DynamicEntitySubFormController.1", "In Liste anzeigen"));
 
 	public DynamicEntitySubFormController(Component parent, JComponent parentMdi,
 			CollectableComponentModelProvider clctcompmodelprovider, String sParentEntityName, SubForm subform,
@@ -195,9 +196,9 @@ public class DynamicEntitySubFormController extends MasterDataSubFormController 
 					entityName = MetaDataClientProvider.getInstance().getEntity(Integer.valueOf(govo.getModuleId()).longValue()).getEntity();
 				}
 				MainFrameTab tab = UIUtils.getInternalFrameForComponent(getSubForm().getJTable());
-				CollectController<?> controller = Main.getMainController().getControllerForInternalFrame(tab);
+				CollectController<?> controller = Main.getInstance().getMainController().getControllerForInternalFrame(tab);
 
-				Main.getMainController().showDetails(entityName, clct.getId(), false, controller);
+				Main.getInstance().getMainController().showDetails(entityName, clct.getId(), false, controller);
 			}
 		});
 	}
@@ -244,7 +245,8 @@ public class DynamicEntitySubFormController extends MasterDataSubFormController 
 					ctlGenericObject.runViewResults(cond);
 				}
 				catch(CommonFatalException ex){
-					throw new CommonFatalException(CommonLocaleDelegate.getMessage("DynamicEntitySubFormController.2", "Der Datensatz kann nicht angezeigt werden. Bitte tragen Sie in der Datenquelle für die dynamische Entität, die Entität ein, die angezeigt werden soll!"));
+					throw new CommonFatalException(getCommonLocaleDelegate().getMessage(
+							"DynamicEntitySubFormController.2", "Der Datensatz kann nicht angezeigt werden. Bitte tragen Sie in der Datenquelle für die dynamische Entität, die Entität ein, die angezeigt werden soll!"));
 				}
 			}
 		});

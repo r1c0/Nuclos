@@ -125,6 +125,8 @@ import org.nuclos.server.statemodel.valueobject.MandatoryFieldVO;
 import org.nuclos.server.statemodel.valueobject.StateVO;
 import org.nuclos.server.statemodel.valueobject.SubformColumnPermissionVO;
 import org.nuclos.server.statemodel.valueobject.SubformPermissionVO;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
 
 /**
  * Panel containing the properties of a state.
@@ -136,7 +138,7 @@ import org.nuclos.server.statemodel.valueobject.SubformPermissionVO;
  * @author	<a href="mailto:Christoph.Radig@novabit.de">Christoph Radig</a>
  * @version 01.00.00
  */
-
+@Configurable(preConstruction=true)
 public class StatePropertiesPanel extends JPanel {
 
 	private static final Logger LOG = Logger.getLogger(StatePropertiesPanel.class);
@@ -254,6 +256,7 @@ public class StatePropertiesPanel extends JPanel {
 		}
 	}
 
+	@Configurable
 	public static class StateDependantRightsPanel extends JPanel implements RightAndMandatoryConstants{
 		
 		public static final int LEFT_BORDER = 5;
@@ -282,19 +285,7 @@ public class StatePropertiesPanel extends JPanel {
 		
 		private List<ChangeListener> lstDetailsChangedListeners = new ArrayList<ChangeListener>();
 		
-		public void addDetailsChangedListener(ChangeListener cl) {
-			lstDetailsChangedListeners.add(cl);
-		}
-
-		public void removeDetailsChangedListener(ChangeListener cl) {
-			lstDetailsChangedListeners.remove(cl);
-		}
-		
-		private void detailsChanged() {
-			for (ChangeListener cl : lstDetailsChangedListeners) {
-				cl.stateChanged(new ChangeEvent(this));
-			}
-		}
+		private CommonLocaleDelegate cld;
 		
 		private ChangeListener detailsChangedListener = new ChangeListener() {
 			@Override
@@ -317,6 +308,25 @@ public class StatePropertiesPanel extends JPanel {
 			scroll.getHorizontalScrollBar().setUnitIncrement(20);
 			scroll.getVerticalScrollBar().setUnitIncrement(20);
 			this.add(scroll, BorderLayout.CENTER);
+		}
+		
+		@Autowired
+		void setCommonLocaleDelegate(CommonLocaleDelegate cld) {
+			this.cld = cld;
+		}
+		
+		public void addDetailsChangedListener(ChangeListener cl) {
+			lstDetailsChangedListeners.add(cl);
+		}
+
+		public void removeDetailsChangedListener(ChangeListener cl) {
+			lstDetailsChangedListeners.remove(cl);
+		}
+		
+		private void detailsChanged() {
+			for (ChangeListener cl : lstDetailsChangedListeners) {
+				cl.stateChanged(new ChangeEvent(this));
+			}
 		}
 		
 		public RightTransfer getRightTransfer() {
@@ -438,9 +448,11 @@ public class StatePropertiesPanel extends JPanel {
 			header.setLayout(layoutHeader);
 			rows.setLayout(layoutRows);
 			
-			final JToggleButton filter = new JToggleButton(CommonLocaleDelegate.getMessage("StatePropertiesPanel.11", "Filter Attribute"), Icons.getInstance().getIconFilter16());
+			final JToggleButton filter = new JToggleButton(cld.getMessage(
+					"StatePropertiesPanel.11", "Filter Attribute"), Icons.getInstance().getIconFilter16());
 			filter.setSelected(filterUnchangedAttributes);
-			final JButton roleSelection = new JButton(CommonLocaleDelegate.getMessage("StatePropertiesPanel.12", "Benutzergruppen"), Icons.getInstance().getIconLDAP());
+			final JButton roleSelection = new JButton(cld.getMessage(
+					"StatePropertiesPanel.12", "Benutzergruppen"), Icons.getInstance().getIconLDAP());
 			final JButton help = new JButton(Icons.getInstance().getIconHelp());
 			
 			
@@ -453,9 +465,11 @@ public class StatePropertiesPanel extends JPanel {
 				new double[]{TableLayout.FILL}
 			}));
 			if (!modules.isEmpty()) {
-				nw.add(new HorizontalLabel(CommonLocaleDelegate.getMessage("StatePropertiesPanel.13", "Pflichtfeld")), "1,0,r,b");
+				nw.add(new HorizontalLabel(cld.getMessage(
+						"StatePropertiesPanel.13", "Pflichtfeld")), "1,0,r,b");
 			} else {
-				nw.add(new JLabel(CommonLocaleDelegate.getMessage("StatePropertiesPanel.14", "Keine Verwendung angegeben!")), "1,0");
+				nw.add(new JLabel(cld.getMessage(
+						"StatePropertiesPanel.14", "Keine Verwendung angegeben!")), "1,0");
 			}
 			nw.setBackground(COLOR_BACKGROUND);
 			
@@ -515,7 +529,9 @@ public class StatePropertiesPanel extends JPanel {
 								try {
 									roleSelection.getLocationOnScreen();
 									tryAgain = false;
-									(new Bubble(roleSelection, CommonLocaleDelegate.getMessage("StatePropertiesPanel.15", "Einige Benutzergruppen sind ausgeblendet."), 5, Bubble.Position.SE)).setVisible(true);
+									(new Bubble(roleSelection, cld.getMessage(
+											"StatePropertiesPanel.15", "Einige Benutzergruppen sind ausgeblendet."), 
+											5, Bubble.Position.SE)).setVisible(true);
 								} catch (IllegalComponentStateException e) {
 									// do nothing. it is not shown
 									LOG.warn("initMain: " + e, e);
@@ -633,7 +649,7 @@ public class StatePropertiesPanel extends JPanel {
 			 */
 			iRow++; // GAP
 			if (!subFormWithColumns.isEmpty()) {
-				JLabel lab = new JLabel("<html><b>" + CommonLocaleDelegate.getMessage("StatePropertiesPanel.16", "Unterformulare") + ":</b></html>");
+				JLabel lab = new JLabel("<html><b>" + cld.getMessage("StatePropertiesPanel.16", "Unterformulare") + ":</b></html>");
 				lab.setForeground(COLOR_SELECTION_BACKGROUND);
 				rows.add(lab, "1," + iRow);
 			}
@@ -898,7 +914,7 @@ public class StatePropertiesPanel extends JPanel {
 					
 					roleSelectionCtrl.setModel(ro);
 					boolean changed = roleSelectionCtrl.run( 
-							CommonLocaleDelegate.getMessage("StatePropertiesPanel.17", "Benutzergruppenauswahl"));
+							cld.getMessage("StatePropertiesPanel.17", "Benutzergruppenauswahl"));
 					
 					if (changed) {
 						List<RightAndMandatoryColumnHeader> selectedColsChanged = (List<RightAndMandatoryColumnHeader>) roleSelectionCtrl.getSelectedObjects();
@@ -932,7 +948,8 @@ public class StatePropertiesPanel extends JPanel {
 						sendWidthChanged();
 						
 						// save to preferences
-						Preferences prefs = ClientPreferences.getUserPreferences().node("collect").node("entity").node(NuclosEntity.STATEMODEL.getEntityName());
+						Preferences prefs = ClientPreferences.getUserPreferences().node("collect")
+								.node("entity").node(NuclosEntity.STATEMODEL.getEntityName());
 						try {
 							PreferencesUtils.putIntegerList(prefs, PREFS_NODE_SELECTEDROLES, new ArrayList<Integer>(selectedRoles));
 						}
@@ -946,7 +963,9 @@ public class StatePropertiesPanel extends JPanel {
 			help.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					(new Bubble(help, CommonLocaleDelegate.getMessage("StatePropertiesPanel.18", "<html>grau=nicht sichtbar<br/>gelb=lesen<br/>grün=schreiben</html>"), 10, Bubble.Position.SE)).setVisible(true);
+					(new Bubble(help, cld.getMessage(
+							"StatePropertiesPanel.18", "<html>grau=nicht sichtbar<br/>gelb=lesen<br/>grün=schreiben</html>"), 
+							10, Bubble.Position.SE)).setVisible(true);
 				}
 			});
 			toolBar.add(help);
@@ -1294,7 +1313,7 @@ public class StatePropertiesPanel extends JPanel {
 				}
 			}
 			
-			result.put(0l, "[" + CommonLocaleDelegate.getMessage("StatePropertiesPanel.19", "Ohne Gruppe") + "]");
+			result.put(0l, "[" + cld.getMessage("StatePropertiesPanel.19", "Ohne Gruppe") + "]");
 			
 			return result;
 		}
@@ -1440,13 +1459,22 @@ public class StatePropertiesPanel extends JPanel {
 	private final StatePropertiesPanelModel model = new StatePropertiesPanelModel();
 
 	private final StateDependantRightsPanel pnlStateDependantRights = new StateDependantRightsPanel();
+	
+	private CommonLocaleDelegate cld;
 
 	public StatePropertiesPanel() {
 		super(new BorderLayout());
 		final JTabbedPane tabpn = new JTabbedPane();
 		this.add(tabpn, BorderLayout.CENTER);
-		tabpn.addTab(CommonLocaleDelegate.getMessage("StatePropertiesPanel.6","Eigenschaften"), newStateBasicPropertiesPanel());
-		tabpn.addTab(CommonLocaleDelegate.getMessage("StatePropertiesPanel.9","Berechtigungen"), pnlStateDependantRights);
+		tabpn.addTab(CommonLocaleDelegate.getInstance().getMessage(
+				"StatePropertiesPanel.6","Eigenschaften"), newStateBasicPropertiesPanel());
+		tabpn.addTab(CommonLocaleDelegate.getInstance().getMessage(
+				"StatePropertiesPanel.9","Berechtigungen"), pnlStateDependantRights);
+	}
+	
+	@Autowired
+	void setCommonLocaleDelegate(CommonLocaleDelegate cld) {
+		this.cld = cld;
 	}
 
 	/**
@@ -1456,7 +1484,7 @@ public class StatePropertiesPanel extends JPanel {
 		final JPanel pnlStateProperties = new JPanel(new GridBagLayout());
 		pnlStateProperties.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 
-		final JLabel labName = new JLabel(CommonLocaleDelegate.getMessage("StatePropertiesPanel.7","Name"));
+		final JLabel labName = new JLabel(cld.getMessage("StatePropertiesPanel.7","Name"));
 		final JTextField tfName = new JTextField();
 		labName.setAlignmentY((float) 0.0);
 		labName.setHorizontalAlignment(SwingConstants.LEADING);
@@ -1471,7 +1499,7 @@ public class StatePropertiesPanel extends JPanel {
 		tfName.setDocument(model.docName);
 		tfName.setEnabled(SecurityCache.getInstance().isWriteAllowedForMasterData(NuclosEntity.STATEMODEL));
 
-		final JLabel labMnemonic = new JLabel(CommonLocaleDelegate.getMessage("StatePropertiesPanel.8","Numeral"));
+		final JLabel labMnemonic = new JLabel(cld.getMessage("StatePropertiesPanel.8","Numeral"));
 		final JTextField tfMnemonic = new JTextField();
 		labMnemonic.setAlignmentY((float) 0.0);
 		labMnemonic.setHorizontalAlignment(SwingConstants.LEADING);
@@ -1487,7 +1515,7 @@ public class StatePropertiesPanel extends JPanel {
 		tfMnemonic.setDocument(model.docMnemonic);
 		tfMnemonic.setEnabled(SecurityCache.getInstance().isWriteAllowedForMasterData(NuclosEntity.STATEMODEL));
 
-		final JLabel labIcon = new JLabel(CommonLocaleDelegate.getMessage("StatePropertiesPanel.20","Statusicon"));
+		final JLabel labIcon = new JLabel(cld.getMessage("StatePropertiesPanel.20","Statusicon"));
 		final JComponent tfIcon = model.clctImage.getImageLabel();
 		model.clctImage.getLabeledComponent().setSize(new Dimension(100, 21));
 		model.clctImage.setInputWidth(16);
@@ -1525,7 +1553,7 @@ public class StatePropertiesPanel extends JPanel {
 		tfIconSet.setPreferredSize(new Dimension(100, 230));
 		tfIconSet.setEnabled(SecurityCache.getInstance().isWriteAllowedForMasterData(NuclosEntity.STATEMODEL));
 		
-		final JLabel labDescription = new JLabel(CommonLocaleDelegate.getMessage("StatePropertiesPanel.5","Hinweistext"));
+		final JLabel labDescription = new JLabel(cld.getMessage("StatePropertiesPanel.5","Hinweistext"));
 		final JTextArea taDescription = new JTextArea();
 		labDescription.setAlignmentY((float) 0.0);
 		labDescription.setHorizontalAlignment(SwingConstants.LEADING);
@@ -1544,7 +1572,7 @@ public class StatePropertiesPanel extends JPanel {
 		taDescription.setLineWrap(true);
 		taDescription.setEditable(SecurityCache.getInstance().isWriteAllowedForMasterData(NuclosEntity.STATEMODEL));
 		
-		final JLabel labTabbedPaneName = new JLabel(CommonLocaleDelegate.getMessage("StatePropertiesPanel.1","Aktive Tablasche"));
+		final JLabel labTabbedPaneName = new JLabel(cld.getMessage("StatePropertiesPanel.1","Aktive Tablasche"));
 		final JComboBox cmbbxTabbedPaneName = new JComboBox();
 		labTabbedPaneName.setHorizontalAlignment(SwingConstants.LEADING);
 		labTabbedPaneName.setHorizontalTextPosition(SwingConstants.TRAILING);

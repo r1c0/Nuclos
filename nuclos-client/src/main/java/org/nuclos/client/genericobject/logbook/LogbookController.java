@@ -50,7 +50,7 @@ import org.nuclos.client.common.NuclosCollectControllerFactory;
 import org.nuclos.client.genericobject.CollectableGenericObjectWithDependants;
 import org.nuclos.client.genericobject.GenericObjectDelegate;
 import org.nuclos.client.genericobject.Modules;
-import org.nuclos.client.main.MainController;
+import org.nuclos.client.main.Main;
 import org.nuclos.client.main.mainframe.MainFrameTab;
 import org.nuclos.client.ui.CommonAbstractAction;
 import org.nuclos.client.ui.Controller;
@@ -59,7 +59,6 @@ import org.nuclos.client.ui.Icons;
 import org.nuclos.client.ui.MainFrameTabAdapter;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.common.NuclosFatalException;
-import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonFinderException;
@@ -87,8 +86,10 @@ public class LogbookController extends Controller {
 
 	private final LogbookPanel pnlLogbook = new LogbookPanel(null);
 	private final JButton btnRefresh = new JButton();
-	private final Action actRefresh = new CommonAbstractAction(CommonLocaleDelegate.getMessage("LogbookController.1", "Aktualisieren"),
-			Icons.getInstance().getIconRefresh16(), CommonLocaleDelegate.getMessage("LogbookController.1", "Aktualisieren")) {
+	private final Action actRefresh = new CommonAbstractAction(
+			getCommonLocaleDelegate().getMessage("LogbookController.1", "Aktualisieren"),
+			Icons.getInstance().getIconRefresh16(), 
+			getCommonLocaleDelegate().getMessage("LogbookController.1", "Aktualisieren")) {
 
 		@Override
 		public void actionPerformed(ActionEvent ev) {
@@ -109,8 +110,10 @@ public class LogbookController extends Controller {
 	private final JButton btnFilter = new JButton();
 	private final JButton btnClearFilter = new JButton();
 	
-	private final Action actFilter = new CommonAbstractAction(CommonLocaleDelegate.getMessage("LogbookController.2", "Filter"),
-			Icons.getInstance().getIconFilter16(), CommonLocaleDelegate.getMessage("LogbookController.2", "Filter")) {
+	private final Action actFilter = new CommonAbstractAction(
+			getCommonLocaleDelegate().getMessage("LogbookController.2", "Filter"),
+			Icons.getInstance().getIconFilter16(), 
+			getCommonLocaleDelegate().getMessage("LogbookController.2", "Filter")) {
 
 		@Override
 		public void actionPerformed(ActionEvent ev) {
@@ -118,8 +121,10 @@ public class LogbookController extends Controller {
 		}
 	};
 	
-	private final Action actClearFilter = new CommonAbstractAction(CommonLocaleDelegate.getMessage("LogbookController.3", "Filter leeren"),
-			Icons.getInstance().getIconClearSearch16(), CommonLocaleDelegate.getMessage("LogbookController.3", "Filter leeren")) {
+	private final Action actClearFilter = new CommonAbstractAction(
+			getCommonLocaleDelegate().getMessage("LogbookController.3", "Filter leeren"),
+			Icons.getInstance().getIconClearSearch16(), 
+			getCommonLocaleDelegate().getMessage("LogbookController.3", "Filter leeren")) {
 
 		@Override
 		public void actionPerformed(ActionEvent ev) {
@@ -146,7 +151,7 @@ public class LogbookController extends Controller {
 		
 		final String sTitle = getTitle(sGenericObjectIdentifier);
 
-		ifrm = MainController.newMainFrameTab(null, sTitle);
+		ifrm = Main.getInstance().getMainController().newMainFrameTab(null, sTitle);
 		//ifrm.setContentPane(pnlLogbook);
 		ifrm.setLayeredComponent(pnlLogbook);
 		parentMdi.add(ifrm);
@@ -168,7 +173,8 @@ public class LogbookController extends Controller {
 		this.btnRefresh.setText(null);
 		pnlLogbook.getToolbar().add(this.btnRefresh);
 		
-		pnlFilter.setBorder(BorderFactory.createTitledBorder(CommonLocaleDelegate.getMessage("LogbookController.4", "Filter nach")));
+		pnlFilter.setBorder(BorderFactory.createTitledBorder(
+				getCommonLocaleDelegate().getMessage("LogbookController.4", "Filter nach")));
 		pnlFilter.setLayout(new GridBagLayout());
 		GridBagConstraints gbc = new GridBagConstraints();
 		gbc.anchor = GridBagConstraints.WEST;
@@ -178,69 +184,69 @@ public class LogbookController extends Controller {
 		
 		gbc.gridx = 0;
 		gbc.gridy = 0;		
-		pnlFilter.add(new JLabel(CommonLocaleDelegate.getMessage("LogbookController.5", "Ge\u00e4ndert am")), gbc);
+		pnlFilter.add(new JLabel(getCommonLocaleDelegate().getMessage("LogbookController.5", "Ge\u00e4ndert am")), gbc);
 		
 		gbc.gridx = 1;
 		gbc.insets.right = 10;
 		this.pnlFilter.add(this.tfCOLUMN_CHANGEDAT, gbc);
 		this.tfCOLUMN_CHANGEDAT.setColumns(15);
-		this.tfCOLUMN_CHANGEDAT.setToolTipText(CommonLocaleDelegate.getMessage("LogbookController.6", "Filter nach Spalte") + " '" + 
-			CommonLocaleDelegate.getMessage("LogbookController.5", "Ge\u00e4ndert am") + "'");
+		this.tfCOLUMN_CHANGEDAT.setToolTipText(getCommonLocaleDelegate().getMessage("LogbookController.6", "Filter nach Spalte") + " '" + 
+				getCommonLocaleDelegate().getMessage("LogbookController.5", "Ge\u00e4ndert am") + "'");
 		
 		++gbc.gridy;
 		gbc.gridx = 0;
 		gbc.insets.right = 5;		
-		pnlFilter.add(new JLabel(CommonLocaleDelegate.getMessage("LogbookController.7", "Ge\u00e4ndert von")), gbc);
+		pnlFilter.add(new JLabel(getCommonLocaleDelegate().getMessage("LogbookController.7", "Ge\u00e4ndert von")), gbc);
 		
 		gbc.gridx = 1;
 		gbc.insets.right = 10;		
 		this.pnlFilter.add(this.tfCOLUMN_CHANGEDBY, gbc);
 		this.tfCOLUMN_CHANGEDBY.setColumns(15);
-		this.tfCOLUMN_CHANGEDBY.setToolTipText(CommonLocaleDelegate.getMessage("LogbookController.6", "Filter nach Spalte") + " '" + 
-			CommonLocaleDelegate.getMessage("LogbookController.7", "Ge\u00e4ndert von")+ "'");
+		this.tfCOLUMN_CHANGEDBY.setToolTipText(getCommonLocaleDelegate().getMessage("LogbookController.6", "Filter nach Spalte") + " '" + 
+				getCommonLocaleDelegate().getMessage("LogbookController.7", "Ge\u00e4ndert von")+ "'");
 		
 		++gbc.gridy;
 		gbc.gridx = 0;
 		gbc.insets.right = 5;		
-		pnlFilter.add(new JLabel(CommonLocaleDelegate.getMessage("LogbookController.8", "Feld")), gbc);
+		pnlFilter.add(new JLabel(getCommonLocaleDelegate().getMessage("LogbookController.8", "Feld")), gbc);
 		
 		gbc.gridx = 1;
 		gbc.insets.right = 10;		
 		this.pnlFilter.add(this.tfCOLUMN_LABEL, gbc);
 		this.tfCOLUMN_LABEL.setColumns(15);
-		this.tfCOLUMN_LABEL.setToolTipText(CommonLocaleDelegate.getMessage("LogbookController.6", "Filter nach Spalte") + " '" + 
-			CommonLocaleDelegate.getMessage("LogbookController.8", "Feld")+ "'");
+		this.tfCOLUMN_LABEL.setToolTipText(getCommonLocaleDelegate().getMessage("LogbookController.6", "Filter nach Spalte") + " '" + 
+				getCommonLocaleDelegate().getMessage("LogbookController.8", "Feld")+ "'");
 		
 		gbc.gridx = 2;
 		gbc.gridy = 0;
 		gbc.insets.right = 5;
-		pnlFilter.add(new JLabel(CommonLocaleDelegate.getMessage("LogbookController.9", "Alter Wert")), gbc);
+		pnlFilter.add(new JLabel(getCommonLocaleDelegate().getMessage("LogbookController.9", "Alter Wert")), gbc);
 		
 		gbc.gridx = 3;		
 		this.pnlFilter.add(this.tfCOLUMN_OLDVALUE, gbc);
 		this.tfCOLUMN_OLDVALUE.setColumns(15);
-		this.tfCOLUMN_OLDVALUE.setToolTipText(CommonLocaleDelegate.getMessage("LogbookController.6", "Filter nach Spalte") + " '" +
-			CommonLocaleDelegate.getMessage("LogbookController.9", "Alter Wert")+ "'");
+		this.tfCOLUMN_OLDVALUE.setToolTipText(getCommonLocaleDelegate().getMessage("LogbookController.6", "Filter nach Spalte") + " '" +
+				getCommonLocaleDelegate().getMessage("LogbookController.9", "Alter Wert")+ "'");
 		
 		++gbc.gridy;
 		gbc.gridx = 2;		
-		pnlFilter.add(new JLabel(CommonLocaleDelegate.getMessage("LogbookController.10", "Neuer Wert")), gbc);
+		pnlFilter.add(new JLabel(getCommonLocaleDelegate().getMessage("LogbookController.10", "Neuer Wert")), gbc);
 		
 		gbc.gridx = 3;	
 		this.pnlFilter.add(this.tfCOLUMN_NEWVALUE, gbc);
 		this.tfCOLUMN_NEWVALUE.setColumns(15);
-		this.tfCOLUMN_NEWVALUE.setToolTipText(CommonLocaleDelegate.getMessage("LogbookController.6", "Filter nach Spalte") + " '" +
-			CommonLocaleDelegate.getMessage("LogbookController.10", "Neuer Wert")+ "'");		
+		this.tfCOLUMN_NEWVALUE.setToolTipText(getCommonLocaleDelegate().getMessage("LogbookController.6", "Filter nach Spalte") + " '" +
+				getCommonLocaleDelegate().getMessage("LogbookController.10", "Neuer Wert")+ "'");		
 		
 		++gbc.gridy;
 		gbc.gridx = 2;		
-		pnlFilter.add(new JLabel(CommonLocaleDelegate.getMessage("LogbookController.11", "ID")), gbc);
+		pnlFilter.add(new JLabel(getCommonLocaleDelegate().getMessage("LogbookController.11", "ID")), gbc);
 		
 		gbc.gridx = 3;		
 		this.pnlFilter.add(this.tfCOLUMN_ID, gbc);
 		this.tfCOLUMN_ID.setColumns(15);
-		this.tfCOLUMN_ID.setToolTipText(CommonLocaleDelegate.getMessage("LogbookController.6", "Filter nach Spalte") + " '" +
-			CommonLocaleDelegate.getMessage("LogbookController.11", "ID")+ "'");
+		this.tfCOLUMN_ID.setToolTipText(getCommonLocaleDelegate().getMessage("LogbookController.6", "Filter nach Spalte") + " '" +
+				getCommonLocaleDelegate().getMessage("LogbookController.11", "ID")+ "'");
 				
 		gbc.gridx = 4;
 		gbc.gridy = 0;
@@ -410,10 +416,10 @@ public class LogbookController extends Controller {
 	}
 
 	private String getTitle(String sGenericObjectIdentifier) {
-		final StringBuffer sbTitle = new StringBuffer(CommonLocaleDelegate.getMessage("LogbookController.12", "Logbuch f\u00fcr")+" ");
+		final StringBuffer sbTitle = new StringBuffer(getCommonLocaleDelegate().getMessage("LogbookController.12", "Logbuch f\u00fcr")+" ");
 
 		if (sGenericObjectIdentifier == null) {
-			sbTitle.append(CommonLocaleDelegate.getMessage("LogbookController.13", "das Objekt mit der Id") + " ");
+			sbTitle.append(getCommonLocaleDelegate().getMessage("LogbookController.13", "das Objekt mit der Id") + " ");
 			sbTitle.append(Integer.toString(iGenericObjectId));
 		}
 		else {

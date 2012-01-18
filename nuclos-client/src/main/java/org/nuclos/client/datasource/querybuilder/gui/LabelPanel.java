@@ -36,7 +36,16 @@ import org.nuclos.common2.CommonLocaleDelegate;
  */
 public class LabelPanel extends JPanel {
 	
-	private String[] labels = {CommonLocaleDelegate.getMessage("LabelPanel.8","Tabelle"), CommonLocaleDelegate.getMessage("LabelPanel.7","Spalte"), CommonLocaleDelegate.getMessage("LabelPanel.1","Alias"), CommonLocaleDelegate.getMessage("LabelPanel.5","Sichtbar"), CommonLocaleDelegate.getMessage("LabelPanel.3","Gruppierung"), CommonLocaleDelegate.getMessage("LabelPanel.6","Sortierung"), CommonLocaleDelegate.getMessage("LabelPanel.2","Bedingung"), CommonLocaleDelegate.getMessage("LabelPanel.4","oder")};
+	private String[] labels = {
+			CommonLocaleDelegate.getInstance().getMessage("LabelPanel.8","Tabelle"), 
+			CommonLocaleDelegate.getInstance().getMessage("LabelPanel.7","Spalte"), 
+			CommonLocaleDelegate.getInstance().getMessage("LabelPanel.1","Alias"), 
+			CommonLocaleDelegate.getInstance().getMessage("LabelPanel.5","Sichtbar"), 
+			CommonLocaleDelegate.getInstance().getMessage("LabelPanel.3","Gruppierung"), 
+			CommonLocaleDelegate.getInstance().getMessage("LabelPanel.6","Sortierung"), 
+			CommonLocaleDelegate.getInstance().getMessage("LabelPanel.2","Bedingung"), 
+			CommonLocaleDelegate.getInstance().getMessage("LabelPanel.4","oder")};
+	
 	private ColumnSelectionTable table;
 	
 	public LabelPanel(ColumnSelectionTable table) {

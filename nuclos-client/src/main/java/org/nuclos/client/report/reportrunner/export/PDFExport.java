@@ -38,7 +38,6 @@ import net.sf.jasperreports.engine.JasperPrint;
 import org.apache.log4j.Logger;
 import org.nuclos.client.report.ReportDelegate;
 import org.nuclos.client.report.reportrunner.AbstractReportExporter;
-import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.server.report.NuclosReportException;
 import org.nuclos.server.report.NuclosReportPrintJob;
 import org.nuclos.server.report.NuclosReportRemotePrintService;
@@ -117,7 +116,8 @@ public class PDFExport extends AbstractReportExporter {
 	          if(null != prservDflt) {
 	        	  prservices = new PrintService[] {prservDflt};
 	          } else {
-	        	  throw new NuclosReportException(CommonLocaleDelegate.getMessage("AbstractReportExporter.5", "Es ist kein passender Print-Service installiert."));
+	        	  throw new NuclosReportException(getCommonLocaleDelegate().getMessage(
+	        			  "AbstractReportExporter.5", "Es ist kein passender Print-Service installiert."));
 	          }
 	        }
 

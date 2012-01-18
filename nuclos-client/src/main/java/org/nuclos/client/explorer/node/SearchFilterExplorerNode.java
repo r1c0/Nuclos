@@ -40,7 +40,6 @@ import org.nuclos.client.task.TaskController;
 import org.nuclos.client.ui.Icons;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.client.ui.tree.TreeNodeAction;
-import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.CommonRunnable;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.server.navigation.treenode.TreeNode;
@@ -98,14 +97,17 @@ public class SearchFilterExplorerNode extends ExplorerNode<SearchFilterTreeNode>
 	private class RemoveFilterAction extends TreeNodeAction {
 
 		RemoveFilterAction(JTree tree) {
-			super(ACTIONCOMMAND_REMOVEFILTER, CommonLocaleDelegate.getMessage("SearchFilterExplorerNode.1","Filter l\u00f6schen") + "...", tree);
+			super(ACTIONCOMMAND_REMOVEFILTER, 
+					getCommonLocaleDelegate().getMessage("SearchFilterExplorerNode.1","Filter l\u00f6schen") + "...", tree);
 		}
 
 		@Override
 		public void actionPerformed(ActionEvent ev) {
 			final String sFilterName = getTreeNode().getFilterName();
-			final String sMessage = CommonLocaleDelegate.getMessage("SearchFilterExplorerNode.5", "Wollen Sie den Filter \"{0}\" wirklich l\u00f6schen?", sFilterName);
-			final int iBtn = JOptionPane.showConfirmDialog(this.getJTree(), sMessage, CommonLocaleDelegate.getMessage("SearchFilterExplorerNode.2","Filter l\u00f6schen"),
+			final String sMessage = getCommonLocaleDelegate().getMessage(
+					"SearchFilterExplorerNode.5", "Wollen Sie den Filter \"{0}\" wirklich l\u00f6schen?", sFilterName);
+			final int iBtn = JOptionPane.showConfirmDialog(this.getJTree(), sMessage, 
+					getCommonLocaleDelegate().getMessage("SearchFilterExplorerNode.2","Filter l\u00f6schen"),
 					JOptionPane.OK_CANCEL_OPTION);
 			if (iBtn == JOptionPane.OK_OPTION) {
 				cmdRemoveFilter();
@@ -135,7 +137,8 @@ public class SearchFilterExplorerNode extends ExplorerNode<SearchFilterTreeNode>
 	private class ShowFilterInTaskPanelAction extends TreeNodeAction {
 
 		ShowFilterInTaskPanelAction(JTree tree) {
-			super(ACTIONCOMMAND_SHOWINTASKPANEL, CommonLocaleDelegate.getMessage("SearchFilterExplorerNode.3","Als Aufgabenliste anzeigen"), tree);
+			super(ACTIONCOMMAND_SHOWINTASKPANEL, 
+					getCommonLocaleDelegate().getMessage("SearchFilterExplorerNode.3","Als Aufgabenliste anzeigen"), tree);
 		}
 
 		@Override
@@ -165,7 +168,8 @@ public class SearchFilterExplorerNode extends ExplorerNode<SearchFilterTreeNode>
 	private class ShowResultAction extends TreeNodeAction {
 
 		ShowResultAction(JTree tree) {
-			super(ACTIONCOMMAND_SHOW_RESULT, CommonLocaleDelegate.getMessage("SearchFilterExplorerNode.4","Suchergebnis anzeigen"), tree);
+			super(ACTIONCOMMAND_SHOW_RESULT, 
+					getCommonLocaleDelegate().getMessage("SearchFilterExplorerNode.4","Suchergebnis anzeigen"), tree);
 		}
 
 		@Override

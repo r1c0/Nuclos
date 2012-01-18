@@ -72,16 +72,19 @@ public class DependantsCollectableFieldsProvider implements CollectableFieldsPro
 		final List<CollectableField> result = new ArrayList<CollectableField>();
 		
 		if (StringUtils.isNullOrEmpty(this.sEntity)) {
-			throw new CommonBusinessException(CommonLocaleDelegate.getMessage("DependantsCollectableFieldsProvider.1", 
-				"Der Parameter 'entity' des Valuelistproviders 'dependants' ist nicht gef\u00fcllt!"));
+			throw new CommonBusinessException(CommonLocaleDelegate.getInstance().getMessage(
+					"DependantsCollectableFieldsProvider.1", 
+					"Der Parameter 'entity' des Valuelistproviders 'dependants' ist nicht gef\u00fcllt!"));
 		}
 		if (StringUtils.isNullOrEmpty(this.sForeignKeyFieldName)) {
-			throw new CommonBusinessException(CommonLocaleDelegate.getMessage("DependantsCollectableFieldsProvider.2",
-				"Der Parameter 'foreignKeyFieldName' des Valuelistproviders 'dependants' ist nicht gef\u00fcllt!"));
+			throw new CommonBusinessException(CommonLocaleDelegate.getInstance().getMessage(
+					"DependantsCollectableFieldsProvider.2",
+					"Der Parameter 'foreignKeyFieldName' des Valuelistproviders 'dependants' ist nicht gef\u00fcllt!"));
 		}
 		if (StringUtils.isNullOrEmpty(this.sEntityField)) {
-			throw new CommonBusinessException(CommonLocaleDelegate.getMessage("DependantsCollectableFieldsProvider.3",
-				"Der Parameter 'entityField' des Valuelistproviders 'dependants' ist nicht gef\u00fcllt!"));
+			throw new CommonBusinessException(CommonLocaleDelegate.getInstance().getMessage(
+					"DependantsCollectableFieldsProvider.3",
+					"Der Parameter 'entityField' des Valuelistproviders 'dependants' ist nicht gef\u00fcllt!"));
 		}
 		
 		if (this.iRelatedEntityId == null) {

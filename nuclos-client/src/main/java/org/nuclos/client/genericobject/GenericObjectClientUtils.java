@@ -228,10 +228,11 @@ public class GenericObjectClientUtils {
 		final String sEntityName = Modules.getInstance().getEntityNameByModuleId(iModuleId);
 
 		if (!SecurityCache.getInstance().isReadAllowedForModule(sEntityName, iGenericObjectId)) {
-			throw new CommonPermissionException(CommonLocaleDelegate.getMessage("GenericObjectclientUtils.1", "Sie haben nicht das Recht, dieses Objekt anzuzeigen."));
+			throw new CommonPermissionException(CommonLocaleDelegate.getInstance().getMessage(
+					"GenericObjectclientUtils.1", "Sie haben nicht das Recht, dieses Objekt anzuzeigen."));
 		}
 
-		Main.getMainController().showDetails(sEntityName, iGenericObjectId);
+		Main.getInstance().getMainController().showDetails(sEntityName, iGenericObjectId);
 	}
 
 	/**
@@ -244,10 +245,11 @@ public class GenericObjectClientUtils {
 		final String sEntityName = Modules.getInstance().getEntityNameByModuleId(iModuleId);
 
 		if (!SecurityCache.getInstance().isWriteAllowedForModule(sEntityName, null)) {
-			throw new CommonPermissionException(CommonLocaleDelegate.getMessage("GenericObjectclientUtils.2", "Sie haben nicht das Recht, dieses Objekt anzulegen."));
+			throw new CommonPermissionException(CommonLocaleDelegate.getInstance().getMessage(
+					"GenericObjectclientUtils.2", "Sie haben nicht das Recht, dieses Objekt anzulegen."));
 		}
 
-		return Main.getMainController().showDetails(sEntityName);
+		return Main.getInstance().getMainController().showDetails(sEntityName);
 	}
 
 	/**

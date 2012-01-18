@@ -51,14 +51,15 @@ public class SelectFixedColumnsPanel extends DefaultSelectObjectsPanel<Collectab
 	
 	public SelectFixedColumnsPanel(JComponent header) {
 		super(header);
+		final CommonLocaleDelegate cld = CommonLocaleDelegate.getInstance();
+		
+		this.labAvailableColumns.setText(cld.getMessage("SelectFixedColumnsController.8","Verf\u00fcgbare Spalten"));
+		this.labSelectedColumns.setText(cld.getMessage("SelectFixedColumnsController.1","Ausgew\u00e4hlte Spalten"));
 
-		this.labAvailableColumns.setText(CommonLocaleDelegate.getMessage("SelectFixedColumnsController.8","Verf\u00fcgbare Spalten"));
-		this.labSelectedColumns.setText(CommonLocaleDelegate.getMessage("SelectFixedColumnsController.1","Ausgew\u00e4hlte Spalten"));
-
-		this.btnLeft.setToolTipText(CommonLocaleDelegate.getMessage("SelectFixedColumnsController.5","Markierte Spalte(n) nicht anzeigen"));
-		this.btnRight.setToolTipText(CommonLocaleDelegate.getMessage("SelectFixedColumnsController.4","Markierte Spalte(n) anzeigen"));
-		this.btnUp.setToolTipText(CommonLocaleDelegate.getMessage("SelectFixedColumnsController.6","Markierte Spalte nach oben verschieben"));
-		this.btnDown.setToolTipText(CommonLocaleDelegate.getMessage("SelectFixedColumnsController.7","Markierte Spalte nach unten verschieben"));
+		this.btnLeft.setToolTipText(cld.getMessage("SelectFixedColumnsController.5","Markierte Spalte(n) nicht anzeigen"));
+		this.btnRight.setToolTipText(cld.getMessage("SelectFixedColumnsController.4","Markierte Spalte(n) anzeigen"));
+		this.btnUp.setToolTipText(cld.getMessage("SelectFixedColumnsController.6","Markierte Spalte nach oben verschieben"));
+		this.btnDown.setToolTipText(cld.getMessage("SelectFixedColumnsController.7","Markierte Spalte nach unten verschieben"));
 
 		this.btnUp.setVisible(true);
 		this.btnDown.setVisible(true);

@@ -121,7 +121,8 @@ public class NuclosUserGroupRightsStep extends NuclosEntityAbstractStep {
 					Class.forName("org.nuclos.server.common.MasterDataPermission").asSubclass(Enum.class);
 			for (Enum<?> e : clazz.getEnumConstants()) {
 				Object value = (e instanceof KeyEnum) ? ((KeyEnum<?>) e).getValue() : e.name();
-				String text = (e instanceof Localizable) ? CommonLocaleDelegate.getText((Localizable) e) : e.toString();
+				String text = (e instanceof Localizable) ? 
+						CommonLocaleDelegate.getInstance().getText((Localizable) e) : e.toString();
 				CollectableField cf = new LocalizedCollectableValueField(value, text);
 				cmbUserRights.addItem(cf);
 			}

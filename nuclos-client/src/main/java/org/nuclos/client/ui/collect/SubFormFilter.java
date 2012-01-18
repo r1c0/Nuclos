@@ -497,7 +497,10 @@ public class SubFormFilter {
          }
           catch(CollectableFieldFormatException e) {
         	LOG.warn("include failed: " + e, e);
-            JOptionPane.showConfirmDialog(null, CommonLocaleDelegate.getMessage("subform.filter.exception", "Das Format der Suchkomponente '{0}' ist nicht korrekt.", cef.getLabel()), CommonLocaleDelegate.getMessage("subform.filter.exception.title", "Formatfehler"), JOptionPane.CLOSED_OPTION, JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showConfirmDialog(null, CommonLocaleDelegate.getInstance().getMessage(
+            		"subform.filter.exception", "Das Format der Suchkomponente '{0}' ist nicht korrekt.", cef.getLabel()), 
+            		CommonLocaleDelegate.getInstance().getMessage("subform.filter.exception.title", "Formatfehler"), 
+            		JOptionPane.CLOSED_OPTION, JOptionPane.ERROR_MESSAGE);
             return true;
          }
       }
@@ -580,7 +583,10 @@ public class SubFormFilter {
    	}
    	catch(CollectableFieldFormatException e) {
     	LOG.warn("getFilterValue failed: " + e, e);
-   		JOptionPane.showConfirmDialog(null, CommonLocaleDelegate.getMessage("subform.filter.exception", "Das Format der Suchkomponente '{0}' ist nicht korrekt.", clctcomp.getEntityField().getLabel()), CommonLocaleDelegate.getMessage("subform.filter.exception.title", "Formatfehler"), JOptionPane.CLOSED_OPTION, JOptionPane.ERROR_MESSAGE);
+   		JOptionPane.showConfirmDialog(null, CommonLocaleDelegate.getInstance().getMessage(
+   			"subform.filter.exception", "Das Format der Suchkomponente '{0}' ist nicht korrekt.", clctcomp.getEntityField().getLabel()), 
+   			CommonLocaleDelegate.getInstance().getMessage("subform.filter.exception.title", "Formatfehler"), 
+   			JOptionPane.CLOSED_OPTION, JOptionPane.ERROR_MESSAGE);
    	}
    	return null;
    }

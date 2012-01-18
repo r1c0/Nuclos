@@ -29,7 +29,6 @@ import org.nuclos.common.collect.collectable.CollectableEntityField;
 import org.nuclos.common.collect.collectable.CollectableField;
 import org.nuclos.common.collect.collectable.CollectableValueField;
 import org.nuclos.common.collect.exception.CollectableFieldFormatException;
-import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.File;
 import org.nuclos.common2.exception.CommonFatalException;
 
@@ -87,7 +86,9 @@ public abstract class AbstractCollectableFileChooser extends AbstractCollectable
 		else {
 			this.getFileChooser().setFileName(file.getFilename());
 			this.getFileChooser().setIcon(FileIcons.getIcon(file.getFiletype()));
-			this.getFileChooser().setToolTipText(CommonLocaleDelegate.getMessage("collectable.file.chooser.tooltip", "Sie k\u00f6nnen die Datei \u00fcber das Kontextmen\u00fc \u00f6ffnen."));
+			this.getFileChooser().setToolTipText(
+					getCommonLocaleDelegate().getMessage(
+							"collectable.file.chooser.tooltip", "Sie k\u00f6nnen die Datei \u00fcber das Kontextmen\u00fc \u00f6ffnen."));
 		}
 	}
 

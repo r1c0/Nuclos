@@ -16,7 +16,6 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.dbtransfer;
 
-import static org.nuclos.common2.CommonLocaleDelegate.getMessage;
 import info.clearthought.layout.TableLayout;
 
 import java.io.File;
@@ -32,6 +31,7 @@ import javax.swing.filechooser.FileFilter;
 
 import org.apache.log4j.Logger;
 import org.nuclos.common.dbtransfer.TransferNuclet;
+import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.ServiceLocator;
 import org.nuclos.server.dbtransfer.TransferFacadeRemote;
 
@@ -126,7 +126,8 @@ public class DBTransferUtils {
 	
 	protected TransferNuclet[] getAvaiableNuclets() {
 		List<TransferNuclet> result = getTransferFacade().getAvaiableNuclets();
-		result.add(0, new TransferNuclet(null, "<" + getMessage("configuration.transfer.utils.fullinstance", "komplette Nuclos Instanz") + ">"));
+		result.add(0, new TransferNuclet(null, "<" + CommonLocaleDelegate.getInstance().getMessage(
+				"configuration.transfer.utils.fullinstance", "komplette Nuclos Instanz") + ">"));
 		return result.toArray(new TransferNuclet[0]);
 	}
 

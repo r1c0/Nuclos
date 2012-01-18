@@ -148,7 +148,7 @@ public class NuclosEntityTranslationStep extends NuclosEntityAbstractStep {
 			return;
 		}
 		
-		LocaleInfo userLocaleInfo = CommonLocaleDelegate.getUserLocaleInfo();
+		LocaleInfo userLocaleInfo = CommonLocaleDelegate.getInstance().getUserLocaleInfo();
 		
 		for(LocaleInfo voLocale : loadLocales()) {
 			String sLocaleLabel = voLocale.language; 

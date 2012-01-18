@@ -34,7 +34,6 @@ import org.nuclos.client.ui.PopupButton;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.client.ui.table.CommonJTable;
 import org.nuclos.client.ui.table.TableUtils;
-import org.nuclos.common2.CommonLocaleDelegate;
 
 
 /**
@@ -72,7 +71,8 @@ public class TimelimitTaskView extends TaskView {
 	private final JScrollPane scrlpn = new JScrollPane();
 	private final JTable tblTasks = new CommonJTable();
 	
-	private final PopupButton popupExtras = new PopupButton(CommonLocaleDelegate.getMessage("PopupButton.Extras","Extras"));
+	private final PopupButton popupExtras = new PopupButton(getCommonLocaleDelegate().getMessage(
+			"PopupButton.Extras","Extras"));
 
 	public TimelimitTaskView() {
 		this.init();
@@ -99,8 +99,10 @@ public class TimelimitTaskView extends TaskView {
 		btnRefresh.putClientProperty("hideActionText", Boolean.TRUE);
 		btnFinish.putClientProperty("hideActionText", Boolean.TRUE);
 
-		this.btnShowAllTasks.setText(CommonLocaleDelegate.getMessage("TimelimitTaskView.1","Alle Fristen"));
-		this.btnShowAllTasks.setToolTipText(CommonLocaleDelegate.getMessage("TimelimitTaskView.2","Auch erledigte Fristen anzeigen"));
+		this.btnShowAllTasks.setText(getCommonLocaleDelegate().getMessage(
+				"TimelimitTaskView.1","Alle Fristen"));
+		this.btnShowAllTasks.setToolTipText(getCommonLocaleDelegate().getMessage(
+				"TimelimitTaskView.2","Auch erledigte Fristen anzeigen"));
 
 		this.scrlpn.getViewport().setView(tblTasks);
 		this.tblTasks.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);

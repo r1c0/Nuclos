@@ -88,8 +88,10 @@ public class EntitySearchFilter extends SearchFilter {
 				return true;
 			}
 		};
-		result.setName(CommonLocaleDelegate.getMessage("EntitySearchFilter.1","<Alle>"));
-		result.setDescription(CommonLocaleDelegate.getMessage("EntitySearchFilter.3","Standardfilter (Keine Einschr\u00e4nkung)"));		
+		result.setName(CommonLocaleDelegate.getInstance().getMessage(
+				"EntitySearchFilter.1","<Alle>"));
+		result.setDescription(CommonLocaleDelegate.getInstance().getMessage(
+				"EntitySearchFilter.3","Standardfilter (Keine Einschr\u00e4nkung)"));		
 		
 		assert result.isDefaultFilter();
 		assert result.getSearchCondition() == null;
@@ -157,7 +159,8 @@ public class EntitySearchFilter extends SearchFilter {
 		EntitySearchFilter result = SearchFilterCache.getInstance().getEntitySearchFilter(sFilterName, sOwner);
 
 		if (result == null) {
-			throw new NoSuchElementException(CommonLocaleDelegate.getMessage("EntitySearchFilter.2","Es existiert kein Suchfilter mit dem Namen {0}.", sFilterName));
+			throw new NoSuchElementException(CommonLocaleDelegate.getInstance().getMessage(
+					"EntitySearchFilter.2","Es existiert kein Suchfilter mit dem Namen {0}.", sFilterName));
 		}
 		
 //		if (result == null) {

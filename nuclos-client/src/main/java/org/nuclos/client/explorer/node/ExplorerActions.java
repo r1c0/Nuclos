@@ -58,6 +58,6 @@ public class ExplorerActions {
 			}
 		}
 		
-		Main.getMainController().showDetails(entityName, id);
+		Main.getInstance().getMainController().showDetails(entityName, id);
 	}
 }

@@ -74,7 +74,6 @@ import org.nuclos.client.common.NuclosDropTargetListener;
 import org.nuclos.client.common.NuclosDropTargetVisitor;
 import org.nuclos.client.common.security.SecurityCache;
 import org.nuclos.client.explorer.ExplorerController;
-import org.nuclos.client.genericobject.GenericObjectCollectController;
 import org.nuclos.client.genericobject.GenericObjectDelegate;
 import org.nuclos.client.genericobject.Modules;
 import org.nuclos.client.genericobject.ReportController;
@@ -83,7 +82,6 @@ import org.nuclos.client.genericobject.datatransfer.TransferableGenericObjects;
 import org.nuclos.client.main.Main;
 import org.nuclos.client.main.mainframe.MainFrame;
 import org.nuclos.client.main.mainframe.MainFrameTab;
-import org.nuclos.client.masterdata.MasterDataCollectController;
 import org.nuclos.client.masterdata.datatransfer.MasterDataIdAndEntity;
 import org.nuclos.client.ui.CommonAbstractAction;
 import org.nuclos.client.ui.Errors;
@@ -112,7 +110,6 @@ import org.nuclos.common.collect.collectable.searchcondition.LogicalOperator;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Transformer;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
-import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.CommonRunnable;
 import org.nuclos.common2.DateUtils;
 import org.nuclos.common2.IdUtils;
@@ -161,8 +158,10 @@ public class PersonalTaskController extends RefreshableTaskController implements
 
 	private final Preferences prefs;
 
-	private final Action actEditTaskInNewTab = new CommonAbstractAction(CommonLocaleDelegate.getMessage("PersonalTaskController.29","In neuem Tab Bearbeiten..."),
-		Icons.getInstance().getIconEdit16(), CommonLocaleDelegate.getMessage("PersonalTaskController.8","Definition der ausgew\u00e4hlten Aufgabe bearbeiten / Aufgabe delegieren")) {
+	private final Action actEditTaskInNewTab = new CommonAbstractAction(getCommonLocaleDelegate().getMessage(
+			"PersonalTaskController.29","In neuem Tab Bearbeiten..."),
+		Icons.getInstance().getIconEdit16(), getCommonLocaleDelegate().getMessage(
+				"PersonalTaskController.8","Definition der ausgew\u00e4hlten Aufgabe bearbeiten / Aufgabe delegieren")) {
 
 		@Override
 		public void actionPerformed(ActionEvent ev) {
@@ -170,7 +169,9 @@ public class PersonalTaskController extends RefreshableTaskController implements
 		}
 	};
 
-	private final Action actEditTask = new CommonAbstractAction(CommonLocaleDelegate.getMessage("PersonalTaskController.7","Bearbeiten..."), Icons.getInstance().getIconEdit16(), CommonLocaleDelegate.getMessage("PersonalTaskController.8","Ausgew\u00e4hlte Aufgabe(n) bearbeiten")) {
+	private final Action actEditTask = new CommonAbstractAction(getCommonLocaleDelegate().getMessage(
+			"PersonalTaskController.7","Bearbeiten..."), Icons.getInstance().getIconEdit16(), 
+			getCommonLocaleDelegate().getMessage("PersonalTaskController.8","Ausgew\u00e4hlte Aufgabe(n) bearbeiten")) {
 
 		@Override
 		public void actionPerformed(ActionEvent ev) {
@@ -178,8 +179,9 @@ public class PersonalTaskController extends RefreshableTaskController implements
 		}
 	};
 
-	private final Action actPerformTask = new CommonAbstractAction(CommonLocaleDelegate.getMessage("PersonalTaskController.25","\u00D6ffne zugeordnete(s) Objekt(e)"), Icons.getInstance().getIconModule(),
-		CommonLocaleDelegate.getMessage("PersonalTaskController.27","Zugeordnetes Objekt anzeigen")) {
+	private final Action actPerformTask = new CommonAbstractAction(getCommonLocaleDelegate().getMessage(
+			"PersonalTaskController.25","\u00D6ffne zugeordnete(s) Objekt(e)"), Icons.getInstance().getIconModule(),
+			getCommonLocaleDelegate().getMessage("PersonalTaskController.27","Zugeordnetes Objekt anzeigen")) {
 
 		@Override
 		public void actionPerformed(ActionEvent ev) {
@@ -187,8 +189,9 @@ public class PersonalTaskController extends RefreshableTaskController implements
 		}
 	};
 
-	private final Action actCopyCell = new CommonAbstractAction(CommonLocaleDelegate.getMessage("ResultPanel.13","Kopiere markierte Zellen"), Icons.getInstance().getIconCopy16(),
-		CommonLocaleDelegate.getMessage("ResultPanel.13","Kopiere markierte Zellen")) {
+	private final Action actCopyCell = new CommonAbstractAction(getCommonLocaleDelegate().getMessage(
+			"ResultPanel.13","Kopiere markierte Zellen"), Icons.getInstance().getIconCopy16(),
+			getCommonLocaleDelegate().getMessage("ResultPanel.13","Kopiere markierte Zellen")) {
 
 		@Override
 		public void actionPerformed(ActionEvent ev) {
@@ -197,8 +200,9 @@ public class PersonalTaskController extends RefreshableTaskController implements
 		}
 	};
 
-	private final Action actCopyRows = new CommonAbstractAction(CommonLocaleDelegate.getMessage("ResultPanel.14","Kopiere markierte Zeilen"), Icons.getInstance().getIconCopy16(),
-		CommonLocaleDelegate.getMessage("ResultPanel.14","Kopiere markierte Zeilen")) {
+	private final Action actCopyRows = new CommonAbstractAction(getCommonLocaleDelegate().getMessage(
+			"ResultPanel.14","Kopiere markierte Zeilen"), Icons.getInstance().getIconCopy16(),
+			getCommonLocaleDelegate().getMessage("ResultPanel.14","Kopiere markierte Zeilen")) {
 
 		@Override
 		public void actionPerformed(ActionEvent ev) {
@@ -209,7 +213,9 @@ public class PersonalTaskController extends RefreshableTaskController implements
 
 
 
-	private final Action actRemoveTask = new CommonAbstractAction(CommonLocaleDelegate.getMessage("PersonalTaskController.21","L\u00f6schen..."), Icons.getInstance().getIconRealDelete16(), CommonLocaleDelegate.getMessage("PersonalTaskController.6","Ausgew\u00e4hlte Aufgabe l\u00f6schen")) {
+	private final Action actRemoveTask = new CommonAbstractAction(getCommonLocaleDelegate().getMessage(
+			"PersonalTaskController.21","L\u00f6schen..."), Icons.getInstance().getIconRealDelete16(), 
+			getCommonLocaleDelegate().getMessage("PersonalTaskController.6","Ausgew\u00e4hlte Aufgabe l\u00f6schen")) {
 
 		@Override
 		public void actionPerformed(ActionEvent ev) {
@@ -217,7 +223,9 @@ public class PersonalTaskController extends RefreshableTaskController implements
 		}
 	};
 
-	private final Action actCompleteTask = new CommonAbstractAction(CommonLocaleDelegate.getMessage("PersonalTaskController.16","Erledigt"), Icons.getInstance().getIconProperties16(), CommonLocaleDelegate.getMessage("PersonalTaskController.5","Ausgew\u00e4hlte Aufgabe(n) als erledigt/unerledigt markieren")) {
+	private final Action actCompleteTask = new CommonAbstractAction(getCommonLocaleDelegate().getMessage(
+			"PersonalTaskController.16","Erledigt"), Icons.getInstance().getIconProperties16(), 
+			getCommonLocaleDelegate().getMessage("PersonalTaskController.5","Ausgew\u00e4hlte Aufgabe(n) als erledigt/unerledigt markieren")) {
 
 		@Override
 		public void actionPerformed(ActionEvent ev) {
@@ -294,7 +302,8 @@ public class PersonalTaskController extends RefreshableTaskController implements
 				if(oValue.toString() != null && !oValue.toString().trim().equals("")){
 					vNum = oValue.toString();
 				}
-				this.setText(CommonLocaleDelegate.getTextFallback("nuclos.entityfield.tasklist.visibility."+vNum, "<[" + oValue + "]>"));
+				this.setText(getCommonLocaleDelegate().getTextFallback(
+						"nuclos.entityfield.tasklist.visibility."+vNum, "<[" + oValue + "]>"));
 			}
 			return comp;
 		}
@@ -341,7 +350,8 @@ public class PersonalTaskController extends RefreshableTaskController implements
 						PersonalTaskController.this.storeColumnOrder(tbl);
 					}
 					catch (PreferencesException ex) {
-						final String sMessage = CommonLocaleDelegate.getMessage("PersonalTaskController.15","Spaltenreihenfolge konnte nicht gespeichert werden.");
+						final String sMessage = getCommonLocaleDelegate().getMessage(
+								"PersonalTaskController.15","Spaltenreihenfolge konnte nicht gespeichert werden.");
 						Errors.getInstance().showExceptionDialog(tbl, sMessage, ex);
 					}
 				}
@@ -353,7 +363,8 @@ public class PersonalTaskController extends RefreshableTaskController implements
 					PersonalTaskController.this.storeColumnWidthsInPrefs(tbl);
 				}
 				catch (PreferencesException ex) {
-					final String sMessage = CommonLocaleDelegate.getMessage("PersonalTaskController.28","Spaltenbreiten konnte nicht gespeichert werden.");
+					final String sMessage = getCommonLocaleDelegate().getMessage(
+							"PersonalTaskController.28","Spaltenbreiten konnte nicht gespeichert werden.");
 					Errors.getInstance().showExceptionDialog(tbl, sMessage, ex);
 				}
 			}
@@ -384,7 +395,7 @@ public class PersonalTaskController extends RefreshableTaskController implements
 		table.addMouseListener(new DoubleClickListener(personaltaskview));
 
 		final Action actRefresh = new CommonAbstractAction(Icons.getInstance().getIconRefresh16(),
-			CommonLocaleDelegate.getMessage("PersonalTaskController.3","Liste aktualisieren")) {
+				getCommonLocaleDelegate().getMessage("PersonalTaskController.3","Liste aktualisieren")) {
 
 			@Override
 			public void actionPerformed(ActionEvent ev) {
@@ -392,7 +403,8 @@ public class PersonalTaskController extends RefreshableTaskController implements
 			}
 		};
 
-		final Action actNew = new CommonAbstractAction(Icons.getInstance().getIconNew16(), CommonLocaleDelegate.getMessage("PersonalTaskController.22","Neue Aufgabe erstellen")) {
+		final Action actNew = new CommonAbstractAction(Icons.getInstance().getIconNew16(), getCommonLocaleDelegate().getMessage(
+				"PersonalTaskController.22","Neue Aufgabe erstellen")) {
 
 			@Override
 			public void actionPerformed(ActionEvent ev) {
@@ -400,7 +412,8 @@ public class PersonalTaskController extends RefreshableTaskController implements
 			}
 		};
 
-		final Action actPrint = new CommonAbstractAction(CommonLocaleDelegate.getMessage("PersonalTaskController.4","Liste drucken"),
+		final Action actPrint = new CommonAbstractAction(getCommonLocaleDelegate().getMessage(
+				"PersonalTaskController.4","Liste drucken"),
 			Icons.getInstance().getIconPrintReport16(), null) {
 
 			@Override
@@ -635,7 +648,7 @@ public class PersonalTaskController extends RefreshableTaskController implements
 			}
 		});
 
-		tab.setTitle(CommonLocaleDelegate.getMessage("tabMyTasks", "Meine Aufgaben"));
+		tab.setTitle(getCommonLocaleDelegate().getMessage("tabMyTasks", "Meine Aufgaben"));
 		tab.setTabIcon(Icons.getInstance().getIconTabTask());
 		tab.setLayeredComponent(PersonalTaskController.this.personaltaskview);
 		tab.setTabStoreController(new TaskController.TaskTabStoreController(TaskController.RestorePreferences.PERSONAL, PersonalTaskController.this.personaltaskview));
@@ -648,7 +661,8 @@ public class PersonalTaskController extends RefreshableTaskController implements
 		try {
 			PreferencesUtils.putIntegerArray(getPreferences(), PREFS_NODE_PERSONALTASKS_BUTTON_ALL_PRESSED, showAllTasksButtonIsSelectedArray);
 		} catch (PreferencesException e1) {
-			Errors.getInstance().showExceptionDialog(this.getParent(), CommonLocaleDelegate.getMessage("PersonalTaskController.17","Fehler beim Abspeichern der Einstellungen"), e1);
+			Errors.getInstance().showExceptionDialog(this.getParent(), getCommonLocaleDelegate().getMessage(
+					"PersonalTaskController.17","Fehler beim Abspeichern der Einstellungen"), e1);
 		}
 	}
 
@@ -657,7 +671,8 @@ public class PersonalTaskController extends RefreshableTaskController implements
 		try {
 			PreferencesUtils.putIntegerArray(getPreferences(), PREFS_NODE_PERSONALTASKS_SHOW_TASKS_ITEM_SELECTED, showTasks);
 		} catch (PreferencesException e1) {
-			Errors.getInstance().showExceptionDialog(this.getParent(), CommonLocaleDelegate.getMessage("PersonalTaskController.18","Fehler beim Abspeichern der Einstellungen"), e1);
+			Errors.getInstance().showExceptionDialog(this.getParent(), getCommonLocaleDelegate().getMessage(
+					"PersonalTaskController.18","Fehler beim Abspeichern der Einstellungen"), e1);
 		}
 	}
 
@@ -666,7 +681,8 @@ public class PersonalTaskController extends RefreshableTaskController implements
 		try {
 			isButtonAllTasksSelectedList = PreferencesUtils.getIntegerList(getPreferences(), PREFS_NODE_PERSONALTASKS_BUTTON_ALL_PRESSED);
 		} catch (PreferencesException ex) {
-			LOG.error(CommonLocaleDelegate.getMessage("PersonalTaskController.9","Der Filterzustand konnte nicht aus den Eisntellungen gelesen werden"), ex);
+			LOG.error(getCommonLocaleDelegate().getMessage(
+					"PersonalTaskController.9","Der Filterzustand konnte nicht aus den Eisntellungen gelesen werden"), ex);
 			return false;
 		}
 		if (isButtonAllTasksSelectedList.isEmpty()) return false ;
@@ -678,7 +694,8 @@ public class PersonalTaskController extends RefreshableTaskController implements
 		try {
 			isButtonDelegateTasksSelectedList = PreferencesUtils.getIntegerList(getPreferences(), PREFS_NODE_PERSONALTASKS_SHOW_TASKS_ITEM_SELECTED);
 		} catch (PreferencesException ex) {
-			LOG.error(CommonLocaleDelegate.getMessage("PersonalTaskController.10","Der Filterzustand konnte nicht aus den Einstellungen gelesen werden"), ex);
+			LOG.error(getCommonLocaleDelegate().getMessage(
+					"PersonalTaskController.10","Der Filterzustand konnte nicht aus den Einstellungen gelesen werden"), ex);
 			return 0;
 		}
 		if (isButtonDelegateTasksSelectedList.isEmpty()) return 0 ;
@@ -689,7 +706,8 @@ public class PersonalTaskController extends RefreshableTaskController implements
 		try {
 			PreferencesUtils.writeSortKeysToPrefs(getPreferences(), this.personaltaskview.getPersonalTaskTableModel().getSortKeys());
 		} catch (PreferencesException e1) {
-			Errors.getInstance().showExceptionDialog(this.getParent(), CommonLocaleDelegate.getMessage("PersonalTaskController.19","Fehler beim Abspeichern der Einstellungen"), e1);
+			Errors.getInstance().showExceptionDialog(this.getParent(), getCommonLocaleDelegate().getMessage(
+					"PersonalTaskController.19","Fehler beim Abspeichern der Einstellungen"), e1);
 		}
 	}
 
@@ -726,8 +744,11 @@ public class PersonalTaskController extends RefreshableTaskController implements
 	private void cmdUncompleteTask(final PersonalTaskView taskview) {
 		final List<TaskVO> lsttaskvo = getSelectedPersonalTasks(taskview);
 		if(!lsttaskvo.isEmpty() && lsttaskvo != null){
-			final String sMessage = CommonLocaleDelegate.getMessage("PersonalTaskController.23","Soll(en) die ausgew\u00e4hlte(n) Aufgabe(n) als unerledigt markiert werden?");
-			final int iBtn = JOptionPane.showConfirmDialog(this.getParent(), sMessage, CommonLocaleDelegate.getMessage("PersonalTaskController.1","Aufgaben als unerledigt markieren"), JOptionPane.YES_NO_OPTION);
+			final String sMessage = getCommonLocaleDelegate().getMessage(
+					"PersonalTaskController.23","Soll(en) die ausgew\u00e4hlte(n) Aufgabe(n) als unerledigt markiert werden?");
+			final int iBtn = JOptionPane.showConfirmDialog(this.getParent(), sMessage, 
+					getCommonLocaleDelegate().getMessage("PersonalTaskController.1","Aufgaben als unerledigt markieren"), 
+					JOptionPane.YES_NO_OPTION);
 			if (iBtn == JOptionPane.YES_OPTION) {
 				UIUtils.runCommand(this.getParent(), new Runnable() {
 					@Override
@@ -749,8 +770,10 @@ public class PersonalTaskController extends RefreshableTaskController implements
 
 	private void cmdRemovePersonalTask(PersonalTaskView taskview) {
 		final List<TaskVO> lsttaskvo = getSelectedPersonalTasks(taskview);
-		final String sMessage = CommonLocaleDelegate.getMessage("PersonalTaskController.24","Soll(en) die ausgew\u00e4hlte(n) Aufgabe(n) wirklich gel\u00f6scht werden?");
-		final int btn = JOptionPane.showConfirmDialog(this.getParent(), sMessage, CommonLocaleDelegate.getMessage("PersonalTaskController.2","Aufgaben l\u00f6schen"), JOptionPane.YES_NO_OPTION);
+		final String sMessage = getCommonLocaleDelegate().getMessage(
+				"PersonalTaskController.24","Soll(en) die ausgew\u00e4hlte(n) Aufgabe(n) wirklich gel\u00f6scht werden?");
+		final int btn = JOptionPane.showConfirmDialog(this.getParent(), sMessage, getCommonLocaleDelegate().getMessage(
+				"PersonalTaskController.2","Aufgaben l\u00f6schen"), JOptionPane.YES_NO_OPTION);
 		if (btn == JOptionPane.YES_OPTION) {
 			UIUtils.runCommand(this.getParent(), new Runnable() {
 				@Override
@@ -811,7 +834,8 @@ public class PersonalTaskController extends RefreshableTaskController implements
 				TableUtils.setOptimalColumnWidths(this.personaltaskview.getTable());
 			}
 		} catch (NuclosBusinessException ex) {
-			Errors.getInstance().showExceptionDialog(this.getParent(), CommonLocaleDelegate.getMessage("PersonalTaskController.20","Fehler beim Aktualisieren der Aufgabenliste"), ex);
+			Errors.getInstance().showExceptionDialog(this.getParent(), getCommonLocaleDelegate().getMessage(
+					"PersonalTaskController.20","Fehler beim Aktualisieren der Aufgabenliste"), ex);
 		} catch (Exception e) {
 			LOG.error("unhandled exception: " + e.toString(), e);
 		}
@@ -856,7 +880,7 @@ public class PersonalTaskController extends RefreshableTaskController implements
 						if (tab != null && !bInNewTab) {
 							NuclosCollectControllerFactory.getInstance().newCollectController(tab, NuclosEntity.TASKLIST.getEntityName(), null).runViewSingleCollectableWithId(taskvo.getId());
 						} else {
-							Main.getMainController().showDetails(NuclosEntity.TASKLIST.getEntityName(), taskvo.getId());
+							Main.getInstance().getMainController().showDetails(NuclosEntity.TASKLIST.getEntityName(), taskvo.getId());
 						}
 					}
 					catch(CommonBusinessException e) {
@@ -945,8 +969,10 @@ public class PersonalTaskController extends RefreshableTaskController implements
 
 			});
 		} else {
-			final String sMessage = CommonLocaleDelegate.getMessage("PersonalTaskController.13","Dieser Aufgabe ist kein Objekt zugeordnet");
-			JOptionPane.showMessageDialog(taskview, sMessage, CommonLocaleDelegate.getMessage("PersonalTaskController.26","\u00D6ffne zugeordnete(s) Objekt(e)"), JOptionPane.ERROR_MESSAGE);
+			final String sMessage = getCommonLocaleDelegate().getMessage(
+					"PersonalTaskController.13","Dieser Aufgabe ist kein Objekt zugeordnet");
+			JOptionPane.showMessageDialog(taskview, sMessage, getCommonLocaleDelegate().getMessage(
+					"PersonalTaskController.26","\u00D6ffne zugeordnete(s) Objekt(e)"), JOptionPane.ERROR_MESSAGE);
 		}
 	}
 
@@ -1134,7 +1160,8 @@ public class PersonalTaskController extends RefreshableTaskController implements
 				final TaskVO taskvoTarget = clctTarget.getTaskVO();
 
 				if (taskvoTarget.getCompleted() != null) {
-					final String sMessage = CommonLocaleDelegate.getMessage("PersonalTaskController.12","Erledigte Aufgaben k\u00F6nnen nicht mehr ver\u00e4ndert werden");
+					final String sMessage = getCommonLocaleDelegate().getMessage(
+							"PersonalTaskController.12","Erledigte Aufgaben k\u00F6nnen nicht mehr ver\u00e4ndert werden");
 					throw new NuclosBusinessException(sMessage);
 				}
 
@@ -1174,7 +1201,8 @@ public class PersonalTaskController extends RefreshableTaskController implements
 			}
 		}
 		catch (UnsupportedFlavorException ex) {
-			JOptionPane.showMessageDialog(getTab(), CommonLocaleDelegate.getMessage("PersonalTaskController.14","Dieser Datentransfer wird von dem ausgew\u00e4hlten Objekt nicht unterst\u00fctzt"));
+			JOptionPane.showMessageDialog(getTab(), getCommonLocaleDelegate().getMessage(
+					"PersonalTaskController.14","Dieser Datentransfer wird von dem ausgew\u00e4hlten Objekt nicht unterst\u00fctzt"));
 		}
 		catch (IOException ex) {
 			throw new NuclosFatalException(ex);

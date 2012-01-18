@@ -16,7 +16,6 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.wizard.steps;
 
-import static org.nuclos.common2.CommonLocaleDelegate.getMessage;
 import info.clearthought.layout.TableLayout;
 
 import java.awt.Component;
@@ -157,27 +156,37 @@ public class NuclosEntityTreeValueStep extends NuclosEntityAbstractStep {
 		btnMultiEditEquation = new JButton(">>");
 		btnDirectory = new JButton(">>");
 		btnReportName = new JButton(">>");
-		lbValue = new JLabel(getMessage("wizard.step.entitytreevalue.1", "Anzeige Knotendarstellung & dynamischer Fenster-Titel *"));
+		lbValue = new JLabel(cld.getMessage(
+				"wizard.step.entitytreevalue.1", "Anzeige Knotendarstellung & dynamischer Fenster-Titel *"));
 		tfValue = new JTextField();
 		tfValue.addFocusListener(NuclosWizardUtils.createWizardFocusAdapter());
-		tfValue.setToolTipText(getMessage("wizard.step.entitytreevalue.tooltip.1", "Anzeige Knotendarstellung & dynamischer Fenster-Titel *"));
+		tfValue.setToolTipText(cld.getMessage(
+				"wizard.step.entitytreevalue.tooltip.1", "Anzeige Knotendarstellung & dynamischer Fenster-Titel *"));
 
-		lbTooltip = new JLabel(getMessage("wizard.step.entitytreevalue.2", "Bezeichnung des Knoten Tooltips"));
+		lbTooltip = new JLabel(cld.getMessage(
+				"wizard.step.entitytreevalue.2", "Bezeichnung des Knoten Tooltips"));
 		tfTooltip = new JTextField();
-		tfTooltip.setToolTipText(getMessage("wizard.step.entitytreevalue.tooltip.2", "Bezeichnung des Knoten Tooltips"));
+		tfTooltip.setToolTipText(cld.getMessage(
+				"wizard.step.entitytreevalue.tooltip.2", "Bezeichnung des Knoten Tooltips"));
 		tfTooltip.addFocusListener(NuclosWizardUtils.createWizardFocusAdapter());
 
-		lbDirectory = new JLabel(getMessage("wizard.step.entitytreevalue.4", "Verzeichnispfad"));
-		lbDirectory.setToolTipText(getMessage("wizard.step.entitytreevalue.tooltip.4", "Bezeichnung des Knoten Tooltips"));
+		lbDirectory = new JLabel(cld.getMessage(
+				"wizard.step.entitytreevalue.4", "Verzeichnispfad"));
+		lbDirectory.setToolTipText(cld.getMessage(
+				"wizard.step.entitytreevalue.tooltip.4", "Bezeichnung des Knoten Tooltips"));
 		tfDirectory = new JTextField();
 
-		lbReportName = new JLabel(getMessage("wizard.step.entitytreevalue.5", "Report Dateiname"));
+		lbReportName = new JLabel(cld.getMessage(
+				"wizard.step.entitytreevalue.5", "Report Dateiname"));
 		tfReportName = new JTextField();
-		tfReportName.setToolTipText(getMessage("wizard.step.entitytreevalue.tooltip.5", "Report Dateiname"));
+		tfReportName.setToolTipText(cld.getMessage(
+				"wizard.step.entitytreevalue.tooltip.5", "Report Dateiname"));
 
-		lbMultiEditEquation = new JLabel(getMessage("wizard.step.entitytreevalue.3", "Felder f\u00fcr Vergleich in der Sammelbearbeitung"));
+		lbMultiEditEquation = new JLabel(cld.getMessage(
+				"wizard.step.entitytreevalue.3", "Felder f\u00fcr Vergleich in der Sammelbearbeitung"));
 		tfMultiEditEquation = new JTextField();
-		tfMultiEditEquation.setToolTipText(getMessage("wizard.step.entitytreevalue.tooltip.3", "Felder f\u00fcr Vergleich in der Sammelbearbeitung"));
+		tfMultiEditEquation.setToolTipText(cld.getMessage(
+				"wizard.step.entitytreevalue.tooltip.3", "Felder f\u00fcr Vergleich in der Sammelbearbeitung"));
 		tfMultiEditEquation.addFocusListener(NuclosWizardUtils.createWizardFocusAdapter());
 
 		lbTreeViewSubform = new JLabel("Baumdarstellung f\u00fcr Unterformulare");

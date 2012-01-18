@@ -59,7 +59,6 @@ import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.collect.collectable.CollectableField;
 import org.nuclos.common.collect.exception.CollectableValidationException;
 import org.nuclos.common.collection.CollectionUtils;
-import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.KeyEnum;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
@@ -159,7 +158,7 @@ public class SearchFilterCollectController extends MasterDataCollectController {
             	CollectableField cf = (CollectableField)oValue;
             	if (cf.getValue() != null) {
             		SearchFilterMode mode = KeyEnum.Utils.findEnum(SearchFilterMode.class, (Integer)((CollectableField)oValue).getValue());
-                    jLabel.setText(CommonLocaleDelegate.getText(mode.getResourceId()));
+                    jLabel.setText(getCommonLocaleDelegate().getText(mode.getResourceId()));
                     jLabel.setHorizontalAlignment(SwingConstants.LEFT);
             	}
             	else {

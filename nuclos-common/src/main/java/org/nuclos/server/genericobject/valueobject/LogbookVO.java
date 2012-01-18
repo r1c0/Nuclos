@@ -212,15 +212,16 @@ public class LogbookVO extends NuclosValueObject {
 	 * @return the label of the logged component (either attribute or subform)
 	 */
 	public String getLabel() {
+		final CommonLocaleDelegate cld = CommonLocaleDelegate.getInstance();
 		if (sLabel.contains(".")) {
 			String sResource_1 = sLabel.substring(0, sLabel.indexOf('.'));
 			String sResource_2 = sLabel.substring(sLabel.indexOf('.')+1, sLabel.length());
-			if (CommonLocaleDelegate.isResourceId(sResource_1) && CommonLocaleDelegate.isResourceId(sResource_2)) {
-				sLabel = CommonLocaleDelegate.getText(sResource_1, null) + "." + CommonLocaleDelegate.getText(sResource_2, null);
+			if (cld.isResourceId(sResource_1) && cld.isResourceId(sResource_2)) {
+				sLabel = cld.getText(sResource_1, null) + "." + cld.getText(sResource_2, null);
 			}
 		}
 		else {
-			sLabel = CommonLocaleDelegate.getText(sLabel, sLabel);
+			sLabel = cld.getText(sLabel, sLabel);
 		}
 		return sLabel;
 	}

@@ -241,7 +241,8 @@ public class StateShape extends ContainerShape implements ImageObserver {
 
 	@Override
 	public void afterCreate() {
-		statevo = new StateVO(new Integer(-getId()), null, CommonLocaleDelegate.getMessage("StateShape.1", "Neuer Status"), "", null, null);
+		statevo = new StateVO(new Integer(-getId()), null, CommonLocaleDelegate.getInstance().getMessage(
+				"StateShape.1", "Neuer Status"), "", null, null);
 		super.afterCreate();
 	}
 

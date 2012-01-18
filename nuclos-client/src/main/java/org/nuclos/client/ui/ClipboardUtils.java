@@ -57,7 +57,7 @@ public class ClipboardUtils {
 
 		public CutAction() {
 			this.putValue(CutAction.SMALL_ICON, iconCut16);
-			this.putValue(SHORT_DESCRIPTION, CommonLocaleDelegate.getMessage("ClipboardUtils.Cut", "Ausschneiden"));
+			this.putValue(SHORT_DESCRIPTION, CommonLocaleDelegate.getInstance().getMessage("ClipboardUtils.Cut", "Ausschneiden"));
 			this.putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_X, KeyEvent.CTRL_DOWN_MASK));
 		}
 	}
@@ -69,7 +69,7 @@ public class ClipboardUtils {
 
 		public CopyAction() {
 			this.putValue(CopyAction.SMALL_ICON, iconCopy16);
-			this.putValue(SHORT_DESCRIPTION, CommonLocaleDelegate.getMessage("ClipboardUtils.Copy", "Kopieren"));
+			this.putValue(SHORT_DESCRIPTION, CommonLocaleDelegate.getInstance().getMessage("ClipboardUtils.Copy", "Kopieren"));
 			this.putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_C, KeyEvent.CTRL_DOWN_MASK));
 		}
 	}
@@ -81,7 +81,7 @@ public class ClipboardUtils {
 
 		public PasteAction() {
 			this.putValue(PasteAction.SMALL_ICON, iconPaste16);
-			this.putValue(SHORT_DESCRIPTION, CommonLocaleDelegate.getMessage("ClipboardUtils.Paste", "Einf\u00fcgen"));
+			this.putValue(SHORT_DESCRIPTION, CommonLocaleDelegate.getInstance().getMessage("ClipboardUtils.Paste", "Einf\u00fcgen"));
 			this.putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_V, KeyEvent.CTRL_DOWN_MASK));
 		}
 	}

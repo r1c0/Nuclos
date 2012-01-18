@@ -60,17 +60,18 @@ public class GenerationRulesPanel extends JPanel {
 	}
 
 	private void init() {
+		final CommonLocaleDelegate cld = CommonLocaleDelegate.getInstance();
 		btnAdd.setIcon(Icons.getInstance().getIconNew16());
-		btnAdd.setToolTipText(CommonLocaleDelegate.getMessage("GenerationRulesPanel.1", "Neue Regel zuordnen"));
+		btnAdd.setToolTipText(cld.getMessage("GenerationRulesPanel.1", "Neue Regel zuordnen"));
 		btnAdd.setActionCommand("add");
 		btnDelete.setIcon(Icons.getInstance().getIconDelete16());
-		btnDelete.setToolTipText(CommonLocaleDelegate.getMessage("GenerationRulesPanel.2", "Zuordnung aufheben"));
+		btnDelete.setToolTipText(cld.getMessage("GenerationRulesPanel.2", "Zuordnung aufheben"));
 		btnDelete.setActionCommand("remove");
 		btnUp.setIcon(Icons.getInstance().getIconUp16());
-		btnUp.setToolTipText(CommonLocaleDelegate.getMessage("GenerationRulesPanel.3", "Nach oben verschieben"));
+		btnUp.setToolTipText(cld.getMessage("GenerationRulesPanel.3", "Nach oben verschieben"));
 		btnUp.setActionCommand("moveUp");
 		btnDown.setIcon(Icons.getInstance().getIconDown16());
-		btnDown.setToolTipText(CommonLocaleDelegate.getMessage("GenerationRulesPanel.4", "Nach unten verschieben"));
+		btnDown.setToolTipText(cld.getMessage("GenerationRulesPanel.4", "Nach unten verschieben"));
 		btnDown.setActionCommand("moveDown");
 
 		toolbar.setFloatable(false);

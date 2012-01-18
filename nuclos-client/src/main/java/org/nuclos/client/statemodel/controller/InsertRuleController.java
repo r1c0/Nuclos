@@ -29,7 +29,6 @@ import org.nuclos.client.statemodel.models.SelectRuleTableModel;
 import org.nuclos.client.statemodel.panels.InsertRulePanel;
 import org.nuclos.client.ui.Controller;
 import org.nuclos.client.ui.table.TableUtils;
-import org.nuclos.common2.CommonLocaleDelegate;
 
 /**
  * Controller for adding a rule to a transition.
@@ -66,7 +65,8 @@ public class InsertRuleController extends Controller {
 				}
 			}
 		});
-		final JDialog dlg = optionPane.createDialog(this.getParent(), CommonLocaleDelegate.getMessage("InsertRuleController.1","Regelauswahl"));
+		final JDialog dlg = optionPane.createDialog(this.getParent(), 
+				getCommonLocaleDelegate().getMessage("InsertRuleController.1","Regelauswahl"));
 		dlg.setResizable(true);
 		dlg.setVisible(true);
 		boolean result = false;

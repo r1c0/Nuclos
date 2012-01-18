@@ -23,9 +23,6 @@ import java.util.List;
 import javax.swing.Icon;
 import javax.swing.JTree;
 
-import org.nuclos.common2.CommonLocaleDelegate;
-import org.nuclos.common2.CommonRunnable;
-import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.client.explorer.ExplorerNode;
 import org.nuclos.client.explorer.node.rule.RuleGenerationNode;
 import org.nuclos.client.main.Main;
@@ -33,6 +30,8 @@ import org.nuclos.client.ui.Icons;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.client.ui.tree.TreeNodeAction;
 import org.nuclos.common.NuclosEntity;
+import org.nuclos.common2.CommonRunnable;
+import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.server.navigation.treenode.TreeNode;
 
 /**
@@ -94,7 +93,7 @@ public class RuleObjectGenerationExplorerNode extends AbstractRuleExplorerNode {
 	private class ShowDetailsAction extends TreeNodeAction {
 
 		ShowDetailsAction(JTree tree) {
-			super(ACTIONCOMMAND_SHOW_DETAILS, CommonLocaleDelegate.getMessage("RuleExplorerNode.1","Details anzeigen"), tree);
+			super(ACTIONCOMMAND_SHOW_DETAILS, getCommonLocaleDelegate().getMessage("RuleExplorerNode.1","Details anzeigen"), tree);
 		}
 
 		@Override
@@ -109,7 +108,8 @@ public class RuleObjectGenerationExplorerNode extends AbstractRuleExplorerNode {
 			UIUtils.runCommand(this.getParent(), new CommonRunnable() {
 				@Override
 				public void run() throws CommonBusinessException {
-					Main.getMainController().showDetails(NuclosEntity.GENERATION.getEntityName(), explorernode.getTreeNode().getId());
+					Main.getInstance().getMainController().showDetails(
+							NuclosEntity.GENERATION.getEntityName(), explorernode.getTreeNode().getId());
 				}
 			});
 		}

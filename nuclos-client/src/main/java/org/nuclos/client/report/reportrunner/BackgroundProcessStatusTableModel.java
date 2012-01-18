@@ -40,7 +40,11 @@ import javax.swing.table.AbstractTableModel;
 
 public class BackgroundProcessStatusTableModel extends AbstractTableModel implements Observer {
 
-	private static final String[] captions = {CommonLocaleDelegate.getMessage("BackgroundProcessStatusTableModel.4","Status"), CommonLocaleDelegate.getMessage("BackgroundProcessStatusTableModel.1","Hintergrundprozess"), CommonLocaleDelegate.getMessage("BackgroundProcessStatusTableModel.3","Startzeit"), CommonLocaleDelegate.getMessage("BackgroundProcessStatusTableModel.2","Meldung")};
+	private static final String[] captions = {
+		CommonLocaleDelegate.getInstance().getMessage("BackgroundProcessStatusTableModel.4","Status"), 
+		CommonLocaleDelegate.getInstance().getMessage("BackgroundProcessStatusTableModel.1","Hintergrundprozess"), 
+		CommonLocaleDelegate.getInstance().getMessage("BackgroundProcessStatusTableModel.3","Startzeit"), 
+		CommonLocaleDelegate.getInstance().getMessage("BackgroundProcessStatusTableModel.2","Meldung")};
 
 	private final List<BackgroundProcessInfo> lstProcesses = new ArrayList<BackgroundProcessInfo>();
 

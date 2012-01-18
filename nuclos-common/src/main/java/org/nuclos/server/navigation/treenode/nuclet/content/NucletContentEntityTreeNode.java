@@ -35,7 +35,7 @@ public class NucletContentEntityTreeNode extends DefaultNucletContentEntryTreeNo
 	
 	@Override
 	public String getName() {
-		return CommonLocaleDelegate.getLabelFromMetaDataVO(getMetaData(eo.getField("entity", String.class)));
+		return CommonLocaleDelegate.getInstance().getLabelFromMetaDataVO(getMetaData(eo.getField("entity", String.class)));
 	}
 
 }

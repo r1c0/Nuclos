@@ -85,9 +85,11 @@ public class TranslationPanel extends JPanel {
 		public String getColumnName(int column) {
 			switch (column) {
 			case 0:
-				return CommonLocaleDelegate.getMessage("wizard.step.entitytranslationstable.3", null);
+				return CommonLocaleDelegate.getInstance().getMessage(
+						"wizard.step.entitytranslationstable.3", null);
 			case 1:
-				return CommonLocaleDelegate.getMessage("wizard.step.entitytranslationstable.4", null);
+				return CommonLocaleDelegate.getInstance().getMessage(
+						"wizard.step.entitytranslationstable.4", null);
 			}
 			return null;
 		}
@@ -151,7 +153,7 @@ public class TranslationPanel extends JPanel {
 		@Override
 		protected String getValueAsString(CellContext context) {
 			if (context.getValue() == null) {
-				String bestTranslation = CommonLocaleDelegate.selectBestTranslation(translations);
+				String bestTranslation = CommonLocaleDelegate.getInstance().selectBestTranslation(translations);
 				return (bestTranslation != null) ? bestTranslation : defaultText;
 			}
 			return super.getValueAsString(context);
@@ -163,7 +165,7 @@ public class TranslationPanel extends JPanel {
 		int option =JOptionPane.showConfirmDialog(
 			parent,
 			translationPanel,
-			CommonLocaleDelegate.getMessage("action.EditTranslationsForLocale", null),
+			CommonLocaleDelegate.getInstance().getMessage("action.EditTranslationsForLocale", null),
 			JOptionPane.OK_CANCEL_OPTION,
 			JOptionPane.PLAIN_MESSAGE);
 		if (option == JOptionPane.OK_OPTION) {

@@ -70,10 +70,15 @@ public class DatasourceNode extends AbstractDatasourceTreeNode {
 	public void refresh() {
 		final List<DatasourceUsageNode> subNodeList = new ArrayList<DatasourceUsageNode>();
 		if (usage == DatasourceUsage.PARENT) {
-			subNodeList.add(new DatasourceUsageNode(datasourceVo, CommonLocaleDelegate.getMessage("DatasourceNode.1", "verwendet"), CommonLocaleDelegate.getMessage("DatasourceNode.2", "Alle Datenquellen, die von der Datenquelle verwendet werden"), DatasourceUsage.USING));
-			subNodeList.add(new DatasourceUsageNode(datasourceVo, CommonLocaleDelegate.getMessage("DatasourceNode.3", "wird verwendet von "), CommonLocaleDelegate.getMessage("DatasourceNode.4", "Alle Datenquellen, von denen die Datenquelle verwendet wird"), DatasourceUsage.USED));
-			subNodeList.add(new DatasourceUsageNode(datasourceVo, CommonLocaleDelegate.getMessage("DatasourceNode.5", "Reports"), CommonLocaleDelegate.getMessage("DatasourceNode.6", "Alle Reports, welche die Datenquelle verwenden"), DatasourceUsage.REPORT));
-			subNodeList.add(new DatasourceUsageNode(datasourceVo, CommonLocaleDelegate.getMessage("DatasourceNode.7", "Formulare"), CommonLocaleDelegate.getMessage("DatasourceNode.8", "Alle Formulare, welche die Datenquelle verwenden"), DatasourceUsage.FORMULAR));
+			final CommonLocaleDelegate cld = CommonLocaleDelegate.getInstance();
+			subNodeList.add(new DatasourceUsageNode(datasourceVo, cld.getMessage("DatasourceNode.1", "verwendet"), 
+					cld.getMessage("DatasourceNode.2", "Alle Datenquellen, die von der Datenquelle verwendet werden"), DatasourceUsage.USING));
+			subNodeList.add(new DatasourceUsageNode(datasourceVo, cld.getMessage("DatasourceNode.3", "wird verwendet von "), 
+					cld.getMessage("DatasourceNode.4", "Alle Datenquellen, von denen die Datenquelle verwendet wird"), DatasourceUsage.USED));
+			subNodeList.add(new DatasourceUsageNode(datasourceVo, cld.getMessage("DatasourceNode.5", "Reports"), 
+					cld.getMessage("DatasourceNode.6", "Alle Reports, welche die Datenquelle verwenden"), DatasourceUsage.REPORT));
+			subNodeList.add(new DatasourceUsageNode(datasourceVo, cld.getMessage("DatasourceNode.7", "Formulare"), 
+					cld.getMessage("DatasourceNode.8", "Alle Formulare, welche die Datenquelle verwenden"), DatasourceUsage.FORMULAR));
 		}
 		setSubNodes(subNodeList);
 	}

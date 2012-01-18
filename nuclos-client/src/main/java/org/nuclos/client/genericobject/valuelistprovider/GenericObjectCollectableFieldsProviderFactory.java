@@ -81,8 +81,10 @@ public class GenericObjectCollectableFieldsProviderFactory implements Collectabl
 		if (sEntityName == null || sEntityName.equals(clcte.getName())) {
 			final CollectableEntityField clctef = clcte.getEntityField(sFieldName);
 			if (!clctef.isReferencing()) {
-				throw new NuclosFatalException(CommonLocaleDelegate.getMessage("GenericObjectCollectableFieldsProviderFactory.1",
-					"Das Feld {0} in der Entit\u00e4t {1} referenziert keine andere Entit\u00e4t.", clctef.getName(), clcte.getName()));
+				throw new NuclosFatalException(CommonLocaleDelegate.getInstance().getMessage(
+						"GenericObjectCollectableFieldsProviderFactory.1",
+						"Das Feld {0} in der Entit\u00e4t {1} referenziert keine andere Entit\u00e4t.", 
+						clctef.getName(), clcte.getName()));
 			}
 			result = new DependantMasterDataCollectableFieldsProvider(clcte.getName(), sFieldName);
 		}
@@ -130,7 +132,8 @@ public class GenericObjectCollectableFieldsProviderFactory implements Collectabl
 			result = new DBObjectCollectableFieldsProvider();
 		}
 		else {
-			throw new NuclosFatalException(CommonLocaleDelegate.getMessage("GenericObjectCollectableFieldsProviderFactory.2", "Unbekannter valuelist-provider Typ: {0}", sCustomType));
+			throw new NuclosFatalException(CommonLocaleDelegate.getInstance().getMessage(
+					"GenericObjectCollectableFieldsProviderFactory.2", "Unbekannter valuelist-provider Typ: {0}", sCustomType));
 		}
 		return result;
 	}

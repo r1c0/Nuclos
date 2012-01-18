@@ -102,8 +102,9 @@ public class DependantMasterDataCollectableFieldsProvider extends ManagedCollect
 	@Override
 	public List<CollectableField> getCollectableFields() {
 		if (this.sFieldToDisplay == null) {
-			throw new IllegalArgumentException(CommonLocaleDelegate.getMessage("DependantMasterDataCollectableFieldsProvider.1",
-				"Die Entit\u00e4t {0} hat kein identifizierendes Feld.", sForeignEntityName));
+			throw new IllegalArgumentException(CommonLocaleDelegate.getInstance().getMessage(
+					"DependantMasterDataCollectableFieldsProvider.1",
+					"Die Entit\u00e4t {0} hat kein identifizierendes Feld.", sForeignEntityName));
 		}
 
 		if (this.oRelatedId == null) {

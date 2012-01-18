@@ -20,8 +20,11 @@ import java.rmi.RemoteException;
 import java.util.Date;
 import java.util.List;
 
+import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.LangUtils;
 import org.nuclos.common.NuclosFatalException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
 
 /**
  * Abstract base class for all tree nodes.
@@ -32,6 +35,7 @@ import org.nuclos.common.NuclosFatalException;
  * @author	<a href="mailto:Christoph.Radig@novabit.de">Christoph Radig</a>
  * @version 00.01.000
  */
+@Configurable
 public abstract class AbstractTreeNode<Id> implements TreeNode {
 	private static final long serialVersionUID = -2950313888999290579L;
 
@@ -40,6 +44,8 @@ public abstract class AbstractTreeNode<Id> implements TreeNode {
 	private Date dateChangedAt;
 	private String sDescription;
 	private List<? extends TreeNode> lstSubNodes;
+	
+	private CommonLocaleDelegate cld;
 
 	/**
 	 * @param id the tree node's id. May be <code>null</code>.
@@ -61,6 +67,15 @@ public abstract class AbstractTreeNode<Id> implements TreeNode {
 		this.setLabel(sLabel);
 		this.setDescription(sDescription);
 		assert this.hasSubNodes() == null;
+	}
+	
+	@Autowired
+	void setCommonLocaleDelegate(CommonLocaleDelegate cld) {
+		this.cld = cld;
+	}
+	
+	protected CommonLocaleDelegate getCommonLocaleDelegate() {
+		return cld;
 	}
 
 	/**

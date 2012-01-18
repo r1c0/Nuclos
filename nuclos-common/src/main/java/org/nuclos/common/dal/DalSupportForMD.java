@@ -34,7 +34,6 @@ import org.nuclos.common.dal.vo.EntityMetaDataVO;
 import org.nuclos.common.dal.vo.EntityObjectVO;
 import org.nuclos.common2.IdUtils;
 import org.nuclos.common2.InternalTimestamp;
-import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.server.attribute.valueobject.AttributeValueVO;
 import org.nuclos.server.common.valueobject.NuclosValueObject;

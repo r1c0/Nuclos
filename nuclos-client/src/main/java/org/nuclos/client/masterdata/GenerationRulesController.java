@@ -127,7 +127,8 @@ public class GenerationRulesController {
 		try {
 			if (ev.getActionCommand().equals("add")) {
 				final InsertRuleController controller = new InsertRuleController(parent);
-				if (controller.run(CommonLocaleDelegate.getMessage("GenerationRulesController.1", "Liste der verf\u00fcgbaren Regeln"), pnlGenerationRules.getModel().getRules())) {
+				if (controller.run(CommonLocaleDelegate.getInstance().getMessage(
+						"GenerationRulesController.1", "Liste der verf\u00fcgbaren Regeln"), pnlGenerationRules.getModel().getRules())) {
 					for (int i = 0; i < controller.getRulesPanel().getTblRules().getSelectedRowCount(); i++) {
 						model.addRow(controller.getRulesPanel().getRow(controller.getRulesPanel().getTblRules().getSelectedRows()[i]));
 					}

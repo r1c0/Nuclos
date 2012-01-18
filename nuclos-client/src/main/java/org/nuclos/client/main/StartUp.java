@@ -41,6 +41,7 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.helpers.LogLog;
 import org.nuclos.client.common.MetaDataClientProvider;
 import org.nuclos.client.common.NuclosCollectableComponentFactory;
+import org.nuclos.client.common.TopicNotificationReceiver;
 import org.nuclos.client.common.prefs.NuclosPreferencesFactory;
 import org.nuclos.client.common.security.SecurityDelegate;
 import org.nuclos.client.genericobject.Modules;
@@ -162,6 +163,10 @@ public class StartUp  {
             public void run() {
 				try {
 					createGUI();
+					TopicNotificationReceiver.getInstance().realSubscribe();
+					// final MainController mc = Main.getInstance().getMainController();
+					// Main.getInstance().getMainFrame().init(mc.getUserName(), mc.getNuclosServerName());
+					Main.getInstance().getMainFrame().init("", "");
 				}
 				catch (Exception e) {
 					LOG.fatal("Startup failed: " + e, e);
@@ -231,6 +236,7 @@ public class StartUp  {
 		try {
 			// perform login:
 			final LoginController ctlLogin = new LoginController(null, this.args);
+			final Main main = new Main();
 
 			ctlLogin.addLoginListener(new LoginListener() {
 				@Override
@@ -251,7 +257,7 @@ public class StartUp  {
 								try {
 									// notify LaunchListeners
 									ServiceManager.lookup("javax.jnlp.SingleInstanceService");
-									Main.notifyListeners(StartUp.this.args);
+									main.notifyListeners(StartUp.this.args);
 							    }
 								catch (UnavailableServiceException ex) {
 							    	// no webstart context
@@ -266,7 +272,7 @@ public class StartUp  {
 									}
 								});
 
-								if (Main.isMacOSX()) {
+								if (main.isMacOSX()) {
 									Class<?> macAppClass = Class.forName("com.apple.eawt.Application");
 									Object macAppObject = macAppClass.getConstructor().newInstance();
 
@@ -278,7 +284,7 @@ public class StartUp  {
 										@Override
 										public Object invoke(Object proxy, Method method, Object[] args)	throws Throwable {
 											if (method != null && "handleAbout".equals(method.getName()) && args.length == 1) {
-												Main.getMainController().cmdShowAboutDialog();
+												main.getMainController().cmdShowAboutDialog();
 											}
 
 											return null;
@@ -294,7 +300,7 @@ public class StartUp  {
 										@Override
 										public Object invoke(Object proxy, Method method, Object[] args)	throws Throwable {
 											if (method != null && "handlePreferences".equals(method.getName()) && args.length == 1) {
-												Main.getMainController().cmdOpenSettings();
+												main.getMainController().cmdOpenSettings();
 											}
 
 											return null;
@@ -314,7 +320,7 @@ public class StartUp  {
 												Method macQuitResponsePerformQuitMethod = macQuitResponseClass.getDeclaredMethod("performQuit");
 												Method macQuitResponseCancelQuitMethod = macQuitResponseClass.getDeclaredMethod("cancelQuit");
 
-												if (Main.getMainController().cmdWindowClosing()) {
+												if (main.getMainController().cmdWindowClosing()) {
 													macQuitResponsePerformQuitMethod.invoke(args[1]);
 												} else {
 													macQuitResponseCancelQuitMethod.invoke(args[1]);
@@ -327,11 +333,12 @@ public class StartUp  {
 
 						            //register dock menu
 						            PopupMenu macDockMenu = new PopupMenu();
-						            MenuItem miDockLogoutExit = new MenuItem(CommonLocaleDelegate.getResource("miLogoutExit", "Abmelden und Beenden"));
+						            MenuItem miDockLogoutExit = new MenuItem(CommonLocaleDelegate.getInstance().getResource(
+						            		"miLogoutExit", "Abmelden und Beenden"));
 						            miDockLogoutExit.addActionListener(new ActionListener() {
 										@Override
 										public void actionPerformed(ActionEvent e) {
-											MainController.cmdLogoutExit();
+											main.getMainController().cmdLogoutExit();
 										}
 									});
 						            macDockMenu.add(miDockLogoutExit);
@@ -345,7 +352,7 @@ public class StartUp  {
 								Main.exit(Main.ExitResult.ABNORMAL);
 							}
 						}
-
+						
 						private void compareClientAndServerVersions() {
 							final ApplicationProperties.Version versionClient = ApplicationProperties.getInstance().getNuclosVersion();
 							final ApplicationProperties.Version versionServer = SecurityDelegate.getInstance().getCurrentApplicationVersionOnServer();
@@ -415,7 +422,8 @@ public class StartUp  {
 
 			final Class<? extends MainController> clsMainController = (Class<? extends MainController>) Class.forName(sClassName);
 			final Constructor<? extends MainController> ctor = clsMainController.getConstructor(String.class, String.class, LoginController.class);
-			ctor.newInstance(sUserName, sNucleusServerName, lc);
+			final MainController mainController = ctor.newInstance(sUserName, sNucleusServerName, lc);
+			Main.getInstance().setMainController(mainController);
 		}
 		catch (InvocationTargetException ex) {
 			final Throwable tTarget = ex.getTargetException();
@@ -429,8 +437,6 @@ public class StartUp  {
 		catch (Exception ex) {
 			throw new CommonFatalException("MainController cannot be created.", ex);
 		}
-
-
 	}
 
 	private void setupLookAndFeel() {

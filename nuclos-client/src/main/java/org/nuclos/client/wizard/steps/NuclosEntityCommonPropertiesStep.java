@@ -16,7 +16,6 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.wizard.steps;
 
-import static org.nuclos.common2.CommonLocaleDelegate.getMessage;
 import info.clearthought.layout.TableLayout;
 
 import java.awt.event.ActionEvent;
@@ -73,7 +72,6 @@ import org.nuclos.common.collect.collectable.Collectable;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
-import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonFatalException;
@@ -173,7 +171,7 @@ public class NuclosEntityCommonPropertiesStep extends NuclosEntityAbstractStep i
 			if(!blnSingularModified)
 				tfLabelSingular.setText(model.getLabelSingular());
 			if(!blnIconModified)
-				this.model.setIcon(ResourceCache.getResourceByName("NCL_MAINFRAME_TITLE"));
+				this.model.setIcon(ResourceCache.getInstance().getResourceByName("NCL_MAINFRAME_TITLE"));
 			if(!blnMenuPathModified) {
 				JTextField field = (JTextField)cbMenupath.getEditor().getEditorComponent();
 				field.setText(model.getMenuPath());
@@ -190,7 +188,7 @@ public class NuclosEntityCommonPropertiesStep extends NuclosEntityAbstractStep i
 		else {
 			cbStateModel.setEnabled(!model.hasRows());
 			tfLabelSingular.setText(model.getLabelSingular());
-			this.model.setIcon(ResourceCache.getResourceByName("NCL_MAINFRAME_TITLE"));
+			this.model.setIcon(ResourceCache.getInstance().getResourceByName("NCL_MAINFRAME_TITLE"));
 			JTextField field = (JTextField)cbMenupath.getEditor().getEditorComponent();
 			field.setText(model.getMenuPath());
 			cbMenupath.setSelectedItem(model.getMenuPath());
@@ -209,10 +207,12 @@ public class NuclosEntityCommonPropertiesStep extends NuclosEntityAbstractStep i
 			cbShowRelation.setSelected(model.isShowRelation());
 			cbStateModel.setSelected(model.isStateModel());
 			if(!model.isStateModel()){
-				lbSystemIdPrefix.setText(getMessage("wizard.step.entitycommonproperties.12", "K\u00fcrzel f\u00fcr Identifizierer:"));
+				lbSystemIdPrefix.setText(cld.getMessage(
+						"wizard.step.entitycommonproperties.12", "K\u00fcrzel f\u00fcr Identifizierer:"));
 			}
 			else {
-				lbSystemIdPrefix.setText(getMessage("wizard.step.entitycommonproperties.13", "K\u00fcrzel f\u00fcr Identifizierer *:"));
+				lbSystemIdPrefix.setText(cld.getMessage(
+						"wizard.step.entitycommonproperties.13", "K\u00fcrzel f\u00fcr Identifizierer *:"));
 			}
 
 			tfMnemonic.setText(model.getAccelerator());
@@ -306,103 +306,137 @@ public class NuclosEntityCommonPropertiesStep extends NuclosEntityAbstractStep i
 		layout.setVGap(3);
 		layout.setHGap(5);
 		this.setLayout(layout);
-		lbLabelSingular = new JLabel(getMessage("wizard.step.entitycommonproperties.1", "Beschriftung Fenstertitel")+": ");
+		lbLabelSingular = new JLabel(cld.getMessage(
+				"wizard.step.entitycommonproperties.1", "Beschriftung Fenstertitel")+": ");
 		tfLabelSingular = new JTextField();
-		tfLabelSingular.setToolTipText(getMessage("wizard.step.entitycommonproperties.tooltip.1", "Beschriftung Fenstertitel"));
+		tfLabelSingular.setToolTipText(cld.getMessage(
+				"wizard.step.entitycommonproperties.tooltip.1", "Beschriftung Fenstertitel"));
 		tfLabelSingular.addFocusListener(NuclosWizardUtils.createWizardFocusAdapter());
-		lbMenupath = new JLabel(getMessage("wizard.step.entitycommonproperties.2", "Pfad im Men\u00fc")+": ");
+		lbMenupath = new JLabel(cld.getMessage(
+				"wizard.step.entitycommonproperties.2", "Pfad im Men\u00fc")+": ");
 
 		cbMenupath = new JComboBox();
 		cbMenupath.setEditable(true);
-		cbMenupath.setToolTipText(getMessage("wizard.step.entitycommonproperties.tooltip.2", "Pfad im Men\u00fc"));
+		cbMenupath.setToolTipText(cld.getMessage(
+				"wizard.step.entitycommonproperties.tooltip.2", "Pfad im Men\u00fc"));
 		cbMenupath.addFocusListener(NuclosWizardUtils.createWizardFocusAdapter());
 
-		lbSystemIdPrefix = new JLabel(getMessage("wizard.step.entitycommonproperties.12", "K\u00fcrzel f\u00fcr Identifizierer:"));
+		lbSystemIdPrefix = new JLabel(cld.getMessage(
+				"wizard.step.entitycommonproperties.12", "K\u00fcrzel f\u00fcr Identifizierer:"));
 		tfSystemIdPrefix = new JTextField();
-		tfSystemIdPrefix.setToolTipText(getMessage("wizard.step.entitycommonproperties.tooltip.12", "K\u00fcrzel f\u00fcr Identifizierer:"));
+		tfSystemIdPrefix.setToolTipText(cld.getMessage(
+				"wizard.step.entitycommonproperties.tooltip.12", "K\u00fcrzel f\u00fcr Identifizierer:"));
 		tfSystemIdPrefix.setDocument(new LimitDocument(3));
 		btMenupath = new JButton("...");
 		btMenupath.setVisible(false);
-		lbIconCustom = new JLabel(getMessage("wizard.step.entitycommonproperties.20", "Benutzerdefiniertes Icon")+": ");
+		lbIconCustom = new JLabel(cld.getMessage(
+				"wizard.step.entitycommonproperties.20", "Benutzerdefiniertes Icon")+": ");
 		cbxIcon = new JComboBox();
-		cbxIcon.setToolTipText(getMessage("wizard.step.entitycommonproperties.tooltip.3", "Icon"));
+		cbxIcon.setToolTipText(cld.getMessage(
+				"wizard.step.entitycommonproperties.tooltip.3", "Icon"));
 		btNewIcon = new JButton("...");
-		btNewIcon.setToolTipText(getMessage("wizard.step.entitycommonproperties.4", "Neues Icon erstellen"));
+		btNewIcon.setToolTipText(cld.getMessage(
+				"wizard.step.entitycommonproperties.4", "Neues Icon erstellen"));
 
-		lbAccelerator = new JLabel(getMessage("wizard.step.entitycommonproperties.5", "Tastenk\u00fcrzel"));
+		lbAccelerator = new JLabel(cld.getMessage(
+				"wizard.step.entitycommonproperties.5", "Tastenk\u00fcrzel"));
 		cbxModifier = new JComboBox();
 		cbxModifier.addItem("");
 		for(String str : ModifierMap.getModifierMap().keySet()) {
 			cbxModifier.addItem(str);
 		}
 		tfMnemonic = new JTextField();
-		tfMnemonic.setToolTipText(getMessage("wizard.step.entitycommonproperties.tooltip.5", "Tastenk\u00fcrzel"));
+		tfMnemonic.setToolTipText(cld.getMessage(
+				"wizard.step.entitycommonproperties.tooltip.5", "Tastenk\u00fcrzel"));
 		tfMnemonic.setDocument(new LimitDocument(2));
 
-		lbLogbook = new JLabel(getMessage("wizard.step.entitycommonproperties.14", "Logbuch:"));
+		lbLogbook = new JLabel(cld.getMessage(
+				"wizard.step.entitycommonproperties.14", "Logbuch:"));
 		cbLogbook = new JCheckBox();
 		cbLogbook.setSelected(true);
-		cbLogbook.setToolTipText(getMessage("wizard.step.entitycommonproperties.tooltip.14", "Logbuch:"));
+		cbLogbook.setToolTipText(cld.getMessage(
+				"wizard.step.entitycommonproperties.tooltip.14", "Logbuch:"));
 
-		lbSearchable = new JLabel(getMessage("wizard.step.entitycommonproperties.6", "Wird eine Suchmaske ben\u00f6tigt")+":");
+		lbSearchable = new JLabel(cld.getMessage(
+				"wizard.step.entitycommonproperties.6", "Wird eine Suchmaske ben\u00f6tigt")+":");
 		cbSearchable = new JCheckBox();
 		cbSearchable.setSelected(true);
-		cbSearchable.setToolTipText(getMessage("wizard.step.entitycommonproperties.tooltip.6", "Wird eine Suchmaske ben\u00f6tigt"));
+		cbSearchable.setToolTipText(cld.getMessage(
+				"wizard.step.entitycommonproperties.tooltip.6", "Wird eine Suchmaske ben\u00f6tigt"));
 
-		lbEditable = new JLabel(getMessage("wizard.step.entitycommonproperties.7", "Ist die Entit\u00e4t modifizierbar")+":");
+		lbEditable = new JLabel(cld.getMessage(
+				"wizard.step.entitycommonproperties.7", "Ist die Entit\u00e4t modifizierbar")+":");
 		cbEditable = new JCheckBox();
 		cbEditable.setSelected(true);
-		cbEditable.setToolTipText(getMessage("wizard.step.entitycommonproperties.tooltip.7", "Ist die Entit\u00e4t modifizierbar"));
+		cbEditable.setToolTipText(cld.getMessage(
+				"wizard.step.entitycommonproperties.tooltip.7", "Ist die Entit\u00e4t modifizierbar"));
 
-		lbShowRelation = new JLabel(getMessage("wizard.step.entitycommonproperties.15", "Zeige Relationen:"));
+		lbShowRelation = new JLabel(cld.getMessage(
+				"wizard.step.entitycommonproperties.15", "Zeige Relationen:"));
 		cbShowRelation = new JCheckBox();
-		cbShowRelation.setToolTipText(getMessage("wizard.step.entitycommonproperties.tooltip.15", "Zeige Relationen:"));
+		cbShowRelation.setToolTipText(cld.getMessage(
+				"wizard.step.entitycommonproperties.tooltip.15", "Zeige Relationen:"));
 
-		lbShowGroups = new JLabel(getMessage("wizard.step.entitycommonproperties.16", "Zeige Gruppen:"));
+		lbShowGroups = new JLabel(cld.getMessage(
+				"wizard.step.entitycommonproperties.16", "Zeige Gruppen:"));
 		cbShowGroups = new JCheckBox();
-		cbShowGroups.setToolTipText(getMessage("wizard.step.entitycommonproperties.tooltip.16", "Zeige Gruppen:"));
+		cbShowGroups.setToolTipText(cld.getMessage(
+				"wizard.step.entitycommonproperties.tooltip.16", "Zeige Gruppen:"));
 
-		lbStateModel = new JLabel(getMessage("wizard.step.entitycommonproperties.17", "Statusmodell:"));
+		lbStateModel = new JLabel(cld.getMessage(
+				"wizard.step.entitycommonproperties.17", "Statusmodell:"));
 		cbStateModel = new JCheckBox();
-		cbStateModel.setToolTipText(getMessage("wizard.step.entitycommonproperties.tooltip.17", "Statusmodell:"));
+		cbStateModel.setToolTipText(cld.getMessage(
+				"wizard.step.entitycommonproperties.tooltip.17", "Statusmodell:"));
 
-		lbVirtual = new JLabel(getMessage("wizard.step.entitycommonproperties.virtual.label", "Virtual entity")+":");
+		lbVirtual = new JLabel(cld.getMessage(
+				"wizard.step.entitycommonproperties.virtual.label", "Virtual entity")+":");
 		final List<String> ves = MetaDataDelegate.getInstance().getVirtualEntities();
 		ves.add("");
 		Collections.sort(ves);
 		final ListComboBoxModel<String> virtualentitymodel = new ListComboBoxModel<String>(ves);
 		cbxVirtual = new JComboBox(virtualentitymodel);
-		cbxVirtual.setToolTipText(getMessage("wizard.step.entitycommonproperties.virtual.description", "Virtual entity (use an existing view)"));
+		cbxVirtual.setToolTipText(cld.getMessage(
+				"wizard.step.entitycommonproperties.virtual.description", "Virtual entity (use an existing view)"));
 		// enable virtual entity name for new entities
 		cbxVirtual.setEnabled(true);
 
-		lbIdFactory = new JLabel(getMessage("wizard.step.entitycommonproperties.idfactory.label",
+		lbIdFactory = new JLabel(cld.getMessage(
+				"wizard.step.entitycommonproperties.idfactory.label",
 				"Primary key factory for VE") + ":");
 		final List<String> pif = MetaDataDelegate.getInstance().getPossibleIdFactories();
 		pif.add("");
 		Collections.sort(pif);
 		final ListComboBoxModel<String> pifModel = new ListComboBoxModel<String>(pif);
 		cbxIdFactory = new JComboBox(pifModel);
-		cbxIdFactory.setToolTipText(getMessage("wizard.step.entitycommonproperties.idfactory.description",
+		cbxIdFactory.setToolTipText(cld.getMessage(
+				"wizard.step.entitycommonproperties.idfactory.description",
 				"DB object to use for Id generation (if you want to write to VE)"));
 		// disable id factories for new entities (will be enabled if a virtual entity is chosen)
 		cbxIdFactory.setEnabled(false);
 
-		lbCache = new JLabel(getMessage("wizard.step.entitycommonproperties.9", "Entit\u00e4t cachen")+":");
+		lbCache = new JLabel(cld.getMessage(
+				"wizard.step.entitycommonproperties.9", "Entit\u00e4t cachen")+":");
 		cbCache = new JCheckBox();
-		cbCache.setToolTipText(getMessage("wizard.step.entitycommonproperties.tooltip.9", "Entit\u00e4t cachen"));
+		cbCache.setToolTipText(cld.getMessage(
+				"wizard.step.entitycommonproperties.tooltip.9", "Entit\u00e4t cachen"));
 
-		lbTableName = new JLabel(getMessage("wizard.step.entitycommonproperties.10", "Tabellenname")+":");
+		lbTableName = new JLabel(cld.getMessage(
+				"wizard.step.entitycommonproperties.10", "Tabellenname")+":");
 		tfTableName = new JTextField();
-		tfTableName.setToolTipText(getMessage("wizard.step.entitycommonproperties.tooltip.10", "Tabellenname"));
+		tfTableName.setToolTipText(cld.getMessage(
+				"wizard.step.entitycommonproperties.tooltip.10", "Tabellenname"));
 		tfTableName.addFocusListener(NuclosWizardUtils.createWizardFocusAdapter());
 		tfTableName.setDocument(new LimitDocument(31));
 
-		lbInternalEntityName = new JLabel(getMessage("wizard.step.entitycommonproperties.11", "Interner Entity-Name"));
+		lbInternalEntityName = new JLabel(cld.getMessage(
+				"wizard.step.entitycommonproperties.11", "Interner Entity-Name"));
 		tfInternalEntityName = new JTextField();
-		tfInternalEntityName.setToolTipText(getMessage("wizard.step.entitycommonproperties.tooltip.11", "Interner Entity-Name"));
+		tfInternalEntityName.setToolTipText(cld.getMessage(
+				"wizard.step.entitycommonproperties.tooltip.11", "Interner Entity-Name"));
 
-		lbIcon = new JLabel(getMessage("wizard.step.entitycommonproperties.3", "Icon")+": ");
+		lbIcon = new JLabel(cld.getMessage(
+				"wizard.step.entitycommonproperties.3", "Icon")+": ");
 		nuclosIconChooser = new ResourceIconChooser();
 
 		this.add(lbLabelSingular, "0,0");
@@ -504,7 +538,8 @@ public class NuclosEntityCommonPropertiesStep extends NuclosEntityAbstractStep i
 				NuclosEntityCommonPropertiesStep.this.model.setStateModel(cb.isSelected());
 				final boolean selected = cb.isSelected();
 				if(selected) {
-					lbSystemIdPrefix.setText(getMessage("wizard.step.entitycommonproperties.13", "K\u00fcrzel f\u00fcr Identifizierer *:"));
+					lbSystemIdPrefix.setText(cld.getMessage(
+							"wizard.step.entitycommonproperties.13", "K\u00fcrzel f\u00fcr Identifizierer *:"));
 					if(tfSystemIdPrefix.getText().isEmpty()){
 						NuclosEntityCommonPropertiesStep.this.setComplete(false);
 					}
@@ -513,7 +548,8 @@ public class NuclosEntityCommonPropertiesStep extends NuclosEntityAbstractStep i
 					}
 				}
 				else {
-					lbSystemIdPrefix.setText(getMessage("wizard.step.entitycommonproperties.12", "K\u00fcrzel f\u00fcr Identifizierer:"));
+					lbSystemIdPrefix.setText(cld.getMessage(
+							"wizard.step.entitycommonproperties.12", "K\u00fcrzel f\u00fcr Identifizierer:"));
 					NuclosEntityCommonPropertiesStep.this.setComplete(true);
 				}
 				lbSystemIdPrefix.setEnabled(selected);
@@ -952,8 +988,11 @@ public class NuclosEntityCommonPropertiesStep extends NuclosEntityAbstractStep i
 	    	if(sTable.equalsIgnoreCase(vo.getDbEntity())) {
 	    		if(this.model.getEntityName().equalsIgnoreCase(vo.getEntity()))
 	    			continue;
-	    		JOptionPane.showMessageDialog(this, getMessage("wizard.step.entitycommonproperties.18", "Der vergebene Tabellenname ist schon vorhanden. Bitte ändern Sie ihn in den erweiterten Einstellungen!"),
-	    			getMessage("wizard.step.entitycommonproperties.19", "Achtung!"), JOptionPane.OK_OPTION);
+	    		JOptionPane.showMessageDialog(this, cld.getMessage(
+	    				"wizard.step.entitycommonproperties.18", 
+	    				"Der vergebene Tabellenname ist schon vorhanden. Bitte ändern Sie ihn in den erweiterten Einstellungen!"),
+	    				cld.getMessage("wizard.step.entitycommonproperties.19", "Achtung!"), 
+	    				JOptionPane.OK_OPTION);
 	 	        throw new InvalidStateException();
 	    	}
 	    }
@@ -1038,8 +1077,12 @@ public class NuclosEntityCommonPropertiesStep extends NuclosEntityAbstractStep i
 				}
 			}
 			if (staticfields.size() > 0) {
-				String message = getMessage("wizard.step.entitycommonproperties.error.virtual.fields", "Virtual entity is missing required attributes ({0}).", StringUtils.join(", ", staticfields));
-				JOptionPane.showMessageDialog(this, message, getMessage("wizard.step.entitycommonproperties.19", "Achtung!"), JOptionPane.OK_OPTION);
+				String message = cld.getMessage("wizard.step.entitycommonproperties.error.virtual.fields", 
+						"Virtual entity is missing required attributes ({0}).", 
+						StringUtils.join(", ", staticfields));
+				JOptionPane.showMessageDialog(this, message, cld.getMessage(
+						"wizard.step.entitycommonproperties.19", "Achtung!"), 
+						JOptionPane.OK_OPTION);
 		 	    throw new InvalidStateException();
 			}
 			else {
@@ -1053,8 +1096,10 @@ public class NuclosEntityCommonPropertiesStep extends NuclosEntityAbstractStep i
 					MetaDataDelegate.getInstance().tryVirtualEntitySelect(virtualentity);
 				}
 				catch (NuclosBusinessException ex) {
-					String message = CommonLocaleDelegate.getMessageFromResource(ex.getMessage());
-					JOptionPane.showMessageDialog(this, message, getMessage("wizard.step.entitycommonproperties.19", "Achtung!"), JOptionPane.OK_OPTION);
+					String message = cld.getMessageFromResource(ex.getMessage());
+					JOptionPane.showMessageDialog(this, message, cld.getMessage(
+							"wizard.step.entitycommonproperties.19", "Achtung!"), 
+							JOptionPane.OK_OPTION);
 			 	    throw new InvalidStateException();
 				}
 				model.setAttributeModel(attributeModel);

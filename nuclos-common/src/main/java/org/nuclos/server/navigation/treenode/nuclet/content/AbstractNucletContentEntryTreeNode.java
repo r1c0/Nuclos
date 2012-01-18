@@ -114,7 +114,7 @@ public abstract class AbstractNucletContentEntryTreeNode implements TreeNode {
 	 * @return
 	 */
 	public final String getLabelWithEntity() {
-		return CommonLocaleDelegate.getLabelFromMetaDataVO(getMetaData(entity)) + ": " + getName();
+		return CommonLocaleDelegate.getInstance().getLabelFromMetaDataVO(getMetaData(entity)) + ": " + getName();
 	}
 
 	/**

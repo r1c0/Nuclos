@@ -35,7 +35,6 @@ import org.nuclos.client.main.mainframe.MainFrameTab;
 import org.nuclos.client.ui.Icons;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.common.NuclosEntity;
-import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.CommonRunnable;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonFinderException;
@@ -108,7 +107,7 @@ public class NucletCollectController extends MasterDataCollectController {
 		//final JToolBar toolbarCustomDetails = UIUtils.createNonFloatableToolBar();
 
 		final JButton newMakeTreeRoot = new JButton(
-			CommonLocaleDelegate.getText("NucletCollectController.5", "Nuclet Bestandteile"),
+				getCommonLocaleDelegate().getText("NucletCollectController.5", "Nuclet Bestandteile"),
 				btnMakeTreeRoot.getIcon());
 
 		for (ActionListener al : btnMakeTreeRoot.getActionListeners())
@@ -123,7 +122,7 @@ public class NucletCollectController extends MasterDataCollectController {
 		this.getDetailsPanel().addToolBarComponent(newMakeTreeRoot);
 
 		btnShowDependences = new JButton(Icons.getInstance().getIconTree16());
-		btnShowDependences.setText(CommonLocaleDelegate.getText("NucletCollectController.6", "Baum der Nuclets"));
+		btnShowDependences.setText(getCommonLocaleDelegate().getText("NucletCollectController.6", "Baum der Nuclets"));
 		btnShowDependences.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -133,8 +132,8 @@ public class NucletCollectController extends MasterDataCollectController {
 		this.getResultPanel().addToolBarComponent(btnShowDependences);
 
 		btnImport = new JButton(Icons.getInstance().getIconImport16());
-		btnImport.setToolTipText(CommonLocaleDelegate.getText("NucletCollectController.1", "Nuclet importieren..."));
-		btnImport.setText(CommonLocaleDelegate.getText("NucletCollectController.3", "Importieren"));
+		btnImport.setToolTipText(getCommonLocaleDelegate().getText("NucletCollectController.1", "Nuclet importieren..."));
+		btnImport.setText(getCommonLocaleDelegate().getText("NucletCollectController.3", "Importieren"));
 		btnImport.addActionListener(new ActionListener() {
 
 			@Override
@@ -150,7 +149,7 @@ public class NucletCollectController extends MasterDataCollectController {
 							LOG.warn("actionPerformed: " + e1);
 						}
 					}
-				}).showWizard(Main.getMainFrame().getHomePane());
+				}).showWizard(Main.getInstance().getMainFrame().getHomePane());
 			}
 		});
 		btnImport.setEnabled(SecurityCache.getInstance().isSuperUser());
@@ -158,15 +157,16 @@ public class NucletCollectController extends MasterDataCollectController {
 		this.getResultPanel().addToolBarComponent(btnImport);
 
 		btnExport = new JButton(Icons.getInstance().getIconExport16());
-		btnExport.setToolTipText(CommonLocaleDelegate.getText("NucletCollectController.2", "Nuclet exportieren..."));
-		btnExport.setText(CommonLocaleDelegate.getText("NucletCollectController.4", "Exportieren"));
+		btnExport.setToolTipText(getCommonLocaleDelegate().getText("NucletCollectController.2", "Nuclet exportieren..."));
+		btnExport.setText(getCommonLocaleDelegate().getText("NucletCollectController.4", "Exportieren"));
 		btnExport.addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				Object oNucletId = NucletCollectController.this.getSelectedCollectableId();
 
-				new DBTransferExport(oNucletId==null?null:((Integer)oNucletId).longValue()).showWizard(Main.getMainFrame().getHomePane());
+				new DBTransferExport(oNucletId==null?null:((Integer)oNucletId).longValue()).showWizard(
+						Main.getInstance().getMainFrame().getHomePane());
 				try {
 					getResultController().getSearchResultStrategy().refreshResult();
 				}
@@ -193,7 +193,7 @@ public class NucletCollectController extends MasterDataCollectController {
 		UIUtils.runCommand(this.getFrame(), new CommonRunnable() {
 			@Override
 			public void run() throws CommonFinderException, CommonPermissionException {
-				Main.getMainController().getExplorerController().cmdShowInOwnTab(new NuclosInstanceTreeNode());
+				Main.getInstance().getMainController().getExplorerController().cmdShowInOwnTab(new NuclosInstanceTreeNode());
 			}
 		});
 	}

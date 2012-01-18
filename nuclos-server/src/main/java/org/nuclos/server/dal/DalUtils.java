@@ -30,7 +30,6 @@ import org.nuclos.common.dal.vo.EntityObjectVO;
 import org.nuclos.common2.DateTime;
 import org.nuclos.common2.IdUtils;
 import org.nuclos.common2.InternalTimestamp;
-import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.common2.exception.CommonStaleVersionException;
 import org.nuclos.server.dal.specification.IDalVersionSpecification;

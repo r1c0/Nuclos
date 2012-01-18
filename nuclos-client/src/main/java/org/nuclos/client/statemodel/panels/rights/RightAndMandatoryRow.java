@@ -759,20 +759,23 @@ public class RightAndMandatoryRow implements RightAndMandatoryConstants{
 							
 							final JPopupMenu menu = new JPopupMenu();
 							if (nullRightAllowed) {
-								JMenuItem itemNull = new JMenuItem(CommonLocaleDelegate.getMessage("RightAndMandatory.1", "Alle nicht sichtbar"), ICON_NO_RIGHT);
+								JMenuItem itemNull = new JMenuItem(CommonLocaleDelegate.getInstance().getMessage(
+										"RightAndMandatory.1", "Alle nicht sichtbar"), ICON_NO_RIGHT);
 								itemNull.addActionListener(new ActionListener() {
 									@Override
 									public void actionPerformed(ActionEvent e) {setAllRoleRights(null);detailsChangedListener.stateChanged(new ChangeEvent(this));}
 								});
 								menu.add(itemNull);
 							}
-							JMenuItem itemRead = new JMenuItem(CommonLocaleDelegate.getMessage("RightAndMandatory.2", "Alle lesen"), ICON_READ);
+							JMenuItem itemRead = new JMenuItem(CommonLocaleDelegate.getInstance().getMessage(
+									"RightAndMandatory.2", "Alle lesen"), ICON_READ);
 							itemRead.addActionListener(new ActionListener() {
 								@Override
 								public void actionPerformed(ActionEvent e) {setAllRoleRights(false);detailsChangedListener.stateChanged(new ChangeEvent(this));}
 							});
 							menu.add(itemRead);
-							JMenuItem itemWrite = new JMenuItem(CommonLocaleDelegate.getMessage("RightAndMandatory.3", "Alle schreiben"), ICON_WRITE);
+							JMenuItem itemWrite = new JMenuItem(CommonLocaleDelegate.getInstance().getMessage(
+									"RightAndMandatory.3", "Alle schreiben"), ICON_WRITE);
 							itemWrite.addActionListener(new ActionListener() {
 								@Override
 								public void actionPerformed(ActionEvent e) {setAllRoleRights(true);detailsChangedListener.stateChanged(new ChangeEvent(this));}

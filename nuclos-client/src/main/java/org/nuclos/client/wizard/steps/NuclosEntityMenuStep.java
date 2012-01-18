@@ -16,7 +16,6 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.wizard.steps;
 
-import static org.nuclos.common2.CommonLocaleDelegate.getMessage;
 import info.clearthought.layout.TableLayout;
 
 import java.util.ArrayList;
@@ -55,7 +54,6 @@ import org.nuclos.common.collect.collectable.DefaultCollectableEntityProvider;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Transformer;
 import org.nuclos.common.dal.vo.EntityObjectVO;
-import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.LocaleInfo;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonValidationException;
@@ -167,8 +165,9 @@ public class NuclosEntityMenuStep extends NuclosEntityAbstractStep {
 		try {
 			subformdata = subFormController.getCollectables(true, true, true);
 		} catch (CommonValidationException e1) {
-			JOptionPane.showMessageDialog(this, CommonLocaleDelegate.getMessageFromResource(e1.getMessage()),
-	    			getMessage("wizard.step.menu.error.title", "Achtung!"), JOptionPane.OK_OPTION);
+			JOptionPane.showMessageDialog(this, cld.getMessageFromResource(e1.getMessage()),
+	    			cld.getMessage("wizard.step.menu.error.title", "Achtung!"), 
+	    			JOptionPane.OK_OPTION);
  	        throw new InvalidStateException();
 		}
 		Collection<EntityObjectVO> entityMenus = CollectionUtils.transform(subformdata, new Transformer<CollectableEntityObject, EntityObjectVO>() {
@@ -193,8 +192,8 @@ public class NuclosEntityMenuStep extends NuclosEntityAbstractStep {
 
 			for (LocaleInfo li : LocaleDelegate.getInstance().getAllLocales(false)) {
 				String fieldname = "menupath_" + li.getTag();
-				String label = CommonLocaleDelegate.getMessage("EntityMenuCollectableEntity.translationfield.label", "Menu path ({0})", li.title);
-				String description = CommonLocaleDelegate.getMessage("EntityMenuCollectableEntity.translationfield.description", "Menu path ({0}). Use \\ to create submenus.", li.title);
+				String label = getCommonLocaleDelegate().getMessage("EntityMenuCollectableEntity.translationfield.label", "Menu path ({0})", li.title);
+				String description = getCommonLocaleDelegate().getMessage("EntityMenuCollectableEntity.translationfield.description", "Menu path ({0}). Use \\ to create submenus.", li.title);
 				DefaultCollectableEntityField field = new DefaultCollectableEntityField(fieldname, String.class, label,
 						description, null, null, false, CollectableField.TYPE_VALUEFIELD, null, null, NuclosEntity.ENTITYMENU.getEntityName());
 				field.setCollectableEntity(this);

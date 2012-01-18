@@ -566,7 +566,7 @@ public ReportOutputVO getReportOutput(Integer iReportOutputId) throws CommonFind
 			DatasourceFacadeLocal facade = ServiceLocator.getInstance().getFacade(DatasourceFacadeLocal.class);
 			ResultVO rvo = facade.executeQuery(reportoutput.getDatasourceId(), mpParams, iMaxRowCount);
 
-			return export.export(rvo, getLocale(reportoutput.getLocale(), CommonLocaleDelegate.getLocale()));
+			return export.export(rvo, getLocale(reportoutput.getLocale(), CommonLocaleDelegate.getInstance().getLocale()));
 		} catch (CommonFinderException ex) {
 			throw new NuclosFatalException(ex);
 		} catch (NuclosDatasourceException ex) {
@@ -779,7 +779,7 @@ public Collection<Integer> getReadableReportIdsForCurrentUser() {
 
    private void setDefaultsParameters(Map<String, Object> parameters, ReportOutputVO output) {
 	   parameters.put(JRParameter.REPORT_FILE_RESOLVER, new JRFileResolver());
-	   parameters.put(JRParameter.REPORT_LOCALE, getLocale(output.getLocale(), CommonLocaleDelegate.getLocale()));
+	   parameters.put(JRParameter.REPORT_LOCALE, getLocale(output.getLocale(), CommonLocaleDelegate.getInstance().getLocale()));
 	   parameters.put("NUCLOS_USER_NAME", getCurrentUserName());
 	   final MasterDataFacadeLocal mdfacadehome = ServiceLocator.getInstance().getFacade(MasterDataFacadeLocal.class);
 	   final CollectableComparison cond = SearchConditionUtils.newMDComparison(MasterDataMetaCache.getInstance().getMetaData(NuclosEntity.USER), "name", ComparisonOperator.EQUAL, getCurrentUserName());

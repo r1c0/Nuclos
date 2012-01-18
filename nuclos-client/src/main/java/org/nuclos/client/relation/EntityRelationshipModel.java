@@ -19,7 +19,6 @@ package org.nuclos.client.relation;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.collect.collectable.AbstractCollectableBean;
 import org.nuclos.common.collect.collectable.AbstractCollectableEntity;
@@ -55,12 +54,12 @@ public class EntityRelationshipModel extends AbstractCollectableBean<EntityRelat
 			super(NuclosEntity.ENTITYRELATION.getEntityName(), "Relationen erstellen");
 			final String entity = NuclosEntity.ENTITYRELATION.getEntityName();
 			this.addCollectableEntityField(new DefaultCollectableEntityField(FIELDNAME_NAME, String.class, 
-					CommonLocaleDelegate.getMessage("CollectableStateModel.3","Name"),
-					CommonLocaleDelegate.getMessage("CollectableRelationModel.4","Name des Relationenmodells"), 
+					getCommonLocaleDelegate().getMessage("CollectableStateModel.3","Name"),
+					getCommonLocaleDelegate().getMessage("CollectableRelationModel.4","Name des Relationenmodells"), 
 					null, null, false, CollectableField.TYPE_VALUEFIELD, null, null, entity));
 			this.addCollectableEntityField(new DefaultCollectableEntityField(FIELDNAME_DESCRIPTION, String.class,
-					CommonLocaleDelegate.getMessage("CollectableStateModel.1","Beschreibung"), 
-					CommonLocaleDelegate.getMessage("CollectableRelationModel.2","Beschreibung des Relationenmodells"), 
+					getCommonLocaleDelegate().getMessage("CollectableStateModel.1","Beschreibung"), 
+					getCommonLocaleDelegate().getMessage("CollectableRelationModel.2","Beschreibung des Relationenmodells"), 
 					null, null, true, CollectableField.TYPE_VALUEFIELD, null, null, entity));
 		}
 

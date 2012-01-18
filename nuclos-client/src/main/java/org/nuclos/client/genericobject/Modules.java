@@ -72,7 +72,9 @@ public class Modules extends ModuleProvider {
 	public String getEntityLabelByModuleId(Integer iModuleId) throws NoSuchElementException {
 		String label = labelsById.get(iModuleId);
 		if (label == null) {
-			label = CommonLocaleDelegate.getResource(MasterDataModuleDelegate.getInstance().getResourceSIdForLabel(iModuleId), this.getModuleById(iModuleId).getField("name", String.class));
+			label = CommonLocaleDelegate.getInstance().getResource(
+					MasterDataModuleDelegate.getInstance().getResourceSIdForLabel(iModuleId), 
+					this.getModuleById(iModuleId).getField("name", String.class));
 			labelsById.put(iModuleId, label);
 			assert label != null;
 		}

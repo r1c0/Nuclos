@@ -24,13 +24,12 @@ import java.util.prefs.Preferences;
 import javax.swing.JComponent;
 
 import org.apache.log4j.Logger;
-import org.nuclos.common2.ClientPreferences;
-import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.client.common.ClientParameterProvider;
 import org.nuclos.client.ui.Controller;
 import org.nuclos.client.ui.Errors;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.common.ParameterProvider;
+import org.nuclos.common2.ClientPreferences;
 
 /**
  * Controller for displaying the internal info page.
@@ -85,7 +84,8 @@ public class InternalInfoController extends Controller {
 				public void run() {
 					try {
 						if (!fileInternalInfoFile.exists()) {
-							final String sMessage = CommonLocaleDelegate.getMessage("InternalInfoController.1", "Die Datei {0} f\u00fcr die Onlinehilfe existiert nicht.", fileInternalInfoFile.getAbsolutePath());
+							final String sMessage = getCommonLocaleDelegate().getMessage(
+									"InternalInfoController.1", "Die Datei {0} f\u00fcr die Onlinehilfe existiert nicht.", fileInternalInfoFile.getAbsolutePath());
 							Errors.getInstance().showExceptionDialog(InternalInfoController.this.getParent(), new IOException(sMessage));
 						}
 						else {
@@ -93,7 +93,8 @@ public class InternalInfoController extends Controller {
 								Runtime.getRuntime().exec("cmd /c " + " \"" + fileInternalInfoFile.getAbsolutePath() + "\"");
 							}
 							catch (IOException ex) {
-								final String sMessage = CommonLocaleDelegate.getMessage("InternalInfoController.2", "Die Informationen k\u00f6nnen nicht angezeigt werden.");
+								final String sMessage = getCommonLocaleDelegate().getMessage(
+										"InternalInfoController.2", "Die Informationen k\u00f6nnen nicht angezeigt werden.");
 								Errors.getInstance().showExceptionDialog(InternalInfoController.this.getParent(), sMessage, ex);
 							}
 						}

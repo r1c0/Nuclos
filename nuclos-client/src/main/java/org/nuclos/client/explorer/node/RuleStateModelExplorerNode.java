@@ -23,10 +23,6 @@ import java.util.List;
 import javax.swing.Icon;
 import javax.swing.JTree;
 
-import org.nuclos.common.NuclosEntity;
-import org.nuclos.common2.CommonLocaleDelegate;
-import org.nuclos.common2.CommonRunnable;
-import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.client.explorer.ExplorerNode;
 import org.nuclos.client.explorer.node.rule.RuleNodeType;
 import org.nuclos.client.explorer.node.rule.StateModelNode;
@@ -37,6 +33,9 @@ import org.nuclos.client.ui.Icons;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.client.ui.collect.CollectControllerFactorySingleton;
 import org.nuclos.client.ui.tree.TreeNodeAction;
+import org.nuclos.common.NuclosEntity;
+import org.nuclos.common2.CommonRunnable;
+import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.server.navigation.treenode.TreeNode;
 import org.nuclos.server.statemodel.valueobject.StateModelVO;
 
@@ -104,7 +103,7 @@ public class RuleStateModelExplorerNode extends AbstractRuleExplorerNode {
 	private class ShowDetailsAction extends TreeNodeAction {
 
 		public ShowDetailsAction(JTree tree) {
-			super(ACTIONCOMMAND_SHOW_DETAILS, CommonLocaleDelegate.getMessage("RuleExplorerNode.1","Details anzeigen"), tree);
+			super(ACTIONCOMMAND_SHOW_DETAILS, getCommonLocaleDelegate().getMessage("RuleExplorerNode.1","Details anzeigen"), tree);
 		}
 
 		@Override

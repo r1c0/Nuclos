@@ -21,15 +21,14 @@ package org.nuclos.client.explorer;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.nuclos.common2.CommonLocaleDelegate;
-import org.nuclos.common2.exception.CommonFinderException;
-import org.nuclos.common2.exception.PreferencesException;
 import org.nuclos.client.genericobject.Modules;
 import org.nuclos.client.masterdata.MasterDataDelegate;
 import org.nuclos.client.searchfilter.EntitySearchFilter;
 import org.nuclos.client.searchfilter.SearchFilterTreeNode;
 import org.nuclos.client.searchfilter.SearchFilters;
 import org.nuclos.common.NuclosFatalException;
+import org.nuclos.common2.exception.CommonFinderException;
+import org.nuclos.common2.exception.PreferencesException;
 import org.nuclos.server.navigation.treenode.AbstractTreeNode;
 import org.nuclos.server.navigation.treenode.TreeNode;
 
@@ -75,14 +74,14 @@ public class PersonalSearchFiltersByEntityTreeNode extends AbstractTreeNode<Obje
 
 	@Override
 	public String getDescription() {
-		return CommonLocaleDelegate.getMessage("PersonalSearchFiltersByEntityTreeNode.1","Pers\u00f6nliche Suchfilter f\u00fcr die Entit\u00e4t") + " \"" + this.getEntityLabel() + "\"";
+		return getCommonLocaleDelegate().getMessage("PersonalSearchFiltersByEntityTreeNode.1","Pers\u00f6nliche Suchfilter f\u00fcr die Entit\u00e4t") + " \"" + this.getEntityLabel() + "\"";
 	}
 
 	private String getEntityLabel() {
 		if (Modules.getInstance().isModuleEntity(this.getEntity())) {
 			return Modules.getInstance().getEntityLabelByModuleId(this.getModuleId());
 		}
-		return CommonLocaleDelegate.getLabelFromMetaDataVO(MasterDataDelegate.getInstance().getMetaData(this.getEntity()));//MasterDataDelegate.getInstance().getMetaData(this.getEntity()).getLabel();
+		return getCommonLocaleDelegate().getLabelFromMetaDataVO(MasterDataDelegate.getInstance().getMetaData(this.getEntity()));//MasterDataDelegate.getInstance().getMetaData(this.getEntity()).getLabel();
 	}
 
 	@Override

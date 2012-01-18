@@ -101,9 +101,13 @@ public class DatasourceEditPanel extends JPanel {
 
 	private void init() {
 		add(pnlHeader, BorderLayout.NORTH);
-		tabbedPane.addTab(CommonLocaleDelegate.getMessage("DatasourceEditPanel.10","Modell"), null, pnlQueryEditor, CommonLocaleDelegate.getMessage("DatasourceEditPanel.8","Grafische Modellierung der Abfrage"));
-		tabbedPane.addTab(CommonLocaleDelegate.getMessage("DatasourceEditPanel.11","SQL"), null, sqlPanel, CommonLocaleDelegate.getMessage("DatasourceEditPanel.12","SQL-Statement der Datenbankabfrage"));
-		tabbedPane.addTab(CommonLocaleDelegate.getMessage("DatasourceEditPanel.18","Vorschau"), null, previewPanel, CommonLocaleDelegate.getMessage("DatasourceEditPanel.6","Ergebnis-Ansicht"));
+		final CommonLocaleDelegate cld = CommonLocaleDelegate.getInstance();
+		tabbedPane.addTab(cld.getMessage("DatasourceEditPanel.10","Modell"), null, pnlQueryEditor, 
+				cld.getMessage("DatasourceEditPanel.8","Grafische Modellierung der Abfrage"));
+		tabbedPane.addTab(cld.getMessage("DatasourceEditPanel.11","SQL"), null, sqlPanel, 
+				cld.getMessage("DatasourceEditPanel.12","SQL-Statement der Datenbankabfrage"));
+		tabbedPane.addTab(cld.getMessage("DatasourceEditPanel.18","Vorschau"), null, previewPanel, 
+				cld.getMessage("DatasourceEditPanel.6","Ergebnis-Ansicht"));
 		add(tabbedPane, BorderLayout.CENTER);
 		tabbedPane.addChangeListener(new ChangeListener() {
 			@Override
@@ -268,7 +272,8 @@ public class DatasourceEditPanel extends JPanel {
 		
 		private final JEditTextArea sqlEditor = new JEditTextArea();
 		private final JPanel sqlToolBar = new JPanel(new FlowLayout(FlowLayout.LEFT));
-		private final JButton btnGenerateSql = new JButton(CommonLocaleDelegate.getMessage("DatasourceEditPanel.13","Statement bearbeiten"));
+		private final JButton btnGenerateSql = new JButton(CommonLocaleDelegate.getInstance().getMessage(
+				"DatasourceEditPanel.13","Statement bearbeiten"));
 		private FocusListener focusListener = new FocusListener() {
 			@Override
 			public void focusGained(FocusEvent e) {
@@ -371,8 +376,12 @@ public class DatasourceEditPanel extends JPanel {
 		 *
 		 */
 		public void edit() {
-			btnGenerateSql.setText(CommonLocaleDelegate.getMessage("DatasourceEditPanel.15","Statement wieder herstellen"));
-			btnGenerateSql.setToolTipText(CommonLocaleDelegate.getMessage("DatasourceEditPanel.16","Stellt das SQL-Statement aus dem Modell wieder her."));
+			btnGenerateSql.setText(
+					CommonLocaleDelegate.getInstance().getMessage(
+							"DatasourceEditPanel.15","Statement wieder herstellen"));
+			btnGenerateSql.setToolTipText(
+					CommonLocaleDelegate.getInstance().getMessage(
+							"DatasourceEditPanel.16","Stellt das SQL-Statement aus dem Modell wieder her."));
 			btnGenerateSql.setSelected(true);
 			sqlEditor.addFocusListener(focusListener);
 			sqlEditor.setEditable(true);
@@ -385,7 +394,8 @@ public class DatasourceEditPanel extends JPanel {
 		 *
 		 */
 		public void unedit() {
-			btnGenerateSql.setText(CommonLocaleDelegate.getMessage("DatasourceEditPanel.14","Statement bearbeiten"));
+			btnGenerateSql.setText(
+					CommonLocaleDelegate.getInstance().getMessage("DatasourceEditPanel.14","Statement bearbeiten"));
 			btnGenerateSql.setToolTipText("");
 			btnGenerateSql.setSelected(false);
 			sqlEditor.setEditable(false);
@@ -397,11 +407,14 @@ public class DatasourceEditPanel extends JPanel {
 
 	class PreviewPanel extends JPanel {
 		private final JPanel pnlOptions = new JPanel(new FlowLayout(FlowLayout.LEFT));
-		private final JLabel lbMaxRowCount = new JLabel(CommonLocaleDelegate.getMessage("DatasourceEditPanel.3","Anzahl Zeilen: "));
+		private final JLabel lbMaxRowCount = new JLabel(CommonLocaleDelegate.getInstance().getMessage(
+				"DatasourceEditPanel.3","Anzahl Zeilen: "));
 		private final JTextField tfMaxRowCount = new JTextField("500", 5);
 		private final JCheckBox cbTruncRows = new JCheckBox();
-		private final JButton btnPreview = new JButton(CommonLocaleDelegate.getMessage("DatasourceEditPanel.4","Anzeigen"));
-		private final JButton btnExport = new JButton(CommonLocaleDelegate.getMessage("DatasourceEditPanel.7","Exportieren"));
+		private final JButton btnPreview = new JButton(CommonLocaleDelegate.getInstance().getMessage(
+				"DatasourceEditPanel.4","Anzeigen"));
+		private final JButton btnExport = new JButton(CommonLocaleDelegate.getInstance().getMessage(
+				"DatasourceEditPanel.7","Exportieren"));
 		private JTable table = new JTable();
 		private final JScrollPane scrPane = new JScrollPane();
 
@@ -410,11 +423,12 @@ public class DatasourceEditPanel extends JPanel {
 		}
 
 		private void init() {
+			final CommonLocaleDelegate cld = CommonLocaleDelegate.getInstance();
 			this.setLayout(new BorderLayout());
 			//Options
 			cbTruncRows.setSelected(true);
-			cbTruncRows.setText(CommonLocaleDelegate.getMessage("DatasourceEditPanel.9","Maximale Anzahl Zeilen einschr\u00e4nken"));
-			cbTruncRows.setToolTipText(CommonLocaleDelegate.getMessage("DatasourceEditPanel.17","Steuert, ob die Anzahl der Zeilen in der Ergebnisliste eingeschr\u00e4nkt werden."));
+			cbTruncRows.setText(cld.getMessage("DatasourceEditPanel.9","Maximale Anzahl Zeilen einschr\u00e4nken"));
+			cbTruncRows.setToolTipText(cld.getMessage("DatasourceEditPanel.17","Steuert, ob die Anzahl der Zeilen in der Ergebnisliste eingeschr\u00e4nkt werden."));
 			cbTruncRows.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {
@@ -428,9 +442,9 @@ public class DatasourceEditPanel extends JPanel {
 					}
 				}
 			});
-			tfMaxRowCount.setToolTipText(CommonLocaleDelegate.getMessage("DatasourceEditPanel.5","Die Anzahl der Zeilen, auf die das Ergebnis eingeschr\u00e4nkt wird."));
+			tfMaxRowCount.setToolTipText(cld.getMessage("DatasourceEditPanel.5","Die Anzahl der Zeilen, auf die das Ergebnis eingeschr\u00e4nkt wird."));
 
-			btnPreview.setToolTipText(CommonLocaleDelegate.getMessage("DatasourceEditPanel.1","Abfrage ausf\u00fchren"));
+			btnPreview.setToolTipText(cld.getMessage("DatasourceEditPanel.1","Abfrage ausf\u00fchren"));
 			btnPreview.setMnemonic('A');
 			btnPreview.addActionListener(new ActionListener() {
 				@Override
@@ -445,7 +459,7 @@ public class DatasourceEditPanel extends JPanel {
 			});
 
 			btnExport.setEnabled(false);
-			btnExport.setToolTipText(CommonLocaleDelegate.getMessage("DatasourceEditPanel.2","Angezeigtes Ergebnis in eine Datei exportieren"));
+			btnExport.setToolTipText(cld.getMessage("DatasourceEditPanel.2","Angezeigtes Ergebnis in eine Datei exportieren"));
 			btnExport.setMnemonic('E');
 			btnExport.addActionListener(new ActionListener() {
 				@Override

@@ -48,7 +48,9 @@ public abstract class DragAndDropUtils {
 			AbstractReportExporter.checkJawin();
 		}
 		catch(Exception e) {
-			throw new PointerException(CommonLocaleDelegate.getMessage("details.subform.controller.2", "Diese Funktion wird nur unter Microsoft Windows unterstützt!"));
+			throw new PointerException(
+					CommonLocaleDelegate.getInstance().getMessage(
+							"details.subform.controller.2", "Diese Funktion wird nur unter Microsoft Windows unterstützt!"));
 		}
 		
 		List<File> lstFiles = new ArrayList<File>();
@@ -77,13 +79,15 @@ public abstract class DragAndDropUtils {
 			application.close();
 			
 		} catch (Exception e) {
-			throw new PointerException(CommonLocaleDelegate.getMessage("details.subform.controller.2", "Diese Funktion wird nur unter Microsoft Windows unterstützt!"));
+			throw new PointerException(CommonLocaleDelegate.getInstance().getMessage(
+					"details.subform.controller.2", "Diese Funktion wird nur unter Microsoft Windows unterstützt!"));
 		}
 		finally {			
 			 try {
 				 Ole32.CoUninitialize();
 			} catch (Exception e2) {
-				throw new PointerException(CommonLocaleDelegate.getMessage("details.subform.controller.2", "Diese Funktion wird nur unter Microsoft Windows unterstützt!"));
+				throw new PointerException(CommonLocaleDelegate.getInstance().getMessage(
+						"details.subform.controller.2", "Diese Funktion wird nur unter Microsoft Windows unterstützt!"));
 			}
 		}
 		return lstFiles;

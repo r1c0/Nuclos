@@ -23,7 +23,6 @@ import org.nuclos.common.NuclosPassword;
 import org.nuclos.common2.DateTime;
 import org.nuclos.common2.IdUtils;
 import org.nuclos.common2.InternalTimestamp;
-import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.server.dal.DalUtils;
 import org.nuclos.server.dblayer.expression.DbNull;

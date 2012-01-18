@@ -102,7 +102,7 @@ public class ResourceIconChooser extends JPanel {
 		if (customResources) {
 			for (String sResource : CollectionUtils.sorted(ResourceDelegate.getInstance().getResourceNames())) {
 				try {
-					ImageIcon iconResource = ResourceCache.getIconResource(sResource);
+					ImageIcon iconResource = ResourceCache.getInstance().getIconResource(sResource);
 					iconNames.add(sResource);
 					icons.add(iconResource);
 				} catch (Exception ex) {
@@ -243,24 +243,27 @@ public class ResourceIconChooser extends JPanel {
 	}
 	
 	public void showDialog(String sSelectedResource) {
+		final CommonLocaleDelegate cld = CommonLocaleDelegate.getInstance();
+		
 		JPanel contentPanel = new JPanel(new BorderLayout(5, 5));
 		contentPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 		contentPanel.add(this, BorderLayout.CENTER);
 		
 		JPanel actionsPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 2));
-		JButton btSave = new JButton(CommonLocaleDelegate.getMessage("ResourceIconChooser.1","Speichern"));
-		JButton btCancel = new JButton(CommonLocaleDelegate.getMessage("ResourceIconChooser.2","Abbrechen"));
+		JButton btSave = new JButton(cld.getMessage("ResourceIconChooser.1","Speichern"));
+		JButton btCancel = new JButton(cld.getMessage("ResourceIconChooser.2","Abbrechen"));
 		actionsPanel.add(btSave);
 		actionsPanel.add(btCancel);
 		contentPanel.add(actionsPanel, BorderLayout.SOUTH);
 		
 		setSelected(sSelectedResource);
 		
-		final JDialog dialog = new JDialog(Main.getMainFrame(), CommonLocaleDelegate.getMessage("ResourceIconChooser.3","Ressource Icon auswählen"), true);
+		final JDialog dialog = new JDialog(Main.getInstance().getMainFrame(), cld.getMessage(
+				"ResourceIconChooser.3","Ressource Icon auswählen"), true);
 		dialog.setContentPane(contentPanel);
 		dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		dialog.getRootPane().setDefaultButton(btSave);
-		Rectangle mfBounds = Main.getMainFrame().getBounds();
+		Rectangle mfBounds = Main.getInstance().getMainFrame().getBounds();
 		dialog.setBounds(mfBounds.x+(mfBounds.width/2)-480, mfBounds.y+(mfBounds.height/2)-300, 960, 600);
 		dialog.setResizable(true);
 		

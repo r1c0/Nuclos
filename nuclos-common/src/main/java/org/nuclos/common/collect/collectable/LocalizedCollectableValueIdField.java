@@ -30,12 +30,12 @@ import org.nuclos.common2.Localizable;
 public class LocalizedCollectableValueIdField extends CollectableValueIdField implements Serializable {
 
 	public static LocalizedCollectableValueIdField fromResourceId(Integer oValueId, Object oValue, String resId) {
-		final String text = CommonLocaleDelegate.getTextFallback(resId, "<[" + oValue + "]>");
+		final String text = CommonLocaleDelegate.getInstance().getTextFallback(resId, "<[" + oValue + "]>");
 		return new LocalizedCollectableValueIdField(oValueId, oValue, text);		
 	}
 	
 	public static LocalizedCollectableValueIdField fromLocalizable(Integer oValueId, Object oValue, Localizable loc) {
-		final String text = CommonLocaleDelegate.getText(loc);
+		final String text = CommonLocaleDelegate.getInstance().getText(loc);
 		return new LocalizedCollectableValueIdField(oValueId, oValue, text);		
 	}
 	

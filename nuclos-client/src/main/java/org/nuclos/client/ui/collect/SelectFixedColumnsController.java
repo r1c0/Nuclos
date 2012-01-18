@@ -36,7 +36,6 @@ import org.nuclos.client.ui.SelectObjectsController;
 import org.nuclos.client.ui.collect.component.model.ChoiceEntityFieldList;
 import org.nuclos.client.ui.model.MutableListModel;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
-import org.nuclos.common2.CommonLocaleDelegate;
 
 /**
  * Controller for selecting visible columns.
@@ -201,7 +200,9 @@ public class SelectFixedColumnsController extends SelectObjectsController<Collec
 		lstNotSelected.removeAll(getFixedObjects());
 
 		if (lstNotSelected.size() == 0) {
-			JOptionPane.showMessageDialog(this.getParent(), CommonLocaleDelegate.getMessage("SelectFixedColumnsController.3","Es d\u00fcrfen nicht alle Spalten ausgeblendet oder fixiert werden."));
+			JOptionPane.showMessageDialog(this.getParent(), 
+					getCommonLocaleDelegate().getMessage(
+							"SelectFixedColumnsController.3","Es d\u00fcrfen nicht alle Spalten ausgeblendet oder fixiert werden."));
 		}
 		else {
 			moveLeftRight(modelSrc, modelDest, selectionModel);

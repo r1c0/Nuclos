@@ -260,8 +260,10 @@ public class DetailsPanel extends SearchOrDetailsPanel {
 				Icons.getInstance().getIconRefresh16());
 
 		this.btnRefreshCurrentCollectable.setToolTipText(bDisguise ?
-			CommonLocaleDelegate.getMessage("DetailsPanel.1", "Die Bearbeitung des Datensatzes abbrechen (\u00c4nderungen verwerfen)") :
-				CommonLocaleDelegate.getMessage("DetailsPanel.2", "Aktualisieren (Datensatz neu laden und \u00c4nderungen verwerfen)"));
+			CommonLocaleDelegate.getInstance().getMessage(
+					"DetailsPanel.1", "Die Bearbeitung des Datensatzes abbrechen (\u00c4nderungen verwerfen)") :
+				CommonLocaleDelegate.getInstance().getMessage(
+						"DetailsPanel.2", "Aktualisieren (Datensatz neu laden und \u00c4nderungen verwerfen)"));
 	}
 
 	public static String getTextForMultiEditChange(DetailsPanel pnlDetails) {
@@ -285,7 +287,7 @@ public class DetailsPanel extends SearchOrDetailsPanel {
 				sb.append(" = ");
 				final CollectableField clctfValue = clctcompmodel.getField();
 				if (clctfValue.isNull()) {
-					sb.append(CommonLocaleDelegate.getMessage("DetailsPanel.3", "<leer>"));
+					sb.append(CommonLocaleDelegate.getInstance().getMessage("DetailsPanel.3", "<leer>"));
 				}
 				else {
 					sb.append(clctfValue.toString());

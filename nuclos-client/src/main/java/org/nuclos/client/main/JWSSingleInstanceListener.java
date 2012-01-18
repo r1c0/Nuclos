@@ -34,6 +34,6 @@ public class JWSSingleInstanceListener implements SingleInstanceListener {
 
 	@Override
 	public void newActivation(String[] args) {
-		Main.notifyListeners(args);
+		Main.getInstance().notifyListeners(args);
 	}
 }

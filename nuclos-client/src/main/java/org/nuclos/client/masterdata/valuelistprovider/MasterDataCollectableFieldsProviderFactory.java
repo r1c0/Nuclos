@@ -80,8 +80,10 @@ public class MasterDataCollectableFieldsProviderFactory implements CollectableFi
 		final CollectableEntityField clctef = clcte.getEntityField(sFieldName);
 
 		if (!clctef.isReferencing()) {
-			throw new NuclosFatalException(CommonLocaleDelegate.getMessage("GenericObjectCollectableFieldsProviderFactory.1",
-				"Das Feld {0} in der Entit\u00e4t {1} referenziert keine andere Entit\u00e4t.", clctef.getName(), clcte.getName()));
+			throw new NuclosFatalException(CommonLocaleDelegate.getInstance().getMessage(
+					"GenericObjectCollectableFieldsProviderFactory.1",
+					"Das Feld {0} in der Entit\u00e4t {1} referenziert keine andere Entit\u00e4t.", 
+					clctef.getName(), clcte.getName()));
 		}
 		return new DependantMasterDataCollectableFieldsProvider(clcte.getName(), sFieldName);
 	}
@@ -210,8 +212,9 @@ public class MasterDataCollectableFieldsProviderFactory implements CollectableFi
 			result = new AssignableWorkspaceCollectableFieldsProvider();
 		}
 		else {
-			throw new NuclosFatalException(CommonLocaleDelegate.getMessage("GenericObjectCollectableFieldsProviderFactory.2",
-				"Unbekannter valuelist-provider Typ: {0}", sCustomType));
+			throw new NuclosFatalException(CommonLocaleDelegate.getInstance().getMessage(
+					"GenericObjectCollectableFieldsProviderFactory.2",
+					"Unbekannter valuelist-provider Typ: {0}", sCustomType));
 		}
 		return result;
 	}
@@ -230,8 +233,10 @@ public class MasterDataCollectableFieldsProviderFactory implements CollectableFi
 		final CollectableEntity clcte = DefaultCollectableEntityProvider.getInstance().getCollectableEntity(sEntityName);
 		final CollectableEntityField clctef = clcte.getEntityField(sFieldName);
 		if (!clctef.isReferencing()) {
-			throw new NuclosFatalException(CommonLocaleDelegate.getMessage("GenericObjectCollectableFieldsProviderFactory.1",
-				"Das Feld {0} in der Entit\u00e4t {1} referenziert keine andere Entit\u00e4t.", sFieldName, sEntityName));
+			throw new NuclosFatalException(CommonLocaleDelegate.getInstance().getMessage(
+					"GenericObjectCollectableFieldsProviderFactory.1",
+					"Das Feld {0} in der Entit\u00e4t {1} referenziert keine andere Entit\u00e4t.", 
+					sFieldName, sEntityName));
 		}
 
 		if (Modules.getInstance().isModuleEntity(clctef.getReferencedEntityName())) {

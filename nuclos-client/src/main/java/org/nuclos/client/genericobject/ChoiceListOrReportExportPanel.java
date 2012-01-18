@@ -65,11 +65,14 @@ public class ChoiceListOrReportExportPanel extends JPanel {
 		this.pnlList = pnlList;
 		pnlPrechoice.setLayout(new LineLayout(LineLayout.VERTICAL));
 		lblHeadline.setToolTipText("");
-		lblHeadline.setText(CommonLocaleDelegate.getMessage("ChoiceListOrReportExportPanel.1", "Bitte Aktion ausw\u00e4hlen:"));
+		lblHeadline.setText(CommonLocaleDelegate.getInstance().getMessage(
+				"ChoiceListOrReportExportPanel.1", "Bitte Aktion ausw\u00e4hlen:"));
 		rbList.setActionCommand("List");
 		rbReport.setActionCommand("Report");
-		rbList.setText(CommonLocaleDelegate.getMessage("ChoiceListOrReportExportPanel.2", "Suchergebnisliste drucken"));
-		rbReport.setText(CommonLocaleDelegate.getMessage("ChoiceListOrReportExportPanel.3", "Formulare f\u00fcr ausgew\u00e4hlte Objekte drucken"));
+		rbList.setText(CommonLocaleDelegate.getInstance().getMessage(
+				"ChoiceListOrReportExportPanel.2", "Suchergebnisliste drucken"));
+		rbReport.setText(CommonLocaleDelegate.getInstance().getMessage(
+				"ChoiceListOrReportExportPanel.3", "Formulare f\u00fcr ausgew\u00e4hlte Objekte drucken"));
 		rbList.setSelected(true);
 		bgPrechoice.add(rbList);
 		bgPrechoice.add(rbReport);

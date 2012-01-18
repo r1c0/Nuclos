@@ -21,6 +21,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+import javax.annotation.PostConstruct;
 import javax.jms.Message;
 import javax.jms.MessageListener;
 
@@ -39,6 +40,8 @@ import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common2.EntityAndFieldName;
 import org.nuclos.common2.exception.CommonFinderException;
 import org.nuclos.server.attribute.valueobject.AttributeCVO;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
 
 /**
  * Client side leased object meta data cache (singleton).
@@ -49,6 +52,7 @@ import org.nuclos.server.attribute.valueobject.AttributeCVO;
  * @author	<a href="mailto:Christoph.Radig@novabit.de">Christoph.Radig</a>
  * @version 01.00.00
  */
+@Configurable
 public class GenericObjectMetaDataCache implements GenericObjectMetaDataProvider {
 
 	private static GenericObjectMetaDataCache singleton;
@@ -58,10 +62,21 @@ public class GenericObjectMetaDataCache implements GenericObjectMetaDataProvider
 	private GenericObjectMetaDataVO lometacvo;
 
 	private List<CacheableListener> lstCacheableListeners;
+	
+	private TopicNotificationReceiver tnr; 
 
-	private GenericObjectMetaDataCache() {		
+	private GenericObjectMetaDataCache() {
+	}
+	
+	@PostConstruct
+	void init() {
 		this.setup();
-		TopicNotificationReceiver.subscribe(JMSConstants.TOPICNAME_METADATACACHE, messagelistener);
+		tnr.subscribe(JMSConstants.TOPICNAME_METADATACACHE, messagelistener);
+	}
+	
+	@Autowired
+	void setTopicNotificationReceiver(TopicNotificationReceiver tnr) {
+		this.tnr = tnr;
 	}
 
 	public static synchronized GenericObjectMetaDataCache getInstance() {

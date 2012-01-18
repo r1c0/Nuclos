@@ -64,7 +64,8 @@ public class NuclosPreferencesRoot extends AbstractMapBasedPreferences.Root {
 		try {
 			if (this.isDirty()) {
 				if (facade == null) {
-					throw new NuclosFatalException(CommonLocaleDelegate.getMessage("NuclosPreferences.1", "Benutzereinstellungen k\u00f6nnen nicht gespeichert werden."));
+					throw new NuclosFatalException(CommonLocaleDelegate.getInstance().getMessage(
+							"NuclosPreferences.1", "Benutzereinstellungen k\u00f6nnen nicht gespeichert werden."));
 				}
 				else {
 					final ByteArrayOutputStream baos = new ByteArrayOutputStream();

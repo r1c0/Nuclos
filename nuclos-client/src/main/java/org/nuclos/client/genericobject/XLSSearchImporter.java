@@ -49,6 +49,8 @@ import org.nuclos.common.collect.collectable.searchcondition.CollectableSearchCo
 import org.nuclos.common.collect.collectable.searchcondition.CompositeCollectableSearchCondition;
 import org.nuclos.common.collect.collectable.searchcondition.LogicalOperator;
 import org.nuclos.common2.CommonLocaleDelegate;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
 
 /**
  * Opens a filechooser - reads out headers of selected XLS file - opens dialog
@@ -62,23 +64,31 @@ import org.nuclos.common2.CommonLocaleDelegate;
  * @author <a href="mailto:uwe.allner@novabit.de">Uwe Allner</a>
  * @version 01.00.00
  */
-
+@Configurable
 public class XLSSearchImporter implements ExtSourceSearchImporter {
+	
 	private Integer iModuleId = null;
 	private JComponent parentComponent = null;
 	private String sSelectedAttribute = null;
 	private int[] firstUpperLeftCell = null; //[column,row]
 	private Workbook wb = null;
 	private Collection<String> readValues = null;
+	
+	private CommonLocaleDelegate cld;
 
 	public XLSSearchImporter(Integer iModuleId, JComponent parentComponent) {
 		this.parentComponent = parentComponent;
 		this.iModuleId = iModuleId;
 	}
+	
+	@Autowired
+	void setCommonLocaleDelegate(CommonLocaleDelegate cld) {
+		this.cld = cld;
+	}
 
 	@Override
 	public String toString(){
-		return CommonLocaleDelegate.getMessage("XLSSearchImporter.1", "Excel Datei");
+		return cld.getMessage("XLSSearchImporter.1", "Excel Datei");
 	}
 	
 	/**
@@ -113,12 +123,14 @@ public class XLSSearchImporter implements ExtSourceSearchImporter {
 		} 
 		catch (BiffException e) {
 			JOptionPane.showMessageDialog(parentComponent,
-					"<html>" + CommonLocaleDelegate.getMessage("XLSSearchImporter.2", "Keine g\u00fcltige Excel Datei") +":<br>" + e.getMessage()	+ "</html>");
+					"<html>" + cld.getMessage("XLSSearchImporter.2", "Keine g\u00fcltige Excel Datei") 
+					+ ":<br>" + e.getMessage()	+ "</html>");
 			return getSearchCondition(); //try again
 
 		} 
 		catch (IOException e) {
-			JOptionPane.showMessageDialog(parentComponent, "<html>" + CommonLocaleDelegate.getMessage("XLSSearchImporter.3", "I/O Fehler") + ":<br>" + e.getMessage() + "</html>");
+			JOptionPane.showMessageDialog(parentComponent, "<html>" + cld.getMessage("XLSSearchImporter.3", "I/O Fehler") 
+					+ ":<br>" + e.getMessage() + "</html>");
 			return getSearchCondition(); //try again
 		}
 
@@ -187,20 +199,24 @@ public class XLSSearchImporter implements ExtSourceSearchImporter {
 		private ValidateImportPanel pnlContents;
 		
 		public ValidateImportPane(ValidateImportPanel contents) {
-			super(parentComponent, CommonLocaleDelegate.getMessage("XLSSearchImporter.4", "Excel Import: Suche"), contents);
+			super(parentComponent, cld.getMessage(
+					"XLSSearchImporter.4", "Excel Import: Suche"), contents);
 			pnlContents = contents;
 		}
 		
 		@Override
 		protected void validateInput() throws ValidatingJOptionPane.ErrorInfo {
 			if (pnlContents.cbColumnName.getSelectedItem() == null) {
-				throw new ErrorInfo(CommonLocaleDelegate.getMessage("XLSSearchImporter.5", "Bitte Spalte w\u00e4hlen"), pnlContents.cbColumnName);
+				throw new ErrorInfo(cld.getMessage(
+						"XLSSearchImporter.5", "Bitte Spalte w\u00e4hlen"), pnlContents.cbColumnName);
 			} 
 			if (pnlContents.cbSheetName.getSelectedItem() == null) {
-				throw new ErrorInfo(CommonLocaleDelegate.getMessage("XLSSearchImporter.6", "Bitte Arbeitsblatt w\u00e4hlen"), pnlContents.cbSheetName);
+				throw new ErrorInfo(cld.getMessage(
+						"XLSSearchImporter.6", "Bitte Arbeitsblatt w\u00e4hlen"), pnlContents.cbSheetName);
 			} 
 			if (firstUpperLeftCell == null) {
-				throw new ErrorInfo(CommonLocaleDelegate.getMessage("XLSSearchImporter.7", "Gew\u00e4hltes Arbeitsblatt enth\u00e4lt keine Daten"), null);
+				throw new ErrorInfo(cld.getMessage(
+						"XLSSearchImporter.7", "Gew\u00e4hltes Arbeitsblatt enth\u00e4lt keine Daten"), null);
 			} 
 		}
 	} // inner class ValidateImportPane
@@ -210,10 +226,14 @@ public class XLSSearchImporter implements ExtSourceSearchImporter {
 		private final JComboBox cbSheetName = new JComboBox();
 		private final JComboBox cbColumnName = new JComboBox();
 		private final JComboBox cbAttributeName = new JComboBox();
-		private final JCheckBox chkHeaderAvailable = new JCheckBox(CommonLocaleDelegate.getMessage("XLSSearchImporter.8", "Spalten haben \u00dcberschriften"));
-		private final JLabel lblSheetName = new JLabel(CommonLocaleDelegate.getMessage("XLSSearchImporter.9", "Arbeitsblatt ausw\u00e4hlen"));
-		private final JLabel lblColumnName = new JLabel(CommonLocaleDelegate.getMessage("XLSSearchImporter.10", "Spalte ausw\u00e4hlen"));
-		private final JLabel lblAttributeName = new JLabel(CommonLocaleDelegate.getMessage("XLSSearchImporter.11", "Attribut ausw\u00e4hlen"));
+		private final JCheckBox chkHeaderAvailable = new JCheckBox(cld.getMessage(
+				"XLSSearchImporter.8", "Spalten haben \u00dcberschriften"));
+		private final JLabel lblSheetName = new JLabel(cld.getMessage(
+				"XLSSearchImporter.9", "Arbeitsblatt ausw\u00e4hlen"));
+		private final JLabel lblColumnName = new JLabel(cld.getMessage(
+				"XLSSearchImporter.10", "Spalte ausw\u00e4hlen"));
+		private final JLabel lblAttributeName = new JLabel(cld.getMessage(
+				"XLSSearchImporter.11", "Attribut ausw\u00e4hlen"));
 
 		private final JLabel[] labels = new JLabel[] { lblSheetName, lblColumnName, lblAttributeName };
 		private final JComboBox[] combos = new JComboBox[] { cbSheetName, cbColumnName, cbAttributeName };

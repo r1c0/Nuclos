@@ -129,13 +129,16 @@ public class DataTypeCollectController extends MasterDataCollectController{
 		super.validate(clct);
 		String sJavaType = (String)clct.getField("javatyp").getValue();
 		if(sJavaType == null) {
-			throw new CommonValidationException(CommonLocaleDelegate.getMessage("DataTypeCollectController.1","Kein Java Datentyp gesetzt"));
+			throw new CommonValidationException(
+					CommonLocaleDelegate.getInstance().getMessage(
+							"DataTypeCollectController.1","Kein Java Datentyp gesetzt"));
 		}
 
 		if(sJavaType.equals("java.lang.Double") || sJavaType.equals("java.lang.Integer")) {
 			Integer iScale = (Integer)clct.getField("scale").getValue();
 			if(iScale == null) {
-				throw new CommonValidationException(CommonLocaleDelegate.getMessage("DataTypeCollectController.2","Keine Vorkommastellen gesetzt"));
+				throw new CommonValidationException(
+						CommonLocaleDelegate.getInstance().getMessage("DataTypeCollectController.2","Keine Vorkommastellen gesetzt"));
 			}
 		}
 

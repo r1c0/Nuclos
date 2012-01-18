@@ -523,14 +523,15 @@ public class WYSIWYGMetaInformation implements LayoutMLConstants {
 			if (getEntityFieldNames(entity.getName()).contains(name)) {
 				MasterDataMetaFieldVO metafieldvo = MetaDataCache.getInstance().getMetaData(entity.getName()).getField(name);
 				//String label = entity.getEntityField(name).getLabel();
-				return CommonLocaleDelegate.getResource(metafieldvo.getResourceSIdForLabel(), metafieldvo.getLabel());
+				return CommonLocaleDelegate.getInstance().getResource(
+						metafieldvo.getResourceSIdForLabel(), metafieldvo.getLabel());
 				//entity.getEntityField(name).getLabel();
 			}
 			else {
 				//NUCLEUSINT-388
 				for (AttributeCVO a : AttributeCache.getInstance().getAttributes()) {
 					if (a.getName().equals(name)) {
-						return CommonLocaleDelegate.getLabelFromAttributeCVO(a);
+						return CommonLocaleDelegate.getInstance().getLabelFromAttributeCVO(a);
 					}
 				}
 				return name;

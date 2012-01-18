@@ -153,15 +153,17 @@ public class MenuItemMover extends JPanel {
 	}
 	
 	public void showDialog(DefaultMenuItem selected) {
-		final JDialog dialog = new JDialog(Main.getMainFrame(), CommonLocaleDelegate.getMessage("MenuItemMover.3","Reihenfolge ändern"), true);
+		final CommonLocaleDelegate cld = CommonLocaleDelegate.getInstance();
+		final JDialog dialog = new JDialog(Main.getInstance().getMainFrame(), 
+				cld.getMessage("MenuItemMover.3","Reihenfolge ändern"), true);
 		
 		JPanel contentPanel = new JPanel(new BorderLayout(5, 5));
 		contentPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 		contentPanel.add(this, BorderLayout.CENTER);
 		
 		JPanel actionsPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 2));
-		JButton btSave = new JButton(CommonLocaleDelegate.getMessage("MenuItemMover.1","Speichern"));
-		JButton btCancel = new JButton(CommonLocaleDelegate.getMessage("MenuItemMover.2","Abbrechen"));
+		JButton btSave = new JButton(cld.getMessage("MenuItemMover.1","Speichern"));
+		JButton btCancel = new JButton(cld.getMessage("MenuItemMover.2","Abbrechen"));
 		actionsPanel.add(btSave);
 		actionsPanel.add(btCancel);
 		contentPanel.add(actionsPanel, BorderLayout.SOUTH);
@@ -171,7 +173,7 @@ public class MenuItemMover extends JPanel {
 		dialog.setContentPane(contentPanel);
 		dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		dialog.getRootPane().setDefaultButton(btSave);
-		Rectangle mfBounds = Main.getMainFrame().getBounds();
+		Rectangle mfBounds = Main.getInstance().getMainFrame().getBounds();
 		dialog.setBounds(mfBounds.x+(mfBounds.width/2)-180, mfBounds.y+(mfBounds.height/2)-200, 360, 400);
 		dialog.setResizable(false);
 		

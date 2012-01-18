@@ -16,8 +16,6 @@
 // along with Nuclos. If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.server.navigation.treenode;
 
-import java.io.InvalidObjectException;
-import java.io.ObjectStreamException;
 import java.rmi.RemoteException;
 import java.util.List;
 
@@ -297,16 +295,17 @@ public class GenericObjectTreeNode extends AbstractTreeNode<Integer> implements
 		return this.sUserName;
 	}
 
-	private Object readResolve() throws ObjectStreamException {
+	@Override
+	public Object readResolve() {
 		if(this.getUserName() == null) {
 			try {
 				this.sUserName = getSecurityFacade().getSessionContextAsString();
 			}
 			catch(NuclosFatalException e) {
-				throw new InvalidObjectException("Username could not be set.");
+				throw new IllegalStateException("Username could not be set.");
 			}
 			catch(RuntimeException ex) {
-				throw new InvalidObjectException("Username could not be set.");
+				throw new IllegalStateException("Username could not be set.");
 			}
 		}
 
@@ -316,13 +315,13 @@ public class GenericObjectTreeNode extends AbstractTreeNode<Integer> implements
 					this.getId());
 			}
 			catch(NuclosFatalException e) {
-				throw new InvalidObjectException("StatusId could not be set.");
+				throw new IllegalStateException("StatusId could not be set.");
 			}
 			catch(RuntimeException ex) {
-				throw new InvalidObjectException("Username could not be set.");
+				throw new IllegalStateException("Username could not be set.");
 			}
 			catch(CommonFinderException e) {
-				throw new InvalidObjectException("StatusId could not be set.");
+				throw new IllegalStateException("StatusId could not be set.");
 			}
 		}
 		return this;

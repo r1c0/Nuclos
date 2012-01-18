@@ -16,8 +16,6 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.common;
 
-import static org.nuclos.common2.CommonLocaleDelegate.getMessage;
-
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Graphics2D;
@@ -74,6 +72,7 @@ import org.nuclos.common.collect.collectable.CollectableField;
 import org.nuclos.common.collect.collectable.CollectableValueField;
 import org.nuclos.common.collect.collectable.searchcondition.ComparisonOperator;
 import org.nuclos.common.collect.exception.CollectableFieldFormatException;
+import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.IOUtils;
 
 public class NuclosCollectableImage extends CollectableMediaComponent implements MessageExchangeListener {
@@ -179,9 +178,11 @@ public class NuclosCollectableImage extends CollectableMediaComponent implements
 
 	private void clearField() {
 		nuclosImage = null;
-		this.getMediaComponent().setText(getMessage("NuclosCollectableImage.1", "Bild hier fallenlassen"));
+		this.getMediaComponent().setText(CommonLocaleDelegate.getInstance().getMessage(
+				"NuclosCollectableImage.1", "Bild hier fallenlassen"));
 		this.getMediaComponent().setIcon(null);
-		this.getMediaComponent().setToolTipText(getMessage("NuclosCollectableImage.1", "Bild hier fallenlassen"));
+		this.getMediaComponent().setToolTipText(CommonLocaleDelegate.getInstance().getMessage(
+				"NuclosCollectableImage.1", "Bild hier fallenlassen"));
 		if (this.getLabeledComponent() instanceof LabeledImage) {
 			LabeledImage li = (LabeledImage) this.getLabeledComponent();
 			li.setNuclosImage(nuclosImage);
@@ -192,7 +193,8 @@ public class NuclosCollectableImage extends CollectableMediaComponent implements
 	@Override
 	public JPopupMenu newJPopupMenu() {
 		final JPopupMenu result = new JPopupMenu();
-		result.add(new AbstractAction(getMessage("collectableimage.filechooser.1", "Bild \u00f6ffnen")) {
+		result.add(new AbstractAction(CommonLocaleDelegate.getInstance().getMessage(
+				"collectableimage.filechooser.1", "Bild \u00f6ffnen")) {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -213,7 +215,8 @@ public class NuclosCollectableImage extends CollectableMediaComponent implements
 			}
 		});
 
-		result.add(new AbstractAction(getMessage("collectableimage.filechooser.2", "Bild speichern")) {
+		result.add(new AbstractAction(CommonLocaleDelegate.getInstance().getMessage(
+				"collectableimage.filechooser.2", "Bild speichern")) {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -247,7 +250,8 @@ public class NuclosCollectableImage extends CollectableMediaComponent implements
 			}
 		});
 
-		result.add(new AbstractAction(getMessage("collectableimage.filechooser.3", "Bild anzeigen")) {
+		result.add(new AbstractAction(CommonLocaleDelegate.getInstance().getMessage(
+				"collectableimage.filechooser.3", "Bild anzeigen")) {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -269,7 +273,8 @@ public class NuclosCollectableImage extends CollectableMediaComponent implements
 			}
 		});
 
-		result.add(new AbstractAction(getMessage("CollectableFileNameChooserBase.1", "zurücksetzen")) {
+		result.add(new AbstractAction(CommonLocaleDelegate.getInstance().getMessage(
+				"CollectableFileNameChooserBase.1", "zurücksetzen")) {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {

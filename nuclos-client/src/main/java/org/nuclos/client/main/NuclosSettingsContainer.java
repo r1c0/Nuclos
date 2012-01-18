@@ -41,12 +41,12 @@ public class NuclosSettingsContainer extends JPanel {
 
 		livesearchPanel = new LiveSearchSettingsPanel();
 		tabPane.addTab(
-			CommonLocaleDelegate.getResource("nuclos.settings.container.tab2", "Live-Suche"),
+			CommonLocaleDelegate.getInstance().getResource("nuclos.settings.container.tab2", "Live-Suche"),
 			livesearchPanel);
 
 		settingsPanel = new NuclosSettingsPanel(frm);
 		tabPane.addTab(
-			CommonLocaleDelegate.getResource("nuclos.settings.container.tab1", "Ansichtsoptionen"),
+			CommonLocaleDelegate.getInstance().getResource("nuclos.settings.container.tab1", "Ansichtsoptionen"),
 			settingsPanel);
 
 		validate();

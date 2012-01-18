@@ -39,7 +39,6 @@ import java.util.regex.Pattern;
 import org.apache.log4j.Logger;
 import org.nuclos.common.MetaDataProvider;
 import org.nuclos.common.NuclosEOField;
-import org.nuclos.common.SpringApplicationContextHolder;
 import org.nuclos.common.attribute.DynamicAttributeVO;
 import org.nuclos.common.collect.collectable.Collectable;
 import org.nuclos.common.collect.collectable.CollectableField;
@@ -52,6 +51,8 @@ import org.nuclos.server.attribute.valueobject.AttributeCVO;
 import org.nuclos.server.genericobject.valueobject.GenericObjectVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataMetaVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 /**
  * Static utility class in the "common" hierarchy, which holds the selected
@@ -63,6 +64,7 @@ import org.nuclos.server.masterdata.valueobject.MasterDataVO;
  *
  * @author marc.jackisch
  */
+@Component
 public class CommonLocaleDelegate {
 
 	private static final Logger LOG = Logger.getLogger(CommonLocaleDelegate.class);
@@ -107,54 +109,68 @@ public class CommonLocaleDelegate {
 		public Date getLastChange();
 
 	};
+	
+	private static CommonLocaleDelegate INSTANCE;
+	
+	//
 
-	private static LookupService keyLookup;
+	private LookupService keyLookup;
+	
+	CommonLocaleDelegate() {
+		INSTANCE = this;
+	}
+	
+	@Autowired
+	void setLookupService(LookupService lookupService) {
+		this.keyLookup = lookupService;
+	}
+	
+	public static CommonLocaleDelegate getInstance() {
+		return INSTANCE;
+	}
 
-	private static List<LocaleInfo> getLocaleCandidates() {
+	private List<LocaleInfo> getLocaleCandidates() {
 		return getKeyLookup().getParentChain();
 	}
 
-	public static Locale getLocale() {
+	public Locale getLocale() {
 		return getKeyLookup().getLocale();
 	}
 
-	private static LookupService getKeyLookup() {
-		if (keyLookup == null) {
-			keyLookup = (LookupService) SpringApplicationContextHolder.getBean("lookupService");
-		}
+	private LookupService getKeyLookup() {
 		return keyLookup;
 	}
 
-	public static LocaleInfo getUserLocaleInfo()  {
+	public LocaleInfo getUserLocaleInfo()  {
 		return getKeyLookup().getLocaleInfo();
 	}
 
-	public static NumberFormat getIntegerFormat() {
+	public NumberFormat getIntegerFormat() {
 		NumberFormat nf = NumberFormat.getIntegerInstance(getLocale());
 		nf.setGroupingUsed(false);
 		return nf;
 	}
 
-	public static NumberFormat getNumberFormat() {
+	public NumberFormat getNumberFormat() {
 		return getKeyLookup().getNumberFormat();
 	}
 
-	public static DateFormat getDateFormat() {
+	public DateFormat getDateFormat() {
 		return getKeyLookup().getDateFormat();
 	}
 
-	public static DateFormat getTimeFormat() {
+	public DateFormat getTimeFormat() {
 		return getKeyLookup().getTimeFormat();
 	}
 
-	public static DateFormat getDateTimeFormat() {
+	public DateFormat getDateTimeFormat() {
 		return getKeyLookup().getDateTimeFormat();
 	}
 
 	//==========================================================================
 
 
-	public static String getResourceById(LocaleInfo li, String id) {
+	public String getResourceById(LocaleInfo li, String id) {
 		return getKeyLookup().getResourceById(li, id);
 	}
 
@@ -177,7 +193,7 @@ public class CommonLocaleDelegate {
 	 *            a reference does not exist
 	 * @see java.text.MessageFormat
 	 */
-	public static String getMessage(String rid, String otext, Object ... params) {
+	public String getMessage(String rid, String otext, Object ... params) {
 		if (rid != null) {
 			return getMessageInternal(rid, new ResourceBundleResolverUtils.RecursiveResolver(keyLookup, rid), otext, params);
 		}
@@ -189,7 +205,7 @@ public class CommonLocaleDelegate {
 	 * @param rid     the resource id
 	 * @param otext   original resource text (optional, just for debugging purposes)
 	 */
-	public static String getText(String rid) {
+	public String getText(String rid) {
 		return getKeyLookup().getResource(rid);
 	}
 	/**
@@ -199,11 +215,11 @@ public class CommonLocaleDelegate {
 	 * @param otext   original resource text (optional, just for debugging purposes)
 	 */
 	@Deprecated
-	public static String getText(String rid, String otext) {
+	public String getText(String rid, String otext) {
 		return getText(rid);
 	}
 
-	public static String getTextFallback(String rid, String fallback) {
+	public String getTextFallback(String rid, String fallback) {
 		try {
 			if (rid != null && getKeyLookup().isResource(rid)) {
 				return getText(rid);
@@ -213,12 +229,12 @@ public class CommonLocaleDelegate {
 		return fallback;
 	}
 
-	public static String getText(Localizable localizable) {
+	public String getText(Localizable localizable) {
 		String resId = localizable.getResourceId();
 		return getText(resId);
 	}
 
-	private static String getMessageInternal(String rid, Transformer<String, String> resolver, String otext, Object ... params) {
+	private String getMessageInternal(String rid, Transformer<String, String> resolver, String otext, Object ... params) {
 		try {
 			return ResourceBundleResolverUtils.getMessageInternal(keyLookup, resolver, rid, params);
 		}
@@ -233,15 +249,15 @@ public class CommonLocaleDelegate {
 	 * @param date
 	 * @return
 	 */
-	public static String formatDate(Date date) {
+	public String formatDate(Date date) {
 		return getKeyLookup().getDateFormat().format(date);
 	}
 
-	public static String formatDate(Object date) {
+	public String formatDate(Object date) {
 		return getKeyLookup().getDateFormat().format(date);
 	}
 
-	public static Date parseDate(String text) throws ParseException {
+	public Date parseDate(String text) throws ParseException {
 		DateFormat df = getKeyLookup().getDateFormat();
 		if(df instanceof SimpleDateFormat) {
 			df = new SimpleDateFormat(((SimpleDateFormat) df).toPattern().replace("yyyy", "yy"));
@@ -253,36 +269,36 @@ public class CommonLocaleDelegate {
 		return df.parse(text);
 	}
 
-	public static String formatTime(Date time) {
+	public String formatTime(Date time) {
 		return getKeyLookup().getTimeFormat().format(time);
 	}
 
-	public static String formatTime(Object time) {
+	public String formatTime(Object time) {
 		return getKeyLookup().getTimeFormat().format(time);
 	}
 
-	public static String formatDateTime(Date dt) {
+	public String formatDateTime(Date dt) {
 		return getKeyLookup().getDateTimeFormat().format(dt);
 	}
 
-	public static String formatDateTime(Object dt) {
+	public String formatDateTime(Object dt) {
 		return getKeyLookup().getDateTimeFormat().format(dt);
 	}
 
-	public static String getLabelFromAttributeCVO(AttributeCVO a) {
+	public String getLabelFromAttributeCVO(AttributeCVO a) {
 		if(a.getResourceSIdForLabel() != null && a.getResourceSIdForLabel().length() > 0) {
 			return getTextFallback(a.getResourceSIdForLabel(), a.getLabel());
 		}
 		return a.getLabel();
 	}
 
-	public static String getDescriptionFromAttributeCVO(AttributeCVO a) {
+	public String getDescriptionFromAttributeCVO(AttributeCVO a) {
 		if(a.getResourceSIdForDescription() != null && a.getResourceSIdForDescription().length() > 0)
 			return getText(a.getResourceSIdForDescription(), a.getDescription());
 		return a.getDescription();
 	}
 
-	public static String getTextForStaticLabel(String resourceId) {
+	public String getTextForStaticLabel(String resourceId) {
 		try {
 			if (resourceId != null) {
 				return getText(resourceId, null);
@@ -291,10 +307,9 @@ public class CommonLocaleDelegate {
 		catch (MissingResourceException ex) {
 		}
 		return "[Missing resource id=" + resourceId + ", locale " + getKeyLookup().getLocaleInfo().getTag() + "]";
-
 	}
 
-	public static String getLabelFromMetaDataVO(MasterDataMetaVO metavo) {
+	public String getLabelFromMetaDataVO(MasterDataMetaVO metavo) {
 		String result = null;
 		if(metavo.getResourceSIdForLabel() != null && keyLookup != null)
 			result = getText(metavo.getResourceSIdForLabel(), metavo.getLabel());
@@ -304,27 +319,27 @@ public class CommonLocaleDelegate {
 		return result;
 	}
 
-	public static String getLabelFromMetaDataVO(EntityMetaDataVO entitymetavo) {
+	public String getLabelFromMetaDataVO(EntityMetaDataVO entitymetavo) {
 		String result = null;
 		if(entitymetavo.getLocaleResourceIdForLabel() != null && keyLookup != null)
-			result = CommonLocaleDelegate.getText(entitymetavo.getLocaleResourceIdForLabel(), null);
+			result = getText(entitymetavo.getLocaleResourceIdForLabel(), null);
 
 		if (result == null)
 			result = entitymetavo.getEntity();
 		return result;
 	}
 
-	public static String getLabelFromMetaFieldDataVO(EntityFieldMetaDataVO fieldmetavo) {
+	public String getLabelFromMetaFieldDataVO(EntityFieldMetaDataVO fieldmetavo) {
 		String result = null;
 		if(fieldmetavo.getLocaleResourceIdForLabel() != null && keyLookup != null)
-			result = CommonLocaleDelegate.getText(fieldmetavo.getLocaleResourceIdForLabel(), null);
+			result = getText(fieldmetavo.getLocaleResourceIdForLabel(), null);
 
 		if (result == null)
 			result = fieldmetavo.getField();
 		return result;
 	}
 
-	public static String getTreeViewFromMetaDataVO(EntityMetaDataVO entitymetavo) {
+	public String getTreeViewFromMetaDataVO(EntityMetaDataVO entitymetavo) {
 		String result = null;
 		if(entitymetavo.getLocaleResourceIdForTreeView() != null && keyLookup != null)
 			result = getResourceById(getUserLocaleInfo(), entitymetavo.getLocaleResourceIdForTreeView());
@@ -332,11 +347,11 @@ public class CommonLocaleDelegate {
 		return result;
 	}
 
-	public static String getTreeViewLabel(MasterDataVO mdvo, String entityname, MetaDataProvider metaDataProvider) {
+	public String getTreeViewLabel(MasterDataVO mdvo, String entityname, MetaDataProvider metaDataProvider) {
 		return getTreeViewLabel(mdvo.getFields(), entityname, metaDataProvider);
 	}
 
-	public static String getTreeViewLabel(GenericObjectVO govo, String entityname, MetaDataProvider metaDataProvider) {
+	public String getTreeViewLabel(GenericObjectVO govo, String entityname, MetaDataProvider metaDataProvider) {
 		Map<String, Object> values = new HashMap<String, Object>();
 		for (DynamicAttributeVO att : govo.getAttributes()) {
 			values.put(metaDataProvider.getEntityField(entityname, att.getAttributeId().longValue()).getField(), att.getValue());
@@ -344,11 +359,11 @@ public class CommonLocaleDelegate {
 		return getTreeViewLabel(values, entityname, metaDataProvider);
 	}
 
-	public static String getTreeViewLabel(EntityObjectVO eovo, String entityname, MetaDataProvider metaDataProvider) {
+	public String getTreeViewLabel(EntityObjectVO eovo, String entityname, MetaDataProvider metaDataProvider) {
 		return getTreeViewLabel(eovo.getFields(), entityname, metaDataProvider);
 	}
 
-	public static String getTreeViewLabel(Collectable clct, String entityname, MetaDataProvider metaDataProvider) {
+	public String getTreeViewLabel(Collectable clct, String entityname, MetaDataProvider metaDataProvider) {
 		Map<String, Object> values = new HashMap<String, Object>();
 		for (EntityFieldMetaDataVO field : metaDataProvider.getAllEntityFieldsByEntity(entityname).values()) {
 			CollectableField value = clct.getField(field.getField());
@@ -362,7 +377,7 @@ public class CommonLocaleDelegate {
 		return getTreeViewLabel(values, entityname, metaDataProvider);
 	}
 
-	public static String getTreeViewLabel(Map<String, Object> values, String entityname, MetaDataProvider metaDataProvider) {
+	public String getTreeViewLabel(Map<String, Object> values, String entityname, MetaDataProvider metaDataProvider) {
 		String result = getTreeViewFromMetaDataVO(metaDataProvider.getEntity(entityname));
 		if (result != null) {
 			return replace(result, values, entityname, metaDataProvider);
@@ -380,7 +395,7 @@ public class CommonLocaleDelegate {
 		}
 	}
 
-	public static String getTreeViewDescriptionFromMetaDataVO(EntityMetaDataVO metavo) {
+	public String getTreeViewDescriptionFromMetaDataVO(EntityMetaDataVO metavo) {
 		String result = null;
 		if(metavo.getLocaleResourceIdForTreeViewDescription() != null && keyLookup != null)
 			result = getResourceById(getUserLocaleInfo(), metavo.getLocaleResourceIdForTreeViewDescription());
@@ -388,11 +403,11 @@ public class CommonLocaleDelegate {
 		return result;
 	}
 
-	public static String getTreeViewDescription(MasterDataVO mdvo, String entityname, MetaDataProvider metaDataProvider) {
+	public String getTreeViewDescription(MasterDataVO mdvo, String entityname, MetaDataProvider metaDataProvider) {
 		return getTreeViewDescription(mdvo.getFields(), entityname, metaDataProvider);
 	}
 
-	public static String getTreeViewDescription(GenericObjectVO govo, String entityname, MetaDataProvider metaDataProvider) {
+	public String getTreeViewDescription(GenericObjectVO govo, String entityname, MetaDataProvider metaDataProvider) {
 		Map<String, Object> values = new HashMap<String, Object>();
 		for (DynamicAttributeVO att : govo.getAttributes()) {
 			values.put(metaDataProvider.getEntityField(entityname, att.getAttributeId().longValue()).getField(), att.getValue());
@@ -400,11 +415,11 @@ public class CommonLocaleDelegate {
 		return getTreeViewDescription(values, entityname, metaDataProvider);
 	}
 
-	public static String getTreeViewDescription(EntityObjectVO eovo, String entityname, MetaDataProvider metaDataProvider) {
+	public String getTreeViewDescription(EntityObjectVO eovo, String entityname, MetaDataProvider metaDataProvider) {
 		return getTreeViewDescription(eovo.getFields(), entityname, metaDataProvider);
 	}
 
-	public static String getTreeViewDescription(Collectable clct, String entityname, MetaDataProvider metaDataProvider) {
+	public String getTreeViewDescription(Collectable clct, String entityname, MetaDataProvider metaDataProvider) {
 		Map<String, Object> values = new HashMap<String, Object>();
 		for (EntityFieldMetaDataVO field : metaDataProvider.getAllEntityFieldsByEntity(entityname).values()) {
 			CollectableField value = clct.getField(field.getField());
@@ -418,7 +433,7 @@ public class CommonLocaleDelegate {
 		return getTreeViewLabel(values, entityname, metaDataProvider);
 	}
 
-	public static String getTreeViewDescription(Map<String, Object> values, String entityname, MetaDataProvider metaDataProvider) {
+	public String getTreeViewDescription(Map<String, Object> values, String entityname, MetaDataProvider metaDataProvider) {
 		String result = getTreeViewDescriptionFromMetaDataVO(metaDataProvider.getEntity(entityname));
 		if (result != null) {
 			return replace(result, values, entityname, metaDataProvider);
@@ -440,7 +455,7 @@ public class CommonLocaleDelegate {
 		}
 	}
 
-	private static String replace(String input, Map<String, Object> values, String entityname, MetaDataProvider metaDataProvider) {
+	private String replace(String input, Map<String, Object> values, String entityname, MetaDataProvider metaDataProvider) {
 		int sidx = 0;
 		while ((sidx = input.indexOf("${", sidx)) >= 0) {
 			int eidx = input.indexOf("}", sidx);
@@ -458,7 +473,7 @@ public class CommonLocaleDelegate {
 		return input;
 	}
 
-	private static String findReplacement(String sKey, String sFlag, Map<String, Object> values, String entityname, MetaDataProvider metaDataProvider) {
+	private String findReplacement(String sKey, String sFlag, Map<String, Object> values, String entityname, MetaDataProvider metaDataProvider) {
 		String sResIfNull = "";
 		if(sFlag != null) {
 			for(StringTokenizer st = new StringTokenizer(sFlag, ":"); st.hasMoreElements(); ) {
@@ -485,7 +500,7 @@ public class CommonLocaleDelegate {
 		}
 	}
 
-	public static String getResource(String resId, String sText) {
+	public String getResource(String resId, String sText) {
 		if (resId != null && keyLookup != null) {
 			return getMessage(resId, sText);
 		}
@@ -496,7 +511,7 @@ public class CommonLocaleDelegate {
 	 * Given a map from locale tags to translations, this method returns
 	 * the best match; or null.
 	 */
-	public static String selectBestTranslation(Map<String, String> map) {
+	public String selectBestTranslation(Map<String, String> map) {
 		for (LocaleInfo li : getLocaleCandidates()) {
 			String tag = li.getTag();
 			String text = map.get(tag);
@@ -507,11 +522,11 @@ public class CommonLocaleDelegate {
 		return null;
 	}
 
-	public static boolean isResourceId(String id) {
+	public boolean isResourceId(String id) {
 		return keyLookup.isResource(id);
 	}
 
-	public static String getMessageFromResource(String text) {
+	public String getMessageFromResource(String text) {
 		String resText = null;
 
 		try {
@@ -536,8 +551,8 @@ public class CommonLocaleDelegate {
 				String param = m.group(1);
 
 				try {
-					if (param.length() > 0 && CommonLocaleDelegate.isResourceId(param.trim()))
-						param = CommonLocaleDelegate.getText(param.trim(),null);
+					if (param.length() > 0 && isResourceId(param.trim()))
+						param = getText(param.trim(),null);
 				}
 				catch (RuntimeException e) {
 					// param seems to be no resourceId

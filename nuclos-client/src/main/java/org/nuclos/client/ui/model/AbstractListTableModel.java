@@ -25,13 +25,20 @@ import java.util.List;
 
 import javax.swing.table.AbstractTableModel;
 
+import org.nuclos.common2.CommonLocaleDelegate;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
+
 /**
  * Abstract TableModel which manages its rows as List of type R.
  * @param R row type
  */
+@Configurable
 public abstract class AbstractListTableModel<R> extends AbstractTableModel implements Iterable<R> {
 
 	private List<R> lstRows;
+	
+	private CommonLocaleDelegate cld;
 
 	public AbstractListTableModel() {
 		setRows(new ArrayList<R>());
@@ -44,6 +51,15 @@ public abstract class AbstractListTableModel<R> extends AbstractTableModel imple
 	 */
 	public AbstractListTableModel(List<R> lstRows) {
 		setRows(lstRows);
+	}
+	
+	@Autowired
+	void setCommonLocaleDelegate(CommonLocaleDelegate cld) {
+		this.cld = cld;
+	}
+	
+	protected CommonLocaleDelegate getCommonLocaleDelegate() {
+		return cld;
 	}
 
 	public void setRows(List<R> lstRows) {

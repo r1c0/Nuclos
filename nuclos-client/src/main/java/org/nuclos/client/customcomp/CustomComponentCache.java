@@ -22,6 +22,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.annotation.PostConstruct;
 import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.swing.SwingUtilities;
@@ -33,7 +34,10 @@ import org.nuclos.common.JMSConstants;
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.server.customcomp.valueobject.CustomComponentVO;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
 
+@Configurable
 public class CustomComponentCache {
 	
 	private static final Logger LOG = Logger.getLogger(CustomComponentCache.class);
@@ -51,8 +55,12 @@ public class CustomComponentCache {
 		}
 		return singleton;
 	}
+	
+	//
 
 	private Map<String, CustomComponentVO> customComponents;
+	
+	private TopicNotificationReceiver tnr;
 	
 	private final MessageListener messagelistener = new MessageListener() {
 		@Override
@@ -62,7 +70,7 @@ public class CustomComponentCache {
 				@Override
 				public void run() {
 					try {
-						Main.getMainController().refreshMenus();
+						Main.getInstance().getMainController().refreshMenus();
 					}
 					catch (Exception e) {
 						LOG.error("onMessage failed: " + e, e);
@@ -73,8 +81,17 @@ public class CustomComponentCache {
 	};
 
 	private CustomComponentCache() {
-		TopicNotificationReceiver.subscribe(JMSConstants.TOPICNAME_CUSTOMCOMPONENTCACHE, messagelistener);
+	}
+	
+	@PostConstruct
+	void init() {
+		tnr.subscribe(JMSConstants.TOPICNAME_CUSTOMCOMPONENTCACHE, messagelistener);
 		revalidate();
+	}
+	
+	@Autowired
+	void setTopicNotificationReceiver(TopicNotificationReceiver tnr) {
+		this.tnr = tnr;
 	}
 	
 	public synchronized Collection<CustomComponentVO> getAll() {

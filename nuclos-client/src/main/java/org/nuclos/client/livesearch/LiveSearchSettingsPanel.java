@@ -71,7 +71,8 @@ public class LiveSearchSettingsPanel extends JPanel {
 			Errors.getInstance().showExceptionDialog(this, "Exception while reading the preferences.", e);
 		}
 
-		JLabel label = new JLabel(CommonLocaleDelegate.getResource("livesearch.settings.text", ""));
+		JLabel label = new JLabel(CommonLocaleDelegate.getInstance().getResource(
+				"livesearch.settings.text", ""));
 		label.setBorder(new EmptyBorder(20, 20, 20, 20));
 		add(label, BorderLayout.NORTH);
 

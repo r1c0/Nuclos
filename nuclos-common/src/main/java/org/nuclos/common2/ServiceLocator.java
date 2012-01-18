@@ -32,6 +32,9 @@ import org.springframework.context.ApplicationContext;
  * <br>
  * <br>Created by Novabit Informationssysteme GmbH
  * <br>Please visit <a href="http://www.novabit.de">www.novabit.de</a>
+ * 
+ * @deprecated All services are in the spring context - please use spring injection.
+ * 		This is especially important on the client. (tp)
  *
  * @author	<a href="mailto:Christoph.Radig@novabit.de">Christoph.Radig</a>
  * @version 01.00.00
@@ -39,6 +42,10 @@ import org.springframework.context.ApplicationContext;
 public class ServiceLocator {
 
 	private static final Logger LOG = Logger.getLogger(ServiceLocator.class);
+	
+	private static ServiceLocator INSTANCE;
+	
+	//
 
 	private boolean enableLoggingProxy;
 	private String  stackTraceMatchRegexp;
@@ -49,13 +56,15 @@ public class ServiceLocator {
 	protected ServiceLocator() throws CommonFatalException {
 		enableLoggingProxy = Boolean.valueOf(System.getProperty("loggingproxy.enable", "false"));
 		stackTraceMatchRegexp = StringUtils.nullIfEmpty(System.getProperty("loggingproxy.tracematch"));
+		INSTANCE = this;
 	}
 
 	/**
 	 * @return the one (and only) instance of ServiceLocator
 	 */
 	public static ServiceLocator getInstance() throws CommonFatalException {
-		return (ServiceLocator) SpringApplicationContextHolder.getBean("serviceLocator");
+		// return (ServiceLocator) SpringApplicationContextHolder.getBean("serviceLocator");
+		return INSTANCE;
 	}
 
 	private <T> T getFacade(Class<T> c, String bean, boolean server) {
@@ -79,8 +88,9 @@ public class ServiceLocator {
 			}
 			return result;
 		}
-		catch(Exception ex) {
-			throw new NuclosFatalException(ex);
+		catch (Exception ex) {
+			throw new NuclosFatalException("Can't get remote facade for " 
+					+ bean + " (" + c.getName() + ") server=" + server, ex);
 		}
 	}
 
@@ -93,11 +103,8 @@ public class ServiceLocator {
 			else if (c.getSimpleName().endsWith("Remote")) {
 				isLocal = false;
 			}
-
 			String springBeanName = c.getSimpleName().substring(0, c.getSimpleName().lastIndexOf("Facade")) + "Service";
-
 			springBeanName = org.apache.commons.lang.StringUtils.uncapitalize(springBeanName);
-
 			return getFacade(c, springBeanName, isLocal);
 		}
 		catch(Exception ex) {

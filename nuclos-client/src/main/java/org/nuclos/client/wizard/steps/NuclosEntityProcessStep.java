@@ -16,7 +16,6 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.wizard.steps;
 
-import static org.nuclos.common2.CommonLocaleDelegate.getMessage;
 import info.clearthought.layout.TableLayout;
 
 import java.awt.Component;
@@ -152,12 +151,13 @@ public class NuclosEntityProcessStep extends NuclosEntityAbstractStep {
 
 	@Override
 	public void applyState() throws InvalidStateException {
+		final CommonLocaleDelegate cld = CommonLocaleDelegate.getInstance();
 		List<CollectableEntityObject> subformdata;
 		try {
 			subformdata = subFormController.getCollectables(true, true, true);
 		} catch (CommonValidationException e1) {
-			JOptionPane.showMessageDialog(this, CommonLocaleDelegate.getMessageFromResource(e1.getMessage()),
-	    			getMessage("wizard.step.processes.error.title", "Achtung!"), JOptionPane.OK_OPTION);
+			JOptionPane.showMessageDialog(this, cld.getMessageFromResource(e1.getMessage()),
+	    			cld.getMessage("wizard.step.processes.error.title", "Achtung!"), JOptionPane.OK_OPTION);
  	        throw new InvalidStateException();
 		}
 		Collection<EntityObjectVO> processes = CollectionUtils.transform(subformdata, new Transformer<CollectableEntityObject, EntityObjectVO>() {
@@ -171,13 +171,15 @@ public class NuclosEntityProcessStep extends NuclosEntityAbstractStep {
 		for (EntityObjectVO process : processes) {
 			String name = process.getField("name");
 			if (StringUtils.isNullOrEmpty(name)) {
-				JOptionPane.showMessageDialog(this, getMessage("wizard.step.processes.error.name.mandatory", "Bitte definieren Sie für jede Aktion einen Namen."),
-		    			getMessage("wizard.step.processes.error.title", "Achtung!"), JOptionPane.OK_OPTION);
+				JOptionPane.showMessageDialog(this, cld.getMessage(
+						"wizard.step.processes.error.name.mandatory", "Bitte definieren Sie für jede Aktion einen Namen."),
+		    			cld.getMessage("wizard.step.processes.error.title", "Achtung!"), JOptionPane.OK_OPTION);
 	 	        throw new InvalidStateException();
 			}
 			if (!names.add(name)) {
-				JOptionPane.showMessageDialog(this, getMessage("wizard.step.processes.error.name.unique", "Der Name einer Aktion muss eindeutig sein ({0}).", name),
-		    			getMessage("wizard.step.processes.error.title", "Achtung!"), JOptionPane.OK_OPTION);
+				JOptionPane.showMessageDialog(this, cld.getMessage(
+						"wizard.step.processes.error.name.unique", "Der Name einer Aktion muss eindeutig sein ({0}).", name),
+		    			cld.getMessage("wizard.step.processes.error.title", "Achtung!"), JOptionPane.OK_OPTION);
 	 	        throw new InvalidStateException();
 			}
 		}
@@ -201,8 +203,11 @@ public class NuclosEntityProcessStep extends NuclosEntityAbstractStep {
 						MetaDataDelegate.getInstance().tryRemoveProcess(process.getEntityObjectVO());
 					}
 					catch (NuclosBusinessException e) {
-						JOptionPane.showMessageDialog(NuclosEntityProcessStep.this, getMessage("wizard.step.processes.error.removeprocess", "Aktion {0} ist bereits in Verwendung und kann nicht entfernt werden.", process.getField("name")),
-				    			getMessage("wizard.step.processes.error.title", "Achtung!"), JOptionPane.OK_OPTION);
+						JOptionPane.showMessageDialog(NuclosEntityProcessStep.this, 
+								getCommonLocaleDelegate().getMessage(
+										"wizard.step.processes.error.removeprocess", "Aktion {0} ist bereits in Verwendung und kann nicht entfernt werden.", process.getField("name")),
+								getCommonLocaleDelegate().getMessage(
+										"wizard.step.processes.error.title", "Achtung!"), JOptionPane.OK_OPTION);
 						return;
 					}
 				}
@@ -222,7 +227,6 @@ public class NuclosEntityProcessStep extends NuclosEntityAbstractStep {
 			result.getEntityObjectVO().setId(i);
 			return result;
 		}
-
 
 	}
 }

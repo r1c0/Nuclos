@@ -82,7 +82,8 @@ public class NucletExplorerView extends DefaultExplorerView implements ExplorerV
 		
 		btnAddContent.setFocusable(false);
 		
-		btnAddContent.setAction(new AbstractAction(CommonLocaleDelegate.getMessage("NucletExplorerNode.1", "Zuweisen"), Icons.getInstance().getIconRelate()) {
+		btnAddContent.setAction(new AbstractAction(CommonLocaleDelegate.getInstance().getMessage(
+				"NucletExplorerNode.1", "Zuweisen"), Icons.getInstance().getIconRelate()) {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -110,7 +111,8 @@ public class NucletExplorerView extends DefaultExplorerView implements ExplorerV
 
 		selectCtrl.setModel(ro);
 		final boolean userPressedOk = selectCtrl.run(
-				CommonLocaleDelegate.getMessage("NucletExplorerNode.2", "Nuclet Zuweisung"));
+				CommonLocaleDelegate.getInstance().getMessage(
+						"NucletExplorerNode.2", "Nuclet Zuweisung"));
 		final NucletContentSelectObjectPanel selectPanel = (NucletContentSelectObjectPanel) selectCtrl.getPanel();
 		PreferencesUtils.putRectangle(prefs, PREFS_NODE_ADDREMOVE_DIALOG_SIZE, selectPanel.getBounds());
 
@@ -167,7 +169,7 @@ public class NucletExplorerView extends DefaultExplorerView implements ExplorerV
 		Integer resId = MetaDataClientProvider.getInstance().getEntity(entity).getResourceId();
 		String nuclosResource = MetaDataClientProvider.getInstance().getEntity(entity).getNuclosResource();
 		if(resId != null) {
-			ImageIcon standardIcon = ResourceCache.getIconResource(resId);
+			ImageIcon standardIcon = ResourceCache.getInstance().getIconResource(resId);
 			return MainFrame.resizeAndCacheTabIcon(standardIcon);
 		} else if (nuclosResource != null){
 			ImageIcon nuclosIcon = NuclosResourceCache.getNuclosResourceIcon(nuclosResource);
@@ -181,6 +183,6 @@ public class NucletExplorerView extends DefaultExplorerView implements ExplorerV
 	}
 
 	private ExplorerController getExplorerController() {
-		return Main.getMainController().getExplorerController();
+		return Main.getInstance().getMainController().getExplorerController();
 	}
 }

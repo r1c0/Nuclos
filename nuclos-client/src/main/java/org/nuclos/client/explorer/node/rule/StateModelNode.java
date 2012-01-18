@@ -117,11 +117,13 @@ public class StateModelNode extends AbstractRuleTreeNode {
 				}
 			}
 			catch (CommonFinderException ex) {
-				final String sMessage = CommonLocaleDelegate.getMessage("DirectoryRuleNode.5","Fehler beim Erzeugen des Baumes");
+				final String sMessage = getCommonLocaleDelegate().getMessage(
+						"DirectoryRuleNode.5","Fehler beim Erzeugen des Baumes");
 				Errors.getInstance().showExceptionDialog(null, sMessage, ex);
 			}
 			catch (CommonBusinessException ex) {
-				final String sMessage = CommonLocaleDelegate.getMessage("DirectoryRuleNode.5","Fehler beim Erzeugen des Baumes");
+				final String sMessage = getCommonLocaleDelegate().getMessage(
+						"DirectoryRuleNode.5","Fehler beim Erzeugen des Baumes");
 				Errors.getInstance().showExceptionDialog(null, sMessage, ex);
 			}
 		}
@@ -157,11 +159,13 @@ public class StateModelNode extends AbstractRuleTreeNode {
 				}
 			}
 			catch (CommonFinderException ex) {
-				final String sMessage = CommonLocaleDelegate.getMessage("DirectoryRuleNode.5","Fehler beim Erzeugen des Baumes");
+				final String sMessage = getCommonLocaleDelegate().getMessage(
+						"DirectoryRuleNode.5","Fehler beim Erzeugen des Baumes");
 				Errors.getInstance().showExceptionDialog(null, sMessage, ex);
 			}
 			catch (CommonBusinessException ex) {
-				final String sMessage = CommonLocaleDelegate.getMessage("DirectoryRuleNode.5","Fehler beim Erzeugen des Baumes");
+				final String sMessage = getCommonLocaleDelegate().getMessage(
+						"DirectoryRuleNode.5","Fehler beim Erzeugen des Baumes");
 				Errors.getInstance().showExceptionDialog(null, sMessage, ex);
 			}
 		}
@@ -185,7 +189,8 @@ public class StateModelNode extends AbstractRuleTreeNode {
 
 		final String startNumText = (startNumeral == null) ? "initial" : startNumeral.toString();
 
-		return CommonLocaleDelegate.getMessage("StateModelNode.1", "Status\u00fcbergang ") + startNumText + " -> " + endNumeral;
+		return CommonLocaleDelegate.getInstance().getMessage(
+				"StateModelNode.1", "Status\u00fcbergang ") + startNumText + " -> " + endNumeral;
 	}
 
 	public StateModelVO getStateModelVo() {

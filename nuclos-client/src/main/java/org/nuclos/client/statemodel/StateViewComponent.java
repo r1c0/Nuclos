@@ -296,7 +296,8 @@ public class StateViewComponent extends JPanel {
 		final JPopupMenu popup = new JPopupMenu();
 
 		if (mpSubsequentStatesAction.size() > 0) {
-			JLabel lbl = new JLabel(CommonLocaleDelegate.getResource("StateViewComponent.01", "M\u00f6gliche Statuswechsel:"));
+			JLabel lbl = new JLabel(CommonLocaleDelegate.getInstance().getResource(
+					"StateViewComponent.01", "M\u00f6gliche Statuswechsel:"));
 			lbl.setFont(lbl.getFont().deriveFont(Font.BOLD));
 			popup.add(lbl);
 		}

@@ -78,7 +78,6 @@ import org.nuclos.common.collect.collectable.CollectableUtils;
 import org.nuclos.common.collect.collectable.DefaultCollectableEntityProvider;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Predicate;
-import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.CommonRunnable;
 import org.nuclos.common2.PreferencesUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
@@ -105,7 +104,7 @@ public class GenericObjectTaskView extends TaskView implements IMainFrameTabClos
 	private final JMenuItem btnPrint = new JMenuItem();
 	private final JMenuItem btnRename = new JMenuItem();
 
-	private final PopupButton popupExtras = new PopupButton(CommonLocaleDelegate.getMessage("PopupButton.Extras","Extras"));
+	private final PopupButton popupExtras = new PopupButton(getCommonLocaleDelegate().getMessage("PopupButton.Extras","Extras"));
 
 	private final JScrollPane scrlpn = new JScrollPane();
 	private final JTable tbl = new CommonJTable();
@@ -133,7 +132,8 @@ public class GenericObjectTaskView extends TaskView implements IMainFrameTabClos
 		this.tfStatusBar.setMinimumSize(new Dimension(0, this.tfStatusBar.getPreferredSize().height));
 
 		toolbar.add(btnRefresh);
-		btnRefresh.setToolTipText(CommonLocaleDelegate.getMessage("PersonalTaskController.3","Aufgabenliste aktualisieren"));
+		btnRefresh.setToolTipText(getCommonLocaleDelegate().getMessage(
+				"PersonalTaskController.3","Aufgabenliste aktualisieren"));
 		this.popupExtras.add(btnPrint);
 		
 		this.popupExtras.add(btnRename);
@@ -245,7 +245,8 @@ public class GenericObjectTaskView extends TaskView implements IMainFrameTabClos
 				} else {
 					result.setSortKeys(Collections.<SortKey>emptyList(), false);
 					throw new CommonBusinessException(
-						CommonLocaleDelegate.getMessage("GenericObjectTaskView.1", "Das Suchergebnis kann nicht nach Unterformularspalten sortiert werden."));
+							getCommonLocaleDelegate().getMessage(
+									"GenericObjectTaskView.1", "Das Suchergebnis kann nicht nach Unterformularspalten sortiert werden."));
 				}
 			}
 		});
@@ -308,7 +309,8 @@ public class GenericObjectTaskView extends TaskView implements IMainFrameTabClos
 				PreferencesUtils.writeSortKeysToPrefs(getPreferences(), ((SortableCollectableTableModel<?>) getTableModel()).getSortKeys());
 			} catch (PreferencesException e1) {
 				Errors.getInstance().showExceptionDialog(this.getParent(), 
-					CommonLocaleDelegate.getMessage("gotaskview.error.save.sortorder", "Fehler beim Abspeichern der Sortierreihenfolge des Suchfilters."), e1);
+						getCommonLocaleDelegate().getMessage(
+								"gotaskview.error.save.sortorder", "Fehler beim Abspeichern der Sortierreihenfolge des Suchfilters."), e1);
 			}
 		}
 	}
@@ -372,7 +374,7 @@ public class GenericObjectTaskView extends TaskView implements IMainFrameTabClos
 				}
 				else {
 					final CollectableMasterDataWithDependants clctmdSelected = (CollectableMasterDataWithDependants) clctSelected;
-					Main.getMainController().showDetails(clctmdSelected.getCollectableEntity().getName(), clctmdSelected.getId());
+					Main.getInstance().getMainController().showDetails(clctmdSelected.getCollectableEntity().getName(), clctmdSelected.getId());
 				}					
 			}
 		}

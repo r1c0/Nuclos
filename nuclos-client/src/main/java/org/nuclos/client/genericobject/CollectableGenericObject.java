@@ -135,7 +135,8 @@ public class CollectableGenericObject extends AbstractCollectable implements Rem
 			}
 			final CollectableEntityField clctef = this.getCollectableEntity().getEntityField(sFieldName);
 			if (clctef == null) {
-				throw new NuclosFatalException(CommonLocaleDelegate.getMessage("CollectableGenericObject.1", "Unbekanntes Attribut: {0}", sFieldName));
+				throw new NuclosFatalException(
+						CommonLocaleDelegate.getInstance().getMessage("CollectableGenericObject.1", "Unbekanntes Attribut: {0}", sFieldName));
 			}
 			result = new CollectableGenericObjectAttributeField(attrvo, clctef.getFieldType());
 			/** @todo reactivate cache? */
@@ -189,7 +190,7 @@ public class CollectableGenericObject extends AbstractCollectable implements Rem
 		}
 
 		assert this.getField(sFieldName).equals(clctfValue) :
-			CommonLocaleDelegate.getMessage("CollectableGenericObject.2", 
+			CommonLocaleDelegate.getInstance().getMessage("CollectableGenericObject.2", 
 				"Das Feld {0} in der Entit\u00e4t {1} enth\u00e4lt den Wert {2} (erwartet: {3})", 
 				sFieldName, getCollectableEntity().getName(), this.getField(sFieldName), clctfValue); 
 //			"Das Feld " + sFieldName + " in der Entit\u00e4t " + getCollectableEntity().getName() + " enth\u00e4lt den Wert " +

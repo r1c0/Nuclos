@@ -46,7 +46,6 @@ import org.nuclos.common.collect.collectable.CollectableField;
 import org.nuclos.common.collect.collectable.CollectableValueField;
 import org.nuclos.common.collect.exception.CollectableFieldFormatException;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
-import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.exception.CommonFatalException;
 
 /**
@@ -164,7 +163,7 @@ public class CollectableCheckBox extends AbstractCollectableComponent {
 		}
 		final JMenuItem miClear = CollectableCheckBox.this.newClearEntry();
 		if (CollectableCheckBox.this.isSearchComponent()) {
-			miClear.setText(CommonLocaleDelegate.getMessage("RootNode.2", "<Alle>"));
+			miClear.setText(getCommonLocaleDelegate().getMessage("RootNode.2", "<Alle>"));
 		}
 		result.add(miClear);
 		return result;

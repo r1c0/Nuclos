@@ -18,9 +18,11 @@ package org.nuclos.client.common;
 
 import java.lang.ref.WeakReference;
 import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+import javax.annotation.PostConstruct;
 import javax.jms.ConnectionFactory;
 import javax.jms.JMSException;
 import javax.jms.Message;
@@ -36,7 +38,9 @@ import org.nuclos.client.jms.MultiMessageListenerContainer;
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.SpringApplicationContextHolder;
 import org.nuclos.common2.CommonLocaleDelegate;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.listener.SimpleMessageListenerContainer;
+import org.springframework.stereotype.Component;
 
 /**
  * Receives topic based JMS messages in the client.
@@ -47,36 +51,52 @@ import org.springframework.jms.listener.SimpleMessageListenerContainer;
  * @author	<a href="mailto:Christoph.Radig@novabit.de">Christoph.Radig</a>
  * @version 01.00.00
  */
-
+@Component
 public class TopicNotificationReceiver {
 
 	private static final Logger LOG = Logger.getLogger(TopicNotificationReceiver.class);
+	
+	private static TopicNotificationReceiver INSTANCE;
 
-	private static Context ctx;
-	private static TopicConnection topicconn;
+	private Context ctx;
+	private TopicConnection topicconn;
+	
+	private List<TopicInfo> infos = new ArrayList<TopicInfo>();
+	
+	// private CommonLocaleDelegate cld;
+	
+	private ConnectionFactory jmsFactory;
 
 	/**
 	 * list that holds all registered listeners for this topic receiver
 	 */
-	private static List<WeakReferenceMessageListener> weakmessagelistener = new LinkedList<WeakReferenceMessageListener>();
+	private List<WeakReferenceMessageListener> weakmessagelistener = new LinkedList<WeakReferenceMessageListener>();
 
-	static {
+	TopicNotificationReceiver() {
+	}
+	
+	@PostConstruct
+	void init() {
 		try {
-			final ConnectionFactory connectionFactory = (ConnectionFactory) SpringApplicationContextHolder.getBean("jmsFactory");
-			topicconn = (TopicConnection) connectionFactory.createConnection();
+			// final ConnectionFactory connectionFactory = (ConnectionFactory) SpringApplicationContextHolder.getBean("jmsFactory");
+			topicconn = (TopicConnection) jmsFactory.createConnection();
 
 
 			ShutdownActions.getInstance().registerShutdownAction(ShutdownActions.SHUTDOWNORDER_JMS_TOPICS,
 				new Thread() {
 				@Override
 				public void run() {
-					TopicNotificationReceiver.unsubscribeAll();
+					unsubscribeAll();
 					try {
 						topicconn.close();
 						topicconn = null;
 					}
 					catch(JMSException e) {
-						throw new NuclosFatalException(CommonLocaleDelegate.getMessage("TopicNotificationReceiver.2", "Die JMS-Topic-Verbindung konnte nicht abgebaut werden."), e);
+						throw new NuclosFatalException("Can't shutdown JMS connection", e);
+						/*
+						throw new NuclosFatalException(cld.getMessage(
+								"TopicNotificationReceiver.2", "Die JMS-Topic-Verbindung konnte nicht abgebaut werden."), e);
+						 */
 					}
 				}
 			});
@@ -84,8 +104,27 @@ public class TopicNotificationReceiver {
 			topicconn.start();
 		}
 		catch (JMSException e) {
-			throw new NuclosFatalException(CommonLocaleDelegate.getMessage("TopicNotificationReceiver.3", "Die JMS-Topic-Verbindung konnte nicht aufgebaut werden."), e);
+			throw new NuclosFatalException("Can't establish JMS connection", e);
+			/*
+			throw new NuclosFatalException(cld.getMessage(
+					"TopicNotificationReceiver.3", "Die JMS-Topic-Verbindung konnte nicht aufgebaut werden."), e);
+			 */
 		}
+		INSTANCE = this;
+	}
+	
+	@Autowired
+	void setConnectionFactory(ConnectionFactory jmsFactory) {
+		this.jmsFactory = jmsFactory;
+	}
+	
+	// @Autowired
+	void setCommonLocaleDelegate(CommonLocaleDelegate cld) {
+		// this.cld = cld;
+	}
+	
+	public static TopicNotificationReceiver getInstance() {
+		return INSTANCE;
 	}
 
 	/**
@@ -94,10 +133,17 @@ public class TopicNotificationReceiver {
 	 * @param messageSelector
 	 * @param messagelistener
 	 */
-	public static void subscribe(String sTopicName, String correlationId, MessageListener messagelistener) {
-		WeakReferenceMessageListener weakrefmsglistener = new WeakReferenceMessageListener(sTopicName, correlationId, messagelistener);
-		weakrefmsglistener.subscribe();
-		weakmessagelistener.add(weakrefmsglistener);
+	public void subscribe(String sTopicName, String correlationId, MessageListener messagelistener) {
+		infos.add(new TopicInfo(sTopicName, correlationId, messagelistener));
+	}
+	
+	public synchronized void realSubscribe() {
+		for (TopicInfo i: infos) {
+			WeakReferenceMessageListener weakrefmsglistener = new WeakReferenceMessageListener(i);
+			weakrefmsglistener.subscribe();
+			weakmessagelistener.add(weakrefmsglistener);
+		}
+		infos.clear();
 	}
 
 	/**
@@ -105,14 +151,14 @@ public class TopicNotificationReceiver {
 	 * @param sTopicName
 	 * @param messagelistener
 	 */
-	public static void subscribe(String sTopicName, MessageListener messagelistener) {
+	public void subscribe(String sTopicName, MessageListener messagelistener) {
 		subscribe(sTopicName, null, messagelistener);
 	}
 
 	/**
 	 * unsubscribes all registered JMS topics
 	 */
-	private static void unsubscribeAll() {
+	private void unsubscribeAll() {
 		List<WeakReferenceMessageListener> tmp = new LinkedList<WeakReferenceMessageListener>(weakmessagelistener);
 		for (WeakReferenceMessageListener ref : tmp) {
 			unsubscribe(ref.getReference().get());
@@ -123,7 +169,7 @@ public class TopicNotificationReceiver {
 	 * unsubscribes the given <code>MessageListener<code> from the topic receiver
 	 * @param messagelistener
 	 */
-	public static void unsubscribe(MessageListener messagelistener) {
+	public void unsubscribe(MessageListener messagelistener) {
 		List<WeakReferenceMessageListener> tmp = new LinkedList<WeakReferenceMessageListener>(weakmessagelistener);
 		for (WeakReferenceMessageListener ref : tmp) {
 			if (ref.getReference().get() == messagelistener) {
@@ -140,17 +186,26 @@ public class TopicNotificationReceiver {
 	 * <code>TopicSession</code> and <code>TopicSubscriber</code> which are closed, when the reference
 	 * does not exists any more
 	 */
+	// @Configurable
 	private static class WeakReferenceMessageListener implements MessageListener {
+		
 		private String topicname;
 		private String correlationId;
 		private WeakReference<MessageListener> reference;
 		private TopicSession topicsession;
 		private TopicSubscriber topicsubscriber;
+		
+		// private CommonLocaleDelegate cld;
 
-		public WeakReferenceMessageListener(String topicname, String correlationId, MessageListener delegate) {
-			this.topicname = topicname;
-			this.correlationId = correlationId;
-			this.reference = new WeakReference<MessageListener>(delegate);
+		public WeakReferenceMessageListener(TopicInfo info) {
+			this.topicname = info.getTopic();
+			this.correlationId = info.getCorrelationId();
+			this.reference = new WeakReference<MessageListener>(info.getMessageListener());
+		}
+		
+		// @Autowired
+		void setCommonLocaleDelegate(CommonLocaleDelegate cld) {
+			// this.cld = cld;
 		}
 
 		public WeakReference<MessageListener> getReference() {
@@ -176,7 +231,7 @@ public class TopicNotificationReceiver {
 				}
 				else if (bean instanceof Topic){
 					Topic topic = (Topic) bean;
-					this.topicsession = topicconn.createTopicSession(false, TopicSession.AUTO_ACKNOWLEDGE);
+					this.topicsession = INSTANCE.topicconn.createTopicSession(false, TopicSession.AUTO_ACKNOWLEDGE);
 					String idSelector = MessageFormat.format("JMSCorrelationID = ''{0}''", correlationId);
 					this.topicsubscriber = topicsession.createSubscriber(topic, idSelector, false);
 					this.topicsubscriber.setMessageListener(this);
@@ -186,7 +241,11 @@ public class TopicNotificationReceiver {
 				}
 			}
 			catch (Exception ex) {
-				throw new NuclosFatalException(CommonLocaleDelegate.getMessage("TopicNotificationReceiver.4", "Der JMS-Abonnent f\u00fcr das Topic {0} konnte nicht registriert werden.", topicname), ex);
+				throw new NuclosFatalException("Can't subscribe to JMS topic " + topicname, ex);
+				/*
+				throw new NuclosFatalException(cld.getMessage(
+						"TopicNotificationReceiver.4", "Der JMS-Abonnent f\u00fcr das Topic {0} konnte nicht registriert werden.", topicname), ex);
+				 */
 			}
 		}
 
@@ -211,7 +270,11 @@ public class TopicNotificationReceiver {
 				}
 			}
 			catch(Exception e) {
-				throw new NuclosFatalException(CommonLocaleDelegate.getMessage("TopicNotificationReceiver.4", "Der JMS-Abonnent f\u00fcr das Topic {0} konnte nicht registriert werden.", topicname), e);
+				throw new NuclosFatalException("Can't unsubscribe to JMS topic " + topicname, e);
+				/*
+				throw new NuclosFatalException(cld.getMessage(
+						"TopicNotificationReceiver.4", "Der JMS-Abonnent f\u00fcr das Topic {0} konnte nicht registriert werden.", topicname), e);
+				 */
 			}
 		}
 
@@ -226,5 +289,31 @@ public class TopicNotificationReceiver {
 				unsubscribe();
 			}
 		}
+	}
+	
+	private static class TopicInfo {
+		
+		private final String sTopicName;
+		private final String correlationId; 
+		private MessageListener messagelistener;
+		
+		private TopicInfo(String sTopicName, String correlationId, MessageListener messagelistener) {
+			this.sTopicName = sTopicName;
+			this.correlationId = correlationId;
+			this.messagelistener = messagelistener;
+		}
+		
+		public String getTopic() {
+			return sTopicName;
+		}
+		
+		public String getCorrelationId() {
+			return correlationId;
+		}
+		
+		public MessageListener getMessageListener() {
+			return messagelistener;
+		}
+		
 	}
 }	// class TopicNotificationReceiver

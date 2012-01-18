@@ -29,6 +29,8 @@ import org.nuclos.client.resource.ResourceCache;
 import org.nuclos.client.ui.Icons;
 import org.nuclos.common.ApplicationProperties;
 import org.nuclos.common2.LangUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 /**
  * Singleton containing Nucleus specific icons.
@@ -38,29 +40,36 @@ import org.nuclos.common2.LangUtils;
  * @author	<a href="mailto:Christoph.Radig@novabit.de">Christoph.Radig</a>
  * @version 01.00.00
  */
+@Component
 public class NuclosIcons {
 	
 	private static final Logger LOG = Logger.getLogger(NuclosIcons.class);
 
-	private static NuclosIcons singleton;
+	private static NuclosIcons INSTANCE;
+	
+	//
+	
+	private ResourceCache resourceCache;
 
 	/**
 	 * icon cache
 	 */
 	private final Map<String, ImageIcon> mpIcons = new HashMap<String, ImageIcon>();
 
-	private NuclosIcons() {
-		// do nothing
+	NuclosIcons() {
+		INSTANCE = this;
+	}
+	
+	@Autowired
+	void setResourceCache(ResourceCache resourceCache) {
+		this.resourceCache = resourceCache;
 	}
 	
 	/**
 	 * @return the one and only instance of <code>Icons</code>
 	 */
-	public static synchronized NuclosIcons getInstance() {
-		if (singleton == null) {
-			singleton = new NuclosIcons();
-		}
-		return singleton;
+	public static NuclosIcons getInstance() {
+		return INSTANCE;
 	}
 	
 	public Icon getIconCustomer() {
@@ -162,7 +171,7 @@ public class NuclosIcons {
 	}
 	
 	private ImageIcon getResource(String resourceName) {
-		return ResourceCache.getIconResource(resourceName);
+		return resourceCache.getIconResource(resourceName);
 	}
 	
 }	// class NuclosIcons

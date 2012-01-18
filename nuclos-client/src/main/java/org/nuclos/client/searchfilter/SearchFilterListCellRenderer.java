@@ -37,17 +37,19 @@ public class SearchFilterListCellRenderer extends DefaultListCellRenderer {
 			final SearchFilter filter = (SearchFilter) oValue;
 
 			if (result instanceof JLabel && !StringUtils.isNullOrEmpty(filter.getLabelResourceId())) {
-				((JLabel) result).setText(CommonLocaleDelegate.getTextFallback(filter.getLabelResourceId(), filter.getName()));
+				((JLabel) result).setText(CommonLocaleDelegate.getInstance().getTextFallback(
+						filter.getLabelResourceId(), filter.getName()));
 			}
 
 			if (!StringUtils.isNullOrEmpty(filter.getDescriptionResourceId())) {
-				sToolTip = CommonLocaleDelegate.getTextFallback(filter.getDescriptionResourceId(), filter.getDescriptionResourceId());
+				sToolTip = CommonLocaleDelegate.getInstance().getTextFallback(
+						filter.getDescriptionResourceId(), filter.getDescriptionResourceId());
 			}
 			else {
 				sToolTip = filter.getDescription();
 			}
 
-			if (filter.getOwner() != null && !(filter.getOwner().equals(Main.getMainController().getUserName()))) {
+			if (filter.getOwner() != null && !(filter.getOwner().equals(Main.getInstance().getMainController().getUserName()))) {
 				sToolTip = sToolTip + " (" + filter.getOwner() + ")";
 			}
 

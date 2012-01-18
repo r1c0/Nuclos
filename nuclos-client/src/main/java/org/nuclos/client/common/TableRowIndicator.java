@@ -16,8 +16,6 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.common;
 
-import static org.nuclos.common2.CommonLocaleDelegate.getMessage;
-
 import java.awt.Cursor;
 import java.awt.Point;
 import java.awt.Rectangle;
@@ -37,6 +35,8 @@ import javax.swing.JTable;
 import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.MouseInputAdapter;
+
+import org.nuclos.common2.CommonLocaleDelegate;
 
 public class TableRowIndicator extends MouseInputAdapter { 
     public static Cursor resizeCursor = Cursor.getPredefinedCursor(Cursor.N_RESIZE_CURSOR);
@@ -167,7 +167,8 @@ public class TableRowIndicator extends MouseInputAdapter {
 				}
 			}
 			
-			JMenuItem mi = new JMenuItem(getMessage("TableRowIndicator.1", "Zeilenh√∂he zur√ºcksetzen"));
+			JMenuItem mi = new JMenuItem(CommonLocaleDelegate.getInstance().getMessage(
+					"TableRowIndicator.1", "Zeilenh√∂he zur√ºcksetzen"));
 			mi.addActionListener(new ActionListener() {
 				
 				@Override

@@ -72,11 +72,21 @@ import org.nuclos.common2.CommonLocaleDelegate;
  */
 public class MultiActionProgressPanel extends JPanel {
 
-	public final JToggleButton btnProtocol = new JToggleButton(CommonLocaleDelegate.getMessage("MultiActionProgressPanel.10","Protokoll anzeigen"), Icons.getInstance().getIconUp16());
-	public final JToggleButton btnPause = new JToggleButton(CommonLocaleDelegate.getMessage("MultiActionProgressPanel.2","Pause"), Icons.getInstance().getIconPause16());
-	public final JButton btnStop = new JButton(CommonLocaleDelegate.getMessage("MultiActionProgressPanel.3","Stop"), Icons.getInstance().getIconStop16());
-	public final JButton btnClose = new JButton(CommonLocaleDelegate.getMessage("MultiActionProgressPanel.4","Schlie\u00dfen"));
-	public final JButton btnSaveResult = new JButton(CommonLocaleDelegate.getMessage("MultiActionProgressPanel.9","Protokoll speichern"), Icons.getInstance().getIconReport());
+	public final JToggleButton btnProtocol = new JToggleButton(
+			CommonLocaleDelegate.getInstance().getMessage(
+					"MultiActionProgressPanel.10","Protokoll anzeigen"), Icons.getInstance().getIconUp16());
+	public final JToggleButton btnPause = new JToggleButton(
+			CommonLocaleDelegate.getInstance().getMessage(
+					"MultiActionProgressPanel.2","Pause"), Icons.getInstance().getIconPause16());
+	public final JButton btnStop = new JButton(
+			CommonLocaleDelegate.getInstance().getMessage(
+					"MultiActionProgressPanel.3","Stop"), Icons.getInstance().getIconStop16());
+	public final JButton btnClose = new JButton(
+			CommonLocaleDelegate.getInstance().getMessage(
+					"MultiActionProgressPanel.4","Schlie\u00dfen"));
+	public final JButton btnSaveResult = new JButton(
+			CommonLocaleDelegate.getInstance().getMessage(
+					"MultiActionProgressPanel.9","Protokoll speichern"), Icons.getInstance().getIconReport());
 
 	private JProgressBar progressbar;
 	private MultiActionProgressTableModel tblmdl;
@@ -90,7 +100,8 @@ public class MultiActionProgressPanel extends JPanel {
 	private final JLabel labAction = new JLabel();
 	protected final JPanel pnlButtonsGrid = new JPanel(new GridLayout(1, 0, 10, 0));
 	private final JScrollPane scrlpn = new JScrollPane(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-	private final StatusBarTextField labStatus = new StatusBarTextField(CommonLocaleDelegate.getMessage("MultiActionProgressPanel.5","Bereit"));
+	private final StatusBarTextField labStatus = new StatusBarTextField(
+			CommonLocaleDelegate.getInstance().getMessage("MultiActionProgressPanel.5","Bereit"));
 
 	private JTextArea txtAreaDetail;
 	private JScrollPane scrlpnDetail;
@@ -176,7 +187,8 @@ public class MultiActionProgressPanel extends JPanel {
 		pnlButtons.add(pnlButtonsGrid, BorderLayout.EAST);
 		setPauseStopButtons();
 
-		pnlCenter.add(new JLabel(CommonLocaleDelegate.getMessage("MultiActionProgressPanel.6","Protokoll")), BorderLayout.NORTH);
+		pnlCenter.add(new JLabel(CommonLocaleDelegate.getInstance().getMessage(
+				"MultiActionProgressPanel.6","Protokoll")), BorderLayout.NORTH);
 		pnlCenter.add(scrlpn, BorderLayout.CENTER);
 
 		scrlpn.setViewportView(tblResult);
@@ -296,8 +308,8 @@ public class MultiActionProgressPanel extends JPanel {
 		this.resultHandler = resultHandler;
 		addResultMouseListener();
 		String[] columnNames = new String[3];
-		columnNames[0] = CommonLocaleDelegate.getMessage("MultiActionProgressPanel.7","ID");
-		columnNames[1] = CommonLocaleDelegate.getMessage("MultiActionProgressPanel.8","Ergebnis");
+		columnNames[0] = CommonLocaleDelegate.getInstance().getMessage("MultiActionProgressPanel.7","ID");
+		columnNames[1] = CommonLocaleDelegate.getInstance().getMessage("MultiActionProgressPanel.8","Ergebnis");
 		columnNames[2] = resultHandler.getStateHeaderLabel();
 		this.tblmdl.setColumnNames(columnNames);
 		this.tblResult.revalidate();
@@ -328,7 +340,8 @@ public class MultiActionProgressPanel extends JPanel {
 	}
 
 	public String getSingleSelectionMenuLabel(){
-		String singleSelectionMenuLabel = CommonLocaleDelegate.getMessage("RuleExplorerNode.1","Details anzeigen");
+		String singleSelectionMenuLabel = CommonLocaleDelegate.getInstance().getMessage(
+				"RuleExplorerNode.1","Details anzeigen");
 		if(getResultHandler() != null){
 			singleSelectionMenuLabel = getResultHandler().getSingleSelectionMenuLabel();
 		}
@@ -336,7 +349,8 @@ public class MultiActionProgressPanel extends JPanel {
 	}
 
 	public String getMultiSelectionMenuLabel(){
-		String multiSelectionMenuLabel = CommonLocaleDelegate.getMessage("RuleExplorerNode.1","Details anzeigen");
+		String multiSelectionMenuLabel = CommonLocaleDelegate.getInstance().getMessage(
+				"RuleExplorerNode.1","Details anzeigen");
 		if(getResultHandler() != null){
 			multiSelectionMenuLabel = getResultHandler().getMultiSelectionMenuLabel();
 		}

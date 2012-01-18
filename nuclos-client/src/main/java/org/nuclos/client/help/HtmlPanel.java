@@ -161,7 +161,7 @@ public class HtmlPanel extends JPanel {
 		scrlpn.getViewport().add(editorpn, null);
 		pnlCenter.add(scrlpn, BorderLayout.CENTER);
 
-		btnClose.setText(CommonLocaleDelegate.getMessage("ExplorerController.27", "Schlie\u00dfen"));
+		btnClose.setText(CommonLocaleDelegate.getInstance().getMessage("ExplorerController.27", "Schlie\u00dfen"));
 		final JPanel pnlButtons = new JPanel();
 		pnlButtons.setBorder(BorderFactory.createEmptyBorder(5, 0, 5, 0));
 		pnlButtons.add(btnClose, null);

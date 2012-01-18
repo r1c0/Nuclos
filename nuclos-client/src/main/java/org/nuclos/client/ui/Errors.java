@@ -38,6 +38,7 @@ import org.apache.log4j.Logger;
 import org.nuclos.client.LocalUserProperties;
 import org.nuclos.client.login.LoginController;
 import org.nuclos.client.main.Main;
+import org.nuclos.client.main.mainframe.MainFrame;
 import org.nuclos.client.security.NuclosRemoteServerSession;
 import org.nuclos.common.ApplicationProperties;
 import org.nuclos.common2.CommonLocaleDelegate;
@@ -142,11 +143,13 @@ public class Errors {
 								NuclosRemoteServerSession.authenticate();
 							}
 							catch (AuthenticationException ex2) {
-								LoginController lc = new LoginController(Main.getMainFrame());
+								final MainFrame mf = Main.getInstance().getMainFrame();
+								
+								LoginController lc = new LoginController(mf);
 
-								if (!lc.run(Main.getMainFrame())) {
+								if (!lc.run(mf)) {
 									String message = LocalUserProperties.getInstance().getLoginResource(LocalUserProperties.KEY_ERR_EXIT);
-									JOptionPane.showMessageDialog(Main.getMainFrame(), message, ApplicationProperties.getInstance().getName(), JOptionPane.ERROR_MESSAGE);
+									JOptionPane.showMessageDialog(mf, message, ApplicationProperties.getInstance().getName(), JOptionPane.ERROR_MESSAGE);
 									System.exit(1);
 								}
 								else {
@@ -160,7 +163,7 @@ public class Errors {
 					Throwable accessexception = getCause(t, AccessDeniedException.class);
 					if (accessexception != null) {
 						String message = LocalUserProperties.getInstance().getLoginResource(LocalUserProperties.KEY_ERR_ACCESS_DENIED);
-						JOptionPane.showMessageDialog(Main.getMainFrame(), message, ApplicationProperties.getInstance().getName(), JOptionPane.ERROR_MESSAGE);
+						JOptionPane.showMessageDialog(Main.getInstance().getMainFrame(), message, ApplicationProperties.getInstance().getName(), JOptionPane.ERROR_MESSAGE);
 						System.exit(1);
 					}
 
@@ -193,12 +196,12 @@ public class Errors {
 			int iMessageType) {
 		String sErrorText;
 		if (sErrorMsg == null) {
-			String localizedMessage = CommonLocaleDelegate.getMessageFromResource(ex.getLocalizedMessage());
+			String localizedMessage = CommonLocaleDelegate.getInstance().getMessageFromResource(ex.getLocalizedMessage());
 			sErrorText = localizedMessage != null ? localizedMessage : ex.getLocalizedMessage();
 		}
 		else {
-			String resMessage = CommonLocaleDelegate.getMessageFromResource(sErrorMsg);
-			String localizedMessage = CommonLocaleDelegate.getMessageFromResource(ex.getLocalizedMessage());
+			String resMessage = CommonLocaleDelegate.getInstance().getMessageFromResource(sErrorMsg);
+			String localizedMessage = CommonLocaleDelegate.getInstance().getMessageFromResource(ex.getLocalizedMessage());
 
 			sErrorText = (resMessage != null ? resMessage : sErrorMsg) + "\n" + (localizedMessage != null ? localizedMessage : ex.getLocalizedMessage());
 		}
@@ -226,7 +229,7 @@ public class Errors {
 		final ExceptionMessagePanel pnl = new ExceptionMessagePanel(dlg, iMessageType);
 
 		// Main message:
-		String resMessage = sErrorMsg != null ? CommonLocaleDelegate.getMessageFromResource(sErrorMsg) : null;
+		String resMessage = sErrorMsg != null ? CommonLocaleDelegate.getInstance().getMessageFromResource(sErrorMsg) : null;
 		String sErrorText = (resMessage != null ? resMessage : failsafeGetMessage("Errors.3","An error occured"));
 		final String sReasonableMessage = getReasonableMessage(t);
 		if (sReasonableMessage != null) {
@@ -340,7 +343,7 @@ public class Errors {
 		String result = null;
 
 		if (t != null) {
-			String resMessage = CommonLocaleDelegate.getMessageFromResource(getRealDetailMessage(t));
+			String resMessage = CommonLocaleDelegate.getInstance().getMessageFromResource(getRealDetailMessage(t));
 			if (isReasonableException(t)) {
 				result = resMessage != null ? resMessage : t.getLocalizedMessage();
 			}
@@ -419,7 +422,7 @@ public class Errors {
 
 	private static String failsafeGetMessage(String resid, String def, Object ... args) {
 		try {
-			return CommonLocaleDelegate.getMessage(resid, null, args);
+			return CommonLocaleDelegate.getInstance().getMessage(resid, null, args);
 		}
 		catch(Exception e) {
 			LOG.info("failsafeGetMessage: " + e);

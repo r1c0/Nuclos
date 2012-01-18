@@ -16,8 +16,6 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.task;
 
-import static org.nuclos.common2.CommonLocaleDelegate.getMessage;
-
 import java.awt.event.ActionEvent;
 import java.util.Collection;
 import java.util.HashSet;
@@ -55,7 +53,6 @@ import org.nuclos.common.collect.collectable.CollectableEntityField;
 import org.nuclos.common.collect.collectable.CollectableValueIdField;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Transformer;
-import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.IdUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.server.common.valueobject.TaskVO;
@@ -112,7 +109,7 @@ public class PersonalTaskCollectController extends MasterDataCollectController {
  				}
 			}
         });
-		this.addCollectableEventListener(Main.getMainController().getTaskController().getPersonalTaskController());
+		this.addCollectableEventListener(Main.getInstance().getMainController().getTaskController().getPersonalTaskController());
 
 		getCollectStateModel().addCollectStateListener(new CollectStateAdapter() {
 			@Override
@@ -124,7 +121,7 @@ public class PersonalTaskCollectController extends MasterDataCollectController {
 						for (DetailsSubFormController<CollectableEntityObject> sf : getSubFormControllersInDetails()) {
 							if (sf.getCollectableEntity().getName().equals(NuclosEntity.TASKOWNER.getEntityName())) {
 								CollectableMasterData md = sf.insertNewRow();
-								String sUser = Main.getMainController().getUserName();
+								String sUser = Main.getInstance().getMainController().getUserName();
 								Long iUser = delegate.getUserId(sUser);
 								md.setField("user", new CollectableValueIdField(iUser, sUser));
 							}
@@ -138,7 +135,7 @@ public class PersonalTaskCollectController extends MasterDataCollectController {
 
 	private void setupDetailsToolBar() {
 		// final JToolBar toolbar = (JToolBar)this.getDetailsPanel().getCustomToolBarArea();
-		final String sSingletaskButtonName = CommonLocaleDelegate.getMessage("EditPersonalTaskDefinitionPanel.Button.Singletask",null);
+		final String sSingletaskButtonName = getCommonLocaleDelegate().getMessage("EditPersonalTaskDefinitionPanel.Button.Singletask",null);
 		sSingletaskButton = new JButton(
 			new AbstractAction(sSingletaskButtonName) {
 
@@ -167,14 +164,16 @@ public class PersonalTaskCollectController extends MasterDataCollectController {
 	@Override
 	protected CollectableMasterDataWithDependants newCollectableWithDefaultValues() {
 		CollectableMasterDataWithDependants newCollectableWithDefaultValues = super.newCollectableWithDefaultValues();
-		newCollectableWithDefaultValues.setField(CollectableTask.FIELDNAME_DELEGATOR, new CollectableValueIdField(SecurityDelegate.getInstance().getUserId(Main.getMainController().getUserName()), ""));
+		newCollectableWithDefaultValues.setField(CollectableTask.FIELDNAME_DELEGATOR, 
+				new CollectableValueIdField(SecurityDelegate.getInstance().getUserId(
+						Main.getInstance().getMainController().getUserName()), ""));
 		return newCollectableWithDefaultValues;
 	}
 
 	private boolean splitTaskForOwners(boolean createMode, MasterDataWithDependantsVO mdvo, final String sSingletaskButtonName)
 		throws CommonBusinessException {
 		boolean result = false;
-		final String sMessage = getMessage("EditPersonalTaskDefinitionPanel.Singletask.Secure", null);
+		final String sMessage = getCommonLocaleDelegate().getMessage("EditPersonalTaskDefinitionPanel.Singletask.Secure", null);
 		final String sSecureTitle = sSingletaskButtonName;
 		int createSingleTasksSecure = JOptionPane.showConfirmDialog(this.getParent(), sMessage, sSecureTitle, JOptionPane.YES_NO_OPTION);
 		switch(createSingleTasksSecure) {

@@ -502,9 +502,9 @@ public class MainFrameTabbedPane extends JTabbedPane implements NuclosDropTarget
 						if (doubleClickArea.contains(e.getPoint())) {
 							LOG.debug("DoubleClick on Tab. Maximized=" + maximizedTabs);
 							if (maximizedTabs) {
-								MainFrame.restoreTabbedPaneContainingArea(MainFrameTabbedPane.this);
+								Main.getInstance().getMainFrame().restoreTabbedPaneContainingArea(MainFrameTabbedPane.this);
 							} else {
-								MainFrame.maximizeTabbedPane(MainFrameTabbedPane.this);
+								Main.getInstance().getMainFrame().maximizeTabbedPane(MainFrameTabbedPane.this);
 							}
 						}
 					}
@@ -545,7 +545,8 @@ public class MainFrameTabbedPane extends JTabbedPane implements NuclosDropTarget
 								}
 							} else {
 								// Split tab pane...
-								Main.getMainFrame().splitTabbedPane(dp.mouseOverTabbedPane, dp.splitRange, dp.originTabbedPane, dp.draggedTabIndex);
+								Main.getInstance().getMainFrame().splitTabbedPane(
+										dp.mouseOverTabbedPane, dp.splitRange, dp.originTabbedPane, dp.draggedTabIndex);
 							}
 						}
 					} else if (dp != null && dw != null && dw.isVisible()) {
@@ -701,7 +702,8 @@ public class MainFrameTabbedPane extends JTabbedPane implements NuclosDropTarget
 					}
 				}
 				catch (CommonBusinessException ex) {
-					final String sErrorMsg = CommonLocaleDelegate.getMessage("MainController.21","Die Stammdaten k\u00f6nnen nicht bearbeitet werden.");
+					final String sErrorMsg = CommonLocaleDelegate.getInstance().getMessage(
+							"MainController.21","Die Stammdaten k\u00f6nnen nicht bearbeitet werden.");
 					Errors.getInstance().showExceptionDialog(MainFrameTabbedPane.this, sErrorMsg, ex);
 				}
 			}
@@ -756,7 +758,8 @@ public class MainFrameTabbedPane extends JTabbedPane implements NuclosDropTarget
 			}
 		};
 		result.putValue(Action.SELECTED_KEY, isHome());
-		result.putValue(Action.SHORT_DESCRIPTION, CommonLocaleDelegate.getMessage("MainFrameTabbedPane.1","Neue Tabs hier oeffnen"));
+		result.putValue(Action.SHORT_DESCRIPTION, CommonLocaleDelegate.getInstance().getMessage(
+				"MainFrameTabbedPane.1","Neue Tabs hier oeffnen"));
 		return result;
 	}
 
@@ -783,7 +786,8 @@ public class MainFrameTabbedPane extends JTabbedPane implements NuclosDropTarget
 			}
 		};
 		result.putValue(Action.SELECTED_KEY, isHomeTree());
-		result.putValue(Action.SHORT_DESCRIPTION, CommonLocaleDelegate.getMessage("MainFrameTabbedPane.2","Neue Explorer Tabs hier oeffnen"));
+		result.putValue(Action.SHORT_DESCRIPTION, CommonLocaleDelegate.getInstance().getMessage(
+				"MainFrameTabbedPane.2","Neue Explorer Tabs hier oeffnen"));
 		return result;
 	}
 
@@ -1039,6 +1043,7 @@ public class MainFrameTabbedPane extends JTabbedPane implements NuclosDropTarget
 	 *
 	 */
 	private void setupStartTab() {
+		final CommonLocaleDelegate cld = CommonLocaleDelegate.getInstance();
 		JPanel jpn = new JPanel(new BorderLayout());
 		JToolBar toolBar = UIUtils.createNonFloatableToolBar();
 
@@ -1087,9 +1092,9 @@ public class MainFrameTabbedPane extends JTabbedPane implements NuclosDropTarget
 			@Override
 			public void mouseReleased(MouseEvent e) {
 				if (maximizedTabs)
-					MainFrame.restoreTabbedPaneContainingArea(MainFrameTabbedPane.this);
+					Main.getInstance().getMainFrame().restoreTabbedPaneContainingArea(MainFrameTabbedPane.this);
 				else
-					MainFrame.maximizeTabbedPane(MainFrameTabbedPane.this);
+					Main.getInstance().getMainFrame().maximizeTabbedPane(MainFrameTabbedPane.this);
 			}
 		});
 		lbClose.addMouseListener(new MouseAdapter() {
@@ -1105,7 +1110,7 @@ public class MainFrameTabbedPane extends JTabbedPane implements NuclosDropTarget
 			}
 			@Override
 			public void mouseReleased(MouseEvent e) {
-				MainFrame.removeTabbedPane(MainFrameTabbedPane.this);
+				Main.getInstance().getMainFrame().removeTabbedPane(MainFrameTabbedPane.this);
 			}
 
 		});
@@ -1115,7 +1120,8 @@ public class MainFrameTabbedPane extends JTabbedPane implements NuclosDropTarget
 			jpnTabbedPaneControl.add(lbClose);
 		}
 
-		final BlackLabel bl = new BlackLabel(jpnTabbedPaneControl, CommonLocaleDelegate.getMessage("MainFrameTabbedPane.3","Tableiste"));
+		final BlackLabel bl = new BlackLabel(jpnTabbedPaneControl, 
+				cld.getMessage("MainFrameTabbedPane.3","Tableiste"));
 		toolBar.add(bl);
 
 		/**
@@ -1135,10 +1141,12 @@ public class MainFrameTabbedPane extends JTabbedPane implements NuclosDropTarget
 		/**
 		 * EXTRAS
 		 */
-		final PopupButton extraButton = new PopupButton(CommonLocaleDelegate.getMessage("PopupButton.Extras","Extras"));
+		final PopupButton extraButton = new PopupButton(cld.getMessage(
+				"PopupButton.Extras","Extras"));
 
 		if (MainFrame.isStarttabEditable()) {
-			extraButton.add(startTab.createHeadline(CommonLocaleDelegate.getMessage("StartTabPanel.11","Startmenu"), null));
+			extraButton.add(startTab.createHeadline(cld.getMessage(
+					"StartTabPanel.11","Startmenu"), null));
 			extraButton.add(new ShowHideJCheckBoxMenuItem(startTab.getShowStartmenuAction()));
 			extraButton.add(new ShowHideJCheckBoxMenuItem(startTab.getAlwaysHideStartmenuAction()));
 			JCheckBoxMenuItem cbmiAdministration = new JCheckBoxMenuItem(startTab.getShowAdministration());
@@ -1153,7 +1161,7 @@ public class MainFrameTabbedPane extends JTabbedPane implements NuclosDropTarget
 			extraButton.addSeparator();
 		}
 
-		extraButton.add(startTab.createHeadline(CommonLocaleDelegate.getMessage("StartTabPanel.12","Zuletzt angesehen"), null));
+		extraButton.add(startTab.createHeadline(cld.getMessage("StartTabPanel.12","Zuletzt angesehen"), null));
 		
 		if (MainFrame.isStarttabEditable()) {
 			extraButton.add(new ShowHideJCheckBoxMenuItem(startTab.getShowHistoryAction()));
@@ -1174,7 +1182,7 @@ public class MainFrameTabbedPane extends JTabbedPane implements NuclosDropTarget
 		extraButton.add(new JMenuItem(startTab.getClearHistoryAction()));
 		
 		extraButton.addSeparator();
-		extraButton.add(startTab.createHeadline(CommonLocaleDelegate.getMessage("StartTabPanel.13","Lesezeichen"), null));
+		extraButton.add(startTab.createHeadline(cld.getMessage("StartTabPanel.13","Lesezeichen"), null));
 		
 		if (MainFrame.isStarttabEditable()) {
 			extraButton.add(new ShowHideJCheckBoxMenuItem(startTab.getShowBookmarkAction()));

@@ -298,7 +298,8 @@ public class SearchConditionSubFormController extends SubFormController {
 						break;
 
 					default:
-						throw new CommonFatalException(CommonLocaleDelegate.getMessage("SearchConditionSubFormController.1", "Unbekannter Knotentyp: {0}", clctcond.getClass().getName()));
+						throw new CommonFatalException(getCommonLocaleDelegate().getMessage(
+								"SearchConditionSubFormController.1", "Unbekannter Knotentyp: {0}", clctcond.getClass().getName()));
 				}
 			}
 		}
@@ -309,11 +310,13 @@ public class SearchConditionSubFormController extends SubFormController {
 		private void fillLastRowWithAtomicSearchCondition(AtomicCollectableSearchCondition atomiccond) {
 			final int iRow = this.getRowCount() - 1;
 			if (iRow < 0) {
-				throw new CommonFatalException(CommonLocaleDelegate.getMessage("SearchConditionSubFormController.2", "Subform ist leer."));
+				throw new CommonFatalException(getCommonLocaleDelegate().getMessage(
+						"SearchConditionSubFormController.2", "Subform ist leer."));
 			}
 			final int iColumn = this.findColumnByFieldName(atomiccond.getFieldName());
 			if (iColumn == -1) {
-				throw new CommonFatalException(CommonLocaleDelegate.getMessage("SearchConditionSubFormController.3", "Spalte {0} nicht vorhanden.", atomiccond.getFieldName()));
+				throw new CommonFatalException(getCommonLocaleDelegate().getMessage(
+						"SearchConditionSubFormController.3", "Spalte {0} nicht vorhanden.", atomiccond.getFieldName()));
 			}
 
 			this.setValueAt(atomiccond, iRow, iColumn);
@@ -325,11 +328,13 @@ public class SearchConditionSubFormController extends SubFormController {
 		 */
 		private void fillLastRowWithFlatConjunction(CompositeCollectableSearchCondition compositecond) throws CommonBusinessException {
 			if (compositecond.getLogicalOperator() != LogicalOperator.AND) {
-				throw new CommonFatalException(CommonLocaleDelegate.getMessage("SearchConditionSubFormController.4", "Dieser logische Operator ist hier nicht erlaubt: {0}", compositecond.getLogicalOperator()));
+				throw new CommonFatalException(getCommonLocaleDelegate().getMessage(
+						"SearchConditionSubFormController.4", "Dieser logische Operator ist hier nicht erlaubt: {0}", compositecond.getLogicalOperator()));
 			}
 			for (CollectableSearchCondition condOperand : compositecond.getOperands()) {
 				if (condOperand.getType() != CollectableSearchCondition.TYPE_ATOMIC) {
-					throw new CommonBusinessException(CommonLocaleDelegate.getMessage("SearchConditionSubFormController.5", "Geschachtelte Bedingung kann in Unterformular nicht dargestellt werden."));
+					throw new CommonBusinessException(getCommonLocaleDelegate().getMessage(
+							"SearchConditionSubFormController.5", "Geschachtelte Bedingung kann in Unterformular nicht dargestellt werden."));
 				}
 				this.fillLastRowWithAtomicSearchCondition((AtomicCollectableSearchCondition) condOperand);
 			}
@@ -417,39 +422,47 @@ public class SearchConditionSubFormController extends SubFormController {
 					}
 				}
 				else {
-					throw new IllegalArgumentException(CommonLocaleDelegate.getMessage("SearchConditionSubFormController.6", "Der logische Operator {0} kann in einem Unterformular nicht dargestellt werden.", CommonLocaleDelegate.getMessage(logicalop.getResourceIdForLabel(), null)));
+					throw new IllegalArgumentException(getCommonLocaleDelegate().getMessage(
+							"SearchConditionSubFormController.6", "Der logische Operator {0} kann in einem Unterformular nicht dargestellt werden.", 
+							getCommonLocaleDelegate().getMessage(logicalop.getResourceIdForLabel(), null)));
 				}
 				return null;
 			}
 
 			@Override
 			public Void visitIdCondition(CollectableIdCondition idcond) {
-				throw new IllegalArgumentException(CommonLocaleDelegate.getMessage("SearchConditionSubFormController.7", "Eine Id-Bedingung kann in einem Unterformular nicht dargestellt werden."));
+				throw new IllegalArgumentException(getCommonLocaleDelegate().getMessage(
+						"SearchConditionSubFormController.7", "Eine Id-Bedingung kann in einem Unterformular nicht dargestellt werden."));
 			}
 
 			@Override
 			public Void visitSubCondition(CollectableSubCondition subcond) {
-				throw new IllegalArgumentException(CommonLocaleDelegate.getMessage("SearchConditionSubFormController.8", "Eine geschachtelte Unterbedingung kann in einem Unterformular nicht dargestellt werden."));
+				throw new IllegalArgumentException(getCommonLocaleDelegate().getMessage(
+						"SearchConditionSubFormController.8", "Eine geschachtelte Unterbedingung kann in einem Unterformular nicht dargestellt werden."));
 			}
 
 			@Override
 			public Void visitPivotJoinCondition(PivotJoinCondition joincond) {
-				throw new IllegalArgumentException(CommonLocaleDelegate.getMessage("SearchConditionSubFormController.11", "Eine geschachtelte Joinbedingung kann in einem Unterformular nicht dargestellt werden."));
+				throw new IllegalArgumentException(getCommonLocaleDelegate().getMessage(
+						"SearchConditionSubFormController.11", "Eine geschachtelte Joinbedingung kann in einem Unterformular nicht dargestellt werden."));
 			}
 
 			@Override
 			public Void visitRefJoinCondition(RefJoinCondition joincond) {
-				throw new IllegalArgumentException(CommonLocaleDelegate.getMessage("SearchConditionSubFormController.11", "Eine geschachtelte Joinbedingung kann in einem Unterformular nicht dargestellt werden."));
+				throw new IllegalArgumentException(getCommonLocaleDelegate().getMessage(
+						"SearchConditionSubFormController.11", "Eine geschachtelte Joinbedingung kann in einem Unterformular nicht dargestellt werden."));
 			}
 
 			@Override
 			public Void visitReferencingCondition(ReferencingCollectableSearchCondition refcond) {
-				throw new IllegalArgumentException(CommonLocaleDelegate.getMessage("SearchConditionSubFormController.9", "Eine referenzierende Bedingung kann in einem Unterformular nicht dargestellt werden."));
+				throw new IllegalArgumentException(getCommonLocaleDelegate().getMessage(
+						"SearchConditionSubFormController.9", "Eine referenzierende Bedingung kann in einem Unterformular nicht dargestellt werden."));
 			}
 
 			@Override
             public Void visitIdListCondition(CollectableIdListCondition collectableIdListCondition) throws CommonBusinessException {
-	            throw new IllegalArgumentException(CommonLocaleDelegate.getMessage("SearchConditionSubFormController.7", "Eine Id-Bedingung kann in einem Unterformular nicht dargestellt werden."));
+	            throw new IllegalArgumentException(getCommonLocaleDelegate().getMessage(
+	            		"SearchConditionSubFormController.7", "Eine Id-Bedingung kann in einem Unterformular nicht dargestellt werden."));
             }
 		}
 
@@ -658,7 +671,8 @@ public class SearchConditionSubFormController extends SubFormController {
 			result = false;
 		}
 		else {
-			throw new IllegalArgumentException(CommonLocaleDelegate.getMessage("SearchConditionSubFormController.10", "Unbekannter logischer Operator: {0}", LangUtils.toString(logicalop)));
+			throw new IllegalArgumentException(CommonLocaleDelegate.getInstance().getMessage(
+					"SearchConditionSubFormController.10", "Unbekannter logischer Operator: {0}", LangUtils.toString(logicalop)));
 		}
 		return result;
 	}
@@ -775,12 +789,14 @@ public class SearchConditionSubFormController extends SubFormController {
 			/** @todo remove those optimistic assumptions below */
 			final String columnName = getSubForm().getUniqueMasterColumnName();
 			if (columnName == null) {
-				throw new CommonFatalException(CommonLocaleDelegate.getMessage("SubFormMultiEditController.1", "Im Unterformular {0} wurde keine eindeutige Spalte (unique master column) definiert.", getSubForm().getEntityName()));
+				throw new CommonFatalException(getCommonLocaleDelegate().getMessage(
+						"SubFormMultiEditController.1", "Im Unterformular {0} wurde keine eindeutige Spalte (unique master column) definiert.", getSubForm().getEntityName()));
 			}
 
 			final int colIndex = model.findColumnByFieldName(columnName);
 			if (colIndex < 0) {
-				throw new CommonFatalException(CommonLocaleDelegate.getMessage("SubFormMultiEditController.2", "Im Unterformular {0} ist keine eindeutige Spalte (unique master column) namens {1} vorhanden.", getSubForm().getEntityName(), columnName));
+				throw new CommonFatalException(getCommonLocaleDelegate().getMessage(
+						"SubFormMultiEditController.2", "Im Unterformular {0} ist keine eindeutige Spalte (unique master column) namens {1} vorhanden.", getSubForm().getEntityName(), columnName));
 			}
 
 			final int viewColumn = getSubForm().getJTable().convertColumnIndexToView(colIndex);
@@ -816,7 +832,8 @@ public class SearchConditionSubFormController extends SubFormController {
 			ro.set(oldAvailableObjects, oldSelectedObjects, comp);
 			setModel(ro);
 			final boolean bOK = run(
-					CommonLocaleDelegate.getMessage("SubFormMultiEditController.3", "Mehrere Datens\u00e4tze in Unterformular einf\u00fcgen/l\u00f6schen"));
+					getCommonLocaleDelegate().getMessage(
+							"SubFormMultiEditController.3", "Mehrere Datens\u00e4tze in Unterformular einf\u00fcgen/l\u00f6schen"));
 
 			if (bOK) {
 				final List<?> lstNewSelectedObjects = this.getSelectedObjects();

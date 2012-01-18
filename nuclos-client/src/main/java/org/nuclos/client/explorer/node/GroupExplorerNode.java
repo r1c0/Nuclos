@@ -32,7 +32,6 @@ import org.nuclos.client.genericobject.datatransfer.TransferableGenericObjects;
 import org.nuclos.client.ui.Errors;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.common.NuclosBusinessException;
-import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.server.navigation.treenode.GroupTreeNode;
 import org.nuclos.server.navigation.treenode.TreeNode;
 
@@ -75,7 +74,8 @@ public class GroupExplorerNode extends MasterDataExplorerNode<GroupTreeNode> {
 									goimp.getGenericObjectId(), getTreeNode().getId().intValue(), true);
 						}
 						else {
-							throw new NuclosBusinessException(CommonLocaleDelegate.getMessage("GroupExplorerNode.1", "Der Datentransfer wird nicht unterst\u00fctzt."));
+							throw new NuclosBusinessException(
+									getCommonLocaleDelegate().getMessage("GroupExplorerNode.1", "Der Datentransfer wird nicht unterst\u00fctzt."));
 						}
 					}
 

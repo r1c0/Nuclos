@@ -16,7 +16,6 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.wizard;
 
-import static org.nuclos.common2.CommonLocaleDelegate.getMessage;
 import info.clearthought.layout.TableLayout;
 
 import java.awt.Dialog;
@@ -41,6 +40,7 @@ import javax.swing.text.PlainDocument;
 
 import org.apache.log4j.Logger;
 import org.nuclos.client.wizard.model.DataTyp;
+import org.nuclos.common2.CommonLocaleDelegate;
 
 public class DataTypDialog extends JDialog{
 
@@ -81,6 +81,7 @@ public class DataTypDialog extends JDialog{
 	}
 	
 	protected void init() {
+		final CommonLocaleDelegate cld = CommonLocaleDelegate.getInstance();
 		double size [][] = {{10,130,130, 30, TableLayout.FILL}, {10, 20, 20,20,20,20,20,20, TableLayout.FILL}};
 		
 		TableLayout layout = new TableLayout(size);
@@ -88,12 +89,15 @@ public class DataTypDialog extends JDialog{
 		layout.setHGap(5);
 		this.setLayout(layout);
 		
-		lbBaseDatatyp = new JLabel(getMessage("wizard.datatype.1", "Grunddatentyp")+": ");
+		lbBaseDatatyp = new JLabel(cld.getMessage(
+				"wizard.datatype.1", "Grunddatentyp")+": ");
 		lstDataTyp = DataTyp.getAllDataTyps();
 		cbxBaseDatatyp = new JComboBox(lstDataTyp.toArray());
-		lbDatatyp = new JLabel(getMessage("wizard.datatype.2", "Datentyp-Bezeichnung")+": ");
+		lbDatatyp = new JLabel(cld.getMessage(
+				"wizard.datatype.2", "Datentyp-Bezeichnung")+": ");
 		tfDatatyp = new JTextField();
-		lbFieldWidth = new JLabel(getMessage("wizard.datatype.3", "Feldbreite")+": ");
+		lbFieldWidth = new JLabel(cld.getMessage(
+				"wizard.datatype.3", "Feldbreite")+": ");
 		tfFieldWidth = new JTextField();
 		tfFieldWidth.setHorizontalAlignment(SwingConstants.RIGHT);
 		
@@ -119,7 +123,8 @@ public class DataTypDialog extends JDialog{
 					String sText = e.getDocument().getText(0, e.getDocument().getLength());
 					for(DataTyp typ : lstDataTyp) {
 						if(typ.getName().equals(sText)) {
-							lbInfo.setText(getMessage("wizard.datatype.10", "Datentyp existiert schon"));
+							lbInfo.setText(cld.getMessage(
+									"wizard.datatype.10", "Datentyp existiert schon"));
 							btnOK.setEnabled(false);
 							break;
 						}
@@ -145,7 +150,8 @@ public class DataTypDialog extends JDialog{
 			}
 					
 		});
-		lbFieldPrecision = new JLabel(getMessage("wizard.datatype.4", "Nachkommastellen")+": ");
+		lbFieldPrecision = new JLabel(cld.getMessage(
+				"wizard.datatype.4", "Nachkommastellen")+": ");
 		tfFieldPrecision = new JTextField();
 		tfFieldPrecision.setHorizontalAlignment(SwingConstants.RIGHT);
 		tfFieldPrecision.setDocument(new PlainDocument() {
@@ -162,12 +168,15 @@ public class DataTypDialog extends JDialog{
 			}
 					
 		});
-		lbInputFormat = new JLabel(getMessage("wizard.datatype.5", "Eingabeformat")+": ");
+		lbInputFormat = new JLabel(cld.getMessage(
+				"wizard.datatype.5", "Eingabeformat")+": ");
 		tfInputFormat = new JTextField();
-		lbOutputFormat = new JLabel(getMessage("wizard.datatype.6", "Ausgabeformat")+": ");
+		lbOutputFormat = new JLabel(cld.getMessage(
+				"wizard.datatype.6", "Ausgabeformat")+": ");
 		tfOutputFormat = new JTextField();
 		
-		btnOK = new JButton(getMessage("wizard.datatype.7", "\u00dcbernehmen"));
+		btnOK = new JButton(cld.getMessage(
+				"wizard.datatype.7", "\u00dcbernehmen"));
 		btnOK.addActionListener(new ActionListener() {
 			
 			@Override
@@ -175,7 +184,8 @@ public class DataTypDialog extends JDialog{
 				DataTyp base = (DataTyp)cbxBaseDatatyp.getSelectedItem();
 				String newName = tfDatatyp.getText();
 				if(newName.length() < 1) {
-					lbInfo.setText(getMessage("wizard.datatype.8", "Bitte geben Sie einen Namen ein"));
+					lbInfo.setText(cld.getMessage(
+							"wizard.datatype.8", "Bitte geben Sie einen Namen ein"));
 					return;
 				}
 				String sFieldPrecision = tfFieldPrecision.getText();
@@ -196,7 +206,8 @@ public class DataTypDialog extends JDialog{
 			}
 		});
 		
-		btnCancel = new JButton(getMessage("wizard.datatype.9", "Verwerfen"));
+		btnCancel = new JButton(cld.getMessage(
+				"wizard.datatype.9", "Verwerfen"));
 		btnCancel.addActionListener(new ActionListener() {
 			
 			@Override
@@ -240,9 +251,7 @@ public class DataTypDialog extends JDialog{
 		this.add(btnCancel, "2,7");
 		this.add(lbInfo, "1,8, 2,8");
 		
-		this.setSize(300, 250);
-		
-		
+		this.setSize(300, 250);		
 	}
 	
 	public DataTyp getDataTyp() {

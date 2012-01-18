@@ -79,7 +79,6 @@ import org.nuclos.common.collect.collectable.CollectableComponentTypes;
 import org.nuclos.common.collect.collectable.CollectableValueField;
 import org.nuclos.common.collect.exception.CollectableValidationException;
 import org.nuclos.common.collection.CollectionUtils;
-import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.CommonRunnable;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonValidationException;
@@ -110,7 +109,8 @@ public class RuleCollectController extends EntityCollectController<CollectableRu
 	private final RuleEditPanel pnlEdit = new RuleEditPanel(subform);
 	private final MasterDataSubFormController subformctlUsage;
 
-	private final Action actCheckRuleSource = new CommonAbstractAction(Icons.getInstance().getIconValidate16(), CommonLocaleDelegate.getMessage("RuleCollectController.2", "Quelltext pr\u00fcfen")) {
+	private final Action actCheckRuleSource = new CommonAbstractAction(Icons.getInstance().getIconValidate16(), 
+			getCommonLocaleDelegate().getMessage("RuleCollectController.2", "Quelltext pr\u00fcfen")) {
 
 		@Override
 		public void actionPerformed(ActionEvent ev) {
@@ -129,7 +129,8 @@ public class RuleCollectController extends EntityCollectController<CollectableRu
 	 */
 	public RuleCollectController(JComponent parent, MainFrameTab tabIfAny) {
 		super(parent, CollectableRule.clcte);
-		ifrm = tabIfAny!=null ? tabIfAny : newInternalFrame(CommonLocaleDelegate.getMessage("RuleCollectController.1", "Regelwerke verwalten"));
+		ifrm = tabIfAny!=null ? tabIfAny : newInternalFrame(getCommonLocaleDelegate().getMessage(
+				"RuleCollectController.1", "Regelwerke verwalten"));
 
 		//this.transferhandler = new RuleTransferHandler(parent);
 
@@ -175,10 +176,11 @@ public class RuleCollectController extends EntityCollectController<CollectableRu
 	}
 
 	private void setupResultToolBar() {
-		this.getResultPanel().addPopupExtraMenuItem(new JMenuItem(new AbstractAction(CommonLocaleDelegate.getMessage("MasterDataCollectController.6","Ergebnis in Explorer anzeigen"), Icons.getInstance().getIconTree16()) {
+		this.getResultPanel().addPopupExtraMenuItem(new JMenuItem(new AbstractAction(getCommonLocaleDelegate().getMessage(
+				"MasterDataCollectController.6","Ergebnis in Explorer anzeigen"), Icons.getInstance().getIconTree16()) {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				Main.getMainController().getExplorerController().cmdShowRuleUsage(null, null);
+				Main.getInstance().getMainController().getExplorerController().cmdShowRuleUsage(null, null);
 			}
 		}));
 	}
@@ -186,8 +188,8 @@ public class RuleCollectController extends EntityCollectController<CollectableRu
 	private void setupDetailsToolBar() {
 		final JMenuItem btnMakeTreeRoot = new JMenuItem();
 		btnMakeTreeRoot.setIcon(Icons.getInstance().getIconMakeTreeRoot16());
-		btnMakeTreeRoot.setText(CommonLocaleDelegate.getMessage("MasterDataCollectController.9","In Explorer anzeigen"));
-		btnMakeTreeRoot.setToolTipText(CommonLocaleDelegate.getMessage("DatasourceCollectController.14", "In Explorer anzeigen"));
+		btnMakeTreeRoot.setText(getCommonLocaleDelegate().getMessage("MasterDataCollectController.9","In Explorer anzeigen"));
+		btnMakeTreeRoot.setToolTipText(getCommonLocaleDelegate().getMessage("DatasourceCollectController.14", "In Explorer anzeigen"));
 		btnMakeTreeRoot.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent ev) {
@@ -214,7 +216,7 @@ public class RuleCollectController extends EntityCollectController<CollectableRu
 	}
 
 	private ExplorerController getExplorerController() {
-		return Main.getMainController().getExplorerController();
+		return Main.getInstance().getMainController().getExplorerController();
 	}
 
 	private void cmdCheckRuleSource() {
@@ -238,7 +240,9 @@ public class RuleCollectController extends EntityCollectController<CollectableRu
 
 				try {
 					ruleDelegate.compile(clctRule.getRuleVO());
-					JOptionPane.showMessageDialog(RuleCollectController.this.getFrame(), CommonLocaleDelegate.getMessage("CodeCollectController.compiledsuccessfully", "Quellcode erfolgreich kompiliert."));
+					JOptionPane.showMessageDialog(RuleCollectController.this.getFrame(), 
+							getCommonLocaleDelegate().getMessage(
+									"CodeCollectController.compiledsuccessfully", "Quellcode erfolgreich kompiliert."));
 				}
 				catch (NuclosCompileException ex) {
 					RuleCollectController.this.pnlEdit.setMessages(ex.getErrorMessages());
@@ -352,7 +356,7 @@ public class RuleCollectController extends EntityCollectController<CollectableRu
 
 	@Override
 	protected String getEntityLabel() {
-		return CommonLocaleDelegate.getMessage("RuleCollectController.3", "Regelwerke");
+		return getCommonLocaleDelegate().getMessage("RuleCollectController.3", "Regelwerke");
 	}
 
 	@Override
@@ -581,7 +585,8 @@ public class RuleCollectController extends EntityCollectController<CollectableRu
 						NuclosConsole.getInstance().parseAndInvoke(new String[]{NuclosConsole.getInstance().CMD_INVALIDATE_RULECACHE}, false);
 					}
 					catch(Exception e) {
-						throw new NuclosFatalException(CommonLocaleDelegate.getMessage("RuleCollectController.5", "Der serverseitige RuleCache konnte nicht invalidiert werden!"), e);
+						throw new NuclosFatalException(getCommonLocaleDelegate().getMessage(
+								"RuleCollectController.5", "Der serverseitige RuleCache konnte nicht invalidiert werden!"), e);
 					}
 					super.postXMLImport(clctctl);
 				}

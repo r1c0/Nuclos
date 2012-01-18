@@ -110,7 +110,7 @@ public class DefaultExplorerView extends JPanel implements ExplorerView {
 
 		// enable drag:
 		this.tree.setDragEnabled(true);
-		this.tree.setTransferHandler(new DefaultTransferHandler(Main.getMainFrame()));
+		this.tree.setTransferHandler(new DefaultTransferHandler(Main.getInstance().getMainFrame()));
 
 		// don't expand on double click:
 		this.tree.setToggleClickCount(0);
@@ -142,7 +142,7 @@ public class DefaultExplorerView extends JPanel implements ExplorerView {
 				UIUtils.runCommand(DefaultExplorerView.this.getParent(), new CommonRunnable() {
 					@Override
 		            public void run() throws CommonFinderException {
-						Main.getMainController().getExplorerController().refreshTab(DefaultExplorerView.this);
+						Main.getInstance().getMainController().getExplorerController().refreshTab(DefaultExplorerView.this);
 					}
 				});
 			}

@@ -27,8 +27,8 @@ import org.nuclos.client.common.NuclosCollectableEntityProvider;
 import org.nuclos.client.genericobject.CollectableGenericObjectEntity;
 import org.nuclos.client.genericobject.GenericObjectLayoutCache;
 import org.nuclos.client.genericobject.valuelistprovider.GenericObjectCollectableFieldsProviderFactory;
-import org.nuclos.client.layout.wysiwyg.WYSIWYGStringsAndLabels;
 import org.nuclos.client.layout.wysiwyg.CollectableWYSIWYGLayoutEditor.WYSIWYGDetailsComponentModel;
+import org.nuclos.client.layout.wysiwyg.WYSIWYGStringsAndLabels;
 import org.nuclos.client.main.mainframe.MainFrameTab;
 import org.nuclos.client.masterdata.CollectableMasterDataWithDependants;
 import org.nuclos.client.masterdata.MasterDataDelegate;
@@ -44,7 +44,6 @@ import org.nuclos.common.collect.collectable.CollectableValueField;
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
 import org.nuclos.common.dal.vo.EntityObjectVO;
-import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.xml.sax.InputSource;
 /**
@@ -107,13 +106,14 @@ public class GenericObjectLayoutCollectController extends LayoutCollectControlle
 	protected LayoutRoot parseLayoutML() throws CommonBusinessException, IOException {
 		final String sLayoutML = this.getLayoutMLFromEditor();
 		if (sLayoutML == null) {
-			throw new NuclosBusinessException(CommonLocaleDelegate.getMessage("GenericObjectLayoutCollectController.1","Die LayoutML-Definition ist leer."));
+			throw new NuclosBusinessException(getCommonLocaleDelegate().getMessage(
+					"GenericObjectLayoutCollectController.1","Die LayoutML-Definition ist leer."));
 		}
 		final LayoutMLParser parser = new LayoutMLParser();
 		
 //		final CollectableGenericObjectEntityForAllAttributes clcte = CollectableGenericObjectEntityForAllAttributes.getInstance(Modules.ENTITYNAME_GENERALSEARCH);
 		final EntityMetaDataVO eMeta = MetaDataClientProvider.getInstance().getEntity(getUsedEntityName());
-		final String label = CommonLocaleDelegate.getText(eMeta.getLocaleResourceIdForLabel(), null);
+		final String label = getCommonLocaleDelegate().getText(eMeta.getLocaleResourceIdForLabel(), null);
 		final Map<String, EntityFieldMetaDataVO> mapEfMeta = MetaDataClientProvider.getInstance().getAllEntityFieldsByEntity(eMeta.getEntity());		
 		
 		if (eMeta.isStateModel()) {

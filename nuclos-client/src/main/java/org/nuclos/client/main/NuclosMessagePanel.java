@@ -50,7 +50,8 @@ public class NuclosMessagePanel extends JPanel {
 	/**
 	 * the text to display in the "messages button".
 	 */
-	private static final String MESSAGESBUTTON_TEXT = CommonLocaleDelegate.getMessage("NucleusStatusBar.1","Meldungen");
+	private static final String MESSAGESBUTTON_TEXT = CommonLocaleDelegate.getInstance().getMessage(
+			"NucleusStatusBar.1","Meldungen");
 
 	/**
 	 * Is flashing activated currently?
@@ -85,7 +86,7 @@ public class NuclosMessagePanel extends JPanel {
 			public void actionPerformed(ActionEvent ev) {
 				// user hits the flashing button --> recognizes new message(s)
 				stopFlashing();
-				Main.getMainController().getNotificationDialog().setVisible(btnNotify.isSelected());
+				Main.getInstance().getMainController().getNotificationDialog().setVisible(btnNotify.isSelected());
 			}
 		});
 		btnNotify.setFocusPainted(false);

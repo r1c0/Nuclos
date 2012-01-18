@@ -16,8 +16,6 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.wizard.model;
 
-import static org.nuclos.common2.CommonLocaleDelegate.getMessage;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -47,19 +45,23 @@ public class EntityRightsSelectTableModel extends AbstractTableModel {
 	public static int COLUMN_COUNT = 2;
 	
 	public EntityRightsSelectTableModel() {
-		super();		
+		super();
+		final CommonLocaleDelegate cld = CommonLocaleDelegate.getInstance();
 		lstUserRights = new ArrayList<MasterDataVO>();
 		mapPermission = new HashMap<String, Integer>();
-		mapPermission.put(CommonLocaleDelegate.getMessage("masterdata.permission.read", "Lesen"), MasterDataPermission.READONLY.getValue());
-		mapPermission.put(CommonLocaleDelegate.getMessage("masterdata.permission.write", "Lesen/Schreiben"), MasterDataPermission.READWRITE.getValue());
-		mapPermission.put(CommonLocaleDelegate.getMessage("masterdata.permission.delete", "Lesen/Schreiben/L\u00f6schen"), MasterDataPermission.DELETE.getValue());
-		
+		mapPermission.put(cld.getMessage(
+				"masterdata.permission.read", "Lesen"), MasterDataPermission.READONLY.getValue());
+		mapPermission.put(cld.getMessage(
+				"masterdata.permission.write", "Lesen/Schreiben"), MasterDataPermission.READWRITE.getValue());
+		mapPermission.put(cld.getMessage(
+				"masterdata.permission.delete", "Lesen/Schreiben/L\u00f6schen"), MasterDataPermission.DELETE.getValue());	
 	}
 	
 	public void setType(int type) {
 		this.iType = type;
 		if(iType == TYPE_STATEMODEL) {
-			mapPermission.put(CommonLocaleDelegate.getMessage("module.permission.delete.physical", "Lesen/Schreiben/Physikalisch L\u00f6schen"), 15);
+			mapPermission.put(CommonLocaleDelegate.getInstance().getMessage(
+					"module.permission.delete.physical", "Lesen/Schreiben/Physikalisch L\u00f6schen"), 15);
 		}
 		this.fireTableDataChanged();
 	}
@@ -140,7 +142,8 @@ public class EntityRightsSelectTableModel extends AbstractTableModel {
 			if(i.intValue() != ModulePermission.DELETE_PHYSICALLY.getValue().intValue()) {
 				MasterDataPermission permission = MasterDataPermission.getInstance(i);
 				Object value = (permission instanceof KeyEnum) ? ((KeyEnum<?>) permission).getValue() : permission.name();
-				String text = (permission instanceof Localizable) ? CommonLocaleDelegate.getText((Localizable) permission) : permission.toString();
+				String text = (permission instanceof Localizable) ? CommonLocaleDelegate.getInstance().getText(
+						(Localizable) permission) : permission.toString();
 				CollectableField cf = new LocalizedCollectableValueField(value, text);			
 				return cf;
 			}
@@ -159,9 +162,9 @@ public class EntityRightsSelectTableModel extends AbstractTableModel {
 	public String getColumnName(int column) {
 		switch (column) {
 		case 0:
-			return getMessage("wizard.step.entityrightstable.1", "Gruppe");
+			return CommonLocaleDelegate.getInstance().getMessage("wizard.step.entityrightstable.1", "Gruppe");
 		case 1:
-			return getMessage("wizard.step.entityrightstable.2", "Rechte");
+			return CommonLocaleDelegate.getInstance().getMessage("wizard.step.entityrightstable.2", "Rechte");
 		default:			
 			return "";
 		}		

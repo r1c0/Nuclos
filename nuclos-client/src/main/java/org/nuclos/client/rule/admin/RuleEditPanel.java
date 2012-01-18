@@ -110,7 +110,7 @@ public class RuleEditPanel extends JPanel {
 							}
 							else {
 								try {
-									Main.getMainController().showDetails(error.getEntityname(), error.getId());
+									Main.getInstance().getMainController().showDetails(error.getEntityname(), error.getId());
 								}
 								catch(CommonBusinessException e) {
 									Errors.getInstance().showExceptionDialog(RuleEditPanel.this, e);
@@ -141,11 +141,11 @@ public class RuleEditPanel extends JPanel {
 		pnlRulesEditor.add(splitpn, BorderLayout.CENTER);
 
 		final JTabbedPane tabpn = new JTabbedPane();
-		tabpn.add(CommonLocaleDelegate.getMessage("RuleEditPanel.1","Regel"), pnlRulesEditor);
+		tabpn.add(CommonLocaleDelegate.getInstance().getMessage("RuleEditPanel.1","Regel"), pnlRulesEditor);
 
 		if(pnlUsage != null) {
 			add(pnlHeader, BorderLayout.NORTH);
-			tabpn.add(CommonLocaleDelegate.getMessage("RuleEditPanel.2","Verwendung"), pnlUsage);
+			tabpn.add(CommonLocaleDelegate.getInstance().getMessage("RuleEditPanel.2","Verwendung"), pnlUsage);
 		}
 		this.add(tabpn, BorderLayout.CENTER);
 	}

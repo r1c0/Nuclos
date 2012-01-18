@@ -24,7 +24,6 @@ import org.apache.log4j.Logger;
 import org.nuclos.client.genericobject.Modules;
 import org.nuclos.client.main.Main;
 import org.nuclos.common.Utils;
-import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.common2.exception.CommonFinderException;
 import org.nuclos.common2.exception.PreferencesException;
@@ -53,7 +52,8 @@ public class SearchFilterTreeNode extends EntitySearchResultTreeNode {
 
 	public SearchFilterTreeNode(EntitySearchFilter searchfilter) {
 		super(searchfilter.getName(),
-				(searchfilter.getOwner() != null && !searchfilter.getOwner().equals(Main.getMainController().getUserName())) ? searchfilter.getDescription() + "("+searchfilter.getOwner()+")" : searchfilter.getDescription(),
+				(searchfilter.getOwner() != null && !searchfilter.getOwner().equals(
+						Main.getInstance().getMainController().getUserName())) ? searchfilter.getDescription() + "("+searchfilter.getOwner()+")" : searchfilter.getDescription(),
 				getInternalSearchExpression(searchfilter),
 				searchfilter.getName(), searchfilter.getOwner(), searchfilter.getEntityName());
 		this.searchfilter = searchfilter;
@@ -75,7 +75,8 @@ public class SearchFilterTreeNode extends EntitySearchResultTreeNode {
 			return new SearchFilterTreeNode(SearchFilters.forEntity(this.getEntity()).get(this.getFilterName(), this.getOwner()));
 		}
 		catch (NoSuchElementException ex) {
-			throw new CommonFinderException(CommonLocaleDelegate.getMessage("SearchFilterTreeNode.1","Der Suchfilter existiert nicht mehr") + ".", ex);
+			throw new CommonFinderException(getCommonLocaleDelegate().getMessage(
+					"SearchFilterTreeNode.1","Der Suchfilter existiert nicht mehr") + ".", ex);
 		}
 		catch (PreferencesException ex) {
 			throw new CommonFatalException(ex);
@@ -100,7 +101,7 @@ public class SearchFilterTreeNode extends EntitySearchResultTreeNode {
 	public String getLabel() {
 		try {
 			if (getSearchFilter().getLabelResourceId() != null) {
-				return CommonLocaleDelegate.getTextFallback(getSearchFilter().getLabelResourceId(), super.getLabel());
+				return getCommonLocaleDelegate().getTextFallback(getSearchFilter().getLabelResourceId(), super.getLabel());
 			}
 		}
 		catch (Exception ex) {
@@ -113,7 +114,7 @@ public class SearchFilterTreeNode extends EntitySearchResultTreeNode {
 	public String getDescription() {
 		try {
 			if (getSearchFilter().getDescriptionResourceId() != null) {
-				return CommonLocaleDelegate.getTextFallback(getSearchFilter().getDescriptionResourceId(), super.getDescription());
+				return getCommonLocaleDelegate().getTextFallback(getSearchFilter().getDescriptionResourceId(), super.getDescription());
 			}
 		}
 		catch (Exception ex) {

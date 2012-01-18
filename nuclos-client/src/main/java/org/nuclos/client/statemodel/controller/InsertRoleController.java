@@ -66,7 +66,8 @@ public class InsertRoleController {
 				}
 			}
 		});
-		JDialog dlg = optionPane.createDialog(parent, CommonLocaleDelegate.getMessage("InsertRoleController.1","Benutzergruppenauswahl"));
+		JDialog dlg = optionPane.createDialog(parent, CommonLocaleDelegate.getInstance().getMessage(
+				"InsertRoleController.1","Benutzergruppenauswahl"));
 		dlg.setResizable(true);
 		dlg.setVisible(true);
 		if (optionPane.getValue() != null) {

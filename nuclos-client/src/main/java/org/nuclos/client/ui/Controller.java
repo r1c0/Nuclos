@@ -18,6 +18,11 @@ package org.nuclos.client.ui;
 
 import java.awt.Component;
 
+import org.nuclos.client.main.MainController;
+import org.nuclos.common2.CommonLocaleDelegate;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
+
 /**
  * General controller (as in "model-view-controller").
  * <br>
@@ -27,12 +32,35 @@ import java.awt.Component;
  * @author	<a href="mailto:Christoph.Radig@novabit.de">Christoph.Radig</a>
  * @version	01.00.00
  */
-
+@Configurable(preConstruction=true)
 public abstract class Controller {
+	
 	private final Component parent;
+	
+	private CommonLocaleDelegate cld;
 
+	private MainController mainController;
+	
 	public Controller(Component parent) {
 		this.parent = parent;
+	}
+	
+	@Autowired
+	void setCommonLocaleDelegate(CommonLocaleDelegate cld) {
+		this.cld = cld;
+	}
+	
+	protected CommonLocaleDelegate getCommonLocaleDelegate() {
+		return cld;
+	}
+
+	// @Autowired
+	void setMainController(MainController mainController) {
+		this.mainController = mainController;
+	}
+	
+	protected MainController getMainController() {
+		return mainController;
 	}
 
 	/**

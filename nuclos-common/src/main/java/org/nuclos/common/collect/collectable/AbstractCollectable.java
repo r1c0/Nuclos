@@ -22,6 +22,8 @@ import org.nuclos.common2.CommonLocaleDelegate;
 
 
 import org.nuclos.common2.LangUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
 
 /**
  * Abstract (basic) implementation of a <code>Collectable</code>.
@@ -32,7 +34,22 @@ import org.nuclos.common2.LangUtils;
  * @author	<a href="mailto:christoph.radig@novabit.de">christoph.radig</a>
  * @version 01.00.00
  */
+@Configurable
 public abstract class AbstractCollectable implements Collectable {
+	
+	private CommonLocaleDelegate cld;
+	
+	protected AbstractCollectable() {
+	}
+	
+	@Autowired
+	void setCommonLocaleDelegate(CommonLocaleDelegate cld) {
+		this.cld = cld;
+	}
+	
+	protected CommonLocaleDelegate getCommonLocaleDelegate() {
+		return cld;
+	}
 
 	/**
 	 * Subclasses may provide an implementation that is more efficient than <code>this.getField(sFieldName).getValue()</code>.
@@ -107,7 +124,8 @@ public abstract class AbstractCollectable implements Collectable {
 	@Override
 	public void validate(CollectableEntity clcte) throws CollectableValidationException {
 		if (!this.isComplete()) {
-			throw new IllegalStateException(CommonLocaleDelegate.getMessage("AbstractCollectable.1","Das Objekt muss vollst\u00e4ndig geladen sein."));
+			throw new IllegalStateException(
+					getCommonLocaleDelegate().getMessage("AbstractCollectable.1","Das Objekt muss vollst\u00e4ndig geladen sein."));
 		}
 		for (String sFieldName : clcte.getFieldNames()) {
 			final CollectableField clctf = this.getField(sFieldName);

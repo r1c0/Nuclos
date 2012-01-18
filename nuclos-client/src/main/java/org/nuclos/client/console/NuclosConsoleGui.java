@@ -82,7 +82,8 @@ public class NuclosConsoleGui extends JPanel {
 
 	private final JTextField txfArgument;
 
-	private final JButton btnStart = new JButton(new AbstractAction(CommonLocaleDelegate.getMessage("NuclosConsoleGui.3","Aktion starten...")) {
+	private final JButton btnStart = new JButton(new AbstractAction(CommonLocaleDelegate.getInstance().getMessage(
+			"NuclosConsoleGui.3","Aktion starten...")) {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			startCommand();
@@ -92,7 +93,8 @@ public class NuclosConsoleGui extends JPanel {
 
 	Thread thread = null;
 
-	private final JButton btnCancel = new JButton(new AbstractAction(CommonLocaleDelegate.getMessage("NuclosConsoleGui.2","Aktion abbrechen...")) {
+	private final JButton btnCancel = new JButton(new AbstractAction(CommonLocaleDelegate.getInstance().getMessage(
+			"NuclosConsoleGui.2","Aktion abbrechen...")) {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			if (thread != null) {
@@ -103,7 +105,8 @@ public class NuclosConsoleGui extends JPanel {
 
 	private static final List<String> shortCuts = NuclosConsole.getInstance().LSTCOMMANDS;
 
-	private JButton btnClearOutput = new JButton(new AbstractAction(CommonLocaleDelegate.getMessage("NuclosConsoleGui.5","Ausgabe l\u00f6schen")) {
+	private JButton btnClearOutput = new JButton(new AbstractAction(CommonLocaleDelegate.getInstance().getMessage(
+			"NuclosConsoleGui.5","Ausgabe l\u00f6schen")) {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			textArea.setText("");
@@ -149,7 +152,8 @@ public class NuclosConsoleGui extends JPanel {
 	}
 
 	private void showShortCuts() {
-		cmbxCommands.addItem(CommonLocaleDelegate.getMessage("NuclosConsoleGui.8","Manuelle Eingabe (Argument)"));
+		cmbxCommands.addItem(CommonLocaleDelegate.getInstance().getMessage(
+				"NuclosConsoleGui.8","Manuelle Eingabe (Argument)"));
 		if (shortCuts.size() == 0) {
 			cmbxCommands.setEnabled(false);
 		}
@@ -166,7 +170,7 @@ public class NuclosConsoleGui extends JPanel {
 		cmdPnl.setLayout(layout);
 		GridBagConstraints constraints = new GridBagConstraints();
 		constraints.insets = new Insets(5, 5, 5, 5);
-		JLabel actLabel = new JLabel(CommonLocaleDelegate.getMessage("NuclosConsoleGui.1","Aktion"));
+		JLabel actLabel = new JLabel(CommonLocaleDelegate.getInstance().getMessage("NuclosConsoleGui.1","Aktion"));
 		actLabel.setPreferredSize(new Dimension(150, 20));
 		constraints.gridx = 0;
 		constraints.gridy = 0;
@@ -175,7 +179,7 @@ public class NuclosConsoleGui extends JPanel {
 		constraints.gridx = 1;
 		constraints.gridy = 0;
 		cmdPnl.add(cmbxCommands, constraints);
-		JLabel argumentsLabel = new JLabel(CommonLocaleDelegate.getMessage("NuclosConsoleGui.4","Argumente"));
+		JLabel argumentsLabel = new JLabel(CommonLocaleDelegate.getInstance().getMessage("NuclosConsoleGui.4","Argumente"));
 		argumentsLabel.setPreferredSize(new Dimension(150, 20));
 		constraints.gridx = 0;
 		constraints.gridy = 1;
@@ -306,7 +310,7 @@ public class NuclosConsoleGui extends JPanel {
 
 		panel.showShortCuts();
 		final JFrame frame = new JFrame();
-		frame.setTitle(CommonLocaleDelegate.getMessage("NuclosConsoleGui.7","Management Console"));
+		frame.setTitle(CommonLocaleDelegate.getInstance().getMessage("NuclosConsoleGui.7","Management Console"));
 		frame.setSize(new Dimension(800, 500));
 		frame.setResizable(false);
 		frame.setLocationRelativeTo(parent);
@@ -378,8 +382,10 @@ public class NuclosConsoleGui extends JPanel {
 	}
 
 	static class LoginPanel extends JPanel {
-		private JLabel lbUser = new JLabel(CommonLocaleDelegate.getMessage("NuclosConsoleGui.6","Benutzername"));
-		private JLabel lbPassword = new JLabel(CommonLocaleDelegate.getMessage("NuclosConsoleGui.9","Passwort"));
+		private JLabel lbUser = new JLabel(CommonLocaleDelegate.getInstance().getMessage(
+				"NuclosConsoleGui.6","Benutzername"));
+		private JLabel lbPassword = new JLabel(CommonLocaleDelegate.getInstance().getMessage(
+				"NuclosConsoleGui.9","Passwort"));
 		JTextField loginField = new JTextField();
 		JPasswordField passwordField = new JPasswordField();
 

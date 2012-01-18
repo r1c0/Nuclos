@@ -87,7 +87,8 @@ public class FileChooserComponent extends JPanel {
 		this.add(labIcon, BorderLayout.WEST);
 		this.add(cmpFileName, BorderLayout.CENTER);
 		//this.add(btnBrowse, BorderLayout.EAST);
-		this.btnBrowse.setToolTipText(CommonLocaleDelegate.getMessage("file.chooser.component.tooltip", "Datei ausw\u00e4hlen"));
+		this.btnBrowse.setToolTipText(CommonLocaleDelegate.getInstance().getMessage(
+				"file.chooser.component.tooltip", "Datei ausw\u00e4hlen"));
 
 		this.labIcon.setOpaque(false);
 

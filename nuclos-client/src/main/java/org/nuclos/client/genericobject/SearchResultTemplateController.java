@@ -69,8 +69,11 @@ public class SearchResultTemplateController {
 	
 	private static final Logger LOG = Logger.getLogger(SearchResultTemplateController.class);
 	
-	private final Action actSaveTemplate = new CommonAbstractAction(CommonLocaleDelegate.getMessage("SearchResultTemplateController.1", "Suchergebnisvorlage speichern"), Icons.getInstance().getIconSave16(),
-			CommonLocaleDelegate.getMessage("SearchResultTemplateController.2", "Eingestelltes Ergebnisformat als Suchergebnisvorlage speichern")) {
+	private final Action actSaveTemplate = new CommonAbstractAction(CommonLocaleDelegate.getInstance().getMessage(
+			"SearchResultTemplateController.1", "Suchergebnisvorlage speichern"), 
+			Icons.getInstance().getIconSave16(),
+			CommonLocaleDelegate.getInstance().getMessage(
+					"SearchResultTemplateController.2", "Eingestelltes Ergebnisformat als Suchergebnisvorlage speichern")) {
 
 		@Override
 		public void actionPerformed(ActionEvent ev) {
@@ -78,8 +81,11 @@ public class SearchResultTemplateController {
 		}
 	};
 
-	private final Action actRemoveTemplate = new CommonAbstractAction(CommonLocaleDelegate.getMessage("SearchResultTemplateController.3", "Suchergebnisvorlage l\u00f6schen"), Icons.getInstance().getIconDelete16(),
-		CommonLocaleDelegate.getMessage("SearchResultTemplateController.4", "Ausgew\u00e4hlte Suchergebnisvorlage l\u00f6schen")) {
+	private final Action actRemoveTemplate = new CommonAbstractAction(CommonLocaleDelegate.getInstance().getMessage(
+			"SearchResultTemplateController.3", "Suchergebnisvorlage l\u00f6schen"), 
+			Icons.getInstance().getIconDelete16(),
+			CommonLocaleDelegate.getInstance().getMessage(
+					"SearchResultTemplateController.4", "Ausgew\u00e4hlte Suchergebnisvorlage l\u00f6schen")) {
 
 		@Override
 		public void actionPerformed(ActionEvent ev) {
@@ -104,7 +110,8 @@ public class SearchResultTemplateController {
 		//toolbar.add(getSearchResultTemplateComboBox());
 		///*btnSaveTemplate =*/ toolbar.add(actSaveTemplate);
 		///*btnRemoveTemplate =*/ toolbar.add(actRemoveTemplate);
-		resultPanel.addToolBarComponent(new BlackLabel(getSearchResultTemplateComboBox(), CommonLocaleDelegate.getMessage("R00016434","Suchergebnisvorlage")));
+		resultPanel.addToolBarComponent(new BlackLabel(getSearchResultTemplateComboBox(), 
+				CommonLocaleDelegate.getInstance().getMessage("R00016434","Suchergebnisvorlage")));
 		resultPanel.addPopupExtraSeparator();
 		resultPanel.addPopupExtraMenuItem(new JMenuItem(actSaveTemplate));
 		resultPanel.addPopupExtraMenuItem(new JMenuItem(actRemoveTemplate));
@@ -124,7 +131,8 @@ public class SearchResultTemplateController {
 	 */
 	private void init(){
 		this.getSearchResultTemplateComboBox().setName("cmbbxSearchResultTemplate");
-		this.getSearchResultTemplateComboBox().setToolTipText(CommonLocaleDelegate.getMessage("SearchResultTemplateController.5", "W\u00e4hlen Sie hier eine Suchergebnisvorlage aus"));
+		this.getSearchResultTemplateComboBox().setToolTipText(CommonLocaleDelegate.getInstance().getMessage(
+				"SearchResultTemplateController.5", "W\u00e4hlen Sie hier eine Suchergebnisvorlage aus"));
 		this.getSearchResultTemplateComboBox().addActionListener(this.alSearchResultTemplates);
 
 		// set tool tips dynamically:
@@ -361,8 +369,10 @@ public class SearchResultTemplateController {
 		final SearchResultTemplate template = this.getSelectedSearchResultTemplate();
 		if (template != null) {
 			final String sTemplateName = template.getName();
-			final String sMessage = CommonLocaleDelegate.getMessage("SearchResultTemplateController.6", "Wollen Sie die Suchergebnisvorlage \"{0}\" wirklich l\u00f6schen?", sTemplateName);
-			final int iBtn = JOptionPane.showConfirmDialog(getFrame(), sMessage, CommonLocaleDelegate.getMessage("SearchResultTemplateController.3", "Suchergebnisvorlage l\u00f6schen"),
+			final String sMessage = CommonLocaleDelegate.getInstance().getMessage(
+					"SearchResultTemplateController.6", "Wollen Sie die Suchergebnisvorlage \"{0}\" wirklich l\u00f6schen?", sTemplateName);
+			final int iBtn = JOptionPane.showConfirmDialog(getFrame(), sMessage, CommonLocaleDelegate.getInstance().getMessage(
+					"SearchResultTemplateController.3", "Suchergebnisvorlage l\u00f6schen"),
 					JOptionPane.OK_CANCEL_OPTION);
 			if (iBtn == JOptionPane.OK_OPTION) {
 				UIUtils.runCommand(getFrame(), new Runnable() {

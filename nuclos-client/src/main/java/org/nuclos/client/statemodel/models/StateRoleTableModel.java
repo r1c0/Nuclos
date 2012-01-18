@@ -44,7 +44,10 @@ public class StateRoleTableModel extends DefaultTableModel {
 		}
 	}
 
-	private static String[] asColumnNames = {CommonLocaleDelegate.getMessage("StateRoleTableModel.1","Benutzergruppe"), CommonLocaleDelegate.getMessage("StateRoleTableModel.2","Beschreibung")};
+	private static String[] asColumnNames = {CommonLocaleDelegate.getInstance().getMessage(
+			"StateRoleTableModel.1","Benutzergruppe"), 
+			CommonLocaleDelegate.getInstance().getMessage("StateRoleTableModel.2","Beschreibung")};
+	
 	private final List<MasterDataVO> lstRoles = new ArrayList<MasterDataVO>();
 
 	public StateRoleTableModel() {

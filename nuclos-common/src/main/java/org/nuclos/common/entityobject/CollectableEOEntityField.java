@@ -77,7 +77,8 @@ public class CollectableEOEntityField extends AbstractCollectableEntityField {
 
 	@Override
 	public String getDescription() {
-		return CommonLocaleDelegate.getTextFallback(efMeta.getLocaleResourceIdForDescription(), efMeta.getFallbacklabel());
+		return CommonLocaleDelegate.getInstance().getTextFallback(
+				efMeta.getLocaleResourceIdForDescription(), efMeta.getFallbacklabel());
 	}
 
 	@Override
@@ -107,7 +108,8 @@ public class CollectableEOEntityField extends AbstractCollectableEntityField {
 
 	@Override
 	public String getLabel() {
-		return CommonLocaleDelegate.getTextFallback(efMeta.getLocaleResourceIdForLabel(), efMeta.getFallbacklabel());
+		return CommonLocaleDelegate.getInstance().getTextFallback(
+				efMeta.getLocaleResourceIdForLabel(), efMeta.getFallbacklabel());
 	}
 
 	@Override

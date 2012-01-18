@@ -38,7 +38,6 @@ import org.nuclos.client.ui.Icons;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.client.ui.tree.TreeNodeAction;
 import org.nuclos.common.NuclosFatalException;
-import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.CommonRunnable;
 import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.exception.CommonBusinessException;
@@ -109,7 +108,7 @@ public class NucletContentEntryExplorerNode extends ExplorerNode<AbstractNucletC
 	private class ShowDetailsAction extends TreeNodeAction {
 
 		ShowDetailsAction(JTree tree) {
-			super(ACTIONCOMMAND_SHOW_DETAILS, CommonLocaleDelegate.getMessage("RuleExplorerNode.1","Details anzeigen"), tree);
+			super(ACTIONCOMMAND_SHOW_DETAILS, getCommonLocaleDelegate().getMessage("RuleExplorerNode.1","Details anzeigen"), tree);
 		}
 
 		@Override
@@ -125,7 +124,7 @@ public class NucletContentEntryExplorerNode extends ExplorerNode<AbstractNucletC
 			UIUtils.runCommand(this.getParent(), new CommonRunnable() {
 				@Override
 				public void run() throws CommonBusinessException {
-					Main.getMainController().showDetails(getTreeNode().getEntity().getEntityName(), getTreeNode().getEntityObjectVO().getId());
+					Main.getInstance().getMainController().showDetails(getTreeNode().getEntity().getEntityName(), getTreeNode().getEntityObjectVO().getId());
 				}
 			});
 		}
@@ -134,7 +133,7 @@ public class NucletContentEntryExplorerNode extends ExplorerNode<AbstractNucletC
 	private class RemoveFromNucletAction extends TreeNodeAction {
 
 		public RemoveFromNucletAction(JTree tree) {
-			super(ACTIONCOMMAND_REMOVE, CommonLocaleDelegate.getMessage("NucletContentEntryExplorerNode.1","Vom Nuclet entfernen"), tree);
+			super(ACTIONCOMMAND_REMOVE, getCommonLocaleDelegate().getMessage("NucletContentEntryExplorerNode.1","Vom Nuclet entfernen"), tree);
 		}
 		
 		@Override

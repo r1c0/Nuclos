@@ -123,7 +123,7 @@ public class CompositeSearchConditionTreeNode extends SearchConditionTreeNode {
 
 	@Override
 	protected String getLabelForExpandedState() {
-		return CommonLocaleDelegate.getMessage(
+		return CommonLocaleDelegate.getInstance().getMessage(
 			this.getSearchCondition().getLogicalOperator().getResourceIdForLabel(), null);
 	}
 
@@ -156,9 +156,10 @@ public class CompositeSearchConditionTreeNode extends SearchConditionTreeNode {
 		}
 
 		private static String getName(CompositeSearchConditionTreeNode node) {
-			String opLabel = CommonLocaleDelegate.getMessage(
+			String opLabel = CommonLocaleDelegate.getInstance().getMessage(
 				LogicalOperator.getComplementalLogicalOperator(node.getLogicalOperator()).getResourceIdForLabel(), null); 
-			return CommonLocaleDelegate.getMessage("CompositeSearchConditionTreeNode.1", "In {0}-Knoten \u00e4ndern", opLabel);
+			return CommonLocaleDelegate.getInstance().getMessage(
+					"CompositeSearchConditionTreeNode.1", "In {0}-Knoten \u00e4ndern", opLabel);
 		}
 
 		@Override

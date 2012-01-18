@@ -77,7 +77,6 @@ import org.nuclos.common.Actions;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.UsageCriteria;
 import org.nuclos.common.collect.exception.CollectableValidationException;
-import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.CommonRunnable;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonFatalException;
@@ -144,7 +143,8 @@ public class StateModelCollectController extends NuclosCollectController<Collect
 	public StateModelCollectController(JComponent parent, MainFrameTab tabIfAny) {
 		super(parent, CollectableStateModel.clcte);
 
-		ifrm = tabIfAny!=null ? tabIfAny : newInternalFrame(CommonLocaleDelegate.getMessage("StateModelCollectController.4","Statusmodelle verwalten"));
+		ifrm = tabIfAny!=null ? tabIfAny : newInternalFrame(getCommonLocaleDelegate().getMessage(
+				"StateModelCollectController.4","Statusmodelle verwalten"));
 		// getSearchStrategy().setCompleteCollectablesStrategy(new CompleteCollectableStateModelsStrategy(this));
 
 		this.initialize(this.pnlCollect);
@@ -381,7 +381,8 @@ public class StateModelCollectController extends NuclosCollectController<Collect
 
 	@Override
 	protected CollectableStateModel updateCollectable(CollectableStateModel clct, Object oAdditionalData) throws CommonBusinessException {
-		throw new CommonFatalException(CommonLocaleDelegate.getMessage("StateModelCollectController.2","Sammelbearbeitung ist hier noch nicht m\u00f6glich."));
+		throw new CommonFatalException(getCommonLocaleDelegate().getMessage(
+				"StateModelCollectController.2","Sammelbearbeitung ist hier noch nicht m\u00f6glich."));
 	}
 
 	@Override
@@ -420,7 +421,8 @@ public class StateModelCollectController extends NuclosCollectController<Collect
 			SecurityCache.getInstance().revalidate();
 		}
 		catch(Exception e) {
-			throw new CommonBusinessException(CommonLocaleDelegate.getMessage("StateModelCollectController.1","Der serverseitige Cache konnte nicht invalidiert werden!"), e);
+			throw new CommonBusinessException(getCommonLocaleDelegate().getMessage(
+					"StateModelCollectController.1","Der serverseitige Cache konnte nicht invalidiert werden!"), e);
 		}
 
 		return intid;
@@ -454,7 +456,7 @@ public class StateModelCollectController extends NuclosCollectController<Collect
 
 	@Override
 	protected String getEntityLabel() {
-		return CommonLocaleDelegate.getMessage("StateModelCollectController.3","Statusmodell");
+		return getCommonLocaleDelegate().getMessage("StateModelCollectController.3","Statusmodell");
 	}
 
 	/**

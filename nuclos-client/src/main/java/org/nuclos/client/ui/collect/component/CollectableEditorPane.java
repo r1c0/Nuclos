@@ -135,7 +135,8 @@ public class CollectableEditorPane extends CollectableTextComponent {
 			res.addSeparator();
 		}
 		
-		JRadioButtonMenuItem miHTML = new JRadioButtonMenuItem(new AbstractAction(CommonLocaleDelegate.getMessage("CollectableEditorPane.view", "Ansicht")) {
+		JRadioButtonMenuItem miHTML = new JRadioButtonMenuItem(new AbstractAction(CommonLocaleDelegate.getInstance().getMessage(
+				"CollectableEditorPane.view", "Ansicht")) {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				String text = getJEditorPane().getText();

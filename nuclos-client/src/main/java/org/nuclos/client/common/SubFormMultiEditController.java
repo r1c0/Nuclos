@@ -34,7 +34,6 @@ import org.nuclos.client.ui.model.ChoiceList;
 import org.nuclos.common.collect.collectable.Collectable;
 import org.nuclos.common.collect.collectable.CollectableComparator;
 import org.nuclos.common.collect.collectable.CollectableField;
-import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.exception.CommonFatalException;
 
 /**
@@ -65,12 +64,14 @@ class SubFormMultiEditController<Clct extends Collectable> extends SelectObjects
 		/** @todo remove those optimistic assumptions below */
 		final String columnName = this.subform.getUniqueMasterColumnName();
 		if (columnName == null) {
-			throw new CommonFatalException(CommonLocaleDelegate.getMessage("SubFormMultiEditController.1", "Im Unterformular {0} wurde keine eindeutige Spalte (unique master column) definiert.", subform.getEntityName()));
+			throw new CommonFatalException(getCommonLocaleDelegate().getMessage(
+					"SubFormMultiEditController.1", "Im Unterformular {0} wurde keine eindeutige Spalte (unique master column) definiert.", subform.getEntityName()));
 		}
 
 		final int colIndex = model.findColumnByFieldName(columnName);
 		if (colIndex < 0) {
-			throw new CommonFatalException(CommonLocaleDelegate.getMessage("SubFormMultiEditController.2", "Im Unterformular {0} ist keine eindeutige Spalte (unique master column) namens {1} vorhanden.", subform.getEntityName(), columnName));
+			throw new CommonFatalException(getCommonLocaleDelegate().getMessage(
+					"SubFormMultiEditController.2", "Im Unterformular {0} ist keine eindeutige Spalte (unique master column) namens {1} vorhanden.", subform.getEntityName(), columnName));
 		}
 
 		final int viewColumn = this.subform.getJTable().convertColumnIndexToView(colIndex);
@@ -109,7 +110,8 @@ class SubFormMultiEditController<Clct extends Collectable> extends SelectObjects
 		ro.setFixed(fixed);
 		setModel(ro);
 		final boolean bOK = run(
-				CommonLocaleDelegate.getMessage("SubFormMultiEditController.3", "Mehrere Datens\u00e4tze in Unterformular einf\u00fcgen/l\u00f6schen"));
+				getCommonLocaleDelegate().getMessage(
+						"SubFormMultiEditController.3", "Mehrere Datens\u00e4tze in Unterformular einf\u00fcgen/l\u00f6schen"));
 
 		if (bOK) {
 			final List<?> lstNewSelectedObjects = this.getSelectedObjects();

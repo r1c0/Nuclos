@@ -123,8 +123,10 @@ public class TableSelectionPanel extends JPanel implements DragGestureListener {
 		scrlpnSavedQueries.setViewportView(tblQueries);
 
 		final JTabbedPane tabpn = new JTabbedPane(JTabbedPane.TOP);
-		tabpn.add(CommonLocaleDelegate.getMessage("TableSelectionPanel.3","Entit\u00e4ten"), scrlpnSystemObjects);
-		tabpn.add(CommonLocaleDelegate.getMessage("TableSelectionPanel.2","Datenquellen"), scrlpnSavedQueries);
+		tabpn.add(CommonLocaleDelegate.getInstance().getMessage(
+				"TableSelectionPanel.3","Entit\u00e4ten"), scrlpnSystemObjects);
+		tabpn.add(CommonLocaleDelegate.getInstance().getMessage(
+				"TableSelectionPanel.2","Datenquellen"), scrlpnSavedQueries);
 
 		if (blnShowParameterPanel) {
 			final JSplitPane splitpn = new JSplitPane(JSplitPane.VERTICAL_SPLIT);

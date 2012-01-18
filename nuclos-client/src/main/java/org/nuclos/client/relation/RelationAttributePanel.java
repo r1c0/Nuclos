@@ -16,7 +16,6 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.relation;
 
-import static org.nuclos.common2.CommonLocaleDelegate.getMessage;
 import info.clearthought.layout.TableLayout;
 
 import java.awt.event.ActionEvent;
@@ -59,7 +58,9 @@ public class RelationAttributePanel extends JPanel {
 	
 	private static final Logger LOG = Logger.getLogger(RelationAttributePanel.class);
 
-	private static String[] labels = {getMessage("wizard.step.entitytranslationstable.1", "Anzeigename"), getMessage("wizard.step.entitytranslationstable.2", "Beschreibung")};
+	private static String[] labels = {
+		CommonLocaleDelegate.getInstance().getMessage("wizard.step.entitytranslationstable.1", "Anzeigename"), 
+		CommonLocaleDelegate.getInstance().getMessage("wizard.step.entitytranslationstable.2", "Beschreibung")};
 
 	private JLabel lbLabel;
 	private JTextField tfLabel;	
@@ -382,8 +383,10 @@ public class RelationAttributePanel extends JPanel {
 		sDBColumn = voField.getDbColumn();
 		
 		
-		tfLabel.setText(CommonLocaleDelegate.getResource(voField.getLocaleResourceIdForLabel(), voField.getFallbacklabel()));
-		tfDescription.setText(CommonLocaleDelegate.getResource(voField.getLocaleResourceIdForDescription(), ""));
+		tfLabel.setText(CommonLocaleDelegate.getInstance().getResource(
+				voField.getLocaleResourceIdForLabel(), voField.getFallbacklabel()));
+		tfDescription.setText(CommonLocaleDelegate.getInstance().getResource(
+				voField.getLocaleResourceIdForDescription(), ""));
 		
 		cbForeignField.setSelectedItem(voField.getForeignEntityField());
 		if(type == TYPE_ENTITY){

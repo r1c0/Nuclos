@@ -60,7 +60,9 @@ public class AllCollectableEntityFieldsCollectableFieldsProvider implements Coll
 				List<MasterDataMetaFieldVO> lstFieldVO = mdmcvoSubEntity.getFields();
 				for(MasterDataMetaFieldVO fieldVO : lstFieldVO) {
 					//result.add(new CollectableValueIdField(fieldVO.getId(), mdmcvoSubEntity.getLabel() + "." + fieldVO.getLabel()));
-					result.add(new CollectableValueIdField(fieldVO.getId(), CommonLocaleDelegate.getLabelFromMetaDataVO(mdmcvoSubEntity) + "." + CommonLocaleDelegate.getResource(fieldVO.getResourceSIdForLabel(), fieldVO.getLabel())));
+					result.add(new CollectableValueIdField(fieldVO.getId(), 
+							CommonLocaleDelegate.getInstance().getLabelFromMetaDataVO(mdmcvoSubEntity) + "." 
+							+ CommonLocaleDelegate.getInstance().getResource(fieldVO.getResourceSIdForLabel(), fieldVO.getLabel())));
 				}
 			}
 		}

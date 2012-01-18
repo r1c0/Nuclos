@@ -35,7 +35,7 @@ public class PersonalTaskSearchStrategy extends MasterDataSearchStrategy {
 
 	@Override
 	public CollectableSearchCondition getCollectableSearchCondition() throws CollectableFieldFormatException {
-		String sUser = Main.getMainController().getUserName();
+		String sUser = Main.getInstance().getMainController().getUserName();
 		Integer iUser = SecurityDelegate.getInstance().getUserId(sUser);
 		CompositeCollectableSearchCondition taskCondition = new CompositeCollectableSearchCondition(LogicalOperator.OR);
 		CollectableSearchCondition delegatorCondition = SearchConditionUtils.newMDReferenceComparison(MetaDataCache

@@ -47,7 +47,7 @@ import org.nuclos.common2.CommonLocaleDelegate;
 	    this.matchDescriptions = matchDescriptions;
 	    
 	    this.entityName = entityMeta.getEntity();
-	    this.entityLabel = CommonLocaleDelegate.getLabelFromMetaDataVO(entityMeta);
+	    this.entityLabel = CommonLocaleDelegate.getInstance().getLabelFromMetaDataVO(entityMeta);
 	    
 	    StringBuilder sb = new StringBuilder();
 	    sb.append("<html><b>")

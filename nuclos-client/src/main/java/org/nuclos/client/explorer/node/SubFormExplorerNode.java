@@ -39,7 +39,6 @@ import org.nuclos.client.ui.UIUtils;
 import org.nuclos.client.ui.tree.TreeNodeAction;
 import org.nuclos.common.MutableBoolean;
 import org.nuclos.common.NuclosBusinessException;
-import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.CommonRunnable;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.server.navigation.treenode.SubFormTreeNode;
@@ -90,7 +89,7 @@ public class SubFormExplorerNode<TN extends SubFormTreeNode<Integer>> extends Ex
 				String sTargetSubFormForeignField = getTreeNode().getMasterDataVO().getField("field", String.class);
 
 				final GenericObjectCollectController goController = NuclosCollectControllerFactory.getInstance().newGenericObjectCollectController(
-					Main.getMainFrame().getHomePane(), iTargetModuleId, null);
+					Main.getInstance().getMainFrame().getHomePane(), iTargetModuleId, null);
 
 				goController.runViewSingleCollectable(
 					CollectableGenericObjectWithDependants.newCollectableGenericObject(
@@ -106,11 +105,13 @@ public class SubFormExplorerNode<TN extends SubFormTreeNode<Integer>> extends Ex
 						} catch (Exception e) {
 							// save failed... open controller
 							goController.getFrame().setVisible(true);
-							showBubbleCenter(goController.getFrame(), CommonLocaleDelegate.getMessage("SubFormExplorerNode.1", "Ein Bearbeitungsfenster Objekt wurde geöffnet, ein Speichern ohne Benutzereingriff ist nicht möglich.<br/> Bitte prüfen Sie die Meldung: {0}", Errors.formatErrorForBubble(e.getMessage())));
+							showBubbleCenter(goController.getFrame(), 
+									getCommonLocaleDelegate().getMessage("SubFormExplorerNode.1", "Ein Bearbeitungsfenster Objekt wurde geöffnet, ein Speichern ohne Benutzereingriff ist nicht möglich.<br/> Bitte prüfen Sie die Meldung: {0}", Errors.formatErrorForBubble(e.getMessage())));
 						}
 					}
 					if (importResult[1] > 0) {
-						showBubbleRight(tree, CommonLocaleDelegate.getMessage("MasterDataSubFormController.5", "Der Valuelist Provider verhindert das Anlegen von ${count} Unterformular Datensätzen.", importResult[1]));
+						showBubbleRight(tree, 
+								getCommonLocaleDelegate().getMessage("MasterDataSubFormController.5", "Der Valuelist Provider verhindert das Anlegen von ${count} Unterformular Datensätzen.", importResult[1]));
 					}
 				} catch (NuclosBusinessException nbe) {
 					// dropped failed

@@ -16,19 +16,17 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.timelimit;
 
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+
+import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.collect.collectable.AbstractCollectableBean;
 import org.nuclos.common.collect.collectable.AbstractCollectableEntity;
 import org.nuclos.common.collect.collectable.CollectableEntity;
 import org.nuclos.common.collect.collectable.CollectableField;
 import org.nuclos.common.collect.collectable.DefaultCollectableEntityField;
 import org.nuclos.common.collection.Transformer;
-import org.nuclos.common2.CommonLocaleDelegate;
-
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-
-import org.nuclos.common.NuclosEntity;
 import org.nuclos.server.common.valueobject.TimelimitTaskVO;
 
 /**
@@ -65,33 +63,46 @@ public class CollectableTimelimitTask extends AbstractCollectableBean<TimelimitT
 			super(NuclosEntity.TIMELIMITTASK.getEntityName(), "Frist");
 			final String entity = NuclosEntity.TIMELIMITTASK.getEntityName();
 			
-			this.addCollectableEntityField(new DefaultCollectableEntityField(FIELDNAME_DESCRIPTION, String.class, CommonLocaleDelegate.getMessage("CollectableTimelimitTask.13","Frist"),
-				CommonLocaleDelegate.getMessage("CollectableTimelimitTask.7","Beschreibung der Frist"), null, null, false, CollectableField.TYPE_VALUEFIELD, null, null, entity));
-			this.addCollectableEntityField(new DefaultCollectableEntityField(FIELDNAME_COMPLETED, Date.class, CommonLocaleDelegate.getMessage("CollectableTimelimitTask.9","Erledigt am"),
-				CommonLocaleDelegate.getMessage("CollectableTimelimitTask.2","Abgeschlossen am"), null, null, true, CollectableField.TYPE_VALUEFIELD, null, null, entity));
-			this.addCollectableEntityField(new DefaultCollectableEntityField(FIELDNAME_EXPIRED, Date.class, CommonLocaleDelegate.getMessage("CollectableTimelimitTask.1","Abgelaufen am"),
-				CommonLocaleDelegate.getMessage("CollectableTimelimitTask.14","Frist abgelaufen am"), null, null, true, CollectableField.TYPE_VALUEFIELD, null, null, entity));
-			this.addCollectableEntityField(new DefaultCollectableEntityField(FIELDNAME_CREATEDAT, Date.class, CommonLocaleDelegate.getMessage("CollectableTimelimitTask.10","Erstellt am"),
-				CommonLocaleDelegate.getMessage("CollectableTimelimitTask.12","Erstellungsdatum"), null, null, false, CollectableField.TYPE_VALUEFIELD, null, null, entity));
-			this.addCollectableEntityField(new DefaultCollectableEntityField(FIELDNAME_CREATEDBY, String.class, CommonLocaleDelegate.getMessage("CollectableTimelimitTask.11","Erstellt von"),
-				CommonLocaleDelegate.getMessage("CollectableTimelimitTask.5","Autor der Erstellung"), null, null, false, CollectableField.TYPE_VALUEFIELD, null, null, entity));
-			this.addCollectableEntityField(new DefaultCollectableEntityField(FIELDNAME_CHANGEDAT, Date.class, CommonLocaleDelegate.getMessage("CollectableTimelimitTask.15","Ge\u00e4ndert am"),
-				CommonLocaleDelegate.getMessage("CollectableTimelimitTask.8","Datum der letzten \u00c4nderung"), null, null, false, CollectableField.TYPE_VALUEFIELD, null, null, entity));
-			this.addCollectableEntityField(new DefaultCollectableEntityField(FIELDNAME_CHANGEDBY, String.class, CommonLocaleDelegate.getMessage("CollectableTimelimitTask.16","Ge\u00e4ndert von"),
-				CommonLocaleDelegate.getMessage("CollectableTimelimitTask.6","Autor der letzten \u00c4nderung"), null, null, false, CollectableField.TYPE_VALUEFIELD, null, null, entity));
+			this.addCollectableEntityField(new DefaultCollectableEntityField(FIELDNAME_DESCRIPTION, String.class, 
+					getCommonLocaleDelegate().getMessage("CollectableTimelimitTask.13","Frist"),
+					getCommonLocaleDelegate().getMessage("CollectableTimelimitTask.7","Beschreibung der Frist"), null, null, false, CollectableField.TYPE_VALUEFIELD, null, null, entity));
+			this.addCollectableEntityField(new DefaultCollectableEntityField(FIELDNAME_COMPLETED, Date.class, 
+					getCommonLocaleDelegate().getMessage("CollectableTimelimitTask.9","Erledigt am"),
+					getCommonLocaleDelegate().getMessage("CollectableTimelimitTask.2","Abgeschlossen am"), null, null, true, CollectableField.TYPE_VALUEFIELD, null, null, entity));
+			this.addCollectableEntityField(new DefaultCollectableEntityField(FIELDNAME_EXPIRED, Date.class, 
+					getCommonLocaleDelegate().getMessage("CollectableTimelimitTask.1","Abgelaufen am"),
+					getCommonLocaleDelegate().getMessage("CollectableTimelimitTask.14","Frist abgelaufen am"), null, null, true, CollectableField.TYPE_VALUEFIELD, null, null, entity));
+			this.addCollectableEntityField(new DefaultCollectableEntityField(FIELDNAME_CREATEDAT, Date.class, 
+					getCommonLocaleDelegate().getMessage("CollectableTimelimitTask.10","Erstellt am"),
+					getCommonLocaleDelegate().getMessage("CollectableTimelimitTask.12","Erstellungsdatum"), null, null, false, CollectableField.TYPE_VALUEFIELD, null, null, entity));
+			this.addCollectableEntityField(new DefaultCollectableEntityField(FIELDNAME_CREATEDBY, String.class, 
+					getCommonLocaleDelegate().getMessage("CollectableTimelimitTask.11","Erstellt von"),
+					getCommonLocaleDelegate().getMessage("CollectableTimelimitTask.5","Autor der Erstellung"), null, null, false, CollectableField.TYPE_VALUEFIELD, null, null, entity));
+			this.addCollectableEntityField(new DefaultCollectableEntityField(FIELDNAME_CHANGEDAT, Date.class, 
+					getCommonLocaleDelegate().getMessage("CollectableTimelimitTask.15","Ge\u00e4ndert am"),
+					getCommonLocaleDelegate().getMessage("CollectableTimelimitTask.8","Datum der letzten \u00c4nderung"), null, null, false, CollectableField.TYPE_VALUEFIELD, null, null, entity));
+			this.addCollectableEntityField(new DefaultCollectableEntityField(FIELDNAME_CHANGEDBY, String.class, 
+					getCommonLocaleDelegate().getMessage("CollectableTimelimitTask.16","Ge\u00e4ndert von"),
+					getCommonLocaleDelegate().getMessage("CollectableTimelimitTask.6","Autor der letzten \u00c4nderung"), null, null, false, CollectableField.TYPE_VALUEFIELD, null, null, entity));
 			this.addCollectableEntityField(new DefaultCollectableEntityField(FIELDNAME_GENERICOBJECTID, Integer.class,
-				CommonLocaleDelegate.getMessage("CollectableTimelimitTask.20","Objekt-ID"), CommonLocaleDelegate.getMessage("CollectableTimelimitTask.17","ID des zugeordneten Objekts"), null, null, 
+					getCommonLocaleDelegate().getMessage("CollectableTimelimitTask.20","Objekt-ID"), 
+					getCommonLocaleDelegate().getMessage("CollectableTimelimitTask.17","ID des zugeordneten Objekts"), null, null, 
 				true, CollectableField.TYPE_VALUEFIELD, null, null, entity));
 			this.addCollectableEntityField(new DefaultCollectableEntityField(FIELDNAME_LEASEDOBJECTIDENTIFIERLABEL,
-					String.class, CommonLocaleDelegate.getMessage("CollectableTimelimitTask.24","Zugeordnetes Objekt"), CommonLocaleDelegate.getMessage("CollectableTimelimitTask.23","System-ID des zugeordneten Objekts"), null, null, true,
+					String.class, 
+					getCommonLocaleDelegate().getMessage("CollectableTimelimitTask.24","Zugeordnetes Objekt"), 
+					getCommonLocaleDelegate().getMessage("CollectableTimelimitTask.23","System-ID des zugeordneten Objekts"), null, null, true,
 					CollectableField.TYPE_VALUEFIELD, null, null, entity));
-			this.addCollectableEntityField(new DefaultCollectableEntityField(FIELDNAME_MODULEID, Integer.class, CommonLocaleDelegate.getMessage("CollectableTimelimitTask.18","Modul-ID"),
-				CommonLocaleDelegate.getMessage("CollectableTimelimitTask.19","Modul-ID des zugeordneten Objekts"), null, null, true, CollectableField.TYPE_VALUEFIELD, null, null, entity));
+			this.addCollectableEntityField(new DefaultCollectableEntityField(FIELDNAME_MODULEID, Integer.class, 
+					getCommonLocaleDelegate().getMessage("CollectableTimelimitTask.18","Modul-ID"),
+					getCommonLocaleDelegate().getMessage("CollectableTimelimitTask.19","Modul-ID des zugeordneten Objekts"), null, null, true, CollectableField.TYPE_VALUEFIELD, null, null, entity));
 
-			this.addCollectableEntityField(new DefaultCollectableEntityField(FIELDNAME_STATUS, String.class, CommonLocaleDelegate.getMessage("CollectableTimelimitTask.21","Status"),
-				CommonLocaleDelegate.getMessage("CollectableTimelimitTask.22","Status des zugeordneten Objekts"), null, null, false, CollectableField.TYPE_VALUEFIELD, null, null, entity));
-			this.addCollectableEntityField(new DefaultCollectableEntityField(FIELDNAME_PROCESS, String.class, CommonLocaleDelegate.getMessage("CollectableTimelimitTask.3","Aktion"),
-				CommonLocaleDelegate.getMessage("CollectableTimelimitTask.4","Aktion des zugeordneten Objekts"), null, null, false, CollectableField.TYPE_VALUEFIELD, null, null, entity));
+			this.addCollectableEntityField(new DefaultCollectableEntityField(FIELDNAME_STATUS, String.class, 
+					getCommonLocaleDelegate().getMessage("CollectableTimelimitTask.21","Status"),
+					getCommonLocaleDelegate().getMessage("CollectableTimelimitTask.22","Status des zugeordneten Objekts"), null, null, false, CollectableField.TYPE_VALUEFIELD, null, null, entity));
+			this.addCollectableEntityField(new DefaultCollectableEntityField(FIELDNAME_PROCESS, String.class, 
+					getCommonLocaleDelegate().getMessage("CollectableTimelimitTask.3","Aktion"),
+					getCommonLocaleDelegate().getMessage("CollectableTimelimitTask.4","Aktion des zugeordneten Objekts"), null, null, false, CollectableField.TYPE_VALUEFIELD, null, null, entity));
 		}
 
 		/**

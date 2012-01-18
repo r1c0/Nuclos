@@ -36,16 +36,20 @@ public class TryAuthenticationPanel extends JPanel {
 
 	public TryAuthenticationPanel() {
 		super(new GridBagLayout());
-
-		JLabel lblUsername = new JLabel(CommonLocaleDelegate.getMessage("TryAuthenticationPanel.login.label", "Login"));
-		String ttLogin = CommonLocaleDelegate.getMessage("TryAuthenticationPanel.login.description", "Loginname for authentication. This name will be inserted into the user filter by replacing the value '''{'0}''.");
+		final CommonLocaleDelegate cld = CommonLocaleDelegate.getInstance();
+		JLabel lblUsername = new JLabel(cld.getMessage(
+				"TryAuthenticationPanel.login.label", "Login"));
+		String ttLogin = cld.getMessage(
+				"TryAuthenticationPanel.login.description", "Loginname for authentication. This name will be inserted into the user filter by replacing the value '''{'0}''.");
 		lblUsername.setToolTipText(ttLogin);
 		add(lblUsername, new GridBagConstraints(0, 0, 1, 1, 0.3, 0.5, GridBagConstraints.LINE_START, GridBagConstraints.HORIZONTAL, insets, 0, 0));
 		tfUsername.setToolTipText(ttLogin);
 		add(tfUsername, new GridBagConstraints(1, 0, 1, 1, 0.7, 0.5, GridBagConstraints.LINE_START, GridBagConstraints.HORIZONTAL, insets, 0, 0));
 
-		JLabel lblPassword = new JLabel(CommonLocaleDelegate.getMessage("TryAuthenticationPanel.password.label", "Passwort"));
-		String ttPassword = CommonLocaleDelegate.getMessage("TryAuthenticationPanel.password.description", "Das Passwort für die Authentisierung.");
+		JLabel lblPassword = new JLabel(cld.getMessage(
+				"TryAuthenticationPanel.password.label", "Passwort"));
+		String ttPassword = cld.getMessage(
+				"TryAuthenticationPanel.password.description", "Das Passwort für die Authentisierung.");
 		lblPassword.setToolTipText(ttPassword);
 		add(lblPassword, new GridBagConstraints(0, 1, 1, 1, 0.3, 0.5, GridBagConstraints.LINE_START, GridBagConstraints.HORIZONTAL, insets, 0, 0));
 		pfPassword.setToolTipText(ttPassword);

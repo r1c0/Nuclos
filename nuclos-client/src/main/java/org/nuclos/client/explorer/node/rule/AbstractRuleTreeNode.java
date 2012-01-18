@@ -27,27 +27,33 @@ import java.util.Map;
 import org.nuclos.client.masterdata.datatransfer.RuleAndRuleUsageEntity;
 import org.nuclos.client.rule.RuleDelegate;
 import org.nuclos.common.NuclosBusinessException;
+import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.server.navigation.treenode.TreeNode;
 import org.nuclos.server.ruleengine.valueobject.RuleVO;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
 
 /**
  * Treenode representing an Node in the Ruletree
  * @author <a href="mailto:rainer.schneider@novabit.de">rainer.schneider</a>
  */
+@Configurable
 public abstract class AbstractRuleTreeNode implements TreeNode {
 
 	protected static final Collator textCollator = Collator.getInstance();
+
+	static {
+		textCollator.setStrength(Collator.TERTIARY);
+	}
 
 	private final Integer iId;
 	private String sLabel;
 	private String sDescription;
 	private List<? extends TreeNode> lstSubNodes;
 	private RuleNodeType nodeType;
-
-	static {
-		textCollator.setStrength(Collator.TERTIARY);
-	}
+	
+	private CommonLocaleDelegate cld;
 
 	public AbstractRuleTreeNode(Integer iId, String sLabel, String sDescription, List<? extends TreeNode> lstSubNodes,
 			RuleNodeType aNodeType) {
@@ -57,6 +63,15 @@ public abstract class AbstractRuleTreeNode implements TreeNode {
 		this.sDescription = sDescription;
 		this.lstSubNodes = lstSubNodes;
 		this.nodeType = aNodeType;
+	}
+	
+	@Autowired
+	void setCommonLocaleDelegate(CommonLocaleDelegate cld) {
+		this.cld = cld;
+	}
+	
+	protected CommonLocaleDelegate getCommonLocaleDelegate() {
+		return cld;
 	}
 
 	/**

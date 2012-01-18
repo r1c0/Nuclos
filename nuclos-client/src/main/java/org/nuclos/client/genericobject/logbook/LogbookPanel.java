@@ -116,7 +116,8 @@ public class LogbookPanel extends JPanel {
 		if (colllogbookvo != null) {
 			this.tblmdl = new LogbookTableModel(colllogbookvo, attrcvoHeader);
 			this.tbl.setModel(tblmdl);
-			this.tbl.getColumn(CommonLocaleDelegate.getMessage("LogbookController.8", "Feld")).setCellRenderer(new LogbookRenderer());
+			this.tbl.getColumn(CommonLocaleDelegate.getInstance().getMessage(
+					"LogbookController.8", "Feld")).setCellRenderer(new LogbookRenderer());
 			this.tbl.getRowSorter().setSortKeys(Arrays.asList(
 				new SortKey(LogbookTableModel.COLUMN_CHANGEDAT, SortOrder.DESCENDING),
 				new SortKey(LogbookTableModel.COLUMN_LABEL, SortOrder.ASCENDING)));
@@ -132,7 +133,7 @@ public class LogbookPanel extends JPanel {
 			final String sText = (String) oValue;
 			result.setText(sText);
 			if (!bSelected) {
-				if (attrcvoHeader != null && sText.equals(CommonLocaleDelegate.getLabelFromAttributeCVO(attrcvoHeader))) {
+				if (attrcvoHeader != null && sText.equals(CommonLocaleDelegate.getInstance().getLabelFromAttributeCVO(attrcvoHeader))) {
 					result.setBackground(new Color(200, 200, 200));
 				}
 				else {

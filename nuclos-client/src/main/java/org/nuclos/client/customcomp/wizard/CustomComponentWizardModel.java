@@ -22,8 +22,6 @@ import static info.clearthought.layout.TableLayoutConstants.FULL;
 import static info.clearthought.layout.TableLayoutConstants.LEFT;
 import static info.clearthought.layout.TableLayoutConstants.PREFERRED;
 import static info.clearthought.layout.TableLayoutConstants.TOP;
-import static org.nuclos.common2.CommonLocaleDelegate.getMessage;
-import static org.nuclos.common2.CommonLocaleDelegate.getText;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -125,8 +123,10 @@ import org.pietschy.wizard.PanelWizardStep;
 import org.pietschy.wizard.Wizard;
 import org.pietschy.wizard.WizardModel;
 import org.pietschy.wizard.models.StaticModel;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
 
-
+@Configurable
 public class CustomComponentWizardModel extends StaticModel {
 
 	Wizard wizard;
@@ -134,6 +134,8 @@ public class CustomComponentWizardModel extends StaticModel {
 	CustomComponentVO componentVO;
 	ResPlanConfigVO configVO;
 	List<TranslationVO> translations;
+	
+	private CommonLocaleDelegate cld;
 
 	CustomComponentWizardModel() {
 		add(new CustomComponentWizardStep1());
@@ -144,6 +146,15 @@ public class CustomComponentWizardModel extends StaticModel {
 		add(new CustomComponentWizardStep6());
 		setLastAvailable(false);
 		setLastVisible(false);
+	}
+	
+	@Autowired
+	void setCommonLocaleDelegate(CommonLocaleDelegate cld) {
+		this.cld = cld;
+	}
+	
+	protected CommonLocaleDelegate getCommonLocaleDelegate() {
+		return cld;
 	}
 
 	void setWizard(Wizard wizard) {
@@ -196,16 +207,25 @@ public class CustomComponentWizardModel extends StaticModel {
 	// Steps
 	//
 
+	@Configurable(preConstruction=true)
 	abstract static class CustomComponentWizardAbstractStep extends PanelWizardStep implements DocumentListener {
 
 		CustomComponentWizardModel model;
+		
+		CommonLocaleDelegate cld;
 
 		CustomComponentWizardAbstractStep(String titleResId) {
-			super(getText(titleResId, null), null);
+			super(CommonLocaleDelegate.getInstance().getText(titleResId, null), null);
 		}
 
 		CustomComponentWizardAbstractStep(String titleResId, String summaryResId) {
-			super(getText(titleResId, null), getText(summaryResId, null));
+			super(CommonLocaleDelegate.getInstance().getText(titleResId, null), 
+					CommonLocaleDelegate.getInstance().getText(summaryResId, null));
+		}
+		
+		@Autowired
+		void setCommonLocaleDelegate(CommonLocaleDelegate cld) {
+			this.cld = cld;
 		}
 
 		@Override
@@ -235,7 +255,7 @@ public class CustomComponentWizardModel extends StaticModel {
 		}
 
 		protected void invalidStateLocalized(JComponent comp, String resourceId, Object...args) throws InvalidStateException {
-			invalidState(comp, getMessage(resourceId, null, args));
+			invalidState(comp, cld.getMessage(resourceId, null, args));
 		}
 
 		protected void invalidState(JComponent comp, String message) throws InvalidStateException {
@@ -270,13 +290,14 @@ public class CustomComponentWizardModel extends StaticModel {
 					updateState();
 				}
 			});
-			removeButton = new JButton(new AbstractAction(getText("nuclos.resplan.wizard.step1.remove", null)) {
+			removeButton = new JButton(new AbstractAction(cld.getText("nuclos.resplan.wizard.step1.remove", null)) {
 				@Override
 				public void actionPerformed(ActionEvent e) {
 					final String selectedComponent = (String) existingComponents.getSelectedItem();
 					if (selectedComponent == null)
 						return;
-					int opt = JOptionPane.showConfirmDialog(CustomComponentWizardStep1.this, getText("nuclos.resplan.wizard.step1.remove.check", null));
+					int opt = JOptionPane.showConfirmDialog(CustomComponentWizardStep1.this, 
+							cld.getText("nuclos.resplan.wizard.step1.remove.check", null));
 					if (opt == JOptionPane.OK_OPTION) {
 						UIUtils.runShortCommand(null, new CommonRunnable() {
 							@Override
@@ -453,7 +474,7 @@ public class CustomComponentWizardModel extends StaticModel {
 			timeFromFieldComboBox = createJComboBox(20);
 			timeUntilFieldComboBox = createJComboBox(20);
 
-			withTimeCheckBox = new JCheckBox(getText("nuclos.resplan.wizard.step3.withTimeSpans", null));
+			withTimeCheckBox = new JCheckBox(cld.getText("nuclos.resplan.wizard.step3.withTimeSpans", null));
 			withTimeCheckBox.addItemListener(this);
 			timeSpanPane = new LocalTimeSpanPane();
 			timeSpanPane.addChangeListener(this);
@@ -715,14 +736,14 @@ public class CustomComponentWizardModel extends StaticModel {
 
 			TableLayoutBuilder tlb = new TableLayoutBuilder(this).columns(PREFERRED, PREFERRED, PREFERRED, FILL).gaps(5, 5);
 			tlb.newRow(PREFERRED).
-				addLabel(CommonLocaleDelegate.getMessage("nuclos.resplan.wizard.step4.defaultViewFrom", "Standard Zeitraum von (HEUTE")).
+				addLabel(cld.getMessage("nuclos.resplan.wizard.step4.defaultViewFrom", "Standard Zeitraum von (HEUTE")).
 				add(tfDefaultViewFrom).
-				add(new JLabel(CommonLocaleDelegate.getMessage("nuclos.resplan.wizard.step4.defaultViewFrom2", ")"), 2));
+				add(new JLabel(cld.getMessage("nuclos.resplan.wizard.step4.defaultViewFrom2", ")"), 2));
 			tlb.newRow(PREFERRED).
-				addLabel(CommonLocaleDelegate.getMessage("nuclos.resplan.wizard.step4.defaultViewUntil", "Standard Zeitraum bis (HEUTE")).
+				addLabel(cld.getMessage("nuclos.resplan.wizard.step4.defaultViewUntil", "Standard Zeitraum bis (HEUTE")).
 				add(tfDefaultViewUntil).
-				add(new JLabel(CommonLocaleDelegate.getMessage("nuclos.resplan.wizard.step4.defaultViewUntil2", ")"), 2));
-			tlb.newRow(PREFERRED).add(new JLabel("          " + CommonLocaleDelegate.getMessage("nuclos.resplan.wizard.step4.defaultView", "t=Tag,w=Woche,m=Monat,j=Jahr")), 4);
+				add(new JLabel(cld.getMessage("nuclos.resplan.wizard.step4.defaultViewUntil2", ")"), 2));
+			tlb.newRow(PREFERRED).add(new JLabel("          " + cld.getMessage("nuclos.resplan.wizard.step4.defaultView", "t=Tag,w=Woche,m=Monat,j=Jahr")), 4);
 			tlb.newRow(10).add(new JSeparator(), 4);
 			tlb.newRow(FILL).add(scrollPane, 4);
 		}
@@ -793,7 +814,7 @@ public class CustomComponentWizardModel extends StaticModel {
 
 			codeEditor = new CustomComponentCodeEditor();
 
-			scriptActiveCheckBox = new JCheckBox(getText("nuclos.resplan.wizard.step5.scriptingActivated", null));
+			scriptActiveCheckBox = new JCheckBox(cld.getText("nuclos.resplan.wizard.step5.scriptingActivated", null));
 			scriptActiveCheckBox.addItemListener(this);
 			codeStateLabel = new JLabel("");
 			editCodeButton = new JButton("Skriptcode editieren");
@@ -886,14 +907,14 @@ public class CustomComponentWizardModel extends StaticModel {
 				GroovySupport support = codeEditor.getSupport();
 				compiled = support.isCompiled();
 				codeStateLabel.setText(compiled
-						? getText("nuclos.resplan.wizard.step5.scriptOk", null)
-						: getText("nuclos.resplan.wizard.step5.scriptError", null));
+						? cld.getText("nuclos.resplan.wizard.step5.scriptOk", null)
+						: cld.getText("nuclos.resplan.wizard.step5.scriptError", null));
 				setComplete(compiled);
 //				replaceModel(backgroundPaintMethod, support.findMethodNames(BackgroundPainter.SCRIPTING_SIGNATURE));
 //				replaceModel(resourceCellMethod, support.findMethodNames(CollectableLabelProvider.SCRIPTING_SIGNATURE));
 //				replaceModel(entryCellMethod, support.findMethodNames(CollectableLabelProvider.SCRIPTING_SIGNATURE));
 			} else {
-				codeStateLabel.setText(getText("nuclos.resplan.wizard.step5.scriptDisabled", null));
+				codeStateLabel.setText(cld.getText("nuclos.resplan.wizard.step5.scriptDisabled", null));
 				setComplete(true);
 			}
 			backgroundPaintMethod.setEnabled(compiled);
@@ -915,19 +936,21 @@ public class CustomComponentWizardModel extends StaticModel {
 
 		public CustomComponentCodeEditor() {
 			super(new BorderLayout());
+			
+			final CommonLocaleDelegate cld = CommonLocaleDelegate.getInstance();
 			this.support = new GroovySupport();
 
 			editPanel = new RuleEditPanel(null);
 			editPanel.getJavaEditorPanel().setContentType("text/groovy");
 
 			JToolBar toolBar = new JToolBar();
-			toolBar.add(new AbstractAction(getText("nuclos.resplan.wizard.step5.scriptEditor.compile", null)) {
+			toolBar.add(new AbstractAction(cld.getText("nuclos.resplan.wizard.step5.scriptEditor.compile", null)) {
 				@Override
 				public void actionPerformed(ActionEvent e) {
 					compile();
 				}
 			});
-			toolBar.add(new AbstractAction(getText("nuclos.resplan.wizard.step5.scriptEditor.close", null)) {
+			toolBar.add(new AbstractAction(cld.getText("nuclos.resplan.wizard.step5.scriptEditor.close", null)) {
 				@Override
 				public void actionPerformed(ActionEvent e) {
 					compile();
@@ -942,7 +965,8 @@ public class CustomComponentWizardModel extends StaticModel {
 		}
 
 		public void run() {
-			JDialog dialog = new JDialog(Main.getMainFrame(), getText("nuclos.resplan.wizard.step5.scriptEditor.title", null));
+			JDialog dialog = new JDialog(Main.getInstance().getMainFrame(), 
+					CommonLocaleDelegate.getInstance().getText("nuclos.resplan.wizard.step5.scriptEditor.title", null));
 			dialog.setModal(true);
 			dialog.getContentPane().add(this);
 			dialog.pack();
@@ -978,7 +1002,7 @@ public class CustomComponentWizardModel extends StaticModel {
 		CustomComponentWizardStep6() {
 			super("nuclos.resplan.wizard.step6.title", "nuclos.resplan.wizard.step6.summary");
 
-			add(new JLabel(getText("nuclos.resplan.wizard.step6.summary", null)));
+			add(new JLabel(cld.getText("nuclos.resplan.wizard.step6.summary", null)));
 		}
 
 		@Override
@@ -999,7 +1023,7 @@ public class CustomComponentWizardModel extends StaticModel {
 		@Override
 		public void applyState() throws InvalidStateException {
 			model.wizard.close();
-			Main.getMainController().refreshMenus();
+			Main.getInstance().getMainController().refreshMenus();
 		}
 	}
 
@@ -1122,7 +1146,7 @@ public class CustomComponentWizardModel extends StaticModel {
 
 		@Override
 		public String getColumnName(int column) {
-			return getText("nuclos.resplan.wizard.step3.timeSpans." + (column == 0 ? "from" : "until"), null);
+			return getCommonLocaleDelegate().getText("nuclos.resplan.wizard.step3.timeSpans." + (column == 0 ? "from" : "until"), null);
 		}
 
 		@Override

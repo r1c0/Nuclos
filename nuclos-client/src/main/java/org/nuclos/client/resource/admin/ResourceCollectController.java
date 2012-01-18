@@ -68,7 +68,7 @@ public class ResourceCollectController extends MasterDataCollectController{
 				int iDetailsMode = ev.getNewCollectState().getInnerState();
 				if (iDetailsMode == CollectState.DETAILSMODE_VIEW || iDetailsMode == CollectState.DETAILSMODE_EDIT) {
 					Integer iId = getSelectedCollectable().getMasterDataWithDependantsCVO().getIntId();
-					ResourceVO resourcevo = ResourceCache.getResourceById(iId);
+					ResourceVO resourcevo = ResourceCache.getInstance().getResourceById(iId);
 					final boolean bIsSystemResource = (resourcevo == null) ? false : resourcevo.isSystemResource();
 					if (bIsSystemResource) {
 						setComponentsEnabled(false);

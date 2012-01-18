@@ -351,7 +351,7 @@ public class WYSIWYGStaticButton extends JButton implements WYSIWYGComponent, WY
 
 	public void setIcon(String resource) {
 		try {
-			ImageIcon ico = ResourceCache.getIconResource(resource);
+			ImageIcon ico = ResourceCache.getInstance().getIconResource(resource);
 			setIcon(ico);
 		}
 		catch (Exception ex) {

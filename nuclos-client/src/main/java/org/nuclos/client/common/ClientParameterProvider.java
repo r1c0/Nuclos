@@ -28,12 +28,13 @@ import javax.jms.TextMessage;
 import org.apache.log4j.Logger;
 import org.nuclos.common.AbstractParameterProvider;
 import org.nuclos.common.JMSConstants;
-import org.nuclos.common.SpringApplicationContextHolder;
 import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.common2.exception.CommonRemoteException;
 import org.nuclos.server.common.ejb3.ParameterFacadeRemote;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 
 /**
@@ -45,9 +46,14 @@ import org.springframework.beans.factory.InitializingBean;
  * @author	<a href="mailto:Christoph.Radig@novabit.de">Christoph.Radig</a>
  * @version 01.00.00
  */
+@Component
 public class ClientParameterProvider extends AbstractParameterProvider implements MessageListener, InitializingBean {
 	
 	private static final Logger LOG = Logger.getLogger(ClientParameterProvider.class);
+	
+	private static ClientParameterProvider INSTANCE;
+	
+	//
 
 	private final MessageListener serverListener = new MessageListener() {
 		@Override
@@ -68,21 +74,36 @@ public class ClientParameterProvider extends AbstractParameterProvider implement
 	 * Map<String sName, String sValue>
 	 */
 	private Map<String, String> mpParams;
+	
+	private TopicNotificationReceiver tnr;
+	
+	private ParameterFacadeRemote parameterFacadeRemote;
 
-	public static synchronized ClientParameterProvider getInstance() {
-		return (ClientParameterProvider) SpringApplicationContextHolder.getBean("parameterProvider");
+	public static ClientParameterProvider getInstance() {
+		// return (ClientParameterProvider) SpringApplicationContextHolder.getBean("parameterProvider");
+		return INSTANCE;
 	}
 
 	/**
 	 * Use getInstance() to get the one and only instance of this class.
 	 */
-	protected ClientParameterProvider() {
-
+	ClientParameterProvider() {
+		INSTANCE = this;
+	}
+	
+	@Autowired
+	void setTopicNotificationReceiver(TopicNotificationReceiver tnr) {
+		this.tnr = tnr;
+	}
+	
+	@Autowired
+	void setParameterService(ParameterFacadeRemote parameterFacadeRemote) {
+		this.parameterFacadeRemote = parameterFacadeRemote;
 	}
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		TopicNotificationReceiver.subscribe(JMSConstants.TOPICNAME_PARAMETERPROVIDER, serverListener);
+		tnr.subscribe(JMSConstants.TOPICNAME_PARAMETERPROVIDER, serverListener);
 		this.mpParams = getParameterFromServer();
 	}
 
@@ -92,9 +113,9 @@ public class ClientParameterProvider extends AbstractParameterProvider implement
 
 	private synchronized Map<String, String> getParameterFromServer() {
 		try {
-
-			ParameterFacadeRemote remote = ServiceLocator.getInstance().getFacade(ParameterFacadeRemote.class);
-			return remote.getParameters();
+			// ParameterFacadeRemote remote = serviceLocator.getFacade(ParameterFacadeRemote.class);
+			// return remote.getParameters();
+			return parameterFacadeRemote.getParameters();
 		}
 		catch (RuntimeException ex) {
 			throw new CommonRemoteException(ex);

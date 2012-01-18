@@ -46,13 +46,17 @@ public class CollectableStateRole extends DefaultCollectable {
 
 	private static class Entity extends AbstractCollectableEntity {
 		private Entity() {
-			super("staterole", CommonLocaleDelegate.getMessage("CollectableStateRole.3","Rolle (Benutzergruppe) f\u00fcr Status"));
+			super("staterole", 
+					CommonLocaleDelegate.getInstance().getMessage(
+							"CollectableStateRole.3","Rolle (Benutzergruppe) f\u00fcr Status"));
 			final String entity = "staterole";
-			this.addCollectableEntityField(new DefaultCollectableEntityField(FIELDNAME_STATE, String.class, CommonLocaleDelegate.getMessage("CollectableStateRole.4","Status"),
-					CommonLocaleDelegate.getMessage("CollectableStateRole.5","\u00dcbergeordneter Status"), null, null, false, CollectableField.TYPE_VALUEIDFIELD, NuclosEntity.STATE.getEntityName(),
+			this.addCollectableEntityField(new DefaultCollectableEntityField(FIELDNAME_STATE, String.class, 
+					getCommonLocaleDelegate().getMessage("CollectableStateRole.4","Status"),
+					getCommonLocaleDelegate().getMessage("CollectableStateRole.5","\u00dcbergeordneter Status"), null, null, false, CollectableField.TYPE_VALUEIDFIELD, NuclosEntity.STATE.getEntityName(),
 					CollectableValueIdField.NULL, null, null, entity));
-			this.addCollectableEntityField(new DefaultCollectableEntityField(FIELDNAME_ROLE, String.class, CommonLocaleDelegate.getMessage("CollectableStateRole.1","Benutzergruppe"),
-					CommonLocaleDelegate.getMessage("CollectableStateRole.2","Benutzergruppe (Rolle)"), null, null, false, CollectableField.TYPE_VALUEIDFIELD, NuclosEntity.ROLE.getEntityName(),
+			this.addCollectableEntityField(new DefaultCollectableEntityField(FIELDNAME_ROLE, String.class, 
+					getCommonLocaleDelegate().getMessage("CollectableStateRole.1","Benutzergruppe"),
+					getCommonLocaleDelegate().getMessage("CollectableStateRole.2","Benutzergruppe (Rolle)"), null, null, false, CollectableField.TYPE_VALUEIDFIELD, NuclosEntity.ROLE.getEntityName(),
 					CollectableValueIdField.NULL, null, null, entity));
 		}
 	}

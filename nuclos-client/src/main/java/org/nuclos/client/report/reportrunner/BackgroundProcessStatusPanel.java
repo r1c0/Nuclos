@@ -56,8 +56,10 @@ public class BackgroundProcessStatusPanel extends JPanel {
 
 	private final JTable tblStatus = new JTable(tblmodel);
 
-	private final JButton btnClear = new JButton(CommonLocaleDelegate.getMessage("BackgroundProcessStatusPanel.4","Zur\u00fccksetzen"));
-	private final JButton btnStopProcess = new JButton(CommonLocaleDelegate.getMessage("BackgroundProcessStatusPanel.2","Prozess beenden"));
+	private final JButton btnClear = new JButton(CommonLocaleDelegate.getInstance().getMessage(
+			"BackgroundProcessStatusPanel.4","Zur\u00fccksetzen"));
+	private final JButton btnStopProcess = new JButton(CommonLocaleDelegate.getInstance().getMessage(
+			"BackgroundProcessStatusPanel.2","Prozess beenden"));
 
 	public BackgroundProcessStatusPanel() {
 		super(new BorderLayout());
@@ -77,10 +79,12 @@ public class BackgroundProcessStatusPanel extends JPanel {
 		this.add(scrlpn, BorderLayout.CENTER);
 		this.add(pnlButtons, BorderLayout.SOUTH);
 
-		btnStopProcess.setToolTipText(CommonLocaleDelegate.getMessage("BackgroundProcessStatusPanel.3","Prozesse beenden"));
+		btnStopProcess.setToolTipText(CommonLocaleDelegate.getInstance().getMessage(
+				"BackgroundProcessStatusPanel.3","Prozesse beenden"));
 		btnStopProcess.setEnabled(false);
 		pnlButtons.add(btnStopProcess);
-		btnClear.setToolTipText(CommonLocaleDelegate.getMessage("BackgroundProcessStatusPanel.1","Beendete Prozesse aus der Liste entfernen"));
+		btnClear.setToolTipText(CommonLocaleDelegate.getInstance().getMessage(
+				"BackgroundProcessStatusPanel.1","Beendete Prozesse aus der Liste entfernen"));
 		btnClear.setEnabled(false);
 		pnlButtons.add(btnClear);
 

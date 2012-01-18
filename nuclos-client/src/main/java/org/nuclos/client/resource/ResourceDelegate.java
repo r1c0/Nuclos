@@ -25,7 +25,6 @@ import org.apache.log4j.Logger;
 import org.nuclos.common.NuclosBusinessException;
 import org.nuclos.common.collection.Pair;
 import org.nuclos.common.dal.vo.EntityObjectVO;
-import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonCreateException;
 import org.nuclos.common2.exception.CommonFatalException;
@@ -34,6 +33,8 @@ import org.nuclos.server.masterdata.valueobject.DependantMasterDataMap;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 import org.nuclos.server.resource.ejb3.ResourceFacadeRemote;
 import org.nuclos.server.resource.valueobject.ResourceVO;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 /**
  * Business Delegate for <code>ResourceFacade</code>
@@ -44,33 +45,39 @@ import org.nuclos.server.resource.valueobject.ResourceVO;
  * @author	<a href="mailto:corina.mandoki@novabit.de">Corina Mandoki</a>
  * @version 01.00.00
  */
+@Component
 public class ResourceDelegate {
 
 	private static final Logger LOG = Logger.getLogger(ResourceDelegate.class);
 
-	private static ResourceDelegate singleton;
+	private static ResourceDelegate INSTANCE;
+	
+	//
 
-	private final ResourceFacadeRemote facade;
+	private ResourceFacadeRemote facade;
+	
+	private ResourceCache resourceCache;
 
 	/**
 	 * Use getInstance() to create an (the) instance of this class
 	 */
-	private ResourceDelegate() throws RuntimeException {
-		this.facade = ServiceLocator.getInstance().getFacade(ResourceFacadeRemote.class);
+	ResourceDelegate() throws RuntimeException {
+		INSTANCE = this;
 	}
 
-	public static synchronized ResourceDelegate getInstance() {
-		if (singleton == null) {
-			try {
-				singleton = new ResourceDelegate();
-			}
-			catch (RuntimeException ex) {
-				throw new CommonFatalException(ex);
-			}
-		}
-		return singleton;
+	public static ResourceDelegate getInstance() {
+		return INSTANCE;
+	}
+	
+	@Autowired
+	void setResourceCache(ResourceCache resourceCache) {
+		this.resourceCache = resourceCache;
 	}
 
+	@Autowired
+	void setResourceFacadeRemote(ResourceFacadeRemote facade) {
+		this.facade = facade;
+	}
 
 	public ResourceVO getResourceByName(String sResourceName) {
 		return facade.getResourceByName(sResourceName);
@@ -142,7 +149,7 @@ public class ResourceDelegate {
 	public boolean containsIconResources() {
 		for (String resName : getResourceNames()) {
 			try {
-				ImageIcon ico = ResourceCache.getIconResource(resName);
+				ImageIcon ico = resourceCache.getIconResource(resName);
 				if (ico.getIconWidth() > 0 && ico.getIconHeight() > 0) {
 					return true;
 				}
@@ -157,7 +164,7 @@ public class ResourceDelegate {
 		Set<String> result = new HashSet<String>();
 		for (String resName : getResourceNames()) {
 			try {
-				ImageIcon ico = ResourceCache.getIconResource(resName);
+				ImageIcon ico = resourceCache.getIconResource(resName);
 				if (ico.getIconWidth() > 0 && ico.getIconHeight() > 0) {
 					result.add(resName);
 				}

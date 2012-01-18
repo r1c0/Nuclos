@@ -91,7 +91,9 @@ public class DOCExport extends AbstractReportExporter {
 		new HashMap<String, DispatchPtr>();
 
 		if (sSourceFileName == null || sSourceFileName.length() == 0) {
-			throw new NuclosReportException(CommonLocaleDelegate.getMessage("DOCExport.1", "Word-Datei konnte nicht erstellt werden, da keine Vorlage angegeben wurde."));
+			throw new NuclosReportException(
+					CommonLocaleDelegate.getInstance().getMessage(
+							"DOCExport.1", "Word-Datei konnte nicht erstellt werden, da keine Vorlage angegeben wurde."));
 		}
 
 		final String sDir = createExportDir(outputvo.getParameter());
@@ -130,8 +132,8 @@ public class DOCExport extends AbstractReportExporter {
 						DispatchPtr textinput = field.getObject("TextInput");
 						if (field != null && value != null) {
 							if (value instanceof Date) {
-								field.put("Result", CommonLocaleDelegate.getDateFormat().format((Date) value));
-								textinput.put("Default", CommonLocaleDelegate.getDateFormat().format((Date) value));
+								field.put("Result", CommonLocaleDelegate.getInstance().getDateFormat().format((Date) value));
+								textinput.put("Default", CommonLocaleDelegate.getInstance().getDateFormat().format((Date) value));
 							} else if (value instanceof Number) {
 								field.put("Result", value.toString());
 								textinput.put("Default", value.toString());
@@ -174,7 +176,9 @@ public class DOCExport extends AbstractReportExporter {
 
 		}
 		catch (Throwable e) {
-			throw new NuclosReportException(CommonLocaleDelegate.getMessage("DOCExport.2", "Die Datei {0} konnte nicht erstellt werden", sFileName) + ":\n" + e.getMessage(), e);
+			throw new NuclosReportException(
+					CommonLocaleDelegate.getInstance().getMessage(
+							"DOCExport.2", "Die Datei {0} konnte nicht erstellt werden", sFileName) + ":\n" + e.getMessage(), e);
 		}
 		finally {
 			for (DispatchPtr ptr : mpFields.values()) {
@@ -202,7 +206,9 @@ public class DOCExport extends AbstractReportExporter {
 				Ole32.CoUninitialize();
 			}
 			catch (Throwable e) {
-				throw new NuclosReportException(CommonLocaleDelegate.getMessage("DOCExport.2", "Die Datei {0} konnte nicht erstellt werden", sFileName) + ":\n" + e.getMessage(), e);
+				throw new NuclosReportException(
+						CommonLocaleDelegate.getInstance().getMessage(
+								"DOCExport.2", "Die Datei {0} konnte nicht erstellt werden", sFileName) + ":\n" + e.getMessage(), e);
 			}
 		}
 

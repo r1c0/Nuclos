@@ -342,7 +342,7 @@ public abstract class NuclosFacadeBean implements NuclosFacadeLocal {
 					}
 				}
 				else {
-					sEntityLabel = CommonLocaleDelegate.getLabelFromMetaDataVO(MasterDataMetaCache.getInstance().getMetaData(sEntityName[i]));//MasterDataMetaCache.getInstance().getMetaData(sEntityName[i]).getLabel();
+					sEntityLabel = CommonLocaleDelegate.getInstance().getLabelFromMetaDataVO(MasterDataMetaCache.getInstance().getMetaData(sEntityName[i]));//MasterDataMetaCache.getInstance().getMetaData(sEntityName[i]).getLabel();
 					if(SecurityCache.getInstance().isReadAllowedForMasterData(this.getCurrentUserName(), sEntityName[i])) {
 					  isReadAllowed = true;
 					  break;
@@ -379,7 +379,9 @@ public abstract class NuclosFacadeBean implements NuclosFacadeLocal {
 					}
 				}
 				else {
-					sEntityLabel = CommonLocaleDelegate.getLabelFromMetaDataVO(MasterDataMetaCache.getInstance().getMetaData(sEntityName[i]));//MasterDataMetaCache.getInstance().getMetaData(sEntityName[i]).getLabel();
+					sEntityLabel = CommonLocaleDelegate.getInstance().getLabelFromMetaDataVO(
+							MasterDataMetaCache.getInstance().getMetaData(sEntityName[i]));
+					//MasterDataMetaCache.getInstance().getMetaData(sEntityName[i]).getLabel();
 					if(SecurityCache.getInstance().isWriteAllowedForMasterData(this.getCurrentUserName(), sEntityName[i])) {
 					  isWriteAllowed = true;
 					  break;
@@ -415,7 +417,9 @@ public abstract class NuclosFacadeBean implements NuclosFacadeLocal {
 					}
 				}
 				else {
-					sEntityLabel = CommonLocaleDelegate.getLabelFromMetaDataVO(MasterDataMetaCache.getInstance().getMetaData(sEntityName[i]));//MasterDataMetaCache.getInstance().getMetaData(sEntityName[i]).getLabel();
+					sEntityLabel = CommonLocaleDelegate.getInstance().getLabelFromMetaDataVO(
+							MasterDataMetaCache.getInstance().getMetaData(sEntityName[i]));
+					//MasterDataMetaCache.getInstance().getMetaData(sEntityName[i]).getLabel();
 					if(SecurityCache.getInstance().isDeleteAllowedForMasterData(this.getCurrentUserName(), sEntityName[i])) {
 					  isDeleteAllowed = true;
 					  break;

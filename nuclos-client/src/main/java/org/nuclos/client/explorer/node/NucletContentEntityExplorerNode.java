@@ -35,7 +35,6 @@ import org.nuclos.client.ui.UIUtils;
 import org.nuclos.client.ui.tree.TreeNodeAction;
 import org.nuclos.client.wizard.ShowNuclosWizard;
 import org.nuclos.common.NuclosFatalException;
-import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.CommonRunnable;
 import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.exception.CommonBusinessException;
@@ -85,7 +84,7 @@ public class NucletContentEntityExplorerNode extends ExplorerNode<NucletContentE
 	private class ShowDetailsAction extends TreeNodeAction {
 
 		ShowDetailsAction(JTree tree) {
-			super(ACTIONCOMMAND_SHOW_DETAILS, CommonLocaleDelegate.getMessage("NucletContentEntityExplorerNode.1","Entitaetenwizard starten"), tree);
+			super(ACTIONCOMMAND_SHOW_DETAILS, getCommonLocaleDelegate().getMessage("NucletContentEntityExplorerNode.1","Entitaetenwizard starten"), tree);
 		}
 
 		@Override
@@ -103,7 +102,7 @@ public class NucletContentEntityExplorerNode extends ExplorerNode<NucletContentE
 				public void run() throws CommonBusinessException {
 					ShowNuclosWizard w = new ShowNuclosWizard(true);
 					w.setEntityToEdit(MetaDataClientProvider.getInstance().getEntity(getTreeNode().getEntityObjectVO().getField("entity", String.class)));
-					w.showWizard(Main.getMainFrame().getHomePane(), Main.getMainFrame());
+					w.showWizard(Main.getInstance().getMainFrame().getHomePane(), Main.getInstance().getMainFrame());
 				}
 			});
 		}
@@ -112,7 +111,7 @@ public class NucletContentEntityExplorerNode extends ExplorerNode<NucletContentE
 	private class RemoveFromNucletAction extends TreeNodeAction {
 
 		public RemoveFromNucletAction(JTree tree) {
-			super(ACTIONCOMMAND_REMOVE, CommonLocaleDelegate.getMessage("NucletContentEntryExplorerNode.1","Vom Nuclet entfernen"), tree);
+			super(ACTIONCOMMAND_REMOVE, getCommonLocaleDelegate().getMessage("NucletContentEntryExplorerNode.1","Vom Nuclet entfernen"), tree);
 		}
 		
 		@Override

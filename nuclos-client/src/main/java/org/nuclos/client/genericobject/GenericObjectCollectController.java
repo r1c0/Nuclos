@@ -285,26 +285,6 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 
 	private static final String TABSELECTED = "tabselected";
 
-
-	/*
-	// TODO: Entity name null ok?
-	public static final CollectableEntityField clctefStatus = new DefaultCollectableEntityField(NuclosEOField.STATE.getMetaData().getField(), String.class,
-		CommonLocaleDelegate.getLabelFromAttributeCVO(AttributeCache.getInstance().getAttribute(NuclosEOField.STATE.getMetaData().getId().intValue())),
-		null, null, null, true, CollectableField.TYPE_VALUEIDFIELD, null, null, null);
-
-	// TODO: Entity name null ok?
-	public static final CollectableEntityField clctefStatusnumeral = new DefaultCollectableEntityField(NuclosEOField.STATENUMBER.getMetaData().getField(), Integer.class,
-		CommonLocaleDelegate.getLabelFromAttributeCVO(AttributeCache.getInstance().getAttribute(NuclosEOField.STATENUMBER.getMetaData().getId().intValue())),
-		null, null, null, true, CollectableField.TYPE_VALUEIDFIELD, null, null, null);
-
-	// TODO: Entity name null ok?
-	private final CollectableEntityField clctefSearchState = new DefaultCollectableEntityField("[status_num_plus_name]", String.class,
-		CommonLocaleDelegate.getLabelFromAttributeCVO(AttributeCache.getInstance().getAttribute(NuclosEOField.STATE.getMetaData().getId().intValue())),
-		null, null, null, true, CollectableField.TYPE_VALUEIDFIELD, null, null, null);
-
-	private final CollectableComboBox clctSearchState = new NuclosCollectableStateComboBox(clctefSearchState, true);
-	 */
-	
 	private CollectableComboBox clctSearchState;
 
 	private final CollectableComponentModelListener ccmlistenerUsageCriteriaFieldsForDetails = new CollectableComponentModelAdapter() {
@@ -345,7 +325,8 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 
 						}
 						catch (/* CommonBusiness */ Exception ex) {
-							Errors.getInstance().showExceptionDialog(getFrame(), CommonLocaleDelegate.getMessage("GenericObjectCollectController.15","Beim Nachladen eines Layouts ist ein Fehler aufgetreten."), ex);
+							Errors.getInstance().showExceptionDialog(getFrame(), 
+									getCommonLocaleDelegate().getMessage("GenericObjectCollectController.15","Beim Nachladen eines Layouts ist ein Fehler aufgetreten."), ex);
 						}
 					}
 				});
@@ -366,7 +347,8 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 							reloadLayoutForSearchTab();
 						}
 						catch (/* CommonBusiness */ Exception ex) {
-							Errors.getInstance().showExceptionDialog(getFrame(), CommonLocaleDelegate.getMessage("GenericObjectCollectController.16","Beim Nachladen eines Layouts ist ein Fehler aufgetreten."), ex);
+							Errors.getInstance().showExceptionDialog(getFrame(), 
+									getCommonLocaleDelegate().getMessage("GenericObjectCollectController.16","Beim Nachladen eines Layouts ist ein Fehler aufgetreten."), ex);
 						}
 					}
 				});
@@ -417,9 +399,9 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	//protected final JComboBox cmbbxSearchDeleted = new JComboBox();
 	protected final ButtonGroup btnGrpSearchDeleted = new ButtonGroup();
 	protected final JRadioButtonMenuItem[] miSearchDeleted = new JRadioButtonMenuItem[]{
-		new JRadioButtonMenuItem(CommonLocaleDelegate.getMessage("GenericObjectCollectController.59","Nur ungel\u00f6schte suchen")),
-		new JRadioButtonMenuItem(CommonLocaleDelegate.getMessage("GenericObjectCollectController.58","Nur gel\u00f6schte suchen")),
-		new JRadioButtonMenuItem(CommonLocaleDelegate.getMessage("GenericObjectCollectController.49","Gel\u00f6schte und ungel\u00f6schte suchen"))
+		new JRadioButtonMenuItem(getCommonLocaleDelegate().getMessage("GenericObjectCollectController.59","Nur ungel\u00f6schte suchen")),
+		new JRadioButtonMenuItem(getCommonLocaleDelegate().getMessage("GenericObjectCollectController.58","Nur gel\u00f6schte suchen")),
+		new JRadioButtonMenuItem(getCommonLocaleDelegate().getMessage("GenericObjectCollectController.49","Gel\u00f6schte und ungel\u00f6schte suchen"))
 	};
 
 	private final JCheckBoxMenuItem chkbxUseInvalidMasterData = new JCheckBoxMenuItem();
@@ -504,8 +486,10 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	/**
 	 * action: Delete selected Collectable (in Result panel)
 	 */
-	final Action actDeleteSelectedCollectablesPhysically = new CommonAbstractAction(CommonLocaleDelegate.getMessage("GenericObjectCollectController.11","Ausgew\u00e4hlte Datens\u00e4tze endg\u00fcltig l\u00f6schen"),
-		Icons.getInstance().getIconRealDelete16(), CommonLocaleDelegate.getMessage("GenericObjectCollectController.11","Ausgew\u00e4hlte Datens\u00e4tze endg\u00fcltig l\u00f6schen")) {
+	final Action actDeleteSelectedCollectablesPhysically = new CommonAbstractAction(
+			getCommonLocaleDelegate().getMessage("GenericObjectCollectController.11","Ausgew\u00e4hlte Datens\u00e4tze endg\u00fcltig l\u00f6schen"),
+			Icons.getInstance().getIconRealDelete16(), 
+			getCommonLocaleDelegate().getMessage("GenericObjectCollectController.11","Ausgew\u00e4hlte Datens\u00e4tze endg\u00fcltig l\u00f6schen")) {
 
 		@Override
 		public void actionPerformed(ActionEvent ev) {
@@ -513,8 +497,10 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		}
 	};
 
-	final Action actDeleteSelectedCollectables = new CommonAbstractAction(CommonLocaleDelegate.getMessage("GenericObjectCollectController.52","L\u00f6schen..."),
-		Icons.getInstance().getIconDelete16(), CommonLocaleDelegate.getMessage("GenericObjectCollectController.12","Ausgew\u00e4hlte Datens\u00e4tze l\u00f6schen")) {
+	final Action actDeleteSelectedCollectables = new CommonAbstractAction(
+			getCommonLocaleDelegate().getMessage("GenericObjectCollectController.52","L\u00f6schen..."),
+			Icons.getInstance().getIconDelete16(), 
+			getCommonLocaleDelegate().getMessage("GenericObjectCollectController.12","Ausgew\u00e4hlte Datens\u00e4tze l\u00f6schen")) {
 
 		@Override
 		public void actionPerformed(ActionEvent ev) {
@@ -522,8 +508,10 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		}
 	};
 
-	final Action actDeleteCurrentCollectableInDetails = new CommonAbstractAction(CommonLocaleDelegate.getMessage("GenericObjectCollectController.53","L\u00f6schen..."),
-		Icons.getInstance().getIconDelete16(), CommonLocaleDelegate.getMessage("GenericObjectCollectController.37","Diesen Datensatz l\u00f6schen")) {
+	final Action actDeleteCurrentCollectableInDetails = new CommonAbstractAction(
+			getCommonLocaleDelegate().getMessage("GenericObjectCollectController.53","L\u00f6schen..."),
+			Icons.getInstance().getIconDelete16(), 
+			getCommonLocaleDelegate().getMessage("GenericObjectCollectController.37","Diesen Datensatz l\u00f6schen")) {
 
 		@Override
 		public void actionPerformed(ActionEvent ev) {
@@ -531,8 +519,10 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		}
 	};
 
-	final Action actRestoreSelectedCollectables = new CommonAbstractAction(CommonLocaleDelegate.getMessage("GenericObjectCollectController.98","Wiederherstellen..."),
-		Icons.getInstance().getIconDelete16(), CommonLocaleDelegate.getMessage("GenericObjectCollectController.13","Ausgew\u00e4hlte Datens\u00e4tze wiederherstellen")) {
+	final Action actRestoreSelectedCollectables = new CommonAbstractAction(
+			getCommonLocaleDelegate().getMessage("GenericObjectCollectController.98","Wiederherstellen..."),
+			Icons.getInstance().getIconDelete16(), 
+			getCommonLocaleDelegate().getMessage("GenericObjectCollectController.13","Ausgew\u00e4hlte Datens\u00e4tze wiederherstellen")) {
 
 		@Override
 		public void actionPerformed(ActionEvent ev) {
@@ -540,8 +530,10 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		}
 	};
 
-	final Action actRestoreCurrentCollectableInDetails = new CommonAbstractAction(CommonLocaleDelegate.getMessage("GenericObjectCollectController.99","Wiederherstellen"),
-		Icons.getInstance().getIconDelete16(), CommonLocaleDelegate.getMessage("GenericObjectCollectController.38","Diesen Datensatz wiederherstellen")) {
+	final Action actRestoreCurrentCollectableInDetails = new CommonAbstractAction(
+			getCommonLocaleDelegate().getMessage("GenericObjectCollectController.99","Wiederherstellen"),
+			Icons.getInstance().getIconDelete16(), 
+			getCommonLocaleDelegate().getMessage("GenericObjectCollectController.38","Diesen Datensatz wiederherstellen")) {
 
 		@Override
 		public void actionPerformed(ActionEvent ev) {
@@ -622,7 +614,8 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	private CollectableComboBox getSearchStateBox() {
 		if (clctSearchState == null) {
 			final CollectableEntityField clctefSearchState = new DefaultCollectableEntityField("[status_num_plus_name]", String.class,
-				CommonLocaleDelegate.getLabelFromAttributeCVO(AttributeCache.getInstance().getAttribute(NuclosEOField.STATE.getMetaData().getId().intValue())),
+				getCommonLocaleDelegate().getLabelFromAttributeCVO(AttributeCache.getInstance().getAttribute(
+						NuclosEOField.STATE.getMetaData().getId().intValue())),
 				null, null, null, true, CollectableField.TYPE_VALUEIDFIELD, null, null, getCollectableEntity().getName());
 			clctSearchState = new NuclosCollectableStateComboBox(clctefSearchState, true);
 		}
@@ -749,13 +742,14 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 */
 		JComboBox jComboBox = getSearchStateBox().getJComboBox();
 		//UIUtils.setMaximumSizeToPreferredSize(jComboBox);
-		jComboBox.setToolTipText(CommonLocaleDelegate.getMessage("GenericObjectCollectController.8","Aktueller Status"));
+		jComboBox.setToolTipText(getCommonLocaleDelegate().getMessage("GenericObjectCollectController.8","Aktueller Status"));
 		//jComboBox.setOpaque(false);
 		//CenteringPanel cpSearchState = new CenteringPanel(jComboBox);
 		//cpSearchState.setOpaque(false);
 		//toolSearchState.add(cpSearchState);
 		//toolSearchState.add(Box.createHorizontalStrut(5));
-		this.getSearchPanel().addToolBarComponent(new BlackLabel(jComboBox, CommonLocaleDelegate.getMessage("nuclos.entityfield.eo.state.label","Status")), 6);
+		this.getSearchPanel().addToolBarComponent(new BlackLabel(jComboBox, 
+				getCommonLocaleDelegate().getMessage("nuclos.entityfield.eo.state.label","Status")), 6);
 
 		//pnlCustomToolBarAreaSearch.add(toolSearchState, gbc);
 		setSearchStatesAccordingToUsageCriteria(new UsageCriteria(iModuleId, null));
@@ -1175,7 +1169,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 			LOG.debug("isDeleteAllowed: delete allowed for module and permission is readwrite.");
 		else {
 			// objects in initial state may always be deleted by their creator:
-			final String sCurrentUser = Main.getMainController().getUserName();
+			final String sCurrentUser = getMainController().getUserName();
 			final String sCreator = govo.getCreatedBy();
 			LOG.debug("isDeleteAllowed: current user: " + sCurrentUser + " - creator: " + sCreator);
 
@@ -1269,13 +1263,13 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		getResultPanel().addToolBarComponent(btnPrintResults);
 
 		btnShowResultInExplorer.setIcon(Icons.getInstance().getIconTree16());
-		btnShowResultInExplorer.setText(CommonLocaleDelegate.getMessage("GenericObjectCollectController.43","Ergebnis in Explorer anzeigen"));
+		btnShowResultInExplorer.setText(getCommonLocaleDelegate().getMessage("GenericObjectCollectController.43","Ergebnis in Explorer anzeigen"));
 
 		btnPrintResults.setIcon(Icons.getInstance().getIconPrintReport16());
 
 		if(SecurityCache.getInstance().isActionAllowed(Actions.ACTION_PRINT_SEARCHRESULT)){
 			btnPrintResults.setEnabled(true);
-			btnPrintResults.setToolTipText(CommonLocaleDelegate.getMessage("GenericObjectCollectController.44","Ergebnisliste drucken"));
+			btnPrintResults.setToolTipText(getCommonLocaleDelegate().getMessage("GenericObjectCollectController.44","Ergebnisliste drucken"));
 			// action: Print results
 			btnPrintResults.addActionListener(new ActionListener() {
 				@Override
@@ -1285,7 +1279,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 			});
 		} else {
 			btnPrintResults.setEnabled(false);
-			btnPrintResults.setToolTipText(CommonLocaleDelegate.getMessage("GenericObjectCollectController.45","Ergebnisliste drucken - Sie verf\u00fcgen nicht \u00fcber ausreichende Rechte."));
+			btnPrintResults.setToolTipText(getCommonLocaleDelegate().getMessage("GenericObjectCollectController.45","Ergebnisliste drucken - Sie verf\u00fcgen nicht \u00fcber ausreichende Rechte."));
 		}
 
 
@@ -1326,14 +1320,16 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 
 		if (multipleCollectablesSelected()) {
 			final int iCount = getResultTable().getSelectedRowCount();
-			final String sMessage = CommonLocaleDelegate.getMessage("GenericObjectCollectController.81","Sollen die ausgew\u00e4hlten {0} Datens\u00e4tze wirklich endg\u00fcltig gel\u00f6scht werden?\nDieser Vorgang kann nicht r\u00fcckg\u00e4ngig gemacht werden!", iCount);
-			final int btn = JOptionPane.showConfirmDialog(getFrame(), sMessage, CommonLocaleDelegate.getMessage("GenericObjectCollectController.20","Datens\u00e4tze endg\u00fcltig l\u00f6schen"), JOptionPane.YES_NO_OPTION);
+			final String sMessage = getCommonLocaleDelegate().getMessage("GenericObjectCollectController.81","Sollen die ausgew\u00e4hlten {0} Datens\u00e4tze wirklich endg\u00fcltig gel\u00f6scht werden?\nDieser Vorgang kann nicht r\u00fcckg\u00e4ngig gemacht werden!", iCount);
+			final int btn = JOptionPane.showConfirmDialog(getFrame(), sMessage, 
+					getCommonLocaleDelegate().getMessage("GenericObjectCollectController.20","Datens\u00e4tze endg\u00fcltig l\u00f6schen"), JOptionPane.YES_NO_OPTION);
 			if (btn == JOptionPane.YES_OPTION)
 				new DeleteSelectedCollectablesPhysicallyController(this).run(getMultiActionProgressPanel(iCount));
 		}
 		else {
-			final String sMessage = CommonLocaleDelegate.getMessage("GenericObjectCollectController.76","Soll der ausgew\u00e4hlte Datensatz ({0}) wirklich endg\u00fcltig gel\u00f6scht werden?\nDieser Vorgang kann nicht r\u00fcckg\u00e4ngig gemacht werden!", getSelectedCollectable().getIdentifierLabel());
-			final int btn = JOptionPane.showConfirmDialog(getFrame(), sMessage, CommonLocaleDelegate.getMessage("GenericObjectCollectController.23","Datensatz endg\u00fcltig l\u00f6schen"), JOptionPane.YES_NO_OPTION);
+			final String sMessage = getCommonLocaleDelegate().getMessage("GenericObjectCollectController.76","Soll der ausgew\u00e4hlte Datensatz ({0}) wirklich endg\u00fcltig gel\u00f6scht werden?\nDieser Vorgang kann nicht r\u00fcckg\u00e4ngig gemacht werden!", getSelectedCollectable().getIdentifierLabel());
+			final int btn = JOptionPane.showConfirmDialog(getFrame(), sMessage, 
+					getCommonLocaleDelegate().getMessage("GenericObjectCollectController.23","Datensatz endg\u00fcltig l\u00f6schen"), JOptionPane.YES_NO_OPTION);
 
 			if (btn == JOptionPane.YES_OPTION)
 				UIUtils.runCommand(getFrame(), new Runnable() {
@@ -1347,7 +1343,8 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 							Errors.getInstance().showExceptionDialog(getFrame(), sErrorMsg, ex);
 						}
 						catch (CommonBusinessException ex) {
-							Errors.getInstance().showExceptionDialog(getFrame(), CommonLocaleDelegate.getMessage("GenericObjectCollectController.29","Der Datensatz konnte nicht endg\u00fcltig gel\u00f6scht werden."), ex);
+							Errors.getInstance().showExceptionDialog(getFrame(), 
+									getCommonLocaleDelegate().getMessage("GenericObjectCollectController.29","Der Datensatz konnte nicht endg\u00fcltig gel\u00f6scht werden."), ex);
 						}
 					}
 				});
@@ -1363,17 +1360,19 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 
 		if (multipleCollectablesSelected()) {
 			final int iCount = getResultTable().getSelectedRowCount();
-			final String sMessage = CommonLocaleDelegate.getMessage("GenericObjectCollectController.82","Sollen die ausgew\u00e4hlten {0} Datens\u00e4tze wirklich gel\u00f6scht werden?", iCount);
-			final int btn = JOptionPane.showConfirmDialog(getFrame(), sMessage, CommonLocaleDelegate.getMessage("GenericObjectCollectController.21","Datens\u00e4tze l\u00f6schen"), JOptionPane.YES_NO_OPTION);
+			final String sMessage = getCommonLocaleDelegate().getMessage("GenericObjectCollectController.82","Sollen die ausgew\u00e4hlten {0} Datens\u00e4tze wirklich gel\u00f6scht werden?", iCount);
+			final int btn = JOptionPane.showConfirmDialog(getFrame(), sMessage, 
+					getCommonLocaleDelegate().getMessage("GenericObjectCollectController.21","Datens\u00e4tze l\u00f6schen"), JOptionPane.YES_NO_OPTION);
 			if (btn == JOptionPane.YES_OPTION)
 				new DeleteSelectedCollectablesController<CollectableGenericObjectWithDependants>(this).run(getMultiActionProgressPanel(iCount));
 			else if (btn == JOptionPane.NO_OPTION)
 				getResultPanel().btnDelete.setSelected(false);
 		}
 		else {
-			final String sMessage = CommonLocaleDelegate.getMessage("GenericObjectCollectController.77","Soll der ausgew\u00e4hlte Datensatz ({0}) wirklich gel\u00f6scht werden?",
+			final String sMessage = getCommonLocaleDelegate().getMessage("GenericObjectCollectController.77","Soll der ausgew\u00e4hlte Datensatz ({0}) wirklich gel\u00f6scht werden?",
 				getSelectedCollectable().getIdentifierLabel());
-			final int btn = JOptionPane.showConfirmDialog(getFrame(), sMessage, CommonLocaleDelegate.getMessage("GenericObjectCollectController.25","Datensatz l\u00f6schen"), JOptionPane.YES_NO_OPTION);
+			final int btn = JOptionPane.showConfirmDialog(getFrame(), sMessage, 
+					getCommonLocaleDelegate().getMessage("GenericObjectCollectController.25","Datensatz l\u00f6schen"), JOptionPane.YES_NO_OPTION);
 
 			if (btn == JOptionPane.YES_OPTION)
 				UIUtils.runCommand(getFrame(), new Runnable() {
@@ -1384,14 +1383,15 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 							//refreshResult();
 						}
 						catch (CommonPermissionException ex) {
-							final String sErrorMsg = CommonLocaleDelegate.getMessage("GenericObjectCollectController.68","Sie verf\u00fcgen nicht \u00fcber die ausreichenden Rechte, um diesen Datensatz zu l\u00f6schen.");
+							final String sErrorMsg = getCommonLocaleDelegate().getMessage("GenericObjectCollectController.68","Sie verf\u00fcgen nicht \u00fcber die ausreichenden Rechte, um diesen Datensatz zu l\u00f6schen.");
 							getResultPanel().btnDelete.setSelected(false);
 							Errors.getInstance().showExceptionDialog(getFrame(), sErrorMsg, ex);
 						}
 						catch (CommonBusinessException ex) {
 							getResultPanel().btnDelete.setSelected(false);
 							//Errors.getInstance().showExceptionDialog(getFrame(), CommonLocaleDelegate.getMessage("GenericObjectCollectController.30","Der Datensatz konnte nicht gel\u00f6scht werden."), ex);
-							Errors.getInstance().showExceptionDialog(getFrame(), CommonLocaleDelegate.getMessage("GenericObjectCollectController.30","Der Datensatz konnte nicht gel\u00f6scht werden."), new CommonRemoveException());
+							Errors.getInstance().showExceptionDialog(getFrame(), 
+									getCommonLocaleDelegate().getMessage("GenericObjectCollectController.30","Der Datensatz konnte nicht gel\u00f6scht werden."), new CommonRemoveException());
 						}
 					}
 				});
@@ -1409,17 +1409,19 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 
 		if (multipleCollectablesSelected()) {
 			final int iCount = getResultTable().getSelectedRowCount();
-			final String sMessage = CommonLocaleDelegate.getMessage("GenericObjectCollectController.83","Sollen die ausgew\u00e4hlten {0} Datens\u00e4tze wirklich wiederhergestellt werden?", iCount);
-			final int btn = JOptionPane.showConfirmDialog(getFrame(), sMessage, CommonLocaleDelegate.getMessage("GenericObjectCollectController.22","Datens\u00e4tze wiederherstellen"), JOptionPane.YES_NO_OPTION);
+			final String sMessage = getCommonLocaleDelegate().getMessage("GenericObjectCollectController.83","Sollen die ausgew\u00e4hlten {0} Datens\u00e4tze wirklich wiederhergestellt werden?", iCount);
+			final int btn = JOptionPane.showConfirmDialog(getFrame(), sMessage, 
+					getCommonLocaleDelegate().getMessage("GenericObjectCollectController.22","Datens\u00e4tze wiederherstellen"), JOptionPane.YES_NO_OPTION);
 			if (btn == JOptionPane.YES_OPTION)
 				new RestoreSelectedCollectablesController(GenericObjectCollectController.this).run(getMultiActionProgressPanel(iCount));
 			else if (btn == JOptionPane.NO_OPTION)
 				getResultPanel().btnDelete.setSelected(true);
 		}
 		else {
-			final String sMessage = CommonLocaleDelegate.getMessage("GenericObjectCollectController.78","Soll der ausgew\u00e4hlte Datensatz ({0}) wirklich wiederhergestellt werden?",
+			final String sMessage = getCommonLocaleDelegate().getMessage("GenericObjectCollectController.78","Soll der ausgew\u00e4hlte Datensatz ({0}) wirklich wiederhergestellt werden?",
 				getSelectedCollectable().getIdentifierLabel());
-			final int btn = JOptionPane.showConfirmDialog(getFrame(), sMessage, CommonLocaleDelegate.getMessage("GenericObjectCollectController.27","Datensatz wiederherstellen"), JOptionPane.YES_NO_OPTION);
+			final int btn = JOptionPane.showConfirmDialog(getFrame(), sMessage, 
+					getCommonLocaleDelegate().getMessage("GenericObjectCollectController.27","Datensatz wiederherstellen"), JOptionPane.YES_NO_OPTION);
 
 			if (btn == JOptionPane.YES_OPTION)
 				UIUtils.runCommand(getFrame(), new Runnable() {
@@ -1430,13 +1432,14 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 							getResultController().getSearchResultStrategy().refreshResult();
 						}
 						catch (CommonPermissionException ex) {
-							final String sErrorMsg = CommonLocaleDelegate.getMessage("GenericObjectCollectController.66","Sie verf\u00fcgen nicht \u00fcber die ausreichenden Rechte, um diesen Datensatz wiederherzustellen.");
+							final String sErrorMsg = getCommonLocaleDelegate().getMessage("GenericObjectCollectController.66","Sie verf\u00fcgen nicht \u00fcber die ausreichenden Rechte, um diesen Datensatz wiederherzustellen.");
 							getResultPanel().btnDelete.setSelected(true);
 							Errors.getInstance().showExceptionDialog(getFrame(), sErrorMsg, ex);
 						}
 						catch (CommonBusinessException ex) {
 							getResultPanel().btnDelete.setSelected(true);
-							Errors.getInstance().showExceptionDialog(getFrame(), CommonLocaleDelegate.getMessage("GenericObjectCollectController.32","Der Datensatz konnte nicht wiederhergestellt werden."), ex);
+							Errors.getInstance().showExceptionDialog(getFrame(), 
+									getCommonLocaleDelegate().getMessage("GenericObjectCollectController.32","Der Datensatz konnte nicht wiederhergestellt werden."), ex);
 						}
 					}
 				});
@@ -1452,8 +1455,9 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		assert getCollectStateModel().getCollectState().equals(new CollectState(CollectState.OUTERSTATE_DETAILS, CollectState.DETAILSMODE_VIEW));
 
 		if (stopEditingInDetails()) {
-			final String sMessage = CommonLocaleDelegate.getMessage("GenericObjectCollectController.75","Soll der angezeigte Datensatz ({0}) wirklich wiederhergestellt werden?", getSelectedCollectable().getIdentifierLabel());
-			final int iBtn = JOptionPane.showConfirmDialog(getFrame(), sMessage, CommonLocaleDelegate.getMessage("GenericObjectCollectController.28","Datensatz wiederherstellen"), JOptionPane.YES_NO_OPTION);
+			final String sMessage = getCommonLocaleDelegate().getMessage("GenericObjectCollectController.75","Soll der angezeigte Datensatz ({0}) wirklich wiederhergestellt werden?", getSelectedCollectable().getIdentifierLabel());
+			final int iBtn = JOptionPane.showConfirmDialog(getFrame(), sMessage, 
+					getCommonLocaleDelegate().getMessage("GenericObjectCollectController.28","Datensatz wiederherstellen"), JOptionPane.YES_NO_OPTION);
 
 			if (iBtn == JOptionPane.OK_OPTION)
 				UIUtils.runCommand(getFrame(), new Runnable() {
@@ -1496,11 +1500,12 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 							}
 						}
 						catch (CommonPermissionException ex) {
-							final String sErrorMessage = CommonLocaleDelegate.getMessage("GenericObjectCollectController.67","Sie verf\u00fcgen nicht \u00fcber die ausreichenden Rechte, um diesen Datensatz wiederherzustellen.");
+							final String sErrorMessage = getCommonLocaleDelegate().getMessage("GenericObjectCollectController.67","Sie verf\u00fcgen nicht \u00fcber die ausreichenden Rechte, um diesen Datensatz wiederherzustellen.");
 							Errors.getInstance().showExceptionDialog(getFrame(), sErrorMessage, ex);
 						}
 						catch (CommonBusinessException ex) {
-							Errors.getInstance().showExceptionDialog(getFrame(), CommonLocaleDelegate.getMessage("GenericObjectCollectController.33","Der Datensatz konnte nicht wiederhergestellt werden."), ex);
+							Errors.getInstance().showExceptionDialog(getFrame(), 
+									getCommonLocaleDelegate().getMessage("GenericObjectCollectController.33","Der Datensatz konnte nicht wiederhergestellt werden."), ex);
 						}
 					}
 				});
@@ -1517,8 +1522,9 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		assert getCollectStateModel().getCollectState().equals(new CollectState(CollectState.OUTERSTATE_DETAILS, CollectState.DETAILSMODE_VIEW));
 
 		if (stopEditingInDetails()) {
-			final String sMessage = CommonLocaleDelegate.getMessage("GenericObjectCollectController.74","Soll der angezeigte Datensatz ({0}) wirklich gel\u00f6scht werden?", getSelectedCollectable().getIdentifierLabel());
-			final int iBtn = JOptionPane.showConfirmDialog(getFrame(), sMessage, CommonLocaleDelegate.getMessage("GenericObjectCollectController.26","Datensatz l\u00f6schen"), JOptionPane.YES_NO_OPTION);
+			final String sMessage = getCommonLocaleDelegate().getMessage("GenericObjectCollectController.74","Soll der angezeigte Datensatz ({0}) wirklich gel\u00f6scht werden?", getSelectedCollectable().getIdentifierLabel());
+			final int iBtn = JOptionPane.showConfirmDialog(getFrame(), sMessage, 
+					getCommonLocaleDelegate().getMessage("GenericObjectCollectController.26","Datensatz l\u00f6schen"), JOptionPane.YES_NO_OPTION);
 
 			if (iBtn == JOptionPane.OK_OPTION)
 				UIUtils.runCommand(getFrame(), new Runnable() {
@@ -1549,7 +1555,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		// fix custom buttons:
 		btnMakeTreeRoot.setName("btnMakeTreeRoot");
 		btnMakeTreeRoot.setIcon(Icons.getInstance().getIconMakeTreeRoot16());
-		btnMakeTreeRoot.setText(CommonLocaleDelegate.getMessage("GenericObjectCollectController.50","In Explorer anzeigen"));
+		btnMakeTreeRoot.setText(getCommonLocaleDelegate().getMessage("GenericObjectCollectController.50","In Explorer anzeigen"));
 		btnMakeTreeRoot.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent ev) {
@@ -1563,7 +1569,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		if (securitycache.isActionAllowed(Actions.ACTION_DELETE_RECORD)) {
 			btnDeletePhysicallyInDetails.setName("btnDeletePhysicallyInDetails");
 			btnDeletePhysicallyInDetails.setIcon(Icons.getInstance().getIconRealDelete16());
-			btnDeletePhysicallyInDetails.setText(CommonLocaleDelegate.getMessage("GenericObjectCollectController.60","Objekt endg\u00fcltig aus der Datenbank l\u00f6schen"));
+			btnDeletePhysicallyInDetails.setText(getCommonLocaleDelegate().getMessage("GenericObjectCollectController.60","Objekt endg\u00fcltig aus der Datenbank l\u00f6schen"));
 			btnDeletePhysicallyInDetails.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent ev) {
@@ -1578,7 +1584,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		// Execute rule by user only for authorized personnel
 		if (securitycache.isActionAllowed(Actions.ACTION_EXECUTE_RULE_BY_USER)) {
 			btnExecuteRule.setName("btnExecuteRule");
-			btnExecuteRule.setText(CommonLocaleDelegate.getMessage("GenericObjectCollectController.62","Regeln ausf\u00fchren"));
+			btnExecuteRule.setText(getCommonLocaleDelegate().getMessage("GenericObjectCollectController.62","Regeln ausf\u00fchren"));
 			btnExecuteRule.setIcon(Icons.getInstance().getIconExecuteRule16());
 			btnExecuteRule.addActionListener(new ActionListener() {
 				@Override
@@ -1596,7 +1602,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 
 
 		if (SecurityCache.getInstance().isActionAllowed(Actions.ACTION_USE_INVALID_MASTERDATA)) {
-			chkbxUseInvalidMasterData.setText(CommonLocaleDelegate.getMessage("GenericObjectCollectController.96","Ung\u00fcltige Stammdaten anzeigen?"));
+			chkbxUseInvalidMasterData.setText(getCommonLocaleDelegate().getMessage("GenericObjectCollectController.96","Ung\u00fcltige Stammdaten anzeigen?"));
 			chkbxUseInvalidMasterData.setOpaque(false);
 			//chkbxUseInvalidMasterData.setForeground(Color.white);
 			chkbxUseInvalidMasterData.addActionListener(new ActionListener() {
@@ -1627,7 +1633,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 
 		btnShowStateHistory.setName("btnShowStateHistory");
 		btnShowStateHistory.setIcon(Icons.getInstance().getIconStateHistory16());
-		btnShowStateHistory.setText(CommonLocaleDelegate.getMessage("GenericObjectCollectController.84","Statushistorie anzeigen"));
+		btnShowStateHistory.setText(getCommonLocaleDelegate().getMessage("GenericObjectCollectController.84","Statushistorie anzeigen"));
 		btnShowStateHistory.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent ev) {
@@ -1643,7 +1649,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		if(iModuleId != null && iModuleId > 0 && Modules.getInstance().isLogbookTracking(iModuleId)) {
 			btnShowLogBook.setName("btnShowLogBook");
 			btnShowLogBook.setIcon(Icons.getInstance().getIconLogBook16());
-			btnShowLogBook.setText(CommonLocaleDelegate.getMessage("GenericObjectCollectController.54","Logbuch anzeigen"));
+			btnShowLogBook.setText(getCommonLocaleDelegate().getMessage("GenericObjectCollectController.54","Logbuch anzeigen"));
 			btnShowLogBook.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent ev) {
@@ -1657,17 +1663,18 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 			final DateChooser datechooserHistorical = clctdatechooserHistorical.getDateChooser();
 			datechooserHistorical.setHistoricalState(true);
 
-			this.getDetailsPanel().addPopupExtraComponent(new BlackLabel(datechooserHistorical, CommonLocaleDelegate.getMessage("GenericObjectCollectController.7","Aktueller/historischer Zustand")));
+			this.getDetailsPanel().addPopupExtraComponent(new BlackLabel(datechooserHistorical, 
+					getCommonLocaleDelegate().getMessage("GenericObjectCollectController.7","Aktueller/historischer Zustand")));
 			registerHistoricalDateChooserListener();
 		}
 
 		cmbbxCurrentState.setName("cmbbxCurrentState");
 		cmbbxCurrentState.setVisible(false);
-		cmbbxCurrentState.setToolTipText(CommonLocaleDelegate.getMessage("GenericObjectCollectController.8","Aktueller Status"));
+		cmbbxCurrentState.setToolTipText(getCommonLocaleDelegate().getMessage("GenericObjectCollectController.8","Aktueller Status"));
 
 		cmpStateStandardView.setName("cmpStateStandardView");
 		cmpStateStandardView.setVisible(false);
-		cmpStateStandardView.setToolTipText(CommonLocaleDelegate.getMessage("GenericObjectCollectController.105","Standard Statuspfad"));
+		cmpStateStandardView.setToolTipText(getCommonLocaleDelegate().getMessage("GenericObjectCollectController.105","Standard Statuspfad"));
 
 		toolbarCustomActionsDetailsIndex = this.getDetailsPanel().getToolBarNextIndex();
 
@@ -1707,7 +1714,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	public void setupAdditionalActions() {
 		// extend popupmenu for rows in result panel:
 		btnPrintDetails.setIcon(Icons.getInstance().getIconPrintReport16());
-		btnPrintDetails.setToolTipText(CommonLocaleDelegate.getMessage("GenericObjectCollectController.48","Formular erzeugen / drucken"));
+		btnPrintDetails.setToolTipText(getCommonLocaleDelegate().getMessage("GenericObjectCollectController.48","Formular erzeugen / drucken"));
 		btnPrintDetails.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent ev) {
@@ -2133,7 +2140,8 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 				}
 				else {
 					result.setSortKeys(Collections.<SortKey>emptyList(), false);
-					throw new CommonBusinessException(CommonLocaleDelegate.getMessage("GenericObjectCollectController.19","Das Suchergebnis kann nicht nach Unterformularspalten sortiert werden."));
+					throw new CommonBusinessException(
+							getCommonLocaleDelegate().getMessage("GenericObjectCollectController.19","Das Suchergebnis kann nicht nach Unterformularspalten sortiert werden."));
 				}
 			}
 		}
@@ -2401,7 +2409,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 			public void handleError(Exception ex) {
 				if(!interrupted)
 					Errors.getInstance().showExceptionDialog(
-						Main.getMainFrame(), ex);
+						Main.getInstance().getMainFrame(), ex);
 			}
 
 			@Override
@@ -2506,7 +2514,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 					}
 					else
 						compFocussable.setBackground(colorHistoricalChanged);
-					final String sToolTip = CommonLocaleDelegate.getMessage("GenericObjectCollectController.4","{0} [Ge\u00e4ndert; aktueller Wert: \"{1}\"]", initialToolTip, clctf.toString());
+					final String sToolTip = getCommonLocaleDelegate().getMessage("GenericObjectCollectController.4","{0} [Ge\u00e4ndert; aktueller Wert: \"{1}\"]", initialToolTip, clctf.toString());
 					compFocussable.setToolTipText(sToolTip);
 					clctcomp.getJComponent().setToolTipText(sToolTip);
 					// todo: mark fields which are not tracked in logbook?
@@ -2929,7 +2937,8 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	 */
 	protected void checkedDeleteCollectablePhysically(final CollectableGenericObjectWithDependants clctlo) throws CommonBusinessException {
 		if (!isPhysicallyDeleteAllowed(clctlo))
-			throw new CommonPermissionException(CommonLocaleDelegate.getMessage("GenericObjectCollectController.41","Endg\u00fcltiges L\u00f6schen ist nicht erlaubt."));
+			throw new CommonPermissionException(
+					getCommonLocaleDelegate().getMessage("GenericObjectCollectController.41","Endg\u00fcltiges L\u00f6schen ist nicht erlaubt."));
 
 		invoke(new CommonRunnable() {
 			@Override
@@ -2953,7 +2962,8 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 
 	protected void checkedRestoreCollectable(final CollectableGenericObjectWithDependants clct) throws CommonBusinessException {
 		if (!isPhysicallyDeleteAllowed(clct))
-			throw new CommonPermissionException(CommonLocaleDelegate.getMessage("GenericObjectCollectController.100","Wiederherstellen ist nicht erlaubt."));
+			throw new CommonPermissionException(
+					getCommonLocaleDelegate().getMessage("GenericObjectCollectController.100","Wiederherstellen ist nicht erlaubt."));
 		invoke(new CommonRunnable() {
 			@Override
 			public void run() throws CommonBusinessException {
@@ -3040,7 +3050,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	 */
 	private String getSelectedGenericObjectStateName() {
 		final CollectableField clctfState = getSelectedGenericObjectState();
-		return (clctfState == null) ? null : CommonLocaleDelegate.getResource(
+		return (clctfState == null) ? null : getCommonLocaleDelegate().getResource(
 			StateDelegate.getInstance().getStatemodelClosure(getModuleId()).getResourceSIdForLabel((Integer)clctfState.getValueId()),
 			LangUtils.toString(clctfState.getValue()));
 	}
@@ -3093,8 +3103,9 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		assert getCollectStateModel().getCollectState().equals(new CollectState(CollectState.OUTERSTATE_DETAILS, CollectState.DETAILSMODE_VIEW));
 
 		if (stopEditingInDetails()) {
-			final String sMessage = CommonLocaleDelegate.getMessage("GenericObjectCollectController.73","Soll der angezeigte Datensatz ({0}) wirklich endg\u00fcltig aus der Datenbank gel\u00f6scht werden?\nDieser Vorgang kann nicht r\u00fcckg\u00e4ngig gemacht werden! ", getSelectedCollectable().getIdentifierLabel());
-			final int iBtn = JOptionPane.showConfirmDialog(getFrame(), sMessage, CommonLocaleDelegate.getMessage("GenericObjectCollectController.24","Datensatz endg\u00fcltig l\u00f6schen"), JOptionPane.YES_NO_OPTION);
+			final String sMessage = getCommonLocaleDelegate().getMessage("GenericObjectCollectController.73","Soll der angezeigte Datensatz ({0}) wirklich endg\u00fcltig aus der Datenbank gel\u00f6scht werden?\nDieser Vorgang kann nicht r\u00fcckg\u00e4ngig gemacht werden! ", getSelectedCollectable().getIdentifierLabel());
+			final int iBtn = JOptionPane.showConfirmDialog(getFrame(), sMessage, 
+					getCommonLocaleDelegate().getMessage("GenericObjectCollectController.24","Datensatz endg\u00fcltig l\u00f6schen"), JOptionPane.YES_NO_OPTION);
 
 			if (iBtn == JOptionPane.OK_OPTION)
 				UIUtils.runCommand(getFrame(), new Runnable() {
@@ -3135,12 +3146,13 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 							}
 						}
 						catch (CommonPermissionException ex) {
-							final String sErrorMessage = CommonLocaleDelegate.getMessage("GenericObjectCollectController.70","Sie verf\u00fcgen nicht \u00fcber die ausreichenden Rechte, um dieses Objekt zu l\u00f6schen.");
+							final String sErrorMessage = getCommonLocaleDelegate().getMessage("GenericObjectCollectController.70","Sie verf\u00fcgen nicht \u00fcber die ausreichenden Rechte, um dieses Objekt zu l\u00f6schen.");
 							Errors.getInstance().showExceptionDialog(getFrame(), sErrorMessage, ex);
 						}
 						catch (CommonBusinessException ex) {
 							if (!handlePointerException(ex))
-								Errors.getInstance().showExceptionDialog(getFrame(), CommonLocaleDelegate.getMessage("GenericObjectCollectController.18","Das Objekt konnte nicht gel\u00f6scht werden."), ex);
+								Errors.getInstance().showExceptionDialog(getFrame(), 
+										getCommonLocaleDelegate().getMessage("GenericObjectCollectController.18","Das Objekt konnte nicht gel\u00f6scht werden."), ex);
 						}
 					}
 				});
@@ -3203,7 +3215,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	protected void cmdEnterViewMode() {
 		if (isSelectedCollectableMarkedAsDeleted())
 			if (!SecurityCache.getInstance().isActionAllowed(Actions.ACTION_READ_DELETED_RECORD))
-				throw new NuclosFatalException(CommonLocaleDelegate.getMessage("GenericObjectCollectController.65","Sie haben nicht die erforderlichen Rechte, gel\u00f6schte Datens\u00e4tze zu lesen."));
+				throw new NuclosFatalException(getCommonLocaleDelegate().getMessage("GenericObjectCollectController.65","Sie haben nicht die erforderlichen Rechte, gel\u00f6schte Datens\u00e4tze zu lesen."));
 
 		super.cmdEnterViewMode();
 	}
@@ -3323,7 +3335,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 						LOG.error("Die Liste der Folgestati enth\u00e4lt ein null-Objekt.");
 					else if (!lstComboEntries.contains(new StateWrapper(statevo.getId(), statevo.getNumeral(), statevo.getStatename(), statevo.getIcon(), statevo.getDescription())))
 						lstComboEntries.add(new StateWrapper(statevo.getId(), statevo.getNumeral(),
-							CommonLocaleDelegate.getResource(/*StateDelegate.getInstance().getResourceSIdForName(statevo.getId()*/
+								getCommonLocaleDelegate().getResource(/*StateDelegate.getInstance().getResourceSIdForName(statevo.getId()*/
 								StateDelegate.getInstance().getStatemodelClosure(getModuleId()).getResourceSIdForLabel(statevo.getId()
 								),
 								statevo.getStatename()), statevo.getIcon(), statevo.getDescription(), statevo.isFromAutomatic(),
@@ -3397,7 +3409,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 						LOG.error("Die Liste der Folgestati enth\u00e4lt ein null-Objekt.");
 					else if (!lstDefaultPathEntries.contains(new StateWrapper(statevo.getId(), statevo.getNumeral(), statevo.getStatename(), statevo.getIcon(), statevo.getDescription())))
 						lstDefaultPathEntries.add(new StateWrapper(statevo.getId(), statevo.getNumeral(),
-							CommonLocaleDelegate.getResource(/*StateDelegate.getInstance().getResourceSIdForName(statevo.getId()*/
+								getCommonLocaleDelegate().getResource(/*StateDelegate.getInstance().getResourceSIdForName(statevo.getId()*/
 								StateDelegate.getInstance().getStatemodelClosure(getModuleId()).getResourceSIdForLabel(statevo.getId()
 								),
 								statevo.getStatename()), statevo.getIcon(), statevo.getDescription(), statevo.isFromAutomatic(),
@@ -3436,7 +3448,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 								LOG.error("Die Liste der Folgestati enth\u00e4lt ein null-Objekt.");
 							else if (!lstSubsequentEntries.contains(new StateWrapper(statevo.getId(), statevo.getNumeral(), statevo.getStatename(), statevo.getIcon(), statevo.getDescription())))
 								lstSubsequentEntries.add(new StateWrapper(statevo.getId(), statevo.getNumeral(),
-									CommonLocaleDelegate.getResource(/*StateDelegate.getInstance().getResourceSIdForName(statevo.getId()*/
+										getCommonLocaleDelegate().getResource(/*StateDelegate.getInstance().getResourceSIdForName(statevo.getId()*/
 										StateDelegate.getInstance().getStatemodelClosure(getModuleId()).getResourceSIdForLabel(statevo.getId()
 										),
 										statevo.getStatename()), statevo.getIcon(), statevo.getDescription()));
@@ -3480,11 +3492,13 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		}
 
 		if (!bViewOrEdit) {
-			toolbarCustomActionsDetails.add(new BlackLabel(cmbbxCurrentState, CommonLocaleDelegate.getMessage("GenericObjectCollectController.106","Status")));
+			toolbarCustomActionsDetails.add(new BlackLabel(cmbbxCurrentState, 
+					getCommonLocaleDelegate().getMessage("GenericObjectCollectController.106","Status")));
 		} else {
 			// button: "print details":
 			if (isHistoricalView())
-				toolbarCustomActionsDetails.add(new BlackLabel(cmbbxCurrentState, CommonLocaleDelegate.getMessage("GenericObjectCollectController.106","Status")));
+				toolbarCustomActionsDetails.add(new BlackLabel(cmbbxCurrentState, 
+						getCommonLocaleDelegate().getMessage("GenericObjectCollectController.106","Status")));
 			else {
 				if (bSingle) {
 					/** @todo print historical order */
@@ -3492,7 +3506,8 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 					btnPrintDetails.setEnabled(bView && hasFormsAssigned(getSelectedCollectable()));
 				}
 
-				toolbarCustomActionsDetails.add(new BlackLabel(cmbbxCurrentState, CommonLocaleDelegate.getMessage("GenericObjectCollectController.106","Status")));
+				toolbarCustomActionsDetails.add(new BlackLabel(cmbbxCurrentState, 
+						getCommonLocaleDelegate().getMessage("GenericObjectCollectController.106","Status")));
 
 				// buttons/actions for "generate leased object":
 				if (!isSelectedCollectableMarkedAsDeleted()) {
@@ -3518,7 +3533,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	}
 
 	protected final ExplorerController getExplorerController() {
-		return Main.getMainController().getExplorerController();
+		return getMainController().getExplorerController();
 	}
 
 	/** @todo consider to move this one to [nucleus.]common */
@@ -3585,15 +3600,15 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	 */
 	public boolean cmdChangeState(final StateWrapper stateNew) {
 		if (isHistoricalView())
-			throw new IllegalStateException(CommonLocaleDelegate.getMessage("GenericObjectCollectController.90","Statuswechsel ist in historischer Ansicht nicht m\u00f6glich."));
+			throw new IllegalStateException(getCommonLocaleDelegate().getMessage("GenericObjectCollectController.90","Statuswechsel ist in historischer Ansicht nicht m\u00f6glich."));
 		if (!getCollectState().isDetailsMode())
-			throw new IllegalStateException(CommonLocaleDelegate.getMessage("GenericObjectCollectController.91","Statuswechsel ist nur in Detailmodus m\u00f6glich."));
+			throw new IllegalStateException(getCommonLocaleDelegate().getMessage("GenericObjectCollectController.91","Statuswechsel ist nur in Detailmodus m\u00f6glich."));
 
 		final boolean bMultiEdit = getCollectState().isDetailsModeMultiViewOrEdit();
 
 		String sQuestion = bMultiEdit
-		? CommonLocaleDelegate.getMessage("GenericObjectCollectController.79","Soll der Wechsel in den Status {0} f\u00fcr die ausgew\u00e4hlten Objekte wirklich durchgef\u00fchrt werden?\nDie vorgenommenen \u00c4nderungen an dem Objekt werden gespeichert.", stateNew.getCombinedStatusText())
-			: CommonLocaleDelegate.getMessage("GenericObjectCollectController.80","Soll der Wechsel in den Status {0} wirklich durchgef\u00fchrt werden?", stateNew.getCombinedStatusText());
+		? getCommonLocaleDelegate().getMessage("GenericObjectCollectController.79","Soll der Wechsel in den Status {0} f\u00fcr die ausgew\u00e4hlten Objekte wirklich durchgef\u00fchrt werden?\nDie vorgenommenen \u00c4nderungen an dem Objekt werden gespeichert.", stateNew.getCombinedStatusText())
+			: getCommonLocaleDelegate().getMessage("GenericObjectCollectController.80","Soll der Wechsel in den Status {0} wirklich durchgef\u00fchrt werden?", stateNew.getCombinedStatusText());
 
 		Object[] argsOptionPane = new Object[] {sQuestion};
 		if (stateNew.getDescription() != null && !stateNew.getDescription().isEmpty()) {
@@ -3609,7 +3624,8 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 			};
 		}
 
-		final int btn = JOptionPane.showConfirmDialog(getFrame(), argsOptionPane, CommonLocaleDelegate.getMessage("GenericObjectCollectController.85","Statuswechsel durchf\u00fchren"),
+		final int btn = JOptionPane.showConfirmDialog(getFrame(), argsOptionPane, 
+				getCommonLocaleDelegate().getMessage("GenericObjectCollectController.85","Statuswechsel durchf\u00fchren"),
 			JOptionPane.OK_CANCEL_OPTION);
 
 		// repaint directly:
@@ -3636,15 +3652,15 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	 */
 	private boolean cmdChangeStates(final StateWrapper stateFinal, final List<Integer> statesNew) {
 		if (isHistoricalView())
-			throw new IllegalStateException(CommonLocaleDelegate.getMessage("GenericObjectCollectController.90","Statuswechsel ist in historischer Ansicht nicht m\u00f6glich."));
+			throw new IllegalStateException(getCommonLocaleDelegate().getMessage("GenericObjectCollectController.90","Statuswechsel ist in historischer Ansicht nicht m\u00f6glich."));
 		if (!getCollectState().isDetailsMode())
-			throw new IllegalStateException(CommonLocaleDelegate.getMessage("GenericObjectCollectController.91","Statuswechsel ist nur in Detailmodus m\u00f6glich."));
+			throw new IllegalStateException(getCommonLocaleDelegate().getMessage("GenericObjectCollectController.91","Statuswechsel ist nur in Detailmodus m\u00f6glich."));
 
 		final boolean bMultiEdit = getCollectState().isDetailsModeMultiViewOrEdit();
 
 		String sQuestion = bMultiEdit
-		? CommonLocaleDelegate.getMessage("GenericObjectCollectController.79","Soll der Wechsel in den Status {0} f\u00fcr die ausgew\u00e4hlten Objekte wirklich durchgef\u00fchrt werden?\nDie vorgenommenen \u00c4nderungen an dem Objekt werden gespeichert.", stateFinal.getCombinedStatusText())
-			: CommonLocaleDelegate.getMessage("GenericObjectCollectController.80","Soll der Wechsel in den Status {0} wirklich durchgef\u00fchrt werden?", stateFinal.getCombinedStatusText());
+		? getCommonLocaleDelegate().getMessage("GenericObjectCollectController.79","Soll der Wechsel in den Status {0} f\u00fcr die ausgew\u00e4hlten Objekte wirklich durchgef\u00fchrt werden?\nDie vorgenommenen \u00c4nderungen an dem Objekt werden gespeichert.", stateFinal.getCombinedStatusText())
+			: getCommonLocaleDelegate().getMessage("GenericObjectCollectController.80","Soll der Wechsel in den Status {0} wirklich durchgef\u00fchrt werden?", stateFinal.getCombinedStatusText());
 
 		Object[] argsOptionPane = new Object[] {sQuestion};
 		if (stateFinal.getDescription() != null && !stateFinal.getDescription().isEmpty()) {
@@ -3660,7 +3676,8 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 			};
 		}
 
-		final int btn = JOptionPane.showConfirmDialog(getFrame(), argsOptionPane, CommonLocaleDelegate.getMessage("GenericObjectCollectController.85","Statuswechsel durchf\u00fchren"),
+		final int btn = JOptionPane.showConfirmDialog(getFrame(), argsOptionPane, 
+				getCommonLocaleDelegate().getMessage("GenericObjectCollectController.85","Statuswechsel durchf\u00fchren"),
 			JOptionPane.OK_CANCEL_OPTION);
 
 		// repaint directly:
@@ -3706,7 +3723,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 						}
 						catch (CommonBusinessException ex) {
 							getSubFormsLoader().setAfterLoadingRunnable(null);
-							final String sErrorMsg = CommonLocaleDelegate.getMessage("GenericObjectCollectController.34","Der Statuswechsel konnte nicht vollzogen werden.");
+							final String sErrorMsg = getCommonLocaleDelegate().getMessage("GenericObjectCollectController.34","Der Statuswechsel konnte nicht vollzogen werden.");
 							handleSaveException(ex, sErrorMsg);
 
 							// redisplay the old status
@@ -3758,7 +3775,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 							}
 							catch (CommonBusinessException ex) {
 								getSubFormsLoader().setAfterLoadingRunnable(null);
-								final String sErrorMsg = CommonLocaleDelegate.getMessage("GenericObjectCollectController.34","Der Statuswechsel konnte nicht vollzogen werden.");
+								final String sErrorMsg = getCommonLocaleDelegate().getMessage("GenericObjectCollectController.34","Der Statuswechsel konnte nicht vollzogen werden.");
 								handleSaveException(ex, sErrorMsg);
 
 								// redisplay the old status
@@ -3849,7 +3866,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 						GenericObjectCollectController.this.setCollectableComponentModelsInDetailsMandatoryAdded(pex.getPointerCollection().getFields());
 					}
 				} else if (!(ex instanceof UserCancelledException)) {
-					final String sErrorMsg = CommonLocaleDelegate.getMessage("GenericObjectCollectController.34","Der Statuswechsel konnte nicht vollzogen werden.");
+					final String sErrorMsg = getCommonLocaleDelegate().getMessage("GenericObjectCollectController.34","Der Statuswechsel konnte nicht vollzogen werden.");
 					Errors.getInstance().showExceptionDialog(getFrame(), sErrorMsg, ex);
 				}
 
@@ -3922,7 +3939,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 						GenericObjectCollectController.this.setCollectableComponentModelsInDetailsMandatoryAdded(pex.getPointerCollection().getFields());
 					}
 				} else {
-					final String sErrorMsg = CommonLocaleDelegate.getMessage("GenericObjectCollectController.34","Der Statuswechsel konnte nicht vollzogen werden.");
+					final String sErrorMsg = getCommonLocaleDelegate().getMessage("GenericObjectCollectController.34","Der Statuswechsel konnte nicht vollzogen werden.");
 					Errors.getInstance().showExceptionDialog(getFrame(), sErrorMsg, ex);
 				}
 
@@ -4205,7 +4222,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		final String sEntityNameSub = cond.getSubEntityName();
 		final SearchConditionSubFormController subformctl = mpsubformctlSearch.get(sEntityNameSub);
 		if (subformctl == null)
-			throw new NuclosFatalException(CommonLocaleDelegate.getMessage("GenericObjectCollectController.40","Ein Unterformular f\u00fcr die Entit\u00e4t {0} ist in der Suchbedingung, aber nicht im aktuellen Layout enthalten.", sEntityNameSub));
+			throw new NuclosFatalException(getCommonLocaleDelegate().getMessage("GenericObjectCollectController.40","Ein Unterformular f\u00fcr die Entit\u00e4t {0} ist in der Suchbedingung, aber nicht im aktuellen Layout enthalten.", sEntityNameSub));
 		subformctl.setCollectableSearchCondition(cond.getSubCondition());
 	}
 
@@ -4288,8 +4305,8 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 					sFilterName = sFilterName + ": " + getSearchFilterComboBox().getSelectedItem().toString();
 				}
 				getExplorerController().showInOwnTab(new EntitySearchResultTreeNode(
-					CommonLocaleDelegate.getMessage("GenericObjectCollectController.93","Suchergebnis ({0})", sFilterName),
-					null, ss.getInternalSearchExpression(), sFilterName, Main.getMainController().getUserName(), getEntityName()));
+						getCommonLocaleDelegate().getMessage("GenericObjectCollectController.93","Suchergebnis ({0})", sFilterName),
+					null, ss.getInternalSearchExpression(), sFilterName, getMainController().getUserName(), getEntityName()));
 			}
 		});
 	}
@@ -4300,7 +4317,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 
 		if (!stopEditing(bSearchTab))
 			/** @todo we need to give a better error message here. */
-			throw new CollectableFieldFormatException(CommonLocaleDelegate.getMessage("GenericObjectCollectController.95","Ung\u00fcltige Eingabe in Unterformular."));
+			throw new CollectableFieldFormatException(getCommonLocaleDelegate().getMessage("GenericObjectCollectController.95","Ung\u00fcltige Eingabe in Unterformular."));
 	}
 
 	/**
@@ -4823,10 +4840,20 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 
 	@Override
 	protected String getTitle(int iTab, int iMode) {
-		final String[] asTabs = {CommonLocaleDelegate.getMessage("GenericObjectCollectController.92","Suche"), CommonLocaleDelegate.getMessage("GenericObjectCollectController.42","Ergebnis"), CommonLocaleDelegate.getMessage("GenericObjectCollectController.35","Details")};
+		final CommonLocaleDelegate cld = getCommonLocaleDelegate();
+		final String[] asTabs = {
+				cld.getMessage("GenericObjectCollectController.92","Suche"), 
+				cld.getMessage("GenericObjectCollectController.42","Ergebnis"), 
+				cld.getMessage("GenericObjectCollectController.35","Details")};
 		final String[] asDetailsMode = {
-			CommonLocaleDelegate.getMessage("GenericObjectCollectController.94","Undefiniert"), CommonLocaleDelegate.getMessage("GenericObjectCollectController.36","Details"), CommonLocaleDelegate.getMessage("GenericObjectCollectController.14","Bearbeiten"), CommonLocaleDelegate.getMessage("GenericObjectCollectController.55","Neueingabe"), CommonLocaleDelegate.getMessage("GenericObjectCollectController.57","Neueingabe (Ge\u00e4ndert)"), CommonLocaleDelegate.getMessage("GenericObjectCollectController.63","Sammelbearbeitung"),
-			CommonLocaleDelegate.getMessage("GenericObjectCollectController.64","Sammelbearbeitung (Ge\u00e4ndert)"), CommonLocaleDelegate.getMessage("GenericObjectCollectController.56","Neueingabe (\u00dcbernahme Suchwerte)")
+				cld.getMessage("GenericObjectCollectController.94","Undefiniert"), 
+				cld.getMessage("GenericObjectCollectController.36","Details"), 
+				cld.getMessage("GenericObjectCollectController.14","Bearbeiten"), 
+				cld.getMessage("GenericObjectCollectController.55","Neueingabe"), 
+				cld.getMessage("GenericObjectCollectController.57","Neueingabe (Ge\u00e4ndert)"), 
+				cld.getMessage("GenericObjectCollectController.63","Sammelbearbeitung"),
+				cld.getMessage("GenericObjectCollectController.64","Sammelbearbeitung (Ge\u00e4ndert)"), 
+				cld.getMessage("GenericObjectCollectController.56","Neueingabe (\u00dcbernahme Suchwerte)")
 		};
 
 		String sPrefix;
@@ -4841,7 +4868,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 				sPrefix += getTreeViewIdentifier(getSelectedCollectable());
 			}
 			else if (CollectState.isDetailsModeMultiViewOrEdit(iMode))
-				sSuffix = CommonLocaleDelegate.getMessage("GenericObjectCollectController.97"," von {0} Objekten", getSelectedCollectables().size());
+				sSuffix = cld.getMessage("GenericObjectCollectController.97"," von {0} Objekten", getSelectedCollectables().size());
 			break;
 		default:
 			sPrefix = getEntityLabel();
@@ -4851,9 +4878,9 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		final StringBuilder sb = new StringBuilder( sPrefix + (sPrefix.length()>0?" - ":"") + sMode + sSuffix);
 
 		if (isSelectedCollectableMarkedAsDeleted())
-			sb.append(CommonLocaleDelegate.getMessage("GenericObjectCollectController.2"," (Objekt ist als gel\u00f6scht markiert)"));
+			sb.append(getCommonLocaleDelegate().getMessage("GenericObjectCollectController.2"," (Objekt ist als gel\u00f6scht markiert)"));
 		else if (isHistoricalView())
-			sb.append(CommonLocaleDelegate.getMessage("GenericObjectCollectController.1"," (Historischer Zustand vom {0})", dateHistorical));
+			sb.append(getCommonLocaleDelegate().getMessage("GenericObjectCollectController.1"," (Historischer Zustand vom {0})", dateHistorical));
 
 		return sb.toString();
 	}
@@ -4886,7 +4913,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	private String getTreeViewIdentifier(CollectableGenericObjectWithDependants clct) {
 		MetaDataProvider metaprovider = SpringApplicationContextHolder.getBean(MetaDataProvider.class);
 
-		String tmp = CommonLocaleDelegate.getTreeViewLabel(clct, getEntity(), metaprovider);
+		String tmp = getCommonLocaleDelegate().getTreeViewLabel(clct, getEntity(), metaprovider);
 
 		int idx = -1;
 		while ((idx = tmp.indexOf("[$" + CollectableFieldFormat.class.getName() + ",")) != -1)
@@ -5052,22 +5079,26 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 
 			@Override
 			public String getText(CollectableGenericObjectWithDependants clctlo) {
-				return CommonLocaleDelegate.getMessage("GenericObjectCollectController.86","Statuswechsel f\u00fcr Datensatz {0}...", MultiCollectablesActionController.getCollectableLabel(ctl.getEntityName(), clctlo));
+				return CommonLocaleDelegate.getInstance().getMessage(
+						"GenericObjectCollectController.86","Statuswechsel f\u00fcr Datensatz {0}...", MultiCollectablesActionController.getCollectableLabel(ctl.getEntityName(), clctlo));
 			}
 
 			@Override
 			public String getSuccessfulMessage(CollectableGenericObjectWithDependants clctlo, Object oResult) {
-				return CommonLocaleDelegate.getMessage("GenericObjectCollectController.87","Statuswechsel f\u00fcr Datensatz {0} war erfolgreich.", MultiCollectablesActionController.getCollectableLabel(ctl.getEntityName(), clctlo));
+				return CommonLocaleDelegate.getInstance().getMessage(
+						"GenericObjectCollectController.87","Statuswechsel f\u00fcr Datensatz {0} war erfolgreich.", MultiCollectablesActionController.getCollectableLabel(ctl.getEntityName(), clctlo));
 			}
 
 			@Override
 			public String getConfirmStopMessage() {
-				return CommonLocaleDelegate.getMessage("GenericObjectCollectController.101","Wollen Sie den Statuswechsel f\u00fcr die ausgew\u00e4hlten Datens\u00e4tze an dieser Stelle beenden?\n(Die bisher ge\u00e4nderten Datens\u00e4tze bleiben in jedem Fall ge\u00e4ndert.)");
+				return CommonLocaleDelegate.getInstance().getMessage(
+						"GenericObjectCollectController.101","Wollen Sie den Statuswechsel f\u00fcr die ausgew\u00e4hlten Datens\u00e4tze an dieser Stelle beenden?\n(Die bisher ge\u00e4nderten Datens\u00e4tze bleiben in jedem Fall ge\u00e4ndert.)");
 			}
 
 			@Override
 			public String getExceptionMessage(CollectableGenericObjectWithDependants clctlo, Exception ex) {
-				return CommonLocaleDelegate.getMessage("GenericObjectCollectController.89","Statuswechsel ist fehlgeschlagen f\u00fcr Datensatz {0}. {1}", MultiCollectablesActionController.getCollectableLabel(ctl.getEntityName(), clctlo), ex.getMessage());
+				return CommonLocaleDelegate.getInstance().getMessage(
+						"GenericObjectCollectController.89","Statuswechsel ist fehlgeschlagen f\u00fcr Datensatz {0}. {1}", MultiCollectablesActionController.getCollectableLabel(ctl.getEntityName(), clctlo), ex.getMessage());
 			}
 
 			@Override
@@ -5091,7 +5122,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		}
 
 		ChangeStateForSelectedCollectablesController(GenericObjectCollectController ctl, StateWrapper stateNew,  final List<Integer> statesNew) throws CommonBusinessException {
-			super(ctl, CommonLocaleDelegate.getMessage("GenericObjectCollectController.88","Statuswechsel in Status {0}", stateNew.getCombinedStatusText()), new ChangeStateAction(ctl, stateNew, statesNew), ctl.getCompleteSelectedCollectables());
+			super(ctl, CommonLocaleDelegate.getInstance().getMessage("GenericObjectCollectController.88","Statuswechsel in Status {0}", stateNew.getCombinedStatusText()), new ChangeStateAction(ctl, stateNew, statesNew), ctl.getCompleteSelectedCollectables());
 		}
 
 	}	// class ChangeStateForSelectedCollectablesController
@@ -5560,7 +5591,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		String resourceName = GenericObjectDelegate.getInstance().getResourceMap().get(getModuleId());
 		String nuclosResource = MetaDataClientProvider.getInstance().getEntity(Modules.getInstance().getEntityNameByModuleId(getModuleId())).getNuclosResource();
 		if(resourceName != null)
-			return ResourceCache.getIconResource(resourceName);
+			return ResourceCache.getInstance().getIconResource(resourceName);
 		else if (nuclosResource != null){
 			ImageIcon nuclosIcon = NuclosResourceCache.getNuclosResourceIcon(nuclosResource);
 			if (nuclosIcon != null) return MainFrame.resizeAndCacheTabIcon(nuclosIcon);
@@ -5692,7 +5723,8 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 					subFormFound = true;
 
 					if (!subFormCtrl.getSubForm().isEnabled()) {
-						throw new NuclosBusinessException(CommonLocaleDelegate.getMessage("GenericObjectCollectController.102", "Unterformular ist nicht aktiv."));
+						throw new NuclosBusinessException(
+								getCommonLocaleDelegate().getMessage("GenericObjectCollectController.102", "Unterformular ist nicht aktiv."));
 					}
 
 					String entityLabel = null;
@@ -5704,7 +5736,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	                		GenericObjectIdModuleProcess goimp = (GenericObjectIdModuleProcess) o;
 	                		Integer entityId = goimp.getModuleId();
 	                		String entity = MetaDataClientProvider.getInstance().getEntity(IdUtils.toLongId(entityId)).getEntity();
-	                		entityLabel = CommonLocaleDelegate.getLabelFromMetaDataVO(MetaDataClientProvider.getInstance().getEntity(
+	                		entityLabel = getCommonLocaleDelegate().getLabelFromMetaDataVO(MetaDataClientProvider.getInstance().getEntity(
 	                				IdUtils.toLongId(entityId)));
 
 	                        try {
@@ -5728,7 +5760,8 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	                }
 
 	                if (noReferenceFound) {
-	                	throw new NuclosBusinessException(CommonLocaleDelegate.getMessage("GenericObjectCollectController.104", "Dieses Unterformular enthält keine Referenzspalte zur Entität {0}.", entityLabel));
+	                	throw new NuclosBusinessException(
+	                			getCommonLocaleDelegate().getMessage("GenericObjectCollectController.104", "Dieses Unterformular enthält keine Referenzspalte zur Entität {0}.", entityLabel));
 	                }
 				}
 			}
@@ -5739,7 +5772,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	    }
 
 		if (!subFormFound) {
-			throw new NuclosBusinessException(CommonLocaleDelegate.getMessage("GenericObjectCollectController.103", "Unterformular ist nicht im Layout vorhanden."));
+			throw new NuclosBusinessException(getCommonLocaleDelegate().getMessage("GenericObjectCollectController.103", "Unterformular ist nicht im Layout vorhanden."));
 		}
 		return result;
 	}
@@ -5812,7 +5845,8 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 			return Collections.emptyList();
 		}
 		catch (CollectableFieldFormatException ex) {
-			throw new NuclosFatalException(CommonLocaleDelegate.getMessage("GenericObjectCollectController.61","Prozess-Id ist ung\u00fcltig."), ex);
+			throw new NuclosFatalException(
+					getCommonLocaleDelegate().getMessage("GenericObjectCollectController.61","Prozess-Id ist ung\u00fcltig."), ex);
 		}
 	}
 

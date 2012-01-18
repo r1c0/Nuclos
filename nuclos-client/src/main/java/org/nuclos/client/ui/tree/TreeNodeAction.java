@@ -107,7 +107,8 @@ public abstract class TreeNodeAction extends AbstractAction {
 	}
 
 	public static TreeNodeAction newCutAction(JTree tree) {
-		final TreeNodeAction result = new ChainedTreeNodeAction(ACTIONCOMMAND_CUT, CommonLocaleDelegate.getMessage("TreeNodeAction.1","Ausschneiden"),
+		final TreeNodeAction result = new ChainedTreeNodeAction(ACTIONCOMMAND_CUT, 
+				CommonLocaleDelegate.getInstance().getMessage("TreeNodeAction.1","Ausschneiden"),
 				TransferHandler.getCutAction(), tree);
 
 		// enable "cut" action according to the tree's TransferHandler:
@@ -117,7 +118,8 @@ public abstract class TreeNodeAction extends AbstractAction {
 	}
 
 	public static TreeNodeAction newCopyAction(JTree tree) {
-		final TreeNodeAction result = new ChainedTreeNodeAction(ACTIONCOMMAND_COPY, CommonLocaleDelegate.getMessage("TreeNodeAction.2","Kopieren"),
+		final TreeNodeAction result = new ChainedTreeNodeAction(ACTIONCOMMAND_COPY, 
+				CommonLocaleDelegate.getInstance().getMessage("TreeNodeAction.2","Kopieren"),
 				TransferHandler.getCopyAction(), tree);
 
 		// enable "copy" action according to the tree's TransferHandler:
@@ -127,7 +129,8 @@ public abstract class TreeNodeAction extends AbstractAction {
 	}
 
 	public static ChainedTreeNodeAction newPasteAction(JTree tree, TreeNode node) {
-		final ChainedTreeNodeAction result = new ChainedTreeNodeAction(ACTIONCOMMAND_PASTE, CommonLocaleDelegate.getMessage("TreeNodeAction.3","Einf\u00fcgen"),
+		final ChainedTreeNodeAction result = new ChainedTreeNodeAction(ACTIONCOMMAND_PASTE, 
+				CommonLocaleDelegate.getInstance().getMessage("TreeNodeAction.3","Einf\u00fcgen"),
 				TransferHandler.getPasteAction(), tree);
 
 		// enable "paste" action according to the tree's TransferHandler:

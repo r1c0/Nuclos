@@ -45,7 +45,8 @@ public class NotePropertiesPanel extends JPanel {
 		final JPanel pnlBg = new JPanel();
 		pnlBg.setLayout(new GridBagLayout());
 
-		final JLabel labText = new JLabel(CommonLocaleDelegate.getMessage("NotePropertiesPanel.2", "Text"));
+		final JLabel labText = new JLabel(CommonLocaleDelegate.getInstance().getMessage(
+				"NotePropertiesPanel.2", "Text"));
 		labText.setAlignmentY((float) 0.0);
 		labText.setHorizontalAlignment(SwingConstants.LEADING);
 		labText.setHorizontalTextPosition(SwingConstants.TRAILING);
@@ -68,7 +69,8 @@ public class NotePropertiesPanel extends JPanel {
 
 		this.setAlignmentX((float) 0.0);
 		this.setAlignmentY((float) 0.0);
-		pnlBg.add(new JLabel(CommonLocaleDelegate.getMessage("NotePropertiesPanel.1", "Bemerkung")),
+		pnlBg.add(new JLabel(CommonLocaleDelegate.getInstance().getMessage(
+				"NotePropertiesPanel.1", "Bemerkung")),
 				new GridBagConstraints(0, 0, 2, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE,
 						new Insets(2, 2, 2, 0), 0, 0));
 		pnlBg.add(labText,

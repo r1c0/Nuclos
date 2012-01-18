@@ -47,14 +47,15 @@ public class RuleHeaderPanel extends JPanel {
 
 	public RuleHeaderPanel() {
 		super(new GridBagLayout());
+		final CommonLocaleDelegate cld = CommonLocaleDelegate.getInstance();
 		this.setBorder(BorderFactory.createEmptyBorder(5, 5, 0, 5));
 
 		final GridBagConstraints gbc = new GridBagConstraints();
 		gbc.anchor = GridBagConstraints.WEST;
 		gbc.insets.bottom = 5;
 		gbc.insets.right = 5;
-		clcttfName.setLabelText(CommonLocaleDelegate.getMessage("RuleHeaderPanel.4","Name"));
-		clcttfName.setToolTipText(CommonLocaleDelegate.getMessage("RuleHeaderPanel.5","Name der Regel"));
+		clcttfName.setLabelText(cld.getMessage("RuleHeaderPanel.4","Name"));
+		clcttfName.setToolTipText(cld.getMessage("RuleHeaderPanel.5","Name der Regel"));
 		gbc.weightx = 0.0;
 		this.add(this.clcttfName.getJLabel(), gbc);
 
@@ -67,8 +68,8 @@ public class RuleHeaderPanel extends JPanel {
 		gbc.gridwidth = 1;
 		gbc.weightx = 0.0;
 		gbc.insets.right = 5;
-		clcttfDescription.setLabelText(CommonLocaleDelegate.getMessage("RuleHeaderPanel.2","Beschreibung"));
-		clcttfDescription.setToolTipText(CommonLocaleDelegate.getMessage("RuleHeaderPanel.3","Beschreibung der Regel"));
+		clcttfDescription.setLabelText(cld.getMessage("RuleHeaderPanel.2","Beschreibung"));
+		clcttfDescription.setToolTipText(cld.getMessage("RuleHeaderPanel.3","Beschreibung der Regel"));
 		this.add(this.clcttfDescription.getJLabel(), gbc);
 
 		gbc.weightx = 1.0;
@@ -79,14 +80,14 @@ public class RuleHeaderPanel extends JPanel {
 
 		gbc.gridwidth = 1;
 		gbc.weightx = 0.0;
-		clctchkbxActive.setLabelText(CommonLocaleDelegate.getMessage("RuleHeaderPanel.1","Aktiv?"));
-		clctchkbxActive.setToolTipText(CommonLocaleDelegate.getMessage("RuleHeaderPanel.6","Steuert, ob die Regel ausgef\u00fchrt wird"));
+		clctchkbxActive.setLabelText(cld.getMessage("RuleHeaderPanel.1","Aktiv?"));
+		clctchkbxActive.setToolTipText(cld.getMessage("RuleHeaderPanel.6","Steuert, ob die Regel ausgef\u00fchrt wird"));
 		this.add(this.clctchkbxActive.getJCheckBox(), gbc);
 		
 		gbc.gridwidth = 1;
 		gbc.weightx = 0.0;
-		clctchkbxDebug.setLabelText(CommonLocaleDelegate.getMessage("RuleHeaderPanel.7","Debug?"));
-		clctchkbxDebug.setToolTipText(CommonLocaleDelegate.getMessage("RuleHeaderPanel.8","Steuert, ob Debugausgaben ausgegeben werden"));
+		clctchkbxDebug.setLabelText(cld.getMessage("RuleHeaderPanel.7","Debug?"));
+		clctchkbxDebug.setToolTipText(cld.getMessage("RuleHeaderPanel.8","Steuert, ob Debugausgaben ausgegeben werden"));
 		this.add(this.clctchkbxDebug.getJCheckBox(), gbc);
 	}
 

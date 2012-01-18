@@ -17,7 +17,6 @@
 
 package org.nuclos.client.main;
 
-import static org.nuclos.common2.CommonLocaleDelegate.getMessage;
 import static org.nuclos.common2.StringUtils.nullIfEmpty;
 
 import java.awt.Color;
@@ -57,6 +56,7 @@ import org.nuclos.common.ApplicationProperties;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Pair;
 import org.nuclos.common.collection.Predicate;
+import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.XMLUtils;
 import org.w3c.dom.Document;
@@ -216,7 +216,7 @@ public class MenuGenerator {
 			Action a;
 			if(nullIfEmpty(menuElement.getAttribute("commandreference")) != null) {
 				String comref = menuElement.getAttribute("commandreference");
-				if (Main.isMacOSX() && ("MainController.cmdWindowClosing".equals(comref) ||
+				if (Main.getInstance().isMacOSX() && ("MainController.cmdWindowClosing".equals(comref) ||
 						"MainController.cmdOpenSettings".equals(comref) ||
 						"MainController.cmdShowAboutDialog".equals(comref))) {
 					return insertIndex; //ignore... we use mac native hander in Main.class
@@ -422,7 +422,8 @@ public class MenuGenerator {
 
 	private void replaceTranslation(Element menuElement) {
 		if(nullIfEmpty(menuElement.getAttribute("resId")) != null)
-			menuElement.setAttribute("text", getMessage(menuElement.getAttribute("resId"), menuElement.getAttribute("text"), ApplicationProperties.getInstance().getName()));
+			menuElement.setAttribute("text", CommonLocaleDelegate.getInstance().getMessage(
+					menuElement.getAttribute("resId"), menuElement.getAttribute("text"), ApplicationProperties.getInstance().getName()));
 		else if(nullIfEmpty(menuElement.getAttribute("text")) != null)
 			menuElement.setAttribute("text", MessageFormat.format(menuElement.getAttribute("text"), ApplicationProperties.getInstance().getName()));
 	}

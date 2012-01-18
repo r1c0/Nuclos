@@ -33,7 +33,6 @@ import org.nuclos.client.ui.Icons;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.client.ui.tree.TreeNodeAction;
 import org.nuclos.common.NuclosFatalException;
-import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.CommonRunnable;
 import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.exception.CommonBusinessException;
@@ -83,7 +82,8 @@ public class NucletContentCustomComponentExplorerNode extends ExplorerNode<Nucle
 	private class ShowDetailsAction extends TreeNodeAction {
 
 		ShowDetailsAction(JTree tree) {
-			super(ACTIONCOMMAND_SHOW_DETAILS, CommonLocaleDelegate.getMessage("NucletContentCustomComponentExplorerNode.1","Ressourcenplanung konfigurieren"), tree);
+			super(ACTIONCOMMAND_SHOW_DETAILS, 
+					getCommonLocaleDelegate().getMessage("NucletContentCustomComponentExplorerNode.1","Ressourcenplanung konfigurieren"), tree);
 		}
 
 		@Override
@@ -109,7 +109,8 @@ public class NucletContentCustomComponentExplorerNode extends ExplorerNode<Nucle
 	private class RemoveFromNucletAction extends TreeNodeAction {
 
 		public RemoveFromNucletAction(JTree tree) {
-			super(ACTIONCOMMAND_REMOVE, CommonLocaleDelegate.getMessage("NucletContentEntryExplorerNode.1","Vom Nuclet entfernen"), tree);
+			super(ACTIONCOMMAND_REMOVE, 
+					getCommonLocaleDelegate().getMessage("NucletContentEntryExplorerNode.1","Vom Nuclet entfernen"), tree);
 		}
 		
 		@Override

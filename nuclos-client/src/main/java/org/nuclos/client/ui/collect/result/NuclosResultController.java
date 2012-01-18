@@ -491,7 +491,7 @@ public class NuclosResultController<Clct extends Collectable> extends ResultCont
 		panel.getVisibleColumnWidth(lstSelected);
 		ctl.setModel(ro);
 		final boolean bOK = ctl.run(  
-				CommonLocaleDelegate.getMessage("SelectColumnsController.1","Anzuzeigende Spalten ausw\u00e4hlen"));
+				CommonLocaleDelegate.getInstance().getMessage("SelectColumnsController.1","Anzuzeigende Spalten ausw\u00e4hlen"));
 
 		if (bOK) {
 			setSelectColumns(fields, ctl.getAvailableObjects(), ctl.getSelectedObjects(), ctl.getFixedObjects(), false, false);
@@ -578,7 +578,8 @@ public class NuclosResultController<Clct extends Collectable> extends ResultCont
 		}
 
 		private JMenuItem createHideColumnItem() {
-			final JMenuItem miPopupHideThisColumn = new JMenuItem(CommonLocaleDelegate.getMessage("NuclosResultController.1","Diese Spalte ausblenden"));
+			final JMenuItem miPopupHideThisColumn = new JMenuItem(
+					CommonLocaleDelegate.getInstance().getMessage("NuclosResultController.1","Diese Spalte ausblenden"));
 			miPopupHideThisColumn.setIcon(Icons.getInstance().getIconRemoveColumn16());
 			miPopupHideThisColumn.addActionListener(new ActionListener() {
 				@Override
@@ -592,7 +593,8 @@ public class NuclosResultController<Clct extends Collectable> extends ResultCont
 		}
 		
 		private JMenuItem createRestoreColumnsItem() {
-			final JMenuItem miPopupRestoreColumns = new JMenuItem(CommonLocaleDelegate.getMessage("NuclosResultController.2", "Alle Spalten auf Vorlage zurücksetzen"));
+			final JMenuItem miPopupRestoreColumns = new JMenuItem(
+					CommonLocaleDelegate.getInstance().getMessage("NuclosResultController.2", "Alle Spalten auf Vorlage zurücksetzen"));
 			miPopupRestoreColumns.setIcon(Icons.getInstance().getIconUndo16());
 			miPopupRestoreColumns.addActionListener(new ActionListener() {
 				@Override
@@ -632,7 +634,9 @@ public class NuclosResultController<Clct extends Collectable> extends ResultCont
 		}
 		
 		private JMenuItem createPublishColumnsItem() {
-			final JMenuItem miPublishColumns = new JMenuItem(new AbstractAction(CommonLocaleDelegate.getMessage("NuclosResultController.3", "Spalten in Vorlage publizieren"), Icons.getInstance().getIconRedo16()) {
+			final JMenuItem miPublishColumns = new JMenuItem(new AbstractAction(
+					CommonLocaleDelegate.getInstance().getMessage(
+							"NuclosResultController.3", "Spalten in Vorlage publizieren"), Icons.getInstance().getIconRedo16()) {
 				@Override
 				public void actionPerformed(ActionEvent e) {
 					try {

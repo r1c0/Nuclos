@@ -57,7 +57,6 @@ import org.nuclos.common.transport.GzipList;
 import org.nuclos.common2.EntityAndFieldName;
 import org.nuclos.common2.IOUtils;
 import org.nuclos.common2.IdUtils;
-import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.TruncatableCollection;

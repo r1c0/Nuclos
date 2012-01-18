@@ -43,7 +43,6 @@ import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.PointerException;
 import org.nuclos.common.collect.collectable.CollectableValueField;
 import org.nuclos.common.collect.exception.CollectableValidationException;
-import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.CommonRunnable;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
@@ -66,7 +65,8 @@ public class TimelimitRuleCollectController extends MasterDataCollectController 
 	// by setupEditPanelForDetailsTab (which, sadly, is during super constructor evaluation)
 	private RuleEditPanel pnlEdit;
 
-	private final Action actCheckRuleSource = new CommonAbstractAction(Icons.getInstance().getIconValidate16(), CommonLocaleDelegate.getMessage("RuleCollectController.2", "Quelltext pr\u00fcfen")) {
+	private final Action actCheckRuleSource = new CommonAbstractAction(Icons.getInstance().getIconValidate16(), 
+			getCommonLocaleDelegate().getMessage("RuleCollectController.2", "Quelltext pr\u00fcfen")) {
 
 		@Override
 		public void actionPerformed(ActionEvent ev) {
@@ -117,13 +117,13 @@ public class TimelimitRuleCollectController extends MasterDataCollectController 
 		UIUtils.runCommand(this.getFrame(), new Runnable() {
 			@Override
 			public void run() {
-				Main.getMainController().getExplorerController().cmdShowRuleUsage(null, null);
+				Main.getInstance().getMainController().getExplorerController().cmdShowRuleUsage(null, null);
 			}
 		});
 	}
 
 	private ExplorerController getExplorerController() {
-		return Main.getMainController().getExplorerController();
+		return Main.getInstance().getMainController().getExplorerController();
 	}
 
 	private void cmdCheckRuleSource() {
@@ -148,7 +148,8 @@ public class TimelimitRuleCollectController extends MasterDataCollectController 
 
 				try {
 					ruleDelegate.check(mdvo);
-					JOptionPane.showMessageDialog(TimelimitRuleCollectController.this.getFrame(), CommonLocaleDelegate.getMessage("CodeCollectController.compiledsuccessfully", "Quellcode erfolgreich kompiliert."));
+					JOptionPane.showMessageDialog(TimelimitRuleCollectController.this.getFrame(), getCommonLocaleDelegate().getMessage(
+							"CodeCollectController.compiledsuccessfully", "Quellcode erfolgreich kompiliert."));
 				}
 				catch (NuclosCompileException ex) {
 					TimelimitRuleCollectController.this.pnlEdit.setMessages(ex.getErrorMessages());
@@ -220,7 +221,7 @@ public class TimelimitRuleCollectController extends MasterDataCollectController 
 
 	@Override
 	protected String getEntityLabel() {
-		return CommonLocaleDelegate.getMessage("TimelimitRuleCollectController.1", "Fristenregeln");
+		return getCommonLocaleDelegate().getMessage("TimelimitRuleCollectController.1", "Fristenregeln");
 	}
 
 	/**

@@ -35,7 +35,6 @@ import org.nuclos.common.collect.collectable.CollectableEntityField;
 import org.nuclos.common.collect.collectable.CollectableField;
 import org.nuclos.common.collect.collectable.CollectableValueField;
 import org.nuclos.common.collect.exception.CollectableFieldFormatException;
-import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.common2.exception.CommonValidationException;
@@ -177,7 +176,10 @@ public class CollectableWYSIWYGLayoutEditor extends AbstractCollectableComponent
 					} else {
 						// old xerlin layout
 
-						JOptionPane.showMessageDialog(jpnWYSIWYGController, CommonLocaleDelegate.getText("layoutml.editor.unsupported.wysiwyg.layout.2", null), CommonLocaleDelegate.getText("layoutml.editor.unsupported.wysiwyg.layout.1", null), JOptionPane.INFORMATION_MESSAGE);
+						JOptionPane.showMessageDialog(jpnWYSIWYGController, 
+								getCommonLocaleDelegate().getText("layoutml.editor.unsupported.wysiwyg.layout.2", null), 
+								getCommonLocaleDelegate().getText("layoutml.editor.unsupported.wysiwyg.layout.1", null), 
+								JOptionPane.INFORMATION_MESSAGE);
 						jpnWYSIWYGController.showPaletteAndEditorPanel();
 						jpnWYSIWYGController.createStandartLayout();
 					}

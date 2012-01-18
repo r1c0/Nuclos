@@ -141,7 +141,8 @@ public class MasterDataDelegate {
 		 try{
 			 return getMetaDataCache().values();
 		 }catch(RuntimeException ex){
-			 final String sMessage = CommonLocaleDelegate.getMessage("MasterDataDelegate.1", "Fehler beim Laden der Metadaten f\u00fcr alle Entit\u00e4ten.");
+			 final String sMessage = CommonLocaleDelegate.getInstance().getMessage(
+					 "MasterDataDelegate.1", "Fehler beim Laden der Metadaten f\u00fcr alle Entit\u00e4ten.");
 			 throw new CommonFatalException(sMessage,ex);
 		 }
 	 }
@@ -161,7 +162,8 @@ public class MasterDataDelegate {
 			 if (result == null) {
 				 result = getMetaDataNoCache(sEntityName);
 				 if(result == null) {
-					 throw new CommonFatalException(CommonLocaleDelegate.getMessage("MasterDataDelegate.2", "Keine Metadaten f\u00fcr die Entit\u00e4t {0} vorhanden.", sEntityName));
+					 throw new CommonFatalException(CommonLocaleDelegate.getInstance().getMessage(
+							 "MasterDataDelegate.2", "Keine Metadaten f\u00fcr die Entit\u00e4t {0} vorhanden.", sEntityName));
 				 }
 				 else {
 					 invalidateCaches();
@@ -170,7 +172,8 @@ public class MasterDataDelegate {
 			 assert result != null;
 			 return result;
 		 }catch(RuntimeException ex){
-			 final String sMessage = CommonLocaleDelegate.getMessage("MasterDataDelegate.3", "Fehler beim Laden der Metadaten f\u00fcr die Entit\u00e4t {0}.", sEntityName);
+			 final String sMessage = CommonLocaleDelegate.getInstance().getMessage(
+					 "MasterDataDelegate.3", "Fehler beim Laden der Metadaten f\u00fcr die Entit\u00e4t {0}.", sEntityName);
 			 throw new CommonFatalException(sMessage, ex);
 		 }
 
@@ -200,7 +203,8 @@ public class MasterDataDelegate {
 			 if (result == null) {
 				 result = getMetaDataNoCache(iEntityId);
 				 if(result == null) {
-					 throw new CommonFatalException(CommonLocaleDelegate.getMessage("MasterDataDelegate.2", "Keine Metadaten f\u00fcr die Entit\u00e4t {0} vorhanden.", iEntityId));
+					 throw new CommonFatalException(CommonLocaleDelegate.getInstance().getMessage(
+							 "MasterDataDelegate.2", "Keine Metadaten f\u00fcr die Entit\u00e4t {0} vorhanden.", iEntityId));
 				 }
 				 else {
 					 invalidateCaches();
@@ -210,7 +214,8 @@ public class MasterDataDelegate {
 			 return result;
 		 }
 		 catch (RuntimeException ex) {
-			 final String sMessage = CommonLocaleDelegate.getMessage("MasterDataDelegate.4", "Fehler beim Laden der Daten f\u00fcr die Entit\u00e4t {0}.", iEntityId);
+			 final String sMessage = CommonLocaleDelegate.getInstance().getMessage(
+					 "MasterDataDelegate.4", "Fehler beim Laden der Daten f\u00fcr die Entit\u00e4t {0}.", iEntityId);
 			 throw new CommonFatalException(sMessage, ex);
 		 }
 	 }
@@ -224,7 +229,8 @@ public class MasterDataDelegate {
 			 return this.getMasterDataFacade().getMetaDataByModuleId(iModuleId);
 		 }
 		 catch (RuntimeException ex) {
-			 final String sMessage = CommonLocaleDelegate.getMessage("MasterDataDelegate.5", "Fehler beim Ermitteln der verf\u00fcgbaren Unterentit\u00e4ten f\u00fcr das Modul {0}.", iModuleId);
+			 final String sMessage = CommonLocaleDelegate.getInstance().getMessage(
+					 "MasterDataDelegate.5", "Fehler beim Ermitteln der verf\u00fcgbaren Unterentit\u00e4ten f\u00fcr das Modul {0}.", iModuleId);
 			 throw new NuclosBusinessException(sMessage, ex);
 		 }
 
@@ -239,7 +245,8 @@ public class MasterDataDelegate {
 			 return this.getMasterDataFacade().getSubEntities(iModuleId);
 		 }
 		 catch (RuntimeException ex) {
-			 final String sMessage = CommonLocaleDelegate.getMessage("MasterDataDelegate.5", "Fehler beim Ermitteln der verf\u00fcgbaren Unterentit\u00e4ten f\u00fcr das Modul {0}.", iModuleId);
+			 final String sMessage = CommonLocaleDelegate.getInstance().getMessage(
+					 "MasterDataDelegate.5", "Fehler beim Ermitteln der verf\u00fcgbaren Unterentit\u00e4ten f\u00fcr das Modul {0}.", iModuleId);
 			 throw new NuclosBusinessException(sMessage, ex);
 		 }
 
@@ -289,7 +296,8 @@ public class MasterDataDelegate {
 			 return result;
 		 }
 		 catch (RuntimeException ex) {
-			 final String sMessage = CommonLocaleDelegate.getMessage("MasterDataDelegate.4", "Fehler beim Laden der Daten f\u00fcr die Entit\u00e4t {0}.", sEntityName);
+			 final String sMessage = CommonLocaleDelegate.getInstance().getMessage(
+					 "MasterDataDelegate.4", "Fehler beim Laden der Daten f\u00fcr die Entit\u00e4t {0}.", sEntityName);
 			 throw new CommonFatalException(sMessage, ex);
 		 }
 	 }
@@ -309,7 +317,8 @@ public class MasterDataDelegate {
 			 return result;
 		 }
 		 catch (RuntimeException ex) {
-			 final String sMessage = CommonLocaleDelegate.getMessage("MasterDataDelegate.4", "Fehler beim Laden der Daten f\u00fcr die Entit\u00e4t {0}.", sEntityName);
+			 final String sMessage = CommonLocaleDelegate.getInstance().getMessage(
+					 "MasterDataDelegate.4", "Fehler beim Laden der Daten f\u00fcr die Entit\u00e4t {0}.", sEntityName);
 			 throw new CommonFatalException(sMessage, ex);
 		 }
 	 }

@@ -38,9 +38,9 @@ import org.nuclos.common.database.query.definition.Table;
  */
 public class TableSelectionModel extends AbstractTableModel {
 
-	private static final String COLUMN_TYPE = CommonLocaleDelegate.getMessage("TableSelectionModel.3","Typ");
-	private static final String COLUMN_TABLE = CommonLocaleDelegate.getMessage("TableSelectionModel.2","Tabelle");
-	private static final String COLUMN_DESCRIPTION = CommonLocaleDelegate.getMessage("TableSelectionModel.1","Beschreibung");
+	private static final String COLUMN_TYPE = CommonLocaleDelegate.getInstance().getMessage("TableSelectionModel.3","Typ");
+	private static final String COLUMN_TABLE = CommonLocaleDelegate.getInstance().getMessage("TableSelectionModel.2","Tabelle");
+	private static final String COLUMN_DESCRIPTION = CommonLocaleDelegate.getInstance().getMessage("TableSelectionModel.1","Beschreibung");
 
 	private static final int COLUMN_TABLE_INDEX = 0;
 	private static final int COLUMN_TYPE_INDEX = 1;
@@ -87,7 +87,8 @@ public class TableSelectionModel extends AbstractTableModel {
 				break;
 			case COLUMN_DESCRIPTION_INDEX:
 				if (table.getComment() == null && table.getEntityName() != null) {
-					result = CommonLocaleDelegate.getLabelFromMetaDataVO(MetaDataClientProvider.getInstance().getEntity(table.getEntityName()));
+					result = CommonLocaleDelegate.getInstance().getLabelFromMetaDataVO(
+							MetaDataClientProvider.getInstance().getEntity(table.getEntityName()));
 				} else {
 					result = table.getComment();
 				}

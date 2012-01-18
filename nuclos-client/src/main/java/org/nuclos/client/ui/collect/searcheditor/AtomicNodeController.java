@@ -46,6 +46,7 @@ import org.apache.commons.lang.NullArgumentException;
 import org.apache.log4j.Logger;
 import org.jdesktop.swingx.renderer.DefaultListRenderer;
 import org.nuclos.client.ui.CommonJTextField;
+import org.nuclos.client.ui.Controller;
 import org.nuclos.client.ui.Errors;
 import org.nuclos.client.ui.LineLayout;
 import org.nuclos.client.ui.ResourceIdMapper;
@@ -65,12 +66,11 @@ import org.nuclos.common.collect.collectable.searchcondition.CollectableComparis
 import org.nuclos.common.collect.collectable.searchcondition.CollectableComparisonWithOtherField;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableComparisonWithParameter;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableComparisonWithParameter.ComparisonParameter;
-import org.nuclos.common.collect.collectable.searchcondition.visit.AtomicVisitor;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableIsNullCondition;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableLikeCondition;
 import org.nuclos.common.collect.collectable.searchcondition.ComparisonOperator;
+import org.nuclos.common.collect.collectable.searchcondition.visit.AtomicVisitor;
 import org.nuclos.common.collect.exception.CollectableFieldFormatException;
-import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.CommonRunnable;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonValidationException;
@@ -84,11 +84,10 @@ import org.nuclos.common2.exception.CommonValidationException;
  * @author	<a href="mailto:Christoph.Radig@novabit.de">Christoph.Radig</a>
  * @version 01.00.00
  */
-public class AtomicNodeController {
+public class AtomicNodeController extends Controller {
 
 	private static final Logger log = Logger.getLogger(AtomicNodeController.class);
 
-	private final Component parent;
 	private final JTree tree;
 	private final CollectableEntity clcte;
 	private final CollectableFieldsProviderFactory clctfproviderfactory;
@@ -97,7 +96,7 @@ public class AtomicNodeController {
 
 	public AtomicNodeController(Component parent, JTree tree, CollectableEntity clcte,
 			CollectableFieldsProviderFactory clctfproviderfactory, Collection<CollectableEntityField> additionalFields) {
-		this.parent = parent;
+		super(parent);
 		this.tree = tree;
 		this.clcte = clcte;
 		this.clctfproviderfactory = clctfproviderfactory;
@@ -110,7 +109,8 @@ public class AtomicNodeController {
 	 */
 	public void runAdd(SearchConditionTreeNode nodeParent) {
 		final AtomicNodePanel pnl = new AtomicNodePanel();
-		final int iBtn = this.newOptionPane(CommonLocaleDelegate.getMessage("AtomicNodeController.1","Einfache Bedingung hinzuf\u00fcgen"), pnl).showDialog();
+		final int iBtn = this.newOptionPane(getCommonLocaleDelegate().getMessage(
+				"AtomicNodeController.1","Einfache Bedingung hinzuf\u00fcgen"), pnl).showDialog();
 
 		if (iBtn == JOptionPane.OK_OPTION) {
 			try {
@@ -121,7 +121,7 @@ public class AtomicNodeController {
 				}
 			}
 			catch (CommonBusinessException ex) {
-				Errors.getInstance().showExceptionDialog(parent, ex);
+				Errors.getInstance().showExceptionDialog(getParent(), ex);
 			}
 		}
 	}
@@ -133,7 +133,8 @@ public class AtomicNodeController {
 	public void runEdit(AtomicSearchConditionTreeNode node) {
 		final AtomicNodePanel pnl = new AtomicNodePanel();
 		pnl.setSearchCondition(node.getSearchCondition());
-		final int iBtn = this.newOptionPane(CommonLocaleDelegate.getMessage("AtomicNodeController.2","Einfache Bedingung bearbeiten"), pnl).showDialog();
+		final int iBtn = this.newOptionPane(getCommonLocaleDelegate().getMessage(
+				"AtomicNodeController.2","Einfache Bedingung bearbeiten"), pnl).showDialog();
 
 		if (iBtn == JOptionPane.OK_OPTION) {
 			try {
@@ -147,13 +148,13 @@ public class AtomicNodeController {
 				nodeParent.refresh(tree);
 			}
 			catch (CommonBusinessException ex) {
-				Errors.getInstance().showExceptionDialog(parent, ex);
+				Errors.getInstance().showExceptionDialog(getParent(), ex);
 			}
 		}
 	}
 
 	private ValidatingJOptionPane newOptionPane(String sTitle, final AtomicNodePanel pnl) {
-		return new ValidatingJOptionPane(parent, sTitle, pnl, JOptionPane.PLAIN_MESSAGE, JOptionPane.OK_CANCEL_OPTION) {
+		return new ValidatingJOptionPane(getParent(), sTitle, pnl, JOptionPane.PLAIN_MESSAGE, JOptionPane.OK_CANCEL_OPTION) {
 
 			@Override
 			protected void validateInput() throws ValidatingJOptionPane.ErrorInfo {
@@ -182,11 +183,15 @@ public class AtomicNodeController {
 		private CollectableComponent clctcompValue;
 		private final CommonJTextField tfLikeComparand = new CommonJTextField(MAX_COLUMNS);
 
-		private final JLabel labCompareWith = new JLabel(CommonLocaleDelegate.getMessage("AtomicNodeController.3","Vergleich mit"));
+		private final JLabel labCompareWith = new JLabel(getCommonLocaleDelegate().getMessage(
+				"AtomicNodeController.3","Vergleich mit"));
 		private final JPanel pnlValueOrOtherField = new JPanel(new LineLayout(LineLayout.HORIZONTAL, 5, true));
-		private final JRadioButton radiobtnValue = new JRadioButton(CommonLocaleDelegate.getMessage("AtomicNodeController.4","Wert"));
-		private final JRadioButton radiobtnOtherField = new JRadioButton(CommonLocaleDelegate.getMessage("AtomicNodeController.5","anderem Feld"));
-		private final JRadioButton radiobtnParameter = new JRadioButton(CommonLocaleDelegate.getMessage("AtomicNodeController.9","Parameter"));
+		private final JRadioButton radiobtnValue = new JRadioButton(getCommonLocaleDelegate().getMessage(
+				"AtomicNodeController.4","Wert"));
+		private final JRadioButton radiobtnOtherField = new JRadioButton(getCommonLocaleDelegate().getMessage(
+				"AtomicNodeController.5","anderem Feld"));
+		private final JRadioButton radiobtnParameter = new JRadioButton(getCommonLocaleDelegate().getMessage(
+				"AtomicNodeController.9","Parameter"));
 		private final ButtonGroup btngrpValueOrOtherField = new ButtonGroup();
 
 		private static final String CARD_VALUE = "value";
@@ -200,10 +205,14 @@ public class AtomicNodeController {
 			final JPanel pnl = new JPanel(new GridBagLayout());
 			this.add(pnl, new GridBagConstraints(0, 0, 1, 1, 1.0, 1.0, GridBagConstraints.SOUTHWEST, GridBagConstraints.NONE, new Insets(0,0,0,0), 0, 0));
 
-			pnl.add(new JLabel(CommonLocaleDelegate.getMessage("AtomicNodeController.6","Feld")), new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0, GridBagConstraints.SOUTHWEST, GridBagConstraints.NONE, new Insets(0, 0, 2, 5), 0, 0));
+			pnl.add(new JLabel(getCommonLocaleDelegate().getMessage("AtomicNodeController.6","Feld")), 
+					new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0, GridBagConstraints.SOUTHWEST, GridBagConstraints.NONE, 
+					new Insets(0, 0, 2, 5), 0, 0));
 			pnl.add(cmbbxEntityField, new GridBagConstraints(0, 2, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 5), 0, 0));
 
-			pnl.add(new JLabel(CommonLocaleDelegate.getMessage("AtomicNodeController.7","Operator")), new GridBagConstraints(1, 1, 1, 1, 0.0, 0.0, GridBagConstraints.SOUTHWEST, GridBagConstraints.NONE, new Insets(0, 0, 2, 5), 0, 0));
+			pnl.add(new JLabel(getCommonLocaleDelegate().getMessage("AtomicNodeController.7","Operator")), 
+					new GridBagConstraints(1, 1, 1, 1, 0.0, 0.0, GridBagConstraints.SOUTHWEST, GridBagConstraints.NONE, 
+					new Insets(0, 0, 2, 5), 0, 0));
 			pnl.add(cmbbxOperator, new GridBagConstraints(1, 2, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 5), 0, 0));
 			cmbbxOperator.setRenderer(new DefaultListCellRenderer() {
 
@@ -211,7 +220,7 @@ public class AtomicNodeController {
 				public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
 					String label = null;
 					if (value != null) {
-						label = CommonLocaleDelegate.getMessage(((ComparisonOperator) value).getResourceIdForLabel(), null);
+						label = getCommonLocaleDelegate().getMessage(((ComparisonOperator) value).getResourceIdForLabel(), null);
 					}
 					return super.getListCellRendererComponent(list, label, index, isSelected, cellHasFocus);
 				}
@@ -349,7 +358,7 @@ public class AtomicNodeController {
 				// special case: comparison with parameter
 				final ComparisonParameter parameter = (ComparisonParameter) cmbbxParameter.getSelectedItem();
 				if (!parameter.isCompatible(clctef)) {
-					throw new CommonValidationException(CommonLocaleDelegate.getMessage("AtomicNodeController.10", null));
+					throw new CommonValidationException(getCommonLocaleDelegate().getMessage("AtomicNodeController.10", null));
 				}
 				return new CollectableComparisonWithParameter(clctef, compop, parameter);
 			}
@@ -359,7 +368,7 @@ public class AtomicNodeController {
 
 				// check that the fields match:
 				if(clctef.getJavaClass() != clctefOtherField.getJavaClass()) {
-					throw new CommonValidationException(CommonLocaleDelegate.getMessage("AtomicNodeController.8","Die Datentypen der Felder stimmen nicht \u00fcberein."));
+					throw new CommonValidationException(getCommonLocaleDelegate().getMessage("AtomicNodeController.8","Die Datentypen der Felder stimmen nicht \u00fcberein."));
 				}
 				return new CollectableComparisonWithOtherField(clctef, compop, clctefOtherField);
 			}

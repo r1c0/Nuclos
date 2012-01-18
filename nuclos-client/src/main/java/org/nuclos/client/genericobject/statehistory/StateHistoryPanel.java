@@ -75,11 +75,11 @@ public class StateHistoryPanel extends JPanel {
 
 		private List<StateHistoryVO> lstHistory;
 		private static String[] asColumnNames = {
-			CommonLocaleDelegate.getMessage("StateHistoryPanel.1", "Status"), 
-			CommonLocaleDelegate.getMessage("StateHistoryPanel.2", "Datum"),
-			CommonLocaleDelegate.getMessage("StateHistoryPanel.3", "Benutzer")};
+			CommonLocaleDelegate.getInstance().getMessage("StateHistoryPanel.1", "Status"), 
+			CommonLocaleDelegate.getInstance().getMessage("StateHistoryPanel.2", "Datum"),
+			CommonLocaleDelegate.getInstance().getMessage("StateHistoryPanel.3", "Benutzer")};
 		//private final DateFormat dateformat = DateFormat.getDateInstance();
-		private final DateFormat dateformat = CommonLocaleDelegate.getDateTimeFormat(); // new java.text.SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
+		private final DateFormat dateformat = CommonLocaleDelegate.getInstance().getDateTimeFormat(); // new java.text.SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
 
 		public TableModel(List<StateHistoryVO> lstHistory) {
 			this.lstHistory = lstHistory;

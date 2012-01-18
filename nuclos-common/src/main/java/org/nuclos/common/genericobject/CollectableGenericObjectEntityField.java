@@ -75,7 +75,7 @@ public class CollectableGenericObjectEntityField extends AbstractCollectableEnti
 
 	@Override
 	public String getDescription() {
-		return CommonLocaleDelegate.getDescriptionFromAttributeCVO(attrcvo);
+		return CommonLocaleDelegate.getInstance().getDescriptionFromAttributeCVO(attrcvo);
 	}
 
 	@Override
@@ -101,7 +101,7 @@ public class CollectableGenericObjectEntityField extends AbstractCollectableEnti
 
 	@Override
 	public String getLabel() {
-		return CommonLocaleDelegate.getLabelFromAttributeCVO(attrcvo);
+		return CommonLocaleDelegate.getInstance().getLabelFromAttributeCVO(attrcvo);
 	}
 
 	@Override

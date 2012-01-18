@@ -67,7 +67,8 @@ public class WikiController {
 	 */
 	public String getBaseURL() {
 		if (ClientParameterProvider.getInstance().getValue(ClientParameterProvider.KEY_WIKI_BASE_URL) == null) {
-			throw new NuclosFatalException(CommonLocaleDelegate.getMessage("WikiController.1", "Die BaseURL f\u00fcr das Wiki muss in T_AD_PARAMETER angegeben werden."));
+			throw new NuclosFatalException(CommonLocaleDelegate.getInstance().getMessage(
+					"WikiController.1", "Die BaseURL f\u00fcr das Wiki muss in T_AD_PARAMETER angegeben werden."));
 		}
 		return ClientParameterProvider.getInstance().getValue(ClientParameterProvider.KEY_WIKI_BASE_URL);
 	}
@@ -152,7 +153,8 @@ public class WikiController {
 			
 		}
 		else {
-			throw new NuclosFatalException(CommonLocaleDelegate.getMessage("WikiController.2", "Keine Komponente zum Anzeigen im Wiki gefunden."));
+			throw new NuclosFatalException(CommonLocaleDelegate.getInstance().getMessage(
+					"WikiController.2", "Keine Komponente zum Anzeigen im Wiki gefunden."));
 		}
 	}
 	

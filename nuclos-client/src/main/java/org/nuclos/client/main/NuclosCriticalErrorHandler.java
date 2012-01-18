@@ -51,21 +51,26 @@ public class NuclosCriticalErrorHandler implements Errors.CriticalErrorHandler {
 		// Ok! (tp)
 		error.printStackTrace(System.err);
 		LOG.fatal("handleCriticalError failed: " + error, error);
+		final CommonLocaleDelegate cld = CommonLocaleDelegate.getInstance();
 		if (bStrict) {
 			// avoid multiple messages:
 			synchronized (this) {
-				final String sMessage = CommonLocaleDelegate.getMessage("NuclosCriticalErrorHandler.1", "Es ist ein kritischer Systemfehler aufgetreten.") + "\n" +
-						CommonLocaleDelegate.getMessage("NuclosCriticalErrorHandler.2", "Aus Sicherheitsgr\u00fcnden muss die Applikation beendet werden.");
+				final String sMessage = cld.getMessage(
+						"NuclosCriticalErrorHandler.1", "Es ist ein kritischer Systemfehler aufgetreten.") + "\n" +
+						cld.getMessage(
+								"NuclosCriticalErrorHandler.2", "Aus Sicherheitsgr\u00fcnden muss die Applikation beendet werden.");
 				Errors.getInstance().showExceptionDialog(parent, sMessage, error);
 				Main.exit(Main.ExitResult.ABNORMAL);
 			}
 		}
 		else {
-			final String sMessage = CommonLocaleDelegate.getMessage("NuclosCriticalErrorHandler.1", "Es ist ein kritischer Systemfehler aufgetreten.") + "\n" +
-			CommonLocaleDelegate.getMessage("NuclosCriticalErrorHandler.3", "Aus Sicherheitsgr\u00fcnden wird empfohlen, die Applikation sofort und ohne Speichern zu beenden.");
+			final String sMessage = cld.getMessage(
+					"NuclosCriticalErrorHandler.1", "Es ist ein kritischer Systemfehler aufgetreten.") + "\n" 
+					+ cld.getMessage("NuclosCriticalErrorHandler.3", "Aus Sicherheitsgr\u00fcnden wird empfohlen, die Applikation sofort und ohne Speichern zu beenden.");
 			Errors.getInstance().showExceptionDialog(parent, sMessage, error);
-			final int iBtn = JOptionPane.showConfirmDialog(parent, CommonLocaleDelegate.getMessage("NuclosCriticalErrorHandler.4", "Applikation beenden? (Empfohlen)"),
-				CommonLocaleDelegate.getMessage("NuclosCriticalErrorHandler.5", "Kritischer Systemfehler"), JOptionPane.YES_NO_OPTION);
+			final int iBtn = JOptionPane.showConfirmDialog(parent, CommonLocaleDelegate.getInstance().getMessage(
+					"NuclosCriticalErrorHandler.4", "Applikation beenden? (Empfohlen)"),
+					cld.getMessage("NuclosCriticalErrorHandler.5", "Kritischer Systemfehler"), JOptionPane.YES_NO_OPTION);
 			if (iBtn == JOptionPane.YES_OPTION) {
 				Main.exit(Main.ExitResult.ABNORMAL);
 			}

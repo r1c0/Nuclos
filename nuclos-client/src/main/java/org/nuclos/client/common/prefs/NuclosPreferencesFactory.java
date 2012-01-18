@@ -96,7 +96,7 @@ public class NuclosPreferencesFactory implements PreferencesFactory {
 	public synchronized Preferences userRoot() {
 		if (this.prefsUser == null) {
 
-			final String sErrorMsg = CommonLocaleDelegate.getMessage("NuclosPreferencesFactory.1", "Die Benutzereinstellungen konnten nicht geladen werden.");
+			final String sErrorMsg = CommonLocaleDelegate.getInstance().getMessage("NuclosPreferencesFactory.1", "Die Benutzereinstellungen konnten nicht geladen werden.");
 
 //			try {
 			PreferencesVO prefsvo;
@@ -170,7 +170,8 @@ public class NuclosPreferencesFactory implements PreferencesFactory {
 				prefsUser.flush();
 			}
 			catch (BackingStoreException ex) {
-				throw new NuclosFatalException(CommonLocaleDelegate.getMessage("NuclosPreferencesFactory.2", "Die Benutzer-Einstellungen konnten nicht gespeichert werden."), ex);
+				throw new NuclosFatalException(CommonLocaleDelegate.getInstance().getMessage(
+						"NuclosPreferencesFactory.2", "Die Benutzer-Einstellungen konnten nicht gespeichert werden."), ex);
 			}
 		}
 	}

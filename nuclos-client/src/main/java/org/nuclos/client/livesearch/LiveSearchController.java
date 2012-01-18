@@ -39,6 +39,7 @@ import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import javax.annotation.PostConstruct;
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
@@ -53,6 +54,8 @@ import org.nuclos.client.common.NuclosCollectControllerFactory;
 import org.nuclos.client.common.security.SecurityCache;
 import org.nuclos.client.entityobject.EntityFacadeDelegate;
 import org.nuclos.client.main.Main;
+import org.nuclos.client.main.MainController;
+import org.nuclos.client.main.mainframe.MainFrame;
 import org.nuclos.client.masterdata.MasterDataDelegate;
 import org.nuclos.client.masterdata.MasterDataLayoutHelper;
 import org.nuclos.client.resource.NuclosResourceCache;
@@ -83,7 +86,10 @@ import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.PreferencesException;
 import org.nuclos.server.livesearch.ejb3.LiveSearchFacadeRemote;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
+@Component
 public class LiveSearchController implements LiveSearchSearchPaneListener, LiveSearchResultPaneListener {
 	
 	private static final Logger LOG = Logger.getLogger(LiveSearchController.class);
@@ -108,9 +114,25 @@ public class LiveSearchController implements LiveSearchSearchPaneListener, LiveS
 
     private Bubble                              overflowMessage;
     private String                              bubbleMessage;
+    
+    private ResourceCache resourceCache;
 
-    public LiveSearchController(JFrame parentFrame) {
-        this.parentFrame = parentFrame;
+    LiveSearchController() {
+	}
+    
+    @Autowired
+    void setResourceCache(ResourceCache resourceCache) {
+    	this.resourceCache = resourceCache;
+    }
+    
+    @Autowired
+    void setParentFrame(MainFrame parentFrame) {
+    	this.parentFrame = parentFrame;
+    }
+    
+    @PostConstruct
+    void init() {
+        // this.parentFrame = parentFrame;
         searchComponent = new SearchComponent();
         searchComponent.setMaximumSize(searchComponent.getPreferredSize());
 
@@ -128,7 +150,7 @@ public class LiveSearchController implements LiveSearchSearchPaneListener, LiveS
         resultPane = new LiveSearchPane();
         resultPane.addLiveSearchPaneListener(this);
 
-        bubbleMessage = CommonLocaleDelegate.getResource("livesearch.controller.overflow", null);
+        bubbleMessage = CommonLocaleDelegate.getInstance().getResource("livesearch.controller.overflow", null);
 
         searchComponent.addFocusListener(new FocusAdapter() {
 			@Override
@@ -244,8 +266,8 @@ public class LiveSearchController implements LiveSearchSearchPaneListener, LiveS
         Collections.sort(allEntities, new Comparator<EntityMetaDataVO>() {
             @Override
             public int compare(EntityMetaDataVO o1, EntityMetaDataVO o2) {
-                String l1 = CommonLocaleDelegate.getLabelFromMetaDataVO(o1);
-                String l2 = CommonLocaleDelegate.getLabelFromMetaDataVO(o2);
+                String l1 = CommonLocaleDelegate.getInstance().getLabelFromMetaDataVO(o1);
+                String l2 = CommonLocaleDelegate.getInstance().getLabelFromMetaDataVO(o2);
                 return l1.compareTo(l2);
             }});
 
@@ -298,7 +320,7 @@ public class LiveSearchController implements LiveSearchSearchPaneListener, LiveS
         case OPEN:
         case KB_OPEN:
         case OPEN_DETAILS:
-            UIUtils.runCommand(Main.getMainFrame(), new CommonRunnable() {
+            UIUtils.runCommand(Main.getInstance().getMainFrame(), new CommonRunnable() {
                 @Override
                 public void run() throws CommonBusinessException {
                 	functionOpen(rows, function == Function.OPEN_DETAILS);
@@ -322,6 +344,10 @@ public class LiveSearchController implements LiveSearchSearchPaneListener, LiveS
 
 
     private void functionOpen(List<LiveSearchResultRow> rows, boolean individual) throws CommonBusinessException {
+    	final Main main = Main.getInstance();
+    	final MainController mc = main.getMainController();
+    	final MainFrame mf = main.getMainFrame();
+    	
     	Map<String, ArrayList<LiveSearchResultRow>> byEntity
     	= new LazyInitMapWrapper<String, ArrayList<LiveSearchResultRow>>(
     		new LinkedHashMap<String, ArrayList<LiveSearchResultRow>>(),
@@ -335,7 +361,7 @@ public class LiveSearchController implements LiveSearchSearchPaneListener, LiveS
     			ArrayList<LiveSearchResultRow> openRows = byEntity.get(entity);
     			if(openRows.size() == 1 || individual) {
     				for(LiveSearchResultRow resRow : openRows)
-    					Main.getMainController().showDetails(resRow.entityName, resRow.theObject.getId());
+    					mc.showDetails(resRow.entityName, resRow.theObject.getId());
     			}
     			else {
     				ArrayList<Long> ids = new ArrayList<Long>();
@@ -346,7 +372,7 @@ public class LiveSearchController implements LiveSearchSearchPaneListener, LiveS
 
     				NuclosCollectController<?> collectController
     				= NuclosCollectControllerFactory.getInstance()
-    					.newCollectController(Main.getMainFrame().getHomePane(), entity, null);
+    					.newCollectController(mf.getHomePane(), entity, null);
     				collectController.runViewResults(cond);
     			}
     		}
@@ -359,14 +385,15 @@ public class LiveSearchController implements LiveSearchSearchPaneListener, LiveS
 	    	    		// - if only one has been found: open directly
 	    	    		List<EntityFieldMetaDataVO> fieldMetas = getParentFieldsWithLayout(row);
 	    	    		if(fieldMetas.size() > 1) {
-	    	    			new ShowAsDialog(Main.getMainFrame(), row.theObject, fieldMetas).setVisible(true);
+	    	    			new ShowAsDialog(mf, row.theObject, fieldMetas).setVisible(true);
 	    	    		}
 	    	    		else if(fieldMetas.isEmpty()) {
-	    	    			JOptionPane.showMessageDialog(Main.getMainFrame(), CommonLocaleDelegate.getResource("livesearch.controller.nolayout", "No layout available"));
+	    	    			JOptionPane.showMessageDialog(mf, 
+	    	    					CommonLocaleDelegate.getInstance().getResource("livesearch.controller.nolayout", "No layout available"));
 	    	    		}
 	    	    		else {
 	    	    			EntityFieldMetaDataVO fm = fieldMetas.get(0);
-	    	    			Main.getMainController().showDetails(
+	    	    			mc.showDetails(
 	    	    				fm.getForeignEntity(),
 	    	    				row.theObject.getFieldIds().get(fm.getField()));
 	    	    		}
@@ -393,11 +420,12 @@ public class LiveSearchController implements LiveSearchSearchPaneListener, LiveS
 
         				NuclosCollectController<?> collectController
         				= NuclosCollectControllerFactory.getInstance()
-        					.newCollectController(Main.getMainFrame().getHomePane(), fm.getForeignEntity(), null);
+        					.newCollectController(mf.getHomePane(), fm.getForeignEntity(), null);
         				collectController.runViewResults(cond);
     				}
     				else {
-    	    			JOptionPane.showMessageDialog(Main.getMainFrame(), CommonLocaleDelegate.getResource("livesearch.controller.nolayout", "No layout available"));
+    	    			JOptionPane.showMessageDialog(mf, 
+    	    					CommonLocaleDelegate.getInstance().getResource("livesearch.controller.nolayout", "No layout available"));
     				}
     			}
     		}
@@ -673,7 +701,7 @@ public class LiveSearchController implements LiveSearchSearchPaneListener, LiveS
                 	}
                 }
                 catch(Exception e) {
-                	Errors.getInstance().showExceptionDialog(Main.getMainFrame(), e);
+                	Errors.getInstance().showExceptionDialog(Main.getInstance().getMainFrame(), e);
                 }
             }
         }
@@ -746,11 +774,11 @@ public class LiveSearchController implements LiveSearchSearchPaneListener, LiveS
                 Integer iconId = searchDef.entity.getResourceId();
                 String nuclosResource = searchDef.entity.getNuclosResource();
                 if(iconId != null)
-                    rowIcon = ResourceCache.getIconResource(iconId);
+                    rowIcon = resourceCache.getIconResource(iconId);
                 else if (nuclosResource != null)
     					rowIcon = NuclosResourceCache.getNuclosResourceIcon(nuclosResource);
 
-                String treeRep = CommonLocaleDelegate.getTreeViewFromMetaDataVO(searchDef.entity);
+                String treeRep = CommonLocaleDelegate.getInstance().getTreeViewFromMetaDataVO(searchDef.entity);
                 String title = StringUtils.replaceParameters(treeRep, new ParameterTransformer(entityObject));
 
                 Map<String, String> matchMap = new HashMap<String, String>();
@@ -772,7 +800,7 @@ public class LiveSearchController implements LiveSearchSearchPaneListener, LiveS
                                     + fieldValue.substring(endIndex);
 
                                 String fieldLabel
-                                    = CommonLocaleDelegate.getLabelFromMetaFieldDataVO(fdef);
+                                    = CommonLocaleDelegate.getInstance().getLabelFromMetaFieldDataVO(fdef);
 
                                 matchMap.put(fieldLabel, hilighedValue);
                             }

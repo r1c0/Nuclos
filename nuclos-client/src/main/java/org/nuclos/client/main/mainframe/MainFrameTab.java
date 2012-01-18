@@ -91,6 +91,8 @@ import org.nuclos.common.MutableBoolean;
 import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
 
 /**
  * JInternalFrame replacement that corrects the ill minimum size behavior of the
@@ -103,7 +105,7 @@ import org.nuclos.common2.exception.CommonBusinessException;
  * @author	<a href="mailto:Christoph.Radig@novabit.de">Christoph.Radig</a>
  * @version	01.00.00
  */
-
+@Configurable(preConstruction=true)
 public class MainFrameTab extends JPanel implements IOverlayComponent, NuclosDropTargetVisitor {
 
 	public static final String IMAGE_ICON_PROPERTY = "NOVABIT_DESKTOP_ICON";
@@ -138,11 +140,14 @@ public class MainFrameTab extends JPanel implements IOverlayComponent, NuclosDro
 	private OverlayComponent overlay;
 
 	private final List<IOverlayChangeListener> overlayChangeListeners = new ArrayList<IOverlayChangeListener>(1);
+	
+	private CommonLocaleDelegate cld;
 
-	private final AbstractAction actMaximize = new AbstractAction(CommonLocaleDelegate.getMessage("MainFrameTab.5","Maximieren"), Icons.getInstance().getIconTabbedPaneMax()) {
+	private final AbstractAction actMaximize = new AbstractAction(cld.getMessage("MainFrameTab.5","Maximieren"), 
+			Icons.getInstance().getIconTabbedPaneMax()) {
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			MainFrame.maximizeTabbedPane(MainFrame.getTabbedPane(MainFrameTab.this));
+			Main.getInstance().getMainFrame().maximizeTabbedPane(MainFrame.getTabbedPane(MainFrameTab.this));
 		}
 		@Override
 		public boolean isEnabled() {
@@ -150,11 +155,12 @@ public class MainFrameTab extends JPanel implements IOverlayComponent, NuclosDro
 			return MainFrame.isTabbedPaneMaximizable(tabbedPane) && !MainFrame.isTabbedPaneMaximized(tabbedPane);
 		}
 	};
-	private final AbstractAction actRestore = new AbstractAction(CommonLocaleDelegate.getMessage("MainFrameTab.6","Wiederherstellen"), Icons.getInstance().getIconTabbedPaneSplit()) {
+	private final AbstractAction actRestore = new AbstractAction(cld.getMessage("MainFrameTab.6","Wiederherstellen"), 
+			Icons.getInstance().getIconTabbedPaneSplit()) {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			MainFrameTabbedPane tabbedPane = MainFrame.getTabbedPane(MainFrameTab.this);
-			MainFrame.restoreTabbedPaneContainingArea(tabbedPane);
+			Main.getInstance().getMainFrame().restoreTabbedPaneContainingArea(tabbedPane);
 		}
 		@Override
 		public boolean isEnabled() {
@@ -162,7 +168,7 @@ public class MainFrameTab extends JPanel implements IOverlayComponent, NuclosDro
 			return MainFrame.isTabbedPaneMaximizable(tabbedPane) && MainFrame.isTabbedPaneMaximized(tabbedPane);
 		}
 	};
-	private final AbstractAction actNeverClose = new AbstractAction(CommonLocaleDelegate.getMessage("MainFrameTab.7","Niemals Schließen")) {
+	private final AbstractAction actNeverClose = new AbstractAction(cld.getMessage("MainFrameTab.7","Niemals Schließen")) {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			neverClose = !neverClose;
@@ -179,7 +185,7 @@ public class MainFrameTab extends JPanel implements IOverlayComponent, NuclosDro
 			return _isClosable();
 		}
 	};
-	private final AbstractAction actClose = new AbstractAction(CommonLocaleDelegate.getMessage("MainFrameTab.4","Schließen")) {
+	private final AbstractAction actClose = new AbstractAction(cld.getMessage("MainFrameTab.4","Schließen")) {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			dispose();
@@ -189,7 +195,7 @@ public class MainFrameTab extends JPanel implements IOverlayComponent, NuclosDro
 			return isClosable();
 		}
 	};
-	private final AbstractAction actCloseAll = new AbstractAction(CommonLocaleDelegate.getMessage("MainFrameTab.3","Alle Schließen")) {
+	private final AbstractAction actCloseAll = new AbstractAction(cld.getMessage("MainFrameTab.3","Alle Schließen")) {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
@@ -198,7 +204,7 @@ public class MainFrameTab extends JPanel implements IOverlayComponent, NuclosDro
 			tabbedPane.adjustTabs();
 		}
 	};
-	private final AbstractAction actCloseOthers = new AbstractAction(CommonLocaleDelegate.getMessage("MainFrameTab.2","Andere Schließen")) {
+	private final AbstractAction actCloseOthers = new AbstractAction(cld.getMessage("MainFrameTab.2","Andere Schließen")) {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
@@ -243,8 +249,11 @@ public class MainFrameTab extends JPanel implements IOverlayComponent, NuclosDro
 			}
 		});
 		setupDragDrop();
-
-
+	}
+	
+	@Autowired
+	void setCommonLocaleDelegate(CommonLocaleDelegate cld) {
+		this.cld = cld;
 	}
 
 	protected void setupDragDrop() {
@@ -499,7 +508,7 @@ public class MainFrameTab extends JPanel implements IOverlayComponent, NuclosDro
 			header.setMinimumSize(new Dimension(new Dimension(0, HEADER_HEIGHT)));
 			header.setMaximumSize(new Dimension(new Dimension(Integer.MAX_VALUE, HEADER_HEIGHT)));
 
-			final JLabel close = new JLabel(CommonLocaleDelegate.getMessage("MainFrameTab.1","Close"), Icons.getInstance().getIconTabCloseButton(), JLabel.RIGHT);
+			final JLabel close = new JLabel(cld.getMessage("MainFrameTab.1","Close"), Icons.getInstance().getIconTabCloseButton(), JLabel.RIGHT);
 			close.addMouseListener(new MouseAdapter() {
 				@Override
 				public void mouseEntered(MouseEvent e) {
@@ -634,6 +643,7 @@ public class MainFrameTab extends JPanel implements IOverlayComponent, NuclosDro
 		}
    } // class TranslucentLockableUI
 
+	@Configurable
 	public static class TranslucentLockableWithProgressUI extends TranslucentLockableUI implements MessageListener {
 
 		private static final Logger log = Logger.getLogger(TranslucentLockableWithProgressUI.class);
@@ -643,6 +653,8 @@ public class MainFrameTab extends JPanel implements IOverlayComponent, NuclosDro
 		private final String correlationId;
 
 		private final MutableBoolean mutLocked = new MutableBoolean(false);
+		
+		private TopicNotificationReceiver tnr;
 
 		public TranslucentLockableWithProgressUI(Color busyColor, String correlationId) {
 			super(busyColor);
@@ -655,16 +667,21 @@ public class MainFrameTab extends JPanel implements IOverlayComponent, NuclosDro
 			textMessage.setFont(fMessage);
 			setText("", 0);
 		}
+		
+		@Autowired
+		void setTopicNotificationReceiver(TopicNotificationReceiver tnr) {
+			this.tnr = tnr;
+		}
 
 		@Override
 		public void setLocked(boolean locked) {
 			mutLocked.setValue(locked);
 			if (locked) {
 				log.info("subscribe to " + JMSConstants.TOPICNAME_LOCKEDTABPROGRESSNOTIFICATION + " with correlationId=" + correlationId);
-				TopicNotificationReceiver.subscribe(JMSConstants.TOPICNAME_LOCKEDTABPROGRESSNOTIFICATION, correlationId, TranslucentLockableWithProgressUI.this);
+				tnr.subscribe(JMSConstants.TOPICNAME_LOCKEDTABPROGRESSNOTIFICATION, correlationId, TranslucentLockableWithProgressUI.this);
 			} else {
 				log.info("unsubscribe from " + JMSConstants.TOPICNAME_LOCKEDTABPROGRESSNOTIFICATION);
-				TopicNotificationReceiver.unsubscribe(TranslucentLockableWithProgressUI.this);
+				tnr.unsubscribe(TranslucentLockableWithProgressUI.this);
 			}
 			while (isDirty()) {
 				try {
@@ -897,7 +914,7 @@ public class MainFrameTab extends JPanel implements IOverlayComponent, NuclosDro
 	 * @return
 	 */
 	public MainFrameTabbedPane getHomePane() {
-		return Main.getMainFrame().getHomePane();
+		return Main.getInstance().getMainFrame().getHomePane();
 	}
 
 	/**

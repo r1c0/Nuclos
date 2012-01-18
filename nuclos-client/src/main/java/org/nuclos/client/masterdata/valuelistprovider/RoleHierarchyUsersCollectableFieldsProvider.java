@@ -23,7 +23,8 @@ public class RoleHierarchyUsersCollectableFieldsProvider implements CacheableCol
 
 	@Override
 	public List<CollectableField> getCollectableFields() throws CommonBusinessException {
-		List<CollectableField> lstUsers = CollectionUtils.transform(MasterDataDelegate.getInstance().getUserHierarchy(Main.getMainController().getUserName()), new Transformer<MasterDataVO, CollectableField>() {
+		List<CollectableField> lstUsers = CollectionUtils.transform(MasterDataDelegate.getInstance().getUserHierarchy(
+				Main.getInstance().getMainController().getUserName()), new Transformer<MasterDataVO, CollectableField>() {
 			@Override
 			public CollectableField transform(MasterDataVO user) {
 				return new CollectableValueIdField(user.getId(), user.getField("lastname")+", "+user.getField("firstname"));

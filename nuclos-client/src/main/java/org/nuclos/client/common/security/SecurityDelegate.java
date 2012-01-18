@@ -24,12 +24,13 @@ import org.apache.log4j.Logger;
 import org.nuclos.common.ApplicationProperties;
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.security.Permission;
-import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.common2.exception.CommonPermissionException;
 import org.nuclos.server.common.MasterDataPermissions;
 import org.nuclos.server.common.ModulePermissions;
 import org.nuclos.server.common.ejb3.SecurityFacadeRemote;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
 
 /**
  * Business Delegate for <code>SecurityFacadeBean</code>.
@@ -40,6 +41,7 @@ import org.nuclos.server.common.ejb3.SecurityFacadeRemote;
  * @author	<a href="mailto:Christoph.Radig@novabit.de">Christoph.Radig</a>
  * @version 01.00.00
  */
+@Configurable
 public class SecurityDelegate {
 	
 	private static final Logger LOG = Logger.getLogger(SecurityDelegate.class);
@@ -57,20 +59,17 @@ public class SecurityDelegate {
 		}
 		return singleton;
 	}
+	
+	@Autowired
+	void setSecurityFacadeRemote(SecurityFacadeRemote facade) {
+		this.facade = facade;
+	}
 
 	/**
 	 * gets the facade once for this object and stores it in a member variable.
 	 */
 	private SecurityFacadeRemote getSecurityFacade() throws NuclosFatalException {
-		if (this.facade == null) {
-			try {
-				this.facade = ServiceLocator.getInstance().getFacade(SecurityFacadeRemote.class);
-			}
-			catch (RuntimeException ex) {
-				throw new CommonFatalException(ex);
-			}
-		}
-		return this.facade;
+		return facade;
 	}
 
 	public ApplicationProperties.Version getCurrentApplicationVersionOnServer() {

@@ -117,7 +117,7 @@ public class NucletContentExplorerNode extends ExplorerNode<NucletContentTreeNod
 		Integer resId = MetaDataClientProvider.getInstance().getEntity(getTreeNode().getEntity()).getResourceId();
 		String nuclosResource = MetaDataClientProvider.getInstance().getEntity(getTreeNode().getEntity()).getNuclosResource();
 		if(resId != null) {
-			ImageIcon standardIcon = ResourceCache.getIconResource(resId);
+			ImageIcon standardIcon = ResourceCache.getInstance().getIconResource(resId);
 			return MainFrame.resizeAndCacheTabIcon(standardIcon);
 		} else if (nuclosResource != null){
 			ImageIcon nuclosIcon = NuclosResourceCache.getNuclosResourceIcon(nuclosResource);

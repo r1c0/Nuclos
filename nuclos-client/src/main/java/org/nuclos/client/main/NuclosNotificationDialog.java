@@ -71,12 +71,12 @@ import org.nuclos.server.genericobject.valueobject.GenericObjectVO;
  */
 public class NuclosNotificationDialog extends JDialog {
 
-	private static final String COL_PRIORITY = CommonLocaleDelegate.getMessage("NuclosNotificationDialog.6","Priorit\u00e4t");
-	private static final String COL_MSGTEXT = CommonLocaleDelegate.getMessage("NuclosNotificationDialog.2","Meldung");
-	private static final String COL_OWNER = CommonLocaleDelegate.getMessage("NuclosNotificationDialog.9","Versendet von");
-	private static final String COL_TIMESTAMP = CommonLocaleDelegate.getMessage("NuclosNotificationDialog.1","Datum / Uhrzeit");
-	private static final String COL_OBJSOURCE = CommonLocaleDelegate.getMessage("NuclosNotificationDialog.5","Objektbezeichner");
-	private static final String COL_OBJDEST = CommonLocaleDelegate.getMessage("NuclosNotificationDialog.12","Zielobjektbezeichner");
+	private static final String COL_PRIORITY = CommonLocaleDelegate.getInstance().getMessage("NuclosNotificationDialog.6","Priorit\u00e4t");
+	private static final String COL_MSGTEXT = CommonLocaleDelegate.getInstance().getMessage("NuclosNotificationDialog.2","Meldung");
+	private static final String COL_OWNER = CommonLocaleDelegate.getInstance().getMessage("NuclosNotificationDialog.9","Versendet von");
+	private static final String COL_TIMESTAMP = CommonLocaleDelegate.getInstance().getMessage("NuclosNotificationDialog.1","Datum / Uhrzeit");
+	private static final String COL_OBJSOURCE = CommonLocaleDelegate.getInstance().getMessage("NuclosNotificationDialog.5","Objektbezeichner");
+	private static final String COL_OBJDEST = CommonLocaleDelegate.getInstance().getMessage("NuclosNotificationDialog.12","Zielobjektbezeichner");
 	private static final String COL_SOURCEID = "sourceID";
 	private static final String COL_TARGETID = "targetID";
 
@@ -108,7 +108,7 @@ public class NuclosNotificationDialog extends JDialog {
 	};
 
 	NuclosNotificationDialog(Frame frmParent, JComponent parentMdi) {
-		super(frmParent, CommonLocaleDelegate.getMessage("NuclosNotificationDialog.3","Meldungen"));
+		super(frmParent, CommonLocaleDelegate.getInstance().getMessage("NuclosNotificationDialog.3","Meldungen"));
 
 		this.parentMdi = parentMdi;
 
@@ -133,8 +133,8 @@ public class NuclosNotificationDialog extends JDialog {
 		this.pnlDetails = createDetailsPanel();
 
 		final JPanel pnlButtons = new JPanel();
-		final JButton btnClear = new JButton(CommonLocaleDelegate.getMessage("NuclosNotificationDialog.13","Zur\u00fccksetzen"));
-		btnClear.setToolTipText(CommonLocaleDelegate.getMessage("NuclosNotificationDialog.4","Meldungen aus der Liste entfernen"));
+		final JButton btnClear = new JButton(CommonLocaleDelegate.getInstance().getMessage("NuclosNotificationDialog.13","Zur\u00fccksetzen"));
+		btnClear.setToolTipText(CommonLocaleDelegate.getInstance().getMessage("NuclosNotificationDialog.4","Meldungen aus der Liste entfernen"));
 		btnClear.addActionListener(new ActionListener() {
 			@Override
             public void actionPerformed(ActionEvent ev) {
@@ -200,11 +200,13 @@ public class NuclosNotificationDialog extends JDialog {
 		tfObjectIdentifier.setBackground(bgColor);
 		tfObjectIdentifier.setBorder(noBorder);
 		tfObjectIdentifier.setEditable(false);
-		tfObjectIdentifier.setToolTipText(CommonLocaleDelegate.getMessage("NuclosNotificationDialog.7","SystemID des Objekts von dem aus die Meldung geschickt wurde") + ".");
+		tfObjectIdentifier.setToolTipText(CommonLocaleDelegate.getInstance().getMessage(
+				"NuclosNotificationDialog.7","SystemID des Objekts von dem aus die Meldung geschickt wurde") + ".");
 		tfDestinationObject.setBackground(bgColor);
 		tfDestinationObject.setBorder(noBorder);
 		tfDestinationObject.setEditable(false);
-		tfDestinationObject.setToolTipText(CommonLocaleDelegate.getMessage("NuclosNotificationDialog.8","SystemID des Zielobjekts einer Objektgenerierung") + ".");
+		tfDestinationObject.setToolTipText(CommonLocaleDelegate.getInstance().getMessage(
+				"NuclosNotificationDialog.8","SystemID des Zielobjekts einer Objektgenerierung") + ".");
 		tfTimestamp.setBackground(bgColor);
 		tfTimestamp.setBorder(noBorder);
 		tfTimestamp.setEditable(false);
@@ -265,7 +267,8 @@ public class NuclosNotificationDialog extends JDialog {
 
 	private void setupPopupMenu() {
 		final JPopupMenu popupmenu = new JPopupMenu();
-		final JMenuItem miShowSource = new JMenuItem(CommonLocaleDelegate.getMessage("NuclosNotificationDialog.10","Zeige Objektdetails") + "...");
+		final JMenuItem miShowSource = new JMenuItem(CommonLocaleDelegate.getInstance().getMessage(
+				"NuclosNotificationDialog.10","Zeige Objektdetails") + "...");
 		popupmenu.add(miShowSource);
 		miShowSource.addActionListener(new ActionListener() {
 			@Override
@@ -273,7 +276,8 @@ public class NuclosNotificationDialog extends JDialog {
 				cmdShowObjectDetails((Integer) tblmodel.getValueAt(tbl.getSelectedRow(), sourceIDColumn));
 			}
 		});
-		final JMenuItem miShowTarget = new JMenuItem(CommonLocaleDelegate.getMessage("NuclosNotificationDialog.11","Zeige Zielobjektdetails") + "...");
+		final JMenuItem miShowTarget = new JMenuItem(CommonLocaleDelegate.getInstance().getMessage(
+				"NuclosNotificationDialog.11","Zeige Zielobjektdetails") + "...");
 		popupmenu.add(miShowTarget);
 		miShowTarget.addActionListener(new ActionListener() {
 			@Override
@@ -338,7 +342,7 @@ public class NuclosNotificationDialog extends JDialog {
 						message.getPriority().getName(),
 						message.getMessage(),
 						message.getRuleName(),
-						CommonLocaleDelegate.getDateTimeFormat().format(message.getTimestamp()),
+						CommonLocaleDelegate.getInstance().getDateTimeFormat().format(message.getTimestamp()),
 						//DateFormat.getDateTimeInstance().format(message.getTimestamp()),
 						message.getSourceIdentifier(),
 						message.getTargetIdentifier(),

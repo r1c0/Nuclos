@@ -16,7 +16,6 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.wizard.steps;
 
-import static org.nuclos.common2.CommonLocaleDelegate.getMessage;
 import info.clearthought.layout.TableLayout;
 
 import java.awt.Dimension;
@@ -60,7 +59,6 @@ import org.nuclos.client.wizard.util.NuclosWizardUtils;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
-import org.nuclos.common2.CommonLocaleDelegate;
 import org.pietschy.wizard.InvalidStateException;
 
 /**
@@ -130,24 +128,25 @@ public class NuclosEntityAttributeRelationShipStep extends NuclosEntityAttribute
 		layout.setHGap(5);
 		this.setLayout(layout);
 
-		lbEntity = new JLabel(getMessage("wizard.step.attributerelationship.1", "Verweis auf Entit\u00e4t")+": ");
+		lbEntity = new JLabel(cld.getMessage("wizard.step.attributerelationship.1", "Verweis auf Entit\u00e4t")+": ");
 		cbxEntity = new JComboBox();
-		cbxEntity.setToolTipText(getMessage("wizard.step.attributerelationship.tooltip.1", "Verweis auf Entit\u00e4t"));
+		cbxEntity.setToolTipText(cld.getMessage("wizard.step.attributerelationship.tooltip.1", "Verweis auf Entit\u00e4t"));
 
-		lbFields = new JLabel(getMessage("wizard.step.attributerelationship.2", "Auswahl f\u00fcr Fremdschl\u00fcsselaufbau")+": ");
+		lbFields = new JLabel(cld.getMessage("wizard.step.attributerelationship.2", "Auswahl f\u00fcr Fremdschl\u00fcsselaufbau")+": ");
 
-		lbAlternativeLabel = new JLabel(getMessage("wizard.step.attributerelationship.3", "Fremdschl\u00fcsselaufbau")+": ");
+		lbAlternativeLabel = new JLabel(cld.getMessage("wizard.step.attributerelationship.3", "Fremdschl\u00fcsselaufbau")+": ");
 		tfAlternativeLabel = new JTextField();
-		tfAlternativeLabel.setToolTipText(getMessage("wizard.step.attributerelationship.tooltip.3", "Fremdschl\u00fcsselaufbau"));
+		tfAlternativeLabel.setToolTipText(cld.getMessage("wizard.step.attributerelationship.tooltip.3", "Fremdschl\u00fcsselaufbau"));
 		tfAlternativeLabel.addFocusListener(NuclosWizardUtils.createWizardFocusAdapter());
 
-		lbOnDeleteCascade = new JLabel(getMessage("wizard.step.attributerelationship.deletecascade.label", "Cascade on delete"));
+		lbOnDeleteCascade = new JLabel(cld.getMessage("wizard.step.attributerelationship.deletecascade.label", "Cascade on delete"));
 		cbOnDeleteCascade = new JCheckBox();
-		cbOnDeleteCascade.setToolTipText(getMessage("wizard.step.attributerelationship.deletecascade.description", "Delete all referencing objects in this entity if the referenced object is deleted."));
+		cbOnDeleteCascade.setToolTipText(cld.getMessage(
+				"wizard.step.attributerelationship.deletecascade.description", "Delete all referencing objects in this entity if the referenced object is deleted."));
 
-		lbValueListProvider = new JLabel(getMessage("wizard.step.attributerelationship.4", "Suchfeld"));
+		lbValueListProvider = new JLabel(cld.getMessage("wizard.step.attributerelationship.4", "Suchfeld"));
 		cbValueListProvider = new JCheckBox();
-		cbValueListProvider.setToolTipText(getMessage("wizard.step.attributerelationship.tooltip.4", "Suchfeld"));
+		cbValueListProvider.setToolTipText(cld.getMessage("wizard.step.attributerelationship.tooltip.4", "Suchfeld"));
 
 		lbInfo = new JLabel();
 
@@ -199,7 +198,7 @@ public class NuclosEntityAttributeRelationShipStep extends NuclosEntityAttribute
 								setFieldNames.add(voField.getField());
 						}
 						if(!NuclosEntityAttributeRelationShipStep.this.model.isEditMode())
-							tfAlternativeLabel.setText(CommonLocaleDelegate.getResource(vo.getLocaleResourceIdForTreeView(), ""));
+							tfAlternativeLabel.setText(cld.getResource(vo.getLocaleResourceIdForTreeView(), ""));
 						try {
 							checkReferenceField();
 						}
@@ -316,11 +315,13 @@ public class NuclosEntityAttributeRelationShipStep extends NuclosEntityAttribute
 
 		if(parentWizardModel.hasRows() && model.isEditMode() && !parentWizardModel.isVirtual()) {
 			cbxEntity.setEnabled(false);
-			cbxEntity.setToolTipText(getMessage("wizard.step.attributerelationship.tooltip.5", "Verweis kann nicht geändert werden. Da bereits Datensätze vorhanden sind."));
+			cbxEntity.setToolTipText(cld.getMessage(
+					"wizard.step.attributerelationship.tooltip.5", "Verweis kann nicht geändert werden. Da bereits Datensätze vorhanden sind."));
 		}
 		else {
 			cbxEntity.setEnabled(true);
-			cbxEntity.setToolTipText(getMessage("wizard.step.attributerelationship.tooltip.1", "Verweis auf Entit\u00e4t"));
+			cbxEntity.setToolTipText(cld.getMessage(
+					"wizard.step.attributerelationship.tooltip.1", "Verweis auf Entit\u00e4t"));
 		}
 
 	}
@@ -384,12 +385,14 @@ public class NuclosEntityAttributeRelationShipStep extends NuclosEntityAttribute
 			  invalid = false;
 		  }
 		  catch(Exception e){
-			  throw new InvalidStateException(getMessage("wizard.step.attributerelationship.7", "Es wurde ein ungültiger Eintrag gefunden: " + sName, sName));
+			  throw new InvalidStateException(cld.getMessage(
+					  "wizard.step.attributerelationship.7", "Es wurde ein ungültiger Eintrag gefunden: " + sName, sName));
 		  }
 		}
 
 		if(invalid){
-			throw new InvalidStateException(getMessage("wizard.step.attributerelationship.8", "Es wurde kein gültiger Referenzeintrag gefunden!"));
+			throw new InvalidStateException(cld.getMessage(
+					"wizard.step.attributerelationship.8", "Es wurde kein gültiger Referenzeintrag gefunden!"));
 		}
 
 	}

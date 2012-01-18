@@ -24,7 +24,6 @@ import org.nuclos.client.masterdata.CollectableMasterDataWithDependants;
 import org.nuclos.client.masterdata.SearchFilterCollectController;
 import org.nuclos.client.ui.collect.result.ISearchResultStrategy;
 import org.nuclos.client.ui.collect.result.ResultController;
-import org.nuclos.common.collect.collectable.CollectableEntity;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
 
 /**

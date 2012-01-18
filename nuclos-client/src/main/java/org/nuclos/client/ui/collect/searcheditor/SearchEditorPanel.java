@@ -44,7 +44,8 @@ public class SearchEditorPanel extends JPanel {
 
 	private final RootNode nodeRoot = new RootNode();
 	private final JTree tree = new JTree(nodeRoot);
-	private final JButton btnSimplify = new JButton(CommonLocaleDelegate.getMessage("SearchEditorPanel.1","Vereinfachen"));
+	private final JButton btnSimplify = new JButton(CommonLocaleDelegate.getInstance().getMessage(
+			"SearchEditorPanel.1","Vereinfachen"));
 
 	public SearchEditorPanel() {
 		super(new BorderLayout());
@@ -62,7 +63,8 @@ public class SearchEditorPanel extends JPanel {
 		pnlTree.add(new JScrollPane(this.tree), BorderLayout.CENTER);
 
 		pnlButtons.add(this.btnSimplify);
-		this.btnSimplify.setToolTipText(CommonLocaleDelegate.getMessage("SearchEditorPanel.2","Suchbedingung vereinfachen"));
+		this.btnSimplify.setToolTipText(CommonLocaleDelegate.getInstance().getMessage(
+				"SearchEditorPanel.2","Suchbedingung vereinfachen"));
 	}
 	
 	JButton getSimplifyButton() {

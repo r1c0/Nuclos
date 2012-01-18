@@ -18,6 +18,7 @@ package org.nuclos.client.resource;
 
 import java.util.Map;
 
+import javax.annotation.PostConstruct;
 import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.swing.ImageIcon;
@@ -27,6 +28,8 @@ import org.nuclos.common.JMSConstants;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Pair;
 import org.nuclos.server.resource.valueobject.ResourceVO;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 /**
  * A (client) cache for resources.
@@ -37,41 +40,12 @@ import org.nuclos.server.resource.valueobject.ResourceVO;
  * @author	<a href="mailto:corina.mandoki@novabit.de">Corina Mandoki</a>
  * @version 00.01.000
  */
+@Component
 public class ResourceCache {
-	/**
-	 * @param resourceName
-	 * @return the <code>ImageIcon</code>
-	 */
-	public static ImageIcon getIconResource(String resourceName) {
-		return _getInstance()._getIconResource(resourceName);
-	}
-
-	public static ImageIcon getIconResource(Integer resourceId) {
-		return _getInstance()._getIconResource(resourceId);
-	}
-
-	/**
-	 * @param resourceName
-	 * @return the <code>byte[]</code>
-	 */
-	public static byte[] getResource(String resourceName) {
-		return _getInstance()._getResource(resourceName);
-	}
-
-	public static ResourceVO getResourceByName(String resourceName) {
-		return _getInstance()._getResourceByName(resourceName);
-	}
-
-	public static ResourceVO getResourceById(Integer resourceId) {
-		return _getInstance()._getResourceById(resourceId);
-	}
-
-	public static void invalidate() {
-		_getInstance()._invalidate();
-	}
-
 	
 	// Implementation details...:
+	
+	private static ResourceCache INSTANCE;
 	
 	private MessageListener messagelistener = new MessageListener() {
 		@Override
@@ -80,27 +54,40 @@ public class ResourceCache {
 		}
 	};
 
-	private static ResourceCache     instance;
-	
 	private ResourceDelegate         delegate;
 	private Map<String, Object>      resources;
 	private Map<Integer, Object>     resourcesById;
 	private Map<String, ResourceVO>  voByName;
 	private Map<Integer, ResourceVO> voById;
 	
+	private TopicNotificationReceiver tnr;
+	
 	private ResourceCache() {
 		resources = CollectionUtils.newHashMap();
 		resourcesById = CollectionUtils.newHashMap();
 		voByName = CollectionUtils.newHashMap();
 		voById = CollectionUtils.newHashMap();
-		delegate = ResourceDelegate.getInstance();
-		TopicNotificationReceiver.subscribe(JMSConstants.TOPICNAME_RESOURCECACHE, messagelistener);
+		
+		INSTANCE = this;
 	}
 	
-	private static ResourceCache _getInstance() {
-		if(instance == null)
-			instance = new ResourceCache();
-		return instance;
+	@PostConstruct
+	void init() {
+		tnr.subscribe(JMSConstants.TOPICNAME_RESOURCECACHE, messagelistener);
+	}
+	
+	@Autowired
+	void setResourceDelegate(ResourceDelegate delegate) {
+		this.delegate = delegate;
+	}
+	
+	@Autowired
+	void setTopicNotificationReceiver(TopicNotificationReceiver tnr) {
+		this.tnr = tnr;
+	}
+	
+	public static ResourceCache getInstance() {
+		return INSTANCE;
 	}
 	
 	private static enum ResourcePrep {
@@ -125,13 +112,13 @@ public class ResourceCache {
 	}
 	
 	
-	private ImageIcon _getIconResource(String resourceName) {
+	public ImageIcon getIconResource(String resourceName) {
 		if(!resources.containsKey(resourceName))
 			encache(delegate.getResource(resourceName), ResourcePrep.ICON, resourceName, null);
 		return (ImageIcon) resources.get(resourceName);
 	}
 
-	private ImageIcon _getIconResource(Integer resourceId) {
+	public ImageIcon getIconResource(Integer resourceId) {
 		if(!resourcesById.containsKey(resourceId))
 			encache(delegate.getResource(resourceId), ResourcePrep.ICON, null, resourceId);
 		return (ImageIcon) resourcesById.get(resourceId);
@@ -142,13 +129,13 @@ public class ResourceCache {
 	 * @param resourceName
 	 * @return the <code>byte[]</code>
 	 */
-	private byte[] _getResource(String resourceName) {
+	public byte[] getResource(String resourceName) {
 		if(!resources.containsKey(resourceName))
 			encache(delegate.getResource(resourceName), ResourcePrep.BYTE_ARR, resourceName, null);
 		return (byte[]) resources.get(resourceName);
 	}
 
-	private ResourceVO _getResourceByName(String resourceName) {
+	public ResourceVO getResourceByName(String resourceName) {
 		if(!voByName.containsKey(resourceName)) {
 			ResourceVO vo = delegate.getResourceByName(resourceName);
 			voByName.put(resourceName, vo);
@@ -158,7 +145,7 @@ public class ResourceCache {
 		return voByName.get(resourceName);
 	}
 
-	private ResourceVO _getResourceById(Integer resourceId) {
+	public ResourceVO getResourceById(Integer resourceId) {
 		if(!voById.containsKey(resourceId)) {
 			ResourceVO vo = delegate.getResourceById(resourceId);
 			voById.put(resourceId, vo);
@@ -168,7 +155,7 @@ public class ResourceCache {
 		return voById.get(resourceId);
 	}
 
-	private void _invalidate() {
+	public void invalidate() {
 		resources.clear();
 		resourcesById.clear();
 		voById.clear();

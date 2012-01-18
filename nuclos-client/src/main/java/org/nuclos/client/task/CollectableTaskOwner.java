@@ -23,7 +23,6 @@ import org.nuclos.common.collect.collectable.CollectableField;
 import org.nuclos.common.collect.collectable.CollectableValueIdField;
 import org.nuclos.common.collect.collectable.DefaultCollectable;
 import org.nuclos.common.collect.collectable.DefaultCollectableEntityField;
-import org.nuclos.common2.CommonLocaleDelegate;
 
 
 public class CollectableTaskOwner extends DefaultCollectable {
@@ -39,12 +38,14 @@ public class CollectableTaskOwner extends DefaultCollectable {
 	public static class Entity extends AbstractCollectableEntity {
 		private Entity() {
 			super("taskowner", "Bearbeiter");
-			this.addCollectableEntityField(new DefaultCollectableEntityField(FIELDNAME_TASK, String.class, CommonLocaleDelegate.getMessage("CollectableTaskOwner.1","Aufgabe"),
-				CommonLocaleDelegate.getMessage("CollectableTaskOwner.2","Aufgabe"), null, null, false, CollectableField.TYPE_VALUEIDFIELD, "__task",
+			this.addCollectableEntityField(new DefaultCollectableEntityField(FIELDNAME_TASK, String.class, 
+					getCommonLocaleDelegate().getMessage("CollectableTaskOwner.1","Aufgabe"),
+					getCommonLocaleDelegate().getMessage("CollectableTaskOwner.2","Aufgabe"), null, null, false, CollectableField.TYPE_VALUEIDFIELD, "__task",
 					CollectableValueIdField.NULL, null, null, TASKOWNER_ENTITY));
 
-			this.addCollectableEntityField(new TaskOwnerCollectableEntityField(FIELDNAME_USER, String.class, CommonLocaleDelegate.getMessage("CollectableTaskOwner.4","Zust\u00e4ndig"), 
-				CommonLocaleDelegate.getMessage("CollectableTaskOwner.3","Bearbeiter der Aufgabe"), null, false, CollectableField.TYPE_VALUEIDFIELD, NuclosEntity.USER.getEntityName(),
+			this.addCollectableEntityField(new TaskOwnerCollectableEntityField(FIELDNAME_USER, String.class, 
+					getCommonLocaleDelegate().getMessage("CollectableTaskOwner.4","Zust\u00e4ndig"), 
+					getCommonLocaleDelegate().getMessage("CollectableTaskOwner.3","Bearbeiter der Aufgabe"), null, false, CollectableField.TYPE_VALUEIDFIELD, NuclosEntity.USER.getEntityName(),
 					CollectableValueIdField.NULL, null, null, TASKOWNER_ENTITY));
 		}
 	}

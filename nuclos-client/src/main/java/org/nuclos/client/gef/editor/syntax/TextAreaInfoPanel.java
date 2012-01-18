@@ -45,14 +45,18 @@ public class TextAreaInfoPanel extends JPanel {
 		labelOverwrite.setMinimumSize(new Dimension(100, 20));
 		labelCaretPos.setMinimumSize(new Dimension(50, 20));
 
-		this.add(new JLabel(CommonLocaleDelegate.getMessage("TextAreaInfoPanel.4","\u00dcberschreibmodus:")));
+		this.add(new JLabel(CommonLocaleDelegate.getInstance().getMessage(
+				"TextAreaInfoPanel.4","\u00dcberschreibmodus:")));
 		this.add(labelOverwrite);
-		this.add(new JLabel(CommonLocaleDelegate.getMessage("TextAreaInfoPanel.1","Cursorposition:")));
+		this.add(new JLabel(CommonLocaleDelegate.getInstance().getMessage(
+				"TextAreaInfoPanel.1","Cursorposition:")));
 		this.add(labelCaretPos);
 	}
 
 	public void setOverwrite(boolean bOverwrite) {
-		labelOverwrite.setText(bOverwrite ? CommonLocaleDelegate.getMessage("TextAreaInfoPanel.3","\u00dcberschreiben") : CommonLocaleDelegate.getMessage("TextAreaInfoPanel.2","Einf\u00fcgen"));
+		labelOverwrite.setText(bOverwrite ? CommonLocaleDelegate.getInstance().getMessage(
+				"TextAreaInfoPanel.3","\u00dcberschreiben") 
+				: CommonLocaleDelegate.getInstance().getMessage("TextAreaInfoPanel.2","Einf\u00fcgen"));
 	}
 
 	public void setCaretPos(int line, int column) {

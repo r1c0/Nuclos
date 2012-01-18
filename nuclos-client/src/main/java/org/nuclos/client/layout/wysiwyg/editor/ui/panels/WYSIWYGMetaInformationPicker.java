@@ -150,7 +150,7 @@ public class WYSIWYGMetaInformationPicker extends JDialog {
 			
 		});
 		freeExpr = new JCheckBox(
-				CommonLocaleDelegate.getMessageFromResource("wysiwg.metainformation.picker.freeexpr"));
+				CommonLocaleDelegate.getInstance().getMessageFromResource("wysiwg.metainformation.picker.freeexpr"));
 		this.add(freeExpr, new TableLayoutConstraints(1, 2, 3, 2));
 		freeExpr.setVisible(true);
 		

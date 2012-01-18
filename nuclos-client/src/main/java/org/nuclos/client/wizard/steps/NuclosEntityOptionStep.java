@@ -16,7 +16,6 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.wizard.steps;
 
-import static org.nuclos.common2.CommonLocaleDelegate.getMessage;
 import info.clearthought.layout.TableLayout;
 
 import java.awt.event.ActionEvent;
@@ -45,11 +44,7 @@ import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
 
-import org.pietschy.wizard.InvalidStateException;
-
 import org.apache.log4j.Logger;
-import org.nuclos.common2.CommonLocaleDelegate;
-import org.nuclos.common2.LocaleInfo;
 import org.nuclos.client.common.LocaleDelegate;
 import org.nuclos.client.common.MetaDataClientProvider;
 import org.nuclos.client.genericobject.Modules;
@@ -64,7 +59,9 @@ import org.nuclos.common.TranslationVO;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
+import org.nuclos.common2.LocaleInfo;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
+import org.pietschy.wizard.InvalidStateException;
 
 /**
 * <br>
@@ -142,30 +139,38 @@ public class NuclosEntityOptionStep extends NuclosEntityAbstractStep {
 		pnlImport = new JPanel();
 		pnlImport.setLayout(layout);
 
-		lbImportServer = new JLabel(getMessage("wizard.step.entityoption.1", "Server")+":");
+		lbImportServer = new JLabel(cld.getMessage(
+				"wizard.step.entityoption.1", "Server")+":");
 		tfImportServer = new JTextField();
 		tfImportServer.addFocusListener(NuclosWizardUtils.createWizardFocusAdapter());
-		lbImportPort = new JLabel(getMessage("wizard.step.entityoption.2", "Port")+":");
+		lbImportPort = new JLabel(cld.getMessage(
+				"wizard.step.entityoption.2", "Port")+":");
 		tfImportPort = new JTextField();
 		tfImportPort.addFocusListener(NuclosWizardUtils.createWizardFocusAdapter());
-		lbImportDatabase = new JLabel(getMessage("wizard.step.entityoption.3", "Datenbanktyp")+":");
+		lbImportDatabase = new JLabel(cld.getMessage(
+				"wizard.step.entityoption.3", "Datenbanktyp")+":");
 		cbxImportDatabase = new JComboBox();
 		cbxImportDatabase.addItem("Oracle");
 		cbxImportDatabase.addItem("MS SQL");
 		cbxImportDatabase.addItem("Postgres");
 		cbxImportDatabase.addItem("Sybase");
-		lbImportUser = new JLabel(getMessage("wizard.step.entityoption.4", "User"));
+		lbImportUser = new JLabel(cld.getMessage(
+				"wizard.step.entityoption.4", "User"));
 		tfImportUser = new JTextField();
 		tfImportUser.addFocusListener(NuclosWizardUtils.createWizardFocusAdapter());
-		lbImportPassword = new JLabel(getMessage("wizard.step.entityoption.5", "Passwort"));
+		lbImportPassword = new JLabel(cld.getMessage(
+				"wizard.step.entityoption.5", "Passwort"));
 		tfImportPassword = new JTextField();
 		tfImportPassword.addFocusListener(NuclosWizardUtils.createWizardFocusAdapter());
-		lbImportSSID = new JLabel(getMessage("wizard.step.entityoption.6", "Datenbank"));
+		lbImportSSID = new JLabel(cld.getMessage(
+				"wizard.step.entityoption.6", "Datenbank"));
 		tfImportSSID = new JTextField();
-		lbUrl = new JLabel(getMessage("wizard.step.entityoption.7", "Datenbank URL"));
+		lbUrl = new JLabel(cld.getMessage(
+				"wizard.step.entityoption.7", "Datenbank URL"));
 		tfUrl = new JTextField();
 		tfUrl.addFocusListener(NuclosWizardUtils.createWizardFocusAdapter());
-		btConnect = new JButton(getMessage("wizard.step.entityoption.8", "Verbindung \u00f6ffnen"));
+		btConnect = new JButton(cld.getMessage(
+				"wizard.step.entityoption.8", "Verbindung \u00f6ffnen"));
 		btConnect.addActionListener(new ActionListener() {
 
 			@Override
@@ -190,7 +195,8 @@ public class NuclosEntityOptionStep extends NuclosEntityAbstractStep {
 		});
 
 
-		lbImportTables = new JLabel(getMessage("wizard.step.entityoption.9", "Tabelle"));
+		lbImportTables = new JLabel(cld.getMessage(
+				"wizard.step.entityoption.9", "Tabelle"));
 		cbxImportTables = new JComboBox();
 
 
@@ -234,19 +240,31 @@ public class NuclosEntityOptionStep extends NuclosEntityAbstractStep {
 		layout.setVGap(3);
 		layout.setHGap(5);
 		this.setLayout(layout);
-		lbName = new JLabel(getMessage("wizard.step.entityoption.10", "Wie m\u00f6chten Sie Attribute erfassen")+" ");
-		rbGatherAttributes = new JRadioButton(getMessage("wizard.step.entityoption.11", "Attribute manuell erfassen"));
-		rbGatherAttributes.setToolTipText(getMessage("wizard.step.entityoption.tooltip.11", "Attribute manuell erfassen"));
-		rbCopyAttributes = new JRadioButton(getMessage("wizard.step.entityoption.12", "Attribute von anderer Entit\u00e4t selektiv \u00fcbernehmen"));
-		rbCopyAttributes.setToolTipText(getMessage("wizard.step.entityoption.tooltip.12", "Attribute von anderer Entit\u00e4t selektiv \u00fcbernehmen"));
-		rbAssignAttributes = new JRadioButton(getMessage("wizard.step.entityoption.13", "\u00dcbernahme aus bestehender Datenbanktabelle"));
-		rbAssignAttributes.setToolTipText(getMessage("wizard.step.entityoption.tooltip.13", "\u00dcbernahme aus bestehender Datenbanktabelle"));
-		rbTemplateAttributes = new JRadioButton(getMessage("wizard.step.entityoption.14", "Vorlage \u00fcbernehmen"));
-		rbTemplateAttributes.setToolTipText(getMessage("wizard.step.entityoption.tooltip.14", "Vorlage \u00fcbernehmen"));
-		rbImportTable = new JRadioButton(getMessage("wizard.step.entityoption.15", "Entit\u00e4t importieren"));
-		rbImportTable.setToolTipText(getMessage("wizard.step.entityoption.tooltip.15", "Entit\u00e4t importieren"));
+		lbName = new JLabel(cld.getMessage(
+				"wizard.step.entityoption.10", "Wie m\u00f6chten Sie Attribute erfassen")+" ");
+		rbGatherAttributes = new JRadioButton(cld.getMessage(
+				"wizard.step.entityoption.11", "Attribute manuell erfassen"));
+		rbGatherAttributes.setToolTipText(cld.getMessage(
+				"wizard.step.entityoption.tooltip.11", "Attribute manuell erfassen"));
+		rbCopyAttributes = new JRadioButton(cld.getMessage(
+				"wizard.step.entityoption.12", "Attribute von anderer Entit\u00e4t selektiv \u00fcbernehmen"));
+		rbCopyAttributes.setToolTipText(cld.getMessage(
+				"wizard.step.entityoption.tooltip.12", "Attribute von anderer Entit\u00e4t selektiv \u00fcbernehmen"));
+		rbAssignAttributes = new JRadioButton(cld.getMessage(
+				"wizard.step.entityoption.13", "\u00dcbernahme aus bestehender Datenbanktabelle"));
+		rbAssignAttributes.setToolTipText(cld.getMessage(
+				"wizard.step.entityoption.tooltip.13", "\u00dcbernahme aus bestehender Datenbanktabelle"));
+		rbTemplateAttributes = new JRadioButton(cld.getMessage(
+				"wizard.step.entityoption.14", "Vorlage \u00fcbernehmen"));
+		rbTemplateAttributes.setToolTipText(cld.getMessage(
+				"wizard.step.entityoption.tooltip.14", "Vorlage \u00fcbernehmen"));
+		rbImportTable = new JRadioButton(cld.getMessage(
+				"wizard.step.entityoption.15", "Entit\u00e4t importieren"));
+		rbImportTable.setToolTipText(cld.getMessage(
+				"wizard.step.entityoption.tooltip.15", "Entit\u00e4t importieren"));
 		rbImportTable.setVisible(false);
-		lbEntity = new JLabel(getMessage("wizard.step.entityoption.16", "Bitte w\u00e4hlen Sie eine Entit\u00e4t aus")+":");
+		lbEntity = new JLabel(cld.getMessage(
+				"wizard.step.entityoption.16", "Bitte w\u00e4hlen Sie eine Entit\u00e4t aus")+":");
 		lbEntity.setVisible(false);
 		cbxEntity = new JComboBox();
 		cbxEntity.setVisible(false);
@@ -421,8 +439,10 @@ public class NuclosEntityOptionStep extends NuclosEntityAbstractStep {
 								if(NuclosWizardUtils.isSystemField(field))
 									continue;
 								Attribute attr = new Attribute();
-								attr.setLabel(CommonLocaleDelegate.getResource(field.getLocaleResourceIdForLabel(), field.getFallbacklabel()));
-								attr.setDescription(CommonLocaleDelegate.getResource(field.getLocaleResourceIdForDescription(), ""));
+								attr.setLabel(cld.getResource(
+										field.getLocaleResourceIdForLabel(), field.getFallbacklabel()));
+								attr.setDescription(cld.getResource(
+										field.getLocaleResourceIdForDescription(), ""));
 								attr.setDistinct(field.isUnique());
 								attr.setMandatory(!field.isNullable());
 								attr.setLogBook(field.isLogBookTracking());

@@ -289,6 +289,8 @@ public class PivotPanel extends SelectFixedColumnsPanel {
 
 		private Header(String baseEntity, Map<String, Map<String, EntityFieldMetaDataVO>> subFormFields, Map<String,List<PivotInfo>> state) {
 			super(new GridBagLayout());
+			final CommonLocaleDelegate cld = CommonLocaleDelegate.getInstance();
+			
 			this.baseEntity = baseEntity;
 			this.pivotLines = new ViewIndex();
 			this.subFormFields = subFormFields;
@@ -308,18 +310,18 @@ public class PivotPanel extends SelectFixedColumnsPanel {
 
 			// label
 			JLabel label = new JLabel(
-					CommonLocaleDelegate.getMessageFromResource("pivot.panel.pivot.entity"));
+					cld.getMessageFromResource("pivot.panel.pivot.entity"));
 			c.gridy = 1;
 			c.gridx = 0;
 			c.weightx = 0.2;
 			add(label, c);
 			label = new JLabel(
-					CommonLocaleDelegate.getMessageFromResource("pivot.panel.key.field"));
+					cld.getMessageFromResource("pivot.panel.key.field"));
 			c.gridx = 1;
 			c.weightx = 0.2;
 			add(label, c);
 			label = new JLabel(
-					CommonLocaleDelegate.getMessageFromResource("pivot.panel.value.field"));
+					cld.getMessageFromResource("pivot.panel.value.field"));
 			c.gridx = 3;
 			c.weightx = 0.2;
 			add(label, c);
@@ -374,8 +376,9 @@ public class PivotPanel extends SelectFixedColumnsPanel {
 		
 		private static boolean addLine(Header me, String baseEntity, PivotInfo pinfo, int index, int viewIndex, 
 				Map<String, EntityFieldMetaDataVO> fields, boolean first, boolean enabled) {
+			final CommonLocaleDelegate cld = CommonLocaleDelegate.getInstance();
 			final MetaDataClientProvider mdProv = MetaDataClientProvider.getInstance();
-			final Collator collator = Collator.getInstance(CommonLocaleDelegate.getLocale());
+			final Collator collator = Collator.getInstance(cld.getLocale());
 			final String subform = pinfo.getSubform();
 			final EntityMetaDataVO mdSubform = mdProv.getEntity(subform);
 
@@ -393,7 +396,7 @@ public class PivotPanel extends SelectFixedColumnsPanel {
 			c.ipadx = 3;
 			c.ipady = 1;
 
-			final JCheckBox cb = new JCheckBox(CommonLocaleDelegate.getLabelFromMetaDataVO(mdSubform));
+			final JCheckBox cb = new JCheckBox(cld.getLabelFromMetaDataVO(mdSubform));
 			cb.setSelected(enabled);
 			if (first) {
 				cb.addItemListener(me.new Enabler(subform, index));
@@ -406,7 +409,7 @@ public class PivotPanel extends SelectFixedColumnsPanel {
 			cb.setEnabled(first);
 			
 			final Changer changer = me.new Changer(pinfo.getSubform(), index);
-			final JLabel l = new JLabel(CommonLocaleDelegate.getLabelFromMetaFieldDataVO(keyField));
+			final JLabel l = new JLabel(cld.getLabelFromMetaFieldDataVO(keyField));
 			l.setEnabled(enabled);
 			me.keyLabels.add(l);
 			me.keyMds.add(keyField);
@@ -481,8 +484,8 @@ public class PivotPanel extends SelectFixedColumnsPanel {
 			Collections.sort(fieldList, new Comparator<EntityFieldMetaDataVO>() {
 				@Override
 				public int compare(EntityFieldMetaDataVO o1, EntityFieldMetaDataVO o2) {
-					return col.compare(CommonLocaleDelegate.getLabelFromMetaFieldDataVO(o1),
-							CommonLocaleDelegate.getLabelFromMetaFieldDataVO(o2));
+					return col.compare(CommonLocaleDelegate.getInstance().getLabelFromMetaFieldDataVO(o1),
+							CommonLocaleDelegate.getInstance().getLabelFromMetaFieldDataVO(o2));
 				}
 			});
 			final ComboBoxModel model = new SimpleCollectionComboBoxModel<EntityFieldMetaDataVO>(fieldList);

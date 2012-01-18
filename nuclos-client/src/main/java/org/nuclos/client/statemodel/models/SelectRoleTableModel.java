@@ -39,7 +39,9 @@ import org.nuclos.server.masterdata.valueobject.MasterDataVO;
  */
 public class SelectRoleTableModel extends AbstractTableModel {
 
-	protected static String[] columnNames = {CommonLocaleDelegate.getMessage("SelectRoleTableModel.1","Benutzergruppe"), CommonLocaleDelegate.getMessage("SelectRoleTableModel.2","Beschreibung")};
+	protected static String[] columnNames = {
+		CommonLocaleDelegate.getInstance().getMessage("SelectRoleTableModel.1","Benutzergruppe"), 
+		CommonLocaleDelegate.getInstance().getMessage("SelectRoleTableModel.2","Beschreibung")};
 	protected List<MasterDataVO> lstRoles = null;
 	protected List<MasterDataVO> lstExcludeRoles = new ArrayList<MasterDataVO>();
 

@@ -215,15 +215,15 @@ public class MainController {
 	@Deprecated
 	private static final String PREFS_NODE_MDIWINDOWS = "mdiWindows";
 
-	private final String sUserName;
-	private final String sNuclosServerName;
-	private final LoginController loginController;
+	private String sUserName;
+	private String sNuclosServerName;
+	private LoginController loginController;
 
 	private final Preferences prefs = ClientPreferences.getUserPreferences().node(PREFS_NODE_MAINFRAME);
 
 	private static MainFrame frm;
 
-	private SwingDebugFrame debugFrame = new SwingDebugFrame(this);
+	private SwingDebugFrame debugFrame;
 
 	/**
 	 * controller for explorer panel
@@ -263,34 +263,78 @@ public class MainController {
 	
 	private NucletComponentRepository nucletComponentRepository;
 	
-	@Autowired
-	public void setNucletComponentRepository(NucletComponentRepository ncr) {
-		this.nucletComponentRepository = ncr;
-	}
-
+	private CommonLocaleDelegate cld;
+	
+	private MetaDataClientProvider mdProv;
+	
+	private TopicNotificationReceiver tnr;
+	
+	private ResourceCache resourceCache;
+	
+	// private Main main;
+	
 	/**
 	 * @param sUserName name of the logged in user
 	 * @param sNuclosServerName name of the Nucleus server connected to.
 	 * @throws BackingStoreException
 	 */
-	public MainController(String sUserName, String sNuclosServerName, final LoginController loginController) {
+	public MainController(String sUserName, String sNuclosServerName, LoginController loginController) {
 		this.sUserName = sUserName;
 		this.sNuclosServerName = sNuclosServerName;
 		this.loginController = loginController;
 	}
 	
+	@Autowired
+	void setResourceCache(ResourceCache resourceCache) {
+		this.resourceCache = resourceCache;
+	}
+	
+	@Autowired 
+	void setTopicNotificationReceiver(TopicNotificationReceiver tnr) {
+		this.tnr = tnr;
+	}
+	
+	@Autowired
+	void setMetaDataClientProvider(MetaDataClientProvider mdProv) {
+		this.mdProv = mdProv;
+	}
+	
+	@Autowired
+	public void setNucletComponentRepository(NucletComponentRepository ncr) {
+		this.nucletComponentRepository = ncr;
+	}
+	
+	@Autowired
+	public void setMainFrame(MainFrame mainFrame) {
+		this.frm = mainFrame;
+	}
+	
+	@Autowired
+	public void setCommonLocaleDelegate(CommonLocaleDelegate cld) {
+		this.cld = cld;
+	}
+
+	/*
+	@Autowired
+	void setMain(Main main) {
+		this.main = main;
+	}
+	 */
+	
 	@PostConstruct
 	void init() throws CommonPermissionException, BackingStoreException {
+		debugFrame = new SwingDebugFrame(this);
 		try {
 			/** @todo this is a workaround - because Main.getMainController() is called to get the user name */
-			Main.setMainController(this);
+			Main.getInstance().setMainController(this);
 
 			LOG.debug(">>> read user rights...");
 			SecurityCache.initialize();
 			loginController.increaseLoginProgressBar(StartUp.PROGRESS_INIT_SECURITYCACHE);
 
 			if (!SecurityCache.getInstance().isActionAllowed(Actions.ACTION_SYSTEMSTART)) {
-				throw new CommonPermissionException(CommonLocaleDelegate.getMessage("MainController.23", "Sie haben nicht das Recht, {0} zu benutzen.", ApplicationProperties.getInstance().getName()));
+				throw new CommonPermissionException(cld.getMessage(
+						"MainController.23", "Sie haben nicht das Recht, {0} zu benutzen.", ApplicationProperties.getInstance().getName()));
 			}
 
 			loginController.increaseLoginProgressBar(StartUp.PROGRESS_READ_ATTRIBUTES);
@@ -336,7 +380,7 @@ public class MainController {
 			}
 
 			LOG.debug(">>> create mainframe...");
-			this.frm = new MainFrame(this.getUserName(), this.getNuclosServerName());
+			// this.frm = new MainFrame(this.getUserName(), this.getNuclosServerName());
 
 			this.frm.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
 			this.frm.addWindowListener(new WindowAdapter() {
@@ -349,7 +393,7 @@ public class MainController {
 
 			LOG.debug(">>> init client communication...");
 			this.notificationdlg = new NuclosNotificationDialog(this.frm, this.getDesktopPane());
-			TopicNotificationReceiver.subscribe(JMSConstants.TOPICNAME_RULENOTIFICATION, messagelistener);
+			tnr.subscribe(JMSConstants.TOPICNAME_RULENOTIFICATION, messagelistener);
 			loginController.increaseLoginProgressBar(StartUp.PROGRESS_INIT_NOTIFICATION);
 
 			LOG.debug(">>> setup menus...");
@@ -373,7 +417,8 @@ public class MainController {
 						MainFrame.getLastAlwaysOpenWorkspaceIdFromPreferences(), MainFrame.getLastAlwaysOpenWorkspaceFromPreferences());
 			}
 			catch (Exception ex) {
-				final String sMessage = CommonLocaleDelegate.getMessage("MainController.4","Die in der letzten Sitzung ge\u00f6ffneten Fenster konnten nicht wiederhergestellt werden.");
+				final String sMessage = cld.getMessage(
+						"MainController.4","Die in der letzten Sitzung ge\u00f6ffneten Fenster konnten nicht wiederhergestellt werden.");
 				Errors.getInstance().showExceptionDialog(null, sMessage, ex);
 			}
 			finally {
@@ -388,7 +433,8 @@ public class MainController {
 				reopenAllControllers(ClientPreferences.getUserPreferences());
 			}
 			catch (Exception ex) {
-				final String sMessage = CommonLocaleDelegate.getMessage("MainController.4","Die in der letzten Sitzung ge\u00f6ffneten Fenster konnten nicht wiederhergestellt werden.");
+				final String sMessage = cld.getMessage(
+						"MainController.4","Die in der letzten Sitzung ge\u00f6ffneten Fenster konnten nicht wiederhergestellt werden.");
 				Errors.getInstance().showExceptionDialog(null, sMessage, ex);
 			}
 
@@ -397,7 +443,8 @@ public class MainController {
 				ctlTasks.restoreGenericObjectTaskViewsFromPreferences();
 			}
 			catch (Exception ex) {
-				final String sMessage = CommonLocaleDelegate.getMessage("tasklist.error.restore", "Die Aufgabenlisten konnten nicht wiederhergestellt werden.");
+				final String sMessage = cld.getMessage(
+						"tasklist.error.restore", "Die Aufgabenlisten konnten nicht wiederhergestellt werden.");
 				LOG.error(sMessage, ex);
 				Errors.getInstance().showExceptionDialog(null, sMessage, ex);
 			}
@@ -453,6 +500,286 @@ public class MainController {
 
 				}
 			});
+			
+			// init Actions
+			cmdDirectHelp = new AbstractAction() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					dha.actionPerformed(e);
+				}
+			};
+			cmdShowTimelimitTasks = new AbstractAction(
+					cld.getMessage("miShowTimelimitTasks","Fristen anzeigen"),
+					Icons.getInstance().getIconTabTimtlimit()) {
+
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						MainController.this.getTaskController().getTimelimitTaskController().cmdShowTimelimitTasks();
+					}
+					@Override
+					public boolean isEnabled() {
+						return SecurityCache.getInstance().isActionAllowed(Actions.ACTION_TIMELIMIT_LIST);
+					}
+				};
+			cmdShowPersonalTasks = new AbstractAction(
+					cld.getMessage("miShowPersonalTasks","Meine Aufgaben anzeigen"),
+					Icons.getInstance().getIconTabTask()) {
+
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						MainController.this.getTaskController().getPersonalTaskController().cmdShowPersonalTasks();
+					}
+					@Override
+					public boolean isEnabled() {
+						return SecurityCache.getInstance().isActionAllowed(Actions.ACTION_TASKLIST);
+					}
+				};
+			cmdShowPersonalSearchFilters = new AbstractAction(
+					cld.getMessage("ExplorerPanel.3","Meine Suchfilter anzeigen"),
+					Icons.getInstance().getIconFilter16()) {
+
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						MainController.this.getExplorerController().cmdShowPersonalSearchFilters();
+					}
+				};
+			cmdChangePassword = new AbstractAction() {
+
+				private Boolean enabled;
+
+				@Override
+				public void actionPerformed(ActionEvent evt) {
+					ChangePasswordPanel cpp = new ChangePasswordPanel(true, "", false);
+					boolean result = cpp.showInDialog(getFrame(), new ChangePasswordPanel.ChangePasswordDelegate() {
+						@Override
+						public void changePassword(String oldPw, String newPw) throws CommonBusinessException {
+							RemoteAuthenticationManager ram = SpringApplicationContextHolder.getBean(RemoteAuthenticationManager.class);
+							ram.changePassword(sUserName, oldPw, newPw);
+							NuclosRemoteServerSession.relogin(sUserName, newPw);
+							try {
+								MainController.this.prefs.flush();
+							} catch (BackingStoreException e) {
+								LOG.fatal("actionPerformed failed: " + e, e);
+							}
+							LocalUserProperties props = LocalUserProperties.getInstance();
+							props.setUserPasswd("");
+							props.store();
+						}
+					});
+				}
+
+				@Override
+				public synchronized boolean isEnabled() {
+					if (enabled == null) {
+						enabled = !SecurityDelegate.getInstance().isLdapAuthenticationActive() || SecurityDelegate.getInstance().isSuperUser();
+					}
+					return LangUtils.defaultIfNull(enabled, Boolean.FALSE);
+				}
+			};
+			cmdOpenManagementConsole = new AbstractAction(
+					cld.getMessage("miManagementConsole", "Management Console"),
+					MainFrame.resizeAndCacheTabIcon(NuclosResourceCache.getNuclosResourceIcon("org.nuclos.client.resource.icon.glyphish-blue.158-wrench-2.png"))) {
+
+					@Override
+					public void actionPerformed(ActionEvent evt) {
+						UIUtils.runCommand(frm, new Runnable() {
+							@Override
+							public void run() {
+								try {
+									NuclosConsoleGui.showInFrame(frm.getHomePane());
+								}
+								catch (Exception e) {
+									LOG.error("showInFrame failed: " + e, e);
+								}
+							}
+						});
+					}};
+			cmdOpenEntityWizard = new AbstractAction(
+					cld.getMessage("miEntityWizard", "Entity Wizard"),
+					MainFrame.resizeAndCacheTabIcon(NuclosResourceCache.getNuclosResourceIcon("org.nuclos.client.resource.icon.glyphish-blue.81-dashboard.png"))) {
+
+				@Override
+				public void actionPerformed(ActionEvent evt) {
+					UIUtils.runCommand(frm, new Runnable() {
+						@Override
+						public void run() {
+							try {
+								ShowNuclosWizard w = new ShowNuclosWizard(false);
+								w.showWizard(MainController.this.getDesktopPane(), MainController.this.getFrame());
+							}
+							catch (Exception e) {
+								LOG.error("showWizard failed: " + e, e);
+							}
+						}
+					});
+				}};
+			cmdOpenCustomComponentWizard = new AbstractAction(
+					cld.getMessage("miResPlanWizard", "Ressourcenplanung"),
+					MainFrame.resizeAndCacheTabIcon(NuclosResourceCache.getNuclosResourceIcon("org.nuclos.client.resource.icon.glyphish-blue.83-calendar.png"))) {
+
+				@Override
+				public void actionPerformed(final ActionEvent evt) {
+					UIUtils.runCommand(frm, new Runnable() {
+						@Override
+						public void run() {
+							try {
+								CustomComponentWizard.run();
+							}
+							catch (Exception e) {
+								LOG.error("CustomComponentWizard failed: " + e, e);
+							}
+						}
+					});
+				}};
+			cmdOpenRelationEditor = new AbstractAction(
+					cld.getMessage("miRelationEditor", "Relationeneditor"),
+					MainFrame.resizeAndCacheTabIcon(NuclosResourceCache.getNuclosResourceIcon("org.nuclos.client.resource.icon.glyphish-blue.55-network.png"))) {
+
+						@Override
+						public void actionPerformed(final ActionEvent evt) {
+							UIUtils.runCommand(frm, new Runnable() {
+								@Override
+								public void run() {
+									try {
+										final CollectControllerFactorySingleton factory = CollectControllerFactorySingleton.getInstance();
+										Collection<MasterDataVO> colRelation = MasterDataDelegate.getInstance().getMasterData(NuclosEntity.ENTITYRELATION.getEntityName());
+										EntityRelationShipCollectController result = factory.newEntityRelationShipCollectController(MainController.this.getFrame().getHomePane(), MainController.this.getFrame(), null);
+										if(colRelation.size() > 0) {
+											MasterDataVO vo = colRelation.iterator().next();
+											result.runViewSingleCollectableWithId(vo.getId());
+										}
+										else {
+											result.runNew();
+										}
+									}
+									catch(/* CommonBusiness */ Exception e1) {
+										LOG.error("actionPerformed " + evt + ": " + e1);
+									}
+								}
+							});
+						}};
+			cmdOpenRelationEditor = new AbstractAction(
+					cld.getMessage("miRelationEditor", "Relationeneditor"),
+					MainFrame.resizeAndCacheTabIcon(NuclosResourceCache.getNuclosResourceIcon("org.nuclos.client.resource.icon.glyphish-blue.55-network.png"))) {
+
+						@Override
+						public void actionPerformed(final ActionEvent evt) {
+							UIUtils.runCommand(frm, new Runnable() {
+								@Override
+								public void run() {
+									try {
+										final CollectControllerFactorySingleton factory = CollectControllerFactorySingleton.getInstance();
+										Collection<MasterDataVO> colRelation = MasterDataDelegate.getInstance().getMasterData(NuclosEntity.ENTITYRELATION.getEntityName());
+										EntityRelationShipCollectController result = factory.newEntityRelationShipCollectController(MainController.this.getFrame().getHomePane(), MainController.this.getFrame(), null);
+										if(colRelation.size() > 0) {
+											MasterDataVO vo = colRelation.iterator().next();
+											result.runViewSingleCollectableWithId(vo.getId());
+										}
+										else {
+											result.runNew();
+										}
+									}
+									catch(/* CommonBusiness */ Exception e1) {
+										LOG.error("actionPerformed " + evt + ": " + e1);
+									}
+								}
+							});
+						}};
+			cmdOpenSettings = new AbstractAction() {
+
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					cmdOpenSettings();
+				}
+			};		
+			cmdRefreshClientCaches = new AbstractAction() {
+
+				@Override
+				public void actionPerformed(ActionEvent evt) {
+					UIUtils.runCommandLater(getFrame(), new CommonRunnable() {
+						@Override
+						public void run() throws CommonBusinessException {
+							invalidateAllClientCaches();
+							JOptionPane.showMessageDialog(getFrame(),
+								cld.getMessage("MainController.3","Die folgenden Aktionen wurden erfolgreich durchgef\u00fchrt:\n" +
+									"Caches aktualisiert: MasterDataCache, SecurityCache, AttributeCache, GenericObjectLayoutCache, GeneratorCache, MetaDataCache, ResourceCache, SearchFilterCache.\n"+
+								"Men\u00fcs aktualisiert."));
+						}
+					});
+				}
+			};
+			cmdSelectAll = new AbstractAction() {
+
+				@Override
+				public void actionPerformed(ActionEvent evt) {
+					// select all rows in the Result panel of the current CollectController (if any):
+					final MainFrameTab ifrm = (MainFrameTab) MainController.this.frm.getHomePane().getSelectedComponent();
+					if (ifrm != null) {
+						final CollectController<?> ctl = getControllerForInternalFrame(ifrm);
+						if (ctl != null && ctl.getCollectState().getOuterState() == CollectStateModel.OUTERSTATE_RESULT) {
+							ctl.getResultTable().selectAll();
+						}
+						else if (ctl != null && ((ctl.getCollectState().getOuterState() == CollectStateModel.OUTERSTATE_DETAILS)
+								|| ctl.getCollectState().getOuterState() == CollectStateModel.OUTERSTATE_SEARCH)){
+							Component focusOwner = KeyboardFocusManager.getCurrentKeyboardFocusManager().getPermanentFocusOwner();
+
+							if (focusOwner instanceof JTextComponent) {
+								((JTextComponent)focusOwner).selectAll();
+							}
+						}
+					}
+				}
+			};
+			cmdHelpContents = new AbstractAction() {
+
+				@Override
+				public void actionPerformed(ActionEvent evt) {
+					WikiController.getInstance().openURLinBrowser(ClientParameterProvider.getInstance().getValue(ClientParameterProvider.KEY_WIKI_STARTPAGE));
+				}
+			};
+			cmdShowAboutDialog  = new AbstractAction() {
+
+				@Override
+				public void actionPerformed(ActionEvent evt) {
+					cmdShowAboutDialog();
+				}
+			};
+			cmdShowProjectReleaseNotes  = new AbstractAction() {
+
+				@Override
+				public void actionPerformed(ActionEvent evt) {
+					new ReleaseNotesController(getFrame(), getDesktopPane()).showReleaseNotes(ApplicationProperties.getInstance().getName());
+				}
+			};
+			cmdShowNuclosReleaseNotes  = new AbstractAction() {
+
+				@Override
+				public void actionPerformed(ActionEvent evt) {
+					ReleaseNotesController.openReleaseNotesInBrowser();
+				}
+			};
+			cmdWindowClosing = new AbstractAction() {
+
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					cmdWindowClosing();
+				}
+			};
+			cmdLogoutExit = new AbstractAction() {
+
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					cmdLogoutExit();
+				}
+			};
+			cmdShowInternalInfo = new AbstractAction() {
+
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					cmdShowInternalInfo();
+				}
+			};
+			cmdExecuteRport = createEntityAction(NuclosEntity.REPORTEXECUTION);
 		}
 		catch (Throwable e) {
 			LOG.fatal("Creating MainController failed, this is fatal: " + e.toString(), e);
@@ -460,186 +787,60 @@ public class MainController {
 		}
 	}
 
-	private Action cmdDirectHelp = new AbstractAction() {
+	private Action cmdDirectHelp;
 
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			dha.actionPerformed(e);
-		}
-	};
+	private Action cmdShowTimelimitTasks;
 
-	private Action cmdShowTimelimitTasks = new AbstractAction(
-		CommonLocaleDelegate.getMessage("miShowTimelimitTasks","Fristen anzeigen"),
-		Icons.getInstance().getIconTabTimtlimit()) {
+	private Action cmdShowPersonalTasks;
 
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			MainController.this.getTaskController().getTimelimitTaskController().cmdShowTimelimitTasks();
-		}
-		@Override
-		public boolean isEnabled() {
-			return SecurityCache.getInstance().isActionAllowed(Actions.ACTION_TIMELIMIT_LIST);
-		}
-	};
+	private Action cmdShowPersonalSearchFilters;
 
-	private Action cmdShowPersonalTasks = new AbstractAction(
-		CommonLocaleDelegate.getMessage("miShowPersonalTasks","Meine Aufgaben anzeigen"),
-		Icons.getInstance().getIconTabTask()) {
+	private Action cmdChangePassword;
 
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			MainController.this.getTaskController().getPersonalTaskController().cmdShowPersonalTasks();
-		}
-		@Override
-		public boolean isEnabled() {
-			return SecurityCache.getInstance().isActionAllowed(Actions.ACTION_TASKLIST);
-		}
-	};
+	private Action cmdOpenManagementConsole;
 
-	private Action cmdShowPersonalSearchFilters = new AbstractAction(
-		CommonLocaleDelegate.getMessage("ExplorerPanel.3","Meine Suchfilter anzeigen"),
-		Icons.getInstance().getIconFilter16()) {
+	private Action cmdOpenEntityWizard;
 
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			MainController.this.getExplorerController().cmdShowPersonalSearchFilters();
-		}
-	};
+	private Action cmdOpenCustomComponentWizard;
+	
+	private Action cmdOpenRelationEditor;
+	
+	private Action cmdOpenSettings;
 
-	private Action cmdChangePassword = new AbstractAction() {
+	public Action cmdRefreshClientCaches;
+	
+	private Action cmdSelectAll;
 
-		private Boolean enabled;
+	private Action cmdHelpContents;
 
-		@Override
-		public void actionPerformed(ActionEvent evt) {
-			ChangePasswordPanel cpp = new ChangePasswordPanel(true, "", false);
-			boolean result = cpp.showInDialog(getFrame(), new ChangePasswordPanel.ChangePasswordDelegate() {
-				@Override
-				public void changePassword(String oldPw, String newPw) throws CommonBusinessException {
-					RemoteAuthenticationManager ram = SpringApplicationContextHolder.getBean(RemoteAuthenticationManager.class);
-					ram.changePassword(sUserName, oldPw, newPw);
-					NuclosRemoteServerSession.relogin(sUserName, newPw);
-					try {
-						MainController.this.prefs.flush();
-					} catch (BackingStoreException e) {
-						LOG.fatal("actionPerformed failed: " + e, e);
-					}
-					LocalUserProperties props = LocalUserProperties.getInstance();
-					props.setUserPasswd("");
-					props.store();
-				}
-			});
-		}
+	private Action cmdShowAboutDialog;
 
-		@Override
-		public synchronized boolean isEnabled() {
-			if (enabled == null) {
-				enabled = !SecurityDelegate.getInstance().isLdapAuthenticationActive() || SecurityDelegate.getInstance().isSuperUser();
-			}
-			return LangUtils.defaultIfNull(enabled, Boolean.FALSE);
-		}
-	};
+	private Action cmdShowProjectReleaseNotes;
 
-	private Action cmdOpenManagementConsole = new AbstractAction(
-		CommonLocaleDelegate.getMessage("miManagementConsole", "Management Console"),
-		MainFrame.resizeAndCacheTabIcon(NuclosResourceCache.getNuclosResourceIcon("org.nuclos.client.resource.icon.glyphish-blue.158-wrench-2.png"))) {
+	private Action cmdShowNuclosReleaseNotes;
 
-		@Override
-		public void actionPerformed(ActionEvent evt) {
-			UIUtils.runCommand(frm, new Runnable() {
-				@Override
-				public void run() {
-					try {
-						NuclosConsoleGui.showInFrame(frm.getHomePane());
-					}
-					catch (Exception e) {
-						LOG.error("showInFrame failed: " + e, e);
-					}
-				}
-			});
-		}};
+	private Action cmdWindowClosing;
 
-	private Action cmdOpenEntityWizard = new AbstractAction(
-			CommonLocaleDelegate.getMessage("miEntityWizard", "Entity Wizard"),
-			MainFrame.resizeAndCacheTabIcon(NuclosResourceCache.getNuclosResourceIcon("org.nuclos.client.resource.icon.glyphish-blue.81-dashboard.png"))) {
+	private Action cmdLogoutExit;
 
-		@Override
-		public void actionPerformed(ActionEvent evt) {
-			UIUtils.runCommand(frm, new Runnable() {
-				@Override
-				public void run() {
-					try {
-						ShowNuclosWizard w = new ShowNuclosWizard(false);
-						w.showWizard(MainController.this.getDesktopPane(), MainController.this.getFrame());
-					}
-					catch (Exception e) {
-						LOG.error("showWizard failed: " + e, e);
-					}
-				}
-			});
-		}};
+	private Action cmdShowInternalInfo;
 
-	private Action cmdOpenCustomComponentWizard = new AbstractAction(
-			CommonLocaleDelegate.getMessage("miResPlanWizard", "Ressourcenplanung"),
-			MainFrame.resizeAndCacheTabIcon(NuclosResourceCache.getNuclosResourceIcon("org.nuclos.client.resource.icon.glyphish-blue.83-calendar.png"))) {
+	private Action cmdExecuteRport;
 
-		@Override
-		public void actionPerformed(final ActionEvent evt) {
-			UIUtils.runCommand(frm, new Runnable() {
-				@Override
-				public void run() {
-					try {
-						CustomComponentWizard.run();
-					}
-					catch (Exception e) {
-						LOG.error("CustomComponentWizard failed: " + e, e);
-					}
-				}
-			});
-		}};
-
-	private Action cmdOpenRelationEditor = new AbstractAction(
-		CommonLocaleDelegate.getMessage("miRelationEditor", "Relationeneditor"),
-		MainFrame.resizeAndCacheTabIcon(NuclosResourceCache.getNuclosResourceIcon("org.nuclos.client.resource.icon.glyphish-blue.55-network.png"))) {
-
-			@Override
-			public void actionPerformed(final ActionEvent evt) {
-				UIUtils.runCommand(frm, new Runnable() {
-					@Override
-					public void run() {
-						try {
-							final CollectControllerFactorySingleton factory = CollectControllerFactorySingleton.getInstance();
-							Collection<MasterDataVO> colRelation = MasterDataDelegate.getInstance().getMasterData(NuclosEntity.ENTITYRELATION.getEntityName());
-							EntityRelationShipCollectController result = factory.newEntityRelationShipCollectController(MainController.this.getFrame().getHomePane(), MainController.this.getFrame(), null);
-							if(colRelation.size() > 0) {
-								MasterDataVO vo = colRelation.iterator().next();
-								result.runViewSingleCollectableWithId(vo.getId());
-							}
-							else {
-								result.runNew();
-							}
-						}
-						catch(/* CommonBusiness */ Exception e1) {
-							LOG.error("actionPerformed " + evt + ": " + e1);
-						}
-					}
-				});
-			}};
-
-	private Action cmdOpenSettings = new AbstractAction() {
-
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			cmdOpenSettings();
-		}
-	};
+	public void cmdLogoutExit() {
+		LocalUserProperties props = LocalUserProperties.getInstance();
+		props.setUserPasswd("");
+		props.store();
+		cmdWindowClosing();
+	}
 
 	public static void cmdOpenSettings() {
 		NuclosSettingsContainer panel = new NuclosSettingsContainer(frm);
 
 		JOptionPane p = new JOptionPane(panel,
 			JOptionPane.PLAIN_MESSAGE, JOptionPane.OK_CANCEL_OPTION,	null);
-		JDialog dlg = p.createDialog(Main.getMainFrame(), CommonLocaleDelegate.getMessage("R00022927", "Einstellungen"));
+		JDialog dlg = p.createDialog(Main.getInstance().getMainFrame(), 
+				CommonLocaleDelegate.getInstance().getMessage("R00022927", "Einstellungen"));
 		dlg.pack();
 		dlg.setResizable(true);
 		dlg.setVisible(true);
@@ -658,72 +859,16 @@ public class MainController {
 		}
 	}
 
-	public Action cmdRefreshClientCaches = new AbstractAction() {
-
-		@Override
-		public void actionPerformed(ActionEvent evt) {
-			UIUtils.runCommandLater(getFrame(), new CommonRunnable() {
-				@Override
-				public void run() throws CommonBusinessException {
-					invalidateAllClientCaches();
-					JOptionPane.showMessageDialog(getFrame(),
-						CommonLocaleDelegate.getMessage("MainController.3","Die folgenden Aktionen wurden erfolgreich durchgef\u00fchrt:\n" +
-							"Caches aktualisiert: MasterDataCache, SecurityCache, AttributeCache, GenericObjectLayoutCache, GeneratorCache, MetaDataCache, ResourceCache, SearchFilterCache.\n"+
-						"Men\u00fcs aktualisiert."));
-				}
-			});
-		}
-	};
-
-	private Action cmdSelectAll = new AbstractAction() {
-
-		@Override
-		public void actionPerformed(ActionEvent evt) {
-			// select all rows in the Result panel of the current CollectController (if any):
-			final MainFrameTab ifrm = (MainFrameTab) MainController.this.frm.getHomePane().getSelectedComponent();
-			if (ifrm != null) {
-				final CollectController<?> ctl = getControllerForInternalFrame(ifrm);
-				if (ctl != null && ctl.getCollectState().getOuterState() == CollectStateModel.OUTERSTATE_RESULT) {
-					ctl.getResultTable().selectAll();
-				}
-				else if (ctl != null && ((ctl.getCollectState().getOuterState() == CollectStateModel.OUTERSTATE_DETAILS)
-						|| ctl.getCollectState().getOuterState() == CollectStateModel.OUTERSTATE_SEARCH)){
-					Component focusOwner = KeyboardFocusManager.getCurrentKeyboardFocusManager().getPermanentFocusOwner();
-
-					if (focusOwner instanceof JTextComponent) {
-						((JTextComponent)focusOwner).selectAll();
-					}
-				}
-			}
-		}
-	};
-
-	private Action cmdHelpContents = new AbstractAction() {
-
-		@Override
-		public void actionPerformed(ActionEvent evt) {
-			WikiController.getInstance().openURLinBrowser(ClientParameterProvider.getInstance().getValue(ClientParameterProvider.KEY_WIKI_STARTPAGE));
-		}
-	};
-
-	private Action cmdShowAboutDialog  = new AbstractAction() {
-
-		@Override
-		public void actionPerformed(ActionEvent evt) {
-			cmdShowAboutDialog();
-		}
-	};
-
-	public static void cmdShowAboutDialog() {
+	public void cmdShowAboutDialog() {
 		try {
-			final MainFrameTab internalFrame = MainController.newMainFrameTab(null, "Info");
-			String html = IOUtils.readFromTextStream(Main.getMainController().getClass().getClassLoader().getResourceAsStream("org/nuclos/client/help/about/about.html"), null);
+			final MainFrameTab internalFrame = newMainFrameTab(null, "Info");
+			String html = IOUtils.readFromTextStream(getClass().getClassLoader().getResourceAsStream("org/nuclos/client/help/about/about.html"), null);
 			HtmlPanel htmlPanel = new HtmlPanel(
 				String.format(
 					html,
 					ApplicationProperties.getInstance().getCurrentVersion(), // %1$s
-					Main.getMainController().getUserName(),                                           // %2$s
-					Main.getMainController().getNuclosServerName(),                                   // %3$s
+					getUserName(),                                           // %2$s
+					getNuclosServerName(),                                   // %3$s
 					System.getProperty("java.version")                       // %4$s
 			));
 			htmlPanel.btnClose.addActionListener(new ActionListener() {
@@ -746,62 +891,14 @@ public class MainController {
 				}
 			});
 			internalFrame.setLayeredComponent(htmlPanel);
-			Main.getMainFrame().getHomePane().add(internalFrame);
+			Main.getInstance().getMainFrame().getHomePane().add(internalFrame);
 			internalFrame.setVisible(true);
         }
         catch(Exception e) {
-        	Errors.getInstance().showExceptionDialog(Main.getMainFrame(), CommonLocaleDelegate.getMessage("MainController.26", "Die Infos k\u00f6nnen nicht angezeigt werden."), e);
+        	Errors.getInstance().showExceptionDialog(Main.getInstance().getMainFrame(), 
+        			cld.getMessage("MainController.26", "Die Infos k\u00f6nnen nicht angezeigt werden."), e);
         }
 	}
-
-	private Action cmdShowProjectReleaseNotes  = new AbstractAction() {
-
-		@Override
-		public void actionPerformed(ActionEvent evt) {
-			new ReleaseNotesController(getFrame(), getDesktopPane()).showReleaseNotes(ApplicationProperties.getInstance().getName());
-		}
-	};
-
-	private Action cmdShowNuclosReleaseNotes  = new AbstractAction() {
-
-		@Override
-		public void actionPerformed(ActionEvent evt) {
-			ReleaseNotesController.openReleaseNotesInBrowser();
-		}
-	};
-
-	private Action cmdWindowClosing = new AbstractAction() {
-
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			cmdWindowClosing();
-		}
-	};
-
-	private Action cmdLogoutExit = new AbstractAction() {
-
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			cmdLogoutExit();
-		}
-	};
-
-	public static void cmdLogoutExit() {
-		LocalUserProperties props = LocalUserProperties.getInstance();
-		props.setUserPasswd("");
-		props.store();
-		Main.getMainController().cmdWindowClosing();
-	}
-
-	private Action cmdShowInternalInfo = new AbstractAction() {
-
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			cmdShowInternalInfo();
-		}
-	};
-
-	private Action cmdExecuteRport = createEntityAction(NuclosEntity.REPORTEXECUTION);
 
    private static class UIDefTableModel extends AbstractTableModel {
 
@@ -1023,9 +1120,9 @@ public class MainController {
 			public void actionPerformed(ActionEvent e) {
 				try {
 					AbstractReportExporter.checkJawin();
-					JOptionPane.showMessageDialog(Main.getMainFrame(), "Jawin ok");
+					JOptionPane.showMessageDialog(Main.getInstance().getMainFrame(), "Jawin ok");
 				} catch (Exception ex) {
-					Errors.getInstance().showDetailedExceptionDialog(Main.getMainFrame(), ex);
+					Errors.getInstance().showDetailedExceptionDialog(Main.getInstance().getMainFrame(), ex);
 				}
 			}
 		});
@@ -1102,7 +1199,7 @@ public class MainController {
 	/**
 	 * @param ctl may be <code>null</code>.
 	 */
-	public static MainFrameTab newMainFrameTab(TopController ctl) {
+	public MainFrameTab newMainFrameTab(TopController ctl) {
 		return newMainFrameTab(ctl, null);
 	}
 
@@ -1110,13 +1207,13 @@ public class MainController {
 	 * @param ctl may be <code>null</code>.
 	 * @param sTitle
 	 */
-	public static MainFrameTab newMainFrameTab(TopController ctl, String sTitle) {
+	public MainFrameTab newMainFrameTab(TopController ctl, String sTitle) {
 		final MainFrameTab result = new MainFrameTab(sTitle);
 		initMainFrameTab(ctl, result);
 		return result;
 	}
 
-	public static void initMainFrameTab(TopController ctl, MainFrameTab tab) {
+	public void initMainFrameTab(TopController ctl, MainFrameTab tab) {
 		Object lock = new Object();
 		synchronized(lock) {
 			ImageIcon icon = ctl != null ? ctl.getIcon() : null;
@@ -1129,17 +1226,17 @@ public class MainController {
 	 * @param tab
 	 * @param ctl may be <code>null</code>.
 	 */
-	private static void addMainFrameTabListener(final MainFrameTab tab, final TopController ctl) {
+	private void addMainFrameTabListener(final MainFrameTab tab, final TopController ctl) {
 		tab.addMainFrameTabListener(new MainFrameTabAdapter() {
 
 			@Override
 			public void tabAdded(MainFrameTab tab) {
-				Main.getMainController().addMainFrameTab(tab, ctl);
+				addMainFrameTab(tab, ctl);
 			}
 
 			@Override
 			public void tabClosed(MainFrameTab tab) {
-				Main.getMainController().removeMainFrameTab(tab);
+				removeMainFrameTab(tab);
 				tab.removeMainFrameTabListener(this);
 			}
 
@@ -1270,8 +1367,8 @@ public class MainController {
 	}
 
 	private void addActionIfAllowed(List<Pair<String[], Action>> menuActions, String[] menuPath, NuclosEntity entity, List<GenericAction> genericActions) {
-		EntityMetaDataVO entitymetavo = MetaDataClientProvider.getInstance().getEntity(entity);
-		Action act = createEntityAction(entitymetavo, CommonLocaleDelegate.getLabelFromMetaDataVO(entitymetavo), false, null);
+		EntityMetaDataVO entitymetavo = mdProv.getEntity(entity);
+		Action act = createEntityAction(entitymetavo, cld.getLabelFromMetaDataVO(entitymetavo), false, null);
 		if (act != null) {
 			menuActions.add(new Pair<String[], Action>(menuPath, act));
 			if (genericActions != null) {
@@ -1293,8 +1390,8 @@ public class MainController {
 		Set<String> customConfigurationEntities = new HashSet<String>();
 
 		for (EntityObjectVO conf : MetaDataDelegate.getInstance().getEntityMenus()) {
-			EntityMetaDataVO meta = MetaDataClientProvider.getInstance().getEntity(conf.getFieldId("entity"));
-			String[] menuPath = splitMenuPath(CommonLocaleDelegate.getResource(conf.getField("menupath", String.class), null));
+			EntityMetaDataVO meta = mdProv.getEntity(conf.getFieldId("entity"));
+			String[] menuPath = splitMenuPath(cld.getResource(conf.getField("menupath", String.class), null));
 
 			if (menuPath != null && menuPath.length > 0) {
 				Action action = createEntityAction(meta, menuPath[menuPath.length - 1], conf.getField("new", Boolean.class), conf.getFieldId("process"));
@@ -1317,8 +1414,8 @@ public class MainController {
 			if (customConfigurationEntities.contains(entitymetavo.getEntity())) {
 				continue;
 			}
-			String[] menuPath = splitMenuPath(CommonLocaleDelegate.getResource(entitymetavo.getLocaleResourceIdForMenuPath(), null));
-			Action action = createEntityAction(entitymetavo, CommonLocaleDelegate.getLabelFromMetaDataVO(entitymetavo), false, null);
+			String[] menuPath = splitMenuPath(cld.getResource(entitymetavo.getLocaleResourceIdForMenuPath(), null));
+			Action action = createEntityAction(entitymetavo, cld.getLabelFromMetaDataVO(entitymetavo), false, null);
 			if (menuPath != null && menuPath.length > 0 && action != null) {
 				entityMenuActions.add(Pair.makePair(menuPath, action));
 				if (genericActions != null) {
@@ -1366,7 +1463,7 @@ public class MainController {
 	private List<Pair<String[], Action>> getCustomComponentMenuActions(List<GenericAction> genericActions) {
 		List<Pair<String[], Action>> customComponentMenuAction = new ArrayList<Pair<String[], Action>>();
 		for (CustomComponentVO ccvo : CustomComponentCache.getInstance().getAll()) {
-			String[] menuPath = splitMenuPath(CommonLocaleDelegate.getTextFallback(ccvo.getMenupathResourceId(), ccvo.getMenupathResourceId()));
+			String[] menuPath = splitMenuPath(cld.getTextFallback(ccvo.getMenupathResourceId(), ccvo.getMenupathResourceId()));
 			Action action = new ResPlanAction(ccvo);
 			// If the component is not allowed to run (due to missing permissions), the action is disabled and skipped
 			if (menuPath != null && menuPath.length > 0 && action != null && action.isEnabled()) {
@@ -1395,7 +1492,8 @@ public class MainController {
 							if (Modules.getInstance().isModuleEntity(entity)) {
 								final Integer iModuleId = Modules.getInstance().getModuleIdByEntityName(entity);
 								final GenericObjectCollectController ctlGenericObject = NuclosCollectControllerFactory.getInstance().
-								newGenericObjectCollectController(MainFrame.getPredefinedEntityOpenLocation(MetaDataClientProvider.getInstance().getEntity(new Long(iModuleId)).getEntity()), iModuleId, null);
+								newGenericObjectCollectController(MainFrame.getPredefinedEntityOpenLocation(
+										mdProv.getEntity(new Long(iModuleId)).getEntity()), iModuleId, null);
 								ctlGenericObject.setSelectedSearchFilter(searchfilter);
 								ctlGenericObject.runViewResults(searchfilter.getSearchCondition());
 							}
@@ -1413,14 +1511,15 @@ public class MainController {
 				WorkspaceDescription.Action wa = new WorkspaceDescription.Action();
 				wa.setAction(GENERIC_SEARCHFILTER_ACTION);
 				wa.putStringParameter("searchfilter", searchfilter.getName());
-				genericActions.add(new GenericAction(wa, new ActionWithMenuPath(new String[]{CommonLocaleDelegate.getMessage("nuclos.entity.searchfilter.label", "Suchfilter")}, action)));
+				genericActions.add(new GenericAction(wa, new ActionWithMenuPath(new String[]{
+						cld.getMessage("nuclos.entity.searchfilter.label", "Suchfilter")}, action)));
 			}
 		}
 	}
 
 	private Action createEntityAction(NuclosEntity entity) {
-		EntityMetaDataVO entitymetavo = MetaDataClientProvider.getInstance().getEntity(entity);
-		return createEntityAction(entitymetavo, CommonLocaleDelegate.getLabelFromMetaDataVO(entitymetavo), false, null);
+		EntityMetaDataVO entitymetavo = mdProv.getEntity(entity);
+		return createEntityAction(entitymetavo, cld.getLabelFromMetaDataVO(entitymetavo), false, null);
 	}
 
 	private Action createEntityAction(EntityMetaDataVO entitymetavo, String label, final boolean isNew, final Long processId) {
@@ -1442,7 +1541,8 @@ public class MainController {
 			action.putValue(Action.MNEMONIC_KEY, (int)nameAndMnemonic.y.charValue());
 		}
 		action.setEnabled(true);
-		action.putValue(Action.SMALL_ICON, MainFrame.resizeAndCacheTabIcon(MainFrame.getEntityIcon(entity)));
+		action.putValue(Action.SMALL_ICON, MainFrame.resizeAndCacheTabIcon(
+				Main.getInstance().getMainFrame().getEntityIcon(entity)));
 		action.putValue(Action.ACTION_COMMAND_KEY, entity);
 		if (!isNew && processId == null) {
 			if (!StringUtils.isNullOrEmpty(entitymetavo.getAccelerator()) && entitymetavo.getAcceleratorModifier() != null) {
@@ -1487,7 +1587,7 @@ public class MainController {
 				removeUnusedPreferences();
 			}
 			catch (Exception ex) {
-				final String sMessage = CommonLocaleDelegate.getMessage("MainController.20","Die Sitzungsdaten, die Informationen \u00fcber die zuletzt ge\u00f6ffneten Fenster enthalten,\n" +
+				final String sMessage = cld.getMessage("MainController.20","Die Sitzungsdaten, die Informationen \u00fcber die zuletzt ge\u00f6ffneten Fenster enthalten,\n" +
 						"konnten nicht geschrieben werden. Bei der n\u00e4chsten Sitzung k\u00f6nnen nicht alle Fenster\n" +
 						"wiederhergestellt werden. Bitte \u00f6ffnen Sie diese Fenster in der n\u00e4chsten Sitzung erneut.");
 				Errors.getInstance().showExceptionDialog(frm, sMessage, ex);
@@ -1520,7 +1620,7 @@ public class MainController {
 		AttributeCache.getInstance().revalidate();
 		GenericObjectLayoutCache.getInstance().invalidate();
 		GeneratorActions.invalidateCache();
-		ResourceCache.invalidate();
+		resourceCache.invalidate();
 		SearchFilterCache.getInstance().validate();
 		GenericObjectDelegate.getInstance().invalidateCaches();
 		LocaleDelegate.getInstance().flush();
@@ -1858,7 +1958,8 @@ public class MainController {
 					}
 				}
 				catch (CommonBusinessException ex) {
-					final String sErrorMsg = CommonLocaleDelegate.getMessage("MainController.21","Die Stammdaten k\u00f6nnen nicht bearbeitet werden.");
+					final String sErrorMsg = cld.getMessage(
+							"MainController.21","Die Stammdaten k\u00f6nnen nicht bearbeitet werden.");
 					Errors.getInstance().showExceptionDialog(frm, sErrorMsg, ex);
 				}
 			}
@@ -1896,7 +1997,9 @@ public class MainController {
 					final CommandMessage command = (CommandMessage) ((ObjectMessage) msg).getObject();
 					switch (command.getCommand()) {
 						case CommandMessage.CMD_SHUTDOWN :
-							getNotificationDialog().addMessage(new RuleNotification(Priority.HIGH, CommonLocaleDelegate.getMessage("MainController.19","Der Client wird auf Anweisung des Administrators in 10 Sekunden beendet."), "Administrator"));
+							getNotificationDialog().addMessage(new RuleNotification(Priority.HIGH, 
+									cld.getMessage("MainController.19","Der Client wird auf Anweisung des Administrators in 10 Sekunden beendet."), 
+									"Administrator"));
 							getNotificationDialog().setVisible(true);
 
 							SwingUtilities.invokeLater(new Runnable() {
@@ -1920,7 +2023,8 @@ public class MainController {
 					switch(command.getCommand()) {
 						case CommandInformationMessage.CMD_INFO_SHUTDOWN :
 							Object[] options = { "OK" };
-							int decision = JOptionPane.showOptionDialog(frm, command.getInfo(), CommonLocaleDelegate.getMessage("MainController.17","Administrator - Passwort\u00e4nderung"),
+							int decision = JOptionPane.showOptionDialog(frm, command.getInfo(), cld.getMessage(
+									"MainController.17","Administrator - Passwort\u00e4nderung"),
 									JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null, options, options[0]);
 							if (decision == 0 || decision == JOptionPane.CLOSED_OPTION || decision == JOptionPane.NO_OPTION) {
 								  new Thread(new Runnable() {
@@ -1941,7 +2045,8 @@ public class MainController {
 				}
 			}
 			else {
-				LOG.warn(CommonLocaleDelegate.getMessage("MainController.14","Message of type {0} received, while an ObjectMessage was expected.", msg.getClass().getName()));
+				LOG.warn(cld.getMessage(
+						"MainController.14","Message of type {0} received, while an ObjectMessage was expected.", msg.getClass().getName()));
 			}
 		}
 		catch (JMSException ex) {
@@ -2185,11 +2290,11 @@ public class MainController {
 	}
 
 	public String getMainMenuAdministration() {
-		return CommonLocaleDelegate.getMessage("MainMenuAdministration", "Administration").replace("^", "");
+		return cld.getMessage("MainMenuAdministration", "Administration").replace("^", "");
 	}
 
 	public String getMainMenuConfiguration() {
-		return CommonLocaleDelegate.getMessage("MainMenuConfiguration", "Konfiguration").replace("^", "");
+		return cld.getMessage("MainMenuConfiguration", "Konfiguration").replace("^", "");
 	}
 	
 	public Preferences getMainFramePreferences() {

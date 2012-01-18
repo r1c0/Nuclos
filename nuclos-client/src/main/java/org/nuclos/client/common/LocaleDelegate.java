@@ -39,7 +39,6 @@ import org.nuclos.client.LocalUserProperties;
 import org.nuclos.client.main.SwingLocaleSwitcher;
 import org.nuclos.common.ApplicationProperties;
 import org.nuclos.common.JMSConstants;
-import org.nuclos.common.SpringApplicationContextHolder;
 import org.nuclos.common2.ClientPreferences;
 import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.LocaleInfo;
@@ -51,8 +50,11 @@ import org.nuclos.server.masterdata.valueobject.DependantMasterDataMap;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.stereotype.Component;
 
+@Component
 public class LocaleDelegate implements CommonLocaleDelegate.LookupService, MessageListener, InitializingBean, DisposableBean {
 
 	private static final Logger LOG = Logger.getLogger(LocaleDelegate.class);
@@ -70,27 +72,44 @@ public class LocaleDelegate implements CommonLocaleDelegate.LookupService, Messa
 	private static DateFormat TIME_FORMAT;
 	private static DateFormat DATETIME_FORMAT;
 	
+	private static LocaleDelegate INSTANCE;
+	
 	// 
 
 	private LocaleFacadeRemote remoteInterface;
 	
+	private TopicNotificationReceiver tnr;
+	
 	public LocaleDelegate() {
+		INSTANCE = this;
+	}
+	
+	@Autowired
+	void setTopicNotificationReceiver(TopicNotificationReceiver tnr) {
+		this.tnr = tnr;
 	}
 
-	public void setService(LocaleFacadeRemote service) {
+	@Autowired
+	void setLocaleService(LocaleFacadeRemote service) {
 		this.remoteInterface = service;
 	}
 
 	@Override
 	public void afterPropertiesSet() {
-		TopicNotificationReceiver.subscribe(JMSConstants.TOPICNAME_LOCALE, this);
+		tnr.subscribe(JMSConstants.TOPICNAME_LOCALE, this);
 	}
 
-	public static synchronized LocaleDelegate getInstance() {
-		return (LocaleDelegate) SpringApplicationContextHolder.getBean("lookupService");
+	public static LocaleDelegate getInstance() {
+		// return (LocaleDelegate) SpringApplicationContextHolder.getBean("lookupService");
+		return INSTANCE;
 	}
 
 	private ResourceBundle getResourceBundle() {
+		// too early
+		if (LOCALE_INFO == null) {
+			LOG.info("early call to getResourceBundle()");
+			return null;
+		}
 		if (RESOURCE_BUNDLE == null) {
 			synchronized (RB_LOCk) {
 				if (RESOURCE_BUNDLE == null) {
@@ -346,13 +365,19 @@ public class LocaleDelegate implements CommonLocaleDelegate.LookupService, Messa
 
 	@Override
 	public String getResource(String key) {
-		if (!getResourceBundle().containsKey(key)) {
+		final ResourceBundle rb = getResourceBundle();
+		// too early 
+		if (rb == null) {
+			LOG.info("early call to getResource(" + key + ")");
+			return key;
+		}
+		if (!rb.containsKey(key)) {
 			if (DATE != null && DATE.before(getLastChange())) {
 				flush();
 			}
 		}
 		try {
-			return getResourceBundle().getString(key);
+			return rb.getString(key);
 		}
 		catch (MissingResourceException ex) {
 			if (ApplicationProperties.getInstance().isFunctionBlockDev()) {
@@ -380,7 +405,7 @@ public class LocaleDelegate implements CommonLocaleDelegate.LookupService, Messa
 	
 	@Override
 	public synchronized void destroy() {
-		TopicNotificationReceiver.unsubscribe(this);
+		tnr.unsubscribe(this);
 		NUMBER_FORMAT = null;
 		DATE_FORMAT = null;
 		TIME_FORMAT = null;

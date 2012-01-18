@@ -34,7 +34,10 @@ import org.nuclos.server.report.valueobject.DatasourceVO;
 public class OwnDatasourceNode extends DirectoryDatasourceNode {
 
 	public OwnDatasourceNode() {
-		super(false, CommonLocaleDelegate.getMessage("OwnDatasourceNode.1", "Eigene Datenquellen"), CommonLocaleDelegate.getMessage("OwnDatasourceNode.1", "Eigene Datenquellen"), null);
+		super(false, 
+				CommonLocaleDelegate.getInstance().getMessage("OwnDatasourceNode.1", "Eigene Datenquellen"), 
+				CommonLocaleDelegate.getInstance().getMessage("OwnDatasourceNode.1", "Eigene Datenquellen"), 
+				null);
 	}
 
 	@Override

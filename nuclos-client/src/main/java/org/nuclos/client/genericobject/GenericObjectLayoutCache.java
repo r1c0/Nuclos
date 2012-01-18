@@ -172,7 +172,8 @@ public class GenericObjectLayoutCache {
 		
 		final String sLayoutML = this.gometa.getLayoutML(this.getLayoutId(usagecriteria, bSearchScreen));	
 		if(sLayoutML == null) {
-			throw new NuclosFatalException(CommonLocaleDelegate.getMessage("GenericObjectLayoutCache.1", "Die Maske f\u00fcr das Modul {0} konte nicht geladen werden.\nEs wurde noch kein Layout zugewiesen.", Modules.getInstance().getEntityLabelByModuleId(iModuleId)));
+			throw new NuclosFatalException(CommonLocaleDelegate.getInstance().getMessage(
+					"GenericObjectLayoutCache.1", "Die Maske f\u00fcr das Modul {0} konte nicht geladen werden.\nEs wurde noch kein Layout zugewiesen.", Modules.getInstance().getEntityLabelByModuleId(iModuleId)));
 		}
 			
 		final LayoutRoot result;
@@ -232,9 +233,11 @@ public class GenericObjectLayoutCache {
 			catch (CommonFinderException ex) {
 				final String sMessage;
 				if (bSearchScreen)
-					sMessage = CommonLocaleDelegate.getMessage("GenericObjectLayoutCache.3", "Ein passendes Such-Layout f\u00fcr {0} konnte nicht gefunden werden.\nEs wurde noch kein Layout zugewiesen.", usagecriteria);
+					sMessage = CommonLocaleDelegate.getInstance().getMessage(
+							"GenericObjectLayoutCache.3", "Ein passendes Such-Layout f\u00fcr {0} konnte nicht gefunden werden.\nEs wurde noch kein Layout zugewiesen.", usagecriteria);
 				else
-					sMessage = CommonLocaleDelegate.getMessage("GenericObjectLayoutCache.2", "Ein passendes Layout f\u00fcr {0} konnte nicht gefunden werden.\nEs wurde noch kein Layout zugewiesen.", usagecriteria);
+					sMessage = CommonLocaleDelegate.getInstance().getMessage(
+							"GenericObjectLayoutCache.2", "Ein passendes Layout f\u00fcr {0} konnte nicht gefunden werden.\nEs wurde noch kein Layout zugewiesen.", usagecriteria);
 				throw new NuclosFatalException(sMessage, ex);
 			}
 		}

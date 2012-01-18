@@ -16,21 +16,17 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.statemodel.admin;
 
+import java.lang.reflect.InvocationTargetException;
+
+import org.apache.commons.beanutils.PropertyUtils;
+import org.nuclos.common.NuclosEntity;
+import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.collect.collectable.AbstractCollectableBean;
 import org.nuclos.common.collect.collectable.AbstractCollectableEntity;
 import org.nuclos.common.collect.collectable.CollectableEntity;
 import org.nuclos.common.collect.collectable.CollectableField;
 import org.nuclos.common.collect.collectable.DefaultCollectableEntityField;
 import org.nuclos.common.collection.Transformer;
-import org.nuclos.common2.CommonLocaleDelegate;
-
-
-import java.lang.reflect.InvocationTargetException;
-
-import org.apache.commons.beanutils.PropertyUtils;
-
-import org.nuclos.common.NuclosFatalException;
-import org.nuclos.common.NuclosEntity;
 import org.nuclos.server.statemodel.valueobject.StateGraphVO;
 import org.nuclos.server.statemodel.valueobject.StateModelVO;
 
@@ -56,12 +52,12 @@ public class CollectableStateModel extends AbstractCollectableBean<StateModelVO>
 			super(NuclosEntity.STATEMODEL.getEntityName(), "Statusmodell");
 			final String entity = NuclosEntity.STATEMODEL.getEntityName();
 			this.addCollectableEntityField(new DefaultCollectableEntityField(FIELDNAME_NAME, String.class, 
-					CommonLocaleDelegate.getMessage("CollectableStateModel.3","Name"),
-					CommonLocaleDelegate.getMessage("CollectableStateModel.4","Name des Statusmodells"), 
+					getCommonLocaleDelegate().getMessage("CollectableStateModel.3","Name"),
+					getCommonLocaleDelegate().getMessage("CollectableStateModel.4","Name des Statusmodells"), 
 					null, null, false, CollectableField.TYPE_VALUEFIELD, null, null, entity));
 			this.addCollectableEntityField(new DefaultCollectableEntityField(FIELDNAME_DESCRIPTION, String.class,
-					CommonLocaleDelegate.getMessage("CollectableStateModel.1","Beschreibung"), 
-					CommonLocaleDelegate.getMessage("CollectableStateModel.2","Beschreibung des Statusmodells"), 
+					getCommonLocaleDelegate().getMessage("CollectableStateModel.1","Beschreibung"), 
+					getCommonLocaleDelegate().getMessage("CollectableStateModel.2","Beschreibung des Statusmodells"), 
 					null, null, true, CollectableField.TYPE_VALUEFIELD, null, null, entity));
 		}
 

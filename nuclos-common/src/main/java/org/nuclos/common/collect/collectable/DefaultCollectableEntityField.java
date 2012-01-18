@@ -123,7 +123,8 @@ public class DefaultCollectableEntityField extends AbstractCollectableEntityFiel
 			}
 		}
 		catch (CollectableFieldValidationException ex) {
-			throw new IllegalArgumentException(CommonLocaleDelegate.getMessage("DefaultCollectableEntityField.1","Der angegebene Defaultwert passt nicht zum Datentyp."));
+			throw new IllegalArgumentException(CommonLocaleDelegate.getInstance().getMessage(
+					"DefaultCollectableEntityField.1","Der angegebene Defaultwert passt nicht zum Datentyp."));
 		}
 		
 		assert sName != null;

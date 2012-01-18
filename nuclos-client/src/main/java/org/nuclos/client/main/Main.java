@@ -35,6 +35,7 @@ import org.nuclos.client.NuclosIcons;
 import org.nuclos.client.main.mainframe.MainFrame;
 import org.nuclos.common.SpringApplicationContextHolder;
 import org.nuclos.common2.StringUtils;
+import org.springframework.beans.factory.annotation.Configurable;
 
 /**
  * The main class of the Nucleus client. Contains some global constants and objects.
@@ -47,29 +48,25 @@ import org.nuclos.common2.StringUtils;
  * @author	<a href="mailto:Christoph.Radig@novabit.de">Christoph.Radig</a>
  * @version 01.00.00
  */
+@Configurable
 public class Main {
 	
 	private static final Logger LOG = Logger.getLogger(Main.class);
-
-	private static boolean macOSX = false;
-
+	
 	private static final TimeZone initialTimeZone = TimeZone.getDefault();
+	
+	private static final boolean MAC_OSX = System.getProperty("os.name").toLowerCase().startsWith("mac os x");
 
-	public static enum ExitResult {
-		NORMAL,
-		LOGIN_FAILED,
-		ABNORMAL
-	}
-
-	/**
-	 * the controller for the main frame.
-	 */
-	private static MainController maincontroller;
+	@Deprecated
+	private static Main INSTANCE;
 
 	/**
-	 * creates an empty main object.
+	 * @deprecated Workaround
+	 * @return Initial vm timezone.
 	 */
-	private Main() {
+	@Deprecated
+	public static TimeZone getInitialTimeZone() {
+		return initialTimeZone;
 	}
 
 	/**
@@ -86,11 +83,38 @@ public class Main {
 		}
 	}
 
-	static void setMainController(MainController maincontroller) {
-		Main.maincontroller = maincontroller;
+	//
+
+	public static enum ExitResult {
+		NORMAL,
+		LOGIN_FAILED,
+		ABNORMAL
 	}
 
-	public static MainController getMainController() {
+	/**
+	 * the controller for the main frame.
+	 */
+	private MainController maincontroller;
+
+	/**
+	 * creates an empty main object.
+	 */
+	Main() {
+		INSTANCE = this;
+	}
+	
+	@Deprecated
+	public static Main getInstance() {
+		if (INSTANCE == null) throw new NullPointerException("too early");
+		return INSTANCE;
+	}
+
+	void setMainController(MainController maincontroller) {
+		this.maincontroller = maincontroller;
+	}
+
+	public MainController getMainController() {
+		if (maincontroller == null) throw new NullPointerException("too early");
 		return maincontroller;
 	}
 
@@ -98,7 +122,7 @@ public class Main {
 	 * @todo this shouldn't be a singleton. Use child window as parameter!
 	 * @return the <code>MainFrame</code> of this application, if any.
 	 */
-	public static MainFrame getMainFrame() {
+	public MainFrame getMainFrame() {
 		for (Frame frm : JFrame.getFrames()) {
 			if (frm instanceof MainFrame) {
 				return (MainFrame) frm;
@@ -115,7 +139,7 @@ public class Main {
 		// for Mac OS X ...
 		System.setProperty("com.apple.mrj.application.apple.menu.about.name", "Nuclos");
 		String osName = System.getProperty("os.name").toLowerCase();
-		macOSX = osName.startsWith("mac os x");
+		final boolean macOSX = osName.startsWith("mac os x");
 		if (macOSX) {
 			try {
 				// check if java 1.6.0_22+ (Java for Mac OS X 10.6, Update 3+ | Java for Mac OS X 10.5, Update 8+)
@@ -126,7 +150,7 @@ public class Main {
 		        int minorVers = Integer.parseInt(fragments2[1]);
 		        if (minorVers < 6) {
 		        		JOptionPane.showMessageDialog(null,
-		        			isMacOSXSnowLeopardOrBetter() ?
+		        			Main.isMacOSXSnowLeopardOrBetter() ?
 		        				"Nuclos Client requires Java for Mac OS X 10.6, Update 3+" :
 		        					"Nuclos Client requires Java for Mac OS X 10.5, Update 8+");
 		        		Main.exit(Main.ExitResult.ABNORMAL);
@@ -134,7 +158,7 @@ public class Main {
 		        		int bugfixVers = Integer.parseInt(fragments1[1]);
 		        		if (bugfixVers < 22) {
 		        			JOptionPane.showMessageDialog(null,
-		        				isMacOSXSnowLeopardOrBetter() ?
+		        				Main.isMacOSXSnowLeopardOrBetter() ?
 		        				"Nuclos Client requires Java for Mac OS X 10.6, Update 3+" :
 		        					"Nuclos Client requires Java for Mac OS X 10.5, Update 8+");
 			        		Main.exit(Main.ExitResult.ABNORMAL);
@@ -181,7 +205,7 @@ public class Main {
 		}
 	}
 
-	protected static void notifyListeners(String[] args) {
+	protected void notifyListeners(String[] args) {
 		Logger log = Logger.getLogger(Main.class);
 		if (args != null && args.length > 0) {
 			log.info("Client launched with arguments " + StringUtils.join(";", args));
@@ -215,8 +239,8 @@ public class Main {
 		return params;
 	}
 
-	public static boolean isMacOSX() {
-		return macOSX;
+	public boolean isMacOSX() {
+		return MAC_OSX;
 	}
 
 	public static boolean isMacOSXSnowLeopardOrBetter() {
@@ -240,15 +264,6 @@ public class Main {
 	    }
 
 	    return false;
-	}
-
-	/**
-	 * @deprecated Workaround
-	 * @return Initial vm timezone.
-	 */
-	@Deprecated
-	public static TimeZone getInitialTimeZone() {
-		return initialTimeZone;
 	}
 
 }	// class Main

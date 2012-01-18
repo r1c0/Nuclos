@@ -60,7 +60,7 @@ public class RoleActionsCollectableFieldsProvider implements CollectableFieldsPr
 			String label = mdvo.getField("name", String.class);
 			String resId = mdvo.getField("labelres", String.class);
 			if (resId != null) {
-				label = CommonLocaleDelegate.getTextFallback(resId, label);
+				label = CommonLocaleDelegate.getInstance().getTextFallback(resId, label);
 			}
 			result.add(new LocalizedCollectableValueField(action, label));
 		}

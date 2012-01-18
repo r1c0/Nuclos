@@ -92,7 +92,7 @@ public class EntityCollectableFieldsProvider implements CollectableFieldsProvide
 		final List<CollectableField> result = CollectionUtils.transform(entites, new Transformer<EntityMetaDataVO, CollectableField>() {
 			@Override
 			public CollectableField transform(EntityMetaDataVO eMeta) {
-				String label = CommonLocaleDelegate.getLabelFromMetaDataVO(eMeta); 
+				String label = CommonLocaleDelegate.getInstance().getLabelFromMetaDataVO(eMeta); 
 				return makeCollectableField(eMeta, label);
 			}
 		});

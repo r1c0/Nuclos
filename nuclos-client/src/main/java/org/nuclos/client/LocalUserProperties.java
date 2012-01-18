@@ -247,11 +247,11 @@ public class LocalUserProperties extends java.util.Properties {
     			LocaleInfo selectedLocale) {
         boolean changes = false;
         for(String key : defaults.keySet())
-            if(CommonLocaleDelegate.isResourceId(key)) {
-                String fromBundle = CommonLocaleDelegate.getText(key);
+            if(CommonLocaleDelegate.getInstance().isResourceId(key)) {
+                String fromBundle = CommonLocaleDelegate.getInstance().getText(key);
                 String previous   = getProperty(key);
                 changes |= previous == null || !fromBundle.equals(previous);
-                setProperty(key, CommonLocaleDelegate.getText(key));
+                setProperty(key, CommonLocaleDelegate.getInstance().getText(key));
             }
 
         StringBuilder allLocalesCoded = new StringBuilder();

@@ -80,7 +80,8 @@ public class ValidationLayerFactory {
 
     	@Override
 		public String getValidationMessage(){
-    		return CommonLocaleDelegate.getMessage("ValidationLayerFactory.1", "Das Feld muss einen Wert enthalten, der dem verlangten Format entspricht.");
+    		return CommonLocaleDelegate.getInstance().getMessage(
+    				"ValidationLayerFactory.1", "Das Feld muss einen Wert enthalten, der dem verlangten Format entspricht.");
     	}
 
     	protected Object getValue(){
@@ -116,7 +117,7 @@ public class ValidationLayerFactory {
 
     	@Override
 		public String getValidationMessage(){
-    		return CommonLocaleDelegate.getMessage("ValidationLayerFactory.2", 
+    		return CommonLocaleDelegate.getInstance().getMessage("ValidationLayerFactory.2", 
     			"Das Feld muss einen Wert enthalten, der dem verlangten Format entspricht und innerhalb des erlaubten Wertebereichs liegt.");
     	}
     }
@@ -141,7 +142,8 @@ public class ValidationLayerFactory {
 
     	@Override
 		public String getValidationMessage(){
-    		return CommonLocaleDelegate.getMessage("ValidationLayerFactory.1", "Das Feld muss einen Wert enthalten, der dem verlangten Format entspricht.");
+    		return CommonLocaleDelegate.getInstance().getMessage(
+    				"ValidationLayerFactory.1", "Das Feld muss einen Wert enthalten, der dem verlangten Format entspricht.");
     	}
     }
  
@@ -160,7 +162,8 @@ public class ValidationLayerFactory {
 
     	@Override
 		public String getValidationMessage(){
-    		return CommonLocaleDelegate.getMessage("ValidationLayerFactory.3", "Das Feld darf nicht leer sein.");
+    		return CommonLocaleDelegate.getInstance().getMessage(
+    				"ValidationLayerFactory.3", "Das Feld darf nicht leer sein.");
     	}
     }
     

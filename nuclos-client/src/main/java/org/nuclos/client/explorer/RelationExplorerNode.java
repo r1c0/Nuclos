@@ -31,7 +31,6 @@ import org.nuclos.client.ui.Icons;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.client.ui.tree.TreeNodeAction;
 import org.nuclos.common.NuclosEntity;
-import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.CommonRunnable;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.server.navigation.treenode.GenericObjectTreeNode;
@@ -81,7 +80,8 @@ public class RelationExplorerNode extends ExplorerNode<RelationTreeNode> {
 	private class ShowDetailsAction extends TreeNodeAction {
 
 		ShowDetailsAction(JTree tree) {
-			super(ACTIONCOMMAND_SHOW_DETAILS, CommonLocaleDelegate.getMessage("RelationExplorerNode.3","Details anzeigen"), tree);
+			super(ACTIONCOMMAND_SHOW_DETAILS, 
+					getCommonLocaleDelegate().getMessage("RelationExplorerNode.3","Details anzeigen"), tree);
 		}
 
 		@Override
@@ -98,7 +98,8 @@ public class RelationExplorerNode extends ExplorerNode<RelationTreeNode> {
 			UIUtils.runCommand(this.getParent(), new CommonRunnable() {
 				@Override
 				public void run() throws CommonBusinessException {
-					Main.getMainController().showDetails(NuclosEntity.GENERICOBJECTRELATION.getEntityName(), explorernode.getTreeNode().getId());
+					Main.getInstance().getMainController().showDetails(
+							NuclosEntity.GENERICOBJECTRELATION.getEntityName(), explorernode.getTreeNode().getId());
 				}
 			});
 		}
@@ -113,7 +114,8 @@ public class RelationExplorerNode extends ExplorerNode<RelationTreeNode> {
 		 * @param tree
 		 */
 		RemoveAction(JTree tree) {
-			super(ACTIONCOMMAND_REMOVE, CommonLocaleDelegate.getMessage("RelationExplorerNode.1","Beziehung entfernen") + "...", tree);
+			super(ACTIONCOMMAND_REMOVE, 
+					getCommonLocaleDelegate().getMessage("RelationExplorerNode.1","Beziehung entfernen") + "...", tree);
 		}
 
 		@Override
@@ -141,9 +143,11 @@ public class RelationExplorerNode extends ExplorerNode<RelationTreeNode> {
 				final GenericObjectTreeNode lotreenodeSource = bForward ? lotreenodeParent : lotreenodeChild;
 				final GenericObjectTreeNode lotreenodeTarget = bForward ? lotreenodeChild : lotreenodeParent;
 
-				final String sMessage = CommonLocaleDelegate.getMessage("GenericObjectExplorerNode.4", "Soll die Beziehung von {0} zu {1} entfernt werden?", lotreenodeSource.getLabel(), lotreenodeTarget.getLabel());
+				final String sMessage = getCommonLocaleDelegate().getMessage(
+						"GenericObjectExplorerNode.4", "Soll die Beziehung von {0} zu {1} entfernt werden?", lotreenodeSource.getLabel(), lotreenodeTarget.getLabel());
 
-				final int iBtn = JOptionPane.showConfirmDialog(this.getParent(), sMessage, CommonLocaleDelegate.getMessage("RelationExplorerNode.2","Beziehung entfernen"), JOptionPane.OK_CANCEL_OPTION);
+				final int iBtn = JOptionPane.showConfirmDialog(this.getParent(), sMessage, 
+						getCommonLocaleDelegate().getMessage("RelationExplorerNode.2","Beziehung entfernen"), JOptionPane.OK_CANCEL_OPTION);
 				if (iBtn == JOptionPane.OK_OPTION) {
 					UIUtils.runCommand(this.getParent(), new CommonRunnable() {
 						@Override

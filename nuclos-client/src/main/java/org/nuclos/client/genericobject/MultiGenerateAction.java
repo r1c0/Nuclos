@@ -94,10 +94,12 @@ class MultiGenerateAction implements Action<Pair<Collection<EntityObjectVO>, Lon
 	public String getText(Pair<Collection<EntityObjectVO>, Long> sources) {
 		if (sources.x.size() == 1) {
 			String entity = MetaDataClientProvider.getInstance().getEntity(generatoractionvo.getTargetModuleId().longValue()).getEntity();
-			return CommonLocaleDelegate.getTreeViewLabel(sources.x.iterator().next(), entity, MetaDataClientProvider.getInstance());
+			return CommonLocaleDelegate.getInstance().getTreeViewLabel(
+					sources.x.iterator().next(), entity, MetaDataClientProvider.getInstance());
 		}
 		else {
-			return CommonLocaleDelegate.getMessage("generation.multiple", "Objektgenerierung f\u00fcr {0} Objekte ...", sources.x.size());
+			return CommonLocaleDelegate.getInstance().getMessage(
+					"generation.multiple", "Objektgenerierung f\u00fcr {0} Objekte ...", sources.x.size());
 		}
 	}
 
@@ -109,26 +111,30 @@ class MultiGenerateAction implements Action<Pair<Collection<EntityObjectVO>, Lon
 	@Override
 	public String getSuccessfulMessage(Pair<Collection<EntityObjectVO>, Long> sources, GenerationResult rResult) {
 		if (!StringUtils.isNullOrEmpty(rResult.getError())) {
-			return CommonLocaleDelegate.getMessage("generation.unsaved",
+			return CommonLocaleDelegate.getInstance().getMessage(
+					"generation.unsaved",
 					"Generated obect could not be saved: \\n{0} \\nPlease edit object in details view (see context menu).",
-					CommonLocaleDelegate.getMessageFromResource(rResult.getError()));
+					CommonLocaleDelegate.getInstance().getMessageFromResource(rResult.getError()));
 		}
 		else {
 			String entity = MetaDataClientProvider.getInstance().getEntity(generatoractionvo.getTargetModuleId().longValue()).getEntity();
-			return CommonLocaleDelegate.getMessage("R00022880",
+			return CommonLocaleDelegate.getInstance().getMessage("R00022880",
 					"Object \"{0}\" successfully generated.",
-					CommonLocaleDelegate.getTreeViewLabel(rResult.getGeneratedObject(), entity, MetaDataClientProvider.getInstance()));
+					CommonLocaleDelegate.getInstance().getTreeViewLabel(
+							rResult.getGeneratedObject(), entity, MetaDataClientProvider.getInstance()));
 		}
 	}
 
 	@Override
 	public String getConfirmStopMessage() {
-		return CommonLocaleDelegate.getMessage("R00022886", "Wollen Sie die Objektgenerierung an dieser Stelle beenden?\n(Die bisher generierten Objekte bleiben in jedem Fall erhalten.)");
+		return CommonLocaleDelegate.getInstance().getMessage(
+				"R00022886", "Wollen Sie die Objektgenerierung an dieser Stelle beenden?\n(Die bisher generierten Objekte bleiben in jedem Fall erhalten.)");
 	}
 
 	@Override
 	public String getExceptionMessage(Pair<Collection<EntityObjectVO>, Long> sources, Exception ex) {
-		return CommonLocaleDelegate.getMessage("R00022883", "Objektgenerierung fehlgeschlagen. \\n{1}", ex.getMessage());
+		return CommonLocaleDelegate.getInstance().getMessage(
+				"R00022883", "Objektgenerierung fehlgeschlagen. \\n{1}", ex.getMessage());
 	}
 
 	@Override

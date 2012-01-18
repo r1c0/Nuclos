@@ -49,22 +49,26 @@ public class RestoreSelectedCollectablesController
 
 		@Override
 		public String getText(CollectableGenericObjectWithDependants clct) {
-			return CommonLocaleDelegate.getMessage("RestoreSelectedCollectablesController.1", "Datensatz {0} wird wiederhergestellt...", MultiCollectablesActionController.getCollectableLabel(ctl.getEntityName(), clct));
+			return CommonLocaleDelegate.getInstance().getMessage(
+					"RestoreSelectedCollectablesController.1", "Datensatz {0} wird wiederhergestellt...", MultiCollectablesActionController.getCollectableLabel(ctl.getEntityName(), clct));
 		}
 
 		@Override
 		public String getSuccessfulMessage(CollectableGenericObjectWithDependants clct, Object oResult) {
-			return CommonLocaleDelegate.getMessage("RestoreSelectedCollectablesController.2", "Datensatz {0} erfolgreich wiederhergestellt.", MultiCollectablesActionController.getCollectableLabel(ctl.getEntityName(), clct));
+			return CommonLocaleDelegate.getInstance().getMessage(
+					"RestoreSelectedCollectablesController.2", "Datensatz {0} erfolgreich wiederhergestellt.", MultiCollectablesActionController.getCollectableLabel(ctl.getEntityName(), clct));
 		}
 
 		@Override
 		public String getConfirmStopMessage() {
-			return CommonLocaleDelegate.getMessage("RestoreSelectedCollectablesController.3", "Wollen Sie die Wiederherstellung der Datens\u00e4tze an dieser Stelle beenden?\n(Die bisher wiederhergestellten Datens\u00e4tze bleiben in jedem Fall erhalten.)");
+			return CommonLocaleDelegate.getInstance().getMessage(
+					"RestoreSelectedCollectablesController.3", "Wollen Sie die Wiederherstellung der Datens\u00e4tze an dieser Stelle beenden?\n(Die bisher wiederhergestellten Datens\u00e4tze bleiben in jedem Fall erhalten.)");
 		}
 
 		@Override
 		public String getExceptionMessage(CollectableGenericObjectWithDependants clct, Exception ex) {
-			return CommonLocaleDelegate.getMessage("RestoreSelectedCollectablesController.4", "Datensatz {0} konnte nicht wiederhergestellt werden.", MultiCollectablesActionController.getCollectableLabel(ctl.getEntityName(), clct)) + " " + ex.getMessage();
+			return CommonLocaleDelegate.getInstance().getMessage(
+					"RestoreSelectedCollectablesController.4", "Datensatz {0} konnte nicht wiederhergestellt werden.", MultiCollectablesActionController.getCollectableLabel(ctl.getEntityName(), clct)) + " " + ex.getMessage();
 		}
 
 		@Override
@@ -74,7 +78,7 @@ public class RestoreSelectedCollectablesController
 	}
 
 	public RestoreSelectedCollectablesController(GenericObjectCollectController ctl) {
-		super(ctl, CommonLocaleDelegate.getMessage("RestoreSelectedCollectablesController.5", "Datens\u00e4tze wiederherstellen"), new RestoreAction(ctl), ctl.getSelectedCollectables());
+		super(ctl, CommonLocaleDelegate.getInstance().getMessage("RestoreSelectedCollectablesController.5", "Datens\u00e4tze wiederherstellen"), new RestoreAction(ctl), ctl.getSelectedCollectables());
 	}
 
 }	// class RestoreSelectedCollectablesController

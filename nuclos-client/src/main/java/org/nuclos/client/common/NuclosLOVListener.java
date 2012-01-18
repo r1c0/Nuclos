@@ -20,6 +20,7 @@ import java.awt.Component;
 import java.awt.IllegalComponentStateException;
 
 import org.nuclos.client.main.Main;
+import org.nuclos.client.main.MainController;
 import org.nuclos.client.main.mainframe.MainFrame;
 import org.nuclos.client.main.mainframe.MainFrameTab;
 import org.nuclos.client.ui.UIUtils;
@@ -92,18 +93,21 @@ public class NuclosLOVListener implements CollectableListOfValues.LOVListener {
 		UIUtils.runCommandLater(clctcomp.getJComponent(), new CommonRunnable() {
 			@Override
 			public void run() throws CommonBusinessException {
+				final Main main = Main.getInstance();
+				final MainController mc = main.getMainController();
 				final String sReferencedEntityName = clctcomp.getEntityField().getReferencedEntityName();
-				CollectController<?> controller = Main.getMainController().getControllerForInternalFrame((MainFrameTab) Main.getMainFrame().getHomePane().getSelectedComponent());
+				CollectController<?> controller = mc.getControllerForInternalFrame((MainFrameTab) 
+						main.getMainFrame().getHomePane().getSelectedComponent());
 				Object oId = clctcomp.getField().getValueId();
 				if(oId instanceof Long) {
 					Long l = (Long)oId;
 					oId = new Integer(l.intValue());
 				}
 				if (clctcomp instanceof CollectableEventListener) {
-					Main.getMainController().showDetails(sReferencedEntityName, oId, true, controller, new WeakCollectableEventListener((CollectableEventListener) clctcomp));
+					mc.showDetails(sReferencedEntityName, oId, true, controller, new WeakCollectableEventListener((CollectableEventListener) clctcomp));
 				}
 				else {
-					Main.getMainController().showDetails(sReferencedEntityName, oId, true, controller);
+					mc.showDetails(sReferencedEntityName, oId, true, controller);
 				}
 			}
 		});
@@ -126,7 +130,7 @@ public class NuclosLOVListener implements CollectableListOfValues.LOVListener {
 			public void run() throws CommonBusinessException {
 				final String sReferencedEntityName = clctcomp.getEntityField().getReferencedEntityName();
 				final CollectableEventListener listener = new WeakCollectableEventListener((CollectableEventListener) clctcomp);
-				Main.getMainController().showNew(sReferencedEntityName, tab, listener);
+				Main.getInstance().getMainController().showNew(sReferencedEntityName, tab, listener);
 			}
 		});
 	}

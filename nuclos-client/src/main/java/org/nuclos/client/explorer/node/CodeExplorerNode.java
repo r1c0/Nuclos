@@ -33,7 +33,6 @@ import org.nuclos.client.ui.Icons;
 import org.nuclos.client.ui.collect.CollectControllerFactorySingleton;
 import org.nuclos.client.ui.tree.TreeNodeAction;
 import org.nuclos.common.NuclosEntity;
-import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.server.customcode.valueobject.CodeVO;
 import org.nuclos.server.navigation.treenode.TreeNode;
@@ -81,7 +80,7 @@ public class CodeExplorerNode extends AbstractRuleExplorerNode {
 	private class ShowDetailsAction extends TreeNodeAction {
 
 		public ShowDetailsAction(JTree tree) {
-			super(ACTIONCOMMAND_SHOW_DETAILS, CommonLocaleDelegate.getMessage("RuleExplorerNode.1","Details anzeigen"), tree);
+			super(ACTIONCOMMAND_SHOW_DETAILS, getCommonLocaleDelegate().getMessage("RuleExplorerNode.1","Details anzeigen"), tree);
 		}
 
 		@Override
@@ -105,7 +104,7 @@ public class CodeExplorerNode extends AbstractRuleExplorerNode {
 				try {
 					ctl.runViewSingleCollectableWithId(codevo.getId());
 				} catch (CommonBusinessException e) {
-					Errors.getInstance().showExceptionDialog(Main.getMainFrame(), e);
+					Errors.getInstance().showExceptionDialog(Main.getInstance().getMainFrame(), e);
 				}
 			}
 		}

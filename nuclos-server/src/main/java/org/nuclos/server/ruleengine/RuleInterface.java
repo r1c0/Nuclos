@@ -279,7 +279,8 @@ public class RuleInterface extends CustomCodeInterface {
 		@Override
 		public String toString() {
 			final AttributeCache attrcache = AttributeCache.getInstance();
-			final String sAttributeLabel = CommonLocaleDelegate.getLabelFromAttributeCVO(attrcache.getAttribute(attrvo.getAttributeId()));
+			final String sAttributeLabel = CommonLocaleDelegate.getInstance().getLabelFromAttributeCVO(
+					attrcache.getAttribute(attrvo.getAttributeId()));
 
 			final LocaleInfo userLocale = getLocaleFacade().getUserLocale();
 
@@ -314,7 +315,8 @@ public class RuleInterface extends CustomCodeInterface {
 		}
 
 		private String getComparedAttributeLabel(AttributeCache attrcache) {
-			return CommonLocaleDelegate.getLabelFromAttributeCVO(attrcache.getAttribute(attrvoCompare.getAttributeId()));
+			return CommonLocaleDelegate.getInstance().getLabelFromAttributeCVO(
+					attrcache.getAttribute(attrvoCompare.getAttributeId()));
 		}
 
 		private String getComparedAttributeValue(AttributeCache attrcache) {

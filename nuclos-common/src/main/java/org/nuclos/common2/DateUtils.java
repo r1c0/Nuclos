@@ -149,7 +149,7 @@ public class DateUtils {
 	 * @postcondition (date == null) --> result == sNullRepresentation
 	 */
 	public static String toString(Date date, String sNullRepresentation) {
-		final String result = (date == null) ? sNullRepresentation : CommonLocaleDelegate.formatDate(date); // DateFormat.getDateInstance().format(date);
+		final String result = (date == null) ? sNullRepresentation : CommonLocaleDelegate.getInstance().formatDate(date); // DateFormat.getDateInstance().format(date);
 		assert !(date != null) || result != null;
 		assert !(date == null) || result == sNullRepresentation;
 
@@ -230,7 +230,7 @@ public class DateUtils {
 	public static String getActualDateAndTime() {
 		//DateFormat df = SimpleDateFormat.getDateTimeInstance();
 		//return df.format(new Date());
-		return CommonLocaleDelegate.formatDateTime(now());
+		return CommonLocaleDelegate.getInstance().formatDateTime(now());
 	}
 	
 	/**
@@ -240,7 +240,7 @@ public class DateUtils {
 	public static String getDateAndTime(Date date) {
 		//DateFormat df = SimpleDateFormat.getDateTimeInstance();
 		//return df.format(date);
-		return CommonLocaleDelegate.formatDateTime(date);
+		return CommonLocaleDelegate.getInstance().formatDateTime(date);
 	}
 	
 	static final long ONE_HOUR = 60 * 60 * 1000L;

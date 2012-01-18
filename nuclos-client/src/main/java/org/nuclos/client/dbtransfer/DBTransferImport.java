@@ -16,7 +16,6 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.dbtransfer;
 
-import static org.nuclos.common2.CommonLocaleDelegate.getMessage;
 import info.clearthought.layout.TableLayout;
 
 import java.awt.BorderLayout;
@@ -69,7 +68,6 @@ import org.apache.commons.collections.Closure;
 import org.nuclos.client.NuclosIcons;
 import org.nuclos.client.common.MetaDataClientProvider;
 import org.nuclos.client.main.Main;
-import org.nuclos.client.main.MainController;
 import org.nuclos.client.main.mainframe.MainFrameTab;
 import org.nuclos.client.masterdata.MasterDataDelegate;
 import org.nuclos.client.ui.Errors;
@@ -94,10 +92,15 @@ import org.pietschy.wizard.PanelWizardStep;
 import org.pietschy.wizard.WizardEvent;
 import org.pietschy.wizard.WizardListener;
 import org.pietschy.wizard.models.StaticModel;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
 
+@Configurable
 public class DBTransferImport {
 
 	public static final String IMPORT_EXECUTED = "import_executed";
+
+	private CommonLocaleDelegate cld;
 
 	private boolean isNuclon;
 	private final ActionListener notifyParent;
@@ -111,8 +114,9 @@ public class DBTransferImport {
 	private final StaticModel model;
 	private final PanelWizardStep step1, step2, step3, step4, step5;
 
-	private final MainFrameTab ifrm = MainController.newMainFrameTab(null, getMessage("dbtransfer.import.title", "Konfiguration importieren"));
-
+	private final MainFrameTab ifrm = Main.getInstance().getMainController().newMainFrameTab(
+			null, cld.getMessage("dbtransfer.import.title", "Konfiguration importieren"));
+	
 	public DBTransferImport(ActionListener notifyParent) {
 		if (notifyParent == null) {
 			throw new IllegalArgumentException("notifyParent must not be null");
@@ -162,6 +166,11 @@ public class DBTransferImport {
             }
       });
 	}
+	
+	@Autowired
+	void setCommonLocaleDelegate(CommonLocaleDelegate cld) {
+		this.cld = cld;
+	}
 
 	private void closeWizard(){
 		if (blnImportStarted) {
@@ -169,13 +178,13 @@ public class DBTransferImport {
 				ifrm.dispose();
 			} else {
 				if (blnSaveOfLogRecommend || blnSaveOfScriptRecommend) {
-					String titel = getMessage("dbtransfer.import.closewizard.title", "Wizard kann noch nicht geschlossen werden");
+					String titel = cld.getMessage("dbtransfer.import.closewizard.title", "Wizard kann noch nicht geschlossen werden");
 					String message = "";
 					if (blnSaveOfLogRecommend) {
-						message = getMessage("dbtransfer.import.closewizard.log", "Es ist ein Problem beim \u00c4ndern des Datenbankschemas aufgetreten.\n" +
+						message = cld.getMessage("dbtransfer.import.closewizard.log", "Es ist ein Problem beim \u00c4ndern des Datenbankschemas aufgetreten.\n" +
 								"Bitte speichern Sie die Log-Datei und analysieren Sie die Probleme!");
 					} else if (blnSaveOfScriptRecommend) {
-						message = getMessage("dbtransfer.import.closewizard.script", "Da die \u00c4nderungen am Datenbankschema nicht automatisch durchgef\u00fchrt wurden\n" +
+						message = cld.getMessage("dbtransfer.import.closewizard.script", "Da die \u00c4nderungen am Datenbankschema nicht automatisch durchgef\u00fchrt wurden\n" +
 								"m\u00fcssen Sie diese noch manuell nachholen.\n" +
 								"Bitte speichern Sie das Script!");
 					}
@@ -210,10 +219,11 @@ public class DBTransferImport {
 	private final JTextField tfTransferFile = new JTextField(50);
 	
 	private PanelWizardStep newStep1(final MainFrameTab ifrm) {
-		final PanelWizardStep step = new PanelWizardStep(getMessage("dbtransfer.import.step1.1", "Konfigurationsdatei"), 
-			getMessage("dbtransfer.import.step1.2", "Bitte w\u00e4hlen Sie eine Konfigurationsdatei aus."));
+		final PanelWizardStep step = new PanelWizardStep(cld.getMessage(
+				"dbtransfer.import.step1.1", "Konfigurationsdatei"), 
+				cld.getMessage("dbtransfer.import.step1.2", "Bitte w\u00e4hlen Sie eine Konfigurationsdatei aus."));
 		
-		final JLabel lbFile = new JLabel(getMessage("dbtransfer.import.step1.3", "Datei"));
+		final JLabel lbFile = new JLabel(cld.getMessage("dbtransfer.import.step1.3", "Datei"));
 		
 		utils.initJPanel(step,
 			new double[] {TableLayout.PREFERRED, TableLayout.PREFERRED, TableLayout.PREFERRED, TableLayout.FILL},
@@ -224,7 +234,8 @@ public class DBTransferImport {
 		
 		final JButton btnBrowse = new JButton("...");
 		//final JProgressBar progressBar = new JProgressBar(0, 230);
-		final JCheckBox chbxImportAsNuclon = new JCheckBox(getMessage("configuration.transfer.import.as.nuclon", "Import als Nuclon"));
+		final JCheckBox chbxImportAsNuclon = new JCheckBox(cld.getMessage(
+				"configuration.transfer.import.as.nuclon", "Import als Nuclon"));
 		chbxImportAsNuclon.setEnabled(false);
 		final JEditorPane editWarnings = new JEditorPane();
 		editWarnings.setContentType("text/html");
@@ -254,8 +265,9 @@ public class DBTransferImport {
 		jpnPreviewFooter.setBackground(Color.WHITE);
 		
 		final JTabbedPane tabbedPane = new JTabbedPane();
-		tabbedPane.addTab(getMessage("configuration.transfer.prepare.warnings.tab", "Warnungen"), scrollWarn);
-		final String sDefaultPreparePreviewTabText = getMessage("configuration.transfer.prepare.preview.tab", "Vorschau der Schema Aenderungen");
+		tabbedPane.addTab(cld.getMessage("configuration.transfer.prepare.warnings.tab", "Warnungen"), scrollWarn);
+		final String sDefaultPreparePreviewTabText = cld.getMessage(
+				"configuration.transfer.prepare.preview.tab", "Vorschau der Schema Aenderungen");
 		tabbedPane.addTab(sDefaultPreparePreviewTabText, jpnPreview);
 		
 		final JLabel lbNewUser = new JLabel();
@@ -299,7 +311,8 @@ public class DBTransferImport {
 							step.setComplete(!importTransferObject.result.hasCriticals());
 							
 							if (!importTransferObject.result.hasCriticals() && !importTransferObject.result.hasWarnings()) {
-								editWarnings.setText(getMessage("configuration.transfer.prepare.no.warnings", "Keine Warnungen"));
+								editWarnings.setText(cld.getMessage(
+										"configuration.transfer.prepare.no.warnings", "Keine Warnungen"));
 							} else {
 								editWarnings.setText(
 									"<html><body><font color=\"#800000\">" + importTransferObject.result.getCriticals() + "</font>" +
@@ -320,7 +333,8 @@ public class DBTransferImport {
 							ifrm.unlockLayer();
 						}
 						if(blnTransferWithWarnings) {
-							JOptionPane.showMessageDialog(jpnPreviewContent, getMessage("dbtransfer.import.step1.19", "Nicht alle Statements können durchgeführt werden!\nBitte kontrollieren Sie die mit rot markierten Einträge!", "Warning", JOptionPane.WARNING_MESSAGE));									
+							JOptionPane.showMessageDialog(jpnPreviewContent, cld.getMessage(
+									"dbtransfer.import.step1.19", "Nicht alle Statements können durchgeführt werden!\nBitte kontrollieren Sie die mit rot markierten Einträge!", "Warning", JOptionPane.WARNING_MESSAGE));									
 						}
 					}
 					
@@ -332,7 +346,8 @@ public class DBTransferImport {
 		final ActionListener browseAction = new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent ev) {
-				final JFileChooser filechooser = utils.getFileChooser(getMessage("configuration.transfer.file.nuclet", "Nuclet-Dateien"), ".nuclet");
+				final JFileChooser filechooser = utils.getFileChooser(cld.getMessage(
+						"configuration.transfer.file.nuclet", "Nuclet-Dateien"), ".nuclet");
 				final int iBtn = filechooser.showOpenDialog(ifrm);
 
 				if (iBtn == JFileChooser.APPROVE_OPTION) {
@@ -384,10 +399,10 @@ public class DBTransferImport {
 		final int iWidthBeginnigSpace = 3;
 		final int iWidthSeparator = 6;
 		
-		JLabel lbPreviewHeaderEntity = new JLabel(getMessage("dbtransfer.import.step1.11", "Entit\u00e4t"));
-		JLabel lbPreviewHeaderTable = new JLabel(getMessage("dbtransfer.import.step1.12", "Tabellenname"));
-		JLabel lbPreviewHeaderRecords = new JLabel(getMessage("dbtransfer.import.step1.4", "Datens\u00e4tze"));
-		lbPreviewHeaderRecords.setToolTipText(getMessage("dbtransfer.import.step1.5", "Anzahl der betroffenen Datens\u00e4tze"));
+		JLabel lbPreviewHeaderEntity = new JLabel(cld.getMessage("dbtransfer.import.step1.11", "Entit\u00e4t"));
+		JLabel lbPreviewHeaderTable = new JLabel(cld.getMessage("dbtransfer.import.step1.12", "Tabellenname"));
+		JLabel lbPreviewHeaderRecords = new JLabel(cld.getMessage("dbtransfer.import.step1.4", "Datens\u00e4tze"));
+		lbPreviewHeaderRecords.setToolTipText(cld.getMessage("dbtransfer.import.step1.5", "Anzahl der betroffenen Datens\u00e4tze"));
 		utils.initJPanel(jpnPreviewContent, 
 			new double[] {iWidthBeginnigSpace, TableLayout.PREFERRED, iWidthSeparator, TableLayout.PREFERRED, iWidthSeparator, TableLayout.PREFERRED, iWidthSeparator, TableLayout.PREFERRED, TableLayout.PREFERRED, iWidthSeparator, TableLayout.PREFERRED},
 			rowContraints);
@@ -420,24 +435,24 @@ public class DBTransferImport {
 			Icon icoStatement = null;
 			switch (pp.getType()) {
 			case PreviewPart.NEW:
-				tooltip = getMessage("dbtransfer.import.step1.6", "Entit\u00e4t wird hinzugef\u00fcgt");
+				tooltip = cld.getMessage("dbtransfer.import.step1.6", "Entit\u00e4t wird hinzugef\u00fcgt");
 				icoStatement = ParameterEditor.COMPARE_ICON_NEW;
 				iCountNew++;
 				break;
 			case PreviewPart.CHANGE:
-				tooltip = getMessage("dbtransfer.import.step1.7", "Entit\u00e4t wird ge\u00e4ndert");
+				tooltip = cld.getMessage("dbtransfer.import.step1.7", "Entit\u00e4t wird ge\u00e4ndert");
 				icoStatement = ParameterEditor.COMPARE_ICON_VALUE_CHANGED;
 				iCountChanged++;
 				break;
 			case PreviewPart.DELETE:
-				tooltip = getMessage("dbtransfer.import.step1.8", "Entit\u00e4t wird gel\u00f6scht");
+				tooltip = cld.getMessage("dbtransfer.import.step1.8", "Entit\u00e4t wird gel\u00f6scht");
 				icoStatement = ParameterEditor.COMPARE_ICON_DELETED;
 				iCountDeleted++;
 				break;
 			}
 			
 			JLabel lbIcon = new JLabel(icoStatement);
-			JLabel lbStatemnts = new JLabel("<html><u>" + getMessage("dbtransfer.import.step1.9", "Script anzeigen") + "...</u></html>");
+			JLabel lbStatemnts = new JLabel("<html><u>" + cld.getMessage("dbtransfer.import.step1.9", "Script anzeigen") + "...</u></html>");
 			lbStatemnts.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));			
 			lbStatemnts.addMouseListener(new MouseListener() {
 				@Override
@@ -462,7 +477,8 @@ public class DBTransferImport {
 					scroll.getVerticalScrollBar().setUnitIncrement(20);
 					scroll.setPreferredSize(new Dimension(600, 300));
 					scroll.setBorder(BorderFactory.createEmptyBorder());
-					MainFrameTab overlayFrame = new MainFrameTab(getMessage("dbtransfer.import.step1.10", "Script f\u00fcr") + " " + pp.getEntity() + " (" + pp.getTable() + ")");
+					MainFrameTab overlayFrame = new MainFrameTab(cld.getMessage(
+							"dbtransfer.import.step1.10", "Script f\u00fcr") + " " + pp.getEntity() + " (" + pp.getTable() + ")");
 					overlayFrame.setLayeredComponent(scroll);
 					ifrm.add(overlayFrame);
 				}
@@ -497,7 +513,8 @@ public class DBTransferImport {
 			new double[] {TableLayout.PREFERRED});
 		
 		if (previewParts.isEmpty()) {
-			jpnPreviewHeader.add(new JLabel(getMessage("dbtransfer.import.step1.18", "Keine Struktur\u00e4nderungen am Datenbankschema.")), "0,0,8,0");
+			jpnPreviewHeader.add(new JLabel(cld.getMessage(
+					"dbtransfer.import.step1.18", "Keine Struktur\u00e4nderungen am Datenbankschema.")), "0,0,8,0");
 			return blnTransferWithWarnings;
 		}
 		
@@ -505,14 +522,16 @@ public class DBTransferImport {
 		jpnPreviewHeader.add(lbPreviewHeaderTable, "3,0");
 		jpnPreviewHeader.add(lbPreviewHeaderRecords, "5,0");		
 		
-		jpnPreviewHeader.add(new JLabel(getMessage("dbtransfer.import.step1.13", "\u00c4nderung")), "7,0");
+		jpnPreviewHeader.add(new JLabel(cld.getMessage(
+				"dbtransfer.import.step1.13", "\u00c4nderung")), "7,0");
 
 		// setup preview footer
 		utils.initJPanel(jpnPreviewFooter, 
 			new double[] {TableLayout.FILL, TableLayout.PREFERRED, TableLayout.PREFERRED, TableLayout.PREFERRED, TableLayout.PREFERRED}, 
 			new double[] {TableLayout.PREFERRED});
 		
-		final JLabel lbCompare = new JLabel(getMessage("dbtransfer.import.step1.14", "\u00c4nderungen")+":");
+		final JLabel lbCompare = new JLabel(cld.getMessage(
+				"dbtransfer.import.step1.14", "\u00c4nderungen")+":");
 		final JLabel lbCompareNew = new JLabel(iCountNew+"");
 		final JLabel lbCompareDeleted = new JLabel(iCountDeleted+"");
 		final JLabel lbCompareValueChanged = new JLabel(iCountChanged+"");
@@ -521,9 +540,12 @@ public class DBTransferImport {
 		lbCompareDeleted.setIcon(ParameterEditor.COMPARE_ICON_DELETED);
 		lbCompareValueChanged.setIcon(ParameterEditor.COMPARE_ICON_VALUE_CHANGED);
 		
-		lbCompareNew.setToolTipText(getMessage("dbtransfer.import.step1.15", "Neue Entit\u00e4ten"));
-		lbCompareDeleted.setToolTipText(getMessage("dbtransfer.import.step1.17", "Gel\u00f6schte Entit\u00e4ten"));
-		lbCompareValueChanged.setToolTipText(getMessage("dbtransfer.import.step1.16", "Ge\u00e4nderte Entit\u00e4ten"));
+		lbCompareNew.setToolTipText(cld.getMessage(
+				"dbtransfer.import.step1.15", "Neue Entit\u00e4ten"));
+		lbCompareDeleted.setToolTipText(cld.getMessage(
+				"dbtransfer.import.step1.17", "Gel\u00f6schte Entit\u00e4ten"));
+		lbCompareValueChanged.setToolTipText(cld.getMessage(
+				"dbtransfer.import.step1.16", "Ge\u00e4nderte Entit\u00e4ten"));
 		
 		jpnPreviewFooter.add(lbCompare, "1,0,r,c");
 		jpnPreviewFooter.add(lbCompareNew, "2,0,r,c");
@@ -568,19 +590,23 @@ public class DBTransferImport {
 	}
 	
 	private PanelWizardStep newStep2(final MainFrameTab ifrm) {
-		final PanelWizardStep step = new PanelWizardStep(getMessage("configuration.transfer.options", "Optionen"), 
-			getMessage("dbtransfer.import.step2.1", "Bitte w\u00e4hlen Sie die Import Optionen aus.")){
+		final PanelWizardStep step = new PanelWizardStep(cld.getMessage(
+				"configuration.transfer.options", "Optionen"), 
+				cld.getMessage("dbtransfer.import.step2.1", "Bitte w\u00e4hlen Sie die Import Optionen aus.")){
 
 				@Override
 				public void prepare() {
 					Map<TransferOption,Serializable> exportOptions = TransferOption.copyOptionMap(importTransferObject.getTransferOptions());
 					
 					chbxIncludeUser.setEnabled(exportOptions.containsKey(TransferOption.INCLUDES_USER));
-					chbxIncludeUser.setText(sDefaultIncludeUserText + (chbxIncludeUser.isEnabled()?"":" ("+getMessage("dbtransfer.import.step2.2", "nicht in Konfigurationsdatei enthalten")+")"));
+					chbxIncludeUser.setText(sDefaultIncludeUserText + (chbxIncludeUser.isEnabled()?"":" ("
+							+ cld.getMessage("dbtransfer.import.step2.2", "nicht in Konfigurationsdatei enthalten")+")"));
 					chbxIncludeLDAP.setEnabled(exportOptions.containsKey(TransferOption.INCLUDES_USER));
-					chbxIncludeLDAP.setText(sDefaultIncludeLDAPText + (chbxIncludeLDAP.isEnabled()?"":" ("+getMessage("dbtransfer.import.step2.2", "nicht in Konfigurationsdatei enthalten")+")"));
+					chbxIncludeLDAP.setText(sDefaultIncludeLDAPText + (chbxIncludeLDAP.isEnabled()?"":" ("
+							+ cld.getMessage("dbtransfer.import.step2.2", "nicht in Konfigurationsdatei enthalten")+")"));
 					chbxIncludeObjectimport.setEnabled(exportOptions.containsKey(TransferOption.INCLUDES_USER));
-					chbxIncludeObjectimport.setText(sDefaultIncludeObjectimportText + (chbxIncludeObjectimport.isEnabled()?"":" ("+getMessage("dbtransfer.import.step2.2", "nicht in Konfigurationsdatei enthalten")+")"));
+					chbxIncludeObjectimport.setText(sDefaultIncludeObjectimportText + (chbxIncludeObjectimport.isEnabled()?"":" ("
+							+ cld.getMessage("dbtransfer.import.step2.2", "nicht in Konfigurationsdatei enthalten")+")"));
 					
 					tfAlternativeDBLogin.setEnabled(chbxAlternativeDBLogin.isSelected());
 					pfAlternativeDBPassword.setEnabled(chbxAlternativeDBLogin.isSelected());
@@ -599,16 +625,22 @@ public class DBTransferImport {
 							  20,
 							  TableLayout.PREFERRED});
 		
-		sDefaultIncludeUserText = getMessage("dbtransfer.import.step2.3", "Benutzer importieren");
-		sDefaultIncludeLDAPText = getMessage("configuration.transfer.import.option.ldap", "LDAP Konfiguration importieren");
-		sDefaultIncludeObjectimportText = getMessage("configuration.transfer.import.option.objectimport", "Objektimport importieren");
+		sDefaultIncludeUserText = cld.getMessage(
+				"dbtransfer.import.step2.3", "Benutzer importieren");
+		sDefaultIncludeLDAPText = cld.getMessage(
+				"configuration.transfer.import.option.ldap", "LDAP Konfiguration importieren");
+		sDefaultIncludeObjectimportText = cld.getMessage(
+				"configuration.transfer.import.option.objectimport", "Objektimport importieren");
 		chbxIncludeUser.setText(sDefaultIncludeUserText);
 		chbxIncludeLDAP.setText(sDefaultIncludeLDAPText);
 		chbxIncludeObjectimport.setText(sDefaultIncludeObjectimportText);
-		chbxAlternativeDBLogin.setText(getMessage("dbtransfer.import.step2.5", "verwende alternativen Datenbanklogin"));
+		chbxAlternativeDBLogin.setText(cld.getMessage(
+				"dbtransfer.import.step2.5", "verwende alternativen Datenbanklogin"));
 		
-		final JLabel lbAlternativeDBLogin = new JLabel(getMessage("dbtransfer.import.step2.7", "Login"));
-		final JLabel lbAlternativeDBPassword = new JLabel(getMessage("dbtransfer.import.step2.8", "Passwort"));
+		final JLabel lbAlternativeDBLogin = new JLabel(cld.getMessage(
+				"dbtransfer.import.step2.7", "Login"));
+		final JLabel lbAlternativeDBPassword = new JLabel(cld.getMessage(
+				"dbtransfer.import.step2.8", "Passwort"));
 		
 		step.add(chbxIncludeUser, "0,0,2,0");
 		step.add(chbxIncludeLDAP, "0,1,2,1");
@@ -675,8 +707,10 @@ public class DBTransferImport {
 	private final List<ParameterEditor> lstParameterEditors = new ArrayList<ParameterEditor>();
 	
 	private PanelWizardStep newStep3(final MainFrameTab ifrm) {
-		final PanelWizardStep step = new PanelWizardStep(getMessage("dbtransfer.import.step3.1", "System Parameter"), 
-			getMessage("dbtransfer.import.step3.2", "Bestimmen Sie die Parameter dieses Systems. Sie k\u00f6nnen w\u00e4hlen zwischen dem aktuellen Zustand und dem aus der Konfigurationsdatei importierten Zustand (default). Sollte keine der beiden Vorgaben stimmen, so k\u00f6nnen Sie auch einen anderen Wert setzen.")){
+		final PanelWizardStep step = new PanelWizardStep(cld.getMessage(
+				"dbtransfer.import.step3.1", "System Parameter"), 
+				cld.getMessage(
+						"dbtransfer.import.step3.2", "Bestimmen Sie die Parameter dieses Systems. Sie k\u00f6nnen w\u00e4hlen zwischen dem aktuellen Zustand und dem aus der Konfigurationsdatei importierten Zustand (default). Sollte keine der beiden Vorgaben stimmen, so k\u00f6nnen Sie auch einen anderen Wert setzen.")){
 
 				@Override
 				public void prepare() {
@@ -855,16 +889,21 @@ public class DBTransferImport {
 							  4});
 		
 		if (allParameterSorted.isEmpty()) {
-			jpnParameterHeader.add(new JLabel(getMessage("dbtransfer.import.parameterpanel.18", "Keine Parameter vorhanden.")), "1,2,4,2");
+			jpnParameterHeader.add(new JLabel(cld.getMessage(
+					"dbtransfer.import.parameterpanel.18", "Keine Parameter vorhanden.")), "1,2,4,2");
 			return;
 		}
 		
-		jpnParameterHeader.add(new JLabel(getMessage("dbtransfer.import.parameterpanel.1", "Parameter")), "1,2");
-		jpnParameterHeader.add(new JLabel(getMessage("dbtransfer.import.parameterpanel.2", "aktuellen Zustand beibehalten")), "2,0,4,0");
+		jpnParameterHeader.add(new JLabel(cld.getMessage(
+				"dbtransfer.import.parameterpanel.1", "Parameter")), "1,2");
+		jpnParameterHeader.add(new JLabel(cld.getMessage(
+				"dbtransfer.import.parameterpanel.2", "aktuellen Zustand beibehalten")), "2,0,4,0");
 		jpnParameterHeader.add(new JSeparator(JSeparator.VERTICAL), "2,1,2,3");
-		jpnParameterHeader.add(new JLabel(getMessage("dbtransfer.import.parameterpanel.3", "importierten Zustand \u00fcbernehmen")), "3,1,4,1");
+		jpnParameterHeader.add(new JLabel(cld.getMessage(
+				"dbtransfer.import.parameterpanel.3", "importierten Zustand \u00fcbernehmen")), "3,1,4,1");
 		jpnParameterHeader.add(new JSeparator(JSeparator.VERTICAL), "3,2,3,3");
-		jpnParameterHeader.add(new JLabel(getMessage("dbtransfer.import.parameterpanel.4", "anderen Wert setzen")), "4,2");
+		jpnParameterHeader.add(new JLabel(cld.getMessage(
+				"dbtransfer.import.parameterpanel.4", "anderen Wert setzen")), "4,2");
 		jpnParameterHeader.add(new JSeparator(JSeparator.VERTICAL), "4,3");
 		
 		// setup parameter footer		
@@ -872,7 +911,8 @@ public class DBTransferImport {
 			new double[] {iWidthBeginnigSpace, iWidthLabelSize+iWidthSeparator+utils.TABLE_LAYOUT_H_GAP+1/*Border*/, iWidthRadioButton, iWidthRadioButton, TableLayout.FILL, TableLayout.PREFERRED, TableLayout.PREFERRED, TableLayout.PREFERRED, TableLayout.PREFERRED}, 
 			new double[] {TableLayout.PREFERRED});
 		
-		final JLabel lbCompare = new JLabel(getMessage("dbtransfer.import.parameterpanel.5", "\u00c4nderungen")+":");
+		final JLabel lbCompare = new JLabel(cld.getMessage(
+				"dbtransfer.import.parameterpanel.5", "\u00c4nderungen")+":");
 		final JLabel lbCompareNew = new JLabel(iCountNew+"");
 		final JLabel lbCompareDeleted = new JLabel(iCountDeleted+"");
 		final JLabel lbCompareValueChanged = new JLabel(iCountValueChanged+"");
@@ -881,12 +921,14 @@ public class DBTransferImport {
 		lbCompareDeleted.setIcon(ParameterEditor.COMPARE_ICON_DELETED);
 		lbCompareValueChanged.setIcon(ParameterEditor.COMPARE_ICON_VALUE_CHANGED);
 		
-		lbCompare.setToolTipText(getMessage("dbtransfer.import.parameterpanel.6", "Vergleich von Aktueller- und Importkonfiguration"));
+		lbCompare.setToolTipText(cld.getMessage(
+				"dbtransfer.import.parameterpanel.6", "Vergleich von Aktueller- und Importkonfiguration"));
 		lbCompareNew.setToolTipText(ParameterEditor.COMPARE_DESCRIPTION_NEW);
 		lbCompareDeleted.setToolTipText(ParameterEditor.COMPARE_DESCRIPTION_DELETED);
 		lbCompareValueChanged.setToolTipText(ParameterEditor.COMPARE_DESCRIPTION_VALUE_CHANGED);
 		
-		jpnParameterFooter.add(new JLabel(getMessage("dbtransfer.import.parameterpanel.7", "auf alle Parameter anwenden")), "1,0,r,c");
+		jpnParameterFooter.add(new JLabel(cld.getMessage(
+				"dbtransfer.import.parameterpanel.7", "auf alle Parameter anwenden")), "1,0,r,c");
 		jpnParameterFooter.add(rbCurrentAll, "2,0,l,c");
 		jpnParameterFooter.add(rbIncomingAll, "3,0,l,c");
 		jpnParameterFooter.add(lbCompare, "4,0,r,c");
@@ -942,8 +984,10 @@ public class DBTransferImport {
 	 * Begin Step 4
 	 */
 	private PanelWizardStep newStep4(final MainFrameTab ifrm) {
-		final PanelWizardStep step = new PanelWizardStep(getMessage("dbtransfer.import.step4.1", "Import"), 
-			getMessage("dbtransfer.import.step4.2", "Der Import der Konfiguration kann nun gestartet werden."));
+		final PanelWizardStep step = new PanelWizardStep(cld.getMessage(
+				"dbtransfer.import.step4.1", "Import"), 
+				cld.getMessage(
+						"dbtransfer.import.step4.2", "Der Import der Konfiguration kann nun gestartet werden."));
 		
 		utils.initJPanel(step,
 			new double[] {180, TableLayout.FILL},
@@ -952,10 +996,12 @@ public class DBTransferImport {
 							  TableLayout.PREFERRED,
 							  TableLayout.PREFERRED});
 		
-		final JLabel lbWarning = new JLabel("<html>"+getMessage("dbtransfer.import.step4.3", " <b>Achtung</b>: Durch den Konfigurationsimport werden Teile der Konfiguration auf diesem System \u00fcberschrieben!<br>" +
+		final JLabel lbWarning = new JLabel("<html>"+ cld.getMessage(
+				"dbtransfer.import.step4.3", " <b>Achtung</b>: Durch den Konfigurationsimport werden Teile der Konfiguration auf diesem System \u00fcberschrieben!<br>" +
 			"Vor dem Import wird dringend empfohlen ein Backup der Datenbank durchzuf\u00fchren.<br><br>" +
 			"Wollen Sie fortfahren und den Konfigurationimport starten?")+"</html>");
-		final JButton btnStartImport = new JButton(getMessage("dbtransfer.import.step4.4", "importieren")+"...");
+		final JButton btnStartImport = new JButton(cld.getMessage(
+				"dbtransfer.import.step4.4", "importieren")+"...");
 //		final JProgressBar progressBar = new JProgressBar(0, 200);
 		
 		step.add(lbWarning, "0,0,1,0");
@@ -1043,10 +1089,10 @@ public class DBTransferImport {
 							
 							//invalidateAllCaches muss mit runCommandLater aufgerufen werden, da irgendeine Methode setzt den GlassPane
 							//auf visible und nach dem Beenden der Aktion nicht mehr auf invisible. Aus disem Grund ist der Men\u00fc nicht "erreichbar".
-							UIUtils.runCommandLater(Main.getMainFrame(), new CommonRunnable() {			
+							UIUtils.runCommandLater(Main.getInstance().getMainFrame(), new CommonRunnable() {			
 								@Override
 								public void run() throws CommonBusinessException {
-									Main.getMainController().invalidateAllClientCaches();
+									Main.getInstance().getMainController().invalidateAllClientCaches();
 								}
 							});	
 						}
@@ -1068,33 +1114,39 @@ public class DBTransferImport {
 		final JLabel lbResult = new JLabel();
 		final JEditorPane editLog = new JEditorPane();
 		final JScrollPane scrollLog = new JScrollPane(editLog);
-		final JLabel lbStructureChangeResult = new JLabel(getMessage("dbtransfer.import.step5.1", "\u00c4nderungen am Datenbankschema"));
-		final JButton btnSaveStructureChangeScript = new JButton(getMessage("dbtransfer.import.step5.2", "Script speichern")+"...");
-		final JButton btnSaveStructureChangeLog = new JButton(getMessage("dbtransfer.import.step5.3", "Log speichern")+"...");
+		final JLabel lbStructureChangeResult = new JLabel(cld.getMessage(
+				"dbtransfer.import.step5.1", "\u00c4nderungen am Datenbankschema"));
+		final JButton btnSaveStructureChangeScript = new JButton(cld.getMessage(
+				"dbtransfer.import.step5.2", "Script speichern")+"...");
+		final JButton btnSaveStructureChangeLog = new JButton(cld.getMessage(
+				"dbtransfer.import.step5.3", "Log speichern")+"...");
 		
 		editLog.setContentType("text/html");
 		editLog.setEditable(false);
 		
-		final PanelWizardStep step = new PanelWizardStep(getMessage("dbtransfer.import.step5.4", "Ergebnis"), 
-			getMessage("dbtransfer.import.step5.5", "Hier wird Ihnen das Ergebnis des Imports angezeigt.")){
+		final PanelWizardStep step = new PanelWizardStep(cld.getMessage("dbtransfer.import.step5.4", "Ergebnis"), 
+				cld.getMessage("dbtransfer.import.step5.5", "Hier wird Ihnen das Ergebnis des Imports angezeigt.")){
 
 				@Override
 				public void prepare() {
 					if (!importTransferResult.hasWarnings() && !importTransferResult.hasCriticals()){
-						lbResult.setText(getMessage("dbtransfer.import.step5.6", "Import erfolgreich!"));
+						lbResult.setText(cld.getMessage("dbtransfer.import.step5.6", "Import erfolgreich!"));
 						this.setComplete(true);	
 					} else {
-						lbResult.setText(getMessage("dbtransfer.import.step5.7", "Ein Problem ist aufgetreten!"));
+						lbResult.setText(cld.getMessage("dbtransfer.import.step5.7", "Ein Problem ist aufgetreten!"));
 						blnSaveOfLogRecommend = true;
 					}
 					StringBuffer sbLog = new StringBuffer();
 					sbLog.append("<html><body>");
 					if (!importTransferResult.foundReferences.isEmpty()) {
-						sbLog.append(getMessage("dbtransfer.import.step5.8", "Folgende Konfigurationsobjekte sollten entfernt werden, werden aber noch verwendet") + ":<br />");
+						sbLog.append(cld.getMessage(
+								"dbtransfer.import.step5.8", "Folgende Konfigurationsobjekte sollten entfernt werden, werden aber noch verwendet") + ":<br />");
 						for (Pair<String, String> reference : importTransferResult.foundReferences) {
-							sbLog.append("- " + reference.y + " (" + CommonLocaleDelegate.getLabelFromMetaDataVO(MetaDataClientProvider.getInstance().getEntity(reference.x)) + ")<br />");
+							sbLog.append("- " + reference.y + " (" 
+									+ cld.getLabelFromMetaDataVO(MetaDataClientProvider.getInstance().getEntity(reference.x)) + ")<br />");
 						}
-						sbLog.append("<br />" + getMessage("dbtransfer.import.step5.9", "Passen Sie Ihre Konfiguration dahingehend an oder bearbeiten Sie die Daten,\nwelche noch auf die Konfigurationsobjekte verweisen."));
+						sbLog.append("<br />" + cld.getMessage(
+								"dbtransfer.import.step5.9", "Passen Sie Ihre Konfiguration dahingehend an oder bearbeiten Sie die Daten,\nwelche noch auf die Konfigurationsobjekte verweisen."));
 						sbLog.append("<br />");
 					}
 					sbLog.append("<font color=\"#800000\">" + importTransferObject.result.getCriticals() + "</font>" +
@@ -1131,7 +1183,8 @@ public class DBTransferImport {
 						}
 					});
 					
-					final JFileChooser filechooser = utils.getFileChooser(getMessage("configuration.transfer.file.sql", "SQL-Dateien"), ".import-sql.txt");
+					final JFileChooser filechooser = utils.getFileChooser(cld.getMessage(
+							"configuration.transfer.file.sql", "SQL-Dateien"), ".import-sql.txt");
 					filechooser.setSelectedFile(new File(tfTransferFile.getText() + ".import-sql.txt"));
 					final int iBtn = filechooser.showSaveDialog(step);
 
@@ -1170,7 +1223,8 @@ public class DBTransferImport {
 				try {
 					UIUtils.showWaitCursorForFrame(ifrm, true);
 					
-					final JFileChooser filechooser = utils.getFileChooser(getMessage("configuration.transfer.file.log", "Log-Dateien"), ".import-log.html");
+					final JFileChooser filechooser = utils.getFileChooser(cld.getMessage(
+							"configuration.transfer.file.log", "Log-Dateien"), ".import-log.html");
 					filechooser.setSelectedFile(new File(tfTransferFile.getText() + ".import-log.html"));
 					final int iBtn = filechooser.showSaveDialog(step);
 

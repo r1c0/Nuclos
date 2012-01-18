@@ -168,6 +168,7 @@ public class DefaultMouseListener extends MouseAdapter {
 			throw new IllegalArgumentException();
 		}
 
+		final CommonLocaleDelegate cld = CommonLocaleDelegate.getInstance();
 		final JPopupMenu result;
 
 		final Collection<GenericObjectExplorerNode> collloexplorernodeSelected =
@@ -182,7 +183,9 @@ public class DefaultMouseListener extends MouseAdapter {
 
 			final CollectableSearchCondition cond = getCollectableSearchCondition(collexplorernodeSelected);
 
-			final Action actShowInList = new CommonAbstractAction(CommonLocaleDelegate.getMessage("ExplorerController.22","In Liste anzeigen"), null, CommonLocaleDelegate.getMessage("ExplorerController.4","Ausgew\u00e4hlte Objekte in Ergebnisliste anzeigen")) {
+			final Action actShowInList = new CommonAbstractAction(cld.getMessage(
+					"ExplorerController.22","In Liste anzeigen"), null, 
+					cld.getMessage("ExplorerController.4","Ausgew\u00e4hlte Objekte in Ergebnisliste anzeigen")) {
 
 				@Override
                 public void actionPerformed(ActionEvent ev) {
@@ -212,14 +215,17 @@ public class DefaultMouseListener extends MouseAdapter {
 			}
 
 			if (bShowRemoveRelationAction) {
-				final Action actRemoveRelation = new CommonAbstractAction(CommonLocaleDelegate.getMessage("ExplorerController.5","Beziehungen entfernen"), null, CommonLocaleDelegate.getMessage("ExplorerController.9","Beziehung von ausgew\u00e4hlten Objekten zu \u00fcbergordnetem Object entfernen")) {
+				final Action actRemoveRelation = new CommonAbstractAction(cld.getMessage(
+						"ExplorerController.5","Beziehungen entfernen"), null, 
+						cld.getMessage("ExplorerController.9","Beziehung von ausgew\u00e4hlten Objekten zu \u00fcbergordnetem Object entfernen")) {
 
 					@Override
                     public void actionPerformed(ActionEvent ev) {
 
-						final String sMessage = CommonLocaleDelegate.getMessage("ExplorerController.28","Sollen die Beziehungen von den ausgew\u00e4hlten Objekten zu dem \u00fcbergeordneten Object entfernt werden")+ "?";
+						final String sMessage = cld.getMessage("ExplorerController.28","Sollen die Beziehungen von den ausgew\u00e4hlten Objekten zu dem \u00fcbergeordneten Object entfernt werden")+ "?";
 
-						final int iBtn = JOptionPane.showConfirmDialog(tree, sMessage, CommonLocaleDelegate.getMessage("ExplorerController.6","Beziehung entfernen"), JOptionPane.OK_CANCEL_OPTION);
+						final int iBtn = JOptionPane.showConfirmDialog(tree, sMessage, cld.getMessage(
+								"ExplorerController.6","Beziehung entfernen"), JOptionPane.OK_CANCEL_OPTION);
 						if (iBtn == JOptionPane.OK_OPTION) {
 							SwingUtilities.invokeLater(new Runnable() {
 
@@ -244,7 +250,8 @@ public class DefaultMouseListener extends MouseAdapter {
 
 											if (iRelationId == null) {
 												// for backwards compatibility only: this might happen for old deserialized nodes that don't have a relation id yet.
-												throw new CommonBusinessException(CommonLocaleDelegate.getMessage("ExplorerController.14","Die Beziehung kann nicht entfernt werden, da die Beziehungs-Id mindestens eines Objektes fehlt. Bitte aktualisieren Sie die Baumansicht und versuchen Sie es erneut."));
+												throw new CommonBusinessException(cld.getMessage(
+														"ExplorerController.14","Die Beziehung kann nicht entfernt werden, da die Beziehungs-Id mindestens eines Objektes fehlt. Bitte aktualisieren Sie die Baumansicht und versuchen Sie es erneut."));
 											}
 											else {
 												mpGOTreeNodeRelation.put(iRelationId, gotreenodeTarget);
@@ -259,7 +266,8 @@ public class DefaultMouseListener extends MouseAdapter {
 									}
 									catch (Exception ex) {
 										LOG.error(ex);
-										Errors.getInstance().showExceptionDialog(null, CommonLocaleDelegate.getMessage("ExplorerController.18","Fehler beim entfernen der Beziehungen"), ex);
+										Errors.getInstance().showExceptionDialog(null, cld.getMessage(
+												"ExplorerController.18","Fehler beim entfernen der Beziehungen"), ex);
 									}
 								}
 							});
@@ -279,14 +287,18 @@ public class DefaultMouseListener extends MouseAdapter {
 			}
 
 			if (bShowRemoveFromParentGroupAction) {
-				final Action actRemoveRelation = new CommonAbstractAction(CommonLocaleDelegate.getMessage("ExplorerController.3","Aus der Gruppe entfernen"), null, CommonLocaleDelegate.getMessage("ExplorerController.8","Beziehung von ausgew\u00e4hlten Objekten zur Objektgruppe entfernen")) {
+				final Action actRemoveRelation = new CommonAbstractAction(cld.getMessage(
+						"ExplorerController.3","Aus der Gruppe entfernen"), null, 
+						cld.getMessage("ExplorerController.8","Beziehung von ausgew\u00e4hlten Objekten zur Objektgruppe entfernen")) {
 
 					@Override
                     public void actionPerformed(ActionEvent ev) {
 
-						final String sMessage = CommonLocaleDelegate.getMessage("ExplorerController.29","Sollen die Beziehungen von den ausgew\u00e4hlten Objekten zur Objektgruppe entfernt werden") + "?";
+						final String sMessage = cld.getMessage(
+								"ExplorerController.29","Sollen die Beziehungen von den ausgew\u00e4hlten Objekten zur Objektgruppe entfernt werden") + "?";
 
-						final int iBtn = JOptionPane.showConfirmDialog(tree, sMessage, CommonLocaleDelegate.getMessage("ExplorerController.7","Beziehung entfernen"), JOptionPane.OK_CANCEL_OPTION);
+						final int iBtn = JOptionPane.showConfirmDialog(tree, sMessage, cld.getMessage(
+								"ExplorerController.7","Beziehung entfernen"), JOptionPane.OK_CANCEL_OPTION);
 						if (iBtn == JOptionPane.OK_OPTION) {
 							SwingUtilities.invokeLater(new Runnable() {
 
@@ -322,7 +334,8 @@ public class DefaultMouseListener extends MouseAdapter {
 									}
 									catch (Exception ex) {
 										LOG.error(ex);
-										Errors.getInstance().showExceptionDialog(null, CommonLocaleDelegate.getMessage("ExplorerController.19","Fehler beim entfernen der Beziehungen"), ex);
+										Errors.getInstance().showExceptionDialog(null, cld.getMessage(
+												"ExplorerController.19","Fehler beim entfernen der Beziehungen"), ex);
 									}
 								}
 							});

@@ -68,7 +68,8 @@ public class MasterDataEntityFieldsCollectableFieldsProvider implements Collecta
 		final List<CollectableField> result = CollectionUtils.transform(colmdmVO_menupath, new Transformer<MasterDataMetaVO, CollectableField>() {
 			@Override
 			public CollectableField transform(MasterDataMetaVO mdmVO) {
-				return new CollectableValueIdField(mdmVO.getEntityName(), CommonLocaleDelegate.getLabelFromMetaDataVO(mdmVO));
+				return new CollectableValueIdField(mdmVO.getEntityName(), 
+						CommonLocaleDelegate.getInstance().getLabelFromMetaDataVO(mdmVO));
 			}
 		});
 

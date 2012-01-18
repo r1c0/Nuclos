@@ -59,7 +59,10 @@ import org.nuclos.common.WorkspaceDescription;
 import org.nuclos.common.WorkspaceDescription.Desktop;
 import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.exception.CommonBusinessException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
 
+@Configurable(preConstruction=true)
 public abstract class DesktopStartTab {
 
 	private static final Logger LOG = Logger.getLogger(DesktopStartTab.class);
@@ -76,8 +79,12 @@ public abstract class DesktopStartTab {
 
 	private final List<DesktopItem> desktopItems = new ArrayList<DesktopItem>();
 	
+	private CommonLocaleDelegate cld;
+	
+	private ResourceCache resourceCache;
+	
 	private final Action actAddMenubutton = new AbstractAction(
-			CommonLocaleDelegate.getMessage("DesktopStartTab.1", "Menu Button hinzufügen"), 
+			cld.getMessage("DesktopStartTab.1", "Menu Button hinzufügen"), 
 			Icons.getInstance().getIconPlus16()) {
 		@Override
 		public void actionPerformed(ActionEvent e) {
@@ -88,7 +95,7 @@ public abstract class DesktopStartTab {
 	};
 	
 	private final Action actEditDesktop = new AbstractAction(
-			CommonLocaleDelegate.getMessage("DesktopStartTab.2", "Desktop Eigenschaften"), 
+			cld.getMessage("DesktopStartTab.2", "Desktop Eigenschaften"), 
 			Icons.getInstance().getIconEdit16()) {
 		@Override
 		public void actionPerformed(ActionEvent e) {
@@ -105,7 +112,7 @@ public abstract class DesktopStartTab {
 				desktopPrefs.setResourceMenuBackground(editor.getResourceMenuBackground());
 				desktopPrefs.setResourceMenuBackgroundHover(editor.getResourceMenuBackgroundHover());
 				desktopPrefs.setResourceBackground(editor.getResourceBackground());
-				setupDesktop(Main.getMainController().getGenericActions());
+				setupDesktop(Main.getInstance().getMainController().getGenericActions());
 				jpnMain.revalidate();
 				jpnMain.repaint();
 			}
@@ -113,7 +120,7 @@ public abstract class DesktopStartTab {
 	};
 	
 	private final Action actHideDesktop = new AbstractAction(
-			CommonLocaleDelegate.getMessage("DesktopStartTab.3", "Desktop ausblenden"), 
+			cld.getMessage("DesktopStartTab.3", "Desktop ausblenden"), 
 			Icons.getInstance().getIconEmpty16()) {
 		@Override
 		public void actionPerformed(ActionEvent e) {
@@ -122,7 +129,7 @@ public abstract class DesktopStartTab {
 	};
 	
 	private final Action actHideToolBar = new AbstractAction(
-			CommonLocaleDelegate.getMessage("DesktopStartTab.4", "Symbolleiste ausblenden",
+			cld.getMessage("DesktopStartTab.4", "Symbolleiste ausblenden",
 			Icons.getInstance().getIconEmpty16())) {
 		@Override
 		public void actionPerformed(ActionEvent e) {
@@ -132,7 +139,7 @@ public abstract class DesktopStartTab {
 	};
 	
 	private final Action actRestoreDesktop = new AbstractAction(
-			CommonLocaleDelegate.getMessage("DesktopStartTab.5", "Auf Vorlage zurücksetzen"), 
+			cld.getMessage("DesktopStartTab.5", "Auf Vorlage zurücksetzen"), 
 			Icons.getInstance().getIconUndo16()) {
 		@Override
 		public void actionPerformed(ActionEvent e) {
@@ -182,6 +189,16 @@ public abstract class DesktopStartTab {
 		this.jpnMain.setComponentPopupMenu(contextMenu);
 	}
 	
+	@Autowired
+	void setResourceCache(ResourceCache resourceCache) {
+		this.resourceCache = resourceCache;
+	}
+	
+	@Autowired
+	void setCommonLocaleDelegate(CommonLocaleDelegate cld) {
+		this.cld = cld;
+	}
+	
 	public abstract void hide();
 	
 	public abstract void showToolBar(boolean show);
@@ -207,7 +224,7 @@ public abstract class DesktopStartTab {
 				backgroundImage = null;
 				boolean resIcon = false;
 				if (desktopPrefs.getResourceBackground() != null) {
-					backgroundImage = ResourceCache.getIconResource(desktopPrefs.getResourceBackground());
+					backgroundImage = resourceCache.getIconResource(desktopPrefs.getResourceBackground());
 					resIcon = true;
 				}
 				if (!resIcon && desktopPrefs.getNuclosResourceBackground() != null) {

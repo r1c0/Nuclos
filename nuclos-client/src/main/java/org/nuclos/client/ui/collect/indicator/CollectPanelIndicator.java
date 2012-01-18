@@ -165,15 +165,15 @@ public class CollectPanelIndicator {
 	}
 	
 	protected static String getSearchLabel() {
-		return CommonLocaleDelegate.getMessage("CollectPanel.5","Suche");
+		return CommonLocaleDelegate.getInstance().getMessage("CollectPanel.5","Suche");
 	}
 	
 	protected static String getResultLabel() {
-		return CommonLocaleDelegate.getMessage("CollectPanel.3","Liste");
+		return CommonLocaleDelegate.getInstance().getMessage("CollectPanel.3","Liste");
 	}
 	
 	protected static String getDetailsLabel() {
-		return CommonLocaleDelegate.getMessage("CollectPanel.1","Details");
+		return CommonLocaleDelegate.getInstance().getMessage("CollectPanel.1","Details");
 	}
 	
 	public abstract static class SelectionListener {

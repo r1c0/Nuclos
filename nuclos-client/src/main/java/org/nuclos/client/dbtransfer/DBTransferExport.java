@@ -16,7 +16,6 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.dbtransfer;
 
-import static org.nuclos.common2.CommonLocaleDelegate.getMessage;
 import info.clearthought.layout.TableLayout;
 
 import java.awt.event.ActionEvent;
@@ -38,19 +37,22 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
 import org.nuclos.client.NuclosIcons;
-import org.nuclos.client.main.MainController;
+import org.nuclos.client.main.Main;
 import org.nuclos.client.main.mainframe.MainFrameTab;
 import org.nuclos.client.wizard.WizardFrame;
 import org.nuclos.common.dbtransfer.Transfer;
 import org.nuclos.common.dbtransfer.TransferNuclet;
 import org.nuclos.common.dbtransfer.TransferOption;
+import org.nuclos.common2.CommonLocaleDelegate;
 import org.pietschy.wizard.I18n;
 import org.pietschy.wizard.PanelWizardStep;
 import org.pietschy.wizard.WizardEvent;
 import org.pietschy.wizard.WizardListener;
 import org.pietschy.wizard.models.StaticModel;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
 
-
+@Configurable
 public class DBTransferExport {
 	
 	private final Long nucletId;
@@ -62,7 +64,10 @@ public class DBTransferExport {
 	
 	private Exception exportException;
 	
-	private final MainFrameTab ifrm = MainController.newMainFrameTab(null, getMessage("dbtransfer.export.title", "Konfiguration exportieren"));
+	private CommonLocaleDelegate cld;
+	
+	private final MainFrameTab ifrm = Main.getInstance().getMainController().newMainFrameTab(
+			null, cld.getMessage("dbtransfer.export.title", "Konfiguration exportieren"));
 	
 	public DBTransferExport(Long nucletId) {
 		this.nucletId = nucletId;
@@ -105,6 +110,11 @@ public class DBTransferExport {
       });
 	}
 	
+	@Autowired
+	void setCommonLocaleDelegate(CommonLocaleDelegate cld) {
+		this.cld = cld;
+	}
+	
 	public void showWizard(JTabbedPane desktopPane) {
       ifrm.setLayeredComponent(WizardFrame.createFrameInScrollPane(wizard));
       
@@ -114,8 +124,10 @@ public class DBTransferExport {
 	}
 
 	private PanelWizardStep newStep1(final MainFrameTab ifrm) {
-		final PanelWizardStep step = new PanelWizardStep(getMessage("dbtransfer.export.step1.1", "Export"), 
-			getMessage("dbtransfer.export.step1.2", "Bitte w\u00e4hlen Sie den Speicherort f\u00fcr die Konfigurationsdatei aus und die Optionen."));
+		final PanelWizardStep step = new PanelWizardStep(cld.getMessage(
+				"dbtransfer.export.step1.1", "Export"), 
+				cld.getMessage("dbtransfer.export.step1.2", 
+						"Bitte w\u00e4hlen Sie den Speicherort f\u00fcr die Konfigurationsdatei aus und die Optionen."));
 		utils.initJPanel(step,
 			new double[] {TableLayout.PREFERRED, TableLayout.PREFERRED, TableLayout.PREFERRED, TableLayout.FILL},
 			new double[] {20,				  
@@ -131,15 +143,21 @@ public class DBTransferExport {
 		
 		final JLabel lbNuclet = new JLabel("Nuclet");
 		final JComboBox comboNuclet = new JComboBox(utils.getAvaiableNuclets());
-		final JLabel lbFile = new JLabel(getMessage("dbtransfer.import.step1.3", "Datei"));
+		final JLabel lbFile = new JLabel(cld.getMessage(
+				"dbtransfer.import.step1.3", "Datei"));
 		final JTextField tfTransferFile = new JTextField(50);
 		final JButton btnBrowse = new JButton("...");
-		final JCheckBox chbxIsNuclonImportAllowed = new JCheckBox(getMessage("configuration.transfer.export.option.isnuclonallowed", "Import als Nuclon gestatten"));
-		final JCheckBox chbxIncludeUser = new JCheckBox(getMessage("configuration.transfer.export.option.user", "Benutzer exportieren"));
-		final JCheckBox chbxIncludeLdap = new JCheckBox(getMessage("configuration.transfer.export.option.includeldap", "LDAP Konfiguration exportieren"));
-		final JCheckBox chbxIncludeImportFile = new JCheckBox(getMessage("configuration.transfer.export.option.includeimportfile", "Objektimport exportieren"));
+		final JCheckBox chbxIsNuclonImportAllowed = new JCheckBox(cld.getMessage(
+				"configuration.transfer.export.option.isnuclonallowed", "Import als Nuclon gestatten"));
+		final JCheckBox chbxIncludeUser = new JCheckBox(cld.getMessage(
+				"configuration.transfer.export.option.user", "Benutzer exportieren"));
+		final JCheckBox chbxIncludeLdap = new JCheckBox(cld.getMessage(
+				"configuration.transfer.export.option.includeldap", "LDAP Konfiguration exportieren"));
+		final JCheckBox chbxIncludeImportFile = new JCheckBox(cld.getMessage(
+				"configuration.transfer.export.option.includeimportfile", "Objektimport exportieren"));
 //		final JCheckBox chbxFreezeConfiguration = new JCheckBox(getMessage("configuration.transfer.freeze", "Konfiguration nach dem Export einfrieren"));
-		final JButton btnStartExport = new JButton(getMessage("dbtransfer.export.step1.4", "exportieren")+"...");
+		final JButton btnStartExport = new JButton(cld.getMessage(
+				"dbtransfer.export.step1.4", "exportieren")+"...");
 //		final JProgressBar progressBar = new JProgressBar(0, 200);
 		
 		step.add(lbNuclet, "0,0");
@@ -182,7 +200,8 @@ public class DBTransferExport {
 		btnBrowse.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent ev) {
-				final JFileChooser filechooser = utils.getFileChooser(getMessage("configuration.transfer.file.nuclet", "Nuclet-Dateien"), ".nuclet");
+				final JFileChooser filechooser = utils.getFileChooser(cld.getMessage(
+						"configuration.transfer.file.nuclet", "Nuclet-Dateien"), ".nuclet");
 				TransferNuclet tn = (TransferNuclet) comboNuclet.getSelectedItem();
 				final String filename = tn.getId()==null ? "Nuclos.instance" : tn.getLabel();
 				filechooser.setSelectedFile(new File(filename + ".nuclet"));
@@ -273,23 +292,27 @@ public class DBTransferExport {
 		final JTextArea taLog = new JTextArea();
 		final JScrollPane scrollLog = new JScrollPane(taLog);
 		
-		final PanelWizardStep step = new PanelWizardStep(getMessage("dbtransfer.import.step5.4", "Ergebnis"), 
-			getMessage("dbtransfer.export.step2.1", "Hier wird Ihnen das Ergebnis des Exports angezeigt.")){
+		final PanelWizardStep step = new PanelWizardStep(cld.getMessage(
+				"dbtransfer.import.step5.4", "Ergebnis"), 
+				cld.getMessage("dbtransfer.export.step2.1", "Hier wird Ihnen das Ergebnis des Exports angezeigt.")){
 
 				@Override
 				public void prepare() {
 					if (exportException == null) {
 						setComplete(true);
 						wizard.setCancelEnabled(false);
-						lbResult.setText(getMessage("dbtransfer.export.step2.2", "Die Konfigurationsdaten wurden erfolgreich exportiert."));
+						lbResult.setText(cld.getMessage(
+								"dbtransfer.export.step2.2", "Die Konfigurationsdaten wurden erfolgreich exportiert."));
 						scrollLog.setVisible(false);
 					} else {
 						setComplete(false);
 						wizard.setCancelEnabled(true);
-						lbResult.setText(getMessage("dbtransfer.import.step5.7", "Ein Problem ist aufgetreten!"));
+						lbResult.setText(cld.getMessage(
+								"dbtransfer.import.step5.7", "Ein Problem ist aufgetreten!"));
 						scrollLog.setVisible(true);
 						if (exportException instanceof FileNotFoundException){
-							taLog.setText(getMessage("dbtransfer.export.step2.3", "Die ausgew\u00e4hlte Datei konnte nicht geschrieben bzw. ersetzt werden.\n" +
+							taLog.setText(cld.getMessage(
+									"dbtransfer.export.step2.3", "Die ausgew\u00e4hlte Datei konnte nicht geschrieben bzw. ersetzt werden.\n" +
 									"M\u00f6glicherweise ist diese noch ge\u00f6ffnet oder Ihnen fehlt eine Berechtigung."));
 						} else {
 							StringWriter sw = new StringWriter();

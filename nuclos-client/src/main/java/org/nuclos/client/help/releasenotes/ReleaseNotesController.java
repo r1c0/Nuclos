@@ -34,7 +34,7 @@ import javax.swing.event.HyperlinkListener;
 
 import org.apache.log4j.Logger;
 import org.nuclos.client.help.HtmlPanel;
-import org.nuclos.client.main.MainController;
+import org.nuclos.client.main.Main;
 import org.nuclos.client.main.mainframe.MainFrameTab;
 import org.nuclos.client.ui.Controller;
 import org.nuclos.client.ui.MainFrameTabAdapter;
@@ -42,7 +42,6 @@ import org.nuclos.client.ui.UIUtils;
 import org.nuclos.common.ApplicationProperties;
 import org.nuclos.common.ApplicationProperties.Version;
 import org.nuclos.common2.ClientPreferences;
-import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.LangUtils;
 
 /**
@@ -104,11 +103,12 @@ public class ReleaseNotesController extends Controller {
 	public void showNuclosReleaseNotesNotice() {
 		Version version = ApplicationProperties.getInstance().getCurrentVersion();
 		
-		final MainFrameTab ifrm = MainController.newMainFrameTab(null, version.getShortName());
+		final MainFrameTab ifrm = Main.getInstance().getMainController().newMainFrameTab(null, version.getShortName());
 		String text =
 			"<html><h1>" + version.getLongName() + "</h1>" +
-			"<p>" + CommonLocaleDelegate.getMessage("nuclos.newversion.releasenotes.notice", null).replace("\n", "<br>") + "</p>" + 
-			"<p><a href='" + getNuclosReleaseNotesURL() + "'>" + CommonLocaleDelegate.getMessage("nuclos.newversion.releasenotes.open", null) + "</a></p></html>";
+			"<p>" + getCommonLocaleDelegate().getMessage("nuclos.newversion.releasenotes.notice", null).replace("\n", "<br>") + "</p>" + 
+			"<p><a href='" + getNuclosReleaseNotesURL() + "'>" + 
+			getCommonLocaleDelegate().getMessage("nuclos.newversion.releasenotes.open", null) + "</a></p></html>";
 		
 		final HtmlPanel pnlReleaseNotes = new HtmlPanel(text);
 		pnlReleaseNotes.btnClose.addActionListener(new ActionListener() {
@@ -180,12 +180,12 @@ public class ReleaseNotesController extends Controller {
 					final URL releaseNotesURL;
 					
 					if(!sProject.equals("nuclos")) {
-						ifrm = MainController.newMainFrameTab(null, ApplicationProperties.getInstance().getName() + " Release Notes");
+						ifrm = Main.getInstance().getMainController().newMainFrameTab(null, ApplicationProperties.getInstance().getName() + " Release Notes");
 						releaseNotesURL = this.getClass().getClassLoader().getResource(LangUtils.defaultIfNull(
 								ApplicationProperties.getInstance().getReleaseNotesFileName(),
 								"doc/releasenotes.html"));
 					}else{
-						ifrm = MainController.newMainFrameTab(null, "Nuclos Release Notes");
+						ifrm = Main.getInstance().getMainController().newMainFrameTab(null, "Nuclos Release Notes");
 						releaseNotesURL = new URL(getNuclosReleaseNotesURL());
 					}
 
@@ -217,7 +217,8 @@ public class ReleaseNotesController extends Controller {
 					ifrm.setVisible(true);
 				}
 				catch (/* IO */ Exception ex) {
-					final String sMessage = CommonLocaleDelegate.getMessage("ReleaseNotesController.1", "Die Release Notes k\u00f6nnen nicht angezeigt werden.");
+					final String sMessage = getCommonLocaleDelegate().getMessage(
+							"ReleaseNotesController.1", "Die Release Notes k\u00f6nnen nicht angezeigt werden.");
 					Logger.getLogger(ReleaseNotesController.class).debug(sMessage);
 					//Errors.getInstance().showExceptionDialog(ReleaseNotesController.this.getParent(), sMessage, ex);
 				}

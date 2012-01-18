@@ -97,7 +97,8 @@ public class GenericObjectTreeNodeFactory {
 		ModuleProvider modules = SpringApplicationContextHolder.getBean(ModuleProvider.class);
 		MetaDataProvider metaprovider = SpringApplicationContextHolder.getBean(MetaDataProvider.class);
 		Map<String, Object> values = getReadableAttributes(username, gowdvo, attrprovider);
-		return CommonLocaleDelegate.getTreeViewLabel(values, modules.getEntityNameByModuleId(gowdvo.getModuleId()), metaprovider);
+		return CommonLocaleDelegate.getInstance().getTreeViewLabel(
+				values, modules.getEntityNameByModuleId(gowdvo.getModuleId()), metaprovider);
 	}
 
 	/**
@@ -111,7 +112,8 @@ public class GenericObjectTreeNodeFactory {
 		ModuleProvider modules = SpringApplicationContextHolder.getBean(ModuleProvider.class);
 		MetaDataProvider metaprovider = SpringApplicationContextHolder.getBean(MetaDataProvider.class);
 		Map<String, Object> values = getReadableAttributes(username, gowdvo, attrprovider);
-		return CommonLocaleDelegate.getTreeViewDescription(values, modules.getEntityNameByModuleId(gowdvo.getModuleId()), metaprovider);
+		return CommonLocaleDelegate.getInstance().getTreeViewDescription(
+				values, modules.getEntityNameByModuleId(gowdvo.getModuleId()), metaprovider);
 	}
 
 	private Map<String, Object> getReadableAttributes(String sUserName, GenericObjectWithDependantsVO gowdvo, AttributeProvider attrprovider) {

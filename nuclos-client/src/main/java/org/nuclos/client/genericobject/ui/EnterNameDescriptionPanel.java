@@ -42,11 +42,15 @@ public class EnterNameDescriptionPanel extends JPanel {
 	}
 
 	private void init() {
-		this.add(new JLabel(CommonLocaleDelegate.getMessage("EnterNameDescriptionPanel.1", "Name")), new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0, GridBagConstraints.WEST,
+		this.add(new JLabel(CommonLocaleDelegate.getInstance().getMessage(
+				"EnterNameDescriptionPanel.1", "Name")), 
+				new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0, GridBagConstraints.WEST,
 		    GridBagConstraints.NONE, new Insets(0, 0, 5, 5), 0, 0));
 		this.add(tfName, new GridBagConstraints(1, 0, 1, 1, 0.0, 0.0, GridBagConstraints.WEST,
 		    GridBagConstraints.NONE, new Insets(0, 0, 5, 5), 0, 0));
-		this.add(new JLabel(CommonLocaleDelegate.getMessage("EnterNameDescriptionPanel.2", "Beschreibung")), new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0, GridBagConstraints.WEST,
+		this.add(new JLabel(CommonLocaleDelegate.getInstance().getMessage(
+				"EnterNameDescriptionPanel.2", "Beschreibung")), 
+				new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0, GridBagConstraints.WEST,
 		    GridBagConstraints.NONE, new Insets(0, 0, 5, 5), 0, 0));
 		this.add(tfDescription, new GridBagConstraints(1, 1, 1, 1, 0.0, 0.0, GridBagConstraints.WEST,
 		    GridBagConstraints.HORIZONTAL, new Insets(0, 0, 5, 5), 0, 0));

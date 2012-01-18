@@ -24,10 +24,10 @@ public class RuleTreeModel {
 	public static final String SAVE_EVENT_NAME = "Save";
 	public static final String USER_EVENT_NAME = "User";
 	public static final String DELETE_EVENT_NAME = "Delete";
-	public static final String FRIST_EVENT_NAME = CommonLocaleDelegate.getMessage("RuleTreeModel.3","Frist");
-	public static final String ALL_RULES_NODE_LABEL = CommonLocaleDelegate.getMessage("RuleTreeModel.1","Alle Regeln");
-	public static final String FRIST_NODE_LABEL = CommonLocaleDelegate.getMessage("RuleTreeModel.4","Fristen");
-	public static final String LIBRARY_LABEL = CommonLocaleDelegate.getText("treenode.rules.library.label");
+	public static final String FRIST_EVENT_NAME = CommonLocaleDelegate.getInstance().getMessage("RuleTreeModel.3","Frist");
+	public static final String ALL_RULES_NODE_LABEL = CommonLocaleDelegate.getInstance().getMessage("RuleTreeModel.1","Alle Regeln");
+	public static final String FRIST_NODE_LABEL = CommonLocaleDelegate.getInstance().getMessage("RuleTreeModel.4","Fristen");
+	public static final String LIBRARY_LABEL = CommonLocaleDelegate.getInstance().getText("treenode.rules.library.label");
 
 	public RuleTreeModel() {
 		super();

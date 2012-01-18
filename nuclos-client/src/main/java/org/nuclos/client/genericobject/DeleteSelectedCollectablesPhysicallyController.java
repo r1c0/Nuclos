@@ -43,7 +43,8 @@ public class DeleteSelectedCollectablesPhysicallyController
 		@Override
 		public Object perform(CollectableGenericObjectWithDependants clct) throws CommonBusinessException {
 			if (!this.ctl.isPhysicallyDeleteAllowed(clct))
-				throw new CommonPermissionException(CommonLocaleDelegate.getMessage("GenericObjectCollectController.41","Endg\u00fcltiges L\u00f6schen ist nicht erlaubt."));
+				throw new CommonPermissionException(CommonLocaleDelegate.getInstance().getMessage(
+						"GenericObjectCollectController.41","Endg\u00fcltiges L\u00f6schen ist nicht erlaubt."));
 
 			GenericObjectDelegate.getInstance().remove(clct.getGenericObjectWithDependantsCVO(), true);
 			return null;
@@ -51,22 +52,26 @@ public class DeleteSelectedCollectablesPhysicallyController
 
 		@Override
 		public String getText(CollectableGenericObjectWithDependants clct) {
-			return CommonLocaleDelegate.getMessage("DeleteSelectedCollectablesPhysicallyController.1", "Datensatz {0} wird endg\u00fcltig gel\u00f6scht...", MultiCollectablesActionController.getCollectableLabel(ctl.getEntityName(), clct));
+			return CommonLocaleDelegate.getInstance().getMessage(
+					"DeleteSelectedCollectablesPhysicallyController.1", "Datensatz {0} wird endg\u00fcltig gel\u00f6scht...", MultiCollectablesActionController.getCollectableLabel(ctl.getEntityName(), clct));
 		}
 
 		@Override
 		public String getSuccessfulMessage(CollectableGenericObjectWithDependants clct, Object oResult) {
-			return CommonLocaleDelegate.getMessage("DeleteSelectedCollectablesPhysicallyController.2", "Datensatz {0} erfolgreich endg\u00fcltig gel\u00f6scht.", MultiCollectablesActionController.getCollectableLabel(ctl.getEntityName(), clct));
+			return CommonLocaleDelegate.getInstance().getMessage(
+					"DeleteSelectedCollectablesPhysicallyController.2", "Datensatz {0} erfolgreich endg\u00fcltig gel\u00f6scht.", MultiCollectablesActionController.getCollectableLabel(ctl.getEntityName(), clct));
 		}
 
 		@Override
 		public String getConfirmStopMessage() {
-			return CommonLocaleDelegate.getMessage("DeleteSelectedCollectablesPhysicallyController.3", "Wollen Sie das endg\u00fcltige L\u00f6schen der Datens\u00e4tze an dieser Stelle beenden?\n(Die bisher gel\u00f6schten Datens\u00e4tze bleiben in jedem Fall gel\u00f6scht.)");
+			return CommonLocaleDelegate.getInstance().getMessage(
+					"DeleteSelectedCollectablesPhysicallyController.3", "Wollen Sie das endg\u00fcltige L\u00f6schen der Datens\u00e4tze an dieser Stelle beenden?\n(Die bisher gel\u00f6schten Datens\u00e4tze bleiben in jedem Fall gel\u00f6scht.)");
 		}
 
 		@Override
 		public String getExceptionMessage(CollectableGenericObjectWithDependants clct, Exception ex) {
-			return CommonLocaleDelegate.getMessage("DeleteSelectedCollectablesPhysicallyController.4", "Datensatz {0} konnte nicht endg\u00fcltig gel\u00f6scht werden.", MultiCollectablesActionController.getCollectableLabel(ctl.getEntityName(), clct)) + " " + ex.getMessage();
+			return CommonLocaleDelegate.getInstance().getMessage(
+					"DeleteSelectedCollectablesPhysicallyController.4", "Datensatz {0} konnte nicht endg\u00fcltig gel\u00f6scht werden.", MultiCollectablesActionController.getCollectableLabel(ctl.getEntityName(), clct)) + " " + ex.getMessage();
 		}
 
 		@Override
@@ -77,7 +82,8 @@ public class DeleteSelectedCollectablesPhysicallyController
 	}
 
 	public DeleteSelectedCollectablesPhysicallyController(GenericObjectCollectController ctl) {
-		super(ctl, CommonLocaleDelegate.getMessage("DeleteSelectedCollectablesPhysicallyController.5", "Datens\u00e4tze endg\u00fcltig l\u00f6schen"), new DeleteAction(ctl), ctl.getListOfSelectedCollectables());
+		super(ctl, CommonLocaleDelegate.getInstance().getMessage(
+				"DeleteSelectedCollectablesPhysicallyController.5", "Datens\u00e4tze endg\u00fcltig l\u00f6schen"), new DeleteAction(ctl), ctl.getListOfSelectedCollectables());
 	}
 
 }	// class DeleteSelectedCollectablesController

@@ -50,7 +50,8 @@ public class ExtSourceSearchImporterChooser {
 	
 	private int showDialog(JComponent contents) {
 		return JOptionPane.showOptionDialog(parentComponent, contents,
-				CommonLocaleDelegate.getMessage("ExtSourceSearchImporterChooser.1", "Importquelle: Auswahl"), JOptionPane.OK_CANCEL_OPTION,
+				CommonLocaleDelegate.getInstance().getMessage(
+						"ExtSourceSearchImporterChooser.1", "Importquelle: Auswahl"), JOptionPane.OK_CANCEL_OPTION,
 				JOptionPane.DEFAULT_OPTION, null, null, contents);
 	}
 
@@ -62,7 +63,8 @@ public class ExtSourceSearchImporterChooser {
 	private void showChooseImporterDialog() {
 
 		JComboBox importSourceCombo = new JComboBox();
-		JLabel importSourceLabel = new JLabel(CommonLocaleDelegate.getMessage("ExtSourceSearchImporterChooser.2", "Importquelle"));
+		JLabel importSourceLabel = new JLabel(CommonLocaleDelegate.getInstance().getMessage(
+				"ExtSourceSearchImporterChooser.2", "Importquelle"));
 		JLabel[] labels = new JLabel[] { importSourceLabel };
 		JComboBox[] combos = new JComboBox[] { importSourceCombo };
 
@@ -99,7 +101,8 @@ public class ExtSourceSearchImporterChooser {
 			//check selected column
 			if (importSourceCombo.getSelectedItem() == null) {
 				JOptionPane.showMessageDialog(parentComponent,
-						CommonLocaleDelegate.getMessage("ExtSourceSearchImporterChooser.3", "Bitte Importquelle w\u00e4hlen"));
+						CommonLocaleDelegate.getInstance().getMessage(
+								"ExtSourceSearchImporterChooser.3", "Bitte Importquelle w\u00e4hlen"));
 				decision = showDialog(importSourcePanel);
 
 			} else {

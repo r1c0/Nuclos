@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.PostConstruct;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageListener;
@@ -32,6 +33,7 @@ import javax.jms.ObjectMessage;
 import org.apache.log4j.Logger;
 import org.nuclos.client.common.TopicNotificationReceiver;
 import org.nuclos.client.main.Main;
+import org.nuclos.client.main.MainController;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.common.JMSConstants;
 import org.nuclos.common.NuclosFatalException;
@@ -42,6 +44,8 @@ import org.nuclos.common2.CommonRunnable;
 import org.nuclos.common2.DateUtils;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
 
 /**
  * SearchFilterCache containing all searchfilters (entity + global searchfilters)
@@ -53,14 +57,18 @@ import org.nuclos.common2.exception.CommonBusinessException;
  * @author	<a href="mailto:martin.weber@novabit.de">Martin Weber</a>
  * @version 00.01.000
  */
-
+@Configurable
 public class SearchFilterCache {
 
 	private static final Logger log = Logger.getLogger(SearchFilterCache.class);
 
 	private static SearchFilterCache singleton;
+	
+	//
 
 	private Map<Pair<String, String>, EntitySearchFilter> mpEntitySearchFilter = new HashMap<Pair<String, String>, EntitySearchFilter>();
+	
+	private TopicNotificationReceiver tnr;
 
 	private final MessageListener messagelistener = new MessageListener() {
 		@Override
@@ -70,12 +78,14 @@ public class SearchFilterCache {
 			if (msg instanceof ObjectMessage) {
 				try {
 					String[] asUsers = (String[])((ObjectMessage)msg).getObject();
+					final Main main = Main.getInstance();
+					final MainController mc = main.getMainController();
 					for (String sUser : asUsers) {
-						if (!(Main.getMainController().getUserName().equals(sUser)))
-							UIUtils.runCommandLater(Main.getMainFrame(), new CommonRunnable() {			
+						if (!(mc.getUserName().equals(sUser)))
+							UIUtils.runCommandLater(main.getMainFrame(), new CommonRunnable() {			
 								@Override
                                 public void run() throws CommonBusinessException {
-									Main.getMainController().refreshTaskController();
+									mc.refreshTaskController();
 								}
 							});	
 					}
@@ -91,8 +101,17 @@ public class SearchFilterCache {
 	};
 	
 	private SearchFilterCache() {
-		TopicNotificationReceiver.subscribe(JMSConstants.TOPICNAME_SEARCHFILTERCACHE, messagelistener);
-		loadSearchFilters();
+	}
+	
+	@PostConstruct
+	void init() {
+		tnr.subscribe(JMSConstants.TOPICNAME_SEARCHFILTERCACHE, messagelistener);
+		loadSearchFilters();		
+	}
+	
+	@Autowired
+	void setTopicNotificationReceiver(TopicNotificationReceiver tnr) {
+		this.tnr = tnr;
 	}
 
 	/**
@@ -109,7 +128,8 @@ public class SearchFilterCache {
 	 * initializes the cache for all entity searchfilters
 	 */
 	private void loadSearchFilters() {
-		for (SearchFilter searchFilter : SearchFilterDelegate.getInstance().getAllSearchFilterByUser(Main.getMainController().getUserName())) {
+		for (SearchFilter searchFilter : SearchFilterDelegate.getInstance().getAllSearchFilterByUser(
+				Main.getInstance().getMainController().getUserName())) {
 			if (isFilterValid(searchFilter)) {
 				if (searchFilter instanceof EntitySearchFilter) {
 					mpEntitySearchFilter.put(new Pair<String, String>(searchFilter.getName(), searchFilter.getOwner()), (EntitySearchFilter)searchFilter);
@@ -139,7 +159,7 @@ public class SearchFilterCache {
 	 */
 	public EntitySearchFilter getEntitySearchFilter(String sFilterName, String sOwner) {
 		if (StringUtils.isNullOrEmpty(sOwner)) {
-			sOwner = Main.getMainController().getUserName();
+			sOwner = Main.getInstance().getMainController().getUserName();
 		}
 
 		for (Pair<String, String> pKey : mpEntitySearchFilter.keySet()) {
@@ -178,7 +198,7 @@ public class SearchFilterCache {
 	 */
 	public boolean filterExists(String sFilterName, String sOwner) {
 		if (sOwner == null) {
-			sOwner = Main.getMainController().getUserName();
+			sOwner = Main.getInstance().getMainController().getUserName();
 		}
 
 		return (getEntitySearchFilter(sFilterName, sOwner) != null);

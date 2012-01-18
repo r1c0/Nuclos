@@ -17,8 +17,6 @@
 
 package org.nuclos.client.customcomp.resplan;
 
-import static org.nuclos.common2.CommonLocaleDelegate.getText;
-
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Rectangle;
@@ -115,7 +113,7 @@ public class ResPlanController extends CustomComponentController {
 	void init(CustomComponentVO vo) {
 		componentVO = vo;
 		configVO = ResPlanConfigVO.fromBytes(vo.getData());
-		resourceVO = configVO.getResources(CommonLocaleDelegate.getUserLocaleInfo());
+		resourceVO = configVO.getResources(CommonLocaleDelegate.getInstance().getUserLocaleInfo());
 
 		resEntity = CollectableHelper.getForEntity(configVO.getResourceEntity());
 		entryEntity = CollectableHelper.getForEntity(configVO.getEntryEntity());
@@ -157,11 +155,11 @@ public class ResPlanController extends CustomComponentController {
 						configVO.getScriptingBackgroundPaintMethod(), BackgroundPainter.SCRIPTING_SIGNATURE));
 				} else {
 					if (entryLabelCode != null) {
-						JOptionPane.showMessageDialog(Main.getMainFrame(), "Kein Code hinterlegt, angegebene Regeln werden ignoriert");
+						JOptionPane.showMessageDialog(Main.getInstance().getMainFrame(), "Kein Code hinterlegt, angegebene Regeln werden ignoriert");
 					}
 				}
 			} catch (Exception ex) {
-				Errors.getInstance().showExceptionDialog(Main.getMainFrame(), "Fehler beim Initialisieren des Skripting", ex);
+				Errors.getInstance().showExceptionDialog(Main.getInstance().getMainFrame(), "Fehler beim Initialisieren des Skripting", ex);
 			}
 		}
 
@@ -446,12 +444,12 @@ public class ResPlanController extends CustomComponentController {
 				if (!resPlanModel.isCollectableEntryValid(entry)) {
 					// if entry is invalid, remove it from the collection and add an error message instead
 					iter.remove();
-					messages.add(CommonLocaleDelegate.getMessage("nuclos.resplan.invalidEntry", null, entry.getIdentifierLabel()));
+					messages.add(getCommonLocaleDelegate().getMessage("nuclos.resplan.invalidEntry", null, entry.getIdentifierLabel()));
 				}
 			}
 			resPlanModel.setData(resources, entries);
 			if (truncated) {
-				messages.add(CommonLocaleDelegate.getMessage("nuclos.resplan.limitSearchResult", null, resourceLimit));
+				messages.add(getCommonLocaleDelegate().getMessage("nuclos.resplan.limitSearchResult", null, resourceLimit));
 			}
 			if (messages.size() > 0) {
 				component.setInfoMessages(messages, showMessage);
@@ -511,7 +509,7 @@ public class ResPlanController extends CustomComponentController {
 		private TimeGranularity(GranularityType type, TimeModel<Date> timeModel) {
 			this.type = type;
 			this.timeModel = timeModel;
-			this.cwLabel = CommonLocaleDelegate.getText("nuclos.resplan.cw.label");
+			this.cwLabel = CommonLocaleDelegate.getInstance().getText("nuclos.resplan.cw.label");
 		}
 
 		public GranularityType getType() {
@@ -534,11 +532,12 @@ public class ResPlanController extends CustomComponentController {
 
 		@Override
 		public String getCategoryName(int category) {
+			final CommonLocaleDelegate cld = CommonLocaleDelegate.getInstance();
 			switch (category) {
-			case 0: return getText("nuclos.resplan.granularity.month", null);
-			case 1: return getText("nuclos.resplan.granularity.calendarWeek", null);
-			case 2: return getText("nuclos.resplan.granularity.day", null);
-			case 3: return getText("nuclos.resplan.granularity.time", null);
+			case 0: return cld.getText("nuclos.resplan.granularity.month", null);
+			case 1: return cld.getText("nuclos.resplan.granularity.calendarWeek", null);
+			case 2: return cld.getText("nuclos.resplan.granularity.day", null);
+			case 3: return cld.getText("nuclos.resplan.granularity.time", null);
 			}
 			return null;
 		}

@@ -80,7 +80,6 @@ import org.nuclos.common.collect.collectable.searchcondition.CollectableComparis
 import org.nuclos.common.collect.collectable.searchcondition.CollectableSearchCondition;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
-import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.EntityAndFieldName;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
@@ -810,7 +809,7 @@ public abstract class SubFormController extends Controller
 			result = clctcompmodel.getField();
 		}
 		else {
-			throw new CommonFatalException(CommonLocaleDelegate.getMessage("SubFormController.1",
+			throw new CommonFatalException(getCommonLocaleDelegate().getMessage("SubFormController.1",
 				"Die Entit\u00e4t der Vaterkomponente ({0}) muss der Entit\u00e4t des Unterformulars ({1}) oder der Entit\u00e4t des \u00fcbergeordneten Formulars ({2}) entsprechen.",
 				sParentComponentEntityName, this.getCollectableEntity().getName(), this.getParentEntityName()));
 		}
@@ -819,7 +818,8 @@ public abstract class SubFormController extends Controller
 			throw new NuclosFieldNotInModelException();
 		}
 		else if(result == null) {
-			throw new CommonFatalException(CommonLocaleDelegate.getMessage("SubFormController.2", "Das Feld ({0}) ist nicht in der Entität ({1}) vorhanden!", sParentComponentEntityName, this.getParentEntityName()));
+			throw new CommonFatalException(getCommonLocaleDelegate().getMessage(
+					"SubFormController.2", "Das Feld ({0}) ist nicht in der Entität ({1}) vorhanden!", sParentComponentEntityName, this.getParentEntityName()));
 		}
 
 		return result;

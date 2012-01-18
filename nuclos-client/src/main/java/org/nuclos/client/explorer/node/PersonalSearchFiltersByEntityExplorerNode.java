@@ -36,7 +36,6 @@ import org.nuclos.client.resource.ResourceCache;
 import org.nuclos.client.ui.Icons;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.client.ui.tree.TreeNodeAction;
-import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.CommonRunnable;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.server.navigation.treenode.TreeNode;
@@ -63,8 +62,8 @@ public class PersonalSearchFiltersByEntityExplorerNode extends ExplorerNode<Pers
 		if (Modules.getInstance().isModuleEntity(getTreeNode().getEntity())) {
 			String sResourceName = GenericObjectDelegate.getInstance().getResourceMap().get(getTreeNode().getModuleId());
 			String nuclosResource = MetaDataClientProvider.getInstance().getEntity(Modules.getInstance().getEntityNameByModuleId(getTreeNode().getModuleId())).getNuclosResource();
-			if (sResourceName != null && ResourceCache.getIconResource(sResourceName) != null) {
-					return MainFrame.resizeAndCacheTabIcon(ResourceCache.getIconResource(sResourceName));
+			if (sResourceName != null && ResourceCache.getInstance().getIconResource(sResourceName) != null) {
+					return MainFrame.resizeAndCacheTabIcon(ResourceCache.getInstance().getIconResource(sResourceName));
 			} else if (nuclosResource != null){
 				ImageIcon nuclosIcon = NuclosResourceCache.getNuclosResourceIcon(nuclosResource);
 				if (nuclosIcon != null) return MainFrame.resizeAndCacheTabIcon(nuclosIcon);
@@ -76,7 +75,7 @@ public class PersonalSearchFiltersByEntityExplorerNode extends ExplorerNode<Pers
 			Integer resId = MetaDataClientProvider.getInstance().getEntity(getTreeNode().getEntity()).getResourceId();
 			String nuclosResource = MetaDataClientProvider.getInstance().getEntity(getTreeNode().getEntity()).getNuclosResource();
 			if(resId != null) {
-				ImageIcon standardIcon = ResourceCache.getIconResource(resId);
+				ImageIcon standardIcon = ResourceCache.getInstance().getIconResource(resId);
 				return MainFrame.resizeAndCacheTabIcon(standardIcon);		
 			} else if (nuclosResource != null){
 				ImageIcon nuclosIcon = NuclosResourceCache.getNuclosResourceIcon(nuclosResource);
@@ -102,7 +101,8 @@ public class PersonalSearchFiltersByEntityExplorerNode extends ExplorerNode<Pers
 	private class SearchInEntityAction extends TreeNodeAction {
 
 		SearchInEntityAction(JTree tree) {
-			super(ACTIONCOMMAND_SEARCHINENTITY, CommonLocaleDelegate.getMessage("PersonalSearchFiltersByEntityExplorerNode.1","Suchen") + "...", tree);
+			super(ACTIONCOMMAND_SEARCHINENTITY, 
+					getCommonLocaleDelegate().getMessage("PersonalSearchFiltersByEntityExplorerNode.1","Suchen") + "...", tree);
 		}
 
 		@Override

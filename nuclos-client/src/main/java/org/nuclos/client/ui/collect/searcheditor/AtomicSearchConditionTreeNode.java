@@ -109,7 +109,8 @@ public class AtomicSearchConditionTreeNode extends SearchConditionTreeNode {
 	 */
 	@Override
 	protected String getLabelForExpandedState() {
-		throw new UnsupportedOperationException(CommonLocaleDelegate.getMessage("AtomicSearchConditionTreeNode.1","Ein atomarer Knoten kann nicht erweitert werden."));
+		throw new UnsupportedOperationException(CommonLocaleDelegate.getInstance().getMessage(
+				"AtomicSearchConditionTreeNode.1","Ein atomarer Knoten kann nicht erweitert werden."));
 	}
 
 	@Override
@@ -127,7 +128,8 @@ public class AtomicSearchConditionTreeNode extends SearchConditionTreeNode {
 				CollectableFieldsProviderFactory clctfproviderfactory,
 				Collection<CollectableEntityField> additionalFields
 		) {
-			super(ACTIONCOMMAND_EDIT_ATOMICNODE, CommonLocaleDelegate.getMessage("AtomicSearchConditionTreeNode.2","Bearbeiten"), tree);
+			super(ACTIONCOMMAND_EDIT_ATOMICNODE, CommonLocaleDelegate.getInstance().getMessage(
+					"AtomicSearchConditionTreeNode.2","Bearbeiten"), tree);
 			this.clcte = clcte;
 			this.clctfproviderfactory = clctfproviderfactory;
 			this.additionalFields = additionalFields;

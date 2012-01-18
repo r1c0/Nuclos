@@ -55,7 +55,6 @@ import org.nuclos.common.collect.collectable.Collectable;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Transformer;
 import org.nuclos.common2.ClientPreferences;
-import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.CommonRunnable;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonFinderException;
@@ -245,7 +244,7 @@ public class ExplorerController extends Controller {
 				return;
 			}
 
-			ExplorerView view = Main.getMainController().getExplorerController().addOrReplaceExplorerViewFor(tab, rp.treenodeRoot, false, false, true);
+			ExplorerView view = Main.getInstance().getMainController().getExplorerController().addOrReplaceExplorerViewFor(tab, rp.treenodeRoot, false, false, true);
 			view.getRootNode().refresh(view.getJTree());
 			ExplorerNode.expandTreeAsync(rp.lstExpandedPaths, view.getJTree());
 		}
@@ -278,7 +277,7 @@ public class ExplorerController extends Controller {
 	private ExplorerView addOrReplaceExplorerViewFor(MainFrameTab newTab, final TreeNode treenodeRoot, boolean withSearchWorker, boolean selectTab, boolean onlyAdd) {
 		ExplorerView view = this.getExplorerViewFor(treenodeRoot);
 		final String sLabel = treenodeRoot.getLabel();
-		final String sLabelWorking = sLabel + " ("+ CommonLocaleDelegate.getMessage("ExplorerController.20","In Bearbeitung") + ")";
+		final String sLabelWorking = sLabel + " ("+ getCommonLocaleDelegate().getMessage("ExplorerController.20","In Bearbeitung") + ")";
 		final boolean addToTreeHome = newTab==null;
 		if (newTab == null) {
 			newTab = new MainFrameTab();
@@ -341,12 +340,15 @@ public class ExplorerController extends Controller {
 					LOG.error(ex);
 
 					if (ex instanceof ExplorerNodeRefreshException) {
-						String sMessage = ex.getMessage() + "\n\n" + CommonLocaleDelegate.getMessage("ExplorerController.13","Der Reiter des Knotens wird automatisch geschlossen.");
-						JOptionPane.showMessageDialog(null, sMessage, CommonLocaleDelegate.getMessage("ExplorerController.30","Wiederherstellen der Baumansicht"), JOptionPane.ERROR_MESSAGE);
+						String sMessage = ex.getMessage() + "\n\n" + getCommonLocaleDelegate().getMessage(
+								"ExplorerController.13","Der Reiter des Knotens wird automatisch geschlossen.");
+						JOptionPane.showMessageDialog(null, sMessage, getCommonLocaleDelegate().getMessage(
+								"ExplorerController.30","Wiederherstellen der Baumansicht"), JOptionPane.ERROR_MESSAGE);
 						closeExplorerView(viewForWorker);
 					}
 					else {
-						Errors.getInstance().showExceptionDialog(null, CommonLocaleDelegate.getMessage("ExplorerController.17","Fehler beim Anzeigen des Explorerfensters"), ex);
+						Errors.getInstance().showExceptionDialog(null, getCommonLocaleDelegate().getMessage(
+								"ExplorerController.17","Fehler beim Anzeigen des Explorerfensters"), ex);
 					}
 				}
 			};
@@ -365,14 +367,15 @@ public class ExplorerController extends Controller {
 				LOG.error("addOrReplaceExplorerViewFor failed" + e, e);
 
 				if (e instanceof ExplorerNodeRefreshException) {
-					String sMessage = e.getMessage() + "\n\n" + CommonLocaleDelegate.getMessage(
+					String sMessage = e.getMessage() + "\n\n" + getCommonLocaleDelegate().getMessage(
 							"ExplorerController.13","Der Reiter des Knotens wird automatisch geschlossen.");
-					JOptionPane.showMessageDialog(null, sMessage, CommonLocaleDelegate.getMessage(
+					JOptionPane.showMessageDialog(null, sMessage, getCommonLocaleDelegate().getMessage(
 							"ExplorerController.30","Wiederherstellen der Baumansicht"), JOptionPane.ERROR_MESSAGE);
 					closeExplorerView(viewForWorker);
 				}
 				else {
-					Errors.getInstance().showExceptionDialog(null, CommonLocaleDelegate.getMessage("ExplorerController.17","Fehler beim Anzeigen des Explorerfensters"), e);
+					Errors.getInstance().showExceptionDialog(null, getCommonLocaleDelegate().getMessage(
+							"ExplorerController.17","Fehler beim Anzeigen des Explorerfensters"), e);
 				}
 			}
 		}
@@ -461,7 +464,9 @@ public class ExplorerController extends Controller {
 		UIUtils.runCommand(this.getParent(), new CommonRunnable() {
 			@Override
             public void run() throws CommonFinderException {
-				final DirectoryRuleNode treenodeRoot = new DirectoryRuleNode(true, CommonLocaleDelegate.getMessage("ExplorerController.24","Regelverwendungen"), CommonLocaleDelegate.getMessage("ExplorerController.25","Regelverwendungen"), null, false);
+				final DirectoryRuleNode treenodeRoot = new DirectoryRuleNode(true, getCommonLocaleDelegate().getMessage(
+						"ExplorerController.24","Regelverwendungen"), 
+						getCommonLocaleDelegate().getMessage("ExplorerController.25","Regelverwendungen"), null, false);
 				final ExplorerView view = ExplorerController.this.addOrReplaceExplorerViewFor(treenodeRoot, true);
 
 				if (ruleIdToGoto != null) {
@@ -498,7 +503,9 @@ public class ExplorerController extends Controller {
 		UIUtils.runCommand(this.getParent(), new CommonRunnable() {
 			@Override
             public void run() throws CommonFinderException {
-				final DirectoryDatasourceNode treenodeRoot = new DirectoryDatasourceNode(true, CommonLocaleDelegate.getMessage("ExplorerController.10","Datenquellen"), CommonLocaleDelegate.getMessage("ExplorerController.11","Datenquellen"), null);
+				final DirectoryDatasourceNode treenodeRoot = new DirectoryDatasourceNode(true, getCommonLocaleDelegate().getMessage(
+						"ExplorerController.10","Datenquellen"), getCommonLocaleDelegate().getMessage(
+								"ExplorerController.11","Datenquellen"), null);
 				final ExplorerView view = ExplorerController.this.addOrReplaceExplorerViewFor(treenodeRoot, true);
 
 				if (datasourceIdToGoto != null) {

@@ -17,8 +17,6 @@
 
 package org.nuclos.client.customcomp.wizard;
 
-import static org.nuclos.common2.CommonLocaleDelegate.getMessage;
-
 import java.awt.Dimension;
 
 import javax.swing.JButton;
@@ -51,13 +49,14 @@ public class CustomComponentWizard extends Wizard {
 				JButton previousButton, JButton nextButton, JButton lastButton,
 				JButton finishButton, JButton cancelButton, JButton closeButton) {
 				
-				previousButton.setText(getMessage("wizard.buttonbar.previous", "zur\u00fcck"));
-				nextButton.setText(getMessage("wizard.buttonbar.next", "weiter"));
+				final CommonLocaleDelegate cld = CommonLocaleDelegate.getInstance();
+				previousButton.setText(cld.getMessage("wizard.buttonbar.previous", "zur\u00fcck"));
+				nextButton.setText(cld.getMessage("wizard.buttonbar.next", "weiter"));
 				lastButton.setText(">>");
-				finishButton.setText(getMessage("wizard.buttonbar.finish", "Fertig"));
-				cancelButton.setText(getMessage("wizard.buttonbar.cancel", "Verwerfen"));
+				finishButton.setText(cld.getMessage("wizard.buttonbar.finish", "Fertig"));
+				cancelButton.setText(cld.getMessage("wizard.buttonbar.cancel", "Verwerfen"));
 				cancelButton.setPreferredSize(new Dimension(80, cancelButton.getPreferredSize().height));
-				closeButton.setText(getMessage("wizard.buttonbar.close", "Schliessen"));
+				closeButton.setText(cld.getMessage("wizard.buttonbar.close", "Schliessen"));
 				
 				super.layoutButtons(helpButton, previousButton, nextButton, lastButton,
 					finishButton, cancelButton, closeButton);
@@ -67,7 +66,8 @@ public class CustomComponentWizard extends Wizard {
 	}	
 	
 	public static void run() {
-		final MainFrameTab tab = new MainFrameTab(CommonLocaleDelegate.getText("nuclos.resplan.wizard.title", "Resourcenplanungskomponente Wizard"));
+		final MainFrameTab tab = new MainFrameTab(CommonLocaleDelegate.getInstance().getText(
+				"nuclos.resplan.wizard.title", "Resourcenplanungskomponente Wizard"));
 		
 		CustomComponentWizardModel model = new CustomComponentWizardModel();
 		Wizard wizard = new CustomComponentWizard(model);

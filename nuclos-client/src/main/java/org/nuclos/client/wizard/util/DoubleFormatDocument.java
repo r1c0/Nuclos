@@ -28,7 +28,7 @@ public class DoubleFormatDocument extends PlainDocument {
 	@Override
 	public void insertString(int offset, String str, javax.swing.text.AttributeSet a)  throws javax.swing.text.BadLocationException {
 		try {
-			String lang = CommonLocaleDelegate.getLocale().getLanguage();
+			String lang = CommonLocaleDelegate.getInstance().getLocale().getLanguage();
 			if(str.length() == 1) {
 				String comma = ",";
 				if("de".equals(lang))

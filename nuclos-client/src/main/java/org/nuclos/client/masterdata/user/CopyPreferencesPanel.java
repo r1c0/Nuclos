@@ -79,13 +79,15 @@ public class CopyPreferencesPanel extends JPanel {
 		userCollectableCbx = new JComboBox(getUserNames().toArray());
 		AutoCompleteDecorator.decorate(userCollectableCbx);
 
-		JLabel label = new JLabel(CommonLocaleDelegate.getMessage("nuclos.preferences.transfer.sourceuser", null));
+		JLabel label = new JLabel(CommonLocaleDelegate.getInstance().getMessage(
+				"nuclos.preferences.transfer.sourceuser", null));
 		label.setLabelFor(userCollectableCbx);
 
 		Box sourceUserBox = UIUtils.createHorizontalBox(label, userCollectableCbx, 5, null);
 		//		
 		JPanel prefsPanel = new JPanel(new BorderLayout());
-		prefsPanel.setBorder(new TitledBorder(CommonLocaleDelegate.getMessage("nuclos.user.preferences", null)));
+		prefsPanel.setBorder(new TitledBorder(CommonLocaleDelegate.getInstance().getMessage(
+				"nuclos.user.preferences", null)));
 
 		tree = new JXTree(new PreferencesTreeModel());
 		tree.setShowsRootHandles(true);
@@ -154,7 +156,8 @@ public class CopyPreferencesPanel extends JPanel {
 		PreferencesTreeModel model = new PreferencesTreeModel();
 		PreferencesExportNode rootTreeNode = model.getRoot();
 
-		PreferencesExportNode entitiesTreeNode = new PreferencesExportNode(CommonLocaleDelegate.getMessage("nuclos.preferences.entity.layoutconfig", null));
+		PreferencesExportNode entitiesTreeNode = new PreferencesExportNode(CommonLocaleDelegate.getInstance().getMessage(
+				"nuclos.preferences.entity.layoutconfig", null));
 		for (String nodeKey : prefs.keySet()) {
 			Matcher matcher = ENTITY_KEY_PATTERN.matcher(nodeKey);
 			if (matcher.matches()) {

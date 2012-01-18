@@ -37,7 +37,8 @@ public class BackgroundProcessStatusDialog extends JDialog {
 	private BackgroundProcessStatusPanel pnlStatus = new BackgroundProcessStatusPanel();
 
 	public BackgroundProcessStatusDialog(Frame owner) {
-		super(owner, CommonLocaleDelegate.getMessage("BackgroundProcessStatusDialog.1","Hintergrundprozesse"), false);
+		super(owner, CommonLocaleDelegate.getInstance().getMessage(
+				"BackgroundProcessStatusDialog.1","Hintergrundprozesse"), false);
 		setSize(400, 200);
 		//setLocation(100, 100);
 		init();

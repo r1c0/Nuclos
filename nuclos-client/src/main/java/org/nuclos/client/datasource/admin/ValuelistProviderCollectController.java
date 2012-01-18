@@ -43,7 +43,6 @@ import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.database.query.definition.QueryTable;
 import org.nuclos.common.masterdata.CollectableMasterDataEntity;
-import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.IOUtils;
 import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.exception.CommonBusinessException;
@@ -125,11 +124,18 @@ public class ValuelistProviderCollectController extends AbstractDatasourceCollec
 	protected void deleteCollectable(CollectableDataSource clct) throws CommonBusinessException {
 		final List<DatasourceVO> lstUsages = DatasourceDelegate.getInstance().getUsagesForDatasource(clct.getDatasourceVO());
 		if (!lstUsages.isEmpty()) {
-			final int iBtn = JOptionPane.showConfirmDialog(this.getFrame(), CommonLocaleDelegate.getMessage("DatasourceCollectController.8","Diese Datenquelle wird in anderen Datenquellen verwendet.") + "\n" +
-				CommonLocaleDelegate.getMessage("DatasourceCollectController.1","Das L\u00f6schen f\u00fchrt dazu, dass folgende Datenquellen nicht mehr ausf\u00fchrbar sind") + ":\n" + getUsagesAsString(lstUsages) +
-					"\n" + CommonLocaleDelegate.getMessage("DatasourceCollectController.24","Wollen sie die Datenquelle dennoch l\u00f6schen?"), CommonLocaleDelegate.getMessage("DatasourceCollectController.20","Umbenennung best\u00e4tigen"), JOptionPane.YES_NO_OPTION);
+			final int iBtn = JOptionPane.showConfirmDialog(this.getFrame(), getCommonLocaleDelegate().getMessage(
+					"DatasourceCollectController.8","Diese Datenquelle wird in anderen Datenquellen verwendet.") + "\n" 
+					+ getCommonLocaleDelegate().getMessage(
+							"DatasourceCollectController.1","Das L\u00f6schen f\u00fchrt dazu, dass folgende Datenquellen nicht mehr ausf\u00fchrbar sind") + ":\n" 
+					+ getUsagesAsString(lstUsages) 
+					+ "\n" + getCommonLocaleDelegate().getMessage(
+							"DatasourceCollectController.24","Wollen sie die Datenquelle dennoch l\u00f6schen?"), 
+					getCommonLocaleDelegate().getMessage("DatasourceCollectController.20","Umbenennung best\u00e4tigen"), 
+					JOptionPane.YES_NO_OPTION);
 			if (iBtn != JOptionPane.OK_OPTION) {
-				throw new CommonBusinessException(CommonLocaleDelegate.getMessage("DatasourceCollectController.15","L\u00f6schen wurde durch den Benutzer abgebrochen."));
+				throw new CommonBusinessException(getCommonLocaleDelegate().getMessage(
+						"DatasourceCollectController.15","L\u00f6schen wurde durch den Benutzer abgebrochen."));
 			}
 			DatasourceDelegate.getInstance().setInvalid(lstUsages);
 		}
@@ -156,11 +162,17 @@ public class ValuelistProviderCollectController extends AbstractDatasourceCollec
 		if (bDataSourceNameWasChanged) {
 			final List<DatasourceVO> lstUsages = DatasourceDelegate.getInstance().getUsagesForDatasource(valuelistProviderVO);
 			if (!lstUsages.isEmpty()) {
-				final int iBtn = JOptionPane.showConfirmDialog(this.getFrame(), CommonLocaleDelegate.getMessage("DatasourceCollectController.9","Diese Datenquelle wird in anderen Datenquellen verwendet.") + "\n" +
-					CommonLocaleDelegate.getMessage("DatasourceCollectController.11","Eine Umbenennung f\u00fchrt dazu, dass folgende Datenquellen nicht mehr ausf\u00fchrbar sind:") + "\n" +
-						getUsagesAsString(lstUsages) + "\n" + CommonLocaleDelegate.getMessage("DatasourceCollectController.23","Wollen sie dennoch speichern?"), CommonLocaleDelegate.getMessage("DatasourceCollectController.21","Umbenennung best\u00e4tigen"), JOptionPane.YES_NO_OPTION);
+				final int iBtn = JOptionPane.showConfirmDialog(this.getFrame(), getCommonLocaleDelegate().getMessage(
+						"DatasourceCollectController.9","Diese Datenquelle wird in anderen Datenquellen verwendet.") + "\n" 
+						+ getCommonLocaleDelegate().getMessage(
+								"DatasourceCollectController.11","Eine Umbenennung f\u00fchrt dazu, dass folgende Datenquellen nicht mehr ausf\u00fchrbar sind:") 
+						+ "\n" + getUsagesAsString(lstUsages) + "\n" + getCommonLocaleDelegate().getMessage(
+								"DatasourceCollectController.23","Wollen sie dennoch speichern?"), 
+						getCommonLocaleDelegate().getMessage("DatasourceCollectController.21","Umbenennung best\u00e4tigen"), 
+						JOptionPane.YES_NO_OPTION);
 				if (iBtn != JOptionPane.OK_OPTION) {
-					throw new CommonBusinessException(CommonLocaleDelegate.getMessage("DatasourceCollectController.18","Speichern wurde durch den Benutzer abgebrochen."));
+					throw new CommonBusinessException(getCommonLocaleDelegate().getMessage(
+							"DatasourceCollectController.18","Speichern wurde durch den Benutzer abgebrochen."));
 				}
 				DatasourceDelegate.getInstance().setInvalid(lstUsages);
 			}
@@ -175,7 +187,8 @@ public class ValuelistProviderCollectController extends AbstractDatasourceCollec
 	@Override
 	protected CollectableDataSource updateCollectable(CollectableDataSource clct, Object oAdditionalData) throws CommonBusinessException {
 		/** @todo implement */
-		throw new NuclosFatalException(CommonLocaleDelegate.getMessage("DatasourceCollectController.17","Sammelbearbeitung ist hier noch nicht m\u00f6glich."));
+		throw new NuclosFatalException(getCommonLocaleDelegate().getMessage(
+				"DatasourceCollectController.17","Sammelbearbeitung ist hier noch nicht m\u00f6glich."));
 	}
 
 	/**
@@ -243,7 +256,8 @@ public class ValuelistProviderCollectController extends AbstractDatasourceCollec
 	protected void importXML(String sXML) throws NuclosBusinessException {
 		final String sWarnings = QueryBuilderEditor.getSkippedElements(pnlEdit.getQueryEditor().setXML(sXML));
 		if (sWarnings.length() > 0) {
-			JOptionPane.showMessageDialog(parent, CommonLocaleDelegate.getMessage("DatasourceCollectController.12","Folgende Elemente existieren nicht mehr in dem aktuellen Datenbankschema\n und wurden daher entfernt:") + "\n" + sWarnings);
+			JOptionPane.showMessageDialog(parent, getCommonLocaleDelegate().getMessage(
+					"DatasourceCollectController.12","Folgende Elemente existieren nicht mehr in dem aktuellen Datenbankschema\n und wurden daher entfernt:") + "\n" + sWarnings);
 		}
 		detailsChanged(pnlEdit.getQueryEditor());
 	}
@@ -264,7 +278,8 @@ public class ValuelistProviderCollectController extends AbstractDatasourceCollec
 		try {
 			final DatasourceFacadeRemote dataSourceFacade = ServiceLocator.getInstance().getFacade(DatasourceFacadeRemote.class);
 			dataSourceFacade.validateSqlFromXML(pnlEdit.getQueryEditor().getXML(new DatasourceEntityOptions(false)));
-			JOptionPane.showMessageDialog(getFrame(), CommonLocaleDelegate.getMessage("DatasourceCollectController.10","Die SQL Abfrage ist syntaktisch korrekt."));
+			JOptionPane.showMessageDialog(getFrame(), getCommonLocaleDelegate().getMessage(
+					"DatasourceCollectController.10","Die SQL Abfrage ist syntaktisch korrekt."));
 		}
 		catch (Exception ex) {
 			Errors.getInstance().showExceptionDialog(getFrame(), ex);

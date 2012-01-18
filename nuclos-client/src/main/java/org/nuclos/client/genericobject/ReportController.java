@@ -133,7 +133,7 @@ public class ReportController extends Controller {
 				return;
 			}
 			
-			String sDialogTitle = CommonLocaleDelegate.getMessage("ReportController.15","Verf\u00fcgbare Formulare");
+			String sDialogTitle = getCommonLocaleDelegate().getMessage("ReportController.15","Verf\u00fcgbare Formulare");
 			//int btnValue = JOptionPane.showConfirmDialog(this.getParent(), pnlSelection, sDialogTitle, JOptionPane.OK_CANCEL_OPTION);
 	        final JOptionPane pane = new JOptionPane(pnlSelection, JOptionPane.PLAIN_MESSAGE, JOptionPane.OK_CANCEL_OPTION, null, null, null);
 	        final JDialog dialog = pane.createDialog(this.getParent(), sDialogTitle);
@@ -177,7 +177,8 @@ public class ReportController extends Controller {
 		final boolean bSingleSelection = (iObjectCount == 1);
 		if (collReports.size() <= 0) {
 			final String sExceptionText = (bSingleSelection ?
-				CommonLocaleDelegate.getMessage("ReportController.9","Es ist noch kein Formular zugeordnet.") : CommonLocaleDelegate.getMessage("ReportController.8","Dieser Auswahl sind keine gemeinsamen Formulare zugeordnet."));
+				CommonLocaleDelegate.getInstance().getMessage("ReportController.9","Es ist noch kein Formular zugeordnet.") : 
+				CommonLocaleDelegate.getInstance().getMessage("ReportController.8","Dieser Auswahl sind keine gemeinsamen Formulare zugeordnet."));
 			throw new NuclosReportException(sExceptionText);
 		}
 
@@ -287,7 +288,8 @@ public class ReportController extends Controller {
 							SwingUtilities.invokeLater(new Runnable() {
 								@Override
 								public void run() {
-									Errors.getInstance().showExceptionDialog(ReportController.this.getParent(), CommonLocaleDelegate.getMessage("ReportController.10","Fehler beim Ausf\u00fchren des Reports") + ":", ex);
+									Errors.getInstance().showExceptionDialog(ReportController.this.getParent(), 
+											getCommonLocaleDelegate().getMessage("ReportController.10","Fehler beim Ausf\u00fchren des Reports") + ":", ex);
 								}
 							});
 						}
@@ -360,7 +362,9 @@ public class ReportController extends Controller {
 							SwingUtilities.invokeLater(new Runnable() {
 								@Override
 								public void run() {
-									Errors.getInstance().showExceptionDialog(ReportController.this.getParent(), CommonLocaleDelegate.getMessage("ReportController.6","Die Ausf\u00fchrung des Reports wurde unerwartet unterbrochen") + ": ", ex);
+									Errors.getInstance().showExceptionDialog(ReportController.this.getParent(), 
+											getCommonLocaleDelegate().getMessage(
+													"ReportController.6","Die Ausf\u00fchrung des Reports wurde unerwartet unterbrochen") + ": ", ex);
 								}
 							});
 						}
@@ -368,7 +372,9 @@ public class ReportController extends Controller {
 							SwingUtilities.invokeLater(new Runnable() {
 								@Override
 								public void run() {
-									Errors.getInstance().showExceptionDialog(ReportController.this.getParent(), CommonLocaleDelegate.getMessage("ReportController.11","Fehler beim Ausf\u00fchren des Reports") + ":", ex);
+									Errors.getInstance().showExceptionDialog(ReportController.this.getParent(), 
+											getCommonLocaleDelegate().getMessage(
+													"ReportController.11","Fehler beim Ausf\u00fchren des Reports") + ":", ex);
 								}
 							});
 						}
@@ -464,13 +470,14 @@ public class ReportController extends Controller {
 		final ReportFormatController formatController;
 		if (lstclctlo.isEmpty()) {
 			formatController = new ReportFormatController(this.getParent());
-			if (formatController.run(CommonLocaleDelegate.getMessage("ReportController.13","Suchergebnis exportieren"))) {
+			if (formatController.run(getCommonLocaleDelegate().getMessage("ReportController.13","Suchergebnis exportieren"))) {
 				export(clcteMain, searchexpr, lstclctefweSelected, bIncludeSubModules, formatController.getFormat());
 			}
 		}
 		else {
 			formatController = new ChoiceListOrReportExportController(this.getParent(), usagecriteria, lstclctlo.size());
-			final boolean bSearchDialog = formatController.run(CommonLocaleDelegate.getMessage("ReportController.12","Suchergebnis exportieren / Formulardruck"));
+			final boolean bSearchDialog = formatController.run(getCommonLocaleDelegate().getMessage(
+					"ReportController.12","Suchergebnis exportieren / Formulardruck"));
 			final ChoiceListOrReportExportPanel pnlChoiceExport = ((ChoiceListOrReportExportController) formatController).pnlChoiceExport;
 			if (bSearchDialog && pnlChoiceExport.getReportButton().isSelected()) {
 				try {
@@ -578,7 +585,7 @@ public class ReportController extends Controller {
 	public void export(JTable table, String sDatasourceName) throws NuclosBusinessException {
 		try {
 			final ReportFormatController formatctl = new ReportFormatController(this.getParent());
-			if (formatctl.run(CommonLocaleDelegate.getMessage("ReportController.14","Tabelle exportieren"))) {
+			if (formatctl.run(getCommonLocaleDelegate().getMessage("ReportController.14","Tabelle exportieren"))) {
 				UIUtils.showWaitCursorForFrame(this.getParent(), true);
 				switch (formatctl.getFormat()) {
 					case PDF:

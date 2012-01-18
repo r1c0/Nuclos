@@ -59,13 +59,17 @@ public class StateModelHeaderPanel extends JPanel {
 		GridBagConstraints gbc = new GridBagConstraints();
 		gbc.anchor = GridBagConstraints.WEST;
 		gbc.insets.right = 10;
-		clcttfName.setLabelText(CommonLocaleDelegate.getMessage("StateModelHeaderPanel.3","Name"));
-		clcttfName.setToolTipText(CommonLocaleDelegate.getMessage("StateModelHeaderPanel.4","Name des Statusmodells"));
+		clcttfName.setLabelText(CommonLocaleDelegate.getInstance().getMessage(
+				"StateModelHeaderPanel.3","Name"));
+		clcttfName.setToolTipText(CommonLocaleDelegate.getInstance().getMessage(
+				"StateModelHeaderPanel.4","Name des Statusmodells"));
 		clcttfName.setColumns(20);
 		pnlTextFields.add(this.clcttfName.getJComponent(), gbc);
 
-		clcttfDescription.setLabelText(CommonLocaleDelegate.getMessage("StateModelHeaderPanel.1","Beschreibung"));
-		clcttfDescription.setToolTipText(CommonLocaleDelegate.getMessage("StateModelHeaderPanel.2","Beschreibung des Statusmodells"));
+		clcttfDescription.setLabelText(CommonLocaleDelegate.getInstance().getMessage(
+				"StateModelHeaderPanel.1","Beschreibung"));
+		clcttfDescription.setToolTipText(CommonLocaleDelegate.getInstance().getMessage(
+				"StateModelHeaderPanel.2","Beschreibung des Statusmodells"));
 		gbc.insets.right = 5;
 		pnlTextFields.add(this.clcttfDescription.getJLabel(), gbc);
 

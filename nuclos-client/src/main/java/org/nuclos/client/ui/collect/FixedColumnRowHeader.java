@@ -226,7 +226,8 @@ public class FixedColumnRowHeader extends SubformRowHeader {
 		ctl.setModel(ro);
 		
 		final List<CollectableEntityField> lstSelectedOld = new ArrayList<CollectableEntityField>((List<CollectableEntityField>) ro.getSelectedFields());
-		final boolean bOK = ctl.run(CommonLocaleDelegate.getMessage("SelectColumnsController.1","Anzuzeigende Spalten ausw\u00e4hlen"));
+		final boolean bOK = ctl.run(CommonLocaleDelegate.getInstance().getMessage(
+				"SelectColumnsController.1","Anzuzeigende Spalten ausw\u00e4hlen"));
 
 		if (bOK) {
 			final List<CollectableEntityField> lstSelectedNew = ctl.getSelectedObjects();

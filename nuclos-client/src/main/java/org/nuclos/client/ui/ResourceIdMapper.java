@@ -38,7 +38,7 @@ public class ResourceIdMapper<V> extends ObjectToStringConverter implements Stri
 	public ResourceIdMapper(Map<V, String> map) {
 		this.translations = new HashMap<Object, String>();
 		for (Map.Entry<?, String> e : map.entrySet()) {
-			String text = CommonLocaleDelegate.getTextFallback(e.getValue(), null);
+			String text = CommonLocaleDelegate.getInstance().getTextFallback(e.getValue(), null);
 			if (text != null)
 				translations.put(e.getKey(), text);
 		}
@@ -49,7 +49,7 @@ public class ResourceIdMapper<V> extends ObjectToStringConverter implements Stri
 		for (V value : values) {
 			if (value instanceof Localizable) {
 				Localizable localizable = (Localizable) value;
-				String text = CommonLocaleDelegate.getTextFallback(localizable.getResourceId(), null);
+				String text = CommonLocaleDelegate.getInstance().getTextFallback(localizable.getResourceId(), null);
 				if (text != null)
 					translations.put(value, text);
 			}

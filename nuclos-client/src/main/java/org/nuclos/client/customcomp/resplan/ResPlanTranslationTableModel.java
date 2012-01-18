@@ -132,6 +132,7 @@ public class ResPlanTranslationTableModel extends AbstractTableModel {
 
 	@Override
 	public String getColumnName(int column) {
-		return CommonLocaleDelegate.getText("nuclos.resplan.l10n.labels." + columns[column]);
+		return CommonLocaleDelegate.getInstance().getText(
+				"nuclos.resplan.l10n.labels." + columns[column]);
 	}
 }

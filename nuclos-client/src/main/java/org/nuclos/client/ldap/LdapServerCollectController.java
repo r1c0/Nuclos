@@ -38,7 +38,6 @@ import org.nuclos.client.ui.collect.CollectStateEvent;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.PointerException;
 import org.nuclos.common.collect.collectable.Collectable;
-import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.server.masterdata.valueobject.DependantMasterDataMap;
@@ -49,7 +48,8 @@ public class LdapServerCollectController extends MasterDataCollectController {
 
 	private static final Logger LOG = Logger.getLogger(LdapServerCollectController.class);
 	
-	private final Action actTestAuthentication = new CommonAbstractAction(Icons.getInstance().getIconValidate16(), CommonLocaleDelegate.getMessage("LdapServerCollectController.testauthentication", "Anmeldung testen")) {
+	private final Action actTestAuthentication = new CommonAbstractAction(Icons.getInstance().getIconValidate16(), 
+			getCommonLocaleDelegate().getMessage("LdapServerCollectController.testauthentication", "Anmeldung testen")) {
 
 		@Override
 		public void actionPerformed(ActionEvent ev) {
@@ -95,7 +95,8 @@ public class LdapServerCollectController extends MasterDataCollectController {
 
 		btnTestAuthentication = new JButton(this.actTestAuthentication);
 		btnTestAuthentication.setName("btnTestAuthentication");
-		btnTestAuthentication.setText(CommonLocaleDelegate.getMessage("LdapServerCollectController.testauthentication", "Anmeldung testen"));
+		btnTestAuthentication.setText(getCommonLocaleDelegate().getMessage(
+				"LdapServerCollectController.testauthentication", "Anmeldung testen"));
 		//toolbar.add(btnTestAuthentication);
 		this.getDetailsPanel().addToolBarComponent(btnTestAuthentication);
 		
@@ -151,7 +152,8 @@ public class LdapServerCollectController extends MasterDataCollectController {
 					JOptionPane optpn = new JOptionPane(inputpanel, JOptionPane.PLAIN_MESSAGE, JOptionPane.OK_CANCEL_OPTION);
 	
 					// perform the dialog:
-					JDialog dialog = optpn.createDialog(getFrame(), CommonLocaleDelegate.getMessage("LdapServerCollectController.testauthentication", "Anmeldung testen"));
+					JDialog dialog = optpn.createDialog(getFrame(), getCommonLocaleDelegate().getMessage(
+							"LdapServerCollectController.testauthentication", "Anmeldung testen"));
 					dialog.setModal(true);
 					dialog.setResizable(false);
 					dialog.pack();
@@ -165,20 +167,26 @@ public class LdapServerCollectController extends MasterDataCollectController {
 							int messagetype;
 							try {
 								if (LDAPDataDelegate.getInstance().tryAuthentication(servername, inputpanel.getUsername(), inputpanel.getPassword())) {
-									title = CommonLocaleDelegate.getText("LdapServerCollectController.testsuccessful.title", "Test erfolgreich");
-									message = CommonLocaleDelegate.getMessage("LdapServerCollectController.testsuccessful.message", "Der Login {0} wurde erfolgreich authentisiert.", inputpanel.getUsername());
+									title = getCommonLocaleDelegate().getText(
+											"LdapServerCollectController.testsuccessful.title", "Test erfolgreich");
+									message = getCommonLocaleDelegate().getMessage(
+											"LdapServerCollectController.testsuccessful.message", "Der Login {0} wurde erfolgreich authentisiert.", inputpanel.getUsername());
 									messagetype = JOptionPane.INFORMATION_MESSAGE;
 								}
 								else {
-									title = CommonLocaleDelegate.getText("LdapServerCollectController.testerror.title", "Test fehlgeschlagen");
-									message = CommonLocaleDelegate.getMessage("LdapServerCollectController.testfailed.message", "Authentisierung des Logins {0} ist fehlgeschlagen.", inputpanel.getUsername());
+									title = getCommonLocaleDelegate().getText(
+											"LdapServerCollectController.testerror.title", "Test fehlgeschlagen");
+									message = getCommonLocaleDelegate().getMessage(
+											"LdapServerCollectController.testfailed.message", "Authentisierung des Logins {0} ist fehlgeschlagen.", inputpanel.getUsername());
 									messagetype = JOptionPane.ERROR_MESSAGE;
 								}
 							}
 							catch (Exception ex) {
 								LOG.error("cmdTryAuthentication failed: " + ex, ex);
-								title = CommonLocaleDelegate.getText("LdapServerCollectController.testerror.title", "Test fehlgeschlagen");
-								message = CommonLocaleDelegate.getMessage("LdapServerCollectController.testerror.message", "Der Test ist mit folgender Meldung fehlgeschlagen: {0}", ex.getMessage());
+								title = getCommonLocaleDelegate().getText(
+										"LdapServerCollectController.testerror.title", "Test fehlgeschlagen");
+								message = getCommonLocaleDelegate().getMessage(
+										"LdapServerCollectController.testerror.message", "Der Test ist mit folgender Meldung fehlgeschlagen: {0}", ex.getMessage());
 								messagetype = JOptionPane.ERROR_MESSAGE;
 							}
 							JOptionPane.showMessageDialog(getFrame(), message, title, messagetype);

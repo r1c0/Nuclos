@@ -26,16 +26,22 @@ import javax.swing.JPanel;
 
 import org.nuclos.client.NuclosIcons;
 import org.nuclos.client.main.Main;
+import org.nuclos.client.main.MainController;
 import org.nuclos.client.main.mainframe.workspace.WorkspaceFrame;
 import org.nuclos.client.synthetica.NuclosThemeSettings;
 import org.nuclos.client.ui.CommonJFrame;
 import org.nuclos.common2.CommonLocaleDelegate;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
 
+@Configurable
 public class ExternalFrame extends CommonJFrame implements WorkspaceFrame{
 
 	private final int number;
 	
 	private final JPanel pnlDesktop = new JPanel(new BorderLayout());
+	
+	private MainController mainController;
 	
 	/**
 	 * 
@@ -55,8 +61,17 @@ public class ExternalFrame extends CommonJFrame implements WorkspaceFrame{
 		contentpane.add(pnlDesktop, BorderLayout.CENTER);
 		
 		setIconImage(NuclosIcons.getInstance().getFrameIcon().getImage());
-		setTitle("Nuclos " + CommonLocaleDelegate.getMessage("ExternalFrame.Title","Erweiterungsfenster {0}",number));
-		MainFrame.setupLiveSearchKey(this);
+		setTitle("Nuclos " + CommonLocaleDelegate.getInstance().getMessage("ExternalFrame.Title","Erweiterungsfenster {0}",number));
+		Main.getInstance().getMainFrame().setupLiveSearchKey(this);
+	}
+	
+	@Autowired
+	void setMainController(MainController mainController) {
+		this.mainController = mainController;
+	}
+	
+	protected MainController getMainController() {
+		return mainController;
 	}
 
 	/**
@@ -65,11 +80,11 @@ public class ExternalFrame extends CommonJFrame implements WorkspaceFrame{
 	@Override
 	public void dispose() {
 		for (MainFrameTabbedPane tabbedPane : new ArrayList<MainFrameTabbedPane>(MainFrame.getTabbedPanes(ExternalFrame.this))) {
-			MainFrame.removeTabbedPane(tabbedPane, true);
+			Main.getInstance().getMainFrame().removeTabbedPane(tabbedPane, true);
 		}
 		
 		MainFrame.removeFrameFromContent(ExternalFrame.this);
-		Main.getMainController().refreshMenus();
+		mainController.refreshMenus();
 		
 		super.dispose();
 	}

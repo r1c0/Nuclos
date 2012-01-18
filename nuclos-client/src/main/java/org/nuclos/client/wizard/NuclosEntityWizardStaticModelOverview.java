@@ -16,8 +16,6 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.wizard;
 
-import static org.nuclos.common2.CommonLocaleDelegate.getMessage;
-
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.MouseAdapter;
@@ -37,6 +35,7 @@ import org.nuclos.client.wizard.steps.NuclosEntityAbstractStep;
 import org.nuclos.client.wizard.steps.NuclosEntityAttributeAbstractStep;
 import org.nuclos.client.wizard.steps.NuclosEntityAttributeRelationShipStep;
 import org.nuclos.client.wizard.steps.NuclosEntityAttributeValueListShipStep;
+import org.nuclos.common2.CommonLocaleDelegate;
 import org.pietschy.wizard.WizardStep;
 import org.pietschy.wizard.models.StaticModel;
 
@@ -60,7 +59,8 @@ public class NuclosEntityWizardStaticModelOverview extends JPanel implements Pro
 		setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
 		setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
 
-		JLabel title = new JLabel(getMessage("wizard.statemodel.overview", "\u00dcbersicht"));
+		JLabel title = new JLabel(CommonLocaleDelegate.getInstance().getMessage(
+				"wizard.statemodel.overview", "\u00dcbersicht"));
 		title.setBorder(BorderFactory.createEmptyBorder(0, 4, 4, 4));
 		title.setAlignmentX(0);
 		title.setMaximumSize(new Dimension(Integer.MAX_VALUE, title.getMaximumSize().height));

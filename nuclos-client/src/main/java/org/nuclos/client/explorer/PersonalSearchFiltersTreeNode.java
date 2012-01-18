@@ -24,7 +24,6 @@ import org.nuclos.client.genericobject.Modules;
 import org.nuclos.client.masterdata.MasterDataDelegate;
 import org.nuclos.client.searchfilter.SearchFilters;
 import org.nuclos.common.NuclosFatalException;
-import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.exception.CommonFinderException;
 import org.nuclos.common2.exception.PreferencesException;
 import org.nuclos.server.masterdata.valueobject.MasterDataMetaVO;
@@ -50,12 +49,12 @@ public class PersonalSearchFiltersTreeNode extends AbstractTreeNode<Object> {
 
 	@Override
 	public String getLabel() {
-		return CommonLocaleDelegate.getMessage("PersonalSearchFiltersTreeNode.2","Eigene Filter");
+		return getCommonLocaleDelegate().getMessage("PersonalSearchFiltersTreeNode.2","Eigene Filter");
 	}
 
 	@Override
 	public String getDescription() {
-		return CommonLocaleDelegate.getMessage("PersonalSearchFiltersTreeNode.1","Alle pers\u00f6nlichen Suchfilter");
+		return getCommonLocaleDelegate().getMessage("PersonalSearchFiltersTreeNode.1","Alle pers\u00f6nlichen Suchfilter");
 	}
 
 	@Override

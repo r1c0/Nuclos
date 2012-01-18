@@ -136,7 +136,8 @@ public class DatasourceExplorerNode extends AbstractDatasourceExplorerNode {
 	private static class ShowDetailsAction extends TreeNodeAction {
 
 		public ShowDetailsAction(JTree tree) {
-			super(ACTIONCOMMAND_SHOW_DETAILS, CommonLocaleDelegate.getMessage("RuleExplorerNode.1","Details anzeigen"), tree);
+			super(ACTIONCOMMAND_SHOW_DETAILS, CommonLocaleDelegate.getInstance().getMessage(
+					"RuleExplorerNode.1","Details anzeigen"), tree);
 		}
 
 		@Override
@@ -158,7 +159,9 @@ public class DatasourceExplorerNode extends AbstractDatasourceExplorerNode {
 					@Override
 					public void run() {
 						if (datasourceVo.getPermission() == DatasourceVO.PERMISSION_NONE) {
-							Errors.getInstance().showExceptionDialog(tree, new NuclosBusinessException(CommonLocaleDelegate.getMessage("DatasourceExplorerNode.3", "Sie haben keine Berechtigungen auf die Datenquelle {0}", datasourceVo.getName())));
+							Errors.getInstance().showExceptionDialog(tree, new NuclosBusinessException(
+									CommonLocaleDelegate.getInstance().getMessage(
+											"DatasourceExplorerNode.3", "Sie haben keine Berechtigungen auf die Datenquelle {0}", datasourceVo.getName())));
 						}
 						else {
 							final CollectControllerFactorySingleton factory = CollectControllerFactorySingleton.getInstance();

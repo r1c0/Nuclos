@@ -23,21 +23,19 @@ import java.util.Date;
 import javax.swing.JOptionPane;
 
 import org.apache.log4j.Logger;
-
-import org.nuclos.common.collect.collectable.CollectableField;
-import org.nuclos.common.collection.CollectionUtils;
-import org.nuclos.common.collection.Predicate;
-import org.nuclos.common2.CommonLocaleDelegate;
-import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.client.common.ClientParameterProvider;
 import org.nuclos.client.genericobject.datatransfer.GenericObjectIdModuleProcess;
 import org.nuclos.client.masterdata.MasterDataDelegate;
 import org.nuclos.client.ui.Controller;
 import org.nuclos.client.ui.ValidatingJOptionPane;
 import org.nuclos.common.NuclosBusinessException;
-import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.NuclosEntity;
+import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.ParameterProvider;
+import org.nuclos.common.collect.collectable.CollectableField;
+import org.nuclos.common.collection.CollectionUtils;
+import org.nuclos.common.collection.Predicate;
+import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.server.navigation.treenode.GenericObjectTreeNode;
 
 /**
@@ -87,11 +85,13 @@ public class RelateGenericObjectsController extends Controller {
 			if (o instanceof GenericObjectIdModuleProcess) {
 				final GenericObjectIdModuleProcess goimpSource = (GenericObjectIdModuleProcess) o;
 				if (goimpSource.getGenericObjectId() == goimpTarget.getGenericObjectId()) {
-					throw new NuclosBusinessException(CommonLocaleDelegate.getMessage("RelateGenericObjectsController.1", "Beziehungen eines Objekts zu sich selbst sind nicht m\u00f6glich."));
+					throw new NuclosBusinessException(getCommonLocaleDelegate().getMessage(
+							"RelateGenericObjectsController.1", "Beziehungen eines Objekts zu sich selbst sind nicht m\u00f6glich."));
 				}
 			}
 			else {
-				throw new NuclosBusinessException(CommonLocaleDelegate.getMessage("GroupExplorerNode.1", "Der Datentransfer wird nicht unterst\u00fctzt."));
+				throw new NuclosBusinessException(getCommonLocaleDelegate().getMessage(
+						"GroupExplorerNode.1", "Der Datentransfer wird nicht unterst\u00fctzt."));
 			}
 		}
 	}
@@ -105,7 +105,8 @@ public class RelateGenericObjectsController extends Controller {
 		this.enableRadioButtons(pnl);
 		this.selectFirstEnabledRadioButton(pnl);
 
-		final ValidatingJOptionPane voptpn = new ValidatingJOptionPane(this.getParent(), CommonLocaleDelegate.getMessage("RelateGenericObjectsController.2", "Beziehung herstellen"), pnl) {
+		final ValidatingJOptionPane voptpn = new ValidatingJOptionPane(this.getParent(), getCommonLocaleDelegate().getMessage(
+				"RelateGenericObjectsController.2", "Beziehung herstellen"), pnl) {
 			@Override
 			protected void validateInput() throws ValidatingJOptionPane.ErrorInfo {
 				if (pnl.getRelationType() == RelateGenericObjectsPanel.RelationType.USERDEFINED) {

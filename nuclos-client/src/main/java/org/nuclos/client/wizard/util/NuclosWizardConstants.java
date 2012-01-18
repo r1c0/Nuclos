@@ -16,7 +16,7 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.wizard.util;
 
-import static org.nuclos.common2.CommonLocaleDelegate.getMessage;
+import org.nuclos.common2.CommonLocaleDelegate;
 
 /**
 * <br>
@@ -30,9 +30,13 @@ import static org.nuclos.common2.CommonLocaleDelegate.getMessage;
 public class NuclosWizardConstants {
 	
 	public static String[] labels = {
-		getMessage("wizard.step.entitycommonproperties.1", "Beschriftung Fenstertitel"),
-		getMessage("wizard.step.entitytranslationstable.6", "Men\u00fcpfad"), 
-		getMessage("wizard.step.entitytranslationstable.7", "Anzeige Knotendarstellung"),
-		getMessage("wizard.step.entitytranslationstable.8", "Bezeichnung des Knoten Tooltips")};
+		CommonLocaleDelegate.getInstance().getMessage(
+				"wizard.step.entitycommonproperties.1", "Beschriftung Fenstertitel"),
+		CommonLocaleDelegate.getInstance().getMessage(
+				"wizard.step.entitytranslationstable.6", "Men\u00fcpfad"), 
+		CommonLocaleDelegate.getInstance().getMessage(
+				"wizard.step.entitytranslationstable.7", "Anzeige Knotendarstellung"),
+		CommonLocaleDelegate.getInstance().getMessage(
+				"wizard.step.entitytranslationstable.8", "Bezeichnung des Knoten Tooltips")};
 		
 }

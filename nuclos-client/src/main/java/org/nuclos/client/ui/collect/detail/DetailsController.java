@@ -51,7 +51,6 @@ import org.nuclos.common.collect.collectable.CollectableEntityField;
 import org.nuclos.common.collect.collectable.CollectableValueField;
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
-import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.StringUtils;
 
 /**
@@ -78,7 +77,7 @@ public class DetailsController<Clct extends Collectable> extends CommonControlle
 	};
 
 	private final Action actDeleteCurrentCollectable = new CommonAbstractAction("L\u00f6schen", Icons.getInstance().getIconRealDelete16(),
-		CommonLocaleDelegate.getMessage("CollectController.15","Diesen Datensatz l\u00f6schen")) {
+		getCommonLocaleDelegate().getMessage("CollectController.15","Diesen Datensatz l\u00f6schen")) {
 
 		@Override
         public void actionPerformed(ActionEvent ev) {
@@ -115,7 +114,7 @@ public class DetailsController<Clct extends Collectable> extends CommonControlle
 	 */
 	public void displayCurrentRecordNumberInDetailsPanelStatusBar(){
 		final CollectController<Clct> cc = getCollectController();
-		getDetailsPanel().setStatusBarText(CommonLocaleDelegate.getMessage("CollectController.8","Datensatz") +
+		getDetailsPanel().setStatusBarText(getCommonLocaleDelegate().getMessage("CollectController.8","Datensatz") +
 				" " + (cc.getResultTable().getSelectedRow() +1 ) + "/" + cc.getResultTable().getRowCount());
 	}
 
@@ -229,7 +228,9 @@ public class DetailsController<Clct extends Collectable> extends CommonControlle
 		}
 
 		final String sChange = cc.getMultiEditChangeString();
-		final String sStatus = CommonLocaleDelegate.getMessage("CollectController.5","\u00c4nderung")+ ": " + (StringUtils.looksEmpty(sChange) ? "<" + CommonLocaleDelegate.getMessage("CollectController.21","keine") + ">" : sChange);
+		final String sStatus = getCommonLocaleDelegate().getMessage(
+				"CollectController.5","\u00c4nderung")+ ": " + (StringUtils.looksEmpty(sChange) ? "<" 
+				+ getCommonLocaleDelegate().getMessage("CollectController.21","keine") + ">" : sChange);
 		this.getDetailsPanel().setStatusBarText(sStatus);
 	}
 

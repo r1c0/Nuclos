@@ -218,10 +218,12 @@ public class SearchResultTemplate {
 
 	public static void validate(String sTemplateName) throws IllegalStateException {
 		if (StringUtils.isNullOrEmpty(sTemplateName)) {
-			throw new IllegalStateException(CommonLocaleDelegate.getMessage("SearchResultTemplate.3","Der Name darf nicht leer sein."));
+			throw new IllegalStateException(CommonLocaleDelegate.getInstance().getMessage(
+					"SearchResultTemplate.3","Der Name darf nicht leer sein."));
 		}
 		if (sTemplateName.matches(".*\\\\.*")) {
-			throw new IllegalStateException(CommonLocaleDelegate.getMessage("SearchResultTemplate.2","Der Name darf keinen Backslash (\"\\\") enthalten."));
+			throw new IllegalStateException(CommonLocaleDelegate.getInstance().getMessage(
+					"SearchResultTemplate.2","Der Name darf keinen Backslash (\"\\\") enthalten."));
 		}
 	}
 
@@ -283,7 +285,7 @@ public class SearchResultTemplate {
 	public static SearchResultTemplate get(Preferences prefsParent, String sTemplateName) throws PreferencesException {
 		final String sEncodedTemplateName = encoded(sTemplateName);
 		if (!PreferencesUtils.nodeExists(prefsParent, sEncodedTemplateName)) {
-			throw new NoSuchElementException(CommonLocaleDelegate.getMessage(
+			throw new NoSuchElementException(CommonLocaleDelegate.getInstance().getMessage(
 					"SearchResultTemplate.4","Es existiert keine Suchergebnisvorlage mit dem Namen {0}.", sTemplateName));
 		}
 
@@ -402,8 +404,10 @@ public class SearchResultTemplate {
 				return true;
 			}
 		};
-		result.setName(CommonLocaleDelegate.getMessage("SearchResultTemplate.1","<Alle>"));
-		result.setDescription(CommonLocaleDelegate.getMessage("SearchResultTemplate.5","Standard Suchergebnisvorlage"));
+		result.setName(CommonLocaleDelegate.getInstance().getMessage(
+				"SearchResultTemplate.1","<Alle>"));
+		result.setDescription(CommonLocaleDelegate.getInstance().getMessage(
+				"SearchResultTemplate.5","Standard Suchergebnisvorlage"));
 		assert result.isDefaultTemplate();
 		return result;
 	}

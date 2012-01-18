@@ -91,7 +91,9 @@ public class DatasourceBasedCollectableFieldsProvider implements CacheableCollec
 					collParameters = DatasourceDelegate.getInstance().getParametersFromXML(dsvo.getSource());
 				}
 				catch (Exception e) {
-					throw new CommonFatalException(CommonLocaleDelegate.getMessage("datasource.collectable.fieldsprovider", "Fehler beim Laden der Datenquelle ''{0}'':\n", oValue), e);
+					throw new CommonFatalException(
+							CommonLocaleDelegate.getInstance().getMessage(
+									"datasource.collectable.fieldsprovider", "Fehler beim Laden der Datenquelle ''{0}'':\n", oValue), e);
 					//"Fehler beim Laden der Datenquelle \"" + oValue + "\":\n", e);
 				}
 			}
@@ -103,7 +105,9 @@ public class DatasourceBasedCollectableFieldsProvider implements CacheableCollec
 					collParameters = DatasourceDelegate.getInstance().getParametersFromXML(dsvo.getSource());
 				}
 				catch (CommonBusinessException e) {
-					throw new CommonFatalException(CommonLocaleDelegate.getMessage("datasource.collectable.fieldsprovider", "Fehler beim Laden der Datenquelle ''{0}'':\n", oValue), e);
+					throw new CommonFatalException(
+							CommonLocaleDelegate.getInstance().getMessage(
+									"datasource.collectable.fieldsprovider", "Fehler beim Laden der Datenquelle ''{0}'':\n", oValue), e);
 					//"Fehler beim Laden der Datenquelle \"" + oValue + "\":\n", e);
 				}
 			}
@@ -114,7 +118,9 @@ public class DatasourceBasedCollectableFieldsProvider implements CacheableCollec
 					collParameters = DatasourceDelegate.getInstance().getParametersFromXML(dsvoSearch.getSource());
 				}
 				catch (CommonBusinessException e) {
-					throw new CommonFatalException(CommonLocaleDelegate.getMessage("datasource.collectable.fieldsprovider", "Fehler beim Laden der Datenquelle ''{0}'':\n", oValue), e);
+					throw new CommonFatalException(
+							CommonLocaleDelegate.getInstance().getMessage(
+									"datasource.collectable.fieldsprovider", "Fehler beim Laden der Datenquelle ''{0}'':\n", oValue), e);
 						//"Fehler beim Laden der Datenquelle \"" + oValue + "\":\n", e);
 				}
 			}

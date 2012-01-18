@@ -79,7 +79,9 @@ public class CollectableMasterDataField extends AbstractCollectableField {
 				this.oValueId = null;
 			}
 			catch(CollectableFieldFormatException e) {
-				throw new NuclosFatalException(CommonLocaleDelegate.getMessage("CollectableMasterDataField.1", "Der Datentyp des Standardwerts der Entit\u00e4t {0} entspricht nicht dem Datentyp der Entit\u00e4t.", clctmd.getField("name")),e);
+				throw new NuclosFatalException(
+						CommonLocaleDelegate.getInstance().getMessage(
+								"CollectableMasterDataField.1", "Der Datentyp des Standardwerts der Entit\u00e4t {0} entspricht nicht dem Datentyp der Entit\u00e4t.", clctmd.getField("name")),e);
 			}
 			catch(ClassNotFoundException e) {
 				throw new NuclosFatalException(e);
@@ -122,7 +124,7 @@ public class CollectableMasterDataField extends AbstractCollectableField {
 		if (result != null && clctef.getJavaClass().equals(Date.class)) {
 			try {
 				if (result instanceof String) {
-					result = CommonLocaleDelegate.getDateFormat().parse((String)result);
+					result = CommonLocaleDelegate.getInstance().getDateFormat().parse((String)result);
 					//result = DateFormat.getDateInstance().parse((String)result);
 				}
 				else {

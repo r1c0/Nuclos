@@ -28,7 +28,6 @@ import javax.swing.JPanel;
 import org.apache.log4j.Logger;
 import org.nuclos.client.common.security.SecurityCache;
 import org.nuclos.client.explorer.node.rule.RuleTreeModel;
-import org.nuclos.client.main.Main;
 import org.nuclos.client.main.mainframe.MainFrameTab;
 import org.nuclos.client.masterdata.CollectableMasterDataWithDependants;
 import org.nuclos.client.masterdata.MasterDataCollectController;
@@ -43,7 +42,6 @@ import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.PointerException;
 import org.nuclos.common.collect.collectable.CollectableValueField;
 import org.nuclos.common.collect.exception.CollectableValidationException;
-import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.CommonRunnable;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
@@ -59,11 +57,14 @@ public class CodeCollectController extends MasterDataCollectController {
 
 	private static final Logger LOG = Logger.getLogger(CodeCollectController.class);
 	
+	//
+	
 	private final CodeDelegate codeDelegate = CodeDelegate.getInstance();
 
 	private RuleEditPanel pnlEdit;
 
-	private final Action actCheckRuleSource = new CommonAbstractAction(Icons.getInstance().getIconValidate16(), CommonLocaleDelegate.getMessage("RuleCollectController.2", "Quelltext pr\u00fcfen")) {
+	private final Action actCheckRuleSource = new CommonAbstractAction(Icons.getInstance().getIconValidate16(), 
+			getCommonLocaleDelegate().getMessage("RuleCollectController.2", "Quelltext pr\u00fcfen")) {
 		@Override
 		public void actionPerformed(ActionEvent ev) {
 			cmdCheckRuleSource();
@@ -86,7 +87,7 @@ public class CodeCollectController extends MasterDataCollectController {
 
 		this.getCollectStateModel().addCollectStateListener(new RuleCollectStateListener());
 	}
-
+	
 	@Override
 	protected void close() {
 		super.close();
@@ -128,7 +129,8 @@ public class CodeCollectController extends MasterDataCollectController {
 
 				try {
 					codeDelegate.compile(mdvo);
-					JOptionPane.showMessageDialog(CodeCollectController.this.getFrame(), CommonLocaleDelegate.getMessage("CodeCollectController.compiledsuccessfully", "Quellcode erfolgreich kompiliert."));
+					JOptionPane.showMessageDialog(CodeCollectController.this.getFrame(), getCommonLocaleDelegate().getMessage(
+							"CodeCollectController.compiledsuccessfully", "Quellcode erfolgreich kompiliert."));
 				}
 				catch (NuclosCompileException ex) {
 					CodeCollectController.this.pnlEdit.setMessages(ex.getErrorMessages());
@@ -283,7 +285,8 @@ public class CodeCollectController extends MasterDataCollectController {
 	@Override
 	protected CollectableMasterDataWithDependants newCollectableWithDefaultValues() {
 		CollectableMasterDataWithDependants result = super.newCollectable();
-		result.setField("name", new CollectableValueField(CommonLocaleDelegate.getText("CodeCollectController.fieldvalue.name.temp", " ")));
+		result.setField("name", new CollectableValueField(getCommonLocaleDelegate().getText(
+				"CodeCollectController.fieldvalue.name.temp", " ")));
 		return result;
 	}
 
@@ -294,7 +297,7 @@ public class CodeCollectController extends MasterDataCollectController {
 			public void run() {
 				try {
 					final Integer id = (Integer) getSelectedCollectableId();
-					Main.getMainController().getExplorerController().cmdShowRuleUsage(id, RuleTreeModel.LIBRARY_LABEL);
+					getMainController().getExplorerController().cmdShowRuleUsage(id, RuleTreeModel.LIBRARY_LABEL);
 				}
 				catch (Exception e) {
 					LOG.error("CodeCollectController.cmdJmpToTree: " + e, e);
@@ -309,7 +312,7 @@ public class CodeCollectController extends MasterDataCollectController {
 			@Override
 			public void run() {
 				try {
-					Main.getMainController().getExplorerController().cmdShowRuleUsage(null, null);
+					getMainController().getExplorerController().cmdShowRuleUsage(null, null);
 				}
 				catch (Exception e) {
 					LOG.error("CodeCollectController.cmdShowResultInExplorer: " + e, e);

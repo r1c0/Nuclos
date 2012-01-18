@@ -60,7 +60,7 @@ public class KeyEnumComboBoxModel<T extends KeyEnum<?>> extends DefaultComboBoxM
 		@Override
 		public String toString() {
 			if (value instanceof Localizable) {
-				return CommonLocaleDelegate.getText((Localizable)value);
+				return CommonLocaleDelegate.getInstance().getText((Localizable)value);
 			}
 			else {
 				return String.valueOf(value.getValue());

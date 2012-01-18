@@ -157,7 +157,8 @@ public abstract class CollectableFileNameChooserBase extends AbstractCollectable
 		// Note that the default entries (as specified in AbstractCollectableComponent) are ignored.
 		final JPopupMenu result = new JPopupMenu();
 
-		final JMenuItem miClear = new JMenuItem(CommonLocaleDelegate.getMessage("CollectableFileNameChooserBase.1","Zur\u00fccksetzen"));
+		final JMenuItem miClear = new JMenuItem(
+				CommonLocaleDelegate.getInstance().getMessage("CollectableFileNameChooserBase.1","Zur\u00fccksetzen"));
 		boolean bClearEnabled;
 		try {
 			bClearEnabled = this.getField().getValue() != null;

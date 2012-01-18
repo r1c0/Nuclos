@@ -178,10 +178,12 @@ public abstract class SearchFilter {
 
 	public static void validate(String sFilterName) throws IllegalStateException {
 		if (StringUtils.isNullOrEmpty(sFilterName)) {
-			throw new IllegalStateException(CommonLocaleDelegate.getMessage("SearchFilter.1", "Filtername darf nicht leer sein."));
+			throw new IllegalStateException(CommonLocaleDelegate.getInstance().getMessage(
+					"SearchFilter.1", "Filtername darf nicht leer sein."));
 		}
 		if (sFilterName.matches(".*\\\\.*")) {
-			throw new IllegalStateException(CommonLocaleDelegate.getMessage("SearchFilter.2", "Filtername darf keinen Backslash (\"\\\") enthalten."));
+			throw new IllegalStateException(CommonLocaleDelegate.getInstance().getMessage(
+					"SearchFilter.2", "Filtername darf keinen Backslash (\"\\\") enthalten."));
 		}
 	}
 

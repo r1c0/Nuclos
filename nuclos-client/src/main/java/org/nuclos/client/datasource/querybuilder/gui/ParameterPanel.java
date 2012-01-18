@@ -81,8 +81,10 @@ public class ParameterPanel extends JPanel {
 	private ParameterModel parameterModel;
 	private final JComboBox cmbbxTypes = new JComboBox(ParameterModel.adatatype);
 
-	private final Action actNew = new NewParameterAction(CommonLocaleDelegate.getMessage("ParameterPanel.1","Neuer Parameter"), Icons.getInstance().getIconNew16());
-	private final Action actDelete = new DeleteParameterAction(CommonLocaleDelegate.getMessage("ParameterPanel.2","Parameter l\u00f6schen"), Icons.getInstance().getIconDelete16());
+	private final Action actNew = new NewParameterAction(CommonLocaleDelegate.getInstance().getMessage(
+			"ParameterPanel.1","Neuer Parameter"), Icons.getInstance().getIconNew16());
+	private final Action actDelete = new DeleteParameterAction(CommonLocaleDelegate.getInstance().getMessage(
+			"ParameterPanel.2","Parameter l\u00f6schen"), Icons.getInstance().getIconDelete16());
 
 	private final boolean blnWithValuelistProviderColumn;
 	private final boolean blnWithParameterLabelColumn;
@@ -287,7 +289,8 @@ public class ParameterPanel extends JPanel {
 				valuelistprovider.setText(vo.getType());
 			}
 			else {
-				valuelistprovider.setText(CommonLocaleDelegate.getMessage("ParameterPanel.4", "Kein ValueListprovider definiert"));
+				valuelistprovider.setText(CommonLocaleDelegate.getInstance().getMessage(
+						"ParameterPanel.4", "Kein ValueListprovider definiert"));
 			}
 
 			TableLayoutConstraints constraint = new TableLayoutConstraints(1, 1, 1, 1, TableLayout.FULL, TableLayout.CENTER);
@@ -332,7 +335,7 @@ public class ParameterPanel extends JPanel {
 				stopCellEditing();
 			}
 			else {
-				valuelistprovider.setText(CommonLocaleDelegate.getMessage("ParameterPanel.4", "Kein ValueListprovider definiert"));
+				valuelistprovider.setText(CommonLocaleDelegate.getInstance().getMessage("ParameterPanel.4", "Kein ValueListprovider definiert"));
 				vo = null;
 			}
 		}

@@ -31,7 +31,10 @@ class MultiActionProgressTableModel extends AbstractListTableModel<MultiActionPr
 	public static final int COLUMN_RESULT = 1;
 	public static final int COLUMN_STATE = 2;
 
-	private static final String[] defaultColumnNames = {CommonLocaleDelegate.getMessage("MultiActionProgressTableModel.1","ID"), CommonLocaleDelegate.getMessage("MultiActionProgressTableModel.2","Ergebnis"), CommonLocaleDelegate.getMessage("MultiActionProgressTableModel.3","Status")};
+	private static final String[] defaultColumnNames = {
+		CommonLocaleDelegate.getInstance().getMessage("MultiActionProgressTableModel.1","ID"), 
+		CommonLocaleDelegate.getInstance().getMessage("MultiActionProgressTableModel.2","Ergebnis"), 
+		CommonLocaleDelegate.getInstance().getMessage("MultiActionProgressTableModel.3","Status")};
 	private String[] aColumnNames;
 
 	private Comparator<MultiActionProgressLine> compResultColumn = new ResultColumnComparator();

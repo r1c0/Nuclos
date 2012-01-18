@@ -18,7 +18,6 @@ package org.nuclos.server.navigation.treenode;
 
 import org.nuclos.common.MetaDataProvider;
 import org.nuclos.common.SpringApplicationContextHolder;
-import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.LangUtils;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 
@@ -51,12 +50,12 @@ public abstract class MasterDataTreeNode<Id> extends AbstractTreeNode<Id> implem
 
 	protected String getIdentifier(MasterDataVO mdvo) {
 		MetaDataProvider metaprovider = SpringApplicationContextHolder.getBean(MetaDataProvider.class);
-		return CommonLocaleDelegate.getTreeViewLabel(mdvo, getEntityName(), metaprovider);
+		return getCommonLocaleDelegate().getTreeViewLabel(mdvo, getEntityName(), metaprovider);
 	}
 
 	protected String getDescription(MasterDataVO mdvo) {
 		MetaDataProvider metaprovider = SpringApplicationContextHolder.getBean(MetaDataProvider.class);
-		return CommonLocaleDelegate.getTreeViewDescription(mdvo, getEntityName(), metaprovider);
+		return getCommonLocaleDelegate().getTreeViewDescription(mdvo, getEntityName(), metaprovider);
 	}
 
 	@Override

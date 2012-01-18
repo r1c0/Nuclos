@@ -70,7 +70,6 @@ import org.nuclos.common.collect.collectable.CollectableValueField;
 import org.nuclos.common.job.IntervalUnit;
 import org.nuclos.common.job.JobType;
 import org.nuclos.common.job.JobUtils;
-import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.CommonRunnable;
 import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.StringUtils;
@@ -101,7 +100,8 @@ public class JobControlCollectController extends MasterDataCollectController {
 
 	final private JobControlDelegate delegate = JobControlDelegate.getInstance();
 
-	private final Action actSchedule = new CommonAbstractAction(Icons.getInstance().getIconPlay16(), CommonLocaleDelegate.getMessage("JobControlCollectController.1","Aktivieren")) {
+	private final Action actSchedule = new CommonAbstractAction(Icons.getInstance().getIconPlay16(), getCommonLocaleDelegate().getMessage(
+			"JobControlCollectController.1","Aktivieren")) {
 
 		@Override
 		public void actionPerformed(ActionEvent ev) {
@@ -109,12 +109,14 @@ public class JobControlCollectController extends MasterDataCollectController {
 				cmdScheduleJob();
 			}
 			catch (CommonBusinessException e) {
-				JOptionPane.showMessageDialog(JobControlCollectController.this.getDetailsPanel(), CommonLocaleDelegate.getMessageFromResource(e.getMessage()), "", JOptionPane.INFORMATION_MESSAGE);
+				JOptionPane.showMessageDialog(JobControlCollectController.this.getDetailsPanel(), getCommonLocaleDelegate().getMessageFromResource(
+						e.getMessage()), "", JOptionPane.INFORMATION_MESSAGE);
 			}
 		}
 	};
 
-	private final Action actUnschedule = new CommonAbstractAction(Icons.getInstance().getIconStop16(), CommonLocaleDelegate.getMessage("JobControlCollectController.3","Deaktivieren")) {
+	private final Action actUnschedule = new CommonAbstractAction(Icons.getInstance().getIconStop16(), getCommonLocaleDelegate().getMessage(
+			"JobControlCollectController.3","Deaktivieren")) {
 
 		@Override
 		public void actionPerformed(ActionEvent ev) {
@@ -122,12 +124,14 @@ public class JobControlCollectController extends MasterDataCollectController {
 				cmdUnscheduleJob();
 			}
 			catch (CommonBusinessException e) {
-				JOptionPane.showMessageDialog(JobControlCollectController.this.getDetailsPanel(), CommonLocaleDelegate.getMessageFromResource(e.getMessage()), "", JOptionPane.INFORMATION_MESSAGE);
+				JOptionPane.showMessageDialog(JobControlCollectController.this.getDetailsPanel(), getCommonLocaleDelegate().getMessageFromResource(
+						e.getMessage()), "", JOptionPane.INFORMATION_MESSAGE);
 			}
 		}
 	};
 
-	private final Action actStartImmediately = new CommonAbstractAction(Icons.getInstance().getIconNext16(), CommonLocaleDelegate.getMessage("JobControlCollectController.2","Ausf\u00fchren")) {
+	private final Action actStartImmediately = new CommonAbstractAction(Icons.getInstance().getIconNext16(), getCommonLocaleDelegate().getMessage(
+			"JobControlCollectController.2","Ausf\u00fchren")) {
 
 		@Override
 		public void actionPerformed(ActionEvent ev) {
@@ -185,7 +189,7 @@ public class JobControlCollectController extends MasterDataCollectController {
 
 				if (startdate != null && starttime != null && interval != null && unit != null) {
 	                try {
-	                	Calendar c = Calendar.getInstance(CommonLocaleDelegate.getUserLocaleInfo().toLocale());
+	                	Calendar c = Calendar.getInstance(getCommonLocaleDelegate().getUserLocaleInfo().toLocale());
 	    				c.setTime(startdate);
 	    				int iHour = Integer.parseInt(starttime.split(":")[0]);
 	    				int iMinute = Integer.parseInt(starttime.split(":")[1]);
@@ -428,19 +432,19 @@ public class JobControlCollectController extends MasterDataCollectController {
 
 		final JButton btnStart = new JButton(this.actSchedule);
 		btnStart.setName("btnStart");
-		btnStart.setText(CommonLocaleDelegate.getMessage("JobControlCollectController.1", "Aktivieren"));
+		btnStart.setText(getCommonLocaleDelegate().getMessage("JobControlCollectController.1", "Aktivieren"));
 		//toolbar.add(btnStart);
 		this.getDetailsPanel().addToolBarComponent(btnStart);
 
 		final JButton btnStop = new JButton(this.actUnschedule);
 		btnStop.setName("btnStop");
-		btnStop.setText(CommonLocaleDelegate.getMessage("JobControlCollectController.3", "Deaktivieren"));
+		btnStop.setText(getCommonLocaleDelegate().getMessage("JobControlCollectController.3", "Deaktivieren"));
 		//toolbar.add(btnStop);
 		this.getDetailsPanel().addToolBarComponent(btnStop);
 
 		final JButton btnStartNow = new JButton(this.actStartImmediately);
 		btnStartNow.setName("btnExecuteNow");
-		btnStartNow.setText(CommonLocaleDelegate.getMessage("JobControlCollectController.2", "Ausf\u00fchren"));
+		btnStartNow.setText(getCommonLocaleDelegate().getMessage("JobControlCollectController.2", "Ausf\u00fchren"));
 		//toolbar.add(btnStartNow);
 		this.getDetailsPanel().addToolBarComponent(btnStartNow);
 
@@ -482,7 +486,8 @@ public class JobControlCollectController extends MasterDataCollectController {
 
 	private void cmdScheduleJob() throws CommonBusinessException{
 		if (CollectState.isDetailsModeChangesPending(getCollectStateModel().getDetailsMode())) {
-			throw new CommonBusinessException(CommonLocaleDelegate.getMessage("JobControlCollectController.4", "Bitte zuerst speichern"));
+			throw new CommonBusinessException(getCommonLocaleDelegate().getMessage(
+					"JobControlCollectController.4", "Bitte zuerst speichern"));
 		}
 		else {
 			checkNameWithAlreadyScheduledJobs(this.getSelectedCollectable());
@@ -533,7 +538,8 @@ public class JobControlCollectController extends MasterDataCollectController {
 
 			@Override
 			public void handleError(Exception ex) {
-				JOptionPane.showMessageDialog(JobControlCollectController.this.getDetailsPanel(), CommonLocaleDelegate.getMessageFromResource(ex.getMessage()), "", JOptionPane.INFORMATION_MESSAGE);
+				JOptionPane.showMessageDialog(JobControlCollectController.this.getDetailsPanel(), getCommonLocaleDelegate().getMessageFromResource(
+						ex.getMessage()), "", JOptionPane.INFORMATION_MESSAGE);
 			}
 
 			@Override

@@ -58,9 +58,12 @@ class RelateGenericObjectsPanel extends JPanel {
 		PREDECESSOROF, PARTOF, USERDEFINED
 	}
 
-	private final JRadioButton rbSuccessorOf = new JRadioButton(CommonLocaleDelegate.getMessage("RelateGenericObjectsPanel.1", "Nachfolge-Beziehung"));
-	private final JRadioButton rbPartOf = new JRadioButton(CommonLocaleDelegate.getMessage("RelateGenericObjectsPanel.2", "Teil-Beziehung"));
-	private final JRadioButton rbOtherRelation = new JRadioButton(CommonLocaleDelegate.getMessage("RelateGenericObjectsPanel.3", "Andere Beziehung"));
+	private final JRadioButton rbSuccessorOf = new JRadioButton(CommonLocaleDelegate.getInstance().getMessage(
+			"RelateGenericObjectsPanel.1", "Nachfolge-Beziehung"));
+	private final JRadioButton rbPartOf = new JRadioButton(CommonLocaleDelegate.getInstance().getMessage(
+			"RelateGenericObjectsPanel.2", "Teil-Beziehung"));
+	private final JRadioButton rbOtherRelation = new JRadioButton(CommonLocaleDelegate.getInstance().getMessage(
+			"RelateGenericObjectsPanel.3", "Andere Beziehung"));
 	private final ButtonGroup bg = new ButtonGroup();
 	private final SuccessorOfPanel pnlSuccessorOf = new SuccessorOfPanel();
 	private final PartOfPanel pnlPartOf = new PartOfPanel();
@@ -93,7 +96,8 @@ class RelateGenericObjectsPanel extends JPanel {
 		final JPanel pnlOptions = new JPanel(new LineLayout(LineLayout.VERTICAL));
 		pnlNorth.add(pnlOptions);
 
-		pnlOptions.setBorder(BorderFactory.createTitledBorder(CommonLocaleDelegate.getMessage("OtherRelationPanel.1", "Beziehungsart")));
+		pnlOptions.setBorder(BorderFactory.createTitledBorder(CommonLocaleDelegate.getInstance().getMessage(
+				"OtherRelationPanel.1", "Beziehungsart")));
 		pnlOptions.add(rbSuccessorOf);
 		pnlOptions.add(rbPartOf);
 		pnlOptions.add(rbOtherRelation);
@@ -270,7 +274,8 @@ class RelateGenericObjectsPanel extends JPanel {
 			final Dimension dimBtn = new Dimension(60, 25);
 			btnSwapRelation.setMinimumSize(dimBtn);
 			btnSwapRelation.setPreferredSize(dimBtn);
-			btnSwapRelation.setToolTipText(CommonLocaleDelegate.getMessage("RelateGenericObjectsPanel.4", "Beziehung umkehren"));
+			btnSwapRelation.setToolTipText(CommonLocaleDelegate.getInstance().getMessage(
+					"RelateGenericObjectsPanel.4", "Beziehung umkehren"));
 
 			btnSwapRelation.addActionListener(new ActionListener() {
 				@Override
@@ -307,14 +312,16 @@ class RelateGenericObjectsPanel extends JPanel {
 
 	static class SuccessorOfPanel extends SwappableRelationPanel {
 		SuccessorOfPanel() {
-			super(CommonLocaleDelegate.getMessage("RelateGenericObjectsPanel.5", "Vorg\u00e4nger"), CommonLocaleDelegate.getMessage("RelateGenericObjectsPanel.6", "Nachfolger"));
+			super(CommonLocaleDelegate.getInstance().getMessage("RelateGenericObjectsPanel.5", "Vorg\u00e4nger"), 
+					CommonLocaleDelegate.getInstance().getMessage("RelateGenericObjectsPanel.6", "Nachfolger"));
 		}
 	}
 
 	static class PartOfPanel extends RelationPanel {
 
 		PartOfPanel() {
-			super(CommonLocaleDelegate.getMessage("RelateGenericObjectsPanel.7", "Teilobjekt(e)"), CommonLocaleDelegate.getMessage("RelateGenericObjectsPanel.8", "Zusammengesetztes Objekt"));
+			super(CommonLocaleDelegate.getInstance().getMessage("RelateGenericObjectsPanel.7", "Teilobjekt(e)"), 
+					CommonLocaleDelegate.getInstance().getMessage("RelateGenericObjectsPanel.8", "Zusammengesetztes Objekt"));
 		}
 	}
 

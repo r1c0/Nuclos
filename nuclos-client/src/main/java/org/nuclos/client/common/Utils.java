@@ -286,8 +286,10 @@ public class Utils {
 							final Collection<CollectableComponent> collclctcomp = clctcompprovider.getCollectableComponentsFor(sInitialFocusFieldName);
 							if (collclctcomp.isEmpty()) {
 								if (bShowWarnings) {
-									final String sMessage = CommonLocaleDelegate.getMessage("ClientUtils.1", "Das angegebene Feld f\u00fcr den initialen Fokus existiert nicht.");
-									JOptionPane.showMessageDialog(frame, sMessage, CommonLocaleDelegate.getMessage("ClientUtils.2", "Hinweis"), JOptionPane.WARNING_MESSAGE);
+									final String sMessage = CommonLocaleDelegate.getInstance().getMessage(
+											"ClientUtils.1", "Das angegebene Feld f\u00fcr den initialen Fokus existiert nicht.");
+									JOptionPane.showMessageDialog(frame, sMessage, CommonLocaleDelegate.getInstance().getMessage("ClientUtils.2", "Hinweis"), 
+											JOptionPane.WARNING_MESSAGE);
 								}
 							}
 							else {
@@ -319,15 +321,21 @@ public class Utils {
 							}
 							else {
 								if (bShowWarnings) {
-									final String sMessage = CommonLocaleDelegate.getMessage("ClientUtils.3", "Das angegebene Feld in der Entit\u00e4t f\u00fcr den initialen Fokus existiert nicht.");
-									JOptionPane.showMessageDialog(frame, sMessage, CommonLocaleDelegate.getMessage("ClientUtils.2", "Hinweis"), JOptionPane.WARNING_MESSAGE);
+									final String sMessage = CommonLocaleDelegate.getInstance().getMessage(
+											"ClientUtils.3", "Das angegebene Feld in der Entit\u00e4t f\u00fcr den initialen Fokus existiert nicht.");
+									JOptionPane.showMessageDialog(frame, sMessage, 
+											CommonLocaleDelegate.getInstance().getMessage("ClientUtils.2", "Hinweis"), 
+											JOptionPane.WARNING_MESSAGE);
 								}
 							}
 						}
 						else {
 							if (bShowWarnings) {
-								final String sMessage = CommonLocaleDelegate.getMessage("ClientUtils.4", "Die angegebene Entit\u00e4t f\u00fcr den initialen Fokus existiert nicht.");
-								JOptionPane.showMessageDialog(frame, sMessage, CommonLocaleDelegate.getMessage("ClientUtils.2", "Hinweis"), JOptionPane.WARNING_MESSAGE);
+								final String sMessage = CommonLocaleDelegate.getInstance().getMessage(
+										"ClientUtils.4", "Die angegebene Entit\u00e4t f\u00fcr den initialen Fokus existiert nicht.");
+								JOptionPane.showMessageDialog(frame, sMessage, 
+										CommonLocaleDelegate.getInstance().getMessage("ClientUtils.2", "Hinweis"), 
+										JOptionPane.WARNING_MESSAGE);
 							}
 						}
 					}

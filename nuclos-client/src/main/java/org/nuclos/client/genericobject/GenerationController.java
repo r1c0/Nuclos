@@ -298,7 +298,7 @@ public class GenerationController {
 
 	public static String getModuleLabel(Integer id) {
 		EntityMetaDataVO meta = MetaDataClientProvider.getInstance().getEntity(IdUtils.toLongId(id));
-		return CommonLocaleDelegate.getLabelFromMetaDataVO(meta);
+		return CommonLocaleDelegate.getInstance().getLabelFromMetaDataVO(meta);
 	}
 
 	/**
@@ -321,12 +321,16 @@ public class GenerationController {
 		if (bMulti) {
 			String message;
 			if(generatoractionvo.isGroupAttributes()) {
-				message = CommonLocaleDelegate.getMessage("GenericObjectCollectController.71a","Create one or more grouped objects of type \"{1}\" from the selected objects of type \"{0}\"?", sSourceModuleName, sTargetModuleName);
+				message = CommonLocaleDelegate.getInstance().getMessage(
+						"GenericObjectCollectController.71a","Create one or more grouped objects of type \"{1}\" from the selected objects of type \"{0}\"?", sSourceModuleName, sTargetModuleName);
 			}
 			else {
-				message = CommonLocaleDelegate.getMessage("GenericObjectCollectController.72","Soll aus den markierten Objekten vom Typ \"{0}\" jeweils ein Objekt vom Typ \"{1}\" erzeugt werden?", sSourceModuleName, sTargetModuleName);
+				message = CommonLocaleDelegate.getInstance().getMessage(
+						"GenericObjectCollectController.72","Soll aus den markierten Objekten vom Typ \"{0}\" jeweils ein Objekt vom Typ \"{1}\" erzeugt werden?", sSourceModuleName, sTargetModuleName);
 			}
-			iBtn = JOptionPane.showConfirmDialog(this.pane, message, CommonLocaleDelegate.getMessage("GenericObjectCollectController.5","{0} erzeugen", sTargetModuleName), JOptionPane.OK_CANCEL_OPTION);
+			iBtn = JOptionPane.showConfirmDialog(this.pane, message, 
+					CommonLocaleDelegate.getInstance().getMessage(
+							"GenericObjectCollectController.5","{0} erzeugen", sTargetModuleName), JOptionPane.OK_CANCEL_OPTION);
 		}
 		else {
 			UsageCriteria uc = sources.values().iterator().next();
@@ -340,8 +344,11 @@ public class GenerationController {
 					LOG.error(e);
 				}
 			}
-			final String sMessage = CommonLocaleDelegate.getMessage("GenericObjectCollectController.71","Soll aus dem/der aktuellen {0} ein(e) {1} erzeugt werden?", sSourceModuleName, sTargetModuleName);
-			iBtn = JOptionPane.showConfirmDialog(this.pane, sMessage, CommonLocaleDelegate.getMessage("GenericObjectCollectController.5","{0} erzeugen", sTargetModuleName), JOptionPane.OK_CANCEL_OPTION);
+			final String sMessage = CommonLocaleDelegate.getInstance().getMessage(
+					"GenericObjectCollectController.71","Soll aus dem/der aktuellen {0} ein(e) {1} erzeugt werden?", sSourceModuleName, sTargetModuleName);
+			iBtn = JOptionPane.showConfirmDialog(this.pane, sMessage, 
+					CommonLocaleDelegate.getInstance().getMessage(
+							"GenericObjectCollectController.5","{0} erzeugen", sTargetModuleName), JOptionPane.OK_CANCEL_OPTION);
 		}
 		return iBtn;
 	}
@@ -437,7 +444,8 @@ public class GenerationController {
 				}
 			});
 			new MultiCollectablesActionController<Pair<Collection<EntityObjectVO>, Long>, GenerationResult>(
-				parent, sourceWithParameters, CommonLocaleDelegate.getMessage("R00022892", "Objektgenerierung"), parent.getTabIcon(),
+				parent, sourceWithParameters, 
+				CommonLocaleDelegate.getInstance().getMessage("R00022892", "Objektgenerierung"), parent.getTabIcon(),
 				new MultiGenerateAction(parent, action)
 			).run(panel);
 		}
@@ -478,7 +486,7 @@ public class GenerationController {
 		Long iGeneratedObjectId = result.getId();
 
 		String entity = MetaDataClientProvider.getInstance().getEntity(IdUtils.toLongId(action.getTargetModuleId())).getEntity();
-		Main.getMainController().showDetails(entity, iGeneratedObjectId);
+		Main.getInstance().getMainController().showDetails(entity, iGeneratedObjectId);
 	}
 
 	/**
@@ -508,7 +516,8 @@ public class GenerationController {
 			SwingUtilities.invokeLater(new Runnable() {
 				@Override
 				public void run() {
-					goclct.setPointerInformation(new PointerCollection(CommonLocaleDelegate.getMessageFromResource(message)), null);
+					goclct.setPointerInformation(new PointerCollection(
+							CommonLocaleDelegate.getInstance().getMessageFromResource(message)), null);
 				}
 			});
 		}
@@ -524,7 +533,8 @@ public class GenerationController {
 			SwingUtilities.invokeLater(new Runnable() {
 				@Override
 				public void run() {
-					mdclct.setPointerInformation(new PointerCollection(CommonLocaleDelegate.getMessageFromResource(message)), null);
+					mdclct.setPointerInformation(new PointerCollection(
+							CommonLocaleDelegate.getInstance().getMessageFromResource(message)), null);
 				}
 			});
 		}

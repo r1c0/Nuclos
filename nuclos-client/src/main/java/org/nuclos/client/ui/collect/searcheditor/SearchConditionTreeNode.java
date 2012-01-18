@@ -241,7 +241,8 @@ public abstract class SearchConditionTreeNode extends DefaultMutableTreeNode {
 	 */
 	protected CompositeTreeNodeAction getAddTreeNodeActions(JTree tree, CollectableEntity clcte,
 			CollectableFieldsProviderFactory clctfproviderfactory, Collection<CollectableEntityField> additionalFields) {
-		return new CompositeTreeNodeAction(CommonLocaleDelegate.getMessage("SearchConditionTreeNode.1","Hinzuf\u00fcgen"), Arrays.asList(new TreeNodeAction[] {
+		return new CompositeTreeNodeAction(CommonLocaleDelegate.getInstance().getMessage(
+				"SearchConditionTreeNode.1","Hinzuf\u00fcgen"), Arrays.asList(new TreeNodeAction[] {
 				new AddAtomicNodeAction(tree, clcte, clctfproviderfactory, additionalFields), TreeNodeAction.newSeparatorAction(),
 				new AddCompositeNodeAction(LogicalOperator.AND, tree),
 				new AddCompositeNodeAction(LogicalOperator.OR, tree),
@@ -283,7 +284,8 @@ public abstract class SearchConditionTreeNode extends DefaultMutableTreeNode {
 	protected class RemoveNodeAction extends TreeNodeAction {
 
 		RemoveNodeAction(JTree tree) {
-			super(ACTIONCOMMAND_REMOVE, CommonLocaleDelegate.getMessage("SearchConditionTreeNode.2","Entfernen"), tree);
+			super(ACTIONCOMMAND_REMOVE, CommonLocaleDelegate.getInstance().getMessage(
+					"SearchConditionTreeNode.2","Entfernen"), tree);
 		}
 
 		@Override
@@ -296,8 +298,8 @@ public abstract class SearchConditionTreeNode extends DefaultMutableTreeNode {
 		private final LogicalOperator logicalOperator;
 
 		AddCompositeNodeAction(LogicalOperator logicalOperator, JTree tree) {
-			super("ADD LOGICAL " + CommonLocaleDelegate.getMessage(logicalOperator.getResourceIdForLabel(), null)
-				+ " NODE", CommonLocaleDelegate.getMessage(logicalOperator.getResourceIdForDescription(), null), tree);
+			super("ADD LOGICAL " + CommonLocaleDelegate.getInstance().getMessage(logicalOperator.getResourceIdForLabel(), null)
+				+ " NODE", CommonLocaleDelegate.getInstance().getMessage(logicalOperator.getResourceIdForDescription(), null), tree);
 			this.logicalOperator = logicalOperator;
 		}
 
@@ -321,7 +323,8 @@ public abstract class SearchConditionTreeNode extends DefaultMutableTreeNode {
 		AddAtomicNodeAction(JTree tree, CollectableEntity clcte,
 				CollectableFieldsProviderFactory clctfproviderfactory,
 				Collection<CollectableEntityField> additionalFields) {
-			super(ACTIONCOMMAND_ADD_ATOMICNODE, CommonLocaleDelegate.getMessage("SearchConditionTreeNode.3","Einfache Bedingung"), tree);
+			super(ACTIONCOMMAND_ADD_ATOMICNODE, CommonLocaleDelegate.getInstance().getMessage(
+					"SearchConditionTreeNode.3","Einfache Bedingung"), tree);
 			this.clcte = clcte;
 			this.clctfproviderfactory = clctfproviderfactory;
 			this.additionalFields = additionalFields;

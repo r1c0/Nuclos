@@ -46,7 +46,7 @@ public class EntityFieldMetaDataListCellRenderer extends JLabel implements ListC
 	public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected,
 			boolean cellHasFocus) {
 
-		setText(CommonLocaleDelegate.getLabelFromMetaFieldDataVO((EntityFieldMetaDataVO) value));
+		setText(CommonLocaleDelegate.getInstance().getLabelFromMetaFieldDataVO((EntityFieldMetaDataVO) value));
         return this;
 	}
 

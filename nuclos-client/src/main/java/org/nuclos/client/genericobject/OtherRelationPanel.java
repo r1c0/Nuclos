@@ -76,8 +76,8 @@ class OtherRelationPanel extends JPanel {
 
 	private static CollectableComboBox newComboBox() {
 		final CollectableEntityField clctef = new DefaultCollectableEntityField(NuclosEntity.RELATIONTYPE.getEntityName(), String.class, 
-				CommonLocaleDelegate.getMessage("OtherRelationPanel.1", "Beziehungsart"),
-				CommonLocaleDelegate.getMessage("OtherRelationPanel.1", "Beziehungsart"), 
+				CommonLocaleDelegate.getInstance().getMessage("OtherRelationPanel.1", "Beziehungsart"),
+				CommonLocaleDelegate.getInstance().getMessage("OtherRelationPanel.1", "Beziehungsart"), 
 				null, null, false, CollectableEntityField.TYPE_VALUEIDFIELD, null, null, NuclosEntity.RELATIONTYPE.getEntityName());
 		final CollectableComboBox result = new NuclosCollectableComboBox(clctef, false);
 		// restrict value list to user-defined relation types:
@@ -99,7 +99,9 @@ class OtherRelationPanel extends JPanel {
 		this.goimpTarget = goimpTarget;
 
 		this.clctcmbbxRelationType = newComboBox();
-		this.relationpanel = new SwappableRelationPanel(CommonLocaleDelegate.getMessage("OtherRelationPanel.2", "Quelle"), CommonLocaleDelegate.getMessage("OtherRelationPanel.3", "Ziel"));
+		this.relationpanel = new SwappableRelationPanel(CommonLocaleDelegate.getInstance().getMessage(
+				"OtherRelationPanel.2", "Quelle"), 
+				CommonLocaleDelegate.getInstance().getMessage("OtherRelationPanel.3", "Ziel"));
 		this.relationpanel.setup(collgoimpSource, goimpTarget);
 		this.pnlCenter = new CenterPanel();
 
@@ -107,8 +109,10 @@ class OtherRelationPanel extends JPanel {
 	}
 
 	private void init() {
+		final CommonLocaleDelegate cld = CommonLocaleDelegate.getInstance();
 		final JPanel pnlNorth = new JPanel(new BorderLayout(5, 0));
-		pnlNorth.add(new JLabel(CommonLocaleDelegate.getMessage("OtherRelationPanel.1", "Beziehungsart")), BorderLayout.WEST);
+		pnlNorth.add(new JLabel(cld.getMessage(
+				"OtherRelationPanel.1", "Beziehungsart")), BorderLayout.WEST);
 		pnlNorth.add(this.clctcmbbxRelationType.getJComboBox(), BorderLayout.CENTER);
 		this.add(pnlNorth, BorderLayout.NORTH);
 
@@ -122,16 +126,17 @@ class OtherRelationPanel extends JPanel {
 		gbc.insets.left = 5;
 		gbc.insets.bottom = 5;
 
-		pnlSouth.add(new JLabel(CommonLocaleDelegate.getMessage("OtherRelationPanel.4", "G\u00fcltig von")), gbc);
+		pnlSouth.add(new JLabel(cld.getMessage(
+				"OtherRelationPanel.4", "G\u00fcltig von")), gbc);
 		pnlSouth.add(this.datechooserValidFrom, gbc);
 		gbc.insets.left = 10;
-		pnlSouth.add(new JLabel(CommonLocaleDelegate.getMessage("OtherRelationPanel.5", "bis")), gbc);
+		pnlSouth.add(new JLabel(cld.getMessage("OtherRelationPanel.5", "bis")), gbc);
 		gbc.insets.left = 5;
 		pnlSouth.add(this.datechooserValidUntil, gbc);
 
 		gbc.insets.top = 5;
 		gbc.gridx = 0;
-		pnlSouth.add(new JLabel(CommonLocaleDelegate.getMessage("OtherRelationPanel.6", "Bemerkung")), gbc);
+		pnlSouth.add(new JLabel(cld.getMessage("OtherRelationPanel.6", "Bemerkung")), gbc);
 
 		gbc.insets.top = 0;
 		gbc.fill = GridBagConstraints.BOTH;
@@ -163,7 +168,8 @@ class OtherRelationPanel extends JPanel {
 
 		private JPanel newEmptyPanel() {
 			final JPanel result = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 10));
-			result.add(new JLabel(CommonLocaleDelegate.getMessage("OtherRelationPanel.7", "Bitte w\u00e4hlen Sie eine Beziehungsart aus.")));
+			result.add(new JLabel(CommonLocaleDelegate.getInstance().getMessage(
+					"OtherRelationPanel.7", "Bitte w\u00e4hlen Sie eine Beziehungsart aus.")));
 			return result;
 		}
 	}
@@ -214,7 +220,8 @@ class OtherRelationPanel extends JPanel {
 		}
 		if (clctf.isNull()) {
 			final ErrorInfo ex = new ErrorInfo();
-			ex.setErrorMessage(CommonLocaleDelegate.getMessage("OtherRelationPanel.7", "Bitte w\u00e4hlen Sie eine Beziehungsart aus."));
+			ex.setErrorMessage(CommonLocaleDelegate.getInstance().getMessage(
+					"OtherRelationPanel.7", "Bitte w\u00e4hlen Sie eine Beziehungsart aus."));
 			ex.setComponent(this.clctcmbbxRelationType.getJComboBox());
 			throw ex;
 		}

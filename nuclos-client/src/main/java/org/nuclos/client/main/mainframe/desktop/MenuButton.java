@@ -111,7 +111,7 @@ abstract class MenuButton extends DesktopItem implements DragGestureListener {
 		}
 		this.prefs = prefs;
 		if (actions == null) {
-			actions = Main.getMainController().getGenericActions();
+			actions = Main.getInstance().getMainController().getGenericActions();
 		}
 		this.itemFontSize = itemFontSize;
 		this.itemTextHorizontalAlignment = itemTextHorizontalAlignment;
@@ -406,17 +406,17 @@ abstract class MenuButton extends DesktopItem implements DragGestureListener {
 		if (!MainFrame.isStarttabEditable()) {
 			return;
 		}
-		
 		hideMenu();
 		
+		final CommonLocaleDelegate cld = CommonLocaleDelegate.getInstance();
 		final JPopupMenu popup = new JPopupMenu();
 
-		popup.add(new JLabel("<html><b>"+CommonLocaleDelegate.getMessage("MenuButton.5", "Eigenschaften")+"</b></html>"));
+		popup.add(new JLabel("<html><b>"+ cld.getMessage("MenuButton.5", "Eigenschaften")+"</b></html>"));
 		
-		JMenu myIcons = new JMenu(CommonLocaleDelegate.getMessage("MenuButton.8", "Meine Icons"));
+		JMenu myIcons = new JMenu(cld.getMessage("MenuButton.8", "Meine Icons"));
 		myIcons.setEnabled(ResourceDelegate.getInstance().containsIconResources());
 		final JMenuItem miSelectResourceIcon = new JMenuItem(new AbstractAction(
-				CommonLocaleDelegate.getMessage("MenuButton.2",
+				cld.getMessage("MenuButton.2",
 						"Standard Icon auswählen"), Icons.getInstance().getIconEmpty16()) {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -429,7 +429,7 @@ abstract class MenuButton extends DesktopItem implements DragGestureListener {
 		});
 		myIcons.add(miSelectResourceIcon);
 		final JMenuItem miSelectResourceIconHover = new JMenuItem(new AbstractAction(
-				CommonLocaleDelegate.getMessage("MenuButton.7",
+				cld.getMessage("MenuButton.7",
 						"Mouseover Icon auswählen"), Icons.getInstance().getIconEmpty16()) {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -443,9 +443,9 @@ abstract class MenuButton extends DesktopItem implements DragGestureListener {
 		myIcons.add(miSelectResourceIconHover);
 		popup.add(myIcons);
 		
-		JMenu nuclosIcons = new JMenu(CommonLocaleDelegate.getMessage("MenuButton.9", "Nuclos Icons"));
+		JMenu nuclosIcons = new JMenu(cld.getMessage("MenuButton.9", "Nuclos Icons"));
 		final JMenuItem miSelectNuclosIcon = new JMenuItem(new AbstractAction(
-				CommonLocaleDelegate.getMessage("MenuButton.2",
+				cld.getMessage("MenuButton.2",
 						"Standard Icon auswählen"), Icons.getInstance().getIconEmpty16()) {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -474,7 +474,7 @@ abstract class MenuButton extends DesktopItem implements DragGestureListener {
 		popup.add(miSelectNuclosResourceIcon);*/
 		
 		final JMenuItem miSelectAction = new JMenuItem(new AbstractAction(
-		CommonLocaleDelegate.getMessage("MenuButton.3",
+		cld.getMessage("MenuButton.3",
 				"Aktion", Icons.getInstance().getIconEmpty16())) {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -494,7 +494,7 @@ abstract class MenuButton extends DesktopItem implements DragGestureListener {
 		});
 		popup.add(miSelectAction);
 		final JMenuItem miAddMenuItem = new JMenuItem(new AbstractAction(
-				CommonLocaleDelegate.getMessage("MenuButton.4",
+				cld.getMessage("MenuButton.4",
 						"Menu Eintrag hinzufügen"), Icons.getInstance().getIconPlus16()) {
 					@Override
 					public void actionPerformed(ActionEvent e) {
@@ -509,7 +509,7 @@ abstract class MenuButton extends DesktopItem implements DragGestureListener {
 		
 		popup.addSeparator();
 		final JMenuItem miRemove = new JMenuItem(new AbstractAction(
-				CommonLocaleDelegate.getMessage("MenuButton.6",
+				cld.getMessage("MenuButton.6",
 						"Menu Button entfernen"), Icons.getInstance().getIconMinus16()) {
 					@Override
 					public void actionPerformed(ActionEvent e) {
@@ -527,7 +527,7 @@ abstract class MenuButton extends DesktopItem implements DragGestureListener {
 		
 		if (sResourceIcon != null && sNuclosResourceIcon == null) {
 			try {
-				resourceIcon = ResourceCache.getIconResource(sResourceIcon);
+				resourceIcon = ResourceCache.getInstance().getIconResource(sResourceIcon);
 				applyIconSize();
 				prefs.setResourceIcon(sResourceIcon);
 				return;
@@ -575,7 +575,7 @@ abstract class MenuButton extends DesktopItem implements DragGestureListener {
 		
 		if (sResourceIconHover != null && sNuclosResourceIconHover == null) {
 			try {
-				resourceIconHover = ResourceCache.getIconResource(sResourceIconHover);
+				resourceIconHover = ResourceCache.getInstance().getIconResource(sResourceIconHover);
 				prefs.setResourceIconHover(sResourceIconHover);
 				return;
 			} catch (Exception ex) {

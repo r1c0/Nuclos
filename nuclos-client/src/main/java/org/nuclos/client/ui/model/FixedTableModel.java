@@ -98,7 +98,7 @@ public class FixedTableModel<T> extends AbstractTableModel {
 				if (this.fixedObjSet.size() + 1 >= objectListModel.getSize()) {
 					JOptionPane.showMessageDialog(
 						null,
-						CommonLocaleDelegate.getMessage(
+						CommonLocaleDelegate.getInstance().getMessage(
 							"SelectFixedColumnsController.2",
 							"Es d\u00fcrfen nicht alle Spalten ausgeblendet und fixiert werden"));
 

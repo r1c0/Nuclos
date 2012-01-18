@@ -100,7 +100,8 @@ public class EntityFieldsCollectableFieldsProvider implements CollectableFieldsP
 						new Transformer<MasterDataMetaFieldVO, CollectableField>() {
 					@Override
 					public CollectableField transform(MasterDataMetaFieldVO mdcvo) {
-						return new CollectableValueIdField(mdcvo.getId(), CommonLocaleDelegate.getResource(mdcvo.getResourceSIdForLabel(), mdcvo.getLabel()));
+						return new CollectableValueIdField(mdcvo.getId(), 
+								CommonLocaleDelegate.getInstance().getResource(mdcvo.getResourceSIdForLabel(), mdcvo.getLabel()));
 					}
 				});
 				
@@ -118,7 +119,8 @@ public class EntityFieldsCollectableFieldsProvider implements CollectableFieldsP
 						result = CollectionUtils.transform(collattrcvo, new Transformer<AttributeCVO, CollectableField>() {
 						@Override
 						public CollectableField transform(AttributeCVO attrcvo) {
-							return new CollectableValueIdField(attrcvo.getId(), CommonLocaleDelegate.getLabelFromAttributeCVO(attrcvo));
+							return new CollectableValueIdField(attrcvo.getId(), 
+									CommonLocaleDelegate.getInstance().getLabelFromAttributeCVO(attrcvo));
 						}
 					});
 

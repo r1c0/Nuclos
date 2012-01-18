@@ -1111,7 +1111,7 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 		private void handleLegacyResourceId(Attributes attributes) {
 			final String resourceId = attributes.getValue(ATTRIBUTE_LOCALERESOURCEID);
 			if (resourceId != null) {
-				String text = CommonLocaleDelegate.getTextForStaticLabel(resourceId);
+				String text = CommonLocaleDelegate.getInstance().getTextForStaticLabel(resourceId);
 				getStaticLocalizationHandler().setTranslation(text);
 			}
 		}
@@ -1172,7 +1172,8 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 					sb.append('"');
 					sb.append(' ');
 				}
-				sb.append("(").append(CommonLocaleDelegate.getMessage("LayoutMLParser.12", "Klasse")).append(": ");
+				sb.append("(").append(CommonLocaleDelegate.getInstance().getMessage(
+						"LayoutMLParser.12", "Klasse")).append(": ");
 				sb.append(comp.getClass().getName());
 				sb.append(')');
 				return sb.toString();
@@ -2167,7 +2168,7 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 
 			@Override
 			public void endElement(String sUriNameSpace, String sSimpleName, String sQualifiedName) {
-				String text = CommonLocaleDelegate.selectBestTranslation(translations);
+				String text = CommonLocaleDelegate.getInstance().selectBestTranslation(translations);
 				if (text != null) {
 					getStaticLocalizationHandler().setTranslation(text);
 				}
@@ -2455,7 +2456,7 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 				final String sIcon = attributes.getValue(ATTRIBUTE_ICON);
 				if (!StringUtils.isNullOrEmpty(sIcon)) {
 					try {
-						ImageIcon ico = ResourceCache.getIconResource(sIcon);
+						ImageIcon ico = ResourceCache.getInstance().getIconResource(sIcon);
 						btn.setIcon(ico);
 					}
 					catch (Exception ex) {

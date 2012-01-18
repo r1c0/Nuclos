@@ -48,6 +48,8 @@ import org.nuclos.common2.CommonRunnable;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.PreferencesException;
 import org.nuclos.server.customcomp.valueobject.CustomComponentVO;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
 
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
@@ -204,10 +206,11 @@ public abstract class CustomComponentController extends TopController {
 		}
 		boolean newTab = false;
 		final MainFrameTab mainFrameTab;
-		String title = CommonLocaleDelegate.getTextFallback(componentVO.getLabelResourceId(), componentVO.getLabelResourceId());
+		String title = CommonLocaleDelegate.getInstance().getTextFallback(
+				componentVO.getLabelResourceId(), componentVO.getLabelResourceId());
 		if (tabIfAny == null) {
 			newTab = true;
-			mainFrameTab = MainController.newMainFrameTab(controller, title);
+			mainFrameTab = Main.getInstance().getMainController().newMainFrameTab(controller, title);
 		} else {
 			mainFrameTab = tabIfAny;
 			mainFrameTab.setTitle(title);
@@ -306,22 +309,29 @@ public abstract class CustomComponentController extends TopController {
 
 	}
 
-	/**
-	 *
-	 *
-	 */
+	@Configurable
 	public static class CustomComponentTabRestoreController extends TabRestoreController {
-
+		
+		private MainController mainController;
+		
+		public CustomComponentTabRestoreController() {
+		}
+		
+		@Autowired
+		void setMainController(MainController mainController) {
+			this.mainController = mainController;
+		}
+		
 		@Override
 		public void restoreFromPreferences(String preferencesXML, MainFrameTab tab) throws Exception {
 			RestorePreferences rp = fromXML(preferencesXML);
 			Class<?> customComponentControllerClass = Class.forName(rp.customComponentClass);
 			CustomComponentController ctl = CustomComponentController.newController(rp.customComponentName, customComponentControllerClass, tab);
 
-			MainController.initMainFrameTab(ctl, tab);
+			Main.getInstance().getMainController().initMainFrameTab(ctl, tab);
 			// Main.getMainController().addMainFrameTab would be called from listener inside of initMainFrameTab, but only when tab added.
 			// During restore the tabs are already added, so we need to do this manually.
-			Main.getMainController().addMainFrameTab(tab, ctl);
+			mainController.addMainFrameTab(tab, ctl);
 
 			ctl.restoreInstanceStateFromXML(rp.instanceStateXML);
 			ctl.run();

@@ -36,7 +36,6 @@ import org.nuclos.client.ui.PopupButton;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.client.ui.table.CommonJTable;
 import org.nuclos.client.ui.table.TableUtils;
-import org.nuclos.common2.CommonLocaleDelegate;
 
 /**
  * View on a personal task list.
@@ -69,7 +68,7 @@ public class PersonalTaskView extends TaskView {
 	
 	final ButtonGroup bgPriority = new ButtonGroup();
 	final JRadioButtonMenuItem[] rbPrio = new JRadioButtonMenuItem[] {
-		new JRadioButtonMenuItem(CommonLocaleDelegate.getMessage("PersonalTaskView.1","<Alle>")),
+		new JRadioButtonMenuItem(getCommonLocaleDelegate().getMessage("PersonalTaskView.1","<Alle>")),
 		new JRadioButtonMenuItem("1"),
 		new JRadioButtonMenuItem("2"),
 		new JRadioButtonMenuItem("3"),
@@ -79,9 +78,9 @@ public class PersonalTaskView extends TaskView {
 	
 	final ButtonGroup bgShowTasks = new ButtonGroup();
 	final JRadioButtonMenuItem[] rbShowTask = new JRadioButtonMenuItem[] {
-		new JRadioButtonMenuItem(CommonLocaleDelegate.getMessage("PersonalTaskView.8","Eigene Aufgaben")),
-		new JRadioButtonMenuItem(CommonLocaleDelegate.getMessage("PersonalTaskView.6","Delegierte Aufgaben")),
-		new JRadioButtonMenuItem(CommonLocaleDelegate.getMessage("PersonalTaskView.3","Eigene und delegierte Aufgaben"))
+		new JRadioButtonMenuItem(getCommonLocaleDelegate().getMessage("PersonalTaskView.8","Eigene Aufgaben")),
+		new JRadioButtonMenuItem(getCommonLocaleDelegate().getMessage("PersonalTaskView.6","Delegierte Aufgaben")),
+		new JRadioButtonMenuItem(getCommonLocaleDelegate().getMessage("PersonalTaskView.3","Eigene und delegierte Aufgaben"))
 	};
 	
 	final JCheckBoxMenuItem ckbShowCompletedTasks = new JCheckBoxMenuItem();
@@ -89,7 +88,8 @@ public class PersonalTaskView extends TaskView {
 	private final JScrollPane scrlpn = new JScrollPane();
 	private final JTable tblTasks = new CommonJTable();
 	
-	private final PopupButton popupExtras = new PopupButton(CommonLocaleDelegate.getMessage("PopupButton.Extras","Extras"));
+	private final PopupButton popupExtras = new PopupButton(getCommonLocaleDelegate().getMessage(
+			"PopupButton.Extras","Extras"));
 
 	public PersonalTaskView() {
 		this.init();
@@ -110,13 +110,15 @@ public class PersonalTaskView extends TaskView {
 		this.popupExtras.add(btnRemove);
 		this.popupExtras.add(ckbShowCompletedTasks);
 		this.popupExtras.addSeparator();
-		this.popupExtras.add(new JLabel("<html><b>"+CommonLocaleDelegate.getMessage("PersonalTaskView.7","Filter nach Priorit\u00e4t")+"</b></html>"));
+		this.popupExtras.add(new JLabel("<html><b>"+getCommonLocaleDelegate().getMessage(
+				"PersonalTaskView.7","Filter nach Priorit\u00e4t")+"</b></html>"));
 		for (int i = 0; i < rbPrio.length; i++) {
 			this.bgPriority.add(rbPrio[i]);
 			this.popupExtras.add(rbPrio[i]);
 		}
 		this.popupExtras.addSeparator();
-		this.popupExtras.add(new JLabel("<html><b>"+CommonLocaleDelegate.getMessage("PersonalTaskView.5","Aufgaben anzeigen")+"</b></html>"));
+		this.popupExtras.add(new JLabel("<html><b>"+getCommonLocaleDelegate().getMessage(
+				"PersonalTaskView.5","Aufgaben anzeigen")+"</b></html>"));
 		for (int i = 0; i < rbShowTask.length; i++) {
 			this.bgShowTasks.add(rbShowTask[i]);
 			this.popupExtras.add(rbShowTask[i]);
@@ -129,8 +131,10 @@ public class PersonalTaskView extends TaskView {
 		btnNew.putClientProperty("hideActionText", Boolean.TRUE);
 		btnComplete.putClientProperty("hideActionText", Boolean.TRUE);
 		
-		this.ckbShowCompletedTasks.setText(CommonLocaleDelegate.getMessage("PersonalTaskView.9", "Auch erledigte anzeigen"));
-		this.ckbShowCompletedTasks.setToolTipText(CommonLocaleDelegate.getMessage("PersonalTaskView.10", "Erledigte und nicht erledigte Aufgaben anzeigen"));
+		this.ckbShowCompletedTasks.setText(getCommonLocaleDelegate().getMessage(
+				"PersonalTaskView.9", "Auch erledigte anzeigen"));
+		this.ckbShowCompletedTasks.setToolTipText(getCommonLocaleDelegate().getMessage(
+				"PersonalTaskView.10", "Erledigte und nicht erledigte Aufgaben anzeigen"));
 
 		this.scrlpn.getViewport().setView(tblTasks);
 		this.tblTasks.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);

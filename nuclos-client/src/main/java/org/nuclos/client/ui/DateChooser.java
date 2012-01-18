@@ -125,7 +125,7 @@ public class DateChooser extends JComponent implements Serializable {
 	/**
 	 * The format in which the selected date will appear in the text field.
 	 */
-	private DateFormat dateformatTextField = CommonLocaleDelegate.getDateFormat(); // DateFormat.getDateInstance(DateFormat.DEFAULT, CommonLocaleDelegate.getLocale());
+	private DateFormat dateformatTextField = CommonLocaleDelegate.getInstance().getDateFormat(); // DateFormat.getDateInstance(DateFormat.DEFAULT, CommonLocaleDelegate.getLocale());
 		//CommonLocaleDelegate.getDateFormat(); // (SimpleDateFormat) DateFormat.getDateInstance();
 
 	/**
@@ -431,10 +431,10 @@ public class DateChooser extends JComponent implements Serializable {
 		if (this.getText() != null && !this.getText().equals("")) {
 			try {
 				String date = this.getText();
-				if (date.equalsIgnoreCase(CommonLocaleDelegate.getMessage("datechooser.today.label", "Heute"))) {
+				if (date.equalsIgnoreCase(CommonLocaleDelegate.getInstance().getMessage("datechooser.today.label", "Heute"))) {
 					date = DateUtils.toString(DateUtils.today());
 				}
-				dateFromText = CommonLocaleDelegate.parseDate(date);
+				dateFromText = CommonLocaleDelegate.getInstance().parseDate(date);
 			}
 			catch (ParseException e) {
 				throw new CommonValidationException(StringUtils.getParameterizedExceptionMessage("datechooser.exception", getText()), e);//"Ung\u00fcltiges Datumsformat: \"" + getText() + "\"", e);
@@ -497,7 +497,7 @@ public class DateChooser extends JComponent implements Serializable {
 			if (date == RelativeDate.today()) {
 				if (isTodayRelative()) {
 					/** @todo refactor with special DateFormat */
-					specialText = CommonLocaleDelegate.getMessage("datechooser.today.label", "Heute");
+					specialText = CommonLocaleDelegate.getInstance().getMessage("datechooser.today.label", "Heute");
 				} else {
 					// since isTodayRelative()=false, "today" should be treated as static date value
 					date = DateUtils.today();
@@ -823,7 +823,8 @@ public class DateChooser extends JComponent implements Serializable {
 			final JPanel pnlButtons = new JPanel(new GridLayout(1, 2, 6, 6));
 			pnlButtons.setBackground(Color.white);
 			pnlButtons.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
-			btnToday = new JButton(CommonLocaleDelegate.getMessage("datechooser.today.label", "Heute"));
+			final CommonLocaleDelegate cld = CommonLocaleDelegate.getInstance();
+			btnToday = new JButton(cld.getMessage("datechooser.today.label", "Heute"));
 			if (bHistoricalState) {
 				btnToday.setEnabled(false);
 			}
@@ -836,7 +837,7 @@ public class DateChooser extends JComponent implements Serializable {
 					if (DateChooser.this.isTodayRelative()) {
 						dateSelected = RelativeDate.today();
 						selectedCalendar.setTime(dateSelected);
-						setDateText(CommonLocaleDelegate.getMessage("datechooser.today.label", "Heute"), true);
+						setDateText(cld.getMessage("datechooser.today.label", "Heute"), true);
 					}
 					else {
 						dateSelected = todaysCalendar.getTime();
@@ -850,11 +851,11 @@ public class DateChooser extends JComponent implements Serializable {
 
 			btnNone = new JButton();
 			if (bHistoricalState) {
-				btnNone.setText(CommonLocaleDelegate.getMessage("datechooser.actual.label", "Aktuell"));
+				btnNone.setText(cld.getMessage("datechooser.actual.label", "Aktuell"));
 				btnNone.setMnemonic('A');
 			}
 			else {
-				btnNone.setText(CommonLocaleDelegate.getMessage("datechooser.empty.label", "Leer"));
+				btnNone.setText(cld.getMessage("datechooser.empty.label", "Leer"));
 				btnNone.setMnemonic('L');
 			}
 
@@ -920,7 +921,8 @@ public class DateChooser extends JComponent implements Serializable {
 		private JPanel createMonthPanel() {
 			final JPanel result = new JPanel(new BorderLayout());
 
-			final String sTooltipMonthScroll = CommonLocaleDelegate.getMessage("datechooser.tooltip", "Dr\u00fccken Sie STRG, um jahrweise zu bl\u00e4ttern.");
+			final String sTooltipMonthScroll = CommonLocaleDelegate.getInstance().getMessage(
+					"datechooser.tooltip", "Dr\u00fccken Sie STRG, um jahrweise zu bl\u00e4ttern.");
 
 			final Icon iconLeft = Icons.getInstance().getIconPrevious16();
 			btnPrevious = new JButton(iconLeft);

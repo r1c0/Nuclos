@@ -36,7 +36,10 @@ import org.nuclos.server.report.valueobject.DatasourceVO;
 public class AllDatasourceNode extends DirectoryDatasourceNode {
 
 	public AllDatasourceNode() {
-		super(false, CommonLocaleDelegate.getMessage("AllDatasourceNode.1", "Alle Datenquellen"), CommonLocaleDelegate.getMessage("AllDatasourceNode.1", "Alle Datenquellen"), null);
+		super(false, CommonLocaleDelegate.getInstance().getMessage(
+				"AllDatasourceNode.1", "Alle Datenquellen"), 
+				CommonLocaleDelegate.getInstance().getMessage(
+						"AllDatasourceNode.1", "Alle Datenquellen"), null);
 	}
 
 	@Override

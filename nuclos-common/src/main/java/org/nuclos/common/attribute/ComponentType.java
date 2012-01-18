@@ -30,10 +30,10 @@ import java.util.NoSuchElementException;
  * @version 01.00.00
  */
 public enum ComponentType {
-	TEXTFIELD(CommonLocaleDelegate.getMessage("ComponentType.5","Textfeld"), false, true, false),
-	DROPDOWN(CommonLocaleDelegate.getMessage("ComponentType.1","Auswahlliste"), false, false, false),
-	COMBOBOX(CommonLocaleDelegate.getMessage("ComponentType.2","ComboBox (editierbar)"), false, true, true),
-	LISTOFVALUES(CommonLocaleDelegate.getMessage("ComponentType.4","Suchfeld"), true, false, false);
+	TEXTFIELD(CommonLocaleDelegate.getInstance().getMessage("ComponentType.5","Textfeld"), false, true, false),
+	DROPDOWN(CommonLocaleDelegate.getInstance().getMessage("ComponentType.1","Auswahlliste"), false, false, false),
+	COMBOBOX(CommonLocaleDelegate.getInstance().getMessage("ComponentType.2","ComboBox (editierbar)"), false, true, true),
+	LISTOFVALUES(CommonLocaleDelegate.getInstance().getMessage("ComponentType.4","Suchfeld"), true, false, false);
 
 	private final String sLabel;
 	private final boolean bSearchable;
@@ -82,7 +82,8 @@ public enum ComponentType {
 				return componenttype;
 			}
 		}
-		throw new NoSuchElementException(CommonLocaleDelegate.getMessage("ComponentType.3","Es gibt keinen passenden Komponenten-Typ f\u00fcr diese Kombination."));
+		throw new NoSuchElementException(CommonLocaleDelegate.getInstance().getMessage(
+				"ComponentType.3","Es gibt keinen passenden Komponenten-Typ f\u00fcr diese Kombination."));
 	}
 
 }	// enum ComponentType

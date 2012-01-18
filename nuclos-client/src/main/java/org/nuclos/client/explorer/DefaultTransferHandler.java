@@ -172,7 +172,7 @@ public class DefaultTransferHandler extends TransferHandler {
 					@Override
 					public void run() {
 						try {
-							JOptionPane.showMessageDialog(parent, CommonLocaleDelegate.getMessage(
+							JOptionPane.showMessageDialog(parent, CommonLocaleDelegate.getInstance().getMessage(
 									"ExplorerController.16","Dieser Datentransfer wird von dem ausgew\u00e4hlten Objekt nicht unterst\u00fctzt."));
 						}
 						catch (Exception e) {

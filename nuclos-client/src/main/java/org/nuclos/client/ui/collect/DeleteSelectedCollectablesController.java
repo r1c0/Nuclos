@@ -58,22 +58,26 @@ public class DeleteSelectedCollectablesController <Clct extends Collectable>
 
 		@Override
 		public String getText(Clct clct) {
-			return CommonLocaleDelegate.getMessage("DeleteSelectedCollectablesController.1","Datensatz {0} wird gel\u00f6scht...", MultiCollectablesActionController.getCollectableLabel(ctl.getEntityName(), clct));
+			return CommonLocaleDelegate.getInstance().getMessage(
+					"DeleteSelectedCollectablesController.1","Datensatz {0} wird gel\u00f6scht...", MultiCollectablesActionController.getCollectableLabel(ctl.getEntityName(), clct));
 		}
 
 		@Override
 		public String getSuccessfulMessage(Clct clct, Object oResult) {
-			return CommonLocaleDelegate.getMessage("DeleteSelectedCollectablesController.2","Datensatz {0} erfolgreich gel\u00f6scht.", MultiCollectablesActionController.getCollectableLabel(ctl.getEntityName(), clct));
+			return CommonLocaleDelegate.getInstance().getMessage(
+					"DeleteSelectedCollectablesController.2","Datensatz {0} erfolgreich gel\u00f6scht.", MultiCollectablesActionController.getCollectableLabel(ctl.getEntityName(), clct));
 		}
 
 		@Override
 		public String getConfirmStopMessage() {
-			return CommonLocaleDelegate.getMessage("DeleteSelectedCollectablesController.3","Wollen Sie das L\u00f6schen der Datens\u00e4tze an dieser Stelle beenden?\n(Die bisher gel\u00f6schten Datens\u00e4tze bleiben in jedem Fall gel\u00f6scht.)");
+			return CommonLocaleDelegate.getInstance().getMessage(
+					"DeleteSelectedCollectablesController.3","Wollen Sie das L\u00f6schen der Datens\u00e4tze an dieser Stelle beenden?\n(Die bisher gel\u00f6schten Datens\u00e4tze bleiben in jedem Fall gel\u00f6scht.)");
 		}
 
 		@Override
 		public String getExceptionMessage(Clct clct, Exception ex) {
-			return CommonLocaleDelegate.getMessage("DeleteSelectedCollectablesController.4","Datensatz {0} konnte nicht gel\u00f6scht werden.", MultiCollectablesActionController.getCollectableLabel(ctl.getEntityName(), clct)) + ex.getMessage();
+			return CommonLocaleDelegate.getInstance().getMessage(
+					"DeleteSelectedCollectablesController.4","Datensatz {0} konnte nicht gel\u00f6scht werden.", MultiCollectablesActionController.getCollectableLabel(ctl.getEntityName(), clct)) + ex.getMessage();
 		}
 
 		@Override
@@ -84,7 +88,8 @@ public class DeleteSelectedCollectablesController <Clct extends Collectable>
 	}
 
 	public DeleteSelectedCollectablesController(CollectController<Clct> ctl) {
-		super(ctl, CommonLocaleDelegate.getMessage("DeleteSelectedCollectablesController.5","Datens\u00e4tze l\u00f6schen"), new DeleteAction<Clct>(ctl), ctl.getSelectedCollectables());
+		super(ctl, CommonLocaleDelegate.getInstance().getMessage(
+				"DeleteSelectedCollectablesController.5","Datens\u00e4tze l\u00f6schen"), new DeleteAction<Clct>(ctl), ctl.getSelectedCollectables());
 	}
 
 }  // class DeleteSelectedCollectablesController

@@ -39,13 +39,19 @@ public class SelectColumnsController extends SelectObjectsController<Collectable
 		SelectColumnsPanel() {
 			super();
 
-			this.labAvailableColumns.setText(CommonLocaleDelegate.getMessage("SelectColumnsController.7","Verf\u00fcgbare Spalten"));
-			this.labSelectedColumns.setText(CommonLocaleDelegate.getMessage("SelectColumnsController.2","Ausgew\u00e4hlte Spalten"));
+			this.labAvailableColumns.setText(CommonLocaleDelegate.getInstance().getMessage(
+					"SelectColumnsController.7","Verf\u00fcgbare Spalten"));
+			this.labSelectedColumns.setText(CommonLocaleDelegate.getInstance().getMessage(
+					"SelectColumnsController.2","Ausgew\u00e4hlte Spalten"));
 
-			this.btnLeft.setToolTipText(CommonLocaleDelegate.getMessage("SelectColumnsController.4","Markierte Spalte(n) nicht anzeigen"));
-			this.btnRight.setToolTipText(CommonLocaleDelegate.getMessage("SelectColumnsController.3","Markierte Spalte(n) anzeigen"));
-			this.btnUp.setToolTipText(CommonLocaleDelegate.getMessage("SelectColumnsController.5","Markierte Spalte nach oben verschieben"));
-			this.btnDown.setToolTipText(CommonLocaleDelegate.getMessage("SelectColumnsController.6","Markierte Spalte nach unten verschieben"));
+			this.btnLeft.setToolTipText(CommonLocaleDelegate.getInstance().getMessage(
+					"SelectColumnsController.4","Markierte Spalte(n) nicht anzeigen"));
+			this.btnRight.setToolTipText(CommonLocaleDelegate.getInstance().getMessage(
+					"SelectColumnsController.3","Markierte Spalte(n) anzeigen"));
+			this.btnUp.setToolTipText(CommonLocaleDelegate.getInstance().getMessage(
+					"SelectColumnsController.5","Markierte Spalte nach oben verschieben"));
+			this.btnDown.setToolTipText(CommonLocaleDelegate.getInstance().getMessage(
+					"SelectColumnsController.6","Markierte Spalte nach unten verschieben"));
 
 			this.btnUp.setVisible(true);
 			this.btnDown.setVisible(true);

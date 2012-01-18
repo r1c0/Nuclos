@@ -44,13 +44,19 @@ import org.nuclos.client.datasource.querybuilder.shapes.RelationConnector;
  */
 public class JoinPanel extends JPanel {
 
-	private static final String sJoin = CommonLocaleDelegate.getMessage("JoinPanel.1", "<html>Nur verkn\u00fcpfte Datens\u00e4tze ber\u00fccksichtigen,<br>deren Feldinhalte auf beiden Seiten identisch sind</html>");
-	private static final String sOuterJoin = CommonLocaleDelegate.getMessage("JoinPanel.2", "<html>ALLE Datens\u00e4tze von {0}<br>und nur Datens\u00e4tze von {1} selektieren,<br>wenn die verkn\u00fcpften Felder identisch sind ({2} Outer Join)</html>");
+	private static final String sJoin = CommonLocaleDelegate.getInstance().getMessage(
+			"JoinPanel.1", "<html>Nur verkn\u00fcpfte Datens\u00e4tze ber\u00fccksichtigen,<br>deren Feldinhalte auf beiden Seiten identisch sind</html>");
+	private static final String sOuterJoin = CommonLocaleDelegate.getInstance().getMessage(
+			"JoinPanel.2", "<html>ALLE Datens\u00e4tze von {0}<br>und nur Datens\u00e4tze von {1} selektieren,<br>wenn die verkn\u00fcpften Felder identisch sind ({2} Outer Join)</html>");
 
-	public final JLabel lblLeftTable = new JLabel(CommonLocaleDelegate.getMessage("JoinPanel.3", "Linke Tabelle"));
-	public final JLabel lblLeftColumn = new JLabel(CommonLocaleDelegate.getMessage("JoinPanel.4", "Linke Spalte"));
-	public final JLabel lblRightTable = new JLabel(CommonLocaleDelegate.getMessage("JoinPanel.5", "Rechte Tabelle"));
-	public final JLabel lblRightColumn = new JLabel(CommonLocaleDelegate.getMessage("JoinPanel.6", "Rechte Spalte"));
+	public final JLabel lblLeftTable = new JLabel(CommonLocaleDelegate.getInstance().getMessage(
+			"JoinPanel.3", "Linke Tabelle"));
+	public final JLabel lblLeftColumn = new JLabel(CommonLocaleDelegate.getInstance().getMessage(
+			"JoinPanel.4", "Linke Spalte"));
+	public final JLabel lblRightTable = new JLabel(CommonLocaleDelegate.getInstance().getMessage(
+			"JoinPanel.5", "Rechte Tabelle"));
+	public final JLabel lblRightColumn = new JLabel(CommonLocaleDelegate.getInstance().getMessage(
+			"JoinPanel.6", "Rechte Spalte"));
 	public final JTextField edLeftTable = new JTextField();
 	public final JTextField edLeftColumn = new JTextField();
 	public final JTextField edRightTable = new JTextField();

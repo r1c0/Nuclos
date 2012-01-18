@@ -41,7 +41,6 @@ import org.nuclos.client.ui.collect.component.model.CollectableComponentModelEve
 import org.nuclos.common.NuclosBusinessException;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.collect.collectable.CollectableValueIdField;
-import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.IdUtils;
 import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
@@ -169,12 +168,12 @@ public class GenerationCollectController extends MasterDataCollectController {
 			DependantMasterDataMap mp = vo.getDependants();
 			for(MasterDataVO voAttribute : mp.getAllValues()) {
 				if(voAttribute.getField("subentityAttributeGrouping") == null){
-					throw new CommonBusinessException(CommonLocaleDelegate.getMessage("GenerationCollectController.2",
+					throw new CommonBusinessException(getCommonLocaleDelegate().getMessage("GenerationCollectController.2",
 					"Sie müssen Gruppierungsfunktionen für die Unterformular Attribute angeben!"));
 				}
 				String sGroup = (String)voAttribute.getField("subentityAttributeGrouping");
 				if(sGroup == null || sGroup.length() < 1){
-					throw new CommonBusinessException(CommonLocaleDelegate.getMessage("GenerationCollectController.2",
+					throw new CommonBusinessException(getCommonLocaleDelegate().getMessage("GenerationCollectController.2",
 						"Sie müssen Gruppierungsfunktionen für die Unterformular Attribute angeben!"));
 				}
 			}
@@ -190,7 +189,7 @@ public class GenerationCollectController extends MasterDataCollectController {
 
 			String sTargetAttribute = (String) mdVOTarget.getField("attributeTarget");
 			if( !(stAllTargetAttributes.add(sTargetAttribute)) ){
-				throw new CommonBusinessException(CommonLocaleDelegate.getMessage("GenerationCollectController.1",
+				throw new CommonBusinessException(getCommonLocaleDelegate().getMessage("GenerationCollectController.1",
 					"Das Zielattribut '{0}' darf nicht mehrfach vorkommen. W\u00e4hlen Sie bitte ein anderes Zielattribut aus.", sTargetAttribute));
 			}
 

@@ -96,7 +96,7 @@ public class NucletContentTreeNode implements TreeNode {
 
 	@Override
 	public String getLabel() {
-		return CommonLocaleDelegate.getLabelFromMetaDataVO(getMetaData());
+		return CommonLocaleDelegate.getInstance().getLabelFromMetaDataVO(getMetaData());
 	}
 
 	@Override

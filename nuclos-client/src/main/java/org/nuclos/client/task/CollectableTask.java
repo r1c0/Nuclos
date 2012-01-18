@@ -64,52 +64,56 @@ public class CollectableTask extends AbstractCollectableBean<TaskVO> {
 	public static class Entity extends AbstractCollectableEntity {
 
 		private Entity() {
-			super("__task", CommonLocaleDelegate.getMessage("CollectableTask.2","Titel"));
+			super("__task", CommonLocaleDelegate.getInstance().getMessage("CollectableTask.2","Titel"));
 
 			this.addCollectableEntityField(new DefaultCollectableEntityField(FIELDNAME_NAME, String.class,
-				CommonLocaleDelegate.getMessage("nuclos.entityfield.tasklist.name.label","Titel"),
-				CommonLocaleDelegate.getMessage("nuclos.entityfield.tasklist.name.description","Titel"), null, null, false, CollectableField.TYPE_VALUEFIELD, null, null, TASK_ENTITY));
+					getCommonLocaleDelegate().getMessage("nuclos.entityfield.tasklist.name.label","Titel"),
+					getCommonLocaleDelegate().getMessage("nuclos.entityfield.tasklist.name.description","Titel"), null, null, false, CollectableField.TYPE_VALUEFIELD, null, null, TASK_ENTITY));
 			this.addCollectableEntityField(new DefaultCollectableEntityField(FIELDNAME_VISIBILITY, Integer.class,
-				CommonLocaleDelegate.getMessage("nuclos.entityfield.tasklist.visibility.label","Sichtbarkeit"),
-				CommonLocaleDelegate.getMessage("nuclos.entityfield.tasklist.visibility.description","Sichtbarkeit"), null, null, true, CollectableField.TYPE_VALUEFIELD, null, null, TASK_ENTITY));
+					getCommonLocaleDelegate().getMessage("nuclos.entityfield.tasklist.visibility.label","Sichtbarkeit"),
+					getCommonLocaleDelegate().getMessage("nuclos.entityfield.tasklist.visibility.description","Sichtbarkeit"), null, null, true, CollectableField.TYPE_VALUEFIELD, null, null, TASK_ENTITY));
 			this.addCollectableEntityField(new DefaultCollectableEntityField(FIELDNAME_PRIORITY, Integer.class,
-				CommonLocaleDelegate.getMessage("nuclos.entityfield.tasklist.priority.label","Priorit\u00e4t"),
-				CommonLocaleDelegate.getMessage("nuclos.entityfield.tasklist.priority.description","Priorit\u00e4t"), null, null, true, CollectableField.TYPE_VALUEFIELD, null, null, TASK_ENTITY));
+					getCommonLocaleDelegate().getMessage("nuclos.entityfield.tasklist.priority.label","Priorit\u00e4t"),
+					getCommonLocaleDelegate().getMessage("nuclos.entityfield.tasklist.priority.description","Priorit\u00e4t"), null, null, true, CollectableField.TYPE_VALUEFIELD, null, null, TASK_ENTITY));
 			this.addCollectableEntityField(new DefaultCollectableEntityField(FIELDNAME_SCHEDULED, Date.class,
-				CommonLocaleDelegate.getMessage("nuclos.entityfield.tasklist.scheduled.label","Termin"),
-				CommonLocaleDelegate.getMessage("nuclos.entityfield.tasklist.scheduled.description","Termin"), null, null, true, CollectableField.TYPE_VALUEFIELD, null, null, TASK_ENTITY));
+					getCommonLocaleDelegate().getMessage("nuclos.entityfield.tasklist.scheduled.label","Termin"),
+					getCommonLocaleDelegate().getMessage("nuclos.entityfield.tasklist.scheduled.description","Termin"), null, null, true, CollectableField.TYPE_VALUEFIELD, null, null, TASK_ENTITY));
 			this.addCollectableEntityField(new DefaultCollectableEntityField(FIELDNAME_TASKSTATUS, String.class,
-				CommonLocaleDelegate.getMessage("nuclos.entityfield.tasklist.taskstatus.label","Bearbeitungsstatus"),
-				CommonLocaleDelegate.getMessage("nuclos.entityfield.tasklist.taskstatus.description","Bearbeitungsstatus"), null, null, true, CollectableField.TYPE_VALUEFIELD, null, null, TASK_ENTITY));
+					getCommonLocaleDelegate().getMessage("nuclos.entityfield.tasklist.taskstatus.label","Bearbeitungsstatus"),
+					getCommonLocaleDelegate().getMessage("nuclos.entityfield.tasklist.taskstatus.description","Bearbeitungsstatus"), null, null, true, CollectableField.TYPE_VALUEFIELD, null, null, TASK_ENTITY));
 			this.addCollectableEntityField(new DefaultCollectableEntityField(FIELDNAME_DESCRIPTION, String.class,
-				CommonLocaleDelegate.getMessage("nuclos.entityfield.tasklist.description.label","Beschreibung"),
-				CommonLocaleDelegate.getMessage("nuclos.entityfield.tasklist.description.description","Beschreibung"), null, null, true, CollectableField.TYPE_VALUEFIELD, null, null, TASK_ENTITY));
+					getCommonLocaleDelegate().getMessage("nuclos.entityfield.tasklist.description.label","Beschreibung"),
+					getCommonLocaleDelegate().getMessage("nuclos.entityfield.tasklist.description.description","Beschreibung"), null, null, true, CollectableField.TYPE_VALUEFIELD, null, null, TASK_ENTITY));
 			this.addCollectableEntityField(new DefaultCollectableEntityField(FIELDNAME_COMMENT, String.class,
-				CommonLocaleDelegate.getMessage("nuclos.entityfield.tasklist.comment.label","Bemerkung"),
-				CommonLocaleDelegate.getMessage("nuclos.entityfield.tasklist.comment.description","Bemerkung"), null, null, true, CollectableField.TYPE_VALUEFIELD, null, null, TASK_ENTITY));
+					getCommonLocaleDelegate().getMessage("nuclos.entityfield.tasklist.comment.label","Bemerkung"),
+					getCommonLocaleDelegate().getMessage("nuclos.entityfield.tasklist.comment.description","Bemerkung"), null, null, true, CollectableField.TYPE_VALUEFIELD, null, null, TASK_ENTITY));
 			this.addCollectableEntityField(new DefaultCollectableEntityField(FIELDNAME_DELEGATOR, String.class,
-				CommonLocaleDelegate.getMessage("nuclos.entityfield.tasklist.taskdelegator.label","Ersteller"),
-				CommonLocaleDelegate.getMessage("nuclos.entityfield.tasklist.taskdelegator.description","Ersteller"), null, null, true, CollectableField.TYPE_VALUEFIELD, null, null, TASK_ENTITY));
+					getCommonLocaleDelegate().getMessage("nuclos.entityfield.tasklist.taskdelegator.label","Ersteller"),
+					getCommonLocaleDelegate().getMessage("nuclos.entityfield.tasklist.taskdelegator.description","Ersteller"), null, null, true, CollectableField.TYPE_VALUEFIELD, null, null, TASK_ENTITY));
 			this.addCollectableEntityField(new DefaultCollectableEntityField(FIELDNAME_COMPLETED, Date.class,
-				CommonLocaleDelegate.getMessage("nuclos.entityfield.tasklist.completed.label","Erledigt am"),
-				CommonLocaleDelegate.getMessage("nuclos.entityfield.tasklist.completed.description","Erledigt am"), null, null, true, CollectableField.TYPE_VALUEFIELD, null, null, TASK_ENTITY));
+					getCommonLocaleDelegate().getMessage("nuclos.entityfield.tasklist.completed.label","Erledigt am"),
+					getCommonLocaleDelegate().getMessage("nuclos.entityfield.tasklist.completed.description","Erledigt am"), null, null, true, CollectableField.TYPE_VALUEFIELD, null, null, TASK_ENTITY));
 			this.addCollectableEntityField(new DefaultCollectableEntityField(FIELDNAME_OWNERNAME, String.class,
-				CommonLocaleDelegate.getMessage("nuclos.entityfield.taskowner.user.label","Bearbeiter"),
-				CommonLocaleDelegate.getMessage("nuclos.entityfield.taskowner.user.label","Bearbeiter"), null, null, true, CollectableField.TYPE_VALUEFIELD, null, null, TASK_ENTITY));
+					getCommonLocaleDelegate().getMessage("nuclos.entityfield.taskowner.user.label","Bearbeiter"),
+					getCommonLocaleDelegate().getMessage("nuclos.entityfield.taskowner.user.label","Bearbeiter"), null, null, true, CollectableField.TYPE_VALUEFIELD, null, null, TASK_ENTITY));
 			this.addCollectableEntityField(new DefaultCollectableEntityField(FIELDNAME_DELEGATORNAME, String.class,
-				CommonLocaleDelegate.getMessage("nuclos.entityfield.tasklist.taskdelegator.label","Ersteller)"),
-				CommonLocaleDelegate.getMessage("nuclos.entityfield.tasklist.taskdelegator.description","Ersteller"), null, null, true, CollectableField.TYPE_VALUEFIELD, null, null, TASK_ENTITY));
+					getCommonLocaleDelegate().getMessage("nuclos.entityfield.tasklist.taskdelegator.label","Ersteller)"),
+					getCommonLocaleDelegate().getMessage("nuclos.entityfield.tasklist.taskdelegator.description","Ersteller"), null, null, true, CollectableField.TYPE_VALUEFIELD, null, null, TASK_ENTITY));
 			this.addCollectableEntityField(new DefaultCollectableEntityField(FIELDNAME_RELATEDOBJECTS, String.class,
-				CommonLocaleDelegate.getMessage("nuclos.entityfield.taskobject.genericObject.label","Zugeordnet(e) Objekt(e)"),
-				CommonLocaleDelegate.getMessage("nuclos.entityfield.taskobject.genericObject.label","Zugeordnet(e) Objekt(e)"), null, null, true, CollectableField.TYPE_VALUEFIELD, null, null, TASK_ENTITY));
-			this.addCollectableEntityField(new DefaultCollectableEntityField(FIELDNAME_CREATEDAT, Date.class,  CommonLocaleDelegate.getMessage("CollectableTask.16","Erstellt am"),
-				CommonLocaleDelegate.getMessage("CollectableTask.18","Erstellt am"), null, null, false, CollectableField.TYPE_VALUEFIELD, null, null, TASK_ENTITY));
-			this.addCollectableEntityField(new DefaultCollectableEntityField(FIELDNAME_CREATEDBY, String.class, CommonLocaleDelegate.getMessage("CollectableTask.17","Erstellt von"),
-				CommonLocaleDelegate.getMessage("CollectableTask.6","Erstellt von"), null, null, false, CollectableField.TYPE_VALUEFIELD, null, null, TASK_ENTITY));
-			this.addCollectableEntityField(new DefaultCollectableEntityField(FIELDNAME_CHANGEDAT, Date.class, CommonLocaleDelegate.getMessage("CollectableTask.23","Ge\u00e4ndert am"),
-				CommonLocaleDelegate.getMessage("CollectableTask.8","Ge\u00e4ndert am"), null, null, false, CollectableField.TYPE_VALUEFIELD, null, null, TASK_ENTITY));
-			this.addCollectableEntityField(new DefaultCollectableEntityField(FIELDNAME_CHANGEDBY, String.class, CommonLocaleDelegate.getMessage("CollectableTask.24","Ge\u00e4ndert von"),
-				CommonLocaleDelegate.getMessage("CollectableTask.7","Ge\u00e4ndert von"), null, null, false, CollectableField.TYPE_VALUEFIELD, null, null, TASK_ENTITY));
+					getCommonLocaleDelegate().getMessage("nuclos.entityfield.taskobject.genericObject.label","Zugeordnet(e) Objekt(e)"),
+					getCommonLocaleDelegate().getMessage("nuclos.entityfield.taskobject.genericObject.label","Zugeordnet(e) Objekt(e)"), null, null, true, CollectableField.TYPE_VALUEFIELD, null, null, TASK_ENTITY));
+			this.addCollectableEntityField(new DefaultCollectableEntityField(FIELDNAME_CREATEDAT, Date.class,  
+					getCommonLocaleDelegate().getMessage("CollectableTask.16","Erstellt am"),
+					getCommonLocaleDelegate().getMessage("CollectableTask.18","Erstellt am"), null, null, false, CollectableField.TYPE_VALUEFIELD, null, null, TASK_ENTITY));
+			this.addCollectableEntityField(new DefaultCollectableEntityField(FIELDNAME_CREATEDBY, String.class, 
+					getCommonLocaleDelegate().getMessage("CollectableTask.17","Erstellt von"),
+					getCommonLocaleDelegate().getMessage("CollectableTask.6","Erstellt von"), null, null, false, CollectableField.TYPE_VALUEFIELD, null, null, TASK_ENTITY));
+			this.addCollectableEntityField(new DefaultCollectableEntityField(FIELDNAME_CHANGEDAT, Date.class, 
+					getCommonLocaleDelegate().getMessage("CollectableTask.23","Ge\u00e4ndert am"),
+					getCommonLocaleDelegate().getMessage("CollectableTask.8","Ge\u00e4ndert am"), null, null, false, CollectableField.TYPE_VALUEFIELD, null, null, TASK_ENTITY));
+			this.addCollectableEntityField(new DefaultCollectableEntityField(FIELDNAME_CHANGEDBY, String.class, 
+					getCommonLocaleDelegate().getMessage("CollectableTask.24","Ge\u00e4ndert von"),
+					getCommonLocaleDelegate().getMessage("CollectableTask.7","Ge\u00e4ndert von"), null, null, false, CollectableField.TYPE_VALUEFIELD, null, null, TASK_ENTITY));
 		}
 
 		public List<String> getNamesOfFieldsToDisplay() {

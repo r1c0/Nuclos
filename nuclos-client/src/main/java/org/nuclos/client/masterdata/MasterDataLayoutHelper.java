@@ -68,11 +68,13 @@ public class MasterDataLayoutHelper {
 
 	public static void checkLayoutMLExistence(String sEntityName) throws NuclosBusinessException {
 		boolean searchable = MasterDataDelegate.getInstance().getMetaData(sEntityName).isSearchable();
-
+		final CommonLocaleDelegate cld = CommonLocaleDelegate.getInstance();
 		if (!isLayoutMLAvailable(sEntityName,searchable) && !hasSpecialLayout(sEntityName)) {
-			String form = searchable ? CommonLocaleDelegate.getResource("R00011933", "Suchmaske") : CommonLocaleDelegate.getResource("R00022868", "Eingabemaske");
-			String entityName = CommonLocaleDelegate.getLabelFromMetaDataVO(MasterDataDelegate.getInstance().getMetaData(sEntityName));
-			throw new NuclosBusinessException(CommonLocaleDelegate.getMessage("masterdata.error.layout.missing",
+			String form = searchable ? cld.getResource("R00011933", "Suchmaske") 
+					: cld.getResource("R00022868", "Eingabemaske");
+			String entityName = cld.getLabelFromMetaDataVO(
+					MasterDataDelegate.getInstance().getMetaData(sEntityName));
+			throw new NuclosBusinessException(cld.getMessage("masterdata.error.layout.missing",
 				"Das Layout f\u00fcr die {0} der Entit\u00e4t '{1}' fehlt", form, entityName));
 		}
 	}

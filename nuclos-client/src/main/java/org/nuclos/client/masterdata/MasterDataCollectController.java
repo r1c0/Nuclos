@@ -63,7 +63,6 @@ import org.nuclos.client.explorer.ExplorerDelegate;
 import org.nuclos.client.genericobject.GenerationController;
 import org.nuclos.client.genericobject.GeneratorActions;
 import org.nuclos.client.genericobject.ReportController;
-import org.nuclos.client.main.Main;
 import org.nuclos.client.main.mainframe.MainFrameTab;
 import org.nuclos.client.masterdata.datatransfer.MasterDataIdAndEntity;
 import org.nuclos.client.masterdata.datatransfer.MasterDataVOTransferable;
@@ -368,10 +367,20 @@ public class MasterDataCollectController extends EntityCollectController<Collect
 
    @Override
    protected String getTitle(int iTab, int iMode) {
-      final String[] asTabs = {CommonLocaleDelegate.getMessage("MasterDataCollectController.17","Suche"), CommonLocaleDelegate.getMessage("MasterDataCollectController.5","Ergebnis"), CommonLocaleDelegate.getMessage("MasterDataCollectController.2","Details")};
+	   final CommonLocaleDelegate cld = getCommonLocaleDelegate();
+      final String[] asTabs = {
+    		  cld.getMessage("MasterDataCollectController.17","Suche"), 
+    		  cld.getMessage("MasterDataCollectController.5","Ergebnis"), 
+    		  cld.getMessage("MasterDataCollectController.2","Details")};
       final String[] asDetailsMode = {
-               CommonLocaleDelegate.getMessage("MasterDataCollectController.18","Undefiniert"), CommonLocaleDelegate.getMessage("MasterDataCollectController.3","Details"), CommonLocaleDelegate.getMessage("MasterDataCollectController.1","Bearbeiten"), CommonLocaleDelegate.getMessage("MasterDataCollectController.10","Neueingabe"), CommonLocaleDelegate.getMessage("MasterDataCollectController.12","Neueingabe (Ge\u00e4ndert)"), CommonLocaleDelegate.getMessage("MasterDataCollectController.15","Sammelbearbeitung"),
-               CommonLocaleDelegate.getMessage("MasterDataCollectController.16","Sammelbearbeitung (Ge\u00e4ndert)"), CommonLocaleDelegate.getMessage("MasterDataCollectController.11","Neueingabe (\u00dcbernahme Suchwerte)")
+               cld.getMessage("MasterDataCollectController.18","Undefiniert"), 
+               cld.getMessage("MasterDataCollectController.3","Details"), 
+               cld.getMessage("MasterDataCollectController.1","Bearbeiten"), 
+               cld.getMessage("MasterDataCollectController.10","Neueingabe"), 
+               cld.getMessage("MasterDataCollectController.12","Neueingabe (Ge\u00e4ndert)"), 
+               cld.getMessage("MasterDataCollectController.15","Sammelbearbeitung"),
+               cld.getMessage("MasterDataCollectController.16","Sammelbearbeitung (Ge\u00e4ndert)"), 
+               cld.getMessage("MasterDataCollectController.11","Neueingabe (\u00dcbernahme Suchwerte)")
       };
 
       String sPrefix;
@@ -384,13 +393,13 @@ public class MasterDataCollectController extends EntityCollectController<Collect
 			sMode = asDetailsMode[iMode];
 			if (CollectState.isDetailsModeViewOrEdit(iMode)) {
 				MasterDataMetaVO metaDataVO = MasterDataDelegate.getInstance().getMetaData(this.getEntityName());
-				String sIdentifier = CommonLocaleDelegate.getTreeViewLabel(this.getSelectedCollectable(), getEntity(), MetaDataClientProvider.getInstance());
+				String sIdentifier = cld.getTreeViewLabel(this.getSelectedCollectable(), getEntity(), MetaDataClientProvider.getInstance());
 				if (sIdentifier == null) {
 					sIdentifier = this.getSelectedCollectable() != null ? this.getSelectedCollectable().getIdentifierLabel() : "<>";
 				}
 				sPrefix += sIdentifier;
 			} else if (CollectState.isDetailsModeMultiViewOrEdit(iMode)) {
-				sSuffix = CommonLocaleDelegate.getMessage("MasterDataCollectController.19", " von {0} Objekten", this.getSelectedCollectables().size());
+				sSuffix = cld.getMessage("MasterDataCollectController.19", " von {0} Objekten", this.getSelectedCollectables().size());
 			}
 			break;
 		default:
@@ -416,7 +425,8 @@ public class MasterDataCollectController extends EntityCollectController<Collect
 		}
 
 		if (buildTreeView) {
-            result = CommonLocaleDelegate.getTreeViewLabel(this.getSelectedCollectable(), getEntity(), MetaDataClientProvider.getInstance());
+            result = getCommonLocaleDelegate().getTreeViewLabel(
+            		this.getSelectedCollectable(), getEntity(), MetaDataClientProvider.getInstance());
 		}
 
 		if (result == null) {
@@ -461,7 +471,8 @@ public class MasterDataCollectController extends EntityCollectController<Collect
       this.getDetailsPanel().btnDelete.setEnabled(SecurityCache.getInstance().isDeleteAllowedForMasterData(sEntity));
 
       btnShowResultInExplorer.setIcon(Icons.getInstance().getIconTree16());
-      btnShowResultInExplorer.setText(CommonLocaleDelegate.getMessage("MasterDataCollectController.6","Ergebnis in Explorer anzeigen"));
+      btnShowResultInExplorer.setText(getCommonLocaleDelegate().getMessage(
+    		  "MasterDataCollectController.6","Ergebnis in Explorer anzeigen"));
       btnShowResultInExplorer.addActionListener(new ActionListener() {
       	@Override
          public void actionPerformed(ActionEvent ev) {
@@ -480,7 +491,8 @@ public class MasterDataCollectController extends EntityCollectController<Collect
 
       if(SecurityCache.getInstance().isActionAllowed(Actions.ACTION_PRINT_SEARCHRESULT)){
          this.btnPrintResults.setEnabled(true);
-         this.btnPrintResults.setToolTipText(CommonLocaleDelegate.getMessage("MasterDataCollectController.7","Ergebnisliste drucken"));
+         this.btnPrintResults.setToolTipText(getCommonLocaleDelegate().getMessage(
+        		 "MasterDataCollectController.7","Ergebnisliste drucken"));
          // action: Print results
          this.btnPrintResults.addActionListener(new ActionListener() {
          	@Override
@@ -490,7 +502,8 @@ public class MasterDataCollectController extends EntityCollectController<Collect
          });
       } else {
          this.btnPrintResults.setEnabled(false);
-         this.btnPrintResults.setToolTipText(CommonLocaleDelegate.getMessage("MasterDataCollectController.8","Ergebnisliste drucken - Sie verf\u00fcgen nicht \u00fcber ausreichende Rechte."));
+         this.btnPrintResults.setToolTipText(getCommonLocaleDelegate().getMessage(
+        		 "MasterDataCollectController.8","Ergebnisliste drucken - Sie verf\u00fcgen nicht \u00fcber ausreichende Rechte."));
       }
 
       //this.getResultPanel().setCustomToolBarArea(toolbar);
@@ -501,7 +514,7 @@ public class MasterDataCollectController extends EntityCollectController<Collect
       //final JToolBar toolbar = UIUtils.createNonFloatableToolBar();
 
       btnMakeTreeRoot.setIcon(Icons.getInstance().getIconMakeTreeRoot16());
-      btnMakeTreeRoot.setText(CommonLocaleDelegate.getMessage("MasterDataCollectController.9","In Explorer anzeigen"));
+      btnMakeTreeRoot.setText(getCommonLocaleDelegate().getMessage("MasterDataCollectController.9","In Explorer anzeigen"));
       btnMakeTreeRoot.addActionListener(new ActionListener() {
       	@Override
          public void actionPerformed(ActionEvent ev) {
@@ -514,7 +527,7 @@ public class MasterDataCollectController extends EntityCollectController<Collect
       // Execute rule by user only for authorized personnel
       if (SecurityCache.getInstance().isActionAllowed(Actions.ACTION_EXECUTE_RULE_BY_USER)) {
          this.btnExecuteRule.setName("btnExecuteRule");
-         this.btnExecuteRule.setText(CommonLocaleDelegate.getMessage("MasterDataCollectController.14","Regeln ausf\u00fchren"));
+         this.btnExecuteRule.setText(getCommonLocaleDelegate().getMessage("MasterDataCollectController.14","Regeln ausf\u00fchren"));
          this.btnExecuteRule.setIcon(Icons.getInstance().getIconExecuteRule16());
          this.btnExecuteRule.addActionListener(new ActionListener() {
          	@Override
@@ -605,7 +618,7 @@ public class MasterDataCollectController extends EntityCollectController<Collect
    }
 
    private ExplorerController getExplorerController() {
-      return Main.getMainController().getExplorerController();
+      return getMainController().getExplorerController();
    }
 
    protected void cmdShowResultInExplorer() {
@@ -1413,8 +1426,10 @@ public class MasterDataCollectController extends EntityCollectController<Collect
 
          if (isFilteringAppropriate()) {
             // Generate checkbox for filtering of inactive/invalid entries
-            chkbxHideInvalid.setText(CommonLocaleDelegate.getMessage("MasterDataCollectController.13","Nur g\u00fcltige und aktive Eintr\u00e4ge"));
-            chkbxHideInvalid.setToolTipText(CommonLocaleDelegate.getMessage("MasterDataCollectController.4","Eintr\u00e4ge beschr\u00e4nken (g\u00fcltig/ung\u00fcltig)"));
+            chkbxHideInvalid.setText(getCommonLocaleDelegate().getMessage(
+            		"MasterDataCollectController.13","Nur g\u00fcltige und aktive Eintr\u00e4ge"));
+            chkbxHideInvalid.setToolTipText(getCommonLocaleDelegate().getMessage(
+            		"MasterDataCollectController.4","Eintr\u00e4ge beschr\u00e4nken (g\u00fcltig/ung\u00fcltig)"));
             //		chkbxHideInvalid.setMaximumSize(chkbxHideInvalid.getMinimumSize());
 
             chkbxHideInvalid.addActionListener(new ActionListener() {
@@ -1568,7 +1583,8 @@ public class MasterDataCollectController extends EntityCollectController<Collect
 		final String sEntityNameSub = cond.getSubEntityName();
 		final SearchConditionSubFormController subformctl = mpsubformctlSearch.get(sEntityNameSub);
 		if (subformctl == null)
-			throw new NuclosFatalException(CommonLocaleDelegate.getMessage("GenericObjectCollectController.40","Ein Unterformular f\u00fcr die Entit\u00e4t {0} ist in der Suchbedingung, aber nicht im aktuellen Layout enthalten.", sEntityNameSub));
+			throw new NuclosFatalException(getCommonLocaleDelegate().getMessage(
+					"GenericObjectCollectController.40","Ein Unterformular f\u00fcr die Entit\u00e4t {0} ist in der Suchbedingung, aber nicht im aktuellen Layout enthalten.", sEntityNameSub));
 		subformctl.setCollectableSearchCondition(cond.getSubCondition());
 	}
 
@@ -1618,7 +1634,8 @@ public class MasterDataCollectController extends EntityCollectController<Collect
 
 		if (!stopEditing(bSearchTab))
 			/** @todo we need to give a better error message here. */
-			throw new CollectableFieldFormatException(CommonLocaleDelegate.getMessage("GenericObjectCollectController.95","Ung\u00fcltige Eingabe in Unterformular."));
+			throw new CollectableFieldFormatException(getCommonLocaleDelegate().getMessage(
+					"GenericObjectCollectController.95","Ung\u00fcltige Eingabe in Unterformular."));
 	}
 
 	/**

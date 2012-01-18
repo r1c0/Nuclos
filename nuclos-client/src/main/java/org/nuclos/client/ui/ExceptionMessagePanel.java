@@ -91,6 +91,8 @@ class ExceptionMessagePanel extends JPanel {
 	}
 
 	private void init() {
+		final CommonLocaleDelegate cld = CommonLocaleDelegate.getInstance();
+		
 		this.setLayout(new BorderLayout());
 		this.add(pnl1, BorderLayout.CENTER);
 
@@ -134,7 +136,7 @@ class ExceptionMessagePanel extends JPanel {
 				dlg.dispose();
 			}
 		});
-		btnDetails.setText(CommonLocaleDelegate.getMessage("ExceptionMessagePanel.1", "Details")+" >>");
+		btnDetails.setText(cld.getMessage("ExceptionMessagePanel.1", "Details")+" >>");
 		btnDetails.addItemListener(new java.awt.event.ItemListener() {
 			@Override
 			public void itemStateChanged(ItemEvent ev) {
@@ -167,14 +169,14 @@ class ExceptionMessagePanel extends JPanel {
 		pnlDetailsButtons.add(btnCopy);
 		pnlDetailsButtons.add(btnSend);
 
-		btnCopy.setText(CommonLocaleDelegate.getMessage("ClipboardUtils.Copy", "Kopieren"));
+		btnCopy.setText(cld.getMessage("ClipboardUtils.Copy", "Kopieren"));
 		btnCopy.setMnemonic('C');
-		btnCopy.setToolTipText(CommonLocaleDelegate.getMessage("ExceptionMessagePanel.2", "Fehlerbericht in die Zwischenablage kopieren"));
+		btnCopy.setToolTipText(cld.getMessage("ExceptionMessagePanel.2", "Fehlerbericht in die Zwischenablage kopieren"));
 
 		btnSend.setEnabled(false);
-		btnSend.setText(CommonLocaleDelegate.getMessage("ExceptionMessagePanel.3", "Senden"));
+		btnSend.setText(cld.getMessage("ExceptionMessagePanel.3", "Senden"));
 		btnSend.setMnemonic('S');
-		btnSend.setToolTipText(CommonLocaleDelegate.getMessage("ExceptionMessagePanel.4", "Fehlerbericht senden"));
+		btnSend.setToolTipText(cld.getMessage("ExceptionMessagePanel.4", "Fehlerbericht senden"));
 	}
 
 	void adjustDialog(boolean bDetailsVisible) {
@@ -204,7 +206,9 @@ class ExceptionMessagePanel extends JPanel {
 		}
 		dlg.setSize(newSize);
 
-		btnDetails.setText(bDetailsVisible ? CommonLocaleDelegate.getMessage("ExceptionMessagePanel.1", "Details")+" <<" : CommonLocaleDelegate.getMessage("ExceptionMessagePanel.1", "Details")+" >>");
+		btnDetails.setText(bDetailsVisible ? CommonLocaleDelegate.getInstance().getMessage(
+				"ExceptionMessagePanel.1", "Details")+" <<" 
+				: CommonLocaleDelegate.getInstance().getMessage("ExceptionMessagePanel.1", "Details")+" >>");
 
 		scrlpnDetails.getViewport().setViewPosition(new Point(0, 0));
 

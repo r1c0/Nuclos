@@ -145,7 +145,7 @@ public class GroovySupport {
 					return groovyMethod.invoke(delegate, args);
 				} catch (Exception ex) {
 					hasErrors = true;
-					Errors.getInstance().showExceptionDialog(Main.getMainFrame(), "Fehler in Skriptmethode " + groovyMethod.getName(), ex);
+					Errors.getInstance().showExceptionDialog(Main.getInstance().getMainFrame(), "Fehler in Skriptmethode " + groovyMethod.getName(), ex);
 				}
 			}
 			return null;

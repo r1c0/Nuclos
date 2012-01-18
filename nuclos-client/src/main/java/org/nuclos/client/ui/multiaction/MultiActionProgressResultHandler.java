@@ -16,8 +16,6 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.ui.multiaction;
 
-import static org.nuclos.common2.CommonLocaleDelegate.getMessage;
-
 import java.util.Collection;
 
 import org.nuclos.client.ui.collect.CollectController;
@@ -34,27 +32,31 @@ public abstract class MultiActionProgressResultHandler implements IMultiActionPr
 
 	@Override
 	public String getSuccessLabel() {
-		return CommonLocaleDelegate.getMessage("MultiActionProgressResultHandler.3","erfolgreich");
+		return CommonLocaleDelegate.getInstance().getMessage(
+				"MultiActionProgressResultHandler.3","erfolgreich");
 	}
 
 	@Override
 	public String getExceptionLabel() {
-		return CommonLocaleDelegate.getMessage("MultiActionProgressResultHandler.4","nicht erfolgreich");
+		return CommonLocaleDelegate.getInstance().getMessage(
+				"MultiActionProgressResultHandler.4","nicht erfolgreich");
 	}
 
 	@Override
 	public String getStateHeaderLabel() {
-		return CommonLocaleDelegate.getMessage("MultiActionProgressResultHandler.2","Aktionstatus");
+		return CommonLocaleDelegate.getInstance().getMessage(
+				"MultiActionProgressResultHandler.2","Aktionstatus");
 	}
 
 	@Override
 	public String getSingleSelectionMenuLabel() {
-		return getMessage("RuleExplorerNode.1","Details anzeigen");
+		return CommonLocaleDelegate.getInstance().getMessage(
+				"RuleExplorerNode.1","Details anzeigen");
 	}
 
 	@Override
 	public String getMultiSelectionMenuLabel() {
-		return getMessage("RuleExplorerNode.1","Details anzeigen");
+		return CommonLocaleDelegate.getInstance().getMessage("RuleExplorerNode.1","Details anzeigen");
 	}
 
 	@Override

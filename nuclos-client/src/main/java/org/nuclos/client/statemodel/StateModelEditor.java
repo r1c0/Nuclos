@@ -126,7 +126,8 @@ public class StateModelEditor extends JPanel implements ShapeModelListener, Focu
 	private class SelectAction extends AbstractAction {
 
 		SelectAction() {
-			super(CommonLocaleDelegate.getMessage("StateModelEditor.1","Auswahl"), Icons.getInstance().getIconSelectObject());
+			super(CommonLocaleDelegate.getInstance().getMessage("StateModelEditor.1","Auswahl"), 
+					Icons.getInstance().getIconSelectObject());
 		}
 
 		@Override
@@ -139,7 +140,8 @@ public class StateModelEditor extends JPanel implements ShapeModelListener, Focu
 	private class NewStateAction extends AbstractAction {
 
 		NewStateAction() {
-			super(CommonLocaleDelegate.getMessage("StateModelEditor.9","Neuer Status"), Icons.getInstance().getIconState());
+			super(CommonLocaleDelegate.getInstance().getMessage("StateModelEditor.9","Neuer Status"), 
+					Icons.getInstance().getIconState());
 		}
 
 		@Override
@@ -152,7 +154,8 @@ public class StateModelEditor extends JPanel implements ShapeModelListener, Focu
 	private class NewTransitionAction extends AbstractAction {
 
 		NewTransitionAction() {
-			super(CommonLocaleDelegate.getMessage("StateModelEditor.10","Neue Transition"), Icons.getInstance().getIconStateTransition());
+			super(CommonLocaleDelegate.getInstance().getMessage("StateModelEditor.10","Neue Transition"), 
+					Icons.getInstance().getIconStateTransition());
 		}
 
 		@Override
@@ -165,7 +168,8 @@ public class StateModelEditor extends JPanel implements ShapeModelListener, Focu
 	private class NewNoteAction extends AbstractAction {
 
 		NewNoteAction() {
-			super(CommonLocaleDelegate.getMessage("StateModelEditor.8","Neue Bemerkung"), Icons.getInstance().getIconStateNewNote());
+			super(CommonLocaleDelegate.getInstance().getMessage("StateModelEditor.8","Neue Bemerkung"), 
+					Icons.getInstance().getIconStateNewNote());
 		}
 
 		@Override
@@ -178,7 +182,8 @@ public class StateModelEditor extends JPanel implements ShapeModelListener, Focu
 	private class DeleteAction extends AbstractAction {
 
 		DeleteAction() {
-			super(CommonLocaleDelegate.getMessage("StateModelEditor.3","Auswahl l\u00f6schen"), Icons.getInstance().getIconDelete16());
+			super(CommonLocaleDelegate.getInstance().getMessage("StateModelEditor.3","Auswahl l\u00f6schen"), 
+					Icons.getInstance().getIconDelete16());
 		}
 
 		@Override
@@ -190,7 +195,7 @@ public class StateModelEditor extends JPanel implements ShapeModelListener, Focu
 	private class DefaultTransitionAction extends AbstractAction {
 
 		DefaultTransitionAction() {
-			super(CommonLocaleDelegate.getMessage("StateModelEditor.19","Als Standardpfad definieren"));
+			super(CommonLocaleDelegate.getInstance().getMessage("StateModelEditor.19","Als Standardpfad definieren"));
 		}
 
 		@Override
@@ -208,7 +213,9 @@ public class StateModelEditor extends JPanel implements ShapeModelListener, Focu
 	private class CopyStateRightsAction extends AbstractAction {
 
 		CopyStateRightsAction() {
-			super(CommonLocaleDelegate.getMessage("StateModelEditor.17","Rechte & Pflichten kopieren"), Icons.getInstance().getIconCopy16());
+			super(CommonLocaleDelegate.getInstance().getMessage(
+					"StateModelEditor.17","Rechte & Pflichten kopieren"), 
+					Icons.getInstance().getIconCopy16());
 		}
 		
 		@Override
@@ -220,7 +227,9 @@ public class StateModelEditor extends JPanel implements ShapeModelListener, Focu
 	private class PasteStateRightsAction extends AbstractAction {
 
 		PasteStateRightsAction() {
-			super(CommonLocaleDelegate.getMessage("StateModelEditor.18","Rechte & Pflichten einfügen"), Icons.getInstance().getIconPaste16());
+			super(CommonLocaleDelegate.getInstance().getMessage(
+					"StateModelEditor.18","Rechte & Pflichten einfügen"), 
+					Icons.getInstance().getIconPaste16());
 		}
 		
 		@Override
@@ -232,7 +241,8 @@ public class StateModelEditor extends JPanel implements ShapeModelListener, Focu
 	private class ZoomInAction extends AbstractAction {
 
 		ZoomInAction() {
-			super(CommonLocaleDelegate.getMessage("StateModelEditor.15","Zoom +"), Icons.getInstance().getIconZoomIn());
+			super(CommonLocaleDelegate.getInstance().getMessage("StateModelEditor.15","Zoom +"), 
+					Icons.getInstance().getIconZoomIn());
 		}
 
 		@Override
@@ -244,7 +254,8 @@ public class StateModelEditor extends JPanel implements ShapeModelListener, Focu
 	private class ZoomOutAction extends AbstractAction {
 
 		ZoomOutAction() {
-			super(CommonLocaleDelegate.getMessage("StateModelEditor.13","Zoom -"), Icons.getInstance().getIconZoomOut());
+			super(CommonLocaleDelegate.getInstance().getMessage("StateModelEditor.13","Zoom -"), 
+					Icons.getInstance().getIconZoomOut());
 		}
 
 		@Override
@@ -256,7 +267,8 @@ public class StateModelEditor extends JPanel implements ShapeModelListener, Focu
 	private class PrintAction extends AbstractAction {
 
 		PrintAction() {
-			super(CommonLocaleDelegate.getMessage("StateModelEditor.5","Drucken..."), Icons.getInstance().getIconPrint16());
+			super(CommonLocaleDelegate.getInstance().getMessage("StateModelEditor.5","Drucken..."), 
+					Icons.getInstance().getIconPrint16());
 		}
 
 		@Override
@@ -435,36 +447,37 @@ public class StateModelEditor extends JPanel implements ShapeModelListener, Focu
 	}
 
 	private void init() {
+		final CommonLocaleDelegate cld = CommonLocaleDelegate.getInstance();
 		final ButtonGroup bg = new ButtonGroup();
 
 		btnSelection.setSelected(true);
 		btnSelection.setText("");
-		btnSelection.setToolTipText(CommonLocaleDelegate.getMessage("StateModelEditor.2","Auswahl"));
+		btnSelection.setToolTipText(cld.getMessage("StateModelEditor.2","Auswahl"));
 		bg.add(btnSelection);
 		toolbar.add(btnSelection);
 		btnSelection.setEnabled(SecurityCache.getInstance().isWriteAllowedForMasterData(NuclosEntity.STATEMODEL));
 
 		btnInsertState.setText("");
-		btnInsertState.setToolTipText(CommonLocaleDelegate.getMessage("StateModelEditor.11","Status einf\u00fcgen"));
+		btnInsertState.setToolTipText(cld.getMessage("StateModelEditor.11","Status einf\u00fcgen"));
 		bg.add(btnInsertState);
 		toolbar.add(btnInsertState);
 		btnInsertState.setEnabled(SecurityCache.getInstance().isWriteAllowedForMasterData(NuclosEntity.STATEMODEL));
 
 		btnInsertTransition.setText("");
-		btnInsertTransition.setToolTipText(CommonLocaleDelegate.getMessage("StateModelEditor.12","Transition einf\u00fcgen"));
+		btnInsertTransition.setToolTipText(cld.getMessage("StateModelEditor.12","Transition einf\u00fcgen"));
 		bg.add(btnInsertTransition);
 		toolbar.add(btnInsertTransition);
 		btnInsertTransition.setEnabled(SecurityCache.getInstance().isWriteAllowedForMasterData(NuclosEntity.STATEMODEL));
 
 		btnInsertNote.setText("");
-		btnInsertNote.setToolTipText(CommonLocaleDelegate.getMessage("StateModelEditor.7","Kommentar einf\u00fcgen"));
+		btnInsertNote.setToolTipText(cld.getMessage("StateModelEditor.7","Kommentar einf\u00fcgen"));
 		bg.add(btnInsertNote);
 		toolbar.add(btnInsertNote);
 		btnInsertNote.setEnabled(SecurityCache.getInstance().isWriteAllowedForMasterData(NuclosEntity.STATEMODEL));
 
 		JButton btn = new JButton(actDelete);
 		btn.setText("");
-		btn.setToolTipText(CommonLocaleDelegate.getMessage("StateModelEditor.4","Auswahl l\u00f6schen"));
+		btn.setToolTipText(cld.getMessage("StateModelEditor.4","Auswahl l\u00f6schen"));
 		toolbar.addSeparator();
 		toolbar.add(btn);
 		btn.setEnabled(SecurityCache.getInstance().isWriteAllowedForMasterData(NuclosEntity.STATEMODEL));
@@ -472,18 +485,18 @@ public class StateModelEditor extends JPanel implements ShapeModelListener, Focu
 		toolbar.addSeparator();
 		btn = toolbar.add(actPrint);
 		btn.setText("");
-		btn.setToolTipText(CommonLocaleDelegate.getMessage("StateModelEditor.6","Drucken"));
+		btn.setToolTipText(cld.getMessage("StateModelEditor.6","Drucken"));
 
 		toolbar.addSeparator();
 		labZoom.setFont(new Font("Dialog", Font.PLAIN, 8));
 		btn = toolbar.add(actZoomIn);
 		btn.setText("");
-		btn.setToolTipText(CommonLocaleDelegate.getMessage("StateModelEditor.16","Zoom +"));
+		btn.setToolTipText(cld.getMessage("StateModelEditor.16","Zoom +"));
 		toolbar.add(labZoom);
 
 		btn = toolbar.add(actZoomOut);
 		btn.setText("");
-		btn.setToolTipText(CommonLocaleDelegate.getMessage("StateModelEditor.14","Zoom -"));
+		btn.setToolTipText(cld.getMessage("StateModelEditor.14","Zoom -"));
 
 
 		toolbar.setOrientation(JToolBar.VERTICAL);
@@ -948,8 +961,12 @@ public class StateModelEditor extends JPanel implements ShapeModelListener, Focu
 			}
 
 			final StateEntry entry = new StateEntry();
-			statevo.setStatename(CommonLocaleDelegate.getResource(StateDelegate.getInstance().getResourceSIdForName(statevo.getId()), statevo.getStatename()));//LocaleDelegate.getInstance().getResourceByIntId(StateDelegate.getInstance().getResourceIdForName(statevo.getId())));
-			statevo.setDescription(CommonLocaleDelegate.getResource(StateDelegate.getInstance().getResourceSIdForDescription(statevo.getId()), statevo.getDescription()));//LocaleDelegate.getInstance().getResourceByIntId(StateDelegate.getInstance().getResourceIdForDescription(statevo.getId())));
+			statevo.setStatename(CommonLocaleDelegate.getInstance().getResource(
+					StateDelegate.getInstance().getResourceSIdForName(statevo.getId()), statevo.getStatename()));
+			//LocaleDelegate.getInstance().getResourceByIntId(StateDelegate.getInstance().getResourceIdForName(statevo.getId())));
+			statevo.setDescription(CommonLocaleDelegate.getInstance().getResource(
+					StateDelegate.getInstance().getResourceSIdForDescription(statevo.getId()), statevo.getDescription()));
+			//LocaleDelegate.getInstance().getResourceByIntId(StateDelegate.getInstance().getResourceIdForDescription(statevo.getId())));
 			entry.setVo(statevo);
 			entry.setShape(stateshape);
 			mpShapes.put(statevo.getClientId(), entry);

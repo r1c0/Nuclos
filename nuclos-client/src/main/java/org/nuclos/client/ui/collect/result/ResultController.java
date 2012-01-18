@@ -90,6 +90,8 @@ import org.nuclos.common2.CommonRunnable;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.common2.exception.CommonPermissionException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
 
 /**
  * Controller for the Result panel.
@@ -112,6 +114,7 @@ import org.nuclos.common2.exception.CommonPermissionException;
  * @since Nuclos 3.1.01 this is a top-level class.
  * @author Thomas Pasch
  */
+@Configurable(preConstruction=true)
 public class ResultController<Clct extends Collectable> {
 
 	private static final Logger LOG = Logger.getLogger(ResultController.class);
@@ -156,14 +159,18 @@ public class ResultController<Clct extends Collectable> {
 	private final Action actDeleteSelectedCollectables;
 
 	private MouseListener mouselistenerTableDblClick;
+	
+	private CommonLocaleDelegate cld;
 
 	/**
 	 * action: Define as new Search result
 	 *
 	 * @deprecated Does nothing.
 	 */
-	private final Action actDefineAsNewSearchResult = new CommonAbstractAction(CommonLocaleDelegate.getMessage("ResultController.3","Als neues Suchergebnis"),
-			Icons.getInstance().getIconEmpty16(), CommonLocaleDelegate.getMessage("ResultController.4","Ausgew\u00e4hlte Datens\u00e4tze als neues Suchergebnis anzeigen")) {
+	private final Action actDefineAsNewSearchResult = new CommonAbstractAction(getCommonLocaleDelegate().getMessage(
+			"ResultController.3","Als neues Suchergebnis"),
+			Icons.getInstance().getIconEmpty16(), getCommonLocaleDelegate().getMessage(
+					"ResultController.4","Ausgew\u00e4hlte Datens\u00e4tze als neues Suchergebnis anzeigen")) {
 
 		@Override
         public void actionPerformed(ActionEvent ev) {
@@ -196,10 +203,12 @@ public class ResultController<Clct extends Collectable> {
 	public ResultController(CollectableEntity clcte, ISearchResultStrategy<Clct> srs) {
 		this.srs = srs;
 		srs.setResultController(this);
-		actDeleteSelectedCollectables = new CommonAbstractAction(CommonLocaleDelegate.getMessage("ResultController.10","L\u00f6schen..."),
+		actDeleteSelectedCollectables = new CommonAbstractAction(CommonLocaleDelegate.getInstance().getMessage(
+				"ResultController.10","L\u00f6schen..."),
 				(clctctl instanceof GenericObjectCollectController)? // quick and dirty... I know
 				Icons.getInstance().getIconDelete16() : Icons.getInstance().getIconRealDelete16(),
-				CommonLocaleDelegate.getMessage("ResultController.5","Ausgew\u00e4hlte Datens\u00e4tze l\u00f6schen")) {
+				CommonLocaleDelegate.getInstance().getMessage(
+						"ResultController.5","Ausgew\u00e4hlte Datens\u00e4tze l\u00f6schen")) {
 
 			@Override
 	        public void actionPerformed(ActionEvent ev) {
@@ -207,6 +216,15 @@ public class ResultController<Clct extends Collectable> {
 			}
 		};
 		this.clcte = clcte;
+	}
+	
+	@Autowired
+	void setCommonLocaleDelegate(CommonLocaleDelegate cld) {
+		this.cld = cld;
+	}
+	
+	protected CommonLocaleDelegate getCommonLocaleDelegate() {
+		return cld;
 	}
 
 	/**
@@ -574,15 +592,19 @@ public class ResultController<Clct extends Collectable> {
 	public void setStatusBar(JTable tblResult, boolean bResultTruncated, int iTotalNumberOfRecords) {
 		String sStatus;
 		if (iTotalNumberOfRecords == 0) {
-			sStatus = CommonLocaleDelegate.getMessage("ResultController.9","Keinen zur Suchanfrage passenden Datensatz gefunden.");
+			sStatus = getCommonLocaleDelegate().getMessage(
+					"ResultController.9","Keinen zur Suchanfrage passenden Datensatz gefunden.");
 		}
 		else if (iTotalNumberOfRecords == 1) {
-			sStatus = CommonLocaleDelegate.getMessage("ResultController.2","1 Datensatz gefunden.");
+			sStatus = getCommonLocaleDelegate().getMessage(
+					"ResultController.2","1 Datensatz gefunden.");
 		}
 		else {
-			sStatus = CommonLocaleDelegate.getMessage("ResultController.1","{0} Datens\u00e4tze gefunden.", Integer.toString(iTotalNumberOfRecords));
+			sStatus = getCommonLocaleDelegate().getMessage(
+					"ResultController.1","{0} Datens\u00e4tze gefunden.", Integer.toString(iTotalNumberOfRecords));
 			if (bResultTruncated) {
-				sStatus += CommonLocaleDelegate.getMessage("ResultController.6"," Das Ergebnis wurde nach {0} Zeilen abgeschnitten.", tblResult.getRowCount());
+				sStatus += getCommonLocaleDelegate().getMessage(
+						"ResultController.6"," Das Ergebnis wurde nach {0} Zeilen abgeschnitten.", tblResult.getRowCount());
 			}
 		}
 		this.getResultPanel().tfStatusBar.setText(sStatus);
@@ -597,18 +619,22 @@ public class ResultController<Clct extends Collectable> {
 
 		if (clctctl.multipleCollectablesSelected()) {
 			final int iCount = clctctl.getResultTable().getSelectedRowCount();
-			final String sMessagePattern = CommonLocaleDelegate.getMessage("ResultController.13","Sollen die ausgew\u00e4hlten {0} Datens\u00e4tze wirklich gel\u00f6scht werden?");
+			final String sMessagePattern = getCommonLocaleDelegate().getMessage(
+					"ResultController.13","Sollen die ausgew\u00e4hlten {0} Datens\u00e4tze wirklich gel\u00f6scht werden?");
 			final String sMessage = MessageFormat.format(sMessagePattern, iCount);
-			final int btn = JOptionPane.showConfirmDialog(clctctl.getFrame(), sMessage, CommonLocaleDelegate.getMessage("ResultController.7","Datens\u00e4tze l\u00f6schen"), JOptionPane.YES_NO_OPTION);
+			final int btn = JOptionPane.showConfirmDialog(clctctl.getFrame(), sMessage, getCommonLocaleDelegate().getMessage(
+					"ResultController.7","Datens\u00e4tze l\u00f6schen"), JOptionPane.YES_NO_OPTION);
 			if (btn == JOptionPane.YES_OPTION) {
 				new DeleteSelectedCollectablesController<Clct>(clctctl).run(clctctl.getMultiActionProgressPanel(iCount));
 			}
 		}
 		else {
-			final String sMessagePattern = CommonLocaleDelegate.getMessage("ResultController.12","Soll der ausgew\u00e4hlte Datensatz ({0}) wirklich gel\u00f6scht werden?");
+			final String sMessagePattern = getCommonLocaleDelegate().getMessage(
+					"ResultController.12","Soll der ausgew\u00e4hlte Datensatz ({0}) wirklich gel\u00f6scht werden?");
 			final String sMessage = MessageFormat.format(sMessagePattern,
 					getSelectedCollectableFromTableModel().getIdentifierLabel());
-			final int btn = JOptionPane.showConfirmDialog(clctctl.getFrame(), sMessage, CommonLocaleDelegate.getMessage("ResultController.8","Datensatz l\u00f6schen"), JOptionPane.YES_NO_OPTION);
+			final int btn = JOptionPane.showConfirmDialog(clctctl.getFrame(), sMessage, getCommonLocaleDelegate().getMessage(
+					"ResultController.8","Datensatz l\u00f6schen"), JOptionPane.YES_NO_OPTION);
 
 			if (btn == JOptionPane.YES_OPTION) {
 				UIUtils.runCommand(clctctl.getFrame(), new Runnable() {
@@ -618,7 +644,8 @@ public class ResultController<Clct extends Collectable> {
 							clctctl.checkedDeleteSelectedCollectable();
 						}
 						catch (CommonPermissionException ex) {
-							final String sErrorMsg = CommonLocaleDelegate.getMessage("ResultController.11","Sie verf\u00fcgen nicht \u00fcber die ausreichenden Rechte, um diesen Datensatz zu l\u00f6schen.");
+							final String sErrorMsg = getCommonLocaleDelegate().getMessage(
+									"ResultController.11","Sie verf\u00fcgen nicht \u00fcber die ausreichenden Rechte, um diesen Datensatz zu l\u00f6schen.");
 							Errors.getInstance().showExceptionDialog(clctctl.getFrame(), sErrorMsg, ex);
 						}
 						catch (CommonBusinessException ex) {
@@ -848,7 +875,8 @@ public class ResultController<Clct extends Collectable> {
 
 		final Map<String, Integer> mpWidths = panel.getVisibleColumnWidth(fields.getSelectedFields());
 		ctl.setModel(fields);
-		final boolean bOK = ctl.run(CommonLocaleDelegate.getMessage("SelectColumnsController.1","Anzuzeigende Spalten ausw\u00e4hlen"));
+		final boolean bOK = ctl.run(getCommonLocaleDelegate().getMessage(
+				"SelectColumnsController.1","Anzuzeigende Spalten ausw\u00e4hlen"));
 
 		if (bOK) {
 			UIUtils.runCommand(clctctl.getFrame(), new CommonRunnable() {

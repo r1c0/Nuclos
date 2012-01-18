@@ -70,7 +70,8 @@ public class MigrateSearchFilterPreferences {
 
 	public static void migrate(String sMigrationUser) throws RemoteException {
 		if(StringUtils.isNullOrEmpty(sMigrationUser)) {
-			throw new NuclosFatalException(CommonLocaleDelegate.getMessage("MigrateSearchFilterPreferences.1", "Der Benutzer, der f\u00fcr die Migration der Suchfilter verwendet wird ist nicht gesetzt!"));
+			throw new NuclosFatalException(CommonLocaleDelegate.getInstance().getMessage(
+					"MigrateSearchFilterPreferences.1", "Der Benutzer, der f\u00fcr die Migration der Suchfilter verwendet wird ist nicht gesetzt!"));
 		}
 
 		// remember preferences of migration user
@@ -107,7 +108,8 @@ public class MigrateSearchFilterPreferences {
 				migrate(mdVO_user, prefsVO);
 			}
 			catch (Exception e) {
-				throw new NuclosFatalException(CommonLocaleDelegate.getMessage("MigrateSearchFilterPreferences.2", "Es ist ein Fehler beim Verschieben der Suchfilter aufgetreten!"), e);
+				throw new NuclosFatalException(CommonLocaleDelegate.getInstance().getMessage(
+						"MigrateSearchFilterPreferences.2", "Es ist ein Fehler beim Verschieben der Suchfilter aufgetreten!"), e);
 			}
 		}
 
@@ -141,7 +143,8 @@ public class MigrateSearchFilterPreferences {
 			prefs.removeNode();
 		}
 		catch (Exception e) {
-			throw new NuclosFatalException(CommonLocaleDelegate.getMessage("MigrateSearchFilterPreferences.2", "Es ist ein Fehler beim Verschieben der Suchfilter aufgetreten!"), e);
+			throw new NuclosFatalException(CommonLocaleDelegate.getInstance().getMessage(
+					"MigrateSearchFilterPreferences.2", "Es ist ein Fehler beim Verschieben der Suchfilter aufgetreten!"), e);
 		}
 	}
 
@@ -238,7 +241,8 @@ public class MigrateSearchFilterPreferences {
 			prefsSearchFilters.removeNode();
 		}
 		catch (Exception e) {
-			throw new NuclosFatalException(CommonLocaleDelegate.getMessage("MigrateSearchFilterPreferences.2", "Es ist ein Fehler beim Verschieben der Suchfilter aufgetreten!"));
+			throw new NuclosFatalException(CommonLocaleDelegate.getInstance().getMessage(
+					"MigrateSearchFilterPreferences.2", "Es ist ein Fehler beim Verschieben der Suchfilter aufgetreten!"));
 		}
 	}
 
@@ -251,7 +255,8 @@ public class MigrateSearchFilterPreferences {
 			final Preferences prefsGlobalSearchFilter = prefs.node(PREFS_NODE_MAINFRAME);
 			final String sFilterName = prefsGlobalSearchFilter.get(PREFS_KEY_GLOBALSEARCHFILTERNAME, "");
 
-			if (sFilterName != null && !sFilterName.equals(CommonLocaleDelegate.getMessage("GlobalSearchFilter.1", "<Alle>"))) {
+			if (sFilterName != null && !sFilterName.equals(CommonLocaleDelegate.getInstance().getMessage(
+					"GlobalSearchFilter.1", "<Alle>"))) {
 				LOG.info("Migrate Global Searchfilter: "+ sFilterName);
 
 				Integer iId = getSearchFilterId(sFilterName, sUserName);
@@ -262,7 +267,8 @@ public class MigrateSearchFilterPreferences {
 
 		}
 		catch (Exception e) {
-			throw new NuclosFatalException(CommonLocaleDelegate.getMessage("MigrateSearchFilterPreferences.3", "Es ist ein Fehler bei der Migration des globalen Suchfilters aufgetreten!"));
+			throw new NuclosFatalException(CommonLocaleDelegate.getInstance().getMessage(
+					"MigrateSearchFilterPreferences.3", "Es ist ein Fehler bei der Migration des globalen Suchfilters aufgetreten!"));
 		}
 	}
 
@@ -332,7 +338,8 @@ public class MigrateSearchFilterPreferences {
 			}
 		}
 		catch (Exception e) {
-			throw new NuclosFatalException(CommonLocaleDelegate.getMessage("MigrateSearchFilterPreferences.3", "Es ist ein Fehler bei der Migration des globalen Suchfilters aufgetreten!"));
+			throw new NuclosFatalException(CommonLocaleDelegate.getInstance().getMessage(
+					"MigrateSearchFilterPreferences.3", "Es ist ein Fehler bei der Migration des globalen Suchfilters aufgetreten!"));
 		}
 	}
 

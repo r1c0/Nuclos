@@ -62,17 +62,18 @@ public abstract class ModuleProvider {
 	}
 
 	protected static Collection<MasterDataVO> fillLocales(Collection<MasterDataVO> collmdvoModules) {
+		final CommonLocaleDelegate cld = CommonLocaleDelegate.getInstance();
 		for (MasterDataVO mdvo : collmdvoModules) {
 			if (mdvo.getField("name") != null )
-				mdvo.setField("name", CommonLocaleDelegate.getText(mdvo.getField("name", String.class),null));
+				mdvo.setField("name", cld.getText(mdvo.getField("name", String.class),null));
 			if (mdvo.getField("description") != null )
-				mdvo.setField("description", CommonLocaleDelegate.getText(mdvo.getField("description", String.class),null));
+				mdvo.setField("description", cld.getText(mdvo.getField("description", String.class),null));
 			if (mdvo.getField("menupath") != null )
-				mdvo.setField("menupath", CommonLocaleDelegate.getText(mdvo.getField("menupath", String.class),null));
+				mdvo.setField("menupath", cld.getText(mdvo.getField("menupath", String.class),null));
 			if (mdvo.getField("treeview") != null )
-				mdvo.setField("treeview", CommonLocaleDelegate.getText(mdvo.getField("treeview", String.class),null));
+				mdvo.setField("treeview", cld.getText(mdvo.getField("treeview", String.class),null));
 			if (mdvo.getField("treeviewdescription") != null )
-				mdvo.setField("treeviewdescription", CommonLocaleDelegate.getText(mdvo.getField("treeviewdescription", String.class),null));
+				mdvo.setField("treeviewdescription", cld.getText(mdvo.getField("treeviewdescription", String.class),null));
 		}
 		return collmdvoModules;
 	}

@@ -78,6 +78,8 @@ import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.server.servermeta.ejb3.ServerMetaFacadeRemote;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.remoting.RemoteAccessException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AccountExpiredException;
@@ -94,6 +96,7 @@ import org.springframework.security.core.AuthenticationException;
  * @author	<a href="mailto:Christoph.Radig@novabit.de">Christoph.Radig</a>
  * @version 01.00.00
  */
+@Configurable
 public class LoginController extends Controller {
 
 	private static final Logger LOG = Logger.getLogger(LoginController.class);
@@ -117,6 +120,12 @@ public class LoginController extends Controller {
 	private List<LoginListener>	      loginListeners	= new LinkedList<LoginListener>();
 	private double                    shakeStepSize	    = 0;
 	private final String[] args;
+	
+	private LocaleDelegate localeDelegate;
+	
+	public LoginController() {
+		this(null, new String[] {});
+	}
 
 	public LoginController(Component parent, String[] args) {
 		super(parent);
@@ -173,6 +182,11 @@ public class LoginController extends Controller {
 	public LoginController(Component parent) {
 		super(parent);
 		this.args = new String[]{};
+	}
+	
+	@Autowired
+	void setLocaleDelegate(LocaleDelegate localeDelegate) {
+		this.localeDelegate = localeDelegate;
 	}
 
 	public void run() {
@@ -356,9 +370,9 @@ public class LoginController extends Controller {
 
 	private void postProcessLogin() {
 		List<LocaleInfo> clientCachedLocaleInfo
-		= LocalUserProperties.getInstance().getLoginLocaleSelection();
+			= LocalUserProperties.getInstance().getLoginLocaleSelection();
 
-		Collection<LocaleInfo> localeInfo = LocaleDelegate.getInstance().getAllLocales(false);
+		Collection<LocaleInfo> localeInfo = localeDelegate.getAllLocales(false);
 
 		LocalUserProperties props = LocalUserProperties.getInstance();
 		LocaleInfo selLocale;
@@ -389,7 +403,7 @@ public class LoginController extends Controller {
 		else {
 			selLocale = (LocaleInfo) loginPanel.getLanguageComboBox().getSelectedItem();
 		}
-		LocaleDelegate.getInstance().selectLocale(localeInfo, selLocale);
+		localeDelegate.selectLocale(localeInfo, selLocale);
 	}
 
 	private boolean cmdPerformLogin(final JFrame frame, final JOptionPane optpn, final int selectedOption, final LocalUserProperties props) {

@@ -164,7 +164,8 @@ class LiveSearchPane extends JPanel {
         }
     };
     
-    private Action openMultiAction = new AbstractAction(CommonLocaleDelegate.getResource("livesearch.reslist.open", "Open selected")) {
+    private Action openMultiAction = new AbstractAction(CommonLocaleDelegate.getInstance().getResource(
+    		"livesearch.reslist.open", "Open selected")) {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
@@ -172,7 +173,8 @@ class LiveSearchPane extends JPanel {
 		}
 	};
 
-    private Action openDetailsAction = new AbstractAction(CommonLocaleDelegate.getResource("livesearch.reslist.opendetails", "Open Details")) {
+    private Action openDetailsAction = new AbstractAction(CommonLocaleDelegate.getInstance().getResource(
+    		"livesearch.reslist.opendetails", "Open Details")) {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {

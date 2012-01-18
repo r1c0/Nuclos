@@ -55,7 +55,7 @@ public class DatasourceHeaderPanel extends JPanel {
 			CollectableEntityField clctefEntity,
 			CollectableEntityField clctefDescription) {
 		super(new BorderLayout());
-
+		final CommonLocaleDelegate cld = CommonLocaleDelegate.getInstance();
 		clcttfName = new CollectableTextField(clctefName);
 		if (clctefEntity != null) {
 			clbxEntity = new CollectableComboBox(clctefEntity);
@@ -77,8 +77,8 @@ public class DatasourceHeaderPanel extends JPanel {
 
 		gbc.gridx = 0;
 		gbc.gridy = 0;
-		clcttfName.setLabelText(CommonLocaleDelegate.getMessage("DatasourceHeaderPanel.3","Name"));
-		clcttfName.setToolTipText(CommonLocaleDelegate.getMessage("DatasourceHeaderPanel.4","Name des Reports/Formulars"));
+		clcttfName.setLabelText(cld.getMessage("DatasourceHeaderPanel.3","Name"));
+		clcttfName.setToolTipText(cld.getMessage("DatasourceHeaderPanel.4","Name des Reports/Formulars"));
 		clcttfName.setColumns(50);
 		pnlTextFields.add(this.clcttfName.getJLabel(), gbc);
 
@@ -89,8 +89,8 @@ public class DatasourceHeaderPanel extends JPanel {
 		if (clctefEntity != null) {
 			gbc.gridx = 2;
 			gbc.insets = new Insets(2, 20, 2, 2);
-			clbxEntity.setLabelText(CommonLocaleDelegate.getMessage("nuclos.entityfield.recordgrant.entity.label","Entity"));
-			clbxEntity.setToolTipText(CommonLocaleDelegate.getMessage("nuclos.entityfield.recordgrant.entity.description","Entity"));
+			clbxEntity.setLabelText(cld.getMessage("nuclos.entityfield.recordgrant.entity.label","Entity"));
+			clbxEntity.setToolTipText(cld.getMessage("nuclos.entityfield.recordgrant.entity.description","Entity"));
 			pnlTextFields.add(this.clbxEntity.getJLabel(), gbc);
 			gbc.gridx = 3;
 			gbc.insets = new Insets(2, 2, 2, 2);
@@ -101,8 +101,8 @@ public class DatasourceHeaderPanel extends JPanel {
 		gbc.gridy = 1;
 		gbc.weightx = 0.0;
 		gbc.fill = GridBagConstraints.NONE;
-		clcttfDescription.setLabelText(CommonLocaleDelegate.getMessage("DatasourceHeaderPanel.1","Beschreibung"));
-		clcttfDescription.setToolTipText(CommonLocaleDelegate.getMessage("DatasourceHeaderPanel.2","Beschreibung des Reports/Formulars"));
+		clcttfDescription.setLabelText(cld.getMessage("DatasourceHeaderPanel.1","Beschreibung"));
+		clcttfDescription.setToolTipText(cld.getMessage("DatasourceHeaderPanel.2","Beschreibung des Reports/Formulars"));
 		pnlTextFields.add(this.clcttfDescription.getJLabel(), gbc);
 
 		gbc.gridx = 1;

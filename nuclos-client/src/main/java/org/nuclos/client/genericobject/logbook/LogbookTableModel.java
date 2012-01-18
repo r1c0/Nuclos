@@ -43,14 +43,14 @@ class LogbookTableModel extends AbstractListTableModel<LogbookVO> {
 
 	// NOTE: "Feld" is used (hard-coded) in LogbookPanel to access the column
 	private static final String[] asColumnNames =
-			{CommonLocaleDelegate.getMessage("LogbookController.5", "Ge\u00e4ndert am"), 
-			CommonLocaleDelegate.getMessage("LogbookController.7", "Ge\u00e4ndert von"), 
-			CommonLocaleDelegate.getMessage("LogbookController.8", "Feld"), 
-			CommonLocaleDelegate.getMessage("LogbookController.9", "Alter Wert"), 
-			CommonLocaleDelegate.getMessage("LogbookController.10", "Neuer Wert"), 
-			CommonLocaleDelegate.getMessage("LogbookController.11", "ID")};
+			{CommonLocaleDelegate.getInstance().getMessage("LogbookController.5", "Ge\u00e4ndert am"), 
+			CommonLocaleDelegate.getInstance().getMessage("LogbookController.7", "Ge\u00e4ndert von"), 
+			CommonLocaleDelegate.getInstance().getMessage("LogbookController.8", "Feld"), 
+			CommonLocaleDelegate.getInstance().getMessage("LogbookController.9", "Alter Wert"), 
+			CommonLocaleDelegate.getInstance().getMessage("LogbookController.10", "Neuer Wert"), 
+			CommonLocaleDelegate.getInstance().getMessage("LogbookController.11", "ID")};
 
-	private final DateFormat dateformat = CommonLocaleDelegate.getDateTimeFormat(); // new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
+	private final DateFormat dateformat = CommonLocaleDelegate.getInstance().getDateTimeFormat(); // new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
 
 	LogbookTableModel(Collection<LogbookVO> colllogbookvo, AttributeCVO attrcvoHeader) {
 		super(new ArrayList<LogbookVO>(colllogbookvo));
@@ -107,9 +107,10 @@ class LogbookTableModel extends AbstractListTableModel<LogbookVO> {
 				break;
 			case COLUMN_LABEL:
 				if(logbookvo.isMigrated())
-					result = CommonLocaleDelegate.getMessage("LogbookTableModel.1","(migriert)");
+					result = CommonLocaleDelegate.getInstance().getMessage("LogbookTableModel.1","(migriert)");
 				else if(logbookvo.getAttribute() != null)
-					result = CommonLocaleDelegate.getLabelFromAttributeCVO(AttributeCache.getInstance().getAttribute(logbookvo.getAttribute()));
+					result = CommonLocaleDelegate.getInstance().getLabelFromAttributeCVO(
+							AttributeCache.getInstance().getAttribute(logbookvo.getAttribute()));
 				else
 					result = logbookvo.getLabel(); // masterdata only
 				break;

@@ -111,13 +111,15 @@ public class RootNode extends SearchConditionTreeNode {
 
 	@Override
 	protected String getLabelForExpandedState() {
-		return CommonLocaleDelegate.getMessage("RootNode.1","Suchbedingung");
+		return CommonLocaleDelegate.getInstance().getMessage("RootNode.1","Suchbedingung");
 	}
 
 	@Override
 	protected String getLabelForCollapsedState() {
 		final CollectableSearchCondition cond = this.getSearchCondition();
-		return CommonLocaleDelegate.getMessage("RootNode.1","Suchbedingung")+": " + ((cond != null) ? cond.toString() : CommonLocaleDelegate.getMessage("RootNode.2","<Alle>"));
+		return CommonLocaleDelegate.getInstance().getMessage(
+				"RootNode.1","Suchbedingung")+": " + ((cond != null) ? cond.toString() 
+				: CommonLocaleDelegate.getInstance().getMessage("RootNode.2","<Alle>"));
 	}
 
 	@Override
@@ -130,8 +132,10 @@ public class RootNode extends SearchConditionTreeNode {
 			bDoIt = true;
 		}
 		else {
-			final String sMessage = CommonLocaleDelegate.getMessage("RootNode.3","Soll die Suchbedingung ersetzt werden?");
-			final int iBtn = JOptionPane.showConfirmDialog(parent, sMessage, CommonLocaleDelegate.getMessage("RootNode.4","Suchbedingung ersetzen"),
+			final String sMessage = CommonLocaleDelegate.getInstance().getMessage(
+					"RootNode.3","Soll die Suchbedingung ersetzt werden?");
+			final int iBtn = JOptionPane.showConfirmDialog(parent, sMessage, CommonLocaleDelegate.getInstance().getMessage(
+					"RootNode.4","Suchbedingung ersetzen"),
 					JOptionPane.YES_NO_OPTION);
 			if (iBtn == JOptionPane.YES_OPTION) {
 				bDoIt = true;
@@ -151,8 +155,10 @@ public class RootNode extends SearchConditionTreeNode {
 			super.add(newChild);
 		}
 		else {
-			final String sMessage = CommonLocaleDelegate.getMessage("RootNode.5","Soll die vorhandene Suchbedingung in die neuen Bedingung eingef\u00fcgt werden?");
-			final int iBtn = JOptionPane.showConfirmDialog(null, sMessage, CommonLocaleDelegate.getMessage("RootNode.6","Suchbedingung einf\u00fcgen"),
+			final String sMessage = CommonLocaleDelegate.getInstance().getMessage(
+					"RootNode.5","Soll die vorhandene Suchbedingung in die neuen Bedingung eingef\u00fcgt werden?");
+			final int iBtn = JOptionPane.showConfirmDialog(null, sMessage, CommonLocaleDelegate.getInstance().getMessage(
+					"RootNode.6","Suchbedingung einf\u00fcgen"),
 					JOptionPane.YES_NO_OPTION);
 			if (iBtn == JOptionPane.YES_OPTION) {
 				Enumeration<MutableTreeNode> enumNodes = this.children();

@@ -20,8 +20,11 @@ import javax.swing.Icon;
 import javax.swing.JComponent;
 
 import org.nuclos.client.wizard.NuclosEntityWizardStaticModel;
+import org.nuclos.common2.CommonLocaleDelegate;
 import org.pietschy.wizard.PanelWizardStep;
 import org.pietschy.wizard.WizardModel;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
 
 /**
 * <br>
@@ -31,12 +34,14 @@ import org.pietschy.wizard.WizardModel;
 * @author <a href="mailto:marc.finke@novabit.de">Marc Finke</a>
 * @version 01.00.00
 */
-
+@Configurable
 public abstract class NuclosEntityAbstractStep extends PanelWizardStep {
 	
 	NuclosEntityWizardStaticModel model;
 	
 	JComponent parent;
+	
+	CommonLocaleDelegate cld;
 
 	public NuclosEntityAbstractStep() {
 	}
@@ -47,6 +52,11 @@ public abstract class NuclosEntityAbstractStep extends PanelWizardStep {
 
 	public NuclosEntityAbstractStep(String name, String summary, Icon icon) {
 		super(name, summary, icon);
+	}
+	
+	@Autowired
+	void setCommonLocaleDelegate(CommonLocaleDelegate cld) {
+		this.cld = cld;
 	}
 	
 	public void setParentComponent(JComponent compParent) {

@@ -38,7 +38,8 @@ public class ResPlanAction extends AbstractAction {
 	private static final Logger LOG = Logger.getLogger(ResPlanAction.class);
 
 	public ResPlanAction(CustomComponentVO componentVO) {
-		putValue(Action.NAME, CommonLocaleDelegate.getTextFallback(componentVO.getLabelResourceId(), componentVO.getLabelResourceId()) + "...");
+		putValue(Action.NAME, CommonLocaleDelegate.getInstance().getTextFallback(
+				componentVO.getLabelResourceId(), componentVO.getLabelResourceId()) + "...");
 		putValue(Action.SMALL_ICON, MainFrame.resizeAndCacheTabIcon(NuclosResourceCache.getNuclosResourceIcon("org.nuclos.client.resource.icon.glyphish.83-calendar.png")));
 		putValue(Action.ACTION_COMMAND_KEY, componentVO.getInternalName());
 		boolean enabled = false;
@@ -63,7 +64,7 @@ public class ResPlanAction extends AbstractAction {
 					CustomComponentController controller = CustomComponentController.newController(internalName);
 					controller.run();
 				} catch (Exception ex) {
-					Errors.getInstance().showExceptionDialog(Main.getMainFrame(), ex);
+					Errors.getInstance().showExceptionDialog(Main.getInstance().getMainFrame(), ex);
 				}
 			}
 		});

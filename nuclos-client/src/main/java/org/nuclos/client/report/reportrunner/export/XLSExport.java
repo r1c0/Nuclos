@@ -28,7 +28,6 @@ import org.jawin.DispatchPtr;
 import org.jawin.win32.Ole32;
 import org.nuclos.client.report.reportrunner.AbstractReportExporter;
 import org.nuclos.common.NuclosBusinessException;
-import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.server.report.NuclosReportException;
 import org.nuclos.server.report.NuclosReportPrintJob;
 import org.nuclos.server.report.print.XLSPrintJob;
@@ -180,7 +179,8 @@ public class XLSExport extends AbstractReportExporter {
 
 		}
 		catch (Throwable ex) {
-			throw new NuclosReportException(CommonLocaleDelegate.getMessage("DOCExport.2", "Die Datei {0} konnte nicht erstellt werden", sFileName) + ".\n", ex);
+			throw new NuclosReportException(getCommonLocaleDelegate().getMessage(
+					"DOCExport.2", "Die Datei {0} konnte nicht erstellt werden", sFileName) + ".\n", ex);
 		}
 		finally {
 			if (worksheet != null) {
@@ -213,7 +213,8 @@ public class XLSExport extends AbstractReportExporter {
 				Ole32.CoUninitialize();
 			}
 			catch (Throwable ex) {
-				throw new NuclosReportException(CommonLocaleDelegate.getMessage("DOCExport.2", "Die Datei {0} konnte nicht erstellt werden", sFileName) + ".\n", ex);
+				throw new NuclosReportException(getCommonLocaleDelegate().getMessage(
+						"DOCExport.2", "Die Datei {0} konnte nicht erstellt werden", sFileName) + ".\n", ex);
 			}
 		}
 		return sFileName;
@@ -299,7 +300,8 @@ public class XLSExport extends AbstractReportExporter {
 		final char[] acAlphabet = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'};
 		final int iLetterCount = acAlphabet.length;
 		if (iColumnIndex < 1 || iColumnIndex > 256) {
-			throw new NuclosBusinessException(CommonLocaleDelegate.getMessage("XLSExport.1", "Der Excel-Spaltenindex muss zwischen 1 und 256 liegen."));
+			throw new NuclosBusinessException(getCommonLocaleDelegate().getMessage(
+					"XLSExport.1", "Der Excel-Spaltenindex muss zwischen 1 und 256 liegen."));
 		}
 
 		if (iColumnIndex <= iLetterCount) {
@@ -321,7 +323,7 @@ public class XLSExport extends AbstractReportExporter {
 			result = reportOutputVO.getSheetname();
 		}
 		if (result == null || result.equals("")) {
-			result = CommonLocaleDelegate.getMessage("XLSExport.2", "Daten aus Nucleus");
+			result = getCommonLocaleDelegate().getMessage("XLSExport.2", "Daten aus Nucleus");
 		}
 
 		return result;

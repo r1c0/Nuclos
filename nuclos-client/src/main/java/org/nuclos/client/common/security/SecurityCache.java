@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import javax.annotation.PostConstruct;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageListener;
@@ -44,6 +45,8 @@ import org.nuclos.server.common.MasterDataPermissions;
 import org.nuclos.server.common.ModulePermission;
 import org.nuclos.server.common.ModulePermissions;
 import org.nuclos.server.common.ejb3.SecurityFacadeRemote;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
 
 /**
  * caches client rights.
@@ -55,6 +58,7 @@ import org.nuclos.server.common.ejb3.SecurityFacadeRemote;
  * @author	<a href="mailto:Christoph.Radig@novabit.de">Christoph.Radig</a>
  * @version 01.00.00
  */
+@Configurable
 public class SecurityCache {
 	private static SecurityCache singleton;
 
@@ -65,11 +69,17 @@ public class SecurityCache {
 	private ModulePermissions modulepermissions;
 	private MasterDataPermissions masterdatapermissions;
 
-	private Map<PermissionKey.AttributePermissionKey, Permission> mpAttributePermission = new HashMap<PermissionKey.AttributePermissionKey, Permission>();
-	private Map<PermissionKey.SubFormPermissionKey, Map<Integer, Permission>> mpSubFormPermission = new HashMap<PermissionKey.SubFormPermissionKey, Map<Integer, Permission>>();
+	private Map<PermissionKey.AttributePermissionKey, Permission> mpAttributePermission = 
+			new HashMap<PermissionKey.AttributePermissionKey, Permission>();
+	private Map<PermissionKey.SubFormPermissionKey, Map<Integer, Permission>> mpSubFormPermission = 
+			new HashMap<PermissionKey.SubFormPermissionKey, Map<Integer, Permission>>();
 
-	private Map<PermissionKey.ModulePermissionKey, ModulePermission> modulePermissionsCache = new HashMap<PermissionKey.ModulePermissionKey, ModulePermission>();
-	private Map<PermissionKey.MasterDataPermissionKey, MasterDataPermission> masterDataPermissionsCache = new HashMap<PermissionKey.MasterDataPermissionKey, MasterDataPermission>();
+	private Map<PermissionKey.ModulePermissionKey, ModulePermission> modulePermissionsCache = 
+			new HashMap<PermissionKey.ModulePermissionKey, ModulePermission>();
+	private Map<PermissionKey.MasterDataPermissionKey, MasterDataPermission> masterDataPermissionsCache = 
+			new HashMap<PermissionKey.MasterDataPermissionKey, MasterDataPermission>();
+	
+	private TopicNotificationReceiver tnr;
 
 	private final MessageListener listener = new MessageListener() {
 		@Override
@@ -88,10 +98,10 @@ public class SecurityCache {
 			if (clearcache) {
 				SecurityCache.this.revalidate();
 				AttributeCache.getInstance().revalidate();
-				UIUtils.runCommandLater(Main.getMainFrame(), new CommonRunnable() {
+				UIUtils.runCommandLater(Main.getInstance().getMainFrame(), new CommonRunnable() {
 					@Override
 	                public void run() throws CommonBusinessException {
-						Main.getMainController().refreshMenus();
+						Main.getInstance().getMainController().refreshMenus();
 					}
 				});
 			}
@@ -121,9 +131,17 @@ public class SecurityCache {
 	 * creates the cache. Fills in all the attributes from the database.
 	 */
 	private SecurityCache() {
-		TopicNotificationReceiver.subscribe(JMSConstants.TOPICNAME_SECURITYCACHE, listener);
-
+	}
+	
+	@PostConstruct
+	void init() {
+		tnr.subscribe(JMSConstants.TOPICNAME_SECURITYCACHE, listener);
 		this.validate();
+	}
+	
+	@Autowired
+	void setTopicNotificationReceiver(TopicNotificationReceiver tnr) {
+		this.tnr = tnr;
 	}
 
 	public synchronized boolean isActionAllowed(String sActionName) {

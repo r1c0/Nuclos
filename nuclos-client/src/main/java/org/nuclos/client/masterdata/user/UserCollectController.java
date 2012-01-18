@@ -80,7 +80,6 @@ import org.nuclos.common.collection.Predicate;
 import org.nuclos.common.collection.Transformer;
 import org.nuclos.common.dal.vo.EntityObjectVO;
 import org.nuclos.common.security.UserVO;
-import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.CommonRunnable;
 import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.ServiceLocator;
@@ -314,7 +313,8 @@ public class UserCollectController extends MasterDataCollectController {
 			final JButton btnSynchronizeWithLDAP = new JButton();
 			btnSynchronizeWithLDAP.setName("btnSynchronizeWithLDAP");
 			btnSynchronizeWithLDAP.setIcon(Icons.getInstance().getIconLDAP());
-			btnSynchronizeWithLDAP.setToolTipText(CommonLocaleDelegate.getMessage("UserCollectController.1", "Mit LDAP synchronisieren"));
+			btnSynchronizeWithLDAP.setToolTipText(getCommonLocaleDelegate().getMessage(
+					"UserCollectController.1", "Mit LDAP synchronisieren"));
 
 			final UserCollectController uctl = this;
 			// action: Select Columns
@@ -345,8 +345,10 @@ public class UserCollectController extends MasterDataCollectController {
 		if(!synchronizeWithLDAP()){
 			return;
 		}
-		final SelectUserController<MasterDataVO> ctl = new SelectUserController<MasterDataVO>(clctctl.getFrame(), CommonLocaleDelegate.getMessage("UserCollectController.2", "LDAP Benutzer"),
-			CommonLocaleDelegate.getMessage("UserCollectController.3", "Ausgew\u00e4hlte Benutzer synchronisieren"), null, null);
+		final SelectUserController<MasterDataVO> ctl = new SelectUserController<MasterDataVO>(clctctl.getFrame(), 
+				getCommonLocaleDelegate().getMessage("UserCollectController.2", "LDAP Benutzer"),
+				getCommonLocaleDelegate().getMessage(
+						"UserCollectController.3", "Ausgew\u00e4hlte Benutzer synchronisieren"), null, null);
 
 		final List<MasterDataVO> lstAvailable = CollectionUtils.typecheck(this.ldapRegisteredUsers, MasterDataVO.class);
 
@@ -355,7 +357,8 @@ public class UserCollectController extends MasterDataCollectController {
 		final ChoiceList<MasterDataVO> ro = new ChoiceList<MasterDataVO>();
 		ro.set(lstAvailable, new MasterDataVO.NameComparator());
 		ctl.setModel(ro);
-		final boolean bOK = ctl.run(CommonLocaleDelegate.getMessage("SelectUserController.7", "Mit LDAP Synchronisieren"));
+		final boolean bOK = ctl.run(getCommonLocaleDelegate().getMessage(
+				"SelectUserController.7", "Mit LDAP Synchronisieren"));
 
 		if (bOK) {
 			UIUtils.runCommand(clctctl.getFrame(), new CommonRunnable() {
@@ -416,7 +419,7 @@ public class UserCollectController extends MasterDataCollectController {
 					synchronizedWithLDAP[0] = true;
 				} catch (CollectableFieldFormatException e) {
 					LOG.warn("synchronizeWithLDAP failed: " + e, e);
-					final String sMessage =CommonLocaleDelegate.getMessage("UserCollectController.4",
+					final String sMessage = getCommonLocaleDelegate().getMessage("UserCollectController.4",
 						"LDAP Synchronisierung ist gescheitert.\nEine Liste der in LDAP registrierten Benutzer kann nicht dargestellt werden.");
 					Errors.getInstance().showExceptionDialog(getFrame(), sMessage, e);
 					synchronizedWithLDAP[0] = false;
@@ -473,12 +476,12 @@ public class UserCollectController extends MasterDataCollectController {
 			case 1:
 				final Object oIdExistingUser = collmdvo.iterator().next().getId();
 				if (!oIdExistingUser.equals(clct.getId())) {
-					throw new CommonBusinessException(CommonLocaleDelegate.getMessage("UserCollectController.5",
+					throw new CommonBusinessException(getCommonLocaleDelegate().getMessage("UserCollectController.5",
 						"Ein Benutzer namens \"{0}\" ist bereits im System vorhanden.", clct.getValue("name")));
 				}
 				break;
 			default:
-				throw new CommonBusinessException(CommonLocaleDelegate.getMessage("UserCollectController.6",
+				throw new CommonBusinessException(getCommonLocaleDelegate().getMessage("UserCollectController.6",
 					"Es sind bereits mehrere Benutzer(!) unter dem Namen \"{0}\" im System vorhanden.", clct.getValue("name")));
 		}
 	}
@@ -486,16 +489,16 @@ public class UserCollectController extends MasterDataCollectController {
 	final Action copyPrefsAction = new AbstractAction() {
 
 		{
-			putValue(Action.SHORT_DESCRIPTION, CommonLocaleDelegate.getMessage("nuclos.preferences.transfer", null));
+			putValue(Action.SHORT_DESCRIPTION, getCommonLocaleDelegate().getMessage("nuclos.preferences.transfer", null));
 			putValue(Action.SMALL_ICON, Icons.getInstance().getIconPrefsCopy());
 		}
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			List<CollectableMasterDataWithDependants> selectedUsers = getSelectedCollectables();
-			CopyPreferencesPanel panel = new CopyPreferencesPanel(Main.getMainController().getUserName());
+			CopyPreferencesPanel panel = new CopyPreferencesPanel(Main.getInstance().getMainController().getUserName());
 			int opt = JOptionPane.showConfirmDialog(UserCollectController.this.getParent(), panel,
-				CommonLocaleDelegate.getMessage("nuclos.preferences.transfer", null),
+					getCommonLocaleDelegate().getMessage("nuclos.preferences.transfer", null),
 				JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
 			if (opt == JOptionPane.OK_OPTION) {
 				Map<String, Map<String, String>> selectedPreferences = panel.getSelectedPreferences();
@@ -506,7 +509,7 @@ public class UserCollectController extends MasterDataCollectController {
 						facade.mergePreferencesForUser(userName, selectedPreferences);
 					} catch(CommonFinderException ex) {
 						Errors.getInstance().showExceptionDialog(UserCollectController.this.getParent(),
-							CommonLocaleDelegate.getMessage("nuclos.preferences.transfer.error", userName), ex);
+								getCommonLocaleDelegate().getMessage("nuclos.preferences.transfer.error", userName), ex);
 					}
 				}
 			}

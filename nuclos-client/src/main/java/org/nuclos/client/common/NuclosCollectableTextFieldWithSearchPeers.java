@@ -77,7 +77,8 @@ public class NuclosCollectableTextFieldWithSearchPeers extends CollectableTextFi
 			result = super.newJPopupMenu();
 			result.addSeparator();
 
-			final Action act = new AbstractAction(CommonLocaleDelegate.getMessage("NuclosCollectableTextFieldWithSearchPeers.1", "Suche erweitern")) {
+			final Action act = new AbstractAction(CommonLocaleDelegate.getInstance().getMessage(
+					"NuclosCollectableTextFieldWithSearchPeers.1", "Suche erweitern")) {
 				@Override
 				public void actionPerformed(ActionEvent ev) {
 					bUsePeers = !bUsePeers;

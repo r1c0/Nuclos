@@ -45,6 +45,8 @@ import org.nuclos.server.report.NuclosReportRemotePrintService;
 import org.nuclos.server.report.valueobject.ReportOutputVO;
 import org.nuclos.server.report.valueobject.ReportVO;
 import org.nuclos.server.report.valueobject.ResultVO;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
 
 /**
  * Base Class for all export types in the package "export"
@@ -55,6 +57,7 @@ import org.nuclos.server.report.valueobject.ResultVO;
  * @author	<a href="mailto:uwe.allner@novabit.de">uwe.allner</a>
  * @version 02.01.00
  */
+@Configurable
 public abstract class AbstractReportExporter implements ReportExporter {
 
 	private final static Logger log = Logger.getLogger(AbstractReportExporter.class);
@@ -66,6 +69,20 @@ public abstract class AbstractReportExporter implements ReportExporter {
 	private String sGenericObjectIdentifier;
 
 	private String sReportFileName;
+	
+	private CommonLocaleDelegate cld;
+	
+	protected AbstractReportExporter() {
+	}
+	
+	@Autowired
+	void setCommonLocaleDelegate(CommonLocaleDelegate cld) {
+		this.cld = cld;
+	}
+	
+	protected CommonLocaleDelegate getCommonLocaleDelegate() {
+		return cld;
+	}
 
 	@Override
 	public void export(ResultVO resultvo, ReportVO reportvo, ReportOutputVO outputvo)
@@ -161,7 +178,8 @@ public abstract class AbstractReportExporter implements ReportExporter {
 				final File fileExportDir = new File(sExportPath);
 				if (!fileExportDir.exists()) {
 					if (!fileExportDir.mkdir()) {
-						throw new NuclosReportException(CommonLocaleDelegate.getMessage("AbstractReportExporter.1", "Das Verzeichnis {0} konnte nicht angelegt werden.", sExportPath));
+						throw new NuclosReportException(CommonLocaleDelegate.getInstance().getMessage(
+								"AbstractReportExporter.1", "Das Verzeichnis {0} konnte nicht angelegt werden.", sExportPath));
 					}
 				}
 			}
@@ -179,13 +197,15 @@ public abstract class AbstractReportExporter implements ReportExporter {
 			if (sSourceFile != null) {
 				final org.nuclos.server.report.ByteArrayCarrier bac = outputvo.getSourceFileContent();
 				if (bac == null) {
-					throw new NuclosReportException(CommonLocaleDelegate.getMessage("AbstractReportExporter.2", "Die Dokumentvorlage \"{0}\" konnte nicht gelesen werden.", sSourceFile));
+					throw new NuclosReportException(CommonLocaleDelegate.getInstance().getMessage(
+							"AbstractReportExporter.2", "Die Dokumentvorlage \"{0}\" konnte nicht gelesen werden.", sSourceFile));
 				}
 				IOUtils.writeToBinaryFile(fileDestination, bac.getData());
 			}
 		}
 		catch (IOException ex) {
-			throw new NuclosReportException(CommonLocaleDelegate.getMessage("AbstractReportExporter.3", "Die Datei \"{0}\" konnte nicht erstellt werden.", sFileName) + "\n", ex);
+			throw new NuclosReportException(CommonLocaleDelegate.getInstance().getMessage(
+					"AbstractReportExporter.3", "Die Datei \"{0}\" konnte nicht erstellt werden.", sFileName) + "\n", ex);
 		}
 	}
 
@@ -206,7 +226,8 @@ public abstract class AbstractReportExporter implements ReportExporter {
 				SystemUtils.open(sFileName);
 			}
 			catch (IOException ex) {
-				throw new NuclosReportException(CommonLocaleDelegate.getMessage("AbstractReportExporter.4", "Die Datei {0} konnte nicht ge\u00f6ffnet werden.", sFileName), ex);
+				throw new NuclosReportException(CommonLocaleDelegate.getInstance().getMessage(
+						"AbstractReportExporter.4", "Die Datei {0} konnte nicht ge\u00f6ffnet werden.", sFileName), ex);
 			}
 		}
 		else {
@@ -233,7 +254,8 @@ public abstract class AbstractReportExporter implements ReportExporter {
 	          if(null != prservDflt) {
 	        	  prservices = new PrintService[] {prservDflt};
 	          } else {
-	        	  throw new NuclosReportException(CommonLocaleDelegate.getMessage("AbstractReportExporter.5", "Es ist kein passender Print-Service installiert."));
+	        	  throw new NuclosReportException(CommonLocaleDelegate.getInstance().getMessage(
+	        			  "AbstractReportExporter.5", "Es ist kein passender Print-Service installiert."));
 	          }
 	        }
 	        

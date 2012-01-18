@@ -65,7 +65,7 @@ public class InvokeWithInputRequiredSupport {
 	}
 
 	private void handleInputRequiredException(InputRequiredException ex, CommonRunnable r, Map<String, Serializable> context, JComponent parent) throws CommonBusinessException {
-		String title = Main.getMainFrame().getTitle();
+		String title = Main.getInstance().getMainFrame().getTitle();
 		String message = ex.getInputSpecification().getMessage();
 		switch (ex.getInputSpecification().getType()) {
 			case InputSpecification.CONFIRM_YES_NO:

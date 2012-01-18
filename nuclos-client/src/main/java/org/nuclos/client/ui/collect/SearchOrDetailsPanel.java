@@ -56,7 +56,8 @@ public abstract class SearchOrDetailsPanel extends JPanel {
 
 	private int popbtnExtraIndex = -1;
 
-	private final PopupButton popbtnExtra = new PopupButton(CommonLocaleDelegate.getMessage("PopupButton.Extras","Extras"));
+	private final PopupButton popbtnExtra = new PopupButton(CommonLocaleDelegate.getInstance().getMessage(
+			"PopupButton.Extras","Extras"));
 
 	/**
 	 * the center panel (between toolbar and status bar) containing the "edit component".

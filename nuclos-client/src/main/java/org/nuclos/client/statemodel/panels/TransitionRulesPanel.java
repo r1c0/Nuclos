@@ -64,23 +64,24 @@ public class TransitionRulesPanel extends JPanel {
 	}
 
 	private void init() {
+		final CommonLocaleDelegate cld = CommonLocaleDelegate.getInstance();
 		btnAdd.setIcon(Icons.getInstance().getIconNew16());
-		btnAdd.setToolTipText(CommonLocaleDelegate.getMessage("TransitionRulesPanel.4","Neue Regel zuordnen"));
+		btnAdd.setToolTipText(cld.getMessage("TransitionRulesPanel.4","Neue Regel zuordnen"));
 		btnAdd.setActionCommand("add");
 		btnDelete.setIcon(Icons.getInstance().getIconDelete16());
-		btnDelete.setToolTipText(CommonLocaleDelegate.getMessage("TransitionRulesPanel.5","Zuordnung aufheben"));
+		btnDelete.setToolTipText(cld.getMessage("TransitionRulesPanel.5","Zuordnung aufheben"));
 		btnDelete.setActionCommand("remove");
 		btnUp.setIcon(Icons.getInstance().getIconUp16());
-		btnUp.setToolTipText(CommonLocaleDelegate.getMessage("TransitionRulesPanel.2","Nach oben verschieben"));
+		btnUp.setToolTipText(cld.getMessage("TransitionRulesPanel.2","Nach oben verschieben"));
 		btnUp.setActionCommand("moveUp");
 		btnDown.setIcon(Icons.getInstance().getIconDown16());
-		btnDown.setToolTipText(CommonLocaleDelegate.getMessage("TransitionRulesPanel.3","Nach unten verschieben"));
+		btnDown.setToolTipText(cld.getMessage("TransitionRulesPanel.3","Nach unten verschieben"));
 		btnDown.setActionCommand("moveDown");
 		btnAutomatic.setIcon(Icons.getInstance().getIconStateTransitionAuto());
-		btnAutomatic.setToolTipText(CommonLocaleDelegate.getMessage("TransitionRulesPanel.1","Automatische Transition"));
+		btnAutomatic.setToolTipText(cld.getMessage("TransitionRulesPanel.1","Automatische Transition"));
 		btnAutomatic.setActionCommand("setAuto");
 		btnDefault.setIcon(Icons.getInstance().getIconStateTransitionDefault());
-		btnDefault.setToolTipText(CommonLocaleDelegate.getMessage("TransitionRulesPanel.6","Standard Transition"));
+		btnDefault.setToolTipText(cld.getMessage("TransitionRulesPanel.6","Standard Transition"));
 		btnDefault.setActionCommand("setDefault");
 
 		toolbar.setFloatable(false);

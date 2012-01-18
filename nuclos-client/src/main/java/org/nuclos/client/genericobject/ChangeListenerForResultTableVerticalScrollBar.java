@@ -138,7 +138,8 @@ public class ChangeListenerForResultTableVerticalScrollBar implements ChangeList
 								LOG.info("Resetting vertical scrollbar because of " + e);
 								model.setValue(0);
 
-								final String sMessage = CommonLocaleDelegate.getMessage("ChangeListenerForResultTableVerticalScrollBar.1", "Beim Nachladen von Datens\u00e4tzen ist ein Fehler ist aufgetreten. Die Datens\u00e4tze k\u00f6nnen nicht angezeigt werden.");
+								final String sMessage = CommonLocaleDelegate.getInstance().getMessage(
+										"ChangeListenerForResultTableVerticalScrollBar.1", "Beim Nachladen von Datens\u00e4tzen ist ein Fehler ist aufgetreten. Die Datens\u00e4tze k\u00f6nnen nicht angezeigt werden.");
 								Errors.getInstance().showExceptionDialog(ifrm, sMessage, e);
 							}							
 						}

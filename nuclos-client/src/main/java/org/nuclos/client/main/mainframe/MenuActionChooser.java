@@ -89,7 +89,7 @@ public class MenuActionChooser extends JPanel{
 			public void actionPerformed(ActionEvent e) {
 			}
 		})));
-		actions.addAll(Main.getMainController().getGenericActions());
+		actions.addAll(Main.getInstance().getMainController().getGenericActions());
 
 		list = new JList(actions.toArray()) {
 
@@ -237,15 +237,17 @@ public class MenuActionChooser extends JPanel{
 	}
 	
 	public void showDialog(WorkspaceDescription.Action selectedAction) {
-		final JDialog dialog = new JDialog(Main.getMainFrame(), CommonLocaleDelegate.getMessage("MenuActionChooser.3","Aktion auswählen"), true);
+		final CommonLocaleDelegate cld = CommonLocaleDelegate.getInstance();
+		final JDialog dialog = new JDialog(Main.getInstance().getMainFrame(), cld.getMessage(
+				"MenuActionChooser.3","Aktion auswählen"), true);
 		
 		JPanel contentPanel = new JPanel(new BorderLayout(5, 5));
 		contentPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 		contentPanel.add(this, BorderLayout.CENTER);
 		
 		JPanel actionsPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 2));
-		JButton btSave = new JButton(CommonLocaleDelegate.getMessage("MenuActionChooser.1","Speichern"));
-		JButton btCancel = new JButton(CommonLocaleDelegate.getMessage("MenuActionChooser.2","Abbrechen"));
+		JButton btSave = new JButton(cld.getMessage("MenuActionChooser.1","Speichern"));
+		JButton btCancel = new JButton(cld.getMessage("MenuActionChooser.2","Abbrechen"));
 		actionsPanel.add(btSave);
 		actionsPanel.add(btCancel);
 		contentPanel.add(actionsPanel, BorderLayout.SOUTH);
@@ -255,7 +257,7 @@ public class MenuActionChooser extends JPanel{
 		dialog.setContentPane(contentPanel);
 		dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		dialog.getRootPane().setDefaultButton(btSave);
-		Rectangle mfBounds = Main.getMainFrame().getBounds();
+		Rectangle mfBounds = Main.getInstance().getMainFrame().getBounds();
 		dialog.setBounds(mfBounds.x+(mfBounds.width/2)-360, mfBounds.y+(mfBounds.height/2)-200, 720, 400);
 		dialog.setResizable(false);
 		

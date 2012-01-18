@@ -219,7 +219,9 @@ public class SubProcessTransitionPanelModel implements Serializable {
 			return GENERATIONID_NOT_SET;
 		}
 		
-		NuclosCollectControllerFactory.getInstance().newCollectController(Main.getMainFrame().getHomePane(), NuclosEntity.GENERATION.getEntityName(), null).runViewSingleCollectableWithId(iGenerationId);
+		NuclosCollectControllerFactory.getInstance().newCollectController(
+				Main.getInstance().getMainFrame().getHomePane(), NuclosEntity.GENERATION.getEntityName(), null)
+				.runViewSingleCollectableWithId(iGenerationId);
 		
 		return RESULT_OKAY;
 	}

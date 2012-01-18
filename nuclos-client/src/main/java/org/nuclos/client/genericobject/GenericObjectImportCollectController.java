@@ -23,6 +23,7 @@ import java.awt.Component;
 import java.awt.Container;
 import java.awt.event.ActionEvent;
 
+import javax.annotation.PostConstruct;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageListener;
@@ -66,7 +67,6 @@ import org.nuclos.common.collect.collectable.CollectableField;
 import org.nuclos.common.collect.collectable.CollectableValueField;
 import org.nuclos.common.fileimport.ImportMode;
 import org.nuclos.common.fileimport.ImportResult;
-import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.KeyEnum;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
@@ -74,6 +74,8 @@ import org.nuclos.common2.fileimport.NuclosFileImportException;
 import org.nuclos.server.masterdata.valueobject.DependantMasterDataMap;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataWithDependantsVO;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
 
 /**
  * Special masterdata collect controller for generic object file import.
@@ -81,6 +83,7 @@ import org.nuclos.server.masterdata.valueobject.MasterDataWithDependantsVO;
  * <br>Created by Novabit Informationssysteme GmbH
  * <br>Please visit <a href="http://www.novabit.de">www.novabit.de</a>
  */
+@Configurable
 public class GenericObjectImportCollectController extends MasterDataCollectController implements MessageListener {
 
 	private static final Logger LOG = Logger.getLogger(GenericObjectImportCollectController.class);
@@ -89,7 +92,8 @@ public class GenericObjectImportCollectController extends MasterDataCollectContr
 
 	private ImportDelegate delegate = ImportDelegate.getInstance();
 
-	private final Action actImport = new CommonAbstractAction(Icons.getInstance().getIconPlay16(), CommonLocaleDelegate.getMessage("GenericObjectImportCollectController.import", "Importieren")) {
+	private final Action actImport = new CommonAbstractAction(Icons.getInstance().getIconPlay16(), getCommonLocaleDelegate().getMessage(
+			"GenericObjectImportCollectController.import", "Importieren")) {
 
 		@Override
 		public void actionPerformed(ActionEvent ev) {
@@ -97,7 +101,8 @@ public class GenericObjectImportCollectController extends MasterDataCollectContr
 		}
 	};
 
-	private final Action actStop = new CommonAbstractAction(Icons.getInstance().getIconStop16(), CommonLocaleDelegate.getMessage("GenericObjectImportCollectController.stopimport", "Import abbrechen")) {
+	private final Action actStop = new CommonAbstractAction(Icons.getInstance().getIconStop16(), getCommonLocaleDelegate().getMessage(
+			"GenericObjectImportCollectController.stopimport", "Import abbrechen")) {
 
 		@Override
 		public void actionPerformed(ActionEvent ev) {
@@ -111,6 +116,8 @@ public class GenericObjectImportCollectController extends MasterDataCollectContr
 	private JProgressBar progressBar;
 
 	private ProgressNotification lastnotification;
+	
+	private TopicNotificationReceiver tnr;
 
 	/**
 	 * You should use {@link org.nuclos.client.ui.collect.CollectControllerFactorySingleton} 
@@ -123,7 +130,10 @@ public class GenericObjectImportCollectController extends MasterDataCollectContr
 	 */
 	public GenericObjectImportCollectController(JComponent parent, MainFrameTab tabIfAny) {
 		super(parent, NuclosEntity.IMPORTFILE.getEntityName(), tabIfAny);
-
+	}
+	
+	@PostConstruct
+	void postConstruct() {
 		this.progressBar = new JProgressBar();
 		this.progressBar.setStringPainted(true);
 
@@ -156,7 +166,7 @@ public class GenericObjectImportCollectController extends MasterDataCollectContr
 		            	if (!StringUtils.isNullOrEmpty(correlationId)) {
 		            		GenericObjectImportCollectController.this.progressBar.setString("Warte auf Status");
 		            		setupDetailsToolBar(true, false);
-		            		TopicNotificationReceiver.subscribe(JMSConstants.TOPICNAME_PROGRESSNOTIFICATION, correlationId, GenericObjectImportCollectController.this);
+		            		tnr.subscribe(JMSConstants.TOPICNAME_PROGRESSNOTIFICATION, correlationId, GenericObjectImportCollectController.this);
 		            	}
 		            	else {
 		            		setupDetailsToolBar(false, false);
@@ -175,7 +185,7 @@ public class GenericObjectImportCollectController extends MasterDataCollectContr
 
 			@Override
             public void detailsModeLeft(CollectStateEvent ev) throws CommonBusinessException {
-				TopicNotificationReceiver.unsubscribe(GenericObjectImportCollectController.this);
+				tnr.unsubscribe(GenericObjectImportCollectController.this);
             }
 		});
 
@@ -186,6 +196,11 @@ public class GenericObjectImportCollectController extends MasterDataCollectContr
  				setCellRendererInResultTable();
 			}
         });
+	}
+	
+	@Autowired
+	void setTopicNotificationReceiver(TopicNotificationReceiver tnr) {
+		this.tnr = tnr;
 	}
 
 	@Override
@@ -231,13 +246,15 @@ public class GenericObjectImportCollectController extends MasterDataCollectContr
 	private void resetProgressBars() {
 		try {
 			if (lastnotification != null) {
-				GenericObjectImportCollectController.this.progressBar.setString(CommonLocaleDelegate.getMessageFromResource(lastnotification.getMessage()));
+				GenericObjectImportCollectController.this.progressBar.setString(getCommonLocaleDelegate().getMessageFromResource(
+						lastnotification.getMessage()));
 	    		GenericObjectImportCollectController.this.progressBar.setMinimum(lastnotification.getProgressMinimum());
 	    		GenericObjectImportCollectController.this.progressBar.setMaximum(lastnotification.getProgressMaximum());
 	    		GenericObjectImportCollectController.this.progressBar.setValue(lastnotification.getValue());
 			}
 			else {
-				GenericObjectImportCollectController.this.progressBar.setString(CommonLocaleDelegate.getMessageFromResource("GenericObjectImportCollectController.18"));
+				GenericObjectImportCollectController.this.progressBar.setString(getCommonLocaleDelegate().getMessageFromResource(
+						"GenericObjectImportCollectController.18"));
 				GenericObjectImportCollectController.this.progressBar.setMinimum(0);
 				GenericObjectImportCollectController.this.progressBar.setMaximum(0);
 				GenericObjectImportCollectController.this.progressBar.setValue(0);
@@ -274,7 +291,7 @@ public class GenericObjectImportCollectController extends MasterDataCollectContr
 		}
 		btnStart = new JButton(this.actImport);
 		btnStart.setName("btnImport");
-		btnStart.setText(CommonLocaleDelegate.getMessage("GenericObjectImportCollectController.import", "Importieren"));
+		btnStart.setText(getCommonLocaleDelegate().getMessage("GenericObjectImportCollectController.import", "Importieren"));
 		btnStart.setEnabled(!running && !editmode);
 		//toolbar.add(btnStart);
 		this.getDetailsPanel().addToolBarComponent(btnStart);
@@ -284,7 +301,7 @@ public class GenericObjectImportCollectController extends MasterDataCollectContr
 		}
 		btnStop = new JButton(this.actStop);
 		btnStop.setName("btnStop");
-		btnStop.setText(CommonLocaleDelegate.getMessage("GenericObjectImportCollectController.stopimport", "Import abbrechen"));
+		btnStop.setText(getCommonLocaleDelegate().getMessage("GenericObjectImportCollectController.stopimport", "Import abbrechen"));
 		btnStop.setEnabled(running && !editmode);
 		//toolbar.add(btnStop);
 		this.getDetailsPanel().addToolBarComponent(btnStop);
@@ -299,7 +316,8 @@ public class GenericObjectImportCollectController extends MasterDataCollectContr
 	        refreshCurrentCollectable();
         }
         catch (CommonBusinessException e) {
-        	JOptionPane.showMessageDialog(GenericObjectImportCollectController.this.getDetailsPanel(), CommonLocaleDelegate.getMessageFromResource(e.getMessage()), "", JOptionPane.ERROR_MESSAGE);
+        	JOptionPane.showMessageDialog(GenericObjectImportCollectController.this.getDetailsPanel(), 
+        			getCommonLocaleDelegate().getMessageFromResource(e.getMessage()), "", JOptionPane.ERROR_MESSAGE);
         }
 	}
 
@@ -310,7 +328,8 @@ public class GenericObjectImportCollectController extends MasterDataCollectContr
         }
         catch(NuclosFileImportException e) {
 			LOG.error("cmdCancelImport failed: " + e, e);
-        	JOptionPane.showMessageDialog(GenericObjectImportCollectController.this.getDetailsPanel(), CommonLocaleDelegate.getMessageFromResource(e.getMessage()), "", JOptionPane.ERROR_MESSAGE);
+        	JOptionPane.showMessageDialog(GenericObjectImportCollectController.this.getDetailsPanel(), 
+        			getCommonLocaleDelegate().getMessageFromResource(e.getMessage()), "", JOptionPane.ERROR_MESSAGE);
         }
 	}
 
@@ -369,7 +388,8 @@ public class GenericObjectImportCollectController extends MasterDataCollectContr
 		    			this.btnStart.setEnabled(false);
 		    			this.btnStop.setEnabled(true);
 
-		    			GenericObjectImportCollectController.this.progressBar.setString(CommonLocaleDelegate.getMessageFromResource(notification.getMessage()));
+		    			GenericObjectImportCollectController.this.progressBar.setString(getCommonLocaleDelegate().getMessageFromResource(
+		    					notification.getMessage()));
 	            		GenericObjectImportCollectController.this.progressBar.setMinimum(notification.getProgressMinimum());
 	            		GenericObjectImportCollectController.this.progressBar.setMaximum(notification.getProgressMaximum());
 	            		GenericObjectImportCollectController.this.progressBar.setValue(notification.getValue());

@@ -57,7 +57,8 @@ public class MoreOptionPanel extends JPanel {
 		layout.setHGap(5);
 		this.setLayout(layout);
 		
-		btnShow = new JButton(CommonLocaleDelegate.getMessage("nuclos.resplan.wizard.step5.title.in","Erweiterte Einstellungen einblenden"), Icons.getInstance().getIconDown16());
+		btnShow = new JButton(CommonLocaleDelegate.getInstance().getMessage(
+				"nuclos.resplan.wizard.step5.title.in","Erweiterte Einstellungen einblenden"), Icons.getInstance().getIconDown16());
 		split = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
 		JPanel emptypanel = new JPanel();
 		split.setTopComponent(emptypanel);
@@ -79,7 +80,8 @@ public class MoreOptionPanel extends JPanel {
 				if(blnFadeIn) {
 					blnFadeIn = false;
 					btnShow.setIcon(Icons.getInstance().getIconDown16());
-					btnShow.setText(CommonLocaleDelegate.getMessage("nuclos.resplan.wizard.step5.title.in","Erweiterte Einstellungen einblenden"));
+					btnShow.setText(CommonLocaleDelegate.getInstance().getMessage(
+							"nuclos.resplan.wizard.step5.title.in","Erweiterte Einstellungen einblenden"));
 					Runnable r = new Runnable() {
 						
 						@Override
@@ -109,7 +111,8 @@ public class MoreOptionPanel extends JPanel {
 				else {
 					blnFadeIn = true;
 					btnShow.setIcon(Icons.getInstance().getIconUp16());
-					btnShow.setText(CommonLocaleDelegate.getMessage("nuclos.resplan.wizard.step5.title.out","Erweiterte Einstellungen ausblenden"));
+					btnShow.setText(CommonLocaleDelegate.getInstance().getMessage(
+							"nuclos.resplan.wizard.step5.title.out","Erweiterte Einstellungen ausblenden"));
 					Runnable r = new Runnable() {
 						
 						@Override

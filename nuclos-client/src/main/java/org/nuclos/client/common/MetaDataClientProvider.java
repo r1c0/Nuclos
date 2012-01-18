@@ -49,6 +49,8 @@ import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.server.report.valueobject.DynamicEntityVO;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
 
 /**
  * An caching singleton for remotely accessing the meta data information
@@ -58,17 +60,25 @@ import org.springframework.beans.factory.InitializingBean;
  * {@link org.nuclos.client.masterdata.MetaDataDelegate}.
  * </p>
  */
+@Configurable
 public class MetaDataClientProvider extends AbstractProvider implements MetaDataProvider, CommonMetaDataClientProvider, InitializingBean {
 
 	private static final Logger LOG = Logger.getLogger(MetaDataClientProvider.class);
 
 	private final DataCache dataCache = new DataCache();
+	
+	private TopicNotificationReceiver tnr;
 
 	private MetaDataClientProvider(){
 	}
 
 	public static void initialize() {
 		getInstance().dataCache.buildMaps();
+	}
+	
+	@Autowired
+	void setTopicNotificationReceiver(TopicNotificationReceiver tnr) {
+		this.tnr = tnr;
 	}
 
 	public static MetaDataClientProvider getInstance() {
@@ -77,7 +87,7 @@ public class MetaDataClientProvider extends AbstractProvider implements MetaData
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		TopicNotificationReceiver.subscribe(JMSConstants.TOPICNAME_METADATACACHE, messagelistener);
+		tnr.subscribe(JMSConstants.TOPICNAME_METADATACACHE, messagelistener);
 	}
 
 	/**
@@ -163,7 +173,7 @@ public class MetaDataClientProvider extends AbstractProvider implements MetaData
 			final EntityFieldMetaDataVO keyField = getEntityField(info.getSubform(), info.getKeyField());
     		for (EntityFieldMetaDataVO ef: serverResult.values()) {
     			ef.setFallbacklabel("<html>" +
-						"<font color=\"green\">" + CommonLocaleDelegate.getLabelFromMetaFieldDataVO(keyField) + ":" + "</font>" +
+						"<font color=\"green\">" + CommonLocaleDelegate.getInstance().getLabelFromMetaFieldDataVO(keyField) + ":" + "</font>" +
 						"<font color=\"black\">" + ef.getField() + ":" + ef.getPivotInfo().getValueField() + "</font>" +
 						"</html>");
     		}
@@ -186,7 +196,7 @@ public class MetaDataClientProvider extends AbstractProvider implements MetaData
 					field.setReadonly(valueField.isReadonly() != null ? valueField.isReadonly() : Boolean.FALSE);
 	    	   		// localize name for client
 	    			field.setFallbacklabel("<html>" +
-							"<font color=\"green\">" + CommonLocaleDelegate.getLabelFromMetaFieldDataVO(keyField) + ":" + "</font>" +
+							"<font color=\"green\">" + CommonLocaleDelegate.getInstance().getLabelFromMetaFieldDataVO(keyField) + ":" + "</font>" +
 							"<font color=\"black\">" + field.getField() + ":" + v + "</font>" +
 							"</html>");
 

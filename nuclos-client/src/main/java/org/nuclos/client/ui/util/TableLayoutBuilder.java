@@ -17,7 +17,6 @@
 
 package org.nuclos.client.ui.util;
 
-import static org.nuclos.common2.CommonLocaleDelegate.getMessage;
 import info.clearthought.layout.TableLayout;
 import info.clearthought.layout.TableLayoutConstants;
 import info.clearthought.layout.TableLayoutConstraints;
@@ -28,6 +27,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import org.nuclos.client.wizard.util.MoreOptionPanel;
+import org.nuclos.common2.CommonLocaleDelegate;
 
 public class TableLayoutBuilder implements TableLayoutConstants {
 
@@ -129,8 +129,9 @@ public class TableLayoutBuilder implements TableLayoutConstants {
 	}	
 
 	public TableLayoutBuilder addLocalizedLabel(String resourceId, String toolTipResourceId, int valign) {
-		String text = getMessage(resourceId, null) + ":";
-		String toolTip = (toolTipResourceId != null) ? getMessage(toolTipResourceId, null) : null;
+		String text = CommonLocaleDelegate.getInstance().getMessage(resourceId, null) + ":";
+		String toolTip = (toolTipResourceId != null) 
+				? CommonLocaleDelegate.getInstance().getMessage(toolTipResourceId, null) : null;
 		return addLabel(text, toolTip, valign);
 	}	
 	

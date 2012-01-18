@@ -174,9 +174,9 @@ public class CollectPanel<Clct extends Collectable> extends JPanel {
 		this.pnlResult.setName("pnlResult");
 		this.pnlDetails.setName("pnlDetails");
 		
-		setTabbedPaneToolTipTextAt(TAB_SEARCH, CommonLocaleDelegate.getMessage("CollectPanel.6","Suche (F3)"));
-		setTabbedPaneToolTipTextAt(TAB_RESULT, CommonLocaleDelegate.getMessage("CollectPanel.4","Ergebnis (F4)"));
-		setTabbedPaneToolTipTextAt(TAB_DETAILS, CommonLocaleDelegate.getMessage("CollectPanel.2","Details (F5)"));
+		setTabbedPaneToolTipTextAt(TAB_SEARCH, CommonLocaleDelegate.getInstance().getMessage("CollectPanel.6","Suche (F3)"));
+		setTabbedPaneToolTipTextAt(TAB_RESULT, CommonLocaleDelegate.getInstance().getMessage("CollectPanel.4","Ergebnis (F4)"));
+		setTabbedPaneToolTipTextAt(TAB_DETAILS, CommonLocaleDelegate.getInstance().getMessage("CollectPanel.2","Details (F5)"));
 
 		/*
 		if (this.containsSearchPanel()) {

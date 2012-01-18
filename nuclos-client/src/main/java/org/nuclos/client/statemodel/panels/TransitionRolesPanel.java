@@ -56,10 +56,12 @@ public class TransitionRolesPanel extends JPanel {
 
 	private void init() {
 		btnAdd.setIcon(Icons.getInstance().getIconNew16());
-		btnAdd.setToolTipText(CommonLocaleDelegate.getMessage("TransitionRolesPanel.1","Neue Benutzergruppe zuordnen"));
+		btnAdd.setToolTipText(CommonLocaleDelegate.getInstance().getMessage(
+				"TransitionRolesPanel.1","Neue Benutzergruppe zuordnen"));
 		btnAdd.setActionCommand("add");
 		btnDelete.setIcon(Icons.getInstance().getIconDelete16());
-		btnDelete.setToolTipText(CommonLocaleDelegate.getMessage("TransitionRolesPanel.2","Zuordnung aufheben"));
+		btnDelete.setToolTipText(CommonLocaleDelegate.getInstance().getMessage(
+				"TransitionRolesPanel.2","Zuordnung aufheben"));
 		btnDelete.setActionCommand("remove");
 
 		toolbar.setFloatable(false);

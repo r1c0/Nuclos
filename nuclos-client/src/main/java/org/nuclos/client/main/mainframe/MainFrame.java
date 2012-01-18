@@ -16,8 +16,6 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.main.mainframe;
 
-import static org.nuclos.common2.CommonLocaleDelegate.getMessage;
-
 import info.clearthought.layout.TableLayout;
 
 import java.awt.BorderLayout;
@@ -56,6 +54,7 @@ import java.util.Set;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
+import javax.annotation.PostConstruct;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.BorderFactory;
@@ -89,6 +88,7 @@ import org.nuclos.client.common.Utils;
 import org.nuclos.client.common.security.SecurityCache;
 import org.nuclos.client.livesearch.LiveSearchController;
 import org.nuclos.client.main.Main;
+import org.nuclos.client.main.MainController;
 import org.nuclos.client.main.MenuGenerator;
 import org.nuclos.client.main.NuclosMessagePanel;
 import org.nuclos.client.main.NuclosNotificationDialog;
@@ -123,6 +123,7 @@ import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.PreferencesUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.PreferencesException;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * The "main frame" of the application. Contains as little control logic as possible.
@@ -134,6 +135,7 @@ import org.nuclos.common2.exception.PreferencesException;
  * @author	<a href="mailto:Christoph.Radig@novabit.de">Christoph.Radig</a>
  * @version 01.00.00
  */
+@org.springframework.stereotype.Component
 public class MainFrame extends CommonJFrame implements WorkspaceFrame, ComponentNameSetter {
 
 	private static final Logger LOG = Logger.getLogger(MainFrame.class);
@@ -163,7 +165,6 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 	private final static int PROGRESSBAR_LAYER = JLayeredPane.MODAL_LAYER;
 	private final static int PROGRESSBAR_WIDTH = 200;
 	private final static JProgressBar progressBar = new JProgressBar();
-	private final NuclosMessagePanel msgPanel = new NuclosMessagePanel();
 	private final static JPanel componentMacPanel = new JPanel();
 	private static final JPanel pnlDesktop = new JPanel();
 
@@ -192,8 +193,6 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 	private static boolean splittingEnabled = true;
 	private static boolean splittingDeactivated = false;
 
-	private static LiveSearchController liveSearchController;
-	private static WorkspaceChooserController workspaceChooserController;
 	private static String defaultWorkspace;
 	private static String lastWorkspace;
 	private static Long lastWorkspaceId;
@@ -209,38 +208,94 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 			setSplittingDeactivated(!isSplittingDeactivated());
 		}
 	};
+	
 	private static final JCheckBoxMenuItem miDeactivateSplitting = new JCheckBoxMenuItem(actDeactivateSplitting);
+	
+	//
 
+	private NuclosMessagePanel msgPanel;
+	
+	private LiveSearchController liveSearchController;
+	private WorkspaceChooserController workspaceChooserController;
+	
+	private CommonLocaleDelegate cld;
+	
+	private ClientParameterProvider clientParameterProvider;
+	
+	private NuclosIcons nuclosIcons;
+	
+	private ResourceCache resourceCache;
+	
 	/**
 	 * creates the main frame. Note that here we don't follow the general rule that the view shouldn't
 	 * contain a reference to its controller. We hide that fact in this package though.
 	 */
-	public MainFrame(String sUserName, String sNucleusServerName) {
-		ValidationLayerFactory.setCurrentPainter(ClientParameterProvider.getInstance().getValue(ParameterProvider.KEY_CLIENT_VALIDATION_LAYER_PAINTER_NAME));
+	MainFrame() {
+	}	// ctor
+	
+	@Autowired
+	void setResourceCache(ResourceCache resourceCache) {
+		this.resourceCache = resourceCache;
+	}
+	
+	@Autowired
+	void setCommonLocaleDelegate(CommonLocaleDelegate cld) {
+		this.cld = cld;
+	}
+	
+	@Autowired
+	void setClientParameterProvider(ClientParameterProvider clientParameterProvider) {
+		this.clientParameterProvider = clientParameterProvider;
+	}
+	
+	@Autowired
+	void setNuclosIcons(NuclosIcons nuclosIcons) {
+		this.nuclosIcons = nuclosIcons;
+	}
+	
+	/*
+	@Autowired
+	void prepare(@Value("#{mainController.userName}") String sUserName, 
+			@Value("#{mainController.nuclosServerName}") String sNucleusServerName) 
+	{
 		init(sUserName, sNucleusServerName);
+	}
+	 */
+	
+	@PostConstruct
+	void postConstruct() 
+	{
+		ValidationLayerFactory.setCurrentPainter(clientParameterProvider.getValue(
+				ParameterProvider.KEY_CLIENT_VALIDATION_LAYER_PAINTER_NAME));
+		msgPanel = new NuclosMessagePanel();
+		
+		// init(sUserName, sNucleusServerName);
 
 		setName("mainframe");
 		addWindowFocusListener(new ZOrderUpdater(MainFrame.this));
 		Utils.setComponentNames(this);
-		setIconImage(NuclosIcons.getInstance().getFrameIcon().getImage());
+		setIconImage(nuclosIcons.getFrameIcon().getImage());
 
-		liveSearchController = new LiveSearchController(this);
-		workspaceChooserController = new WorkspaceChooserController();
+		// liveSearchController = new LiveSearchController(this);
+		// workspaceChooserController = new WorkspaceChooserController();
 		setupLiveSearchKey(this);
-	}	// ctor
-
-	/**
-	 *
-	 */
-	private static void setProgressBounds() {
-		progressBar.setBounds((Main.getMainFrame().getBounds().width - PROGRESSBAR_WIDTH) / 2, 0, PROGRESSBAR_WIDTH, 10);
+	}
+	
+	@Autowired
+	void setWorkspaceChooserController(WorkspaceChooserController wcc) {
+		this.workspaceChooserController = wcc;
+	}
+	
+	@Autowired
+	void setLiveSearchController(LiveSearchController lsc) {
+		this.liveSearchController = lsc;
 	}
 
-	/**
-	 *
-	 * @param maxValue
-	 */
-	public static void showProgress(final int maxValue) {
+	private void setProgressBounds() {
+		progressBar.setBounds((getBounds().width - PROGRESSBAR_WIDTH) / 2, 0, PROGRESSBAR_WIDTH, 10);
+	}
+
+	public void showProgress(final int maxValue) {
 		UIUtils.invokeOnDispatchThread(new Runnable() {
 			@Override
 			public void run() {
@@ -248,29 +303,23 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 				progressBar.setMaximum(maxValue);
 				progressBar.setValue(0);
 				setProgressBounds();
-				Main.getMainFrame().getLayeredPane().add(progressBar, PROGRESSBAR_LAYER);
+				getLayeredPane().add(progressBar, PROGRESSBAR_LAYER);
 			}
 		});
 	}
 
-	/**
-	 *
-	 */
-	public static void hideProgress() {
+	public void hideProgress() {
 		UIUtils.invokeOnDispatchThread(new Runnable() {
 			@Override
 			public void run() {
-				Main.getMainFrame().getLayeredPane().remove(Main.getMainFrame().getLayeredPane().getIndexOf(progressBar));
-				Main.getMainFrame().getLayeredPane().repaint();
+				getLayeredPane().remove(getLayeredPane().getIndexOf(progressBar));
+				getLayeredPane().repaint();
 				progressBar.setValue(0);
 			}
 		});
 	}
 
-	/**
-	 *
-	 */
-	public static void continueProgress() {
+	public void continueProgress() {
 		UIUtils.invokeOnDispatchThread(new Runnable() {
 			@Override
 			public void run() {
@@ -285,12 +334,10 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 	}
 
 	public void setTitle(String sUserName, String sNucleusServerName) {
-
 		super.setTitle(ApplicationProperties.getInstance().getCurrentVersion().getAppName());
-
 	}
 
-	private void init(String sUserName, String sNucleusServerName) {
+	public void init(String sUserName, String sNucleusServerName) {
 		this.setTitle(sUserName, sNucleusServerName);
 		setBackground(NuclosThemeSettings.BACKGROUND_ROOTPANE);
 		JPanel contentpane = (JPanel) getContentPane();
@@ -436,7 +483,7 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 		if (!isTabbedPaneVisible(result)) {
 			MainFrameTabbedPane maxTabbedPane = getMaximizedTabbedPaneIfAny(result);
 			(new Bubble(maxTabbedPane,
-				CommonLocaleDelegate.getMessage("MainFrame.3","Neuer Tab im ausgeblendeten Bereich."),
+					CommonLocaleDelegate.getInstance().getMessage("MainFrame.3","Neuer Tab im ausgeblendeten Bereich."),
 				5,
 				Bubble.Position.NO_ARROW_CENTER)).setVisible(true);
 
@@ -489,7 +536,7 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 	private void initWindowMenu(Map<String, Map<String, Action>> commandMap, NuclosNotificationDialog notificationDialog) {
 		// Windows menu:
 		menuWindow.removeAll();
-
+		
 		final JCheckBoxMenuItem miWindowNotificationDialog = new JCheckBoxMenuItem();
 		final JCheckBoxMenuItem miWindowBackgroundTasks = new JCheckBoxMenuItem();
 		JMenuItem miNextTab = new JMenuItem();
@@ -497,15 +544,15 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 		JMenuItem miCloseAllTabs = new JMenuItem();
 		JMenuItem miRestoreDefaultWorkspace = new JMenuItem();
 
-		MenuGenerator.initMenuItem(menuWindow, getMessage("miWindow", "^Window"), null, null);
+		MenuGenerator.initMenuItem(menuWindow, cld.getMessage("miWindow", "^Window"), null, null);
 
-		MenuGenerator.initMenuItem(miWindowBackgroundTasks, getMessage("miBGTasks", "^Background Tasks"), null, null);
-		MenuGenerator.initMenuItem(miWindowNotificationDialog, getMessage("miMessages", "^Messages"), null, null);
-		MenuGenerator.initMenuItem(miCloseAllTabs, getMessage("miWCloseAll", "^Close All Tabs"), null, null);
-		MenuGenerator.initMenuItem(miNextTab, getMessage("miWNext", "^Next Tab"), null, KeyBindingProvider.NEXT_TAB.getKeystroke());
-		MenuGenerator.initMenuItem(miPreviousTab, getMessage("miWPrev", "^Previous Tab"), null, KeyBindingProvider.PREVIOUS_TAB.getKeystroke());
-		MenuGenerator.initMenuItem(miDeactivateSplitting, getMessage("miWDeactivateSplitting","^Disable Window Splitting"), null, null);
-		MenuGenerator.initMenuItem(miRestoreDefaultWorkspace, getMessage("miWRestoreDefaultWorkspace","Restore Default Workspace"), null, null);
+		MenuGenerator.initMenuItem(miWindowBackgroundTasks, cld.getMessage("miBGTasks", "^Background Tasks"), null, null);
+		MenuGenerator.initMenuItem(miWindowNotificationDialog, cld.getMessage("miMessages", "^Messages"), null, null);
+		MenuGenerator.initMenuItem(miCloseAllTabs, cld.getMessage("miWCloseAll", "^Close All Tabs"), null, null);
+		MenuGenerator.initMenuItem(miNextTab, cld.getMessage("miWNext", "^Next Tab"), null, KeyBindingProvider.NEXT_TAB.getKeystroke());
+		MenuGenerator.initMenuItem(miPreviousTab, cld.getMessage("miWPrev", "^Previous Tab"), null, KeyBindingProvider.PREVIOUS_TAB.getKeystroke());
+		MenuGenerator.initMenuItem(miDeactivateSplitting, cld.getMessage("miWDeactivateSplitting","^Disable Window Splitting"), null, null);
+		MenuGenerator.initMenuItem(miRestoreDefaultWorkspace, cld.getMessage("miWRestoreDefaultWorkspace","Restore Default Workspace"), null, null);
 
 		menuWindow.add(miWindowBackgroundTasks);
 		menuWindow.add(miWindowNotificationDialog);
@@ -522,8 +569,8 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 		})) {
 			if (frame instanceof WorkspaceFrame) {
 				String title = (frame instanceof ExternalFrame) ?
-					CommonLocaleDelegate.getMessage("ExternalFrame.Title","Erweiterungsfenster {0}",((WorkspaceFrame) frame).getNumber()) :
-						CommonLocaleDelegate.getMessage("MainFrame.Title","Hauptfenster");
+					cld.getMessage("ExternalFrame.Title","Erweiterungsfenster {0}",((WorkspaceFrame) frame).getNumber()) :
+						cld.getMessage("MainFrame.Title","Hauptfenster");
 				JMenuItem miFrameToFront = new JMenuItem(new AbstractAction("Nuclos " + title) {
 
 					@Override
@@ -700,9 +747,10 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 		Map<String, Map<String, JComponent>> componentMap,
 		NuclosNotificationDialog notificationDialog) {
 		initWindowMenu(commandMap, notificationDialog);
-
+		final boolean macosx = Main.getInstance().isMacOSX();
+		
 		try {
-			List<Component> exportNotJMenuComponents = Main.isMacOSX()? new ArrayList<Component>() : null;
+			List<Component> exportNotJMenuComponents = macosx ? new ArrayList<Component>() : null;
 			MenuGenerator menuGen = new MenuGenerator(commandMap, componentMap, exportNotJMenuComponents);
 			menuGen.processMenuConfig(getClass().getClassLoader().getResourceAsStream("nuclos-menuconfig.xml"));
 			if (getWorkspace() != null && !getWorkspace().getWoDesc().isHideMenuBar()) {
@@ -713,7 +761,7 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 			}
 			JMenuBar mb = menuGen.getJMenuBar();
 			setJMenuBar(mb);
-			if (Main.isMacOSX() && !exportNotJMenuComponents.isEmpty()) {
+			if (macosx && !exportNotJMenuComponents.isEmpty()) {
 				componentMacPanel.removeAll();
 				componentMacPanel.setBorder(BorderFactory.createEmptyBorder(2, 0, 2, 0));
 				componentMacPanel.setOpaque(false);
@@ -919,7 +967,7 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 	 *
 	 */
 	private void addStaticsToMenu() {
-		for (final Pair<String[], Action> p : Main.getMainController().getAdministrationMenuActions()) {
+		for (final Pair<String[], Action> p : Main.getInstance().getMainController().getAdministrationMenuActions()) {
 			UIUtils.runCommand(MainFrame.this, new CommonRunnable() {
 				@Override
 				public void run() throws CommonBusinessException {
@@ -927,7 +975,7 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 				}
 			});
 		}
-		for (final Pair<String[], Action> p : Main.getMainController().getConfigurationMenuActions()) {
+		for (final Pair<String[], Action> p : Main.getInstance().getMainController().getConfigurationMenuActions()) {
 			UIUtils.runCommand(MainFrame.this, new CommonRunnable() {
 				@Override
 				public void run() throws CommonBusinessException {
@@ -937,14 +985,13 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 		}
 	}
 
-	/**
-	 *
-	 */
 	private void addEntitiesToMenu() {
 		List<Pair<String[], Action>> menuAdditions = new ArrayList<Pair<String[], Action>>();
-		menuAdditions.addAll(Main.getMainController().getEntityMenuActions());
-		menuAdditions.addAll(Main.getMainController().getCustomComponentMenuActions());
-		menuAdditions.addAll(Main.getMainController().getNucletComponentMenuActions());
+		final MainController mc = Main.getInstance().getMainController();
+		
+		menuAdditions.addAll(mc.getEntityMenuActions());
+		menuAdditions.addAll(mc.getCustomComponentMenuActions());
+		menuAdditions.addAll(mc.getNucletComponentMenuActions());
 
 		final Collator collator = Collator.getInstance(Locale.getDefault());
 		final Comparator<String[]> arrayCollator = ComparatorUtils.arrayComparator(collator);
@@ -1100,15 +1147,15 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 	 *
 	 * @param tabbedPane
 	 */
-	static void restoreTabbedPaneContainingArea(MainFrameTabbedPane tabbedPane) {
+	void restoreTabbedPaneContainingArea(MainFrameTabbedPane tabbedPane) {
 		if (maximizedTabbedPanes.containsKey(tabbedPane)) {
 			MaximizedTabbedPaneParameter mtpp = maximizedTabbedPanes.get(tabbedPane);
 			final JFrame frame = getJFrame(tabbedPane);
 
-			if (frame == Main.getMainFrame()) {
+			if (frame == this) {
 				pnlDesktop.remove(tabbedPane);
 				restoreJSplitPanes(mtpp);
-				Main.getMainFrame().setFrameContent(mtpp.splitPaneRoot);
+				setFrameContent(mtpp.splitPaneRoot);
 
 				pnlDesktop.validate();
 				pnlDesktop.repaint();
@@ -1132,7 +1179,7 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 	/**
 	 * Restore all maximized tabbedpanes
 	 */
-	public static void restoreAllTabbedPaneContainingArea() {
+	public void restoreAllTabbedPaneContainingArea() {
 		for (MainFrameTabbedPane tabbedPane : frameContent.getAllValues()) {
 			restoreTabbedPaneContainingArea(tabbedPane);
 		}
@@ -1157,7 +1204,7 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 	 *
 	 * @param tabbedPane
 	 */
-	static void maximizeTabbedPane(MainFrameTabbedPane tabbedPane) {
+	void maximizeTabbedPane(MainFrameTabbedPane tabbedPane) {
 
 		MaximizedTabbedPaneParameter mtpp = getMaximizedTabbedPaneParameter(tabbedPane);
 		if (mtpp != null) {
@@ -1165,7 +1212,7 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 			tabbedPane.setMaximized(true);
 			maximizedTabbedPanes.put(tabbedPane, mtpp);
 
-			if (frame == Main.getMainFrame()) {
+			if (frame == this) {
 				pnlDesktop.remove(mtpp.splitPaneRoot);
 				pnlDesktop.add(tabbedPane, BorderLayout.CENTER);
 				pnlDesktop.validate();
@@ -1435,7 +1482,7 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 	 *
 	 * @param tabbedPane
 	 */
-	public static void removeTabbedPane(MainFrameTabbedPane tabbedPane) {
+	public void removeTabbedPane(MainFrameTabbedPane tabbedPane) {
 		removeTabbedPane(tabbedPane, false);
 	}
 
@@ -1444,7 +1491,7 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 	 * @param tabbedPane
 	 * @param forcedFromFrameClose
 	 */
-	public static void removeTabbedPane(MainFrameTabbedPane tabbedPane, boolean forcedFromFrameClose) {
+	public void removeTabbedPane(MainFrameTabbedPane tabbedPane, boolean forcedFromFrameClose) {
 		removeTabbedPane(tabbedPane, forcedFromFrameClose, true);
 	}
 
@@ -1454,7 +1501,7 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 	 * @param forcedFromFrameClose
 	 * @param addNotClosableToHome
 	 */
-	public static void removeTabbedPane(MainFrameTabbedPane tabbedPane, boolean forcedFromFrameClose, boolean addNotClosableToHome) {
+	public void removeTabbedPane(MainFrameTabbedPane tabbedPane, boolean forcedFromFrameClose, boolean addNotClosableToHome) {
 		final JFrame frame = getJFrame(tabbedPane);
 		final int countTabbedsOnFrame = countTabbedPanes(frame);
 
@@ -1466,8 +1513,8 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 			if (!forcedFromFrameClose && tabbedPane.getTabCount() > 1) {
 				if (JOptionPane.YES_OPTION != JOptionPane.showConfirmDialog(
 					tabbedPane,
-					CommonLocaleDelegate.getMessage("MainFrame.1","Tab Leiste mit allen enthaltenen Tabs entfernen.\nMoechten Sie fortfahren?"),
-					CommonLocaleDelegate.getMessage("MainFrame.2","Tab Leiste entfernen"), JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE))
+					cld.getMessage("MainFrame.1","Tab Leiste mit allen enthaltenen Tabs entfernen.\nMoechten Sie fortfahren?"),
+					cld.getMessage("MainFrame.2","Tab Leiste entfernen"), JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE))
 					return;
 			}
 
@@ -1499,7 +1546,7 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 					splitPaneParent.validate();
 					splitPaneParent.repaint();
 
-				} else if (frame == Main.getMainFrame()) {
+				} else if (frame == this) {
 					pnlDesktop.remove(splitPane);
 					pnlDesktop.add(otherComp, BorderLayout.CENTER);
 					pnlDesktop.validate();
@@ -1592,7 +1639,7 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 
 		nextExternalFrameNumber++;
 
-		Main.getMainController().refreshMenus();
+		Main.getInstance().getMainController().refreshMenus();
 	}
 
 	/**
@@ -1715,35 +1762,25 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 		pnlDesktop.add(comp, BorderLayout.CENTER);
 	}
 
-	/**
-	 *
-	 */
 	@Override
 	public CommonJFrame getFrame() {
 		return this;
 	}
 
-	/**
-	 *
-	 * @param frame
-	 */
-	static void setupLiveSearchKey(JFrame frame) {
+	void setupLiveSearchKey(JFrame frame) {
 		frame.getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyBindingProvider.FOCUS_ON_LIVE_SEARCH.getKeystroke(), KeyBindingProvider.FOCUS_ON_LIVE_SEARCH.getKey());
 		frame.getRootPane().getActionMap().put(KeyBindingProvider.FOCUS_ON_LIVE_SEARCH	.getKey(), new AbstractAction() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				MainFrame.cmdFocusLiveSearch();
+				cmdFocusLiveSearch();
 			}
 		});
 	}
 
-	/**
-	 *
-	 */
-	private static void cmdFocusLiveSearch() {
-		Main.getMainFrame().setVisible(true);
-		Main.getMainFrame().requestFocusInWindow();
+	private void cmdFocusLiveSearch() {
+		setVisible(true);
+		requestFocusInWindow();
 		liveSearchController.getSearchComponent().requestFocus();
 	}
 
@@ -1803,8 +1840,10 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 			throws BackingStoreException, PreferencesException {
 		setSplittingDeactivated(mainFramePrefs.getBoolean(PREFS_NODE_SPLITTING_DEACTIVATED, false));
 		selectedHistorySize = mainFramePrefs.getInt(PREFS_NODE_HISTORY_SIZE_INDEX, 0);
-		defaultWorkspace = mainFramePrefs.get(PREFS_NODE_DEFAULT_WORKSPACE, CommonLocaleDelegate.getMessage("Workspace.Default","Standard"));
-		lastWorkspace = mainFramePrefs.get(PREFS_NODE_LAST_WORKSPACE, CommonLocaleDelegate.getMessage("Workspace.Default","Standard"));
+		defaultWorkspace = mainFramePrefs.get(PREFS_NODE_DEFAULT_WORKSPACE, CommonLocaleDelegate.getInstance().getMessage(
+				"Workspace.Default","Standard"));
+		lastWorkspace = mainFramePrefs.get(PREFS_NODE_LAST_WORKSPACE, CommonLocaleDelegate.getInstance().getMessage(
+				"Workspace.Default","Standard"));
 		lastWorkspaceId = mainFramePrefs.getLong(PREFS_NODE_LAST_WORKSPACE_ID, 0l);
 		lastAlwaysOpenWorkspace = mainFramePrefs.get(PREFS_NODE_LAST_ALWAYS_OPEN_WORKSPACE, null);
 		lastAlwaysOpenWorkspaceId = mainFramePrefs.getLong(PREFS_NODE_LAST_ALWAYS_OPEN_WORKSPACE_ID, 0l);
@@ -2127,13 +2166,13 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 	 * @param entity
 	 * @return
 	 */
-	public static ImageIcon getEntityIcon(String entity) {
+	public ImageIcon getEntityIcon(String entity) {
 		ImageIcon result = null;
 
 		Integer resourceId = MetaDataClientProvider.getInstance().getEntity(entity).getResourceId();
 		String nuclosResource = MetaDataClientProvider.getInstance().getEntity(entity).getNuclosResource();
 		if (resourceId != null) {
-			result = ResourceCache.getIconResource(resourceId);
+			result = resourceCache.getIconResource(resourceId);
 		} else if (nuclosResource != null) {
 			result = NuclosResourceCache.getNuclosResourceIcon(nuclosResource);
 		}
@@ -2149,15 +2188,15 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 		return result;
 	}
 	
-	private static void newSwitchingWorkspaceSplash() {
+	private void newSwitchingWorkspaceSplash() {
 		if (winSwitchingWorkspace != null) {
 			return;
 		}
 		
-		winSwitchingWorkspace = new JWindow(Main.getMainFrame());
+		winSwitchingWorkspace = new JWindow(this);
 		winSwitchingWorkspace.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 		
-		JLabel lab = new JLabel(CommonLocaleDelegate.getMessage("MainFrame.4", "Arbeitsumgebung wird gewechselt") + "...");
+		JLabel lab = new JLabel(cld.getMessage("MainFrame.4", "Arbeitsumgebung wird gewechselt") + "...");
 		lab.setForeground(Color.WHITE);
 		lab.setFont(new Font(Font.DIALOG, Font.PLAIN, 12));
 		lab.setBorder(BorderFactory.createEmptyBorder(0, 0, 10, 0));
@@ -2182,28 +2221,28 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 		jpnSwitchingWorkspace.paintImmediately(0, 0, jpnSwitchingWorkspace.getSize().width, jpnSwitchingWorkspace.getSize().height);
 	}
 	
-	public static void repositionSwitchingWorkspace() {
+	public void repositionSwitchingWorkspace() {
 		if (winSwitchingWorkspace != null) {
-			winSwitchingWorkspace.setLocationRelativeTo(Main.getMainFrame());
+			winSwitchingWorkspace.setLocationRelativeTo(this);
 		}
 	}
 	
-	public static void showSwitchingWorkspace(boolean show) {
+	public void showSwitchingWorkspace(boolean show) {
 		if (show) {
 			MainFrameTabbedPane.RESIZE_AND_ADJUST_IMMEDIATE = true;
-			Main.getMainFrame().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+			setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 			componentMacPanel.setVisible(false);
 			pnlDesktop.setVisible(false);
 			newSwitchingWorkspaceSplash();
-			JPanel contentpane = (JPanel) Main.getMainFrame().getContentPane();
+			JPanel contentpane = (JPanel) getContentPane();
 			contentpane.revalidate();
 			contentpane.paintImmediately(0,0,contentpane.getSize().width,contentpane.getSize().height);
 			
 		} else {			
-			final JPanel contentpane = (JPanel) Main.getMainFrame().getContentPane();
+			final JPanel contentpane = (JPanel) getContentPane();
 			componentMacPanel.setVisible(true);
 			pnlDesktop.setVisible(true);
-			Main.getMainFrame().setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+			setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 			
 			Thread t = new Thread(new Runnable() {
 				@Override

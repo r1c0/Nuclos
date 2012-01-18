@@ -418,7 +418,7 @@ public class TreeNodeFacadeBean extends NuclosFacadeBean implements TreeNodeFaca
 		query.where(builder.equal(t.baseColumn("STRRELATIONTYPE", String.class), relationType));
 		String resourceId = CollectionUtils.getFirst(DataBaseHelper.getDbAccess().executeQuery(query));
 		if (resourceId != null) {
-			CommonLocaleDelegate.getMessage(resourceId, relationType);
+			CommonLocaleDelegate.getInstance().getMessage(resourceId, relationType);
 		}
 		return null;
 	}

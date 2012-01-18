@@ -44,7 +44,6 @@ import org.nuclos.client.ui.UIUtils;
 import org.nuclos.client.ui.tree.CompositeTreeNodeAction;
 import org.nuclos.client.ui.tree.TreeNodeAction;
 import org.nuclos.common.UsageCriteria;
-import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.server.genericobject.valueobject.GeneratorActionVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 import org.nuclos.server.navigation.treenode.MasterDataTreeNode;
@@ -92,7 +91,7 @@ public class MasterDataExplorerNode<TN extends MasterDataTreeNode<Integer>> exte
 	}
 
 	protected MasterDataExplorerNode<TN>.RemoveAction newRemoveAction(JTree tree) {
-		return new RemoveAction(tree, CommonLocaleDelegate.getMessage("MasterDataExplorerNode.1", "L\u00f6schen")+ "...");
+		return new RemoveAction(tree, getCommonLocaleDelegate().getMessage("MasterDataExplorerNode.1", "L\u00f6schen")+ "...");
 	}
 
 	private TreeNodeAction newGeneratorAction(JTree tree) {
@@ -101,7 +100,8 @@ public class MasterDataExplorerNode<TN extends MasterDataTreeNode<Integer>> exte
 			return null;
 		}
 
-		final CompositeTreeNodeAction result = new CompositeTreeNodeAction(CommonLocaleDelegate.getMessage("RuleExplorerNode.5","Arbeitsschritte"), lst);
+		final CompositeTreeNodeAction result = new CompositeTreeNodeAction(
+				getCommonLocaleDelegate().getMessage("RuleExplorerNode.5","Arbeitsschritte"), lst);
 		return result;
 	}
 
@@ -130,8 +130,9 @@ public class MasterDataExplorerNode<TN extends MasterDataTreeNode<Integer>> exte
 		@Override
 		public void actionPerformed(ActionEvent ev) {
 			final String sName = getTreeNode().getLabel();
-			final String sMessage = CommonLocaleDelegate.getMessage("MasterDataExplorerNode.3", "Wollen Sie das Objekt \"{0}\" wirklich l\u00f6schen?", sName);
-			final int iBtn = JOptionPane.showConfirmDialog(this.getParent(), sMessage, CommonLocaleDelegate.getMessage("MasterDataExplorerNode.2", "Objekt l\u00f6schen"),
+			final String sMessage = getCommonLocaleDelegate().getMessage("MasterDataExplorerNode.3", "Wollen Sie das Objekt \"{0}\" wirklich l\u00f6schen?", sName);
+			final int iBtn = JOptionPane.showConfirmDialog(this.getParent(), sMessage, 
+					getCommonLocaleDelegate().getMessage("MasterDataExplorerNode.2", "Objekt l\u00f6schen"),
 					JOptionPane.OK_CANCEL_OPTION);
 			if (iBtn == JOptionPane.OK_OPTION) {
 				cmdRemove();
@@ -175,7 +176,7 @@ public class MasterDataExplorerNode<TN extends MasterDataTreeNode<Integer>> exte
 		Integer resId = MetaDataClientProvider.getInstance().getEntity(getTreeNode().getEntityName()).getResourceId();
 		String nuclosResource = MetaDataClientProvider.getInstance().getEntity(getTreeNode().getEntityName()).getNuclosResource();
 		if(resId != null) {
-			ImageIcon standardIcon = ResourceCache.getIconResource(resId);
+			ImageIcon standardIcon = ResourceCache.getInstance().getIconResource(resId);
 			return MainFrame.resizeAndCacheTabIcon(standardIcon);
 		} else if (nuclosResource != null){
 			ImageIcon nuclosIcon = NuclosResourceCache.getNuclosResourceIcon(nuclosResource);

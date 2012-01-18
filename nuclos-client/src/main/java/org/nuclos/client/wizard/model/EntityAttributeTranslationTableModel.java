@@ -16,14 +16,13 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.wizard.model;
 
-import static org.nuclos.common2.CommonLocaleDelegate.getMessage;
-
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.table.AbstractTableModel;
 
 import org.nuclos.common.TranslationVO;
+import org.nuclos.common2.CommonLocaleDelegate;
 
 public class EntityAttributeTranslationTableModel extends AbstractTableModel {
 
@@ -106,13 +105,14 @@ public class EntityAttributeTranslationTableModel extends AbstractTableModel {
 
 	@Override
 	public String getColumnName(int column) {
+		final CommonLocaleDelegate cld = CommonLocaleDelegate.getInstance();
 		switch(column) {
 		case 0:
-			return getMessage("wizard.step.entitytranslationstable.3", "Sprache");
+			return cld.getMessage("wizard.step.entitytranslationstable.3", "Sprache");
 		case 1:
-			return getMessage("wizard.step.entitytranslationstable.4", "Beschriftung");		
+			return cld.getMessage("wizard.step.entitytranslationstable.4", "Beschriftung");		
 		case 2:
-			return getMessage("wizard.step.entitytranslationstable.2", "Beschreibung");
+			return cld.getMessage("wizard.step.entitytranslationstable.2", "Beschreibung");
 		default:
 			
 			return "";

@@ -43,6 +43,7 @@ public class WorkspacePublisher {
 	private boolean saved;
 	
 	public WorkspacePublisher(boolean forceStructureChange) {
+		final CommonLocaleDelegate cld = CommonLocaleDelegate.getInstance();
 		contentPanel = new JPanel();
 		contentPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 		
@@ -65,11 +66,16 @@ public class WorkspacePublisher {
 				new double[] {20, TableLayout.PREFERRED},
 							  rowArray);
 		
-		chbxStructureChange = new JCheckBox(CommonLocaleDelegate.getMessage("WorkspacePublisher.6","Struktur des Hauptfensters (Fensteraufteilung)"));
-		chbxStructureUpdate = new JCheckBox(CommonLocaleDelegate.getMessage("WorkspacePublisher.4","Name, Icon, Position der Trenner und des Fensters"));
-		chbxStarttabConfiguration = new JCheckBox(CommonLocaleDelegate.getMessage("WorkspacePublisher.7","Starttab Konfigurationen"));
-		chbxTableColumnConfiguration = new JCheckBox(CommonLocaleDelegate.getMessage("WorkspacePublisher.8","Spalteneinstellungen aller Entitäten und Unterformulare"));
-		chbxToolbarConfiguration = new JCheckBox(CommonLocaleDelegate.getMessage("WorkspacePublisher.9","Symbolleisten aller Entitäten"));
+		chbxStructureChange = new JCheckBox(cld.getMessage(
+				"WorkspacePublisher.6","Struktur des Hauptfensters (Fensteraufteilung)"));
+		chbxStructureUpdate = new JCheckBox(cld.getMessage(
+				"WorkspacePublisher.4","Name, Icon, Position der Trenner und des Fensters"));
+		chbxStarttabConfiguration = new JCheckBox(cld.getMessage(
+				"WorkspacePublisher.7","Starttab Konfigurationen"));
+		chbxTableColumnConfiguration = new JCheckBox(cld.getMessage(
+				"WorkspacePublisher.8","Spalteneinstellungen aller Entitäten und Unterformulare"));
+		chbxToolbarConfiguration = new JCheckBox(cld.getMessage(
+				"WorkspacePublisher.9","Symbolleisten aller Entitäten"));
 		
 		// DEV ---
 		chbxToolbarConfiguration.setEnabled(false);
@@ -77,7 +83,9 @@ public class WorkspacePublisher {
 		
 		int y = 0;
 		if (forceStructureChange) {
-			contentPanel.add(new JLabel(CommonLocaleDelegate.getMessage("WorkspacePublisher.5","Aufgrund der geänderten Fensteraufteilung können nur alle Änderungen publiziert werden.")), "0, "+y+", 1, "+y++);
+			contentPanel.add(new JLabel(cld.getMessage(
+					"WorkspacePublisher.5","Aufgrund der geänderten Fensteraufteilung können nur alle Änderungen publiziert werden.")), 
+					"0, "+y+", 1, "+y++);
 			chbxStructureChange.setSelected(true);
 			chbxStructureChange.setEnabled(false);
 			chbxStructureUpdate.setSelected(true);
@@ -94,19 +102,22 @@ public class WorkspacePublisher {
 		
 		y++;
 		JPanel actionsPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 2));
-		btSave = new JButton(CommonLocaleDelegate.getMessage("WorkspacePublisher.2","Speichern"));
-		btCancel = new JButton(CommonLocaleDelegate.getMessage("WorkspacePublisher.3","Abbrechen"));
+		btSave = new JButton(cld.getMessage("WorkspacePublisher.2","Speichern"));
+		btCancel = new JButton(cld.getMessage("WorkspacePublisher.3","Abbrechen"));
 		actionsPanel.add(btSave);
 		actionsPanel.add(btCancel);
 		contentPanel.add(actionsPanel, "0, "+y+", 1, "+y++);
 		
-		dialog = new JDialog(Main.getMainFrame(), CommonLocaleDelegate.getMessage("WorkspacePublisher.1","Arbeitsumgebung bearbeiten"), true);
+		dialog = new JDialog(Main.getInstance().getMainFrame(), cld.getMessage(
+				"WorkspacePublisher.1","Arbeitsumgebung bearbeiten"), true);
 		dialog.setContentPane(contentPanel);
 		dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		dialog.getRootPane().setDefaultButton(btSave);
-		Rectangle mfBounds = Main.getMainFrame().getBounds();
+		Rectangle mfBounds = Main.getInstance().getMainFrame().getBounds();
 		Dimension prefSize = contentPanel.getPreferredSize();
-		dialog.setBounds(mfBounds.x+(mfBounds.width/2)-(prefSize.width/2), mfBounds.y+(mfBounds.height/2)-(prefSize.height/2), prefSize.width, prefSize.height+25);
+		dialog.setBounds(mfBounds.x+(mfBounds.width/2)-(prefSize.width/2), 
+				mfBounds.y+(mfBounds.height/2)-(prefSize.height/2), 
+				prefSize.width, prefSize.height+25);
 		dialog.setResizable(false);
 		
 		initListener();

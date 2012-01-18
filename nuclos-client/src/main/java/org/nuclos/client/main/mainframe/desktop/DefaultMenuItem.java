@@ -40,7 +40,7 @@ import javax.swing.JPopupMenu;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 
-import org.jfree.util.Log;
+import org.apache.log4j.Logger;
 import org.nuclos.client.main.GenericAction;
 import org.nuclos.client.main.mainframe.MainFrame;
 import org.nuclos.client.main.mainframe.MenuActionChooser;
@@ -51,6 +51,9 @@ import org.nuclos.common.WorkspaceDescription;
 import org.nuclos.common2.CommonLocaleDelegate;
 
 abstract class DefaultMenuItem extends JLabel implements DragGestureListener {
+	
+	private static final Logger LOG = Logger.getLogger(DefaultMenuItem.class);
+	
 	private boolean hover = false;
 	
 	private int flashLight = 0;
@@ -82,23 +85,22 @@ abstract class DefaultMenuItem extends JLabel implements DragGestureListener {
 		
 		ImageIcon resIconBackground = null;
 		try {
-			resIconBackground = ResourceCache.getIconResource(itemResourceBackground);
+			resIconBackground = ResourceCache.getInstance().getIconResource(itemResourceBackground);
 			Dimension size = new Dimension(resIconBackground.getIconWidth(),resIconBackground.getIconHeight());
 			setSize(size);
 			setMinimumSize(size);
 			setMaximumSize(size);
 			setPreferredSize(size);
 		} catch (Exception ex) {
-			Log.error(ex);
-			
+			LOG.error(ex);
 		}
 		itemBackground = resIconBackground;
 		
 		ImageIcon resIconBackgroundHover = null;
 		try {
-			resIconBackgroundHover = ResourceCache.getIconResource(itemResourceBackgroundHover);
+			resIconBackgroundHover = ResourceCache.getInstance().getIconResource(itemResourceBackgroundHover);
 		} catch (Exception ex) {
-			Log.error(ex);
+			LOG.error(ex);
 		}
 		itemBackgroundHover = resIconBackgroundHover;
 		
@@ -189,11 +191,12 @@ abstract class DefaultMenuItem extends JLabel implements DragGestureListener {
 			return;
 		}
 		
+		final CommonLocaleDelegate cld = CommonLocaleDelegate.getInstance();
 		final JPopupMenu popup = new JPopupMenu();
 		
-		popup.add(new JLabel("<html><b>"+CommonLocaleDelegate.getMessage("DefaultMenuItem.4", "Eigenschaften")+"</b></html>"));
+		popup.add(new JLabel("<html><b>"+ cld.getMessage("DefaultMenuItem.4", "Eigenschaften")+"</b></html>"));
 		final JMenuItem miPosition = new JMenuItem(new AbstractAction(
-				CommonLocaleDelegate.getMessage("DefaultMenuItem.5",
+				cld.getMessage("DefaultMenuItem.5",
 						"Position"), Icons.getInstance().getIconEmpty16()) {
 					@Override
 					public void actionPerformed(ActionEvent e) {
@@ -203,7 +206,7 @@ abstract class DefaultMenuItem extends JLabel implements DragGestureListener {
 		popup.add(miPosition);
 				
 		final JMenuItem miSelectAction = new JMenuItem(new AbstractAction(
-		CommonLocaleDelegate.getMessage("DefaultMenuItem.1",
+		cld.getMessage("DefaultMenuItem.1",
 				"Aktion"), Icons.getInstance().getIconEmpty16()) {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -225,7 +228,7 @@ abstract class DefaultMenuItem extends JLabel implements DragGestureListener {
 		
 		popup.addSeparator();
 		final JMenuItem miRemove = new JMenuItem(new AbstractAction(
-				CommonLocaleDelegate.getMessage("DefaultMenuItem.3",
+				cld.getMessage("DefaultMenuItem.3",
 						"Menu Eintrag entfernen"), Icons.getInstance().getIconMinus16()) {
 					@Override
 					public void actionPerformed(ActionEvent e) {
@@ -244,7 +247,8 @@ abstract class DefaultMenuItem extends JLabel implements DragGestureListener {
 	public void setAction(Action action) {
 		this.action = action;
 		this.setText(action==null?
-				CommonLocaleDelegate.getMessage("DefaultMenuItem.2", "Aktion nicht gefunden"):(String) action.getValue(Action.NAME));
+				CommonLocaleDelegate.getInstance().getMessage(
+						"DefaultMenuItem.2", "Aktion nicht gefunden"):(String) action.getValue(Action.NAME));
 	}
 	
 	public void setHover(boolean hover) {

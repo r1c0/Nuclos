@@ -38,6 +38,7 @@ import org.apache.log4j.Logger;
 import org.nuclos.client.common.security.SecurityCache;
 import org.nuclos.client.explorer.ExplorerController;
 import org.nuclos.client.main.Main;
+import org.nuclos.client.main.MainController;
 import org.nuclos.client.main.mainframe.MainFrame;
 import org.nuclos.client.main.mainframe.MainFrameTab;
 import org.nuclos.client.main.mainframe.MainFrameTabbedPane;
@@ -57,7 +58,6 @@ import org.nuclos.client.ui.table.TableUtils;
 import org.nuclos.common.Actions;
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common2.ClientPreferences;
-import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.PreferencesUtils;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
@@ -203,25 +203,26 @@ public class TaskController extends Controller {
 		@Override
 		public void restoreFromPreferences(String preferencesXML, final MainFrameTab tab) throws Exception {
 			RestorePreferences rp = fromXML(preferencesXML);
-
+			final MainController mc = Main.getInstance().getMainController();
+			
 			switch (rp.type) {
 				case RestorePreferences.PERSONAL:
 					if (SecurityCache.getInstance().isActionAllowed(Actions.ACTION_TASKLIST)) {
-						Main.getMainController().getTaskController().getPersonalTaskController().showPersonalTasks(tab);
+						mc.getTaskController().getPersonalTaskController().showPersonalTasks(tab);
 					} else {
 						throw new IllegalArgumentException("Personal Tasks not granted any more");
 					}
 					break;
 				case RestorePreferences.TIMELIMIT:
 					if (SecurityCache.getInstance().isActionAllowed(Actions.ACTION_TIMELIMIT_LIST)) {
-						Main.getMainController().getTaskController().getTimelimitTaskController().showTimelimitTasks(tab);
+						mc.getTaskController().getTimelimitTaskController().showTimelimitTasks(tab);
 					} else {
 						throw new IllegalArgumentException("Timelimit Tasks not granted any more");
 					}
 					break;
 				case RestorePreferences.GENERIC:
 					EntitySearchFilter filter = SearchFilterCache.getInstance().getEntitySearchFilterById(rp.searchFilterId);
-					Main.getMainController().getTaskController().addOrReplaceGenericObjectTaskViewFor(filter, tab);
+					mc.getTaskController().addOrReplaceGenericObjectTaskViewFor(filter, tab);
 					break;
 				default:
 					throw new IllegalArgumentException("Task type: "+rp.type);
@@ -314,14 +315,14 @@ public class TaskController extends Controller {
 				taskTabbed = tabbedPane;
 			}
 		}
-		if (taskTabbed == null) Main.getMainFrame().getHomePane();
+		if (taskTabbed == null) Main.getInstance().getMainFrame().getHomePane();
 
 		for (String sFilterName : lstFilterNames) {
 			try {
 				Integer refreshInterval = mapRefreshIntervals.get(sFilterName);
 				refreshInterval = (refreshInterval != null && refreshInterval >= 0)? refreshInterval : 0;
 				if (SecurityCache.getInstance().isActionAllowed(Actions.ACTION_TASKLIST) &&
-					sFilterName.startsWith(CommonLocaleDelegate.getMessage("tabMyTasks", "Meine Aufgaben"))) {
+					sFilterName.startsWith(getCommonLocaleDelegate().getMessage("tabMyTasks", "Meine Aufgaben"))) {
 					MainFrameTab tab = new MainFrameTab();
 					taskTabbed.addTab(tab, false);
 					ctlPersonalTasks.showPersonalTasks(tab);
@@ -329,7 +330,7 @@ public class TaskController extends Controller {
 					MainFrame.setSelectedTab(tab);
 				}
 				else if (SecurityCache.getInstance().isActionAllowed(Actions.ACTION_TIMELIMIT_LIST) &&
-					sFilterName.startsWith(CommonLocaleDelegate.getMessage("tabTimelimits", "Fristen"))) {
+					sFilterName.startsWith(getCommonLocaleDelegate().getMessage("tabTimelimits", "Fristen"))) {
 					MainFrameTab tab = new MainFrameTab();
 					taskTabbed.addTab(tab, false);
 					ctlTimelimitTasks.showTimelimitTasks(tab);
@@ -412,7 +413,8 @@ public class TaskController extends Controller {
 			// This filter is not yet in the task list; create a new tab for it
 
 			final GenericObjectTaskView newView = ctlGenericObjectTasks.newGenericObjectTaskView(filter);
-			final String sLabel = StringUtils.isNullOrEmpty(filter.getLabelResourceId()) ? filter.getName() : CommonLocaleDelegate.getTextFallback(filter.getLabelResourceId(), filter.getName());
+			final String sLabel = StringUtils.isNullOrEmpty(filter.getLabelResourceId()) ? filter.getName() 
+					: getCommonLocaleDelegate().getTextFallback(filter.getLabelResourceId(), filter.getName());
 			tab.addMainFrameTabListener(new MainFrameTabAdapter() {
 				@Override
 				public boolean tabClosing(MainFrameTab tab) {
@@ -458,7 +460,8 @@ public class TaskController extends Controller {
 								TaskController.this.storeSortingColumnToPrefs(goTaskView);
 							}
 							catch (PreferencesException ex) {
-								final String sMessage = CommonLocaleDelegate.getMessage("tasklist.error.column.order", "Die Spaltenreihenfolge konnte nicht gespeichert werden.");
+								final String sMessage = getCommonLocaleDelegate().getMessage(
+										"tasklist.error.column.order", "Die Spaltenreihenfolge konnte nicht gespeichert werden.");
 								Errors.getInstance().showExceptionDialog(goTaskView.getJTable(), sMessage, ex);
 							}
 						}
@@ -479,7 +482,8 @@ public class TaskController extends Controller {
 							TaskController.this.storeColumnOrderAndWidthsInPrefs(goTaskView);
 						}
 						catch (PreferencesException ex) {
-							final String sMessage = CommonLocaleDelegate.getMessage("tasklist.error.column.order", "Die Spaltenreihenfolge konnte nicht gespeichert werden.");
+							final String sMessage = getCommonLocaleDelegate().getMessage(
+									"tasklist.error.column.order", "Die Spaltenreihenfolge konnte nicht gespeichert werden.");
 							Errors.getInstance().showExceptionDialog(goTaskView.getJTable(), sMessage, ex);
 						}
 					}
@@ -544,7 +548,8 @@ public class TaskController extends Controller {
 			}
 		}
 		catch (NuclosFatalException ex) {
-			Errors.getInstance().showExceptionDialog(getParent(), CommonLocaleDelegate.getMessage("tasklist.error.load", "Die Aufgaben-Liste kann nicht geladen werden."), ex);
+			Errors.getInstance().showExceptionDialog(getParent(), getCommonLocaleDelegate().getMessage(
+					"tasklist.error.load", "Die Aufgaben-Liste kann nicht geladen werden."), ex);
 		}
 	}
 
@@ -576,7 +581,8 @@ public class TaskController extends Controller {
 				closeGenericObjectTaskView(view);
 			}
 			catch (PreferencesException ex) {
-				throw new NuclosFatalException(CommonLocaleDelegate.getMessage("tasklist.error.delete.searchfilter", "Der Suchfilter {0} konnte nicht aus der Aufgabenleiste entfernt werden.", searchFilter.getName()), ex);
+				throw new NuclosFatalException(getCommonLocaleDelegate().getMessage(
+						"tasklist.error.delete.searchfilter", "Der Suchfilter {0} konnte nicht aus der Aufgabenleiste entfernt werden.", searchFilter.getName()), ex);
 			}
 		}
 	}

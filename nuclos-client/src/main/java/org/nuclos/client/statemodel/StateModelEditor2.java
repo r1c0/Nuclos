@@ -514,8 +514,14 @@ public class StateModelEditor2 extends JPanel {
 			child.setVertex(true);
 			model.add(parent, child, index++);
 					
-			statevo.setStatename(CommonLocaleDelegate.getResource(StateDelegate.getInstance().getResourceSIdForName(statevo.getId()), statevo.getStatename()));//LocaleDelegate.getInstance().getResourceByIntId(StateDelegate.getInstance().getResourceIdForName(statevo.getId())));
-			statevo.setDescription(CommonLocaleDelegate.getResource(StateDelegate.getInstance().getResourceSIdForDescription(statevo.getId()), statevo.getDescription()));//LocaleDelegate.getInstance().getResourceByIntId(StateDelegate.getInstance().getResourceIdForDescription(statevo.getId())));
+			statevo.setStatename(CommonLocaleDelegate.getInstance().getResource(
+					StateDelegate.getInstance().getResourceSIdForName(
+							statevo.getId()), statevo.getStatename()));
+			//LocaleDelegate.getInstance().getResourceByIntId(StateDelegate.getInstance().getResourceIdForName(statevo.getId())));
+			statevo.setDescription(CommonLocaleDelegate.getInstance().getResource(
+					StateDelegate.getInstance().getResourceSIdForDescription(
+							statevo.getId()), statevo.getDescription()));
+			//LocaleDelegate.getInstance().getResourceByIntId(StateDelegate.getInstance().getResourceIdForDescription(statevo.getId())));
 		}
 		
 		for (StateTransitionVO statetransitionvo : setTransitions) {

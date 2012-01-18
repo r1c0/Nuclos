@@ -16,8 +16,6 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.explorer;
 
-import static org.nuclos.common2.CommonLocaleDelegate.getMessage;
-
 import java.awt.Component;
 import java.awt.Toolkit;
 import java.awt.datatransfer.DataFlavor;
@@ -55,7 +53,7 @@ import org.nuclos.client.common.NuclosCollectControllerFactory;
 import org.nuclos.client.explorer.ExplorerSettings.FolderNodeAction;
 import org.nuclos.client.explorer.ExplorerSettings.ObjectNodeAction;
 import org.nuclos.client.genericobject.GenerationController;
-import org.nuclos.client.main.Main;
+import org.nuclos.client.main.MainController;
 import org.nuclos.client.main.mainframe.MainFrame;
 import org.nuclos.client.main.mainframe.MainFrameTab;
 import org.nuclos.client.ui.CommonClientWorkerAdapter;
@@ -79,6 +77,8 @@ import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonFinderException;
 import org.nuclos.server.genericobject.valueobject.GeneratorActionVO;
 import org.nuclos.server.navigation.treenode.TreeNode;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
 
 /**
  * A node in the explorer tree.
@@ -89,6 +89,7 @@ import org.nuclos.server.navigation.treenode.TreeNode;
  * @author	<a href="mailto:Christoph.Radig@novabit.de">Christoph.Radig</a>
  * @version 01.00.00
  */
+@Configurable
 public class ExplorerNode<TN extends TreeNode> extends DefaultMutableTreeNode {
 
 	private static final Logger log = Logger.getLogger(ExplorerNode.class);
@@ -113,6 +114,10 @@ public class ExplorerNode<TN extends TreeNode> extends DefaultMutableTreeNode {
 	 * Have the children of this node already been loaded?
 	 */
 	private boolean bChildrenHaveBeenLoaded;
+	
+	private MainController mainController;
+	
+	private CommonLocaleDelegate cld;
 
 	/**
 	 * Use <code>ExplorerNodeFactory.newExplorerNode()</code> to create <code>ExplorerNode</code>s
@@ -121,6 +126,24 @@ public class ExplorerNode<TN extends TreeNode> extends DefaultMutableTreeNode {
 	 */
 	protected ExplorerNode(TreeNode treenode) {
 		super(treenode, true);
+	}
+	
+	@Autowired
+	void setMainController(MainController mainController) {
+		this.mainController = mainController;
+	}
+	
+	protected MainController getMainController() {
+		return mainController;
+	}
+	
+	@Autowired
+	void setCommonLocaleDelegate(CommonLocaleDelegate cld) {
+		this.cld = cld;
+	}
+	
+	protected CommonLocaleDelegate getCommonLocaleDelegate() {
+		return cld;
 	}
 
 	/**
@@ -143,7 +166,7 @@ public class ExplorerNode<TN extends TreeNode> extends DefaultMutableTreeNode {
 	 * @postcondition result != null
 	 */
 	protected ExplorerController getExplorerController() {
-		return Main.getMainController().getExplorerController();
+		return getMainController().getExplorerController();
 	}
 
 	@Override
@@ -344,11 +367,13 @@ public class ExplorerNode<TN extends TreeNode> extends DefaultMutableTreeNode {
 
 		result.addAll(getExpandCollapseActions(tree));
 
-		final TreeNodeAction exploreractCopy = new ChainedTreeNodeAction(ACTIONCOMMAND_COPY, CommonLocaleDelegate.getMessage("ExplorerNode.4","Kopieren"),
+		final TreeNodeAction exploreractCopy = new ChainedTreeNodeAction(ACTIONCOMMAND_COPY, 
+				getCommonLocaleDelegate().getMessage("ExplorerNode.4","Kopieren"),
 				TransferHandler.getCopyAction(), tree);
 		result.add(exploreractCopy);
 
-		final TreeNodeAction exploreractPaste = new ChainedTreeNodeAction(ACTIONCOMMAND_PASTE, CommonLocaleDelegate.getMessage("ExplorerNode.2","Einf\u00fcgen"),
+		final TreeNodeAction exploreractPaste = new ChainedTreeNodeAction(ACTIONCOMMAND_PASTE, 
+				getCommonLocaleDelegate().getMessage("ExplorerNode.2","Einf\u00fcgen"),
 				TransferHandler.getPasteAction(), tree);
 		result.add(exploreractPaste);
 
@@ -540,7 +565,8 @@ public class ExplorerNode<TN extends TreeNode> extends DefaultMutableTreeNode {
 	protected class ShowInOwnTabAction extends TreeNodeAction {
 
 		public ShowInOwnTabAction(JTree tree) {
-			super(ACTIONCOMMAND_SHOW_IN_OWN_TAB, CommonLocaleDelegate.getMessage("ExplorerNode.3","In eigenem Reiter anzeigen"), tree);
+			super(ACTIONCOMMAND_SHOW_IN_OWN_TAB, 
+					getCommonLocaleDelegate().getMessage("ExplorerNode.3","In eigenem Reiter anzeigen"), tree);
 		}
 
 		@Override
@@ -559,7 +585,8 @@ public class ExplorerNode<TN extends TreeNode> extends DefaultMutableTreeNode {
 	protected class RefreshAction extends TreeNodeAction {
 
 		public RefreshAction(JTree tree) {
-			super(ACTIONCOMMAND_REFRESH, CommonLocaleDelegate.getMessage("ExplorerNode.1","Aktualisieren"), tree);
+			super(ACTIONCOMMAND_REFRESH, 
+					getCommonLocaleDelegate().getMessage("ExplorerNode.1","Aktualisieren"), tree);
 		}
 
 		@Override
@@ -584,7 +611,8 @@ public class ExplorerNode<TN extends TreeNode> extends DefaultMutableTreeNode {
 	protected class ExpandAction extends TreeNodeAction {
 
 		public ExpandAction(JTree tree) {
-			super(ACTIONCOMMAND_EXPAND, CommonLocaleDelegate.getMessage("ExplorerNode.5","Unterelemente aufklappen"), tree);
+			super(ACTIONCOMMAND_EXPAND, 
+					getCommonLocaleDelegate().getMessage("ExplorerNode.5","Unterelemente aufklappen"), tree);
 		}
 
 		@Override
@@ -609,7 +637,8 @@ public class ExplorerNode<TN extends TreeNode> extends DefaultMutableTreeNode {
 	protected class CollapseAction extends TreeNodeAction {
 
 		public CollapseAction(JTree tree) {
-			super(ACTIONCOMMAND_COLLAPSE, CommonLocaleDelegate.getMessage("ExplorerNode.6","Unterelemente zuklappen"), tree);
+			super(ACTIONCOMMAND_COLLAPSE, 
+					getCommonLocaleDelegate().getMessage("ExplorerNode.6","Unterelemente zuklappen"), tree);
 		}
 
 		@Override
@@ -731,7 +760,8 @@ public class ExplorerNode<TN extends TreeNode> extends DefaultMutableTreeNode {
 		private final boolean newTab;
 
 		protected ShowDetailsAction(String command, String labelResourceId, JTree tree, boolean newTab) {
-			super(command, CommonLocaleDelegate.getText(labelResourceId), tree);
+			super(command, 
+					getCommonLocaleDelegate().getText(labelResourceId), tree);
 			this.newTab = newTab;
 		}
 
@@ -753,7 +783,7 @@ public class ExplorerNode<TN extends TreeNode> extends DefaultMutableTreeNode {
 			UIUtils.runCommand(this.getParent(), new CommonRunnable() {
 				@Override
 				public void run() throws CommonBusinessException {
-					Main.getMainController().showDetails(getTreeNode().getEntityName(), getTreeNode().getId(), newTab);
+					getMainController().showDetails(getTreeNode().getEntityName(), getTreeNode().getId(), newTab);
 				}
 			});
 		}
@@ -765,7 +795,8 @@ public class ExplorerNode<TN extends TreeNode> extends DefaultMutableTreeNode {
 	protected class ShowListAction extends TreeNodeAction {
 
 		public ShowListAction(JTree tree) {
-			super(ACTIONCOMMAND_SHOW_IN_LIST, CommonLocaleDelegate.getMessage("ExplorerNode.ShowList", "Unterelemente in Liste anzeigen"), tree);
+			super(ACTIONCOMMAND_SHOW_IN_LIST, 
+					getCommonLocaleDelegate().getMessage("ExplorerNode.ShowList", "Unterelemente in Liste anzeigen"), tree);
 		}
 
 		@Override
@@ -830,7 +861,8 @@ public class ExplorerNode<TN extends TreeNode> extends DefaultMutableTreeNode {
 
 				@Override
 				public void handleError(Exception ex) {
-					Errors.getInstance().showExceptionDialog(null, getMessage("GenericObjectExplorerNode.3", "Fehler beim entfernen der Beziehungen"), ex);
+					Errors.getInstance().showExceptionDialog(null, 
+							getCommonLocaleDelegate().getMessage("GenericObjectExplorerNode.3", "Fehler beim entfernen der Beziehungen"), ex);
 				}
 			};
 

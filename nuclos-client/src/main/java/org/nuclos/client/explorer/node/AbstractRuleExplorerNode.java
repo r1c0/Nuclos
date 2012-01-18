@@ -39,7 +39,6 @@ import org.nuclos.client.ui.Errors;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.client.ui.tree.ChainedTreeNodeAction;
 import org.nuclos.client.ui.tree.TreeNodeAction;
-import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.CommonRunnable;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonFinderException;
@@ -108,7 +107,9 @@ public abstract class AbstractRuleExplorerNode extends ExplorerNode<AbstractRule
 						refresh(tree);
 					}
 					catch (CommonBusinessException ex) {
-						Errors.getInstance().showExceptionDialog(parent, CommonLocaleDelegate.getMessage("AbstractRuleExplorerNode.3","Regel kann nicht eingef\u00fcgt werden. Evtl. ist die Regel schon vorhanden") + ".", ex);
+						Errors.getInstance().showExceptionDialog(parent, 
+								getCommonLocaleDelegate().getMessage(
+										"AbstractRuleExplorerNode.3","Regel kann nicht eingef\u00fcgt werden. Evtl. ist die Regel schon vorhanden") + ".", ex);
 						refresh(tree);
 					}
 				}
@@ -124,7 +125,9 @@ public abstract class AbstractRuleExplorerNode extends ExplorerNode<AbstractRule
 						refreshParent(tree);
 					}
 					catch (CommonBusinessException ex) {
-						Errors.getInstance().showExceptionDialog(parent, CommonLocaleDelegate.getMessage("AbstractRuleExplorerNode.4","Regel kann nicht eingef\u00fcgt werden. Evtl. ist die Regel schon vorhanden") + ".", ex);
+						Errors.getInstance().showExceptionDialog(parent, 
+								getCommonLocaleDelegate().getMessage(
+										"AbstractRuleExplorerNode.4","Regel kann nicht eingef\u00fcgt werden. Evtl. ist die Regel schon vorhanden") + ".", ex);
 						refreshParent(tree);
 					}
 				}
@@ -162,11 +165,13 @@ public abstract class AbstractRuleExplorerNode extends ExplorerNode<AbstractRule
 			result.add(TreeNodeAction.newSeparatorAction());
 		}
 
-		final TreeNodeAction exploreractCopy = new ChainedTreeNodeAction(ACTIONCOMMAND_COPY, CommonLocaleDelegate.getMessage("AbstractRuleExplorerNode.2","Kopieren"),
+		final TreeNodeAction exploreractCopy = new ChainedTreeNodeAction(ACTIONCOMMAND_COPY, 
+				getCommonLocaleDelegate().getMessage("AbstractRuleExplorerNode.2","Kopieren"),
 				TransferHandler.getCopyAction(), tree);
 		result.add(exploreractCopy);
 
-		final TreeNodeAction exploreractPaste = new ChainedTreeNodeAction(ACTIONCOMMAND_PASTE, CommonLocaleDelegate.getMessage("AbstractRuleExplorerNode.1","Einf\u00fcgen"),
+		final TreeNodeAction exploreractPaste = new ChainedTreeNodeAction(ACTIONCOMMAND_PASTE, 
+				getCommonLocaleDelegate().getMessage("AbstractRuleExplorerNode.1","Einf\u00fcgen"),
 				TransferHandler.getPasteAction(), tree);
 		result.add(exploreractPaste);
 
