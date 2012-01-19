@@ -271,6 +271,8 @@ public class MainController {
 	
 	private ResourceCache resourceCache;
 	
+	private SecurityCache securityCache;
+	
 	// private Main main;
 	
 	/**
@@ -282,6 +284,11 @@ public class MainController {
 		this.sUserName = sUserName;
 		this.sNuclosServerName = sNuclosServerName;
 		this.loginController = loginController;
+	}
+	
+	@Autowired
+	void setSecurityCache(SecurityCache securityCache) {
+		this.securityCache = securityCache;
 	}
 	
 	@Autowired
@@ -314,13 +321,6 @@ public class MainController {
 		this.cld = cld;
 	}
 
-	/*
-	@Autowired
-	void setMain(Main main) {
-		this.main = main;
-	}
-	 */
-	
 	@PostConstruct
 	void init() throws CommonPermissionException, BackingStoreException {
 		debugFrame = new SwingDebugFrame(this);
@@ -329,10 +329,9 @@ public class MainController {
 			Main.getInstance().setMainController(this);
 
 			LOG.debug(">>> read user rights...");
-			SecurityCache.initialize();
 			loginController.increaseLoginProgressBar(StartUp.PROGRESS_INIT_SECURITYCACHE);
 
-			if (!SecurityCache.getInstance().isActionAllowed(Actions.ACTION_SYSTEMSTART)) {
+			if (!securityCache.isActionAllowed(Actions.ACTION_SYSTEMSTART)) {
 				throw new CommonPermissionException(cld.getMessage(
 						"MainController.23", "Sie haben nicht das Recht, {0} zu benutzen.", ApplicationProperties.getInstance().getName()));
 			}
@@ -411,10 +410,12 @@ public class MainController {
 
 			LOG.debug(">>> restore last workspace...");
 			try {
-				MainFrame.readMainFramePreferences(prefs);
+				Main.getInstance().getMainFrame().readMainFramePreferences(prefs);
 				RestoreUtils.restoreWorkspaceThreaded(
-						MainFrame.getLastWorkspaceIdFromPreferences(), MainFrame.getLastWorkspaceFromPreferences(),
-						MainFrame.getLastAlwaysOpenWorkspaceIdFromPreferences(), MainFrame.getLastAlwaysOpenWorkspaceFromPreferences());
+						MainFrame.getLastWorkspaceIdFromPreferences(), 
+						MainFrame.getLastWorkspaceFromPreferences(),
+						MainFrame.getLastAlwaysOpenWorkspaceIdFromPreferences(), 
+						MainFrame.getLastAlwaysOpenWorkspaceFromPreferences());
 			}
 			catch (Exception ex) {
 				final String sMessage = cld.getMessage(
@@ -518,7 +519,7 @@ public class MainController {
 					}
 					@Override
 					public boolean isEnabled() {
-						return SecurityCache.getInstance().isActionAllowed(Actions.ACTION_TIMELIMIT_LIST);
+						return securityCache.isActionAllowed(Actions.ACTION_TIMELIMIT_LIST);
 					}
 				};
 			cmdShowPersonalTasks = new AbstractAction(
@@ -531,7 +532,7 @@ public class MainController {
 					}
 					@Override
 					public boolean isEnabled() {
-						return SecurityCache.getInstance().isActionAllowed(Actions.ACTION_TASKLIST);
+						return securityCache.isActionAllowed(Actions.ACTION_TASKLIST);
 					}
 				};
 			cmdShowPersonalSearchFilters = new AbstractAction(

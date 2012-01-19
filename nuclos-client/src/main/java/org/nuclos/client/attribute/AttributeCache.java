@@ -20,6 +20,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.lang.NullArgumentException;
 import org.nuclos.client.common.MetaDataClientProvider;
@@ -28,10 +29,10 @@ import org.nuclos.common.AttributeProvider;
 import org.nuclos.common.CacheableListener;
 import org.nuclos.common.NuclosAttributeNotFoundException;
 import org.nuclos.common.NuclosFatalException;
-import org.nuclos.common.SpringApplicationContextHolder;
-import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.server.attribute.valueobject.AttributeCVO;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 /**
  * Client cache for all attributes (Singleton pattern).
@@ -46,44 +47,48 @@ import org.nuclos.server.attribute.valueobject.AttributeCVO;
  * @author	<a href="mailto:Christoph.Radig@novabit.de">Christoph.Radig</a>
  * @version 01.00.00
  */
+@Component
 public class AttributeCache implements AttributeProvider {
+	
 	/**
 	 * the one (and only) instance of AttributeCache
 	 */
-	private static AttributeCache singleton;
+	private static AttributeCache INSTANCE;
+	
+	private AttributeDelegate attributeDelegate;
+	
+	//
 
 	/** @todo change this to an unmodifiable collection */
-    private final Map<Integer, AttributeCVO> mpAttributesByIds = CollectionUtils.newHashMap();
+    private final Map<Integer, AttributeCVO> mpAttributesByIds = new ConcurrentHashMap<Integer, AttributeCVO>();
 
-	private List<CacheableListener> lstCacheableListeners;
-
-	/**
-	 * Must be called before the first call to getInstance(). This way, <code>getInstance()</code>,
-	 * is guaranteed not to throw any exceptions.
-	 */
-	public static synchronized void initialize() throws NuclosFatalException {
-		getInstance().fill();
-	}
+	private final LinkedList<CacheableListener> lstCacheableListeners = new LinkedList<CacheableListener>();
 
 	/**
 	 * @return the one (and only) instance of AttributeCache
 	 */
-	public static synchronized AttributeCache getInstance() {
-		return (AttributeCache) SpringApplicationContextHolder.getBean("attributeProvider");
+	public static AttributeCache getInstance() {
+		// return (AttributeCache) SpringApplicationContextHolder.getBean("attributeProvider");
+		return INSTANCE;
 	}
 
 	/**
 	 * creates the cache. Fills in all the attributes from the server.
 	 * @throws NuclosFatalException
 	 */
-	protected AttributeCache() throws NuclosFatalException {
-		//this.fill();
+	AttributeCache() {
+		INSTANCE = this;
+	}
+	
+	@Autowired
+	void setAttributeDelegate(AttributeDelegate attributeDelegate) {
+		this.attributeDelegate = attributeDelegate;
 	}
 
 	/**
 	 * revalidates this cache: clears it, then fills in all the attributes from the server again.
 	 */
-	public synchronized void revalidate() {
+	public void revalidate() {
 		this.mpAttributesByIds.clear();
 		this.fill();
 	}
@@ -93,8 +98,11 @@ public class AttributeCache implements AttributeProvider {
 	 * @postcondition result != null
 	 */
 	@Override
-    public synchronized AttributeCVO getAttribute(int iAttributeId) {
-		final AttributeCVO result = this.mpAttributesByIds.get(iAttributeId);
+    public AttributeCVO getAttribute(int iAttributeId) {
+		if (mpAttributesByIds.isEmpty()) {
+			fill();
+		}
+		final AttributeCVO result = mpAttributesByIds.get(iAttributeId);
 		if (result == null) {
 			throw new NuclosAttributeNotFoundException(iAttributeId);
 		}
@@ -107,13 +115,13 @@ public class AttributeCache implements AttributeProvider {
 	 * @param iAttributeId
 	 * @return Does this cache contain an attribute with the given id?
 	 */
-	public synchronized boolean contains(int iAttributeId) {
+	public boolean contains(int iAttributeId) {
 		return this.mpAttributesByIds.containsKey(iAttributeId);
 	}
 
 	@Override
-    public synchronized AttributeCVO getAttribute(Integer iEntityId, String sAttributeName) throws NuclosAttributeNotFoundException {
-		return this.getAttribute(Modules.getInstance().getEntityNameByModuleId(iEntityId), sAttributeName);
+    public AttributeCVO getAttribute(Integer iEntityId, String sAttributeName) throws NuclosAttributeNotFoundException {
+		return getAttribute(Modules.getInstance().getEntityNameByModuleId(iEntityId), sAttributeName);
 	}
 
 	/**
@@ -124,7 +132,7 @@ public class AttributeCache implements AttributeProvider {
 	 * @postcondition result != null
 	 */
 	@Override
-    public synchronized AttributeCVO getAttribute(String sEntity, String sAttributeName) throws NuclosAttributeNotFoundException {
+    public AttributeCVO getAttribute(String sEntity, String sAttributeName) throws NuclosAttributeNotFoundException {
 		if (sEntity == null) {
 			throw new NullArgumentException("sEntity");
 		}
@@ -144,15 +152,14 @@ public class AttributeCache implements AttributeProvider {
 		return MetaDataClientProvider.getInstance().getEntityField(entity, field);
 	}
 
-
 	/**
 	 * adds a single attribute to this cache and notifies CacheableListeners.
 	 * @param attrcvo
 	 * @precondition attrcvo != null
 	 */
-	public synchronized void add(AttributeCVO attrcvo) {
-		this.addImpl(attrcvo);
-		this.fireCacheableChanged();
+	public void add(AttributeCVO attrcvo) {
+		addImpl(attrcvo);
+		fireCacheableChanged();
 	}
 
 	/**
@@ -164,11 +171,11 @@ public class AttributeCache implements AttributeProvider {
 		if (attrcvo == null) {
 			throw new NullArgumentException("attrcvo");
 		}
-		if (this.mpAttributesByIds.containsKey(attrcvo.getId())) {
+		if (mpAttributesByIds.containsKey(attrcvo.getId())) {
 			throw new NuclosFatalException("attributecache.uniquekey.id.error");
 				//"Ein Attribut mit dieser Id ist schon im Cache vorhanden.");
 		}
-		this.mpAttributesByIds.put(attrcvo.getId(), attrcvo);
+		mpAttributesByIds.put(attrcvo.getId(), attrcvo);
 		// old entry (attribute which has the same id) is overwritten
 	}
 
@@ -179,9 +186,9 @@ public class AttributeCache implements AttributeProvider {
 	 * @param iAttributeId
 	 * @postcondition !this.contains(iAttributeId)
 	 */
-	public synchronized void remove(Integer iAttributeId) {
-		this.removeImpl(iAttributeId);
-		this.fireCacheableChanged();
+	public void remove(Integer iAttributeId) {
+		removeImpl(iAttributeId);
+		fireCacheableChanged();
 		assert !this.contains(iAttributeId);
 	}
 
@@ -196,8 +203,7 @@ public class AttributeCache implements AttributeProvider {
 		if (iAttributeId == null) {
 			throw new NullArgumentException("iAttributeId");
 		}
-
-		this.mpAttributesByIds.remove(iAttributeId);
+		mpAttributesByIds.remove(iAttributeId);
 
 		// postcondition:
 		assert !this.contains(iAttributeId);
@@ -207,51 +213,53 @@ public class AttributeCache implements AttributeProvider {
 	 * replaces the given attribute in the cache and notifies CacheableListeners.
 	 * @param attrcvo
 	 */
-	public synchronized void replace(AttributeCVO attrcvo) {
+	public void replace(AttributeCVO attrcvo) {
 		if (attrcvo == null) {
 			throw new NullArgumentException("attrcvo");
 		}
-		this.removeImpl(attrcvo.getId());
-		this.addImpl(attrcvo);
-		this.fireCacheableChanged();
+		removeImpl(attrcvo.getId());
+		addImpl(attrcvo);
+		fireCacheableChanged();
 	}
 
 	/**
 	 * @return Collection<AttributeCVO> a collection containing all attributes in the cache.
 	 */
 	@Override
-    public synchronized Collection<AttributeCVO> getAttributes() {
-		return this.mpAttributesByIds.values();
+    public Collection<AttributeCVO> getAttributes() {
+		return mpAttributesByIds.values();
 	}
 
 	/**
 	 * fills this cache.
 	 * @throws NuclosFatalException
 	 */
-	private void fill() throws NuclosFatalException {
-		for (AttributeCVO attrcvo : AttributeDelegate.getInstance().getAllAttributeCVOs(null)) {
+	public void fill() throws NuclosFatalException {
+		for (AttributeCVO attrcvo : attributeDelegate.getAllAttributeCVOs(null)) {
 			this.addImpl(attrcvo);
 		}
 	}
 
-	private synchronized List<CacheableListener> getCacheableListeners() {
-		if (this.lstCacheableListeners == null) {
-			this.lstCacheableListeners = new LinkedList<CacheableListener>();
+	public void addCacheableListener(CacheableListener cacheablelistener) {
+		synchronized(lstCacheableListeners) {
+			lstCacheableListeners.add(cacheablelistener);
 		}
-		return this.lstCacheableListeners;
 	}
 
-	public synchronized void addCacheableListener(CacheableListener cacheablelistener) {
-		this.getCacheableListeners().add(cacheablelistener);
+	public void removeCacheableListener(CacheableListener cacheablelistener) {
+		synchronized (lstCacheableListeners) {
+			lstCacheableListeners.remove(cacheablelistener);
+		}
 	}
 
-	public synchronized void removeCacheableListener(CacheableListener cacheablelistener) {
-		this.getCacheableListeners().remove(cacheablelistener);
-	}
-
-	private synchronized void fireCacheableChanged() {
+	private void fireCacheableChanged() {
+		// defensive copy
+		final LinkedList<CacheableListener> clone;
+		synchronized (lstCacheableListeners) {
+			clone = (LinkedList<CacheableListener>) lstCacheableListeners.clone();
+		}
 		/** @todo Is this still necessary? Won't the GenericObjectMetaDataCache always fireCachableChanged() anyway? */
-		for (CacheableListener listener : this.getCacheableListeners()) {
+		for (CacheableListener listener : clone) {
 			listener.cacheableChanged();
 		}
 	}

@@ -26,27 +26,17 @@ import javax.swing.JPanel;
 
 import org.nuclos.client.NuclosIcons;
 import org.nuclos.client.main.Main;
-import org.nuclos.client.main.MainController;
 import org.nuclos.client.main.mainframe.workspace.WorkspaceFrame;
 import org.nuclos.client.synthetica.NuclosThemeSettings;
 import org.nuclos.client.ui.CommonJFrame;
 import org.nuclos.common2.CommonLocaleDelegate;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Configurable;
 
-@Configurable
 public class ExternalFrame extends CommonJFrame implements WorkspaceFrame{
 
 	private final int number;
 	
 	private final JPanel pnlDesktop = new JPanel(new BorderLayout());
 	
-	private MainController mainController;
-	
-	/**
-	 * 
-	 * @throws HeadlessException
-	 */
 	public ExternalFrame(int number) throws HeadlessException {
 		super();
 		this.number = number;
@@ -65,18 +55,6 @@ public class ExternalFrame extends CommonJFrame implements WorkspaceFrame{
 		Main.getInstance().getMainFrame().setupLiveSearchKey(this);
 	}
 	
-	@Autowired
-	void setMainController(MainController mainController) {
-		this.mainController = mainController;
-	}
-	
-	protected MainController getMainController() {
-		return mainController;
-	}
-
-	/**
-	 * 
-	 */
 	@Override
 	public void dispose() {
 		for (MainFrameTabbedPane tabbedPane : new ArrayList<MainFrameTabbedPane>(MainFrame.getTabbedPanes(ExternalFrame.this))) {
@@ -84,47 +62,31 @@ public class ExternalFrame extends CommonJFrame implements WorkspaceFrame{
 		}
 		
 		MainFrame.removeFrameFromContent(ExternalFrame.this);
-		mainController.refreshMenus();
+		Main.getInstance().getMainController().refreshMenus();
 		
 		super.dispose();
 	}
 	
-	/**
-	 * 
-	 */
 	@Override
 	public Component getFrameContent() {
 		return pnlDesktop.getComponent(0);
 	}
 	
-	/**
-	 * 
-	 */
 	public void clearFrameContent() {
 		pnlDesktop.removeAll();
 	}
 	
-	/**
-	 * 
-	 */
 	@Override
 	public void setFrameContent(Component comp) {
 		clearFrameContent();
 		pnlDesktop.add(comp, BorderLayout.CENTER);
 	}
 	
-	/**
-	 * 
-	 */
 	@Override
 	public CommonJFrame getFrame() {
 		return this;
 	}
 
-	/**
-	 * 
-	 * @return
-	 */
 	@Override
 	public int getNumber() {
 		return number;

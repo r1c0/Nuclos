@@ -16,6 +16,7 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.server.navigation.treenode;
 
+import java.io.ObjectStreamException;
 import java.rmi.RemoteException;
 import java.util.Date;
 import java.util.List;
@@ -45,7 +46,7 @@ public abstract class AbstractTreeNode<Id> implements TreeNode {
 	private String sDescription;
 	private List<? extends TreeNode> lstSubNodes;
 	
-	private CommonLocaleDelegate cld;
+	private transient CommonLocaleDelegate cld;
 
 	/**
 	 * @param id the tree node's id. May be <code>null</code>.
@@ -67,6 +68,11 @@ public abstract class AbstractTreeNode<Id> implements TreeNode {
 		this.setLabel(sLabel);
 		this.setDescription(sDescription);
 		assert this.hasSubNodes() == null;
+	}
+	
+	protected Object readResolve() throws ObjectStreamException {
+		setCommonLocaleDelegate(CommonLocaleDelegate.getInstance());
+		return this;
 	}
 	
 	@Autowired

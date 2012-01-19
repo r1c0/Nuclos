@@ -17,6 +17,7 @@
 
 package org.nuclos.client.ui.model;
 
+import java.io.ObjectStreamException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -38,7 +39,7 @@ public abstract class AbstractListTableModel<R> extends AbstractTableModel imple
 
 	private List<R> lstRows;
 	
-	private CommonLocaleDelegate cld;
+	private transient CommonLocaleDelegate cld;
 
 	public AbstractListTableModel() {
 		setRows(new ArrayList<R>());
@@ -51,6 +52,11 @@ public abstract class AbstractListTableModel<R> extends AbstractTableModel imple
 	 */
 	public AbstractListTableModel(List<R> lstRows) {
 		setRows(lstRows);
+	}
+	
+	protected Object readResolve() throws ObjectStreamException {
+		setCommonLocaleDelegate(CommonLocaleDelegate.getInstance());
+		return this;
 	}
 	
 	@Autowired

@@ -16,6 +16,7 @@
 // along with Nuclos. If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.server.navigation.treenode;
 
+import java.io.ObjectStreamException;
 import java.rmi.RemoteException;
 import java.util.List;
 
@@ -296,7 +297,7 @@ public class GenericObjectTreeNode extends AbstractTreeNode<Integer> implements
 	}
 
 	@Override
-	public Object readResolve() {
+	protected Object readResolve() throws ObjectStreamException {
 		if(this.getUserName() == null) {
 			try {
 				this.sUserName = getSecurityFacade().getSessionContextAsString();

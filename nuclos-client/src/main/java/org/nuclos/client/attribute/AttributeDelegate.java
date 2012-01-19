@@ -19,11 +19,14 @@ package org.nuclos.client.attribute;
 import java.util.Collection;
 import java.util.Set;
 
-import org.nuclos.common.NuclosFatalException;
-import org.nuclos.common2.ServiceLocator;
+import javax.annotation.PostConstruct;
+
 import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.server.attribute.ejb3.AttributeFacadeRemote;
 import org.nuclos.server.attribute.valueobject.AttributeCVO;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.stereotype.Component;
 
 /**
  * Business Delegate for <code>AttributeFacadeBean</code>.
@@ -34,29 +37,28 @@ import org.nuclos.server.attribute.valueobject.AttributeCVO;
  * @author	<a href="mailto:Christoph.Radig@novabit.de">Christoph.Radig</a>
  * @version 01.00.00
  */
+@Component
+@Lazy
 public class AttributeDelegate {
-	private static AttributeDelegate singleton;
+	
+	private static AttributeDelegate INSTANCE;
 
+	// 
+	
 	private AttributeFacadeRemote facade;
 
-	public static synchronized AttributeDelegate getInstance() {
-		if (singleton == null) {
-			singleton = new AttributeDelegate();
-		}
-		return singleton;
+	public static AttributeDelegate getInstance() {
+		if (INSTANCE.facade == null) throw new NullPointerException("too early");
+		return INSTANCE;
 	}
 
 	private AttributeDelegate() {
-		this.facade = newAttributeFacade();
+		INSTANCE = this;
 	}
-
-	private static AttributeFacadeRemote newAttributeFacade() {
-		try {
-			return ServiceLocator.getInstance().getFacade(AttributeFacadeRemote.class);
-		}
-		catch (RuntimeException ex) {
-			throw new NuclosFatalException(ex);
-		}
+	
+	@Autowired
+	void setAttributeFacadeRemote(AttributeFacadeRemote facade) {
+		this.facade = facade;
 	}
 
 	/**
@@ -65,56 +67,12 @@ public class AttributeDelegate {
 	 */
 	public Collection<AttributeCVO> getAllAttributeCVOs(Integer iGroupId) {
 		try {
-			return this.facade.getAttributes(iGroupId);
+			return facade.getAttributes(iGroupId);
 		}
 		catch (RuntimeException ex) {
 			throw new CommonFatalException(ex);
 		}
 	}	// getAttributes
-
-	/*
-	public AttributeCVO update(AttributeCVO attrcvo, DependantMasterDataMap mpmdvoDependants) throws CommonBusinessException {
-		if (attrcvo == null) {
-			throw new NullArgumentException("attrcvo");
-		}
-		try {
-			// workaround: The server cannot return the new values of columns that were joined into the view.
-			// So we call get() again (in another transaction) to get the changed values:
-			return this.facade.get(this.facade.modify(attrcvo, mpmdvoDependants));
-		}
-		catch (RuntimeException ex) {
-			throw new NuclosUpdateException(null, ex);
-		}
-		catch (CommonCreateException ex) {
-			throw new NuclosUpdateException(null, ex);
-		}
-
-	}
-	 */
-
-	/**
-	 * @param attrcvo
-	 * @return
-	 * @throws CommonBusinessException
-	 * @postcondition result != null
-	public AttributeCVO create(AttributeCVO attrcvo, DependantMasterDataMap mpmdvoDependants) throws CommonBusinessException {
-		try {
-			return this.facade.create(attrcvo, mpmdvoDependants);
-		}
-		catch (RuntimeException ex) {
-			throw new CommonFatalException(ex);
-		}
-	}
-
-	public void remove(AttributeCVO attrcvo) throws CommonBusinessException {
-		try {
-			this.facade.remove(attrcvo);
-		}
-		catch (RuntimeException ex) {
-			throw new CommonFatalException(ex);
-		}
-	}
-	 */
 
 	/**
 	 * invalidates the attribute cache (console function)

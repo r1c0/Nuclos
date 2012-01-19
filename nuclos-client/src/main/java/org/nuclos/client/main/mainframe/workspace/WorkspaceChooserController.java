@@ -367,7 +367,7 @@ public class WorkspaceChooserController {
 				
 				contentPanel.repaint();
 				
-				MainFrame.setSplittingEnabled(
+				Main.getInstance().getMainFrame().setSplittingEnabled(
 						wovo.getAssignedWorkspace() == null || 
 						(wovo.getAssignedWorkspace() != null && SecurityCache.getInstance().isActionAllowed(Actions.ACTION_WORKSPACE_ASSIGN)));
 			}

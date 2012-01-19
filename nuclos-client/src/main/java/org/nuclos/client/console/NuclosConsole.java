@@ -74,6 +74,9 @@ import org.nuclos.server.ruleengine.ejb3.TimelimitRuleFacadeRemote;
 import org.nuclos.server.ruleengine.valueobject.RuleEventUsageVO;
 import org.nuclos.server.ruleengine.valueobject.RuleVO;
 import org.nuclos.server.ruleengine.valueobject.RuleWithUsagesVO;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
+import org.springframework.stereotype.Component;
 
 /**
  * Management console for Nucleus.
@@ -84,9 +87,8 @@ import org.nuclos.server.ruleengine.valueobject.RuleWithUsagesVO;
  * @author	<a href="mailto:Boris.Sander@novabit.de">Boris Sander</a>
  * @version 01.00.00
  */
+@Configurable
 public class NuclosConsole extends ConsoleConstants {
-
-	private static String sUserName;
 
 	/**
 	 * this list is used by NuclosConsoleGui to show the available commands
@@ -104,13 +106,19 @@ public class NuclosConsole extends ConsoleConstants {
 			CMD_IMPORTTIMELIMITRULES, CMD_EXPORTTIMELIMITRULES, CMD_EXECUTE_TIMELIMITRULE_NOW
 	);
 
-	private static NuclosConsole singleton;
+	private static NuclosConsole INSTANCE;
+
+	private static String sUserName;
+	
+	// 
+	
+	private AttributeCache attributeCache;
 
 	public static synchronized NuclosConsole getInstance() {
-		if (singleton == null) {
-			singleton = newNuclosConsole();
+		if (INSTANCE == null) {
+			INSTANCE = newNuclosConsole();
 		}
-		return singleton;
+		return INSTANCE;
 	}
 
 	private static NuclosConsole newNuclosConsole() {
@@ -127,6 +135,11 @@ public class NuclosConsole extends ConsoleConstants {
 	}
 
 	protected NuclosConsole() {
+	}
+	
+	@Autowired
+	void setAttributeCache(AttributeCache attributeCache) {
+		this.attributeCache = attributeCache;
 	}
 
 	private static void login(String sUser, String sPassword) throws LoginException {
@@ -832,9 +845,10 @@ public class NuclosConsole extends ConsoleConstants {
 	 * Check and eliminate attributes from object generation which are not valid in the context
 	 * todo: check validity of subentities here also!
 	 */
-	private static void validateObjectGenerations() {
+	private void validateObjectGenerations() {
 		System.out.println("validateObjectGenerations start ...");
-		AttributeCache.initialize();
+		attributeCache.fill();
+		
 		final GenericObjectMetaDataCache lometacache = GenericObjectMetaDataCache.getInstance();
 		for (MasterDataVO mdvoGeneration : MasterDataDelegate.getInstance().getMasterData(NuclosEntity.GENERATION.getEntityName())) {
 			final Collection<String> collSourceAttributeNames = lometacache.getAttributeNamesByModuleId(mdvoGeneration.getField("sourceModuleId", Integer.class), Boolean.FALSE);

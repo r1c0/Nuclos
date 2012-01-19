@@ -31,6 +31,7 @@ import org.nuclos.server.common.ModulePermissions;
 import org.nuclos.server.common.ejb3.SecurityFacadeRemote;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
+import org.springframework.stereotype.Component;
 
 /**
  * Business Delegate for <code>SecurityFacadeBean</code>.
@@ -41,23 +42,21 @@ import org.springframework.beans.factory.annotation.Configurable;
  * @author	<a href="mailto:Christoph.Radig@novabit.de">Christoph.Radig</a>
  * @version 01.00.00
  */
-@Configurable
+@Component
 public class SecurityDelegate {
 	
 	private static final Logger LOG = Logger.getLogger(SecurityDelegate.class);
 	
-	private static SecurityDelegate singleton;
+	private static SecurityDelegate INSTANCE;
 
 	private SecurityFacadeRemote facade;
 
-	private SecurityDelegate() {
+	SecurityDelegate() {
+		INSTANCE = this;
 	}
 
-	public static synchronized SecurityDelegate getInstance() {
-		if (singleton == null) {
-			singleton = new SecurityDelegate();
-		}
-		return singleton;
+	public static SecurityDelegate getInstance() {
+		return INSTANCE;
 	}
 	
 	@Autowired
@@ -117,7 +116,7 @@ public class SecurityDelegate {
 	 * @param sEntityName
 	 * @return a map of state id's and the corresponding permission
 	 */
-	public java.util.Map<Integer, Permission> getSubFormPermission(String sEntityName) {
+	public Map<Integer, Permission> getSubFormPermission(String sEntityName) {
 		try {
 			return this.getSecurityFacade().getSubFormPermission(sEntityName);
 		}catch(RuntimeException ex) {

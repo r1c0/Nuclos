@@ -46,7 +46,8 @@ import org.nuclos.server.common.ModulePermission;
 import org.nuclos.server.common.ModulePermissions;
 import org.nuclos.server.common.ejb3.SecurityFacadeRemote;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Configurable;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.stereotype.Component;
 
 /**
  * caches client rights.
@@ -58,9 +59,11 @@ import org.springframework.beans.factory.annotation.Configurable;
  * @author	<a href="mailto:Christoph.Radig@novabit.de">Christoph.Radig</a>
  * @version 01.00.00
  */
-@Configurable
+@Component
+@Lazy
 public class SecurityCache {
-	private static SecurityCache singleton;
+	
+	private static SecurityCache INSTANCE;
 
 	private String username;
 	private Boolean superUser;
@@ -80,6 +83,10 @@ public class SecurityCache {
 			new HashMap<PermissionKey.MasterDataPermissionKey, MasterDataPermission>();
 	
 	private TopicNotificationReceiver tnr;
+	
+	private SecurityDelegate securityDelegate;
+	
+	private AttributeCache attributeCache;
 
 	private final MessageListener listener = new MessageListener() {
 		@Override
@@ -97,7 +104,7 @@ public class SecurityCache {
 			}
 			if (clearcache) {
 				SecurityCache.this.revalidate();
-				AttributeCache.getInstance().revalidate();
+				attributeCache.revalidate();
 				UIUtils.runCommandLater(Main.getInstance().getMainFrame(), new CommonRunnable() {
 					@Override
 	                public void run() throws CommonBusinessException {
@@ -110,38 +117,39 @@ public class SecurityCache {
 
 
 	/**
-	 * May optionally be called to explicitly initialize the cache. The cache is implicitly initialized by
-	 * the first call to <code>getInstance()</code> anyway.
-	 */
-	public static void initialize() {
-		getInstance();
-	}
-
-	/**
 	 * @return the one (and only) instance of SecurityCache
 	 */
-	public static synchronized SecurityCache getInstance() {
-		if (singleton == null) {
-			singleton = new SecurityCache();
-		}
-		return singleton;
+	public static SecurityCache getInstance() {
+		return INSTANCE;
 	}
 
 	/**
 	 * creates the cache. Fills in all the attributes from the database.
 	 */
-	private SecurityCache() {
+	SecurityCache() {
+		INSTANCE = this;
 	}
 	
 	@PostConstruct
 	void init() {
 		tnr.subscribe(JMSConstants.TOPICNAME_SECURITYCACHE, listener);
-		this.validate();
+		validate();
+		this.securityDelegate = SecurityDelegate.getInstance();
 	}
 	
 	@Autowired
 	void setTopicNotificationReceiver(TopicNotificationReceiver tnr) {
 		this.tnr = tnr;
+	}
+	
+	@Autowired
+	void setSecurityDelegate(SecurityDelegate securityDelegate) {
+		this.securityDelegate = securityDelegate;
+	}
+	
+	@Autowired
+	void setAttributeCache(AttributeCache attributeCache) {
+		this.attributeCache = attributeCache;
 	}
 
 	public synchronized boolean isActionAllowed(String sActionName) {
@@ -243,7 +251,7 @@ public class SecurityCache {
 	 * @throws NuclosFatalException
 	 */
     private void validate() throws NuclosFatalException {
-		Map<String, Object> iniData = SecurityDelegate.getInstance().getInitialSecurityData();
+		Map<String, Object> iniData = securityDelegate.getInitialSecurityData();
 		this.username = (String) iniData.get(SecurityFacadeRemote.USERNAME);
 		this.superUser = (Boolean) iniData.get(SecurityFacadeRemote.IS_SUPER_USER);
 		this.stAllowedActions = (Set<String>) iniData.get(SecurityFacadeRemote.ALLOWED_ACTIONS);
@@ -261,7 +269,7 @@ public class SecurityCache {
 	public synchronized Map<Integer, Permission> getSubFormPermission(String sEntityName) {
 		PermissionKey.SubFormPermissionKey subFormPermissionKey = new PermissionKey.SubFormPermissionKey(sEntityName);
 		if (!mpSubFormPermission.containsKey(subFormPermissionKey)) {
-			Map<Integer, Permission> permission = SecurityDelegate.getInstance().getSubFormPermission(sEntityName);
+			Map<Integer, Permission> permission = securityDelegate.getSubFormPermission(sEntityName);
 			mpSubFormPermission.put(subFormPermissionKey, permission);
 		}
 		return mpSubFormPermission.get(subFormPermissionKey);
@@ -290,7 +298,7 @@ public class SecurityCache {
 		PermissionKey.AttributePermissionKey key = new PermissionKey.AttributePermissionKey(entity, attributeName, stateId);
 		if(!mpAttributePermission.containsKey(key)) {
 			Map<String, Permission> attrPermissions
-				= SecurityDelegate.getInstance().getAttributePermissionsByEntity(entity, stateId);
+				= securityDelegate.getAttributePermissionsByEntity(entity, stateId);
 			for(Map.Entry<String, Permission> e : attrPermissions.entrySet())
 				mpAttributePermission.put(
 					new PermissionKey.AttributePermissionKey(entity, e.getKey(), stateId),

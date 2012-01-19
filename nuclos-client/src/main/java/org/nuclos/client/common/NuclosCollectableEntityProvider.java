@@ -20,6 +20,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
 
+import javax.annotation.PostConstruct;
+
 import org.nuclos.client.attribute.AttributeCache;
 import org.nuclos.client.genericobject.CollectableGenericObjectEntity;
 import org.nuclos.client.genericobject.Modules;
@@ -37,6 +39,9 @@ import org.nuclos.common.collect.collectable.CollectableEntity;
 import org.nuclos.common.collect.collectable.CollectableEntityProvider;
 import org.nuclos.common.masterdata.CollectableMasterDataEntity;
 import org.nuclos.server.masterdata.valueobject.MasterDataMetaVO;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
+import org.springframework.stereotype.Component;
 
 /**
  * <code>CollectableEntityProvider</code> for all Nucleus-specific entities.
@@ -50,22 +55,28 @@ import org.nuclos.server.masterdata.valueobject.MasterDataMetaVO;
  * @todo move this class to nucleus.common so it's accessible from the server -
  * or implement a separate server version.
  */
+@Component
 public class NuclosCollectableEntityProvider implements CollectableEntityProvider {
 
-	private static CollectableEntityProvider singleton;
+	private static CollectableEntityProvider INSTANCE;
+	
+	//
 
 	private Map<String, CollectableEntity> mpSpecialEntities = new HashMap<String, CollectableEntity>(12);
+	
+	private AttributeCache attributeCache;
 
-	public static synchronized CollectableEntityProvider getInstance() {
-		if (singleton == null) {
-			singleton = new NuclosCollectableEntityProvider();
-		}
-		assert singleton != null;
-		return singleton;
+	public static CollectableEntityProvider getInstance() {
+		return INSTANCE;
 	}
 
 	private NuclosCollectableEntityProvider() {
-		AttributeCache.initialize();
+		INSTANCE = this;
+	}
+	
+	@PostConstruct
+	void init() {
+		attributeCache.fill();
 
 		this.mpSpecialEntities.put(CollectableRule.clcte.getName(), CollectableRule.clcte);
 		this.mpSpecialEntities.put(CollectableRuleEventUsage.clcte.getName(), CollectableRuleEventUsage.clcte);
@@ -75,6 +86,11 @@ public class NuclosCollectableEntityProvider implements CollectableEntityProvide
 		this.mpSpecialEntities.put(CollectableStateRoleAttributeGroup.clcte.getName(), CollectableStateRoleAttributeGroup.clcte);
 		this.mpSpecialEntities.put(CollectableStateRoleSubForm.clcte.getName(), CollectableStateRoleSubForm.clcte);
 		this.mpSpecialEntities.put(CollectableTaskOwner.clcte.getName(), CollectableTaskOwner.clcte);
+	}
+	
+	@Autowired
+	void setAttributeCache(AttributeCache attributeCache) {
+		this.attributeCache = attributeCache;
 	}
 
 	@Override
@@ -114,8 +130,6 @@ public class NuclosCollectableEntityProvider implements CollectableEntityProvide
 			assert result != null;
 			assert result.getName().equals(sEntityName);
 			return result;
-		
-		
 	}
 
 	@Override

@@ -25,6 +25,7 @@ import java.awt.dnd.DnDConstants;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.io.IOException;
+import java.io.ObjectStreamException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -117,7 +118,7 @@ public class ExplorerNode<TN extends TreeNode> extends DefaultMutableTreeNode {
 	
 	private MainController mainController;
 	
-	private CommonLocaleDelegate cld;
+	private transient CommonLocaleDelegate cld;
 
 	/**
 	 * Use <code>ExplorerNodeFactory.newExplorerNode()</code> to create <code>ExplorerNode</code>s
@@ -126,6 +127,11 @@ public class ExplorerNode<TN extends TreeNode> extends DefaultMutableTreeNode {
 	 */
 	protected ExplorerNode(TreeNode treenode) {
 		super(treenode, true);
+	}
+	
+	protected Object readResolve() throws ObjectStreamException {
+		setCommonLocaleDelegate(CommonLocaleDelegate.getInstance());
+		return this;
 	}
 	
 	@Autowired

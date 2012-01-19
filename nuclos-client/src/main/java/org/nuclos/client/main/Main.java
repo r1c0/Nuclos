@@ -57,7 +57,6 @@ public class Main {
 	
 	private static final boolean MAC_OSX = System.getProperty("os.name").toLowerCase().startsWith("mac os x");
 
-	@Deprecated
 	private static Main INSTANCE;
 
 	/**
@@ -103,7 +102,6 @@ public class Main {
 		INSTANCE = this;
 	}
 	
-	@Deprecated
 	public static Main getInstance() {
 		if (INSTANCE == null) throw new NullPointerException("too early");
 		return INSTANCE;

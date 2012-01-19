@@ -92,6 +92,7 @@ import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.common2.exception.CommonPermissionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
+import org.springframework.context.annotation.Lazy;
 
 /**
  * Controller for the Result panel.

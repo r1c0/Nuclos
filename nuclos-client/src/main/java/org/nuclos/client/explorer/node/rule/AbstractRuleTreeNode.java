@@ -16,6 +16,7 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.explorer.node.rule;
 
+import java.io.ObjectStreamException;
 import java.text.Collator;
 import java.util.Collection;
 import java.util.Collections;
@@ -53,7 +54,7 @@ public abstract class AbstractRuleTreeNode implements TreeNode {
 	private List<? extends TreeNode> lstSubNodes;
 	private RuleNodeType nodeType;
 	
-	private CommonLocaleDelegate cld;
+	private transient CommonLocaleDelegate cld;
 
 	public AbstractRuleTreeNode(Integer iId, String sLabel, String sDescription, List<? extends TreeNode> lstSubNodes,
 			RuleNodeType aNodeType) {
@@ -63,6 +64,11 @@ public abstract class AbstractRuleTreeNode implements TreeNode {
 		this.sDescription = sDescription;
 		this.lstSubNodes = lstSubNodes;
 		this.nodeType = aNodeType;
+	}
+	
+	protected Object readResolve() throws ObjectStreamException {
+		setCommonLocaleDelegate(CommonLocaleDelegate.getInstance());
+		return this;
 	}
 	
 	@Autowired

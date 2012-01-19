@@ -189,7 +189,6 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 	private static final MultiListMap<String, EntityBookmark> bookmark = new MultiListHashMap<String, EntityBookmark>();
 	private static int selectedHistorySize = 0;
 
-	private final JMenu menuWindow = new JMenu();
 	private static boolean splittingEnabled = true;
 	private static boolean splittingDeactivated = false;
 
@@ -201,17 +200,19 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 	
 	private static JWindow winSwitchingWorkspace;
 
-	private static final AbstractAction actDeactivateSplitting = new AbstractAction() {
+	//
+	
+	private final AbstractAction actDeactivateSplitting = new AbstractAction() {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			setSplittingDeactivated(!isSplittingDeactivated());
 		}
 	};
+
+	private JCheckBoxMenuItem miDeactivateSplitting;
 	
-	private static final JCheckBoxMenuItem miDeactivateSplitting = new JCheckBoxMenuItem(actDeactivateSplitting);
-	
-	//
+	private JMenu menuWindow;
 
 	private NuclosMessagePanel msgPanel;
 	
@@ -534,6 +535,9 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 	}
 
 	private void initWindowMenu(Map<String, Map<String, Action>> commandMap, NuclosNotificationDialog notificationDialog) {
+		menuWindow = new JMenu();
+		miDeactivateSplitting = new JCheckBoxMenuItem(actDeactivateSplitting);
+		
 		// Windows menu:
 		menuWindow.removeAll();
 		
@@ -545,13 +549,13 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 		JMenuItem miRestoreDefaultWorkspace = new JMenuItem();
 
 		MenuGenerator.initMenuItem(menuWindow, cld.getMessage("miWindow", "^Window"), null, null);
+		MenuGenerator.initMenuItem(miDeactivateSplitting, cld.getMessage("miWDeactivateSplitting","^Disable Window Splitting"), null, null);
 
 		MenuGenerator.initMenuItem(miWindowBackgroundTasks, cld.getMessage("miBGTasks", "^Background Tasks"), null, null);
 		MenuGenerator.initMenuItem(miWindowNotificationDialog, cld.getMessage("miMessages", "^Messages"), null, null);
 		MenuGenerator.initMenuItem(miCloseAllTabs, cld.getMessage("miWCloseAll", "^Close All Tabs"), null, null);
 		MenuGenerator.initMenuItem(miNextTab, cld.getMessage("miWNext", "^Next Tab"), null, KeyBindingProvider.NEXT_TAB.getKeystroke());
 		MenuGenerator.initMenuItem(miPreviousTab, cld.getMessage("miWPrev", "^Previous Tab"), null, KeyBindingProvider.PREVIOUS_TAB.getKeystroke());
-		MenuGenerator.initMenuItem(miDeactivateSplitting, cld.getMessage("miWDeactivateSplitting","^Disable Window Splitting"), null, null);
 		MenuGenerator.initMenuItem(miRestoreDefaultWorkspace, cld.getMessage("miWRestoreDefaultWorkspace","Restore Default Workspace"), null, null);
 
 		menuWindow.add(miWindowBackgroundTasks);
@@ -1836,7 +1840,7 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 	 * @throws BackingStoreException
 	 * @throws PreferencesException
 	 */
-	public static void readMainFramePreferences(Preferences mainFramePrefs)
+	public void readMainFramePreferences(Preferences mainFramePrefs)
 			throws BackingStoreException, PreferencesException {
 		setSplittingDeactivated(mainFramePrefs.getBoolean(PREFS_NODE_SPLITTING_DEACTIVATED, false));
 		selectedHistorySize = mainFramePrefs.getInt(PREFS_NODE_HISTORY_SIZE_INDEX, 0);
@@ -1975,9 +1979,9 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 	 *
 	 * @param splittingDeactivated
 	 */
-	public static void setSplittingDeactivated(boolean splittingDeactivated) {
-		MainFrame.splittingDeactivated = splittingDeactivated;
-		MainFrame.miDeactivateSplitting.setSelected(splittingDeactivated);
+	public void setSplittingDeactivated(boolean splittingDeactivated) {
+		splittingDeactivated = splittingDeactivated;
+		miDeactivateSplitting.setSelected(splittingDeactivated);
 	}
 
 	/**
@@ -1992,10 +1996,10 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 	 *
 	 * @param enabled
 	 */
-	public static void setSplittingEnabled(boolean enabled) {
+	public void setSplittingEnabled(boolean enabled) {
 		MainFrame.splittingEnabled = enabled;
 		setSplittingDeactivated(!enabled);
-		MainFrame.miDeactivateSplitting.setEnabled(enabled);
+		miDeactivateSplitting.setEnabled(enabled);
 	}
 
 	/**
