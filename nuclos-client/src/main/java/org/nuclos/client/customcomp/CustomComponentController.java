@@ -309,17 +309,9 @@ public abstract class CustomComponentController extends TopController {
 
 	}
 
-	@Configurable
 	public static class CustomComponentTabRestoreController extends TabRestoreController {
 		
-		private MainController mainController;
-		
 		public CustomComponentTabRestoreController() {
-		}
-		
-		@Autowired
-		void setMainController(MainController mainController) {
-			this.mainController = mainController;
 		}
 		
 		@Override
@@ -331,7 +323,7 @@ public abstract class CustomComponentController extends TopController {
 			Main.getInstance().getMainController().initMainFrameTab(ctl, tab);
 			// Main.getMainController().addMainFrameTab would be called from listener inside of initMainFrameTab, but only when tab added.
 			// During restore the tabs are already added, so we need to do this manually.
-			mainController.addMainFrameTab(tab, ctl);
+			Main.getInstance().getMainController().addMainFrameTab(tab, ctl);
 
 			ctl.restoreInstanceStateFromXML(rp.instanceStateXML);
 			ctl.run();
