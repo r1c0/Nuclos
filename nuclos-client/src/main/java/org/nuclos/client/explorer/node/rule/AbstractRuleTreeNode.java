@@ -66,10 +66,14 @@ public abstract class AbstractRuleTreeNode implements TreeNode {
 		this.nodeType = aNodeType;
 	}
 	
-	protected Object readResolve() throws ObjectStreamException {
+	/*
+	 * Maven don't like this.
+	 * {@link org.springframework.beans.factory.aspectj.AbstractInterfaceDrivenDependencyInjectionAspect}.
+	public Object readResolve() throws ObjectStreamException {
 		setCommonLocaleDelegate(CommonLocaleDelegate.getInstance());
 		return this;
 	}
+	 */
 	
 	@Autowired
 	void setCommonLocaleDelegate(CommonLocaleDelegate cld) {

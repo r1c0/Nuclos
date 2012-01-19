@@ -296,8 +296,14 @@ public class GenericObjectTreeNode extends AbstractTreeNode<Integer> implements
 		return this.sUserName;
 	}
 
-	@Override
-	protected Object readResolve() throws ObjectStreamException {
+	/**
+	 * Don't use @Override as there is nothing to override seen by the
+	 * (maven) java compiler.
+	 * 
+	 * Must be public and must not throw ObjectStreamException
+	 * {@link org.springframework.beans.factory.aspectj.AbstractInterfaceDrivenDependencyInjectionAspect}.
+	 */
+	public Object readResolve() {
 		if(this.getUserName() == null) {
 			try {
 				this.sUserName = getSecurityFacade().getSessionContextAsString();
