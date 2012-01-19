@@ -19,12 +19,15 @@ package org.nuclos.server.navigation.treenode;
 import java.rmi.RemoteException;
 import java.util.List;
 
+import javax.annotation.PostConstruct;
+
 import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.common2.exception.CommonFinderException;
 import org.nuclos.common2.exception.CommonPermissionException;
 import org.nuclos.common2.exception.CommonRemoteException;
 import org.nuclos.common.Utils;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
+import org.springframework.beans.factory.annotation.Configurable;
 
 /**
  * TreeNode for MasterDataRecords
@@ -35,10 +38,18 @@ import org.nuclos.server.masterdata.valueobject.MasterDataVO;
  * @author	<a href="mailto:Lars.Rueckemann@novabit.de">Lars Rueckemann</a>
  * @version	01.00.00
  */
+@Configurable
 public class DefaultMasterDataTreeNode extends MasterDataTreeNode<Integer> {
+	
+	private final MasterDataVO mdvo;
 
 	public DefaultMasterDataTreeNode(String sEntity, MasterDataVO mdvo) {
 		super(sEntity, mdvo.getIntId());
+		this.mdvo = mdvo;
+	}
+	
+	@PostConstruct
+	final void init() {
 		this.setLabel(getIdentifier(mdvo));
 		this.setDescription(getDescription(mdvo));
 	}
