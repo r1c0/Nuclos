@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE layoutml SYSTEM "http://www.novabit.de/technologies/layoutml/layoutml.dtd">
+<layoutml>
+    <layout>
+        <panel>
+            <boxlayout axis="y"/>
+            <empty-panel/>
+            <panel>
+                <gridbaglayout/>
+                <label enabled="yes" name="Formular" text="Entität">
+                    <gridbag-constraints anchor="northwest" gridx="0" gridy="0" weightx="1"/>
+                </label>
+                <collectable-component columns="40" controltype="combobox" fill-control-horizontally="yes" insertable="no" name="entity" show-only="control">
+                    <gridbag-constraints anchor="northwest" gridx="1" gridy="0" weightx="0"/>
+	                <valuelist-provider type="masterDataEntity"/>
+                </collectable-component>
+                <label enabled="yes" name="General" text="Allgemeines">
+                    <gridbag-constraints anchor="northwest" gridx="0" gridy="1" weightx="1"/>
+                </label>
+                <collectable-component columns="40" controltype="combobox" fill-control-horizontally="yes" insertable="no" name="general" show-only="control">
+                    <gridbag-constraints anchor="northwest" gridx="1" gridy="1" weightx="0"/>
+                    <valuelist-provider type="parameters">
+                        <parameter name="showClass" value="java.lang.String"/>
+                        <parameter name="showValue" value="Menüleiste"/>
+                        <parameter name="showValue" value="Maskenfunktionen"/>
+                        <parameter name="showValue" value="Sonstige"/>
+                    </valuelist-provider>
+                </collectable-component>
+            </panel>
+            <panel>
+                <boxlayout axis="y"/>
+                <titled-border title="Wikiseiten für Komponenten"/>
+                <subform entity="nuclos_wikimapping">
+                    <subform-column name="attribute">
+                        <valuelist-provider type="entityfields"/>
+                    </subform-column>
+                    <subform-column name="field" visible="no"/>
+                </subform>
+                <subform entity="nuclos_wikimappinggeneral"/>
+            </panel>
+        </panel>
+    </layout>
+    <rules>
+        <rule>
+            <event sourcecomponent="entity" type="value-changed"/>
+            <actions>
+                <refresh-valuelist entity="nuclos_wikimapping" parameter-for-sourcecomponent="entity" targetcomponent="attribute"/>
+            </actions>
+        </rule>
+    </rules>
+</layoutml>

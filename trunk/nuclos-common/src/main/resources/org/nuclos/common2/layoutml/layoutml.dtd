@@ -1,0 +1,456 @@
+<?xml version='1.0' encoding='us-ascii'?>
+
+<!--
+/**
+* <br>DTD for the LayoutML (Layout Markup Language).
+* <br>System Identifier: "http://www.novabit.de/technologies/layoutml/layoutml.dtd"
+* <br>
+* <br>Created by Novabit Informationssysteme GmbH
+* <br>Please visit <a href="http://www.novabit.de">www.novabit.de</a>
+*
+* @author	<a href="mailto:$Christoph.Radig@novabit.de">Christoph.Radig</a>
+* @version	01.00.00
+*/
+-->
+
+<!ENTITY % border "empty-border|etched-border|bevel-border|line-border|titled-border">
+<!ENTITY % borders "clear-border?,(%border;)*">
+<!ENTITY % sizes "minimum-size?,preferred-size?">
+<!ENTITY % layoutmanager "tablelayout|borderlayout|flowlayout|gridlayout|gridbaglayout|boxlayout|rowlayout|columnlayout">
+<!ENTITY % layoutconstraints "tablelayout-constraints|borderlayout-constraints|gridbag-constraints|tabbedpane-constraints|splitpane-constraints">
+<!ENTITY % boolean "yes|no">
+<!-- NUCLEUSINT-1142 -->
+<!ENTITY % controltype "textfield|id-textfield|textarea|combobox|checkbox|optiongroup|listofvalues|datechooser|filechooser|image|password">
+<!ENTITY % container "panel|empty-panel|subform|tabbedpane|scrollpane|splitpane">
+
+<!ELEMENT layoutml (definitions?, layout, dependencies?, rules?)>
+
+<!-- Note that definitions are currently unused. -->
+
+<!ELEMENT definitions (collectable-field*)>
+
+<!ELEMENT collectable-field EMPTY>
+<!ATTLIST collectable-field
+name CDATA #REQUIRED
+>
+
+
+<!ELEMENT layout (initial-focus-component?, (panel|splitpane))>
+
+<!ELEMENT initial-focus-component EMPTY>
+<!ATTLIST initial-focus-component
+name CDATA #REQUIRED
+entity CDATA #IMPLIED
+>
+
+<!--
+layoutmanager should be a mandatory attribute for panel here, but it is not possible
+with the current version of Xerlin, possibly because of a bug in Xerces 2.2.
+We have to check back when we switch to Xerces 2.5 or higher.
+-->
+
+<!ELEMENT panel ((%layoutconstraints;)?,(%layoutmanager;)?,(%borders;),(%sizes;),font?,background?,
+ description?,((%container;)|label|textfield|textarea|combobox|button|collectable-component|separator|titled-separator)*)>
+<!ATTLIST panel
+name CDATA #IMPLIED
+visible (%boolean;) #IMPLIED
+opaque (%boolean;) #IMPLIED
+>
+
+<!ELEMENT empty-panel ((%layoutconstraints;)?,(%borders;),(%sizes;),background?,description?)>
+<!ATTLIST empty-panel
+name CDATA #IMPLIED
+visible (%boolean;) #IMPLIED
+opaque (%boolean;) #IMPLIED
+>
+
+<!ELEMENT tabbedpane ((%layoutconstraints;)?,(%borders;),(%sizes;),(%container;)*)>
+<!ATTLIST tabbedpane
+name CDATA #IMPLIED
+tablayoutpolicy (wrap|scroll) #IMPLIED
+tabplacement (top|bottom|left|right) #IMPLIED
+>
+
+<!ELEMENT splitpane ((%layoutconstraints;)?,(%borders;),(%sizes;),(%container;),(%container;))>
+<!ATTLIST splitpane
+name CDATA #IMPLIED
+orientation (horizontal|vertical) #REQUIRED
+dividersize CDATA #IMPLIED
+resizeweight CDATA #IMPLIED
+expandable (%boolean;) #IMPLIED
+continuous-layout (%boolean;) #IMPLIED
+>
+
+<!ELEMENT subform ((%layoutconstraints;)?,(%borders;),(%sizes;),initial-sorting-order?,background?,description?,
+    subform-column*)>
+<!ATTLIST subform
+name CDATA #IMPLIED
+entity CDATA #REQUIRED
+enabled (%boolean;) #IMPLIED
+toolbarorientation (horizontal|vertical|hide) #IMPLIED
+opaque (%boolean;) #IMPLIED
+controllertype CDATA #IMPLIED
+unique-mastercolumn CDATA #IMPLIED
+foreignkeyfield-to-parent CDATA #IMPLIED
+parent-subform CDATA #IMPLIED
+>
+
+<!ELEMENT subform-column (translations?,valuelist-provider?)>
+<!ATTLIST subform-column
+name CDATA #REQUIRED
+label CDATA #IMPLIED
+controltype (%controltype;) #IMPLIED
+controltypeclass CDATA #IMPLIED
+visible (%boolean;) #IMPLIED
+enabled (%boolean;) #IMPLIED
+insertable (%boolean;) #IMPLIED
+rows CDATA #IMPLIED
+columns CDATA #IMPLIED
+resourceId CDATA #IMPLIED
+width CDATA #IMPLIED
+>
+
+<!ELEMENT initial-sorting-order EMPTY>
+<!ATTLIST initial-sorting-order
+ name CDATA #REQUIRED
+ sorting-order (ascending|descending) #REQUIRED
+ >
+
+<!ELEMENT scrollpane ((%layoutconstraints;)?,(%borders;),(%sizes;),((%container;)|textarea|collectable-component)?)>
+<!ATTLIST scrollpane
+name CDATA #IMPLIED
+horizontalscrollbar (always|never|asneeded) #IMPLIED
+verticalscrollbar (always|never|asneeded) #IMPLIED
+>
+
+<!ELEMENT label ((%layoutconstraints;)?,(%borders;),(%sizes;),font?,description?,translations?)>
+<!ATTLIST label
+name CDATA #IMPLIED
+enabled (%boolean;) #IMPLIED
+text CDATA #REQUIRED
+resourceId CDATA #IMPLIED
+>
+
+<!ELEMENT textfield ((%layoutconstraints;)?,(%borders;),(%sizes;),font?,description?)>
+<!ATTLIST textfield
+name CDATA #IMPLIED
+enabled (%boolean;) #IMPLIED
+editable (%boolean;) #IMPLIED
+columns CDATA #IMPLIED
+>
+
+<!ELEMENT image ((%layoutconstraints;)?,(%borders;),(%sizes;),font?,description?)>
+<!ATTLIST image
+name CDATA #IMPLIED
+enabled (%boolean;) #IMPLIED
+editable (%boolean;) #IMPLIED
+columns CDATA #IMPLIED
+>
+
+<!ELEMENT textarea ((%layoutconstraints;)?,(%borders;),(%sizes;),font?,description?)>
+<!ATTLIST textarea
+name CDATA #IMPLIED
+enabled (%boolean;) #IMPLIED
+editable (%boolean;) #IMPLIED
+rows CDATA #IMPLIED
+columns CDATA #IMPLIED
+>
+
+<!ELEMENT combobox ((%layoutconstraints;)?,(%borders;),(%sizes;),font?,description?)>
+<!ATTLIST combobox
+name CDATA #IMPLIED
+enabled (%boolean;) #IMPLIED
+editable (%boolean;) #REQUIRED
+>
+
+<!ELEMENT button ((%layoutconstraints;)?,(%borders;),(%sizes;),font?,description?,property*,translations?)>
+<!ATTLIST button
+name CDATA #IMPLIED
+actioncommand CDATA #REQUIRED
+label CDATA #IMPLIED
+tooltip CDATA #IMPLIED
+enabled (%boolean;) #IMPLIED
+resourceId CDATA #IMPLIED
+icon CDATA #IMPLIED
+>
+
+<!ELEMENT collectable-component ((%layoutconstraints;)?,property*,(%borders;),(%sizes;),background?,font?,description?,options?,translations?,valuelist-provider?)>
+<!ATTLIST collectable-component
+name CDATA #REQUIRED
+controltype (%controltype;) #IMPLIED
+controltypeclass CDATA #IMPLIED
+enabled (%boolean;) #IMPLIED
+insertable (%boolean;) #IMPLIED
+visible (%boolean;) #IMPLIED
+scalable (%boolean;) #IMPLIED
+show-only (label|control|browsebutton) #IMPLIED
+label CDATA #IMPLIED
+rows CDATA #IMPLIED
+columns CDATA #IMPLIED
+mnemonic CDATA #IMPLIED
+opaque (%boolean;) #IMPLIED
+fill-control-horizontally (%boolean;) #IMPLIED
+resourceId CDATA #IMPLIED
+nextfocuscomponent CDATA #IMPLIED
+aspectratio (%boolean;) #IMPLIED
+>
+
+<!ELEMENT options (option*)>
+<!ATTLIST options
+name CDATA #IMPLIED
+default CDATA #REQUIRED
+orientation (horizontal|vertical) #IMPLIED
+>
+
+<!ELEMENT option (translations?)>
+<!ATTLIST option
+name CDATA #IMPLIED
+value CDATA #REQUIRED
+label CDATA #REQUIRED
+mnemonic CDATA #IMPLIED
+>
+
+<!ELEMENT valuelist-provider (parameter*)>
+<!ATTLIST valuelist-provider
+type CDATA #REQUIRED
+>
+
+<!ELEMENT parameter EMPTY>
+<!ATTLIST parameter
+name CDATA #REQUIRED
+value CDATA #REQUIRED
+>
+
+<!ELEMENT property EMPTY>
+<!ATTLIST property
+name CDATA #REQUIRED
+value CDATA #REQUIRED
+>
+
+<!ELEMENT separator ((%layoutconstraints;)?,(%sizes;))>
+<!ATTLIST separator
+orientation (horizontal|vertical) #IMPLIED
+>
+
+<!ELEMENT titled-separator ((%layoutconstraints;)?,(%sizes;),font?,translations?)>
+<!ATTLIST titled-separator
+title CDATA #REQUIRED
+resourceId CDATA #IMPLIED
+>
+
+<!ELEMENT borderlayout EMPTY>
+<!ATTLIST borderlayout
+hgap CDATA #IMPLIED
+vgap CDATA #IMPLIED
+>
+
+<!ELEMENT flowlayout EMPTY>
+<!ATTLIST flowlayout
+align (left|right|leading|trailing|center) #IMPLIED
+hgap CDATA #IMPLIED
+vgap CDATA #IMPLIED
+>
+
+<!ELEMENT gridlayout EMPTY>
+<!ATTLIST gridlayout
+rows CDATA #REQUIRED
+columns CDATA #REQUIRED
+hgap CDATA #IMPLIED
+vgap CDATA #IMPLIED
+>
+
+<!ELEMENT gridbaglayout EMPTY>
+
+<!ELEMENT boxlayout EMPTY>
+<!ATTLIST boxlayout
+axis (x|y) #REQUIRED
+>
+
+<!ELEMENT rowlayout EMPTY>
+<!ATTLIST rowlayout
+gap CDATA #IMPLIED
+fill-vertically (%boolean;) #IMPLIED
+>
+
+<!ELEMENT columnlayout EMPTY>
+<!ATTLIST columnlayout
+gap CDATA #IMPLIED
+fill-horizontally (%boolean;) #IMPLIED
+>
+
+<!ELEMENT borderlayout-constraints EMPTY>
+<!ATTLIST borderlayout-constraints
+position (north|south|west|east|center) #REQUIRED
+>
+
+<!ELEMENT gridbag-constraints EMPTY>
+<!ATTLIST gridbag-constraints
+gridx CDATA #IMPLIED
+gridy CDATA #IMPLIED
+gridwidth CDATA #IMPLIED
+gridheight CDATA #IMPLIED
+weightx CDATA #IMPLIED
+weighty CDATA #IMPLIED
+anchor (north|northeast|east|southeast|south|southwest|west|northwest|center) #IMPLIED
+fill (none|horizontal|vertical|both) #IMPLIED
+insettop CDATA #IMPLIED
+insetleft CDATA #IMPLIED
+insetbottom CDATA #IMPLIED
+insetright CDATA #IMPLIED
+ipadx CDATA #IMPLIED
+ipady CDATA #IMPLIED
+>
+
+<!ELEMENT tablelayout-constraints EMPTY>
+<!ATTLIST tablelayout-constraints
+col1 CDATA #REQUIRED
+col2 CDATA #REQUIRED
+row1 CDATA #REQUIRED
+row2 CDATA #REQUIRED
+hAlign CDATA #REQUIRED
+vAlign CDATA #REQUIRED
+>
+
+<!ELEMENT tablelayout EMPTY>
+<!ATTLIST tablelayout
+columns CDATA #REQUIRED
+rows CDATA #REQUIRED
+>
+
+<!ELEMENT splitpane-constraints EMPTY>
+<!ATTLIST splitpane-constraints
+position (top|bottom|left|right) #REQUIRED
+>
+
+<!ELEMENT tabbedpane-constraints (translations?)>
+<!ATTLIST tabbedpane-constraints
+title CDATA #REQUIRED
+enabled (%boolean;) #IMPLIED
+resourceId CDATA #IMPLIED
+internalname CDATA #IMPLIED
+mnemonic CDATA #IMPLIED
+>
+
+<!ELEMENT clear-border EMPTY>
+
+<!ELEMENT empty-border EMPTY>
+<!ATTLIST empty-border
+top CDATA #IMPLIED
+left CDATA #IMPLIED
+bottom CDATA #IMPLIED
+right CDATA #IMPLIED
+>
+
+<!ELEMENT etched-border EMPTY>
+<!ATTLIST etched-border
+type (lowered|raised) #IMPLIED
+>
+
+<!ELEMENT bevel-border EMPTY>
+<!ATTLIST bevel-border
+type (lowered|raised) #REQUIRED
+>
+
+<!ELEMENT line-border EMPTY>
+<!ATTLIST line-border
+red CDATA #IMPLIED
+green CDATA #IMPLIED
+blue CDATA #IMPLIED
+thickness CDATA #IMPLIED
+>
+
+<!ELEMENT titled-border (translations?)>
+<!ATTLIST titled-border
+title CDATA #REQUIRED
+resourceId CDATA #IMPLIED
+>
+
+<!ELEMENT minimum-size EMPTY>
+<!ATTLIST minimum-size
+width CDATA #IMPLIED
+height CDATA #IMPLIED
+>
+
+<!ELEMENT preferred-size EMPTY>
+<!ATTLIST preferred-size
+width CDATA #IMPLIED
+height CDATA #IMPLIED
+>
+
+<!ELEMENT background EMPTY>
+<!ATTLIST background
+red CDATA #IMPLIED
+green CDATA #IMPLIED
+blue CDATA #IMPLIED
+>
+
+<!ELEMENT font EMPTY>
+<!ATTLIST font
+size CDATA #IMPLIED
+>
+
+<!ELEMENT translations (translation*)>
+
+<!ELEMENT translation EMPTY>
+<!ATTLIST translation
+lang CDATA #REQUIRED
+text CDATA #REQUIRED
+>
+
+<!ELEMENT description (#PCDATA)>
+
+
+<!ELEMENT dependencies (dependency*)>
+
+<!ELEMENT dependency EMPTY>
+<!ATTLIST dependency
+name CDATA #IMPLIED
+dependant-field CDATA #REQUIRED
+depends-on CDATA #REQUIRED
+>
+
+
+<!ELEMENT rules (rule*)>
+
+<!ELEMENT rule (event, condition?, actions)>
+<!ATTLIST rule
+name CDATA #IMPLIED
+>
+
+<!ELEMENT event EMPTY>
+<!ATTLIST event
+type (lookup|value-changed) #REQUIRED
+entity CDATA #IMPLIED
+sourcecomponent CDATA #REQUIRED
+>
+
+<!ELEMENT condition EMPTY>
+
+<!ELEMENT actions ((transfer-lookedup-value|clear|enable|refresh-valuelist)*)>
+
+<!ELEMENT transfer-lookedup-value EMPTY>
+<!ATTLIST transfer-lookedup-value
+sourcefield CDATA #REQUIRED
+targetcomponent CDATA #REQUIRED
+>
+
+<!ELEMENT clear EMPTY>
+<!ATTLIST clear
+entity CDATA #IMPLIED
+targetcomponent CDATA #REQUIRED
+>
+
+<!ELEMENT enable EMPTY>
+<!ATTLIST enable
+targetcomponent CDATA #REQUIRED
+invertable (%boolean;) #IMPLIED
+>
+
+<!ELEMENT refresh-valuelist EMPTY>
+<!ATTLIST refresh-valuelist
+entity CDATA #IMPLIED
+targetcomponent CDATA #REQUIRED
+parameter-for-sourcecomponent CDATA #IMPLIED
+>
+
+<!-- END OF LayoutML DTD -->

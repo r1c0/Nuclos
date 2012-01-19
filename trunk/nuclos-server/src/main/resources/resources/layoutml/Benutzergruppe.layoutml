@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="ISO-8859-15"?>
+<!DOCTYPE layoutml SYSTEM "http://www.novabit.de/technologies/layoutml/layoutml.dtd">
+<layoutml>
+<layout>
+  <panel visible="yes" opaque="yes">
+    <tablelayout columns="-1.0" rows="-1.0" />
+    <panel>
+      <tablelayout-constraints col1="0" col2="0" row1="0" row2="0" hAlign="2" vAlign="2" />
+      <tablelayout columns="12.0|164.0|5.0|228.0|-1.0|14.0" rows="12.0|22.0|5.0|22.0|5.0|165.0|-1.0|12.0" />
+      <collectable-component fill-control-horizontally="yes" name="name" insertable="yes" opaque="yes" visible="yes" enabled="yes" controltype="textfield" show-only="label">
+        <tablelayout-constraints col1="1" col2="1" row1="1" row2="1" hAlign="2" vAlign="1" />
+        <minimum-size height="16" width="15" />
+        <preferred-size height="16" width="50" />
+      </collectable-component>
+      <collectable-component fill-control-horizontally="yes" name="name" columns="30" insertable="yes" opaque="yes" visible="yes" enabled="yes" controltype="textfield" show-only="control">
+        <tablelayout-constraints col1="3" col2="3" row1="1" row2="1" hAlign="2" vAlign="1" />
+        <minimum-size height="20" width="35" />
+        <preferred-size height="20" width="70" />
+      </collectable-component>
+      <collectable-component fill-control-horizontally="yes" name="parentrole" insertable="no" opaque="yes" visible="yes" enabled="yes" controltype="combobox" show-only="control">
+        <tablelayout-constraints col1="3" col2="3" row1="3" row2="3" hAlign="2" vAlign="1" />
+        <minimum-size height="23" width="35" />
+        <preferred-size height="23" width="70" />
+      </collectable-component>
+      <collectable-component fill-control-horizontally="yes" name="parentrole" insertable="yes" opaque="yes" visible="yes" enabled="yes" controltype="textfield" show-only="label">
+        <tablelayout-constraints col1="1" col2="1" row1="3" row2="3" hAlign="2" vAlign="1" />
+        <minimum-size height="22" width="15" />
+        <preferred-size height="22" width="50" />
+      </collectable-component>
+      <tabbedpane  name="Tabbedpane_1">
+        <tablelayout-constraints col1="1" col2="4" row1="5" row2="6" hAlign="2" vAlign="2" />
+        <minimum-size height="40" width="180" />
+        <preferred-size height="250" width="300" />
+        <panel visible="yes" opaque="yes">
+        <tabbedpane-constraints title="User" enabled="yes" internalname="User">
+          <translations>
+            <translation lang="de" text="Benutzer"/>
+            <translation lang="en" text="User"/>
+          </translations>
+        </tabbedpane-constraints>
+          <tablelayout columns="-1.0" rows="-1.0" />
+          <panel>
+            <tablelayout-constraints col1="0" col2="0" row1="0" row2="0" hAlign="2" vAlign="2" />
+            <tablelayout columns="0.0|-1.0" rows="0.0|-1.0" />
+            <subform name="SubForm_7" entity="nuclos_roleuser" toolbarorientation="vertical" enabled="yes" unique-mastercolumn="user" >
+              <tablelayout-constraints col1="1" col2="1" row1="1" row2="1" hAlign="2" vAlign="2" />
+              <minimum-size height="40" width="180" />
+              <preferred-size height="250" width="300" />
+            </subform>
+          </panel>
+        </panel>
+        <panel visible="yes" opaque="yes">
+        <tabbedpane-constraints title="Description" enabled="yes" internalname="Description">
+          <translations>
+            <translation lang="de" text="Beschreibung"/>
+            <translation lang="en" text="Description"/>
+          </translations>
+        </tabbedpane-constraints>
+          <tablelayout columns="-1.0" rows="-1.0" />
+          <panel>
+            <tablelayout-constraints col1="0" col2="0" row1="0" row2="0" hAlign="2" vAlign="2" />
+            <tablelayout columns="12.0|-1.0|12.0" rows="12.0|-1.0|12.0" />
+            <collectable-component fill-control-horizontally="yes" name="description" rows="3" columns="30" insertable="yes" opaque="yes" visible="yes" enabled="yes" controltype="textarea" show-only="control">
+              <tablelayout-constraints col1="1" col2="1" row1="1" row2="1" hAlign="2" vAlign="2" />
+              <minimum-size height="20" width="35" />
+              <preferred-size height="20" width="70" />
+            </collectable-component>
+          </panel>
+        </panel>
+        <panel visible="yes" opaque="yes">
+        <tabbedpane-constraints title="Privileges" enabled="yes" internalname="Privileges">
+          <translations>
+            <translation lang="de" text="Berechtigungen"/>
+            <translation lang="en" text="Privileges"/>
+          </translations>
+        </tabbedpane-constraints>
+          <tablelayout columns="-1.0" rows="-1.0" />
+          <panel>
+            <tablelayout-constraints col1="0" col2="0" row1="0" row2="0" hAlign="2" vAlign="2" />
+            <tablelayout columns="0.0|-1.0" rows="0.0|-1.0" />
+            <subform name="SubForm_5" entity="nuclos_roleaction" toolbarorientation="vertical" enabled="yes" unique-mastercolumn="action" >
+              <tablelayout-constraints col1="1" col2="1" row1="1" row2="1" hAlign="2" vAlign="2" />
+              <minimum-size height="40" width="180" />
+              <preferred-size height="250" width="300" />
+              <subform-column name="action" enabled="yes" visible="yes" insertable="no" controltype="combobox">
+                <valuelist-provider type="actions"/></subform-column>
+            </subform>
+          </panel>
+        </panel>
+        <panel visible="yes" opaque="yes">
+        <tabbedpane-constraints title="Module privileges" enabled="yes" internalname="Module privileges">
+          <translations>
+            <translation lang="de" text="Modulrechte"/>
+            <translation lang="en" text="Module privileges"/>
+          </translations>
+        </tabbedpane-constraints>
+          <tablelayout columns="-1.0" rows="-1.0" />
+          <panel>
+            <tablelayout-constraints col1="0" col2="0" row1="0" row2="0" hAlign="2" vAlign="2" />
+            <tablelayout columns="0.0|-1.0" rows="0.0|-1.0" />
+            <subform name="SubForm_6" entity="nuclos_rolemodule" toolbarorientation="vertical" enabled="yes" unique-mastercolumn="module" >
+              <tablelayout-constraints col1="1" col2="1" row1="1" row2="1" hAlign="2" vAlign="2" />
+              <minimum-size height="40" width="180" />
+              <preferred-size height="250" width="300" />
+              <initial-sorting-order name="group" sorting-order="ascending" />
+              <subform-column name="module" enabled="yes" visible="yes" insertable="yes" controltype="combobox">
+                <valuelist-provider type="entityId">
+                  <parameter name="restriction" value="entities with statemodel" />
+                  <parameter name="menupath" value="optional" />
+                </valuelist-provider></subform-column>
+              <subform-column name="group" enabled="yes" visible="yes" insertable="yes">
+                <valuelist-provider type="default">
+                  <parameter name="ignoreValidity" value="true" />
+                </valuelist-provider></subform-column>
+              <subform-column name="modulepermission" enabled="yes" visible="yes" insertable="yes" controltype="combobox">
+                <valuelist-provider type="enum">
+                  <parameter name="showEnum" value="org.nuclos.server.common.ModulePermission" />
+                </valuelist-provider></subform-column>
+            </subform>
+          </panel>
+        </panel>
+        <panel visible="yes" opaque="yes">
+        <tabbedpane-constraints title="Master data privileges" enabled="yes" internalname="Master data privileges">
+          <translations>
+            <translation lang="de" text="Stammdatenrechte"/>
+            <translation lang="en" text="Master data privileges"/>
+          </translations>
+        </tabbedpane-constraints>
+          <tablelayout columns="-1.0" rows="-1.0" />
+          <panel>
+            <tablelayout-constraints col1="0" col2="0" row1="0" row2="0" hAlign="2" vAlign="2" />
+            <tablelayout columns="0.0|-1.0" rows="0.0|-1.0" />
+            <subform name="SubForm_8" entity="nuclos_rolemasterdata" toolbarorientation="vertical" enabled="yes" unique-mastercolumn="entity" >
+              <tablelayout-constraints col1="1" col2="1" row1="1" row2="1" hAlign="2" vAlign="2" />
+              <minimum-size height="40" width="180" />
+              <preferred-size height="250" width="300" />
+              <initial-sorting-order name="masterdatapermission" sorting-order="descending" />
+              <subform-column name="entity" enabled="yes" visible="yes" insertable="no" controltype="combobox">
+                <valuelist-provider type="masterDataEntity"/></subform-column>
+              <subform-column name="masterdatapermission" enabled="yes" visible="yes" insertable="yes" controltype="combobox">
+                <valuelist-provider type="enum">
+                  <parameter name="showEnum" value="org.nuclos.server.common.MasterDataPermission" />
+                </valuelist-provider></subform-column>
+            </subform>
+          </panel>
+        </panel>
+        <panel visible="yes" opaque="yes">
+        <tabbedpane-constraints title="Workspaces" enabled="yes" internalname="Workspaces">
+          <translations>
+            <translation lang="de" text="Arbeitsumgebungen"/>
+            <translation lang="en" text="Workspaces"/>
+          </translations>
+        </tabbedpane-constraints>
+          <tablelayout columns="-1.0" rows="-1.0" />
+          <panel>
+            <tablelayout-constraints col1="0" col2="0" row1="0" row2="0" hAlign="2" vAlign="2" />
+            <tablelayout columns="0.0|-1.0" rows="0.0|-1.0" />
+            <subform name="SubForm_1" entity="nuclos_roleworkspace" foreignkeyfield-to-parent="role" toolbarorientation="vertical" enabled="yes" >
+              <tablelayout-constraints col1="1" col2="1" row1="1" row2="1" hAlign="2" vAlign="2" />
+              <minimum-size height="40" width="180" />
+              <preferred-size height="100" width="300" />
+              <initial-sorting-order name="workspace" sorting-order="ascending" />
+              <subform-column name="workspace" enabled="yes" visible="yes" insertable="yes">
+                <valuelist-provider type="assignableworkspaces"/></subform-column>
+            </subform>
+          </panel>
+        </panel>
+        <panel visible="yes" opaque="yes">
+        <tabbedpane-constraints title="Reports" enabled="yes" internalname="Reports">
+          <translations>
+            <translation lang="de" text="Reports"/>
+            <translation lang="en" text="Reports"/>
+          </translations>
+        </tabbedpane-constraints>
+          <tablelayout columns="-1.0" rows="-1.0" />
+          <panel>
+            <tablelayout-constraints col1="0" col2="0" row1="0" row2="0" hAlign="2" vAlign="2" />
+            <tablelayout columns="0.0|-1.0" rows="0.0|-1.0" />
+            <subform name="SubForm_9" entity="nuclos_rolereport" toolbarorientation="vertical" enabled="yes" unique-mastercolumn="report" >
+              <tablelayout-constraints col1="1" col2="1" row1="1" row2="1" hAlign="2" vAlign="2" />
+              <minimum-size height="40" width="180" />
+              <preferred-size height="250" width="300" />
+              <subform-column name="report" enabled="yes" visible="yes" insertable="yes">
+                <valuelist-provider type="allreports">
+                  <parameter name="entity" value="nuclos_report" />
+                </valuelist-provider></subform-column>
+            </subform>
+          </panel>
+        </panel>
+      </tabbedpane>
+    </panel>
+  </panel>
+</layout>
+</layoutml>

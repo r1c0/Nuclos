@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE layoutml SYSTEM "http://www.novabit.de/technologies/layoutml/layoutml.dtd">
+<layoutml>
+	<layout>
+		<panel>
+			<borderlayout/>
+			<panel name="pnlHeader">
+				<borderlayout-constraints position="north"/>
+				<gridbaglayout/>
+				<empty-border bottom="10" left="5" right="5" top="5"/>
+				<collectable-component columns="40" name="name">
+					<gridbag-constraints insetright="10"/>
+				</collectable-component>
+				<collectable-component columns="40" fill-control-horizontally="yes" name="description">
+					<gridbag-constraints fill="horizontal" weightx="1.0"/>
+				</collectable-component>
+			</panel>
+			<tabbedpane>
+				<borderlayout-constraints position="center"/>
+				<panel>
+					<tabbedpane-constraints title="Layout"/>
+					<borderlayout/>
+					<collectable-component controltypeclass="org.nuclos.client.layout.wysiwyg.CollectableWYSIWYGLayoutEditor" name="layoutML">
+						<borderlayout-constraints position="center"/>
+					</collectable-component>
+				</panel>
+				<panel>
+					<tabbedpane-constraints title="Verwendung"/>
+					<borderlayout/>
+					<subform entity="nuclos_layoutUsage" name="usages" toolbarorientation="vertical">
+						<borderlayout-constraints position="center"/>
+						<subform-column controltype="combobox" insertable="no" name="entity">
+							<valuelist-provider type="entity"/>
+						</subform-column>
+						<subform-column controltype="combobox" insertable="no" name="process">
+							<valuelist-provider type="process"/>
+						</subform-column>
+					</subform>
+				</panel>
+			</tabbedpane>
+		</panel>
+	</layout>
+	<rules>
+		<rule name="Abhängigkeit Module">
+			<event entity="nuclos_layoutUsage" sourcecomponent="entity" type="value-changed"/>
+			<actions>
+				<refresh-valuelist parameter-for-sourcecomponent="entityName" targetcomponent="process"/>
+			</actions>
+		</rule>
+	</rules>
+</layoutml>

@@ -1,0 +1,112 @@
+<!--
+  This file contains the Oracle-specific definitions for Nuclos.
+-->
+<database>
+  <function name="GETNEXTSEQUENTIALNUMBER">
+    <code><![CDATA[FUNCTION GETNEXTSEQUENTIALNUMBER (imoduleid NUMBER)
+   RETURN NUMBER
+IS
+   PRAGMA AUTONOMOUS_TRANSACTION;
+   iresult      NUMBER (9, 0);
+   dlastreset   DATE;
+BEGIN
+BEGIN
+   SELECT intnextval, datlastreset
+         INTO iresult, dlastreset
+         FROM T_AD_MODULE_SEQUENTIALNUMBER
+        WHERE intmodule_id = imoduleid
+   FOR UPDATE;
+   -- sperrt die selektierten Zeilen bis zum nächsten COMMIT oder ROLLBACK
+   EXCEPTION
+      -- Einfügen eines Datensatzes für den Fall, dass das Modul neu erzeugt wurde
+     WHEN NO_DATA_FOUND THEN BEGIN
+       INSERT INTO T_AD_MODULE_SEQUENTIALNUMBER (intmodule_id, datlastreset, intnextval)
+       values(imoduleid, sysdate, 0);
+       iresult := 1;
+     END;
+   END;
+
+   IF TO_CHAR (SYSDATE, 'MM') != TO_CHAR (dlastreset, 'MM')
+   THEN
+      UPDATE T_AD_MODULE_SEQUENTIALNUMBER
+         SET datlastreset = SYSDATE;
+
+      iresult := 1;
+   END IF;
+
+   UPDATE T_AD_MODULE_SEQUENTIALNUMBER
+      SET intnextval = iresult + 1
+    WHERE intmodule_id = imoduleid;
+
+   COMMIT;
+
+   RETURN iresult;
+END GETNEXTSEQUENTIALNUMBER;]]></code>
+  </function>
+
+
+  <procedure name="WRITE_TO_JOBPROTOCOL">
+    <code><![CDATA[PROCEDURE WRITE_TO_JOBPROTOCOL (session_id NUMBER, state VARCHAR2) IS
+BEGIN
+      UPDATE T_MD_JOBRUN SET STRENDDATE = SYSDATE, STRSTATE = state WHERE INTID = session_id;
+      COMMIT;
+END WRITE_TO_JOBPROTOCOL;]]></code>
+  </procedure>
+  <procedure name="WRITE_TO_JOBPROTOCOL_MESSAGE">
+    <code><![CDATA[PROCEDURE WRITE_TO_JOBPROTOCOL_MESSAGE (session_id NUMBER, level VARCHAR2, message VARCHAR2, name VARCHAR2) IS
+BEGIN
+      INSERT INTO T_MD_JOBRUN_MESSAGES (INTID, INTID_T_MD_JOBRUN, STRMESSAGELEVEL, STRMESSAGE, STRRULE, DATCREATED, STRCREATED, DATCHANGED, STRCHANGED, INTVERSION)
+      VALUES (IDFACTORY.NEXTVAL, session_id, level, message, name, SYSDATE, USER, SYSDATE, USER, 1);
+      COMMIT;
+END WRITE_TO_JOBPROTOCOL_MESSAGE;]]></code>
+  </procedure>
+  
+
+  <procedure name="LOG_INFO_MESSAGE">
+    <code><![CDATA[PROCEDURE LOG_INFO_MESSAGE (session_id NUMBER, message VARCHAR2, name VARCHAR2) IS
+BEGIN
+	WRITE_TO_JOBPROTOCOL_MESSAGE(session_id, 'INFO', message, name);
+END LOG_INFO_MESSAGE;]]></code>
+  </procedure>
+  <procedure name="LOG_WARNING_MESSAGE">
+    <code><![CDATA[PROCEDURE LOG_WARNING_MESSAGE (session_id NUMBER, message VARCHAR2, name VARCHAR2) IS
+BEGIN
+	WRITE_TO_JOBPROTOCOL_MESSAGE(session_id, 'WARNING', message, name);
+END LOG_WARNING_MESSAGE;]]></code>
+  </procedure>
+  <procedure name="LOG_ERROR_MESSAGE">
+    <code><![CDATA[PROCEDURE LOG_ERROR_MESSAGE (session_id NUMBER, message VARCHAR2, name VARCHAR2) IS
+BEGIN
+	WRITE_TO_JOBPROTOCOL_MESSAGE(session_id, 'ERROR', message, name);
+END LOG_ERROR_MESSAGE;]]></code>
+  </procedure>
+  
+  
+  <procedure name="INSERT_NUCLOS_UPDATE_JOB">
+    <code><![CDATA[PROCEDURE INSERT_NUCLOS_UPDATE_JOB IS
+BEGIN
+ DECLARE number_jobs number;
+ BEGIN
+  SELECT COUNT(*)
+  INTO number_jobs
+  FROM T_AD_QRTZ_TRIGGERS
+  WHERE trigger_name='trigger_NuclosUpdateJob'
+  AND trigger_group='DEFAULT';
+
+  IF number_jobs = 0
+  THEN
+      INSERT INTO T_AD_QRTZ_JOB_DETAILS (JOB_NAME, JOB_GROUP, DESCRIPTION, JOB_CLASS_NAME, IS_DURABLE, IS_VOLATILE, IS_STATEFUL, REQUESTS_RECOVERY)
+      VALUES ('NuclosUpdateJob', 'DEFAULT', 'Job for Updates', 'org.nuclos.server.common.NuclosUpdateJob',0, 0, 0, 0);
+
+      INSERT INTO T_AD_QRTZ_TRIGGERS (TRIGGER_NAME, TRIGGER_GROUP, JOB_NAME, JOB_GROUP, IS_VOLATILE, DESCRIPTION, NEXT_FIRE_TIME, PREV_FIRE_TIME, TRIGGER_STATE, TRIGGER_TYPE, START_TIME, END_TIME, CALENDAR_NAME, MISFIRE_INSTR)
+      VALUES ('trigger_NuclosUpdateJob', 'DEFAULT', 'NuclosUpdateJob', 'DEFAULT', '0', null, 1199142000000, -1, 'WAITING', 'CRON', 1199142000000, 0, null, 0);
+
+      INSERT INTO T_AD_QRTZ_CRON_TRIGGERS (TRIGGER_NAME, TRIGGER_GROUP, CRON_EXPRESSION, TIME_ZONE_ID)
+      VALUES ('trigger_NuclosUpdateJob', 'DEFAULT', '0 0 0 ? * *', 'Europe/Berlin');
+
+      COMMIT;
+  END IF;
+ END;
+END INSERT_NUCLOS_UPDATE_JOB;]]></code>
+  </procedure>
+</database>

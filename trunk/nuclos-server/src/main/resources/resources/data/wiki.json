@@ -1,0 +1,35 @@
+[
+  { "general": "Menüleiste", "nuclos_wikimappinggeneral": [
+      { "name": "menuAdministration", "wikipage": "Administration" },
+      { "name": "menuFile", "wikipage": "Datei" },
+      { "name": "menuEdit", "wikipage": "Bearbeiten" },
+      { "name": "menuWindow", "wikipage": "Fenster" },
+      { "name": "menuHelp", "wikipage": "Hilfe" }
+    ] },
+  { "general": "Sonstige", "nuclos_wikimappinggeneral": [
+      { "name": "pnlExplorer", "wikipage": "Baumnavigation" },
+      { "name": "pnlTasks", "wikipage": "Aufgabenliste" },
+      { "name": "desktop", "wikipage": "Grundlagen Benutzeroberflaeche" },
+      { "name": "menubar", "wikipage": "Grundlagen Benutzeroberflaeche" }
+    ] },
+  { "general": "Maskenfunktionen", "nuclos_wikimappinggeneral": [
+      { "name": "btnNew", "wikipage": "Detailmasken+Detail" },
+      { "name": "btnSearch", "wikipage": "Suche+Suchmaske" },
+      { "name": "btnClone", "wikipage": "Detailmasken+Detail" },
+      { "name": "btnSearchEditor", "wikipage": "Suche+Sucheditor" },
+      { "name": "cmbbxCurrentState", "wikipage": "Detailmasken+Detail#section-Detailmasken+Detail-Statuswechsel" },
+      { "name": "cmbbxSearchFilter", "wikipage": "Suche+Suchfilter" },
+      { "name": "btnSaveFilter", "wikipage": "Suche+Suchfilter#section-Suche+Suchfilter-SuchfilterAnlegen" },
+      { "name": "btnRemoveFilter", "wikipage": "Suche+Suchfilter#section-Suche+Suchfilter-BestehendenSuchfilterL_C3_B6schen" },
+      { "name": "cmbbxSearchResultTemplate", "wikipage": "Reporting+Suchergebnisvorlage" }
+    ] },
+  { "entity": "nuclos_generalsearch", "nuclos_wikimapping": [ { "wikipage": "Suche+Allgemein" } ] },
+  { "entity": "nuclos_user", "nuclos_wikimapping": [ { "wikipage": "Berechtigung+Benutzer" } ] },
+  { "entity": "nuclos_role", "nuclos_wikimapping": [ { "wikipage": "Berechtigung+Benutzergruppen" } ] },
+  { "entity": "nuclos_statemodel", "nuclos_wikimapping": [ { "wikipage": "Module+Statusmodell" } ] },
+  { "entity": "nuclos_report", "nuclos_wikimapping": [ { "wikipage": "Reporting+Reports" } ] },
+  { "entity": "nuclos_datasource", "nuclos_wikimapping": [ { "wikipage": "Reporting+Datenquellen" } ] },
+  { "entity": "nuclos_form", "nuclos_wikimapping": [ { "wikipage": "Reporting+Formulare" } ] },
+  { "entity": "nuclos_reportExecution", "nuclos_wikimapping": [ { "wikipage": "Reporting+Report+ausfuehren" } ] },
+  { "entity": "nuclos_fulltextsearch", "nuclos_wikimapping": [ { "wikipage": "Suche+Volltextsuche" } ] }
+]

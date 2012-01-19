@@ -1,0 +1,39 @@
+<launch4jConfig>
+  <dontWrapJar>false</dontWrapJar>
+  <headerType>gui</headerType>
+  <!--
+    <jar>install-launch4j.jar</jar>
+    <outfile>nuclos-installer-@version@.exe</outfile>
+  -->
+  <errTitle></errTitle>
+  <cmdLine></cmdLine>
+  <chdir></chdir>
+  <priority>normal</priority>
+  <downloadUrl>http://www.oracle.com/technetwork/java/javase/downloads/</downloadUrl>
+  <supportUrl>http://www.nuclos.org/</supportUrl>
+  <customProcName>false</customProcName>
+  <stayAlive>false</stayAlive>
+  <manifest></manifest>
+  <icon>nuclos.ico</icon>
+  <jre>
+    <path></path>
+    <minVersion>1.6.0_10</minVersion>
+    <maxVersion></maxVersion>
+    <jdkPreference>preferJre</jdkPreference>
+  </jre>
+  <messages>
+    <jreVersionErr>Nuclos requires Java Runtime Environment (JRE) 1.6 Update 10 (or newer)</jreVersionErr>
+  </messages>
+  <versionInfo>
+    <productName>Nuclos</productName>
+    <companyName>Novabit Informationssysteme GmbH</companyName>
+    <fileVersion>1.0.0.0</fileVersion>
+    <txtFileVersion>1.0.0</txtFileVersion>
+    <fileDescription>Nuclos Installer</fileDescription>
+    <copyright>Novabit Informationssysteme GmbH</copyright>
+    <productVersion>1.0.0.0</productVersion>
+    <txtProductVersion>1.0.0</txtProductVersion>
+    <internalName>nuclos-installer</internalName>
+    <originalFilename>nuclos-installer.exe</originalFilename>
+  </versionInfo>
+</launch4jConfig>

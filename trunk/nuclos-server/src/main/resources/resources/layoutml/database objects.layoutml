@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="ISO-8859-15"?>
+<!DOCTYPE layoutml SYSTEM "http://www.novabit.de/technologies/layoutml/layoutml.dtd">
+<layoutml>
+<layout>
+  <panel visible="yes" opaque="yes">
+    <tablelayout columns="-1.0" rows="-1.0" />
+    <panel>
+      <tablelayout-constraints col1="0" col2="0" row1="0" row2="0" hAlign="2" vAlign="2" />
+      <tablelayout columns="12.0|112.0|5.0|230.0" rows="12.0|22.0|5.0|22.0" />
+      <collectable-component fill-control-horizontally="yes" name="name" insertable="yes" opaque="yes" visible="yes" enabled="yes" controltype="textfield" show-only="label">
+        <tablelayout-constraints col1="1" col2="1" row1="1" row2="1" hAlign="2" vAlign="1" />
+        <minimum-size height="22" width="15" />
+        <preferred-size height="22" width="50" />
+      </collectable-component>
+      <collectable-component fill-control-horizontally="yes" name="name" columns="30" insertable="yes" opaque="yes" visible="yes" enabled="yes" controltype="textfield" show-only="control">
+        <tablelayout-constraints col1="3" col2="3" row1="1" row2="1" hAlign="2" vAlign="1" />
+        <minimum-size height="22" width="35" />
+        <preferred-size height="22" width="70" />
+      </collectable-component>
+      <collectable-component fill-control-horizontally="yes" name="dbobjecttype" insertable="yes" opaque="yes" visible="yes" enabled="yes" controltype="textfield" show-only="label">
+        <tablelayout-constraints col1="1" col2="1" row1="3" row2="3" hAlign="2" vAlign="1" />
+        <minimum-size height="22" width="15" />
+        <preferred-size height="22" width="50" />
+      </collectable-component>
+      <collectable-component fill-control-horizontally="yes" name="dbobjecttype" columns="30" insertable="yes" opaque="yes" visible="yes" enabled="yes" controltype="combobox" show-only="control">
+        <tablelayout-constraints col1="3" col2="3" row1="3" row2="3" hAlign="2" vAlign="1" />
+        <minimum-size height="22" width="35" />
+        <preferred-size height="22" width="70" />
+        <valuelist-provider type="dbobjecttype"/>
+      </collectable-component>
+    </panel>
+  </panel>
+</layout>
+</layoutml>

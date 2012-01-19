@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE web-app PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN" "http://java.sun.com/dtd/web-app_2_3.dtd">
+<web-app>
+
+	<context-param>
+		<param-name>contextConfigLocation</param-name>
+		<param-value>classpath*:META-INF/nuclos/*-beans.xml</param-value>
+	</context-param>
+
+	<filter>
+	  <filter-name>springSecurityFilterChain</filter-name>
+	  <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
+	</filter>
+
+	<filter-mapping>
+	  <filter-name>springSecurityFilterChain</filter-name>
+	  <url-pattern>/*</url-pattern>
+	</filter-mapping>
+
+	<listener>
+		<listener-class>org.nuclos.server.web.NuclosContextLoaderListener</listener-class>
+	</listener>
+
+   <servlet>
+      <servlet-name>JnlpServlet</servlet-name>
+      <servlet-class>org.nuclos.server.jnlp.JnlpServlet</servlet-class>
+   </servlet>
+
+   <servlet>
+	    <servlet-name>remoting</servlet-name>
+		<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+		<init-param>
+			<param-name>contextConfigLocation</param-name>
+			<param-value>classpath*:META-INF/nuclos/*-remoting.xml</param-value>
+		</init-param>
+	    <load-on-startup>1</load-on-startup>
+	</servlet>
+
+	<servlet>
+	    <servlet-name>jmsbroker</servlet-name>
+		    <servlet-class>org.nuclos.server.web.NuclosJMSBrokerTunnelServlet</servlet-class>
+	    <load-on-startup>2</load-on-startup>
+	</servlet>
+
+	<servlet>
+		<servlet-name>CXFServlet</servlet-name>
+		<display-name>CXF Servlet</display-name>
+		<servlet-class>
+			org.apache.cxf.transport.servlet.CXFServlet
+		</servlet-class>
+		<load-on-startup>3</load-on-startup>
+	</servlet>
+
+	<servlet>
+        <servlet-name>spring-ws</servlet-name>
+        <servlet-class>org.springframework.ws.transport.http.MessageDispatcherServlet</servlet-class>
+        <init-param>
+			<param-name>contextConfigLocation</param-name>
+			<param-value>classpath*:META-INF/nuclos/*-ws.xml</param-value>
+		</init-param>
+		<init-param>
+		    <param-name>transformWsdlLocations</param-name>
+		    <param-value>true</param-value>
+		</init-param>
+        <load-on-startup>4</load-on-startup>
+    </servlet>
+
+	<servlet>
+        <servlet-name>reports</servlet-name>
+        <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+        <init-param>
+			<param-name>contextConfigLocation</param-name>
+			<param-value>classpath*:META-INF/nuclos/*-reports.xml</param-value>
+		</init-param>
+        <load-on-startup>5</load-on-startup>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>reports</servlet-name>
+        <url-pattern>/reports/*</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>spring-ws</servlet-name>
+        <url-pattern>/springws/*</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+      <servlet-name>JnlpServlet</servlet-name>
+      <url-pattern>*.jnlp</url-pattern>
+    </servlet-mapping>
+
+	<servlet-mapping>
+	    <servlet-name>remoting</servlet-name>
+	    <url-pattern>/remoting/*</url-pattern>
+	</servlet-mapping>
+
+	<servlet-mapping>
+	    <servlet-name>jmsbroker</servlet-name>
+	    <url-pattern>/jmsbroker</url-pattern>
+	</servlet-mapping>
+
+	<servlet-mapping>
+		<servlet-name>CXFServlet</servlet-name>
+		<url-pattern>/ws/*</url-pattern>
+	</servlet-mapping>
+
+</web-app>

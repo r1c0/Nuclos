@@ -1,0 +1,50 @@
+<project name="nuclos-war" basedir="." xmlns:artifact="antlib:org.apache.maven.artifact.ant">
+
+	<path id="maven-ant-tasks.classpath" path="../nuclos-installer/lib/maven-ant-tasks-2.1.3.jar" />
+	<typedef resource="org/apache/maven/artifact/ant/antlib.xml" uri="antlib:org.apache.maven.artifact.ant" classpathref="maven-ant-tasks.classpath" />
+
+	<!--
+		Properties in build.properties:
+		- nuclos.home.dir: top-level Nuclos directory
+	 -->
+	<property name="build.properties" value="../build.properties" />
+	<property file="${build.properties}" />
+
+	<!-- tomcat deployment -->
+	<property name="tomcat.deploy.dir" value="${nuclos.home.dir}/webapp" />
+
+	<artifact:pom id="pom.nuclos" file="../pom.xml" />
+	<artifact:pom id="pom.war" file="pom.xml" />
+
+	<target name="info">
+		<echo message="Version ${pom.war.version} (${pom.war.properties.nuclos.version.date})" />
+		<echo message="Java: ${java.version} (${java.vm.version})" level="info" />
+		<echo message="OS: ${os.name} (${os.version}, ${os.arch})" level="info" />
+		<echo message="Ant: ${ant.version}" />
+	</target>
+
+	<target name="mvn.clean">
+		<artifact:mvn pom="../pom.xml">
+			<arg value="clean" />
+		</artifact:mvn>
+	</target>
+
+	<target name="mvn.install">
+		<artifact:mvn pom="../pom.xml">
+			<arg value="install" />
+		</artifact:mvn>
+	</target>
+
+	<target name="main" depends="mvn.clean, mvn.install" description="Execute maven build (clean install) and deploy to webapp directory.">
+		<copy todir="${tomcat.deploy.dir}" overwrite="true">
+			<fileset dir="${basedir}/target/nuclos-war" excludes="**/*.properties" />
+		</copy>
+	</target>
+
+	<target name="main.noclean" depends="mvn.install" description="Execute maven build (install) and deploy to webapp directory.">
+		<copy todir="${tomcat.deploy.dir}" overwrite="true">
+			<fileset dir="${basedir}/target/nuclos-war" excludes="**/*.properties" />
+		</copy>
+	</target>
+
+</project>

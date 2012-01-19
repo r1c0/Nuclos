@@ -1,0 +1,77 @@
+//Copyright (C) 2010  Novabit Informationssysteme GmbH
+//
+//This file is part of Nuclos.
+//
+//Nuclos is free software: you can redistribute it and/or modify
+//it under the terms of the GNU Affero General Public License as published by
+//the Free Software Foundation, either version 3 of the License, or
+//(at your option) any later version.
+//
+//Nuclos is distributed in the hope that it will be useful,
+//but WITHOUT ANY WARRANTY; without even the implied warranty of
+//MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//GNU Affero General Public License for more details.
+//
+//You should have received a copy of the GNU Affero General Public License
+//along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
+
+package org.nuclos.client.ui.resplan;
+
+import java.util.List;
+
+/**
+ * @param <R> resource
+ * @param <T> time unit
+ * @param <V> value
+ */
+public interface ResPlanModel<R, T extends Comparable<? super T>, E> {
+
+	/**
+	 * Returns the concrete entry type of this model. 
+	 */
+	public abstract Class<E> getEntryType();
+
+	/**
+	 * Retrieves all resources.
+	 */
+	public abstract List<? extends R> getResources();
+
+	/**
+	 * Retrieves all entries to the given resource.
+	 */
+	public abstract List<? extends E> getEntries(R resource);
+
+	/**
+	 * Retrieves the interval for the given entry.
+	 */
+	public abstract Interval<T> getInterval(E entry);
+
+	/**
+	 * Creates a new entry for the given resource and interval.
+	 * Note that ehis method returns intentionally void. It is up to the model to decide
+	 * what to do and to propagte the changes (if any) as events.
+	 */
+	public abstract void createEntry(R resource, Interval<T> interval, Object value);
+	
+	/**
+	 * Updates the given entry.
+	 */
+	public abstract void updateEntry(E entry, R resource, Interval<T> interval);
+
+	/**
+	 * Removes the given entry.
+	 */
+	public abstract void removeEntry(E entry);
+
+	public abstract boolean isCreateAllowed();
+
+	public abstract boolean isUpdateAllowed(E entry);
+	
+	public abstract boolean isRemoveAllowed(E entry);
+	
+	public abstract void addResPlanModelListener(ResPlanModelListener listener);
+	
+	public abstract void removeResPlanModelListener(ResPlanModelListener listener);
+
+	public abstract ResPlanModelListener[] getResPlanModelListeners();
+}

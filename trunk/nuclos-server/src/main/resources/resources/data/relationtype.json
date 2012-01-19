@@ -1,0 +1,14 @@
+[
+  {
+    "system": true,
+    "name": "PredecessorOf",
+    "description": "A --> B bedeutet: A ist Vorgänger von B. B ist Nachfolger von A.",
+    "labelres": "relationtype.PredecessorOf"
+  },
+  {
+    "system": true,
+    "name": "PartOf",
+    "description": "A --> B bedeutet: A ist Teil von B. B enthält A.",
+    "labelres": "relationtype.PartOf"
+  }
+]
