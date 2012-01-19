@@ -74,7 +74,9 @@ import org.nuclos.server.dblayer.util.IFieldRef;
 import org.nuclos.server.genericobject.searchcondition.CollectableGenericObjectSearchExpression;
 import org.nuclos.server.genericobject.searchcondition.CollectableSearchExpression;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
 
+@Configurable
 public class EntityObjectProcessor extends AbstractJdbcWithFieldsDalProcessor<EntityObjectVO>
 	implements JdbcEntityObjectProcessor {
 

@@ -54,6 +54,7 @@ import org.nuclos.client.common.NuclosCollectControllerFactory;
 import org.nuclos.client.explorer.ExplorerSettings.FolderNodeAction;
 import org.nuclos.client.explorer.ExplorerSettings.ObjectNodeAction;
 import org.nuclos.client.genericobject.GenerationController;
+import org.nuclos.client.main.Main;
 import org.nuclos.client.main.MainController;
 import org.nuclos.client.main.mainframe.MainFrame;
 import org.nuclos.client.main.mainframe.MainFrameTab;
@@ -138,12 +139,10 @@ public class ExplorerNode<TN extends TreeNode> extends DefaultMutableTreeNode {
 	}
 	 */
 	
-	@Autowired
-	void setMainController(MainController mainController) {
-		this.mainController = mainController;
-	}
-	
 	protected MainController getMainController() {
+		if (mainController == null) {
+			mainController = Main.getInstance().getMainController();
+		}
 		return mainController;
 	}
 	

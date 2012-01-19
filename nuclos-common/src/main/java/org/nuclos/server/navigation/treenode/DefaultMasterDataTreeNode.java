@@ -41,6 +41,11 @@ import org.springframework.beans.factory.annotation.Configurable;
 @Configurable
 public class DefaultMasterDataTreeNode extends MasterDataTreeNode<Integer> {
 	
+	/**
+	 * Attention:
+	 * Even if this sounds weird: mdvo could be null. Do not rely on the
+	 * value. See {@link #init()} for details...
+	 */
 	private final MasterDataVO mdvo;
 
 	public DefaultMasterDataTreeNode(String sEntity, MasterDataVO mdvo) {
@@ -50,8 +55,13 @@ public class DefaultMasterDataTreeNode extends MasterDataTreeNode<Integer> {
 	
 	@PostConstruct
 	final void init() {
-		this.setLabel(getIdentifier(mdvo));
-		this.setDescription(getDescription(mdvo));
+		// after deserialization (e.g. from XStream) this is called again
+		// but with mdvo == null!
+		if (mdvo != null) {
+			this.setLabel(getIdentifier(mdvo));
+			this.setDescription(getDescription(mdvo));
+		}
+		assert getLabel() != null;
 	}
 
 
