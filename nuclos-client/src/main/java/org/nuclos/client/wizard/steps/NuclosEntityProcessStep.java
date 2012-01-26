@@ -57,12 +57,14 @@ import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonValidationException;
 import org.pietschy.wizard.InvalidStateException;
+import org.springframework.beans.factory.annotation.Configurable;
 
 /**
 * <br>
 * Created by Novabit Informationssysteme GmbH <br>
 * Please visit <a href="http://www.novabit.de">www.novabit.de</a>
 */
+@Configurable
 public class NuclosEntityProcessStep extends NuclosEntityAbstractStep {
 
 	private static final long serialVersionUID = 2900241917334839766L;

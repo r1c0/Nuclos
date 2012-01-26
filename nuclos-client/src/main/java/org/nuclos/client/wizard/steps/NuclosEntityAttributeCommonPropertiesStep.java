@@ -35,6 +35,7 @@ import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.annotation.PostConstruct;
 import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -74,6 +75,7 @@ import org.nuclos.common2.RelativeDate;
 import org.nuclos.common2.exception.CommonValidationException;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 import org.pietschy.wizard.InvalidStateException;
+import org.springframework.beans.factory.annotation.Configurable;
 
 /**
 * <br>
@@ -83,7 +85,7 @@ import org.pietschy.wizard.InvalidStateException;
 * @author <a href="mailto:marc.finke@novabit.de">Marc Finke</a>
 * @version 01.00.00
 */
-
+@Configurable
 public class NuclosEntityAttributeCommonPropertiesStep extends NuclosEntityAttributeAbstractStep {
 
 	private static final Logger LOG = Logger.getLogger(NuclosEntityAttributeCommonPropertiesStep.class);
@@ -136,20 +138,20 @@ public class NuclosEntityAttributeCommonPropertiesStep extends NuclosEntityAttri
 
 
 	public NuclosEntityAttributeCommonPropertiesStep() {
-		initComponents();
-
+		// initComponents();
 	}
 
 	public NuclosEntityAttributeCommonPropertiesStep(String name, String summary) {
 		super(name, summary);
-		initComponents();
+		// initComponents();
 	}
 
 	public NuclosEntityAttributeCommonPropertiesStep(String name, String summary, Icon icon) {
 		super(name, summary, icon);
-		initComponents();
+		// initComponents();
 	}
 
+	@PostConstruct
 	@Override
 	protected void initComponents() {
 		double size [][] = {{150,20, TableLayout.FILL}, {20,20,20,20,20,20,20,20,90, TableLayout.FILL}};

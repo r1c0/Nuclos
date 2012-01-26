@@ -259,7 +259,7 @@ public class MainController {
 		}
 	};
 
-	private DirectHelpActionListener dha = new DirectHelpActionListener();
+	private DirectHelpActionListener dha;
 	
 	private NucletComponentRepository nucletComponentRepository;
 	
@@ -407,6 +407,8 @@ public class MainController {
 
 			this.ctlTasks.setExplorerController(ctlExplorer);
 			this.ctlExplorer.setTaskController(ctlTasks);
+			
+			initActions();
 
 			LOG.debug(">>> restore last workspace...");
 			try {
@@ -501,6 +503,16 @@ public class MainController {
 
 				}
 			});
+		}
+		catch (Throwable e) {
+			LOG.fatal("Creating MainController failed, this is fatal: " + e.toString(), e);
+			throw new ExceptionInInitializerError(e);
+		}
+	}
+			
+	private void initActions() {
+		try {
+			dha = new DirectHelpActionListener();
 			
 			// init Actions
 			cmdDirectHelp = new AbstractAction() {

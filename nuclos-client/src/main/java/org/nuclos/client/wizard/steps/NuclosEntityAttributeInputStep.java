@@ -86,6 +86,7 @@ import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 import org.pietschy.wizard.InvalidStateException;
 import org.pietschy.wizard.WizardEvent;
 import org.pietschy.wizard.WizardListener;
+import org.springframework.beans.factory.annotation.Configurable;
 
 /**
 * <br>
@@ -95,7 +96,7 @@ import org.pietschy.wizard.WizardListener;
 * @author <a href="mailto:marc.finke@novabit.de">Marc Finke</a>
 * @version 01.00.00
 */
-
+@Configurable
 public class NuclosEntityAttributeInputStep extends NuclosEntityAbstractStep {
 
 	private static final Logger LOG = Logger.getLogger(NuclosEntityAttributeInputStep.class);

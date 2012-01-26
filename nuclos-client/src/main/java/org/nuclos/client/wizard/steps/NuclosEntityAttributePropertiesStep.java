@@ -31,6 +31,7 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
+import javax.annotation.PostConstruct;
 import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -68,6 +69,7 @@ import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonValidationException;
 import org.nuclos.server.genericobject.valueobject.GenericObjectDocumentFile;
 import org.pietschy.wizard.InvalidStateException;
+import org.springframework.beans.factory.annotation.Configurable;
 
 /**
 * <br>
@@ -77,7 +79,7 @@ import org.pietschy.wizard.InvalidStateException;
 * @author <a href="mailto:marc.finke@novabit.de">Marc Finke</a>
 * @version 01.00.00
 */
-
+@Configurable
 public class NuclosEntityAttributePropertiesStep extends NuclosEntityAttributeAbstractStep implements ChangeListener, ActionListener {
 
 	private static final Logger LOG = Logger.getLogger(NuclosEntityAttributeCommonPropertiesStep.class);
@@ -146,27 +148,34 @@ public class NuclosEntityAttributePropertiesStep extends NuclosEntityAttributeAb
 
 	JComponent parent;
 
-	String customtypename = cld.getText("wizard.datatype.individual");
+	String customtypename;
 
-	DataTyp customtype = new DataTyp(customtypename, null, null, null, null, null, null);
+	DataTyp customtype;
 
 	public NuclosEntityAttributePropertiesStep() {
-		initComponents();
+		// initComponents();
 	}
 
 	public NuclosEntityAttributePropertiesStep(String name, String summary) {
 		super(name, summary);
-		initComponents();
+		// initComponents();
 	}
 
 	public NuclosEntityAttributePropertiesStep(String name, String summary, Icon icon) {
 		super(name, summary, icon);
-		initComponents();
+		// initComponents();
 	}
 
+	@PostConstruct
 	@Override
 	protected void initComponents() {
-		double size [][] = {{TableLayout.PREFERRED, 200, 30, TableLayout.FILL}, {20,20,20,20,20,20,20,20,20,20,20,20,20, TableLayout.FILL}};
+		customtypename = cld.getText("wizard.datatype.individual");
+		customtype = new DataTyp(customtypename, null, null, null, null, null, null);
+		
+		double size [][] = {
+				{TableLayout.PREFERRED, 200, 30, TableLayout.FILL}, 
+				{20,20,20,20,20,20,20,20,20,20,20,20,20, TableLayout.FILL}
+				};
 
 		TableLayout layout = new TableLayout(size);
 		layout.setVGap(3);

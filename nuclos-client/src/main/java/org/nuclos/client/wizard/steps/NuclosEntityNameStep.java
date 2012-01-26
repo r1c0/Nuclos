@@ -76,6 +76,7 @@ import org.nuclos.common2.exception.CommonPermissionException;
 import org.nuclos.server.console.ejb3.ConsoleFacadeRemote;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 import org.pietschy.wizard.InvalidStateException;
+import org.springframework.beans.factory.annotation.Configurable;
 
 /**
 * <br>
@@ -85,7 +86,7 @@ import org.pietschy.wizard.InvalidStateException;
 * @author <a href="mailto:marc.finke@novabit.de">Marc Finke</a>
 * @version 01.00.00
 */
-
+@Configurable
 public class NuclosEntityNameStep extends NuclosEntityAbstractStep {
 
 	private static final Logger LOG = Logger.getLogger(NuclosEntityNameStep.class);

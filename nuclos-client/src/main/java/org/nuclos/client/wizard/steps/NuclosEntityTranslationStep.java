@@ -46,6 +46,7 @@ import org.nuclos.common.dal.vo.EntityMetaDataVO;
 import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.LocaleInfo;
 import org.pietschy.wizard.InvalidStateException;
+import org.springframework.beans.factory.annotation.Configurable;
 
 /**
 * <br>
@@ -55,7 +56,7 @@ import org.pietschy.wizard.InvalidStateException;
 * @author <a href="mailto:marc.finke@novabit.de">Marc Finke</a>
 * @version 01.00.00
 */
-
+@Configurable
 public class NuclosEntityTranslationStep extends NuclosEntityAbstractStep {
 
 	private JScrollPane scrolPane;

@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import javax.annotation.PostConstruct;
 import javax.swing.AbstractCellEditor;
 import javax.swing.DefaultCellEditor;
 import javax.swing.Icon;
@@ -49,6 +50,7 @@ import org.nuclos.client.wizard.util.NuclosWizardUtils;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
 import org.nuclos.common2.exception.CommonValidationException;
 import org.pietschy.wizard.InvalidStateException;
+import org.springframework.beans.factory.annotation.Configurable;
 
 /**
 * <br>
@@ -58,7 +60,7 @@ import org.pietschy.wizard.InvalidStateException;
 * @author <a href="mailto:marc.finke@novabit.de">Marc Finke</a>
 * @version 01.00.00
 */
-
+@Configurable
 public class NuclosEntityAttributeValueListShipStep extends NuclosEntityAttributeAbstractStep {
 	
 	private static final Logger LOG = Logger.getLogger(NuclosEntityAttributeValueListShipStep.class);
@@ -73,20 +75,20 @@ public class NuclosEntityAttributeValueListShipStep extends NuclosEntityAttribut
 	
 
 	public NuclosEntityAttributeValueListShipStep() {	
-		initComponents();		
+		// initComponents();		
 	}
 
 	public NuclosEntityAttributeValueListShipStep(String name, String summary) {
 		super(name, summary);
-		initComponents();
+		// initComponents();
 	}
 
 	public NuclosEntityAttributeValueListShipStep(String name, String summary, Icon icon) {
 		super(name, summary, icon);
-		initComponents();
+		// initComponents();
 	}
 	
-	
+	@PostConstruct
 	@Override
 	protected void initComponents() {		
 		

@@ -25,6 +25,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
 import org.nuclos.common2.CommonLocaleDelegate;
+import org.springframework.beans.factory.annotation.Configurable;
 
 /**
 * <br>
@@ -34,7 +35,7 @@ import org.nuclos.common2.CommonLocaleDelegate;
 * @author <a href="mailto:marc.finke@novabit.de">Marc Finke</a>
 * @version 01.00.00
 */
-
+@Configurable
 public class NuclosEntityFinalStep extends NuclosEntityAbstractStep {
 
 	private JLabel lbName;

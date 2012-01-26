@@ -139,6 +139,7 @@ import org.nuclos.server.masterdata.valueobject.DependantMasterDataMap;
 import org.nuclos.server.masterdata.valueobject.MasterDataMetaVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 import org.pietschy.wizard.InvalidStateException;
+import org.springframework.beans.factory.annotation.Configurable;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
@@ -150,7 +151,7 @@ import org.xml.sax.SAXException;
 * @author <a href="mailto:marc.finke@novabit.de">Marc Finke</a>
 * @version 01.00.00
 */
-
+@Configurable
 public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 
 	private static final Logger LOG = Logger.getLogger(Main.class);

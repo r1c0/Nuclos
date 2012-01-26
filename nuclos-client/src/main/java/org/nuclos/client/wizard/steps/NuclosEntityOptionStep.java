@@ -63,6 +63,7 @@ import org.nuclos.common.dal.vo.EntityMetaDataVO;
 import org.nuclos.common2.LocaleInfo;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 import org.pietschy.wizard.InvalidStateException;
+import org.springframework.beans.factory.annotation.Configurable;
 
 /**
 * <br>
@@ -72,7 +73,7 @@ import org.pietschy.wizard.InvalidStateException;
 * @author <a href="mailto:marc.finke@novabit.de">Marc Finke</a>
 * @version 01.00.00
 */
-
+@Configurable
 public class NuclosEntityOptionStep extends NuclosEntityAbstractStep {
 
 	private static final Logger LOG = Logger.getLogger(NuclosEntityOptionStep.class);

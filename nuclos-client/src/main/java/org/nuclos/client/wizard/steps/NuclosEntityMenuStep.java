@@ -59,12 +59,14 @@ import org.nuclos.common2.LocaleInfo;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonValidationException;
 import org.pietschy.wizard.InvalidStateException;
+import org.springframework.beans.factory.annotation.Configurable;
 
 /**
 * <br>
 * Created by Novabit Informationssysteme GmbH <br>
 * Please visit <a href="http://www.novabit.de">www.novabit.de</a>
 */
+@Configurable
 public class NuclosEntityMenuStep extends NuclosEntityAbstractStep {
 
 	private static final long serialVersionUID = 2900241917334839766L;
@@ -77,7 +79,7 @@ public class NuclosEntityMenuStep extends NuclosEntityAbstractStep {
 	public static String[] labels = TranslationVO.labelsEntity;
 
 	public NuclosEntityMenuStep() {
-		initComponents();
+		// initComponents();
 	}
 
 	public NuclosEntityMenuStep(String name, String summary) {

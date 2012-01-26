@@ -71,6 +71,7 @@ import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.common2.exception.CommonFinderException;
 import org.nuclos.common2.exception.CommonPermissionException;
 import org.pietschy.wizard.InvalidStateException;
+import org.springframework.beans.factory.annotation.Configurable;
 
 /**
  * Entity wizard, entity tree representation, step 5.
@@ -81,6 +82,7 @@ import org.pietschy.wizard.InvalidStateException;
  * @author <a href="mailto:marc.finke@novabit.de">Marc Finke</a>
  * @version 01.00.00
  */
+@Configurable
 public class NuclosEntityTreeValueStep extends NuclosEntityAbstractStep {
 
 	private static final Logger LOG = Logger.getLogger(NuclosEntityTreeValueStep.class);
