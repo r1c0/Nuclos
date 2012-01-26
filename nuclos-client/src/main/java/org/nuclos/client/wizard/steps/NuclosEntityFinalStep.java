@@ -18,6 +18,7 @@ package org.nuclos.client.wizard.steps;
 
 import info.clearthought.layout.TableLayout;
 
+import javax.annotation.PostConstruct;
 import javax.swing.Icon;
 import javax.swing.JLabel;
 import javax.swing.JScrollPane;
@@ -43,19 +44,20 @@ public class NuclosEntityFinalStep extends NuclosEntityAbstractStep {
 	
 
 	public NuclosEntityFinalStep() {	
-		initComponents();		
+		// initComponents();		
 	}
 
 	public NuclosEntityFinalStep(String name, String summary) {
 		super(name, summary);
-		initComponents();
+		// initComponents();
 	}
 
 	public NuclosEntityFinalStep(String name, String summary, Icon icon) {
 		super(name, summary, icon);
-		initComponents();
+		// initComponents();
 	}
 	
+	@PostConstruct
 	@Override
 	protected void initComponents() {
 		

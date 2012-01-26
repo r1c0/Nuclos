@@ -43,6 +43,7 @@ import org.nuclos.server.common.ejb3.NuclosFacadeBean;
 import org.nuclos.server.database.DataBaseHelper;
 import org.nuclos.server.genericobject.GenericObjectMetaDataCache;
 import org.nuclos.server.genericobject.Modules;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.xml.sax.InputSource;
 
@@ -57,6 +58,16 @@ import org.xml.sax.InputSource;
 // @Remote(AttributeFacadeRemote.class)
 @Transactional
 public class AttributeFacadeBean extends NuclosFacadeBean implements AttributeFacadeLocal, AttributeFacadeRemote {
+	
+	private AttributeCache attributeCache;
+	
+	public AttributeFacadeBean() {
+	}
+	
+	@Autowired
+	void setAttributeCache(AttributeCache attributeCache) {
+		this.attributeCache = attributeCache;
+	}
 
 	/**
 	 * @return a collection containing all dynamic attributes
@@ -68,7 +79,7 @@ public class AttributeFacadeBean extends NuclosFacadeBean implements AttributeFa
 
 		final SecurityCache securitycache = SecurityCache.getInstance();
 
-		for (AttributeCVO attrcvo : AttributeCache.getInstance().getAttributes()) {
+		for (AttributeCVO attrcvo : attributeCache.getAttributes()) {
 			if (iGroupId == null || iGroupId.equals(attrcvo.getAttributegroupId())) {
 				final AttributeCVO attrcvoClone = attrcvo.clone();
 				attrcvoClone.setPermissions(securitycache.getAttributeGroup(this.getCurrentUserName(), attrcvoClone.getAttributegroupId()));
@@ -92,41 +103,13 @@ public class AttributeFacadeBean extends NuclosFacadeBean implements AttributeFa
 		}
 		final AttributeCVO result;
 		try {
-			result = AttributeCache.getInstance().getAttribute(iAttributeId);
+			result = attributeCache.getAttribute(iAttributeId);
 		}
 		catch (NuclosAttributeNotFoundException ex) {
 			throw new CommonFinderException(ex);
 		}
 		return result;
 	}
-
-	/*
-	 * use is unnecessary
-	@Override
-	@Deprecated
-	@RolesAllowed("Login")
-	public AttributeCVO create(AttributeCVO attrcvo, DependantMasterDataMap mpDependants)
-	throws CommonCreateException, CommonFinderException, CommonRemoveException,
-	CommonStaleVersionException, CommonValidationException, CommonPermissionException {
-		AttributeCVO result = null;
-		return result;
-	}
-	 */
-
-	/*
-	 * use is unnecessary
-	 * 
-	 * @deprecated Use 'return attrcvo.getId();'
-	@Override
-	@Deprecated
-	@RolesAllowed("Login")
-	public Integer modify(AttributeCVO attrcvo, DependantMasterDataMap mpDependants) throws CommonCreateException,
-			CommonFinderException, CommonRemoveException,
-			CommonStaleVersionException, CommonValidationException,
-			NuclosSystemAttributeNotModifiableException, CommonPermissionException, CreateException {
-		return attrcvo.getId();
-	}
-	 */
 
 	/**
 	 * invalidates the attribute cache (console function)
@@ -204,36 +187,8 @@ public class AttributeFacadeBean extends NuclosFacadeBean implements AttributeFa
 			catch(LayoutMLException e){
 				throw new CommonFatalException(e);
 			}
-		}
-		
+		}	
 		return setAttributes;
 	}
-
-	/*
-	 * use is unnecessary
-	@Override
-	@Deprecated
-	@RolesAllowed("Login")
-	public void makeConsistent(String sEntityName, Integer iCollectableId, Map<String, Object> mpChangedFields) throws CreateException, CommonFinderException {
-	}
-	 */
-	
-	/*
-	 * use is unnecessary
-	@Override
-	@Deprecated
-	@RolesAllowed("Login")
-	public void makeConsistent(String sEntityName, Integer iCollectableId, Pair<String, String> changedField) throws CreateException, CommonFinderException {
-	}
-	 */
-
-	/*
-	 * use is unnecessary
-	@Override
-	@Deprecated
-	@RolesAllowed("Login")
-	public void makeConsistent(Integer iAttributeId, Integer iAttributeValueId, String sAttributeValue) throws CreateException, CommonFinderException {
-	}
-	 */
 	
 }

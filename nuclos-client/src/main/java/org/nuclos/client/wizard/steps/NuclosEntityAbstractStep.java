@@ -16,6 +16,7 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.wizard.steps;
 
+import javax.annotation.PostConstruct;
 import javax.swing.Icon;
 import javax.swing.JComponent;
 
@@ -54,6 +55,9 @@ public abstract class NuclosEntityAbstractStep extends PanelWizardStep {
 		super(name, summary, icon);
 	}
 	
+	@PostConstruct
+	protected abstract void initComponents();
+	
 	@Autowired
 	void setCommonLocaleDelegate(CommonLocaleDelegate cld) {
 		this.cld = cld;
@@ -66,8 +70,6 @@ public abstract class NuclosEntityAbstractStep extends PanelWizardStep {
 	public NuclosEntityWizardStaticModel getModel() {
 		return model;
 	}
-	
-	protected abstract void initComponents();
 	
 	@Override
 	public void init(WizardModel model) {

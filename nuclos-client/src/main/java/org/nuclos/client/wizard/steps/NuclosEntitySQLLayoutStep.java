@@ -43,6 +43,7 @@ import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.annotation.PostConstruct;
 import javax.swing.DefaultListModel;
 import javax.swing.Icon;
 import javax.swing.JButton;
@@ -205,21 +206,21 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 	MyTreeModel treeModel;
 
 	public NuclosEntitySQLLayoutStep() {
-		initComponents();
+		// initComponents();
 		mpFieldNameChanged = new HashMap<String, String>();
 	}
 
 	public NuclosEntitySQLLayoutStep(String name, String summary) {
 		super(name, summary);
-		initComponents();
+		// initComponents();
 	}
 
 	public NuclosEntitySQLLayoutStep(String name, String summary, Icon icon) {
 		super(name, summary, icon);
-		initComponents();
+		// initComponents();
 	}
 
-
+	@PostConstruct
 	@Override
 	protected void initComponents() {
 

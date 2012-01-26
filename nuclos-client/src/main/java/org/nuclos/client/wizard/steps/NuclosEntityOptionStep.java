@@ -30,6 +30,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.PostConstruct;
 import javax.swing.ButtonGroup;
 import javax.swing.Icon;
 import javax.swing.JButton;
@@ -116,17 +117,17 @@ public class NuclosEntityOptionStep extends NuclosEntityAbstractStep {
 	JComboBox cbxImportTables;
 
 	public NuclosEntityOptionStep() {
-		initComponents();
+		// initComponents();
 	}
 
 	public NuclosEntityOptionStep(String name, String summary) {
 		super(name, summary);
-		initComponents();
+		// initComponents();
 	}
 
 	public NuclosEntityOptionStep(String name, String summary, Icon icon) {
 		super(name, summary, icon);
-		initComponents();
+		// initComponents();
 	}
 
 	protected void initPanel() {
@@ -231,6 +232,7 @@ public class NuclosEntityOptionStep extends NuclosEntityAbstractStep {
 
 	}
 
+	@PostConstruct
 	@Override
 	protected void initComponents() {
 

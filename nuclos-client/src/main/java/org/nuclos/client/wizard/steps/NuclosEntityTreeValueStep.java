@@ -33,6 +33,7 @@ import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.annotation.PostConstruct;
 import javax.swing.DefaultCellEditor;
 import javax.swing.DropMode;
 import javax.swing.Icon;
@@ -121,19 +122,20 @@ public class NuclosEntityTreeValueStep extends NuclosEntityAbstractStep {
 	private TreeValueTableCellEditor refNameCellEditor;
 
 	public NuclosEntityTreeValueStep() {
-		initComponents();
+		// initComponents();
 	}
 
 	public NuclosEntityTreeValueStep(String name, String summary) {
 		super(name, summary);
-		initComponents();
+		// initComponents();
 	}
 
 	public NuclosEntityTreeValueStep(String name, String summary, Icon icon) {
 		super(name, summary, icon);
-		initComponents();
+		// initComponents();
 	}
 
+	@PostConstruct
 	@Override
 	protected void initComponents() {
 

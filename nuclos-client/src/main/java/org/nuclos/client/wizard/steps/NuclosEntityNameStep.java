@@ -33,6 +33,7 @@ import java.util.List;
 import java.util.NavigableSet;
 import java.util.TreeSet;
 
+import javax.annotation.PostConstruct;
 import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -106,23 +107,24 @@ public class NuclosEntityNameStep extends NuclosEntityAbstractStep {
 
 
 	public NuclosEntityNameStep() {
-		initComponents();
+		// initComponents();
 	}
 
 	public NuclosEntityNameStep(String name, String summary) {
 		super(name, summary);
-		initComponents();
+		// initComponents();
 	}
 
 	public NuclosEntityNameStep(String name, String summary, Icon icon) {
 		super(name, summary, icon);
-		initComponents();
+		// initComponents();
 	}
 
 	public void setEntityToEdit(EntityMetaDataVO vo) {
 		this.toEdit = vo;
 	}
 
+	@PostConstruct
 	@Override
 	protected void initComponents() {
 

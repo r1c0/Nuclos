@@ -31,6 +31,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.PostConstruct;
 import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -150,17 +151,17 @@ public class NuclosEntityCommonPropertiesStep extends NuclosEntityAbstractStep i
 
 
 	public NuclosEntityCommonPropertiesStep() {
-		initComponents();
+		// initComponents();
 	}
 
 	public NuclosEntityCommonPropertiesStep(String name, String summary) {
 		super(name, summary);
-		initComponents();
+		// initComponents();
 	}
 
 	public NuclosEntityCommonPropertiesStep(String name, String summary, Icon icon) {
 		super(name, summary, icon);
-		initComponents();
+		// initComponents();
 	}
 
 	@Override
@@ -295,8 +296,7 @@ public class NuclosEntityCommonPropertiesStep extends NuclosEntityAbstractStep i
 		return false;
 	}
 
-
-
+	@PostConstruct
 	@Override
 	protected void initComponents() {
 

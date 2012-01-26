@@ -37,6 +37,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 
+import javax.annotation.PostConstruct;
 import javax.swing.DropMode;
 import javax.swing.Icon;
 import javax.swing.JButton;
@@ -116,21 +117,20 @@ public class NuclosEntityAttributeInputStep extends NuclosEntityAbstractStep {
 
 
 	public NuclosEntityAttributeInputStep() {
-		initComponents();
+		// initComponents();
 	}
 
 	public NuclosEntityAttributeInputStep(String name, String summary) {
 		super(name, summary);
-		initComponents();
+		// initComponents();
 	}
 
 	public NuclosEntityAttributeInputStep(String name, String summary, Icon icon) {
 		super(name, summary, icon);
-		initComponents();
+		// initComponents();
 	}
 
-
-
+	@PostConstruct
 	@Override
 	protected void initComponents() {
 

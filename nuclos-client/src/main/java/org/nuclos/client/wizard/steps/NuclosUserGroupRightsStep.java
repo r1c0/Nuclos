@@ -20,6 +20,7 @@ import info.clearthought.layout.TableLayout;
 
 import java.util.Collection;
 
+import javax.annotation.PostConstruct;
 import javax.swing.DefaultCellEditor;
 import javax.swing.Icon;
 import javax.swing.JComboBox;
@@ -63,21 +64,20 @@ public class NuclosUserGroupRightsStep extends NuclosEntityAbstractStep {
 	
 	
 	public NuclosUserGroupRightsStep() {	
-		initComponents();		
+		// initComponents();		
 	}
 
 	public NuclosUserGroupRightsStep(String name, String summary) {
 		super(name, summary);
-		initComponents();
+		// initComponents();
 	}
 
 	public NuclosUserGroupRightsStep(String name, String summary, Icon icon) {
 		super(name, summary, icon);
-		initComponents();	
-		
-		
+		// initComponents();
 	}
 	
+	@PostConstruct
 	@Override
 	protected void initComponents() {
 		

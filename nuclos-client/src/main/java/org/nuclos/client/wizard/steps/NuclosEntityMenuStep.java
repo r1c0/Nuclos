@@ -24,6 +24,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.prefs.Preferences;
 
+import javax.annotation.PostConstruct;
 import javax.swing.Icon;
 import javax.swing.JOptionPane;
 import javax.swing.JToolBar;
@@ -81,15 +82,15 @@ public class NuclosEntityMenuStep extends NuclosEntityAbstractStep {
 
 	public NuclosEntityMenuStep(String name, String summary) {
 		super(name, summary);
-		initComponents();
+		// initComponents();
 	}
 
 	public NuclosEntityMenuStep(String name, String summary, Icon icon) {
 		super(name, summary, icon);
-		initComponents();
+		// initComponents();
 	}
 
-
+	@PostConstruct
 	@Override
 	protected void initComponents() {
 		double size [][] = {{TableLayout.FILL}, {TableLayout.FILL}};

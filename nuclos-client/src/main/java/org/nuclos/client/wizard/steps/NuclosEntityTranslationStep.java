@@ -27,6 +27,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.PostConstruct;
 import javax.swing.DefaultCellEditor;
 import javax.swing.Icon;
 import javax.swing.JScrollPane;
@@ -65,20 +66,20 @@ public class NuclosEntityTranslationStep extends NuclosEntityAbstractStep {
 	public static String[] labels = TranslationVO.labelsEntity;
 	
 	public NuclosEntityTranslationStep() {	
-		initComponents();		
+		// initComponents();		
 	}
 
 	public NuclosEntityTranslationStep(String name, String summary) {
 		super(name, summary);
-		initComponents();
+		// initComponents();
 	}
 
 	public NuclosEntityTranslationStep(String name, String summary, Icon icon) {
 		super(name, summary, icon);
-		initComponents();
+		// initComponents();
 	}
 	
-	
+	@PostConstruct
 	@Override
 	protected void initComponents() {
 		double size [][] = {{TableLayout.FILL, 130,130, TableLayout.FILL, 10}, {TableLayout.FILL, 10}};

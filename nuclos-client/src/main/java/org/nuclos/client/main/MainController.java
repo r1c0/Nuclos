@@ -1326,7 +1326,7 @@ public class MainController {
 		addActionIfAllowed(menuActions, menuPath, NuclosEntity.LDAPSERVER, genericActions);
 		addActionIfAllowed(menuActions, menuPath, NuclosEntity.WEBSERVICE, genericActions);
 
-		if (SecurityCache.getInstance().isActionAllowed("UseManagementConsole")) {
+		if (securityCache.isActionAllowed("UseManagementConsole")) {
 			menuActions.add(new Pair<String[], Action>(menuPath, cmdOpenManagementConsole));
 			addGenericCommandAction(genericActions, "UseManagementConsole", cmdOpenManagementConsole, menuPath);
 		}
@@ -1343,7 +1343,7 @@ public class MainController {
 
 		final String[] menuPath = new String[] {getMainMenuConfiguration()};
 
-		if (SecurityCache.getInstance().isActionAllowed("EntityWizard")) {
+		if (securityCache.isActionAllowed("EntityWizard")) {
 			menuActions.add(new Pair<String[], Action>(menuPath, cmdOpenEntityWizard));
 			addGenericCommandAction(genericActions, "EntityWizard", cmdOpenEntityWizard, menuPath);
 		}
@@ -1352,11 +1352,11 @@ public class MainController {
 		addActionIfAllowed(menuActions, menuPath, NuclosEntity.STATEMODEL, genericActions);
 		addActionIfAllowed(menuActions, menuPath, NuclosEntity.GENERATION, genericActions);
 
-		if (SecurityCache.getInstance().isActionAllowed("RelationEditor")) {
+		if (securityCache.isActionAllowed("RelationEditor")) {
 			menuActions.add(new Pair<String[], Action>(menuPath, cmdOpenRelationEditor));
 			addGenericCommandAction(genericActions, "RelationEditor", cmdOpenRelationEditor, menuPath);
 		}
-		if (SecurityCache.getInstance().isActionAllowed("ResPlanWizard")) {
+		if (securityCache.isActionAllowed("ResPlanWizard")) {
 			menuActions.add(new Pair<String[], Action>(menuPath, cmdOpenCustomComponentWizard));
 			addGenericCommandAction(genericActions, "ResPlanWizard", cmdOpenCustomComponentWizard, menuPath);
 		}
@@ -1525,7 +1525,7 @@ public class MainController {
 
 	private Action createEntityAction(EntityMetaDataVO entitymetavo, String label, final boolean isNew, final Long processId) {
 		String entity = entitymetavo.getEntity();
-		if (!SecurityCache.getInstance().isReadAllowedForEntity(entity)) {
+		if (!securityCache.isReadAllowedForEntity(entity)) {
 			return null;
 		}
 
@@ -1617,7 +1617,7 @@ public class MainController {
 		MasterDataCache.getInstance().invalidate(null);
 		MasterDataDelegate.getInstance().invalidateLayoutCache();
 		MetaDataCache.getInstance().invalidate();
-		SecurityCache.getInstance().revalidate();
+		securityCache.revalidate();
 		AttributeCache.getInstance().revalidate();
 		GenericObjectLayoutCache.getInstance().invalidate();
 		GeneratorActions.invalidateCache();

@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.prefs.Preferences;
 
+import javax.annotation.PostConstruct;
 import javax.swing.Icon;
 import javax.swing.JComponent;
 import javax.swing.JOptionPane;
@@ -74,20 +75,20 @@ public class NuclosEntityProcessStep extends NuclosEntityAbstractStep {
 	public static String[] labels = TranslationVO.labelsEntity;
 
 	public NuclosEntityProcessStep() {
-		initComponents();
+		// initComponents();
 	}
 
 	public NuclosEntityProcessStep(String name, String summary) {
 		super(name, summary);
-		initComponents();
+		// initComponents();
 	}
 
 	public NuclosEntityProcessStep(String name, String summary, Icon icon) {
 		super(name, summary, icon);
-		initComponents();
+		// initComponents();
 	}
 
-
+	@PostConstruct
 	@Override
 	protected void initComponents() {
 		double size [][] = {{TableLayout.FILL}, {TableLayout.FILL}};
