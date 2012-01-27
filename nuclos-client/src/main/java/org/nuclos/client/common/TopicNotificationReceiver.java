@@ -31,7 +31,6 @@ import javax.jms.Topic;
 import javax.jms.TopicConnection;
 import javax.jms.TopicSession;
 import javax.jms.TopicSubscriber;
-import javax.naming.Context;
 
 import org.apache.log4j.Logger;
 import org.nuclos.client.jms.MultiMessageListenerContainer;
@@ -57,8 +56,11 @@ public class TopicNotificationReceiver {
 	private static final Logger LOG = Logger.getLogger(TopicNotificationReceiver.class);
 	
 	private static TopicNotificationReceiver INSTANCE;
+	
+	//
+	
+	private volatile boolean deferredSubscribe = true;
 
-	private Context ctx;
 	private TopicConnection topicconn;
 	
 	private List<TopicInfo> infos = new ArrayList<TopicInfo>();
@@ -134,10 +136,20 @@ public class TopicNotificationReceiver {
 	 * @param messagelistener
 	 */
 	public void subscribe(String sTopicName, String correlationId, MessageListener messagelistener) {
+		if (sTopicName == null) {
+			throw new NullPointerException("No topic name");
+		}
+		if (messagelistener == null) {
+			throw new NullPointerException("No MessageListener");
+		}
 		infos.add(new TopicInfo(sTopicName, correlationId, messagelistener));
+		if (!deferredSubscribe) {
+			realSubscribe();
+		}
 	}
 	
 	public synchronized void realSubscribe() {
+		deferredSubscribe = false;
 		for (TopicInfo i: infos) {
 			WeakReferenceMessageListener weakrefmsglistener = new WeakReferenceMessageListener(i);
 			weakrefmsglistener.subscribe();
