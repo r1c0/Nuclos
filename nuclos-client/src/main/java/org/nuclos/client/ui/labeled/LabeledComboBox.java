@@ -76,7 +76,8 @@ public class LabeledComboBox extends LabeledComponent {
 		
 		@Override
 		public Color getBackground() {
-			return NuclosThemeSettings.BACKGROUND_INACTIVEFIELD;
+			final ColorProvider colorproviderBackground = LabeledComboBox.this.getBackgroundColorProvider();
+			return (colorproviderBackground != null) ? colorproviderBackground.getColor(NuclosThemeSettings.BACKGROUND_INACTIVEFIELD) : NuclosThemeSettings.BACKGROUND_INACTIVEFIELD;
 		}
 		
 	};

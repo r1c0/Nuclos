@@ -70,6 +70,7 @@ public abstract class LabeledComponent extends JPanel {
 	protected LabeledComponent() {
 		super(new GridBagLayout());
 		this.pnlControl.setOpaque(false);
+		this.setOpaque(false);
 	}
 
 	/**
@@ -249,6 +250,17 @@ public abstract class LabeledComponent extends JPanel {
 	public void setFillControlHorizontally(boolean bFill) {
 		this.remove(pnlControl);
 		this.add(pnlControl, this.getGridBagConstraintsForControl(bFill));
+	}
+	
+	@Override
+	public boolean isOpaque() {
+		// always false
+		return false;
+	}
+
+	@Override
+	public void setOpaque(boolean isOpaque) {
+		// ignore
 	}
 
 //	/**

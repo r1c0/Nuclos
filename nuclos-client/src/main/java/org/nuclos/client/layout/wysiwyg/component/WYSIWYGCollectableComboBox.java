@@ -24,13 +24,18 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.PostConstruct;
 import javax.swing.JMenuItem;
 import javax.swing.border.Border;
 
+import org.nuclos.client.layout.wysiwyg.component.WYSIWYGComponent.PropertyFilter;
 import org.nuclos.client.layout.wysiwyg.component.properties.PropertyValue;
+import org.nuclos.client.synthetica.NuclosThemeSettings;
+import org.nuclos.client.ui.ColorProvider;
 import org.nuclos.client.ui.labeled.LabeledComboBox;
 import org.nuclos.client.ui.labeled.LabeledComponent;
 import org.nuclos.common.NuclosBusinessException;
+import org.springframework.beans.factory.annotation.Configurable;
 
 /**
  * 
@@ -45,7 +50,7 @@ import org.nuclos.common.NuclosBusinessException;
  */
 public class WYSIWYGCollectableComboBox extends WYSIWYGCollectableComponent {
 
-	private LabeledComboBox component = new LabeledComboBox();
+	private LabeledComboBox component = new WYSIWYGLabeledComboBox();
 	
 	public WYSIWYGCollectableComboBox() {
 		propertyNames.add(PROPERTY_FONT);
@@ -60,6 +65,7 @@ public class WYSIWYGCollectableComboBox extends WYSIWYGCollectableComponent {
 		propertyFilters.put(PROPERTY_ROWS, new PropertyFilter(PROPERTY_ROWS, DISABLED));
 		propertyFilters.put(PROPERTY_FILL_CONTROL_HORIZONTALLY, new PropertyFilter(PROPERTY_FILL_CONTROL_HORIZONTALLY, DISABLED));
 		propertyFilters.put(PROPERTY_INSERTABLE, new PropertyFilter(PROPERTY_INSERTABLE, DISABLED));
+		propertyFilters.put(PROPERTY_OPAQUE, new PropertyFilter(PROPERTY_OPAQUE, DISABLED));
 	
 		this.setLayout(new BorderLayout());
 		component.getJLabel().setVisible(false);
@@ -206,6 +212,48 @@ public class WYSIWYGCollectableComboBox extends WYSIWYGCollectableComponent {
 	 */
 	@Override
 	public void validateProperties(Map<String, PropertyValue<Object>> values) throws NuclosBusinessException {
+	}
+	
+	@Configurable
+	private class WYSIWYGLabeledComboBox extends LabeledComboBox {
+
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		
+		private Color backgroundcolor;
+		
+		@PostConstruct
+		void init() {
+			setBackgroundColorProvider(new ColorProvider() {
+				@Override
+				public Color getColor(Color colorDefault) {
+					if (backgroundcolor == null && !NuclosThemeSettings.BACKGROUND_PANEL.equals(colorDefault)) {
+						if (isEnabled()) {
+							return Color.WHITE;
+						} else {
+							return NuclosThemeSettings.BACKGROUND_INACTIVEFIELD;
+						}
+					}
+					return backgroundcolor;
+				}
+			});
+		}
+		
+		@Override
+		public void setBackground(Color bg) {
+			if (NuclosThemeSettings.BACKGROUND_PANEL.equals(bg)) {
+				backgroundcolor = null;
+			} else {
+				backgroundcolor = bg;
+			}
+		}
+
+		@Override
+		public Color getBackground() {
+			return super.getBackground();
+		}
 	}
 
 }

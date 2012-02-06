@@ -1411,7 +1411,7 @@ public abstract class AbstractCollectableComponent
 
 	/** @todo comment */
 	protected Color getBackgroundColor() {
-		final Color result;
+		Color result;
 
 		/** @todo + isEnabled() && */
 		if (isMultiEditable() && !getDetailsModel().hasCommonValue() && !getDetailsModel().isValueToBeChanged())
@@ -1420,18 +1420,24 @@ public abstract class AbstractCollectableComponent
 		}
 		else {
 			boolean hasValue = !getModel().getField().isNull();
-
+			boolean active = true;
+			
 			// not editable
 			if (isDetailsComponent() && (getControlComponent() instanceof JTextComponent) && !((JTextComponent) getControlComponent()).isEditable()) {
 				result = NuclosThemeSettings.BACKGROUND_INACTIVEFIELD;
+				active = false;
 			} else if (isDetailsComponent() && (getControlComponent() instanceof DateChooser) && !((DateChooser) getControlComponent()).getJTextField().isEditable()) {
 				result = NuclosThemeSettings.BACKGROUND_INACTIVEFIELD;
+				active = false;
 			} else if (isDetailsComponent() && (getControlComponent() instanceof ListOfValues) && !((ListOfValues) getControlComponent()).isEnabled()) {
 				result = NuclosThemeSettings.BACKGROUND_INACTIVEFIELD;
+				active = false;
 			} else if (isDetailsComponent() && (getControlComponent() instanceof JComboBox) && !((JComboBox) getControlComponent()).isEditable()) {
 				result = NuclosThemeSettings.BACKGROUND_INACTIVEFIELD;
+				active = false;
 			} else if (isDetailsComponent() && (getControlComponent() instanceof FileChooserComponent) && !((FileChooserComponent) getControlComponent()).isEnabled()) {
 				result = NuclosThemeSettings.BACKGROUND_INACTIVEFIELD;
+				active = false;
 			} else
 
 			if (isDetailsComponent() && getDetailsModel().isMandatoryAdded()) {
@@ -1439,8 +1445,12 @@ public abstract class AbstractCollectableComponent
 			} else if (isDetailsComponent() && getDetailsModel().isMandatory()) {
 				result = hasValue || hasFocus() ? null : ClientParameterProvider.getInstance().getColorValue(ParameterProvider.KEY_MANDATORY_ITEM_BACKGROUND_COLOR, new Color(255,255,200));
 			} else {
-				result = hasFocus() ? null : NuclosThemeSettings.BACKGROUND_PANEL.equals(comp.getBackground()) ? Color.WHITE : comp.getBackground();
+				result = hasFocus() ? null : Color.WHITE;
 			}
+			
+			if (!NuclosThemeSettings.BACKGROUND_PANEL.equals(comp.getBackground())) {
+				result = hasFocus() && active ? null : comp.getBackground();
+			} 
 		}
 
 		//Logger.getLogger(AbstractCollectableComponent.class).debug("getBackgroundColor: result = " + result);
