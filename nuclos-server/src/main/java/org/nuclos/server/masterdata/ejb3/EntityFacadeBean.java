@@ -60,7 +60,6 @@ import org.nuclos.server.dblayer.structure.DbColumnType;
 import org.nuclos.server.genericobject.Modules;
 import org.nuclos.server.genericobject.searchcondition.CollectableSearchExpression;
 import org.nuclos.server.report.valueobject.DatasourceVO;
-import org.nuclos.server.report.valueobject.ResultVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -186,86 +185,54 @@ public class EntityFacadeBean extends NuclosFacadeBean implements EntityFacadeRe
 	 * @return
 	 */
 	@Override
-	public List<CollectableValueIdField> getQuickSearchResult(String entity, String field, String search, Integer vlpId, Map<String, Object> vlpParameter, String vlpValueFieldName, Integer iMaxRowCount) {
+	public List<CollectableValueIdField> getQuickSearchResult(String entity, String field, String search, Integer vlpId, Map<String, Object> vlpParameter, Integer iMaxRowCount) {
 		List<CollectableValueIdField> result = new ArrayList<CollectableValueIdField>();
 
 		try {
 			final MetaDataProvider provider = MetaDataServerProvider.getInstance();
 			final EntityFieldMetaDataVO efMeta = provider.getEntityField(entity, field);
-			
-			if (efMeta.getForeignEntity() != null) {
-				final DbColumnType columnType = EntityObjectMetaDbHelper.createDbColumnType(efMeta);
-				final EntityMetaDataVO eForeignMeta = provider.getEntity(efMeta.getForeignEntity());
-	
-				final List<?> viewPattern = EntityObjectMetaDbHelper.getViewPatternForField(efMeta, provider);
-				// we have to use the view for interface entities (no data in table).
-				final String view = EntityObjectMetaDbHelper.getViewName(eForeignMeta);
-	
-				final DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
-				final DbQuery<DbTuple> query = builder.createTupleQuery();
-				final DbFrom from = query.from(view).alias(view);
-	
-				PreparedStringBuilder sqlPrepared =  new PreparedStringBuilder();
-				sqlPrepared.append(DataBaseHelper.getDbAccess().getSelectSqlForColumn(view, columnType, viewPattern));
-	
-				final DbExpression<Long> id = from.baseColumn("INTID", Long.class);
-				final DbExpression<String> presentation = new DbExpression<String>(builder, String.class, sqlPrepared);
-				final DbOrder order = builder.asc(presentation);
-				final String wildcard = DataBaseHelper.getDbAccess().getWildcardLikeSearchChar();
-	
-				search = search.replace("*", wildcard);
-				search = search.replace("?", "_");
-	
-				query.multiselect(id, presentation);
-	
-				DbCondition condLike = builder.like(builder.upper(presentation), (wildcard+StringUtils.toUpperCase(search))+wildcard);
-				DatasourceVO dsvo = DatasourceCache.getInstance().getValuelistProvider(vlpId);
-				if (dsvo != null && dsvo.getValid()) {
-					query.where(builder.and(condLike,builder.in(id, 
-							datasourceServerUtils.getSqlWithIdForInClause(dsvo.getSource(), vlpParameter))));
-				} else {
-					query.where(condLike);
-				}
+			final DbColumnType columnType = EntityObjectMetaDbHelper.createDbColumnType(efMeta);
+			final EntityMetaDataVO eForeignMeta = provider.getEntity(efMeta.getForeignEntity());
 
-				query.orderBy(order);
-	
-				if (iMaxRowCount != null)
-					query.maxResults(iMaxRowCount);
-	
-				for (DbTuple tuple : DataBaseHelper.getDbAccess().executeQuery(query)) {
-					result.add(new CollectableValueIdField(
-						tuple.get(0, Long.class).intValue(),
-						tuple.get(1, String.class)));
-				}
+			final List<?> viewPattern = EntityObjectMetaDbHelper.getViewPatternForField(efMeta, provider);
+			// we have to use the view for interface entities (no data in table).
+			final String view = EntityObjectMetaDbHelper.getViewName(eForeignMeta);
+
+			final DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
+			final DbQuery<DbTuple> query = builder.createTupleQuery();
+			final DbFrom from = query.from(view).alias(view);
+
+			PreparedStringBuilder sqlPrepared =  new PreparedStringBuilder();
+			sqlPrepared.append(DataBaseHelper.getDbAccess().getSelectSqlForColumn(view, columnType, viewPattern));
+
+			final DbExpression<Long> id = from.baseColumn("INTID", Long.class);
+			final DbExpression<String> presentation = new DbExpression<String>(builder, String.class, sqlPrepared);
+			final DbOrder order = builder.asc(presentation);
+			final String wildcard = DataBaseHelper.getDbAccess().getWildcardLikeSearchChar();
+
+			search = search.replace("*", wildcard);
+			search = search.replace("?", "_");
+
+			query.multiselect(id, presentation);
+
+			DbCondition condLike = builder.like(builder.upper(presentation), (wildcard+StringUtils.toUpperCase(search))+wildcard);
+			DatasourceVO dsvo = DatasourceCache.getInstance().getValuelistProvider(vlpId);
+			if (dsvo != null && dsvo.getValid()) {
+				query.where(builder.and(condLike,builder.in(id, 
+						datasourceServerUtils.getSqlWithIdForInClause(dsvo.getSource(), vlpParameter))));
 			} else {
-				DatasourceVO dsvo = DatasourceCache.getInstance().getValuelistProvider(vlpId);
-				if (dsvo != null && dsvo.getValid() && vlpValueFieldName != null) {
-					final DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
-					final DbQuery<DbTuple> query = builder.createTupleQuery();
-					
-					final String wildcard = DataBaseHelper.getDbAccess().getWildcardLikeSearchChar();
-		
-					search = search.replace("*", wildcard);
-					search = search.replace("?", "_");
-		
-					PreparedStringBuilder sqlPrepared =  new PreparedStringBuilder();
-					sqlPrepared.append("SELECT \"" + vlpValueFieldName + "\" FROM (");
-					sqlPrepared.append(datasourceServerUtils.createSQL(dsvo.getSource(), vlpParameter));
-					sqlPrepared.append(") AS SUB WHERE UPPER(\"" + vlpValueFieldName + "\") LIKE '" + (wildcard+StringUtils.toUpperCase(search))+wildcard + "'");
-					
-					if (iMaxRowCount != null)
-						query.maxResults(iMaxRowCount);
-					
-					ResultVO resultVO = DataBaseHelper.getDbAccess().executePlainQueryAsResultVO(sqlPrepared.toString(), iMaxRowCount);
-					
-					for (Object[] row : resultVO.getRows()) {
-						result.add(new CollectableValueIdField(
-								null, row[0]));
-					}
+				query.where(condLike);
+			}
 
-				} else {
-					return result;
-				}
+			query.orderBy(order);
+
+			if (iMaxRowCount != null)
+				query.maxResults(iMaxRowCount);
+
+			for (DbTuple tuple : DataBaseHelper.getDbAccess().executeQuery(query)) {
+				result.add(new CollectableValueIdField(
+					tuple.get(0, Long.class).intValue(),
+					tuple.get(1, String.class)));
 			}
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);

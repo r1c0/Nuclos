@@ -63,6 +63,6 @@ public interface EntityFacadeRemote {
 	 */
 	@RolesAllowed("Login")
 	List<CollectableValueIdField> getQuickSearchResult(String entity, String field, String search, Integer vlpId, 
-			Map<String, Object> vlpParameter, String vlpValueFieldName, Integer iMaxRowCount);
+			Map<String, Object> vlpParameter, Integer iMaxRowCount);
 
 }

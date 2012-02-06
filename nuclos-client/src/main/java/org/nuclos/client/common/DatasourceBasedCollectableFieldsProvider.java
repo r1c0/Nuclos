@@ -252,8 +252,4 @@ public class DatasourceBasedCollectableFieldsProvider implements CacheableCollec
     public Map<String, Object> getValueListParameter() {
 	    return mpParameters;
     }
-    
-    public String getValueFieldName() {
-    	return sValueFieldName;
-    }
 }
