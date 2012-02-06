@@ -584,11 +584,11 @@ public class WYSIWYGSubForm extends JLayeredPane implements WYSIWYGComponent, Mo
 	}
 
 	public void addDragGestureListener(final WYSIWYGComponent component, final WYSIWYGComponent wysiwygComponent) {
-		MouseDragGestureListener dgListener = new MouseDragGestureListener(component, wysiwygComponent);
+		//MouseDragGestureListener dgListener = new MouseDragGestureListener(component, wysiwygComponent);
 
    	  	// component, action, listener
-   	  	if (component instanceof JComponent)
-   		  addDragGestureListener((JComponent)component, dgListener, new DispatchMouseListener());
+   	  	//if (component instanceof JComponent)
+   		  //addDragGestureListener((JComponent)component, dgListener, new DispatchMouseListener());
 	}
 
 

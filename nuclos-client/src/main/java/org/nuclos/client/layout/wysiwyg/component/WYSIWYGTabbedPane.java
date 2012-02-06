@@ -235,8 +235,8 @@ public class WYSIWYGTabbedPane extends DnDTabbedPane implements WYSIWYGComponent
     	   	  };
 
     	   // component, action, listener
-    	 DragSource.getDefaultDragSource().createDefaultDragGestureRecognizer(
-    	     this, DnDConstants.ACTION_COPY_OR_MOVE, dgListener );
+    	 //DragSource.getDefaultDragSource().createDefaultDragGestureRecognizer(
+    	   //  this, DnDConstants.ACTION_COPY_OR_MOVE, dgListener );
    }
 
    /**
