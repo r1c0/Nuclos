@@ -16,27 +16,46 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.jms;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.lang.ref.WeakReference;
+import java.util.Iterator;
+import java.util.LinkedList;
 
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.jms.Session;
 
+import org.apache.log4j.Logger;
 import org.springframework.jms.listener.SessionAwareMessageListener;
 import org.springframework.jms.listener.SimpleMessageListenerContainer;
 
 public class MultiMessageListenerContainer extends SimpleMessageListenerContainer {
 	
-	List<MessageListener> lstMessageListener;
+	private static final Logger LOG = Logger.getLogger(MultiMessageListenerContainer.class);
 	
+	private LinkedList<WeakReference<MessageListener>> lstMessageListener;
 	
-	public void addMessageListener(MessageListener ml) {
+	public MultiMessageListenerContainer() {
+	}
+	
+	public synchronized void addMessageListener(MessageListener ml) {
 		if(lstMessageListener == null)
-			lstMessageListener = new ArrayList<MessageListener>();
+			lstMessageListener = new LinkedList<WeakReference<MessageListener>>();
 		
-		lstMessageListener.add(ml);
+		lstMessageListener.add(new WeakReference<MessageListener>(ml));
+		LOG.info("addMessageListener " + ml + " to " + this);
+	}
+	
+	public synchronized void deleteMessageListener(MessageListener ml) {
+		for (Iterator<WeakReference<MessageListener>> it = lstMessageListener.iterator(); it.hasNext(); ) {
+			final WeakReference<MessageListener> wr = it.next();
+			final MessageListener l = wr.get();
+			if (l == ml || l == null) {
+				it.remove();
+				LOG.info("deleteMessageListener " + ml + " from " + this);
+			}
+		}
+		LOG.info("deleteMessageListener ended");
 	}
 	
 	/**
@@ -49,23 +68,39 @@ public class MultiMessageListenerContainer extends SimpleMessageListenerContaine
 	 */
 	@Override
 	protected void invokeListener(Session session, Message message) throws JMSException {
-		if(lstMessageListener == null) 
-			lstMessageListener = new ArrayList<MessageListener>();
-		for(Object listener : new ArrayList<MessageListener>(lstMessageListener)) { // new list here, otherwise java.util.ConcurrentModificationException
-			if (listener instanceof SessionAwareMessageListener) {
-				doInvokeListener((SessionAwareMessageListener) listener, session, message);
+		if (lstMessageListener != null) {
+			final LinkedList<WeakReference<MessageListener>> listeners;
+			synchronized(this) {
+				listeners = (LinkedList<WeakReference<MessageListener>>) lstMessageListener.clone();
 			}
-			else if (listener instanceof MessageListener) {
-				doInvokeListener((MessageListener) listener, message);
-			}
-			else if (listener != null) {
-				throw new IllegalArgumentException(
-						"Only MessageListener and SessionAwareMessageListener supported: " + listener);
-			}
-			else {
-				throw new IllegalStateException("No message listener specified - see property 'messageListener'");
+			for (WeakReference<MessageListener> wr : listeners) {
+				final MessageListener listener = wr.get();
+				if (listener instanceof SessionAwareMessageListener) {
+					doInvokeListener((SessionAwareMessageListener) listener, session, message);
+					LOG.info("doInvokeListener(" + listener + ", " + session + ", " + message + ")");
+				} else if (listener instanceof MessageListener) {
+					doInvokeListener((MessageListener) listener, message);
+					LOG.info("doInvokeListener(" + listener + ", " + message + ")");
+				} else if (listener != null) {
+					throw new IllegalArgumentException(
+							"Only MessageListener and SessionAwareMessageListener supported: " + listener);
+				}
 			}
 		}
+	}
+	
+	@Override
+	public String toString() {
+		final StringBuilder result = new StringBuilder();
+		result.append("MultiMessageListenerContainer[");
+		for (WeakReference<MessageListener> wr : lstMessageListener) {
+			final MessageListener ml = wr.get();
+			if (ml != null) {
+				result.append(ml);
+			}
+		}
+		result.append("]");
+		return result.toString();
 	}
 
 }

@@ -106,7 +106,7 @@ public class TopicNotificationReceiver {
 
 			topicconn.start();
 			
-			subscribe(JMSConstants.TOPICNAME_HEARTBEAT, new HeartBeatMessageListener());
+			subscribe(JMSConstants.TOPICNAME_HEARTBEAT, heartBeatListener);
 		}
 		catch (JMSException e) {
 			throw new NuclosFatalException("Can't establish JMS connection", e);
@@ -235,21 +235,30 @@ public class TopicNotificationReceiver {
 				Object bean = SpringApplicationContextHolder.getBean(topicname);
 				if (bean instanceof SimpleMessageListenerContainer) {
 					SimpleMessageListenerContainer container = (SimpleMessageListenerContainer)bean;
-
+					if (!container.isActive()) {
+						throw new NuclosFatalException(container + " is not active, you can't subscribe");
+					}
+					
 					if(container instanceof MultiMessageListenerContainer) {
 						MultiMessageListenerContainer multiContainer = (MultiMessageListenerContainer)container;
 						multiContainer.addMessageListener(this);
+						LOG.info("Subscribe " + this + " to MultiMessageListenerContainer");
 					}
 					else {
+						if (container.getMessageListener() != null) {
+							throw new NuclosFatalException("On " + container + " the MessageListener has already been set: " + container.getMessageListener());
+						}
 						container.setMessageListener(this);
+						LOG.info("Subscribe " + this + " to SimpleMessageListenerContainer");
 					}
 				}
-				else if (bean instanceof Topic){
+				else if (bean instanceof Topic) {
 					Topic topic = (Topic) bean;
 					this.topicsession = INSTANCE.topicconn.createTopicSession(false, TopicSession.AUTO_ACKNOWLEDGE);
 					String idSelector = MessageFormat.format("JMSCorrelationID = ''{0}''", correlationId);
 					this.topicsubscriber = topicsession.createSubscriber(topic, idSelector, false);
 					this.topicsubscriber.setMessageListener(this);
+					LOG.info("Subscribe " + this + " to Topic");
 				}
 				else {
 					throw new NuclosFatalException("Invalid bean class:" + bean.getClass().getName());
@@ -278,10 +287,23 @@ public class TopicNotificationReceiver {
 						topicsession.close();
 						topicsession = null;
 					}
+					LOG.info("Unsubscribe " + this + " from Topic");
 				}
 				else {
 					SimpleMessageListenerContainer container = (SimpleMessageListenerContainer) SpringApplicationContextHolder.getBean(topicname);
-					container.shutdown();
+					// container.shutdown();
+					if (container instanceof MultiMessageListenerContainer) {
+						final MessageListener ml = getReference().get();
+						if (ml != null) {
+							MultiMessageListenerContainer multiContainer = (MultiMessageListenerContainer)container;
+							multiContainer.deleteMessageListener(ml);
+							LOG.info("Unsubscribe " + this + " from MultiMessageListenerContainer");
+						}
+					}
+					else {
+						container.setMessageListener(null);
+						LOG.info("Unsubscribe " + this + " from SimpleMessageListenerContainer");
+					}
 				}
 			}
 			catch(Exception e) {
@@ -303,6 +325,28 @@ public class TopicNotificationReceiver {
 			else {
 				unsubscribe();
 			}
+		}
+		
+		@Override
+		public String toString() {
+			final StringBuilder result = new StringBuilder();
+			result.append("WeakRefMsgListener[");
+			result.append("topic=").append(topicname);
+			final MessageListener ml = getReference().get();
+			if (ml != null) {
+				result.append(",delegate=").append(ml);
+			}
+			if (topicsession != null) {
+				result.append(",session=").append(topicsession);
+			}
+			if (topicsubscriber != null) {
+				result.append(",subscriber=").append(topicsubscriber);
+			}
+			if (correlationId != null) {
+				result.append(",corrId=").append(correlationId);
+			}
+			result.append("]");
+			return result.toString();
 		}
 	}
 	
