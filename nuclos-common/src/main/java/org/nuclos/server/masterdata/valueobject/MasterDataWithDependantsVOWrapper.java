@@ -118,4 +118,28 @@ public class MasterDataWithDependantsVOWrapper extends MasterDataWithDependantsV
 	public List<String> getMappedFields() {
 		return wrapperFieldNames;
 	}
+	
+	public String toDescription() {
+		final StringBuilder result = new StringBuilder();
+		result.append("MdwdVOWrapped[id=").append(getId());
+		if (isChanged()) {
+			result.append(",changed=").append(isChanged());
+		}
+		if (isSystemRecord()) {
+			result.append(",sr=").append(isSystemRecord());
+		}
+		result.append(",fields=").append(getFields());
+		result.append(",type").append(type);
+		result.append(",wrapped=").append(wrapperFields);
+		final DependantMasterDataMap deps = getMdDependants();
+		if (deps != null && !deps.isEmpty()) {
+			result.append(",deps=").append(deps);
+		}
+		final DependantMasterDataMap deps2 = getDependants();
+		if (deps2 != null && !deps2.isEmpty()) {
+			result.append(",deps2=").append(deps2);
+		}
+		result.append("]");
+		return result.toString();
+	}
 }

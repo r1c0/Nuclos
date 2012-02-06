@@ -483,6 +483,23 @@ public class MasterDataVO extends AbstractNuclosValueObject<Object> {
 		final Object oName = mpFields.get("name");
 		return (oName != null) ? oName.toString() : LangUtils.toString(this.getId());
 	}
+	
+	public String toDescription() {
+		final StringBuilder result = new StringBuilder();
+		result.append("MdVO[id=").append(oId);
+		if (bChanged) {
+			result.append(",changed=").append(bChanged);
+		}
+		if (systemRecord) {
+			result.append(",sr=").append(systemRecord);
+		}
+		result.append(",fields=").append(mpFields);
+		if (mpDependants != null && !mpDependants.isEmpty()) {
+			result.append(",deps=").append(mpDependants);
+		}
+		result.append("]");
+		return result.toString();
+	}
 
 	/**
 	 * @return the common fields of this object. Note that this may only be called for entities which have an Integer id.
@@ -558,6 +575,11 @@ public class MasterDataVO extends AbstractNuclosValueObject<Object> {
 	}
 
 	public DependantMasterDataMap getDependants() {
-		return this.mpDependants;
+		return mpDependants;
 	}
+	
+	protected final DependantMasterDataMap getMdDependants() {
+		return mpDependants;
+	}
+	
 }	// class MasterDataVO

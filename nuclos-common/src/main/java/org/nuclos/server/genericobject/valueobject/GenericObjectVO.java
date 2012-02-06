@@ -447,6 +447,21 @@ public class GenericObjectVO extends NuclosValueObject implements Cloneable {
 		iInstanceId = instanceId;
 	}
 	
+	public String toDescription() {
+		final StringBuilder result = new StringBuilder();
+		result.append("GoVO[id=").append(iInstanceId);
+		result.append(",moduleId=").append(iModuleId);
+		if (bDeleted) {
+			result.append(",deleted=").append(bDeleted);
+		}
+		if (iParentId != null) {
+			result.append(",parentId=").append(iParentId);
+		}
+		result.append(",fields=").append(mpattrvo);
+		result.append("]");
+		return result.toString();
+	}
+
 	@Override
 	public String toString() {
 		final StringBuilder result = new StringBuilder();

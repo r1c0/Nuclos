@@ -41,7 +41,7 @@ import org.nuclos.server.masterdata.valueobject.MasterDataVO;
  * @author	<a href="mailto:Corina.Mandoki@novabit.de">Corina Mandoki</a>
  * @version 01.00.00
  */
-public class RuleObjectContainerCVO implements Serializable {
+public final class RuleObjectContainerCVO implements Serializable {
 
 	private GenericObjectVO govo;
 	private MasterDataVO mdvo;
@@ -370,5 +370,36 @@ public class RuleObjectContainerCVO implements Serializable {
 		return map;
 	}
 
-
+	@Override
+	public String toString() {
+		final StringBuilder result = new StringBuilder();
+		result.append("RuleObjectContainerVO[");
+		if (mdvo != null) {
+			result.append("mdVO=").append(mdvo.toDescription());
+		}
+		if (govo != null) {
+			result.append("goVO=").append(govo.toDescription());
+		}
+		if (event != null) {
+			result.append(",event=").append(event);
+		}
+		if (iSourceStateId != null) {
+			result.append(",srcSId=").append(iSourceStateId);
+		}
+		if (iSourceStateNum != null) {
+			result.append(",srcSNum=").append(iSourceStateNum);
+		}
+		if (iTargetStateId != null) {
+			result.append(",targetSId=").append(iTargetStateId);
+		}
+		if (iTargetStateNum != null) {
+			result.append(",targetStateNum").append(iTargetStateNum);
+		}
+		if (mpDependants != null) {
+			result.append(",deps=").append(mpDependants);
+		}
+		result.append("]");
+		return result.toString();
+	}
+	
 }	// class RuleObjectContainerCVO

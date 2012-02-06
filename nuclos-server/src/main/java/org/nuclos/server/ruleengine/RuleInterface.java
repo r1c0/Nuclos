@@ -2794,4 +2794,45 @@ public class RuleInterface extends CustomCodeInterface {
 		this.getRuleInterface().logError(getSessionId(), sMessage, this.getCurrentRule().getName());
 		logger.error(getSessionId() + " - " + sMessage + " - " + this.getCurrentRule().getName());
 	}
+	
+	@Override
+	public String toString() {
+		final StringBuilder result = new StringBuilder();
+		result.append("RuleInterface[");
+		if (rulevo != null) {
+			result.append("rule=").append(rulevo.toDescription());
+		}
+		if (iSessionId != null) {
+			result.append(",sessionId=").append(iSessionId);
+		}
+		if (lstActions != null && !lstActions.isEmpty()) {
+			result.append(",\nactions=").append(lstActions);
+		}
+		if (lstCheckFailed != null && !lstCheckFailed.isEmpty()) {
+			result.append(",\ncheckFailed=").append(lstCheckFailed);
+		}
+		if (lstNotification != null && !lstNotification.isEmpty()) {
+			result.append(",\nnotifications=").append(lstNotification);
+		}
+		if (mpProperties != null && !mpProperties.isEmpty()) {
+			result.append(",\nprops=").append(mpProperties);
+		}
+		if (userObject != null) {
+			result.append(",user=").append(userObject);
+		}
+		if (userCtx != null) {
+			result.append(",userCtx=").append(userCtx);
+		}
+		if (roccvo != null) {
+			result.append(",\ncontainer=").append(roccvo);
+		}
+		if (roccvoSource != null && !roccvoSource.isEmpty()) {
+			result.append(",\nsrcContainers=").append(roccvoSource);
+		}
+		if (roccvoParameter != null) {
+			result.append(",\nparams=").append(roccvoParameter);
+		}
+		return result.toString();
+	}
+	
 } // class RuleInterface

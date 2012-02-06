@@ -84,6 +84,19 @@ public class RuleNotification extends SimpleClientNotification {
 
 	@Override
 	public String toString() {
-		return sRuleName + ": " + super.getMessage();
+		return sRuleName + ": " + getMessage();
+	}
+	
+	public String toDescription() {
+		final StringBuilder result = new StringBuilder();
+		result.append("RuleNotification[");
+		result.append("msg=").append(getMessage());
+		result.append(",srcId").append(sourceId);
+		result.append(",srcIdent=").append(sourceIdentifier);
+		result.append(",targedId=").append(targetId);
+		result.append(",targetIdent=").append(targetIdentifier);
+		result.append(",rule=").append(sRuleName);
+		result.append("]");
+		return result.toString();
 	}
 }	// class RuleNotification

@@ -183,5 +183,26 @@ public class RuleVO extends NuclosValueObject {
 	public String toString() {
 		return this.getName();
 	}
+	
+	public String toDescription() {
+		final StringBuilder result = new StringBuilder();
+		result.append("RuleVO[");
+		result.append("id=").append(getId());
+		result.append("name=").append(sName);
+		if (bActive) {
+			result.append(",active=").append(bActive);
+		}
+		if (bDebug) {
+			result.append(",debug=").append(bDebug);
+		}
+		if (nucletId != null) {
+			result.append(",nucletId=").append(nucletId);
+		}
+		if (sRuleSource != null) {
+			result.append(",src=").append(sRuleSource);
+		}
+		result.append("]");
+		return result.toString();
+	}
 
 }	// class RuleVO

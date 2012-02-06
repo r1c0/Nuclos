@@ -178,6 +178,9 @@ public class DependantMasterDataMapForRule implements Serializable {
 		return foreignKeyField + "Id";
 	}
 
-
+	@Override
+	public String toString() {
+		return "DependantMasterDataMapForRule[\n" + mmp + "\n]";
+	}
 
 }	// class DependantMasterDataMap

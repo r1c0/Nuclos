@@ -26,13 +26,16 @@ import org.nuclos.common.collect.collectable.Collectable;
  *
  * @author	<a href="mailto:Christoph.Radig@novabit.de">Christoph.Radig</a>
  * @version 01.00.00
+ * 
+ * @deprecated As MasterDataVO already contains its dependants, I see no reason
+ * 		to stick to this class. (tp)
  */
 public class MasterDataWithDependantsVO extends MasterDataVO {
 
 	/**
 	 * the dependants of this object.
 	 */
-	private DependantMasterDataMap mpDependants;
+	private DependantMasterDataMap mpDependants2;
 
 	/**
 	 * @param mdvo
@@ -41,7 +44,7 @@ public class MasterDataWithDependantsVO extends MasterDataVO {
 	 */
 	public MasterDataWithDependantsVO(MasterDataVO mdvo, DependantMasterDataMap mpDependants) {
 		super(mdvo);
-		this.mpDependants = mpDependants;
+		this.mpDependants2 = mpDependants;
 
 		assert this.isComplete() == (mpDependants != null);
 	}
@@ -51,7 +54,7 @@ public class MasterDataWithDependantsVO extends MasterDataVO {
 	 * @see Collectable#isComplete()
 	 */
 	public boolean isComplete() {
-		return this.mpDependants != null;
+		return this.mpDependants2 != null;
 	}
 
 	/**
@@ -60,11 +63,33 @@ public class MasterDataWithDependantsVO extends MasterDataVO {
 	 */
 	@Override
 	public DependantMasterDataMap getDependants() {
-		return this.isComplete() ? this.mpDependants : new DependantMasterDataMap();
+		return this.isComplete() ? this.mpDependants2 : new DependantMasterDataMap();
 	}
 
 	@Override
 	public void setDependants(DependantMasterDataMap mpDependants) {
-		this.mpDependants = mpDependants;
+		this.mpDependants2 = mpDependants;
 	}
+	
+	public String toDescription() {
+		final StringBuilder result = new StringBuilder();
+		result.append("MdwdVO[id=").append(getId());
+		if (isChanged()) {
+			result.append(",changed=").append(isChanged());
+		}
+		if (isSystemRecord()) {
+			result.append(",sr=").append(isSystemRecord());
+		}
+		result.append(",fields=").append(getFields());
+		final DependantMasterDataMap deps = getDependants();
+		if (deps != null && !deps.isEmpty()) {
+			result.append(",deps=").append(deps);
+		}
+		if (mpDependants2 != null && !mpDependants2.isEmpty()) {
+			result.append(",deps2=").append(mpDependants2);
+		}
+		result.append("]");
+		return result.toString();
+	}
+
 }	 // class MasterDataWithDependantsVO
