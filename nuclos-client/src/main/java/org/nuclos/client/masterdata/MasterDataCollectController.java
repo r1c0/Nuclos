@@ -576,8 +576,11 @@ public class MasterDataCollectController extends EntityCollectController<Collect
 		public void run() throws CommonBusinessException {
 			try {
 				setDetailsChangedIgnored(true);
-				CollectableMasterDataWithDependants clct = getSelectedCollectable();
-				MasterDataWithDependantsVO md = new MasterDataWithDependantsVO(clct.getMasterDataCVO(), getAllSubFormData(clct.getId()).toDependantMasterDataMap());
+				
+				final CollectableMasterDataWithDependants clct = getCollectStateModel().getEditedCollectable();
+				readValuesFromEditPanel(clct, false);
+				final MasterDataWithDependantsVO md = new MasterDataWithDependantsVO(
+						clct.getMasterDataCVO(), getAllSubFormData(clct.getId()).toDependantMasterDataMap());
 				mddelegate.executeBusinessRules(getEntityName(), lstRuleVO, md, bSaveAfterRuleExecution);
 			}
 			finally {

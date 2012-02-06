@@ -340,5 +340,23 @@ public class DynamicAttributeVO implements Serializable, Cloneable {
 			oValue = new String((String) oValue);
 		}
 	}
+	
+	@Override
+	public String toString() {
+		final StringBuffer result = new StringBuffer();
+		result.append("DaVO[aId=");
+		result.append(iAttributeId);
+		if (oValue != null) {
+			result.append(",value=").append(oValue);
+		}
+		if (iValueId != 0) {
+			result.append(",vId=").append(iValueId);
+		}
+		if (bRemoved) {
+			result.append(",removed=").append(bRemoved);
+		}
+		result.append("]");
+		return result.toString();
+	}
 
 }	// class DynamicAttributeVO

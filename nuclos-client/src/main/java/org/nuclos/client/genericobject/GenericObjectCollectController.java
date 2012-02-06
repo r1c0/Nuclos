@@ -1700,9 +1700,13 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 			public void run() throws CommonBusinessException {
 				try {
 					setDetailsChangedIgnored(true);
-					CollectableGenericObjectWithDependants clct = getSelectedCollectable();
-					GenericObjectWithDependantsVO go = new GenericObjectWithDependantsVO(clct.getGenericObjectCVO(), getAllSubFormData(clct).toDependantMasterDataMap());
-					GenericObjectDelegate.getInstance().executeBusinessRules(lstRuleVO, go, bSaveAfterRuleExecution);
+					
+					final CollectableGenericObjectWithDependants clct = getCollectStateModel().getEditedCollectable();
+					readValuesFromEditPanel(clct, false);
+					final GenericObjectWithDependantsVO go = new GenericObjectWithDependantsVO(
+							clct.getGenericObjectCVO(), getAllSubFormData(clct).toDependantMasterDataMap());
+					GenericObjectDelegate.getInstance().executeBusinessRules(
+							lstRuleVO, go, bSaveAfterRuleExecution);
 				}
 				finally {
 					setDetailsChangedIgnored(false);
