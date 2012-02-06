@@ -160,10 +160,14 @@ public class SecurityCache {
 	private ModulePermission getModulePermission(String sEntityName, Integer iGenericObjectId) {
 		PermissionKey.ModulePermissionKey modulePermissionKey = new PermissionKey.ModulePermissionKey(iGenericObjectId, sEntityName);
 		if (!modulePermissionsCache.containsKey(modulePermissionKey)) {
-			ModulePermission permission = modulepermissions.getMaxPermissionForGenericObject(sEntityName, iGenericObjectId);
+			ModulePermission permission = modulepermissions.getMaxPermissionForGO(sEntityName, iGenericObjectId);
 			modulePermissionsCache.put(modulePermissionKey, permission);
 		}
-		return modulePermissionsCache.get(modulePermissionKey);
+		final ModulePermission result = modulePermissionsCache.get(modulePermissionKey);
+		if (result == ModulePermission.NO) {
+			return null;
+		}
+		return result;
 	}
 
 	private MasterDataPermission getMasterDataPermission(String sEntityName) {

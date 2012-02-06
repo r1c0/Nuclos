@@ -29,6 +29,8 @@ import org.nuclos.common2.Localizable;
  * @version 01.00.00
  */
 public enum MasterDataPermission implements KeyEnum<Integer>, Localizable {
+	
+	NO(0x00, "no"),
 
 	READONLY(0x01, "read"),
 
@@ -62,7 +64,7 @@ public enum MasterDataPermission implements KeyEnum<Integer>, Localizable {
 	 * @return Does this permission include the right to read?
 	 */
 	public static boolean includesReading(MasterDataPermission permission) {
-		return permission != null;
+		return permission != null && permission != MasterDataPermission.NO;
 	}
 
 	/**
@@ -84,6 +86,8 @@ public enum MasterDataPermission implements KeyEnum<Integer>, Localizable {
 			return null;
 		}
 		switch (iValue) {
+			case 0x00:
+				return NO;
 			case 0x01:
 				return READONLY;
 			case 0x03:

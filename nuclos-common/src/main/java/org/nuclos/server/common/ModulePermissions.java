@@ -115,12 +115,19 @@ public class ModulePermissions implements Serializable {
 		}
 		return maxpermission;
 	}
+	
+	/**
+	 * @return the maximum right for an entity and the genericobject
+	 * 		and ModulePermission.NO for no permissions.
+	 */
+	public ModulePermission getMaxPermissionForGO(String sEntityName, Integer iGenericObjectId) {
+		final ModulePermission result = getMaxPermissionForGenericObject(sEntityName, iGenericObjectId);
+		return result == null ? ModulePermission.NO : result;
+	}
 
 	/**
-	 * returns the maximum right for an entity and the genericobject
-	 * @param sEntityName
-	 * @param iObjectGroupId
-	 * @param iGenericObjectId
+	 * @return the maximum right for an entity and the genericobject
+	 * 		and null for no permissions.
 	 */
 	public ModulePermission getMaxPermissionForGenericObject(String sEntityName, Integer iGenericObjectId) {
 		ModulePermission maxpermission = null;
