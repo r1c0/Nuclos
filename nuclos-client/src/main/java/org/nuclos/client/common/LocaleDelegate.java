@@ -59,8 +59,6 @@ public class LocaleDelegate implements CommonLocaleDelegate.LookupService, Messa
 
 	private static final Logger LOG = Logger.getLogger(LocaleDelegate.class);
 	
-	private static LocaleDelegate INSTANCE;
-	
 	private static Object RB_LOCk = new Object();
 	private static Locale LOCALE;
 	private static LocaleInfo LOCALE_INFO;

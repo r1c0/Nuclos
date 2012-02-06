@@ -56,10 +56,14 @@ public class TopicNotificationReceiver {
 
 	private static final Logger LOG = Logger.getLogger(TopicNotificationReceiver.class);
 	
-	private static TopicNotificationReceiver INSTANCE;
+	private static final HeartBeatMessageListener heartBeatListener = new HeartBeatMessageListener();
 	
 	private static final DummyMessageListener dummyListener = new DummyMessageListener();
 
+	private static TopicNotificationReceiver INSTANCE;
+	
+	//
+	
 	private volatile boolean deferredSubscribe = true;
 
 	private TopicConnection topicconn;

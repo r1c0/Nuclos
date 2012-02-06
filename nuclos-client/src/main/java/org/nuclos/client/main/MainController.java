@@ -267,7 +267,6 @@ public class MainController {
 	private NucletComponentRepository nucletComponentRepository;
 	
 	private CommonLocaleDelegate cld;
-	private SecurityCache securityCache;
 	
 	private MetaDataClientProvider mdProv;
 	
@@ -279,11 +278,6 @@ public class MainController {
 	
 	// private Main main;
 	
-	@Autowired
-	void setSecurityCache(SecurityCache securityCache) {
-		this.securityCache = securityCache;
-	}
-
 	/**
 	 * @param sUserName name of the logged in user
 	 * @param sNuclosServerName name of the Nucleus server connected to.
@@ -1557,14 +1551,16 @@ public class MainController {
 						NuclosResourceCache.getNuclosResourceIcon("org.nuclos.client.resource.icon.glyphish.185-printer.png"), 16)) {
 					@Override
 					public void actionPerformed(ActionEvent e) {
-						ReportExecutionCollectController.execReport(Main.getMainFrame(), NuclosEntity.REPORTEXECUTION.getEntityName(), mdReport);
+						ReportExecutionCollectController.execReport(Main.getInstance().getMainFrame(), NuclosEntity.REPORTEXECUTION.getEntityName(), mdReport);
 					}
 				};
 				if (genericActions != null) {
 					WorkspaceDescription.Action wa = new WorkspaceDescription.Action();
 					wa.setAction(GENERIC_REPORT_ACTION);
 					wa.putStringParameter("report", mdReport.getField("name", String.class));
-					genericActions.add(new GenericAction(wa, new ActionWithMenuPath(new String[]{CommonLocaleDelegate.getMessage("nuclos.entity.reportExecution.label", "Reporting ausführen")}, action)));
+					genericActions.add(new GenericAction(wa, new ActionWithMenuPath(new String[]{
+							cld.getMessage("nuclos.entity.reportExecution.label", "Reporting ausführen")
+							}, action)));
 				}
 			}
 		} catch (Exception e) {

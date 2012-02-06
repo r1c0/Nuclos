@@ -89,22 +89,18 @@ public class MetaDataCache {
 	};
 	
 
-	private Map<String, MasterDataMetaVO> mp;
-	
-	public static synchronized MetaDataCache getInstance() {
-		if (INSTANCE == null) {
-			INSTANCE = new MetaDataCache();
-		}
+	public static MetaDataCache getInstance() {
 		return INSTANCE;
 	}
 	
 	public MetaDataCache() {
+		INSTANCE = this;
 	}
 	
 	@PostConstruct
 	void init() {
 		tnr.subscribe(JMSConstants.TOPICNAME_METADATACACHE, messagelistener);
-		log.debug("Initializing metadata cache");
+		LOG.debug("Initializing metadata cache");
 		final Collection<MasterDataMetaVO> coll = MasterDataDelegate.getInstance().getMetaData();
 		this.mp = new ConcurrentHashMap<String, MasterDataMetaVO>(coll.size());
 		for (MasterDataMetaVO mdmetavo : coll) {

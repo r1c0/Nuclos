@@ -93,7 +93,7 @@ public class SecurityCache implements SecurityCacheMBean {
 	private GenericObjectGroupFacadeLocal genericobjectgroupfacade;
 
 	private final Map<PermissionKey.AttributePermissionKey, Permission> mpAttributePermission 
-		= new HashMap<PermissionKey.AttributePermissionKey, Permission>();
+		= new ConcurrentHashMap<PermissionKey.AttributePermissionKey, Permission>();
 
 	private final Map<String, UserRights> mpUserRights = new ConcurrentHashMap<String, UserRights>();
 
@@ -916,7 +916,7 @@ public class SecurityCache implements SecurityCacheMBean {
 	public void invalidate() {
 		TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
 			@Override
-			public void afterCommit() {
+			public synchronized void afterCommit() {
 				LOG.debug("Invalidating security cache...");
 
 				mpUserRights.clear();
@@ -933,7 +933,7 @@ public class SecurityCache implements SecurityCacheMBean {
 		if (username != null) {
 			TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
 				@Override
-				public void afterCommit() {
+				public synchronized void afterCommit() {
 					LOG.debug("Invalidating security cache for user " + username + "...");
 					if (mpUserRights.containsKey(username)) {
 						mpUserRights.remove(username);

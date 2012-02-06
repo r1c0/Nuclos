@@ -72,10 +72,6 @@ public class SecurityCache {
 	
 	//
 	
-	private SecurityDelegate securityDelegate;
-	
-	private AttributeCache attributeCache;
-
 	private String username;
 	private Boolean superUser;
 	private Set<String> stAllowedActions;
@@ -164,16 +160,6 @@ public class SecurityCache {
 		this.attributeCache = attributeCache;
 	}
 	
-	@Autowired
-	void setSecurityDelegate(SecurityDelegate securityDelegate) {
-		this.securityDelegate = securityDelegate;
-	}
-	
-	@Autowired
-	void setAttributeCache(AttributeCache attributeCache) {
-		this.attributeCache = attributeCache;
-	}
-
 	public synchronized boolean isActionAllowed(String sActionName) {
 		return stAllowedActions.contains(sActionName);
 	}

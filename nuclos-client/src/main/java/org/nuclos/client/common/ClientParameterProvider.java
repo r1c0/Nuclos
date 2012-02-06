@@ -74,7 +74,7 @@ public class ClientParameterProvider extends AbstractParameterProvider implement
 	/**
 	 * Map<String sName, String sValue>
 	 */
-	private Map<String, String> mpParams;
+	private final Map<String, String> mpParams = new ConcurrentHashMap<String, String>();
 	
 	private TopicNotificationReceiver tnr;
 	
@@ -105,16 +105,14 @@ public class ClientParameterProvider extends AbstractParameterProvider implement
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		tnr.subscribe(JMSConstants.TOPICNAME_PARAMETERPROVIDER, serverListener);
-		this.mpParams = getParameterFromServer();
+		revalidate();
 	}
 	
-	@Autowired
-	void setServiceLocator(ServiceLocator serviceLocator) {
-		this.serviceLocator = serviceLocator;
-	}
-
 	private void revalidate() {
-		this.mpParams = getParameterFromServer();
+		synchronized (mpParams) {
+			mpParams.clear();
+			mpParams.putAll(getParameterFromServer());
+		}
 		LOG.info("Revalidated cache " + this);
 	}
 

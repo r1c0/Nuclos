@@ -261,7 +261,7 @@ public class StartUp  {
 							    }
 								catch (UnavailableServiceException ex) {
 							    	// no webstart context
-									Main.notifyListeners(StartUp.this.args);
+									main.notifyListeners(StartUp.this.args);
 							    }
 
 								// After successful initialization, set the strict version of the critical error handler:

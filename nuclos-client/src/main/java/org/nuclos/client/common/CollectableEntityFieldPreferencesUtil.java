@@ -180,7 +180,7 @@ public class CollectableEntityFieldPreferencesUtil {
 		}
 		else if (DoNotUseCollectableEntity.class.getName().equals(cep.getType())) {
 			final EntityMetaDataVO mdEntity = mdProv.getEntity(cep.getEntity());
-			ce = new DoNotUseCollectableEntity(cep.getEntity(), CommonLocaleDelegate.getLabelFromMetaDataVO(mdEntity));
+			ce = new DoNotUseCollectableEntity(cep.getEntity(), CommonLocaleDelegate.getInstance().getLabelFromMetaDataVO(mdEntity));
 		}
 		else {
 			throw new PreferencesException("Unknown CollectableEntity of type " + cep.getType());

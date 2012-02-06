@@ -53,6 +53,7 @@ import org.nuclos.client.ui.collect.CollectStateConstants;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.ParameterProvider;
+import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.KeyEnum;
 import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.exception.CommonBusinessException;
@@ -177,7 +178,8 @@ public class ReportExecutionCollectController extends MasterDataCollectControlle
 	}
 	
 	public static void execReport(final Component parent, final String entity, final MasterDataVO mdReport) {
-		ExecutorService cachedThreadPoolExecutor = Executors.newCachedThreadPool();
+		final ExecutorService cachedThreadPoolExecutor = Executors.newCachedThreadPool();
+		final CommonLocaleDelegate cld = CommonLocaleDelegate.getInstance();
 		
 		UIUtils.showWaitCursorForFrame(parent, true);
 		try {
@@ -193,7 +195,7 @@ public class ReportExecutionCollectController extends MasterDataCollectControlle
 						pnlSelection.addReport(new ReportVO(mdReport), formatVO);
 					pnlSelection.selectFirstReport();
 					if (JOptionPane.showConfirmDialog(parent, pnlSelection, 
-							getCommonLocaleDelegate().getMessage(
+							cld.getMessage(
 									"ReportExecutionCollectController.6","Verf\u00fcgbare Ausgabeformate"), JOptionPane.OK_CANCEL_OPTION) == JOptionPane.OK_OPTION) {
 						final ReportSelectionPanel.ReportEntry entry = pnlSelection.getSelectedReport();
 						if (entry == null)
@@ -217,7 +219,7 @@ public class ReportExecutionCollectController extends MasterDataCollectControlle
 						} catch (NuclosReportException ex) {
 							String msg = ex.getLocalizedMessage();
 							Errors.getInstance().showExceptionDialog(parent,
-								new NuclosFatalException(getCommonLocaleDelegate().getMessage(
+								new NuclosFatalException(cld.getMessage(
 										"ReportExecutionCollectController.8", "Fehler beim Ausf\u00fchren des Reports {0}", (msg != null ? ": " + msg : "")), ex));
 						}
 					}
@@ -251,15 +253,15 @@ public class ReportExecutionCollectController extends MasterDataCollectControlle
 										thread = ReportRunner.createJob(parent, mpParams, reportvo, formatVO, false, Integer.getInteger(ClientParameterProvider.getInstance().getValue(ParameterProvider.KEY_REPORT_MAXROWCOUNT)));
 									else {
 										thread = null;
-										throw new NuclosFatalException(getCommonLocaleDelegate().getMessage(
-												"ReportExecutionCollectController.5","Unbekannter Reporttyp: {0}", cmd.getCollectableEntity().getName()));
+										throw new NuclosFatalException(cld.getMessage(
+												"ReportExecutionCollectController.5","Unbekannter Reporttyp: {0}", entity));
 									}
 									if (thread != null) {
 										thread.start();
 										try {
 											thread.join();
 										} catch (InterruptedException ex) {
-											throw new NuclosFatalException(getCommonLocaleDelegate().getMessage(
+											throw new NuclosFatalException(cld.getMessage(
 													"ReportExecutionCollectController.3","Die Ausf\u00fchrung des Reports wurde unerwartet unterbrochen: "), ex);
 										}
 										sLastGeneratedFileName = thread.getDocumentName();
@@ -271,8 +273,8 @@ public class ReportExecutionCollectController extends MasterDataCollectControlle
 								SwingUtilities.invokeLater(new Runnable() {
 									@Override
 									public void run() {
-										Errors.getInstance().showExceptionDialog(ReportExecutionCollectController.this.parent, new NuclosFatalException(
-												getCommonLocaleDelegate().getMessage("ReportExecutionCollectController.7", "Fehler beim Ausf\u00fchren des Sammelreports."), ex));
+										Errors.getInstance().showExceptionDialog(parent, new NuclosFatalException(
+												cld.getMessage("ReportExecutionCollectController.7", "Fehler beim Ausf\u00fchren des Sammelreports."), ex));
 									}
 								});
 							}
