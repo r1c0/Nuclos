@@ -266,7 +266,8 @@ public abstract class SubFormController extends Controller
 	}
 
 	/**
-	 * @return the entity name and foreign key field name used to uniquely identify this subform in its <code>CollectController</code>.
+	 * @return the entity name and foreign key field name used to uniquely 
+	 * 		identify this subform in its <code>CollectController</code>.
 	 */
 	public final EntityAndFieldName getEntityAndForeignKeyFieldName() {
 		return new EntityAndFieldName(this.getCollectableEntity().getName(), this.getForeignKeyFieldName());

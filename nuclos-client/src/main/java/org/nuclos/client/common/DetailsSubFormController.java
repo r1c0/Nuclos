@@ -504,36 +504,45 @@ public abstract class DetailsSubFormController<Clct extends Collectable>
 	}
 
 	/**
-	 * validates the Collectables in this subform and the childsubforms if any, sets the given parent id in the foreign key field of each Collectable
+	 * validates the Collectables in this subform and the childsubforms if any, 
+	 * sets the given parent id in the foreign key field of each Collectable
 	 * and returns them.
+	 * 
 	 * @return All collectables, even the removed ones.
 	 * @postcondition result != null
 	 */
-	public List<Clct> getAllCollectables(Object oParentId, Collection<DetailsSubFormController<Clct>> collSubForms, boolean bSetParent, Clct clct) throws CommonValidationException {
-		List<Clct> lsclct;
+	public List<Clct> getAllCollectables(Object oParentId, Collection<DetailsSubFormController<Clct>> collSubForms, 
+			boolean bSetParent, Clct clct) throws CommonValidationException {
+		final String entity = getEntityAndForeignKeyFieldName().getEntityName();
+		final List<Clct> result;
+		
 		if (bSetParent) {
-			lsclct= this.getCollectables(oParentId, true, true, true);
+			result= getCollectables(oParentId, true, true, true);
 		}
 		else {
 			if (clct != null && clct instanceof CollectableMasterData) {
 				// don't get collectables from table model for dependant data of subform childs
-				DependantCollectableMasterDataMap dcmdm = ((CollectableMasterData)clct).getDependantCollectableMasterDataMap();
-				lsclct = prepareAndValidateCollectables((List<Clct>)dcmdm.getValues(this.getEntityAndForeignKeyFieldName().getEntityName()), true, false, true);
+				final DependantCollectableMasterDataMap dcmdm = 
+						((CollectableMasterData)clct).getDependantCollectableMasterDataMap();
+				result = prepareAndValidateCollectables((List<Clct>)dcmdm.getValues(entity), 
+						true, false, true);
 			}
 			else {
-				lsclct= this.getCollectables(true, true, true);
+				result= getCollectables(true, true, true);
 			}
 		}
 
 		for (DetailsSubFormController<Clct> subFormController : CollectionUtils.emptyIfNull(collSubForms)) {
-			if (this.getEntityAndForeignKeyFieldName().getEntityName().equals(subFormController.getParentEntityName())) {
-				for (Clct clct1 : lsclct) {
-					subFormController.setCollectables(subFormController.getAllCollectables(clct1.getId(), collSubForms, false, clct1));
+			final String pentity = subFormController.getParentEntityName();
+			if (entity.equals(pentity)) {
+				// dependant subform case
+				for (Clct clct1 : result) {
+					subFormController.setCollectables(
+							subFormController.getAllCollectables(clct1.getId(), collSubForms, false, clct1));
 				}
 			}
 		}
-
-		return lsclct;
+		return result;
 	}
 
 	/**

@@ -60,9 +60,14 @@ public class ExecuteRuleButtonAction<Clct extends Collectable> implements Collec
 			public void run() {
 				try {
 					CollectState cs = controller.getCollectState();
+					
+					// Don't save: As the rule is collecting the GUI state from the model,
+					// saving the thing before this is plain wrong.
+					/*
 					if (cs.getOuterState() == CollectState.OUTERSTATE_DETAILS && CollectState.isDetailsModeChangesPending(cs.getInnerState())) {
 						controller.save();
 					}
+					 */
 
 					String sruleId = probs.getProperty("ruletoexecute");
 					Integer ruleId = null;

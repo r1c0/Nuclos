@@ -2848,17 +2848,18 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	 */
 	protected DependantCollectableMasterDataMap getAllSubFormData(CollectableGenericObjectWithDependants oParent) throws CommonValidationException {
 		final DependantCollectableMasterDataMap result = new DependantCollectableMasterDataMap();
-
-		for (DetailsSubFormController<CollectableEntityObject> subformctl : getSubFormControllersInDetails()) {
-
-			if("nuclos_generalsearchdocument".equals(subformctl.getCollectableEntity().getName())) {
+		final Collection<DetailsSubFormController<CollectableEntityObject>> sfControllers = getSubFormControllersInDetails();
+		
+		for (DetailsSubFormController<CollectableEntityObject> subformctl : sfControllers) {
+			final String subEntity = subformctl.getCollectableEntity().getName();
+			
+			if ("nuclos_generalsearchdocument".equals(subEntity)) {
 				String sPath = (String)Modules.getInstance().getModuleById(iModuleId).getField("documentPath");
-
 				sPath = getDirectoryPath(StringUtils.emptyIfNull(sPath), oParent);
-
-				if(sPath == null)
+				if (sPath == null) {
 					continue;
-				for(CollectableMasterData md : subformctl.getCollectables())
+				}
+				for (CollectableMasterData md : subformctl.getCollectables()) {
 					if(md.getField("file").getValue() != null) {
 						GenericObjectDocumentFile docFile = (GenericObjectDocumentFile)md.getField("file").getValue();
 						docFile.setDirectoryPath(sPath);
@@ -2867,14 +2868,19 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 							md.setField("path", clctfield);
 						}
 					}
+				}
 			}
-
 			//NUCLEUSINT-1119
-			if (subformctl.getSubForm().getParentSubForm() == null)
-				if(oParent != null)
-					result.addValues(subformctl.getSubForm().getEntityName(), subformctl.getAllCollectables(oParent.getId(), getSubFormControllersInDetails(), true, null));
-				else
-					result.addValues(subformctl.getSubForm().getEntityName(), subformctl.getAllCollectables(null, getSubFormControllersInDetails(), true, null));
+			if (subformctl.getSubForm().getParentSubForm() == null) {
+				final List<CollectableEntityObject> dependants;
+				if (oParent != null) {
+					dependants = subformctl.getAllCollectables(oParent.getId(), sfControllers, true, null);
+				}
+				else {
+					dependants = subformctl.getAllCollectables(null, sfControllers, true, null);
+				}
+				result.addValues(subEntity, dependants);
+			}
 		}
 
 		return result;
