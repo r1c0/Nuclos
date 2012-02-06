@@ -21,10 +21,16 @@ import org.nuclos.common.dal.vo.EntityObjectVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 
 public class MasterDataToEntityObjectTransformer implements Transformer<MasterDataVO, EntityObjectVO> {
+	
+	private final String entity;
+	
+	public MasterDataToEntityObjectTransformer(String entity) {
+		this.entity = entity;
+	}
 
 	@Override
 	public EntityObjectVO transform(MasterDataVO i) {
-		return DalSupportForMD.getEntityObjectVO(i);
+		return DalSupportForMD.getEntityObjectVO(entity, i);
 	}
 
 }

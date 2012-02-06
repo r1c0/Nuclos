@@ -355,16 +355,17 @@ public class RuleObjectContainerCVO implements Serializable {
 	private static DependantMasterDataMap convert(DependantMasterDataMapForRule dep) {
 		DependantMasterDataMap map = new DependantMasterDataMap();
 		for(String key : dep.getEntityNames()) {
-			map.setData(key, CollectionUtils.transform(dep.getValues(key), new MasterDataToEntityObjectTransformer()));
+			map.setData(key, CollectionUtils.transform(dep.getValues(key), 
+					new MasterDataToEntityObjectTransformer(key)));
 		}
-
 		return map;
 	}
 
 	private static DependantMasterDataMapForRule convert(DependantMasterDataMap dep) {
 		DependantMasterDataMapForRule map = new DependantMasterDataMapForRule();
 		for(String key : dep.getEntityNames()) {
-			map.setValues(key, CollectionUtils.transform(dep.getData(key), new EntityObjectToMasterDataTransformer()));
+			map.setValues(key, CollectionUtils.transform(dep.getData(key), 
+					new EntityObjectToMasterDataTransformer()));
 		}
 		return map;
 	}

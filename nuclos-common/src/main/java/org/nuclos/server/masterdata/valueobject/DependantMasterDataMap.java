@@ -128,7 +128,7 @@ public final class DependantMasterDataMap implements Serializable {
 	 */
 	@Deprecated
 	public void addValue(String sDependantEntityName, MasterDataVO mdvoDependant) {
-		addData(sDependantEntityName, DalSupportForMD.getEntityObjectVO(mdvoDependant));
+		addData(sDependantEntityName, DalSupportForMD.getEntityObjectVO(sDependantEntityName, mdvoDependant));
 	}
 
 	/**
@@ -152,7 +152,7 @@ public final class DependantMasterDataMap implements Serializable {
 	@Deprecated
 	public void addAllValues(String sDependantEntityName, Collection<MasterDataVO> collmdvoDependants) {
 		Collection<EntityObjectVO> colVo = CollectionUtils.transform(collmdvoDependants,
-			new MasterDataToEntityObjectTransformer());
+			new MasterDataToEntityObjectTransformer(sDependantEntityName));
 		addAllData(sDependantEntityName, colVo);
 	}
 
@@ -179,7 +179,7 @@ public final class DependantMasterDataMap implements Serializable {
 	@Deprecated
 	public void setValues(String sDependantEntityName, Collection<MasterDataVO> collmdvoDependants) {
 		Collection<EntityObjectVO> colVO = CollectionUtils.transform(collmdvoDependants,
-			new MasterDataToEntityObjectTransformer());
+			new MasterDataToEntityObjectTransformer(sDependantEntityName));
 		setData(sDependantEntityName, colVO);
 	}
 

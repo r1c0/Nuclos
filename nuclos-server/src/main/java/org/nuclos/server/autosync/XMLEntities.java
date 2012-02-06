@@ -237,7 +237,8 @@ public class XMLEntities {
 				while (reader.nextTag() == XMLStreamReader.START_ELEMENT) {
 					String dependantName = reader.getLocalName();
 					List<MasterDataVO> list = readList(reader, t, handler);
-					Collection<EntityObjectVO> colVO = CollectionUtils.transform(list, new MasterDataToEntityObjectTransformer());
+					Collection<EntityObjectVO> colVO = CollectionUtils.transform(list, 
+							new MasterDataToEntityObjectTransformer(dependantName));
 					dependantMap.addAllData(dependantName, colVO);
 				}
 			} else {

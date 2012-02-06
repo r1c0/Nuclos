@@ -162,7 +162,8 @@ public class SearchFilterFacadeBean extends MasterDataFacadeBean implements Sear
 		MasterDataVO mdVO_searchfilteruser = SearchFilterUserVO.transformToMasterData(filterVO.getSearchFilterUser());
 
 		DependantMasterDataMap dmdp = new DependantMasterDataMap();
-		dmdp.addData(NuclosEntity.SEARCHFILTERUSER.getEntityName(), DalSupportForMD.getEntityObjectVO(mdVO_searchfilteruser));
+		final String entity = NuclosEntity.SEARCHFILTERUSER.getEntityName();
+		dmdp.addData(entity, DalSupportForMD.getEntityObjectVO(entity, mdVO_searchfilteruser));
 
 		MasterDataVO mdVO_searchfilter_new = getMasterDataFacade().create(NuclosEntity.SEARCHFILTER.getEntityName(), mdVO_searchfilter, dmdp);
 		Collection<MasterDataVO> coll_searchfilteruser_new = getMasterDataFacade().getDependantMasterData(NuclosEntity.SEARCHFILTERUSER.getEntityName(), "searchfilter", mdVO_searchfilter_new.getId());

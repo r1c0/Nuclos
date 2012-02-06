@@ -224,7 +224,9 @@ public class MigrateSearchFilterPreferences {
 				mdVO_searchfilter_user.setField("validFrom", null);
 				mdVO_searchfilter_user.setField("validUntil", null);
 
-				dmdm.addData(NuclosEntity.SEARCHFILTERUSER.getEntityName(), DalSupportForMD.getEntityObjectVO(mdVO_searchfilter_user));
+				final String entity = NuclosEntity.SEARCHFILTERUSER.getEntityName();
+				dmdm.addData(entity, 
+						DalSupportForMD.getEntityObjectVO(entity, mdVO_searchfilter_user));
 
 				Integer iId = MasterDataDelegate.getInstance().create(NuclosEntity.SEARCHFILTER.getEntityName(), mdVO_searchfilter, dmdm).getIntId();
 

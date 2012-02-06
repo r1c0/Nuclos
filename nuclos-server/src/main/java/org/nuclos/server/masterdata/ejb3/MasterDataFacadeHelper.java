@@ -243,7 +243,8 @@ public class MasterDataFacadeHelper {
 		if (oRelatedId == null) {
 			throw new NullArgumentException("oRelatedId");
 		}
-		LOG.debug("Getting dependant masterdata for entity " + sEntityName + " with foreign key field " + sForeignKeyField + " and related id " + oRelatedId);
+		LOG.debug("Getting dependant masterdata for entity " + sEntityName + " with foreign key field " 
+				+ sForeignKeyField + " and related id " + oRelatedId);
 
 		final MasterDataMetaVO mdmetavo = MasterDataMetaCache.getInstance().getMetaData(sEntityName);
 		Date startDate = new Date();
@@ -252,7 +253,8 @@ public class MasterDataFacadeHelper {
 				getDependantMasterDataBySQL(oRelatedId, mdmetavo) :
 					getDependantMasterDataByBean(sEntityName, sForeignKeyField, oRelatedId);
 
-		Collection<EntityObjectVO> colEntityObject = CollectionUtils.transform(result, new MasterDataToEntityObjectTransformer());
+		Collection<EntityObjectVO> colEntityObject = CollectionUtils.transform(result, 
+				new MasterDataToEntityObjectTransformer(sEntityName));
 
 		Date endate = new Date();
 		NuclosPerformanceLogger.performanceLog(
@@ -261,7 +263,8 @@ public class MasterDataFacadeHelper {
 				username,
 				oRelatedId,
 				sEntityName,
-				"Reading the master data entity for an objekt if type "+sEntityName+" ("+(mdmetavo.isDynamic() ? " dynamic " : " static ") +")",
+				"Reading the master data entity for an objekt if type "+sEntityName+" ("
+						+ (mdmetavo.isDynamic() ? " dynamic " : " static ") +")",
 				"",
 				"");
 
@@ -497,7 +500,7 @@ public class MasterDataFacadeHelper {
 			switch (nucEntity) {
 			case DBSOURCE:
 				try {
-		            updateDbObject(DalSupportForMD.getEntityObjectVO(mdvo), null, false);
+		            updateDbObject(DalSupportForMD.getEntityObjectVO(sEntityName, mdvo), null, false);
 	            }
 	            catch(NuclosBusinessException e) {
 		            throw new CommonRemoveException(e.getMessage(), e);
@@ -548,7 +551,7 @@ public class MasterDataFacadeHelper {
 		}
 
 		JdbcEntityObjectProcessor eoProcessor = NucletDalProvider.getInstance().getEntityObjectProcessor(mdmetavo.getEntityName());
-		EntityObjectVO eoVO = DalSupportForMD.getEntityObjectVO(mdvo);
+		EntityObjectVO eoVO = DalSupportForMD.getEntityObjectVO(sEntityName, mdvo);
 		DalUtils.updateVersionInformation(eoVO, sUserName);
 		eoVO.flagUpdate();
 
@@ -565,7 +568,7 @@ public class MasterDataFacadeHelper {
 			switch (nucEntity) {
 			case DBSOURCE:
 				try {
-		            updateDbObject(DalSupportForMD.getEntityObjectVO(mdvoInDB), eoVO, false);
+		            updateDbObject(DalSupportForMD.getEntityObjectVO(sEntityName, mdvoInDB), eoVO, false);
 	            }
 	            catch(NuclosBusinessException e) {
 		            throw new CommonCreateException(e.getMessage(), e);
@@ -618,7 +621,7 @@ public class MasterDataFacadeHelper {
 		mdvoToCreate.setId(result);
 
 		JdbcEntityObjectProcessor eoProcessor = NucletDalProvider.getInstance().getEntityObjectProcessor(mdmetavo.getEntityName());
-		EntityObjectVO eoVO = DalSupportForMD.getEntityObjectVO(mdvoToCreate);
+		EntityObjectVO eoVO = DalSupportForMD.getEntityObjectVO(sEntityName, mdvoToCreate);
 		DalUtils.updateVersionInformation(eoVO, sUserName);
 		eoVO.flagNew();
 

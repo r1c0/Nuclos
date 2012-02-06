@@ -279,15 +279,21 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 		for (EntityAndFieldName eafn : collSubEntities.keySet()) {
 			// care only about dependant data which are on the highest level
 			if (collSubEntities.get(eafn) == null) {
-				final String sForeignKeyFieldName = LangUtils.defaultIfNull(eafn.getFieldName(), ModuleConstants.DEFAULT_FOREIGNKEYFIELDNAME);
-				Collection<MasterDataVO> collmdVO = getMasterDataFacade().getDependantMasterData(eafn.getEntityName(), sForeignKeyFieldName, govo.getId());
+				final String entity = eafn.getEntityName();
+				final String sForeignKeyFieldName = LangUtils.defaultIfNull(eafn.getFieldName(), 
+						ModuleConstants.DEFAULT_FOREIGNKEYFIELDNAME);
+				Collection<MasterDataVO> collmdVO = getMasterDataFacade().getDependantMasterData(
+						entity, sForeignKeyFieldName, govo.getId());
 
-				mpDependants.setData(eafn.getEntityName(), CollectionUtils.transform(collmdVO, new MasterDataToEntityObjectTransformer()));
+				mpDependants.setData(entity, CollectionUtils.transform(collmdVO, 
+						new MasterDataToEntityObjectTransformer(entity)));
 
 				if (bAll) {
 					for (MasterDataVO mdVO : collmdVO) {
 						// now read all dependant data of the child subforms
-						getMasterDataFacade().readAllDependants(eafn.getEntityName(), mdVO.getIntId(), mdVO.getDependants(), mdVO.isRemoved(), eafn.getEntityName(), collSubEntities);
+						getMasterDataFacade().readAllDependants(
+								entity, mdVO.getIntId(), mdVO.getDependants(), mdVO.isRemoved(), 
+								entity, collSubEntities);
 					}
 				}
 			}
@@ -1701,7 +1707,8 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 	public void attachDocumentToObject(MasterDataVO mdvoDocument) {
 		try {
 			DependantMasterDataMap map = new DependantMasterDataMap();
-			map.addData((String)mdvoDocument.getField("entity"), DalSupportForMD.getEntityObjectVO(mdvoDocument));
+			final String entity = (String) mdvoDocument.getField("entity");
+			map.addData(entity, DalSupportForMD.getEntityObjectVO(entity, mdvoDocument));
 			int genericObjectId = ((Integer)mdvoDocument.getField("genericObject")).intValue();
 			int moduleId = getModuleContainingGenericObject(genericObjectId);
 			helper.createDependants(Modules.getInstance().getEntityNameByModuleId(moduleId), genericObjectId, map);

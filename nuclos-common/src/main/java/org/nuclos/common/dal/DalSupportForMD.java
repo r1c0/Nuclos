@@ -50,9 +50,10 @@ public class DalSupportForMD {
 		// Never invoked.
 	}
 
-	public static EntityObjectVO getEntityObjectVO(MasterDataVO md) {
+	public static EntityObjectVO getEntityObjectVO(String entity, MasterDataVO md) {
 		final EntityObjectVO eo = new EntityObjectVO();
-
+		eo.setEntity(entity);
+		
 		eo.setId(IdUtils.toLongId(md.getId()));
 		eo.setCreatedBy(md.getCreatedBy());
 		eo.setCreatedAt(InternalTimestamp.toInternalTimestamp(md.getCreatedAt()));
@@ -283,11 +284,11 @@ public class DalSupportForMD {
 	 *
 	 * @return
 	 */
-	public static Transformer<MasterDataVO, EntityObjectVO> getTransformerToEntityObjectVO() {
+	public static Transformer<MasterDataVO, EntityObjectVO> getTransformerToEntityObjectVO(final String entity) {
 		return new Transformer<MasterDataVO, EntityObjectVO>() {
 			@Override
             public EntityObjectVO transform(MasterDataVO md) {
-                return DalSupportForMD.getEntityObjectVO(md);
+                return DalSupportForMD.getEntityObjectVO(entity, md);
             }
 		};
 	}

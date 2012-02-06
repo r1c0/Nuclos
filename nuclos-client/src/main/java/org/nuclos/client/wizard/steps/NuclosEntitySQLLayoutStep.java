@@ -803,8 +803,9 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 					 vo.setField("module", metaVO.getEntity());
 					 vo.setField("moduleId", iEntityId);
 
-					 DependantMasterDataMap mp = new DependantMasterDataMap(NuclosEntity.ROLEMODULE.getEntityName(),
-						 Collections.singletonList(DalSupportForMD.getEntityObjectVO(vo)));
+					 final String entity = NuclosEntity.ROLEMODULE.getEntityName();
+					 DependantMasterDataMap mp = new DependantMasterDataMap(entity,
+						 Collections.singletonList(DalSupportForMD.getEntityObjectVO(entity, vo)));
 
 					 MasterDataDelegate.getInstance().update(NuclosEntity.ROLE.getEntityName(), voRole, mp);
 				 }
@@ -826,7 +827,10 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 					 else
 						 vo.setField("masterdatapermission", permission);
 
-					 DependantMasterDataMap mp = new DependantMasterDataMap(NuclosEntity.ROLEMASTERDATA.getEntityName(), Collections.singletonList(DalSupportForMD.getEntityObjectVO(vo)));
+					 final String entity = NuclosEntity.ROLEMASTERDATA.getEntityName();
+					 DependantMasterDataMap mp = new DependantMasterDataMap(
+							 entity, 
+							 Collections.singletonList(DalSupportForMD.getEntityObjectVO(entity, vo)));
 					 MasterDataDelegate.getInstance().update(NuclosEntity.ROLE.getEntityName(), voRole, mp);
 
 				 }
@@ -1169,18 +1173,20 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 
 			mdLayoutUsage.setField("searchScreen", Boolean.FALSE);
 			mdLayoutUsage.setField("layout", wizardModel.getEntityName());
-			dependMapLayoutUsage.addData(sLayoutUsageType, DalSupportForMD.getEntityObjectVO(mdLayoutUsage));
+			dependMapLayoutUsage.addData(sLayoutUsageType, 
+					DalSupportForMD.getEntityObjectVO(sLayoutUsageType, mdLayoutUsage));
 
 			metaLayoutUsage = MasterDataDelegate.getInstance().getMetaData(sLayoutUsageType);
 			masterDataLayoutUsage = new CollectableMasterDataEntity(metaLayoutUsage);
-			masterDataLayoumlUsage = new CollectableMasterData(masterDataEntity, new MasterDataVO(masterDataLayoutUsage.getMasterDataMetaCVO(), false));
+			masterDataLayoumlUsage = new CollectableMasterData(masterDataEntity, 
+					new MasterDataVO(masterDataLayoutUsage.getMasterDataMetaCVO(), false));
 			mdLayoutUsage = masterDataLayoumlUsage.getMasterDataCVO();
 
 			mdLayoutUsage.setField("entity", wizardModel.getEntityName());
 
 			mdLayoutUsage.setField("searchScreen", Boolean.TRUE);
 			mdLayoutUsage.setField("layout", wizardModel.getEntityName());
-			dependMapLayoutUsage.addData(sLayoutUsageType, DalSupportForMD.getEntityObjectVO(mdLayoutUsage));
+			dependMapLayoutUsage.addData(sLayoutUsageType, DalSupportForMD.getEntityObjectVO(sLayoutUsageType, mdLayoutUsage));
 
 			try {
 				String sCompareField = "entity";

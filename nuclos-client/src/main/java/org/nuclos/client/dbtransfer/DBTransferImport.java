@@ -776,9 +776,10 @@ public class DBTransferImport {
 	}
 	
 	private void setupParameterPanel(Collection<EntityObjectVO> incomingParameterVOs) {
+		final String entity = NuclosEntity.PARAMETER.getEntityName();
 		List<EntityObjectVO> currentParameterVOs = new ArrayList<EntityObjectVO>(CollectionUtils.transform(
-			MasterDataDelegate.getInstance().getMasterData(NuclosEntity.PARAMETER.getEntityName()), 
-			DalSupportForMD.getTransformerToEntityObjectVO()));
+			MasterDataDelegate.getInstance().getMasterData(entity), 
+			DalSupportForMD.getTransformerToEntityObjectVO(entity)));
 		int iCountNew = 0;
 		int iCountDeleted = 0;
 		int iCountValueChanged = 0;

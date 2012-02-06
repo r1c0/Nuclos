@@ -212,8 +212,8 @@ public class GeneratorFacadeBean extends NuclosFacadeBean implements GeneratorFa
 			source = DalSupportForGO.wrapGenericObjectVO(loccvoSource.getGenericObject());
 		}
 		else {
-			source = DalSupportForMD.getEntityObjectVO(loccvoSource.getMasterData());
-			source.setEntity(meta.getEntity());
+			source = DalSupportForMD.getEntityObjectVO(meta.getEntity(), loccvoSource.getMasterData());
+			// source.setEntity(meta.getEntity());
 		}
 		return generateGenericObject(Collections.singletonList(source), null, generator).getGeneratedObject().getId();
 	}
@@ -403,23 +403,27 @@ public class GeneratorFacadeBean extends NuclosFacadeBean implements GeneratorFa
 			RuleObjectContainerCVO container = new RuleObjectContainerCVO(Event.GENERATION_BEFORE, md, dependants);
 
 			// Create the new object
+			final String entity = targetMeta.getEntity();
 			try {
 				// execute rules (before)
 				final List<String> lstActions = new ArrayList<String>();
 				container = executeGenerationRules(generatoractionvo, container, sourceContainers, parameterCVO, lstActions, false);
 
-				MasterDataVO created = getMasterDataFacade().create(targetMeta.getEntity(), container.getMasterData(), container.getDependants());
+				MasterDataVO created = getMasterDataFacade().create(entity, container.getMasterData(), container.getDependants());
 
 				// execute rules (after)
 				container = new RuleObjectContainerCVO(Event.GENERATION_AFTER, created, container.getDependants());
 				container = executeGenerationRules(generatoractionvo, container, sourceContainers, parameterCVO, new ArrayList<String>(), true);
 
-				return new GenerationResult(CollectionUtils.transform(sourceObjects, new ExtractIdTransformer()), DalSupportForMD.getEntityObjectVO(getMasterDataFacade().get(targetMeta.getEntity(), created.getId())), null) ;
+				return new GenerationResult(CollectionUtils.transform(sourceObjects, 
+						new ExtractIdTransformer()), 
+						DalSupportForMD.getEntityObjectVO(entity, 
+								getMasterDataFacade().get(entity, created.getId())), null) ;
 			}
 			catch (CommonBusinessException ex) {
 				// this is required, because the id is already generated
 				container.getMasterData().setId(null);
-				EntityObjectVO temp = DalSupportForMD.getEntityObjectVO(container.getMasterData());
+				EntityObjectVO temp = DalSupportForMD.getEntityObjectVO(entity, container.getMasterData());
 				temp.setEntity(targetMeta.getEntity());
 				temp.setDependants(container.getDependants());
 				return new GenerationResult(CollectionUtils.transform(sourceObjects, new ExtractIdTransformer()), temp, ex.getMessage()) ;
@@ -817,7 +821,8 @@ public class GeneratorFacadeBean extends NuclosFacadeBean implements GeneratorFa
 		}
 	}
 
-	private void copyAttributes(GeneratorActionVO gavo, Collection<MasterDataVO> attributes, String source, String fef, Object sourceId, String target, DependantMasterDataMap dependants) {
+	private void copyAttributes(GeneratorActionVO gavo, Collection<MasterDataVO> attributes, String source, String fef, 
+			Object sourceId, String target, DependantMasterDataMap dependants) {
 		final Collection<MasterDataVO> data = getMasterDataFacade().getDependantMasterData(source, fef, sourceId);
 
 		if (attributes.size() == 0) {
@@ -829,7 +834,7 @@ public class GeneratorFacadeBean extends NuclosFacadeBean implements GeneratorFa
 						mdvo.setField(fieldmeta.getField() + "Id", null);
 					}
 				}
-				dependants.addData(target, DalSupportForMD.getEntityObjectVO(mdvo));
+				dependants.addData(target, DalSupportForMD.getEntityObjectVO(target, mdvo));
 			}
 		}
 		else {
@@ -846,7 +851,7 @@ public class GeneratorFacadeBean extends NuclosFacadeBean implements GeneratorFa
 						mdvo.setField((String) attribute.getField("subentityAttributeTarget") + "Id", valueId);
 					}
 				}
-				dependants.addData(target, DalSupportForMD.getEntityObjectVO(mdvo));
+				dependants.addData(target, DalSupportForMD.getEntityObjectVO(target, mdvo));
 			}
 		}
 	}

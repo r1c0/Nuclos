@@ -332,8 +332,9 @@ public class MasterDataDelegate {
 	  */
 	 public Collection<EntityObjectVO> getDependantMasterData(final String sEntityName, String sForeignKeyFieldName, Object oRelatedId) {
 		 try {
-			 Collection<EntityObjectVO> col = CollectionUtils.transform(this.getMasterDataFacade().getDependantMasterData(sEntityName, sForeignKeyFieldName, oRelatedId), 
-                     new MasterDataToEntityObjectTransformer());
+			 Collection<EntityObjectVO> col = CollectionUtils.transform(
+					 getMasterDataFacade().getDependantMasterData(sEntityName, sForeignKeyFieldName, oRelatedId), 
+                     new MasterDataToEntityObjectTransformer(sEntityName));
 			 return col;
 		 }
 		 catch (RuntimeException ex) {

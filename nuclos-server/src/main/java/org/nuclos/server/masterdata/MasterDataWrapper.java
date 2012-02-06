@@ -737,8 +737,10 @@ public class MasterDataWrapper {
 			mpFields.put("completed", new java.sql.Date(vo.getCompleted().getTime()));
 
 		DependantMasterDataMap dependants = new DependantMasterDataMap();
+		final String entity = NuclosEntity.TASKOBJECT.getEntityName();
 		for (TaskObjectVO toVO : vo.getRelatedObjects())
-			dependants.addData(NuclosEntity.TASKOBJECT.getEntityName(), DalSupportForMD.getEntityObjectVO(wrapTaskObjectVO(toVO)));
+			dependants.addData(entity, 
+					DalSupportForMD.getEntityObjectVO(entity, wrapTaskObjectVO(toVO)));
 
 		MasterDataVO mdVO = new MasterDataVO(vo.getId(), vo.getChangedAt(), vo.getCreatedBy(), vo.getChangedAt(), vo.getChangedBy(), vo.getVersion(), mpFields);
 

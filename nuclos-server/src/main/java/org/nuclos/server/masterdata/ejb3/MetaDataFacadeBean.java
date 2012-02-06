@@ -1290,7 +1290,8 @@ public class MetaDataFacadeBean extends NuclosFacadeBean implements MetaDataFaca
 				mdFieldVO.setField("foreignentity", null);
 				mdFieldVO.setField("foreignentityfield", null);
 
-				dependMap.addData(NuclosEntity.ENTITYFIELD.getEntityName(), DalSupportForMD.getEntityObjectVO(mdFieldVO));
+				final String entity = NuclosEntity.ENTITYFIELD.getEntityName();
+				dependMap.addData(entity, DalSupportForMD.getEntityObjectVO(entity, mdFieldVO));
 				lstFields.add(colName);
 			}
 

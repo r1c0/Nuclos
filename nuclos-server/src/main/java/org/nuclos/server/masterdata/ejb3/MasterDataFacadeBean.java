@@ -500,17 +500,17 @@ public class MasterDataFacadeBean extends NuclosFacadeBean implements MasterData
 					try {
 						DependantMasterDataMap dmdm = null;
 						for(EntityAndFieldName eafn : lstRequiredSubEntities) {
+							final String entity = eafn.getEntityName();
 							Collection<MasterDataVO> collmdvo = getDependantMasterData(
-								eafn.getEntityName(), eafn.getFieldName(), oId);
+								entity, eafn.getFieldName(), oId);
 							if(!collmdvo.isEmpty()) {
 								if(dmdm == null) {
 									dmdm = new DependantMasterDataMap();
 								}
-								dmdm.addAllData(eafn.getEntityName(), CollectionUtils.transform(collmdvo, 
-										new MasterDataToEntityObjectTransformer()));
+								dmdm.addAllData(entity, CollectionUtils.transform(collmdvo, 
+										new MasterDataToEntityObjectTransformer(entity)));
 							}
 						}
-
 						return new MasterDataWithDependantsVO(helper.getMasterDataCVOById(mdmetavo, oId), dmdm);
 					}
 					catch(CommonFinderException ex) {
@@ -1098,22 +1098,23 @@ public class MasterDataFacadeBean extends NuclosFacadeBean implements MasterData
 			for(EntityAndFieldName eafn : mpEntityAndParentEntityName.keySet()) {
 				// first subform in hierarchie found or
 				// child subfrom found
+				final String entity = eafn.getEntityName();
 				if((mpEntityAndParentEntityName.get(eafn) == null && sParentEntity == null)
-					|| (mpEntityAndParentEntityName.get(eafn) != null && mpEntityAndParentEntityName.get(
-						eafn).equals(sParentEntity))) {
-					if(!mpDependants.getData(eafn.getEntityName()).isEmpty()) {
-						collmdvo = CollectionUtils.emptyIfNull(mpDependants.getData(eafn.getEntityName()));
+					|| (mpEntityAndParentEntityName.get(eafn) != null 
+					&& mpEntityAndParentEntityName.get(eafn).equals(sParentEntity))) {
+					if(!mpDependants.getData(entity).isEmpty()) {
+						collmdvo = CollectionUtils.emptyIfNull(mpDependants.getData(entity));
 					}
 					else {
 						if(iId != null) {
 							Collection<EntityObjectVO> col = CollectionUtils.transform(getDependantMasterData(
-								eafn.getEntityName(),
-								MasterDataFacadeHelper.getForeignKeyFieldName(sEntityName, eafn.getEntityName(), mpEntityAndParentEntityName), iId),
-									new MasterDataToEntityObjectTransformer());
-
+								entity,
+								MasterDataFacadeHelper.getForeignKeyFieldName(sEntityName, entity, mpEntityAndParentEntityName), 
+								iId), 
+								new MasterDataToEntityObjectTransformer(entity));
 
 							collmdvo = CollectionUtils.emptyIfNull(col);
-							mpDependants.addAllData(eafn.getEntityName(), collmdvo);
+							mpDependants.addAllData(entity, collmdvo);
 						}
 					}
 
@@ -1504,8 +1505,9 @@ public class MasterDataFacadeBean extends NuclosFacadeBean implements MasterData
 		List<EntityAndFieldName> lsteafn) {
 		final DependantMasterDataMap result = new DependantMasterDataMap();
 		for(EntityAndFieldName eafn : lsteafn) {
+			final String entity = eafn.getEntityName();
 			Collection<EntityObjectVO> col = CollectionUtils.transform(this.getDependantMasterData(
-				eafn.getEntityName(), eafn.getFieldName(), oId), new MasterDataToEntityObjectTransformer());
+				entity, eafn.getFieldName(), oId), new MasterDataToEntityObjectTransformer(entity));
 
 			result.addAllData(eafn.getEntityName(), col);
 		}

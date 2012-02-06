@@ -73,7 +73,7 @@ public class JSONHelper {
 				for (Object dependant : (List<?>) value) {
 					MasterDataVO dependantVO = makeMasterDataVO(dependant, name, metaData);
 					if (dependantVO != null) {
-						dependantMap.addData(name, DalSupportForMD.getEntityObjectVO(dependantVO));
+						dependantMap.addData(name, DalSupportForMD.getEntityObjectVO(name, dependantVO));
 					}
 				}
 			} else {

@@ -1008,29 +1008,35 @@ public class XmlImportFacadeBean extends NuclosFacadeBean implements XmlImportFa
 		}
 
 		for (EntityAndFieldName eafn : entitylist) {
-			Collection<MasterDataVO> mdList = getMasterDataFacade().getDependantMasterData(eafn.getEntityName(), eafn.getFieldName(), entityId);
+			final String entity = eafn.getEntityName();
+			Collection<MasterDataVO> mdList = getMasterDataFacade().getDependantMasterData(
+					entity, eafn.getFieldName(), entityId);
 
 			for (MasterDataVO mdvo : mdList) {
-				DependantMasterDataMap dmdmOfChildren = readDependants(subformtree, eafn.getEntityName(), mdvo.getIntId(), new DependantMasterDataMap());
+				DependantMasterDataMap dmdmOfChildren = readDependants(subformtree, entity, mdvo.getIntId(), 
+						new DependantMasterDataMap());
 				mdvo.setDependants(dmdmOfChildren);
 
 				// check subforms in other layouts
 				if (eafn.getEntityName() != null) {
-					if (Modules.getInstance().isModuleEntity(eafn.getEntityName())) {
+					if (Modules.getInstance().isModuleEntity(entity)) {
 						// this should never happen
 					}
-					else if (MasterDataMetaCache.getInstance().getMetaData(eafn.getEntityName()).getIsImportExport()){
-						if (!mpMdSubFormsWithForeignKeys.containsKey(eafn.getEntityName())) {
-							if (layoutFacade.isMasterDataLayoutAvailable(eafn.getEntityName())) {
-								mpMdSubFormsWithForeignKeys.put(eafn.getEntityName(), layoutFacade.getSubFormEntityAndParentSubFormEntityNames(eafn.getEntityName(),mdvo.getIntId(),true));
+					else if (MasterDataMetaCache.getInstance().getMetaData(entity).getIsImportExport()){
+						if (!mpMdSubFormsWithForeignKeys.containsKey(entity)) {
+							if (layoutFacade.isMasterDataLayoutAvailable(entity)) {
+								mpMdSubFormsWithForeignKeys.put(entity, 
+										layoutFacade.getSubFormEntityAndParentSubFormEntityNames(
+												entity,mdvo.getIntId(),true));
 							}
 						}
 
-						if (mpMdSubFormsWithForeignKeys.get(eafn.getEntityName()) != null) {
-							readDependants(mpMdSubFormsWithForeignKeys.get(eafn.getEntityName()), null, mdvo.getIntId(), new DependantMasterDataMap());
+						if (mpMdSubFormsWithForeignKeys.get(entity) != null) {
+							readDependants(mpMdSubFormsWithForeignKeys.get(entityId), null, mdvo.getIntId(), 
+									new DependantMasterDataMap());
 						}
 						//todo check this
-						if (!MasterDataMetaCache.getInstance().getMetaData(eafn.getEntityName()).getUniqueFieldNames().isEmpty()) {
+						if (!MasterDataMetaCache.getInstance().getMetaData(entity).getUniqueFieldNames().isEmpty()) {
 							Pair<String, Integer> pair = new Pair<String, Integer>(eafn.getEntityName(), mdvo.getIntId());
 							if (!isEntityIdAlreadyRead(pair)){
 								lstAllReadEntityIds.add(pair);
@@ -1038,10 +1044,10 @@ public class XmlImportFacadeBean extends NuclosFacadeBean implements XmlImportFa
 						}
 					}
 				}
-
 				//lstAllReadEntityIds.add(new Pair<String, MasterDataVO>(eafn.getEntityName(), mdvo));
 			}
-			dmdm.addAllData(eafn.getEntityName(), CollectionUtils.transform(mdList, new MasterDataToEntityObjectTransformer()));
+			dmdm.addAllData(entity, CollectionUtils.transform(mdList, 
+					new MasterDataToEntityObjectTransformer(entity)));
 		}
 		return dmdm;
 	}

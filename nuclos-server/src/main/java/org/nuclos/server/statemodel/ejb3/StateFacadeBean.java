@@ -924,18 +924,19 @@ public class StateFacadeBean extends NuclosFacadeBean implements StateFacadeRemo
 		if (vo.getStateTarget().intValue() < 0)											//newly inserted state referenced?
 			vo.setStateTarget(states.get(vo.getStateTarget()));						//map newly inserted state temp id to real state id
 
-		DependantMasterDataMap dependants = new DependantMasterDataMap();
+		final DependantMasterDataMap dependants = new DependantMasterDataMap();
+		final String entity = NuclosEntity.RULETRANSITION.getEntityName();
 
 		int order = 1;
 		for (Pair<Integer, Boolean> rule : vo.getRuleIdsWithRunAfterwards()) {
 			RuleEngineTransitionVO ruleTransitionVO = new RuleEngineTransitionVO(new NuclosValueObject(),vo.getId(),rule.x,order++,rule.y);
-			dependants.addData(NuclosEntity.RULETRANSITION.getEntityName(),
-				DalSupportForMD.getEntityObjectVO(MasterDataWrapper.wrapRuleEngineTransitionVO(ruleTransitionVO)));
+			dependants.addData(entity,
+				DalSupportForMD.getEntityObjectVO(entity, MasterDataWrapper.wrapRuleEngineTransitionVO(ruleTransitionVO)));
 		}
 		for (Integer id : vo.getRoleIds()) {
 			RoleTransitionVO roleTransitionVO = new RoleTransitionVO(new NuclosValueObject(),vo.getId(),id);
 			dependants.addData(NuclosEntity.ROLETRANSITION.getEntityName(),
-				DalSupportForMD.getEntityObjectVO(MasterDataWrapper.wrapRoleTransitionVO(roleTransitionVO)));
+				DalSupportForMD.getEntityObjectVO(entity, MasterDataWrapper.wrapRoleTransitionVO(roleTransitionVO)));
 		}
 
 		MasterDataVO mdVO = getMasterDataFacade().create(NuclosEntity.STATETRANSITION.getEntityName(), MasterDataWrapper.wrapStateTransitionVO(vo), dependants);
@@ -958,6 +959,7 @@ public class StateFacadeBean extends NuclosFacadeBean implements StateFacadeRemo
 		List<Pair<Integer, Boolean>> clientRules = vo.getRuleIdsWithRunAfterwards();
 		int order = 1;
 
+		final String ruleTransition = NuclosEntity.RULETRANSITION.getEntityName();
 		for (Iterator<RuleEngineTransitionVO> iter = dbRules.iterator(); iter.hasNext();) {
 			RuleEngineTransitionVO retVO = iter.next();
 			dbRuleIds.add(retVO.getRuleId());
@@ -967,7 +969,8 @@ public class StateFacadeBean extends NuclosFacadeBean implements StateFacadeRemo
 			//if (!clientRuleIds.contains(retVO.getRuleId())) {
 				mdVO.remove();
 			//}
-			dependants.addData(NuclosEntity.RULETRANSITION.getEntityName(), DalSupportForMD.getEntityObjectVO(mdVO));
+			dependants.addData(ruleTransition, 
+					DalSupportForMD.getEntityObjectVO(ruleTransition, mdVO));
 		}
 
 		//add all new rules for transition because or new ordering
@@ -975,8 +978,9 @@ public class StateFacadeBean extends NuclosFacadeBean implements StateFacadeRemo
 
 		for (Pair<Integer, Boolean> rule : clientRules) {
 			RuleEngineTransitionVO ruleTransitionVO = new RuleEngineTransitionVO(new NuclosValueObject(),vo.getId(),rule.x,order++,rule.y);
-			dependants.addData(NuclosEntity.RULETRANSITION.getEntityName(),
-				DalSupportForMD.getEntityObjectVO(MasterDataWrapper.wrapRuleEngineTransitionVO(ruleTransitionVO)));
+			dependants.addData(ruleTransition,
+				DalSupportForMD.getEntityObjectVO(ruleTransition, 
+						MasterDataWrapper.wrapRuleEngineTransitionVO(ruleTransitionVO)));
 		}
 
 		// --- create RoleTransitions ---
@@ -991,6 +995,7 @@ public class StateFacadeBean extends NuclosFacadeBean implements StateFacadeRemo
 		List<Integer> dbRoleIds = new ArrayList<Integer>();
 		List<Integer> clientRoleIds = vo.getRoleIds();
 
+		final String roleTransition = NuclosEntity.ROLETRANSITION.getEntityName();
 		for (Iterator<RoleTransitionVO> iter = dbRoles.iterator(); iter.hasNext();) {
 			RoleTransitionVO rtVO = iter.next();
 			dbRoleIds.add(rtVO.getRoleId());
@@ -998,15 +1003,16 @@ public class StateFacadeBean extends NuclosFacadeBean implements StateFacadeRemo
 			if (!vo.getRoleIds().contains(rtVO.getRoleId())) {
 				mdVO.remove();
 			}
-			dependants.addData(NuclosEntity.ROLETRANSITION.getEntityName(), DalSupportForMD.getEntityObjectVO(mdVO));
+			dependants.addData(roleTransition, DalSupportForMD.getEntityObjectVO(roleTransition, mdVO));
 		}
 
 		clientRoleIds.removeAll(dbRoleIds);
 
 		for (Integer id : clientRoleIds) {
 			RoleTransitionVO roleTransitionVO = new RoleTransitionVO(new NuclosValueObject(),vo.getId(),id);
-			dependants.addData(NuclosEntity.ROLETRANSITION.getEntityName(),
-				DalSupportForMD.getEntityObjectVO(MasterDataWrapper.wrapRoleTransitionVO(roleTransitionVO)));
+			dependants.addData(roleTransition,
+				DalSupportForMD.getEntityObjectVO(roleTransition,
+						MasterDataWrapper.wrapRoleTransitionVO(roleTransitionVO)));
 		}
 
 		return dependants;

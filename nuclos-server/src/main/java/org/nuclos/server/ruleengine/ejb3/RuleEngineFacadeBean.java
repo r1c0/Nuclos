@@ -265,7 +265,7 @@ public class RuleEngineFacadeBean extends NuclosFacadeBean implements RuleEngine
 					sCurrentRule = rulevo.getName();
 
 					if (rulevo.isActive()) {
-						info("Start executing rule \"" + rulevo.getName() + "\"");
+						info("Start executing rule \"" + rulevo.getName() + "\" (" + rulevo.getId() + ")");
 
 						RuleCodeGenerator<NuclosRule> generator = getGenerator(rulevo);
 						final NuclosRule ruleInstance = ccm.getInstance(generator);
