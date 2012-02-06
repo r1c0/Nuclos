@@ -26,6 +26,8 @@ import org.nuclos.common.HasId;
  */
 public interface IDalVO extends HasId<Long> {
 	
+	int STATE_UNCHANGED = 0;
+	
 	int STATE_NEW = 1;
 	
 	int STATE_UPDATED = 2;

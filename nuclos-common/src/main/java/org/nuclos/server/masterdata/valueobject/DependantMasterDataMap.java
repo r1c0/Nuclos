@@ -274,6 +274,16 @@ public final class DependantMasterDataMap implements Serializable {
 		}
 		return foreignKeyField;
 	}
+	
+	public boolean getPendingChanges() {
+		for (EntityObjectVO eo : mmp.getAllValues()) {
+			if (eo.isFlagNew() || eo.isFlagRemoved() || eo.isFlagUpdated())
+				return true;
+			if (eo.getDependants().getPendingChanges())
+				return true;
+		}
+		return false;
+	}
 
 	@Override
 	public String toString() {

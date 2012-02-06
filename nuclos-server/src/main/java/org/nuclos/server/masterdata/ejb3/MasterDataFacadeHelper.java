@@ -782,14 +782,15 @@ public class MasterDataFacadeHelper {
 						mdvoDependant.setEntity(sDependantEntityName);
 						GenericObjectVO govo = DalSupportForGO.getGenericObjectVO(mdvoDependant);
 						GenericObjectFacadeLocal goLocal = ServiceLocator.getInstance().getFacade(GenericObjectFacadeLocal.class);
+						final DependantMasterDataMap deps = mdvoDependant.getDependants();
 						if(mdvoDependant.isFlagNew()) {
-							goLocal.create(new GenericObjectWithDependantsVO(govo, mdvoDependant.getDependants()));
+							goLocal.create(new GenericObjectWithDependantsVO(govo, deps));
 						}
 						else if(mdvoDependant.isFlagRemoved()) {
-							goLocal.remove(new GenericObjectWithDependantsVO(govo, mdvoDependant.getDependants()), true);
+							goLocal.remove(new GenericObjectWithDependantsVO(govo, deps), true);
 						}
-						else if (mdvoDependant.isFlagUpdated()) {
-							goLocal.modify(govo, mdvoDependant.getDependants(), false);
+						else if (mdvoDependant.isFlagUpdated() || deps.getPendingChanges()) {
+							goLocal.modify(govo, deps, false);
 						}
 					}
 					catch(NuclosBusinessException ex) {

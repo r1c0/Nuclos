@@ -181,6 +181,7 @@ public class EntityObjectVO extends AbstractDalVOWithFields<Object> implements I
 		final StringBuilder result = new StringBuilder();
 		result.append(getClass().getName()).append("[");
 		result.append("entity=").append(getEntity());
+		appendState(result.append(","));
 		result.append(",fields=").append(getFields());
 		result.append(",fieldIds=").append(getFieldIds());
 		result.append(",depEntities=").append(getDependants().getEntityNames());

@@ -83,6 +83,27 @@ public abstract class AbstractDalVOBasic implements IDalVO, Serializable {
 	@Override
 	public final boolean isFlagRemoved() {
 		return this.state == STATE_REMOVED;
-	}	
+	}
+	
+	protected void appendState(StringBuilder result) {
+		String s;
+		switch (state) {
+		case STATE_UNCHANGED:
+			s = "UNCHANGED";
+			break;
+		case STATE_NEW:
+			s = "NEW";
+			break;
+		case STATE_UPDATED:
+			s = "UPDATED";
+			break;
+		case STATE_REMOVED:
+			s = "REMOVED";
+			break;
+		default:
+			s = "?" + state + "?";
+		}
+		result.append(s);
+	}
 	
 }

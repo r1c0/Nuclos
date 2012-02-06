@@ -494,6 +494,7 @@ public class EntityFieldMetaDataVO extends AbstractDalVOWithVersion implements C
 		final StringBuilder result = new StringBuilder();
 		result.append(getClass().getName()).append("[");
 		result.append("field=").append(getField());
+		appendState(result.append(","));
 		result.append(",column=").append(getDbColumn());
 		result.append(",entityId=").append(getEntityId());
 		if (getPivotInfo() != null) {
