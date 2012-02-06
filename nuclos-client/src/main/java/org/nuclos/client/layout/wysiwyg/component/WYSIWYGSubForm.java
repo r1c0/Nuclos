@@ -96,6 +96,7 @@ import org.nuclos.client.ui.Errors;
 import org.nuclos.client.ui.collect.SubForm;
 import org.nuclos.client.ui.collect.SubForm.Column;
 import org.nuclos.client.ui.collect.SubFormFilter;
+import org.nuclos.client.ui.collect.ToolTipsTableHeader;
 import org.nuclos.client.ui.collect.component.model.CollectableComponentModel;
 import org.nuclos.client.ui.collect.component.model.CollectableComponentModelProvider;
 import org.nuclos.client.ui.collect.component.model.DefaultCollectableComponentModelProvider;
@@ -941,17 +942,22 @@ public class WYSIWYGSubForm extends JLayeredPane implements WYSIWYGComponent, Mo
 	public synchronized void mouseClicked(MouseEvent e) {
 		for(MouseListener l : listenerList.getListeners(MouseListener.class)) {
 			// NUCLEUSINT-556
-			WYSIWYGSubFormColumn column = getColumnHeaderAtPoint(e.getPoint());
-			if(column != null) {
-				MouseListener[] listenerlist = ((Component) column).getMouseListeners();
-				for(MouseListener listener : listenerlist) {
-					if(listener instanceof PropertiesDisplayMouseListener) {
-						listener.mouseClicked(e);
+			if(e.getComponent() instanceof ToolTipsTableHeader) {
+
+				WYSIWYGSubFormColumn column = getColumnAtX(e.getX());
+				if(column != null) {
+					MouseListener[] listenerlist = ((Component) column).getMouseListeners();
+					for(MouseListener listener : listenerlist) {
+						if(listener instanceof PropertiesDisplayMouseListener) {
+							listener.mouseClicked(e);
+						}
 					}
+
 				}
 			}
 			else
 				l.mouseClicked(e);
+
 		}
 	}
 

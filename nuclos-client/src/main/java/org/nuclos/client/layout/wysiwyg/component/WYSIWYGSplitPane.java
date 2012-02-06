@@ -156,7 +156,7 @@ public class WYSIWYGSplitPane extends JPanel implements WYSIWYGComponent{
 		jSplit.setLeftComponent(this.firstEditor);
 		jSplit.setRightComponent(this.secondEditor);
 		
-		DnDUtil.addDragGestureListener(this, this);
+		//DnDUtil.addDragGestureListener(this, this);
 	}
 	
 	public void setFirstEditor(WYSIWYGLayoutEditorPanel panel) {
