@@ -31,6 +31,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import javax.annotation.PreDestroy;
 import javax.annotation.security.RolesAllowed;
 
+import org.apache.commons.httpclient.cookie.CookieAttributeHandler;
 import org.apache.log4j.Logger;
 import org.nuclos.common.HashResourceBundle;
 import org.nuclos.common.JMSConstants;
@@ -197,22 +198,26 @@ public class LocaleFacadeBean extends NuclosFacadeBean implements LocaleFacadeLo
 			// 
 			// This is an issue when assigning nuclet components to nuclets. (tp)
 			synchronized (CACHE) {
-				// Check if current thread is already loading resources.
-				// If yes, return an empty result to avoid infinite recursion through calls to getResourcesAsVO().
-				if (!isLoadingResources.get()) {
-					isLoadingResources.set(true);
-					try {
-						long start = System.currentTimeMillis();
-	
-						result = new HashResourceBundle();
-						for (MasterDataVO mdvo : getResourcesAsVO(localeInfo)) {
-							result.putProperty((String) mdvo.getField(F_RESOURCEID), StringUtils.unicodeDecodeWithNewlines((String) mdvo.getField(F_TEXT)));
+				// Test if the resource bundle has already been loaded be an concurrent thread.
+				result = CACHE.get(localeInfo);
+				if (result == null) {
+					// Check if current thread is already loading resources.
+					// If yes, return an empty result to avoid infinite recursion through calls to getResourcesAsVO().
+					if (!isLoadingResources.get()) {
+						isLoadingResources.set(true);
+						try {
+							long start = System.currentTimeMillis();
+		
+							result = new HashResourceBundle();
+							for (MasterDataVO mdvo : getResourcesAsVO(localeInfo)) {
+								result.putProperty((String) mdvo.getField(F_RESOURCEID), StringUtils.unicodeDecodeWithNewlines((String) mdvo.getField(F_TEXT)));
+							}
+							LOG.info("Created resource cache for locale " + localeInfo.getTag() + " in " + (System.currentTimeMillis() - start) + " ms");
+							CACHE.put(localeInfo, result);
 						}
-						LOG.info("Created resource cache for locale " + localeInfo.getTag() + " in " + (System.currentTimeMillis() - start) + " ms");
-						CACHE.put(localeInfo, result);
-					}
-					finally {
-						isLoadingResources.set(false);
+						finally {
+							isLoadingResources.set(false);
+						}
 					}
 				}
 			}
