@@ -85,9 +85,14 @@ public class AttributeCache implements AttributeProvider {
 	}
 
 	/**
-	 * revalidates this cache: clears it, then fills in all the attributes from the server again.
+	 * revalidates this cache: clears it, then fills in all the attributes 
+	 * from the server again.
+	 * <p>
+	 * Must be synchronized to avoid attributecache.uniquekey.id.error in 
+	 * {@link #addImpl(AttributeCVO)}.
+	 * </p>
 	 */
-	public void revalidate() {
+	public synchronized void revalidate() {
 		mpAttributesByIds.clear();
 		fill();
 	}
@@ -166,10 +171,14 @@ public class AttributeCache implements AttributeProvider {
 
 	/**
 	 * adds a single attribute to this cache.
+	 * <p>
+	 * Must be synchronized to avoid attributecache.uniquekey.id.error in 
+	 * {@link #fill()}.
+	 * </p>
 	 * @param attrcvo
 	 * @precondition attrcvo != null
 	 */
-	private void addImpl(AttributeCVO attrcvo) {
+	private synchronized void addImpl(AttributeCVO attrcvo) {
 		if (attrcvo == null) {
 			throw new NullArgumentException("attrcvo");
 		}
@@ -211,19 +220,6 @@ public class AttributeCache implements AttributeProvider {
 	}
 
 	/**
-	 * replaces the given attribute in the cache and notifies CacheableListeners.
-	 * @param attrcvo
-	 */
-	public void replace(AttributeCVO attrcvo) {
-		if (attrcvo == null) {
-			throw new NullArgumentException("attrcvo");
-		}
-		removeImpl(attrcvo.getId());
-		addImpl(attrcvo);
-		fireCacheableChanged();
-	}
-
-	/**
 	 * @return Collection<AttributeCVO> a collection containing all attributes in the cache.
 	 */
 	@Override
@@ -233,11 +229,15 @@ public class AttributeCache implements AttributeProvider {
 
 	/**
 	 * fills this cache.
+	 * <p>
+	 * Must be synchronized to avoid attributecache.uniquekey.id.error in 
+	 * {@link #addImpl(AttributeCVO)}.
+	 * </p>
 	 * @throws NuclosFatalException
 	 */
-	public void fill() throws NuclosFatalException {
+	public synchronized void fill() throws NuclosFatalException {
 		for (AttributeCVO attrcvo : attributeDelegate.getAllAttributeCVOs(null)) {
-			this.addImpl(attrcvo);
+			addImpl(attrcvo);
 		}
 	}
 
