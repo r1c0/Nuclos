@@ -24,6 +24,8 @@ import java.sql.DriverManager;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import javax.naming.NamingException;
 import javax.servlet.ServletContext;
@@ -34,8 +36,11 @@ import org.apache.activemq.thread.Scheduler;
 import org.apache.activemq.xbean.XBeanBrokerService;
 import org.apache.log4j.ClearThreadLocalMap;
 import org.apache.log4j.Logger;
+import org.nuclos.common.JMSConstants;
 import org.nuclos.common.SpringApplicationContextHolder;
+import org.nuclos.server.jms.NuclosJMSUtils;
 import org.springframework.jms.listener.SimpleMessageListenerContainer;
+import org.springframework.jms.support.JmsUtils;
 import org.springframework.jndi.JndiTemplate;
 import org.springframework.util.Log4jConfigurer;
 import org.springframework.util.ResourceUtils;
@@ -74,6 +79,17 @@ public class NuclosContextLoaderListener extends ContextLoaderListener {
 		super.contextInitialized(event);
 
 		this.log = Logger.getLogger(this.getClass());
+		
+		final Timer timer = (Timer) SpringApplicationContextHolder.getBean("timer");
+		final TimerTask task = new TimerTask() {
+			private int i = 0;
+			
+			@Override
+			public void run() {
+				NuclosJMSUtils.sendMessage(Integer.toString(++i), JMSConstants.TOPICNAME_HEARTBEAT);
+			}
+		};
+		timer.schedule(task, 60000, 60000);
 	}
 
 	@Override

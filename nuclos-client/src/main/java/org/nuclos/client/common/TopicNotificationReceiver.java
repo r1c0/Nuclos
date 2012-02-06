@@ -34,6 +34,7 @@ import javax.jms.TopicSubscriber;
 
 import org.apache.log4j.Logger;
 import org.nuclos.client.jms.MultiMessageListenerContainer;
+import org.nuclos.common.JMSConstants;
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.SpringApplicationContextHolder;
 import org.nuclos.common2.CommonLocaleDelegate;
@@ -104,6 +105,8 @@ public class TopicNotificationReceiver {
 			});
 
 			topicconn.start();
+			
+			subscribe(JMSConstants.TOPICNAME_HEARTBEAT, new HeartBeatMessageListener());
 		}
 		catch (JMSException e) {
 			throw new NuclosFatalException("Can't establish JMS connection", e);
@@ -292,8 +295,8 @@ public class TopicNotificationReceiver {
 
 		@Override
 		public void onMessage(Message msg) {
-			LOG.debug(MessageFormat.format("Received message from topic {0}: {1}", topicname, msg));
 			MessageListener delegate = reference.get();
+			LOG.info(MessageFormat.format("Received message from topic {0}: {1}\n\tfor {2}", topicname, msg, delegate));
 			if(delegate != null) {
 				delegate.onMessage(msg);
 			}
@@ -328,4 +331,17 @@ public class TopicNotificationReceiver {
 		}
 		
 	}
+	
+	private static class HeartBeatMessageListener implements MessageListener {
+		
+		public HeartBeatMessageListener() {
+		}
+
+		@Override
+		public void onMessage(Message message) {
+			LOG.info("Received heartbeat message " + message);
+		}		
+		
+	}
+	
 }	// class TopicNotificationReceiver

@@ -22,6 +22,7 @@ import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.Session;
 
+import org.apache.log4j.Logger;
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.SpringApplicationContextHolder;
 import org.springframework.context.ApplicationContext;
@@ -30,11 +31,13 @@ import org.springframework.jms.core.MessageCreator;
 
 public class NuclosJMSUtils {
 	
+	private static final Logger LOG = Logger.getLogger(NuclosJMSUtils.class);
+	
 	public static void sendMessage(final String sMessageText, String topic) {
 		NuclosJMSUtils.sendMessage(sMessageText, topic, null);
 	}
 	
-	public static void sendMessage(final String sMessageText, String topic, final String sReceiver) {
+	public static void sendMessage(final String sMessageText, final String topic, final String sReceiver) {
 		try {
     		ApplicationContext context = SpringApplicationContextHolder.getApplicationContext();
 
@@ -47,6 +50,7 @@ public class NuclosJMSUtils {
 					Message message = session.createTextMessage(sMessageText);
 					if(sReceiver != null)
 						message.setJMSCorrelationID(sReceiver);
+					logSendMessage(topic, sMessageText, message);
 					return message;
 				}
 			});
@@ -56,7 +60,7 @@ public class NuclosJMSUtils {
     	}
 	}
 	
-	public static void sendObjectMessage(final Serializable object, String topic, final String sReceiver) {
+	public static void sendObjectMessage(final Serializable object, final String topic, final String sReceiver) {
 		try {
     		ApplicationContext context = SpringApplicationContextHolder.getApplicationContext();
 	    	JmsTemplate jmsTemplate = (JmsTemplate)context.getBean(topic);
@@ -67,6 +71,7 @@ public class NuclosJMSUtils {
 					Message message = session.createObjectMessage(object);
 					if(sReceiver != null)
 						message.setJMSCorrelationID(sReceiver);
+					logSendMessage(topic, object, message);
 					return message;
 				}
 			});
@@ -74,6 +79,20 @@ public class NuclosJMSUtils {
     	catch(Exception ex) {
     		throw new NuclosFatalException(ex);
     	}
+	}
+	
+	private static void logSendMessage(String topic, Object body, Message msg) throws JMSException {
+		LOG.info("JMS send to topic '" + topic + "' msg=" + body + " details=" + toString(msg));
+	}
+	
+	private static String toString(Message msg) throws JMSException {
+		final StringBuilder result = new StringBuilder();
+		result.append("Message[");
+		result.append("type=").append(msg.getJMSType());
+		result.append(",corrId=").append(msg.getJMSCorrelationID());
+		result.append(",msgId=").append(msg.getJMSMessageID());
+		result.append("]");
+		return result.toString();
 	}
 	
 }

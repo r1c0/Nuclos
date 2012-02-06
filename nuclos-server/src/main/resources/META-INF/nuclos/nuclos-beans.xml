@@ -110,6 +110,12 @@
 			</list>
 		</property>
 	</bean>
+	
+	<!-- Global server timer -->
+	<bean id="timer" class="java.util.Timer">
+		<constructor-arg><value>NuclosServerTimer</value></constructor-arg>
+		<constructor-arg><value>true</value></constructor-arg>
+	</bean>
 
 	<!-- Server Startup: Logging version (and svn) information -->
 

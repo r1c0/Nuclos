@@ -99,4 +99,10 @@ public interface JMSConstants {
 	 */
 	public static final String TOPICNAME_CUSTOMCOMPONENTCACHE = "topic.customcomponentCache";
 
+	/**
+	 * Name of the JMS topic for sending a heartbeat to the client in order to avoid
+	 * socket connection reset.
+	 */
+	public static final String TOPICNAME_HEARTBEAT = "topic.heartBeat";
+
 }

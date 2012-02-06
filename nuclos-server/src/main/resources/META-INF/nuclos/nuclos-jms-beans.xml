@@ -77,13 +77,14 @@
 
     <amq:topic id="destinationCustomcomponentCache" physicalName="topic/customcomponentCache"/>
 
+    <amq:topic id="destinationHeartbeat" physicalName="topic/heartbeat"/>
 
 	<!-- JMS ConnectionFactory to use, configuring the embedded broker using XML -->
 	<!-- For depends-on see http://activemq.apache.org/vm-transport-reference.html -->
 	<bean id="jmsFactory" class="org.apache.activemq.pool.PooledConnectionFactory"
 		depends-on="broker">
 		<property name="connectionFactory">
-			<amq:connectionFactory brokerURL="vm://localhost?broker.create=false">
+			<amq:connectionFactory brokerURL="vm://nuclosBroker?broker.create=false">
 			</amq:connectionFactory>
 		</property>
 	</bean>
@@ -163,6 +164,12 @@
     <bean id="topic.customcomponentCache" class="org.springframework.jms.core.JmsTemplate"
           p:connectionFactory-ref="jmsProducerConnectionFactory"
           p:defaultDestination-ref="destinationCustomcomponentCache" >
+          <property name="pubSubDomain" value="true"></property>
+    </bean>
+
+    <bean id="topic.heartBeat" class="org.springframework.jms.core.JmsTemplate"
+          p:connectionFactory-ref="jmsProducerConnectionFactory"
+          p:defaultDestination-ref="destinationHeartbeat" >
           <property name="pubSubDomain" value="true"></property>
     </bean>
 

@@ -196,6 +196,10 @@
     	<property name="destinationName" value="topic/customcomponentCache"></property>
     </bean>
     
+    <bean id="topic.heartBeat" class="org.springframework.jms.listener.SimpleMessageListenerContainer" parent="topic">
+    	<property name="destinationName" value="topic/heartBeat"></property>
+    </bean>
+    
 	<!-- JMS end -->
 
 	<!-- Security start -->
