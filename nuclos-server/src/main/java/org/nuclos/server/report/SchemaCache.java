@@ -79,6 +79,8 @@ public class SchemaCache implements SchemaCacheMBean {
    private Schema currentSchema = null;
    
    private ServerParameterProvider serverParameterProvider;
+   
+   private MetaDataServerProvider metaDataServerProvider;
 
    SchemaCache() {
 	   INSTANCE = this;
@@ -92,6 +94,11 @@ public class SchemaCache implements SchemaCacheMBean {
    @Autowired
    void setServerParameterProvider(ServerParameterProvider serverParameterProvider) {
 	   this.serverParameterProvider = serverParameterProvider;
+   }
+   
+   @Autowired
+   void setMetaDataServerProvider(MetaDataServerProvider metaDataServerProvider) {
+	   this.metaDataServerProvider = metaDataServerProvider;
    }
 
    public static SchemaCache getInstance() {
@@ -146,7 +153,7 @@ public class SchemaCache implements SchemaCacheMBean {
    }
 
 	private String getEntityName(String tableName) {
-		for (EntityMetaDataVO eMeta : MetaDataServerProvider.getInstance().getAllEntities()) {
+		for (EntityMetaDataVO eMeta : metaDataServerProvider.getAllEntities()) {
 			if(eMeta.getDbEntity().substring(1).equalsIgnoreCase(tableName.substring(1))) {
 				// ignore T or V
 				return eMeta.getEntity();

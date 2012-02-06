@@ -58,8 +58,8 @@ public class TopicNotificationReceiver {
 	
 	private static TopicNotificationReceiver INSTANCE;
 	
-	//
-	
+	private static final DummyMessageListener dummyListener = new DummyMessageListener();
+
 	private volatile boolean deferredSubscribe = true;
 
 	private TopicConnection topicconn;
@@ -301,8 +301,10 @@ public class TopicNotificationReceiver {
 						}
 					}
 					else {
-						container.setMessageListener(null);
-						LOG.info("Unsubscribe " + this + " from SimpleMessageListenerContainer");
+						// not allowed from Spring, throws IllegalArgumentException
+						// container.setMessageListener(null);
+						container.setMessageListener(dummyListener);
+						LOG.info("Unsubscribe " + this + " from SimpleMessageListenerContainer " + container);
 					}
 				}
 			}
@@ -384,6 +386,18 @@ public class TopicNotificationReceiver {
 		@Override
 		public void onMessage(Message message) {
 			LOG.info("Received heartbeat message " + message);
+		}		
+		
+	}
+	
+	private static class DummyMessageListener implements MessageListener {
+		
+		public DummyMessageListener() {
+		}
+
+		@Override
+		public void onMessage(Message message) {
+			LOG.info("Dummy listener received and ignores message " + message);
 		}		
 		
 	}
