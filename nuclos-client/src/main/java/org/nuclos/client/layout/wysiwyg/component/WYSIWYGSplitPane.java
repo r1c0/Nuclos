@@ -33,6 +33,7 @@ import org.nuclos.client.layout.wysiwyg.WYSIWYGStringsAndLabels.PROPERTY_LABELS;
 import org.nuclos.client.layout.wysiwyg.component.properties.ComponentProperties;
 import org.nuclos.client.layout.wysiwyg.component.properties.PropertyValue;
 import org.nuclos.client.layout.wysiwyg.editor.ui.panels.WYSIWYGLayoutEditorPanel;
+import org.nuclos.client.layout.wysiwyg.editor.util.DnDUtil;
 import org.nuclos.client.layout.wysiwyg.editor.util.InterfaceGuidelines;
 import org.nuclos.client.layout.wysiwyg.editor.util.valueobjects.PropertiesSorter;
 import org.nuclos.client.layout.wysiwyg.editor.util.valueobjects.TableLayoutPanel;
@@ -154,6 +155,8 @@ public class WYSIWYGSplitPane extends JPanel implements WYSIWYGComponent{
 		
 		jSplit.setLeftComponent(this.firstEditor);
 		jSplit.setRightComponent(this.secondEditor);
+		
+		DnDUtil.addDragGestureListener(this, this);
 	}
 	
 	public void setFirstEditor(WYSIWYGLayoutEditorPanel panel) {

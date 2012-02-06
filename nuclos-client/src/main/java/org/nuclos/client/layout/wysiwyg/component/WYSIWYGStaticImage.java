@@ -33,6 +33,7 @@ import org.nuclos.client.layout.wysiwyg.WYSIWYGStringsAndLabels.PROPERTY_LABELS;
 import org.nuclos.client.layout.wysiwyg.component.properties.ComponentProperties;
 import org.nuclos.client.layout.wysiwyg.component.properties.PropertyValue;
 import org.nuclos.client.layout.wysiwyg.editor.ui.panels.WYSIWYGLayoutEditorPanel;
+import org.nuclos.client.layout.wysiwyg.editor.util.DnDUtil;
 import org.nuclos.client.layout.wysiwyg.editor.util.valueobjects.PropertiesSorter;
 import org.nuclos.client.layout.wysiwyg.editor.util.valueobjects.TableLayoutPanel;
 import org.nuclos.client.layout.wysiwyg.editor.util.valueobjects.layoutmlrules.LayoutMLRules;
@@ -119,6 +120,10 @@ public class WYSIWYGStaticImage extends JLabel implements WYSIWYGComponent {
 	private LayoutMLRules componentsRules = new LayoutMLRules();
 
 	private ComponentProperties properties;
+	
+	public WYSIWYGStaticImage() {
+	    DnDUtil.addDragGestureListener(this);
+	}
 
 	/*
 	 * (non-Javadoc)

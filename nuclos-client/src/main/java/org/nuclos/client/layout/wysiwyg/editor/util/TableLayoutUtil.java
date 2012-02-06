@@ -435,6 +435,9 @@ public class TableLayoutUtil {
 	 */
 	public void moveComponentTo(WYSIWYGComponent c, LayoutCell toInsertTo) {
 		TableLayoutConstraints constraint = getConstraintForComponent(c);
+		
+		if (constraint == null)
+			return;
 
 		/** checking if constraints fit to target layout */
 		constraint = checkIfConstraintContainesIllegalValues(c, constraint);
@@ -1804,7 +1807,7 @@ public class TableLayoutUtil {
 	 */
 	public boolean isCellEmpty(WYSIWYGComponent c, LayoutCell cell) {
 		boolean isEmpty = true;
-
+		
 		Component[] comp = container.getComponents();
 
 		TableLayoutConstraints constraint;
@@ -2018,6 +2021,7 @@ public class TableLayoutUtil {
 	public void drawCurrentCell(Graphics g) {
 		Graphics2D g2d = (Graphics2D) g;
 		if (tableLayout.getNumRow() > 1 && tableLayout.getNumColumn() > 1) {
+			
 			if (container.getParentEditorPanel().getParent() instanceof JPanel) {
 				//TODO peformanceleck! rekursives endloszeichnen bei panel im panel
 				((JPanel) container.getParentEditorPanel().getParent()).updateUI();

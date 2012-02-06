@@ -27,10 +27,13 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.HeadlessException;
 import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.dnd.DnDConstants;
+import java.awt.dnd.DragSource;
 import java.awt.dnd.DropTarget;
+import java.awt.dnd.DropTargetContext;
 import java.awt.dnd.DropTargetDragEvent;
 import java.awt.dnd.DropTargetDropEvent;
 import java.awt.dnd.DropTargetEvent;
@@ -43,7 +46,9 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.util.ConcurrentModificationException;
 import java.util.Iterator;
 import java.util.List;
@@ -58,6 +63,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.KeyStroke;
+import javax.swing.SwingUtilities;
 
 import org.apache.log4j.Logger;
 import org.nuclos.client.layout.wysiwyg.CollectableWYSIWYGLayoutEditor.WYSIWYGLayoutEditorChangeDescriptor;
@@ -69,12 +75,15 @@ import org.nuclos.client.layout.wysiwyg.component.ComponentProcessors;
 import org.nuclos.client.layout.wysiwyg.component.WYSIWYGComponent;
 import org.nuclos.client.layout.wysiwyg.component.WYSIWYGSplitPane;
 import org.nuclos.client.layout.wysiwyg.component.WYSIWYGSubForm;
+import org.nuclos.client.layout.wysiwyg.component.WYSIWYGTabbedPane;
 import org.nuclos.client.layout.wysiwyg.component.properties.PropertiesPanel;
 import org.nuclos.client.layout.wysiwyg.datatransfer.DragElement;
+import org.nuclos.client.layout.wysiwyg.datatransfer.TransferableComponent;
 import org.nuclos.client.layout.wysiwyg.datatransfer.TransferableElement;
 import org.nuclos.client.layout.wysiwyg.datatransfer.TransferablePlaceholder;
 import org.nuclos.client.layout.wysiwyg.editor.ui.panels.WYSIWYGLayoutEditorPanel;
 import org.nuclos.client.layout.wysiwyg.editor.ui.panels.WYSIWYGMetaInformationPicker;
+import org.nuclos.client.layout.wysiwyg.editor.util.DnDUtil.GhostGlassPane;
 import org.nuclos.client.layout.wysiwyg.editor.util.InterfaceGuidelines;
 import org.nuclos.client.layout.wysiwyg.editor.util.TableLayoutUtil;
 import org.nuclos.client.layout.wysiwyg.editor.util.UndoRedoFunction;
@@ -139,10 +148,13 @@ public class TableLayoutPanel extends JPanel implements DropTargetListener, Mous
 		this.setLayout(tableLayout);
 		tableLayoutUtil = new TableLayoutUtil(tableLayout, this);
 
-		DropTarget dropTarget = new DropTarget(this, this);
-		dropTarget.setActive(true);
-		dropTarget.setDefaultActions(DnDConstants.ACTION_COPY_OR_MOVE);
+		//DropTarget dropTarget = new DropTarget(this, this);
+		//dropTarget.setActive(true);
+		//dropTarget.setDefaultActions(DnDConstants.ACTION_COPY_OR_MOVE);
 
+        new DropTarget(this, DnDConstants.ACTION_COPY_OR_MOVE, this, true);
+        new DropTarget(glassPane, DnDConstants.ACTION_COPY_OR_MOVE, this, true);
+        
 		changeSizeMeasurementPopupColumn = new ChangeSizeMeasurementPopupColumn(tableLayoutUtil);
 		changeSizeMeasurementPopupRows = new ChangeSizeMeasurementPopupRows(tableLayoutUtil);
 		changeSizeMeasurementPopupMultipleItems = new ChangeSizeMeasurementPopupMultipleItems(tableLayoutUtil);
@@ -338,6 +350,7 @@ public class TableLayoutPanel extends JPanel implements DropTargetListener, Mous
 	 * ########## Listener ##########
 	 */
 
+
 	/**
 	 * DropTargetListener
 	 */
@@ -345,10 +358,49 @@ public class TableLayoutPanel extends JPanel implements DropTargetListener, Mous
 	public void dragEnter(DropTargetDragEvent dtde) {
 		// reject drop by default
 		dtde.rejectDrag();
+		
+		if (getComponentToMove() != null && !glassPane.isVisible())
+			initGlassPane((Component)getComponentToMove(), dtde.getLocation());
 	}
+
+	private GhostGlassPane glassPane = new GhostGlassPane();
+    public void initGlassPane(Component c, Point p) {
+        getRootPane().setGlassPane(glassPane);
+        glassPane.addMouseListener(this);
+
+        //paint ghost
+        BufferedImage image = new BufferedImage(c.getWidth( ),
+									c.getHeight( ), 
+									BufferedImage.TYPE_INT_ARGB);
+		Graphics g = image.getGraphics( );
+		c.paint(g);
+
+		glassPane.setPoint(new Point(-1000,-1000));
+		glassPane.setVisible(true);
+		
+		Point px = (Point)p.clone();
+		SwingUtilities.convertPointToScreen(px, glassPane);
+		SwingUtilities.convertPointFromScreen(px, tableLayoutUtil.getContainer());
+
+		//glassPane.setPoint(px);
+		glassPane.setImage(image);
+		glassPane.revalidate();
+		glassPane.repaint();
+    }
+    
+    public void hideGlassPane() {
+		resetComponentToMove();
+		
+		glassPane.setCursor(null); // reset cursor. cause cursor flickering on dnd inside the component.
+		tableLayoutUtil.getContainer().setCursor(null); // reset cursor. cause cursor flickering on dnd inside the component.
+		
+		glassPane.setVisible(false);
+		glassPane.setImage(null);
+    }
 
 	@Override
 	public void dragExit(DropTargetEvent dte) {
+				
 	}
 
 	/** 
@@ -356,14 +408,28 @@ public class TableLayoutPanel extends JPanel implements DropTargetListener, Mous
 	 */
 	@Override
 	public void dragOver(DropTargetDragEvent dtde) {
-		tableLayoutUtil.setCurrentLayoutCell(dtde.getLocation());
+		Point p = (Point)dtde.getLocation().clone();
+		if (glassPane.isVisible()) {
+			SwingUtilities.convertPointToScreen(p, glassPane);
+			SwingUtilities.convertPointFromScreen(p, tableLayoutUtil.getContainer());
+		}
+		tableLayoutUtil.setCurrentLayoutCell(p);
+		
 		if (isDropAllowed(dtde)) {
+			glassPane.setCursor(DragSource.DefaultCopyDrop); // prevents cursor flickering on dnd inside the component.
+			tableLayoutUtil.getContainer().setCursor(DragSource.DefaultCopyDrop); // prevents cursor flickering on dnd inside the component.
 			dtde.acceptDrag(DnDConstants.ACTION_COPY);
 			repaint();
-			tableLayoutUtil.drawCurrentCell(this.getCurrentTableLayoutUtil().getContainer().getGraphics());
+			//tableLayoutUtil.drawCurrentCell(this.getCurrentTableLayoutUtil().getContainer().getGraphics());
 		} else {
+			glassPane.setCursor(DragSource.DefaultCopyNoDrop); // prevents cursor flickering on dnd inside the component.
+			tableLayoutUtil.getContainer().setCursor(DragSource.DefaultCopyNoDrop); // prevents cursor flickering on dnd inside the component.
 			dtde.rejectDrag();
 		}
+
+		glassPane.setPoint(dtde.getLocation());
+		glassPane.revalidate();
+		glassPane.repaint();
 	}
 
 	/**
@@ -376,9 +442,13 @@ public class TableLayoutPanel extends JPanel implements DropTargetListener, Mous
 		if (event instanceof DropTargetDragEvent) {
 			if (((DropTargetDragEvent) event).isDataFlavorSupported(TransferableElement.flavor)) {
 				dataFlavorSupported = true;
+			} else if (((DropTargetDragEvent) event).isDataFlavorSupported(TransferableComponent.flavor)) {
+				dataFlavorSupported = true;
 			}
 		} else if (event instanceof DropTargetDropEvent) {
 			if (((DropTargetDropEvent) event).isDataFlavorSupported(TransferableElement.flavor)) {
+				dataFlavorSupported = true;
+			} else if (((DropTargetDropEvent) event).isDataFlavorSupported(TransferableComponent.flavor)) {
 				dataFlavorSupported = true;
 			}
 		}
@@ -393,6 +463,7 @@ public class TableLayoutPanel extends JPanel implements DropTargetListener, Mous
 
 		if (dataFlavorSupported) {
 			LayoutCell cell = tableLayoutUtil.getCurrentLayoutCell();
+		
 			if (wysiwygEditorMode == WYSIWYGEditorModes.EXPERT_MODE){
 				//NUCLEUSINT-365
 				/** dropping of a component to a not empty cell is allowed if expertmode is enabled */
@@ -400,30 +471,62 @@ public class TableLayoutPanel extends JPanel implements DropTargetListener, Mous
 			}
 			// NUCLEUSINT-496
 			Point mouse = tableLayoutUtil.getContainer().getMousePosition();
-			// nullpointer exception prevention
-			if (mouse == null)
-				return false;
-			if (tableLayoutUtil.isCellEmpty(cell) || (mouse.x > tableLayoutUtil.getCalculatedLayoutWidth() || mouse.y > tableLayoutUtil.getCalculatedLayoutHeight())) {
+			if (mouse == null) {
+				// nullpointer exception prevention
+				if (event instanceof DropTargetDragEvent) {
+					mouse = ((DropTargetDragEvent) event).getLocation();
+				} else if (event instanceof DropTargetDropEvent) {
+					mouse = ((DropTargetDropEvent) event).getLocation();
+				}
+				mouse = (Point)mouse.clone();
+				if (glassPane.isVisible()) {
+					SwingUtilities.convertPointToScreen(mouse, glassPane);
+					SwingUtilities.convertPointFromScreen(mouse, tableLayoutUtil.getContainer());
+				}
+
+				if (mouse == null) {
+					return false;
+				}
+			}
+
+			if (tableLayoutUtil.isCellEmpty(cell)
+					|| (mouse.x > tableLayoutUtil.getCalculatedLayoutWidth() || mouse.y > tableLayoutUtil.getCalculatedLayoutHeight())) {
 				boolean emptycell = true;
 					// NUCLEUSINT-496 check if the next cell is empty too, else do not allow drop
 					try {
+						Object transferData = null;
+						if (event instanceof DropTargetDragEvent) {
+							transferData = ((DropTargetDragEvent) event).getTransferable().getTransferData(new DataFlavor(DragElement.class, "Element"));
+							if (transferData == null) {
+								transferData =  ((DropTargetDragEvent) event).getTransferable().getTransferData(new DataFlavor(WYSIWYGComponent.class, "Element"));
+							}
+						} else if (event instanceof DropTargetDropEvent) {
+							transferData = ((DropTargetDropEvent) event).getTransferable().getTransferData(new DataFlavor(DragElement.class, "Element"));
+							if (transferData == null) {
+								transferData =  ((DropTargetDropEvent) event).getTransferable().getTransferData(new DataFlavor(WYSIWYGComponent.class, "Element"));
+							}
+						}
 						
-						DragElement element = (DragElement) ((DropTargetDragEvent) event).getTransferable().getTransferData(new DataFlavor(DragElement.class, "Element"));
-						if (element.isLabeledComponent()) {
-							LayoutCell secondCell = tableLayoutUtil.getLayoutCellByPosition(cell.getCellX() + 1, cell.getCellY());
-
-							// if the next cell is a small cell with the width of the margin between, use the next one
-							if (secondCell.getCellDimensions().width == InterfaceGuidelines.MARGIN_BETWEEN)
-								secondCell = tableLayoutUtil.getLayoutCellByPosition(secondCell.getCellX() +1, secondCell.getCellY());
-							
-							log.debug(cell.toString());
-							
-							if (!tableLayoutUtil.isCellEmpty(secondCell)) {
-								emptycell = false;
-								if (mouse.x > tableLayoutUtil.getCalculatedLayoutWidth() || mouse.y > tableLayoutUtil.getCalculatedLayoutHeight()) {
-									emptycell = true;
+						if (transferData instanceof DragElement) {
+							DragElement element = (DragElement) transferData;
+							if (element.isLabeledComponent()) {
+								LayoutCell secondCell = tableLayoutUtil.getLayoutCellByPosition(cell.getCellX() + 1, cell.getCellY());
+	
+								// if the next cell is a small cell with the width of the margin between, use the next one
+								if (secondCell.getCellDimensions().width == InterfaceGuidelines.MARGIN_BETWEEN)
+									secondCell = tableLayoutUtil.getLayoutCellByPosition(secondCell.getCellX() +1, secondCell.getCellY());
+								
+								log.debug(cell.toString());
+								
+								if (!tableLayoutUtil.isCellEmpty(secondCell)) {
+									emptycell = false;
+									if (mouse.x > tableLayoutUtil.getCalculatedLayoutWidth() || mouse.y > tableLayoutUtil.getCalculatedLayoutHeight()) {
+										emptycell = true;
+									}
 								}
 							}
+						} else if (transferData.equals(WYSIWYGComponent.class)) {
+							//do nothing. we do not have to check if labeled component and if next cell is available.
 						}
 					}
 					catch (ClassCastException e) {
@@ -438,7 +541,7 @@ public class TableLayoutPanel extends JPanel implements DropTargetListener, Mous
 						// nothing to do
 						LOG.info("isDropAllowed: " + e);
 					}
-				
+					
 				/** if editor is running in standardmode dropping is only allowed to a empty cell */
 				return emptycell;
 			} 
@@ -455,6 +558,8 @@ public class TableLayoutPanel extends JPanel implements DropTargetListener, Mous
 	 */
 	@Override
 	public void drop(DropTargetDropEvent dtde) {
+		glassPane.setCursor(null); // reset cursor. cause cursor flickering on dnd inside the component.
+		tableLayoutUtil.getContainer().setCursor(null); // reset cursor. cause cursor flickering on dnd inside the component.
 		if (chgDescriptor != null) {
 			chgDescriptor.setContentChanged();
 		}
@@ -465,14 +570,21 @@ public class TableLayoutPanel extends JPanel implements DropTargetListener, Mous
 			mouseLocation.x = InterfaceGuidelines.MARGIN_LEFT;
 		if (mouseLocation.y < InterfaceGuidelines.MARGIN_TOP)
 			mouseLocation.y = InterfaceGuidelines.MARGIN_TOP;
+		
+		Point p = (Point)mouseLocation.clone();
+		if (glassPane.isVisible()) {
+			SwingUtilities.convertPointToScreen(p, glassPane);
+			SwingUtilities.convertPointFromScreen(p, tableLayoutUtil.getContainer());
+		}
 
-		tableLayoutUtil.setCurrentLayoutCell(mouseLocation);
+		//tableLayoutUtil.setCurrentLayoutCell(p);
 		current = tableLayoutUtil.getCurrentLayoutCell();
 		// NUCLEUSINT-496 controlling the do while loop
 		boolean processSecondComponent = false;
 
 		if (!isDropAllowed(dtde)) {
 			dtde.rejectDrop();
+			hideGlassPane();
 			return;
 		}
 
@@ -480,56 +592,117 @@ public class TableLayoutPanel extends JPanel implements DropTargetListener, Mous
 		//NUCLEUSINT-496 the component for the labeled component
 		Component componentAfterLabel = null;
 		try {
-			DragElement element = (DragElement) dtde.getTransferable().getTransferData(new DataFlavor(DragElement.class, "Element"));
-
-			String elem = element.getElement();
-			String control = element.getControltype();
-			String field = null;
-			if (LayoutMLConstants.ELEMENT_COLLECTABLECOMPONENT.equals(elem)) {
-				List<String> values = getParentEditorPanel().getMetaInformation().getFieldNamesByControlType(control);
-				if (values.size() > 0) {
-					//NUCLEUSINT-465
-					field = WYSIWYGMetaInformationPicker.showPickDialog(getParentEditorPanel(), values, this);
-					if (field == null) {
-						return;
+			Object transferData =  ((DropTargetDropEvent) dtde).getTransferable().getTransferData(new DataFlavor(DragElement.class, "Element"));
+			if (transferData == null) {
+				transferData =  ((DropTargetDropEvent) dtde).getTransferable().getTransferData(new DataFlavor(WYSIWYGComponent.class, "Element"));
+			}
+			
+			if (transferData instanceof DragElement) {
+				DragElement element = (DragElement) transferData;
+	
+				String elem = element.getElement();
+				String control = element.getControltype();
+				String field = null;
+				if (LayoutMLConstants.ELEMENT_COLLECTABLECOMPONENT.equals(elem)) {
+					List<String> values = getParentEditorPanel().getMetaInformation().getFieldNamesByControlType(control);
+					if (values.size() > 0) {
+						//NUCLEUSINT-465
+						field = WYSIWYGMetaInformationPicker.showPickDialog(getParentEditorPanel(), values, this);
+						if (field == null) {
+							return;
+						}
+					} else {
+						throw new NuclosBusinessException(TABLELAYOUT_PANEL.NO_ATTRIBUTE_FOR_THIS_COMPONENT_AVAILABLE);
+					}
+					// NUCLEUSINT-496
+				} else if ((LayoutMLConstants.ELEMENT_LABEL + LayoutMLConstants.ELEMENT_COLLECTABLECOMPONENT).equals(elem)) {
+					control = elem.substring(LayoutMLConstants.ELEMENT_LABEL.length(), control.length());
+					List<String> values = getParentEditorPanel().getMetaInformation().getFieldNamesByControlType(control);
+					if (values.size() > 0) {
+					
+						field = WYSIWYGMetaInformationPicker.showPickDialog(getParentEditorPanel(), values, this);
+						if (field == null) {
+							return;
+						}
+					} else {
+						throw new NuclosBusinessException(TABLELAYOUT_PANEL.NO_ATTRIBUTE_FOR_THIS_COMPONENT_AVAILABLE);
+					}
+				}
+				Component droppedComponent = ComponentProcessors.getInstance().createComponent(elem, control, getParentEditorPanel().getController().getMetaInformation(), field);
+	
+				if (droppedComponent instanceof TransferablePlaceholder) {
+					try {
+						component = ((TransferablePlaceholder) droppedComponent).createComponent();
+					} catch (CommonBusinessException e) {
+						Errors.getInstance().showExceptionDialog(this, e);
 					}
 				} else {
-					throw new NuclosBusinessException(TABLELAYOUT_PANEL.NO_ATTRIBUTE_FOR_THIS_COMPONENT_AVAILABLE);
+					// NUCLEUSINT-496
+					if (element.isLabeledComponent()) {
+						componentAfterLabel = droppedComponent;
+						component = ComponentProcessors.getInstance().createComponent(elem, LayoutMLConstants.ELEMENT_LABEL, getParentEditorPanel().getController().getMetaInformation(), field);
+						componentAfterLabel.setBounds(mouseLocation.x + component.getPreferredSize().width + InterfaceGuidelines.MARGIN_BETWEEN, mouseLocation.y, componentAfterLabel.getPreferredSize().width, componentAfterLabel.getPreferredSize().height);
+						processSecondComponent = true;
+					} else {
+						component = droppedComponent;
+					}
 				}
-				// NUCLEUSINT-496
-			} else if ((LayoutMLConstants.ELEMENT_LABEL + LayoutMLConstants.ELEMENT_COLLECTABLECOMPONENT).equals(elem)) {
-				control = elem.substring(LayoutMLConstants.ELEMENT_LABEL.length(), control.length());
-				List<String> values = getParentEditorPanel().getMetaInformation().getFieldNamesByControlType(control);
-				if (values.size() > 0) {
+				component.setBounds(mouseLocation.x, mouseLocation.y, component.getPreferredSize().width, component.getPreferredSize().height);
+			} else if (transferData.equals(WYSIWYGComponent.class)) {
+				if (!wasComponentMoved() && mouseLocation.x > InterfaceGuidelines.MARGIN_LEFT && mouseLocation.y > InterfaceGuidelines.MARGIN_TOP) {
+					if (getComponentToMove() != null) {
+						try {
+							//NUCLEUSINT-427 restore the previous set value for enabled
+							WYSIWYGComponent wysiwygComponent = getComponentToMove();
+							Boolean enabledValue = (Boolean) wysiwygComponent.getProperties().getProperty(WYSIWYGComponent.PROPERTY_ENABLED).getValue();
+
+							if ((getParentEditorPanel().getController().getMode() & WYSIWYGEditorModes.STANDARD_MODE) == WYSIWYGEditorModes.STANDARD_MODE) {
+								if (tableLayoutUtil.isCellEmpty(tableLayoutUtil.getCurrentLayoutCell())) {
+									tableLayoutUtil.moveComponentTo(getComponentToMove(), getCurrentLayoutCell());
+									((Component) getComponentToMove()).setEnabled(enabledValue);
+									setComponentToMove(null);
+								}
+							} else if ((getParentEditorPanel().getController().getMode() & WYSIWYGEditorModes.EXPERT_MODE) == WYSIWYGEditorModes.EXPERT_MODE) {
+								tableLayoutUtil.moveComponentTo(getComponentToMove(), getCurrentLayoutCell());
+								
+								((Component) getComponentToMove()).setEnabled(enabledValue);
+								setComponentToMove(null);
+							}
+						} catch (HeadlessException e1) {
+						} catch (NuclosBusinessException e1) {
+						}
+					}
+					//NUCLEUSINT-273 //NUCLEUSINT-999
+				} else if ((mouseLocation.x > InterfaceGuidelines.MARGIN_LEFT  && mouseLocation.y <= InterfaceGuidelines.MARGIN_TOP) || (mouseLocation.x <= InterfaceGuidelines.MARGIN_LEFT && mouseLocation.y > InterfaceGuidelines.MARGIN_TOP)) {
+					LayoutCell selectedCell = tableLayoutUtil.getLayoutCell(mouseLocation);
+
+					boolean existing = false;
+
+					try {
+						for (LayoutCell cell : cellsToEdit) {
+							if (cell.equals(selectedCell)) {
+								cellsToEdit.remove(selectedCell);
+								existing = true;
+							}
+						}
+
+						if (!existing) {
+							cellsToEdit.push(selectedCell);
+						}
+					} catch (ConcurrentModificationException ex) {
+						/** nothing to do, bad timing */
+					}
+
+					repaint();
+				}
+
+				resetComponentToMove();
+			
+				glassPane.setVisible(false);
+				glassPane.setImage(null);
 				
-					field = WYSIWYGMetaInformationPicker.showPickDialog(getParentEditorPanel(), values, this);
-					if (field == null) {
-						return;
-					}
-				} else {
-					throw new NuclosBusinessException(TABLELAYOUT_PANEL.NO_ATTRIBUTE_FOR_THIS_COMPONENT_AVAILABLE);
-				}
+				return;
 			}
-			Component droppedComponent = ComponentProcessors.getInstance().createComponent(elem, control, getParentEditorPanel().getController().getMetaInformation(), field);
-
-			if (droppedComponent instanceof TransferablePlaceholder) {
-				try {
-					component = ((TransferablePlaceholder) droppedComponent).createComponent();
-				} catch (CommonBusinessException e) {
-					Errors.getInstance().showExceptionDialog(this, e);
-				}
-			} else {
-				// NUCLEUSINT-496
-				if (element.isLabeledComponent()) {
-					componentAfterLabel = droppedComponent;
-					component = ComponentProcessors.getInstance().createComponent(elem, LayoutMLConstants.ELEMENT_LABEL, getParentEditorPanel().getController().getMetaInformation(), field);
-					componentAfterLabel.setBounds(mouseLocation.x + component.getPreferredSize().width + InterfaceGuidelines.MARGIN_BETWEEN, mouseLocation.y, componentAfterLabel.getPreferredSize().width, componentAfterLabel.getPreferredSize().height);
-					processSecondComponent = true;
-				} else {
-					component = droppedComponent;
-				}
-			}
-			component.setBounds(mouseLocation.x, mouseLocation.y, component.getPreferredSize().width, component.getPreferredSize().height);
 		} catch (UnsupportedFlavorException e) {
 			log.error(e);
 			Errors.getInstance().showExceptionDialog(this, e);
@@ -610,7 +783,7 @@ public class TableLayoutPanel extends JPanel implements DropTargetListener, Mous
 	
 			/** adding the component to the layout */
 			tableLayoutUtil.insertComponentTo((WYSIWYGComponent) component, current);
-	
+			
 			if (usePreferredSizeInsteadofAbsoluteSizes) {
 				tableLayoutUtil.modifyTableLayoutSizes(TableLayout.PREFERRED, false, current, true);
 				tableLayoutUtil.modifyTableLayoutSizes(TableLayout.PREFERRED, true, current, true);
@@ -817,6 +990,9 @@ public class TableLayoutPanel extends JPanel implements DropTargetListener, Mous
 	@Override
 	public void mouseReleased(MouseEvent e) {
 		this.updateUI();
+		
+		if (glassPane.isVisible())
+			hideGlassPane();
 	}
 
 	/**
@@ -915,6 +1091,20 @@ public class TableLayoutPanel extends JPanel implements DropTargetListener, Mous
 	public void setComponentToMove(WYSIWYGComponent componentToMove) {
 		WYSIWYGLayoutEditorPanel parentContainer = getParentEditorPanel();
 		parentContainer.setComponentToMove(componentToMove);
+	}
+	
+	public void resetComponentToMove() {
+		if (getComponentToMove() != null) {
+			try {
+				//NUCLEUSINT-427 restore the previous set value for enabled
+				WYSIWYGComponent component = getComponentToMove();
+				Boolean enabledValue = (Boolean) component.getProperties().getProperty(WYSIWYGComponent.PROPERTY_ENABLED).getValue();
+
+				((Component) getComponentToMove()).setEnabled(enabledValue);
+				setComponentToMove(null);
+			} catch (HeadlessException e1) {
+			}
+		}
 	}
 
 	/**

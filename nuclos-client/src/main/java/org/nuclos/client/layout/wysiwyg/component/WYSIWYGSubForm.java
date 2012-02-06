@@ -19,10 +19,20 @@ package org.nuclos.client.layout.wysiwyg.component;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
+import java.awt.dnd.DnDConstants;
+import java.awt.dnd.DragGestureEvent;
+import java.awt.dnd.DragGestureListener;
+import java.awt.dnd.DragSource;
+import java.awt.dnd.DragSourceDragEvent;
+import java.awt.dnd.DragSourceDropEvent;
+import java.awt.dnd.DragSourceEvent;
+import java.awt.dnd.DragSourceListener;
+import java.awt.dnd.InvalidDnDOperationException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
@@ -38,6 +48,7 @@ import java.util.Map;
 import java.util.prefs.Preferences;
 
 import javax.swing.BorderFactory;
+import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JLayeredPane;
 import javax.swing.JMenuItem;
@@ -70,6 +81,7 @@ import org.nuclos.client.layout.wysiwyg.component.properties.PropertyValueInitia
 import org.nuclos.client.layout.wysiwyg.component.properties.PropertyValueInteger;
 import org.nuclos.client.layout.wysiwyg.component.properties.PropertyValueString;
 import org.nuclos.client.layout.wysiwyg.component.properties.PropertyValueValuelistProvider;
+import org.nuclos.client.layout.wysiwyg.datatransfer.TransferableComponent;
 import org.nuclos.client.layout.wysiwyg.editor.ui.panels.WYSIWYGLayoutEditorPanel;
 import org.nuclos.client.layout.wysiwyg.editor.ui.panels.layoutmlrule.LayoutMLRuleEditorDialog;
 import org.nuclos.client.layout.wysiwyg.editor.util.mouselistener.PropertiesDisplayMouseListener;
@@ -219,7 +231,7 @@ public class WYSIWYGSubForm extends JLayeredPane implements WYSIWYGComponent, Mo
 		this.message.addMouseListener(this);
 		this.setLayout(new BorderLayout());
 	}
-
+	
 	/**
 	 * 
 	 * @return the entity the subform is related to
@@ -463,7 +475,7 @@ public class WYSIWYGSubForm extends JLayeredPane implements WYSIWYGComponent, Mo
 				
 				// fire change to update column labels
 				this.subform.getJTable().tableChanged(new TableModelEvent(this.subform.getSubformRowHeader().getHeaderTable().getModel(), TableModelEvent.HEADER_ROW));
-				
+
 				this.add(this.subform, BorderLayout.CENTER);
 
 				for (MouseListener ml : this.subform.getJTable().getTableHeader().getMouseListeners()) {
@@ -505,7 +517,116 @@ public class WYSIWYGSubForm extends JLayeredPane implements WYSIWYGComponent, Mo
 			this.message.setToolTipText(ex.getMessage());
 			this.add(this.message, BorderLayout.CENTER);
 		}
+		addDragGestureListener(this, this);
 	}
+
+	
+	public static class MouseDragGestureListener implements DragGestureListener {
+		private final WYSIWYGComponent component;
+		private final WYSIWYGComponent wysiwygComponent;
+		
+		public MouseDragGestureListener(final WYSIWYGComponent component, final WYSIWYGComponent wysiwygComponent) {
+			this.component = component;
+			this.wysiwygComponent = wysiwygComponent;
+		}
+		
+		public JComponent getComponent() {
+			return (JComponent)component;
+		}
+		
+		public void dragGestureRecognized(DragGestureEvent e) {
+   	    	WYSIWYGComponent item = (wysiwygComponent != null) ? wysiwygComponent: findWYSIWYGComponent(e.getComponent());
+   	 		if (item != null) {	 
+   	 			final WYSIWYGLayoutEditorPanel parent = component.getParentEditor();
+   	 			if (parent != null) {
+   	 				parent.setComponentToMove(item);
+   	 				parent.getTableLayoutPanel().initGlassPane((Component)item, e.getDragOrigin());
+   	 				
+    	 			try {
+    	 				// NUCLEUSINT-496
+	 					e.startDrag(null, new TransferableComponent(item), new DragSourceListener() {
+							@Override
+							public void dropActionChanged(DragSourceDragEvent dsde) {
+							}
+							@Override
+							public void dragOver(DragSourceDragEvent dsde) {
+							}
+							@Override
+							public void dragExit(DragSourceEvent dse) {
+							}
+							@Override
+							public void dragEnter(DragSourceDragEvent dsde) {
+							}
+							@Override
+							public void dragDropEnd(DragSourceDropEvent dsde) {
+			   	 				parent.getTableLayoutPanel().hideGlassPane();
+							}
+						});
+    	 			} catch (InvalidDnDOperationException ex) {
+    	 				//do nothing
+    	 			}
+   	 			}
+   	 		}
+   	     }
+	}
+
+	public void addDragGestureListener(final WYSIWYGComponent component, final WYSIWYGComponent wysiwygComponent) {
+		MouseDragGestureListener dgListener = new MouseDragGestureListener(component, wysiwygComponent);
+
+   	  	// component, action, listener
+   	  	if (component instanceof JComponent)
+   		  addDragGestureListener((JComponent)component, dgListener, new DispatchMouseListener());
+	}
+
+
+	private void addDragGestureListener(final JComponent c,final MouseDragGestureListener dgListener, DispatchMouseListener ml) {
+		c.addMouseListener(ml);
+		DragSource.getDefaultDragSource().createDefaultDragGestureRecognizer(
+			     c, DnDConstants.ACTION_COPY_OR_MOVE, dgListener );
+		Component[] comps = c.getComponents();
+		for (int i = 0; i < comps.length; i++) {
+			if (comps[i] instanceof JComponent)
+				addDragGestureListener((JComponent)comps[i], dgListener, ml);
+		}		
+	}
+	
+	private class DispatchMouseListener implements MouseListener {
+		@Override
+		public void mouseReleased(MouseEvent e) {	
+			WYSIWYGSubForm.this.mouseReleased(e);	
+		}
+		
+		@Override
+		public void mousePressed(MouseEvent e) {	
+			WYSIWYGSubForm.this.mousePressed(e);			
+		}
+		
+		@Override
+		public void mouseExited(MouseEvent e) {		
+			WYSIWYGSubForm.this.mouseExited(e);
+		}
+		
+		@Override
+		public void mouseEntered(MouseEvent e) {	
+			WYSIWYGSubForm.this.mouseEntered(e);
+		}
+		
+		@Override
+		public void mouseClicked(MouseEvent e) {	
+			WYSIWYGSubForm.this.mouseClicked(e);
+		}
+	};
+	
+	private static WYSIWYGComponent findWYSIWYGComponent(Object o) {
+		if (o instanceof WYSIWYGComponent)
+			return (WYSIWYGComponent)o;
+		
+		if (o instanceof Container) {
+			return findWYSIWYGComponent(((Container)o).getParent());
+		}
+		return null;
+	}
+
 	
 	/**
 	 * Note: This listener implements SwingX's {@link TableColumnModelExtListener} to track width changes.
@@ -844,7 +965,9 @@ public class WYSIWYGSubForm extends JLayeredPane implements WYSIWYGComponent, Mo
 				}
 			}
 			else
-				l.mouseClicked(e);
+				if (!(l instanceof DispatchMouseListener))
+					l.mouseClicked(e);
+
 
 		}
 	}
@@ -878,7 +1001,8 @@ public class WYSIWYGSubForm extends JLayeredPane implements WYSIWYGComponent, Mo
 	@Override
 	public void mouseEntered(MouseEvent e) {
 		for (MouseListener l : listenerList.getListeners(MouseListener.class)) {
-			l.mouseEntered(e);
+			if (!(l instanceof DispatchMouseListener))
+				l.mouseEntered(e);
 		}
 	}
 
@@ -889,7 +1013,8 @@ public class WYSIWYGSubForm extends JLayeredPane implements WYSIWYGComponent, Mo
 	@Override
 	public void mouseExited(MouseEvent e) {
 		for (MouseListener l : listenerList.getListeners(MouseListener.class)) {
-			l.mouseExited(e);
+			if (!(l instanceof DispatchMouseListener))
+				l.mouseExited(e);
 		}
 	}
 
@@ -900,7 +1025,8 @@ public class WYSIWYGSubForm extends JLayeredPane implements WYSIWYGComponent, Mo
 	@Override
 	public void mousePressed(MouseEvent e) {
 		for (MouseListener l : listenerList.getListeners(MouseListener.class)) {
-			l.mousePressed(e);
+			if (!(l instanceof DispatchMouseListener))
+				l.mousePressed(e);
 		}
 	}
 
@@ -911,7 +1037,8 @@ public class WYSIWYGSubForm extends JLayeredPane implements WYSIWYGComponent, Mo
 	@Override
 	public void mouseReleased(MouseEvent e) {
 		for (MouseListener l : listenerList.getListeners(MouseListener.class)) {
-			l.mouseReleased(e);
+			if (!(l instanceof DispatchMouseListener))
+				l.mouseReleased(e);
 		}
 	}
 

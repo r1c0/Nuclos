@@ -42,6 +42,7 @@ import org.nuclos.client.layout.wysiwyg.WYSIWYGStringsAndLabels.PROPERTY_LABELS;
 import org.nuclos.client.layout.wysiwyg.component.properties.ComponentProperties;
 import org.nuclos.client.layout.wysiwyg.component.properties.PropertyValue;
 import org.nuclos.client.layout.wysiwyg.editor.ui.panels.WYSIWYGLayoutEditorPanel;
+import org.nuclos.client.layout.wysiwyg.editor.util.DnDUtil;
 import org.nuclos.client.layout.wysiwyg.editor.util.valueobjects.PropertiesSorter;
 import org.nuclos.client.layout.wysiwyg.editor.util.valueobjects.TableLayoutPanel;
 import org.nuclos.client.layout.wysiwyg.editor.util.valueobjects.WYSIWYGValuelistProvider;
@@ -340,6 +341,10 @@ public abstract class WYSIWYGCollectableComponent extends JPanel implements WYSI
 	public synchronized void removeMouseListener(MouseListener l) {
 		super.removeMouseListener(l);
 		listenerList.remove(MouseListener.class, l);
+	}
+	
+	protected final void addDragGestureListener() {
+		DnDUtil.addDragGestureListener(this);
 	}
 	
 	protected void addMouseListener() {

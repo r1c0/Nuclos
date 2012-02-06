@@ -32,6 +32,7 @@ import org.nuclos.client.layout.wysiwyg.component.properties.ComponentProperties
 import org.nuclos.client.layout.wysiwyg.component.properties.PropertyValue;
 import org.nuclos.client.layout.wysiwyg.component.properties.PropertyValueFont;
 import org.nuclos.client.layout.wysiwyg.editor.ui.panels.WYSIWYGLayoutEditorPanel;
+import org.nuclos.client.layout.wysiwyg.editor.util.DnDUtil;
 import org.nuclos.client.layout.wysiwyg.editor.util.valueobjects.PropertiesSorter;
 import org.nuclos.client.layout.wysiwyg.editor.util.valueobjects.TableLayoutPanel;
 import org.nuclos.client.layout.wysiwyg.editor.util.valueobjects.layoutmlrules.LayoutMLRules;
@@ -105,6 +106,7 @@ public class WYSIWYGStaticLabel extends JLabel implements WYSIWYGComponent, WYSI
 		new PropertyFilter(PROPERTY_PREFFEREDSIZE, STANDARD_MODE | EXPERT_MODE),
 		new PropertyFilter(PROPERTY_TRANSLATIONS, STANDARD_MODE | EXPERT_MODE)
 	};
+	
 	/**
 	 * <!ELEMENT label
 	 * ((%layoutconstraints;)?,(%borders;),(%sizes;),font?,description?)>
@@ -112,10 +114,11 @@ public class WYSIWYGStaticLabel extends JLabel implements WYSIWYGComponent, WYSI
 	 * CDATA #REQUIRED >
 	 */
 
-	public WYSIWYGStaticLabel() {}
-
 	private ComponentProperties properties;
 
+	public WYSIWYGStaticLabel() {
+	    DnDUtil.addDragGestureListener(this);
+	}
 	/*
 	 * (non-Javadoc)
 	 * @see org.nuclos.client.layout.wysiwyg.component.WYSIWYGComponent#getAdditionalContextMenuItems(int)

@@ -34,6 +34,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
+import javax.swing.JComponent;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JSplitPane;
@@ -60,6 +61,7 @@ import org.nuclos.client.layout.wysiwyg.component.properties.ComponentProperties
 import org.nuclos.client.layout.wysiwyg.component.properties.PropertiesPanel;
 import org.nuclos.client.layout.wysiwyg.component.properties.PropertyUtils;
 import org.nuclos.client.layout.wysiwyg.component.properties.PropertyValue;
+import org.nuclos.client.layout.wysiwyg.editor.util.DnDUtil;
 import org.nuclos.client.layout.wysiwyg.editor.util.InterfaceGuidelines;
 import org.nuclos.client.layout.wysiwyg.editor.util.LayoutMLRuleController;
 import org.nuclos.client.layout.wysiwyg.editor.util.ScissorToggleButton;
@@ -197,6 +199,7 @@ public class WYSIWYGLayoutEditorPanel extends JPanel implements WYSIWYGComponent
 		this.add(tableLayoutPanel, "0,0");
 
 		tableLayoutPanel.addMouseListener(this);
+		DnDUtil.addDragGestureListener(this, this);
 	}
 
 	/**

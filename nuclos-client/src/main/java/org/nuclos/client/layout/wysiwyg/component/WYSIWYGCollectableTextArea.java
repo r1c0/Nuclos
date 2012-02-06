@@ -65,6 +65,7 @@ public class WYSIWYGCollectableTextArea extends WYSIWYGCollectableComponent {
 		component.getJTextComponent().setEditable(false);
 		this.add(component, BorderLayout.CENTER);
 		this.addMouseListener();
+		this.addDragGestureListener();
 	}
 	
 	/*

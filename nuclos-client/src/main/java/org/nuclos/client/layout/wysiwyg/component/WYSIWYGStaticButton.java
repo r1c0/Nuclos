@@ -35,6 +35,7 @@ import org.nuclos.client.layout.wysiwyg.WYSIWYGStringsAndLabels.STATIC_BUTTON;
 import org.nuclos.client.layout.wysiwyg.component.properties.ComponentProperties;
 import org.nuclos.client.layout.wysiwyg.component.properties.PropertyValue;
 import org.nuclos.client.layout.wysiwyg.editor.ui.panels.WYSIWYGLayoutEditorPanel;
+import org.nuclos.client.layout.wysiwyg.editor.util.DnDUtil;
 import org.nuclos.client.layout.wysiwyg.editor.util.valueobjects.PropertiesSorter;
 import org.nuclos.client.layout.wysiwyg.editor.util.valueobjects.TableLayoutPanel;
 import org.nuclos.client.layout.wysiwyg.editor.util.valueobjects.WYSIYWYGProperty;
@@ -168,6 +169,9 @@ public class WYSIWYGStaticButton extends JButton implements WYSIWYGComponent, WY
 
 	private ComponentProperties properties;
 
+	public WYSIWYGStaticButton() {
+		DnDUtil.addDragGestureListener(this);
+	}
 	/*
 	 * (non-Javadoc)
 	 * @see org.nuclos.client.layout.wysiwyg.component.WYSIWYGComponent#getAdditionalContextMenuItems(int)

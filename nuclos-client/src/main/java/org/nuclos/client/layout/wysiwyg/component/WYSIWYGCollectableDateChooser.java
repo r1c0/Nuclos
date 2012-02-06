@@ -63,6 +63,7 @@ public class WYSIWYGCollectableDateChooser extends WYSIWYGCollectableComponent {
 		component.getJLabel().setVisible(false);
 		this.add(component, BorderLayout.CENTER);
 		this.addMouseListener();
+		this.addDragGestureListener();
 	}
 	
 	/*

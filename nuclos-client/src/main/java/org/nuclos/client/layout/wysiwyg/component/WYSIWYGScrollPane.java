@@ -33,6 +33,7 @@ import org.nuclos.client.layout.wysiwyg.WYSIWYGStringsAndLabels.PROPERTY_LABELS;
 import org.nuclos.client.layout.wysiwyg.component.properties.ComponentProperties;
 import org.nuclos.client.layout.wysiwyg.component.properties.PropertyValue;
 import org.nuclos.client.layout.wysiwyg.editor.ui.panels.WYSIWYGLayoutEditorPanel;
+import org.nuclos.client.layout.wysiwyg.editor.util.DnDUtil;
 import org.nuclos.client.layout.wysiwyg.editor.util.valueobjects.PropertiesSorter;
 import org.nuclos.client.layout.wysiwyg.editor.util.valueobjects.TableLayoutPanel;
 import org.nuclos.client.layout.wysiwyg.editor.util.valueobjects.layoutmlrules.LayoutMLRules;
@@ -121,11 +122,15 @@ public class WYSIWYGScrollPane extends JScrollPane implements WYSIWYGComponent {
 	
 	private WYSIWYGLayoutEditorChangeDescriptor wysiwygLayoutEditorChangeDescriptor = null;
 
+	public WYSIWYGScrollPane() {
+	}
+	
 	@Override
 	public void setViewportView(Component view) {
 		super.setViewportView(view);
 		this.wysiwygLayoutEditorPanel = (WYSIWYGLayoutEditorPanel) view;
 		this.wysiwygLayoutEditorPanel.getTableLayoutPanel().setEditorChangeDescriptor(this.wysiwygLayoutEditorChangeDescriptor);
+		DnDUtil.addDragGestureListener(this, this);
 	}
 
 	public void setWYSIWYGLayoutEditorChangeDescriptor(WYSIWYGLayoutEditorChangeDescriptor wysiwygLayoutEditorChangeDescriptor) {

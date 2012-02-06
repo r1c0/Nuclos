@@ -65,6 +65,7 @@ public class WYSIWYGCollectableTextfield extends WYSIWYGCollectableComponent {
 		this.setLayout(new BorderLayout());
 		this.add(component, BorderLayout.CENTER);
 		this.addMouseListener();
+		this.addDragGestureListener();
 	}
 
 	/*

@@ -158,7 +158,7 @@ public class WYSIWYGSubFormColumn extends JLabel implements WYSIWYGComponent, Se
 	private WYSIWYGSubForm subform;
 	
 	private CollectableEntityField field;
-
+	
 	public WYSIWYGSubFormColumn(WYSIWYGSubForm subform, CollectableEntityField field) {
 		this.subform = subform;
 		this.field = field;

@@ -61,6 +61,7 @@ public class WYSIWYGCollectableCheckBox extends WYSIWYGCollectableComponent {
 		this.component.setSelected(false);
 		this.add(component, BorderLayout.CENTER);
 		this.addMouseListener();
+		this.addDragGestureListener();
 	}
 	
 	/*

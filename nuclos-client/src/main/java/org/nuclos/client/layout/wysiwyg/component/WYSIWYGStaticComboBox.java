@@ -36,6 +36,7 @@ import org.nuclos.client.layout.wysiwyg.WYSIWYGStringsAndLabels.PROPERTY_LABELS;
 import org.nuclos.client.layout.wysiwyg.component.properties.ComponentProperties;
 import org.nuclos.client.layout.wysiwyg.component.properties.PropertyValue;
 import org.nuclos.client.layout.wysiwyg.editor.ui.panels.WYSIWYGLayoutEditorPanel;
+import org.nuclos.client.layout.wysiwyg.editor.util.DnDUtil;
 import org.nuclos.client.layout.wysiwyg.editor.util.valueobjects.PropertiesSorter;
 import org.nuclos.client.layout.wysiwyg.editor.util.valueobjects.TableLayoutPanel;
 import org.nuclos.client.layout.wysiwyg.editor.util.valueobjects.layoutmlrules.LayoutMLRules;
@@ -116,6 +117,10 @@ public class WYSIWYGStaticComboBox extends JComboBox implements WYSIWYGComponent
 	private LayoutMLRules componentsRules = new LayoutMLRules();
 	
 	private ComponentProperties properties;
+	
+	public WYSIWYGStaticComboBox() {
+	    DnDUtil.addDragGestureListener(this);
+	}
 		
 	/*
 	 * (non-Javadoc)

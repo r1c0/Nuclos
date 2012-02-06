@@ -30,6 +30,7 @@ import org.nuclos.client.layout.wysiwyg.WYSIWYGStringsAndLabels.PROPERTY_LABELS;
 import org.nuclos.client.layout.wysiwyg.component.properties.ComponentProperties;
 import org.nuclos.client.layout.wysiwyg.component.properties.PropertyValue;
 import org.nuclos.client.layout.wysiwyg.editor.ui.panels.WYSIWYGLayoutEditorPanel;
+import org.nuclos.client.layout.wysiwyg.editor.util.DnDUtil;
 import org.nuclos.client.layout.wysiwyg.editor.util.valueobjects.PropertiesSorter;
 import org.nuclos.client.layout.wysiwyg.editor.util.valueobjects.TableLayoutPanel;
 import org.nuclos.client.layout.wysiwyg.editor.util.valueobjects.layoutmlrules.LayoutMLRules;
@@ -125,9 +126,11 @@ public class WYSIWYGStaticTextarea extends LabeledTextArea implements WYSIWYGCom
 	 */
 	
 	private ComponentProperties properties;
-	
+
 	public WYSIWYGStaticTextarea(){
 		super.getJLabel().setVisible(false);
+
+		DnDUtil.addDragGestureListener(this);
 	}
 	
 	/*

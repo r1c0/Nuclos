@@ -30,6 +30,7 @@ import org.nuclos.client.layout.wysiwyg.WYSIWYGStringsAndLabels.PROPERTY_LABELS;
 import org.nuclos.client.layout.wysiwyg.component.properties.ComponentProperties;
 import org.nuclos.client.layout.wysiwyg.component.properties.PropertyValue;
 import org.nuclos.client.layout.wysiwyg.editor.ui.panels.WYSIWYGLayoutEditorPanel;
+import org.nuclos.client.layout.wysiwyg.editor.util.DnDUtil;
 import org.nuclos.client.layout.wysiwyg.editor.util.InterfaceGuidelines;
 import org.nuclos.client.layout.wysiwyg.editor.util.valueobjects.PropertiesSorter;
 import org.nuclos.client.layout.wysiwyg.editor.util.valueobjects.TableLayoutPanel;
@@ -82,6 +83,10 @@ public class WYSIWYGStaticSeparator extends JSeparator implements WYSIWYGCompone
 		new PropertyFilter(PROPERTY_ORIENTATION, STANDARD_MODE | EXPERT_MODE), 
 		new PropertyFilter(PROPERTY_PREFFEREDSIZE, STANDARD_MODE | EXPERT_MODE)
 	};
+	
+	public WYSIWYGStaticSeparator() {
+		DnDUtil.addDragGestureListener(this);
+}
 
 	/*
 	 * (non-Javadoc)
