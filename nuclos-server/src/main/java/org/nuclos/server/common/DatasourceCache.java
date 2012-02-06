@@ -230,9 +230,12 @@ public class DatasourceCache {
 	 * @return
 	 */
 	public ValuelistProviderVO getValuelistProvider(Integer iValuelistProviderId) {
-		if (mpValuelistProviderById.isEmpty())
+		if (iValuelistProviderId == null) {
+			return null;
+		}
+		if (mpValuelistProviderById.isEmpty()) {
 			findDatasourcesById();
-
+		}
 		return mpValuelistProviderById.get(iValuelistProviderId);
 	}
 
