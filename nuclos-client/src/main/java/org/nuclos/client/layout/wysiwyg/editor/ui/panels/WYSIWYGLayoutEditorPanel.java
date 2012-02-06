@@ -39,6 +39,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JSplitPane;
 import javax.swing.JViewport;
+import javax.swing.SwingUtilities;
 import javax.swing.border.Border;
 
 import org.nuclos.client.layout.wysiwyg.CollectableWYSIWYGLayoutEditor.WYSIWYGLayoutEditorChangeDescriptor;
@@ -478,6 +479,10 @@ public class WYSIWYGLayoutEditorPanel extends JPanel implements WYSIWYGComponent
 				ComponentPopUp popup = new ComponentPopUp(getTableLayoutUtil(), this);
 
 				Point loc = tableLayoutPanel.getMousePosition().getLocation();
+				if (loc == null) {
+					loc = (Point)e.getLocationOnScreen().clone();
+					SwingUtilities.convertPointFromScreen(loc, e.getComponent());
+				}
 				popup.showComponentPropertiesPopup(loc);
 			}
 		}

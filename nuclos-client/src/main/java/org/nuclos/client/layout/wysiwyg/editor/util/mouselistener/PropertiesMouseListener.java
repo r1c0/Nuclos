@@ -76,7 +76,7 @@ public class PropertiesMouseListener implements MouseListener {
 			ComponentPopUp popup = new ComponentPopUp(container.getCurrentTableLayoutUtil(), e.getComponent(), e.getX());
 			Point loc = container.getCurrentTableLayoutUtil().getContainer().getMousePosition();
 			if (loc == null) {
-				loc = e.getLocationOnScreen();
+				loc = (Point)e.getLocationOnScreen().clone();
 				SwingUtilities.convertPointFromScreen(loc, e.getComponent());
 			}
 			popup.showComponentPropertiesPopup(loc);
