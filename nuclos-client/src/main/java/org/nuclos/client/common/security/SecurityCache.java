@@ -170,7 +170,10 @@ public class SecurityCache {
 		return result;
 	}
 
-	private MasterDataPermission getMasterDataPermission(String sEntityName) {
+	/**
+	 * Must be synchronized because masterdatapermissions might be null.
+	 */
+	private synchronized MasterDataPermission getMasterDataPermission(String sEntityName) {
 		PermissionKey.MasterDataPermissionKey masterDataPermissionKey = new PermissionKey.MasterDataPermissionKey(sEntityName);
 		if (!masterDataPermissionsCache.containsKey(masterDataPermissionKey)) {
 			MasterDataPermission permission = masterdatapermissions.get(sEntityName);
@@ -238,6 +241,9 @@ public class SecurityCache {
 
 	/**
 	 * revalidates this cache: clears it, then fills in all the attributes from the server again.
+	 * <p>
+	 * Must be synchronized because masterdatapermissions is set to null (via validate).
+	 * </p>
 	 */
 	public synchronized void revalidate() {
 		this.superUser = Boolean.FALSE;
@@ -253,6 +259,7 @@ public class SecurityCache {
 
 	/**
 	 * fills this cache.
+	 * 
 	 * @throws NuclosFatalException
 	 */
     private void validate() throws NuclosFatalException {
