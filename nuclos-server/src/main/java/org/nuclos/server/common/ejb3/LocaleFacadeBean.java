@@ -191,22 +191,29 @@ public class LocaleFacadeBean extends NuclosFacadeBean implements LocaleFacadeLo
 	public HashResourceBundle getResourceBundle(LocaleInfo localeInfo) throws CommonFatalException {
 		HashResourceBundle result = localeInfo == null ? CACHE.get(localeInfo) : null;
 		if (result == null) {
-			// Check if current thread is already loading resources.
-			// If yes, return an empty result to avoid infinite recursion through calls to getResourcesAsVO().
-			if (!isLoadingResources.get()) {
-				isLoadingResources.set(true);
-				try {
-					long start = System.currentTimeMillis();
-
-					result = new HashResourceBundle();
-					for (MasterDataVO mdvo : getResourcesAsVO(localeInfo)) {
-						result.putProperty((String) mdvo.getField(F_RESOURCEID), StringUtils.unicodeDecodeWithNewlines((String) mdvo.getField(F_TEXT)));
+			// Avoid entering this block over and over again in different threads
+			// when the CACHE hasn't been filled yes. In this case, waiting on sync lock
+			// it the right thing to do.
+			// 
+			// This is an issue when assigning nuclet components to nuclets. (tp)
+			synchronized (CACHE) {
+				// Check if current thread is already loading resources.
+				// If yes, return an empty result to avoid infinite recursion through calls to getResourcesAsVO().
+				if (!isLoadingResources.get()) {
+					isLoadingResources.set(true);
+					try {
+						long start = System.currentTimeMillis();
+	
+						result = new HashResourceBundle();
+						for (MasterDataVO mdvo : getResourcesAsVO(localeInfo)) {
+							result.putProperty((String) mdvo.getField(F_RESOURCEID), StringUtils.unicodeDecodeWithNewlines((String) mdvo.getField(F_TEXT)));
+						}
+						LOG.info("Created resource cache for locale " + localeInfo.getTag() + " in " + (System.currentTimeMillis() - start) + " ms");
+						CACHE.put(localeInfo, result);
 					}
-					LOG.info("Created resource cache for locale " + localeInfo.getTag() + " in " + (System.currentTimeMillis() - start) + " ms");
-					CACHE.put(localeInfo, result);
-				}
-				finally {
-					isLoadingResources.set(false);
+					finally {
+						isLoadingResources.set(false);
+					}
 				}
 			}
 		}
