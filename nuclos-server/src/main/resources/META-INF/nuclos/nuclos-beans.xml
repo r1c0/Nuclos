@@ -89,6 +89,11 @@
     	<context:exclude-filter expression=".*_Roo_.*" type="regex"/>
     	<context:exclude-filter expression="org.springframework.stereotype.Controller" type="annotation"/>
     </context:component-scan>
+    
+    <!-- 
+    	Inject beans into the servlet context
+    	see http://andykayley.blogspot.com/2007/11/how-to-inject-spring-beans-into.html    	
+	-->
 
 	<!-- for transaction manager annotation based -->
 	<tx:annotation-driven mode="aspectj" transaction-manager="transactionManager"/>

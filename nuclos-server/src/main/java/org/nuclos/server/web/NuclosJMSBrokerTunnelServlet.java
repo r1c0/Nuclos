@@ -16,11 +16,13 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.server.web;
 
-import java.io.IOException;
+import java.lang.reflect.Field;
 import java.net.URI;
+import java.util.HashMap;
 
 import javax.servlet.ServletException;
 
+import org.apache.activemq.broker.Broker;
 import org.apache.activemq.broker.BrokerService;
 import org.apache.activemq.broker.Connection;
 import org.apache.activemq.broker.TransportConnection;
@@ -30,6 +32,7 @@ import org.apache.activemq.transport.TransportAcceptListener;
 import org.apache.activemq.transport.http.HttpSpringEmbeddedTunnelServlet;
 import org.apache.activemq.transport.http.HttpTransportFactory;
 import org.apache.activemq.transport.http.HttpTransportServer;
+import org.apache.activemq.transport.http.HttpTunnelServlet;
 import org.apache.activemq.util.ServiceSupport;
 import org.apache.activemq.xbean.XBeanBrokerService;
 import org.apache.log4j.Logger;
@@ -43,7 +46,7 @@ public class NuclosJMSBrokerTunnelServlet extends HttpSpringEmbeddedTunnelServle
 	
 	private static final Logger LOG = Logger.getLogger(NuclosJMSBrokerTunnelServlet.class);
 	
-	/**
+	/*
 	 * <p>
 	 * ActiveMQ HTTP seems to always need an jetty. See http://activemq.apache.org/http-and-https-transports-reference.html
 	 * for details. Alternative transport are available as well, see http://activemq.apache.org/configuring-transports.html.
@@ -57,130 +60,200 @@ public class NuclosJMSBrokerTunnelServlet extends HttpSpringEmbeddedTunnelServle
 	 *   <li>http://static.springsource.org/spring/docs/2.5.x/reference/mvc.html</li>
 	 * </ul>
 	 * </p>
-	 * @deprecated There is a httpTransportFactory within HttpEmbeddedTunnelServlet, hence
-	 * 		there must be away to use it (and HttpTransportServer as well). (tp)
 	 */
-	private HttpTransportFactory myTransportFactory;
 	
-	private XBeanBrokerService brokerService;
+	public NuclosJMSBrokerTunnelServlet() {
+	}
 	
-	private HttpTransportServer htServer;
-	
+	/**
+	 * Get the broker from our (existing) Spring context.
+	 */
 	@Override
 	protected BrokerService createBroker() throws Exception {
-		if (brokerService == null) {
-			brokerService = (XBeanBrokerService) SpringApplicationContextHolder.getBean("broker");
+		if (broker == null) {
+			broker = (XBeanBrokerService) SpringApplicationContextHolder.getBean("broker");
 		}
-		return brokerService;
+		return broker;
 	}
 	
 	@Override
-	public void destroy() {
-		super.destroy();
+	public void init() throws ServletException {
+		// -------------------------------------------------------------------------		
+		// copied from org.apache.activemq.transport.http.HttpEmbeddedTunnelServlet (5.5.0)
+        // lets initialize the ActiveMQ broker
+        try {
+            if (broker == null) {
+                broker = createBroker();
 
-		myTransportFactory = null;
-		if (htServer != null) {
-			try {
-				htServer.stop();
-			}
-			catch (Exception e) {
-				// ignore
-			}
-		}
-		htServer = null;
-		transportConnector = null;
-		
-		
-		if (brokerService != null) {
-			try {
-				brokerService.stop();
-				brokerService.waitUntilStopped();
-				brokerService.destroy();
-			}
-			catch (Exception e) {
-				// ignore
-			}
-		}
-		brokerService = null;
-		broker = null;
-	}
+                // Add the servlet connector
+                String url = getConnectorURL();
+                HttpTransportFactory factory = new HttpTransportFactory();
+                transportConnector = (HttpTransportServer) factory.doBind(new URI(url));
+                broker.addConnector(transportConnector);
 
-	@Override
-	public synchronized void init() throws ServletException {
-		try {
-			if(broker == null)
-				broker = createBroker();
-			
-			String url = getConnectorURL();
-			myTransportFactory = new HttpTransportFactory();
-			htServer = new HttpTransportServer(new URI(url), myTransportFactory);
-			transportConnector = htServer;
-			
-			TransportAcceptListener acceptListener = new TransportAcceptListener() {
+                String brokerURL = getServletContext().getInitParameter("org.apache.activemq.brokerURL");
+                if (brokerURL != null) {
+                    log("Listening for internal communication on: " + brokerURL);
+                }
+            }
+            broker.start();
+        } catch (Exception e) {
+            throw new ServletException("Failed to start embedded broker: " + e, e);
+        }
+        // now lets register the listener
+        TransportAcceptListener listener = transportConnector.getAcceptListener();
+        getServletContext().setAttribute("transportChannelListener", listener);
+		// end of copied from org.apache.activemq.transport.http.HttpEmbeddedTunnelServlet (5.5.0)
+		// -------------------------------------------------------------------------		
+        
+		// -------------------------------------------------------------------------
+        // fix to set required parameter of HttpTunnelServlet
+        // listener is always null here...
+        if (listener == null) {
+        	listener = new TransportAcceptListener() {
 				
 				@Override
-				public void onAcceptError(Exception e) {
-					LOG.error("init failed: " + e, e);
+				public void onAcceptError(Exception error) {
+					LOG.error("accept failed: " + error, error);
 				}
 				
 				@Override
 				public void onAccept(final Transport transport) {
 					try {
-	                    // Starting the connection could block due to
-	                    // wireformat negotiation, so start it in an async thread.
-	                    Thread startThread = new Thread("ActiveMQ Transport Initiator: " + transport.getRemoteAddress()) {
-	                        @Override
+						// Starting the connection could block due to
+						// wireformat negotiation, so start it in an async thread.
+						Thread startThread = new Thread("ActiveMQ Transport Initiator: " + transport.getRemoteAddress()) {
+							@Override
 							public void run() {
-	                            try {
-	                                Connection connection = createConnection(transport);
-	                                connection.start();
-	                            } catch (Exception e) {
-	                                ServiceSupport.dispose(transport);
-	                                onAcceptError(e);
-	                            }
-	                        }
-	                    };
-	                    startThread.start();
-	                } catch (Exception e) {
-	                    ServiceSupport.dispose(transport);
-	                    onAcceptError(e);
-	                }
+								try {
+									Connection connection = createConnection(transport);
+									connection.start();
+								} 
+								catch (Exception e) {
+									ServiceSupport.dispose(transport);
+									onAcceptError(e);
+								}
+							}
+						};
+						startThread.start();
+					}
+					catch (Exception error) {
+						ServiceSupport.dispose(transport);
+						onAcceptError(error);
+					}
 				}
-			}; 
-			transportConnector.setAcceptListener(acceptListener);
-			
-			
-			TransportAcceptListener listener = transportConnector.getAcceptListener();			
-			getServletContext().setAttribute("transportFactory", myTransportFactory);
-			getServletContext().setAttribute("transportChannelListener", listener);
-			getServletContext().setAttribute("acceptListener", acceptListener);
-			
-			super.init();
+        	};
+            getServletContext().setAttribute("transportChannelListener", listener);
+        }
+        getServletContext().setAttribute("acceptListener", listener);
+        final HttpTransportFactory htf = new HttpTransportFactory();
+        getServletContext().setAttribute("transportFactory", htf);
+		// -------------------------------------------------------------------------
+        
+		// -------------------------------------------------------------------------
+        // copied from org.apache.activemq.transport.http.HttpTunnelServlet (5.5.0)
+        //
+        // The following is looked up in the servlet context:
+        // context_name					type						variable				optional?
+        // -------------------------------------------------------------------------------------------
+        // acceptListener				TransportAcceptListener		listener				no
+        // transportFactory				HttpTransportFactory		transportFactory		no
+        // transportOptions				HashMap						transportOptions		yes
+        // wireFormat					TextWireFormat				wireFormat				yes
+        //
+        /*
+        this.listener = (TransportAcceptListener)getServletContext().getAttribute("acceptListener");
+        if (this.listener == null) {
+            throw new ServletException("No such attribute 'acceptListener' available in the ServletContext");
+        }
+        transportFactory = (HttpTransportFactory)getServletContext().getAttribute("transportFactory");
+        if (transportFactory == null) {
+            throw new ServletException("No such attribute 'transportFactory' available in the ServletContext");    
+        }
+        transportOptions = (HashMap)getServletContext().getAttribute("transportOptions");
+        wireFormat = (TextWireFormat)getServletContext().getAttribute("wireFormat");
+        if (wireFormat == null) {
+            wireFormat = createWireFormat();
+        }
+         */
+        // end of copied from org.apache.activemq.transport.http.HttpTunnelServlet (5.5.0)
+		// -------------------------------------------------------------------------
+        
+        // set stuff from org.apache.activemq.transport.http.HttpTunnelServlet 
+        // using reflection (to access private fields)
+        setField("listener", (TransportAcceptListener)getServletContext().getAttribute("acceptListener"));
+        setField("transportFactory", (HttpTransportFactory)getServletContext().getAttribute("transportFactory"));
+        setField("transportOptions", (HashMap)getServletContext().getAttribute("transportOptions"));
+        // setField("wireFormat", (TextWireFormat)getServletContext().getAttribute("wireFormat"));
+        setField("wireFormat", createWireFormat());
+	}
+	
+	private Connection createConnection(Transport transport) {
+		final Broker b;
+		try {
+			b = broker.getBroker();
 		}
 		catch (Exception e) {
-			throw new ServletException("Failed to start embedded broker: " + e, e);
+			throw new NuclosFatalException(e);
+		}
+		final TransportConnector con = new TransportConnector(transportConnector);
+		con.setBrokerService(broker);
+		final TransportConnection result = new TransportConnection(con, transport, b, null);
+		result.getStatistics().setEnabled(true);
+		return result;
+	}
+	
+	private void setField(String name, Object value) throws ServletException {
+		try {
+			final Field field = HttpTunnelServlet.class.getDeclaredField(name);
+			field.setAccessible(true);
+			field.set(this, value);
+		} 
+		catch (SecurityException e) {
+			throw new ServletException(e);
+		} 
+		catch (NoSuchFieldException e) {
+			throw new ServletException(e);
+		} 
+		catch (IllegalArgumentException e) {
+			throw new ServletException(e);
+		} 
+		catch (IllegalAccessException e) {
+			throw new ServletException(e);
 		}
 	}
 	
-	protected Connection createConnection(Transport transport) throws IOException {
-        TransportConnection answer = null;
+	/**
+	 * Tidy up.
+	 */
+	@Override
+	public void destroy() {
+		super.destroy();
 		try {
-			TransportConnector con = new TransportConnector();
-			con.setBrokerService(broker);
-			con.setServer(htServer);
-			
-			answer = new TransportConnection(con, transport, broker.getBroker(), null);
-			answer.getStatistics().setEnabled(true);
+			transportConnector.stop();
 		}
-		catch(Exception e) {
-			throw new NuclosFatalException(e);
+		catch (Exception e) {
+			// ignore
 		}
-        return answer;
-    }
+		transportConnector = null;
+		
+		if (broker != null) {
+			try {
+				broker.stop();
+				broker.waitUntilStopped();
+				((XBeanBrokerService) broker).destroy();
+			}
+			catch (Exception e) {
+				// ignore
+			}
+		}
+		broker = null;
+		broker = null;
+	}
 
-	 @Override
-	 protected String getConnectorURL() {
-	    return "http://localhost/" + "nuclos";
-	 }
+	@Override
+	protected String getConnectorURL() {
+		return "http://localhost/" + "nuclos";
+	}
 
 }

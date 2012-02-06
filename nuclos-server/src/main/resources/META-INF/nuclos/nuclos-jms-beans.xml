@@ -25,18 +25,32 @@
 	
 	<!--
 		Configuration basics:
+		http://activemq.apache.org/xml-configuration.html
 		http://activemq.apache.org/spring-support.html
+		http://activemq.apache.org/vm-transport-reference.html
+		http://activemq.apache.org/slow-networks-drop-large-messages.html
+		
+		ActiveMQ URI stuff:
+		http://activemq.apache.org/broker-configuration-uri.html
+		http://activemq.apache.org/broker-uri.html
+		http://activemq.apache.org/configuring-wire-formats.html
+
+		Misc ActiveMQ stuff:
+		http://activemq.apache.org/broker-xbean-uri.html
+		http://activemq.apache.org/xbean-xml-reference-50.html	
 	 
 	 	JmsTemplate Gotchas:
 	 	http://activemq.apache.org/jmstemplate-gotchas.html
 	 -->
 
-	<!--  Embedded ActiveMQ Broker -->
-    <amq:broker id="broker" useJmx="false" persistent="false">
-        <amq:transportConnectors>
-            <amq:transportConnector uri="vm://localhost"/>
-        </amq:transportConnectors>
-    </amq:broker>
+	<!-- Embedded ActiveMQ Broker -->
+	<amq:broker id="broker" brokerName="nuclosBroker" useJmx="false" persistent="false">
+		<amq:transportConnectors>
+			<!-- Advanced Broker Configuration Syntax: http://activemq.apache.org/vm-transport-reference.html -->
+			<amq:transportConnector name="vmtransport" 
+				uri="vm://localhost?wireformat.maxInactivityDuration=100000))" />	
+		</amq:transportConnectors>
+	</amq:broker>
 
     <!--  ActiveMQ Destinations  -->
     <amq:topic id="destinationParameterProvider" physicalName="topic/parameterProvider"/>
@@ -64,10 +78,12 @@
     <amq:topic id="destinationCustomcomponentCache" physicalName="topic/customcomponentCache"/>
 
 
-    <!-- JMS ConnectionFactory to use, configuring the embedded broker using XML -->
-	<bean id="jmsFactory" class="org.apache.activemq.pool.PooledConnectionFactory">
+	<!-- JMS ConnectionFactory to use, configuring the embedded broker using XML -->
+	<!-- For depends-on see http://activemq.apache.org/vm-transport-reference.html -->
+	<bean id="jmsFactory" class="org.apache.activemq.pool.PooledConnectionFactory"
+		depends-on="broker">
 		<property name="connectionFactory">
-	 		<amq:connectionFactory brokerURL="vm://localhost" >
+			<amq:connectionFactory brokerURL="vm://localhost?broker.create=false">
 			</amq:connectionFactory>
 		</property>
 	</bean>
