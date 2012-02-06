@@ -370,6 +370,21 @@ public class EntityObjectMetaDbHelper {
 		}
 		return null;
 	}
+	
+	public static String getTableOrViewForSelect(EntityMetaDataVO eMeta) {
+		// dbSourceForDML = eMeta.isVirtual() ? eMeta.getVirtualentity() : "T_" + eMeta.getDbEntity().substring(2);
+		final String result;
+		if (eMeta.isVirtual()) {
+			result = eMeta.getVirtualentity();
+		}
+		else if (eMeta.isDynamic()) {
+			result =eMeta.getDbEntity();
+		}
+		else {
+			result = "T_" + eMeta.getDbEntity().substring(2);
+		}
+		return result;
+	}
 
 	public static DbColumnType createDbColumnType(EntityFieldMetaDataVO fieldMeta) {
 		return createDbColumnType(fieldMeta.getDataType(), fieldMeta.getScale(), fieldMeta.getPrecision());

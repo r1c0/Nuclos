@@ -63,6 +63,7 @@ import org.nuclos.server.dal.processor.nuclet.JdbcEntityObjectProcessor;
 import org.nuclos.server.database.DataBaseHelper;
 import org.nuclos.server.dblayer.DbException;
 import org.nuclos.server.dblayer.DbInvalidResultSizeException;
+import org.nuclos.server.dblayer.EntityObjectMetaDbHelper;
 import org.nuclos.server.dblayer.query.DbCondition;
 import org.nuclos.server.dblayer.query.DbExpression;
 import org.nuclos.server.dblayer.query.DbFrom;
@@ -121,7 +122,7 @@ public class EntityObjectProcessor extends AbstractJdbcWithFieldsDalProcessor<En
 		this.versionColumn = config.getVersionColumn();
 
 		// dbSourceForSQL = this.eMeta.getDbEntity();
-		dbSourceForDML = this.eMeta.isVirtual() ? this.eMeta.getVirtualentity() : "T_" + this.eMeta.getDbEntity().substring(2);
+		dbSourceForDML = EntityObjectMetaDbHelper.getTableOrViewForSelect(eMeta);
 		dbSourceForSQL = dbSourceForDML;
 
 		/**
