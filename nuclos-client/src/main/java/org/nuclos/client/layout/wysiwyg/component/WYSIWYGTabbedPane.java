@@ -202,7 +202,7 @@ public class WYSIWYGTabbedPane extends DnDTabbedPane implements WYSIWYGComponent
     	   	 				final int index = tabbedPane.indexAtLocation(e.getDragOrigin().x, e.getDragOrigin().y);
     	   	 				if (index == -1) {
     	    	   	 			final WYSIWYGLayoutEditorPanel parent = getParentEditor();
-    	    	   	 			if (parent != null) {
+    	    	   	 			if (parent != null && !parent.getTableLayoutPanel().isResizeDragPerformed()) {
     	    	   	 				parent.setComponentToMove(item);
     	    	   	 				try {
 	    		    	 			    // NUCLEUSINT-496

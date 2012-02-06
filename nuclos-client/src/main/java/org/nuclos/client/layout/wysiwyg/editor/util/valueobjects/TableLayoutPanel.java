@@ -342,6 +342,10 @@ public class TableLayoutPanel extends JPanel implements DropTargetListener, Mous
 		}
 	}
 
+	public boolean isResizeDragPerformed() {
+		return resizeLayoutWithMouse.isPerfomingAction();
+	}
+	
 	/**
 	 * ########## Listener ##########
 	 */
@@ -350,7 +354,7 @@ public class TableLayoutPanel extends JPanel implements DropTargetListener, Mous
 	/**
 	 * DropTargetListener
 	 */
-	@Override
+	@Override 
 	public void dragEnter(DropTargetDragEvent dtde) {
 		// reject drop by default
 		dtde.rejectDrag();

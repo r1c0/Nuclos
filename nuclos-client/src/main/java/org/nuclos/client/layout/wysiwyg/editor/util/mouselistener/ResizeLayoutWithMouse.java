@@ -45,6 +45,7 @@ import org.nuclos.client.layout.wysiwyg.editor.util.valueobjects.LayoutCell;
  */
 public class ResizeLayoutWithMouse extends AbstractControlledListener implements MouseMotionListener, MouseListener {
 
+	private boolean dragConsumed = true;
 	private Point mouseoverHighlightLine = new Point(-1, -1);
 	private LayoutCell cellToResize;
 
@@ -70,6 +71,10 @@ public class ResizeLayoutWithMouse extends AbstractControlledListener implements
 
 		return isActionToPerform;
 	}
+	
+	public boolean isPerfomingAction() {
+		return isActionToPerform(getActionToPerform());
+	}
 
 	/**
 	 * This Method does handle the Drag Event
@@ -77,7 +82,7 @@ public class ResizeLayoutWithMouse extends AbstractControlledListener implements
 	@Override
 	public void mouseDragged(MouseEvent e) {
 		/** checking if something has to be done and if its a valid target */
-		if (isActionToPerform(getActionToPerform()) && cellToResize != null) {
+		if (isPerfomingAction() && cellToResize != null) {
 
 			double value = 0;
 			boolean column = false;
