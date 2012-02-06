@@ -55,6 +55,7 @@ import org.nuclos.client.ui.UIUtils;
 import org.nuclos.client.ui.tree.CompositeTreeNodeAction;
 import org.nuclos.client.ui.tree.TreeNodeAction;
 import org.nuclos.common.AttributeProvider;
+import org.nuclos.common.GenericObjectMetaDataProvider;
 import org.nuclos.common.MutableBoolean;
 import org.nuclos.common.NuclosBusinessException;
 import org.nuclos.common.NuclosEOField;
@@ -154,7 +155,7 @@ public class GenericObjectExplorerNode extends ExplorerNode<GenericObjectTreeNod
 		Integer iModuleId = this.getTreeNode().getModuleId();
 		Integer iProcessId = this.getTreeNode().getProcessId();
 		Integer iStateNumeral = (Integer)genericObjectVO.getAttribute(NuclosEOField.STATENUMBER.getMetaData().getField(), 
-				SpringApplicationContextHolder.getBean(AttributeProvider.class)).getValue();
+				SpringApplicationContextHolder.getBean(GenericObjectMetaDataProvider.class)).getValue();
 
 		final List<TreeNodeAction> lst = getGeneratorActions(tree, genericObjectVO, iModuleId, iStateNumeral, iProcessId);
 		if (lst.isEmpty()) {

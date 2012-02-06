@@ -16,7 +16,6 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.common.security;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -51,6 +50,7 @@ import org.nuclos.server.common.ejb3.SecurityFacadeRemote;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Component;
 
 /**
  * caches client rights.
@@ -71,6 +71,10 @@ public class SecurityCache {
 	private static SecurityCache INSTANCE;
 	
 	//
+	
+	private SecurityDelegate securityDelegate;
+	
+	private AttributeCache attributeCache;
 
 	private String username;
 	private Boolean superUser;
@@ -148,6 +152,16 @@ public class SecurityCache {
 	@Autowired
 	void setTopicNotificationReceiver(TopicNotificationReceiver tnr) {
 		this.tnr = tnr;
+	}
+	
+	@Autowired
+	void setSecurityDelegate(SecurityDelegate securityDelegate) {
+		this.securityDelegate = securityDelegate;
+	}
+	
+	@Autowired
+	void setAttributeCache(AttributeCache attributeCache) {
+		this.attributeCache = attributeCache;
 	}
 	
 	@Autowired
@@ -327,12 +341,21 @@ public class SecurityCache {
 		if(!mpAttributePermission.containsKey(key)) {
 			Map<String, Permission> attrPermissions
 				= securityDelegate.getAttributePermissionsByEntity(entity, stateId);
-			for(Map.Entry<String, Permission> e : attrPermissions.entrySet())
+			for(Map.Entry<String, Permission> e : attrPermissions.entrySet()) {
+				Permission perm = e.getValue();
+				if (perm == null) {
+					perm = Permission.NONE;
+				}
 				mpAttributePermission.put(
 					new PermissionKey.AttributePermissionKey(entity, e.getKey(), stateId),
-					e.getValue());
+					perm);
+			}
 		}
-		return mpAttributePermission.get(key);
+		final Permission result = mpAttributePermission.get(key);
+		if (result == Permission.NONE) {
+			return null;
+		}
+		return result;
 	}
 
 

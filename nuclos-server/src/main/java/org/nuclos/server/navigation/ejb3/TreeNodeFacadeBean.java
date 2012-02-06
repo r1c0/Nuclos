@@ -106,6 +106,7 @@ import org.nuclos.server.navigation.treenode.nuclet.content.NucletContentCustomC
 import org.nuclos.server.navigation.treenode.nuclet.content.NucletContentEntityTreeNode;
 import org.nuclos.server.navigation.treenode.nuclet.content.NucletContentRuleTreeNode;
 import org.nuclos.server.navigation.treenode.nuclet.content.NucletContentTreeNode;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -121,6 +122,18 @@ import org.springframework.transaction.annotation.Transactional;
 public class TreeNodeFacadeBean extends NuclosFacadeBean implements TreeNodeFacadeLocal, TreeNodeFacadeRemote {
 
 	private static final int DEFAULT_ROWCOUNT_FOR_SEARCHRESULT = 500;
+	
+	//
+	
+	private ServerParameterProvider serverParameterProvider;
+	
+	public TreeNodeFacadeBean() {
+	}
+	
+	@Autowired
+	void setServerParameterProvider(ServerParameterProvider serverParameterProvider) {
+		this.serverParameterProvider = serverParameterProvider;
+	}
 
 	/**
 	 * gets a generic object tree node for a specific generic object
@@ -160,7 +173,8 @@ public class TreeNodeFacadeBean extends NuclosFacadeBean implements TreeNodeFaca
 
 		final GenericObjectWithDependantsVO gowdvo = getWithDependants(gofacade, moduleId, iGenericObjectId);
 
-		final GenericObjectTreeNode result = GenericObjectTreeNodeFactory.getInstance().newTreeNode(gowdvo, AttributeCache.getInstance(), ServerParameterProvider.getInstance(), iRelationId, relationtype, direction, getCurrentUserName(), parentId);
+		final GenericObjectTreeNode result = GenericObjectTreeNodeFactory.getInstance().newTreeNode(gowdvo, AttributeCache.getInstance(), 
+				serverParameterProvider, iRelationId, relationtype, direction, getCurrentUserName(), parentId);
 
 		assert result != null;
 		return result;
@@ -1014,9 +1028,7 @@ public class TreeNodeFacadeBean extends NuclosFacadeBean implements TreeNodeFaca
 	 */
 	@Override
 	public List<TreeNode> getSubNodes(EntitySearchResultTreeNode node) {
-		final ParameterProvider paramprovider = ServerParameterProvider.getInstance();
-
-		final int iMaxRowCount = paramprovider.getIntValue(ParameterProvider.KEY_MAX_ROWCOUNT_FOR_SEARCHRESULT_IN_TREE, DEFAULT_ROWCOUNT_FOR_SEARCHRESULT);
+		final int iMaxRowCount = serverParameterProvider.getIntValue(ParameterProvider.KEY_MAX_ROWCOUNT_FOR_SEARCHRESULT_IN_TREE, DEFAULT_ROWCOUNT_FOR_SEARCHRESULT);
 
 		if (Modules.getInstance().isModuleEntity(node.getEntity())) {
 			final AttributeProvider attrprovider = AttributeCache.getInstance();
@@ -1028,7 +1040,7 @@ public class TreeNodeFacadeBean extends NuclosFacadeBean implements TreeNodeFaca
 							getAttributeIdsRequiredForGenericObjectTreeNode(iModuleId), getSubEntityNamesRequiredForGenericObjectTreeNode(iModuleId), iMaxRowCount);
 
 			for (GenericObjectWithDependantsVO gowdvo : collgowdvo) {
-				result.add(GenericObjectTreeNodeFactory.getInstance().newTreeNode(gowdvo, attrprovider, paramprovider, null, null, null, getCurrentUserName(), null));
+				result.add(GenericObjectTreeNodeFactory.getInstance().newTreeNode(gowdvo, attrprovider, serverParameterProvider, null, null, null, getCurrentUserName(), null));
 			}
 
 			String sLabel = MessageFormat.format(getLocaleFacade().getResourceById(getLocaleFacade().getUserLocale(), "treenode.subnode.label"), node.getLabel(), collgowdvo.size(), collgowdvo.totalSize());

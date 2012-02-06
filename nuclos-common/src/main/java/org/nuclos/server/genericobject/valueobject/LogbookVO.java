@@ -17,6 +17,7 @@
 package org.nuclos.server.genericobject.valueobject;
 
 import org.nuclos.common.AttributeProvider;
+import org.nuclos.common.GenericObjectMetaDataProvider;
 import org.nuclos.common.MasterDataMetaProvider;
 import org.nuclos.common.SpringApplicationContextHolder;
 import org.nuclos.common2.CommonLocaleDelegate;
@@ -90,7 +91,7 @@ public class LogbookVO extends NuclosValueObject {
 
 	private void determineLabel() {
 		if (getAttribute() != null) {
-			this.sLabel = SpringApplicationContextHolder.getBean(AttributeProvider.class).getAttribute(getAttribute()).getResourceSIdForLabel();
+			this.sLabel = SpringApplicationContextHolder.getBean(GenericObjectMetaDataProvider.class).getAttribute(getAttribute()).getResourceSIdForLabel();
 		}
 		else if (getMasterDataMetaFieldId() != null) {
 			MasterDataMetaProvider cache = SpringApplicationContextHolder.getBean(MasterDataMetaProvider.class);

@@ -171,7 +171,6 @@ import org.nuclos.common.collect.collectable.DefaultCollectableEntityProvider;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableComparison;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableSearchCondition;
 import org.nuclos.common.collect.collectable.searchcondition.ComparisonOperator;
-import org.nuclos.common.collect.exception.CollectableFieldFormatException;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.ComparatorUtils;
 import org.nuclos.common.collection.Pair;
@@ -194,7 +193,6 @@ import org.nuclos.common2.exception.PreferencesException;
 import org.nuclos.server.common.ejb3.TestFacadeRemote;
 import org.nuclos.server.customcomp.valueobject.CustomComponentVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
-import org.nuclos.server.report.valueobject.ReportVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
@@ -269,6 +267,7 @@ public class MainController {
 	private NucletComponentRepository nucletComponentRepository;
 	
 	private CommonLocaleDelegate cld;
+	private SecurityCache securityCache;
 	
 	private MetaDataClientProvider mdProv;
 	
@@ -280,6 +279,11 @@ public class MainController {
 	
 	// private Main main;
 	
+	@Autowired
+	void setSecurityCache(SecurityCache securityCache) {
+		this.securityCache = securityCache;
+	}
+
 	/**
 	 * @param sUserName name of the logged in user
 	 * @param sNuclosServerName name of the Nucleus server connected to.
@@ -330,6 +334,8 @@ public class MainController {
 	void init() throws CommonPermissionException, BackingStoreException {
 		debugFrame = new SwingDebugFrame(this);
 		try {
+			cmdExecuteRport = createEntityAction(NuclosEntity.REPORTEXECUTION);
+			
 			/** @todo this is a workaround - because Main.getMainController() is called to get the user name */
 			Main.getInstance().setMainController(this);
 

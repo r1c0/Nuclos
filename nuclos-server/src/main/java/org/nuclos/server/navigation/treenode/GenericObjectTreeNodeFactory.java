@@ -33,6 +33,7 @@ import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.server.common.SecurityCache;
+import org.nuclos.server.genericobject.GenericObjectMetaDataCache;
 import org.nuclos.server.genericobject.valueobject.GenericObjectWithDependantsVO;
 import org.nuclos.server.navigation.treenode.GenericObjectTreeNode.RelationDirection;
 import org.nuclos.server.navigation.treenode.GenericObjectTreeNode.SystemRelationType;
@@ -142,7 +143,7 @@ public class GenericObjectTreeNodeFactory {
 	 * @return true, if attribute data is readable, otherwise false
 	 */
 	public boolean isReadAllowedForAttribute(String sUserName, String sKey, GenericObjectWithDependantsVO gowdvo, AttributeProvider attrprovider) {
-		Integer iAttributeGroupId = SpringApplicationContextHolder.getBean(AttributeProvider.class).getAttribute(gowdvo.getModuleId(), sKey).getAttributegroupId();
+		Integer iAttributeGroupId = SpringApplicationContextHolder.getBean(GenericObjectMetaDataCache.class).getAttribute(gowdvo.getModuleId(), sKey).getAttributegroupId();
 		Permission permission = SecurityCache.getInstance().getAttributeGroup(sUserName, iAttributeGroupId).get(gowdvo.getStatusId());
 
 		return (permission == null) ? false : permission.includesReading();

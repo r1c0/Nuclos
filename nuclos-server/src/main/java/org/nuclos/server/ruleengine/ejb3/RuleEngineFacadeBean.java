@@ -47,7 +47,6 @@ import org.nuclos.common.collection.TransformerUtils;
 import org.nuclos.common.dal.vo.EntityObjectVO;
 import org.nuclos.common.dal.vo.SystemFields;
 import org.nuclos.common2.IdUtils;
-import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
@@ -97,6 +96,8 @@ import org.nuclos.server.ruleengine.valueobject.RuleWithUsagesVO;
 import org.nuclos.server.statemodel.ejb3.StateFacadeLocal;
 import org.nuclos.server.statemodel.valueobject.StateModelVO;
 import org.nuclos.server.statemodel.valueobject.StateTransitionVO;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -110,11 +111,11 @@ import org.springframework.transaction.annotation.Transactional;
 // @Remote(RuleEngineFacadeRemote.class)
 @Transactional
 public class RuleEngineFacadeBean extends NuclosFacadeBean implements RuleEngineFacadeLocal, RuleEngineFacadeRemote {
-
-	// @todo move this constant to a more common place
-	private static final String CONNECTIONFACTORY_JNDINAME = "java:/ConnectionFactory";
-
+	
 	private CustomCodeManager ccm;
+
+	RuleEngineFacadeBean() {
+	}
 
 	public void setCustomCodeManager(CustomCodeManager ccm) {
 		this.ccm = ccm;
@@ -1161,17 +1162,25 @@ public class RuleEngineFacadeBean extends NuclosFacadeBean implements RuleEngine
 		"java.util.*"
 	};
 
+	@Configurable
 	public static class RuleTemplateType extends AbstractRuleTemplateType<NuclosRule> {
+		
+		private ServerParameterProvider serverParameterProvider;
 
 		public RuleTemplateType() {
 			super("Rule", NuclosRule.class);
+		}
+		
+		@Autowired
+		void setServerParameterProvider(ServerParameterProvider serverParameterProvider) {
+			this.serverParameterProvider = serverParameterProvider;
 		}
 
 		@Override
 		protected List<String> getImports() {
 			List<String> imports = new ArrayList<String>();
 			CollectionUtils.addAll(imports, IMPORTS);
-			final String additionalImports = ServerParameterProvider.getInstance().getValue(ParameterProvider.KEY_ADDITIONAL_IMPORTS_FOR_RULES);
+			final String additionalImports = serverParameterProvider.getValue(ParameterProvider.KEY_ADDITIONAL_IMPORTS_FOR_RULES);
 			if (additionalImports != null) {
 				CollectionUtils.addAll(imports, additionalImports.split(","));
 			}
