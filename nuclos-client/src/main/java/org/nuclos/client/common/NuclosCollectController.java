@@ -1230,7 +1230,7 @@ public abstract class NuclosCollectController<Clct extends Collectable> extends 
 							new Comparator<RuleVO>() {
 								@Override
 								public int compare(RuleVO o1, RuleVO o2) {
-									return o1.getName().compareTo(o2.getName());
+									return o1.getRule().compareTo(o2.getRule());
 								}
 							});
 					controller.setModel(ro);

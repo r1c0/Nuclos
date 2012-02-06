@@ -38,7 +38,7 @@ public class SortedRuleVO {
 	public SortedRuleVO(RuleVO vo) {
 		iOrder = new Integer(-1);
 		iId = vo.getId();
-		sName = vo.getName();
+		sName = vo.getRule();
 		sDescription = vo.getDescription();
 	}
 

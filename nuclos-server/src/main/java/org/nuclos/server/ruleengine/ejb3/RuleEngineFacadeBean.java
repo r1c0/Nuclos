@@ -263,10 +263,10 @@ public class RuleEngineFacadeBean extends NuclosFacadeBean implements RuleEngine
 				int iHeaderLinesCount = 0;
 				try {
 					final RuleVO rulevo = iter.next();
-					sCurrentRule = rulevo.getName();
+					sCurrentRule = rulevo.getRule();
 
 					if (rulevo.isActive()) {
-						info("Start executing rule \"" + rulevo.getName() + "\" (" + rulevo.getId() + ")");
+						info("Start executing rule \"" + rulevo.getRule() + "\" (" + rulevo.getId() + ")");
 
 						RuleCodeGenerator<NuclosRule> generator = getGenerator(rulevo);
 						final NuclosRule ruleInstance = ccm.getInstance(generator);
@@ -279,10 +279,10 @@ public class RuleEngineFacadeBean extends NuclosFacadeBean implements RuleEngine
 
 						lstRuleNotifications.addAll(ri.getRuleNotification());
 
-						info("Finished executing rule \"" + rulevo.getName() + "\"");
+						info("Finished executing rule \"" + rulevo.getRule() + "\"");
 					}
 					else {
-						log(Level.INFO, "Skipped rule \"" + rulevo.getName() + "\" - it is not active.");
+						log(Level.INFO, "Skipped rule \"" + rulevo.getRule() + "\" - it is not active.");
 					}
 				}
 				catch (NuclosBusinessRuleException ex) {
@@ -905,7 +905,7 @@ public class RuleEngineFacadeBean extends NuclosFacadeBean implements RuleEngine
 
 		try {
 			for (EntityObjectVO mdvo : mpDependants.getAllData()) {
-				mdvo.getFields().put("rule", rulevo.getName());
+				mdvo.getFields().put("rule", rulevo.getRule());
 				mdvo.getFields().put("ruleId", rulevo.getId());
 				mdvo.getFieldIds().put("ruleId", IdUtils.toLongId(rulevo.getId()));
 			}
@@ -957,7 +957,7 @@ public class RuleEngineFacadeBean extends NuclosFacadeBean implements RuleEngine
 
 	private void validateUniqueConstraint(RuleVO rulevo) throws CommonValidationException {
 		CollectableComparison cond = SearchConditionUtils.newMDComparison(
-			MasterDataMetaCache.getInstance().getMetaData(NuclosEntity.RULE),"rule", ComparisonOperator.EQUAL, rulevo.getName());
+			MasterDataMetaCache.getInstance().getMetaData(NuclosEntity.RULE),"rule", ComparisonOperator.EQUAL, rulevo.getRule());
 		Collection<MasterDataVO> mdVOList = getMasterDataFacade().getMasterData(NuclosEntity.RULE.getEntityName(), cond, true);
 
 		if (mdVOList != null) {
@@ -1035,7 +1035,7 @@ public class RuleEngineFacadeBean extends NuclosFacadeBean implements RuleEngine
 
 		if (mdVOList != null && mdVOList.size() > 0) {
 			final RuleVO rulevo = MasterDataWrapper.getRuleVO(mdVOList.iterator().next());
-			rulevo.setRuleSource(rulevoNew.getRuleSource());
+			rulevo.setSource(rulevoNew.getSource());
 			getMasterDataFacade().modify(NuclosEntity.RULE.getEntityName(), MasterDataWrapper.wrapRuleVO(rulevo), null);
 			RuleCache.getInstance().invalidate();
 		}

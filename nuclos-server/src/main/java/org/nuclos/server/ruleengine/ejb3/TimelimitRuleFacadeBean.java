@@ -102,7 +102,7 @@ public class TimelimitRuleFacadeBean extends NuclosFacadeBean implements Timelim
 		Collections.sort(result, new Comparator<RuleVO>() {
 			@Override
 			public int compare(RuleVO ii1, RuleVO ii2) {
-				return ii1.getName().compareTo(ii2.getName());
+				return ii1.getRule().compareTo(ii2.getRule());
 			}
 		});
 		return result;
@@ -274,8 +274,8 @@ public class TimelimitRuleFacadeBean extends NuclosFacadeBean implements Timelim
 				this.importTimelimitRule(ruleVO);
 			}
 			catch (CommonBusinessException ex) {
-				throw new CommonBusinessException(StringUtils.getParameterizedExceptionMessage("rule.import.error", ruleVO.getName()), ex);
-					//"Fehler beim Importieren der Regel \"" + ruleVO.getName() + "\" aufgetreten.", ex);
+				throw new CommonBusinessException(StringUtils.getParameterizedExceptionMessage(
+						"rule.import.error", ruleVO.getRule()), ex);
 			}
 		}
 	}
@@ -296,7 +296,7 @@ public class TimelimitRuleFacadeBean extends NuclosFacadeBean implements Timelim
 			CommonStaleVersionException, CommonValidationException, CommonPermissionException, NuclosBusinessRuleException {
 		voRule.validate();
 
-		final String sName = voRule.getName();
+		final String sName = voRule.getRule();
 
 		MasterDataVO mdvo = findByName(sName);
 		if (mdvo == null) {
@@ -310,7 +310,7 @@ public class TimelimitRuleFacadeBean extends NuclosFacadeBean implements Timelim
 			}
 		}
 		else {
-			mdvo.setField("source", voRule.getRuleSource());
+			mdvo.setField("source", voRule.getSource());
 			getMasterDataFacade().modify(NuclosEntity.TIMELIMITRULE.getEntityName(), mdvo, null);
 		}
 	}
@@ -412,7 +412,7 @@ public class TimelimitRuleFacadeBean extends NuclosFacadeBean implements Timelim
 			ruleInstance.process(ri, iGenericObjectId);
 		}
 		catch(NuclosBusinessRuleException e) {
-			final String sErrorMessage = "Es sind Fehler aufgetreten bei der Abarbeitung der Fristenregel " + ri.getCurrentRule().getName() +
+			final String sErrorMessage = "Es sind Fehler aufgetreten bei der Abarbeitung der Fristenregel " + ri.getCurrentRule().getRule() +
 			" aufgetreten beim Modulobjekt mit der ID " + iGenericObjectId + ":/n" + e;
 			Logger.getLogger("TimelimitErrors").error(sErrorMessage);
 			LOG.warn(sErrorMessage);
@@ -451,9 +451,9 @@ public class TimelimitRuleFacadeBean extends NuclosFacadeBean implements Timelim
 	 */
 	private MasterDataVO makeMasterDataVO(RuleVO rulevo) {
 		Map<String, Object> mpFields = new HashMap<String, Object>();
-		mpFields.put("name", rulevo.getName());
+		mpFields.put("name", rulevo.getRule());
 		mpFields.put("description", rulevo.getDescription());
-		mpFields.put("source", rulevo.getRuleSource());
+		mpFields.put("source", rulevo.getSource());
 		mpFields.put("active", rulevo.isActive());
 
 		MasterDataVO mdvo = new MasterDataVO(null, new Date(), getCurrentUserName(), new Date(),

@@ -1122,7 +1122,8 @@ public class GeneratorFacadeBean extends NuclosFacadeBean implements GeneratorFa
 		for (DbTuple ruleWithOrder : rulesWithOrders) {
 			RuleVO ruleVO = RuleCache.getInstance().getRule(ruleWithOrder.get(0, Integer.class));
 			Boolean bRunAfterwards = ruleWithOrder.get(2, Boolean.class);
-			result.add(new GeneratorRuleVO(ruleVO.getId(), ruleVO.getName(), ruleVO.getDescription(), ruleWithOrder.get(1, Integer.class), bRunAfterwards == null ? Boolean.FALSE : bRunAfterwards));
+			result.add(new GeneratorRuleVO(ruleVO.getId(), ruleVO.getRule(), ruleVO.getDescription(), ruleWithOrder.get(1, Integer.class), 
+					bRunAfterwards == null ? Boolean.FALSE : bRunAfterwards));
 		}
 
 		return result;

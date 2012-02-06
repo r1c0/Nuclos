@@ -285,7 +285,7 @@ public class RuleCollectController extends EntityCollectController<CollectableRu
 			this.pnlEdit.getJavaEditorPanel().setCaretPosition(0);
 		}
 		else {
-			this.pnlEdit.getJavaEditorPanel().setText(rulevo.getRuleSource());
+			this.pnlEdit.getJavaEditorPanel().setText(rulevo.getSource());
 			this.pnlEdit.getJavaEditorPanel().setCaretPosition(0);
 			this.pnlEdit.setId(((Integer)clct.getId()).longValue());
 		}
@@ -351,7 +351,7 @@ public class RuleCollectController extends EntityCollectController<CollectableRu
 
 		super.readValuesFromEditPanel(clct, bSearchTab);
 
-		clct.getRuleVO().setRuleSource(this.pnlEdit.getJavaEditorPanel().getText());
+		clct.getRuleVO().setSource(this.pnlEdit.getJavaEditorPanel().getText());
 	}
 
 	@Override

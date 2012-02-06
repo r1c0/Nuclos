@@ -143,7 +143,7 @@ public class RuleCodeGenerator<T> implements CodeGenerator {
 	private String getCode() {
 		final StringBuilder sb = new StringBuilder();
 		sb.append(getHeader());
-		sb.append(ruleVO.getRuleSource());
+		sb.append(ruleVO.getSource());
 		sb.append(type.getFooter());
 		return sb.toString();
 	}
@@ -164,7 +164,7 @@ public class RuleCodeGenerator<T> implements CodeGenerator {
 	}
 
 	private String getLabel() {
-		return MessageFormat.format(type.getLabel(), ruleVO.getName());
+		return MessageFormat.format(type.getLabel(), ruleVO.getRule());
 	}
 
 	private static int countLines(CharSequence cs) {

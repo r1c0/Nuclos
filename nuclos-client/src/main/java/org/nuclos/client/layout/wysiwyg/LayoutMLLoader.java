@@ -859,7 +859,7 @@ public class LayoutMLLoader implements LayoutMLConstants {
 							ruleToExecute = RuleDelegate.getInstance().get(Integer.parseInt(ruleId));
 							final PropertyValue<String> pv = (PropertyValue<String>) 
 									peekComponent().getProperties().getProperty(WYSIWYGStaticButton.PROPERTY_RULE);
-							pv.setValue(ruleToExecute.getName());
+							pv.setValue(ruleToExecute.getRule());
 						} catch (Exception e) {
 							LOG.warn("startElement failed: " + e, e);
 						}

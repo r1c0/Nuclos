@@ -53,6 +53,9 @@ public abstract class AbstractCollectableEntityField implements CollectableEntit
 	 * @deprecated Why is this transient? How is a value after serialization enforced?
 	 */
 	private transient CefSecurityAgent securityAgent;
+	
+	public AbstractCollectableEntityField() {
+	}
 
 	@Override
     public boolean isIdField() {

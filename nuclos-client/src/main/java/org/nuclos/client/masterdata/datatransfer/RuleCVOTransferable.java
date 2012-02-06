@@ -44,7 +44,7 @@ public class RuleCVOTransferable implements Transferable {
 	public RuleCVOTransferable(List<RuleAndRuleUsageEntity> aRuleVo) {
 		this.ruleVo = aRuleVo;
 
-		this.sText = ruleVo.get(0).getRuleVo().getName();
+		this.sText = ruleVo.get(0).getRuleVo().getRule();
 
 		this.aflavors = new DataFlavor[] {
 				new RuleAndRuleUsageEntity.RuleUsageDataFlavor(),

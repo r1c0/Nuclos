@@ -215,7 +215,7 @@ public class DirectoryRuleNode extends AbstractRuleTreeNode {
 		Collections.sort(sortedRules, new Comparator<RuleVO>() {
 			@Override
 			public int compare(RuleVO o1, RuleVO o2) {
-				return textCollator.compare(o1.getName(), o2.getName());
+				return textCollator.compare(o1.getRule(), o2.getRule());
 			}
 		});
 

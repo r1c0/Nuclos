@@ -40,10 +40,14 @@ import javax.swing.JPanel;
  */
 public class RuleHeaderPanel extends JPanel {
 
-	public final CollectableTextField clcttfName = new CollectableTextField(CollectableRule.clcte.getEntityField("name"));
-	public final CollectableTextField clcttfDescription = new CollectableTextField(CollectableRule.clcte.getEntityField("description"));
-	public final CollectableCheckBox clctchkbxActive = new CollectableCheckBox(CollectableRule.clcte.getEntityField("active"), false);
-	public final CollectableCheckBox clctchkbxDebug = new CollectableCheckBox(CollectableRule.clcte.getEntityField("debug"), false);
+	public final CollectableTextField clcttfName = new CollectableTextField(
+			CollectableRule.clcte.getEntityField(CollectableRule.FIELDNAME_NAME));
+	public final CollectableTextField clcttfDescription = new CollectableTextField(
+			CollectableRule.clcte.getEntityField(CollectableRule.FIELDNAME_DESCRIPTION));
+	public final CollectableCheckBox clctchkbxActive = new CollectableCheckBox(
+			CollectableRule.clcte.getEntityField(CollectableRule.FIELDNAME_ACTIVE), false);
+	public final CollectableCheckBox clctchkbxDebug = new CollectableCheckBox(
+			CollectableRule.clcte.getEntityField(CollectableRule.FIELDNAME_DEBUG), false);
 
 	public RuleHeaderPanel() {
 		super(new GridBagLayout());

@@ -35,7 +35,7 @@ public class StateModelRuleVO {
 
 	public StateModelRuleVO(RuleVO vo) {
 		iId = vo.getId();
-		sName = vo.getName();
+		sName = vo.getRule();
 		sDescription = vo.getDescription();
 	}
 

@@ -113,9 +113,9 @@ public class MasterDataWrapper {
 
 	public static MasterDataVO wrapRuleVO(RuleVO vo) {
 		Map<String, Object> mpFields = new HashMap<String,Object>();
-		mpFields.put("rule", vo.getName());
+		mpFields.put("rule", vo.getRule());
 		mpFields.put("description", vo.getDescription());
-		mpFields.put("source", vo.getRuleSource());
+		mpFields.put("source", vo.getSource());
 		mpFields.put("nucletId", vo.getNucletId());
 		mpFields.put("active", vo.isActive());
 		mpFields.put("debug", vo.isDebug());

@@ -55,22 +55,22 @@ public class RuleNode extends AbstractRuleTreeNode {
 	}
 
 	public RuleNode(RuleVO aRuleVo, boolean aIsAllRuleSubnodeFlag) {
-		this(aRuleVo, aRuleVo.getId(), aRuleVo.getName(), aRuleVo.getDescription(), null, RuleNodeType.RULE, aIsAllRuleSubnodeFlag, false);
+		this(aRuleVo, aRuleVo.getId(), aRuleVo.getRule(), aRuleVo.getDescription(), null, RuleNodeType.RULE, aIsAllRuleSubnodeFlag, false);
 	}
 
 	public RuleNode(RuleVO aRuleVo, String aEventName, String aEntity) {
-		this(aRuleVo, aRuleVo.getId(), aRuleVo.getName(), aRuleVo.getDescription(), new ArrayList<AbstractRuleTreeNode>(), RuleNodeType.RULE, false, false);
+		this(aRuleVo, aRuleVo.getId(), aRuleVo.getRule(), aRuleVo.getDescription(), new ArrayList<AbstractRuleTreeNode>(), RuleNodeType.RULE, false, false);
 		this.eventName = aEventName;
 		this.entity = aEntity;
 	}
 
 	public RuleNode(RuleVO aRuleVo, String aEventName, boolean isTimeLimitRule) {
-		this(aRuleVo, aRuleVo.getId(), aRuleVo.getName(), aRuleVo.getDescription(), new ArrayList<AbstractRuleTreeNode>(), RuleNodeType.RULE, false, isTimeLimitRule);
+		this(aRuleVo, aRuleVo.getId(), aRuleVo.getRule(), aRuleVo.getDescription(), new ArrayList<AbstractRuleTreeNode>(), RuleNodeType.RULE, false, isTimeLimitRule);
 		this.eventName = aEventName;
 	}
 
 	public RuleNode(RuleVO aRuleVo, RuleEngineGenerationVO generationVO, boolean aIsAllRuleSubnodeFlag) {
-		this(aRuleVo, aRuleVo.getId(), aRuleVo.getName() // + " (" +generationVO.getOrder() + ")"
+		this(aRuleVo, aRuleVo.getId(), aRuleVo.getRule() // + " (" +generationVO.getOrder() + ")"
 				, aRuleVo.getDescription(), new ArrayList<AbstractRuleTreeNode>(), RuleNodeType.RULE, aIsAllRuleSubnodeFlag, false);
 	}
 

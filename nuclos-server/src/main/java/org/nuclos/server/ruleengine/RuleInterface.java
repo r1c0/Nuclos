@@ -2034,7 +2034,7 @@ public class RuleInterface extends CustomCodeInterface {
 	 * @param sMessage
 	 */
 	public void addNotificationMessage(String sMessage, Priority priority) {
-		final RuleNotification message = new RuleNotification(priority, sMessage, rulevo.getName());
+		final RuleNotification message = new RuleNotification(priority, sMessage, rulevo.getRule());
 
 		final String sAttributeNameSystemIdentifier = NuclosEOField.SYSTEMIDENTIFIER.getMetaData().getField();
 
@@ -2769,8 +2769,8 @@ public class RuleInterface extends CustomCodeInterface {
 	 * logging should work in business rules also
 	 */
 	public void logInfo(String sMessage) throws NuclosBusinessRuleException {
-		this.getRuleInterface().logInfo(getSessionId(), sMessage, this.getCurrentRule().getName());
-		logger.info(getSessionId() + " - " + sMessage + " - " + this.getCurrentRule().getName());
+		this.getRuleInterface().logInfo(getSessionId(), sMessage, this.getCurrentRule().getRule());
+		logger.info(getSessionId() + " - " + sMessage + " - " + this.getCurrentRule().getRule());
 	}
 
 	/**
@@ -2780,8 +2780,8 @@ public class RuleInterface extends CustomCodeInterface {
 	 * logging should work in business rules also
 	 */
 	public void logWarning(String sMessage) throws NuclosBusinessRuleException {
-		this.getRuleInterface().logWarning(getSessionId(), sMessage, this.getCurrentRule().getName());
-		logger.warn(getSessionId() + " - " + sMessage + " - " + this.getCurrentRule().getName());
+		this.getRuleInterface().logWarning(getSessionId(), sMessage, this.getCurrentRule().getRule());
+		logger.warn(getSessionId() + " - " + sMessage + " - " + this.getCurrentRule().getRule());
 	}
 
 	/**
@@ -2791,8 +2791,8 @@ public class RuleInterface extends CustomCodeInterface {
 	 * logging should work in business rules also
 	 */
 	public void logError(String sMessage) throws NuclosBusinessRuleException {
-		this.getRuleInterface().logError(getSessionId(), sMessage, this.getCurrentRule().getName());
-		logger.error(getSessionId() + " - " + sMessage + " - " + this.getCurrentRule().getName());
+		this.getRuleInterface().logError(getSessionId(), sMessage, this.getCurrentRule().getRule());
+		logger.error(getSessionId() + " - " + sMessage + " - " + this.getCurrentRule().getRule());
 	}
 	
 	@Override

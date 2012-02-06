@@ -310,7 +310,7 @@ public class WYSIWYGMetaInformation implements LayoutMLConstants {
 				}
 			});
 			for (RuleVO rule: collRules) {
-				result.add(new StringResourceIdPair(rule.getName(), null));
+				result.add(new StringResourceIdPair(rule.getRule(), null));
 			}
 		} else if (META_ICONS.equals(meta)) {
 			result.addAll(CollectionUtils.transform(ResourceDelegate.getInstance().getIconResources(), new Transformer<String, StringResourceIdPair>() {

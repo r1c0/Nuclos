@@ -74,7 +74,9 @@ public class ServerParameterProvider extends AbstractParameterProvider implement
 		return INSTANCE;
 	}
 
-	protected ServerParameterProvider() { }
+	protected ServerParameterProvider() { 
+		INSTANCE = this;
+	}
 
 	@Override
 	public void afterPropertiesSet() throws Exception {

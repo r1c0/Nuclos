@@ -38,13 +38,14 @@ import org.nuclos.server.ruleengine.valueobject.RuleVO;
  */
 public class CollectableRule extends AbstractCollectableBean<RuleVO> {
 
-	public static final String TASK_ENTITY = "Rule";
+	public static final String RULE_ENTITY = NuclosEntity.RULE.getEntityName();
 	
-	public static final String FIELDNAME_NAME = "name";
+	public static final String FIELDNAME_NAME = "rule";
 	public static final String FIELDNAME_DESCRIPTION = "description";
-	public static final String FIELDNAME_RULESOURCE = "ruleSource";
+	public static final String FIELDNAME_RULESOURCE = "source";
 	public static final String FIELDNAME_ACTIVE = "active";
 	public static final String FIELDNAME_DEBUG = "debug";
+	public static final String FIELDNAME_NUCLET = "nuclet";
 
 	/**
 	 * inner class <code>CollectableRule.Entity</code>.
@@ -53,18 +54,20 @@ public class CollectableRule extends AbstractCollectableBean<RuleVO> {
 	public static class Entity extends AbstractCollectableEntity {
 
 		private Entity() {
-			super(NuclosEntity.RULE.getEntityName(), "Regel");
+			super(RULE_ENTITY, "Regel");
 
 			this.addCollectableEntityField(new DefaultCollectableEntityField(FIELDNAME_NAME, String.class, "Name",
-					"Name der Regel", null, null, false, CollectableField.TYPE_VALUEFIELD, null, null, TASK_ENTITY));
+					"Name der Regel", null, null, false, CollectableField.TYPE_VALUEFIELD, null, null, RULE_ENTITY));
 			this.addCollectableEntityField(new DefaultCollectableEntityField(FIELDNAME_DESCRIPTION, String.class,
-					"Beschreibung", "Beschreibung der Regel", null, null, true, CollectableField.TYPE_VALUEFIELD, null, null, TASK_ENTITY));
+					"Beschreibung", "Beschreibung der Regel", null, null, true, CollectableField.TYPE_VALUEFIELD, null, null, RULE_ENTITY));
 			this.addCollectableEntityField(new DefaultCollectableEntityField(FIELDNAME_RULESOURCE, String.class, "Code",
-					"Quellcode der Regel", null, null, false, CollectableField.TYPE_VALUEFIELD, null, null, TASK_ENTITY));
+					"Quellcode der Regel", null, null, false, CollectableField.TYPE_VALUEFIELD, null, null, RULE_ENTITY));
 			this.addCollectableEntityField(new DefaultCollectableEntityField(FIELDNAME_ACTIVE, Boolean.class,
-					"Aktiv?", "Aktivkennzeichen der Regel", null, null, false, CollectableField.TYPE_VALUEFIELD, null, null, TASK_ENTITY));
+					"Aktiv?", "Aktivkennzeichen der Regel", null, null, false, CollectableField.TYPE_VALUEFIELD, null, null, RULE_ENTITY));
 			this.addCollectableEntityField(new DefaultCollectableEntityField(FIELDNAME_DEBUG, Boolean.class,
-					"Debug?", "Debug-Flag der Regel", null, null, false, CollectableField.TYPE_VALUEFIELD, null, null, TASK_ENTITY));
+					"Debug?", "Debug-Flag der Regel", null, null, false, CollectableField.TYPE_VALUEFIELD, null, null, RULE_ENTITY));
+			this.addCollectableEntityField(new DefaultCollectableEntityField(FIELDNAME_NUCLET, String.class,
+					"Nuclet", "", null, null, false, CollectableField.TYPE_VALUEIDFIELD, null, null, RULE_ENTITY));
 		}
 	}	// inner class Entity
 
@@ -90,7 +93,7 @@ public class CollectableRule extends AbstractCollectableBean<RuleVO> {
 
 	@Override
 	public String getIdentifierLabel() {
-		return getRuleVO().getName();
+		return getRuleVO().getRule();
 	}
 
 	@Override

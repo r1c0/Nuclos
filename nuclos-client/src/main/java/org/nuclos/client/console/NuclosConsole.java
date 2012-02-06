@@ -314,8 +314,8 @@ public class NuclosConsole extends ConsoleConstants {
 
 		try {
 			for (RuleVO rulevo : RuleDelegate.getInstance().getAllRules()) {
-				final String sFileName = rulevo.getName() + ".txt";
-				IOUtils.writeToTextFile(new File(fileOutputDir, sFileName), rulevo.getRuleSource(), "ISO-8859-1");
+				final String sFileName = rulevo.getRule() + ".txt";
+				IOUtils.writeToTextFile(new File(fileOutputDir, sFileName), rulevo.getSource(), "ISO-8859-1");
 			}
 		}
 		catch (IOException e) {
@@ -330,8 +330,8 @@ public class NuclosConsole extends ConsoleConstants {
 
 		try {
 			for (RuleVO rulevo : TimelimitRuleDelegate.getInstance().getAllTimelimitRules()) {
-				final String sFileName = rulevo.getName() + ".txt";
-				IOUtils.writeToTextFile(new File(fileOutputDir, sFileName), rulevo.getRuleSource(), "ISO-8859-1");
+				final String sFileName = rulevo.getRule() + ".txt";
+				IOUtils.writeToTextFile(new File(fileOutputDir, sFileName), rulevo.getSource(), "ISO-8859-1");
 			}
 		}
 		catch (IOException e) {

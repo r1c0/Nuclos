@@ -41,7 +41,7 @@ public class RuleWithUsagesVO implements Serializable {
 	}
 
 	public String getName() {
-		return this.rulevo.getName();
+		return this.rulevo.getRule();
 	}
 
 	public RuleVO getRuleVO() {

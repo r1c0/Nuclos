@@ -22,6 +22,10 @@ import org.nuclos.server.common.valueobject.NuclosValueObject;
 
 /**
  * Value object representing a rule.
+ * <p>
+ * Attention: <em>Never</em> change/add a property here without adjusting 
+ * {@link org.nuclos.client.rule.admin.CollectableRule.Entity}. 
+ * </p>
  * <br>
  * <br>Created by Novabit Informationssysteme GmbH
  * <br>Please visit <a href="http://www.novabit.de">www.novabit.de</a>
@@ -31,10 +35,11 @@ import org.nuclos.server.common.valueobject.NuclosValueObject;
  */
 public class RuleVO extends NuclosValueObject {
 
-	private String sName;
+	private String rule;
 	private String sDescription;
-	private String sRuleSource;
+	private String source;
 	private Integer nucletId;
+	private String nuclet;
 	private boolean bActive;
 	private boolean bDebug;
 
@@ -46,9 +51,9 @@ public class RuleVO extends NuclosValueObject {
 	 */
 	public RuleVO(NuclosValueObject nvo, String sName, String sDescription, String sRuleSource, Integer nucletId, boolean bActive, boolean bDebug) {
 		super(nvo);
-		this.sName = sName;
+		this.rule = sName;
 		this.sDescription = sDescription;
-		this.sRuleSource = sRuleSource;
+		this.source = sRuleSource;
 		this.nucletId = nucletId;
 		this.bActive = bActive;
 		this.bDebug = bDebug;
@@ -56,15 +61,15 @@ public class RuleVO extends NuclosValueObject {
 
 	/**
 	 * constructor to be called by client only
-	 * @param sName rule name of underlying database record
+	 * @param rule rule name of underlying database record
 	 * @param sDescription rule description of underlying database record
 	 * @param sRuleSource rule sourcecode of underlying database record
 	 */
-	public RuleVO(String sName, String sDescription, String sRuleSource, Integer nucletId, boolean bActive) {
+	public RuleVO(String rule, String sDescription, String sRuleSource, Integer nucletId, boolean bActive) {
 		super();
-		this.sName = sName;
+		this.rule = rule;
 		this.sDescription = sDescription;
-		this.sRuleSource = sRuleSource;
+		this.source = sRuleSource;
 		this.nucletId = nucletId;
 		this.bActive = bActive;
 	}
@@ -73,16 +78,24 @@ public class RuleVO extends NuclosValueObject {
 	 * get rule name of underlying database record
 	 * @return rule name of underlying database record
 	 */
-	public String getName() {
-		return this.sName;
+	public String getRule() {
+		return this.rule;
 	}
 
 	/**
 	 * set rule name of underlying database record
-	 * @param sName rule name of underlying database record
+	 * @param rule rule name of underlying database record
 	 */
-	public void setName(String sName) {
-		this.sName = sName;
+	public void setRule(String rule) {
+		this.rule = rule;
+	}
+	
+	public String getNuclet() {
+		return nuclet;
+	}
+	
+	public void setNuclet(String nuclet) {
+		this.nuclet = nuclet;
 	}
 
 	/**
@@ -105,16 +118,16 @@ public class RuleVO extends NuclosValueObject {
 	 * get rule sourcecode of underlying database record
 	 * @return rule sourcecode of underlying database record
 	 */
-	public String getRuleSource() {
-		return this.sRuleSource;
+	public String getSource() {
+		return this.source;
 	}
 
 	/**
 	 * set rule sourcecode of underlying database record
 	 * @param sRuleSource rule sourcecode of underlying database record
 	 */
-	public void setRuleSource(String sRuleSource) {
-		this.sRuleSource = sRuleSource;
+	public void setSource(String sRuleSource) {
+		this.source = sRuleSource;
 	}
 
 	public Integer getNucletId() {
@@ -153,20 +166,20 @@ public class RuleVO extends NuclosValueObject {
 	 */
 	@Override
 	public void validate() throws CommonValidationException {
-		if (StringUtils.isNullOrEmpty(this.getName())) {
+		if (StringUtils.isNullOrEmpty(getRule())) {
 			throw new CommonValidationException("ruleengine.error.validation.rule.name");
 		}
 		if (StringUtils.isNullOrEmpty(this.getDescription())) {
 			throw new CommonValidationException("ruleengine.error.validation.rule.description");
 		}
-		if (StringUtils.isNullOrEmpty(this.getRuleSource())) {
+		if (StringUtils.isNullOrEmpty(this.getSource())) {
 			throw new CommonValidationException("ruleengine.error.validation.rule.rulesource");
 		}
 	}
 
 	@Override
 	public int hashCode() {
-		return (getName() != null ? getName().hashCode() : 0);
+		return (getRule() != null ? getRule().hashCode() : 0);
 	}
 
 	@Override
@@ -174,21 +187,21 @@ public class RuleVO extends NuclosValueObject {
 		if (o instanceof RuleVO) {
 			final RuleVO that = (RuleVO) o;
 			// rules are equal if there names are equal
-			return this.getName().equals(that.getName());
+			return getRule().equals(that.getRule());
 		}
 		return false;
 	}
 
 	@Override
 	public String toString() {
-		return this.getName();
+		return getRule();
 	}
 	
 	public String toDescription() {
 		final StringBuilder result = new StringBuilder();
 		result.append("RuleVO[");
 		result.append("id=").append(getId());
-		result.append("name=").append(sName);
+		result.append("name=").append(rule);
 		if (bActive) {
 			result.append(",active=").append(bActive);
 		}
@@ -198,8 +211,8 @@ public class RuleVO extends NuclosValueObject {
 		if (nucletId != null) {
 			result.append(",nucletId=").append(nucletId);
 		}
-		if (sRuleSource != null) {
-			result.append(",src=").append(sRuleSource);
+		if (source != null) {
+			result.append(",src=").append(source);
 		}
 		result.append("]");
 		return result.toString();

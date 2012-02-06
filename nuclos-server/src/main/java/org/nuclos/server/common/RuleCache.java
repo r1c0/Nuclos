@@ -115,14 +115,14 @@ public class RuleCache implements RuleCacheMBean {
 			for (MasterDataVO ruleVO : ruleVOs) {
 				final RuleVO rulevo = MasterDataWrapper.getRuleVO(ruleVO);
 				mpRulessById.put(rulevo.getId(), rulevo);
-				mpRulesByName.put(rulevo.getName(), rulevo);
+				mpRulesByName.put(rulevo.getRule(), rulevo);
 			}
 
 			Collection<MasterDataVO> timelimitruleVOs = mdFacade.getMasterData(NuclosEntity.TIMELIMITRULE.getEntityName(), null, true);
 
 			for (MasterDataVO timelimitruleVO : timelimitruleVOs) {
 				final RuleVO rulevo = MasterDataWrapper.getRuleVO(timelimitruleVO);
-				timelimitrules.put(rulevo.getName(), rulevo);
+				timelimitrules.put(rulevo.getRule(), rulevo);
 			}
 
 			Collection<MasterDataVO> webserviceVOs = mdFacade.getMasterData(NuclosEntity.WEBSERVICE.getEntityName(), null, true);
