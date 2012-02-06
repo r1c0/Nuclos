@@ -94,6 +94,7 @@ import org.nuclos.client.ui.collect.component.model.CollectableComponentModelAda
 import org.nuclos.client.ui.collect.component.model.CollectableComponentModelEvent;
 import org.nuclos.client.ui.collect.component.model.CollectableComponentModelListener;
 import org.nuclos.client.ui.collect.component.model.DetailsComponentModelEvent;
+import org.nuclos.client.ui.collect.component.model.SearchComponentModel;
 import org.nuclos.client.ui.collect.component.model.SearchComponentModelEvent;
 import org.nuclos.client.ui.labeled.LabeledComponent;
 import org.nuclos.client.ui.labeled.LabeledTextArea;
@@ -395,6 +396,9 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 						}
 					}
 					else if (clctcompSource instanceof CollectableComboBox) {
+						if (bCreateSearchableComponents) {
+							return; //NUCLOSINT-1160
+						}
 //							alle Filtern/Gruppieren, so nur TransferActions mit gleicher SourceComp
 //							dann, pro Gruppe ein Listener
 						// List of associated transfers actions as pair (sourceFieldName -> targetCollectableComponentModel)
@@ -461,6 +465,9 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 			}
 
 			private void handleTransferLookedUpValueAction(final TransferLookedUpValueAction transferaction, final CollectableListOfValues clctlovSource) throws SAXException {
+				if (bCreateSearchableComponents) {
+					return; //NUCLOSINT-1160
+				}
 				final String sTargetComponentName = transferaction.getTargetComponentName();
 				final CollectableComponentModel clctcompmodelTarget = mpclctcompmodel.get(sTargetComponentName);
 				if (clctcompmodelTarget == null) {
@@ -641,6 +648,9 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 		 * Transfers looked-up values.
 		 */
 		private void transferValue(Collectable clctSelected, String sourceFieldName, CollectableComponentModel clctcompmodelTarget) {
+			if (clctcompmodelTarget instanceof SearchComponentModel) {
+				return; //NUCLOSINT-1160
+			}
 			if (clctSelected == null) {
 				clctcompmodelTarget.clear();
 			}
