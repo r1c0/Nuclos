@@ -24,6 +24,8 @@ import org.nuclos.client.common.Utils;
 import org.nuclos.client.entityobject.EntityFacadeDelegate;
 import org.nuclos.client.valuelistprovider.cache.CacheableCollectableFieldsProvider;
 import org.nuclos.client.valuelistprovider.cache.ManagedCollectableFieldsProvider;
+import org.nuclos.common.collect.collectable.CollectableEntity;
+import org.nuclos.common.collect.collectable.CollectableEntityField;
 import org.nuclos.common.collect.collectable.CollectableEntityProvider;
 import org.nuclos.common.collect.collectable.CollectableField;
 import org.nuclos.common.collect.collectable.DefaultCollectableEntityProvider;
@@ -52,8 +54,24 @@ public class DependantMasterDataCollectableFieldsProvider extends ManagedCollect
 		this.sEntityName = sEntityName;
 		this.sForeignKeyFieldName = sForeignKeyFieldName;
 		final CollectableEntityProvider clcteprovider = DefaultCollectableEntityProvider.getInstance();
-		this.sForeignEntityName = clcteprovider.getCollectableEntity(sEntityName).getEntityField(sForeignKeyFieldName).getReferencedEntityName();
-		this.sFieldToDisplay = clcteprovider.getCollectableEntity(sForeignEntityName).getIdentifierFieldName();
+		final CollectableEntity ce = clcteprovider.getCollectableEntity(sEntityName);
+		final CollectableEntityField cef = ce.getEntityField(sForeignKeyFieldName);
+		final String field = cef.getReferencedEntityFieldName();
+		this.sForeignEntityName = cef.getReferencedEntityName();
+		
+		/* 
+		 * There is no such thing like an 'field to display' as the 'stringified' ref could
+		 * be something like '${bezeichnung} - ${name}' - and this would be _two_ referenced
+		 * fields.
+		 * 
+		 * getIdentifierFieldName() just looks for (very old) '${name}' that is not present
+		 * today.
+		 * 
+		 * (tp)
+		 */
+		// this.sFieldToDisplay = ce.getIdentifierFieldName();
+		this.sFieldToDisplay = "<field to display was not set with setParameter()>";
+		
 		this.checkValidity = Utils.hasValidOrActiveField(sEntityName);
 	}
 

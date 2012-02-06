@@ -46,6 +46,9 @@ public interface CollectableEntity {
 	 * @return the name of the field that contains the identifier for the collectable, if any.
 	 * Note that this may be <code>null</code> in cases where there isn't a single identifying field
 	 * (or column).
+	 * 
+	 * @deprecated Identifier used is defined as 'stringified' ref from the refering entity.
+	 * 		Hence this method is plain wrong (old crap).
 	 */
 	String getIdentifierFieldName();
 
