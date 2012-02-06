@@ -52,11 +52,13 @@ import org.nuclos.common.collect.collectable.CollectableEntity;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
 import org.nuclos.common.collect.collectable.CollectableField;
 import org.nuclos.common.collect.collectable.CollectableFieldsProvider;
+import org.nuclos.common.collect.collectable.CollectableValueField;
 import org.nuclos.common.collect.collectable.CollectableValueIdField;
 import org.nuclos.common.collect.collectable.searchcondition.AtomicCollectableSearchCondition;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableSearchCondition;
 import org.nuclos.common.collect.collectable.searchcondition.ComparisonOperator;
 import org.nuclos.common.collect.exception.CollectableFieldFormatException;
+import org.nuclos.common.collect.exception.CollectableValidationException;
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
 import org.nuclos.common.format.FormattingTransformer;
@@ -65,6 +67,7 @@ import org.nuclos.common2.IdUtils;
 import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.StringUtils;
+import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.server.masterdata.ejb3.EntityFacadeRemote;
 
 /**
@@ -131,6 +134,50 @@ public class CollectableListOfValues extends LabeledCollectableComponentWithVLP 
 		 */
 		public void viewSearchResults(Event ev);
 	}	// inner class LOVListener
+	
+	private class DefaultValueCollectable implements Collectable {
+		private final Object oValue;
+		public DefaultValueCollectable(Object oValue) {
+			this.oValue = oValue;
+		}
+		
+		@Override
+		public Object getId() {
+			return null;
+		}
+		@Override
+		public String getIdentifierLabel() {
+			return null;
+		}
+		@Override
+		public int getVersion() {
+			return 0;
+		}
+		@Override
+		public Object getValue(String sFieldName) {
+			return oValue;
+		}
+		@Override
+		public Object getValueId(String sFieldName) {
+			return null;
+		}
+		@Override
+		public CollectableField getField(String sFieldName)
+				throws CommonFatalException {
+			return new CollectableValueIdField(null, oValue);
+		}
+		@Override
+		public void setField(String sFieldName, CollectableField clctfValue) {
+		}
+		@Override
+		public boolean isComplete() {
+			return false;
+		}
+		@Override
+		public void validate(CollectableEntity clcte)
+				throws CollectableValidationException {
+		}
+	}
 
 	/**
 	 * @param clctef
@@ -155,11 +202,14 @@ public class CollectableListOfValues extends LabeledCollectableComponentWithVLP 
 		if (clctef == null) {
 			throw new NullArgumentException("clctef");
 		}
-		if (!clctef.isIdField()) {
+
+		EntityFieldMetaDataVO efMeta = MetaDataClientProvider.getInstance().getEntityField(clctef.getEntityName(), clctef.getName());
+		
+		if (!clctef.isIdField() && efMeta.getForeignEntity() != null) {
 			throw new IllegalArgumentException(StringUtils.getParameterizedExceptionMessage("collectable.listofvalues.exception.1", clctef.getName()));
 				//"Das Feld \"" + clctef.getName() + "\" ist kein Id-Feld und kann daher nicht in einem LOV (Suchfeld) dargestellt werden.");
 		}
-		if (!clctef.isReferencing()) {
+		if (!clctef.isReferencing() && efMeta.getForeignEntity() != null) {
 			throw new IllegalArgumentException(StringUtils.getParameterizedExceptionMessage("collectable.listofvalues.exception.2", clctef.getName()));
 				//"Das Feld \"" + clctef.getName() + "\" ist kein Fremdschl\u00fcssel-Feld und kann daher nicht in einem LOV (Suchfeld) dargestellt werden.");
 		}
@@ -171,6 +221,7 @@ public class CollectableListOfValues extends LabeledCollectableComponentWithVLP 
 			protected List<CollectableValueIdField> getQuickSearchResult(String inputString) {
 				Integer vlpId = null;
 				Map<String, Object> vlpParameter = null;
+				String vlpValueFieldName = null;
 				CollectableFieldsProvider provider = getValueListProvider();
 				if (provider instanceof CachingCollectableFieldsProvider) {
 					provider = ((CachingCollectableFieldsProvider) provider).getDelegate();
@@ -180,10 +231,10 @@ public class CollectableListOfValues extends LabeledCollectableComponentWithVLP 
 					if (dsProvider.isValuelistProviderDatasource()) {
 						vlpId = dsProvider.getDatasourceVO().getId();
 						vlpParameter = dsProvider.getValueListParameter();
+						vlpValueFieldName = dsProvider.getValueFieldName();
 					}
 				}
-
-				return CollectableListOfValues.getQuickSearchResult(clctef, inputString, vlpId, vlpParameter);
+				return CollectableListOfValues.getQuickSearchResult(clctef, inputString, vlpId, vlpParameter, vlpValueFieldName);
 			}
 		});
 
@@ -191,17 +242,19 @@ public class CollectableListOfValues extends LabeledCollectableComponentWithVLP 
 
 		this.getListOfValues().setQuickSearchEnabled(enableQuickSearch(clctef));
 
-		EntityFieldMetaDataVO efMeta = MetaDataClientProvider.getInstance().getEntityField(clctef.getEntityName(), clctef.getName());
-		final EntityMetaDataVO eMetaForeign = MetaDataClientProvider.getInstance().getEntity(efMeta.getForeignEntity());
-
 		this.getListOfValues().setQuickSearchSelectedListener(new ListOfValues.QuickSearchSelectedListener() {
 			@Override
-			public void actionPerformed(CollectableValueIdField itemSelected) {
+			public void actionPerformed(final CollectableValueIdField itemSelected) {
 				if (itemSelected == null) {
 					CollectableListOfValues.this.clearListOfValues();
 				} else {
 					try {
-						Collectable c = Utils.getReferencedCollectable(clctef.getEntityName(), clctef.getName(), itemSelected.getValueId());
+						Collectable c = null;
+						if (itemSelected.getValueId() == null)
+							c = new DefaultValueCollectable(itemSelected.getValue());
+						else
+							c = Utils.getReferencedCollectable(clctef.getEntityName(), clctef.getName(), itemSelected.getValueId());
+						
 						CollectableListOfValues.this.acceptLookedUpCollectable(c);
 					} catch(Exception e) {
 						Errors.getInstance().showExceptionDialog(CollectableListOfValues.this.getListOfValues(), e);
@@ -221,7 +274,13 @@ public class CollectableListOfValues extends LabeledCollectableComponentWithVLP 
 			this.getListOfValues().setSearchOnLostFocus(false);
 		}
 
-		this.getListOfValues().setQuickSearchOnly(!SecurityCache.getInstance().isReadAllowedForEntity(efMeta.getForeignEntity()));
+		boolean blnQuickSearch = false;
+		if (efMeta.getForeignEntity() == null) {
+			blnQuickSearch = getValueListProvider() != null;
+		} else {
+			blnQuickSearch = !SecurityCache.getInstance().isReadAllowedForEntity(efMeta.getForeignEntity());
+		}
+		this.getListOfValues().setQuickSearchOnly(blnQuickSearch);
 
 		assert this.isInsertable() == this.isSearchComponent();
 	}
@@ -243,13 +302,13 @@ public class CollectableListOfValues extends LabeledCollectableComponentWithVLP 
 	 * @param collectableFieldsProvider
 	 * @return
 	 */
-	private static List<CollectableValueIdField> getQuickSearchResult(final CollectableEntityField clctef, final String inputString, Integer vlpId, Map<String, Object> vlpParameter) {
+	private static List<CollectableValueIdField> getQuickSearchResult(final CollectableEntityField clctef, final String inputString, Integer vlpId, Map<String, Object> vlpParameter, String vlpValueFieldName) {
 
 		CollectableEntity clcte = clctef.getCollectableEntity();
 		if (clcte == null)
 			return Collections.emptyList();
 
-		return ServiceLocator.getInstance().getFacade(EntityFacadeRemote.class).getQuickSearchResult(clcte.getName(), clctef.getName(), inputString, vlpId, vlpParameter, QUICKSEARCH_MAX);
+		return ServiceLocator.getInstance().getFacade(EntityFacadeRemote.class).getQuickSearchResult(clcte.getName(), clctef.getName(), inputString, vlpId, vlpParameter, vlpValueFieldName, QUICKSEARCH_MAX);
 	}
 
 	/**
@@ -263,7 +322,10 @@ public class CollectableListOfValues extends LabeledCollectableComponentWithVLP 
 					CommonLocaleDelegate.getInstance().getMessage("CollectableFileNameChooserBase.1","Zur\u00fccksetzen"));
 			boolean bClearEnabled;
 			try {
-				bClearEnabled = this.getBrowseButton().isEnabled() && (this.getField().getValueId() != null);
+				if (!this.getField().isIdField())
+					bClearEnabled = false;
+				else
+					bClearEnabled = this.getBrowseButton().isEnabled() && (this.getField().getValueId() != null);
 			}
 			catch (CollectableFieldFormatException ex) {
 				bClearEnabled = false;
@@ -276,7 +338,9 @@ public class CollectableListOfValues extends LabeledCollectableComponentWithVLP 
 					CollectableListOfValues.this.clearListOfValues();
 				}
 			});
-			result.add(miClear);
+			
+			if (result != null)
+				result.add(miClear);
 		}
 		return result;
 	}
@@ -425,7 +489,9 @@ public class CollectableListOfValues extends LabeledCollectableComponentWithVLP 
 	@Override
 	public CollectableField getFieldFromView() throws CollectableFieldFormatException {
 		if (this.oValueId == null) {
-			return new CollectableValueIdField(this.oValueId, null);
+			if (getEntityField().isIdField() && getEntityField().isReferencing())
+				return new CollectableValueIdField(this.oValueId, null);
+			return new CollectableValueField(CollectableTextComponentHelper.write(this.getJTextField(), this.getEntityField()).getValue());
 		} else {
 			return new CollectableValueIdField(this.oValueId, CollectableTextComponentHelper.write(this.getJTextField(), this.getEntityField()).getValue());
 		}
@@ -446,7 +512,7 @@ public class CollectableListOfValues extends LabeledCollectableComponentWithVLP 
 
 		this.adjustAppearance();
 
-		this.oValueId = clctfValue.getValueId();
+		//this.oValueId = clctfValue.getValueId();
 	}
 
 	@Override
@@ -462,8 +528,12 @@ public class CollectableListOfValues extends LabeledCollectableComponentWithVLP 
 	@Override
 	public void collectableFieldChangedInModel(CollectableComponentModelEvent ev) {
 		if (this.isSearchComponent()) {
-			// the text is set in searchConditionChangedInModel, but the value id is set here:
-			this.oValueId = ev.getNewValue().getValueId();
+			try {
+				// the text is set in searchConditionChangedInModel, but the value id is set here:
+				this.oValueId = ev.getNewValue().getValueId();				
+			} catch (Exception e) {
+				this.oValueId = null;
+			}
 		}
 		else {
 			super.collectableFieldChangedInModel(ev);

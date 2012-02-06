@@ -67,8 +67,8 @@ public class EntityFacadeDelegate implements EntityFacadeRemote {
 
 	@Override
 	public List<CollectableValueIdField> getQuickSearchResult(String entity, String field, String search,
-			Integer vlpId, Map<String, Object> vlpParameter, Integer iMaxRowCount) {
-		return facade.getQuickSearchResult(entity, field, search, vlpId, vlpParameter, iMaxRowCount);
+			Integer vlpId, Map<String, Object> vlpParameter, String vlpValueFieldName, Integer iMaxRowCount) {
+		return facade.getQuickSearchResult(entity, field, search, vlpId, vlpParameter, vlpValueFieldName, iMaxRowCount);
 	}
 	
 }

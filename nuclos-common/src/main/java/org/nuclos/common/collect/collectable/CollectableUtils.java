@@ -108,14 +108,16 @@ public class CollectableUtils {
 	public static void validateFieldType(CollectableField clctf, CollectableEntityField clctef)
 			throws CollectableFieldValidationException {
 		if (clctf.getFieldType() != clctef.getFieldType() && !NuclosEOField.isEOFieldWithForceValueSearch(clctef.getName())) {
-			String msg;
-			if(clctef.getFieldType() == CollectableEntityField.TYPE_VALUEFIELD)
+			if (clctef.isIdField() || clctef.isReferencing()) {
+				String msg;
+				if(clctef.getFieldType() == CollectableEntityField.TYPE_VALUEFIELD)
 				msg = CommonLocaleDelegate.getInstance().getMessage(
 						"CollectableUtils.2","Das Feld \"{0}\" darf keine Id enthalten.", clctef.getLabel());
-			else
+				else
 				msg = CommonLocaleDelegate.getInstance().getMessage(
 						"CollectableUtils.4","Das Feld \"{0}\" muss eine Id enthalten.", clctef.getLabel());
-			throw new CollectableFieldValidationException(msg);
+				throw new CollectableFieldValidationException(msg);
+			}
 		}
 	}
 
