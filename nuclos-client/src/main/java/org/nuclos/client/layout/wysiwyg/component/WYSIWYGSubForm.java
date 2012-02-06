@@ -23,6 +23,7 @@ import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.dnd.DnDConstants;
 import java.awt.dnd.DragGestureEvent;
@@ -289,7 +290,19 @@ public class WYSIWYGSubForm extends JLayeredPane implements WYSIWYGComponent, Mo
 		}
 		return null;
 	}
-
+	/**
+	 * 
+	 * @param x the x position of the cursor for finding the column
+	 * @return null if there is no {@link WYSIWYGSubFormColumn} under the mouse, otherwise the {@link WYSIWYGSubFormColumn}
+	 */
+	public WYSIWYGSubFormColumn getColumnHeaderAtPoint(Point p) {
+		if (subform != null) {
+			if (subform.getJTable().getTableHeader().getBounds().contains(p))
+			return getColumnAtX(p.x);
+		}
+		return null;		
+	}
+	
 	/**
 	 * 
 	 * @param x the x position of the cursor for finding the column
@@ -312,7 +325,7 @@ public class WYSIWYGSubForm extends JLayeredPane implements WYSIWYGComponent, Mo
 				if (mousey < subformy) {
 					return null;
 				}
-			}
+			} 
 			
 			for (int i = 0; i < subform.getJTable().getColumnModel().getColumnCount(); i++) {
 				TableColumn tableColumn = subform.getJTable().getColumnModel().getColumn(i);
@@ -951,24 +964,18 @@ public class WYSIWYGSubForm extends JLayeredPane implements WYSIWYGComponent, Mo
 	public synchronized void mouseClicked(MouseEvent e) {
 		for(MouseListener l : listenerList.getListeners(MouseListener.class)) {
 			// NUCLEUSINT-556
-			if(e.getComponent() instanceof ToolTipsTableHeader) {
-
-				WYSIWYGSubFormColumn column = getColumnAtX(e.getX());
-				if(column != null) {
-					MouseListener[] listenerlist = ((Component) column).getMouseListeners();
-					for(MouseListener listener : listenerlist) {
-						if(listener instanceof PropertiesDisplayMouseListener) {
-							listener.mouseClicked(e);
-						}
+			WYSIWYGSubFormColumn column = getColumnHeaderAtPoint(e.getPoint());
+			if(column != null) {
+				MouseListener[] listenerlist = ((Component) column).getMouseListeners();
+				for(MouseListener listener : listenerlist) {
+					if(listener instanceof PropertiesDisplayMouseListener) {
+						listener.mouseClicked(e);
 					}
-
 				}
 			}
 			else
 				if (!(l instanceof DispatchMouseListener))
 					l.mouseClicked(e);
-
-
 		}
 	}
 
