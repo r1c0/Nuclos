@@ -16,6 +16,8 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.report.admin;
 
+import java.awt.Component;
+import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -38,6 +40,7 @@ import javax.swing.SwingUtilities;
 import org.nuclos.client.common.ClientParameterProvider;
 import org.nuclos.client.common.KeyBindingProvider;
 import org.nuclos.client.genericobject.ReportSelectionPanel;
+import org.nuclos.client.main.Main;
 import org.nuclos.client.main.mainframe.MainFrameTab;
 import org.nuclos.client.masterdata.CollectableMasterData;
 import org.nuclos.client.masterdata.MasterDataCollectController;
@@ -53,6 +56,7 @@ import org.nuclos.common.ParameterProvider;
 import org.nuclos.common2.KeyEnum;
 import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.exception.CommonBusinessException;
+import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 import org.nuclos.server.report.NuclosReportException;
 import org.nuclos.server.report.ejb3.ReportFacadeRemote;
 import org.nuclos.server.report.valueobject.ReportOutputVO;
@@ -72,8 +76,6 @@ import org.nuclos.server.report.valueobject.ReportVO.OutputType;
  */
 public class ReportExecutionCollectController extends MasterDataCollectController {
 
-	private final ExecutorService cachedThreadPoolExecutor = Executors.newCachedThreadPool();
-
 	protected class ExecuteAction extends AbstractAction {
 
 		public ExecuteAction() {
@@ -86,7 +88,7 @@ public class ReportExecutionCollectController extends MasterDataCollectControlle
 		}
 	}
 
-	private String sLastGeneratedFileName = null;
+	private static String sLastGeneratedFileName = null;
 
 
 	/**
@@ -167,25 +169,28 @@ public class ReportExecutionCollectController extends MasterDataCollectControlle
 		return getCommonLocaleDelegate().getMessage("ReportExecutionCollectController.4","Reporting - Ausf\u00fchrung");
 	}
 
-	/**
-	 * @param reportRunnable see org.nuclos.client.report.reportrunner.ReportThread/Thread/Runnable
-	 */
-	public Future<?> executeInterruptible(Runnable reportRunnable) {
-		return cachedThreadPoolExecutor.submit(reportRunnable);
-	}
-
 	private void execReport() {
-		UIUtils.showWaitCursorForFrame(getFrame(), true);
+		final CollectableMasterData clctSelected = ReportExecutionCollectController.this.getSelectedCollectable();
+		if (clctSelected != null) {
+			execReport(getFrame(), clctSelected.getCollectableEntity().getName(), clctSelected.getMasterDataCVO());
+		}
+	}
+	
+	public static void execReport(final Component parent, final String entity, final MasterDataVO mdReport) {
+		ExecutorService cachedThreadPoolExecutor = Executors.newCachedThreadPool();
+		
+		UIUtils.showWaitCursorForFrame(parent, true);
 		try {
 			final ReportFacadeRemote facade =ServiceLocator.getInstance().getFacade(ReportFacadeRemote.class);
-			final CollectableMasterData clctSelected = ReportExecutionCollectController.this.getSelectedCollectable();
-			if (clctSelected != null) {
-				final Collection<ReportOutputVO> collFormats = facade.getReportOutputs((Integer) clctSelected.getId());
-				OutputType outputType = KeyEnum.Utils.findEnum(OutputType.class, clctSelected.getMasterDataCVO().getField("outputtype", String.class));
+			
+			if (mdReport != null) {
+				final Collection<ReportOutputVO> collFormats = facade.getReportOutputs((Integer) mdReport.getId());
+				OutputType outputType = KeyEnum.Utils.findEnum(OutputType.class, mdReport.getField("outputtype", String.class));
+				
 				if (outputType == ReportVO.OutputType.SINGLE) {
 					final ReportSelectionPanel pnlSelection = new ReportSelectionPanel();
 					for (ReportOutputVO formatVO : collFormats)
-						pnlSelection.addReport(new ReportVO(getSelectedCollectable().getMasterDataCVO()), formatVO);
+						pnlSelection.addReport(new ReportVO(mdReport), formatVO);
 					pnlSelection.selectFirstReport();
 					if (JOptionPane.showConfirmDialog(parent, pnlSelection, 
 							getCommonLocaleDelegate().getMessage(
@@ -200,29 +205,25 @@ public class ReportExecutionCollectController extends MasterDataCollectControlle
 							final String sMaxRowCount = ClientParameterProvider.getInstance().getValue(ParameterProvider.KEY_REPORT_MAXROWCOUNT);
 							final Integer iMaxRowCount = (sMaxRowCount == null) ? null : Integer.getInteger(sMaxRowCount);
 							final ReportThread thread;
-							if (NuclosEntity.REPORTEXECUTION.checkEntityName(clctSelected.getCollectableEntity().getName()))
+							if (NuclosEntity.REPORTEXECUTION.checkEntityName(entity))
 								thread = ReportRunner.createJob(parent, mpParams, entry.getReport(), entry.getOutput(), true, iMaxRowCount);
 							else
 								thread = null;
 							if (thread != null) {
 								BackgroundProcessStatusController.getStatusDialog(UIUtils.getFrameForComponent(parent)).setVisible(true);
-								Future<?> future = executeInterruptible(thread);
+								Future<?> future = cachedThreadPoolExecutor.submit(thread);
 								thread.getReportRunner().setProcessFuture(future);
 							}
 						} catch (NuclosReportException ex) {
 							String msg = ex.getLocalizedMessage();
-							Errors.getInstance().showExceptionDialog(ReportExecutionCollectController.this.parent,
+							Errors.getInstance().showExceptionDialog(parent,
 								new NuclosFatalException(getCommonLocaleDelegate().getMessage(
 										"ReportExecutionCollectController.8", "Fehler beim Ausf\u00fchren des Reports {0}", (msg != null ? ": " + msg : "")), ex));
 						}
 					}
 				} else {
 					final Thread collectiveThread = new Thread() {
-						private CollectableMasterData cmd;
-						private Collection<ReportOutputVO> collFormat;
 						{
-							cmd = ReportExecutionCollectController.this.getSelectedCollectable();
-							collFormat = collFormats;
 							BackgroundProcessStatusController.getStatusDialog(UIUtils.getFrameForComponent(parent)).setVisible(true);
 						}
 
@@ -230,11 +231,11 @@ public class ReportExecutionCollectController extends MasterDataCollectControlle
 						public void run() {
 							try {
 								final Map<String, Object> mpParams = new HashMap<String, Object>();
-								if (!ReportRunner.prepareParameters(collFormat, mpParams))
+								if (!ReportRunner.prepareParameters(collFormats, mpParams))
 									return;
-								final ReportVO reportvo = new ReportVO(ReportExecutionCollectController.this.getSelectedCollectable().getMasterDataCVO());
+								final ReportVO reportvo = new ReportVO(mdReport);
 								boolean bIsFirstOfMany = true;
-								for (Iterator<ReportOutputVO> j = collFormat.iterator(); j.hasNext();) {
+								for (Iterator<ReportOutputVO> j = collFormats.iterator(); j.hasNext();) {
 									final ReportOutputVO formatVO = j.next();
 									formatVO.setIsFirstOfMany(bIsFirstOfMany);
 									formatVO.setIsLastOfMany(!j.hasNext());
@@ -244,9 +245,9 @@ public class ReportExecutionCollectController extends MasterDataCollectControlle
 									else
 										sLastGeneratedFileName = null;
 									final ReportThread thread;
-									if (NuclosEntity.REPORTEXECUTION.checkEntityName(cmd.getCollectableEntity().getName()))
+									if (NuclosEntity.REPORTEXECUTION.checkEntityName(entity))
 										thread = ReportRunner.createJob(parent, mpParams, reportvo, formatVO, true, Integer.getInteger(ClientParameterProvider.getInstance().getValue(ParameterProvider.KEY_REPORT_MAXROWCOUNT)));
-									else if (NuclosEntity.REPORT.checkEntityName(cmd.getCollectableEntity().getName()))
+									else if (NuclosEntity.REPORT.checkEntityName(entity))
 										thread = ReportRunner.createJob(parent, mpParams, reportvo, formatVO, false, Integer.getInteger(ClientParameterProvider.getInstance().getValue(ParameterProvider.KEY_REPORT_MAXROWCOUNT)));
 									else {
 										thread = null;
@@ -283,7 +284,7 @@ public class ReportExecutionCollectController extends MasterDataCollectControlle
 		} catch (RuntimeException ex) {
 			Errors.getInstance().showExceptionDialog(parent, ex.getMessage(), ex);
 		} finally {
-			UIUtils.showWaitCursorForFrame(ReportExecutionCollectController.this.getFrame(), false);
+			UIUtils.showWaitCursorForFrame(parent, false);
 		}
 	}
 

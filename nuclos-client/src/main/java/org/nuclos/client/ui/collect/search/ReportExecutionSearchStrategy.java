@@ -26,6 +26,13 @@ import org.nuclos.common.collect.exception.CollectableFieldFormatException;
 import org.nuclos.server.report.valueobject.ReportVO;
 
 public class ReportExecutionSearchStrategy extends MasterDataSearchStrategy {
+	
+	public static final CollectableSearchCondition MAIN_CONDITITION = org.nuclos.common.SearchConditionUtils.newEOComparison(
+			NuclosEntity.REPORTEXECUTION.getEntityName(), "type", ComparisonOperator.EQUAL,
+			ReportVO.ReportType.REPORT.getValue(), MetaDataClientProvider.getInstance());
+	static {
+		MAIN_CONDITITION.setConditionName("type = report");
+	}
 
 	public ReportExecutionSearchStrategy() {
 	}
@@ -34,10 +41,8 @@ public class ReportExecutionSearchStrategy extends MasterDataSearchStrategy {
 	public CollectableSearchCondition getCollectableSearchCondition() throws CollectableFieldFormatException {
 		CollectableSearchCondition searchCondition = ReportDelegate.getInstance().getCollectableSearchCondition(
 				getMasterCollectDataController().getCollectableEntity(), super.getCollectableSearchCondition());
-		CollectableSearchCondition reportCond = org.nuclos.common.SearchConditionUtils.newEOComparison(
-				NuclosEntity.REPORTEXECUTION.getEntityName(), "type", ComparisonOperator.EQUAL,
-				ReportVO.ReportType.REPORT.getValue(), MetaDataClientProvider.getInstance());
-		reportCond.setConditionName("type = report");
-		return SearchConditionUtils.and(searchCondition, reportCond);
+
+		return SearchConditionUtils.and(searchCondition, MAIN_CONDITITION);
 	}
+	
 }

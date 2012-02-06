@@ -87,6 +87,7 @@ import javax.swing.text.JTextComponent;
 
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.log4j.Logger;
+import org.jfree.util.Log;
 import org.nuclos.client.LocalUserProperties;
 import org.nuclos.client.attribute.AttributeCache;
 import org.nuclos.client.common.ClientParameterProvider;
@@ -128,6 +129,7 @@ import org.nuclos.client.masterdata.MetaDataDelegate;
 import org.nuclos.client.nuclet.INucletComponent;
 import org.nuclos.client.nuclet.NucletComponentRepository;
 import org.nuclos.client.relation.EntityRelationShipCollectController;
+import org.nuclos.client.report.admin.ReportExecutionCollectController;
 import org.nuclos.client.report.reportrunner.AbstractReportExporter;
 import org.nuclos.client.resource.NuclosResourceCache;
 import org.nuclos.client.resource.ResourceCache;
@@ -148,6 +150,7 @@ import org.nuclos.client.ui.collect.CollectController.MessageType;
 import org.nuclos.client.ui.collect.CollectControllerFactorySingleton;
 import org.nuclos.client.ui.collect.CollectStateModel;
 import org.nuclos.client.ui.collect.detail.DetailsCollectableEventListener;
+import org.nuclos.client.ui.collect.search.ReportExecutionSearchStrategy;
 import org.nuclos.client.wiki.WikiController;
 import org.nuclos.client.wizard.ShowNuclosWizard;
 import org.nuclos.common.Actions;
@@ -168,6 +171,7 @@ import org.nuclos.common.collect.collectable.DefaultCollectableEntityProvider;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableComparison;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableSearchCondition;
 import org.nuclos.common.collect.collectable.searchcondition.ComparisonOperator;
+import org.nuclos.common.collect.exception.CollectableFieldFormatException;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.ComparatorUtils;
 import org.nuclos.common.collection.Pair;
@@ -190,6 +194,7 @@ import org.nuclos.common2.exception.PreferencesException;
 import org.nuclos.server.common.ejb3.TestFacadeRemote;
 import org.nuclos.server.customcomp.valueobject.CustomComponentVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
+import org.nuclos.server.report.valueobject.ReportVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
@@ -1281,6 +1286,7 @@ public class MainController {
 	public static final String GENERIC_CUSTOMCOMPONENT_ACTION = "nuclosGenericCustomComponentAction";
 	public static final String GENERIC_SEARCHFILTER_ACTION = "nuclosGenericSearchFilterAction";
 	public static final String GENERIC_RESTORE_WORKSPACE_ACTION = "nuclosGenericRestoreWorkspaceAction";
+	public static final String GENERIC_REPORT_ACTION = "nuclosGenericReportAction";
 
 	public List<GenericAction> getGenericActions() {
 		List<GenericAction> result = new ArrayList<GenericAction>();
@@ -1307,6 +1313,7 @@ public class MainController {
 		result.addAll(sortedResult);
 
 		addSearchFilterActions(result);
+		addReportActions(result);
 		WorkspaceChooserController.addGenericActions(result);
 
 		return result;
@@ -1527,6 +1534,35 @@ public class MainController {
 				genericActions.add(new GenericAction(wa, new ActionWithMenuPath(new String[]{
 						cld.getMessage("nuclos.entity.searchfilter.label", "Suchfilter")}, action)));
 			}
+		}
+	}
+	
+	private void addReportActions(List<GenericAction> genericActions) {
+		try {
+			for (final MasterDataVO mdReport : CollectionUtils.sorted(
+					MasterDataDelegate.getInstance().getMasterData(NuclosEntity.REPORTEXECUTION.getEntityName(), ReportExecutionSearchStrategy.MAIN_CONDITITION),
+					new Comparator<MasterDataVO>() {
+						@Override
+						public int compare(MasterDataVO o1, MasterDataVO o2) {
+							return LangUtils.compareComparables(o1.getField("name", String.class), o2.getField("name", String.class));
+						}
+					})) {
+				Action action = new AbstractAction(mdReport.getField("name", String.class), MainFrame.resizeAndCacheIcon(
+						NuclosResourceCache.getNuclosResourceIcon("org.nuclos.client.resource.icon.glyphish.185-printer.png"), 16)) {
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						ReportExecutionCollectController.execReport(Main.getMainFrame(), NuclosEntity.REPORTEXECUTION.getEntityName(), mdReport);
+					}
+				};
+				if (genericActions != null) {
+					WorkspaceDescription.Action wa = new WorkspaceDescription.Action();
+					wa.setAction(GENERIC_REPORT_ACTION);
+					wa.putStringParameter("report", mdReport.getField("name", String.class));
+					genericActions.add(new GenericAction(wa, new ActionWithMenuPath(new String[]{CommonLocaleDelegate.getMessage("nuclos.entity.reportExecution.label", "Reporting ausführen")}, action)));
+				}
+			}
+		} catch (Exception e) {
+			Log.error(e.getMessage(), e);
 		}
 	}
 
