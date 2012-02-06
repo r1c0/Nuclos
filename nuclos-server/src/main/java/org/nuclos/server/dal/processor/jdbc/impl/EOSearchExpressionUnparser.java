@@ -140,8 +140,11 @@ public class EOSearchExpressionUnparser {
 				// only INTID in SELECT part of SQL query
 				if (selects.size() == 1) {
 					// we must add the sorting function to the SELECT part in order to get ORDER BY to work
+					// NUCLOS-311: MS SQL needs a schema name here.
 					final DbSelection<Object> select = (DbSelection<Object>) table.getQuery().getBuilder().plainExpression(type, 
-							calcFunction + "(" + table.getAlias() + ".INTID) " + entityField.getDbColumn());
+							queryBuilder.getDBAccess().getSchemaName() + "." 
+							+ calcFunction + "(" + table.getAlias() + ".INTID) " 
+							+ entityField.getDbColumn());
 					selects.add(select);
 				}
 				// no tableAlias, only select alias (i.e. unqualified)...
