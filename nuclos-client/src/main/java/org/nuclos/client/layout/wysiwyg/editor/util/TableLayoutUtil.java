@@ -36,12 +36,8 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import org.apache.log4j.Logger;
-
-import org.nuclos.common2.StringUtils;
-import org.nuclos.common2.exception.CommonBusinessException;
-import org.nuclos.common2.exception.CommonFatalException;
-import org.nuclos.client.layout.wysiwyg.WYSIWYGLayoutControllingPanel;
 import org.nuclos.client.layout.wysiwyg.CollectableWYSIWYGLayoutEditor.WYSIWYGLayoutEditorChangeDescriptor;
+import org.nuclos.client.layout.wysiwyg.WYSIWYGLayoutControllingPanel;
 import org.nuclos.client.layout.wysiwyg.WYSIWYGStringsAndLabels.TABLELAYOUT_UTIL;
 import org.nuclos.client.layout.wysiwyg.component.WYSIWYGCollectableComponent;
 import org.nuclos.client.layout.wysiwyg.component.WYSIWYGCollectableLabel;
@@ -62,6 +58,9 @@ import org.nuclos.client.layout.wysiwyg.editor.util.valueobjects.layoutmlrules.L
 import org.nuclos.client.layout.wysiwyg.editor.util.valueobjects.layoutmlrules.LayoutMLRuleAction;
 import org.nuclos.client.ui.Errors;
 import org.nuclos.common.NuclosBusinessException;
+import org.nuclos.common2.StringUtils;
+import org.nuclos.common2.exception.CommonBusinessException;
+import org.nuclos.common2.exception.CommonFatalException;
 
 /**
  * This class does all Actions that can be done on a {@link TableLayout}

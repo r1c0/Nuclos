@@ -27,13 +27,11 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.HeadlessException;
 import java.awt.Point;
-import java.awt.Rectangle;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.dnd.DnDConstants;
 import java.awt.dnd.DragSource;
 import java.awt.dnd.DropTarget;
-import java.awt.dnd.DropTargetContext;
 import java.awt.dnd.DropTargetDragEvent;
 import java.awt.dnd.DropTargetDropEvent;
 import java.awt.dnd.DropTargetEvent;
@@ -48,7 +46,6 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.util.ConcurrentModificationException;
 import java.util.Iterator;
 import java.util.List;
@@ -75,7 +72,6 @@ import org.nuclos.client.layout.wysiwyg.component.ComponentProcessors;
 import org.nuclos.client.layout.wysiwyg.component.WYSIWYGComponent;
 import org.nuclos.client.layout.wysiwyg.component.WYSIWYGSplitPane;
 import org.nuclos.client.layout.wysiwyg.component.WYSIWYGSubForm;
-import org.nuclos.client.layout.wysiwyg.component.WYSIWYGTabbedPane;
 import org.nuclos.client.layout.wysiwyg.component.properties.PropertiesPanel;
 import org.nuclos.client.layout.wysiwyg.datatransfer.DragElement;
 import org.nuclos.client.layout.wysiwyg.datatransfer.TransferableComponent;
@@ -153,7 +149,7 @@ public class TableLayoutPanel extends JPanel implements DropTargetListener, Mous
 		//dropTarget.setDefaultActions(DnDConstants.ACTION_COPY_OR_MOVE);
 
         new DropTarget(this, DnDConstants.ACTION_COPY_OR_MOVE, this, true);
-        new DropTarget(glassPane, DnDConstants.ACTION_COPY_OR_MOVE, this, true);
+        //new DropTarget(glassPane, DnDConstants.ACTION_COPY_OR_MOVE, this, true);
         
 		changeSizeMeasurementPopupColumn = new ChangeSizeMeasurementPopupColumn(tableLayoutUtil);
 		changeSizeMeasurementPopupRows = new ChangeSizeMeasurementPopupRows(tableLayoutUtil);
@@ -363,7 +359,7 @@ public class TableLayoutPanel extends JPanel implements DropTargetListener, Mous
 			initGlassPane((Component)getComponentToMove(), dtde.getLocation());
 	}
 
-	private GhostGlassPane glassPane = new GhostGlassPane();
+	private static GhostGlassPane glassPane = new GhostGlassPane();
     public void initGlassPane(Component c, Point p) {
         getRootPane().setGlassPane(glassPane);
         glassPane.addMouseListener(this);
@@ -377,12 +373,7 @@ public class TableLayoutPanel extends JPanel implements DropTargetListener, Mous
 
 		glassPane.setPoint(new Point(-1000,-1000));
 		glassPane.setVisible(true);
-		
-		Point px = (Point)p.clone();
-		SwingUtilities.convertPointToScreen(px, glassPane);
-		SwingUtilities.convertPointFromScreen(px, tableLayoutUtil.getContainer());
 
-		//glassPane.setPoint(px);
 		glassPane.setImage(image);
 		glassPane.revalidate();
 		glassPane.repaint();
@@ -409,17 +400,13 @@ public class TableLayoutPanel extends JPanel implements DropTargetListener, Mous
 	@Override
 	public void dragOver(DropTargetDragEvent dtde) {
 		Point p = (Point)dtde.getLocation().clone();
-		if (glassPane.isVisible()) {
-			SwingUtilities.convertPointToScreen(p, glassPane);
-			SwingUtilities.convertPointFromScreen(p, tableLayoutUtil.getContainer());
-		}
-		tableLayoutUtil.setCurrentLayoutCell(p);
 		
+		tableLayoutUtil.setCurrentLayoutCell(p);
+
 		if (isDropAllowed(dtde)) {
 			glassPane.setCursor(DragSource.DefaultCopyDrop); // prevents cursor flickering on dnd inside the component.
 			tableLayoutUtil.getContainer().setCursor(DragSource.DefaultCopyDrop); // prevents cursor flickering on dnd inside the component.
 			dtde.acceptDrag(DnDConstants.ACTION_COPY);
-			repaint();
 			//tableLayoutUtil.drawCurrentCell(this.getCurrentTableLayoutUtil().getContainer().getGraphics());
 		} else {
 			glassPane.setCursor(DragSource.DefaultCopyNoDrop); // prevents cursor flickering on dnd inside the component.
@@ -427,9 +414,23 @@ public class TableLayoutPanel extends JPanel implements DropTargetListener, Mous
 			dtde.rejectDrag();
 		}
 
-		glassPane.setPoint(dtde.getLocation());
-		glassPane.revalidate();
-		glassPane.repaint();
+		repaint();
+		
+		try {
+			Point px = (Point)dtde.getLocation().clone();
+			
+			SwingUtilities.convertPointToScreen(px, this);
+			SwingUtilities.convertPointFromScreen(px, getParentEditorPanel().getController().getEditorPanel());
+			
+			Point l = getParentEditorPanel().getController().getEditorPanel().getLocationOnScreen();
+			px = new Point(px.x+l.x, px.y+l.y);
+			
+			glassPane.setPoint(px);
+			//glassPane.revalidate();
+			glassPane.repaint();
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
 	}
 
 	/**
@@ -477,11 +478,6 @@ public class TableLayoutPanel extends JPanel implements DropTargetListener, Mous
 					mouse = ((DropTargetDragEvent) event).getLocation();
 				} else if (event instanceof DropTargetDropEvent) {
 					mouse = ((DropTargetDropEvent) event).getLocation();
-				}
-				mouse = (Point)mouse.clone();
-				if (glassPane.isVisible()) {
-					SwingUtilities.convertPointToScreen(mouse, glassPane);
-					SwingUtilities.convertPointFromScreen(mouse, tableLayoutUtil.getContainer());
 				}
 
 				if (mouse == null) {
@@ -572,13 +568,10 @@ public class TableLayoutPanel extends JPanel implements DropTargetListener, Mous
 			mouseLocation.y = InterfaceGuidelines.MARGIN_TOP;
 		
 		Point p = (Point)mouseLocation.clone();
-		if (glassPane.isVisible()) {
-			SwingUtilities.convertPointToScreen(p, glassPane);
-			SwingUtilities.convertPointFromScreen(p, tableLayoutUtil.getContainer());
-		}
-
-		//tableLayoutUtil.setCurrentLayoutCell(p);
+		
+		tableLayoutUtil.setCurrentLayoutCell(p);
 		current = tableLayoutUtil.getCurrentLayoutCell();
+		
 		// NUCLEUSINT-496 controlling the do while loop
 		boolean processSecondComponent = false;
 
@@ -696,10 +689,7 @@ public class TableLayoutPanel extends JPanel implements DropTargetListener, Mous
 					repaint();
 				}
 
-				resetComponentToMove();
-			
-				glassPane.setVisible(false);
-				glassPane.setImage(null);
+				hideGlassPane();
 				
 				return;
 			}
