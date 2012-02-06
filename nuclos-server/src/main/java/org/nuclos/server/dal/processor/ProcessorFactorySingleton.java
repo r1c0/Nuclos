@@ -55,10 +55,11 @@ import org.nuclos.server.dal.processor.jdbc.impl.ImportObjectProcessor;
 import org.nuclos.server.dal.processor.jdbc.impl.WorkspaceProcessor;
 import org.nuclos.server.dal.processor.nuclet.JdbcEntityObjectProcessor;
 import org.nuclos.server.fileimport.ImportStructure;
+import org.springframework.beans.factory.annotation.Autowired;
 
 public class ProcessorFactorySingleton {
 
-	private static final ProcessorFactorySingleton INSTANCE = new ProcessorFactorySingleton();
+	private static ProcessorFactorySingleton INSTANCE;
 
 	private static final Set<String> staticSystemFields;
 	static {
@@ -69,12 +70,22 @@ public class ProcessorFactorySingleton {
 		set.add(NuclosEOField.CREATEDBY.getMetaData().getField());
 		staticSystemFields = Collections.unmodifiableSet(set);
 	}
+	
+	//
+	
+	private TableAliasSingleton tableAliasSingleton;
 
 	private ProcessorFactorySingleton() {
+		INSTANCE = this;
 	}
 
 	public static ProcessorFactorySingleton getInstance() {
 		return INSTANCE;
+	}
+	
+	@Autowired
+	void setTableAliasSingleton(TableAliasSingleton tableAliasSingleton) {
+		this.tableAliasSingleton = tableAliasSingleton;
 	}
 
 	private static int countFieldsForInitiatingFieldMap(Collection<EntityFieldMetaDataVO> colEfMeta) {
@@ -146,9 +157,9 @@ public class ProcessorFactorySingleton {
 		}
 	}
 
-	protected static <S extends Object> IColumnToVOMapping<S> createRefFieldMapping(EntityFieldMetaDataVO field) {
+	protected <S extends Object> IColumnToVOMapping<S> createRefFieldMapping(EntityFieldMetaDataVO field) {
 		try {
-			final String alias = TableAliasSingleton.getInstance().getAlias(field);
+			final String alias = tableAliasSingleton.getAlias(field);
 			return new ColumnToRefFieldVOMapping<S>(alias, field);
 		} catch (ClassNotFoundException e) {
 			throw new CommonFatalException(e);

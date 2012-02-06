@@ -28,9 +28,10 @@ import org.nuclos.common.collection.Pair;
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
 import org.nuclos.common2.StringUtils;
-import org.nuclos.server.common.MetaDataServerProvider;
 import org.nuclos.server.dal.processor.IColumnToVOMapping;
 import org.nuclos.server.dal.processor.IColumnWithMdToVOMapping;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 /**
  * A singleton for defining the table join aliases for 'stringified' references.
@@ -40,11 +41,12 @@ import org.nuclos.server.dal.processor.IColumnWithMdToVOMapping;
  * @author Thomas Pasch
  * @since Nuclos 3.2.01
  */
+@Component
 public class TableAliasSingleton {
 	
 	private static final Logger LOG = Logger.getLogger(TableAliasSingleton.class);
 	
-	private static final TableAliasSingleton INSTANCE = new TableAliasSingleton();
+	private static TableAliasSingleton INSTANCE;
 	
 	//
 	
@@ -62,17 +64,25 @@ public class TableAliasSingleton {
 	 */
 	private final Map<Pair<String,String>,String> TABLE_ALIASES = new ConcurrentHashMap<Pair<String,String>, String>();
 	
-	private final MetaDataProvider mdProv;
+	private MetaDataProvider mdProv;
 	
 	private final boolean debug;
 
 	private TableAliasSingleton() {
-		mdProv = MetaDataServerProvider.getInstance();
+		INSTANCE = this;
 		debug = LOG.isDebugEnabled();
 	}
 	
 	public static TableAliasSingleton getInstance() {
+		if (INSTANCE.mdProv == null) {
+			throw new IllegalStateException();
+		}
 		return INSTANCE;
+	}
+	
+	@Autowired
+	void setMetaDataProvider(MetaDataProvider mdProv) {
+		this.mdProv = mdProv;
 	}
 	
 	/**
@@ -110,7 +120,7 @@ public class TableAliasSingleton {
 		if (result == null) {
 			final String alias = meta.getForeignEntity();
 			result = StringUtils.makeSQLIdentifierFrom("a_", alias, meta.getField(), Integer.toString(AI.incrementAndGet()));
-			if (debug) {
+			if (debug && mdProv != null) {
 				final EntityMetaDataVO entity = mdProv.getEntity(meta.getEntityId());
 				LOG.debug("table alias for " + entity.getEntity() + "." + meta.getField() + " is " + result);
 			}

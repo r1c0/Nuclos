@@ -187,12 +187,19 @@ public class MasterDataFacadeHelper {
 
 	private RecordGrantUtils grantUtils;
 	
+	private MasterDataMetaCache masterDataMetaCache;
+	
 	public MasterDataFacadeHelper() {
 	}
 	
 	@Autowired
 	void setRecordGrantUtils(RecordGrantUtils grantUtils) {
 		this.grantUtils = grantUtils;
+	}
+	
+	@Autowired
+	void setMasterDataMetaCache(MasterDataMetaCache masterDataMetaCache) {
+		this.masterDataMetaCache = masterDataMetaCache;
 	}
 
 	void close() {
@@ -246,7 +253,7 @@ public class MasterDataFacadeHelper {
 		LOG.debug("Getting dependant masterdata for entity " + sEntityName + " with foreign key field " 
 				+ sForeignKeyField + " and related id " + oRelatedId);
 
-		final MasterDataMetaVO mdmetavo = MasterDataMetaCache.getInstance().getMetaData(sEntityName);
+		final MasterDataMetaVO mdmetavo = masterDataMetaCache.getMetaData(sEntityName);
 		Date startDate = new Date();
 
 		Collection<MasterDataVO> result = mdmetavo.isDynamic() ?
@@ -272,7 +279,8 @@ public class MasterDataFacadeHelper {
 	}
 
 	Collection<MasterDataVO> getDependantMasterDataByBean(String sEntityName, String sForeignKeyFieldName, Object oRelatedId) {
-		final CollectableEntityField clctef = SearchConditionUtils.newMasterDataEntityField(MasterDataMetaCache.getInstance().getMetaData(sEntityName), sForeignKeyFieldName);
+		final CollectableEntityField clctef = SearchConditionUtils.newMasterDataEntityField(
+				masterDataMetaCache.getMetaData(sEntityName), sForeignKeyFieldName);
 		final CollectableSearchCondition cond = new CollectableComparison(clctef, ComparisonOperator.EQUAL, new CollectableValueIdField(oRelatedId, null));
 		return getGenericMasterData(sEntityName, cond, true);
 	}
@@ -361,8 +369,8 @@ public class MasterDataFacadeHelper {
 	}
 
 // @todo unify validation mechanisms
-	private static void validateCVO(String sEntityName, MasterDataVO mdvo) throws CommonValidationException {
-		mdvo.validate(MasterDataMetaCache.getInstance().getMetaData(sEntityName));
+	private void validateCVO(String sEntityName, MasterDataVO mdvo) throws CommonValidationException {
+		mdvo.validate(masterDataMetaCache.getMetaData(sEntityName));
 	}
 
 	/**
@@ -462,7 +470,7 @@ public class MasterDataFacadeHelper {
 			throw new NullArgumentException("sEntityName");
 		}
 
-		final MasterDataMetaVO mdmetavo = MasterDataMetaCache.getInstance().getMetaData(sEntityName);
+		final MasterDataMetaVO mdmetavo = masterDataMetaCache.getMetaData(sEntityName);
 
 		// prevent removal if dependant dynamic attributes exist:
 		final Object oExternalId = mdvo.getId();
@@ -483,7 +491,7 @@ public class MasterDataFacadeHelper {
 		}
 		//remove documents
 
-		for (MasterDataMetaFieldVO field : MasterDataMetaCache.getInstance().getMetaData(sEntityName).getFields()) {
+		for (MasterDataMetaFieldVO field : masterDataMetaCache.getMetaData(sEntityName).getFields()) {
 			if(field.getJavaClass().equals(GenericObjectDocumentFile.class)) {
 				String sExtendedPath = "";
 				if (sEntityName.equals("nuclos_" + NuclosEntity.GENERALSEARCHDOCUMENT)) {
@@ -536,7 +544,7 @@ public class MasterDataFacadeHelper {
 			validateCVO(sEntityName, mdvo);
 		}
 
-		final MasterDataMetaVO mdmetavo = MasterDataMetaCache.getInstance().getMetaData(sEntityName);
+		final MasterDataMetaVO mdmetavo = masterDataMetaCache.getMetaData(sEntityName);
 
 		final MasterDataVO mdvoInDB = checkForStaleVersion(mdmetavo, mdvo);
 
@@ -600,7 +608,7 @@ public class MasterDataFacadeHelper {
 			validateCVO(sEntityName, mdvoToCreate);
 		}
 
-		final MasterDataMetaVO mdmetavo = MasterDataMetaCache.getInstance().getMetaData(sEntityName);
+		final MasterDataMetaVO mdmetavo = masterDataMetaCache.getMetaData(sEntityName);
 		final EntityMetaDataVO entityMeta = MetaDataServerProvider.getInstance().getEntity(sEntityName);
 
 		validateUniqueConstraintWithJson(mdmetavo, mdvoToCreate);
@@ -716,7 +724,7 @@ public class MasterDataFacadeHelper {
 	public void removeDependants(DependantMasterDataMap mpDependants)
 			throws CommonFinderException, CommonRemoveException, CommonStaleVersionException, CommonPermissionException {
 		for (String sDependantEntityName : mpDependants.getEntityNames()) {
-			if (!MasterDataMetaCache.getInstance().getMetaData(sDependantEntityName).isDynamic()
+			if (!masterDataMetaCache.getMetaData(sDependantEntityName).isDynamic()
 				&& !MetaDataServerProvider.getInstance().getEntity(sDependantEntityName).isStateModel()) {
 				for (EntityObjectVO mdvoDependant : mpDependants.getData(sDependantEntityName)) {
 
@@ -736,7 +744,7 @@ public class MasterDataFacadeHelper {
 						}
 					}
 					else {
-						if (MasterDataMetaCache.getInstance().getMetaData(sDependantEntityName).isEditable()
+						if (masterDataMetaCache.getMetaData(sDependantEntityName).isEditable()
 							&& mdvoDependant.isFlagRemoved() && mdvoDependant.getId() != null) {
 							// remove the row:
 							MasterDataVO voDependant = DalSupportForMD.wrapEntityObjectVO(mdvoDependant);
@@ -815,10 +823,10 @@ public class MasterDataFacadeHelper {
 			throws CommonCreateException, CommonValidationException, CommonFinderException, CommonStaleVersionException, CommonPermissionException {
 
 		final String sIdFieldName = getForeignKeyFieldName(sEntityName, sDependantEntityName, mpEntityAndParentEntityName) + "Id";
-		if (!mdvoDependant.isRemoved() && !mdvoDependant.isEmpty(sIdFieldName) && !MasterDataMetaCache.getInstance().getMetaData(sDependantEntityName).isDynamic()) {
+		if (!mdvoDependant.isRemoved() && !mdvoDependant.isEmpty(sIdFieldName) && !masterDataMetaCache.getMetaData(sDependantEntityName).isDynamic()) {
 			// validate the row
 			if(ServerParameterProvider.getInstance().getValue(ParameterProvider.KEY_SERVER_VALIDATES_MASTERDATAVALUES).equals("1")) {
-				mdvoDependant.validate(MasterDataMetaCache.getInstance().getMetaData(sDependantEntityName));
+				mdvoDependant.validate(masterDataMetaCache.getMetaData(sDependantEntityName));
 			}
 
 			Integer iReferenceId;
@@ -828,7 +836,7 @@ public class MasterDataFacadeHelper {
 			}
 			else {
 				iReferenceId = (Integer) mdvoDependant.getId();
-				if (MasterDataMetaCache.getInstance().getMetaData(sDependantEntityName).isEditable() && mdvoDependant.isChanged()) {
+				if (masterDataMetaCache.getMetaData(sDependantEntityName).isEditable() && mdvoDependant.isChanged()) {
 					this.modifySingleRow(sDependantEntityName, mdvoDependant, sUserName, bValidate);
 				}
 				else {
@@ -862,7 +870,7 @@ public class MasterDataFacadeHelper {
 	}
 
 
-	public static String getForeignKeyFieldName(String sEntityName, String sDependantEntityName, Map<EntityAndFieldName, String> mpEntityAndParentEntityName) {
+	public String getForeignKeyFieldName(String sEntityName, String sDependantEntityName, Map<EntityAndFieldName, String> mpEntityAndParentEntityName) {
 		String result = null;
 
 		/**
@@ -887,7 +895,7 @@ public class MasterDataFacadeHelper {
 		 * if no information from layout is accessible try to get it from meta data...
 		 */
 		if (result == null) {
-			final MasterDataMetaVO mdmetavo = MasterDataMetaCache.getInstance().getMetaData(sDependantEntityName);
+			final MasterDataMetaVO mdmetavo = masterDataMetaCache.getMetaData(sDependantEntityName);
 
 			// Old Nucleus instance namend the foreign key field "genericObject"
 			// and it could be that more than column refers on the parent entity, so

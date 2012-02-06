@@ -116,12 +116,19 @@ public class LocaleFacadeBean extends NuclosFacadeBean implements LocaleFacadeLo
 	
 	private MasterDataFacadeHelper masterDataFacadeHelper;
 	
+	private ServerParameterProvider serverParameterProvider;
+	
 	public LocaleFacadeBean() {
 	}
 	
 	@Autowired
 	void setMasterDataFacadeHelper(MasterDataFacadeHelper masterDataFacadeHelper) {
 		this.masterDataFacadeHelper = masterDataFacadeHelper;
+	}
+	
+	@Autowired
+	void setServerParameterProvider(ServerParameterProvider serverParameterProvider) {
+		this.serverParameterProvider = serverParameterProvider;
 	}
 
 	@Override
@@ -148,7 +155,7 @@ public class LocaleFacadeBean extends NuclosFacadeBean implements LocaleFacadeLo
 	}
 
 	private String getDefaultTag() throws CommonFatalException {
-		String tag = ServerParameterProvider.getInstance().getValue(ParameterProvider.KEY_DEFAULT_LOCALE);
+		String tag = serverParameterProvider.getValue(ParameterProvider.KEY_DEFAULT_LOCALE);
 		if (tag == null)
 			throw new CommonFatalException("No default locale");
 		return tag;
@@ -182,7 +189,7 @@ public class LocaleFacadeBean extends NuclosFacadeBean implements LocaleFacadeLo
 	 */
 	@Override
 	public HashResourceBundle getResourceBundle(LocaleInfo localeInfo) throws CommonFatalException {
-		HashResourceBundle result = CACHE.get(localeInfo);
+		HashResourceBundle result = localeInfo == null ? CACHE.get(localeInfo) : null;
 		if (result == null) {
 			// Check if current thread is already loading resources.
 			// If yes, return an empty result to avoid infinite recursion through calls to getResourcesAsVO().

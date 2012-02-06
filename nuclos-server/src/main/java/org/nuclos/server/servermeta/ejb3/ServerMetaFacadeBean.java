@@ -20,6 +20,7 @@ import java.util.TimeZone;
 
 import org.nuclos.common.ParameterProvider;
 import org.nuclos.server.common.ServerParameterProvider;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * Special "no-login"-service class. Keep small and secure ;)
@@ -28,18 +29,31 @@ import org.nuclos.server.common.ServerParameterProvider;
 // @Local(ServerMetaFacadeLocal.class)
 // @Remote(ServerMetaFacadeRemote.class)
 public class ServerMetaFacadeBean implements ServerMetaFacadeRemote {
+	
+	private ServerParameterProvider serverParameterProvider;
+	
+	ServerMetaFacadeBean() {
+	}
+	
+	@Autowired
+	void setServerParameterProvider(ServerParameterProvider serverParameterProvider) {
+		this.serverParameterProvider = serverParameterProvider;
+	}
+	
 	@Override
 	public String getServerProperty(String key) {
 		if(key.startsWith("application.settings.client."))
-			return ServerParameterProvider.getInstance().getValue(key);
+			return serverParameterProvider.getValue(key);
 		return "<no access>";
 	}
+	
 	@Override
 	public TimeZone getServerDefaultTimeZone() {
 		return TimeZone.getDefault();
 	}
+	
 	@Override
 	public String getDefaultNuclosTheme() {
-		return ServerParameterProvider.getInstance().getValue(ParameterProvider.KEY_DEFAULT_NUCLOS_THEME);
+		return serverParameterProvider.getValue(ParameterProvider.KEY_DEFAULT_NUCLOS_THEME);
 	}
 }

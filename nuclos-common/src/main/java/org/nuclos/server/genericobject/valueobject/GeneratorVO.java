@@ -58,9 +58,10 @@ public class GeneratorVO implements Serializable {
 	 */
 	public List<GeneratorActionVO> getGeneratorActions(Integer iModuleId, Integer iStateNumeral, Integer iProcessId) {
 		final List<GeneratorActionVO> result = new LinkedList<GeneratorActionVO>();
+		final MetaDataProvider mdProv = SpringApplicationContextHolder.getBean(MetaDataProvider.class);
 		for (GeneratorActionVO generatoractionvo : lstActions) {
 			if (iModuleId.equals(generatoractionvo.getSourceModuleId())) {
-				if (SpringApplicationContextHolder.getBean(MetaDataProvider.class).getEntity(IdUtils.toLongId(iModuleId)).isStateModel()) {
+				if (mdProv.getEntity(IdUtils.toLongId(iModuleId)).isStateModel()) {
 					final String sStateMnemonic = LangUtils.toString(iStateNumeral);
 					for (GeneratorUsageVO guvo : generatoractionvo.getUsages()) {
 						if ((getStateMnemonicFromGeneratorusageVO(guvo) == null || getStateMnemonicFromGeneratorusageVO(guvo).equals(sStateMnemonic)) &&

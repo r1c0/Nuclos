@@ -117,7 +117,8 @@ public class GenericObjectTreeNodeFactory {
 	}
 
 	private Map<String, Object> getReadableAttributes(String sUserName, GenericObjectWithDependantsVO gowdvo, AttributeProvider attrprovider) {
-		String sResIfNoPermission = StringUtils.defaultIfNull(SpringApplicationContextHolder.getBean(ParameterProvider.class).getValue(ParameterProvider.KEY_BLUR_FILTER),"***");
+		String sResIfNoPermission = StringUtils.defaultIfNull(
+				SpringApplicationContextHolder.getBean(ParameterProvider.class).getValue(ParameterProvider.KEY_BLUR_FILTER),"***");
 		Map<String, Object> values = new HashMap<String, Object>();
 		for (DynamicAttributeVO att : gowdvo.getAttributes()) {
 			String attname = attrprovider.getAttribute(att.getAttributeId()).getName();

@@ -405,7 +405,8 @@ public class GenericObjectVO extends NuclosValueObject implements Cloneable {
 	 * @return statusId
 	 */
 	public Integer getStatusId() {
-		DynamicAttributeVO attributeVO = getAttribute(NuclosEOField.STATE.getMetaData().getField(), SpringApplicationContextHolder.getBean(AttributeProvider.class));
+		DynamicAttributeVO attributeVO = getAttribute(NuclosEOField.STATE.getMetaData().getField(), 
+				SpringApplicationContextHolder.getBean(AttributeProvider.class));
 		return (attributeVO != null) ? (Integer)attributeVO.getValueId() : null;
 	}
 

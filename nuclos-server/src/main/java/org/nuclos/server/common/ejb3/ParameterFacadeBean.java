@@ -19,6 +19,7 @@ package org.nuclos.server.common.ejb3;
 import java.util.Map;
 
 import org.nuclos.server.common.ServerParameterProvider;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
 * Facade bean for managing parameters.
@@ -30,6 +31,16 @@ import org.nuclos.server.common.ServerParameterProvider;
 //@Remote(ParameterFacadeRemote.class)
 //@Transactional
 public class ParameterFacadeBean extends NuclosFacadeBean implements ParameterFacadeRemote {
+	
+	private ServerParameterProvider serverParameterProvider;
+	
+	ParameterFacadeBean() {	
+	}
+	
+	@Autowired
+	void setServerParameterProvider(ServerParameterProvider serverParameterProvider) {
+		this.serverParameterProvider = serverParameterProvider;
+	}
 
 	/**
 	 * get all parameter entries
@@ -38,6 +49,6 @@ public class ParameterFacadeBean extends NuclosFacadeBean implements ParameterFa
 	@Override
 //	@RolesAllowed("Login")
 	public Map<String, String> getParameters() {
-		return ServerParameterProvider.getInstance().getAllParameters();
+		return serverParameterProvider.getAllParameters();
 	}
 }

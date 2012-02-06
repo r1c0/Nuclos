@@ -268,7 +268,7 @@
 
 	<bean id="moduleProvider" class="org.nuclos.server.genericobject.Modules" depends-on="appContext"/>
 
-	<bean id="metaDataProvider" class="org.nuclos.server.common.MetaDataServerProvider" depends-on="nucletDalProvider"/>
+	<bean id="metaDataProvider" class="org.nuclos.server.common.MetaDataServerProvider"/>
 
 	<bean id="serviceLocator" class="org.nuclos.server.common.ServerServiceLocator" depends-on="appContext"/>
 
@@ -324,7 +324,7 @@
 
   <!-- Initialize dal provider - since 3.1.01 -->
 
-  <bean id="processorFactorySingleton" class="org.nuclos.server.dal.processor.ProcessorFactorySingleton" factory-method="getInstance">
+  <bean id="processorFactorySingleton" class="org.nuclos.server.dal.processor.ProcessorFactorySingleton">
   </bean>
 
   <bean id="jdbcEntityMetaDataProcessor" factory-bean="processorFactorySingleton" factory-method="newEntityMetaDataProcessor">
@@ -348,10 +348,9 @@
   <bean id="dynamicMetaDataProcessor" class="org.nuclos.server.dal.processor.jdbc.impl.DynamicMetaDataProcessor">
   </bean>
 
-  <bean id="datasourceCache" class="org.nuclos.server.common.DatasourceCache" factory-method="getInstance"
-  	depends-on="nucletDalProvider">
+  <bean id="datasourceCache" class="org.nuclos.server.common.DatasourceCache" depends-on="nucletDalProvider">
   </bean>
-
+  
   <bean id="nuclosDalProvider" class="org.nuclos.server.dal.provider.NuclosDalProvider" factory-method="getInstance"
   	init-method="buildEOProcessors" depends-on="appContext">
   	<property name="entityMetaDataProcessor"><ref bean="jsonEntityMetaDataProcessor"/></property>

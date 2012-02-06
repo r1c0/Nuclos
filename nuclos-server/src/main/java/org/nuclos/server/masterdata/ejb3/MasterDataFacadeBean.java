@@ -145,12 +145,19 @@ public class MasterDataFacadeBean extends NuclosFacadeBean implements MasterData
 
 	private boolean bServerValidatesMasterDataValues;
 	
+	private ServerParameterProvider serverParameterProvider;
+	
 	public MasterDataFacadeBean() {
 	}
 	
 	@Autowired
 	void setMasterDataFacadeHelper(MasterDataFacadeHelper masterDataFacadeHelper) {
 		this.helper = masterDataFacadeHelper;
+	}
+	
+	@Autowired
+	void setServerParameterProvider(ServerParameterProvider serverParameterProvider) {
+		this.serverParameterProvider = serverParameterProvider;
 	}
 	
 	protected final MasterDataFacadeHelper getMasterDataFacadeHelper() {
@@ -162,7 +169,7 @@ public class MasterDataFacadeBean extends NuclosFacadeBean implements MasterData
 	@RolesAllowed("Login")
 	public void postConstruct() {
 		super.postConstruct();
-		this.bServerValidatesMasterDataValues = "1".equals(ServerParameterProvider.getInstance().getValue(
+		this.bServerValidatesMasterDataValues = "1".equals(serverParameterProvider.getValue(
 			ParameterProvider.KEY_SERVER_VALIDATES_MASTERDATAVALUES));
 	}
 
@@ -1109,7 +1116,7 @@ public class MasterDataFacadeBean extends NuclosFacadeBean implements MasterData
 						if(iId != null) {
 							Collection<EntityObjectVO> col = CollectionUtils.transform(getDependantMasterData(
 								entity,
-								MasterDataFacadeHelper.getForeignKeyFieldName(sEntityName, entity, mpEntityAndParentEntityName), 
+								helper.getForeignKeyFieldName(sEntityName, entity, mpEntityAndParentEntityName), 
 								iId), 
 								new MasterDataToEntityObjectTransformer(entity));
 

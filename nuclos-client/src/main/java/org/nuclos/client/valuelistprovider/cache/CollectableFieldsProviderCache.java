@@ -18,9 +18,9 @@
 package org.nuclos.client.valuelistprovider.cache;
 
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.nuclos.common.collect.collectable.CollectableField;
 import org.nuclos.common.collect.collectable.CollectableFieldsProvider;
@@ -38,16 +38,15 @@ public class CollectableFieldsProviderCache {
 	private final Map<Pair<Class<? extends CacheableCollectableFieldsProvider>, Object>, List<CollectableField>> cache;
 
 	public CollectableFieldsProviderCache() {
-		cache = new LinkedHashMap<Pair<Class<? extends CacheableCollectableFieldsProvider>, Object>, List<CollectableField>>();
+		// Was a LinkedHashMap before
+		cache = new ConcurrentHashMap<Pair<Class<? extends CacheableCollectableFieldsProvider>, Object>, List<CollectableField>>();
 	}
 
 	/**
 	 * Clears the cache.
 	 */
 	public void clear() {
-		synchronized (cache) {
-			cache.clear();
-		}
+		cache.clear();
 	}
 
 	/**
@@ -121,17 +120,16 @@ public class CollectableFieldsProviderCache {
 					delegate.getClass(), cacheKey);
 
 			List<CollectableField> values;
-			// leave synchronized so that we do not block other cache accesses
-			synchronized (cache) {
-				values = cache.get(qualifiedCacheKey);
-				if (values == null) {
+			values = cache.get(qualifiedCacheKey);
+			if (values == null) {
+				synchronized (delegate) {
 					values = delegate.getCollectableFields();
-					if (values == null) {
-						//make sure empty result can be differentiated from not yet loaded
-						values = new ArrayList<CollectableField>();
-					}
-					cache.put(qualifiedCacheKey, values);
 				}
+				if (values == null) {
+					//make sure empty result can be differentiated from not yet loaded
+					values = new ArrayList<CollectableField>();
+				}
+				cache.put(qualifiedCacheKey, values);
 			}
 			return values;
 		}
@@ -167,9 +165,7 @@ public class CollectableFieldsProviderCache {
 			Pair<Class<? extends CacheableCollectableFieldsProvider>, Object> qualifiedCacheKey =
 				new Pair<Class<? extends CacheableCollectableFieldsProvider>, Object>(delegate.getClass(), cacheKey);
 
-			synchronized (cache) {
-				cache.remove(qualifiedCacheKey);
-			}
+			cache.remove(qualifiedCacheKey);
     	}
 	}
 }

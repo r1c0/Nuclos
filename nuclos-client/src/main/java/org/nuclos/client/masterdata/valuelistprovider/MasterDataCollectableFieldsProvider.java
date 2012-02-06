@@ -102,14 +102,14 @@ public class MasterDataCollectableFieldsProvider extends ManagedCollectableField
 		return getCollectableFieldsByName(this.sEntityName, sFieldName, !this.getIgnoreValidity() && bValid && !bSearchMode);
 	}
 
-	private static synchronized List<CollectableField> getCollectableFields(String sEntityName, boolean bValid) throws CommonBusinessException {
+	private static List<CollectableField> getCollectableFields(String sEntityName, boolean bValid) throws CommonBusinessException {
 		List<CollectableField> result = MasterDataCache.getInstance().getCollectableFields(sEntityName, bValid);
 		Collections.sort(result);
 
 		return result;
 	}
 
-	private static synchronized List<CollectableField> getCollectableFieldsByName(String sEntityName, String sFieldName, boolean bValid) throws CommonBusinessException {
+	private static List<CollectableField> getCollectableFieldsByName(String sEntityName, String sFieldName, boolean bValid) throws CommonBusinessException {
 		List<CollectableField> result =  MasterDataCache.getInstance().getCollectableFieldsByName(sEntityName, sFieldName, bValid);
 		Collections.sort(result);
 

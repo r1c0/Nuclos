@@ -33,7 +33,6 @@ import org.nuclos.common.dal.vo.SystemFields;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.server.autosync.XMLEntities;
 import org.nuclos.server.common.SecurityCache;
-import org.nuclos.server.common.ServerParameterProvider;
 import org.nuclos.server.database.DataBaseHelper;
 import org.nuclos.server.dblayer.DbTuple;
 import org.nuclos.server.dblayer.expression.DbCurrentDateTime;
@@ -58,6 +57,9 @@ public class NuclosUserDetailsService implements org.nuclos.server.security.User
 	private static final Logger log = Logger.getLogger(MasterDataFacadeHelper.class);
 
 	private ParameterProvider paramprovider;
+	
+	NuclosUserDetailsService() {
+	}
 
 	public void setParameterProvider(ParameterProvider paramprovider) {
 		this.paramprovider = paramprovider;
@@ -113,7 +115,7 @@ public class NuclosUserDetailsService implements org.nuclos.server.security.User
 			expired = c.before(Calendar.getInstance());
 		}
 
-		String lockDays = ServerParameterProvider.getInstance().getValue(ParameterProvider.KEY_SECURITY_LOCK_DAYS);
+		String lockDays = paramprovider.getValue(ParameterProvider.KEY_SECURITY_LOCK_DAYS);
 		if (!locked && lastlogin != null && !StringUtils.isNullOrEmpty(lockDays)) {
 			try {
 				Integer days = Integer.parseInt(lockDays);
@@ -131,7 +133,7 @@ public class NuclosUserDetailsService implements org.nuclos.server.security.User
 		}
 
 		Boolean credentialsExpired = false;
-		String passwordInterval = ServerParameterProvider.getInstance().getValue(ParameterProvider.KEY_SECURITY_PASSWORD_INTERVAL);
+		String passwordInterval = paramprovider.getValue(ParameterProvider.KEY_SECURITY_PASSWORD_INTERVAL);
 		if (!StringUtils.isNullOrEmpty(passwordInterval)) {
 			if (passwordchanged != null) {
 				try {

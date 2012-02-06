@@ -147,8 +147,8 @@ public class DependantMasterDataMapForRule implements Serializable {
 			throw new NullArgumentException("iGenericObjectId");
 		}
 		/** @todo eliminate this workaround: */
+		final MasterDataMetaProvider cache = SpringApplicationContextHolder.getBean(MasterDataMetaProvider.class);
 		for (String sEntityName : this.getEntityNames()) {
-			MasterDataMetaProvider cache = SpringApplicationContextHolder.getBean(MasterDataMetaProvider.class);
 			if (cache != null) {
 				final MasterDataMetaVO mdmetavo = cache.getMetaData(sEntityName);
 				if (mdmetavo.isEditable()) {

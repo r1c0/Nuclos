@@ -113,6 +113,8 @@ public class EntityObjectProcessor extends AbstractJdbcWithFieldsDalProcessor<En
 	private final IColumnToVOMapping<Integer> versionColumn;
 	
 	private DatasourceServerUtils datasourceServerUtils;
+	
+	private TableAliasSingleton tableAliasSingleton; 
 
 	public EntityObjectProcessor(ProcessorConfiguration config)
 	{
@@ -148,6 +150,11 @@ public class EntityObjectProcessor extends AbstractJdbcWithFieldsDalProcessor<En
 	@Autowired
 	void setDatasourceServerUtils(DatasourceServerUtils datasourceServerUtils) {
 		this.datasourceServerUtils = datasourceServerUtils;
+	}
+	
+	@Autowired
+	void setTableAliasSingleton(TableAliasSingleton tableAliasSingleton) {
+		this.tableAliasSingleton = tableAliasSingleton;
 	}
 
 	@Override
@@ -535,7 +542,6 @@ public class EntityObjectProcessor extends AbstractJdbcWithFieldsDalProcessor<En
 	 */
 	
 	private List<CollectableSearchCondition> getJoinsForColumns(final List<IColumnToVOMapping<? extends Object>> columns) {
-		final TableAliasSingleton tas = TableAliasSingleton.getInstance();
 		final List<CollectableSearchCondition> result = new ArrayList<CollectableSearchCondition>();
 		final boolean debug = LOG.isDebugEnabled();
 		for (IColumnToVOMapping<?> m: columns) {
@@ -550,7 +556,7 @@ public class EntityObjectProcessor extends AbstractJdbcWithFieldsDalProcessor<En
 				final EntityFieldMetaDataVO meta = mapping.getMeta();
 				final String fentity = meta.getForeignEntity();
 				if (fentity != null) {
-					alias = tas.getAlias(meta);					
+					alias = tableAliasSingleton.getAlias(meta);					
 					if (f.startsWith("STRVALUE_")) {
 						add = true;
 					}					
@@ -566,7 +572,7 @@ public class EntityObjectProcessor extends AbstractJdbcWithFieldsDalProcessor<En
 			// ???
 			else {
 				if (f.startsWith("STRVALUE_") || f.startsWith("INTVALUE_")) {
-					alias = tas.getAlias(m);
+					alias = tableAliasSingleton.getAlias(m);
 					add = true;
 				}
 			}
@@ -574,7 +580,7 @@ public class EntityObjectProcessor extends AbstractJdbcWithFieldsDalProcessor<En
 				if (debug) {
 					LOG.info("getJoinsForColumns: apply RefJoinCondition for " + m + " alias " + alias);
 				}
-				result.add(tas.getRefJoinCondition(m));
+				result.add(tableAliasSingleton.getRefJoinCondition(m));
 			}			
 		}
 		return result;
@@ -591,7 +597,6 @@ public class EntityObjectProcessor extends AbstractJdbcWithFieldsDalProcessor<En
 		// 
 		// Also add join conditions needed by sorting order. (tp)
 		if (sortingOrder != null) {
-			final TableAliasSingleton tas = TableAliasSingleton.getInstance();
 			final MetaDataProvider mdProv = MetaDataServerProvider.getInstance();
 			final List<CollectableSorting> newSortingOrder = new ArrayList<CollectableSorting>(sortingOrder.size());
 			final String baseEntity = eMeta.getEntity();
@@ -607,7 +612,7 @@ public class EntityObjectProcessor extends AbstractJdbcWithFieldsDalProcessor<En
 						newSortingOrder.add(cs);
 						continue;
 					}
-					final RefJoinCondition join = tas.getRefJoinCondition(mdField);
+					final RefJoinCondition join = tableAliasSingleton.getRefJoinCondition(mdField);
 					if (!result.contains(join)) {
 						result.add(join);
 					}

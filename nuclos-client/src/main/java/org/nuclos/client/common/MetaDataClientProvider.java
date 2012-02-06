@@ -64,12 +64,15 @@ import org.springframework.beans.factory.annotation.Configurable;
 public class MetaDataClientProvider extends AbstractProvider implements MetaDataProvider, CommonMetaDataClientProvider, InitializingBean {
 
 	private static final Logger LOG = Logger.getLogger(MetaDataClientProvider.class);
+	
+	private static MetaDataClientProvider INSTANCE;
 
 	private final DataCache dataCache = new DataCache();
 	
 	private TopicNotificationReceiver tnr;
 
-	private MetaDataClientProvider(){
+	MetaDataClientProvider(){
+		INSTANCE = this;
 	}
 
 	public static void initialize() {
@@ -82,7 +85,7 @@ public class MetaDataClientProvider extends AbstractProvider implements MetaData
 	}
 
 	public static MetaDataClientProvider getInstance() {
-		return (MetaDataClientProvider) SpringApplicationContextHolder.getBean("metaDataProvider");
+		return INSTANCE;
 	}
 
 	@Override

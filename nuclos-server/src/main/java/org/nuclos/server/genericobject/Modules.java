@@ -51,6 +51,10 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @version 01.00.00
  */
 public class Modules extends ModuleProvider {
+	
+	private static Modules INSTANCE;
+	
+	//
 
 	/**
 	 * The specfied subnodes of the module used in the treenode 
@@ -63,7 +67,8 @@ public class Modules extends ModuleProvider {
 	
 	//
 
-	public Modules() {
+	Modules() {
+		INSTANCE = this;
 	}
 	
 	@PostConstruct
@@ -77,7 +82,7 @@ public class Modules extends ModuleProvider {
 	}
 
 	public static Modules getInstance() {
-		return (Modules) SpringApplicationContextHolder.getBean("moduleProvider");
+		return INSTANCE;
 	}
 
 	@Override

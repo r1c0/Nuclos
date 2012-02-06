@@ -16,17 +16,18 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.server.mbean;
 
+import javax.annotation.PostConstruct;
+
 import org.apache.log4j.Logger;
-import org.nuclos.common.NuclosFatalException;
 import org.nuclos.server.common.DatasourceCache;
 import org.nuclos.server.report.SchemaCache;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 /**
  * @deprecated Is this still in use?
  */
-@Component
 public class NuclosCacheService /*extends ServiceMBeanSupport implements NuclosCacheServiceMBean */{
 
 	protected static final Logger log = Logger.getLogger(NuclosCacheService.class);
@@ -37,12 +38,6 @@ public class NuclosCacheService /*extends ServiceMBeanSupport implements NuclosC
 	private SchemaCache schemaCache;
 	
 	public NuclosCacheService () {
-		try {
-			this.init();
-		}
-		catch(Exception e) {
-			throw new NuclosFatalException(e);
-		}
 	}
 	
 	@Autowired
@@ -50,8 +45,8 @@ public class NuclosCacheService /*extends ServiceMBeanSupport implements NuclosC
 		this.datasourceCache = datasourceCache;
 	}
 
-	
-   private void init() throws Exception {
+	@PostConstruct
+	void init() throws Exception {
 		log.info("init() in ...");
 
 		// Das Login ist fuer den Zugriff auf die EJBs noetig. Wir leihen

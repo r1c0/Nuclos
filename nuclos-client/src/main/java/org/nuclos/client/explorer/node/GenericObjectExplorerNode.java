@@ -153,7 +153,8 @@ public class GenericObjectExplorerNode extends ExplorerNode<GenericObjectTreeNod
 
 		Integer iModuleId = this.getTreeNode().getModuleId();
 		Integer iProcessId = this.getTreeNode().getProcessId();
-		Integer iStateNumeral = (Integer)genericObjectVO.getAttribute(NuclosEOField.STATENUMBER.getMetaData().getField(), SpringApplicationContextHolder.getBean(AttributeProvider.class)).getValue();
+		Integer iStateNumeral = (Integer)genericObjectVO.getAttribute(NuclosEOField.STATENUMBER.getMetaData().getField(), 
+				SpringApplicationContextHolder.getBean(AttributeProvider.class)).getValue();
 
 		final List<TreeNodeAction> lst = getGeneratorActions(tree, genericObjectVO, iModuleId, iStateNumeral, iProcessId);
 		if (lst.isEmpty()) {

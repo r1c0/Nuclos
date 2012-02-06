@@ -27,24 +27,20 @@ public class SpringApplicationContextHolder implements ApplicationContextAware {
 	private static final Logger LOG = Logger.getLogger(SpringApplicationContextHolder.class);
 	
 	private static ApplicationContext applicationContext;
-	private static SpringApplicationContextHolder holder;
+	
+	private static SpringApplicationContextHolder INSTANCE;
 	
 
 	/**
 	 * private Constructor which
 	 * initialize Spring ApplicationContext
 	 */
-	public SpringApplicationContextHolder() {	
+	SpringApplicationContextHolder() {
+		INSTANCE = this;
 	}
 	
-	/*
-	 *  
-	 * @return SpringApplicationWrapper
-	 */
-	public static synchronized SpringApplicationContextHolder getInstance()	{
-		if(holder == null)
-			holder = new SpringApplicationContextHolder();
-		return holder;
+	public static SpringApplicationContextHolder getInstance()	{
+		return INSTANCE;
 	}
 	
 	

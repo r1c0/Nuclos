@@ -65,7 +65,8 @@ public class DynamicAttributeVO implements Serializable, Cloneable {
 	 * @param sCanonicalValue value of underlying database record
 	 */
 	public DynamicAttributeVO(Integer iId, Integer iAttributeId, Integer iValueId, String sCanonicalValue) throws CommonValidationException {
-		this(iId, iAttributeId, iValueId, sCanonicalValue, SpringApplicationContextHolder.getBean(AttributeProvider.class));
+		this(iId, iAttributeId, iValueId, sCanonicalValue, 
+				SpringApplicationContextHolder.getBean(AttributeProvider.class));
 	}
 
 	/**

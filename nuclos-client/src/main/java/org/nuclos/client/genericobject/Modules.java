@@ -43,14 +43,23 @@ import org.nuclos.server.masterdata.valueobject.MasterDataVO;
  */
 public class Modules extends ModuleProvider {
 
-	private final Logger log = Logger.getLogger(this.getClass());
+	private static final Logger LOG = Logger.getLogger(Modules.class);
+	
+	private static Modules INSTANCE;
 
-	public static synchronized Modules getInstance() {
-		return (Modules) SpringApplicationContextHolder.getBean("moduleProvider");
+	//
+
+	public static Modules getInstance() {
+		return INSTANCE;
 	}
+	
+	//
 
 	private final ConcurrentHashMap<Integer, String> labelsById = new ConcurrentHashMap<Integer, String>();
 
+	Modules() {
+		INSTANCE = this;
+	}
 
 	@Override
 	public Collection<MasterDataVO> getModules() {

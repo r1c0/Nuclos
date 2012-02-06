@@ -16,6 +16,8 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.server.report;
 
+import javax.annotation.PostConstruct;
+
 import org.apache.log4j.Logger;
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.ParameterProvider;
@@ -52,6 +54,8 @@ import org.nuclos.server.report.valueobject.DatasourceVO;
 import org.nuclos.server.report.valueobject.DynamicEntityVO;
 import org.nuclos.server.report.valueobject.RecordGrantVO;
 import org.nuclos.server.report.valueobject.ValuelistProviderVO;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 /**
  * Caches the database schema used for reports and forms.<br>
@@ -63,24 +67,35 @@ import org.nuclos.server.report.valueobject.ValuelistProviderVO;
  * @author	<a href="mailto:Rostislav.Maksymovskyi@novabit.de">Rostislav Maksymovskyi</a>
  * @version 02.00.00
  */
+@Component
 public class SchemaCache implements SchemaCacheMBean {
-   private static final Logger log = Logger.getLogger(SchemaCache.class);
+	
+   private static final Logger LOG = Logger.getLogger(SchemaCache.class);
 
-   private static SchemaCache singleton;
+   private static SchemaCache INSTANCE;
+   
+   //
 
    private Schema currentSchema = null;
+   
+   private ServerParameterProvider serverParameterProvider;
 
-   private SchemaCache() {
-      this.currentSchema = getSchemaFromDB();
+   SchemaCache() {
+	   INSTANCE = this;
+   }
+   
+   @PostConstruct
+   final void init() {
+	   this.currentSchema = getSchemaFromDB();
+   }
+   
+   @Autowired
+   void setServerParameterProvider(ServerParameterProvider serverParameterProvider) {
+	   this.serverParameterProvider = serverParameterProvider;
    }
 
-   public static synchronized SchemaCache getInstance() {
-      if (singleton == null) {
-         singleton = new SchemaCache();
-         // register this cache as MBean
-         MBeanAgent.registerCache(singleton, SchemaCacheMBean.class);
-      }
-      return singleton;
+   public static SchemaCache getInstance() {
+      return INSTANCE;
    }
 
    public Schema getCurrentSchema() {
@@ -92,7 +107,7 @@ public class SchemaCache implements SchemaCacheMBean {
 		//log.info("Initializing SchemaCache");
 
    	Predicate<String> predicate = null;
-   	String filter = ServerParameterProvider.getInstance().getValue(ParameterProvider.KEY_DATASOURCE_TABLE_FILTER);
+   	String filter = serverParameterProvider.getValue(ParameterProvider.KEY_DATASOURCE_TABLE_FILTER);
    	if (filter != null) {
    		predicate = PredicateUtils.wildcardFilterList(filter);
    	}
@@ -142,7 +157,7 @@ public class SchemaCache implements SchemaCacheMBean {
 
    @Override
 public synchronized void invalidate() {
-      log.debug("Invalidating SchemaCache");
+      LOG.debug("Invalidating SchemaCache");
       this.currentSchema = null;
       this.currentSchema = getSchemaFromDB();
    }

@@ -70,6 +70,7 @@ import org.nuclos.server.report.ByteArrayCarrier;
 import org.nuclos.server.resource.valueobject.ResourceFile;
 import org.nuclos.server.ruleengine.NuclosBusinessRuleException;
 import org.nuclos.server.transfer.XmlExportImportHelper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -106,11 +107,22 @@ public class XmlExportFacadeBean extends NuclosFacadeBean implements XmlExportFa
 	@PostConstruct
 	@Override
 	public void postConstruct() {
-      super.postConstruct();
-
-		modules = Modules.getInstance();
-		genericObjectMetaDataCache = GenericObjectMetaDataCache.getInstance();
-		serverParameterProvider = ServerParameterProvider.getInstance();
+		super.postConstruct();
+	}
+	
+	@Autowired
+	void setServerParameterProvider(ServerParameterProvider serverParameterProvider) {
+		this.serverParameterProvider = serverParameterProvider;
+	}
+	
+	@Autowired
+	void setGenericObjectMetaDataCache(GenericObjectMetaDataCache genericObjectMetaDataCache) {
+		this.genericObjectMetaDataCache = genericObjectMetaDataCache;
+	}
+	
+	@Autowired
+	void setModules(Modules modules) {
+		this.modules = modules;
 	}
 
 	private XmlExportImportProtocolFacadeLocal getProtocolFacade() {

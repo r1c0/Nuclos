@@ -177,7 +177,7 @@ public class AttributeFacadeBean extends NuclosFacadeBean implements AttributeFa
 		
 		Set<String> setAttributes = new HashSet<String>();
 		Map<Integer, String> mLayoutMap = GenericObjectMetaDataCache.getLayoutMap();
-		List<Integer> lstLayoutIds = GenericObjectMetaDataCache.getLayoutIdsForModule(iModuleId);
+		List<Integer> lstLayoutIds = GenericObjectMetaDataCache.getInstance().getLayoutIdsForModule(iModuleId);
 		for(Integer iLayoutId : lstLayoutIds) {
 			LayoutMLParser parser = new LayoutMLParser();
 			try{

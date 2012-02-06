@@ -24,13 +24,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import javax.annotation.PostConstruct;
+
 import org.nuclos.common.AbstractProvider;
 import org.nuclos.common.CommonMetaDataServerProvider;
 import org.nuclos.common.JMSConstants;
 import org.nuclos.common.MetaDataProvider;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.NuclosFatalException;
-import org.nuclos.common.SpringApplicationContextHolder;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.dal.util.DalTransformations;
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
@@ -55,21 +56,48 @@ import org.nuclos.server.jms.NuclosJMSUtils;
 import org.nuclos.server.report.SchemaCache;
 import org.nuclos.server.report.ejb3.DatasourceFacadeLocal;
 import org.nuclos.server.report.valueobject.DynamicEntityVO;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.Assert;
 
 /**
  * An caching singleton for accessing the meta data information
  * on the server side.
  */
 public class MetaDataServerProvider extends AbstractProvider implements MetaDataProvider, CommonMetaDataServerProvider {
+	
+	private static MetaDataServerProvider INSTANCE;
+	
+	//
 
-	private final DataCache dataCache = new DataCache();
+	private NucletDalProvider nucletDalProvider;
+	
+	private DatasourceCache datasourceCache;
 
+	private DataCache dataCache;
+	
 	private MetaDataServerProvider(){
+		INSTANCE = this;
+	}
+	
+	@PostConstruct
+	final void init() {
+		dataCache = new DataCache();
 		dataCache.buildMaps();
+	}
+	
+	@Autowired
+	void setNucletDalProvider(NucletDalProvider nucletDalProvider) {
+		this.nucletDalProvider = nucletDalProvider;
+	}
+	
+	@Autowired
+	void setDatasourceCache(DatasourceCache datasourceCache) {
+		Assert.notNull(datasourceCache);
+		this.datasourceCache = datasourceCache;
 	}
 
 	public static MetaDataServerProvider getInstance() {
-		return (MetaDataServerProvider) SpringApplicationContextHolder.getBean("metaDataProvider");
+		return INSTANCE;
 	}
 
 	@Override
@@ -280,6 +308,9 @@ public class MetaDataServerProvider extends AbstractProvider implements MetaData
 		private ConcurrentHashMap<PivotInfo, Map<String, EntityFieldMetaDataVO>> mapPivotMetaData = new ConcurrentHashMap<PivotInfo, Map<String,EntityFieldMetaDataVO>>();
 
 		private Map<String, DynamicEntityVO> mapDynamicEntities;
+		
+		private DataCache() {
+		}
 
 		public Map<String, List<String>> getMapEntitiesByNuclets() {
 			if (isRevalidating()) {
@@ -298,7 +329,7 @@ public class MetaDataServerProvider extends AbstractProvider implements MetaData
 			}
 			else if (mapDynamicEntities == null) {
 				mapDynamicEntities = Collections.unmodifiableMap(CollectionUtils.generateLookupMap(
-						DatasourceCache.getInstance().getAllDynamicEntities(), DalTransformations.getDynamicEntityName()));
+						datasourceCache.getAllDynamicEntities(), DalTransformations.getDynamicEntityName()));
 			}
 			return mapMetaDataByEntity;
 		}
@@ -405,7 +436,6 @@ public class MetaDataServerProvider extends AbstractProvider implements MetaData
 				}
 			}
 
-
 			return result;
 		}
 
@@ -416,7 +446,7 @@ public class MetaDataServerProvider extends AbstractProvider implements MetaData
 				entitiesByNuclets.get(NAMESPACE_NUCLOS).add(meta.getEntity());
 			}
 
-			for (EntityMetaDataVO meta : NucletDalProvider.getInstance().getEntityMetaDataProcessor().getAll()) {
+			for (EntityMetaDataVO meta : nucletDalProvider.getEntityMetaDataProcessor().getAll()) {
 				String nuclet = LangUtils.defaultIfNull(meta.getNuclet(), NAMESPACE_DEFAULT);
 				if (!entitiesByNuclets.containsKey(nuclet)) {
 					entitiesByNuclets.put(nuclet, new ArrayList<String>());

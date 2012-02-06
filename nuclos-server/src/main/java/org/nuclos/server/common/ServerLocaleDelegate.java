@@ -30,22 +30,29 @@ import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
-import org.nuclos.common.SpringApplicationContextHolder;
 import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.LocaleInfo;
 import org.nuclos.server.common.ejb3.LocaleFacadeLocal;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 
 public class ServerLocaleDelegate implements CommonLocaleDelegate.LookupService {
+	
+	private static ServerLocaleDelegate INSTANCE;
+	
+	//
 
 	private LocaleFacadeLocal localeFacade;
+	
+	ServerLocaleDelegate() {
+		INSTANCE = this;
+	}
 
 	public void setService(LocaleFacadeLocal service) {
 		this.localeFacade = service;
 	}
 
-	public static synchronized ServerLocaleDelegate getInstance() {
-		return (ServerLocaleDelegate) SpringApplicationContextHolder.getBean("lookupService");
+	public static ServerLocaleDelegate getInstance() {
+		return INSTANCE;
 	}
 
 	@Override

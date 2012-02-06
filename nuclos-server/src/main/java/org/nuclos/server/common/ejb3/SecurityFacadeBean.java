@@ -49,6 +49,7 @@ import org.nuclos.server.dblayer.expression.DbId;
 import org.nuclos.server.dblayer.query.DbFrom;
 import org.nuclos.server.dblayer.query.DbQuery;
 import org.nuclos.server.dblayer.query.DbQueryBuilder;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -62,12 +63,22 @@ import org.springframework.transaction.annotation.Transactional;
 // @Remote(SecurityFacadeRemote.class)
 @Transactional
 public class SecurityFacadeBean extends NuclosFacadeBean implements SecurityFacadeLocal, SecurityFacadeRemote {
+	
+	private ServerParameterProvider serverParameterProvider;
+	
+	SecurityFacadeBean() {
+	}
 
 	@PostConstruct
 	@Override
 	public void postConstruct() {
       super.postConstruct();
       this.info("Authentication successful.");
+	}
+	
+	@Autowired
+	void setServerParameterProvider(ServerParameterProvider serverParameterProvider) {
+		this.serverParameterProvider = serverParameterProvider;
 	}
 
 	/**
@@ -299,8 +310,8 @@ public class SecurityFacadeBean extends NuclosFacadeBean implements SecurityFaca
 	@Override
 	public Date getPasswordExpiration() {
 		Integer interval = 0;
-		if (ServerParameterProvider.getInstance().getValue(ParameterProvider.KEY_SECURITY_PASSWORD_INTERVAL) != null) {
-			interval = ServerParameterProvider.getInstance().getIntValue(ParameterProvider.KEY_SECURITY_PASSWORD_INTERVAL, 0);
+		if (serverParameterProvider.getValue(ParameterProvider.KEY_SECURITY_PASSWORD_INTERVAL) != null) {
+			interval = serverParameterProvider.getIntValue(ParameterProvider.KEY_SECURITY_PASSWORD_INTERVAL, 0);
 		}
 
 		if (interval == 0) {

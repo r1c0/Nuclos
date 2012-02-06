@@ -65,12 +65,13 @@ public class AttributeCache implements AttributeProvider {
 	private final Map<String, List<AttributeCVO>> mpAttributesByExternalEntity
 		= new ConcurrentHashMap<String, List<AttributeCVO>>();
 
-	public static synchronized AttributeCache getInstance() {
-		return (AttributeCache) SpringApplicationContextHolder.getBean("attributeProvider");
+	public static AttributeCache getInstance() {
+		return INSTANCE;
 	}
 
 	protected AttributeCache() {
 		validate();
+		INSTANCE = this;
 	}
 
 	public void update(AttributeCVO attrcvo) {

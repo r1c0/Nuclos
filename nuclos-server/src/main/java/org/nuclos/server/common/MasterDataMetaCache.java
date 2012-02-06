@@ -64,6 +64,8 @@ public class MasterDataMetaCache implements MasterDataMetaCacheMBean, MasterData
 	
 	private static final Logger LOG = Logger.getLogger(MasterDataMetaCache.class);
 	
+	private static MasterDataMetaCache INSTANCE;
+	
 	// 
 	
 	private final Map<String, MasterDataMetaVO> mp
@@ -77,10 +79,9 @@ public class MasterDataMetaCache implements MasterDataMetaCacheMBean, MasterData
 
 	/**
 	 * @return the one and only instance of the <code>MasterDataMetaCache</code>.
-	 * @todo OPTIMIZE: remove synchronized by explicitly building the cache when the server starts.
 	 */
-	public static synchronized MasterDataMetaCache getInstance() {
-		return (MasterDataMetaCache) SpringApplicationContextHolder.getBean(MasterDataMetaProvider.class);
+	public static MasterDataMetaCache getInstance() {
+		return INSTANCE;
 	}
 
 	@Override
@@ -89,7 +90,7 @@ public class MasterDataMetaCache implements MasterDataMetaCacheMBean, MasterData
 	}
 
 	private MasterDataMetaCache() {
-		// revalidate();
+		INSTANCE = this;
 	}
 
 	/**

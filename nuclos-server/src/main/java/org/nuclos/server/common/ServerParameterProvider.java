@@ -57,6 +57,10 @@ public class ServerParameterProvider extends AbstractParameterProvider implement
 	private static final Logger LOG = Logger.getLogger(ServerParameterProvider.class);
 	
 	private static final String NULL = "<null>";
+	
+	private static ServerParameterProvider INSTANCE;
+	
+	//
 
 	/**
 	 * Map<String sName, String sValue>
@@ -66,8 +70,8 @@ public class ServerParameterProvider extends AbstractParameterProvider implement
 
 	//private final ClientNotifier clientnotifier = new ClientNotifier(JMSConstants.TOPICNAME_PARAMETERPROVIDER);
 
-	public static synchronized ServerParameterProvider getInstance() {
-		return (ServerParameterProvider) SpringApplicationContextHolder.getBean("parameterProvider");
+	public static ServerParameterProvider getInstance() {
+		return INSTANCE;
 	}
 
 	protected ServerParameterProvider() { }

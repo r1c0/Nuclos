@@ -107,6 +107,11 @@ public class ClientParameterProvider extends AbstractParameterProvider implement
 		tnr.subscribe(JMSConstants.TOPICNAME_PARAMETERPROVIDER, serverListener);
 		this.mpParams = getParameterFromServer();
 	}
+	
+	@Autowired
+	void setServiceLocator(ServiceLocator serviceLocator) {
+		this.serviceLocator = serviceLocator;
+	}
 
 	private void revalidate() {
 		this.mpParams = getParameterFromServer();

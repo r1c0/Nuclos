@@ -25,6 +25,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.annotation.PostConstruct;
+
 import org.apache.log4j.Logger;
 import org.nuclos.common.AttributeProvider;
 import org.nuclos.common.GenericObjectMetaDataProvider;
@@ -53,6 +55,8 @@ import org.nuclos.server.dblayer.DbTuple;
 import org.nuclos.server.dblayer.query.DbFrom;
 import org.nuclos.server.dblayer.query.DbQuery;
 import org.nuclos.server.dblayer.query.DbQueryBuilder;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 /**
  * Server side leased object meta data cache (singleton).
@@ -63,12 +67,17 @@ import org.nuclos.server.dblayer.query.DbQueryBuilder;
  * @author	<a href="mailto:Christoph.Radig@novabit.de">Christoph.Radig</a>
  * @version 01.00.00
  */
+@Component
 public class GenericObjectMetaDataCache implements GenericObjectMetaDataProvider {
 	private static final Logger log = Logger.getLogger(GenericObjectMetaDataCache.class);
 
-	private static GenericObjectMetaDataCache singleton;
+	private static GenericObjectMetaDataCache INSTANCE;
+	
+	//
 
 	private GenericObjectMetaDataVO lometacvo;
+	
+	private MetaDataServerProvider metaDataServerProvider;
 
 	private static final Set<Integer> setExcludedAttributeIds = new HashSet<Integer>();
 	static {
@@ -92,24 +101,31 @@ public class GenericObjectMetaDataCache implements GenericObjectMetaDataProvider
 		NuclosEOField.STATENUMBER.getMetaData().getId().intValue(),
 		NuclosEOField.STATEICON.getMetaData().getId().intValue()};
 
-	public static synchronized GenericObjectMetaDataCache getInstance() {
-		if (singleton == null) {
-			singleton = new GenericObjectMetaDataCache();
-		}
-		return singleton;
+	public static GenericObjectMetaDataCache getInstance() {
+		return INSTANCE;
 	}
 
 	private GenericObjectMetaDataCache() {
-		this.lometacvo = newGenericObjectMetaDataCVO();
+		INSTANCE = this;
 	}
 
-	private static GenericObjectMetaDataVO newGenericObjectMetaDataCVO() {
+	@PostConstruct
+	final void init() {
+		this.lometacvo = newGenericObjectMetaDataCVO();
+	}
+	
+	@Autowired
+	void setMetaDataServerProvider(MetaDataServerProvider metaDataServerProvider) {
+		this.metaDataServerProvider = metaDataServerProvider;
+	}
+
+	private GenericObjectMetaDataVO newGenericObjectMetaDataCVO() {
 		log.debug("Rebuilding generic object meta data cache");
 
 		Map<Integer, Set<String>> mapModuleAtributes = new HashMap<Integer, Set<String>>();
-		for (EntityMetaDataVO eMeta : MetaDataServerProvider.getInstance().getAllEntities()) {
+		for (EntityMetaDataVO eMeta : metaDataServerProvider.getAllEntities()) {
 			mapModuleAtributes.put(IdUtils.unsafeToId(eMeta.getId()), new HashSet<String>());
-			for (EntityFieldMetaDataVO efMeta : MetaDataServerProvider.getInstance().getAllEntityFieldsByEntity(eMeta.getEntity()).values()) {
+			for (EntityFieldMetaDataVO efMeta : metaDataServerProvider.getAllEntityFieldsByEntity(eMeta.getEntity()).values()) {
 				mapModuleAtributes.get(IdUtils.unsafeToId(eMeta.getId())).add(efMeta.getField());
 			}
 		}
@@ -149,7 +165,7 @@ public class GenericObjectMetaDataCache implements GenericObjectMetaDataProvider
 //			result.put(tuple.get(0, Integer.class), tuple.get(1, String.class));
 //		}
 
-		for (EntityMetaDataVO eMeta : MetaDataServerProvider.getInstance().getAllEntities()) {
+		for (EntityMetaDataVO eMeta : metaDataServerProvider.getAllEntities()) {
 			if (eMeta.isStateModel()) {
 				if (eMeta.getResourceId() != null) {
 
@@ -180,7 +196,7 @@ public class GenericObjectMetaDataCache implements GenericObjectMetaDataProvider
 	 * @return all layout usages
 	 * @postcondition result != null
 	 */
-	private static Collection<LayoutUsageVO> getLayoutUsageVOs() {
+	private Collection<LayoutUsageVO> getLayoutUsageVOs() {
 		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<DbTuple> query = builder.createTupleQuery();
 		DbFrom t = query.from("T_MD_LAYOUTUSAGE").alias(SystemFields.BASE_ALIAS);
@@ -193,7 +209,7 @@ public class GenericObjectMetaDataCache implements GenericObjectMetaDataProvider
 			@Override
 			public LayoutUsageVO transform(DbTuple tuple) {
 				try {
-					final Integer iEntityId = MetaDataServerProvider.getInstance().getEntity(tuple.get(1, String.class)).getId().intValue();
+					final Integer iEntityId = metaDataServerProvider.getEntity(tuple.get(1, String.class)).getId().intValue();
 					return new LayoutUsageVO(
 						tuple.get(0, Integer.class),
 						new UsageCriteria(iEntityId, tuple.get(2, Integer.class)),
@@ -221,7 +237,7 @@ public class GenericObjectMetaDataCache implements GenericObjectMetaDataProvider
 	 * @param ModuleId
 	 * @return List of LayoutIds
 	 */
-	public static List<Integer> getLayoutIdsForModule(Object ModuleId){
+	public List<Integer> getLayoutIdsForModule(Object ModuleId){
 		List<Integer> ret = new ArrayList<Integer>();
 		Collection<LayoutUsageVO> col = getLayoutUsageVOs();
 		Iterator<LayoutUsageVO> it = col.iterator();
@@ -261,7 +277,7 @@ public class GenericObjectMetaDataCache implements GenericObjectMetaDataProvider
 
 	@Override
 	public EntityFieldMetaDataVO getEntityField(String entity, String field) throws NuclosAttributeNotFoundException {
-		return MetaDataServerProvider.getInstance().getEntityField(entity, field);
+		return metaDataServerProvider.getEntityField(entity, field);
 	}
 
 	@Override

@@ -24,6 +24,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import javax.annotation.PostConstruct;
+
 import org.apache.log4j.Logger;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.NuclosFatalException;
@@ -62,7 +64,7 @@ public class DatasourceCache {
 	
 	private static final Logger LOG = Logger.getLogger(DatasourceCache.class);
 
-	private static final DatasourceCache INSTANCE = new DatasourceCache();
+	private static DatasourceCache INSTANCE;
 	
 	//
 
@@ -89,12 +91,17 @@ public class DatasourceCache {
 	private DatasourceServerUtils datasourceServerUtils;
 
 
-	private DatasourceCache() {
-		findDatasourcesById();
+	DatasourceCache() {
+		INSTANCE = this;
 	}
 
 	public static DatasourceCache getInstance() {
 		return INSTANCE;
+	}
+	
+	@PostConstruct
+	final void init() {
+		findDatasourcesById();		
 	}
 	
 	@Autowired
