@@ -34,8 +34,7 @@ public class SpringApplicationContextHolder implements ApplicationContextAware {
 	 * private Constructor which
 	 * initialize Spring ApplicationContext
 	 */
-	public SpringApplicationContextHolder() {
-		
+	public SpringApplicationContextHolder() {	
 	}
 	
 	/*
@@ -75,7 +74,7 @@ public class SpringApplicationContextHolder implements ApplicationContextAware {
 	 * @param strBean String
 	 * @return Object
 	 */
-	public static synchronized Object getBean(String strBean) {		
+	public static Object getBean(String strBean) {		
 		Object bean = null;
 		try {
 			bean = applicationContext.getBean(strBean);
@@ -91,7 +90,7 @@ public class SpringApplicationContextHolder implements ApplicationContextAware {
 	 * @param strBean String
 	 * @return Object
 	 */
-	public static synchronized <T> T getBean(Class<T> c) {		
+	public static <T> T getBean(Class<T> c) {		
 		T bean = null;
 		try{
 			bean = applicationContext.getBean(c);

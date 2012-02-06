@@ -20,6 +20,8 @@
 package org.nuclos.common.caching;
 
 import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.log4j.Logger;
 import org.nuclos.common.collection.Pair;
@@ -30,12 +32,12 @@ public class TimedCache<K, V> implements NBCache<K, V> {
 		
 	private LookupProvider<K, V>                 look;
 	private long                                 maxAgeMillis;
-	private HashMap<K, Pair<V, Long>>            map;
+	private Map<K, Pair<V, Long>>            map;
 	
 	public TimedCache(LookupProvider<K, V> lookupProvider, int maxAgeSeconds) {
 		this.look = lookupProvider;
 		this.maxAgeMillis = maxAgeSeconds * 1000L;
-		this.map = new HashMap<K, Pair<V, Long>>();
+		this.map = new ConcurrentHashMap<K, Pair<V, Long>>();
 	}
 	
 	@Override
@@ -46,24 +48,30 @@ public class TimedCache<K, V> implements NBCache<K, V> {
 	@Override
 	public V get(K key) {
 		boolean log = LOG.isDebugEnabled();
-		synchronized(map) {
-			long ct = System.currentTimeMillis();
-			if(map.containsKey(key)) {
-				Pair<V, Long> p = map.get(key);
-				if((ct - p.y) < maxAgeMillis) {
-					if (log) LOG.debug("cache hit for key " + key);
-					return p.x;
-				}
-				else 
-					if (log) LOG.debug("cache expired for key " + key + " (" + (ct - p.y) + " >= " + maxAgeMillis +  ")");
+		
+		long ct = System.currentTimeMillis();
+		if(map.containsKey(key)) {
+			Pair<V, Long> p = map.get(key);
+			if((ct - p.y) < maxAgeMillis) {
+				if (log) LOG.debug("cache hit for key " + key);
+				return p.x;
 			}
-			else 
-				if (log) LOG.debug("cache miss for key " + key);
-			// reached this point: either the key is not present, or the value is
-			// too old
-			V v = look.lookup(key);
-			map.put(key, new Pair<V, Long>(v, ct));
-			return v;
+			else {
+				if (log) { 
+					LOG.debug("cache expired for key " + key + " (" + (ct - p.y) + " >= " + maxAgeMillis +  ")");
+				}
+			}
 		}
+		else {
+			if (log) {
+				LOG.debug("cache miss for key " + key);
+			}
+		}
+		// reached this point: either the key is not present, or the value is
+		// too old
+		V v = look.lookup(key);
+		map.put(key, new Pair<V, Long>(v, ct));
+		return v;
 	}
+	
 }

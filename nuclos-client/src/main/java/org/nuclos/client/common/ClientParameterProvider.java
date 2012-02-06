@@ -19,6 +19,7 @@ package org.nuclos.client.common;
 
 import java.awt.Color;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.jms.JMSException;
 import javax.jms.Message;
@@ -111,7 +112,7 @@ public class ClientParameterProvider extends AbstractParameterProvider implement
 		this.mpParams = getParameterFromServer();
 	}
 
-	private synchronized Map<String, String> getParameterFromServer() {
+	private Map<String, String> getParameterFromServer() {
 		try {
 			// ParameterFacadeRemote remote = serviceLocator.getFacade(ParameterFacadeRemote.class);
 			// return remote.getParameters();
@@ -127,18 +128,18 @@ public class ClientParameterProvider extends AbstractParameterProvider implement
 	 * @return the value for the parameter with the given name.
 	 */
 	@Override
-	public synchronized String getValue(String sParameterName) {
-		return this.mpParams.get(sParameterName);
+	public String getValue(String sParameterName) {
+		return mpParams.get(sParameterName);
 	}
 
-	public synchronized Map<String, String>getAllParameters() {
-		return this.mpParams;
+	public Map<String, String>getAllParameters() {
+		return mpParams;
 	}
 
-	public synchronized Color getColorValue(String sParameterName, Color defaultColor) {
+	public Color getColorValue(String sParameterName, Color defaultColor) {
 		Color result;
 		try {
-			String[] rgb = this.getValue(sParameterName).split(",");
+			String[] rgb = getValue(sParameterName).split(",");
 			if (rgb.length == 3) {
 				result = new Color(Integer.valueOf(rgb[0]),Integer.valueOf(rgb[1]),Integer.valueOf(rgb[2]));
 			} else {

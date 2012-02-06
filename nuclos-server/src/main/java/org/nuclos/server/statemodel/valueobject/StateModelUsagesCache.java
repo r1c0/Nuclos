@@ -37,19 +37,21 @@ import org.nuclos.server.dblayer.query.DbQueryBuilder;
  */
 public class StateModelUsagesCache {
 
-	private static StateModelUsagesCache singleton;
+	private static StateModelUsagesCache INSTANCE;
+	
+	// 
 
 	private StateModelUsages stateModelUsages;
 
 	public static synchronized StateModelUsagesCache getInstance() {
-		if (singleton == null) {
-			singleton = new StateModelUsagesCache();
+		if (INSTANCE == null) {
+			INSTANCE = new StateModelUsagesCache();
 		}
-		return singleton;
+		return INSTANCE;
 	}
 
 	private StateModelUsagesCache() {
-		this.validate();
+		validate();
 	}
 
 	/**

@@ -19,6 +19,7 @@ package org.nuclos.client.common.security;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.annotation.PostConstruct;
 import javax.jms.JMSException;
@@ -72,15 +73,15 @@ public class SecurityCache {
 	private ModulePermissions modulepermissions;
 	private MasterDataPermissions masterdatapermissions;
 
-	private Map<PermissionKey.AttributePermissionKey, Permission> mpAttributePermission = 
-			new HashMap<PermissionKey.AttributePermissionKey, Permission>();
-	private Map<PermissionKey.SubFormPermissionKey, Map<Integer, Permission>> mpSubFormPermission = 
-			new HashMap<PermissionKey.SubFormPermissionKey, Map<Integer, Permission>>();
+	private Map<PermissionKey.AttributePermissionKey, Permission> mpAttributePermission 
+		= new ConcurrentHashMap<PermissionKey.AttributePermissionKey, Permission>();
+	private Map<PermissionKey.SubFormPermissionKey, Map<Integer, Permission>> mpSubFormPermission 
+		= new ConcurrentHashMap<PermissionKey.SubFormPermissionKey, Map<Integer, Permission>>();
 
-	private Map<PermissionKey.ModulePermissionKey, ModulePermission> modulePermissionsCache = 
-			new HashMap<PermissionKey.ModulePermissionKey, ModulePermission>();
-	private Map<PermissionKey.MasterDataPermissionKey, MasterDataPermission> masterDataPermissionsCache = 
-			new HashMap<PermissionKey.MasterDataPermissionKey, MasterDataPermission>();
+	private Map<PermissionKey.ModulePermissionKey, ModulePermission> modulePermissionsCache 
+		= new ConcurrentHashMap<PermissionKey.ModulePermissionKey, ModulePermission>();
+	private Map<PermissionKey.MasterDataPermissionKey, MasterDataPermission> masterDataPermissionsCache 
+		= new ConcurrentHashMap<PermissionKey.MasterDataPermissionKey, MasterDataPermission>();
 	
 	private TopicNotificationReceiver tnr;
 	
@@ -153,7 +154,7 @@ public class SecurityCache {
 	}
 
 	public synchronized boolean isActionAllowed(String sActionName) {
-		return this.stAllowedActions.contains(sActionName);
+		return stAllowedActions.contains(sActionName);
 	}
 
 	private ModulePermission getModulePermission(String sEntityName, Integer iGenericObjectId) {
@@ -174,15 +175,15 @@ public class SecurityCache {
 		return masterDataPermissionsCache.get(masterDataPermissionKey);
 	}
 
-	public synchronized boolean isReadAllowedForModule(String sModuleEntity, Integer iGenericObjectId) {
-		return ModulePermission.includesReading(this.getModulePermission(sModuleEntity, iGenericObjectId));
+	public boolean isReadAllowedForModule(String sModuleEntity, Integer iGenericObjectId) {
+		return ModulePermission.includesReading(getModulePermission(sModuleEntity, iGenericObjectId));
 	}
 
-	public synchronized boolean isReadAllowedForMasterData(String sEntity) {
+	public boolean isReadAllowedForMasterData(String sEntity) {
 		if (NuclosEntity.REPORTEXECUTION.checkEntityName(sEntity)) {
-			return this.isActionAllowed(Actions.ACTION_EXECUTE_REPORTS);
+			return isActionAllowed(Actions.ACTION_EXECUTE_REPORTS);
 		}
-		return MasterDataPermission.includesReading(this.getMasterDataPermission(sEntity));
+		return MasterDataPermission.includesReading(getMasterDataPermission(sEntity));
 	}
 
 	/**
@@ -190,45 +191,45 @@ public class SecurityCache {
 	 * @param entityName  the name
 	 * @return boolean
 	 */
-	public synchronized boolean isReadAllowedForEntity(String entityName) {
+	public boolean isReadAllowedForEntity(String entityName) {
 		return isReadAllowedForMasterData(entityName)
 		   ||  isReadAllowedForModule(entityName, null);
 	}
 
-	public synchronized boolean isReadAllowedForMasterData(NuclosEntity entity) {
+	public boolean isReadAllowedForMasterData(NuclosEntity entity) {
 		return isReadAllowedForMasterData(entity.getEntityName());
 	}
 
 	public synchronized boolean isNewAllowedForModule(String sModuleEntity) {
-		return LangUtils.defaultIfNull(this.modulepermissions.getNewAllowedByEntityName().get(sModuleEntity), false);
+		return LangUtils.defaultIfNull(modulepermissions.getNewAllowedByEntityName().get(sModuleEntity), false);
 	}
 
 	public synchronized boolean isNewAllowedForModuleAndProcess(Integer iModuleId, Integer iProcessId) {
-		return this.modulepermissions.getNewAllowedProcessesByModuleId().containsKey(iModuleId) &&
-			this.modulepermissions.getNewAllowedProcessesByModuleId().get(iModuleId).contains(iProcessId);
+		return modulepermissions.getNewAllowedProcessesByModuleId().containsKey(iModuleId) &&
+			modulepermissions.getNewAllowedProcessesByModuleId().get(iModuleId).contains(iProcessId);
 	}
 
-	public synchronized boolean isWriteAllowedForModule(String sModuleEntity, Integer iGenericObjectId) {
-		return ModulePermission.includesWriting(this.getModulePermission(sModuleEntity, iGenericObjectId));
+	public boolean isWriteAllowedForModule(String sModuleEntity, Integer iGenericObjectId) {
+		return ModulePermission.includesWriting(getModulePermission(sModuleEntity, iGenericObjectId));
 	}
 
-	public synchronized boolean isWriteAllowedForMasterData(String sEntity) {
-		return MasterDataPermission.includesWriting(this.getMasterDataPermission(sEntity));
+	public boolean isWriteAllowedForMasterData(String sEntity) {
+		return MasterDataPermission.includesWriting(getMasterDataPermission(sEntity));
 	}
 
-	public synchronized boolean isWriteAllowedForMasterData(NuclosEntity entity) {
+	public boolean isWriteAllowedForMasterData(NuclosEntity entity) {
 		return isWriteAllowedForMasterData(entity.getEntityName());
 	}
 
-	public synchronized boolean isDeleteAllowedForModule(String sModuleEntity, Integer iGenericObjectId, boolean physically) {
-		ModulePermission modulePermission = this.getModulePermission(sModuleEntity, iGenericObjectId);
+	public boolean isDeleteAllowedForModule(String sModuleEntity, Integer iGenericObjectId, boolean physically) {
+		ModulePermission modulePermission = getModulePermission(sModuleEntity, iGenericObjectId);
 		return physically
 			? ModulePermission.includesDeletingPhysically(modulePermission)
 			: ModulePermission.includesDeletingLogically(modulePermission);
 	}
 
-	public synchronized boolean isDeleteAllowedForMasterData(String sEntity) {
-		return MasterDataPermission.includesDeleting(this.getMasterDataPermission(sEntity));
+	public boolean isDeleteAllowedForMasterData(String sEntity) {
+		return MasterDataPermission.includesDeleting(getMasterDataPermission(sEntity));
 	}
 
 	/**
@@ -266,7 +267,7 @@ public class SecurityCache {
 	 * @param sEntityName
 	 * @return a map of state id's and the corresponding permission
 	 */
-	public synchronized Map<Integer, Permission> getSubFormPermission(String sEntityName) {
+	public Map<Integer, Permission> getSubFormPermission(String sEntityName) {
 		PermissionKey.SubFormPermissionKey subFormPermissionKey = new PermissionKey.SubFormPermissionKey(sEntityName);
 		if (!mpSubFormPermission.containsKey(subFormPermissionKey)) {
 			Map<Integer, Permission> permission = securityDelegate.getSubFormPermission(sEntityName);
@@ -283,7 +284,7 @@ public class SecurityCache {
 	 * @param iState
 	 * @return Permission
 	 */
-	public synchronized Permission getSubFormPermission(String sEntityName, Integer iState) {
+	public Permission getSubFormPermission(String sEntityName, Integer iState) {
 		return getSubFormPermission(sEntityName).get(iState);
 	}
 
@@ -294,7 +295,7 @@ public class SecurityCache {
 	 * @param stateId        the state
 	 * @return Permission
 	 */
-	public synchronized Permission getAttributePermission(String entity, String attributeName, Integer stateId) {
+	public Permission getAttributePermission(String entity, String attributeName, Integer stateId) {
 		PermissionKey.AttributePermissionKey key = new PermissionKey.AttributePermissionKey(entity, attributeName, stateId);
 		if(!mpAttributePermission.containsKey(key)) {
 			Map<String, Permission> attrPermissions
@@ -311,4 +312,5 @@ public class SecurityCache {
 	public Boolean isSuperUser() {
 		return superUser;
 	}
+	
 }	// class SecurityCache

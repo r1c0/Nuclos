@@ -19,6 +19,7 @@ package org.nuclos.client.masterdata;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.annotation.PostConstruct;
 import javax.jms.JMSException;
@@ -58,14 +59,16 @@ import org.springframework.beans.factory.annotation.Configurable;
 public class MasterDataCache {
 	private final Logger log = Logger.getLogger(this.getClass());
 
-	private static MasterDataCache singleton;
+	private static MasterDataCache INSTANCE;
 
 	/**
 	 * maps an entity name to the contents of the entity.
 	 */
-	private final Map<String, List<MasterDataVO>> mp = CollectionUtils.newHashMap();
+	private final Map<String, List<MasterDataVO>> mp 
+		= new ConcurrentHashMap<String, List<MasterDataVO>>();
 
-	private final Map<CollectableFieldsByNameKey, List<CollectableField>> mpCollectableFieldsByName = CollectionUtils.newHashMap();
+	private final Map<CollectableFieldsByNameKey, List<CollectableField>> mpCollectableFieldsByName 
+		= new ConcurrentHashMap<MasterDataCache.CollectableFieldsByNameKey, List<CollectableField>>();
 	
 	private TopicNotificationReceiver tnr;
 
@@ -94,10 +97,10 @@ public class MasterDataCache {
 	};
 
 	public static synchronized MasterDataCache getInstance() {
-		if (singleton == null) {
-			singleton = new MasterDataCache();
+		if (INSTANCE == null) {
+			INSTANCE = new MasterDataCache();
 		}
-		return singleton;
+		return INSTANCE;
 	}
 
 	private MasterDataCache() {
@@ -120,12 +123,12 @@ public class MasterDataCache {
 	 * @return the current contents (data) of the entity with the given name.
 	 * @throws CommonFinderException
 	 */
-	public synchronized List<MasterDataVO> get(String sEntityName) throws CommonFinderException {
-		List<MasterDataVO> result = this.mp.get(sEntityName);
+	public List<MasterDataVO> get(String sEntityName) throws CommonFinderException {
+		List<MasterDataVO> result = mp.get(sEntityName);
 		if (result == null) {
 			result = new ArrayList<MasterDataVO>(MasterDataDelegate.getInstance().getMasterData(sEntityName));
 			if (!Boolean.FALSE.equals(isCacheable(sEntityName))) {
-				this.mp.put(sEntityName, result);
+				mp.put(sEntityName, result);
 			}
 		}
 		return result;
@@ -139,7 +142,7 @@ public class MasterDataCache {
 	 * @return the data (if found)
 	 * @throws CommonFinderException
 	 */
-	public synchronized MasterDataVO get(String sEntityName, Integer id) throws CommonFinderException {
+	public MasterDataVO get(String sEntityName, Integer id) throws CommonFinderException {
 		List<MasterDataVO> result = get(sEntityName);
 		for (MasterDataVO md : result) {
 			if (LangUtils.equals(id,  md.getIntId())) {
@@ -202,9 +205,9 @@ public class MasterDataCache {
 	 * @param bCheckValidity Test for active sign and validFrom/validUntil
 	 * @return list of collectable fields
 	 */
-	public synchronized List<CollectableField> getCollectableFields(String sEntityName, boolean bCheckValidity) throws CommonBusinessException {
+	public List<CollectableField> getCollectableFields(String sEntityName, boolean bCheckValidity) throws CommonBusinessException {
 		/** @todo use CollectableEntity.getIdentifierFieldName rather than CollectableMasterData.FIELDNAME_NAME */
-		return this.getCollectableFieldsByName(sEntityName, CollectableMasterData.FIELDNAME_NAME, bCheckValidity);
+		return getCollectableFieldsByName(sEntityName, CollectableMasterData.FIELDNAME_NAME, bCheckValidity);
 	}
 
 	/**
@@ -214,17 +217,18 @@ public class MasterDataCache {
 	 * @param bCheckValidity Test for active sign and validFrom/validUntil
 	 * @return list of collectable fields
 	 */
-	public synchronized List<CollectableField> getCollectableFieldsByName(String sEntityName, String sFieldName, boolean bCheckValidity) throws CommonBusinessException {
+	public List<CollectableField> getCollectableFieldsByName(String sEntityName, String sFieldName, boolean bCheckValidity) 
+			throws CommonBusinessException {
 		CollectableFieldsByNameKey cacheKey = new CollectableFieldsByNameKey();
 		cacheKey.sEntityName = sEntityName;
 		cacheKey.sFieldName = sFieldName;
 		cacheKey.bCheckValidity = bCheckValidity;
 
-		List<CollectableField> result = this.mpCollectableFieldsByName.get(cacheKey);
+		List<CollectableField> result = mpCollectableFieldsByName.get(cacheKey);
 		if (result == null) {
 			result = EntityFacadeDelegate.getInstance().getCollectableFieldsByName(sEntityName, sFieldName, bCheckValidity);
 			if (Boolean.TRUE.equals(isCacheable(sEntityName))) {
-				this.mpCollectableFieldsByName.put(cacheKey, result);
+				mpCollectableFieldsByName.put(cacheKey, result);
 			}
 		}
 		return result;
@@ -247,7 +251,6 @@ public class MasterDataCache {
 
 			return super.equals(obj);
 		}
-
 
 	}
 

@@ -23,6 +23,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.log4j.Logger;
 import org.nuclos.common.AbstractParameterProvider;
@@ -30,6 +31,7 @@ import org.nuclos.common.JMSConstants;
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.SpringApplicationContextHolder;
 import org.nuclos.common.dal.vo.SystemFields;
+import org.nuclos.server.common.ejb3.ParameterFacadeRemote;
 import org.nuclos.server.database.DataBaseHelper;
 import org.nuclos.server.dblayer.DbTuple;
 import org.nuclos.server.dblayer.query.DbFrom;
@@ -52,12 +54,15 @@ import org.springframework.beans.factory.InitializingBean;
  */
 public class ServerParameterProvider extends AbstractParameterProvider implements ServerParameterProviderMBean, InitializingBean {
 
-	//private static final Logger log = Logger.getLogger(ServerParameterProvider.class);
+	private static final Logger LOG = Logger.getLogger(ServerParameterProvider.class);
+	
+	private static final String NULL = "<null>";
 
 	/**
 	 * Map<String sName, String sValue>
 	 */
-	private Map<String, String> mpParameters;
+	private final Map<String, String> mpParameters
+		= new ConcurrentHashMap<String, String>();
 
 	//private final ClientNotifier clientnotifier = new ClientNotifier(JMSConstants.TOPICNAME_PARAMETERPROVIDER);
 
@@ -69,41 +74,50 @@ public class ServerParameterProvider extends AbstractParameterProvider implement
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		this.mpParameters = this.loadParameters();
-		MBeanAgent.registerConfiguration(this, ServerParameterProviderMBean.class);
+		if (mpParameters.isEmpty()) {
+			final Map<String,String> lp = loadParameters();
+			mpParameters.putAll(lp);
+			MBeanAgent.registerConfiguration(this, ServerParameterProviderMBean.class);
+		}
 	}
 
 	/**
 	 * @return Map<String sName, String sValue>
 	 */
 	@Override
-	public synchronized Map<String, String> getAllParameters() {
-		return Collections.unmodifiableMap(this.mpParameters);
+	public Map<String, String> getAllParameters() {
+		return Collections.unmodifiableMap(mpParameters);
 	}
 
 	@Override
-	public synchronized String getValue(String sParameter) {
-		return mpParameters.get(sParameter);
+	public String getValue(String sParameter) {
+		final String result = mpParameters.get(sParameter);
+		if (NULL.equals(result)) {
+			return null;
+		}
+		return result;
 	}
 
 	/**
 	 * gets all parameters
 	 * @return Map<String name, String value>
 	 */
-	private Map<String,String> loadParameters(){
+	private static Map<String,String> loadParameters() {
 		Map<String,String> rawParameters = new HashMap<String, String>();
 		Map<String, String> properties = getParameterDefaults();
 		if (properties != null)
 			rawParameters.putAll(properties);
 		rawParameters.putAll(getParametersFromDB());
 
-		Map<String,String> mpParameters = new HashMap<String,String>();
-		for(String sParameter : rawParameters.keySet()){
-			String value = rawParameters.get(sParameter);
-			if(value != null && !value.isEmpty())
+		final Map<String,String> mpParameters = new HashMap<String,String>();
+		for(String sParameter : rawParameters.keySet()) {
+			String value = rawParameters.get(sParameter);			
+			if(value != null && !value.isEmpty()) {
 				mpParameters.put(sParameter, replaceParameter(rawParameters, value));
-			else
-				mpParameters.put(sParameter, null);
+			}
+			else {
+				mpParameters.put(sParameter, NULL);
+			}
 
 			String ovr = System.getProperty("override." + sParameter.replace(' ', '_'));
 			if(ovr != null)
@@ -155,7 +169,7 @@ public class ServerParameterProvider extends AbstractParameterProvider implement
 	 * @param sParameterValue
 	 * @return
 	 */
-    private String replaceParameter(Map<String, String> mpParameters,String sParameterValue) {
+    private static String replaceParameter(Map<String, String> mpParameters,String sParameterValue) {
        int sidx = 0;
        while ((sidx = sParameterValue.indexOf("${", sidx)) >= 0) {
            int eidx = sParameterValue.indexOf("}", sidx);
@@ -179,7 +193,7 @@ public class ServerParameterProvider extends AbstractParameterProvider implement
 	 * @param mpParameter
 	 * @return parameter value or <code>IllegalArgumentException</code> if parameter has no value
 	 */
-    private String findReplacement(Map<String, String> mpParameters, String sParameter) {
+    private static String findReplacement(Map<String, String> mpParameters, String sParameter) {
 
        if(mpParameters.containsKey(sParameter))
     	   return mpParameters.get(sParameter);
@@ -190,31 +204,27 @@ public class ServerParameterProvider extends AbstractParameterProvider implement
 
     }
 
-    public synchronized void revalidate() {
-   	 this.mpParameters = this.loadParameters();
-   	 this.notifyClients(JMS_MESSAGE_ALL_PARAMETERS_ARE_REVALIDATED);
-    }
+	public void revalidate() {
+		mpParameters.clear();
+		mpParameters.putAll(loadParameters());
+		notifyClients(JMS_MESSAGE_ALL_PARAMETERS_ARE_REVALIDATED);
+	}
 
-    private synchronized void notifyClients(String sMessage) {
-    	NuclosJMSUtils.sendMessage(JMS_MESSAGE_ALL_PARAMETERS_ARE_REVALIDATED, JMSConstants.TOPICNAME_PARAMETERPROVIDER);
-    }
+	private void notifyClients(String sMessage) {
+		NuclosJMSUtils.sendMessage(
+				JMS_MESSAGE_ALL_PARAMETERS_ARE_REVALIDATED, JMSConstants.TOPICNAME_PARAMETERPROVIDER);
+	}
 
-    /**
-     * @return current system environment
-     */
-    @Override
-		public synchronized Map<String,String> getSystemParameters(){
-			return System.getenv();
-		}
+	/**
+	 * @return current system environment
+	 */
+	public static Map<String, String> getSystemParameters() {
+		return System.getenv();
+	}
 
-		@Override
-		public synchronized Collection<String> getParameterNames() {
-			return this.mpParameters.keySet();
-		}
+	@Override
+	public Collection<String> getParameterNames() {
+		return this.mpParameters.keySet();
+	}
 
-		@Override
-		protected void finalize() throws Throwable {
-			//this.clientnotifier.close();
-			super.finalize();
-		}
 }	// class ServerParameterProvider

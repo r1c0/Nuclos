@@ -22,6 +22,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.log4j.Logger;
 import org.nuclos.common.NuclosEntity;
@@ -52,21 +53,30 @@ import org.nuclos.server.statemodel.valueobject.StateVO;
  * @version 00.01.000
  */
 public class StateCache {
-	private static final Logger log = Logger.getLogger(StateCache.class);
+	
+	private static final Logger LOG = Logger.getLogger(StateCache.class);
 
-	private static StateCache singleton;
+	private static StateCache INSTANCE;
 
-	private MasterDataFacadeLocal mdLocal = null;
+	private MasterDataFacadeLocal mdLocal;
 	private StateFacadeLocal statefacade;
 
-	private Map<Integer, StateVO> mpStatessById;
-	private Map<Integer, List<StateVO>> mpStatesByModel;
-	private Map<Integer, StateVO> mpStateByModelAndInitialState;
-	private Map<Integer, StateTransitionVO> mpInitialTransitionByModel;
-	private Map<Integer, Collection<StateVO>> mpStatesByModule;
+	private final Map<Integer, StateVO> mpStatessById
+		= new ConcurrentHashMap<Integer, StateVO>();
+	
+	private final Map<Integer, List<StateVO>> mpStatesByModel
+		= new ConcurrentHashMap<Integer, List<StateVO>>();
+	
+	private final Map<Integer, StateVO> mpStateByModelAndInitialState
+		= new ConcurrentHashMap<Integer, StateVO>();
+	
+	private final Map<Integer, StateTransitionVO> mpInitialTransitionByModel
+		= new ConcurrentHashMap<Integer, StateTransitionVO>();
+	
+	private final Map<Integer, Collection<StateVO>> mpStatesByModule
+		= new ConcurrentHashMap<Integer, Collection<StateVO>>();
 
 	private StateCache() {
-
 	}
 	
 	private StateFacadeLocal getStateFacade() {
@@ -83,10 +93,10 @@ public class StateCache {
 	}
 
 	public static synchronized StateCache getInstance() {
-		if (singleton == null) {
-			singleton = new StateCache();
+		if (INSTANCE == null) {
+			INSTANCE = new StateCache();
 		}
-		return singleton;
+		return INSTANCE;
 	}
 
 	/**
@@ -96,20 +106,18 @@ public class StateCache {
 	 * @throws CommonPermissionException
 	 * @throws CommonFinderException
 	 */
-	public synchronized StateVO getState(Integer iStateId) {
+	public StateVO getState(Integer iStateId) {
 		try {
-			if (mpStatessById == null) {
-				mpStatessById = Collections.synchronizedMap(new HashMap<Integer, StateVO>());
-			}
 			if (!mpStatessById.containsKey(iStateId)) {
-				log.info("Initializing StateCache for StateId " + iStateId);
+				LOG.info("Initializing StateCache for StateId " + iStateId);
 
-				StateVO stateVO = MasterDataWrapper.getStateVO(getMasterDataFacade().get(NuclosEntity.STATE.getEntityName(), iStateId));
+				StateVO stateVO = MasterDataWrapper.getStateVO(
+						getMasterDataFacade().get(NuclosEntity.STATE.getEntityName(), iStateId));
 				stateVO.setMandatoryFields(getStateFacade().findMandatoryFieldsByStateId(stateVO.getId()));
 				stateVO.setMandatoryColumns(getStateFacade().findMandatoryColumnsByStateId(stateVO.getId()));
 				mpStatessById.put(stateVO.getId(), stateVO);
 
-				log.info("FINISHED initializing State cache for StateId " + iStateId);
+				LOG.info("FINISHED initializing State cache for StateId " + iStateId);
 			}
 		}
 		catch (CommonFinderException ex) {
@@ -118,7 +126,6 @@ public class StateCache {
 		catch (CommonPermissionException ex) {
 			throw new NuclosFatalException(ex);
 		}
-
 		return mpStatessById.get(iStateId);
 	}
 
@@ -127,12 +134,9 @@ public class StateCache {
 	 * @param iModelId
 	 * @return List<StateVO> of all states in model with given id
 	 */
-	public synchronized Collection<StateVO> getStatesByModel(Integer iModelId) {
-		if (mpStatesByModel == null) {
-			mpStatesByModel = Collections.synchronizedMap(new HashMap<Integer, List<StateVO>>());
-		}
+	public Collection<StateVO> getStatesByModel(Integer iModelId) {
 		if (!mpStatesByModel.containsKey(iModelId)) {
-			log.info("Initializing StateCache for ModelID " + iModelId);
+			LOG.info("Initializing StateCache for ModelID " + iModelId);
 			final List<StateVO> lststatevo = new ArrayList<StateVO>();
 
 			Collection<MasterDataVO> mdVOList = getMasterDataFacade().getDependantMasterData(NuclosEntity.STATE.getEntityName(), "model", iModelId);
@@ -146,17 +150,14 @@ public class StateCache {
 
 			mpStatesByModel.put(iModelId, lststatevo);
 
-			log.info("FINISHED initializing State cache for ModelId "
+			LOG.info("FINISHED initializing State cache for ModelId "
 				+ iModelId);
 		}
 
 		return mpStatesByModel.get(iModelId);
 	}
 	
-	public synchronized StateTransitionVO getInitialTransistionByModel(Integer iModelId) {
-		if (mpInitialTransitionByModel == null) {
-			mpInitialTransitionByModel = Collections.synchronizedMap(new HashMap<Integer, StateTransitionVO>());
-		}
+	public StateTransitionVO getInitialTransistionByModel(Integer iModelId) {
 		if (!mpInitialTransitionByModel.containsKey(iModelId)) {
 			StateTransitionVO initialTransition = getStateFacade().findStateTransitionByNullAndTargetState(getStateByModelAndInitialState(iModelId).getId());
 			
@@ -164,19 +165,14 @@ public class StateCache {
 				throw new NuclosFatalException("getInitialTransistionByModel failed for modelId = "+iModelId);
 
 			mpInitialTransitionByModel.put(iModelId, initialTransition);
-
-			log.info("FINISHED initializing Transistion cache for ModelId " + iModelId);
-		}
-		
+			LOG.info("FINISHED initializing Transistion cache for ModelId " + iModelId);
+		}	
 		return mpInitialTransitionByModel.get(iModelId);
 	}
 
-	public synchronized StateVO getStateByModelAndInitialState(Integer iModelId) {
-		if (mpStateByModelAndInitialState == null) {
-			mpStateByModelAndInitialState = Collections.synchronizedMap(new HashMap<Integer, StateVO>());
-		}
+	public StateVO getStateByModelAndInitialState(Integer iModelId) {
 		if (!mpStateByModelAndInitialState.containsKey(iModelId)) {
-			log.info("Initializing StateCache for ModelID " + iModelId);
+			LOG.info("Initializing StateCache for ModelID " + iModelId);
 
 			DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
 			DbQuery<Integer> query = builder.createQuery(Integer.class);
@@ -193,20 +189,15 @@ public class StateCache {
 				throw new NuclosFatalException("getStateByModelAndInitialState failed for modelId = "+iModelId);
 
 			mpStateByModelAndInitialState.put(iModelId,getState(stateIds.iterator().next()));
-
-			log.info("FINISHED initializing State cache for ModelId " + iModelId);
+			LOG.info("FINISHED initializing State cache for ModelId " + iModelId);
 		}
-
 		return mpStateByModelAndInitialState.get(iModelId);
 	}
 
-	public synchronized Collection<StateVO> getStatesByModule(Integer iModuleId) {
+	public Collection<StateVO> getStatesByModule(Integer iModuleId) {
 		// special case for general search (all states for all modules)
 		if (iModuleId == null) {
 			iModuleId = new Integer(-1);
-		}
-		if (mpStatesByModule == null) {
-			mpStatesByModule = Collections.synchronizedMap(new HashMap<Integer, Collection<StateVO>>());
 		}
 		if (!mpStatesByModule.containsKey(iModuleId)) {
 			if (iModuleId.intValue() == -1) {
@@ -221,7 +212,7 @@ public class StateCache {
 				mpStatesByModule.put(iModuleId, lstStates);
 			}
 			else {
-				log.info("Initializing StateCache for ModuleID " + iModuleId);
+				LOG.info("Initializing StateCache for ModuleID " + iModuleId);
 				// First get all models for a given module
 
 				final Collection<StateVO> collstatevo = new ArrayList<StateVO>();
@@ -229,25 +220,23 @@ public class StateCache {
 				{
 					collstatevo.addAll(this.getStatesByModel(iModel));
 				}
-
 				mpStatesByModule.put(iModuleId, collstatevo);
-				log.info("FINISHED initializing State cache for ModuleId " + iModuleId);
+				LOG.info("FINISHED initializing State cache for ModuleId " + iModuleId);
 			}
 		}
-
 		return mpStatesByModule.get(iModuleId);
 	}
 
 	/**
 	 * Invalidate the whole cache
 	 */
-	public synchronized void invalidate() {
-		log.info("Invalidating StateCache");
-		mpStatessById = null;
-		mpStatesByModel = null;
-		mpStateByModelAndInitialState = null;
-		mpInitialTransitionByModel = null;
-		mpStatesByModule = null;
+	public void invalidate() {
+		LOG.info("Invalidating StateCache");
+		mpStatessById.clear();
+		mpStatesByModel.clear();
+		mpStateByModelAndInitialState.clear();
+		mpInitialTransitionByModel.clear();
+		mpStatesByModule.clear();
 	}
 
 }	// class StateCache

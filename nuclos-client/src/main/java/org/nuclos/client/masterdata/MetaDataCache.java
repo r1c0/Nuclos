@@ -19,6 +19,7 @@ package org.nuclos.client.masterdata;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.annotation.PostConstruct;
 import javax.jms.JMSException;
@@ -53,9 +54,9 @@ import org.springframework.beans.factory.annotation.Configurable;
 @Configurable
 public class MetaDataCache {
 
-	private final Logger log = Logger.getLogger(this.getClass());
+	private static final Logger LOG = Logger.getLogger(MetaDataCache.class);
 
-	private static MetaDataCache singleton;
+	private static MetaDataCache INSTANCE;
 	
 	private Map<String, MasterDataMetaVO> mp;
 	
@@ -64,7 +65,7 @@ public class MetaDataCache {
 	private final MessageListener messagelistener = new MessageListener() {
 		@Override
 		public void onMessage(Message msg) {
-			log.debug("Received notification from server: meta data changed.");
+			LOG.debug("Received notification from server: meta data changed.");
 			MetaDataCache.this.invalidate();
 			if (msg instanceof TextMessage) {
 				try {
@@ -78,21 +79,23 @@ public class MetaDataCache {
 						});
 				}
 				catch (JMSException ex) {
-					log.warn("Exception thrown in JMS message listener.", ex);
+					LOG.warn("Exception thrown in JMS message listener.", ex);
 				}
 			}
 			else {
-				log.warn("Message of type " + msg.getClass().getName() + " received, while a TextMessage was expected.");
+				LOG.warn("Message of type " + msg.getClass().getName() + " received, while a TextMessage was expected.");
 			}			
 		}
 	};
 	
 
+	private Map<String, MasterDataMetaVO> mp;
+	
 	public static synchronized MetaDataCache getInstance() {
-		if (singleton == null) {
-			singleton = new MetaDataCache();
+		if (INSTANCE == null) {
+			INSTANCE = new MetaDataCache();
 		}
-		return singleton;
+		return INSTANCE;
 	}
 	
 	public MetaDataCache() {
@@ -103,7 +106,7 @@ public class MetaDataCache {
 		tnr.subscribe(JMSConstants.TOPICNAME_METADATACACHE, messagelistener);
 		log.debug("Initializing metadata cache");
 		final Collection<MasterDataMetaVO> coll = MasterDataDelegate.getInstance().getMetaData();
-		this.mp = new HashMap<String, MasterDataMetaVO>(coll.size());
+		this.mp = new ConcurrentHashMap<String, MasterDataMetaVO>(coll.size());
 		for (MasterDataMetaVO mdmetavo : coll) {
 			this.mp.put(mdmetavo.getEntityName(), mdmetavo);
 		}
@@ -117,8 +120,8 @@ public class MetaDataCache {
 	/**
 	 * @return the meta data for all master data tables.
 	 */
-	public synchronized Collection<MasterDataMetaVO> getMetaData() {
-		Collection<MasterDataMetaVO> coll = this.mp.values();
+	public Collection<MasterDataMetaVO> getMetaData() {
+		Collection<MasterDataMetaVO> coll = mp.values();
 		if(coll == null || coll.isEmpty())
 			return MasterDataDelegate.getInstance().getMetaData();
 		
@@ -130,8 +133,8 @@ public class MetaDataCache {
 	 * @return the meta data for the given entity, if any.
 	 */
 	public MasterDataMetaVO getMetaData(String sEntity) {
-		log.debug("Metadata cache hit");		
-		MasterDataMetaVO result = this.mp.get(sEntity);
+		LOG.debug("Metadata cache hit");		
+		MasterDataMetaVO result = mp.get(sEntity);
 		if(result == null)
 			return MasterDataDelegate.getInstance().getMetaData(sEntity);
 		
@@ -143,7 +146,7 @@ public class MetaDataCache {
 	}
 	
 	public MasterDataMetaVO getMetaDataById(Integer iId) {
-		log.debug("Metadata cache hit");
+		LOG.debug("Metadata cache hit");
 		for (MasterDataMetaVO result : mp.values()) {
 			if (iId.equals(result.getId())) {
 				return result;
@@ -153,8 +156,8 @@ public class MetaDataCache {
 	}
 	
 	public synchronized void invalidate() {
-		log.debug("Invalidating meta data cache.");
-		this.mp.clear();
+		LOG.debug("Invalidating meta data cache.");
+		mp.clear();
 		MasterDataDelegate.getInstance().invalidateCaches();
 	}
 		

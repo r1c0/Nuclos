@@ -23,6 +23,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.log4j.Logger;
 import org.nuclos.common.NuclosFatalException;
@@ -427,25 +428,19 @@ public class DatasourceServerUtils {
 	    */
 	   public class SQLCache {
 
-		   private Map<String, String> mpDatasourcesSQLByXML = null;
-
-		   private synchronized Map<String, String> getMap() {
-			   if (mpDatasourcesSQLByXML == null) {
-				   mpDatasourcesSQLByXML = Collections.synchronizedMap(new HashMap<String, String>());
-			   }
-			   return mpDatasourcesSQLByXML;
-		   }
+		   private final Map<String, String> mpDatasourcesSQLByXML 
+		   	= new ConcurrentHashMap<String, String>();
 
 		   private String getSQL(String sDatasourceXML) throws NuclosDatasourceException {
-			   if (!getMap().containsKey(sDatasourceXML)) {
-				   getMap().put(sDatasourceXML, createSQLForCaching(sDatasourceXML));
+			   if (!mpDatasourcesSQLByXML.containsKey(sDatasourceXML)) {
+				   mpDatasourcesSQLByXML.put(sDatasourceXML, createSQLForCaching(sDatasourceXML));
 			   }
 
-			   return getMap().get(sDatasourceXML);
+			   return mpDatasourcesSQLByXML.get(sDatasourceXML);
 		   }
 
-		   public synchronized void invalidate() {
-			   mpDatasourcesSQLByXML = null;
+		   public void invalidate() {
+			   mpDatasourcesSQLByXML.clear();
 		   }
 	   }
 

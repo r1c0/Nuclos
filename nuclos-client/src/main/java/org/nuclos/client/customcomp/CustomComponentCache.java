@@ -21,6 +21,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.annotation.PostConstruct;
 import javax.jms.Message;
@@ -42,18 +43,18 @@ public class CustomComponentCache {
 	
 	private static final Logger LOG = Logger.getLogger(CustomComponentCache.class);
 
-	private static CustomComponentCache singleton;
+	private static CustomComponentCache INSTANCE;
 
 	public static synchronized CustomComponentCache getInstance() {
-		if (singleton == null) {
+		if (INSTANCE == null) {
 			try {
-				singleton = new CustomComponentCache();
+				INSTANCE = new CustomComponentCache();
 			}
 			catch (RuntimeException ex) {
 				throw new CommonFatalException(ex);
 			}
 		}
-		return singleton;
+		return INSTANCE;
 	}
 	
 	//
@@ -94,15 +95,15 @@ public class CustomComponentCache {
 		this.tnr = tnr;
 	}
 	
-	public synchronized Collection<CustomComponentVO> getAll() {
+	public Collection<CustomComponentVO> getAll() {
 		return customComponents.values();
 	}
 
-	public synchronized Collection<String> getAllNames() {
+	public Collection<String> getAllNames() {
 		return customComponents.keySet();
 	}
 
-	public synchronized CustomComponentVO getByName(String internalName) {
+	public CustomComponentVO getByName(String internalName) {
 		CustomComponentVO customComponentVO = customComponents.get(internalName);
 		if (customComponentVO == null)
 			throw new NuclosFatalException("No component with name " + internalName);
@@ -110,7 +111,7 @@ public class CustomComponentCache {
 	}
 	
 	private synchronized void revalidate() {
-		customComponents = new HashMap<String, CustomComponentVO>();
+		customComponents = new ConcurrentHashMap<String, CustomComponentVO>();
 		for (CustomComponentVO vo : CustomComponentDelegate.getInstance().getAll()) {
 			customComponents.put(vo.getInternalName(), vo);
 		}

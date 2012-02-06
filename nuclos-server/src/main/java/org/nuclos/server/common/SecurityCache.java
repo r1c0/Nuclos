@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.log4j.Logger;
 import org.nuclos.common.Actions;
@@ -81,16 +82,26 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
  */
 public class SecurityCache implements SecurityCacheMBean {
 
-	private static SecurityCache singleton;
+	private static final Logger LOG = Logger.getLogger(SecurityCache.class);
 
-	private final Logger log = Logger.getLogger(this.getClass());
-
-	//private final ClientNotifier clientnotifier = new ClientNotifier(JMSConstants.TOPICNAME_SECURITYCACHE);
+	private static SecurityCache INSTANCE;
+	
+	//
 
 	private SecurityFacadeLocal securityfacade;
+
 	private GenericObjectGroupFacadeLocal genericobjectgroupfacade;
 
-	private Map<PermissionKey.AttributePermissionKey, Permission> mpAttributePermission = new HashMap<PermissionKey.AttributePermissionKey, Permission>();
+	private final Map<PermissionKey.AttributePermissionKey, Permission> mpAttributePermission 
+		= new HashMap<PermissionKey.AttributePermissionKey, Permission>();
+
+	private final Map<String, UserRights> mpUserRights = new ConcurrentHashMap<String, UserRights>();
+
+	private final Map<UserAttributeGroup, Map<Integer, Permission>> mpAttributeGroups
+		= new ConcurrentHashMap<SecurityCache.UserAttributeGroup, Map<Integer,Permission>>();
+	
+	private final Map<UserSubForm, Map<Integer, Permission>> mpSubForms
+		= new ConcurrentHashMap<SecurityCache.UserSubForm, Map<Integer,Permission>>();
 
 	private static class UserRights {
 
@@ -616,94 +627,94 @@ public class SecurityCache implements SecurityCacheMBean {
 		}
 	}
 
-	private final Map<String, UserRights> mpUserRights = new HashMap<String, UserRights>();
-
-	private final Map<UserAttributeGroup, Map<Integer, Permission>> mpAttributeGroups;
-	private final Map<UserSubForm, Map<Integer, Permission>> mpSubForms;
-
 	public static synchronized SecurityCache getInstance() {
-		if (singleton == null) {
-			singleton = new SecurityCache();
+		if (INSTANCE == null) {
+			INSTANCE = new SecurityCache();
 			// register this cache as MBean
 			//MBeanAgent.registerCache(singleton, SecurityCacheMBean.class);
 		}
 
-		return singleton;
+		return INSTANCE;
 	}
 
 	private SecurityCache() {
-		/** @todo OPTIMIZE: These maps needn't be synchronized */
-		this.mpAttributeGroups = Collections.synchronizedMap(new HashMap<UserAttributeGroup, Map<Integer, Permission>>());
-		this.mpSubForms = Collections.synchronizedMap(new HashMap<UserSubForm, Map<Integer, Permission>>());
 	}
 
 	public Set<String> getAllowedActions(String sUserName) {
-		return this.getUserRights(sUserName).getAllowedActions();
+		return getUserRights(sUserName).getAllowedActions();
 	}
 
 	public ModulePermissions getModulePermissions(String sUserName) {
-		return this.getUserRights(sUserName).getModulePermissions();
+		return getUserRights(sUserName).getModulePermissions();
 	}
 
 	public MasterDataPermissions getMasterDataPermissions(String sUserName){
-		return this.getUserRights(sUserName).getMasterDataPermissions();
+		return getUserRights(sUserName).getMasterDataPermissions();
 	}
 
 	public boolean isReadAllowedForModule(String sUserName, Integer iModuleId, Integer iGenericObjectId) {
-		return this.isReadAllowedForModule(sUserName, Modules.getInstance().getEntityNameByModuleId(iModuleId), iGenericObjectId);
+		return isReadAllowedForModule(sUserName, Modules.getInstance().getEntityNameByModuleId(iModuleId), iGenericObjectId);
 	}
 
 	public boolean isReadAllowedForModule(String sUserName, String sEntityName, Integer iGenericObjectId) {
-		return this.getUserRights(sUserName).isSuperUser() || ModulePermission.includesReading(this.getModulePermissions(sUserName).getMaxPermissionForGenericObject(sEntityName, iGenericObjectId));
+		return getUserRights(sUserName).isSuperUser() || ModulePermission.includesReading(this.getModulePermissions(sUserName).getMaxPermissionForGenericObject(sEntityName, iGenericObjectId));
 	}
 
 	public boolean isReadAllowedForMasterData(String sUserName, Integer iMasterDataId) {
-		return this.isReadAllowedForMasterData(sUserName, MasterDataMetaCache.getInstance().getMetaDataById(iMasterDataId).getEntityName());
+		return isReadAllowedForMasterData(sUserName, MasterDataMetaCache.getInstance().getMetaDataById(iMasterDataId).getEntityName());
 	}
 
 	public boolean isReadAllowedForMasterData(String sUserName, String sEntityName) {
 		if (NuclosEntity.REPORTEXECUTION.checkEntityName(sEntityName)) {
-			return this.getUserRights(sUserName).getAllowedActions().contains(Actions.ACTION_EXECUTE_REPORTS);
+			return getUserRights(sUserName).getAllowedActions().contains(Actions.ACTION_EXECUTE_REPORTS);
 		}
-		return this.getUserRights(sUserName).isSuperUser() || MasterDataPermission.includesReading(this.getMasterDataPermissions(sUserName).get(sEntityName));
+		return getUserRights(sUserName).isSuperUser() 
+				|| MasterDataPermission.includesReading(this.getMasterDataPermissions(sUserName).get(sEntityName));
 	}
 
 	public boolean isNewAllowedForModule(String sUserName, Integer iModuleId) {
-		return this.getModulePermissions(sUserName).getNewAllowedByModuleId().get(iModuleId);
+		return getModulePermissions(sUserName).getNewAllowedByModuleId().get(iModuleId);
 	}
 
 	public boolean isWriteAllowedForModule(String sUserName, Integer iModuleId, Integer iGenericObjectId) {
-		return this.isWriteAllowedForModule(sUserName, Modules.getInstance().getEntityNameByModuleId(iModuleId), iGenericObjectId);
+		return isWriteAllowedForModule(sUserName, Modules.getInstance().getEntityNameByModuleId(iModuleId), iGenericObjectId);
 	}
 
 	public boolean isWriteAllowedForModule(String sUserName, String sEntityName, Integer iGenericObjectId) {
-		return ModulePermission.includesWriting(this.getModulePermissions(sUserName).getMaxPermissionForGenericObject(sEntityName, iGenericObjectId));
+		return ModulePermission.includesWriting(
+				getModulePermissions(sUserName).getMaxPermissionForGenericObject(sEntityName, iGenericObjectId));
 	}
 
 	public boolean isWriteAllowedForMasterData(String sUserName, Integer iMasterDataId) {
-		return this.isWriteAllowedForMasterData(sUserName, MasterDataMetaCache.getInstance().getMetaDataById(iMasterDataId).getEntityName());
+		return isWriteAllowedForMasterData(sUserName, 
+				MasterDataMetaCache.getInstance().getMetaDataById(iMasterDataId).getEntityName());
 	}
 
 	public boolean isWriteAllowedForMasterData(String sUserName, String sEntityName) {
-		return MasterDataPermission.includesWriting(this.getMasterDataPermissions(sUserName).get(sEntityName));
+		return MasterDataPermission.includesWriting(getMasterDataPermissions(sUserName).get(sEntityName));
 	}
 
 	public boolean isWriteAllowedForObjectGroup(String sUserName, Integer iModuleId, Integer iObjectGroupId) {
-		return this.isWriteAllowedForObjectGroup(sUserName, Modules.getInstance().getEntityNameByModuleId(iModuleId), iObjectGroupId);
+		return isWriteAllowedForObjectGroup(sUserName, 
+				Modules.getInstance().getEntityNameByModuleId(iModuleId), iObjectGroupId);
 	}
 
 	public boolean isWriteAllowedForObjectGroup(String sUserName, String sEntityName, Integer iObjectGroupId) {
-		return this.getUserRights(sUserName).isSuperUser() || ModulePermission.includesWriting(this.getModulePermissions(sUserName).getMaxPermissionForObjectGroup(sEntityName, iObjectGroupId));
+		return getUserRights(sUserName).isSuperUser() 
+				|| ModulePermission.includesWriting(
+						getModulePermissions(sUserName).getMaxPermissionForObjectGroup(sEntityName, iObjectGroupId));
 	}
 
 	public boolean isDeleteAllowedForModule(String sUserName, Integer iModuleId, Integer iGenericObjectId, boolean bPhysically) {
-		return this.isDeleteAllowedForModule(sUserName, Modules.getInstance().getEntityNameByModuleId(iModuleId), iGenericObjectId, bPhysically);
+		return isDeleteAllowedForModule(sUserName, 
+				Modules.getInstance().getEntityNameByModuleId(iModuleId), iGenericObjectId, bPhysically);
 	}
 
 	public boolean isDeleteAllowedForModule(String sUserName, String sEntityName, Integer iGenericObjectId, boolean bPhysically) {
-		if (this.getUserRights(sUserName).isSuperUser())
+		if (getUserRights(sUserName).isSuperUser())
 			return true;
-		final ModulePermission modulepermission = this.getModulePermissions(sUserName).getMaxPermissionForGenericObject(sEntityName, iGenericObjectId);
+		final ModulePermission modulepermission = getModulePermissions(sUserName).getMaxPermissionForGenericObject(
+				sEntityName, iGenericObjectId);
 		return bPhysically ?
 				ModulePermission.includesDeletingPhysically(modulepermission) :
 				ModulePermission.includesDeletingLogically(modulepermission);
@@ -711,15 +722,17 @@ public class SecurityCache implements SecurityCacheMBean {
 	}
 
 	public boolean isDeleteAllowedForMasterData(String sUserName, Integer iMasterDataId) {
-		return this.isDeleteAllowedForMasterData(sUserName, MasterDataMetaCache.getInstance().getMetaDataById(iMasterDataId).getEntityName());
+		return isDeleteAllowedForMasterData(sUserName, 
+				MasterDataMetaCache.getInstance().getMetaDataById(iMasterDataId).getEntityName());
 	}
 
 	public boolean isDeleteAllowedForMasterData(String sUserName, String sEntityName) {
-		return this.getUserRights(sUserName).isSuperUser() || MasterDataPermission.includesDeleting(this.getMasterDataPermissions(sUserName).get(sEntityName));
+		return getUserRights(sUserName).isSuperUser() 
+				|| MasterDataPermission.includesDeleting(getMasterDataPermissions(sUserName).get(sEntityName));
 	}
 
 	public boolean isSuperUser(String sUserName) {
-		return this.getUserRights(sUserName).isSuperUser();
+		return getUserRights(sUserName).isSuperUser();
 	}
 
 	/**
@@ -775,7 +788,7 @@ public class SecurityCache implements SecurityCacheMBean {
 	}
 
 	public Collection<Integer> getTransitionIds(String sUserName) {
-		return this.getUserRights(sUserName).getTransitionIds();
+		return getUserRights(sUserName).getTransitionIds();
 	}
 
 	/**
@@ -787,7 +800,7 @@ public class SecurityCache implements SecurityCacheMBean {
 	 * @return Map<ReportType,Collection<Integer>> contains a map of all reports/forms that may be read by the given user.
 	 */
 	public Map<ReportType,Collection<Integer>> getReadableReports(String sUserName) {
-		return this.getUserRights(sUserName).getReadableReports();
+		return getUserRights(sUserName).getReadableReports();
 	}
 
 	/**
@@ -799,7 +812,7 @@ public class SecurityCache implements SecurityCacheMBean {
 	 * @return Collection<Integer> contains the ids of all reports/forms that may be (read and) written by the given user.
 	 */
 	public Collection<Integer> getWritableReportIds(String sUserName) {
-		return this.getUserRights(sUserName).getWritableReportIds();
+		return getUserRights(sUserName).getWritableReportIds();
 	}
 
 	/**
@@ -811,7 +824,7 @@ public class SecurityCache implements SecurityCacheMBean {
 	 * @return Collection<Integer> contains the ids of all datasources that may be read by the given user.
 	 */
 	public Collection<Integer> getReadableDataSourceIds(String sUserName) {
-		return this.getUserRights(sUserName).getReadableDataSourceIds();
+		return getUserRights(sUserName).getReadableDataSourceIds();
 	}
 
 	/**
@@ -823,7 +836,7 @@ public class SecurityCache implements SecurityCacheMBean {
 	 * @return Collection<Integer> contains the ids of all datasources that may be read by the given user.
 	 */
 	public Collection<Integer> getReadableDataSources(String sUserName) {
-		return this.getUserRights(sUserName).getReadableDataSourceIds();
+		return getUserRights(sUserName).getReadableDataSourceIds();
 	}
 
 	/**
@@ -835,7 +848,7 @@ public class SecurityCache implements SecurityCacheMBean {
 	 * @return Collection<Integer> contains the ids of all datasources that may be (read and) written by the given user.
 	 */
 	public Collection<Integer> getWritableDataSourceIds(String sUserName) {
-		return this.getUserRights(sUserName).getWritableDataSourceIds();
+		return getUserRights(sUserName).getWritableDataSourceIds();
 	}
 
 	/**
@@ -843,7 +856,7 @@ public class SecurityCache implements SecurityCacheMBean {
 	 * @param iAttributeGroupId
 	 * @return maps a state id to a permission.
 	 */
-	public synchronized Map<Integer, Permission> getAttributeGroup(String sUserName, Integer iAttributeGroupId) {
+	public Map<Integer, Permission> getAttributeGroup(String sUserName, Integer iAttributeGroupId) {
 		final UserAttributeGroup userattrgroup = new UserAttributeGroup(sUserName, iAttributeGroupId);
 		if (!mpAttributeGroups.containsKey(userattrgroup)) {
 			mpAttributeGroups.put(userattrgroup, newAttributeGroup(sUserName, iAttributeGroupId));
@@ -862,10 +875,10 @@ public class SecurityCache implements SecurityCacheMBean {
 	 * @param iSubFormId
 	 * @return maps a state id to a permission
 	 */
-	public synchronized Map<Integer, Permission> getSubForm(String sUserName, String sEntityName) {
+	public Map<Integer, Permission> getSubForm(String sUserName, String sEntityName) {
 		final UserSubForm usersubform = new UserSubForm(sUserName, sEntityName);
-		if(!this.mpSubForms.containsKey(usersubform)) {
-			this.mpSubForms.put(usersubform, getUserRights(sUserName).getSubFormPermissions(sEntityName));
+		if(!mpSubForms.containsKey(usersubform)) {
+			mpSubForms.put(usersubform, getUserRights(sUserName).getSubFormPermissions(sEntityName));
 		}
 		return new HashMap<Integer, Permission>(mpSubForms.get(usersubform));
 	}
@@ -895,21 +908,20 @@ public class SecurityCache implements SecurityCacheMBean {
 		return getUserRights(sUserName).getAttributeGroupPermissions(iAttributeGroupId);
 	}
 
-	public synchronized Set<Integer> getCompulsorySearchFilterIds(String userName, String entity) {
+	public Set<Integer> getCompulsorySearchFilterIds(String userName, String entity) {
 		return getUserRights(userName).getCompulsorySearchFilterIds(entity);
 	}
 
 	@Override
-	public synchronized void invalidate() {
+	public void invalidate() {
 		TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
 			@Override
 			public void afterCommit() {
-				log.debug("Invalidating security cache...");
+				LOG.debug("Invalidating security cache...");
 
 				mpUserRights.clear();
 				mpAttributeGroups.clear();
 				mpSubForms.clear();
-
 				mpAttributePermission.clear();
 
 				notifyClients();
@@ -917,12 +929,12 @@ public class SecurityCache implements SecurityCacheMBean {
 		});
 	}
 
-	public synchronized void invalidate(final String username) {
+	public void invalidate(final String username) {
 		if (username != null) {
 			TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
 				@Override
 				public void afterCommit() {
-					log.debug("Invalidating security cache for user " + username + "...");
+					LOG.debug("Invalidating security cache for user " + username + "...");
 					if (mpUserRights.containsKey(username)) {
 						mpUserRights.remove(username);
 					}
@@ -958,7 +970,7 @@ public class SecurityCache implements SecurityCacheMBean {
 		return getUserRights(sUserName).getRoleIds();
 	}
 
-	private synchronized UserRights getUserRights(String sUserName) {
+	private UserRights getUserRights(String sUserName) {
 		UserRights result = mpUserRights.get(sUserName);
 		if (result == null) {
 			result = new UserRights(sUserName);
@@ -974,7 +986,8 @@ public class SecurityCache implements SecurityCacheMBean {
 	 * @return Permission
 	 */
 	public Permission getAttributePermission(String sEntity, String sAttributeName, Integer iStateId) {
-		PermissionKey.AttributePermissionKey attributePermissionKey = new PermissionKey.AttributePermissionKey(sEntity, sAttributeName, iStateId);
+		PermissionKey.AttributePermissionKey attributePermissionKey 
+			= new PermissionKey.AttributePermissionKey(sEntity, sAttributeName, iStateId);
 		if (!mpAttributePermission.containsKey(attributePermissionKey)) {
 			Permission permission = getSecurityFacade().getAttributePermission(sEntity, sAttributeName, iStateId);
 			mpAttributePermission.put(attributePermissionKey, permission);
@@ -991,17 +1004,17 @@ public class SecurityCache implements SecurityCacheMBean {
 
 	@Override
 	public int getAttributeGroupsCount() {
-		return this.mpAttributeGroups != null ? this.mpAttributeGroups.size() : 0;
+		return mpAttributeGroups != null ? mpAttributeGroups.size() : 0;
 	}
 
 	@Override
 	public int getSubFormCount() {
-		return this.mpSubForms != null ? this.mpSubForms.size() : 0;
+		return mpSubForms != null ? mpSubForms.size() : 0;
 	}
 
 	@Override
 	public int getUserRightsCount() {
-		return this.mpUserRights != null ? this.mpUserRights.size() : 0;
+		return mpUserRights != null ? mpUserRights.size() : 0;
 	}
 
 	/**
@@ -1009,11 +1022,12 @@ public class SecurityCache implements SecurityCacheMBean {
 	 */
 	private void notifyClients() {
 		NuclosJMSUtils.sendMessage(null, JMSConstants.TOPICNAME_SECURITYCACHE);
-		log.debug("Notified clients that leased object meta data changed.");
+		LOG.debug("Notified clients that leased object meta data changed.");
 	}
 
 	private void notifyUser(String username) {
 		NuclosJMSUtils.sendMessage(username, JMSConstants.TOPICNAME_SECURITYCACHE);
-		log.debug("Notified user " + username + " that security data has changed.");
+		LOG.debug("Notified user " + username + " that security data has changed.");
 	}
+	
 }	// class SecurityCache

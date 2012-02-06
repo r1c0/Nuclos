@@ -67,11 +67,11 @@ public class MasterDataDelegate {
 
 	private static final Logger LOG = Logger.getLogger(MasterDataDelegate.class);
 
-	private static MasterDataDelegate singleton;
-
-	private final Logger log = Logger.getLogger(this.getClass());
+	private static MasterDataDelegate INSTANCE;
 
 	public static final String ENTITYNAME_ENTITY = "entity";
+	
+	// 
 
 	private final MasterDataFacadeRemote facade;
 
@@ -84,35 +84,35 @@ public class MasterDataDelegate {
 	 */
 	private MasterDataDelegate() throws RuntimeException {
 		this.facade = ServiceLocator.getInstance().getFacade(MasterDataFacadeRemote.class);
-			//ServiceLocator.getInstance().getFacade(MasterDataFacadeRemote.class);
+		//ServiceLocator.getInstance().getFacade(MasterDataFacadeRemote.class);
 	}
 
 	public static synchronized MasterDataDelegate getInstance() {
-		if (singleton == null) {
+		if (INSTANCE == null) {
 			try {
-				singleton = new MasterDataDelegate();
+				INSTANCE = new MasterDataDelegate();
 			}
 			catch (RuntimeException ex) {
 				throw new CommonFatalException(ex);
 			}
 		}
-		return singleton;
+		return INSTANCE;
 	}
 
 	public MasterDataFacadeRemote getMasterDataFacade() {
-		return this.facade;
+		return facade;
 	}
 
 	private synchronized MasterDataLayoutCache getLayoutCache() {
-		if (this.mdlayoutcache == null) {
-			this.mdlayoutcache = new MasterDataLayoutCache();
+		if (mdlayoutcache == null) {
+			mdlayoutcache = new MasterDataLayoutCache();
 		}
-		assert this.mdlayoutcache != null;
-		return this.mdlayoutcache;
+		assert mdlayoutcache != null;
+		return mdlayoutcache;
 	}
 
 	public synchronized void invalidateLayoutCache() {
-		this.mdlayoutcache = null;
+		mdlayoutcache = null;
 	}
 
 	public void revalidateMasterDataMetaCache() {
@@ -621,7 +621,7 @@ public class MasterDataDelegate {
 
 	  private Map<String, MasterDataMetaVO> getMetaDataCache() throws RuntimeException {
 		  if(metaDataCache == null) {
-			  log.debug("Initializing metadata cache");
+			  LOG.debug("Initializing metadata cache");
 			  final Collection<MasterDataMetaVO> coll = getMasterDataFacade().getAllMetaData();
 			  metaDataCache = new HashMap<String, MasterDataMetaVO>(coll.size() * 2);
 			  for(MasterDataMetaVO mdmetavo : coll) {
@@ -640,7 +640,7 @@ public class MasterDataDelegate {
 	  }
 
 	  public void invalidateCaches() {
-		  log.debug("Invalidating meta data cache.");
+		  LOG.debug("Invalidating meta data cache.");
 		  metaDataCache = null;
 	  }
 

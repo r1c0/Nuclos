@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.lang.NullArgumentException;
 import org.apache.log4j.Logger;
@@ -57,48 +58,57 @@ import org.nuclos.server.ruleengine.valueobject.RuleVO;
  * @version 00.01.000
  */
 public class RuleCache implements RuleCacheMBean {
-	private static final Logger log = Logger.getLogger(RuleCache.class);
+	
+	private static final Logger LOG = Logger.getLogger(RuleCache.class);
+	
+	private static RuleCache INSTANCE;
+
+	//
 
 	private final MasterDataFacadeLocal mdFacade = ServiceLocator.getInstance().getFacade(MasterDataFacadeLocal.class);
 
-	private static RuleCache singleton;
+	private final Map<Integer, RuleVO> mpRulessById
+		= new ConcurrentHashMap<Integer, RuleVO>();
+	
+	private final Map<String, RuleVO> mpRulesByName
+		= new ConcurrentHashMap<String, RuleVO>();
+	
+	private final Map<Pair<String, String>, List<RuleVO>> mpRulesByEventAndEntity
+		= new ConcurrentHashMap<Pair<String,String>, List<RuleVO>>();
+	
+	private final Map<String, List<RuleVO>> mpRulesByEvent
+		= new ConcurrentHashMap<String, List<RuleVO>>();
 
-	private Map<Integer, RuleVO> mpRulessById;
-	private Map<String, RuleVO> mpRulesByName;
-	private Map<Pair<String, String>, List<RuleVO>> mpRulesByEventAndEntity;
-	private Map<String, List<RuleVO>> mpRulesByEvent;
+	private final Map<String, RuleVO> timelimitrules
+		= new ConcurrentHashMap<String, RuleVO>();
 
-	private Map<String, RuleVO> timelimitrules;
-
-	private Map<String, CodeVO> commoncode;
-	private Map<String, MasterDataVO> webservices;
+	private final Map<String, CodeVO> commoncode
+		= new ConcurrentHashMap<String, CodeVO>();
+	
+	private final Map<String, MasterDataVO> webservices
+		= new ConcurrentHashMap<String, MasterDataVO>();
 
 	private RuleCache() {
 		init();
 	}
 
 	public static synchronized RuleCache getInstance() {
-		if (singleton == null) {
-			singleton = new RuleCache();
+		if (INSTANCE == null) {
+			INSTANCE = new RuleCache();
 			// register this cache as MBean
-			MBeanAgent.registerCache(singleton, RuleCacheMBean.class);
+			MBeanAgent.registerCache(INSTANCE, RuleCacheMBean.class);
 		}
 
-		return singleton;
+		return INSTANCE;
 	}
 
 	/**
 	 * initialize RuleById and RuleByName
 	 *
 	 */
-	private synchronized void init() {
-		if (mpRulessById == null) {
-			log.debug("Initializing RuleCache for RuleById and RulesByName");
-			mpRulessById = Collections.synchronizedMap(new HashMap<Integer, RuleVO>());
-			mpRulesByName = Collections.synchronizedMap(new HashMap<String, RuleVO>());
-			timelimitrules = Collections.synchronizedMap(new HashMap<String, RuleVO>());
-			commoncode = Collections.synchronizedMap(new HashMap<String, CodeVO>());
-			webservices = Collections.synchronizedMap(new HashMap<String, MasterDataVO>());
+	private void init() {
+		if (mpRulessById.isEmpty()) {
+			LOG.debug("Initializing RuleCache for RuleById and RulesByName");
 
 			Collection<MasterDataVO> ruleVOs = mdFacade.getMasterData(NuclosEntity.RULE.getEntityName(), null, true);
 
@@ -130,7 +140,7 @@ public class RuleCache implements RuleCacheMBean {
 				}
 			}
 
-			log.debug("FINISHED initializing rule cache.");
+			LOG.debug("FINISHED initializing rule cache.");
 		}
 	}
 
@@ -139,7 +149,7 @@ public class RuleCache implements RuleCacheMBean {
 	 * @param iRuleId
 	 * @return the RuleVO of the rule with the specified id
 	 */
-	public synchronized RuleVO getRule(Integer iRuleId) {
+	public RuleVO getRule(Integer iRuleId) {
 		init();
 		return mpRulessById.get(iRuleId);
 	}
@@ -149,11 +159,11 @@ public class RuleCache implements RuleCacheMBean {
 	 * @param sRuleName
 	 * @return the RuleVO of the rule with the specified name
 	 */
-	public synchronized RuleVO getRule(String sRuleName) {
+	public RuleVO getRule(String sRuleName) {
 		if (sRuleName == null) {
 			throw new NullArgumentException("sRuleName");
 		}
-		this.init();
+		init();
 		final RuleVO result = mpRulesByName.get(sRuleName);
 		if (result == null) {
 			throw new NuclosFatalException(StringUtils.getParameterizedExceptionMessage("rulecache.exception", sRuleName));//"Regel nicht gefunden: " + sRuleName);
@@ -168,7 +178,7 @@ public class RuleCache implements RuleCacheMBean {
 	 * @param iModuleId
 	 * @return List<RuleVO> of all rules for the specified entity and event type, ordered by the execution order.
 	 */
-	public synchronized List<RuleVO> getByEventAndEntityOrdered(String sEventName, String sEntity) {
+	public List<RuleVO> getByEventAndEntityOrdered(String sEventName, String sEntity) {
 		return getByEventAndEntityOrdered(new Pair<String, String>(sEventName, sEntity));
 	}
 
@@ -177,13 +187,9 @@ public class RuleCache implements RuleCacheMBean {
 	 * @param pair
 	 * @return List<RuleVO> of all rules for the specified entity and event type, ordered by the execution order.
 	 */
-	private synchronized List<RuleVO> getByEventAndEntityOrdered(Pair<String, String> pair) {
-
-		if (mpRulesByEventAndEntity == null) {
-			mpRulesByEventAndEntity = CollectionUtils.newHashMap();
-		}
+	private List<RuleVO> getByEventAndEntityOrdered(Pair<String, String> pair) {
 		if (!mpRulesByEventAndEntity.containsKey(pair)) {
-			log.debug("Initializing RuleCache for " + pair);
+			LOG.debug("Initializing RuleCache for " + pair);
 			try {
 				DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
 				DbQuery<Integer> query = builder.createQuery(Integer.class);
@@ -202,7 +208,7 @@ public class RuleCache implements RuleCacheMBean {
 
 				mpRulesByEventAndEntity.put(pair, rules);
 
-				log.debug("FINISHED initializing RuleCache for " + pair);
+				LOG.debug("FINISHED initializing RuleCache for " + pair);
 			}
 			catch (CommonFinderException ex) {
 				throw new NuclosFatalException(ex);
@@ -220,12 +226,9 @@ public class RuleCache implements RuleCacheMBean {
 	 * @param sEventName
 	 * @return List<RuleVO> of all rules for the specified event type, ordered by the execution order.
 	 */
-	public synchronized List<RuleVO> getByEventOrdered(String sEventName) {
-		if (mpRulesByEvent == null) {
-			mpRulesByEvent = CollectionUtils.newHashMap();
-		}
+	public List<RuleVO> getByEventOrdered(String sEventName) {
 		if (!mpRulesByEvent.containsKey(sEventName)) {
-			log.debug("Initializing RuleCache for " + sEventName);
+			LOG.debug("Initializing RuleCache for " + sEventName);
 			try {
 				DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
 				DbQuery<Integer> query = builder.createQuery(Integer.class);
@@ -241,7 +244,7 @@ public class RuleCache implements RuleCacheMBean {
 					rules.add(MasterDataWrapper.getRuleVO(mdFacade.get(NuclosEntity.RULE.getEntityName(), id)));
 
 				mpRulesByEvent.put(sEventName, rules);
-				log.debug("FINISHED initializing RuleCache for " + sEventName);
+				LOG.debug("FINISHED initializing RuleCache for " + sEventName);
 			}
 			catch (CommonFinderException e) {
 				throw new NuclosFatalException(e);
@@ -257,22 +260,22 @@ public class RuleCache implements RuleCacheMBean {
 	 * get a collection of all rules
 	 * @return Collection<RuleVO> of all rules
 	 */
-	public synchronized Collection<RuleVO> getAllRules() {
+	public Collection<RuleVO> getAllRules() {
 		init();
 		return new HashSet<RuleVO>(mpRulessById.values());
 	}
 
-	public synchronized Collection<RuleVO> getTimelimitRules() {
+	public Collection<RuleVO> getTimelimitRules() {
 		init();
 		return new HashSet<RuleVO>(timelimitrules.values());
 	}
 
-	public synchronized Collection<MasterDataVO> getWebservices() {
+	public Collection<MasterDataVO> getWebservices() {
 		init();
 		return new HashSet<MasterDataVO>(webservices.values());
 	}
 
-	public synchronized Collection<CodeVO> getCommonCode() {
+	public Collection<CodeVO> getCommonCode() {
 		init();
 		return new HashSet<CodeVO>(commoncode.values());
 	}
@@ -281,24 +284,24 @@ public class RuleCache implements RuleCacheMBean {
 	 * Invalidate the cache
 	 */
 	@Override
-	public synchronized void invalidate() {
-		log.debug("Invalidating RuleCache");
-		mpRulessById = null;
-		mpRulesByName = null;
-		mpRulesByEventAndEntity = null;
-		mpRulesByEvent = null;
-		commoncode = null;
-		webservices = null;
+	public void invalidate() {
+		LOG.debug("Invalidating RuleCache");
+		mpRulessById.clear();
+		mpRulesByName.clear();
+		mpRulesByEventAndEntity.clear();
+		mpRulesByEvent.clear();
+		commoncode.clear();
+		webservices.clear();
 	}
 
 	@Override
 	public int getRuleCount() {
-		return this.getAllRules().size();
+		return getAllRules().size();
 	}
 
 	@Override
 	public Collection<String> showRuleNames() {
-		if(mpRulesByName == null) {
+		if (mpRulesByName.isEmpty()) {
 			init();
 		}
 		return this.mpRulesByName.keySet();

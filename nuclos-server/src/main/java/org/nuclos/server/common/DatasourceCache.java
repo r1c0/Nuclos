@@ -22,6 +22,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.log4j.Logger;
 import org.nuclos.common.NuclosEntity;
@@ -62,21 +63,28 @@ public class DatasourceCache {
 	private static final Logger LOG = Logger.getLogger(DatasourceCache.class);
 
 	private static final DatasourceCache INSTANCE = new DatasourceCache();
+	
+	//
 
 	/** map which contains all datasources */
-	private Map<Integer, DatasourceVO> mpDatasourcesById = null;
+	private final Map<Integer, DatasourceVO> mpDatasourcesById 
+		= new ConcurrentHashMap<Integer, DatasourceVO>();
 
 	/** map which contains the datasources where the user has at least read permission */
-	private Map<String, List<DatasourceVO>> mpDatasourcesByCreator = null;
+	private final Map<String, List<DatasourceVO>> mpDatasourcesByCreator 
+		= new ConcurrentHashMap<String, List<DatasourceVO>>();
 
 	/** map which contains all datasources */
-	private Map<Integer, ValuelistProviderVO> mpValuelistProviderById = null;
+	private final Map<Integer, ValuelistProviderVO> mpValuelistProviderById 
+		= new ConcurrentHashMap<Integer, ValuelistProviderVO>();
 
 	/** map which contains all record grants */
-	private Map<Integer, RecordGrantVO> mpRecordGrantById = null;
+	private final Map<Integer, RecordGrantVO> mpRecordGrantById 
+		= new ConcurrentHashMap<Integer, RecordGrantVO>();
 
 	/** map which contains all datasources */
-	private Map<Integer, DynamicEntityVO> mpDynamicEntitiesById = null;
+	private final Map<Integer, DynamicEntityVO> mpDynamicEntitiesById 
+		= new ConcurrentHashMap<Integer, DynamicEntityVO>();
 	
 	private DatasourceServerUtils datasourceServerUtils;
 
@@ -94,29 +102,25 @@ public class DatasourceCache {
 		this.datasourceServerUtils = datasourceServerUtils;
 	}
 
-	private synchronized void findDatasourcesById() {
+	private void findDatasourcesById() {
 		LOG.info("Initializing DatasourceCache");
 		final NucletDalProvider prov = NucletDalProvider.getInstance();
 		
-		mpDatasourcesById = Collections.synchronizedMap(new HashMap<Integer, DatasourceVO>());
 		for (EntityObjectVO eoVO : 
 			prov.getEntityObjectProcessor(NuclosEntity.DATASOURCE).getAll()) {
 			mpDatasourcesById.put(eoVO.getId().intValue(),
 					MasterDataWrapper.getDatasourceVO(DalSupportForMD.wrapEntityObjectVO(eoVO), "INITIAL"));
 		}
-		mpValuelistProviderById = Collections.synchronizedMap(new HashMap<Integer, ValuelistProviderVO>());
 		for (EntityObjectVO eoVO : 
 			prov.getEntityObjectProcessor(NuclosEntity.VALUELISTPROVIDER).getAll()) {
 			mpValuelistProviderById.put(eoVO.getId().intValue(),
 					MasterDataWrapper.getValuelistProviderVO(DalSupportForMD.wrapEntityObjectVO(eoVO)));
 		}
-		mpDynamicEntitiesById = Collections.synchronizedMap(new HashMap<Integer, DynamicEntityVO>());
 		for (EntityObjectVO eoVO : 
 			prov.getEntityObjectProcessor(NuclosEntity.DYNAMICENTITY).getAll()) {
 			mpDynamicEntitiesById.put(eoVO.getId().intValue(),
 					MasterDataWrapper.getDynamicEntityVO(DalSupportForMD.wrapEntityObjectVO(eoVO)));
 		}
-		mpRecordGrantById = Collections.synchronizedMap(new HashMap<Integer, RecordGrantVO>());
 		for (EntityObjectVO eoVO : 
 			prov.getEntityObjectProcessor(NuclosEntity.RECORDGRANT).getAll()) {
 			mpRecordGrantById.put(eoVO.getId().intValue(),
@@ -129,9 +133,8 @@ public class DatasourceCache {
 	 * initialize the map of datasources by creator
 	 * @param sCreator
 	 */
-	private synchronized void findDataSourcesByCreator(String sCreator) {
+	private void findDataSourcesByCreator(String sCreator) {
 		LOG.debug("Initializing DatasourceCacheByCreator");
-		mpDatasourcesByCreator = Collections.synchronizedMap(new HashMap<String, List<DatasourceVO>>());
 		try {
 			MasterDataFacadeLocal mdFacade = ServiceLocator.getInstance().getFacade(MasterDataFacadeLocal.class);
 			List<DatasourceVO> datasources = new ArrayList<DatasourceVO>();
@@ -142,13 +145,12 @@ public class DatasourceCache {
 			query.select(t.baseColumn("INTID", Integer.class));
 			query.where(builder.equal(t.baseColumn("STRCREATED", String.class), sCreator));
 
-	      for (Integer id : DataBaseHelper.getDbAccess().executeQuery(query.distinct(true))) {
-	      	MasterDataVO mdVO = mdFacade.get(NuclosEntity.DATASOURCE.getEntityName(),id);
-	      	if (getPermission(mdVO.getIntId(), sCreator) != DatasourceVO.PERMISSION_NONE) {
+			for (Integer id : DataBaseHelper.getDbAccess().executeQuery(query.distinct(true))) {
+				MasterDataVO mdVO = mdFacade.get(NuclosEntity.DATASOURCE.getEntityName(), id);
+				if (getPermission(mdVO.getIntId(), sCreator) != DatasourceVO.PERMISSION_NONE) {
 					datasources.add(MasterDataWrapper.getDatasourceVO(mdVO, sCreator));
-	      	}
-	      }
-
+				}
+			}
 			mpDatasourcesByCreator.put(sCreator,datasources);
 		}
 		catch (CommonPermissionException ex) {
@@ -162,13 +164,13 @@ public class DatasourceCache {
 	/**
 	 * Invalidate the cache
 	 */
-	public synchronized void invalidate() {
+	public void invalidate() {
 		LOG.debug("Invalidating DatasourceCache");
-		mpDatasourcesById = null;
-		mpDatasourcesByCreator = null;
-		mpValuelistProviderById = null;
-		mpRecordGrantById = null;
-		mpDynamicEntitiesById = null;
+		mpDatasourcesById.clear();
+		mpDatasourcesByCreator.clear();
+		mpValuelistProviderById.clear();
+		mpRecordGrantById.clear();
+		mpDynamicEntitiesById.clear();
 
 		datasourceServerUtils.invalidateCache();
 		findDatasourcesById();
@@ -178,10 +180,10 @@ public class DatasourceCache {
 	 * get a collection of all Datasources where the given user has at least read permission
 	 * @return Collection<DatasourceVO>
 	 */
-	public synchronized Collection<DatasourceVO> getAllDatasources(final String sUser) {
+	public Collection<DatasourceVO> getAllDatasources(final String sUser) {
 		List<DatasourceVO>result = new ArrayList<DatasourceVO>();
 
-		if (mpDatasourcesById == null)
+		if (mpDatasourcesById.isEmpty())
 			findDatasourcesById();
 
 		for (DatasourceVO datasourceVO : mpDatasourcesById.values()) {
@@ -196,10 +198,10 @@ public class DatasourceCache {
 	 * get all Datasources without checking user permissions
 	 * @return
 	 */
-	public synchronized Collection<DatasourceVO> getAllDatasources() {
+	public Collection<DatasourceVO> getAllDatasources() {
 		List<DatasourceVO>result = new ArrayList<DatasourceVO>();
 
-		if (mpDatasourcesById == null)
+		if (mpDatasourcesById.isEmpty())
 			findDatasourcesById();
 
 		result.addAll(mpDatasourcesById.values());
@@ -211,10 +213,10 @@ public class DatasourceCache {
 	 * get all valuelist provider
 	 * @return
 	 */
-	public synchronized Collection<ValuelistProviderVO> getAllValuelistProvider() {
-		List<ValuelistProviderVO>result = new ArrayList<ValuelistProviderVO>();
+	public Collection<ValuelistProviderVO> getAllValuelistProvider() {
+		List<ValuelistProviderVO> result = new ArrayList<ValuelistProviderVO>();
 
-		if (mpValuelistProviderById == null)
+		if (mpValuelistProviderById.isEmpty())
 			findDatasourcesById();
 
 		result.addAll(mpValuelistProviderById.values());
@@ -227,8 +229,8 @@ public class DatasourceCache {
 	 * @param iValuelistProviderId
 	 * @return
 	 */
-	public synchronized ValuelistProviderVO getValuelistProvider(Integer iValuelistProviderId) {
-		if (mpValuelistProviderById == null)
+	public ValuelistProviderVO getValuelistProvider(Integer iValuelistProviderId) {
+		if (mpValuelistProviderById.isEmpty())
 			findDatasourcesById();
 
 		return mpValuelistProviderById.get(iValuelistProviderId);
@@ -238,10 +240,10 @@ public class DatasourceCache {
 	 * get all record grant
 	 * @return
 	 */
-	public synchronized Collection<RecordGrantVO> getAllRecordGrant() {
-		List<RecordGrantVO>result = new ArrayList<RecordGrantVO>();
+	public Collection<RecordGrantVO> getAllRecordGrant() {
+		List<RecordGrantVO> result = new ArrayList<RecordGrantVO>();
 
-		if (mpRecordGrantById == null)
+		if (mpRecordGrantById.isEmpty())
 			findDatasourcesById();
 
 		result.addAll(mpRecordGrantById.values());
@@ -254,8 +256,8 @@ public class DatasourceCache {
 	 * @param iRecordGrantId
 	 * @return
 	 */
-	public synchronized RecordGrantVO getRecordGrant(Integer iRecordGrantId) {
-		if (mpRecordGrantById == null)
+	public RecordGrantVO getRecordGrant(Integer iRecordGrantId) {
+		if (mpRecordGrantById.isEmpty())
 			findDatasourcesById();
 
 		return mpRecordGrantById.get(iRecordGrantId);
@@ -265,10 +267,10 @@ public class DatasourceCache {
 	 * get all dynamic entities
 	 * @return
 	 */
-	public synchronized Collection<DynamicEntityVO> getAllDynamicEntities() {
+	public Collection<DynamicEntityVO> getAllDynamicEntities() {
 		List<DynamicEntityVO>result = new ArrayList<DynamicEntityVO>();
 
-		if (mpDynamicEntitiesById == null)
+		if (mpDynamicEntitiesById.isEmpty())
 			findDatasourcesById();
 
 		result.addAll(mpDynamicEntitiesById.values());
@@ -281,8 +283,8 @@ public class DatasourceCache {
 	 * @param iDynamicEntityId
 	 * @return
 	 */
-	public synchronized DynamicEntityVO getDynamicEntity(Integer iDynamicEntityId) {
-		if (mpDynamicEntitiesById == null)
+	public DynamicEntityVO getDynamicEntity(Integer iDynamicEntityId) {
+		if (mpDynamicEntitiesById.isEmpty())
 			findDatasourcesById();
 
 		return mpDynamicEntitiesById.get(iDynamicEntityId);
@@ -294,8 +296,8 @@ public class DatasourceCache {
 	 * @return
 	 * @throws CommonPermissionException
 	 */
-	public synchronized DatasourceVO get(Integer iDatasourceId) {
-		if (mpDatasourcesById == null)
+	public DatasourceVO get(Integer iDatasourceId) {
+		if (mpDatasourcesById.isEmpty())
 			findDatasourcesById();
 
 		return mpDatasourcesById.get(iDatasourceId);
@@ -308,8 +310,8 @@ public class DatasourceCache {
 	 * @return
 	 * @throws CommonPermissionException
 	 */
-	public synchronized DatasourceVO getDatasourcesById(Integer iDatasourceId, String sUserName) throws CommonPermissionException {
-		if (mpDatasourcesById == null)
+	public DatasourceVO getDatasourcesById(Integer iDatasourceId, String sUserName) throws CommonPermissionException {
+		if (mpDatasourcesById.isEmpty())
 			findDatasourcesById();
 
 		if (getPermission(iDatasourceId, sUserName) == DatasourceVO.PERMISSION_NONE) {
@@ -323,8 +325,8 @@ public class DatasourceCache {
 	 * @param sUserName
 	 * @return
 	 */
-	public synchronized Collection<DatasourceVO> getDatasourcesByCreator(String sUserName) {
-		if(mpDatasourcesByCreator == null || mpDatasourcesByCreator.get(sUserName) == null) {
+	public Collection<DatasourceVO> getDatasourcesByCreator(String sUserName) {
+		if(mpDatasourcesByCreator.isEmpty() || mpDatasourcesByCreator.get(sUserName) == null) {
 			findDataSourcesByCreator(sUserName);
 		}
 		return CollectionUtils.emptyIfNull(mpDatasourcesByCreator.get(sUserName));
@@ -335,8 +337,8 @@ public class DatasourceCache {
 	 * @param sDatasourceName
 	 * @return DatasourceVO (may be null)
 	 */
-	public synchronized DatasourceVO getDatasourceByName(String sDatasourceName) {
-		if (mpDatasourcesById == null)
+	public DatasourceVO getDatasourceByName(String sDatasourceName) {
+		if (mpDatasourcesById.isEmpty())
 			findDatasourcesById();
 
 		DatasourceVO result = null;
@@ -355,8 +357,8 @@ public class DatasourceCache {
 	 * @param sValuelistProviderName
 	 * @return ValuelistProviderVO (may be null)
 	 */
-	public synchronized ValuelistProviderVO getValuelistProviderByName(String sValuelistProviderName) {
-		if (mpDatasourcesById == null)
+	public ValuelistProviderVO getValuelistProviderByName(String sValuelistProviderName) {
+		if (mpDatasourcesById.isEmpty())
 			findDatasourcesById();
 
 		ValuelistProviderVO result = null;
@@ -375,8 +377,8 @@ public class DatasourceCache {
 	 * @param sRecordGrantName
 	 * @return RecordGrantVO (may be null)
 	 */
-	public synchronized RecordGrantVO getRecordGrantByName(String sRecordGrantName) {
-		if (mpRecordGrantById == null)
+	public RecordGrantVO getRecordGrantByName(String sRecordGrantName) {
+		if (mpRecordGrantById.isEmpty())
 			findDatasourcesById();
 
 		RecordGrantVO result = null;
@@ -395,8 +397,8 @@ public class DatasourceCache {
 	 * @param sDynamicEntityName
 	 * @return DynamicEntityVO (may be null)
 	 */
-	public synchronized DynamicEntityVO getDynamicEntityByName(String sDynamicEntityName) {
-		if (mpDatasourcesById == null)
+	public DynamicEntityVO getDynamicEntityByName(String sDynamicEntityName) {
+		if (mpDatasourcesById.isEmpty())
 			findDatasourcesById();
 
 		DynamicEntityVO result = null;

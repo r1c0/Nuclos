@@ -62,7 +62,9 @@ public class GenericObjectLayoutCache {
 	
 	private static final Logger LOG = Logger.getLogger(GenericObjectLayoutCache.class);
 
-	private static GenericObjectLayoutCache singleton;
+	private static GenericObjectLayoutCache INSTANCE;
+	
+	// 
 
 	private final GenericObjectMetaDataProvider gometa = GenericObjectMetaDataCache.getInstance();
 
@@ -113,10 +115,10 @@ public class GenericObjectLayoutCache {
 	}
 
 	public static synchronized GenericObjectLayoutCache getInstance() {
-		if (singleton == null) {
-			singleton = new GenericObjectLayoutCache();
+		if (INSTANCE == null) {
+			INSTANCE = new GenericObjectLayoutCache();
 		}
-		return singleton;
+		return INSTANCE;
 	}
 	
 	/**

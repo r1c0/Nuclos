@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.log4j.Logger;
 import org.nuclos.common.EntityTreeViewVO;
@@ -63,15 +64,16 @@ public class MasterDataMetaCache implements MasterDataMetaCacheMBean, MasterData
 	
 	private static final Logger LOG = Logger.getLogger(MasterDataMetaCache.class);
 	
-	private Map<String, MasterDataMetaVO> mp;
+	// 
 	
-	private Map<String, Collection<MasterDataVO>> mpSubNodes = new HashMap<String, Collection<MasterDataVO>>();
+	private final Map<String, MasterDataMetaVO> mp
+		= new ConcurrentHashMap<String, MasterDataMetaVO>();
 	
-	private Map<String, Collection<EntityTreeViewVO>> subNodes = new HashMap<String, Collection<EntityTreeViewVO>>();
-
-	private static final Set<String> stExcludedFieldNamesForDynamicGeneration = new HashSet<String>(
-			Arrays.asList("INTID", "DATCREATED", "STRCREATED", "DATCHANGED", "STRCHANGED", "INTVERSION", "BLNDELETED")
-	);
+	private final Map<String, Collection<MasterDataVO>> mpSubNodes 
+		= new ConcurrentHashMap<String, Collection<MasterDataVO>>();
+	
+	private final Map<String, Collection<EntityTreeViewVO>> subNodes 
+		= new ConcurrentHashMap<String, Collection<EntityTreeViewVO>>();
 
 	/**
 	 * @return the one and only instance of the <code>MasterDataMetaCache</code>.
@@ -95,16 +97,17 @@ public class MasterDataMetaCache implements MasterDataMetaCacheMBean, MasterData
 	 * after metadata entries in the database were changed.
 	 */
 	@Override
-	public synchronized void revalidate() {
+	public void revalidate() {
 		mpSubNodes.clear();
 		subNodes.clear();
-		mp = buildMap();
+		mp.clear();
+		mp.putAll(buildMap());
 	}
 
 	/**
 	 * @return Collection<MasterDataMetaVO> the masterdata meta information for the all entities.
 	 */
-	public synchronized Collection<MasterDataMetaVO> getAllMetaData() {
+	public Collection<MasterDataMetaVO> getAllMetaData() {
 		// Note that we need to return a copy here as mp.values() is not serializable:
 		return new ArrayList<MasterDataMetaVO>(getMp().values());
 	}
@@ -115,7 +118,7 @@ public class MasterDataMetaCache implements MasterDataMetaCacheMBean, MasterData
 	 * @postcondition result != null
 	 */
 	@Override
-	public synchronized MasterDataMetaVO getMetaData(String sEntityName) {
+	public MasterDataMetaVO getMetaData(String sEntityName) {
 		final MasterDataMetaVO result = getMp().get(sEntityName);
 		if (result == null) {
 			throw new NuclosFatalException("Master data meta information for entity \"" + sEntityName + "\" is not available.");
@@ -128,7 +131,7 @@ public class MasterDataMetaCache implements MasterDataMetaCacheMBean, MasterData
 		return getMetaData(entity.getEntityName());
 	}
 
-	public synchronized MasterDataMetaVO findMetaData(String sEntityName) {
+	public MasterDataMetaVO findMetaData(String sEntityName) {
 		return getMp().get(sEntityName);
 	}
 
@@ -136,7 +139,7 @@ public class MasterDataMetaCache implements MasterDataMetaCacheMBean, MasterData
 	 * @param iId id of the metadata entry
 	 * @return the masterdata meta information for the given entity, if any.
 	 */
-	public synchronized MasterDataMetaVO getMasterDataMetaById(Integer iId) {
+	public MasterDataMetaVO getMasterDataMetaById(Integer iId) {
 		for (MasterDataMetaVO result : getMp().values()) {
 			if (iId.equals(result.getId())) {
 				return result;
@@ -176,7 +179,7 @@ public class MasterDataMetaCache implements MasterDataMetaCacheMBean, MasterData
 	 * @return the masterdata meta information for the given entity, if any.
 	 */
 	@Override
-	public synchronized MasterDataMetaVO getMetaDataById(Integer iId) {
+	public MasterDataMetaVO getMetaDataById(Integer iId) {
 		for (MasterDataMetaVO result : getMp().values()) {
 			if (iId.equals(result.getId())) {
 				return result;
@@ -189,7 +192,7 @@ public class MasterDataMetaCache implements MasterDataMetaCacheMBean, MasterData
 	 * @param dbEntities a list of DB entity names of the metadata entry
 	 * @return a list of masterdata meta information for the given entities, if any.
 	 */
-	public synchronized List<MasterDataMetaVO> getMetaDataByDBEntityNames(List<String> dbEntities) {
+	public List<MasterDataMetaVO> getMetaDataByDBEntityNames(List<String> dbEntities) {
 		List<MasterDataMetaVO> result = new ArrayList<MasterDataMetaVO>();
 		for (MasterDataMetaVO current : getMp().values()) {
 			if (dbEntities.contains(current.getDBEntity())) {
@@ -203,7 +206,7 @@ public class MasterDataMetaCache implements MasterDataMetaCacheMBean, MasterData
 	 * @return a map that may only be read from, never written to.
 	 * @postcondition result != null
 	 */
-	private synchronized Map<String, MasterDataMetaVO> buildMap() {
+	private static Map<String, MasterDataMetaVO> buildMap() {
 		LOG.debug("START building masterdata cache.");
 
 		final Map<String, MasterDataMetaVO> result = new HashMap<String, MasterDataMetaVO>();
@@ -308,7 +311,7 @@ public class MasterDataMetaCache implements MasterDataMetaCacheMBean, MasterData
 	}
 	
 	private Map<String, MasterDataMetaVO> getMp() {
-		if (mp == null) {
+		if (mp.isEmpty()) {
 			revalidate();
 		}
 		return mp;

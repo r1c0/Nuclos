@@ -55,7 +55,7 @@ import org.springframework.beans.factory.annotation.Configurable;
 @Configurable
 public class GenericObjectMetaDataCache implements GenericObjectMetaDataProvider {
 
-	private static GenericObjectMetaDataCache singleton;
+	private static GenericObjectMetaDataCache INSTANCE;
 
 	private final Logger log = Logger.getLogger(this.getClass());
 
@@ -80,10 +80,10 @@ public class GenericObjectMetaDataCache implements GenericObjectMetaDataProvider
 	}
 
 	public static synchronized GenericObjectMetaDataCache getInstance() {
-		if (singleton == null) {
-			singleton = new GenericObjectMetaDataCache();
+		if (INSTANCE == null) {
+			INSTANCE = new GenericObjectMetaDataCache();
 		}
-		return singleton;
+		return INSTANCE;
 	}
 
 	private GenericObjectMetaDataVO getMetaDataCVO() {

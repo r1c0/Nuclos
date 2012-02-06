@@ -63,7 +63,6 @@ public class AttributeCache implements AttributeProvider {
     private final Map<Integer, AttributeCVO> mpAttributesByIds = new ConcurrentHashMap<Integer, AttributeCVO>();
 
 	private final LinkedList<CacheableListener> lstCacheableListeners = new LinkedList<CacheableListener>();
-
 	/**
 	 * @return the one (and only) instance of AttributeCache
 	 */
@@ -89,8 +88,8 @@ public class AttributeCache implements AttributeProvider {
 	 * revalidates this cache: clears it, then fills in all the attributes from the server again.
 	 */
 	public void revalidate() {
-		this.mpAttributesByIds.clear();
-		this.fill();
+		mpAttributesByIds.clear();
+		fill();
 	}
 
 	/**
@@ -116,7 +115,7 @@ public class AttributeCache implements AttributeProvider {
 	 * @return Does this cache contain an attribute with the given id?
 	 */
 	public boolean contains(int iAttributeId) {
-		return this.mpAttributesByIds.containsKey(iAttributeId);
+		return mpAttributesByIds.containsKey(iAttributeId);
 	}
 
 	@Override
@@ -147,6 +146,9 @@ public class AttributeCache implements AttributeProvider {
 		return result;
 	}
 
+	/**
+	 * @deprecated Use MetaDataClientProvider.getInstance().getEntityField(entity, field)
+	 */
 	@Override
 	public EntityFieldMetaDataVO getEntityField(String entity, String field) throws NuclosAttributeNotFoundException {
 		return MetaDataClientProvider.getInstance().getEntityField(entity, field);
@@ -204,7 +206,6 @@ public class AttributeCache implements AttributeProvider {
 			throw new NullArgumentException("iAttributeId");
 		}
 		mpAttributesByIds.remove(iAttributeId);
-
 		// postcondition:
 		assert !this.contains(iAttributeId);
 	}

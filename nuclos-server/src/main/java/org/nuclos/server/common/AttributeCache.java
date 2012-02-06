@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.lang.NullArgumentException;
 import org.apache.log4j.Logger;
@@ -54,45 +55,48 @@ import org.nuclos.server.masterdata.ejb3.MetaDataFacadeLocal;
  */
 public class AttributeCache implements AttributeProvider {
 
-	private static AttributeCache singleton;
+	private static AttributeCache INSTANCE;
+	
+	//
 
-	private Map<Integer, AttributeCVO> mpAttributesById;
+	private final Map<Integer, AttributeCVO> mpAttributesById 
+		= new ConcurrentHashMap<Integer, AttributeCVO>();
 
-	private Map<String, List<AttributeCVO>> mpAttributesByExternalEntity;
+	private final Map<String, List<AttributeCVO>> mpAttributesByExternalEntity
+		= new ConcurrentHashMap<String, List<AttributeCVO>>();
 
 	public static synchronized AttributeCache getInstance() {
 		return (AttributeCache) SpringApplicationContextHolder.getBean("attributeProvider");
 	}
 
 	protected AttributeCache() {
-		this.validate();
+		validate();
 	}
 
-	public synchronized void update(AttributeCVO attrcvo) {
-		this.validate();
+	public void update(AttributeCVO attrcvo) {
+		validate();
 
 		mpAttributesById.put(attrcvo.getId(), attrcvo);
-
 		if(!StringUtils.isNullOrEmpty(attrcvo.getExternalEntity())) {
 			mpAttributesByExternalEntity.get(attrcvo.getExternalEntity()).add(attrcvo);
 		}
 	}
 
-	public synchronized void remove(AttributeCVO attrcvo) {
-		this.validate();
+	public void remove(AttributeCVO attrcvo) {
+		validate();
 
-		this.mpAttributesById.remove(attrcvo.getId());
-		this.mpAttributesByExternalEntity.get(attrcvo.getExternalEntity()).remove(attrcvo);
+		mpAttributesById.remove(attrcvo.getId());
+		mpAttributesByExternalEntity.get(attrcvo.getExternalEntity()).remove(attrcvo);
 	}
 
 	/**
 	 * @postcondition result != null
 	 */
 	@Override
-	public synchronized AttributeCVO getAttribute(int iAttributeId) {
+	public AttributeCVO getAttribute(int iAttributeId) {
 		this.validate();
 
-		final AttributeCVO result = this.mpAttributesById.get(iAttributeId);
+		final AttributeCVO result = mpAttributesById.get(iAttributeId);
 		if (result == null) {
 			throw new NuclosAttributeNotFoundException(iAttributeId);
 		}
@@ -101,9 +105,8 @@ public class AttributeCache implements AttributeProvider {
 	}
 
 	public synchronized boolean contains(int iAttribute) {
-		this.validate();
-
-		return this.mpAttributesById.containsKey(iAttribute);
+		validate();
+		return mpAttributesById.containsKey(iAttribute);
 	}
 
 
@@ -114,14 +117,15 @@ public class AttributeCache implements AttributeProvider {
 	}
 
 	@Override
-	public synchronized AttributeCVO getAttribute(String sEntity, String sAttributeName) throws NuclosAttributeNotFoundException {
+	public AttributeCVO getAttribute(String sEntity, String sAttributeName) throws NuclosAttributeNotFoundException {
 		if (sAttributeName == null) {
 			throw new NullArgumentException("sAttributeName");
 		}
-		this.validate();
+		validate();
 
 		try {
-			final AttributeCVO result = getAttribute(IdUtils.unsafeToId(MetaDataServerProvider.getInstance().getEntityField(sEntity, sAttributeName).getId()));
+			final AttributeCVO result = getAttribute(IdUtils.unsafeToId(
+					MetaDataServerProvider.getInstance().getEntityField(sEntity, sAttributeName).getId()));
 			if (result == null) {
 				throw new NuclosAttributeNotFoundException(sAttributeName);
 			}
@@ -139,29 +143,27 @@ public class AttributeCache implements AttributeProvider {
 
 
 	@Override
-	public synchronized Collection<AttributeCVO> getAttributes() {
-		this.validate();
+	public Collection<AttributeCVO> getAttributes() {
+		validate();
 		return new HashSet<AttributeCVO>(mpAttributesById.values());
 	}
 
-	public synchronized void revalidate() {
-		this.invalidate();
-		this.validate();
+	public void revalidate() {
+		invalidate();
+		validate();
 	}
 
-	public synchronized void invalidate() {
-		mpAttributesById = null;
-		mpAttributesByExternalEntity = null;
+	public void invalidate() {
+		mpAttributesById.clear();
+		mpAttributesByExternalEntity.clear();
 	}
 
-	private synchronized void validate() {
-		if (mpAttributesById == null || mpAttributesByExternalEntity == null) {
+	private void validate() {
+		if (mpAttributesById.isEmpty() || mpAttributesByExternalEntity.isEmpty()) {
 
 			try {
 				final Logger log = Logger.getLogger(this.getClass());
 				log.debug("START building attribute cache.");
-				mpAttributesById = Collections.synchronizedMap(new HashMap<Integer, AttributeCVO>());
-				mpAttributesByExternalEntity = Collections.synchronizedMap(new HashMap<String, List<AttributeCVO>>());
 
 				MetaDataFacadeLocal metaFacade = ServiceLocator.getInstance().getFacade(MetaDataFacadeLocal.class);
 
@@ -199,8 +201,8 @@ public class AttributeCache implements AttributeProvider {
 	 * @param sEntity
 	 * @return a list of AttributeCVO which contains a reference to another entity
 	 */
-	public synchronized Collection<AttributeCVO> getReferencingAttributes(String sEntity) {
-		this.validate();
+	public Collection<AttributeCVO> getReferencingAttributes(String sEntity) {
+		validate();
 		return CollectionUtils.emptyIfNull(mpAttributesByExternalEntity.get(sEntity));
 	}
 

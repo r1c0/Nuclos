@@ -49,7 +49,7 @@ import org.nuclos.server.masterdata.valueobject.MasterDataVO;
  */
 public class MetaDataDelegate implements CommonMetaDataServerProvider {
 
- 	private static MetaDataDelegate singleton;
+ 	private static MetaDataDelegate INSTANCE;
 
 	public static final String ENTITYNAME_ENTITY = "entity";
 
@@ -66,15 +66,15 @@ public class MetaDataDelegate implements CommonMetaDataServerProvider {
 	}
 
 	public static synchronized MetaDataDelegate getInstance() {
-		if (singleton == null) {
+		if (INSTANCE == null) {
 			try {
-				singleton = new MetaDataDelegate();
+				INSTANCE = new MetaDataDelegate();
 			}
 			catch (RuntimeException ex) {
 				throw new CommonFatalException(ex);
 			}
 		}
-		return singleton;
+		return INSTANCE;
 	}
 
 	public Collection<MasterDataVO> hasEntityFieldInImportStructure(String sEntity, String sField) {
