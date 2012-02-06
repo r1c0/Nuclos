@@ -813,7 +813,7 @@ public class LiveSearchController implements LiveSearchSearchPaneListener, LiveS
             Collections.sort(newRows, new Comparator<LiveSearchResultRow>() {
                 @Override
                 public int compare(LiveSearchResultRow o1, LiveSearchResultRow o2) {
-                    return o1.titleString.compareToIgnoreCase(o2.titleString);
+                    return StringUtils.compareIgnoreCase(o1.titleString, o2.titleString);
                 }});
             return newRows;
         }

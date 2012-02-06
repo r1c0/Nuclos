@@ -428,6 +428,9 @@ public class StringUtils {
 	   * @return the given string with all parameters replaced
 	   */
 	  public static String replaceParameters(String s, Transformer<String, String> t) {
+		  if (s == null) {
+			  return null;
+		  }
 		  StringBuffer sb = new StringBuffer();
 		  Matcher m = PARAM_PATTERN.matcher(s);
 		  while(m.find()) {
@@ -705,6 +708,10 @@ public class StringUtils {
 	 */
 	public static boolean equalsIgnoreCase(String s1, String s2) {
 		return (s1 == null) ? (s2 == null) : s1.equalsIgnoreCase(s2);
+	}
+	
+	public static int compareIgnoreCase(String s1, String s2) {
+		return (s1 == null) ? ((s2 == null) ? 0 : 1) : s1.compareToIgnoreCase(s2);
 	}
 
 	private static final int MAX_SQL_ID_LENGTH = 21;
