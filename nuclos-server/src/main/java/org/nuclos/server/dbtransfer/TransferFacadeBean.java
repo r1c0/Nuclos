@@ -1296,7 +1296,7 @@ public class TransferFacadeBean extends NuclosFacadeBean
 			notifierHelper.notifyNextStep();
 			if (!nc.isEnabled()) {
 				info("nuclet content is disabled. adding all to untouched content map");
-				contentSkipped.addAll(getDependencies(importContentMap, contentTypes, nc, null));
+				contentSkipped.addAll(getDependencies(importContentMap, contentTypes, nc, null, true));
 			} else {
 				for (EntityObjectVO importEO : importContentMap.getValues(nc.getEntity())) {
 					info("import eo: " + getIdentifier(nc, importEO));
@@ -1312,7 +1312,7 @@ public class TransferFacadeBean extends NuclosFacadeBean
 							if (!validate(nc, importEO, ValidationType.INSERT, importContentMap, uidLocalizedMap, existingNucletIds, t.getTransferOptions(), t.result)) {
 								info("validation for INSERT is false --> adding to skipped content (dependencies also)");
 								contentSkipped.add(importEO);
-								contentSkipped.addAll(getDependencies(importContentMap, contentTypes, nc, importEO));
+								contentSkipped.addAll(getDependencies(importContentMap, contentTypes, nc, importEO, true));
 								continue;
 							}
 
@@ -1330,7 +1330,7 @@ public class TransferFacadeBean extends NuclosFacadeBean
 								if (!validate(nc, importEO, ValidationType.UPDATE, importContentMap, uidLocalizedMap, existingNucletIds, t.getTransferOptions(), t.result)) {
 									info("validation for UPDATE is false --> adding to skipped content (dependencies also)");
 									contentSkipped.add(importEO);
-									contentSkipped.addAll(getDependencies(importContentMap, contentTypes, nc, importEO));
+									contentSkipped.addAll(getDependencies(importContentMap, contentTypes, nc, importEO, true));
 									continue;
 								}
 //								if (!LangUtils.equals(uid.version, importEO.getVersion())) {
@@ -1346,7 +1346,7 @@ public class TransferFacadeBean extends NuclosFacadeBean
 							} else {
 								info("update of nuclet content is not allowed --> adding to skipped content (dependencies also)");
 								contentSkipped.add(importEO);
-								contentSkipped.addAll(getDependencies(importContentMap, contentTypes, nc, importEO));
+								contentSkipped.addAll(getDependencies(importContentMap, contentTypes, nc, importEO, true));
 								continue;
 							}
 

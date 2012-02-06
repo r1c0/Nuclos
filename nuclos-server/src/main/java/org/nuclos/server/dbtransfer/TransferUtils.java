@@ -284,7 +284,7 @@ public class TransferUtils {
 	 * @param EntityObjectVO targetObject
 	 * @return
 	 */
-	public static NucletContentMap getDependencies(NucletContentMap contentMap, List<INucletContent> contentTypes, INucletContent targetType, EntityObjectVO targetObject) {
+	public static NucletContentMap getDependencies(NucletContentMap contentMap, List<INucletContent> contentTypes, INucletContent targetType, EntityObjectVO targetObject, boolean tryToRemoveReference) {
 		NucletContentMap result = new NucletContentHashMap();
 
 		for(EntityFieldMetaDataVO efMeta : targetType.getFieldDependencies()) {
@@ -292,20 +292,35 @@ public class TransferUtils {
 			if (entity != null) {
 				for(EntityObjectVO eo : contentMap.getValues(entity)) {
 					if (targetObject == null) {
-						result.add(eo);
-						result.addAll(getDependencies(contentMap, contentTypes, getContentType(contentTypes, entity), eo));
+						if (tryToRemoveReference && efMeta.isNullable()) {
+							eo.getFields().remove(efMeta.getField());
+							eo.getFieldIds().remove(efMeta.getField());
+						} else {
+							result.add(eo);
+							result.addAll(getDependencies(contentMap, contentTypes, getContentType(contentTypes, entity), eo, tryToRemoveReference));
+						}
 					} else {
 						if (efMeta.getForeignEntity() != null) {
 							if (LangUtils.equals(targetObject.getId(), eo.getFieldId(efMeta.getField()))) {
-								result.add(eo);
-								result.addAll(getDependencies(contentMap, contentTypes, getContentType(contentTypes, entity), eo));
+								if (tryToRemoveReference && efMeta.isNullable()) {
+									eo.getFields().remove(efMeta.getField());
+									eo.getFieldIds().remove(efMeta.getField());
+								} else {
+									result.add(eo);
+									result.addAll(getDependencies(contentMap, contentTypes, getContentType(contentTypes, entity), eo, tryToRemoveReference));
+								}
 							}
 						}
 						if (efMeta.getUnreferencedForeignEntity() != null) {
 							if (LangUtils.equals(
 								targetObject.getFields().get(efMeta.getUnreferencedForeignEntityField()), eo.getFields().get(efMeta.getField()))) {
-								result.add(eo);
-								result.addAll(getDependencies(contentMap, contentTypes, getContentType(contentTypes, entity), eo));
+								if (tryToRemoveReference && efMeta.isNullable()) {
+									eo.getFields().remove(efMeta.getField());
+									eo.getFieldIds().remove(efMeta.getField());
+								} else {
+									result.add(eo);
+									result.addAll(getDependencies(contentMap, contentTypes, getContentType(contentTypes, entity), eo, tryToRemoveReference));
+								}
 							}
 						}
 					}
