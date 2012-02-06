@@ -40,6 +40,7 @@ import org.nuclos.client.layout.wysiwyg.WYSIWYGStringsAndLabels;
 import org.nuclos.client.layout.wysiwyg.WYSIWYGStringsAndLabels.COLLECTABLE_COMPONENT;
 import org.nuclos.client.layout.wysiwyg.component.properties.PropertyUtils;
 import org.nuclos.client.layout.wysiwyg.component.properties.PropertyValue;
+import org.nuclos.client.layout.wysiwyg.editor.util.DnDUtil;
 import org.nuclos.client.layout.wysiwyg.editor.util.valueobjects.WYSIWYGOption;
 import org.nuclos.client.layout.wysiwyg.editor.util.valueobjects.WYSIWYGOptions;
 import org.nuclos.client.ui.collect.component.CollectableComponentType;
@@ -299,6 +300,7 @@ public class WYSIWYGUniversalComponent extends WYSIWYGCollectableComponent {
 			this.add(messageLabel, BorderLayout.CENTER);
 		}
 		this.addMouseListener();
+		DnDUtil.addDragGestureListener(this, this);
 	}
 
 	/*
@@ -379,6 +381,7 @@ public class WYSIWYGUniversalComponent extends WYSIWYGCollectableComponent {
 		try {
 			NuclosCollectableComponentFactory.getInstance().newCollectableComponent(clcte, sFieldName, clctcomptype, false);
 		} catch (CommonFatalException ex) {
+			ex.printStackTrace();
 			String controlType = (String) values.get(PROPERTY_CONTROLTYPE).getValue();
 			throw new NuclosBusinessException(WYSIWYGStringsAndLabels.partedString(COLLECTABLE_COMPONENT.PROPERTY_VALIDATION_MESSAGE_CONTROLTYPE_NOT_VALID, controlType));
 		}
