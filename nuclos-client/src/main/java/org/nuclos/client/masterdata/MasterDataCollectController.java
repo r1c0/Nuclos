@@ -577,7 +577,12 @@ public class MasterDataCollectController extends EntityCollectController<Collect
 			try {
 				setDetailsChangedIgnored(true);
 				
-				final CollectableMasterDataWithDependants clct = getCollectStateModel().getEditedCollectable();
+				// get the edited state
+				CollectableMasterDataWithDependants clct = getCollectStateModel().getEditedCollectable();
+				if (clct == null) {
+					// .. or the selected state if the details have not been edited.
+					clct = getSelectedCollectable();
+				}
 				readValuesFromEditPanel(clct, false);
 				final MasterDataWithDependantsVO md = new MasterDataWithDependantsVO(
 						clct.getMasterDataCVO(), getAllSubFormData(clct.getId()).toDependantMasterDataMap());

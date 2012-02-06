@@ -1701,7 +1701,12 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 				try {
 					setDetailsChangedIgnored(true);
 					
-					final CollectableGenericObjectWithDependants clct = getCollectStateModel().getEditedCollectable();
+					// get the edited state
+					CollectableGenericObjectWithDependants clct = getCollectStateModel().getEditedCollectable();
+					if (clct == null) {
+						// .. or the selected state if the details have not been edited.
+						clct = getSelectedCollectable();
+					}
 					readValuesFromEditPanel(clct, false);
 					final GenericObjectWithDependantsVO go = new GenericObjectWithDependantsVO(
 							clct.getGenericObjectCVO(), getAllSubFormData(clct).toDependantMasterDataMap());
