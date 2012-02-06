@@ -96,7 +96,6 @@ import org.nuclos.client.ui.Errors;
 import org.nuclos.client.ui.collect.SubForm;
 import org.nuclos.client.ui.collect.SubForm.Column;
 import org.nuclos.client.ui.collect.SubFormFilter;
-import org.nuclos.client.ui.collect.ToolTipsTableHeader;
 import org.nuclos.client.ui.collect.component.model.CollectableComponentModel;
 import org.nuclos.client.ui.collect.component.model.CollectableComponentModelProvider;
 import org.nuclos.client.ui.collect.component.model.DefaultCollectableComponentModelProvider;
@@ -584,16 +583,15 @@ public class WYSIWYGSubForm extends JLayeredPane implements WYSIWYGComponent, Mo
 	}
 
 	public void addDragGestureListener(final WYSIWYGComponent component, final WYSIWYGComponent wysiwygComponent) {
-		//MouseDragGestureListener dgListener = new MouseDragGestureListener(component, wysiwygComponent);
+		MouseDragGestureListener dgListener = new MouseDragGestureListener(component, wysiwygComponent);
 
    	  	// component, action, listener
-   	  	//if (component instanceof JComponent)
-   		  //addDragGestureListener((JComponent)component, dgListener, new DispatchMouseListener());
+   	  	if (component instanceof JComponent)
+   		  addDragGestureListener((JComponent)component, dgListener);
 	}
 
 
-	private void addDragGestureListener(final JComponent c,final MouseDragGestureListener dgListener, DispatchMouseListener ml) {
-		c.addMouseListener(ml);
+	private void addDragGestureListener(final JComponent c,final MouseDragGestureListener dgListener) {
 		DragSource.getDefaultDragSource().createDefaultDragGestureRecognizer(
 			     c, DnDConstants.ACTION_COPY_OR_MOVE, dgListener );
 		/*Component[] comps = c.getComponents();
@@ -603,38 +601,11 @@ public class WYSIWYGSubForm extends JLayeredPane implements WYSIWYGComponent, Mo
 		}*/
 		if (c == this) {
 			if (message != null)
-				addDragGestureListener(message, dgListener, ml);
-			if (subform != null)
-				addDragGestureListener(subform, dgListener, ml);
+				addDragGestureListener(message, dgListener);
+			if (subform != null) 
+				addDragGestureListener(subform.getToolbar(), dgListener);
 		}
 	}
-	
-	private class DispatchMouseListener implements MouseListener {
-		@Override
-		public void mouseReleased(MouseEvent e) {	
-			WYSIWYGSubForm.this.mouseReleased(e);	
-		}
-		
-		@Override
-		public void mousePressed(MouseEvent e) {	
-			WYSIWYGSubForm.this.mousePressed(e);			
-		}
-		
-		@Override
-		public void mouseExited(MouseEvent e) {		
-			WYSIWYGSubForm.this.mouseExited(e);
-		}
-		
-		@Override
-		public void mouseEntered(MouseEvent e) {	
-			WYSIWYGSubForm.this.mouseEntered(e);
-		}
-		
-		@Override
-		public void mouseClicked(MouseEvent e) {	
-			WYSIWYGSubForm.this.mouseClicked(e);
-		}
-	};
 	
 	private static WYSIWYGComponent findWYSIWYGComponent(Object o) {
 		if (o instanceof WYSIWYGComponent)
@@ -980,8 +951,7 @@ public class WYSIWYGSubForm extends JLayeredPane implements WYSIWYGComponent, Mo
 				}
 			}
 			else
-				if (!(l instanceof DispatchMouseListener))
-					l.mouseClicked(e);
+				l.mouseClicked(e);
 		}
 	}
 
@@ -1014,8 +984,7 @@ public class WYSIWYGSubForm extends JLayeredPane implements WYSIWYGComponent, Mo
 	@Override
 	public void mouseEntered(MouseEvent e) {
 		for (MouseListener l : listenerList.getListeners(MouseListener.class)) {
-			if (!(l instanceof DispatchMouseListener))
-				l.mouseEntered(e);
+			l.mouseEntered(e);
 		}
 	}
 
@@ -1026,8 +995,7 @@ public class WYSIWYGSubForm extends JLayeredPane implements WYSIWYGComponent, Mo
 	@Override
 	public void mouseExited(MouseEvent e) {
 		for (MouseListener l : listenerList.getListeners(MouseListener.class)) {
-			if (!(l instanceof DispatchMouseListener))
-				l.mouseExited(e);
+			l.mouseExited(e);
 		}
 	}
 
@@ -1038,8 +1006,7 @@ public class WYSIWYGSubForm extends JLayeredPane implements WYSIWYGComponent, Mo
 	@Override
 	public void mousePressed(MouseEvent e) {
 		for (MouseListener l : listenerList.getListeners(MouseListener.class)) {
-			if (!(l instanceof DispatchMouseListener))
-				l.mousePressed(e);
+			l.mousePressed(e);
 		}
 	}
 
@@ -1050,8 +1017,7 @@ public class WYSIWYGSubForm extends JLayeredPane implements WYSIWYGComponent, Mo
 	@Override
 	public void mouseReleased(MouseEvent e) {
 		for (MouseListener l : listenerList.getListeners(MouseListener.class)) {
-			if (!(l instanceof DispatchMouseListener))
-				l.mouseReleased(e);
+			l.mouseReleased(e);
 		}
 	}
 

@@ -344,7 +344,7 @@ public abstract class WYSIWYGCollectableComponent extends JPanel implements WYSI
 	}
 	
 	protected final void addDragGestureListener() {
-		//DnDUtil.addDragGestureListener(this);
+		DnDUtil.addDragGestureListener(this);
 	}
 	
 	protected void addMouseListener() {

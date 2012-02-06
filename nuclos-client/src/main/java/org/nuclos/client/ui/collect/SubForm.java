@@ -481,6 +481,10 @@ public class SubForm extends JPanel implements TableCellRendererProvider, Action
 			b.removeMouseListener(l);
 	}
 
+	public JToolBar getToolbar() {
+		return toolbar;
+	}
+
 	public int getToolbarOrientation() {
 		return toolbar.getOrientation();
 	}

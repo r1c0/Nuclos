@@ -45,7 +45,6 @@ import org.nuclos.client.layout.wysiwyg.editor.util.valueobjects.LayoutCell;
  */
 public class ResizeLayoutWithMouse extends AbstractControlledListener implements MouseMotionListener, MouseListener {
 
-	private boolean dragConsumed = true;
 	private Point mouseoverHighlightLine = new Point(-1, -1);
 	private LayoutCell cellToResize;
 
@@ -72,8 +71,10 @@ public class ResizeLayoutWithMouse extends AbstractControlledListener implements
 		return isActionToPerform;
 	}
 	
-	public boolean isPerfomingAction() {
-		return isActionToPerform(getActionToPerform());
+	private static boolean blnIsPerfomingAction = false;
+	
+	public static boolean isPerfomingAction() {
+		return blnIsPerfomingAction;
 	}
 
 	/**
@@ -133,15 +134,19 @@ public class ResizeLayoutWithMouse extends AbstractControlledListener implements
 
 		switch (getActionToPerform()) {
 			case PANEL_ALTER_COLUMN :
+				blnIsPerfomingAction = true;
 				c.setCursor(Cursor.getPredefinedCursor(Cursor.E_RESIZE_CURSOR));
 				break;
 			case PANEL_ALTER_ROW :
+				blnIsPerfomingAction = true;
 				c.setCursor(Cursor.getPredefinedCursor(Cursor.S_RESIZE_CURSOR));
 				break;
 			case PANEL_ALTER_SE :
+				blnIsPerfomingAction = true;
 				c.setCursor(Cursor.getPredefinedCursor(Cursor.SE_RESIZE_CURSOR));
 				break;
 			default :
+				blnIsPerfomingAction = false;
 				c.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 				break;
 		}
