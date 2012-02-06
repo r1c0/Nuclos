@@ -1551,7 +1551,7 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	 * @throws CommonBusinessException
 	 */
 	public final void runViewSingleCollectableWithId(Object oId, boolean bShow) throws CommonBusinessException {
-		this.runViewSingleCollectable(this.findCollectableByIdWithoutDependants(this.getEntityName(), oId), bShow);
+		runViewSingleCollectable(findCollectableById(getEntityName(), oId), bShow);
 	}
 
 	public final void runViewMultipleCollectablesWithIds(List<Object> ids) throws CommonBusinessException {
