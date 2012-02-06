@@ -267,8 +267,8 @@ public interface LayoutMLConstants {
 	public static final Dimension DEFAULTVALUE_CHECKBOX_PREFERREDSIZE = new Dimension(20, 22);
 	public static final Dimension DEFAULTVALUE_TEXTFIELD_MINIMUMSIZE = new Dimension(35, 22);
 	public static final Dimension DEFAULTVALUE_TEXTFIELD_PREFERREDSIZE = new Dimension(70, 22);
-	public static final Dimension DEFAULTVALUE_COMBOBOX_MINIMUMSIZE = new Dimension(35, 23);
-	public static final Dimension DEFAULTVALUE_COMBOBOX_PREFERREDSIZE = new Dimension(70, 23);
+	public static final Dimension DEFAULTVALUE_COMBOBOX_MINIMUMSIZE = new Dimension(35, 22);
+	public static final Dimension DEFAULTVALUE_COMBOBOX_PREFERREDSIZE = new Dimension(70, 22);
 	public static final Dimension DEFAULTVALUE_DATECHOOSER_MINIMUMSIZE = new Dimension(35, 22);
 	public static final Dimension DEFAULTVALUE_DATECHOOSER_PREFERREDSIZE = new Dimension(90, 22);
 	public static final Dimension DEFAULTVALUE_OPTIONGROUP_MINIMUMSIZE = new Dimension(35, 22);

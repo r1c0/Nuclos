@@ -596,11 +596,17 @@ public class WYSIWYGSubForm extends JLayeredPane implements WYSIWYGComponent, Mo
 		c.addMouseListener(ml);
 		DragSource.getDefaultDragSource().createDefaultDragGestureRecognizer(
 			     c, DnDConstants.ACTION_COPY_OR_MOVE, dgListener );
-		Component[] comps = c.getComponents();
+		/*Component[] comps = c.getComponents();
 		for (int i = 0; i < comps.length; i++) {
 			if (comps[i] instanceof JComponent)
 				addDragGestureListener((JComponent)comps[i], dgListener, ml);
-		}		
+		}*/
+		if (c == this) {
+			if (message != null)
+				addDragGestureListener(message, dgListener, ml);
+			if (subform != null)
+				addDragGestureListener(subform, dgListener, ml);
+		}
 	}
 	
 	private class DispatchMouseListener implements MouseListener {
