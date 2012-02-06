@@ -26,6 +26,10 @@
 				<executions>
 					<execution>
 						<id>retrieve.svn.version</id>
+						<!-- 
+							phases see:
+							http://maven.apache.org/guides/introduction/introduction-to-the-lifecycle.html
+						 -->
 						<phase>prepare-package</phase>
 						<configuration>
 							<includeProjectDependencies>true</includeProjectDependencies>

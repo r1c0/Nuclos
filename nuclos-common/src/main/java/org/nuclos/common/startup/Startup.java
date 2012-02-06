@@ -42,9 +42,9 @@ public class Startup {
 		try {
 			final String version = IOUtils.toString(getClasspathResource("nuclos-version.properties"), ENCODING);
 			LOG.info("version info\n:" + version);
-			final String info = IOUtils.toString(getClasspathResource("info.xml"), ENCODING);
+			final String info = IOUtils.toString(getClasspathResource("info.txt"), ENCODING);
 			LOG.info("SVN info\n:" + info);
-			final String status = IOUtils.toString(getClasspathResource("status.xml"), ENCODING);
+			final String status = IOUtils.toString(getClasspathResource("status.txt"), ENCODING);
 			LOG.info("SVN status\n:" + status);
 		}
 		catch (Exception e) {

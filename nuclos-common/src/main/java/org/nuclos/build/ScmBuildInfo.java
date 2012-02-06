@@ -48,8 +48,8 @@ public class ScmBuildInfo {
 			System.out.println("user.dir: " + System.getProperty("user.dir"));
 			System.out.println("resources dir: " + resources);
 			try {
-				invokeMain("org.tmatesoft.svn.cli.SVN", new String[] {"info", "--xml"}, new File(resources, "info.xml"));
-				invokeMain("org.tmatesoft.svn.cli.SVN", new String[] {"status", "--xml"}, new File(resources, "status.xml"));
+				invokeMain("org.tmatesoft.svn.cli.SVN", new String[] {"info", "--xml"}, new File(resources, "info.txt"));
+				invokeMain("org.tmatesoft.svn.cli.SVN", new String[] {"status", "--xml"}, new File(resources, "status.txt"));
 			}
 			catch (IllegalArgumentException e) {
 				// no svn?
@@ -80,6 +80,10 @@ public class ScmBuildInfo {
 	
 	public static File getResourcesMainSrcRoot() {
 		return new File(getClassRoot().getParentFile().getParentFile(), "src/main/resources");
+	}
+	
+	public static File getClassesRoot() {
+		return new File(getClassRoot().getParentFile().getParentFile(), "target/classes");
 	}
 	
 	public static void invokeMain(String className, String[] args, File out) throws FileNotFoundException {
