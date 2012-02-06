@@ -30,7 +30,6 @@ import org.nuclos.server.common.MasterDataPermissions;
 import org.nuclos.server.common.ModulePermissions;
 import org.nuclos.server.common.ejb3.SecurityFacadeRemote;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.stereotype.Component;
 
 /**

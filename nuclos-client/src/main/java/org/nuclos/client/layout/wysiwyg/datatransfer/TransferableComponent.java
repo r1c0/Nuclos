@@ -22,7 +22,6 @@ import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
 
 import org.nuclos.client.layout.wysiwyg.component.WYSIWYGComponent;
-import org.nuclos.client.layout.wysiwyg.editor.ui.panels.WYSIWYGLayoutEditorPanel;
 
 /**
  * TransferableComponent implements the Transferable interface to enable 

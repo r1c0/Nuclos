@@ -35,14 +35,13 @@ import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.collect.collectable.CollectableEntity;
 import org.nuclos.common.collect.collectable.CollectableField;
 import org.nuclos.common.collect.collectable.DefaultCollectableEntityProvider;
-import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.masterdata.CollectableMasterDataEntity;
 import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonFinderException;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Configurable;
+import org.springframework.stereotype.Component;
 
 /**
  * Caches whole contents from master data entities. It is not used for data dependant on a foreign key.
@@ -55,9 +54,10 @@ import org.springframework.beans.factory.annotation.Configurable;
  * @version 01.00.00
  * @todo the caller has to decide whether an entity is cacheable or not. This is bad.
  */
-@Configurable
+@Component
 public class MasterDataCache {
-	private final Logger log = Logger.getLogger(this.getClass());
+	
+	private static final Logger LOG = Logger.getLogger(MasterDataCache.class);
 
 	private static MasterDataCache INSTANCE;
 
@@ -71,6 +71,10 @@ public class MasterDataCache {
 		= new ConcurrentHashMap<MasterDataCache.CollectableFieldsByNameKey, List<CollectableField>>();
 	
 	private TopicNotificationReceiver tnr;
+	
+	private MasterDataDelegate masterDataDelegate;
+	
+	private EntityFacadeDelegate entityFacadeDelegate;
 
 	private final MessageListener messagelistener = new MessageListener() {
 		@Override
@@ -79,15 +83,15 @@ public class MasterDataCache {
 			if (msg instanceof TextMessage) {
 				try {
 					sEntity = ((TextMessage) msg).getText();
-					log.info("JMS message is of type TextMessage, text is: " + sEntity);
+					LOG.info("JMS message is of type TextMessage, text is: " + sEntity);
 				}
 				catch (JMSException ex) {
-					log.warn("Exception thrown in JMS message listener.", ex);
+					LOG.warn("Exception thrown in JMS message listener.", ex);
 					sEntity = null;
 				}
 			}
 			else {
-				log.warn("Message of type " + msg.getClass().getName() + " received, while a TextMessage was expected.");
+				LOG.warn("Message of type " + msg.getClass().getName() + " received, while a TextMessage was expected.");
 				sEntity = null;
 			}
 
@@ -95,14 +99,12 @@ public class MasterDataCache {
 		}
 	};
 
-	public static synchronized MasterDataCache getInstance() {
-		if (INSTANCE == null) {
-			INSTANCE = new MasterDataCache();
-		}
+	public static MasterDataCache getInstance() {
 		return INSTANCE;
 	}
 
-	private MasterDataCache() {
+	MasterDataCache() {
+		INSTANCE = this;
 	}
 	
 	@PostConstruct
@@ -113,6 +115,16 @@ public class MasterDataCache {
 	@Autowired
 	void setTopicNotificationReceiver(TopicNotificationReceiver tnr) {
 		this.tnr = tnr;
+	}
+	
+	@Autowired
+	void setMasterDataDelegate(MasterDataDelegate masterDataDelegate) {
+		this.masterDataDelegate = masterDataDelegate;
+	}
+	
+	@Autowired
+	void setEntityFacadeDelegate(EntityFacadeDelegate entityFacadeDelegate) {
+		this.entityFacadeDelegate = entityFacadeDelegate;
 	}
 
 	/**
@@ -125,7 +137,7 @@ public class MasterDataCache {
 	public List<MasterDataVO> get(String sEntityName) throws CommonFinderException {
 		List<MasterDataVO> result = mp.get(sEntityName);
 		if (result == null) {
-			result = new ArrayList<MasterDataVO>(MasterDataDelegate.getInstance().getMasterData(sEntityName));
+			result = new ArrayList<MasterDataVO>(masterDataDelegate.getMasterData(sEntityName));
 			if (!Boolean.FALSE.equals(isCacheable(sEntityName))) {
 				mp.put(sEntityName, result);
 			}
@@ -171,12 +183,12 @@ public class MasterDataCache {
 	 */
 	public void invalidate(String sEntityName) {
 		if (sEntityName == null) {
-			log.info("Invalidating the whole masterdata cache.");
+			LOG.info("Invalidating the whole masterdata cache.");
 			this.mp.clear();
 			this.mpCollectableFieldsByName.clear();
 		}
 		else {
-			log.info("Removing entity " + sEntityName + " from masterdata cache.");
+			LOG.info("Removing entity " + sEntityName + " from masterdata cache.");
 			this.mp.remove(sEntityName);
 
 			for (CollectableFieldsByNameKey key : mpCollectableFieldsByName.keySet()) {
@@ -191,7 +203,7 @@ public class MasterDataCache {
 				case LAYOUT:
 				case LAYOUTUSAGE:
 					// invalidate the master data layout cache if a md layout (usage) has been changed:
-					MasterDataDelegate.getInstance().invalidateLayoutCache();
+					masterDataDelegate.invalidateLayoutCache();
 					break;
 				}
 			}
@@ -225,7 +237,7 @@ public class MasterDataCache {
 
 		List<CollectableField> result = mpCollectableFieldsByName.get(cacheKey);
 		if (result == null) {
-			result = EntityFacadeDelegate.getInstance().getCollectableFieldsByName(sEntityName, sFieldName, bCheckValidity);
+			result = entityFacadeDelegate.getCollectableFieldsByName(sEntityName, sFieldName, bCheckValidity);
 			if (Boolean.TRUE.equals(isCacheable(sEntityName))) {
 				mpCollectableFieldsByName.put(cacheKey, result);
 			}

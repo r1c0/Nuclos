@@ -37,8 +37,6 @@ public class SelectColumnsController extends SelectObjectsController<Collectable
 	private static class SelectColumnsPanel<T> extends DefaultSelectObjectsPanel<T> {
 
 		SelectColumnsPanel() {
-			super();
-
 			this.labAvailableColumns.setText(CommonLocaleDelegate.getInstance().getMessage(
 					"SelectColumnsController.7","Verf\u00fcgbare Spalten"));
 			this.labSelectedColumns.setText(CommonLocaleDelegate.getInstance().getMessage(

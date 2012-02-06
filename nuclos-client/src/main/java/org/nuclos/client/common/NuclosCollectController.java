@@ -34,6 +34,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.prefs.Preferences;
 
+import javax.annotation.PostConstruct;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.DefaultComboBoxModel;
@@ -112,6 +113,7 @@ import org.nuclos.server.common.NuclosUpdateException;
 import org.nuclos.server.ruleengine.NuclosBusinessRuleException;
 import org.nuclos.server.ruleengine.valueobject.RuleEventUsageVO;
 import org.nuclos.server.ruleengine.valueobject.RuleVO;
+import org.springframework.beans.factory.annotation.Configurable;
 
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
@@ -1283,13 +1285,18 @@ public abstract class NuclosCollectController<Clct extends Collectable> extends 
 		return bTransferable;
 	}
 
+	@Configurable
 	private static class MySelectObjectsPanel<T> extends DefaultSelectObjectsPanel<T> {
 
 		private final JCheckBox cbxSaveAfterRuleExecution = new JCheckBox();
 
 		MySelectObjectsPanel() {
-			super();
-			init();
+		}
+
+		@PostConstruct
+		@Override
+		protected void init() {
+			super.init();
 			cbxSaveAfterRuleExecution.setText(CommonLocaleDelegate.getInstance().getMessage(
 					"NuclosCollectController.10","Objekt nach Regelausf\u00fchrung speichern"));
 			this.pnlMain.add(cbxSaveAfterRuleExecution, new GridBagConstraints(2, 2, 1, 1, 1.0, 1.0

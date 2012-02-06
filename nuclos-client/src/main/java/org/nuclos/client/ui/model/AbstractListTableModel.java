@@ -17,7 +17,6 @@
 
 package org.nuclos.client.ui.model;
 
-import java.io.ObjectStreamException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;

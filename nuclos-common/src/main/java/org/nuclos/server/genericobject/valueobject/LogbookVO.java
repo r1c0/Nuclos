@@ -16,7 +16,6 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.server.genericobject.valueobject;
 
-import org.nuclos.common.AttributeProvider;
 import org.nuclos.common.GenericObjectMetaDataProvider;
 import org.nuclos.common.MasterDataMetaProvider;
 import org.nuclos.common.SpringApplicationContextHolder;

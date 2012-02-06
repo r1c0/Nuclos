@@ -38,7 +38,6 @@ import org.nuclos.common.JMSConstants;
 import org.nuclos.common.MetaDataProvider;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.NuclosFatalException;
-import org.nuclos.common.SpringApplicationContextHolder;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.dal.util.DalTransformations;
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;

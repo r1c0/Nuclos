@@ -18,13 +18,10 @@ package org.nuclos.server.common;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -33,7 +30,6 @@ import org.nuclos.common.EntityTreeViewVO;
 import org.nuclos.common.MasterDataMetaProvider;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.NuclosFatalException;
-import org.nuclos.common.SpringApplicationContextHolder;
 import org.nuclos.common.dal.DalSupportForMD;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
 import org.nuclos.common2.ServiceLocator;

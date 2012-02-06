@@ -25,7 +25,6 @@ import org.nuclos.client.masterdata.MasterDataDelegate;
 import org.nuclos.client.masterdata.MasterDataModuleDelegate;
 import org.nuclos.common.ModuleProvider;
 import org.nuclos.common.NuclosEntity;
-import org.nuclos.common.SpringApplicationContextHolder;
 import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 

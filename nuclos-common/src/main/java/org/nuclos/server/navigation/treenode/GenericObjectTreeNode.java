@@ -16,7 +16,6 @@
 // along with Nuclos. If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.server.navigation.treenode;
 
-import java.io.ObjectStreamException;
 import java.rmi.RemoteException;
 import java.util.List;
 

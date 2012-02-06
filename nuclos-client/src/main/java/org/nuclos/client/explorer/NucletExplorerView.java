@@ -134,7 +134,6 @@ public class NucletExplorerView extends DefaultExplorerView implements ExplorerV
 	private class NucletContentSelectObjectPanel<T> extends DefaultSelectObjectsPanel<T> {
 
 		public NucletContentSelectObjectPanel() {
-			super();
 			btnDown.setVisible(false);
 			btnUp.setVisible(false);
 			setPreferredSize(PreferencesUtils.getRectangle(prefs, PREFS_NODE_ADDREMOVE_DIALOG_SIZE, 720, 480).getSize());

@@ -22,7 +22,6 @@ import org.nuclos.common.collection.Transformer;
 import org.nuclos.common.dal.vo.EntityObjectVO;
 import org.nuclos.common.format.FormattingTransformer;
 import org.nuclos.common2.IdUtils;
-import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.StringUtils;
 
 public class MakeEntityObjectValueIdField implements Transformer<EntityObjectVO, CollectableField> {

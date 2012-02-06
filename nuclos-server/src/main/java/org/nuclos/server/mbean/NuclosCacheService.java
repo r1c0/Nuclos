@@ -22,8 +22,6 @@ import org.apache.log4j.Logger;
 import org.nuclos.server.common.DatasourceCache;
 import org.nuclos.server.report.SchemaCache;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
-import org.springframework.stereotype.Component;
 
 /**
  * @deprecated Is this still in use?

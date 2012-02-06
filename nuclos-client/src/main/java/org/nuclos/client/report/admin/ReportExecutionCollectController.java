@@ -17,7 +17,6 @@
 package org.nuclos.client.report.admin;
 
 import java.awt.Component;
-import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -40,7 +39,6 @@ import javax.swing.SwingUtilities;
 import org.nuclos.client.common.ClientParameterProvider;
 import org.nuclos.client.common.KeyBindingProvider;
 import org.nuclos.client.genericobject.ReportSelectionPanel;
-import org.nuclos.client.main.Main;
 import org.nuclos.client.main.mainframe.MainFrameTab;
 import org.nuclos.client.masterdata.CollectableMasterData;
 import org.nuclos.client.masterdata.MasterDataCollectController;

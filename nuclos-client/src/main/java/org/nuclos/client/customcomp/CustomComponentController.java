@@ -28,7 +28,6 @@ import javax.swing.JDesktopPane;
 import org.apache.log4j.Logger;
 import org.nuclos.client.customcomp.resplan.ResPlanController;
 import org.nuclos.client.main.Main;
-import org.nuclos.client.main.MainController;
 import org.nuclos.client.main.mainframe.MainFrame;
 import org.nuclos.client.main.mainframe.MainFrameTab;
 import org.nuclos.client.main.mainframe.workspace.ITabStoreController;
@@ -48,8 +47,6 @@ import org.nuclos.common2.CommonRunnable;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.PreferencesException;
 import org.nuclos.server.customcomp.valueobject.CustomComponentVO;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Configurable;
 
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;

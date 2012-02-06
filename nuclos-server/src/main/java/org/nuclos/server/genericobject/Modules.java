@@ -28,7 +28,6 @@ import org.nuclos.common.EntityTreeViewVO;
 import org.nuclos.common.ModuleProvider;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.NuclosFatalException;
-import org.nuclos.common.SpringApplicationContextHolder;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.EntityObjectToEntityTreeViewVO;
 import org.nuclos.common.collection.EntityObjectToMasterDataTransformer;

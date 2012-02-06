@@ -19,7 +19,6 @@
  */
 package org.nuclos.common.caching;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 

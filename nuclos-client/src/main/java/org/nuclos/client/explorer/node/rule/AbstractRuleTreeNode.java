@@ -16,7 +16,6 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.explorer.node.rule;
 
-import java.io.ObjectStreamException;
 import java.text.Collator;
 import java.util.Collection;
 import java.util.Collections;

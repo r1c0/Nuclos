@@ -17,7 +17,6 @@
 package org.nuclos.client.masterdata;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -37,7 +36,7 @@ import org.nuclos.common2.CommonRunnable;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.server.masterdata.valueobject.MasterDataMetaVO;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Configurable;
+import org.springframework.stereotype.Component;
 
 
 /**
@@ -51,16 +50,20 @@ import org.springframework.beans.factory.annotation.Configurable;
  * @version 01.00.00
  *
  */
-@Configurable
+@Component
 public class MetaDataCache {
 
 	private static final Logger LOG = Logger.getLogger(MetaDataCache.class);
 
 	private static MetaDataCache INSTANCE;
 	
+	//
+	
 	private Map<String, MasterDataMetaVO> mp;
 	
 	private TopicNotificationReceiver tnr;
+	
+	private MasterDataDelegate masterDataDelegate;
 	
 	private final MessageListener messagelistener = new MessageListener() {
 		@Override
@@ -101,7 +104,7 @@ public class MetaDataCache {
 	void init() {
 		tnr.subscribe(JMSConstants.TOPICNAME_METADATACACHE, messagelistener);
 		LOG.debug("Initializing metadata cache");
-		final Collection<MasterDataMetaVO> coll = MasterDataDelegate.getInstance().getMetaData();
+		final Collection<MasterDataMetaVO> coll = masterDataDelegate.getMetaData();
 		this.mp = new ConcurrentHashMap<String, MasterDataMetaVO>(coll.size());
 		for (MasterDataMetaVO mdmetavo : coll) {
 			this.mp.put(mdmetavo.getEntityName(), mdmetavo);
@@ -113,13 +116,18 @@ public class MetaDataCache {
 		this.tnr = tnr;
 	}
 	
+	@Autowired
+	void setMasterDataDelegate(MasterDataDelegate masterDataDelegate) {
+		this.masterDataDelegate = masterDataDelegate;
+	}
+	
 	/**
 	 * @return the meta data for all master data tables.
 	 */
 	public Collection<MasterDataMetaVO> getMetaData() {
 		Collection<MasterDataMetaVO> coll = mp.values();
 		if(coll == null || coll.isEmpty())
-			return MasterDataDelegate.getInstance().getMetaData();
+			return masterDataDelegate.getMetaData();
 		
 		return coll;
 	}
@@ -132,7 +140,7 @@ public class MetaDataCache {
 		LOG.debug("Metadata cache hit");		
 		MasterDataMetaVO result = mp.get(sEntity);
 		if(result == null)
-			return MasterDataDelegate.getInstance().getMetaData(sEntity);
+			return masterDataDelegate.getMetaData(sEntity);
 		
 		return result;
 	}
@@ -154,7 +162,7 @@ public class MetaDataCache {
 	public synchronized void invalidate() {
 		LOG.info("Invalidating meta data cache.");
 		mp.clear();
-		MasterDataDelegate.getInstance().invalidateCaches();
+		masterDataDelegate.invalidateCaches();
 	}
 		
 } // class MetaDataCache

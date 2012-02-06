@@ -19,8 +19,6 @@ package org.nuclos.client.attribute;
 import java.util.Collection;
 import java.util.Set;
 
-import javax.annotation.PostConstruct;
-
 import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.server.attribute.ejb3.AttributeFacadeRemote;
 import org.nuclos.server.attribute.valueobject.AttributeCVO;

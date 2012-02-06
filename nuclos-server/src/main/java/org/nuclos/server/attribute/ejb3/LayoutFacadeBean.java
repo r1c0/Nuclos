@@ -52,7 +52,6 @@ import org.nuclos.server.genericobject.GenericObjectMetaDataCache;
 import org.nuclos.server.genericobject.Modules;
 import org.nuclos.server.genericobject.valueobject.GenericObjectVO;
 import org.nuclos.server.masterdata.ejb3.MasterDataFacadeBean;
-import org.nuclos.server.masterdata.ejb3.MasterDataFacadeHelper;
 import org.nuclos.server.masterdata.valueobject.MasterDataMetaVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 import org.nuclos.server.ruleengine.NuclosBusinessRuleException;

@@ -18,13 +18,11 @@ package org.nuclos.client.attribute;
 
 import java.util.Collection;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.lang.NullArgumentException;
 import org.apache.log4j.Logger;
-import org.jfree.util.Log;
 import org.nuclos.client.common.MetaDataClientProvider;
 import org.nuclos.client.genericobject.Modules;
 import org.nuclos.common.AttributeProvider;

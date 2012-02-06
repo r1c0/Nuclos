@@ -24,32 +24,32 @@ import org.apache.log4j.Logger;
 import org.nuclos.common.collect.collectable.CollectableField;
 import org.nuclos.common.collect.collectable.CollectableValueIdField;
 import org.nuclos.common2.EntityAndFieldName;
-import org.nuclos.common2.ServiceLocator;
-import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.server.masterdata.ejb3.EntityFacadeRemote;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
+@Component
 public class EntityFacadeDelegate implements EntityFacadeRemote {
 
-	private static EntityFacadeDelegate singleton;
+	private static final Logger LOG = Logger.getLogger(EntityFacadeDelegate.class);
 
-	private final Logger log = Logger.getLogger(this.getClass());
+	private static EntityFacadeDelegate INSTANCE;
+	
+	//
 
-	private final EntityFacadeRemote facade;
+	private EntityFacadeRemote facade;
 
-	private EntityFacadeDelegate() {
-		this.facade = ServiceLocator.getInstance().getFacade(EntityFacadeRemote.class);
+	EntityFacadeDelegate() {
+		INSTANCE = this;
 	}
 
-	public static synchronized EntityFacadeDelegate getInstance() {
-		if (singleton == null) {
-			try {
-				singleton = new EntityFacadeDelegate();
-			}
-			catch (RuntimeException ex) {
-				throw new CommonFatalException(ex);
-			}
-		}
-		return singleton;
+	public static EntityFacadeDelegate getInstance() {
+		return INSTANCE;
+	}
+	
+	@Autowired
+	void setEntityFacadeRemote(EntityFacadeRemote entityFacadeRemote) {
+		this.facade = entityFacadeRemote;
 	}
 
 	public List<CollectableField> getCollectableFieldsByName(

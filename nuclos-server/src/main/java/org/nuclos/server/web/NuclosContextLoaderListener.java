@@ -40,7 +40,6 @@ import org.nuclos.common.JMSConstants;
 import org.nuclos.common.SpringApplicationContextHolder;
 import org.nuclos.server.jms.NuclosJMSUtils;
 import org.springframework.jms.listener.SimpleMessageListenerContainer;
-import org.springframework.jms.support.JmsUtils;
 import org.springframework.jndi.JndiTemplate;
 import org.springframework.util.Log4jConfigurer;
 import org.springframework.util.ResourceUtils;

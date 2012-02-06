@@ -24,7 +24,6 @@ import javax.jms.MessageListener;
 import javax.swing.ImageIcon;
 
 import org.apache.log4j.Logger;
-import org.jfree.util.Log;
 import org.nuclos.client.common.TopicNotificationReceiver;
 import org.nuclos.common.JMSConstants;
 import org.nuclos.common.collection.CollectionUtils;

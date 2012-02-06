@@ -17,26 +17,16 @@
 package org.nuclos.client.layout.wysiwyg.component;
 
 import java.awt.BorderLayout;
-import java.awt.Component;
 import java.awt.Font;
-import java.awt.dnd.DnDConstants;
-import java.awt.dnd.DragGestureEvent;
-import java.awt.dnd.DragGestureListener;
-import java.awt.dnd.DragSource;
-import java.awt.dnd.InvalidDnDOperationException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import javax.swing.JComponent;
 import javax.swing.JMenuItem;
 
 import org.nuclos.client.layout.wysiwyg.WYSIWYGMetaInformation;
 import org.nuclos.client.layout.wysiwyg.component.properties.PropertyValue;
-import org.nuclos.client.layout.wysiwyg.datatransfer.TransferableComponent;
-import org.nuclos.client.layout.wysiwyg.editor.ui.panels.WYSIWYGLayoutEditorPanel;
 import org.nuclos.client.layout.wysiwyg.editor.util.valueobjects.layoutmlrules.LayoutMLRules;
-import org.nuclos.client.ui.Errors;
 import org.nuclos.client.ui.labeled.LabeledComponent;
 import org.nuclos.client.ui.labeled.LabeledTextField;
 import org.nuclos.common.NuclosBusinessException;

@@ -16,14 +16,13 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.server.navigation.treenode;
 
-import java.io.ObjectStreamException;
 import java.rmi.RemoteException;
 import java.util.Date;
 import java.util.List;
 
+import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.LangUtils;
-import org.nuclos.common.NuclosFatalException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 

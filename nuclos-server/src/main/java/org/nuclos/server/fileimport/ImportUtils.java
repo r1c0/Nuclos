@@ -52,7 +52,6 @@ import org.nuclos.common.genericobject.CollectableGenericObjectEntityField;
 import org.nuclos.common.masterdata.CollectableMasterDataEntity;
 import org.nuclos.common2.IdUtils;
 import org.nuclos.common2.KeyEnum;
-import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonValidationException;

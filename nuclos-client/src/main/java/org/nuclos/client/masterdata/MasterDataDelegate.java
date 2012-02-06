@@ -53,6 +53,8 @@ import org.nuclos.server.masterdata.valueobject.MasterDataMetaVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataWithDependantsVO;
 import org.nuclos.server.ruleengine.valueobject.RuleVO;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 /**
  * Business Delegate for <code>MasterDataFacadeBean</code>.
@@ -63,43 +65,54 @@ import org.nuclos.server.ruleengine.valueobject.RuleVO;
  * @author      <a href="mailto:Christoph.Radig@novabit.de">Christoph.Radig</a>
  * @version 01.00.00
  */
+@Component
 public class MasterDataDelegate {
 
 	private static final Logger LOG = Logger.getLogger(MasterDataDelegate.class);
 
-	private static MasterDataDelegate INSTANCE;
-
 	public static final String ENTITYNAME_ENTITY = "entity";
 	
+	private static MasterDataDelegate INSTANCE;
+
 	// 
 
-	private final MasterDataFacadeRemote facade;
+	private MasterDataFacadeRemote facade;
 
 	private MasterDataLayoutCache mdlayoutcache;
 
-	private static Map<String, MasterDataMetaVO> metaDataCache;
+	private Map<String, MasterDataMetaVO> metaDataCache;
+	
+	private CommonLocaleDelegate cld;
+	
+	private MasterDataCache masterDataCache;
 
 	/**
 	 * Use getInstance() to create an (the) instance of this class
 	 */
-	private MasterDataDelegate() throws RuntimeException {
-		this.facade = ServiceLocator.getInstance().getFacade(MasterDataFacadeRemote.class);
-		//ServiceLocator.getInstance().getFacade(MasterDataFacadeRemote.class);
+	MasterDataDelegate() throws RuntimeException {
+		INSTANCE = this;
 	}
 
-	public static synchronized MasterDataDelegate getInstance() {
-		if (INSTANCE == null) {
-			try {
-				INSTANCE = new MasterDataDelegate();
-			}
-			catch (RuntimeException ex) {
-				throw new CommonFatalException(ex);
-			}
-		}
+	public static MasterDataDelegate getInstance() {
 		return INSTANCE;
 	}
+	
+	@Autowired
+	void setMasterDataFacadeRemote(MasterDataFacadeRemote masterDataFacadeRemote) {
+		this.facade = masterDataFacadeRemote;
+	}
+	
+	@Autowired
+	void setCommonLocaleDelegate(CommonLocaleDelegate cld) {
+		this.cld = cld;
+	}
+	
+	@Autowired
+	void setMasterDataCache(MasterDataCache masterDataCache) {
+		this.masterDataCache = masterDataCache;
+	}
 
-	public MasterDataFacadeRemote getMasterDataFacade() {
+	private MasterDataFacadeRemote getMasterDataFacade() {
 		return facade;
 	}
 
@@ -126,7 +139,7 @@ public class MasterDataDelegate {
 	 * @return the (cached) layout ml document, if any, for the given entity and mode.
 	 */
 	 public String getLayoutML(String sEntityName, boolean bSearchMode) {
-		 return this.getLayoutCache().get(sEntityName, bSearchMode);
+		 return getLayoutCache().get(sEntityName, bSearchMode);
 	 }
 
 	 public Integer getLayoutId(String entityName, boolean searchMode) {
@@ -142,7 +155,7 @@ public class MasterDataDelegate {
 		 try{
 			 return getMetaDataCache().values();
 		 }catch(RuntimeException ex){
-			 final String sMessage = CommonLocaleDelegate.getInstance().getMessage(
+			 final String sMessage = cld.getMessage(
 					 "MasterDataDelegate.1", "Fehler beim Laden der Metadaten f\u00fcr alle Entit\u00e4ten.");
 			 throw new CommonFatalException(sMessage,ex);
 		 }
@@ -163,7 +176,7 @@ public class MasterDataDelegate {
 			 if (result == null) {
 				 result = getMetaDataNoCache(sEntityName);
 				 if(result == null) {
-					 throw new CommonFatalException(CommonLocaleDelegate.getInstance().getMessage(
+					 throw new CommonFatalException(cld.getMessage(
 							 "MasterDataDelegate.2", "Keine Metadaten f\u00fcr die Entit\u00e4t {0} vorhanden.", sEntityName));
 				 }
 				 else {
@@ -173,7 +186,7 @@ public class MasterDataDelegate {
 			 assert result != null;
 			 return result;
 		 }catch(RuntimeException ex){
-			 final String sMessage = CommonLocaleDelegate.getInstance().getMessage(
+			 final String sMessage = cld.getMessage(
 					 "MasterDataDelegate.3", "Fehler beim Laden der Metadaten f\u00fcr die Entit\u00e4t {0}.", sEntityName);
 			 throw new CommonFatalException(sMessage, ex);
 		 }
@@ -204,7 +217,7 @@ public class MasterDataDelegate {
 			 if (result == null) {
 				 result = getMetaDataNoCache(iEntityId);
 				 if(result == null) {
-					 throw new CommonFatalException(CommonLocaleDelegate.getInstance().getMessage(
+					 throw new CommonFatalException(cld.getMessage(
 							 "MasterDataDelegate.2", "Keine Metadaten f\u00fcr die Entit\u00e4t {0} vorhanden.", iEntityId));
 				 }
 				 else {
@@ -215,7 +228,7 @@ public class MasterDataDelegate {
 			 return result;
 		 }
 		 catch (RuntimeException ex) {
-			 final String sMessage = CommonLocaleDelegate.getInstance().getMessage(
+			 final String sMessage = cld.getMessage(
 					 "MasterDataDelegate.4", "Fehler beim Laden der Daten f\u00fcr die Entit\u00e4t {0}.", iEntityId);
 			 throw new CommonFatalException(sMessage, ex);
 		 }
@@ -230,7 +243,7 @@ public class MasterDataDelegate {
 			 return this.getMasterDataFacade().getMetaDataByModuleId(iModuleId);
 		 }
 		 catch (RuntimeException ex) {
-			 final String sMessage = CommonLocaleDelegate.getInstance().getMessage(
+			 final String sMessage = cld.getMessage(
 					 "MasterDataDelegate.5", "Fehler beim Ermitteln der verf\u00fcgbaren Unterentit\u00e4ten f\u00fcr das Modul {0}.", iModuleId);
 			 throw new NuclosBusinessException(sMessage, ex);
 		 }
@@ -246,7 +259,7 @@ public class MasterDataDelegate {
 			 return this.getMasterDataFacade().getSubEntities(iModuleId);
 		 }
 		 catch (RuntimeException ex) {
-			 final String sMessage = CommonLocaleDelegate.getInstance().getMessage(
+			 final String sMessage = cld.getMessage(
 					 "MasterDataDelegate.5", "Fehler beim Ermitteln der verf\u00fcgbaren Unterentit\u00e4ten f\u00fcr das Modul {0}.", iModuleId);
 			 throw new NuclosBusinessException(sMessage, ex);
 		 }
@@ -297,7 +310,7 @@ public class MasterDataDelegate {
 			 return result;
 		 }
 		 catch (RuntimeException ex) {
-			 final String sMessage = CommonLocaleDelegate.getInstance().getMessage(
+			 final String sMessage = cld.getMessage(
 					 "MasterDataDelegate.4", "Fehler beim Laden der Daten f\u00fcr die Entit\u00e4t {0}.", sEntityName);
 			 throw new CommonFatalException(sMessage, ex);
 		 }
@@ -318,7 +331,7 @@ public class MasterDataDelegate {
 			 return result;
 		 }
 		 catch (RuntimeException ex) {
-			 final String sMessage = CommonLocaleDelegate.getInstance().getMessage(
+			 final String sMessage = cld.getMessage(
 					 "MasterDataDelegate.4", "Fehler beim Laden der Daten f\u00fcr die Entit\u00e4t {0}.", sEntityName);
 			 throw new CommonFatalException(sMessage, ex);
 		 }
@@ -373,7 +386,7 @@ public class MasterDataDelegate {
 		 MasterDataVO result = null;
 		 if (bUseCacheIfPossible) {
 			 /** @todo optimize */
-			 result = CollectionUtils.findFirst(MasterDataCache.getInstance().get(sEntityName),
+			 result = CollectionUtils.findFirst(masterDataCache.get(sEntityName),
 				 PredicateUtils.transformedInputEquals(new MasterDataVO.GetId(), oId));
 		 }
 		 if (result == null) {
@@ -651,10 +664,11 @@ public class MasterDataDelegate {
 	  private static class MasterDataLayoutCache {
 
 		  private static class Key {
-			  final String sEntityName;
-			  final boolean bSearch;
+			  
+			  private final String sEntityName;
+			  private final boolean bSearch;
 
-			  Key(String sEntityName, boolean bSearch) {
+			  private Key(String sEntityName, boolean bSearch) {
 				  this.sEntityName = sEntityName;
 				  this.bSearch = bSearch;
 			  }
@@ -686,33 +700,35 @@ public class MasterDataDelegate {
 			  }
 		  }
 
-		  private final Map<Key, Pair<Integer, String>> mpUsages = getLayoutUsagesMap();
+		  private Map<Key, Pair<Integer, String>> mpUsages;
+		  
+		  private MasterDataLayoutCache() {
+			  mpUsages = getLayoutUsagesMap();
+		  }
 
-		  private static Map<Key, Pair<Integer, String>> getLayoutUsagesMap() {
+		  private Map<Key, Pair<Integer, String>> getLayoutUsagesMap() {
 			  final Map<Key, Pair<Integer, String>> result = new HashMap<Key, Pair<Integer, String>>();
 			  final Map<Integer, String> mpLayouts = getLayoutsMap();
 	
-				  for (MasterDataVO mdvoUsage : ServiceLocator.getInstance().getFacade(MasterDataFacadeRemote.class).getMasterData(NuclosEntity.LAYOUTUSAGE.getEntityName(), null, true)) {
-					  final String sEntityName = mdvoUsage.getField("entity", String.class);
-					  final boolean bSearch = mdvoUsage.getField("searchScreen", Boolean.class);
-					  final Integer iLayoutId = mdvoUsage.getField("layoutId", Integer.class);
-					  result.put(
-						  new Key(sEntityName, bSearch),
-						  new Pair<Integer, String>(iLayoutId, mpLayouts.get(iLayoutId)));
-				  }
-			  
-			  
+			  for (MasterDataVO mdvoUsage : ServiceLocator.getInstance().getFacade(MasterDataFacadeRemote.class).getMasterData(NuclosEntity.LAYOUTUSAGE.getEntityName(), null, true)) {
+				  final String sEntityName = mdvoUsage.getField("entity", String.class);
+				  final boolean bSearch = mdvoUsage.getField("searchScreen", Boolean.class);
+				  final Integer iLayoutId = mdvoUsage.getField("layoutId", Integer.class);
+				  result.put(
+					  new Key(sEntityName, bSearch),
+					  new Pair<Integer, String>(iLayoutId, mpLayouts.get(iLayoutId)));
+			  }
 			  return result;
 		  }
 
-		  private static Map<Integer, String> getLayoutsMap() {
+		  private Map<Integer, String> getLayoutsMap() {
 			  final Map<Integer, String> result = new HashMap<Integer, String>();
 
-				  for (MasterDataVO mdvoLayout : ServiceLocator.getInstance().getFacade(MasterDataFacadeRemote.class).getMasterData(NuclosEntity.LAYOUT.getEntityName(), null, true)) {
-					  final Integer iLayoutId = (Integer) mdvoLayout.getId();
-					  final String sLayoutML = mdvoLayout.getField("layoutML", String.class);
-					  result.put(iLayoutId, sLayoutML);
-				  }
+			  for (MasterDataVO mdvoLayout : ServiceLocator.getInstance().getFacade(MasterDataFacadeRemote.class).getMasterData(NuclosEntity.LAYOUT.getEntityName(), null, true)) {
+				  final Integer iLayoutId = (Integer) mdvoLayout.getId();
+				  final String sLayoutML = mdvoLayout.getField("layoutML", String.class);
+				  result.put(iLayoutId, sLayoutML);
+			  }
 			  return result;
 		  }
 
@@ -730,5 +746,7 @@ public class MasterDataDelegate {
 			  Pair<Integer, String> p = mpUsages.get(new Key(sEntityName, bSearchMode));
 			  return p != null ? p.x : null;
 		  }
+		  
 	  }       // class MasterDataLayoutCache
+	  
 }       // class MasterDataDelegate

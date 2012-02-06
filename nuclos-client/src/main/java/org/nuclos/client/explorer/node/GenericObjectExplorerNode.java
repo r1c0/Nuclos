@@ -54,7 +54,6 @@ import org.nuclos.client.ui.Icons;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.client.ui.tree.CompositeTreeNodeAction;
 import org.nuclos.client.ui.tree.TreeNodeAction;
-import org.nuclos.common.AttributeProvider;
 import org.nuclos.common.GenericObjectMetaDataProvider;
 import org.nuclos.common.MutableBoolean;
 import org.nuclos.common.NuclosBusinessException;
@@ -80,6 +79,7 @@ import org.nuclos.server.navigation.treenode.TreeNode;
  * @author	<a href="mailto:Christoph.Radig@novabit.de">Christoph.Radig</a>
  * @version 01.00.00
  */
+@SuppressWarnings("deprecation")
 public class GenericObjectExplorerNode extends ExplorerNode<GenericObjectTreeNode> {
 
 	protected static final Logger log = Logger.getLogger(GenericObjectExplorerNode.class);

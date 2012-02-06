@@ -29,7 +29,6 @@ import javax.jms.TextMessage;
 import org.apache.log4j.Logger;
 import org.nuclos.common.AbstractParameterProvider;
 import org.nuclos.common.JMSConstants;
-import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.common2.exception.CommonRemoteException;
 import org.nuclos.server.common.ejb3.ParameterFacadeRemote;

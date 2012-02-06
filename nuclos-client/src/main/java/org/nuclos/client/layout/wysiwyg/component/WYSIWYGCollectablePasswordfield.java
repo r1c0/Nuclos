@@ -28,7 +28,6 @@ import javax.annotation.PostConstruct;
 import javax.swing.JMenuItem;
 import javax.swing.border.Border;
 
-import org.nuclos.client.layout.wysiwyg.component.WYSIWYGComponent.PropertyFilter;
 import org.nuclos.client.layout.wysiwyg.component.properties.PropertyValue;
 import org.nuclos.client.synthetica.NuclosThemeSettings;
 import org.nuclos.client.ui.ColorProvider;

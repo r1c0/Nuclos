@@ -1022,12 +1022,12 @@ public class SecurityCache implements SecurityCacheMBean {
 	 */
 	private void notifyClients() {
 		NuclosJMSUtils.sendMessage(null, JMSConstants.TOPICNAME_SECURITYCACHE);
-		LOG.debug("Notified clients that leased object meta data changed.");
+		LOG.info("Notified clients that leased object meta data changed.");
 	}
 
 	private void notifyUser(String username) {
 		NuclosJMSUtils.sendMessage(username, JMSConstants.TOPICNAME_SECURITYCACHE);
-		LOG.debug("Notified user " + username + " that security data has changed.");
+		LOG.info("Notified user " + username + " that security data has changed.");
 	}
 	
 }	// class SecurityCache

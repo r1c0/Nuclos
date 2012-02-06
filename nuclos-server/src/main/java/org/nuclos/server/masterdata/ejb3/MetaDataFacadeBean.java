@@ -65,7 +65,6 @@ import org.nuclos.common.transport.vo.EntityMetaDataTO;
 import org.nuclos.common.valueobject.EntityRelationshipModelVO;
 import org.nuclos.common2.IOUtils;
 import org.nuclos.common2.IdUtils;
-import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.LocaleInfo;
 import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.StringUtils;

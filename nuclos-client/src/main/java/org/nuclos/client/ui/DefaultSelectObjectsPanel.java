@@ -22,14 +22,13 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 
+import javax.annotation.PostConstruct;
 import javax.swing.BorderFactory;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 
-import org.nuclos.common2.CommonLocaleDelegate;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
 /**
@@ -46,26 +45,15 @@ public class DefaultSelectObjectsPanel<T> extends SelectObjectsPanel<T> {
 
 	protected final JComponent header;
 	
-	private CommonLocaleDelegate cld;
-
 	public DefaultSelectObjectsPanel() {
 		this(null);
 	}
 	
 	public DefaultSelectObjectsPanel(JComponent header) {
 		this.header = header;
-		init();
-	}
-	
-	@Autowired
-	void setCommonLocaleDelegate(CommonLocaleDelegate cld) {
-		this.cld = cld;
-	}
-	
-	protected CommonLocaleDelegate getCommonLocaleDelegate() {
-		return cld;
 	}
 
+	@PostConstruct
 	protected void init() {
 		this.pnlMain.setLayout(new GridBagLayout());
 		this.pnlAvailableObjects.setLayout(new BorderLayout());

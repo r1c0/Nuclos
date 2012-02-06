@@ -44,8 +44,6 @@ public class SelectUserController<T extends MasterDataVO> extends SelectObjectsC
 	private static class SelectUserPanel<T> extends DefaultSelectObjectsPanel<T> {
 
 		SelectUserPanel(String text1, String text2, String text3, String text4) {
-			super();
-
 			this.labAvailableColumns.setText(text1);
 			this.labSelectedColumns.setText(text2);
 

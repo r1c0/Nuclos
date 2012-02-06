@@ -19,6 +19,7 @@ package org.nuclos.client.ui.collect;
 import java.awt.event.MouseListener;
 import java.util.Set;
 
+import javax.annotation.PostConstruct;
 import javax.swing.JComponent;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
@@ -65,6 +66,7 @@ public class SelectFixedColumnsPanel extends DefaultSelectObjectsPanel<Collectab
 		this.btnDown.setVisible(true);
 	}
 
+	@PostConstruct
 	@Override
 	protected void init() {
 		super.init();

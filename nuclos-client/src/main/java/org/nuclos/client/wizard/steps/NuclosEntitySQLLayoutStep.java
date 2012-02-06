@@ -135,10 +135,12 @@ import org.nuclos.common2.layoutml.LayoutMLConstants;
 import org.nuclos.common2.layoutml.LayoutMLParser;
 import org.nuclos.common2.layoutml.exception.LayoutMLException;
 import org.nuclos.server.console.ejb3.ConsoleFacadeRemote;
+import org.nuclos.server.masterdata.ejb3.MasterDataFacadeRemote;
 import org.nuclos.server.masterdata.valueobject.DependantMasterDataMap;
 import org.nuclos.server.masterdata.valueobject.MasterDataMetaVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 import org.pietschy.wizard.InvalidStateException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -206,6 +208,8 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 
 	MyTreeModel treeModel;
 
+	private MasterDataFacadeRemote masterDataFacadeRemote;
+
 	public NuclosEntitySQLLayoutStep() {
 		// initComponents();
 		mpFieldNameChanged = new HashMap<String, String>();
@@ -219,6 +223,11 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 	public NuclosEntitySQLLayoutStep(String name, String summary, Icon icon) {
 		super(name, summary, icon);
 		// initComponents();
+	}
+	
+	@Autowired
+	void setMasterDataFacadeRemote(MasterDataFacadeRemote masterDataFacadeRemote) {
+		this.masterDataFacadeRemote = masterDataFacadeRemote;
 	}
 
 	@PostConstruct
@@ -1192,7 +1201,7 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 				String sCompareField = "entity";
 
 				CollectableComparison compare = SearchConditionUtils.newMDComparison(metaLayoutUsage, sCompareField, ComparisonOperator.EQUAL, wizardModel.getEntityName());
-				Collection<MasterDataVO> colLayout = MasterDataDelegate.getInstance().getMasterDataFacade().getMasterData(sLayoutUsageType, compare, true);
+				Collection<MasterDataVO> colLayout = masterDataFacadeRemote.getMasterData(sLayoutUsageType, compare, true);
 
 				if(colLayout.size() > 0) {
 					MasterDataVO voLayoutUsage = colLayout.iterator().next();
