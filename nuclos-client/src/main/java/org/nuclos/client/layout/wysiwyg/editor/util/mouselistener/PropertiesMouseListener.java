@@ -20,6 +20,8 @@ import java.awt.Point;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
+import javax.swing.SwingUtilities;
+
 import org.nuclos.client.layout.wysiwyg.component.WYSIWYGComponent;
 import org.nuclos.client.layout.wysiwyg.editor.util.popupmenu.ComponentPopUp;
 import org.nuclos.client.layout.wysiwyg.editor.util.valueobjects.TableLayoutPanel;
@@ -73,9 +75,11 @@ public class PropertiesMouseListener implements MouseListener {
 			/** show the properties for the component */
 			ComponentPopUp popup = new ComponentPopUp(container.getCurrentTableLayoutUtil(), e.getComponent(), e.getX());
 			Point loc = container.getCurrentTableLayoutUtil().getContainer().getMousePosition();
-			if (loc != null)
-				popup.showComponentPropertiesPopup(loc);
-
+			if (loc == null) {
+				loc = e.getLocationOnScreen();
+				SwingUtilities.convertPointFromScreen(loc, e.getComponent());
+			}
+			popup.showComponentPropertiesPopup(loc);
 		}
 	}
 
