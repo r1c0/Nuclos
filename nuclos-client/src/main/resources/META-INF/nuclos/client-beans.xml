@@ -127,62 +127,55 @@
         	</bean>
         </property>
     </bean>
+    
+    <bean id="jmsErrorHandler" class="org.nuclos.common2.communication.SimpleSpringErrorHandler">
+    	<property name="prefix" value="client jms"></property>
+    </bean>
 
-    <bean id="topic.parameterProvider" class="org.springframework.jms.listener.SimpleMessageListenerContainer">
+    <bean id="topic" class="org.springframework.jms.listener.SimpleMessageListenerContainer" abstract="true">
     	<property name="connectionFactory" ref="jmsFactory"></property>
+    	<property name="pubSubDomain" value="true"></property>
+    	<property name="errorHandler" ref="jmsErrorHandler"/>
+    </bean>
+
+    <bean id="topic.parameterProvider" class="org.springframework.jms.listener.SimpleMessageListenerContainer" parent="topic">
     	<property name="destinationName" value="topic/parameterProvider"></property>
-    	<property name="pubSubDomain" value="true"></property>
     </bean>
 
-    <bean id="topic.statemodel" class="org.springframework.jms.listener.SimpleMessageListenerContainer">
-    	<property name="connectionFactory" ref="jmsFactory"></property>
+    <bean id="topic.statemodel" class="org.springframework.jms.listener.SimpleMessageListenerContainer" parent="topic">
     	<property name="destinationName" value="topic/statemodel"></property>
-    	<property name="pubSubDomain" value="true"></property>
     </bean>
 
-    <bean id="topic.ruleNotification" class="org.springframework.jms.listener.SimpleMessageListenerContainer">
-    	<property name="connectionFactory" ref="jmsFactory"></property>
+    <bean id="topic.ruleNotification" class="org.springframework.jms.listener.SimpleMessageListenerContainer" parent="topic">
     	<property name="destinationName" value="topic/ruleNotification"></property>
-    	<property name="pubSubDomain" value="true"></property>
     </bean>
 
-    <bean id="topic.masterdataCache" class="org.springframework.jms.listener.SimpleMessageListenerContainer">
-    	<property name="connectionFactory" ref="jmsFactory"></property>
+    <bean id="topic.masterdataCache" class="org.springframework.jms.listener.SimpleMessageListenerContainer" parent="topic">
     	<property name="destinationName" value="topic/masterdataCache"></property>
-    	<property name="pubSubDomain" value="true"></property>
     </bean>
 
-    <bean id="topic.metadataCache" class="org.nuclos.client.jms.MultiMessageListenerContainer">
-    	<property name="connectionFactory" ref="jmsFactory"></property>
+    <bean id="topic.metadataCache" class="org.nuclos.client.jms.MultiMessageListenerContainer" parent="topic">
     	<property name="destinationName" value="topic/metadataCache"></property>
-    	<property name="pubSubDomain" value="true"></property>
     </bean>
 
-    <bean id="topic.securityCache" class="org.springframework.jms.listener.SimpleMessageListenerContainer">
-    	<property name="connectionFactory" ref="jmsFactory"></property>
+    <bean id="topic.securityCache" class="org.springframework.jms.listener.SimpleMessageListenerContainer" parent="topic">
     	<property name="destinationName" value="topic/securityCache"></property>
-    	<property name="pubSubDomain" value="true"></property>
     </bean>
 
-    <bean id="topic.searchfilterCache" class="org.springframework.jms.listener.SimpleMessageListenerContainer">
-    	<property name="connectionFactory" ref="jmsFactory"></property>
+    <bean id="topic.searchfilterCache" class="org.springframework.jms.listener.SimpleMessageListenerContainer" parent="topic">
     	<property name="destinationName" value="topic/searchfilterCache"></property>
-    	<property name="pubSubDomain" value="true"></property>
     </bean>
 
-    <bean id="topic.resourceCache" class="org.springframework.jms.listener.SimpleMessageListenerContainer">
-    	<property name="connectionFactory" ref="jmsFactory"></property>
+    <bean id="topic.resourceCache" class="org.springframework.jms.listener.SimpleMessageListenerContainer" parent="topic">
     	<property name="destinationName" value="topic/resourceCache"></property>
-    	<property name="pubSubDomain" value="true"></property>
     </bean>
 
-    <bean id="topic.localizationChanges" class="org.springframework.jms.listener.SimpleMessageListenerContainer">
-    	<property name="connectionFactory" ref="jmsFactory"></property>
+    <bean id="topic.localizationChanges" class="org.springframework.jms.listener.SimpleMessageListenerContainer" parent="topic">
     	<property name="destinationName" value="topic/localizationChanges"></property>
-    	<property name="pubSubDomain" value="true"></property>
     </bean>
 
-	<!-- using a spring container does not work in this case as we need to subscribe and unsubscribe multiple times in a dynamic way -->
+	<!-- using a spring container does not work in this case as we need 
+		to subscribe and unsubscribe multiple times in a dynamic way -->
 	<bean id="topic.progressNotification" class="org.apache.activemq.command.ActiveMQTopic">
     	<constructor-arg value="topic/progressNotification"/>
     </bean>
@@ -193,15 +186,16 @@
     	<property name="pubSubDomain" value="true"></property>
     </bean-->
 
+	<!-- using a spring container does not work in this case as we need 
+		to subscribe and unsubscribe multiple times in a dynamic way -->
     <bean id="topic.lockedTabProgressNotification" class="org.apache.activemq.command.ActiveMQTopic">
     	<constructor-arg value="topic/lockedTabProgressNotification"/>
     </bean>
 
-    <bean id="topic.customcomponentCache" class="org.springframework.jms.listener.SimpleMessageListenerContainer">
-    	<property name="connectionFactory" ref="jmsFactory"></property>
+    <bean id="topic.customcomponentCache" class="org.springframework.jms.listener.SimpleMessageListenerContainer" parent="topic">
     	<property name="destinationName" value="topic/customcomponentCache"></property>
-    	<property name="pubSubDomain" value="true"></property>
     </bean>
+    
 	<!-- JMS end -->
 
 	<!-- Security start -->

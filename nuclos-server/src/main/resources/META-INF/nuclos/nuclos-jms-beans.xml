@@ -65,9 +65,12 @@
 
 
     <!-- JMS ConnectionFactory to use, configuring the embedded broker using XML -->
-    <amq:connectionFactory id="jmsFactory" brokerURL="vm://localhost" >
-
-    </amq:connectionFactory>
+	<bean id="jmsFactory" class="org.apache.activemq.pool.PooledConnectionFactory">
+		<property name="connectionFactory">
+	 		<amq:connectionFactory brokerURL="vm://localhost" >
+			</amq:connectionFactory>
+		</property>
+	</bean>
 
 	<!-- JMS Producer Configuration -->
     <bean id="jmsProducerConnectionFactory"
@@ -93,7 +96,7 @@
           <property name="pubSubDomain" value="true"></property>
     </bean>
 
-    <bean id="topic.masterdataCache" class="org.springframework.jms.core.JmsTemplate"
+    <bean id="topic.masterdataCache" class="org.springframework.jms.core.JmsTemplate" 
           p:connectionFactory-ref="jmsProducerConnectionFactory"
           p:defaultDestination-ref="destinationMasterdataCache" >
           <property name="pubSubDomain" value="true"></property>
@@ -147,14 +150,21 @@
           <property name="pubSubDomain" value="true"></property>
     </bean>
 
-	<!-- JMS end  -->
-
 	<!-- JMS client -->
-	<bean id="listener.masterdataCache" class="org.springframework.jms.listener.SimpleMessageListenerContainer">
-    	<property name="connectionFactory" ref="jmsFactory"></property>
-    	<property name="destinationName" value="topic/masterdataCache"></property>
-    	<property name="pubSubDomain" value="true"></property>
-    	<property name="messageListener" ref="nuclosAuthenticationProvider"></property>
+
+    <bean id="jmsErrorHandler" class="org.nuclos.common2.communication.SimpleSpringErrorHandler">
+    	<property name="prefix" value="client jms"></property>
     </bean>
+
+	<bean id="listener.masterdataCache"
+		class="org.springframework.jms.listener.SimpleMessageListenerContainer">
+		<property name="connectionFactory" ref="jmsFactory"></property>
+		<property name="destinationName" value="topic/masterdataCache"></property>
+		<property name="pubSubDomain" value="true"></property>
+		<property name="messageListener" ref="nuclosAuthenticationProvider"></property>
+		<property name="errorHandler" ref="jmsErrorHandler" />
+	</bean>
+
+	<!-- JMS end  -->
 
 </beans>
