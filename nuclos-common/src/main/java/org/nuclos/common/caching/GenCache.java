@@ -21,7 +21,12 @@ package org.nuclos.common.caching;
 
 import java.util.HashMap;
 
+import org.apache.log4j.Logger;
+
 public class GenCache<K, V> implements NBCache<K, V> {
+	
+	private static final Logger LOG = Logger.getLogger(GenCache.class);
+	
 	private LookupProvider<K, V>   look;
 	private HashMap<K, V>          map;
 
@@ -33,6 +38,7 @@ public class GenCache<K, V> implements NBCache<K, V> {
 	@Override
 	public void clear() {
 		map.clear();
+		LOG.info("Cleared cache " + this);
 	}
 
 	@Override

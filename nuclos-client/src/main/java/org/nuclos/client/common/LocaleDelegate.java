@@ -122,6 +122,7 @@ public class LocaleDelegate implements CommonLocaleDelegate.LookupService, Messa
 					}
 				}
 			}
+			LOG.info("Updated ResourceBundle for cache " + this);
 		}
 		return RESOURCE_BUNDLE;
 	}
@@ -396,6 +397,7 @@ public class LocaleDelegate implements CommonLocaleDelegate.LookupService, Messa
 		synchronized(RB_LOCk) {
 			RESOURCE_BUNDLE = null;
 		}
+		LOG.info("Cleared cache " + this);
 	}
 
 	@Override

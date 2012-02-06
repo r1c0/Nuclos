@@ -285,6 +285,7 @@ public class MetaDataClientProvider extends AbstractProvider implements MetaData
 
 	public synchronized void revalidate(){
 		dataCache.buildMaps();
+		LOG.info("Revalidated cache " + this);
 	}
 
 	private final MessageListener messagelistener = new MessageListener() {

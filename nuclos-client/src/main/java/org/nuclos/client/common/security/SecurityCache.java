@@ -27,6 +27,8 @@ import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.jms.TextMessage;
 
+import org.apache.log4j.Logger;
+import org.jfree.util.Log;
 import org.nuclos.client.attribute.AttributeCache;
 import org.nuclos.client.common.TopicNotificationReceiver;
 import org.nuclos.client.main.Main;
@@ -64,7 +66,11 @@ import org.springframework.stereotype.Component;
 @Lazy
 public class SecurityCache {
 	
+	private static final Logger LOG = Logger.getLogger(SecurityCache.class);
+	
 	private static SecurityCache INSTANCE;
+	
+	//
 
 	private String username;
 	private Boolean superUser;
@@ -104,6 +110,7 @@ public class SecurityCache {
 				}
 			}
 			if (clearcache) {
+				Log.info("JMS trigger clearcache in " + this);
 				SecurityCache.this.revalidate();
 				attributeCache.revalidate();
 				UIUtils.runCommandLater(Main.getInstance().getMainFrame(), new CommonRunnable() {
@@ -261,6 +268,7 @@ public class SecurityCache {
 		this.mpSubFormPermission.clear();
 		modulePermissionsCache.clear();
 		masterDataPermissionsCache.clear();
+		LOG.info("Cleared cache " + this);
 		validate();
 	}
 
@@ -276,6 +284,7 @@ public class SecurityCache {
 		this.stAllowedActions = (Set<String>) iniData.get(SecurityFacadeRemote.ALLOWED_ACTIONS);
 		this.modulepermissions = (ModulePermissions) iniData.get(SecurityFacadeRemote.MODULE_PERMISSIONS);
 		this.masterdatapermissions = (MasterDataPermissions) iniData.get(SecurityFacadeRemote.MASTERDATA_PERMISSIONS);
+		LOG.info("Validated (filled) cache " + this);
 	}
 
 	/**

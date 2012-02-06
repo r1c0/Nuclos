@@ -50,4 +50,10 @@ public class CommandMessage implements Serializable {
 	public void setCommand(int command) {
 		iCommand = command;
 	}
+	
+	@Override
+	public String toString() {
+		return "CommandMessage[" + iCommand + "]";
+	}
+	
 }

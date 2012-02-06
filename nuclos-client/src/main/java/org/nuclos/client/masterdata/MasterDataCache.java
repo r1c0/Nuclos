@@ -75,12 +75,11 @@ public class MasterDataCache {
 	private final MessageListener messagelistener = new MessageListener() {
 		@Override
 		public void onMessage(Message msg) {
-			log.debug("JMS message received.");
 			String sEntity;
 			if (msg instanceof TextMessage) {
 				try {
 					sEntity = ((TextMessage) msg).getText();
-					log.debug("JMS message is of type TextMessage, text is: " + sEntity);
+					log.info("JMS message is of type TextMessage, text is: " + sEntity);
 				}
 				catch (JMSException ex) {
 					log.warn("Exception thrown in JMS message listener.", ex);
@@ -172,12 +171,12 @@ public class MasterDataCache {
 	 */
 	public void invalidate(String sEntityName) {
 		if (sEntityName == null) {
-			log.debug("Invalidating the whole masterdata cache.");
+			log.info("Invalidating the whole masterdata cache.");
 			this.mp.clear();
 			this.mpCollectableFieldsByName.clear();
 		}
 		else {
-			log.debug("Removing entity " + sEntityName + " from masterdata cache.");
+			log.info("Removing entity " + sEntityName + " from masterdata cache.");
 			this.mp.remove(sEntityName);
 
 			for (CollectableFieldsByNameKey key : mpCollectableFieldsByName.keySet()) {

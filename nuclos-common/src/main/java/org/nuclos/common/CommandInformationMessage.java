@@ -52,4 +52,11 @@ public class CommandInformationMessage extends CommandMessage {
 	public void setNeedLogout(boolean needLogout) {
 		this.needLogout = needLogout;
 	}
+	
+	@Override
+	public String toString() {
+		return "CommandInformationMessage[" + getCommand() 
+				+ ", " + info + ", " + needLogout + "]";
+	}
+
 }

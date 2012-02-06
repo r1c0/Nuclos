@@ -112,7 +112,7 @@
 	</bean>
 	
 	<!-- Global server timer -->
-	<bean id="timer" class="java.util.Timer">
+	<bean id="timer" class="java.util.Timer" destroy-method="cancel">
 		<constructor-arg><value>NuclosServerTimer</value></constructor-arg>
 		<constructor-arg><value>true</value></constructor-arg>
 	</bean>

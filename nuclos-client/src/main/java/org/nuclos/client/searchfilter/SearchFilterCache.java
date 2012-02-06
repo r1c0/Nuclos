@@ -31,6 +31,7 @@ import javax.jms.MessageListener;
 import javax.jms.ObjectMessage;
 
 import org.apache.log4j.Logger;
+import org.jfree.util.Log;
 import org.nuclos.client.common.TopicNotificationReceiver;
 import org.nuclos.client.main.Main;
 import org.nuclos.client.main.MainController;
@@ -60,7 +61,7 @@ import org.springframework.beans.factory.annotation.Configurable;
 @Configurable
 public class SearchFilterCache {
 
-	private static final Logger log = Logger.getLogger(SearchFilterCache.class);
+	private static final Logger LOG = Logger.getLogger(SearchFilterCache.class);
 
 	private static SearchFilterCache singleton;
 	
@@ -73,7 +74,7 @@ public class SearchFilterCache {
 	private final MessageListener messagelistener = new MessageListener() {
 		@Override
         public void onMessage(Message msg) {
-			log.debug("Received notification from server: search filter cache changed.");
+			LOG.info("Received notification from server: search filter cache changed.");
 			SearchFilterCache.this.validate();
 			if (msg instanceof ObjectMessage) {
 				try {
@@ -91,11 +92,11 @@ public class SearchFilterCache {
 					}
 				}
 				catch (JMSException ex) {
-					log.warn("Exception thrown in JMS message listener.", ex);
+					LOG.warn("Exception thrown in JMS message listener.", ex);
 				}
 			}
 			else {
-				log.warn("Message of type " + msg.getClass().getName() + " received, while a TextMessage was expected.");
+				LOG.warn("Message of type " + msg.getClass().getName() + " received, while a TextMessage was expected.");
 			}			
 		}
 	};
@@ -136,6 +137,7 @@ public class SearchFilterCache {
 				}
 			}
 		}
+		LOG.info("Filled cache " + this);
 	}
 
 	/**
@@ -313,7 +315,7 @@ public class SearchFilterCache {
 	 */
 	public void validate() {
 		this.mpEntitySearchFilter.clear();
-
+		LOG.info("Cleared cache " + this);
 		loadSearchFilters();
 	}
 }

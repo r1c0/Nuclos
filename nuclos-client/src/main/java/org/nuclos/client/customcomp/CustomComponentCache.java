@@ -112,9 +112,11 @@ public class CustomComponentCache {
 	
 	private synchronized void revalidate() {
 		customComponents = new ConcurrentHashMap<String, CustomComponentVO>();
+		LOG.info("Cleared cache " + this);
 		for (CustomComponentVO vo : CustomComponentDelegate.getInstance().getAll()) {
 			customComponents.put(vo.getInternalName(), vo);
 		}
 		customComponents = Collections.unmodifiableMap(customComponents);
+		LOG.info("Revalidated (filled) cache " + this);
 	}
 }

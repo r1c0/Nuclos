@@ -208,7 +208,7 @@ public class GenericObjectMetaDataCache implements GenericObjectMetaDataProvider
 	private final MessageListener messagelistener = new MessageListener() {
 		@Override
 		public void onMessage(Message msg) {
-			log.debug("Received notification from server: meta data changed.");
+			log.info("Received notification from server: meta data changed.");
 			GenericObjectMetaDataCache.this.revalidate();
 		}
 	};

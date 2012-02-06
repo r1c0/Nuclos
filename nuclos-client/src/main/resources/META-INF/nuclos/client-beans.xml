@@ -132,6 +132,12 @@
     	<property name="prefix" value="client jms"></property>
     </bean>
 
+	<!--
+		Normally with SimpleMessageListenerContainer a MessageListener property is expected.
+		But nuclos client used TopicNotificationReceiver for dynamically associate listeners.
+		
+		TODO: Check where this overhead is really needed.
+	 -->
     <bean id="topic" class="org.springframework.jms.listener.SimpleMessageListenerContainer" abstract="true">
     	<property name="connectionFactory" ref="jmsFactory"></property>
     	<property name="pubSubDomain" value="true"></property>

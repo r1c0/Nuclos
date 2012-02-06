@@ -1614,6 +1614,7 @@ public class MainController {
 
 	public void setupMenuBar(){
 		frm.menuSetup(getCommandMap(), getComponentMap(), getNotificationDialog());
+		LOG.info("Setup (refreshed) menu bar");
 	}
 
 	/**
@@ -2041,6 +2042,7 @@ public class MainController {
 						default:
 							LOG.warn("Undefined message priority: " + notification.getPriority());
 					}
+					LOG.info("Handled RuleNotification " + notification.toDescription());
 				}
 				else if (objMessage.getClass().equals(CommandMessage.class)) {
 					final CommandMessage command = (CommandMessage) ((ObjectMessage) msg).getObject();
@@ -2067,6 +2069,7 @@ public class MainController {
 							});
 							break;
 					}
+					LOG.info("Handled CommandMessage " + command);
 				} else if(objMessage.getClass().equals(CommandInformationMessage.class)) {
 					final CommandInformationMessage command = (CommandInformationMessage)((ObjectMessage) msg).getObject();
 					switch(command.getCommand()) {
@@ -2091,6 +2094,7 @@ public class MainController {
 							}
 						break;
 					}
+					LOG.info("Handled CommandInformationMessage " + command);
 				}
 			}
 			else {

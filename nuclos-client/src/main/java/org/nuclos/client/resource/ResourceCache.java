@@ -23,6 +23,8 @@ import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.swing.ImageIcon;
 
+import org.apache.log4j.Logger;
+import org.jfree.util.Log;
 import org.nuclos.client.common.TopicNotificationReceiver;
 import org.nuclos.common.JMSConstants;
 import org.nuclos.common.collection.CollectionUtils;
@@ -42,6 +44,9 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class ResourceCache {
+	
+	private static final Logger LOG = Logger.getLogger(ResourceCache.class);
+	
 	
 	// Implementation details...:
 	
@@ -160,5 +165,6 @@ public class ResourceCache {
 		resourcesById.clear();
 		voById.clear();
 		voByName.clear();
+		LOG.info("Invalidated (cleared) cache " + this);
 	}
 }

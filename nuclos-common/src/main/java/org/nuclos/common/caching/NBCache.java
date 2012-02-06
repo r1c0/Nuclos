@@ -20,6 +20,7 @@
 package org.nuclos.common.caching;
 
 public interface NBCache<K, V> {
+	
 	public static interface LookupProvider<K, V> {
 		public V lookup(K key);
 	};

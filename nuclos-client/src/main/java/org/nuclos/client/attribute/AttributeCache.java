@@ -23,6 +23,8 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.lang.NullArgumentException;
+import org.apache.log4j.Logger;
+import org.jfree.util.Log;
 import org.nuclos.client.common.MetaDataClientProvider;
 import org.nuclos.client.genericobject.Modules;
 import org.nuclos.common.AttributeProvider;
@@ -49,6 +51,8 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class AttributeCache implements AttributeProvider {
+	
+	private static final Logger LOG = Logger.getLogger(AttributeCache.class);
 	
 	/**
 	 * the one (and only) instance of AttributeCache
@@ -94,6 +98,7 @@ public class AttributeCache implements AttributeProvider {
 	 */
 	public synchronized void revalidate() {
 		mpAttributesByIds.clear();
+		LOG.info("Cleared cache " + this);
 		fill();
 	}
 
@@ -239,6 +244,7 @@ public class AttributeCache implements AttributeProvider {
 		for (AttributeCVO attrcvo : attributeDelegate.getAllAttributeCVOs(null)) {
 			addImpl(attrcvo);
 		}
+		LOG.info("Validated (filled) cache " + this);
 	}
 
 	public void addCacheableListener(CacheableListener cacheablelistener) {

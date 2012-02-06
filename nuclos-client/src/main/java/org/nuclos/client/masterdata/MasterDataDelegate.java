@@ -113,6 +113,7 @@ public class MasterDataDelegate {
 
 	public synchronized void invalidateLayoutCache() {
 		mdlayoutcache = null;
+		LOG.info("invalidateLayoutCache done");
 	}
 
 	public void revalidateMasterDataMetaCache() {

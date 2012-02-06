@@ -110,6 +110,7 @@ public class ClientParameterProvider extends AbstractParameterProvider implement
 
 	private void revalidate() {
 		this.mpParams = getParameterFromServer();
+		LOG.info("Revalidated cache " + this);
 	}
 
 	private Map<String, String> getParameterFromServer() {

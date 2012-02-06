@@ -61,6 +61,10 @@ public class MultiMessageListenerContainer extends SimpleMessageListenerContaine
 	/**
 	 * Invoke the specified listener: either as standard JMS MessageListener
 	 * or (preferably) as Spring SessionAwareMessageListener.
+	 * <p>
+	 * TODO: Maybe it is better to invoke the 'real' listeners thread (i.e. with
+	 * a thread pool)? (tp)
+	 * </p>
 	 * @param session the JMS Session to operate on
 	 * @param message the received JMS Message
 	 * @throws JMSException if thrown by JMS API methods
@@ -96,9 +100,10 @@ public class MultiMessageListenerContainer extends SimpleMessageListenerContaine
 		for (WeakReference<MessageListener> wr : lstMessageListener) {
 			final MessageListener ml = wr.get();
 			if (ml != null) {
-				result.append(ml);
+				result.append(ml).append(", ");
 			}
 		}
+		result.append("super=").append(super.toString());
 		result.append("]");
 		return result.toString();
 	}

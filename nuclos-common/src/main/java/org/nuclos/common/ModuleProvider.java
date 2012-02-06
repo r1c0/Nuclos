@@ -25,6 +25,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 
+import org.apache.log4j.Logger;
+import org.jfree.util.Log;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.IdUtils;
@@ -48,6 +50,10 @@ import org.nuclos.server.masterdata.valueobject.MasterDataVO;
  * @version 01.00.00
  */
 public abstract class ModuleProvider {
+	
+	private static final Logger LOG = Logger.getLogger(ModuleProvider.class);
+	
+	//
 
 	private Map<Object, MasterDataVO> mpModulesById = CollectionUtils.newHashMap();
 	private Map<String, MasterDataVO> mpModulesByEntityName = CollectionUtils.newHashMap();
@@ -55,10 +61,12 @@ public abstract class ModuleProvider {
 	protected void setModules(Collection<MasterDataVO> collmdvoModules) {
 		mpModulesById = CollectionUtils.newHashMap();
 		mpModulesByEntityName = CollectionUtils.newHashMap();
+		LOG.info("Cleared entities in cache " + this);
 		for (MasterDataVO mdvo : collmdvoModules) {
 			mpModulesById.put(mdvo.getId(), mdvo);
 			mpModulesByEntityName.put(mdvo.getField("entity", String.class), mdvo);
 		}
+		LOG.info("Refilled entities in cache " + this);
 	}
 
 	protected static Collection<MasterDataVO> fillLocales(Collection<MasterDataVO> collmdvoModules) {
@@ -98,7 +106,7 @@ public abstract class ModuleProvider {
 				return LangUtils.compare(mdvo1.getId(), mdvo2.getId());
 			}
 		});
-
+		LOG.info("Get entities for cache " + this);		
 		return result;
 	}
 

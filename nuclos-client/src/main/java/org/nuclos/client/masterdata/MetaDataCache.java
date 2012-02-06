@@ -65,7 +65,7 @@ public class MetaDataCache {
 	private final MessageListener messagelistener = new MessageListener() {
 		@Override
 		public void onMessage(Message msg) {
-			LOG.debug("Received notification from server: meta data changed.");
+			LOG.info("Received notification from server: meta data changed.");
 			MetaDataCache.this.invalidate();
 			if (msg instanceof TextMessage) {
 				try {
@@ -156,7 +156,7 @@ public class MetaDataCache {
 	}
 	
 	public synchronized void invalidate() {
-		LOG.debug("Invalidating meta data cache.");
+		LOG.info("Invalidating meta data cache.");
 		mp.clear();
 		MasterDataDelegate.getInstance().invalidateCaches();
 	}
