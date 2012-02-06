@@ -5,13 +5,13 @@ import java.util.prefs.Preferences;
 /**
  * A representation of {@link CollectableEntity} that is more suited 
  * to be stored in {@link Preferences}.
- * 
+ * <p>
+ * Attention: Consider using {@link org.nuclos.common.WorkspaceDescription}
+ * when you want to store Workspace setting (in contrast to user preferences).
+ * </p>
  * @author Thomas Pasch
  * @since Nuclos 3.1.0-rc5
- * 
- * @deprecated use WorkspaceDescription
  */
-@Deprecated
 public class CollectableEntityPref {
 
 	private final String type;

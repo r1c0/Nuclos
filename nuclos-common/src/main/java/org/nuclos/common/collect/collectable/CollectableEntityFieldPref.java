@@ -8,13 +8,13 @@ import org.nuclos.common.dal.vo.PivotInfo;
 /**
  * A representation of {@link CollectableEntityField} that is more suited 
  * to be stored in {@link Preferences}.
- * 
+ * <p>
+ * Attention: Consider using {@link org.nuclos.common.WorkspaceDescription}
+ * when you want to store Workspace setting (in contrast to user preferences).
+ * </p>
  * @author Thomas Pasch
  * @since Nuclos 3.1.0-rc5
- * 
- * @deprecated use WorkspaceDescription
  */
-@Deprecated
 public class CollectableEntityFieldPref implements Serializable {
 	
 	private final String type;

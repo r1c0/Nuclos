@@ -22,6 +22,7 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.prefs.Preferences;
 
+import org.nuclos.client.common.CollectableEntityFieldPreferencesUtil;
 import org.nuclos.client.common.MetaDataClientProvider;
 import org.nuclos.common.CollectableEntityFieldWithEntityForExternal;
 import org.nuclos.common.MetaDataProvider;
@@ -262,7 +263,7 @@ public class SearchResultTemplate {
 			prefs.put(PREFS_KEY_DESCRIPTION, sDescription);
 		}
 
-		PreferencesUtils.putSerializableListXML(prefs, PREFS_NODE_VISIBLEENTITYFIELDS, getVisibleColumns());
+		CollectableEntityFieldPreferencesUtil.writeList(prefs, PREFS_NODE_VISIBLEENTITYFIELDS, getVisibleColumns());
 		PreferencesUtils.putSerializableListXML(prefs, PREFS_NODE_COLLECTABLESORTING, getSortingOrder());
 		PreferencesUtils.putSerializableListXML(prefs, PREFS_NODE_FIXEDENTITYFIELDS, getListColumnsFixed());
 
@@ -315,7 +316,8 @@ public class SearchResultTemplate {
 		result.setDescription(prefs.get(PREFS_KEY_DESCRIPTION, null));
 
 		if (PreferencesUtils.nodeExists(prefs, PREFS_NODE_VISIBLEENTITYFIELDS)) {
-			result.setVisibleColumns((List<CollectableEntityField>) PreferencesUtils.getSerializableListXML(prefs, PREFS_NODE_VISIBLEENTITYFIELDS, true));
+			result.setVisibleColumns(
+					CollectableEntityFieldPreferencesUtil.readList(prefs, PREFS_NODE_VISIBLEENTITYFIELDS, true));
 		}
 		// backward compatibility
 		else {
