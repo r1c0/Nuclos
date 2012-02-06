@@ -245,7 +245,7 @@ public class TopicNotificationReceiver {
 						LOG.info("Subscribe " + this + " to MultiMessageListenerContainer");
 					}
 					else {
-						if (container.getMessageListener() != null) {
+						if (container.getMessageListener() != null  && container.getMessageListener() != dummyListener) {
 							throw new NuclosFatalException("On " + container + " the MessageListener has already been set: " + container.getMessageListener());
 						}
 						container.setMessageListener(this);

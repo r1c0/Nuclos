@@ -67,7 +67,7 @@ public class CollectableRule extends AbstractCollectableBean<RuleVO> {
 			this.addCollectableEntityField(new DefaultCollectableEntityField(FIELDNAME_DEBUG, Boolean.class,
 					"Debug?", "Debug-Flag der Regel", null, null, false, CollectableField.TYPE_VALUEFIELD, null, null, RULE_ENTITY));
 			this.addCollectableEntityField(new DefaultCollectableEntityField(FIELDNAME_NUCLET, String.class,
-					"Nuclet", "", null, null, false, CollectableField.TYPE_VALUEIDFIELD, null, null, RULE_ENTITY));
+					"Nuclet", "", null, null, true, CollectableField.TYPE_VALUEIDFIELD, null, null, RULE_ENTITY));
 		}
 	}	// inner class Entity
 
