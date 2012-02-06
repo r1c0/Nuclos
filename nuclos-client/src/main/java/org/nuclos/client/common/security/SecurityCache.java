@@ -177,9 +177,16 @@ public class SecurityCache {
 		PermissionKey.MasterDataPermissionKey masterDataPermissionKey = new PermissionKey.MasterDataPermissionKey(sEntityName);
 		if (!masterDataPermissionsCache.containsKey(masterDataPermissionKey)) {
 			MasterDataPermission permission = masterdatapermissions.get(sEntityName);
+			if (permission == null) {
+				permission = MasterDataPermission.NO;
+			}
 			masterDataPermissionsCache.put(masterDataPermissionKey, permission);
 		}
-		return masterDataPermissionsCache.get(masterDataPermissionKey);
+		final MasterDataPermission result = masterDataPermissionsCache.get(masterDataPermissionKey);
+		if (result == MasterDataPermission.NO) {
+			return null;
+		}
+		return result;
 	}
 
 	public boolean isReadAllowedForModule(String sModuleEntity, Integer iGenericObjectId) {
