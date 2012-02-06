@@ -70,14 +70,13 @@ public class DetailsComponentModel extends CollectableComponentModel {
 			public void run() {
 				try {
 					DetailsComponentModel.this.setField(clctfValue, true);
+					assert getField().equals(clctfValue) : "field=" + getField() + " value is " + clctfValue;
 				}
 				catch (Exception e) {
 					LOG.error("setField failed: " + e, e);
 				}
 			}
-		});
-		
-		assert this.getField().equals(clctfValue);
+		});		
 	}
 
 	/**

@@ -193,13 +193,12 @@ public abstract class CollectableComponentModel {
 		}
 		final CollectableField clctfOldValue = this.clctfValue;
 		this.clctfValue = clctfValue;
-
-		this.setDirty();
+		setDirty();
+		assert getField().equals(clctfValue) : "field=" + getField() + " but new value is " + clctfValue;
 
 		if (bNotifyListeners) {
-			this.fireFieldChanged(clctfOldValue, clctfValue);
+			fireFieldChanged(clctfOldValue, clctfValue);
 		}
-		assert this.getField().equals(clctfValue);
 	}
 	
 	public void setFieldInitial(CollectableField clctfValue, boolean bNotifyListeners, boolean bDirty) {
