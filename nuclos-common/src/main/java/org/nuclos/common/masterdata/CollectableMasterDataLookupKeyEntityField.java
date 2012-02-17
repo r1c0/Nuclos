@@ -119,12 +119,12 @@ public class CollectableMasterDataLookupKeyEntityField extends AbstractCollectab
 
 	@Override
 	public String getDescription() {
-		return CommonLocaleDelegate.getTextFallback(mdmetafield.getResourceSIdForDescription(), this.mdmetafield.getDescription());
+		return CommonLocaleDelegate.getInstance().getTextFallback(mdmetafield.getResourceSIdForDescription(), this.mdmetafield.getDescription());
 	}
 
 	@Override
 	public String getLabel() {
-		return CommonLocaleDelegate.getTextFallback(mdmetafield.getResourceSIdForLabel(), this.mdmetafield.getLabel());
+		return CommonLocaleDelegate.getInstance().getTextFallback(mdmetafield.getResourceSIdForLabel(), this.mdmetafield.getLabel());
 	}
 
 	@Override

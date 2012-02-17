@@ -124,7 +124,7 @@ public class InvokeWithInputRequiredSupport {
 				if (InputDelegate.class.isAssignableFrom(clazz)) {
 					InputDelegate ics = (InputDelegate) clazz.newInstance();
 					InputDelegatePane pane = new InputDelegatePane(ics);
-					JDialog dialog = new JDialog(Main.getMainFrame(), title, true);
+					JDialog dialog = new JDialog(Main.getInstance().getMainFrame(), title, true);
 					Map<String, Serializable> result = pane.show(dialog, ex.getInputDelegateSpecification().getData(), parent);
 					if (result != null) {
 						context.putAll(result);

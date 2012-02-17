@@ -351,7 +351,7 @@ public abstract class NuclosFacadeBean {
 					}
 				}
 				else {
-					sEntityLabel = CommonLocaleDelegate.getLabelFromMetaDataVO(masterDataMetaCache.getMetaData(sEntityName[i]));
+					sEntityLabel = CommonLocaleDelegate.getInstance().getLabelFromMetaDataVO(masterDataMetaCache.getMetaData(sEntityName[i]));
 					//masterDataMetaCache.getMetaData(sEntityName[i]).getLabel();
 					if(securityCache.isReadAllowedForMasterData(this.getCurrentUserName(), sEntityName[i])) {
 					  isReadAllowed = true;
@@ -389,7 +389,7 @@ public abstract class NuclosFacadeBean {
 					}
 				}
 				else {
-					sEntityLabel = CommonLocaleDelegate.getLabelFromMetaDataVO(masterDataMetaCache.getMetaData(sEntityName[i]));
+					sEntityLabel = CommonLocaleDelegate.getInstance().getLabelFromMetaDataVO(masterDataMetaCache.getMetaData(sEntityName[i]));
 					//masterDataMetaCache.getMetaData(sEntityName[i]).getLabel();
 					if(securityCache.isWriteAllowedForMasterData(this.getCurrentUserName(), sEntityName[i])) {
 					  isWriteAllowed = true;
@@ -426,7 +426,7 @@ public abstract class NuclosFacadeBean {
 					}
 				}
 				else {
-					sEntityLabel = CommonLocaleDelegate.getLabelFromMetaDataVO(masterDataMetaCache.getMetaData(sEntityName[i]));
+					sEntityLabel = CommonLocaleDelegate.getInstance().getLabelFromMetaDataVO(masterDataMetaCache.getMetaData(sEntityName[i]));
 					//masterDataMetaCache.getMetaData(sEntityName[i]).getLabel();
 					if(securityCache.isDeleteAllowedForMasterData(this.getCurrentUserName(), sEntityName[i])) {
 					  isDeleteAllowed = true;

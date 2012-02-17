@@ -154,12 +154,10 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 		this.helper = genericObjectFacadeHelper;
 	}
 	
-	@Autowired
-	final void setMasterDataFacade(MasterDataFacadeLocal masterDataFacade) {
-		this.masterDataFacade = masterDataFacade;
-	}
-	
 	private final MasterDataFacadeLocal getMasterDataFacade() {
+		if (masterDataFacade == null) {
+			masterDataFacade = ServerServiceLocator.getInstance().getFacade(MasterDataFacadeLocal.class);
+		}
 		return masterDataFacade;
 	}
 

@@ -72,10 +72,6 @@ public class NuclosIcons {
 		return INSTANCE;
 	}
 	
-	void setResourceCache(ResourceCache resourceCache) {
-		this.resourceCache = resourceCache;
-	}
-	
 	public Icon getIconCustomer() {
 		final String sCustomerIconFilename = LangUtils.defaultIfNull(
 				ApplicationProperties.getInstance().getCustomerIconFileName(),

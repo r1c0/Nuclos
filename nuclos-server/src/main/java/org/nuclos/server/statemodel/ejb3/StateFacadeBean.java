@@ -159,12 +159,10 @@ public class StateFacadeBean extends NuclosFacadeBean implements StateFacadeRemo
 		this.genericObjectFacade = genericObjectFacade;
 	}
 	
-	@Autowired
-	final void setMasterDataFacade(MasterDataFacadeLocal masterDataFacade) {
-		this.masterDataFacade = masterDataFacade;
-	}
-	
 	private final MasterDataFacadeLocal getMasterDataFacade() {
+		if (masterDataFacade == null) {
+			masterDataFacade = ServerServiceLocator.getInstance().getFacade(MasterDataFacadeLocal.class);
+		}
 		return masterDataFacade;
 	}
 

@@ -329,7 +329,7 @@ public class SecurityCache implements SecurityCacheMBean {
 
 					Set<Integer> newAllowedProcesses = new HashSet<Integer>();
 					for (Integer iStateModelId : stateModelUsagesCache.getStateUsages().getStateModelIdsByModuleId(iModuleId)) {
-						StateTransitionVO initialTransitionVO = stateCache.getInitialTransistionByModel(iStateModelId);
+						StateTransitionVO initialTransitionVO = getStateCache().getInitialTransistionByModel(iStateModelId);
 						if (iStateModelId != null && initialTransitionVO != null) {
 							for (UsageCriteria uc : stateModelUsagesCache.getStateUsages().getUsageCriteriaByStateModelId(iStateModelId)) {
 								newAllowedProcesses.add(uc.getProcessId());
@@ -366,7 +366,7 @@ public class SecurityCache implements SecurityCacheMBean {
 						Boolean isNewAllowed = false;
 						if (smu != null) {
 							Integer iStateModelId = smu.getStateModelId();
-							StateTransitionVO initialTransitionVO = iStateModelId!=null? stateCache.getInitialTransistionByModel(iStateModelId) : null;
+							StateTransitionVO initialTransitionVO = iStateModelId!=null? getStateCache().getInitialTransistionByModel(iStateModelId) : null;
 							isNewAllowed = iStateModelId != null && initialTransitionVO != null &&
 								!CollectionUtils.intersection(initialTransitionVO.getRoleIds(), getRoleIds()).isEmpty();
 						}
@@ -379,7 +379,7 @@ public class SecurityCache implements SecurityCacheMBean {
 						Set<Integer> newAllowedProcesses = new HashSet<Integer>();
 
 						for (Integer iStateModelId : stateModelUsagesCache.getStateUsages().getStateModelIdsByModuleId(iModuleId)) {
-							StateTransitionVO initialTransitionVO = stateCache.getInitialTransistionByModel(iStateModelId);
+							StateTransitionVO initialTransitionVO = getStateCache().getInitialTransistionByModel(iStateModelId);
 							final Boolean isNewAllowed = iStateModelId != null && initialTransitionVO != null &&
 								!CollectionUtils.intersection(initialTransitionVO.getRoleIds(), getRoleIds()).isEmpty();
 							if (isNewAllowed) {
@@ -689,9 +689,11 @@ public class SecurityCache implements SecurityCacheMBean {
 		this.stateModelUsagesCache = stateModelUsagesCache;
 	}
 	
-	@Autowired
-	void setStateCache(StateCache stateCache) {
-		this.stateCache = stateCache;
+	private StateCache getStateCache() {
+		if (stateCache == null) {
+			stateCache = StateCache.getInstance();
+		}
+		return stateCache;
 	}
 
 	public Set<String> getAllowedActions(String sUserName) {

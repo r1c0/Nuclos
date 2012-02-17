@@ -169,7 +169,7 @@ public class StartUp  {
             public void run() {
 				try {
 					createGUI();
-					if (Main.isMacOSX()) {
+					if (Main.getInstance().isMacOSX()) {
 						Class<?> macAppClass = Class.forName("com.apple.eawt.Application");
 						Object macAppObject = macAppClass.getConstructor().newInstance();
 						// set Nuclos dock icon

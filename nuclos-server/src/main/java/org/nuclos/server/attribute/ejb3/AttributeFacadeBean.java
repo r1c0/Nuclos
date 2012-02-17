@@ -55,9 +55,6 @@ import org.xml.sax.InputSource;
 @Transactional
 public class AttributeFacadeBean extends NuclosFacadeBean implements AttributeFacadeRemote {
 	
-	public AttributeFacadeBean() {
-	}
-	
 	private AttributeCache attributeCache;
 	
 	public AttributeFacadeBean() {

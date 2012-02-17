@@ -207,7 +207,7 @@ public class ResourceIconChooser extends JPanel {
 			if (customResources) {
 				for (String sResource : CollectionUtils.sorted(ResourceDelegate.getInstance().getResourceNames())) {
 					try {
-						ImageIcon iconResource = ResourceCache.getIconResource(sResource);
+						ImageIcon iconResource = ResourceCache.getInstance().getIconResource(sResource);
 						iconNames.add(sResource);
 						icons.add(iconResource);
 					} catch (Exception ex) {

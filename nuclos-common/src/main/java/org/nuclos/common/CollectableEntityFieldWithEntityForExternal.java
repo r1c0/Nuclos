@@ -87,7 +87,7 @@ public class CollectableEntityFieldWithEntityForExternal extends CollectableEnti
 		if (result == null) {
 			if (this.getCollectableEntity() instanceof CollectableEOEntity) {
 				CollectableEOEntity clcteo = (CollectableEOEntity) this.getCollectableEntity();
-				result = CommonLocaleDelegate.getLabelFromMetaDataVO(clcteo.getMeta());
+				result = CommonLocaleDelegate.getInstance().getLabelFromMetaDataVO(clcteo.getMeta());
 			}
 		}
 		
