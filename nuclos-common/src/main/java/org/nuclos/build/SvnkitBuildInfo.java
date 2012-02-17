@@ -5,7 +5,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.tmatesoft.svn.cli.SVNCommandUtil;
@@ -18,7 +20,8 @@ import org.tmatesoft.svn.core.internal.util.SVNPathUtil;
 import org.tmatesoft.svn.core.internal.util.SVNXMLUtil;
 import org.tmatesoft.svn.core.internal.wc.SVNConflictVersion;
 import org.tmatesoft.svn.core.internal.wc.SVNTreeConflictUtil;
-import org.tmatesoft.svn.core.internal.wc17.SVNWCUtils;
+import org.tmatesoft.svn.core.internal.wc.admin.SVNEntry;
+import org.tmatesoft.svn.core.wc.ISVNStatusHandler;
 import org.tmatesoft.svn.core.wc.SVNClientManager;
 import org.tmatesoft.svn.core.wc.SVNInfo;
 import org.tmatesoft.svn.core.wc.SVNRevision;
@@ -179,10 +182,57 @@ public class SvnkitBuildInfo {
 	}
 
 	public void status(File statusFile) throws SVNException, IOException {
-		final SVNStatus status = cm.getStatusClient().doStatus(wc, false);
+		final File absPath = wc.getAbsoluteFile();
+		final class MyHandler implements ISVNStatusHandler {
+
+			private SVNStatus status;
+
+			private List<String> lines = new ArrayList<String>();
+
+			public void handleStatus(SVNStatus s) {
+				final SVNStatusType cs = s.getContentsStatus();
+				final SVNStatusType ns = s.getNodeStatus();
+				final SVNTreeConflictDescription tc = s.getTreeConflict();
+				final SVNEntry entry = s.getEntry();
+				if (absPath.equals(s.getFile())) {
+					if (status != null && cs == SVNStatusType.STATUS_EXTERNAL && absPath.isDirectory()) {
+						status = s;
+						status.markExternal();
+					}
+					else if (status == null) {
+						status = s;
+					}
+				}
+				if (tc != null || cs != null || ns != null) {
+					final StringBuilder line = new StringBuilder();
+					line.append(s.getFile().getPath()).append(" entry=").append(entry);
+					// line.append(entry.getName()).append(" ");
+					if (tc != null) {
+						line.append("C");
+					}
+					if (cs != null) {
+						line.append(" content=").append(cs.toString());
+					}
+					if (ns != null) {
+						line.append(" node=").append(ns.toString());
+					}
+					lines.add(line.toString());
+				}
+			}
+		}
+		;
+		final MyHandler handler = new MyHandler();
+		final long revision = cm.getStatusClient().doStatus(wc, SVNRevision.HEAD, SVNDepth.INFINITY,
+				true, false, true, false, handler, null);
 		final Writer writer = new OutputStreamWriter(new FileOutputStream(statusFile), "UTF-8");
 		try {
-			printStatus(writer, status);
+			if (handler.status != null) {
+				printStatus(writer, handler.status);
+			}
+			for (String s : handler.lines) {
+				writer.write(s);
+				writer.write("\n");
+			}
 		}
 		finally {
 			writer.close();

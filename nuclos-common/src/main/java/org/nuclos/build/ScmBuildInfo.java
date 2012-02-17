@@ -55,21 +55,21 @@ public class ScmBuildInfo {
 			// printSystemProps();
 			System.out.println("user.dir: " + System.getProperty("user.dir"));
 			System.out.println("resources dir: " + resources);
-			/*
 			try {
 				sm = new NoExitSecurityManager();
 				System.setSecurityManager(sm);
-				invokeMain("org.tmatesoft.svn.cli.SVN", new String[] {"info", "--xml"}, new File(resources, "info.txt"));
-				invokeMain("org.tmatesoft.svn.cli.SVN", new String[] {"status", "--xml"}, new File(resources, "status.txt"));
+				invokeMain("org.tmatesoft.svn.cli.SVN", new String[] {"info", "--xml"}, info);
+				invokeMain("org.tmatesoft.svn.cli.SVN", new String[] {"status", "--xml"}, status);
 			}
 			catch (IllegalArgumentException e) {
 				// no svn?
-				System.out.println("svn info not available: " + e);
+				System.out.println("svn info not available (no svnkit?): " + e);
 			}
-			 */
+			/*
 			svnkit = new SvnkitBuildInfo(getSvnWorkingDir());
 			svnkit.info(info);
 			svnkit.status(status);
+			 */
 			System.out.println("ScmBuildInfo: finished execution, written " + info + " and " + status);
 		}
 		finally {
