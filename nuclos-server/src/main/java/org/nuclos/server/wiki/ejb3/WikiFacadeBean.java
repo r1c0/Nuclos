@@ -25,7 +25,6 @@ import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.dal.vo.SystemFields;
 import org.nuclos.server.autosync.XMLEntities;
 import org.nuclos.server.common.ServerParameterProvider;
-import org.nuclos.server.database.SpringDataBaseHelper;
 import org.nuclos.server.dblayer.query.DbFrom;
 import org.nuclos.server.dblayer.query.DbQuery;
 import org.nuclos.server.dblayer.query.DbQueryBuilder;

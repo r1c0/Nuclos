@@ -20,7 +20,6 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 
-import javax.annotation.PostConstruct;
 import javax.annotation.security.RolesAllowed;
 
 import org.nuclos.common.CommandMessage;

@@ -52,7 +52,6 @@ import org.nuclos.server.genericobject.Modules;
 import org.nuclos.server.jms.NuclosJMSUtils;
 import org.nuclos.server.report.SchemaCache;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 /**
  * An caching singleton for accessing the meta data information

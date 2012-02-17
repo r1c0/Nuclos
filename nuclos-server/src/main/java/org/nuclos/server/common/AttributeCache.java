@@ -34,14 +34,12 @@ import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
 import org.nuclos.common.security.Permission;
 import org.nuclos.common2.IdUtils;
-import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.server.attribute.valueobject.AttributeCVO;
 import org.nuclos.server.dal.DalSupportForGO;
 import org.nuclos.server.dal.DalUtils;
 import org.nuclos.server.genericobject.Modules;
-import org.nuclos.server.masterdata.ejb3.MetaDataFacadeLocal;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**

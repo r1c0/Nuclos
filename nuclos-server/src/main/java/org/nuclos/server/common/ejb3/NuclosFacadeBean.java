@@ -16,10 +16,6 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.server.common.ejb3;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
-import javax.annotation.security.RolesAllowed;
-
 import org.apache.commons.lang.NullArgumentException;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;

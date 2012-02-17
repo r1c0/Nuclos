@@ -20,17 +20,14 @@ import java.util.Collection;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.nuclos.common.SpringApplicationContextHolder;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Transformer;
-import org.nuclos.common2.ServiceLocator;
 import org.nuclos.server.common.ejb3.SecurityFacadeLocal;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.intercept.RunAsUserToken;
-import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.GrantedAuthorityImpl;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
@@ -141,7 +138,7 @@ public class NuclosLocalServerSession {
 		return CollectionUtils.transform(NuclosUserDetailsService.getSuperUserActions(), new Transformer<String, GrantedAuthority>() {
 			@Override
 			public GrantedAuthority transform(String i) {
-				return new GrantedAuthorityImpl(i);
+				return new SimpleGrantedAuthority(i);
 			}
 		});
 	}
