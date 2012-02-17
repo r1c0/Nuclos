@@ -97,11 +97,11 @@ public class EntityObjectFacadeBean extends NuclosFacadeBean implements EntityOb
 //		checkWriteAllowed(referencingEntity);
 
 		EntityFieldMetaDataVO fieldmeta = MetaDataServerProvider.getInstance().getEntityField(referencingEntity, referencingEntityField);
-		if (fieldmeta.getForeignEntity() == null) {
-			throw new NuclosFatalException("Field " + referencingEntity + "." + referencingEntityField + " is not a reference field.");
+		if (fieldmeta.getForeignEntity() == null && fieldmeta.getLookupEntity() == null) {
+			throw new NuclosFatalException("Field " + referencingEntity + "." + referencingEntityField + " is not a reference or lookup field.");
 		}
 		else {
-			JdbcEntityObjectProcessor eop = NucletDalProvider.getInstance().getEntityObjectProcessor(fieldmeta.getForeignEntity());
+			JdbcEntityObjectProcessor eop = NucletDalProvider.getInstance().getEntityObjectProcessor(fieldmeta.getForeignEntity() != null ? fieldmeta.getForeignEntity() : fieldmeta.getLookupEntity());
 			return eop.getByPrimaryKey(id);
 		}
 	}
