@@ -4,8 +4,10 @@ import java.io.Serializable;
 import java.util.Map;
 
 import javax.swing.JComponent;
+import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 
+import org.nuclos.api.context.InputDelegate;
 import org.nuclos.api.context.InputRequiredException;
 import org.nuclos.api.context.InputSpecification;
 import org.nuclos.client.NuclosHttpInvokerAttributeContext;
@@ -18,15 +20,15 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class InvokeWithInputRequiredSupport {
-	
+
 	private NuclosHttpInvokerAttributeContext ctx;
-	
+
 	public InvokeWithInputRequiredSupport() {
 	}
-	
+
 	@Autowired
 	void setNuclosHttpInvokerAttributeContext(NuclosHttpInvokerAttributeContext ctx) {
-		this.ctx = ctx; 
+		this.ctx = ctx;
 	}
 
 	public void invoke(CommonRunnable runnable, Map<String, Serializable> context, JComponent parent) throws CommonBusinessException {
@@ -66,8 +68,10 @@ public class InvokeWithInputRequiredSupport {
 
 	private void handleInputRequiredException(InputRequiredException ex, CommonRunnable r, Map<String, Serializable> context, JComponent parent) throws CommonBusinessException {
 		String title = Main.getInstance().getMainFrame().getTitle();
-		String message = ex.getInputSpecification().getMessage();
-		switch (ex.getInputSpecification().getType()) {
+		
+		if (ex.getInputSpecification() != null) {
+			String message = ex.getInputSpecification().getMessage();
+			switch (ex.getInputSpecification().getType()) {
 			case InputSpecification.CONFIRM_YES_NO:
 				int i = JOptionPane.showConfirmDialog(parent, message, title, JOptionPane.YES_NO_OPTION);
 				if (i != JOptionPane.CLOSED_OPTION && i != JOptionPane.CANCEL_OPTION) {
@@ -110,6 +114,39 @@ public class InvokeWithInputRequiredSupport {
 				break;
 			default:
 				break;
+			}
+		}
+		else if (ex.getInputDelegateSpecification() != null) {
+			String classname = ex.getInputDelegateSpecification().getDelegateClass();
+
+			try {
+				Class<?> clazz = Class.forName(classname);
+				if (InputDelegate.class.isAssignableFrom(clazz)) {
+					InputDelegate ics = (InputDelegate) clazz.newInstance();
+					InputDelegatePane pane = new InputDelegatePane(ics);
+					JDialog dialog = new JDialog(Main.getMainFrame(), title, true);
+					Map<String, Serializable> result = pane.show(dialog, ex.getInputDelegateSpecification().getData(), parent);
+					if (result != null) {
+						context.putAll(result);
+						invoke(r, context, parent);
+					}
+					else {
+						throw new UserCancelledException();
+					}
+				}
+			}
+			catch (ClassNotFoundException e) {
+				throw new RuntimeException(e);
+			}
+			catch (InstantiationException e) {
+				throw new RuntimeException(e);
+			}
+			catch (IllegalAccessException e) {
+				throw new RuntimeException(e);
+			}
+		}
+		else {
+			throw new UnsupportedOperationException("Unable to process exception " +  ex.toString());
 		}
 	}
 

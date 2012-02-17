@@ -153,7 +153,7 @@
 		<property name="platformTransactionManager" ref="transactionManager"/>
 	</bean>
 	
-	<bean id="inputContext" class="org.nuclos.api.context.InputContext" destroy-method="destroy" factory-method="getInstance">
+	<bean id="inputContext" class="org.nuclos.api.context.SpringInputContext" destroy-method="destroy" factory-method="getInstance">
 	</bean>
 	
 	<!-- Transaction and Rollback -->

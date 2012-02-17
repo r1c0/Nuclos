@@ -23,6 +23,7 @@ import java.util.TimeZone;
 
 import org.apache.log4j.Logger;
 import org.nuclos.api.context.InputContext;
+import org.nuclos.api.context.SpringInputContext;
 import org.springframework.remoting.support.RemoteInvocation;
 import org.springframework.remoting.support.RemoteInvocationExecutor;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -38,7 +39,7 @@ public class NuclosRemoteInvocationExecutor implements RemoteInvocationExecutor 
 	/**
 	 * Spring injected.
 	 */
-	private InputContext inputContext;
+	private SpringInputContext inputContext;
 	
 	/**
 	 * Spring injected.
@@ -61,14 +62,14 @@ public class NuclosRemoteInvocationExecutor implements RemoteInvocationExecutor 
 	/**
 	 * Spring injected.
 	 */
-	public void setInputContext(InputContext inputContext) {
+	public void setInputContext(SpringInputContext inputContext) {
 		this.inputContext = inputContext; 
 	}
 	
 	/**
 	 * Spring injected.
 	 */
-	final InputContext getInputContext() {
+	final SpringInputContext getInputContext() {
 		return inputContext;
 	}
 	
@@ -103,7 +104,7 @@ public class NuclosRemoteInvocationExecutor implements RemoteInvocationExecutor 
 		try {
 			userContext.setTimeZone((TimeZone) invoke.getAttribute("user.timezone"));
 			remoteContext.setRemotly(true);
-			final InputContext inputContext = getInputContext();
+			final SpringInputContext inputContext = getInputContext();
 
 			if (invoke.getAttribute("org.nuclos.api.context.InputContextSupported") != null) {
 				Object o = invoke.getAttribute("org.nuclos.api.context.InputContextSupported");
