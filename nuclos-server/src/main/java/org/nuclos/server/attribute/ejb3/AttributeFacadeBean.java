@@ -52,11 +52,11 @@ import org.xml.sax.InputSource;
  * Created by Novabit Informationssysteme GmbH <br>
  * Please visit <a href="http://www.novabit.de">www.novabit.de</a>
  */
-// @Stateless
-// @Local(AttributeFacadeLocal.class)
-// @Remote(AttributeFacadeRemote.class)
 @Transactional
-public class AttributeFacadeBean extends NuclosFacadeBean implements AttributeFacadeLocal, AttributeFacadeRemote {
+public class AttributeFacadeBean extends NuclosFacadeBean implements AttributeFacadeRemote {
+	
+	public AttributeFacadeBean() {
+	}
 	
 	private AttributeCache attributeCache;
 	
@@ -71,7 +71,6 @@ public class AttributeFacadeBean extends NuclosFacadeBean implements AttributeFa
 	/**
 	 * @return a collection containing all dynamic attributes
 	 */
-	@Override
 	@RolesAllowed("Login")
 	public Collection<AttributeCVO> getAttributes(Integer iGroupId) {
 		final Collection<AttributeCVO> result = new HashSet<AttributeCVO>();
@@ -94,7 +93,6 @@ public class AttributeFacadeBean extends NuclosFacadeBean implements AttributeFa
 	 * @throws CommonPermissionException
 	 * @precondition iAttributeId != null
 	 */
-	@Override
 	public AttributeCVO get(Integer iAttributeId) throws CommonFinderException, CommonPermissionException {
 //		this.checkReadAllowed(NuclosEntity.ATTRIBUTE);
 		if (iAttributeId == null) {
@@ -113,7 +111,6 @@ public class AttributeFacadeBean extends NuclosFacadeBean implements AttributeFa
 	/**
 	 * invalidates the attribute cache (console function)
 	 */
-	@Override
 	@RolesAllowed("Login")
 	public void invalidateCache() {
 		this.invalidateCache(null);
@@ -122,7 +119,6 @@ public class AttributeFacadeBean extends NuclosFacadeBean implements AttributeFa
 	/**
 	 * invalidates the attribute cache
 	 */
-	@Override
 	public void invalidateCache(Integer iAttributeId) {
 		GenericObjectMetaDataCache.getInstance().attributeChanged(iAttributeId);
 	}
@@ -130,7 +126,6 @@ public class AttributeFacadeBean extends NuclosFacadeBean implements AttributeFa
 	/**
 	 * @return the available calculation functions for calculated attributes
 	 */
-	@Override
 	@RolesAllowed("Login")
 	public Collection<String> getCalculationFunctions() {
 		return CollectionUtils.applyFilter(dataBaseHelper.getDbAccess().getCallableNames(), new Predicate<String>() {
@@ -145,7 +140,6 @@ public class AttributeFacadeBean extends NuclosFacadeBean implements AttributeFa
 	 * @param sAttributeName
 	 * @return the layouts that contained this attribute
 	 */
-	@Override
 	@RolesAllowed("Login")
 	public Set<String> getAttributeLayouts(String sAttributeName){
 		Set<String> sLayoutsName = new HashSet<String>();
@@ -168,7 +162,6 @@ public class AttributeFacadeBean extends NuclosFacadeBean implements AttributeFa
 		return sLayoutsName;
 	}
 	
-	@Override
 	@RolesAllowed("Login")
 	public Set<String> getAttributeForModule(String sModuleId) {
 		

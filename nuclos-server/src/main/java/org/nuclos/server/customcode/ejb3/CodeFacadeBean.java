@@ -38,15 +38,30 @@ import org.nuclos.server.customcode.codegenerator.NuclosJavaCompiler;
 import org.nuclos.server.customcode.codegenerator.PlainCodeGenerator;
 import org.nuclos.server.customcode.valueobject.CodeVO;
 import org.nuclos.server.masterdata.MasterDataWrapper;
+import org.nuclos.server.masterdata.ejb3.MasterDataFacadeLocal;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 import org.nuclos.server.ruleengine.NuclosCompileException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 @RolesAllowed("Login")
 @Transactional
 public class CodeFacadeBean extends NuclosFacadeBean implements CodeFacadeRemote {
+	
+	private MasterDataFacadeLocal masterDataFacade;
+	
+	public CodeFacadeBean() {
+	}
+	
+	@Autowired
+	final void setMasterDataFacade(MasterDataFacadeLocal masterDataFacade) {
+		this.masterDataFacade = masterDataFacade;
+	}
+	
+	private final MasterDataFacadeLocal getMasterDataFacade() {
+		return masterDataFacade;
+	}
 
-	@Override
 	public MasterDataVO create(MasterDataVO vo) throws CommonBusinessException {
 		checkWriteAllowed(NuclosEntity.CODE);
 
@@ -61,7 +76,6 @@ public class CodeFacadeBean extends NuclosFacadeBean implements CodeFacadeRemote
 		return mdvo;
 	}
 
-	@Override
 	public MasterDataVO modify(MasterDataVO vo) throws CommonBusinessException {
 		checkWriteAllowed(NuclosEntity.CODE);
 
@@ -77,7 +91,6 @@ public class CodeFacadeBean extends NuclosFacadeBean implements CodeFacadeRemote
 		return mdVO;
 	}
 
-	@Override
 	public void remove(MasterDataVO vo) throws CommonBusinessException {
 		checkDeleteAllowed(NuclosEntity.CODE);
 
@@ -90,7 +103,6 @@ public class CodeFacadeBean extends NuclosFacadeBean implements CodeFacadeRemote
 		RuleCache.getInstance().invalidate();
 	}
 
-	@Override
 	public void check(MasterDataVO vo) throws CommonBusinessException {
 		checkWriteAllowed(NuclosEntity.CODE);
 		check(vo, false);
@@ -134,7 +146,6 @@ public class CodeFacadeBean extends NuclosFacadeBean implements CodeFacadeRemote
 		}
 	}
 
-	@Override
 	public List<CodeVO> getAll() throws CommonPermissionException {
 		checkReadAllowed(NuclosEntity.CODE);
 		return CollectionUtils.transform(getMasterDataFacade().getMasterData(NuclosEntity.CODE.getEntityName(), null, true), new Transformer<MasterDataVO, CodeVO>() {

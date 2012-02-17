@@ -27,6 +27,7 @@ import org.nuclos.server.attribute.valueobject.AttributeCVO;
 import org.nuclos.server.attribute.valueobject.AttributeValueVO;
 import org.nuclos.server.common.AttributeCache;
 import org.nuclos.server.common.MasterDataMetaCache;
+import org.nuclos.server.common.ServerServiceLocator;
 import org.nuclos.server.common.UpdateJobs;
 import org.nuclos.server.database.SpringDataBaseHelper;
 import org.nuclos.server.dblayer.DbAccess;
@@ -199,19 +200,19 @@ public class MakeAttributesConsistent implements UpdateJobs{
 
 	private MasterDataFacadeLocal getMasterDataFacade() {
 		if (mdfacadelocal == null)
-			mdfacadelocal = ServiceLocator.getInstance().getFacade(MasterDataFacadeLocal.class);
+			mdfacadelocal = ServerServiceLocator.getInstance().getFacade(MasterDataFacadeLocal.class);
 		return mdfacadelocal;
 	}
 
 	private AttributeFacadeLocal getAttributeFacade() {
 		if (attrfacadelocal == null)
-			attrfacadelocal = ServiceLocator.getInstance().getFacade(AttributeFacadeLocal.class);
+			attrfacadelocal = ServerServiceLocator.getInstance().getFacade(AttributeFacadeLocal.class);
 		return attrfacadelocal;
 	}
 
 	private GenericObjectFacadeLocal getGenericObjectFacade() {
 		if (gofacadelocal == null)
-			gofacadelocal = ServiceLocator.getInstance().getFacade(GenericObjectFacadeLocal.class);
+			gofacadelocal = ServerServiceLocator.getInstance().getFacade(GenericObjectFacadeLocal.class);
 		return gofacadelocal;
 	}
 }

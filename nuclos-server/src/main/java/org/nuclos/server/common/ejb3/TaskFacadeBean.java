@@ -65,6 +65,7 @@ import org.nuclos.server.dblayer.query.DbQuery;
 import org.nuclos.server.dblayer.query.DbQueryBuilder;
 import org.nuclos.server.masterdata.MasterDataWrapper;
 import org.nuclos.server.masterdata.ejb3.MasterDataFacadeHelper;
+import org.nuclos.server.masterdata.ejb3.MasterDataFacadeLocal;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataWithDependantsVO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -76,14 +77,13 @@ import org.springframework.transaction.annotation.Transactional;
  * <br>Created by Novabit Informationssysteme GmbH
  * <br>Please visit <a href="http://www.novabit.de">www.novabit.de</a>
  */
-// @Stateless
-// @Local(TaskFacadeLocal.class)
-// @Remote(TaskFacadeRemote.class)
 @Transactional
 @RolesAllowed("Login")
-public class TaskFacadeBean extends NuclosFacadeBean implements TaskFacadeRemote, TaskFacadeLocal {
+public class TaskFacadeBean extends NuclosFacadeBean implements TaskFacadeRemote {
 	
 	private MasterDataFacadeHelper masterDataFacadeHelper;
+	
+	private MasterDataFacadeLocal masterDataFacade;
 	
 	public TaskFacadeBean() {
 	}
@@ -93,13 +93,21 @@ public class TaskFacadeBean extends NuclosFacadeBean implements TaskFacadeRemote
 		this.masterDataFacadeHelper = masterDataFacadeHelper;
 	}
 
+	@Autowired
+	final void setMasterDataFacade(MasterDataFacadeLocal masterDataFacade) {
+		this.masterDataFacade = masterDataFacade;
+	}
+	
+	private final MasterDataFacadeLocal getMasterDataFacade() {
+		return masterDataFacade;
+	}
+
    /**
     * get all tasks (or only unfinished tasks)
     * @param sOwner task owner to get tasks for
     * @param bUnfinishedOnly get only unfinished tasks
     * @return collection of task value objects
     */
-   @Override
    public Collection<TaskVO> getTasksByOwner(String sOwner, boolean bUnfinishedOnly, Integer iPriority) throws NuclosBusinessException {
 	   	final Collection<TaskVO> result = new HashSet<TaskVO>();
 		Long userId = getUserId(sOwner);
@@ -128,7 +136,6 @@ public class TaskFacadeBean extends NuclosFacadeBean implements TaskFacadeRemote
     * @param bDelegatedOnly get only delegated tasks
     * @return collection of task value objects
     */
-   @Override
    public Collection<TaskVO> getTasksByDelegator(String sDelegator, boolean bUnfinishedOnly, Integer iPriority) throws NuclosBusinessException {
 	   	final Collection<TaskVO> result = new HashSet<TaskVO>();
 		Long delegatorId = getUserId(sDelegator);
@@ -159,21 +166,9 @@ public class TaskFacadeBean extends NuclosFacadeBean implements TaskFacadeRemote
     * @param visibility
     * @return collection of task value objects
     */
-   @Override
    public Collection<TaskVO> getTasksByVisibilityForOwners(List<String> owners, Integer visibility, boolean bUnfinishedOnly, Integer iPriority) throws NuclosBusinessException {
       final Collection<TaskVO> result = new HashSet<TaskVO>();
 
-//      List<Object> owners = CollectionUtils.transform(ownerIds, new Transformer<Integer,Object>(){
-//		@Override
-//		public Object transform(Integer i) {
-//			return i;
-//		}}
-//      );
-//
-//	  CollectableIdListCondition idListCond = new CollectableIdListCondition(owners);
-//	  final CollectableEntityField entityFieldDelegator = SearchConditionUtils.newMasterDataEntityField(MasterDataMetaCache.getInstance().getMetaData(NuclosEntity.TASKLIST.getEntityName()), "delegator");
-//	  ReferencingCollectableSearchCondition refCond = new ReferencingCollectableSearchCondition(entityFieldDelegator, idListCond);
-//
 	  CompositeCollectableSearchCondition condDelegator = new CompositeCollectableSearchCondition(LogicalOperator.OR);
 	  for(String owner : owners){
 		  condDelegator.addOperand(SearchConditionUtils.newMDComparison(MasterDataMetaCache.getInstance().getMetaData(NuclosEntity.TASKLIST.getEntityName()),"delegator",ComparisonOperator.EQUAL,owner));
@@ -204,7 +199,6 @@ public class TaskFacadeBean extends NuclosFacadeBean implements TaskFacadeRemote
     * @param bUnfinishedOnly get only unfinished tasks
     * @return collection of task value objects
     */
-   @Override
    public Collection<TaskVO> getTasks(String sUser, boolean bUnfinishedOnly, Integer iPriority) throws NuclosBusinessException {
       final Collection<TaskVO> colltaskvobyowner = this.getTasksByOwner(sUser, bUnfinishedOnly, iPriority);
       final Collection<TaskVO> colltaskvobydelegator = this.getTasksByDelegator(sUser, bUnfinishedOnly, iPriority);
@@ -235,7 +229,6 @@ public class TaskFacadeBean extends NuclosFacadeBean implements TaskFacadeRemote
     * @param taskvo containing the task data
     * @return same task as value object
     */
-   @Override
    public TaskVO create(TaskVO taskvo, Set<Long> stOwners) throws CommonValidationException, NuclosBusinessException, CommonPermissionException {
       TaskVO dbTaskVO = null;
 		taskvo.validate();
@@ -267,7 +260,6 @@ public class TaskFacadeBean extends NuclosFacadeBean implements TaskFacadeRemote
 	 * @param splitforowners true/false - shows if this task will be transformed to tasks for each owner
 	 * @return new task ids
 	 */
-	 @Override
 	 public Collection<TaskVO> create(TaskVO taskvo, Set<Long> stOwners, boolean splitforowners) throws CommonValidationException, NuclosBusinessException, CommonPermissionException {
 		List<TaskVO> listTaskVO = new ArrayList<TaskVO>();
 		if(!splitforowners){
@@ -287,7 +279,6 @@ public class TaskFacadeBean extends NuclosFacadeBean implements TaskFacadeRemote
     * @param taskvo containing the task data
     * @return new task id
     */
-   @Override
    public TaskVO modify(TaskVO taskvo, Set<Long> collOwners) throws CommonFinderException, CommonStaleVersionException, CommonValidationException, NuclosBusinessException {
 		TaskVO newTaskVO = null;
 		taskvo.validate();
@@ -327,8 +318,9 @@ public class TaskFacadeBean extends NuclosFacadeBean implements TaskFacadeRemote
 	 * @param splitforowners true/false - shows if this task will be transformed to tasks for each owner
 	 * @return new task ids
 	 */
-	 @Override
-	 public Collection<TaskVO> modify(TaskVO taskvo, Set<Long> collOwners, boolean splitforowners) throws CommonFinderException, CommonStaleVersionException, CommonValidationException, NuclosBusinessException {
+	 public Collection<TaskVO> modify(TaskVO taskvo, Set<Long> collOwners, boolean splitforowners) 
+			 throws CommonFinderException, CommonStaleVersionException, CommonValidationException, NuclosBusinessException {
+		 
 		List<TaskVO> listTaskVO = new ArrayList<TaskVO>();
 		if(!splitforowners){
 			listTaskVO.add(modify(taskvo, collOwners));
@@ -357,7 +349,6 @@ public class TaskFacadeBean extends NuclosFacadeBean implements TaskFacadeRemote
 	 * delete task from database
 	 * @param taskvo containing the task data
 	 */
-	@Override
 	public void remove(TaskVO taskvo) throws CommonFinderException, CommonRemoveException, CommonStaleVersionException, NuclosBusinessException {
 		try {
 			deleteOwnersForTask(taskvo.getId());
@@ -400,8 +391,6 @@ public class TaskFacadeBean extends NuclosFacadeBean implements TaskFacadeRemote
 		dataBaseHelper.execute(DbStatementUtils.deleteFrom("T_UD_TASKOWNER", "INTID_T_UD_TODOLIST", iTaskId));
 	}
 
-
-	@Override
 	public List<String> getOwnerNamesByTask(TaskVO taskvo) {
 		DbQueryBuilder builder = dataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<Integer> query = builder.createQuery(Integer.class);
@@ -419,7 +408,6 @@ public class TaskFacadeBean extends NuclosFacadeBean implements TaskFacadeRemote
 		return lstOwners;
 	}
 
-	@Override
 	public Set<Long> getOwnerIdsByTask(final Long iTaskId) {
 		DbQueryBuilder builder = dataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<Long> query = builder.createQuery(Long.class);
@@ -440,8 +428,7 @@ public class TaskFacadeBean extends NuclosFacadeBean implements TaskFacadeRemote
 		return dataBaseHelper.getDbAccess().executeQuerySingleResult(query) > 0L;
 	}
 
-   @Override
-   public Long getUserId(String sUserName) {
+	public Long getUserId(String sUserName) {
 		DbQueryBuilder builder = dataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<Long> query = builder.createQuery(Long.class);
 		DbFrom t = query.from("T_MD_USER").alias(SystemFields.BASE_ALIAS);
@@ -455,8 +442,7 @@ public class TaskFacadeBean extends NuclosFacadeBean implements TaskFacadeRemote
 		}
 	}
 
-   @Override
-   public List<String> getUserNamesById(Set<Long> stUserIds) {
+	public List<String> getUserNamesById(Set<Long> stUserIds) {
 	   List<String> lstUserNames = new ArrayList<String>();
 	   for (Long iUserId : stUserIds) {
 		   DbQueryBuilder builder = dataBaseHelper.getDbAccess().getQueryBuilder();
@@ -469,7 +455,6 @@ public class TaskFacadeBean extends NuclosFacadeBean implements TaskFacadeRemote
 	   return lstUserNames;
    }
 
-	@Override
 	public MasterDataVO getUserAsVO(Object oId) throws CommonFinderException {
 		return masterDataFacadeHelper.getMasterDataCVOById(
 				MasterDataMetaCache.getInstance().getMetaData(NuclosEntity.USER), oId);
@@ -555,14 +540,12 @@ public class TaskFacadeBean extends NuclosFacadeBean implements TaskFacadeRemote
 		return result;
 	}
 
-	@Override
 	public Collection<TaskVO> create(MasterDataWithDependantsVO mdvo, Set<Long> stOwners,
 		boolean splitforowners) throws CommonValidationException,
 		NuclosBusinessException, CommonPermissionException {
 		return create(MasterDataWrapper.getTaskVO(mdvo, null), stOwners, splitforowners);
 	}
 
-	@Override
 	public Collection<TaskVO> modify(MasterDataWithDependantsVO mdvo,
 		Set<Long> collOwners, boolean splitforowners)
 		throws CommonFinderException, CommonStaleVersionException,

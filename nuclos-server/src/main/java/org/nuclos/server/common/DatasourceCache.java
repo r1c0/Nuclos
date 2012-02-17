@@ -173,7 +173,7 @@ public class DatasourceCache {
 	private void findDataSourcesByCreator(String sCreator) {
 		LOG.debug("Initializing DatasourceCacheByCreator");
 		try {
-			MasterDataFacadeLocal mdFacade = ServiceLocator.getInstance().getFacade(MasterDataFacadeLocal.class);
+			MasterDataFacadeLocal mdFacade = ServerServiceLocator.getInstance().getFacade(MasterDataFacadeLocal.class);
 			List<DatasourceVO> datasources = new ArrayList<DatasourceVO>();
 
 			DbQueryBuilder builder = dataBaseHelper.getDbAccess().getQueryBuilder();

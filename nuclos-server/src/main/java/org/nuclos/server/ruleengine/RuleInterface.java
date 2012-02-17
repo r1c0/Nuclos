@@ -102,6 +102,7 @@ import org.nuclos.server.common.MetaDataServerProvider;
 import org.nuclos.server.common.ModuleConstants;
 import org.nuclos.server.common.NuclosUserDetailsContextHolder;
 import org.nuclos.server.common.ServerParameterProvider;
+import org.nuclos.server.common.ServerServiceLocator;
 import org.nuclos.server.common.calendar.CommonDate;
 import org.nuclos.server.common.ejb3.LocaleFacadeLocal;
 import org.nuclos.server.common.ejb3.SecurityFacadeLocal;
@@ -324,7 +325,7 @@ public class RuleInterface extends CustomCodeInterface {
 		}
 
 		private LocaleFacadeLocal getLocaleFacade() {
-			return ServiceLocator.getInstance().getFacade(LocaleFacadeLocal.class);
+			return ServerServiceLocator.getInstance().getFacade(LocaleFacadeLocal.class);
 		}
 
 	}	// inner class Check
@@ -465,15 +466,15 @@ public class RuleInterface extends CustomCodeInterface {
 //	}
 
 	private GenericObjectFacadeLocal getGenericObjectFacade() {
-		return ServiceLocator.getInstance().getFacade(GenericObjectFacadeLocal.class);
+		return ServerServiceLocator.getInstance().getFacade(GenericObjectFacadeLocal.class);
 	}
 
 	private MasterDataFacadeLocal getMasterDataFacade() {
-		return ServiceLocator.getInstance().getFacade(MasterDataFacadeLocal.class);
+		return ServerServiceLocator.getInstance().getFacade(MasterDataFacadeLocal.class);
 	}
 
 	private LocaleFacadeLocal getLocaleFacade() {
-		return ServiceLocator.getInstance().getFacade(LocaleFacadeLocal.class);
+		return ServerServiceLocator.getInstance().getFacade(LocaleFacadeLocal.class);
 	}
 
 	/**
@@ -1267,7 +1268,7 @@ public class RuleInterface extends CustomCodeInterface {
 			throw new NuclosFatalException("code.interface.exception.3");//"Die Stammdaten haben kein Statusmodell");
 		}
 
-		final StateFacadeLocal stateFacadeLocal = ServiceLocator.getInstance().getFacade(StateFacadeLocal.class);
+		final StateFacadeLocal stateFacadeLocal = ServerServiceLocator.getInstance().getFacade(StateFacadeLocal.class);
 		return stateFacadeLocal.getInitialState(this.getGenericObject().getUsageCriteria(AttributeCache.getInstance())).getNumeral();
 	}
 
@@ -1278,7 +1279,7 @@ public class RuleInterface extends CustomCodeInterface {
 	public Integer getInitialStateNumeral(Integer iGenericObjectId) {
 		try {
 			this.getGenericObject(iGenericObjectId);
-			final StateFacadeLocal stateFacadeLocal = ServiceLocator.getInstance().getFacade(StateFacadeLocal.class);
+			final StateFacadeLocal stateFacadeLocal = ServerServiceLocator.getInstance().getFacade(StateFacadeLocal.class);
 			return stateFacadeLocal.getInitialState(iGenericObjectId).getNumeral();
 		}
 		catch (CommonFinderException ex) {
@@ -1296,7 +1297,7 @@ public class RuleInterface extends CustomCodeInterface {
 	 */
 	public MasterDataVO getMasterData(String sEntityName, Integer iId) {
 		try {
-			final MasterDataFacadeLocal mdFacade = ServiceLocator.getInstance().getFacade(MasterDataFacadeLocal.class);
+			final MasterDataFacadeLocal mdFacade = ServerServiceLocator.getInstance().getFacade(MasterDataFacadeLocal.class);
 			return mdFacade.get(sEntityName, iId);
 		}
 		catch (Exception ex) {
@@ -1312,7 +1313,7 @@ public class RuleInterface extends CustomCodeInterface {
 	 */
 	public MasterDataWithDependantsVO getMasterDataWithDependants(String sEntityName, Integer iId){
 		try {
-			final MasterDataFacadeLocal mdFacade = ServiceLocator.getInstance().getFacade(MasterDataFacadeLocal.class);
+			final MasterDataFacadeLocal mdFacade = ServerServiceLocator.getInstance().getFacade(MasterDataFacadeLocal.class);
 			return mdFacade.getWithDependants(sEntityName, iId);
 		}
 		catch (Exception ex) {
@@ -1326,7 +1327,7 @@ public class RuleInterface extends CustomCodeInterface {
 	 */
 	public Collection<Object> getMasterDataIds(String sEntityName) {
 		try {
-			final MasterDataFacadeLocal mdFacade = ServiceLocator.getInstance().getFacade(MasterDataFacadeLocal.class);
+			final MasterDataFacadeLocal mdFacade = ServerServiceLocator.getInstance().getFacade(MasterDataFacadeLocal.class);
 			return mdFacade.getMasterDataIds(sEntityName);
 		}
 		catch (Exception ex) {
@@ -1529,7 +1530,7 @@ public class RuleInterface extends CustomCodeInterface {
 		if (asAttributes == null) {
 			throw new NullArgumentException("asAttributes");
 		}
-		final GeneratorFacadeLocal generatorFacade = ServiceLocator.getInstance().getFacade(GeneratorFacadeLocal.class);
+		final GeneratorFacadeLocal generatorFacade = ServerServiceLocator.getInstance().getFacade(GeneratorFacadeLocal.class);
 		generatorFacade.transferGenericObjectData(govoSource, iGenericObjectTarget, asAttributes);
 	}
 
@@ -1556,7 +1557,7 @@ public class RuleInterface extends CustomCodeInterface {
 			throw new NuclosFatalException("rule.interface.error.8");
 				//"Fristen k\u00f6nnen nicht f\u00fcr Stammdaten verwendet werden.");
 		}
-		final TimelimitTaskFacadeLocal timelimitfacade = ServiceLocator.getInstance().getFacade(TimelimitTaskFacadeLocal.class);
+		final TimelimitTaskFacadeLocal timelimitfacade = ServerServiceLocator.getInstance().getFacade(TimelimitTaskFacadeLocal.class);
 		try {
 			timelimitfacade.create(new TimelimitTaskVO(sDescription, dateExpired, dateCompleted, iGenericObjectId));
 		}
@@ -1610,7 +1611,7 @@ public class RuleInterface extends CustomCodeInterface {
 
 	public void addTask(String sTask, String sOwner, String sDelegator, java.util.Date dScheduled, java.util.Date dCompleted, Integer iPriority, Integer iVisibility, String description, Integer taskstatusId, String taskstatus, Collection<Pair<String, Long>> collTaskObjects) {
 		try {
-			final TaskFacadeLocal taskfacadelocal = ServiceLocator.getInstance().getFacade(TaskFacadeLocal.class);
+			final TaskFacadeLocal taskfacadelocal = ServerServiceLocator.getInstance().getFacade(TaskFacadeLocal.class);
 			Set<Long> stOwnerId = new HashSet<Long>();
 			Long userId = taskfacadelocal.getUserId(sOwner);
 			if(userId == null){
@@ -1635,7 +1636,7 @@ public class RuleInterface extends CustomCodeInterface {
 	private MasterDataVO getUserVO(String sUserName) {
 		String result = null;
 
-		final MasterDataFacadeLocal mdFacade = ServiceLocator.getInstance().getFacade(MasterDataFacadeLocal.class);
+		final MasterDataFacadeLocal mdFacade = ServerServiceLocator.getInstance().getFacade(MasterDataFacadeLocal.class);
 
 		final CollectableComparison cond = SearchConditionUtils.newMDComparison(MasterDataMetaCache.getInstance().getMetaData(NuclosEntity.USER), "name", ComparisonOperator.EQUAL, sUserName);
 		final Collection<MasterDataVO> collmdvo = mdFacade.getMasterData(NuclosEntity.USER.getEntityName(), cond, false);
@@ -1650,7 +1651,7 @@ public class RuleInterface extends CustomCodeInterface {
 	public String getUserMailAddress(String sUserName) {
 		String result = null;
 
-		final MasterDataFacadeLocal mdFacade = ServiceLocator.getInstance().getFacade(MasterDataFacadeLocal.class);
+		final MasterDataFacadeLocal mdFacade = ServerServiceLocator.getInstance().getFacade(MasterDataFacadeLocal.class);
 
 		final CollectableComparison cond = SearchConditionUtils.newMDComparison(MasterDataMetaCache.getInstance().getMetaData(NuclosEntity.USER), "name", ComparisonOperator.EQUAL, sUserName);
 		final Collection<MasterDataVO> collmdvo = mdFacade.getMasterData(NuclosEntity.USER.getEntityName(), cond, false);
@@ -2452,11 +2453,11 @@ public class RuleInterface extends CustomCodeInterface {
 	public MasterDataVO getCurrentUser() throws NuclosBusinessRuleException {
 		MasterDataVO returnValue = null;
 
-		SecurityFacadeLocal secFacadeHome = ServiceLocator.getInstance().getFacade(SecurityFacadeLocal.class);;
+		SecurityFacadeLocal secFacadeHome = ServerServiceLocator.getInstance().getFacade(SecurityFacadeLocal.class);;
 		String sUserName = secFacadeHome.getUserName();
 
 
-		final MasterDataFacadeLocal mdfacadehome = ServiceLocator.getInstance().getFacade(MasterDataFacadeLocal.class);
+		final MasterDataFacadeLocal mdfacadehome = ServerServiceLocator.getInstance().getFacade(MasterDataFacadeLocal.class);
 		final CollectableComparison cond = SearchConditionUtils.newMDComparison(MasterDataMetaCache.getInstance().getMetaData(NuclosEntity.USER), "name", ComparisonOperator.EQUAL, sUserName);
 		final Collection<MasterDataVO> collmdvo = mdfacadehome.getMasterData(NuclosEntity.USER.getEntityName(), cond, false);
 		if (collmdvo.size() > 1) {
@@ -2653,7 +2654,7 @@ public class RuleInterface extends CustomCodeInterface {
 		if (iObjectId == null) {
 			throw new NuclosFatalRuleException("iObjectId could not be null");
 		}
-		final ReportFacadeRemote reportFacade = ServiceLocator.getInstance().getFacade(ReportFacadeRemote.class);
+		final ReportFacadeRemote reportFacade = ServerServiceLocator.getInstance().getFacade(ReportFacadeRemote.class);
 		final CollectableSearchCondition clctcond = SearchConditionUtils.newEOComparison(NuclosEntity.REPORT.getEntityName(), "name", ComparisonOperator.EQUAL, reportName, MetaDataServerProvider.getInstance());
 		final List<EntityObjectVO> lstReport = NucletDalProvider.getInstance().getEntityObjectProcessor(NuclosEntity.REPORT.getEntityName()).getBySearchExpression(new CollectableSearchExpression(clctcond));
 		String fileName = reportName;
@@ -2741,7 +2742,7 @@ public class RuleInterface extends CustomCodeInterface {
 		DependantMasterDataMap dependants = new DependantMasterDataMap(NuclosEntity.IMPORTUSAGE.getEntityName(), usages);
 		MasterDataVO importfilevo;
         try {
-	        importfilevo = ServiceLocator.getInstance().getFacade(ImportFacadeLocal.class).createFileImport(new MasterDataWithDependantsVO(importfile, dependants));
+	        importfilevo = ServerServiceLocator.getInstance().getFacade(ImportFacadeLocal.class).createFileImport(new MasterDataWithDependantsVO(importfile, dependants));
         }
         catch(CommonBusinessException e) {
         	throw new NuclosBusinessRuleException(e);
@@ -2759,7 +2760,7 @@ public class RuleInterface extends CustomCodeInterface {
 	}
 
 	private ImportFacadeLocal getImportExecutionFacade() {
-		return ServiceLocator.getInstance().getFacade(ImportFacadeLocal.class);
+		return ServerServiceLocator.getInstance().getFacade(ImportFacadeLocal.class);
 	}
 
 	/**

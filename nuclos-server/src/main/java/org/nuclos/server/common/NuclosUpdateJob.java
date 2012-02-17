@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Date;
 
 import org.apache.log4j.Logger;
+import org.nuclos.common.SpringApplicationContextHolder;
 import org.nuclos.common.collection.Pair;
 import org.nuclos.common.dal.vo.SystemFields;
 import org.nuclos.server.database.SpringDataBaseHelper;
@@ -36,6 +37,8 @@ import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
 
 /**
  * NuclosUpdateJob
@@ -46,18 +49,27 @@ import org.quartz.SchedulerException;
  * @author	<a href="mailto:corina.mandoki@novabit.de">Corina Mandoki</a>
  * @version 01.00.00
  */
-public class NuclosUpdateJob extends NuclosQuartzJob{
+@Configurable
+public class NuclosUpdateJob extends NuclosQuartzJob {
 	
-	private static final Logger LOG = Logger.getLogger("NuclosUpdateJob");		
+	private static final Logger LOG = Logger.getLogger("NuclosUpdateJob");
+	
+	private Scheduler nuclosScheduler;
 	
 	public NuclosUpdateJob() {
 		super(new NuclosUpdateJobImpl());
 	}
 	
+	@Autowired
+	final void setNuclosScheduler(Scheduler nuclosScheduler) {
+		this.nuclosScheduler = nuclosScheduler;
+	}
+
 	/**
 	 * inner class NuclosUpdateJobImpl: implementation of NuclosUpdateJob
 	 */
 	private static class NuclosUpdateJobImpl implements Job {
+		
 		@Override
 		public void execute(JobExecutionContext context) throws JobExecutionException {
 			LOG.debug("Start executing NuclosUpdateJob");
@@ -108,9 +120,9 @@ public class NuclosUpdateJob extends NuclosQuartzJob{
 		}
 		
 		public void deleteJob(String sJobName, String sJobGroup) {
-			final Scheduler scheduler = NuclosScheduler.getInstance().getScheduler();
 			try {
-				scheduler.deleteJob(sJobName, sJobGroup);
+				final Scheduler nuclosScheduler = (Scheduler) SpringApplicationContextHolder.getBean("nuclosScheduler");
+				nuclosScheduler.deleteJob(sJobName, sJobGroup);
 				LOG.debug("NuclosUpdateJob deleted");
 			}
 			catch(SchedulerException ex) {

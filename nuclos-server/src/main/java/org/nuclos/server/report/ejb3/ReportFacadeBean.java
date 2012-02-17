@@ -92,6 +92,7 @@ import org.nuclos.common2.exception.CommonStaleVersionException;
 import org.nuclos.server.common.MasterDataMetaCache;
 import org.nuclos.server.common.NuclosSystemParameters;
 import org.nuclos.server.common.SecurityCache;
+import org.nuclos.server.common.ServerServiceLocator;
 import org.nuclos.server.common.ejb3.LocaleFacadeLocal;
 import org.nuclos.server.common.ejb3.NuclosFacadeBean;
 import org.nuclos.server.dblayer.DbException;
@@ -134,11 +135,8 @@ import org.springframework.transaction.annotation.Transactional;
 * <br>Created by Novabit Informationssysteme GmbH
 * <br>Please visit <a href="http://www.novabit.de">www.novabit.de</a>
 */
-// @Stateless
-// @Local(ReportFacadeLocal.class)
-// @Remote(ReportFacadeRemote.class)
 @Transactional
-public class ReportFacadeBean extends NuclosFacadeBean implements ReportFacadeLocal, ReportFacadeRemote {
+public class ReportFacadeBean extends NuclosFacadeBean implements ReportFacadeRemote {
 
    public static final String ALIAS_INTID = "intid";
 
@@ -146,15 +144,26 @@ public class ReportFacadeBean extends NuclosFacadeBean implements ReportFacadeLo
    
    //
    
-   private DataSource dataSource;
-   
-   public ReportFacadeBean() {
-   }
-   
-   @Autowired
-   void setDataSource(DataSource dataSource) {
-	   this.dataSource = dataSource;
-   }
+	private DataSource dataSource;
+
+	private MasterDataFacadeLocal masterDataFacade;
+
+	public ReportFacadeBean() {
+	}
+
+	@Autowired
+	void setDataSource(DataSource dataSource) {
+		this.dataSource = dataSource;
+	}
+
+	@Autowired
+	final void setMasterDataFacade(MasterDataFacadeLocal masterDataFacade) {
+		this.masterDataFacade = masterDataFacade;
+	}
+
+	private final MasterDataFacadeLocal getMasterDataFacade() {
+		return masterDataFacade;
+	}
 
    @PostConstruct
    @RolesAllowed("Login")
@@ -180,7 +189,6 @@ public class ReportFacadeBean extends NuclosFacadeBean implements ReportFacadeLo
     * @return all reports
     * @throws CommonPermissionException
     */
-   @Override
    public Collection<ReportVO> getReports() throws CommonPermissionException {
       this.checkReadAllowed(NuclosEntity.REPORT);
       final Collection<ReportVO> collreport = new ArrayList<ReportVO>();
@@ -205,8 +213,7 @@ public class ReportFacadeBean extends NuclosFacadeBean implements ReportFacadeLo
     * @return set of reports
     * @throws CommonPermissionException
     */
-   @Override
-public Collection<ReportVO> getReportsForDatasourceId(Integer iDataSourceId, final ReportType type) throws CommonPermissionException {
+   public Collection<ReportVO> getReportsForDatasourceId(Integer iDataSourceId, final ReportType type) throws CommonPermissionException {
       this.checkReadAllowed(NuclosEntity.DATASOURCE);
       final Collection<ReportVO> collreport = new ArrayList<ReportVO>();
 
@@ -243,8 +250,7 @@ public Collection<ReportVO> getReportsForDatasourceId(Integer iDataSourceId, fin
     * @param mpDependants
     * @return new report
     */
-   @Override
-public MasterDataVO create(MasterDataVO mdvo, DependantMasterDataMap mpDependants)
+   public MasterDataVO create(MasterDataVO mdvo, DependantMasterDataMap mpDependants)
          throws CommonCreateException, NuclosReportException, CommonPermissionException, NuclosBusinessRuleException {
       this.checkReadAllowed(NuclosEntity.REPORT);
       final MasterDataVO result = getMasterDataFacade().create(NuclosEntity.REPORT.getEntityName(), mdvo, mpDependants);
@@ -260,8 +266,7 @@ public MasterDataVO create(MasterDataVO mdvo, DependantMasterDataMap mpDependant
     * @param mpDependants
     * @return modified report
     */
-   @Override
-public Integer modify(MasterDataVO mdvo, DependantMasterDataMap mpDependants) throws CommonBusinessException {
+   public Integer modify(MasterDataVO mdvo, DependantMasterDataMap mpDependants) throws CommonBusinessException {
       this.checkReadAllowed(NuclosEntity.REPORT);
       final Integer result = (Integer) getMasterDataFacade().modify(NuclosEntity.REPORT.getEntityName(), mdvo, mpDependants);
       this.compileAndSaveAllXML(mdvo);
@@ -274,8 +279,7 @@ public Integer modify(MasterDataVO mdvo, DependantMasterDataMap mpDependants) th
     * @param sEntity
     * @param mdvo value object
     */
-   @Override
-public void remove(MasterDataVO mdvo)
+   public void remove(MasterDataVO mdvo)
          throws CommonFinderException, CommonRemoveException, CommonStaleVersionException, CommonPermissionException, CommonCreateException, NuclosBusinessRuleException {
       this.checkReadAllowed(NuclosEntity.REPORT);
       getMasterDataFacade().remove(NuclosEntity.REPORT.getEntityName(), mdvo, true);
@@ -371,7 +375,6 @@ public void remove(MasterDataVO mdvo)
     * @param iReportId id of report
     * @return collection of output formats
     */
-   @Override
    public Collection<ReportOutputVO> getReportOutputs(Integer iReportId) {
       List<ReportOutputVO> outputs = new ArrayList<ReportOutputVO>();
 
@@ -385,8 +388,7 @@ public void remove(MasterDataVO mdvo)
       return outputs;
    }
 
-   @Override
-public Collection<SubreportVO> getSubreports(Integer reportoutputId) {
+   public Collection<SubreportVO> getSubreports(Integer reportoutputId) {
       List<SubreportVO> subreports = new ArrayList<SubreportVO>();
 
       CollectableComparison cond = SearchConditionUtils.newMDReferenceComparison(
@@ -405,8 +407,7 @@ public Collection<SubreportVO> getSubreports(Integer reportoutputId) {
     * @param iReportOutputId
     * @return reportoutput
     */
-   @Override
-public ReportOutputVO getReportOutput(Integer iReportOutputId) throws CommonFinderException, CommonPermissionException {
+   public ReportOutputVO getReportOutput(Integer iReportOutputId) throws CommonFinderException, CommonPermissionException {
       return MasterDataWrapper.getReportOutputVO(getMasterDataFacade().get(NuclosEntity.REPORTOUTPUT.getEntityName(), iReportOutputId));
    }
 
@@ -415,8 +416,7 @@ public ReportOutputVO getReportOutput(Integer iReportOutputId) throws CommonFind
     * @param usagecriteria
     * @return collection of reports (forms)
     */
-   @Override
-@RolesAllowed("Login")
+   @RolesAllowed("Login")
    public Collection<ReportVO> findReportsByUsage(UsageCriteria usagecriteria) {
 
       List<ReportVO> reports = new ArrayList<ReportVO>();
@@ -460,7 +460,6 @@ public ReportOutputVO getReportOutput(Integer iReportOutputId) throws CommonFind
 				return StringUtils.emptyIfNull(o1.getName()).compareToIgnoreCase(StringUtils.emptyIfNull(o2.getName()));
 			}});
 
-
       return reports;
    }
 
@@ -470,8 +469,9 @@ public ReportOutputVO getReportOutput(Integer iReportOutputId) throws CommonFind
     * @param mpParams parameters
     * @return report/form filled with data
     */
-   @Override
-   public JasperPrint prepareReport(Integer iReportOutputId, Map<String, Object> mpParams, Integer iMaxRowCount) throws CommonFinderException, NuclosReportException, CommonPermissionException {
+   public JasperPrint prepareReport(Integer iReportOutputId, Map<String, Object> mpParams, Integer iMaxRowCount) 
+		   throws CommonFinderException, NuclosReportException, CommonPermissionException {
+	   
       try {
          final ReportOutputVO reportoutput = getReportOutput(iReportOutputId);
 
@@ -512,7 +512,7 @@ public ReportOutputVO getReportOutput(Integer iReportOutputId) throws CommonFind
         	// get existing connection (enlisted in current transaction)
         	Connection conn = DataSourceUtils.getConnection(dataSource);//DataBaseHelper.getConnection(NuclosDataSources.getDefaultDS());
             try {
-               DatasourceFacadeLocal facade = ServiceLocator.getInstance().getFacade(DatasourceFacadeLocal.class);
+               DatasourceFacadeLocal facade = ServerServiceLocator.getInstance().getFacade(DatasourceFacadeLocal.class);
 
                JRDefaultNuclosDataSource ds = new JRDefaultNuclosDataSource(facade.get(reportoutput.getDatasourceId()).getName(), mpParams, conn);
 
@@ -562,8 +562,9 @@ public ReportOutputVO getReportOutput(Integer iReportOutputId) throws CommonFind
 	 * @param mpParams parameters
 	 * @return report/form filled with data
 	 */
-	@Override
-	public NuclosFile prepareCsvReport(Integer iReportOutputId, Map<String, Object> mpParams, Integer iMaxRowCount) throws CommonFinderException, NuclosReportException, CommonPermissionException {
+	public NuclosFile prepareCsvReport(Integer iReportOutputId, Map<String, Object> mpParams, Integer iMaxRowCount) 
+			throws CommonFinderException, NuclosReportException, CommonPermissionException {
+		
 		final ReportOutputVO reportoutput = getReportOutput(iReportOutputId);
 
 		final String sSourceFileName = reportoutput.getSourceFile();
@@ -573,7 +574,7 @@ public ReportOutputVO getReportOutput(Integer iReportOutputId) throws CommonFind
 
 		TemplatedCsvExport export = new TemplatedCsvExport(reportoutput);
 		try {
-			DatasourceFacadeLocal facade = ServiceLocator.getInstance().getFacade(DatasourceFacadeLocal.class);
+			DatasourceFacadeLocal facade = ServerServiceLocator.getInstance().getFacade(DatasourceFacadeLocal.class);
 			ResultVO rvo = facade.executeQuery(reportoutput.getDatasourceId(), mpParams, iMaxRowCount);
 
 			return export.export(rvo, getLocale(reportoutput.getLocale(), CommonLocaleDelegate.getInstance().getLocale()));
@@ -586,7 +587,7 @@ public ReportOutputVO getReportOutput(Integer iReportOutputId) throws CommonFind
 
    private Locale getLocale(String locale, Locale def) {
 	   if (!StringUtils.isNullOrEmpty(locale)) {
-		   for (LocaleInfo li : ServiceLocator.getInstance().getFacade(LocaleFacadeLocal.class).getAllLocales(true)) {
+		   for (LocaleInfo li : ServerServiceLocator.getInstance().getFacade(LocaleFacadeLocal.class).getAllLocales(true)) {
 			   if (locale.equalsIgnoreCase(li.name)) {
 				   return li.toLocale();
 			   }
@@ -600,8 +601,7 @@ public ReportOutputVO getReportOutput(Integer iReportOutputId) throws CommonFind
     * @param iReportOutputId report output id
     * @return empty report/form
     */
-   @Override
-public JasperPrint prepareEmptyReport(Integer iReportOutputId) throws CommonFinderException, NuclosReportException, CommonBusinessException {
+   public JasperPrint prepareEmptyReport(Integer iReportOutputId) throws CommonFinderException, NuclosReportException, CommonBusinessException {
       try {
          final ReportOutputVO reportoutput = getReportOutput(iReportOutputId);
          final JasperReport jr = deserializeJasperReportObject(reportoutput.getReportCLS());
@@ -657,7 +657,6 @@ public JasperPrint prepareEmptyReport(Integer iReportOutputId) throws CommonFind
     * @param bIncludeSubModules Include submodules in search?
     * @return search result report filled with data
     */
-   @Override
    @RolesAllowed("Login")
    public JasperPrint prepareSearchResult(CollectableSearchExpression clctexpr,
          List<? extends CollectableEntityField> lstclctefweSelected, Integer iModuleId, boolean bIncludeSubModules) throws NuclosReportException {
@@ -676,8 +675,7 @@ public JasperPrint prepareEmptyReport(Integer iReportOutputId) throws CommonFind
     * @return search result report filled with data from the JTable
     * @throws NuclosReportException
     */
-   @Override
-@RolesAllowed("Login")
+   @RolesAllowed("Login")
    public JasperPrint prepareTableModel(TableModel tableModel) throws NuclosReportException {
       try {
          final JasperDesign jrdesign = getJrDesignForSearchResult();
@@ -694,7 +692,6 @@ public JasperPrint prepareEmptyReport(Integer iReportOutputId) throws CommonFind
     * @throws NuclosReportException
     * @throws FinderException
     */
-   @Override
    @RolesAllowed("Login")
    public JasperDesign getJrDesignForSearchResult() throws JRException, NuclosReportException {
       InputStream input;
@@ -748,8 +745,7 @@ public JasperPrint prepareEmptyReport(Integer iReportOutputId) throws CommonFind
     * @param iReportId report/form id
     * @return Is save allowed for the report/form with the given id?
     */
-   @Override
-@RolesAllowed("Login")
+   @RolesAllowed("Login")
    public boolean isSaveAllowed(Integer iReportId) {
       return SecurityCache.getInstance().getWritableReportIds(getCurrentUserName()).contains(iReportId);
    }
@@ -758,8 +754,7 @@ public JasperPrint prepareEmptyReport(Integer iReportOutputId) throws CommonFind
      * finds reports readable for current user
      * @return collection of report ids
      */
-   @Override
-public Collection<Integer> getReadableReportIdsForCurrentUser() {
+   public Collection<Integer> getReadableReportIdsForCurrentUser() {
       Collection<Integer> result = new HashSet<Integer>();
       Map<ReportType,Collection<Integer>> readableReports = SecurityCache.getInstance().getReadableReports(getCurrentUserName());
       for (ReportType rt : readableReports.keySet())
@@ -791,7 +786,7 @@ public Collection<Integer> getReadableReportIdsForCurrentUser() {
 	   parameters.put(JRParameter.REPORT_FILE_RESOLVER, new JRFileResolver());
 	   parameters.put(JRParameter.REPORT_LOCALE, getLocale(output.getLocale(), CommonLocaleDelegate.getInstance().getLocale()));
 	   parameters.put("NUCLOS_USER_NAME", getCurrentUserName());
-	   final MasterDataFacadeLocal mdfacadehome = ServiceLocator.getInstance().getFacade(MasterDataFacadeLocal.class);
+	   final MasterDataFacadeLocal mdfacadehome = ServerServiceLocator.getInstance().getFacade(MasterDataFacadeLocal.class);
 	   final CollectableComparison cond = SearchConditionUtils.newMDComparison(MasterDataMetaCache.getInstance().getMetaData(NuclosEntity.USER), "name", ComparisonOperator.EQUAL, getCurrentUserName());
 	   final Collection<MasterDataVO> collmdvo = mdfacadehome.getMasterData(NuclosEntity.USER.getEntityName(), cond, false);
 	   if (collmdvo.size() == 1) {
@@ -802,13 +797,11 @@ public Collection<Integer> getReadableReportIdsForCurrentUser() {
 	   }
    }
 
-	@Override
 	public NuclosReportRemotePrintService lookupDefaultPrintService() {
 		PrintService ps = PrintServiceLookup.lookupDefaultPrintService();
 		return new NuclosReportRemotePrintService(ps);
 	}
 
-	@Override
 	public NuclosReportRemotePrintService[] lookupPrintServices(DocFlavor flavor, AttributeSet as) throws NuclosReportException {
 		PrintService   prservDflt = PrintServiceLookup.lookupDefaultPrintService();
 		PrintService[] prservices = PrintServiceLookup.lookupPrintServices( flavor, as );
@@ -827,7 +820,6 @@ public Collection<Integer> getReadableReportIdsForCurrentUser() {
         return rprservices;
 	}
 
-	@Override
 	public void printViaPrintService(NuclosReportRemotePrintService ps, NuclosReportPrintJob pj, PrintRequestAttributeSet aset, byte[] data) throws NuclosReportException {
 		try {
 			File prntFile = getFileFromBytes(data);

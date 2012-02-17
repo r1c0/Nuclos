@@ -51,6 +51,7 @@ import org.nuclos.common2.exception.CommonStaleVersionException;
 import org.nuclos.common2.exception.CommonValidationException;
 import org.nuclos.server.common.RuleCache;
 import org.nuclos.server.common.ServerParameterProvider;
+import org.nuclos.server.common.ServerServiceLocator;
 import org.nuclos.server.common.ejb3.NuclosFacadeBean;
 import org.nuclos.server.common.valueobject.NuclosValueObject;
 import org.nuclos.server.customcode.CustomCodeManager;
@@ -62,12 +63,14 @@ import org.nuclos.server.dblayer.DbException;
 import org.nuclos.server.dblayer.query.DbFrom;
 import org.nuclos.server.dblayer.query.DbQuery;
 import org.nuclos.server.dblayer.query.DbQueryBuilder;
+import org.nuclos.server.masterdata.ejb3.MasterDataFacadeLocal;
 import org.nuclos.server.masterdata.valueobject.MasterDataMetaVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 import org.nuclos.server.ruleengine.NuclosBusinessRuleException;
 import org.nuclos.server.ruleengine.NuclosCompileException;
 import org.nuclos.server.ruleengine.RuleInterface;
 import org.nuclos.server.ruleengine.valueobject.RuleVO;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
@@ -78,16 +81,29 @@ import org.springframework.transaction.interceptor.TransactionAspectSupport;
  * <br>Created by Novabit Informationssysteme GmbH
  * <br>Please visit <a href="http://www.novabit.de">www.novabit.de</a>
 */
-// @Stateless
-// @Local(TimelimitRuleFacadeLocal.class)
-// @Remote(TimelimitRuleFacadeRemote.class)
 @Transactional
 @RolesAllowed("Login")
-public class TimelimitRuleFacadeBean extends NuclosFacadeBean implements TimelimitRuleFacadeLocal, TimelimitRuleFacadeRemote {
+public class TimelimitRuleFacadeBean extends NuclosFacadeBean implements TimelimitRuleFacadeRemote {
 
 	private static final Logger LOG = Logger.getLogger(TimelimitRuleFacadeBean.class);
+	
+	//
 
 	private CustomCodeManager ccm;
+	
+	private MasterDataFacadeLocal masterDataFacade;
+	
+	public TimelimitRuleFacadeBean() {
+	}
+
+	@Autowired
+	final void setMasterDataFacade(MasterDataFacadeLocal masterDataFacade) {
+		this.masterDataFacade = masterDataFacade;
+	}
+	
+	private final MasterDataFacadeLocal getMasterDataFacade() {
+		return masterDataFacade;
+	}
 
 	public void setCustomCodeManager(CustomCodeManager ccm) {
 		this.ccm = ccm;
@@ -112,7 +128,6 @@ public class TimelimitRuleFacadeBean extends NuclosFacadeBean implements Timelim
 	 * @return Collection<RuleVO> all TimelimitRule definitions
 	 * @throws CommonFinderException
 	 */
-	@Override
 	public Collection<RuleVO> getAllTimelimitRules() {
 		List<RuleVO> list = new ArrayList<RuleVO>();
 		list = CollectionUtils.transform(getMasterDataFacade().getMasterData(NuclosEntity.TIMELIMITRULE.getEntityName(), null, false), new MakeTimelimitRule());
@@ -125,7 +140,6 @@ public class TimelimitRuleFacadeBean extends NuclosFacadeBean implements Timelim
 	 * @return Collection<RuleVO> all active TimelimitRule definitions
 	 * @throws CommonFinderException
 	 */
-	@Override
 	public Collection<RuleVO> getActiveTimelimitRules() throws CommonFinderException {
 		final List<RuleVO> list = new ArrayList<RuleVO>(getAllTimelimitRules());
 
@@ -150,9 +164,9 @@ public class TimelimitRuleFacadeBean extends NuclosFacadeBean implements Timelim
 	 * @throws CommonValidationException
 	 * @throws CommonPermissionException
 	 */
-	@Override
-	public MasterDataVO create(MasterDataVO mdcvo) throws CommonCreateException, CommonFinderException, CommonRemoveException, CommonValidationException, CommonStaleVersionException, NuclosCompileException, CommonPermissionException,
-															NuclosBusinessRuleException{
+	public MasterDataVO create(MasterDataVO mdcvo) 
+			throws CommonCreateException, CommonFinderException, CommonRemoveException, CommonValidationException, 
+			CommonStaleVersionException, NuclosCompileException, CommonPermissionException, NuclosBusinessRuleException {
 		try {
 			final MasterDataVO result = getMasterDataFacade().create(NuclosEntity.TIMELIMITRULE.getEntityName(), mdcvo, null);
 
@@ -182,9 +196,9 @@ public class TimelimitRuleFacadeBean extends NuclosFacadeBean implements Timelim
 	 * @throws CommonValidationException
 	 * @throws CommonPermissionException
 	 */
-	@Override
 	public MasterDataVO modify(MasterDataVO mdcvo) throws CommonCreateException, CommonFinderException, CommonRemoveException, CommonStaleVersionException,
 			CommonValidationException, NuclosCompileException, CommonPermissionException, NuclosBusinessRuleException {
+		
 		try {
 			RuleVO rule = makeTimelimitRuleVO(mdcvo);
 			if (rule.isActive()) {
@@ -212,9 +226,9 @@ public class TimelimitRuleFacadeBean extends NuclosFacadeBean implements Timelim
 	 * @throws CommonCreateException
 	 * @throws CommonPermissionException
 	 */
-	@Override
 	public void remove(MasterDataVO mdcvo) throws CommonFinderException, CommonRemoveException, CommonStaleVersionException,
 		CommonCreateException, CommonPermissionException, NuclosBusinessRuleException, NuclosCompileException {
+		
 		try {
 			getMasterDataFacade().remove(NuclosEntity.TIMELIMITRULE.getEntityName(), mdcvo, false);
 
@@ -236,7 +250,6 @@ public class TimelimitRuleFacadeBean extends NuclosFacadeBean implements Timelim
 	 * @param mdcvo
 	 * @throws NuclosCompileException
 	 */
-	@Override
 	public void check(MasterDataVO rule) throws NuclosCompileException {
 		check(makeTimelimitRuleVO(rule));
 	}
@@ -248,7 +261,6 @@ public class TimelimitRuleFacadeBean extends NuclosFacadeBean implements Timelim
 	/**
 	 * @return String containing functions the user has to implement
 	 */
-	@Override
 	public String getClassTemplate() {
 		final StringBuffer sb = new StringBuffer();
 		sb.append("/** @name        \n");
@@ -266,7 +278,6 @@ public class TimelimitRuleFacadeBean extends NuclosFacadeBean implements Timelim
 	 * @param collRuleVO
 	 * @throws CreateException
 	 */
-	@Override
 	public void importTimelimitRules(Collection<RuleVO> collRuleVO) throws CommonBusinessException {
 		for (RuleVO ruleVO : collRuleVO) {
 			try {
@@ -314,7 +325,6 @@ public class TimelimitRuleFacadeBean extends NuclosFacadeBean implements Timelim
 		}
 	}
 
-	@Override
 	@Transactional(propagation=Propagation.REQUIRES_NEW)
     public Collection<String> getJobRules(Object oId) {
 		DbQueryBuilder builder = dataBaseHelper.getDbAccess().getQueryBuilder();
@@ -336,7 +346,6 @@ public class TimelimitRuleFacadeBean extends NuclosFacadeBean implements Timelim
 	 * @throws CreateException
 	 * @author corina.mandoki
 	 */
-	@Override
 	public void executeRule(String sRuleName, Integer iSessionId) {
 		executeTimelimitRule(sRuleName, iSessionId);
 	}
@@ -346,13 +355,12 @@ public class TimelimitRuleFacadeBean extends NuclosFacadeBean implements Timelim
 	 * First we get the list of all relevant generic objects, then we execute the rule for each one in an own transaction.
 	 * @return InvoiceInspectorResultRun
 	 */
-	@Override
 	public void executeTimelimitRule(String sRuleName) {
 		executeTimelimitRule(sRuleName, null);
 	}
 
 	private void executeTimelimitRule(String ruleName, Integer sessionId) {
-		TimelimitRuleFacadeLocal timelimitRuleFacade = ServiceLocator.getInstance().getFacade(TimelimitRuleFacadeLocal.class);
+		TimelimitRuleFacadeLocal timelimitRuleFacade = ServerServiceLocator.getInstance().getFacade(TimelimitRuleFacadeLocal.class);
 
 		Pair<NuclosTimelimitRule, RuleInterface> instanceAndInterface = timelimitRuleFacade.prepareTimelimitRule(ruleName, sessionId);
 
@@ -367,7 +375,6 @@ public class TimelimitRuleFacadeBean extends NuclosFacadeBean implements Timelim
 		}
 	}
 
-	@Override
 	@Transactional(propagation=Propagation.REQUIRES_NEW)
     public Pair<NuclosTimelimitRule, RuleInterface> prepareTimelimitRule(String ruleName, Integer sessionId) {
 		MasterDataVO mdvo = findByName(ruleName);
@@ -392,7 +399,6 @@ public class TimelimitRuleFacadeBean extends NuclosFacadeBean implements Timelim
 		return new Pair<NuclosTimelimitRule, RuleInterface>(ruleInstance, ri);
     }
 
-	@Override
 	@Transactional(propagation=Propagation.REQUIRES_NEW)
     public Collection<Integer> executeTimelimitRule(NuclosTimelimitRule ruleInstance, RuleInterface ri) {
 	    return ruleInstance.getIntIds(ri);
@@ -404,7 +410,6 @@ public class TimelimitRuleFacadeBean extends NuclosFacadeBean implements Timelim
 	 * @param ri the rule interface as parameter for executed method
 	 * @param iGenericObjectId the leased object id as parameter for executed method
 	 */
-	@Override
 	@Transactional(propagation=Propagation.REQUIRES_NEW)
 	public void executeTimelimitRule(final NuclosTimelimitRule ruleInstance, final RuleInterface ri, final Integer iGenericObjectId) {
 		try {

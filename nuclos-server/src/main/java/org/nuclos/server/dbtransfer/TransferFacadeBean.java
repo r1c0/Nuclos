@@ -82,6 +82,7 @@ import org.nuclos.server.common.MetaDataServerProvider;
 import org.nuclos.server.common.RuleCache;
 import org.nuclos.server.common.SecurityCache;
 import org.nuclos.server.common.ServerParameterProvider;
+import org.nuclos.server.common.ServerServiceLocator;
 import org.nuclos.server.common.StateCache;
 import org.nuclos.server.common.ejb3.LocaleFacadeLocal;
 import org.nuclos.server.common.ejb3.NuclosFacadeBean;
@@ -153,14 +154,9 @@ import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
 
 
-// @Stateless
-// @Remote(TransferFacadeRemote.class)
-// @Local(TransferFacadeLocal.class)
 @Transactional
 @RolesAllowed("UseManagementConsole")
-public class TransferFacadeBean extends NuclosFacadeBean
-	implements TransferFacadeRemote, TransferFacadeLocal
-{
+public class TransferFacadeBean extends NuclosFacadeBean implements TransferFacadeRemote {
 
 	private static final Logger LOG = Logger.getLogger(TransferFacadeBean.class);
 
@@ -177,12 +173,7 @@ public class TransferFacadeBean extends NuclosFacadeBean
 	//
 	
 	private DataSource dataSource;
-
-	/**
-	 *
-	 * @param transferOptions
-	 * @return
-	 */
+	
 	private static List<INucletContent> getNucletContentInstances(TransferOption.Map transferOptions, Process p) {
 		List<INucletContent> contents = new ArrayList<INucletContent>();
 
@@ -314,11 +305,6 @@ public class TransferFacadeBean extends NuclosFacadeBean
 		this.dataSource = dataSource;
 	}
 
-	/**
-	 *
-	 * @return
-	 */
-	@Override
 	public List<TransferNuclet> getAvaiableNuclets() {
 		List<TransferNuclet> result = new ArrayList<TransferNuclet>();
 		for (EntityObjectVO nucletObject : getProcessor(NuclosEntity.NUCLET).getAll()) {
@@ -338,7 +324,6 @@ public class TransferFacadeBean extends NuclosFacadeBean
 	 * @return the file content as byte array
 	 * @throws NuclosBusinessException
 	 */
-	@Override
 	public byte[] createTransferFile(Long nucletId, TransferOption.Map exportOptions) throws NuclosBusinessException {
 		if (nucletId == null)
 			exportOptions.put(TransferOption.IS_NUCLOS_INSTANCE, null);
@@ -405,11 +390,6 @@ public class TransferFacadeBean extends NuclosFacadeBean
 		return bytes;
 	}
 
-	/**
-	 *
-	 * @param List<EntityObjectVO> ncObjects
-	 * @param List<EntityObjectVO> uidObjects
-	 */
 	private void createMissingUIDs(List<EntityObjectVO> ncObjects, List<EntityObjectVO> uidObjects) {
 		NucletContentUID.Map uidMap = new NucletContentUID.HashMap();
 		uidMap.addAll(uidObjects);
@@ -423,12 +403,6 @@ public class TransferFacadeBean extends NuclosFacadeBean
 		}
 	}
 
-	/**
-	 *
-	 * @param INucletContent nc
-	 * @param List<EntityObjectVO> ncObjects
-	 * @param List<EntityObjectVO> uidObjects
-	 */
 	private void updateUIDObjectVersion(INucletContent nc, List<EntityObjectVO> ncObjects, List<EntityObjectVO> uidObjects) {
 		for (EntityObjectVO ncObject : ncObjects) {
 			for (EntityObjectVO uidObject : uidObjects) {
@@ -446,12 +420,6 @@ public class TransferFacadeBean extends NuclosFacadeBean
 		}
 	}
 
-	/**
-	 *
-	 * @param bytes
-	 * @return Map<TransferOption, Serializable>
-	 * @throws NuclosBusinessException
-	 */
 	public TransferOption.Map getOptions(byte[] bytes) throws NuclosBusinessException {
 		MetaDataRoot root = readBytes(bytes, null, false, null, null, null);
 		String error = matchMetaDataRoot(root);
@@ -466,7 +434,6 @@ public class TransferFacadeBean extends NuclosFacadeBean
 	 * current configuration would change if the transfer is executed
 	 * @throws NuclosBusinessException
 	 */
-	@Override
 	public Transfer prepareTransfer(boolean isNuclon, byte[] bytes) throws NuclosBusinessException
 	{
 		cleanupUIDs();
@@ -875,7 +842,7 @@ public class TransferFacadeBean extends NuclosFacadeBean
             }});
 
 		MasterDataFacadeRemote mdFacade =
-			ServiceLocator.getInstance().getFacade(MasterDataFacadeRemote.class);
+			ServerServiceLocator.getInstance().getFacade(MasterDataFacadeRemote.class);
 		userIds.removeAll(mdFacade.getMasterDataIds(NuclosEntity.USER.getEntityName()));
 		return userIds.size();
 	}
@@ -896,7 +863,6 @@ public class TransferFacadeBean extends NuclosFacadeBean
 	 * @return a message object informing the client about success or failure
 	 * @throws NuclosBusinessException (only for pre database changes)
 	 */
-	@Override
 	public synchronized Transfer.Result runTransfer(final Transfer t) throws NuclosBusinessException {
 		t.result = new Transfer.Result();
 
@@ -999,7 +965,7 @@ public class TransferFacadeBean extends NuclosFacadeBean
 			SchemaCache.getInstance().invalidate();
 			DatasourceCache.getInstance().invalidate();
 			//** update dynamic entities
-			ServiceLocator.getInstance().getFacade(DatasourceFacadeLocal.class).processChangingDynamicEntities(
+			ServerServiceLocator.getInstance().getFacade(DatasourceFacadeLocal.class).processChangingDynamicEntities(
 			DatasourceCache.getInstance().getAllDynamicEntities(), oldDynamicEntities, true, t.result.script);
 
 			/** compile all custom code artifacts
@@ -1039,7 +1005,7 @@ public class TransferFacadeBean extends NuclosFacadeBean
 		RuleCache.getInstance().invalidate();
 		ResourceCache.getInstance().invalidate();
 		ServerParameterProvider.getInstance().revalidate();
-		ServiceLocator.getInstance().getFacade(LocaleFacadeLocal.class).flushInternalCaches();
+		ServerServiceLocator.getInstance().getFacade(LocaleFacadeLocal.class).flushInternalCaches();
 
 		MetaDataServerProvider.getInstance().revalidate(true);
 		SecurityCache.getInstance().invalidate();
@@ -1646,7 +1612,6 @@ public class TransferFacadeBean extends NuclosFacadeBean
 		return false;
 	}
 
-	@Override
 	public String getDatabaseType(){
 		return dataBaseHelper.getDbAccess().getDbType().toString();
 	}
@@ -1698,17 +1663,11 @@ public class TransferFacadeBean extends NuclosFacadeBean
 		// wird nicht ueber den Cache geprueft...
 	}
 
-	@Override
 	@RolesAllowed("Login")
 	public synchronized boolean isFrozenEntity(String entityName) {
 		return false;
 	}
 
-	/**
-	 *
-	 * @param String nucletUID
-	 * @return
-	 */
 	private Set<Long> getExistingNucletIds(String nucletUID) {
 		Set<Long> result = new HashSet<Long>();
 		if (nucletUID == null)
@@ -1720,11 +1679,6 @@ public class TransferFacadeBean extends NuclosFacadeBean
 		return result;
 	}
 
-	/**
-	 *
-	 * @param Long nucletId
-	 * @return
-	 */
 	private Set<Long> getExistingNucletIds(Long nucletId) {
 		Set<Long> result = new HashSet<Long>();
 		if (nucletId != null) {
@@ -1741,12 +1695,6 @@ public class TransferFacadeBean extends NuclosFacadeBean
 		return result;
 	}
 
-	/**
-	 *
-	 * @param Set<Long> existingNucletIds
-	 * @param List<INucletContent> contentTypes
-	 * @return
-	 */
 	private NucletContentUID.Map getUIDMap(Set<Long> existingNucletIds, List<INucletContent> contentTypes, TransferOption.Map transferOptions) {
 		NucletContentUID.Map result = new NucletContentUID.HashMap();
 		for (INucletContent nc : contentTypes) {
@@ -1755,12 +1703,6 @@ public class TransferFacadeBean extends NuclosFacadeBean
 		return result;
 	}
 
-	/**
-	 *
-	 * @param Set<Long>existingNucletIds
-	 * @param List<INucletContent> contentTypes
-	 * @return
-	 */
 	private List<EntityObjectVO> getUIDObjects(Set<Long> existingNucletIds, List<INucletContent> contentTypes, TransferOption.Map transferOptions) {
 		List<EntityObjectVO> result = new ArrayList<EntityObjectVO>();
 		for (INucletContent nc : contentTypes) {
@@ -1769,13 +1711,8 @@ public class TransferFacadeBean extends NuclosFacadeBean
 		return result;
 	}
 
-	/*
-	 *
-	 * @param newParameterVOs
-	 * @throws NuclosBusinessException
-	 */
 	private void updateParameter(Collection<EntityObjectVO> newParameterVOs) throws NuclosBusinessException {
-		ServiceLocator.getInstance().getFacade(MasterDataFacadeRemote.class);
+		ServerServiceLocator.getInstance().getFacade(MasterDataFacadeRemote.class);
 
 		List<EntityObjectVO> existingParameterVOs = NucletDalProvider.getInstance().getEntityObjectProcessor(NuclosEntity.PARAMETER).getAll();
 		Set<String> existingParameter = new HashSet<String>();
@@ -1843,12 +1780,6 @@ public class TransferFacadeBean extends NuclosFacadeBean
 		}
 	}
 
-	/**
-	 *
-	 * @param nucletId
-	 * @throws NuclosBusinessException
-	 */
-	@Override
 	public void checkCircularReference(Long nucletId) throws CommonValidationException {
 		CollectableSearchCondition clctcondUP = SearchConditionUtils.newEOidComparison(
 			NuclosEntity.NUCLETDEPENDENCE.getEntityName(),
@@ -1901,7 +1832,6 @@ public class TransferFacadeBean extends NuclosFacadeBean
 				MetaDataServerProvider.getInstance());
 			return checkCircularReferenceDown(nucletId, getProcessor(NuclosEntity.NUCLETDEPENDENCE).getBySearchExpression(new CollectableSearchExpression(clctcond)));
 		}
-
 		return false;
 	}
 

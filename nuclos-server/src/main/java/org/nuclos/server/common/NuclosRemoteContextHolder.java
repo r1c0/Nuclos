@@ -23,9 +23,6 @@ import javax.annotation.PreDestroy;
 import org.springframework.stereotype.Component;
 
 
-/**
- * @deprecated Only a few usages left - not strictly necessary any more. (tp)
- */
 @Component
 public class NuclosRemoteContextHolder {
 	

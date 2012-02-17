@@ -20,6 +20,7 @@ import org.apache.log4j.Logger;
 import org.nuclos.common.Actions;
 import org.nuclos.common2.ServiceLocator;
 import org.nuclos.server.common.SecurityCache;
+import org.nuclos.server.common.ServerServiceLocator;
 import org.nuclos.server.console.ejb3.ConsoleFacadeRemote;
 import org.nuclos.server.security.NuclosLocalServerSession;
 
@@ -40,7 +41,7 @@ public class NuclosConsoleService implements NuclosConsoleServiceMBean {
 		final ServerCall sc = new ServerCall(sUser, sPassword) {
 			@Override
 			public String run() throws Exception {
-				ServiceLocator.getInstance().getFacade(ConsoleFacadeRemote.class).executeCommand(sCommand);
+				ServerServiceLocator.getInstance().getFacade(ConsoleFacadeRemote.class).executeCommand(sCommand);
 				return "command successfully executed";
 			}
 		};

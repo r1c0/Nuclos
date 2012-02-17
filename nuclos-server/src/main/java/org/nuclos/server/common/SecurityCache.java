@@ -47,7 +47,7 @@ import org.nuclos.common2.KeyEnum;
 import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.ServiceLocator;
 import org.nuclos.server.autosync.XMLEntities;
-import org.nuclos.server.common.ejb3.SecurityFacadeLocal;
+import org.nuclos.server.common.ejb3.SecurityFacadeBean;
 import org.nuclos.server.database.SpringDataBaseHelper;
 import org.nuclos.server.dblayer.DbTuple;
 import org.nuclos.server.dblayer.query.DbColumnExpression;
@@ -92,7 +92,10 @@ public class SecurityCache implements SecurityCacheMBean {
 	
 	//
 
-	private SecurityFacadeLocal securityfacade;
+	/**
+	 * Using SecurityFacadeLocal would build an dependency cycle, so don't. (tp)
+	 */
+	private SecurityFacadeBean securityfacade;
 
 	private GenericObjectGroupFacadeLocal genericobjectgroupfacade;
 	
@@ -657,8 +660,8 @@ public class SecurityCache implements SecurityCacheMBean {
 	}
 	
 	@Autowired
-	void setSecurityFacadeLocal(SecurityFacadeLocal securityFacadeLocal) {
-		this.securityfacade = securityFacadeLocal;
+	void setSecurityFacadeLocal(SecurityFacadeBean securityFacade) {
+		this.securityfacade = securityFacade;
 	}
 	
 	@Autowired
@@ -834,7 +837,7 @@ public class SecurityCache implements SecurityCacheMBean {
 	private GenericObjectGroupFacadeLocal getGenericObjectGroupFacade() {
 		/*
 		if (genericobjectgroupfacade == null) {
-			genericobjectgroupfacade = ServiceLocator.getInstance().getFacade(GenericObjectGroupFacadeLocal.class);
+			genericobjectgroupfacade = ServerServiceLocator.getInstance().getFacade(GenericObjectGroupFacadeLocal.class);
 		}
 		 */
 		return genericobjectgroupfacade;
@@ -940,7 +943,7 @@ public class SecurityCache implements SecurityCacheMBean {
 		if (IdUtils.unsafeToId(NuclosEOField.SYSTEMIDENTIFIER.getMetaData().getFieldGroupId()).equals(iAttributeGroupId)) {
 			Map<Integer, Permission> systemFieldPermissions = new HashMap<Integer, Permission>();
 
-			MasterDataFacadeLocal mdFacade = ServiceLocator.getInstance().getFacade(MasterDataFacadeLocal.class);
+			MasterDataFacadeLocal mdFacade = ServerServiceLocator.getInstance().getFacade(MasterDataFacadeLocal.class);
 			for (MasterDataVO state : mdFacade.getMasterData(NuclosEntity.STATE.getEntityName(), null, true)) {
 				systemFieldPermissions.put(state.getIntId(), Permission.READONLY);
 			}
@@ -949,7 +952,7 @@ public class SecurityCache implements SecurityCacheMBean {
 		} else if (IdUtils.unsafeToId(NuclosEOField.PROCESS.getMetaData().getFieldGroupId()).equals(iAttributeGroupId)) {
 			Map<Integer, Permission> systemFieldPermissions = new HashMap<Integer, Permission>();
 
-			MasterDataFacadeLocal mdFacade = ServiceLocator.getInstance().getFacade(MasterDataFacadeLocal.class);
+			MasterDataFacadeLocal mdFacade = ServerServiceLocator.getInstance().getFacade(MasterDataFacadeLocal.class);
 			for (MasterDataVO state : mdFacade.getMasterData(NuclosEntity.STATE.getEntityName(), null, true)) {
 				systemFieldPermissions.put(state.getIntId(), Permission.READWRITE);
 			}
@@ -1048,10 +1051,10 @@ public class SecurityCache implements SecurityCacheMBean {
 		return mpAttributePermission.get(attributePermissionKey);
 	}
 
-	private SecurityFacadeLocal getSecurityFacade() {
+	private SecurityFacadeBean getSecurityFacade() {
 		/*
 		if (securityfacade == null) {
-			securityfacade = ServiceLocator.getInstance().getFacade(SecurityFacadeLocal.class);
+			securityfacade = ServerServiceLocator.getInstance().getFacade(SecurityFacadeLocal.class);
 		}
 		 */
 		return securityfacade;

@@ -25,14 +25,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 /**
  * Special "no-login"-service class. Keep small and secure ;)
  */
-// @Stateless
-// @Local(ServerMetaFacadeLocal.class)
-// @Remote(ServerMetaFacadeRemote.class)
 public class ServerMetaFacadeBean implements ServerMetaFacadeRemote {
 	
 	private ServerParameterProvider serverParameterProvider;
 	
-	ServerMetaFacadeBean() {
+	public ServerMetaFacadeBean() {
 	}
 	
 	@Autowired
@@ -40,20 +37,18 @@ public class ServerMetaFacadeBean implements ServerMetaFacadeRemote {
 		this.serverParameterProvider = serverParameterProvider;
 	}
 	
-	@Override
 	public String getServerProperty(String key) {
 		if(key.startsWith("application.settings.client."))
 			return serverParameterProvider.getValue(key);
 		return "<no access>";
 	}
 	
-	@Override
 	public TimeZone getServerDefaultTimeZone() {
 		return TimeZone.getDefault();
 	}
 	
-	@Override
 	public String getDefaultNuclosTheme() {
 		return serverParameterProvider.getValue(ParameterProvider.KEY_DEFAULT_NUCLOS_THEME);
 	}
+
 }

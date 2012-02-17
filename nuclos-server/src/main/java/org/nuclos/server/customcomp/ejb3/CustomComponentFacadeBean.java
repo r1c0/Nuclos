@@ -32,6 +32,7 @@ import org.nuclos.common.collection.Transformer;
 import org.nuclos.common2.LocaleInfo;
 import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.exception.CommonBusinessException;
+import org.nuclos.server.common.ServerServiceLocator;
 import org.nuclos.server.common.ejb3.LocaleFacadeLocal;
 import org.nuclos.server.common.ejb3.NuclosFacadeBean;
 import org.nuclos.server.common.valueobject.NuclosValueObject;
@@ -39,14 +40,16 @@ import org.nuclos.server.customcomp.valueobject.CustomComponentVO;
 import org.nuclos.server.dblayer.DbStatementUtils;
 import org.nuclos.server.dblayer.expression.DbNull;
 import org.nuclos.server.jms.NuclosJMSUtils;
+import org.nuclos.server.masterdata.ejb3.MasterDataFacadeLocal;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationAdapter;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 @Transactional
-public final class CustomComponentFacadeBean extends NuclosFacadeBean implements CustomComponentFacadeRemote {
+public class CustomComponentFacadeBean extends NuclosFacadeBean implements CustomComponentFacadeRemote {
 
 	private static final Logger LOG = Logger.getLogger(CustomComponentFacadeBean.class);
 
@@ -56,6 +59,20 @@ public final class CustomComponentFacadeBean extends NuclosFacadeBean implements
 			NuclosJMSUtils.sendMessage(null, JMSConstants.TOPICNAME_CUSTOMCOMPONENTCACHE);
 		}
 	};
+	
+	private MasterDataFacadeLocal masterDataFacade;	
+	
+	public CustomComponentFacadeBean() {
+	}
+
+	@Autowired
+	final void setMasterDataFacade(MasterDataFacadeLocal masterDataFacade) {
+		this.masterDataFacade = masterDataFacade;
+	}
+	
+	private final MasterDataFacadeLocal getMasterDataFacade() {
+		return masterDataFacade;
+	}
 
 	private void notifyClients() {
 		try {
@@ -69,7 +86,6 @@ public final class CustomComponentFacadeBean extends NuclosFacadeBean implements
 		}
 	}
 
-	@Override
 	public List<CustomComponentVO> getAll() {
 		Collection<MasterDataVO> mdvos = getMasterDataFacade().getMasterData(NuclosEntity.CUSTOMCOMPONENT.getEntityName(), null, true);
 		List<CustomComponentVO> vos = new ArrayList<CustomComponentVO>(mdvos.size());
@@ -79,27 +95,22 @@ public final class CustomComponentFacadeBean extends NuclosFacadeBean implements
 		return vos;
 	}
 
-	@Override
 	public void create(CustomComponentVO vo, List<TranslationVO> translations) throws CommonBusinessException {
 		checkWriteAllowed(NuclosEntity.CUSTOMCOMPONENT);
 		MasterDataVO result = getMasterDataFacade().create(NuclosEntity.CUSTOMCOMPONENT.getEntityName(), wrapVO(vo), null);
 
 		setResources(getCustomComponentVO(result), translations);
-
 		notifyClients();
 	}
 
-	@Override
 	public void modify(CustomComponentVO vo, List<TranslationVO> translations) throws CommonBusinessException {
 		checkWriteAllowed(NuclosEntity.CUSTOMCOMPONENT);
 		getMasterDataFacade().modify(NuclosEntity.CUSTOMCOMPONENT.getEntityName(), wrapVO(vo), null);
 
 		setResources(vo, translations);
-
 		notifyClients();
 	}
 
-	@Override
 	public void remove(CustomComponentVO vo) throws CommonBusinessException {
 		getMasterDataFacade().remove(NuclosEntity.CUSTOMCOMPONENT.getEntityName(), wrapVO(vo), true);
 
@@ -174,7 +185,7 @@ public final class CustomComponentFacadeBean extends NuclosFacadeBean implements
 	}
 
 	private static boolean isResourceId(String s) {
-		return ServiceLocator.getInstance().getFacade(LocaleFacadeLocal.class).isResourceId(s);
+		return ServerServiceLocator.getInstance().getFacade(LocaleFacadeLocal.class).isResourceId(s);
 	}
 
 	private void setResourceIdForField(Integer iId, String column, String sResourceId) {
@@ -182,13 +193,12 @@ public final class CustomComponentFacadeBean extends NuclosFacadeBean implements
 				DbStatementUtils.updateValues("T_MD_CUSTOMCOMPONENT", column, DbNull.escapeNull(sResourceId, String.class)).where("INTID", iId));
 	}
 
-	@Override
 	public List<TranslationVO> getTranslations(Integer ccid) throws CommonBusinessException {
 		ArrayList<TranslationVO> result = new ArrayList<TranslationVO>();
 
 		CustomComponentVO cc = getCustomComponentVO(getMasterDataFacade().get(NuclosEntity.CUSTOMCOMPONENT.getEntityName(), ccid));
 
-		LocaleFacadeLocal service = ServiceLocator.getInstance().getFacade(LocaleFacadeLocal.class);
+		LocaleFacadeLocal service = ServerServiceLocator.getInstance().getFacade(LocaleFacadeLocal.class);
 
 		// If the resource-ids do not exist, setup the translation list with these values (backwards compatibility)
 		boolean isResourceIdLabel = service.isResourceId(cc.getLabelResourceId());

@@ -77,15 +77,12 @@ import org.springframework.transaction.annotation.Transactional;
  * <br>Created by Novabit Informationssysteme GmbH
  * <br>Please visit <a href="http://www.novabit.de">www.novabit.de</a>
  */
-// @Stateless
-// @Remote(PreferencesFacadeRemote.class)
 @Transactional
 public class PreferencesFacadeBean extends NuclosFacadeBean implements PreferencesFacadeRemote {
+	
+	public PreferencesFacadeBean() {
+	}
 
-	/* (non-Javadoc)
-	 * @see org.nuclos.ejb3.PreferencesFacadeRemote#getUserPreferences()
-	 */
-	@Override
 	@RolesAllowed("Login")
 	public PreferencesVO getUserPreferences() throws CommonFinderException {
 		// print out the default encoding on this platform:
@@ -97,10 +94,6 @@ public class PreferencesFacadeBean extends NuclosFacadeBean implements Preferenc
 		return getUserPreferences(this.getCurrentUserName().toLowerCase());
 	}
 
-	/* (non-Javadoc)
-	 * @see org.nuclos.ejb3.PreferencesFacadeRemote#getUserPreferences()
-	 */
-	@Override
 	@RolesAllowed("Login")
 	public PreferencesVO getTemplateUserPreferences() throws NuclosBusinessException, CommonFinderException{
 		PreferencesVO templateUserPrefs = null;
@@ -111,19 +104,11 @@ public class PreferencesFacadeBean extends NuclosFacadeBean implements Preferenc
 		return templateUserPrefs;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.nuclos.ejb3.PreferencesFacadeRemote#modifyUserPreferences(org.nuclos.server.common.valueobject.PreferencesVO)
-	 */
-	@Override
 	@RolesAllowed("Login")
 	public void modifyUserPreferences(PreferencesVO prefsvo) throws CommonFinderException {
 		setPreferencesForUser(getCurrentUserName(),prefsvo);
 	}
 
-	/* (non-Javadoc)
-	 * @see org.nuclos.ejb3.PreferencesFacadeRemote#setPreferencesForUser(java.lang.String, org.nuclos.server.common.valueobject.PreferencesVO)
-	 */
-	@Override
 	@RolesAllowed("UseManagementConsole")
 	public void setPreferencesForUser(String sUserName, PreferencesVO prefsvo) throws CommonFinderException {
 		DbQueryBuilder builder = dataBaseHelper.getDbAccess().getQueryBuilder();
@@ -140,16 +125,11 @@ public class PreferencesFacadeBean extends NuclosFacadeBean implements Preferenc
 		}
 	}
 
-	/* (non-Javadoc)
-	 * @see org.nuclos.ejb3.PreferencesFacadeRemote#getPreferencesForUser(java.lang.String)
-	 */
-	@Override
 	@RolesAllowed("UseManagementConsole")
 	public PreferencesVO getPreferencesForUser(String sUserName) throws CommonFinderException {
 		return getUserPreferences(sUserName);
 	}
 
-	@Override
 	@RolesAllowed("UseManagementConsole")
 	public void mergePreferencesForUser(String targetUser, Map<String, Map<String, String>> preferencesToMerge) throws CommonFinderException {
 		try {
@@ -188,11 +168,6 @@ public class PreferencesFacadeBean extends NuclosFacadeBean implements Preferenc
 			throw ex;
 	}
 
-	/**
-	 *
-	 * @return
-	 */
-	@Override
 	public Collection<WorkspaceVO> getWorkspaceHeaderOnly() {
 		List<WorkspaceVO> result = new ArrayList<WorkspaceVO>();
 		result.addAll(getWorkspaceProcessor().getByUser(getCurrentUserName()));
@@ -233,12 +208,6 @@ public class PreferencesFacadeBean extends NuclosFacadeBean implements Preferenc
 		return result;
 	}
 
-	/**
-	 *
-	 * @param wovo
-	 * @throws CommonBusinessException
-	 */
-	@Override
 	public void storeWorkspaceHeaderOnly(WorkspaceVO wovo) throws CommonBusinessException {
 		if (wovo.getAssignedWorkspace() != null && !isAssignWorkspaceAllowed()) {
 			throw new CommonFatalException("Edit of assignable workspaces is not allowed!");
@@ -256,12 +225,6 @@ public class PreferencesFacadeBean extends NuclosFacadeBean implements Preferenc
 		}
 	}
 
-	/**
-	 *
-	 * @param id
-	 * @return
-	 */
-	@Override
 	public WorkspaceVO getWorkspace(Long id) throws CommonBusinessException {
 		WorkspaceVO wovo = getWorkspaceProcessor().getByPrimaryKey(id);
 		if (wovo == null) {
@@ -283,11 +246,6 @@ public class PreferencesFacadeBean extends NuclosFacadeBean implements Preferenc
 		return wovo;
 	}
 	
-	/**
-	 * 
-	 * @param nc
-	 * @param all (incl. never closable)
-	 */
 	private void removeAllTabs(NestedContent nc, boolean all) {
 		if (nc instanceof MutableContent) {
 			removeAllTabs(((MutableContent) nc).getContent(), all);
@@ -309,13 +267,6 @@ public class PreferencesFacadeBean extends NuclosFacadeBean implements Preferenc
 		}
 	}
 
-	/**
-	 *
-	 * @param wovo
-	 * @return
-	 * @throws CommonBusinessException
-	 */
-	@Override
 	public WorkspaceVO storeWorkspace(WorkspaceVO wovo) throws CommonBusinessException {
 		DalUtils.updateVersionInformation(wovo, getCurrentUserName());
 		if (wovo.getId() == null) {
@@ -333,12 +284,6 @@ public class PreferencesFacadeBean extends NuclosFacadeBean implements Preferenc
 		return wovo;
 	}
 
-	/**
-	 *
-	 * @param wovo
-	 * @return
-	 * @throws CommonBusinessException
-	 */
 	private WorkspaceVO storeAssignableWorkspace(WorkspaceVO wovo) throws CommonBusinessException {
 		DalUtils.updateVersionInformation(wovo, getCurrentUserName());
 		wovo.setUser(null);
@@ -356,23 +301,10 @@ public class PreferencesFacadeBean extends NuclosFacadeBean implements Preferenc
 		return wovo;
 	}
 
-	/**
-	 *
-	 * @param id
-	 */
-	@Override
 	public void removeWorkspace(Long id) {
 		getWorkspaceProcessor().delete(id);
 	}
 
-	/**
-	 *
-	 * @param wovo (private or customized workspace)
-	 * @param roleIds
-	 * @throws CommonBusinessException
-	 * return private or customized workspace
-	 */
-	@Override
 	public WorkspaceVO assignWorkspace(WorkspaceVO wovo, Collection<Long> roleIds) throws CommonBusinessException {
 		if (!isAssignWorkspaceAllowed()) {
 			throw new CommonFatalException("Edit of assignable workspaces is not allowed!");
@@ -428,11 +360,6 @@ public class PreferencesFacadeBean extends NuclosFacadeBean implements Preferenc
 		}
 	}
 
-	/**
-	 *
-	 * @param roleIds
-	 * @param assignedWorkspace
-	 */
 	private void modifyWorkspaceAssignments(Collection<Long> roleIds, Long assignedWorkspace) {
 		JdbcEntityObjectProcessor rowoProc = NucletDalProvider.getInstance().getEntityObjectProcessor(NuclosEntity.ROLEWORKSPACE);
 
@@ -475,19 +402,10 @@ public class PreferencesFacadeBean extends NuclosFacadeBean implements Preferenc
 		}
 	}
 
-	/**
-	 *
-	 * @return
-	 */
 	public Collection<EntityObjectVO> getAssignableRoles() {
 		return NucletDalProvider.getInstance().getEntityObjectProcessor(NuclosEntity.ROLE).getAll();
 	}
 
-	/**
-	 *
-	 * @param assignedWorkspaceId
-	 * @return
-	 */
 	public Collection<Long> getAssignedRoleIds(Long assignedWorkspaceId) {
 		if (assignedWorkspaceId == null) {
 			return new ArrayList<Long>();
@@ -509,12 +427,6 @@ public class PreferencesFacadeBean extends NuclosFacadeBean implements Preferenc
 		});
 	}
 
-	/**
-	 *
-	 * @param assignableWovo
-	 * @return customizedWovo
-	 * @throws CommonBusinessException
-	 */
 	private WorkspaceVO splitWorkspace(WorkspaceVO assignableWovo) throws CommonBusinessException {
 		WorkspaceVO customizedWorkspace = new WorkspaceVO();
 
@@ -535,7 +447,6 @@ public class PreferencesFacadeBean extends NuclosFacadeBean implements Preferenc
 	 * @param ep
 	 * @throws CommonBusinessException
 	 */
-	@Override
 	public void publishEntityPreferences(WorkspaceVO customizedWovo, EntityPreferences ep) throws CommonBusinessException {
 		if (!isAssignWorkspaceAllowed()) {
 			throw new CommonFatalException("Edit of assignable workspaces is not allowed!");
@@ -556,14 +467,6 @@ public class PreferencesFacadeBean extends NuclosFacadeBean implements Preferenc
 		}
 	}
 
-	/**
-	 *
-	 * @param customizedWovo
-	 * @param entity
-	 * @param sfp
-	 * @throws CommonBusinessException
-	 */
-	@Override
 	public void publishSubFormPreferences(WorkspaceVO customizedWovo, String entity, SubFormPreferences sfp) throws CommonBusinessException {
 		if (!isAssignWorkspaceAllowed()) {
 			throw new CommonFatalException("Edit of assignable workspaces is not allowed!");
@@ -581,18 +484,10 @@ public class PreferencesFacadeBean extends NuclosFacadeBean implements Preferenc
 		}
 	}
 
-	/**
-	 *
-	 * @param customizedWovo
-	 * @param isPublishStructureChange
-	 * @param isPublishStructureUpdate
-	 * @param isPublishStarttabConfiguration
-	 * @param isPublishToolbarConfiguration
-	 * @param isPublishTableColumnConfiguration
-	 * @throws CommonBusinessException
-	 */
-	@Override
-	public void publishWorkspaceChanges(WorkspaceVO customizedWovo, boolean isPublishStructureChange, boolean isPublishStructureUpdate, boolean isPublishStarttabConfiguration, boolean isPublishTableColumnConfiguration, boolean isPublishToolbarConfiguration) throws CommonBusinessException {
+	public void publishWorkspaceChanges(WorkspaceVO customizedWovo, boolean isPublishStructureChange, boolean isPublishStructureUpdate, 
+			boolean isPublishStarttabConfiguration, boolean isPublishTableColumnConfiguration, boolean isPublishToolbarConfiguration) 
+					throws CommonBusinessException {
+		
 		if (!isAssignWorkspaceAllowed()) {
 			throw new CommonFatalException("Edit of assignable workspaces is not allowed!");
 		}
@@ -659,11 +554,6 @@ public class PreferencesFacadeBean extends NuclosFacadeBean implements Preferenc
 		storeWorkspace(assignableWovo);
 	}
 
-	/**
-	 *
-	 * @param ncSource
-	 * @param ncTarget
-	 */
 	private void transferStarttabConfiguration(NestedContent ncSource, NestedContent ncTarget) {
 		if (ncSource instanceof MutableContent) {
 			transferStarttabConfiguration(((MutableContent) ncSource).getContent(), ((MutableContent) ncTarget).getContent());
@@ -696,13 +586,6 @@ public class PreferencesFacadeBean extends NuclosFacadeBean implements Preferenc
 		}
 	}
 
-	/**
-	 *
-	 * @param customizedWovo
-	 * @return
-	 * @throws CommonBusinessException
-	 */
-	@Override
 	public WorkspaceVO restoreWorkspace(WorkspaceVO customizedWovo) throws CommonBusinessException {
 		if (customizedWovo.getAssignedWorkspace() == null) {
 			throw new CommonFatalException("Workspace is not assigned!");
@@ -720,12 +603,6 @@ public class PreferencesFacadeBean extends NuclosFacadeBean implements Preferenc
 		return customizedWovo;
 	}
 
-	/**
-	 *
-	 * @param sourceWovo
-	 * @param targetWovo
-	 * @throws CommonBusinessException
-	 */
 	private void transferWorkspaceContent(WorkspaceVO sourceWovo, WorkspaceVO targetWovo) throws CommonBusinessException {
 		targetWovo.importHeader(sourceWovo.getWoDesc());
 
@@ -733,11 +610,6 @@ public class PreferencesFacadeBean extends NuclosFacadeBean implements Preferenc
 		targetWovo.setClbworkspace(sourceWovo.getClbworkspace());
 	}
 
-	/**
-	 *
-	 * @param wovo
-	 * @throws CommonBusinessException
-	 */
 	private void removeNonMainFrames(WorkspaceVO wovo) throws CommonBusinessException {
 		// only main frame in target
 		Frame mainFrame = wovo.getWoDesc().getMainFrame();
@@ -749,10 +621,6 @@ public class PreferencesFacadeBean extends NuclosFacadeBean implements Preferenc
 		wovo.getWoDesc().getHomeTreeTabbed();
 	}
 
-	/**
-	 *
-	 * @param wd
-	 */
 	private void flagTabsAssigned(WorkspaceDescription wd) {
 		for (Frame frame : wd.getFrames()) {
 			for (Tab tab : getTabs(frame.getContent())) {
@@ -761,20 +629,12 @@ public class PreferencesFacadeBean extends NuclosFacadeBean implements Preferenc
 		}
 	}
 
-	/**
-	 *
-	 * @param wd
-	 */
 	private void removeClosableTabs(WorkspaceDescription wd) {
 		for (Frame frame : wd.getFrames()) {
 			removeClosableTabs(frame.getContent());
 		}
 	}
 
-	/**
-	 *
-	 * @param nc
-	 */
 	private void removeClosableTabs(NestedContent nc) {
 		if (nc instanceof MutableContent) {
 			removeClosableTabs(((MutableContent) nc).getContent());
@@ -792,11 +652,6 @@ public class PreferencesFacadeBean extends NuclosFacadeBean implements Preferenc
 		}
 	}
 
-	/**
-	 *
-	 * @param ncAssigned
-	 * @param ncCustomized
-	 */
 	private void mergeTabbeds(NestedContent ncAssigned, NestedContent ncCustomized) {
 		if (ncAssigned instanceof MutableContent) {
 			mergeTabbeds(((MutableContent) ncAssigned).getContent(), ((MutableContent) ncCustomized).getContent());
@@ -841,13 +696,6 @@ public class PreferencesFacadeBean extends NuclosFacadeBean implements Preferenc
 		}
 	}
 
-	/**
-	 *
-	 * @param assignableWovo
-	 * @param customizedWovo
-	 * @return
-	 * @throws CommonBusinessException
-	 */
 	private WorkspaceVO mergeWorkspaces(WorkspaceVO assignableWovo, WorkspaceVO customizedWovo) throws CommonBusinessException {
 		final WorkspaceVO mergedWovo = customizedWovo;
 		final WorkspaceDescription wdm = mergedWovo.getWoDesc();
@@ -894,14 +742,6 @@ public class PreferencesFacadeBean extends NuclosFacadeBean implements Preferenc
 		return mergedWovo;
 	}
 
-	/**
-	 *
-	 * @param id1
-	 * @param id2
-	 * @return
-	 * @throws CommonBusinessException
-	 */
-	@Override
 	public boolean isWorkspaceStructureChanged(Long id1, Long id2) throws CommonBusinessException {
 		return isStructureChanged(
 				getWorkspaceProcessor().getByPrimaryKey(id1).getWoDesc().getMainFrame(),
@@ -929,12 +769,6 @@ public class PreferencesFacadeBean extends NuclosFacadeBean implements Preferenc
 		}
 	}
 
-	/**
-	 *
-	 * @param nc1
-	 * @param nc2
-	 * @return
-	 */
 	private boolean equalsContent(NestedContent nc1, NestedContent nc2) {
 		if (nc1 instanceof MutableContent) {
 			return (nc2 instanceof MutableContent);
@@ -947,11 +781,6 @@ public class PreferencesFacadeBean extends NuclosFacadeBean implements Preferenc
 		}
 	}
 
-	/**
-	 *
-	 * @param nc
-	 * @return
-	 */
 	private List<Tab> getTabs(NestedContent nc) {
 		List<Tab> result = new ArrayList<Tab>();
 		if (nc instanceof MutableContent) {
@@ -965,10 +794,6 @@ public class PreferencesFacadeBean extends NuclosFacadeBean implements Preferenc
 		return result;
 	}
 
-	/**
-	 *
-	 * @param nc
-	 */
 	private void removeHomeTabbedFlags(NestedContent nc) {
 		if (nc instanceof MutableContent) {
 			removeHomeTabbedFlags(((MutableContent) nc).getContent());
@@ -981,19 +806,10 @@ public class PreferencesFacadeBean extends NuclosFacadeBean implements Preferenc
 		}
 	}
 
-	/**
-	 *
-	 * @return
-	 */
 	private boolean isAssignWorkspaceAllowed() {
 		return SecurityCache.getInstance().getAllowedActions(getCurrentUserName()).contains(Actions.ACTION_WORKSPACE_ASSIGN);
 	}
 
-	/**
-	 * @param sUserName
-	 * @return the entity bean corresponding to the user with the given name
-	 * @throws CommonFinderException
-	 */
 	private PreferencesVO getUserPreferences(String sUserName) throws CommonFinderException {
 		DbQueryBuilder builder = dataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<byte[]> query = builder.createQuery(byte[].class);

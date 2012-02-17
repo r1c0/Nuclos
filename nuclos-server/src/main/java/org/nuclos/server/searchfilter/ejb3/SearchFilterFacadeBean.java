@@ -46,16 +46,19 @@ import org.nuclos.common2.exception.CommonValidationException;
 import org.nuclos.server.common.LocaleUtils;
 import org.nuclos.server.common.MasterDataMetaCache;
 import org.nuclos.server.common.SecurityCache;
+import org.nuclos.server.common.ServerServiceLocator;
 import org.nuclos.server.common.ejb3.LocaleFacadeLocal;
 import org.nuclos.server.database.SpringDataBaseHelper;
 import org.nuclos.server.dblayer.DbStatementUtils;
 import org.nuclos.server.jms.NuclosJMSUtils;
 import org.nuclos.server.masterdata.ejb3.MasterDataFacadeBean;
+import org.nuclos.server.masterdata.ejb3.MasterDataFacadeLocal;
 import org.nuclos.server.masterdata.valueobject.DependantMasterDataMap;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 import org.nuclos.server.ruleengine.NuclosBusinessRuleException;
 import org.nuclos.server.searchfilter.valueobject.SearchFilterUserVO;
 import org.nuclos.server.searchfilter.valueobject.SearchFilterVO;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -63,17 +66,28 @@ import org.springframework.transaction.annotation.Transactional;
  * <br>
  * Created by Novabit Informationssysteme GmbH <br>
  * Please visit <a href="http://www.novabit.de">www.novabit.de</a>
-*/
-// @Stateless
-// @Remote(SearchFilterFacadeRemote.class)
+ */
 @Transactional
 public class SearchFilterFacadeBean extends MasterDataFacadeBean implements SearchFilterFacadeRemote {
 
 	//private final ClientNotifier clientnotifier = new ClientNotifier(JMSConstants.TOPICNAME_SEARCHFILTERCACHE);
 
 	private static final String SEARCHFILTER_TABLE = "T_UD_SEARCHFILTER";
+	
+	private MasterDataFacadeLocal masterDataFacade;
+	
+	public SearchFilterFacadeBean() {
+	}
+	
+	@Autowired
+	final void setMasterDataFacade(MasterDataFacadeLocal masterDataFacade) {
+		this.masterDataFacade = masterDataFacade;
+	}
+	
+	private final MasterDataFacadeLocal getMasterDataFacade() {
+		return masterDataFacade;
+	}
 
-	@Override
 	public Object modify(String sEntityName, MasterDataVO mdvo, DependantMasterDataMap mpDependants, List<TranslationVO> resources)
 			throws CommonCreateException, CommonFinderException, CommonRemoveException, CommonStaleVersionException,
 			CommonValidationException, CommonPermissionException, NuclosBusinessRuleException {
@@ -95,13 +109,6 @@ public class SearchFilterFacadeBean extends MasterDataFacadeBean implements Sear
 		return id;
 	}
 
-	/**
-	 * @return all searchfilters for the given user
-	 * @throws CreateException
-	 * @throws CommonPermissionException
-	 * @throws CommonFinderException
-	 */
-	@Override
     @RolesAllowed("Login")
 	public Collection<SearchFilterVO> getAllSearchFilterByUser(String sUser) throws CommonFinderException, CommonPermissionException {
 		Collection<SearchFilterVO> collSearchFilter = new ArrayList<SearchFilterVO>();
@@ -151,7 +158,6 @@ public class SearchFilterFacadeBean extends MasterDataFacadeBean implements Sear
 	 * @throws CommonCreateException
 	 * @throws NuclosBusinessRuleException
 	 */
-	@Override
     @RolesAllowed("Login")
 	public SearchFilterVO createSearchFilter(SearchFilterVO filterVO) throws NuclosBusinessRuleException, CommonCreateException, CommonPermissionException {
 		MasterDataVO mdVO_searchfilter = SearchFilterVO.transformToMasterData(filterVO);
@@ -185,7 +191,6 @@ public class SearchFilterFacadeBean extends MasterDataFacadeBean implements Sear
 	 * @throws CommonCreateException
 	 * @throws NuclosBusinessRuleException
 	 */
-	@Override
     @RolesAllowed("Login")
 	public SearchFilterVO modifySearchFilter(SearchFilterVO filterVO) throws NuclosBusinessRuleException, CommonCreateException, CommonFinderException, CommonRemoveException, CommonStaleVersionException, CommonValidationException, CommonPermissionException {
 		Object oId = getMasterDataFacade().modify(NuclosEntity.SEARCHFILTER.getEntityName(), SearchFilterVO.transformToMasterData(filterVO), null);
@@ -195,7 +200,6 @@ public class SearchFilterFacadeBean extends MasterDataFacadeBean implements Sear
 	/**
 	 * deletes the given searchfilter
 	 */
-	@Override
     @RolesAllowed("Login")
 	public void removeSearchFilter(SearchFilterVO filterVO) throws NuclosBusinessRuleException, CommonCreateException, CommonFinderException, CommonRemoveException, CommonStaleVersionException, CommonValidationException, CommonPermissionException {
 		// if the user is not the owner of the searchfilter, remove only the searchfilteruser record
@@ -212,7 +216,6 @@ public class SearchFilterFacadeBean extends MasterDataFacadeBean implements Sear
 	 * updates the createdBy field of the given searchfilter
 	 * ATTENTION: this is only used by the migration process
 	 */
-	@Override
     @RolesAllowed("Login")
 	public void changeCreatedUser(Integer iId, String sUserName) throws NuclosBusinessRuleException, CommonCreateException, CommonFinderException, CommonRemoveException, CommonStaleVersionException, CommonValidationException, CommonPermissionException {
 		SpringDataBaseHelper.getInstance().execute(DbStatementUtils.updateValues("T_UD_SEARCHFILTER",
@@ -243,13 +246,12 @@ public class SearchFilterFacadeBean extends MasterDataFacadeBean implements Sear
 		//clientnotifier.notifyClientsByUsers(asUsers);
 	}
 
-	@Override
 	public List<TranslationVO> getResources(Integer id) throws CommonBusinessException {
 		ArrayList<TranslationVO> result = new ArrayList<TranslationVO>();
 
 		MasterDataVO sf = getMasterDataFacade().get(NuclosEntity.SEARCHFILTER.getEntityName(), id);
 
-		LocaleFacadeLocal service = ServiceLocator.getInstance().getFacade(LocaleFacadeLocal.class);
+		LocaleFacadeLocal service = ServerServiceLocator.getInstance().getFacade(LocaleFacadeLocal.class);
 
 		String labelResourceId = sf.getField("labelres", String.class);
 		String descriptionResourceId = sf.getField("descriptionres", String.class);

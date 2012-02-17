@@ -282,7 +282,7 @@ public class MasterDataMetaCache implements MasterDataMetaCacheMBean, MasterData
 		if(mpSubNodes.get(sEntity) == null) {
 			LOG.info("Initilizing SubnodeMD Metainformation for entity " + sEntity);
 
-			final MasterDataFacadeLocal mdLocal = ServiceLocator.getInstance().getFacade(MasterDataFacadeLocal.class);
+			final MasterDataFacadeLocal mdLocal = ServerServiceLocator.getInstance().getFacade(MasterDataFacadeLocal.class);
 			final Collection<MasterDataVO> colSubNodes = mdLocal.getDependantMasterData(NuclosEntity.ENTITYSUBNODES.getEntityName(), EntityTreeViewVO.ENTITY_FIELD, oId);
 			mpSubNodes.put(sEntity, colSubNodes);
 		}
@@ -293,7 +293,7 @@ public class MasterDataMetaCache implements MasterDataMetaCacheMBean, MasterData
 		if(subNodes.get(sEntity) == null) {
 			LOG.info("Initilizing SubnodeETV Metainformation for entity " + sEntity);
 
-			final MasterDataFacadeLocal mdLocal = ServiceLocator.getInstance().getFacade(MasterDataFacadeLocal.class);
+			final MasterDataFacadeLocal mdLocal = ServerServiceLocator.getInstance().getFacade(MasterDataFacadeLocal.class);
 			final Collection<EntityTreeViewVO> colSubNodes = mdLocal.getDependantSubnodes(NuclosEntity.ENTITYSUBNODES.getEntityName(), EntityTreeViewVO.ENTITY_FIELD, oId);
 			subNodes.put(sEntity, colSubNodes);
 		}

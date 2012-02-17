@@ -74,6 +74,7 @@ import org.nuclos.server.common.MasterDataMetaCache;
 import org.nuclos.server.common.MetaDataServerProvider;
 import org.nuclos.server.common.ModuleConstants;
 import org.nuclos.server.common.SecurityCache;
+import org.nuclos.server.common.ServerServiceLocator;
 import org.nuclos.server.common.ejb3.NuclosFacadeBean;
 import org.nuclos.server.common.valueobject.NuclosValueObject;
 import org.nuclos.server.dal.DalSupportForGO;
@@ -99,6 +100,7 @@ import org.nuclos.server.genericobject.valueobject.GenericObjectWithDependantsVO
 import org.nuclos.server.genericobject.valueobject.LogbookVO;
 import org.nuclos.server.masterdata.MasterDataWrapper;
 import org.nuclos.server.masterdata.ejb3.MasterDataFacadeHelper;
+import org.nuclos.server.masterdata.ejb3.MasterDataFacadeLocal;
 import org.nuclos.server.masterdata.valueobject.DependantMasterDataMap;
 import org.nuclos.server.masterdata.valueobject.MasterDataMetaVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
@@ -123,17 +125,16 @@ import org.springframework.transaction.annotation.Transactional;
  * <br>Created by Novabit Informationssysteme GmbH
  * <br>Please visit <a href="http://www.novabit.de">www.novabit.de</a>
  */
-// @Stateless
-// @Local(GenericObjectFacadeLocal.class)
-// @Remote(GenericObjectFacadeRemote.class)
 @Transactional
-public class GenericObjectFacadeBean extends NuclosFacadeBean implements GenericObjectFacadeLocal, GenericObjectFacadeRemote {
+public class GenericObjectFacadeBean extends NuclosFacadeBean implements GenericObjectFacadeRemote {
 
 	private static final Logger LOG = Logger.getLogger(GenericObjectFacadeBean.class);
 	
 	//
 
 	private GenericObjectFacadeHelper helper;
+	
+	private MasterDataFacadeLocal masterDataFacade;
 	
 	/**
 	 * @deprecated
@@ -153,13 +154,20 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 		this.helper = genericObjectFacadeHelper;
 	}
 	
-	@Override
+	@Autowired
+	final void setMasterDataFacade(MasterDataFacadeLocal masterDataFacade) {
+		this.masterDataFacade = masterDataFacade;
+	}
+	
+	private final MasterDataFacadeLocal getMasterDataFacade() {
+		return masterDataFacade;
+	}
+
 	@RolesAllowed("Login")
 	public GenericObjectMetaDataVO getMetaData() {
 		return GenericObjectMetaDataCache.getInstance().getMetaDataCVO();
 	}
 
-	@Override
 	@RolesAllowed("Login")
 	public Map<Integer, String> getResourceMap() {
 		return GenericObjectMetaDataCache.getInstance().getResourceMap();
@@ -173,7 +181,6 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 	 * @throws CommonPermissionException if the user doesn't have the permission to view the generic object with the given id.
 	 * @nucleus.permission mayRead(module)
 	 */
-	@Override
 	@RolesAllowed("Login")
 	public GenericObjectVO get(Integer iGenericObjectId) throws CommonFinderException, CommonPermissionException {
 		return get(iGenericObjectId, true);
@@ -189,7 +196,6 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 	 * @throws CommonPermissionException if the user doesn't have the permission to view the generic object with the given id.
 	 * @nucleus.permission mayRead(module)
 	 */
-	@Override
 	@RolesAllowed("Login")
 	public GenericObjectVO get(Integer iGenericObjectId, boolean bCheckPermission) throws CommonFinderException, CommonPermissionException {
 //		GenericObjectVO govo = MasterDataWrapper.getGenericObjectVO(getMasterDataFacade().get(ENTITY_NAME_GENERICOBJECT, iGenericObjectId));
@@ -221,7 +227,6 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 	 * @postcondition result != null
 	 * @postcondition result.isComplete()
 	 */
-	@Override
 	@RolesAllowed("Login")
 	public GenericObjectWithDependantsVO getWithDependants(Integer iGenericObjectId, Set<String> stRequiredSubEntityNames)
 			throws CommonPermissionException, CommonFinderException {
@@ -249,7 +254,6 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 	 * @throws CommonPermissionException
 	 * @throws CommonFinderException
 	 */
-	@Override
 	@RolesAllowed("Login")
 	public Integer getVersion(int iGenericObjectId) throws CommonFinderException, CommonPermissionException {
 		return this.get(iGenericObjectId).getVersion();
@@ -263,10 +267,9 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 	 *         dependants (highest hierarchie of subforms) will be reloaded
 	 * @throws CommonFinderException if no such object was found.
 	 */
-	@Override
 	@RolesAllowed("Login")
 	public DependantMasterDataMap reloadDependants(GenericObjectVO govo, DependantMasterDataMap mpDependants, boolean bAll) throws CommonFinderException {
-		LayoutFacadeLocal layoutFacade = ServiceLocator.getInstance().getFacade(LayoutFacadeLocal.class);
+		LayoutFacadeLocal layoutFacade = ServerServiceLocator.getInstance().getFacade(LayoutFacadeLocal.class);
 
 		final Map<EntityAndFieldName, String> collSubEntities = layoutFacade.getSubFormEntityAndParentSubFormEntityNames(
 			Modules.getInstance().getEntityNameByModuleId(govo.getModuleId()),govo.getId(),false);
@@ -308,7 +311,6 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 	 * deprecated merge with getWithDependants?
 	 * @nucleus.permission mayRead(module)
 	 */
-	@Override
 	@RolesAllowed("Login")
 	public RuleObjectContainerCVO getRuleObjectContainerCVO(Event event, Integer iGenericObjectId)
 			throws CommonPermissionException, CommonFinderException {
@@ -329,7 +331,6 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 	 * @postcondition result != null
 	 * @nucleus.permission mayRead(module)
 	 */
-	@Override
 	@RolesAllowed("Login")
 	public GenericObjectWithDependantsVO getHistorical(int iGenericObjectId, Date dateHistorical) throws CommonFinderException, CommonPermissionException {
 		debug("Entering getHistorical(Integer iGenericObjectId, Date dateHistorical)");
@@ -378,7 +379,6 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 	 * @return list of generic object value objects - without dependants and parent objects!
 	 * @todo restrict permission - check module id!
 	 */
-	@Override
 	@RolesAllowed("Login")
 	public List<GenericObjectWithDependantsVO> getGenericObjects(Integer iModuleId, CollectableSearchExpression clctexpr,
 			Set<Integer> stRequiredAttributeIds) {
@@ -409,7 +409,6 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 	 * @return list of generic object value objects with specified dependants and without parent objects!
 	 * @postcondition result != null
 	 */
-	@Override
 	public List<GenericObjectWithDependantsVO> getGenericObjects(Integer iModuleId, CollectableSearchExpression clctexpr,
 		Set<Integer> stRequiredAttributeIds, Set<String> stRequiredSubEntityNames, boolean bIncludeParentObjects) {
 		return getGenericObjects(iModuleId, clctexpr, stRequiredAttributeIds, stRequiredSubEntityNames);
@@ -427,7 +426,6 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 	 * @precondition stRequiredSubEntityNames != null
 	 * @todo rename to getGenericObjectProxyList?
 	 */
-	@Override
 	@RolesAllowed("Login")
 	public ProxyList<GenericObjectWithDependantsVO> getGenericObjectsWithDependants(Integer iModuleId, CollectableSearchExpression clctexpr,
 			Set<Integer> stRequiredAttributeIds, Set<String> stRequiredSubEntityNames, boolean bIncludeParentObjects, boolean bIncludeSubModules) {
@@ -448,7 +446,6 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 	 * @precondition stRequiredSubEntityNames != null
 	 * @todo rename to getGenericObjectProxyList?
 	 */
-	@Override
 	@RolesAllowed("Login")
 	public ProxyList<GenericObjectWithDependantsVO> getPrintableGenericObjectsWithDependants(Integer iModuleId, CollectableSearchExpression clctexpr,
 			Set<Integer> stRequiredAttributeIds, Set<String> stRequiredSubEntityNames, boolean bIncludeParentObjects, boolean bIncludeSubModules) {
@@ -501,7 +498,6 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 	 * @precondition iMaxRowCount > 0
 	 * @postcondition result.size() <= iMaxRowCount
 	 */
-	@Override
 	@RolesAllowed("Login")
 	public TruncatableCollection<GenericObjectWithDependantsVO> getRestrictedNumberOfGenericObjects(Integer iModuleId,
 			CollectableSearchExpression clctexpr, Set<Integer> stRequiredAttributeIds, Set<String> stRequiredSubEntityNames,
@@ -548,7 +544,6 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 	 * @param cond condition that the leased objects to be found must satisfy
 	 * @return List<Integer> list of leased object ids
 	 */
-	@Override
 	public List<Integer> getGenericObjectIds(Integer iModuleId, CollectableSearchExpression cse) {
 		EntityMetaDataVO eMeta = MetaDataServerProvider.getInstance().getEntity(IdUtils.toLongId(iModuleId));
 		List<Long> ids = NucletDalProvider.getInstance().getEntityObjectProcessor(eMeta.getEntity()).getIdsBySearchExprUserGroups(
@@ -562,7 +557,6 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 	 * @param cond condition that the generic objects to be found must satisfy
 	 * @return List<Integer> list of generic object ids
 	 */
-	@Override
 	public List<Integer> getGenericObjectIds(Integer iModuleId, CollectableSearchCondition cond) {
 		return this.getGenericObjectIds(iModuleId, new CollectableSearchExpression(cond));
 	}
@@ -580,7 +574,6 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 	 * @return list of leased object value objects
 	 * @precondition stRequiredSubEntityNames != null
 	 */
-	@Override
 	public Collection<GenericObjectWithDependantsVO> getGenericObjectsMore(Integer iModuleId, List<Integer> lstIds,
 			Set<Integer> stRequiredAttributeIds, Set<String> stRequiredSubEntityNames, boolean bIncludeParentObjects) {
 
@@ -617,7 +610,6 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 	 *
 	 * @nucleus.permission mayWrite(module)
 	 */
-	@Override
 	@RolesAllowed("Login")
 	public GenericObjectWithDependantsVO create(GenericObjectWithDependantsVO gowdvo, Set<String> stRequiredSubEntityNames)
 			throws CommonPermissionException, NuclosBusinessRuleException, CommonCreateException, CommonFinderException {
@@ -647,7 +639,6 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 	 *
 	 * @nucleus.permission mayWrite(module)
 	 */
-	@Override
 	@RolesAllowed("Login")
 	public GenericObjectVO create(GenericObjectWithDependantsVO gowdvo)
 			throws CommonPermissionException, NuclosBusinessRuleException, CommonCreateException {
@@ -809,7 +800,6 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 	 * @precondition lowdcvo.getModuleId() == iModuleId
 	 * @nucleus.permission mayWrite(module)
 	 */
-	@Override
 	@RolesAllowed("Login")
 	public GenericObjectWithDependantsVO modify(Integer iModuleId, GenericObjectWithDependantsVO lowdcvo)
 			throws CommonCreateException, CommonFinderException, CommonRemoveException,
@@ -844,7 +834,6 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 	 * @nucleus.permission mayWrite(module)
 	 * @todo change signature into GenericObjectVO modify(GenericObjectWithDependantsVO lowdcvo, boolean bFireSaveEvent)
 	 */
-	@Override
 	@RolesAllowed("Login")
 	public GenericObjectVO modify(GenericObjectVO govo, DependantMasterDataMap mpDependants, boolean bFireSaveEvent)
 			throws CommonPermissionException, CommonStaleVersionException,
@@ -864,7 +853,6 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 	 * @nucleus.permission mayWrite(module)
 	 * @todo change signature into GenericObjectVO modify(GenericObjectWithDependantsVO lowdcvo, boolean bFireSaveEvent)
 	 */
-	@Override
 	@RolesAllowed("Login")
 	public GenericObjectVO modify(GenericObjectVO govo, DependantMasterDataMap mpDependants, boolean bFireSaveEvent, boolean bCheckPermission)
 			throws CommonPermissionException, CommonStaleVersionException,
@@ -901,7 +889,7 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 
 		EntityObjectVO eoUpdated = DalSupportForGO.wrapGenericObjectVO(govo);
 
-		StateFacadeLocal statefacade = ServiceLocator.getInstance().getFacade(StateFacadeLocal.class);
+		StateFacadeLocal statefacade = ServerServiceLocator.getInstance().getFacade(StateFacadeLocal.class);
 		statefacade.checkMandatory(eoUpdated);
 
 		DalUtils.updateVersionInformation(eoUpdated, getCurrentUserName());
@@ -927,7 +915,7 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 			final Set<Integer> stExcluded = new HashSet<Integer>();
 			getMasterDataFacade().protocolDependantChanges(govo.getId(), mpDependants, stExcluded, false);
 
-			LayoutFacadeLocal layoutFacade = ServiceLocator.getInstance().getFacade(LayoutFacadeLocal.class);
+			LayoutFacadeLocal layoutFacade = ServerServiceLocator.getInstance().getFacade(LayoutFacadeLocal.class);
 			final Map<EntityAndFieldName, String> collSubEntities = layoutFacade.getSubFormEntityAndParentSubFormEntityNames(
 				entityNameByModuleId,govo.getId(),false);
 
@@ -974,7 +962,7 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 		}
 		String sEntity = Modules.getInstance().getEntityNameByModuleId(govo.getModuleId());
 
-		RuleEngineFacadeLocal facade = ServiceLocator.getInstance().getFacade(RuleEngineFacadeLocal.class);
+		RuleEngineFacadeLocal facade = ServerServiceLocator.getInstance().getFacade(RuleEngineFacadeLocal.class);
 		RuleObjectContainerCVO ruleContainer = facade.fireRule(sEntity, after ? RuleEventUsageVO.SAVE_AFTER_EVENT : RuleEventUsageVO.SAVE_EVENT, new RuleObjectContainerCVO(event, govo, mpDependants != null ? mpDependants : new DependantMasterDataMap()));
 		return ruleContainer;
 	}
@@ -994,7 +982,7 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 		}
 		String sEntityName = Modules.getInstance().getEntityNameByModuleId(govo.getModuleId());
 
-		RuleEngineFacadeLocal facade = ServiceLocator.getInstance().getFacade(RuleEngineFacadeLocal.class);
+		RuleEngineFacadeLocal facade = ServerServiceLocator.getInstance().getFacade(RuleEngineFacadeLocal.class);
 		facade.fireRule(sEntityName, after ? RuleEventUsageVO.DELETE_AFTER_EVENT : RuleEventUsageVO.DELETE_EVENT, new RuleObjectContainerCVO(after?Event.DELETE_AFTER:Event.DELETE_BEFORE, govo, mpDependants != null ? mpDependants : new DependantMasterDataMap()));
 	}
 
@@ -1006,14 +994,13 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 	 * @throws CommonCreateException
 	 * @nucleus.permission mayDelete(module, bDeletePhysically)
 	 */
-	@Override
 	@RolesAllowed("Login")
 	public void remove(GenericObjectWithDependantsVO gowdvo, boolean bDeletePhysically) throws NuclosBusinessException, CommonFinderException, CommonRemoveException, CommonPermissionException, CommonStaleVersionException, NuclosBusinessRuleException, CommonCreateException {
 		this.debug("Entering remove(GenericObjectWithDependantsVO gowdvo, boolean bDeletePhysically)");
 
 		final int iModuleId;
 
-		LayoutFacadeLocal layoutFacade =  ServiceLocator.getInstance().getFacade(LayoutFacadeLocal.class);
+		LayoutFacadeLocal layoutFacade =  ServerServiceLocator.getInstance().getFacade(LayoutFacadeLocal.class);
 
 //		try {
 //			final GenericObjectVO dbGoVO = MasterDataWrapper.getGenericObjectVO(getMasterDataFacade().get(NuclosEntity.GENERICOBJECT.getEntityName(), gowdvo.getId()));
@@ -1145,7 +1132,7 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 
 		if (modules.getUsesStateModel(iModuleId)) {
 			// delete all dependant state history entries:
-			StateFacadeLocal stateFacade = ServiceLocator.getInstance().getFacade(StateFacadeLocal.class);
+			StateFacadeLocal stateFacade = ServerServiceLocator.getInstance().getFacade(StateFacadeLocal.class);
 			for (StateHistoryVO history : stateFacade.findStateHistoryByGenericObjectId(govo.getId()))
 			{
 				getMasterDataFacade().remove(NuclosEntity.STATEHISTORY.getEntityName(), MasterDataWrapper.wrapStateHistoryVO(history), false);
@@ -1167,7 +1154,6 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 	 * @throws NuclosBusinessRuleException
 	 * @throws CommonCreateException
 	 */
-	@Override
 	public void restore(Integer iId)throws CommonFinderException, CommonPermissionException, CommonBusinessException {
 		this.debug("Entering restore(GenericObjectWithDependantsVO gowdvo)");
 
@@ -1210,7 +1196,7 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 			throw new IllegalArgumentException("goVO");
 		}
 		try {
-			StateFacadeLocal statefacade = ServiceLocator.getInstance().getFacade(StateFacadeLocal.class);
+			StateFacadeLocal statefacade = ServerServiceLocator.getInstance().getFacade(StateFacadeLocal.class);
 			final Integer iInitialStateId = statefacade.getInitialState(goVO.getId()).getId();
 			statefacade.changeStateByRule(Integer.valueOf(goVO.getModuleId()), goVO.getId(), iInitialStateId);
 		}
@@ -1234,7 +1220,6 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 	 * @precondition Modules.getInstance().isLogbookTracking(this.getModuleContainingGenericObject(iGenericObjectId))
 	 * @nucleus.permission mayRead(module)
 	 */
-	@Override
 	@RolesAllowed("Login")
 	public Collection<LogbookVO> getLogbook(int iGenericObjectId, Integer iAttributeId)
 			throws CommonFinderException, CommonPermissionException {
@@ -1300,7 +1285,6 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 	 * @throws NuclosBusinessRuleException
 	 * @nucleus.permission mayWrite(module)
 	 */
-	@Override
 	@RolesAllowed("Login")
 	public void addToGroup(int iGenericObjectId, int iGroupId, boolean blnCheckWriteAllowedForObject)
 			throws CommonCreateException, CommonFinderException, CommonPermissionException, NuclosBusinessRuleException {
@@ -1313,7 +1297,7 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 		}
 
 		// XXX* this.gogrouphome.create(iGroupId, iGenericObjectId);
-		GenericObjectGroupFacadeLocal goGroupFacade = ServiceLocator.getInstance().getFacade(GenericObjectGroupFacadeLocal.class);
+		GenericObjectGroupFacadeLocal goGroupFacade = ServerServiceLocator.getInstance().getFacade(GenericObjectGroupFacadeLocal.class);
 		goGroupFacade.addToGroup(iGenericObjectId, iGroupId);
 	}
 
@@ -1331,7 +1315,6 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 	 * @throws CommonPermissionException
 	 * @nucleus.permission mayWrite(targetModule)
 	 */
-	@Override
 	@RolesAllowed("Login")
 	public void removeFromGroup(Map<Integer, Integer> mpGOGroupRelation)
 		throws NuclosBusinessRuleException, CommonFinderException, CommonPermissionException,
@@ -1355,7 +1338,6 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 	 * @throws NuclosBusinessRuleException
 	 * @nucleus.permission mayWrite(module)
 	 */
-	@Override
 	@RolesAllowed("Login")
 	public void removeFromGroup(int iGenericObjectId, int iGroupId)
 		throws CommonFinderException, CommonPermissionException, NuclosBusinessRuleException,
@@ -1366,7 +1348,7 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 
 		checkWriteAllowedForObjectGroup(iModuleId, iGroupId);
 
-		GenericObjectGroupFacadeLocal goGroupFacade = ServiceLocator.getInstance().getFacade(GenericObjectGroupFacadeLocal.class);
+		GenericObjectGroupFacadeLocal goGroupFacade = ServerServiceLocator.getInstance().getFacade(GenericObjectGroupFacadeLocal.class);
 		goGroupFacade.removeFromGroup(iGenericObjectId, iGroupId);
 	}
 
@@ -1380,7 +1362,6 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 	 * @precondition Modules.getInstance().isMainModule(iModuleIdTarget.intValue())
 	 * @nucleus.permission mayWrite(targetModule)
 	 */
-	@Override
 	@RolesAllowed("Login")
 	public void relate(Integer iModuleIdTarget, Integer iGenericObjectIdTarget,
 			Integer iGenericObjectIdSource, String relationType)
@@ -1402,7 +1383,6 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 	 * @precondition Modules.getInstance().isMainModule(iModuleIdTarget.intValue())
 	 * @nucleus.permission mayWrite(targetModule)
 	 */
-	@Override
 	@RolesAllowed("Login")
 	public void relate(Integer iModuleIdTarget, Integer iGenericObjectIdTarget,
 			Integer iGenericObjectIdSource, String relationType, Date dateValidFrom, Date dateValidUntil,
@@ -1428,7 +1408,6 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 	 * @throws CommonPermissionException
 	 * @nucleus.permission mayWrite(targetModule)
 	 */
-	@Override
 	@RolesAllowed("Login")
 	public void removeRelation(Map<Integer, GenericObjectTreeNode> mpGOTreeNodeRelation) throws CommonBusinessException, CommonRemoveException, CommonFinderException {
 		for(Integer iRelationId : mpGOTreeNodeRelation.keySet()) {
@@ -1448,7 +1427,6 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 	 * @precondition Modules.getInstance().isMainModule(iModuleIdTarget)
 	 * @nucleus.permission mayWrite(targetModule)
 	 */
-	@Override
 	@RolesAllowed("Login")
 	public void removeRelation(Integer iRelationId, Integer iGenericObjectIdTarget, Integer iModuleIdTarget)
 			throws CommonRemoveException, CommonFinderException, CommonBusinessException {
@@ -1485,7 +1463,6 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 	 * @precondition Modules.getInstance().isMainModule(iModuleIdTarget.intValue())
 	 * @nucleus.permission mayWrite(targetModule)
 	 */
-	@Override
 	public void unrelate(Integer iModuleIdTarget, Integer iGenericObjectIdTarget, Integer iGenericObjectIdSource, String relationType)
 			throws CommonFinderException, NuclosBusinessRuleException, CommonPermissionException, CommonRemoveException {
 
@@ -1516,7 +1493,6 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 	 * @throws FinderException if no such relation exists.
 	 * @postcondition result != null
 	 */
-	@Override
 	public Collection<GenericObjectRelationVO> findRelations(Integer iGenericObjectIdSource, String relationType, Integer iGenericObjectIdTarget) throws CommonFinderException, CommonPermissionException {
 		DbQueryBuilder builder = dataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<Integer> query = builder.createQuery(Integer.class);
@@ -1529,7 +1505,6 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 		return findRelationsImpl(query);
 	}
 
-	@Override
 	public Collection<GenericObjectRelationVO> findRelationsByGenericObjectId(Integer iGenericObjectId) throws CommonFinderException, CommonPermissionException {
 		DbQueryBuilder builder = dataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<Integer> query = builder.createQuery(Integer.class);
@@ -1556,7 +1531,6 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 	 * @param sAttribute			attribute name of attribute to change
 	 * @param oValue					new value to set for attribute
 	 */
-	@Override
 	public void setAttribute(Integer iGenericObjectId, String sAttribute, Integer iValueId, Object oValue)
 			throws NuclosFatalException, CommonValidationException, NuclosBusinessException {
 
@@ -1578,7 +1552,6 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 	 * @param iGenericObjectId id of generic object to check
 	 * @return true if in module or false if not
 	 */
-	@Override
 	public boolean isGenericObjectInModule(Integer iModuleId, Integer iGenericObjectId) throws CommonFinderException {
 		return LangUtils.equals(this.getModuleContainingGenericObject(iGenericObjectId), iModuleId);
 	}
@@ -1588,7 +1561,6 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 	 * @return the id of the module containing the generic object with the given id.
 	 * @throws CommonFinderException if there is no generic object with the given id.
 	 */
-	@Override
 	@RolesAllowed("Login")
 	public int getModuleContainingGenericObject(int iGenericObjectId) throws CommonFinderException {
 		final EOGenericObjectVO eogo = NucletDalProvider.getInstance().getEOGenericObjectProcessor()
@@ -1607,7 +1579,6 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 	 * @return the id of the state of the generic object with the given id
 	 * @throws CommonFinderException
 	 */
-	@Override
 	@RolesAllowed("Login")
 	public int getStateIdByGenericObject(int iGenericObjectId) throws CommonFinderException{
 		final Integer iAttributeId = AttributeCache.getInstance().getAttribute(NuclosEOField.STATE.getMetaData().getId().intValue()).getId();
@@ -1629,7 +1600,6 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 	 * @postcondition (iModuleId == null) --> result.isEmpty()
 	 * @postcondition (iGenericObjectId == null) --> result.isEmpty()
 	 */
-	@Override
 	@RolesAllowed("Login")
 	public Set<Integer> getRelatedGenericObjectIds(final Integer iModuleId, final Integer iGenericObjectId, final RelationDirection direction, final String relationType) {
 		// @todo optimize: the two steps are unnecessary for part-of relationships. 16.09.04 CR
@@ -1701,7 +1671,6 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 	 * @return Id of created master data entry
 	 * @todo restrict permission - check module id! requires the right to modify documents
 	 */
-	@Override
 	@RolesAllowed("Login")
 	public void attachDocumentToObject(MasterDataVO mdvoDocument) {
 		try {
@@ -1729,10 +1698,9 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 	 * @throws CommonBusinessException
 	 * @todo restrict permission - check module id!
 	 */
-	@Override
 	@RolesAllowed("ExecuteRulesManually")
 	public void executeBusinessRules(List<RuleVO> lstRuleVO, GenericObjectWithDependantsVO govo, boolean bSaveAfterRuleExecution) throws CommonBusinessException {
-		RuleEngineFacadeLocal facade = ServiceLocator.getInstance().getFacade(RuleEngineFacadeLocal.class);
+		RuleEngineFacadeLocal facade = ServerServiceLocator.getInstance().getFacade(RuleEngineFacadeLocal.class);
 
 		final RuleObjectContainerCVO loccvo = facade.executeBusinessRules(lstRuleVO, new RuleObjectContainerCVO(Event.USER, govo, govo.getDependants()), false);
 		if (bSaveAfterRuleExecution) {
@@ -1743,7 +1711,6 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 	/**
 	 * creates a LogbookEntry
 	 */
-	@Override
 	public void createLogbookEntry(Integer genericObjectId, Integer attributeId, Integer masterdataMetaId, Integer masterdataMetaFieldId,
 		Integer masterdataRecordId, String masterdataAction, Integer oldValueId, Integer oldValueExternalId,
 		String oldValue, Integer newValueId, Integer newValueExternalId, String newValue)
@@ -1784,7 +1751,6 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 	 * @param canonicalValue
 	 * @return a collection of BadAttributeValueException
 	 */
-	@Override
 	public Collection<BadAttributeValueException> createGenericObjectAttribute(
 			Integer genericObjectId, Integer attributeId, Integer valueId, String canonicalValue, boolean logbookTracking) {
 		final Collection<BadAttributeValueException> badAttributes = new ArrayList<BadAttributeValueException>();
@@ -1814,7 +1780,6 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 	/**
 	 * updates a GenericObjectAttribute
 	 */
-	@Override
 	public void updateGenericObjectAttribute(DynamicAttributeVO vo, Integer genericObjectId, boolean logbookTracking) throws NuclosBusinessException {
 		final EntityObjectVO eo = DalSupportForGO.getEntityObjectProcesserForGenericObject(genericObjectId).getByPrimaryKey(
 				IdUtils.toLongId(genericObjectId));
@@ -1841,7 +1806,6 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 	 * @param attributeId
 	 * @return the DynamicAttributeVO matching the given genericObjectId and attributeId
 	 */
-	@Override
 	public DynamicAttributeVO findAttributeByGoAndAttributeId(Integer genericObjectId, Integer attributeId) throws CommonFinderException {
 
 		EntityObjectVO eo = DalSupportForGO.getEntityObject(genericObjectId);

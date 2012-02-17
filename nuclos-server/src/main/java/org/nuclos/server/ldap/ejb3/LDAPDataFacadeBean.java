@@ -44,6 +44,7 @@ import org.nuclos.common2.exception.CommonPermissionException;
 import org.nuclos.common2.exception.CommonValidationException;
 import org.nuclos.server.common.MasterDataMetaCache;
 import org.nuclos.server.common.MetaDataServerProvider;
+import org.nuclos.server.common.ServerServiceLocator;
 import org.nuclos.server.common.ejb3.NuclosFacadeBean;
 import org.nuclos.server.dal.provider.NucletDalProvider;
 import org.nuclos.server.genericobject.searchcondition.CollectableSearchExpression;
@@ -52,6 +53,7 @@ import org.nuclos.server.masterdata.valueobject.DependantMasterDataMap;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataWithDependantsVOWrapper;
 import org.nuclos.server.security.NuclosLdapBindAuthenticator;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ldap.control.PagedResultsCookie;
 import org.springframework.ldap.control.PagedResultsDirContextProcessor;
 import org.springframework.ldap.core.ContextMapper;
@@ -68,31 +70,36 @@ import org.springframework.transaction.annotation.Transactional;
  * <br>Created by Novabit Informationssysteme GmbH
  * <br>Please visit <a href="http://www.novabit.de">www.novabit.de</a>
  */
-// @Stateless
-// @Local(LDAPDataFacadeLocal.class)
-// @Remote(LDAPDataFacadeRemote.class)
 @Transactional
-public class LDAPDataFacadeBean extends NuclosFacadeBean implements LDAPDataFacadeLocal, LDAPDataFacadeRemote {
+public class LDAPDataFacadeBean extends NuclosFacadeBean implements LDAPDataFacadeRemote {
 
 	private static final Logger log = Logger.getLogger(LDAPDataFacadeBean.class);
 
 	private final static int PAGESIZE = 1000;
+	
+	private MasterDataFacadeLocal masterDataFacade;
+	
+	public LDAPDataFacadeBean() {
+	}
 
-	@Override
+	@Autowired
+	final void setMasterDataFacade(MasterDataFacadeLocal masterDataFacade) {
+		this.masterDataFacade = masterDataFacade;
+	}
+	
 	public MasterDataVO create(MasterDataVO vo, DependantMasterDataMap mpDependants) throws CommonBusinessException {
 		checkWriteAllowed(NuclosEntity.LDAPSERVER);
 		validate(vo, mpDependants);
 
-		return getMasterDataFacade().create(NuclosEntity.LDAPSERVER.getEntityName(), vo, mpDependants);
+		return masterDataFacade.create(NuclosEntity.LDAPSERVER.getEntityName(), vo, mpDependants);
 	}
 
-	@Override
 	public MasterDataVO modify(MasterDataVO vo, DependantMasterDataMap mpDependants) throws CommonBusinessException {
 		checkWriteAllowed(NuclosEntity.LDAPSERVER);
 		validate(vo, mpDependants);
 
-		Integer id = (Integer)getMasterDataFacade().modify(NuclosEntity.LDAPSERVER.getEntityName(), vo, mpDependants);
-		return getMasterDataFacade().get(NuclosEntity.LDAPSERVER.getEntityName(), id);
+		Integer id = (Integer) masterDataFacade.modify(NuclosEntity.LDAPSERVER.getEntityName(), vo, mpDependants);
+		return masterDataFacade.get(NuclosEntity.LDAPSERVER.getEntityName(), id);
 	}
 
 	/**
@@ -102,7 +109,6 @@ public class LDAPDataFacadeBean extends NuclosFacadeBean implements LDAPDataFaca
 	 * @return a collection containing the search result for the given search expression.
 	 * TODO restrict permissions
 	 */
-	@Override
 	@RolesAllowed("Login")
 	public Collection<MasterDataWithDependantsVOWrapper> getUsers(String filterExpr, Object[] filterArgs) throws CommonBusinessException {
 		List<EntityObjectVO> servers = NucletDalProvider.getInstance().getEntityObjectProcessor(NuclosEntity.LDAPSERVER).getAll();
@@ -210,7 +216,8 @@ public class LDAPDataFacadeBean extends NuclosFacadeBean implements LDAPDataFaca
 			}
 		}
 
-		final Collection<MasterDataVO> nucleususers = ServiceLocator.getInstance().getFacade(MasterDataFacadeLocal.class).getMasterData(NuclosEntity.USER.getEntityName(), null, true);
+		final Collection<MasterDataVO> nucleususers = ServerServiceLocator.getInstance().getFacade(
+				MasterDataFacadeLocal.class).getMasterData(NuclosEntity.USER.getEntityName(), null, true);
 
 		final Map<String, MasterDataWithDependantsVOWrapper> map = new HashMap<String, MasterDataWithDependantsVOWrapper>();
 		for (MasterDataWithDependantsVOWrapper wrapper : searchResult) {
@@ -236,7 +243,6 @@ public class LDAPDataFacadeBean extends NuclosFacadeBean implements LDAPDataFaca
 		return new ArrayList<MasterDataWithDependantsVOWrapper>(map.values());
     }
 
-	@Override
 	@RolesAllowed("Login")
 	public boolean tryAuthentication(String ldapserver, String username, String password) throws CommonPermissionException, CommonBusinessException {
 		checkWriteAllowed(NuclosEntity.LDAPSERVER);

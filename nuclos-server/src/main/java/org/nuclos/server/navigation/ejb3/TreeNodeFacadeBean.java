@@ -80,6 +80,7 @@ import org.nuclos.server.genericobject.Modules;
 import org.nuclos.server.genericobject.ejb3.GenericObjectFacadeLocal;
 import org.nuclos.server.genericobject.searchcondition.CollectableSearchExpression;
 import org.nuclos.server.genericobject.valueobject.GenericObjectWithDependantsVO;
+import org.nuclos.server.masterdata.ejb3.MasterDataFacadeLocal;
 import org.nuclos.server.masterdata.valueobject.MasterDataMetaVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 import org.nuclos.server.navigation.treenode.DefaultMasterDataTreeNode;
@@ -119,13 +120,17 @@ import org.springframework.transaction.annotation.Transactional;
 */
 @Transactional
 @RolesAllowed("Login")
-public class TreeNodeFacadeBean extends NuclosFacadeBean implements TreeNodeFacadeLocal, TreeNodeFacadeRemote {
+public class TreeNodeFacadeBean extends NuclosFacadeBean implements TreeNodeFacadeRemote {
 
 	private static final int DEFAULT_ROWCOUNT_FOR_SEARCHRESULT = 500;
 	
 	//
 	
 	private ServerParameterProvider serverParameterProvider;
+	
+	private GenericObjectFacadeLocal genericObjectFacade;
+	
+	private MasterDataFacadeLocal masterDataFacade;
 	
 	public TreeNodeFacadeBean() {
 	}
@@ -135,6 +140,24 @@ public class TreeNodeFacadeBean extends NuclosFacadeBean implements TreeNodeFaca
 		this.serverParameterProvider = serverParameterProvider;
 	}
 
+	@Autowired
+	final void setGenericObjectFacade(GenericObjectFacadeLocal genericObjectFacade) {
+		this.genericObjectFacade = genericObjectFacade;
+	}
+	
+	private final GenericObjectFacadeLocal getGenericObjectFacade() {
+		return genericObjectFacade;
+	}
+
+	@Autowired
+	final void setMasterDataFacade(MasterDataFacadeLocal masterDataFacade) {
+		this.masterDataFacade = masterDataFacade;
+	}
+	
+	private final MasterDataFacadeLocal getMasterDataFacade() {
+		return masterDataFacade;
+	}
+
 	/**
 	 * gets a generic object tree node for a specific generic object
 	 * @param iGenericObjectId id of generic object to get tree node for
@@ -142,7 +165,6 @@ public class TreeNodeFacadeBean extends NuclosFacadeBean implements TreeNodeFaca
 	 * @throws CommonFinderException if the object doesn't exist (anymore).
 	 * @postcondition result != null
 	 */
-	@Override
 	public GenericObjectTreeNode getGenericObjectTreeNode(Integer iGenericObjectId, Integer moduleId, Integer parentId) throws CommonFinderException {
 		final GenericObjectTreeNode result = newGenericObjectTreeNode(iGenericObjectId, moduleId, null, null, null, parentId);
 		assert result != null;
@@ -160,7 +182,6 @@ public class TreeNodeFacadeBean extends NuclosFacadeBean implements TreeNodeFaca
 	 * @throws CommonFinderException if the object doesn't exist (anymore).
 	 * @postcondition result != null
 	 */
-	@Override
 	public GenericObjectTreeNode newGenericObjectTreeNode(Integer iGenericObjectId,
 			Integer moduleId, Integer iRelationId, SystemRelationType relationtype, RelationDirection direction, Integer parentId) throws CommonFinderException {
 
@@ -252,7 +273,6 @@ public class TreeNodeFacadeBean extends NuclosFacadeBean implements TreeNodeFaca
 	 * @throws CommonPermissionException
 	 * @postcondition result != null
 	 */
-    @Override
 	public List<TreeNode> getSubNodesIgnoreUser(GenericObjectTreeNode node) {
 		final List<TreeNode> result = new ArrayList<TreeNode>();
 		final MasterDataVO mdcvoModule = Modules.getInstance().getModuleById(node.getModuleId());
@@ -472,7 +492,6 @@ public class TreeNodeFacadeBean extends NuclosFacadeBean implements TreeNodeFaca
 	 * @return group tree node for given id
 	 * @postcondition result != null
 	 */
-	@Override
 	public GroupTreeNode getGroupTreeNode(final Integer iId, final boolean bLoadSubNodes) throws CommonFinderException {
 		DbQueryBuilder builder = dataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<DbTuple> query = builder.createTupleQuery();
@@ -500,7 +519,6 @@ public class TreeNodeFacadeBean extends NuclosFacadeBean implements TreeNodeFaca
 		return result;
 	}
 
-	@Override
 	public NucletTreeNode getNucletTreeNode(Integer iId) throws CommonFinderException {
 		try {
 			EntityObjectVO eovo = NucletDalProvider.getInstance().getEntityObjectProcessor(NuclosEntity.NUCLET).getByPrimaryKey(iId.longValue());
@@ -517,7 +535,6 @@ public class TreeNodeFacadeBean extends NuclosFacadeBean implements TreeNodeFaca
 	 * @throws CommonPermissionException
 	 * @postcondition result != null
 	 */
-	@Override
 	public MasterDataTreeNode<Integer> getMasterDataTreeNode(Integer iId, String sEntity, boolean bLoadSubNodes) throws CommonFinderException, CommonPermissionException {
 		final MasterDataVO mdvo = this.getMasterDataFacade().get(sEntity, iId);
 		final MasterDataTreeNode<Integer> result = new DefaultMasterDataTreeNode(sEntity, mdvo);
@@ -529,10 +546,6 @@ public class TreeNodeFacadeBean extends NuclosFacadeBean implements TreeNodeFaca
 		return result;
 	}
 
-	/**
-	 *
-	 */
-	@Override
 	public SubFormEntryTreeNode getSubFormEntryTreeNode(Integer iId, String sEntity, boolean bLoadSubNodes) throws CommonFinderException, CommonPermissionException {
 		final MasterDataVO mdvo = this.getMasterDataFacade().get(sEntity, iId);
 		final SubFormEntryTreeNode result = new SubFormEntryTreeNode(sEntity, mdvo);
@@ -549,7 +562,6 @@ public class TreeNodeFacadeBean extends NuclosFacadeBean implements TreeNodeFaca
 	 * @return the subnodes for the given node.
 	 * @postcondition result != null
 	 */
-	@Override
 	public List<GenericObjectTreeNode> getSubNodes(GroupTreeNode node) {
 		DbQueryBuilder builder = dataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<DbTuple> query = builder.createTupleQuery();
@@ -574,10 +586,6 @@ public class TreeNodeFacadeBean extends NuclosFacadeBean implements TreeNodeFaca
 		return result;
 	}
 
-	/**
-	 *
-	 */
-	@Override
 	public List<TreeNode> getSubNodes(NucletTreeNode node) {
 		List<TreeNode> result = new ArrayList<TreeNode>();
 		if (node.isShowDependeces()) {
@@ -618,7 +626,6 @@ public class TreeNodeFacadeBean extends NuclosFacadeBean implements TreeNodeFaca
 	 * @return the subnodes for the given node.
 	 * @postcondition result != null
 	 */
-	@Override
 	public List<TreeNode> getSubnodes(DefaultMasterDataTreeNode node) {
 		final List<TreeNode> result = new ArrayList<TreeNode>();
 		final MasterDataMetaVO mdMeta = MasterDataMetaCache.getInstance().getMetaData(
@@ -627,24 +634,6 @@ public class TreeNodeFacadeBean extends NuclosFacadeBean implements TreeNodeFaca
 			node.getEntityName(), mdMeta.getId());
 		final Collection<EntityTreeViewVO> subnodes = MasterDataMetaCache.getInstance().getSubnodesETV(
 			node.getEntityName(), mdMeta.getId());
-
-		/*
-		final Iterator<MasterDataVO> it1 = colSubNodes.iterator();
-		final Iterator<EntityTreeViewVO> it2 = subnodes.iterator();
-		while(it1.hasNext()) {
-			final MasterDataVO mdvoSub = it1.next();
-			final EntityTreeViewVO vo = it2.next();
-			assert vo.getEntity().equals(mdvoSub.getField(EntityTreeViewVO.SUBFORM_ENTITY_FIELD))
-				&& vo.getField().equals(mdvoSub.getField(EntityTreeViewVO.SUBFORM2ENTITY_REF_FIELD))
-				&& vo.getOriginentityid().equals(mdvoSub.getField(EntityTreeViewVO.ENTITY_FIELD));
-
-			DynamicTreeNode treenode = new SubFormTreeNode<Integer>(null, node, mdvoSub);
-			treenode.getSubNodes();
-			result.add(treenode);
-		}
-
-		assert result != null;
-		 */
 
 		subformSubnodes(result, node, colSubNodes, subnodes);
 		return result;
@@ -655,7 +644,6 @@ public class TreeNodeFacadeBean extends NuclosFacadeBean implements TreeNodeFaca
 	 * @return the subnodes for the given node.
 	 * @postcondition result != null
 	 */
-	@Override
 	public List<AbstractNucletContentEntryTreeNode> getSubNodes(NucletContentTreeNode node) {
 		final List<AbstractNucletContentEntryTreeNode> result = new ArrayList<AbstractNucletContentEntryTreeNode>();
 
@@ -676,28 +664,15 @@ public class TreeNodeFacadeBean extends NuclosFacadeBean implements TreeNodeFaca
 		return sortAbstractNucletContentEntryTreeNodes(result);
 	}
 
-	/**
-	 *
-	 * @param node
-	 * @return
-	 */
-	@Override
 	public List<AbstractNucletContentEntryTreeNode> getNucletContent(NucletTreeNode node) {
 		final List<AbstractNucletContentEntryTreeNode> result = new ArrayList<AbstractNucletContentEntryTreeNode>();
 
 		for (NucletContentTreeNode contentTypeNode : getNucletContentTypes(IdUtils.toLongId(node.getId()))) {
 			result.addAll(getSubNodes(contentTypeNode));
 		}
-
 		return result;
 	}
 
-	/**
-	 *
-	 * @param node
-	 * @return
-	 */
-	@Override
 	public List<NucletTreeNode> getSubNodes(NuclosInstanceTreeNode node) {
 		final Collection<NucletTreeNode> result = new ArrayList<NucletTreeNode>();
 
@@ -727,12 +702,6 @@ public class TreeNodeFacadeBean extends NuclosFacadeBean implements TreeNodeFaca
 			}});
 	}
 
-	/**
-	 *
-	 * @return the available nodes.
-	 * @postcondition result != null
-	 */
-	@Override
 	public List<AbstractNucletContentEntryTreeNode> getAvailableNucletContents() {
 		List<AbstractNucletContentEntryTreeNode> result = new ArrayList<AbstractNucletContentEntryTreeNode>();
 		for (NuclosEntity ne : AbstractNucletContentEntryTreeNode.getNucletContentEntities()) {
@@ -764,13 +733,6 @@ public class TreeNodeFacadeBean extends NuclosFacadeBean implements TreeNodeFaca
 		return result;
 	}
 
-	/**
-	 *
-	 * @param nucletId
-	 * @param contents
-	 * @throws NuclosBusinessException
-	 */
-	@Override
 	public void addNucletContents(Long nucletId, Set<AbstractNucletContentEntryTreeNode> contents) throws NuclosBusinessException {
 		CacheInvalidator ci = new CacheInvalidator();
 
@@ -797,12 +759,6 @@ public class TreeNodeFacadeBean extends NuclosFacadeBean implements TreeNodeFaca
 		ci.run();
 	}
 
-	/**
-	 *
-	 * @param contents
-	 * @return true if at least one content is removed from nuclet
-	 */
-	@Override
 	public boolean removeNucletContents(Set<AbstractNucletContentEntryTreeNode> contents) {
 		boolean result = false;
 		CacheInvalidator ci = new CacheInvalidator();
@@ -849,33 +805,14 @@ public class TreeNodeFacadeBean extends NuclosFacadeBean implements TreeNodeFaca
 		}
 	}
 
-	/**
-	 *
-	 * @param nodes
-	 * @return
-	 */
 	private List<AbstractNucletContentEntryTreeNode> sortAbstractNucletContentEntryTreeNodes(List<AbstractNucletContentEntryTreeNode> nodes) {
 		return CollectionUtils.sorted(nodes, new AbstractNucletContentEntryTreeNode.Comparator());
 	}
 
-	/**
-	 *
-	 * @param entity
-	 * @param eoId
-	 * @return
-	 */
-	@Override
 	public AbstractNucletContentEntryTreeNode getNucletContentEntryNode(NuclosEntity entity, Long eoId) {
 		return getNucletContentEntryNode(NucletDalProvider.getInstance().getEntityObjectProcessor(entity).getByPrimaryKey(eoId));
 	}
 
-	/**
-	 *
-	 * @param ne
-	 * @param eo
-	 * @param eMeta
-	 * @return
-	 */
 	private AbstractNucletContentEntryTreeNode getNucletContentEntryNode(EntityObjectVO eo) {
 		if (eo == null) {
 			throw new IllegalArgumentException("eo must not be null");
@@ -898,32 +835,14 @@ public class TreeNodeFacadeBean extends NuclosFacadeBean implements TreeNodeFaca
 		}
 	}
 
-	/**
-	 *
-	 * @param node
-	 * @param mdVO
-	 */
-	@Override
 	public DynamicTreeNode<Integer> getDynamicTreeNode(TreeNode node, MasterDataVO mdVO) {
 		return new DynamicTreeNode<Integer>(null, node, mdVO);
 	}
 
-	/**
-	 *
-	 * @param node
-	 * @param mdVO
-	 */
-	@Override
 	public SubFormTreeNode getSubFormTreeNode(GenericObjectTreeNode node, MasterDataVO mdVO) {
 		return new SubFormTreeNode(null, node, mdVO);
 	}
 
-	/**
-	 *
-	 * @param node
-	 * @param mdVO
-	 */
-	@Override
 	public List<TreeNode> getSubNodesForDynamicTreeNode(TreeNode node, MasterDataVO mdVO) {
 		final String sEntity = (String)mdVO.getField("entity");
 		final String sField = (String)mdVO.getField("field");
@@ -939,11 +858,6 @@ public class TreeNodeFacadeBean extends NuclosFacadeBean implements TreeNodeFaca
 		return result;
 	}
 
-	/**
-	 * @param node
-	 * @param mdVO
-	 */
-	@Override
     public List<SubFormEntryTreeNode> getSubNodesForSubFormTreeNode(TreeNode node, MasterDataVO mdVO) {
 		final String sEntity = (String)mdVO.getField("entity");
 		final String sField = (String)mdVO.getField("field");
@@ -983,12 +897,6 @@ public class TreeNodeFacadeBean extends NuclosFacadeBean implements TreeNodeFaca
 
 	}
 
-	/**
-	 * @param node
-	 * @return the subnodes for the given node.
-	 * @postcondition result != null
-	 */
-	@Override
 	public java.util.List<org.nuclos.server.navigation.treenode.GroupTreeNode> getSubNodes(GroupSearchResultTreeNode node) {
 		final List<GroupTreeNode> result = new ArrayList<GroupTreeNode>();
 
@@ -1008,7 +916,6 @@ public class TreeNodeFacadeBean extends NuclosFacadeBean implements TreeNodeFaca
 	 * @return the subnodes for the given node.
 	 * @postcondition result != null
 	 */
-	@Override
 	public java.util.List<org.nuclos.server.navigation.treenode.DefaultMasterDataTreeNode> getSubNodes(MasterDataSearchResultTreeNode node) {
 		final List<DefaultMasterDataTreeNode> result = new ArrayList<DefaultMasterDataTreeNode>();
 
@@ -1028,7 +935,6 @@ public class TreeNodeFacadeBean extends NuclosFacadeBean implements TreeNodeFaca
 	 * @return list of sub nodes for given tree node
 	 * @postcondition result != null
 	 */
-	@Override
 	public List<TreeNode> getSubNodes(EntitySearchResultTreeNode node) {
 		final int iMaxRowCount = serverParameterProvider.getIntValue(ParameterProvider.KEY_MAX_ROWCOUNT_FOR_SEARCHRESULT_IN_TREE, DEFAULT_ROWCOUNT_FOR_SEARCHRESULT);
 
@@ -1072,7 +978,6 @@ public class TreeNodeFacadeBean extends NuclosFacadeBean implements TreeNodeFaca
 			assert result != null;
 			return result;
 		}
-
 	}
 
 	private static class GenericObjectTreeNodeChildrenComparator implements Comparator<TreeNode> {

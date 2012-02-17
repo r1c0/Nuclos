@@ -44,6 +44,7 @@ import org.nuclos.common2.exception.CommonRemoveException;
 import org.nuclos.common2.exception.CommonValidationException;
 import org.nuclos.server.common.MasterDataMetaCache;
 import org.nuclos.server.common.SecurityCache;
+import org.nuclos.server.common.ServerServiceLocator;
 import org.nuclos.server.common.StateCache;
 import org.nuclos.server.common.ejb3.NuclosFacadeBean;
 import org.nuclos.server.dblayer.query.DbFrom;
@@ -68,6 +69,7 @@ import org.nuclos.server.statemodel.valueobject.StateModelUsagesCache;
 import org.nuclos.server.statemodel.valueobject.StateModelVO;
 import org.nuclos.server.statemodel.valueobject.StateTransitionVO;
 import org.nuclos.server.statemodel.valueobject.StateVO;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 
@@ -83,17 +85,23 @@ import org.springframework.transaction.annotation.Transactional;
  *
  * @todo restrict
  */
-// @Stateless
-// @Local(ProcessMonitorFacadeLocal.class)
-// @Remote(ProcessMonitorFacadeRemote.class)
 @Transactional
-public class ProcessMonitorFacadeBean extends NuclosFacadeBean implements ProcessMonitorFacadeLocal, ProcessMonitorFacadeRemote{
+public class ProcessMonitorFacadeBean extends NuclosFacadeBean implements ProcessMonitorFacadeRemote {
 
-	private MasterDataFacadeLocal masterDataFacadeLocal  = ServiceLocator.getInstance().getFacade(MasterDataFacadeLocal.class);
+	private MasterDataFacadeLocal masterDataFacade;
 	
 	public ProcessMonitorFacadeBean() {
 	}
 	
+	@Autowired
+	final void setMasterDataFacade(MasterDataFacadeLocal masterDataFacade) {
+		this.masterDataFacade = masterDataFacade;
+	}
+	
+	private final MasterDataFacadeLocal getMasterDataFacade() {
+		return masterDataFacade;
+	}
+
 	/**
 	 * unused the setStateGraph method makes the job
 	 * create a new ProcessModel in the database
@@ -101,7 +109,6 @@ public class ProcessMonitorFacadeBean extends NuclosFacadeBean implements Proces
 	 * @throws CommonPermissionException 
 	 * @throws NuclosBusinessRuleException 
 	 */
-	@Override
 	public ProcessMonitorVO create(ProcessMonitorGraphVO graphvo) throws CommonCreateException, CommonValidationException, NuclosBusinessRuleException, CommonPermissionException {
 		Map<String, Object> mpFields = new HashMap<String,Object>();
 		
@@ -117,7 +124,6 @@ public class ProcessMonitorFacadeBean extends NuclosFacadeBean implements Proces
 	 * unused at the moment setStateGraph makes the job
 	 * method to modify a ProcessModel 
 	 */
-	@Override
 	public ProcessMonitorVO modify(ProcessMonitorVO vo) {		
 		return vo;		
 	}
@@ -126,7 +132,6 @@ public class ProcessMonitorFacadeBean extends NuclosFacadeBean implements Proces
 	 * method to get all process models
 	 * @return collection of process model vo
 	 */
-	@Override
 	public Collection<StateVO> getStateByModelId(Integer modelId) {
 		return StateCache.getInstance().getStatesByModel(modelId);
 	}
@@ -135,7 +140,6 @@ public class ProcessMonitorFacadeBean extends NuclosFacadeBean implements Proces
 	 * method to get all process models
 	 * @return collection of process model vo
 	 */
-	@Override
 	public Collection<ProcessMonitorVO> getProcessModels() {
 		final Collection<ProcessMonitorVO> result = new HashSet<ProcessMonitorVO>();
 		
@@ -159,7 +163,6 @@ public class ProcessMonitorFacadeBean extends NuclosFacadeBean implements Proces
 	 * @return state model id
 	 * @throws CommonPermissionException 
 	 */
-	@Override
 	public Integer setStateGraph(ProcessMonitorGraphVO processgraphcvo) 
 			throws CommonCreateException , CommonFinderException, CommonRemoveException, CommonValidationException, CommonPermissionException {
 		final Integer result;
@@ -201,7 +204,6 @@ public class ProcessMonitorFacadeBean extends NuclosFacadeBean implements Proces
 	 * @return state graph cvo containing the state graph information for the model with the given id
 	 * @throws CommonPermissionException 
 	 */
-	@Override
 	public ProcessMonitorGraphVO getStateGraph(Integer iModelId) throws CommonFinderException {
 		
 		ProcessMonitorGraphVO result = null;
@@ -384,8 +386,8 @@ public class ProcessMonitorFacadeBean extends NuclosFacadeBean implements Proces
 //							StateModelVO stateModelTarget = MasterDataWrapper.getStateModelVO(getMasterDataFacade().get(NuclosEntity.STATEMODEL.getEntityName(), stateModelTargetId));
 							
 							try {
-								MasterDataVO stateModelUsageSource = masterDataFacadeLocal.get(NuclosEntity.STATEMODELUSAGE.getEntityName(), processStateSource.getField("stateModelUsageId"));
-								MasterDataVO stateModelUsageTarget = masterDataFacadeLocal.get(NuclosEntity.STATEMODELUSAGE.getEntityName(), processStateTarget.getField("stateModelUsageId"));
+								MasterDataVO stateModelUsageSource = masterDataFacade.get(NuclosEntity.STATEMODELUSAGE.getEntityName(), processStateSource.getField("stateModelUsageId"));
+								MasterDataVO stateModelUsageTarget = masterDataFacade.get(NuclosEntity.STATEMODELUSAGE.getEntityName(), processStateTarget.getField("stateModelUsageId"));
 								
 								GeneratorActionVO newGenerationVO = new GeneratorActionVO(
 									null,
@@ -414,7 +416,8 @@ public class ProcessMonitorFacadeBean extends NuclosFacadeBean implements Proces
 								if (processtransitionvo.getGenerationId() != null){
 //									MDGenerationLocal oldGenerationLocal = mdGenerationHome.findByPrimaryKey(processtransitionvo.getGenerationId());
 //									GeneratorActionVO oldGenerationVO = oldGenerationLocal.getValueObject();
-									GeneratorActionVO oldGenerationVO = MasterDataWrapper.getGeneratorActionVO(getMasterDataFacade().get(NuclosEntity.GENERATION.getEntityName(), processtransitionvo.getGenerationId()), ServiceLocator.getInstance().getFacade(GeneratorFacadeLocal.class).getGeneratorUsages(processtransitionvo.getGenerationId()));
+									GeneratorActionVO oldGenerationVO = MasterDataWrapper.getGeneratorActionVO(getMasterDataFacade().get(NuclosEntity.GENERATION.getEntityName(), processtransitionvo.getGenerationId()), 
+											ServerServiceLocator.getInstance().getFacade(GeneratorFacadeLocal.class).getGeneratorUsages(processtransitionvo.getGenerationId()));
 									
 									boolean sourceModuleNoChange =  (newGenerationVO.getSourceModuleId()==null && oldGenerationVO.getSourceModuleId()==null) ||
 															   	    (newGenerationVO.getSourceModuleId()!=null && 
@@ -534,12 +537,6 @@ public class ProcessMonitorFacadeBean extends NuclosFacadeBean implements Proces
 		}
 	}
 	
-	/**
-	 * 
-	 * @param stateModelId
-	 * @return
-	 */
-	@Override
 	public List<SubProcessUsageCriteriaVO> getSubProcessUsageCriterias(Integer stateModelId){
 		final List<SubProcessUsageCriteriaVO> result = new ArrayList<SubProcessUsageCriteriaVO>();
 		
@@ -554,13 +551,6 @@ public class ProcessMonitorFacadeBean extends NuclosFacadeBean implements Proces
 		return result;
 	}
 	
-	/**
-	 * 
-	 * @param iProcessMonitorId
-	 * @return
-	 * @throws CommonBusinessException
-	 */
-	@Override
 	public SubProcessVO findStartingSubProcess(Integer iProcessMonitorId) {
 		// find subprocess with no linking transistion on it -> start element!
 		SubProcessVO startSubProcessVO = null;
@@ -589,12 +579,6 @@ public class ProcessMonitorFacadeBean extends NuclosFacadeBean implements Proces
 		}
 	}
 	
-	/**
-	 * 
-	 * @param targetStateId
-	 * @return
-	 */
-	@Override
 	public Boolean isFinalState(Integer targetStateId){
 		Boolean result = new Boolean(false);
 		
@@ -610,12 +594,6 @@ public class ProcessMonitorFacadeBean extends NuclosFacadeBean implements Proces
 		return result;
 	}
 	
-	/**
-	 * 
-	 * @param iSubProcessTransitionId
-	 * @return id or null
-	 */
-	@Override
 	public Integer getGenerationIdFromSubProcessTransition(Integer iSubProcessTransitionId){
 		try {
 //			return transitionHome.findByPrimaryKey(iSubProcessTransitionId).getGenerationId();
@@ -626,25 +604,11 @@ public class ProcessMonitorFacadeBean extends NuclosFacadeBean implements Proces
 		}
 	}
 	
-	/**
-	 * 
-	 * @param iProcessMonitorId
-	 * @param datePlanStart
-	 * @throws CommonBusinessException 
-	 */
-	@Override
 	public DateTime getProcessPlanEnd(Integer iProcessMonitorId, DateTime datePlanStart) throws CommonBusinessException{
 		final SubProcessVO startSubProcessVO = this.findStartingSubProcess(iProcessMonitorId);
 		return getMaxPlanEndUntilEnd(startSubProcessVO, datePlanStart);
 	}
 	
-	/**
-	 * 
-	 * @param subProcess
-	 * @param datePlanStart
-	 * @return
-	 * @throws FinderException
-	 */
 	private DateTime getMaxPlanEndUntilEnd(SubProcessVO subProcess, DateTime datePlanStart){
 		try {
 			// max value of this step
@@ -696,7 +660,6 @@ public class ProcessMonitorFacadeBean extends NuclosFacadeBean implements Proces
 	 * 			DatePlanEnd (seriesNext from planEndSeries + datePlanStart)
 	 * 		and DateRuntimeEnd (datePlanStart + runtime)
 	 */
-	@Override
 	public DateTime getPlanEnd(SubProcessVO subProcess, DateTime datePlanStart){
 
 		final DateTime datePlanEnd = SeriesUtils.getSeriesNext(subProcess.getPlanEndSeries(), datePlanStart);
@@ -713,23 +676,10 @@ public class ProcessMonitorFacadeBean extends NuclosFacadeBean implements Proces
 
 	}
 	
-	/**
-	 * 
-	 * @param subProcess
-	 * @param dateOrigin
-	 * @return calculated plan start date
-	 */
-	@Override
-	public DateTime getPlanStart(SubProcessVO subProcess, DateTime dateOrigin){
-		
+	public DateTime getPlanStart(SubProcessVO subProcess, DateTime dateOrigin) {
 		return SeriesUtils.getSeriesNext(subProcess.getPlanStartSeries(), dateOrigin);
 	}
 	
-	/**
-	 * 
-	 * @return
-	 */
-	@Override
 	public List<ProcessStateRuntimeFormatVO> getPossibleRuntimeFormats() {
 		ArrayList<ProcessStateRuntimeFormatVO> result = new ArrayList<ProcessStateRuntimeFormatVO>();
 		
@@ -799,12 +749,6 @@ public class ProcessMonitorFacadeBean extends NuclosFacadeBean implements Proces
 		}		
 	}
 	
-	/**
-	 * 
-	 * @param ptId
-	 * @return
-	 * @throws CommonPermissionException
-	 */
 	public ProcessTransitionVO getProcessTransition(Integer ptId) throws CommonPermissionException {
 		ProcessTransitionVO result;
 		try {
@@ -837,14 +781,6 @@ public class ProcessMonitorFacadeBean extends NuclosFacadeBean implements Proces
 		return result;
 	}
 
-	/**
-	 * 
-	 * @param targetStateId
-	 * @param processmodelId
-	 * @return
-	 * @throws CommonPermissionException
-	 */
-	@Override
 	public Collection<ProcessTransitionVO> findProcessTransitionByTargetStateAndProcessmodel(Integer targetStateId, Integer processmodelId) throws CommonPermissionException {
 		/**
 		 * old ejb finder:
@@ -934,14 +870,6 @@ public class ProcessMonitorFacadeBean extends NuclosFacadeBean implements Proces
 		return result;
 	}
 	
-	/**
-	 * 
-	 * @param generationId
-	 * @param targetCaseId
-	 * @return
-	 * @throws CommonPermissionException
-	 */
-	@Override
 	public Collection<MasterDataVO> findGeneratorsWhichArePointingToSameSubProcess(Integer generationId, Integer targetCaseId) throws CommonPermissionException {
 		Collection<MasterDataVO> result = new ArrayList<MasterDataVO>();
 

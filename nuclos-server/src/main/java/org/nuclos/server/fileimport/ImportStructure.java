@@ -39,6 +39,7 @@ import org.nuclos.server.attribute.valueobject.AttributeCVO;
 import org.nuclos.server.common.AttributeCache;
 import org.nuclos.server.common.MasterDataMetaCache;
 import org.nuclos.server.common.MetaDataServerProvider;
+import org.nuclos.server.common.ServerServiceLocator;
 import org.nuclos.server.genericobject.Modules;
 import org.nuclos.server.masterdata.ejb3.MasterDataFacadeLocal;
 import org.nuclos.server.masterdata.valueobject.MasterDataMetaFieldVO;
@@ -77,7 +78,7 @@ public class ImportStructure {
 
 	public ImportStructure(Integer iImportStructureId) {
 		try {
-			final MasterDataFacadeLocal mdfacade = ServiceLocator.getInstance().getFacade(MasterDataFacadeLocal.class);
+			final MasterDataFacadeLocal mdfacade = ServerServiceLocator.getInstance().getFacade(MasterDataFacadeLocal.class);
 
 			final MasterDataVO mdcvoStructure = mdfacade.get(NuclosEntity.IMPORT.getEntityName(), iImportStructureId);
 

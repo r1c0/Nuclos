@@ -23,6 +23,7 @@ import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.dal.DalCallResult;
 import org.nuclos.common.dal.vo.EntityObjectVO;
 import org.nuclos.common2.ServiceLocator;
+import org.nuclos.server.common.ServerServiceLocator;
 import org.nuclos.server.dal.provider.NucletDalProvider;
 import org.nuclos.server.report.ejb3.SchedulerControlFacadeLocal;
 
@@ -55,9 +56,9 @@ public class JobControllerNucletContent extends DefaultNucletContent {
 	}
 
 	private void unschedule(EntityObjectVO job) {
-		if (job != null && ServiceLocator.getInstance().getFacade(SchedulerControlFacadeLocal.class).isScheduled(job.getField("name", String.class))) {
+		if (job != null && ServerServiceLocator.getInstance().getFacade(SchedulerControlFacadeLocal.class).isScheduled(job.getField("name", String.class))) {
 			try {
-				ServiceLocator.getInstance().getFacade(SchedulerControlFacadeLocal.class).deleteJob(job.getField("name", String.class));
+				ServerServiceLocator.getInstance().getFacade(SchedulerControlFacadeLocal.class).deleteJob(job.getField("name", String.class));
 			}
 			catch (Exception e) {
 				warn(e);

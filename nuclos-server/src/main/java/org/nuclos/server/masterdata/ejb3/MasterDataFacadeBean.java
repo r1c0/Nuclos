@@ -33,6 +33,7 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.annotation.security.RolesAllowed;
 
 import org.apache.commons.lang.NullArgumentException;
@@ -87,6 +88,7 @@ import org.nuclos.server.common.NuclosSystemParameters;
 import org.nuclos.server.common.RuleCache;
 import org.nuclos.server.common.SecurityCache;
 import org.nuclos.server.common.ServerParameterProvider;
+import org.nuclos.server.common.ServerServiceLocator;
 import org.nuclos.server.common.ejb3.LocaleFacadeLocal;
 import org.nuclos.server.common.ejb3.NuclosFacadeBean;
 import org.nuclos.server.customcode.codegenerator.NuclosJavaCompiler;
@@ -102,6 +104,7 @@ import org.nuclos.server.dblayer.query.DbQueryBuilder;
 import org.nuclos.server.dblayer.query.DbSelection;
 import org.nuclos.server.dbtransfer.TransferFacadeLocal;
 import org.nuclos.server.genericobject.ProxyList;
+import org.nuclos.server.genericobject.ejb3.GenericObjectFacadeLocal;
 import org.nuclos.server.genericobject.searchcondition.CollectableSearchExpression;
 import org.nuclos.server.jms.NuclosJMSUtils;
 import org.nuclos.server.masterdata.MasterDataProxyList;
@@ -129,13 +132,12 @@ import org.springframework.transaction.annotation.Transactional;
  * Created by Novabit Informationssysteme GmbH <br>
  * Please visit <a href="http://www.novabit.de">www.novabit.de</a>
  */
-// @Stateless
-// @Local(MasterDataFacadeLocal.class)
-// @Remote(MasterDataFacadeRemote.class)
 @Transactional
-public class MasterDataFacadeBean extends NuclosFacadeBean implements MasterDataFacadeLocal, MasterDataFacadeRemote {
+public class MasterDataFacadeBean extends NuclosFacadeBean implements MasterDataFacadeRemote {
 
 	private static final Logger LOG = Logger.getLogger(MasterDataFacadeBean.class);
+	
+	//
 
 	private MasterDataFacadeHelper helper;
 
@@ -150,12 +152,12 @@ public class MasterDataFacadeBean extends NuclosFacadeBean implements MasterData
 	}
 	
 	@Autowired
-	void setMasterDataFacadeHelper(MasterDataFacadeHelper masterDataFacadeHelper) {
+	final void setMasterDataFacadeHelper(MasterDataFacadeHelper masterDataFacadeHelper) {
 		this.helper = masterDataFacadeHelper;
 	}
 	
 	@Autowired
-	void setServerParameterProvider(ServerParameterProvider serverParameterProvider) {
+	final void setServerParameterProvider(ServerParameterProvider serverParameterProvider) {
 		this.serverParameterProvider = serverParameterProvider;
 	}
 	
@@ -170,6 +172,7 @@ public class MasterDataFacadeBean extends NuclosFacadeBean implements MasterData
 			ParameterProvider.KEY_SERVER_VALIDATES_MASTERDATAVALUES));
 	}
 
+	@PreDestroy
 	public void preDestroy() {
 		this.helper.close();
 	}
@@ -185,7 +188,6 @@ public class MasterDataFacadeBean extends NuclosFacadeBean implements MasterData
 	/**
 	 * @return the masterdata meta information for the all entities.
 	 */
-	@Override
     @RolesAllowed("Login")
 	public Collection<MasterDataMetaVO> getAllMetaData() {
 		return MasterDataMetaCache.getInstance().getAllMetaData();
@@ -200,7 +202,6 @@ public class MasterDataFacadeBean extends NuclosFacadeBean implements MasterData
 	 * @throws NuclosFatalException if there is not metadata for the given
 	 *            entity.
 	 */
-	@Override
     public MasterDataMetaVO getMetaData(String sEntityName) {
 		final MasterDataMetaVO result = MasterDataMetaCache.getInstance().getMetaData(
 			sEntityName);
@@ -220,7 +221,6 @@ public class MasterDataFacadeBean extends NuclosFacadeBean implements MasterData
 	 * @postcondition result != null
 	 * @throws ElisaFatalException if there is not metadata for the given entity.
 	 */
-	@Override
     public MasterDataMetaVO getMetaData(Integer iEntityId) {
 		final MasterDataMetaVO result = MasterDataMetaCache.getInstance().getMasterDataMetaById(
 			iEntityId);
@@ -238,8 +238,6 @@ public class MasterDataFacadeBean extends NuclosFacadeBean implements MasterData
 	 * @return Collection<MasterdataMetaCVO> the masterdata meta information for
 	 *         all entities having foreign keys to the given module.
 	 */
-	// @TODO GOREF
-	@Override
     public Collection<MasterDataMetaVO> getMetaDataByModuleId(Integer iModuleId) {
 		DbQueryBuilder builder = dataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<String> query = builder.createQuery(String.class);
@@ -268,7 +266,6 @@ public class MasterDataFacadeBean extends NuclosFacadeBean implements MasterData
 	 *         expression.
 	 * @todo restrict permissions by entity name
 	 */
-	@Override
     @RolesAllowed("Login")
 	public ProxyList<MasterDataWithDependantsVO> getMasterDataProxyList(
 		String sEntityName, CollectableSearchExpression clctexpr) {
@@ -286,7 +283,6 @@ public class MasterDataFacadeBean extends NuclosFacadeBean implements MasterData
 	 * @postcondition result != null
 	 * @todo restrict permissions by entity name
 	 */
-	@Override
     @RolesAllowed("Login")
 	public TruncatableCollection<MasterDataVO> getMasterData(String sEntityName,
 		CollectableSearchCondition cond, boolean bAll) {
@@ -352,7 +348,6 @@ public class MasterDataFacadeBean extends NuclosFacadeBean implements MasterData
 	 * @param cond condition that the masterdata objects to be found must satisfy
 	 * @return List<Integer> list of masterdata ids
 	 */
-	@Override
     @RolesAllowed("Login")
 	public List<Object> getMasterDataIds(String sEntityName, CollectableSearchExpression cse) {
 		JdbcEntityObjectProcessor eoProcessor = NucletDalProvider.getInstance().getEntityObjectProcessor(sEntityName);
@@ -454,7 +449,6 @@ public class MasterDataFacadeBean extends NuclosFacadeBean implements MasterData
 	 *
 	 * @return List<Integer> list of masterdata ids
 	 */
-	@Override
     @RolesAllowed("Login")
 	public List<Object> getMasterDataIds(String sEntityName) {
 		final MasterDataMetaVO mdmetacvo = this.getMetaData(sEntityName);
@@ -486,7 +480,6 @@ public class MasterDataFacadeBean extends NuclosFacadeBean implements MasterData
 	 * @return the next chunk of the search result for a proxy list.
 	 * @todo restrict permissions by entity name
 	 */
-	@Override
     @RolesAllowed("Login")
 	public List<MasterDataWithDependantsVO> getMasterDataMore(
 		String sEntityName, final List<?> lstIntIds,
@@ -534,7 +527,6 @@ public class MasterDataFacadeBean extends NuclosFacadeBean implements MasterData
 	 *            executing the search and fetching the single rows.
 	 * @throws CommonPermissionException
 	 */
-	@Override
     @RolesAllowed("Login")
 	public TruncatableCollection<MasterDataVO> getAllReports() throws CommonFinderException, CommonPermissionException {
 		this.checkReadAllowed(NuclosEntity.ROLE);
@@ -585,7 +577,6 @@ public class MasterDataFacadeBean extends NuclosFacadeBean implements MasterData
 	 * @precondition oRelatedId != null
 	 * @todo restrict permissions by entity name
 	 */
-	@Override
     @RolesAllowed("Login")
 	public Collection<MasterDataVO> getDependantMasterData(String sEntityName,
 		String sForeignKeyField, Object oRelatedId) {
@@ -595,7 +586,6 @@ public class MasterDataFacadeBean extends NuclosFacadeBean implements MasterData
 	}
 
 
-	@Override
 	@RolesAllowed("Login")
 	public Collection<EntityTreeViewVO> getDependantSubnodes(
 		String sEntityName, String sForeignKeyField, Object oRelatedId) {
@@ -614,7 +604,6 @@ public class MasterDataFacadeBean extends NuclosFacadeBean implements MasterData
 	 * @throws CommonPermissionException
 	 * @throws CommonPermissionException
 	 */
-	@Override
     @RolesAllowed("Login")
 	public MasterDataVO get(String sEntityName, Object oId)
 		throws CommonFinderException, CommonPermissionException {
@@ -648,7 +637,6 @@ public class MasterDataFacadeBean extends NuclosFacadeBean implements MasterData
 	 * @throws CommonPermissionException
 	 * @throws CommonFinderException
 	 */
-	@Override
     @RolesAllowed("Login")
 	public Integer getVersion(String sEntityName, Object oId)
 		throws CommonFinderException, CommonPermissionException {
@@ -667,7 +655,6 @@ public class MasterDataFacadeBean extends NuclosFacadeBean implements MasterData
 	 *               mpDependants.areAllDependantsNew()
 	 * @nucleus.permission checkWriteAllowed(sEntityName)
 	 */
-	@Override
     @RolesAllowed("Login")
 	public MasterDataVO create(String sEntityName, MasterDataVO mdvo,
 		DependantMasterDataMap mpDependants) throws CommonCreateException,
@@ -687,7 +674,7 @@ public class MasterDataFacadeBean extends NuclosFacadeBean implements MasterData
 			}
 
 			if (nuclosEntity == NuclosEntity.RELATIONTYPE) {
-				LocaleFacadeLocal localeFacade = ServiceLocator.getInstance().getFacade(LocaleFacadeLocal.class);
+				LocaleFacadeLocal localeFacade = ServerServiceLocator.getInstance().getFacade(LocaleFacadeLocal.class);
 				LocaleInfo localeInfo = localeFacade.getUserLocale();
 				String sText = mdvo.getField("name", String.class);
 				String sResourceId = localeFacade.setResourceForLocale(null, localeInfo, sText);
@@ -716,7 +703,7 @@ public class MasterDataFacadeBean extends NuclosFacadeBean implements MasterData
 						"Dependants must be new (must have empty ids).");
 				}
 
-				LayoutFacadeLocal layoutFacade = ServiceLocator.getInstance().getFacade(
+				LayoutFacadeLocal layoutFacade = ServerServiceLocator.getInstance().getFacade(
 					LayoutFacadeLocal.class);
 				Map<EntityAndFieldName, String> mpEntityAndParentEntityName = layoutFacade.getSubFormEntityAndParentSubFormEntityNames(
 					sEntityName, iId, false);
@@ -739,7 +726,7 @@ public class MasterDataFacadeBean extends NuclosFacadeBean implements MasterData
 					throw new CommonCreateException(e);
 				}
 			} else if (NuclosEntity.NUCLET.getEntityName().equals(sEntityName)) {
-				ServiceLocator.getInstance().getFacade(TransferFacadeLocal.class).checkCircularReference(
+				ServerServiceLocator.getInstance().getFacade(TransferFacadeLocal.class).checkCircularReference(
 						IdUtils.toLongId(mdvo.getIntId()));
 			}
 
@@ -775,16 +762,12 @@ public class MasterDataFacadeBean extends NuclosFacadeBean implements MasterData
 	 * @precondition sEntityName != null
 	 * @nucleus.permission checkWriteAllowed(sEntityName)
 	 */
-	@Override
     @RolesAllowed("Login")
 	public Object modify(String sEntityName, MasterDataVO mdvo,
 		DependantMasterDataMap mpDependants) throws CommonCreateException,
 		CommonFinderException, CommonRemoveException,
 		CommonStaleVersionException, CommonValidationException,
 		CommonPermissionException, NuclosBusinessRuleException {
-
-
-		// todo: check and clean thrown exception types to necessary minimum
 
 		checkWriteAllowed(sEntityName);
 		getRecordGrantUtils().checkWriteInternal(sEntityName, IdUtils.toLongId(mdvo.getId()));
@@ -814,7 +797,7 @@ public class MasterDataFacadeBean extends NuclosFacadeBean implements MasterData
 			}
 		}
 		if (nuclosEntity == NuclosEntity.RELATIONTYPE) {
-			LocaleFacadeLocal localeFacade = ServiceLocator.getInstance().getFacade(LocaleFacadeLocal.class);
+			LocaleFacadeLocal localeFacade = ServerServiceLocator.getInstance().getFacade(LocaleFacadeLocal.class);
 			LocaleInfo localeInfo = localeFacade.getUserLocale();
 			String sResourceId = mdvo.getField("labelres", String.class);
 			String sText = mdvo.getField("name", String.class);
@@ -848,7 +831,7 @@ public class MasterDataFacadeBean extends NuclosFacadeBean implements MasterData
 				throw new CommonCreateException(e);
 			}
 		} else if (NuclosEntity.NUCLET.getEntityName().equals(sEntityName)) {
-			ServiceLocator.getInstance().getFacade(TransferFacadeLocal.class).checkCircularReference(
+			ServerServiceLocator.getInstance().getFacade(TransferFacadeLocal.class).checkCircularReference(
 					IdUtils.toLongId(mdvo.getIntId()));
 		}
 
@@ -900,7 +883,6 @@ public class MasterDataFacadeBean extends NuclosFacadeBean implements MasterData
 	 * @precondition sEntityName != null
 	 * @nucleus.permission checkDeleteAllowed(sEntityName)
 	 */
-	@Override
     @RolesAllowed("Login")
 	public void remove(String sEntityName, MasterDataVO mdvo,
 		boolean bRemoveDependants) throws CommonFinderException,
@@ -914,7 +896,7 @@ public class MasterDataFacadeBean extends NuclosFacadeBean implements MasterData
 
 		mdvo.remove();
 		if(bRemoveDependants) {
-			LayoutFacadeLocal layoutFacade = ServiceLocator.getInstance().getFacade(LayoutFacadeLocal.class);
+			LayoutFacadeLocal layoutFacade = ServerServiceLocator.getInstance().getFacade(LayoutFacadeLocal.class);
 			Map<EntityAndFieldName, String> mpEntityAndParentEntityName = layoutFacade.getSubFormEntityAndParentSubFormEntityNames(
 				sEntityName, mdvo.getIntId(), false);
 			DependantMasterDataMap mdp = this.readAllDependants(sEntityName, mdvo.getIntId(),
@@ -940,7 +922,7 @@ public class MasterDataFacadeBean extends NuclosFacadeBean implements MasterData
 		helper.removeDependantTaskObjects(mdvo.getIntId()); //explicit delete, because it is not a reference, so no db constraint available
 
 		if (nuclosEntity == NuclosEntity.RELATIONTYPE) {
-			LocaleFacadeLocal localeFacade = ServiceLocator.getInstance().getFacade(LocaleFacadeLocal.class);
+			LocaleFacadeLocal localeFacade = ServerServiceLocator.getInstance().getFacade(LocaleFacadeLocal.class);
 			String sResourceId = mdvo.getField("labelres", String.class);
 			localeFacade.deleteResource(sResourceId);
 		}
@@ -974,7 +956,7 @@ public class MasterDataFacadeBean extends NuclosFacadeBean implements MasterData
 		MasterDataVO mdvo, DependantMasterDataMap mpDependants, boolean after)
 		throws NuclosBusinessRuleException {
 
-		RuleObjectContainerCVO ruleContainer = ServiceLocator.getInstance().getFacade(RuleEngineFacadeLocal.class).fireRule(
+		RuleObjectContainerCVO ruleContainer = ServerServiceLocator.getInstance().getFacade(RuleEngineFacadeLocal.class).fireRule(
 			sEntityName,
 			after ? RuleEventUsageVO.SAVE_AFTER_EVENT : RuleEventUsageVO.SAVE_EVENT,
 			new RuleObjectContainerCVO(event, mdvo, mpDependants != null
@@ -996,7 +978,7 @@ public class MasterDataFacadeBean extends NuclosFacadeBean implements MasterData
 	private void fireDeleteEvent(String sEntityName, MasterDataVO mdvo,
 		DependantMasterDataMap mpDependants, boolean after) throws NuclosBusinessRuleException {
 
-		ServiceLocator.getInstance().getFacade(RuleEngineFacadeLocal.class).fireRule(
+		ServerServiceLocator.getInstance().getFacade(RuleEngineFacadeLocal.class).fireRule(
 			sEntityName,
 			after ? RuleEventUsageVO.DELETE_AFTER_EVENT : RuleEventUsageVO.DELETE_EVENT,
 			new RuleObjectContainerCVO(after ? Event.DELETE_AFTER : Event.DELETE_BEFORE, mdvo, mpDependants != null
@@ -1008,7 +990,6 @@ public class MasterDataFacadeBean extends NuclosFacadeBean implements MasterData
 	 * @param sEntityName
 	 * @return Does the entity with the given name use the rule engine?
 	 */
-	@Override
     @RolesAllowed("Login")
 	public boolean getUsesRuleEngine(String sEntityName) {
 		return this.getUsesRuleEngine(sEntityName, RuleEventUsageVO.USER_EVENT);
@@ -1045,12 +1026,11 @@ public class MasterDataFacadeBean extends NuclosFacadeBean implements MasterData
 	 * @throws CommonBusinessException
 	 * @todo restrict permission - check module id!
 	 */
-	@Override
     @RolesAllowed("ExecuteRulesManually")
 	public void executeBusinessRules(String sEntityName, List<RuleVO> lstRuleVO,
 		MasterDataWithDependantsVO mdvo, boolean bSaveAfterRuleExecution)
 		throws CommonBusinessException {
-		final RuleObjectContainerCVO loccvo = ServiceLocator.getInstance().getFacade(
+		final RuleObjectContainerCVO loccvo = ServerServiceLocator.getInstance().getFacade(
 			RuleEngineFacadeLocal.class).executeBusinessRules(lstRuleVO,
 			new RuleObjectContainerCVO(Event.USER, mdvo, mdvo.getDependants()), false);
 		if(bSaveAfterRuleExecution) {
@@ -1064,10 +1044,9 @@ public class MasterDataFacadeBean extends NuclosFacadeBean implements MasterData
 	 *
 	 * @param entityName
 	 */
-	@Override
     @RolesAllowed("Login")
 	public Set<EntityAndFieldName> getSubFormEntitiesByMasterDataEntity(String entityName) {
-		LayoutFacadeLocal layoutFacade = ServiceLocator.getInstance().getFacade(
+		LayoutFacadeLocal layoutFacade = ServerServiceLocator.getInstance().getFacade(
 			LayoutFacadeLocal.class);
 
 		if(MasterDataMetaCache.getInstance().exist(entityName)
@@ -1087,7 +1066,6 @@ public class MasterDataFacadeBean extends NuclosFacadeBean implements MasterData
 	 * @param sEntityName
 	 * @param mdvo
 	 */
-	@Override
     @RolesAllowed("Login")
 	public DependantMasterDataMap readAllDependants(String sEntityName,
 		Integer iId, DependantMasterDataMap mpDependants, Boolean bRemoved,
@@ -1141,7 +1119,6 @@ public class MasterDataFacadeBean extends NuclosFacadeBean implements MasterData
 	 * @param dependants
 	 * @precondition mpDependants != null
 	 */
-	@Override
     public void modifyDependants(String entityName, Integer id, Boolean removed,
 		DependantMasterDataMap dependants) throws CommonCreateException,
 		CommonFinderException, CommonRemoveException, CommonPermissionException,
@@ -1152,7 +1129,7 @@ public class MasterDataFacadeBean extends NuclosFacadeBean implements MasterData
 			throw new NullArgumentException("dependants");
 		}
 
-		LayoutFacadeLocal layoutFacade = ServiceLocator.getInstance().getFacade(
+		LayoutFacadeLocal layoutFacade = ServerServiceLocator.getInstance().getFacade(
 			LayoutFacadeLocal.class);
 		Map<EntityAndFieldName, String> mpEntityAndParentEntityName = layoutFacade.getSubFormEntityAndParentSubFormEntityNames(
 			entityName, id, false);
@@ -1178,7 +1155,6 @@ public class MasterDataFacadeBean extends NuclosFacadeBean implements MasterData
 	 * order to rebuild the cache after metadata entries in the database were
 	 * changed.
 	 */
-	@Override
     @RolesAllowed("UseManagementConsole")
 	public void revalidateMasterDataMetaCache() {
 		MasterDataMetaCache.getInstance().revalidate();
@@ -1190,7 +1166,6 @@ public class MasterDataFacadeBean extends NuclosFacadeBean implements MasterData
 	 * @param sCachedEntityName name of the cached entity.
 	 * @precondition sCachedEntityName != null
 	 */
-	@Override
     public void notifyClients(String sCachedEntityName) {
 		helper.notifyClients(sCachedEntityName);
 	}
@@ -1203,7 +1178,6 @@ public class MasterDataFacadeBean extends NuclosFacadeBean implements MasterData
 	 *           be considered in the search.
 	 * @return collection of master data value objects
 	 */
-	@Override
     @RolesAllowed("Login")
 	public java.util.List<org.nuclos.common.collect.collectable.CollectableField> getProcessByUsage(
 		Integer iModuleId, boolean bSearchMode) {
@@ -1237,7 +1211,6 @@ public class MasterDataFacadeBean extends NuclosFacadeBean implements MasterData
 	 * @return Collection<MasterDataMetaVO> the masterdata meta information for
 	 *         all entities having foreign keys to the given module.
 	 */
-	@Override
     public List<org.nuclos.common.collect.collectable.CollectableField> getSubEntities(Integer iModuleId) {
 
 		DbQueryBuilder builder = dataBaseHelper.getDbAccess().getQueryBuilder();
@@ -1257,7 +1230,6 @@ public class MasterDataFacadeBean extends NuclosFacadeBean implements MasterData
 		});
 	}
 
-	@Override
     public Map<String, String> getRuleEventsWithLocaleResource() {
 		Map<String, String> mp = CollectionUtils.newHashMap();
 		// TODO_AUTOSYNC: Re-merge with database, add resourceId to metadata
@@ -1281,7 +1253,6 @@ public class MasterDataFacadeBean extends NuclosFacadeBean implements MasterData
 	 * @throws CommonPermissionException
 	 * @todo restrict permissions by entity name / module id
 	 */
-	@Override
     @RolesAllowed("Login")
 	public void protocolDependantChanges(Integer iGenericObjectId,
 		DependantMasterDataMap mpDependants, Set<Integer> stExcluded,
@@ -1351,7 +1322,9 @@ public class MasterDataFacadeBean extends NuclosFacadeBean implements MasterData
 							// track only actually changed values (regardless if they
 							// have been trimmed or not)
 							if(!sOldValue.trim().equals(sNewValue)) {
-								getGenericObjectFacade().createLogbookEntry(
+								final GenericObjectFacadeLocal genericObjectFacade 
+									= ServerServiceLocator.getInstance().getFacade(GenericObjectFacadeLocal.class);
+								genericObjectFacade.createLogbookEntry(
 										iGenericObjectId, null, mdmetavo.getId(),
 										mdmetafieldvo.getId(), iRecordId, sAction,
 										null, null, sOldValue, null, null, sNewValue);
@@ -1374,7 +1347,6 @@ public class MasterDataFacadeBean extends NuclosFacadeBean implements MasterData
 	 * @param sOutputFileName the name of the csv file to which the results are
 	 *           written.
 	 */
-	@Override
 	@Transactional(propagation = Propagation.NOT_SUPPORTED)
 	@RolesAllowed("UseManagementConsole")
 	public void checkMasterDataValues(String sOutputFileName) {
@@ -1430,7 +1402,6 @@ public class MasterDataFacadeBean extends NuclosFacadeBean implements MasterData
 	 * @throws CommonFinderException if no such object was found.
 	 * @throws NuclosBusinessException
 	 */
-	@Override
     public RuleObjectContainerCVO getRuleObjectContainerCVO(Event event, String sEntityName,
 		Integer iObjectId) throws CommonPermissionException,
 		CommonFinderException, NuclosBusinessException {
@@ -1448,7 +1419,6 @@ public class MasterDataFacadeBean extends NuclosFacadeBean implements MasterData
 	 * @throws CommonFinderException
 	 * @throws CommonPermissionException
 	 */
-	@Override
     public MasterDataWithDependantsVO getWithDependants(String sEntityName,
 		Integer iId) throws CommonFinderException, NuclosBusinessException,
 		CommonPermissionException {
@@ -1457,7 +1427,7 @@ public class MasterDataFacadeBean extends NuclosFacadeBean implements MasterData
 		}
 		List<EntityAndFieldName> lsteafn = new ArrayList<EntityAndFieldName>();
 
-		LayoutFacadeLocal layoutFacade = ServiceLocator.getInstance().getFacade(
+		LayoutFacadeLocal layoutFacade = ServerServiceLocator.getInstance().getFacade(
 			LayoutFacadeLocal.class);
 		for(EntityAndFieldName eafn : layoutFacade.getSubFormEntityAndParentSubFormEntityNames(
 			sEntityName, iId, false).keySet()) {
@@ -1476,7 +1446,6 @@ public class MasterDataFacadeBean extends NuclosFacadeBean implements MasterData
 	 * @throws CommonFinderException
 	 * @throws CommonPermissionException
 	 */
-	@Override
     public Collection<MasterDataWithDependantsVO> getWithDependantsByCondition(
 		String sEntityName, CollectableSearchCondition cond) {
 		Collection<MasterDataWithDependantsVO> result = new ArrayList<MasterDataWithDependantsVO>();
@@ -1484,7 +1453,7 @@ public class MasterDataFacadeBean extends NuclosFacadeBean implements MasterData
 		for(MasterDataVO mdVO : getMasterData(sEntityName, cond, true)) {
 			List<EntityAndFieldName> lsteafn = new ArrayList<EntityAndFieldName>();
 
-			LayoutFacadeLocal layoutFacade = ServiceLocator.getInstance().getFacade(LayoutFacadeLocal.class);
+			LayoutFacadeLocal layoutFacade = ServerServiceLocator.getInstance().getFacade(LayoutFacadeLocal.class);
 			for(EntityAndFieldName eafn : layoutFacade.getSubFormEntityAndParentSubFormEntityNames(
 				sEntityName, mdVO.getIntId(), false).keySet()) {
 				lsteafn.add(eafn);
@@ -1497,7 +1466,7 @@ public class MasterDataFacadeBean extends NuclosFacadeBean implements MasterData
 	}
 
 	public DependantMasterDataMap reloadDependants(String entityname, MasterDataVO mdvo, boolean bAll) throws CommonFinderException {
-		LayoutFacadeLocal layoutFacade = ServiceLocator.getInstance().getFacade(LayoutFacadeLocal.class);
+		LayoutFacadeLocal layoutFacade = ServerServiceLocator.getInstance().getFacade(LayoutFacadeLocal.class);
 
 		final Map<EntityAndFieldName, String> collSubEntities = layoutFacade.getSubFormEntityAndParentSubFormEntityNames(entityname, mdvo.getIntId(), false);
 		return getDependants(mdvo.getIntId(), new ArrayList<EntityAndFieldName>(collSubEntities.keySet()));
@@ -1523,7 +1492,6 @@ public class MasterDataFacadeBean extends NuclosFacadeBean implements MasterData
 	 * @return generic object document file content
 	 * @todo restrict permission - check module id!
 	 */
-	@Override
     @RolesAllowed("Login")
 	public byte[] loadContent(Integer iGenericObjectDocumentId, String sFileName, String sPath)
 		throws CommonFinderException {
@@ -1546,7 +1514,6 @@ public class MasterDataFacadeBean extends NuclosFacadeBean implements MasterData
 	 * @param user - the user for which to get subordinated users
 	 * @return List<MasterDataVO> list of masterdata valueobjects
 	 */
-	@Override
 	public List<MasterDataVO> getUserHierarchy(String user) {
 		boolean isSuperUser = SecurityCache.getInstance().isSuperUser(user);
 		if (!isSuperUser) {

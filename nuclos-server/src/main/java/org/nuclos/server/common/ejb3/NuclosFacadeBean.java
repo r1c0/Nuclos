@@ -25,7 +25,6 @@ import org.nuclos.common.collect.collectable.searchcondition.CollectableIdCondit
 import org.nuclos.common.collect.collectable.searchcondition.CollectableSearchCondition;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
 import org.nuclos.common2.CommonLocaleDelegate;
-import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.common2.exception.CommonFinderException;
@@ -34,6 +33,7 @@ import org.nuclos.server.common.MasterDataMetaCache;
 import org.nuclos.server.common.NuclosRemoteContextHolder;
 import org.nuclos.server.common.RecordGrantUtils;
 import org.nuclos.server.common.SecurityCache;
+import org.nuclos.server.common.ServerServiceLocator;
 import org.nuclos.server.dal.processor.nuclet.JdbcEntityObjectProcessor;
 import org.nuclos.server.dal.provider.NucletDalProvider;
 import org.nuclos.server.database.SpringDataBaseHelper;
@@ -42,25 +42,19 @@ import org.nuclos.server.genericobject.Modules;
 import org.nuclos.server.genericobject.ejb3.GenericObjectFacadeLocal;
 import org.nuclos.server.genericobject.ejb3.GenericObjectGroupFacadeLocal;
 import org.nuclos.server.genericobject.searchcondition.CollectableSearchExpression;
-import org.nuclos.server.masterdata.ejb3.MasterDataFacadeLocal;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 
-public abstract class NuclosFacadeBean implements NuclosFacadeLocal {
+public abstract class NuclosFacadeBean {
 	
 	private static final Logger LOG = Logger.getLogger(NuclosFacadeBean.class);
 
-	private GenericObjectFacadeLocal goFacade;
-	private MasterDataFacadeLocal mdFacade;
-	private TransferFacadeLocal transferFacade;
-	private LocaleFacadeLocal localFacade;
-	
-	private boolean local;
-	
 	private NuclosRemoteContextHolder remoteCtx;
 	
 	private RecordGrantUtils grantUtils;
+	
+	// Spring injected
 	
 	protected SpringDataBaseHelper dataBaseHelper;
 	
@@ -72,36 +66,40 @@ public abstract class NuclosFacadeBean implements NuclosFacadeLocal {
 	
 	private NucletDalProvider nucletDalProvider;
 	
+	private LocaleFacadeLocal localFacade;
+	
+	// end Spring injected
+	
 	public NuclosFacadeBean() {
 	}
 	
 	@Autowired
-	void setDataBaseHelper(SpringDataBaseHelper dataBaseHelper) {
+	final void setDataBaseHelper(SpringDataBaseHelper dataBaseHelper) {
 		this.dataBaseHelper = dataBaseHelper;
 	}
 	
 	@Autowired
-	void setSecurityCache(SecurityCache securityCache) {
+	final void setSecurityCache(SecurityCache securityCache) {
 		this.securityCache = securityCache;
 	}
 	
 	@Autowired
-	void setModules(Modules modules) {
+	final void setModules(Modules modules) {
 		this.modules = modules;
 	}
 	
 	@Autowired
-	void setMasterDataMetaCache(MasterDataMetaCache masterDataMetaCache) {
+	final void setMasterDataMetaCache(MasterDataMetaCache masterDataMetaCache) {
 		this.masterDataMetaCache = masterDataMetaCache;
 	}
 	
 	@Autowired
-	void setNucletDalProvider(NucletDalProvider nucletDalProvider) {
+	final void setNucletDalProvider(NucletDalProvider nucletDalProvider) {
 		this.nucletDalProvider = nucletDalProvider;
 	}
 
 	@Autowired
-	void setNuclosRemoteContextHolder(NuclosRemoteContextHolder remoteCtx) {
+	final void setNuclosRemoteContextHolder(NuclosRemoteContextHolder remoteCtx) {
 		this.remoteCtx = remoteCtx;
 	}
 	
@@ -114,20 +112,23 @@ public abstract class NuclosFacadeBean implements NuclosFacadeLocal {
 		return grantUtils;
 	}
 	
+	protected final LocaleFacadeLocal getLocaleFacade() {
+		return localFacade;
+	}
+	
+	protected final NucletDalProvider getNucletDalProvider() {
+		return nucletDalProvider;
+	}
+	
 	/**
 	 * @return the name of the current user. Shortcut for <code>this.getSessionContext().getCallerPrincipal().getName()</code>.
 	 */
-	@Override
 	public final String getCurrentUserName() {
 		return SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
 	}
 
 	public boolean isCalledRemotely() {
 		return remoteCtx.peek();
-	}
-	
-	public void setLocal(boolean bln) {
-		this.local = bln;
 	}
 	
 	/**
@@ -279,9 +280,10 @@ public abstract class NuclosFacadeBean implements NuclosFacadeLocal {
 						this.getCurrentUserName(), modules.getEntityLabelByModuleName(sEntityName)));
 				}
 				else {
-					GenericObjectGroupFacadeLocal facade = ServiceLocator.getInstance().getFacade(GenericObjectGroupFacadeLocal.class);
+					final GenericObjectGroupFacadeLocal genericObjectGroupFacade 
+						= ServerServiceLocator.getInstance().getFacade(GenericObjectGroupFacadeLocal.class);
 					throw new CommonPermissionException(StringUtils.getParameterizedExceptionMessage("nucleus.facade.permission.exception.4",
-						this.getCurrentUserName(), facade.getObjectGroupName(iObjectGroupId)));
+						this.getCurrentUserName(), genericObjectGroupFacade.getObjectGroupName(iObjectGroupId)));
 				}
 			}
 		}
@@ -449,43 +451,16 @@ public abstract class NuclosFacadeBean implements NuclosFacadeLocal {
 
 	private String getSystemIdentifier(Integer iGenericObjectId) throws CommonPermissionException {
 		try {
-			return getGenericObjectFacade().get(iGenericObjectId).getSystemIdentifier();
+			return ServerServiceLocator.getInstance().getFacade(GenericObjectFacadeLocal.class).get(iGenericObjectId).getSystemIdentifier();
 		}
 		catch (CommonFinderException e) {
 			throw new CommonFatalException(e);
 		}
 	}
 
-	protected <T> T getFacade(Class<T> c) {
-		return ServiceLocator.getInstance().getFacade(c);
-	}
-
-	protected GenericObjectFacadeLocal getGenericObjectFacade() {
-		if (goFacade == null)
-			goFacade = ServiceLocator.getInstance().getFacade(GenericObjectFacadeLocal.class);
-   	return goFacade;
-	}
-
-	protected MasterDataFacadeLocal getMasterDataFacade() {
-		return this.getFacade(MasterDataFacadeLocal.class);
-   }
-	
-	protected LocaleFacadeLocal getLocaleFacade() {
-		if (localFacade == null) {
-			localFacade = ServiceLocator.getInstance().getFacade(LocaleFacadeLocal.class);
-		}
-   	return localFacade;
-	}
-
-	private TransferFacadeLocal getTransferFacade() {
-		if (transferFacade == null)
-			transferFacade = ServiceLocator.getInstance().getFacade(TransferFacadeLocal.class);
-		return transferFacade;
-	}
-
 	private void checkFrozenEntities(String... entityName) throws CommonPermissionException {
 		for (String s : entityName)
-			if (getTransferFacade().isFrozenEntity(s)) {
+			if (ServerServiceLocator.getInstance().getFacade(TransferFacadeLocal.class).isFrozenEntity(s)) {
 				throw new CommonPermissionException(StringUtils.getParameterizedExceptionMessage("nucleus.facade.permission.exception.10", s));
 			}
 	}

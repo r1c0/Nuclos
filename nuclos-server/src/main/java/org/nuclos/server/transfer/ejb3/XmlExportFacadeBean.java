@@ -56,11 +56,14 @@ import org.nuclos.server.common.AttributeCache;
 import org.nuclos.server.common.MasterDataMetaCache;
 import org.nuclos.server.common.NuclosSystemParameters;
 import org.nuclos.server.common.ServerParameterProvider;
+import org.nuclos.server.common.ServerServiceLocator;
 import org.nuclos.server.common.ejb3.LocaleFacadeLocal;
 import org.nuclos.server.common.ejb3.NuclosFacadeBean;
 import org.nuclos.server.genericobject.GenericObjectMetaDataCache;
 import org.nuclos.server.genericobject.Modules;
+import org.nuclos.server.genericobject.ejb3.GenericObjectFacadeLocal;
 import org.nuclos.server.genericobject.valueobject.GenericObjectVO;
+import org.nuclos.server.masterdata.ejb3.MasterDataFacadeLocal;
 import org.nuclos.server.masterdata.valueobject.MasterDataMetaFieldVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataMetaVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
@@ -77,21 +80,17 @@ import org.springframework.transaction.annotation.Transactional;
  * <br>Created by Novabit Informationssysteme GmbH
  * <br>Please visit <a href="http://www.novabit.de">www.novabit.de</a>
  */
-// @Stateless
-// @Local(XmlExportFacadeLocal.class)
-// @Remote(XmlExportFacadeRemote.class)
 @Transactional
-public class XmlExportFacadeBean extends NuclosFacadeBean implements XmlExportFacadeLocal, XmlExportFacadeRemote {
+public class XmlExportFacadeBean extends NuclosFacadeBean implements XmlExportFacadeRemote {
 
 	private XmlExportImportProtocolFacadeLocal protocolFacade;
 	
-	private LocaleFacadeLocal locale = ServiceLocator.getInstance().getFacade(LocaleFacadeLocal.class);
+	private LocaleFacadeLocal localeFacade;
 
 	private Integer iProtocolId;
 
 	private Modules modules;
 	private GenericObjectMetaDataCache genericObjectMetaDataCache;
-	private ServerParameterProvider serverParameterProvider;
 	private List<Pair<String, Integer>> exportedIds;
 	private Map<Integer, Map<EntityAndFieldName, String>> mpGoSubFormsWithForeignKeys;
 	private Map<String, Map<EntityAndFieldName, String>> mpMdSubFormsWithForeignKeys;
@@ -101,31 +100,56 @@ public class XmlExportFacadeBean extends NuclosFacadeBean implements XmlExportFa
 	private Integer iProcessedEntities = 0;
 
 	private Integer iActionNumber = 1;
+	
+	private GenericObjectFacadeLocal genericObjectFacade;
+	
+	private MasterDataFacadeLocal masterDataFacade;
+	
+	public XmlExportFacadeBean() {
+	}
 
 	@Autowired
-	void setServerParameterProvider(ServerParameterProvider serverParameterProvider) {
-		this.serverParameterProvider = serverParameterProvider;
-	}
-	
-	@Autowired
-	void setGenericObjectMetaDataCache(GenericObjectMetaDataCache genericObjectMetaDataCache) {
+	final void setGenericObjectMetaDataCache(GenericObjectMetaDataCache genericObjectMetaDataCache) {
 		this.genericObjectMetaDataCache = genericObjectMetaDataCache;
 	}
 	
 	@Autowired
-	void setModules(Modules modules) {
+	final void setModules(Modules modules) {
 		this.modules = modules;
+	}
+	
+	@Autowired
+	final void setLocaleFacade(LocaleFacadeLocal localeFacade) {
+		this.localeFacade = localeFacade;
+	}
+
+	@Autowired
+	final void setGenericObjectFacade(GenericObjectFacadeLocal genericObjectFacade) {
+		this.genericObjectFacade = genericObjectFacade;
+	}
+	
+	private final GenericObjectFacadeLocal getGenericObjectFacade() {
+		return genericObjectFacade;
+	}
+
+	@Autowired
+	final void setMasterDataFacade(MasterDataFacadeLocal masterDataFacade) {
+		this.masterDataFacade = masterDataFacade;
+	}
+	
+	private final MasterDataFacadeLocal getMasterDataFacade() {
+		return masterDataFacade;
 	}
 
 	private XmlExportImportProtocolFacadeLocal getProtocolFacade() {
 		if (protocolFacade == null)
-			protocolFacade = ServiceLocator.getInstance().getFacade(XmlExportImportProtocolFacadeLocal.class);
+			protocolFacade = ServerServiceLocator.getInstance().getFacade(XmlExportImportProtocolFacadeLocal.class);
 		return protocolFacade;
 	}
 	
-	@Override
 	public org.nuclos.common2.File xmlExport(Map<Integer, String> exportEntities, boolean deepexport, String sFileName) 
 			throws CommonFinderException, CommonPermissionException, IOException, CommonCreateException, NuclosBusinessRuleException {
+		
 		return xmlExport(exportEntities, deepexport, true, sFileName);
 	}
 
@@ -143,9 +167,9 @@ public class XmlExportFacadeBean extends NuclosFacadeBean implements XmlExportFa
 	 * @throws Exception
 	 * @jboss.method-attributes read-only = "true"
 	 */
-	@Override
 	public org.nuclos.common2.File xmlExport(Map<Integer, String> exportEntities, boolean deepexport, boolean withDependants, String sFileName) 
 			throws CommonFinderException, CommonPermissionException, IOException, CommonCreateException, NuclosBusinessRuleException {
+		
 		today = new Date();
 		dateFormat = new SimpleDateFormat("dd.MM.yyy HH:mm:ss");
 		iActionNumber = 1;
@@ -326,7 +350,7 @@ public class XmlExportFacadeBean extends NuclosFacadeBean implements XmlExportFa
 			govo = getGenericObjectFacade().get((Integer) entityId);
 		}
 		catch (Exception e) {
-			String sMessage = MessageFormat.format(locale.getResourceById(locale.getUserLocale(), "xmlexport.error.creating.entity"), sEntityName, entityId, e);
+			String sMessage = MessageFormat.format(localeFacade.getResourceById(localeFacade.getUserLocale(), "xmlexport.error.creating.entity"), sEntityName, entityId, e);
 				//"Modul-Entit\u00e4t ["+sEntityName+"] mit der ID ["+entityId+"] konnte nicht exportiert werden. "+e;
 			getProtocolFacade().writeExportImportLogEntry(iProtocolId, XmlExportImportHelper.EXPIMP_MESSAGE_LEVEL_ERROR,
 					XmlExportImportHelper.EXPIMP_ACTION_READ, sMessage, iActionNumber++);
@@ -397,7 +421,7 @@ public class XmlExportFacadeBean extends NuclosFacadeBean implements XmlExportFa
 		}
 		parent.add(entity);
 
-		String sMessage = MessageFormat.format(locale.getResourceById(locale.getUserLocale(), "xmlexport.message.successful"), sEntityName, entityId);  
+		String sMessage = MessageFormat.format(localeFacade.getResourceById(localeFacade.getUserLocale(), "xmlexport.message.successful"), sEntityName, entityId);  
 			//"Module-entity ["+sEntityName+"] with the ID ["+entityId+"] successful exported.";
 		info(sMessage);
 		getProtocolFacade().writeExportImportLogEntry(iProtocolId, XmlExportImportHelper.EXPIMP_MESSAGE_LEVEL_INFO,
@@ -408,7 +432,7 @@ public class XmlExportFacadeBean extends NuclosFacadeBean implements XmlExportFa
 		if (bImportData) {
 			if (!mpGoSubFormsWithForeignKeys.containsKey(govo.getModuleId())) {
 				for (Integer iLayoutId : genericObjectMetaDataCache.getLayoutIdsByModuleId(govo.getModuleId(), false)) {
-					LayoutFacadeLocal layoutFacade = ServiceLocator.getInstance().getFacade(LayoutFacadeLocal.class);
+					LayoutFacadeLocal layoutFacade = ServerServiceLocator.getInstance().getFacade(LayoutFacadeLocal.class);
 					Map<EntityAndFieldName, String> subformtree = layoutFacade.getSubFormEntityAndParentSubFormEntityNamesByLayoutId(iLayoutId);
 					for (EntityAndFieldName eafn : subformtree.keySet()) {
 						String sParentEntity = sEntityName;
@@ -461,7 +485,7 @@ public class XmlExportFacadeBean extends NuclosFacadeBean implements XmlExportFa
 			md = getMasterDataFacade().get(sEntityName, entityId);
 		}
 		catch (Exception e) {
-			String sMessage = MessageFormat.format(locale.getResourceById(locale.getUserLocale(), "xmlexport.error.creating.mdentity"), sEntityName, entityId, e);  
+			String sMessage = MessageFormat.format(localeFacade.getResourceById(localeFacade.getUserLocale(), "xmlexport.error.creating.mdentity"), sEntityName, entityId, e);  
 				//"Master data entity ["+sEntityName+"] with the ID ["+entityId+"] could not be exported. "+e;
 			getProtocolFacade().writeExportImportLogEntry(iProtocolId, XmlExportImportHelper.EXPIMP_MESSAGE_LEVEL_ERROR,
 					XmlExportImportHelper.EXPIMP_ACTION_READ, sMessage, iActionNumber++);
@@ -566,7 +590,7 @@ public class XmlExportFacadeBean extends NuclosFacadeBean implements XmlExportFa
 								sFileName, md.getId(), md.getId());
 					}
 					catch (IOException e) {
-						String sMessage = MessageFormat.format(locale.getResourceById(locale.getUserLocale(), "xmlexport.error.copying.file"), md.getField("filename").toString(), sEntityName, entityId, e); 
+						String sMessage = MessageFormat.format(localeFacade.getResourceById(localeFacade.getUserLocale(), "xmlexport.error.copying.file"), md.getField("filename").toString(), sEntityName, entityId, e); 
 							//"Error copying the file ["+md.getField("filename").toString()+"] of the master data entity ["+sEntityName+"] with the Id ["+entityId+"]";
 						getProtocolFacade().writeExportImportLogEntry(iProtocolId, XmlExportImportHelper.EXPIMP_MESSAGE_LEVEL_ERROR,
 								XmlExportImportHelper.EXPIMP_ACTION_READ, sMessage, iActionNumber++);
@@ -616,7 +640,7 @@ public class XmlExportFacadeBean extends NuclosFacadeBean implements XmlExportFa
 
 		exportedIds.add(new Pair<String, Integer>(sEntityName, (Integer)entityId));
 
-		String sMessage = MessageFormat.format(locale.getResourceById(locale.getUserLocale(), "xmlexport.message.successful.2"), sEntityName, entityId); 
+		String sMessage = MessageFormat.format(localeFacade.getResourceById(localeFacade.getUserLocale(), "xmlexport.message.successful.2"), sEntityName, entityId); 
 			//"Master data entity ["+sEntityName+"] with the ID ["+entityId+"] successful exported.";
 		info(sMessage);
 		getProtocolFacade().writeExportImportLogEntry(iProtocolId, XmlExportImportHelper.EXPIMP_MESSAGE_LEVEL_INFO,
@@ -625,7 +649,7 @@ public class XmlExportFacadeBean extends NuclosFacadeBean implements XmlExportFa
 		// subform 1:n references
 		if (bExportDependants) {
 			if (!mpMdSubFormsWithForeignKeys.containsKey(sEntityName)) {
-				LayoutFacadeLocal layoutFacade = ServiceLocator.getInstance().getFacade(LayoutFacadeLocal.class);
+				LayoutFacadeLocal layoutFacade = ServerServiceLocator.getInstance().getFacade(LayoutFacadeLocal.class);
 				mpMdSubFormsWithForeignKeys.put(sEntityName, layoutFacade.getSubFormEntityAndParentSubFormEntityNames(sEntityName,(Integer)entityId,true));
 			}
 
@@ -672,7 +696,6 @@ public class XmlExportFacadeBean extends NuclosFacadeBean implements XmlExportFa
 	/**
 	 * get the count of the processed exported entities
 	 */
-	@Override
 	public Integer getProcessedEntities() {
 		return this.iProcessedEntities;
 	}

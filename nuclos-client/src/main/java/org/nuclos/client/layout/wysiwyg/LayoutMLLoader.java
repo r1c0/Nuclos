@@ -43,7 +43,6 @@ import org.nuclos.client.common.LocaleDelegate;
 import org.nuclos.client.common.NuclosCollectableEntityProvider;
 import org.nuclos.client.genericobject.GeneratorActions;
 import org.nuclos.client.genericobject.Modules;
-import org.nuclos.client.layout.wysiwyg.WYSIWYGMetaInformation.StringResourceIdPair;
 import org.nuclos.client.layout.wysiwyg.WYSIWYGStringsAndLabels.ERROR_MESSAGES;
 import org.nuclos.client.layout.wysiwyg.WYSIWYGStringsAndLabels.PROPERTY_LABELS;
 import org.nuclos.client.layout.wysiwyg.component.ComponentProcessors;

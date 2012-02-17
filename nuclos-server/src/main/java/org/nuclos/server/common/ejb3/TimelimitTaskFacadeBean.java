@@ -40,9 +40,12 @@ import org.nuclos.common2.exception.CommonValidationException;
 import org.nuclos.server.common.MasterDataMetaCache;
 import org.nuclos.server.common.valueobject.TimelimitTaskVO;
 import org.nuclos.server.dal.DalSupportForGO;
+import org.nuclos.server.genericobject.ejb3.GenericObjectFacadeLocal;
 import org.nuclos.server.genericobject.valueobject.GenericObjectWithDependantsVO;
 import org.nuclos.server.masterdata.MasterDataWrapper;
+import org.nuclos.server.masterdata.ejb3.MasterDataFacadeLocal;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -51,19 +54,40 @@ import org.springframework.transaction.annotation.Transactional;
  * <br>Created by Novabit Informationssysteme GmbH
  * <br>Please visit <a href="http://www.novabit.de">www.novabit.de</a>
  */
-// @Stateless
-// @Local(TimelimitTaskFacadeLocal.class)
-// @Remote(TimelimitTaskFacadeRemote.class)
 @Transactional
 @RolesAllowed("Login")
-public class TimelimitTaskFacadeBean extends NuclosFacadeBean implements TimelimitTaskFacadeLocal, TimelimitTaskFacadeRemote {
+public class TimelimitTaskFacadeBean extends NuclosFacadeBean implements TimelimitTaskFacadeRemote {
+	
+	private GenericObjectFacadeLocal genericObjectFacade;
+	
+	private MasterDataFacadeLocal masterDataFacade;
+	
+	public TimelimitTaskFacadeBean() {
+	}
+
+	@Autowired
+	final void setGenericObjectFacade(GenericObjectFacadeLocal genericObjectFacade) {
+		this.genericObjectFacade = genericObjectFacade;
+	}
+	
+	private final GenericObjectFacadeLocal getGenericObjectFacade() {
+		return genericObjectFacade;
+	}
+
+	@Autowired
+	final void setMasterDataFacade(MasterDataFacadeLocal masterDataFacade) {
+		this.masterDataFacade = masterDataFacade;
+	}
+	
+	private final MasterDataFacadeLocal getMasterDataFacade() {
+		return masterDataFacade;
+	}
 
 	/**
 	 * get all timelimit tasks (or only unfinished tasks)
 	 * @param bOnlyUnfinishedTasks get only unfinished tasks
 	 * @return collection of task value objects
 	 */
-	@Override
 	public Collection<TimelimitTaskVO> getTimelimitTasks(boolean bOnlyUnfinishedTasks) {
 		final Collection<TimelimitTaskVO> result = new HashSet<TimelimitTaskVO>();
 
@@ -92,7 +116,6 @@ public class TimelimitTaskFacadeBean extends NuclosFacadeBean implements Timelim
 	 * create a new TimelimitTask in the database
 	 * @return same task as value object
 	 */
-	@Override
 	public TimelimitTaskVO create(TimelimitTaskVO voTimelimitTask) throws CommonValidationException, NuclosBusinessException {
 
 		//check attribute for validity
@@ -118,7 +141,6 @@ public class TimelimitTaskFacadeBean extends NuclosFacadeBean implements Timelim
 	 * @param voTimelimitTask containing the task data
 	 * @return new task id
 	 */
-	@Override
 	public TimelimitTaskVO modify(TimelimitTaskVO voTimelimitTask) throws CommonFinderException, CommonStaleVersionException, CommonValidationException, NuclosBusinessException {
 
 		//check attribute for validity
@@ -143,7 +165,6 @@ public class TimelimitTaskFacadeBean extends NuclosFacadeBean implements Timelim
 	 * delete TimelimitTask from database
 	 * @param voTimelimitTask containing the task data
 	 */
-	@Override
 	public void remove(TimelimitTaskVO voTimelimitTask) throws CommonFinderException, CommonRemoveException, CommonStaleVersionException, NuclosBusinessException {
 		try {
 			getMasterDataFacade().remove(NuclosEntity.TIMELIMITTASK.getEntityName(), MasterDataWrapper.wrapTimelimitTaskVO(voTimelimitTask), false);

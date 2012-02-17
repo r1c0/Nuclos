@@ -70,9 +70,9 @@ import org.nuclos.server.common.LocaleUtils;
 import org.nuclos.server.common.MasterDataMetaCache;
 import org.nuclos.server.common.MetaDataServerProvider;
 import org.nuclos.server.common.SecurityCache;
+import org.nuclos.server.common.ServerServiceLocator;
 import org.nuclos.server.common.SessionUtils;
 import org.nuclos.server.common.StateCache;
-import org.nuclos.server.common.ejb3.LocaleFacadeLocal;
 import org.nuclos.server.common.ejb3.NuclosFacadeBean;
 import org.nuclos.server.common.valueobject.NuclosValueObject;
 import org.nuclos.server.dal.DalSupportForGO;
@@ -123,12 +123,9 @@ import org.springframework.transaction.annotation.Transactional;
  * <br>Please visit <a href="http://www.novabit.de">www.novabit.de</a>
  * @todo restrict
  */
-// @Stateless
-// @Local(StateFacadeLocal.class)
-// @Remote(StateFacadeRemote.class)
 @Transactional
 @RolesAllowed("Login")
-public class StateFacadeBean extends NuclosFacadeBean implements StateFacadeRemote, StateFacadeLocal {
+public class StateFacadeBean extends NuclosFacadeBean implements StateFacadeRemote {
 	
 	private static final Logger LOG = Logger.getLogger(StateFacadeBean.class);
 
@@ -136,23 +133,39 @@ public class StateFacadeBean extends NuclosFacadeBean implements StateFacadeRemo
 
 	//
 	
-	private LocaleFacadeLocal locale;
-	
 	private SessionUtils utils;
 	
 	private StateCache stateCache;
+	
+	private GenericObjectFacadeLocal genericObjectFacade;
+	
+	private MasterDataFacadeLocal masterDataFacade;
 	
 	public StateFacadeBean() {
 	}
 	
 	@Autowired
-	void setSessionUtils(SessionUtils utils) {
+	final void setSessionUtils(SessionUtils utils) {
 		this.utils = utils;
 	}
 	
 	@Autowired
-	void setStateCache(StateCache stateCache) {
+	final void setStateCache(StateCache stateCache) {
 		this.stateCache = stateCache;
+	}
+
+	@Autowired
+	final void setGenericObjectFacade(GenericObjectFacadeLocal genericObjectFacade) {
+		this.genericObjectFacade = genericObjectFacade;
+	}
+	
+	@Autowired
+	final void setMasterDataFacade(MasterDataFacadeLocal masterDataFacade) {
+		this.masterDataFacade = masterDataFacade;
+	}
+	
+	private final MasterDataFacadeLocal getMasterDataFacade() {
+		return masterDataFacade;
 	}
 
 	/**
@@ -161,7 +174,6 @@ public class StateFacadeBean extends NuclosFacadeBean implements StateFacadeRemo
 	 * @return state graph cvo containing the state graph information for the model with the given id
 	 * @throws CommonPermissionException
 	 */
-	@Override
     public StateGraphVO getStateGraph(Integer iModelId) throws CommonFinderException, CommonPermissionException, NuclosBusinessException {
 		checkReadAllowed(NuclosEntity.STATEMODEL);
 		StateGraphVO result;
@@ -216,8 +228,10 @@ public class StateFacadeBean extends NuclosFacadeBean implements StateFacadeRemo
 	 * @return state model id
 	 * @throws CommonPermissionException
 	 */
-	@Override
-    public Integer setStateGraph(StateGraphVO stategraphcvo, DependantMasterDataMap mpDependants) throws CommonCreateException, CommonFinderException, CommonRemoveException, CommonValidationException, CommonStaleVersionException, CommonPermissionException, NuclosBusinessRuleException {
+    public Integer setStateGraph(StateGraphVO stategraphcvo, DependantMasterDataMap mpDependants) 
+    		throws CommonCreateException, CommonFinderException, CommonRemoveException, CommonValidationException, 
+    		CommonStaleVersionException, CommonPermissionException, NuclosBusinessRuleException {
+    	
 		Integer result;
 
 		// check state graph for validity:
@@ -262,13 +276,6 @@ public class StateFacadeBean extends NuclosFacadeBean implements StateFacadeRemo
 
 		return result;
 	}
-
-	@Override
-	protected LocaleFacadeLocal getLocaleFacade() {
-		if (locale == null)
-			locale = ServiceLocator.getInstance().getFacade(LocaleFacadeLocal.class);
-   	return locale;
-   }
 
 	private Integer createStateGraph(StateGraphVO stategraphvo) throws NuclosBusinessRuleException, CommonPermissionException, CommonCreateException, CommonFinderException {
 		StateModelVO statemodelvo = stategraphvo.getStateModel();
@@ -578,7 +585,7 @@ public class StateFacadeBean extends NuclosFacadeBean implements StateFacadeRemo
 			mpChangedFields.put(NuclosEOField.STATE.getMetaData().getField(), dbStateVO.getStatename());
 		}
 		// not needed/available
-		// ServiceLocator.getInstance().getFacade(AttributeFacadeLocal.class).makeConsistent(NuclosEntity.STATE.getEntityName(), dbStateVO.getId(), mpChangedFields);
+		// ServerServiceLocator.getInstance().getFacade(AttributeFacadeLocal.class).makeConsistent(NuclosEntity.STATE.getEntityName(), dbStateVO.getId(), mpChangedFields);
 
 		dbStateVO.setNumeral(clientStateVO.getNumeral());
 		dbStateVO.setStatename(clientStateVO.getStatename());
@@ -669,8 +676,10 @@ public class StateFacadeBean extends NuclosFacadeBean implements StateFacadeRemo
 	 * @param statemodelvo state model value object
 	 * @throws CommonPermissionException
 	 */
-	@Override
-    public void removeStateGraph(StateModelVO statemodelvo) throws CommonFinderException, CommonRemoveException, CommonStaleVersionException, CommonPermissionException, NuclosBusinessRuleException, NuclosBusinessException {
+    public void removeStateGraph(StateModelVO statemodelvo) 
+    		throws CommonFinderException, CommonRemoveException, CommonStaleVersionException, CommonPermissionException, 
+    		NuclosBusinessRuleException, NuclosBusinessException {
+    	
 		checkDeleteAllowed(NuclosEntity.STATEMODEL);
 		try {
 			StateModelVO dbStateModel = findStateModelById(statemodelvo.getId());
@@ -700,7 +709,6 @@ public class StateFacadeBean extends NuclosFacadeBean implements StateFacadeRemo
 	 * @param usagecriteria
 	 * @return the initial state of the statemodel corresponding to <code>usagecriteria</code>.
 	 */
-	@Override
     public StateVO getInitialState(UsageCriteria usagecriteria) {
 		return stateCache.getState(getInitialStateId(usagecriteria));
 	}
@@ -710,7 +718,6 @@ public class StateFacadeBean extends NuclosFacadeBean implements StateFacadeRemo
 	 * @param iGenericObjectId id of leased object to get initial state for
 	 * @return state id of initial state for given generic object
 	 */
-	@Override
     public StateVO getInitialState(Integer iGenericObjectId) throws NuclosFatalException {
 		UsageCriteria usagecriteria = getRelevantStateUsageCritera(iGenericObjectId);
 		return getInitialState(usagecriteria);
@@ -721,7 +728,6 @@ public class StateFacadeBean extends NuclosFacadeBean implements StateFacadeRemo
 	 * @param usagecriteria
 	 * @return the id of the initial state of the statemodel corresponding to <code>usagecriteria</code>.
 	 */
-	@Override
     @RolesAllowed("Login")
 	public Integer getInitialStateId(UsageCriteria usagecriteria) {
 		return StateModelUsagesCache.getInstance().getStateUsages().getInitialStateId(usagecriteria);
@@ -731,7 +737,6 @@ public class StateFacadeBean extends NuclosFacadeBean implements StateFacadeRemo
 	 * @param usagecriteria
 	 * @return the id of the statemodel corresponding to <code>usagecriteria</code>.
 	 */
-	@Override
     @RolesAllowed("Login")
 	public Integer getStateModelId(UsageCriteria usagecriteria) {
 		return StateModelUsagesCache.getInstance().getStateUsages().getStateModel(usagecriteria);
@@ -741,7 +746,6 @@ public class StateFacadeBean extends NuclosFacadeBean implements StateFacadeRemo
 	 * @param iStateModelId
 	 * @return the id of the statemodel corresponding to <code>usagecriteria</code>.
 	 */
-	@Override
     @RolesAllowed("Login")
 	public Collection<StateVO> getStatesByModel(Integer iStateModelId) {
 		return stateCache.getStatesByModel(iStateModelId);
@@ -751,10 +755,10 @@ public class StateFacadeBean extends NuclosFacadeBean implements StateFacadeRemo
 	 * method to get all state models
 	 * @return collection of state model vo
 	 */
-	@Override
     public Collection<StateModelVO> getStateModels() {
 		Collection<StateModelVO> result = new HashSet<StateModelVO>();
-		Collection<MasterDataVO> mdVOList = ServiceLocator.getInstance().getFacade(MasterDataFacadeLocal.class).getMasterData(NuclosEntity.STATEMODEL.getEntityName(), null, true);
+		Collection<MasterDataVO> mdVOList = ServerServiceLocator.getInstance().getFacade(
+				MasterDataFacadeLocal.class).getMasterData(NuclosEntity.STATEMODEL.getEntityName(), null, true);
 		for (MasterDataVO mdVO : mdVOList) {
 			result.add(MasterDataWrapper.getStateModelVO(mdVO));
 		}
@@ -768,12 +772,11 @@ public class StateFacadeBean extends NuclosFacadeBean implements StateFacadeRemo
 	 * @return set of state history entries
 	 * @nucleus.permission mayRead(module)
 	 */
-	@Override
     @RolesAllowed("Login")
 	public Collection<StateHistoryVO> getStateHistory(Integer iModuleId, Integer iGenericObjectId)
 			throws CommonFinderException, CommonPermissionException {
 
-		if (!getGenericObjectFacade().isGenericObjectInModule(iModuleId, iGenericObjectId)) {
+		if (!genericObjectFacade.isGenericObjectInModule(iModuleId, iGenericObjectId)) {
 			throw new IllegalArgumentException();
 		}
 		checkReadAllowedForModule(iModuleId, iGenericObjectId);
@@ -784,7 +787,7 @@ public class StateFacadeBean extends NuclosFacadeBean implements StateFacadeRemo
 	private UsageCriteria getRelevantStateUsageCritera(Integer iGenericObjectId) {
 		GenericObjectVO govo;
 		try {
-			govo = ServiceLocator.getInstance().getFacade(GenericObjectFacadeLocal.class).get(iGenericObjectId);
+			govo = ServerServiceLocator.getInstance().getFacade(GenericObjectFacadeLocal.class).get(iGenericObjectId);
 		}
 		catch (CommonFinderException ex) {
 			throw new NuclosFatalException(ex);
@@ -801,7 +804,6 @@ public class StateFacadeBean extends NuclosFacadeBean implements StateFacadeRemo
 	 * @param iModuleId id of module to retrieve states for
 	 * @return Collection of all states for the given module
 	 */
-	@Override
     @RolesAllowed("Login")
 	public Collection<StateVO> getStatesByModule(Integer iModuleId) {
 		return stateCache.getStatesByModule(iModuleId);
@@ -814,7 +816,6 @@ public class StateFacadeBean extends NuclosFacadeBean implements StateFacadeRemo
 	 * @return state id of actual state for given leased object
 	 * @nucleus.permission mayRead(module)
 	 */
-	@Override
     @RolesAllowed("Login")
 	public StateVO getCurrentState(Integer iModuleId, Integer iGenericObjectId) throws CommonFinderException {
 
@@ -831,7 +832,6 @@ public class StateFacadeBean extends NuclosFacadeBean implements StateFacadeRemo
 	 * @return set of possible subsequent states for given leased object
 	 * @nucleus.permission mayRead(module)
 	 */
-	@Override
     @RolesAllowed("Login")
 	public Collection<StateVO> getSubsequentStates(Integer iModuleId, Integer iGenericObjectId, boolean bGetAutomaticStatesAlso)
 			throws NuclosNoAdequateStatemodelException, CommonFinderException {
@@ -864,7 +864,6 @@ public class StateFacadeBean extends NuclosFacadeBean implements StateFacadeRemo
 	 * @param iGenericObjectId leased object id to change status for
 	 * @param iNumeral legal subsequent status numeral to set for given leased object
 	 */
-	@Override
     public void changeStateByRule(Integer iModuleId, Integer iGenericObjectId, int iNumeral)
 			throws NuclosNoAdequateStatemodelException, NuclosSubsequentStateNotLegalException,
 			NuclosBusinessException, CommonFinderException, CommonPermissionException, CommonCreateException {
@@ -878,7 +877,6 @@ public class StateFacadeBean extends NuclosFacadeBean implements StateFacadeRemo
 	 * @param iGenericObjectId leased object id to change status for
 	 * @param iTargetStateId legal subsequent status id to set for given leased object
 	 */
-	@Override
     public void changeStateByRule(Integer iModuleId, Integer iGenericObjectId, Integer iTargetStateId)
 			throws NuclosNoAdequateStatemodelException, NuclosSubsequentStateNotLegalException,
 			NuclosBusinessException, CommonFinderException, CommonPermissionException, CommonCreateException {
@@ -893,7 +891,6 @@ public class StateFacadeBean extends NuclosFacadeBean implements StateFacadeRemo
 	 * @param iTargetStateId legal subsequent status id to set for given leased object
 	 * @nucleus.permission mayWrite(module)
 	 */
-	@Override
     @RolesAllowed("Login")
 	public void changeStateByUser(Integer iModuleId, Integer iGenericObjectId, Integer iTargetStateId)
 			throws NuclosBusinessException, CommonPermissionException, CommonPermissionException, CommonCreateException,
@@ -910,7 +907,6 @@ public class StateFacadeBean extends NuclosFacadeBean implements StateFacadeRemo
 	 * @param iTargetStateId legal subsequent status id to set for given object
 	 * @nucleus.permission mayWrite(module)
 	 */
-	@Override
     @RolesAllowed("Login")
 	public void changeStateAndModifyByUser(Integer iModuleId,
 		GenericObjectWithDependantsVO gowdvo, Integer iTargetStateId)
@@ -919,7 +915,7 @@ public class StateFacadeBean extends NuclosFacadeBean implements StateFacadeRemo
 		CommonStaleVersionException, CommonValidationException, CommonFatalException {
 
 		checkWriteAllowedForModule(iModuleId, gowdvo.getId());
-		getGenericObjectFacade().modify(iModuleId, gowdvo);
+		genericObjectFacade.modify(iModuleId, gowdvo);
 		changeState(iModuleId, gowdvo.getId(), iTargetStateId, false);
 	}
 
@@ -954,7 +950,7 @@ public class StateFacadeBean extends NuclosFacadeBean implements StateFacadeRemo
 		// --- create RuleEngineTransitions ---
 		Collection<RuleEngineTransitionVO> dbRules;
 		try {
-			dbRules = ServiceLocator.getInstance().getFacade(RuleEngineFacadeLocal.class).getAllRuleTransitionsForTransitionId(vo.getId());
+			dbRules = ServerServiceLocator.getInstance().getFacade(RuleEngineFacadeLocal.class).getAllRuleTransitionsForTransitionId(vo.getId());
 		}
 		catch(CommonPermissionException e) {
 			throw new CommonFatalException(e);
@@ -1040,7 +1036,6 @@ public class StateFacadeBean extends NuclosFacadeBean implements StateFacadeRemo
 	/**
 	 * returns a StateTransitionVO for the given transitionId
 	 */
-	@Override
     public StateTransitionVO findStateTransitionById(Integer transitionId)
 	{
 		CollectableComparison cond = SearchConditionUtils.newMDComparison(
@@ -1052,7 +1047,6 @@ public class StateFacadeBean extends NuclosFacadeBean implements StateFacadeRemo
 	/**
 	 * returns a StateTransitionVO for the given sourceStateId
 	 */
-	@Override
     public Collection<StateTransitionVO> findStateTransitionBySourceState(Integer sourceStateId)
 	{
 		CollectableComparison cond = SearchConditionUtils.newMDReferenceComparison(
@@ -1064,7 +1058,6 @@ public class StateFacadeBean extends NuclosFacadeBean implements StateFacadeRemo
 	/**
 	 * returns a StateTransitionVO for the given sourceStateId without automatic
 	 */
-	@Override
     public Collection<StateTransitionVO> findStateTransitionBySourceStateNonAutomatic(Integer sourceStateId)
 	{
 		CollectableComparison condSource = SearchConditionUtils.newMDReferenceComparison(
@@ -1078,7 +1071,6 @@ public class StateFacadeBean extends NuclosFacadeBean implements StateFacadeRemo
 	/**
 	 * returns a StateTransitionVO for the given targetStateId without a sourceStateId
 	 */
-	@Override
     public StateTransitionVO findStateTransitionByNullAndTargetState(Integer targetStateId)
 	{
 		CollectableEntity entity = new CollectableMasterDataEntity(MasterDataMetaCache.getInstance().getMetaData(NuclosEntity.STATETRANSITION));
@@ -1099,7 +1091,6 @@ public class StateFacadeBean extends NuclosFacadeBean implements StateFacadeRemo
 	/**
 	 * returns a StateTransitionVO for the given sourceStateId and targetStateId
 	 */
-	@Override
     public StateTransitionVO findStateTransitionBySourceAndTargetState(Integer sourceStateId, Integer targetStateId)
 	{
 		CollectableComparison condSource = SearchConditionUtils.newMDReferenceComparison(
@@ -1147,7 +1138,6 @@ public class StateFacadeBean extends NuclosFacadeBean implements StateFacadeRemo
 	/**
 	 * returns the StateModelVO for the given Id
 	 */
-	@Override
     public StateModelVO findStateModelById(Integer id) throws CommonPermissionException, CommonFinderException
 	{
 		return MasterDataWrapper.getStateModelVO(getMasterDataFacade().get(NuclosEntity.STATEMODEL.getEntityName(), id));
@@ -1156,7 +1146,6 @@ public class StateFacadeBean extends NuclosFacadeBean implements StateFacadeRemo
 	/**
 	 * returns the StateModelVO for the given statemodel-name
 	 */
-	@Override
     public StateModelVO findStateModelByName(String name) throws CommonPermissionException, CommonFinderException
 	{
 		CollectableComparison cond = SearchConditionUtils.newMDComparison(
@@ -1172,7 +1161,6 @@ public class StateFacadeBean extends NuclosFacadeBean implements StateFacadeRemo
 	/**
 	 * returns a Collection of StateModelVO which contains rule-transitions with the given ruleId
 	 */
-	@Override
     public Collection<StateModelVO> findStateModelsByRuleId(Integer ruleId) throws CommonPermissionException
 	{
 		DbQueryBuilder builder = dataBaseHelper.getDbAccess().getQueryBuilder();
@@ -1200,7 +1188,6 @@ public class StateFacadeBean extends NuclosFacadeBean implements StateFacadeRemo
 	/**
 	 * returns a Collection of StateHistories for the given genericObjectId
 	 */
-	@Override
     public Collection<StateHistoryVO> findStateHistoryByGenericObjectId(Integer genericObjectId)
 	{
 		List<StateHistoryVO> histories = new ArrayList<StateHistoryVO>();
@@ -1244,7 +1231,7 @@ public class StateFacadeBean extends NuclosFacadeBean implements StateFacadeRemo
 
 		// copy status name to leased object attributes:
 		try {
-			GenericObjectFacadeLocal goFacade = ServiceLocator.getInstance().getFacade(GenericObjectFacadeLocal.class);
+			GenericObjectFacadeLocal goFacade = ServerServiceLocator.getInstance().getFacade(GenericObjectFacadeLocal.class);
 			goFacade.setAttribute(iGenericObjectId, NuclosEOField.STATE.getMetaData().getField(), stateVO.getId(), stateVO.getStatename());
 			goFacade.setAttribute(iGenericObjectId, NuclosEOField.STATENUMBER.getMetaData().getField(), stateVO.getId(), stateVO.getNumeral());
 			//goFacade.setAttribute(iGenericObjectId, NuclosEOField.STATEICON.getMetaData().getField(), stateVO.getId(), stateVO.getIcon());
@@ -1254,7 +1241,7 @@ public class StateFacadeBean extends NuclosFacadeBean implements StateFacadeRemo
 		}
 
 		// handle instance "state change"
-		ServiceLocator.getInstance().getFacade(InstanceFacadeLocal.class).notifyInstanceAboutStateChange(iGenericObjectId, iTargetStateId);
+		ServerServiceLocator.getInstance().getFacade(InstanceFacadeLocal.class).notifyInstanceAboutStateChange(iGenericObjectId, iTargetStateId);
 
 		// fire rules attached to the executed state transition:
 		fireStateChangedEvent(iGenericObjectId, iSourceStateId, iTargetStateId);
@@ -1265,7 +1252,6 @@ public class StateFacadeBean extends NuclosFacadeBean implements StateFacadeRemo
 	 * @param eoVO
 	 * @throws NuclosBusinessException
 	 */
-	@Override
 	public void checkMandatory(EntityObjectVO eoVO) throws NuclosBusinessException {
 		if (eoVO.getFieldIds().containsKey(NuclosEOField.STATE.getName())) {
 			this.checkMandatory(eoVO, stateCache.getState(eoVO.getFieldId(NuclosEOField.STATE.getName()).intValue()));
@@ -1278,7 +1264,6 @@ public class StateFacadeBean extends NuclosFacadeBean implements StateFacadeRemo
 	 * @param state
 	 * @throws NuclosBusinessException
 	 */
-	@Override
 	public void checkMandatory(EntityObjectVO eoVO, StateVO state) throws NuclosBusinessException {
 		if (!state.getMandatoryFields().isEmpty()) {
 			final MetaDataProvider metaProvider = MetaDataServerProvider.getInstance();
@@ -1353,10 +1338,10 @@ public class StateFacadeBean extends NuclosFacadeBean implements StateFacadeRemo
 	private void fireStateChangedEvent(Integer iGenericObjectId, Integer iSourceStateId, Integer iTargetStateId)
 			throws NuclosBusinessRuleException {
 
-		GenericObjectFacadeLocal goFacade = ServiceLocator.getInstance().getFacade(GenericObjectFacadeLocal.class);
+		GenericObjectFacadeLocal goFacade = ServerServiceLocator.getInstance().getFacade(GenericObjectFacadeLocal.class);
 
 		try {
-			RuleEngineFacadeLocal facade = ServiceLocator.getInstance().getFacade(RuleEngineFacadeLocal.class);
+			RuleEngineFacadeLocal facade = ServerServiceLocator.getInstance().getFacade(RuleEngineFacadeLocal.class);
 
 			final StateVO targetState = iTargetStateId==null? null: stateCache.getState(iTargetStateId);
 			final Integer iTargetStateNum = targetState==null? null: targetState.getNumeral();
@@ -1451,7 +1436,6 @@ public class StateFacadeBean extends NuclosFacadeBean implements StateFacadeRemo
       return permissions;
 	}
 
-	@Override
 	public Set<MandatoryFieldVO> findMandatoryFieldsByStateId(Integer stateId) {
 		Set<MandatoryFieldVO> mandatory = new HashSet<MandatoryFieldVO>();
 
@@ -1465,7 +1449,6 @@ public class StateFacadeBean extends NuclosFacadeBean implements StateFacadeRemo
       return mandatory;
 	}
 
-	@Override
 	public Set<MandatoryColumnVO> findMandatoryColumnsByStateId(Integer stateId) {
 		Set<MandatoryColumnVO> mandatory = new HashSet<MandatoryColumnVO>();
 
@@ -1479,7 +1462,6 @@ public class StateFacadeBean extends NuclosFacadeBean implements StateFacadeRemo
       return mandatory;
 	}
 
-	@Override
     public void invalidateCache() {
 		stateCache.invalidate();
 		StateModelUsagesCache.getInstance().revalidate();
@@ -1487,17 +1469,14 @@ public class StateFacadeBean extends NuclosFacadeBean implements StateFacadeRemo
 		NuclosJMSUtils.sendMessage("invalidatecaches", JMSConstants.TOPICNAME_STATEMODEL);
 	}
 
-	@Override
     public String getResourceSIdForName(Integer iStateId) {
 		return LocaleUtils.getResourceIdForField(STATE_TABLE, iStateId, LocaleUtils.FIELD_LABEL);
 	}
 
-	@Override
     public String getResourceSIdForDescription(Integer iStateId) {
 		return LocaleUtils.getResourceIdForField(STATE_TABLE, iStateId, LocaleUtils.FIELD_DESCRIPTION);
 	}
 
-	@Override
 	public Statemodel getStatemodel(UsageCriteria usageCriteria) {
 		Statemodel res = new Statemodel(usageCriteria);
 		res.setAllStates(stateCache.getStatesByModule(usageCriteria.getModuleId()));
@@ -1511,7 +1490,6 @@ public class StateFacadeBean extends NuclosFacadeBean implements StateFacadeRemo
 		return res;
 	}
 
-	@Override
 	public StatemodelClosure getStatemodelClosureForModule(Integer moduleId) {
 		StatemodelClosure res = new StatemodelClosure(moduleId);
 		StateModelUsages stateUsages = StateModelUsagesCache.getInstance().getStateUsages();

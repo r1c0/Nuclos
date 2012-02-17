@@ -26,6 +26,7 @@ import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.common2.exception.CommonFinderException;
 import org.nuclos.server.common.MasterDataMetaCache;
+import org.nuclos.server.common.ServerServiceLocator;
 import org.nuclos.server.common.UpdateJobs;
 import org.nuclos.server.database.SpringDataBaseHelper;
 import org.nuclos.server.dblayer.DbException;
@@ -76,7 +77,7 @@ public class AssignSubformRightToRole implements UpdateJobs {
 		LOG.debug("START executing AssignSubformRightToRole");
 
 		try {
-			StateFacadeLocal stateFacade = ServiceLocator.getInstance().getFacade(StateFacadeLocal.class);
+			StateFacadeLocal stateFacade = ServerServiceLocator.getInstance().getFacade(StateFacadeLocal.class);
 
 			for (Iterator<StateModelVO> iter = stateFacade.getStateModels().iterator(); iter.hasNext();) {
 				StateModelVO statemodelvo = iter.next();

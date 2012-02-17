@@ -81,6 +81,7 @@ import org.nuclos.server.common.AttributeCache;
 import org.nuclos.server.common.MasterDataMetaCache;
 import org.nuclos.server.common.NuclosSystemParameters;
 import org.nuclos.server.common.ServerParameterProvider;
+import org.nuclos.server.common.ServerServiceLocator;
 import org.nuclos.server.common.ejb3.LocaleFacadeLocal;
 import org.nuclos.server.common.ejb3.NuclosFacadeBean;
 import org.nuclos.server.common.valueobject.NuclosValueObject;
@@ -91,10 +92,12 @@ import org.nuclos.server.dblayer.query.DbQuery;
 import org.nuclos.server.dblayer.query.DbQueryBuilder;
 import org.nuclos.server.genericobject.GenericObjectMetaDataCache;
 import org.nuclos.server.genericobject.Modules;
+import org.nuclos.server.genericobject.ejb3.GenericObjectFacadeLocal;
 import org.nuclos.server.genericobject.valueobject.CanonicalAttributeFormat;
 import org.nuclos.server.genericobject.valueobject.GenericObjectDocumentFile;
 import org.nuclos.server.genericobject.valueobject.GenericObjectVO;
 import org.nuclos.server.genericobject.valueobject.GenericObjectWithDependantsVO;
+import org.nuclos.server.masterdata.ejb3.MasterDataFacadeLocal;
 import org.nuclos.server.masterdata.valueobject.DependantMasterDataMap;
 import org.nuclos.server.masterdata.valueobject.MasterDataMetaFieldVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataMetaVO;
@@ -106,6 +109,7 @@ import org.nuclos.server.statemodel.ejb3.StateFacadeLocal;
 import org.nuclos.server.statemodel.valueobject.StateModelUsagesCache;
 import org.nuclos.server.statemodel.valueobject.StateVO;
 import org.nuclos.server.transfer.XmlExportImportHelper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -114,11 +118,8 @@ import org.springframework.transaction.annotation.Transactional;
  * <br>Created by Novabit Informationssysteme GmbH
  * <br>Please visit <a href="http://www.novabit.de">www.novabit.de</a>
  */
-// @Stateless
-// @Local(XmlImportFacadeLocal.class)
-// @Remote(XmlImportFacadeRemote.class)
 @Transactional
-public class XmlImportFacadeBean extends NuclosFacadeBean implements XmlImportFacadeLocal, XmlImportFacadeRemote {
+public class XmlImportFacadeBean extends NuclosFacadeBean implements XmlImportFacadeRemote {
 
 	private XmlExportImportProtocolFacadeLocal protocolFacade;
 
@@ -129,7 +130,7 @@ public class XmlImportFacadeBean extends NuclosFacadeBean implements XmlImportFa
 	private AttributeCache attributeCache = AttributeCache.getInstance();
 	private ServerParameterProvider serverParameterProvider = ServerParameterProvider.getInstance();
 	
-	private LocaleFacadeLocal locale = ServiceLocator.getInstance().getFacade(LocaleFacadeLocal.class);
+	private LocaleFacadeLocal localeFacade;
 
 	private Date today;
 
@@ -145,6 +146,36 @@ public class XmlImportFacadeBean extends NuclosFacadeBean implements XmlImportFa
 
 	private Integer iActionNumber = 1;
 
+	private GenericObjectFacadeLocal genericObjectFacade;
+	
+	private MasterDataFacadeLocal masterDataFacade;
+	
+	public XmlImportFacadeBean() {
+	}
+	
+	@Autowired
+	final void setLocaleFacade(LocaleFacadeLocal localeFacade) {
+		this.localeFacade = localeFacade;
+	}
+
+	@Autowired
+	final void setGenericObjectFacade(GenericObjectFacadeLocal genericObjectFacade) {
+		this.genericObjectFacade = genericObjectFacade;
+	}
+	
+	private final GenericObjectFacadeLocal getGenericObjectFacade() {
+		return genericObjectFacade;
+	}
+	
+	@Autowired
+	final void setMasterDataFacade(MasterDataFacadeLocal masterDataFacade) {
+		this.masterDataFacade = masterDataFacade;
+	}
+	
+	private final MasterDataFacadeLocal getMasterDataFacade() {
+		return masterDataFacade;
+	}
+
 	@PostConstruct
 	public void postConstruct() {
 		modules = Modules.getInstance();
@@ -155,7 +186,7 @@ public class XmlImportFacadeBean extends NuclosFacadeBean implements XmlImportFa
 
 	private XmlExportImportProtocolFacadeLocal getProtocolFacade() {
 		if (protocolFacade == null)
-			protocolFacade = ServiceLocator.getInstance().getFacade(XmlExportImportProtocolFacadeLocal.class);
+			protocolFacade = ServerServiceLocator.getInstance().getFacade(XmlExportImportProtocolFacadeLocal.class);
 		return protocolFacade;
 	}
 
@@ -172,9 +203,9 @@ public class XmlImportFacadeBean extends NuclosFacadeBean implements XmlImportFa
 	 * @throws ElisaBusinessException
 	 * @jboss.method-attributes read-only = "true"
 	 */
-	@Override
 	public void xmlImport(String sEntityName, org.nuclos.common2.File importFile) 
 			throws IOException, DocumentException, CommonCreateException, CommonPermissionException, NuclosBusinessException, CommonFinderException {
+		
 		today = new Date();
 		dateFormat = new SimpleDateFormat("dd.MM.yy HH:mm:ss");
 		iActionNumber = 1;
@@ -226,7 +257,7 @@ public class XmlImportFacadeBean extends NuclosFacadeBean implements XmlImportFa
 			String sVersionImport = ApplicationProperties.getInstance().getNuclosVersion().getVersionNumber();
 
 			if (!sVersionImport.equals(sVersionExport)) {
-				String sMessage = MessageFormat.format(locale.getResourceById(locale.getUserLocale(), "xmlimport.error.incompatible.app.version"), sVersionExport, sVersionImport);
+				String sMessage = MessageFormat.format(localeFacade.getResourceById(localeFacade.getUserLocale(), "xmlimport.error.incompatible.app.version"), sVersionExport, sVersionImport);
 					//"Die zu importierenden Daten stammen aus einer Applikation mit der Versionsnummer ["+sVersionExport+"]\n" +
 				//"Diese Versionsnummer stimmt nicht mit der Version ["+sVersionImport+"] der aktuellen Applikation \u00fcberein.";
 
@@ -240,7 +271,7 @@ public class XmlImportFacadeBean extends NuclosFacadeBean implements XmlImportFa
 			String sEntityNameExport = root.attribute("rootentity").getValue();
 
 			if (!sEntityNameExport.equals(sEntityName)) {
-				String sMessage = MessageFormat.format(locale.getResourceById(locale.getUserLocale(), "xmlimport.error.incompatible.entity"), sEntityNameExport, sEntityName);
+				String sMessage = MessageFormat.format(localeFacade.getResourceById(localeFacade.getUserLocale(), "xmlimport.error.incompatible.entity"), sEntityNameExport, sEntityName);
 					//"Die zu importierenden Daten stammen aus der Entit\u00e4t ["+sEntityNameExport+"]\n" +
 				//"Diese Entit\u00e4t stimmt nicht mit der aktuell ausgew\u00e4hlten Entit\u00e4t ["+sEntityName+"] \u00fcberein.";
 
@@ -409,21 +440,21 @@ public class XmlImportFacadeBean extends NuclosFacadeBean implements XmlImportFa
 //							" der Entit\u00e4t "+element.attributeValue("name")+" mit der Id ["+element.attribute("id").getValue()+"]";
 							getProtocolFacade().writeExportImportLogEntry(iProtocolId, XmlExportImportHelper.EXPIMP_MESSAGE_LEVEL_ERROR,
 								XmlExportImportHelper.EXPIMP_ACTION_INSERT, 
-								MessageFormat.format(locale.getResourceById(locale.getUserLocale(), "xmlimport.error.missing.reference.1"), elem.attribute("name").getText(), element.attributeValue("name"), element.attribute("id").getValue()), iActionNumber++);
+								MessageFormat.format(localeFacade.getResourceById(localeFacade.getUserLocale(), "xmlimport.error.missing.reference.1"), elem.attribute("name").getText(), element.attributeValue("name"), element.attribute("id").getValue()), iActionNumber++);
 
 							if (NuclosEntity.REPORT.checkEntityName(sExternalEntity)) {
 								sMessage = StringUtils.getParameterizedExceptionMessage("xmlimport.error.missing.reference.2", elem.attribute("name").getText(), element.attributeValue("name"), element.attribute("id").getValue());
 									//" Sie besitzen kein Recht auf den referenzierten Report bzw. Formular.";
 								getProtocolFacade().writeExportImportLogEntry(iProtocolId, XmlExportImportHelper.EXPIMP_MESSAGE_LEVEL_ERROR,
 									XmlExportImportHelper.EXPIMP_ACTION_INSERT, 
-									MessageFormat.format(locale.getResourceById(locale.getUserLocale(), "xmlimport.error.missing.reference.2"), elem.attribute("name").getText(), element.attributeValue("name"), element.attribute("id").getValue()), iActionNumber++);
+									MessageFormat.format(localeFacade.getResourceById(localeFacade.getUserLocale(), "xmlimport.error.missing.reference.2"), elem.attribute("name").getText(), element.attributeValue("name"), element.attribute("id").getValue()), iActionNumber++);
 							}
 							else {
 								sMessage = StringUtils.getParameterizedExceptionMessage("xmlimport.error.missing.reference.3", elem.attribute("name").getText(), element.attributeValue("name"), element.attribute("id").getValue());
 									//" Evtl. wurde die Referenzierte Entit\u00e4t zuvor nicht exportiert und konnte deshalb nicht gefunden werden.";
 								getProtocolFacade().writeExportImportLogEntry(iProtocolId, XmlExportImportHelper.EXPIMP_MESSAGE_LEVEL_ERROR,
 									XmlExportImportHelper.EXPIMP_ACTION_INSERT, 
-									MessageFormat.format(locale.getResourceById(locale.getUserLocale(), "xmlimport.error.missing.reference.3"), elem.attribute("name").getText(), element.attributeValue("name"), element.attribute("id").getValue()), iActionNumber++);
+									MessageFormat.format(localeFacade.getResourceById(localeFacade.getUserLocale(), "xmlimport.error.missing.reference.3"), elem.attribute("name").getText(), element.attributeValue("name"), element.attribute("id").getValue()), iActionNumber++);
 							}
 							
 							
@@ -534,7 +565,7 @@ public class XmlImportFacadeBean extends NuclosFacadeBean implements XmlImportFa
 				if (!mpGoSubFormsWithForeignKeys.containsKey(govo.getModuleId())) {
 					List<Map<EntityAndFieldName, String>> lseafn = new ArrayList<Map<EntityAndFieldName, String>>();
 					for (Integer iLayoutId : genericObjectMetaDataCache.getLayoutIdsByModuleId(govo.getModuleId(), false)) {
-						LayoutFacadeLocal layoutFacade = ServiceLocator.getInstance().getFacade(LayoutFacadeLocal.class);
+						LayoutFacadeLocal layoutFacade = ServerServiceLocator.getInstance().getFacade(LayoutFacadeLocal.class);
 						Map<EntityAndFieldName, String> subformtree = layoutFacade.getSubFormEntityAndParentSubFormEntityNamesByLayoutId(iLayoutId);
 						Map<EntityAndFieldName, String> subformtree_with_fkeys = new HashMap<EntityAndFieldName, String>();
 						for (EntityAndFieldName eafn : subformtree.keySet()) {
@@ -570,11 +601,11 @@ public class XmlImportFacadeBean extends NuclosFacadeBean implements XmlImportFa
 						sMessage = StringUtils.getParameterizedExceptionMessage("xmlimport.error.module.entity.2", element.attribute("name").getValue(), existingGO.getId());
 							//"konnte nicht im Zielsystem ermittelt werden.";
 						getProtocolFacade().writeExportImportLogEntry(iProtocolId, XmlExportImportHelper.EXPIMP_MESSAGE_LEVEL_ERROR,
-								sAction, MessageFormat.format(locale.getResourceById(locale.getUserLocale(), "xmlimport.error.module.entity.2"), element.attribute("name").getValue(), existingGO.getId()), iActionNumber++);
+								sAction, MessageFormat.format(localeFacade.getResourceById(localeFacade.getUserLocale(), "xmlimport.error.module.entity.2"), element.attribute("name").getValue(), existingGO.getId()), iActionNumber++);
 						throw new NuclosFatalException(sMessage);
 					}
 					else {
-						sMessage = MessageFormat.format(locale.getResourceById(locale.getUserLocale(), "xmlimport.error.module.entity.3"), element.attribute("name").getValue(), existingGO.getId()); 
+						sMessage = MessageFormat.format(localeFacade.getResourceById(localeFacade.getUserLocale(), "xmlimport.error.module.entity.3"), element.attribute("name").getValue(), existingGO.getId()); 
 							//"erfolgreich ge\u00e4ndert.";
 						info(sMessage);
 						getProtocolFacade().writeExportImportLogEntry(iProtocolId, XmlExportImportHelper.EXPIMP_MESSAGE_LEVEL_INFO,
@@ -583,7 +614,7 @@ public class XmlImportFacadeBean extends NuclosFacadeBean implements XmlImportFa
 				}
 				else {
 					sAction = XmlExportImportHelper.EXPIMP_ACTION_READ;
-					sMessage = MessageFormat.format(locale.getResourceById(locale.getUserLocale(), "xmlimport.error.module.entity.4"), element.attribute("name").getValue(), existingGO.getId()); 
+					sMessage = MessageFormat.format(localeFacade.getResourceById(localeFacade.getUserLocale(), "xmlimport.error.module.entity.4"), element.attribute("name").getValue(), existingGO.getId()); 
 						//"erfolgreich im Zielsystem ermittelt.";
 					info(sMessage);
 					getProtocolFacade().writeExportImportLogEntry(iProtocolId, XmlExportImportHelper.EXPIMP_MESSAGE_LEVEL_INFO, sAction, sMessage, iActionNumber++);
@@ -609,7 +640,7 @@ public class XmlImportFacadeBean extends NuclosFacadeBean implements XmlImportFa
 					// remember all imported genericobjects
 					lstAllImportedEntityIds.add(new Pair<String, Integer>(element.attributeValue("name"), newGoVO.getId()));
 
-					String sMessage = MessageFormat.format(locale.getResourceById(locale.getUserLocale(), "xmlimport.error.module.entity.1"), element.attribute("name").getValue(), newGoVO.getId());
+					String sMessage = MessageFormat.format(localeFacade.getResourceById(localeFacade.getUserLocale(), "xmlimport.error.module.entity.1"), element.attribute("name").getValue(), newGoVO.getId());
 						//"Modul-Entit\u00e4t ["+element.attribute("name").getValue()+"] mit der ID ["+newGoVO.getId()+"] erfolgreich angelegt.";
 					info(sMessage);
 					getProtocolFacade().writeExportImportLogEntry(iProtocolId, XmlExportImportHelper.EXPIMP_MESSAGE_LEVEL_INFO,
@@ -622,7 +653,7 @@ public class XmlImportFacadeBean extends NuclosFacadeBean implements XmlImportFa
 				//"Modul-Entit\u00e4t ["+element.attribute("name").getValue()+"] mit der Export-ID ["+element.attribute("id").getValue()+"] konnte nicht angelegt werden. "+e;
 			getProtocolFacade().writeExportImportLogEntry(iProtocolId, XmlExportImportHelper.EXPIMP_MESSAGE_LEVEL_ERROR,
 					XmlExportImportHelper.EXPIMP_ACTION_INSERT, 
-					MessageFormat.format(locale.getResourceById(locale.getUserLocale(), "xmlimport.error.module.entity.5"), element.attribute("name").getValue(), element.attribute("id").getValue(), e), iActionNumber++);
+					MessageFormat.format(localeFacade.getResourceById(localeFacade.getUserLocale(), "xmlimport.error.module.entity.5"), element.attribute("name").getValue(), element.attribute("id").getValue(), e), iActionNumber++);
 			throw new NuclosFatalException(sMessage);
 		}
 	}
@@ -706,14 +737,14 @@ public class XmlImportFacadeBean extends NuclosFacadeBean implements XmlImportFa
 										//" Sie besitzen kein Recht auf den referenzierten Report bzw. Formular.";
 									getProtocolFacade().writeExportImportLogEntry(iProtocolId, XmlExportImportHelper.EXPIMP_MESSAGE_LEVEL_ERROR,
 										XmlExportImportHelper.EXPIMP_ACTION_INSERT, 
-										MessageFormat.format(locale.getResourceById(locale.getUserLocale(), "xmlimport.error.missing.mdreference.2"), mfield.getFieldName(), element.attributeValue("name"), element.attribute("id").getValue()), iActionNumber++);
+										MessageFormat.format(localeFacade.getResourceById(localeFacade.getUserLocale(), "xmlimport.error.missing.mdreference.2"), mfield.getFieldName(), element.attributeValue("name"), element.attribute("id").getValue()), iActionNumber++);
 								}
 								else {
 									sMessage = StringUtils.getParameterizedExceptionMessage("xmlimport.error.missing.mdreference.3", mfield.getFieldName(), element.attributeValue("name"), element.attribute("id").getValue());
 										//" Evtl. wurde die Referenzierte Entit\u00e4t zuvor nicht exportiert und konnte deshalb nicht gefunden werden.";
 									getProtocolFacade().writeExportImportLogEntry(iProtocolId, XmlExportImportHelper.EXPIMP_MESSAGE_LEVEL_ERROR,
 										XmlExportImportHelper.EXPIMP_ACTION_INSERT, 
-										MessageFormat.format(locale.getResourceById(locale.getUserLocale(), "xmlimport.error.missing.mdreference.3"), mfield.getFieldName(), element.attributeValue("name"), element.attribute("id").getValue()), iActionNumber++);
+										MessageFormat.format(localeFacade.getResourceById(localeFacade.getUserLocale(), "xmlimport.error.missing.mdreference.3"), mfield.getFieldName(), element.attributeValue("name"), element.attribute("id").getValue()), iActionNumber++);
 								}
 //								getProtocolFacade().writeExportImportLogEntry(iProtocolId, XmlExportImportHelper.EXPIMP_MESSAGE_LEVEL_ERROR,
 //										XmlExportImportHelper.EXPIMP_ACTION_INSERT, sMessage, iActionNumber++);
@@ -745,7 +776,7 @@ public class XmlImportFacadeBean extends NuclosFacadeBean implements XmlImportFa
 //				"mit der Export-ID ["+element.attribute("id").getValue()+"]. "+e;
 				getProtocolFacade().writeExportImportLogEntry(iProtocolId, XmlExportImportHelper.EXPIMP_MESSAGE_LEVEL_ERROR,
 						XmlExportImportHelper.EXPIMP_ACTION_INSERT, 
-						MessageFormat.format(locale.getResourceById(locale.getUserLocale(), "xmlimport.error.parse.value"), element.attribute("name").getValue(), element.attribute("id").getValue(), e), iActionNumber++);
+						MessageFormat.format(localeFacade.getResourceById(localeFacade.getUserLocale(), "xmlimport.error.parse.value"), element.attribute("name").getValue(), element.attribute("id").getValue(), e), iActionNumber++);
 				throw new NuclosFatalException(sMessage);
 			}
 			catch (IOException e) {
@@ -754,7 +785,7 @@ public class XmlImportFacadeBean extends NuclosFacadeBean implements XmlImportFa
 //				"mit der Export-ID ["+element.attribute("id").getValue()+"]. "+e;
 				getProtocolFacade().writeExportImportLogEntry(iProtocolId, XmlExportImportHelper.EXPIMP_MESSAGE_LEVEL_ERROR,
 						XmlExportImportHelper.EXPIMP_ACTION_INSERT, 
-						MessageFormat.format(locale.getResourceById(locale.getUserLocale(), "xmlimport.error.read.file"), element.attribute("name").getValue(), element.attribute("id").getValue(), e), iActionNumber++);
+						MessageFormat.format(localeFacade.getResourceById(localeFacade.getUserLocale(), "xmlimport.error.read.file"), element.attribute("name").getValue(), element.attribute("id").getValue(), e), iActionNumber++);
 				throw new NuclosFatalException(sMessage);
 			}
 			catch (ClassNotFoundException e) {
@@ -763,7 +794,7 @@ public class XmlImportFacadeBean extends NuclosFacadeBean implements XmlImportFa
 //				"mit der Export-ID ["+element.attribute("id").getValue()+"]. "+e;
 				getProtocolFacade().writeExportImportLogEntry(iProtocolId, XmlExportImportHelper.EXPIMP_MESSAGE_LEVEL_ERROR,
 						XmlExportImportHelper.EXPIMP_ACTION_INSERT, 
-						MessageFormat.format(locale.getResourceById(locale.getUserLocale(), "xmlimport.error.read.object"), element.attribute("name").getValue(), element.attribute("id").getValue(), e), iActionNumber++);
+						MessageFormat.format(localeFacade.getResourceById(localeFacade.getUserLocale(), "xmlimport.error.read.object"), element.attribute("name").getValue(), element.attribute("id").getValue(), e), iActionNumber++);
 				throw new NuclosFatalException(sMessage);
 			}
 			catch (Exception e) {
@@ -802,7 +833,7 @@ public class XmlImportFacadeBean extends NuclosFacadeBean implements XmlImportFa
 //				"mit der Export-ID ["+element.attribute("id").getValue()+"]. "+e;
 			getProtocolFacade().writeExportImportLogEntry(iProtocolId, XmlExportImportHelper.EXPIMP_MESSAGE_LEVEL_ERROR,
 					XmlExportImportHelper.EXPIMP_ACTION_INSERT, 
-					MessageFormat.format(locale.getResourceById(locale.getUserLocale(), "xmlimport.error.parse.date"), element.attribute("name").getValue(), element.attribute("id").getValue(), e), iActionNumber++);
+					MessageFormat.format(localeFacade.getResourceById(localeFacade.getUserLocale(), "xmlimport.error.parse.date"), element.attribute("name").getValue(), element.attribute("id").getValue(), e), iActionNumber++);
 			throw new NuclosFatalException(sMessage);
 		}
 
@@ -823,7 +854,7 @@ public class XmlImportFacadeBean extends NuclosFacadeBean implements XmlImportFa
 				String sEntityName = element.attribute("name").getValue();
 
 				if (!mpMdSubFormsWithForeignKeys.containsKey(sEntityName)) {
-					LayoutFacadeLocal layoutFacade = ServiceLocator.getInstance().getFacade(LayoutFacadeLocal.class);
+					LayoutFacadeLocal layoutFacade = ServerServiceLocator.getInstance().getFacade(LayoutFacadeLocal.class);
 					mpMdSubFormsWithForeignKeys.put(sEntityName, layoutFacade.getSubFormEntityAndParentSubFormEntityNames(sEntityName,prepVO.getIntId(),true));
 				}
 
@@ -842,11 +873,11 @@ public class XmlImportFacadeBean extends NuclosFacadeBean implements XmlImportFa
 						sMessage = StringUtils.getParameterizedExceptionMessage("xmlimport.error.masterdata.entity.2", element.attribute("name").getValue(), existingEntity.getId());
 							//"konnte nicht im Zielsystem ermittelt werden.";
 						getProtocolFacade().writeExportImportLogEntry(iProtocolId, XmlExportImportHelper.EXPIMP_MESSAGE_LEVEL_ERROR, sAction, 
-							MessageFormat.format(locale.getResourceById(locale.getUserLocale(), "xmlimport.error.masterdata.entity.2"), element.attribute("name").getValue(), existingEntity.getId()), iActionNumber++);
+							MessageFormat.format(localeFacade.getResourceById(localeFacade.getUserLocale(), "xmlimport.error.masterdata.entity.2"), element.attribute("name").getValue(), existingEntity.getId()), iActionNumber++);
 						throw new NuclosFatalException(sMessage);
 					}
 					else {
-						sMessage = MessageFormat.format(locale.getResourceById(locale.getUserLocale(), "xmlimport.error.masterdata.entity.3"), element.attribute("name").getValue(), existingEntity.getId()); 
+						sMessage = MessageFormat.format(localeFacade.getResourceById(localeFacade.getUserLocale(), "xmlimport.error.masterdata.entity.3"), element.attribute("name").getValue(), existingEntity.getId()); 
 							//"erfolgreich ge\u00e4ndert.";
 						info(sMessage);
 						getProtocolFacade().writeExportImportLogEntry(iProtocolId, XmlExportImportHelper.EXPIMP_MESSAGE_LEVEL_INFO,
@@ -855,7 +886,7 @@ public class XmlImportFacadeBean extends NuclosFacadeBean implements XmlImportFa
 				}
 				else {
 					sAction = XmlExportImportHelper.EXPIMP_ACTION_READ;
-					sMessage = MessageFormat.format(locale.getResourceById(locale.getUserLocale(), "xmlimport.error.masterdata.entity.4"), element.attribute("name").getValue(), existingEntity.getId()); 
+					sMessage = MessageFormat.format(localeFacade.getResourceById(localeFacade.getUserLocale(), "xmlimport.error.masterdata.entity.4"), element.attribute("name").getValue(), existingEntity.getId()); 
 						//"erfolgreich im Zielsystem ermittelt.";
 					info(sMessage);
 					getProtocolFacade().writeExportImportLogEntry(iProtocolId, XmlExportImportHelper.EXPIMP_MESSAGE_LEVEL_INFO,
@@ -876,7 +907,7 @@ public class XmlImportFacadeBean extends NuclosFacadeBean implements XmlImportFa
 					//"Stammdaten-Entit\u00e4t ["+element.attribute("name").getValue()+"] mit der Export-ID ["+element.attribute("id")+"] konnte nicht modifiziert werden. "+e;
 				getProtocolFacade().writeExportImportLogEntry(iProtocolId, XmlExportImportHelper.EXPIMP_MESSAGE_LEVEL_ERROR,
 						XmlExportImportHelper.EXPIMP_ACTION_UPDATE, 
-						MessageFormat.format(locale.getResourceById(locale.getUserLocale(), "xmlimport.error.masterdata.entity.5"), element.attribute("name").getValue(), element.attribute("id"), e), iActionNumber++);
+						MessageFormat.format(localeFacade.getResourceById(localeFacade.getUserLocale(), "xmlimport.error.masterdata.entity.5"), element.attribute("name").getValue(), element.attribute("id"), e), iActionNumber++);
 				throw new NuclosFatalException(sMessage);
 			}
 		}
@@ -892,7 +923,7 @@ public class XmlImportFacadeBean extends NuclosFacadeBean implements XmlImportFa
 					// remember all imported masterdata
 					lstAllImportedEntityIds.add(new Pair<String, Integer>(element.attribute("name").getValue() ,newVO.getIntId()));
 
-					String sMessage = MessageFormat.format(locale.getResourceById(locale.getUserLocale(), "xmlimport.error.masterdata.entity.6"), element.attribute("name").getValue(), newVO.getIntId()); 
+					String sMessage = MessageFormat.format(localeFacade.getResourceById(localeFacade.getUserLocale(), "xmlimport.error.masterdata.entity.6"), element.attribute("name").getValue(), newVO.getIntId()); 
 						//"Stammdaten-Entit\u00e4t ["+element.attribute("name").getValue()+"] mit der ID ["+newVO.getIntId()+"] erfolgreich angelegt.";
 					info(sMessage);
 					getProtocolFacade().writeExportImportLogEntry(iProtocolId, XmlExportImportHelper.EXPIMP_MESSAGE_LEVEL_INFO,
@@ -904,7 +935,7 @@ public class XmlImportFacadeBean extends NuclosFacadeBean implements XmlImportFa
 					//"Stammdaten-Entit\u00e4t ["+element.attribute("name").getValue()+"] mit der Export-ID ["+element.attribute("id")+"] konnte nicht angelegt werden. "+e;
 				getProtocolFacade().writeExportImportLogEntry(iProtocolId, XmlExportImportHelper.EXPIMP_MESSAGE_LEVEL_ERROR,
 						XmlExportImportHelper.EXPIMP_ACTION_INSERT, 
-						MessageFormat.format(locale.getResourceById(locale.getUserLocale(), "xmlimport.error.masterdata.entity.7"), element.attribute("name").getValue(), element.attribute("id"), e), iActionNumber++);
+						MessageFormat.format(localeFacade.getResourceById(localeFacade.getUserLocale(), "xmlimport.error.masterdata.entity.7"), element.attribute("name").getValue(), element.attribute("id"), e), iActionNumber++);
 				throw new NuclosFatalException(sMessage);
 			}
 		}
@@ -929,7 +960,7 @@ public class XmlImportFacadeBean extends NuclosFacadeBean implements XmlImportFa
 					//"Das Dokument ["+selmText+"] f\u00fcr die Stammdaten-Entit\u00e4t ["+element.attribute("name").getValue()+"] mit der Export-ID ["+element.attribute("id")+"] konnte nicht angelegt werden. "+e;
 				getProtocolFacade().writeExportImportLogEntry(iProtocolId, XmlExportImportHelper.EXPIMP_MESSAGE_LEVEL_ERROR,
 						XmlExportImportHelper.EXPIMP_ACTION_INSERT, 
-						MessageFormat.format(locale.getResourceById(locale.getUserLocale(), "xmlimport.error.masterdata.entity.8"), selmText, element.attribute("name").getValue(), element.attribute("id"), e), iActionNumber++);
+						MessageFormat.format(localeFacade.getResourceById(localeFacade.getUserLocale(), "xmlimport.error.masterdata.entity.8"), selmText, element.attribute("name").getValue(), element.attribute("id"), e), iActionNumber++);
 			}
 		}
 		else if (mfield.getJavaClass().getName().equals("java.lang.Object")){
@@ -990,7 +1021,7 @@ public class XmlImportFacadeBean extends NuclosFacadeBean implements XmlImportFa
 	 * @param dmdm
 	 */
 	private DependantMasterDataMap readDependants(final Map<EntityAndFieldName, String> subformtree, String sEntityName, Object entityId, DependantMasterDataMap dmdm) {
-		LayoutFacadeLocal layoutFacade = ServiceLocator.getInstance().getFacade(LayoutFacadeLocal.class);
+		LayoutFacadeLocal layoutFacade = ServerServiceLocator.getInstance().getFacade(LayoutFacadeLocal.class);
 
 		List<EntityAndFieldName> entitylist = new ArrayList<EntityAndFieldName>();
 		for (Entry<EntityAndFieldName, String> entry : subformtree.entrySet()) {
@@ -1114,7 +1145,7 @@ public class XmlImportFacadeBean extends NuclosFacadeBean implements XmlImportFa
 
 		TruncatableCollection<MasterDataVO> result = getMasterDataFacade().getMasterData(entityName, new CompositeCollectableSearchCondition(LogicalOperator.AND, conditions), true);
 		if (result.size() > 1) {
-			String sMessage = locale.getResourceById(locale.getUserLocale(), "xmlimport.error.masterdata.entity.9");//"Mehr als eine eindeutige Entit\u00e4t gefunden, bitte manuell \u00fcberpr\u00fcfen";
+			String sMessage = localeFacade.getResourceById(localeFacade.getUserLocale(), "xmlimport.error.masterdata.entity.9");//"Mehr als eine eindeutige Entit\u00e4t gefunden, bitte manuell \u00fcberpr\u00fcfen";
 			error(sMessage);
 			getProtocolFacade().writeExportImportLogEntry(iProtocolId, XmlExportImportHelper.EXPIMP_MESSAGE_LEVEL_ERROR,
 					XmlExportImportHelper.EXPIMP_ACTION_READ, sMessage, iActionNumber++);
@@ -1150,7 +1181,7 @@ public class XmlImportFacadeBean extends NuclosFacadeBean implements XmlImportFa
 				new CompositeCollectableSearchCondition(LogicalOperator.AND, conditions));
 
 		if (result.size() > 1) {
-			String sMessage = locale.getResourceById(locale.getUserLocale(), "xmlimport.error.masterdata.entity.9");//"Mehr als eine eindeutige Entit\u00e4t gefunden, bitte manuell \u00fcberpr\u00fcfen";
+			String sMessage = localeFacade.getResourceById(localeFacade.getUserLocale(), "xmlimport.error.masterdata.entity.9");//"Mehr als eine eindeutige Entit\u00e4t gefunden, bitte manuell \u00fcberpr\u00fcfen";
 			error(sMessage);
 			getProtocolFacade().writeExportImportLogEntry(iProtocolId, XmlExportImportHelper.EXPIMP_MESSAGE_LEVEL_ERROR,
 					XmlExportImportHelper.EXPIMP_ACTION_READ, sMessage, iActionNumber++);
@@ -1195,7 +1226,7 @@ public class XmlImportFacadeBean extends NuclosFacadeBean implements XmlImportFa
 		UsageCriteria usagecriteria = new UsageCriteria(iModuleId, iProcessId);
 
 		Integer stateModelId = StateModelUsagesCache.getInstance().getStateUsages().getStateModel(usagecriteria);
-		Collection<StateVO> states = ServiceLocator.getInstance().getFacade(StateFacadeLocal.class).getStatesByModel(stateModelId);
+		Collection<StateVO> states = ServerServiceLocator.getInstance().getFacade(StateFacadeLocal.class).getStatesByModel(stateModelId);
 
 		for (StateVO sta : states) {
 			if (sta.getStatename().equals(status))
@@ -1268,14 +1299,14 @@ public class XmlImportFacadeBean extends NuclosFacadeBean implements XmlImportFa
 				//String sMessage = "Die Entit\u00e4t ["+sEntity+"] mit der ID ["+mdvo.getIntId()+"] wurde erfolgreich gel\u00f6scht.";
 				getProtocolFacade().writeExportImportLogEntry(iProtocolId, XmlExportImportHelper.EXPIMP_MESSAGE_LEVEL_INFO,
 						XmlExportImportHelper.EXPIMP_ACTION_DELETE, 
-						MessageFormat.format(locale.getResourceById(locale.getUserLocale(), "xmlimport.error.masterdata.entity.11"), sEntity, mdvo.getIntId()), iActionNumber++);
+						MessageFormat.format(localeFacade.getResourceById(localeFacade.getUserLocale(), "xmlimport.error.masterdata.entity.11"), sEntity, mdvo.getIntId()), iActionNumber++);
 			}
 			catch (Exception e) {
 				String sMessage = StringUtils.getParameterizedExceptionMessage("xmlimport.error.masterdata.entity.12", sEntity, iId, e); 
 					//"Die Stammdaten-Entit\u00e4t ["+sEntity+"] mit der ID ["+iId+"] konnte nicht gel\u00f6scht werden. "+e;
 				getProtocolFacade().writeExportImportLogEntry(iProtocolId, XmlExportImportHelper.EXPIMP_MESSAGE_LEVEL_ERROR,
 						XmlExportImportHelper.EXPIMP_ACTION_DELETE, 
-						MessageFormat.format(locale.getResourceById(locale.getUserLocale(), "xmlimport.error.masterdata.entity.12"), sEntity, iId, e), iActionNumber++);
+						MessageFormat.format(localeFacade.getResourceById(localeFacade.getUserLocale(), "xmlimport.error.masterdata.entity.12"), sEntity, iId, e), iActionNumber++);
 				throw new NuclosFatalException(sMessage);
 			}
 		}
@@ -1322,7 +1353,7 @@ public class XmlImportFacadeBean extends NuclosFacadeBean implements XmlImportFa
 				//								"kann nicht entfernt werden, da das Feld nicht leer sein darf.";
 								getProtocolFacade().writeExportImportLogEntry(iProtocolId, XmlExportImportHelper.EXPIMP_MESSAGE_LEVEL_ERROR,
 										XmlExportImportHelper.EXPIMP_ACTION_DELETE, 
-										MessageFormat.format(locale.getResourceById(locale.getUserLocale(), "xmlimport.error.masterdata.entity.13"), sEntity, mdvo.getIntId(), sField, mdmvo.getEntityName()), iActionNumber++);
+										MessageFormat.format(localeFacade.getResourceById(localeFacade.getUserLocale(), "xmlimport.error.masterdata.entity.13"), sEntity, mdvo.getIntId(), sField, mdmvo.getEntityName()), iActionNumber++);
 								throw new NuclosFatalException(sMessage);
 							}
 				
@@ -1338,7 +1369,7 @@ public class XmlImportFacadeBean extends NuclosFacadeBean implements XmlImportFa
 				//								"mit der ID ["+mdvo_ref.getIntId()+"] zur\u00fcckzusetzen, trat ein Fehler auf. "+e;
 								getProtocolFacade().writeExportImportLogEntry(iProtocolId, XmlExportImportHelper.EXPIMP_MESSAGE_LEVEL_ERROR,
 										XmlExportImportHelper.EXPIMP_ACTION_DELETE, 
-										MessageFormat.format(locale.getResourceById(locale.getUserLocale(), "xmlimport.error.masterdata.entity.14"), sField, mdmvo.getEntityName(), mdvo_ref.getIntId(), e), iActionNumber++);
+										MessageFormat.format(localeFacade.getResourceById(localeFacade.getUserLocale(), "xmlimport.error.masterdata.entity.14"), sField, mdmvo.getEntityName(), mdvo_ref.getIntId(), e), iActionNumber++);
 								throw new NuclosFatalException(sMessage);
 							}
 						}
@@ -1355,7 +1386,7 @@ public class XmlImportFacadeBean extends NuclosFacadeBean implements XmlImportFa
 					try {
 						getProtocolFacade().writeExportImportLogEntry(iProtocolId, XmlExportImportHelper.EXPIMP_MESSAGE_LEVEL_ERROR,
 								XmlExportImportHelper.EXPIMP_ACTION_DELETE, 
-								MessageFormat.format(locale.getResourceById(locale.getUserLocale(), "xmlimport.error.masterdata.entity.15"), sField, mdmvo.getEntityName(), iIntidOfForeignEntity, e), iActionNumber++);
+								MessageFormat.format(localeFacade.getResourceById(localeFacade.getUserLocale(), "xmlimport.error.masterdata.entity.15"), sField, mdmvo.getEntityName(), iIntidOfForeignEntity, e), iActionNumber++);
 					}
 					catch (Exception e1) {
 						throw new NuclosFatalException(e);
@@ -1372,7 +1403,7 @@ public class XmlImportFacadeBean extends NuclosFacadeBean implements XmlImportFa
 			try {
 				getProtocolFacade().writeExportImportLogEntry(iProtocolId, XmlExportImportHelper.EXPIMP_MESSAGE_LEVEL_ERROR,
 						XmlExportImportHelper.EXPIMP_ACTION_DELETE, 
-						MessageFormat.format(locale.getResourceById(locale.getUserLocale(), "xmlimport.error.masterdata.entity.16"), sEntity, mdvo.getIntId(), e), iActionNumber++);
+						MessageFormat.format(localeFacade.getResourceById(localeFacade.getUserLocale(), "xmlimport.error.masterdata.entity.16"), sEntity, mdvo.getIntId(), e), iActionNumber++);
 			}
 			catch (Exception e1) {
 				throw new NuclosFatalException(e1);

@@ -36,6 +36,7 @@ import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.fileimport.FileImportResult;
 import org.nuclos.common2.fileimport.NuclosFileImportException;
 import org.nuclos.server.common.MetaDataServerProvider;
+import org.nuclos.server.common.ServerServiceLocator;
 import org.nuclos.server.dal.DalSupportForGO;
 import org.nuclos.server.dal.provider.NucletDalProvider;
 import org.nuclos.server.fileimport.ImportStructure.Item;
@@ -168,13 +169,13 @@ public class NuclosImport extends AbstractImport {
 			for (FileImportResult fir : result) {
 				summary.append(getLogger().info(StringUtils.getParameterizedExceptionMessage("import.logging.result", fir.getEntity(), fir.getInserted(), fir.getUpdated(), fir.getDeleted())) + System.getProperty("line.separator"));
 			}
-			ServiceLocator.getInstance().getFacade(ImportFacadeLocal.class).setImportResult(getContext().getImportfileId(), getLogger().getErrorcount() > 0 ? ImportResult.INCOMPLETE : ImportResult.OK, summary.toString());
+			ServerServiceLocator.getInstance().getFacade(ImportFacadeLocal.class).setImportResult(getContext().getImportfileId(), getLogger().getErrorcount() > 0 ? ImportResult.INCOMPLETE : ImportResult.OK, summary.toString());
 			this.notifier.finish();
 
 			return result;
 		}
 		catch (NuclosFileImportException ex) {
-			ServiceLocator.getInstance().getFacade(ImportFacadeLocal.class).setImportResult(getContext().getImportfileId(), ImportResult.ERROR, getLogger().localize(ex.getMessage()));
+			ServerServiceLocator.getInstance().getFacade(ImportFacadeLocal.class).setImportResult(getContext().getImportfileId(), ImportResult.ERROR, getLogger().localize(ex.getMessage()));
 			if (this.notifier != null) {
 				this.notifier.stop(ex.getMessage());
 			}

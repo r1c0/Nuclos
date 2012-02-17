@@ -23,6 +23,7 @@ import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 
 import org.nuclos.common2.ServiceLocator;
+import org.nuclos.server.common.ServerServiceLocator;
 import org.nuclos.server.report.NuclosQuartzJob;
 import org.nuclos.server.ruleengine.ejb3.RuleInterfaceFacadeLocal;
 
@@ -69,7 +70,7 @@ public class StateChangeJob extends NuclosQuartzJob {
 			logger.debug("Executing StateChangeJob(iGenericObjectId=" + iGenericObjectId + ", iNewState=" + iNewState + ")");
 
 			try {
-				ServiceLocator.getInstance().getFacade(RuleInterfaceFacadeLocal.class).changeState(null, iGenericObjectId, iNewState);
+				ServerServiceLocator.getInstance().getFacade(RuleInterfaceFacadeLocal.class).changeState(null, iGenericObjectId, iNewState);
 			}
 			catch (org.nuclos.server.ruleengine.NuclosBusinessRuleException ex) {
 				throw new JobExecutionException(ex);

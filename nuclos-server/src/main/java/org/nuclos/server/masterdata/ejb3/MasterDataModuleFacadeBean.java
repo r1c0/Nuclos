@@ -27,11 +27,13 @@ import org.nuclos.common2.exception.CommonRemoveException;
 import org.nuclos.common2.exception.CommonStaleVersionException;
 import org.nuclos.common2.exception.CommonValidationException;
 import org.nuclos.server.common.LocaleUtils;
+import org.nuclos.server.common.ServerServiceLocator;
 import org.nuclos.server.common.ejb3.LocaleFacadeLocal;
 import org.nuclos.server.common.ejb3.NuclosFacadeBean;
 import org.nuclos.server.masterdata.valueobject.DependantMasterDataMap;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 import org.nuclos.server.ruleengine.NuclosBusinessRuleException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -44,11 +46,9 @@ import org.springframework.transaction.annotation.Transactional;
 // @Local(MasterDataModuleFacadeLocal.class)
 // @Remote(MasterDataModuleFacadeRemote.class)
 @Transactional
-public class MasterDataModuleFacadeBean extends NuclosFacadeBean implements MasterDataModuleFacadeLocal, MasterDataModuleFacadeRemote {
+public class MasterDataModuleFacadeBean extends NuclosFacadeBean implements MasterDataModuleFacadeRemote {
 
 	private final static String MODULE_TABLE = "t_md_entity";
-	
-	LocaleFacadeLocal localeFacade = ServiceLocator.getInstance().getFacade(LocaleFacadeLocal.class);
 	
 	private static final String MODULE_RESOURCE_FIELDNAMES[] = {
 		LocaleUtils.FIELD_LABEL,
@@ -57,7 +57,24 @@ public class MasterDataModuleFacadeBean extends NuclosFacadeBean implements Mast
 		LocaleUtils.FIELD_TREEVIEW,
 		LocaleUtils.FIELD_TREEVIEWDESCRIPTION
 	};
+	
+	private LocaleFacadeLocal localeFacade;	
+	
+	private MasterDataFacadeLocal masterDataFacade;
+	
+	public MasterDataModuleFacadeBean() {
+	}
+	
+	@Autowired
+	final void setLocaleFacade(LocaleFacadeLocal localeFacade) {
+		this.localeFacade = localeFacade;
+	}
 
+	@Autowired
+	final void setMasterDataFacade(MasterDataFacadeLocal masterDataFacade) {
+		this.masterDataFacade = masterDataFacade;
+	}
+	
 	/**
 	 * create a new master data record with the given id
 	 * @param mdvo the master data record to be created
@@ -69,14 +86,13 @@ public class MasterDataModuleFacadeBean extends NuclosFacadeBean implements Mast
 	 * @precondition (mpDependants != null) --> mpDependants.areAllDependantsNew()
 	 * @nucleus.permission checkWriteAllowed(sEntityName)
 	 */
-	@Override
 	@RolesAllowed("Login")
 	public MasterDataVO create(String sEntityName, MasterDataVO mdvo, DependantMasterDataMap mpDependants)
 			throws CommonCreateException, CommonPermissionException, NuclosBusinessRuleException {
 
-		MasterDataVO result = getMasterDataFacade().create(sEntityName, mdvo, mpDependants);
+		MasterDataVO result = masterDataFacade.create(sEntityName, mdvo, mpDependants);
 
-		LocaleFacadeLocal facade = ServiceLocator.getInstance().getFacade(LocaleFacadeLocal.class);
+		LocaleFacadeLocal facade = ServerServiceLocator.getInstance().getFacade(LocaleFacadeLocal.class);
 
 		LocaleUtils.setResourceIdForField(MODULE_TABLE, result.getIntId(), LocaleUtils.FIELD_LABEL, facade.setDefaultResource(null, (String)result.getField(LocaleUtils.FIELD_LABEL)));
 		LocaleUtils.setResourceIdForField(MODULE_TABLE, result.getIntId(), LocaleUtils.FIELD_DESCRIPTION, facade.setDefaultResource(null, (String)result.getField(LocaleUtils.FIELD_DESCRIPTION)));
@@ -99,12 +115,11 @@ public class MasterDataModuleFacadeBean extends NuclosFacadeBean implements Mast
 	 * @precondition sEntityName != null
 	 * @nucleus.permission checkWriteAllowed(sEntityName)
 	 */
-	@Override
 	@RolesAllowed("Login")
 	public Object modify(String sEntityName, MasterDataVO mdvo, DependantMasterDataMap mpDependants)
 			throws CommonCreateException, CommonFinderException, CommonRemoveException, CommonStaleVersionException,
 			CommonValidationException, CommonPermissionException, NuclosBusinessRuleException {
-		Object result = getMasterDataFacade().modify(sEntityName, mdvo, mpDependants);
+		Object result = masterDataFacade.modify(sEntityName, mdvo, mpDependants);
 
 		
 		for (String resFieldName : MODULE_RESOURCE_FIELDNAMES) {
@@ -117,7 +132,7 @@ public class MasterDataModuleFacadeBean extends NuclosFacadeBean implements Mast
 	}
 	
 	private void updateResourceIdForField(String resId, String resFieldName, MasterDataVO mdvo) {
-		LocaleFacadeLocal locale = ServiceLocator.getInstance().getFacade(LocaleFacadeLocal.class);
+		LocaleFacadeLocal locale = ServerServiceLocator.getInstance().getFacade(LocaleFacadeLocal.class);
 		String text = (String) mdvo.getField(resFieldName);
 		if (resId != null) {			
 			if (StringUtils.isNullOrEmpty(text)) {
@@ -156,12 +171,11 @@ public class MasterDataModuleFacadeBean extends NuclosFacadeBean implements Mast
 	 * @precondition sEntityName != null
 	 * @nucleus.permission checkDeleteAllowed(sEntityName)
 	 */
-	@Override
 	@RolesAllowed("Login")
 	public void remove(String sEntityName, MasterDataVO mdvo, boolean bRemoveDependants) throws NuclosBusinessRuleException, CommonPermissionException,
 								CommonStaleVersionException, CommonRemoveException, CommonFinderException {
 
-		LocaleFacadeLocal facade = ServiceLocator.getInstance().getFacade(LocaleFacadeLocal.class);
+		LocaleFacadeLocal facade = ServerServiceLocator.getInstance().getFacade(LocaleFacadeLocal.class);
 
 		facade.deleteResource(getResourceSIdForLabel(mdvo.getIntId()));
 		facade.deleteResource(getResourceSIdForDescription(mdvo.getIntId()));
@@ -169,30 +183,25 @@ public class MasterDataModuleFacadeBean extends NuclosFacadeBean implements Mast
 		facade.deleteResource(getResourceSIdForTreeViewDescription(mdvo.getIntId()));
 		facade.deleteResource(getResourceSIdForMenuPath(mdvo.getIntId()));
 
-		getMasterDataFacade().remove(sEntityName, mdvo, bRemoveDependants);
+		masterDataFacade.remove(sEntityName, mdvo, bRemoveDependants);
 	}
 
-	@Override
 	public String getResourceSIdForLabel(Integer iId) {
 		return LocaleUtils.getResourceIdForField(MODULE_TABLE, iId, LocaleUtils.FIELD_LABEL);
 	}
 
-	@Override
 	public String getResourceSIdForDescription(Integer iId) {		
 		return LocaleUtils.getResourceIdForField(MODULE_TABLE, iId, LocaleUtils.FIELD_DESCRIPTION);
 	}
 
-	@Override
 	public String getResourceSIdForTreeView(Integer iId) {		
 		return LocaleUtils.getResourceIdForField(MODULE_TABLE, iId, LocaleUtils.FIELD_TREEVIEW);
 	}
 
-	@Override
 	public String getResourceSIdForTreeViewDescription(Integer iId) {		
 		return LocaleUtils.getResourceIdForField(MODULE_TABLE, iId, LocaleUtils.FIELD_TREEVIEWDESCRIPTION);
 	}
 
-	@Override
 	public String getResourceSIdForMenuPath(Integer iId) {		
 		return LocaleUtils.getResourceIdForField(MODULE_TABLE, iId, LocaleUtils.FIELD_MENUPATH);		
 	}

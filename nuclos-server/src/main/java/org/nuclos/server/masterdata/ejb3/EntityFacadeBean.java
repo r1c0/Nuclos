@@ -47,6 +47,7 @@ import org.nuclos.server.attribute.ejb3.LayoutFacadeLocal;
 import org.nuclos.server.common.DatasourceCache;
 import org.nuclos.server.common.DatasourceServerUtils;
 import org.nuclos.server.common.MetaDataServerProvider;
+import org.nuclos.server.common.ServerServiceLocator;
 import org.nuclos.server.common.ejb3.NuclosFacadeBean;
 import org.nuclos.server.dal.processor.jdbc.TableAliasSingleton;
 import org.nuclos.server.dal.processor.jdbc.impl.EOSearchExpressionUnparser;
@@ -116,12 +117,11 @@ public class EntityFacadeBean extends NuclosFacadeBean implements EntityFacadeRe
 	 * @ejb.interface-method view-type="remote"
 	 * @ejb.permission role-name="Login"
 	 */
-	@Override
 	public Map<EntityAndFieldName, String> getSubFormEntityAndParentSubFormEntityNames(String sEntity,Integer iLayoutId) {
 		if(Modules.getInstance().isModuleEntity(sEntity)){
-			return ServiceLocator.getInstance().getFacade(LayoutFacadeLocal.class).getSubFormEntityAndParentSubFormEntityNamesById(iLayoutId);
+			return ServerServiceLocator.getInstance().getFacade(LayoutFacadeLocal.class).getSubFormEntityAndParentSubFormEntityNamesById(iLayoutId);
 		} else {
-			return ServiceLocator.getInstance().getFacade(LayoutFacadeLocal.class).getSubFormEntityAndParentSubFormEntityNames(sEntity, iLayoutId, false);
+			return ServerServiceLocator.getInstance().getFacade(LayoutFacadeLocal.class).getSubFormEntityAndParentSubFormEntityNames(sEntity, iLayoutId, false);
 		}
 	}
 
@@ -132,7 +132,6 @@ public class EntityFacadeBean extends NuclosFacadeBean implements EntityFacadeRe
 	 * @return list of collectable fields
 	 * @todo this method should be used in CollectableFieldsProviders
 	 */
-	@Override
 	public List<CollectableField> getCollectableFieldsByName(
 		String sEntityName,
 		String sFieldName,
@@ -187,17 +186,6 @@ public class EntityFacadeBean extends NuclosFacadeBean implements EntityFacadeRe
 	
 	private static final CollectableEOEntityField clctEOEFdeleted = new CollectableEOEntityField(NuclosEOField.LOGGICALDELETED.getMetaData(), "<dummy>");
 
-	/**
-	 *
-	 * @param entity
-	 * @param field
-	 * @param search
-	 * @param vlpId
-	 * @param vlpParameter
-	 * @param iMaxRowCount
-	 * @return
-	 */
-	@Override
 	public List<CollectableValueIdField> getQuickSearchResult(String entity, String field, String search, Integer vlpId, Map<String, Object> vlpParameter, Integer iMaxRowCount) {
 		final List<CollectableValueIdField> result = new ArrayList<CollectableValueIdField>();
 		try {
@@ -264,7 +252,6 @@ public class EntityFacadeBean extends NuclosFacadeBean implements EntityFacadeRe
 		return result;
 	}
 
-	@Override
 	public String getBaseEntity(String dynamicentityname) {
 		return datasourceCache.getBaseEntity(dynamicentityname);
 	}

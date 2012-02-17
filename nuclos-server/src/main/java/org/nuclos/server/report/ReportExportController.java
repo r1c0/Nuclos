@@ -35,6 +35,7 @@ import org.nuclos.common.collect.collectable.CollectableFieldFormat;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.exception.CommonBusinessException;
+import org.nuclos.server.common.ServerServiceLocator;
 import org.nuclos.server.report.ejb3.DatasourceFacadeLocal;
 import org.nuclos.server.report.ejb3.ReportFacadeLocal;
 import org.nuclos.server.report.valueobject.DatasourceParameterVO;
@@ -66,7 +67,7 @@ public class ReportExportController {
 	public ModelAndView export(@PathVariable String report, @PathVariable String output, HttpServletRequest request, HttpServletResponse response) throws IOException {
 		try {
 			// find report by name in user's readable reports
-			ReportFacadeLocal facade = ServiceLocator.getInstance().getFacade(ReportFacadeLocal.class);
+			ReportFacadeLocal facade = ServerServiceLocator.getInstance().getFacade(ReportFacadeLocal.class);
 			for (ReportVO reportvo : facade.getReports()) {
 				if (reportvo.getName().equalsIgnoreCase(report)) {
 					if (reportvo.getType() != ReportType.REPORT) {
@@ -104,7 +105,7 @@ public class ReportExportController {
 
 	private NuclosFile export(ReportVO report, ReportOutputVO output, Map<?,?> parameters) throws CommonBusinessException, ClassNotFoundException {
 		final Map<String, Object> params = CollectionUtils.newHashMap();
-		List<DatasourceParameterVO> lstParameters = ServiceLocator.getInstance().getFacade(DatasourceFacadeLocal.class).getParameters(report.getDatasourceId());
+		List<DatasourceParameterVO> lstParameters = ServerServiceLocator.getInstance().getFacade(DatasourceFacadeLocal.class).getParameters(report.getDatasourceId());
 		for (DatasourceParameterVO dspvo: lstParameters) {
 			if (parameters.containsKey(dspvo.getParameter())) {
 				params.put(dspvo.getParameter(), CollectableFieldFormat.getInstance(Class.forName(dspvo.getDatatype())).parse(null, ((String[])parameters.get(dspvo.getParameter()))[0]));
@@ -125,11 +126,11 @@ public class ReportExportController {
 	}
 
 	private NuclosFile exportCSV(Integer reportOutputId, Map<String, Object> params) throws CommonBusinessException {
-		return ServiceLocator.getInstance().getFacade(ReportFacadeLocal.class).prepareCsvReport(reportOutputId, params, null);
+		return ServerServiceLocator.getInstance().getFacade(ReportFacadeLocal.class).prepareCsvReport(reportOutputId, params, null);
 	}
 
 	private NuclosFile exportPDF(Integer reportOutputId, Map<String, Object> params) throws CommonBusinessException {
-		JasperPrint jp = ServiceLocator.getInstance().getFacade(ReportFacadeLocal.class).prepareReport(reportOutputId, params, null);
+		JasperPrint jp = ServerServiceLocator.getInstance().getFacade(ReportFacadeLocal.class).prepareReport(reportOutputId, params, null);
 		try {
 			return new NuclosFile("test.pdf", JasperExportManager.exportReportToPdf(jp));
 		} catch (JRException e) {

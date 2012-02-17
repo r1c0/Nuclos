@@ -19,9 +19,7 @@ package org.nuclos.client.ui.layoutml;
 import java.awt.event.ActionListener;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
-import javax.swing.AbstractButton;
 import javax.swing.JComponent;
 
 /**

@@ -44,6 +44,7 @@ import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.server.common.NuclosSystemParameters;
 import org.nuclos.server.common.ServerParameterProvider;
+import org.nuclos.server.common.ServerServiceLocator;
 import org.nuclos.server.report.ejb3.DatasourceFacadeLocal;
 import org.nuclos.server.report.ejb3.ReportFacadeLocal;
 import org.nuclos.server.report.valueobject.ReportVO;
@@ -89,8 +90,8 @@ public class NuclosReportJob extends NuclosQuartzJob {
 			}
 			else {
 				try {
-					final ReportFacadeLocal reportFacade = ServiceLocator.getInstance().getFacade(ReportFacadeLocal.class);
-					final DatasourceFacadeLocal datasourceFacade = ServiceLocator.getInstance().getFacade(DatasourceFacadeLocal.class);
+					final ReportFacadeLocal reportFacade = ServerServiceLocator.getInstance().getFacade(ReportFacadeLocal.class);
+					final DatasourceFacadeLocal datasourceFacade = ServerServiceLocator.getInstance().getFacade(DatasourceFacadeLocal.class);
 					ReportVO reportVO = null;
 					boolean bFound = false;
 

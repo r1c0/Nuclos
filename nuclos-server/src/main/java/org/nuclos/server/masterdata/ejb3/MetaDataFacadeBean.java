@@ -36,6 +36,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.annotation.PreDestroy;
 import javax.annotation.security.RolesAllowed;
 import javax.sql.DataSource;
 
@@ -81,6 +82,7 @@ import org.nuclos.server.common.LocaleUtils;
 import org.nuclos.server.common.MasterDataMetaCache;
 import org.nuclos.server.common.MetaDataServerProvider;
 import org.nuclos.server.common.NuclosSystemParameters;
+import org.nuclos.server.common.ServerServiceLocator;
 import org.nuclos.server.common.ejb3.LocaleFacadeLocal;
 import org.nuclos.server.common.ejb3.NuclosFacadeBean;
 import org.nuclos.server.dal.DalUtils;
@@ -137,7 +139,7 @@ import org.springframework.transaction.interceptor.TransactionAspectSupport;
 // @Local(MetaDataFacadeLocal.class)
 // @Remote(MetaDataFacadeRemote.class)
 @Transactional
-public class MetaDataFacadeBean extends NuclosFacadeBean implements MetaDataFacadeRemote, MetaDataFacadeLocal {
+public class MetaDataFacadeBean extends NuclosFacadeBean implements MetaDataFacadeRemote {
 
 	private static final Logger LOG = Logger.getLogger(MetaDataFacadeBean.class);
 
@@ -150,6 +152,10 @@ public class MetaDataFacadeBean extends NuclosFacadeBean implements MetaDataFaca
 	private SpringDataBaseHelper dataBaseHelper;
 	
 	private DataSource dataSource;
+	
+	private GenericObjectFacadeLocal genericObjectFacade;
+	
+	private MasterDataFacadeLocal masterDataFacade;
 	
 	public MetaDataFacadeBean() {
 	}
@@ -178,6 +184,21 @@ public class MetaDataFacadeBean extends NuclosFacadeBean implements MetaDataFaca
 		this.processorFactory = processorFactory;
 	}
 
+	@Autowired
+	final void setGenericObjectFacade(GenericObjectFacadeLocal genericObjectFacade) {
+		this.genericObjectFacade = genericObjectFacade;
+	}
+	
+	private final GenericObjectFacadeLocal getGenericObjectFacade() {
+		return genericObjectFacade;
+	}
+
+	@Autowired
+	final void setMasterDataFacade(MasterDataFacadeLocal masterDataFacade) {
+		this.masterDataFacade = masterDataFacade;
+	}
+	
+	@PreDestroy
 	public void preDestroy() {
 		this.helper.close();
 	}
@@ -419,7 +440,7 @@ public class MetaDataFacadeBean extends NuclosFacadeBean implements MetaDataFaca
 	public void remove(String sEntityName, MasterDataVO mdvo, boolean bRemoveDependants) throws NuclosBusinessRuleException, CommonPermissionException,
 								CommonStaleVersionException, CommonRemoveException, CommonFinderException {
 
-		LocaleFacadeLocal facade = ServiceLocator.getInstance().getFacade(LocaleFacadeLocal.class);
+		LocaleFacadeLocal facade = ServerServiceLocator.getInstance().getFacade(LocaleFacadeLocal.class);
 
 		MasterDataMetaVO metavo = MasterDataMetaCache.getInstance().getMetaData((String)mdvo.getField("entity"));
 		facade.deleteResource(metavo.getResourceSIdForLabel());
@@ -433,7 +454,7 @@ public class MetaDataFacadeBean extends NuclosFacadeBean implements MetaDataFaca
 			facade.deleteResource(metafieldvo.getResourceSIdForDescription());
 		}
 
-		this.getMasterDataFacade().remove(sEntityName, mdvo, bRemoveDependants);
+		masterDataFacade.remove(sEntityName, mdvo, bRemoveDependants);
 
 		MasterDataFacadeHelper.invalidateCaches(sEntityName, mdvo);
 	}
@@ -486,7 +507,7 @@ public class MetaDataFacadeBean extends NuclosFacadeBean implements MetaDataFaca
 		if (!voEntity.isVirtual()) {
 			if(hasEntityRows(voEntity)) {
 				if(voEntity.isStateModel()) {
-					GenericObjectFacadeLocal local = ServiceLocator.getInstance().getFacade(GenericObjectFacadeLocal.class);
+					GenericObjectFacadeLocal local = ServerServiceLocator.getInstance().getFacade(GenericObjectFacadeLocal.class);
 					for(Integer iId : local.getGenericObjectIds(IdUtils.unsafeToId(voEntity.getId()), new CollectableSearchExpression())) {
 						Set<String> setNames = new HashSet<String>();
 						try {
@@ -500,7 +521,7 @@ public class MetaDataFacadeBean extends NuclosFacadeBean implements MetaDataFaca
 
 				}
 				else {
-					MasterDataFacadeLocal local = ServiceLocator.getInstance().getFacade(MasterDataFacadeLocal.class);
+					MasterDataFacadeLocal local = ServerServiceLocator.getInstance().getFacade(MasterDataFacadeLocal.class);
 					for(MasterDataVO vo : local.getMasterData(voEntity.getEntity(), null, true)) {
 						try {
 							local.remove(voEntity.getEntity(), vo, false);
@@ -529,29 +550,29 @@ public class MetaDataFacadeBean extends NuclosFacadeBean implements MetaDataFaca
 		CollectableComparison compWorkflowSubEntity1 = SearchConditionUtils.newEOComparison("nuclos_generationSubentity", "entitySource", ComparisonOperator.EQUAL, voEntity.getEntity(), MetaDataServerProvider.getInstance());
 		CollectableComparison compWorkflowSubEntity2 = SearchConditionUtils.newEOComparison("nuclos_generationSubentity", "entityTarget", ComparisonOperator.EQUAL, voEntity.getEntity(), MetaDataServerProvider.getInstance());
 		CompositeCollectableSearchCondition searchWorkflowSubEntity = SearchConditionUtils.or(compWorkflowSubEntity1, compWorkflowSubEntity2);
-		Collection<MasterDataVO> colWorkflowSubEntity = getMasterDataFacade().getMasterData("nuclos_generationSubentity", searchWorkflowSubEntity, true);
+		Collection<MasterDataVO> colWorkflowSubEntity = masterDataFacade.getMasterData("nuclos_generationSubentity", searchWorkflowSubEntity, true);
 		for(MasterDataVO voWorkflowSubEntity : colWorkflowSubEntity) {
-			getMasterDataFacade().remove("nuclos_generationSubentity", voWorkflowSubEntity, true);
+			masterDataFacade.remove("nuclos_generationSubentity", voWorkflowSubEntity, true);
 		}
 
 		// delete workflow
 		CollectableComparison compWorkflow1 = SearchConditionUtils.newEOComparison("nuclos_generation", "sourceModule", ComparisonOperator.EQUAL, voEntity.getEntity(), MetaDataServerProvider.getInstance());
 		CollectableComparison compWorkflow2 = SearchConditionUtils.newEOComparison("nuclos_generation", "targetModule", ComparisonOperator.EQUAL, voEntity.getEntity(), MetaDataServerProvider.getInstance());
 		CompositeCollectableSearchCondition searchWorkflow = SearchConditionUtils.or(compWorkflow1, compWorkflow2);
-		Collection<MasterDataVO> colWorkflow = getMasterDataFacade().getMasterData("nuclos_generation", searchWorkflow, true);
+		Collection<MasterDataVO> colWorkflow = masterDataFacade.getMasterData("nuclos_generation", searchWorkflow, true);
 		for(MasterDataVO voWorkflow : colWorkflow) {
 			CollectableComparison compWorkflowRule = SearchConditionUtils.newEOComparison("nuclos_rulegeneration", "generation", ComparisonOperator.EQUAL, voWorkflow.getId(), MetaDataServerProvider.getInstance());
-			for(MasterDataVO voWorkflowRule : getMasterDataFacade().getMasterData("nuclos_rulegeneration", compWorkflowRule, true)) {
-				getMasterDataFacade().remove("nuclos_rulegeneration", voWorkflowRule, true);
+			for(MasterDataVO voWorkflowRule : masterDataFacade.getMasterData("nuclos_rulegeneration", compWorkflowRule, true)) {
+				masterDataFacade.remove("nuclos_rulegeneration", voWorkflowRule, true);
 			}
-			getMasterDataFacade().remove("nuclos_generation", voWorkflow, true);
+			masterDataFacade.remove("nuclos_generation", voWorkflow, true);
 		}
 
 		// delete import structure
 		CollectableComparison comp = SearchConditionUtils.newEOComparison("nuclos_import", "entity", ComparisonOperator.EQUAL, voEntity.getEntity(), MetaDataServerProvider.getInstance());
-		Collection<MasterDataVO> colImportStructure = getMasterDataFacade().getMasterData("nuclos_import", comp, true);
+		Collection<MasterDataVO> colImportStructure = masterDataFacade.getMasterData("nuclos_import", comp, true);
 		for(MasterDataVO voImportStructure : colImportStructure) {
-			getMasterDataFacade().remove("nuclos_import", voImportStructure, true);
+			masterDataFacade.remove("nuclos_import", voImportStructure, true);
 		}
 
 		// delete statemodel
@@ -1215,7 +1236,7 @@ public class MetaDataFacadeBean extends NuclosFacadeBean implements MetaDataFaca
 				if(postsize > 0)
 					sJavaType = "java.lang.Double";
 
-				MasterDataMetaVO metaFieldVO = getMasterDataFacade().getMetaData(NuclosEntity.ENTITYFIELD.getEntityName());
+				MasterDataMetaVO metaFieldVO = masterDataFacade.getMetaData(NuclosEntity.ENTITYFIELD.getEntityName());
 				MasterDataVO mdFieldVO = new MasterDataVO(metaFieldVO, false);
 
 				mdFieldVO.setField("foreignentityfield", null);
@@ -1273,7 +1294,7 @@ public class MetaDataFacadeBean extends NuclosFacadeBean implements MetaDataFaca
 				if(postsize > 0)
 					sJavaType = "java.lang.Double";
 
-				MasterDataMetaVO metaFieldVO = getMasterDataFacade().getMetaData(NuclosEntity.ENTITYFIELD.getEntityName());
+				MasterDataMetaVO metaFieldVO = masterDataFacade.getMetaData(NuclosEntity.ENTITYFIELD.getEntityName());
 				MasterDataVO mdFieldVO = new MasterDataVO(metaFieldVO, false);
 
 				mdFieldVO.setField("foreignentityfield", null);
@@ -1304,7 +1325,7 @@ public class MetaDataFacadeBean extends NuclosFacadeBean implements MetaDataFaca
 
 			rsCols.close();
 
-			metaNew = getMasterDataFacade().getMetaData(sEntity);
+			metaNew = masterDataFacade.getMetaData(sEntity);
 
 			String sqlSelect = "select * from " + schema + "." + table;
 			Statement stmt = connect.createStatement();
@@ -1484,13 +1505,13 @@ public class MetaDataFacadeBean extends NuclosFacadeBean implements MetaDataFaca
 	@RolesAllowed("Login")
 	public Collection<MasterDataVO> hasEntityFieldInImportStructure(String sEntity, String sField) {
 		CollectableComparison comp = SearchConditionUtils.newEOComparison("nuclos_import", "entity", ComparisonOperator.EQUAL, sEntity, MetaDataServerProvider.getInstance());
-		Collection<MasterDataVO> colImportStructure = getMasterDataFacade().getMasterData("nuclos_import", comp, true);
+		Collection<MasterDataVO> colImportStructure = masterDataFacade.getMasterData("nuclos_import", comp, true);
 		for(MasterDataVO voImportStructure : colImportStructure) {
 			String sImport = (String)voImportStructure.getField("name");
 			CollectableComparison compAttribute1 = SearchConditionUtils.newEOComparison("nuclos_importattribute", "import", ComparisonOperator.EQUAL, sImport, MetaDataServerProvider.getInstance());
 			CollectableComparison compAttribute2 = SearchConditionUtils.newEOComparison("nuclos_importattribute", "attribute", ComparisonOperator.EQUAL, sField, MetaDataServerProvider.getInstance());
 			CompositeCollectableSearchCondition search = SearchConditionUtils.and(compAttribute1, compAttribute2);
-			Collection<MasterDataVO> colImportAttribute = getMasterDataFacade().getMasterData("nuclos_importattribute", search, true);
+			Collection<MasterDataVO> colImportAttribute = masterDataFacade.getMasterData("nuclos_importattribute", search, true);
 			if(colImportAttribute.size() > 0)
 				return colImportStructure;
 		}

@@ -28,18 +28,18 @@ import org.springframework.transaction.annotation.Transactional;
  * <br>Created by Novabit Informationssysteme GmbH
  * <br>Please visit <a href="http://www.novabit.de">www.novabit.de</a>
 */
-// @Stateless
-// @Remote(TestFacadeRemote.class)
 @Transactional
 @RolesAllowed("PerformTests")
 public class TestFacadeBean extends NuclosFacadeBean implements TestFacadeRemote {
+	
+	public TestFacadeBean() {
+	}
 
 	/**
 	 * Used for testing serialization of CollectableSearchCondition.
 	 * @param clctcond
 	 * @return clctcond itself
 	 */
-	@Override
 	public CollectableSearchCondition testSerialization(CollectableSearchCondition clctcond) {
 		return clctcond;
 	}
@@ -50,7 +50,6 @@ public class TestFacadeBean extends NuclosFacadeBean implements TestFacadeRemote
 	 * @param topic    the topic
 	 * @param message  the message
 	 */
-	@Override
 	public void testClientNotification(String topic, String message) {
 		NuclosJMSUtils.sendMessage(message, topic);
 	}

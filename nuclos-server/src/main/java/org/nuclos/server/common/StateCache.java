@@ -39,6 +39,7 @@ import org.nuclos.server.statemodel.ejb3.StateFacadeLocal;
 import org.nuclos.server.statemodel.valueobject.StateModelUsagesCache;
 import org.nuclos.server.statemodel.valueobject.StateTransitionVO;
 import org.nuclos.server.statemodel.valueobject.StateVO;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * A cache for States.
@@ -82,15 +83,18 @@ public class StateCache {
 		INSTANCE = this;
 	}
 	
-	public void setStateFacadeLocal(StateFacadeLocal stateFacadeLocal) {
+	@Autowired
+	final void setStateFacadeLocal(StateFacadeLocal stateFacadeLocal) {
 		this.statefacade = stateFacadeLocal;
 	}
 	
-	public void setMasterDataFacadeLocal(MasterDataFacadeLocal masterDataFacadeLocal) {
+	@Autowired
+	final void setMasterDataFacadeLocal(MasterDataFacadeLocal masterDataFacadeLocal) {
 		this.mdLocal = masterDataFacadeLocal;
 	}
 	
-	public void setDataBaseHelper(SpringDataBaseHelper dataBaseHelper) {
+	@Autowired
+	final void setDataBaseHelper(SpringDataBaseHelper dataBaseHelper) {
 		this.dataBaseHelper = dataBaseHelper;
 	}
 	
@@ -101,7 +105,7 @@ public class StateCache {
 	private StateFacadeLocal getStateFacade() {
 		/*
 		if (statefacade == null) {
-			statefacade = ServiceLocator.getInstance().getFacade(StateFacadeLocal.class);
+			statefacade = ServerServiceLocator.getInstance().getFacade(StateFacadeLocal.class);
 		}
 		 */
 		return statefacade;
@@ -110,7 +114,7 @@ public class StateCache {
 	private MasterDataFacadeLocal getMasterDataFacade() {
 		/*
 		if (mdLocal == null)
-			mdLocal = ServiceLocator.getInstance().getFacade(MasterDataFacadeLocal.class);
+			mdLocal = ServerServiceLocator.getInstance().getFacade(MasterDataFacadeLocal.class);
 		 */
 		return mdLocal;
 	}

@@ -45,6 +45,7 @@ import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 import org.nuclos.server.mbean.MBeanAgent;
 import org.nuclos.server.mbean.RuleCacheMBean;
 import org.nuclos.server.ruleengine.valueobject.RuleVO;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * A cache for rules.
@@ -98,11 +99,13 @@ public class RuleCache implements RuleCacheMBean {
 		return INSTANCE;
 	}
 	
-	public void setDataBaseHelper(SpringDataBaseHelper dataBaseHelper) {
+	@Autowired
+	final void setDataBaseHelper(SpringDataBaseHelper dataBaseHelper) {
 		this.dataBaseHelper = dataBaseHelper;
 	}
 	
-	public void setMasterDataFacadeLocal(MasterDataFacadeLocal masterDataFacadeLocal) {
+	@Autowired
+	final void setMasterDataFacadeLocal(MasterDataFacadeLocal masterDataFacadeLocal) {
 		this.mdFacade = masterDataFacadeLocal;
 	}
 

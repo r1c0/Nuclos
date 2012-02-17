@@ -67,13 +67,14 @@ import org.nuclos.server.dblayer.query.DbQuery;
 import org.nuclos.server.dblayer.query.DbQueryBuilder;
 import org.nuclos.server.jms.NuclosJMSUtils;
 import org.nuclos.server.masterdata.ejb3.MasterDataFacadeHelper;
+import org.nuclos.server.masterdata.ejb3.MasterDataFacadeLocal;
 import org.nuclos.server.masterdata.valueobject.DependantMasterDataMap;
 import org.nuclos.server.masterdata.valueobject.MasterDataMetaVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 import org.nuclos.server.ruleengine.NuclosBusinessRuleException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationAdapter;
@@ -86,9 +87,8 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
  * <br>Created by Novabit Informationssysteme GmbH
  * <br>Please visit <a href="http://www.novabit.de">www.novabit.de</a>
  */
-@Configurable
 @Transactional
-public class LocaleFacadeBean extends NuclosFacadeBean implements LocaleFacadeLocal, LocaleFacadeRemote {
+public class LocaleFacadeBean implements LocaleFacadeRemote {
 
 	private static final Logger LOG = Logger.getLogger(LocaleFacadeBean.class);
 
@@ -120,25 +120,31 @@ public class LocaleFacadeBean extends NuclosFacadeBean implements LocaleFacadeLo
 	
 	private SpringDataBaseHelper dataBaseHelper;
 	
+	private MasterDataFacadeLocal masterDataFacade;
+	
 	public LocaleFacadeBean() {
 	}
 	
 	@Autowired
-	void setMasterDataFacadeHelper(MasterDataFacadeHelper masterDataFacadeHelper) {
+	final void setMasterDataFacadeHelper(MasterDataFacadeHelper masterDataFacadeHelper) {
 		this.masterDataFacadeHelper = masterDataFacadeHelper;
 	}
 	
 	@Autowired
-	void setServerParameterProvider(ServerParameterProvider serverParameterProvider) {
+	final void setServerParameterProvider(ServerParameterProvider serverParameterProvider) {
 		this.serverParameterProvider = serverParameterProvider;
 	}
 	
 	@Autowired
-	void setDataBaseHelper(SpringDataBaseHelper dataBaseHelper) {
+	final void setDataBaseHelper(SpringDataBaseHelper dataBaseHelper) {
 		this.dataBaseHelper = dataBaseHelper;
 	}
-
-	@Override
+	
+	@Autowired
+	final void setMasterDataFacade(MasterDataFacadeLocal masterDataFacade) {
+		this.masterDataFacade = masterDataFacade;
+	}
+	
 	public void flushInternalCaches() {
 		internalFlush();
 	}
@@ -156,7 +162,6 @@ public class LocaleFacadeBean extends NuclosFacadeBean implements LocaleFacadeLo
 		}
 	}
 
-	@Override
 	public LocaleInfo getDefaultLocale() throws CommonFatalException {
 		return getBestLocale(LocaleInfo.parseTag(getDefaultTag()));
 	}
@@ -173,7 +178,6 @@ public class LocaleFacadeBean extends NuclosFacadeBean implements LocaleFacadeLo
 	 *
 	 * @return the user locale (or the default locale if not set)
 	 */
-	@Override
 	public LocaleInfo getUserLocale() {
 		return getBestLocale(LocaleInfo.parseTag(LocaleContextHolder.getLocale().toString()));
 	}
@@ -194,7 +198,6 @@ public class LocaleFacadeBean extends NuclosFacadeBean implements LocaleFacadeLo
 	 * @return the resulting resource bundle
 	 * @throws CommonFatalException
 	 */
-	@Override
 	public HashResourceBundle getResourceBundle(LocaleInfo localeInfo) throws CommonFatalException {
 		HashResourceBundle result = localeInfo == null ? CACHE.get(localeInfo) : null;
 		if (result == null) {
@@ -234,7 +237,6 @@ public class LocaleFacadeBean extends NuclosFacadeBean implements LocaleFacadeLo
 		return result;
 	}
 
-	@Override
 	public DateFormat getDateFormat() {
 		LocaleInfo userLocale = getUserLocale();
 		try {
@@ -247,7 +249,7 @@ public class LocaleFacadeBean extends NuclosFacadeBean implements LocaleFacadeLo
 
 	private Map<LocaleInfo, String> getLocaleInfosWithParent() {
 		Map<LocaleInfo, String> map = new HashMap<LocaleInfo, String>();
-		for (MasterDataVO mdvo : getMasterDataFacade().getMasterData(NuclosEntity.LOCALE.getEntityName(), null, true)) {
+		for (MasterDataVO mdvo : masterDataFacade.getMasterData(NuclosEntity.LOCALE.getEntityName(), null, true)) {
 			LocaleInfo localeInfo = new LocaleInfo(mdvo.getField("name", String.class),
 				mdvo.getField("description", String.class), mdvo.getIntId(),
 				mdvo.getField("language", String.class), mdvo.getField("country", String.class));
@@ -255,21 +257,6 @@ public class LocaleFacadeBean extends NuclosFacadeBean implements LocaleFacadeLo
 			map.put(localeInfo, parentTag);
 		}
 		return map;
-		/*
-   	return NuclosSQLUtils.runSelect(NuclosDataSources.getDefaultDS(), "select * from t_md_locale",
-   		new NuclosSQLUtils.ResultSetRunner<Map<LocaleInfo, String>>() {
-				@Override
-				public Map<LocaleInfo, String> perform(ResultSet rs) throws SQLException {
-					while (rs.next()) {
-						LocaleInfo localeInfo = new LocaleInfo(rs.getString("strdescription"), rs.getInt("intid"),
-							rs.getString("strlanguagecode"), rs.getString("strcountrycode"));
-						String parentTag = rs.getString("strparent");
-						map.put(localeInfo, parentTag);
-					}
-					return map;
-				}
-   		});
-		 */
 	}
 
 	private LocaleInfo getLocaleInfoForId(final Integer iLocale) {
@@ -287,7 +274,6 @@ public class LocaleFacadeBean extends NuclosFacadeBean implements LocaleFacadeLo
 	 * @return the locales
 	 * @throws CommonFatalException
 	 */
-	@Override
 	public Collection<LocaleInfo> getAllLocales(boolean includeNull) {
 		Collection<LocaleInfo> locales = CollectionUtils.sorted(getLocaleInfosWithParent().keySet(), LocaleInfo.DESCRIPTION_COMPARATOR);
 		if (!includeNull)
@@ -296,7 +282,6 @@ public class LocaleFacadeBean extends NuclosFacadeBean implements LocaleFacadeLo
 	}
 
 
-	@Override
 	public Collection<MasterDataVO> getLocaleResourcesForParent(LocaleInfo localeInfo) {
 		List<LocaleInfo> parentChain = getParentChain(localeInfo);
 		return parentChain.size() >= 2 ? getResourcesAsVO(parentChain.get(parentChain.size() - 2)) : Collections.<MasterDataVO>emptyList();
@@ -308,7 +293,7 @@ public class LocaleFacadeBean extends NuclosFacadeBean implements LocaleFacadeLo
 		Collections.reverse(parentChain);
 		for(LocaleInfo li : parentChain) {
 			CollectableSearchCondition cond = getResourcesSearchCondition(li);
-			TruncatableCollection<MasterDataVO> lst = getMasterDataFacade().getMasterData(NuclosEntity.LOCALERESOURCE.getEntityName(), cond, true);
+			TruncatableCollection<MasterDataVO> lst = masterDataFacade.getMasterData(NuclosEntity.LOCALERESOURCE.getEntityName(), cond, true);
 			for (MasterDataVO mdvo : lst) {
 				res.put((String) mdvo.getField(F_RESOURCEID), mdvo);
 			}
@@ -316,7 +301,6 @@ public class LocaleFacadeBean extends NuclosFacadeBean implements LocaleFacadeLo
 		return res.values();
 	}
 
-	@Override
 	public String getResourceById(LocaleInfo localeInfo, String sresourceId) {
 		MasterDataVO mdvo = XMLEntities.getData(NuclosEntity.LOCALERESOURCE).findVO("resourceID", sresourceId, "locale", localeInfo.language);
 		if (mdvo != null) {
@@ -333,7 +317,6 @@ public class LocaleFacadeBean extends NuclosFacadeBean implements LocaleFacadeLo
 		return CollectionUtils.getFirst(dataBaseHelper.getDbAccess().executeQuery(query));
 	}
 
-	@Override
 	public Map<String, String> getAllResourcesById(String resourceId) {
 		Map<String, String> map = new HashMap<String, String>();
 		for (MasterDataVO mdvo : XMLEntities.getData(NuclosEntity.LOCALERESOURCE).findAllVO("resourceID", resourceId)) {
@@ -352,9 +335,11 @@ public class LocaleFacadeBean extends NuclosFacadeBean implements LocaleFacadeLo
 		return map;
 	}
 
-	@Override
-	public Object modify(MasterDataVO mdvo, DependantMasterDataMap mpDependants) throws NuclosBusinessRuleException, CommonCreateException, CommonFinderException, CommonRemoveException, CommonStaleVersionException, CommonValidationException, CommonPermissionException {
-		Object oId = this.getMasterDataFacade().modify(NuclosEntity.LOCALE.getEntityName(), mdvo, new DependantMasterDataMap());
+	public Object modify(MasterDataVO mdvo, DependantMasterDataMap mpDependants) 
+			throws NuclosBusinessRuleException, CommonCreateException, CommonFinderException, 
+			CommonRemoveException, CommonStaleVersionException, CommonValidationException, CommonPermissionException {
+		
+		Object oId = masterDataFacade.modify(NuclosEntity.LOCALE.getEntityName(), mdvo, new DependantMasterDataMap());
 		this.modifyDependants(mpDependants.getData(NuclosEntity.LOCALERESOURCE.getEntityName()), getLocaleInfoForId((Integer)mdvo.getField(R_PARENT + "Id")));
 
 		return oId;
@@ -363,61 +348,8 @@ public class LocaleFacadeBean extends NuclosFacadeBean implements LocaleFacadeLo
 	private void modifyDependants(Collection<EntityObjectVO> collmdvo, LocaleInfo parentLocale) {
 		// TODO_AUTOSYNC
 		throw new UnsupportedOperationException("TODO");
-		/*
-   	// TODO_AUTOSYNC: localetext "weggefallen"
-      MasterDataMetaVO localeResMeta = getMasterDataFacade().getMetaData(E_LOCALERESOURCE);
-      try {
-         for (MasterDataVO mdvo : collmdvo) {
-
-            Integer localeId = (Integer)mdvo.getField(R_LOCALE_ID);
-            LocaleInfo localeInfo = getLocaleInfoForId(localeId);
-            String resourceId = (String)mdvo.getField(F_RESOURCEID);
-            String localeText = (String)mdvo.getField("localetext");
-
-            if (mdvo.getId() != null) {
-               if (getResourceById(parentLocale, resourceId) != null) {
-
-                  MasterDataVO mdvo_db; // = this.getMasterDataFacade().get(E_LOCALERESOURCE, mdvo.getId());
-
-                  CollectableSearchCondition cnd = SearchConditionUtils.and(
-                  	getSearchCondition(localeInfo),
-                  	SearchConditionUtils.newMDComparison(localeResMeta, F_RESOURCEID, ComparisonOperator.EQUAL, resourceId));
-
-                  Collection<MasterDataVO> c = getMasterDataFacade().getMasterData(E_LOCALERESOURCE, cnd, true);
-                  if(c.isEmpty())
-                     mdvo_db = null;
-                  else
-                     mdvo_db = c.iterator().next();
-
-                  Integer localeId_db = (Integer)mdvo_db.getField(R_LOCALE_ID);
-                  String resourceId_db = (String)mdvo_db.getField(F_RESOURCEID);
-
-                  if ((localeId_db).equals(parentLocale.localeId) && resourceId_db.equals(resourceId)) {
-                     if (!mdvo.getField(F_LOCALETEXT).equals(mdvo_db.getField(F_TEXT))) {
-                        this.update(resourceId, localeInfo, localeText);
-                     }
-                  }
-                  else if (!mdvo.getField(F_LOCALETEXT).equals(mdvo_db.getField(F_TEXT))) {
-                     this.update(resourceId, localeInfo, localeText);
-                  }
-               }
-               else {
-                  this.setResourceForLocale(resourceId, localeInfo, localeText);
-               }
-            }
-            else {
-               this.setResourceForLocale(null, localeInfo, localeText);
-            }
-         }
-      }
-      catch (Exception ex) {
-         throw new CommonFatalException(ex);
-      }
-      internalFlush();
-		 */
 	}
 
-	@Override
 	public void update(String resourceId, LocaleInfo localeInfo, String text) {
 		if (text != null) {
 			dataBaseHelper.execute(DbStatementUtils.updateValues("T_MD_LOCALERESOURCE",
@@ -426,7 +358,6 @@ public class LocaleFacadeBean extends NuclosFacadeBean implements LocaleFacadeLo
 		}
 	}
 
-	@Override
 	public void deleteResource(String resourceId) {
 		if (resourceId != null) {
 			dataBaseHelper.execute(DbStatementUtils.deleteFrom("T_MD_LOCALERESOURCE",
@@ -435,7 +366,6 @@ public class LocaleFacadeBean extends NuclosFacadeBean implements LocaleFacadeLo
 		}
 	}
 
-	@Override
 	public void deleteResourceFromLocale(String resourceId, LocaleInfo localeInfo) {
 		if (resourceId != null) {
 			dataBaseHelper.execute(DbStatementUtils.deleteFrom("T_MD_LOCALERESOURCE",
@@ -445,11 +375,9 @@ public class LocaleFacadeBean extends NuclosFacadeBean implements LocaleFacadeLo
 		}
 	}
 
-
 	/**
 	 * get resource by the given id
 	 */
-	@Override
 	public String getResource(String resourceId) {
 		String text = getResourceById(getDefaultLocale(), resourceId);
 		if (text == null) {
@@ -461,7 +389,6 @@ public class LocaleFacadeBean extends NuclosFacadeBean implements LocaleFacadeLo
 	/**
 	 * get resources by the given id
 	 */
-	@Override
 	public Collection<MasterDataVO> getResourcesAsVO(Collection<String> coll, final LocaleInfo localeInfo) {
 		final MasterDataMetaVO mdmetavo = MasterDataMetaCache.getInstance().getMetaData(NuclosEntity.LOCALERESOURCE);
 
@@ -479,7 +406,6 @@ public class LocaleFacadeBean extends NuclosFacadeBean implements LocaleFacadeLo
 			}});
 	}
 
-	@Override
 	public String setResourceForLocale(String sResourceId, LocaleInfo localeInfo, String sText) {
 		internalFlush();
 		if (sText != null) {
@@ -495,7 +421,6 @@ public class LocaleFacadeBean extends NuclosFacadeBean implements LocaleFacadeLo
 		return null;
 	}
 
-	@Override
 	public String insert(String sResourceId, LocaleInfo localeInfo, String sText) {
 		return insert(sResourceId, localeInfo, sText, false);
 	}
@@ -520,12 +445,10 @@ public class LocaleFacadeBean extends NuclosFacadeBean implements LocaleFacadeLo
 		return sResourceId;
 	}
 
-	@Override
 	public String setDefaultResource(String sResourceId, String stext) {
 		return setResourceForLocale(sResourceId, getDefaultLocale(), stext);
 	}
 
-	@Override
 	public String createResource(String sText) {
 		boolean inInternalTranslation = false;  // Novabit only
 
@@ -539,10 +462,8 @@ public class LocaleFacadeBean extends NuclosFacadeBean implements LocaleFacadeLo
 			}
 		}
 		return null;
-
 	}
 
-	@Override
 	public void updateResource(String resourceId, String text) {
 		if (text != null) {
 			update(resourceId, getDefaultLocale(), text);
@@ -559,20 +480,18 @@ public class LocaleFacadeBean extends NuclosFacadeBean implements LocaleFacadeLo
 	 * @return the locale
 	 * @throws CommonFatalException
 	 */
-	@Override
 	public MasterDataVO getLocaleVO(LocaleInfo localeInfo) {
 		LocaleInfo existing = getBestLocale(localeInfo);
 		if (!existing.equals(localeInfo))
 			return null;
 		try {
-			return getMasterDataFacade().get(NuclosEntity.LOCALE.getEntityName(), existing.localeId);
+			return masterDataFacade.get(NuclosEntity.LOCALE.getEntityName(), existing.localeId);
 		}
 		catch(Exception e) {
 			throw new CommonFatalException(e);
 		}
 	}
 
-	@Override
 	public LocaleInfo getBestLocale(LocaleInfo localeInfo) {
 		List<LocaleInfo> parentChain = getParentChain(localeInfo);
 		return parentChain.get(0);
@@ -594,7 +513,6 @@ public class LocaleFacadeBean extends NuclosFacadeBean implements LocaleFacadeLo
 		return SearchConditionUtils.newMDComparison(MasterDataMetaCache.getInstance().getMetaData(NuclosEntity.LOCALERESOURCE), F_LOCALE, ComparisonOperator.EQUAL, localeInfo.getTag());
 	}
 
-	@Override
 	@RolesAllowed("Login")
 	public List<LocaleInfo> getParentChain(final LocaleInfo localeInfo) {
 		Map<LocaleInfo, String> localesWithParent = getLocaleInfosWithParent();
@@ -632,7 +550,6 @@ public class LocaleFacadeBean extends NuclosFacadeBean implements LocaleFacadeLo
 		return (parent != null) ? parent : LocaleInfo.getStandardParentTag(tag);
 	}
 
-	@Override
 	public Date getLastChange() {
 		DbQueryBuilder builder = dataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<Date> query = builder.createQuery(Date.class);
@@ -641,7 +558,6 @@ public class LocaleFacadeBean extends NuclosFacadeBean implements LocaleFacadeLo
 		return dataBaseHelper.getDbAccess().executeQuerySingleResult(query);
 	}
 
-	@Override
 	public boolean isResourceId(String s) {
 		if (s == null) {
 			return false;
@@ -652,6 +568,10 @@ public class LocaleFacadeBean extends NuclosFacadeBean implements LocaleFacadeLo
 		DbFrom t = query.from("T_MD_LOCALERESOURCE").alias(SystemFields.BASE_ALIAS);
 		query.select(t.baseColumn("INTID", Long.class)).where(builder.equal(builder.upper(t.baseColumn("STRRESOURCEID", String.class)), s.toUpperCase()));
 		return dataBaseHelper.getDbAccess().executeQuery(query).size() > 0;
+	}
+	
+	final String getCurrentUserName() {
+		return SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
 	}
 	
 	@PreDestroy

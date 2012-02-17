@@ -53,6 +53,7 @@ import org.nuclos.common2.exception.CommonStaleVersionException;
 import org.nuclos.common2.exception.CommonValidationException;
 import org.nuclos.server.common.MetaDataServerProvider;
 import org.nuclos.server.common.ServerParameterProvider;
+import org.nuclos.server.common.ServerServiceLocator;
 import org.nuclos.server.common.ejb3.LocaleFacadeLocal;
 import org.nuclos.server.dblayer.query.DbFrom;
 import org.nuclos.server.dblayer.query.DbQuery;
@@ -75,20 +76,22 @@ import org.springframework.transaction.annotation.Transactional;
  * <br>Please visit <a href="http://www.novabit.de">www.novabit.de</a>
  */
 @Transactional
-public class JobControlFacadeBean extends MasterDataFacadeBean implements JobControlFacadeLocal, JobControlFacadeRemote {
+public class JobControlFacadeBean extends MasterDataFacadeBean implements JobControlFacadeRemote {
 
 	private static final Logger LOG = Logger.getLogger(JobControlFacadeBean.class);
 	
 	private SchedulerControlFacadeLocal scheduler;
+	
+	public JobControlFacadeBean() {
+	}
 
 	private SchedulerControlFacadeLocal getScheduler() {
 		if (scheduler == null) {
-			scheduler = ServiceLocator.getInstance().getFacade(SchedulerControlFacadeLocal.class);
+			scheduler = ServerServiceLocator.getInstance().getFacade(SchedulerControlFacadeLocal.class);
 		}
 		return scheduler;
 	}
 
-	@Override
 	@RolesAllowed("Login")
 	public MasterDataVO create(JobVO job) throws CommonBusinessException {
 		checkWriteAllowed(NuclosEntity.JOBCONTROLLER);
@@ -104,13 +107,12 @@ public class JobControlFacadeBean extends MasterDataFacadeBean implements JobCon
 		mdVO.setField("resultdetails", null);
 		mdVO.setField("nextfiretime", null);
 
-		MasterDataFacadeLocal mdFacade = ServiceLocator.getInstance().getFacade(MasterDataFacadeLocal.class);
+		MasterDataFacadeLocal mdFacade = ServerServiceLocator.getInstance().getFacade(MasterDataFacadeLocal.class);
 		MasterDataVO result = mdFacade.create(NuclosEntity.JOBCONTROLLER.getEntityName(), mdVO, job.getDependants());
 		getScheduler().addJob(new JobVO(result));
 		return result;
 	}
 
-	@Override
 	@RolesAllowed("Login")
 	public Object modify(JobVO job) throws CommonBusinessException {
 		checkWriteAllowed(NuclosEntity.JOBCONTROLLER);
@@ -118,7 +120,7 @@ public class JobControlFacadeBean extends MasterDataFacadeBean implements JobCon
 		// try to generate cron expression and validate
 		validate(job);
 
-		MasterDataFacadeLocal mdFacade = ServiceLocator.getInstance().getFacade(MasterDataFacadeLocal.class);
+		MasterDataFacadeLocal mdFacade = ServerServiceLocator.getInstance().getFacade(MasterDataFacadeLocal.class);
 
 		boolean isScheduled;
 
@@ -144,12 +146,9 @@ public class JobControlFacadeBean extends MasterDataFacadeBean implements JobCon
 				mdFacade.modify(NuclosEntity.JOBCONTROLLER.getEntityName(), mdvo, null);
 			}
 		}
-
 		return result;
 	}
 
-
-	@Override
 	@RolesAllowed("Login")
     public void remove(JobVO job) throws CommonBusinessException {
 		checkWriteAllowed(NuclosEntity.JOBCONTROLLER);
@@ -161,7 +160,7 @@ public class JobControlFacadeBean extends MasterDataFacadeBean implements JobCon
 			}
 		}
 
-		MasterDataFacadeLocal mdFacade = ServiceLocator.getInstance().getFacade(MasterDataFacadeLocal.class);
+		MasterDataFacadeLocal mdFacade = ServerServiceLocator.getInstance().getFacade(MasterDataFacadeLocal.class);
 		mdFacade.remove(NuclosEntity.JOBCONTROLLER.getEntityName(), job.toMasterDataVO(), true);
     }
 
@@ -202,7 +201,7 @@ public class JobControlFacadeBean extends MasterDataFacadeBean implements JobCon
 			}
 
 			IntervalUnit intervalUnit = org.nuclos.common2.KeyEnum.Utils.findEnum(IntervalUnit.class, unit);
-			Calendar c = Calendar.getInstance(ServiceLocator.getInstance().getFacade(LocaleFacadeLocal.class).getUserLocale().toLocale());
+			Calendar c = Calendar.getInstance(ServerServiceLocator.getInstance().getFacade(LocaleFacadeLocal.class).getUserLocale().toLocale());
 			c.setTime(startdate);
 			int iHour = Integer.parseInt(starttime.split(":")[0]);
 			int iMinute = Integer.parseInt(starttime.split(":")[1]);
@@ -223,7 +222,6 @@ public class JobControlFacadeBean extends MasterDataFacadeBean implements JobCon
 	 * Execute this method in a separate transaction (TransactionAttributeType.REQUIRES_NEW)
 	 * to avoid transaction isolation locks that last for the complete job execution.
 	 */
-	@Override
 	@Transactional(propagation=Propagation.REQUIRES_NEW)
     public Pair<JobVO, MasterDataVO> prepare(Object oId) {
 		try {
@@ -314,7 +312,6 @@ public class JobControlFacadeBean extends MasterDataFacadeBean implements JobCon
 	 * @param jobVO
 	 * @throws CommonBusinessException
 	 */
-	@Override
 	@RolesAllowed("Login")
 	public void scheduleJob(Object oId) throws CommonBusinessException {
 		checkWriteAllowed(NuclosEntity.JOBCONTROLLER);
@@ -341,7 +338,6 @@ public class JobControlFacadeBean extends MasterDataFacadeBean implements JobCon
 	 * @param jobVO
 	 * @throws CommonBusinessException
 	 */
-	@Override
 	@RolesAllowed("Login")
 	public void unscheduleJob(Object oId) throws CommonBusinessException {
 		checkWriteAllowed(NuclosEntity.JOBCONTROLLER);
@@ -358,7 +354,6 @@ public class JobControlFacadeBean extends MasterDataFacadeBean implements JobCon
 	/**
 	 * @param oId - id of job to execute
 	 */
-	@Override
 	@RolesAllowed("Login")
 	@Transactional(propagation=Propagation.NOT_SUPPORTED)
 	public void startJobImmediately(Object oId) throws CommonBusinessException {
@@ -378,7 +373,6 @@ public class JobControlFacadeBean extends MasterDataFacadeBean implements JobCon
 	 * @throws CommonCreateException
 	 * @throws NuclosBusinessRuleException
 	 */
-	@Override
 	@Transactional(propagation=Propagation.REQUIRES_NEW)
 	public void writeToJobRunMessages(Integer iSessionId, String sLevel, String sMessage, String sRuleName) {
 		try {
@@ -456,7 +450,6 @@ public class JobControlFacadeBean extends MasterDataFacadeBean implements JobCon
 	 * @param sType
 	 * @return
 	 */
-	@Override
 	@RolesAllowed("Login")
 	public Collection<String> getDBObjects()  throws CommonPermissionException {
 		checkReadAllowed(NuclosEntity.JOBCONTROLLER);
@@ -468,7 +461,6 @@ public class JobControlFacadeBean extends MasterDataFacadeBean implements JobCon
 		});
 	}
 
-	@Override
 	@Transactional(propagation=Propagation.REQUIRES_NEW)
     public void setJobExecutionResult(Object oResult, Date dFireTime, Date dNextFireTime, JobVO jobVO, MasterDataVO jobRun) {
 	    try {
@@ -513,7 +505,6 @@ public class JobControlFacadeBean extends MasterDataFacadeBean implements JobCon
 	    }
     }
 
-	@Override
 	@Transactional(propagation=Propagation.REQUIRES_NEW)
     public void setJobExecutionResultError(Object oId, Date dFireTime, Date sNextFireTime, Integer iSessionId, String sErrorMessage) {
 	    try {

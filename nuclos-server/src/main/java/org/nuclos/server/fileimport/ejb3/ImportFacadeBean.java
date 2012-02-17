@@ -38,8 +38,8 @@ import org.nuclos.common2.exception.CommonRemoveException;
 import org.nuclos.common2.exception.CommonValidationException;
 import org.nuclos.common2.fileimport.FileImportResult;
 import org.nuclos.common2.fileimport.NuclosFileImportException;
-import org.nuclos.server.common.NuclosScheduler;
 import org.nuclos.server.common.NuclosSystemParameters;
+import org.nuclos.server.common.ServerServiceLocator;
 import org.nuclos.server.common.ejb3.LocaleFacadeLocal;
 import org.nuclos.server.common.ejb3.NuclosFacadeBean;
 import org.nuclos.server.fileimport.AbstractImport;
@@ -52,11 +52,13 @@ import org.nuclos.server.genericobject.valueobject.GenericObjectDocumentFile;
 import org.nuclos.server.masterdata.ejb3.MasterDataFacadeLocal;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataWithDependantsVO;
+import org.nuclos.server.report.NuclosQuartzJob;
 import org.quartz.JobDetail;
 import org.quartz.JobExecutionContext;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.quartz.UnableToInterruptJobException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
@@ -69,56 +71,68 @@ import org.springframework.transaction.interceptor.TransactionAspectSupport;
  * <br>Created by Novabit Informationssysteme GmbH
  * <br>Please visit <a href="http://www.novabit.de">www.novabit.de</a>
  */
-// @Stateless
-// @Remote(ImportFacadeRemote.class)
-// @Local(ImportFacadeLocal.class)
 @RolesAllowed("Login")
 @Transactional
-public class ImportFacadeBean extends NuclosFacadeBean implements ImportFacadeRemote, ImportFacadeLocal {
+public class ImportFacadeBean extends NuclosFacadeBean implements ImportFacadeRemote {
+	
+	private Scheduler nuclosScheduler;
+	
+	private MasterDataFacadeLocal masterDataFacade;
+	
+	public ImportFacadeBean() {
+	}
+	
+	@Autowired
+	final void setNuclosScheduler(Scheduler nuclosScheduler) {
+		this.nuclosScheduler = nuclosScheduler;
+	}	
 
-	@Override
+	@Autowired
+	final void setMasterDataFacade(MasterDataFacadeLocal masterDataFacade) {
+		this.masterDataFacade = masterDataFacade;
+	}
+	
+	private final MasterDataFacadeLocal getMasterDataFacade() {
+		return masterDataFacade;
+	}
+
 	public MasterDataVO createImportStructure(MasterDataWithDependantsVO importStructure) throws CommonBusinessException {
 		checkWriteAllowed(NuclosEntity.IMPORT);
 		ImportUtils.validateImportStructure(importStructure);
 
-		MasterDataFacadeLocal mdfacade = ServiceLocator.getInstance().getFacade(MasterDataFacadeLocal.class);
+		MasterDataFacadeLocal mdfacade = ServerServiceLocator.getInstance().getFacade(MasterDataFacadeLocal.class);
 		return mdfacade.create(NuclosEntity.IMPORT.getEntityName(), importStructure, importStructure.getDependants());
 	}
 
-	@Override
 	public Object modifyImportStructure(MasterDataWithDependantsVO importStructure) throws CommonBusinessException {
 		checkWriteAllowed(NuclosEntity.IMPORT);
 		ImportUtils.validateImportStructure(importStructure);
 
-		MasterDataFacadeLocal mdfacade = ServiceLocator.getInstance().getFacade(MasterDataFacadeLocal.class);
+		MasterDataFacadeLocal mdfacade = ServerServiceLocator.getInstance().getFacade(MasterDataFacadeLocal.class);
 		return mdfacade.modify(NuclosEntity.IMPORT.getEntityName(), importStructure, importStructure.getDependants());
 	}
 
-	@Override
 	public void removeImportStructure(MasterDataVO importStructure) throws CommonBusinessException {
 		checkDeleteAllowed(NuclosEntity.IMPORT);
 
-		MasterDataFacadeLocal mdfacade = ServiceLocator.getInstance().getFacade(MasterDataFacadeLocal.class);
+		MasterDataFacadeLocal mdfacade = ServerServiceLocator.getInstance().getFacade(MasterDataFacadeLocal.class);
 		mdfacade.remove(NuclosEntity.IMPORT.getEntityName(), importStructure, true);
 	}
 
-
-	@Override
 	public MasterDataVO createFileImport(MasterDataWithDependantsVO fileImport) throws CommonBusinessException {
 		checkWriteAllowed(NuclosEntity.IMPORTFILE);
 		ImportUtils.validateFileImport(fileImport);
 
-		MasterDataFacadeLocal mdfacade = ServiceLocator.getInstance().getFacade(MasterDataFacadeLocal.class);
+		MasterDataFacadeLocal mdfacade = ServerServiceLocator.getInstance().getFacade(MasterDataFacadeLocal.class);
 		return mdfacade.create(NuclosEntity.IMPORTFILE.getEntityName(), fileImport, fileImport.getDependants());
 	}
 
-	@Override
 	public Object modifyFileImport(MasterDataWithDependantsVO fileImport) throws CommonBusinessException {
 		checkWriteAllowed(NuclosEntity.IMPORTFILE);
 		ImportUtils.validateFileImport(fileImport);
 
 		if (getImportCorrelationId(fileImport.getIntId()) == null) {
-			MasterDataFacadeLocal mdfacade = ServiceLocator.getInstance().getFacade(MasterDataFacadeLocal.class);
+			MasterDataFacadeLocal mdfacade = ServerServiceLocator.getInstance().getFacade(MasterDataFacadeLocal.class);
 			return mdfacade.modify(NuclosEntity.IMPORTFILE.getEntityName(), fileImport, fileImport.getDependants());
 		}
 		else {
@@ -126,12 +140,11 @@ public class ImportFacadeBean extends NuclosFacadeBean implements ImportFacadeRe
 		}
 	}
 
-	@Override
 	public void removeFileImport(MasterDataVO fileImport) throws CommonBusinessException {
 		checkDeleteAllowed(NuclosEntity.IMPORTFILE);
 
 		if (getImportCorrelationId(fileImport.getIntId()) == null) {
-			MasterDataFacadeLocal mdfacade = ServiceLocator.getInstance().getFacade(MasterDataFacadeLocal.class);
+			MasterDataFacadeLocal mdfacade = ServerServiceLocator.getInstance().getFacade(MasterDataFacadeLocal.class);
 			mdfacade.remove(NuclosEntity.IMPORTFILE.getEntityName(), fileImport, true);
 		}
 		else {
@@ -139,10 +152,9 @@ public class ImportFacadeBean extends NuclosFacadeBean implements ImportFacadeRe
 		}
 	}
 
-	@Override
 	@Transactional(propagation=Propagation.SUPPORTS)
 	public List<FileImportResult> doImport(ImportContext context) throws NuclosFileImportException {
-		ImportFacadeLocal localInterface = ServiceLocator.getInstance().getFacade(ImportFacadeLocal.class);
+		ImportFacadeLocal localInterface = ServerServiceLocator.getInstance().getFacade(ImportFacadeLocal.class);
 
 		MasterDataWithDependantsVO importfilevo;
 		try {
@@ -166,15 +178,15 @@ public class ImportFacadeBean extends NuclosFacadeBean implements ImportFacadeRe
 
 	        // get translations
 	        LocaleInfo info = null;
-	        for (LocaleInfo i : ServiceLocator.getInstance().getFacade(LocaleFacadeLocal.class).getAllLocales(true)) {
+	        for (LocaleInfo i : ServerServiceLocator.getInstance().getFacade(LocaleFacadeLocal.class).getAllLocales(true)) {
 	        	if (i.localeId == context.getLocaleId()) {
 	        		info = i;
 	        	}
 	        }
 	        if (info == null) {
-	        	info = ServiceLocator.getInstance().getFacade(LocaleFacadeLocal.class).getDefaultLocale();
+	        	info = ServerServiceLocator.getInstance().getFacade(LocaleFacadeLocal.class).getDefaultLocale();
 	        }
-	        HashResourceBundle bundle = ServiceLocator.getInstance().getFacade(LocaleFacadeLocal.class).getResourceBundle(info);
+	        HashResourceBundle bundle = ServerServiceLocator.getInstance().getFacade(LocaleFacadeLocal.class).getResourceBundle(info);
 
 	        logger = new ImportLogger(f.getAbsolutePath(), bundle);
         }
@@ -215,7 +227,6 @@ public class ImportFacadeBean extends NuclosFacadeBean implements ImportFacadeRe
 		return result;
 	}
 
-	@Override
 	@Transactional(propagation=Propagation.REQUIRES_NEW)
     public List<FileImportResult> doAtomicImport(AbstractImport instance) throws NuclosFileImportException {
 		try {
@@ -227,7 +238,6 @@ public class ImportFacadeBean extends NuclosFacadeBean implements ImportFacadeRe
 		}
     }
 
-	@Override
 	@Transactional(propagation=Propagation.NOT_SUPPORTED)
     public List<FileImportResult> doNonAtomicImport(AbstractImport instance) throws NuclosFileImportException {
 	    return doImportInternal(instance);
@@ -237,21 +247,16 @@ public class ImportFacadeBean extends NuclosFacadeBean implements ImportFacadeRe
 		return instance.doImport();
 	}
 
-	@Override
     public void stopImport(Integer importfileId) throws NuclosFileImportException {
-		Scheduler scheduler = NuclosScheduler.getInstance().getScheduler();
 		try {
-	        scheduler.interrupt(importfileId.toString(), NuclosScheduler.JOBGROUP_IMPORT);
+	        nuclosScheduler.interrupt(importfileId.toString(), NuclosQuartzJob.JOBGROUP_IMPORT);
         }
         catch(UnableToInterruptJobException e) {
         	throw new NuclosFileImportException("import.exception.stop");
         }
     }
 
-	@Override
     public String doImport(Integer importfileId) throws NuclosFileImportException {
-	    Scheduler scheduler = NuclosScheduler.getInstance().getScheduler();
-
 	    String correlationId = getImportCorrelationId(importfileId);
 
 	    try {
@@ -274,17 +279,17 @@ public class ImportFacadeBean extends NuclosFacadeBean implements ImportFacadeRe
 	    	correlationId = UUID.randomUUID().toString();
 
 	    	try {
-			    if (scheduler.getJobDetail(importfileId.toString(), NuclosScheduler.JOBGROUP_IMPORT) != null) {
-			    	scheduler.deleteJob(importfileId.toString(), NuclosScheduler.JOBGROUP_IMPORT);
+			    if (nuclosScheduler.getJobDetail(importfileId.toString(), NuclosQuartzJob.JOBGROUP_IMPORT) != null) {
+			    	nuclosScheduler.deleteJob(importfileId.toString(), NuclosQuartzJob.JOBGROUP_IMPORT);
 			    }
-			    JobDetail jobDetail = new JobDetail(importfileId.toString(), NuclosScheduler.JOBGROUP_IMPORT, ImportJob.class);
+			    JobDetail jobDetail = new JobDetail(importfileId.toString(), NuclosQuartzJob.JOBGROUP_IMPORT, ImportJob.class);
 		    	jobDetail.getJobDataMap().put("ProcessId", correlationId);
-		    	jobDetail.getJobDataMap().put("LocaleId", ServiceLocator.getInstance().getFacade(LocaleFacadeLocal.class).getUserLocale().localeId);
+		    	jobDetail.getJobDataMap().put("LocaleId", ServerServiceLocator.getInstance().getFacade(LocaleFacadeLocal.class).getUserLocale().localeId);
 		    	jobDetail.getJobDataMap().put("User", getCurrentUserName());
 		    	jobDetail.setDurability(true);
-			    scheduler.addJob(jobDetail, false);
+		    	nuclosScheduler.addJob(jobDetail, false);
 
-			    scheduler.triggerJob(importfileId.toString(), NuclosScheduler.JOBGROUP_IMPORT);
+		    	nuclosScheduler.triggerJob(importfileId.toString(), NuclosQuartzJob.JOBGROUP_IMPORT);
 		    }
 		    catch (SchedulerException ex) {
 		    	throw new NuclosFileImportException("import.exception.start");
@@ -293,15 +298,13 @@ public class ImportFacadeBean extends NuclosFacadeBean implements ImportFacadeRe
 	    return correlationId;
     }
 
-	@Override
     public String getImportCorrelationId(Integer importfileId) {
-		Scheduler scheduler = NuclosScheduler.getInstance().getScheduler();
 		try {
-	        List<?> executingJobs = scheduler.getCurrentlyExecutingJobs();
+	        List<?> executingJobs = nuclosScheduler.getCurrentlyExecutingJobs();
 	        for (Object o : executingJobs) {
 	        	if (o instanceof JobExecutionContext) {
 	        		JobExecutionContext job = (JobExecutionContext) o;
-	        		if (NuclosScheduler.JOBGROUP_IMPORT.equals(job.getJobDetail().getGroup()) && job.getJobDetail().getName().equals(importfileId.toString())) {
+	        		if (NuclosQuartzJob.JOBGROUP_IMPORT.equals(job.getJobDetail().getGroup()) && job.getJobDetail().getName().equals(importfileId.toString())) {
 	        			return job.getJobDetail().getJobDataMap().getString("ProcessId");
 	        		}
 	        	}
@@ -313,7 +316,6 @@ public class ImportFacadeBean extends NuclosFacadeBean implements ImportFacadeRe
 	    return null;
     }
 
-	@Override
 	@Transactional(propagation=Propagation.REQUIRES_NEW)
 	public void setImportResult(Integer importfileId, ImportResult result, String summary) {
 		try {

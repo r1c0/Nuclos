@@ -50,8 +50,6 @@ import org.springframework.transaction.annotation.Transactional;
  * Created by Novabit Informationssysteme GmbH <br>
  * Please visit <a href="http://www.novabit.de">www.novabit.de</a>
  */
-// @Stateless
-// @Remote(ResourceFacadeRemote.class)
 @Transactional
 public class ResourceFacadeBean extends MasterDataFacadeBean implements ResourceFacadeRemote {
 	
@@ -65,20 +63,17 @@ public class ResourceFacadeBean extends MasterDataFacadeBean implements Resource
 		this.resourceCache = resourceCache;
 	}
 
-	@Override
     @RolesAllowed("Login")
 	public ResourceVO getResourceByName(String sResourceName) {
 		return resourceCache.getResourceByName(sResourceName);
 	}
 	
 
-	@Override
     @RolesAllowed("Login")
 	public ResourceVO getResourceById(Integer iResourceId) {
 		return resourceCache.getResourceById(iResourceId);
 	}
 
-	@Override
     @RolesAllowed("Login")
 	public Pair<ResourceVO, byte[]> getResource(String resourceName) {
 		Pair<ResourceVO, byte[]> res = new Pair<ResourceVO, byte[]>();
@@ -88,7 +83,6 @@ public class ResourceFacadeBean extends MasterDataFacadeBean implements Resource
 	}
 	
 
-	@Override
 	@RolesAllowed("Login")
 	public Pair<ResourceVO, byte[]> getResource(Integer resourceId) {
 		Pair<ResourceVO, byte[]> res = new Pair<ResourceVO, byte[]>();
@@ -121,7 +115,6 @@ public class ResourceFacadeBean extends MasterDataFacadeBean implements Resource
 		return super.modify(sEntityName, mdvo, mpDependants);
 	}
 
-	@Override
     public void remove(String sEntityName, MasterDataVO mdvo)throws CommonFinderException, CommonRemoveException,
 			CommonStaleVersionException, CommonPermissionException, CommonCreateException, NuclosBusinessRuleException {
 
@@ -181,7 +174,6 @@ public class ResourceFacadeBean extends MasterDataFacadeBean implements Resource
 	 * @return resource file content
 	 * @throws CommonFinderException
 	 */
-	@Override
     @RolesAllowed("Login")
 	public byte[] loadResource(Integer iResourceId, String sFileName) throws CommonFinderException {
 		File resourceDir = NuclosSystemParameters.getDirectory(NuclosSystemParameters.RESOURCE_PATH);
@@ -199,8 +191,6 @@ public class ResourceFacadeBean extends MasterDataFacadeBean implements Resource
 		}
 	}
 
-
-	@Override
 	public Set<String> getResourceNames() {
 		return resourceCache.getResourceNames();
 	}

@@ -35,9 +35,11 @@ import org.nuclos.server.dblayer.DbStatementUtils;
 import org.nuclos.server.dblayer.query.DbFrom;
 import org.nuclos.server.dblayer.query.DbQuery;
 import org.nuclos.server.dblayer.query.DbQueryBuilder;
+import org.nuclos.server.masterdata.ejb3.MasterDataFacadeLocal;
 import org.nuclos.server.masterdata.valueobject.MasterDataMetaVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 import org.nuclos.server.ruleengine.NuclosBusinessRuleException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -51,7 +53,21 @@ import org.springframework.transaction.annotation.Transactional;
 // @Local(XmlExportImportProtocolFacadeLocal.class)
 // @Remote(XmlExportImportProtocolFacadeRemote.class)
 @Transactional(propagation=Propagation.REQUIRES_NEW)
-public class XmlExportImportProtocolFacadeBean extends NuclosFacadeBean implements XmlExportImportProtocolFacadeLocal, XmlExportImportProtocolFacadeRemote {
+public class XmlExportImportProtocolFacadeBean extends NuclosFacadeBean implements XmlExportImportProtocolFacadeRemote {
+	
+	private MasterDataFacadeLocal masterDataFacade;
+	
+	public XmlExportImportProtocolFacadeBean() {
+	}
+	
+	@Autowired
+	final void setMasterDataFacade(MasterDataFacadeLocal masterDataFacade) {
+		this.masterDataFacade = masterDataFacade;
+	}
+	
+	private final MasterDataFacadeLocal getMasterDataFacade() {
+		return masterDataFacade;
+	}
 
 	/**
 	 * creates the protocol header for an export/import transaction
@@ -67,7 +83,6 @@ public class XmlExportImportProtocolFacadeBean extends NuclosFacadeBean implemen
 	 * @throws CreateException
 	 * @throws NuclosBusinessRuleException
 	 */
-	@Override
 	public Integer writeExportImportLogHeader(String sType, String sUserName, Date dImportDate, String sImportEntityName, String sImportFileName) 
 			throws CommonCreateException, CommonPermissionException, NuclosBusinessRuleException {
 		MasterDataMetaVO mdmvo = getMasterDataFacade().getMetaData(NuclosEntity.IMPORTEXPORT.getEntityName());
@@ -94,7 +109,6 @@ public class XmlExportImportProtocolFacadeBean extends NuclosFacadeBean implemen
 	 * @throws CreateException
 	 * @throws NuclosBusinessRuleException
 	 */
-	@Override
 	public void writeExportImportLogEntry(Integer iParentId, String sMessageLevel, String sImportAction, String sImportMessage, Integer iActionNumber) 
 			throws CommonCreateException, CommonPermissionException, NuclosBusinessRuleException {
 		if (iParentId == null) {
@@ -126,7 +140,6 @@ public class XmlExportImportProtocolFacadeBean extends NuclosFacadeBean implemen
 	 * @throws CommonStaleVersionException
 	 * @throws CommonValidationException
 	 */
-	@Override
 	public void addFile(Integer iParentId, byte[] ba) {
 		if (iParentId == null) {
 			return;
@@ -150,7 +163,6 @@ public class XmlExportImportProtocolFacadeBean extends NuclosFacadeBean implemen
 	 * @param iParentId
 	 * @return org.nuclos.common2.File
 	 */
-	@Override
 	public org.nuclos.common2.File getFile(Integer iParentId) {
 		if (iParentId == null) {
 			return null;

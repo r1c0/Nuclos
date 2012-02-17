@@ -59,12 +59,10 @@ import org.nuclos.common2.exception.CommonPermissionException;
 import org.nuclos.common2.exception.CommonRemoveException;
 import org.nuclos.server.common.AttributeCache;
 import org.nuclos.server.common.MasterDataMetaCache;
-import org.nuclos.server.common.NuclosScheduler;
 import org.nuclos.server.common.NuclosSystemParameters;
 import org.nuclos.server.common.ServerParameterProvider;
 import org.nuclos.server.common.ejb3.NuclosFacadeBean;
 import org.nuclos.server.dal.DalSupportForGO;
-import org.nuclos.server.dal.provider.NucletDalProvider;
 import org.nuclos.server.dblayer.DbException;
 import org.nuclos.server.dblayer.incubator.DbExecutor;
 import org.nuclos.server.dblayer.incubator.DbExecutor.ResultSetRunner;
@@ -72,11 +70,13 @@ import org.nuclos.server.dblayer.query.DbFrom;
 import org.nuclos.server.dblayer.query.DbQuery;
 import org.nuclos.server.dblayer.query.DbQueryBuilder;
 import org.nuclos.server.genericobject.ejb3.GeneratorFacadeLocal;
+import org.nuclos.server.genericobject.ejb3.GenericObjectFacadeLocal;
 import org.nuclos.server.genericobject.searchcondition.CollectableSearchExpression;
 import org.nuclos.server.genericobject.valueobject.GenericObjectRelationVO;
 import org.nuclos.server.genericobject.valueobject.GenericObjectVO;
 import org.nuclos.server.job.ejb3.JobControlFacadeLocal;
 import org.nuclos.server.masterdata.MasterDataWrapper;
+import org.nuclos.server.masterdata.ejb3.MasterDataFacadeLocal;
 import org.nuclos.server.masterdata.valueobject.MasterDataMetaVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 import org.nuclos.server.navigation.treenode.GenericObjectTreeNode.RelationDirection;
@@ -94,6 +94,7 @@ import org.quartz.JobDetail;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.quartz.SimpleTrigger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -102,14 +103,85 @@ import org.springframework.transaction.annotation.Transactional;
 * <br>Created by Novabit Informationssysteme GmbH
 * <br>Please visit <a href="http://www.novabit.de">www.novabit.de</a>
 */
-// @Stateless
-// @Local(RuleInterfaceFacadeLocal.class)
 @Transactional
-public class RuleInterfaceFacadeBean extends NuclosFacadeBean implements RuleInterfaceFacadeLocal {
+public class RuleInterfaceFacadeBean extends NuclosFacadeBean {
 	
 	private static final Logger LOG = Logger.getLogger(RuleInterfaceFacadeBean.class);
+	
+	private StateFacadeLocal stateFacadeLocal;
+	
+	private GeneratorFacadeLocal generatorFacadeLocal;
+	
+	private JobControlFacadeLocal jobControlFacadeLocal;
+	
+	private ServerParameterProvider serverParameterProvider;
+	
+	private AttributeCache attributeCache;
+	
+	private MasterDataMetaCache masterDataMetaCache;
+	
+	private Scheduler nuclosScheduler;
+	
+	private GenericObjectFacadeLocal genericObjectFacade;
+	
+	private MasterDataFacadeLocal masterDataFacade;
+	
+	public RuleInterfaceFacadeBean() {
+	}
+	
+	@Autowired
+	final void setStateFacadeLocal(StateFacadeLocal stateFacadeLocal) {
+		this.stateFacadeLocal = stateFacadeLocal;
+	}
+	
+	@Autowired
+	final void setGeneratorFacadeLocal(GeneratorFacadeLocal generatorFacadeLocal) {
+		this.generatorFacadeLocal = generatorFacadeLocal;
+	}
+	
+	@Autowired
+	final void setJobControlFacadeLocal(JobControlFacadeLocal jobControlFacadeLocal) {
+		this.jobControlFacadeLocal = jobControlFacadeLocal;
+	}
+	
+	@Autowired
+	final void setServerParameterProvider(ServerParameterProvider serverParameterProvider) {
+		this.serverParameterProvider = serverParameterProvider;
+	}
+	
+	@Autowired
+	final void setAttributeCache(AttributeCache attributeCache) {
+		this.attributeCache = attributeCache;
+	}
+	
+	@Autowired
+	final void setMasterDataMetaCache(MasterDataMetaCache masterDataMetaCache) {
+		this.masterDataMetaCache = masterDataMetaCache;
+	}
+	
+	@Autowired
+	final void setNuclosScheduler(Scheduler nuclosScheduler) {
+		this.nuclosScheduler = nuclosScheduler;
+	}
 
-	@Override
+	@Autowired
+	final void setGenericObjectFacade(GenericObjectFacadeLocal genericObjectFacade) {
+		this.genericObjectFacade = genericObjectFacade;
+	}
+	
+	private final GenericObjectFacadeLocal getGenericObjectFacade() {
+		return genericObjectFacade;
+	}
+
+	@Autowired
+	final void setMasterDataFacade(MasterDataFacadeLocal masterDataFacade) {
+		this.masterDataFacade = masterDataFacade;
+	}
+	
+	private final MasterDataFacadeLocal getMasterDataFacade() {
+		return masterDataFacade;
+	}
+
 	public Integer getModuleId(Integer iGenericObjectId) {
 		try {
 			return getGenericObjectFacade().getModuleContainingGenericObject(iGenericObjectId);
@@ -119,18 +191,15 @@ public class RuleInterfaceFacadeBean extends NuclosFacadeBean implements RuleInt
 		}
 	}
 
-	@Override
 	public GenericObjectVO getGenericObject(Integer iGenericObjectId) throws CommonFinderException, CommonPermissionException {
 		return getGenericObjectFacade().get(iGenericObjectId);
 	}
 
-	@Override
 	public boolean isStateEqual(Integer iGenericObjectId, int iNumeral) throws CommonFinderException {
-		final StateVO statevoCurrent = getFacade(StateFacadeLocal.class).getCurrentState(this.getModuleId(iGenericObjectId), iGenericObjectId);
+		final StateVO statevoCurrent = stateFacadeLocal.getCurrentState(this.getModuleId(iGenericObjectId), iGenericObjectId);
 		return new Integer(iNumeral).equals(statevoCurrent.getNumeral());
 	}
 
-	@Override
 	public boolean isAttributeEqual(Integer iGenericObjectId, String sAttribute, Object oValue) {
 		try {
 //			GenericObjectAttribute attr = goFacade.findAttributeByGoAndAttributeId(iGenericObjectId,AttributeCache.getInstance().getAttribute(sAttribute).getId());
@@ -143,7 +212,6 @@ public class RuleInterfaceFacadeBean extends NuclosFacadeBean implements RuleInt
 		}
 	}
 
-	@Override
 	public boolean isAttributeNull(Integer iGenericObjectId, String sAttribute) {
 		try {
 //			GenericObjectAttribute attr = goFacade.findAttributeByGoAndAttributeId(iGenericObjectId,AttributeCache.getInstance().getAttribute(sAttribute).getId());
@@ -156,9 +224,9 @@ public class RuleInterfaceFacadeBean extends NuclosFacadeBean implements RuleInt
 		}
 	}
 
-	@Override
 	public void sendMessage(String[] asRecipients, String sSubject, String sMessage) throws NuclosBusinessRuleException {
-		final MailCommunicator mailcommunicator = new MailCommunicator(ServerParameterProvider.getInstance().getValue("SMTP Server"), ServerParameterProvider.getInstance().getValue("SMTP Username"), ServerParameterProvider.getInstance().getValue("SMTP Password"));
+		final MailCommunicator mailcommunicator = new MailCommunicator(
+				serverParameterProvider.getValue("SMTP Server"), serverParameterProvider.getValue("SMTP Username"), serverParameterProvider.getValue("SMTP Password"));
 		final String[] asRecipientAddresses = new String[asRecipients.length];
 		for (int i = 0; i < asRecipients.length; i++) {
 			final String sRecipient = asRecipients[i];
@@ -178,7 +246,8 @@ public class RuleInterfaceFacadeBean extends NuclosFacadeBean implements RuleInt
 			}
 		}
 		try {
-			mailcommunicator.sendMessage(ServerParameterProvider.getInstance().getValue("SMTP Authentication"), ServerParameterProvider.getInstance().getValue("SMTP Sender"), asRecipientAddresses, sSubject, sMessage);
+			mailcommunicator.sendMessage(serverParameterProvider.getValue("SMTP Authentication"), 
+					serverParameterProvider.getValue("SMTP Sender"), asRecipientAddresses, sSubject, sMessage);
 		}
 		catch (CommonCommunicationException ex) {
 			throw new NuclosBusinessRuleException(StringUtils.getParameterizedExceptionMessage("task.facade.exception", ex.getMessage()), ex);
@@ -186,25 +255,22 @@ public class RuleInterfaceFacadeBean extends NuclosFacadeBean implements RuleInt
 		}
 	}
 
-	@Override
 	public Integer createObject(Integer iGenericObjectId, String sGenerator) throws NuclosBusinessRuleException {
 		try {
-			return IdUtils.unsafeToId(getFacade(GeneratorFacadeLocal.class).generateGenericObject(IdUtils.toLongId(iGenericObjectId), sGenerator));
+			return IdUtils.unsafeToId(generatorFacadeLocal.generateGenericObject(IdUtils.toLongId(iGenericObjectId), sGenerator));
 		}
 		catch (CommonBusinessException ex) {
 			throw new NuclosFatalRuleException(ex);
 		}
 	}
 
-	@Override
 	public Integer createObject(String sEntityName, Integer iObjectId, String sGenerator) throws NuclosBusinessRuleException {
 		return createObject(iObjectId, sGenerator);
 	}
 
-	@Override
 	public Integer createObject(RuleObjectContainerCVO loccvo, String sGenerator) throws NuclosBusinessRuleException {
 		try {
-			return IdUtils.unsafeToId(getFacade(GeneratorFacadeLocal.class).generateGenericObject(loccvo, sGenerator));
+			return IdUtils.unsafeToId(generatorFacadeLocal.generateGenericObject(loccvo, sGenerator));
 		}
 		catch (CommonBusinessException ex) {
 			throw new NuclosBusinessRuleException(ex);
@@ -216,13 +282,12 @@ public class RuleInterfaceFacadeBean extends NuclosFacadeBean implements RuleInt
 	 * @postcondition result != null
 	 * @postcondition !result.isRemoved()
 	 */
-	@Override
 	public DynamicAttributeVO getAttribute(Integer iGenericObjectId, String sAttribute) {
 		DynamicAttributeVO result;
 
 		Integer iAttributeId = null;
 		try {
-			iAttributeId = AttributeCache.getInstance().getAttribute(this.getModuleId(iGenericObjectId), sAttribute).getId();
+			iAttributeId = attributeCache.getAttribute(this.getModuleId(iGenericObjectId), sAttribute).getId();
 			result = getGenericObjectFacade().findAttributeByGoAndAttributeId(iGenericObjectId, iAttributeId);
 		}
 		catch (CommonFinderException e) {
@@ -243,7 +308,6 @@ public class RuleInterfaceFacadeBean extends NuclosFacadeBean implements RuleInt
 	 * The leased object is read from the database and stored later (after the change).
 	 * @precondition iGenericObjectId != null
 	 */
-	@Override
 	public void setAttribute(RuleVO ruleVO, Integer iGenericObjectId, String sAttribute, Integer iValueId, Object oValue) throws NuclosBusinessRuleException {
 		if (iGenericObjectId == null) {
 			throw new NullArgumentException("iGenericObjectId");
@@ -268,9 +332,8 @@ public class RuleInterfaceFacadeBean extends NuclosFacadeBean implements RuleInt
 	 * sets the attribute with the given name value in the given GenericObjectVO to the given value id and value.
 	 * This method does not apply any changes to the database.
 	 */
-	@Override
 	public void setAttribute(RuleVO ruleVO, GenericObjectVO govo, String sAttribute, Integer iValueId, Object oValue) {
-		final Integer iAttributeId = AttributeCache.getInstance().getAttribute(govo.getModuleId(), sAttribute).getId();
+		final Integer iAttributeId = attributeCache.getAttribute(govo.getModuleId(), sAttribute).getId();
 		DynamicAttributeVO attrvo = govo.getAttribute(iAttributeId);
 		//Object oldValue = null;
 
@@ -290,9 +353,8 @@ public class RuleInterfaceFacadeBean extends NuclosFacadeBean implements RuleInt
 	 * sets the field with the given name value in the given MasterDataVO to the given value id and value.
 	 * This method does not apply any changes to the database.
 	 */
-	@Override
 	public void setMasterDataField(String sEntityName, MasterDataVO mdvo, String sFieldName, Integer iValueId, Object oValue) {
-		if (MasterDataMetaCache.getInstance().getMetaData(sEntityName).getField(sFieldName).getForeignEntity() != null) {
+		if (masterDataMetaCache.getMetaData(sEntityName).getField(sFieldName).getForeignEntity() != null) {
 			mdvo.setField(sFieldName + "Id", iValueId);
 		}
 		mdvo.setField(sFieldName, oValue);
@@ -303,7 +365,6 @@ public class RuleInterfaceFacadeBean extends NuclosFacadeBean implements RuleInt
 	 * The masterdata object is read from the database and stored later (after the change).
 	 * @precondition iId != null
 	 */
-	@Override
 	public void setMasterDataField(String sEntityName, Integer iId, String sFieldName, Integer iValueId, Object oValue) {
 		if (iId == null) {
 			throw new NullArgumentException("iId");
@@ -325,7 +386,6 @@ public class RuleInterfaceFacadeBean extends NuclosFacadeBean implements RuleInt
 	/**
 	 * @precondition iGenericObjectId != null
 	 */
-	@Override
 	public GenericObjectVO changeState(GenericObjectVO govoCurrent, Integer iGenericObjectId, int iNumeral) throws NuclosBusinessRuleException {
 		try {
 			final boolean bSyncNeeded = (govoCurrent != null) && iGenericObjectId.equals(govoCurrent.getId());
@@ -355,31 +415,18 @@ public class RuleInterfaceFacadeBean extends NuclosFacadeBean implements RuleInt
 		catch (CommonPermissionException ex) {
 			throw new NuclosBusinessRuleException(ex);
 		}
-//		catch (CommonValidationException ex) {
-//			throw new NuclosBusinessRuleException(ex);
-//		}
 		catch (NuclosBusinessException ex) {
 			throw new NuclosBusinessRuleException(ex);
 		}
-//		catch (CommonStaleVersionException ex) {
-//			throw new NuclosBusinessRuleException(ex);
-//		}
-//		catch (CommonRemoveException ex) {
-//			throw new NuclosBusinessRuleException(ex);
-//		}
-//		catch (CommonCreateException ex) {
-//			throw new CommonFatalException(ex);
-//		}
 	}
 
 	/**
 	 * @precondition iGenericObjectId != null
 	 */
-	@Override
 	public void changeState(Integer iGenericObjectId, int iNumeral) throws NuclosBusinessRuleException {
 		// @todo defer sync to changeStateByRule
 		try {
-			getFacade(StateFacadeLocal.class).changeStateByRule(this.getModuleId(iGenericObjectId), iGenericObjectId, iNumeral);
+			stateFacadeLocal.changeStateByRule(this.getModuleId(iGenericObjectId), iGenericObjectId, iNumeral);
 		}
 		catch (CommonCreateException ex) {
 			throw new NuclosBusinessRuleException(ex);
@@ -412,7 +459,6 @@ public class RuleInterfaceFacadeBean extends NuclosFacadeBean implements RuleInt
 	 * @precondition iGenericObjectId != null
 	 * @throws NuclosBusinessRuleException if the transition from the current state to the new state is not possible for the given object.
 	 */
-	@Override
 	public GenericObjectVO scheduleStateChange(GenericObjectVO govoCurrent, Integer iGenericObjectId, int iNewState, Date dateToSchedule)
 			throws NuclosBusinessRuleException, CommonFinderException {
 
@@ -426,10 +472,9 @@ public class RuleInterfaceFacadeBean extends NuclosFacadeBean implements RuleInt
 
 		GenericObjectVO result = govoCurrent;
 		try {
-			final Scheduler scheduler = NuclosScheduler.getInstance().getScheduler();
 			final String sJobName = "InnerStateChangeJob for GenericObjectId " + iGenericObjectId + " and target state " + iNewState;
 			// Always delete a possibly existing old job:
-			if (scheduler.deleteJob(sJobName, Scheduler.DEFAULT_GROUP)) {
+			if (nuclosScheduler.deleteJob(sJobName, Scheduler.DEFAULT_GROUP)) {
 				info("Removed " + sJobName + ".");
 			}
 
@@ -443,7 +488,7 @@ public class RuleInterfaceFacadeBean extends NuclosFacadeBean implements RuleInt
 					jobDetail.getJobDataMap().put(StateChangeJob.PARAM_LEASEDOBJECTID, iGenericObjectId.intValue());
 					jobDetail.getJobDataMap().put(StateChangeJob.PARAM_NEWSTATE, iNewState);
 
-					scheduler.scheduleJob(jobDetail, new SimpleTrigger(sJobName, Scheduler.DEFAULT_GROUP, dateToSchedule));
+					nuclosScheduler.scheduleJob(jobDetail, new SimpleTrigger(sJobName, Scheduler.DEFAULT_GROUP, dateToSchedule));
 					info("Successfully scheduled " + sJobName + " at " + dateToSchedule.toString() + ".");
 				}
 			}
@@ -457,15 +502,13 @@ public class RuleInterfaceFacadeBean extends NuclosFacadeBean implements RuleInt
 	/**
 	 * schedules a test job once for ten seconds later.
 	 */
-	@Override
 	public void scheduleTestJob() {
-		final Scheduler scheduler = NuclosScheduler.getInstance().getScheduler();
 		final String sDate = new Date().toString();
 
 		final JobDetail jobDetail = new JobDetail("Test job (" + sDate + ")", Scheduler.DEFAULT_GROUP, TestJob.class);
 		final SimpleTrigger jobTrigger = new SimpleTrigger("Test job (" + sDate + ")", Scheduler.DEFAULT_GROUP, new Date(System.currentTimeMillis() + 10000L));
 		try {
-			scheduler.scheduleJob(jobDetail, jobTrigger);
+			nuclosScheduler.scheduleJob(jobDetail, jobTrigger);
 		}
 		catch (SchedulerException ex) {
 			throw new NuclosFatalException(ex);
@@ -473,32 +516,14 @@ public class RuleInterfaceFacadeBean extends NuclosFacadeBean implements RuleInt
 		info("Successfully scheduled TestJob.");
 	}
 
-	/**
-	 * @param iModuleId
-	 * @param cond
-	 * @return Collection<Integer>
-	 */
-	@Override
 	public Collection<Integer> getGenericObjectIds(Integer iModuleId, CollectableSearchCondition cond) {
 		return getGenericObjectFacade().getGenericObjectIds(iModuleId, cond);
 	}
 
-	/**
-	 * @param sEntityName
-	 * @param cond
-	 * @return Collection<Integer>
-	 */
-	@Override
 	public Collection<Object> getMasterDataIds(String sEntityName, CollectableSearchExpression cond) {
 		return getMasterDataFacade().getMasterDataIds(sEntityName, cond);
 	}
 
-	/**
-	 * @param sEntityName
-	 * @param cond
-	 * @return Collection<Integer>
-	 */
-	@Override
 	public Collection<Object> getMasterDataIds(String sEntityName) {
 		return getMasterDataFacade().getMasterDataIds(sEntityName);
 	}
@@ -513,7 +538,6 @@ public class RuleInterfaceFacadeBean extends NuclosFacadeBean implements RuleInt
 	 * @postcondition (iModuleId == null) --> result.isEmpty()
 	 * @postcondition (iGenericObjectId == null) --> result.isEmpty()
 	 */
-	@Override
 	public Collection<Integer> getRelatedGenericObjectIds(Integer iModuleId, Integer iGenericObjectId, RelationDirection direction, String relationType) {
 		final Collection<Integer> result = getGenericObjectFacade().getRelatedGenericObjectIds(iModuleId, iGenericObjectId, direction, relationType);
 
@@ -523,7 +547,6 @@ public class RuleInterfaceFacadeBean extends NuclosFacadeBean implements RuleInt
 		return result;
 	}
 
-	@Override
 	public void relate(Integer iGenericObjectIdSource, Integer iGenericObjectIdTarget, String relationType,
 			Date dateValidFrom, Date dateValidUntil, String sDescription)
 			throws CommonFinderException, CommonCreateException, CommonPermissionException, NuclosBusinessRuleException
@@ -532,7 +555,6 @@ public class RuleInterfaceFacadeBean extends NuclosFacadeBean implements RuleInt
 		getGenericObjectFacade().relate(iModuleIdTarget, iGenericObjectIdTarget, iGenericObjectIdSource, relationType, dateValidFrom, dateValidUntil, sDescription);
 	}
 
-	@Override
 	public void unrelate(Integer iGenericObjectIdSource, Integer iGenericObjectIdTarget, String relationType)
 			throws CommonFinderException, CommonPermissionException, NuclosBusinessRuleException, CommonRemoveException {
 
@@ -543,7 +565,6 @@ public class RuleInterfaceFacadeBean extends NuclosFacadeBean implements RuleInt
 	/**
 	 * invalidates the given relations by setting "validUntil" to the current date, if necessary
 	 */
-	@Override
 	public void invalidateRelations(Integer iGenericObjectIdSource, Integer iGenericObjectIdTarget, String relationType)
 			throws CommonFinderException, CommonBusinessException, NuclosBusinessRuleException {
 		try {
@@ -562,11 +583,11 @@ public class RuleInterfaceFacadeBean extends NuclosFacadeBean implements RuleInt
 		}
 	}
 
-	@Override
 	public boolean isStateChangePossible(Integer iGenericObjectId, int iNewState) throws CommonFinderException {
 		final boolean result;
 		try {
-			final Collection<StateVO> collSubsequentStates = getFacade(StateFacadeLocal.class).getSubsequentStates(this.getModuleId(iGenericObjectId), iGenericObjectId, true);
+			final Collection<StateVO> collSubsequentStates = stateFacadeLocal.getSubsequentStates(
+					this.getModuleId(iGenericObjectId), iGenericObjectId, true);
 			final Set<Integer> stNumerals = new HashSet<Integer>();
 			for (StateVO statevo : collSubsequentStates) {
 				stNumerals.add(statevo.getNumeral());
@@ -585,7 +606,6 @@ public class RuleInterfaceFacadeBean extends NuclosFacadeBean implements RuleInt
 	 * @param oParams the parameters (note that it is not possible to use null as a parameter use {@code DbNull} instead)
 	 * @throws NuclosBusinessRuleException
 	 */
-	@Override
 	public void callDbProcedure(String sProcedureName, Object... oParams) throws NuclosBusinessRuleException {
 		try {
 			dataBaseHelper.getDbAccess().executeProcedure(sProcedureName, oParams);
@@ -602,7 +622,6 @@ public class RuleInterfaceFacadeBean extends NuclosFacadeBean implements RuleInt
 	 * @return the result of the function the object is of the java type corresponding to iResultType
 	 * @throws NuclosBusinessRuleException
 	 */
-	@Override
 	public <T> T callDbFunction(String sFunctionName, Class<T> resultType, Object... oParams) throws NuclosBusinessRuleException {
 		try {
 			return dataBaseHelper.getDbAccess().executeFunction(sFunctionName, resultType, oParams);
@@ -618,7 +637,6 @@ public class RuleInterfaceFacadeBean extends NuclosFacadeBean implements RuleInt
 	 * @return a {@link Collection} with {@link MasterDataVO} (easier to work with in a rule, columnames are the fields)
 	 * @throws NuclosBusinessRuleException if the ds was not found
 	 */
-	@Override
 	public Collection<MasterDataVO> executeSelectOnJCADatasource(String jndiName, String selectStatement) throws NuclosBusinessRuleException {
 		DataSource db;
 
@@ -666,12 +684,10 @@ public class RuleInterfaceFacadeBean extends NuclosFacadeBean implements RuleInt
 		}
 	}
 
-	@Override
 	public EntityObjectVO getEntityObject(String entity, Long id) {
-		return NucletDalProvider.getInstance().getEntityObjectProcessor(entity).getByPrimaryKey(id);
+		return getNucletDalProvider().getEntityObjectProcessor(entity).getByPrimaryKey(id);
 	}
 
-	@Override
 	public MasterDataVO getMasterData(String sEntityName, Integer iId) {
 		try {
 			return getMasterDataFacade().get(sEntityName, iId);
@@ -691,7 +707,6 @@ public class RuleInterfaceFacadeBean extends NuclosFacadeBean implements RuleInt
 	 * @param Stub stub
 	 * @param String servicename
 	 */
-	@Override
 	public void setConnectionSettingsForWebservice(Object stub, String serviceName) throws NuclosBusinessRuleException {
 		//public void setConnectionSettingsForWebservice(Stub stub, String serviceName) throws NuclosBusinessRuleException {
 
@@ -827,7 +842,6 @@ public class RuleInterfaceFacadeBean extends NuclosFacadeBean implements RuleInt
 	/**
 	 * This Method is needed for creating a temp File for Sending over Webservice
 	 */
-	@Override
 	public File createTempFile(String fileName, byte[] data) throws NuclosBusinessRuleException{
 		String codegeneratorPath = NuclosSystemParameters.getString(NuclosSystemParameters.GENERATOR_OUTPUT_PATH);
 		File tempFile = new File(codegeneratorPath  + "/temp");
@@ -843,24 +857,21 @@ public class RuleInterfaceFacadeBean extends NuclosFacadeBean implements RuleInt
 		return tempFile;
 	}
 
-	@Override
 	public void logInfo(Integer iSessionId, String sMessage, String sRuleName) throws NuclosBusinessRuleException{
 		this.writeToJobRunMessages(iSessionId, "INFO", sMessage,sRuleName);
 	}
 
-	@Override
 	public void logWarning(Integer iSessionId, String sMessage, String sRuleName) throws NuclosBusinessRuleException{
 		this.writeToJobRunMessages(iSessionId, "WARNING", sMessage, sRuleName);
 	}
 
-	@Override
 	public void logError(Integer iSessionId, String sMessage, String sRuleName) throws NuclosBusinessRuleException{
 		this.writeToJobRunMessages(iSessionId, "ERROR", sMessage, sRuleName);
 	}
 
 	private void writeToJobRunMessages(Integer iSessionId, String sLevel, String sMessage, String sRuleName) throws NuclosBusinessRuleException{
 		try {
-			getFacade(JobControlFacadeLocal.class).writeToJobRunMessages(iSessionId, sLevel, sMessage, sRuleName);
+			jobControlFacadeLocal.writeToJobRunMessages(iSessionId, sLevel, sMessage, sRuleName);
 		}
 		catch (Exception ex) {
 			throw new NuclosBusinessRuleException(ex.getMessage(), ex);

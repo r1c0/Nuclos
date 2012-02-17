@@ -37,23 +37,29 @@ import org.apache.log4j.Logger;
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.StringUtils;
+import org.nuclos.server.common.ServerServiceLocator;
 import org.nuclos.server.dblayer.DbException;
 import org.nuclos.server.report.api.JRNuclosDataSource;
 import org.nuclos.server.report.ejb3.DatasourceFacadeLocal;
 import org.nuclos.server.report.valueobject.DatasourceParameterVO;
 import org.nuclos.server.report.valueobject.DatasourceVO;
 import org.nuclos.server.security.NuclosLocalServerSession;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 /**
  * @author thomas.schiffmann
  *
  */
+@Configurable
 public class JRDefaultNuclosDataSource implements JRNuclosDataSource {
 
 	private static final Logger LOG = Logger.getLogger(JRDefaultNuclosDataSource.class);
+	
+	// 
 
-	private final DatasourceFacadeLocal datasourcefacade = ServiceLocator.getInstance().getFacade(DatasourceFacadeLocal.class);
+	private DatasourceFacadeLocal datasourcefacade;
 
 	private final String name;
 	private final Map<String, Object> params;
@@ -65,7 +71,7 @@ public class JRDefaultNuclosDataSource implements JRNuclosDataSource {
 	private Statement statement;
 	private ResultSet data;
 
-	JRResultSetDataSource datasource;
+	private JRResultSetDataSource datasource;
 
 	public JRDefaultNuclosDataSource(String name, Map<String, Object> params, Connection conn) {
 		this(name, params, null, conn);
@@ -76,6 +82,11 @@ public class JRDefaultNuclosDataSource implements JRNuclosDataSource {
 		this.params = params;
 		this.parent = parent;
 		this.conn = conn;
+	}
+	
+	@Autowired
+	final void setDatasourceFacade(DatasourceFacadeLocal datasourceFacade) {
+		this.datasourcefacade = datasourceFacade;
 	}
 
 	private void getData() throws DbException {

@@ -58,6 +58,7 @@ import org.nuclos.common2.exception.CommonValidationException;
 import org.nuclos.server.common.AttributeCache;
 import org.nuclos.server.common.MasterDataMetaCache;
 import org.nuclos.server.common.MetaDataServerProvider;
+import org.nuclos.server.common.ServerServiceLocator;
 import org.nuclos.server.fileimport.ImportStructure.ForeignEntityIdentifier;
 import org.nuclos.server.fileimport.ImportStructure.Item;
 import org.nuclos.server.genericobject.Modules;
@@ -181,7 +182,7 @@ public class ImportUtils {
 
 			Integer importstructureId = (Integer) usage.getField("importId", Integer.class);
 
-			MasterDataFacadeLocal mdFacade = ServiceLocator.getInstance().getFacade(MasterDataFacadeLocal.class);
+			MasterDataFacadeLocal mdFacade = ServerServiceLocator.getInstance().getFacade(MasterDataFacadeLocal.class);
 			MasterDataWithDependantsVO importstructure = null;
 			try {
 				importstructure = mdFacade.getWithDependants(NuclosEntity.IMPORT.getEntityName(), importstructureId);
@@ -354,7 +355,7 @@ public class ImportUtils {
 
 	public static List<Long> getObjectIdsByEntity(String entity) {
 		if (Modules.getInstance().existModule(entity)) {
-			GenericObjectFacadeLocal goFacade = ServiceLocator.getInstance().getFacade(GenericObjectFacadeLocal.class);
+			GenericObjectFacadeLocal goFacade = ServerServiceLocator.getInstance().getFacade(GenericObjectFacadeLocal.class);
 			return CollectionUtils.transform(goFacade.getGenericObjectIds(Modules.getInstance().getModuleIdByEntityName(entity), (CollectableSearchCondition)null), new Transformer<Integer, Long>() {
 				@Override
 				public Long transform(Integer i) {
@@ -363,7 +364,7 @@ public class ImportUtils {
 			});
 		}
 		else {
-			MasterDataFacadeLocal mdFacade = ServiceLocator.getInstance().getFacade(MasterDataFacadeLocal.class);
+			MasterDataFacadeLocal mdFacade = ServerServiceLocator.getInstance().getFacade(MasterDataFacadeLocal.class);
 			return CollectionUtils.transform(mdFacade.getMasterDataIds(entity), new Transformer<Object, Long>() {
 				@Override
 				public Long transform(Object i) {

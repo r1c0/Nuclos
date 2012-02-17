@@ -37,6 +37,7 @@ import org.nuclos.common2.exception.CommonValidationException;
 import org.nuclos.common2.layoutml.LayoutMLParser;
 import org.nuclos.common2.layoutml.exception.LayoutMLException;
 import org.nuclos.server.common.MetaDataServerProvider;
+import org.nuclos.server.common.ServerServiceLocator;
 import org.nuclos.server.common.ejb3.LocaleFacadeLocal;
 import org.nuclos.server.dal.DalUtils;
 import org.nuclos.server.database.SpringDataBaseHelper;
@@ -1279,7 +1280,7 @@ public class MigrationVm2m5 extends AbstractMigration{
 			return sText;
 		}
 		info("create resource for \"" + sText + "\"");
-		LocaleFacadeLocal localeFacade = ServiceLocator.getInstance().getFacade(LocaleFacadeLocal.class);
+		LocaleFacadeLocal localeFacade = ServerServiceLocator.getInstance().getFacade(LocaleFacadeLocal.class);
 		return localeFacade.createResource(sText);
 	}
 

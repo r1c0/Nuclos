@@ -50,12 +50,15 @@ import org.nuclos.server.common.AttributeCache;
 import org.nuclos.server.common.MasterDataMetaCache;
 import org.nuclos.server.genericobject.GenericObjectMetaDataCache;
 import org.nuclos.server.genericobject.Modules;
+import org.nuclos.server.genericobject.ejb3.GenericObjectFacadeLocal;
 import org.nuclos.server.genericobject.valueobject.GenericObjectVO;
 import org.nuclos.server.masterdata.ejb3.MasterDataFacadeBean;
+import org.nuclos.server.masterdata.ejb3.MasterDataFacadeLocal;
 import org.nuclos.server.masterdata.valueobject.MasterDataMetaVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 import org.nuclos.server.ruleengine.NuclosBusinessRuleException;
 import org.nuclos.server.transfer.XmlExportImportHelper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.xml.sax.InputSource;
 
@@ -65,18 +68,31 @@ import org.xml.sax.InputSource;
  * <br>Created by Novabit Informationssysteme GmbH
  * <br>Please visit <a href="http://www.novabit.de">www.novabit.de</a>
  */
-// @Stateless
-// @Local(LayoutFacadeLocal.class)
-// @Remote(LayoutFacadeRemote.class)
 @Transactional
-public class LayoutFacadeBean extends MasterDataFacadeBean implements LayoutFacadeLocal, LayoutFacadeRemote {
+public class LayoutFacadeBean extends MasterDataFacadeBean implements LayoutFacadeRemote {
+	
+	private GenericObjectFacadeLocal genericObjectFacade;
+	
+	private MasterDataFacadeLocal masterDataFacade;
+	
+	public LayoutFacadeBean() {
+	}
 
+	@Autowired
+	final void setGenericObjectFacade(GenericObjectFacadeLocal genericObjectFacade) {
+		this.genericObjectFacade = genericObjectFacade;
+	}
+	
+	@Autowired
+	final void setMasterDataFacade(MasterDataFacadeLocal masterDataFacade) {
+		this.masterDataFacade = masterDataFacade;
+	}
+	
 	/**
 	 * imports the given layouts, adding new and overwriting existing layouts. The other existing layouts are untouched.
 	 * Currently, only the layoutml description is imported, not the usages.
 	 * @param colllayoutvo
 	 */
-	@Override
 	@RolesAllowed("UseManagementConsole")
 	public void importLayouts(Collection<LayoutVO> colllayoutvo) throws CommonBusinessException {
 		for (LayoutVO layoutvo : colllayoutvo) {
@@ -118,7 +134,6 @@ public class LayoutFacadeBean extends MasterDataFacadeBean implements LayoutFaca
 	/**
 	 * refreshes the module attribute relation table and all generic object views (console function)
 	 */
-	@Override
 	@RolesAllowed("UseManagementConsole")
 	public void refreshAll() {
 		GenericObjectMetaDataCache.getInstance().layoutChanged(null);
@@ -129,7 +144,6 @@ public class LayoutFacadeBean extends MasterDataFacadeBean implements LayoutFaca
 	 * @param sEntity
 	 * @return true, if detail layout is available for the given entity name, otherwise false
 	 */
-	@Override
 	@RolesAllowed("Login")
 	public boolean isMasterDataLayoutAvailable(String sEntity) {
 		return getMasterDataLayout(sEntity) == null ? false : true;
@@ -139,20 +153,19 @@ public class LayoutFacadeBean extends MasterDataFacadeBean implements LayoutFaca
 	 * @param sEntity
 	 * @return the detail layout for the given entity name if any, otherwise null
 	 */
-	@Override
 	@RolesAllowed("Login")
 	public String getMasterDataLayout(String sEntity) {
 		return getMasterDataLayout(sEntity, false);
 	}
+
 	/**
 	 * @param sEntity
 	 * @return the layout for the given entity name if any, otherwise null
 	 */
-	@Override
 	@RolesAllowed("Login")
 	public String getMasterDataLayout(String sEntity, boolean bSearchMode) {
 	String sLayoutML = null;
-		final List<MasterDataVO> lstMDLayoutUsage = new ArrayList<MasterDataVO>(getMasterDataFacade().getMasterData(
+		final List<MasterDataVO> lstMDLayoutUsage = new ArrayList<MasterDataVO>(masterDataFacade.getMasterData(
 				NuclosEntity.LAYOUTUSAGE.getEntityName(), null, true));
 		for (MasterDataVO mdvoUsage : lstMDLayoutUsage) {
 //			final String sEntityName = mdvoUsage.getField("entity", String.class);
@@ -181,7 +194,6 @@ public class LayoutFacadeBean extends MasterDataFacadeBean implements LayoutFaca
 	 * Note that this works only for genericobject entities
 	 * @param iLayoutId
 	 */
-	@Override
 	@RolesAllowed("Login")
 	public Map<EntityAndFieldName, String> getSubFormEntityAndParentSubFormEntityNamesByLayoutId(Integer iLayoutId) {
 		String sLayoutML = null;
@@ -213,7 +225,6 @@ public class LayoutFacadeBean extends MasterDataFacadeBean implements LayoutFaca
 	 * @param id, id of MasterDataVO or GenericObjectVO
 	 * @param forImportOrExport, true if it is used for import- or export-routines
 	 */
-	@Override
 	// Caveat: Das Methodenformat und der Kommentar sind ein wenig verwirrend und verschleiern
 	// die internen Zusammenhaenge. Fuer Stammdaten ist eine Objekt-ID ueberhaupt nicht notwendig,
 	// sie wird hier ignoriert. Bei generischen Objekten werden die UsageCritera (Modul- +
@@ -226,7 +237,7 @@ public class LayoutFacadeBean extends MasterDataFacadeBean implements LayoutFaca
 
 		if (Modules.getInstance().isModuleEntity(entityName)) {
 			try {
-				result = getSubFormEntityAndParentSubFormEntityNamesByGO(getGenericObjectFacade().get(id));
+				result = getSubFormEntityAndParentSubFormEntityNamesByGO(genericObjectFacade.get(id));
 			}
 			catch (CommonFinderException e) {
 				throw new CommonFatalException(e);
@@ -345,7 +356,6 @@ public class LayoutFacadeBean extends MasterDataFacadeBean implements LayoutFaca
 	 * @ejb.interface-method view-type="local"
 	 * @ejb.permission role-name="Login"
 	 */
-	@Override
 	public Map<EntityAndFieldName, String> getSubFormEntityAndParentSubFormEntityNamesById(Integer iLayoutId) {
 		String sLayoutML = null;
 		try {
@@ -367,6 +377,5 @@ public class LayoutFacadeBean extends MasterDataFacadeBean implements LayoutFaca
 			throw new NuclosFatalException(e);
 		}
 	}
-
 
 }

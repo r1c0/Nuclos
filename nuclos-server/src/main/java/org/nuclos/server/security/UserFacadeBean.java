@@ -41,6 +41,7 @@ import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonValidationException;
 import org.nuclos.server.common.ServerParameterProvider;
+import org.nuclos.server.common.ServerServiceLocator;
 import org.nuclos.server.common.ejb3.NuclosFacadeBean;
 import org.nuclos.server.common.mail.NuclosMailSender;
 import org.nuclos.server.dal.DalUtils;
@@ -53,14 +54,28 @@ import org.nuclos.server.dblayer.statements.DbInsertStatement;
 import org.nuclos.server.masterdata.ejb3.MasterDataFacadeLocal;
 import org.nuclos.server.masterdata.valueobject.DependantMasterDataMap;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 @Transactional(propagation=Propagation.REQUIRED)
 @RolesAllowed("Login")
-public class UserFacadeBean extends NuclosFacadeBean implements UserFacadeRemote, UserFacadeLocal {
+public class UserFacadeBean extends NuclosFacadeBean implements UserFacadeRemote {
+	
+	private MasterDataFacadeLocal masterDataFacade;
+	
+	public UserFacadeBean() {
+	}
 
-	@Override
+	@Autowired
+	final void setMasterDataFacade(MasterDataFacadeLocal masterDataFacade) {
+		this.masterDataFacade = masterDataFacade;
+	}
+	
+	private final MasterDataFacadeLocal getMasterDataFacade() {
+		return masterDataFacade;
+	}
+
 	public UserVO create(UserVO vo, DependantMasterDataMap mpDependants) throws CommonBusinessException {
 		checkWriteAllowed(NuclosEntity.USER);
 
@@ -77,7 +92,6 @@ public class UserFacadeBean extends NuclosFacadeBean implements UserFacadeRemote
 		return new UserVO(mdvo);
 	}
 
-	@Override
 	public UserVO modify(UserVO vo, DependantMasterDataMap mpDependants) throws CommonBusinessException {
 		checkWriteAllowed(NuclosEntity.USER);
 
@@ -93,14 +107,12 @@ public class UserFacadeBean extends NuclosFacadeBean implements UserFacadeRemote
 		return new UserVO(getMasterDataFacade().get(NuclosEntity.USER.getEntityName(), id));
 	}
 
-	@Override
 	public void remove(UserVO vo) throws CommonBusinessException {
 		checkWriteAllowed(NuclosEntity.USER);
 		// clear password history
 		getMasterDataFacade().remove(NuclosEntity.USER.getEntityName(), vo.toMasterDataVO(), true);
 	}
 
-	@Override
 	public void setPassword(String username, String password) throws CommonBusinessException {
 		DbQueryBuilder builder = dataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<Integer> query = builder.createQuery(Integer.class);
@@ -109,7 +121,7 @@ public class UserFacadeBean extends NuclosFacadeBean implements UserFacadeRemote
 		query.where(builder.equal(builder.upper(t.baseColumn("STRUSER", String.class)), builder.upper(builder.literal(username))));
 		Integer userId = dataBaseHelper.getDbAccess().executeQuerySingleResult(query);
 
-		UserVO user = new UserVO(ServiceLocator.getInstance().getFacade(MasterDataFacadeLocal.class).get(NuclosEntity.USER.getEntityName(), userId));
+		UserVO user = new UserVO(ServerServiceLocator.getInstance().getFacade(MasterDataFacadeLocal.class).get(NuclosEntity.USER.getEntityName(), userId));
 		user.setSetPassword(true);
 		user.setNewPassword(password);
 		user.setPasswordChanged(Calendar.getInstance().getTime());

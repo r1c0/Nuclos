@@ -34,6 +34,7 @@ import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.fileimport.FileImportResult;
 import org.nuclos.common2.fileimport.NuclosFileImportException;
+import org.nuclos.server.common.ServerServiceLocator;
 import org.nuclos.server.fileimport.ImportStructure.ForeignEntityIdentifier;
 import org.nuclos.server.fileimport.ImportStructure.Item;
 import org.nuclos.server.genericobject.Modules;
@@ -201,13 +202,13 @@ public abstract class AbstractImport {
 		return stateCache;
 	}
 
-	private final GenericObjectFacadeLocal goFacade = ServiceLocator.getInstance().getFacade(GenericObjectFacadeLocal.class);
+	private final GenericObjectFacadeLocal goFacade = ServerServiceLocator.getInstance().getFacade(GenericObjectFacadeLocal.class);
 
 	protected GenericObjectFacadeLocal getGenericObjectFacade() {
 		return this.goFacade;
 	}
 
-	private final MasterDataFacadeLocal mdFacade = ServiceLocator.getInstance().getFacade(MasterDataFacadeLocal.class);
+	private final MasterDataFacadeLocal mdFacade = ServerServiceLocator.getInstance().getFacade(MasterDataFacadeLocal.class);
 
 	protected MasterDataFacadeLocal getMasterDataFacade() {
 		return this.mdFacade;

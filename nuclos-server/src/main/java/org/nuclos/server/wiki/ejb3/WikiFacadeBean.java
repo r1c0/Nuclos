@@ -38,12 +38,12 @@ import org.springframework.transaction.annotation.Transactional;
  * Created by Novabit Informationssysteme GmbH <br>
  * Please visit <a href="http://www.novabit.de">www.novabit.de</a>
  */
-// @Stateless
-// @Remote(WikiFacadeRemote.class)
 @Transactional
 public class WikiFacadeBean extends MasterDataFacadeBean implements WikiFacadeRemote {
+	
+	public WikiFacadeBean() {
+	}
 
-	@Override
 	public String getWikiPageFor(String sEntityName, String sAttributeName) {
 		DbQueryBuilder builder = dataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<Integer> query = builder.createQuery(Integer.class);
@@ -97,7 +97,6 @@ public class WikiFacadeBean extends MasterDataFacadeBean implements WikiFacadeRe
 	/**
 	 * wikipage for a "general" component: explorer, menubar, statusbar ...
 	 */
-	@Override
 	public String getWikiPageFor(String sComponentName) {
 		Collection<MasterDataVO> coll_wikimappinggeneral = getMasterData(NuclosEntity.WIKIMAPPINGGENERAL.getEntityName(), null, true);
 

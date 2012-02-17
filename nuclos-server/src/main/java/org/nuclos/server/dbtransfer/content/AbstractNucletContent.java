@@ -51,6 +51,7 @@ import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.LocaleInfo;
 import org.nuclos.common2.ServiceLocator;
 import org.nuclos.server.common.MetaDataServerProvider;
+import org.nuclos.server.common.ServerServiceLocator;
 import org.nuclos.server.common.ejb3.LocaleFacadeLocal;
 import org.nuclos.server.dal.DalUtils;
 import org.nuclos.server.dal.provider.NucletDalProvider;
@@ -393,7 +394,7 @@ public abstract class AbstractNucletContent implements INucletContent {
 	 * @param fields
 	 */
 	protected void storeLocaleResources(EntityObjectVO ncObject, String...fields) {
-		LocaleFacadeLocal localeFacade = ServiceLocator.getInstance().getFacade(LocaleFacadeLocal.class);
+		LocaleFacadeLocal localeFacade = ServerServiceLocator.getInstance().getFacade(LocaleFacadeLocal.class);
 		Collection<LocaleInfo> locales = localeFacade.getAllLocales(false);
 
 		Map<LocaleInfo, Map<String, String>> localeResources = new HashMap<LocaleInfo, Map<String, String>>();
@@ -413,7 +414,7 @@ public abstract class AbstractNucletContent implements INucletContent {
 	 * @param fields
 	 */
 	protected void restoreLocaleResources(EntityObjectVO ncObject) {
-		LocaleFacadeLocal localeFacade = ServiceLocator.getInstance().getFacade(LocaleFacadeLocal.class);
+		LocaleFacadeLocal localeFacade = ServerServiceLocator.getInstance().getFacade(LocaleFacadeLocal.class);
 
 		Map<LocaleInfo, Map<String, String>> localeResources = (Map<LocaleInfo, Map<String, String>>) ncObject.getFields().get(LOCALE_RESOURCE_MAPPING_FIELD_NAME);
 		if (localeResources != null) {

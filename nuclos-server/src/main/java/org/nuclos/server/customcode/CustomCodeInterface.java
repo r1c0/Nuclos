@@ -49,6 +49,7 @@ import org.nuclos.server.common.AttributeCache;
 import org.nuclos.server.common.MasterDataMetaCache;
 import org.nuclos.server.common.MetaDataServerProvider;
 import org.nuclos.server.common.ModuleConstants;
+import org.nuclos.server.common.ServerServiceLocator;
 import org.nuclos.server.common.ooxml.ExcelReader;
 import org.nuclos.server.common.ooxml.WordXMLReader;
 import org.nuclos.server.genericobject.Modules;
@@ -85,7 +86,7 @@ public abstract class CustomCodeInterface {
 	 */
 	protected RuleInterfaceFacadeLocal getRuleInterface() {
 		if (ruleInterface == null)
-			ruleInterface = ServiceLocator.getInstance().getFacade(RuleInterfaceFacadeLocal.class);
+			ruleInterface = ServerServiceLocator.getInstance().getFacade(RuleInterfaceFacadeLocal.class);
 		return ruleInterface;
 	}
 
@@ -426,7 +427,7 @@ public abstract class CustomCodeInterface {
 	 * @return Collection<MasterDataVO>
 	 */
 	public Collection<MasterDataVO> getDependants(Integer iId, String sEntityName, String sForeignKeyFieldName) {
-		final MasterDataFacadeLocal mdfacade = ServiceLocator.getInstance().getFacade(MasterDataFacadeLocal.class);
+		final MasterDataFacadeLocal mdfacade = ServerServiceLocator.getInstance().getFacade(MasterDataFacadeLocal.class);
 		try {
 			return mdfacade.getDependantMasterData(sEntityName, sForeignKeyFieldName, iId);
 		}

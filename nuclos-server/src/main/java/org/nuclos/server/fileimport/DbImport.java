@@ -38,6 +38,7 @@ import org.nuclos.common2.fileimport.FileImportResult;
 import org.nuclos.common2.fileimport.NuclosFileImportException;
 import org.nuclos.server.common.BusinessIDFactory;
 import org.nuclos.server.common.MetaDataServerProvider;
+import org.nuclos.server.common.ServerServiceLocator;
 import org.nuclos.server.dal.DalUtils;
 import org.nuclos.server.dal.processor.ProcessorFactorySingleton;
 import org.nuclos.server.dal.processor.jdbc.impl.ImportObjectProcessor;
@@ -241,12 +242,12 @@ public class DbImport extends AbstractImport {
 			for (FileImportResult fir : result) {
 				summary.append(getLogger().info(StringUtils.getParameterizedExceptionMessage("import.logging.result", fir.getEntity(), fir.getInserted(), fir.getUpdated(), fir.getDeleted())) + System.getProperty("line.separator"));
 			}
-			ServiceLocator.getInstance().getFacade(ImportFacadeLocal.class).setImportResult(getContext().getImportfileId(), getLogger().getErrorcount() > 0 ? ImportResult.INCOMPLETE : ImportResult.OK, summary.toString());
+			ServerServiceLocator.getInstance().getFacade(ImportFacadeLocal.class).setImportResult(getContext().getImportfileId(), getLogger().getErrorcount() > 0 ? ImportResult.INCOMPLETE : ImportResult.OK, summary.toString());
 
 			this.notifier.finish();
         }
         catch (NuclosFileImportException ex) {
-        	ServiceLocator.getInstance().getFacade(ImportFacadeLocal.class).setImportResult(getContext().getImportfileId(), ImportResult.ERROR, getLogger().localize(ex.getMessage()));
+        	ServerServiceLocator.getInstance().getFacade(ImportFacadeLocal.class).setImportResult(getContext().getImportfileId(), ImportResult.ERROR, getLogger().localize(ex.getMessage()));
         	this.notifier.stop(ex.getMessage());
         	throw ex;
         }
@@ -258,7 +259,7 @@ public class DbImport extends AbstractImport {
 
 	private StateFacadeLocal getStateFacade() {
 		if (stateFacade == null) {
-			stateFacade = ServiceLocator.getInstance().getFacade(StateFacadeLocal.class);
+			stateFacade = ServerServiceLocator.getInstance().getFacade(StateFacadeLocal.class);
 		}
 		return stateFacade;
 	}

@@ -41,6 +41,7 @@ import org.nuclos.common2.exception.CommonValidationException;
 import org.nuclos.server.common.AttributeCache;
 import org.nuclos.server.common.InstanceConstants;
 import org.nuclos.server.common.MasterDataMetaCache;
+import org.nuclos.server.common.ServerServiceLocator;
 import org.nuclos.server.common.ejb3.NuclosFacadeBean;
 import org.nuclos.server.dblayer.query.DbCondition;
 import org.nuclos.server.dblayer.query.DbFrom;
@@ -48,16 +49,19 @@ import org.nuclos.server.dblayer.query.DbQuery;
 import org.nuclos.server.dblayer.query.DbQueryBuilder;
 import org.nuclos.server.genericobject.GenericObjectMetaDataCache;
 import org.nuclos.server.genericobject.ejb3.GeneratorFacadeLocal;
+import org.nuclos.server.genericobject.ejb3.GenericObjectFacadeLocal;
 import org.nuclos.server.genericobject.valueobject.GeneratorActionVO;
 import org.nuclos.server.genericobject.valueobject.GenericObjectVO;
 import org.nuclos.server.genericobject.valueobject.GenericObjectWithDependantsVO;
 import org.nuclos.server.masterdata.MasterDataWrapper;
+import org.nuclos.server.masterdata.ejb3.MasterDataFacadeLocal;
 import org.nuclos.server.masterdata.valueobject.DependantMasterDataMap;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 import org.nuclos.server.processmonitor.valueobject.ProcessTransitionVO;
 import org.nuclos.server.processmonitor.valueobject.SubProcessVO;
 import org.nuclos.server.ruleengine.NuclosBusinessRuleException;
 import org.nuclos.server.statemodel.valueobject.StateModelVO;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -74,10 +78,36 @@ import org.springframework.transaction.annotation.Transactional;
 // @Local(InstanceFacadeLocal.class)
 // @Remote(InstanceFacadeRemote.class)
 @Transactional
-public class InstanceFacadeBean extends NuclosFacadeBean implements InstanceFacadeLocal, InstanceFacadeRemote, InstanceConstants{
+public class InstanceFacadeBean extends NuclosFacadeBean implements InstanceFacadeRemote, InstanceConstants {
 
 	private GeneratorFacadeLocal generatorFacade;
+	
 	private ProcessMonitorFacadeLocal processMonitorFacade;
+	
+	private GenericObjectFacadeLocal genericObjectFacade;
+	
+	private MasterDataFacadeLocal masterDataFacade;
+	
+	public InstanceFacadeBean() {
+	}
+
+	@Autowired
+	final void setGenericObjectFacade(GenericObjectFacadeLocal genericObjectFacade) {
+		this.genericObjectFacade = genericObjectFacade;
+	}
+	
+	private final GenericObjectFacadeLocal getGenericObjectFacade() {
+		return genericObjectFacade;
+	}
+
+	@Autowired
+	final void setMasterDataFacade(MasterDataFacadeLocal masterDataFacade) {
+		this.masterDataFacade = masterDataFacade;
+	}
+	
+	private final MasterDataFacadeLocal getMasterDataFacade() {
+		return masterDataFacade;
+	}
 
 	/**
 	 * notify instance about state change if any instance is set.
@@ -90,7 +120,6 @@ public class InstanceFacadeBean extends NuclosFacadeBean implements InstanceFaca
 	 * @param genericObjectId
 	 * @param targetStateId
 	 */
-	@Override
 	public void notifyInstanceAboutStateChange(Integer genericObjectId, Integer targetStateId){
 		try {
 			final GenericObjectVO goVO = this.getGenericObjectFacade().get(genericObjectId, false);
@@ -151,7 +180,8 @@ public class InstanceFacadeBean extends NuclosFacadeBean implements InstanceFaca
 				if (otherGenerations.isEmpty()){
 					// no other ... same procedure as every year ;-)
 					MasterDataVO mdGaVO = getMasterDataFacade().get(NuclosEntity.GENERATION.getEntityName(), transition.getGenerationId());
-					GeneratorActionVO gaVO = MasterDataWrapper.getGeneratorActionVO(mdGaVO, ServiceLocator.getInstance().getFacade(GeneratorFacadeLocal.class).getGeneratorUsages(mdGaVO.getIntId()));
+					GeneratorActionVO gaVO = MasterDataWrapper.getGeneratorActionVO(mdGaVO, 
+							ServerServiceLocator.getInstance().getFacade(GeneratorFacadeLocal.class).getGeneratorUsages(mdGaVO.getIntId()));
 					final GenericObjectVO createdGoVO = getGenericObjectFacade().get(IdUtils.unsafeToId(this.getGeneratorFacade().generateGenericObject(IdUtils.toLongId(genericObjectId), gaVO.getName())));
 					// instance would be automaticly transfered to target
 					// but we have to set the attributes
@@ -186,7 +216,8 @@ public class InstanceFacadeBean extends NuclosFacadeBean implements InstanceFaca
 					} else {
 						// generate ...
 						MasterDataVO mdGaVO = getMasterDataFacade().get(NuclosEntity.GENERATION.getEntityName(), transition.getGenerationId());
-						GeneratorActionVO gaVO = MasterDataWrapper.getGeneratorActionVO(mdGaVO, ServiceLocator.getInstance().getFacade(GeneratorFacadeLocal.class).getGeneratorUsages(mdGaVO.getIntId()));
+						GeneratorActionVO gaVO = MasterDataWrapper.getGeneratorActionVO(mdGaVO, 
+								ServerServiceLocator.getInstance().getFacade(GeneratorFacadeLocal.class).getGeneratorUsages(mdGaVO.getIntId()));
 						final GenericObjectVO createdGoVO = getGenericObjectFacade().get(IdUtils.unsafeToId(this.getGeneratorFacade().generateGenericObject(IdUtils.toLongId(genericObjectId), gaVO.getName())));
 
 						// instance would be automaticly transfered to target
@@ -442,7 +473,6 @@ public class InstanceFacadeBean extends NuclosFacadeBean implements InstanceFaca
 	 * 			null		   if generation for given instance is not yet run
 	 *
 	 */
-	@Override
 	public Boolean isObjectGenerated(Integer iInstanceId, Integer iGenerationId){
 		DbQueryBuilder builder = dataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<Boolean> query = builder.createQuery(Boolean.class);
@@ -454,13 +484,6 @@ public class InstanceFacadeBean extends NuclosFacadeBean implements InstanceFaca
 		return CollectionUtils.getFirst(dataBaseHelper.getDbAccess().executeQuery(query));
 	}
 
-	/**
-	 *
-	 * @param iInstanceId
-	 * @return
-	 *
-	 */
-	@Override
 	public Boolean isProcessInstanceStarted(Integer iInstanceId){
 		DbQueryBuilder builder = dataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<Long> query = builder.createQuery(Long.class);
@@ -470,16 +493,6 @@ public class InstanceFacadeBean extends NuclosFacadeBean implements InstanceFaca
 		return dataBaseHelper.getDbAccess().executeQuerySingleResult(query) > 0L;
 	}
 
-	/**
-	 *
-	 * @param iInstanceId
-	 * @param iGenerationId
-	 * @param bResult
-	 * @throws CommonPermissionException
-	 * @throws CommonCreateException
-	 *
-	 */
-	@Override
 	public void createRunOfObjectGeneration(Integer iInstanceId, Integer iGenerationId, Boolean bResult) throws CommonCreateException, CommonPermissionException{
 		MasterDataVO mdvo = new MasterDataVO(MasterDataMetaCache.getInstance().getMetaData(NuclosEntity.INSTANCEOBJECTGENERATION), false);
 		mdvo.setField("instanceId", iInstanceId);
@@ -493,13 +506,6 @@ public class InstanceFacadeBean extends NuclosFacadeBean implements InstanceFaca
 		}
 	}
 
-	/**
-	 *
-	 * @param iProcessMonitorId
-	 * @param iInstanceId
-	 * @throws CommonBusinessException
-	 */
-	@Override
 	public void createProcessInstance(Integer iProcessMonitorId, Integer iInstanceId) throws CommonBusinessException{
 
 		MasterDataVO instanceVO = getMasterDataFacade().get(NuclosEntity.INSTANCE.getEntityName(), iInstanceId);
@@ -536,13 +542,6 @@ public class InstanceFacadeBean extends NuclosFacadeBean implements InstanceFaca
 		getMasterDataFacade().modify(NuclosEntity.INSTANCE.getEntityName(), instanceVO, null);
 	}
 
-	/**
-	 *
-	 * @param iInstanceId
-	 * @param iStateModelUsageId
-	 * @return object id (could be null)
-	 */
-	@Override
 	public Integer getObjectId(Integer iInstanceId, Integer iStateModelUsageId){
 		MasterDataVO stateModelUsage;
 		try {
@@ -573,12 +572,6 @@ public class InstanceFacadeBean extends NuclosFacadeBean implements InstanceFaca
 		return CollectionUtils.getFirst(dataBaseHelper.getDbAccess().executeQuery(query));
 	}
 
-	/**
-	 *
-	 * @param iInstanceId
-	 * @param iStateModelUsageId
-	 */
-	@Override
 	public int getInstanceStatus(Integer iInstanceId, Integer iStateModelUsageId){
 		try {
 			final Date now = new Date();
@@ -627,7 +620,7 @@ public class InstanceFacadeBean extends NuclosFacadeBean implements InstanceFaca
 	 */
 	private GeneratorFacadeLocal getGeneratorFacade() {
 			if (generatorFacade == null)
-				generatorFacade = ServiceLocator.getInstance().getFacade(GeneratorFacadeLocal.class);
+				generatorFacade = ServerServiceLocator.getInstance().getFacade(GeneratorFacadeLocal.class);
 		return generatorFacade;
 	}
 
@@ -637,7 +630,7 @@ public class InstanceFacadeBean extends NuclosFacadeBean implements InstanceFaca
 	 */
 	private ProcessMonitorFacadeLocal getProcessMonitorFacade() {
 			if (processMonitorFacade == null)
-				processMonitorFacade = ServiceLocator.getInstance().getFacade(ProcessMonitorFacadeLocal.class);
+				processMonitorFacade = ServerServiceLocator.getInstance().getFacade(ProcessMonitorFacadeLocal.class);
 		return processMonitorFacade;
 	}
 }

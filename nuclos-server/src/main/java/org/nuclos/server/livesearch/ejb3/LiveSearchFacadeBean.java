@@ -38,6 +38,7 @@ import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.server.common.MetaDataServerProvider;
 import org.nuclos.server.common.ServerParameterProvider;
+import org.nuclos.server.common.ServerServiceLocator;
 import org.nuclos.server.common.SessionUtils;
 import org.nuclos.server.common.ejb3.NuclosFacadeBean;
 import org.nuclos.server.common.ejb3.SecurityFacadeLocal;
@@ -53,10 +54,8 @@ import org.springframework.transaction.annotation.Transactional;
  * is required for the search results, a pluggable module architecture exists
  * via the server-side configuration and implementations of LiveSearchAddFilter. 
  */
-// @Stateless
-// @Remote(LiveSearchFacadeRemote.class)
 @Transactional
-public final class LiveSearchFacadeBean extends NuclosFacadeBean implements LiveSearchFacadeRemote {
+public class LiveSearchFacadeBean extends NuclosFacadeBean implements LiveSearchFacadeRemote {
 	
 	private SessionUtils utils;
 	
@@ -77,7 +76,6 @@ public final class LiveSearchFacadeBean extends NuclosFacadeBean implements Live
 	 * 
 	 * The "hide attributes"-set may be null
 	 */
-	@Override
 	public List<Pair<EntityObjectVO, Set<String>>> search(final String entity, String searchString) {
 		JdbcEntityObjectProcessor proc = NucletDalProvider.getInstance().getEntityObjectProcessor(entity);
 
@@ -141,7 +139,7 @@ public final class LiveSearchFacadeBean extends NuclosFacadeBean implements Live
 				
 				private SecurityFacadeLocal getFacade() {
 					if(secFacade == null)
-						secFacade = ServiceLocator.getInstance().getFacade(SecurityFacadeLocal.class);
+						secFacade = ServerServiceLocator.getInstance().getFacade(SecurityFacadeLocal.class);
 					return secFacade;
 				}
 				

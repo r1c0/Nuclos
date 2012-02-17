@@ -50,6 +50,7 @@ import org.nuclos.server.common.DatasourceServerUtils;
 import org.nuclos.server.common.MasterDataMetaCache;
 import org.nuclos.server.common.MetaDataServerProvider;
 import org.nuclos.server.common.SecurityCache;
+import org.nuclos.server.common.ServerServiceLocator;
 import org.nuclos.server.common.ejb3.NuclosFacadeBean;
 import org.nuclos.server.dblayer.DbAccess;
 import org.nuclos.server.dblayer.DbException;
@@ -59,6 +60,7 @@ import org.nuclos.server.dblayer.query.DbQuery;
 import org.nuclos.server.dblayer.query.DbQueryBuilder;
 import org.nuclos.server.dblayer.statements.DbPlainStatement;
 import org.nuclos.server.masterdata.MasterDataWrapper;
+import org.nuclos.server.masterdata.ejb3.MasterDataFacadeLocal;
 import org.nuclos.server.masterdata.valueobject.MasterDataMetaVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 import org.nuclos.server.report.NuclosReportException;
@@ -79,11 +81,8 @@ import org.springframework.transaction.annotation.Transactional;
  * Created by Novabit Informationssysteme GmbH <br>
  * Please visit <a href="http://www.novabit.de">www.novabit.de</a>
  */
-// @Stateless
-// @Local(DatasourceFacadeLocal.class)
-// @Remote(DatasourceFacadeRemote.class)
 @Transactional
-public class DatasourceFacadeBean extends NuclosFacadeBean implements DatasourceFacadeLocal, DatasourceFacadeRemote {
+public class DatasourceFacadeBean extends NuclosFacadeBean implements DatasourceFacadeRemote {
 
 	private static final Logger LOG = Logger.getLogger(DatasourceFacadeBean.class);
 
@@ -133,109 +132,115 @@ public class DatasourceFacadeBean extends NuclosFacadeBean implements Datasource
    
    //
    
-   private DatasourceServerUtils utils;
-   
-   public DatasourceFacadeBean() {
-   }
-   
-   @Autowired
-   void setDatasourceServerUtils(DatasourceServerUtils utils) {
-	   this.utils = utils;
-   }
+	private DatasourceServerUtils utils;
 
-   /**
-    * get all datasources
-    *
-    * @return set of datasources
-    * @throws CommonPermissionException
-    */
-   @Override
-public Collection<DatasourceVO> getDatasources() throws CommonPermissionException {
-   	this.checkReadAllowed(NuclosEntity.REPORT, NuclosEntity.DATASOURCE);
-   	return DatasourceCache.getInstance().getAllDatasources(getCurrentUserName());
-   }
+	private MasterDataFacadeLocal masterDataFacade;
 
-   /**
-    * get all datasources
-    *
-    * @return set of datasources
-    */
-   @Override
-public Collection<DatasourceVO> getDatasourcesForCurrentUser() {
-      return DatasourceCache.getInstance().getDatasourcesByCreator(getCurrentUserName());
-   }
+	public DatasourceFacadeBean() {
+	}
 
-   /**
-    * get datasource value object
-    *
-    * @param iId
-    *                primary key of datasource
-    * @return datasource value object
-    */
-   @Override
-@RolesAllowed("Login")
-   public DatasourceVO get(Integer iId) throws CommonFinderException, CommonPermissionException {
-   	return DatasourceCache.getInstance().getDatasourcesById(iId, getCurrentUserName());
+	@Autowired
+	void setDatasourceServerUtils(DatasourceServerUtils utils) {
+		this.utils = utils;
+	}
 
-     /* todo how should we handle permissions here? - It is necessary, that
-     // all users have the right to execute inline datasources
-     if (result.getPermission() == DatasourceVO.PERMISSION_NONE) {
-         throw new CommonPermissionException();
-     }
-     return result;
-     */
-   }
+	@Autowired
+	final void setMasterDataFacade(MasterDataFacadeLocal masterDataFacade) {
+		this.masterDataFacade = masterDataFacade;
+	}
 
-   /**
-    * get datasource value object
-    *
-    * @param sDatasourceName
-    *                name of datasource
-    * @return datasource value object
-    */
-   @Override
-@RolesAllowed("Login")
-   public DatasourceVO get(String sDatasourceName) throws CommonFinderException, CommonPermissionException {
-   	return DatasourceCache.getInstance().getDatasourceByName(sDatasourceName);
-   }
+	private final MasterDataFacadeLocal getMasterDataFacade() {
+		return masterDataFacade;
+	}
 
-   /**
-    * get valuelist provider value object
-    *
-    * @param sValuelistProvider
-    *                name of valuelist provider
-    * @return valuelist provider value object
-    */
-   @Override
-@RolesAllowed("Login")
-   public ValuelistProviderVO getValuelistProvider(String sValuelistProvider) throws CommonFinderException, CommonPermissionException {
-   	return DatasourceCache.getInstance().getValuelistProviderByName(sValuelistProvider);
-   }
+	/**
+	 * get all datasources
+	 *
+	 * @return set of datasources
+	 * @throws CommonPermissionException
+	 */
+	public Collection<DatasourceVO> getDatasources() throws CommonPermissionException {
+		this.checkReadAllowed(NuclosEntity.REPORT, NuclosEntity.DATASOURCE);
+		return DatasourceCache.getInstance().getAllDatasources(getCurrentUserName());
+	}
 
-   /**
-    * get dynamic entity value object
-    *
-    * @param sDynamicEntity
-    *                name of valuelist provider
-    * @return dynamic entity value object
-    */
-   @Override
-@RolesAllowed("Login")
-   public DynamicEntityVO getDynamicEntity(String sDynamicEntity) throws CommonFinderException, CommonPermissionException {
-   	return DatasourceCache.getInstance().getDynamicEntityByName(sDynamicEntity);
-   }
+	/**
+	 * get all datasources
+	 *
+	 * @return set of datasources
+	 */
+	public Collection<DatasourceVO> getDatasourcesForCurrentUser() {
+		return DatasourceCache.getInstance().getDatasourcesByCreator(getCurrentUserName());
+	}
 
-   /**
-   * get a Datasource by id regardless of permisssions
-   * @param iDatasourceId
-   * @return
-   * @throws CommonPermissionException
-   */
-   @Override
-@RolesAllowed("Login")
-   public DatasourceVO getDatasourceById(Integer iDatasourceId) {
-      return DatasourceCache.getInstance().get(iDatasourceId);
-   }
+	/**
+	 * get datasource value object
+	 *
+	 * @param iId
+	 *                primary key of datasource
+	 * @return datasource value object
+	 */
+	@RolesAllowed("Login")
+	public DatasourceVO get(Integer iId) throws CommonFinderException, CommonPermissionException {
+		return DatasourceCache.getInstance().getDatasourcesById(iId, getCurrentUserName());
+
+		/* todo how should we handle permissions here? - It is necessary, that
+		// all users have the right to execute inline datasources
+		if (result.getPermission() == DatasourceVO.PERMISSION_NONE) {
+		    throw new CommonPermissionException();
+		}
+		return result;
+		*/
+	}
+
+	/**
+	 * get datasource value object
+	 *
+	 * @param sDatasourceName
+	 *                name of datasource
+	 * @return datasource value object
+	 */
+	@RolesAllowed("Login")
+	public DatasourceVO get(String sDatasourceName) throws CommonFinderException, CommonPermissionException {
+		return DatasourceCache.getInstance().getDatasourceByName(sDatasourceName);
+	}
+
+	/**
+	 * get valuelist provider value object
+	 *
+	 * @param sValuelistProvider
+	 *                name of valuelist provider
+	 * @return valuelist provider value object
+	 */
+	@RolesAllowed("Login")
+	public ValuelistProviderVO getValuelistProvider(String sValuelistProvider) throws CommonFinderException,
+			CommonPermissionException {
+		return DatasourceCache.getInstance().getValuelistProviderByName(sValuelistProvider);
+	}
+
+	/**
+	 * get dynamic entity value object
+	 *
+	 * @param sDynamicEntity
+	 *                name of valuelist provider
+	 * @return dynamic entity value object
+	 */
+	@RolesAllowed("Login")
+	public DynamicEntityVO getDynamicEntity(String sDynamicEntity) throws CommonFinderException,
+			CommonPermissionException {
+		return DatasourceCache.getInstance().getDynamicEntityByName(sDynamicEntity);
+	}
+
+	/**
+	* get a Datasource by id regardless of permisssions
+	* @param iDatasourceId
+	* @return
+	* @throws CommonPermissionException
+	*/
+	@RolesAllowed("Login")
+	public DatasourceVO getDatasourceById(Integer iDatasourceId) {
+		return DatasourceCache.getInstance().get(iDatasourceId);
+	}
 
    /**
     * create new datasource
@@ -244,9 +249,9 @@ public Collection<DatasourceVO> getDatasourcesForCurrentUser() {
     *                value object
     * @return new datasource
     */
-   @Override
-public DatasourceVO create(DatasourceVO datasourcevo, List<String> lstUsedDatasources)
+   public DatasourceVO create(DatasourceVO datasourcevo, List<String> lstUsedDatasources)
 		throws CommonCreateException, CommonValidationException, NuclosBusinessRuleException, CommonPermissionException {
+	   
    	datasourcevo.validate();
    	updateValidFlag(datasourcevo);
 
@@ -282,8 +287,9 @@ public DatasourceVO create(DatasourceVO datasourcevo, List<String> lstUsedDataso
     * 					list of used dynamic entity names
     * @return new dynamic entity
     */
-   @Override
-public DynamicEntityVO createDynamicEntity(DynamicEntityVO dynamicEntityVO, List<String> lstUsedDynamicEntities) throws CommonCreateException, CommonValidationException, NuclosBusinessRuleException, CommonPermissionException {
+   public DynamicEntityVO createDynamicEntity(DynamicEntityVO dynamicEntityVO, List<String> lstUsedDynamicEntities) 
+		   throws CommonCreateException, CommonValidationException, NuclosBusinessRuleException, CommonPermissionException {
+	   
    	dynamicEntityVO.validate();
    	updateValidFlag(dynamicEntityVO);
 
@@ -320,8 +326,9 @@ public DynamicEntityVO createDynamicEntity(DynamicEntityVO dynamicEntityVO, List
     * 					list of used valuelist provider names
     * @return new valuelist provider
     */
-   @Override
-public ValuelistProviderVO createValuelistProvider(ValuelistProviderVO valuelistProviderVO, List<String> lstUsedValuelistProvider) throws CommonCreateException, CommonValidationException, NuclosBusinessRuleException, CommonPermissionException {
+   public ValuelistProviderVO createValuelistProvider(ValuelistProviderVO valuelistProviderVO, List<String> lstUsedValuelistProvider) 
+		   throws CommonCreateException, CommonValidationException, NuclosBusinessRuleException, CommonPermissionException {
+	   
    	valuelistProviderVO.validate();
    	updateValidFlag(valuelistProviderVO);
 
@@ -356,8 +363,9 @@ public ValuelistProviderVO createValuelistProvider(ValuelistProviderVO valuelist
     * 					list of used RecordGrant names
     * @return new RecordGrant
     */
-   @Override
-   public RecordGrantVO createRecordGrant(RecordGrantVO recordGrantVO, List<String> lstUsedRecordGrant) throws CommonCreateException, CommonValidationException, NuclosBusinessRuleException, CommonPermissionException {
+   public RecordGrantVO createRecordGrant(RecordGrantVO recordGrantVO, List<String> lstUsedRecordGrant) 
+		   throws CommonCreateException, CommonValidationException, NuclosBusinessRuleException, CommonPermissionException {
+	   
 	   recordGrantVO.validate();
    	updateValidFlag(recordGrantVO);
 
@@ -399,8 +407,9 @@ public ValuelistProviderVO createValuelistProvider(ValuelistProviderVO valuelist
     * @throws CommonStaleVersionException
     * @throws CommonValidationException
     */
-   @Override
-public void modify(DatasourceVO datasourcevo) throws CommonFinderException, CommonPermissionException, CommonStaleVersionException, CommonValidationException, NuclosBusinessRuleException {
+   public void modify(DatasourceVO datasourcevo) 
+		   throws CommonFinderException, CommonPermissionException, CommonStaleVersionException, CommonValidationException, NuclosBusinessRuleException {
+	   
    	DataSourceType nuclosEntity = DataSourceType.getFromDatasourceVO(datasourcevo);
    	switch (nuclosEntity) {
    		case DATASOURCE:
@@ -426,8 +435,9 @@ public void modify(DatasourceVO datasourcevo) throws CommonFinderException, Comm
     * @throws CommonStaleVersionException
     * @throws CommonValidationException
     */
-   @Override
-public DynamicEntityVO modifyDynamicEntity(DynamicEntityVO dynamicEntityVO, List<String> lstUsedDynamicEntities) throws CommonFinderException, CommonPermissionException, CommonStaleVersionException, CommonValidationException, NuclosBusinessRuleException {
+   public DynamicEntityVO modifyDynamicEntity(DynamicEntityVO dynamicEntityVO, List<String> lstUsedDynamicEntities) 
+		   throws CommonFinderException, CommonPermissionException, CommonStaleVersionException, CommonValidationException, NuclosBusinessRuleException {
+	   
    	return modifyDynamicEntity(dynamicEntityVO, lstUsedDynamicEntities, true);
    }
 
@@ -478,8 +488,9 @@ public DynamicEntityVO modifyDynamicEntity(DynamicEntityVO dynamicEntityVO, List
     * @throws CommonStaleVersionException
     * @throws CommonValidationException
     */
-   @Override
-public ValuelistProviderVO modifyValuelistProvider(ValuelistProviderVO valuelistProviderVO, List<String> lstUsedValuelistProvider) throws CommonFinderException, CommonPermissionException, CommonStaleVersionException, CommonValidationException, NuclosBusinessRuleException {
+   public ValuelistProviderVO modifyValuelistProvider(ValuelistProviderVO valuelistProviderVO, List<String> lstUsedValuelistProvider) 
+		   throws CommonFinderException, CommonPermissionException, CommonStaleVersionException, CommonValidationException, NuclosBusinessRuleException {
+	   
    	return modifyValuelistProvider(valuelistProviderVO, lstUsedValuelistProvider, true);
    }
 
@@ -528,8 +539,9 @@ public ValuelistProviderVO modifyValuelistProvider(ValuelistProviderVO valuelist
     * @throws CommonStaleVersionException
     * @throws CommonValidationException
     */
-   @Override
-   public RecordGrantVO modifyRecordGrant(RecordGrantVO recordGrantVO, List<String> lstUsedRecordGrant) throws CommonFinderException, CommonPermissionException, CommonStaleVersionException, CommonValidationException, NuclosBusinessRuleException {
+   public RecordGrantVO modifyRecordGrant(RecordGrantVO recordGrantVO, List<String> lstUsedRecordGrant) 
+		   throws CommonFinderException, CommonPermissionException, CommonStaleVersionException, CommonValidationException, NuclosBusinessRuleException {
+	   
    	return modifyRecordGrant(recordGrantVO, lstUsedRecordGrant, true);
    }
 
@@ -581,8 +593,10 @@ public ValuelistProviderVO modifyValuelistProvider(ValuelistProviderVO valuelist
     *                value object
     * @return modified datasource
     */
-   @Override
-public DatasourceVO modify(DatasourceVO datasourcevo, List<String> lstUsedDatasources) throws CommonFinderException, CommonPermissionException, CommonStaleVersionException, CommonValidationException, NuclosBusinessRuleException, CommonRemoteException {
+   public DatasourceVO modify(DatasourceVO datasourcevo, List<String> lstUsedDatasources) 
+		   throws CommonFinderException, CommonPermissionException, CommonStaleVersionException, CommonValidationException, 
+		   NuclosBusinessRuleException, CommonRemoteException {
+	   
    	return modify(datasourcevo, lstUsedDatasources, true);
    }
 
@@ -630,8 +644,7 @@ public DatasourceVO modify(DatasourceVO datasourcevo, List<String> lstUsedDataso
     * @param newDEs (dynamic entities of this list would be created)
     * @param oldDEs (dynamic entities of this list would be deleted)
     */
-   @Override
-public void processChangingDynamicEntities(Collection<DynamicEntityVO> newDEs, Collection<DynamicEntityVO> oldDEs, boolean bExecute, List<String> script) {
+   public void processChangingDynamicEntities(Collection<DynamicEntityVO> newDEs, Collection<DynamicEntityVO> oldDEs, boolean bExecute, List<String> script) {
    	for (DynamicEntityVO oldDEVO : oldDEs) {
    		try {
 				this.processChangingDynamicEntity(null, oldDEVO, false, false, bExecute, script);
@@ -788,8 +801,7 @@ public void processChangingDynamicEntities(Collection<DynamicEntityVO> newDEs, C
     * @throws CommonFinderException
     * @throws CommonPermissionException
     */
-   @Override
-@RolesAllowed("Login")
+   @RolesAllowed("Login")
    public List<DatasourceVO> getUsagesForDatasource(final Integer iDatasourceId) throws CommonFinderException, CommonPermissionException {
    	return getUsagesForDatasource(get(iDatasourceId));
    }
@@ -805,8 +817,7 @@ public void processChangingDynamicEntities(Collection<DynamicEntityVO> newDEs, C
     * @throws CommonPermissionException
     * @throws CommonFinderException
     */
-   @Override
-@RolesAllowed("Login")
+   @RolesAllowed("Login")
    public List<DatasourceVO> getUsagesForDatasource(DatasourceVO datasourceVO) throws CommonFinderException, CommonPermissionException {
    	final DataSourceType datasourceType = DataSourceType.getFromDatasourceVO(datasourceVO);
 
@@ -834,7 +845,6 @@ public void processChangingDynamicEntities(Collection<DynamicEntityVO> newDEs, C
     * @throws CommonFinderException
     * @throws CommonPermissionException
     */
-	@Override
 	public List<DatasourceVO> getUsingByForDatasource(final Integer iDatasourceId)
 		throws CommonFinderException, CommonPermissionException {
 
@@ -870,8 +880,10 @@ public void processChangingDynamicEntities(Collection<DynamicEntityVO> newDEs, C
     * @param datasourcevo
     *                value object
     */
-   @Override
-public void remove(DatasourceVO datasourcevo) throws CommonFinderException, CommonRemoveException, CommonPermissionException, CommonStaleVersionException, NuclosBusinessRuleException {
+	public void remove(DatasourceVO datasourcevo) 
+			throws CommonFinderException, CommonRemoveException, CommonPermissionException, CommonStaleVersionException, 
+			NuclosBusinessRuleException {
+		
    	DatasourceVO dbDatasourceVO = MasterDataWrapper.getDatasourceVO(getMasterDataFacade().get(NuclosEntity.DATASOURCE.getEntityName(), datasourcevo.getId()), getCurrentUserName());
 
   		if (DatasourceCache.getInstance().getPermission(dbDatasourceVO.getId(), getCurrentUserName()) != DatasourceVO.PERMISSION_READWRITE) {
@@ -900,8 +912,10 @@ public void remove(DatasourceVO datasourcevo) throws CommonFinderException, Comm
     * @param dynamicEntityVO
     *                value object
     */
-   @Override
-public void removeDynamicEntity(DynamicEntityVO dynamicEntityVO) throws CommonFinderException, CommonRemoveException, CommonPermissionException, CommonStaleVersionException, NuclosBusinessRuleException {
+	public void removeDynamicEntity(DynamicEntityVO dynamicEntityVO) 
+			throws CommonFinderException, CommonRemoveException, CommonPermissionException, CommonStaleVersionException, 
+			NuclosBusinessRuleException {
+		
    	DynamicEntityVO dbDynamicEntityVO = MasterDataWrapper.getDynamicEntityVO(getMasterDataFacade().get(NuclosEntity.DYNAMICENTITY.getEntityName(), dynamicEntityVO.getId()));
    	this.checkDeleteAllowed(NuclosEntity.DYNAMICENTITY);
 
@@ -936,8 +950,9 @@ public void removeDynamicEntity(DynamicEntityVO dynamicEntityVO) throws CommonFi
     * @param valuelistProviderVO
     *                value object
     */
-   @Override
-public void removeValuelistProvider(ValuelistProviderVO valuelistProviderVO) throws CommonFinderException, CommonRemoveException, CommonPermissionException, CommonStaleVersionException, NuclosBusinessRuleException {
+	public void removeValuelistProvider(ValuelistProviderVO valuelistProviderVO) 
+			throws CommonFinderException, CommonRemoveException, CommonPermissionException, CommonStaleVersionException, NuclosBusinessRuleException {
+		
    	ValuelistProviderVO dbValuelistProviderVO = MasterDataWrapper.getValuelistProviderVO(getMasterDataFacade().get(NuclosEntity.VALUELISTPROVIDER.getEntityName(), valuelistProviderVO.getId()));
    	this.checkDeleteAllowed(NuclosEntity.VALUELISTPROVIDER);
 
@@ -964,10 +979,12 @@ public void removeValuelistProvider(ValuelistProviderVO valuelistProviderVO) thr
     * @param recordGrantVO
     *                value object
     */
-   @Override
-public void removeRecordGrant(RecordGrantVO recordGrantVO) throws CommonFinderException, CommonRemoveException, CommonPermissionException, CommonStaleVersionException, NuclosBusinessRuleException {
-	   RecordGrantVO dbRecordGrantVO = MasterDataWrapper.getRecordGrantVO(getMasterDataFacade().get(NuclosEntity.RECORDGRANT.getEntityName(), recordGrantVO.getId()));
-   	this.checkDeleteAllowed(NuclosEntity.RECORDGRANT);
+   public void removeRecordGrant(RecordGrantVO recordGrantVO) 
+		   throws CommonFinderException, CommonRemoveException, CommonPermissionException, CommonStaleVersionException, NuclosBusinessRuleException {
+	   
+	   	RecordGrantVO dbRecordGrantVO = MasterDataWrapper.getRecordGrantVO(
+	   			getMasterDataFacade().get(NuclosEntity.RECORDGRANT.getEntityName(), recordGrantVO.getId()));
+   		this.checkDeleteAllowed(NuclosEntity.RECORDGRANT);
 
   		if (dbRecordGrantVO.getVersion() != recordGrantVO.getVersion()) {
   			throw new CommonStaleVersionException("record grant", recordGrantVO.toString(), dbRecordGrantVO.toString());
@@ -1011,8 +1028,7 @@ public void removeRecordGrant(RecordGrantVO recordGrantVO) throws CommonFinderEx
     * @throws NuclosFatalException
     * @throws NuclosDatasourceException
     */
-   @Override
-@RolesAllowed("Login")
+   @RolesAllowed("Login")
    public List<DatasourceParameterVO> getParameters(String sDatasourceXML) throws NuclosFatalException, NuclosDatasourceException {
 		return utils.getParameters(sDatasourceXML);
    }
@@ -1024,7 +1040,6 @@ public void removeRecordGrant(RecordGrantVO recordGrantVO) throws CommonFinderEx
    * @throws NuclosFatalException
    * @throws NuclosDatasourceException
    */
-   @Override
    @RolesAllowed("Login")
   public List<DatasourceParameterVO> getParameters(Integer iDatasourceId) throws NuclosFatalException, NuclosDatasourceException {
 		return utils.getParameters(iDatasourceId);
@@ -1037,8 +1052,7 @@ public void removeRecordGrant(RecordGrantVO recordGrantVO) throws CommonFinderEx
     * @throws CommonValidationException
     * @throws NuclosReportException
     */
-   @Override
-@RolesAllowed("Login")
+   @RolesAllowed("Login")
    public void validateSqlFromXML(String sDatasourceXML) throws CommonValidationException, NuclosDatasourceException {
    	final String sSql = this.createSQL(sDatasourceXML,this.getTestParameters(sDatasourceXML));
 
@@ -1052,7 +1066,6 @@ public void removeRecordGrant(RecordGrantVO recordGrantVO) throws CommonFinderEx
     * @throws CommonValidationException
     * @throws NuclosReportException
     */
-   @Override
    @RolesAllowed("Login")
    public void validateSql(String sql) throws CommonValidationException, NuclosDatasourceException {
 		try {
@@ -1067,7 +1080,6 @@ public void removeRecordGrant(RecordGrantVO recordGrantVO) throws CommonFinderEx
    * @param iDatasourceId id of datasource
    * @return string containing sql
    */
-  @Override
   public String createSQL(Integer iDatasourceId, Map<String, Object> mpParams) throws NuclosDatasourceException {
      return utils.createSQL(iDatasourceId, mpParams);
   }
@@ -1079,7 +1091,6 @@ public void removeRecordGrant(RecordGrantVO recordGrantVO) throws CommonFinderEx
     *                xml of datasource
     * @return string containing sql
     */
-  	@Override
 	@RolesAllowed("Login")
    public String createSQL(String sDatasourceXML) throws NuclosDatasourceException {
       return utils.createSQL(sDatasourceXML);
@@ -1092,7 +1103,6 @@ public void removeRecordGrant(RecordGrantVO recordGrantVO) throws CommonFinderEx
     *                xml of datasource
     * @return string containing sql
     */
-  	@Override
 	@RolesAllowed("Login")
    public String createSQL(String sDatasourceXML, Map<String, Object> mpParams) throws NuclosDatasourceException {
   		return utils.createSQL(sDatasourceXML, mpParams);
@@ -1105,7 +1115,6 @@ public void removeRecordGrant(RecordGrantVO recordGrantVO) throws CommonFinderEx
 	 * @param iDatasourceId id of datasource
 	 * @return string containing sql
 	 */
-	@Override
 	public String createSQLForReportExecution(String name, Map<String, Object> mpParams) throws NuclosDatasourceException {
 		if (isCalledRemotely()) {
 			// just to ensure it won't be used in remote interface
@@ -1115,13 +1124,13 @@ public void removeRecordGrant(RecordGrantVO recordGrantVO) throws CommonFinderEx
 		return utils.createSQLForReportExecution(name, mpParams);
 	}
 
-/**
-    * set test values for every parameter for sysntax check
-    *
-    * @param sDatasourceXML
-    * @return Map<String sName, String sValue>
-    */
-   private Map<String, Object> getTestParameters(final String sDatasourceXML) {
+	/**
+	 * set test values for every parameter for sysntax check
+	 *
+	 * @param sDatasourceXML
+	 * @return Map<String sName, String sValue>
+	 */
+	private Map<String, Object> getTestParameters(final String sDatasourceXML) {
 		final Map<String, Object> result = new HashMap<String, Object>();
 
 		final List<DatasourceParameterVO> lstParams;
@@ -1159,8 +1168,7 @@ public void removeRecordGrant(RecordGrantVO recordGrantVO) throws CommonFinderEx
    /**
     * invalidate datasource cache
     */
-   @Override
-@RolesAllowed("Login")
+	@RolesAllowed("Login")
    public void invalidateCache() {
       DatasourceCache.getInstance().invalidate();
    }
@@ -1171,8 +1179,7 @@ public void removeRecordGrant(RecordGrantVO recordGrantVO) throws CommonFinderEx
     * @return set of DynamicEntityVO
     * @throws CommonPermissionException
     */
-   @Override
-@RolesAllowed("Login")
+	@RolesAllowed("Login")
    public Collection<DynamicEntityVO> getDynamicEntities() {
 //   	this.checkReadAllowed(ENTITY_NAME_DYNAMICENTITY);
    	return DatasourceCache.getInstance().getAllDynamicEntities();
@@ -1185,8 +1192,7 @@ public void removeRecordGrant(RecordGrantVO recordGrantVO) throws CommonFinderEx
     *                primary key of dynamic entity
     * @return DynamicEntityVO
     */
-   @Override
-@RolesAllowed("Login")
+	@RolesAllowed("Login")
    public DynamicEntityVO getDynamicEntity(Integer iDynamicEntityId) throws CommonPermissionException {
 //   	this.checkReadAllowed(ENTITY_NAME_DYNAMICENTITY);
    	return DatasourceCache.getInstance().getDynamicEntity(iDynamicEntityId);
@@ -1198,8 +1204,7 @@ public void removeRecordGrant(RecordGrantVO recordGrantVO) throws CommonFinderEx
     * @return set of ValuelistProviderVO
     * @throws CommonPermissionException
     */
-   @Override
-@RolesAllowed("Login")
+	@RolesAllowed("Login")
    public Collection<ValuelistProviderVO> getValuelistProvider() throws CommonPermissionException {
 //   	this.checkReadAllowed(ENTITY_NAME_VALUELISTPROVIDER);
    	return DatasourceCache.getInstance().getAllValuelistProvider();
@@ -1212,8 +1217,7 @@ public void removeRecordGrant(RecordGrantVO recordGrantVO) throws CommonFinderEx
     *                primary key of valuelist provider
     * @return ValuelistProviderVO
     */
-   @Override
-@RolesAllowed("Login")
+	@RolesAllowed("Login")
    public ValuelistProviderVO getValuelistProvider(Integer iValuelistProviderId) throws CommonPermissionException {
 //   	this.checkReadAllowed(ENTITY_NAME_VALUELISTPROVIDER);
    	return DatasourceCache.getInstance().getValuelistProvider(iValuelistProviderId);
@@ -1225,8 +1229,7 @@ public void removeRecordGrant(RecordGrantVO recordGrantVO) throws CommonFinderEx
     * @return set of RecordGrantVO
     * @throws CommonPermissionException
     */
-   @Override
-@RolesAllowed("Login")
+	@RolesAllowed("Login")
    public Collection<RecordGrantVO> getRecordGrant() throws CommonPermissionException {
 //   	this.checkReadAllowed(ENTITY_NAME_VALUELISTPROVIDER);
    	return DatasourceCache.getInstance().getAllRecordGrant();
@@ -1239,8 +1242,7 @@ public void removeRecordGrant(RecordGrantVO recordGrantVO) throws CommonFinderEx
     *                primary key of RecordGrant
     * @return RecordGrantVO
     */
-   @Override
-@RolesAllowed("Login")
+	@RolesAllowed("Login")
    public RecordGrantVO getRecordGrant(Integer iRecordGrantId) throws CommonPermissionException {
 //   	this.checkReadAllowed(ENTITY_NAME_VALUELISTPROVIDER);
    	return DatasourceCache.getInstance().getRecordGrant(iRecordGrantId);
@@ -1253,8 +1255,7 @@ public void removeRecordGrant(RecordGrantVO recordGrantVO) throws CommonFinderEx
     *                name of RecordGrant
     * @return RecordGrant value object
     */
-   @Override
-@RolesAllowed("Login")
+	@RolesAllowed("Login")
    public RecordGrantVO getRecordGrant(String sRecordGrant) throws CommonFinderException, CommonPermissionException {
    	return DatasourceCache.getInstance().getRecordGrantByName(sRecordGrant);
    }
@@ -1268,10 +1269,9 @@ public void removeRecordGrant(RecordGrantVO recordGrantVO) throws CommonFinderEx
 	 * @throws NuclosReportException
 	 * @throws CommonFinderException
 	 */
-	@Override
 	public ResultVO executeQuery(Integer iDatasourceId, Map<String, Object> mpParams, Integer iMaxRowCount) throws NuclosDatasourceException, CommonFinderException {
 		final ResultVO result;
-		DatasourceFacadeLocal facade = ServiceLocator.getInstance().getFacade(DatasourceFacadeLocal.class);
+		DatasourceFacadeLocal facade = ServerServiceLocator.getInstance().getFacade(DatasourceFacadeLocal.class);
 		result = executeQuery(facade.getDatasourceById(iDatasourceId).getSource(), mpParams, iMaxRowCount);
 
 		return result;
@@ -1284,7 +1284,6 @@ public void removeRecordGrant(RecordGrantVO recordGrantVO) throws CommonFinderEx
 	 * @param iMaxRowCount
 	 * @return report/form filled with data
 	 */
-	@Override
 	public ResultVO executeQuery(String sDatasourceXML, Map<String, Object> mpParams, Integer iMaxRowCount) throws CommonFinderException, NuclosDatasourceException {
 		final ResultVO result = new ResultVO();
 		final String sQuery = createSQL(sDatasourceXML, mpParams);
@@ -1292,7 +1291,6 @@ public void removeRecordGrant(RecordGrantVO recordGrantVO) throws CommonFinderEx
 		return dataBaseHelper.getDbAccess().executePlainQueryAsResultVO(sQuery, iMaxRowCount==null?-1:iMaxRowCount);
 	}
 
-	@Override
 	public Schema getSchemaTables() {
 		//return SchemaCache.getSchema(ServerParameterProvider.getInstance().getValue(ParameterProvider.KEY_NUCLOS_SCHEMA));
 		return SchemaCache.getInstance().getCurrentSchema();
@@ -1301,7 +1299,6 @@ public void removeRecordGrant(RecordGrantVO recordGrantVO) throws CommonFinderEx
 	/**
 	 * @throws CommonPermissionException
 	 */
-	@Override
 	public Table getSchemaColumns(Table table) {
 		//SchemaCache.getColumns(ServerParameterProvider.getInstance().getValue(ParameterProvider.KEY_NUCLOS_SCHEMA), table);
 		//SchemaCache.getConstraints(ServerParameterProvider.getInstance().getValue(ParameterProvider.KEY_NUCLOS_SCHEMA), table);
@@ -1309,7 +1306,6 @@ public void removeRecordGrant(RecordGrantVO recordGrantVO) throws CommonFinderEx
 		return table;
 	}
 
-	@Override
     public String createSQLOriginalParameter(String sDatasourceXML)
         throws NuclosDatasourceException {
 	    return utils.createSQLOriginalParameter(sDatasourceXML);

@@ -23,6 +23,7 @@ import org.nuclos.common.collection.Pair;
 import org.nuclos.common.job.JobType;
 import org.nuclos.common2.KeyEnum;
 import org.nuclos.common2.ServiceLocator;
+import org.nuclos.server.common.ServerServiceLocator;
 import org.nuclos.server.job.ejb3.JobControlFacadeLocal;
 import org.nuclos.server.job.valueobject.JobVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
@@ -114,7 +115,7 @@ public class SchedulableJob extends NuclosQuartzJob {
 
 	private static JobControlFacadeLocal getJobFacade() {
 		if (jobfacade == null)
-			jobfacade = ServiceLocator.getInstance().getFacade(JobControlFacadeLocal.class);
+			jobfacade = ServerServiceLocator.getInstance().getFacade(JobControlFacadeLocal.class);
 		return jobfacade;
 	}
 }

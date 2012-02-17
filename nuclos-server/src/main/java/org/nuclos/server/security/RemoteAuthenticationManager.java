@@ -22,6 +22,7 @@ import java.util.Collection;
 import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
+import org.nuclos.server.common.ServerServiceLocator;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -100,7 +101,7 @@ public class RemoteAuthenticationManager implements org.nuclos.common.security.R
 		SecurityContextHolder.getContext().setAuthentication(auth);
 
 		if (authenticated) {
-			ServiceLocator.getInstance().getFacade(UserFacadeLocal.class).setPassword(username, newpassword);
+			ServerServiceLocator.getInstance().getFacade(UserFacadeLocal.class).setPassword(username, newpassword);
 		}
 		else {
 			userDetailsService.logAttempt(username, authenticated);

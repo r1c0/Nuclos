@@ -38,6 +38,7 @@ import org.nuclos.server.common.MetaDataServerProvider;
 import org.nuclos.server.common.RuleCache;
 import org.nuclos.server.common.SecurityCache;
 import org.nuclos.server.common.ServerParameterProvider;
+import org.nuclos.server.common.ServerServiceLocator;
 import org.nuclos.server.common.StateCache;
 import org.nuclos.server.common.ejb3.LocaleFacadeLocal;
 import org.nuclos.server.common.ejb3.NuclosFacadeBean;
@@ -61,12 +62,12 @@ import org.springframework.transaction.annotation.Transactional;
  * <br>Created by Novabit Informationssysteme GmbH
  * <br>Please visit <a href="http://www.novabit.de">www.novabit.de</a>
  */
-// @Stateless
-// @Local(ConsoleFacadeLocal.class)
-// @Remote(ConsoleFacadeRemote.class)
 @Transactional
 @RolesAllowed("UseManagementConsole")
-public class ConsoleFacadeBean extends NuclosFacadeBean implements ConsoleFacadeLocal, ConsoleFacadeRemote {
+public class ConsoleFacadeBean extends NuclosFacadeBean implements ConsoleFacadeRemote {
+	
+	public ConsoleFacadeBean() {
+	}
 
 	/**
 	 *
@@ -75,117 +76,30 @@ public class ConsoleFacadeBean extends NuclosFacadeBean implements ConsoleFacade
 	 * @param priority
 	 * @param sAuthor the author of the message
 	 */
-	@Override
 	public void sendClientNotification(String sMessage, String sUser, Priority priority, String sAuthor) {
 		NuclosJMSUtils.sendObjectMessage(new RuleNotification(priority, sMessage, sAuthor), JMSConstants.TOPICNAME_RULENOTIFICATION, LangUtils.defaultIfNull(sUser, JMSConstants.BROADCAST_MESSAGE));
-//		final ClientNotifier clientNotifier = new ClientNotifier(JMSConstants.TOPICNAME_RULENOTIFICATION);
-//		clientNotifier.notifyClients(new RuleNotification(priority, sMessage, sAuthor), LangUtils.defaultIfNull(sUser, JMSConstants.BROADCAST_MESSAGE));
 	}
 
 	/**
 	 * end all the clients of sUser
 	 * @param sUser if null for all users
 	 */
-	@Override
-	public void killSession(String sUser) {
-		
+	public void killSession(String sUser) {		
 		NuclosJMSUtils.sendObjectMessage(new CommandMessage(CommandMessage.CMD_SHUTDOWN), JMSConstants.TOPICNAME_RULENOTIFICATION, LangUtils.defaultIfNull(sUser, JMSConstants.BROADCAST_MESSAGE));
-		
-//		final ClientNotifier clientNotifier = new ClientNotifier(JMSConstants.TOPICNAME_RULENOTIFICATION);
-//		clientNotifier.notifyClients(new CommandMessage(CommandMessage.CMD_SHUTDOWN), LangUtils.defaultIfNull(sUser, JMSConstants.BROADCAST_MESSAGE));
 	}
 
 	/**
 	 * check for VIEWS and FUNCTIONS which are invalid and compile them
 	 * @throws SQLException 
 	 */
-	@Override
 	public void compileInvalidDbObjects() throws SQLException {
 		info("compiling invalid db objects (views and functions)");
 		dataBaseHelper.getDbAccess().validateObjects();
 	}
 
 	/**
-	 * finds attribute values which should be assigned to a value list entry and creates a script to assign them if possible
-	 * @return the number of bad attribute values found
-	 */
-//	public int updateAttributeValueListAssignment(final String sOutputFileName) {
-//			final String sSql = "SELECT "+
-//					ApplicationProperties.getInstance().getName()+
-//					".GET_NUCLEUS_ATTRIBUTE_VALUE(dplo.intid_t_ud_genericobject, 'nuclosSystemId') system_id," +
-//							"dplo.intid record_id, a.strattribute, a.intid attribut_id," +
-//							"dplo.strvalue attributwert, werteliste.intid werteliste_id," +
-//							"werteliste.strvalue werteliste_wert,\n" +
-//							"werteliste.strmnemonic werteliste_kuerzel\n" +
-//							"FROM t_md_attributevalue werteliste," +
-//							"(SELECT *\n" +
-//							"FROM T_UD_GO_ATTRIBUTE\n " +
-//							"WHERE intid_t_dp_value IS NULL\n" +
-//							"AND intid_external IS NULL\n" +
-//							"AND intid_t_md_attribute IN (\n" +
-//							"SELECT DISTINCT intid\n" +
-//							"         FROM t_md_attribute\n" +
-//							"        WHERE intid IN (\n" +
-//							"                 SELECT DISTINCT intid_t_md_attribute\n" +
-//							"                            FROM t_md_attributevalue))) dplo,\n" +
-//							"t_md_attribute a\n" +
-//							"WHERE (   werteliste.strvalue LIKE dplo.strvalue\n" +
-//							"OR werteliste.strmnemonic LIKE dplo.strvalue\n" +
-//							")\n" +
-//							"AND werteliste.intid_t_md_attribute = dplo.intid_t_md_attribute\n" +
-//							"AND dplo.intid_t_md_attribute = a.intid\n";
-//
-//			return DataBaseHelper.runSQLSelect(NuclosDataSources.getDefaultDS(), sSql, new NovabitDataBaseRunnable<Integer>() {
-//				public Integer run(ResultSet rs) {
-//					PrintStream ps = null;
-//					try {
-//						ps = new PrintStream(new BufferedOutputStream(new FileOutputStream(sOutputFileName)), true);
-//						int count = 0;
-//
-//						while (rs.next()) {
-//							final String sVlValue = rs.getString("werteliste_wert");
-//							final String sVlMnemonic = rs.getString("werteliste_kuerzel");
-//							final String sAttributeValue = rs.getString("attributwert");
-//							final String sAttribute = rs.getString("strattribute");
-//							final String sSystemId = rs.getString("system_id");
-//							final AttributeCVO attrVo = AttributeCache.getInstance().getAttribute(sAttribute);
-//							if ((attrVo.isShowMnemonic() && sVlMnemonic.compareTo(sAttributeValue) == 0) ||
-//									(!attrVo.isShowMnemonic() && sVlValue.compareTo(sAttributeValue) == 0)) {
-//								ps.println("-- Statement f\u00fcr Objekt: " + sSystemId + " - Attribut: " + sAttribute);
-//								ps.println("UPDATE T_UD_GO_ATTRIBUTE set intid_t_dp_value = " + rs.getInt("werteliste_id") + " WHERE intid = " + rs.getInt("record_id") + ";");
-//							}
-//							else {
-//								ps.println("-- " + sSystemId + ": By the attribute " + sAttribute + " cannot be assigned the value " + sAttributeValue + " (The state of the show mnemonic in the master data of the attribute does not match");//Zustand von zeige K\u00fcrzel in den Stammdaten des Attributs stimmt nicht \u00fcberein");
-//							}
-//							count++;
-//						}
-//						if (count == 0) {
-//							ps.println("-- No missing references found");
-//						}
-//						return count;
-//					}
-//					catch (SQLException ex) {
-//						throw new NuclosFatalException(ex);
-//					}
-//					catch (FileNotFoundException ex) {
-//						throw new NuclosFatalException(ex);
-//					}
-//					finally {
-//						if (ps != null) {
-//							ps.close();
-//						}
-//						if (ps != null && ps.checkError()) {
-//							throw new NuclosFatalException("Failed to close PrintStream.");
-//						}
-//					}
-//				}
-//			});
-//	}
-
-	/**
 	 * invalidateAllServerSide Caches
 	 */
-	@Override
 	public String invalidateAllCaches() {
 		final StringBuilder sbResult = new StringBuilder("Revalidating ParameterCache\n");
 		ServerParameterProvider.getInstance().revalidate();
@@ -219,7 +133,7 @@ public class ConsoleFacadeBean extends NuclosFacadeBean implements ConsoleFacade
 		ResourceCache.getInstance().invalidate();
 
 		sbResult.append("Invalidating Locale Caches\n");
-		ServiceLocator.getInstance().getFacade(LocaleFacadeLocal.class).flushInternalCaches();
+		ServerServiceLocator.getInstance().getFacade(LocaleFacadeLocal.class).flushInternalCaches();
 
 		sbResult.append("ready");
 		return sbResult.toString();
@@ -228,7 +142,6 @@ public class ConsoleFacadeBean extends NuclosFacadeBean implements ConsoleFacade
 	/**
 	 * get Infomation about the database in use
 	 */
-	@Override
 	public String getDatabaseInformationAsHtml() {
 		final StringBuilder sb = new StringBuilder("<b>Database Meta Information</b><br>");
 		sb.append("<HTML><table border=\"1\">");
@@ -248,7 +161,6 @@ public class ConsoleFacadeBean extends NuclosFacadeBean implements ConsoleFacade
 	/**
 	 * get the system properties of the server
 	 */
-	@Override
 	public String getSystemPropertiesAsHtml() {
 		final StringBuilder sbClient = new StringBuilder();
 		sbClient.append("<html><b>Java System Properties (Server):</b>");
@@ -265,7 +177,6 @@ public class ConsoleFacadeBean extends NuclosFacadeBean implements ConsoleFacade
 	 * @param sCommand
 	 * @throws CommonBusinessException
 	 */
-	@Override
 	public void executeCommand(String sCommand) throws CommonBusinessException {
 
 		String sCommandLowerCase = sCommand.toLowerCase();

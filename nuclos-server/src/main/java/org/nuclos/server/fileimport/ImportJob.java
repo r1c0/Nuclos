@@ -19,6 +19,7 @@ package org.nuclos.server.fileimport;
 import org.apache.log4j.Logger;
 import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.fileimport.NuclosFileImportException;
+import org.nuclos.server.common.ServerServiceLocator;
 import org.nuclos.server.fileimport.ejb3.ImportFacadeLocal;
 import org.nuclos.server.job.NuclosInterruptableJob;
 import org.nuclos.server.masterdata.ejb3.MasterDataFacadeHelper;
@@ -81,7 +82,7 @@ public class ImportJob extends NuclosInterruptableJob {
         }
 
 		private ImportFacadeLocal getImportExecutionFacade() {
-			return ServiceLocator.getInstance().getFacade(ImportFacadeLocal.class);
+			return ServerServiceLocator.getInstance().getFacade(ImportFacadeLocal.class);
 		}
 	}
 }

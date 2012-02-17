@@ -57,15 +57,12 @@ import org.springframework.transaction.annotation.Transactional;
  * Created by Novabit Informationssysteme GmbH <br>
  * Please visit <a href="http://www.novabit.de">www.novabit.de</a>
 */
-// @Stateless
-// @Local(SecurityFacadeLocal.class)
-// @Remote(SecurityFacadeRemote.class)
 @Transactional
-public class SecurityFacadeBean extends NuclosFacadeBean implements SecurityFacadeLocal, SecurityFacadeRemote {
+public class SecurityFacadeBean extends NuclosFacadeBean implements SecurityFacadeRemote {
 	
 	private ServerParameterProvider serverParameterProvider;
 	
-	SecurityFacadeBean() {
+	public SecurityFacadeBean() {
 	}
 
 	@PostConstruct
@@ -82,7 +79,6 @@ public class SecurityFacadeBean extends NuclosFacadeBean implements SecurityFaca
 	 * logs the current user in.
 	 * @return session id for the current user
 	 */
-	@Override
     @RolesAllowed("Login")
 	public Integer login() {
 		final Integer result = writeLoginProtocol(this.getCurrentUserName());
@@ -94,7 +90,6 @@ public class SecurityFacadeBean extends NuclosFacadeBean implements SecurityFaca
 	 * logs the current user out.
 	 * @param iSessionId session id for the current user
 	 */
-	@Override
     @RolesAllowed("Login")
 	public void logout(Integer iSessionId) throws LoginException {
 		this.writeLogoutProtocol(iSessionId);
@@ -104,7 +99,6 @@ public class SecurityFacadeBean extends NuclosFacadeBean implements SecurityFaca
 	/**
 	 * @return information about the current version of the application installed on the server.
 	 */
-	@Override
     @RolesAllowed("Login")
 	public ApplicationProperties.Version getCurrentApplicationVersionOnServer() {
 		return ApplicationProperties.getInstance().getNuclosVersion();
@@ -113,7 +107,6 @@ public class SecurityFacadeBean extends NuclosFacadeBean implements SecurityFaca
 	/**
 	 * @return information about the current version of the application installed on the server.
 	 */
-	@Override
     @RolesAllowed("Login")
 	public String getUserName() {
 		return this.getCurrentUserName();
@@ -123,7 +116,6 @@ public class SecurityFacadeBean extends NuclosFacadeBean implements SecurityFaca
 	 * Get all actions that are allowed for the current user.
 	 * @return set that contains the Actions objects (no duplicates).
 	 */
-	@Override
     @RolesAllowed("Login")
 	public Set<String> getAllowedActions() {
 		return SecurityCache.getInstance().getAllowedActions(this.getCurrentUserName());
@@ -132,7 +124,6 @@ public class SecurityFacadeBean extends NuclosFacadeBean implements SecurityFaca
 	/**
 	 * @return the module permissions for the current user.
 	 */
-	@Override
     @RolesAllowed("Login")
 	public ModulePermissions getModulePermissions() {
 		return SecurityCache.getInstance().getModulePermissions(this.getCurrentUserName());
@@ -141,7 +132,6 @@ public class SecurityFacadeBean extends NuclosFacadeBean implements SecurityFaca
 	/**
 	 * @return the masterdata permissions for the current user.
 	 */
-	@Override
     @RolesAllowed("Login")
 	public MasterDataPermissions getMasterDataPermissions() {
 		return SecurityCache.getInstance().getMasterDataPermissions(this.getCurrentUserName());
@@ -150,7 +140,6 @@ public class SecurityFacadeBean extends NuclosFacadeBean implements SecurityFaca
 	/**
 	 * get a String representation of the users session context
 	 */
-	@Override
     @RolesAllowed("Login")
 	public String getSessionContextAsString() {
 		return this.getCurrentUserName();
@@ -191,7 +180,6 @@ public class SecurityFacadeBean extends NuclosFacadeBean implements SecurityFaca
 	 * @return
 	 * @throws CommonFatalException
 	 */
-	@Override
 	public Integer getUserId(final String sUserName) throws CommonFatalException {
 		DbQueryBuilder builder = dataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<Integer> query = builder.createQuery(Integer.class);
@@ -210,7 +198,6 @@ public class SecurityFacadeBean extends NuclosFacadeBean implements SecurityFaca
 	/**
 	 * @return the readable subforms
 	 */
-	@Override
     public java.util.Map<Integer, org.nuclos.common.security.Permission> getSubFormPermission(String sEntityName) {
 		return SecurityCache.getInstance().getSubForm(getCurrentUserName(), sEntityName);
 	}
@@ -222,7 +209,6 @@ public class SecurityFacadeBean extends NuclosFacadeBean implements SecurityFaca
 	 * @param iStatusNumeral
 	 * @return Permission
 	 */
-	@Override
     public Permission getAttributePermission(String sEntity, String sAttributeName, Integer iState) {
 		// special behaviour for modules which have no statusnumeral (e.g. Rechnungsabschnitte)
 		  if (iState == null) {
@@ -235,8 +221,6 @@ public class SecurityFacadeBean extends NuclosFacadeBean implements SecurityFaca
 		  return mpAttributePermission.get(iState);
 	}
 
-
-	@Override
 	public Map<String, Permission> getAttributePermissionsByEntity(String entity, Integer stateId) {
 		HashMap<String, Permission> res = new HashMap<String, Permission>();
 		MetaDataServerProvider mdProv = MetaDataServerProvider.getInstance();
@@ -258,20 +242,16 @@ public class SecurityFacadeBean extends NuclosFacadeBean implements SecurityFaca
 		return res;
 	}
 
-
-	@Override
     @RolesAllowed("Login")
 	public Boolean isSuperUser() {
 		return SecurityCache.getInstance().isSuperUser(this.getCurrentUserName());
 	}
 
-	@Override
     @RolesAllowed("Login")
 	public void invalidateCache(){
 		SecurityCache.getInstance().invalidate();
 	}
 
-	@Override
     public Map<String, Object> getInitialSecurityData() {
 		GzipMap<String, Object> res = new GzipMap<String, Object>();
 		res.put(SecurityFacadeRemote.USERNAME, getCurrentUserName());
@@ -282,7 +262,6 @@ public class SecurityFacadeBean extends NuclosFacadeBean implements SecurityFaca
 		return res;
     }
 
-	@Override
 	public Boolean isLdapAuthenticationActive() {
 		DbQueryBuilder builder = dataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<Long> query = builder.createQuery(Long.class);
@@ -293,7 +272,6 @@ public class SecurityFacadeBean extends NuclosFacadeBean implements SecurityFaca
 		return dataBaseHelper.getDbAccess().executeQuery(query).size() > 0;
 	}
 
-	@Override
 	public Boolean isLdapSynchronizationActive() {
 		DbQueryBuilder builder = dataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<Long> query = builder.createQuery(Long.class);
@@ -304,7 +282,6 @@ public class SecurityFacadeBean extends NuclosFacadeBean implements SecurityFaca
 		return dataBaseHelper.getDbAccess().executeQuery(query).size() > 0;
 	}
 
-	@Override
 	public Date getPasswordExpiration() {
 		Integer interval = 0;
 		if (serverParameterProvider.getValue(ParameterProvider.KEY_SECURITY_PASSWORD_INTERVAL) != null) {

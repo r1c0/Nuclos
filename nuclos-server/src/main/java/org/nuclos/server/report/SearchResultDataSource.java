@@ -43,6 +43,7 @@ import org.nuclos.common.entityobject.CollectableEOEntityField;
 import org.nuclos.common.genericobject.GenericObjectUtils;
 import org.nuclos.common2.ServiceLocator;
 import org.nuclos.server.common.AttributeCache;
+import org.nuclos.server.common.ServerServiceLocator;
 import org.nuclos.server.genericobject.Modules;
 import org.nuclos.server.genericobject.ejb3.GenericObjectFacadeLocal;
 import org.nuclos.server.genericobject.searchcondition.CollectableSearchExpression;
@@ -77,7 +78,7 @@ public class SearchResultDataSource implements JRDataSource {
 	public SearchResultDataSource(CollectableSearchExpression clctexpr,
 			List<? extends CollectableEntityField> lstclctefweSelected, Integer iModuleId, boolean bIncludeSubModules) {
 
-		final GenericObjectFacadeLocal goFacade = ServiceLocator.getInstance().getFacade(GenericObjectFacadeLocal.class);
+		final GenericObjectFacadeLocal goFacade = ServerServiceLocator.getInstance().getFacade(GenericObjectFacadeLocal.class);
 
 		this.lstclctefweSelected = lstclctefweSelected;
 		this.sMainEntityName = Modules.getInstance().getEntityNameByModuleId(iModuleId);

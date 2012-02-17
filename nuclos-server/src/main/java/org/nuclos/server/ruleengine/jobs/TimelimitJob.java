@@ -20,6 +20,7 @@ import java.util.Collection;
 
 import org.apache.log4j.Logger;
 import org.nuclos.common2.ServiceLocator;
+import org.nuclos.server.common.ServerServiceLocator;
 import org.nuclos.server.job.NuclosJob;
 import org.nuclos.server.job.SchedulableJob;
 import org.nuclos.server.job.valueobject.JobVO;
@@ -44,7 +45,7 @@ public class TimelimitJob extends SchedulableJob implements NuclosJob {//NuclosQ
 	public String execute(JobVO jobVO, Integer iSessionId) {
 		//execute job rules
 
-		final TimelimitRuleFacadeLocal ruleFacade = ServiceLocator.getInstance().getFacade(TimelimitRuleFacadeLocal.class);
+		final TimelimitRuleFacadeLocal ruleFacade = ServerServiceLocator.getInstance().getFacade(TimelimitRuleFacadeLocal.class);
 
 		Collection<String> ruleNames = ruleFacade.getJobRules(jobVO.getId());
 		logger.info("Rules to execute: " + ruleNames);

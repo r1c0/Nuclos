@@ -17,16 +17,12 @@
 package org.nuclos.client.genericobject;
 
 import java.util.Comparator;
-import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-
+import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common2.ServiceLocator;
-import org.nuclos.common.MetaDataProvider;
-import org.nuclos.common.NuclosFatalException;
-import org.nuclos.common.SpringApplicationContextHolder;
 import org.nuclos.server.genericobject.ejb3.GeneratorFacadeRemote;
 import org.nuclos.server.genericobject.valueobject.GeneratorActionVO;
 import org.nuclos.server.genericobject.valueobject.GeneratorVO;

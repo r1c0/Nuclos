@@ -34,7 +34,7 @@ public class ParameterFacadeBean extends NuclosFacadeBean implements ParameterFa
 	
 	private ServerParameterProvider serverParameterProvider;
 	
-	ParameterFacadeBean() {	
+	public ParameterFacadeBean() {	
 	}
 	
 	@Autowired
@@ -46,8 +46,6 @@ public class ParameterFacadeBean extends NuclosFacadeBean implements ParameterFa
 	 * get all parameter entries
 	 * @return map of parameters with values
 	 */
-	@Override
-//	@RolesAllowed("Login")
 	public Map<String, String> getParameters() {
 		return serverParameterProvider.getAllParameters();
 	}

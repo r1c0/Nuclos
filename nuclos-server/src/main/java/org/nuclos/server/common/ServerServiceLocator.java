@@ -41,19 +41,20 @@ public class ServerServiceLocator extends ServiceLocator {
 	@Override
 	public <T> T getFacade(Class<T> c) {
 		final Object target = super.getFacade(c);
+		final Class<?> targetClass = target.getClass();
 		if (c.getSimpleName().endsWith("Local")) {
 			Object proxy = Proxy.newProxyInstance(getClass().getClassLoader(), new Class<?>[] {c}, new InvocationHandler() {
 				@Override
 				public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
 					try {
 						ctx.setRemotly(false);
-						return method.invoke(target, args);
+						final Method realMethod = targetClass.getMethod(method.getName(), method.getParameterTypes());
+						return realMethod.invoke(target, args);
 					} catch (InvocationTargetException ex) {
 						throw ex.getTargetException();
 					} finally {
 						ctx.pop();
 					}
-
 				}
 			});
 			return (T) proxy;

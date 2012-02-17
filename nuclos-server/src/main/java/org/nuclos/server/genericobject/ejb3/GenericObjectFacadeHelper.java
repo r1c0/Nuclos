@@ -61,6 +61,7 @@ import org.nuclos.server.common.MasterDataMetaCache;
 import org.nuclos.server.common.MetaDataServerProvider;
 import org.nuclos.server.common.ModuleConstants;
 import org.nuclos.server.common.RecordGrantUtils;
+import org.nuclos.server.common.ServerServiceLocator;
 import org.nuclos.server.dal.DalSupportForGO;
 import org.nuclos.server.dal.provider.NucletDalProvider;
 import org.nuclos.server.database.SpringDataBaseHelper;
@@ -137,20 +138,20 @@ public class GenericObjectFacadeHelper {
 
 	private GenericObjectFacadeLocal getGenericObjectFacade() {
 		if (goFacade == null)
-			goFacade = ServiceLocator.getInstance().getFacade(GenericObjectFacadeLocal.class);
+			goFacade = ServerServiceLocator.getInstance().getFacade(GenericObjectFacadeLocal.class);
 
 		return goFacade;
 	}
 
 	private MasterDataFacadeLocal getMasterDataFacade() {
 		if (mdFacade == null)
-			mdFacade = ServiceLocator.getInstance().getFacade(MasterDataFacadeLocal.class);
+			mdFacade = ServerServiceLocator.getInstance().getFacade(MasterDataFacadeLocal.class);
 		return mdFacade;
 	}
 
 	private LayoutFacadeLocal getLayoutFacade() {
 		if (layoutFacade == null)
-			layoutFacade = ServiceLocator.getInstance().getFacade(LayoutFacadeLocal.class);
+			layoutFacade = ServerServiceLocator.getInstance().getFacade(LayoutFacadeLocal.class);
 		return layoutFacade;
 	}
 

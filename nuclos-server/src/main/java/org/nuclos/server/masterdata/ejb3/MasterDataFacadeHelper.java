@@ -78,6 +78,7 @@ import org.nuclos.server.common.NuclosSystemParameters;
 import org.nuclos.server.common.RecordGrantUtils;
 import org.nuclos.server.common.SecurityCache;
 import org.nuclos.server.common.ServerParameterProvider;
+import org.nuclos.server.common.ServerServiceLocator;
 import org.nuclos.server.dal.DalSupportForGO;
 import org.nuclos.server.dal.DalUtils;
 import org.nuclos.server.dal.processor.nuclet.JdbcEntityObjectProcessor;
@@ -740,7 +741,7 @@ public class MasterDataFacadeHelper {
 						try {
 							mdvoDependant.setEntity(sDependantEntityName);
 							GenericObjectVO govo = DalSupportForGO.getGenericObjectVO(mdvoDependant);
-							GenericObjectFacadeLocal goLocal = ServiceLocator.getInstance().getFacade(GenericObjectFacadeLocal.class);
+							GenericObjectFacadeLocal goLocal = ServerServiceLocator.getInstance().getFacade(GenericObjectFacadeLocal.class);
 							goLocal.remove(new GenericObjectWithDependantsVO(govo, mdvoDependant.getDependants()), true);
 						}
 						catch(CommonCreateException ex) {
@@ -788,7 +789,7 @@ public class MasterDataFacadeHelper {
 					try {
 						mdvoDependant.setEntity(sDependantEntityName);
 						GenericObjectVO govo = DalSupportForGO.getGenericObjectVO(mdvoDependant);
-						GenericObjectFacadeLocal goLocal = ServiceLocator.getInstance().getFacade(GenericObjectFacadeLocal.class);
+						GenericObjectFacadeLocal goLocal = ServerServiceLocator.getInstance().getFacade(GenericObjectFacadeLocal.class);
 						final DependantMasterDataMap deps = mdvoDependant.getDependants();
 						if(mdvoDependant.isFlagNew()) {
 							goLocal.create(new GenericObjectWithDependantsVO(govo, deps));
@@ -1126,38 +1127,10 @@ public class MasterDataFacadeHelper {
 
 	private AttributeFacadeLocal getAttributeFacade() {
 		if (attributeFacade == null) {
-			attributeFacade = ServiceLocator.getInstance().getFacade(AttributeFacadeLocal.class);
+			attributeFacade = ServerServiceLocator.getInstance().getFacade(AttributeFacadeLocal.class);
 		}
 		return attributeFacade;
 	}
-
-//	static MetaDataProvider getSingleDbMetaDataProviderFor(MasterDataMetaVO mdMeta) {
-//		String entityName = mdMeta.getEntityName();
-//		Long entityId = mdMeta.getId().longValue();
-//		StaticMetaDataProvider provider = new StaticMetaDataProvider();
-//		// Wrap entity metadata
-//		EntityMetaDataVO entityMeta = new EntityMetaDataVO();
-//		entityMeta.setId(entityId);
-//		entityMeta.setEntity(entityName);
-//		entityMeta.setDbEntity(mdMeta.getDBEntity());
-//		provider.addEntity(entityMeta);
-//		for (MasterDataMetaFieldVO mdFieldMeta : mdMeta.getFields()) {
-//			EntityFieldMetaDataVO fieldMeta = new EntityFieldMetaDataVO();
-//			fieldMeta.setId(mdFieldMeta.getId().longValue());
-//			fieldMeta.setField(mdFieldMeta.getFieldName());
-//			fieldMeta.setDbColumn(mdFieldMeta.getDBFieldName());
-//			fieldMeta.setDataType(mdFieldMeta.getJavaClass().getName());
-//			fieldMeta.setScale(mdFieldMeta.getDataScale());
-//			fieldMeta.setPrecision(mdFieldMeta.getDataPrecision());
-//			fieldMeta.setNullable(mdFieldMeta.isNullable());
-//			fieldMeta.setForeignEntity(mdFieldMeta.getForeignEntity());
-//			fieldMeta.setForeignEntityField(mdFieldMeta.getForeignEntityField());
-//			fieldMeta.setEntityId(entityId);
-//			fieldMeta.setIndexed(mdFieldMeta.isIndexed());
-//			provider.addEntityField(entityName, fieldMeta);
-//		}
-//		return provider;
-//	}
 
 	private void updateDbObject(EntityObjectVO oldSource, EntityObjectVO newSource, boolean isRollback) throws NuclosBusinessException {
 		if (oldSource == null && newSource == null) {

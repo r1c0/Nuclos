@@ -167,7 +167,9 @@
 	
 	<!-- Services/Beans -->
 
-	<bean id="masterDataService" class="org.nuclos.server.masterdata.ejb3.MasterDataFacadeBean"/>
+	<bean id="masterDataService" class="org.nuclos.server.masterdata.ejb3.MasterDataFacadeBean">
+		<qualifier value="masterDataService"/>
+	</bean>
 
 	<bean id="parameterService" class="org.nuclos.server.common.ejb3.ParameterFacadeBean"/>
 
@@ -207,7 +209,7 @@
 
 	<bean id="entityObjectService" class="org.nuclos.server.common.ejb3.EntityObjectFacadeBean"/>
 
-	<bean id="genericObjectGroupService" class="org.nuclos.server.genericobject.ejb3.GenericObjectGroupFacadeBean"/>
+	<bean id="genericObjectGroupService" class="org.nuclos.server.genericobject.ejb3.GenericObjectGroupFacadeBean" />
 
 	<bean id="reportService" class="org.nuclos.server.report.ejb3.ReportFacadeBean"/>
 
@@ -255,9 +257,7 @@
 
 	<bean id="codeService" class="org.nuclos.server.customcode.ejb3.CodeFacadeBean"/>
 
-	<bean id="lookupService" class="org.nuclos.server.common.ServerLocaleDelegate">
-		<property name="service" ref="localeService" />
-	</bean>
+	<bean id="lookupService" class="org.nuclos.server.common.ServerLocaleDelegate" />
 
 	<bean id="userService" class="org.nuclos.server.security.UserFacadeBean"/>
 
@@ -276,16 +276,9 @@
 	<!-- Caching init on startup -->
 	<bean id="nuclosCacheService" class="org.nuclos.server.mbean.NuclosCacheService" depends-on="appContext"/>
 	
-	<bean id="ruleCache" class="org.nuclos.server.common.RuleCache">
-		<property name="masterDataFacadeLocal" ref="masterDataService"/>
-		<property name="dataBaseHelper" ref="dataBaseHelper"/>
-	</bean>
+	<bean id="ruleCache" class="org.nuclos.server.common.RuleCache" />
 
-	<bean id="stateCache" class="org.nuclos.server.common.StateCache">
-		<property name="masterDataFacadeLocal" ref="masterDataService"/>
-		<property name="dataBaseHelper" ref="dataBaseHelper"/>
-		<property name="stateFacadeLocal" ref="stateService"/>
-	</bean>
+	<bean id="stateCache" class="org.nuclos.server.common.StateCache" />
 
 	<!-- quartz scheduler instance start -->
     <bean id="nuclosScheduler" class="org.springframework.scheduling.quartz.SchedulerFactoryBean" depends-on="nuclosCacheService">

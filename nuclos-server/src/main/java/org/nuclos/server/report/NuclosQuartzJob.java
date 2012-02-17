@@ -37,6 +37,10 @@ import org.springframework.beans.factory.annotation.Configurable;
  */
 @Configurable
 public class NuclosQuartzJob implements Job {
+	
+	public static final String JOBGROUP_IMPORT = "import";
+
+	//
 
 	private final Job job;
 	private static String sUserName;

@@ -44,6 +44,7 @@ import org.nuclos.server.common.MasterDataPermissions;
 import org.nuclos.server.common.MetaDataServerProvider;
 import org.nuclos.server.common.ModulePermission;
 import org.nuclos.server.common.ModulePermissions;
+import org.nuclos.server.common.ServerServiceLocator;
 import org.nuclos.server.common.ejb3.SecurityFacadeLocal;
 import org.nuclos.server.dal.processor.nuclet.JdbcEntityObjectProcessor;
 import org.nuclos.server.dal.provider.NucletDalProvider;
@@ -151,7 +152,7 @@ public class WebAccessBean implements WebAccessWS {
 	        if(meta.isStateModel())
 	        	ruleContainer = genericObjectFacade.getRuleObjectContainerCVO(Event.INTERFACE, id.intValue());
 	        else
-	        	ruleContainer = ServiceLocator.getInstance().getFacade(MasterDataFacadeLocal.class).getRuleObjectContainerCVO(Event.INTERFACE, entityName, id.intValue());
+	        	ruleContainer = ServerServiceLocator.getInstance().getFacade(MasterDataFacadeLocal.class).getRuleObjectContainerCVO(Event.INTERFACE, entityName, id.intValue());
 	        
 	        ruleEngineFacade.executeBusinessRules(
 	        	CollectionUtils.asList(rule),

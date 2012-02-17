@@ -273,7 +273,7 @@ public synchronized void invalidate() {
    }
 
    private void addToSchema(Schema schema) {
-		//DatasourceLocalHome datasourceHome = (DatasourceLocalHome) ServiceLocator.getInstance().getLocalHome(DatasourceLocalHome.JNDI_NAME);
+		//DatasourceLocalHome datasourceHome = (DatasourceLocalHome) ServerServiceLocator.getInstance().getLocalHome(DatasourceLocalHome.JNDI_NAME);
 		//try {
 			//for (Iterator i = datasourceHome.findAll().iterator(); i.hasNext();) {
 			//@todo is it the right way to ignore user permissions here?

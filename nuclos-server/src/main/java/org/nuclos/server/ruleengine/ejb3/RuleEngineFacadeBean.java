@@ -63,6 +63,7 @@ import org.nuclos.server.common.MetaDataServerProvider;
 import org.nuclos.server.common.RuleCache;
 import org.nuclos.server.common.SecurityCache;
 import org.nuclos.server.common.ServerParameterProvider;
+import org.nuclos.server.common.ServerServiceLocator;
 import org.nuclos.server.common.ejb3.NuclosFacadeBean;
 import org.nuclos.server.customcode.CustomCodeManager;
 import org.nuclos.server.customcode.NuclosRule;
@@ -79,6 +80,7 @@ import org.nuclos.server.genericobject.searchcondition.CollectableSearchExpressi
 import org.nuclos.server.genericobject.valueobject.GeneratorActionVO;
 import org.nuclos.server.jms.NuclosJMSUtils;
 import org.nuclos.server.masterdata.MasterDataWrapper;
+import org.nuclos.server.masterdata.ejb3.MasterDataFacadeLocal;
 import org.nuclos.server.masterdata.valueobject.DependantMasterDataMap;
 import org.nuclos.server.masterdata.valueobject.MasterDataMetaVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
@@ -105,15 +107,23 @@ import org.springframework.transaction.annotation.Transactional;
  * <br>Created by Novabit Informationssysteme GmbH
  * <br>Please visit <a href="http://www.novabit.de">www.novabit.de</a>
  */
-// @Stateless
-// @Local(RuleEngineFacadeLocal.class)
-// @Remote(RuleEngineFacadeRemote.class)
 @Transactional
-public class RuleEngineFacadeBean extends NuclosFacadeBean implements RuleEngineFacadeLocal, RuleEngineFacadeRemote {
+public class RuleEngineFacadeBean extends NuclosFacadeBean implements RuleEngineFacadeRemote {
 	
 	private CustomCodeManager ccm;
 
-	RuleEngineFacadeBean() {
+	private MasterDataFacadeLocal masterDataFacade;
+	
+	public RuleEngineFacadeBean() {
+	}
+
+	@Autowired
+	final void setMasterDataFacade(MasterDataFacadeLocal masterDataFacade) {
+		this.masterDataFacade = masterDataFacade;
+	}
+	
+	private final MasterDataFacadeLocal getMasterDataFacade() {
+		return masterDataFacade;
 	}
 
 	public void setCustomCodeManager(CustomCodeManager ccm) {
@@ -130,7 +140,6 @@ public class RuleEngineFacadeBean extends NuclosFacadeBean implements RuleEngine
 	 * @precondition iModuleId != null
 	 * @precondition Modules.getInstance().getUsesRuleEngine(iModuleId.intValue())
 	 */
-	@Override
 	public RuleObjectContainerCVO fireRule(String sEntity, String sEventName, RuleObjectContainerCVO loccvoCurrent) throws NuclosBusinessRuleException {
 		if (sEntity == null) {
 			throw new NullArgumentException("sEntity");
@@ -156,9 +165,10 @@ public class RuleEngineFacadeBean extends NuclosFacadeBean implements RuleEngine
 	 * @param loccvoCurrent current leased object as parameter for rules
 	 * @return the possibly change current object.
 	 */
-	@Override
-	public RuleObjectContainerCVO fireRule(Integer sourceStateId, Integer targetStateId, RuleObjectContainerCVO ruleContainer, Boolean after) throws NuclosBusinessRuleException {
-		StateFacadeLocal facade = ServiceLocator.getInstance().getFacade(StateFacadeLocal.class);
+	public RuleObjectContainerCVO fireRule(Integer sourceStateId, Integer targetStateId, RuleObjectContainerCVO ruleContainer, Boolean after) 
+			throws NuclosBusinessRuleException {
+		
+		StateFacadeLocal facade = ServerServiceLocator.getInstance().getFacade(StateFacadeLocal.class);
 		StateTransitionVO stVO = (sourceStateId == null) ?
 			facade.findStateTransitionByNullAndTargetState(targetStateId) :
 				facade.findStateTransitionBySourceAndTargetState(sourceStateId, targetStateId);
@@ -201,8 +211,11 @@ public class RuleEngineFacadeBean extends NuclosFacadeBean implements RuleEngine
 	/**
 	 * fires the rules for a specific object generation.
 	 */
-	@Override
-	public RuleObjectContainerCVO fireGenerationRules(Integer iGenerationId, RuleObjectContainerCVO tgtRuleObject, Collection<RuleObjectContainerCVO> srcRuleObjects, RuleObjectContainerCVO parameterRuleObject, List<String> actions, PropertiesMap properties, Boolean after) throws NuclosBusinessRuleException {
+	public RuleObjectContainerCVO fireGenerationRules(Integer iGenerationId, RuleObjectContainerCVO tgtRuleObject, 
+			Collection<RuleObjectContainerCVO> srcRuleObjects, RuleObjectContainerCVO parameterRuleObject, 
+			List<String> actions, PropertiesMap properties, Boolean after) 
+			throws NuclosBusinessRuleException {
+		
 		RuleObjectContainerCVO result = null;
 
 		try {
@@ -228,8 +241,9 @@ public class RuleEngineFacadeBean extends NuclosFacadeBean implements RuleEngine
 	 * @return the possibly change current object.
 	 * @throws NuclosBusinessRuleException
 	 */
-	@Override
-	public RuleObjectContainerCVO executeBusinessRules(List<RuleVO> lstRules, RuleObjectContainerCVO loccvoCurrent, boolean bIgnoreExceptions) throws NuclosBusinessRuleException {
+	public RuleObjectContainerCVO executeBusinessRules(List<RuleVO> lstRules, RuleObjectContainerCVO loccvoCurrent, boolean bIgnoreExceptions) 
+			throws NuclosBusinessRuleException {
+		
 		return this.executeBusinessRules(lstRules, loccvoCurrent, null, bIgnoreExceptions, null);
 	}
 
@@ -336,57 +350,12 @@ public class RuleEngineFacadeBean extends NuclosFacadeBean implements RuleEngine
 
 			}
 		}
-
-//			final Context ctx = ServiceLocator.getInstance().getInitialContext();
-//			Topic topic = null;
-//			TopicConnection topicconn = null;
-//			try {
-//				// subscribe to topic "ruleNotification":
-//				final TopicConnectionFactory topicconnfactory = (TopicConnectionFactory) ctx.lookup(CONNECTIONFACTORY_JNDINAME);
-//				topicconn = topicconnfactory.createTopicConnection();
-//				topic = (Topic) ctx.lookup(JMSConstants.TOPICNAME_RULENOTIFICATION);
-//
-//				//send the message
-//				final TopicSession topicsession = topicconn.createTopicSession(true, 0);
-//				final TopicPublisher topicpublisher = topicsession.createPublisher(topic);
-
-//				for (RuleNotification notification : lstRuleNotifications) {
-//					final Message msg = topicsession.createObjectMessage(notification);
-//					msg.setJMSCorrelationID(this.getCurrentUserName());
-//					topicpublisher.publish(msg);
-//				}
-
-//				topicsession.commit();
-//				topicsession.close();
-//			}
-//			catch (NamingException ex) {
-//				throw new NuclosFatalException("client.notifier.exception", ex);
-//				//"Die Notifikation des Clients ist fehlgeschlagen.", ex);
-//			}
-//			catch (JMSException ex) {
-//				throw new NuclosFatalException("client.notifier.exception", ex);
-//				//"Die Notifikation des Clients ist fehlgeschlagen.", ex);
-//			}
-//			finally {
-//				if (topicconn != null) {
-//					try {
-//						topicconn.close();
-//						topicconn = null;
-//						topic = null;
-//					}
-//					catch (JMSException ex) {
-//						throw new NuclosFatalException(ex);
-//					}
-//				}
-//			}
-//		}
 	}
 
 	/**
 	 * @return Collection<RuleVO> all rule definitions
 	 * @throws CommonPermissionException
 	 */
-	@Override
 	public Collection<RuleVO> getAllRules() throws CommonPermissionException {
 		if(!this.isInRole("UseManagementConsole")) {
 			this.checkReadAllowed(NuclosEntity.RULE, NuclosEntity.STATEMODEL);
@@ -399,7 +368,6 @@ public class RuleEngineFacadeBean extends NuclosFacadeBean implements RuleEngine
 	 * @return Collection<RuleVO> all rule for a given event Name
 	 * @throws CommonPermissionException
 	 */
-	@Override
 	public List<RuleVO> getByEventOrdered(String sEventName) throws CommonPermissionException {
 		this.checkReadAllowed(NuclosEntity.RULE);
 		return RuleCache.getInstance().getByEventOrdered(sEventName);
@@ -410,7 +378,6 @@ public class RuleEngineFacadeBean extends NuclosFacadeBean implements RuleEngine
 	 * @return Collection<RuleVO> all rule for a given event Name
 	 * @throws CommonPermissionException
 	 */
-	@Override
 	public List<RuleVO> getByEventAndEntityOrdered(String sEventName, String sEntity) throws CommonPermissionException {
 		this.checkReadAllowed(NuclosEntity.RULE);
 		return RuleCache.getInstance().getByEventAndEntityOrdered(sEventName, sEntity);
@@ -428,8 +395,9 @@ public class RuleEngineFacadeBean extends NuclosFacadeBean implements RuleEngine
 	 * @throws CommonCreateException
 	 * @throws CommonPermissionException
 	 */
-	@Override
-	public void createRuleUsageInEntity(String sEventname, String sEntity, Integer ruleToInsertId, Integer ruleBeforeId) throws CommonCreateException, CommonPermissionException {
+	public void createRuleUsageInEntity(String sEventname, String sEntity, Integer ruleToInsertId, Integer ruleBeforeId) 
+			throws CommonCreateException, CommonPermissionException {
+		
 		// @todo the name is misspelled (Module).
 		this.checkWriteAllowed(NuclosEntity.RULE);
 
@@ -488,8 +456,9 @@ public class RuleEngineFacadeBean extends NuclosFacadeBean implements RuleEngine
 	 * @throws CommonFinderException
 	 * @throws NuclosBusinessRuleException
 	 */
-	@Override
-	public void removeRuleUsage(String eventName, String entity, Integer iRuleIdToRemove) throws CommonPermissionException, NuclosBusinessRuleException, CommonFinderException, CommonRemoveException, CommonStaleVersionException {
+	public void removeRuleUsage(String eventName, String entity, Integer iRuleIdToRemove) 
+			throws CommonPermissionException, NuclosBusinessRuleException, CommonFinderException, CommonRemoveException, CommonStaleVersionException {
+		
 		this.checkWriteAllowed(NuclosEntity.RULE);
 
 		Collection<RuleEventUsageVO> reUsageList = new ArrayList<RuleEventUsageVO>();
@@ -533,8 +502,9 @@ public class RuleEngineFacadeBean extends NuclosFacadeBean implements RuleEngine
 	 * @throws CommonCreateException
 	 * @throws CommonPermissionException
 	 */
-	@Override
-	public void moveRuleUsageInEntity(String eventName, String entity, Integer ruleToMoveId, Integer ruleBeforeId) throws CommonCreateException, CommonPermissionException {
+	public void moveRuleUsageInEntity(String eventName, String entity, Integer ruleToMoveId, Integer ruleBeforeId) 
+			throws CommonCreateException, CommonPermissionException {
+		
 		this.checkWriteAllowed(NuclosEntity.RULE);
 
 		Collection<RuleEventUsageVO> reVOList = new ArrayList<RuleEventUsageVO>();
@@ -598,11 +568,10 @@ public class RuleEngineFacadeBean extends NuclosFacadeBean implements RuleEngine
 	 * @return Collection<GeneratorActionVO>
 	 * @throws CommonPermissionException
 	 */
-	@Override
 	public Collection<GeneratorActionVO> getAllGenerations() throws CommonPermissionException {
 		this.checkReadAllowed(NuclosEntity.RULE);
 		final Collection<GeneratorActionVO> result = new HashSet<GeneratorActionVO>();
-		GeneratorFacadeLocal facade = ServiceLocator.getInstance().getFacade(GeneratorFacadeLocal.class);
+		GeneratorFacadeLocal facade = ServerServiceLocator.getInstance().getFacade(GeneratorFacadeLocal.class);
 		Collection<MasterDataVO> mdGenerationsVO = getMasterDataFacade().getMasterData(NuclosEntity.GENERATION.getEntityName(), null, true);
 
 		for (MasterDataVO mdVO : mdGenerationsVO)
@@ -616,7 +585,6 @@ public class RuleEngineFacadeBean extends NuclosFacadeBean implements RuleEngine
 	 * @return Collection<GeneratorActionVO>
 	 * @throws CommonPermissionException
 	 */
-	@Override
 	public Collection<GeneratorActionVO> getAllGenerationsWithRule() throws CommonPermissionException {
 		return getAllGenerationsForRuleImpl(null);
 	}
@@ -626,7 +594,6 @@ public class RuleEngineFacadeBean extends NuclosFacadeBean implements RuleEngine
 	 * @return Collection<GeneratorActionVO>
 	 * @throws CommonPermissionException
 	 */
-	@Override
 	public Collection<GeneratorActionVO> getAllGenerationsForRuleId(Integer iRuleId) throws CommonPermissionException {
 		if (iRuleId == null)
 			return Collections.emptySet();
@@ -647,7 +614,7 @@ public class RuleEngineFacadeBean extends NuclosFacadeBean implements RuleEngine
 
 		List<Integer> generationIds = dataBaseHelper.getDbAccess().executeQuery(query.distinct(true));
 
-		GeneratorFacadeLocal generatorFacade = ServiceLocator.getInstance().getFacade(GeneratorFacadeLocal.class);
+		GeneratorFacadeLocal generatorFacade = ServerServiceLocator.getInstance().getFacade(GeneratorFacadeLocal.class);
 
 		try {
 			for (Integer id : generationIds) {
@@ -663,14 +630,11 @@ public class RuleEngineFacadeBean extends NuclosFacadeBean implements RuleEngine
 		return CollectionUtils.sorted(resultUnsorted, new GenerationOrderComparator());
 	}
 
-
-
 	/**
 	 * Get all RuleGeneration for the given rule.
 	 * @return Collection<RuleEngineGenerationVO>
 	 * @throws CommonPermissionException
 	 */
-	@Override
 	public Collection<RuleEngineGenerationVO> getAllRuleGenerationsForRuleId(Integer ruleId) throws CommonPermissionException {
 		this.checkReadAllowed(NuclosEntity.RULE);
 		final Collection<RuleEngineGenerationVO> result = new HashSet<RuleEngineGenerationVO>();
@@ -690,7 +654,6 @@ public class RuleEngineFacadeBean extends NuclosFacadeBean implements RuleEngine
 	 * @return Collection<RuleEngineGenerationVO>
 	 * @throws CommonPermissionException
 	 */
-	@Override
 	public Collection<RuleEngineGenerationVO> getAllRuleGenerationsForGenerationId(Integer generationId) throws CommonPermissionException {
 		this.checkReadAllowed(NuclosEntity.RULE);
 		final Collection<RuleEngineGenerationVO> result = new HashSet<RuleEngineGenerationVO>();
@@ -710,7 +673,6 @@ public class RuleEngineFacadeBean extends NuclosFacadeBean implements RuleEngine
 	 * @return Collection<RuleEngineTransitionVO>
 	 * @throws CommonPermissionException
 	 */
-	@Override
 	public Collection<RuleEngineTransitionVO> getAllRuleTransitionsForRuleId(Integer ruleId) throws CommonPermissionException {
 		this.checkReadAllowed(NuclosEntity.RULE);
 		final Collection<RuleEngineTransitionVO> result = new HashSet<RuleEngineTransitionVO>();
@@ -730,7 +692,6 @@ public class RuleEngineFacadeBean extends NuclosFacadeBean implements RuleEngine
 	 * @return Collection<RuleEngineTransitionVO>
 	 * @throws CommonPermissionException
 	 */
-	@Override
 	public Collection<RuleEngineTransitionVO> getAllRuleTransitionsForTransitionId(Integer transitionId) throws CommonPermissionException {
 		this.checkReadAllowed(NuclosEntity.RULE);
 		final Collection<RuleEngineTransitionVO> result = new HashSet<RuleEngineTransitionVO>();
@@ -750,13 +711,12 @@ public class RuleEngineFacadeBean extends NuclosFacadeBean implements RuleEngine
 	 * @return collection of generation actions
 	 * @throws CommonPermissionException
 	 */
-	@Override
 	public Collection<StateModelVO> getAllStateModelsForRuleId(Integer aRuleId) throws CommonPermissionException {
 		this.checkReadAllowed(NuclosEntity.RULE);
 		final Collection<StateModelVO> result = new HashSet<StateModelVO>();
 		final Collection<Integer> modelIdSet = new HashSet<Integer>();
 
-		StateFacadeLocal stateFacade = ServiceLocator.getInstance().getFacade(StateFacadeLocal.class);
+		StateFacadeLocal stateFacade = ServerServiceLocator.getInstance().getFacade(StateFacadeLocal.class);
 		final Collection<StateModelVO> collstatemodel = stateFacade.findStateModelsByRuleId(aRuleId);
 		for (StateModelVO statemodelvo : collstatemodel) {
 			// avoid double transitions
@@ -773,7 +733,6 @@ public class RuleEngineFacadeBean extends NuclosFacadeBean implements RuleEngine
 	 * @return Collection<RuleEngineGenerationVO>
 	 * @throws CommonPermissionException
 	 */
-	@Override
 	public Collection<RuleEngineGenerationVO> getAllRuleEngineGenerations() throws CommonPermissionException {
 		this.checkReadAllowed(NuclosEntity.RULE);
 		final Collection<RuleEngineGenerationVO> result = new HashSet<RuleEngineGenerationVO>();
@@ -818,7 +777,6 @@ public class RuleEngineFacadeBean extends NuclosFacadeBean implements RuleEngine
 	 * @return collection of state model vo
 	 * @throws CommonPermissionException
 	 */
-	@Override
 	public Collection<RuleEventUsageVO> getByEventAndRule(String sEventName, Integer iRuleId) throws CommonPermissionException {
 		this.checkReadAllowed(NuclosEntity.RULE);
 		final Collection<RuleEventUsageVO> result = new HashSet<RuleEventUsageVO>();
@@ -837,7 +795,6 @@ public class RuleEngineFacadeBean extends NuclosFacadeBean implements RuleEngine
 	 * @return collection of entity names
 	 * @throws CommonPermissionException
 	 */
-	@Override
 	public Collection<String> getRuleUsageEntityNamesByEvent(String sEventName) throws CommonPermissionException {
 		CollectableSearchCondition condEventEQUAL = SearchConditionUtils.newEOComparison(NuclosEntity.RULEUSAGE.getEntityName(), "event", ComparisonOperator.EQUAL, sEventName, MetaDataServerProvider.getInstance());
 
@@ -860,7 +817,6 @@ public class RuleEngineFacadeBean extends NuclosFacadeBean implements RuleEngine
 	 * @return rule value object
 	 * @throws CommonPermissionException
 	 */
-	@Override
 	public RuleVO get(Integer iId) throws CommonFinderException, CommonPermissionException {
 		this.checkRuleExecution();
 		return RuleCache.getInstance().getRule(iId);
@@ -873,7 +829,6 @@ public class RuleEngineFacadeBean extends NuclosFacadeBean implements RuleEngine
 	 * @return rule value object
 	 * @throws CommonPermissionException
 	 */
-	@Override
 	public RuleVO get(String ruleName) throws CommonFinderException, CommonPermissionException {
 		this.checkRuleExecution();
 		return RuleCache.getInstance().getRule(ruleName);
@@ -896,8 +851,10 @@ public class RuleEngineFacadeBean extends NuclosFacadeBean implements RuleEngine
 	 * @throws CommonPermissionException
 	 * @precondition (mpDependants != null) -> mpDependants.dependantsAreNew()
 	 */
-	@Override
-	public RuleVO create(RuleVO rulevo, DependantMasterDataMap mpDependants) throws CommonCreateException, CommonFinderException, CommonRemoveException, CommonValidationException, CommonStaleVersionException, NuclosCompileException, CommonPermissionException {
+	public RuleVO create(RuleVO rulevo, DependantMasterDataMap mpDependants) 
+			throws CommonCreateException, CommonFinderException, CommonRemoveException, CommonValidationException, 
+			CommonStaleVersionException, NuclosCompileException, CommonPermissionException {
+		
 		this.checkWriteAllowed(NuclosEntity.RULE);
 		//check layout for validity
 		rulevo.validate();	//throws CommonValidationException
@@ -931,8 +888,10 @@ public class RuleEngineFacadeBean extends NuclosFacadeBean implements RuleEngine
 	 * @throws NuclosCompileException
 	 * @throws CommonPermissionException
 	 */
-	@Override
-	public RuleVO modify(RuleVO rulevo, DependantMasterDataMap mpDependants) throws CommonCreateException, CommonFinderException, CommonRemoveException, CommonStaleVersionException, CommonValidationException, NuclosCompileException, CommonPermissionException {
+	public RuleVO modify(RuleVO rulevo, DependantMasterDataMap mpDependants) 
+			throws CommonCreateException, CommonFinderException, CommonRemoveException, CommonStaleVersionException, 
+			CommonValidationException, NuclosCompileException, CommonPermissionException {
+		
 		this.checkWriteAllowed(NuclosEntity.RULE);
 		//check layout for validity
 		rulevo.validate();	//throws CommonValidationException
@@ -976,8 +935,10 @@ public class RuleEngineFacadeBean extends NuclosFacadeBean implements RuleEngine
 	 * @throws CommonPermissionException
 	 * @throws NuclosBusinessRuleException
 	 */
-	@Override
-	public void remove(RuleVO rulevo) throws CommonFinderException, CommonRemoveException, CommonStaleVersionException, CommonPermissionException, NuclosBusinessRuleException, NuclosCompileException {
+	public void remove(RuleVO rulevo) 
+			throws CommonFinderException, CommonRemoveException, CommonStaleVersionException, CommonPermissionException, 
+			NuclosBusinessRuleException, NuclosCompileException {
+		
 		this.checkDeleteAllowed(NuclosEntity.RULE);
 
 		if (rulevo.isActive()) {
@@ -1001,7 +962,6 @@ public class RuleEngineFacadeBean extends NuclosFacadeBean implements RuleEngine
 	 * Currently, only the rule code is imported, not the usages. If one rule cannot be imported, the import will be aborted.
 	 * @param collRuleWithUsages
 	 */
-	@Override
 	@RolesAllowed("UseManagementConsole")
 	public void importRules(Collection<RuleWithUsagesVO> collRuleWithUsages) throws CommonBusinessException {
 		for (RuleWithUsagesVO ruleWithUsagesVO : collRuleWithUsages) {
@@ -1055,7 +1015,6 @@ public class RuleEngineFacadeBean extends NuclosFacadeBean implements RuleEngine
 	 * @param ruleVO
 	 * @throws NuclosCompileException
 	 */
-	@Override
 	@RolesAllowed("Login")
 	public void check(RuleVO ruleVO) throws NuclosCompileException {
 		NuclosJavaCompiler.check(new RuleCodeGenerator<NuclosRule>(new RuleEngineFacadeBean.RuleTemplateType(), ruleVO), false);
@@ -1065,7 +1024,6 @@ public class RuleEngineFacadeBean extends NuclosFacadeBean implements RuleEngine
 	 * Returns a template for new rules to display in the rule editor.
 	 * @return String containing class template
 	 */
-	@Override
 	public String getClassTemplate() {
 		final StringBuffer sb = new StringBuffer();
 		sb.append("/** @name        \n");
@@ -1108,7 +1066,6 @@ public class RuleEngineFacadeBean extends NuclosFacadeBean implements RuleEngine
 	/**
 	 * Delete the Output Path Directory.
 	 */
-	@Override
 	@RolesAllowed("UseManagementConsole")
 	public void deleteDirectoryOutputPath() {
 		final File fOutputPath = NuclosJavaCompiler.getOutputPath();
@@ -1129,7 +1086,6 @@ public class RuleEngineFacadeBean extends NuclosFacadeBean implements RuleEngine
 	/**
 	 * invalidates the rule cache
 	 */
-	@Override
 	@RolesAllowed("Login")
 	public void invalidateCache() {
 		RuleCache.getInstance().invalidate();
