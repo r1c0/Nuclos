@@ -33,10 +33,6 @@ import javax.swing.JPanel;
 
 import org.nuclos.client.wizard.steps.NuclosEntityAbstractStep;
 import org.nuclos.client.wizard.steps.NuclosEntityAttributeAbstractStep;
-import org.nuclos.client.wizard.steps.NuclosEntityAttributeLookupShipStep;
-import org.nuclos.client.wizard.steps.NuclosEntityAttributeRelationShipStep;
-import org.nuclos.client.wizard.steps.NuclosEntityAttributeTranslationStep;
-import org.nuclos.client.wizard.steps.NuclosEntityAttributeValueListShipStep;
 import org.nuclos.common2.CommonLocaleDelegate;
 import org.pietschy.wizard.WizardStep;
 import org.pietschy.wizard.models.StaticModel;

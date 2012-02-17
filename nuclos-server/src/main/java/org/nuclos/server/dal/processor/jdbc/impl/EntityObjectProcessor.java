@@ -60,7 +60,6 @@ import org.nuclos.server.dal.processor.ProcessorConfiguration;
 import org.nuclos.server.dal.processor.jdbc.AbstractJdbcWithFieldsDalProcessor;
 import org.nuclos.server.dal.processor.jdbc.TableAliasSingleton;
 import org.nuclos.server.dal.processor.nuclet.JdbcEntityObjectProcessor;
-import org.nuclos.server.database.DataBaseHelper;
 import org.nuclos.server.dblayer.DbException;
 import org.nuclos.server.dblayer.DbInvalidResultSizeException;
 import org.nuclos.server.dblayer.EntityObjectMetaDbHelper;

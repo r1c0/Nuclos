@@ -54,7 +54,6 @@ import org.nuclos.server.common.MetaDataServerProvider;
 import org.nuclos.server.common.SecurityCache;
 import org.nuclos.server.common.valueobject.TaskVO;
 import org.nuclos.server.dal.provider.NucletDalProvider;
-import org.nuclos.server.database.DataBaseHelper;
 import org.nuclos.server.dblayer.DbInvalidResultSizeException;
 import org.nuclos.server.dblayer.DbStatementUtils;
 import org.nuclos.server.dblayer.DbTuple;

@@ -51,7 +51,6 @@ import org.nuclos.server.common.MasterDataMetaCache;
 import org.nuclos.server.common.MetaDataServerProvider;
 import org.nuclos.server.common.SecurityCache;
 import org.nuclos.server.common.ejb3.NuclosFacadeBean;
-import org.nuclos.server.database.DataBaseHelper;
 import org.nuclos.server.dblayer.DbAccess;
 import org.nuclos.server.dblayer.DbException;
 import org.nuclos.server.dblayer.DbTuple;

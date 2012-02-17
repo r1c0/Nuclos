@@ -93,7 +93,6 @@ import org.nuclos.server.customcode.codegenerator.NuclosJavaCompiler;
 import org.nuclos.server.customcode.codegenerator.WsdlCodeGenerator;
 import org.nuclos.server.dal.processor.nuclet.JdbcEntityObjectProcessor;
 import org.nuclos.server.dal.provider.NucletDalProvider;
-import org.nuclos.server.database.DataBaseHelper;
 import org.nuclos.server.dblayer.DbTuple;
 import org.nuclos.server.dblayer.query.DbColumnExpression;
 import org.nuclos.server.dblayer.query.DbCondition;

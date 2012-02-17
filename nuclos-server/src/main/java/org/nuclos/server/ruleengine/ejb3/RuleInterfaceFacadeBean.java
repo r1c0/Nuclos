@@ -65,7 +65,6 @@ import org.nuclos.server.common.ServerParameterProvider;
 import org.nuclos.server.common.ejb3.NuclosFacadeBean;
 import org.nuclos.server.dal.DalSupportForGO;
 import org.nuclos.server.dal.provider.NucletDalProvider;
-import org.nuclos.server.database.DataBaseHelper;
 import org.nuclos.server.dblayer.DbException;
 import org.nuclos.server.dblayer.incubator.DbExecutor;
 import org.nuclos.server.dblayer.incubator.DbExecutor.ResultSetRunner;

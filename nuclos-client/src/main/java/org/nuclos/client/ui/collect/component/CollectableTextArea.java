@@ -17,8 +17,6 @@
 package org.nuclos.client.ui.collect.component;
 
 import java.awt.Component;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
 
 import javax.swing.JComponent;
 import javax.swing.JTable;
@@ -27,7 +25,6 @@ import javax.swing.table.TableCellRenderer;
 
 import org.apache.log4j.Logger;
 import org.jdesktop.jxlayer.JXLayer;
-
 import org.nuclos.client.ui.labeled.LabeledTextArea;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
 import org.nuclos.common.collect.collectable.searchcondition.ComparisonOperator;

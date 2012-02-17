@@ -54,7 +54,6 @@ import org.nuclos.common2.exception.CommonValidationException;
 import org.nuclos.server.common.MetaDataServerProvider;
 import org.nuclos.server.common.ServerParameterProvider;
 import org.nuclos.server.common.ejb3.LocaleFacadeLocal;
-import org.nuclos.server.database.DataBaseHelper;
 import org.nuclos.server.dblayer.query.DbFrom;
 import org.nuclos.server.dblayer.query.DbQuery;
 import org.nuclos.server.dblayer.query.DbQueryBuilder;

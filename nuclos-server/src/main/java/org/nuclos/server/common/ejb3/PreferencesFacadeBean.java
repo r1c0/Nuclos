@@ -62,7 +62,6 @@ import org.nuclos.server.dal.DalUtils;
 import org.nuclos.server.dal.processor.nuclet.IWorkspaceProcessor;
 import org.nuclos.server.dal.processor.nuclet.JdbcEntityObjectProcessor;
 import org.nuclos.server.dal.provider.NucletDalProvider;
-import org.nuclos.server.database.DataBaseHelper;
 import org.nuclos.server.dblayer.DbException;
 import org.nuclos.server.dblayer.DbInvalidResultSizeException;
 import org.nuclos.server.dblayer.DbStatementUtils;

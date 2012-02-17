@@ -42,7 +42,6 @@ import org.nuclos.server.common.AttributeCache;
 import org.nuclos.server.common.InstanceConstants;
 import org.nuclos.server.common.MasterDataMetaCache;
 import org.nuclos.server.common.ejb3.NuclosFacadeBean;
-import org.nuclos.server.database.DataBaseHelper;
 import org.nuclos.server.dblayer.query.DbCondition;
 import org.nuclos.server.dblayer.query.DbFrom;
 import org.nuclos.server.dblayer.query.DbQuery;

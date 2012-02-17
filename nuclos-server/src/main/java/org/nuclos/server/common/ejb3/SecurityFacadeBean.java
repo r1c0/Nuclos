@@ -41,7 +41,6 @@ import org.nuclos.server.common.MetaDataServerProvider;
 import org.nuclos.server.common.ModulePermissions;
 import org.nuclos.server.common.SecurityCache;
 import org.nuclos.server.common.ServerParameterProvider;
-import org.nuclos.server.database.DataBaseHelper;
 import org.nuclos.server.dblayer.DbInvalidResultSizeException;
 import org.nuclos.server.dblayer.DbStatementUtils;
 import org.nuclos.server.dblayer.DbTuple;

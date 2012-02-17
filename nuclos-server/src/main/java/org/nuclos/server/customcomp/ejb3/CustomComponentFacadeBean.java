@@ -36,7 +36,6 @@ import org.nuclos.server.common.ejb3.LocaleFacadeLocal;
 import org.nuclos.server.common.ejb3.NuclosFacadeBean;
 import org.nuclos.server.common.valueobject.NuclosValueObject;
 import org.nuclos.server.customcomp.valueobject.CustomComponentVO;
-import org.nuclos.server.database.DataBaseHelper;
 import org.nuclos.server.dblayer.DbStatementUtils;
 import org.nuclos.server.dblayer.expression.DbNull;
 import org.nuclos.server.jms.NuclosJMSUtils;

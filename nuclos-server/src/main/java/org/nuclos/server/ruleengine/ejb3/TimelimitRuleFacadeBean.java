@@ -58,7 +58,6 @@ import org.nuclos.server.customcode.NuclosTimelimitRule;
 import org.nuclos.server.customcode.codegenerator.NuclosJavaCompiler;
 import org.nuclos.server.customcode.codegenerator.RuleCodeGenerator;
 import org.nuclos.server.customcode.codegenerator.RuleCodeGenerator.AbstractRuleTemplateType;
-import org.nuclos.server.database.DataBaseHelper;
 import org.nuclos.server.dblayer.DbException;
 import org.nuclos.server.dblayer.query.DbFrom;
 import org.nuclos.server.dblayer.query.DbQuery;

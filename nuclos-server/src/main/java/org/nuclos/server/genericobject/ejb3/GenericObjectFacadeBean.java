@@ -79,7 +79,6 @@ import org.nuclos.server.common.valueobject.NuclosValueObject;
 import org.nuclos.server.dal.DalSupportForGO;
 import org.nuclos.server.dal.DalUtils;
 import org.nuclos.server.dal.provider.NucletDalProvider;
-import org.nuclos.server.database.DataBaseHelper;
 import org.nuclos.server.dblayer.DbException;
 import org.nuclos.server.dblayer.DbStatementUtils;
 import org.nuclos.server.dblayer.DbTuple;

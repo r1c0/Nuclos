@@ -40,7 +40,6 @@ import org.nuclos.server.attribute.valueobject.AttributeCVO;
 import org.nuclos.server.common.AttributeCache;
 import org.nuclos.server.common.SecurityCache;
 import org.nuclos.server.common.ejb3.NuclosFacadeBean;
-import org.nuclos.server.database.DataBaseHelper;
 import org.nuclos.server.genericobject.GenericObjectMetaDataCache;
 import org.nuclos.server.genericobject.Modules;
 import org.springframework.beans.factory.annotation.Autowired;
