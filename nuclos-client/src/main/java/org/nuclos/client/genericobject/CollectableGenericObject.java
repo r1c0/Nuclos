@@ -178,7 +178,7 @@ public class CollectableGenericObject extends AbstractCollectable implements Rem
 			assert !attrvo.isRemoved();
 
 			attrvo.setValue(clctfValue.getValue());
-			if (this.getCollectableEntity().getEntityField(sFieldName).isIdField()) {
+			if (clctfValue.isIdField() && (this.getCollectableEntity().getEntityField(sFieldName).isReferencing() || this.getCollectableEntity().getEntityField(sFieldName).isIdField())) {
 				attrvo.setValueId((Integer) clctfValue.getValueId());
 			}
 
