@@ -174,7 +174,8 @@ public class MetaDataFacadeBean extends NuclosFacadeBean implements MetaDataFaca
 		return processorFactory;
 	}
 
-	public void setProcessorFactory(ProcessorFactorySingleton processorFactory) {
+	@Autowired
+	void setProcessorFactory(ProcessorFactorySingleton processorFactory) {
 		this.processorFactory = processorFactory;
 	}
 

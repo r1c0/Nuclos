@@ -186,7 +186,7 @@
 	<bean id="attributeService" class="org.nuclos.server.attribute.ejb3.AttributeFacadeBean"/>
 
 	<bean id="metaDataService" class="org.nuclos.server.masterdata.ejb3.MetaDataFacadeBean">
-		<property name="processorFactory" ref="processorFactorySingleton"/>
+		<!--  property name="processorFactory" ref="processorFactorySingleton"/ -->
 	</bean>
 
 	<bean id="genericObjectService" class="org.nuclos.server.genericobject.ejb3.GenericObjectFacadeBean"/>
@@ -263,13 +263,13 @@
 
 	<bean id="parameterProvider" class="org.nuclos.server.common.ServerParameterProvider" depends-on="appContext"/>
 
-	<bean id="attributeProvider" class="org.nuclos.server.common.AttributeCache" depends-on="appContext"/>
+	<bean id="attributeProvider" class="org.nuclos.server.common.AttributeCache"/>
 
-	<bean id="masterdataMetaProvider" class="org.nuclos.server.common.MasterDataMetaCache" depends-on="appContext"/>
+	<bean id="masterdataMetaProvider" class="org.nuclos.server.common.MasterDataMetaCache"/>
 
-	<bean id="moduleProvider" class="org.nuclos.server.genericobject.Modules" depends-on="appContext"/>
+	<bean id="moduleProvider" class="org.nuclos.server.genericobject.Modules"/>
 
-	<!-- bean id="metaDataProvider" class="org.nuclos.server.common.MetaDataServerProvider"/ -->
+	<bean id="metaDataProvider" class="org.nuclos.server.common.MetaDataServerProvider"/>
 
 	<bean id="serviceLocator" class="org.nuclos.server.common.ServerServiceLocator" depends-on="appContext"/>
 

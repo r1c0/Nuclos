@@ -23,6 +23,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import javax.annotation.PostConstruct;
+
 import org.apache.commons.lang.NullArgumentException;
 import org.apache.log4j.Logger;
 import org.nuclos.common.AttributeProvider;
@@ -40,6 +42,7 @@ import org.nuclos.server.dal.DalSupportForGO;
 import org.nuclos.server.dal.DalUtils;
 import org.nuclos.server.genericobject.Modules;
 import org.nuclos.server.masterdata.ejb3.MetaDataFacadeLocal;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * Singleton class for getting attribute value objects.
@@ -61,14 +64,21 @@ public class AttributeCache implements AttributeProvider {
 
 	private final Map<String, List<AttributeCVO>> mpAttributesByExternalEntity
 		= new ConcurrentHashMap<String, List<AttributeCVO>>();
-
+	
+	private MetaDataServerProvider metaDataServerProvider;
+	
 	public static AttributeCache getInstance() {
 		return INSTANCE;
 	}
 
-	protected AttributeCache() {
-		validate();
+	AttributeCache() {
+		// validate();
 		INSTANCE = this;
+	}
+	
+	@Autowired
+	void setMetaDataServerProvider(MetaDataServerProvider metaDataServerProvider) {
+		this.metaDataServerProvider = metaDataServerProvider;
 	}
 
 	public void update(AttributeCVO attrcvo) {
@@ -123,7 +133,7 @@ public class AttributeCache implements AttributeProvider {
 
 		try {
 			final AttributeCVO result = getAttribute(IdUtils.unsafeToId(
-					MetaDataServerProvider.getInstance().getEntityField(sEntity, sAttributeName).getId()));
+					metaDataServerProvider.getEntityField(sEntity, sAttributeName).getId()));
 			if (result == null) {
 				throw new NuclosAttributeNotFoundException(sAttributeName);
 			}
@@ -136,7 +146,7 @@ public class AttributeCache implements AttributeProvider {
 
 	@Override
 	public EntityFieldMetaDataVO getEntityField(String entity, String field) throws NuclosAttributeNotFoundException {
-		return MetaDataServerProvider.getInstance().getEntityField(entity, field);
+		return metaDataServerProvider.getEntityField(entity, field);
 	}
 
 
@@ -156,20 +166,19 @@ public class AttributeCache implements AttributeProvider {
 		mpAttributesByExternalEntity.clear();
 	}
 
-	private void validate() {
+	@PostConstruct
+	void validate() {
 		if (mpAttributesById.isEmpty() || mpAttributesByExternalEntity.isEmpty()) {
 
 			try {
 				final Logger log = Logger.getLogger(this.getClass());
 				log.debug("START building attribute cache.");
 
-				MetaDataFacadeLocal metaFacade = ServiceLocator.getInstance().getFacade(MetaDataFacadeLocal.class);
-
-				for (EntityMetaDataVO eMeta : MetaDataServerProvider.getInstance().getAllEntities()) {
+				for (EntityMetaDataVO eMeta : metaDataServerProvider.getAllEntities()) {
 					if (DalUtils.isNuclosProcessor(eMeta) || !eMeta.isStateModel()) {
 						continue;
 					}
-					for (EntityFieldMetaDataVO efMeta : MetaDataServerProvider.getInstance()
+					for (EntityFieldMetaDataVO efMeta : metaDataServerProvider
 							.getAllEntityFieldsByEntity(eMeta.getEntity()).values()) {
 						Map<Integer, Permission> permissions = SecurityCache.getInstance().getAttributeGroup("",
 								IdUtils.unsafeToId(efMeta.getFieldGroupId()));

@@ -58,7 +58,6 @@ import org.springframework.stereotype.Component;
  * An caching singleton for accessing the meta data information
  * on the server side.
  */
-@Component
 public class MetaDataServerProvider extends AbstractProvider implements MetaDataProvider, CommonMetaDataServerProvider {
 	
 	private static MetaDataServerProvider INSTANCE;
