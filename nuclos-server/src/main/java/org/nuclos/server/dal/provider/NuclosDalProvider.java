@@ -31,15 +31,12 @@ import org.nuclos.server.dal.processor.nuclos.JsonEntityFieldMetaDataProcessor;
 import org.nuclos.server.dal.processor.nuclos.JsonEntityMetaDataProcessor;
 import org.nuclos.server.dal.processor.nuclos.JsonEntityObjectProcessor;
 
-/**
- * @deprecated Replace with pure Spring solution.
- */
 public class NuclosDalProvider extends AbstractDalProvider {
 	
 	/**
 	 * Singleton der auch in einer MultiThreading-Umgebung Threadsafe ist...
 	 */
-	private static final NuclosDalProvider singleton = new NuclosDalProvider();
+	private static NuclosDalProvider INSTANCE;
 	
 	// instance variables
 	
@@ -50,10 +47,14 @@ public class NuclosDalProvider extends AbstractDalProvider {
 	private DynamicMetaDataProcessor dynMetaDataProcessor;
 	
 	public static NuclosDalProvider getInstance() {
-		return singleton;
+		if (INSTANCE == null || INSTANCE.mapEntityObject.isEmpty()) {
+			throw new IllegalStateException("too early");
+		}
+		return INSTANCE;
 	}	
 	
-	private NuclosDalProvider(){
+	NuclosDalProvider() {
+		INSTANCE = this;
 	}
 	
 	/**

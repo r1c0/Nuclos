@@ -31,7 +31,6 @@ import java.lang.reflect.Proxy;
 import java.util.Locale;
 import java.util.Properties;
 
-import javax.annotation.PostConstruct;
 import javax.jnlp.ServiceManager;
 import javax.jnlp.UnavailableServiceException;
 import javax.naming.NamingException;
@@ -63,8 +62,6 @@ import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.common2.exception.CommonPermissionException;
 import org.nuclos.server.servermeta.ejb3.ServerMetaFacadeRemote;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.core.io.Resource;
 import org.springframework.util.Log4jConfigurer;

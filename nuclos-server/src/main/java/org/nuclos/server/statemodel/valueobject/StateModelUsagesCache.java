@@ -16,6 +16,8 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.server.statemodel.valueobject;
 
+import javax.annotation.PostConstruct;
+
 import org.nuclos.common.UsageCriteria;
 import org.nuclos.common.dal.vo.SystemFields;
 import org.nuclos.common.dblayer.JoinType;
@@ -25,6 +27,8 @@ import org.nuclos.server.dblayer.query.DbFrom;
 import org.nuclos.server.dblayer.query.DbJoin;
 import org.nuclos.server.dblayer.query.DbQuery;
 import org.nuclos.server.dblayer.query.DbQueryBuilder;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 /**
  * Singleton class for getting initial states and state models by usage criteria.
@@ -35,6 +39,7 @@ import org.nuclos.server.dblayer.query.DbQueryBuilder;
  * @author	<a href="mailto:ramin.goettlich@novabit.de">ramin.goettlich</a>
  * @version 00.01.000
  */
+@Component
 public class StateModelUsagesCache {
 
 	private static StateModelUsagesCache INSTANCE;
@@ -42,15 +47,27 @@ public class StateModelUsagesCache {
 	// 
 
 	private StateModelUsages stateModelUsages;
+	
+	private DataBaseHelper dataBaseHelper;
 
-	public static synchronized StateModelUsagesCache getInstance() {
-		if (INSTANCE == null) {
-			INSTANCE = new StateModelUsagesCache();
+	public static StateModelUsagesCache getInstance() {
+		if (INSTANCE.stateModelUsages == null) {
+			throw new IllegalStateException("too early");
 		}
 		return INSTANCE;
 	}
 
-	private StateModelUsagesCache() {
+	StateModelUsagesCache() {
+		INSTANCE = this;
+	}
+	
+	@Autowired
+	void setDataBaseHelper(DataBaseHelper dataBaseHelper) {
+		this.dataBaseHelper = dataBaseHelper;
+	}
+	
+	@PostConstruct
+	final void init() {
 		validate();
 	}
 
@@ -84,10 +101,10 @@ public class StateModelUsagesCache {
 	 * @return
 	 * @postcondition result != null
 	 */
-	private static StateModelUsages buildCache() {
+	private StateModelUsages buildCache() {
 		final StateModelUsages result = new StateModelUsages();
 
-		DbQueryBuilder builder = DataBaseHelper.getInstance().getDbAccess().getQueryBuilder();
+		DbQueryBuilder builder = dataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<DbTuple> query = builder.createTupleQuery();
 		DbFrom s = query.from("T_MD_STATE").alias("s");
 		DbJoin t = s.join("T_MD_STATE_TRANSITION", JoinType.INNER).alias(SystemFields.BASE_ALIAS).on("INTID", "INTID_T_MD_STATE_2", Integer.class);
@@ -101,7 +118,7 @@ public class StateModelUsagesCache {
 		query.orderBy(builder.asc(u.baseColumn("INTID_T_MD_MODULE", Integer.class)),
 		   builder.asc(u.baseColumn("INTID_T_MD_PROCESS", Integer.class)));
 		
-		for (DbTuple tuple : DataBaseHelper.getInstance().getDbAccess().executeQuery(query)) {
+		for (DbTuple tuple : dataBaseHelper.getDbAccess().executeQuery(query)) {
 			final UsageCriteria usagecriteria = new UsageCriteria(
 				tuple.get(2, Integer.class), tuple.get(3, Integer.class));
 			result.add(new StateModelUsages.StateModelUsage(

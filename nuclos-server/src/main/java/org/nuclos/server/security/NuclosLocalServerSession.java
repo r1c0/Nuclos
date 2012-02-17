@@ -90,12 +90,14 @@ public abstract class NuclosLocalServerSession {
 	private static void loginAs(String username, String password, Collection<? extends GrantedAuthority> authorities) {
 		Authentication auth = new NuclosLocalServerAuthenticationToken(username, password, authorities);
 		SecurityContextHolder.getContext().setAuthentication(auth);
-		sessionId = ServiceLocator.getInstance().getFacade(SecurityFacadeLocal.class).login();
+		final SecurityFacadeLocal sfl = (SecurityFacadeLocal) SpringApplicationContextHolder.getBean("securityService");
+		sessionId = sfl.login();
 	}
 
 	public static void logout() {
 		try {
-			ServiceLocator.getInstance().getFacade(SecurityFacadeLocal.class).logout(sessionId);
+			final SecurityFacadeLocal sfl = (SecurityFacadeLocal) SpringApplicationContextHolder.getBean("securityService");
+			sfl.logout(sessionId);
 			SecurityContextHolder.getContext().setAuthentication(null);
 		}
 		catch(Exception e) {

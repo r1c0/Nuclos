@@ -22,6 +22,10 @@ import javax.annotation.PreDestroy;
 
 import org.springframework.stereotype.Component;
 
+
+/**
+ * @deprecated Only a few usages left - not strictly necessary any more. (tp)
+ */
 @Component
 public class NuclosRemoteContextHolder {
 	
@@ -49,6 +53,10 @@ public class NuclosRemoteContextHolder {
 	
 	public Boolean peek() {
 		Stack<Boolean> stack = threadLocal.get();
+		if (stack == null) {
+			stack = new Stack<Boolean>();
+			threadLocal.set(stack);
+		}
 		return stack.size() > 0 ? stack.peek() : null;
 	}
 	

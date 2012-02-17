@@ -145,11 +145,6 @@ public class StaticMetaDataProvider extends AbstractProvider implements MetaData
 	}
 
 	@Override
-	public String getBaseEntity(String dynamicentityname) {
-		throw new UnsupportedOperationException("getBaseEntity() is not applicable for StaticMetaDataProvider.");
-	}
-
-	@Override
 	public List<String> getEntities(String nuclet) {
 		if (mapEntitiesByNuclets.containsKey(nuclet)) {
 			return mapEntitiesByNuclets.get(nuclet);

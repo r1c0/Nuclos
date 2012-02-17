@@ -16,15 +16,15 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.server.navigation.treenode;
 
-import org.nuclos.common.MetaDataProvider;
-import org.nuclos.common.SpringApplicationContextHolder;
 import org.nuclos.common.Utils;
 import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.common2.exception.CommonFinderException;
 import org.nuclos.common2.exception.CommonPermissionException;
 import org.nuclos.common2.exception.CommonRemoteException;
+import org.nuclos.server.masterdata.ejb3.EntityFacadeRemote;
 import org.nuclos.server.masterdata.valueobject.MasterDataMetaVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
+import org.springframework.beans.factory.annotation.Configurable;
 
 /**
  * TreeNode for MasterDataRecords
@@ -35,20 +35,27 @@ import org.nuclos.server.masterdata.valueobject.MasterDataVO;
  * @author	<a href="mailto:Lars.Rueckemann@novabit.de">Lars Rueckemann</a>
  * @version	01.00.00
  */
+@Configurable
 public class SubFormEntryTreeNode extends DefaultMasterDataTreeNode {
+	
+	private EntityFacadeRemote entityFacadeRemote;
 
 	public SubFormEntryTreeNode(String sEntity, MasterDataVO mdvo) {
 		super(sEntity, mdvo);
 	}
+	
+	void setEntityFacadeRemote(EntityFacadeRemote entityFacadeRemote) {
+		this.entityFacadeRemote = entityFacadeRemote;
+	}
 
 	@Override
 	public String getEntityName() {
-		if (super.getEntityName().startsWith(MasterDataMetaVO.DYNAMIC_ENTITY_PREFIX)) {
-			MetaDataProvider metaprovider = SpringApplicationContextHolder.getBean(MetaDataProvider.class);
-			return metaprovider.getBaseEntity(super.getEntityName());
+		final String entityName = super.getEntityName();
+		if (entityName.startsWith(MasterDataMetaVO.DYNAMIC_ENTITY_PREFIX)) {
+			return entityFacadeRemote.getBaseEntity(entityName);
 		}
 		else {
-			return super.getEntityName();
+			return entityName;
 		}
 	}
 

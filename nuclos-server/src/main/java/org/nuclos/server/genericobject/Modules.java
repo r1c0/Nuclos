@@ -64,6 +64,8 @@ public class Modules extends ModuleProvider {
 	
 	private MasterDataFacadeHelper masterDataFacadeHelper;
 	
+	private NucletDalProvider nucletDalProvider;
+	
 	//
 
 	Modules() {
@@ -79,6 +81,11 @@ public class Modules extends ModuleProvider {
 	void setMasterDataFacadeHelper(MasterDataFacadeHelper masterDataFacadeHelper) {
 		this.masterDataFacadeHelper = masterDataFacadeHelper;
 	}
+	
+	@Autowired
+	void setNucletDalProvider(NucletDalProvider nucletDalProvider) {
+		this.nucletDalProvider = nucletDalProvider;
+	}
 
 	public static Modules getInstance() {
 		return INSTANCE;
@@ -91,7 +98,7 @@ public class Modules extends ModuleProvider {
 				NuclosLocalServerSession.loginAsSuperUser();
 
 			List<MasterDataVO> colModules = new ArrayList<MasterDataVO>();
-			for (EntityMetaDataVO eMeta : NucletDalProvider.getInstance().getEntityMetaDataProcessor().getAll()) {
+			for (EntityMetaDataVO eMeta : nucletDalProvider.getEntityMetaDataProcessor().getAll()) {
 				if (eMeta.isStateModel()) {
 					colModules.add(DalSupportForMD.wrapEntityMetaDataVOInModule(eMeta));
 				}

@@ -64,5 +64,14 @@ public interface EntityFacadeRemote {
 	@RolesAllowed("Login")
 	List<CollectableValueIdField> getQuickSearchResult(String entity, String field, String search, Integer vlpId, 
 			Map<String, Object> vlpParameter, Integer iMaxRowCount);
+	
+	
+	/**
+	 * Get the base entity name of a dynamic entity.
+	 *
+	 * @param dynamicentityname The name of the dynamic entity.
+	 * @return Returns the base entity name. Returns the original entity name if there is no dynamic entity with the given name.
+	 */
+	String getBaseEntity(String dynamicentityname);
 
 }

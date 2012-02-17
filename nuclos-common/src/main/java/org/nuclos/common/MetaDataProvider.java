@@ -54,7 +54,7 @@ public interface MetaDataProvider extends CommonMetaDataProvider {
 	 * @param dynamicentityname The name of the dynamic entity.
 	 * @return Returns the base entity name. Returns the original entity name if there is no dynamic entity with the given name.
 	 */
-	String getBaseEntity(String dynamicentityname);
+	// String getBaseEntity(String dynamicentityname);
 
 	/**
 	 * Get entities by nuclet name

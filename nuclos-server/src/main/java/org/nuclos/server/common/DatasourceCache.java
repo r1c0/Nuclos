@@ -29,12 +29,14 @@ import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.dal.DalSupportForMD;
+import org.nuclos.common.dal.util.DalTransformations;
 import org.nuclos.common.dal.vo.EntityObjectVO;
 import org.nuclos.common.dal.vo.SystemFields;
 import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.exception.CommonFinderException;
 import org.nuclos.common2.exception.CommonPermissionException;
 import org.nuclos.server.dal.provider.NucletDalProvider;
+import org.nuclos.server.dal.provider.NuclosDalProvider;
 import org.nuclos.server.database.DataBaseHelper;
 import org.nuclos.server.dblayer.query.DbFrom;
 import org.nuclos.server.dblayer.query.DbQuery;
@@ -47,6 +49,7 @@ import org.nuclos.server.report.valueobject.DynamicEntityVO;
 import org.nuclos.server.report.valueobject.RecordGrantVO;
 import org.nuclos.server.report.valueobject.ValuelistProviderVO;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 /**
  * Cache for all Datasources.
@@ -58,6 +61,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  * 
  * TODO: Re-check if all methods must be synchronized! (tp)
  */
+@Component
 public class DatasourceCache {
 	
 	private static final Logger LOG = Logger.getLogger(DatasourceCache.class);
@@ -86,12 +90,17 @@ public class DatasourceCache {
 	private final Map<Integer, DynamicEntityVO> mpDynamicEntitiesById 
 		= new ConcurrentHashMap<Integer, DynamicEntityVO>();
 	
+	private final Map<String, DynamicEntityVO> mapDynamicEntities
+		= new ConcurrentHashMap<String, DynamicEntityVO>();
+	
 	private DatasourceServerUtils datasourceServerUtils;
 	
 	private DataBaseHelper dataBaseHelper;
 	
 	private SecurityCache securityCache;
-
+	
+	private NucletDalProvider nucletDalProvider;
+	
 
 	DatasourceCache() {
 		INSTANCE = this;
@@ -102,7 +111,7 @@ public class DatasourceCache {
 	}
 	
 	@PostConstruct
-	final void init() {
+	public final void init() {
 		findDatasourcesById();		
 	}
 	
@@ -120,30 +129,40 @@ public class DatasourceCache {
 	void setSecurityCache(SecurityCache securityCache) {
 		this.securityCache = securityCache;
 	}
+	
+	@Autowired
+	void setNucletDalProvider(NucletDalProvider nucletDalProvider) {
+		this.nucletDalProvider = nucletDalProvider;
+	}
 
 	private void findDatasourcesById() {
 		LOG.info("Initializing DatasourceCache");
-		final NucletDalProvider prov = NucletDalProvider.getInstance();
-		
+		// Check if it is 'too early'
+		NucletDalProvider.getInstance();
 		for (EntityObjectVO eoVO : 
-			prov.getEntityObjectProcessor(NuclosEntity.DATASOURCE).getAll()) {
+			nucletDalProvider.getEntityObjectProcessor(NuclosEntity.DATASOURCE).getAll()) {
 			mpDatasourcesById.put(eoVO.getId().intValue(),
 					MasterDataWrapper.getDatasourceVO(DalSupportForMD.wrapEntityObjectVO(eoVO), "INITIAL"));
 		}
 		for (EntityObjectVO eoVO : 
-			prov.getEntityObjectProcessor(NuclosEntity.VALUELISTPROVIDER).getAll()) {
+			nucletDalProvider.getEntityObjectProcessor(NuclosEntity.VALUELISTPROVIDER).getAll()) {
 			mpValuelistProviderById.put(eoVO.getId().intValue(),
 					MasterDataWrapper.getValuelistProviderVO(DalSupportForMD.wrapEntityObjectVO(eoVO)));
 		}
 		for (EntityObjectVO eoVO : 
-			prov.getEntityObjectProcessor(NuclosEntity.DYNAMICENTITY).getAll()) {
+			nucletDalProvider.getEntityObjectProcessor(NuclosEntity.DYNAMICENTITY).getAll()) {
 			mpDynamicEntitiesById.put(eoVO.getId().intValue(),
 					MasterDataWrapper.getDynamicEntityVO(DalSupportForMD.wrapEntityObjectVO(eoVO)));
 		}
 		for (EntityObjectVO eoVO : 
-			prov.getEntityObjectProcessor(NuclosEntity.RECORDGRANT).getAll()) {
+			nucletDalProvider.getEntityObjectProcessor(NuclosEntity.RECORDGRANT).getAll()) {
 			mpRecordGrantById.put(eoVO.getId().intValue(),
 					MasterDataWrapper.getRecordGrantVO(DalSupportForMD.wrapEntityObjectVO(eoVO)));
+		}
+		if (mapDynamicEntities.isEmpty()) {
+			mapDynamicEntities.putAll(Collections.unmodifiableMap(CollectionUtils.generateLookupMap(
+					mpDynamicEntitiesById.values() /*getAllDynamicEntities()*/, 
+					DalTransformations.getDynamicEntityName())));
 		}
 		LOG.info("Finished initializing DatasourceCache.");
 	}
@@ -228,6 +247,21 @@ public class DatasourceCache {
 		return result;
 	}
 
+	/**
+	 * Get the base entity name of a dynamic entity.
+	 *
+	 * @param dynamicentityname The name of the dynamic entity.
+	 * @return Returns the base entity name. Returns the original entity name if there is no dynamic entity with the given name.
+	 */
+	public String getBaseEntity(String dynamicentityname) {
+		if (mapDynamicEntities.containsKey(dynamicentityname)) {
+			return mapDynamicEntities.get(dynamicentityname).getEntity();
+		}
+		else {
+			return dynamicentityname;
+		}
+	}
+	
 	/**
 	 * get all valuelist provider
 	 * @return

@@ -31,7 +31,6 @@ import org.apache.log4j.Logger;
 import org.jdesktop.swingx.JXErrorPane;
 import org.jdesktop.swingx.error.ErrorInfo;
 import org.nuclos.client.LaunchListener;
-import org.nuclos.client.NuclosIcons;
 import org.nuclos.client.main.mainframe.MainFrame;
 import org.nuclos.common.SpringApplicationContextHolder;
 import org.nuclos.common2.StringUtils;

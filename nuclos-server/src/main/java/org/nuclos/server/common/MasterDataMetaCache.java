@@ -75,6 +75,8 @@ public class MasterDataMetaCache implements MasterDataMetaCacheMBean, MasterData
 		= new ConcurrentHashMap<String, Collection<EntityTreeViewVO>>();
 	
 	private DataBaseHelper dataBaseHelper;
+	
+	private MetaDataServerProvider metaDataServerProvider;
 
 	MasterDataMetaCache() {
 		INSTANCE = this;
@@ -91,6 +93,11 @@ public class MasterDataMetaCache implements MasterDataMetaCacheMBean, MasterData
 	void setDataBaseHelper(DataBaseHelper dataBaseHelper) {
 		this.dataBaseHelper = dataBaseHelper;
 	}
+	
+	@Autowired
+	void setMetaDataServerProvider(MetaDataServerProvider metaDataServerProvider) {
+		this.metaDataServerProvider = metaDataServerProvider;
+	}
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
@@ -102,7 +109,7 @@ public class MasterDataMetaCache implements MasterDataMetaCacheMBean, MasterData
 	 * after metadata entries in the database were changed.
 	 */
 	@Override
-	public void revalidate() {
+	public synchronized void revalidate() {
 		mpSubNodes.clear();
 		subNodes.clear();
 		mp.clear();
@@ -211,14 +218,14 @@ public class MasterDataMetaCache implements MasterDataMetaCacheMBean, MasterData
 	 * @return a map that may only be read from, never written to.
 	 * @postcondition result != null
 	 */
-	private static Map<String, MasterDataMetaVO> buildMap() {
+	private Map<String, MasterDataMetaVO> buildMap() {
 		LOG.debug("START building masterdata cache.");
 
 		final Map<String, MasterDataMetaVO> result = new HashMap<String, MasterDataMetaVO>();
 
-		for (EntityMetaDataVO eMeta : MetaDataServerProvider.getInstance().getAllEntities()) {
+		for (EntityMetaDataVO eMeta : metaDataServerProvider.getAllEntities()) {
 			result.put(eMeta.getEntity(), DalSupportForMD.wrapEntityMetaDataVOInMasterData(eMeta,
-				MetaDataServerProvider.getInstance().getAllEntityFieldsByEntity(eMeta.getEntity()).values()));
+				metaDataServerProvider.getAllEntityFieldsByEntity(eMeta.getEntity()).values()));
 		}
 
 		LOG.debug("FINISHED building masterdata cache.");

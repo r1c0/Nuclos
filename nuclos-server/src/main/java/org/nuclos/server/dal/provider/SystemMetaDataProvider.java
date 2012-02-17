@@ -125,11 +125,6 @@ public class SystemMetaDataProvider implements MetaDataProvider {
 	}
 
 	@Override
-	public String getBaseEntity(String dynamicentityname) {
-		throw new UnsupportedOperationException("getBaseEntity() is not applicable for system entites.");
-	}
-
-	@Override
 	public List<String> getEntities(String nuclet) {
 		if (!NAMESPACE_NUCLOS.equals(nuclet)) {
 			throw new UnsupportedOperationException(getClass().getName() + " does not support nuclets");

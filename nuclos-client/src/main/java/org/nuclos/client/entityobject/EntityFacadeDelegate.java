@@ -71,4 +71,9 @@ public class EntityFacadeDelegate implements EntityFacadeRemote {
 		return facade.getQuickSearchResult(entity, field, search, vlpId, vlpParameter, iMaxRowCount);
 	}
 	
+	@Override
+	public String getBaseEntity(String dynamicentityname) {
+		return facade.getBaseEntity(dynamicentityname);
+	}
+	
 }

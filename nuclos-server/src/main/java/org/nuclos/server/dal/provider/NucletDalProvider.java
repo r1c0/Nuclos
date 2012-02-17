@@ -40,7 +40,7 @@ public class NucletDalProvider extends AbstractDalProvider {
 	/**
 	 * Singleton der auch in einer MultiThreading-Umgebung Threadsafe ist...
 	 */
-	private static final NucletDalProvider singleton = new NucletDalProvider();
+	private static NucletDalProvider INSTANCE;
 	
 	
 	// instance variables
@@ -51,12 +51,17 @@ public class NucletDalProvider extends AbstractDalProvider {
 	private JdbcEntityFieldMetaDataProcessor entityFieldMetaDataProcessor;
 	private IEOGenericObjectProcessor eoGenericObjectProcessor;
 	private IWorkspaceProcessor workspaceProcessor;
+	private ProcessorFactorySingleton processorFac;
 	
 	public static NucletDalProvider getInstance() {
-		return singleton;
+		if (INSTANCE == null || INSTANCE.eoGenericObjectProcessor == null || INSTANCE.mapEntityObject.isEmpty()) {
+			throw new IllegalStateException("too early");
+		}
+		return INSTANCE;
 	}	
 	
-	private NucletDalProvider(){
+	NucletDalProvider() {
+		INSTANCE = this;
 	}
 	
 	/**
@@ -85,13 +90,18 @@ public class NucletDalProvider extends AbstractDalProvider {
 	 */
 	public void setWorkspaceProcessor(IWorkspaceProcessor processor) {
 		this.workspaceProcessor = processor;
-	}	
+	}
+	
+	/**
+	 * Spring property.
+	 */
+	public void setProcessorFactorySingleton(ProcessorFactorySingleton processorFac) {
+		this.processorFac = processorFac;
+	}
 	
 	public void buildEOProcessors() {
 		synchronized (mapEntityObject) {
 			mapEntityObject.clear();
-			
-			final ProcessorFactorySingleton processorFac = ProcessorFactorySingleton.getInstance();
 			try {
 				// Constructor<?> entityObjectProcessorConstructor = Class.forName(getDalProperties().getProperty("entity.object.nuclet")).getConstructor(EntityMetaDataVO.class, Collection.class);
 				

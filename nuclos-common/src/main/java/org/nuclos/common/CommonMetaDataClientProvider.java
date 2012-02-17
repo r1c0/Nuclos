@@ -40,5 +40,13 @@ public interface CommonMetaDataClientProvider extends CommonMetaDataProvider {
 	 * @return All (pseudo) fields.
 	 */
     Collection<EntityFieldMetaDataVO> getAllPivotEntityFields(PivotInfo info, List<String> valueColumns);
-
+    
+	/**
+	 * Get the base entity name of a dynamic entity.
+	 *
+	 * @param dynamicentityname The name of the dynamic entity.
+	 * @return Returns the base entity name. Returns the original entity name if there is no dynamic entity with the given name.
+	 */
+	String getBaseEntity(String dynamicentityname);
+	
 }

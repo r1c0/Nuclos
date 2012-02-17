@@ -91,6 +91,8 @@ public class EntityFacadeBean extends NuclosFacadeBean implements EntityFacadeRe
 	private MasterDataFacadeHelper helper;
 	
 	private DatasourceServerUtils datasourceServerUtils;
+	
+	private DatasourceCache datasourceCache;
 
 	public EntityFacadeBean() {
 	}
@@ -103,6 +105,11 @@ public class EntityFacadeBean extends NuclosFacadeBean implements EntityFacadeRe
 	@Autowired
 	void setDatasourceServerUtils(DatasourceServerUtils datasourceServerUtils) {
 		this.datasourceServerUtils = datasourceServerUtils;
+	}
+	
+	@Autowired
+	void setDatasourceCache(DatasourceCache datasourceCache) {
+		this.datasourceCache = datasourceCache;
 	}
 	
 	/**
@@ -197,7 +204,7 @@ public class EntityFacadeBean extends NuclosFacadeBean implements EntityFacadeRe
 			final MetaDataProvider provider = MetaDataServerProvider.getInstance();
 			final EntityFieldMetaDataVO efMeta = provider.getEntityField(entity, field);
 			assert efMeta.getForeignEntity() != null;
-			final EntityMetaDataVO eForeignMeta = provider.getEntity(efMeta.getForeignEntity() != null ? efMeta.getForeignEntity() : efMeta.getLookupEntity());
+			final EntityMetaDataVO eForeignMeta = provider.getEntity(efMeta.getForeignEntity());
 			final TableAliasSingleton tas = TableAliasSingleton.getInstance();
 			final String alias = tas.getAlias(efMeta);
 			final String table = EntityObjectMetaDbHelper.getTableOrViewForSelect(eForeignMeta);
@@ -255,6 +262,11 @@ public class EntityFacadeBean extends NuclosFacadeBean implements EntityFacadeRe
 		}
 
 		return result;
+	}
+
+	@Override
+	public String getBaseEntity(String dynamicentityname) {
+		return datasourceCache.getBaseEntity(dynamicentityname);
 	}
 
 }

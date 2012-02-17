@@ -31,7 +31,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.apache.log4j.Logger;
 import org.nuclos.common.Actions;
 import org.nuclos.common.JMSConstants;
-import org.nuclos.common.ModuleProvider;
 import org.nuclos.common.NuclosEOField;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.UsageCriteria;
@@ -69,6 +68,7 @@ import org.nuclos.server.statemodel.valueobject.StateModelUsages.StateModelUsage
 import org.nuclos.server.statemodel.valueobject.StateModelUsagesCache;
 import org.nuclos.server.statemodel.valueobject.StateTransitionVO;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.support.TransactionSynchronizationAdapter;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
@@ -83,6 +83,7 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
  * @version 00.01.000
  */
 @Component
+@Lazy
 public class SecurityCache implements SecurityCacheMBean {
 
 	private static final Logger LOG = Logger.getLogger(SecurityCache.class);
@@ -98,6 +99,12 @@ public class SecurityCache implements SecurityCacheMBean {
 	private DataBaseHelper dataBaseHelper;
 	
 	private StateCache stateCache;
+	
+	private Modules modules;
+	
+	private MasterDataMetaCache masterDataMetaCache;
+	
+	private StateModelUsagesCache stateModelUsagesCache;
 
 	private final Map<PermissionKey.AttributePermissionKey, Permission> mpAttributePermission 
 		= new ConcurrentHashMap<PermissionKey.AttributePermissionKey, Permission>();
@@ -296,7 +303,6 @@ public class SecurityCache implements SecurityCacheMBean {
 		private ModulePermissions readModulePermissions() {
 			DbQueryBuilder builder = dataBaseHelper.getDbAccess().getQueryBuilder();
 
-			final ModuleProvider moduleprovider = Modules.getInstance();
 			final Map<Pair<String, Integer>, ModulePermission> mpByEntityName = new HashMap<Pair<String, Integer>, ModulePermission>();
 			final Map<Pair<Integer, Integer>, ModulePermission> mpByModuleId = new HashMap<Pair<Integer, Integer>, ModulePermission>();
 			final Map<String, Boolean> mpNewAllowedByEntityName = new HashMap<String, Boolean>();
@@ -311,7 +317,7 @@ public class SecurityCache implements SecurityCacheMBean {
 				query.where(builder.equal(t.baseColumn("BLNUSESSTATEMODEL", Boolean.class), true));
 				for (String entityName : dataBaseHelper.getDbAccess().executeQuery(query.distinct(true))) {
 					ModulePermission permission = ModulePermission.DELETE_PHYSICALLY;
-					final Integer iModuleId = moduleprovider.getModuleIdByEntityName(entityName);
+					final Integer iModuleId = modules.getModuleIdByEntityName(entityName);
 
 					mpByEntityName.put(new Pair<String, Integer>(entityName, null), permission);
 					mpByModuleId.put(new Pair<Integer, Integer>(iModuleId, null), permission);
@@ -319,10 +325,10 @@ public class SecurityCache implements SecurityCacheMBean {
 					mpNewAllowedByModuleId.put(iModuleId, Boolean.TRUE);
 
 					Set<Integer> newAllowedProcesses = new HashSet<Integer>();
-					for (Integer iStateModelId : StateModelUsagesCache.getInstance().getStateUsages().getStateModelIdsByModuleId(iModuleId)) {
+					for (Integer iStateModelId : stateModelUsagesCache.getStateUsages().getStateModelIdsByModuleId(iModuleId)) {
 						StateTransitionVO initialTransitionVO = stateCache.getInitialTransistionByModel(iStateModelId);
 						if (iStateModelId != null && initialTransitionVO != null) {
-							for (UsageCriteria uc : StateModelUsagesCache.getInstance().getStateUsages().getUsageCriteriaByStateModelId(iStateModelId)) {
+							for (UsageCriteria uc : stateModelUsagesCache.getStateUsages().getUsageCriteriaByStateModelId(iStateModelId)) {
 								newAllowedProcesses.add(uc.getProcessId());
 							}
 						}
@@ -346,14 +352,14 @@ public class SecurityCache implements SecurityCacheMBean {
 					Integer group = tuple.get(1, Integer.class);
 					ModulePermission permission = ModulePermission.getInstance(tuple.get(2, Integer.class));
 					permission = permission.max(mpByEntityName.get(new Pair<String, Integer>(entityName, group)));
-					final Integer iModuleId = moduleprovider.getModuleIdByEntityName(entityName);
+					final Integer iModuleId = modules.getModuleIdByEntityName(entityName);
 
 					mpByEntityName.put(new Pair<String, Integer>(entityName, group), permission);
 					mpByModuleId.put(new Pair<Integer, Integer>(iModuleId, group), permission);
 
 					/** is new allowed is defined in initial state model. */
 					if (!mpNewAllowedByModuleId.containsKey(iModuleId)) {
-						StateModelUsage smu = StateModelUsagesCache.getInstance().getStateUsages().getStateModelUsage(new UsageCriteria(iModuleId, null));
+						StateModelUsage smu = stateModelUsagesCache.getStateUsages().getStateModelUsage(new UsageCriteria(iModuleId, null));
 						Boolean isNewAllowed = false;
 						if (smu != null) {
 							Integer iStateModelId = smu.getStateModelId();
@@ -369,12 +375,12 @@ public class SecurityCache implements SecurityCacheMBean {
 					if (!mpNewAllowedProcessesByModuleId.containsKey(iModuleId)) {
 						Set<Integer> newAllowedProcesses = new HashSet<Integer>();
 
-						for (Integer iStateModelId : StateModelUsagesCache.getInstance().getStateUsages().getStateModelIdsByModuleId(iModuleId)) {
+						for (Integer iStateModelId : stateModelUsagesCache.getStateUsages().getStateModelIdsByModuleId(iModuleId)) {
 							StateTransitionVO initialTransitionVO = stateCache.getInitialTransistionByModel(iStateModelId);
 							final Boolean isNewAllowed = iStateModelId != null && initialTransitionVO != null &&
 								!CollectionUtils.intersection(initialTransitionVO.getRoleIds(), getRoleIds()).isEmpty();
 							if (isNewAllowed) {
-								for (UsageCriteria uc : StateModelUsagesCache.getInstance().getStateUsages().getUsageCriteriaByStateModelId(iStateModelId)) {
+								for (UsageCriteria uc : stateModelUsagesCache.getStateUsages().getUsageCriteriaByStateModelId(iStateModelId)) {
 									newAllowedProcesses.add(uc.getProcessId());
 								}
 							}
@@ -392,7 +398,7 @@ public class SecurityCache implements SecurityCacheMBean {
 			final Map<String, MasterDataPermission> mpByEntityName = new HashMap<String, MasterDataPermission>();
 
 			if (isSuperUser()) {
-				for (MasterDataMetaVO metaVO : MasterDataMetaCache.getInstance().getAllMetaData()) {
+				for (MasterDataMetaVO metaVO : masterDataMetaCache.getAllMetaData()) {
 					mpByEntityName.put(metaVO.getEntityName(), MasterDataPermission.DELETE);
 				}
 			} else {
@@ -666,6 +672,21 @@ public class SecurityCache implements SecurityCacheMBean {
 	}
 	
 	@Autowired
+	void setModules(Modules modules) {
+		this.modules = modules;
+	}
+	
+	@Autowired
+	void setMasterDataMetaCache(MasterDataMetaCache masterDataMetaCache) {
+		this.masterDataMetaCache = masterDataMetaCache;
+	}
+	
+	@Autowired
+	void setStateModelUsagesCache(StateModelUsagesCache stateModelUsagesCache) {
+		this.stateModelUsagesCache = stateModelUsagesCache;
+	}
+	
+	@Autowired
 	void setStateCache(StateCache stateCache) {
 		this.stateCache = stateCache;
 	}
@@ -683,7 +704,7 @@ public class SecurityCache implements SecurityCacheMBean {
 	}
 
 	public boolean isReadAllowedForModule(String sUserName, Integer iModuleId, Integer iGenericObjectId) {
-		return isReadAllowedForModule(sUserName, Modules.getInstance().getEntityNameByModuleId(iModuleId), iGenericObjectId);
+		return isReadAllowedForModule(sUserName, modules.getEntityNameByModuleId(iModuleId), iGenericObjectId);
 	}
 
 	public boolean isReadAllowedForModule(String sUserName, String sEntityName, Integer iGenericObjectId) {
@@ -691,7 +712,7 @@ public class SecurityCache implements SecurityCacheMBean {
 	}
 
 	public boolean isReadAllowedForMasterData(String sUserName, Integer iMasterDataId) {
-		return isReadAllowedForMasterData(sUserName, MasterDataMetaCache.getInstance().getMetaDataById(iMasterDataId).getEntityName());
+		return isReadAllowedForMasterData(sUserName, masterDataMetaCache.getMetaDataById(iMasterDataId).getEntityName());
 	}
 
 	public boolean isReadAllowedForMasterData(String sUserName, String sEntityName) {
@@ -707,7 +728,7 @@ public class SecurityCache implements SecurityCacheMBean {
 	}
 
 	public boolean isWriteAllowedForModule(String sUserName, Integer iModuleId, Integer iGenericObjectId) {
-		return isWriteAllowedForModule(sUserName, Modules.getInstance().getEntityNameByModuleId(iModuleId), iGenericObjectId);
+		return isWriteAllowedForModule(sUserName, modules.getEntityNameByModuleId(iModuleId), iGenericObjectId);
 	}
 
 	public boolean isWriteAllowedForModule(String sUserName, String sEntityName, Integer iGenericObjectId) {
@@ -717,7 +738,7 @@ public class SecurityCache implements SecurityCacheMBean {
 
 	public boolean isWriteAllowedForMasterData(String sUserName, Integer iMasterDataId) {
 		return isWriteAllowedForMasterData(sUserName, 
-				MasterDataMetaCache.getInstance().getMetaDataById(iMasterDataId).getEntityName());
+				masterDataMetaCache.getMetaDataById(iMasterDataId).getEntityName());
 	}
 
 	public boolean isWriteAllowedForMasterData(String sUserName, String sEntityName) {
@@ -726,7 +747,7 @@ public class SecurityCache implements SecurityCacheMBean {
 
 	public boolean isWriteAllowedForObjectGroup(String sUserName, Integer iModuleId, Integer iObjectGroupId) {
 		return isWriteAllowedForObjectGroup(sUserName, 
-				Modules.getInstance().getEntityNameByModuleId(iModuleId), iObjectGroupId);
+				modules.getEntityNameByModuleId(iModuleId), iObjectGroupId);
 	}
 
 	public boolean isWriteAllowedForObjectGroup(String sUserName, String sEntityName, Integer iObjectGroupId) {
@@ -737,7 +758,7 @@ public class SecurityCache implements SecurityCacheMBean {
 
 	public boolean isDeleteAllowedForModule(String sUserName, Integer iModuleId, Integer iGenericObjectId, boolean bPhysically) {
 		return isDeleteAllowedForModule(sUserName, 
-				Modules.getInstance().getEntityNameByModuleId(iModuleId), iGenericObjectId, bPhysically);
+				modules.getEntityNameByModuleId(iModuleId), iGenericObjectId, bPhysically);
 	}
 
 	public boolean isDeleteAllowedForModule(String sUserName, String sEntityName, Integer iGenericObjectId, boolean bPhysically) {
@@ -753,7 +774,7 @@ public class SecurityCache implements SecurityCacheMBean {
 
 	public boolean isDeleteAllowedForMasterData(String sUserName, Integer iMasterDataId) {
 		return isDeleteAllowedForMasterData(sUserName, 
-				MasterDataMetaCache.getInstance().getMetaDataById(iMasterDataId).getEntityName());
+				masterDataMetaCache.getMetaDataById(iMasterDataId).getEntityName());
 	}
 
 	public boolean isDeleteAllowedForMasterData(String sUserName, String sEntityName) {

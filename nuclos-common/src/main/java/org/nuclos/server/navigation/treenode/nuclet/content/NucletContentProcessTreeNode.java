@@ -16,7 +16,6 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.server.navigation.treenode.nuclet.content;
 
-import org.apache.commons.lang.StringUtils;
 import org.nuclos.common.dal.vo.EntityObjectVO;
 
 /**

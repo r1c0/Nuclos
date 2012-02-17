@@ -21,16 +21,15 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.log4j.Logger;
-import org.nuclos.common.MetaDataProvider;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.collect.collectable.searchcondition.RefJoinCondition;
 import org.nuclos.common.collection.Pair;
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
 import org.nuclos.common2.StringUtils;
+import org.nuclos.server.common.MetaDataServerProvider;
 import org.nuclos.server.dal.processor.IColumnToVOMapping;
 import org.nuclos.server.dal.processor.IColumnWithMdToVOMapping;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
@@ -64,8 +63,6 @@ public class TableAliasSingleton {
 	 */
 	private final Map<Pair<String,String>,String> TABLE_ALIASES = new ConcurrentHashMap<Pair<String,String>, String>();
 	
-	private MetaDataProvider mdProv;
-	
 	private final boolean debug;
 
 	private TableAliasSingleton() {
@@ -74,15 +71,7 @@ public class TableAliasSingleton {
 	}
 	
 	public static TableAliasSingleton getInstance() {
-		if (INSTANCE.mdProv == null) {
-			throw new IllegalStateException();
-		}
 		return INSTANCE;
-	}
-	
-	@Autowired
-	void setMetaDataProvider(MetaDataProvider mdProv) {
-		this.mdProv = mdProv;
 	}
 	
 	/**
@@ -120,9 +109,15 @@ public class TableAliasSingleton {
 		if (result == null) {
 			final String alias = meta.getForeignEntity();
 			result = StringUtils.makeSQLIdentifierFrom("a_", alias, meta.getField(), Integer.toString(AI.incrementAndGet()));
-			if (debug && mdProv != null) {
-				final EntityMetaDataVO entity = mdProv.getEntity(meta.getEntityId());
-				LOG.debug("table alias for " + entity.getEntity() + "." + meta.getField() + " is " + result);
+			if (debug) {
+				final MetaDataServerProvider mdProv = MetaDataServerProvider.getInstance();
+				try {
+					final EntityMetaDataVO entity = mdProv.getEntity(meta.getEntityId());
+					LOG.debug("table alias for " + entity.getEntity() + "." + meta.getField() + " is " + result);
+				}
+				catch (NullPointerException e) {
+					// ignore
+				}
 			}
 			TABLE_ALIASES.put(pair, result);
 		}
