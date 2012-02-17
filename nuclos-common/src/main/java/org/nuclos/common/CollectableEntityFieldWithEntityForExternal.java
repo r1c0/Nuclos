@@ -19,6 +19,8 @@ package org.nuclos.common;
 import java.util.prefs.Preferences;
 
 import org.nuclos.common.collect.collectable.*;
+import org.nuclos.common.entityobject.CollectableEOEntity;
+import org.nuclos.common2.CommonLocaleDelegate;
 
 /**
  * CollectableEntityFieldWithEntityForExternal supports including rows from a subform
@@ -74,9 +76,22 @@ public class CollectableEntityFieldWithEntityForExternal extends CollectableEnti
 
 	@Override
 	public String getLabel() {
+		
 		return bFieldBelongsToMainEntity ?
 				this.getField().getLabel() :
-				this.getCollectableEntityLabel() + "." + this.getField().getLabel();
+					getEntityLaybel() + "." + this.getField().getLabel();
+	}
+	
+	private String getEntityLaybel() {
+		String result = this.getCollectableEntityLabel();
+		if (result == null) {
+			if (this.getCollectableEntity() instanceof CollectableEOEntity) {
+				CollectableEOEntity clcteo = (CollectableEOEntity) this.getCollectableEntity();
+				result = CommonLocaleDelegate.getLabelFromMetaDataVO(clcteo.getMeta());
+			}
+		}
+		
+		return result;
 	}
 
 	/**
@@ -88,7 +103,7 @@ public class CollectableEntityFieldWithEntityForExternal extends CollectableEnti
 		return bFieldBelongsToMainEntity ?
 				this.getField().getLabel() :
 				"<html>" +
-						"<font color=\"blue\">" + this.getCollectableEntityLabel() + "." + "</font>" +
+						"<font color=\"blue\">" + getEntityLaybel() + "." + "</font>" +
 						"<font color=\"black\">" + this.getField().getLabel() + "</font>" +
 						"</html>";
 	}

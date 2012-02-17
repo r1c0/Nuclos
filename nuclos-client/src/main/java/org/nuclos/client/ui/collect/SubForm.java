@@ -1080,14 +1080,21 @@ public class SubForm extends JPanel implements TableCellRendererProvider, Action
 	 * @param tableColumnWidthsFromPreferences
 	 */
 	public final void setColumnWidths(List<Integer> tableColumnWidthsFromPreferences) {
-		useCustomColumnWidths = !tableColumnWidthsFromPreferences.isEmpty() && tableColumnWidthsFromPreferences.size() == subformtbl.getColumnCount();
+		useCustomColumnWidths = !tableColumnWidthsFromPreferences.isEmpty() && tableColumnWidthsFromPreferences.size() <= subformtbl.getColumnCount();
 		if (useCustomColumnWidths) {
-			assert(tableColumnWidthsFromPreferences.size() == subformtbl.getColumnCount());
+			assert(tableColumnWidthsFromPreferences.size() <= subformtbl.getColumnCount());
 			final Enumeration<TableColumn> enumeration = subformtbl.getColumnModel().getColumns();
 			int iColumn = 0;
 			while (enumeration.hasMoreElements()) {
 				final TableColumn column = enumeration.nextElement();
-				final int iPreferredCellWidth = tableColumnWidthsFromPreferences.get(iColumn++);
+				final int iPreferredCellWidth;
+				if (iColumn < tableColumnWidthsFromPreferences.size()) {
+					// known column
+					iPreferredCellWidth = tableColumnWidthsFromPreferences.get(iColumn++);
+				} else {
+					// new column
+					iPreferredCellWidth = getDefaultColumnWidth(column, iColumn++);
+				}
 				column.setPreferredWidth(iPreferredCellWidth);
 				column.setWidth(iPreferredCellWidth);
 			}
@@ -1098,19 +1105,22 @@ public class SubForm extends JPanel implements TableCellRendererProvider, Action
 	}
 
 	public final void resetDefaultColumnWidths() {
-		// If there are no stored field widths or the number of stored field widths differs from the column count
-		// (that is, the number of columns has changed since the last invocation of the client), set optimal column widths:
 		for (int iColumn = 0; iColumn < subformtbl.getColumnCount(); iColumn++) {
 			final TableColumn tableColumn = subformtbl.getColumnModel().getColumn(iColumn);
-			Integer preferredCellWidth = getColumnWidth("" + tableColumn.getIdentifier());
-			int width = (preferredCellWidth != null)
-				? preferredCellWidth
-				: Math.max(TableUtils.getPreferredColumnWidth(subformtbl, iColumn, 50, TableUtils.TABLE_INSETS), subformtbl.getSubFormModel().getMinimumColumnWidth(iColumn));
+			final int width = getDefaultColumnWidth(tableColumn, iColumn);
 			tableColumn.setPreferredWidth(width);
 			tableColumn.setWidth(width);
 		}
 		useCustomColumnWidths = false;
 		subformtbl.revalidate();
+	}
+	
+	private int getDefaultColumnWidth(TableColumn tc, int iColumn) {
+		final Integer preferredCellWidth = getColumnWidth("" + tc.getIdentifier());
+		final int width = (preferredCellWidth != null)
+			? preferredCellWidth
+			: Math.max(TableUtils.getPreferredColumnWidth(subformtbl, iColumn, 50, TableUtils.TABLE_INSETS), subformtbl.getSubFormModel().getMinimumColumnWidth(iColumn));
+		return width;
 	}
 
 	public final void setupTableModelListener(final Logger log) {

@@ -154,6 +154,7 @@ public abstract class SubFormController extends Controller
 		final String sEntityName = subform.getEntityName();
 		this.prefs = prefsUserParent.node("subentity").node(sEntityName);
 		this.subFormPrefs = entityPrefs.getSubFormPreferences(sEntityName);
+		WorkspaceUtils.validatePreferences(subFormPrefs);
 		this.clctfproviderfactory = clctfproviderfactory;
 
 		assert this.getCollectableEntity() != null;
