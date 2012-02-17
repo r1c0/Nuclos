@@ -8029,6 +8029,32 @@
         "descriptionres": "nuclos.entityfield.generation.ruleonly.description"
       },
       {
+        "name": "showobject",
+        "dbfield": "BLNSHOWOBJECT",
+        "label": "Objekt anzeigen",
+        "description": "Objekt nach Generierung anzeigen",
+        "datatype": "java.lang.Boolean",
+        "nullable": true,
+        "searchable": false,
+        "logbook": false,
+        "unique": false,
+        "labelres": "nuclos.entityfield.generation.showobject.label",
+        "descriptionres": "nuclos.entityfield.generation.showobject.description"
+      },
+      {
+        "name": "refreshsrcobject",
+        "dbfield": "BLNREFRESHSRCOBJECT",
+        "label": "Quellobjekt aktualisieren",
+        "description": "Quellobjekt nach Generierung aktualisieren",
+        "datatype": "java.lang.Boolean",
+        "nullable": true,
+        "searchable": false,
+        "logbook": false,
+        "unique": false,
+        "labelres": "nuclos.entityfield.generation.refreshsrcobject.label",
+        "descriptionres": "nuclos.entityfield.generation.refreshsrcobject.description"
+      },
+      {
         "name": "groupattributes",
         "dbfield": "GROUPATTRIBUTES",
         "label": "Gruppierung nach zu übernehmenden Attributen durchführen",

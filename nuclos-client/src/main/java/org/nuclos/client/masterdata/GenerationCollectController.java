@@ -40,6 +40,7 @@ import org.nuclos.client.ui.collect.component.model.CollectableComponentModelAda
 import org.nuclos.client.ui.collect.component.model.CollectableComponentModelEvent;
 import org.nuclos.common.NuclosBusinessException;
 import org.nuclos.common.NuclosEntity;
+import org.nuclos.common.collect.collectable.CollectableValueField;
 import org.nuclos.common.collect.collectable.CollectableValueIdField;
 import org.nuclos.common2.IdUtils;
 import org.nuclos.common2.LangUtils;
@@ -118,7 +119,13 @@ public class GenerationCollectController extends MasterDataCollectController {
 
 	@Override
 	protected void unsafeFillDetailsPanel(CollectableMasterDataWithDependants clct) throws NuclosBusinessException {
+		if (clct.getField("showobject").getValue() == null)
+			clct.setField("showobject", new CollectableValueField(Boolean.TRUE));
+		if (clct.getField("refreshsrcobject").getValue() == null)
+			clct.setField("refreshsrcobject", new CollectableValueField(Boolean.FALSE));
+		
 		super.unsafeFillDetailsPanel(clct);
+		
 		try {
 			generationRulesController.setRuleUsages(GeneratorDelegate.getInstance().getRuleUsages((Integer) clct.getId()));
 		} catch (CommonPermissionException e) {

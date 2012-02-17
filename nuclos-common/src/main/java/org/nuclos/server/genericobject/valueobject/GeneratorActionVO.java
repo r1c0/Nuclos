@@ -40,6 +40,8 @@ public class GeneratorActionVO implements java.io.Serializable {
 	private Integer iParameterEntityId;
 	private Integer iCaseTransitionId;
 	private boolean blnGroupAttributes;
+	private boolean blnShowObject;
+	private boolean blnRefreshSrcObject;
 	private boolean blnCreateRelationBetweenObjects;
 	private boolean blnCreateRelationToParameterObject;
 
@@ -85,6 +87,22 @@ public class GeneratorActionVO implements java.io.Serializable {
 
 	public void setGroupAttributes(boolean blnGroupAttributes) {
 		this.blnGroupAttributes = blnGroupAttributes;
+	}
+
+	public boolean isShowObject() {
+		return blnShowObject;
+	}
+
+	public void setShowObject(boolean blnShowObject) {
+		this.blnShowObject = blnShowObject;
+	}
+
+	public boolean isRefreshSrcObject() {
+		return blnRefreshSrcObject;
+	}
+
+	public void setRefreshSrcObject(boolean blnRefreshSrcObject) {
+		this.blnRefreshSrcObject = blnRefreshSrcObject;
 	}
 
 	public boolean isCreateRelationBetweenObjects() {

@@ -21,9 +21,9 @@
           <tablelayout columns="-1.0" rows="-1.0" />
           <panel>
             <tablelayout-constraints col1="0" col2="0" row1="0" row2="0" hAlign="2" vAlign="2" />
-            <tablelayout columns="12.0|309.0|5.0|220.0|-1.0" rows="12.0|22.0|5.0|22.0|5.0|22.0|5.0|22.0|5.0|22.0|5.0|150.0|22.0|79.0|106.0|22.0|5.0|22.0|-1.0" />
+            <tablelayout columns="12.0|309.0|5.0|220.0|-1.0" rows="12.0|22.0|5.0|22.0|5.0|22.0|5.0|22.0|5.0|22.0|5.0|22.0|5.0|22.0|5.0|150.0|22.0|79.0|106.0|22.0|5.0|22.0|-1.0" />
             <collectable-component fill-control-horizontally="yes" name="description" insertable="yes" opaque="yes" visible="yes" enabled="yes" controltype="textfield" show-only="label">
-              <tablelayout-constraints col1="1" col2="1" row1="15" row2="15" hAlign="2" vAlign="1" />
+              <tablelayout-constraints col1="1" col2="1" row1="19" row2="19" hAlign="2" vAlign="1" />
               <minimum-size height="22" width="15" />
               <preferred-size height="22" width="50" />
             </collectable-component>
@@ -58,12 +58,12 @@
               <preferred-size height="22" width="20" />
             </collectable-component>
             <collectable-component fill-control-horizontally="yes" name="description" rows="3" columns="30" insertable="yes" opaque="yes" visible="yes" enabled="yes" controltype="textarea" show-only="control">
-              <tablelayout-constraints col1="1" col2="4" row1="17" row2="18" hAlign="2" vAlign="2" />
+              <tablelayout-constraints col1="1" col2="4" row1="20" row2="22" hAlign="2" vAlign="2" />
               <minimum-size height="22" width="35" />
               <preferred-size height="22" width="70" />
             </collectable-component>
             <panel visible="yes" opaque="yes">
-              <tablelayout-constraints col1="1" col2="4" row1="11" row2="12" hAlign="2" vAlign="2" />
+              <tablelayout-constraints col1="1" col2="4" row1="15" row2="16" hAlign="2" vAlign="2" />
               <tablelayout columns="-1.0" rows="-1.0" />
               <titled-border title="Source module">
                 <translations>
@@ -96,7 +96,7 @@
               </panel>
             </panel>
             <panel visible="yes" opaque="yes">
-              <tablelayout-constraints col1="1" col2="4" row1="13" row2="13" hAlign="2" vAlign="2" />
+              <tablelayout-constraints col1="1" col2="4" row1="17" row2="17" hAlign="2" vAlign="2" />
               <tablelayout columns="-1.0" rows="-1.0" />
               <titled-border title="Target module">
                 <translations>
@@ -132,7 +132,7 @@
               </panel>
             </panel>
             <panel visible="yes" opaque="yes">
-              <tablelayout-constraints col1="1" col2="4" row1="14" row2="14" hAlign="2" vAlign="2" />
+              <tablelayout-constraints col1="1" col2="4" row1="18" row2="18" hAlign="2" vAlign="2" />
               <tablelayout columns="-1.0" rows="-1.0" />
               <titled-border title="Parameter entity">
                 <translations>
@@ -195,6 +195,26 @@
               <minimum-size height="22" width="19" />
               <preferred-size height="22" width="20" />
             </collectable-component>
+	      <collectable-component fill-control-horizontally="yes" name="showobject" insertable="yes" opaque="yes" visible="yes" enabled="yes" controltype="textfield" show-only="label">
+	        <tablelayout-constraints col1="1" col2="1" row1="11" row2="11" hAlign="2" vAlign="1" />
+	        <minimum-size height="22" width="15" />
+	        <preferred-size height="22" width="50" />
+	      </collectable-component>
+	      <collectable-component fill-control-horizontally="yes" name="showobject" insertable="yes" opaque="yes" visible="yes" enabled="yes" controltype="checkbox" show-only="control">
+	        <tablelayout-constraints col1="3" col2="3" row1="11" row2="11" hAlign="2" vAlign="1" />
+	        <minimum-size height="22" width="19" />
+	        <preferred-size height="22" width="20" />
+	      </collectable-component>
+	      <collectable-component fill-control-horizontally="yes" name="refreshsrcobject" insertable="yes" opaque="yes" visible="yes" enabled="yes" controltype="textfield" show-only="label">
+	        <tablelayout-constraints col1="1" col2="1" row1="12" row2="13" hAlign="2" vAlign="1" />
+	        <minimum-size height="22" width="15" />
+	        <preferred-size height="22" width="50" />
+	      </collectable-component>
+	      <collectable-component fill-control-horizontally="yes" name="refreshsrcobject" insertable="yes" opaque="yes" visible="yes" enabled="yes" controltype="checkbox" show-only="control">
+	        <tablelayout-constraints col1="3" col2="3" row1="12" row2="13" hAlign="2" vAlign="1" />
+	        <minimum-size height="22" width="19" />
+	        <preferred-size height="22" width="20" />
+	      </collectable-component>
           </panel>
         </panel>
         <panel visible="yes" opaque="yes">

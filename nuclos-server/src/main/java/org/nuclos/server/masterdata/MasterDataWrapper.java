@@ -179,6 +179,14 @@ public class MasterDataWrapper {
 			usages);
 		if(mdVO.getField("groupattributes") != null)
 			vo.setGroupAttributes((Boolean)mdVO.getField("groupattributes"));
+		if(mdVO.getField("showobject") != null)
+			vo.setShowObject((Boolean)mdVO.getField("showobject"));
+		else
+			vo.setShowObject(true);
+		if(mdVO.getField("refreshsrcobject") != null)
+			vo.setRefreshSrcObject((Boolean)mdVO.getField("refreshsrcobject"));
+		else
+			vo.setShowObject(false);
 		if(mdVO.getField("createRelation") != null)
 			vo.setCreateRelationBetweenObjects((Boolean)mdVO.getField("createRelation"));
 		if(mdVO.getField("createParameterRelation") != null)

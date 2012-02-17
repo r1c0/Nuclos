@@ -3330,6 +3330,66 @@
     "text": "Nur intern verwendet"
   },
   {
+    "resourceID": "nuclos.entityfield.generation.showobject.label",
+    "locale": "i-default",
+    "text": "Show object"
+  },
+  {
+    "resourceID": "nuclos.entityfield.generation.showobject.label",
+    "locale": "en",
+    "text": "Show object"
+  },
+  {
+    "resourceID": "nuclos.entityfield.generation.showobject.label",
+    "locale": "de",
+    "text": "Objekt anzeigen"
+  },
+  {
+    "resourceID": "nuclos.entityfield.generation.showobject.description",
+    "locale": "i-default",
+    "text": "Show object after generation"
+  },
+  {
+    "resourceID": "nuclos.entityfield.generation.showobject.description",
+    "locale": "en",
+    "text": "Show object after generation"
+  },
+  {
+    "resourceID": "nuclos.entityfield.generation.showobject.description",
+    "locale": "de",
+    "text": "Objekt nach Generierung anzeigen"
+  },
+  {
+    "resourceID": "nuclos.entityfield.generation.refreshsrcobject.label",
+    "locale": "i-default",
+    "text": "Refresh source object"
+  },
+  {
+    "resourceID": "nuclos.entityfield.generation.refreshsrcobject.label",
+    "locale": "en",
+    "text": "Refresh source object"
+  },
+  {
+    "resourceID": "nuclos.entityfield.generation.refreshsrcobject.label",
+    "locale": "de",
+    "text": "Quellobjekt aktualisieren"
+  },
+  {
+    "resourceID": "nuclos.entityfield.generation.refreshsrcobject.description",
+    "locale": "i-default",
+    "text": "Refresh source object after generation"
+  },
+  {
+    "resourceID": "nuclos.entityfield.generation.refreshsrcobject.description",
+    "locale": "en",
+    "text": "Refresh source object after generation"
+  },
+  {
+    "resourceID": "nuclos.entityfield.generation.refreshsrcobject.description",
+    "locale": "de",
+    "text": "Quellobjekt nach Generierung aktualisieren"
+  },
+  {
     "resourceID": "nuclos.entityfield.generation.groupattributes.label",
     "locale": "i-default",
     "text": "Group by attributes to be transferred"

@@ -412,6 +412,8 @@ public class GenerationController {
 							fireGenerationEvent(result.get());
 							if (!isHeadless()) {
 								showResult(result.get());
+								if (action.isRefreshSrcObject())
+									parentController.refreshCurrentCollectable();
 							}
 						} catch (CommonBusinessException e) {
 							Errors.getInstance().showExceptionDialog(parent, e);
@@ -464,7 +466,8 @@ public class GenerationController {
 			if ((meta.isStateModel() && SecurityCache.getInstance().isWriteAllowedForModule(Modules.getInstance().getEntityNameByModuleId(action.getTargetModuleId()), generatedGoId))
 					|| (!meta.isStateModel() && SecurityCache.getInstance().isWriteAllowedForMasterData(meta.getEntity())) ) {
 				if (generatedGoId != null) {
-					showGenericObject(result.getGeneratedObject(), action.getTargetModuleId());
+					if (action.isShowObject())
+						showGenericObject(result.getGeneratedObject(), action.getTargetModuleId());
 				}
 				else {
 					showIncompleteGenericObject(result.getSourceIds(), result.getGeneratedObject(), result.getError());
