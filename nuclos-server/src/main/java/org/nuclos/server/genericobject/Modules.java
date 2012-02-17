@@ -66,6 +66,8 @@ public class Modules extends ModuleProvider {
 	
 	private NucletDalProvider nucletDalProvider;
 	
+	private NuclosLocalServerSession nuclosLocalServerSession;
+	
 	//
 
 	Modules() {
@@ -86,6 +88,11 @@ public class Modules extends ModuleProvider {
 	void setNucletDalProvider(NucletDalProvider nucletDalProvider) {
 		this.nucletDalProvider = nucletDalProvider;
 	}
+	
+	@Autowired
+	void setNuclosLocalServerSession(NuclosLocalServerSession nuclosLocalServerSession) {
+		this.nuclosLocalServerSession = nuclosLocalServerSession;
+	}
 
 	public static Modules getInstance() {
 		return INSTANCE;
@@ -94,9 +101,9 @@ public class Modules extends ModuleProvider {
 	@Override
 	public Collection<MasterDataVO> getModules() {
 		try {
-			if (NuclosLocalServerSession.getCurrentUser() == null)
-				NuclosLocalServerSession.loginAsSuperUser();
-
+			if (nuclosLocalServerSession.getCurrentUser() == null) {
+				nuclosLocalServerSession.loginAsSuperUser();
+			}
 			List<MasterDataVO> colModules = new ArrayList<MasterDataVO>();
 			for (EntityMetaDataVO eMeta : nucletDalProvider.getEntityMetaDataProcessor().getAll()) {
 				if (eMeta.isStateModel()) {

@@ -147,14 +147,11 @@ public class XmlImportFacadeBean extends NuclosFacadeBean implements XmlImportFa
 	private Integer iActionNumber = 1;
 
 	@PostConstruct
-	@Override
 	public void postConstruct() {
-      super.postConstruct();
-
-      modules = Modules.getInstance();
-   	genericObjectMetaDataCache = GenericObjectMetaDataCache.getInstance();
-   	attributeCache = AttributeCache.getInstance();
-   	serverParameterProvider = ServerParameterProvider.getInstance();
+		modules = Modules.getInstance();
+		genericObjectMetaDataCache = GenericObjectMetaDataCache.getInstance();
+		attributeCache = AttributeCache.getInstance();
+		serverParameterProvider = ServerParameterProvider.getInstance();
 	}
 
 	private XmlExportImportProtocolFacadeLocal getProtocolFacade() {

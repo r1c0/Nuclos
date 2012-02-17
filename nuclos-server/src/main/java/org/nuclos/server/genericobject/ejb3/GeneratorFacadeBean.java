@@ -122,9 +122,7 @@ public class GeneratorFacadeBean extends NuclosFacadeBean implements GeneratorFa
 
 	@PostConstruct
 	@RolesAllowed("Login")
-	@Override
 	public void postConstruct() {
-		super.postConstruct();
 
 		systemAttributes = CollectionUtils.transform(NuclosEOField.values(), new Transformer<NuclosEOField, String>() {
 			@Override

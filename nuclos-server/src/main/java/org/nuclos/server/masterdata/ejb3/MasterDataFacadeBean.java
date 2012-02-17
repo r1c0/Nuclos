@@ -163,19 +163,15 @@ public class MasterDataFacadeBean extends NuclosFacadeBean implements MasterData
 		return helper;
 	}
 
-	@Override
 	@PostConstruct
 	@RolesAllowed("Login")
 	public void postConstruct() {
-		super.postConstruct();
 		this.bServerValidatesMasterDataValues = "1".equals(serverParameterProvider.getValue(
 			ParameterProvider.KEY_SERVER_VALIDATES_MASTERDATAVALUES));
 	}
 
-	@Override
 	public void preDestroy() {
 		this.helper.close();
-		super.preDestroy();
 	}
 
 	/**

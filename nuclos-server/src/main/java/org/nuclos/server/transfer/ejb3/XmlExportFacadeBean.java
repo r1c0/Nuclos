@@ -104,12 +104,6 @@ public class XmlExportFacadeBean extends NuclosFacadeBean implements XmlExportFa
 
 	private Integer iActionNumber = 1;
 
-	@PostConstruct
-	@Override
-	public void postConstruct() {
-		super.postConstruct();
-	}
-	
 	@Autowired
 	void setServerParameterProvider(ServerParameterProvider serverParameterProvider) {
 		this.serverParameterProvider = serverParameterProvider;

@@ -69,12 +69,6 @@ import org.springframework.transaction.annotation.Transactional;
 @RolesAllowed("UseManagementConsole")
 public class ConsoleFacadeBean extends NuclosFacadeBean implements ConsoleFacadeLocal, ConsoleFacadeRemote {
 
-	@Override
-	@PostConstruct
-	public void postConstruct() {
-		super.postConstruct();
-	}
-
 	/**
 	 *
 	 * @param sMessage the message to send

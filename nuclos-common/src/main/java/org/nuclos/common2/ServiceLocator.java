@@ -38,6 +38,8 @@ import org.springframework.context.ApplicationContext;
  *
  * @author	<a href="mailto:Christoph.Radig@novabit.de">Christoph.Radig</a>
  * @version 01.00.00
+ * 
+ * @deprecated Use Spring injection instead of this.
  */
 public class ServiceLocator {
 

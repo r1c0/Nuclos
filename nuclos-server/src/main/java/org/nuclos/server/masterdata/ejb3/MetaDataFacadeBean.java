@@ -179,17 +179,8 @@ public class MetaDataFacadeBean extends NuclosFacadeBean implements MetaDataFaca
 		this.processorFactory = processorFactory;
 	}
 
-	@PostConstruct
-	@RolesAllowed("Login")
-	@Override
-	public void postConstruct() {
-      super.postConstruct();
-	}
-
-	@Override
 	public void preDestroy() {
 		this.helper.close();
-		super.preDestroy();
 	}
 
 	@Override

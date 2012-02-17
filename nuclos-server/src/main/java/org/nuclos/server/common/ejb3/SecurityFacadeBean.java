@@ -69,9 +69,7 @@ public class SecurityFacadeBean extends NuclosFacadeBean implements SecurityFaca
 	}
 
 	@PostConstruct
-	@Override
 	public void postConstruct() {
-      super.postConstruct();
       this.info("Authentication successful.");
 	}
 	

@@ -25,6 +25,7 @@ import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Transformer;
 import org.nuclos.common2.ServiceLocator;
 import org.nuclos.server.common.ejb3.SecurityFacadeLocal;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.intercept.RunAsUserToken;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.core.Authentication;
@@ -32,6 +33,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.GrantedAuthorityImpl;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.stereotype.Component;
 
 /**
  * Utilitiy class for setting up a new local server session context, for instance in job execution or server startup.
@@ -41,28 +43,60 @@ import org.springframework.security.core.userdetails.UserDetails;
  * <br>Created by Novabit Informationssysteme GmbH
  * <br>Please visit <a href="http://www.novabit.de">www.novabit.de</a>
  */
-public abstract class NuclosLocalServerSession {
+@Component
+public class NuclosLocalServerSession {
 
 	public static final String STATIC_SUPERUSER = "(superuser)";
 
 	private static final Logger LOG = Logger.getLogger(NuclosLocalServerSession.class);
+	
+	private static NuclosLocalServerSession INSTANCE;
+	
+	//
 
-	private static Integer sessionId;
-
-	public static void login(String username, String password) {
-		AuthenticationProvider authprovider = (AuthenticationProvider) SpringApplicationContextHolder.getBean("nuclosAuthenticationProvider");
-		Authentication auth = new NuclosLocalServerAuthenticationToken(username, password);
-		SecurityContextHolder.getContext().setAuthentication(authprovider.authenticate(auth));
-		sessionId = ServiceLocator.getInstance().getFacade(SecurityFacadeLocal.class).login();
+	private Integer sessionId;
+	
+	private SecurityFacadeLocal securityFacadeLocal;
+	
+	private NuclosAuthenticationProvider nuclosAuthenticationProvider;
+	
+	private NuclosUserDetailsService nuclosUserDetailsService;
+	
+	NuclosLocalServerSession() {
+		INSTANCE = this;
+	}
+	
+	public static NuclosLocalServerSession getInstance() {
+		return INSTANCE;
+	}
+	
+	@Autowired
+	void setSecurityFacadeLocal(SecurityFacadeLocal securityFacadeLocal) {
+		this.securityFacadeLocal = securityFacadeLocal;
+	}
+	
+	@Autowired
+	void setNuclosAuthenticationProvider(NuclosAuthenticationProvider nuclosAuthenticationProvider) {
+		this.nuclosAuthenticationProvider = nuclosAuthenticationProvider;
+	}
+	
+	@Autowired
+	void setNuclosUserDetailsService(NuclosUserDetailsService nuclosUserDetailsService) {
+		this.nuclosUserDetailsService = nuclosUserDetailsService;
 	}
 
-	public static void loginAsUser(String username) {
-		UserDetailsService userDetailsService = (UserDetailsService) SpringApplicationContextHolder.getBean("userDetailsService");
-		UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+	public void login(String username, String password) {
+		Authentication auth = new NuclosLocalServerAuthenticationToken(username, password);
+		SecurityContextHolder.getContext().setAuthentication(nuclosAuthenticationProvider.authenticate(auth));
+		sessionId = securityFacadeLocal.login();
+	}
+
+	public void loginAsUser(String username) {
+		UserDetails userDetails = nuclosUserDetailsService.loadUserByUsername(username);
 		loginAs(userDetails.getUsername(), userDetails.getPassword(), userDetails.getAuthorities());
 	}
 
-	public static String getCurrentUser() {
+	public String getCurrentUser() {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		if (auth != null && auth.isAuthenticated()) {
 			return auth.getName();
@@ -70,7 +104,7 @@ public abstract class NuclosLocalServerSession {
 		return null;
 	}
 
-	public static void runUnrestricted(Runnable run) {
+	public void runUnrestricted(Runnable run) {
 		Authentication token = SecurityContextHolder.getContext().getAuthentication();
 		try {
 			RunAsUserToken runastoken = new RunAsUserToken("", STATIC_SUPERUSER, "", getSuperUserAuthorities(), token.getClass());
@@ -83,21 +117,19 @@ public abstract class NuclosLocalServerSession {
 	}
 
 	/** Login as dummy user with superuser rights. Used during start-up (cache initialization). */
-	public static void loginAsSuperUser() {
+	public void loginAsSuperUser() {
 		loginAs(STATIC_SUPERUSER, "", getSuperUserAuthorities());
 	}
 
-	private static void loginAs(String username, String password, Collection<? extends GrantedAuthority> authorities) {
+	private void loginAs(String username, String password, Collection<? extends GrantedAuthority> authorities) {
 		Authentication auth = new NuclosLocalServerAuthenticationToken(username, password, authorities);
 		SecurityContextHolder.getContext().setAuthentication(auth);
-		final SecurityFacadeLocal sfl = (SecurityFacadeLocal) SpringApplicationContextHolder.getBean("securityService");
-		sessionId = sfl.login();
+		sessionId = securityFacadeLocal.login();
 	}
 
-	public static void logout() {
+	public void logout() {
 		try {
-			final SecurityFacadeLocal sfl = (SecurityFacadeLocal) SpringApplicationContextHolder.getBean("securityService");
-			sfl.logout(sessionId);
+			securityFacadeLocal.logout(sessionId);
 			SecurityContextHolder.getContext().setAuthentication(null);
 		}
 		catch(Exception e) {
@@ -105,7 +137,7 @@ public abstract class NuclosLocalServerSession {
 		}
 	}
 
-	private static List<GrantedAuthority> getSuperUserAuthorities() {
+	private List<GrantedAuthority> getSuperUserAuthorities() {
 		return CollectionUtils.transform(NuclosUserDetailsService.getSuperUserActions(), new Transformer<String, GrantedAuthority>() {
 			@Override
 			public GrantedAuthority transform(String i) {

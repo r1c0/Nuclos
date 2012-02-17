@@ -69,7 +69,7 @@ public class NuclosConsoleService implements NuclosConsoleServiceMBean {
 		public String start() throws Exception {
 			try {
 				log.info("login(" + this.nuclosUser + ")");
-				NuclosLocalServerSession.login(this.nuclosUser, this.nuclosPassword);
+				NuclosLocalServerSession.getInstance().login(this.nuclosUser, this.nuclosPassword);
 				if(!SecurityCache.getInstance().hasUserRight(Actions.ACTION_MANAGEMENT_CONSOLE)) {
 					log.warn("Try to use management console from ServiceMBean, but user has no rights!");
 					return "You need the right \"" + Actions.ACTION_MANAGEMENT_CONSOLE + "\" to use this ServiceMBean.";
@@ -78,7 +78,7 @@ public class NuclosConsoleService implements NuclosConsoleServiceMBean {
 				return run();
 			}
 			finally {
-				NuclosLocalServerSession.logout();
+				NuclosLocalServerSession.getInstance().logout();
 				log.info("logout(" + this.nuclosUser + ")");
 			}
 		}

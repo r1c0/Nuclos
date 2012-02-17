@@ -2687,7 +2687,7 @@ public class RuleInterface extends CustomCodeInterface {
 		for (final ReportOutputVO outputVO : reportOutputs) {
 			final String name = fileName;
 			final int index = countOutputs;
-			NuclosLocalServerSession.runUnrestricted(new Runnable() {
+			NuclosLocalServerSession.getInstance().runUnrestricted(new Runnable() {
 				@Override
 				public void run() {
 					try {

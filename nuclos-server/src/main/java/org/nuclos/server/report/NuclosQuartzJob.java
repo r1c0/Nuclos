@@ -23,6 +23,8 @@ import org.quartz.Job;
 import org.quartz.JobDetail;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
 
 /**
  * Base class for Quartz jobs in Nucleus. Performs login/logout for the Quartz user.
@@ -33,13 +35,21 @@ import org.quartz.JobExecutionException;
  * @author	<a href="mailto:christoph.radig@novabit.de">Christoph Radig</a>
  * @version 01.00.00
  */
+@Configurable
 public class NuclosQuartzJob implements Job {
 
 	private final Job job;
 	private static String sUserName;
+	
+	private NuclosLocalServerSession nuclosLocalServerSession;
 
 	public NuclosQuartzJob(Job job) {
 		this.job = job;
+	}
+	
+	@Autowired
+	void setNuclosLocalServerSession(NuclosLocalServerSession nuclosLocalServerSession) {
+		this.nuclosLocalServerSession = nuclosLocalServerSession;
 	}
 
 	/**
@@ -57,12 +67,12 @@ public class NuclosQuartzJob implements Job {
 			if (jd != null && jd.getJobDataMap() != null && jd.getJobDataMap().get("User") != null) {
 				realuser = jd.getJobDataMap().getString("User");
 			}
-			NuclosLocalServerSession.loginAsUser(realuser);
+			nuclosLocalServerSession.loginAsUser(realuser);
 			try {
 				this.job.execute(context);
 			}
 			finally {
-				NuclosLocalServerSession.logout();
+				nuclosLocalServerSession.logout();
 			}
 		}
 		catch (Exception ex) {

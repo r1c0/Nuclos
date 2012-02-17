@@ -88,7 +88,7 @@ public class JRDefaultNuclosDataSource implements JRNuclosDataSource {
 			if (SecurityContextHolder.getContext().getAuthentication() == null
 				|| !SecurityContextHolder.getContext().getAuthentication().isAuthenticated()) {
 				asSuperUser = true;
-				NuclosLocalServerSession.loginAsSuperUser();
+				NuclosLocalServerSession.getInstance().loginAsSuperUser();
 			}
 			DatasourceVO datasource = datasourcefacade.get(name);
 
@@ -106,7 +106,7 @@ public class JRDefaultNuclosDataSource implements JRNuclosDataSource {
 
 			query = datasourcefacade.createSQLForReportExecution(name, currentparams);
 			if (asSuperUser) {
-				NuclosLocalServerSession.logout();
+				NuclosLocalServerSession.getInstance().logout();
 			}
 		} catch (Exception e1) {
 			throw new NuclosFatalException(e1);

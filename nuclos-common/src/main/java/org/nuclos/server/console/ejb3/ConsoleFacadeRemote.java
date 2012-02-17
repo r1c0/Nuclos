@@ -18,16 +18,10 @@ package org.nuclos.server.console.ejb3;
 
 import java.sql.SQLException;
 
-import javax.annotation.PostConstruct;
-
 import org.nuclos.common.Priority;
 import org.nuclos.common2.exception.CommonBusinessException;
 
-// @Remote
 public interface ConsoleFacadeRemote {
-
-	@PostConstruct
-	void postConstruct();
 
 	/**
 	 *

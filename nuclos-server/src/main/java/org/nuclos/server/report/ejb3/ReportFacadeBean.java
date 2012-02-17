@@ -158,10 +158,7 @@ public class ReportFacadeBean extends NuclosFacadeBean implements ReportFacadeLo
 
    @PostConstruct
    @RolesAllowed("Login")
-   @Override
    public void postConstruct() {
-      super.postConstruct();
-
       // Determine classpath dynamically
       String jrClasspath = getClassPathFor(JasperReport.class, JRNuclosDataSource.class);
       info("Set JasperReports compile class-path to " + jrClasspath);
