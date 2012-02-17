@@ -123,13 +123,12 @@ public class NuclosRemoteInvocationExecutor implements RemoteInvocationExecutor 
 				}
 				inputContext.set(context);
 			}
-			return invoke.invoke(param);
+			Object result = invoke.invoke(param);
+			txManager.commit(tx);
+			return result;
 		} 
 		catch (InvocationTargetException e) {
-			final Throwable cause = e.getCause();
-			if (!(cause instanceof RuntimeException)) {
-				txManager.rollback(tx);
-			}
+			txManager.rollback(tx);
 			throw e;
 		}
 		finally {
