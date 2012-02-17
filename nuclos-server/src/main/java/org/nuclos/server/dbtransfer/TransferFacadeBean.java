@@ -103,13 +103,17 @@ import org.nuclos.server.dblayer.query.DbExpression;
 import org.nuclos.server.dblayer.query.DbFrom;
 import org.nuclos.server.dblayer.query.DbQuery;
 import org.nuclos.server.dblayer.query.DbQueryBuilder;
+import org.nuclos.server.dblayer.statements.DbBuildableStatement;
 import org.nuclos.server.dblayer.statements.DbStatement;
 import org.nuclos.server.dblayer.statements.DbStructureChange;
+import org.nuclos.server.dblayer.structure.DbArtifact;
 import org.nuclos.server.dblayer.structure.DbConstraint.DbForeignKeyConstraint;
 import org.nuclos.server.dblayer.structure.DbConstraint.DbUniqueConstraint;
+import org.nuclos.server.dblayer.structure.DbConstraint;
 import org.nuclos.server.dblayer.structure.DbSimpleView;
 import org.nuclos.server.dblayer.structure.DbTable;
 import org.nuclos.server.dblayer.structure.DbTableArtifact;
+import org.nuclos.server.dblayer.util.StatementToStringVisitor;
 import org.nuclos.server.dbtransfer.content.ActionNucletContent;
 import org.nuclos.server.dbtransfer.content.CustomComponentNucletContent;
 import org.nuclos.server.dbtransfer.content.DefaultNucletContent;
@@ -130,6 +134,7 @@ import org.nuclos.server.dbtransfer.content.SearchFilterNucletContent;
 import org.nuclos.server.dbtransfer.content.StateNucletContent;
 import org.nuclos.server.dbtransfer.content.UserNucletContent;
 import org.nuclos.server.dbtransfer.content.ValidationType;
+import org.nuclos.server.dbtransfer.content.WebserviceNucletContent;
 import org.nuclos.server.dbtransfer.content.WorkspaceNucletContent;
 import org.nuclos.server.genericobject.searchcondition.CollectableSearchExpression;
 import org.nuclos.server.jms.NuclosJMSUtils;
@@ -274,7 +279,7 @@ public class TransferFacadeBean extends NuclosFacadeBean
 		contents.add(new DefaultNucletContent(NuclosEntity.RECORDGRANT, null, contents));
 		contents.add(new DefaultNucletContent(NuclosEntity.RECORDGRANTUSAGE, NuclosEntity.RECORDGRANT, contents));
 
-		contents.add(new DefaultNucletContent(NuclosEntity.WEBSERVICE, null, contents));
+		contents.add(new WebserviceNucletContent(contents));
 		contents.add(new WorkspaceNucletContent(contents));
 		contents.add(new CustomComponentNucletContent(contents));
 
@@ -298,7 +303,7 @@ public class TransferFacadeBean extends NuclosFacadeBean
 		contents.add(new SearchFilterNucletContent(contents));
 		contents.add(new DefaultNucletContent(NuclosEntity.SEARCHFILTERUSER, NuclosEntity.SEARCHFILTER, contents));
 		contents.add(new DefaultNucletContent(NuclosEntity.SEARCHFILTERROLE, NuclosEntity.SEARCHFILTER, contents));
-
+		
 		return contents;
 	}
 	
@@ -503,10 +508,10 @@ public class TransferFacadeBean extends NuclosFacadeBean
 		}
 
 		DbAccess dbAccess = dataBaseHelper.getDbAccess();
-		info("get all foreign key contraints and drop");
-		final List<DbForeignKeyConstraint> fkConstraints = getForeignKeyConstraints(getEntities(contentTypes), new EntityObjectMetaDbHelper(dbAccess, MetaDataServerProvider.getInstance()));
+		info("get all contraints and drop");
+		final List<DbConstraint> constraints = getConstraints(getEntities(contentTypes), new EntityObjectMetaDbHelper(dbAccess, MetaDataServerProvider.getInstance()));
 		try {
-			dbAccess.execute(SchemaUtils.drop(fkConstraints));
+			dbAccess.execute(SchemaUtils.drop(constraints));
 			Object savepoint = TransactionAspectSupport.currentTransactionStatus().createSavepoint();
 			info("delete content");
 			deleteContent(existingNucletIds, uidExistingMap, uidImportMap, importContentMap, contentTypes, t, true,
@@ -526,8 +531,8 @@ public class TransferFacadeBean extends NuclosFacadeBean
 				throw (NuclosBusinessException)ex;
 			throw new NuclosFatalException(ex);
 		} finally {
-			info("recreate foreign key contraints");
-			dbAccess.execute(SchemaUtils.create(fkConstraints));
+			info("recreate contraints");
+			dbAccess.execute(SchemaUtils.create(constraints));
 		}
 
 		try {
@@ -613,7 +618,12 @@ public class TransferFacadeBean extends NuclosFacadeBean
 		Map<String, DbTable> transferredSchema = (new EntityObjectMetaDbHelper(dbAccess, transferredProvider)).getSchema();
 
 		List<DbStructureChange> dbChangeStmts = SchemaUtils.modify(currentSchema.values(), transferredSchema.values());
-
+//		StatementToStringVisitor toStringVisitor = new StatementToStringVisitor();
+//		for (DbStatement stmt : dbChangeStmts) {
+//			LOG.info("Statements to execute:");
+//			LOG.info("    " + stmt.accept(toStringVisitor));
+//		}
+		
 		notifierHelper.setSteps(dbChangeStmts.size());
 		for (DbStructureChange dbChangeStmt : dbChangeStmts) {
 			notifierHelper.notifyNextStep();
@@ -866,10 +876,11 @@ public class TransferFacadeBean extends NuclosFacadeBean
 		return userIds.size();
 	}
 
-	private List<DbForeignKeyConstraint> getForeignKeyConstraints(List<String> entities, EntityObjectMetaDbHelper helper) {
-		List<DbForeignKeyConstraint> result = new ArrayList<DbForeignKeyConstraint>();
+	private List<DbConstraint> getConstraints(List<String> entities, EntityObjectMetaDbHelper helper) {
+		List<DbConstraint> result = new ArrayList<DbConstraint>();
 		for (String entity : entities) {
 			result.addAll(helper.getDbTable(MetaDataServerProvider.getInstance().getEntity(entity)).getTableArtifacts(DbForeignKeyConstraint.class));
+			result.addAll(helper.getDbTable(MetaDataServerProvider.getInstance().getEntity(entity)).getTableArtifacts(DbUniqueConstraint.class));
 		}
 		return result;
 	}
@@ -936,10 +947,10 @@ public class TransferFacadeBean extends NuclosFacadeBean
 		EntityObjectMetaDbHelper currentHelper = new EntityObjectMetaDbHelper(dbAccess, currentProvider);
 		Map<String, DbTable> currentSchema = currentHelper.getSchema();
 
-		info("get all foreign key contraints and drop");
-		final List<DbForeignKeyConstraint> fkConstraints = getForeignKeyConstraints(getEntities(contentTypes), new EntityObjectMetaDbHelper(dbAccess, MetaDataServerProvider.getInstance()));
+		info("get all contraints and drop");
+		final List<DbConstraint> constraints = getConstraints(getEntities(contentTypes), new EntityObjectMetaDbHelper(dbAccess, MetaDataServerProvider.getInstance()));
 		try {
-			dbAccess.execute(SchemaUtils.drop(fkConstraints));
+			dbAccess.execute(SchemaUtils.drop(constraints));
 			// main config data transfer...
 			info("delete content");
 			deleteContent(t.getExistingNucletIds(), t.getUidExistingMap(), t.getUidImportMap(), importContentMap, contentTypes, t, false,
@@ -1015,8 +1026,8 @@ public class TransferFacadeBean extends NuclosFacadeBean
 				throw (NuclosBusinessException)ex;
 			throw new NuclosFatalException(ex);
 		} finally {
-			info("recreate foreign key contraints");
-			dbAccess.execute(SchemaUtils.create(fkConstraints));
+			info("recreate contraints");
+			dbAccess.execute(SchemaUtils.create(constraints));
 		}
 	}
 

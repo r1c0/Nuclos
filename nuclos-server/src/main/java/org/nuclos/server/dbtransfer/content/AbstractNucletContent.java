@@ -19,7 +19,7 @@ package org.nuclos.server.dbtransfer.content;
 import static org.nuclos.server.dbtransfer.TransferUtils.getContentType;
 import static org.nuclos.server.dbtransfer.TransferUtils.getEntityObjectVO;
 import static org.nuclos.server.dbtransfer.TransferUtils.getForeignFieldToNuclet;
-import static org.nuclos.server.dbtransfer.TransferUtils.getForeignFieldToParent;
+import static org.nuclos.server.dbtransfer.TransferUtils.getForeignFieldsToParent;
 import static org.nuclos.server.dbtransfer.TransferUtils.getIdentifier;
 import static org.nuclos.server.dbtransfer.TransferUtils.getForeignFields;
 
@@ -38,6 +38,8 @@ import org.nuclos.common.NuclosEOField;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.SearchConditionUtils;
 import org.nuclos.common.collect.collectable.searchcondition.ComparisonOperator;
+import org.nuclos.common.collection.BinaryPredicate;
+import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.dal.DalCallResult;
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
@@ -184,25 +186,32 @@ public abstract class AbstractNucletContent implements INucletContent {
 			// get nuclet references from parent(s)
 			INucletContent ncParent = getContentType(contentTypes, parententity);
 			for (EntityObjectVO parent : ncParent.getNcObjects(nucletIds, transferOptions)) {
-				EntityFieldMetaDataVO efMeta = MetaDataServerProvider.getInstance().getEntityField(entity, getForeignFieldToParent(entity, parententity));
-				if (efMeta.getForeignEntity() != null) {
-					result.addAll(NucletDalProvider.getInstance().getEntityObjectProcessor(entity).getBySearchExpression(
-						new CollectableSearchExpression(SearchConditionUtils.newEOidComparison(
-							entity.getEntityName(), getForeignFieldToParent(entity, parententity),
-							ComparisonOperator.EQUAL, parent.getId(),
-							MetaDataServerProvider.getInstance()))));
-				} else if (efMeta.getUnreferencedForeignEntity() != null) {
-					result.addAll(NucletDalProvider.getInstance().getEntityObjectProcessor(entity).getBySearchExpression(
-						new CollectableSearchExpression(SearchConditionUtils.newEOComparison(
-							entity.getEntityName(), getForeignFieldToParent(entity, parententity),
-							ComparisonOperator.EQUAL, parent.getFields().get(efMeta.getUnreferencedForeignEntityField()),
-							MetaDataServerProvider.getInstance()))));
-				} else {
-					throw new IllegalArgumentException();
+				for (String fieldToParent : getForeignFieldsToParent(entity, parententity)) {
+					EntityFieldMetaDataVO efMeta = MetaDataServerProvider.getInstance().getEntityField(entity, fieldToParent);
+					if (efMeta.getForeignEntity() != null) {
+						result.addAll(NucletDalProvider.getInstance().getEntityObjectProcessor(entity).getBySearchExpression(
+							new CollectableSearchExpression(SearchConditionUtils.newEOidComparison(
+								entity.getEntityName(), efMeta.getField(),
+								ComparisonOperator.EQUAL, parent.getId(),
+								MetaDataServerProvider.getInstance()))));
+					} else if (efMeta.getUnreferencedForeignEntity() != null) {
+						result.addAll(NucletDalProvider.getInstance().getEntityObjectProcessor(entity).getBySearchExpression(
+							new CollectableSearchExpression(SearchConditionUtils.newEOComparison(
+								entity.getEntityName(), efMeta.getField(),
+								ComparisonOperator.EQUAL, parent.getFields().get(efMeta.getUnreferencedForeignEntityField()),
+								MetaDataServerProvider.getInstance()))));
+					} else {
+						throw new IllegalArgumentException();
+					}
 				}
 			}
 		}
-		return result;
+		return new ArrayList<EntityObjectVO>(CollectionUtils.distinct(result, new BinaryPredicate<EntityObjectVO, EntityObjectVO>() {
+			@Override
+			public boolean evaluate(EntityObjectVO t1, EntityObjectVO t2) {
+				return LangUtils.equals(t1.getId(), t2.getId());
+			}
+		}));
 	}
 
 	@Override
@@ -258,8 +267,11 @@ public abstract class AbstractNucletContent implements INucletContent {
 						otherObjects.add(eo);
 				}
 				for (EntityObjectVO eo : NucletDalProvider.getInstance().getEntityObjectProcessor(entity).getAll()) {
-					if (type == ValidationType.INSERT || (type == ValidationType.UPDATE && !LangUtils.equals(ncObject.getId(), eo.getId())))
-						otherObjects.add(eo);
+					if (type == ValidationType.INSERT || (type == ValidationType.UPDATE && !LangUtils.equals(ncObject.getId(), eo.getId()))) {
+						if (uidMap.getUID(eo) == null) { // otherwise belongs to nuclet
+							otherObjects.add(eo);
+						}
+					}
 				}
 				for (Set<String> uniqueCombination : uniqueFieldCombinations) {
 					for (EntityObjectVO eo : otherObjects) {

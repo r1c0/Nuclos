@@ -82,14 +82,18 @@ public class TransferUtils {
 	 * @param NuclosEntity parententity
 	 * @return
 	 */
-	public static String getForeignFieldToParent(NuclosEntity entity, NuclosEntity parententity) {
+	public static Set<String> getForeignFieldsToParent(NuclosEntity entity, NuclosEntity parententity) {
+		final Set<String> result = new HashSet<String>();
 		for (EntityFieldMetaDataVO efMeta : MetaDataServerProvider.getInstance().getAllEntityFieldsByEntity(entity.getEntityName()).values()) {
 			if (LangUtils.equals(parententity.getEntityName(), efMeta.getForeignEntity())) {
-				return efMeta.getField();
+				result.add(efMeta.getField());
 			}
 			else if (LangUtils.equals(parententity.getEntityName(), efMeta.getUnreferencedForeignEntity())) {
-				return efMeta.getField();
+				result.add(efMeta.getField());
 			}
+		}
+		if (!result.isEmpty()) {
+			return result;
 		}
 		throw new NuclosFatalException("Foreign field to parent not found");
 	}

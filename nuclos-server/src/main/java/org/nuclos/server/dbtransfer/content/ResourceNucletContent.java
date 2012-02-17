@@ -29,8 +29,6 @@ import org.nuclos.server.resource.valueobject.ResourceFile;
 
 public class ResourceNucletContent extends DefaultNucletContent {
 	
-	public static final String BYTE_ARRAY_FIELD_NAME = "ResourceNucletContent.byteField";
-
 	public ResourceNucletContent(List<INucletContent> contentTypes) {
 		super(NuclosEntity.RESOURCE, null, contentTypes);
 	}
