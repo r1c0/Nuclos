@@ -46,7 +46,6 @@ public class DbFrom implements Serializable {
 		result.append("table=").append(tableName);
 		result.append(", alias=").append(tableAlias);
 		result.append(", joins=").append(joins);
-		result.append(", query=").append(query);
 		result.append("]");
 		return result.toString();
 	}

@@ -1179,7 +1179,6 @@ public class MasterDataFacadeHelper {
 		final DbObjectHelper dboHelper = new DbObjectHelper(dbAccess);
 
 		boolean isUsedAsCalculatedAttribute = false;
-		boolean isEntityView = false;
 		EntityMetaDataVO eMetaUsingThisView = null;
 
 		final String objectName = oldSource != null? oldSource.getField("dbobject", String.class) : newSource.getField("dbobject", String.class);
@@ -1201,11 +1200,7 @@ public class MasterDataFacadeHelper {
 			/**
 			 * look if view is replacing an entity object view
 			 */
-			for (EntityMetaDataVO eMeta : MetaDataServerProvider.getInstance().getAllEntities())
-				if (objectName.equals(eMeta.getDbEntity())) {
-					eMetaUsingThisView = eMeta;
-					isEntityView = true;
-				}
+			eMetaUsingThisView = dboHelper.getEntityMetaForView(objectName);
 		}
 
 		/**
@@ -1226,7 +1221,7 @@ public class MasterDataFacadeHelper {
 				/** drop '.y' old object */
 				dbAccess.execute(dboHelper.getStatements(oldSource, type.getName()).y);
 			} else {
-				if (isEntityView && !isRollback) {
+				if (eMetaUsingThisView != null && !isRollback) {
 					/**
 					 * drop generic entity object view
 					 */
@@ -1251,16 +1246,12 @@ public class MasterDataFacadeHelper {
 					}
 				}
 			} else {
-				if (isEntityView) {
+				if (eMetaUsingThisView != null) {
 					/**
 					 * back to generic entity object view
 					 */
-					EntityObjectMetaDbHelper eoHelper = new EntityObjectMetaDbHelper(dbAccess, MetaDataServerProvider.getInstance());
-					List<DbSimpleView> genericView = eoHelper.getDbTable(eMetaUsingThisView).getTableArtifacts(DbSimpleView.class);
-					if (genericView.isEmpty())
-						return;
 					try {
-						dbAccess.execute(SchemaUtils.create(genericView.get(0)));
+						dbAccess.execute(dboHelper.getCreateEntityView(eMetaUsingThisView));
 					}
 					catch (DbException dbex) {
 						throw new NuclosBusinessException(StringUtils.getParameterizedExceptionMessage("masterdata.error.dbobject.restore.generic.view", dbex.getMessage()));

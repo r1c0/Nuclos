@@ -166,6 +166,9 @@ public class NuclosJavaCompiler implements Closeable {
 		for (CodeGenerator generator : generators) {
 			for (JavaFileObject jfo : generator.getSourceFiles()) {
 				if (!sources.add(jfo)) {
+					if (jfo instanceof JavaSourceAsString) {
+						LOG.warn("Duplicate class: " + ((JavaSourceAsString) jfo).getFQName());
+					}
 					throw new NuclosCompileException("nuclos.compiler.duplicateclasses");
 				}
 			}

@@ -220,4 +220,10 @@ public class DbQuery<T extends Object> {
 			throw new IllegalArgumentException("Alias " + tableAlias + " already used: " + tableAliases.keySet());
 		tableAliases.put(tableAlias, from);
 	}
+
+	@Override
+	public String toString() {
+		return "DbQuery [resultType=" + resultType + ", roots=" + roots + ", tableAliases=" + tableAliases + ", distinct=" + distinct + ", maxResults=" + maxResults + ", selections=" + selections + ", condition=" + condition
+				+ ", groupList=" + groupList + ", groupRestriction=" + groupRestriction + ", orderList=" + orderList + "]";
+	}
 }

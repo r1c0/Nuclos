@@ -16,6 +16,7 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.server.dbtransfer.content;
 
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -53,7 +54,7 @@ public class EntityFieldNucletContent extends DefaultNucletContent implements IN
 	}
 
 	@Override
-	public void insertOrUpdateNcObject(DalCallResult result, EntityObjectVO ncObject, boolean isNuclon) {
+	public void insertOrUpdateNcObject(DalCallResult result, EntityObjectVO ncObject, boolean isNuclon) throws SQLIntegrityConstraintViolationException {
 		restoreLocaleResources(ncObject);
 		super.insertOrUpdateNcObject(result, ncObject, isNuclon);
 	}

@@ -19,12 +19,15 @@ package org.nuclos.server.dal.specification;
 import java.util.Collection;
 
 import org.nuclos.common.dal.DalCallResult;
+import org.nuclos.common.dal.vo.EntityObjectVO;
 import org.nuclos.common.dal.vo.IDalVO;
 import org.nuclos.server.dblayer.DbException;
 
 public interface IDalWriteSpecification<DalVO extends IDalVO> {
 	
 	void insertOrUpdate(DalVO dalVO) throws DbException;
+	
+	void checkLogicalUniqueConstraint(EntityObjectVO dalVO) throws DbException;
 	
 	void delete(Long id) throws DbException;
 	

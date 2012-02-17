@@ -23,10 +23,12 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.NotImplementedException;
 import org.nuclos.common.Actions;
 import org.nuclos.common.WorkspaceVO;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.dal.DalCallResult;
+import org.nuclos.common.dal.vo.EntityObjectVO;
 import org.nuclos.common.dal.vo.SystemFields;
 import org.nuclos.server.common.SecurityCache;
 import org.nuclos.server.dal.processor.IColumnToVOMapping;
@@ -225,5 +227,10 @@ public class WorkspaceProcessor extends AbstractJdbcDalProcessor<WorkspaceVO> im
 		final SQLIntegrityConstraintViolationException checkResult = super.checkLogicalUniqueConstraint(checkValues, wovo.getId());
 		if (checkResult != null)
 			throw new DbException("Workspace.name.in.use");
+	}
+	
+	@Override
+	public void checkLogicalUniqueConstraint(EntityObjectVO dalVO) throws DbException {
+		throw new NotImplementedException();
 	}
 }

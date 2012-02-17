@@ -19,8 +19,10 @@ package org.nuclos.server.dal.processor.jdbc.impl;
 import java.util.Collection;
 import java.util.List;
 
+import org.apache.commons.lang.NotImplementedException;
 import org.nuclos.common.dal.DalCallResult;
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
+import org.nuclos.common.dal.vo.EntityObjectVO;
 import org.nuclos.server.dal.processor.IColumnToVOMapping;
 import org.nuclos.server.dal.processor.jdbc.AbstractJdbcDalProcessor;
 import org.nuclos.server.dal.processor.nuclet.JdbcEntityFieldMetaDataProcessor;
@@ -101,6 +103,11 @@ implements JdbcEntityFieldMetaDataProcessor{
 	@Override
 	public DalCallResult batchInsertOrUpdate(Collection<EntityFieldMetaDataVO> colDalVO, boolean failAfterBatch) {
 		return super.batchInsertOrUpdate(colDalVO, failAfterBatch);
+	}
+
+	@Override
+	public void checkLogicalUniqueConstraint(EntityObjectVO dalVO) throws DbException {
+		throw new NotImplementedException();
 	}
 
 }

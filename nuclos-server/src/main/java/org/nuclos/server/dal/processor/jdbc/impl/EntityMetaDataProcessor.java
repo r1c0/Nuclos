@@ -19,8 +19,10 @@ package org.nuclos.server.dal.processor.jdbc.impl;
 import java.util.Collection;
 import java.util.List;
 
+import org.apache.commons.lang.NotImplementedException;
 import org.nuclos.common.dal.DalCallResult;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
+import org.nuclos.common.dal.vo.EntityObjectVO;
 import org.nuclos.server.dal.processor.IColumnToVOMapping;
 import org.nuclos.server.dal.processor.jdbc.AbstractJdbcDalProcessor;
 import org.nuclos.server.dal.processor.nuclet.JdbcEntityMetaDataProcessor;
@@ -86,5 +88,10 @@ implements JdbcEntityMetaDataProcessor {
 	public DalCallResult batchDelete(Collection<Long> colId, boolean failAfterBatch) {
 		return super.batchDelete(colId, failAfterBatch);
 	}	
+	
+	@Override
+	public void checkLogicalUniqueConstraint(EntityObjectVO dalVO) throws DbException {
+		throw new NotImplementedException();
+	}
 	
 }

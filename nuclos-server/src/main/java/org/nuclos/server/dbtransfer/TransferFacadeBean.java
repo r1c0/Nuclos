@@ -30,6 +30,7 @@ import static org.nuclos.server.dbtransfer.TransferUtils.validate;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.sql.SQLException;
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -111,6 +112,7 @@ import org.nuclos.server.dblayer.structure.DbConstraint.DbUniqueConstraint;
 import org.nuclos.server.dblayer.structure.DbSimpleView;
 import org.nuclos.server.dblayer.structure.DbTable;
 import org.nuclos.server.dblayer.structure.DbTableArtifact;
+import org.nuclos.server.dblayer.util.StatementToStringVisitor;
 import org.nuclos.server.dbtransfer.content.ActionNucletContent;
 import org.nuclos.server.dbtransfer.content.CustomComponentNucletContent;
 import org.nuclos.server.dbtransfer.content.DefaultNucletContent;
@@ -507,9 +509,11 @@ public class TransferFacadeBean extends NuclosFacadeBean
 		DbAccess dbAccess = dataBaseHelper.getDbAccess();
 		info("get all contraints and drop");
 		final List<DbConstraint> constraints = getConstraints(getEntities(contentTypes), new EntityObjectMetaDbHelper(dbAccess, MetaDataServerProvider.getInstance()));
+		
+		Object savepoint = null;
 		try {
 			dbAccess.execute(SchemaUtils.drop(constraints));
-			Object savepoint = TransactionAspectSupport.currentTransactionStatus().createSavepoint();
+			savepoint = TransactionAspectSupport.currentTransactionStatus().createSavepoint();
 			info("delete content");
 			deleteContent(existingNucletIds, uidExistingMap, uidImportMap, importContentMap, contentTypes, t, true,
 				new TransferNotifierHelper(jmsNotifier, "prepare delete obsolete content", 30, 50));
@@ -522,12 +526,15 @@ public class TransferFacadeBean extends NuclosFacadeBean
 			info("insert or update content");
 			insertOrUpdateContent(existingNucletIds, uidLocalizedMap, importContentMap, contentTypes, t,
 				new TransferNotifierHelper(jmsNotifier, "prepare insert or update content", 60, 80));
-			TransactionAspectSupport.currentTransactionStatus().rollbackToSavepoint(savepoint);
 		} catch (Exception ex) {
+			LOG.error(ex);
 			if (ex instanceof NuclosBusinessException)
 				throw (NuclosBusinessException)ex;
 			throw new NuclosFatalException(ex);
 		} finally {
+			if (savepoint != null) {
+				TransactionAspectSupport.currentTransactionStatus().rollbackToSavepoint(savepoint);
+			}
 			info("recreate contraints");
 			dbAccess.execute(SchemaUtils.create(constraints));
 		}
@@ -615,11 +622,11 @@ public class TransferFacadeBean extends NuclosFacadeBean
 		Map<String, DbTable> transferredSchema = (new EntityObjectMetaDbHelper(dbAccess, transferredProvider)).getSchema();
 
 		List<DbStructureChange> dbChangeStmts = SchemaUtils.modify(currentSchema.values(), transferredSchema.values());
-//		StatementToStringVisitor toStringVisitor = new StatementToStringVisitor();
-//		for (DbStatement stmt : dbChangeStmts) {
-//			LOG.info("Statements to execute:");
-//			LOG.info("    " + stmt.accept(toStringVisitor));
-//		}
+		StatementToStringVisitor toStringVisitor = new StatementToStringVisitor();
+		for (DbStatement stmt : dbChangeStmts) {
+			LOG.info("Statements to execute:");
+			LOG.info("    " + stmt.accept(toStringVisitor));
+		}
 		
 		notifierHelper.setSteps(dbChangeStmts.size());
 		for (DbStructureChange dbChangeStmt : dbChangeStmts) {
@@ -1140,11 +1147,18 @@ public class TransferFacadeBean extends NuclosFacadeBean
 		DbObjectsPredicate dbObjectsPredicate,
 		boolean bExecuteDDL, List<String> script, StringBuffer sbResultMessage) {
 
+		DbObjectHelper helper = new DbObjectHelper(dbAccess);
+		
 		for (DbObject dbObject : CollectionUtils.select(currentObjects.keySet(), dbObjectsPredicate)) {
 			logScript(script, Collections.singletonList(currentObjects.get(dbObject).y));
 			if (bExecuteDDL)
 				try {
 					dbAccess.execute(currentObjects.get(dbObject).y);
+					EntityMetaDataVO meta = helper.getEntityMetaForView(dbObject.getName());
+					if (meta != null) {
+						dbAccess.execute(helper.getCreateEntityView(meta));
+					}
+					
 				} catch (Exception ex) {
 					logDDLError(sbResultMessage, ex.getMessage(), Collections.singletonList(currentObjects.get(dbObject).y));
 				}
@@ -1154,6 +1168,10 @@ public class TransferFacadeBean extends NuclosFacadeBean
 			logScript(script, Collections.singletonList(transferredObjects.get(dbObject).x));
 			if (bExecuteDDL)
 				try {
+					EntityMetaDataVO meta = helper.getEntityMetaForView(dbObject.getName());
+					if (meta != null) {
+						dbAccess.execute(helper.getDropEntityView(meta));
+					}
 					dbAccess.execute(transferredObjects.get(dbObject).x);
 				} catch (Exception ex) {
 					logDDLError(sbResultMessage, ex.getMessage(), Collections.singletonList(transferredObjects.get(dbObject).x));
@@ -1311,6 +1329,8 @@ public class TransferFacadeBean extends NuclosFacadeBean
 		notifierHelper.setSteps(contentTypes.size());
 		NucletContentMap contentSkipped = new NucletContentHashMap();
 		Collection<NucletContentProcessor> contentProcessors = new ArrayList<NucletContentProcessor>();
+		
+		List<NucletContentProcessor> checkLogicalUniqueAgain = new ArrayList<NucletContentProcessor>();
 
 		for (INucletContent nc : contentTypes) {
 			info("insert or update content for nuclos entity: " + nc.getEntity());
@@ -1418,8 +1438,16 @@ public class TransferFacadeBean extends NuclosFacadeBean
 				catch (DbException e) {
 					result.addBusinessException(e);
 				}
+				catch (SQLIntegrityConstraintViolationException e) {
+					checkLogicalUniqueAgain.add(ncp);
+				}
 			}
 		}
+		
+		for (NucletContentProcessor ncp : checkLogicalUniqueAgain) {
+			ncp.getNC().checkLogicalUnique(result, ncp.getNcObject());
+		}
+		
 		logDalCallResult(result, t.result.sbWarning);
 	}
 

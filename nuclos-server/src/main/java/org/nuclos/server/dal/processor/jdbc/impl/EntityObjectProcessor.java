@@ -437,6 +437,13 @@ public class EntityObjectProcessor extends AbstractJdbcWithFieldsDalProcessor<En
 		return count.intValue();
 	}
 
+	@Override
+	public void checkLogicalUniqueConstraint(EntityObjectVO dalVO) throws DbException {
+		final DalCallResult result = new DalCallResult();
+		checkLogicalUniqueConstraint(result, dalVO);
+		result.throwFirstException();
+	}
+
 	private CollectableSearchCondition getSearchConditionWithDeletedAndVLP(CollectableSearchExpression clctexpr) {
 		CollectableSearchCondition result = null;
 		if (clctexpr.getValueListProviderDatasource() != null) {

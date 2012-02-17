@@ -19,10 +19,11 @@ package org.nuclos.server.dbtransfer.content;
 import static org.nuclos.server.dbtransfer.TransferUtils.getContentType;
 import static org.nuclos.server.dbtransfer.TransferUtils.getEntityObjectVO;
 import static org.nuclos.server.dbtransfer.TransferUtils.getForeignFieldToNuclet;
+import static org.nuclos.server.dbtransfer.TransferUtils.getForeignFields;
 import static org.nuclos.server.dbtransfer.TransferUtils.getForeignFieldsToParent;
 import static org.nuclos.server.dbtransfer.TransferUtils.getIdentifier;
-import static org.nuclos.server.dbtransfer.TransferUtils.getForeignFields;
 
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -240,9 +241,24 @@ public abstract class AbstractNucletContent implements INucletContent {
 	}
 
 	@Override
-	public void insertOrUpdateNcObject(DalCallResult result, EntityObjectVO ncObject, boolean isNuclon) {
+	public void insertOrUpdateNcObject(DalCallResult result, EntityObjectVO ncObject, boolean isNuclon) throws SQLIntegrityConstraintViolationException{
 		try {
 			NucletDalProvider.getInstance().getEntityObjectProcessor(entity).insertOrUpdate(ncObject);
+		}
+		catch (DbException e) {
+			if (e.getSqlCause() instanceof SQLIntegrityConstraintViolationException) {
+				// Logical unique constraint violated, check later again
+				throw (SQLIntegrityConstraintViolationException) e.getSqlCause();
+			} else {
+				result.addBusinessException(e);
+			}
+		}
+	}
+
+	@Override
+	public void checkLogicalUnique(DalCallResult result, EntityObjectVO ncObject) {
+		try {
+			NucletDalProvider.getInstance().getEntityObjectProcessor(entity).checkLogicalUniqueConstraint(ncObject);
 		}
 		catch (DbException e) {
 			result.addBusinessException(e);

@@ -17,11 +17,13 @@
 package org.nuclos.server.dblayer;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.nuclos.common.MetaDataProvider;
+import org.nuclos.common.NuclosBusinessException;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.collection.Pair;
@@ -30,6 +32,8 @@ import org.nuclos.common.dal.vo.EntityMetaDataVO;
 import org.nuclos.common.dal.vo.EntityObjectVO;
 import org.nuclos.common.dblayer.JoinType;
 import org.nuclos.common2.StringUtils;
+import org.nuclos.server.common.MetaDataServerProvider;
+import org.nuclos.server.dblayer.impl.SchemaUtils;
 import org.nuclos.server.dblayer.query.DbFrom;
 import org.nuclos.server.dblayer.query.DbQuery;
 import org.nuclos.server.dblayer.query.DbQueryBuilder;
@@ -259,6 +263,37 @@ public class DbObjectHelper {
 		return null;
 	}
 
+	public EntityMetaDataVO getEntityMetaForView(String dbobjectname) {
+		for (EntityMetaDataVO meta : MetaDataServerProvider.getInstance().getAllEntities()) {
+			if (dbobjectname.equals(meta.getDbEntity())) {
+				return meta;
+			}
+		}
+		return null;
+	}
+	
+	public List<DbStructureChange> getCreateEntityView(EntityMetaDataVO meta) {
+		EntityObjectMetaDbHelper helper = new EntityObjectMetaDbHelper(dbAccess, MetaDataServerProvider.getInstance());
+		List<DbSimpleView> genericView = helper.getDbTable(meta).getTableArtifacts(DbSimpleView.class);
+		if (genericView.isEmpty()) {
+			return Collections.emptyList();
+		}
+		else {
+			return SchemaUtils.create(genericView.get(0));
+		}
+	}
+	
+	public List<DbStructureChange> getDropEntityView(EntityMetaDataVO meta) {
+		EntityObjectMetaDbHelper helper = new EntityObjectMetaDbHelper(dbAccess, MetaDataServerProvider.getInstance());
+		List<DbSimpleView> genericView = helper.getDbTable(meta).getTableArtifacts(DbSimpleView.class);
+		if (genericView.isEmpty()) {
+			return Collections.emptyList();
+		}
+		else {
+			return SchemaUtils.drop(genericView.get(0));
+		}
+	}
+	
 	/**
 	 *
 	 * @param name
@@ -272,5 +307,4 @@ public class DbObjectHelper {
 						return true;
 		return false;
 	}
-
 }

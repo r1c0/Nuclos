@@ -16,6 +16,7 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.server.dbtransfer.content;
 
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
@@ -55,7 +56,9 @@ public interface INucletContent {
 	
 	public void setNcObjectFieldNull(DalCallResult result, Long id, String field);
 	
-	public void insertOrUpdateNcObject(DalCallResult result, EntityObjectVO ncObject, boolean isNuclon);
+	public void insertOrUpdateNcObject(DalCallResult result, EntityObjectVO ncObject, boolean isNuclon) throws SQLIntegrityConstraintViolationException;
+	
+	public void checkLogicalUnique(DalCallResult result, EntityObjectVO ncObject);
 	
 	public void deleteNcObject(DalCallResult result, EntityObjectVO ncObject);
 	

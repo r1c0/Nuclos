@@ -17,6 +17,8 @@
 package org.nuclos.server.dblayer.statements;
 
 import java.sql.SQLException;
+import java.util.Collections;
+import java.util.Comparator;
 
 import org.nuclos.server.dblayer.structure.DbArtifact;
 
@@ -42,6 +44,24 @@ public class DbStructureChange extends DbStatement {
 				throw new IllegalArgumentException("Illegal parameters for type " + this);
 		}
 	}
+	
+	public static Comparator<DbStructureChange> COMPARATOR = new Comparator<DbStructureChange>() {
+		@Override
+		public int compare(DbStructureChange o1, DbStructureChange o2) {
+			if (o1.getType() == Type.DROP && o2.getType() != Type.DROP) {
+				return -1;
+			}
+			else if (o1.getType() != Type.DROP && o2.getType() == Type.DROP) {
+				return 1;
+			}
+			else if (o1.getType() == Type.DROP && o2.getType() == Type.DROP) {
+				return Collections.reverseOrder(DbArtifact.COMPARATOR).compare(o1.getArtifact1(), o2.getArtifact1());
+			}
+			else {
+				return DbArtifact.COMPARATOR.compare(o1.getArtifact2(), o2.getArtifact2());
+			}
+		}
+	};
 	
 	private final Type type;
 	private final DbArtifact artifact1;

@@ -19,8 +19,10 @@ package org.nuclos.server.dal.processor.jdbc.impl;
 import java.util.Collection;
 import java.util.List;
 
+import org.apache.commons.lang.NotImplementedException;
 import org.nuclos.common.dal.DalCallResult;
 import org.nuclos.common.dal.vo.EOGenericObjectVO;
+import org.nuclos.common.dal.vo.EntityObjectVO;
 import org.nuclos.server.dal.processor.IColumnToVOMapping;
 import org.nuclos.server.dal.processor.jdbc.AbstractJdbcDalProcessor;
 import org.nuclos.server.dal.processor.nuclet.IEOGenericObjectProcessor;
@@ -92,5 +94,10 @@ public class EOGenericObjectProcessor extends AbstractJdbcDalProcessor<EOGeneric
 	@Override
 	public List<EOGenericObjectVO> getByParent(Long parentId) {
 		return super.getByIdColumn(allColumns, moduleColumn, parentId);
+	}
+	
+	@Override
+	public void checkLogicalUniqueConstraint(EntityObjectVO dalVO) throws DbException {
+		throw new NotImplementedException();
 	}
 }
