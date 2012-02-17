@@ -179,7 +179,8 @@ public final class CustomComponentFacadeBean extends NuclosFacadeBean implements
 	}
 
 	private void setResourceIdForField(Integer iId, String column, String sResourceId) {
-		DataBaseHelper.execute(DbStatementUtils.updateValues("T_MD_CUSTOMCOMPONENT", column, DbNull.escapeNull(sResourceId, String.class)).where("INTID", iId));
+		dataBaseHelper.getInstance().execute(
+				DbStatementUtils.updateValues("T_MD_CUSTOMCOMPONENT", column, DbNull.escapeNull(sResourceId, String.class)).where("INTID", iId));
 	}
 
 	@Override

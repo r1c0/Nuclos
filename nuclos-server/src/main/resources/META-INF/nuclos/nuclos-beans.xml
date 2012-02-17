@@ -274,7 +274,17 @@
 
 	<!-- Caching init on startup -->
 	<bean id="nuclosCacheService" class="org.nuclos.server.mbean.NuclosCacheService" depends-on="appContext"/>
+	
+	<bean id="ruleCache" class="org.nuclos.server.common.RuleCache">
+		<property name="masterDataFacadeLocal" ref="masterDataService"/>
+		<property name="dataBaseHelper" ref="dataBaseHelper"/>
+	</bean>
 
+	<bean id="stateCache" class="org.nuclos.server.common.StateCache">
+		<property name="masterDataFacadeLocal" ref="masterDataService"/>
+		<property name="dataBaseHelper" ref="dataBaseHelper"/>
+		<property name="stateFacadeLocal" ref="stateService"/>
+	</bean>
 
 	<!-- quartz scheduler instance start -->
     <bean id="nuclosScheduler" class="org.springframework.scheduling.quartz.SchedulerFactoryBean" depends-on="nuclosCacheService">

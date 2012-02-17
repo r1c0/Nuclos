@@ -87,6 +87,8 @@ public class DatasourceCache {
 		= new ConcurrentHashMap<Integer, DynamicEntityVO>();
 	
 	private DatasourceServerUtils datasourceServerUtils;
+	
+	private DataBaseHelper dataBaseHelper;
 
 
 	DatasourceCache() {
@@ -105,6 +107,11 @@ public class DatasourceCache {
 	@Autowired
 	void setDatasourceServerUtils(DatasourceServerUtils datasourceServerUtils) {
 		this.datasourceServerUtils = datasourceServerUtils;
+	}
+	
+	@Autowired
+	void setDataBaseHelper(DataBaseHelper dataBaseHelper) {
+		this.dataBaseHelper = dataBaseHelper;
 	}
 
 	private void findDatasourcesById() {
@@ -144,13 +151,13 @@ public class DatasourceCache {
 			MasterDataFacadeLocal mdFacade = ServiceLocator.getInstance().getFacade(MasterDataFacadeLocal.class);
 			List<DatasourceVO> datasources = new ArrayList<DatasourceVO>();
 
-			DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
+			DbQueryBuilder builder = dataBaseHelper.getDbAccess().getQueryBuilder();
 			DbQuery<Integer> query = builder.createQuery(Integer.class);
 			DbFrom t = query.from("T_UD_DATASOURCE").alias(SystemFields.BASE_ALIAS);
 			query.select(t.baseColumn("INTID", Integer.class));
 			query.where(builder.equal(t.baseColumn("STRCREATED", String.class), sCreator));
 
-			for (Integer id : DataBaseHelper.getDbAccess().executeQuery(query.distinct(true))) {
+			for (Integer id : dataBaseHelper.getDbAccess().executeQuery(query.distinct(true))) {
 				MasterDataVO mdVO = mdFacade.get(NuclosEntity.DATASOURCE.getEntityName(), id);
 				if (getPermission(mdVO.getIntId(), sCreator) != DatasourceVO.PERMISSION_NONE) {
 					datasources.add(MasterDataWrapper.getDatasourceVO(mdVO, sCreator));

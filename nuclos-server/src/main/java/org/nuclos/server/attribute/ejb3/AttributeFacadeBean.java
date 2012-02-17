@@ -134,7 +134,7 @@ public class AttributeFacadeBean extends NuclosFacadeBean implements AttributeFa
 	@Override
 	@RolesAllowed("Login")
 	public Collection<String> getCalculationFunctions() {
-		return CollectionUtils.applyFilter(DataBaseHelper.getDbAccess().getCallableNames(), new Predicate<String>() {
+		return CollectionUtils.applyFilter(dataBaseHelper.getDbAccess().getCallableNames(), new Predicate<String>() {
 			@Override public boolean evaluate(String name) {
 				return StringUtils.toUpperCase(name).startsWith("CA");
 			};

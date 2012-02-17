@@ -55,7 +55,7 @@ public class NuclosIcons {
 	 * icon cache
 	 */
 	private final Map<String, ImageIcon> mpIcons = new HashMap<String, ImageIcon>();
-
+	
 	NuclosIcons() {
 		INSTANCE = this;
 	}
@@ -70,6 +70,10 @@ public class NuclosIcons {
 	 */
 	public static NuclosIcons getInstance() {
 		return INSTANCE;
+	}
+	
+	void setResourceCache(ResourceCache resourceCache) {
+		this.resourceCache = resourceCache;
 	}
 	
 	public Icon getIconCustomer() {

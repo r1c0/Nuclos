@@ -40,6 +40,8 @@ import org.nuclos.server.statemodel.ejb3.StateFacadeLocal;
 import org.nuclos.server.statemodel.valueobject.StateModelUsagesCache;
 import org.nuclos.server.statemodel.valueobject.StateModelVO;
 import org.nuclos.server.statemodel.valueobject.StateVO;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
 
 /**
  * Assign rights to roles, that have attribute rights, for all subforms
@@ -50,11 +52,24 @@ import org.nuclos.server.statemodel.valueobject.StateVO;
  * @author	<a href="mailto:corina.mandoki@novabit.de">Corina Mandoki</a>
  * @version 01.00.00
  */
-
-public class AssignSubformRightToRole implements UpdateJobs{
+@Configurable
+public class AssignSubformRightToRole implements UpdateJobs {
 
 	public static final String sRelease = "Nucleus Release 2.1.1";
+	
+	//
+	
 	private boolean isSuccessfulExecuted = false;
+	
+	private DataBaseHelper dataBaseHelper;
+	
+	public AssignSubformRightToRole() {
+	}
+	
+	@Autowired
+	void setDataBaseHelper(DataBaseHelper dataBaseHelper) {
+		this.dataBaseHelper = dataBaseHelper;
+	}
 
 	@Override
 	public boolean execute() {
@@ -70,7 +85,7 @@ public class AssignSubformRightToRole implements UpdateJobs{
 						for (String sSubform : getSubformsFromUsageCriteriasOf(statemodelvo)) {
 							final Integer iSubformId = MasterDataMetaCache.getInstance().getMetaData(sSubform).getId();
 
-							DataBaseHelper.execute(DbStatementUtils.insertInto("T_MD_ROLE_SUBFORM",
+							dataBaseHelper.execute(DbStatementUtils.insertInto("T_MD_ROLE_SUBFORM",
 								"INTID", new DbId(),
 								"DATCREATED", DbCurrentDateTime.CURRENT_DATETIME,
 								"STRCREATED", "INITIAL",
@@ -123,11 +138,11 @@ public class AssignSubformRightToRole implements UpdateJobs{
 	}
 
 	private Collection<Integer> getRoleIdsFrom(StateVO statevo) throws DbException, CommonFatalException {
-		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
+		DbQueryBuilder builder = dataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<Integer> query = builder.createQuery(Integer.class);
 		DbFrom t = query.from("T_MD_ROLE_ATTRIBUTEGROUP").alias(SystemFields.BASE_ALIAS);
 		query.select(t.baseColumn("INTID_T_MD_ROLE", Integer.class));
 		query.where(builder.equal(t.baseColumn("INTID_T_MD_STATE", Integer.class), statevo.getId()));
-		return DataBaseHelper.getDbAccess().executeQuery(query);
+		return dataBaseHelper.getDbAccess().executeQuery(query);
 	}
 }

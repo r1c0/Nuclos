@@ -23,13 +23,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import javax.annotation.PostConstruct;
+
 import org.apache.commons.lang.NullArgumentException;
 import org.apache.log4j.Logger;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.collection.Pair;
 import org.nuclos.common.dal.vo.SystemFields;
-import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonFinderException;
 import org.nuclos.common2.exception.CommonPermissionException;
@@ -62,8 +63,6 @@ public class RuleCache implements RuleCacheMBean {
 
 	//
 
-	private final MasterDataFacadeLocal mdFacade = ServiceLocator.getInstance().getFacade(MasterDataFacadeLocal.class);
-
 	private final Map<Integer, RuleVO> mpRulessById
 		= new ConcurrentHashMap<Integer, RuleVO>();
 	
@@ -84,25 +83,34 @@ public class RuleCache implements RuleCacheMBean {
 	
 	private final Map<String, MasterDataVO> webservices
 		= new ConcurrentHashMap<String, MasterDataVO>();
+	
+	private DataBaseHelper dataBaseHelper;
+	
+	private MasterDataFacadeLocal mdFacade;
 
-	private RuleCache() {
-		init();
+	RuleCache() {
+		INSTANCE = this;
+		// register this cache as MBean
+		MBeanAgent.registerCache(INSTANCE, RuleCacheMBean.class);
 	}
 
-	public static synchronized RuleCache getInstance() {
-		if (INSTANCE == null) {
-			INSTANCE = new RuleCache();
-			// register this cache as MBean
-			MBeanAgent.registerCache(INSTANCE, RuleCacheMBean.class);
-		}
-
+	public static RuleCache getInstance() {
 		return INSTANCE;
+	}
+	
+	public void setDataBaseHelper(DataBaseHelper dataBaseHelper) {
+		this.dataBaseHelper = dataBaseHelper;
+	}
+	
+	public void setMasterDataFacadeLocal(MasterDataFacadeLocal masterDataFacadeLocal) {
+		this.mdFacade = masterDataFacadeLocal;
 	}
 
 	/**
 	 * initialize RuleById and RuleByName
 	 *
 	 */
+	@PostConstruct
 	private void init() {
 		if (mpRulessById.isEmpty()) {
 			LOG.debug("Initializing RuleCache for RuleById and RulesByName");
@@ -188,7 +196,7 @@ public class RuleCache implements RuleCacheMBean {
 		if (!mpRulesByEventAndEntity.containsKey(pair)) {
 			LOG.debug("Initializing RuleCache for " + pair);
 			try {
-				DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
+				DbQueryBuilder builder = dataBaseHelper.getDbAccess().getQueryBuilder();
 				DbQuery<Integer> query = builder.createQuery(Integer.class);
 				DbFrom t = query.from("V_MD_RULE_EVENT").alias(SystemFields.BASE_ALIAS);
 				query.select(t.baseColumn("INTID_T_MD_RULE", Integer.class));
@@ -196,7 +204,7 @@ public class RuleCache implements RuleCacheMBean {
 					builder.equal(t.baseColumn("STREVENT", String.class), pair.getX()),
 					builder.equal(t.baseColumn("STRMASTERDATA", String.class), pair.getY())));
 				query.orderBy(builder.asc(t.baseColumn("INTORDER", Integer.class)));
-				List<Integer> ruleIds = DataBaseHelper.getDbAccess().executeQuery(query);
+				List<Integer> ruleIds = dataBaseHelper.getDbAccess().executeQuery(query);
 
 				List<RuleVO> rules = new ArrayList<RuleVO>();
 
@@ -227,13 +235,13 @@ public class RuleCache implements RuleCacheMBean {
 		if (!mpRulesByEvent.containsKey(sEventName)) {
 			LOG.debug("Initializing RuleCache for " + sEventName);
 			try {
-				DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
+				DbQueryBuilder builder = dataBaseHelper.getDbAccess().getQueryBuilder();
 				DbQuery<Integer> query = builder.createQuery(Integer.class);
 				DbFrom t = query.from("V_MD_RULE_EVENT").alias(SystemFields.BASE_ALIAS);
 				query.select(t.baseColumn("INTID_T_MD_RULE", Integer.class));
 				query.where(builder.equal(t.baseColumn("STREVENT", String.class), sEventName));
 				query.orderBy(builder.asc(t.baseColumn("INTORDER", Integer.class)));
-				List<Integer> ruleIds = DataBaseHelper.getDbAccess().executeQuery(query);
+				List<Integer> ruleIds = dataBaseHelper.getDbAccess().executeQuery(query);
 
 				List<RuleVO> rules = new ArrayList<RuleVO>();
 

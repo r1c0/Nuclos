@@ -127,16 +127,16 @@ public class PreferencesFacadeBean extends NuclosFacadeBean implements Preferenc
 	@Override
 	@RolesAllowed("UseManagementConsole")
 	public void setPreferencesForUser(String sUserName, PreferencesVO prefsvo) throws CommonFinderException {
-		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
+		DbQueryBuilder builder = dataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<Integer> query = builder.createQuery(Integer.class);
 		DbFrom t = query.from("T_MD_USER").alias(SystemFields.BASE_ALIAS);
 		query.select(t.baseColumn("INTID", Integer.class));
 		query.where(builder.equal(builder.upper(t.baseColumn("STRUSER", String.class)), builder.upper(builder.literal(sUserName))));
 
-		Integer userId = DataBaseHelper.getDbAccess().executeQuerySingleResult(query);
+		Integer userId = dataBaseHelper.getDbAccess().executeQuerySingleResult(query);
 		if (userId != null) {
 			byte[] data = prefsvo == null ? new byte[]{} : convertToBadBytes(prefsvo.getPreferencesBytes());
-			DataBaseHelper.getDbAccess().execute(DbStatementUtils.updateValues("T_MD_USER",
+			dataBaseHelper.getDbAccess().execute(DbStatementUtils.updateValues("T_MD_USER",
 				"OBJPREFERENCES", data).where("INTID", userId));
 		}
 	}
@@ -996,14 +996,14 @@ public class PreferencesFacadeBean extends NuclosFacadeBean implements Preferenc
 	 * @throws CommonFinderException
 	 */
 	private PreferencesVO getUserPreferences(String sUserName) throws CommonFinderException {
-		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
+		DbQueryBuilder builder = dataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<byte[]> query = builder.createQuery(byte[].class);
 		DbFrom t = query.from("T_MD_USER").alias(SystemFields.BASE_ALIAS);
 		query.select(t.baseColumn("OBJPREFERENCES", byte[].class));
 		query.where(builder.equal(builder.upper(t.baseColumn("STRUSER", String.class)), builder.upper(builder.literal(sUserName))));
 
 		try {
-			byte[] b = DataBaseHelper.getDbAccess().executeQuerySingleResult(query);
+			byte[] b = dataBaseHelper.getDbAccess().executeQuerySingleResult(query);
 			if (b != null) {
 				return new PreferencesVO(convertFromBadBytes(b));
 			}

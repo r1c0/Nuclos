@@ -138,13 +138,13 @@ public class ServerParameterProvider extends AbstractParameterProvider implement
 		final Logger log = Logger.getLogger(ServerParameterProvider.class);
 		log.debug("START building parameter cache.");
 
-		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
+		DbQueryBuilder builder = DataBaseHelper.getInstance().getDbAccess().getQueryBuilder();
 		DbQuery<DbTuple> query = builder.createTupleQuery();
 		DbFrom t = query.from("T_AD_PARAMETER").alias(SystemFields.BASE_ALIAS);
 		query.multiselect(t.baseColumn("STRPARAMETER", String.class), t.baseColumn("STRVALUE", String.class));
 
 		Map<String, String> result = new HashMap<String, String>();
-		for (DbTuple tuple : DataBaseHelper.getDbAccess().executeQuery(query)) {
+		for (DbTuple tuple : DataBaseHelper.getInstance().getDbAccess().executeQuery(query)) {
 			result.put(tuple.get(0, String.class), tuple.get(1, String.class));
 		}
 

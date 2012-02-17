@@ -49,7 +49,7 @@ public class WorkspaceNucletContent extends DefaultNucletContent {
 	public void deleteNcObject(DalCallResult result, EntityObjectVO ncObject) {
 		if (ncObject.getFieldId("user") == null) { // is assignable workspace
 			// Remove user assigned workspaces.
-			DataBaseHelper.getDbAccess().execute(DbStatementUtils.deleteFrom("T_MD_WORKSPACE", "INTID_T_MD_WORKSPACE", ncObject.getId()));
+			DataBaseHelper.getInstance().getDbAccess().execute(DbStatementUtils.deleteFrom("T_MD_WORKSPACE", "INTID_T_MD_WORKSPACE", ncObject.getId()));
 		}
 		super.deleteNcObject(result, ncObject);
 	}

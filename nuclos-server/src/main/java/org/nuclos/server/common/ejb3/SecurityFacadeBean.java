@@ -167,7 +167,7 @@ public class SecurityFacadeBean extends NuclosFacadeBean implements SecurityFaca
 			final String sApplicationName = ApplicationProperties.getInstance().getName();
 
 			DbId nextId = new DbId();
-			DataBaseHelper.execute(DbStatementUtils.insertInto("T_AD_SESSION_STATISTIC",
+			dataBaseHelper.execute(DbStatementUtils.insertInto("T_AD_SESSION_STATISTIC",
 				"SESSION_ID", nextId,
 				"USER_ID", sUserName,
 				"APPLICATION", sApplicationName,
@@ -184,7 +184,7 @@ public class SecurityFacadeBean extends NuclosFacadeBean implements SecurityFaca
 	 * write the successful logout into the protocol table
 	 */
 	private void writeLogoutProtocol(Integer iSessionId) {
-		DataBaseHelper.execute(DbStatementUtils.updateValues("T_AD_SESSION_STATISTIC",
+		dataBaseHelper.execute(DbStatementUtils.updateValues("T_AD_SESSION_STATISTIC",
 			"LOGOFF", new InternalTimestamp(Calendar.getInstance().getTimeInMillis())).where("SESSION_ID", iSessionId));
 	}
 
@@ -196,14 +196,14 @@ public class SecurityFacadeBean extends NuclosFacadeBean implements SecurityFaca
 	 */
 	@Override
 	public Integer getUserId(final String sUserName) throws CommonFatalException {
-		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
+		DbQueryBuilder builder = dataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<Integer> query = builder.createQuery(Integer.class);
 		DbFrom t = query.from("T_MD_USER").alias(SystemFields.BASE_ALIAS);
 		query.select(t.baseColumn("INTID", Integer.class));
 		query.where(builder.equal(builder.upper(t.baseColumn("STRUSER", String.class)), builder.upper(builder.literal(sUserName))));
 		Integer executeQuerySingleResult = null;
 		try{
-			executeQuerySingleResult = DataBaseHelper.getDbAccess().executeQuerySingleResult(query);
+			executeQuerySingleResult = dataBaseHelper.getDbAccess().executeQuerySingleResult(query);
 		} catch (DbInvalidResultSizeException e){
 			throw new CommonFatalException("Could not find user "+sUserName);
 		}
@@ -287,24 +287,24 @@ public class SecurityFacadeBean extends NuclosFacadeBean implements SecurityFaca
 
 	@Override
 	public Boolean isLdapAuthenticationActive() {
-		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
+		DbQueryBuilder builder = dataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<Long> query = builder.createQuery(Long.class);
 		DbFrom t = query.from("T_AD_LDAPSERVER").alias(SystemFields.BASE_ALIAS);
 		query.select(t.baseColumn("INTID", Long.class));
 		query.where(builder.and(builder.equal(t.baseColumn("BLNACTIVE", Boolean.class), true), builder.isNotNull(t.baseColumn("STRUSERFILTER", String.class))));
 
-		return DataBaseHelper.getDbAccess().executeQuery(query).size() > 0;
+		return dataBaseHelper.getDbAccess().executeQuery(query).size() > 0;
 	}
 
 	@Override
 	public Boolean isLdapSynchronizationActive() {
-		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
+		DbQueryBuilder builder = dataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<Long> query = builder.createQuery(Long.class);
 		DbFrom t = query.from("T_AD_LDAPSERVER").alias(SystemFields.BASE_ALIAS);
 		query.select(t.baseColumn("INTID", Long.class));
 		query.where(builder.and(builder.equal(t.baseColumn("BLNACTIVE", Boolean.class), true), builder.isNotNull(t.baseColumn("SEARCHFILTER", String.class))));
 
-		return DataBaseHelper.getDbAccess().executeQuery(query).size() > 0;
+		return dataBaseHelper.getDbAccess().executeQuery(query).size() > 0;
 	}
 
 	@Override
@@ -320,12 +320,12 @@ public class SecurityFacadeBean extends NuclosFacadeBean implements SecurityFaca
 
 		String username = getCurrentUserName();
 
-		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
+		DbQueryBuilder builder = dataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<DbTuple> query = builder.createTupleQuery();
 		DbFrom t = query.from("T_MD_USER").alias(SystemFields.BASE_ALIAS);
 		query.multiselect(t.baseColumn("DATPASSWORDCHANGED", Date.class), t.baseColumn("BLNSUPERUSER", Boolean.class));
 		query.where(builder.equal(builder.upper(t.baseColumn("STRUSER", String.class)), builder.upper(builder.literal(username))));
-		DbTuple tuple = DataBaseHelper.getDbAccess().executeQuerySingleResult(query);
+		DbTuple tuple = dataBaseHelper.getDbAccess().executeQuerySingleResult(query);
 
 		Date d = tuple.get(0, Date.class);
 		Boolean isSuperUser = Boolean.TRUE.equals(tuple.get(1, Boolean.class));

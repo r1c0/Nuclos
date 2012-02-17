@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.PostConstruct;
 import javax.sql.DataSource;
 
 import org.apache.commons.lang.NullArgumentException;
@@ -34,7 +35,6 @@ import org.nuclos.common.VersionNumber;
 import org.nuclos.common.collection.Pair;
 import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.server.autosync.AutoDbSetup;
-import org.nuclos.server.common.NuclosDataSources;
 import org.nuclos.server.common.NuclosSystemParameters;
 import org.nuclos.server.common.ServerProperties;
 import org.nuclos.server.dblayer.DbAccess;
@@ -44,6 +44,8 @@ import org.nuclos.server.dblayer.statements.DbBuildableStatement;
 import org.nuclos.server.dblayer.statements.DbStatement;
 import org.nuclos.server.dblayer.structure.DbTableType;
 import org.nuclos.server.dblayer.util.StatementToStringVisitor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 /**
  * Class containing general static helper functions.<br>
@@ -54,15 +56,41 @@ import org.nuclos.server.dblayer.util.StatementToStringVisitor;
  * @author	<a href="mailto:martin.weber@novabit.de">martin.weber</a>
  * @version 01.00.00
  */
+@Component
 public class DataBaseHelper {
 
-	private static final Logger log = Logger.getLogger(DataBaseHelper.class);
+	private static final Logger LOG = Logger.getLogger(DataBaseHelper.class);
 
-	public static String DEFAULT_SEQUENCE = "IDFACTORY";
+	public static final String DEFAULT_SEQUENCE = "IDFACTORY";
+	
+	private static DataBaseHelper INSTANCE;
+	
+	//
+	
+	private DataSource dataSource;
 
-	private static final DbAccess defaultDbAccess;
+	// 
+	
+	private DbAccess defaultDbAccess;
 
-	static {
+	DataBaseHelper() {
+		INSTANCE = this;
+	}
+	
+	public static DataBaseHelper getInstance() {
+		if (INSTANCE.defaultDbAccess == null) {
+			throw new IllegalStateException("too early");
+		}
+		return INSTANCE;
+	}
+	
+	@Autowired
+	void setDataSource(DataSource dataSource) {
+		this.dataSource = dataSource;
+	}
+
+	@PostConstruct
+	final void init() {
 		try {
 			Map<String, String> config = new HashMap<String, String>();
 			for (Map.Entry<?, ?> p : ServerProperties.loadProperties(ServerProperties.JNDI_SERVER_PROPERTIES).entrySet()) {
@@ -77,11 +105,11 @@ public class DataBaseHelper {
 			File structureChangelogDir = NuclosSystemParameters.getDirectory(NuclosSystemParameters.DATABASE_STRUCTURE_CHANGE_LOG_PATH);
 			if (structureChangelogDir != null) {
 				String path = structureChangelogDir.getAbsolutePath();
-				log.info("Set structure change log directory to " + path);
+				LOG.info("Set structure change log directory to " + path);
 				config.put(DbAccess.STRUCTURE_CHANGELOG_DIR, path);
 			}
 
-			DataSource dataSource = NuclosDataSources.getDefaultDS();
+			// DataSource dataSource = NuclosDataSources.getDefaultDS();
 			defaultDbAccess = getDbAccessFor(dataSource, config);
 
 			AutoDbSetup autoSetup = new AutoDbSetup(defaultDbAccess);
@@ -93,13 +121,13 @@ public class DataBaseHelper {
 
 			boolean doAutoSetup = "true".equals(config.get("autosetup"));
 
-			log.info("Nuclos auto-setup is " + (doAutoSetup ? "enabled" : "disabled"));
+			LOG.info("Nuclos auto-setup is " + (doAutoSetup ? "enabled" : "disabled"));
 			if (doAutoSetup) {
 				boolean installed = autoSetup.checkIsInstalled();
 				if (version != null) {
-					log.info(String.format("Nuclos version found in schema %s: %s (%s)", defaultDbAccess.getSchemaName(), version.x, version.y));
+					LOG.info(String.format("Nuclos version found in schema %s: %s (%s)", defaultDbAccess.getSchemaName(), version.x, version.y));
 					if (!installed) {
-						log.warn("Cannot detect Nuclos schema via table existence");
+						LOG.warn("Cannot detect Nuclos schema via table existence");
 					}
 					installed = true;
 
@@ -111,11 +139,11 @@ public class DataBaseHelper {
 				}
 
 				if (!installed) {
-					log.info("No Nuclos installation found in schema " + defaultDbAccess.getSchemaName());
+					LOG.info("No Nuclos installation found in schema " + defaultDbAccess.getSchemaName());
 					List<DbStatement> statements = autoSetup.getSetupStatements();
 					executeSetupStatements("Auto-Setup", statements);
 				} else {
-					log.info("Existing Nuclos installation found in schema " + defaultDbAccess.getSchemaName());
+					LOG.info("Existing Nuclos installation found in schema " + defaultDbAccess.getSchemaName());
 					if (version != null) {
 						List<DbStatement> statements = autoSetup.getUpdateStatementsSince(version.x);
 						if (statements != null) {
@@ -125,17 +153,14 @@ public class DataBaseHelper {
 				}
 			}
 		} catch (Exception ex) {
-			log.fatal("Error initializing Nuclos datasource/database access", ex);
+			LOG.fatal("Error initializing Nuclos datasource/database access", ex);
 			throw new NuclosFatalException("Error initializing Nuclos datasource/database access: " + ex, ex);
 		}
 	}
 
-	private DataBaseHelper() {
-	}
-
-	private static void executeSetupStatements(String type, List<DbStatement> stmts) throws Exception {
-		log.info("Starting " + type);
-		log.info(type + ": " + stmts.size() + " statement(s) to execute...");
+	private void executeSetupStatements(String type, List<DbStatement> stmts) throws Exception {
+		LOG.info("Starting " + type);
+		LOG.info(type + ": " + stmts.size() + " statement(s) to execute...");
 
 		int stmtNo = 1;
 		String stmtDescription = null;
@@ -146,19 +171,19 @@ public class DataBaseHelper {
 				// this is intentionally a separate assignment; if something went
 				// wrong inside the visitor, the number is already set
 				stmtDescription = stmtDescription + ": " + stmt.accept(toStringVisitor);
-				log.info(stmtDescription + "...");
+				LOG.info(stmtDescription + "...");
 				defaultDbAccess.execute(stmt);
 				stmtNo++;
 			}
-			log.info(type + " finished successfully");
+			LOG.info(type + " finished successfully");
 		} catch (Exception e) {
 			String message = "Error during " + stmtDescription + ": " + e.toString();
-			log.fatal("Error during " + stmtDescription + ": " + e.toString(), e);
+			LOG.fatal("Error during " + stmtDescription + ": " + e.toString(), e);
 			throw new NuclosFatalException(message, e);
 		}
 	}
 
-	public static DbAccess getDbAccess() {
+	public DbAccess getDbAccess() {
 		return defaultDbAccess;
 	}
 
@@ -175,7 +200,7 @@ public class DataBaseHelper {
 		} else {
 			try {
 				dbType = DbType.getFromMetaData(dataSource);
-				log.info("Auto-determine database type: " + dbType);
+				LOG.info("Auto-determine database type: " + dbType);
 			} catch (SQLException ex) {
 				throw new NuclosFatalException("Error while determining database vendor and version", ex);
 			}
@@ -186,7 +211,7 @@ public class DataBaseHelper {
 		return dbType.createDbAccess(dataSource, config);
 	}
 
-	public static int execute(DbBuildableStatement command) throws DbException {
+	public int execute(DbBuildableStatement command) throws DbException {
 		return getDbAccess().execute(command);
 	}
 
@@ -194,7 +219,7 @@ public class DataBaseHelper {
 	 * @return a connection from the given datasource. Must be closed by the caller in a finally block.
 	 * @precondition datasource != null
 	 */
-	public static Connection getConnection(DataSource datasource) {
+	public Connection getConnection(DataSource datasource) {
 		if (datasource == null) {
 			throw new NullArgumentException("datasource");
 		}
@@ -206,7 +231,7 @@ public class DataBaseHelper {
 		}
 	}
 
-	public static Integer getNextIdAsInteger(String sSequenceName) {
+	public Integer getNextIdAsInteger(String sSequenceName) {
 		try {
 			return getDbAccess().getDbExecutor().getNextId(sSequenceName).intValue();
 		}
@@ -216,7 +241,7 @@ public class DataBaseHelper {
 		}
 	}
 
-	public static boolean isTableAvailable(String sTable) {
+	public boolean isTableAvailable(String sTable) {
 		if (getDbAccess().getTableNames(DbTableType.TABLE).contains(sTable))
 			return true;
 		if (getDbAccess().getTableNames(DbTableType.TABLE).contains(sTable.toLowerCase()))
@@ -225,7 +250,7 @@ public class DataBaseHelper {
 		return false;
 	}
 
-	public static boolean isViewAvailable(String sTable) {
+	public boolean isViewAvailable(String sTable) {
 		if (getDbAccess().getTableNames(DbTableType.VIEW).contains(sTable))
 			return true;
 		if (getDbAccess().getTableNames(DbTableType.VIEW).contains(sTable.toLowerCase()))
@@ -234,7 +259,8 @@ public class DataBaseHelper {
 		return false;
 	}
 
-	public static boolean isObjectAvailable(String sObjectName) {
+	public boolean isObjectAvailable(String sObjectName) {
 		return isTableAvailable(sObjectName) ||isViewAvailable(sObjectName);
 	}
+	
 } // class DataBaseHelper

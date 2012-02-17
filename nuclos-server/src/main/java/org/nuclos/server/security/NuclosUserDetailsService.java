@@ -42,6 +42,7 @@ import org.nuclos.server.dblayer.query.DbQueryBuilder;
 import org.nuclos.server.dblayer.statements.DbUpdateStatement;
 import org.nuclos.server.masterdata.ejb3.MasterDataFacadeHelper;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.GrantedAuthorityImpl;
@@ -58,7 +59,14 @@ public class NuclosUserDetailsService implements org.nuclos.server.security.User
 
 	private ParameterProvider paramprovider;
 	
+	private DataBaseHelper dataBaseHelper;
+	
 	NuclosUserDetailsService() {
+	}
+	
+	@Autowired
+	void setDataBaseHelper(DataBaseHelper dataBaseHelper) {
+		this.dataBaseHelper = dataBaseHelper;
 	}
 
 	public void setParameterProvider(ParameterProvider paramprovider) {
@@ -71,7 +79,7 @@ public class NuclosUserDetailsService implements org.nuclos.server.security.User
 	 */
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException, DataAccessException {
-		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
+		DbQueryBuilder builder = dataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<DbTuple> query = builder.createTupleQuery();
 		DbFrom t = query.from("T_MD_USER").alias(SystemFields.BASE_ALIAS);
 		query.multiselect(
@@ -85,7 +93,7 @@ public class NuclosUserDetailsService implements org.nuclos.server.security.User
 			t.baseColumn("BLNREQUIREPASSWORDCHANGE", Boolean.class));
 		query.where(builder.equal(builder.upper(t.baseColumn("STRUSER", String.class)), builder.upper(builder.literal(username))));
 
-		DbTuple tuple = CollectionUtils.getFirst(DataBaseHelper.getDbAccess().executeQuery(query));
+		DbTuple tuple = CollectionUtils.getFirst(dataBaseHelper.getDbAccess().executeQuery(query));
 		Long intid;
 		Boolean isSuperUser;
 		String password;
@@ -185,12 +193,12 @@ public class NuclosUserDetailsService implements org.nuclos.server.security.User
 			}
 		}
 
-		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
+		DbQueryBuilder builder = dataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<DbTuple> query = builder.createTupleQuery();
 		DbFrom t = query.from("T_MD_USER").alias(SystemFields.BASE_ALIAS);
 		query.multiselect(t.baseColumn("INTID", Long.class), t.baseColumn("INTLOGINATTEMPTS", Integer.class));
 		query.where(builder.equal(builder.upper(t.baseColumn("STRUSER", String.class)), builder.upper(builder.literal(username))));
-		DbTuple tuple = DataBaseHelper.getDbAccess().executeQuerySingleResult(query);
+		DbTuple tuple = dataBaseHelper.getDbAccess().executeQuerySingleResult(query);
 
 		Long id;
 		Integer loginattempts;
@@ -221,16 +229,16 @@ public class NuclosUserDetailsService implements org.nuclos.server.security.User
 		}
 		Map<String, Object> conditions = new HashMap<String, Object>(1);
 		conditions.put("INTID", id);
-		DataBaseHelper.getDbAccess().execute(new DbUpdateStatement("T_MD_USER", values, conditions));
+		dataBaseHelper.getDbAccess().execute(new DbUpdateStatement("T_MD_USER", values, conditions));
 	}
 
 	static Set<String> getSuperUserActions() {
-		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
+		DbQueryBuilder builder = DataBaseHelper.getInstance().getDbAccess().getQueryBuilder();
 		Set<String> actions = new HashSet<String>();
 		DbQuery<String> rolesQuery = builder.createQuery(String.class);
 		DbFrom action = rolesQuery.from("T_AD_ACTION").alias(SystemFields.BASE_ALIAS);
 		rolesQuery.select(action.baseColumn("STRACTION", String.class));
-		actions.addAll(DataBaseHelper.getDbAccess().executeQuery(rolesQuery));
+		actions.addAll(DataBaseHelper.getInstance().getDbAccess().executeQuery(rolesQuery));
 
 		for(MasterDataVO mdvo : XMLEntities.getData(NuclosEntity.ACTION).getAll()) {
 			actions.add(mdvo.getField("action", String.class));
@@ -244,7 +252,7 @@ public class NuclosUserDetailsService implements org.nuclos.server.security.User
 		values.put("BLNLOCKED", Boolean.TRUE);
 		Map<String, Object> conditions = new HashMap<String, Object>(1);
 		conditions.put("INTID", user);
-		DataBaseHelper.getDbAccess().execute(new DbUpdateStatement("T_MD_USER", values, conditions));
+		dataBaseHelper.getDbAccess().execute(new DbUpdateStatement("T_MD_USER", values, conditions));
 	}
 
 	private void setPasswordChanged(Long user) {
@@ -252,6 +260,6 @@ public class NuclosUserDetailsService implements org.nuclos.server.security.User
 		values.put("DATPASSWORDCHANGED", Calendar.getInstance().getTime());
 		Map<String, Object> conditions = new HashMap<String, Object>(1);
 		conditions.put("INTID", user);
-		DataBaseHelper.getDbAccess().execute(new DbUpdateStatement("T_MD_USER", values, conditions));
+		dataBaseHelper.getDbAccess().execute(new DbUpdateStatement("T_MD_USER", values, conditions));
 	}
 }

@@ -7476,6 +7476,13 @@
         "nullable": true
       },
       {
+        "name": "readDelegate",
+        "dbfield": "STR_READDELEGATE",
+        "datatype": "java.lang.String",
+        "datascale": 255,
+        "nullable": true
+      },
+      {
         "name": "rowcolorscript",
         "dbfield": "STRROWCOLORSCRIPT",
         "datatype": "org.nuclos.common.NuclosScript",

@@ -57,10 +57,13 @@ import org.nuclos.server.dblayer.statements.DbInsertStatement;
 import org.nuclos.server.dblayer.statements.DbStatement;
 import org.nuclos.server.dblayer.statements.DbTableStatement;
 import org.nuclos.server.dblayer.statements.DbUpdateStatement;
+import org.springframework.beans.factory.annotation.Autowired;
 
 public abstract class AbstractJdbcDalProcessor<DalVO extends IDalVO> extends AbstractDalProcessor<DalVO> {
 
 	private static final Logger LOG = Logger.getLogger(AbstractJdbcDalProcessor.class);
+	
+	protected DataBaseHelper dataBaseHelper;
 
    // This must be clone and hence cannot be final.
    protected List<IColumnToVOMapping<? extends Object>> allColumns;
@@ -71,6 +74,11 @@ public abstract class AbstractJdbcDalProcessor<DalVO extends IDalVO> extends Abs
       this.allColumns = allColumns;
       this.allColumnsAsSet = new HashSet<IColumnToVOMapping<? extends Object>>(allColumns);
       checkColumns();
+   }
+   
+   @Autowired
+   void setDataBaseHelper(DataBaseHelper dataBaseHelper) {
+	   this.dataBaseHelper = dataBaseHelper;
    }
 
 	public Object clone() {
@@ -93,12 +101,16 @@ public abstract class AbstractJdbcDalProcessor<DalVO extends IDalVO> extends Abs
    }
 
    /**
-    * @deprecated We want to get rid of views.
+    * Table (or view) to use when writing to DB.
+    * <p>
+    * This is only different from {@link #getDbSourceForSQL()} for 
+    * DB read delegates.
+    * </p>
     */
    protected abstract String getDbSourceForDML();
 
    /**
-    * @deprecated We want to get rid of views.
+    * Table or view to use when reading from DB.
     */
    protected abstract String getDbSourceForSQL();
 
@@ -110,12 +122,12 @@ public abstract class AbstractJdbcDalProcessor<DalVO extends IDalVO> extends Abs
 
 	public List<Long> getAllIds() {
 		DbQuery<Long> query = createSingleColumnQuery(getPrimaryKeyColumn(), true);
-		return DataBaseHelper.getDbAccess().executeQuery(query);
+		return dataBaseHelper.getDbAccess().executeQuery(query);
 	}
 
    protected List<DalVO> getAll(final List<IColumnToVOMapping<? extends Object>> columns) {
       DbQuery<Object[]> query = createQuery(columns);
-      return DataBaseHelper.getDbAccess().executeQuery(query, createResultTransformer(columns));
+      return dataBaseHelper.getDbAccess().executeQuery(query, createResultTransformer(columns));
    }
 
    protected DalVO getByPrimaryKey(final Long id) {
@@ -137,7 +149,7 @@ public abstract class AbstractJdbcDalProcessor<DalVO extends IDalVO> extends Abs
       DbQuery<Object[]> query = createQuery(columns);
       DbFrom from = CollectionUtils.getFirst(query.getRoots());
       query.where(query.getBuilder().equal(column.getDbColumn(from), id));
-      return DataBaseHelper.getDbAccess().executeQuery(query, createResultTransformer(columns));
+      return dataBaseHelper.getDbAccess().executeQuery(query, createResultTransformer(columns));
    }
 
    protected List<DalVO> getByPrimaryKeys(final List<IColumnToVOMapping<? extends Object>> columns, final List<Long> ids) {
@@ -149,7 +161,7 @@ public abstract class AbstractJdbcDalProcessor<DalVO extends IDalVO> extends Abs
       List<DalVO> result = new ArrayList<DalVO>(ids.size());
       for (List<Long> idSubList : CollectionUtils.splitEvery(ids, query.getBuilder().getInLimit())) {
          query.where(pkExpr.as(Long.class).in(idSubList));
-         result.addAll(DataBaseHelper.getDbAccess().executeQuery(query, transformer));
+         result.addAll(dataBaseHelper.getDbAccess().executeQuery(query, transformer));
       }
       return result;
    }
@@ -179,7 +191,7 @@ public abstract class AbstractJdbcDalProcessor<DalVO extends IDalVO> extends Abs
          }
          if (stmt != null) {
             try {
-               DataBaseHelper.getDbAccess().execute(stmt);
+               dataBaseHelper.getDbAccess().execute(stmt);
             } catch (DbException ex) {
             	if (!failAfterBatch) {
             		throw ex;
@@ -199,7 +211,7 @@ public abstract class AbstractJdbcDalProcessor<DalVO extends IDalVO> extends Abs
 		for(Long id : colId) {
 			DbStatement stmt = new DbDeleteStatement(getDbSourceForDML(), getPrimaryKeyMap(id));
 			try {
-				DataBaseHelper.getDbAccess().execute(stmt);
+				dataBaseHelper.getDbAccess().execute(stmt);
 			} catch(DbException ex) {
 				if (!failAfterBatch) {
 					throw ex;
@@ -223,7 +235,7 @@ public abstract class AbstractJdbcDalProcessor<DalVO extends IDalVO> extends Abs
    }
 
    protected DbQuery<Object[]> createQuery(List<IColumnToVOMapping<? extends Object>> columns, boolean overrideDbSourceUseDML) {
-      DbQuery<Object[]> query = DataBaseHelper.getDbAccess().getQueryBuilder().createQuery(Object[].class);
+      DbQuery<Object[]> query = dataBaseHelper.getDbAccess().getQueryBuilder().createQuery(Object[].class);
       DbFrom from = query.from(overrideDbSourceUseDML ? getDbSourceForDML() : getDbSourceForSQL()).alias(SystemFields.BASE_ALIAS);
       List<DbExpression<?>> selections = new ArrayList<DbExpression<?>>();
       for (IColumnToVOMapping<?> column : columns) {
@@ -250,14 +262,14 @@ public abstract class AbstractJdbcDalProcessor<DalVO extends IDalVO> extends Abs
    }
 
 	protected <S> DbQuery<S> createSingleColumnQuery(IColumnToVOMapping<S> column, boolean overrideDbSourceUseDML) {
-		DbQuery<S> query = DataBaseHelper.getDbAccess().getQueryBuilder().createQuery(column.getDataType());
+		DbQuery<S> query = dataBaseHelper.getDbAccess().getQueryBuilder().createQuery(column.getDataType());
 		DbFrom from = query.from(overrideDbSourceUseDML ? getDbSourceForDML() : getDbSourceForSQL()).alias(SystemFields.BASE_ALIAS);
 		query.select(column.getDbColumn(from));
 		return query;
 	}
 
    protected DbQuery<Long> createCountQuery(IColumnToVOMapping<Long> column) {
-      DbQuery<Long> query = DataBaseHelper.getDbAccess().getQueryBuilder().createQuery(column.getDataType());
+      DbQuery<Long> query = dataBaseHelper.getDbAccess().getQueryBuilder().createQuery(column.getDataType());
       DbFrom from = query.from(getDbSourceForSQL()).alias(SystemFields.BASE_ALIAS);
       query.select(query.getBuilder().count(column.getDbColumn(from)));
       return query;
@@ -319,7 +331,7 @@ public abstract class AbstractJdbcDalProcessor<DalVO extends IDalVO> extends Abs
 
 	protected SQLIntegrityConstraintViolationException checkLogicalUniqueConstraint(
 			final Map<IColumnToVOMapping<?>, Object> values, final Long id) {
-		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
+		DbQueryBuilder builder = dataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<Long> query = builder.createQuery(Long.class);
 		DbFrom from = query.from(getDbSourceForSQL()).alias(SystemFields.BASE_ALIAS);
 		query.select(query.getBuilder().countRows());
@@ -343,7 +355,7 @@ public abstract class AbstractJdbcDalProcessor<DalVO extends IDalVO> extends Abs
 		}
 
 		query.where(builder.and(conditions.toArray(new DbCondition[conditions.size()])));
-		Long count = DataBaseHelper.getDbAccess().executeQuerySingleResult(query);
+		Long count = dataBaseHelper.getDbAccess().executeQuerySingleResult(query);
 		if (count > 1L) {
 			return new SQLIntegrityConstraintViolationException("Unique constraint violated in query '"
 					+ query + "' with id=" + id + ", number of result is " + count);
@@ -354,7 +366,7 @@ public abstract class AbstractJdbcDalProcessor<DalVO extends IDalVO> extends Abs
 	private List<String> getLogStatements(DbStatement stmt) {
 		List<String> statements = null;
 		try {
-			final DbAccess dbAccess = DataBaseHelper.getDbAccess();
+			final DbAccess dbAccess = dataBaseHelper.getDbAccess();
 			final IBatch batch = dbAccess.getBatchFor(stmt);
 			statements = dbAccess.getStatementsForLogging(batch);
 		} catch (SQLException e) {

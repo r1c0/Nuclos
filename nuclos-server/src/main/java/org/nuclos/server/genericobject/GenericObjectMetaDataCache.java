@@ -78,6 +78,8 @@ public class GenericObjectMetaDataCache implements GenericObjectMetaDataProvider
 	private GenericObjectMetaDataVO lometacvo;
 	
 	private MetaDataServerProvider metaDataServerProvider;
+	
+	private DataBaseHelper dataBaseHelper;
 
 	private static final Set<Integer> setExcludedAttributeIds = new HashSet<Integer>();
 	static {
@@ -118,6 +120,11 @@ public class GenericObjectMetaDataCache implements GenericObjectMetaDataProvider
 	void setMetaDataServerProvider(MetaDataServerProvider metaDataServerProvider) {
 		this.metaDataServerProvider = metaDataServerProvider;
 	}
+	
+	@Autowired
+	void setDataBaseHelper(DataBaseHelper dataBaseHelper) {
+		this.dataBaseHelper = dataBaseHelper;
+	}
 
 	private GenericObjectMetaDataVO newGenericObjectMetaDataCVO() {
 		log.debug("Rebuilding generic object meta data cache");
@@ -138,13 +145,13 @@ public class GenericObjectMetaDataCache implements GenericObjectMetaDataProvider
 	 * @postcondition result != null
 	 */
 	public static Map<Integer, String> getLayoutMap() {
-		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
+		DbQueryBuilder builder = DataBaseHelper.getInstance().getDbAccess().getQueryBuilder();
 		DbQuery<DbTuple> query = builder.createTupleQuery();
 		DbFrom t = query.from("T_MD_LAYOUT").alias(SystemFields.BASE_ALIAS);
 		query.multiselect(t.baseColumn("INTID", Integer.class), t.baseColumn("CLBLAYOUTML", String.class));
 
 		Map<Integer, String> result = new HashMap<Integer, String>();
-		for (DbTuple tuple : DataBaseHelper.getDbAccess().executeQuery(query)) {
+		for (DbTuple tuple : DataBaseHelper.getInstance().getDbAccess().executeQuery(query)) {
 			result.put(tuple.get(0, Integer.class), tuple.get(1, String.class));
 		}
 		return result;
@@ -184,12 +191,12 @@ public class GenericObjectMetaDataCache implements GenericObjectMetaDataProvider
 	 * @return result
 	 */
 	public static String getLayoutName(Integer iLayoutId){
-		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
+		DbQueryBuilder builder = DataBaseHelper.getInstance().getDbAccess().getQueryBuilder();
 		DbQuery<String> query = builder.createQuery(String.class);
 		DbFrom t = query.from("T_MD_LAYOUT").alias(SystemFields.BASE_ALIAS);
 		query.multiselect(t.baseColumn("STRLAYOUT", String.class));
 		query.where(builder.equal(t.baseColumn("INTID", Integer.class), iLayoutId));
-		return CollectionUtils.getFirst(DataBaseHelper.getDbAccess().executeQuery(query));
+		return CollectionUtils.getFirst(DataBaseHelper.getInstance().getDbAccess().executeQuery(query));
 	}
 
 	/**
@@ -197,7 +204,7 @@ public class GenericObjectMetaDataCache implements GenericObjectMetaDataProvider
 	 * @postcondition result != null
 	 */
 	private Collection<LayoutUsageVO> getLayoutUsageVOs() {
-		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
+		DbQueryBuilder builder = dataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<DbTuple> query = builder.createTupleQuery();
 		DbFrom t = query.from("T_MD_LAYOUTUSAGE").alias(SystemFields.BASE_ALIAS);
 		query.multiselect(
@@ -205,7 +212,7 @@ public class GenericObjectMetaDataCache implements GenericObjectMetaDataProvider
 			t.baseColumn("STRENTITY", String.class),
 			t.baseColumn("INTID_T_MD_PROCESS", Integer.class),
 			t.baseColumn("BLNSEARCHSCREEN", Boolean.class));
-		List<LayoutUsageVO> result = DataBaseHelper.getDbAccess().executeQuery(query, new Transformer<DbTuple, LayoutUsageVO>() {
+		List<LayoutUsageVO> result = dataBaseHelper.getDbAccess().executeQuery(query, new Transformer<DbTuple, LayoutUsageVO>() {
 			@Override
 			public LayoutUsageVO transform(DbTuple tuple) {
 				try {

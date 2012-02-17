@@ -45,6 +45,7 @@ import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 import org.nuclos.server.mbean.MBeanAgent;
 import org.nuclos.server.mbean.MasterDataMetaCacheMBean;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * Master data cache containing meta information about masterdata entities.
@@ -72,6 +73,12 @@ public class MasterDataMetaCache implements MasterDataMetaCacheMBean, MasterData
 	
 	private final Map<String, Collection<EntityTreeViewVO>> subNodes 
 		= new ConcurrentHashMap<String, Collection<EntityTreeViewVO>>();
+	
+	private DataBaseHelper dataBaseHelper;
+
+	MasterDataMetaCache() {
+		INSTANCE = this;
+	}
 
 	/**
 	 * @return the one and only instance of the <code>MasterDataMetaCache</code>.
@@ -79,14 +86,15 @@ public class MasterDataMetaCache implements MasterDataMetaCacheMBean, MasterData
 	public static MasterDataMetaCache getInstance() {
 		return INSTANCE;
 	}
+	
+	@Autowired
+	void setDataBaseHelper(DataBaseHelper dataBaseHelper) {
+		this.dataBaseHelper = dataBaseHelper;
+	}
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		MBeanAgent.registerCache(this, MasterDataMetaCacheMBean.class);
-	}
-
-	private MasterDataMetaCache() {
-		INSTANCE = this;
 	}
 
 	/**
@@ -238,7 +246,7 @@ public class MasterDataMetaCache implements MasterDataMetaCacheMBean, MasterData
 		final String sEntityName = mdmetavo.getEntityName();
 		if (log) LOG.debug("sEntityName = " + sEntityName);
 		final String sDbEntityName = mdmetavo.getDBEntity();
-		DbTable table = DataBaseHelper.getDbAccess().getTableMetaData(sDbEntityName);
+		DbTable table = dataBaseHelper.getDbAccess().getTableMetaData(sDbEntityName);
 
 		Map<String, DbColumn> columnsByName = new TreeMap<String, DbColumn>(String.CASE_INSENSITIVE_ORDER);
 		columnsByName.putAll(DbArtifact.makeSimpleNameMap(table.getTableColumns()));

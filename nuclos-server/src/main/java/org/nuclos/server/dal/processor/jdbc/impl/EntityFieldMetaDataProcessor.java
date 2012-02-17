@@ -65,13 +65,13 @@ implements JdbcEntityFieldMetaDataProcessor{
 	@Override
 	public List<EntityFieldMetaDataVO> getByParent(String entity) {
 
-		DbQuery<Long> query = DataBaseHelper.getDbAccess().getQueryBuilder().createQuery(Long.class);
+		DbQuery<Long> query = dataBaseHelper.getDbAccess().getQueryBuilder().createQuery(Long.class);
 		DbFrom from = query.from("T_MD_ENTITY");
 		from.alias("entity");
 		query.select(from.baseColumn("INTID", DT_LONG));
 		query.where(query.getBuilder().equal(from.baseColumn("STRENTITY", DT_STRING), entity));
 		
-		return super.getByIdColumn(allColumns, entityIdColumn, DataBaseHelper.getDbAccess().executeQuerySingleResult(query));
+		return super.getByIdColumn(allColumns, entityIdColumn, dataBaseHelper.getDbAccess().executeQuerySingleResult(query));
 	}
 
 	@Override

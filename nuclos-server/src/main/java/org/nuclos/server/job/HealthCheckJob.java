@@ -40,8 +40,9 @@ import org.nuclos.server.job.valueobject.JobVO;
  * @version 01.00.00
  */
 
-public class HealthCheckJob extends SchedulableJob implements NuclosJob{
-	private static Logger logger = Logger.getLogger(HealthCheckJob.class);
+public class HealthCheckJob extends SchedulableJob implements NuclosJob {
+	
+	private static final Logger LOG = Logger.getLogger(HealthCheckJob.class);
 
 	@Override
 	public String execute(JobVO jobVO, Integer iSessionId) {
@@ -49,11 +50,11 @@ public class HealthCheckJob extends SchedulableJob implements NuclosJob{
 		String sExecutionResult = "";
 		for (DataBaseObject dbObject : jobDBObjects) {
 			if (dbObject.getType().equals("Funktion")) {
-				String result = DataBaseHelper.getDbAccess().executeFunction(dbObject.getName(), String.class, iSessionId);
+				String result = DataBaseHelper.getInstance().getDbAccess().executeFunction(dbObject.getName(), String.class, iSessionId);
 				sExecutionResult = sExecutionResult + dbObject.getName()+": "+ result + "\n";
 			}
 			else {
-				DataBaseHelper.getDbAccess().executeProcedure(dbObject.getName(), iSessionId);
+				DataBaseHelper.getInstance().getDbAccess().executeProcedure(dbObject.getName(), iSessionId);
 			}
 		}
 		return !sExecutionResult.isEmpty() ? sExecutionResult.substring(0, sExecutionResult.length() > 4000 ? 4001 : sExecutionResult.length()) : null;
@@ -65,7 +66,7 @@ public class HealthCheckJob extends SchedulableJob implements NuclosJob{
 	 * @return
 	 */
 	private static List<DataBaseObject> getJobDBObjects(Object oId) {
-		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
+		DbQueryBuilder builder = DataBaseHelper.getInstance().getDbAccess().getQueryBuilder();
 		DbQuery<DbTuple> query = builder.createTupleQuery();
 		DbFrom t = query.from("T_MD_JOBDBOBJECT").alias(SystemFields.BASE_ALIAS);
 		query.multiselect(t.baseColumn("STRNAME", String.class), t.baseColumn("STRTYPE", String.class));
@@ -73,15 +74,15 @@ public class HealthCheckJob extends SchedulableJob implements NuclosJob{
 		query.orderBy(builder.asc(t.baseColumn("INTORDER", Integer.class)));
 
 		try {
-			return DataBaseHelper.getDbAccess().executeQuery(query, new Transformer<DbTuple, DataBaseObject>() {
+			return DataBaseHelper.getInstance().getDbAccess().executeQuery(query, new Transformer<DbTuple, DataBaseObject>() {
 				@Override
 				public DataBaseObject transform(DbTuple t) {
-					logger.info("Database object to execute: " + t.get(0, String.class));
+					LOG.info("Database object to execute: " + t.get(0, String.class));
 					return new DataBaseObject(t.get(0, String.class), t.get(1, String.class));
 				}
 			});
 		} catch (DbException ex) {
-			logger.error(ex);
+			LOG.error(ex);
 			return Collections.emptyList();
 		}
 	}

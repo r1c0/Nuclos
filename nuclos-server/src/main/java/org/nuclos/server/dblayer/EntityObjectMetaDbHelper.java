@@ -81,7 +81,7 @@ public class EntityObjectMetaDbHelper {
 	private final DbAccess dbAccess;
 
 	public EntityObjectMetaDbHelper(MetaDataProvider provider) {
-		this(DataBaseHelper.getDbAccess(), provider);
+		this(DataBaseHelper.getInstance().getDbAccess(), provider);
 	}
 
 	public EntityObjectMetaDbHelper(DbAccess dbAccess, MetaDataProvider provider) {
@@ -378,7 +378,10 @@ public class EntityObjectMetaDbHelper {
 			result = eMeta.getVirtualentity();
 		}
 		else if (eMeta.isDynamic()) {
-			result =eMeta.getDbEntity();
+			result = eMeta.getDbEntity();
+		}
+		else if (eMeta.getReadDelegate() != null) {
+			result = eMeta.getReadDelegate();
 		}
 		else {
 			result = "T_" + eMeta.getDbEntity().substring(2);

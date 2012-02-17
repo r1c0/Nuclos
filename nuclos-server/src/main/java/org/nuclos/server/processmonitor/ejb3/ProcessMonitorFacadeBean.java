@@ -946,7 +946,7 @@ public class ProcessMonitorFacadeBean extends NuclosFacadeBean implements Proces
 	public Collection<MasterDataVO> findGeneratorsWhichArePointingToSameSubProcess(Integer generationId, Integer targetCaseId) throws CommonPermissionException {
 		Collection<MasterDataVO> result = new ArrayList<MasterDataVO>();
 
-		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
+		DbQueryBuilder builder = dataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<Integer> query = builder.createQuery(Integer.class);
 		DbFrom g = query.from("T_MD_GENERATION").alias("g");
 		DbFrom pt = g.join("T_MD_CASE_TRANSITION", JoinType.INNER).alias("pt").on("INTID_T_MD_CASE_TRANSITION", "INTID", Integer.class);
@@ -955,7 +955,7 @@ public class ProcessMonitorFacadeBean extends NuclosFacadeBean implements Proces
 			builder.equal(g.baseColumn("INTID", Integer.class), generationId).not(),
 			builder.equal(pt.baseColumn("INTID_T_MD_CASE_2", Integer.class), targetCaseId)));
 		
-		List<Integer> ids = DataBaseHelper.getDbAccess().executeQuery(query);
+		List<Integer> ids = dataBaseHelper.getDbAccess().executeQuery(query);
 		
 		for (Integer id : ids) {
 			try {

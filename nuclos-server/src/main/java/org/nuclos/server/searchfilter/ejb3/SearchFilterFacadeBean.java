@@ -215,7 +215,7 @@ public class SearchFilterFacadeBean extends MasterDataFacadeBean implements Sear
 	@Override
     @RolesAllowed("Login")
 	public void changeCreatedUser(Integer iId, String sUserName) throws NuclosBusinessRuleException, CommonCreateException, CommonFinderException, CommonRemoveException, CommonStaleVersionException, CommonValidationException, CommonPermissionException {
-		DataBaseHelper.execute(DbStatementUtils.updateValues("T_UD_SEARCHFILTER",
+		DataBaseHelper.getInstance().execute(DbStatementUtils.updateValues("T_UD_SEARCHFILTER",
 			"STRCREATED", sUserName).where("INTID", iId));
 	}
 

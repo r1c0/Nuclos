@@ -556,7 +556,7 @@ public class GeneratorFacadeBean extends NuclosFacadeBean implements GeneratorFa
 		String sTable = MetaDataServerProvider.getInstance().getEntity(sourceEntity).getDbEntity();
 		// NUCLOSINT-1358
 		sTable = "V_" + sTable.substring(2);
-		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
+		DbQueryBuilder builder = dataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<DbTuple> query = builder.createTupleQuery();
 		DbFrom t = query.from(sTable).alias(SystemFields.BASE_ALIAS);
 
@@ -614,7 +614,7 @@ public class GeneratorFacadeBean extends NuclosFacadeBean implements GeneratorFa
 		}
 		query.where(builder.or(conditions.toArray(new DbCondition[conditions.size()])));
 
-		DbTuple tuple = DataBaseHelper.getDbAccess().executeQuerySingleResult(query);
+		DbTuple tuple = dataBaseHelper.getDbAccess().executeQuerySingleResult(query);
 
 		final EntityObjectVO result = new EntityObjectVO();
 		result.initFields(1, 1);
@@ -651,7 +651,7 @@ public class GeneratorFacadeBean extends NuclosFacadeBean implements GeneratorFa
 		String sTable = sourceEntity.getDbEntity();
 		// NUCLOSINT-1358
 		sTable = "V_" + sTable.substring(2);
-		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
+		DbQueryBuilder builder = dataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<DbTuple> query = builder.createTupleQuery();
 		DbFrom t = query.from(sTable).alias(SystemFields.BASE_ALIAS);
 
@@ -710,7 +710,7 @@ public class GeneratorFacadeBean extends NuclosFacadeBean implements GeneratorFa
 		}
 		query.where(builder.or(conditions.toArray(new DbCondition[conditions.size()])));
 
-		List<EntityObjectVO> aggregated = DataBaseHelper.getDbAccess().executeQuery(query, new Transformer<DbTuple, EntityObjectVO>() {
+		List<EntityObjectVO> aggregated = dataBaseHelper.getDbAccess().executeQuery(query, new Transformer<DbTuple, EntityObjectVO>() {
 			@Override
 			public EntityObjectVO transform(DbTuple tuple) {
 				final EntityObjectVO result = new EntityObjectVO();
@@ -1110,14 +1110,14 @@ public class GeneratorFacadeBean extends NuclosFacadeBean implements GeneratorFa
 	public Collection<GeneratorRuleVO> getRuleUsages(Integer generatorId) throws CommonPermissionException {
 		Collection<GeneratorRuleVO> result = new ArrayList<GeneratorRuleVO>();
 
-		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
+		DbQueryBuilder builder = dataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<DbTuple> query = builder.createTupleQuery();
 		DbFrom t = query.from("T_MD_RULE_GENERATION").alias(SystemFields.BASE_ALIAS);
 		query.multiselect(t.baseColumn("INTID_T_MD_RULE", Integer.class), t.baseColumn("INTORDER", Integer.class), t.baseColumn("BLNRUNAFTERWARDS", Boolean.class));
 		query.where(builder.equal(t.baseColumn("INTID_T_MD_GENERATION", Integer.class), generatorId));
 		query.orderBy(builder.asc(t.baseColumn("INTORDER", Integer.class)));
 
-		List<DbTuple> rulesWithOrders = DataBaseHelper.getDbAccess().executeQuery(query.distinct(true));
+		List<DbTuple> rulesWithOrders = dataBaseHelper.getDbAccess().executeQuery(query.distinct(true));
 
 		for (DbTuple ruleWithOrder : rulesWithOrders) {
 			RuleVO ruleVO = RuleCache.getInstance().getRule(ruleWithOrder.get(0, Integer.class));

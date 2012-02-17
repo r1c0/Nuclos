@@ -68,6 +68,8 @@ import org.nuclos.server.security.NuclosLocalServerSession;
 import org.nuclos.server.statemodel.valueobject.StateModelUsages.StateModelUsage;
 import org.nuclos.server.statemodel.valueobject.StateModelUsagesCache;
 import org.nuclos.server.statemodel.valueobject.StateTransitionVO;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.transaction.support.TransactionSynchronizationAdapter;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
@@ -80,6 +82,7 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
  * @author	<a href="mailto:ramin.goettlich@novabit.de">ramin.goettlich</a>
  * @version 00.01.000
  */
+@Component
 public class SecurityCache implements SecurityCacheMBean {
 
 	private static final Logger LOG = Logger.getLogger(SecurityCache.class);
@@ -91,6 +94,10 @@ public class SecurityCache implements SecurityCacheMBean {
 	private SecurityFacadeLocal securityfacade;
 
 	private GenericObjectGroupFacadeLocal genericobjectgroupfacade;
+	
+	private DataBaseHelper dataBaseHelper;
+	
+	private StateCache stateCache;
 
 	private final Map<PermissionKey.AttributePermissionKey, Permission> mpAttributePermission 
 		= new ConcurrentHashMap<PermissionKey.AttributePermissionKey, Permission>();
@@ -103,7 +110,7 @@ public class SecurityCache implements SecurityCacheMBean {
 	private final Map<UserSubForm, Map<Integer, Permission>> mpSubForms
 		= new ConcurrentHashMap<SecurityCache.UserSubForm, Map<Integer,Permission>>();
 
-	private static class UserRights {
+	private class UserRights {
 
 		private final String sUserName;
 
@@ -164,7 +171,7 @@ public class SecurityCache implements SecurityCacheMBean {
 
 		public synchronized Collection<Integer> getTransitionIds() {
 			if (collTransitionIds == null) {
-				DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
+				DbQueryBuilder builder = dataBaseHelper.getDbAccess().getQueryBuilder();
 				DbQuery<Integer> query = builder.createQuery(Integer.class);
 
 				if (isSuperUser()) {
@@ -176,7 +183,7 @@ public class SecurityCache implements SecurityCacheMBean {
 					query.where(t.baseColumn("INTID_T_MD_ROLE", Integer.class).in(getRoleIds()));
 				}
 
-				collTransitionIds = DataBaseHelper.getDbAccess().executeQuery(query.distinct(true));
+				collTransitionIds = dataBaseHelper.getDbAccess().executeQuery(query.distinct(true));
 			}
 			return collTransitionIds;
 		}
@@ -200,7 +207,7 @@ public class SecurityCache implements SecurityCacheMBean {
 		private synchronized Map<ReportType,Collection<Integer>> readReports(boolean readWrite) {
 			Map<ReportType,Collection<Integer>> result = new HashMap<ReportType,Collection<Integer>>();
 
-			DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
+			DbQueryBuilder builder = dataBaseHelper.getDbAccess().getQueryBuilder();
 			DbQuery<DbTuple> query = builder.createTupleQuery();
 			DbFrom t = query.from("T_UD_REPORT").alias(SystemFields.BASE_ALIAS);
 			query.multiselect(t.baseColumn("INTID", Integer.class), t.baseColumn("INTTYPE", Integer.class));
@@ -215,7 +222,7 @@ public class SecurityCache implements SecurityCacheMBean {
 					builder.and(rrc.in(getRoleIds()), readWriteCond)));
 			}
 
-			for (DbTuple tuple : DataBaseHelper.getDbAccess().executeQuery(query.distinct(true))) {
+			for (DbTuple tuple : dataBaseHelper.getDbAccess().executeQuery(query.distinct(true))) {
 				Integer id = tuple.get(0, Integer.class);
 				ReportType type = KeyEnum.Utils.findEnum(ReportType.class, tuple.get(1, Integer.class));
 				if (result.containsKey(type))
@@ -258,7 +265,7 @@ public class SecurityCache implements SecurityCacheMBean {
 		}
 
 		private synchronized Collection<Integer> readDataSourceIds(boolean readWrite) {
-			DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
+			DbQueryBuilder builder = dataBaseHelper.getDbAccess().getQueryBuilder();
 			DbQuery<Integer> query = builder.createQuery(Integer.class);
 			DbFrom t = query.from("T_UD_DATASOURCE").alias(SystemFields.BASE_ALIAS);
 			query.select(t.baseColumn("INTID", Integer.class));
@@ -271,7 +278,7 @@ public class SecurityCache implements SecurityCacheMBean {
 					ro.baseColumn("INTID_T_UD_REPORT", Integer.class).in(reportIds)));
 			}
 
-			return DataBaseHelper.getDbAccess().executeQuery(query.distinct(true));
+			return dataBaseHelper.getDbAccess().executeQuery(query.distinct(true));
 		}
 
 		private DbCondition getNameCondition(DbQuery<?> q, DbFrom t, String column) {
@@ -287,7 +294,7 @@ public class SecurityCache implements SecurityCacheMBean {
 		}
 
 		private ModulePermissions readModulePermissions() {
-			DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
+			DbQueryBuilder builder = dataBaseHelper.getDbAccess().getQueryBuilder();
 
 			final ModuleProvider moduleprovider = Modules.getInstance();
 			final Map<Pair<String, Integer>, ModulePermission> mpByEntityName = new HashMap<Pair<String, Integer>, ModulePermission>();
@@ -302,7 +309,7 @@ public class SecurityCache implements SecurityCacheMBean {
 				DbFrom t = query.from("T_MD_ENTITY").alias(SystemFields.BASE_ALIAS);
 				query.select(t.baseColumn("STRENTITY", String.class));
 				query.where(builder.equal(t.baseColumn("BLNUSESSTATEMODEL", Boolean.class), true));
-				for (String entityName : DataBaseHelper.getDbAccess().executeQuery(query.distinct(true))) {
+				for (String entityName : dataBaseHelper.getDbAccess().executeQuery(query.distinct(true))) {
 					ModulePermission permission = ModulePermission.DELETE_PHYSICALLY;
 					final Integer iModuleId = moduleprovider.getModuleIdByEntityName(entityName);
 
@@ -313,7 +320,7 @@ public class SecurityCache implements SecurityCacheMBean {
 
 					Set<Integer> newAllowedProcesses = new HashSet<Integer>();
 					for (Integer iStateModelId : StateModelUsagesCache.getInstance().getStateUsages().getStateModelIdsByModuleId(iModuleId)) {
-						StateTransitionVO initialTransitionVO = StateCache.getInstance().getInitialTransistionByModel(iStateModelId);
+						StateTransitionVO initialTransitionVO = stateCache.getInitialTransistionByModel(iStateModelId);
 						if (iStateModelId != null && initialTransitionVO != null) {
 							for (UsageCriteria uc : StateModelUsagesCache.getInstance().getStateUsages().getUsageCriteriaByStateModelId(iStateModelId)) {
 								newAllowedProcesses.add(uc.getProcessId());
@@ -334,7 +341,7 @@ public class SecurityCache implements SecurityCacheMBean {
 				query.where(builder.and(
 					re.baseColumn("INTID_T_MD_ROLE", Integer.class).in(getRoleIds()),
 					builder.equal(m.baseColumn("BLNUSESSTATEMODEL", Boolean.class), true)));
-				for (DbTuple tuple : DataBaseHelper.getDbAccess().executeQuery(query)) {
+				for (DbTuple tuple : dataBaseHelper.getDbAccess().executeQuery(query)) {
 					String entityName = tuple.get(0, String.class);
 					Integer group = tuple.get(1, Integer.class);
 					ModulePermission permission = ModulePermission.getInstance(tuple.get(2, Integer.class));
@@ -350,7 +357,7 @@ public class SecurityCache implements SecurityCacheMBean {
 						Boolean isNewAllowed = false;
 						if (smu != null) {
 							Integer iStateModelId = smu.getStateModelId();
-							StateTransitionVO initialTransitionVO = iStateModelId!=null? StateCache.getInstance().getInitialTransistionByModel(iStateModelId) : null;
+							StateTransitionVO initialTransitionVO = iStateModelId!=null? stateCache.getInitialTransistionByModel(iStateModelId) : null;
 							isNewAllowed = iStateModelId != null && initialTransitionVO != null &&
 								!CollectionUtils.intersection(initialTransitionVO.getRoleIds(), getRoleIds()).isEmpty();
 						}
@@ -363,7 +370,7 @@ public class SecurityCache implements SecurityCacheMBean {
 						Set<Integer> newAllowedProcesses = new HashSet<Integer>();
 
 						for (Integer iStateModelId : StateModelUsagesCache.getInstance().getStateUsages().getStateModelIdsByModuleId(iModuleId)) {
-							StateTransitionVO initialTransitionVO = StateCache.getInstance().getInitialTransistionByModel(iStateModelId);
+							StateTransitionVO initialTransitionVO = stateCache.getInitialTransistionByModel(iStateModelId);
 							final Boolean isNewAllowed = iStateModelId != null && initialTransitionVO != null &&
 								!CollectionUtils.intersection(initialTransitionVO.getRoleIds(), getRoleIds()).isEmpty();
 							if (isNewAllowed) {
@@ -389,12 +396,12 @@ public class SecurityCache implements SecurityCacheMBean {
 					mpByEntityName.put(metaVO.getEntityName(), MasterDataPermission.DELETE);
 				}
 			} else {
-				DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
+				DbQueryBuilder builder = dataBaseHelper.getDbAccess().getQueryBuilder();
 				DbQuery<DbTuple> query = builder.createTupleQuery();
 				DbFrom t = query.from("T_MD_ROLE_MASTERDATA").alias(SystemFields.BASE_ALIAS);
 				query.multiselect(t.baseColumn("STRMASTERDATA", String.class), t.baseColumn("INTPERMISSION", Integer.class));
 				query.where(t.baseColumn("INTID_T_MD_ROLE", Integer.class).in(getRoleIds()));
-				for (DbTuple tuple : DataBaseHelper.getDbAccess().executeQuery(query)) {
+				for (DbTuple tuple : dataBaseHelper.getDbAccess().executeQuery(query)) {
 					String entity = tuple.get(0, String.class);
 					MasterDataPermission mp = MasterDataPermission.getInstance(tuple.get(1, Integer.class));
 					mpByEntityName.put(entity, mp.max(mpByEntityName.get(entity)));
@@ -408,21 +415,21 @@ public class SecurityCache implements SecurityCacheMBean {
 		}
 
 		private Set<Integer> readUserRoleIds() {
-			DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
+			DbQueryBuilder builder = dataBaseHelper.getDbAccess().getQueryBuilder();
 			DbQuery<Integer> query = builder.createQuery(Integer.class);
 			DbFrom t = query.from("T_MD_ROLE_USER").alias(SystemFields.BASE_ALIAS);
 			query.select(t.baseColumn("INTID_T_MD_ROLE", Integer.class));
 			query.where(builder.equal(t.baseColumn("INTID_T_MD_USER", Integer.class), getUserId()));
-			return new HashSet<Integer>(DataBaseHelper.getDbAccess().executeQuery(query.distinct(true)));
+			return new HashSet<Integer>(dataBaseHelper.getDbAccess().executeQuery(query.distinct(true)));
 		}
 
 		private Set<String> readActions() {
 			if (isSuperUser()) {
-				DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
+				DbQueryBuilder builder = dataBaseHelper.getDbAccess().getQueryBuilder();
 				DbQuery<String> query = builder.createQuery(String.class);
 				DbFrom t = query.from("T_AD_ACTION").alias(SystemFields.BASE_ALIAS);
 				query.select(t.baseColumn("STRACTION", String.class));
-				Set<String> actions = new HashSet<String>(DataBaseHelper.getDbAccess().executeQuery(query));
+				Set<String> actions = new HashSet<String>(dataBaseHelper.getDbAccess().executeQuery(query));
 
 				for(MasterDataVO mdvo : XMLEntities.getData(NuclosEntity.ACTION).getAll()) {
 					actions.add(mdvo.getField("action", String.class));
@@ -430,23 +437,23 @@ public class SecurityCache implements SecurityCacheMBean {
 				return actions;
 			}
 
-			DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
+			DbQueryBuilder builder = dataBaseHelper.getDbAccess().getQueryBuilder();
 			DbQuery<String> query = builder.createQuery(String.class);
 			DbFrom t = query.from("T_MD_ROLE_ACTION").alias(SystemFields.BASE_ALIAS);
 			query.select(t.baseColumn("STRACTIONNAME", String.class));
 			query.where(t.baseColumn("INTID_T_MD_ROLE", Integer.class).in(getRoleIds()));
-			return new HashSet<String>(DataBaseHelper.getDbAccess().executeQuery(query));
+			return new HashSet<String>(dataBaseHelper.getDbAccess().executeQuery(query));
 		}
 
 		public synchronized Map<Integer, Permission> getSubFormPermissions(String sEntityName) {
 			final Map<Integer, Permission> result = new HashMap<Integer, Permission>();
-			DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
+			DbQueryBuilder builder = dataBaseHelper.getDbAccess().getQueryBuilder();
 
 			if (isSuperUser()) {
 				DbQuery<Integer> query = builder.createQuery(Integer.class);
 				DbFrom t = query.from("T_MD_STATE").alias(SystemFields.BASE_ALIAS);
 				query.select(t.baseColumn("INTID", Integer.class));
-				for (Integer state : DataBaseHelper.getDbAccess().executeQuery(query)) {
+				for (Integer state : dataBaseHelper.getDbAccess().executeQuery(query)) {
 					result.put(state, Permission.READWRITE);
 				}
 			} else {
@@ -458,7 +465,7 @@ public class SecurityCache implements SecurityCacheMBean {
 				query.where(builder.and(
 					t.baseColumn("INTID_T_MD_ROLE", Integer.class).in(getRoleIds()),
 					builder.equal(t.baseColumn("STRENTITY", String.class), sEntityName)));
-				for (DbTuple tuple : DataBaseHelper.getDbAccess().executeQuery(query)) {
+				for (DbTuple tuple : dataBaseHelper.getDbAccess().executeQuery(query)) {
 					Integer state = tuple.get(0, Integer.class);
 					Permission permission = Boolean.TRUE.equals(tuple.get(1)) ? Permission.READWRITE : Permission.READONLY;
 					result.put(state, permission.max(result.get(state)));
@@ -469,13 +476,13 @@ public class SecurityCache implements SecurityCacheMBean {
 
 		public synchronized Map<Integer, Permission> getAttributeGroupPermissions(Integer iAttributeGroupId) {
 			final Map<Integer, Permission> result = new HashMap<Integer, Permission>();
-			DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
+			DbQueryBuilder builder = dataBaseHelper.getDbAccess().getQueryBuilder();
 
 			if (isSuperUser()) {
 				DbQuery<Integer> query = builder.createQuery(Integer.class);
 				DbFrom t = query.from("T_MD_STATE").alias(SystemFields.BASE_ALIAS);
 				query.select(t.baseColumn("INTID", Integer.class));
-				for (Integer state : DataBaseHelper.getDbAccess().executeQuery(query)) {
+				for (Integer state : dataBaseHelper.getDbAccess().executeQuery(query)) {
 					result.put(state, Permission.READWRITE);
 				}
 			} else {
@@ -487,7 +494,7 @@ public class SecurityCache implements SecurityCacheMBean {
 				query.where(builder.and(
 					t.baseColumn("INTID_T_MD_ROLE", Integer.class).in(getRoleIds()),
 					builder.equal(t.baseColumn("INTID_T_MD_ATTRIBUTEGROUP", Integer.class), iAttributeGroupId)));
-				for (DbTuple tuple : DataBaseHelper.getDbAccess().executeQuery(query)) {
+				for (DbTuple tuple : dataBaseHelper.getDbAccess().executeQuery(query)) {
 					Integer state = tuple.get(0, Integer.class);
 					Permission permission = Boolean.TRUE.equals(tuple.get(1)) ? Permission.READWRITE : Permission.READONLY;
 					result.put(state, permission.max(result.get(state)));
@@ -506,7 +513,7 @@ public class SecurityCache implements SecurityCacheMBean {
 		}
 
 		private List<CompulsorySearchFilter> readCompulsorySearchFilterIdsImpl(String subtable, String condcolumn, Collection<Integer> condids) {
-			DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
+			DbQueryBuilder builder = dataBaseHelper.getDbAccess().getQueryBuilder();
 
 			DbQuery<DbTuple> query = builder.createTupleQuery();
 			DbFrom t = query.from("T_UD_SEARCHFILTER").alias(SystemFields.BASE_ALIAS);
@@ -518,7 +525,7 @@ public class SecurityCache implements SecurityCacheMBean {
 				builder.equal(u.baseColumn("BLNCOMPULSORYFILTER", Boolean.class), true),
 				u.baseColumn(condcolumn, Integer.class).in(condids)));
 			query.distinct(true);
-			return DataBaseHelper.getDbAccess().executeQuery(query, new Transformer<DbTuple, CompulsorySearchFilter>() {
+			return dataBaseHelper.getDbAccess().executeQuery(query, new Transformer<DbTuple, CompulsorySearchFilter>() {
 				@Override
 				public CompulsorySearchFilter transform(DbTuple t) {
 					return new CompulsorySearchFilter(
@@ -528,14 +535,14 @@ public class SecurityCache implements SecurityCacheMBean {
 		}
 
 		private void readUserData() {
-			DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
+			DbQueryBuilder builder = dataBaseHelper.getDbAccess().getQueryBuilder();
 			DbQuery<DbTuple> query = builder.createTupleQuery();
 			DbFrom t = query.from("T_MD_USER").alias(SystemFields.BASE_ALIAS);
 			query.multiselect(
 				t.baseColumn("INTID", Integer.class),
 				t.baseColumn("BLNSUPERUSER", Boolean.class));
 			query.where(getNameCondition(query, t, "STRUSER"));
-			DbTuple tuple = CollectionUtils.getFirst(DataBaseHelper.getDbAccess().executeQuery(query));
+			DbTuple tuple = CollectionUtils.getFirst(dataBaseHelper.getDbAccess().executeQuery(query));
 			if (tuple != null) {
 				userId = tuple.get(0, Integer.class);
 				isSuperUser = Boolean.TRUE.equals(tuple.get(1, Boolean.class));
@@ -546,6 +553,7 @@ public class SecurityCache implements SecurityCacheMBean {
 			}
 		}
 	}	// class UserRights
+
 
 	/**
 	 * defines a unique key to get the permission for an attributegroup
@@ -627,17 +635,39 @@ public class SecurityCache implements SecurityCacheMBean {
 		}
 	}
 
-	public static synchronized SecurityCache getInstance() {
+	public static SecurityCache getInstance() {
+		/*
 		if (INSTANCE == null) {
 			INSTANCE = new SecurityCache();
 			// register this cache as MBean
 			//MBeanAgent.registerCache(singleton, SecurityCacheMBean.class);
 		}
-
+		 */
 		return INSTANCE;
 	}
 
-	private SecurityCache() {
+	SecurityCache() {
+		INSTANCE = this;
+	}
+	
+	@Autowired
+	void setSecurityFacadeLocal(SecurityFacadeLocal securityFacadeLocal) {
+		this.securityfacade = securityFacadeLocal;
+	}
+	
+	@Autowired
+	void setGenericObjectGroupFacadeLocal(GenericObjectGroupFacadeLocal genericObjectGroupFacadeLocal) {
+		this.genericobjectgroupfacade = genericObjectGroupFacadeLocal;
+	}
+	
+	@Autowired
+	void setDataBaseHelper(DataBaseHelper dataBaseHelper) {
+		this.dataBaseHelper = dataBaseHelper;
+	}
+	
+	@Autowired
+	void setStateCache(StateCache stateCache) {
+		this.stateCache = stateCache;
 	}
 
 	public Set<String> getAllowedActions(String sUserName) {
@@ -781,9 +811,11 @@ public class SecurityCache implements SecurityCacheMBean {
 	}
 
 	private GenericObjectGroupFacadeLocal getGenericObjectGroupFacade() {
+		/*
 		if (genericobjectgroupfacade == null) {
 			genericobjectgroupfacade = ServiceLocator.getInstance().getFacade(GenericObjectGroupFacadeLocal.class);
 		}
+		 */
 		return genericobjectgroupfacade;
 	}
 
@@ -996,9 +1028,11 @@ public class SecurityCache implements SecurityCacheMBean {
 	}
 
 	private SecurityFacadeLocal getSecurityFacade() {
+		/*
 		if (securityfacade == null) {
 			securityfacade = ServiceLocator.getInstance().getFacade(SecurityFacadeLocal.class);
 		}
+		 */
 		return securityfacade;
 	}
 

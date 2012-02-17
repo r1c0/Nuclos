@@ -45,6 +45,7 @@ import javax.print.PrintService;
 import javax.print.PrintServiceLookup;
 import javax.print.attribute.AttributeSet;
 import javax.print.attribute.PrintRequestAttributeSet;
+import javax.sql.DataSource;
 import javax.swing.table.TableModel;
 
 import net.sf.jasperreports.engine.JRDataSource;
@@ -88,7 +89,6 @@ import org.nuclos.common2.exception.CommonPermissionException;
 import org.nuclos.common2.exception.CommonRemoveException;
 import org.nuclos.common2.exception.CommonStaleVersionException;
 import org.nuclos.server.common.MasterDataMetaCache;
-import org.nuclos.server.common.NuclosDataSources;
 import org.nuclos.server.common.NuclosSystemParameters;
 import org.nuclos.server.common.SecurityCache;
 import org.nuclos.server.common.ejb3.LocaleFacadeLocal;
@@ -124,6 +124,7 @@ import org.nuclos.server.report.valueobject.SubreportVO;
 import org.nuclos.server.resource.ResourceCache;
 import org.nuclos.server.resource.valueobject.ResourceVO;
 import org.nuclos.server.ruleengine.NuclosBusinessRuleException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.datasource.DataSourceUtils;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -142,6 +143,18 @@ public class ReportFacadeBean extends NuclosFacadeBean implements ReportFacadeLo
    public static final String ALIAS_INTID = "intid";
 
    private static final String CHARENCODING = "UTF-8";
+   
+   //
+   
+   private DataSource dataSource;
+   
+   public ReportFacadeBean() {
+   }
+   
+   @Autowired
+   void setDataSource(DataSource dataSource) {
+	   this.dataSource = dataSource;
+   }
 
    @PostConstruct
    @RolesAllowed("Login")
@@ -200,7 +213,7 @@ public Collection<ReportVO> getReportsForDatasourceId(Integer iDataSourceId, fin
       this.checkReadAllowed(NuclosEntity.DATASOURCE);
       final Collection<ReportVO> collreport = new ArrayList<ReportVO>();
 
-      DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
+      DbQueryBuilder builder = dataBaseHelper.getDbAccess().getQueryBuilder();
       DbQuery<Integer> query = builder.createQuery(Integer.class);
       DbFrom r = query.from("T_UD_REPORT").alias("r");
       DbFrom o = r.join("T_UD_REPORTOUTPUT", JoinType.INNER).alias("o").on("INTID", "INTID_T_UD_REPORT", Integer.class);
@@ -209,7 +222,7 @@ public Collection<ReportVO> getReportsForDatasourceId(Integer iDataSourceId, fin
          builder.equal(r.baseColumn("INTTYPE", Integer.class), type.getValue()),
          builder.equal(o.baseColumn("INTID_T_UD_DATASOURCE", String.class), iDataSourceId)));
 
-      for (Integer intid : DataBaseHelper.getDbAccess().executeQuery(query)) {
+      for (Integer intid : dataBaseHelper.getDbAccess().executeQuery(query)) {
          try {
             MasterDataVO mdVO = getMasterDataFacade().get(NuclosEntity.REPORT.getEntityName(), intid);
             Collection<Integer> readableReports = SecurityCache.getInstance().getReadableReports(getCurrentUserName()).get(type);
@@ -411,7 +424,7 @@ public ReportOutputVO getReportOutput(Integer iReportOutputId) throws CommonFind
 
       List<ReportVO> reports = new ArrayList<ReportVO>();
 
-      DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
+      DbQueryBuilder builder = dataBaseHelper.getDbAccess().getQueryBuilder();
       DbQuery<Integer> query = builder.createQuery(Integer.class);
       DbFrom t = query.from("T_UD_REPORTUSAGE").alias(SystemFields.BASE_ALIAS);
       query.select(t.baseColumn("INTID_T_UD_REPORT", Integer.class));
@@ -425,7 +438,7 @@ public ReportOutputVO getReportOutput(Integer iReportOutputId) throws CommonFind
          query.where(builder.and(cond, builder.or(c.isNull(), builder.equal(c, iProcessId))));
       }
 
-      List<Integer> collUsableReportIds = DataBaseHelper.getDbAccess().executeQuery(query);
+      List<Integer> collUsableReportIds = dataBaseHelper.getDbAccess().executeQuery(query);
 
       Map<ReportType,Collection<Integer>> readableReports = SecurityCache.getInstance().getReadableReports(getCurrentUserName());
 
@@ -500,7 +513,7 @@ public ReportOutputVO getReportOutput(Integer iReportOutputId) throws CommonFind
          JasperPrint jprint = null;
          if (reportoutput.getDatasourceId() != null) {
         	// get existing connection (enlisted in current transaction)
-        	Connection conn = DataSourceUtils.getConnection(NuclosDataSources.getDefaultDS());//DataBaseHelper.getConnection(NuclosDataSources.getDefaultDS());
+        	Connection conn = DataSourceUtils.getConnection(dataSource);//DataBaseHelper.getConnection(NuclosDataSources.getDefaultDS());
             try {
                DatasourceFacadeLocal facade = ServiceLocator.getInstance().getFacade(DatasourceFacadeLocal.class);
 

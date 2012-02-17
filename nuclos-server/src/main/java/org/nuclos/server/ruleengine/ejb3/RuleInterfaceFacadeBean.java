@@ -167,14 +167,14 @@ public class RuleInterfaceFacadeBean extends NuclosFacadeBean implements RuleInt
 				asRecipientAddresses[i] = sRecipient;
 			}
 			else {
-				DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
+				DbQueryBuilder builder = dataBaseHelper.getDbAccess().getQueryBuilder();
 				DbQuery<String> query = builder.createQuery(String.class);
 				DbFrom t = query.from("T_MD_USER").alias(SystemFields.BASE_ALIAS);
 				query.select(t.baseColumn("STREMAIL", String.class));
 				query.where(builder.equal(builder.upper(t.baseColumn("STRUSER", String.class)), builder.upper(builder.literal(sRecipient))));
 
 				// @todo P2 There will be a NPE in mailcommunicator.sendMessage(). Replace array with Collection.
-				String sEmail = CollectionUtils.getFirst(DataBaseHelper.getDbAccess().executeQuery(query));
+				String sEmail = CollectionUtils.getFirst(dataBaseHelper.getDbAccess().executeQuery(query));
 				asRecipientAddresses[i] = sEmail;
 			}
 		}
@@ -589,7 +589,7 @@ public class RuleInterfaceFacadeBean extends NuclosFacadeBean implements RuleInt
 	@Override
 	public void callDbProcedure(String sProcedureName, Object... oParams) throws NuclosBusinessRuleException {
 		try {
-			DataBaseHelper.getDbAccess().executeProcedure(sProcedureName, oParams);
+			dataBaseHelper.getDbAccess().executeProcedure(sProcedureName, oParams);
 		} catch (DbException e) {
 			throw new NuclosBusinessRuleException(e.getMessage(), e);
 		}
@@ -606,7 +606,7 @@ public class RuleInterfaceFacadeBean extends NuclosFacadeBean implements RuleInt
 	@Override
 	public <T> T callDbFunction(String sFunctionName, Class<T> resultType, Object... oParams) throws NuclosBusinessRuleException {
 		try {
-			return DataBaseHelper.getDbAccess().executeFunction(sFunctionName, resultType, oParams);
+			return dataBaseHelper.getDbAccess().executeFunction(sFunctionName, resultType, oParams);
 		} catch (DbException e) {
 			throw new NuclosBusinessRuleException(e.getMessage(), e);
 		}
@@ -629,7 +629,7 @@ public class RuleInterfaceFacadeBean extends NuclosFacadeBean implements RuleInt
 			throw new NuclosBusinessRuleException(e);
 		}
 
-		final DbExecutor executor = DataBaseHelper.getDbAccess().getDbExecutor();
+		final DbExecutor executor = dataBaseHelper.getDbAccess().getDbExecutor();
 		try {
 			return executor.executeQuery(selectStatement, new ResultSetRunner<Collection<MasterDataVO>>() {
 				@Override

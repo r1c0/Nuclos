@@ -100,7 +100,7 @@ public class ImportObjectProcessor extends EntityObjectProcessor {
 				if(importStructure.isUpdate()) {
 					columnValueMap.put("INTVERSION", DbIncrement.INCREMENT);
 					stmt = new DbUpdateStatement(getDbSourceForDML(), columnValueMap, columnConditionMap);
-					updated = DataBaseHelper.getDbAccess().execute(stmt) > 0;
+					updated = dataBaseHelper.getDbAccess().execute(stmt) > 0;
 					if (updated) this.updated++;
 				}
 
@@ -108,7 +108,7 @@ public class ImportObjectProcessor extends EntityObjectProcessor {
 				columnValueMap = getColumnValuesMap(valueColumnsInsert, dalVO, false);
 				if(importStructure.isInsert() && !updated) {
 					stmt = new DbInsertStatement(getDbSourceForDML(), columnValueMap);
-					DataBaseHelper.getDbAccess().execute(stmt);
+					dataBaseHelper.getDbAccess().execute(stmt);
 					inserted++;
 				}
 

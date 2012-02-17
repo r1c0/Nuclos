@@ -194,7 +194,8 @@ public class Main {
 		}
 
 		try {
-			new StartUp(asArgs);
+			final StartUp startUp = new StartUp(asArgs);
+			startUp.init();
 		} catch (Exception e) {
 			LOG.fatal("main failed: " + e, e);
 			ErrorInfo ei = new ErrorInfo("Fatal Error", e.getMessage(), null, null, e, null, null);

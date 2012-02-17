@@ -63,6 +63,8 @@ public class RecordGrantUtils {
 	
 	private DatasourceServerUtils datasourceServerUtils;
 	
+	private DataBaseHelper dataBaseHelper;
+	
 	public RecordGrantUtils() {
 	}
 	
@@ -74,6 +76,11 @@ public class RecordGrantUtils {
 	@Autowired
 	void setDatasourceServerUtils(DatasourceServerUtils datasourceServerUtils) {
 		this.datasourceServerUtils = datasourceServerUtils;
+	}
+	
+	@Autowired
+	void setDataBaseHelper(DataBaseHelper dataBaseHelper) {
+		this.dataBaseHelper = dataBaseHelper;
 	}
 
 	public void checkWriteInternal(String entity, Long id) throws CommonPermissionException {
@@ -131,7 +138,7 @@ public class RecordGrantUtils {
 
 		try {
 			if(rgVO.getValid()) {
-				ResultVO queryResult = DataBaseHelper.getDbAccess().executePlainQueryAsResultVO(
+				ResultVO queryResult = dataBaseHelper.getDbAccess().executePlainQueryAsResultVO(
 						datasourceServerUtils.getSqlQueryForId(rgVO.getSource(), getParameter(), id), 1);
 
 				if (queryResult.getRowCount() > 0) {
@@ -167,7 +174,7 @@ public class RecordGrantUtils {
 
 		try {
 			if(rgVO.getValid()) {
-				ResultVO queryResult = DataBaseHelper.getDbAccess().executePlainQueryAsResultVO(
+				ResultVO queryResult = dataBaseHelper.getDbAccess().executePlainQueryAsResultVO(
 						datasourceServerUtils.createSQL(rgVO.getSource(), getParameter()), 1);
 				boolean canWrite = true;
 				boolean canDelete = true;
@@ -329,7 +336,7 @@ public class RecordGrantUtils {
 		if (filterIds.isEmpty())
 			return null;
 
-		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
+		DbQueryBuilder builder = dataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<DbTuple> query = builder.createTupleQuery();
 		DbFrom table = query.from("T_UD_SEARCHFILTER").alias(SystemFields.BASE_ALIAS);
 		DbColumnExpression<Integer> intId = table.baseColumn("INTID", Integer.class);
@@ -341,7 +348,7 @@ public class RecordGrantUtils {
 		query.distinct(true);
 
 		List<CollectableSearchCondition> cscs = new ArrayList<CollectableSearchCondition>();
-		for (DbTuple t : DataBaseHelper.getDbAccess().executeQuery(query)) {
+		for (DbTuple t : dataBaseHelper.getDbAccess().executeQuery(query)) {
 			String filterName = t.get(1, String.class);
 			String entityName = t.get(2, String.class);
 			String xml = t.get(3, String.class);

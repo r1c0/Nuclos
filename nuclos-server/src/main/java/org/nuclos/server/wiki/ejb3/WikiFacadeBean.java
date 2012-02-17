@@ -46,13 +46,13 @@ public class WikiFacadeBean extends MasterDataFacadeBean implements WikiFacadeRe
 
 	@Override
 	public String getWikiPageFor(String sEntityName, String sAttributeName) {
-		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
+		DbQueryBuilder builder = dataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<Integer> query = builder.createQuery(Integer.class);
 		DbFrom t = query.from("T_MD_WIKI").alias(SystemFields.BASE_ALIAS);
 		query.select(t.baseColumn("INTID", Integer.class));
 		query.where(builder.equal(t.baseColumn("STRMASTERDATA", String.class), sEntityName));
 		
-		Collection<Integer> stWikiIds = DataBaseHelper.getDbAccess().executeQuery(query); 
+		Collection<Integer> stWikiIds = dataBaseHelper.getDbAccess().executeQuery(query); 
 		
 		stWikiIds.addAll(CollectionUtils.typecheck(
 			XMLEntities.getSystemObjectIdsWith(NuclosEntity.WIKI.getEntityName(), "entity", getMetaData(sEntityName).getEntityName()),

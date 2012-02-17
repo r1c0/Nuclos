@@ -2158,7 +2158,7 @@ public class RuleInterface extends CustomCodeInterface {
 	 * @return next unique system id using default sequence "IDFACTORY"
 	 */
 	public Integer getNextIntid() {
-		return DataBaseHelper.getNextIdAsInteger(DataBaseHelper.DEFAULT_SEQUENCE);
+		return DataBaseHelper.getInstance().getNextIdAsInteger(DataBaseHelper.DEFAULT_SEQUENCE);
 	}
 
 	/**

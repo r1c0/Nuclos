@@ -110,7 +110,7 @@ public class ConsoleFacadeBean extends NuclosFacadeBean implements ConsoleFacade
 	@Override
 	public void compileInvalidDbObjects() throws SQLException {
 		info("compiling invalid db objects (views and functions)");
-		DataBaseHelper.getDbAccess().validateObjects();
+		dataBaseHelper.getDbAccess().validateObjects();
 	}
 
 	/**
@@ -240,12 +240,12 @@ public class ConsoleFacadeBean extends NuclosFacadeBean implements ConsoleFacade
 	public String getDatabaseInformationAsHtml() {
 		final StringBuilder sb = new StringBuilder("<b>Database Meta Information</b><br>");
 		sb.append("<HTML><table border=\"1\">");
-		for (Map.Entry<String, Object> e : DataBaseHelper.getDbAccess().getMetaDataInfo().entrySet()) {
+		for (Map.Entry<String, Object> e : dataBaseHelper.getDbAccess().getMetaDataInfo().entrySet()) {
 			sb.append(String.format("<tr><td><b>%s</b></td><td>%s</td></tr>", e.getKey(), e.getValue()));
 		}
 
 		sb.append("</table><br><b>Vendor specific parameters:<br><table border=\"1\">");
-		final Map<String, String> mpDbParameters = DataBaseHelper.getDbAccess().getDatabaseParameters();
+		final Map<String, String> mpDbParameters = dataBaseHelper.getDbAccess().getDatabaseParameters();
 		for (String sParameter : mpDbParameters.keySet()) {
 			sb.append("<tr><td><b>" + sParameter + "</b></td><td>" + mpDbParameters.get(sParameter) + "</td></tr>");
 		}
@@ -282,7 +282,7 @@ public class ConsoleFacadeBean extends NuclosFacadeBean implements ConsoleFacade
 			mig.startMigration();
 		}
 		else if (sCommandLowerCase.equals(ConsoleConstants.CMD_REFRESH_VIEWS.toLowerCase())) {
-			EntityObjectMetaDbHelper dbHelper = new EntityObjectMetaDbHelper(DataBaseHelper.getDbAccess(), MetaDataServerProvider.getInstance());
+			EntityObjectMetaDbHelper dbHelper = new EntityObjectMetaDbHelper(dataBaseHelper.getDbAccess(), MetaDataServerProvider.getInstance());
 			List<DbStructureChange> lstDropStructureChanges = SchemaUtils.drop(dbHelper.getSchema().values());
 			List<DbStructureChange> lstCreateStructureChanges = SchemaUtils.create(dbHelper.getSchema().values());
 
@@ -291,7 +291,7 @@ public class ConsoleFacadeBean extends NuclosFacadeBean implements ConsoleFacade
 				if (af instanceof DbSimpleView) {
 					try {
 						info("DROP " + ((DbSimpleView)af).getViewName());
-						DataBaseHelper.getDbAccess().execute(sc);
+						dataBaseHelper.getDbAccess().execute(sc);
 					} catch (Exception ex) {};
 				}
 			}
@@ -301,14 +301,14 @@ public class ConsoleFacadeBean extends NuclosFacadeBean implements ConsoleFacade
 				if (af instanceof DbSimpleView) {
 					try {
 						info("CREATE " + ((DbSimpleView)af).getViewName());
-						DataBaseHelper.getDbAccess().execute(sc);
+						dataBaseHelper.getDbAccess().execute(sc);
 					} catch (Exception ex) {};
 				}
 			}
 
 		}
 		else if(sCommandLowerCase.equals(ConsoleConstants.CMD_CREATE_UNIQUECONSTRAINTS.toLowerCase())) {
-			EntityObjectMetaDbHelper dbHelper = new EntityObjectMetaDbHelper(DataBaseHelper.getDbAccess(), MetaDataServerProvider.getInstance());
+			EntityObjectMetaDbHelper dbHelper = new EntityObjectMetaDbHelper(dataBaseHelper.getDbAccess(), MetaDataServerProvider.getInstance());
 			List<DbStructureChange> lstCreateStructureChanges = SchemaUtils.create(dbHelper.getSchema().values());
 			for (DbStructureChange sc : lstCreateStructureChanges) {
 				DbArtifact af = sc.getArtifact2();
@@ -316,13 +316,13 @@ public class ConsoleFacadeBean extends NuclosFacadeBean implements ConsoleFacade
 					try {
 						DbUniqueConstraint c = (DbUniqueConstraint)af;
 						info("CREATE " + c.getConstraintName());
-						DataBaseHelper.getDbAccess().execute(sc);
+						dataBaseHelper.getDbAccess().execute(sc);
 					} catch (Exception ex) {};
 				}
 			}
 		}
 		else if(sCommandLowerCase.equals(ConsoleConstants.CMD_CREATE_FOREIGNCONSTRAINTS.toLowerCase())) {
-			EntityObjectMetaDbHelper dbHelper = new EntityObjectMetaDbHelper(DataBaseHelper.getDbAccess(), MetaDataServerProvider.getInstance());
+			EntityObjectMetaDbHelper dbHelper = new EntityObjectMetaDbHelper(dataBaseHelper.getDbAccess(), MetaDataServerProvider.getInstance());
 			List<DbStructureChange> lstCreateStructureChanges = SchemaUtils.create(dbHelper.getSchema().values());
 			for (DbStructureChange sc : lstCreateStructureChanges) {
 				DbArtifact af = sc.getArtifact2();
@@ -330,13 +330,13 @@ public class ConsoleFacadeBean extends NuclosFacadeBean implements ConsoleFacade
 					try {
 						DbForeignKeyConstraint c = (DbForeignKeyConstraint)af;
 						info("CREATE " + c.getConstraintName());
-						DataBaseHelper.getDbAccess().execute(sc);
+						dataBaseHelper.getDbAccess().execute(sc);
 					} catch (Exception ex) {};
 				}
 			}
 		}
 		else if(sCommandLowerCase.startsWith(ConsoleConstants.CMD_VALIDATE_SCHEMA.toLowerCase())) {
-			SchemaValidator validator = new SchemaValidator(DataBaseHelper.getDbAccess(), sCommandLowerCase.split("\\s+"));
+			SchemaValidator validator = new SchemaValidator(dataBaseHelper.getDbAccess(), sCommandLowerCase.split("\\s+"));
 			validator.validate();
 		}
 		else {

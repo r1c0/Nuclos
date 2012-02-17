@@ -246,7 +246,7 @@ public class MasterDataFacadeBean extends NuclosFacadeBean implements MasterData
 	// @TODO GOREF
 	@Override
     public Collection<MasterDataMetaVO> getMetaDataByModuleId(Integer iModuleId) {
-		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
+		DbQueryBuilder builder = dataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<String> query = builder.createQuery(String.class);
 		DbFrom m = query.from("T_AD_MASTERDATA").alias("m");
 		DbFrom mf = m.join("T_AD_MASTERDATA_FIELD", JoinType.INNER).alias("mf").on("INTID", "INTID_T_AD_MASTERDATA", Integer.class);
@@ -258,7 +258,7 @@ public class MasterDataFacadeBean extends NuclosFacadeBean implements MasterData
 		query.orderBy(builder.asc(m.baseColumn("STRENTITY", String.class)));
 
 		final MasterDataMetaCache mdmetacache = MasterDataMetaCache.getInstance();
-		return DataBaseHelper.getDbAccess().executeQuery(query, new Transformer<String, MasterDataMetaVO>() {
+		return dataBaseHelper.getDbAccess().executeQuery(query, new Transformer<String, MasterDataMetaVO>() {
 			@Override
 			public MasterDataMetaVO transform(String ent) {
 				return mdmetacache.getMetaData(ent);
@@ -466,7 +466,7 @@ public class MasterDataFacadeBean extends NuclosFacadeBean implements MasterData
 
 		String dbEntity = mdmetacvo.getDBEntity();
 
-		if(!DataBaseHelper.isObjectAvailable(dbEntity)) {
+		if(!dataBaseHelper.isObjectAvailable(dbEntity)) {
 			throw new CommonFatalException(
 				StringUtils.getParameterizedExceptionMessage(
 					"masterdata.error.missing.table", dbEntity,
@@ -1021,7 +1021,7 @@ public class MasterDataFacadeBean extends NuclosFacadeBean implements MasterData
 
 	private boolean getUsesRuleEngine(String sEntityName, String event) {
 
-		DbQuery<DbTuple> query = DataBaseHelper.getDbAccess().getQueryBuilder().createTupleQuery();
+		DbQuery<DbTuple> query = dataBaseHelper.getDbAccess().getQueryBuilder().createTupleQuery();
 		DbFrom from = query.from("T_MD_RULE_EVENT").alias(SystemFields.BASE_ALIAS);
 		List<DbSelection<?>> columns = new ArrayList<DbSelection<?>>();
 
@@ -1029,14 +1029,14 @@ public class MasterDataFacadeBean extends NuclosFacadeBean implements MasterData
 		query.multiselect(columns);
 
 		List<DbCondition> lstDbCondition = new ArrayList<DbCondition>();
-		lstDbCondition.add(DataBaseHelper.getDbAccess().getQueryBuilder().equal(from.baseColumn("STRMASTERDATA", String.class),
-			DataBaseHelper.getDbAccess().getQueryBuilder().literal(sEntityName)));
-		lstDbCondition.add(DataBaseHelper.getDbAccess().getQueryBuilder().equal(from.baseColumn("STREVENT", String.class),
-			DataBaseHelper.getDbAccess().getQueryBuilder().literal(event)));
+		lstDbCondition.add(dataBaseHelper.getDbAccess().getQueryBuilder().equal(from.baseColumn("STRMASTERDATA", String.class),
+			dataBaseHelper.getDbAccess().getQueryBuilder().literal(sEntityName)));
+		lstDbCondition.add(dataBaseHelper.getDbAccess().getQueryBuilder().equal(from.baseColumn("STREVENT", String.class),
+			dataBaseHelper.getDbAccess().getQueryBuilder().literal(event)));
 
-		query.where(DataBaseHelper.getDbAccess().getQueryBuilder().and(lstDbCondition.toArray(new DbCondition[0])));
+		query.where(dataBaseHelper.getDbAccess().getQueryBuilder().and(lstDbCondition.toArray(new DbCondition[0])));
 
-		List<DbTuple> usages = DataBaseHelper.getDbAccess().executeQuery(query);
+		List<DbTuple> usages = dataBaseHelper.getDbAccess().executeQuery(query);
 
 		return (usages.size() > 0);
 	}
@@ -1214,7 +1214,7 @@ public class MasterDataFacadeBean extends NuclosFacadeBean implements MasterData
 		Integer iModuleId, boolean bSearchMode) {
 		// @todo Try to replace with getDependantMasterData
 
-		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
+		DbQueryBuilder builder = dataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<DbTuple> query = builder.createTupleQuery();
 		DbFrom process = query.from("T_MD_PROCESS").alias("process");
 		query.multiselect(process.baseColumn("INTID", Integer.class), process.baseColumn("STRPROCESS", String.class));
@@ -1229,7 +1229,7 @@ public class MasterDataFacadeBean extends NuclosFacadeBean implements MasterData
 		}
 		query.where(condition);
 
-		return DataBaseHelper.getDbAccess().executeQuery(query, new Transformer<DbTuple, CollectableField>() {
+		return dataBaseHelper.getDbAccess().executeQuery(query, new Transformer<DbTuple, CollectableField>() {
 			@Override
 			public CollectableField transform(DbTuple t) {
 				return new CollectableValueIdField(t.get(0, Integer.class), t.get(1, String.class));
@@ -1245,7 +1245,7 @@ public class MasterDataFacadeBean extends NuclosFacadeBean implements MasterData
 	@Override
     public List<org.nuclos.common.collect.collectable.CollectableField> getSubEntities(Integer iModuleId) {
 
-		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
+		DbQueryBuilder builder = dataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<DbTuple> query = builder.createTupleQuery();
 		DbFrom m = query.from("T_MD_ENTITY").alias("m");
 		DbFrom mf = m.join("T_MD_ENTITY_FIELD", JoinType.INNER).alias("mf").on("INTID", "INTID_T_MD_ENTITY", Integer.class);
@@ -1254,7 +1254,7 @@ public class MasterDataFacadeBean extends NuclosFacadeBean implements MasterData
 		query.where(builder.equal(p.baseColumn("INTID", Integer.class), iModuleId));
 		query.orderBy(builder.asc(m.baseColumn("STRENTITY", String.class)));
 
-		return DataBaseHelper.getDbAccess().executeQuery(query, new Transformer<DbTuple, CollectableField>() {
+		return dataBaseHelper.getDbAccess().executeQuery(query, new Transformer<DbTuple, CollectableField>() {
 			@Override
 			public CollectableField transform(DbTuple t) {
 				return new CollectableValueIdField(t.get(0, Integer.class), t.get(1, String.class));

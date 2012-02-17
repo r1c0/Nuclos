@@ -68,7 +68,7 @@ public class BusinessIDFactory {
 
 	private static Integer getNextSequentialNumber(int iModuleId) {
 		try {
-			return DataBaseHelper.getDbAccess().executeFunction("GETNEXTSEQUENTIALNUMBER", Integer.class, iModuleId);
+			return DataBaseHelper.getInstance().getDbAccess().executeFunction("GETNEXTSEQUENTIALNUMBER", Integer.class, iModuleId);
 		}
 		catch (DbException ex) {
 			final String sModuleLabel = Modules.getInstance().getEntityLabelByModuleId(iModuleId);

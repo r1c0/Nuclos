@@ -59,11 +59,24 @@ import org.nuclos.server.dblayer.structure.DbSimpleView;
 import org.nuclos.server.dblayer.structure.DbTable;
 import org.nuclos.server.genericobject.valueobject.CanonicalAttributeFormat;
 import org.nuclos.server.migration.AbstractMigration;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
 import org.xml.sax.InputSource;
 
+@Configurable
 public class MigrationVm2m5 extends AbstractMigration{
 
 	private boolean armed = true;
+	
+	private DataBaseHelper dataBaseHelper;
+	
+	public MigrationVm2m5() {
+	}
+	
+	@Autowired
+	void setDataBaseHelper(DataBaseHelper dataBaseHelper) {
+		this.dataBaseHelper = dataBaseHelper;
+	}
 
 	public void startMigration() {
 		try {
@@ -93,7 +106,7 @@ public class MigrationVm2m5 extends AbstractMigration{
 	private void migrateMasterdata() {
 		info("*** M I G R A T E   M A S T E R D A T A ***");
 
-		DbQuery<DbTuple> query = DataBaseHelper.getDbAccess().getQueryBuilder().createTupleQuery();
+		DbQuery<DbTuple> query = dataBaseHelper.getDbAccess().getQueryBuilder().createTupleQuery();
 		DbFrom from = query.from("T_AD_MASTERDATA");
 		from.alias("md");
 		List<DbSelection<?>> columns = new ArrayList<DbSelection<?>>();
@@ -126,7 +139,7 @@ public class MigrationVm2m5 extends AbstractMigration{
 		columns.add(getColumn(from, "STR_LOCALERESOURCE_TT", DT_STRING));
 		query.multiselect(columns);
 
-		List<DbTuple> result = DataBaseHelper.getDbAccess().executeQuery(query);
+		List<DbTuple> result = dataBaseHelper.getDbAccess().executeQuery(query);
 
 
 		for (DbTuple rs : result) {
@@ -146,7 +159,7 @@ public class MigrationVm2m5 extends AbstractMigration{
 			String sTreeDescRes = rs.get("STR_LOCALERESOURCE_TT", java.lang.String.class);
 
 
-			Integer newId = DataBaseHelper.getNextIdAsInteger(DataBaseHelper.DEFAULT_SEQUENCE);
+			Integer newId = dataBaseHelper.getNextIdAsInteger(DataBaseHelper.DEFAULT_SEQUENCE);
 
 			info("-----------------------------------");
 			info("Processing masterdata entity " + sEntity);
@@ -196,9 +209,9 @@ public class MigrationVm2m5 extends AbstractMigration{
 			columnValueMap.put("INTID_T_AD_MASTERDATA", newId);
 			conditionMap.put("INTID_T_AD_MASTERDATA", id);
 			info("Update Logbook entry (\"INTID_T_AD_MASTERDATA " + id + " --> " + newId + "\")");
-			if(armed) info(DataBaseHelper.getDbAccess().execute(new DbUpdateStatement("T_UD_LOGBOOK", columnValueMap, conditionMap)) + " records updated.");
+			if(armed) info(dataBaseHelper.getDbAccess().execute(new DbUpdateStatement("T_UD_LOGBOOK", columnValueMap, conditionMap)) + " records updated.");
 
-			if(armed) DataBaseHelper.getDbAccess().execute(new DbInsertStatement("T_MD_ENTITY", values));
+			if(armed) dataBaseHelper.getDbAccess().execute(new DbInsertStatement("T_MD_ENTITY", values));
 
 			/** update Generation */
 			columnValueMap = new HashMap<String, Object>();
@@ -206,13 +219,13 @@ public class MigrationVm2m5 extends AbstractMigration{
 			columnValueMap.put("INTID_ENTITY_SOURCE", newId);
 			conditionMap.put("INTID_ENTITY_SOURCE", id);
 			info("Update Generation subentity entry (\"INTID_ENTITY_SOURCE " + id + " --> " + newId + "\")");
-			if(armed) info(DataBaseHelper.getDbAccess().execute(new DbUpdateStatement("T_MD_GENERATION_SUBENTITY", columnValueMap, conditionMap)) + " records updated.");
+			if(armed) info(dataBaseHelper.getDbAccess().execute(new DbUpdateStatement("T_MD_GENERATION_SUBENTITY", columnValueMap, conditionMap)) + " records updated.");
 			columnValueMap = new HashMap<String, Object>();
 			conditionMap = new HashMap<String, Object>();
 			columnValueMap.put("INTID_ENTITY_TARGET", newId);
 			conditionMap.put("INTID_ENTITY_TARGET", id);
 			info("Update Generation subentity entry (\"INTID_ENTITY_TARGET " + id + " --> " + newId + "\")");
-			if(armed) info(DataBaseHelper.getDbAccess().execute(new DbUpdateStatement("T_MD_GENERATION_SUBENTITY", columnValueMap, conditionMap)) + " records updated.");
+			if(armed) info(dataBaseHelper.getDbAccess().execute(new DbUpdateStatement("T_MD_GENERATION_SUBENTITY", columnValueMap, conditionMap)) + " records updated.");
 
 			/** update searchfilter */
 			/*columnValueMap = new HashMap<String, Object>();
@@ -228,7 +241,7 @@ public class MigrationVm2m5 extends AbstractMigration{
 		}
 
 		/** run after main migration of masterdata */
-		result = DataBaseHelper.getDbAccess().executeQuery(query);
+		result = dataBaseHelper.getDbAccess().executeQuery(query);
 		for (DbTuple rs : result) {
 			Integer id = rs.get("INTID", java.lang.Integer.class);
 			String sEntity = rs.get("STRENTITY", java.lang.String.class);
@@ -236,12 +249,12 @@ public class MigrationVm2m5 extends AbstractMigration{
 
 			if ("T_UD_GENERICOBJECT".equals(sDbEntity.toUpperCase())) {
 				/** update searchfilters */
-				DbQuery<Integer> queryModule = DataBaseHelper.getDbAccess().getQueryBuilder().createQuery(Integer.class);
+				DbQuery<Integer> queryModule = dataBaseHelper.getDbAccess().getQueryBuilder().createQuery(Integer.class);
 				DbFrom module = queryModule.from("T_MD_MODULE").alias("module");
 				queryModule.select(module.baseColumn("INTID", Integer.class));
 				queryModule.where(
-					DataBaseHelper.getDbAccess().getQueryBuilder().equal(module.baseColumn("STRENTITY", Integer.class), sEntity));
-				Integer moduleid = DataBaseHelper.getDbAccess().executeQuerySingleResult(queryModule);
+					dataBaseHelper.getDbAccess().getQueryBuilder().equal(module.baseColumn("STRENTITY", Integer.class), sEntity));
+				Integer moduleid = dataBaseHelper.getDbAccess().executeQuerySingleResult(queryModule);
 				/*Map<String, Object> columnValueMap = new HashMap<String, Object>();
 				Map<String, Object> conditionMap = new HashMap<String, Object>();
 				columnValueMap.put("INTID_T_AD_MASTERDATA", moduleid);
@@ -254,7 +267,7 @@ public class MigrationVm2m5 extends AbstractMigration{
 	}
 
 	private void migrateMasterdataFieldsForEntity(Integer iMasterdataId, Integer iNewMasterdataId) {
-		DbQuery<DbTuple> query = DataBaseHelper.getDbAccess().getQueryBuilder().createTupleQuery();
+		DbQuery<DbTuple> query = dataBaseHelper.getDbAccess().getQueryBuilder().createTupleQuery();
 		DbFrom from = query.from("T_AD_MASTERDATA_FIELD");
 		from.alias("mdf");
 		List<DbSelection<?>> columns = new ArrayList<DbSelection<?>>();
@@ -286,10 +299,10 @@ public class MigrationVm2m5 extends AbstractMigration{
 		//columns.add(getColumn(from, "BLNINVARIANT", DT_BOOLEAN));
 		query.multiselect(columns);
 
-		query.where(DataBaseHelper.getDbAccess().getQueryBuilder().equal(getColumn(from, "INTID_T_AD_MASTERDATA", DT_INTEGER),
-			DataBaseHelper.getDbAccess().getQueryBuilder().literal(iMasterdataId)));
+		query.where(dataBaseHelper.getDbAccess().getQueryBuilder().equal(getColumn(from, "INTID_T_AD_MASTERDATA", DT_INTEGER),
+			dataBaseHelper.getDbAccess().getQueryBuilder().literal(iMasterdataId)));
 
-		List<DbTuple> result = DataBaseHelper.getDbAccess().executeQuery(query);
+		List<DbTuple> result = dataBaseHelper.getDbAccess().executeQuery(query);
 
 
 		for (DbTuple rs : result) {
@@ -310,7 +323,7 @@ public class MigrationVm2m5 extends AbstractMigration{
 
 			info("Processing masterdata field " + sField);
 
-			Integer iNewMDFieldId = DataBaseHelper.getNextIdAsInteger(DataBaseHelper.DEFAULT_SEQUENCE);
+			Integer iNewMDFieldId = dataBaseHelper.getNextIdAsInteger(DataBaseHelper.DEFAULT_SEQUENCE);
 
 			Map<String, Object> values = new HashMap<String, Object>();
 			values.put("INTID", iNewMDFieldId);
@@ -352,16 +365,16 @@ public class MigrationVm2m5 extends AbstractMigration{
 			columnValueMap.put("INTID_T_AD_MD_FIELD", iNewMDFieldId);
 			conditionMap.put("INTID_T_AD_MD_FIELD", id);
 			info("Update Logbook entry (\"INTID_T_AD_MD_FIELD " + id + " --> " + iNewMDFieldId + "\")");
-			if(armed) info(DataBaseHelper.getDbAccess().execute(new DbUpdateStatement("T_UD_LOGBOOK", columnValueMap, conditionMap)) + " records updated.");
+			if(armed) info(dataBaseHelper.getDbAccess().execute(new DbUpdateStatement("T_UD_LOGBOOK", columnValueMap, conditionMap)) + " records updated.");
 
-			if (armed) DataBaseHelper.getDbAccess().execute(new DbInsertStatement("T_MD_ENTITY_FIELD", values));
+			if (armed) dataBaseHelper.getDbAccess().execute(new DbInsertStatement("T_MD_ENTITY_FIELD", values));
 		}
 	}
 
 	private void migrateModules() throws CommonValidationException, ClassNotFoundException {
 		info("*** M I G R A T E   M O D U L E S ***");
 
-		DbQuery<DbTuple> query = DataBaseHelper.getDbAccess().getQueryBuilder().createTupleQuery();
+		DbQuery<DbTuple> query = dataBaseHelper.getDbAccess().getQueryBuilder().createTupleQuery();
 		DbFrom from = query.from("T_MD_MODULE");
 		from.alias("mo");
 		List<DbSelection<?>> columns = new ArrayList<DbSelection<?>>();
@@ -393,7 +406,7 @@ public class MigrationVm2m5 extends AbstractMigration{
 		columns.add(getColumn(from, "STR_LOCALERESOURCE_TT", DT_STRING));
 		query.multiselect(columns);
 
-		List<DbTuple> result = DataBaseHelper.getDbAccess().executeQuery(query);
+		List<DbTuple> result = dataBaseHelper.getDbAccess().executeQuery(query);
 
 
 		for (DbTuple rs : result) {
@@ -445,7 +458,7 @@ public class MigrationVm2m5 extends AbstractMigration{
 			put(rs, "STRCHANGED", values, "STRCHANGED", DT_STRING);
 			put(rs, "INTVERSION", values, "INTVERSION", DT_INTEGER);
 
-			if(armed) DataBaseHelper.getDbAccess().execute(new DbInsertStatement("T_MD_ENTITY", values));
+			if(armed) dataBaseHelper.getDbAccess().execute(new DbInsertStatement("T_MD_ENTITY", values));
 
 			info("Processing attributes now...");
 
@@ -470,13 +483,13 @@ public class MigrationVm2m5 extends AbstractMigration{
 		columnValueMap.put("INTID_T_MD_ATTRIBUTE", newAttrId);
 		conditionMap.put("INTID_T_MD_ATTRIBUTE", oldAttrId);
 		info("Update " + sAttributeName + " in Logbook...");
-		if(armed) info(DataBaseHelper.getDbAccess().execute(new DbUpdateStatement("T_UD_LOGBOOK", columnValueMap, conditionMap)) + " records updated.");
+		if(armed) info(dataBaseHelper.getDbAccess().execute(new DbUpdateStatement("T_UD_LOGBOOK", columnValueMap, conditionMap)) + " records updated.");
 	}
 
 	private void migrateAttributesForModule(Integer iModuleId, String entity) throws CommonValidationException, ClassNotFoundException {
 		int i = 0;
 		for (String attribute : getAttributesFromLayouts(iModuleId, entity)) {
-			DbQuery<DbTuple> query = DataBaseHelper.getDbAccess().getQueryBuilder().createTupleQuery();
+			DbQuery<DbTuple> query = dataBaseHelper.getDbAccess().getQueryBuilder().createTupleQuery();
 			DbFrom from = query.from("T_MD_ATTRIBUTE");
 			from.alias("attr");
 			List<DbSelection<?>> columns = new ArrayList<DbSelection<?>>();
@@ -513,11 +526,11 @@ public class MigrationVm2m5 extends AbstractMigration{
 			columns.add(getColumn(from, "STR_LOCALERESOURCE_L", DT_STRING));
 			columns.add(getColumn(from, "STR_LOCALERESOURCE_D", DT_STRING));
 			query.multiselect(columns);
-			query.where(DataBaseHelper.getDbAccess().getQueryBuilder().equal(
+			query.where(dataBaseHelper.getDbAccess().getQueryBuilder().equal(
 				from.baseColumn("STRATTRIBUTE", DT_STRING),
-				DataBaseHelper.getDbAccess().getQueryBuilder().literal(attribute)));
+				dataBaseHelper.getDbAccess().getQueryBuilder().literal(attribute)));
 
-			List<DbTuple> result = DataBaseHelper.getDbAccess().executeQuery(query);
+			List<DbTuple> result = dataBaseHelper.getDbAccess().executeQuery(query);
 
 			Set<String> systemArrtibutes = new HashSet<String>();
 			systemArrtibutes.add("[erstellt_am]");
@@ -551,28 +564,28 @@ public class MigrationVm2m5 extends AbstractMigration{
 				Integer iDataPrecision = rs.get("INTDATAPRECISION", java.lang.Integer.class);
 				String sCalcFunction = rs.get("STRCALCFUNCTION", java.lang.String.class);
 
-				Integer iNewAttributeId = DataBaseHelper.getNextIdAsInteger(DataBaseHelper.DEFAULT_SEQUENCE);
+				Integer iNewAttributeId = dataBaseHelper.getNextIdAsInteger(DataBaseHelper.DEFAULT_SEQUENCE);
 
 				if (systemArrtibutes.contains(sField)) {
 					continue;
 				}
 
 				/** update logbook */
-				DbQuery<Integer> queryLB = DataBaseHelper.getDbAccess().getQueryBuilder().createQuery(Integer.class);
+				DbQuery<Integer> queryLB = dataBaseHelper.getDbAccess().getQueryBuilder().createQuery(Integer.class);
 				DbFrom lb = queryLB.from("T_UD_LOGBOOK").alias("lb");
 				DbFrom go = lb.join("T_UD_GENERICOBJECT", JoinType.INNER).alias("go").on("INTID_T_UD_GENERICOBJECT", "INTID", Integer.class);
 				queryLB.select(lb.baseColumn("INTID", Integer.class));
-				queryLB.where(DataBaseHelper.getDbAccess().getQueryBuilder().and(
-					DataBaseHelper.getDbAccess().getQueryBuilder().equal(go.baseColumn("INTID_T_MD_MODULE", Integer.class), iModuleId),
-					DataBaseHelper.getDbAccess().getQueryBuilder().equal(lb.baseColumn("INTID_T_MD_ATTRIBUTE", Integer.class), iAttrId)));
-				for (Integer logbookEntryid : DataBaseHelper.getDbAccess().executeQuery(queryLB.distinct(true))) {
+				queryLB.where(dataBaseHelper.getDbAccess().getQueryBuilder().and(
+					dataBaseHelper.getDbAccess().getQueryBuilder().equal(go.baseColumn("INTID_T_MD_MODULE", Integer.class), iModuleId),
+					dataBaseHelper.getDbAccess().getQueryBuilder().equal(lb.baseColumn("INTID_T_MD_ATTRIBUTE", Integer.class), iAttrId)));
+				for (Integer logbookEntryid : dataBaseHelper.getDbAccess().executeQuery(queryLB.distinct(true))) {
 					Map<String, Object> columnValueMap = new HashMap<String, Object>();
 					Map<String, Object> conditionMap = new HashMap<String, Object>();
 					columnValueMap.put("INTID_T_MD_ATTRIBUTE", iNewAttributeId);
 					conditionMap.put("INTID", logbookEntryid);
 
 					info("Update Logbook entry with id " + logbookEntryid + " (\"INTID_T_MD_ATTRIBUTE " + iAttrId + " --> " + iNewAttributeId + " WHERE INTID_T_MD_MODULE=" + iModuleId + "\")");
-					if(armed) info(DataBaseHelper.getDbAccess().execute(new DbUpdateStatement("T_UD_LOGBOOK", columnValueMap, conditionMap)) + " records updated.");
+					if(armed) info(dataBaseHelper.getDbAccess().execute(new DbUpdateStatement("T_UD_LOGBOOK", columnValueMap, conditionMap)) + " records updated.");
 				}
 
 				info("Processing attribute " + sField);
@@ -580,7 +593,7 @@ public class MigrationVm2m5 extends AbstractMigration{
 				/**
 				 * Look if attribute has simple values
 				 */
-				DbQuery<DbTuple> queryAttributeValues = DataBaseHelper.getDbAccess().getQueryBuilder().createTupleQuery();
+				DbQuery<DbTuple> queryAttributeValues = dataBaseHelper.getDbAccess().getQueryBuilder().createTupleQuery();
 				DbFrom fromAttributeValues = queryAttributeValues.from("T_MD_ATTRIBUTEVALUE");
 				fromAttributeValues.alias("attrvalue");
 				List<DbSelection<?>> columnsAttributeValues = new ArrayList<DbSelection<?>>();
@@ -597,13 +610,13 @@ public class MigrationVm2m5 extends AbstractMigration{
 				columnsAttributeValues.add(getColumn(fromAttributeValues, "STRCHANGED", DT_STRING));
 				columnsAttributeValues.add(getColumn(fromAttributeValues, "INTVERSION", DT_INTEGER));
 				queryAttributeValues.multiselect(columnsAttributeValues);
-				queryAttributeValues.where(DataBaseHelper.getDbAccess().getQueryBuilder().equal(
+				queryAttributeValues.where(dataBaseHelper.getDbAccess().getQueryBuilder().equal(
 					fromAttributeValues.baseColumn("INTID_T_MD_ATTRIBUTE", DT_INTEGER),
-					DataBaseHelper.getDbAccess().getQueryBuilder().literal(iAttrId)));
+					dataBaseHelper.getDbAccess().getQueryBuilder().literal(iAttrId)));
 
 				String sFieldValueEntity = null;
 
-				List<DbTuple> resultAttributeValues = DataBaseHelper.getDbAccess().executeQuery(queryAttributeValues);
+				List<DbTuple> resultAttributeValues = dataBaseHelper.getDbAccess().executeQuery(queryAttributeValues);
 				for (DbTuple rsAttributeValue : resultAttributeValues) {
 					if (sFieldValueEntity == null) {
 						sFieldValueEntity = createFieldValueEntity(sDataType, iDataScale, iDataPrecision);
@@ -637,7 +650,7 @@ public class MigrationVm2m5 extends AbstractMigration{
 							columnValueMap.put("INTID_T_DP_VALUE_OLD", DbNull.forType(Integer.class));
 							conditionMap.put("INTID_T_DP_VALUE_OLD", rsAttributeValue.get("INTID", DT_INTEGER));
 							info("Update Logbook entry (\"INTID_T_DP_VALUE_OLD --> INTID_EXTERNAL_OLD WHERE INTID_T_DP_VALUE_OLD=" + rsAttributeValue.get("INTID", DT_INTEGER) + "\")");
-							if(armed) info(DataBaseHelper.getDbAccess().execute(new DbUpdateStatement("T_UD_LOGBOOK", columnValueMap, conditionMap)) + " records updated.");
+							if(armed) info(dataBaseHelper.getDbAccess().execute(new DbUpdateStatement("T_UD_LOGBOOK", columnValueMap, conditionMap)) + " records updated.");
 						}{
 							Map<String, Object> columnValueMap = new HashMap<String, Object>();
 							Map<String, Object> conditionMap = new HashMap<String, Object>();
@@ -645,11 +658,11 @@ public class MigrationVm2m5 extends AbstractMigration{
 							columnValueMap.put("INTID_T_DP_VALUE_NEW", DbNull.forType(Integer.class));
 							conditionMap.put("INTID_T_DP_VALUE_NEW", rsAttributeValue.get("INTID", DT_INTEGER));
 							info("Update Logbook entry (\"INTID_T_DP_VALUE_NEW --> INTID_EXTERNAL_NEW WHERE INTID_T_DP_VALUE_NEW=" + rsAttributeValue.get("INTID", DT_INTEGER) + "\")");
-							if(armed) info(DataBaseHelper.getDbAccess().execute(new DbUpdateStatement("T_UD_LOGBOOK", columnValueMap, conditionMap)) + " records updated.");
+							if(armed) info(dataBaseHelper.getDbAccess().execute(new DbUpdateStatement("T_UD_LOGBOOK", columnValueMap, conditionMap)) + " records updated.");
 						}
 
 
-						if(armed) DataBaseHelper.getDbAccess().execute(new DbInsertStatement("T_EO_" + sFieldValueEntity.toUpperCase(), values));
+						if(armed) dataBaseHelper.getDbAccess().execute(new DbInsertStatement("T_EO_" + sFieldValueEntity.toUpperCase(), values));
 					}
 				}
 
@@ -699,43 +712,43 @@ public class MigrationVm2m5 extends AbstractMigration{
 				put(rs, "STRCHANGED", values, "STRCHANGED", DT_STRING);
 				put(rs, "INTVERSION", values, "INTVERSION", DT_INTEGER);
 
-				if (armed) DataBaseHelper.getDbAccess().execute(new DbInsertStatement("T_MD_ENTITY_FIELD", values));
+				if (armed) dataBaseHelper.getDbAccess().execute(new DbInsertStatement("T_MD_ENTITY_FIELD", values));
 
 				/** update Generation */
 				{
-					DbQuery<Integer> queryGENA = DataBaseHelper.getDbAccess().getQueryBuilder().createQuery(Integer.class);
+					DbQuery<Integer> queryGENA = dataBaseHelper.getDbAccess().getQueryBuilder().createQuery(Integer.class);
 					DbFrom gena = queryGENA.from("T_MD_GENERATION_ATTRIBUTE").alias("gena");
 					DbFrom gen = gena.join("T_MD_GENERATION", JoinType.INNER).alias("gen").on("INTID_T_MD_GENERATION", "INTID", Integer.class);
 					queryGENA.select(gena.baseColumn("INTID", Integer.class));
-					queryGENA.where(DataBaseHelper.getDbAccess().getQueryBuilder().and(
-						DataBaseHelper.getDbAccess().getQueryBuilder().equal(gen.baseColumn("INTID_T_MD_MODULE_SOURCE", Integer.class), iModuleId),
-						DataBaseHelper.getDbAccess().getQueryBuilder().equal(gena.baseColumn("INTID_T_MD_ATTRIBUTE_SOURCE", Integer.class), iAttrId)));
-					for (Integer genAttributeid : DataBaseHelper.getDbAccess().executeQuery(queryGENA.distinct(true))) {
+					queryGENA.where(dataBaseHelper.getDbAccess().getQueryBuilder().and(
+						dataBaseHelper.getDbAccess().getQueryBuilder().equal(gen.baseColumn("INTID_T_MD_MODULE_SOURCE", Integer.class), iModuleId),
+						dataBaseHelper.getDbAccess().getQueryBuilder().equal(gena.baseColumn("INTID_T_MD_ATTRIBUTE_SOURCE", Integer.class), iAttrId)));
+					for (Integer genAttributeid : dataBaseHelper.getDbAccess().executeQuery(queryGENA.distinct(true))) {
 						Map<String, Object> columnValueMap = new HashMap<String, Object>();
 						Map<String, Object> conditionMap = new HashMap<String, Object>();
 						columnValueMap.put("INTID_T_MD_ATTRIBUTE_SOURCE", iNewAttributeId);
 						conditionMap.put("INTID", genAttributeid);
 
 						info("Update Generation attribute entry with id " + genAttributeid + " (\"INTID_T_MD_ATTRIBUTE_SOURCE " + iAttrId + " --> " + iNewAttributeId + " WHERE INTID_T_MD_MODULE_SOURCE=" + iModuleId + "\")");
-						if(armed) info(DataBaseHelper.getDbAccess().execute(new DbUpdateStatement("T_MD_GENERATION_ATTRIBUTE", columnValueMap, conditionMap)) + " records updated.");
+						if(armed) info(dataBaseHelper.getDbAccess().execute(new DbUpdateStatement("T_MD_GENERATION_ATTRIBUTE", columnValueMap, conditionMap)) + " records updated.");
 					}
 				}
 				{
-					DbQuery<Integer> queryGENA = DataBaseHelper.getDbAccess().getQueryBuilder().createQuery(Integer.class);
+					DbQuery<Integer> queryGENA = dataBaseHelper.getDbAccess().getQueryBuilder().createQuery(Integer.class);
 					DbFrom gena = queryGENA.from("T_MD_GENERATION_ATTRIBUTE").alias("gena");
 					DbFrom gen = gena.join("T_MD_GENERATION", JoinType.INNER).alias("gen").on("INTID_T_MD_GENERATION", "INTID", Integer.class);
 					queryGENA.select(gena.baseColumn("INTID", Integer.class));
-					queryGENA.where(DataBaseHelper.getDbAccess().getQueryBuilder().and(
-						DataBaseHelper.getDbAccess().getQueryBuilder().equal(gen.baseColumn("INTID_T_MD_MODULE_TARGET", Integer.class), iModuleId),
-						DataBaseHelper.getDbAccess().getQueryBuilder().equal(gena.baseColumn("INTID_T_MD_ATTRIBUTE_TARGET", Integer.class), iAttrId)));
-					for (Integer genAttributeid : DataBaseHelper.getDbAccess().executeQuery(queryGENA.distinct(true))) {
+					queryGENA.where(dataBaseHelper.getDbAccess().getQueryBuilder().and(
+						dataBaseHelper.getDbAccess().getQueryBuilder().equal(gen.baseColumn("INTID_T_MD_MODULE_TARGET", Integer.class), iModuleId),
+						dataBaseHelper.getDbAccess().getQueryBuilder().equal(gena.baseColumn("INTID_T_MD_ATTRIBUTE_TARGET", Integer.class), iAttrId)));
+					for (Integer genAttributeid : dataBaseHelper.getDbAccess().executeQuery(queryGENA.distinct(true))) {
 						Map<String, Object> columnValueMap = new HashMap<String, Object>();
 						Map<String, Object> conditionMap = new HashMap<String, Object>();
 						columnValueMap.put("INTID_T_MD_ATTRIBUTE_TARGET", iNewAttributeId);
 						conditionMap.put("INTID", genAttributeid);
 
 						info("Update Generation attribute entry with id " + genAttributeid + " (\"INTID_T_MD_ATTRIBUTE_TARGET " + iAttrId + " --> " + iNewAttributeId + " WHERE INTID_T_MD_MODULE_TARGET=" + iModuleId + "\")");
-						if(armed) info(DataBaseHelper.getDbAccess().execute(new DbUpdateStatement("T_MD_GENERATION_ATTRIBUTE", columnValueMap, conditionMap)) + " records updated.");
+						if(armed) info(dataBaseHelper.getDbAccess().execute(new DbUpdateStatement("T_MD_GENERATION_ATTRIBUTE", columnValueMap, conditionMap)) + " records updated.");
 					}
 				}
 
@@ -746,8 +759,7 @@ public class MigrationVm2m5 extends AbstractMigration{
 					conditionMap.put("INTID_T_MD_ATTRIBUTE", iAttrId);
 
 					info("delete calcfunction go attributes with attribute id " + iAttrId);
-					if(armed) info(DataBaseHelper.getDbAccess().execute(new DbDeleteStatement("t_ud_go_attribute", conditionMap)) + " records deleted.");
-
+					if(armed) info(dataBaseHelper.getDbAccess().execute(new DbDeleteStatement("t_ud_go_attribute", conditionMap)) + " records deleted.");
 				}
 			}
 		}
@@ -756,7 +768,7 @@ public class MigrationVm2m5 extends AbstractMigration{
 	private void migrateAttributeGroups() {
 		info("*** M I G R A T E   A T T R I B U T E   G R O U P S ***");
 
-		DbQuery<DbTuple> query = DataBaseHelper.getDbAccess().getQueryBuilder().createTupleQuery();
+		DbQuery<DbTuple> query = dataBaseHelper.getDbAccess().getQueryBuilder().createTupleQuery();
 		DbFrom from = query.from("T_MD_ATTRIBUTEGROUP");
 		from.alias("attrgrp");
 		List<DbSelection<?>> columns = new ArrayList<DbSelection<?>>();
@@ -769,7 +781,7 @@ public class MigrationVm2m5 extends AbstractMigration{
 		columns.add(getColumn(from, "INTVERSION", DT_INTEGER));
 		query.multiselect(columns);
 
-		List<DbTuple> result = DataBaseHelper.getDbAccess().executeQuery(query);
+		List<DbTuple> result = dataBaseHelper.getDbAccess().executeQuery(query);
 
 
 		for (DbTuple rs : result) {
@@ -786,14 +798,14 @@ public class MigrationVm2m5 extends AbstractMigration{
 			put(rs, "STRCHANGED", values, "STRCHANGED", DT_STRING);
 			put(rs, "INTVERSION", values, "INTVERSION", DT_INTEGER);
 
-			if(armed) DataBaseHelper.getDbAccess().execute(new DbInsertStatement("T_MD_ENTITY_FIELD_GROUP", values));
+			if(armed) dataBaseHelper.getDbAccess().execute(new DbInsertStatement("T_MD_ENTITY_FIELD_GROUP", values));
 		}
 	}
 
 	private void migrateModuleSubnodes() {
 		info("*** M I G R A T E   M O D U L E   S U B N O D E S ***");
 
-		DbQuery<DbTuple> query = DataBaseHelper.getDbAccess().getQueryBuilder().createTupleQuery();
+		DbQuery<DbTuple> query = dataBaseHelper.getDbAccess().getQueryBuilder().createTupleQuery();
 		DbFrom from = query.from("T_MD_MODULE_SUBNODES");
 		from.alias("modsubnode");
 		List<DbSelection<?>> columns = new ArrayList<DbSelection<?>>();
@@ -809,7 +821,7 @@ public class MigrationVm2m5 extends AbstractMigration{
 		columns.add(getColumn(from, "INTVERSION", DT_INTEGER));
 		query.multiselect(columns);
 
-		List<DbTuple> result = DataBaseHelper.getDbAccess().executeQuery(query);
+		List<DbTuple> result = dataBaseHelper.getDbAccess().executeQuery(query);
 
 
 		for (DbTuple rs : result) {
@@ -832,7 +844,7 @@ public class MigrationVm2m5 extends AbstractMigration{
 			put(rs, "STRCHANGED", values, "STRCHANGED", DT_STRING);
 			put(rs, "INTVERSION", values, "INTVERSION", DT_INTEGER);
 
-			if(armed) DataBaseHelper.getDbAccess().execute(new DbInsertStatement("T_MD_ENTITY_SUBNODES", values));
+			if(armed) dataBaseHelper.getDbAccess().execute(new DbInsertStatement("T_MD_ENTITY_SUBNODES", values));
 		}
 	}
 
@@ -841,7 +853,7 @@ public class MigrationVm2m5 extends AbstractMigration{
 	private String createFieldValueEntity(String sDataType, Integer iDataScape, Integer iDataPrecision) {
 		iCountFieldValueEntities++;
 		String sEntityName = sFieldValueEntityNameBase+iCountFieldValueEntities;
-		Integer iEntityId = DataBaseHelper.getNextIdAsInteger(DataBaseHelper.DEFAULT_SEQUENCE);
+		Integer iEntityId = dataBaseHelper.getNextIdAsInteger(DataBaseHelper.DEFAULT_SEQUENCE);
 
 		info("Create field value entity " + sEntityName);
 
@@ -865,12 +877,12 @@ public class MigrationVm2m5 extends AbstractMigration{
 			values.put("STRCHANGED", "Migration v2.5.00");
 			values.put("INTVERSION", new Integer(1));
 
-			if(armed) DataBaseHelper.getDbAccess().execute(new DbInsertStatement("T_MD_ENTITY", values));
+			if(armed) dataBaseHelper.getDbAccess().execute(new DbInsertStatement("T_MD_ENTITY", values));
 		}
 
 		{
 			Map<String, Object> values = new HashMap<String, Object>();
-			values.put("INTID", DataBaseHelper.getNextIdAsInteger(DataBaseHelper.DEFAULT_SEQUENCE));
+			values.put("INTID", dataBaseHelper.getNextIdAsInteger(DataBaseHelper.DEFAULT_SEQUENCE));
 			values.put("INTID_T_MD_ENTITY", iEntityId);
 			values.put("STRFIELD", "value");
 			values.put("STRDBFIELD", "STRVALUE");
@@ -891,12 +903,12 @@ public class MigrationVm2m5 extends AbstractMigration{
 			values.put("STRCHANGED", "Migration v2.5.00");
 			values.put("INTVERSION", new Integer(1));
 
-			if (armed) DataBaseHelper.getDbAccess().execute(new DbInsertStatement("T_MD_ENTITY_FIELD", values));
+			if (armed) dataBaseHelper.getDbAccess().execute(new DbInsertStatement("T_MD_ENTITY_FIELD", values));
 		}
 
 		{
 			Map<String, Object> values = new HashMap<String, Object>();
-			values.put("INTID", DataBaseHelper.getNextIdAsInteger(DataBaseHelper.DEFAULT_SEQUENCE));
+			values.put("INTID", dataBaseHelper.getNextIdAsInteger(DataBaseHelper.DEFAULT_SEQUENCE));
 			values.put("INTID_T_MD_ENTITY", iEntityId);
 			values.put("STRFIELD", "mnemonic");
 			values.put("STRDBFIELD", "STRMNEMONIC");
@@ -917,12 +929,12 @@ public class MigrationVm2m5 extends AbstractMigration{
 			values.put("STRCHANGED", "Migration v2.5.00");
 			values.put("INTVERSION", new Integer(1));
 
-			if (armed) DataBaseHelper.getDbAccess().execute(new DbInsertStatement("T_MD_ENTITY_FIELD", values));
+			if (armed) dataBaseHelper.getDbAccess().execute(new DbInsertStatement("T_MD_ENTITY_FIELD", values));
 		}
 
 		{
 			Map<String, Object> values = new HashMap<String, Object>();
-			values.put("INTID", DataBaseHelper.getNextIdAsInteger(DataBaseHelper.DEFAULT_SEQUENCE));
+			values.put("INTID", dataBaseHelper.getNextIdAsInteger(DataBaseHelper.DEFAULT_SEQUENCE));
 			values.put("INTID_T_MD_ENTITY", iEntityId);
 			values.put("STRFIELD", "description");
 			values.put("STRDBFIELD", "STRDESCRIPTION");
@@ -942,12 +954,12 @@ public class MigrationVm2m5 extends AbstractMigration{
 			values.put("STRCHANGED", "Migration v2.5.00");
 			values.put("INTVERSION", new Integer(1));
 
-			if (armed) DataBaseHelper.getDbAccess().execute(new DbInsertStatement("T_MD_ENTITY_FIELD", values));
+			if (armed) dataBaseHelper.getDbAccess().execute(new DbInsertStatement("T_MD_ENTITY_FIELD", values));
 		}
 
 		{
 			Map<String, Object> values = new HashMap<String, Object>();
-			values.put("INTID", DataBaseHelper.getNextIdAsInteger(DataBaseHelper.DEFAULT_SEQUENCE));
+			values.put("INTID", dataBaseHelper.getNextIdAsInteger(DataBaseHelper.DEFAULT_SEQUENCE));
 			values.put("INTID_T_MD_ENTITY", iEntityId);
 			values.put("STRFIELD", "validFrom");
 			values.put("STRDBFIELD", "DATVALIDFROM");
@@ -966,12 +978,12 @@ public class MigrationVm2m5 extends AbstractMigration{
 			values.put("STRCHANGED", "Migration v2.5.00");
 			values.put("INTVERSION", new Integer(1));
 
-			if (armed) DataBaseHelper.getDbAccess().execute(new DbInsertStatement("T_MD_ENTITY_FIELD", values));
+			if (armed) dataBaseHelper.getDbAccess().execute(new DbInsertStatement("T_MD_ENTITY_FIELD", values));
 		}
 
 		{
 			Map<String, Object> values = new HashMap<String, Object>();
-			values.put("INTID", DataBaseHelper.getNextIdAsInteger(DataBaseHelper.DEFAULT_SEQUENCE));
+			values.put("INTID", dataBaseHelper.getNextIdAsInteger(DataBaseHelper.DEFAULT_SEQUENCE));
 			values.put("INTID_T_MD_ENTITY", iEntityId);
 			values.put("STRFIELD", "validUntil");
 			values.put("STRDBFIELD", "DATVALIDUNTIL");
@@ -990,14 +1002,14 @@ public class MigrationVm2m5 extends AbstractMigration{
 			values.put("STRCHANGED", "Migration v2.5.00");
 			values.put("INTVERSION", new Integer(1));
 
-			if (armed) DataBaseHelper.getDbAccess().execute(new DbInsertStatement("T_MD_ENTITY_FIELD", values));
+			if (armed) dataBaseHelper.getDbAccess().execute(new DbInsertStatement("T_MD_ENTITY_FIELD", values));
 		}
 
 		if (armed) {
 			MetaDataServerProvider.getInstance().revalidate();
 			EntityMetaDataVO eMeta = MetaDataServerProvider.getInstance().getEntity(sEntityName);
-			EntityObjectMetaDbHelper dbHelper = new EntityObjectMetaDbHelper(DataBaseHelper.getDbAccess(), MetaDataServerProvider.getInstance());
-			DataBaseHelper.getDbAccess().execute(SchemaUtils.create(dbHelper.getDbTable(eMeta)));
+			EntityObjectMetaDbHelper dbHelper = new EntityObjectMetaDbHelper(dataBaseHelper.getDbAccess(), MetaDataServerProvider.getInstance());
+			dataBaseHelper.getDbAccess().execute(SchemaUtils.create(dbHelper.getDbTable(eMeta)));
 		}
 
 		return sEntityName;
@@ -1007,7 +1019,7 @@ public class MigrationVm2m5 extends AbstractMigration{
 	private void createEntityObjectTables() {
 		info("*** C R E A T E   E N T I T Y   O B J E C T   T A B L E S ***");
 
-		EntityObjectMetaDbHelper dbHelper = new EntityObjectMetaDbHelper(DataBaseHelper.getDbAccess(), MetaDataServerProvider.getInstance());
+		EntityObjectMetaDbHelper dbHelper = new EntityObjectMetaDbHelper(dataBaseHelper.getDbAccess(), MetaDataServerProvider.getInstance());
 		List<DbStructureChange> lstDropStructureChanges = SchemaUtils.drop(dbHelper.getSchema().values());
 		List<DbStructureChange> lstCreateStructureChanges = SchemaUtils.create(dbHelper.getSchema().values());
 
@@ -1016,7 +1028,7 @@ public class MigrationVm2m5 extends AbstractMigration{
 			if (af instanceof DbSimpleView) {
 				info("DROP " + ((DbSimpleView)af).getViewName());
 				try {
-					if (armed) DataBaseHelper.getDbAccess().execute(sc);
+					if (armed) dataBaseHelper.getDbAccess().execute(sc);
 				} catch (Exception ex) {};
 			}
 		}
@@ -1029,7 +1041,7 @@ public class MigrationVm2m5 extends AbstractMigration{
 				if (sTableName.startsWith("T_EO_") && !sTableName.startsWith(sFieldValueTableNameBase)) {
 
 					info("CREATE " + sTableName);
-					if (armed) DataBaseHelper.getDbAccess().execute(sc);
+					if (armed) dataBaseHelper.getDbAccess().execute(sc);
 				}
 			}/* else if (af instanceof DbConstraint.DbPrimaryKeyConstraint) {
 				String sTableName = ((DbConstraint.DbPrimaryKeyConstraint)af).getTableName();
@@ -1062,14 +1074,14 @@ public class MigrationVm2m5 extends AbstractMigration{
 
 		Map<Integer, String> mapOldAttributeIds = new HashMap<Integer, String>();
 		{
-			DbQuery<DbTuple> query = DataBaseHelper.getDbAccess().getQueryBuilder().createTupleQuery();
+			DbQuery<DbTuple> query = dataBaseHelper.getDbAccess().getQueryBuilder().createTupleQuery();
 			DbFrom from = query.from("T_MD_ATTRIBUTE");
 			from.alias("attr");
 			List<DbSelection<?>> columns = new ArrayList<DbSelection<?>>();
 			columns.add(getColumn(from, "INTID", DT_INTEGER));
 			columns.add(getColumn(from, "STRATTRIBUTE", DT_STRING));
 			query.multiselect(columns);
-			List<DbTuple> result = DataBaseHelper.getDbAccess().executeQuery(query);
+			List<DbTuple> result = dataBaseHelper.getDbAccess().executeQuery(query);
 			for (DbTuple rs : result) {
 				Integer id = rs.get("INTID", java.lang.Integer.class);
 				String attribute = rs.get("STRATTRIBUTE", java.lang.String.class);
@@ -1081,7 +1093,7 @@ public class MigrationVm2m5 extends AbstractMigration{
 		/**
 		 * select old generic objects
 		 */
-		DbQuery<DbTuple> queryObjects = DataBaseHelper.getDbAccess().getQueryBuilder().createTupleQuery();
+		DbQuery<DbTuple> queryObjects = dataBaseHelper.getDbAccess().getQueryBuilder().createTupleQuery();
 		DbFrom fromObjects = queryObjects.from("T_UD_GENERICOBJECT");
 		fromObjects.alias("go");
 		List<DbSelection<?>> columnsObjects = new ArrayList<DbSelection<?>>();
@@ -1095,7 +1107,7 @@ public class MigrationVm2m5 extends AbstractMigration{
 		columnsObjects.add(getColumn(fromObjects, "INTVERSION", DT_INTEGER));
 		queryObjects.multiselect(columnsObjects);
 
-		List<DbTuple> resultObjects = DataBaseHelper.getDbAccess().executeQuery(queryObjects);
+		List<DbTuple> resultObjects = dataBaseHelper.getDbAccess().executeQuery(queryObjects);
 
 		for (DbTuple rsObjects : resultObjects) {
 			Integer iObjectId = rsObjects.get("INTID", java.lang.Integer.class);
@@ -1126,7 +1138,7 @@ public class MigrationVm2m5 extends AbstractMigration{
 			/**
 			 * Select Attributes
 			 */
-			DbQuery<DbTuple> queryGOA = DataBaseHelper.getDbAccess().getQueryBuilder().createTupleQuery();
+			DbQuery<DbTuple> queryGOA = dataBaseHelper.getDbAccess().getQueryBuilder().createTupleQuery();
 			DbFrom fromGOA = queryGOA.from("T_UD_GO_ATTRIBUTE");
 			fromGOA.alias("goa");
 			List<DbSelection<?>> columnsGOA = new ArrayList<DbSelection<?>>();
@@ -1136,11 +1148,11 @@ public class MigrationVm2m5 extends AbstractMigration{
 			columnsGOA.add(getColumn(fromGOA, "INTID_EXTERNAL", DT_INTEGER));
 			columnsGOA.add(getColumn(fromGOA, "STRVALUE", DT_STRING));
 			queryGOA.multiselect(columnsGOA);
-			queryGOA.where(DataBaseHelper.getDbAccess().getQueryBuilder().equal(
+			queryGOA.where(dataBaseHelper.getDbAccess().getQueryBuilder().equal(
 				fromGOA.baseColumn("INTID_T_UD_GENERICOBJECT", DT_INTEGER),
-				DataBaseHelper.getDbAccess().getQueryBuilder().literal(iObjectId)));
+				dataBaseHelper.getDbAccess().getQueryBuilder().literal(iObjectId)));
 
-			List<DbTuple> resultGOA = DataBaseHelper.getDbAccess().executeQuery(queryGOA);
+			List<DbTuple> resultGOA = dataBaseHelper.getDbAccess().executeQuery(queryGOA);
 			for (DbTuple rsGOA : resultGOA) {
 				Integer iId = rsGOA.get("INTID", java.lang.Integer.class);
 				Integer iAttrId = rsGOA.get("INTID_T_MD_ATTRIBUTE", java.lang.Integer.class);
@@ -1191,16 +1203,16 @@ public class MigrationVm2m5 extends AbstractMigration{
 
 							warn("Try to search for \"" + sValue + "\" in " + eForeign.getDbEntity().replace("V_", "T_") + "." + efForeign.getDbColumn());
 
-							DbQuery<DbTuple> queryForeign = DataBaseHelper.getDbAccess().getQueryBuilder().createTupleQuery();
+							DbQuery<DbTuple> queryForeign = dataBaseHelper.getDbAccess().getQueryBuilder().createTupleQuery();
 							DbFrom fromForeign = queryForeign.from(eForeign.getDbEntity().replace("^V_", "T_"));
 							fromForeign.alias("f");
 							queryForeign.select((DbSelection<DbTuple>) getColumn(fromForeign, "INTID", DT_INTEGER));
-							queryForeign.where(DataBaseHelper.getDbAccess().getQueryBuilder().equal(
+							queryForeign.where(dataBaseHelper.getDbAccess().getQueryBuilder().equal(
 								fromForeign.baseColumn(efForeign.getDbColumn(), Class.forName(efForeign.getDataType())),
-								DataBaseHelper.getDbAccess().getQueryBuilder().literal(sValue)));
+								dataBaseHelper.getDbAccess().getQueryBuilder().literal(sValue)));
 
 							try {
-								DbTuple rsForeign = DataBaseHelper.getDbAccess().executeQuerySingleResult(queryForeign);
+								DbTuple rsForeign = dataBaseHelper.getDbAccess().executeQuerySingleResult(queryForeign);
 								Integer iForeignId = rsForeign.get("INTID", java.lang.Integer.class);
 								put(rsForeign, "INTID", values, DalUtils.getDbIdFieldName(efMeta.getDbColumn()), DT_INTEGER);
 								warn("Record with id " + iForeignId + " found. Error fixed!");
@@ -1227,7 +1239,7 @@ public class MigrationVm2m5 extends AbstractMigration{
 				}
 			}
 
-			if(armed) DataBaseHelper.getDbAccess().execute(new DbInsertStatement(MetaDataServerProvider.getInstance().getEntity(iModuleId.longValue()).getDbEntity().replace("^V_", "T_"), values));
+			if(armed) dataBaseHelper.getDbAccess().execute(new DbInsertStatement(MetaDataServerProvider.getInstance().getEntity(iModuleId.longValue()).getDbEntity().replace("^V_", "T_"), values));
 		}
 
 
@@ -1300,33 +1312,33 @@ public class MigrationVm2m5 extends AbstractMigration{
 	private Set<String> getAttributesFromLayouts(Integer iModuleId, String entity) {
 		Set<String> result = new HashSet<String>();
 
-		DbQuery<DbTuple> subquery = DataBaseHelper.getDbAccess().getQueryBuilder().createTupleQuery();
+		DbQuery<DbTuple> subquery = dataBaseHelper.getDbAccess().getQueryBuilder().createTupleQuery();
 		DbFrom subfrom = subquery.from("t_md_layoutusage");
 		subfrom.alias("golayusage");
 		List<DbSelection<?>> subcolumns = new ArrayList<DbSelection<?>>();
 		subcolumns.add(getColumn(subfrom, "intid_t_md_layout", DT_INTEGER));
 		subquery.distinct(true);
 		subquery.multiselect(subcolumns);
-		subquery.where(DataBaseHelper.getDbAccess().getQueryBuilder().equal(
+		subquery.where(dataBaseHelper.getDbAccess().getQueryBuilder().equal(
 			subfrom.baseColumn("strentity", DT_STRING),
-			DataBaseHelper.getDbAccess().getQueryBuilder().literal(entity)));
+			dataBaseHelper.getDbAccess().getQueryBuilder().literal(entity)));
 
-		List<DbTuple> usages = DataBaseHelper.getDbAccess().executeQuery(subquery);
+		List<DbTuple> usages = dataBaseHelper.getDbAccess().executeQuery(subquery);
 
 		for (DbTuple usage : usages) {
 			Integer iLauyoutId = usage.get("intid_t_md_layout", java.lang.Integer.class);
 
-			DbQuery<DbTuple> query = DataBaseHelper.getDbAccess().getQueryBuilder().createTupleQuery();
+			DbQuery<DbTuple> query = dataBaseHelper.getDbAccess().getQueryBuilder().createTupleQuery();
 			DbFrom from = query.from("t_md_layout");
 			from.alias("golayout");
 			List<DbSelection<?>> columns = new ArrayList<DbSelection<?>>();
 			columns.add(getColumn(from, "clblayoutml", DT_STRING));
 			query.multiselect(columns);
-			query.where(DataBaseHelper.getDbAccess().getQueryBuilder().equal(
+			query.where(dataBaseHelper.getDbAccess().getQueryBuilder().equal(
 				from.baseColumn("intid", DT_INTEGER),
-				DataBaseHelper.getDbAccess().getQueryBuilder().literal(iLauyoutId)));
+				dataBaseHelper.getDbAccess().getQueryBuilder().literal(iLauyoutId)));
 
-			List<DbTuple> layouts = DataBaseHelper.getDbAccess().executeQuery(query);
+			List<DbTuple> layouts = dataBaseHelper.getDbAccess().executeQuery(query);
 
 			for (DbTuple layout : layouts) {
 				String sLayoutML = (String) layout.get("clblayoutml", DT_STRING);

@@ -687,7 +687,7 @@ public void processChangingDynamicEntities(Collection<DynamicEntityVO> newDEs, C
 			}
    	}
 
-		DbAccess dbAccess = DataBaseHelper.getDbAccess();
+		DbAccess dbAccess = dataBaseHelper.getDbAccess();
 		if (oldDEVO != null) {
 			String sqlToExecute = null;
 			try {
@@ -839,7 +839,7 @@ public void processChangingDynamicEntities(Collection<DynamicEntityVO> newDEs, C
 	public List<DatasourceVO> getUsingByForDatasource(final Integer iDatasourceId)
 		throws CommonFinderException, CommonPermissionException {
 
-		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
+		DbQueryBuilder builder = dataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<DbTuple> query = builder.createTupleQuery();
 		DbFrom t = query.from("T_UD_DATASOURCEUSAGE").alias(SystemFields.BASE_ALIAS);
 		query.multiselect(
@@ -849,7 +849,7 @@ public void processChangingDynamicEntities(Collection<DynamicEntityVO> newDEs, C
 		query.where(builder.equal(t.baseColumn("INTID_T_UD_DATASOURCE", Integer.class), iDatasourceId));
 
 		List<DatasourceVO> result = new ArrayList<DatasourceVO>();
-		for (DbTuple tuple : DataBaseHelper.getDbAccess().executeQuery(query)) {
+		for (DbTuple tuple : dataBaseHelper.getDbAccess().executeQuery(query)) {
 			try {
 				Integer dataSourceUsed = tuple.get(2, Integer.class);
 				MasterDataVO mdVO = getMasterDataFacade().get(NuclosEntity.DATASOURCE.getEntityName(), dataSourceUsed);
@@ -1057,7 +1057,7 @@ public void removeRecordGrant(RecordGrantVO recordGrantVO) throws CommonFinderEx
    @RolesAllowed("Login")
    public void validateSql(String sql) throws CommonValidationException, NuclosDatasourceException {
 		try {
-			DataBaseHelper.getDbAccess().checkSyntax(sql);
+			dataBaseHelper.getDbAccess().checkSyntax(sql);
 		} catch (DbException e) {
 			throw new CommonValidationException(StringUtils.getParameterizedExceptionMessage("datasource.error.invalid.statement", e.getMessage()), e);//"Die Abfrage ist ung\u00ef\u00bf\u00bdltig.\n" + e.getMessage(), e);
 		}
@@ -1290,7 +1290,7 @@ public void removeRecordGrant(RecordGrantVO recordGrantVO) throws CommonFinderEx
 		final ResultVO result = new ResultVO();
 		final String sQuery = createSQL(sDatasourceXML, mpParams);
 
-		return DataBaseHelper.getDbAccess().executePlainQueryAsResultVO(sQuery, iMaxRowCount==null?-1:iMaxRowCount);
+		return dataBaseHelper.getDbAccess().executePlainQueryAsResultVO(sQuery, iMaxRowCount==null?-1:iMaxRowCount);
 	}
 
 	@Override
@@ -1306,7 +1306,7 @@ public void removeRecordGrant(RecordGrantVO recordGrantVO) throws CommonFinderEx
 	public Table getSchemaColumns(Table table) {
 		//SchemaCache.getColumns(ServerParameterProvider.getInstance().getValue(ParameterProvider.KEY_NUCLOS_SCHEMA), table);
 		//SchemaCache.getConstraints(ServerParameterProvider.getInstance().getValue(ParameterProvider.KEY_NUCLOS_SCHEMA), table);
-		SchemaCache.fillTableColumnsAndConstraints(table);
+		SchemaCache.getInstance().fillTableColumnsAndConstraints(table);
 		return table;
 	}
 

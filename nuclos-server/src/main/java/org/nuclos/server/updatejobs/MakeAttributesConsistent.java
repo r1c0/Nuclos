@@ -29,6 +29,7 @@ import org.nuclos.server.common.AttributeCache;
 import org.nuclos.server.common.MasterDataMetaCache;
 import org.nuclos.server.common.UpdateJobs;
 import org.nuclos.server.database.DataBaseHelper;
+import org.nuclos.server.dblayer.DbAccess;
 import org.nuclos.server.dblayer.DbException;
 import org.nuclos.server.dblayer.query.DbFrom;
 import org.nuclos.server.dblayer.query.DbQuery;
@@ -90,7 +91,8 @@ public class MakeAttributesConsistent implements UpdateJobs{
 	 * @deprecated Does nothing/unneeded? (Please re-check!) (tp)
 	 */
 	private void makeAttributesConsistent() {
-		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
+		final DbAccess dbAccess = DataBaseHelper.getInstance().getDbAccess();
+		DbQueryBuilder builder = dbAccess.getQueryBuilder();
 		DbQuery<Integer> query = builder.createQuery(Integer.class);
 		DbFrom t = query.from("T_UD_GO_ATTRIBUTE").alias(SystemFields.BASE_ALIAS);
 		query.select(t.baseColumn("INTID_EXTERNAL", Integer.class));
@@ -103,7 +105,7 @@ public class MakeAttributesConsistent implements UpdateJobs{
 				// check whether attribute is used in a genericobject
 				try {
 					query.where(builder.equal(t.baseColumn("INTID_T_MD_ATTRIBUTE", Integer.class), attrcvo.getId()));
-					List<Integer> intidExternals = DataBaseHelper.getDbAccess().executeQuery(query);
+					List<Integer> intidExternals = dbAccess.executeQuery(query);
 					
 					for (Integer intid_external : intidExternals) {
 						try {
@@ -144,7 +146,7 @@ public class MakeAttributesConsistent implements UpdateJobs{
 				// check whether attribute is used in a genericobject
 				try {
 					query.where(builder.equal(t.baseColumn("INTID_T_MD_ATTRIBUTE", Integer.class), attrcvo.getId()));
-					List<Integer> intidExternals = DataBaseHelper.getDbAccess().executeQuery(query);
+					List<Integer> intidExternals = dbAccess.executeQuery(query);
 					
 					for (Integer intid_external : intidExternals) {
 						try {

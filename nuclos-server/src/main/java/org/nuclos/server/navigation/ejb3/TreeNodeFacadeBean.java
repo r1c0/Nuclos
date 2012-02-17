@@ -373,7 +373,7 @@ public class TreeNodeFacadeBean extends NuclosFacadeBean implements TreeNodeFaca
 	private List<TreeNode> getRelatedSubNodes(GenericObjectTreeNode node, final RelationDirection direction) {
 		final List<TreeNode> result = new ArrayList<TreeNode>();
 
-		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
+		DbQueryBuilder builder = dataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<DbTuple> query = builder.createTupleQuery();
 		DbFrom r = query.from("T_UD_GO_RELATION").alias("r");
 		DbFrom l = query.from("T_UD_GENERICOBJECT").alias("l");
@@ -393,7 +393,7 @@ public class TreeNodeFacadeBean extends NuclosFacadeBean implements TreeNodeFaca
 			));
 		// order by type ???
 
-		for (DbTuple tuple : DataBaseHelper.getDbAccess().executeQuery(query.distinct(true))) {
+		for (DbTuple tuple : dataBaseHelper.getDbAccess().executeQuery(query.distinct(true))) {
 			final Integer iRelationId = tuple.get(0, Integer.class);
 			final int iGenericObjectId = tuple.get(1, Integer.class);
 
@@ -426,12 +426,12 @@ public class TreeNodeFacadeBean extends NuclosFacadeBean implements TreeNodeFaca
 	}
 
 	private String getRelationTypeLabel(String relationType){
-		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
+		DbQueryBuilder builder = dataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<String> query = builder.createQuery(String.class);
 		DbFrom t = query.from("T_MD_RELATIONTYPE").alias(SystemFields.BASE_ALIAS);
 		query.select(t.baseColumn("STRLOCALERESOURCEID", String.class));
 		query.where(builder.equal(t.baseColumn("STRRELATIONTYPE", String.class), relationType));
-		String resourceId = CollectionUtils.getFirst(DataBaseHelper.getDbAccess().executeQuery(query));
+		String resourceId = CollectionUtils.getFirst(dataBaseHelper.getDbAccess().executeQuery(query));
 		if (resourceId != null) {
 			CommonLocaleDelegate.getInstance().getMessage(resourceId, relationType);
 		}
@@ -441,7 +441,7 @@ public class TreeNodeFacadeBean extends NuclosFacadeBean implements TreeNodeFaca
 	private List<TreeNode> getGroupSubNodes(GenericObjectTreeNode node) {
 		final List<TreeNode> result = new ArrayList<TreeNode>();
 
-		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
+		DbQueryBuilder builder = dataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<DbTuple> query = builder.createTupleQuery();
 		DbFrom l = query.from("T_UD_GO_GROUP").alias("l");
 		DbFrom g = l.join("T_UD_GROUP", JoinType.INNER).alias("g").on("INTID_T_UD_GROUP", "INTID", Integer.class);
@@ -454,7 +454,7 @@ public class TreeNodeFacadeBean extends NuclosFacadeBean implements TreeNodeFaca
 		query.where(builder.equal(l.baseColumn("INTID_T_UD_GROUP", Integer.class), node.getId()));
 		query.orderBy(builder.asc(g.baseColumn("STRGROUP", String.class)), builder.desc(g.baseColumn("DATVALIDFROM", Date.class)));
 
-		for (DbTuple tuple : DataBaseHelper.getDbAccess().executeQuery(query)) {
+		for (DbTuple tuple : dataBaseHelper.getDbAccess().executeQuery(query)) {
 			final GroupTreeNode nodeGroupDefined = new GroupTreeNode(
 				tuple.get(0, Integer.class), tuple.get(1, String.class),
 				tuple.get(2, String.class), tuple.get(3, String.class));
@@ -475,7 +475,7 @@ public class TreeNodeFacadeBean extends NuclosFacadeBean implements TreeNodeFaca
 	 */
 	@Override
 	public GroupTreeNode getGroupTreeNode(final Integer iId, final boolean bLoadSubNodes) throws CommonFinderException {
-		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
+		DbQueryBuilder builder = dataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<DbTuple> query = builder.createTupleQuery();
 		DbFrom t = query.from("T_UD_GROUP").alias(SystemFields.BASE_ALIAS);
 		DbFrom fk1 = t.join("T_MD_GROUPTYPE", JoinType.INNER).alias("fk1").on("INTID_T_MD_GROUPTYPE", "INTID", Integer.class);
@@ -487,7 +487,7 @@ public class TreeNodeFacadeBean extends NuclosFacadeBean implements TreeNodeFaca
 
 		DbTuple tuple;
 		try {
-			tuple = DataBaseHelper.getDbAccess().executeQuerySingleResult(query);
+			tuple = dataBaseHelper.getDbAccess().executeQuerySingleResult(query);
 		} catch (DbInvalidResultSizeException e) {
 			throw new NuclosFatalException("treenode.error.missing.group");//"Die Gruppe existiert nicht mehr.");
 		}
@@ -552,7 +552,7 @@ public class TreeNodeFacadeBean extends NuclosFacadeBean implements TreeNodeFaca
 	 */
 	@Override
 	public List<GenericObjectTreeNode> getSubNodes(GroupTreeNode node) {
-		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
+		DbQueryBuilder builder = dataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<DbTuple> query = builder.createTupleQuery();
 		DbFrom grp = query.from("T_UD_GO_GROUP").alias("grp");
 		DbFrom gob = grp.join("T_UD_GENERICOBJECT", JoinType.INNER).alias("gob").on("INTID_T_UD_GENERICOBJECT", "INTID", Integer.class);
@@ -563,7 +563,7 @@ public class TreeNodeFacadeBean extends NuclosFacadeBean implements TreeNodeFaca
 		query.orderBy(builder.asc(grp.baseColumn("DATCREATED", Date.class)));
 
 		final List<GenericObjectTreeNode> result = new ArrayList<GenericObjectTreeNode>();
-		for (DbTuple tuple : DataBaseHelper.getDbAccess().executeQuery(query)) {
+		for (DbTuple tuple : dataBaseHelper.getDbAccess().executeQuery(query)) {
 			try {
 				result.add(getGenericObjectTreeNode(tuple.get(0, Integer.class), tuple.get(1, Integer.class), null));
 			}

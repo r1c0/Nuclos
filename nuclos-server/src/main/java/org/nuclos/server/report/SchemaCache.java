@@ -80,6 +80,8 @@ public class SchemaCache implements SchemaCacheMBean {
    private ServerParameterProvider serverParameterProvider;
    
    private MetaDataServerProvider metaDataServerProvider;
+   
+   private DataBaseHelper dataBaseHelper;
 
    SchemaCache() {
 	   INSTANCE = this;
@@ -98,6 +100,11 @@ public class SchemaCache implements SchemaCacheMBean {
    @Autowired
    void setMetaDataServerProvider(MetaDataServerProvider metaDataServerProvider) {
 	   this.metaDataServerProvider = metaDataServerProvider;
+   }
+   
+   @Autowired
+   void setDataBaseHelper(DataBaseHelper dataBaseHelper) {
+	   this.dataBaseHelper = dataBaseHelper;
    }
 
    public static SchemaCache getInstance() {
@@ -138,7 +145,7 @@ public class SchemaCache implements SchemaCacheMBean {
       Schema schema = new Schema();
 
       for (DbTableType tableType : DbTableType.TABLE_AND_VIEW) {
-      	for (String tableName : DataBaseHelper.getDbAccess().getTableNames(tableType)) {
+      	for (String tableName : dataBaseHelper.getDbAccess().getTableNames(tableType)) {
       		if (namePredicate != null && !namePredicate.evaluate(tableName))
       			continue;
 	         Table table = new Table(schema, tableName);
@@ -170,7 +177,7 @@ public synchronized void invalidate() {
 
    // ***** static **********************************************************************
 
-   public static synchronized void fillTableColumnsAndConstraints(final Table table){
+   public synchronized void fillTableColumnsAndConstraints(final Table table){
       getColumns(table);
       getConstraints(table);
 
@@ -178,7 +185,7 @@ public synchronized void invalidate() {
       //SchemaCache.getInstance().addTable((Table)table.clone());
    }
 
-   public static synchronized void getColumns(final Table table) {
+   public synchronized void getColumns(final Table table) {
       if (table.isQuery()) {
          new QueryTable().setAllQueryColumns(table);
       }
@@ -187,8 +194,8 @@ public synchronized void invalidate() {
       }
    }
 
-   private static synchronized void getConstraints(final Table table) {
-   	DbTable tableMetaData = DataBaseHelper.getDbAccess().getTableMetaData(table.getName());
+   private synchronized void getConstraints(final Table table) {
+   	DbTable tableMetaData = dataBaseHelper.getDbAccess().getTableMetaData(table.getName());
    	if (tableMetaData != null) {
    		DbArtifact.acceptAll(tableMetaData.getTableArtifacts(DbConstraint.class), new AbstractDbArtifactVisitor<Void>() {
    			@Override
@@ -222,10 +229,10 @@ public synchronized void invalidate() {
       }
    }
 
-   private static void readColumnsIntoTable(final Table table) {
+   private void readColumnsIntoTable(final Table table) {
    	// TODO_AUTOSYNC: Other schema
 
-   	DbTable dbTable = DataBaseHelper.getDbAccess().getTableMetaData(table.getName());
+   	DbTable dbTable = dataBaseHelper.getDbAccess().getTableMetaData(table.getName());
    	for (DbColumn dbColumn : dbTable.getTableArtifacts(DbColumn.class)) {
    		final String name = dbColumn.getColumnName();
    		final DbColumnType columnType = dbColumn.getColumnType();

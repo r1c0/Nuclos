@@ -1154,7 +1154,7 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 		}
 
 		if (modules.isLogbookTracking(iModuleId)) {
-			DataBaseHelper.getDbAccess().execute(DbStatementUtils.deleteFrom("T_UD_LOGBOOK", "INTID_T_UD_GENERICOBJECT", govo.getId()));
+			dataBaseHelper.getDbAccess().execute(DbStatementUtils.deleteFrom("T_UD_LOGBOOK", "INTID_T_UD_GENERICOBJECT", govo.getId()));
 		}
 	}
 
@@ -1519,7 +1519,7 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 	 */
 	@Override
 	public Collection<GenericObjectRelationVO> findRelations(Integer iGenericObjectIdSource, String relationType, Integer iGenericObjectIdTarget) throws CommonFinderException, CommonPermissionException {
-		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
+		DbQueryBuilder builder = dataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<Integer> query = builder.createQuery(Integer.class);
 		DbFrom t = query.from("T_UD_GO_RELATION").alias(SystemFields.BASE_ALIAS);
 		query.select(t.baseColumn("INTID", Integer.class));
@@ -1532,7 +1532,7 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 
 	@Override
 	public Collection<GenericObjectRelationVO> findRelationsByGenericObjectId(Integer iGenericObjectId) throws CommonFinderException, CommonPermissionException {
-		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
+		DbQueryBuilder builder = dataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<Integer> query = builder.createQuery(Integer.class);
 		DbFrom t = query.from("T_UD_GO_RELATION").alias(SystemFields.BASE_ALIAS);
 		query.select(t.baseColumn("INTID", Integer.class));
@@ -1545,7 +1545,7 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 	private Collection<GenericObjectRelationVO> findRelationsImpl(DbQuery<Integer> query) throws CommonFinderException, CommonPermissionException {
 		Collection<GenericObjectRelationVO> result = new ArrayList<GenericObjectRelationVO>();
 
-		for (Integer id : DataBaseHelper.getDbAccess().executeQuery(query.distinct(true)))
+		for (Integer id : dataBaseHelper.getDbAccess().executeQuery(query.distinct(true)))
 			result.add(MasterDataWrapper.getGenericObjectRelationVO(getMasterDataFacade().get(NuclosEntity.GENERICOBJECTRELATION.getEntityName(), id)));
 
 		return result;
@@ -1638,7 +1638,7 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 		final Set<Integer> result = new HashSet<Integer>();
 		if (iModuleId != null && iGenericObjectId != null) {
 
-			DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
+			DbQueryBuilder builder = dataBaseHelper.getDbAccess().getQueryBuilder();
 			DbQuery<DbTuple> query = builder.createTupleQuery();
 			DbFrom r = query.from("T_UD_GO_RELATION").alias("r");
 			DbFrom l = query.from("T_UD_GENERICOBJECT").alias("l");
@@ -1653,7 +1653,7 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 				builder.equal(r.baseColumn("STRRELATIONTYPE", String.class), relationType)));
 			query.distinct(true);
 
-			List<DbTuple> result1 = DataBaseHelper.getDbAccess().executeQuery(query);
+			List<DbTuple> result1 = dataBaseHelper.getDbAccess().executeQuery(query);
 			for (DbTuple tuple1 : result1) {
 				final Integer intid1 = tuple1.get(0, Integer.class);
 				if (tuple1.get(1, Integer.class).equals(iModuleId)) {
@@ -1667,7 +1667,7 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 						builder.equal(genericObject2, l.baseColumn("INTID", Integer.class)),
 						builder.equal(r.baseColumn("STRRELATIONTYPE", String.class), relationType)));
 
-					for (DbTuple tuple2 : DataBaseHelper.getDbAccess().executeQuery(query)) {
+					for (DbTuple tuple2 : dataBaseHelper.getDbAccess().executeQuery(query)) {
 						result.add(tuple2.get(0, Integer.class));
 					}
 				}
@@ -1853,7 +1853,7 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 
 	private boolean getUsesRuleEngine(String sEntityName, String event) {
 
-		DbQuery<DbTuple> query = DataBaseHelper.getDbAccess().getQueryBuilder().createTupleQuery();
+		DbQuery<DbTuple> query = dataBaseHelper.getDbAccess().getQueryBuilder().createTupleQuery();
 		DbFrom from = query.from("T_MD_RULE_EVENT").alias(SystemFields.BASE_ALIAS);
 		List<DbSelection<?>> columns = new ArrayList<DbSelection<?>>();
 
@@ -1861,14 +1861,14 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 		query.multiselect(columns);
 
 		List<DbCondition> lstDbCondition = new ArrayList<DbCondition>();
-		lstDbCondition.add(DataBaseHelper.getDbAccess().getQueryBuilder().equal(from.baseColumn("strmasterdata", String.class),
-			DataBaseHelper.getDbAccess().getQueryBuilder().literal(sEntityName)));
-		lstDbCondition.add(DataBaseHelper.getDbAccess().getQueryBuilder().equal(from.baseColumn("strevent", String.class),
-			DataBaseHelper.getDbAccess().getQueryBuilder().literal(event)));
+		lstDbCondition.add(dataBaseHelper.getDbAccess().getQueryBuilder().equal(from.baseColumn("strmasterdata", String.class),
+			dataBaseHelper.getDbAccess().getQueryBuilder().literal(sEntityName)));
+		lstDbCondition.add(dataBaseHelper.getDbAccess().getQueryBuilder().equal(from.baseColumn("strevent", String.class),
+			dataBaseHelper.getDbAccess().getQueryBuilder().literal(event)));
 
-		query.where(DataBaseHelper.getDbAccess().getQueryBuilder().and(lstDbCondition.toArray(new DbCondition[0])));
+		query.where(dataBaseHelper.getDbAccess().getQueryBuilder().and(lstDbCondition.toArray(new DbCondition[0])));
 
-		List<DbTuple> usages = DataBaseHelper.getDbAccess().executeQuery(query);
+		List<DbTuple> usages = dataBaseHelper.getDbAccess().executeQuery(query);
 
 		return (usages.size() > 0);
 	}

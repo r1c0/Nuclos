@@ -189,6 +189,8 @@ public class MasterDataFacadeHelper {
 	
 	private MasterDataMetaCache masterDataMetaCache;
 	
+	private DataBaseHelper dataBaseHelper;
+	
 	public MasterDataFacadeHelper() {
 	}
 	
@@ -200,6 +202,11 @@ public class MasterDataFacadeHelper {
 	@Autowired
 	void setMasterDataMetaCache(MasterDataMetaCache masterDataMetaCache) {
 		this.masterDataMetaCache = masterDataMetaCache;
+	}
+	
+	@Autowired
+	void setDataBaseHelper(DataBaseHelper dataBaseHelper) {
+		this.dataBaseHelper = dataBaseHelper;
 	}
 
 	void close() {
@@ -285,11 +292,11 @@ public class MasterDataFacadeHelper {
 		return getGenericMasterData(sEntityName, cond, true);
 	}
 
-	static Collection<MasterDataVO> getDependantMasterDataBySQL(Object oRelatedId, final MasterDataMetaVO mdmetavo) {
+	Collection<MasterDataVO> getDependantMasterDataBySQL(Object oRelatedId, final MasterDataMetaVO mdmetavo) {
 		final List<MasterDataMetaFieldVO> collFields = mdmetavo.getFields();
 		final int fieldCount = collFields.size();
 
-		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
+		DbQueryBuilder builder = dataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<DbTuple> query = builder.createTupleQuery();
 		DbFrom t = query.from(mdmetavo.getDBEntity()).alias(SystemFields.BASE_ALIAS);
 		DbColumnExpression<Integer> goColumn = t.baseColumn("INTID_T_UD_GENERICOBJECT", Integer.class);
@@ -307,7 +314,7 @@ public class MasterDataFacadeHelper {
 		query.multiselect(selection);
 		query.where(builder.equal(goColumn, oRelatedId));
 
-		return DataBaseHelper.getDbAccess().executeQuery(query, new Transformer<DbTuple, MasterDataVO>() {
+		return dataBaseHelper.getDbAccess().executeQuery(query, new Transformer<DbTuple, MasterDataVO>() {
 			@Override
             public MasterDataVO transform(DbTuple tuple) {
 				MasterDataVO result = new MasterDataVO(mdmetavo, false);
@@ -483,7 +490,7 @@ public class MasterDataFacadeHelper {
 
 		// @todo refactor: make this easier to write:
 		try {
-			DataBaseHelper.execute(DbStatementUtils.deleteFrom(getUserWritableDbEntityName(mdmetavo),
+			dataBaseHelper.execute(DbStatementUtils.deleteFrom(getUserWritableDbEntityName(mdmetavo),
 				"INTID", mdvo.getIntId()));
 		}
 		catch (CommonFatalException ex) {
@@ -621,9 +628,9 @@ public class MasterDataFacadeHelper {
 		} else {
 			final String idFactory = entityMeta.getIdFactory();
 			if (idFactory == null) {
-				result = DataBaseHelper.getNextIdAsInteger(DataBaseHelper.DEFAULT_SEQUENCE);
+				result = dataBaseHelper.getNextIdAsInteger(DataBaseHelper.DEFAULT_SEQUENCE);
 			} else {
-				result = DataBaseHelper.getDbAccess().executeFunction(idFactory, Integer.class);
+				result = dataBaseHelper.getDbAccess().executeFunction(idFactory, Integer.class);
 			}
 		}
 		mdvoToCreate.setId(result);
@@ -1163,7 +1170,7 @@ public class MasterDataFacadeHelper {
 
 		String dbtype = (oldSource != null) ? oldSource.getField("dbtype", String.class) : newSource.getField("dbtype", String.class);
 
-		final DbAccess dbAccess = DataBaseHelper.getDbAccess();
+		final DbAccess dbAccess = dataBaseHelper.getDbAccess();
 
 		if (!dbAccess.getDbType().equals(DbType.getFromName(dbtype))) {
 			return;
@@ -1288,7 +1295,7 @@ public class MasterDataFacadeHelper {
 	public void removeDependantTaskObjects(Integer entityId) {
 		DbStatement stmt = DbStatementUtils.deleteFrom("T_UD_TODO_OBJECT",
 			"INTID_T_UD_GENERICOBJECT", entityId);
-		DataBaseHelper.getDbAccess().execute(stmt);
+		dataBaseHelper.getDbAccess().execute(stmt);
 	}
 
 }	// class MasterDataFacadeHelper

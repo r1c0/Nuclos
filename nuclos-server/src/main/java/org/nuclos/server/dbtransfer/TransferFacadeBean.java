@@ -43,6 +43,7 @@ import java.util.Set;
 import java.util.zip.ZipEntry;
 
 import javax.annotation.security.RolesAllowed;
+import javax.sql.DataSource;
 
 import org.apache.log4j.Logger;
 import org.nuclos.common.ApplicationProperties;
@@ -77,7 +78,6 @@ import org.nuclos.common2.exception.CommonValidationException;
 import org.nuclos.server.common.DatasourceCache;
 import org.nuclos.server.common.LockedTabProgressNotifier;
 import org.nuclos.server.common.MetaDataServerProvider;
-import org.nuclos.server.common.NuclosDataSources;
 import org.nuclos.server.common.RuleCache;
 import org.nuclos.server.common.SecurityCache;
 import org.nuclos.server.common.ServerParameterProvider;
@@ -141,6 +141,7 @@ import org.nuclos.server.resource.ResourceCache;
 import org.nuclos.server.ruleengine.NuclosCompileException;
 import org.nuclos.server.ruleengine.NuclosCompileException.ErrorMessage;
 import org.nuclos.server.statemodel.valueobject.StateModelUsagesCache;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
@@ -167,7 +168,11 @@ public class TransferFacadeBean extends NuclosFacadeBean
 
 	private static final String TABLE_ENTRY_SUFFIX = ".eo.xml";
 	
-	private enum Process {CREATE, PREPARE, RUN};
+	private static enum Process {CREATE, PREPARE, RUN};
+	
+	//
+	
+	private DataSource dataSource;
 
 	/**
 	 *
@@ -295,6 +300,14 @@ public class TransferFacadeBean extends NuclosFacadeBean
 		contents.add(new DefaultNucletContent(NuclosEntity.SEARCHFILTERROLE, NuclosEntity.SEARCHFILTER, contents));
 
 		return contents;
+	}
+	
+	public TransferFacadeBean() {
+	}
+	
+	@Autowired
+	void setDataSource(DataSource dataSource) {
+		this.dataSource = dataSource;
 	}
 
 	/**
@@ -489,7 +502,7 @@ public class TransferFacadeBean extends NuclosFacadeBean
 			}
 		}
 
-		DbAccess dbAccess = DataBaseHelper.getDbAccess();
+		DbAccess dbAccess = dataBaseHelper.getDbAccess();
 		info("get all foreign key contraints and drop");
 		final List<DbForeignKeyConstraint> fkConstraints = getForeignKeyConstraints(getEntities(contentTypes), new EntityObjectMetaDbHelper(dbAccess, MetaDataServerProvider.getInstance()));
 		try {
@@ -521,7 +534,7 @@ public class TransferFacadeBean extends NuclosFacadeBean
 			info("preview changes");
 			final String notifyPreviewString = "creating preview of db changes";
 			jmsNotifier.notify(notifyPreviewString, 80);
-			previewParts.addAll(previewChanges(DataBaseHelper.getDbAccess(), existingNucletIds, contentTypes, importContentMap, importData, uidLocalizedMap, root.exportOptions,
+			previewParts.addAll(previewChanges(dataBaseHelper.getDbAccess(), existingNucletIds, contentTypes, importContentMap, importData, uidLocalizedMap, root.exportOptions,
 				new TransferNotifierHelper(jmsNotifier, notifyPreviewString, 80, 100)));
 		} catch (Exception ex) {
 			if (t.result.hasCriticals()) t.result.sbCritical.append("<br />");
@@ -712,7 +725,7 @@ public class TransferFacadeBean extends NuclosFacadeBean
 	private void checkIfNewUniqueConstraintIsAllowed(DbStructureChange dbChangeStmt, PreviewPart pp) {
 		try {
 			DbUniqueConstraint artifactConstraint = (DbUniqueConstraint)dbChangeStmt.getArtifact2();
-			DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
+			DbQueryBuilder builder = dataBaseHelper.getDbAccess().getQueryBuilder();
 			DbQuery<Long> query = builder.createQuery(Long.class);
 			DbFrom t = query.from(artifactConstraint.getTableName()).alias(SystemFields.BASE_ALIAS);
 			List<DbExpression<?>> lstDBSelection = new ArrayList<DbExpression<?>>();
@@ -726,7 +739,7 @@ public class TransferFacadeBean extends NuclosFacadeBean
 			query.having(builder.greaterThan(builder.countRows(), builder.literal(1L)));
 			query.maxResults(2);
 
-			List<Long> result = DataBaseHelper.getDbAccess().executeQuery(query);
+			List<Long> result = dataBaseHelper.getDbAccess().executeQuery(query);
 			if(!result.isEmpty()) {
 				pp.setWarning(pp.WARNING);
 				pp.addStatement("Unique Constraint kann nicht gesetzt werden!");
@@ -882,7 +895,7 @@ public class TransferFacadeBean extends NuclosFacadeBean
 		info("get all dynamic entities");
 		Collection<DynamicEntityVO> oldDynamicEntities = DatasourceCache.getInstance().getAllDynamicEntities();
 
-		Map<String, String> config = DataBaseHelper.getDbAccess().getConfig();
+		Map<String, String> config = dataBaseHelper.getDbAccess().getConfig();
 		if (t.getTransferOptions().containsKey(TransferOption.DBADMIN)) {
 			config.put(DbAccess.USERNAME, (String) t.getTransferOptions().get(TransferOption.DBADMIN));
 		}
@@ -890,7 +903,7 @@ public class TransferFacadeBean extends NuclosFacadeBean
 			config.put(DbAccess.PASSWORD, (String) t.getTransferOptions().get(TransferOption.DBADMIN_PASSWORD));
 		}
 		info("create db access");
-		DbAccess dbAccess = DataBaseHelper.getDbAccess().getDbType().createDbAccess(NuclosDataSources.getDefaultDS(), config);
+		DbAccess dbAccess = dataBaseHelper.getDbAccess().getDbType().createDbAccess(dataSource, config);
 
 		jmsNotifier.notify("read current schema", 0);
 		info("read current schema");
@@ -1599,7 +1612,7 @@ public class TransferFacadeBean extends NuclosFacadeBean
 
 	@Override
 	public String getDatabaseType(){
-		return DataBaseHelper.getDbAccess().getDbType().toString();
+		return dataBaseHelper.getDbAccess().getDbType().toString();
 	}
 
 	private Boolean freezeConfiguration = null;
@@ -1611,12 +1624,12 @@ public class TransferFacadeBean extends NuclosFacadeBean
 	}
 
 	private static Boolean readConfigParameter() {
-		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
+		DbQueryBuilder builder = DataBaseHelper.getInstance().getDbAccess().getQueryBuilder();
 		DbQuery<String> query = builder.createQuery(String.class);
 		DbFrom t = query.from("T_AD_PARAMETER").alias(SystemFields.BASE_ALIAS);
 		query.select(t.baseColumn("STRVALUE", String.class));
 		query.where(builder.equal(t.baseColumn("STRPARAMETER", String.class), PARAM_NAME));
-		List<String> v = DataBaseHelper.getDbAccess().executeQuery(query);
+		List<String> v = DataBaseHelper.getInstance().getDbAccess().executeQuery(query);
 		return (v.size() == 0) ? Boolean.FALSE : Boolean.valueOf(v.get(0));
 	}
 
@@ -1627,12 +1640,12 @@ public class TransferFacadeBean extends NuclosFacadeBean
 	public synchronized void setFreezeConfiguration(boolean freeze) {
 		if (freeze == freezeConfiguration()) return;
 
-		DataBaseHelper.execute(DbStatementUtils.deleteFrom("T_AD_PARAMETER",
+		dataBaseHelper.execute(DbStatementUtils.deleteFrom("T_AD_PARAMETER",
 			"INTID", PARAM_INTID));
 
 		String user = getCurrentUserName();
 
-		DataBaseHelper.execute(DbStatementUtils.insertInto("T_AD_PARAMETER",
+		dataBaseHelper.execute(DbStatementUtils.insertInto("T_AD_PARAMETER",
 			"INTID", PARAM_INTID,
 			"STRPARAMETER", PARAM_NAME,
 			"STRDESCRIPTION", PARAM_DESCRIPTION,

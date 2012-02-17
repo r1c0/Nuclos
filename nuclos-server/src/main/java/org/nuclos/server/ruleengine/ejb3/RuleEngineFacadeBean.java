@@ -177,14 +177,14 @@ public class RuleEngineFacadeBean extends NuclosFacadeBean implements RuleEngine
 	private RuleObjectContainerCVO fireRule(Integer transitionId, RuleObjectContainerCVO ruleContainer, Boolean after) throws NuclosBusinessRuleException {
 		final List<RuleVO> rules = new ArrayList<RuleVO>();
 
-		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
+		DbQueryBuilder builder = dataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<DbTuple> query = builder.createTupleQuery();
 		DbFrom t = query.from("T_MD_RULE_TRANSITION").alias(SystemFields.BASE_ALIAS);
 		query.multiselect(t.baseColumn("INTID_T_MD_RULE", Integer.class), t.baseColumn("BLNRUNAFTERWARDS", Boolean.class));
 		query.where(builder.equal(t.baseColumn("INTID_T_MD_STATE_TRANSITION", Integer.class), transitionId));
 		query.orderBy(builder.asc(t.baseColumn("INTORDER", Integer.class)));
 
-		for (DbTuple res : DataBaseHelper.getDbAccess().executeQuery(query)) {
+		for (DbTuple res : dataBaseHelper.getDbAccess().executeQuery(query)) {
 			Boolean bRuleRunAfterwards = res.get(1, Boolean.class);
 			if (bRuleRunAfterwards == null) bRuleRunAfterwards = Boolean.FALSE;
 			if ((bRuleRunAfterwards && after) || (!bRuleRunAfterwards && !after)) {
@@ -638,7 +638,7 @@ public class RuleEngineFacadeBean extends NuclosFacadeBean implements RuleEngine
 		this.checkReadAllowed(NuclosEntity.RULE);
 		Collection<GeneratorActionVO> resultUnsorted = new HashSet<GeneratorActionVO>();
 
-		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
+		DbQueryBuilder builder = dataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<Integer> query = builder.createQuery(Integer.class);
 		DbFrom t = query.from("T_MD_RULE_GENERATION").alias(SystemFields.BASE_ALIAS);
 		query.select(t.baseColumn("INTID_T_MD_GENERATION", Integer.class));
@@ -646,7 +646,7 @@ public class RuleEngineFacadeBean extends NuclosFacadeBean implements RuleEngine
 			query.where(builder.equal(t.baseColumn("INTID_T_MD_RULE", Integer.class), iRuleId));
 		}
 
-		List<Integer> generationIds = DataBaseHelper.getDbAccess().executeQuery(query.distinct(true));
+		List<Integer> generationIds = dataBaseHelper.getDbAccess().executeQuery(query.distinct(true));
 
 		GeneratorFacadeLocal generatorFacade = ServiceLocator.getInstance().getFacade(GeneratorFacadeLocal.class);
 
@@ -796,14 +796,14 @@ public class RuleEngineFacadeBean extends NuclosFacadeBean implements RuleEngine
 		this.checkReadAllowed(NuclosEntity.RULE);
 		List<RuleVO> rules = new ArrayList<RuleVO>();
 
-		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
+		DbQueryBuilder builder = dataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<DbTuple> query = builder.createTupleQuery();
 		DbFrom t = query.from("T_MD_RULE_GENERATION").alias(SystemFields.BASE_ALIAS);
 		query.multiselect(t.baseColumn("INTID_T_MD_RULE", Integer.class), t.baseColumn("BLNRUNAFTERWARDS", Boolean.class));
 		query.where(builder.equal(t.baseColumn("INTID_T_MD_GENERATION", Integer.class), iGenerationId));
 		query.orderBy(builder.asc(t.baseColumn("INTORDER", Integer.class)));
 
-		for (DbTuple res : DataBaseHelper.getDbAccess().executeQuery(query)) {
+		for (DbTuple res : dataBaseHelper.getDbAccess().executeQuery(query)) {
 			Boolean bRuleRunAfterwards = res.get(1, Boolean.class);
 			if (bRuleRunAfterwards == null) bRuleRunAfterwards = Boolean.FALSE;
 			if ((bRuleRunAfterwards && after) || (!bRuleRunAfterwards && !after)) {

@@ -22,6 +22,9 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+
+import javax.annotation.PostConstruct;
 
 import org.nuclos.common.JMSConstants;
 import org.nuclos.common.collection.CollectionUtils;
@@ -37,6 +40,8 @@ import org.nuclos.server.dblayer.query.DbQuery;
 import org.nuclos.server.dblayer.query.DbQueryBuilder;
 import org.nuclos.server.jms.NuclosJMSUtils;
 import org.nuclos.server.resource.valueobject.ResourceVO;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 /**
  * A (server) cache for resources.
@@ -47,6 +52,7 @@ import org.nuclos.server.resource.valueobject.ResourceVO;
  * @author	<a href="mailto:corina.mandoki@novabit.de">Corina Mandoki</a>
  * @version 00.01.000
  */
+@Component
 public class ResourceCache {
 	
 	private Map<String, ResourceVO> mpResourcesByName;
@@ -54,20 +60,31 @@ public class ResourceCache {
 	
 	//private final ClientNotifier clientnotifier = new ClientNotifier(JMSConstants.TOPICNAME_RESOURCECACHE);
 	
-	private Map<ResourceVO, byte[]> mpResources = CollectionUtils.newHashMap();
-	
 	private static final File resourceDir = NuclosSystemParameters.getDirectory(NuclosSystemParameters.RESOURCE_PATH);
 	
-	private static ResourceCache singleton;
+	private static ResourceCache INSTANCE;
 	
-	public static synchronized ResourceCache getInstance() {
-		if (singleton == null) {
-			singleton = new ResourceCache();
-		}
-		return singleton;
+	//
+	
+	private final Map<ResourceVO, byte[]> mpResources = new ConcurrentHashMap<ResourceVO, byte[]>();
+	
+	private DataBaseHelper dataBaseHelper;
+	
+	public static ResourceCache getInstance() {
+		return INSTANCE;
 	}
 	
-	private ResourceCache() {
+	ResourceCache() {
+		INSTANCE = this;
+	}
+	
+	@Autowired
+	void setDataBaseHelper(DataBaseHelper dataBaseHelper) {
+		this.dataBaseHelper = dataBaseHelper;
+	}
+	
+	@PostConstruct
+	final void init() {
 		this.mpResourcesByName = buildMap();
 		this.mpResourcesById = buildIdMap();
 	}
@@ -88,7 +105,7 @@ public class ResourceCache {
 	 * init the ids map
 	 */
 	private Map<Integer, ResourceVO> buildIdMap() {
-		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
+		DbQueryBuilder builder = dataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<DbTuple> query = builder.createTupleQuery();
 		DbFrom t = query.from("T_MD_RESOURCE").alias(SystemFields.BASE_ALIAS);
 		query.multiselect(
@@ -104,7 +121,7 @@ public class ResourceCache {
 			t.baseColumn("BLNSYSTEMRESOURCE", Boolean.class));
 
 		final Map<Integer, ResourceVO> result = CollectionUtils.newHashMap();
-		for (DbTuple tuple : DataBaseHelper.getDbAccess().executeQuery(query)) {
+		for (DbTuple tuple : dataBaseHelper.getDbAccess().executeQuery(query)) {
 			ResourceVO resourcevo = new ResourceVO(
 				tuple.get(0, Integer.class),
 				tuple.get(1, Date.class),
@@ -147,6 +164,9 @@ public class ResourceCache {
 			mpResourcesByName = buildMap();
 		}
 		ResourceVO resourcevo = mpResourcesByName.get(sResourceName);
+		if (resourcevo == null) {
+			return null;
+		}
 		if (!mpResources.containsKey(resourcevo)) {
 			if(resourcevo != null && resourcevo.getFileName() != null) {
 				final File file = new File(resourceDir, resourcevo.getFileName());			

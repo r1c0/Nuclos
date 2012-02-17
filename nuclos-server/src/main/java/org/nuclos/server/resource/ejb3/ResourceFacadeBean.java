@@ -41,6 +41,7 @@ import org.nuclos.server.resource.ResourceCache;
 import org.nuclos.server.resource.valueobject.ResourceFile;
 import org.nuclos.server.resource.valueobject.ResourceVO;
 import org.nuclos.server.ruleengine.NuclosBusinessRuleException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -53,27 +54,36 @@ import org.springframework.transaction.annotation.Transactional;
 // @Remote(ResourceFacadeRemote.class)
 @Transactional
 public class ResourceFacadeBean extends MasterDataFacadeBean implements ResourceFacadeRemote {
+	
+	private ResourceCache resourceCache;
+	
+	public ResourceFacadeBean() {
+	}
+	
+	@Autowired
+	void setResourceCache(ResourceCache resourceCache) {
+		this.resourceCache = resourceCache;
+	}
 
 	@Override
     @RolesAllowed("Login")
 	public ResourceVO getResourceByName(String sResourceName) {
-		return ResourceCache.getInstance().getResourceByName(sResourceName);
+		return resourceCache.getResourceByName(sResourceName);
 	}
 	
 
 	@Override
     @RolesAllowed("Login")
 	public ResourceVO getResourceById(Integer iResourceId) {
-		return ResourceCache.getInstance().getResourceById(iResourceId);
+		return resourceCache.getResourceById(iResourceId);
 	}
 
 	@Override
     @RolesAllowed("Login")
 	public Pair<ResourceVO, byte[]> getResource(String resourceName) {
 		Pair<ResourceVO, byte[]> res = new Pair<ResourceVO, byte[]>();
-		ResourceCache rcinst = ResourceCache.getInstance();
-		res.x = rcinst.getResourceByName(resourceName);
-		res.y = ResourceCache.getInstance().getResource(resourceName);
+		res.x = resourceCache.getResourceByName(resourceName);
+		res.y = resourceCache.getResource(resourceName);
 		return res;
 	}
 	
@@ -82,9 +92,8 @@ public class ResourceFacadeBean extends MasterDataFacadeBean implements Resource
 	@RolesAllowed("Login")
 	public Pair<ResourceVO, byte[]> getResource(Integer resourceId) {
 		Pair<ResourceVO, byte[]> res = new Pair<ResourceVO, byte[]>();
-		ResourceCache rcinst = ResourceCache.getInstance();
-		res.x = rcinst.getResourceById(resourceId);
-		res.y = ResourceCache.getInstance().getResource(res.x.getName());
+		res.x = resourceCache.getResourceById(resourceId);
+		res.y = resourceCache.getResource(res.x.getName());
 		return res;
 	}
 	
@@ -193,6 +202,6 @@ public class ResourceFacadeBean extends MasterDataFacadeBean implements Resource
 
 	@Override
 	public Set<String> getResourceNames() {
-		return ResourceCache.getInstance().getResourceNames();
+		return resourceCache.getResourceNames();
 	}
 }

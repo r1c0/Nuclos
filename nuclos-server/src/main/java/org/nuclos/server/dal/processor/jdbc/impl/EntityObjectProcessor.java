@@ -100,12 +100,16 @@ public class EntityObjectProcessor extends AbstractJdbcWithFieldsDalProcessor<En
 	protected final EntityMetaDataVO eMeta;
 
 	/**
-	 * @deprecated We want to get rid of views.
+	 * Table or view to use when reading from DB.
 	 */
 	private final String dbSourceForSQL;
 	
 	/**
-	 * @deprecated We want to get rid of views.
+	 * Table (or view) to use when writing to DB.
+	 * <p>
+	 * This is only different from {@link #getDbSourceForSQL()} for 
+	 * DB read delegates.
+	 * </p>
 	 */
 	private final String dbSourceForDML;
 
@@ -124,8 +128,13 @@ public class EntityObjectProcessor extends AbstractJdbcWithFieldsDalProcessor<En
 		this.versionColumn = config.getVersionColumn();
 
 		// dbSourceForSQL = this.eMeta.getDbEntity();
-		dbSourceForDML = EntityObjectMetaDbHelper.getTableOrViewForSelect(eMeta);
-		dbSourceForSQL = dbSourceForDML;
+		dbSourceForSQL = EntityObjectMetaDbHelper.getTableOrViewForSelect(eMeta);
+		if (eMeta.getReadDelegate() == null) {
+			dbSourceForDML = dbSourceForSQL;
+		}
+		else {
+			dbSourceForDML = eMeta.getDbEntity();
+		}
 
 		/**
 		 * Logical Unique Constraints
@@ -250,7 +259,7 @@ public class EntityObjectProcessor extends AbstractJdbcWithFieldsDalProcessor<En
 		for(List<Long> idSubList : CollectionUtils.splitEvery(ids,
 		    query.getBuilder().getInLimit())) {
 			query.addToWhereAsAnd(pkExpr.as(Long.class).in(idSubList));
-			result.addAll(DataBaseHelper.getDbAccess().executeQuery(query, transformer));
+			result.addAll(dataBaseHelper.getDbAccess().executeQuery(query, transformer));
 		}
 		return result;
     }
@@ -327,7 +336,7 @@ public class EntityObjectProcessor extends AbstractJdbcWithFieldsDalProcessor<En
 			unparser.unparseSortingOrder(clctexpr.getSortingOrder());
 		if (iMaxRowCount != null)
 			query.maxResults(iMaxRowCount);
-		return DataBaseHelper.getDbAccess().executeQuery(query, createResultTransformer(columns));
+		return dataBaseHelper.getDbAccess().executeQuery(query, createResultTransformer(columns));
 	}
 
 	/**
@@ -342,7 +351,7 @@ public class EntityObjectProcessor extends AbstractJdbcWithFieldsDalProcessor<En
 		EOSearchExpressionUnparser unparser = new EOSearchExpressionUnparser(query, eMeta);
 		unparser.unparseSearchCondition(getSearchConditionWithDeletedAndVLP(clctexpr));
 		unparser.unparseSortingOrder(clctexpr.getSortingOrder());
-		return DataBaseHelper.getDbAccess().executeQuery(query);
+		return dataBaseHelper.getDbAccess().executeQuery(query);
 	}
 
 	/**
@@ -354,7 +363,7 @@ public class EntityObjectProcessor extends AbstractJdbcWithFieldsDalProcessor<En
 		if(SecurityCache.getInstance().isSuperUser(user) || SecurityCache.getInstance().getModulePermissions(user).getMaxPermissionForObjectGroup(eMeta.getEntity(), null) != null) {
 			return getIdsBySearchExpression(searchExpression);
 		}
-        DbQuery<Long> query = DataBaseHelper.getDbAccess().getQueryBuilder().<Long>createQuery(getPrimaryKeyColumn().getDataType());
+        DbQuery<Long> query = dataBaseHelper.getDbAccess().getQueryBuilder().<Long>createQuery(getPrimaryKeyColumn().getDataType());
 
 		DbFrom from = query.from(getDbSourceForSQL()).alias(SystemFields.BASE_ALIAS);
 
@@ -367,7 +376,7 @@ public class EntityObjectProcessor extends AbstractJdbcWithFieldsDalProcessor<En
 		unparser.unparseSearchCondition(getSearchConditionWithDeletedAndVLP(searchExpression));
 		unparser.unparseSortingOrder(searchExpression.getSortingOrder());
 
-		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
+		DbQueryBuilder builder = dataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<Long> groupsubquery = builder.createQuery(getPrimaryKeyColumn().getDataType());
 		DbFrom sqfrom = groupsubquery.from("t_ud_genericobject").alias("g");
 		sqfrom.innerJoin(getDbSourceForDML()).alias("eo").on("intid", "intid", Long.class);
@@ -391,14 +400,14 @@ public class EntityObjectProcessor extends AbstractJdbcWithFieldsDalProcessor<En
 		DbCondition objectgroup = from.baseColumn("intid", Long.class).in(groupsubquery);
 
 		query.where(query.getRestriction() != null ? (query.getBuilder().and(query.getRestriction(), objectgroup)) : objectgroup);
-		return DataBaseHelper.getDbAccess().executeQuery(query);
+		return dataBaseHelper.getDbAccess().executeQuery(query);
 	}
 
 
 	@Override
 	public List<Long> getAllIds() {
 		DbQuery<Long> query = createSingleColumnQuery(getPrimaryKeyColumn(), true);
-		return DataBaseHelper.getDbAccess().executeQuery(query);
+		return dataBaseHelper.getDbAccess().executeQuery(query);
 	}
 
 	@Override
@@ -410,7 +419,7 @@ public class EntityObjectProcessor extends AbstractJdbcWithFieldsDalProcessor<En
 		DbFrom from = CollectionUtils.getFirst(query.getRoots());
 		query.where(query.getBuilder().equal(getPrimaryKeyColumn().getDbColumn(from), id));
 		try {
-			return DataBaseHelper.getDbAccess().executeQuerySingleResult(query);
+			return dataBaseHelper.getDbAccess().executeQuerySingleResult(query);
 		} catch (DbInvalidResultSizeException e) {
 			if (e.wasEmpty()) {
 				throw new CommonFatalException("No record with id " + id + " in table " + eMeta.getDbEntity());
@@ -425,7 +434,7 @@ public class EntityObjectProcessor extends AbstractJdbcWithFieldsDalProcessor<En
 		DbQuery<Long> query = createCountQuery(getPrimaryKeyColumn());
 		EOSearchExpressionUnparser unparser = new EOSearchExpressionUnparser(query, eMeta);
 		unparser.unparseSearchCondition(getSearchConditionWithDeletedAndVLP(clctexpr));
-		Long count = DataBaseHelper.getDbAccess().executeQuerySingleResult(query);
+		Long count = dataBaseHelper.getDbAccess().executeQuerySingleResult(query);
 		return count.intValue();
 	}
 

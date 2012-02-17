@@ -76,7 +76,6 @@ import org.nuclos.server.common.ejb3.LocaleFacadeLocal;
 import org.nuclos.server.common.ejb3.NuclosFacadeBean;
 import org.nuclos.server.common.valueobject.NuclosValueObject;
 import org.nuclos.server.dal.DalSupportForGO;
-import org.nuclos.server.database.DataBaseHelper;
 import org.nuclos.server.dblayer.query.DbFrom;
 import org.nuclos.server.dblayer.query.DbQuery;
 import org.nuclos.server.dblayer.query.DbQueryBuilder;
@@ -141,12 +140,19 @@ public class StateFacadeBean extends NuclosFacadeBean implements StateFacadeRemo
 	
 	private SessionUtils utils;
 	
+	private StateCache stateCache;
+	
 	public StateFacadeBean() {
 	}
 	
 	@Autowired
 	void setSessionUtils(SessionUtils utils) {
 		this.utils = utils;
+	}
+	
+	@Autowired
+	void setStateCache(StateCache stateCache) {
+		this.stateCache = stateCache;
 	}
 
 	/**
@@ -167,7 +173,7 @@ public class StateFacadeBean extends NuclosFacadeBean implements StateFacadeRemo
 		//get states (with attributegroup permissions) and transitions for state model
 		Set<StateVO> ststatevo = new HashSet<StateVO>();
 		Set<StateTransitionVO> sttransitionvo = new HashSet<StateTransitionVO>();
-		for (StateVO statevo : StateCache.getInstance().getStatesByModel(iModelId)) {
+		for (StateVO statevo : stateCache.getStatesByModel(iModelId)) {
 			StateVO.UserRights userRights = new StateVO.UserRights();
 			for (AttributegroupPermissionVO permission : findAttributegroupPermissionsByStateId(statevo.getId()))
 				userRights.addValue(permission.getRoleId(),permission);
@@ -343,7 +349,7 @@ public class StateFacadeBean extends NuclosFacadeBean implements StateFacadeRemo
 			}
 		}
 
-		StateCache.getInstance().invalidate();
+		stateCache.invalidate();
 
 		// remove the model
 		if (stateModelVO.getId() != null)
@@ -481,7 +487,7 @@ public class StateFacadeBean extends NuclosFacadeBean implements StateFacadeRemo
 
 					updateState(statevo,statemodelvo);
 
-					StateCache.getInstance().invalidate();
+					stateCache.invalidate();
 
 					for (MandatoryFieldVO vo : findMandatoryFieldsByStateId(stateId)) {
 						getMasterDataFacade().remove(NuclosEntity.STATEMANDATORYFIELD.getEntityName(), MasterDataWrapper.wrapMandatoryFieldVO(vo), false);
@@ -546,7 +552,7 @@ public class StateFacadeBean extends NuclosFacadeBean implements StateFacadeRemo
 			}
 		}
 
-		StateCache.getInstance().invalidate();
+		stateCache.invalidate();
 
 		dbStateModel.setName(statemodelvo.getName());
 		dbStateModel.setDescription(statemodelvo.getDescription());
@@ -696,7 +702,7 @@ public class StateFacadeBean extends NuclosFacadeBean implements StateFacadeRemo
 	 */
 	@Override
     public StateVO getInitialState(UsageCriteria usagecriteria) {
-		return StateCache.getInstance().getState(getInitialStateId(usagecriteria));
+		return stateCache.getState(getInitialStateId(usagecriteria));
 	}
 
 	/**
@@ -738,7 +744,7 @@ public class StateFacadeBean extends NuclosFacadeBean implements StateFacadeRemo
 	@Override
     @RolesAllowed("Login")
 	public Collection<StateVO> getStatesByModel(Integer iStateModelId) {
-		return StateCache.getInstance().getStatesByModel(iStateModelId);
+		return stateCache.getStatesByModel(iStateModelId);
 	}
 
 	/**
@@ -798,7 +804,7 @@ public class StateFacadeBean extends NuclosFacadeBean implements StateFacadeRemo
 	@Override
     @RolesAllowed("Login")
 	public Collection<StateVO> getStatesByModule(Integer iModuleId) {
-		return StateCache.getInstance().getStatesByModule(iModuleId);
+		return stateCache.getStatesByModule(iModuleId);
 	}
 
 	/**
@@ -814,7 +820,7 @@ public class StateFacadeBean extends NuclosFacadeBean implements StateFacadeRemo
 
 		Long iActualState = DalSupportForGO.getEntityObject(iGenericObjectId, iModuleId).getFieldIds().get(NuclosEOField.STATE.getMetaData().getField());
 
-		return (iActualState == null) ? null : StateCache.getInstance().getState(iActualState.intValue());
+		return (iActualState == null) ? null : stateCache.getState(iActualState.intValue());
 	}
 
 	/**
@@ -832,10 +838,9 @@ public class StateFacadeBean extends NuclosFacadeBean implements StateFacadeRemo
 
 		Collection<StateVO> result = new HashSet<StateVO>();
 		StateVO statevoCurrent = getCurrentState(iModuleId, iGenericObjectId);
-		StateCache statecache = StateCache.getInstance();
 		if (statevoCurrent == null) {
 			//if there is no current state, then subsequent state equals to initial state
-			result.add(statecache.getState(getInitialState(iGenericObjectId).getId()));
+			result.add(stateCache.getState(getInitialState(iGenericObjectId).getId()));
 		}
 		else {
 			Collection<StateTransitionVO> collStates = bGetAutomaticStatesAlso ?
@@ -846,7 +851,7 @@ public class StateFacadeBean extends NuclosFacadeBean implements StateFacadeRemo
 			for (StateTransitionVO stateTransition : collStates) {
 				if (bGetAutomaticStatesAlso || collTransitionIds.contains(stateTransition.getId()))
 				{ //may transition be retrieved by actual user?
-					result.add(statecache.getState(stateTransition.getStateTarget()));
+					result.add(stateCache.getState(stateTransition.getStateTarget()));
 				}
 			}
 		}
@@ -1170,7 +1175,7 @@ public class StateFacadeBean extends NuclosFacadeBean implements StateFacadeRemo
 	@Override
     public Collection<StateModelVO> findStateModelsByRuleId(Integer ruleId) throws CommonPermissionException
 	{
-		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
+		DbQueryBuilder builder = dataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<Integer> query = builder.createQuery(Integer.class);
 		DbFrom s = query.from("T_MD_STATE").alias("s");
 		DbFrom t = s.join("T_MD_STATE_TRANSITION", JoinType.INNER).alias(SystemFields.BASE_ALIAS).on("INTID", "INTID_T_MD_STATE_2", Integer.class);
@@ -1181,7 +1186,7 @@ public class StateFacadeBean extends NuclosFacadeBean implements StateFacadeRemo
 		List<StateModelVO> statemodels = new ArrayList<StateModelVO>();
 
 		try {
-			for (Integer id : DataBaseHelper.getDbAccess().executeQuery(query.distinct(true))) {
+			for (Integer id : dataBaseHelper.getDbAccess().executeQuery(query.distinct(true))) {
 				statemodels.add(findStateModelById(id));
 			}
 		}
@@ -1230,11 +1235,12 @@ public class StateFacadeBean extends NuclosFacadeBean implements StateFacadeRemo
 		StateVO statevo = getCurrentState(iModuleId, iGenericObjectId);
 		Integer iSourceStateId = (statevo == null) ? null : statevo.getId();
 
-		StateVO stateVO = StateCache.getInstance().getState(iTargetStateId);
+		StateVO stateVO = stateCache.getState(iTargetStateId);
 
 		// change the status of leased object now:
 		getMasterDataFacade().create(NuclosEntity.STATEHISTORY.getEntityName(),
-			MasterDataWrapper.wrapStateHistoryVO(new StateHistoryVO(iGenericObjectId,iTargetStateId,StateCache.getInstance().getState(iTargetStateId).getStatename())), null);
+			MasterDataWrapper.wrapStateHistoryVO(new StateHistoryVO(iGenericObjectId,iTargetStateId,
+					stateCache.getState(iTargetStateId).getStatename())), null);
 
 		// copy status name to leased object attributes:
 		try {
@@ -1262,7 +1268,7 @@ public class StateFacadeBean extends NuclosFacadeBean implements StateFacadeRemo
 	@Override
 	public void checkMandatory(EntityObjectVO eoVO) throws NuclosBusinessException {
 		if (eoVO.getFieldIds().containsKey(NuclosEOField.STATE.getName())) {
-			this.checkMandatory(eoVO, StateCache.getInstance().getState(eoVO.getFieldId(NuclosEOField.STATE.getName()).intValue()));
+			this.checkMandatory(eoVO, stateCache.getState(eoVO.getFieldId(NuclosEOField.STATE.getName()).intValue()));
 		}
 	}
 
@@ -1352,10 +1358,10 @@ public class StateFacadeBean extends NuclosFacadeBean implements StateFacadeRemo
 		try {
 			RuleEngineFacadeLocal facade = ServiceLocator.getInstance().getFacade(RuleEngineFacadeLocal.class);
 
-			final StateVO targetState = iTargetStateId==null? null: StateCache.getInstance().getState(iTargetStateId);
+			final StateVO targetState = iTargetStateId==null? null: stateCache.getState(iTargetStateId);
 			final Integer iTargetStateNum = targetState==null? null: targetState.getNumeral();
 			final String sTargetStateName = targetState==null? null: targetState.getStatename();
-			final StateVO sourceState = iSourceStateId==null? null: StateCache.getInstance().getState(iSourceStateId);
+			final StateVO sourceState = iSourceStateId==null? null: stateCache.getState(iSourceStateId);
 			final Integer iSourceStateNum = sourceState==null? null: sourceState.getNumeral();
 			final String sSourceStateName = sourceState==null? null: sourceState.getStatename();
 
@@ -1370,7 +1376,8 @@ public class StateFacadeBean extends NuclosFacadeBean implements StateFacadeRemo
 			RuleObjectContainerCVO loccvoAfter = facade.fireRule(iSourceStateId, iTargetStateId, loccvoBefore, false);
 
 			// check mandatory fields and subform columns
-			checkMandatory(DalSupportForGO.wrapGenericObjectVO(loccvoAfter.getGenericObject()), StateCache.getInstance().getState(iTargetStateId));
+			checkMandatory(DalSupportForGO.wrapGenericObjectVO(loccvoAfter.getGenericObject()), 
+					stateCache.getState(iTargetStateId));
 
 			// Write back the possibly changed GenericObjectVO along with its dependants.
 			// We deliberately allow changing the GenericObjectVO from the rule in "state change" events
@@ -1474,7 +1481,7 @@ public class StateFacadeBean extends NuclosFacadeBean implements StateFacadeRemo
 
 	@Override
     public void invalidateCache() {
-		StateCache.getInstance().invalidate();
+		stateCache.invalidate();
 		StateModelUsagesCache.getInstance().revalidate();
 
 		NuclosJMSUtils.sendMessage("invalidatecaches", JMSConstants.TOPICNAME_STATEMODEL);
@@ -1493,7 +1500,7 @@ public class StateFacadeBean extends NuclosFacadeBean implements StateFacadeRemo
 	@Override
 	public Statemodel getStatemodel(UsageCriteria usageCriteria) {
 		Statemodel res = new Statemodel(usageCriteria);
-		res.setAllStates(StateCache.getInstance().getStatesByModule(usageCriteria.getModuleId()));
+		res.setAllStates(stateCache.getStatesByModule(usageCriteria.getModuleId()));
 		res.setInitialStateId(getInitialStateId(usageCriteria));
 		for(Integer stateId : res.getStateIDs()) {
 			res.setTransitionsForState(stateId, findStateTransitionBySourceState(stateId));

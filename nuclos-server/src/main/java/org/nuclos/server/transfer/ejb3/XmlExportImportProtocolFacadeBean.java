@@ -136,7 +136,7 @@ public class XmlExportImportProtocolFacadeBean extends NuclosFacadeBean implemen
 		try {
 			MasterDataMetaVO mdmvo = MasterDataMetaCache.getInstance().getMetaData(NuclosEntity.IMPORTEXPORT.getEntityName());
 
-			DataBaseHelper.execute(DbStatementUtils.updateValues(mdmvo.getDBEntity(), 
+			dataBaseHelper.execute(DbStatementUtils.updateValues(mdmvo.getDBEntity(), 
 				"BLBXMLFILE", ba).where("INTID", iParentId));
 		}
 		catch (Exception e) {
@@ -160,7 +160,7 @@ public class XmlExportImportProtocolFacadeBean extends NuclosFacadeBean implemen
 		try {
 			MasterDataMetaVO mdmvo = MasterDataMetaCache.getInstance().getMetaData(NuclosEntity.IMPORTEXPORT.getEntityName());
 			
-			DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
+			DbQueryBuilder builder = dataBaseHelper.getDbAccess().getQueryBuilder();
 			DbQuery<byte[]> query = builder.createQuery(byte[].class);
 			DbFrom t = query.from(mdmvo.getDBEntity()).alias(SystemFields.BASE_ALIAS);			
 			query.select(t.baseColumn("BLBXMLFILE", byte[].class));
@@ -168,7 +168,7 @@ public class XmlExportImportProtocolFacadeBean extends NuclosFacadeBean implemen
 			
 			byte[] ba = null;
 			try {
-				ba = DataBaseHelper.getDbAccess().executeQuerySingleResult(query);
+				ba = dataBaseHelper.getDbAccess().executeQuerySingleResult(query);
 			} catch (DbInvalidResultSizeException ex) {
 				// nothing??
 			}

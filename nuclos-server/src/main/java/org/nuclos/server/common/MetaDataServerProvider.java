@@ -75,6 +75,8 @@ public class MetaDataServerProvider extends AbstractProvider implements MetaData
 
 	private DataCache dataCache;
 	
+	private DataBaseHelper dataBaseHelper;
+	
 	private MetaDataServerProvider(){
 		INSTANCE = this;
 	}
@@ -94,6 +96,11 @@ public class MetaDataServerProvider extends AbstractProvider implements MetaData
 	void setDatasourceCache(DatasourceCache datasourceCache) {
 		Assert.notNull(datasourceCache);
 		this.datasourceCache = datasourceCache;
+	}
+	
+	@Autowired
+	void setDataBaseHelper(DataBaseHelper dataBaseHelper) {
+		this.dataBaseHelper = dataBaseHelper;
 	}
 
 	public static MetaDataServerProvider getInstance() {
@@ -181,10 +188,10 @@ public class MetaDataServerProvider extends AbstractProvider implements MetaData
 				}
 
 				// select distinct p.<keyfield> from <subform> p
-				final DbQuery<? extends Object> query = DataBaseHelper.getDbAccess().getQueryBuilder().createQuery(Object.class);
+				final DbQuery<? extends Object> query = dataBaseHelper.getDbAccess().getQueryBuilder().createQuery(Object.class);
 				final DbFrom from = query.distinct(true).from(subformTable).alias("p");
 				query.selectLiberate(from.baseColumn(keyField.getDbColumn(), keyTypeClass)).maxResults(250);
-				final List<? extends Object> columns = DataBaseHelper.getDbAccess().executeQuery(query);
+				final List<? extends Object> columns = dataBaseHelper.getDbAccess().executeQuery(query);
 				//
 				final EntityObjectVO vo = new EntityObjectVO();
 				vo.initFields(columns.size(), 1);
@@ -231,7 +238,7 @@ public class MetaDataServerProvider extends AbstractProvider implements MetaData
 	
 	@Override
 	public List<String> getPossibleIdFactories() {
-		return new ArrayList<String>(DataBaseHelper.getDbAccess().getCallableNames());
+		return new ArrayList<String>(dataBaseHelper.getDbAccess().getCallableNames());
 	}
 
 	private static boolean isBlank(Object o) {

@@ -26,8 +26,11 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Properties;
 
+import javax.annotation.PostConstruct;
+
 import org.apache.log4j.Logger;
 import org.nuclos.common2.StringUtils;
+import org.springframework.stereotype.Component;
 
 /**
  * Application global properties.
@@ -38,60 +41,68 @@ import org.nuclos.common2.StringUtils;
  * @author	<a href="mailto:Christoph.Radig@novabit.de">Christoph.Radig</a>
  * @version 01.00.00
  */
+@Component
 public class ApplicationProperties implements Serializable {
 
 	private static final Logger LOG = Logger.getLogger(ApplicationProperties.class);
 
 	private static final long serialVersionUID = 16362018323707955L;
 
-	private static ApplicationProperties singleton;
-
 	/**
 	 * the color of the application logo
 	 */
 	public static final Color COLOR_APP = new Color(40, 60, 131);
+	
+	private static ApplicationProperties INSTANCE;
 
-	private final Version nuclosVersion;
-	private final Version appVersion;
-	private final String sMainControllerClassName;
-	private final String sCollectControllerClassName;
-	private final String sCollectableComponentFactoryClassName;
-	private final String sGenericObjectTreeNodeFactoryClassName;
-	private final String sExplorerNodeFactoryClassName;
-	private final String sExplorerViewFactoryClassName;
-	private final String sFrameIconFileName;
-	private final String sBigIconFileName;
-	private final String sBigIcon512FileName;
-	private final String sCustomerIconFileName;
-	private final String sReleaseNotesFileName;
-	private final String sGenericObjectCollectableFieldsProviderFactoryClassName;
-	private final String sMasterDataCollectableFieldsProviderFactoryClassName;
-	private final String sCollectableComparatorFactoryClassName;
-	private final String sCollectableFieldComparatorFactoryClassName;
-	private final String sConsoleClassName;
-	private final boolean bFunctionBlockDev;
-	private final long    loginPanelBgColor;
-	private final long    loginPanelLogoBgColor;
-	private final long    loginPanelTextColor;
-	private final long    loginPanelBorderHiColor;
-	private final long    loginPanelBorderShadeColor;
-	private final long    splashBgColor;
-	private final String  splashIconFileName;
-	private final long    splashTitleColor;
-	private final long    splashVersionColor;
-	private final long    splashSteppingColor;
-	private final long    splashProgressColor;
-	private final long    desktopPaneBackgroundColor;
-	private final String  desktopPaneBgImageFileName;
+	//
 
-	public static synchronized ApplicationProperties getInstance() {
-		if (singleton == null) {
-			singleton = new ApplicationProperties();
+	private Version nuclosVersion;
+	private Version appVersion;
+	private String sMainControllerClassName;
+	private String sCollectControllerClassName;
+	private String sCollectableComponentFactoryClassName;
+	private String sGenericObjectTreeNodeFactoryClassName;
+	private String sExplorerNodeFactoryClassName;
+	private String sExplorerViewFactoryClassName;
+	private String sFrameIconFileName;
+	private String sBigIconFileName;
+	private String sBigIcon512FileName;
+	private String sCustomerIconFileName;
+	private String sReleaseNotesFileName;
+	private String sGenericObjectCollectableFieldsProviderFactoryClassName;
+	private String sMasterDataCollectableFieldsProviderFactoryClassName;
+	private String sCollectableComparatorFactoryClassName;
+	private String sCollectableFieldComparatorFactoryClassName;
+	private String sConsoleClassName;
+	private boolean bFunctionBlockDev;
+	private long    loginPanelBgColor;
+	private long    loginPanelLogoBgColor;
+	private long    loginPanelTextColor;
+	private long    loginPanelBorderHiColor;
+	private long    loginPanelBorderShadeColor;
+	private long    splashBgColor;
+	private String  splashIconFileName;
+	private long    splashTitleColor;
+	private long    splashVersionColor;
+	private long    splashSteppingColor;
+	private long    splashProgressColor;
+	private long    desktopPaneBackgroundColor;
+	private String  desktopPaneBgImageFileName;
+	
+	ApplicationProperties() {
+		INSTANCE = this;
+	}
+	
+	public static ApplicationProperties getInstance() {
+		if (INSTANCE == null) {
+			throw new IllegalStateException("too early");
 		}
-		return singleton;
+		return INSTANCE;
 	}
 
-	private ApplicationProperties() {
+	@PostConstruct
+	final void init() {
 		Properties props = new Properties();
 		props.put("application.icon.frame", "icons/nuclos-icon.png");
 		props.put("application.icon.big.transparent", "icons/nuclos-icon.png");

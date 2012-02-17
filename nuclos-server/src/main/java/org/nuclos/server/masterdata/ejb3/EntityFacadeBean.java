@@ -198,17 +198,17 @@ public class EntityFacadeBean extends NuclosFacadeBean implements EntityFacadeRe
 			// we have to use the view for interface entities (no data in table).
 			final String view = EntityObjectMetaDbHelper.getViewName(eForeignMeta);
 
-			final DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
+			final DbQueryBuilder builder = dataBaseHelper.getDbAccess().getQueryBuilder();
 			final DbQuery<DbTuple> query = builder.createTupleQuery();
 			final DbFrom from = query.from(view).alias(view);
 
 			PreparedStringBuilder sqlPrepared =  new PreparedStringBuilder();
-			sqlPrepared.append(DataBaseHelper.getDbAccess().getSelectSqlForColumn(view, columnType, viewPattern));
+			sqlPrepared.append(dataBaseHelper.getDbAccess().getSelectSqlForColumn(view, columnType, viewPattern));
 
 			final DbExpression<Long> id = from.baseColumn("INTID", Long.class);
 			final DbExpression<String> presentation = new DbExpression<String>(builder, String.class, sqlPrepared);
 			final DbOrder order = builder.asc(presentation);
-			final String wildcard = DataBaseHelper.getDbAccess().getWildcardLikeSearchChar();
+			final String wildcard = dataBaseHelper.getDbAccess().getWildcardLikeSearchChar();
 
 			search = search.replace("*", wildcard);
 			search = search.replace("?", "_");
@@ -229,7 +229,7 @@ public class EntityFacadeBean extends NuclosFacadeBean implements EntityFacadeRe
 			if (iMaxRowCount != null)
 				query.maxResults(iMaxRowCount);
 
-			for (DbTuple tuple : DataBaseHelper.getDbAccess().executeQuery(query)) {
+			for (DbTuple tuple : dataBaseHelper.getDbAccess().executeQuery(query)) {
 				result.add(new CollectableValueIdField(
 					tuple.get(0, Long.class).intValue(),
 					tuple.get(1, String.class)));

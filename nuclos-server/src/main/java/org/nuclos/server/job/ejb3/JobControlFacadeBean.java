@@ -403,13 +403,13 @@ public class JobControlFacadeBean extends MasterDataFacadeBean implements JobCon
 		final MailCommunicator mailcommunicator = new MailCommunicator(ServerParameterProvider.getInstance().getValue("SMTP Server"), ServerParameterProvider.getInstance().getValue("SMTP Username"), ServerParameterProvider.getInstance().getValue("SMTP Password"));
 		final String[] asRecipientAddresses = new String[1];
 
-		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
+		DbQueryBuilder builder = dataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<String> query = builder.createQuery(String.class);
 		DbFrom t = query.from("T_MD_USER").alias(SystemFields.BASE_ALIAS);
 		query.select(t.baseColumn("STREMAIL", String.class));
 		query.where(builder.equal(builder.upper(t.baseColumn("STRUSER", String.class)), builder.upper(builder.literal(sRecipient))));
 
-		String sEmail = CollectionUtils.getFirst(DataBaseHelper.getDbAccess().executeQuery(query));
+		String sEmail = CollectionUtils.getFirst(dataBaseHelper.getDbAccess().executeQuery(query));
 
 		if (sEmail != null) {
 			asRecipientAddresses[0] = sEmail;
@@ -462,7 +462,7 @@ public class JobControlFacadeBean extends MasterDataFacadeBean implements JobCon
 	public Collection<String> getDBObjects()  throws CommonPermissionException {
 		checkReadAllowed(NuclosEntity.JOBCONTROLLER);
 
-		return CollectionUtils.applyFilter(DataBaseHelper.getDbAccess().getCallableNames(), new Predicate<String>() {
+		return CollectionUtils.applyFilter(dataBaseHelper.getDbAccess().getCallableNames(), new Predicate<String>() {
 			@Override public boolean evaluate(String name) {
 				return StringUtils.toUpperCase(name).startsWith("JOB_");
 			}

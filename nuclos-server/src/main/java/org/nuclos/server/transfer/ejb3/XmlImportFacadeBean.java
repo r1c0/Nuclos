@@ -1176,14 +1176,14 @@ public class XmlImportFacadeBean extends NuclosFacadeBean implements XmlImportFa
 	 * @return
 	 */
 	private Integer getReferencedProcessId(Integer moduleId, String process) {
-		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
+		DbQueryBuilder builder = dataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<Integer> query = builder.createQuery(Integer.class);
 		DbFrom t = query.from("T_MD_PROCESS").alias(SystemFields.BASE_ALIAS);
 		query.select(t.baseColumn("INTID", Integer.class));
 		query.where(builder.and(
 			builder.equal(t.baseColumn("INTID_T_MD_MODULE", Integer.class), moduleId),
 			builder.equal(t.baseColumn("STRPROCESS", String.class), process)));
-		return CollectionUtils.getFirst(DataBaseHelper.getDbAccess().executeQuery(query), 0);
+		return CollectionUtils.getFirst(dataBaseHelper.getDbAccess().executeQuery(query), 0);
 	}
 
 	/**
@@ -1293,7 +1293,7 @@ public class XmlImportFacadeBean extends NuclosFacadeBean implements XmlImportFa
 	 */
 	// @TODO GOREF
 	private void removeReferenceToEntity(final String sEntity, final MasterDataVO mdvo) {
-		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
+		DbQueryBuilder builder = dataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<DbTuple> query = builder.createTupleQuery();
 		DbFrom t = query.from("T_AD_MASTERDATA_FIELD").alias(SystemFields.BASE_ALIAS);
 		query.multiselect(
@@ -1303,7 +1303,7 @@ public class XmlImportFacadeBean extends NuclosFacadeBean implements XmlImportFa
 		query.where(builder.equal(t.baseColumn("STRFOREIGNENTITY", String.class), sEntity));
 		
 		try {
-			for (DbTuple tuple : DataBaseHelper.getDbAccess().executeQuery(query)) {
+			for (DbTuple tuple : dataBaseHelper.getDbAccess().executeQuery(query)) {
 				final Integer iIntidOfForeignEntity = tuple.get(0, Integer.class);
 				final String sField = tuple.get(1, String.class);
 				String sDBField = tuple.get(2, String.class);
@@ -1316,7 +1316,7 @@ public class XmlImportFacadeBean extends NuclosFacadeBean implements XmlImportFa
 				query2.where(builder.equal(t2.baseColumn(sDBField, Integer.class), mdvo.getIntId()));
 	
 				try {
-					for (Integer iIntid : DataBaseHelper.getDbAccess().executeQuery(query2)) {
+					for (Integer iIntid : dataBaseHelper.getDbAccess().executeQuery(query2)) {
 						try {
 							// if field is not nullable, then it's not possible to remove the reference
 							if (!mdmvo.getField(sField).isNullable()) {

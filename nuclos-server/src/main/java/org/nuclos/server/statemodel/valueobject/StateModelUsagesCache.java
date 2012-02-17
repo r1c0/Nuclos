@@ -87,7 +87,7 @@ public class StateModelUsagesCache {
 	private static StateModelUsages buildCache() {
 		final StateModelUsages result = new StateModelUsages();
 
-		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
+		DbQueryBuilder builder = DataBaseHelper.getInstance().getDbAccess().getQueryBuilder();
 		DbQuery<DbTuple> query = builder.createTupleQuery();
 		DbFrom s = query.from("T_MD_STATE").alias("s");
 		DbJoin t = s.join("T_MD_STATE_TRANSITION", JoinType.INNER).alias(SystemFields.BASE_ALIAS).on("INTID", "INTID_T_MD_STATE_2", Integer.class);
@@ -101,7 +101,7 @@ public class StateModelUsagesCache {
 		query.orderBy(builder.asc(u.baseColumn("INTID_T_MD_MODULE", Integer.class)),
 		   builder.asc(u.baseColumn("INTID_T_MD_PROCESS", Integer.class)));
 		
-		for (DbTuple tuple : DataBaseHelper.getDbAccess().executeQuery(query)) {
+		for (DbTuple tuple : DataBaseHelper.getInstance().getDbAccess().executeQuery(query)) {
 			final UsageCriteria usagecriteria = new UsageCriteria(
 				tuple.get(2, Integer.class), tuple.get(3, Integer.class));
 			result.add(new StateModelUsages.StateModelUsage(

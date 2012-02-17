@@ -318,14 +318,14 @@ public class TimelimitRuleFacadeBean extends NuclosFacadeBean implements Timelim
 	@Override
 	@Transactional(propagation=Propagation.REQUIRES_NEW)
     public Collection<String> getJobRules(Object oId) {
-		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
+		DbQueryBuilder builder = dataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<String> query = builder.createQuery(String.class);
 		DbFrom t = query.from("V_MD_JOBRULE").alias(SystemFields.BASE_ALIAS);
 		query.select(t.baseColumn("STRVALUE_T_MD_TIMELIMITRULE", String.class));
 		query.where(builder.equal(t.baseColumn("INTID_T_MD_JOBCONTROLLER", Integer.class), oId));
 		query.orderBy(builder.asc(t.baseColumn("INTORDER", Integer.class)));
 		try {
-			return DataBaseHelper.getDbAccess().executeQuery(query);
+			return dataBaseHelper.getDbAccess().executeQuery(query);
 		} catch (DbException ex) {
 			LOG.error(ex);
 			return Collections.emptySet();

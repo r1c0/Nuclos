@@ -219,7 +219,7 @@ public class SchemaValidator {
 
 		// create release entry if necessary
 		if (setup.getInstalledVersions().isEmpty()) {
-			DataBaseHelper.execute(setup.getReleaseStatement(setup.getCurrentRelease()));
+			DataBaseHelper.getInstance().execute(setup.getReleaseStatement(setup.getCurrentRelease()));
 		}
     }
 

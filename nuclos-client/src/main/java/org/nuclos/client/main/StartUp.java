@@ -31,6 +31,7 @@ import java.lang.reflect.Proxy;
 import java.util.Locale;
 import java.util.Properties;
 
+import javax.annotation.PostConstruct;
 import javax.jnlp.ServiceManager;
 import javax.jnlp.UnavailableServiceException;
 import javax.naming.NamingException;
@@ -61,6 +62,8 @@ import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.common2.exception.CommonPermissionException;
 import org.nuclos.server.servermeta.ejb3.ServerMetaFacadeRemote;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.core.io.Resource;
 import org.springframework.util.Log4jConfigurer;
@@ -98,10 +101,15 @@ public class StartUp  {
 	private static Logger log;
 
 	private final String[] args;
-
+	
+	//
+	
 	public StartUp(String[] asArgs) {
 		this.args = asArgs;
-
+		// init();
+	}
+	
+	public final void init() {
 		// setup client side logging:
 		setupClientLogging();
 
@@ -189,7 +197,7 @@ public class StartUp  {
 		}
 	}
 
-	private static void setupClientLogging() {
+	private void setupClientLogging() {
 		LogLog.setInternalDebugging(true);
 		String sLog4jUrl = System.getProperty("log4j.url");
 		if (!StringUtils.isNullOrEmpty(sLog4jUrl)) {
@@ -207,15 +215,20 @@ public class StartUp  {
 			}
 		}
 
+		
+		// final String configurationfile = ApplicationProperties.getInstance().isFunctionBlockDev() 
+		// 		? "log4j-dev.properties" : "log4j.properties";
+		final String configurationfile = Boolean.getBoolean("functionblock.dev")
+				? "log4j-dev.properties" : "log4j.properties";
 		try {
-			String configurationfile = ApplicationProperties.getInstance().isFunctionBlockDev() ? "log4j-dev.properties" : "log4j.properties";
 			LogLog.debug("Try to configure loggging from default configuration file: " + configurationfile);
 			Log4jConfigurer.initLogging("classpath:" + configurationfile);
 			log = Logger.getLogger(StartUp.class);
 			log.info("Logging configured from default log4j configuration.");
 		}
 		catch (Throwable t) {
-			throw new NuclosFatalException("The client-side logging could not be initialized, because the configuration file log4j.xml was not found in the Classpath.", t);
+			throw new NuclosFatalException("The client-side logging could not be initialized, because the configuration file " 
+					+ configurationfile  + " was not found in the Classpath.", t);
 		}
 		finally {
 			LogLog.setInternalDebugging(false);

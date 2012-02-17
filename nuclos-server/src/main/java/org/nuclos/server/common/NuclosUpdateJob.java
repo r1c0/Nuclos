@@ -57,7 +57,7 @@ public class NuclosUpdateJob extends NuclosQuartzJob{
 	/**
 	 * inner class NuclosUpdateJobImpl: implementation of NuclosUpdateJob
 	 */
-	private static class NuclosUpdateJobImpl implements Job{
+	private static class NuclosUpdateJobImpl implements Job {
 		@Override
 		public void execute(JobExecutionContext context) throws JobExecutionException {
 			LOG.debug("Start executing NuclosUpdateJob");
@@ -67,7 +67,8 @@ public class NuclosUpdateJob extends NuclosQuartzJob{
 				System.setProperty("restricted", getUserName());
 			}				
 
-			DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
+			final DataBaseHelper dataBaseHelper = DataBaseHelper.getInstance();
+			DbQueryBuilder builder = dataBaseHelper.getDbAccess().getQueryBuilder();
 			DbQuery<DbTuple> query = builder.createTupleQuery();
 			DbFrom t = query.from("T_AD_UPDATEJOBS").alias(SystemFields.BASE_ALIAS);
 			query.multiselect(
@@ -78,7 +79,7 @@ public class NuclosUpdateJob extends NuclosQuartzJob{
 
 			ArrayList<Pair<Integer, String>> lstJavaClassNames = new ArrayList<Pair<Integer, String>>();
 			try {
-				for (DbTuple tuple : DataBaseHelper.getDbAccess().executeQuery(query)) {
+				for (DbTuple tuple : dataBaseHelper.getDbAccess().executeQuery(query)) {
 					LOG.info("Job to execute: " + tuple.get(1, String.class));
 					lstJavaClassNames.add(new Pair<Integer, String>(tuple.get(0, Integer.class), tuple.get(1, String.class)));
 				}
@@ -91,7 +92,7 @@ public class NuclosUpdateJob extends NuclosQuartzJob{
 					UpdateJobs job = (UpdateJobs)Class.forName(javaClass.getY()).newInstance();
 					boolean isSuccessfulExecuted = job.execute();
 					if (isSuccessfulExecuted) {
-						DataBaseHelper.execute(DbStatementUtils.updateValues("T_AD_UPDATEJOBS",
+						dataBaseHelper.execute(DbStatementUtils.updateValues("T_AD_UPDATEJOBS",
 							"DATEXECUTED", DbCurrentDate.CURRENT_DATE).where("INTID", javaClass.getX()));
 						LOG.info("END executing Job: "+javaClass.getY());
 					}

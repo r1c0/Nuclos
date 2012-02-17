@@ -286,7 +286,7 @@ public class DatasourceServerUtils {
 		if(table != null) {
 			final Table resultTable = (Table) table.clone();
 			resultTable.setAlias(xmltable.getId());
-			SchemaCache.getColumns(resultTable);
+			SchemaCache.getInstance().getColumns(resultTable);
 			return resultTable;
 		}
 		return new Table(schema, "");

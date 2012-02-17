@@ -91,7 +91,7 @@ public class DalUtils {
 	}
 
 	public static Long getNextId() {
-		return IdUtils.toLongId(DataBaseHelper.getNextIdAsInteger(DataBaseHelper.DEFAULT_SEQUENCE));
+		return IdUtils.toLongId(DataBaseHelper.getInstance().getNextIdAsInteger(DataBaseHelper.DEFAULT_SEQUENCE));
 	}
 
 	public static void handleVersionUpdate(IDalVersionSpecification processor,

@@ -137,7 +137,7 @@ public class WorkspaceProcessor extends AbstractJdbcDalProcessor<WorkspaceVO> im
 	
 	@Override
 	public void deleteByAssigned(Long assignedId) throws DbException {
-		final DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
+		final DbQueryBuilder builder = dataBaseHelper.getDbAccess().getQueryBuilder();
 		final DbQuery<DbTuple> query = builder.createTupleQuery();
 		final DbFrom from = query.from(getDbSourceForSQL()).alias(SystemFields.BASE_ALIAS);
 		final DbJoin join = from.innerJoin("T_MD_USER").alias("t2").on("INTID_T_MD_USER", "INTID", Long.class);
@@ -159,7 +159,7 @@ public class WorkspaceProcessor extends AbstractJdbcDalProcessor<WorkspaceVO> im
 		query.where(builder.equal(from.baseColumn(assignedColumn.getColumn(), assignedColumn.getDataType()), assignedId));
 		query.addToWhereAsAnd(builder.not(from.baseColumn(assignedColumn.getColumn(), assignedColumn.getDataType()).in(rowoQuery)));
 		
-		for (DbTuple tuple : DataBaseHelper.getDbAccess().executeQuery(query)) {
+		for (DbTuple tuple : dataBaseHelper.getDbAccess().executeQuery(query)) {
 			Long id = (Long) tuple.get(0);
 			String user = (String) tuple.get(1);
 			if (!SecurityCache.getInstance().getAllowedActions(user).contains(Actions.ACTION_WORKSPACE_ASSIGN)) {
@@ -169,7 +169,7 @@ public class WorkspaceProcessor extends AbstractJdbcDalProcessor<WorkspaceVO> im
 	}
 	
 	private void deleteAllByAssigned(Long assignedId) throws DbException {
-		DataBaseHelper.getDbAccess().execute(DbStatementUtils.deleteFrom(getDbSourceForDML(), assignedColumn.getColumn(), assignedId));
+		dataBaseHelper.getDbAccess().execute(DbStatementUtils.deleteFrom(getDbSourceForDML(), assignedColumn.getColumn(), assignedId));
 	}
 
 	@Override
@@ -185,7 +185,7 @@ public class WorkspaceProcessor extends AbstractJdbcDalProcessor<WorkspaceVO> im
 			query.where(builder.equal(from.baseColumn(userColumn.getColumn(), userColumn.getDataType()), userId));
 		}
 		
-		return DataBaseHelper.getDbAccess().executeQuery(query, createResultTransformer(allColumns));
+		return dataBaseHelper.getDbAccess().executeQuery(query, createResultTransformer(allColumns));
 	}
 	
 	@Override
@@ -218,7 +218,7 @@ public class WorkspaceProcessor extends AbstractJdbcDalProcessor<WorkspaceVO> im
 		query.addToWhereAsAnd(builder.not(from.baseColumn(idColumn.getColumn(), idColumn.getDataType()).in(aswoQuery)));
 		query.addToWhereAsAnd(builder.isNull(from.baseColumn(userColumn.getColumn(), userColumn.getDataType())));
 		
-		return DataBaseHelper.getDbAccess().executeQuery(query, createResultTransformer(allColumns));
+		return dataBaseHelper.getDbAccess().executeQuery(query, createResultTransformer(allColumns));
 	}
 	
 	private void checkLogicalUniqueConstraint(WorkspaceVO wovo) throws DbException {

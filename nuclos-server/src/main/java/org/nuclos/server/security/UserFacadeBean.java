@@ -103,12 +103,12 @@ public class UserFacadeBean extends NuclosFacadeBean implements UserFacadeRemote
 
 	@Override
 	public void setPassword(String username, String password) throws CommonBusinessException {
-		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
+		DbQueryBuilder builder = dataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<Integer> query = builder.createQuery(Integer.class);
 		DbFrom t = query.from("T_MD_USER").alias(SystemFields.BASE_ALIAS);
 		query.select(t.baseColumn("INTID", Integer.class));
 		query.where(builder.equal(builder.upper(t.baseColumn("STRUSER", String.class)), builder.upper(builder.literal(username))));
-		Integer userId = DataBaseHelper.getDbAccess().executeQuerySingleResult(query);
+		Integer userId = dataBaseHelper.getDbAccess().executeQuerySingleResult(query);
 
 		UserVO user = new UserVO(ServiceLocator.getInstance().getFacade(MasterDataFacadeLocal.class).get(NuclosEntity.USER.getEntityName(), userId));
 		user.setSetPassword(true);
@@ -189,13 +189,13 @@ public class UserFacadeBean extends NuclosFacadeBean implements UserFacadeRemote
 			return new ArrayList<String>();
 		}
 
-		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
+		DbQueryBuilder builder = dataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<DbTuple> query = builder.createTupleQuery();
 		DbFrom t = query.from("T_MD_PASSWORDHISTORY").alias(SystemFields.BASE_ALIAS);
 		query.multiselect(t.baseColumn("INTID", Long.class), t.baseColumn("DATCREATED", Date.class), t.baseColumn("STRPASSWORD", String.class));
 		query.where(builder.equal(t.baseColumn("INTID_T_MD_USER", Long.class), user));
 		query.orderBy(builder.desc(t.baseColumn("DATCREATED", Date.class)), builder.desc(t.baseColumn("INTID", Long.class)));
-		List<DbTuple> result = DataBaseHelper.getDbAccess().executeQuery(query);
+		List<DbTuple> result = dataBaseHelper.getDbAccess().executeQuery(query);
 
 		Calendar c = Calendar.getInstance();
 		c.add(Calendar.DAY_OF_MONTH, -1 * days);
@@ -223,12 +223,12 @@ public class UserFacadeBean extends NuclosFacadeBean implements UserFacadeRemote
 	}
 
 	private String getEncryptedPassword(Long user) {
-		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
+		DbQueryBuilder builder = dataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<String> query = builder.createQuery(String.class);
 		DbFrom t = query.from("T_MD_USER").alias(SystemFields.BASE_ALIAS);
 		query.select(t.baseColumn("STRPASSWORD", String.class));
 		query.where(builder.equal(t.baseColumn("INTID", Long.class), user));
-		return DataBaseHelper.getDbAccess().executeQuerySingleResult(query);
+		return dataBaseHelper.getDbAccess().executeQuerySingleResult(query);
 	}
 
 	private void updatePasswordHistory(Long user, String encryptedpassword) {
@@ -245,16 +245,16 @@ public class UserFacadeBean extends NuclosFacadeBean implements UserFacadeRemote
 			m.put("DATCHANGED", new Date(System.currentTimeMillis()));
 			m.put("STRCHANGED", getCurrentUserName());
 			m.put("INTVERSION", 1);
-			DataBaseHelper.getDbAccess().execute(new DbInsertStatement("T_MD_PASSWORDHISTORY", m));
+			dataBaseHelper.getDbAccess().execute(new DbInsertStatement("T_MD_PASSWORDHISTORY", m));
 		}
 
-		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
+		DbQueryBuilder builder = dataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<DbTuple> query = builder.createTupleQuery();
 		DbFrom t = query.from("T_MD_PASSWORDHISTORY").alias(SystemFields.BASE_ALIAS);
 		query.multiselect(t.baseColumn("INTID", Long.class), t.baseColumn("DATCREATED", Date.class));
 		query.where(builder.equal(t.baseColumn("INTID_T_MD_USER", Long.class), user));
 		query.orderBy(builder.desc(t.baseColumn("DATCREATED", Date.class)), builder.desc(t.baseColumn("INTID", Long.class)));
-		List<DbTuple> result = DataBaseHelper.getDbAccess().executeQuery(query);
+		List<DbTuple> result = dataBaseHelper.getDbAccess().executeQuery(query);
 
 		Calendar c = Calendar.getInstance();
 		c.add(Calendar.DAY_OF_MONTH, -1 * days);
@@ -275,7 +275,7 @@ public class UserFacadeBean extends NuclosFacadeBean implements UserFacadeRemote
 				Long id = tuple.get(0, Long.class);
 				Map<String, Object> condition = new HashMap<String, Object>(1);
 				condition.put("INTID", id);
-				DataBaseHelper.getDbAccess().execute(new DbDeleteStatement("T_MD_PASSWORDHISTORY", condition));
+				dataBaseHelper.getDbAccess().execute(new DbDeleteStatement("T_MD_PASSWORDHISTORY", condition));
 			}
 			counter++;
 		}

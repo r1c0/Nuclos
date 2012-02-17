@@ -67,6 +67,8 @@ public class EntityMetaDataVO extends AbstractDalVOWithVersion {
 
 	private String virtualentity;
 	private String idFactory;
+	
+	private String readDelegate;
 
 	private Collection<Set<String>> uniqueFieldCombinations;
 	private Collection<Set<String>> logicalUniqueFieldCombinations;
@@ -408,6 +410,14 @@ public class EntityMetaDataVO extends AbstractDalVOWithVersion {
 	
 	public void setIdFactory(String idFactory) {
 		this.idFactory = StringUtils.stripToNull(idFactory);
+	}
+	
+	public String getReadDelegate() {
+		return readDelegate;
+	}
+	
+	public void setReadDelegate(String readDelegate) {
+		this.readDelegate = readDelegate;
 	}
 
 	public NuclosScript getRowColorScript() {

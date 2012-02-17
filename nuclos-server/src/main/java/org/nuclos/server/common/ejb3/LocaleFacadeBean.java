@@ -119,6 +119,8 @@ public class LocaleFacadeBean extends NuclosFacadeBean implements LocaleFacadeLo
 	
 	private ServerParameterProvider serverParameterProvider;
 	
+	private DataBaseHelper dataBaseHelper;
+	
 	public LocaleFacadeBean() {
 	}
 	
@@ -130,6 +132,11 @@ public class LocaleFacadeBean extends NuclosFacadeBean implements LocaleFacadeLo
 	@Autowired
 	void setServerParameterProvider(ServerParameterProvider serverParameterProvider) {
 		this.serverParameterProvider = serverParameterProvider;
+	}
+	
+	@Autowired
+	void setDataBaseHelper(DataBaseHelper dataBaseHelper) {
+		this.dataBaseHelper = dataBaseHelper;
 	}
 
 	@Override
@@ -317,14 +324,14 @@ public class LocaleFacadeBean extends NuclosFacadeBean implements LocaleFacadeLo
 			return mdvo.getField("text", String.class);
 		}
 
-		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
+		DbQueryBuilder builder = dataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<String> query = builder.createQuery(String.class);
 		DbFrom t = query.from("T_MD_LOCALERESOURCE").alias(SystemFields.BASE_ALIAS);
 		query.select(t.baseColumn("STRTEXT", String.class));
 		query.where(builder.and(
 			builder.equal(t.baseColumn("STRRESOURCEID", String.class), sresourceId),
 			builder.equal(t.baseColumn("STRLOCALE", String.class), localeInfo.getTag())));
-		return CollectionUtils.getFirst(DataBaseHelper.getDbAccess().executeQuery(query));
+		return CollectionUtils.getFirst(dataBaseHelper.getDbAccess().executeQuery(query));
 	}
 
 	@Override
@@ -333,14 +340,14 @@ public class LocaleFacadeBean extends NuclosFacadeBean implements LocaleFacadeLo
 		for (MasterDataVO mdvo : XMLEntities.getData(NuclosEntity.LOCALERESOURCE).findAllVO("resourceID", resourceId)) {
 			map.put(mdvo.getField("locale", String.class), mdvo.getField("text", String.class));
 		}
-		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
+		DbQueryBuilder builder = dataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<DbTuple> query = builder.createTupleQuery();
 		DbFrom t = query.from("T_MD_LOCALERESOURCE").alias(SystemFields.BASE_ALIAS);
 		query.multiselect(
 			t.baseColumn("STRLOCALE", String.class),
 			t.baseColumn("STRTEXT", String.class));
 		query.where(builder.equal(t.baseColumn("STRRESOURCEID", String.class), resourceId));
-		for (DbTuple tuple : DataBaseHelper.getDbAccess().executeQuery(query)) {
+		for (DbTuple tuple : dataBaseHelper.getDbAccess().executeQuery(query)) {
 			map.put(tuple.get(0, String.class), tuple.get(1, String.class));
 		}
 		return map;
@@ -414,7 +421,7 @@ public class LocaleFacadeBean extends NuclosFacadeBean implements LocaleFacadeLo
 	@Override
 	public void update(String resourceId, LocaleInfo localeInfo, String text) {
 		if (text != null) {
-			DataBaseHelper.execute(DbStatementUtils.updateValues("T_MD_LOCALERESOURCE",
+			dataBaseHelper.execute(DbStatementUtils.updateValues("T_MD_LOCALERESOURCE",
 				"STRTEXT", text).where("STRRESOURCEID", resourceId, "STRLOCALE", localeInfo.getTag()));
 			internalFlush();
 		}
@@ -423,7 +430,7 @@ public class LocaleFacadeBean extends NuclosFacadeBean implements LocaleFacadeLo
 	@Override
 	public void deleteResource(String resourceId) {
 		if (resourceId != null) {
-			DataBaseHelper.execute(DbStatementUtils.deleteFrom("T_MD_LOCALERESOURCE",
+			dataBaseHelper.execute(DbStatementUtils.deleteFrom("T_MD_LOCALERESOURCE",
 				"STRRESOURCEID", resourceId));
 			internalFlush();
 		}
@@ -432,7 +439,7 @@ public class LocaleFacadeBean extends NuclosFacadeBean implements LocaleFacadeLo
 	@Override
 	public void deleteResourceFromLocale(String resourceId, LocaleInfo localeInfo) {
 		if (resourceId != null) {
-			DataBaseHelper.execute(DbStatementUtils.deleteFrom("T_MD_LOCALERESOURCE",
+			dataBaseHelper.execute(DbStatementUtils.deleteFrom("T_MD_LOCALERESOURCE",
 				"STRRESOURCEID", resourceId,
 				"STRLOCALE", localeInfo.getTag()));
 			internalFlush();
@@ -495,12 +502,12 @@ public class LocaleFacadeBean extends NuclosFacadeBean implements LocaleFacadeLo
 	}
 
 	public String insert(String sResourceId, LocaleInfo localeInfo, String sText, boolean internal) {
-		final Integer nextId = DataBaseHelper.getNextIdAsInteger(internal ? "resids" : "idfactory");
+		final Integer nextId = dataBaseHelper.getNextIdAsInteger(internal ? "resids" : "idfactory");
 
 		if (sResourceId == null)
 			sResourceId = generateResourceId(nextId);
 
-		DataBaseHelper.execute(DbStatementUtils.insertInto("T_MD_LOCALERESOURCE",
+		dataBaseHelper.execute(DbStatementUtils.insertInto("T_MD_LOCALERESOURCE",
 			"INTID", new DbId(),
 			"STRRESOURCEID", sResourceId,
 			"STRLOCALE", localeInfo.getTag(),
@@ -573,14 +580,14 @@ public class LocaleFacadeBean extends NuclosFacadeBean implements LocaleFacadeLo
 	}
 
 	private Integer getResourceIntId(String resId, LocaleInfo localeInfo) {
-		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
+		DbQueryBuilder builder = dataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<Integer> query = builder.createQuery(Integer.class);
 		DbFrom t = query.from("T_MD_LOCALERESOURCE").alias(SystemFields.BASE_ALIAS);
 		query.select(t.baseColumn("INTID", Integer.class));
 		query.where(builder.and(
 			builder.equal(t.baseColumn("STRRESOURCEID", String.class), resId),
 			builder.equal(t.baseColumn("STRLOCALE", String.class), localeInfo.getTag())));
-		return CollectionUtils.getFirst(DataBaseHelper.getDbAccess().executeQuery(query));
+		return CollectionUtils.getFirst(dataBaseHelper.getDbAccess().executeQuery(query));
 	}
 
 	private static CollectableSearchCondition getResourcesSearchCondition(LocaleInfo localeInfo) {
@@ -628,11 +635,11 @@ public class LocaleFacadeBean extends NuclosFacadeBean implements LocaleFacadeLo
 
 	@Override
 	public Date getLastChange() {
-		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
+		DbQueryBuilder builder = dataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<Date> query = builder.createQuery(Date.class);
 		DbFrom t = query.from("T_MD_LOCALERESOURCE").alias(SystemFields.BASE_ALIAS);
 		query.select(builder.max(t.baseColumn("DATCHANGED", Date.class)));
-		return DataBaseHelper.getDbAccess().executeQuerySingleResult(query);
+		return dataBaseHelper.getDbAccess().executeQuerySingleResult(query);
 	}
 
 	@Override
@@ -641,11 +648,11 @@ public class LocaleFacadeBean extends NuclosFacadeBean implements LocaleFacadeLo
 			return false;
 		}
 
-		DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
+		DbQueryBuilder builder = dataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<Long> query = builder.createQuery(Long.class);
 		DbFrom t = query.from("T_MD_LOCALERESOURCE").alias(SystemFields.BASE_ALIAS);
 		query.select(t.baseColumn("INTID", Long.class)).where(builder.equal(builder.upper(t.baseColumn("STRRESOURCEID", String.class)), s.toUpperCase()));
-		return DataBaseHelper.getDbAccess().executeQuery(query).size() > 0;
+		return dataBaseHelper.getDbAccess().executeQuery(query).size() > 0;
 	}
 	
 	@PreDestroy

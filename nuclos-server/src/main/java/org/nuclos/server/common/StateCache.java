@@ -26,7 +26,6 @@ import org.apache.log4j.Logger;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.dblayer.JoinType;
-import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.exception.CommonFinderException;
 import org.nuclos.common2.exception.CommonPermissionException;
 import org.nuclos.server.database.DataBaseHelper;
@@ -56,8 +55,13 @@ public class StateCache {
 
 	private static StateCache INSTANCE;
 
+	//
+	
 	private MasterDataFacadeLocal mdLocal;
+	
 	private StateFacadeLocal statefacade;
+	
+	private DataBaseHelper dataBaseHelper;
 
 	private final Map<Integer, StateVO> mpStatessById
 		= new ConcurrentHashMap<Integer, StateVO>();
@@ -74,27 +78,41 @@ public class StateCache {
 	private final Map<Integer, Collection<StateVO>> mpStatesByModule
 		= new ConcurrentHashMap<Integer, Collection<StateVO>>();
 
-	private StateCache() {
+	StateCache() {
+		INSTANCE = this;
 	}
 	
+	public void setStateFacadeLocal(StateFacadeLocal stateFacadeLocal) {
+		this.statefacade = stateFacadeLocal;
+	}
+	
+	public void setMasterDataFacadeLocal(MasterDataFacadeLocal masterDataFacadeLocal) {
+		this.mdLocal = masterDataFacadeLocal;
+	}
+	
+	public void setDataBaseHelper(DataBaseHelper dataBaseHelper) {
+		this.dataBaseHelper = dataBaseHelper;
+	}
+	
+	public static StateCache getInstance() {
+		return INSTANCE;
+	}
+
 	private StateFacadeLocal getStateFacade() {
+		/*
 		if (statefacade == null) {
 			statefacade = ServiceLocator.getInstance().getFacade(StateFacadeLocal.class);
 		}
+		 */
 		return statefacade;
 	}
 
 	private MasterDataFacadeLocal getMasterDataFacade() {
+		/*
 		if (mdLocal == null)
 			mdLocal = ServiceLocator.getInstance().getFacade(MasterDataFacadeLocal.class);
+		 */
 		return mdLocal;
-	}
-
-	public static synchronized StateCache getInstance() {
-		if (INSTANCE == null) {
-			INSTANCE = new StateCache();
-		}
-		return INSTANCE;
 	}
 
 	/**
@@ -172,7 +190,7 @@ public class StateCache {
 		if (!mpStateByModelAndInitialState.containsKey(iModelId)) {
 			LOG.info("Initializing StateCache for ModelID " + iModelId);
 
-			DbQueryBuilder builder = DataBaseHelper.getDbAccess().getQueryBuilder();
+			DbQueryBuilder builder = dataBaseHelper.getDbAccess().getQueryBuilder();
 			DbQuery<Integer> query = builder.createQuery(Integer.class);
 			DbFrom s = query.from("T_MD_STATE").alias("s");
 			DbFrom st = s.join("T_MD_STATE_TRANSITION", JoinType.INNER).alias("st").on("INTID", "INTID_T_MD_STATE_2", Integer.class);
@@ -181,7 +199,7 @@ public class StateCache {
 				builder.equal(s.baseColumn("INTID_T_MD_STATEMODEL", Integer.class), iModelId),
 				st.baseColumn("INTID_T_MD_STATE_1", Integer.class).isNull()));
 
-			List<Integer> stateIds = DataBaseHelper.getDbAccess().executeQuery(query.distinct(true));
+			List<Integer> stateIds = dataBaseHelper.getDbAccess().executeQuery(query.distinct(true));
 
 			if (stateIds.size() == 0)
 				throw new NuclosFatalException("getStateByModelAndInitialState failed for modelId = "+iModelId);
