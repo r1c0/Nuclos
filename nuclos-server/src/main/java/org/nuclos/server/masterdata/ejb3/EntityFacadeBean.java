@@ -25,25 +25,31 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.nuclos.common.MetaDataProvider;
+import org.nuclos.common.NuclosEOField;
 import org.nuclos.common.SearchConditionUtils;
 import org.nuclos.common.collect.collectable.CollectableField;
+import org.nuclos.common.collect.collectable.CollectableValueField;
 import org.nuclos.common.collect.collectable.CollectableValueIdField;
 import org.nuclos.common.collect.collectable.MakeCollectableValueIdField;
+import org.nuclos.common.collect.collectable.searchcondition.CollectableComparison;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableSearchCondition;
 import org.nuclos.common.collect.collectable.searchcondition.ComparisonOperator;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
 import org.nuclos.common.dal.vo.EntityObjectVO;
+import org.nuclos.common.entityobject.CollectableEOEntityField;
 import org.nuclos.common2.EntityAndFieldName;
 import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.StringUtils;
+import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.server.attribute.ejb3.LayoutFacadeLocal;
 import org.nuclos.server.common.DatasourceCache;
 import org.nuclos.server.common.DatasourceServerUtils;
 import org.nuclos.server.common.MetaDataServerProvider;
 import org.nuclos.server.common.ejb3.NuclosFacadeBean;
+import org.nuclos.server.dal.processor.jdbc.impl.EOSearchExpressionUnparser;
 import org.nuclos.server.dal.processor.nuclet.JdbcEntityObjectProcessor;
 import org.nuclos.server.dal.provider.NucletDalProvider;
 import org.nuclos.server.database.DataBaseHelper;
@@ -58,6 +64,7 @@ import org.nuclos.server.dblayer.query.DbQuery;
 import org.nuclos.server.dblayer.query.DbQueryBuilder;
 import org.nuclos.server.dblayer.structure.DbColumnType;
 import org.nuclos.server.genericobject.Modules;
+import org.nuclos.server.genericobject.searchcondition.CollectableGenericObjectSearchExpression;
 import org.nuclos.server.genericobject.searchcondition.CollectableSearchExpression;
 import org.nuclos.server.report.valueobject.DatasourceVO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -173,6 +180,8 @@ public class EntityFacadeBean extends NuclosFacadeBean implements EntityFacadeRe
 				return LangUtils.compare(o1.getValue(), o2.getValue());
 			}});
 	}
+	
+	private static final CollectableEOEntityField clctEOEFdeleted = new CollectableEOEntityField(NuclosEOField.LOGGICALDELETED.getMetaData(), "<dummy>");
 
 	/**
 	 *
@@ -192,7 +201,7 @@ public class EntityFacadeBean extends NuclosFacadeBean implements EntityFacadeRe
 			final MetaDataProvider provider = MetaDataServerProvider.getInstance();
 			final EntityFieldMetaDataVO efMeta = provider.getEntityField(entity, field);
 			final DbColumnType columnType = EntityObjectMetaDbHelper.createDbColumnType(efMeta);
-			final EntityMetaDataVO eForeignMeta = provider.getEntity(efMeta.getForeignEntity());
+			final EntityMetaDataVO eForeignMeta = provider.getEntity(efMeta.getForeignEntity() != null ? efMeta.getForeignEntity() : efMeta.getLookupEntity());
 
 			final List<?> viewPattern = EntityObjectMetaDbHelper.getViewPatternForField(efMeta, provider);
 			// we have to use the view for interface entities (no data in table).
@@ -215,13 +224,29 @@ public class EntityFacadeBean extends NuclosFacadeBean implements EntityFacadeRe
 
 			query.multiselect(id, presentation);
 
+
+			final EntityFieldMetaDataVO efDeleted = provider.getAllEntityFieldsByEntity(eForeignMeta.getEntity()).get(clctEOEFdeleted.getEntityName());
+			if (efDeleted != null) {
+				EOSearchExpressionUnparser unparser = new EOSearchExpressionUnparser(query, eForeignMeta);
+				CollectableSearchCondition condSearchDeleted = new CollectableComparison(clctEOEFdeleted, ComparisonOperator.EQUAL, new CollectableValueField(false));
+
+				unparser.unparseSearchCondition(condSearchDeleted);
+			}
+
 			DbCondition condLike = builder.like(builder.upper(presentation), (wildcard+StringUtils.toUpperCase(search))+wildcard);
 			DatasourceVO dsvo = DatasourceCache.getInstance().getValuelistProvider(vlpId);
 			if (dsvo != null && dsvo.getValid()) {
-				query.where(builder.and(condLike,builder.in(id, 
+				if (efDeleted == null)
+					query.where(builder.and(condLike,builder.in(id, 
+						datasourceServerUtils.getSqlWithIdForInClause(dsvo.getSource(), vlpParameter))));
+				else
+					query.addToWhereAsAnd(builder.and(condLike,builder.in(id, 
 						datasourceServerUtils.getSqlWithIdForInClause(dsvo.getSource(), vlpParameter))));
 			} else {
-				query.where(condLike);
+				if (efDeleted == null)
+					query.where(condLike);
+				else
+					query.addToWhereAsAnd(condLike);
 			}
 
 			query.orderBy(order);
