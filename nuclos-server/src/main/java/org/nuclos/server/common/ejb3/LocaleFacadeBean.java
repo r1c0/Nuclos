@@ -31,6 +31,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import javax.annotation.PreDestroy;
 import javax.annotation.security.RolesAllowed;
 
+import org.apache.commons.httpclient.cookie.CookieAttributeHandler;
 import org.apache.log4j.Logger;
 import org.nuclos.common.HashResourceBundle;
 import org.nuclos.common.JMSConstants;
