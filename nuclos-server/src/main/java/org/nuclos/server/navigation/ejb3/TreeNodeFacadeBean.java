@@ -104,6 +104,7 @@ import org.nuclos.server.navigation.treenode.nuclet.content.AbstractNucletConten
 import org.nuclos.server.navigation.treenode.nuclet.content.DefaultNucletContentEntryTreeNode;
 import org.nuclos.server.navigation.treenode.nuclet.content.NucletContentCustomComponentTreeNode;
 import org.nuclos.server.navigation.treenode.nuclet.content.NucletContentEntityTreeNode;
+import org.nuclos.server.navigation.treenode.nuclet.content.NucletContentProcessTreeNode;
 import org.nuclos.server.navigation.treenode.nuclet.content.NucletContentRuleTreeNode;
 import org.nuclos.server.navigation.treenode.nuclet.content.NucletContentTreeNode;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -891,6 +892,8 @@ public class TreeNodeFacadeBean extends NuclosFacadeBean implements TreeNodeFaca
 				return new NucletContentCustomComponentTreeNode(eo);
 			case RULE:
 				return new NucletContentRuleTreeNode(eo);
+			case PROCESS:
+				return new NucletContentProcessTreeNode(eo);
 			default:
 				return new DefaultNucletContentEntryTreeNode(eo);
 		}
