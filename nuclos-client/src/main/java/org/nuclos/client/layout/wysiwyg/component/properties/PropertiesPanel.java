@@ -592,7 +592,9 @@ public class PropertiesPanel extends JPanel implements SaveAndCancelButtonPanelC
 		 */
 		@Override
 		public void setValueAt(Object value, int row, int col) {
-			Object oldValue = getWYSIWYGComponent().getProperties().getProperty(PROPERTY_LABELS.ACTIONCOMMAND).getValue();
+			Object oldValue = null;
+			if (getWYSIWYGComponent().getProperties().getProperty(PROPERTY_LABELS.ACTIONCOMMAND) != null)
+				getWYSIWYGComponent().getProperties().getProperty(PROPERTY_LABELS.ACTIONCOMMAND).getValue();
 			map.setValue(row, value);
 			if (value instanceof PropertyValueString && LangUtils.compare(((PropertyValueString)value).getValue(), oldValue) != 0) {
 				int index = map.indexOf(PROPERTY_LABELS.ACTIONCOMMAND);
