@@ -1034,7 +1034,7 @@ public class TransferFacadeBean extends NuclosFacadeBean
 		ServerParameterProvider.getInstance().revalidate();
 		ServiceLocator.getInstance().getFacade(LocaleFacadeLocal.class).flushInternalCaches();
 
-		MetaDataServerProvider.getInstance().revalidate();
+		MetaDataServerProvider.getInstance().revalidate(true);
 		SecurityCache.getInstance().invalidate();
 
 		StateCache.getInstance().invalidate();

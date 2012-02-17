@@ -306,7 +306,7 @@ public class MetaDataFacadeBean extends NuclosFacadeBean implements MetaDataFaca
 						IdUtils.unsafeToId(metaFieldTO.getEntityFieldMeta().getId()));
 			}
 		}
-		MetaDataServerProvider.getInstance().revalidate();
+		MetaDataServerProvider.getInstance().revalidate(true);
 		return null;
 	}
 
@@ -628,7 +628,7 @@ public class MetaDataFacadeBean extends NuclosFacadeBean implements MetaDataFaca
 		// delete entity
 		NucletDalProvider.getInstance().getEntityMetaDataProcessor().delete(voEntity.getId());
 
-		MetaDataServerProvider.getInstance().revalidate();
+		MetaDataServerProvider.getInstance().revalidate(true);
 	}
 
 	@Override
@@ -787,7 +787,7 @@ public class MetaDataFacadeBean extends NuclosFacadeBean implements MetaDataFaca
 						createResourceIdForEntityField("T_MD_ENTITY_FIELD", toField, 
 								IdUtils.unsafeToId(toField.getEntityFieldMeta().getId()));
 				}
-				MetaDataServerProvider.getInstance().revalidate();
+				MetaDataServerProvider.getInstance().revalidate(true);
 				updatedMDEntity = MetaDataServerProvider.getInstance().getEntity(updatedMDEntity.getEntity());
 			}
 			else {
@@ -800,7 +800,7 @@ public class MetaDataFacadeBean extends NuclosFacadeBean implements MetaDataFaca
 				for(EntityFieldMetaDataTO toField : toFields) {
 					createResourceIdForEntityField("T_MD_ENTITY_FIELD", toField, IdUtils.unsafeToId(toField.getEntityFieldMeta().getId()));
 				}
-				MetaDataServerProvider.getInstance().revalidate();
+				MetaDataServerProvider.getInstance().revalidate(true);
 			}
 
 			if (updatedTOEntity.getProcesses() != null) {
@@ -1538,7 +1538,7 @@ public class MetaDataFacadeBean extends NuclosFacadeBean implements MetaDataFaca
 	@Override
 	@RolesAllowed("Login")
     public void invalidateServerMetadata() {
-	    MetaDataServerProvider.getInstance().revalidate();
+	    MetaDataServerProvider.getInstance().revalidate(true);
     }
 
 	@Override

@@ -82,6 +82,8 @@ public class SchemaCache implements SchemaCacheMBean {
    private MetaDataServerProvider metaDataServerProvider;
    
    private SpringDataBaseHelper dataBaseHelper;
+   
+   private DatasourceCache datasourceCache;
 
    SchemaCache() {
 	   INSTANCE = this;
@@ -105,6 +107,11 @@ public class SchemaCache implements SchemaCacheMBean {
    @Autowired
    void setDataBaseHelper(SpringDataBaseHelper dataBaseHelper) {
 	   this.dataBaseHelper = dataBaseHelper;
+   }
+   
+   @Autowired
+   void setDatasourceCache(DatasourceCache datasourceCache) {
+	   this.datasourceCache = datasourceCache;
    }
 
    public static SchemaCache getInstance() {
@@ -265,12 +272,12 @@ public synchronized void invalidate() {
    	}
    }
 
-   public static void addToSchema(Schema schema) {
+   private void addToSchema(Schema schema) {
 		//DatasourceLocalHome datasourceHome = (DatasourceLocalHome) ServiceLocator.getInstance().getLocalHome(DatasourceLocalHome.JNDI_NAME);
 		//try {
 			//for (Iterator i = datasourceHome.findAll().iterator(); i.hasNext();) {
 			//@todo is it the right way to ignore user permissions here?
-			for (DatasourceVO  voDatasource : DatasourceCache.getInstance().getAllDatasources()) {
+			for (DatasourceVO  voDatasource : datasourceCache.getAllDatasources()) {
 				//DatasourceLocal datasource = (DatasourceLocal) i.next();
 				//DatasourceVO voDatasource = datasource.getValueObject();
 //				if (voDatasource.getPermission() != DatasourceVO.PERMISSION_NONE) {
@@ -289,7 +296,7 @@ public synchronized void invalidate() {
 		catch (FinderException e) {
 			throw new NuclosFatalException(e);
 		}*/
-			for (DynamicEntityVO dynamicEntityVO : DatasourceCache.getInstance().getAllDynamicEntities()) {
+			for (DynamicEntityVO dynamicEntityVO : datasourceCache.getAllDynamicEntities()) {
 				String sName = dynamicEntityVO.getName();
 				String sViewName = null;
 				String sComment = dynamicEntityVO.getDescription();
@@ -301,7 +308,7 @@ public synchronized void invalidate() {
 				schema.addTable(table);
 			}
 
-			for (ValuelistProviderVO valuelistProviderVO : DatasourceCache.getInstance().getAllValuelistProvider()) {
+			for (ValuelistProviderVO valuelistProviderVO : datasourceCache.getAllValuelistProvider()) {
 				String sName = valuelistProviderVO.getName();
 				String sViewName = null;
 				String sComment = valuelistProviderVO.getDescription();
@@ -313,7 +320,7 @@ public synchronized void invalidate() {
 				schema.addTable(table);
 			}
 
-			for (RecordGrantVO recordGrantVO : DatasourceCache.getInstance().getAllRecordGrant()) {
+			for (RecordGrantVO recordGrantVO : datasourceCache.getAllRecordGrant()) {
 				String sName = recordGrantVO.getName();
 				String sViewName = null;
 				String sComment = recordGrantVO.getDescription();

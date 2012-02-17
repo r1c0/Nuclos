@@ -360,10 +360,10 @@ public class MasterDataFacadeHelper {
 				SecurityCache.getInstance().invalidate(mdvo.getField("name", String.class));
 				break;
 			case LAYOUT:
-				MetaDataServerProvider.getInstance().revalidate();
+				MetaDataServerProvider.getInstance().revalidate(true);
 				break;
 			case LAYOUTUSAGE:
-				MetaDataServerProvider.getInstance().revalidate();
+				MetaDataServerProvider.getInstance().revalidate(true);
 				break;
 			case RESOURCE:
 				ResourceCache.getInstance().invalidate();

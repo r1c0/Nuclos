@@ -306,7 +306,7 @@ public DynamicEntityVO createDynamicEntity(DynamicEntityVO dynamicEntityVO, List
 		}
    	DatasourceCache.getInstance().invalidate();
    	SchemaCache.getInstance().invalidate();
-   	MetaDataServerProvider.getInstance().revalidate();
+   	MetaDataServerProvider.getInstance().revalidate(true);
 
    	return dbDynamicEntityVO;
    }
@@ -462,7 +462,7 @@ public DynamicEntityVO modifyDynamicEntity(DynamicEntityVO dynamicEntityVO, List
 
 		DatasourceCache.getInstance().invalidate();
 		SchemaCache.getInstance().invalidate();
-		MetaDataServerProvider.getInstance().revalidate();
+		MetaDataServerProvider.getInstance().revalidate(true);
 
 		return DatasourceCache.getInstance().getDynamicEntity(dbDynamicEntityVO.getId());
    }
@@ -927,7 +927,7 @@ public void removeDynamicEntity(DynamicEntityVO dynamicEntityVO) throws CommonFi
 		}
   		DatasourceCache.getInstance().invalidate();
   		SchemaCache.getInstance().invalidate();
-  		MetaDataServerProvider.getInstance().revalidate();
+  		MetaDataServerProvider.getInstance().revalidate(true);
    }
 
    /**

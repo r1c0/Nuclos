@@ -87,7 +87,7 @@ public class MigrationVm2m5 extends AbstractMigration{
 			migrateAttributeGroups();
 			migrateModules();
 			migrateModuleSubnodes();
-			MetaDataServerProvider.getInstance().revalidate();
+			MetaDataServerProvider.getInstance().revalidate(true);
 
 			createEntityObjectTables();
 			migrateModuleObjects();
@@ -1006,7 +1006,7 @@ public class MigrationVm2m5 extends AbstractMigration{
 		}
 
 		if (armed) {
-			MetaDataServerProvider.getInstance().revalidate();
+			MetaDataServerProvider.getInstance().revalidate(true);
 			EntityMetaDataVO eMeta = MetaDataServerProvider.getInstance().getEntity(sEntityName);
 			EntityObjectMetaDbHelper dbHelper = new EntityObjectMetaDbHelper(dataBaseHelper.getDbAccess(), MetaDataServerProvider.getInstance());
 			dataBaseHelper.getDbAccess().execute(SchemaUtils.create(dbHelper.getDbTable(eMeta)));

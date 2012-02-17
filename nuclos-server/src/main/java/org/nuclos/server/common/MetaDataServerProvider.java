@@ -65,8 +65,10 @@ public class MetaDataServerProvider extends AbstractProvider implements MetaData
 
 	private NucletDalProvider nucletDalProvider;
 	
-	private DatasourceCache datasourceCache;
-
+	private NuclosDalProvider nuclosDalProvider;
+	
+	private DynamicMetaDataProcessor dynamicMetaDataProcessor;
+	
 	private DataCache dataCache;
 	
 	private SpringDataBaseHelper dataBaseHelper;
@@ -82,18 +84,23 @@ public class MetaDataServerProvider extends AbstractProvider implements MetaData
 	}
 	
 	@Autowired
-	void setNucletDalProvider(NucletDalProvider nucletDalProvider) {
+	final void setNucletDalProvider(NucletDalProvider nucletDalProvider) {
 		this.nucletDalProvider = nucletDalProvider;
 	}
 	
 	@Autowired
-	void setDataBaseHelper(SpringDataBaseHelper dataBaseHelper) {
+	final void setDataBaseHelper(SpringDataBaseHelper dataBaseHelper) {
 		this.dataBaseHelper = dataBaseHelper;
 	}
 	
 	@Autowired
-	void setDatasourceCache(DatasourceCache datasourceCache) {
-		this.datasourceCache = datasourceCache;
+	final void setNuclosDalProvider(NuclosDalProvider nuclosDalProvider) {
+		this.nuclosDalProvider = nuclosDalProvider;
+	}
+	
+	@Autowired
+	final void setDynamicMetaDataProcessor(DynamicMetaDataProcessor dynamicMetaDataProcessor) {
+		this.dynamicMetaDataProcessor = dynamicMetaDataProcessor;
 	}
 
 	public static MetaDataServerProvider getInstance() {
@@ -104,20 +111,6 @@ public class MetaDataServerProvider extends AbstractProvider implements MetaData
     public Collection<EntityMetaDataVO> getAllEntities() {
 		return  new ArrayList<EntityMetaDataVO>(dataCache.getMapMetaDataByEntity().values());
 	}
-
-	/*
-	public Collection<EntityMetaDataVO> getNucletEntities() {
-		Collection<EntityMetaDataVO> result = new ArrayList<EntityMetaDataVO>();
-
-		for (EntityMetaDataVO metaVO : dataCache.getMapMetaDataByEntity().values()) {
-			if (org.nuclos.server.dal.processor.nuclet.JdbcEntityMetaDataProcessor.class.getName().equals(metaVO.processor())) {
-				result.add(metaVO);
-			}
-		}
-
-		return result;
-	}
-	 */
 
 	@Override
     public EntityMetaDataVO getEntity(Long id) {
@@ -276,16 +269,18 @@ public class MetaDataServerProvider extends AbstractProvider implements MetaData
 		throw new CommonFatalException("entity field with id=" + fieldId + " in " + entity + " does not exists.");
 	}
 
-	public synchronized void revalidate(){
+	public synchronized void revalidate(boolean otherCaches) {
 		dataCache.buildMaps();
-		NucletDalProvider.getInstance().revalidate();
+		nucletDalProvider.revalidate();
 
-		/** re-/invalidate old caches */
-		SchemaCache.getInstance().invalidate();
-		MasterDataMetaCache.getInstance().revalidate();
-		AttributeCache.getInstance().revalidate();
-		Modules.getInstance().invalidate();
-		GenericObjectMetaDataCache.getInstance().layoutChanged(null);
+		if (otherCaches) {
+			/** re-/invalidate old caches */
+			SchemaCache.getInstance().invalidate();
+			MasterDataMetaCache.getInstance().revalidate();
+			AttributeCache.getInstance().revalidate();
+			Modules.getInstance().invalidate();
+			GenericObjectMetaDataCache.getInstance().layoutChanged(null);
+		}
 
 		debug("Notified clients that meta data changed.");
 		NuclosJMSUtils.sendMessage("Meta data changed.", JMSConstants.TOPICNAME_METADATACACHE);
@@ -335,18 +330,18 @@ public class MetaDataServerProvider extends AbstractProvider implements MetaData
 			/**
 			 * Nuclet Entities
 			 */
-			for (EntityMetaDataVO eMeta : NucletDalProvider.getInstance().getEntityMetaDataProcessor().getAll()){
+			for (EntityMetaDataVO eMeta : nucletDalProvider.getEntityMetaDataProcessor().getAll()){
 				result.put(eMeta.getEntity(), eMeta);
 			}
 
 			/**
 			 * Nuclos Entities
 			 */
-			for (EntityMetaDataVO eMeta : NuclosDalProvider.getInstance().getEntityMetaDataProcessor().getAll()){
+			for (EntityMetaDataVO eMeta : nuclosDalProvider.getEntityMetaDataProcessor().getAll()){
 				result.put(eMeta.getEntity(), eMeta);
 			}
 
-			for(EntityMetaDataVO meta : DynamicMetaDataProcessor.getDynamicEntities())
+			for(EntityMetaDataVO meta : dynamicMetaDataProcessor.getDynamicEntities())
 				result.put(meta.getEntity(), meta);
 
 			return result;
@@ -383,29 +378,14 @@ public class MetaDataServerProvider extends AbstractProvider implements MetaData
 			}
 		}
 
-		/**
-		 * @deprecated Risk of spring circular references. Avoid this.
-		 */
-		/*
-		public Map<String, DynamicEntityVO> getMapDynamicEntities() {
-			if (isRevalidating()) {
-				return getMapDynamicEntities();
-			}
-			else if (mapDynamicEntities == null) {
-				getMapMetaDataByEntity();
-			}
-			return mapDynamicEntities;
-		}
-		 */
-
 		private Map<String, Map<String, EntityFieldMetaDataVO>> buildMapFieldMetaData(Map<String, EntityMetaDataVO> mapMetaDataByEntity) {
 			Map<String, Map<String, EntityFieldMetaDataVO>> result = new HashMap<String, Map<String,EntityFieldMetaDataVO>>();
 
 			/**
 			 * Nuclet Entities
 			 */
-			for (EntityMetaDataVO eMeta : NucletDalProvider.getInstance().getEntityMetaDataProcessor().getAll()){
-				List<EntityFieldMetaDataVO> entityFields = NucletDalProvider.getInstance().getEntityFieldMetaDataProcessor().getByParent(eMeta.getEntity());
+			for (EntityMetaDataVO eMeta : nucletDalProvider.getEntityMetaDataProcessor().getAll()){
+				List<EntityFieldMetaDataVO> entityFields = nucletDalProvider.getEntityFieldMetaDataProcessor().getByParent(eMeta.getEntity());
 				DalUtils.addNucletEOSystemFields(entityFields, eMeta);
 
 				result.put(eMeta.getEntity(), new HashMap<String, EntityFieldMetaDataVO>());
@@ -417,8 +397,8 @@ public class MetaDataServerProvider extends AbstractProvider implements MetaData
 			/**
 			 * Nuclos Entities
 			 */
-			for (EntityMetaDataVO eMeta : NuclosDalProvider.getInstance().getEntityMetaDataProcessor().getAll()){
-				List<EntityFieldMetaDataVO> entityFields = NuclosDalProvider.getInstance().getEntityFieldMetaDataProcessor().getByParent(eMeta.getEntity());
+			for (EntityMetaDataVO eMeta : nuclosDalProvider.getEntityMetaDataProcessor().getAll()){
+				List<EntityFieldMetaDataVO> entityFields = nuclosDalProvider.getEntityFieldMetaDataProcessor().getByParent(eMeta.getEntity());
 
 				result.put(eMeta.getEntity(), new ConcurrentHashMap<String, EntityFieldMetaDataVO>());
 				for (EntityFieldMetaDataVO efMeta : entityFields) {
@@ -440,7 +420,7 @@ public class MetaDataServerProvider extends AbstractProvider implements MetaData
 		private Map<String, List<String>> buildMapEntitiesByNuclets() {
 			HashMap<String, List<String>> entitiesByNuclets = new HashMap<String, List<String>>();
 			entitiesByNuclets.put(NAMESPACE_NUCLOS, new ArrayList<String>());
-			for (EntityMetaDataVO meta : NuclosDalProvider.getInstance().getEntityMetaDataProcessor().getAll()) {
+			for (EntityMetaDataVO meta : nuclosDalProvider.getEntityMetaDataProcessor().getAll()) {
 				entitiesByNuclets.get(NAMESPACE_NUCLOS).add(meta.getEntity());
 			}
 
@@ -488,25 +468,7 @@ public class MetaDataServerProvider extends AbstractProvider implements MetaData
 			}
 		}
 
-		/*
-		private DatasourceFacadeLocal getDatasourceFacade() {
-			return ServiceLocator.getInstance().getFacade(DatasourceFacadeLocal.class);
-		}
-		 */
-		
 	} // class DataCache
-
-	/*
-	@Override
-	public String getBaseEntity(String dynamicentityname) {
-		if (dataCache.getMapDynamicEntities().containsKey(dynamicentityname)) {
-			return dataCache.getMapDynamicEntities().get(dynamicentityname).getEntity();
-		}
-		else {
-			return dynamicentityname;
-		}
-	}
-	 */
 
 	@Override
 	public List<String> getEntities(String nuclet) {
