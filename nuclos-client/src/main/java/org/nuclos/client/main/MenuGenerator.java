@@ -337,7 +337,7 @@ public class MenuGenerator {
 		return null;
 	}
 
-	private enum ConditionTypes { AND, OR, NOT, SecurityAction, SecurityEntityReadAllowed, Dev, Appname, DynamicClass, appId };
+	private static enum ConditionTypes { AND, OR, NOT, SecurityAction, SecurityEntityReadAllowed, Dev, Appname, DynamicClass, appId };
 
 	private boolean hasCondition(Element e) {
 		return CollectionUtils.transform(XMLUtils.getSubElements(e), XMLUtils.getTagTransformer()).indexOf("condition") >= 0;

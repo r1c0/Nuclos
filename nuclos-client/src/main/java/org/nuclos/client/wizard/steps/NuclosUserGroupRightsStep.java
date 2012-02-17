@@ -39,6 +39,7 @@ import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.KeyEnum;
 import org.nuclos.common2.Localizable;
 import org.nuclos.common2.exception.CommonFatalException;
+import org.nuclos.server.common.MasterDataPermission;
 import org.nuclos.server.common.ModulePermission;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 import org.pietschy.wizard.InvalidStateException;
@@ -121,6 +122,10 @@ public class NuclosUserGroupRightsStep extends NuclosEntityAbstractStep {
 			Class<? extends Enum<?>> clazz = (Class<? extends Enum<?>>) 
 					Class.forName("org.nuclos.server.common.MasterDataPermission").asSubclass(Enum.class);
 			for (Enum<?> e : clazz.getEnumConstants()) {
+				// Don't add NO permission
+				if (MasterDataPermission.NO.equals(e)) {
+					continue;
+				}
 				Object value = (e instanceof KeyEnum) ? ((KeyEnum<?>) e).getValue() : e.name();
 				String text = (e instanceof Localizable) ? 
 						CommonLocaleDelegate.getInstance().getText((Localizable) e) : e.toString();

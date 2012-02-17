@@ -30,6 +30,10 @@ import org.nuclos.common2.Localizable;
  */
 public enum ModulePermission implements KeyEnum<Integer>, Localizable {
 	
+	/**
+	 * Added in order to enable ConcurrentHashMaps for caching. Normally, having no rights
+	 * is represented by the <code>null</code> value. (tp)
+	 */
 	NO(0x00, "no"),
 
 	READONLY(0x01, "read"),
