@@ -89,6 +89,8 @@ public class DatasourceCache {
 	private DatasourceServerUtils datasourceServerUtils;
 	
 	private DataBaseHelper dataBaseHelper;
+	
+	private SecurityCache securityCache;
 
 
 	DatasourceCache() {
@@ -112,6 +114,11 @@ public class DatasourceCache {
 	@Autowired
 	void setDataBaseHelper(DataBaseHelper dataBaseHelper) {
 		this.dataBaseHelper = dataBaseHelper;
+	}
+	
+	@Autowired
+	void setSecurityCache(SecurityCache securityCache) {
+		this.securityCache = securityCache;
 	}
 
 	private void findDatasourcesById() {
@@ -436,10 +443,10 @@ public class DatasourceCache {
 	public int getPermission(Integer iDatasourceId, String sUserName) {
 		final int result;
 
-		if (SecurityCache.getInstance().getWritableDataSourceIds(sUserName).contains(iDatasourceId)) {
+		if (securityCache.getWritableDataSourceIds(sUserName).contains(iDatasourceId)) {
 			result = DatasourceVO.PERMISSION_READWRITE;
 		}
-		else if (SecurityCache.getInstance().getReadableDataSources(sUserName).contains(iDatasourceId)) {
+		else if (securityCache.getReadableDataSources(sUserName).contains(iDatasourceId)) {
 			result = DatasourceVO.PERMISSION_READONLY;
 		}
 		else {
