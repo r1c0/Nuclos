@@ -443,7 +443,7 @@ public DynamicEntityVO modifyDynamicEntity(DynamicEntityVO dynamicEntityVO, List
    		this.checkWriteAllowed(NuclosEntity.DYNAMICENTITY);
 
 			if(dbDynamicEntityVO.getVersion() != dynamicEntityVO.getVersion()) {
-				throw new CommonStaleVersionException();
+				throw new CommonStaleVersionException("dynamic entity", dynamicEntityVO.toString(), dbDynamicEntityVO.toString());
 			}
 
 			processChangingDynamicEntity(dynamicEntityVO, dbDynamicEntityVO, true);
@@ -495,7 +495,7 @@ public ValuelistProviderVO modifyValuelistProvider(ValuelistProviderVO valuelist
    		this.checkWriteAllowed(NuclosEntity.VALUELISTPROVIDER);
 
 			if(dbValuelistProviderVO.getVersion() != valuelistProviderVO.getVersion()) {
-				throw new CommonStaleVersionException();
+				throw new CommonStaleVersionException("value list provider", valuelistProviderVO.toString(), dbValuelistProviderVO.toString());
 			}
 
 			getMasterDataFacade().modify(NuclosEntity.VALUELISTPROVIDER.getEntityName(), MasterDataWrapper.wrapDatasourceVO(valuelistProviderVO), null);
@@ -545,7 +545,7 @@ public ValuelistProviderVO modifyValuelistProvider(ValuelistProviderVO valuelist
    		this.checkWriteAllowed(NuclosEntity.RECORDGRANT);
 
 			if(dbRecordGrantVO.getVersion() != recordGrantVO.getVersion()) {
-				throw new CommonStaleVersionException();
+				throw new CommonStaleVersionException("record grant", recordGrantVO.toString(), dbRecordGrantVO.toString());
 			}
 
 			try {
@@ -601,7 +601,7 @@ public DatasourceVO modify(DatasourceVO datasourcevo, List<String> lstUsedDataso
    			throw new CommonPermissionException();
    		}
    		if (dbDatasourceVO.getVersion() != datasourcevo.getVersion()) {
-   			throw new CommonStaleVersionException();
+   			throw new CommonStaleVersionException("datasource", datasourcevo.toString(), dbDatasourceVO.toString());
    		}
    		getMasterDataFacade().modify(NuclosEntity.DATASOURCE.getEntityName(), MasterDataWrapper.wrapDatasourceVO(datasourcevo), null);
 
@@ -879,7 +879,7 @@ public void remove(DatasourceVO datasourcevo) throws CommonFinderException, Comm
   			throw new CommonPermissionException();
   		}
   		if (dbDatasourceVO.getVersion() != datasourcevo.getVersion()) {
-  			throw new CommonStaleVersionException();
+  			throw new CommonStaleVersionException("data source", datasourcevo.toString(), dbDatasourceVO.toString());
   		}
 
   		getMasterDataFacade().remove(NuclosEntity.DATASOURCE.getEntityName(), MasterDataWrapper.wrapDatasourceVO(datasourcevo), false);
@@ -907,7 +907,7 @@ public void removeDynamicEntity(DynamicEntityVO dynamicEntityVO) throws CommonFi
    	this.checkDeleteAllowed(NuclosEntity.DYNAMICENTITY);
 
   		if (dbDynamicEntityVO.getVersion() != dynamicEntityVO.getVersion()) {
-  			throw new CommonStaleVersionException();
+  			throw new CommonStaleVersionException("dynamic entity", dynamicEntityVO.toString(), dbDynamicEntityVO.toString());
   		}
 
   		try {
@@ -943,7 +943,7 @@ public void removeValuelistProvider(ValuelistProviderVO valuelistProviderVO) thr
    	this.checkDeleteAllowed(NuclosEntity.VALUELISTPROVIDER);
 
   		if (dbValuelistProviderVO.getVersion() != valuelistProviderVO.getVersion()) {
-  			throw new CommonStaleVersionException();
+  			throw new CommonStaleVersionException("value list provider", valuelistProviderVO.toString(), dbValuelistProviderVO.toString());
   		}
 
   		getMasterDataFacade().remove(NuclosEntity.VALUELISTPROVIDER.getEntityName(), MasterDataWrapper.wrapDatasourceVO(dbValuelistProviderVO), false);
@@ -971,7 +971,7 @@ public void removeRecordGrant(RecordGrantVO recordGrantVO) throws CommonFinderEx
    	this.checkDeleteAllowed(NuclosEntity.RECORDGRANT);
 
   		if (dbRecordGrantVO.getVersion() != recordGrantVO.getVersion()) {
-  			throw new CommonStaleVersionException();
+  			throw new CommonStaleVersionException("record grant", recordGrantVO.toString(), dbRecordGrantVO.toString());
   		}
 
   		getMasterDataFacade().remove(NuclosEntity.RECORDGRANT.getEntityName(), MasterDataWrapper.wrapDatasourceVO(dbRecordGrantVO), false);

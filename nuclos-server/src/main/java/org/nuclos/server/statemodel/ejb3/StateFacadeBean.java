@@ -692,7 +692,7 @@ public class StateFacadeBean extends NuclosFacadeBean implements StateFacadeRemo
 
 	private void checkForStaleVersion(StateModelVO dbStateModel, StateModelVO clientStateModel) throws CommonStaleVersionException {
 		if (dbStateModel.getVersion() != clientStateModel.getVersion()) {
-			throw new CommonStaleVersionException();
+			throw new CommonStaleVersionException("state model", clientStateModel.toString(), dbStateModel.toString());
 		}
 	}
 

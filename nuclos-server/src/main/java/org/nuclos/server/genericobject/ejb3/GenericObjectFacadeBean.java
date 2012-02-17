@@ -208,7 +208,7 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 
 	private void checkForStaleVersion(GenericObjectVO oldGO, GenericObjectVO newGO) throws CommonStaleVersionException {
 		if (oldGO.getVersion() != newGO.getVersion()) {
-			throw new CommonStaleVersionException();
+			throw new CommonStaleVersionException("generic object", newGO.toDescription(), oldGO.toDescription());
 		}
 	}
 

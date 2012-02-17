@@ -100,7 +100,7 @@ public class DalUtils {
 		if (vo.getId() != null) {
 			final Integer oldVersion = processor.getVersion(vo.getId());
 			if (!vo.getVersion().equals(oldVersion)) {
-				throw new CommonStaleVersionException();
+				throw new CommonStaleVersionException("entity object", vo.toString(), Integer.toString(oldVersion));
 			}
 		}
 

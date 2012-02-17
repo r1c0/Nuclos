@@ -989,7 +989,7 @@ public class RuleEngineFacadeBean extends NuclosFacadeBean implements RuleEngine
 
 		// check for stale version:
 		if (mdVO.getVersion() != rulevo.getVersion()) {
-			throw new CommonStaleVersionException();
+			throw new CommonStaleVersionException("rule -> master data", rulevo.toDescription(), mdVO.toDescription());
 		}
 		//mdVO.remove();
 

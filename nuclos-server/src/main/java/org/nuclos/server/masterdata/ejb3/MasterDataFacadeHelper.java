@@ -442,7 +442,7 @@ public class MasterDataFacadeHelper {
 	MasterDataVO checkForStaleVersion(MasterDataMetaVO mdMetaVO, MasterDataVO mdvo) throws CommonStaleVersionException, CommonPermissionException, CommonFinderException {
 		final MasterDataVO mdvoInDataBase = getMasterDataCVOById(mdMetaVO, mdvo.getIntId());
 		if (mdvo.getVersion() != mdvoInDataBase.getVersion()) {
-			throw new CommonStaleVersionException();
+			throw new CommonStaleVersionException("master data", mdvo.toDescription(), mdvoInDataBase.toDescription());
 		}
 		if (mdvo.isSystemRecord()) {
 			throw new CommonPermissionException();

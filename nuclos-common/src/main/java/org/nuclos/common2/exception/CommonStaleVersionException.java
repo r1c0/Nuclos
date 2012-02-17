@@ -28,22 +28,23 @@ package org.nuclos.common2.exception;
  */
 public class CommonStaleVersionException extends CommonBusinessException {
 
-	public CommonStaleVersionException() {
-		super(CommonBusinessException.STALE_VERSION);
-	}
-
 	/**
 	 * @param tCause wrapped exception
 	 */
-	public CommonStaleVersionException(Throwable tCause) {
+	CommonStaleVersionException(Throwable tCause) {
 		super(CommonBusinessException.STALE_VERSION, tCause);
 	}
 
 	/**
 	 * @param sMessage exception message
+	 * @deprecated Use {@link #CommonStaleVersionException(String, String, String)}.
 	 */
 	public CommonStaleVersionException(String sMessage) {
 		super(sMessage);
+	}
+	
+	public CommonStaleVersionException(String type, String newDb, String oldDb) {
+		super(type + ": new: " + newDb + "\n\told: " + oldDb);
 	}
 
 	/**
