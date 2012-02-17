@@ -45,6 +45,7 @@ import org.nuclos.server.dblayer.statements.DbStatement;
 import org.nuclos.server.dblayer.structure.DbTableType;
 import org.nuclos.server.dblayer.util.StatementToStringVisitor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Component;
 
 /**
@@ -57,6 +58,7 @@ import org.springframework.stereotype.Component;
  * @version 01.00.00
  */
 @Component
+@DependsOn("nuclosRemoteRollback")
 public class DataBaseHelper {
 
 	private static final Logger LOG = Logger.getLogger(DataBaseHelper.class);

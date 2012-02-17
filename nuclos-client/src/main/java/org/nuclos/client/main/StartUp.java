@@ -40,6 +40,7 @@ import javax.swing.UIManager;
 
 import org.apache.log4j.Logger;
 import org.apache.log4j.helpers.LogLog;
+import org.nuclos.client.NuclosIcons;
 import org.nuclos.client.common.MetaDataClientProvider;
 import org.nuclos.client.common.NuclosCollectableComponentFactory;
 import org.nuclos.client.common.TopicNotificationReceiver;
@@ -171,10 +172,12 @@ public class StartUp  {
             public void run() {
 				try {
 					createGUI();
-					TopicNotificationReceiver.getInstance().realSubscribe();
-					// final MainController mc = Main.getInstance().getMainController();
-					// Main.getInstance().getMainFrame().init(mc.getUserName(), mc.getNuclosServerName());
-					Main.getInstance().getMainFrame().init("", "");
+					if (Main.isMacOSX()) {
+						Class<?> macAppClass = Class.forName("com.apple.eawt.Application");
+						Object macAppObject = macAppClass.getConstructor().newInstance();
+						// set Nuclos dock icon
+						macAppClass.getMethod("setDockIconImage", java.awt.Image.class).invoke(macAppObject, NuclosIcons.getInstance().getBigTransparentApplicationIcon512().getImage());
+					}				
 				}
 				catch (Exception e) {
 					LOG.fatal("Startup failed: " + e, e);

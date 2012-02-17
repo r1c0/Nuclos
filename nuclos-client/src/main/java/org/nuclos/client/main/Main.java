@@ -162,11 +162,6 @@ public class Main {
 			        		Main.exit(Main.ExitResult.ABNORMAL);
 		        		}
 		        }
-
-				Class<?> macAppClass = Class.forName("com.apple.eawt.Application");
-				Object macAppObject = macAppClass.getConstructor().newInstance();
-				// set Nuclos dock icon
-				macAppClass.getMethod("setDockIconImage", java.awt.Image.class).invoke(macAppObject, NuclosIcons.getInstance().getBigTransparentApplicationIcon512().getImage());
 			} catch (Exception e) {
 				LOG.fatal("main failed: " + e, e);
 				ErrorInfo ei = new ErrorInfo("Fatal Error", e.getMessage(), null, null, e, null, null);

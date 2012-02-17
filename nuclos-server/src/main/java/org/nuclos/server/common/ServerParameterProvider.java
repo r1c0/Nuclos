@@ -39,6 +39,7 @@ import org.nuclos.server.jms.NuclosJMSUtils;
 import org.nuclos.server.mbean.MBeanAgent;
 import org.nuclos.server.mbean.ServerParameterProviderMBean;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * <code>ParameterProvider</code> for the server side.
@@ -67,6 +68,8 @@ public class ServerParameterProvider extends AbstractParameterProvider implement
 		= new ConcurrentHashMap<String, String>();
 
 	//private final ClientNotifier clientnotifier = new ClientNotifier(JMSConstants.TOPICNAME_PARAMETERPROVIDER);
+	
+	private DataBaseHelper dataBaseHelper;
 
 	public static ServerParameterProvider getInstance() {
 		return INSTANCE;
@@ -74,6 +77,11 @@ public class ServerParameterProvider extends AbstractParameterProvider implement
 
 	protected ServerParameterProvider() { 
 		INSTANCE = this;
+	}
+	
+	@Autowired
+	void setDataBaseHelper(DataBaseHelper dataBaseHelper) {
+		this.dataBaseHelper = dataBaseHelper;
 	}
 
 	@Override
@@ -106,7 +114,7 @@ public class ServerParameterProvider extends AbstractParameterProvider implement
 	 * gets all parameters
 	 * @return Map<String name, String value>
 	 */
-	private static Map<String,String> loadParameters() {
+	private Map<String,String> loadParameters() {
 		Map<String,String> rawParameters = new HashMap<String, String>();
 		Map<String, String> properties = getParameterDefaults();
 		if (properties != null)
@@ -134,17 +142,17 @@ public class ServerParameterProvider extends AbstractParameterProvider implement
 	 * gets all parameter entries from the database.
 	 * @return Map<String name, String value>
 	 */
-	private static Map<String, String> getParametersFromDB() {
+	private Map<String, String> getParametersFromDB() {
 		final Logger log = Logger.getLogger(ServerParameterProvider.class);
 		log.debug("START building parameter cache.");
 
-		DbQueryBuilder builder = DataBaseHelper.getInstance().getDbAccess().getQueryBuilder();
+		DbQueryBuilder builder = dataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<DbTuple> query = builder.createTupleQuery();
 		DbFrom t = query.from("T_AD_PARAMETER").alias(SystemFields.BASE_ALIAS);
 		query.multiselect(t.baseColumn("STRPARAMETER", String.class), t.baseColumn("STRVALUE", String.class));
 
 		Map<String, String> result = new HashMap<String, String>();
-		for (DbTuple tuple : DataBaseHelper.getInstance().getDbAccess().executeQuery(query)) {
+		for (DbTuple tuple : dataBaseHelper.getDbAccess().executeQuery(query)) {
 			result.put(tuple.get(0, String.class), tuple.get(1, String.class));
 		}
 
