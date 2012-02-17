@@ -679,6 +679,8 @@ public class StateModelEditor extends JPanel implements ShapeModelListener, Focu
 				TableUtils.setPreferredColumnWidth(pnlProperties.getTransitionRulePanel().getTblRules(), 10, 10);
 				pnlProperties.getTransitionRulePanel().getBtnAutomatic().setSelected(((StateTransition) shapeSelected).getStateTransitionVO().isAutomatic());
 				pnlProperties.getTransitionRulePanel().getBtnDefault().setSelected(((StateTransition) shapeSelected).getStateTransitionVO().isDefault());
+				pnlProperties.getTransitionRulePanel().getBtnAutomatic().setEnabled(((StateTransition) shapeSelected).getStateTransitionVO().getStateSource()!=null);
+				pnlProperties.getTransitionRulePanel().getBtnDefault().setEnabled(((StateTransition) shapeSelected).getStateTransitionVO().getStateSource()!=null);
 				pnlProperties.getTransitionRolePanel().getModel().setRoles(RoleRepository.getInstance().selectRolesById(((StateTransition) shape).getRoles()));
 				TableUtils.setPreferredColumnWidth(pnlProperties.getTransitionRolePanel().getTblRoles(), 10, 10);
 			}

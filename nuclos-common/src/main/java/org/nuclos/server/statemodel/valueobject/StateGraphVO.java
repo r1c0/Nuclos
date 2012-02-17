@@ -271,7 +271,7 @@ public class StateGraphVO implements Serializable {
 						@Override public boolean evaluate(StateTransitionVO t) { return !t.isRemoved() && t.getStateSource() == iSubsequentStateSource && t.isDefault() == false; }
 					});
 					if (subsequentStateTransition != null) {
-						throw new CommonValidationException("statemachine.error.validation.graph.defaulttransition");
+						//throw new CommonValidationException("statemachine.error.validation.graph.defaulttransition");
 					}
 					break;
 				}
