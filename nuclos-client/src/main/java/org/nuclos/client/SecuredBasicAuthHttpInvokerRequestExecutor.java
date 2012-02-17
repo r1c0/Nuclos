@@ -29,6 +29,7 @@ import org.apache.commons.httpclient.protocol.Protocol;
 import org.apache.log4j.Logger;
 import org.nuclos.common.ApplicationProperties;
 import org.nuclos.common2.LangUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.remoting.httpinvoker.CommonsHttpInvokerRequestExecutor;
 import org.springframework.remoting.httpinvoker.HttpInvokerClientConfiguration;
 import org.springframework.security.core.Authentication;
@@ -40,6 +41,8 @@ public class SecuredBasicAuthHttpInvokerRequestExecutor extends CommonsHttpInvok
 
 	private HttpMethodRetryHandler retryHandler;
 	
+	private ApplicationProperties applicationProperties;
+	
 	static {
 		LOG.info("Register CustomSecureProtocolSocketFactory for HTTPS");
 		Protocol.registerProtocol("https", new Protocol("https", new CustomSecureProtocolSocketFactory(), 443));		
@@ -48,10 +51,15 @@ public class SecuredBasicAuthHttpInvokerRequestExecutor extends CommonsHttpInvok
 	public SecuredBasicAuthHttpInvokerRequestExecutor() {
 	}
 	
+	@Autowired
+	void setApplicationProperties(ApplicationProperties applicationProperties) {
+		this.applicationProperties = applicationProperties;
+	}
+	
 	@PostConstruct
 	final void init() {
 		// timeout 30 minutes (requested for entity transfer)
-		super.setReadTimeout(ApplicationProperties.getInstance().isFunctionBlockDev() ? 0 : 1000 * 60 * 30);
+		super.setReadTimeout(applicationProperties.isFunctionBlockDev() ? 0 : 1000 * 60 * 30);
 	}
 
 	@Override
