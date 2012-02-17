@@ -24,7 +24,6 @@ import org.springframework.transaction.annotation.AnnotationTransactionAttribute
 import org.springframework.transaction.interceptor.DefaultTransactionAttribute;
 import org.springframework.transaction.interceptor.TransactionAttribute;
 
-@Component
 public class NuclosAnnotationTransactionAttributeSource extends AnnotationTransactionAttributeSource {
 	
 	private NuclosRemoteContextHolder ctx;
