@@ -32,6 +32,8 @@ public class DbException extends NuclosFatalException {
 	
 	private int errorCode;
 	
+	private transient SQLException sqlCause;
+	
 	public DbException(String message) {
 		this(null, message, null, null);
 	}
@@ -75,6 +77,10 @@ public class DbException extends NuclosFatalException {
 		return errorCode;
 	}
 	
+	public SQLException getSqlCause() {
+		return sqlCause;
+	}
+	
 	@Override
 	public synchronized Throwable initCause(Throwable cause) {
 		if (cause == null) return cause;
@@ -83,6 +89,7 @@ public class DbException extends NuclosFatalException {
 		// a plain copy (without chained exceptions etc. but with the original
 		// stacktrace).
 		if (cause instanceof SQLException) {
+			sqlCause = (SQLException) cause;
 			final SQLException sqlException = ((SQLException) cause);
 			errorCode = sqlException.getErrorCode();
 			cause = new SQLException(sqlException.getMessage(), sqlException.getSQLState(), sqlException.getErrorCode());
