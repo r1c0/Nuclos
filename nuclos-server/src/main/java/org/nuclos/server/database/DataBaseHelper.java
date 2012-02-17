@@ -74,6 +74,8 @@ public class DataBaseHelper {
 	// 
 	
 	private DbAccess defaultDbAccess;
+	
+	private ApplicationProperties applicationProperties;
 
 	DataBaseHelper() {
 		INSTANCE = this;
@@ -89,6 +91,11 @@ public class DataBaseHelper {
 	@Autowired
 	void setDataSource(DataSource dataSource) {
 		this.dataSource = dataSource;
+	}
+	
+	@Autowired
+	void setApplicationProperties(ApplicationProperties applicationProperties) {
+		this.applicationProperties = applicationProperties;
 	}
 
 	@PostConstruct
@@ -134,7 +141,7 @@ public class DataBaseHelper {
 					installed = true;
 
 					// Check that the installed version not newer than this Nuclos server version
-					String thisVersion = ApplicationProperties.getInstance().getNuclosVersion().getSchemaVersion();
+					String thisVersion = applicationProperties.getNuclosVersion().getSchemaVersion();
 					if (VersionNumber.compare(version.x, thisVersion) > 0) {
 						throw new NuclosFatalException(String.format("Found schema is newer than this Nuclos server: %s > %s", version.x, thisVersion));
 					}
@@ -185,8 +192,8 @@ public class DataBaseHelper {
 		}
 	}
 
-	public DbAccess getDbAccess() {
-		return defaultDbAccess;
+	public static DbAccess getDbAccess() {
+		return INSTANCE.defaultDbAccess;
 	}
 
 	public static DbAccess getDbAccessFor(DataSource dataSource, Map<String, String> config) {
