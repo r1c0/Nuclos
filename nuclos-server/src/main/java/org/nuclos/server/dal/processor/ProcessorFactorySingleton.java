@@ -367,6 +367,7 @@ public class ProcessorFactorySingleton {
 		allColumns.add(createBeanMapping(SystemFields.BASE_ALIAS, type, "STR_REPORTFILENAME", "reportFilename", DT_STRING));
 
 		allColumns.add(createBeanMapping(SystemFields.BASE_ALIAS, type, "STR_IDFACTORY", "idFactory", DT_STRING));
+		allColumns.add(createBeanMapping(SystemFields.BASE_ALIAS, type, "STR_READDELEGATE", "readDelegate", DT_STRING));
 		allColumns.add(createBeanMapping(SystemFields.BASE_ALIAS, type, "STRROWCOLORSCRIPT", "rowColorScript", DT_NUCLOSSCRIPT));
 
 		allColumns.add(createBeanMapping(SystemFields.BASE_ALIAS, type, "STRVIRTUALENTITY", "virtualentity", DT_STRING));

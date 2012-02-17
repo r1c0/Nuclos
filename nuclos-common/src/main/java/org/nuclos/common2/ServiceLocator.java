@@ -79,7 +79,9 @@ public class ServiceLocator {
 					result = SpringApplicationContextHolder.getBean(c);
 				}
 				catch(Exception e) {
-					LOG.info("getFacade: " + e);
+					LOG.info("getFacade: spring failed on type '" + c.getName() 
+							+ "', now trying bean name '" + bean
+							+ "':\n\t" + e );
 					result = (T) SpringApplicationContextHolder.getBean(bean);
 				}
 			}

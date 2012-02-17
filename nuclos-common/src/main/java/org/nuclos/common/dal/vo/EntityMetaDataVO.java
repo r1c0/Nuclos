@@ -127,6 +127,7 @@ public class EntityMetaDataVO extends AbstractDalVOWithVersion {
 
 	    this.setVirtualentity(eo.getField("virtualentity", String.class));
 	    this.setIdFactory(eo.getField("idFactory", String.class));
+	    this.setReadDelegate(eo.getField("readDelegate", String.class));
 	    this.setRowColorScript(eo.getField("rowcolorscript", NuclosScript.class));
 
 	    this.setEntity(eo.getField("entity", String.class));
