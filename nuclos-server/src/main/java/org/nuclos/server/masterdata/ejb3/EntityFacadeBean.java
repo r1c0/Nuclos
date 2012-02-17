@@ -49,13 +49,15 @@ import org.nuclos.server.common.DatasourceCache;
 import org.nuclos.server.common.DatasourceServerUtils;
 import org.nuclos.server.common.MetaDataServerProvider;
 import org.nuclos.server.common.ejb3.NuclosFacadeBean;
-import org.nuclos.server.dal.processor.jdbc.impl.EOSearchExpressionUnparser;
+import org.nuclos.server.dal.processor.jdbc.TableAliasSingleton;
 import org.nuclos.server.dal.processor.nuclet.JdbcEntityObjectProcessor;
 import org.nuclos.server.dal.provider.NucletDalProvider;
 import org.nuclos.server.database.DataBaseHelper;
+import org.nuclos.server.dblayer.DbAccess;
 import org.nuclos.server.dblayer.DbTuple;
 import org.nuclos.server.dblayer.EntityObjectMetaDbHelper;
 import org.nuclos.server.dblayer.impl.util.PreparedStringBuilder;
+import org.nuclos.server.dblayer.query.DbCompoundColumnExpression;
 import org.nuclos.server.dblayer.query.DbCondition;
 import org.nuclos.server.dblayer.query.DbExpression;
 import org.nuclos.server.dblayer.query.DbFrom;
@@ -81,9 +83,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class EntityFacadeBean extends NuclosFacadeBean implements EntityFacadeRemote {
 
-	private static final Logger log = Logger.getLogger(EntityFacadeBean.class);
+	private static final Logger LOG = Logger.getLogger(EntityFacadeBean.class);
 
-	private static final long serialVersionUID = -7055310957896198484L;
 	private static final String FIELDNAME_ACTIVE = "active";
 	private static final String FIELDNAME_VALIDFROM = "validFrom";
 	private static final String FIELDNAME_VALIDUNTIL = "validUntil";
@@ -195,35 +196,32 @@ public class EntityFacadeBean extends NuclosFacadeBean implements EntityFacadeRe
 	 */
 	@Override
 	public List<CollectableValueIdField> getQuickSearchResult(String entity, String field, String search, Integer vlpId, Map<String, Object> vlpParameter, Integer iMaxRowCount) {
-		List<CollectableValueIdField> result = new ArrayList<CollectableValueIdField>();
-
+		final List<CollectableValueIdField> result = new ArrayList<CollectableValueIdField>();
 		try {
 			final MetaDataProvider provider = MetaDataServerProvider.getInstance();
 			final EntityFieldMetaDataVO efMeta = provider.getEntityField(entity, field);
-			final DbColumnType columnType = EntityObjectMetaDbHelper.createDbColumnType(efMeta);
+			assert efMeta.getForeignEntity() != null;
 			final EntityMetaDataVO eForeignMeta = provider.getEntity(efMeta.getForeignEntity() != null ? efMeta.getForeignEntity() : efMeta.getLookupEntity());
-
-			final List<?> viewPattern = EntityObjectMetaDbHelper.getViewPatternForField(efMeta, provider);
-			// we have to use the view for interface entities (no data in table).
-			final String view = EntityObjectMetaDbHelper.getViewName(eForeignMeta);
-
-			final DbQueryBuilder builder = dataBaseHelper.getDbAccess().getQueryBuilder();
+			final TableAliasSingleton tas = TableAliasSingleton.getInstance();
+			final String alias = tas.getAlias(efMeta);
+			final String table = EntityObjectMetaDbHelper.getTableOrViewForSelect(eForeignMeta);
+			final DbAccess access = dataBaseHelper.getDbAccess();
+			final DbQueryBuilder builder = access.getQueryBuilder();
 			final DbQuery<DbTuple> query = builder.createTupleQuery();
-			final DbFrom from = query.from(view).alias(view);
-
-			PreparedStringBuilder sqlPrepared =  new PreparedStringBuilder();
-			sqlPrepared.append(dataBaseHelper.getDbAccess().getSelectSqlForColumn(view, columnType, viewPattern));
-
+			
+			final DbFrom from = query.from(table).alias(alias);
 			final DbExpression<Long> id = from.baseColumn("INTID", Long.class);
-			final DbExpression<String> presentation = new DbExpression<String>(builder, String.class, sqlPrepared);
-			final DbOrder order = builder.asc(presentation);
-			final String wildcard = dataBaseHelper.getDbAccess().getWildcardLikeSearchChar();
-
+			final DbExpression<String> stringifiedRef = new DbCompoundColumnExpression<String>(from, efMeta, false);
+			final DbOrder order = builder.asc(stringifiedRef);
+			
+			final String wildcard = access.getWildcardLikeSearchChar();
 			search = search.replace("*", wildcard);
 			search = search.replace("?", "_");
+			search = wildcard + StringUtils.toUpperCase(search) + wildcard;
+			query.multiselect(id, stringifiedRef);
 
-			query.multiselect(id, presentation);
-
+			final DbCondition condLike = builder.like(builder.upper(stringifiedRef), search);
+			final DatasourceVO dsvo = DatasourceCache.getInstance().getValuelistProvider(vlpId);
 
 			final EntityFieldMetaDataVO efDeleted = provider.getAllEntityFieldsByEntity(eForeignMeta.getEntity()).get(clctEOEFdeleted.getEntityName());
 			if (efDeleted != null) {
@@ -233,8 +231,6 @@ public class EntityFacadeBean extends NuclosFacadeBean implements EntityFacadeRe
 				unparser.unparseSearchCondition(condSearchDeleted);
 			}
 
-			DbCondition condLike = builder.like(builder.upper(presentation), (wildcard+StringUtils.toUpperCase(search))+wildcard);
-			DatasourceVO dsvo = DatasourceCache.getInstance().getValuelistProvider(vlpId);
 			if (dsvo != null && dsvo.getValid()) {
 				if (efDeleted == null)
 					query.where(builder.and(condLike,builder.in(id, 
@@ -248,19 +244,18 @@ public class EntityFacadeBean extends NuclosFacadeBean implements EntityFacadeRe
 				else
 					query.addToWhereAsAnd(condLike);
 			}
-
 			query.orderBy(order);
 
 			if (iMaxRowCount != null)
 				query.maxResults(iMaxRowCount);
 
-			for (DbTuple tuple : dataBaseHelper.getDbAccess().executeQuery(query)) {
+			for (DbTuple tuple : access.executeQuery(query)) {
 				result.add(new CollectableValueIdField(
 					tuple.get(0, Long.class).intValue(),
 					tuple.get(1, String.class)));
 			}
 		} catch (Exception e) {
-			log.error(e.getMessage(), e);
+			LOG.error(e.getMessage(), e);
 		}
 
 		return result;

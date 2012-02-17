@@ -506,16 +506,19 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 		for(Attribute attr : lstAttr) {
 			listmodel.addElement(attr);
 		}
-
 		treeModel = new MyTreeModel(model.getAttributeModel().getAttributeMap());
 
 		try {
 			treeAttributeOrder.setModel(treeModel);
 			treeModel.expandWholeTree();
-		} catch (Exception e) {
+		}
+		// TODO: Avoid this NPE (tp)
+		catch (NullPointerException e) {
+			LOG.info("prepare failed: " + e);
+		}
+		catch (Exception e) {
 			LOG.info("prepare failed: " + e, e);
 		}
-
 		listAttributeOrder.setModel(listmodel);
 
 		SwingUtilities.invokeLater(new Runnable() {

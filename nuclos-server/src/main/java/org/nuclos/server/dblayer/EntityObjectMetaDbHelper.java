@@ -275,7 +275,11 @@ public class EntityObjectMetaDbHelper {
 		return result;
 	}
 
-	public static List<?> getViewPatternForField(EntityFieldMetaDataVO fieldMeta, MetaDataProvider provider) {
+	/**
+	 * @deprecated Stringified refs are now dereferenced by table joins. Hence the whole method is 
+	 * 		obsolete. (tp)
+	 */
+	private static List<?> getViewPatternForField(EntityFieldMetaDataVO fieldMeta, MetaDataProvider provider) {
 		List<Object> result = new ArrayList<Object>();
 		boolean isForeignReference = (fieldMeta.getForeignEntity() != null);
 
@@ -360,6 +364,10 @@ public class EntityObjectMetaDbHelper {
 		return tableName;
 	}
 
+	/**
+	 * @deprecated Consider that the auto-generated views of nuclos are deprecated.
+	 * 		Hence there should be no need to use this method. (tp)
+	 */
 	public static String getViewName(EntityMetaDataVO entityMeta) {
 		String tableName = StringUtils.toUpperCase(entityMeta.getDbEntity());
 		if (tableName.startsWith("V_")) {
@@ -437,5 +445,8 @@ public class EntityObjectMetaDbHelper {
 		return new DbColumnType(genericType, null, length, precision, scale);
 	}
 
+	/**
+	 * @deprecated Please use {@link org.nuclos.server.dblayer.util.ForeignEntityFieldParser}. (tp)
+	 */
 	private static final Pattern PARAM_PATTERN = Pattern.compile("\\$\\{([^}]+)\\}");
 }
