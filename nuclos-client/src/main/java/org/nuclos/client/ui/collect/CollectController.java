@@ -167,6 +167,7 @@ import org.nuclos.common2.exception.CommonFinderException;
 import org.nuclos.common2.exception.CommonPermissionException;
 import org.nuclos.common2.exception.CommonStaleVersionException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.Assert;
 
 
 /**
@@ -571,6 +572,7 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	
 	@Autowired
 	void setInvokeWithInputRequiredSupport(InvokeWithInputRequiredSupport invokeWithInputRequiredSupport) {
+		Assert.notNull(invokeWithInputRequiredSupport);
 		this.invokeWithInputRequiredSupport = invokeWithInputRequiredSupport;
 	}
 

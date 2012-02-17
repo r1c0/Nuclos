@@ -40,7 +40,11 @@ public class ScmBuildInfo {
 		final NoExitSecurityManager sm = new NoExitSecurityManager();
 		System.setSecurityManager(sm);
 		try {
-			final File resources = getResourcesMainSrcRoot();
+			File resources = getResourcesMainSrcRoot();
+			if (!resources.isDirectory()) {
+				System.out.println("can't find resources dir: " + resources + ", falling back to classpath");
+				resources = getClassRoot();
+			}
 			final File info = new File(resources, "info.xml");
 			info.delete();
 			final File status = new File(resources, "status.xml");
