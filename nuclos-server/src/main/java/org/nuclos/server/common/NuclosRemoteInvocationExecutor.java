@@ -21,10 +21,16 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 import java.util.TimeZone;
 
+import org.apache.activemq.store.jdbc.adapter.TransactDatabaseLocker;
 import org.apache.log4j.Logger;
 import org.nuclos.api.context.InputContext;
 import org.springframework.remoting.support.RemoteInvocation;
 import org.springframework.remoting.support.RemoteInvocationExecutor;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionDefinition;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.DefaultTransactionDefinition;
+import org.springframework.util.Assert;
 
 public class NuclosRemoteInvocationExecutor implements RemoteInvocationExecutor {
 
@@ -45,6 +51,11 @@ public class NuclosRemoteInvocationExecutor implements RemoteInvocationExecutor 
 	 */
 	private NuclosRemoteContextHolder remoteContext;
 	
+	/**
+	 * Spring injected.
+	 */
+	private PlatformTransactionManager txManager;
+	
 	public NuclosRemoteInvocationExecutor() {
 	}
 	
@@ -55,6 +66,9 @@ public class NuclosRemoteInvocationExecutor implements RemoteInvocationExecutor 
 		this.inputContext = inputContext; 
 	}
 	
+	/**
+	 * Spring injected.
+	 */
 	final InputContext getInputContext() {
 		return inputContext;
 	}
@@ -73,8 +87,20 @@ public class NuclosRemoteInvocationExecutor implements RemoteInvocationExecutor 
 		this.userContext = userContext;
 	}
 	
+	/**
+	 * Spring injected.
+	 */
+	public void setPlatformTransactionManager(PlatformTransactionManager txManager) {
+		Assert.notNull(txManager);
+		this.txManager = txManager;
+	}
+	
 	@Override
 	public Object invoke(RemoteInvocation invoke, Object param) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+		final DefaultTransactionDefinition def = new DefaultTransactionDefinition();
+		def.setName("nuclosRemoveInvocationTxDef");
+		def.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRED);
+		final TransactionStatus tx = txManager.getTransaction(def);
 		try {
 			userContext.setTimeZone((TimeZone) invoke.getAttribute("user.timezone"));
 			remoteContext.setRemotly(true);
@@ -98,6 +124,13 @@ public class NuclosRemoteInvocationExecutor implements RemoteInvocationExecutor 
 				inputContext.set(context);
 			}
 			return invoke.invoke(param);
+		} 
+		catch (InvocationTargetException e) {
+			final Throwable cause = e.getCause();
+			if (!(cause instanceof RuntimeException)) {
+				txManager.rollback(tx);
+			}
+			throw e;
 		}
 		finally {
 			userContext.clear();

@@ -150,6 +150,7 @@
 		<property name="inputContext" ref="inputContext"/>
 		<property name="nuclosRemoteContextHolder" ref="nuclosRemoteContextHolder"/>
 		<property name="nuclosUserDetailsContextHolder" ref="nuclosUserDetailsContextHolder"/>
+		<property name="platformTransactionManager" ref="transactionManager"/>
 	</bean>
 	
 	<bean id="inputContext" class="org.nuclos.api.context.InputContext" destroy-method="destroy" factory-method="getInstance">
@@ -157,12 +158,12 @@
 	
 	<!-- Transaction and Rollback -->
 
-	<bean id="attrSource" class="org.nuclos.server.common.NuclosAnnotationTransactionAttributeSource"/>
+	<!-- bean id="attrSource" class="org.nuclos.server.common.NuclosAnnotationTransactionAttributeSource"/>
 
 	<bean id="nuclosRemoteRollback" class="org.nuclos.server.common.NuclosRemoteRollbackInterceptor">
 		<property name="transactionManager" ref="transactionManager"></property>
 		<property name="transactionAttributeSource" ref="attrSource"></property>
-	</bean>
+	</bean -->
 	
 	<!-- Services/Beans -->
 

@@ -58,7 +58,7 @@ import org.springframework.stereotype.Component;
  * @version 01.00.00
  */
 @Component
-@DependsOn("nuclosRemoteRollback")
+// @DependsOn("nuclosRemoteRollback")
 public class DataBaseHelper {
 
 	private static final Logger LOG = Logger.getLogger(DataBaseHelper.class);

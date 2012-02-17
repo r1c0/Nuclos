@@ -18,6 +18,8 @@ package org.nuclos.client;
 
 import java.io.IOException;
 
+import javax.annotation.PostConstruct;
+
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethodRetryHandler;
@@ -34,14 +36,20 @@ import org.springframework.security.core.context.SecurityContextHolder;
 
 public class SecuredBasicAuthHttpInvokerRequestExecutor extends CommonsHttpInvokerRequestExecutor {
 
-	private static final Logger log = Logger.getLogger(SecuredBasicAuthHttpInvokerRequestExecutor.class);
+	private static final Logger LOG = Logger.getLogger(SecuredBasicAuthHttpInvokerRequestExecutor.class);
 
 	private HttpMethodRetryHandler retryHandler;
+	
+	static {
+		LOG.info("Register CustomSecureProtocolSocketFactory for HTTPS");
+		Protocol.registerProtocol("https", new Protocol("https", new CustomSecureProtocolSocketFactory(), 443));		
+	}
 
 	public SecuredBasicAuthHttpInvokerRequestExecutor() {
-		log.info("Register CustomSecureProtocolSocketFactory for HTTPS");
-		Protocol.registerProtocol("https", new Protocol("https", new CustomSecureProtocolSocketFactory(), 443));
-
+	}
+	
+	@PostConstruct
+	final void init() {
 		// timeout 30 minutes (requested for entity transfer)
 		super.setReadTimeout(ApplicationProperties.getInstance().isFunctionBlockDev() ? 0 : 1000 * 60 * 30);
 	}

@@ -33,11 +33,11 @@
 
 	<bean id="httpInvokerServiceExporter" class="org.springframework.remoting.httpinvoker.HttpInvokerServiceExporter" abstract="true">
 		<property name="remoteInvocationExecutor" ref="remoteInvocationExecutor"/>
-	    <property name="interceptors">
+	    <!-- property name="interceptors">
 	    	<list>
 	    		<ref bean="nuclosRemoteRollback"/>
 	    	</list>
-	    </property>
+	    </property -->
 	</bean>
 
 	 <bean name="/RemoteAuthenticationManager" parent="httpInvokerServiceExporter">
