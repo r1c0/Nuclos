@@ -7103,6 +7103,20 @@
         "nullable": true
       },
       {
+        "name": "lookupentity",
+        "dbfield": "STRLOOKUPENTITY",
+        "datatype": "java.lang.String",
+        "datascale": 255,
+        "nullable": true
+      },
+      {
+        "name": "lookupentityfield",
+        "dbfield": "STRLOOKUPENTITYFIELD",
+        "datatype": "java.lang.String",
+        "datascale": 255,
+        "nullable": true
+      },
+      {
         "name": "datascale",
         "dbfield": "INTDATASCALE",
         "datatype": "java.lang.Integer",

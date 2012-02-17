@@ -197,8 +197,7 @@ public class EntityFacadeBean extends NuclosFacadeBean implements EntityFacadeRe
 			final MetaDataProvider provider = MetaDataServerProvider.getInstance();
 			final EntityFieldMetaDataVO efMeta = provider.getEntityField(entity, field);
 			assert efMeta.getForeignEntity() != null;
-			//final EntityMetaDataVO eForeignMeta = provider.getEntity(efMeta.getForeignEntity() != null ? efMeta.getForeignEntity() : efMeta.getLookupEntity());
-			final EntityMetaDataVO eForeignMeta = provider.getEntity(efMeta.getForeignEntity());
+			final EntityMetaDataVO eForeignMeta = provider.getEntity(efMeta.getForeignEntity() != null ? efMeta.getForeignEntity() : efMeta.getLookupEntity());
 			final TableAliasSingleton tas = TableAliasSingleton.getInstance();
 			final String alias = tas.getAlias(efMeta);
 			final String table = EntityObjectMetaDbHelper.getTableOrViewForSelect(eForeignMeta);

@@ -48175,6 +48175,11 @@
   },
   {
     "resourceID": "wizard.step.inputattribute.10",
+    "locale": "en",
+    "text": "Reference to other entities"
+  },
+  {
+    "resourceID": "wizard.step.inputattribute.10",
     "locale": "de",
     "text": "Verknüpfung zu anderen Entitäten"
   },
@@ -48257,6 +48262,21 @@
     "resourceID": "wizard.step.inputattribute.17",
     "locale": "de",
     "text": "Hinweis"
+  },
+  {
+    "resourceID": "wizard.step.inputattribute.18",
+    "locale": "i-default",
+    "text": "Define lookup entities"
+  },
+  {
+    "resourceID": "wizard.step.inputattribute.18",
+    "locale": "en",
+    "text": "Define lookup entities"
+  },
+  {
+    "resourceID": "wizard.step.inputattribute.18",
+    "locale": "de",
+    "text": "Nachschlage-Enti\u00e4t definieren"
   },
   {
     "resourceID": "wizard.step.entitytreevalue.1",
@@ -62657,6 +62677,36 @@
     "resourceID": "wizard.step.attributeproperties.tooltip.reference",
     "locale": "de",
     "text": "Ein Referenzfeld ermöglicht die Auswahl von Werten aus einer anderen Entität."
+  },
+  {
+    "resourceID": "wizard.step.attributeproperties.lookup",
+    "locale": "i-default",
+    "text": "Lookup field"
+  },
+  {
+    "resourceID": "wizard.step.attributeproperties.lookup",
+    "locale": "en",
+    "text": "Lookup field"
+  },
+  {
+    "resourceID": "wizard.step.attributeproperties.lookup",
+    "locale": "de",
+    "text": "Nachschlagefeld"
+  },
+  {
+    "resourceID": "wizard.step.attributeproperties.tooltip.lookup",
+    "locale": "i-default",
+    "text": "A lookup field enables you to select values from another entity."
+  },
+  {
+    "resourceID": "wizard.step.attributeproperties.tooltip.lookup",
+    "locale": "en",
+    "text": "A lookup field enables you to select values from another entity."
+  },
+  {
+    "resourceID": "wizard.step.attributeproperties.tooltip.lookup",
+    "locale": "de",
+    "text": "Ein Nachschlagefeld ermöglicht die Auswahl von Werten aus einer anderen Entität."
   },
   {
     "resourceID": "wizard.step.attributeproperties.validation.conversion",

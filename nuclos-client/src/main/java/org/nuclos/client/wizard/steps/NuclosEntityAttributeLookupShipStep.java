@@ -16,6 +16,7 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.wizard.steps;
 
+import static org.nuclos.common2.CommonLocaleDelegate.getMessage;
 import info.clearthought.layout.TableLayout;
 
 import java.awt.Dimension;
@@ -35,7 +36,6 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.annotation.PostConstruct;
 import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -60,8 +60,8 @@ import org.nuclos.client.wizard.util.NuclosWizardUtils;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
+import org.nuclos.common2.CommonLocaleDelegate;
 import org.pietschy.wizard.InvalidStateException;
-import org.springframework.beans.factory.annotation.Configurable;
 
 /**
 * <br>
@@ -71,10 +71,10 @@ import org.springframework.beans.factory.annotation.Configurable;
 * @author <a href="mailto:marc.finke@novabit.de">Marc Finke</a>
 * @version 01.00.00
 */
-@Configurable
-public class NuclosEntityAttributeRelationShipStep extends NuclosEntityAttributeAbstractStep {
 
-	private static final Logger LOG = Logger.getLogger(NuclosEntityAttributeRelationShipStep.class);
+public class NuclosEntityAttributeLookupShipStep extends NuclosEntityAttributeAbstractStep {
+
+	private static final Logger LOG = Logger.getLogger(NuclosEntityAttributeLookupShipStep.class);
 
 	JLabel lbEntity;
 	JComboBox cbxEntity;
@@ -95,33 +95,29 @@ public class NuclosEntityAttributeRelationShipStep extends NuclosEntityAttribute
 	JLabel lbValueListProvider;
 	JCheckBox cbValueListProvider;
 
-	JLabel lbOnDeleteCascade;
-	JCheckBox cbOnDeleteCascade;
-
 	List<Attribute> lstAttributes;
 
 	NuclosEntityWizardStaticModel parentWizardModel;
 
 
-	public NuclosEntityAttributeRelationShipStep() {
-		// initComponents();
+	public NuclosEntityAttributeLookupShipStep() {
+		initComponents();
 	}
 
-	public NuclosEntityAttributeRelationShipStep(String name, String summary) {
+	public NuclosEntityAttributeLookupShipStep(String name, String summary) {
 		super(name, summary);
-		// initComponents();
+		initComponents();
 	}
 
-	public NuclosEntityAttributeRelationShipStep(String name, String summary, Icon icon) {
+	public NuclosEntityAttributeLookupShipStep(String name, String summary, Icon icon) {
 		super(name, summary, icon);
-		// initComponents();
+		initComponents();
 	}
 
 	public void setAttributeList(List<Attribute> lst) {
 		this.lstAttributes = lst;
 	}
 
-	@PostConstruct
 	@Override
 	protected void initComponents() {
 		double size [][] = {{TableLayout.PREFERRED,40, TableLayout.FILL}, {20,20,20,20,100,20,TableLayout.PREFERRED, TableLayout.FILL}};
@@ -131,25 +127,20 @@ public class NuclosEntityAttributeRelationShipStep extends NuclosEntityAttribute
 		layout.setHGap(5);
 		this.setLayout(layout);
 
-		lbEntity = new JLabel(cld.getMessage("wizard.step.attributerelationship.1", "Verweis auf Entit\u00e4t")+": ");
+		lbEntity = new JLabel(getMessage("wizard.step.attributerelationship.1", "Verweis auf Entit\u00e4t")+": ");
 		cbxEntity = new JComboBox();
-		cbxEntity.setToolTipText(cld.getMessage("wizard.step.attributerelationship.tooltip.1", "Verweis auf Entit\u00e4t"));
+		cbxEntity.setToolTipText(getMessage("wizard.step.attributerelationship.tooltip.1", "Verweis auf Entit\u00e4t"));
 
-		lbFields = new JLabel(cld.getMessage("wizard.step.attributerelationship.2", "Auswahl f\u00fcr Fremdschl\u00fcsselaufbau")+": ");
+		lbFields = new JLabel(getMessage("wizard.step.attributerelationship.2", "Auswahl f\u00fcr Fremdschl\u00fcsselaufbau")+": ");
 
-		lbAlternativeLabel = new JLabel(cld.getMessage("wizard.step.attributerelationship.3", "Fremdschl\u00fcsselaufbau")+": ");
+		lbAlternativeLabel = new JLabel(getMessage("wizard.step.attributerelationship.3", "Fremdschl\u00fcsselaufbau")+": ");
 		tfAlternativeLabel = new JTextField();
-		tfAlternativeLabel.setToolTipText(cld.getMessage("wizard.step.attributerelationship.tooltip.3", "Fremdschl\u00fcsselaufbau"));
+		tfAlternativeLabel.setToolTipText(getMessage("wizard.step.attributerelationship.tooltip.3", "Fremdschl\u00fcsselaufbau"));
 		tfAlternativeLabel.addFocusListener(NuclosWizardUtils.createWizardFocusAdapter());
 
-		lbOnDeleteCascade = new JLabel(cld.getMessage("wizard.step.attributerelationship.deletecascade.label", "Cascade on delete"));
-		cbOnDeleteCascade = new JCheckBox();
-		cbOnDeleteCascade.setToolTipText(cld.getMessage(
-				"wizard.step.attributerelationship.deletecascade.description", "Delete all referencing objects in this entity if the referenced object is deleted."));
-
-		lbValueListProvider = new JLabel(cld.getMessage("wizard.step.attributerelationship.4", "Suchfeld"));
+		lbValueListProvider = new JLabel(getMessage("wizard.step.attributerelationship.4", "Suchfeld"));
 		cbValueListProvider = new JCheckBox();
-		cbValueListProvider.setToolTipText(cld.getMessage("wizard.step.attributerelationship.tooltip.4", "Suchfeld"));
+		cbValueListProvider.setToolTipText(getMessage("wizard.step.attributerelationship.tooltip.4", "Suchfeld"));
 
 		lbInfo = new JLabel();
 
@@ -162,19 +153,16 @@ public class NuclosEntityAttributeRelationShipStep extends NuclosEntityAttribute
 		this.add(lbEntity, "0,0, 1,0");
 		this.add(cbxEntity, "2,0");
 
-		this.add(lbOnDeleteCascade, "0,1, 1,1");
-		this.add(cbOnDeleteCascade, "2,1");
-
-		this.add(lbValueListProvider, "0,2, 1,2");
-		this.add(cbValueListProvider, "2,2");
+		this.add(lbValueListProvider, "0,1, 1,1");
+		this.add(cbValueListProvider, "2,1");
 
 
-		this.add(scrollPane, "0,3, 0,7");
+		this.add(scrollPane, "0,2, 0,7");
 
-		this.add(btSelect, "1,3");
+		this.add(btSelect, "1,2");
 
 
-		this.add(tfAlternativeLabel, "2,3");
+		this.add(tfAlternativeLabel, "2,2");
 		this.add(lbInfo, "0,6, 2,6");
 
 		cbxEntity.addItemListener(new ItemListener() {
@@ -200,27 +188,27 @@ public class NuclosEntityAttributeRelationShipStep extends NuclosEntityAttribute
 							if(voField.getForeignEntity() == null)
 								setFieldNames.add(voField.getField());
 						}
-						if(!NuclosEntityAttributeRelationShipStep.this.model.isEditMode())
-							tfAlternativeLabel.setText(cld.getResource(vo.getLocaleResourceIdForTreeView(), ""));
+						if(!NuclosEntityAttributeLookupShipStep.this.model.isEditMode())
+							tfAlternativeLabel.setText(CommonLocaleDelegate.getResource(vo.getLocaleResourceIdForTreeView(), ""));
 						try {
 							checkReferenceField();
 						}
 						catch(Exception e1) {
 							LOG.info("itemStateChanged failed: " + e1, e1);
 							tfAlternativeLabel.setText("");
-							NuclosEntityAttributeRelationShipStep.this.model.getAttribute().setField(null);
+							NuclosEntityAttributeLookupShipStep.this.model.getAttribute().setField(null);
 						}
 
 						List<String> lstItems = new ArrayList<String>();
 						lstItems.addAll(setFieldNames);
 						Collections.sort(lstItems);
 						listFields.setListData(lstItems.toArray());
-						NuclosEntityAttributeRelationShipStep.this.model.getAttribute().setMetaVO(vo);
-						NuclosEntityAttributeRelationShipStep.this.setComplete(true);
+						NuclosEntityAttributeLookupShipStep.this.model.getAttribute().setLookupMetaVO(vo);
+						NuclosEntityAttributeLookupShipStep.this.setComplete(true);
 					}
 					else {
-						NuclosEntityAttributeRelationShipStep.this.model.getAttribute().setMetaVO(null);
-						NuclosEntityAttributeRelationShipStep.this.setComplete(false);
+						NuclosEntityAttributeLookupShipStep.this.model.getAttribute().setLookupMetaVO(null);
+						NuclosEntityAttributeLookupShipStep.this.setComplete(false);
 					}
 				}
 			}
@@ -250,21 +238,12 @@ public class NuclosEntityAttributeRelationShipStep extends NuclosEntityAttribute
 
 		});
 
-		cbOnDeleteCascade.addItemListener(new ItemListener() {
-
-			@Override
-			public void itemStateChanged(ItemEvent e) {
-				JCheckBox cb = (JCheckBox)e.getItem();
-				NuclosEntityAttributeRelationShipStep.this.model.getAttribute().setOnDeleteCascade(cb.isSelected());
-			}
-		});
-
 		cbValueListProvider.addItemListener(new ItemListener() {
 
 			@Override
 			public void itemStateChanged(ItemEvent e) {
 				JCheckBox cb = (JCheckBox)e.getItem();
-				NuclosEntityAttributeRelationShipStep.this.model.getAttribute().setValueListProvider(cb.isSelected());
+				NuclosEntityAttributeLookupShipStep.this.model.getAttribute().setValueListProvider(cb.isSelected());
 			}
 		});
 
@@ -288,10 +267,10 @@ public class NuclosEntityAttributeRelationShipStep extends NuclosEntityAttribute
 			protected void doSomeWork(DocumentEvent e) {
 				try {
 					model.getAttribute().setField(e.getDocument().getText(0, e.getDocument().getLength()));
-					NuclosEntityAttributeRelationShipStep.this.model.getAttribute().setField(e.getDocument().getText(0, e.getDocument().getLength()));
+					NuclosEntityAttributeLookupShipStep.this.model.getAttribute().setField(e.getDocument().getText(0, e.getDocument().getLength()));
 				}
 				catch (BadLocationException ex) {
-					Errors.getInstance().showExceptionDialog(NuclosEntityAttributeRelationShipStep.this, ex);
+					Errors.getInstance().showExceptionDialog(NuclosEntityAttributeLookupShipStep.this, ex);
 				}
 			}
 		});
@@ -303,28 +282,25 @@ public class NuclosEntityAttributeRelationShipStep extends NuclosEntityAttribute
 		super.prepare();
 		fillEntityCombobox();
 
-		if(this.model.getAttribute().getMetaVO() != null) {
+		if(this.model.getAttribute().getLookupMetaVO() != null) {
 			if(model.getAttribute().getField() != null) {
 				String sField = new String(model.getAttribute().getField());
-				cbxEntity.setSelectedItem(this.model.getAttribute().getMetaVO());
+				cbxEntity.setSelectedItem(this.model.getAttribute().getLookupMetaVO());
 				tfAlternativeLabel.setText(sField);
-				cbOnDeleteCascade.setSelected(this.model.getAttribute().isOnDeleteCascade());
 				cbValueListProvider.setSelected(this.model.getAttribute().isValueListProvider());
 			}
 			else {
-				cbxEntity.setSelectedItem(this.model.getAttribute().getMetaVO());
+				cbxEntity.setSelectedItem(this.model.getAttribute().getLookupMetaVO());
 			}
 		}
 
 		if(parentWizardModel.hasRows() && model.isEditMode() && !parentWizardModel.isVirtual()) {
 			cbxEntity.setEnabled(false);
-			cbxEntity.setToolTipText(cld.getMessage(
-					"wizard.step.attributerelationship.tooltip.5", "Verweis kann nicht geändert werden. Da bereits Datensätze vorhanden sind."));
+			cbxEntity.setToolTipText(getMessage("wizard.step.attributerelationship.tooltip.5", "Verweis kann nicht geändert werden. Da bereits Datensätze vorhanden sind."));
 		}
 		else {
 			cbxEntity.setEnabled(true);
-			cbxEntity.setToolTipText(cld.getMessage(
-					"wizard.step.attributerelationship.tooltip.1", "Verweis auf Entit\u00e4t"));
+			cbxEntity.setToolTipText(getMessage("wizard.step.attributerelationship.tooltip.1", "Verweis auf Entit\u00e4t"));
 		}
 
 	}
@@ -370,8 +346,6 @@ public class NuclosEntityAttributeRelationShipStep extends NuclosEntityAttribute
 	public void applyState() throws InvalidStateException {
 		checkReferenceField();
 		super.applyState();
-		this.model.nextStep();
-		this.model.refreshModelState();
 	}
 
 
@@ -386,18 +360,16 @@ public class NuclosEntityAttributeRelationShipStep extends NuclosEntityAttribute
 		  String sName = referencedEntityMatcher.group().substring(2,referencedEntityMatcher.group().length()-1);
 
 		  try {
-			  MetaDataDelegate.getInstance().getEntityField(model.getAttribute().getMetaVO().getEntity(), sName);
+			  MetaDataDelegate.getInstance().getEntityField(model.getAttribute().getLookupMetaVO().getEntity(), sName);
 			  invalid = false;
 		  }
 		  catch(Exception e){
-			  throw new InvalidStateException(cld.getMessage(
-					  "wizard.step.attributerelationship.7", "Es wurde ein ungültiger Eintrag gefunden: " + sName, sName));
+			  throw new InvalidStateException(getMessage("wizard.step.attributerelationship.7", "Es wurde ein ungültiger Eintrag gefunden: " + sName, sName));
 		  }
 		}
 
 		if(invalid){
-			throw new InvalidStateException(cld.getMessage(
-					"wizard.step.attributerelationship.8", "Es wurde kein gültiger Referenzeintrag gefunden!"));
+			throw new InvalidStateException(getMessage("wizard.step.attributerelationship.8", "Es wurde kein gültiger Referenzeintrag gefunden!"));
 		}
 
 	}

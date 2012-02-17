@@ -123,14 +123,14 @@ public class CollectableMasterDataEntity implements CollectableEntity {
 	public CollectableEntityField getEntityField(String sFieldName) {
 		CollectableEntityField result = mpclctef.get(sFieldName);
 		if (result == null) {
-			boolean bEnumerated = (getMetaFieldVO(sFieldName).getForeignEntity() != null);
-
-			if (bEnumerated)
+			if (getMetaFieldVO(sFieldName).getForeignEntity() != null)
 				result = new CollectableMasterDataForeignKeyEntityField(mdmetavo.getField(sFieldName), getName());
+			else if (getMetaFieldVO(sFieldName).getLookupEntity() != null)
+				result = new CollectableMasterDataLookupKeyEntityField(mdmetavo.getField(sFieldName), getName());
 			else {
 				MasterDataMetaFieldVO mdmetafieldvo = getMetaFieldVO(sFieldName);
 
-				int fieldtype = bEnumerated ? CollectableField.TYPE_VALUEIDFIELD : CollectableField.TYPE_VALUEFIELD;
+				int fieldtype = CollectableField.TYPE_VALUEFIELD;
 
 				CollectableField cfDefault = null;
 

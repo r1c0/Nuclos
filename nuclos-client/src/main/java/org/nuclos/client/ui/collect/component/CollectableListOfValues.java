@@ -85,6 +85,8 @@ public class CollectableListOfValues extends LabeledCollectableComponentWithVLP 
 	 */
 	private Object oValueId;
 
+	private boolean blnIsLookupEntity = false;
+
 	private final List<LookupListener> lstLookupListeners = new LinkedList<LookupListener>();
 
 	private DocumentListener documentlistener;
@@ -159,6 +161,9 @@ public class CollectableListOfValues extends LabeledCollectableComponentWithVLP 
 			throw new IllegalArgumentException(StringUtils.getParameterizedExceptionMessage("collectable.listofvalues.exception.1", clctef.getName()));
 				//"Das Feld \"" + clctef.getName() + "\" ist kein Id-Feld und kann daher nicht in einem LOV (Suchfeld) dargestellt werden.");
 		}
+		
+		EntityFieldMetaDataVO efMeta = MetaDataClientProvider.getInstance().getEntityField(clctef.getEntityName(), clctef.getName());
+
 		if (!clctef.isReferencing()) {
 			throw new IllegalArgumentException(StringUtils.getParameterizedExceptionMessage("collectable.listofvalues.exception.2", clctef.getName()));
 				//"Das Feld \"" + clctef.getName() + "\" ist kein Fremdschl\u00fcssel-Feld und kann daher nicht in einem LOV (Suchfeld) dargestellt werden.");
@@ -191,8 +196,7 @@ public class CollectableListOfValues extends LabeledCollectableComponentWithVLP 
 
 		this.getListOfValues().setQuickSearchEnabled(enableQuickSearch(clctef));
 
-		EntityFieldMetaDataVO efMeta = MetaDataClientProvider.getInstance().getEntityField(clctef.getEntityName(), clctef.getName());
-		final EntityMetaDataVO eMetaForeign = MetaDataClientProvider.getInstance().getEntity(efMeta.getForeignEntity());
+		final EntityMetaDataVO eMetaForeign = MetaDataClientProvider.getInstance().getEntity(efMeta.getForeignEntity() != null ? efMeta.getForeignEntity() : efMeta.getLookupEntity());
 
 		this.getListOfValues().setQuickSearchSelectedListener(new ListOfValues.QuickSearchSelectedListener() {
 			@Override
@@ -220,8 +224,10 @@ public class CollectableListOfValues extends LabeledCollectableComponentWithVLP 
 		if (this.isSearchComponent()) {
 			this.getListOfValues().setSearchOnLostFocus(false);
 		}
+		
+		blnIsLookupEntity = efMeta.getLookupEntity() != null;
 
-		this.getListOfValues().setQuickSearchOnly(!SecurityCache.getInstance().isReadAllowedForEntity(efMeta.getForeignEntity()));
+		this.getListOfValues().setQuickSearchOnly(!SecurityCache.getInstance().isReadAllowedForEntity(efMeta.getForeignEntity() != null ? efMeta.getForeignEntity() : efMeta.getLookupEntity()));
 
 		assert this.isInsertable() == this.isSearchComponent();
 	}
@@ -424,7 +430,8 @@ public class CollectableListOfValues extends LabeledCollectableComponentWithVLP 
 
 	@Override
 	public CollectableField getFieldFromView() throws CollectableFieldFormatException {
-		if (this.oValueId == null) {
+		
+		if (this.oValueId == null && !blnIsLookupEntity) {
 			return new CollectableValueIdField(this.oValueId, null);
 		} else {
 			return new CollectableValueIdField(this.oValueId, CollectableTextComponentHelper.write(this.getJTextField(), this.getEntityField()).getValue());
@@ -462,8 +469,10 @@ public class CollectableListOfValues extends LabeledCollectableComponentWithVLP 
 	@Override
 	public void collectableFieldChangedInModel(CollectableComponentModelEvent ev) {
 		if (this.isSearchComponent()) {
-			// the text is set in searchConditionChangedInModel, but the value id is set here:
-			this.oValueId = ev.getNewValue().getValueId();
+			if (!blnIsLookupEntity) {
+				// the text is set in searchConditionChangedInModel, but the value id is set here:
+				this.oValueId = ev.getNewValue().getValueId();
+			}
 		}
 		else {
 			super.collectableFieldChangedInModel(ev);

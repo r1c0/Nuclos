@@ -17,6 +17,8 @@
 package org.nuclos.client.ui.collect.component;
 
 import java.awt.Component;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 
 import javax.swing.JComponent;
 import javax.swing.JTable;
@@ -61,6 +63,16 @@ public class CollectableTextArea extends CollectableTextComponent {
 //		this.getJTextArea().setWrapStyleWord(true);
 
 		this.setFillControlHorizontally(true);
+		
+		 /*getJTextArea().addKeyListener(new KeyAdapter() {
+			 @Override
+			public void keyPressed(KeyEvent e) {
+				 if (e.getKeyCode() == KeyEvent.VK_TAB)
+					 e.consume();
+			            
+				super.keyPressed(e);
+			}
+		});*/
 	}
 
 	public JTextArea getJTextArea() {

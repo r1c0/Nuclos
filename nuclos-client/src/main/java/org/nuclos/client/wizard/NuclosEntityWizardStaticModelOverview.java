@@ -33,7 +33,9 @@ import javax.swing.JPanel;
 
 import org.nuclos.client.wizard.steps.NuclosEntityAbstractStep;
 import org.nuclos.client.wizard.steps.NuclosEntityAttributeAbstractStep;
+import org.nuclos.client.wizard.steps.NuclosEntityAttributeLookupShipStep;
 import org.nuclos.client.wizard.steps.NuclosEntityAttributeRelationShipStep;
+import org.nuclos.client.wizard.steps.NuclosEntityAttributeTranslationStep;
 import org.nuclos.client.wizard.steps.NuclosEntityAttributeValueListShipStep;
 import org.nuclos.common2.CommonLocaleDelegate;
 import org.pietschy.wizard.WizardStep;
@@ -109,20 +111,8 @@ public class NuclosEntityWizardStaticModelOverview extends JPanel implements Pro
 									boolean blnSearching = true;
 									while (blnSearching) {
 										WizardStep activeStep = wizardStep.getModel().getActiveStep();
-										if (!activeStep.isComplete()) {
-											if (!(activeStep instanceof NuclosEntityAttributeRelationShipStep)) {
-												blnSearching = false;
-												break;
-											}
-										}
 										if (activeStep == wizardStep) {
-											if (!(activeStep instanceof NuclosEntityAttributeValueListShipStep))
-												blnSearching = false;
-											else {
-												blnSearching = false;
-												wizardStep.getModel().nextStep();
-												wizardStep.getModel().nextStep();
-											}
+											blnSearching = false;
 										} else {
 											wizardStep.getModel().nextStep();
 										}

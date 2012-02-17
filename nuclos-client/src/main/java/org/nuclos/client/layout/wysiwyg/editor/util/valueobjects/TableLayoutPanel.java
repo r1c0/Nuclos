@@ -54,6 +54,7 @@ import java.util.Stack;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.ActionMap;
+import javax.swing.BorderFactory;
 import javax.swing.InputMap;
 import javax.swing.JComponent;
 import javax.swing.JMenuItem;
@@ -367,6 +368,7 @@ public class TableLayoutPanel extends JPanel implements DropTargetListener, Mous
     public void initGlassPane(Component c, Point p) {
         getRootPane().setGlassPane(glassPane);
         glassPane.addMouseListener(this);
+        glassPane.setBorder(BorderFactory.createLineBorder(Color.RED));
 
         //paint ghost
         BufferedImage image = new BufferedImage(c.getWidth( ),

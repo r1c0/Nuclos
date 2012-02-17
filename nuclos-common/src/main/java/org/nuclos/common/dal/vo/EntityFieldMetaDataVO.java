@@ -52,6 +52,8 @@ public class EntityFieldMetaDataVO extends AbstractDalVOWithVersion implements C
 	private String foreignEntityField;
 	private String unreferencedForeignEntity;
 	private String unreferencedForeignEntityField;
+	private String lookupEntity;
+	private String lookupEntityField;
 
 	private String dataType;
 	private Integer scale;
@@ -103,6 +105,9 @@ public class EntityFieldMetaDataVO extends AbstractDalVOWithVersion implements C
 
 		setForeignEntity(eo.getField("foreignentity", String.class));
 		setForeignEntityField(eo.getField("foreignentityfield", String.class));
+
+		setLookupEntity(eo.getField("lookupentity", String.class));
+		setLookupEntityField(eo.getField("lookupentityfield", String.class));
 
 		setDataType(eo.getField("datatype", String.class));
 		setScale(eo.getField("datascale", Integer.class));
@@ -384,6 +389,22 @@ public class EntityFieldMetaDataVO extends AbstractDalVOWithVersion implements C
 
 	public void setUnreferencedForeignEntityField(String unreferencedForeignEntityField) {
 		this.unreferencedForeignEntityField = unreferencedForeignEntityField;
+	}
+
+	public String getLookupEntity() {
+		return lookupEntity;
+	}
+
+	public void setLookupEntity(String lookupEntity) {
+		this.lookupEntity = lookupEntity;
+	}
+
+	public String getLookupEntityField() {
+		return lookupEntityField;
+	}
+
+	public void setLookupEntityField(String lookupEntityField) {
+		this.lookupEntityField = lookupEntityField;
 	}
 
 	/**

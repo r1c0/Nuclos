@@ -665,18 +665,26 @@ public class NuclosEntityAttributePropertiesStep extends NuclosEntityAttributeAb
 		else {
 			model.setReferenzTyp(selectedType.isRefenceTyp());
 			model.setValueListTyp(cbxValueList.isSelected());
+			model.setLookupTyp(selectedType.isLookupTyp());
 		}
 		model.getAttribute().setDatatyp(selectedType);
 		model.getAttribute().setOutputFormat(selectedType.getOutputFormat());
 
-		if(!this.model.isValueListTyp() && !this.model.isRefernzTyp()) {
+		if(!this.model.isValueListTyp() && !this.model.isRefernzTyp() && !this.model.isLookupTyp()) {
 			model.getAttribute().setMetaVO(null);
+			model.getAttribute().setLookupMetaVO(null);
 			model.getAttribute().setField(null);
+			model.nextStep();
 			model.nextStep();
 			model.nextStep();
 			model.refreshModelState();
 		}
 		else if(this.model.isRefernzTyp()) {
+			model.nextStep();
+			model.refreshModelState();
+		}
+		else if(this.model.isLookupTyp()) {
+			model.nextStep();
 			model.nextStep();
 			model.refreshModelState();
 		}

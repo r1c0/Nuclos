@@ -46,6 +46,7 @@ import javax.swing.text.JTextComponent;
 
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.log4j.Logger;
+import org.nuclos.client.common.MetaDataClientProvider;
 import org.nuclos.client.ui.Errors;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.client.ui.collect.CollectController.CollectableEventListener;
@@ -60,6 +61,7 @@ import org.nuclos.common.collect.collectable.CollectableEntityField;
 import org.nuclos.common.collect.collectable.CollectableField;
 import org.nuclos.common.collect.collectable.CollectableFieldComparatorFactory;
 import org.nuclos.common.collect.collectable.CollectableUtils;
+import org.nuclos.common.collect.collectable.CollectableValueIdField;
 import org.nuclos.common.collect.collectable.searchcondition.AbstractCollectableSearchCondition;
 import org.nuclos.common.collect.collectable.searchcondition.AtomicCollectableSearchCondition;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableComparison;
@@ -72,6 +74,7 @@ import org.nuclos.common.collect.collectable.searchcondition.ComparisonOperator;
 import org.nuclos.common.collect.collectable.searchcondition.ToHumanReadablePresentationVisitor;
 import org.nuclos.common.collect.collectable.searchcondition.visit.AtomicVisitor;
 import org.nuclos.common.collect.exception.CollectableFieldFormatException;
+import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common2.IdUtils;
 import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.StringUtils;
@@ -100,6 +103,8 @@ public class CollectableComboBox extends LabeledCollectableComponentWithVLP impl
 	private CollectableField clctfExtra;
 
 	private boolean insertable;
+
+	private boolean blnIsLookupEntity = false;
 
 	/**
 	 * <code>ActionListener</code> that gets notified whenever the selection changes (even on deselection).
@@ -175,6 +180,13 @@ public class CollectableComboBox extends LabeledCollectableComponentWithVLP impl
 
 		setComboBoxModel(Collections.<CollectableField>emptyList());
 
+		try {
+			EntityFieldMetaDataVO efMeta = MetaDataClientProvider.getInstance().getEntityField(clctef.getEntityName(), clctef.getName());
+
+			blnIsLookupEntity = efMeta.getLookupEntity() != null;
+		} catch (Exception e) {
+			blnIsLookupEntity = false;
+		}
 		assert isInsertable() == isSearchComponent();
 	}
 
@@ -409,10 +421,16 @@ public class CollectableComboBox extends LabeledCollectableComponentWithVLP impl
 		final CollectableField result;
 		if (isInsertable() && (oCurrentItem instanceof String)) {
 			final String sText = (String) oCurrentItem;
-			result = CollectableTextComponentHelper.write(sText, getEntityField());
+			if (!blnIsLookupEntity)
+				result = CollectableTextComponentHelper.write(sText, getEntityField());
+			else
+				result = new CollectableValueIdField(null, CollectableTextComponentHelper.write(sText, getEntityField()).getValue());
 		}
 		else {
-			result = (oCurrentItem == null) ? getEntityField().getNullField() : (CollectableField) oCurrentItem;
+			if (!blnIsLookupEntity)
+				result = (oCurrentItem == null) ? getEntityField().getNullField() : (CollectableField) oCurrentItem;
+			else
+				result = (oCurrentItem == null) ? getEntityField().getNullField() : new CollectableValueIdField(null, ((CollectableField) oCurrentItem).getValue());
 		}
 		return result;
 	}

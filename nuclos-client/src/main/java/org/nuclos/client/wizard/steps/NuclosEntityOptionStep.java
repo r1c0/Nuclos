@@ -462,6 +462,7 @@ public class NuclosEntityOptionStep extends NuclosEntityAbstractStep {
 								attr.setIndexed(Boolean.TRUE.equals(field.isIndexed()));
 								attr.setCalculationScript(field.getCalculationScript());
 								String sForeignEntity = field.getForeignEntity();
+								String sLookupEntity = field.getLookupEntity();
 								if(sForeignEntity != null) {
 									attr.setMetaVO(MetaDataClientProvider.getInstance().getEntity(sForeignEntity));
 									attr.setOnDeleteCascade(field.isOnDeleteCascade());
@@ -484,8 +485,29 @@ public class NuclosEntityOptionStep extends NuclosEntityAbstractStep {
 												attr.getDatatyp().setOutputFormat(voField.getFormatOutput());
 										}
 									}
-								}
-								else {
+								} else if(sLookupEntity != null) {
+									attr.setLookupMetaVO(MetaDataClientProvider.getInstance().getEntity(sLookupEntity));
+									attr.setOnDeleteCascade(field.isOnDeleteCascade());
+									attr.setField(field.getLookupEntityField());
+									attr.setDatatyp(DataTyp.getLookupTyp());
+									if(!Modules.getInstance().isModuleEntity(sLookupEntity) && field.getLookupEntityField() != null) {
+										String sLookupField = field.getLookupEntityField();
+										if(sLookupField.indexOf("${") >= 0) {
+											attr.setDatatyp(DataTyp.getLookupTyp());
+										}
+										else {
+											EntityFieldMetaDataVO voField = MetaDataClientProvider.getInstance().getEntityField(sLookupEntity, field.getLookupEntityField());
+
+											attr.getDatatyp().setJavaType(voField.getDataType());
+											if(voField.getPrecision() != null)
+												attr.getDatatyp().setPrecision(voField.getPrecision());
+											if(voField.getScale() != null)
+												attr.getDatatyp().setScale(voField.getScale());
+											if(voField.getFormatOutput() != null)
+												attr.getDatatyp().setOutputFormat(voField.getFormatOutput());
+										}
+									}
+								} else {
 									attr.setDatatyp(NuclosWizardUtils.getDataTyp(field.getDataType(),
 										field.getScale(), field.getPrecision(), field.getFormatInput(),
 										field.getFormatOutput()));

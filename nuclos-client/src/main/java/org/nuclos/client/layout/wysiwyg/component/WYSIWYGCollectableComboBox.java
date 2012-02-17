@@ -28,6 +28,7 @@ import javax.annotation.PostConstruct;
 import javax.swing.JMenuItem;
 import javax.swing.border.Border;
 
+import org.nuclos.client.layout.wysiwyg.component.WYSIWYGComponent.PropertySetMethod;
 import org.nuclos.client.layout.wysiwyg.component.properties.PropertyValue;
 import org.nuclos.client.synthetica.NuclosThemeSettings;
 import org.nuclos.client.ui.ColorProvider;
@@ -57,13 +58,14 @@ public class WYSIWYGCollectableComboBox extends WYSIWYGCollectableComponent {
 		propertySetMethods.put(PROPERTY_NAME, new PropertySetMethod(PROPERTY_NAME, "setName"));
 		propertySetMethods.put(PROPERTY_COLUMNS, new PropertySetMethod(PROPERTY_COLUMNS, "setColumns"));
 		propertySetMethods.put(PROPERTY_FILL_CONTROL_HORIZONTALLY, new PropertySetMethod(PROPERTY_FILL_CONTROL_HORIZONTALLY, "setFillControlHorizontally"));
+		propertySetMethods.put(PROPERTY_INSERTABLE, new PropertySetMethod(PROPERTY_INSERTABLE, "setInsertable"));
 		
 		propertyFilters.put(PROPERTY_SHOWONLY, new PropertyFilter(PROPERTY_SHOWONLY, DISABLED));
 		propertyFilters.put(PROPERTY_CONTROLTYPECLASS, new PropertyFilter(PROPERTY_CONTROLTYPECLASS, DISABLED));
 		propertyFilters.put(PROPERTY_LABEL, new PropertyFilter(PROPERTY_LABEL, DISABLED));
 		propertyFilters.put(PROPERTY_ROWS, new PropertyFilter(PROPERTY_ROWS, DISABLED));
 		propertyFilters.put(PROPERTY_FILL_CONTROL_HORIZONTALLY, new PropertyFilter(PROPERTY_FILL_CONTROL_HORIZONTALLY, DISABLED));
-		propertyFilters.put(PROPERTY_INSERTABLE, new PropertyFilter(PROPERTY_INSERTABLE, DISABLED));
+		propertyFilters.put(PROPERTY_INSERTABLE, new PropertyFilter(PROPERTY_INSERTABLE, EXPERT_MODE));
 		propertyFilters.put(PROPERTY_OPAQUE, new PropertyFilter(PROPERTY_OPAQUE, DISABLED));
 	
 		this.setLayout(new BorderLayout());
@@ -89,7 +91,6 @@ public class WYSIWYGCollectableComboBox extends WYSIWYGCollectableComponent {
 	 */
 	@Override
 	protected void render() {
-		
 	}
 	
 	/*
@@ -202,6 +203,12 @@ public class WYSIWYGCollectableComboBox extends WYSIWYGCollectableComponent {
 	public void setToolTipText(String toolTipText) {
 		if (component != null) {
 			component.setToolTipText(toolTipText);
+		}
+	}
+
+	public void setInsertable(boolean insertable) {
+		if (component != null) {
+			component.setEditable(insertable);
 		}
 	}
 

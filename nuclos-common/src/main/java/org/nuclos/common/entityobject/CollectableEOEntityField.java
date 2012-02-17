@@ -133,12 +133,12 @@ public class CollectableEOEntityField extends AbstractCollectableEntityField {
 
 	@Override
 	public String getReferencedEntityName() {
-		return efMeta.getForeignEntity();
+		return efMeta.getForeignEntity() != null ? efMeta.getForeignEntity() : efMeta.getLookupEntity();
 	}
 
 	@Override
 	public String getReferencedEntityFieldName() {
-		return efMeta.getForeignEntityField();
+		return efMeta.getForeignEntityField() != null ? efMeta.getForeignEntityField() : efMeta.getLookupEntityField();
 	}
 
 	@Override

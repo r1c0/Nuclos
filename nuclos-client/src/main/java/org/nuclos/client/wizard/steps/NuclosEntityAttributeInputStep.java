@@ -434,6 +434,8 @@ public class NuclosEntityAttributeInputStep extends NuclosEntityAbstractStep {
 		for (Attribute a : tableModel.getAttributes()) {
 			if (a.getDatatyp().isRefenceTyp() && a.getMetaVO() == null) {
 				missingreferences.add(a.getInternalName());
+			} else if (a.getDatatyp().isLookupTyp() && a.getLookupMetaVO() == null) {
+				missingreferences.add(a.getInternalName());
 			}
 		}
 		if (missingreferences.size() > 0) {
@@ -543,6 +545,7 @@ public class NuclosEntityAttributeInputStep extends NuclosEntityAbstractStep {
 			model.add(step1);
 			model.add(step2a);
 			model.add(step2b);
+			model.add(step2c);
 			model.add(step3);
 			model.add(step4);
 

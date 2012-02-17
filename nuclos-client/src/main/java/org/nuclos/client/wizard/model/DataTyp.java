@@ -93,6 +93,15 @@ public class DataTyp implements Cloneable {
 		}
 	}
 
+	public boolean isLookupTyp() {
+		if(name.equals("Nachschlage Feld")) {
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
+
 	public boolean isValueListTyp() {
 		if(name.equals("Werteliste")) {
 			return true;
@@ -158,6 +167,9 @@ public class DataTyp implements Cloneable {
 				return false;
 			}
 			if (!LangUtils.equals(source.isValueListTyp(), target.isValueListTyp())) {
+				return false;
+			}
+			if (!LangUtils.equals(source.isLookupTyp(), target.isLookupTyp())) {
 				return false;
 			}
 			return (sourcescale <= targetscale);
@@ -260,6 +272,7 @@ public class DataTyp implements Cloneable {
 
 		lst.addAll(DataTyp.getAllDataTypsFromDB());
 		lst.add(getReferenzTyp());
+		lst.add(getLookupTyp());
 
 		return lst;
 	}
@@ -273,6 +286,8 @@ public class DataTyp implements Cloneable {
 				(String)vo.getField("databasetyp"), (Integer)vo.getField("scale"), (Integer)vo.getField("precision"), (String)vo.getField("javatyp"));
 			if(typ.getName().equals("Referenz Feld"))
 				continue;
+			if(typ.getName().equals("Nachschlage Feld"))
+				continue;
 			lst.add(typ);
 		}
 
@@ -281,6 +296,10 @@ public class DataTyp implements Cloneable {
 
 	public static DataTyp getReferenzTyp() {
 		return new DataTyp("Referenz Feld", null, null, "varchar", 255, 0, "java.lang.String");
+	}
+
+	public static DataTyp getLookupTyp() {
+		return new DataTyp("Nachschlage Feld", null, null, "varchar", 255, 0, "java.lang.String");
 	}
 
 	public static DataTyp getValueListTyp() {

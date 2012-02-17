@@ -281,15 +281,20 @@ public class EntityObjectMetaDbHelper {
 	 */
 	private static List<?> getViewPatternForField(EntityFieldMetaDataVO fieldMeta, MetaDataProvider provider) {
 		List<Object> result = new ArrayList<Object>();
-		boolean isForeignReference = (fieldMeta.getForeignEntity() != null);
+		boolean isForeignReference = (fieldMeta.getForeignEntity() != null || fieldMeta.getLookupEntity() != null);
 
 		if (isForeignReference) {
 			boolean isJoin = !StringUtils.toUpperCase(fieldMeta.getDbColumn()).startsWith("INTID_");
 			if (isJoin) {
 
-				EntityMetaDataVO foreignEntity = provider.getEntity(fieldMeta.getForeignEntity());
-
-				String foreignFieldName = fieldMeta.getForeignEntityField();
+				EntityMetaDataVO foreignEntity = provider.getEntity(fieldMeta.getForeignEntity() != null ? fieldMeta.getForeignEntity() : fieldMeta.getLookupEntity());
+				
+				String foreignFieldName = null;
+				if (fieldMeta.getForeignEntity() != null)
+					foreignFieldName = fieldMeta.getForeignEntityField();
+				else if (fieldMeta.getLookupEntity() != null)
+					foreignFieldName = fieldMeta.getLookupEntityField();
+				
 				if (foreignFieldName == null || foreignFieldName.isEmpty())
 					foreignFieldName = "name";
 

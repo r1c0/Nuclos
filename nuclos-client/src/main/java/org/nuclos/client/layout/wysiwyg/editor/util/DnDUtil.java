@@ -17,6 +17,7 @@
 package org.nuclos.client.layout.wysiwyg.editor.util;
 
 import java.awt.AlphaComposite;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Graphics;
@@ -33,6 +34,7 @@ import java.awt.dnd.DragSourceListener;
 import java.awt.dnd.InvalidDnDOperationException;
 import java.awt.image.BufferedImage;
 
+import javax.swing.BorderFactory;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 
@@ -61,6 +63,8 @@ public class DnDUtil {
 		{
 			setOpaque(false);
 			composite = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.5f); 
+			setBorder(BorderFactory.createLineBorder(Color.RED));
+
 		}
 		
 		public void setImage(BufferedImage dragged)
@@ -82,9 +86,9 @@ public class DnDUtil {
 			g2.setComposite(composite);
 
 			g2.drawImage(dragged,
-				//(int) (location.getX( ) - (dragged.getWidth(this)  / 2d)),
-				//(int) (location.getY( ) - (dragged.getHeight(this) / 2d)),
-					location.x, location.y,
+				(int) (location.getX( ) - (dragged.getWidth(this)  / 2d)),
+				(int) (location.getY( ) - (dragged.getHeight(this) / 2d)),
+				//	location.x, location.y,
 				null);
 		}
 	}

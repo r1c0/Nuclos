@@ -716,9 +716,49 @@ public class NuclosEntityNameStep extends NuclosEntityAbstractStep {
         	}
         }
         else {
-        	attr.setDatatyp(NuclosWizardUtils.getDataTyp(fieldVO.getDataType(),
-        		fieldVO.getScale(), fieldVO.getPrecision(), fieldVO.getFormatInput(),
-        		fieldVO.getFormatOutput()));
+            String sLookupEntity = fieldVO.getLookupEntity();
+            if(sLookupEntity != null) {
+            	EntityMetaDataVO voLookupEntity = MetaDataClientProvider.getInstance().getEntity(sLookupEntity);
+            	if(voLookupEntity.isFieldValueEntity()) {
+            		attr.setMetaVO(voLookupEntity);
+            		attr.setField(fieldVO.getLookupEntityField());
+            		attr.setDatatyp(DataTyp.getDefaultStringTyp());
+            		loadValueList(attr);
+            	}
+            	else {
+            		attr.setLookupMetaVO(voLookupEntity);
+
+            		attr.setOnDeleteCascade(fieldVO.isOnDeleteCascade());
+            		attr.setField(fieldVO.getLookupEntityField());
+            		attr.setDatatyp(DataTyp.getLookupTyp());
+            		if(!Modules.getInstance().isModuleEntity(sLookupEntity) && fieldVO.getLookupEntityField() != null) {
+            			String sLookupField = fieldVO.getLookupEntityField();
+            			if(sLookupField.indexOf("${") >= 0) {
+            				attr.setDatatyp(DataTyp.getLookupTyp());
+            			}
+            			else {
+            				EntityMetaDataVO voEntity = MetaDataClientProvider.getInstance().getEntity((sLookupEntity));
+            				EntityFieldMetaDataVO voField =  MetaDataClientProvider.getInstance().getEntityField(voEntity.getEntity(), sLookupField);
+
+            				attr.getDatatyp().setJavaType(voField.getDataType());
+            				if(voField.getPrecision() != null)
+            					attr.getDatatyp().setPrecision(voField.getPrecision());
+            				if(voField.getScale() != null)
+            					attr.getDatatyp().setScale(voField.getScale());
+            				if(voField.getFormatInput() != null)
+            					attr.getDatatyp().setInputFormat(voField.getFormatInput());
+            				if(voField.getFormatOutput() != null)
+            					attr.getDatatyp().setOutputFormat(voField.getFormatOutput());
+            			}
+
+            		}
+            	}
+            } 
+            else {
+	        	attr.setDatatyp(NuclosWizardUtils.getDataTyp(fieldVO.getDataType(),
+	        		fieldVO.getScale(), fieldVO.getPrecision(), fieldVO.getFormatInput(),
+	        		fieldVO.getFormatOutput()));
+            }
         }
 
         try {

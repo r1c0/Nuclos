@@ -80,18 +80,20 @@ public class CollectableGenericObjectEntityField extends AbstractCollectableEnti
 
 	@Override
 	public boolean isReferencing() {
-		return (attrcvo.getExternalEntity() != null);
+		return (attrcvo.getExternalEntity() != null || entityFieldMeta.getLookupEntity() != null);
 	}
 
 	@Override
 	public String getReferencedEntityName() {
-		return attrcvo.getExternalEntity();
+		return attrcvo.getExternalEntity() != null ? attrcvo.getExternalEntity() : entityFieldMeta.getLookupEntity();
 	}
 
 	@Override
 	public String getReferencedEntityFieldName() {
 		final String sFieldNameDefault = attrcvo.isShowMnemonic() ? MasterDataVO.FIELDNAME_MNEMONIC : MasterDataVO.FIELDNAME_NAME;
-		return LangUtils.defaultIfNull(attrcvo.getExternalEntityFieldName(), sFieldNameDefault);
+		if (attrcvo.getExternalEntity() != null)
+			return LangUtils.defaultIfNull(attrcvo.getExternalEntityFieldName(), sFieldNameDefault);
+		return LangUtils.defaultIfNull(entityFieldMeta.getLookupEntityField(), sFieldNameDefault);
 	}
 
 	@Override
@@ -194,6 +196,7 @@ public class CollectableGenericObjectEntityField extends AbstractCollectableEnti
 				break;
 			case COMBOBOX:
 			case DROPDOWN:
+			case LOOKUP:
 				result = CollectableComponentTypes.TYPE_COMBOBOX;
 				break;
 			case LISTOFVALUES:

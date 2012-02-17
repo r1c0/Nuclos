@@ -278,6 +278,8 @@ public class ProcessorFactorySingleton {
 
 		allColumns.add(createBeanMapping(SystemFields.BASE_ALIAS, type, "STRFOREIGNENTITY", "foreignEntity", DT_STRING));
 		allColumns.add(createBeanMapping(SystemFields.BASE_ALIAS, type, "STRFOREIGNENTITYFIELD", "foreignEntityField", DT_STRING));
+		allColumns.add(createBeanMapping(SystemFields.BASE_ALIAS, type, "STRLOOKUPENTITY", "lookupEntity", DT_STRING));
+		allColumns.add(createBeanMapping(SystemFields.BASE_ALIAS, type, "STRLOOKUPENTITYFIELD", "lookupEntityField", DT_STRING));
 
 		allColumns.add(createBeanMapping(SystemFields.BASE_ALIAS, type, "STRDATATYPE", "dataType", DT_STRING));
 		allColumns.add(createBeanMapping(SystemFields.BASE_ALIAS, type, "INTDATASCALE", "scale", DT_INTEGER));

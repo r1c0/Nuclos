@@ -150,7 +150,7 @@ public class WYSIWYGMetaInformation implements LayoutMLConstants {
 		//AttributeCVO attributeVo = AttributeCache.getInstance().getAttribute(entity == null ? this.entity.getName() : entity, attribute);
 		//return attributeVo.getExternalEntity();
 		EntityFieldMetaDataVO efMeta = MetaDataClientProvider.getInstance().getEntityField(entity == null ? this.entity.getName() : entity, attribute);
-		return efMeta.getForeignEntity();
+		return efMeta.getForeignEntity() != null ? efMeta.getForeignEntity() : efMeta.getLookupEntity();
 	}
 
 	/**
@@ -631,9 +631,15 @@ public class WYSIWYGMetaInformation implements LayoutMLConstants {
 					if (f.getForeignEntity() != null && !f.isSearchable()) {
 						result.add(f.getFieldName());
 					}
+					if (f.getLookupEntity() != null && !f.isSearchable()) {
+						result.add(f.getFieldName());
+					}
 				}
 				else if (ATTRIBUTEVALUE_LISTOFVALUES.equals(controlType)) {
 					if (f.getForeignEntity() != null && f.isSearchable()) {
+						result.add(f.getFieldName());
+					}
+					if (f.getLookupEntity() != null && !f.isSearchable()) {
 						result.add(f.getFieldName());
 					}
 				}

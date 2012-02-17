@@ -211,6 +211,7 @@ public class NuclosEntityAttributeValueListShipStep extends NuclosEntityAttribut
 	public void applyState() throws InvalidStateException {
 		super.applyState();
 		this.model.nextStep();
+		this.model.nextStep();
 		this.model.refreshModelState();
 		
 		if(subform.getJTable().getCellEditor() != null)

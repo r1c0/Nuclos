@@ -384,7 +384,7 @@ public class Utils {
 		if (id != null) {
 			EntityObjectVO eo = EntityObjectDelegate.getInstance().getReferenced(referencingEntity, referencingEntityField, id);
 			EntityFieldMetaDataVO field = MetaDataClientProvider.getInstance().getEntityField(referencingEntity, referencingEntityField);
-			EntityMetaDataVO referencedMeta = MetaDataClientProvider.getInstance().getEntity(field.getForeignEntity());
+			EntityMetaDataVO referencedMeta = MetaDataClientProvider.getInstance().getEntity(field.getForeignEntity() != null ? field.getForeignEntity() : field.getLookupEntity());
 			if (referencedMeta.isStateModel()) {
 				Map<String, EntityFieldMetaDataVO> fields = MetaDataClientProvider.getInstance().getAllEntityFieldsByEntity(referencedMeta.getEntity());
 				CollectableEOEntity clcte = new CollectableEOEntity(referencedMeta, fields);

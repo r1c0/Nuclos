@@ -34,6 +34,7 @@ public enum ComponentType {
 	DROPDOWN(CommonLocaleDelegate.getInstance().getMessage("ComponentType.1","Auswahlliste"), false, false, false),
 	COMBOBOX(CommonLocaleDelegate.getInstance().getMessage("ComponentType.2","ComboBox (editierbar)"), false, true, true),
 	LISTOFVALUES(CommonLocaleDelegate.getInstance().getMessage("ComponentType.4","Suchfeld"), true, false, false);
+	LOOKUP(CommonLocaleDelegate.getMessage("ComponentType.1","Nachschlagefeld"), true, true, false);
 
 	private final String sLabel;
 	private final boolean bSearchable;

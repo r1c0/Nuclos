@@ -23,6 +23,7 @@ import javax.swing.JComponent;
 
 import org.nuclos.client.wizard.model.Attribute;
 import org.nuclos.client.wizard.model.DataTyp;
+import org.nuclos.client.wizard.steps.NuclosEntityAttributeLookupShipStep;
 import org.nuclos.client.wizard.steps.NuclosEntityAttributeRelationShipStep;
 import org.nuclos.client.wizard.steps.NuclosEntityAttributeTranslationStep;
 import org.nuclos.common.TranslationVO;
@@ -48,6 +49,7 @@ public class NuclosEntityAttributeWizardStaticModel extends StaticModel {
 	int iAttributeCount;
 	boolean blnValueListTyp;
 	boolean blnRefenzTyp;
+	boolean blnLookupTyp;
 	
 	
 	boolean blnEditMode;
@@ -114,6 +116,14 @@ public class NuclosEntityAttributeWizardStaticModel extends StaticModel {
 
 	public void setReferenzTyp(boolean blnReferenceTyp) {
 		this.blnRefenzTyp = blnReferenceTyp;
+	}
+	
+	public boolean isLookupTyp() {
+		return blnLookupTyp;
+	}
+
+	public void setLookupTyp(boolean blnLookupTyp) {
+		this.blnLookupTyp = blnLookupTyp;
 	}	
 	
 	
@@ -125,16 +135,32 @@ public class NuclosEntityAttributeWizardStaticModel extends StaticModel {
 	@Override
 	public void previousStep() {
 		WizardStep step = this.getActiveStep();
-		if(step instanceof NuclosEntityAttributeTranslationStep && !this.isValueListTyp() && !this.isRefernzTyp()) {
+		if(step instanceof NuclosEntityAttributeTranslationStep &&
+				!this.isValueListTyp() && !this.isRefernzTyp() && !this.isLookupTyp()) {
+			super.previousStep();
 			super.previousStep();
 			super.previousStep();
 			super.previousStep();
 		}
-		else if(step instanceof NuclosEntityAttributeTranslationStep && this.isValueListTyp() && !this.isRefernzTyp()) {
+		else if(step instanceof NuclosEntityAttributeTranslationStep && this.isValueListTyp()
+				&& !this.isRefernzTyp()) {
+			super.previousStep();
+			super.previousStep();
+			super.previousStep();
+		}
+		else if(step instanceof NuclosEntityAttributeTranslationStep && !this.isValueListTyp()
+				&& this.isRefernzTyp() && !this.isLookupTyp()) {
+			super.previousStep();
+			super.previousStep();
 			super.previousStep();
 			super.previousStep();
 		}
 		else if(step instanceof NuclosEntityAttributeRelationShipStep){
+			super.previousStep();
+			super.previousStep();
+		}
+		else if(step instanceof NuclosEntityAttributeLookupShipStep){
+			super.previousStep();
 			super.previousStep();
 			super.previousStep();
 		}

@@ -111,6 +111,8 @@ public class NuclosWizardUtils {
 			String strName = (String)vo.getField("name");
 			if(strName.equals("Referenz Feld"))
 				continue;
+			if(strName.equals("Nachschlage Feld"))
+				continue;
 
 			if(StringUtils.equals(javaType, strJavaTyp) && StringUtils.equals(outputFormat, strOutputFormat) &&
 				/*StringUtils.equals(inputFormat, strInputFormat) &&*/ ObjectUtils.equals(scale, iScale) &&

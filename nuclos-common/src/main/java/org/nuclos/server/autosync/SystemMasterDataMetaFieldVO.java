@@ -32,6 +32,7 @@ public class SystemMasterDataMetaFieldVO extends MasterDataMetaFieldVO {
 		String sDbFieldName, String sLabel, String sDescription,
 		String sDefaultValue, String sForeignEntityName, String sForeignEntityFieldName, 
 		String sUnreferencedForeignEntityName, String sUnreferencedForeignEntityFieldName,
+		String sLookupEntityName, String sLookupEntityFieldName,
 		Class<?> clsDataType,
 		Integer iDataScale, Integer iDataPrecision, String sInputFormat,
 		String sOutputFormat, boolean bNullable, boolean bSearchable,
@@ -41,6 +42,7 @@ public class SystemMasterDataMetaFieldVO extends MasterDataMetaFieldVO {
 	{
 		super(iId, sFieldName, sDbFieldName, sLabel, sDescription, sDefaultValue,
 			sForeignEntityName, sForeignEntityFieldName, sUnreferencedForeignEntityName, sUnreferencedForeignEntityFieldName,
+			sLookupEntityName, sLookupEntityFieldName,
 			clsDataType, iDataScale,
 			iDataPrecision, sInputFormat, sOutputFormat, bNullable, bSearchable,
 			bUnique, bInvariant, bLogToLogbook, CREATED_DATE, CREATED_USER,

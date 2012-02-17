@@ -41,6 +41,8 @@ public class MasterDataMetaFieldVO extends NuclosValueObject {
 	private String sForeignEntityFieldName;
 	private String sUnreferencedForeignEntityName;
 	private String sUnreferencedForeignEntityFieldName;
+	private String sLookupEntityName;
+	private String sLookupEntityFieldName;
 	private Class<?> clsDataType;
 	private Integer iDataScale;
 	private Integer iDataPrecision;
@@ -79,7 +81,9 @@ public class MasterDataMetaFieldVO extends NuclosValueObject {
 	 * @param sChangedBy last changer of underlying database record
 	 */
 	public MasterDataMetaFieldVO(Integer iId, String sFieldName, String sDbFieldName, String sLabel, String sDescription, String sDefaultValue,
-			String sForeignEntityName, String sForeignEntityFieldName, String sUnreferencedForeignEntityName, String sUnreferencedForeignEntityFieldName, 
+			String sForeignEntityName, String sForeignEntityFieldName, 
+			String sUnreferencedForeignEntityName, String sUnreferencedForeignEntityFieldName, 
+			String sLookupEntityName, String sLookupEntityFieldName, 
 			Class<?> clsDataType, Integer iDataScale, Integer iDataPrecision, String sInputFormat,
 			String sOutputFormat, boolean bNullable, boolean bSearchable, boolean bUnique, boolean bInvariant, boolean bLogToLogbook, 
 			java.util.Date dateCreatedAt, String sCreatedBy, java.util.Date dateChangedAt, String sChangedBy, Integer iVersion,
@@ -94,6 +98,8 @@ public class MasterDataMetaFieldVO extends NuclosValueObject {
 		this.sForeignEntityFieldName = sForeignEntityFieldName;
 		this.sUnreferencedForeignEntityName = sUnreferencedForeignEntityName;
 		this.sUnreferencedForeignEntityFieldName = sUnreferencedForeignEntityFieldName;
+		this.sLookupEntityName = sLookupEntityName;
+		this.sLookupEntityFieldName = sLookupEntityFieldName;
 		this.clsDataType = clsDataType;
 		this.iDataScale = iDataScale;
 		this.iDataPrecision = iDataPrecision;
@@ -120,7 +126,7 @@ public class MasterDataMetaFieldVO extends NuclosValueObject {
 	 * @param sOutputFormat
 	 */
 	public MasterDataMetaFieldVO(Integer iId, String sFieldName, String sDbFieldName, String sLabel, String sDescription, String sDefaultValue,
-			String sForeignEntityName, String sForeignEntityFieldName, Class<?> clsDataType, Integer iDataScale, Integer iDataPrecision, String sOutputFormat, boolean bUnique) {
+			String sForeignEntityName, String sForeignEntityFieldName, String sLookupEntityName, String sLookupEntityFieldName, Class<?> clsDataType, Integer iDataScale, Integer iDataPrecision, String sOutputFormat, boolean bUnique) {
 		super(iId, null, null, null, null, 1);
 		this.sFieldName = sFieldName;
 		this.sDBFieldName = sDbFieldName;
@@ -129,6 +135,8 @@ public class MasterDataMetaFieldVO extends NuclosValueObject {
 		this.sDefaultValue = sDefaultValue;
 		this.sForeignEntityName = sForeignEntityName;
 		this.sForeignEntityFieldName = sForeignEntityFieldName;
+		this.sLookupEntityName = sLookupEntityName;
+		this.sLookupEntityFieldName = sLookupEntityFieldName;
 		this.clsDataType = clsDataType;
 		this.iDataScale = iDataScale;
 		this.iDataPrecision = iDataPrecision;
@@ -209,6 +217,20 @@ public class MasterDataMetaFieldVO extends NuclosValueObject {
 
 	public String getUnreferencedForeignEntityFieldName() {
 		return sUnreferencedForeignEntityFieldName;
+	}
+
+	/**
+	 * @return lookup entity of underlying database record, if any.
+	 */
+	public String getLookupEntity() {
+		return sLookupEntityName;
+	}
+
+	/**
+	 * @return lookup entity field of underlying database record, if any.
+	 */
+	public String getLookupEntityField() {
+		return sLookupEntityFieldName;
 	}
 
 	/**

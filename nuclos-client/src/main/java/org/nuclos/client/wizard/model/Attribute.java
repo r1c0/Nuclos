@@ -42,6 +42,7 @@ public class Attribute {
 	boolean readonly;
 	boolean modifiable;
 	EntityMetaDataVO metaVO;
+	EntityMetaDataVO lookupMetaVO;
 	boolean blnValueListProvider;
 	String strField;
 	String defaultValue;
@@ -239,6 +240,14 @@ public class Attribute {
 		this.metaVO = metaVO;
 	}
 
+	public EntityMetaDataVO getLookupMetaVO() {
+		return lookupMetaVO;
+	}
+
+	public void setLookupMetaVO(EntityMetaDataVO metaVO) {
+		this.lookupMetaVO = metaVO;
+	}
+
 	public String getField() {
 		return strField;
 	}
@@ -281,6 +290,7 @@ public class Attribute {
 		attr.setLogBook(this.isLogBook());
 		attr.setMandatory(this.isMandatory());
 		attr.setMetaVO(this.getMetaVO());
+		attr.setLookupMetaVO(this.getLookupMetaVO());
 		attr.setOldInternalName(this.oldInternalName);
 		attr.setRemove(this.isRemove());
 		attr.setResume(this.isForResume());

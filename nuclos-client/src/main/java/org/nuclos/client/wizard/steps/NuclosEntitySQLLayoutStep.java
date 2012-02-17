@@ -1271,6 +1271,8 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 				 continue;
 			 if(field.getForeignEntity() != null && field.getForeignEntityField() == null)
 				 continue;
+			 if(field.getLookupEntity() != null && field.getLookupEntityField() == null)
+				 continue;
 
 		  	 String controltype = getCollectableComponentType(field);
 
@@ -1716,6 +1718,12 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 
 		if(f.getForeignEntity() != null && f.isSearchable())
 			return LayoutMLConstants.CONTROLTYPE_LISTOFVALUES;
+		
+		if(f.getLookupEntity() != null && !f.isSearchable())
+			return LayoutMLConstants.CONTROLTYPE_COMBOBOX;
+
+		if(f.getLookupEntity() != null && f.isSearchable())
+			return LayoutMLConstants.CONTROLTYPE_LISTOFVALUES;
 
 		if(Date.class.getName().equals(f.getDataType()) || InternalTimestamp.class.getName().equals(f.getDataType()))
 			return LayoutMLConstants.CONTROLTYPE_DATECHOOSER;
@@ -1899,6 +1907,27 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 				metaFieldVO.setDbColumn("INTID_"+ attr.getDbName().replaceFirst("^STRVALUE_", ""));
 			}
 			metaFieldVO.setForeignEntityField(null);
+			metaFieldVO.setModifiable(false);
+		}
+		else {
+			metaFieldVO.setModifiable(true);
+		}
+		if(attr.getLookupMetaVO() != null && attr.getField() != null) {
+			metaFieldVO.setModifiable(false);
+			metaFieldVO.setLookupEntity(attr.getLookupMetaVO().getEntity());
+			metaFieldVO.setOnDeleteCascade(attr.isOnDeleteCascade());
+			metaFieldVO.setLookupEntityField(attr.getField());
+			//if(!attr.getDbName().startsWith("STRVALUE_")) {
+				//metaFieldVO.setDbColumn("STRVALUE_"+ attr.getDbName().replaceFirst("^INTID_", ""));
+			//}
+		}
+		else if (attr.getLookupMetaVO() != null && attr.getField() == null) {
+			metaFieldVO.setLookupEntity(attr.getLookupMetaVO().getEntity());
+			metaFieldVO.setOnDeleteCascade(attr.isOnDeleteCascade());
+			//if(!attr.getDbName().startsWith("INTID_")) {
+				//metaFieldVO.setDbColumn("INTID_"+ attr.getDbName().replaceFirst("^STRVALUE_", ""));
+			//}
+			metaFieldVO.setLookupEntityField(null);
 			metaFieldVO.setModifiable(false);
 		}
 		else {
