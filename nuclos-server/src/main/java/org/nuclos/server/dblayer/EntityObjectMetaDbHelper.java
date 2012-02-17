@@ -48,7 +48,7 @@ import org.nuclos.common2.InternalTimestamp;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.server.dal.DalUtils;
-import org.nuclos.server.database.DataBaseHelper;
+import org.nuclos.server.database.SpringDataBaseHelper;
 import org.nuclos.server.dblayer.structure.DbColumn;
 import org.nuclos.server.dblayer.structure.DbColumnType;
 import org.nuclos.server.dblayer.structure.DbColumnType.DbGenericType;
@@ -81,7 +81,7 @@ public class EntityObjectMetaDbHelper {
 	private final DbAccess dbAccess;
 
 	public EntityObjectMetaDbHelper(MetaDataProvider provider) {
-		this(DataBaseHelper.getInstance().getDbAccess(), provider);
+		this(SpringDataBaseHelper.getInstance().getDbAccess(), provider);
 	}
 
 	public EntityObjectMetaDbHelper(DbAccess dbAccess, MetaDataProvider provider) {

@@ -22,7 +22,7 @@ import java.util.Date;
 import org.apache.log4j.Logger;
 import org.nuclos.common.collection.Pair;
 import org.nuclos.common.dal.vo.SystemFields;
-import org.nuclos.server.database.DataBaseHelper;
+import org.nuclos.server.database.SpringDataBaseHelper;
 import org.nuclos.server.dblayer.DbException;
 import org.nuclos.server.dblayer.DbStatementUtils;
 import org.nuclos.server.dblayer.DbTuple;
@@ -67,7 +67,7 @@ public class NuclosUpdateJob extends NuclosQuartzJob{
 				System.setProperty("restricted", getUserName());
 			}				
 
-			final DataBaseHelper dataBaseHelper = DataBaseHelper.getInstance();
+			final SpringDataBaseHelper dataBaseHelper = SpringDataBaseHelper.getInstance();
 			DbQueryBuilder builder = dataBaseHelper.getDbAccess().getQueryBuilder();
 			DbQuery<DbTuple> query = builder.createTupleQuery();
 			DbFrom t = query.from("T_AD_UPDATEJOBS").alias(SystemFields.BASE_ALIAS);

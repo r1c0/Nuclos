@@ -35,7 +35,7 @@ import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonFinderException;
 import org.nuclos.common2.exception.CommonPermissionException;
 import org.nuclos.server.customcode.valueobject.CodeVO;
-import org.nuclos.server.database.DataBaseHelper;
+import org.nuclos.server.database.SpringDataBaseHelper;
 import org.nuclos.server.dblayer.query.DbFrom;
 import org.nuclos.server.dblayer.query.DbQuery;
 import org.nuclos.server.dblayer.query.DbQueryBuilder;
@@ -84,7 +84,7 @@ public class RuleCache implements RuleCacheMBean {
 	private final Map<String, MasterDataVO> webservices
 		= new ConcurrentHashMap<String, MasterDataVO>();
 	
-	private DataBaseHelper dataBaseHelper;
+	private SpringDataBaseHelper dataBaseHelper;
 	
 	private MasterDataFacadeLocal mdFacade;
 
@@ -98,7 +98,7 @@ public class RuleCache implements RuleCacheMBean {
 		return INSTANCE;
 	}
 	
-	public void setDataBaseHelper(DataBaseHelper dataBaseHelper) {
+	public void setDataBaseHelper(SpringDataBaseHelper dataBaseHelper) {
 		this.dataBaseHelper = dataBaseHelper;
 	}
 	

@@ -33,7 +33,7 @@ import org.nuclos.common.dal.vo.SystemFields;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.server.autosync.XMLEntities;
 import org.nuclos.server.common.SecurityCache;
-import org.nuclos.server.database.DataBaseHelper;
+import org.nuclos.server.database.SpringDataBaseHelper;
 import org.nuclos.server.dblayer.DbTuple;
 import org.nuclos.server.dblayer.expression.DbCurrentDateTime;
 import org.nuclos.server.dblayer.query.DbFrom;
@@ -59,13 +59,13 @@ public class NuclosUserDetailsService implements org.nuclos.server.security.User
 
 	private ParameterProvider paramprovider;
 	
-	private DataBaseHelper dataBaseHelper;
+	private SpringDataBaseHelper dataBaseHelper;
 	
 	NuclosUserDetailsService() {
 	}
 	
 	@Autowired
-	void setDataBaseHelper(DataBaseHelper dataBaseHelper) {
+	void setDataBaseHelper(SpringDataBaseHelper dataBaseHelper) {
 		this.dataBaseHelper = dataBaseHelper;
 	}
 
@@ -233,12 +233,12 @@ public class NuclosUserDetailsService implements org.nuclos.server.security.User
 	}
 
 	static Set<String> getSuperUserActions() {
-		DbQueryBuilder builder = DataBaseHelper.getInstance().getDbAccess().getQueryBuilder();
+		DbQueryBuilder builder = SpringDataBaseHelper.getInstance().getDbAccess().getQueryBuilder();
 		Set<String> actions = new HashSet<String>();
 		DbQuery<String> rolesQuery = builder.createQuery(String.class);
 		DbFrom action = rolesQuery.from("T_AD_ACTION").alias(SystemFields.BASE_ALIAS);
 		rolesQuery.select(action.baseColumn("STRACTION", String.class));
-		actions.addAll(DataBaseHelper.getInstance().getDbAccess().executeQuery(rolesQuery));
+		actions.addAll(SpringDataBaseHelper.getInstance().getDbAccess().executeQuery(rolesQuery));
 
 		for(MasterDataVO mdvo : XMLEntities.getData(NuclosEntity.ACTION).getAll()) {
 			actions.add(mdvo.getField("action", String.class));

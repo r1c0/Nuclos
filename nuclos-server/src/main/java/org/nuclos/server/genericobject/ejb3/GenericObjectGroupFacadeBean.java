@@ -29,7 +29,7 @@ import org.nuclos.common2.exception.CommonPermissionException;
 import org.nuclos.common2.exception.CommonRemoveException;
 import org.nuclos.common2.exception.CommonStaleVersionException;
 import org.nuclos.server.common.ejb3.NuclosFacadeBean;
-import org.nuclos.server.database.DataBaseHelper;
+import org.nuclos.server.database.SpringDataBaseHelper;
 import org.nuclos.server.dblayer.query.DbFrom;
 import org.nuclos.server.dblayer.query.DbQuery;
 import org.nuclos.server.dblayer.query.DbQueryBuilder;
@@ -144,14 +144,14 @@ public class GenericObjectGroupFacadeBean extends NuclosFacadeBean implements Ge
 	}
 
 	private static Integer findIntId(int genericObjectId, int groupId) {
-		DbQueryBuilder builder = DataBaseHelper.getInstance().getDbAccess().getQueryBuilder();
+		DbQueryBuilder builder = SpringDataBaseHelper.getInstance().getDbAccess().getQueryBuilder();
 		DbQuery<Integer> query = builder.createQuery(Integer.class);
 		DbFrom t = query.from("T_UD_GO_GROUP").alias(SystemFields.BASE_ALIAS);
 		query.select(t.baseColumn("INTID", Integer.class));
 		query.where(builder.and(
 			builder.equal(t.baseColumn("INTID_T_UD_GENERICOBJECT", Integer.class), genericObjectId),
 			builder.equal(t.baseColumn("INTID_T_UD_GROUP", Integer.class), groupId)));
-		return DataBaseHelper.getInstance().getDbAccess().executeQuerySingleResult(query);
+		return SpringDataBaseHelper.getInstance().getDbAccess().executeQuerySingleResult(query);
 	}
 
 	/**

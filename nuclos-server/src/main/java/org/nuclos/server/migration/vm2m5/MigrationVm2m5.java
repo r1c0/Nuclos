@@ -39,7 +39,7 @@ import org.nuclos.common2.layoutml.exception.LayoutMLException;
 import org.nuclos.server.common.MetaDataServerProvider;
 import org.nuclos.server.common.ejb3.LocaleFacadeLocal;
 import org.nuclos.server.dal.DalUtils;
-import org.nuclos.server.database.DataBaseHelper;
+import org.nuclos.server.database.SpringDataBaseHelper;
 import org.nuclos.server.dblayer.DbException;
 import org.nuclos.server.dblayer.DbInvalidResultSizeException;
 import org.nuclos.server.dblayer.DbTuple;
@@ -68,13 +68,13 @@ public class MigrationVm2m5 extends AbstractMigration{
 
 	private boolean armed = true;
 	
-	private DataBaseHelper dataBaseHelper;
+	private SpringDataBaseHelper dataBaseHelper;
 	
 	public MigrationVm2m5() {
 	}
 	
 	@Autowired
-	void setDataBaseHelper(DataBaseHelper dataBaseHelper) {
+	void setDataBaseHelper(SpringDataBaseHelper dataBaseHelper) {
 		this.dataBaseHelper = dataBaseHelper;
 	}
 
@@ -159,7 +159,7 @@ public class MigrationVm2m5 extends AbstractMigration{
 			String sTreeDescRes = rs.get("STR_LOCALERESOURCE_TT", java.lang.String.class);
 
 
-			Integer newId = dataBaseHelper.getNextIdAsInteger(DataBaseHelper.DEFAULT_SEQUENCE);
+			Integer newId = dataBaseHelper.getNextIdAsInteger(SpringDataBaseHelper.DEFAULT_SEQUENCE);
 
 			info("-----------------------------------");
 			info("Processing masterdata entity " + sEntity);
@@ -323,7 +323,7 @@ public class MigrationVm2m5 extends AbstractMigration{
 
 			info("Processing masterdata field " + sField);
 
-			Integer iNewMDFieldId = dataBaseHelper.getNextIdAsInteger(DataBaseHelper.DEFAULT_SEQUENCE);
+			Integer iNewMDFieldId = dataBaseHelper.getNextIdAsInteger(SpringDataBaseHelper.DEFAULT_SEQUENCE);
 
 			Map<String, Object> values = new HashMap<String, Object>();
 			values.put("INTID", iNewMDFieldId);
@@ -564,7 +564,7 @@ public class MigrationVm2m5 extends AbstractMigration{
 				Integer iDataPrecision = rs.get("INTDATAPRECISION", java.lang.Integer.class);
 				String sCalcFunction = rs.get("STRCALCFUNCTION", java.lang.String.class);
 
-				Integer iNewAttributeId = dataBaseHelper.getNextIdAsInteger(DataBaseHelper.DEFAULT_SEQUENCE);
+				Integer iNewAttributeId = dataBaseHelper.getNextIdAsInteger(SpringDataBaseHelper.DEFAULT_SEQUENCE);
 
 				if (systemArrtibutes.contains(sField)) {
 					continue;
@@ -853,7 +853,7 @@ public class MigrationVm2m5 extends AbstractMigration{
 	private String createFieldValueEntity(String sDataType, Integer iDataScape, Integer iDataPrecision) {
 		iCountFieldValueEntities++;
 		String sEntityName = sFieldValueEntityNameBase+iCountFieldValueEntities;
-		Integer iEntityId = dataBaseHelper.getNextIdAsInteger(DataBaseHelper.DEFAULT_SEQUENCE);
+		Integer iEntityId = dataBaseHelper.getNextIdAsInteger(SpringDataBaseHelper.DEFAULT_SEQUENCE);
 
 		info("Create field value entity " + sEntityName);
 
@@ -882,7 +882,7 @@ public class MigrationVm2m5 extends AbstractMigration{
 
 		{
 			Map<String, Object> values = new HashMap<String, Object>();
-			values.put("INTID", dataBaseHelper.getNextIdAsInteger(DataBaseHelper.DEFAULT_SEQUENCE));
+			values.put("INTID", dataBaseHelper.getNextIdAsInteger(SpringDataBaseHelper.DEFAULT_SEQUENCE));
 			values.put("INTID_T_MD_ENTITY", iEntityId);
 			values.put("STRFIELD", "value");
 			values.put("STRDBFIELD", "STRVALUE");
@@ -908,7 +908,7 @@ public class MigrationVm2m5 extends AbstractMigration{
 
 		{
 			Map<String, Object> values = new HashMap<String, Object>();
-			values.put("INTID", dataBaseHelper.getNextIdAsInteger(DataBaseHelper.DEFAULT_SEQUENCE));
+			values.put("INTID", dataBaseHelper.getNextIdAsInteger(SpringDataBaseHelper.DEFAULT_SEQUENCE));
 			values.put("INTID_T_MD_ENTITY", iEntityId);
 			values.put("STRFIELD", "mnemonic");
 			values.put("STRDBFIELD", "STRMNEMONIC");
@@ -934,7 +934,7 @@ public class MigrationVm2m5 extends AbstractMigration{
 
 		{
 			Map<String, Object> values = new HashMap<String, Object>();
-			values.put("INTID", dataBaseHelper.getNextIdAsInteger(DataBaseHelper.DEFAULT_SEQUENCE));
+			values.put("INTID", dataBaseHelper.getNextIdAsInteger(SpringDataBaseHelper.DEFAULT_SEQUENCE));
 			values.put("INTID_T_MD_ENTITY", iEntityId);
 			values.put("STRFIELD", "description");
 			values.put("STRDBFIELD", "STRDESCRIPTION");
@@ -959,7 +959,7 @@ public class MigrationVm2m5 extends AbstractMigration{
 
 		{
 			Map<String, Object> values = new HashMap<String, Object>();
-			values.put("INTID", dataBaseHelper.getNextIdAsInteger(DataBaseHelper.DEFAULT_SEQUENCE));
+			values.put("INTID", dataBaseHelper.getNextIdAsInteger(SpringDataBaseHelper.DEFAULT_SEQUENCE));
 			values.put("INTID_T_MD_ENTITY", iEntityId);
 			values.put("STRFIELD", "validFrom");
 			values.put("STRDBFIELD", "DATVALIDFROM");
@@ -983,7 +983,7 @@ public class MigrationVm2m5 extends AbstractMigration{
 
 		{
 			Map<String, Object> values = new HashMap<String, Object>();
-			values.put("INTID", dataBaseHelper.getNextIdAsInteger(DataBaseHelper.DEFAULT_SEQUENCE));
+			values.put("INTID", dataBaseHelper.getNextIdAsInteger(SpringDataBaseHelper.DEFAULT_SEQUENCE));
 			values.put("INTID_T_MD_ENTITY", iEntityId);
 			values.put("STRFIELD", "validUntil");
 			values.put("STRDBFIELD", "DATVALIDUNTIL");

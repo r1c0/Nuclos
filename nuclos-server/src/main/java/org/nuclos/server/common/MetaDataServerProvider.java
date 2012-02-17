@@ -43,7 +43,7 @@ import org.nuclos.server.dal.DalUtils;
 import org.nuclos.server.dal.processor.jdbc.impl.DynamicMetaDataProcessor;
 import org.nuclos.server.dal.provider.NucletDalProvider;
 import org.nuclos.server.dal.provider.NuclosDalProvider;
-import org.nuclos.server.database.DataBaseHelper;
+import org.nuclos.server.database.SpringDataBaseHelper;
 import org.nuclos.server.dblayer.EntityObjectMetaDbHelper;
 import org.nuclos.server.dblayer.query.DbFrom;
 import org.nuclos.server.dblayer.query.DbQuery;
@@ -70,7 +70,7 @@ public class MetaDataServerProvider extends AbstractProvider implements MetaData
 
 	private DataCache dataCache;
 	
-	private DataBaseHelper dataBaseHelper;
+	private SpringDataBaseHelper dataBaseHelper;
 	
 	private MetaDataServerProvider(){
 		INSTANCE = this;
@@ -88,7 +88,7 @@ public class MetaDataServerProvider extends AbstractProvider implements MetaData
 	}
 	
 	@Autowired
-	void setDataBaseHelper(DataBaseHelper dataBaseHelper) {
+	void setDataBaseHelper(SpringDataBaseHelper dataBaseHelper) {
 		this.dataBaseHelper = dataBaseHelper;
 	}
 	

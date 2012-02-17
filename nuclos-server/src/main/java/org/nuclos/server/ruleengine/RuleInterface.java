@@ -113,7 +113,7 @@ import org.nuclos.server.common.valueobject.TaskVO;
 import org.nuclos.server.common.valueobject.TimelimitTaskVO;
 import org.nuclos.server.customcode.CustomCodeInterface;
 import org.nuclos.server.dal.provider.NucletDalProvider;
-import org.nuclos.server.database.DataBaseHelper;
+import org.nuclos.server.database.SpringDataBaseHelper;
 import org.nuclos.server.fileimport.ImportContext;
 import org.nuclos.server.fileimport.ejb3.ImportFacadeLocal;
 import org.nuclos.server.genericobject.Modules;
@@ -2158,7 +2158,7 @@ public class RuleInterface extends CustomCodeInterface {
 	 * @return next unique system id using default sequence "IDFACTORY"
 	 */
 	public Integer getNextIntid() {
-		return DataBaseHelper.getInstance().getNextIdAsInteger(DataBaseHelper.DEFAULT_SEQUENCE);
+		return SpringDataBaseHelper.getInstance().getNextIdAsInteger(SpringDataBaseHelper.DEFAULT_SEQUENCE);
 	}
 
 	/**

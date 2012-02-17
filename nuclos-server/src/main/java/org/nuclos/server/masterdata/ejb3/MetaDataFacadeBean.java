@@ -88,7 +88,7 @@ import org.nuclos.server.dal.DalUtils;
 import org.nuclos.server.dal.processor.ProcessorFactorySingleton;
 import org.nuclos.server.dal.processor.nuclet.JdbcEntityObjectProcessor;
 import org.nuclos.server.dal.provider.NucletDalProvider;
-import org.nuclos.server.database.DataBaseHelper;
+import org.nuclos.server.database.SpringDataBaseHelper;
 import org.nuclos.server.dblayer.DbAccess;
 import org.nuclos.server.dblayer.DbException;
 import org.nuclos.server.dblayer.DbStatementUtils;
@@ -148,7 +148,7 @@ public class MetaDataFacadeBean extends NuclosFacadeBean implements MetaDataFaca
 
 	private ProcessorFactorySingleton processorFactory;
 	
-	private DataBaseHelper dataBaseHelper;
+	private SpringDataBaseHelper dataBaseHelper;
 	
 	private DataSource dataSource;
 	
@@ -161,7 +161,7 @@ public class MetaDataFacadeBean extends NuclosFacadeBean implements MetaDataFaca
 	}
 	
 	@Autowired
-	void setDataBaseHelper(DataBaseHelper dataBaseHelper) {
+	void setDataBaseHelper(SpringDataBaseHelper dataBaseHelper) {
 		this.dataBaseHelper = dataBaseHelper;
 	}
 	
@@ -1058,7 +1058,7 @@ public class MetaDataFacadeBean extends NuclosFacadeBean implements MetaDataFaca
 			voField.setEntityId(voParent.getId());
 			if(voField.isFlagNew()) {
 				DalUtils.updateVersionInformation(voField,getCurrentUserName());
-				voField.setId(new Long(dataBaseHelper.getNextIdAsInteger(DataBaseHelper.DEFAULT_SEQUENCE)));
+				voField.setId(new Long(dataBaseHelper.getNextIdAsInteger(SpringDataBaseHelper.DEFAULT_SEQUENCE)));
 			}
 			else if(voField.isFlagUpdated()){
 				DalUtils.updateVersionInformation(voField, getCurrentUserName());
@@ -1335,7 +1335,7 @@ public class MetaDataFacadeBean extends NuclosFacadeBean implements MetaDataFaca
 
 				int col = 1;
 				PreparedStatement pst = dataSource.getConnection().prepareStatement(sb.toString());
-				pst.setInt(col++, dataBaseHelper.getNextIdAsInteger(DataBaseHelper.DEFAULT_SEQUENCE));
+				pst.setInt(col++, dataBaseHelper.getNextIdAsInteger(SpringDataBaseHelper.DEFAULT_SEQUENCE));
 				for(Object object : lstValues) {
 					pst.setObject(col++, object);
 				}

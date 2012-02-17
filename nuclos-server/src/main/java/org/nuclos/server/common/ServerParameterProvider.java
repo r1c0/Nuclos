@@ -30,7 +30,7 @@ import org.nuclos.common.AbstractParameterProvider;
 import org.nuclos.common.JMSConstants;
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.dal.vo.SystemFields;
-import org.nuclos.server.database.DataBaseHelper;
+import org.nuclos.server.database.SpringDataBaseHelper;
 import org.nuclos.server.dblayer.DbTuple;
 import org.nuclos.server.dblayer.query.DbFrom;
 import org.nuclos.server.dblayer.query.DbQuery;
@@ -69,7 +69,7 @@ public class ServerParameterProvider extends AbstractParameterProvider implement
 
 	//private final ClientNotifier clientnotifier = new ClientNotifier(JMSConstants.TOPICNAME_PARAMETERPROVIDER);
 	
-	private DataBaseHelper dataBaseHelper;
+	private SpringDataBaseHelper dataBaseHelper;
 
 	public static ServerParameterProvider getInstance() {
 		return INSTANCE;
@@ -80,7 +80,7 @@ public class ServerParameterProvider extends AbstractParameterProvider implement
 	}
 	
 	@Autowired
-	void setDataBaseHelper(DataBaseHelper dataBaseHelper) {
+	void setDataBaseHelper(SpringDataBaseHelper dataBaseHelper) {
 		this.dataBaseHelper = dataBaseHelper;
 	}
 

@@ -28,7 +28,7 @@ import org.nuclos.server.attribute.valueobject.AttributeValueVO;
 import org.nuclos.server.common.AttributeCache;
 import org.nuclos.server.common.MasterDataMetaCache;
 import org.nuclos.server.common.UpdateJobs;
-import org.nuclos.server.database.DataBaseHelper;
+import org.nuclos.server.database.SpringDataBaseHelper;
 import org.nuclos.server.dblayer.DbAccess;
 import org.nuclos.server.dblayer.DbException;
 import org.nuclos.server.dblayer.query.DbFrom;
@@ -91,7 +91,7 @@ public class MakeAttributesConsistent implements UpdateJobs{
 	 * @deprecated Does nothing/unneeded? (Please re-check!) (tp)
 	 */
 	private void makeAttributesConsistent() {
-		final DbAccess dbAccess = DataBaseHelper.getInstance().getDbAccess();
+		final DbAccess dbAccess = SpringDataBaseHelper.getInstance().getDbAccess();
 		DbQueryBuilder builder = dbAccess.getQueryBuilder();
 		DbQuery<Integer> query = builder.createQuery(Integer.class);
 		DbFrom t = query.from("T_UD_GO_ATTRIBUTE").alias(SystemFields.BASE_ALIAS);

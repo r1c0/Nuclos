@@ -33,7 +33,7 @@ import org.nuclos.common2.InternalTimestamp;
 import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.common2.exception.CommonStaleVersionException;
 import org.nuclos.server.dal.specification.IDalVersionSpecification;
-import org.nuclos.server.database.DataBaseHelper;
+import org.nuclos.server.database.SpringDataBaseHelper;
 import org.nuclos.server.dblayer.structure.DbColumn;
 import org.nuclos.server.dblayer.structure.DbColumnType;
 import org.nuclos.server.genericobject.valueobject.GenericObjectDocumentFile;
@@ -91,7 +91,7 @@ public class DalUtils {
 	}
 
 	public static Long getNextId() {
-		return IdUtils.toLongId(DataBaseHelper.getInstance().getNextIdAsInteger(DataBaseHelper.DEFAULT_SEQUENCE));
+		return IdUtils.toLongId(SpringDataBaseHelper.getInstance().getNextIdAsInteger(SpringDataBaseHelper.DEFAULT_SEQUENCE));
 	}
 
 	public static void handleVersionUpdate(IDalVersionSpecification processor,

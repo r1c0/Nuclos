@@ -87,7 +87,7 @@ import org.nuclos.server.common.ejb3.NuclosFacadeBean;
 import org.nuclos.server.customcode.codegenerator.NuclosJavaCompiler;
 import org.nuclos.server.dal.DalUtils;
 import org.nuclos.server.dal.provider.NucletDalProvider;
-import org.nuclos.server.database.DataBaseHelper;
+import org.nuclos.server.database.SpringDataBaseHelper;
 import org.nuclos.server.dblayer.DbAccess;
 import org.nuclos.server.dblayer.DbException;
 import org.nuclos.server.dblayer.DbObjectHelper;
@@ -1624,12 +1624,12 @@ public class TransferFacadeBean extends NuclosFacadeBean
 	}
 
 	private static Boolean readConfigParameter() {
-		DbQueryBuilder builder = DataBaseHelper.getInstance().getDbAccess().getQueryBuilder();
+		DbQueryBuilder builder = SpringDataBaseHelper.getInstance().getDbAccess().getQueryBuilder();
 		DbQuery<String> query = builder.createQuery(String.class);
 		DbFrom t = query.from("T_AD_PARAMETER").alias(SystemFields.BASE_ALIAS);
 		query.select(t.baseColumn("STRVALUE", String.class));
 		query.where(builder.equal(t.baseColumn("STRPARAMETER", String.class), PARAM_NAME));
-		List<String> v = DataBaseHelper.getInstance().getDbAccess().executeQuery(query);
+		List<String> v = SpringDataBaseHelper.getInstance().getDbAccess().executeQuery(query);
 		return (v.size() == 0) ? Boolean.FALSE : Boolean.valueOf(v.get(0));
 	}
 

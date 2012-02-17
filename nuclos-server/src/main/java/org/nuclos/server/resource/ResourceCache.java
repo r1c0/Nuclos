@@ -33,7 +33,7 @@ import org.nuclos.common.dal.vo.SystemFields;
 import org.nuclos.common2.IOUtils;
 import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.server.common.NuclosSystemParameters;
-import org.nuclos.server.database.DataBaseHelper;
+import org.nuclos.server.database.SpringDataBaseHelper;
 import org.nuclos.server.dblayer.DbTuple;
 import org.nuclos.server.dblayer.query.DbFrom;
 import org.nuclos.server.dblayer.query.DbQuery;
@@ -70,7 +70,7 @@ public class ResourceCache {
 	
 	private final Object lock = new Object();
 	
-	private DataBaseHelper dataBaseHelper;
+	private SpringDataBaseHelper dataBaseHelper;
 	
 	public static ResourceCache getInstance() {
 		return INSTANCE;
@@ -81,7 +81,7 @@ public class ResourceCache {
 	}
 	
 	@Autowired
-	void setDataBaseHelper(DataBaseHelper dataBaseHelper) {
+	void setDataBaseHelper(SpringDataBaseHelper dataBaseHelper) {
 		this.dataBaseHelper = dataBaseHelper;
 	}
 	

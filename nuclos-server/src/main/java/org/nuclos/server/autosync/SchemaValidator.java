@@ -26,7 +26,7 @@ import org.apache.log4j.Logger;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Transformer;
 import org.nuclos.server.common.MetaDataServerProvider;
-import org.nuclos.server.database.DataBaseHelper;
+import org.nuclos.server.database.SpringDataBaseHelper;
 import org.nuclos.server.dblayer.DbAccess;
 import org.nuclos.server.dblayer.EntityObjectMetaDbHelper;
 import org.nuclos.server.dblayer.statements.DbStatement;
@@ -81,7 +81,7 @@ public class SchemaValidator {
 		// drop callables and sequences (except IDFACTORY as this would reset the sequence)
 		for (DbArtifact artifact : artifacts) {
 			if (artifact instanceof DbCallable) {
-				if (((DbCallable) artifact).getCallableName().equals(DataBaseHelper.DEFAULT_SEQUENCE) && !idfactory) {
+				if (((DbCallable) artifact).getCallableName().equals(SpringDataBaseHelper.DEFAULT_SEQUENCE) && !idfactory) {
 					continue;
 				}
 				executeStructureChange(new DbStructureChange(DbStructureChange.Type.DROP, artifact));
@@ -219,7 +219,7 @@ public class SchemaValidator {
 
 		// create release entry if necessary
 		if (setup.getInstalledVersions().isEmpty()) {
-			DataBaseHelper.getInstance().execute(setup.getReleaseStatement(setup.getCurrentRelease()));
+			SpringDataBaseHelper.getInstance().execute(setup.getReleaseStatement(setup.getCurrentRelease()));
 		}
     }
 

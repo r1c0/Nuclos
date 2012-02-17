@@ -41,7 +41,7 @@ import org.nuclos.server.dal.processor.AbstractDalProcessor;
 import org.nuclos.server.dal.processor.ColumnToBeanVORefMapping;
 import org.nuclos.server.dal.processor.ColumnToRefFieldVOMapping;
 import org.nuclos.server.dal.processor.IColumnToVOMapping;
-import org.nuclos.server.database.DataBaseHelper;
+import org.nuclos.server.database.SpringDataBaseHelper;
 import org.nuclos.server.dblayer.DbAccess;
 import org.nuclos.server.dblayer.DbException;
 import org.nuclos.server.dblayer.IBatch;
@@ -63,7 +63,7 @@ public abstract class AbstractJdbcDalProcessor<DalVO extends IDalVO> extends Abs
 
 	private static final Logger LOG = Logger.getLogger(AbstractJdbcDalProcessor.class);
 	
-	protected DataBaseHelper dataBaseHelper;
+	protected SpringDataBaseHelper dataBaseHelper;
 
    // This must be clone and hence cannot be final.
    protected List<IColumnToVOMapping<? extends Object>> allColumns;
@@ -77,7 +77,7 @@ public abstract class AbstractJdbcDalProcessor<DalVO extends IDalVO> extends Abs
    }
    
    @Autowired
-   void setDataBaseHelper(DataBaseHelper dataBaseHelper) {
+   void setDataBaseHelper(SpringDataBaseHelper dataBaseHelper) {
 	   this.dataBaseHelper = dataBaseHelper;
    }
 

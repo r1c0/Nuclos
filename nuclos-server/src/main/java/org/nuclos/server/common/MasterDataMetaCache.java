@@ -33,7 +33,7 @@ import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.dal.DalSupportForMD;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
 import org.nuclos.common2.ServiceLocator;
-import org.nuclos.server.database.DataBaseHelper;
+import org.nuclos.server.database.SpringDataBaseHelper;
 import org.nuclos.server.dblayer.structure.DbArtifact;
 import org.nuclos.server.dblayer.structure.DbColumn;
 import org.nuclos.server.dblayer.structure.DbTable;
@@ -74,7 +74,7 @@ public class MasterDataMetaCache implements MasterDataMetaCacheMBean, MasterData
 	private final Map<String, Collection<EntityTreeViewVO>> subNodes 
 		= new ConcurrentHashMap<String, Collection<EntityTreeViewVO>>();
 	
-	private DataBaseHelper dataBaseHelper;
+	private SpringDataBaseHelper dataBaseHelper;
 	
 	private MetaDataServerProvider metaDataServerProvider;
 
@@ -90,7 +90,7 @@ public class MasterDataMetaCache implements MasterDataMetaCacheMBean, MasterData
 	}
 	
 	@Autowired
-	void setDataBaseHelper(DataBaseHelper dataBaseHelper) {
+	void setDataBaseHelper(SpringDataBaseHelper dataBaseHelper) {
 		this.dataBaseHelper = dataBaseHelper;
 	}
 	

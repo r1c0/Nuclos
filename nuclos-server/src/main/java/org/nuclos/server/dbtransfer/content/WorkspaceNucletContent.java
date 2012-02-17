@@ -25,7 +25,7 @@ import org.nuclos.common.collection.Predicate;
 import org.nuclos.common.dal.DalCallResult;
 import org.nuclos.common.dal.vo.EntityObjectVO;
 import org.nuclos.common.dbtransfer.TransferOption.Map;
-import org.nuclos.server.database.DataBaseHelper;
+import org.nuclos.server.database.SpringDataBaseHelper;
 import org.nuclos.server.dblayer.DbStatementUtils;
 
 public class WorkspaceNucletContent extends DefaultNucletContent {
@@ -49,7 +49,7 @@ public class WorkspaceNucletContent extends DefaultNucletContent {
 	public void deleteNcObject(DalCallResult result, EntityObjectVO ncObject) {
 		if (ncObject.getFieldId("user") == null) { // is assignable workspace
 			// Remove user assigned workspaces.
-			DataBaseHelper.getInstance().getDbAccess().execute(DbStatementUtils.deleteFrom("T_MD_WORKSPACE", "INTID_T_MD_WORKSPACE", ncObject.getId()));
+			SpringDataBaseHelper.getInstance().getDbAccess().execute(DbStatementUtils.deleteFrom("T_MD_WORKSPACE", "INTID_T_MD_WORKSPACE", ncObject.getId()));
 		}
 		super.deleteNcObject(result, ncObject);
 	}

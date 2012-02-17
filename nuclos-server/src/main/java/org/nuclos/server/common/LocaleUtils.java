@@ -18,7 +18,7 @@ package org.nuclos.server.common;
 
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.dal.vo.SystemFields;
-import org.nuclos.server.database.DataBaseHelper;
+import org.nuclos.server.database.SpringDataBaseHelper;
 import org.nuclos.server.dblayer.DbStatementUtils;
 import org.nuclos.server.dblayer.expression.DbNull;
 import org.nuclos.server.dblayer.query.DbFrom;
@@ -56,7 +56,7 @@ public class LocaleUtils {
 	public static void setResourceIdForField(String sEntityTable, Integer iId, String sFieldName, String sResourceId) {
 		String sColumn = getColumnByFieldName(sFieldName);
 		if (sColumn != null) {
-			DataBaseHelper.getInstance().execute(DbStatementUtils
+			SpringDataBaseHelper.getInstance().execute(DbStatementUtils
 				.updateValues(sEntityTable, sColumn, DbNull.escapeNull(sResourceId, String.class))
 				.where("INTID", iId));
 		}
@@ -64,12 +64,12 @@ public class LocaleUtils {
 	
 	public static String getResourceIdForField(String sEntityTable, Integer iId, String sFieldName) {
 		String sColumn = getColumnByFieldName(sFieldName);
-		DbQueryBuilder builder = DataBaseHelper.getInstance().getDbAccess().getQueryBuilder();
+		DbQueryBuilder builder = SpringDataBaseHelper.getInstance().getDbAccess().getQueryBuilder();
 		DbQuery<String> query = builder.createQuery(String.class);
 		DbFrom t = query.from(sEntityTable).alias(SystemFields.BASE_ALIAS);
 		query.select(t.baseColumn(sColumn, String.class));
 		query.where(builder.equal(t.baseColumn("INTID", Integer.class), iId));
-		return CollectionUtils.getFirst(DataBaseHelper.getInstance().getDbAccess().executeQuery(query));
+		return CollectionUtils.getFirst(SpringDataBaseHelper.getInstance().getDbAccess().executeQuery(query));
 	}
 
 }

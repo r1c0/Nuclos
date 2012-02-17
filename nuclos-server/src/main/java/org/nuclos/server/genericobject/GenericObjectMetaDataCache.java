@@ -50,7 +50,7 @@ import org.nuclos.server.attribute.valueobject.LayoutUsageVO;
 import org.nuclos.server.common.AttributeCache;
 import org.nuclos.server.common.MetaDataServerProvider;
 import org.nuclos.server.dal.provider.NucletDalProvider;
-import org.nuclos.server.database.DataBaseHelper;
+import org.nuclos.server.database.SpringDataBaseHelper;
 import org.nuclos.server.dblayer.DbTuple;
 import org.nuclos.server.dblayer.query.DbFrom;
 import org.nuclos.server.dblayer.query.DbQuery;
@@ -79,7 +79,7 @@ public class GenericObjectMetaDataCache implements GenericObjectMetaDataProvider
 	
 	private MetaDataServerProvider metaDataServerProvider;
 	
-	private DataBaseHelper dataBaseHelper;
+	private SpringDataBaseHelper dataBaseHelper;
 
 	private static final Set<Integer> setExcludedAttributeIds = new HashSet<Integer>();
 	static {
@@ -122,7 +122,7 @@ public class GenericObjectMetaDataCache implements GenericObjectMetaDataProvider
 	}
 	
 	@Autowired
-	void setDataBaseHelper(DataBaseHelper dataBaseHelper) {
+	void setDataBaseHelper(SpringDataBaseHelper dataBaseHelper) {
 		this.dataBaseHelper = dataBaseHelper;
 	}
 
@@ -145,13 +145,13 @@ public class GenericObjectMetaDataCache implements GenericObjectMetaDataProvider
 	 * @postcondition result != null
 	 */
 	public static Map<Integer, String> getLayoutMap() {
-		DbQueryBuilder builder = DataBaseHelper.getInstance().getDbAccess().getQueryBuilder();
+		DbQueryBuilder builder = SpringDataBaseHelper.getInstance().getDbAccess().getQueryBuilder();
 		DbQuery<DbTuple> query = builder.createTupleQuery();
 		DbFrom t = query.from("T_MD_LAYOUT").alias(SystemFields.BASE_ALIAS);
 		query.multiselect(t.baseColumn("INTID", Integer.class), t.baseColumn("CLBLAYOUTML", String.class));
 
 		Map<Integer, String> result = new HashMap<Integer, String>();
-		for (DbTuple tuple : DataBaseHelper.getInstance().getDbAccess().executeQuery(query)) {
+		for (DbTuple tuple : SpringDataBaseHelper.getInstance().getDbAccess().executeQuery(query)) {
 			result.put(tuple.get(0, Integer.class), tuple.get(1, String.class));
 		}
 		return result;
@@ -191,12 +191,12 @@ public class GenericObjectMetaDataCache implements GenericObjectMetaDataProvider
 	 * @return result
 	 */
 	public static String getLayoutName(Integer iLayoutId){
-		DbQueryBuilder builder = DataBaseHelper.getInstance().getDbAccess().getQueryBuilder();
+		DbQueryBuilder builder = SpringDataBaseHelper.getInstance().getDbAccess().getQueryBuilder();
 		DbQuery<String> query = builder.createQuery(String.class);
 		DbFrom t = query.from("T_MD_LAYOUT").alias(SystemFields.BASE_ALIAS);
 		query.multiselect(t.baseColumn("STRLAYOUT", String.class));
 		query.where(builder.equal(t.baseColumn("INTID", Integer.class), iLayoutId));
-		return CollectionUtils.getFirst(DataBaseHelper.getInstance().getDbAccess().executeQuery(query));
+		return CollectionUtils.getFirst(SpringDataBaseHelper.getInstance().getDbAccess().executeQuery(query));
 	}
 
 	/**

@@ -21,7 +21,7 @@ import javax.annotation.PostConstruct;
 import org.nuclos.common.UsageCriteria;
 import org.nuclos.common.dal.vo.SystemFields;
 import org.nuclos.common.dblayer.JoinType;
-import org.nuclos.server.database.DataBaseHelper;
+import org.nuclos.server.database.SpringDataBaseHelper;
 import org.nuclos.server.dblayer.DbTuple;
 import org.nuclos.server.dblayer.query.DbFrom;
 import org.nuclos.server.dblayer.query.DbJoin;
@@ -48,7 +48,7 @@ public class StateModelUsagesCache {
 
 	private StateModelUsages stateModelUsages;
 	
-	private DataBaseHelper dataBaseHelper;
+	private SpringDataBaseHelper dataBaseHelper;
 
 	public static StateModelUsagesCache getInstance() {
 		if (INSTANCE.stateModelUsages == null) {
@@ -62,7 +62,7 @@ public class StateModelUsagesCache {
 	}
 	
 	@Autowired
-	void setDataBaseHelper(DataBaseHelper dataBaseHelper) {
+	void setDataBaseHelper(SpringDataBaseHelper dataBaseHelper) {
 		this.dataBaseHelper = dataBaseHelper;
 	}
 	

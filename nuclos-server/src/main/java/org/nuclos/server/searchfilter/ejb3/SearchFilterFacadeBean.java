@@ -47,7 +47,7 @@ import org.nuclos.server.common.LocaleUtils;
 import org.nuclos.server.common.MasterDataMetaCache;
 import org.nuclos.server.common.SecurityCache;
 import org.nuclos.server.common.ejb3.LocaleFacadeLocal;
-import org.nuclos.server.database.DataBaseHelper;
+import org.nuclos.server.database.SpringDataBaseHelper;
 import org.nuclos.server.dblayer.DbStatementUtils;
 import org.nuclos.server.jms.NuclosJMSUtils;
 import org.nuclos.server.masterdata.ejb3.MasterDataFacadeBean;
@@ -215,7 +215,7 @@ public class SearchFilterFacadeBean extends MasterDataFacadeBean implements Sear
 	@Override
     @RolesAllowed("Login")
 	public void changeCreatedUser(Integer iId, String sUserName) throws NuclosBusinessRuleException, CommonCreateException, CommonFinderException, CommonRemoveException, CommonStaleVersionException, CommonValidationException, CommonPermissionException {
-		DataBaseHelper.getInstance().execute(DbStatementUtils.updateValues("T_UD_SEARCHFILTER",
+		SpringDataBaseHelper.getInstance().execute(DbStatementUtils.updateValues("T_UD_SEARCHFILTER",
 			"STRCREATED", sUserName).where("INTID", iId));
 	}
 

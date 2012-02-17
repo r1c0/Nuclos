@@ -82,7 +82,7 @@ import org.nuclos.server.dal.DalSupportForGO;
 import org.nuclos.server.dal.DalUtils;
 import org.nuclos.server.dal.processor.nuclet.JdbcEntityObjectProcessor;
 import org.nuclos.server.dal.provider.NucletDalProvider;
-import org.nuclos.server.database.DataBaseHelper;
+import org.nuclos.server.database.SpringDataBaseHelper;
 import org.nuclos.server.dblayer.DbAccess;
 import org.nuclos.server.dblayer.DbException;
 import org.nuclos.server.dblayer.DbObjectHelper;
@@ -189,7 +189,7 @@ public class MasterDataFacadeHelper {
 	
 	private MasterDataMetaCache masterDataMetaCache;
 	
-	private DataBaseHelper dataBaseHelper;
+	private SpringDataBaseHelper dataBaseHelper;
 	
 	public MasterDataFacadeHelper() {
 	}
@@ -205,7 +205,7 @@ public class MasterDataFacadeHelper {
 	}
 	
 	@Autowired
-	void setDataBaseHelper(DataBaseHelper dataBaseHelper) {
+	void setDataBaseHelper(SpringDataBaseHelper dataBaseHelper) {
 		this.dataBaseHelper = dataBaseHelper;
 	}
 
@@ -628,7 +628,7 @@ public class MasterDataFacadeHelper {
 		} else {
 			final String idFactory = entityMeta.getIdFactory();
 			if (idFactory == null) {
-				result = dataBaseHelper.getNextIdAsInteger(DataBaseHelper.DEFAULT_SEQUENCE);
+				result = dataBaseHelper.getNextIdAsInteger(SpringDataBaseHelper.DEFAULT_SEQUENCE);
 			} else {
 				result = dataBaseHelper.getDbAccess().executeFunction(idFactory, Integer.class);
 			}

@@ -28,7 +28,7 @@ import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.dblayer.JoinType;
 import org.nuclos.common2.exception.CommonFinderException;
 import org.nuclos.common2.exception.CommonPermissionException;
-import org.nuclos.server.database.DataBaseHelper;
+import org.nuclos.server.database.SpringDataBaseHelper;
 import org.nuclos.server.dblayer.query.DbFrom;
 import org.nuclos.server.dblayer.query.DbQuery;
 import org.nuclos.server.dblayer.query.DbQueryBuilder;
@@ -61,7 +61,7 @@ public class StateCache {
 	
 	private StateFacadeLocal statefacade;
 	
-	private DataBaseHelper dataBaseHelper;
+	private SpringDataBaseHelper dataBaseHelper;
 
 	private final Map<Integer, StateVO> mpStatessById
 		= new ConcurrentHashMap<Integer, StateVO>();
@@ -90,7 +90,7 @@ public class StateCache {
 		this.mdLocal = masterDataFacadeLocal;
 	}
 	
-	public void setDataBaseHelper(DataBaseHelper dataBaseHelper) {
+	public void setDataBaseHelper(SpringDataBaseHelper dataBaseHelper) {
 		this.dataBaseHelper = dataBaseHelper;
 	}
 	

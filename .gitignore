@@ -3,6 +3,9 @@
 /build
 /nuclos-common/src/main/resources/info.xml
 /nuclos-common/src/main/resources/status.xml
+/nuclos-common/src/main/resources/info.txt
+/nuclos-common/src/main/resources/status.txt
+/nuclos-server/.springBeans
 # m2 stuff
 .classpath
 .project
@@ -11,5 +14,4 @@ target
 pom.xml.versionsBackup
 /velocity.log
 #META-INF
-
 

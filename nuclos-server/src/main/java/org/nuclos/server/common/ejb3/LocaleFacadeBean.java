@@ -57,7 +57,7 @@ import org.nuclos.common2.exception.CommonValidationException;
 import org.nuclos.server.autosync.XMLEntities;
 import org.nuclos.server.common.MasterDataMetaCache;
 import org.nuclos.server.common.ServerParameterProvider;
-import org.nuclos.server.database.DataBaseHelper;
+import org.nuclos.server.database.SpringDataBaseHelper;
 import org.nuclos.server.dblayer.DbStatementUtils;
 import org.nuclos.server.dblayer.DbTuple;
 import org.nuclos.server.dblayer.expression.DbCurrentDateTime;
@@ -118,7 +118,7 @@ public class LocaleFacadeBean extends NuclosFacadeBean implements LocaleFacadeLo
 	
 	private ServerParameterProvider serverParameterProvider;
 	
-	private DataBaseHelper dataBaseHelper;
+	private SpringDataBaseHelper dataBaseHelper;
 	
 	public LocaleFacadeBean() {
 	}
@@ -134,7 +134,7 @@ public class LocaleFacadeBean extends NuclosFacadeBean implements LocaleFacadeLo
 	}
 	
 	@Autowired
-	void setDataBaseHelper(DataBaseHelper dataBaseHelper) {
+	void setDataBaseHelper(SpringDataBaseHelper dataBaseHelper) {
 		this.dataBaseHelper = dataBaseHelper;
 	}
 

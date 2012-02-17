@@ -48,7 +48,7 @@ import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.ServiceLocator;
 import org.nuclos.server.autosync.XMLEntities;
 import org.nuclos.server.common.ejb3.SecurityFacadeLocal;
-import org.nuclos.server.database.DataBaseHelper;
+import org.nuclos.server.database.SpringDataBaseHelper;
 import org.nuclos.server.dblayer.DbTuple;
 import org.nuclos.server.dblayer.query.DbColumnExpression;
 import org.nuclos.server.dblayer.query.DbCondition;
@@ -96,7 +96,7 @@ public class SecurityCache implements SecurityCacheMBean {
 
 	private GenericObjectGroupFacadeLocal genericobjectgroupfacade;
 	
-	private DataBaseHelper dataBaseHelper;
+	private SpringDataBaseHelper dataBaseHelper;
 	
 	private StateCache stateCache;
 	
@@ -667,7 +667,7 @@ public class SecurityCache implements SecurityCacheMBean {
 	}
 	
 	@Autowired
-	void setDataBaseHelper(DataBaseHelper dataBaseHelper) {
+	void setDataBaseHelper(SpringDataBaseHelper dataBaseHelper) {
 		this.dataBaseHelper = dataBaseHelper;
 	}
 	

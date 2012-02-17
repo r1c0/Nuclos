@@ -40,7 +40,7 @@ import org.nuclos.common.preferences.ReadOnlyPreferences;
 import org.nuclos.common.querybuilder.NuclosDatasourceException;
 import org.nuclos.common2.exception.CommonPermissionException;
 import org.nuclos.common2.exception.PreferencesException;
-import org.nuclos.server.database.DataBaseHelper;
+import org.nuclos.server.database.SpringDataBaseHelper;
 import org.nuclos.server.dblayer.DbTuple;
 import org.nuclos.server.dblayer.query.DbColumnExpression;
 import org.nuclos.server.dblayer.query.DbFrom;
@@ -63,7 +63,7 @@ public class RecordGrantUtils {
 	
 	private DatasourceServerUtils datasourceServerUtils;
 	
-	private DataBaseHelper dataBaseHelper;
+	private SpringDataBaseHelper dataBaseHelper;
 	
 	public RecordGrantUtils() {
 	}
@@ -79,7 +79,7 @@ public class RecordGrantUtils {
 	}
 	
 	@Autowired
-	void setDataBaseHelper(DataBaseHelper dataBaseHelper) {
+	void setDataBaseHelper(SpringDataBaseHelper dataBaseHelper) {
 		this.dataBaseHelper = dataBaseHelper;
 	}
 

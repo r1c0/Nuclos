@@ -40,7 +40,7 @@ import org.nuclos.server.common.RecordGrantUtils;
 import org.nuclos.server.common.SecurityCache;
 import org.nuclos.server.dal.processor.nuclet.JdbcEntityObjectProcessor;
 import org.nuclos.server.dal.provider.NucletDalProvider;
-import org.nuclos.server.database.DataBaseHelper;
+import org.nuclos.server.database.SpringDataBaseHelper;
 import org.nuclos.server.dbtransfer.TransferFacadeLocal;
 import org.nuclos.server.genericobject.Modules;
 import org.nuclos.server.genericobject.ejb3.GenericObjectFacadeLocal;
@@ -70,7 +70,7 @@ public abstract class NuclosFacadeBean implements NuclosFacadeLocal {
 	
 	private RecordGrantUtils grantUtils;
 	
-	protected DataBaseHelper dataBaseHelper;
+	protected SpringDataBaseHelper dataBaseHelper;
 	
 	//@Resource
 	// private SessionContext sctx;
@@ -79,7 +79,7 @@ public abstract class NuclosFacadeBean implements NuclosFacadeLocal {
 	}
 	
 	@Autowired
-	void setDataBaseHelper(DataBaseHelper dataBaseHelper) {
+	void setDataBaseHelper(SpringDataBaseHelper dataBaseHelper) {
 		this.dataBaseHelper = dataBaseHelper;
 	}
 

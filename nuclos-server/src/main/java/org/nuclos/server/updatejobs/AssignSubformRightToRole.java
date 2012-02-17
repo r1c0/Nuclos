@@ -27,7 +27,7 @@ import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.common2.exception.CommonFinderException;
 import org.nuclos.server.common.MasterDataMetaCache;
 import org.nuclos.server.common.UpdateJobs;
-import org.nuclos.server.database.DataBaseHelper;
+import org.nuclos.server.database.SpringDataBaseHelper;
 import org.nuclos.server.dblayer.DbException;
 import org.nuclos.server.dblayer.DbStatementUtils;
 import org.nuclos.server.dblayer.expression.DbCurrentDateTime;
@@ -61,13 +61,13 @@ public class AssignSubformRightToRole implements UpdateJobs {
 	
 	private boolean isSuccessfulExecuted = false;
 	
-	private DataBaseHelper dataBaseHelper;
+	private SpringDataBaseHelper dataBaseHelper;
 	
 	public AssignSubformRightToRole() {
 	}
 	
 	@Autowired
-	void setDataBaseHelper(DataBaseHelper dataBaseHelper) {
+	void setDataBaseHelper(SpringDataBaseHelper dataBaseHelper) {
 		this.dataBaseHelper = dataBaseHelper;
 	}
 

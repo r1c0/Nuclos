@@ -84,7 +84,7 @@ import org.nuclos.server.common.ServerParameterProvider;
 import org.nuclos.server.common.ejb3.LocaleFacadeLocal;
 import org.nuclos.server.common.ejb3.NuclosFacadeBean;
 import org.nuclos.server.common.valueobject.NuclosValueObject;
-import org.nuclos.server.database.DataBaseHelper;
+import org.nuclos.server.database.SpringDataBaseHelper;
 import org.nuclos.server.dblayer.DbException;
 import org.nuclos.server.dblayer.DbTuple;
 import org.nuclos.server.dblayer.query.DbFrom;

@@ -35,7 +35,7 @@ import org.nuclos.common.database.query.definition.Table;
 import org.nuclos.server.common.DatasourceCache;
 import org.nuclos.server.common.MetaDataServerProvider;
 import org.nuclos.server.common.ServerParameterProvider;
-import org.nuclos.server.database.DataBaseHelper;
+import org.nuclos.server.database.SpringDataBaseHelper;
 import org.nuclos.server.dblayer.DbException;
 import org.nuclos.server.dblayer.structure.AbstractDbArtifactVisitor;
 import org.nuclos.server.dblayer.structure.DbArtifact;
@@ -81,7 +81,7 @@ public class SchemaCache implements SchemaCacheMBean {
    
    private MetaDataServerProvider metaDataServerProvider;
    
-   private DataBaseHelper dataBaseHelper;
+   private SpringDataBaseHelper dataBaseHelper;
 
    SchemaCache() {
 	   INSTANCE = this;
@@ -103,7 +103,7 @@ public class SchemaCache implements SchemaCacheMBean {
    }
    
    @Autowired
-   void setDataBaseHelper(DataBaseHelper dataBaseHelper) {
+   void setDataBaseHelper(SpringDataBaseHelper dataBaseHelper) {
 	   this.dataBaseHelper = dataBaseHelper;
    }
 
