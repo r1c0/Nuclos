@@ -67,6 +67,7 @@ import org.nuclos.client.layout.wysiwyg.editor.util.valueobjects.LayoutCell;
 import org.nuclos.client.ui.Errors;
 import org.nuclos.common.NuclosBusinessException;
 import org.nuclos.common.NuclosFatalException;
+import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonFatalException;
 
@@ -579,39 +580,8 @@ public class PropertiesPanel extends JPanel implements SaveAndCancelButtonPanelC
 		 */
 		@Override
 		public boolean isCellEditable(int row, int col) {
-			////NUCLOSINT-743 enable disable Rule selection depending on Actioncommand
-			if (c instanceof WYSIWYGStaticButton) {
-				
-				Object value = map.get(PROPERTY_LABELS.ACTIONCOMMAND);
-				boolean executeRuleAction = false;
-				if (value instanceof PropertyValueString) {
-					String actioncommand = ((PropertyValueString)value).getValue();
-					if (!STATIC_BUTTON.EXECUTE_RULE_ACTION_LABEL.equals(actioncommand)) {
-						// if not execute rule action - reset maybe set values for rule
-						int index = map.indexOf(PROPERTY_LABELS.RULE);
-						if (index != -1)
-							map.setValue(index, new PropertyValueString());
-					} else if (STATIC_BUTTON.EXECUTE_RULE_ACTION_LABEL.equals(actioncommand)){
-						// its the execute rule action
-						executeRuleAction = true;
-								
-					}
-					// is the field clicked the rule field?
-					String propertyName = (String)getValueAt(row, 0);
-					if (PROPERTY_LABELS.RULE.equals(propertyName)) {
-						if (executeRuleAction) {
-							// action command is execute rule, so a rule may be selected
-							return true;
-						} else {
-							// false action command, no selection possible
-							return false;
-						}
-					}
-				}
-			}
-				
 			if (col == 1)
-					return true;
+				return true;
 		
 			return false;
 		}
@@ -622,7 +592,16 @@ public class PropertiesPanel extends JPanel implements SaveAndCancelButtonPanelC
 		 */
 		@Override
 		public void setValueAt(Object value, int row, int col) {
+			Object oldValue = getWYSIWYGComponent().getProperties().getProperty(PROPERTY_LABELS.ACTIONCOMMAND).getValue();
 			map.setValue(row, value);
+			if (value instanceof PropertyValueString && LangUtils.compare(((PropertyValueString)value).getValue(), oldValue) != 0) {
+				int index = map.indexOf(PROPERTY_LABELS.ACTIONCOMMAND);
+				if (index != -1 && row == index) { // so we have only the actioncommand prop set.
+					index = map.indexOf(PROPERTY_LABELS.ACTIONCOMMAND_PROPERTIES);
+					if (index != -1)
+						map.setValue(index, new PropertyValueString());
+				}
+			}
 			fireTableCellUpdated(row, col);
 		}
 

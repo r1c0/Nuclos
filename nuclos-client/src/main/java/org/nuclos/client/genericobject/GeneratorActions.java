@@ -17,13 +17,16 @@
 package org.nuclos.client.genericobject;
 
 import java.util.Comparator;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
 
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common2.ServiceLocator;
+import org.nuclos.common.MetaDataProvider;
 import org.nuclos.common.NuclosFatalException;
+import org.nuclos.common.SpringApplicationContextHolder;
 import org.nuclos.server.genericobject.ejb3.GeneratorFacadeRemote;
 import org.nuclos.server.genericobject.valueobject.GeneratorActionVO;
 import org.nuclos.server.genericobject.valueobject.GeneratorVO;
@@ -83,6 +86,42 @@ public class GeneratorActions {
 		assert result != null;
 		return result;
 	}
+
+	/**
+	 * gets a list of generator actions by module.
+	 * @param iModuleId source module id
+	 * @return List<GeneratorActionVO> list of generator actions
+	 * @postcondition result != null
+	 */
+	public static List<GeneratorActionVO> getGeneratorActions(Integer iModuleId) {
+		List<GeneratorActionVO> result = getInstance().generatorcvo.getGeneratorActions(iModuleId);
+		result = CollectionUtils.sorted(result, new Comparator<GeneratorActionVO>() {
+
+			@Override
+			public int compare(GeneratorActionVO o1, GeneratorActionVO o2) {
+				return o1.toString().toUpperCase().compareTo(o2.toString().toUpperCase());
+			}			
+			
+		});
+		assert result != null;
+		return result;
+
+	}
+
+
+	/**
+	 * gets a generator action by id.
+	 * @param iGeneratorActionId the generator action id
+	 * @return GeneratorActionVO the generator action
+	 * @postcondition result != null
+	 */
+	public static GeneratorActionVO getGeneratorAction(Integer iGeneratorActionId) {
+		GeneratorActionVO result = getInstance().generatorcvo.getGeneratorAction(iGeneratorActionId);
+		
+		assert result != null;
+		return result;
+	}
+
 
 	/**
 	 * invalidates the cache so  the generator actions are reread the next time.

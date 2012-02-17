@@ -17,6 +17,8 @@
 package org.nuclos.client.layout.wysiwyg.component;
 
 import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Properties;
 
 import org.nuclos.client.genericobject.GenericObjectCollectController;
@@ -70,19 +72,30 @@ public class ChangeStateButtonAction<Clct extends Collectable> implements Collec
 			Collection<StateVO> possibleStates = StateDelegate.getInstance().getStatesByModule(moduleId);
 			String stateName = null;
 			Integer stateID = null;
+			Integer stateNumeral = null;
 			String stateDescription = null;
 			NuclosImage stateIcon = null;
 			for(StateVO possibleState : possibleStates) {
+				if(possibleState.getId().equals(targetState)) {
+					stateName = possibleState.getStatename();
+					stateID = possibleState.getId();
+					stateNumeral = possibleState.getNumeral();
+					stateIcon = possibleState.getIcon();
+					stateDescription = possibleState.getDescription();
+					break;
+				}
+				// for compatibility to old fashioned way to set target state via other properties.
 				if(possibleState.getNumeral().equals(targetState)) {
 					stateName = possibleState.getStatename();
 					stateID = possibleState.getId();
+					stateNumeral = possibleState.getNumeral();
 					stateIcon = possibleState.getIcon();
 					stateDescription = possibleState.getDescription();
 					break;
 				}
 			}
 			
-			StateWrapper newState = new StateWrapper(stateID, targetState, stateName, stateIcon, stateDescription);
+			StateWrapper newState = new StateWrapper(stateID, stateNumeral, stateName, stateIcon, stateDescription);
 			gController.cmdChangeState(newState);
 		}
 		else {
@@ -90,4 +103,34 @@ public class ChangeStateButtonAction<Clct extends Collectable> implements Collec
 		}
 	}
 
+	@Override
+	public boolean isRunnable(CollectController<Clct> controller, Properties probs) {
+		if(controller instanceof GenericObjectCollectController) {
+			GenericObjectCollectController gController = (GenericObjectCollectController) controller;
+			
+			if (!controller.getDetailsPanel().isVisible()) {
+				// is not in details view, is in search or elsewhere
+				return false;
+			}
+			
+			String sTargetState = probs.getProperty("targetState");
+			Integer targetState = null;
+			try {
+				 targetState = Integer.parseInt(sTargetState);
+			} catch (NumberFormatException e) {
+				return false;
+			}
+			
+			List<StateVO> lstSubsequentStates = gController.getPossibleSubsequentStates();
+			for (Iterator it = lstSubsequentStates.iterator(); it.hasNext();) {
+				StateVO stateVO = (StateVO) it.next();
+				if (stateVO.getId().equals(targetState))
+					return true;
+				// for compatibility to old fashioned way to set target state via other properties.
+				if (stateVO.getNumeral().equals(targetState))
+					return true;
+			}
+		}
+		return false;
+	}
 }

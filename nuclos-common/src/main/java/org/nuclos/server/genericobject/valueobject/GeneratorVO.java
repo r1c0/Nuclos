@@ -79,6 +79,42 @@ public class GeneratorVO implements Serializable {
 		return result;
 	}
 
+	/**
+	 * gets a list of generator actions by module.
+	 * @param iModuleId source module id
+	 * @return List<GeneratorActionVO> list of generator actions
+	 * @postcondition result != null
+	 */
+	public List<GeneratorActionVO> getGeneratorActions(Integer iModuleId) {
+		final List<GeneratorActionVO> result = new LinkedList<GeneratorActionVO>();
+		for (GeneratorActionVO generatoractionvo : lstActions) {
+			if (iModuleId.equals(generatoractionvo.getSourceModuleId())) {
+				result.add(generatoractionvo);
+			}
+		}
+		assert result != null;
+		return result;
+	}
+
+
+	/**
+	 * gets a generator action by id.
+	 * @param iGeneratorActionId the generator action id
+	 * @return GeneratorActionVO the generator action
+	 * @postcondition result != null
+	 */
+	public GeneratorActionVO getGeneratorAction(Integer iGeneratorActionId) {
+		GeneratorActionVO result = null;
+		final MetaDataProvider mdProv = SpringApplicationContextHolder.getBean(MetaDataProvider.class);
+		for (GeneratorActionVO generatoractionvo : lstActions) {
+			if (generatoractionvo.getId().equals(iGeneratorActionId)) {
+				result = generatoractionvo;
+			}
+		}
+		assert result != null;
+		return result;
+	}
+
 	private String getStateMnemonicFromGeneratorusageVO(GeneratorUsageVO guvo) {
 		String state = guvo.getStateMnemonic();
 		int index = state.indexOf(" ");

@@ -49,4 +49,9 @@ public class DummyButtonAction<Clct extends Collectable> implements CollectActio
 		overlayFrame.setLayeredComponent(new JLabel(DUMMYBUTTONACTION.MESSAGE));
 		controller.getFrame().add(overlayFrame);
 	}
+
+	@Override
+	public boolean isRunnable(CollectController<Clct> controller, Properties probs) {
+		return true;
+	}
 }

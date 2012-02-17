@@ -37,6 +37,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -62,6 +63,7 @@ import javax.swing.border.TitledBorder;
 
 import org.apache.commons.lang.NullArgumentException;
 import org.apache.log4j.Logger;
+import org.eclipse.jdt.core.dom.InstanceofExpression;
 import org.nuclos.client.common.NuclosDropTargetListener;
 import org.nuclos.client.common.NuclosDropTargetVisitor;
 import org.nuclos.client.common.Utils.CollectableLookupProvider;
@@ -2430,7 +2432,19 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 			 */
 			@Override
             public void startElement(String sUriNameSpace, String sSimpleName, String sQualifiedName, Attributes attributes) {
-				final JButton btn = new JButton();
+				final JButton btn = new JButton() {
+					@Override
+					public void setActionCommand(String actionCommand) {
+						super.setActionCommand(actionCommand);
+						
+						ActionListener[] als = getActionListeners();
+						for (int i = 0; i < als.length; i++) {
+							ActionListener al = als[i];
+							if (al instanceof LayoutMLButtonActionListener)
+								((LayoutMLButtonActionListener)al).setParentComponent(this, actionCommand);
+						}
+					}
+				};
 
 				// name:
 				final String sName = attributes.getValue(ATTRIBUTE_NAME);
@@ -2701,6 +2715,10 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 					} else if (STATIC_BUTTON.EXECUTE_RULE_ACTION.equals(button.getActionCommand())) {
 						if ("ruletoexecute".equals(sName)) {
 							button.setActionCommand(button.getActionCommand() + "_ruletoexecute=" + oValue);
+						}
+					} else if (STATIC_BUTTON.GENERATOR_ACTION.equals(button.getActionCommand())) {
+						if ("generatortoexecute".equals(sName)) {
+							button.setActionCommand(button.getActionCommand() + "_generatortoexecute=" + oValue);
 						}
 					}
 				} else {

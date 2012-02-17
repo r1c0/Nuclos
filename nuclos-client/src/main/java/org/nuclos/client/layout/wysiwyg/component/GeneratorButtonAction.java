@@ -16,13 +16,11 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.layout.wysiwyg.component;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Properties;
 
+import org.nuclos.client.genericobject.GeneratorActions;
 import org.nuclos.client.genericobject.GenericObjectCollectController;
 import org.nuclos.client.masterdata.MasterDataCollectController;
-import org.nuclos.client.rule.RuleDelegate;
 import org.nuclos.client.ui.Errors;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.client.ui.collect.CollectActionAdapter;
@@ -32,7 +30,7 @@ import org.nuclos.client.ui.collect.UserCancelledException;
 import org.nuclos.common.collect.collectable.Collectable;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonFinderException;
-import org.nuclos.server.ruleengine.valueobject.RuleVO;
+import org.nuclos.server.genericobject.valueobject.GeneratorActionVO;
 
 
 /**
@@ -45,7 +43,7 @@ import org.nuclos.server.ruleengine.valueobject.RuleVO;
  * @author <a href="mailto:hartmut.beckschulze@novabit.de">hartmut.beckschulze</a>
  * @version 01.00.00
  */
-public class ExecuteRuleButtonAction<Clct extends Collectable> implements CollectActionAdapter<Clct> {
+public class GeneratorButtonAction<Clct extends Collectable> implements CollectActionAdapter<Clct> {
 
 	/**
 	 */
@@ -69,24 +67,25 @@ public class ExecuteRuleButtonAction<Clct extends Collectable> implements Collec
 					}
 					 */
 
-					String sruleId = probs.getProperty("ruletoexecute");
-					Integer ruleId = null;
+					String sactionId = probs.getProperty("generatortoexecute");
+					Integer actionId = null;
 					try {
-						ruleId = Integer.parseInt(sruleId);
+						actionId = Integer.parseInt(sactionId);
 					}
 					catch (NumberFormatException e) {
 						Errors.getInstance().showExceptionDialog(controller.getCollectPanel(), e);
 						return;
 					}
-					RuleVO ruleToExecute = RuleDelegate.getInstance().get(ruleId);
-					if (ruleToExecute != null) {
-						List<RuleVO> rule = new ArrayList<RuleVO>();
-						rule.add(ruleToExecute);
+				
+					GeneratorActionVO generatorToExecute = GeneratorActions.getGeneratorAction(actionId);
+					if (generatorToExecute != null) {
 						if (controller instanceof MasterDataCollectController) {
-							((MasterDataCollectController)controller).executeBusinessRules(rule, true);
+							if (((MasterDataCollectController)controller).getGeneratorActions().contains(generatorToExecute))
+								((MasterDataCollectController)controller).cmdGenerateObject(generatorToExecute);
 						}
 						else if (controller instanceof GenericObjectCollectController) {
-							((GenericObjectCollectController)controller).executeBusinessRules(rule, true);
+							if (((GenericObjectCollectController)controller).getGeneratorActions().contains(generatorToExecute))
+								((GenericObjectCollectController)controller).cmdGenerateObject(generatorToExecute);
 						}
 						controller.refreshCurrentCollectable();
 					}
@@ -110,23 +109,25 @@ public class ExecuteRuleButtonAction<Clct extends Collectable> implements Collec
 			return false;
 		}
 		
+		String sactionId = probs.getProperty("generatortoexecute");
+		Integer actionId = null;
 		try {
-			String sruleId = probs.getProperty("ruletoexecute");
-			Integer ruleId = null;
-			try {
-				ruleId = Integer.parseInt(sruleId);
-			}
-			catch (NumberFormatException e) {
-				return false;
-			}
-			
-			RuleVO ruleToExecute = RuleDelegate.getInstance().get(ruleId);
-			if (ruleToExecute != null && ruleToExecute.isActive() && !ruleToExecute.isRemoved()) {
-				return true;
-			}
+			actionId = Integer.parseInt(sactionId);
 		}
-		catch (CommonFinderException e) {
-			// do nothing
+		catch (NumberFormatException e) {
+			return false;
+		}
+	
+		GeneratorActionVO generatorToExecute = GeneratorActions.getGeneratorAction(actionId);
+		if (generatorToExecute != null) {
+			if (controller instanceof MasterDataCollectController) {
+				if (((MasterDataCollectController)controller).getGeneratorActions().contains(generatorToExecute))
+					return true;
+			}
+			else if (controller instanceof GenericObjectCollectController) {
+				if (((GenericObjectCollectController)controller).getGeneratorActions().contains(generatorToExecute))
+					return true;
+			}
 		}
 		return false;
 	}

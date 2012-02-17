@@ -1845,8 +1845,10 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	 */
 	@Override
 	protected LayoutRoot getInitialLayoutMLDefinitionForSearchPanel() {
-		return getLayoutFromCache(new UsageCriteria(getModuleId(), null),
+		LayoutRoot layoutRoot = getLayoutFromCache(new UsageCriteria(getModuleId(), null),
 			new CollectState(CollectState.OUTERSTATE_SEARCH, CollectState.SEARCHMODE_UNSYNCHED));
+		getLayoutMLButtonsActionListener().setComponentsEnabled(false);
+		return layoutRoot;
 	}
 
 	protected LayoutRoot getInitialLayoutMLDefinitionForDetailsPanel() {
@@ -2295,7 +2297,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 
 			selectTabPane(clct);
 
-
+			getLayoutMLButtonsActionListener().fireComponentEnabledStateUpdate();
 		}
 		finally {
 			/** @todo this doesn't seem to belong here... */
@@ -2562,6 +2564,8 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 
 		// begin multi-update of dependants:
 		multiupdateofdependants = new MultiUpdateOfDependants(getSubFormControllersInDetails(), collclct);
+		
+        getLayoutMLButtonsActionListener().setComponentsEnabled(false);
 	}
 
 	/**
@@ -3491,6 +3495,12 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		}
 
 		cmpStateStandardView.setEnabled(cmpStateStandardView.getItemCount() != 0);
+	}
+	
+	public List<StateVO> getPossibleSubsequentStates() {
+		UsageCriteria uc = getUsageCriteria(getSelectedCollectable());
+		DynamicAttributeVO av = getSelectedCollectable().getGenericObjectCVO().getAttribute(NuclosEOField.STATE.getMetaData().getId().intValue());
+		return StateDelegate.getInstance().getStatemodel(uc).getSubsequentStates(av.getValueId(), false);
 	}
 
 	private void showCustomActions(int iDetailsMode) {
@@ -5842,7 +5852,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	}
 
 	@Override
-	protected List<GeneratorActionVO> getGeneratorActions() {
+	public List<GeneratorActionVO> getGeneratorActions() {
 		try {
 			if (CollectState.isDetailsModeViewOrEdit(getCollectStateModel().getDetailsMode())) {
 				final UsageCriteria usagecriteria = getUsageCriteriaFromView(false);
@@ -5866,7 +5876,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	}
 
 	@Override
-	protected void cmdGenerateObject(GeneratorActionVO generatoractionvo) {
+	public void cmdGenerateObject(GeneratorActionVO generatoractionvo) {
 		Map<Long, UsageCriteria> sources = new HashMap<Long, UsageCriteria>();
 		for (CollectableGenericObjectWithDependants clct : getSelectedCollectables()) {
 			sources.put(IdUtils.toLongId(clct.getId()), getUsageCriteria(clct));

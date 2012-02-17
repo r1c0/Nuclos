@@ -24,6 +24,7 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.LayoutManager;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -39,6 +40,9 @@ import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
 
 import org.apache.log4j.Logger;
+import org.nuclos.client.common.MetaDataClientProvider;
+import org.nuclos.client.genericobject.GeneratorActions;
+import org.nuclos.client.genericobject.Modules;
 import org.nuclos.client.layout.wysiwyg.WYSIWYGStringsAndLabels.JTABBEDPANE;
 import org.nuclos.client.layout.wysiwyg.WYSIWYGStringsAndLabels.STATIC_BUTTON;
 import org.nuclos.client.layout.wysiwyg.component.TitledBorderWithTranslations;
@@ -95,10 +99,14 @@ import org.nuclos.client.layout.wysiwyg.editor.util.valueobjects.layoutmlrules.L
 import org.nuclos.client.layout.wysiwyg.editor.util.valueobjects.layoutmlrules.LayoutMLRuleEventType;
 import org.nuclos.client.layout.wysiwyg.editor.util.valueobjects.layoutmlrules.LayoutMLRules;
 import org.nuclos.client.rule.RuleDelegate;
+import org.nuclos.client.statemodel.StateDelegate;
+import org.nuclos.common2.IdUtils;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonValidationException;
 import org.nuclos.common2.layoutml.LayoutMLConstants;
+import org.nuclos.server.genericobject.valueobject.GeneratorActionVO;
 import org.nuclos.server.ruleengine.valueobject.RuleVO;
+import org.nuclos.server.statemodel.valueobject.StateVO;
 
 /**
  * This Class generates the LayoutML.
@@ -783,7 +791,7 @@ public class LayoutMLGenerator implements LayoutMLConstants {
 		if (STATIC_BUTTON.EXECUTE_RULE_ACTION_LABEL.equals(actionCommand)) {
 			// is a execute rule action command
 			try {
-				String rule = (String)c.getProperties().getProperty(WYSIWYGStaticButton.PROPERTY_RULE).getValue();
+				String rule = (String)c.getProperties().getProperty(WYSIWYGStaticButton.PROPERTY_ACTIONCOMMAND_PROPERTIES).getValue();
 				RuleVO ruleVO = RuleDelegate.getInstance().get(rule);
 				WYSIYWYGProperty temp = new WYSIYWYGProperty();
 				temp.addWYSIYWYGPropertySet(new WYSIYWYGPropertySet("ruletoexecute", ruleVO.getId() + ""));
@@ -792,7 +800,66 @@ public class LayoutMLGenerator implements LayoutMLConstants {
 				LOG.warn("getLayoutMLForStaticButton failed: " + e, e);
 			}
 		}
-		
+		if (STATIC_BUTTON.GENERATOR_ACTION_LABEL.equals(actionCommand)) {
+			// is a execute generator action command
+			try {
+				String sEntity = c.getParentEditor().getMetaInformation().getCollectableEntity().getName();
+				final Integer iModuleId;
+				if (Modules.getInstance().existModule(sEntity)) 
+					iModuleId = Modules.getInstance().getModuleByEntityName(sEntity).getIntId();
+				else
+					iModuleId = IdUtils.unsafeToId(MetaDataClientProvider.getInstance().getEntity(sEntity).getId());
+				
+				String generator = (String)c.getProperties().getProperty(WYSIWYGStaticButton.PROPERTY_ACTIONCOMMAND_PROPERTIES).getValue();
+				Collection<GeneratorActionVO> collGenerators = GeneratorActions.getGeneratorActions(iModuleId);
+				
+				GeneratorActionVO generatorActionVO = null;
+				for (GeneratorActionVO gen: collGenerators) {
+					if (gen.getName().equals(generator)) {
+						generatorActionVO = gen;
+						break;
+					}
+				}
+				if (generatorActionVO != null) {
+					WYSIYWYGProperty temp = new WYSIYWYGProperty();
+					temp.addWYSIYWYGPropertySet(new WYSIYWYGPropertySet("generatortoexecute", generatorActionVO.getId() + ""));
+					block.append(getLayoutMLCollectableComponentProperty(temp, blockDeep + 1));
+				}
+			} catch (Exception e) {
+				LOG.warn("getLayoutMLForStaticButton failed: " + e, e);
+			}
+		}
+		if (STATIC_BUTTON.STATE_CHANGE_ACTION_LABEL.equals(actionCommand)) {
+			// is a execute generator action command
+			try {
+				final Collection<StateVO> collStates;
+				String sEntity = c.getParentEditor().getMetaInformation().getCollectableEntity().getName();
+				if (Modules.getInstance().existModule(sEntity)) {
+					Integer iModuleId = Modules.getInstance().getModuleByEntityName(sEntity).getIntId();
+					collStates = StateDelegate.getInstance().getStatesByModule(iModuleId);
+				} else {
+					collStates = Collections.emptyList();
+				}
+				
+				String targetState = (String)c.getProperties().getProperty(WYSIWYGStaticButton.PROPERTY_ACTIONCOMMAND_PROPERTIES).getValue();
+				
+				StateVO stateVO = null;
+				for (StateVO state: collStates) {
+					if (state.getNumeral().toString().equals(targetState)) {
+						stateVO = state;
+						break;
+					}
+				}
+				
+				if (stateVO != null) {
+					WYSIYWYGProperty temp = new WYSIYWYGProperty();
+					temp.addWYSIYWYGPropertySet(new WYSIYWYGPropertySet("targetState", stateVO.getId() + ""));
+					block.append(getLayoutMLCollectableComponentProperty(temp, blockDeep + 1));
+				}
+			} catch (Exception e) {
+				LOG.warn("getLayoutMLForStaticButton failed: " + e, e);
+			}
+		}
 		//NUCLEUSINT-1159
 		WYSIYWYGProperty collectableComponentProperties = (WYSIYWYGProperty) c.getProperties().getProperty(WYSIWYGCollectableComponent.PROPERTY_COLLECTABLECOMPONENTPROPERTY).getValue();
 		if (collectableComponentProperties != null) {
@@ -1005,6 +1072,8 @@ public class LayoutMLGenerator implements LayoutMLConstants {
 				} else if (STATIC_BUTTON.EXECUTE_RULE_ACTION_LABEL.equals(propertyValue)) {
 					//NUCLOSINT-743
 					sb.append(STATIC_BUTTON.EXECUTE_RULE_ACTION);
+				} else if (STATIC_BUTTON.GENERATOR_ACTION_LABEL.equals(propertyValue)) {
+					sb.append(STATIC_BUTTON.GENERATOR_ACTION);
 				}	else
 					sb.append(StringUtils.xmlEncode(propertyValue));
 			} else if (property instanceof PropertyValueBoolean) {

@@ -31,4 +31,5 @@ import org.nuclos.common.collect.collectable.Collectable;
  */
 public interface CollectActionAdapter<Clct extends Collectable> {
 	public void run(CollectController<Clct> controller, Properties probs);
+	public boolean isRunnable(CollectController<Clct> controller, Properties probs);
 }

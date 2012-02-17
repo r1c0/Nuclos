@@ -638,12 +638,12 @@ public class RuleCollectController extends EntityCollectController<CollectableRu
 	}
 
 	@Override
-	protected void cmdGenerateObject(GeneratorActionVO generatoractionvo) {
+	public void cmdGenerateObject(GeneratorActionVO generatoractionvo) {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	protected List<GeneratorActionVO> getGeneratorActions() {
+	public List<GeneratorActionVO> getGeneratorActions() {
 		return Collections.emptyList();
 	}
 }	// class RuleCollectController

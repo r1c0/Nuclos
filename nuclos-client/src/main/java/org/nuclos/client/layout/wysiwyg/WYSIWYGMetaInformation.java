@@ -33,13 +33,16 @@ import org.apache.log4j.Logger;
 import org.nuclos.client.attribute.AttributeCache;
 import org.nuclos.client.common.MetaDataClientProvider;
 import org.nuclos.client.common.NuclosCollectableEntityProvider;
+import org.nuclos.client.genericobject.GeneratorActions;
 import org.nuclos.client.genericobject.Modules;
 import org.nuclos.client.layout.wysiwyg.WYSIWYGStringsAndLabels.COMMON_LABELS;
+import org.nuclos.client.layout.wysiwyg.WYSIWYGStringsAndLabels.STATIC_BUTTON;
 import org.nuclos.client.layout.wysiwyg.component.WYSIWYGCollectableCheckBox;
 import org.nuclos.client.layout.wysiwyg.component.WYSIWYGCollectableComboBox;
 import org.nuclos.client.layout.wysiwyg.component.WYSIWYGCollectableDateChooser;
 import org.nuclos.client.layout.wysiwyg.component.WYSIWYGCollectableListOfValues;
 import org.nuclos.client.layout.wysiwyg.component.WYSIWYGComponent;
+import org.nuclos.client.layout.wysiwyg.component.WYSIWYGStaticButton;
 import org.nuclos.client.layout.wysiwyg.component.WYSIWYGSubForm;
 import org.nuclos.client.layout.wysiwyg.component.WYSIWYGSubFormColumn;
 import org.nuclos.client.layout.wysiwyg.component.WYSIWYGUniversalComponent;
@@ -51,6 +54,7 @@ import org.nuclos.client.layout.wysiwyg.editor.util.valueobjects.WYSIWYGValuelis
 import org.nuclos.client.masterdata.MetaDataCache;
 import org.nuclos.client.resource.ResourceDelegate;
 import org.nuclos.client.rule.RuleDelegate;
+import org.nuclos.client.statemodel.StateDelegate;
 import org.nuclos.client.ui.collect.component.CollectableComponentType;
 import org.nuclos.common.NuclosAttributeNotFoundException;
 import org.nuclos.common.NuclosImage;
@@ -66,16 +70,20 @@ import org.nuclos.common.collection.Transformer;
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.genericobject.CollectableGenericObjectEntityField;
 import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.IdUtils;
 import org.nuclos.common2.Localizable;
 import org.nuclos.common2.StringUtils;
+import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.common2.exception.CommonFinderException;
 import org.nuclos.common2.layoutml.LayoutMLConstants;
 import org.nuclos.server.attribute.valueobject.AttributeCVO;
+import org.nuclos.server.genericobject.valueobject.GeneratorActionVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataMetaFieldVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataMetaVO;
 import org.nuclos.server.ruleengine.valueobject.RuleEventUsageVO;
 import org.nuclos.server.ruleengine.valueobject.RuleVO;
+import org.nuclos.server.statemodel.valueobject.StateVO;
 
 /**
  * This class connects the WYSIWYG Editor with the Backbone.
@@ -100,7 +108,7 @@ public class WYSIWYGMetaInformation implements LayoutMLConstants {
 	public static final String META_ENTITY_FIELD_NAMES_REFERENCING = "meta_entity_field_names_referencing";
 	public static final String META_CONTROLTYPE = "meta_controltype";
 	public static final String META_SHOWONLY = "meta_showonly";
-	public static final String META_RULES = "meta_rules";
+	public static final String META_ACTIONCOMMAND_PROPERTIES = "meta_actioncommand_properties";
 	//NUCLEUSINT-390
 	public static final String META_POSSIBLE_PARENT_SUBFORMS = "meta_subforms";
 	public static final String META_ICONS = "meta_icons";
@@ -122,6 +130,10 @@ public class WYSIWYGMetaInformation implements LayoutMLConstants {
 	}
 
 	private CollectableEntity entity;
+	
+	private Collection<RuleVO> collRules;
+	private Collection<StateVO> collStates;
+	private Collection<GeneratorActionVO> collGenerators;
 
 	/** used for collecting the informations */
 	private CollectableEntityProvider provider = NuclosCollectableEntityProvider.getInstance();
@@ -133,6 +145,10 @@ public class WYSIWYGMetaInformation implements LayoutMLConstants {
 	 */
 	public void setCollectableEntity(CollectableEntity entity) {
 		this.entity = entity;
+		
+		this.collRules = null;
+		this.collStates = null;
+		this.collGenerators = null;
 	}
 
 	/**
@@ -299,20 +315,32 @@ public class WYSIWYGMetaInformation implements LayoutMLConstants {
 			}
 			// should be possible to deselect a parent subform
 			result.add(new StringResourceIdPair("", null));
-		} else if (META_RULES.equals(meta)) {
-			//NUCLOSINT-743 get all the user driven rules for this entity
-			Collection<RuleVO> collRules = RuleDelegate.getInstance().getByEventAndEntityOrdered(RuleEventUsageVO.USER_EVENT, getCollectableEntity().getName());
-			// remove inactive rules
-			CollectionUtils.removeAll(collRules, new Predicate<RuleVO>() {
-				@Override
-                public boolean evaluate(RuleVO rulevo) {
-					return !rulevo.isActive();
+		} else if (META_ACTIONCOMMAND_PROPERTIES.equals(meta)) {
+			PropertyValue propActionCommand = c.getProperties().getProperty(WYSIWYGStaticButton.PROPERTY_ACTIONCOMMAND);
+			if (propActionCommand != null) {
+				String actionCommand = ((PropertyValueString)dialog.getModel().getValueAt(getDialogTableModelPropertyRowIndex(dialog, WYSIWYGStaticButton.PROPERTY_ACTIONCOMMAND), 1)).getValue();
+				if (actionCommand != null) {
+					if (STATIC_BUTTON.DUMMY_BUTTON_ACTION_LABEL.equals(actionCommand))
+						; // do nothing
+					else if (STATIC_BUTTON.STATE_CHANGE_ACTION_LABEL.equals(actionCommand)) {
+						Collection<StateVO> collStates = getStates();
+						for (StateVO state: collStates) {
+							result.add(new StringResourceIdPair(state.getNumeral().toString(), null));
+						}
+					} else if (STATIC_BUTTON.EXECUTE_RULE_ACTION_LABEL.equals(actionCommand)) {
+						//NUCLOSINT-743 get all the user driven rules for this entity
+						Collection<RuleVO> collRules = getRules();
+						for (RuleVO rule: collRules) {
+							result.add(new StringResourceIdPair(rule.getRule(), null));
+						}		
+					} else if (STATIC_BUTTON.GENERATOR_ACTION_LABEL.equals(actionCommand)) {
+						Collection<GeneratorActionVO> collGenerators = getGeneratorActions();
+						for (GeneratorActionVO generator: collGenerators) {
+							result.add(new StringResourceIdPair(generator.getName(), null));
+						}
+					} 
 				}
-			});
-			for (RuleVO rule: collRules) {
-				result.add(new StringResourceIdPair(rule.getRule(), null));
-			}
-		} else if (META_ICONS.equals(meta)) {
+			}} else if (META_ICONS.equals(meta)) {
 			result.addAll(CollectionUtils.transform(ResourceDelegate.getInstance().getIconResources(), new Transformer<String, StringResourceIdPair>() {
 				@Override
 				public StringResourceIdPair transform(String i) {
@@ -322,6 +350,45 @@ public class WYSIWYGMetaInformation implements LayoutMLConstants {
 		}
 
 		return result;
+	}
+	
+	private Collection<RuleVO> getRules() {
+		if (this.collRules == null) {
+			//NUCLOSINT-743 get all the user driven rules for this entity
+			this.collRules = RuleDelegate.getInstance().getByEventAndEntityOrdered(RuleEventUsageVO.USER_EVENT, getCollectableEntity().getName());
+			// remove inactive rules
+			CollectionUtils.removeAll(collRules, new Predicate<RuleVO>() {
+				@Override
+	            public boolean evaluate(RuleVO rulevo) {
+					return !rulevo.isActive();
+				}
+			});
+		}
+		return collRules;
+	}
+	
+	private Collection<StateVO> getStates() {
+		if (this.collStates == null) {
+			if (Modules.getInstance().existModule(getCollectableEntity().getName())) {
+				Integer iModuleId = Modules.getInstance().getModuleByEntityName(getCollectableEntity().getName()).getIntId();
+				this.collStates = StateDelegate.getInstance().getStatesByModule(iModuleId);
+			} else {
+				this.collStates = Collections.emptyList();
+			}
+		}
+		return collStates;
+	}
+
+	private Collection<GeneratorActionVO> getGeneratorActions() {
+		if (this.collGenerators == null) {
+			final Integer iModuleId;
+			if (Modules.getInstance().existModule(getCollectableEntity().getName())) 
+				iModuleId = Modules.getInstance().getModuleByEntityName(getCollectableEntity().getName()).getIntId();
+			else
+				iModuleId = IdUtils.unsafeToId(MetaDataClientProvider.getInstance().getEntity(getCollectableEntity().getName()).getId());
+			collGenerators = GeneratorActions.getGeneratorActions(iModuleId);
+		}
+		return collGenerators;
 	}
 
 	/**

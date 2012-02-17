@@ -1128,9 +1128,9 @@ public abstract class EntityCollectController<Clct extends Collectable> extends 
 		}
 	}
 
-	protected abstract void cmdGenerateObject(GeneratorActionVO generatoractionvo);
+	public abstract void cmdGenerateObject(GeneratorActionVO generatoractionvo);
 
-	protected abstract List<GeneratorActionVO> getGeneratorActions();
+	public abstract List<GeneratorActionVO> getGeneratorActions();
 
 	protected void setupResultContextMenuGeneration() {
 		this.getResultPanel().popupmenuRow.addPopupMenuListener(new PopupMenuListener() {

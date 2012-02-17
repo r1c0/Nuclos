@@ -803,10 +803,9 @@ public class WYSIWYGStringsAndLabels {
 		public static final String TABPLACEMENT = "Reiterposition";
 		/** static button */
 		public static final String ACTIONCOMMAND = "Befehlstyp";
+		public static final String ACTIONCOMMAND_PROPERTIES = "Argumente";
 		public static final String LABEL = "Beschriftung";
 		public static final String TOOLTIP = "Tooltip";
-		//NUCLOSINT-743
-		public static final String RULE = "Auszuf\u00fchrende Regel";
 		/** static combobox */
 		public static final String EDITABLE = "Editierbar";
 		/** static label */
@@ -1253,6 +1252,8 @@ public class WYSIWYGStringsAndLabels {
 		public static final String EXECUTE_RULE_ACTION = "org.nuclos.client.layout.wysiwyg.component.ExecuteRuleButtonAction";
 		public static final String DUMMY_BUTTON_ACTION_LABEL = "Dummy Action";
 		public static final String DUMMY_BUTTON_ACTION = "org.nuclos.client.layout.wysiwyg.component.DummyButtonAction";
+		public static final String GENERATOR_ACTION_LABEL = "Arbeitsschritt";
+		public static final String GENERATOR_ACTION = "org.nuclos.client.layout.wysiwyg.component.GeneratorButtonAction";
 
 		@Override
 		public Icon getIcon() {

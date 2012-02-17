@@ -27,6 +27,7 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.net.URL;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -40,6 +41,9 @@ import javax.swing.border.CompoundBorder;
 import org.apache.log4j.Logger;
 import org.nuclos.client.common.LocaleDelegate;
 import org.nuclos.client.common.NuclosCollectableEntityProvider;
+import org.nuclos.client.genericobject.GeneratorActions;
+import org.nuclos.client.genericobject.Modules;
+import org.nuclos.client.layout.wysiwyg.WYSIWYGMetaInformation.StringResourceIdPair;
 import org.nuclos.client.layout.wysiwyg.WYSIWYGStringsAndLabels.ERROR_MESSAGES;
 import org.nuclos.client.layout.wysiwyg.WYSIWYGStringsAndLabels.PROPERTY_LABELS;
 import org.nuclos.client.layout.wysiwyg.component.ComponentProcessors;
@@ -87,6 +91,7 @@ import org.nuclos.client.layout.wysiwyg.editor.util.valueobjects.layoutmlrules.L
 import org.nuclos.client.layout.wysiwyg.editor.util.valueobjects.layoutmlrules.LayoutMLRules;
 import org.nuclos.client.masterdata.MetaDataCache;
 import org.nuclos.client.rule.RuleDelegate;
+import org.nuclos.client.statemodel.StateDelegate;
 import org.nuclos.client.ui.Errors;
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common2.LocaleInfo;
@@ -95,8 +100,10 @@ import org.nuclos.common2.XMLUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.common2.layoutml.LayoutMLConstants;
+import org.nuclos.server.genericobject.valueobject.GeneratorActionVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataMetaVO;
 import org.nuclos.server.ruleengine.valueobject.RuleVO;
+import org.nuclos.server.statemodel.valueobject.StateVO;
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.EntityResolver;
@@ -852,14 +859,55 @@ public class LayoutMLLoader implements LayoutMLConstants {
 			public void startElement(Attributes atts) throws SAXException {
 				if (peekComponent() instanceof WYSIWYGStaticButton) {
 						String label = atts.getValue("name");
-						String ruleId = atts.getValue("value");
+						String valueId = atts.getValue("value");
 					if ("ruletoexecute".equals(label)) {
 						RuleVO ruleToExecute;
 						try {
-							ruleToExecute = RuleDelegate.getInstance().get(Integer.parseInt(ruleId));
+							ruleToExecute = RuleDelegate.getInstance().get(Integer.parseInt(valueId));
 							final PropertyValue<String> pv = (PropertyValue<String>) 
-									peekComponent().getProperties().getProperty(WYSIWYGStaticButton.PROPERTY_RULE);
+									peekComponent().getProperties().getProperty(WYSIWYGStaticButton.PROPERTY_ACTIONCOMMAND_PROPERTIES);
 							pv.setValue(ruleToExecute.getRule());
+						} catch (Exception e) {
+							LOG.warn("startElement failed: " + e, e);
+						}
+					} else if ("generatortoexecute".equals(label)) {
+						GeneratorActionVO generatorToExecute;
+						try {
+							generatorToExecute = GeneratorActions.getGeneratorAction(Integer.parseInt(valueId));
+							final PropertyValue<String> pv = (PropertyValue<String>) 
+									peekComponent().getProperties().getProperty(WYSIWYGStaticButton.PROPERTY_ACTIONCOMMAND_PROPERTIES);
+							pv.setValue(generatorToExecute.getName());
+						} catch (Exception e) {
+							LOG.warn("startElement failed: " + e, e);
+						}
+					} else if ("targetState".equals(label)) {
+						StateVO targetState = null;
+						try {
+							final Collection<StateVO> collStates;
+							String sEntity = peekComponent().getProperties().getMetaInformation().getCollectableEntity().getName();
+							if (Modules.getInstance().existModule(sEntity)) {
+								Integer iModuleId = Modules.getInstance().getModuleByEntityName(sEntity).getIntId();
+								collStates = StateDelegate.getInstance().getStatesByModule(iModuleId);
+							} else {
+								collStates = Collections.emptyList();
+							}
+							for (StateVO state: collStates) {
+								if (state.getId().equals(Integer.parseInt(valueId))) {
+									targetState = state;
+									break;
+								}
+								// for compatibility to old fashioned way to set target state via other properties.
+								if (state.getNumeral().equals(Integer.parseInt(valueId))) {
+									targetState = state;
+									break;
+								}
+							}
+							
+							if (targetState != null) {
+								final PropertyValue<String> pv = (PropertyValue<String>) 
+										peekComponent().getProperties().getProperty(WYSIWYGStaticButton.PROPERTY_ACTIONCOMMAND_PROPERTIES);
+								pv.setValue(targetState.getNumeral().toString());
+							}
 						} catch (Exception e) {
 							LOG.warn("startElement failed: " + e, e);
 						}

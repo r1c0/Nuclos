@@ -64,14 +64,12 @@ public class WYSIWYGStaticButton extends JButton implements WYSIWYGComponent, WY
 
 	public static final String PROPERTY_NAME = PROPERTY_LABELS.NAME;
 	public static final String PROPERTY_ACTIONCOMMAND = PROPERTY_LABELS.ACTIONCOMMAND;
+	public static final String PROPERTY_ACTIONCOMMAND_PROPERTIES = PROPERTY_LABELS.ACTIONCOMMAND_PROPERTIES;
 	//NUCLEUSINT-1159
 	public static final String PROPERTY_PROPERTIES = PROPERTY_LABELS.COLLECTABLECOMPONENTPROPERTY;
 	public static final String PROPERTY_LABEL= PROPERTY_LABELS.LABEL;
 	public static final String PROPERTY_TOOLTIP = PROPERTY_LABELS.TOOLTIP;
 	public static String PROPERTY_ENABLED = PROPERTY_LABELS.ENABLED;
-	//NUCLOSINT-743
-	public static String PROPERTY_RULE = PROPERTY_LABELS.RULE;
-
 	public static final String PROPERTY_ICON = PROPERTY_LABELS.ICON;
 
 	public static final String[][] PROPERTIES_TO_LAYOUTML_ATTRIBUTES = new String[][]{
@@ -96,8 +94,7 @@ public class WYSIWYGStaticButton extends JButton implements WYSIWYGComponent, WY
 		PROPERTY_TRANSLATIONS,
 		//NUCLEUSINT-1159
 		PROPERTY_PROPERTIES	,
-		//NUCLOSINT-743
-		PROPERTY_RULE,
+		PROPERTY_ACTIONCOMMAND_PROPERTIES,
 		PROPERTY_ICON
 	};
 
@@ -114,8 +111,7 @@ public class WYSIWYGStaticButton extends JButton implements WYSIWYGComponent, WY
 		new PropertyClass(PROPERTY_TRANSLATIONS, TranslationMap.class),
 		//NUCLEUSINT-1159
 		new PropertyClass(PROPERTY_PROPERTIES, WYSIYWYGProperty.class),
-		//NUCLOSINT-743
-		new PropertyClass(PROPERTY_RULE, String.class),
+		new PropertyClass(PROPERTY_ACTIONCOMMAND_PROPERTIES, String.class),
 		new PropertyClass(PROPERTY_ICON, String.class)
 		};
 
@@ -144,19 +140,18 @@ public class WYSIWYGStaticButton extends JButton implements WYSIWYGComponent, WY
 		new PropertyFilter(PROPERTY_TRANSLATIONS, STANDARD_MODE),
 		//NUCLEUSINT-1159
 		new PropertyFilter(PROPERTY_PROPERTIES, EXPERT_MODE),
-		////NUCLOSINT-743
-		new PropertyFilter(PROPERTY_RULE, EXPERT_MODE),
+		new PropertyFilter(PROPERTY_ACTIONCOMMAND_PROPERTIES, EXPERT_MODE),
 		new PropertyFilter(PROPERTY_ICON, STANDARD_MODE | EXPERT_MODE)
 	};
 
 	//NUCLEUSINT-1159
     public static final String[][] PROPERTY_VALUES_STATIC = new String[][] {
-      {PROPERTY_ACTIONCOMMAND, STATIC_BUTTON.DUMMY_BUTTON_ACTION_LABEL, STATIC_BUTTON.STATE_CHANGE_ACTION_LABEL, STATIC_BUTTON.EXECUTE_RULE_ACTION_LABEL}
+      {PROPERTY_ACTIONCOMMAND, STATIC_BUTTON.DUMMY_BUTTON_ACTION_LABEL, STATIC_BUTTON.STATE_CHANGE_ACTION_LABEL, STATIC_BUTTON.EXECUTE_RULE_ACTION_LABEL, STATIC_BUTTON.GENERATOR_ACTION_LABEL}
     };
 
     ////NUCLOSINT-743 get the Business Rules for the entity
 	public static final String[][] PROPERTY_VALUES_FROM_METAINFORMATION = new String[][] {
-		{PROPERTY_RULE, WYSIWYGMetaInformation.META_RULES},
+		{PROPERTY_ACTIONCOMMAND_PROPERTIES, WYSIWYGMetaInformation.META_ACTIONCOMMAND_PROPERTIES},
 		{PROPERTY_ICON, WYSIWYGMetaInformation.META_ICONS}
 	};
 
@@ -293,6 +288,8 @@ public class WYSIWYGStaticButton extends JButton implements WYSIWYGComponent, WY
 				pv.setValue(STATIC_BUTTON.STATE_CHANGE_ACTION_LABEL);
 			else if (STATIC_BUTTON.EXECUTE_RULE_ACTION.equals(value.getValue()))
 				pv.setValue(STATIC_BUTTON.EXECUTE_RULE_ACTION_LABEL);
+			else if (STATIC_BUTTON.GENERATOR_ACTION.equals(value.getValue()))
+				pv.setValue(STATIC_BUTTON.GENERATOR_ACTION_LABEL);
 		}
 
 		properties.setProperty(property, value, valueClass);
@@ -320,6 +317,8 @@ public class WYSIWYGStaticButton extends JButton implements WYSIWYGComponent, WY
 				actionCommand = STATIC_BUTTON.STATE_CHANGE_ACTION;
 			else if (STATIC_BUTTON.EXECUTE_RULE_ACTION_LABEL.equals(actionCommand))
 				actionCommand = STATIC_BUTTON.EXECUTE_RULE_ACTION;
+			else if (STATIC_BUTTON.GENERATOR_ACTION_LABEL.equals(actionCommand))
+				actionCommand = STATIC_BUTTON.GENERATOR_ACTION;
 
 			try {
 				Class<?> actionClass = Class.forName(actionCommand);

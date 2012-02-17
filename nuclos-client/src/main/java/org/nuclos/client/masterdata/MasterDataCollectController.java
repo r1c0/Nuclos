@@ -998,6 +998,8 @@ public class MasterDataCollectController extends EntityCollectController<Collect
 			   };
 
 			   MasterDataCollectController.this.getSubFormsLoader().addSubFormClientWorker(subformctl.getCollectableEntity().getName(), sfClientWorker);
+
+			   getLayoutMLButtonsActionListener().fireComponentEnabledStateUpdate();
 		   }
 	   }
    }
@@ -1009,6 +1011,8 @@ public class MasterDataCollectController extends EntityCollectController<Collect
 
       // begin multi-update of dependants:
       this.multiupdateofdependants = new MultiUpdateOfDependants(this.getSubFormControllersInDetails(), collclct);
+
+      getLayoutMLButtonsActionListener().setComponentsEnabled(false);
    }
 
    @Override
@@ -1263,7 +1267,7 @@ public class MasterDataCollectController extends EntityCollectController<Collect
 				oId.set(mddelegate.update(getEntityName(), clct.getMasterDataCVO(), mpclctDependants.toDependantMasterDataMap()));
 			}
 	  });
-
+      
       final MasterDataVO mdvoUpdated = this.mddelegate.get(this.getEntityName(), oId.get());
       return new CollectableMasterDataWithDependants(clct.getCollectableEntity(), new MasterDataWithDependantsVO(mdvoUpdated, this.readDependants(mdvoUpdated.getId())));
    }
@@ -1570,7 +1574,9 @@ public class MasterDataCollectController extends EntityCollectController<Collect
 
 	@Override
 	protected LayoutRoot getInitialLayoutMLDefinitionForSearchPanel() {
-		return newLayoutRoot(true);
+		LayoutRoot layoutRoot = newLayoutRoot(true);
+		getLayoutMLButtonsActionListener().setComponentsEnabled(false);
+		return layoutRoot;
 	}
 
 	@Override
@@ -1678,7 +1684,7 @@ public class MasterDataCollectController extends EntityCollectController<Collect
 	}
 
 	@Override
-	protected void cmdGenerateObject(GeneratorActionVO generatoractionvo) {
+	public void cmdGenerateObject(GeneratorActionVO generatoractionvo) {
 		Map<Long, UsageCriteria> sources = new HashMap<Long, UsageCriteria>();
 		for (CollectableMasterDataWithDependants clct : getSelectedCollectables()) {
 			sources.put(IdUtils.toLongId(clct.getId()), null);
@@ -1688,7 +1694,7 @@ public class MasterDataCollectController extends EntityCollectController<Collect
 	}
 
 	@Override
-	protected List<GeneratorActionVO> getGeneratorActions() {
+	public List<GeneratorActionVO> getGeneratorActions() {
 		Integer entityId = IdUtils.unsafeToId(MetaDataClientProvider.getInstance().getEntity(getEntity()).getId());
 		return GeneratorActions.getActions(entityId, null, null);
 	}
