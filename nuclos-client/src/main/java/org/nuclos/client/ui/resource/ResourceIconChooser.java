@@ -17,6 +17,7 @@
 package org.nuclos.client.ui.resource;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
@@ -31,7 +32,9 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
+import javax.swing.AbstractListModel;
 import javax.swing.BorderFactory;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
@@ -47,15 +50,18 @@ import javax.swing.ListCellRenderer;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
+import javax.swing.SwingWorker;
 import javax.swing.event.ListSelectionListener;
 
 import org.apache.log4j.Logger;
+import org.jdesktop.swingx.JXBusyLabel;
 import org.nuclos.client.main.Main;
 import org.nuclos.client.main.mainframe.MainFrame;
 import org.nuclos.client.resource.NuclosResourceCache;
 import org.nuclos.client.resource.ResourceCache;
 import org.nuclos.client.resource.ResourceDelegate;
 import org.nuclos.client.synthetica.NuclosThemeSettings;
+import org.nuclos.client.ui.Errors;
 import org.nuclos.client.ui.Icons;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common2.CommonLocaleDelegate;
@@ -64,8 +70,14 @@ public class ResourceIconChooser extends JPanel {
 	
 	private static final Logger LOG = Logger.getLogger(ResourceIconChooser.class);
 	
+	private final boolean customResources;
+	
 	private final JList list;
+	private final JScrollPane listScroller;
 	private final List<String> iconNames = new ArrayList<String>();
+	
+	private boolean loading;
+	private String iconToSelect;
 	
 	private boolean saved;
 	
@@ -94,29 +106,10 @@ public class ResourceIconChooser extends JPanel {
 	}
 	
 	public ResourceIconChooser(final int iconMaxSize, boolean customResources) {
+		this.customResources = customResources;
 		setLayout(new BorderLayout());
 		
-		List<ImageIcon> icons = new ArrayList<ImageIcon>();
-		iconNames.add(null);
-		icons.add(Icons.getInstance().getIconEmpty16());
-		if (customResources) {
-			for (String sResource : CollectionUtils.sorted(ResourceDelegate.getInstance().getResourceNames())) {
-				try {
-					ImageIcon iconResource = ResourceCache.getInstance().getIconResource(sResource);
-					iconNames.add(sResource);
-					icons.add(iconResource);
-				} catch (Exception ex) {
-					// ignore. not an image icon.
-				}
-			}
-		} else {
-			for (String iconName : NuclosResourceCache.getNuclosResourceIcons()) {
-				iconNames.add(iconName);
-				icons.add(NuclosResourceCache.getNuclosResourceIcon(iconName));
-			}
-		}
-		
-		list = new JList(icons.toArray()) {
+		list = new JList() {
 
 			@Override
 			public int getScrollableUnitIncrement(Rectangle visibleRect,
@@ -185,40 +178,112 @@ public class ResourceIconChooser extends JPanel {
 		});
         list.setVisibleRowCount(-1);
         
-        JScrollPane listScroller = new JScrollPane(list);
+        listScroller = new JScrollPane(list);
         listScroller.setPreferredSize(new Dimension(250, 80));
         listScroller.setAlignmentX(LEFT_ALIGNMENT);
         
-        add(listScroller, BorderLayout.CENTER);
+        JXBusyLabel busyLabel = new JXBusyLabel();
+        busyLabel.setBusy(true);
+        
+        JPanel busyPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        busyPanel.setBackground(Color.WHITE);
+        busyPanel.add(busyLabel);
+        
+        add(new JScrollPane(busyPanel), BorderLayout.CENTER);
+        
+        loading = true;
+        iconToSelect = null;
+        
+        LoadWorker worker = new LoadWorker();
+        worker.execute();
 	}	
 	
-	public void setSelected(String name) {
-		int selectedIndex = -1;
-		
-		if (name == null) {
-			selectedIndex = 0;
-		} else {
-			for (int i = 0; i < iconNames.size(); i++) {
-				if (iconNames.get(i) != null && iconNames.get(i).equals(name)) {
-					selectedIndex = i;
+	private class LoadWorker extends SwingWorker<List<ImageIcon>, Object> {
+
+		@Override
+		protected List<ImageIcon> doInBackground() throws Exception {
+			List<ImageIcon> icons = new ArrayList<ImageIcon>();
+			iconNames.add(null);
+			icons.add(Icons.getInstance().getIconEmpty16());
+			if (customResources) {
+				for (String sResource : CollectionUtils.sorted(ResourceDelegate.getInstance().getResourceNames())) {
+					try {
+						ImageIcon iconResource = ResourceCache.getIconResource(sResource);
+						iconNames.add(sResource);
+						icons.add(iconResource);
+					} catch (Exception ex) {
+						// ignore. not an image icon.
+					}
 				}
+			} else {
+				for (String iconName : NuclosResourceCache.getNuclosResourceIcons()) {
+					iconNames.add(iconName);
+					icons.add(NuclosResourceCache.getNuclosResourceIcon(iconName));
+				}
+			}
+			return icons;
+		}
+
+		@Override
+		protected void done() {
+			try {
+				final Object[] result = get().toArray();
+				list.setModel(new AbstractListModel() {
+	                public int getSize() { return result.length; }
+	                public Object getElementAt(int i) { return result[i]; }
+	            });
+				removeAll();
+				add(listScroller, BorderLayout.CENTER);
+				
+				list.revalidate();
+				listScroller.revalidate();
+				revalidate();
+				repaint();
+				
+				loading = false;
+				
+				if (iconToSelect != null) {
+					setSelected(iconToSelect);
+					iconToSelect = null;
+				}
+			} catch (Exception e) {
+				Errors.getInstance().showExceptionDialog(list, e);
 			}
 		}
 		
-		if (selectedIndex >= 0) {
-			final int select = selectedIndex;
-    			list.setSelectedIndex(selectedIndex);
-    			SwingUtilities.invokeLater(new Runnable() {
-					@Override
-					public void run() {
-						try {
-							list.scrollRectToVisible(list.getCellBounds(select, select));
-						}
-						catch (Exception e) {
-							LOG.error("setSelected failed: " + e, e);
-						}																									
+	}
+	
+	public void setSelected(String name) {
+		if (loading) {
+			iconToSelect = name;
+		} else {
+			int selectedIndex = -1;
+			
+			if (name == null) {
+				selectedIndex = 0;
+			} else {
+				for (int i = 0; i < iconNames.size(); i++) {
+					if (iconNames.get(i) != null && iconNames.get(i).equals(name)) {
+						selectedIndex = i;
 					}
-				});
+				}
+			}
+			
+			if (selectedIndex >= 0) {
+				final int select = selectedIndex;
+	    			list.setSelectedIndex(selectedIndex);
+	    			SwingUtilities.invokeLater(new Runnable() {
+						@Override
+						public void run() {
+							try {
+								list.scrollRectToVisible(list.getCellBounds(select, select));
+							}
+							catch (Exception e) {
+								LOG.error("setSelected failed: " + e, e);
+							}																									
+						}
+					});
+			}
 		}
 	}
 	
@@ -270,7 +335,11 @@ public class ResourceIconChooser extends JPanel {
 		btSave.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				saved = true;
+				if (loading) {
+					//  ignore, no save
+				} else {
+					saved = true;
+				}
 				dialog.dispose();
 			}
 		});

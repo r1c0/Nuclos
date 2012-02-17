@@ -414,7 +414,6 @@ abstract class MenuButton extends DesktopItem implements DragGestureListener {
 		popup.add(new JLabel("<html><b>"+ cld.getMessage("MenuButton.5", "Eigenschaften")+"</b></html>"));
 		
 		JMenu myIcons = new JMenu(cld.getMessage("MenuButton.8", "Meine Icons"));
-		myIcons.setEnabled(ResourceDelegate.getInstance().containsIconResources());
 		final JMenuItem miSelectResourceIcon = new JMenuItem(new AbstractAction(
 				cld.getMessage("MenuButton.2",
 						"Standard Icon auswählen"), Icons.getInstance().getIconEmpty16()) {

@@ -68,6 +68,8 @@ public class ResourceCache {
 	
 	private final Map<ResourceVO, byte[]> mpResources = new ConcurrentHashMap<ResourceVO, byte[]>();
 	
+	private final Object lock = new Object();
+	
 	private DataBaseHelper dataBaseHelper;
 	
 	public static ResourceCache getInstance() {
@@ -85,8 +87,10 @@ public class ResourceCache {
 	
 	@PostConstruct
 	final void init() {
-		this.mpResourcesByName = buildMap();
-		this.mpResourcesById = buildIdMap();
+		synchronized (lock) {
+			this.mpResourcesByName = buildMap();
+			this.mpResourcesById = buildIdMap();
+		}
 	}
 	
 	/**
@@ -142,15 +146,19 @@ public class ResourceCache {
 	 * @param sResourceName
 	 */
 	public ResourceVO getResourceByName(String sResourceName) {
-		if (mpResourcesByName.isEmpty()) {
-			mpResourcesByName = buildMap();
+		synchronized (lock) {
+			if (mpResourcesByName.isEmpty()) {
+				mpResourcesByName = buildMap();
+			}
 		}
 		return mpResourcesByName.get(sResourceName);
 	}
 	
 	public ResourceVO getResourceById(Integer iResourceId) {
-		if (mpResourcesById.isEmpty()) {
-			mpResourcesById = buildIdMap();
+		synchronized (lock) {
+			if (mpResourcesById.isEmpty()) {
+				mpResourcesById = buildIdMap();
+			}
 		}
 		return mpResourcesById.get(iResourceId);
 	}
@@ -160,8 +168,10 @@ public class ResourceCache {
 	 * @return the resource as <code>byte[]</code>
 	 */
 	public byte[] getResource(String sResourceName) {
-		if (mpResourcesByName.isEmpty()) {
-			mpResourcesByName = buildMap();
+		synchronized (lock) {
+			if (mpResourcesByName.isEmpty()) {
+				mpResourcesByName = buildMap();
+			}
 		}
 		ResourceVO resourcevo = mpResourcesByName.get(sResourceName);
 		if (resourcevo == null) {
@@ -183,13 +193,20 @@ public class ResourceCache {
 	}
 	
 	public Set<String> getResourceNames() {
+		synchronized (lock) {
+			if (mpResourcesByName.isEmpty()) {
+				mpResourcesByName = buildMap();
+			}
+		}
 		return new HashSet<String>(mpResourcesByName.keySet());
 	}
 	
 	public void invalidate() {
-		this.mpResourcesByName.clear();
-		this.mpResourcesById.clear();
-		this.mpResources.clear();
+		synchronized (lock) {
+			this.mpResourcesByName.clear();
+			this.mpResourcesById.clear();
+			this.mpResources.clear();
+		}
 		
 		this.notifyClients();	
 	}
