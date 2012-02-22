@@ -42,7 +42,7 @@ import org.nuclos.client.ui.UIUtils;
 import org.nuclos.client.ui.UIUtils.CommandHandler;
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common2.ClientPreferences;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.CommonRunnable;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.PreferencesException;
@@ -203,7 +203,7 @@ public abstract class CustomComponentController extends TopController {
 		}
 		boolean newTab = false;
 		final MainFrameTab mainFrameTab;
-		String title = CommonLocaleDelegate.getInstance().getTextFallback(
+		String title = SpringLocaleDelegate.getInstance().getTextFallback(
 				componentVO.getLabelResourceId(), componentVO.getLabelResourceId());
 		if (tabIfAny == null) {
 			newTab = true;

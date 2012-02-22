@@ -82,9 +82,9 @@ public class DynamicEntitySubFormController extends MasterDataSubFormController 
 
 	private static final Logger LOG = Logger.getLogger(DynamicEntitySubFormController.class);
 	
-	private JMenuItem miDetails = new JMenuItem(getCommonLocaleDelegate().getMessage(
+	private JMenuItem miDetails = new JMenuItem(getSpringLocaleDelegate().getMessage(
 			"AbstractCollectableComponent.7","Details anzeigen..."));
-	private JMenuItem miDefineAsNewSearchResult = new JMenuItem(getCommonLocaleDelegate().getMessage(
+	private JMenuItem miDefineAsNewSearchResult = new JMenuItem(getSpringLocaleDelegate().getMessage(
 			"DynamicEntitySubFormController.1", "In Liste anzeigen"));
 
 	public DynamicEntitySubFormController(Component parent, JComponent parentMdi,
@@ -245,7 +245,7 @@ public class DynamicEntitySubFormController extends MasterDataSubFormController 
 					ctlGenericObject.runViewResults(cond);
 				}
 				catch(CommonFatalException ex){
-					throw new CommonFatalException(getCommonLocaleDelegate().getMessage(
+					throw new CommonFatalException(getSpringLocaleDelegate().getMessage(
 							"DynamicEntitySubFormController.2", "Der Datensatz kann nicht angezeigt werden. Bitte tragen Sie in der Datenquelle für die dynamische Entität, die Entität ein, die angezeigt werden soll!"));
 				}
 			}

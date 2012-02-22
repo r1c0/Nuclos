@@ -25,7 +25,7 @@ import javax.swing.JButton;
 import org.apache.log4j.Logger;
 import org.nuclos.client.ui.Errors;
 import org.nuclos.client.wizard.steps.NuclosEntitySQLLayoutStep;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.pietschy.wizard.ButtonBar;
 import org.pietschy.wizard.InvalidStateException;
 import org.pietschy.wizard.Wizard;
@@ -113,7 +113,7 @@ public class NuclosWizardButtonBar extends ButtonBar {
 		
 		});
 		
-		btFinish.setText(CommonLocaleDelegate.getInstance().getMessage(
+		btFinish.setText(SpringLocaleDelegate.getInstance().getMessage(
 				"wizard.buttonbar.finish", "Fertig"));
 	}
 	
@@ -122,17 +122,17 @@ public class NuclosWizardButtonBar extends ButtonBar {
 			final JButton previousButton, JButton nextButton, JButton lastButton,
 			JButton finishButton, JButton cancelButton, JButton closeButton) {
 		
-		final CommonLocaleDelegate cld = CommonLocaleDelegate.getInstance();
-		nextButton.setText(cld.getMessage(
+		final SpringLocaleDelegate localeDelegate = SpringLocaleDelegate.getInstance();
+		nextButton.setText(localeDelegate.getMessage(
 				"wizard.buttonbar.next", "weiter"));
-		previousButton.setText(cld.getMessage(
+		previousButton.setText(localeDelegate.getMessage(
 				"wizard.buttonbar.previous", "zur\u00fcck"));
 		lastButton.setText(">>");			
-		finishButton.setText(cld.getMessage(
+		finishButton.setText(localeDelegate.getMessage(
 				"wizard.buttonbar.finish", "Fertig"));
-		cancelButton.setText(cld.getMessage(
+		cancelButton.setText(localeDelegate.getMessage(
 				"wizard.buttonbar.cancel", "Verwerfen"));
-		closeButton.setText(cld.getMessage(
+		closeButton.setText(localeDelegate.getMessage(
 				"wizard.buttonbar.close", "Schliessen"));
 		
 		super.layoutButtons(helpButton, previousButton, nextButton, lastButton,

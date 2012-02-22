@@ -28,7 +28,7 @@ import javax.swing.JSplitPane;
 import javax.swing.UIManager;
 
 import org.nuclos.client.statemodel.StateModelEditor;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 
 /**
  * Details edit panel for state model administration. Contains the state model editor.
@@ -82,7 +82,7 @@ public class StateModelEditPanel extends JPanel {
 
 	private static JPanel newUsagePanel(JComponent subformUsages) {
 		final JPanel pnlUsages = new JPanel(new BorderLayout());
-		final JLabel labUsages = new JLabel(CommonLocaleDelegate.getInstance().getMessage(
+		final JLabel labUsages = new JLabel(SpringLocaleDelegate.getInstance().getMessage(
 				"StateModelEditPanel.1","Verwendungen"));
 		labUsages.setBorder(BorderFactory.createEmptyBorder(2, 5, 2, 5));
 		pnlUsages.add(labUsages, BorderLayout.NORTH);

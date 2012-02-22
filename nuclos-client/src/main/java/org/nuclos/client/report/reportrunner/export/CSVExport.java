@@ -117,7 +117,7 @@ public class CSVExport extends AbstractReportExporter {
 
 		}
 		catch (IOException ex) {
-			throw new NuclosReportException(getCommonLocaleDelegate().getMessage(
+			throw new NuclosReportException(getSpringLocaleDelegate().getMessage(
 					"CSVExport.1", "Fehler beim Erzeugen der Datei: {0}", sFileName));
 		}
 

@@ -177,8 +177,8 @@ public class CollectableWYSIWYGLayoutEditor extends AbstractCollectableComponent
 						// old xerlin layout
 
 						JOptionPane.showMessageDialog(jpnWYSIWYGController, 
-								getCommonLocaleDelegate().getText("layoutml.editor.unsupported.wysiwyg.layout.2", null), 
-								getCommonLocaleDelegate().getText("layoutml.editor.unsupported.wysiwyg.layout.1", null), 
+								getSpringLocaleDelegate().getText("layoutml.editor.unsupported.wysiwyg.layout.2", null), 
+								getSpringLocaleDelegate().getText("layoutml.editor.unsupported.wysiwyg.layout.1", null), 
 								JOptionPane.INFORMATION_MESSAGE);
 						jpnWYSIWYGController.showPaletteAndEditorPanel();
 						jpnWYSIWYGController.createStandartLayout();

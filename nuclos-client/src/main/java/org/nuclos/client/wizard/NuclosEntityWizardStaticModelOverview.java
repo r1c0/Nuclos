@@ -33,7 +33,7 @@ import javax.swing.JPanel;
 
 import org.nuclos.client.wizard.steps.NuclosEntityAbstractStep;
 import org.nuclos.client.wizard.steps.NuclosEntityAttributeAbstractStep;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.pietschy.wizard.WizardStep;
 import org.pietschy.wizard.models.StaticModel;
 
@@ -57,7 +57,7 @@ public class NuclosEntityWizardStaticModelOverview extends JPanel implements Pro
 		setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
 		setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
 
-		JLabel title = new JLabel(CommonLocaleDelegate.getInstance().getMessage(
+		JLabel title = new JLabel(SpringLocaleDelegate.getInstance().getMessage(
 				"wizard.statemodel.overview", "\u00dcbersicht"));
 		title.setBorder(BorderFactory.createEmptyBorder(0, 4, 4, 4));
 		title.setAlignmentX(0);

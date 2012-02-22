@@ -76,7 +76,7 @@ import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.dal.vo.SystemFields;
 import org.nuclos.common.dblayer.JoinType;
 import org.nuclos.common.querybuilder.NuclosDatasourceException;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.IOUtils;
 import org.nuclos.common2.LocaleInfo;
 import org.nuclos.common2.ServiceLocator;
@@ -577,7 +577,7 @@ public class ReportFacadeBean extends NuclosFacadeBean implements ReportFacadeRe
 			DatasourceFacadeLocal facade = ServerServiceLocator.getInstance().getFacade(DatasourceFacadeLocal.class);
 			ResultVO rvo = facade.executeQuery(reportoutput.getDatasourceId(), mpParams, iMaxRowCount);
 
-			return export.export(rvo, getLocale(reportoutput.getLocale(), CommonLocaleDelegate.getInstance().getLocale()));
+			return export.export(rvo, getLocale(reportoutput.getLocale(), SpringLocaleDelegate.getInstance().getLocale()));
 		} catch (CommonFinderException ex) {
 			throw new NuclosFatalException(ex);
 		} catch (NuclosDatasourceException ex) {
@@ -784,7 +784,7 @@ public class ReportFacadeBean extends NuclosFacadeBean implements ReportFacadeRe
 
    private void setDefaultsParameters(Map<String, Object> parameters, ReportOutputVO output) {
 	   parameters.put(JRParameter.REPORT_FILE_RESOLVER, new JRFileResolver());
-	   parameters.put(JRParameter.REPORT_LOCALE, getLocale(output.getLocale(), CommonLocaleDelegate.getInstance().getLocale()));
+	   parameters.put(JRParameter.REPORT_LOCALE, getLocale(output.getLocale(), SpringLocaleDelegate.getInstance().getLocale()));
 	   parameters.put("NUCLOS_USER_NAME", getCurrentUserName());
 	   final MasterDataFacadeLocal mdfacadehome = ServerServiceLocator.getInstance().getFacade(MasterDataFacadeLocal.class);
 	   final CollectableComparison cond = SearchConditionUtils.newMDComparison(MasterDataMetaCache.getInstance().getMetaData(NuclosEntity.USER), "name", ComparisonOperator.EQUAL, getCurrentUserName());

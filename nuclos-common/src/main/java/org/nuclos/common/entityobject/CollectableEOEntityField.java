@@ -26,7 +26,7 @@ import org.nuclos.common.collect.collectable.CollectableEntityField;
 import org.nuclos.common.collect.collectable.CollectableField;
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.masterdata.EnumeratedDefaultValueProvider;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.exception.CommonFatalException;
 
 /**
@@ -77,7 +77,7 @@ public class CollectableEOEntityField extends AbstractCollectableEntityField {
 
 	@Override
 	public String getDescription() {
-		return CommonLocaleDelegate.getInstance().getTextFallback(
+		return SpringLocaleDelegate.getInstance().getTextFallback(
 				efMeta.getLocaleResourceIdForDescription(), efMeta.getFallbacklabel());
 	}
 
@@ -108,7 +108,7 @@ public class CollectableEOEntityField extends AbstractCollectableEntityField {
 
 	@Override
 	public String getLabel() {
-		return CommonLocaleDelegate.getInstance().getTextFallback(
+		return SpringLocaleDelegate.getInstance().getTextFallback(
 				efMeta.getLocaleResourceIdForLabel(), efMeta.getFallbacklabel());
 	}
 

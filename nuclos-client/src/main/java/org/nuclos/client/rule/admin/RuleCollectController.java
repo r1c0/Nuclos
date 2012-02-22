@@ -110,7 +110,7 @@ public class RuleCollectController extends EntityCollectController<CollectableRu
 	private final MasterDataSubFormController subformctlUsage;
 
 	private final Action actCheckRuleSource = new CommonAbstractAction(Icons.getInstance().getIconValidate16(), 
-			getCommonLocaleDelegate().getMessage("RuleCollectController.2", "Quelltext pr\u00fcfen")) {
+			getSpringLocaleDelegate().getMessage("RuleCollectController.2", "Quelltext pr\u00fcfen")) {
 
 		@Override
 		public void actionPerformed(ActionEvent ev) {
@@ -129,7 +129,7 @@ public class RuleCollectController extends EntityCollectController<CollectableRu
 	 */
 	public RuleCollectController(JComponent parent, MainFrameTab tabIfAny) {
 		super(parent, CollectableRule.clcte);
-		ifrm = tabIfAny!=null ? tabIfAny : newInternalFrame(getCommonLocaleDelegate().getMessage(
+		ifrm = tabIfAny!=null ? tabIfAny : newInternalFrame(getSpringLocaleDelegate().getMessage(
 				"RuleCollectController.1", "Regelwerke verwalten"));
 
 		//this.transferhandler = new RuleTransferHandler(parent);
@@ -176,7 +176,7 @@ public class RuleCollectController extends EntityCollectController<CollectableRu
 	}
 
 	private void setupResultToolBar() {
-		this.getResultPanel().addPopupExtraMenuItem(new JMenuItem(new AbstractAction(getCommonLocaleDelegate().getMessage(
+		this.getResultPanel().addPopupExtraMenuItem(new JMenuItem(new AbstractAction(getSpringLocaleDelegate().getMessage(
 				"MasterDataCollectController.6","Ergebnis in Explorer anzeigen"), Icons.getInstance().getIconTree16()) {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -188,8 +188,8 @@ public class RuleCollectController extends EntityCollectController<CollectableRu
 	private void setupDetailsToolBar() {
 		final JMenuItem btnMakeTreeRoot = new JMenuItem();
 		btnMakeTreeRoot.setIcon(Icons.getInstance().getIconMakeTreeRoot16());
-		btnMakeTreeRoot.setText(getCommonLocaleDelegate().getMessage("MasterDataCollectController.9","In Explorer anzeigen"));
-		btnMakeTreeRoot.setToolTipText(getCommonLocaleDelegate().getMessage("DatasourceCollectController.14", "In Explorer anzeigen"));
+		btnMakeTreeRoot.setText(getSpringLocaleDelegate().getMessage("MasterDataCollectController.9","In Explorer anzeigen"));
+		btnMakeTreeRoot.setToolTipText(getSpringLocaleDelegate().getMessage("DatasourceCollectController.14", "In Explorer anzeigen"));
 		btnMakeTreeRoot.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent ev) {
@@ -241,7 +241,7 @@ public class RuleCollectController extends EntityCollectController<CollectableRu
 				try {
 					ruleDelegate.compile(clctRule.getRuleVO());
 					JOptionPane.showMessageDialog(RuleCollectController.this.getFrame(), 
-							getCommonLocaleDelegate().getMessage(
+							getSpringLocaleDelegate().getMessage(
 									"CodeCollectController.compiledsuccessfully", "Quellcode erfolgreich kompiliert."));
 				}
 				catch (NuclosCompileException ex) {
@@ -356,7 +356,7 @@ public class RuleCollectController extends EntityCollectController<CollectableRu
 
 	@Override
 	protected String getEntityLabel() {
-		return getCommonLocaleDelegate().getMessage("RuleCollectController.3", "Regelwerke");
+		return getSpringLocaleDelegate().getMessage("RuleCollectController.3", "Regelwerke");
 	}
 
 	@Override
@@ -382,7 +382,7 @@ public class RuleCollectController extends EntityCollectController<CollectableRu
 		catch (NuclosCompileException ex) {
 			this.pnlEdit.setMessages(ex.getErrorMessages());
 			throw new PointerException("RuleCollectController.4");
-			//throw new CommonBusinessException(CommonLocaleDelegate.getMessage("RuleCollectController.4", "Fehler beim \u00dcbersetzen des Quellcodes.\nBitte \u00fcberpr\u00fcfen Sie die Meldungen."));
+			//throw new CommonBusinessException(SpringLocaleDelegate.getMessage("RuleCollectController.4", "Fehler beim \u00dcbersetzen des Quellcodes.\nBitte \u00fcberpr\u00fcfen Sie die Meldungen."));
 		}
 		catch (CommonBusinessException ex) {
 			throw new PointerException(ex.getMessage(), ex);
@@ -410,7 +410,7 @@ public class RuleCollectController extends EntityCollectController<CollectableRu
 		catch (NuclosCompileException ex) {
 			this.pnlEdit.setMessages(ex.getErrorMessages());
 			throw new PointerException("RuleCollectController.4");
-			//throw new CommonBusinessException(CommonLocaleDelegate.getMessage("RuleCollectController.4", "Fehler beim \u00dcbersetzen des Quellcodes.\nBitte \u00fcberpr\u00fcfen Sie die Meldungen."));
+			//throw new CommonBusinessException(SpringLocaleDelegate.getMessage("RuleCollectController.4", "Fehler beim \u00dcbersetzen des Quellcodes.\nBitte \u00fcberpr\u00fcfen Sie die Meldungen."));
 		}
 		catch (CommonBusinessException ex) {
 			throw new PointerException(ex.getMessage(), ex);
@@ -585,7 +585,7 @@ public class RuleCollectController extends EntityCollectController<CollectableRu
 						NuclosConsole.getInstance().parseAndInvoke(new String[]{NuclosConsole.getInstance().CMD_INVALIDATE_RULECACHE}, false);
 					}
 					catch(Exception e) {
-						throw new NuclosFatalException(getCommonLocaleDelegate().getMessage(
+						throw new NuclosFatalException(getSpringLocaleDelegate().getMessage(
 								"RuleCollectController.5", "Der serverseitige RuleCache konnte nicht invalidiert werden!"), e);
 					}
 					super.postXMLImport(clctctl);

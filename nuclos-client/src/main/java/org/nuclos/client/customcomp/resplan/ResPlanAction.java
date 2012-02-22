@@ -30,7 +30,7 @@ import org.nuclos.client.main.mainframe.MainFrame;
 import org.nuclos.client.resource.NuclosResourceCache;
 import org.nuclos.client.ui.Errors;
 import org.nuclos.client.ui.UIUtils;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.server.customcomp.valueobject.CustomComponentVO;
 
 public class ResPlanAction extends AbstractAction {
@@ -38,7 +38,7 @@ public class ResPlanAction extends AbstractAction {
 	private static final Logger LOG = Logger.getLogger(ResPlanAction.class);
 
 	public ResPlanAction(CustomComponentVO componentVO) {
-		putValue(Action.NAME, CommonLocaleDelegate.getInstance().getTextFallback(
+		putValue(Action.NAME, SpringLocaleDelegate.getInstance().getTextFallback(
 				componentVO.getLabelResourceId(), componentVO.getLabelResourceId()) + "...");
 		putValue(Action.SMALL_ICON, MainFrame.resizeAndCacheTabIcon(NuclosResourceCache.getNuclosResourceIcon("org.nuclos.client.resource.icon.glyphish.83-calendar.png")));
 		putValue(Action.ACTION_COMMAND_KEY, componentVO.getInternalName());

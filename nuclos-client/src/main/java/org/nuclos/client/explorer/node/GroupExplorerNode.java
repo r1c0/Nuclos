@@ -75,7 +75,7 @@ public class GroupExplorerNode extends MasterDataExplorerNode<GroupTreeNode> {
 						}
 						else {
 							throw new NuclosBusinessException(
-									getCommonLocaleDelegate().getMessage("GroupExplorerNode.1", "Der Datentransfer wird nicht unterst\u00fctzt."));
+									getSpringLocaleDelegate().getMessage("GroupExplorerNode.1", "Der Datentransfer wird nicht unterst\u00fctzt."));
 						}
 					}
 

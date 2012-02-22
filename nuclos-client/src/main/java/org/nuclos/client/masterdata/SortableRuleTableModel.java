@@ -26,7 +26,7 @@ import java.util.List;
 import javax.swing.table.DefaultTableModel;
 
 import org.nuclos.client.statemodel.SortedRuleVO;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 
 /**
  * Table model for sorted and sortable rules.
@@ -47,9 +47,9 @@ public class SortableRuleTableModel extends DefaultTableModel {
 	}
 
 	public static final String[] asColumnNames = {
-		CommonLocaleDelegate.getInstance().getMessage("SortableRuleTableModel.2","Regel"), 
-		CommonLocaleDelegate.getInstance().getMessage("SortableRuleTableModel.1","Beschreibung"), 
-		CommonLocaleDelegate.getInstance().getMessage("SortableRuleTableModel.3","Ausführung im Anschluss")};
+		SpringLocaleDelegate.getInstance().getMessage("SortableRuleTableModel.2","Regel"), 
+		SpringLocaleDelegate.getInstance().getMessage("SortableRuleTableModel.1","Beschreibung"), 
+		SpringLocaleDelegate.getInstance().getMessage("SortableRuleTableModel.3","Ausführung im Anschluss")};
 
 	private final List<SortedRuleVO> lstRules = new ArrayList<SortedRuleVO>();
 	

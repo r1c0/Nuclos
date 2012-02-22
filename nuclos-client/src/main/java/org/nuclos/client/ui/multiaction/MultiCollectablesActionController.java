@@ -49,7 +49,7 @@ import org.nuclos.common.collect.collectable.Collectable;
 import org.nuclos.common.collect.collectable.CollectableFieldFormat;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.csvparser.ExcelCSVPrinter;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.exception.CommonBusinessException;
 
 /**
@@ -160,7 +160,7 @@ public class MultiCollectablesActionController <T,R> extends Controller {
 				try {
 					action.executeFinalAction();
 				} catch (CommonBusinessException ex) {
-					final String sMessage = getCommonLocaleDelegate().getMessage(
+					final String sMessage = getSpringLocaleDelegate().getMessage(
 							"MultiCollectablesActionController.4","Nach dem Abschluss der Operation ist ein Fehler aufgetreten.");
 					Errors.getInstance().showExceptionDialog(getParent(), sMessage, ex);
 				}
@@ -171,7 +171,7 @@ public class MultiCollectablesActionController <T,R> extends Controller {
 		//ifrm.setContentPane(pnl);
 		ifrm.setLayeredComponent(pnl);
 		ifrm.setTabIcon(this.iconFrame);
-		pnl.setStatus(getCommonLocaleDelegate().getMessage("MultiCollectablesActionController.1","Vorgang l\u00e4uft..."));
+		pnl.setStatus(getSpringLocaleDelegate().getMessage("MultiCollectablesActionController.1","Vorgang l\u00e4uft..."));
 
 		final MultiObjectsActionRunnable runnable = new MultiObjectsActionRunnable(this.coll.size(), ifrm, pnl);
 
@@ -190,14 +190,14 @@ public class MultiCollectablesActionController <T,R> extends Controller {
 			@Override
 			public void actionPerformed(ActionEvent ev) {
 				if (pnl.btnPause.isSelected()) {
-					pnl.setStatus(getCommonLocaleDelegate().getMessage("MultiCollectablesActionController.2","Wird angehalten..."));
+					pnl.setStatus(getSpringLocaleDelegate().getMessage("MultiCollectablesActionController.2","Wird angehalten..."));
 					// disallow input:
 					//setModalGlassPane(ifrm);
 					ifrm.lockLayer();
 					runnable.pause();
 				}
 				else {
-					pnl.setStatus(getCommonLocaleDelegate().getMessage("MultiCollectablesActionController.1","Vorgang l\u00e4uft..."));
+					pnl.setStatus(getSpringLocaleDelegate().getMessage("MultiCollectablesActionController.1","Vorgang l\u00e4uft..."));
 					runnable.play();
 				}
 			}
@@ -209,7 +209,7 @@ public class MultiCollectablesActionController <T,R> extends Controller {
 				// pause the action while the user thinks about it...
 				runnable.pause();
 				final int iBtn = JOptionPane.showConfirmDialog(ifrm, action.getConfirmStopMessage(), 
-						getCommonLocaleDelegate().getMessage("MultiCollectablesActionController.3","Operation beenden"),
+						getSpringLocaleDelegate().getMessage("MultiCollectablesActionController.3","Operation beenden"),
 						JOptionPane.YES_NO_OPTION);
 				if (iBtn == JOptionPane.YES_OPTION) {
 					runnable.stop();
@@ -237,7 +237,7 @@ public class MultiCollectablesActionController <T,R> extends Controller {
 							action.executeFinalAction();
 						}
 						catch (CommonBusinessException ex) {
-							final String sMessage = getCommonLocaleDelegate().getMessage(
+							final String sMessage = getSpringLocaleDelegate().getMessage(
 									"MultiCollectablesActionController.4","Nach dem Abschluss der Operation ist ein Fehler aufgetreten.");
 							Errors.getInstance().showExceptionDialog(getParent(), sMessage, ex);
 						}
@@ -262,7 +262,7 @@ public class MultiCollectablesActionController <T,R> extends Controller {
 
 							@Override
 							public String getDescription() {
-								return getCommonLocaleDelegate().getText("MultiCollectablesActionController.csv", "CSV-Dateien") + " (*.csv)";
+								return getSpringLocaleDelegate().getText("MultiCollectablesActionController.csv", "CSV-Dateien") + " (*.csv)";
 							}
 						};
 						filechooser.addChoosableFileFilter(filefilter);
@@ -329,7 +329,7 @@ public class MultiCollectablesActionController <T,R> extends Controller {
 	}
 
 	public static String getCollectableLabel(String entityname, Collectable clct) {
-		String label = CommonLocaleDelegate.getInstance().getTreeViewLabel(clct, entityname, MetaDataClientProvider.getInstance());
+		String label = SpringLocaleDelegate.getInstance().getTreeViewLabel(clct, entityname, MetaDataClientProvider.getInstance());
 
 		String tmp = label != null ? label : clct.getIdentifierLabel();
 
@@ -366,7 +366,7 @@ public class MultiCollectablesActionController <T,R> extends Controller {
 							public void run() {
 								try {
 								ifrm.unlockLayer();
-								pnl.setStatus(getCommonLocaleDelegate().getMessage("MultiCollectablesActionController.5","Angehalten."));
+								pnl.setStatus(getSpringLocaleDelegate().getMessage("MultiCollectablesActionController.5","Angehalten."));
 								}
 								catch (Exception e) {
 									LOG.error("MultiObjectsActionRunnable.run failed: " + e, e);
@@ -439,13 +439,13 @@ public class MultiCollectablesActionController <T,R> extends Controller {
 							if (MultiCollectablesActionController.this.error) {
 								pnl.showProtocol(true);
 								JOptionPane.showMessageDialog(MultiCollectablesActionController.this.getParent(), 
-										getCommonLocaleDelegate().getMessageFromResource("MultiCollectablesActionController.erroroccurred"), 
+										getSpringLocaleDelegate().getMessageFromResource("MultiCollectablesActionController.erroroccurred"), 
 										Errors.getInstance().getAppName(), JOptionPane.ERROR_MESSAGE);
 							}
 							closable = true;
 							pnl.setActionText(" ");
 							pnl.setCloseButton();
-							pnl.setStatus(getCommonLocaleDelegate().getMessage("MultiCollectablesActionController.6","Beendet."));
+							pnl.setStatus(getSpringLocaleDelegate().getMessage("MultiCollectablesActionController.6","Beendet."));
 						}
 						catch (Exception e) {
 							LOG.error("MultiObjectsActionRunnable.run failed: " + e, e);

@@ -27,7 +27,7 @@ import java.util.NoSuchElementException;
 
 import org.apache.log4j.Logger;
 import org.nuclos.common.collection.CollectionUtils;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.IdUtils;
 import org.nuclos.common2.LangUtils;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
@@ -69,18 +69,18 @@ public abstract class ModuleProvider {
 	}
 
 	protected static Collection<MasterDataVO> fillLocales(Collection<MasterDataVO> collmdvoModules) {
-		final CommonLocaleDelegate cld = CommonLocaleDelegate.getInstance();
+		final SpringLocaleDelegate localeDelegate = SpringLocaleDelegate.getInstance();
 		for (MasterDataVO mdvo : collmdvoModules) {
 			if (mdvo.getField("name") != null )
-				mdvo.setField("name", cld.getText(mdvo.getField("name", String.class),null));
+				mdvo.setField("name", localeDelegate.getText(mdvo.getField("name", String.class),null));
 			if (mdvo.getField("description") != null )
-				mdvo.setField("description", cld.getText(mdvo.getField("description", String.class),null));
+				mdvo.setField("description", localeDelegate.getText(mdvo.getField("description", String.class),null));
 			if (mdvo.getField("menupath") != null )
-				mdvo.setField("menupath", cld.getText(mdvo.getField("menupath", String.class),null));
+				mdvo.setField("menupath", localeDelegate.getText(mdvo.getField("menupath", String.class),null));
 			if (mdvo.getField("treeview") != null )
-				mdvo.setField("treeview", cld.getText(mdvo.getField("treeview", String.class),null));
+				mdvo.setField("treeview", localeDelegate.getText(mdvo.getField("treeview", String.class),null));
 			if (mdvo.getField("treeviewdescription") != null )
-				mdvo.setField("treeviewdescription", cld.getText(mdvo.getField("treeviewdescription", String.class),null));
+				mdvo.setField("treeviewdescription", localeDelegate.getText(mdvo.getField("treeviewdescription", String.class),null));
 		}
 		return collmdvoModules;
 	}

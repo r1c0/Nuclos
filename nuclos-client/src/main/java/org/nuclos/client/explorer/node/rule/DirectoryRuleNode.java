@@ -30,7 +30,7 @@ import org.nuclos.client.rule.RuleDelegate;
 import org.nuclos.client.statemodel.StateDelegate;
 import org.nuclos.client.ui.Errors;
 import org.nuclos.common.NuclosBusinessException;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.exception.CommonFinderException;
 import org.nuclos.server.genericobject.valueobject.GeneratorActionVO;
 import org.nuclos.server.navigation.treenode.TreeNode;
@@ -84,11 +84,11 @@ public class DirectoryRuleNode extends AbstractRuleTreeNode {
 				setSubNodes(getRootSubNodeList());
 			}
 			catch (NuclosBusinessException ex) {
-				final String sMessage = CommonLocaleDelegate.getInstance().getMessage("DirectoryRuleNode.4","Fehler beim Erzeugen des Baumes");
+				final String sMessage = SpringLocaleDelegate.getInstance().getMessage("DirectoryRuleNode.4","Fehler beim Erzeugen des Baumes");
 				Errors.getInstance().showExceptionDialog(null, sMessage, ex);
 			}
 			catch (CommonFinderException ex) {
-				final String sMessage = CommonLocaleDelegate.getInstance().getMessage("DirectoryRuleNode.5","Fehler beim Erzeugen des Baumes");
+				final String sMessage = SpringLocaleDelegate.getInstance().getMessage("DirectoryRuleNode.5","Fehler beim Erzeugen des Baumes");
 				Errors.getInstance().showExceptionDialog(null, sMessage, ex);
 			}
 		}
@@ -149,13 +149,13 @@ public class DirectoryRuleNode extends AbstractRuleTreeNode {
 		final List<EntityRuleNode> result = new ArrayList<EntityRuleNode>();
 		/*for (MasterDataMetaVO mdmetaVO : MasterDataDelegate.getInstance().getMetaData()) {
 			if (MasterDataDelegate.getInstance().getUsesRuleEngine(mdmetaVO.getEntityName())) {
-				result.add(new EntityRuleNode(sEventName, mdmetaVO.getEntityName(), CommonLocaleDelegate.getLabelFromMetaDataVO(mdmetaVO), null, false));//mdmetaVO.getLabel(), null, false));
+				result.add(new EntityRuleNode(sEventName, mdmetaVO.getEntityName(), SpringLocaleDelegate.getLabelFromMetaDataVO(mdmetaVO), null, false));//mdmetaVO.getLabel(), null, false));
 			}
 		}*/
 		Collection<String> ruleUsageEntitiesByEvent = RuleDelegate.getInstance().getRuleUsageEntityNamesByEvent(sEventName);
 		for (String entityName : ruleUsageEntitiesByEvent) {
 			result.add(new EntityRuleNode(sEventName, entityName,
-				CommonLocaleDelegate.getInstance().getLabelFromMetaDataVO(MetaDataClientProvider.getInstance().getEntity(entityName)),
+				SpringLocaleDelegate.getInstance().getLabelFromMetaDataVO(MetaDataClientProvider.getInstance().getEntity(entityName)),
 				null, false));
 		}
 
@@ -237,34 +237,34 @@ public class DirectoryRuleNode extends AbstractRuleTreeNode {
 		result.add(new DirectoryRuleNode(false, DirectoryRuleNode.MainDirectory.USEREVENT_ENTITY, null, false));
 		result.add(new DirectoryRuleNode(false, DirectoryRuleNode.MainDirectory.STATE_TRANSITION, null, false));
 		result.add(new DirectoryRuleNode(false, DirectoryRuleNode.MainDirectory.OBJECT_GENERATION, null, false));
-		final CommonLocaleDelegate cld = CommonLocaleDelegate.getInstance();
+		final SpringLocaleDelegate localeDelegate = SpringLocaleDelegate.getInstance();
 		result.add(new TimelimitNode(
-				cld.getMessage("DirectoryRuleNode.6","Fristen"), 
-				cld.getMessage("DirectoryRuleNode.14","Regeln die t\u00e4glich vom System ausgef\u00fchrt werden"), true));
+				localeDelegate.getMessage("DirectoryRuleNode.6","Fristen"), 
+				localeDelegate.getMessage("DirectoryRuleNode.14","Regeln die t\u00e4glich vom System ausgef\u00fchrt werden"), true));
 		result.add(new LibraryTreeNode(
-				cld.getText("treenode.rules.library.label"), 
-				cld.getText("treenode.rules.library.description")));
+				localeDelegate.getText("treenode.rules.library.label"), 
+				localeDelegate.getText("treenode.rules.library.description")));
 
 		return result;
 	}
 
 	public enum MainDirectory {
-		OBJECT_GENERATION(CommonLocaleDelegate.getInstance().getMessage("DirectoryRuleNode.9","Objektgenerierung"), 
-				CommonLocaleDelegate.getInstance().getMessage("DirectoryRuleNode.10","Regeln die automatisch bei der Objektgenerierung ausgef\u00fchrt werden")),
-		STATE_TRANSITION(CommonLocaleDelegate.getInstance().getMessage("DirectoryRuleNode.18","Status\u00fcberg\u00e4nge"), 
-				CommonLocaleDelegate.getInstance().getMessage("DirectoryRuleNode.16","Reglen die automatisch bei Status\u00fcberg\u00e4ngen ausgef\u00fchrt werden")),
-		SAVE_ENTITY(CommonLocaleDelegate.getInstance().getMessage("DirectoryRuleNode.17","Speichern pro Entit\u00e4t"), 
-				CommonLocaleDelegate.getInstance().getMessage("DirectoryRuleNode.12","Regeln die automatisch beim Speichern einer Entit\u00e4t ausgef\u00fchrt werden")),
-		DELETE_ENTITY(CommonLocaleDelegate.getInstance().getMessage("DirectoryRuleNode.8","L\u00f6schen pro Entit\u00e4t"), 
-				CommonLocaleDelegate.getInstance().getMessage("DirectoryRuleNode.11","Regeln die automatisch beim L\u00f6schen einer Entit\u00e4t ausgef\u00fchrt werden")),
-		USEREVENT_ENTITY(CommonLocaleDelegate.getInstance().getMessage("DirectoryRuleNode.3","Benutzeraktion pro Entit\u00e4t"), 
-				CommonLocaleDelegate.getInstance().getMessage("DirectoryRuleNode.13","Regeln die manuell durch den Benutzer gestartet werden k\u00f6nnen")),
-		ALL_RULES(CommonLocaleDelegate.getInstance().getMessage("DirectoryRuleNode.1","Alle Regeln"), 
-				CommonLocaleDelegate.getInstance().getMessage("DirectoryRuleNode.2","Alle Regeln")),
-		TIMELIMIT(CommonLocaleDelegate.getInstance().getMessage("DirectoryRuleNode.7","Fristen"), 
-				CommonLocaleDelegate.getInstance().getMessage("DirectoryRuleNode.15","Regeln die t\u00e4glich vom System ausgef\u00fchrt werden")),
-		LIBRARY(CommonLocaleDelegate.getInstance().getText("treenode.rules.library.label"), 
-				CommonLocaleDelegate.getInstance().getText("treenode.rules.library.description"));
+		OBJECT_GENERATION(SpringLocaleDelegate.getInstance().getMessage("DirectoryRuleNode.9","Objektgenerierung"), 
+				SpringLocaleDelegate.getInstance().getMessage("DirectoryRuleNode.10","Regeln die automatisch bei der Objektgenerierung ausgef\u00fchrt werden")),
+		STATE_TRANSITION(SpringLocaleDelegate.getInstance().getMessage("DirectoryRuleNode.18","Status\u00fcberg\u00e4nge"), 
+				SpringLocaleDelegate.getInstance().getMessage("DirectoryRuleNode.16","Reglen die automatisch bei Status\u00fcberg\u00e4ngen ausgef\u00fchrt werden")),
+		SAVE_ENTITY(SpringLocaleDelegate.getInstance().getMessage("DirectoryRuleNode.17","Speichern pro Entit\u00e4t"), 
+				SpringLocaleDelegate.getInstance().getMessage("DirectoryRuleNode.12","Regeln die automatisch beim Speichern einer Entit\u00e4t ausgef\u00fchrt werden")),
+		DELETE_ENTITY(SpringLocaleDelegate.getInstance().getMessage("DirectoryRuleNode.8","L\u00f6schen pro Entit\u00e4t"), 
+				SpringLocaleDelegate.getInstance().getMessage("DirectoryRuleNode.11","Regeln die automatisch beim L\u00f6schen einer Entit\u00e4t ausgef\u00fchrt werden")),
+		USEREVENT_ENTITY(SpringLocaleDelegate.getInstance().getMessage("DirectoryRuleNode.3","Benutzeraktion pro Entit\u00e4t"), 
+				SpringLocaleDelegate.getInstance().getMessage("DirectoryRuleNode.13","Regeln die manuell durch den Benutzer gestartet werden k\u00f6nnen")),
+		ALL_RULES(SpringLocaleDelegate.getInstance().getMessage("DirectoryRuleNode.1","Alle Regeln"), 
+				SpringLocaleDelegate.getInstance().getMessage("DirectoryRuleNode.2","Alle Regeln")),
+		TIMELIMIT(SpringLocaleDelegate.getInstance().getMessage("DirectoryRuleNode.7","Fristen"), 
+				SpringLocaleDelegate.getInstance().getMessage("DirectoryRuleNode.15","Regeln die t\u00e4glich vom System ausgef\u00fchrt werden")),
+		LIBRARY(SpringLocaleDelegate.getInstance().getText("treenode.rules.library.label"), 
+				SpringLocaleDelegate.getInstance().getText("treenode.rules.library.description"));
 
 		private final String label;
 		private final String descripton;

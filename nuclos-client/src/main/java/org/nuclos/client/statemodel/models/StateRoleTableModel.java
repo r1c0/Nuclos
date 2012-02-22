@@ -23,7 +23,7 @@ import java.util.List;
 
 import javax.swing.table.DefaultTableModel;
 
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 
 /**
@@ -44,9 +44,9 @@ public class StateRoleTableModel extends DefaultTableModel {
 		}
 	}
 
-	private static String[] asColumnNames = {CommonLocaleDelegate.getInstance().getMessage(
+	private static String[] asColumnNames = {SpringLocaleDelegate.getInstance().getMessage(
 			"StateRoleTableModel.1","Benutzergruppe"), 
-			CommonLocaleDelegate.getInstance().getMessage("StateRoleTableModel.2","Beschreibung")};
+			SpringLocaleDelegate.getInstance().getMessage("StateRoleTableModel.2","Beschreibung")};
 	
 	private final List<MasterDataVO> lstRoles = new ArrayList<MasterDataVO>();
 

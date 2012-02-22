@@ -25,7 +25,7 @@ import javax.swing.ImageIcon;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
 import org.nuclos.common.dal.vo.EntityObjectVO;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 
 /*package*/class LiveSearchResultRow {
 	public static final int ICON_SIZE = 24;
@@ -47,7 +47,7 @@ import org.nuclos.common2.CommonLocaleDelegate;
 	    this.matchDescriptions = matchDescriptions;
 	    
 	    this.entityName = entityMeta.getEntity();
-	    this.entityLabel = CommonLocaleDelegate.getInstance().getLabelFromMetaDataVO(entityMeta);
+	    this.entityLabel = SpringLocaleDelegate.getInstance().getLabelFromMetaDataVO(entityMeta);
 	    
 	    StringBuilder sb = new StringBuilder();
 	    sb.append("<html><b>")

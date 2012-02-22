@@ -32,7 +32,7 @@ import org.nuclos.client.layout.wysiwyg.editor.util.InterfaceGuidelines;
  *
  * @author <a href="mailto:hartmut.beckschulze@novabit.de">hartmut.beckschulze</a>
  * @version 01.00.00
- * @deprecated Should be done with the help of CommonLocaleDelegate and localeresource.json.
+ * @deprecated Should be done with the help of SpringLocaleDelegate and localeresource.json.
  */
 public class WYSIWYGStringsAndLabels {
 
@@ -44,7 +44,7 @@ public class WYSIWYGStringsAndLabels {
 	public static final String EXPERT_MODE = "Expertenmodus";
 
 	/**
-	 * @deprecated Should be done with the help of CommonLocaleDelegate and localeresource.json.
+	 * @deprecated Should be done with the help of SpringLocaleDelegate and localeresource.json.
 	 */
 	public static class ERROR_MESSAGES {
 		public static final String PARENT_NO_WYSIWYG = "Elternelement ist kein WYSIWYGLayoutEditorPanel!";
@@ -64,7 +64,7 @@ public class WYSIWYGStringsAndLabels {
 	}
 
 	/**
-	 * @deprecated Should be done with the help of CommonLocaleDelegate and localeresource.json.
+	 * @deprecated Should be done with the help of SpringLocaleDelegate and localeresource.json.
 	 */
 	public static class COLLECTABLE_COMPONENT implements PaletteItemElement {
 		public static final String PROPERTY_LABEL = "Eigenschaften";
@@ -106,7 +106,7 @@ public class WYSIWYGStringsAndLabels {
 	}
 
 	/**
-	 * @deprecated Should be done with the help of CommonLocaleDelegate and localeresource.json.
+	 * @deprecated Should be done with the help of SpringLocaleDelegate and localeresource.json.
 	 */
 	public static class COLLECTABLE_CHECKBOX implements PaletteItemElement {
 		public static final String PROPERTY_LABEL = "Eigenschaften";
@@ -140,7 +140,7 @@ public class WYSIWYGStringsAndLabels {
 	}
 
 	/**
-	 * @deprecated Should be done with the help of CommonLocaleDelegate and localeresource.json.
+	 * @deprecated Should be done with the help of SpringLocaleDelegate and localeresource.json.
 	 */
 	// NUCLEUSINT-496
 	public static class COLLECTABLE_LABELED_CHECKBOX implements PaletteItemElement {
@@ -173,7 +173,7 @@ public class WYSIWYGStringsAndLabels {
 	}
 
 	/**
-	 * @deprecated Should be done with the help of CommonLocaleDelegate and localeresource.json.
+	 * @deprecated Should be done with the help of SpringLocaleDelegate and localeresource.json.
 	 */
 	public static class COLLECTABLE_COMBOBOX implements PaletteItemElement {
 		public static final String PROPERTY_LABEL = "Eigenschaften";
@@ -207,7 +207,7 @@ public class WYSIWYGStringsAndLabels {
 	}
 
 	/**
-	 * @deprecated Should be done with the help of CommonLocaleDelegate and localeresource.json.
+	 * @deprecated Should be done with the help of SpringLocaleDelegate and localeresource.json.
 	 */
 	// NUCLEUSINT-496
 	public static class COLLECTABLE_LABELED_COMBOBOX implements PaletteItemElement {
@@ -240,7 +240,7 @@ public class WYSIWYGStringsAndLabels {
 	}
 
 	/**
-	 * @deprecated Should be done with the help of CommonLocaleDelegate and localeresource.json.
+	 * @deprecated Should be done with the help of SpringLocaleDelegate and localeresource.json.
 	 */
 	public static class COLLECTABLE_DATECHOOSER implements PaletteItemElement {
 		public static final String PROPERTY_LABEL = "Eigenschaften";
@@ -274,7 +274,7 @@ public class WYSIWYGStringsAndLabels {
 	}
 
 	/**
-	 * @deprecated Should be done with the help of CommonLocaleDelegate and localeresource.json.
+	 * @deprecated Should be done with the help of SpringLocaleDelegate and localeresource.json.
 	 */
 	// NUCLEUSINT-496
 	public static class COLLECTABLE_LABELED_DATECHOOSER implements PaletteItemElement {
@@ -307,7 +307,7 @@ public class WYSIWYGStringsAndLabels {
 	}
 
 	/**
-	 * @deprecated Should be done with the help of CommonLocaleDelegate and localeresource.json.
+	 * @deprecated Should be done with the help of SpringLocaleDelegate and localeresource.json.
 	 */
 	public static class COLLECTABLE_LABEL implements PaletteItemElement {
 		public static final String PROPERTY_LABEL = "Eigenschaften";
@@ -341,7 +341,7 @@ public class WYSIWYGStringsAndLabels {
 	}
 
 	/**
-	 * @deprecated Should be done with the help of CommonLocaleDelegate and localeresource.json.
+	 * @deprecated Should be done with the help of SpringLocaleDelegate and localeresource.json.
 	 */
 	public static class COLLECTABLE_LISTOFVALUES implements PaletteItemElement {
 		public static final String PROPERTY_LABEL = "Eigenschaften";
@@ -375,7 +375,7 @@ public class WYSIWYGStringsAndLabels {
 	}
 
 	/**
-	 * @deprecated Should be done with the help of CommonLocaleDelegate and localeresource.json.
+	 * @deprecated Should be done with the help of SpringLocaleDelegate and localeresource.json.
 	 */
 	// NUCLEUSINT-496
 	public static class COLLECTABLE_LABELED_LISTOFVALUES implements PaletteItemElement {
@@ -408,7 +408,7 @@ public class WYSIWYGStringsAndLabels {
 	}
 
 	/**
-	 * @deprecated Should be done with the help of CommonLocaleDelegate and localeresource.json.
+	 * @deprecated Should be done with the help of SpringLocaleDelegate and localeresource.json.
 	 */
 	public static class COLLECTABLE_OPTIONGROUP implements PaletteItemElement {
 		public static final String PROPERTY_LABEL = "Eigenschaften";
@@ -442,7 +442,7 @@ public class WYSIWYGStringsAndLabels {
 	}
 
 	/**
-	 * @deprecated Should be done with the help of CommonLocaleDelegate and localeresource.json.
+	 * @deprecated Should be done with the help of SpringLocaleDelegate and localeresource.json.
 	 */
 	// NUCLEUSINT-496
 	public static class COLLECTABLE_LABELED_OPTIONGROUP implements PaletteItemElement {
@@ -475,7 +475,7 @@ public class WYSIWYGStringsAndLabels {
 	}
 
 	/**
-	 * @deprecated Should be done with the help of CommonLocaleDelegate and localeresource.json.
+	 * @deprecated Should be done with the help of SpringLocaleDelegate and localeresource.json.
 	 */
 	public static class COLLECTABLE_TEXTAREA implements PaletteItemElement {
 		public static final String PROPERTY_LABEL = "Eigenschaften";
@@ -509,7 +509,7 @@ public class WYSIWYGStringsAndLabels {
 	}
 
 	/**
-	 * @deprecated Should be done with the help of CommonLocaleDelegate and localeresource.json.
+	 * @deprecated Should be done with the help of SpringLocaleDelegate and localeresource.json.
 	 */
 	// NUCLEUSINT-496
 	public static class COLLECTABLE_LABELED_TEXTAREA implements PaletteItemElement {
@@ -542,7 +542,7 @@ public class WYSIWYGStringsAndLabels {
 	}
 
 	/**
-	 * @deprecated Should be done with the help of CommonLocaleDelegate and localeresource.json.
+	 * @deprecated Should be done with the help of SpringLocaleDelegate and localeresource.json.
 	 */
 	public static class COLLECTABLE_TEXTFIELD implements PaletteItemElement {
 		public static final String PROPERTY_LABEL = "Eigenschaften";
@@ -576,7 +576,7 @@ public class WYSIWYGStringsAndLabels {
 	}
 
 	/**
-	 * @deprecated Should be done with the help of CommonLocaleDelegate and localeresource.json.
+	 * @deprecated Should be done with the help of SpringLocaleDelegate and localeresource.json.
 	 */
 	//NUCLEUSINT-1142
 	public static class COLLECTABLE_PASSWORDFIELD implements PaletteItemElement {
@@ -611,7 +611,7 @@ public class WYSIWYGStringsAndLabels {
 	}
 
 	/**
-	 * @deprecated Should be done with the help of CommonLocaleDelegate and localeresource.json.
+	 * @deprecated Should be done with the help of SpringLocaleDelegate and localeresource.json.
 	 */
 	// NUCLEUSINT-496
 	public static class COLLECTABLE_LABELED_TEXTFIELD implements PaletteItemElement {
@@ -644,7 +644,7 @@ public class WYSIWYGStringsAndLabels {
 	}
 
 	/**
-	 * @deprecated Should be done with the help of CommonLocaleDelegate and localeresource.json.
+	 * @deprecated Should be done with the help of SpringLocaleDelegate and localeresource.json.
 	 */
 	//NUCLEUSINT-1142
 	public static class COLLECTABLE_LABELED_PASSWORDFIELD implements PaletteItemElement {
@@ -677,7 +677,7 @@ public class WYSIWYGStringsAndLabels {
 	}
 
 	/**
-	 * @deprecated Should be done with the help of CommonLocaleDelegate and localeresource.json.
+	 * @deprecated Should be done with the help of SpringLocaleDelegate and localeresource.json.
 	 */
 	public static class COLLECTABLE_LABELED_IMAGE implements PaletteItemElement {
 		public static final String PALETTE_ELEMENTNAME = "Image";
@@ -709,7 +709,7 @@ public class WYSIWYGStringsAndLabels {
 	}
 
 	/**
-	 * @deprecated Should be done with the help of CommonLocaleDelegate and localeresource.json.
+	 * @deprecated Should be done with the help of SpringLocaleDelegate and localeresource.json.
 	 */
 	public static class COLLECTABLE_SUBFORM implements PaletteItemElement {
 		public static final String LABEL_NO_ENTITY_ASSIGNED = "Bitte geben Sie eine Entit\u00e4t an.";
@@ -744,14 +744,14 @@ public class WYSIWYGStringsAndLabels {
 	}
 
 	/**
-	 * @deprecated Should be done with the help of CommonLocaleDelegate and localeresource.json.
+	 * @deprecated Should be done with the help of SpringLocaleDelegate and localeresource.json.
 	 */
 	public static class COLLECTABLE_SUBFORM_COLUMN {
 		public static final String PROPERTY_LABEL = "Spalteneigenschaften";
 	}
 
 	/**
-	 * @deprecated Should be done with the help of CommonLocaleDelegate and localeresource.json.
+	 * @deprecated Should be done with the help of SpringLocaleDelegate and localeresource.json.
 	 */
 	public static class PROPERTY_LABELS {
 		public static final String NAME = "Name der Komponente";
@@ -826,7 +826,7 @@ public class WYSIWYGStringsAndLabels {
 	}
 
 	/**
-	 * @deprecated Should be done with the help of CommonLocaleDelegate and localeresource.json.
+	 * @deprecated Should be done with the help of SpringLocaleDelegate and localeresource.json.
 	 */
 	public static class BORDER_EDITOR {
 		public static final String TITLE_BORDER_EDITOR = "Rahmeneditor";
@@ -867,7 +867,7 @@ public class WYSIWYGStringsAndLabels {
 	}
 
 	/**
-	 * @deprecated Should be done with the help of CommonLocaleDelegate and localeresource.json.
+	 * @deprecated Should be done with the help of SpringLocaleDelegate and localeresource.json.
 	 */
 	public static class LAYOUTML_RULE_EDITOR {
 		public static final String TITLE_LAYOUTML_RULE_EDITOR = "Regeleditor";
@@ -903,7 +903,7 @@ public class WYSIWYGStringsAndLabels {
 	}
 
 	/**
-	 * @deprecated Should be done with the help of CommonLocaleDelegate and localeresource.json.
+	 * @deprecated Should be done with the help of SpringLocaleDelegate and localeresource.json.
 	 */
 	public static class OPTIONS_EDITOR {
 		public static final String LABEL_OPTIONGROUP_NAME = "Name der Werteliste:";
@@ -930,7 +930,7 @@ public class WYSIWYGStringsAndLabels {
 	}
 
 	/**
-	 * @deprecated Should be done with the help of CommonLocaleDelegate and localeresource.json.
+	 * @deprecated Should be done with the help of SpringLocaleDelegate and localeresource.json.
 	 */
 	public static class VALUELIST_PROVIDER_EDITOR {
 		//NUCLEUSINT-312
@@ -953,7 +953,7 @@ public class WYSIWYGStringsAndLabels {
 	}
 
 	/**
-	 * @deprecated Should be done with the help of CommonLocaleDelegate and localeresource.json.
+	 * @deprecated Should be done with the help of SpringLocaleDelegate and localeresource.json.
 	 */
 	public static class COLLECTABLE_COMPONENT_PROPERTY_EDITOR {
 		//NUCLEUSINT-283
@@ -970,7 +970,7 @@ public class WYSIWYGStringsAndLabels {
 	}
 
 	/**
-	 * @deprecated Should be done with the help of CommonLocaleDelegate and localeresource.json.
+	 * @deprecated Should be done with the help of SpringLocaleDelegate and localeresource.json.
 	 */
 	public static class INITIAL_FOCUS_EDITOR {
 		public static final String TOOLBAR_TOOLTIP = "Initialen Focus f\u00fcr das Layout setzen";
@@ -981,7 +981,7 @@ public class WYSIWYGStringsAndLabels {
 	}
 
 	/**
-	 * @deprecated Should be done with the help of CommonLocaleDelegate and localeresource.json.
+	 * @deprecated Should be done with the help of SpringLocaleDelegate and localeresource.json.
 	 */
 	public static class WYSIWYGLAYOUT_EDITOR_PANEL {
 		public static final String PROPERTY_LABEL = "Eigenschaften";
@@ -995,7 +995,7 @@ public class WYSIWYGStringsAndLabels {
 	}
 
 	/**
-	 * @deprecated Should be done with the help of CommonLocaleDelegate and localeresource.json.
+	 * @deprecated Should be done with the help of SpringLocaleDelegate and localeresource.json.
 	 */
 	public static class STATIC_TITLED_SEPARATOR implements PaletteItemElement {
 		public static final String PROPERTY_LABEL = "Eigenschaften";
@@ -1029,7 +1029,7 @@ public class WYSIWYGStringsAndLabels {
 	}
 
 	/**
-	 * @deprecated Should be done with the help of CommonLocaleDelegate and localeresource.json.
+	 * @deprecated Should be done with the help of SpringLocaleDelegate and localeresource.json.
 	 */
 	public static class STATIC_TEXTFIELD implements PaletteItemElement {
 		public static final String PROPERTY_LABEL = "Eigenschaften";
@@ -1063,7 +1063,7 @@ public class WYSIWYGStringsAndLabels {
 	}
 
 	/**
-	 * @deprecated Should be done with the help of CommonLocaleDelegate and localeresource.json.
+	 * @deprecated Should be done with the help of SpringLocaleDelegate and localeresource.json.
 	 */
 	public static class STATIC_TEXTAREA implements PaletteItemElement {
 		public static final String PROPERTY_LABEL = "Eigenschaften";
@@ -1097,7 +1097,7 @@ public class WYSIWYGStringsAndLabels {
 	}
 
 	/**
-	 * @deprecated Should be done with the help of CommonLocaleDelegate and localeresource.json.
+	 * @deprecated Should be done with the help of SpringLocaleDelegate and localeresource.json.
 	 */
 	public static class STATIC_SEPERATOR implements PaletteItemElement {
 		public static final String PROPERTY_LABEL = "Eigenschaften";
@@ -1131,7 +1131,7 @@ public class WYSIWYGStringsAndLabels {
 	}
 
 	/**
-	 * @deprecated Should be done with the help of CommonLocaleDelegate and localeresource.json.
+	 * @deprecated Should be done with the help of SpringLocaleDelegate and localeresource.json.
 	 */
 	public static class STATIC_LABEL implements PaletteItemElement {
 		public static final String PROPERTY_LABEL = "Eigenschaften";
@@ -1165,7 +1165,7 @@ public class WYSIWYGStringsAndLabels {
 	}
 
 	/**
-	 * @deprecated Should be done with the help of CommonLocaleDelegate and localeresource.json.
+	 * @deprecated Should be done with the help of SpringLocaleDelegate and localeresource.json.
 	 */
 	public static class STATIC_IMAGE implements PaletteItemElement {
 		public static final String PALETTE_ELEMENTNAME = "Image";
@@ -1197,7 +1197,7 @@ public class WYSIWYGStringsAndLabels {
 	}
 
 	/**
-	 * @deprecated Should be done with the help of CommonLocaleDelegate and localeresource.json.
+	 * @deprecated Should be done with the help of SpringLocaleDelegate and localeresource.json.
 	 */
 	public static class STATIC_COMBOBOX implements PaletteItemElement {
 		public static final String PROPERTY_LABEL = "Eigenschaften";
@@ -1231,7 +1231,7 @@ public class WYSIWYGStringsAndLabels {
 	}
 
 	/**
-	 * @deprecated Should be done with the help of CommonLocaleDelegate and localeresource.json.
+	 * @deprecated Should be done with the help of SpringLocaleDelegate and localeresource.json.
 	 */
 	public static class STATIC_BUTTON implements PaletteItemElement {
 		public static final String PROPERTY_LABEL = "Eigenschaften";
@@ -1280,7 +1280,7 @@ public class WYSIWYGStringsAndLabels {
 	}
 
 	/**
-	 * @deprecated Should be done with the help of CommonLocaleDelegate and localeresource.json.
+	 * @deprecated Should be done with the help of SpringLocaleDelegate and localeresource.json.
 	 */
 	//NUCLEUSINT-650
 	public static class EDITORPANEL implements PaletteItemElement {
@@ -1313,7 +1313,7 @@ public class WYSIWYGStringsAndLabels {
 	}
 
 	/**
-	 * @deprecated Should be done with the help of CommonLocaleDelegate and localeresource.json.
+	 * @deprecated Should be done with the help of SpringLocaleDelegate and localeresource.json.
 	 */
 	public static class JSCROLLPANE implements PaletteItemElement {
 		public static final String PROPERTY_LABEL = "Eigenschaften";
@@ -1351,7 +1351,7 @@ public class WYSIWYGStringsAndLabels {
 	}
 
 	/**
-	 * @deprecated Should be done with the help of CommonLocaleDelegate and localeresource.json.
+	 * @deprecated Should be done with the help of SpringLocaleDelegate and localeresource.json.
 	 */
 	public static class JTABBEDPANE implements PaletteItemElement {
 		public static final String PROPERTY_LABEL = "Eigenschaften";
@@ -1418,7 +1418,7 @@ public class WYSIWYGStringsAndLabels {
 	}
 
 	/**
-	 * @deprecated Should be done with the help of CommonLocaleDelegate and localeresource.json.
+	 * @deprecated Should be done with the help of SpringLocaleDelegate and localeresource.json.
 	 */
 	public static class JSPLITPANE implements PaletteItemElement {
 		public static final String PROPERTY_LABEL = "Eigenschaften";
@@ -1455,7 +1455,7 @@ public class WYSIWYGStringsAndLabels {
 	}
 
 	/**
-	 * @deprecated Should be done with the help of CommonLocaleDelegate and localeresource.json.
+	 * @deprecated Should be done with the help of SpringLocaleDelegate and localeresource.json.
 	 */
 	public static class BUTTON_LABELS {
 		//NUCLEUSINT-624
@@ -1467,7 +1467,7 @@ public class WYSIWYGStringsAndLabels {
 	}
 
 	/**
-	 * @deprecated Should be done with the help of CommonLocaleDelegate and localeresource.json.
+	 * @deprecated Should be done with the help of SpringLocaleDelegate and localeresource.json.
 	 */
 	public static class PROPERTY_VALUE_COLOR {
 		public static final String LABEL_OK = "OK";
@@ -1479,7 +1479,7 @@ public class WYSIWYGStringsAndLabels {
 	}
 
 	/**
-	 * @deprecated Should be done with the help of CommonLocaleDelegate and localeresource.json.
+	 * @deprecated Should be done with the help of SpringLocaleDelegate and localeresource.json.
 	 */
 	public static class PROPERTY_VALUE_DESCRIPTION {
 		public static final String LABEL_EDIT_DESCRIPTION = "Tooltip bearbeiten";
@@ -1487,7 +1487,7 @@ public class WYSIWYGStringsAndLabels {
 	}
 
 	/**
-	 * @deprecated Should be done with the help of CommonLocaleDelegate and localeresource.json.
+	 * @deprecated Should be done with the help of SpringLocaleDelegate and localeresource.json.
 	 */
 	public static class PROPERTY_VALUE_DIMENSION {
 		public static final String ERRORMESSAGE_NUMBERFORMAT = "Ganze Zahl erwartet f\u00fcr Attribut \"" + MARKER + "\".";
@@ -1495,7 +1495,7 @@ public class WYSIWYGStringsAndLabels {
 	}
 
 	/**
-	 * @deprecated Should be done with the help of CommonLocaleDelegate and localeresource.json.
+	 * @deprecated Should be done with the help of SpringLocaleDelegate and localeresource.json.
 	 */
 	public static class PROPERTY_INITIAL_SORTING_ORDER {
 		public static final String ASCENDING = "aufsteigend";
@@ -1503,14 +1503,14 @@ public class WYSIWYGStringsAndLabels {
 	}
 
 	/**
-	 * @deprecated Should be done with the help of CommonLocaleDelegate and localeresource.json.
+	 * @deprecated Should be done with the help of SpringLocaleDelegate and localeresource.json.
 	 */
 	public static class PROPERTY_VALUE_FONT {
 		public static final String ERRORMESSAGE_VALUE_OUT_OF_RANGE = "Der Wert ist nicht im Bereich von " + MARKER + " und " + MARKER;
 	}
 
 	/**
-	 * @deprecated Should be done with the help of CommonLocaleDelegate and localeresource.json.
+	 * @deprecated Should be done with the help of SpringLocaleDelegate and localeresource.json.
 	 */
 	public static class PROPERTYUTILS {
 		public static final String ERRORMESSAGE_PROPERTY_NOT_REGISTERED = "Eigenschaft " + MARKER + " ist f\u00fcr die Komponente " + MARKER + " nicht definiert";
@@ -1518,7 +1518,7 @@ public class WYSIWYGStringsAndLabels {
 	}
 
 	/**
-	 * @deprecated Should be done with the help of CommonLocaleDelegate and localeresource.json.
+	 * @deprecated Should be done with the help of SpringLocaleDelegate and localeresource.json.
 	 */
 	public static class COMMON_LABELS {
 		public static final String EMPTY = "";
@@ -1527,7 +1527,7 @@ public class WYSIWYGStringsAndLabels {
 	}
 
 	/**
-	 * @deprecated Should be done with the help of CommonLocaleDelegate and localeresource.json.
+	 * @deprecated Should be done with the help of SpringLocaleDelegate and localeresource.json.
 	 */
 	public static class TABLELAYOUT_CONSTRAINTS {
 		public static final String LABEL_LEFT = "Links";
@@ -1542,7 +1542,7 @@ public class WYSIWYGStringsAndLabels {
 	}
 
 	/**
-	 * @deprecated Should be done with the help of CommonLocaleDelegate and localeresource.json.
+	 * @deprecated Should be done with the help of SpringLocaleDelegate and localeresource.json.
 	 */
 	public static class PROPERTIES_DIALOG {
 		public static final String DIALOG_TITLE = "Eigenschaften von \"" + MARKER + "\"";
@@ -1556,7 +1556,7 @@ public class WYSIWYGStringsAndLabels {
 	}
 
 	/**
-	 * @deprecated Should be done with the help of CommonLocaleDelegate and localeresource.json.
+	 * @deprecated Should be done with the help of SpringLocaleDelegate and localeresource.json.
 	 */
 	public static class ENABLE_DISABLE_SLICING {
 		public static final String TOOLTIP_ENABLED_SLICING = "Das Schneiden von neuen Zellen ist aktiviert";
@@ -1564,7 +1564,7 @@ public class WYSIWYGStringsAndLabels {
 	}
 
 	/**
-	 * @deprecated Should be done with the help of CommonLocaleDelegate and localeresource.json.
+	 * @deprecated Should be done with the help of SpringLocaleDelegate and localeresource.json.
 	 */
 	public static class PALETTE_CONTROLLER {
 		public static final String TITLE_PALETTE = "Palette";
@@ -1579,7 +1579,7 @@ public class WYSIWYGStringsAndLabels {
 	}
 
 	/**
-	 * @deprecated Should be done with the help of CommonLocaleDelegate and localeresource.json.
+	 * @deprecated Should be done with the help of SpringLocaleDelegate and localeresource.json.
 	 */
 	public static class TABLELAYOUT_UTIL {
 		public static final String ERRORMESSAGE_SUBFORM_NOT_DELETABLE_TARGET_OF_INITIAL_FOCUS = "Der Initiale Fokus liegt auf dieser Subform.\nEr muss erst entfernt werden, sonst kann sie nicht gel\u00f6scht werden.";
@@ -1592,7 +1592,7 @@ public class WYSIWYGStringsAndLabels {
 	}
 
 	/**
-	 * @deprecated Should be done with the help of CommonLocaleDelegate and localeresource.json.
+	 * @deprecated Should be done with the help of SpringLocaleDelegate and localeresource.json.
 	 */
 	public static class UNDO_REDO {
 		public static final String LABEL_TOOLTIP_UNDO = "Die letzte \u00c4nderung zur\u00fccknehmen";
@@ -1600,7 +1600,7 @@ public class WYSIWYGStringsAndLabels {
 	}
 
 	/**
-	 * @deprecated Should be done with the help of CommonLocaleDelegate and localeresource.json.
+	 * @deprecated Should be done with the help of SpringLocaleDelegate and localeresource.json.
 	 */
 	public static class ALIGNMENT_DIALOG {
 		public static final String TOOLTIP_00 = "linksb\u00fcndig oben";
@@ -1625,7 +1625,7 @@ public class WYSIWYGStringsAndLabels {
 	}
 
 	/**
-	 * @deprecated Should be done with the help of CommonLocaleDelegate and localeresource.json.
+	 * @deprecated Should be done with the help of SpringLocaleDelegate and localeresource.json.
 	 */
 	public static class MEASUREMENT_DESCRIPTIONS {
 		public static final String NAME_ABSOLUTE_SIZE = "Absolute Gr\u00f6\u00dfe setzen";
@@ -1639,7 +1639,7 @@ public class WYSIWYGStringsAndLabels {
 	}
 
 	/**
-	 * @deprecated Should be done with the help of CommonLocaleDelegate and localeresource.json.
+	 * @deprecated Should be done with the help of SpringLocaleDelegate and localeresource.json.
 	 */
 	public static class CHANGE_SIZE_COLUMN_POPUP {
 
@@ -1660,7 +1660,7 @@ public class WYSIWYGStringsAndLabels {
 	}
 
 	/**
-	 * @deprecated Should be done with the help of CommonLocaleDelegate and localeresource.json.
+	 * @deprecated Should be done with the help of SpringLocaleDelegate and localeresource.json.
 	 */
 	public static class CHANGE_SIZE_ROW_POPUP {
 
@@ -1681,7 +1681,7 @@ public class WYSIWYGStringsAndLabels {
 	}
 
 	/**
-	 * @deprecated Should be done with the help of CommonLocaleDelegate and localeresource.json.
+	 * @deprecated Should be done with the help of SpringLocaleDelegate and localeresource.json.
 	 */
 	public static class MULTIPLE_SELECTION_ROWS_AND_COLUMNS {
 		public static final String TITLE_MENUITEM = "Mehrfachauswahl";
@@ -1690,7 +1690,7 @@ public class WYSIWYGStringsAndLabels {
 	}
 
 	/**
-	 * @deprecated Should be done with the help of CommonLocaleDelegate and localeresource.json.
+	 * @deprecated Should be done with the help of SpringLocaleDelegate and localeresource.json.
 	 */
 	public static class COMPONENT_POPUP {
 		public static final String LABEL_MOVE_COMPONENT = "Bewegen";
@@ -1702,7 +1702,7 @@ public class WYSIWYGStringsAndLabels {
 	}
 
 	/**
-	 * @deprecated Should be done with the help of CommonLocaleDelegate and localeresource.json.
+	 * @deprecated Should be done with the help of SpringLocaleDelegate and localeresource.json.
 	 */
 	public static class TWO_PARTED_ALIGNMENT_DIALOG {
 		public static final String TOOLTIP_00 = "Links";
@@ -1716,7 +1716,7 @@ public class WYSIWYGStringsAndLabels {
 	}
 
 	/**
-	 * @deprecated Should be done with the help of CommonLocaleDelegate and localeresource.json.
+	 * @deprecated Should be done with the help of SpringLocaleDelegate and localeresource.json.
 	 */
 	public static class TABLELAYOUT_PANEL {
 		public static final String TITLE_ADD_LAYOUT = "Panel einf\u00fcgen";
@@ -1725,7 +1725,7 @@ public class WYSIWYGStringsAndLabels {
 	}
 
 	/**
-	 * @deprecated Should be done with the help of CommonLocaleDelegate and localeresource.json.
+	 * @deprecated Should be done with the help of SpringLocaleDelegate and localeresource.json.
 	 */
 	public static class TABLELAYOUT_PANEL_TOOLTIP {
 		public static final String COLUMN = "Spalte";
@@ -1745,7 +1745,7 @@ public class WYSIWYGStringsAndLabels {
 	}
 
 	/**
-	 * @deprecated Should be done with the help of CommonLocaleDelegate and localeresource.json.
+	 * @deprecated Should be done with the help of SpringLocaleDelegate and localeresource.json.
 	 */
 	public static class COMPONENT_PROCESSOR {
 		public static final String LABEL_DEFAULTNAME_COLLECTABLE_LABEL = "Label_";
@@ -1777,7 +1777,7 @@ public class WYSIWYGStringsAndLabels {
 	}
 
 	/**
-	 * @deprecated Should be done with the help of CommonLocaleDelegate and localeresource.json.
+	 * @deprecated Should be done with the help of SpringLocaleDelegate and localeresource.json.
 	 */
 	public static class VALIDATION_MESSAGES {
 		public static final String PREFERREDSIZE_WIDTH = "Bevorzugte Gr\u00f6\u00dfe: Breite muss gr\u00f6\u00dfer als " + MARKER + " sein.";
@@ -1786,14 +1786,14 @@ public class WYSIWYGStringsAndLabels {
 	}
 
 	/**
-	 * @deprecated Should be done with the help of CommonLocaleDelegate and localeresource.json.
+	 * @deprecated Should be done with the help of SpringLocaleDelegate and localeresource.json.
 	 */
 	public static class DUMMYBUTTONACTION {
 		public static final String MESSAGE = "Der Button wurde angeklickt...";
 	}
 
 	/**
-	 * @deprecated Should be done with the help of CommonLocaleDelegate and localeresource.json.
+	 * @deprecated Should be done with the help of SpringLocaleDelegate and localeresource.json.
 	 */
 	//NUCLEUSINT-1159
 	public static class CHANGESTATEACTIONLISTENER {

@@ -40,7 +40,7 @@ import org.nuclos.client.main.SwingLocaleSwitcher;
 import org.nuclos.common.ApplicationProperties;
 import org.nuclos.common.JMSConstants;
 import org.nuclos.common2.ClientPreferences;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.LocaleInfo;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonFatalException;
@@ -55,7 +55,7 @@ import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Component;
 
 @Component
-public class LocaleDelegate implements CommonLocaleDelegate.LookupService, MessageListener, InitializingBean, DisposableBean {
+public class LocaleDelegate implements SpringLocaleDelegate.LookupService, MessageListener, InitializingBean, DisposableBean {
 
 	private static final Logger LOG = Logger.getLogger(LocaleDelegate.class);
 	

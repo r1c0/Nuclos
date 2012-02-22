@@ -106,12 +106,12 @@ public class SubFormExplorerNode<TN extends SubFormTreeNode<Integer>> extends Ex
 							// save failed... open controller
 							goController.getFrame().setVisible(true);
 							showBubbleCenter(goController.getFrame(), 
-									getCommonLocaleDelegate().getMessage("SubFormExplorerNode.1", "Ein Bearbeitungsfenster Objekt wurde geöffnet, ein Speichern ohne Benutzereingriff ist nicht möglich.<br/> Bitte prüfen Sie die Meldung: {0}", Errors.formatErrorForBubble(e.getMessage())));
+									getSpringLocaleDelegate().getMessage("SubFormExplorerNode.1", "Ein Bearbeitungsfenster Objekt wurde geöffnet, ein Speichern ohne Benutzereingriff ist nicht möglich.<br/> Bitte prüfen Sie die Meldung: {0}", Errors.formatErrorForBubble(e.getMessage())));
 						}
 					}
 					if (importResult[1] > 0) {
 						showBubbleRight(tree, 
-								getCommonLocaleDelegate().getMessage("MasterDataSubFormController.5", "Der Valuelist Provider verhindert das Anlegen von ${count} Unterformular Datensätzen.", importResult[1]));
+								getSpringLocaleDelegate().getMessage("MasterDataSubFormController.5", "Der Valuelist Provider verhindert das Anlegen von ${count} Unterformular Datensätzen.", importResult[1]));
 					}
 				} catch (NuclosBusinessException nbe) {
 					// dropped failed

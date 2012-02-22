@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.client.datasource.DatasourceDelegate;
 import org.nuclos.client.explorer.node.datasource.DatasourceNode.DatasourceUsage;
 import org.nuclos.server.report.valueobject.DatasourceVO;
@@ -35,8 +35,8 @@ public class OwnDatasourceNode extends DirectoryDatasourceNode {
 
 	public OwnDatasourceNode() {
 		super(false, 
-				CommonLocaleDelegate.getInstance().getMessage("OwnDatasourceNode.1", "Eigene Datenquellen"), 
-				CommonLocaleDelegate.getInstance().getMessage("OwnDatasourceNode.1", "Eigene Datenquellen"), 
+				SpringLocaleDelegate.getInstance().getMessage("OwnDatasourceNode.1", "Eigene Datenquellen"), 
+				SpringLocaleDelegate.getInstance().getMessage("OwnDatasourceNode.1", "Eigene Datenquellen"), 
 				null);
 	}
 

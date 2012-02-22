@@ -41,7 +41,7 @@ import javax.swing.table.TableColumn;
 import org.nuclos.client.common.MetaDataClientProvider;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 
 public class EntityChoicePanel extends JPanel {
 	
@@ -91,9 +91,9 @@ public class EntityChoicePanel extends JPanel {
 		JPanel pnlButtons = new JPanel();		
 		pnlButtons.setLayout(new TableLayout(cellsPanel));		
 		btnOk = new JButton("OK");		
-		btnSelectAll = new JButton(CommonLocaleDelegate.getInstance().getMessage(
+		btnSelectAll = new JButton(SpringLocaleDelegate.getInstance().getMessage(
 				"nuclos.entityrelation.choicepanel.1", "Alle ausw\u00e4hlen"));
-		btnSelectNon = new JButton(CommonLocaleDelegate.getInstance().getMessage(
+		btnSelectNon = new JButton(SpringLocaleDelegate.getInstance().getMessage(
 				"nuclos.entityrelation.choicepanel.2", "Keine ausw\u00e4hlen"));
 		pnlButtons.add(btnOk, "1,1");
 		pnlButtons.add(btnSelectAll, "3,1");
@@ -176,10 +176,10 @@ public class EntityChoicePanel extends JPanel {
 		public String getColumnName(int column) {
 			switch(column) {
 			case 0:
-				return CommonLocaleDelegate.getInstance().getMessage(
+				return SpringLocaleDelegate.getInstance().getMessage(
 						"nuclos.entityrelation.choicepanel.3", "Entit\u00e4t");
 			case 1:
-				return CommonLocaleDelegate.getInstance().getMessage("nuclos.entityrelation.choicepanel.4", "\u00dcbernehmen");
+				return SpringLocaleDelegate.getInstance().getMessage("nuclos.entityrelation.choicepanel.4", "\u00dcbernehmen");
 			default:
 				return "";
 			}

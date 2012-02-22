@@ -29,7 +29,7 @@ import org.nuclos.common.collect.collectable.LocalizedCollectableValueField;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Transformer;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.exception.CommonBusinessException;
 
 /**
@@ -92,7 +92,7 @@ public class EntityCollectableFieldsProvider implements CollectableFieldsProvide
 		final List<CollectableField> result = CollectionUtils.transform(entites, new Transformer<EntityMetaDataVO, CollectableField>() {
 			@Override
 			public CollectableField transform(EntityMetaDataVO eMeta) {
-				String label = CommonLocaleDelegate.getInstance().getLabelFromMetaDataVO(eMeta); 
+				String label = SpringLocaleDelegate.getInstance().getLabelFromMetaDataVO(eMeta); 
 				return makeCollectableField(eMeta, label);
 			}
 		});

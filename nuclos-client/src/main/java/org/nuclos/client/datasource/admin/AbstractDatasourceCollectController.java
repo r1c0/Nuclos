@@ -61,7 +61,7 @@ import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.collect.collectable.CollectableEntity;
 import org.nuclos.common.collect.exception.CollectableValidationException;
 import org.nuclos.common.querybuilder.DatasourceUtils;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.IOUtils;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
@@ -137,7 +137,7 @@ public abstract class AbstractDatasourceCollectController extends NuclosCollectC
 
 	@Override
 	protected String getEntityLabel() {
-		return getCommonLocaleDelegate().getLabelFromMetaDataVO(MetaDataCache.getInstance().getMetaData(sEntity));
+		return getSpringLocaleDelegate().getLabelFromMetaDataVO(MetaDataCache.getInstance().getMetaData(sEntity));
 	}
 
 	/**
@@ -168,7 +168,7 @@ public abstract class AbstractDatasourceCollectController extends NuclosCollectC
 	protected void validate(CollectableDataSource clct) throws CommonBusinessException {
 		if (!pnlEdit.isModelUsed() && !pnlEdit.getSql().trim().toUpperCase().startsWith("SELECT")) {
 			throw new CommonValidationException(
-					getCommonLocaleDelegate().getMessage(
+					getSpringLocaleDelegate().getMessage(
 							"DatasourceCollectController.22","Ung\u00fcltiges SQL Statement. Es d\u00fcrfen nur SELECT Anweisungen ausgef\u00fchrt werden."));
 		}
 		validateParameters();
@@ -190,7 +190,7 @@ public abstract class AbstractDatasourceCollectController extends NuclosCollectC
 		//final JToolBar toolbarCustomDetails = UIUtils.createNonFloatableToolBar();
 
 		btnImport = new JButton(Icons.getInstance().getIconImport16());
-		btnImport.setToolTipText(getCommonLocaleDelegate().getMessage("DatasourceCollectController.3","Datenquelle importieren"));
+		btnImport.setToolTipText(getSpringLocaleDelegate().getMessage("DatasourceCollectController.3","Datenquelle importieren"));
 		btnImport.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent ev) {
@@ -201,7 +201,7 @@ public abstract class AbstractDatasourceCollectController extends NuclosCollectC
 		this.getDetailsPanel().addToolBarComponent(btnImport);
 
 		btnExport = new JButton(Icons.getInstance().getIconExport16());
-		btnExport.setToolTipText(getCommonLocaleDelegate().getMessage("DatasourceCollectController.2","Datenquelle exportieren"));
+		btnExport.setToolTipText(getSpringLocaleDelegate().getMessage("DatasourceCollectController.2","Datenquelle exportieren"));
 		btnExport.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent ev) {
@@ -212,7 +212,7 @@ public abstract class AbstractDatasourceCollectController extends NuclosCollectC
 		this.getDetailsPanel().addToolBarComponent(btnExport);
 
 		btnValidate = new JButton(Icons.getInstance().getIconValidate16());
-		btnValidate.setToolTipText(getCommonLocaleDelegate().getMessage(
+		btnValidate.setToolTipText(getSpringLocaleDelegate().getMessage(
 				"DatasourceCollectController.19","Syntax der SQL Abfrage pr\u00fcfen"));
 		btnValidate.addActionListener(new ActionListener() {
 			@Override
@@ -405,7 +405,7 @@ public abstract class AbstractDatasourceCollectController extends NuclosCollectC
 				final Map<String, List<String>> mpWarnings = pnlEdit.getQueryEditor().setXML(datasourceVO.getSource());
 				final String sWarnings = QueryBuilderEditor.getSkippedElements(mpWarnings);
 				if (sWarnings.length() > 0) {
-					JOptionPane.showMessageDialog(parent, getCommonLocaleDelegate().getMessage(
+					JOptionPane.showMessageDialog(parent, getSpringLocaleDelegate().getMessage(
 							"DatasourceCollectController.13","Folgende Elemente existieren nicht mehr in dem aktuellen Datenbankschema und wurden daher entfernt") + ":\n" + sWarnings);
 				}
 				final List<DatasourceParameterVO> lstParams = datasourcedelegate.getParametersFromXML(datasourceVO.getSource());
@@ -427,7 +427,7 @@ public abstract class AbstractDatasourceCollectController extends NuclosCollectC
 							continue;
 						}
 
-						JOptionPane.showMessageDialog(parent, getCommonLocaleDelegate().getMessage(
+						JOptionPane.showMessageDialog(parent, getSpringLocaleDelegate().getMessage(
 								"DatasourceCollectController.5","Der Parameter \"{0}\" ist definiert, wird aber nicht verwendet.", sParameter));
 					}
 				}
@@ -437,7 +437,7 @@ public abstract class AbstractDatasourceCollectController extends NuclosCollectC
 						continue;
 					}
 					if (pnlEdit.isModelUsed() && !stDefinedParameters.contains(sParameter)) {
-						JOptionPane.showMessageDialog(parent, getCommonLocaleDelegate().getMessage(
+						JOptionPane.showMessageDialog(parent, getSpringLocaleDelegate().getMessage(
 								"DatasourceCollectController.6","Der Parameter \"{0}\" ist nicht definiert.", sParameter));
 					}
 				}
@@ -470,7 +470,7 @@ public abstract class AbstractDatasourceCollectController extends NuclosCollectC
 
 		if (lstParams.iterator().hasNext()) {
 			result = (JOptionPane.showOptionDialog(parent, panel, 
-					CommonLocaleDelegate.getInstance().getMessage("DatasourceCollectController.16","Parameter"), 
+					SpringLocaleDelegate.getInstance().getMessage("DatasourceCollectController.16","Parameter"), 
 					JOptionPane.OK_CANCEL_OPTION,
 					JOptionPane.PLAIN_MESSAGE, null, null, null) == JOptionPane.OK_OPTION);
 			if (result) {
@@ -527,7 +527,7 @@ public abstract class AbstractDatasourceCollectController extends NuclosCollectC
 						NuclosConsole.getInstance().parseAndInvoke(new String[]{NuclosConsole.getInstance().CMD_INVALIDATEALLCACHES}, false);
 					}
 					catch(Exception e) {
-						throw new NuclosFatalException(getCommonLocaleDelegate().getMessage(
+						throw new NuclosFatalException(getSpringLocaleDelegate().getMessage(
 								"DatasourceCollectController.7","Der serverseitige DatasourceCache konnte nicht invalidiert werden!"), e);
 					}
 

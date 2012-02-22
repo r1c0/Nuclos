@@ -20,7 +20,7 @@ import java.util.prefs.Preferences;
 
 import org.nuclos.common.collect.collectable.*;
 import org.nuclos.common.entityobject.CollectableEOEntity;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 
 /**
  * CollectableEntityFieldWithEntityForExternal supports including rows from a subform
@@ -87,7 +87,7 @@ public class CollectableEntityFieldWithEntityForExternal extends CollectableEnti
 		if (result == null) {
 			if (this.getCollectableEntity() instanceof CollectableEOEntity) {
 				CollectableEOEntity clcteo = (CollectableEOEntity) this.getCollectableEntity();
-				result = CommonLocaleDelegate.getInstance().getLabelFromMetaDataVO(clcteo.getMeta());
+				result = SpringLocaleDelegate.getInstance().getLabelFromMetaDataVO(clcteo.getMeta());
 			}
 		}
 		

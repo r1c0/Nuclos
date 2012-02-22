@@ -68,7 +68,7 @@ public class PersonalTaskView extends TaskView {
 	
 	final ButtonGroup bgPriority = new ButtonGroup();
 	final JRadioButtonMenuItem[] rbPrio = new JRadioButtonMenuItem[] {
-		new JRadioButtonMenuItem(getCommonLocaleDelegate().getMessage("PersonalTaskView.1","<Alle>")),
+		new JRadioButtonMenuItem(getSpringLocaleDelegate().getMessage("PersonalTaskView.1","<Alle>")),
 		new JRadioButtonMenuItem("1"),
 		new JRadioButtonMenuItem("2"),
 		new JRadioButtonMenuItem("3"),
@@ -78,9 +78,9 @@ public class PersonalTaskView extends TaskView {
 	
 	final ButtonGroup bgShowTasks = new ButtonGroup();
 	final JRadioButtonMenuItem[] rbShowTask = new JRadioButtonMenuItem[] {
-		new JRadioButtonMenuItem(getCommonLocaleDelegate().getMessage("PersonalTaskView.8","Eigene Aufgaben")),
-		new JRadioButtonMenuItem(getCommonLocaleDelegate().getMessage("PersonalTaskView.6","Delegierte Aufgaben")),
-		new JRadioButtonMenuItem(getCommonLocaleDelegate().getMessage("PersonalTaskView.3","Eigene und delegierte Aufgaben"))
+		new JRadioButtonMenuItem(getSpringLocaleDelegate().getMessage("PersonalTaskView.8","Eigene Aufgaben")),
+		new JRadioButtonMenuItem(getSpringLocaleDelegate().getMessage("PersonalTaskView.6","Delegierte Aufgaben")),
+		new JRadioButtonMenuItem(getSpringLocaleDelegate().getMessage("PersonalTaskView.3","Eigene und delegierte Aufgaben"))
 	};
 	
 	final JCheckBoxMenuItem ckbShowCompletedTasks = new JCheckBoxMenuItem();
@@ -88,7 +88,7 @@ public class PersonalTaskView extends TaskView {
 	private final JScrollPane scrlpn = new JScrollPane();
 	private final JTable tblTasks = new CommonJTable();
 	
-	private final PopupButton popupExtras = new PopupButton(getCommonLocaleDelegate().getMessage(
+	private final PopupButton popupExtras = new PopupButton(getSpringLocaleDelegate().getMessage(
 			"PopupButton.Extras","Extras"));
 
 	public PersonalTaskView() {
@@ -110,14 +110,14 @@ public class PersonalTaskView extends TaskView {
 		this.popupExtras.add(btnRemove);
 		this.popupExtras.add(ckbShowCompletedTasks);
 		this.popupExtras.addSeparator();
-		this.popupExtras.add(new JLabel("<html><b>"+getCommonLocaleDelegate().getMessage(
+		this.popupExtras.add(new JLabel("<html><b>"+getSpringLocaleDelegate().getMessage(
 				"PersonalTaskView.7","Filter nach Priorit\u00e4t")+"</b></html>"));
 		for (int i = 0; i < rbPrio.length; i++) {
 			this.bgPriority.add(rbPrio[i]);
 			this.popupExtras.add(rbPrio[i]);
 		}
 		this.popupExtras.addSeparator();
-		this.popupExtras.add(new JLabel("<html><b>"+getCommonLocaleDelegate().getMessage(
+		this.popupExtras.add(new JLabel("<html><b>"+getSpringLocaleDelegate().getMessage(
 				"PersonalTaskView.5","Aufgaben anzeigen")+"</b></html>"));
 		for (int i = 0; i < rbShowTask.length; i++) {
 			this.bgShowTasks.add(rbShowTask[i]);
@@ -131,9 +131,9 @@ public class PersonalTaskView extends TaskView {
 		btnNew.putClientProperty("hideActionText", Boolean.TRUE);
 		btnComplete.putClientProperty("hideActionText", Boolean.TRUE);
 		
-		this.ckbShowCompletedTasks.setText(getCommonLocaleDelegate().getMessage(
+		this.ckbShowCompletedTasks.setText(getSpringLocaleDelegate().getMessage(
 				"PersonalTaskView.9", "Auch erledigte anzeigen"));
-		this.ckbShowCompletedTasks.setToolTipText(getCommonLocaleDelegate().getMessage(
+		this.ckbShowCompletedTasks.setToolTipText(getSpringLocaleDelegate().getMessage(
 				"PersonalTaskView.10", "Erledigte und nicht erledigte Aufgaben anzeigen"));
 
 		this.scrlpn.getViewport().setView(tblTasks);

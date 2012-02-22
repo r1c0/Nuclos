@@ -53,7 +53,7 @@ import org.nuclos.common.collect.collectable.DefaultCollectableEntityProvider;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Transformer;
 import org.nuclos.common.dal.vo.EntityObjectVO;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonValidationException;
 import org.pietschy.wizard.InvalidStateException;
@@ -154,13 +154,13 @@ public class NuclosEntityProcessStep extends NuclosEntityAbstractStep {
 
 	@Override
 	public void applyState() throws InvalidStateException {
-		final CommonLocaleDelegate cld = CommonLocaleDelegate.getInstance();
+		final SpringLocaleDelegate localeDelegate = SpringLocaleDelegate.getInstance();
 		List<CollectableEntityObject> subformdata;
 		try {
 			subformdata = subFormController.getCollectables(true, true, true);
 		} catch (CommonValidationException e1) {
-			JOptionPane.showMessageDialog(this, cld.getMessageFromResource(e1.getMessage()),
-	    			cld.getMessage("wizard.step.processes.error.title", "Achtung!"), JOptionPane.OK_OPTION);
+			JOptionPane.showMessageDialog(this, localeDelegate.getMessageFromResource(e1.getMessage()),
+	    			localeDelegate.getMessage("wizard.step.processes.error.title", "Achtung!"), JOptionPane.OK_OPTION);
  	        throw new InvalidStateException();
 		}
 		Collection<EntityObjectVO> processes = CollectionUtils.transform(subformdata, new Transformer<CollectableEntityObject, EntityObjectVO>() {
@@ -174,15 +174,15 @@ public class NuclosEntityProcessStep extends NuclosEntityAbstractStep {
 		for (EntityObjectVO process : processes) {
 			String name = process.getField("name");
 			if (StringUtils.isNullOrEmpty(name)) {
-				JOptionPane.showMessageDialog(this, cld.getMessage(
+				JOptionPane.showMessageDialog(this, localeDelegate.getMessage(
 						"wizard.step.processes.error.name.mandatory", "Bitte definieren Sie für jede Aktion einen Namen."),
-		    			cld.getMessage("wizard.step.processes.error.title", "Achtung!"), JOptionPane.OK_OPTION);
+		    			localeDelegate.getMessage("wizard.step.processes.error.title", "Achtung!"), JOptionPane.OK_OPTION);
 	 	        throw new InvalidStateException();
 			}
 			if (!names.add(name)) {
-				JOptionPane.showMessageDialog(this, cld.getMessage(
+				JOptionPane.showMessageDialog(this, localeDelegate.getMessage(
 						"wizard.step.processes.error.name.unique", "Der Name einer Aktion muss eindeutig sein ({0}).", name),
-		    			cld.getMessage("wizard.step.processes.error.title", "Achtung!"), JOptionPane.OK_OPTION);
+		    			localeDelegate.getMessage("wizard.step.processes.error.title", "Achtung!"), JOptionPane.OK_OPTION);
 	 	        throw new InvalidStateException();
 			}
 		}
@@ -207,9 +207,9 @@ public class NuclosEntityProcessStep extends NuclosEntityAbstractStep {
 					}
 					catch (NuclosBusinessException e) {
 						JOptionPane.showMessageDialog(NuclosEntityProcessStep.this, 
-								getCommonLocaleDelegate().getMessage(
+								getSpringLocaleDelegate().getMessage(
 										"wizard.step.processes.error.removeprocess", "Aktion {0} ist bereits in Verwendung und kann nicht entfernt werden.", process.getField("name")),
-								getCommonLocaleDelegate().getMessage(
+								getSpringLocaleDelegate().getMessage(
 										"wizard.step.processes.error.title", "Achtung!"), JOptionPane.OK_OPTION);
 						return;
 					}

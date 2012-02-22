@@ -36,7 +36,7 @@ import org.nuclos.client.ui.collect.indicator.CollectPanelIndicator;
 import org.nuclos.client.ui.collect.result.ResultPanel;
 import org.nuclos.client.ui.collect.search.SearchPanel;
 import org.nuclos.common.collect.collectable.Collectable;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 
 
 /**
@@ -174,19 +174,19 @@ public class CollectPanel<Clct extends Collectable> extends JPanel {
 		this.pnlResult.setName("pnlResult");
 		this.pnlDetails.setName("pnlDetails");
 		
-		setTabbedPaneToolTipTextAt(TAB_SEARCH, CommonLocaleDelegate.getInstance().getMessage("CollectPanel.6","Suche (F3)"));
-		setTabbedPaneToolTipTextAt(TAB_RESULT, CommonLocaleDelegate.getInstance().getMessage("CollectPanel.4","Ergebnis (F4)"));
-		setTabbedPaneToolTipTextAt(TAB_DETAILS, CommonLocaleDelegate.getInstance().getMessage("CollectPanel.2","Details (F5)"));
+		setTabbedPaneToolTipTextAt(TAB_SEARCH, SpringLocaleDelegate.getInstance().getMessage("CollectPanel.6","Suche (F3)"));
+		setTabbedPaneToolTipTextAt(TAB_RESULT, SpringLocaleDelegate.getInstance().getMessage("CollectPanel.4","Ergebnis (F4)"));
+		setTabbedPaneToolTipTextAt(TAB_DETAILS, SpringLocaleDelegate.getInstance().getMessage("CollectPanel.2","Details (F5)"));
 
 		/*
 		if (this.containsSearchPanel()) {
-			this.tabpn.addTab(CommonLocaleDelegate.getMessage("CollectPanel.5","Suche"), this.pnlSearch);
-			this.tabpn.setToolTipTextAt(this.getTabIndexOf(TAB_SEARCH), CommonLocaleDelegate.getMessage("CollectPanel.6","Suche (F3)"));
+			this.tabpn.addTab(SpringLocaleDelegate.getMessage("CollectPanel.5","Suche"), this.pnlSearch);
+			this.tabpn.setToolTipTextAt(this.getTabIndexOf(TAB_SEARCH), SpringLocaleDelegate.getMessage("CollectPanel.6","Suche (F3)"));
 		}
-		this.tabpn.addTab(CommonLocaleDelegate.getMessage("CollectPanel.3","Ergebnis"), this.pnlResult);
-		this.tabpn.setToolTipTextAt(this.getTabIndexOf(TAB_RESULT), CommonLocaleDelegate.getMessage("CollectPanel.4","Ergebnis (F4)"));
-		this.tabpn.addTab(CommonLocaleDelegate.getMessage("CollectPanel.1","Details"), this.pnlDetails);
-		this.tabpn.setToolTipTextAt(this.getTabIndexOf(TAB_DETAILS), CommonLocaleDelegate.getMessage("CollectPanel.2","Details (F5)"));
+		this.tabpn.addTab(SpringLocaleDelegate.getMessage("CollectPanel.3","Ergebnis"), this.pnlResult);
+		this.tabpn.setToolTipTextAt(this.getTabIndexOf(TAB_RESULT), SpringLocaleDelegate.getMessage("CollectPanel.4","Ergebnis (F4)"));
+		this.tabpn.addTab(SpringLocaleDelegate.getMessage("CollectPanel.1","Details"), this.pnlDetails);
+		this.tabpn.setToolTipTextAt(this.getTabIndexOf(TAB_DETAILS), SpringLocaleDelegate.getMessage("CollectPanel.2","Details (F5)"));
 		
 		this.tabpn.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);*/
 	}

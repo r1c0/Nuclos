@@ -30,7 +30,7 @@ import org.nuclos.common.GenericObjectMetaDataVO;
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.attribute.DynamicAttributeVO;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableSearchCondition;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.TruncatableCollection;
 import org.nuclos.common2.exception.CommonBusinessException;
@@ -326,10 +326,10 @@ public class GenericObjectDelegate {
 			// the default message of NuclosUpdateException is not always correct ("duplicate key").
 			/** @todo find a better solution */
 			if (tCause == null) {
-				throw new NuclosUpdateException(CommonLocaleDelegate.getInstance().getMessage(
+				throw new NuclosUpdateException(SpringLocaleDelegate.getInstance().getMessage(
 						"GenericObjectDelegate.1", "Der Datensatz konnte nicht gespeichert werden.") + "\n" + ex.getMessage(), ex);
 			} else {
-				throw new NuclosUpdateException(CommonLocaleDelegate.getInstance().getMessage(
+				throw new NuclosUpdateException(SpringLocaleDelegate.getInstance().getMessage(
 						"GenericObjectDelegate.1", "Der Datensatz konnte nicht gespeichert werden.") + "\n" + tCause.getMessage(), ex);
 			}
 		}
@@ -370,10 +370,10 @@ public class GenericObjectDelegate {
 			// the default message of NuclosUpdateException is not always correct ("duplicate key").
 			/** @todo find a better solution */
 			if (ex.getCause() == null) {
-				throw new CommonCreateException(CommonLocaleDelegate.getInstance().getMessage(
+				throw new CommonCreateException(SpringLocaleDelegate.getInstance().getMessage(
 						"GenericObjectDelegate.2", "Der Datensatz konnte nicht erzeugt werden.") + "\n" + ex.getMessage(), ex);
 			} else {
-				throw new CommonCreateException(CommonLocaleDelegate.getInstance().getMessage(
+				throw new CommonCreateException(SpringLocaleDelegate.getInstance().getMessage(
 						"GenericObjectDelegate.2", "Der Datensatz konnte nicht erzeugt werden.") + "\n" + ex.getCause().getMessage(), ex);
 			}
 		}
@@ -413,7 +413,7 @@ public class GenericObjectDelegate {
 			// RuntimeException has the BAD habit to include its cause' message in its own message.
 			// the default message of NuclosUpdateException is not always correct ("duplicate key").
 			/** @todo find a better solution */
-			throw new CommonCreateException(CommonLocaleDelegate.getInstance().getMessage(
+			throw new CommonCreateException(SpringLocaleDelegate.getInstance().getMessage(
 					"GenericObjectDelegate.2", "Der Datensatz konnte nicht erzeugt werden.") + "\n" + ex.getCause().getMessage(), ex);
 		}
 		catch (RuntimeException ex) {

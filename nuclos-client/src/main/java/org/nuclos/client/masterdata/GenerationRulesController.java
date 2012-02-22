@@ -32,7 +32,7 @@ import org.nuclos.client.statemodel.controller.InsertRuleController;
 import org.nuclos.client.ui.Errors;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Transformer;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.server.common.valueobject.GeneratorRuleVO;
 
 /**
@@ -127,7 +127,7 @@ public class GenerationRulesController {
 		try {
 			if (ev.getActionCommand().equals("add")) {
 				final InsertRuleController controller = new InsertRuleController(parent);
-				if (controller.run(CommonLocaleDelegate.getInstance().getMessage(
+				if (controller.run(SpringLocaleDelegate.getInstance().getMessage(
 						"GenerationRulesController.1", "Liste der verf\u00fcgbaren Regeln"), pnlGenerationRules.getModel().getRules())) {
 					for (int i = 0; i < controller.getRulesPanel().getTblRules().getSelectedRowCount(); i++) {
 						model.addRow(controller.getRulesPanel().getRow(controller.getRulesPanel().getTblRules().getSelectedRows()[i]));

@@ -20,7 +20,7 @@ package org.nuclos.common2;
  * Classes annotated with this interface provides an resource id which should be used
  * for representation.
  * 
- * The localized representation should be extracted via {@link org.nuclos.common2.CommonLocaleDelegate#getText(Localizable)}. 
+ * The localized representation should be extracted via {@link org.nuclos.common2.SpringLocaleDelegate#getText(Localizable)}. 
  */
 public interface Localizable {
 

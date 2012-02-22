@@ -51,7 +51,7 @@ import org.nuclos.common.collection.Pair;
 import org.nuclos.common.collection.Transformer;
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.dal.vo.EntityObjectVO;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.exception.CommonBusinessException;
 
 /**
@@ -67,7 +67,7 @@ public class ShowAsDialog extends JDialog {
 	private EntityObjectVO     object;
 	
 	public ShowAsDialog(JFrame owner, EntityObjectVO object, List<EntityFieldMetaDataVO> possibleReferences) {
-		super(owner, CommonLocaleDelegate.getInstance().getResource("livesearch.showasdiag.title", "Frage"), false);
+		super(owner, SpringLocaleDelegate.getInstance().getResource("livesearch.showasdiag.title", "Frage"), false);
 		this.object = object;
 		
 		List<Pair<EntityFieldMetaDataVO, String>> withLabel
@@ -79,7 +79,7 @@ public class ShowAsDialog extends JDialog {
 	                    public Pair<EntityFieldMetaDataVO, String> transform(EntityFieldMetaDataVO i) {
 		                    return new Pair<EntityFieldMetaDataVO, String>(
 		                    	i,
-		                    	CommonLocaleDelegate.getInstance().getLabelFromMetaDataVO(
+		                    	SpringLocaleDelegate.getInstance().getLabelFromMetaDataVO(
 		                    			MetaDataClientProvider.getInstance().getEntity(i.getForeignEntity())));
 	                    }
 					}),
@@ -103,7 +103,7 @@ public class ShowAsDialog extends JDialog {
 		}
 		checkPane.setBorder(new CompoundBorder(new EmptyBorder(10, 30, 10, 30), new LineBorder(Color.GRAY)));
 		
-		JLabel label = new JLabel(CommonLocaleDelegate.getInstance().getResource(
+		JLabel label = new JLabel(SpringLocaleDelegate.getInstance().getResource(
 				"livesearch.showasdiag.text", "<html><br>Das Objekt repräsentiert einen Detaildatensatz, zu dem kein eindeutiges Layout bestimmt werden konnte.<br>In welchem Modul soll die Ansicht geöffnet werden?</html>"));
 		label.setBorder(new EmptyBorder(10, 10, 10, 10));
 		
@@ -131,7 +131,7 @@ public class ShowAsDialog extends JDialog {
 	}
 	
 	
-	private Action okAction = new AbstractAction(CommonLocaleDelegate.getInstance().getResource("livesearch.showasdiag.ok", "OK")) {
+	private Action okAction = new AbstractAction(SpringLocaleDelegate.getInstance().getResource("livesearch.showasdiag.ok", "OK")) {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
@@ -151,7 +151,7 @@ public class ShowAsDialog extends JDialog {
 		}
 	};
 
-	private Action cancelAction = new AbstractAction(CommonLocaleDelegate.getInstance().getResource("livesearch.showasdiag.cancel", "Cancel")) {
+	private Action cancelAction = new AbstractAction(SpringLocaleDelegate.getInstance().getResource("livesearch.showasdiag.cancel", "Cancel")) {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {

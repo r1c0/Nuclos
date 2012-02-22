@@ -22,7 +22,7 @@ import org.nuclos.common.collect.collectable.CollectableField;
 import org.nuclos.common.collect.collectable.CollectableValueIdField;
 import org.nuclos.common.collect.collectable.DefaultCollectable;
 import org.nuclos.common.collect.collectable.DefaultCollectableEntityField;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 
 import org.nuclos.common.NuclosEntity;
 
@@ -47,16 +47,16 @@ public class CollectableStateRole extends DefaultCollectable {
 	private static class Entity extends AbstractCollectableEntity {
 		private Entity() {
 			super("staterole", 
-					CommonLocaleDelegate.getInstance().getMessage(
+					SpringLocaleDelegate.getInstance().getMessage(
 							"CollectableStateRole.3","Rolle (Benutzergruppe) f\u00fcr Status"));
 			final String entity = "staterole";
 			this.addCollectableEntityField(new DefaultCollectableEntityField(FIELDNAME_STATE, String.class, 
-					getCommonLocaleDelegate().getMessage("CollectableStateRole.4","Status"),
-					getCommonLocaleDelegate().getMessage("CollectableStateRole.5","\u00dcbergeordneter Status"), null, null, false, CollectableField.TYPE_VALUEIDFIELD, NuclosEntity.STATE.getEntityName(),
+					getSpringLocaleDelegate().getMessage("CollectableStateRole.4","Status"),
+					getSpringLocaleDelegate().getMessage("CollectableStateRole.5","\u00dcbergeordneter Status"), null, null, false, CollectableField.TYPE_VALUEIDFIELD, NuclosEntity.STATE.getEntityName(),
 					CollectableValueIdField.NULL, null, null, entity));
 			this.addCollectableEntityField(new DefaultCollectableEntityField(FIELDNAME_ROLE, String.class, 
-					getCommonLocaleDelegate().getMessage("CollectableStateRole.1","Benutzergruppe"),
-					getCommonLocaleDelegate().getMessage("CollectableStateRole.2","Benutzergruppe (Rolle)"), null, null, false, CollectableField.TYPE_VALUEIDFIELD, NuclosEntity.ROLE.getEntityName(),
+					getSpringLocaleDelegate().getMessage("CollectableStateRole.1","Benutzergruppe"),
+					getSpringLocaleDelegate().getMessage("CollectableStateRole.2","Benutzergruppe (Rolle)"), null, null, false, CollectableField.TYPE_VALUEIDFIELD, NuclosEntity.ROLE.getEntityName(),
 					CollectableValueIdField.NULL, null, null, entity));
 		}
 	}

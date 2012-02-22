@@ -24,7 +24,7 @@ import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableIdCondition;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableSearchCondition;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.common2.exception.CommonFinderException;
@@ -351,7 +351,7 @@ public abstract class NuclosFacadeBean {
 					}
 				}
 				else {
-					sEntityLabel = CommonLocaleDelegate.getInstance().getLabelFromMetaDataVO(masterDataMetaCache.getMetaData(sEntityName[i]));
+					sEntityLabel = SpringLocaleDelegate.getInstance().getLabelFromMetaDataVO(masterDataMetaCache.getMetaData(sEntityName[i]));
 					//masterDataMetaCache.getMetaData(sEntityName[i]).getLabel();
 					if(securityCache.isReadAllowedForMasterData(this.getCurrentUserName(), sEntityName[i])) {
 					  isReadAllowed = true;
@@ -389,7 +389,7 @@ public abstract class NuclosFacadeBean {
 					}
 				}
 				else {
-					sEntityLabel = CommonLocaleDelegate.getInstance().getLabelFromMetaDataVO(masterDataMetaCache.getMetaData(sEntityName[i]));
+					sEntityLabel = SpringLocaleDelegate.getInstance().getLabelFromMetaDataVO(masterDataMetaCache.getMetaData(sEntityName[i]));
 					//masterDataMetaCache.getMetaData(sEntityName[i]).getLabel();
 					if(securityCache.isWriteAllowedForMasterData(this.getCurrentUserName(), sEntityName[i])) {
 					  isWriteAllowed = true;
@@ -426,7 +426,7 @@ public abstract class NuclosFacadeBean {
 					}
 				}
 				else {
-					sEntityLabel = CommonLocaleDelegate.getInstance().getLabelFromMetaDataVO(masterDataMetaCache.getMetaData(sEntityName[i]));
+					sEntityLabel = SpringLocaleDelegate.getInstance().getLabelFromMetaDataVO(masterDataMetaCache.getMetaData(sEntityName[i]));
 					//masterDataMetaCache.getMetaData(sEntityName[i]).getLabel();
 					if(securityCache.isDeleteAllowedForMasterData(this.getCurrentUserName(), sEntityName[i])) {
 					  isDeleteAllowed = true;

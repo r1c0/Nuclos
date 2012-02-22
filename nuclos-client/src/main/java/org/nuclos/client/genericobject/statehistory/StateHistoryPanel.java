@@ -27,7 +27,7 @@ import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.table.AbstractTableModel;
 
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.server.statemodel.valueobject.StateHistoryVO;
 
 /**
@@ -75,11 +75,11 @@ public class StateHistoryPanel extends JPanel {
 
 		private List<StateHistoryVO> lstHistory;
 		private static String[] asColumnNames = {
-			CommonLocaleDelegate.getInstance().getMessage("StateHistoryPanel.1", "Status"), 
-			CommonLocaleDelegate.getInstance().getMessage("StateHistoryPanel.2", "Datum"),
-			CommonLocaleDelegate.getInstance().getMessage("StateHistoryPanel.3", "Benutzer")};
+			SpringLocaleDelegate.getInstance().getMessage("StateHistoryPanel.1", "Status"), 
+			SpringLocaleDelegate.getInstance().getMessage("StateHistoryPanel.2", "Datum"),
+			SpringLocaleDelegate.getInstance().getMessage("StateHistoryPanel.3", "Benutzer")};
 		//private final DateFormat dateformat = DateFormat.getDateInstance();
-		private final DateFormat dateformat = CommonLocaleDelegate.getInstance().getDateTimeFormat(); // new java.text.SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
+		private final DateFormat dateformat = SpringLocaleDelegate.getInstance().getDateTimeFormat(); // new java.text.SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
 
 		public TableModel(List<StateHistoryVO> lstHistory) {
 			this.lstHistory = lstHistory;

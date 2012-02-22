@@ -34,7 +34,7 @@ import javax.swing.table.TableCellRenderer;
 
 import org.nuclos.client.masterdata.SortableRuleTableModel;
 import org.nuclos.client.ui.Icons;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 
 /**
  * shows the rules attached to a transition.
@@ -64,24 +64,24 @@ public class TransitionRulesPanel extends JPanel {
 	}
 
 	private void init() {
-		final CommonLocaleDelegate cld = CommonLocaleDelegate.getInstance();
+		final SpringLocaleDelegate localeDelegate = SpringLocaleDelegate.getInstance();
 		btnAdd.setIcon(Icons.getInstance().getIconNew16());
-		btnAdd.setToolTipText(cld.getMessage("TransitionRulesPanel.4","Neue Regel zuordnen"));
+		btnAdd.setToolTipText(localeDelegate.getMessage("TransitionRulesPanel.4","Neue Regel zuordnen"));
 		btnAdd.setActionCommand("add");
 		btnDelete.setIcon(Icons.getInstance().getIconDelete16());
-		btnDelete.setToolTipText(cld.getMessage("TransitionRulesPanel.5","Zuordnung aufheben"));
+		btnDelete.setToolTipText(localeDelegate.getMessage("TransitionRulesPanel.5","Zuordnung aufheben"));
 		btnDelete.setActionCommand("remove");
 		btnUp.setIcon(Icons.getInstance().getIconUp16());
-		btnUp.setToolTipText(cld.getMessage("TransitionRulesPanel.2","Nach oben verschieben"));
+		btnUp.setToolTipText(localeDelegate.getMessage("TransitionRulesPanel.2","Nach oben verschieben"));
 		btnUp.setActionCommand("moveUp");
 		btnDown.setIcon(Icons.getInstance().getIconDown16());
-		btnDown.setToolTipText(cld.getMessage("TransitionRulesPanel.3","Nach unten verschieben"));
+		btnDown.setToolTipText(localeDelegate.getMessage("TransitionRulesPanel.3","Nach unten verschieben"));
 		btnDown.setActionCommand("moveDown");
 		btnAutomatic.setIcon(Icons.getInstance().getIconStateTransitionAuto());
-		btnAutomatic.setToolTipText(cld.getMessage("TransitionRulesPanel.1","Automatische Transition"));
+		btnAutomatic.setToolTipText(localeDelegate.getMessage("TransitionRulesPanel.1","Automatische Transition"));
 		btnAutomatic.setActionCommand("setAuto");
 		btnDefault.setIcon(Icons.getInstance().getIconStateTransitionDefault());
-		btnDefault.setToolTipText(cld.getMessage("TransitionRulesPanel.6","Standard Transition"));
+		btnDefault.setToolTipText(localeDelegate.getMessage("TransitionRulesPanel.6","Standard Transition"));
 		btnDefault.setActionCommand("setDefault");
 
 		toolbar.setFloatable(false);

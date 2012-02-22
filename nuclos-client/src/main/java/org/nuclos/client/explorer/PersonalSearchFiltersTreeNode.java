@@ -49,12 +49,12 @@ public class PersonalSearchFiltersTreeNode extends AbstractTreeNode<Object> {
 
 	@Override
 	public String getLabel() {
-		return getCommonLocaleDelegate().getMessage("PersonalSearchFiltersTreeNode.2","Eigene Filter");
+		return getSpringLocaleDelegate().getMessage("PersonalSearchFiltersTreeNode.2","Eigene Filter");
 	}
 
 	@Override
 	public String getDescription() {
-		return getCommonLocaleDelegate().getMessage("PersonalSearchFiltersTreeNode.1","Alle pers\u00f6nlichen Suchfilter");
+		return getSpringLocaleDelegate().getMessage("PersonalSearchFiltersTreeNode.1","Alle pers\u00f6nlichen Suchfilter");
 	}
 
 	@Override

@@ -26,7 +26,7 @@ import org.nuclos.common.collect.collectable.CollectableField;
 import org.nuclos.common.collect.collectable.CollectableFieldsProvider;
 import org.nuclos.common.collect.collectable.CollectableValueIdField;
 import org.nuclos.common.dal.vo.EntityObjectVO;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
@@ -72,17 +72,17 @@ public class DependantsCollectableFieldsProvider implements CollectableFieldsPro
 		final List<CollectableField> result = new ArrayList<CollectableField>();
 		
 		if (StringUtils.isNullOrEmpty(this.sEntity)) {
-			throw new CommonBusinessException(CommonLocaleDelegate.getInstance().getMessage(
+			throw new CommonBusinessException(SpringLocaleDelegate.getInstance().getMessage(
 					"DependantsCollectableFieldsProvider.1", 
 					"Der Parameter 'entity' des Valuelistproviders 'dependants' ist nicht gef\u00fcllt!"));
 		}
 		if (StringUtils.isNullOrEmpty(this.sForeignKeyFieldName)) {
-			throw new CommonBusinessException(CommonLocaleDelegate.getInstance().getMessage(
+			throw new CommonBusinessException(SpringLocaleDelegate.getInstance().getMessage(
 					"DependantsCollectableFieldsProvider.2",
 					"Der Parameter 'foreignKeyFieldName' des Valuelistproviders 'dependants' ist nicht gef\u00fcllt!"));
 		}
 		if (StringUtils.isNullOrEmpty(this.sEntityField)) {
-			throw new CommonBusinessException(CommonLocaleDelegate.getInstance().getMessage(
+			throw new CommonBusinessException(SpringLocaleDelegate.getInstance().getMessage(
 					"DependantsCollectableFieldsProvider.3",
 					"Der Parameter 'entityField' des Valuelistproviders 'dependants' ist nicht gef\u00fcllt!"));
 		}

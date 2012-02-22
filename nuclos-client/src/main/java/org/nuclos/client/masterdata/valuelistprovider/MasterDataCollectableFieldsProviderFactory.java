@@ -44,7 +44,7 @@ import org.nuclos.common.collect.collectable.CollectableEntityField;
 import org.nuclos.common.collect.collectable.CollectableFieldsProvider;
 import org.nuclos.common.collect.collectable.CollectableFieldsProviderFactory;
 import org.nuclos.common.collect.collectable.DefaultCollectableEntityProvider;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.server.report.valueobject.ValuelistProviderVO;
@@ -80,7 +80,7 @@ public class MasterDataCollectableFieldsProviderFactory implements CollectableFi
 		final CollectableEntityField clctef = clcte.getEntityField(sFieldName);
 
 		if (!clctef.isReferencing()) {
-			throw new NuclosFatalException(CommonLocaleDelegate.getInstance().getMessage(
+			throw new NuclosFatalException(SpringLocaleDelegate.getInstance().getMessage(
 					"GenericObjectCollectableFieldsProviderFactory.1",
 					"Das Feld {0} in der Entit\u00e4t {1} referenziert keine andere Entit\u00e4t.", 
 					clctef.getName(), clcte.getName()));
@@ -212,7 +212,7 @@ public class MasterDataCollectableFieldsProviderFactory implements CollectableFi
 			result = new AssignableWorkspaceCollectableFieldsProvider();
 		}
 		else {
-			throw new NuclosFatalException(CommonLocaleDelegate.getInstance().getMessage(
+			throw new NuclosFatalException(SpringLocaleDelegate.getInstance().getMessage(
 					"GenericObjectCollectableFieldsProviderFactory.2",
 					"Unbekannter valuelist-provider Typ: {0}", sCustomType));
 		}
@@ -233,7 +233,7 @@ public class MasterDataCollectableFieldsProviderFactory implements CollectableFi
 		final CollectableEntity clcte = DefaultCollectableEntityProvider.getInstance().getCollectableEntity(sEntityName);
 		final CollectableEntityField clctef = clcte.getEntityField(sFieldName);
 		if (!clctef.isReferencing()) {
-			throw new NuclosFatalException(CommonLocaleDelegate.getInstance().getMessage(
+			throw new NuclosFatalException(SpringLocaleDelegate.getInstance().getMessage(
 					"GenericObjectCollectableFieldsProviderFactory.1",
 					"Das Feld {0} in der Entit\u00e4t {1} referenziert keine andere Entit\u00e4t.", 
 					sFieldName, sEntityName));

@@ -22,7 +22,7 @@ import java.util.prefs.Preferences;
 
 import org.apache.commons.lang.NullArgumentException;
 import org.nuclos.common.collect.exception.CollectableFieldValidationException;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.RelativeDate;
 
@@ -123,7 +123,7 @@ public class DefaultCollectableEntityField extends AbstractCollectableEntityFiel
 			}
 		}
 		catch (CollectableFieldValidationException ex) {
-			throw new IllegalArgumentException(CommonLocaleDelegate.getInstance().getMessage(
+			throw new IllegalArgumentException(SpringLocaleDelegate.getInstance().getMessage(
 					"DefaultCollectableEntityField.1","Der angegebene Defaultwert passt nicht zum Datentyp."));
 		}
 		

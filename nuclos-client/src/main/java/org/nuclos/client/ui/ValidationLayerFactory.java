@@ -38,7 +38,7 @@ import org.jdesktop.jxlayer.plaf.AbstractBufferedLayerUI;
 
 import org.nuclos.common.collect.collectable.CollectableFieldFormat;
 import org.nuclos.common.collect.exception.CollectableFieldFormatException;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.ValueValidationHelper;
 import org.nuclos.common2.exception.CommonFatalException;
@@ -80,7 +80,7 @@ public class ValidationLayerFactory {
 
     	@Override
 		public String getValidationMessage(){
-    		return CommonLocaleDelegate.getInstance().getMessage(
+    		return SpringLocaleDelegate.getInstance().getMessage(
     				"ValidationLayerFactory.1", "Das Feld muss einen Wert enthalten, der dem verlangten Format entspricht.");
     	}
 
@@ -117,7 +117,7 @@ public class ValidationLayerFactory {
 
     	@Override
 		public String getValidationMessage(){
-    		return CommonLocaleDelegate.getInstance().getMessage("ValidationLayerFactory.2", 
+    		return SpringLocaleDelegate.getInstance().getMessage("ValidationLayerFactory.2", 
     			"Das Feld muss einen Wert enthalten, der dem verlangten Format entspricht und innerhalb des erlaubten Wertebereichs liegt.");
     	}
     }
@@ -142,7 +142,7 @@ public class ValidationLayerFactory {
 
     	@Override
 		public String getValidationMessage(){
-    		return CommonLocaleDelegate.getInstance().getMessage(
+    		return SpringLocaleDelegate.getInstance().getMessage(
     				"ValidationLayerFactory.1", "Das Feld muss einen Wert enthalten, der dem verlangten Format entspricht.");
     	}
     }
@@ -162,7 +162,7 @@ public class ValidationLayerFactory {
 
     	@Override
 		public String getValidationMessage(){
-    		return CommonLocaleDelegate.getInstance().getMessage(
+    		return SpringLocaleDelegate.getInstance().getMessage(
     				"ValidationLayerFactory.3", "Das Feld darf nicht leer sein.");
     	}
     }

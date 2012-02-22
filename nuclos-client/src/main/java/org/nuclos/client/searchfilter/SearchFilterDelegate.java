@@ -32,7 +32,7 @@ import org.nuclos.common.collect.collectable.DefaultCollectableEntityProvider;
 import org.nuclos.common.collect.collectable.searchcondition.SearchConditionUtils;
 import org.nuclos.common.collect.collectable.searchcondition.visit.PutSearchConditionToPrefsVisitor;
 import org.nuclos.common.dal.vo.SystemFields;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.PreferencesUtils;
 import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.exception.CommonBusinessException;
@@ -73,7 +73,7 @@ public class SearchFilterDelegate {
 	 */
 	private static final String PREFS_NODE_SORTINGCOLUMNS = "sortingColumns";
 	
-	private CommonLocaleDelegate cld = CommonLocaleDelegate.getInstance();
+	private SpringLocaleDelegate localeDelegate = SpringLocaleDelegate.getInstance();
 
 	private static SearchFilterDelegate singleton;
 
@@ -117,7 +117,7 @@ public class SearchFilterDelegate {
 			SearchFilterCache.getInstance().addFilter(searchFilter);
 		}
 		catch (Exception e) {
-			String sMessage = cld.getMessage("SearchFilterDelegate.1", "Ein Fehler beim Speichern des Suchfilters ist aufgetreten!");
+			String sMessage = localeDelegate.getMessage("SearchFilterDelegate.1", "Ein Fehler beim Speichern des Suchfilters ist aufgetreten!");
 			LOG.error(sMessage);
 			throw new NuclosFatalException(sMessage, e);
 		}
@@ -132,7 +132,7 @@ public class SearchFilterDelegate {
 		SearchFilter oldSearchFilter = SearchFilterCache.getInstance().getSearchFilter(sOldFilterName, sOwner);
 
 		if (!oldSearchFilter.getSearchFilterVO().isEditable()) {
-			throw new NuclosBusinessException(cld.getMessage(
+			throw new NuclosBusinessException(localeDelegate.getMessage(
 					"SearchFilterDelegate.2", "Der Suchfilter darf von Ihnen nicht ge\u00e4ndert werden."));
 		}
 
@@ -144,13 +144,13 @@ public class SearchFilterDelegate {
 			SearchFilterCache.getInstance().addFilter(searchFilter);
 		}
 		catch (CommonStaleVersionException e) {
-			String sMessage = cld.getMessage(
+			String sMessage = localeDelegate.getMessage(
 					"SearchFilterDelegate.4", "Der Suchfilter wurde zwischenzeitlich von einem anderen Benutzer ge\u00e4ndert. Bitte initialisieren Sie den Client.");
 			LOG.info(sMessage);
 			throw new NuclosBusinessException(sMessage, e);
 		}
 		catch (Exception e) {
-			String sMessage = cld.getMessage(
+			String sMessage = localeDelegate.getMessage(
 					"SearchFilterDelegate.1", "Ein Fehler beim Speichern des Suchfilters ist aufgetreten!");
 			LOG.error(sMessage);
 			throw new NuclosFatalException(sMessage, e);
@@ -182,7 +182,7 @@ public class SearchFilterDelegate {
 			return filter;
 		}
 		catch (Exception e) {
-			String sMessage = cld.getMessage(
+			String sMessage = localeDelegate.getMessage(
 					"SearchFilterDelegate.1", "Ein Fehler beim Speichern des Suchfilters ist aufgetreten!");
 			LOG.error(sMessage);
 			throw new NuclosFatalException(sMessage, e);
@@ -196,7 +196,7 @@ public class SearchFilterDelegate {
 	 */
 	public void removeSearchFilter(SearchFilter filter) throws NuclosBusinessException {
 		if (!filter.getSearchFilterVO().isEditable()) {
-			throw new NuclosBusinessException(cld.getMessage(
+			throw new NuclosBusinessException(localeDelegate.getMessage(
 					"SearchFilterDelegate.5", "Der Suchfilter darf von Ihnen nicht gel\u00f6scht werden."));
 		}
 
@@ -205,12 +205,12 @@ public class SearchFilterDelegate {
 			SearchFilterCache.getInstance().removeFilter(filter);
 		}
 		catch (CommonStaleVersionException e) {
-			throw new NuclosBusinessException(cld.getMessage(
+			throw new NuclosBusinessException(localeDelegate.getMessage(
 					"SearchFilterDelegate.7", "Ein Suchfilter konnte nicht gel\u00f6scht werden, da er zwischenzeitlich von einem anderen Benutzer ge\u00e4ndert wurde.\n" +
 					"Bitte initialisieren Sie die Client und versuchen es erneut."));
 		}
 		catch (Exception e) {
-			throw new NuclosFatalException(cld.getMessage(
+			throw new NuclosFatalException(localeDelegate.getMessage(
 					"SearchFilterDelegate.8", "Ein Suchfilter konnte nicht gel\u00f6scht werden"), e);
 		}
 	}
@@ -231,13 +231,13 @@ public class SearchFilterDelegate {
 						collSearchFilter.add(sf);
 				}
 				catch (Exception e) {
-					LOG.error(cld.getMessage(
+					LOG.error(localeDelegate.getMessage(
 							"SearchFilterDelegate.9", "Ein Suchfilter konnte nicht geladen werden"));
 				}
 			}
 		}
 		catch (Exception e) {
-			LOG.error(cld.getMessage(
+			LOG.error(localeDelegate.getMessage(
 					"SearchFilterDelegate.9", "Ein Suchfilter konnte nicht geladen werden"));
 		}
 
@@ -297,11 +297,11 @@ public class SearchFilterDelegate {
 			prefsSearchfilter.removeNode();
 		}
 		catch (Exception e) {
-			LOG.error(cld.getMessage("SearchFilterDelegate.11", "Fehler beim Transformieren des Filters"));
+			LOG.error(localeDelegate.getMessage("SearchFilterDelegate.11", "Fehler beim Transformieren des Filters"));
 			if (result != null) {
 				result.setValid(false);
 				result.setName((result.getName() != null ? (result.getName()+" - ") : "") 
-						+ cld.getMessage("SearchFilterDelegate.12", "Filter ist ung\u00fcltig"));
+						+ localeDelegate.getMessage("SearchFilterDelegate.12", "Filter ist ung\u00fcltig"));
 			}
 		}
 

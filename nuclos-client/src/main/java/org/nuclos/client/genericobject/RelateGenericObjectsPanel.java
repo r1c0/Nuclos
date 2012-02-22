@@ -37,7 +37,7 @@ import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.client.genericobject.datatransfer.GenericObjectIdModuleProcess;
 import org.nuclos.client.ui.Icons;
 import org.nuclos.client.ui.LineLayout;
@@ -58,11 +58,11 @@ class RelateGenericObjectsPanel extends JPanel {
 		PREDECESSOROF, PARTOF, USERDEFINED
 	}
 
-	private final JRadioButton rbSuccessorOf = new JRadioButton(CommonLocaleDelegate.getInstance().getMessage(
+	private final JRadioButton rbSuccessorOf = new JRadioButton(SpringLocaleDelegate.getInstance().getMessage(
 			"RelateGenericObjectsPanel.1", "Nachfolge-Beziehung"));
-	private final JRadioButton rbPartOf = new JRadioButton(CommonLocaleDelegate.getInstance().getMessage(
+	private final JRadioButton rbPartOf = new JRadioButton(SpringLocaleDelegate.getInstance().getMessage(
 			"RelateGenericObjectsPanel.2", "Teil-Beziehung"));
-	private final JRadioButton rbOtherRelation = new JRadioButton(CommonLocaleDelegate.getInstance().getMessage(
+	private final JRadioButton rbOtherRelation = new JRadioButton(SpringLocaleDelegate.getInstance().getMessage(
 			"RelateGenericObjectsPanel.3", "Andere Beziehung"));
 	private final ButtonGroup bg = new ButtonGroup();
 	private final SuccessorOfPanel pnlSuccessorOf = new SuccessorOfPanel();
@@ -96,7 +96,7 @@ class RelateGenericObjectsPanel extends JPanel {
 		final JPanel pnlOptions = new JPanel(new LineLayout(LineLayout.VERTICAL));
 		pnlNorth.add(pnlOptions);
 
-		pnlOptions.setBorder(BorderFactory.createTitledBorder(CommonLocaleDelegate.getInstance().getMessage(
+		pnlOptions.setBorder(BorderFactory.createTitledBorder(SpringLocaleDelegate.getInstance().getMessage(
 				"OtherRelationPanel.1", "Beziehungsart")));
 		pnlOptions.add(rbSuccessorOf);
 		pnlOptions.add(rbPartOf);
@@ -274,7 +274,7 @@ class RelateGenericObjectsPanel extends JPanel {
 			final Dimension dimBtn = new Dimension(60, 25);
 			btnSwapRelation.setMinimumSize(dimBtn);
 			btnSwapRelation.setPreferredSize(dimBtn);
-			btnSwapRelation.setToolTipText(CommonLocaleDelegate.getInstance().getMessage(
+			btnSwapRelation.setToolTipText(SpringLocaleDelegate.getInstance().getMessage(
 					"RelateGenericObjectsPanel.4", "Beziehung umkehren"));
 
 			btnSwapRelation.addActionListener(new ActionListener() {
@@ -312,16 +312,16 @@ class RelateGenericObjectsPanel extends JPanel {
 
 	static class SuccessorOfPanel extends SwappableRelationPanel {
 		SuccessorOfPanel() {
-			super(CommonLocaleDelegate.getInstance().getMessage("RelateGenericObjectsPanel.5", "Vorg\u00e4nger"), 
-					CommonLocaleDelegate.getInstance().getMessage("RelateGenericObjectsPanel.6", "Nachfolger"));
+			super(SpringLocaleDelegate.getInstance().getMessage("RelateGenericObjectsPanel.5", "Vorg\u00e4nger"), 
+					SpringLocaleDelegate.getInstance().getMessage("RelateGenericObjectsPanel.6", "Nachfolger"));
 		}
 	}
 
 	static class PartOfPanel extends RelationPanel {
 
 		PartOfPanel() {
-			super(CommonLocaleDelegate.getInstance().getMessage("RelateGenericObjectsPanel.7", "Teilobjekt(e)"), 
-					CommonLocaleDelegate.getInstance().getMessage("RelateGenericObjectsPanel.8", "Zusammengesetztes Objekt"));
+			super(SpringLocaleDelegate.getInstance().getMessage("RelateGenericObjectsPanel.7", "Teilobjekt(e)"), 
+					SpringLocaleDelegate.getInstance().getMessage("RelateGenericObjectsPanel.8", "Zusammengesetztes Objekt"));
 		}
 	}
 

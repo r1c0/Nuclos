@@ -117,7 +117,7 @@ import org.nuclos.common.collection.Pair;
 import org.nuclos.common.collection.Transformer;
 import org.nuclos.common.collection.multimap.MultiListHashMap;
 import org.nuclos.common.collection.multimap.MultiListMap;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.CommonRunnable;
 import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.PreferencesUtils;
@@ -220,7 +220,7 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 	private LiveSearchController liveSearchController;
 	private WorkspaceChooserController workspaceChooserController;
 	
-	private CommonLocaleDelegate cld;
+	private SpringLocaleDelegate localeDelegate;
 	
 	private ClientParameterProvider clientParameterProvider;
 	
@@ -241,8 +241,8 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 	}
 	
 	@Autowired
-	void setCommonLocaleDelegate(CommonLocaleDelegate cld) {
-		this.cld = cld;
+	void setSpringLocaleDelegate(SpringLocaleDelegate cld) {
+		this.localeDelegate = cld;
 	}
 	
 	@Autowired
@@ -484,7 +484,7 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 		if (!isTabbedPaneVisible(result)) {
 			MainFrameTabbedPane maxTabbedPane = getMaximizedTabbedPaneIfAny(result);
 			(new Bubble(maxTabbedPane,
-					CommonLocaleDelegate.getInstance().getMessage("MainFrame.3","Neuer Tab im ausgeblendeten Bereich."),
+					SpringLocaleDelegate.getInstance().getMessage("MainFrame.3","Neuer Tab im ausgeblendeten Bereich."),
 				5,
 				Bubble.Position.NO_ARROW_CENTER)).setVisible(true);
 
@@ -548,15 +548,15 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 		JMenuItem miCloseAllTabs = new JMenuItem();
 		JMenuItem miRestoreDefaultWorkspace = new JMenuItem();
 
-		MenuGenerator.initMenuItem(menuWindow, cld.getMessage("miWindow", "^Window"), null, null);
-		MenuGenerator.initMenuItem(miDeactivateSplitting, cld.getMessage("miWDeactivateSplitting","^Disable Window Splitting"), null, null);
+		MenuGenerator.initMenuItem(menuWindow, localeDelegate.getMessage("miWindow", "^Window"), null, null);
+		MenuGenerator.initMenuItem(miDeactivateSplitting, localeDelegate.getMessage("miWDeactivateSplitting","^Disable Window Splitting"), null, null);
 
-		MenuGenerator.initMenuItem(miWindowBackgroundTasks, cld.getMessage("miBGTasks", "^Background Tasks"), null, null);
-		MenuGenerator.initMenuItem(miWindowNotificationDialog, cld.getMessage("miMessages", "^Messages"), null, null);
-		MenuGenerator.initMenuItem(miCloseAllTabs, cld.getMessage("miWCloseAll", "^Close All Tabs"), null, null);
-		MenuGenerator.initMenuItem(miNextTab, cld.getMessage("miWNext", "^Next Tab"), null, KeyBindingProvider.NEXT_TAB.getKeystroke());
-		MenuGenerator.initMenuItem(miPreviousTab, cld.getMessage("miWPrev", "^Previous Tab"), null, KeyBindingProvider.PREVIOUS_TAB.getKeystroke());
-		MenuGenerator.initMenuItem(miRestoreDefaultWorkspace, cld.getMessage("miWRestoreDefaultWorkspace","Restore Default Workspace"), null, null);
+		MenuGenerator.initMenuItem(miWindowBackgroundTasks, localeDelegate.getMessage("miBGTasks", "^Background Tasks"), null, null);
+		MenuGenerator.initMenuItem(miWindowNotificationDialog, localeDelegate.getMessage("miMessages", "^Messages"), null, null);
+		MenuGenerator.initMenuItem(miCloseAllTabs, localeDelegate.getMessage("miWCloseAll", "^Close All Tabs"), null, null);
+		MenuGenerator.initMenuItem(miNextTab, localeDelegate.getMessage("miWNext", "^Next Tab"), null, KeyBindingProvider.NEXT_TAB.getKeystroke());
+		MenuGenerator.initMenuItem(miPreviousTab, localeDelegate.getMessage("miWPrev", "^Previous Tab"), null, KeyBindingProvider.PREVIOUS_TAB.getKeystroke());
+		MenuGenerator.initMenuItem(miRestoreDefaultWorkspace, localeDelegate.getMessage("miWRestoreDefaultWorkspace","Restore Default Workspace"), null, null);
 
 		menuWindow.add(miWindowBackgroundTasks);
 		menuWindow.add(miWindowNotificationDialog);
@@ -573,8 +573,8 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 		})) {
 			if (frame instanceof WorkspaceFrame) {
 				String title = (frame instanceof ExternalFrame) ?
-					cld.getMessage("ExternalFrame.Title","Erweiterungsfenster {0}",((WorkspaceFrame) frame).getNumber()) :
-						cld.getMessage("MainFrame.Title","Hauptfenster");
+					localeDelegate.getMessage("ExternalFrame.Title","Erweiterungsfenster {0}",((WorkspaceFrame) frame).getNumber()) :
+						localeDelegate.getMessage("MainFrame.Title","Hauptfenster");
 				JMenuItem miFrameToFront = new JMenuItem(new AbstractAction("Nuclos " + title) {
 
 					@Override
@@ -1517,8 +1517,8 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 			if (!forcedFromFrameClose && tabbedPane.getTabCount() > 1) {
 				if (JOptionPane.YES_OPTION != JOptionPane.showConfirmDialog(
 					tabbedPane,
-					cld.getMessage("MainFrame.1","Tab Leiste mit allen enthaltenen Tabs entfernen.\nMoechten Sie fortfahren?"),
-					cld.getMessage("MainFrame.2","Tab Leiste entfernen"), JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE))
+					localeDelegate.getMessage("MainFrame.1","Tab Leiste mit allen enthaltenen Tabs entfernen.\nMoechten Sie fortfahren?"),
+					localeDelegate.getMessage("MainFrame.2","Tab Leiste entfernen"), JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE))
 					return;
 			}
 
@@ -1844,9 +1844,9 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 			throws BackingStoreException, PreferencesException {
 		setSplittingDeactivated(mainFramePrefs.getBoolean(PREFS_NODE_SPLITTING_DEACTIVATED, false));
 		selectedHistorySize = mainFramePrefs.getInt(PREFS_NODE_HISTORY_SIZE_INDEX, 0);
-		defaultWorkspace = mainFramePrefs.get(PREFS_NODE_DEFAULT_WORKSPACE, CommonLocaleDelegate.getInstance().getMessage(
+		defaultWorkspace = mainFramePrefs.get(PREFS_NODE_DEFAULT_WORKSPACE, SpringLocaleDelegate.getInstance().getMessage(
 				"Workspace.Default","Standard"));
-		lastWorkspace = mainFramePrefs.get(PREFS_NODE_LAST_WORKSPACE, CommonLocaleDelegate.getInstance().getMessage(
+		lastWorkspace = mainFramePrefs.get(PREFS_NODE_LAST_WORKSPACE, SpringLocaleDelegate.getInstance().getMessage(
 				"Workspace.Default","Standard"));
 		lastWorkspaceId = mainFramePrefs.getLong(PREFS_NODE_LAST_WORKSPACE_ID, 0l);
 		lastAlwaysOpenWorkspace = mainFramePrefs.get(PREFS_NODE_LAST_ALWAYS_OPEN_WORKSPACE, null);
@@ -2200,7 +2200,7 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 		winSwitchingWorkspace = new JWindow(this);
 		winSwitchingWorkspace.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 		
-		JLabel lab = new JLabel(cld.getMessage("MainFrame.4", "Arbeitsumgebung wird gewechselt") + "...");
+		JLabel lab = new JLabel(localeDelegate.getMessage("MainFrame.4", "Arbeitsumgebung wird gewechselt") + "...");
 		lab.setForeground(Color.WHITE);
 		lab.setFont(new Font(Font.DIALOG, Font.PLAIN, 12));
 		lab.setBorder(BorderFactory.createEmptyBorder(0, 0, 10, 0));

@@ -53,7 +53,7 @@ import org.nuclos.common.NuclosBusinessException;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.NuclosFile;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.IOUtils;
 import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.exception.CommonBusinessException;
@@ -117,7 +117,7 @@ public class ReportRunner implements Runnable, BackgroundProcessInfo, CommonInte
 
 	private final ReportAttachmentInfo attachmentInfo;
 	
-	private CommonLocaleDelegate cld;
+	private SpringLocaleDelegate localeDelegate;
 	
 	/**
 	 * @param parent
@@ -259,8 +259,8 @@ public class ReportRunner implements Runnable, BackgroundProcessInfo, CommonInte
 	}
 	
 	@Autowired
-	void setCommonLocaleDelegate(CommonLocaleDelegate cld) {
-		this.cld = cld;
+	void setSpringLocaleDelegate(SpringLocaleDelegate cld) {
+		this.localeDelegate = cld;
 	}
 
 	@Override
@@ -306,7 +306,7 @@ public class ReportRunner implements Runnable, BackgroundProcessInfo, CommonInte
 			if (attachmentInfo != null) {
 				String filename = attachDocument();
 				this.setStatus(Status.DONE);
-				this.setMessage(cld.getMessage(
+				this.setMessage(localeDelegate.getMessage(
 						"ReportRunner.fileattached", "Document {0} hast been attached to object {1}.", 
 						filename, attachmentInfo.getGenericObjectIdentifier()));
 			}
@@ -317,7 +317,7 @@ public class ReportRunner implements Runnable, BackgroundProcessInfo, CommonInte
 		catch (InterruptedException e) {
 			Thread.currentThread().interrupt();
 			this.setStatus(Status.CANCELLED);
-			this.setMessage(cld.getMessage("ReportRunner.1", "Der Prozess wurde abgebrochen."));
+			this.setMessage(localeDelegate.getMessage("ReportRunner.1", "Der Prozess wurde abgebrochen."));
 		}
 		catch (final Exception ex) {
 			this.setStatus(Status.ERROR);
@@ -395,23 +395,23 @@ public class ReportRunner implements Runnable, BackgroundProcessInfo, CommonInte
 						assert exporter.getClass().equals(PDFExport.class);
 
 						setBackgroundProcessInterruptionIntervalForCurrentThread();
-						new PDFExport().export((sDatasourceName != null) ? sDatasourceName : cld.getMessage("ReportRunner.2", "Suchergebnis"), 
+						new PDFExport().export((sDatasourceName != null) ? sDatasourceName : localeDelegate.getMessage("ReportRunner.2", "Suchergebnis"), 
 								jasperPrint, null, reportoutputvo.getDestination());
 
 					}
 					else if (this.resultVO != null) {
 						setBackgroundProcessInterruptionIntervalForCurrentThread();
 						exporter.export(resultVO, new ReportVO((sDatasourceName != null) ? sDatasourceName 
-								: cld.getMessage("ReportRunner.2", "Suchergebnis")), 
+								: localeDelegate.getMessage("ReportRunner.2", "Suchergebnis")), 
 								new ReportOutputVO(format, ReportOutputVO.Destination.SCREEN, null));
 					}
 					else {
-						throw new NuclosReportException(cld.getMessage("ReportRunner.3", "Report nicht initialisiert."));
+						throw new NuclosReportException(localeDelegate.getMessage("ReportRunner.3", "Report nicht initialisiert."));
 					}
 					break;
 
 				default:
-					throw new NuclosReportException(cld.getMessage("ReportRunner.3", "Report nicht initialisiert."));
+					throw new NuclosReportException(localeDelegate.getMessage("ReportRunner.3", "Report nicht initialisiert."));
 			}
 		}
 		catch (CommonBusinessException ex) {
@@ -445,7 +445,7 @@ public class ReportRunner implements Runnable, BackgroundProcessInfo, CommonInte
 	 * @param mpParams
 	 */
 	public static boolean prepareParameters(Collection<ReportOutputVO> collFormat, Map<String, Object> mpParams) throws NuclosReportException {
-		final CommonLocaleDelegate cld = CommonLocaleDelegate.getInstance();
+		final SpringLocaleDelegate localeDelegate = SpringLocaleDelegate.getInstance();
 		boolean result = true;
 
 		final Collection<Integer> collDatasourceId = new HashSet<Integer>();
@@ -462,7 +462,7 @@ public class ReportRunner implements Runnable, BackgroundProcessInfo, CommonInte
 			final DatasourceFacadeRemote datasourcefacade = ServiceLocator.getInstance().getFacade(DatasourceFacadeRemote.class);
 			for (Integer iDatasourceId : collDatasourceId) {
 				if (iDatasourceId == null)
-					throw new NuclosReportException(cld.getMessage("ReportRunner.4", "Keine Datenquelle angegeben"));
+					throw new NuclosReportException(localeDelegate.getMessage("ReportRunner.4", "Keine Datenquelle angegeben"));
 
 				final DatasourceVO datasourcevo = datasourcefacade.get(iDatasourceId);
 
@@ -477,7 +477,7 @@ public class ReportRunner implements Runnable, BackgroundProcessInfo, CommonInte
 				if (mpParams.containsKey("intid")) {
 					if (!liParamNamesInThisDatasource.contains("intid")) {
 						throw new NuclosReportException(
-							cld.getMessage("ReportRunner.5", "Die dem Formular zugrundeliegende Datenquelle \"{0}\" muss den Parameter intid definieren.", datasourcevo.getName()));
+							localeDelegate.getMessage("ReportRunner.5", "Die dem Formular zugrundeliegende Datenquelle \"{0}\" muss den Parameter intid definieren.", datasourcevo.getName()));
 					}
 				}
 				liParamNamesInThisDatasource.clear();
@@ -487,7 +487,7 @@ public class ReportRunner implements Runnable, BackgroundProcessInfo, CommonInte
 				final ParameterPanel panel = new ParameterPanel(liParamsEmpty);
 
 				result = (JOptionPane.showOptionDialog(Main.getInstance().getMainFrame(), panel, 
-						cld.getMessage("ReportRunner.8", "Parameter"), 
+						localeDelegate.getMessage("ReportRunner.8", "Parameter"), 
 						JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE, null, null, null) == JOptionPane.OK_OPTION);
 				if (result) {
 					panel.fillParameterMap(liParamsEmpty, mpParams);
@@ -518,7 +518,7 @@ public class ReportRunner implements Runnable, BackgroundProcessInfo, CommonInte
 			final MasterDataVO mdvo = new MasterDataVO(MasterDataDelegate.getInstance().getMetaData(attachmentInfo.getDocumentEntityName()), false);
 			mdvo.setField("genericObject", attachmentInfo.getGenericObjectId());
 			mdvo.setField("entity", attachmentInfo.getDocumentEntityName());
-			mdvo.setField(attachmentInfo.getDocumentFieldNames()[0], cld.getMessage("ReportController.2", "Automatisch angef\u00fcgtes Dokument"));
+			mdvo.setField(attachmentInfo.getDocumentFieldNames()[0], localeDelegate.getMessage("ReportController.2", "Automatisch angef\u00fcgtes Dokument"));
 			mdvo.setField(attachmentInfo.getDocumentFieldNames()[1], new Date());
 			mdvo.setField(attachmentInfo.getDocumentFieldNames()[2], Main.getInstance().getMainController().getUserName());
 			if(NuclosEntity.GENERALSEARCHDOCUMENT.getEntityName().equals(attachmentInfo.getDocumentEntityName())) {
@@ -533,7 +533,7 @@ public class ReportRunner implements Runnable, BackgroundProcessInfo, CommonInte
 			return file.getName();
 		}
 		catch (Exception ex) {
-			throw new NuclosReportException(cld.getMessage(
+			throw new NuclosReportException(localeDelegate.getMessage(
 					"ReportController.1","Anh\u00e4ngen der Datei \"{0}\" an GenericObject \"{1}\" fehlgeschlagen.", 
 					getDocumentName(), attachmentInfo.getGenericObjectIdentifier()), ex);
 		}
@@ -567,9 +567,9 @@ public class ReportRunner implements Runnable, BackgroundProcessInfo, CommonInte
 	 */
 	@Override
 	public String getJobName() {
-		String result = cld.getMessage("ReportRunner.6", "Report: \"{0}\"", this.sJobName);
+		String result = localeDelegate.getMessage("ReportRunner.6", "Report: \"{0}\"", this.sJobName);
 		if (sDatasourceName != null) {
-			result = cld.getMessage("ReportRunner.7", "Report: \"{0}\", Datenquelle: {1}", this.sJobName, sDatasourceName);
+			result = localeDelegate.getMessage("ReportRunner.7", "Report: \"{0}\", Datenquelle: {1}", this.sJobName, sDatasourceName);
 		}
 		return result;
 	}

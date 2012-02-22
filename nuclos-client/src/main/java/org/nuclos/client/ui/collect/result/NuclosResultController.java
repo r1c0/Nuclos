@@ -74,7 +74,7 @@ import org.nuclos.common.collect.collectable.CollectableEntity;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
 import org.nuclos.common.collect.collectable.CollectableUtils;
 import org.nuclos.common.collection.CollectionUtils;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.CommonRunnable;
 import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.exception.CommonBusinessException;
@@ -491,7 +491,7 @@ public class NuclosResultController<Clct extends Collectable> extends ResultCont
 		panel.getVisibleColumnWidth(lstSelected);
 		ctl.setModel(ro);
 		final boolean bOK = ctl.run(  
-				CommonLocaleDelegate.getInstance().getMessage("SelectColumnsController.1","Anzuzeigende Spalten ausw\u00e4hlen"));
+				SpringLocaleDelegate.getInstance().getMessage("SelectColumnsController.1","Anzuzeigende Spalten ausw\u00e4hlen"));
 
 		if (bOK) {
 			setSelectColumns(fields, ctl.getAvailableObjects(), ctl.getSelectedObjects(), ctl.getFixedObjects(), false, false);
@@ -579,7 +579,7 @@ public class NuclosResultController<Clct extends Collectable> extends ResultCont
 
 		private JMenuItem createHideColumnItem() {
 			final JMenuItem miPopupHideThisColumn = new JMenuItem(
-					CommonLocaleDelegate.getInstance().getMessage("NuclosResultController.1","Diese Spalte ausblenden"));
+					SpringLocaleDelegate.getInstance().getMessage("NuclosResultController.1","Diese Spalte ausblenden"));
 			miPopupHideThisColumn.setIcon(Icons.getInstance().getIconRemoveColumn16());
 			miPopupHideThisColumn.addActionListener(new ActionListener() {
 				@Override
@@ -594,7 +594,7 @@ public class NuclosResultController<Clct extends Collectable> extends ResultCont
 		
 		private JMenuItem createRestoreColumnsItem() {
 			final JMenuItem miPopupRestoreColumns = new JMenuItem(
-					CommonLocaleDelegate.getInstance().getMessage("NuclosResultController.2", "Alle Spalten auf Vorlage zurücksetzen"));
+					SpringLocaleDelegate.getInstance().getMessage("NuclosResultController.2", "Alle Spalten auf Vorlage zurücksetzen"));
 			miPopupRestoreColumns.setIcon(Icons.getInstance().getIconUndo16());
 			miPopupRestoreColumns.addActionListener(new ActionListener() {
 				@Override
@@ -635,7 +635,7 @@ public class NuclosResultController<Clct extends Collectable> extends ResultCont
 		
 		private JMenuItem createPublishColumnsItem() {
 			final JMenuItem miPublishColumns = new JMenuItem(new AbstractAction(
-					CommonLocaleDelegate.getInstance().getMessage(
+					SpringLocaleDelegate.getInstance().getMessage(
 							"NuclosResultController.3", "Spalten in Vorlage publizieren"), Icons.getInstance().getIconRedo16()) {
 				@Override
 				public void actionPerformed(ActionEvent e) {

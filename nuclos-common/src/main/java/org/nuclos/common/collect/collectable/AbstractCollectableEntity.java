@@ -20,7 +20,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonFatalException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,7 +42,7 @@ public abstract class AbstractCollectableEntity implements CollectableEntity {
 	private final String sLabel;
 	private final Map<String, CollectableEntityField> mpclctef = new HashMap<String, CollectableEntityField>();
 	
-	private CommonLocaleDelegate cld;
+	private SpringLocaleDelegate localeDelegate;
 
 	public AbstractCollectableEntity(String sName, String sLabel) {
 		this.sName = sName;
@@ -50,12 +50,12 @@ public abstract class AbstractCollectableEntity implements CollectableEntity {
 	}
 	
 	@Autowired
-	void setCommonLocaleDelegate(CommonLocaleDelegate cld) {
-		this.cld = cld;
+	void setSpringLocaleDelegate(SpringLocaleDelegate cld) {
+		this.localeDelegate = cld;
 	}
 	
-	protected CommonLocaleDelegate getCommonLocaleDelegate() {
-		return cld;
+	protected SpringLocaleDelegate getSpringLocaleDelegate() {
+		return localeDelegate;
 	}
 
 	protected void addCollectableEntityField(CollectableEntityField clctef) {

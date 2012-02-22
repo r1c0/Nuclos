@@ -16,7 +16,7 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.explorer.node.datasource;
 
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.server.report.valueobject.DatasourceVO;
 import java.util.ArrayList;
 import java.util.List;
@@ -70,15 +70,15 @@ public class DatasourceNode extends AbstractDatasourceTreeNode {
 	public void refresh() {
 		final List<DatasourceUsageNode> subNodeList = new ArrayList<DatasourceUsageNode>();
 		if (usage == DatasourceUsage.PARENT) {
-			final CommonLocaleDelegate cld = CommonLocaleDelegate.getInstance();
-			subNodeList.add(new DatasourceUsageNode(datasourceVo, cld.getMessage("DatasourceNode.1", "verwendet"), 
-					cld.getMessage("DatasourceNode.2", "Alle Datenquellen, die von der Datenquelle verwendet werden"), DatasourceUsage.USING));
-			subNodeList.add(new DatasourceUsageNode(datasourceVo, cld.getMessage("DatasourceNode.3", "wird verwendet von "), 
-					cld.getMessage("DatasourceNode.4", "Alle Datenquellen, von denen die Datenquelle verwendet wird"), DatasourceUsage.USED));
-			subNodeList.add(new DatasourceUsageNode(datasourceVo, cld.getMessage("DatasourceNode.5", "Reports"), 
-					cld.getMessage("DatasourceNode.6", "Alle Reports, welche die Datenquelle verwenden"), DatasourceUsage.REPORT));
-			subNodeList.add(new DatasourceUsageNode(datasourceVo, cld.getMessage("DatasourceNode.7", "Formulare"), 
-					cld.getMessage("DatasourceNode.8", "Alle Formulare, welche die Datenquelle verwenden"), DatasourceUsage.FORMULAR));
+			final SpringLocaleDelegate localeDelegate = SpringLocaleDelegate.getInstance();
+			subNodeList.add(new DatasourceUsageNode(datasourceVo, localeDelegate.getMessage("DatasourceNode.1", "verwendet"), 
+					localeDelegate.getMessage("DatasourceNode.2", "Alle Datenquellen, die von der Datenquelle verwendet werden"), DatasourceUsage.USING));
+			subNodeList.add(new DatasourceUsageNode(datasourceVo, localeDelegate.getMessage("DatasourceNode.3", "wird verwendet von "), 
+					localeDelegate.getMessage("DatasourceNode.4", "Alle Datenquellen, von denen die Datenquelle verwendet wird"), DatasourceUsage.USED));
+			subNodeList.add(new DatasourceUsageNode(datasourceVo, localeDelegate.getMessage("DatasourceNode.5", "Reports"), 
+					localeDelegate.getMessage("DatasourceNode.6", "Alle Reports, welche die Datenquelle verwenden"), DatasourceUsage.REPORT));
+			subNodeList.add(new DatasourceUsageNode(datasourceVo, localeDelegate.getMessage("DatasourceNode.7", "Formulare"), 
+					localeDelegate.getMessage("DatasourceNode.8", "Alle Formulare, welche die Datenquelle verwenden"), DatasourceUsage.FORMULAR));
 		}
 		setSubNodes(subNodeList);
 	}

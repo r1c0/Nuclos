@@ -22,7 +22,7 @@ import org.nuclos.common.collect.collectable.CollectableEntity;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
 import org.nuclos.common.collect.collectable.CollectableFieldsProviderFactory;
 import org.nuclos.common.collect.collectable.searchcondition.AtomicCollectableSearchCondition;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 
 import java.awt.dnd.DnDConstants;
 import java.awt.event.ActionEvent;
@@ -109,7 +109,7 @@ public class AtomicSearchConditionTreeNode extends SearchConditionTreeNode {
 	 */
 	@Override
 	protected String getLabelForExpandedState() {
-		throw new UnsupportedOperationException(CommonLocaleDelegate.getInstance().getMessage(
+		throw new UnsupportedOperationException(SpringLocaleDelegate.getInstance().getMessage(
 				"AtomicSearchConditionTreeNode.1","Ein atomarer Knoten kann nicht erweitert werden."));
 	}
 
@@ -128,7 +128,7 @@ public class AtomicSearchConditionTreeNode extends SearchConditionTreeNode {
 				CollectableFieldsProviderFactory clctfproviderfactory,
 				Collection<CollectableEntityField> additionalFields
 		) {
-			super(ACTIONCOMMAND_EDIT_ATOMICNODE, CommonLocaleDelegate.getInstance().getMessage(
+			super(ACTIONCOMMAND_EDIT_ATOMICNODE, SpringLocaleDelegate.getInstance().getMessage(
 					"AtomicSearchConditionTreeNode.2","Bearbeiten"), tree);
 			this.clcte = clcte;
 			this.clctfproviderfactory = clctfproviderfactory;

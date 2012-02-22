@@ -34,7 +34,7 @@ import java.util.Map;
 import org.nuclos.client.ui.LookAndFeel;
 import org.nuclos.common.ApplicationProperties;
 import org.nuclos.common.NuclosFatalException;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.LocaleInfo;
 
 /**
@@ -247,11 +247,11 @@ public class LocalUserProperties extends java.util.Properties {
     			LocaleInfo selectedLocale) {
         boolean changes = false;
         for(String key : defaults.keySet())
-            if(CommonLocaleDelegate.getInstance().isResourceId(key)) {
-                String fromBundle = CommonLocaleDelegate.getInstance().getText(key);
+            if(SpringLocaleDelegate.getInstance().isResourceId(key)) {
+                String fromBundle = SpringLocaleDelegate.getInstance().getText(key);
                 String previous   = getProperty(key);
                 changes |= previous == null || !fromBundle.equals(previous);
-                setProperty(key, CommonLocaleDelegate.getInstance().getText(key));
+                setProperty(key, SpringLocaleDelegate.getInstance().getText(key));
             }
 
         StringBuilder allLocalesCoded = new StringBuilder();

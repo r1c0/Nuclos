@@ -21,7 +21,7 @@ import java.util.List;
 
 import javax.swing.table.AbstractTableModel;
 
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 
 public class EntityAttributeSelectTableModel extends AbstractTableModel {
 	
@@ -112,20 +112,20 @@ public class EntityAttributeSelectTableModel extends AbstractTableModel {
 
 	@Override
 	public String getColumnName(int column) {
-		final CommonLocaleDelegate cld = CommonLocaleDelegate.getInstance();
+		final SpringLocaleDelegate localeDelegate = SpringLocaleDelegate.getInstance();
 		switch (column) {
 		case 0:
-			return cld.getMessage("wizard.datatype.7", "\u00dcbernehmen");
+			return localeDelegate.getMessage("wizard.datatype.7", "\u00dcbernehmen");
 		case 1:
-			return cld.getMessage("wizard.step.attributeproperties.1", "Anzeigename");
+			return localeDelegate.getMessage("wizard.step.attributeproperties.1", "Anzeigename");
 		case 2:
-			return cld.getMessage("wizard.step.attributeproperties.2", "Beschreibung");
+			return localeDelegate.getMessage("wizard.step.attributeproperties.2", "Beschreibung");
 		case 3:
-			return cld.getMessage("wizard.step.attributeproperties.3", "Datentyp");		
+			return localeDelegate.getMessage("wizard.step.attributeproperties.3", "Datentyp");		
 		case 4:
-			return cld.getMessage("wizard.datatype.3", "Feldbreite");
+			return localeDelegate.getMessage("wizard.datatype.3", "Feldbreite");
 		case 5:
-			return cld.getMessage("wizard.datatype.4", "Nachkommastellen");
+			return localeDelegate.getMessage("wizard.datatype.4", "Nachkommastellen");
 
 		default:			
 			return "";

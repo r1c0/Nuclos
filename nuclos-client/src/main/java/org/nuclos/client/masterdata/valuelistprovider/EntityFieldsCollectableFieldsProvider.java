@@ -28,7 +28,7 @@ import org.nuclos.common.collect.collectable.CollectableFieldsProvider;
 import org.nuclos.common.collect.collectable.CollectableValueIdField;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Transformer;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.client.attribute.AttributeCache;
 import org.nuclos.client.genericobject.GenericObjectMetaDataCache;
@@ -101,7 +101,7 @@ public class EntityFieldsCollectableFieldsProvider implements CollectableFieldsP
 					@Override
 					public CollectableField transform(MasterDataMetaFieldVO mdcvo) {
 						return new CollectableValueIdField(mdcvo.getId(), 
-								CommonLocaleDelegate.getInstance().getResource(mdcvo.getResourceSIdForLabel(), mdcvo.getLabel()));
+								SpringLocaleDelegate.getInstance().getResource(mdcvo.getResourceSIdForLabel(), mdcvo.getLabel()));
 					}
 				});
 				
@@ -120,7 +120,7 @@ public class EntityFieldsCollectableFieldsProvider implements CollectableFieldsP
 						@Override
 						public CollectableField transform(AttributeCVO attrcvo) {
 							return new CollectableValueIdField(attrcvo.getId(), 
-									CommonLocaleDelegate.getInstance().getLabelFromAttributeCVO(attrcvo));
+									SpringLocaleDelegate.getInstance().getLabelFromAttributeCVO(attrcvo));
 						}
 					});
 

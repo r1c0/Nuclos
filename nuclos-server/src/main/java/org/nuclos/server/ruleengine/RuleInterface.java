@@ -79,7 +79,7 @@ import org.nuclos.common.fileimport.NuclosFileImport;
 import org.nuclos.common.fileimport.NuclosFileImportResult;
 import org.nuclos.common.fileimport.NuclosFileImportStructureUsage;
 import org.nuclos.common.mail.NuclosMail;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.DateUtils;
 import org.nuclos.common2.IdUtils;
 import org.nuclos.common2.LangUtils;
@@ -280,7 +280,7 @@ public class RuleInterface extends CustomCodeInterface {
 		@Override
 		public String toString() {
 			final AttributeCache attrcache = AttributeCache.getInstance();
-			final String sAttributeLabel = CommonLocaleDelegate.getInstance().getLabelFromAttributeCVO(
+			final String sAttributeLabel = SpringLocaleDelegate.getInstance().getLabelFromAttributeCVO(
 					attrcache.getAttribute(attrvo.getAttributeId()));
 
 			final LocaleInfo userLocale = getLocaleFacade().getUserLocale();
@@ -316,7 +316,7 @@ public class RuleInterface extends CustomCodeInterface {
 		}
 
 		private String getComparedAttributeLabel(AttributeCache attrcache) {
-			return CommonLocaleDelegate.getInstance().getLabelFromAttributeCVO(
+			return SpringLocaleDelegate.getInstance().getLabelFromAttributeCVO(
 					attrcache.getAttribute(attrvoCompare.getAttributeId()));
 		}
 

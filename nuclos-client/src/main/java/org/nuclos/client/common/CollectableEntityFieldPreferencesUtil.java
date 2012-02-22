@@ -27,7 +27,7 @@ import org.nuclos.common.entityobject.CollectableEOEntityField;
 import org.nuclos.common.genericobject.CollectableGenericObjectEntityField;
 import org.nuclos.common.masterdata.CollectableMasterDataEntity;
 import org.nuclos.common.masterdata.CollectableMasterDataForeignKeyEntityField;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.IdUtils;
 import org.nuclos.common2.PreferencesUtils;
 import org.nuclos.common2.exception.CommonFatalException;
@@ -180,7 +180,7 @@ public class CollectableEntityFieldPreferencesUtil {
 		}
 		else if (DoNotUseCollectableEntity.class.getName().equals(cep.getType())) {
 			final EntityMetaDataVO mdEntity = mdProv.getEntity(cep.getEntity());
-			ce = new DoNotUseCollectableEntity(cep.getEntity(), CommonLocaleDelegate.getInstance().getLabelFromMetaDataVO(mdEntity));
+			ce = new DoNotUseCollectableEntity(cep.getEntity(), SpringLocaleDelegate.getInstance().getLabelFromMetaDataVO(mdEntity));
 		}
 		else {
 			throw new PreferencesException("Unknown CollectableEntity of type " + cep.getType());

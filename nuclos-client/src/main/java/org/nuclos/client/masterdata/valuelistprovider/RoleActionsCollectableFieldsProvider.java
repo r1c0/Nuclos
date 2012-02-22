@@ -25,7 +25,7 @@ import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.collect.collectable.CollectableField;
 import org.nuclos.common.collect.collectable.CollectableFieldsProvider;
 import org.nuclos.common.collect.collectable.LocalizedCollectableValueField;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.server.genericobject.ProxyList;
 import org.nuclos.server.genericobject.searchcondition.CollectableSearchExpression;
@@ -60,7 +60,7 @@ public class RoleActionsCollectableFieldsProvider implements CollectableFieldsPr
 			String label = mdvo.getField("name", String.class);
 			String resId = mdvo.getField("labelres", String.class);
 			if (resId != null) {
-				label = CommonLocaleDelegate.getInstance().getTextFallback(resId, label);
+				label = SpringLocaleDelegate.getInstance().getTextFallback(resId, label);
 			}
 			result.add(new LocalizedCollectableValueField(action, label));
 		}

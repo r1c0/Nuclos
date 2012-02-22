@@ -23,7 +23,7 @@ import javax.swing.JList;
 import javax.swing.ListCellRenderer;
 
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 
 /**
  * This avoids toString rendering for EntityFieldMetaDataVO lists.
@@ -46,7 +46,7 @@ public class EntityFieldMetaDataListCellRenderer extends JLabel implements ListC
 	public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected,
 			boolean cellHasFocus) {
 
-		setText(CommonLocaleDelegate.getInstance().getLabelFromMetaFieldDataVO((EntityFieldMetaDataVO) value));
+		setText(SpringLocaleDelegate.getInstance().getLabelFromMetaFieldDataVO((EntityFieldMetaDataVO) value));
         return this;
 	}
 

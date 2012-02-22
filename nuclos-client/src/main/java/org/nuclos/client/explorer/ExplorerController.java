@@ -277,7 +277,7 @@ public class ExplorerController extends Controller {
 	private ExplorerView addOrReplaceExplorerViewFor(MainFrameTab newTab, final TreeNode treenodeRoot, boolean withSearchWorker, boolean selectTab, boolean onlyAdd) {
 		ExplorerView view = this.getExplorerViewFor(treenodeRoot);
 		final String sLabel = treenodeRoot.getLabel();
-		final String sLabelWorking = sLabel + " ("+ getCommonLocaleDelegate().getMessage("ExplorerController.20","In Bearbeitung") + ")";
+		final String sLabelWorking = sLabel + " ("+ getSpringLocaleDelegate().getMessage("ExplorerController.20","In Bearbeitung") + ")";
 		final boolean addToTreeHome = newTab==null;
 		if (newTab == null) {
 			newTab = new MainFrameTab();
@@ -340,14 +340,14 @@ public class ExplorerController extends Controller {
 					LOG.error(ex);
 
 					if (ex instanceof ExplorerNodeRefreshException) {
-						String sMessage = ex.getMessage() + "\n\n" + getCommonLocaleDelegate().getMessage(
+						String sMessage = ex.getMessage() + "\n\n" + getSpringLocaleDelegate().getMessage(
 								"ExplorerController.13","Der Reiter des Knotens wird automatisch geschlossen.");
-						JOptionPane.showMessageDialog(null, sMessage, getCommonLocaleDelegate().getMessage(
+						JOptionPane.showMessageDialog(null, sMessage, getSpringLocaleDelegate().getMessage(
 								"ExplorerController.30","Wiederherstellen der Baumansicht"), JOptionPane.ERROR_MESSAGE);
 						closeExplorerView(viewForWorker);
 					}
 					else {
-						Errors.getInstance().showExceptionDialog(null, getCommonLocaleDelegate().getMessage(
+						Errors.getInstance().showExceptionDialog(null, getSpringLocaleDelegate().getMessage(
 								"ExplorerController.17","Fehler beim Anzeigen des Explorerfensters"), ex);
 					}
 				}
@@ -367,14 +367,14 @@ public class ExplorerController extends Controller {
 				LOG.error("addOrReplaceExplorerViewFor failed" + e, e);
 
 				if (e instanceof ExplorerNodeRefreshException) {
-					String sMessage = e.getMessage() + "\n\n" + getCommonLocaleDelegate().getMessage(
+					String sMessage = e.getMessage() + "\n\n" + getSpringLocaleDelegate().getMessage(
 							"ExplorerController.13","Der Reiter des Knotens wird automatisch geschlossen.");
-					JOptionPane.showMessageDialog(null, sMessage, getCommonLocaleDelegate().getMessage(
+					JOptionPane.showMessageDialog(null, sMessage, getSpringLocaleDelegate().getMessage(
 							"ExplorerController.30","Wiederherstellen der Baumansicht"), JOptionPane.ERROR_MESSAGE);
 					closeExplorerView(viewForWorker);
 				}
 				else {
-					Errors.getInstance().showExceptionDialog(null, getCommonLocaleDelegate().getMessage(
+					Errors.getInstance().showExceptionDialog(null, getSpringLocaleDelegate().getMessage(
 							"ExplorerController.17","Fehler beim Anzeigen des Explorerfensters"), e);
 				}
 			}
@@ -464,9 +464,9 @@ public class ExplorerController extends Controller {
 		UIUtils.runCommand(this.getParent(), new CommonRunnable() {
 			@Override
             public void run() throws CommonFinderException {
-				final DirectoryRuleNode treenodeRoot = new DirectoryRuleNode(true, getCommonLocaleDelegate().getMessage(
+				final DirectoryRuleNode treenodeRoot = new DirectoryRuleNode(true, getSpringLocaleDelegate().getMessage(
 						"ExplorerController.24","Regelverwendungen"), 
-						getCommonLocaleDelegate().getMessage("ExplorerController.25","Regelverwendungen"), null, false);
+						getSpringLocaleDelegate().getMessage("ExplorerController.25","Regelverwendungen"), null, false);
 				final ExplorerView view = ExplorerController.this.addOrReplaceExplorerViewFor(treenodeRoot, true);
 
 				if (ruleIdToGoto != null) {
@@ -503,8 +503,8 @@ public class ExplorerController extends Controller {
 		UIUtils.runCommand(this.getParent(), new CommonRunnable() {
 			@Override
             public void run() throws CommonFinderException {
-				final DirectoryDatasourceNode treenodeRoot = new DirectoryDatasourceNode(true, getCommonLocaleDelegate().getMessage(
-						"ExplorerController.10","Datenquellen"), getCommonLocaleDelegate().getMessage(
+				final DirectoryDatasourceNode treenodeRoot = new DirectoryDatasourceNode(true, getSpringLocaleDelegate().getMessage(
+						"ExplorerController.10","Datenquellen"), getSpringLocaleDelegate().getMessage(
 								"ExplorerController.11","Datenquellen"), null);
 				final ExplorerView view = ExplorerController.this.addOrReplaceExplorerViewFor(treenodeRoot, true);
 

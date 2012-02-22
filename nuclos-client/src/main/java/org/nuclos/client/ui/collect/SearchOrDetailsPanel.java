@@ -33,7 +33,7 @@ import org.nuclos.client.ui.PopupButton;
 import org.nuclos.client.ui.StatusBarTextField;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.client.ui.collect.component.model.EditModel;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.StringUtils;
 
 /**
@@ -56,7 +56,7 @@ public abstract class SearchOrDetailsPanel extends JPanel {
 
 	private int popbtnExtraIndex = -1;
 
-	private final PopupButton popbtnExtra = new PopupButton(CommonLocaleDelegate.getInstance().getMessage(
+	private final PopupButton popbtnExtra = new PopupButton(SpringLocaleDelegate.getInstance().getMessage(
 			"PopupButton.Extras","Extras"));
 
 	/**

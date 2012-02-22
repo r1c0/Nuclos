@@ -206,7 +206,7 @@ public class NuclosEntityAttributeInputStep extends NuclosEntityAbstractStep {
 		scrolPane = new JScrollPane();
 		scrolPane.getViewport().add(tblAttributes);
 
-		btnNewAttribute = new JButton(cld.getMessage(
+		btnNewAttribute = new JButton(localeDelegate.getMessage(
 				"wizard.step.inputattribute.1", "Attribut hinzuf\u00fcgen"));
 		btnNewAttribute.addActionListener(new ActionListener() {
 
@@ -218,7 +218,7 @@ public class NuclosEntityAttributeInputStep extends NuclosEntityAbstractStep {
 
 		});
 
-		btnDropAttribute = new JButton(cld.getMessage(
+		btnDropAttribute = new JButton(localeDelegate.getMessage(
 				"wizard.step.inputattribute.2", "Attribut entfernen"));
 		btnDropAttribute.setEnabled(false);
 		btnDropAttribute.addActionListener(new ActionListener() {
@@ -232,7 +232,7 @@ public class NuclosEntityAttributeInputStep extends NuclosEntityAbstractStep {
 				StringBuffer sMessage = new StringBuffer();
 				if(hasAttributeReferenz(attr, sMessage)) {
 					JOptionPane.showMessageDialog(NuclosEntityAttributeInputStep.this, sMessage,
-						cld.getMessage("wizard.step.inputattribute.12", "Entfernen nicht möglich!"), 
+						localeDelegate.getMessage("wizard.step.inputattribute.12", "Entfernen nicht möglich!"), 
 						JOptionPane.OK_OPTION);
 					return;
 				}
@@ -246,17 +246,17 @@ public class NuclosEntityAttributeInputStep extends NuclosEntityAbstractStep {
 						}
 					});
 
-					String sMessageText = cld.getMessage(
+					String sMessageText = localeDelegate.getMessage(
 							"wizard.step.inputattribute.15", "Das Attribut wird in der Import Strukturdefinition ");
 
 					for(String sImport : colImportStructureNames){
 						sMessageText += sImport + " ";
 					}
 
-					sMessageText += cld.getMessage(
+					sMessageText += localeDelegate.getMessage(
 							"wizard.step.inputattribute.16", "\nDie Referenz wird entfernt, wenn das Attribut gelöscht wird!\nSoll das Attribut trotzdem gelöscht werden?");
 					int option = JOptionPane.showConfirmDialog(NuclosEntityAttributeInputStep.this, sMessageText,
-							cld.getMessage("wizard.step.inputattribute.17", "Achtung"), 
+							localeDelegate.getMessage("wizard.step.inputattribute.17", "Achtung"), 
 							JOptionPane.YES_NO_OPTION);
 					if(option != JOptionPane.YES_OPTION) {
 						return;
@@ -266,7 +266,7 @@ public class NuclosEntityAttributeInputStep extends NuclosEntityAbstractStep {
 				if(attr.getMetaVO() != null) {
 					if(isSubformEntity(attr)){
 						if(NuclosEntityAttributeInputStep.this.getModel().hasRows()) {
-							String sText = cld.getMessage("wizard.step.inputattribute.14",
+							String sText = localeDelegate.getMessage("wizard.step.inputattribute.14",
 								"Die Entität enthält bereits Daten. Wenn Sie dieses Attribut löschen,\n" +
 									"verliert die Hauptentität, die Datensätze dieser Entität.\n" +
 									"Das Unterformular wird ebenfalls aus der Maske herausgenommen.");
@@ -283,7 +283,7 @@ public class NuclosEntityAttributeInputStep extends NuclosEntityAbstractStep {
 							    });
 
 							dia.setContentPane(pane);
-							dia.setTitle(cld.getMessage(
+							dia.setTitle(localeDelegate.getMessage(
 									"wizard.step.inputattribute.13", "Attribut entfernen?"));
 							dia.setLocationRelativeTo(NuclosEntityAttributeInputStep.this.getModel().getParentFrame());
 							dia.pack();
@@ -308,7 +308,7 @@ public class NuclosEntityAttributeInputStep extends NuclosEntityAbstractStep {
 			}
 		});
 
-		btnEditAttribute = new JButton(cld.getMessage(
+		btnEditAttribute = new JButton(localeDelegate.getMessage(
 				"wizard.step.inputattribute.3", "Attribut bearbeiten"));
 		btnEditAttribute.setEnabled(false);
 		btnEditAttribute.addActionListener(new ActionListener() {
@@ -330,10 +330,10 @@ public class NuclosEntityAttributeInputStep extends NuclosEntityAbstractStep {
 		panelAttributes.setLayout(new TableLayout(sizePanel));
 
 		btUp = new JButton(Icons.getInstance().getIconSortAscending());
-		btUp.setToolTipText(cld.getMessage(
+		btUp.setToolTipText(localeDelegate.getMessage(
 				"wizard.step.entitysqllayout.tooltip.5", "Attribut nach oben schieben"));
 		btDown = new JButton(Icons.getInstance().getIconSortDescending());
-		btDown.setToolTipText(cld.getMessage(
+		btDown.setToolTipText(localeDelegate.getMessage(
 				"wizard.step.entitysqllayout.tooltip.6", "Attribut nach unten schieben"));
 
 		panelAttributes.add(scrolPane, "0,0, 0,5");
@@ -439,12 +439,12 @@ public class NuclosEntityAttributeInputStep extends NuclosEntityAbstractStep {
 			}
 		}
 		if (missingreferences.size() > 0) {
-			String message = cld.getMessage(
+			String message = localeDelegate.getMessage(
 					"wizard.step.inputattribute.validation.reference", 
 					"Please select a foreign entity for each reference field ({0}).", 
 					StringUtils.join(", ", missingreferences));
 			JOptionPane.showMessageDialog(this, message, 
-					cld.getMessage("wizard.step.entitycommonproperties.19", "Achtung!"), 
+					localeDelegate.getMessage("wizard.step.entitycommonproperties.19", "Achtung!"), 
 					JOptionPane.OK_OPTION);
 	        throw new InvalidStateException();
 		}
@@ -502,7 +502,7 @@ public class NuclosEntityAttributeInputStep extends NuclosEntityAbstractStep {
 
 	protected void showNuclosEntityAttributeWizard(Attribute attr, final boolean editMode, final int row) {
 
-		final MainFrameTab tabAttribute = new MainFrameTab(cld.getMessage(
+		final MainFrameTab tabAttribute = new MainFrameTab(localeDelegate.getMessage(
 				"wizard.step.inputattribute.8", "Attribut Wizard f\u00fcr Entit\u00e4t"+" " 
 				+ NuclosEntityAttributeInputStep.this.model.getEntityName()));
 
@@ -519,33 +519,33 @@ public class NuclosEntityAttributeInputStep extends NuclosEntityAbstractStep {
 			}
 			model.setTranslation(entityModel.getTranslation().get(attr));
 
-			NuclosEntityAttributePropertiesStep step1 = new NuclosEntityAttributePropertiesStep(cld.getMessage(
+			NuclosEntityAttributePropertiesStep step1 = new NuclosEntityAttributePropertiesStep(localeDelegate.getMessage(
 					"wizard.step.inputattribute.4", "Eigenschaften"), 
-					cld.getMessage("wizard.step.inputattribute.4", "Eigenschaften"));
+					localeDelegate.getMessage("wizard.step.inputattribute.4", "Eigenschaften"));
 			step1.setParentWizardModel(this.model);
 			step1.setParent(tabAttribute);
 			step1.setColumnTypeChangeAllowed(!this.hasEntityValues());
-			NuclosEntityAttributeValueListShipStep step2a = new NuclosEntityAttributeValueListShipStep(cld.getMessage(
+			NuclosEntityAttributeValueListShipStep step2a = new NuclosEntityAttributeValueListShipStep(localeDelegate.getMessage(
 					"wizard.step.inputattribute.5", "Werteliste"), 
-					cld.getMessage("wizard.step.inputattribute.5", "Werteliste"));
-			NuclosEntityAttributeRelationShipStep step2b = new NuclosEntityAttributeRelationShipStep(cld.getMessage(
+					localeDelegate.getMessage("wizard.step.inputattribute.5", "Werteliste"));
+			NuclosEntityAttributeRelationShipStep step2b = new NuclosEntityAttributeRelationShipStep(localeDelegate.getMessage(
 					"wizard.step.inputattribute.10", "Verkn\u00fcpfung zu anderen Entit\u00e4ten"), 
-					cld.getMessage("wizard.step.inputattribute.10", "Verkn\u00fcpfung zu anderen Entit\u00e4ten"));
+					localeDelegate.getMessage("wizard.step.inputattribute.10", "Verkn\u00fcpfung zu anderen Entit\u00e4ten"));
 			step2b.setAttributeList(this.getModel().getAttributeModel().getAttributes());
 			step2b.setParentWizardModel(this.model);
             NuclosEntityAttributeLookupShipStep step2c = new NuclosEntityAttributeLookupShipStep(
-            		cld.getMessage("wizard.step.inputattribute.18", "Nachschlage-Enti\u00e4t definieren"), 
-            		cld.getMessage("wizard.step.inputattribute.18", "Nachschlage-Enti\u00e4t definieren"));
+            		localeDelegate.getMessage("wizard.step.inputattribute.18", "Nachschlage-Enti\u00e4t definieren"), 
+            		localeDelegate.getMessage("wizard.step.inputattribute.18", "Nachschlage-Enti\u00e4t definieren"));
             step2c.setAttributeList(this.getModel().getAttributeModel().getAttributes());
             step2c.setParentWizardModel(this.model);
-			NuclosEntityAttributeTranslationStep step3 = new NuclosEntityAttributeTranslationStep(cld.getMessage(
+			NuclosEntityAttributeTranslationStep step3 = new NuclosEntityAttributeTranslationStep(localeDelegate.getMessage(
 					"wizard.step.inputattribute.6", "\u00dcbersetzungen"), 
-					cld.getMessage("wizard.step.inputattribute.6", "\u00dcbersetzungen"));
+					localeDelegate.getMessage("wizard.step.inputattribute.6", "\u00dcbersetzungen"));
 			step3.setParentWizardModel(this.model);
 			step3.setComplete(true);
-			NuclosEntityAttributeCommonPropertiesStep step4 = new NuclosEntityAttributeCommonPropertiesStep(cld.getMessage(
+			NuclosEntityAttributeCommonPropertiesStep step4 = new NuclosEntityAttributeCommonPropertiesStep(localeDelegate.getMessage(
 					"wizard.step.inputattribute.7", "Allgemeine Eigenschaften"), 
-					cld.getMessage("wizard.step.inputattribute.7", "Allgemeine Eigenschaften"));
+					localeDelegate.getMessage("wizard.step.inputattribute.7", "Allgemeine Eigenschaften"));
 			step4.setParentWizardModel(this.model);
 			model.add(step1);
 			model.add(step2a);
@@ -640,7 +640,7 @@ public class NuclosEntityAttributeInputStep extends NuclosEntityAbstractStep {
 				final String sForeignField = voField.getForeignEntityField();
 				if(sForeign.equals(this.model.getEntityName())) {
 					if(sForeignField.indexOf(attr.getInternalName()) >= 0) {
-						String sMessage = cld.getMessage(
+						String sMessage = localeDelegate.getMessage(
 								"wizard.step.inputattribute.11", "Die Entität " + vo.getEntity() 
 								+ " verweist auf das Feld " + attr.getLabel() + "\n" 
 								+ "Bitte entfernen Sie vorher das Feld dort!", 

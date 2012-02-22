@@ -34,7 +34,7 @@ import javax.swing.JPanel;
 
 import org.nuclos.client.synthetica.NuclosThemeSettings;
 import org.nuclos.client.ui.collect.CollectPanel;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 
 public class CollectPanelIndicator {
 	
@@ -165,15 +165,15 @@ public class CollectPanelIndicator {
 	}
 	
 	protected static String getSearchLabel() {
-		return CommonLocaleDelegate.getInstance().getMessage("CollectPanel.5","Suche");
+		return SpringLocaleDelegate.getInstance().getMessage("CollectPanel.5","Suche");
 	}
 	
 	protected static String getResultLabel() {
-		return CommonLocaleDelegate.getInstance().getMessage("CollectPanel.3","Liste");
+		return SpringLocaleDelegate.getInstance().getMessage("CollectPanel.3","Liste");
 	}
 	
 	protected static String getDetailsLabel() {
-		return CommonLocaleDelegate.getInstance().getMessage("CollectPanel.1","Details");
+		return SpringLocaleDelegate.getInstance().getMessage("CollectPanel.1","Details");
 	}
 	
 	public abstract static class SelectionListener {

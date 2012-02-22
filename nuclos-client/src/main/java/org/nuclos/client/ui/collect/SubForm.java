@@ -129,7 +129,7 @@ import org.nuclos.common.collect.collectable.DefaultCollectableEntityField;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableComparison;
 import org.nuclos.common.collect.collectable.searchcondition.ComparisonOperator;
 import org.nuclos.common.collect.exception.CollectableFieldFormatException;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
@@ -164,14 +164,14 @@ public class SubForm extends JPanel implements TableCellRendererProvider, Action
 	        @Override
 	        public AbstractButton createButton() {
 	        	JButton res = new JButton(Icons.getInstance().getIconNew16());
-	        	res.setToolTipText(CommonLocaleDelegate.getInstance().getMessage(
+	        	res.setToolTipText(SpringLocaleDelegate.getInstance().getMessage(
 	        			"SubForm.7","Neuen Datensatz anlegen"));
 	        	res.setActionCommand(name());
 		        return res;
 	        }
 			@Override
 			public JMenuItem createMenuItem() {
-				JMenuItem res = new JMenuItem(CommonLocaleDelegate.getInstance().getMessage(
+				JMenuItem res = new JMenuItem(SpringLocaleDelegate.getInstance().getMessage(
 						"SubForm.7","Neuen Datensatz anlegen"), Icons.getInstance().getIconNew16());
 				res.setActionCommand(name());
 				return res;
@@ -181,14 +181,14 @@ public class SubForm extends JPanel implements TableCellRendererProvider, Action
 	        @Override
 	        public AbstractButton createButton() {
 	        	JButton res = new JButton(Icons.getInstance().getIconDelete16());
-	        	res.setToolTipText(CommonLocaleDelegate.getInstance().getMessage(
+	        	res.setToolTipText(SpringLocaleDelegate.getInstance().getMessage(
 	        			"SubForm.1","Ausgew\u00e4hlten Datensatz l\u00f6schen"));
 	        	res.setActionCommand(name());
 		        return res;
 	        }
 			@Override
 			public JMenuItem createMenuItem() {
-				JMenuItem res = new JMenuItem(CommonLocaleDelegate.getInstance().getMessage(
+				JMenuItem res = new JMenuItem(SpringLocaleDelegate.getInstance().getMessage(
 						"SubForm.1","Ausgew\u00e4hlten Datensatz l\u00f6schen"), Icons.getInstance().getIconDelete16());
 				res.setActionCommand(name());
 				return res;
@@ -198,14 +198,14 @@ public class SubForm extends JPanel implements TableCellRendererProvider, Action
 	        @Override
 	        public AbstractButton createButton() {
 	        	JButton res = new JButton(Icons.getInstance().getIconMultiEdit16());
-	        	res.setToolTipText(CommonLocaleDelegate.getInstance().getMessage(
+	        	res.setToolTipText(SpringLocaleDelegate.getInstance().getMessage(
 	        			"SubForm.6","Mehrere Datens\u00e4tze hinzuf\u00fcgen/l\u00f6schen"));
 	        	res.setActionCommand(name());
 		        return res;
 	        }
 			@Override
 			public JMenuItem createMenuItem() {
-				JMenuItem res = new JMenuItem(CommonLocaleDelegate.getInstance().getMessage(
+				JMenuItem res = new JMenuItem(SpringLocaleDelegate.getInstance().getMessage(
 						"SubForm.6","Mehrere Datens\u00e4tze hinzuf\u00fcgen/l\u00f6schen"), Icons.getInstance().getIconMultiEdit16());
 				res.setActionCommand(name());
 				return res;
@@ -216,14 +216,14 @@ public class SubForm extends JPanel implements TableCellRendererProvider, Action
 	        public AbstractButton createButton() {
 	        	JToggleButton res = new JToggleButton(Icons.getInstance().getIconFilter16());
 	        	res.setSize(16, 16);
-	        	res.setToolTipText(CommonLocaleDelegate.getInstance().getMessage(
+	        	res.setToolTipText(SpringLocaleDelegate.getInstance().getMessage(
 	        			"SubForm.5","Datens\u00e4tze filtern"));
 	        	res.setActionCommand(name());
 		        return res;
 	        }
 			@Override
 			public JMenuItem createMenuItem() {
-				JCheckBoxMenuItem res = new JCheckBoxMenuItem(CommonLocaleDelegate.getInstance().getMessage(
+				JCheckBoxMenuItem res = new JCheckBoxMenuItem(SpringLocaleDelegate.getInstance().getMessage(
 						"SubForm.5","Datens\u00e4tze filtern"), Icons.getInstance().getIconFilter16());
 				res.setActionCommand(name());
 				return res;
@@ -1471,7 +1471,7 @@ public class SubForm extends JPanel implements TableCellRendererProvider, Action
 			final String sSourceFieldName = act.getSourceFieldName();
 			final int iTargetColumn = subformtblmdl.findColumnByFieldName(act.getTargetComponentName());
 			if (iTargetColumn == -1) {
-				throw new CommonFatalException(CommonLocaleDelegate.getInstance().getMessage(
+				throw new CommonFatalException(SpringLocaleDelegate.getInstance().getMessage(
 						"SubForm.2","Das Unterformular enth\u00e4lt keine Spalte namens {0}", act.getTargetComponentName()));
 			}
 
@@ -1499,7 +1499,7 @@ public class SubForm extends JPanel implements TableCellRendererProvider, Action
 		for (ClearAction act : collClearActions) {
 			final int iTargetColumn = subformtblmdl.findColumnByFieldName(act.getTargetComponentName());
 			if (iTargetColumn == -1) {
-				throw new CommonFatalException(CommonLocaleDelegate.getInstance().getMessage(
+				throw new CommonFatalException(SpringLocaleDelegate.getInstance().getMessage(
 						"SubForm.2","Das Unterformular enth\u00e4lt keine Spalte namens {0}", act.getTargetComponentName()));
 			}
 			final CollectableEntityField clctefTarget = subformtblmdl.getCollectableEntityField(iTargetColumn);
@@ -1552,7 +1552,7 @@ public class SubForm extends JPanel implements TableCellRendererProvider, Action
 						result = sFieldName;
 					}
 					else {
-						final String sMessage = CommonLocaleDelegate.getInstance().getMessage(
+						final String sMessage = SpringLocaleDelegate.getInstance().getMessage(
 								"SubForm.4","Das Unterformular f\u00fcr die Entit\u00e4t \"{0}\" enth\u00e4lt mehr als ein Fremdschl\u00fcsselfeld, das die \u00fcbergeordnete Entit\u00e4t \"{1}\" referenziert:\n\t{2}\n\t{3}\nBitte geben Sie das Feld im Layout explizit an.", clcte.getName(), sParentEntityName, result, sFieldName);
 						throw new CommonFatalException(sMessage);
 					}
@@ -1561,7 +1561,7 @@ public class SubForm extends JPanel implements TableCellRendererProvider, Action
 		}
 
 		if (result == null) {
-			throw new CommonFatalException(CommonLocaleDelegate.getInstance().getMessage(
+			throw new CommonFatalException(SpringLocaleDelegate.getInstance().getMessage(
 					"SubForm.3","Das Unterformular f\u00fcr die Entit\u00e4t \"{0}\" enth\u00e4lt kein Fremdschl\u00fcsselfeld, das die \u00fcbergeordnete Entit\u00e4t \"{1}\" referenziert.\nBitte geben Sie das Feld im Layout explizit an.", clcte.getName(), sParentEntityName));
 		}
 		assert result != null;

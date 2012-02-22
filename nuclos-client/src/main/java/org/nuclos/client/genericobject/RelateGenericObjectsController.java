@@ -85,12 +85,12 @@ public class RelateGenericObjectsController extends Controller {
 			if (o instanceof GenericObjectIdModuleProcess) {
 				final GenericObjectIdModuleProcess goimpSource = (GenericObjectIdModuleProcess) o;
 				if (goimpSource.getGenericObjectId() == goimpTarget.getGenericObjectId()) {
-					throw new NuclosBusinessException(getCommonLocaleDelegate().getMessage(
+					throw new NuclosBusinessException(getSpringLocaleDelegate().getMessage(
 							"RelateGenericObjectsController.1", "Beziehungen eines Objekts zu sich selbst sind nicht m\u00f6glich."));
 				}
 			}
 			else {
-				throw new NuclosBusinessException(getCommonLocaleDelegate().getMessage(
+				throw new NuclosBusinessException(getSpringLocaleDelegate().getMessage(
 						"GroupExplorerNode.1", "Der Datentransfer wird nicht unterst\u00fctzt."));
 			}
 		}
@@ -105,7 +105,7 @@ public class RelateGenericObjectsController extends Controller {
 		this.enableRadioButtons(pnl);
 		this.selectFirstEnabledRadioButton(pnl);
 
-		final ValidatingJOptionPane voptpn = new ValidatingJOptionPane(this.getParent(), getCommonLocaleDelegate().getMessage(
+		final ValidatingJOptionPane voptpn = new ValidatingJOptionPane(this.getParent(), getSpringLocaleDelegate().getMessage(
 				"RelateGenericObjectsController.2", "Beziehung herstellen"), pnl) {
 			@Override
 			protected void validateInput() throws ValidatingJOptionPane.ErrorInfo {

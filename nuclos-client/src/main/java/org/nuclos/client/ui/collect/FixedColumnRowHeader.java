@@ -72,7 +72,7 @@ import org.nuclos.common.WorkspaceDescription.SubFormPreferences;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
 import org.nuclos.common.collect.collectable.CollectableUtils;
 import org.nuclos.common.collection.CollectionUtils;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.CommonRunnable;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
@@ -226,7 +226,7 @@ public class FixedColumnRowHeader extends SubformRowHeader {
 		ctl.setModel(ro);
 		
 		final List<CollectableEntityField> lstSelectedOld = new ArrayList<CollectableEntityField>((List<CollectableEntityField>) ro.getSelectedFields());
-		final boolean bOK = ctl.run(CommonLocaleDelegate.getInstance().getMessage(
+		final boolean bOK = ctl.run(SpringLocaleDelegate.getInstance().getMessage(
 				"SelectColumnsController.1","Anzuzeigende Spalten ausw\u00e4hlen"));
 
 		if (bOK) {

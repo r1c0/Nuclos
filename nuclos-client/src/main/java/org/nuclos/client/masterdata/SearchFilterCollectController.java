@@ -158,7 +158,7 @@ public class SearchFilterCollectController extends MasterDataCollectController {
             	CollectableField cf = (CollectableField)oValue;
             	if (cf.getValue() != null) {
             		SearchFilterMode mode = KeyEnum.Utils.findEnum(SearchFilterMode.class, (Integer)((CollectableField)oValue).getValue());
-                    jLabel.setText(getCommonLocaleDelegate().getText(mode.getResourceId()));
+                    jLabel.setText(getSpringLocaleDelegate().getText(mode.getResourceId()));
                     jLabel.setHorizontalAlignment(SwingConstants.LEFT);
             	}
             	else {

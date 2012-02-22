@@ -38,7 +38,7 @@ import org.nuclos.client.attribute.AttributeCache;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.client.ui.table.CommonJTable;
 import org.nuclos.common.NuclosEOField;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.server.attribute.valueobject.AttributeCVO;
 import org.nuclos.server.genericobject.valueobject.LogbookVO;
 
@@ -116,7 +116,7 @@ public class LogbookPanel extends JPanel {
 		if (colllogbookvo != null) {
 			this.tblmdl = new LogbookTableModel(colllogbookvo, attrcvoHeader);
 			this.tbl.setModel(tblmdl);
-			this.tbl.getColumn(CommonLocaleDelegate.getInstance().getMessage(
+			this.tbl.getColumn(SpringLocaleDelegate.getInstance().getMessage(
 					"LogbookController.8", "Feld")).setCellRenderer(new LogbookRenderer());
 			this.tbl.getRowSorter().setSortKeys(Arrays.asList(
 				new SortKey(LogbookTableModel.COLUMN_CHANGEDAT, SortOrder.DESCENDING),
@@ -133,7 +133,7 @@ public class LogbookPanel extends JPanel {
 			final String sText = (String) oValue;
 			result.setText(sText);
 			if (!bSelected) {
-				if (attrcvoHeader != null && sText.equals(CommonLocaleDelegate.getInstance().getLabelFromAttributeCVO(attrcvoHeader))) {
+				if (attrcvoHeader != null && sText.equals(SpringLocaleDelegate.getInstance().getLabelFromAttributeCVO(attrcvoHeader))) {
 					result.setBackground(new Color(200, 200, 200));
 				}
 				else {

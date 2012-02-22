@@ -65,7 +65,7 @@ public class UserCollectableFieldsProvider implements CollectableFieldsProvider 
 //			Class<? extends Enum> clazz = Class.forName(this.showEnum).asSubclass(Enum.class);
 //			for (Enum e : clazz.getEnumConstants()) {
 //				Object value = (e instanceof KeyEnum) ? ((KeyEnum) e).getValue() : e.name();
-//				String text = (e instanceof Localizable) ? CommonLocaleDelegate.getText((Localizable) e) : e.toString();
+//				String text = (e instanceof Localizable) ? SpringLocaleDelegate.getText((Localizable) e) : e.toString();
 //				CollectableField cf = new LocalizedCollectableValueField(value, text);
 //				result.add(cf);
 //			}

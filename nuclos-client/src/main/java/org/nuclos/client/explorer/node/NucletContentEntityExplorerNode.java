@@ -84,7 +84,7 @@ public class NucletContentEntityExplorerNode extends ExplorerNode<NucletContentE
 	private class ShowDetailsAction extends TreeNodeAction {
 
 		ShowDetailsAction(JTree tree) {
-			super(ACTIONCOMMAND_SHOW_DETAILS, getCommonLocaleDelegate().getMessage("NucletContentEntityExplorerNode.1","Entitaetenwizard starten"), tree);
+			super(ACTIONCOMMAND_SHOW_DETAILS, getSpringLocaleDelegate().getMessage("NucletContentEntityExplorerNode.1","Entitaetenwizard starten"), tree);
 		}
 
 		@Override
@@ -111,7 +111,7 @@ public class NucletContentEntityExplorerNode extends ExplorerNode<NucletContentE
 	private class RemoveFromNucletAction extends TreeNodeAction {
 
 		public RemoveFromNucletAction(JTree tree) {
-			super(ACTIONCOMMAND_REMOVE, getCommonLocaleDelegate().getMessage("NucletContentEntryExplorerNode.1","Vom Nuclet entfernen"), tree);
+			super(ACTIONCOMMAND_REMOVE, getSpringLocaleDelegate().getMessage("NucletContentEntryExplorerNode.1","Vom Nuclet entfernen"), tree);
 		}
 		
 		@Override

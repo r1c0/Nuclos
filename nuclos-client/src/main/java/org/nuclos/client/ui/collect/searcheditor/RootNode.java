@@ -23,7 +23,7 @@ import org.nuclos.common.collect.collectable.CollectableEntityField;
 import org.nuclos.common.collect.collectable.CollectableFieldsProviderFactory;
 import org.nuclos.common.collect.collectable.searchcondition.AbstractCollectableSearchCondition;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableSearchCondition;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 
 import java.awt.Component;
 import java.awt.datatransfer.Transferable;
@@ -111,15 +111,15 @@ public class RootNode extends SearchConditionTreeNode {
 
 	@Override
 	protected String getLabelForExpandedState() {
-		return CommonLocaleDelegate.getInstance().getMessage("RootNode.1","Suchbedingung");
+		return SpringLocaleDelegate.getInstance().getMessage("RootNode.1","Suchbedingung");
 	}
 
 	@Override
 	protected String getLabelForCollapsedState() {
 		final CollectableSearchCondition cond = this.getSearchCondition();
-		return CommonLocaleDelegate.getInstance().getMessage(
+		return SpringLocaleDelegate.getInstance().getMessage(
 				"RootNode.1","Suchbedingung")+": " + ((cond != null) ? cond.toString() 
-				: CommonLocaleDelegate.getInstance().getMessage("RootNode.2","<Alle>"));
+				: SpringLocaleDelegate.getInstance().getMessage("RootNode.2","<Alle>"));
 	}
 
 	@Override
@@ -132,9 +132,9 @@ public class RootNode extends SearchConditionTreeNode {
 			bDoIt = true;
 		}
 		else {
-			final String sMessage = CommonLocaleDelegate.getInstance().getMessage(
+			final String sMessage = SpringLocaleDelegate.getInstance().getMessage(
 					"RootNode.3","Soll die Suchbedingung ersetzt werden?");
-			final int iBtn = JOptionPane.showConfirmDialog(parent, sMessage, CommonLocaleDelegate.getInstance().getMessage(
+			final int iBtn = JOptionPane.showConfirmDialog(parent, sMessage, SpringLocaleDelegate.getInstance().getMessage(
 					"RootNode.4","Suchbedingung ersetzen"),
 					JOptionPane.YES_NO_OPTION);
 			if (iBtn == JOptionPane.YES_OPTION) {
@@ -155,9 +155,9 @@ public class RootNode extends SearchConditionTreeNode {
 			super.add(newChild);
 		}
 		else {
-			final String sMessage = CommonLocaleDelegate.getInstance().getMessage(
+			final String sMessage = SpringLocaleDelegate.getInstance().getMessage(
 					"RootNode.5","Soll die vorhandene Suchbedingung in die neuen Bedingung eingef\u00fcgt werden?");
-			final int iBtn = JOptionPane.showConfirmDialog(null, sMessage, CommonLocaleDelegate.getInstance().getMessage(
+			final int iBtn = JOptionPane.showConfirmDialog(null, sMessage, SpringLocaleDelegate.getInstance().getMessage(
 					"RootNode.6","Suchbedingung einf\u00fcgen"),
 					JOptionPane.YES_NO_OPTION);
 			if (iBtn == JOptionPane.YES_OPTION) {

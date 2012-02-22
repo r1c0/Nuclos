@@ -116,7 +116,7 @@ public class PDFExport extends AbstractReportExporter {
 	          if(null != prservDflt) {
 	        	  prservices = new PrintService[] {prservDflt};
 	          } else {
-	        	  throw new NuclosReportException(getCommonLocaleDelegate().getMessage(
+	        	  throw new NuclosReportException(getSpringLocaleDelegate().getMessage(
 	        			  "AbstractReportExporter.5", "Es ist kein passender Print-Service installiert."));
 	          }
 	        }

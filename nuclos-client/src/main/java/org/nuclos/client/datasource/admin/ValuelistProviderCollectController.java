@@ -124,17 +124,17 @@ public class ValuelistProviderCollectController extends AbstractDatasourceCollec
 	protected void deleteCollectable(CollectableDataSource clct) throws CommonBusinessException {
 		final List<DatasourceVO> lstUsages = DatasourceDelegate.getInstance().getUsagesForDatasource(clct.getDatasourceVO());
 		if (!lstUsages.isEmpty()) {
-			final int iBtn = JOptionPane.showConfirmDialog(this.getFrame(), getCommonLocaleDelegate().getMessage(
+			final int iBtn = JOptionPane.showConfirmDialog(this.getFrame(), getSpringLocaleDelegate().getMessage(
 					"DatasourceCollectController.8","Diese Datenquelle wird in anderen Datenquellen verwendet.") + "\n" 
-					+ getCommonLocaleDelegate().getMessage(
+					+ getSpringLocaleDelegate().getMessage(
 							"DatasourceCollectController.1","Das L\u00f6schen f\u00fchrt dazu, dass folgende Datenquellen nicht mehr ausf\u00fchrbar sind") + ":\n" 
 					+ getUsagesAsString(lstUsages) 
-					+ "\n" + getCommonLocaleDelegate().getMessage(
+					+ "\n" + getSpringLocaleDelegate().getMessage(
 							"DatasourceCollectController.24","Wollen sie die Datenquelle dennoch l\u00f6schen?"), 
-					getCommonLocaleDelegate().getMessage("DatasourceCollectController.20","Umbenennung best\u00e4tigen"), 
+					getSpringLocaleDelegate().getMessage("DatasourceCollectController.20","Umbenennung best\u00e4tigen"), 
 					JOptionPane.YES_NO_OPTION);
 			if (iBtn != JOptionPane.OK_OPTION) {
-				throw new CommonBusinessException(getCommonLocaleDelegate().getMessage(
+				throw new CommonBusinessException(getSpringLocaleDelegate().getMessage(
 						"DatasourceCollectController.15","L\u00f6schen wurde durch den Benutzer abgebrochen."));
 			}
 			DatasourceDelegate.getInstance().setInvalid(lstUsages);
@@ -162,16 +162,16 @@ public class ValuelistProviderCollectController extends AbstractDatasourceCollec
 		if (bDataSourceNameWasChanged) {
 			final List<DatasourceVO> lstUsages = DatasourceDelegate.getInstance().getUsagesForDatasource(valuelistProviderVO);
 			if (!lstUsages.isEmpty()) {
-				final int iBtn = JOptionPane.showConfirmDialog(this.getFrame(), getCommonLocaleDelegate().getMessage(
+				final int iBtn = JOptionPane.showConfirmDialog(this.getFrame(), getSpringLocaleDelegate().getMessage(
 						"DatasourceCollectController.9","Diese Datenquelle wird in anderen Datenquellen verwendet.") + "\n" 
-						+ getCommonLocaleDelegate().getMessage(
+						+ getSpringLocaleDelegate().getMessage(
 								"DatasourceCollectController.11","Eine Umbenennung f\u00fchrt dazu, dass folgende Datenquellen nicht mehr ausf\u00fchrbar sind:") 
-						+ "\n" + getUsagesAsString(lstUsages) + "\n" + getCommonLocaleDelegate().getMessage(
+						+ "\n" + getUsagesAsString(lstUsages) + "\n" + getSpringLocaleDelegate().getMessage(
 								"DatasourceCollectController.23","Wollen sie dennoch speichern?"), 
-						getCommonLocaleDelegate().getMessage("DatasourceCollectController.21","Umbenennung best\u00e4tigen"), 
+						getSpringLocaleDelegate().getMessage("DatasourceCollectController.21","Umbenennung best\u00e4tigen"), 
 						JOptionPane.YES_NO_OPTION);
 				if (iBtn != JOptionPane.OK_OPTION) {
-					throw new CommonBusinessException(getCommonLocaleDelegate().getMessage(
+					throw new CommonBusinessException(getSpringLocaleDelegate().getMessage(
 							"DatasourceCollectController.18","Speichern wurde durch den Benutzer abgebrochen."));
 				}
 				DatasourceDelegate.getInstance().setInvalid(lstUsages);
@@ -187,7 +187,7 @@ public class ValuelistProviderCollectController extends AbstractDatasourceCollec
 	@Override
 	protected CollectableDataSource updateCollectable(CollectableDataSource clct, Object oAdditionalData) throws CommonBusinessException {
 		/** @todo implement */
-		throw new NuclosFatalException(getCommonLocaleDelegate().getMessage(
+		throw new NuclosFatalException(getSpringLocaleDelegate().getMessage(
 				"DatasourceCollectController.17","Sammelbearbeitung ist hier noch nicht m\u00f6glich."));
 	}
 
@@ -256,7 +256,7 @@ public class ValuelistProviderCollectController extends AbstractDatasourceCollec
 	protected void importXML(String sXML) throws NuclosBusinessException {
 		final String sWarnings = QueryBuilderEditor.getSkippedElements(pnlEdit.getQueryEditor().setXML(sXML));
 		if (sWarnings.length() > 0) {
-			JOptionPane.showMessageDialog(parent, getCommonLocaleDelegate().getMessage(
+			JOptionPane.showMessageDialog(parent, getSpringLocaleDelegate().getMessage(
 					"DatasourceCollectController.12","Folgende Elemente existieren nicht mehr in dem aktuellen Datenbankschema\n und wurden daher entfernt:") + "\n" + sWarnings);
 		}
 		detailsChanged(pnlEdit.getQueryEditor());
@@ -278,7 +278,7 @@ public class ValuelistProviderCollectController extends AbstractDatasourceCollec
 		try {
 			final DatasourceFacadeRemote dataSourceFacade = ServiceLocator.getInstance().getFacade(DatasourceFacadeRemote.class);
 			dataSourceFacade.validateSqlFromXML(pnlEdit.getQueryEditor().getXML(new DatasourceEntityOptions(false)));
-			JOptionPane.showMessageDialog(getFrame(), getCommonLocaleDelegate().getMessage(
+			JOptionPane.showMessageDialog(getFrame(), getSpringLocaleDelegate().getMessage(
 					"DatasourceCollectController.10","Die SQL Abfrage ist syntaktisch korrekt."));
 		}
 		catch (Exception ex) {

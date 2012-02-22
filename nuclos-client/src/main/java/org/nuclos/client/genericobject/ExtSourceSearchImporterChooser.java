@@ -26,7 +26,7 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 
 public class ExtSourceSearchImporterChooser {
 
@@ -50,7 +50,7 @@ public class ExtSourceSearchImporterChooser {
 	
 	private int showDialog(JComponent contents) {
 		return JOptionPane.showOptionDialog(parentComponent, contents,
-				CommonLocaleDelegate.getInstance().getMessage(
+				SpringLocaleDelegate.getInstance().getMessage(
 						"ExtSourceSearchImporterChooser.1", "Importquelle: Auswahl"), JOptionPane.OK_CANCEL_OPTION,
 				JOptionPane.DEFAULT_OPTION, null, null, contents);
 	}
@@ -63,7 +63,7 @@ public class ExtSourceSearchImporterChooser {
 	private void showChooseImporterDialog() {
 
 		JComboBox importSourceCombo = new JComboBox();
-		JLabel importSourceLabel = new JLabel(CommonLocaleDelegate.getInstance().getMessage(
+		JLabel importSourceLabel = new JLabel(SpringLocaleDelegate.getInstance().getMessage(
 				"ExtSourceSearchImporterChooser.2", "Importquelle"));
 		JLabel[] labels = new JLabel[] { importSourceLabel };
 		JComboBox[] combos = new JComboBox[] { importSourceCombo };
@@ -101,7 +101,7 @@ public class ExtSourceSearchImporterChooser {
 			//check selected column
 			if (importSourceCombo.getSelectedItem() == null) {
 				JOptionPane.showMessageDialog(parentComponent,
-						CommonLocaleDelegate.getInstance().getMessage(
+						SpringLocaleDelegate.getInstance().getMessage(
 								"ExtSourceSearchImporterChooser.3", "Bitte Importquelle w\u00e4hlen"));
 				decision = showDialog(importSourcePanel);
 

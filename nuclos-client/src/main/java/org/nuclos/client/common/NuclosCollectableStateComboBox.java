@@ -45,7 +45,7 @@ import org.nuclos.common.collect.collectable.searchcondition.CollectableSearchCo
 import org.nuclos.common.collect.collectable.searchcondition.ComparisonOperator;
 import org.nuclos.common.collect.exception.CollectableFieldFormatException;
 import org.nuclos.common.collection.CollectionUtils;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.server.statemodel.valueobject.StateVO;
 
 /**
@@ -78,14 +78,14 @@ public class NuclosCollectableStateComboBox extends CollectableComboBox {
 
 	private CollectableEntityField getStatus() {
 		return new DefaultCollectableEntityField(NuclosEOField.STATE.getMetaData().getField(), String.class,
-				CommonLocaleDelegate.getInstance().getLabelFromAttributeCVO(
+				SpringLocaleDelegate.getInstance().getLabelFromAttributeCVO(
 						AttributeCache.getInstance().getAttribute(NuclosEOField.STATE.getMetaData().getId().intValue())),
 				null, null, null, true, CollectableField.TYPE_VALUEIDFIELD, null, null, getEntityField().getEntityName());
 	}
 
 	private CollectableEntityField getStatusNumeral() {
 		return new DefaultCollectableEntityField(NuclosEOField.STATENUMBER.getMetaData().getField(), Integer.class,
-				CommonLocaleDelegate.getInstance().getLabelFromAttributeCVO(
+				SpringLocaleDelegate.getInstance().getLabelFromAttributeCVO(
 						AttributeCache.getInstance().getAttribute(NuclosEOField.STATENUMBER.getMetaData().getId().intValue())),
 				null, null, null, true, CollectableField.TYPE_VALUEIDFIELD, null, null, getEntityField().getEntityName());
 	}

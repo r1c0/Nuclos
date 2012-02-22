@@ -84,7 +84,7 @@ public class InternalInfoController extends Controller {
 				public void run() {
 					try {
 						if (!fileInternalInfoFile.exists()) {
-							final String sMessage = getCommonLocaleDelegate().getMessage(
+							final String sMessage = getSpringLocaleDelegate().getMessage(
 									"InternalInfoController.1", "Die Datei {0} f\u00fcr die Onlinehilfe existiert nicht.", fileInternalInfoFile.getAbsolutePath());
 							Errors.getInstance().showExceptionDialog(InternalInfoController.this.getParent(), new IOException(sMessage));
 						}
@@ -93,7 +93,7 @@ public class InternalInfoController extends Controller {
 								Runtime.getRuntime().exec("cmd /c " + " \"" + fileInternalInfoFile.getAbsolutePath() + "\"");
 							}
 							catch (IOException ex) {
-								final String sMessage = getCommonLocaleDelegate().getMessage(
+								final String sMessage = getSpringLocaleDelegate().getMessage(
 										"InternalInfoController.2", "Die Informationen k\u00f6nnen nicht angezeigt werden.");
 								Errors.getInstance().showExceptionDialog(InternalInfoController.this.getParent(), sMessage, ex);
 							}

@@ -69,7 +69,7 @@ import org.nuclos.common.collection.Predicate;
 import org.nuclos.common.collection.Transformer;
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.genericobject.CollectableGenericObjectEntityField;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.IdUtils;
 import org.nuclos.common2.Localizable;
 import org.nuclos.common2.StringUtils;
@@ -589,7 +589,7 @@ public class WYSIWYGMetaInformation implements LayoutMLConstants {
 			if (getEntityFieldNames(entity.getName()).contains(name)) {
 				MasterDataMetaFieldVO metafieldvo = MetaDataCache.getInstance().getMetaData(entity.getName()).getField(name);
 				//String label = entity.getEntityField(name).getLabel();
-				return CommonLocaleDelegate.getInstance().getResource(
+				return SpringLocaleDelegate.getInstance().getResource(
 						metafieldvo.getResourceSIdForLabel(), metafieldvo.getLabel());
 				//entity.getEntityField(name).getLabel();
 			}
@@ -597,7 +597,7 @@ public class WYSIWYGMetaInformation implements LayoutMLConstants {
 				//NUCLEUSINT-388
 				for (AttributeCVO a : AttributeCache.getInstance().getAttributes()) {
 					if (a.getName().equals(name)) {
-						return CommonLocaleDelegate.getInstance().getLabelFromAttributeCVO(a);
+						return SpringLocaleDelegate.getInstance().getLabelFromAttributeCVO(a);
 					}
 				}
 				return name;

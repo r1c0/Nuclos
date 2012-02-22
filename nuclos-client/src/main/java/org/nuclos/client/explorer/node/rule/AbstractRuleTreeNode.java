@@ -27,7 +27,7 @@ import java.util.Map;
 import org.nuclos.client.masterdata.datatransfer.RuleAndRuleUsageEntity;
 import org.nuclos.client.rule.RuleDelegate;
 import org.nuclos.common.NuclosBusinessException;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.server.navigation.treenode.TreeNode;
 import org.nuclos.server.ruleengine.valueobject.RuleVO;
@@ -53,7 +53,7 @@ public abstract class AbstractRuleTreeNode implements TreeNode {
 	private List<? extends TreeNode> lstSubNodes;
 	private RuleNodeType nodeType;
 	
-	private transient CommonLocaleDelegate cld;
+	private transient SpringLocaleDelegate localeDelegate;
 
 	public AbstractRuleTreeNode(Integer iId, String sLabel, String sDescription, List<? extends TreeNode> lstSubNodes,
 			RuleNodeType aNodeType) {
@@ -69,18 +69,18 @@ public abstract class AbstractRuleTreeNode implements TreeNode {
 	 * Maven don't like this.
 	 * {@link org.springframework.beans.factory.aspectj.AbstractInterfaceDrivenDependencyInjectionAspect}.
 	public Object readResolve() throws ObjectStreamException {
-		setCommonLocaleDelegate(CommonLocaleDelegate.getInstance());
+		setSpringLocaleDelegate(SpringLocaleDelegate.getInstance());
 		return this;
 	}
 	 */
 	
 	@Autowired
-	void setCommonLocaleDelegate(CommonLocaleDelegate cld) {
-		this.cld = cld;
+	void setSpringLocaleDelegate(SpringLocaleDelegate cld) {
+		this.localeDelegate = cld;
 	}
 	
-	protected CommonLocaleDelegate getCommonLocaleDelegate() {
-		return cld;
+	protected SpringLocaleDelegate getSpringLocaleDelegate() {
+		return localeDelegate;
 	}
 
 	/**

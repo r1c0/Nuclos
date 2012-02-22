@@ -43,7 +43,7 @@ import org.nuclos.common.dal.util.DalTransformations;
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
 import org.nuclos.common.dal.vo.PivotInfo;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.server.report.valueobject.DynamicEntityVO;
@@ -175,7 +175,7 @@ public class MetaDataClientProvider extends AbstractProvider implements MetaData
 			final EntityFieldMetaDataVO keyField = getEntityField(info.getSubform(), info.getKeyField());
     		for (EntityFieldMetaDataVO ef: serverResult.values()) {
     			ef.setFallbacklabel("<html>" +
-						"<font color=\"green\">" + CommonLocaleDelegate.getInstance().getLabelFromMetaFieldDataVO(keyField) + ":" + "</font>" +
+						"<font color=\"green\">" + SpringLocaleDelegate.getInstance().getLabelFromMetaFieldDataVO(keyField) + ":" + "</font>" +
 						"<font color=\"black\">" + ef.getField() + ":" + ef.getPivotInfo().getValueField() + "</font>" +
 						"</html>");
     		}
@@ -198,7 +198,7 @@ public class MetaDataClientProvider extends AbstractProvider implements MetaData
 					field.setReadonly(valueField.isReadonly() != null ? valueField.isReadonly() : Boolean.FALSE);
 	    	   		// localize name for client
 	    			field.setFallbacklabel("<html>" +
-							"<font color=\"green\">" + CommonLocaleDelegate.getInstance().getLabelFromMetaFieldDataVO(keyField) + ":" + "</font>" +
+							"<font color=\"green\">" + SpringLocaleDelegate.getInstance().getLabelFromMetaFieldDataVO(keyField) + ":" + "</font>" +
 							"<font color=\"black\">" + field.getField() + ":" + v + "</font>" +
 							"</html>");
 

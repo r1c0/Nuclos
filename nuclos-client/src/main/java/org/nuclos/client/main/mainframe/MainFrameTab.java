@@ -88,7 +88,7 @@ import org.nuclos.common.Actions;
 import org.nuclos.common.JMSConstants;
 import org.nuclos.common.LockedTabProgressNotification;
 import org.nuclos.common.MutableBoolean;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -141,9 +141,9 @@ public class MainFrameTab extends JPanel implements IOverlayComponent, NuclosDro
 
 	private final List<IOverlayChangeListener> overlayChangeListeners = new ArrayList<IOverlayChangeListener>(1);
 	
-	private CommonLocaleDelegate cld;
+	private SpringLocaleDelegate localeDelegate;
 
-	private final AbstractAction actMaximize = new AbstractAction(cld.getMessage("MainFrameTab.5","Maximieren"), 
+	private final AbstractAction actMaximize = new AbstractAction(localeDelegate.getMessage("MainFrameTab.5","Maximieren"), 
 			Icons.getInstance().getIconTabbedPaneMax()) {
 		@Override
 		public void actionPerformed(ActionEvent e) {
@@ -155,7 +155,7 @@ public class MainFrameTab extends JPanel implements IOverlayComponent, NuclosDro
 			return MainFrame.isTabbedPaneMaximizable(tabbedPane) && !MainFrame.isTabbedPaneMaximized(tabbedPane);
 		}
 	};
-	private final AbstractAction actRestore = new AbstractAction(cld.getMessage("MainFrameTab.6","Wiederherstellen"), 
+	private final AbstractAction actRestore = new AbstractAction(localeDelegate.getMessage("MainFrameTab.6","Wiederherstellen"), 
 			Icons.getInstance().getIconTabbedPaneSplit()) {
 		@Override
 		public void actionPerformed(ActionEvent e) {
@@ -168,7 +168,7 @@ public class MainFrameTab extends JPanel implements IOverlayComponent, NuclosDro
 			return MainFrame.isTabbedPaneMaximizable(tabbedPane) && MainFrame.isTabbedPaneMaximized(tabbedPane);
 		}
 	};
-	private final AbstractAction actNeverClose = new AbstractAction(cld.getMessage("MainFrameTab.7","Niemals Schließen")) {
+	private final AbstractAction actNeverClose = new AbstractAction(localeDelegate.getMessage("MainFrameTab.7","Niemals Schließen")) {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			neverClose = !neverClose;
@@ -185,7 +185,7 @@ public class MainFrameTab extends JPanel implements IOverlayComponent, NuclosDro
 			return _isClosable();
 		}
 	};
-	private final AbstractAction actClose = new AbstractAction(cld.getMessage("MainFrameTab.4","Schließen")) {
+	private final AbstractAction actClose = new AbstractAction(localeDelegate.getMessage("MainFrameTab.4","Schließen")) {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			dispose();
@@ -195,7 +195,7 @@ public class MainFrameTab extends JPanel implements IOverlayComponent, NuclosDro
 			return isClosable();
 		}
 	};
-	private final AbstractAction actCloseAll = new AbstractAction(cld.getMessage("MainFrameTab.3","Alle Schließen")) {
+	private final AbstractAction actCloseAll = new AbstractAction(localeDelegate.getMessage("MainFrameTab.3","Alle Schließen")) {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
@@ -204,7 +204,7 @@ public class MainFrameTab extends JPanel implements IOverlayComponent, NuclosDro
 			tabbedPane.adjustTabs();
 		}
 	};
-	private final AbstractAction actCloseOthers = new AbstractAction(cld.getMessage("MainFrameTab.2","Andere Schließen")) {
+	private final AbstractAction actCloseOthers = new AbstractAction(localeDelegate.getMessage("MainFrameTab.2","Andere Schließen")) {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
@@ -252,8 +252,8 @@ public class MainFrameTab extends JPanel implements IOverlayComponent, NuclosDro
 	}
 	
 	@Autowired
-	void setCommonLocaleDelegate(CommonLocaleDelegate cld) {
-		this.cld = cld;
+	void setSpringLocaleDelegate(SpringLocaleDelegate cld) {
+		this.localeDelegate = cld;
 	}
 
 	protected void setupDragDrop() {
@@ -508,7 +508,7 @@ public class MainFrameTab extends JPanel implements IOverlayComponent, NuclosDro
 			header.setMinimumSize(new Dimension(new Dimension(0, HEADER_HEIGHT)));
 			header.setMaximumSize(new Dimension(new Dimension(Integer.MAX_VALUE, HEADER_HEIGHT)));
 
-			final JLabel close = new JLabel(cld.getMessage("MainFrameTab.1","Close"), Icons.getInstance().getIconTabCloseButton(), JLabel.RIGHT);
+			final JLabel close = new JLabel(localeDelegate.getMessage("MainFrameTab.1","Close"), Icons.getInstance().getIconTabCloseButton(), JLabel.RIGHT);
 			close.addMouseListener(new MouseAdapter() {
 				@Override
 				public void mouseEntered(MouseEvent e) {

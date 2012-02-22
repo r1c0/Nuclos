@@ -27,7 +27,7 @@ import javax.swing.JSplitPane;
 
 import org.apache.log4j.Logger;
 import org.nuclos.client.ui.Icons;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 
 public class MoreOptionPanel extends JPanel {
 	
@@ -57,7 +57,7 @@ public class MoreOptionPanel extends JPanel {
 		layout.setHGap(5);
 		this.setLayout(layout);
 		
-		btnShow = new JButton(CommonLocaleDelegate.getInstance().getMessage(
+		btnShow = new JButton(SpringLocaleDelegate.getInstance().getMessage(
 				"nuclos.resplan.wizard.step5.title.in","Erweiterte Einstellungen einblenden"), Icons.getInstance().getIconDown16());
 		split = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
 		JPanel emptypanel = new JPanel();
@@ -80,7 +80,7 @@ public class MoreOptionPanel extends JPanel {
 				if(blnFadeIn) {
 					blnFadeIn = false;
 					btnShow.setIcon(Icons.getInstance().getIconDown16());
-					btnShow.setText(CommonLocaleDelegate.getInstance().getMessage(
+					btnShow.setText(SpringLocaleDelegate.getInstance().getMessage(
 							"nuclos.resplan.wizard.step5.title.in","Erweiterte Einstellungen einblenden"));
 					Runnable r = new Runnable() {
 						
@@ -111,7 +111,7 @@ public class MoreOptionPanel extends JPanel {
 				else {
 					blnFadeIn = true;
 					btnShow.setIcon(Icons.getInstance().getIconUp16());
-					btnShow.setText(CommonLocaleDelegate.getInstance().getMessage(
+					btnShow.setText(SpringLocaleDelegate.getInstance().getMessage(
 							"nuclos.resplan.wizard.step5.title.out","Erweiterte Einstellungen ausblenden"));
 					Runnable r = new Runnable() {
 						

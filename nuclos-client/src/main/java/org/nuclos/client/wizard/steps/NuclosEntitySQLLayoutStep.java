@@ -122,7 +122,7 @@ import org.nuclos.common.dal.vo.EntityMetaDataVO;
 import org.nuclos.common.masterdata.CollectableMasterDataEntity;
 import org.nuclos.common.transport.vo.EntityFieldMetaDataTO;
 import org.nuclos.common.transport.vo.EntityMetaDataTO;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.InternalTimestamp;
 import org.nuclos.common2.LocaleInfo;
 import org.nuclos.common2.ServiceLocator;
@@ -160,9 +160,9 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 
 	static String[] labels = NuclosWizardConstants.labels;
 	static String[] labelsFields = {
-		CommonLocaleDelegate.getInstance().getMessage(
+		SpringLocaleDelegate.getInstance().getMessage(
 				"wizard.step.entitytranslationstable.1", "Anzeigename"), 
-		CommonLocaleDelegate.getInstance().getMessage(
+		SpringLocaleDelegate.getInstance().getMessage(
 				"wizard.step.entitytranslationstable.2", "Beschreibung")};
 	static String[] sEditFields = {"STRCREATED", "DATCREATED", "STRCHANGED", "DATCHANGED" };
 
@@ -241,7 +241,7 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 		layout.setHGap(5);
 		this.setLayout(layout);
 
-		lbRowColorScript = new JLabel(cld.getMessage(
+		lbRowColorScript = new JLabel(localeDelegate.getMessage(
 				"wizard.step.entitysqllayout.rowcolor", "Hintergrundfarbe der Zeilendarstellung konfigurieren"));
 		btRowColorScript = new JButton("...");
 		btRowColorScript.addActionListener(new ActionListener() {
@@ -261,32 +261,32 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 		});
 
 
-		lbLayout = new JLabel(cld.getMessage(
+		lbLayout = new JLabel(localeDelegate.getMessage(
 				"wizard.step.entitysqllayout.2", "M\u00f6chten Sie eine Standard-Maske generieren lassen"));
 		cbLayout = new JCheckBox();
-		cbLayout.setToolTipText(cld.getMessage(
+		cbLayout.setToolTipText(localeDelegate.getMessage(
 				"wizard.step.entitysqllayout.tooltip.2", "M\u00f6chten Sie eine Standard-Maske generieren lassen"));
 
-		lbAttributeGroup = new JLabel(cld.getMessage(
+		lbAttributeGroup = new JLabel(localeDelegate.getMessage(
 				"wizard.step.entitysqllayout.12", "Attributegruppen werden zusammengefasst"));
 		cbAttributeGroup = new JCheckBox();
-		cbAttributeGroup.setToolTipText(cld.getMessage(
+		cbAttributeGroup.setToolTipText(localeDelegate.getMessage(
 				"wizard.step.entitysqllayout.tooltip.3", "Attributegruppen werden zusammengefasst"));
 
-		lbAttributeText = new JLabel(cld.getMessage(
+		lbAttributeText = new JLabel(localeDelegate.getMessage(
 				"wizard.step.entitysqllayout.13", "Geben Sie die Reihenfolge an, in der die Felder in der Maske erstellt werden sollen"));
 
-		lbSubforms = new JLabel(cld.getMessage(
+		lbSubforms = new JLabel(localeDelegate.getMessage(
 				"wizard.step.entitysqllayout.14", "Vorhandene Unterformular mit ins Layout aufnehmen"));
 		cbSubforms = new JCheckBox();
-		cbSubforms.setToolTipText(cld.getMessage(
+		cbSubforms.setToolTipText(localeDelegate.getMessage(
 				"wizard.step.entitysqllayout.tooltip.4", "Vorhandene Unterformulare mit ins Layout aufnehmen"));
 
-		lbEditFields = new JLabel(cld.getMessage(
+		lbEditFields = new JLabel(localeDelegate.getMessage(
 				"wizard.step.entitysqllayout.15","Editierungsfelder erstellen:"));
 		cbEditFields = new JCheckBox();
 		cbEditFields.setSelected(true);
-		cbEditFields.setToolTipText(cld.getMessage(
+		cbEditFields.setToolTipText(localeDelegate.getMessage(
 				"wizard.step.entitysqllayout.tooltip.7","Editierungsfelder mit in das Layout aufnehmen"));
 
 		listAttributeOrder = new JList();
@@ -305,10 +305,10 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 		panelAttributes.setLayout(new TableLayout(sizePanel));
 
 		btUp = new JButton(Icons.getInstance().getIconSortAscending());
-		btUp.setToolTipText(cld.getMessage(
+		btUp.setToolTipText(localeDelegate.getMessage(
 				"wizard.step.entitysqllayout.tooltip.5", "Attribut nach oben schieben"));
 		btDown = new JButton(Icons.getInstance().getIconSortDescending());
-		btDown.setToolTipText(cld.getMessage(
+		btDown.setToolTipText(localeDelegate.getMessage(
 				"wizard.step.entitysqllayout.tooltip.6", "Attribut nach unten schieben"));
 
 		panelAttributes.add(sPane, "0,0, 0,4");
@@ -351,7 +351,7 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 				JCheckBox cb = (JCheckBox)e.getItem();
 				NuclosEntitySQLLayoutStep.this.model.setCreateLayout(cb.isSelected());
 				if(cb.isSelected() && hasEntityLayout) {
-					(new Bubble(cbLayout, cld.getMessage(
+					(new Bubble(cbLayout, localeDelegate.getMessage(
 							"wizard.step.entitysqllayout.9", "Achtung! Ihr bestehendes Layout wird überschrieben!"), 
 							5, Position.UPPER)).setVisible(true);
 				}
@@ -497,7 +497,7 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 
 		hasEntityLayout = hasEntityLayout();
 		if(hasEntityLayout){
-			lbLayout.setText(cld.getMessage(
+			lbLayout.setText(localeDelegate.getMessage(
 					"wizard.step.entitysqllayout.16", "Wollen Sie die bestehende Maske aktualisieren:"));
 		}
 		DefaultListModel listmodel = new DefaultListModel();
@@ -570,7 +570,7 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 			for(String sField : model.getMultiEditEquation().split(",")) {
 				for(Attribute attr : this.model.getAttributeModel().getRemoveAttributes()) {
 					if(attr.getInternalName().equals(sField)) {
-						String sMessage = cld.getMessage(
+						String sMessage = localeDelegate.getMessage(
 								"wizard.step.entitysqllayout.10", 
 								"Das gelöschte Attribut " + attr.getInternalName() + " befindet sich in Ihren Angaben!\nBitte überprüfen Sie Ihre Eintragungen!", 
 								attr.getInternalName());
@@ -584,7 +584,7 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 					if(!attr.hasInternalNameChanged())
 						continue;
 					if(attr.getOldInternalName().equals(sField)) {
-						String sMessage = cld.getMessage(
+						String sMessage = localeDelegate.getMessage(
 								"wizard.step.entitysqllayout.11", 
 								"Das geänderte Attribut " + attr.getOldInternalName() + " befindet sich in Ihren Angaben!\nBitte überprüfen Sie Ihre Eintragungen!", 
 								attr.getOldInternalName());
@@ -635,7 +635,7 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 			  if(!attr.hasInternalNameChanged())
 				  continue;
 			  if(attr.getOldInternalName().equals(sName)){
-				  String str = cld.getMessage(
+				  String str = localeDelegate.getMessage(
 						  "wizard.step.entitysqllayout.11", 
 						  "Das geänderte Attribut " + attr.getOldInternalName() + " befindet sich in Ihren Angaben!\nBitte überprüfen Sie Ihre Eintragungen!", 
 						  attr.getOldInternalName());
@@ -662,7 +662,7 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 		  String sName = value.toString();
 		  for(Attribute attr : this.model.getAttributeModel().getRemoveAttributes()) {
 			  if(attr.getInternalName().equals(sName)){
-				  String str = cld.getMessage(
+				  String str = localeDelegate.getMessage(
 						  "wizard.step.entitysqllayout.10", 
 						  "Das gelöschte Attribut " + attr.getInternalName() + " befindet sich in Ihren Angaben!\nBitte überprüfen Sie Ihre Eintragungen!", 
 						  attr.getInternalName());
@@ -1113,7 +1113,7 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 				 if(isSystemField(field))
 					 continue;
 
-				 String sdesc = cld.getResource(field.getLocaleResourceIdForDescription(), "");
+				 String sdesc = localeDelegate.getResource(field.getLocaleResourceIdForDescription(), "");
 				 Component c = ComponentProcessors.getInstance().createComponent(LayoutMLConstants.ELEMENT_COLLECTABLECOMPONENT, LayoutMLConstants.ELEMENT_LABEL, panel.getMetaInformation(), field.getField());
 				 Font font = new Font("Courier", Font.PLAIN, 12);
 				 c.setFont(font);
@@ -1818,7 +1818,7 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 			if(attr.isDistinct() != v.isUnique()) {
 				final boolean blnAllowed = MetaDataDelegate.getInstance().isChangeDatabaseColumnToUniqueAllowed(metaVOOld.getEntity(), attr.getInternalName());
 				if(!blnAllowed) {
-					final String msg = cld.getMessage(
+					final String msg = localeDelegate.getMessage(
 							"wizard.step.entitysqllayout.6", 
 							"Das Feld {0} kann nicht auf ein eindeutiges Feld umgestellt werden.", 
 							attr.getLabel());

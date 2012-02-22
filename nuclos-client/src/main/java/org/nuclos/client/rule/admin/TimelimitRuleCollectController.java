@@ -66,7 +66,7 @@ public class TimelimitRuleCollectController extends MasterDataCollectController 
 	private RuleEditPanel pnlEdit;
 
 	private final Action actCheckRuleSource = new CommonAbstractAction(Icons.getInstance().getIconValidate16(), 
-			getCommonLocaleDelegate().getMessage("RuleCollectController.2", "Quelltext pr\u00fcfen")) {
+			getSpringLocaleDelegate().getMessage("RuleCollectController.2", "Quelltext pr\u00fcfen")) {
 
 		@Override
 		public void actionPerformed(ActionEvent ev) {
@@ -148,7 +148,7 @@ public class TimelimitRuleCollectController extends MasterDataCollectController 
 
 				try {
 					ruleDelegate.check(mdvo);
-					JOptionPane.showMessageDialog(TimelimitRuleCollectController.this.getFrame(), getCommonLocaleDelegate().getMessage(
+					JOptionPane.showMessageDialog(TimelimitRuleCollectController.this.getFrame(), getSpringLocaleDelegate().getMessage(
 							"CodeCollectController.compiledsuccessfully", "Quellcode erfolgreich kompiliert."));
 				}
 				catch (NuclosCompileException ex) {
@@ -221,7 +221,7 @@ public class TimelimitRuleCollectController extends MasterDataCollectController 
 
 	@Override
 	protected String getEntityLabel() {
-		return getCommonLocaleDelegate().getMessage("TimelimitRuleCollectController.1", "Fristenregeln");
+		return getSpringLocaleDelegate().getMessage("TimelimitRuleCollectController.1", "Fristenregeln");
 	}
 
 	/**
@@ -245,7 +245,7 @@ public class TimelimitRuleCollectController extends MasterDataCollectController 
 		catch (NuclosCompileException ex) {
 			pnlEdit.setMessages(ex.getErrorMessages());
 			throw new PointerException("RuleCollectController.4");
-			//throw new CommonBusinessException(CommonLocaleDelegate.getMessage("RuleCollectController.4", "Fehler beim \u00dcbersetzen des Quellcodes.\nBitte \u00fcberpr\u00fcfen Sie die Meldungen."));
+			//throw new CommonBusinessException(SpringLocaleDelegate.getMessage("RuleCollectController.4", "Fehler beim \u00dcbersetzen des Quellcodes.\nBitte \u00fcberpr\u00fcfen Sie die Meldungen."));
 		}
 		catch (CommonBusinessException ex) {
 			throw new PointerException(ex.getMessage(), ex);
@@ -268,7 +268,7 @@ public class TimelimitRuleCollectController extends MasterDataCollectController 
 		catch (NuclosCompileException ex) {
 			pnlEdit.setMessages(ex.getErrorMessages());
 			throw new PointerException("RuleCollectController.4");
-			//throw new CommonBusinessException(CommonLocaleDelegate.getMessage("RuleCollectController.4", "Fehler beim \u00dcbersetzen des Quellcodes.\nBitte \u00fcberpr\u00fcfen Sie die Meldungen."));
+			//throw new CommonBusinessException(SpringLocaleDelegate.getMessage("RuleCollectController.4", "Fehler beim \u00dcbersetzen des Quellcodes.\nBitte \u00fcberpr\u00fcfen Sie die Meldungen."));
 		}
 		catch (CommonBusinessException ex) {
 			throw new PointerException(ex.getMessage(), ex);

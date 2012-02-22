@@ -51,7 +51,7 @@ import org.nuclos.common.collection.Transformer;
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
 import org.nuclos.common.masterdata.CollectableMasterDataEntity;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.exception.CommonFinderException;
 import org.nuclos.common2.exception.CommonPermissionException;
 import org.nuclos.common2.layoutml.LayoutMLParser;
@@ -122,7 +122,7 @@ public class NuclosWizardUtils {
 			}
 		}
 		if(typ == null) {
-			 typ = new DataTyp(CommonLocaleDelegate.getInstance().getText("wizard.datatype.individual"), 
+			 typ = new DataTyp(SpringLocaleDelegate.getInstance().getText("wizard.datatype.individual"), 
 					 inputFormat, outputFormat, null, scale, precision, javaType);
 		}
 		return typ;
@@ -241,7 +241,7 @@ public class NuclosWizardUtils {
 
 			@Override
 			public String transform(EntityMetaDataVO i) {
-				String menu = CommonLocaleDelegate.getInstance().getResource(i.getLocaleResourceIdForMenuPath(), "");
+				String menu = SpringLocaleDelegate.getInstance().getResource(i.getLocaleResourceIdForMenuPath(), "");
 				return org.nuclos.common2.StringUtils.emptyIfNull(menu);
 			}
 

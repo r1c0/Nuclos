@@ -27,7 +27,7 @@ import java.util.prefs.PreferencesFactory;
 import org.apache.log4j.Logger;
 import org.nuclos.client.common.ShutdownActions;
 import org.nuclos.common.NuclosFatalException;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.common2.exception.CommonFinderException;
@@ -96,7 +96,7 @@ public class NuclosPreferencesFactory implements PreferencesFactory {
 	public synchronized Preferences userRoot() {
 		if (this.prefsUser == null) {
 
-			final String sErrorMsg = CommonLocaleDelegate.getInstance().getMessage("NuclosPreferencesFactory.1", "Die Benutzereinstellungen konnten nicht geladen werden.");
+			final String sErrorMsg = SpringLocaleDelegate.getInstance().getMessage("NuclosPreferencesFactory.1", "Die Benutzereinstellungen konnten nicht geladen werden.");
 
 //			try {
 			PreferencesVO prefsvo;
@@ -170,7 +170,7 @@ public class NuclosPreferencesFactory implements PreferencesFactory {
 				prefsUser.flush();
 			}
 			catch (BackingStoreException ex) {
-				throw new NuclosFatalException(CommonLocaleDelegate.getInstance().getMessage(
+				throw new NuclosFatalException(SpringLocaleDelegate.getInstance().getMessage(
 						"NuclosPreferencesFactory.2", "Die Benutzer-Einstellungen konnten nicht gespeichert werden."), ex);
 			}
 		}

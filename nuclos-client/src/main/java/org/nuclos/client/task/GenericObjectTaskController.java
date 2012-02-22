@@ -190,7 +190,7 @@ public class GenericObjectTaskController extends RefreshableTaskController {
 			}
 		});
 
-		gotaskview.getPrintMenuItem().setAction(new AbstractAction(getCommonLocaleDelegate().getMessage(
+		gotaskview.getPrintMenuItem().setAction(new AbstractAction(getSpringLocaleDelegate().getMessage(
 				"PersonalTaskController.4","Aufgabenliste drucken"), 
 			Icons.getInstance().getIconPrintReport16()) {
 
@@ -207,7 +207,7 @@ public class GenericObjectTaskController extends RefreshableTaskController {
 		}
 		
 		gotaskview.getRenameMenuItem().setAction(
-				new AbstractAction(getCommonLocaleDelegate().getMessage("ExplorerController.31", "Umbenennen"), 
+				new AbstractAction(getSpringLocaleDelegate().getMessage("ExplorerController.31", "Umbenennen"), 
 						Icons.getInstance().getIconClearSearch16()) {
 
 			@Override
@@ -235,13 +235,13 @@ public class GenericObjectTaskController extends RefreshableTaskController {
 	
 	private void setupPopupMenuListener(final GenericObjectTaskView gotaskview){
 		//context menu:		
-		final JMenuItem miDetails = new JMenuItem(getCommonLocaleDelegate().getMessage(
+		final JMenuItem miDetails = new JMenuItem(getSpringLocaleDelegate().getMessage(
 				"AbstractCollectableComponent.7","Details anzeigen..."));
-		final JMenuItem miDefineAsNewSearchResult = new JMenuItem(getCommonLocaleDelegate().getMessage(
+		final JMenuItem miDefineAsNewSearchResult = new JMenuItem(getSpringLocaleDelegate().getMessage(
 				"ExplorerController.22", "In Liste anzeigen"));
-		final JMenuItem miCopyCells = new JMenuItem(getCommonLocaleDelegate().getMessage(
+		final JMenuItem miCopyCells = new JMenuItem(getSpringLocaleDelegate().getMessage(
 				"ResultPanel.13","Kopiere markierte Zellen"));
-		final JMenuItem miCopyRows = new JMenuItem(getCommonLocaleDelegate().getMessage(
+		final JMenuItem miCopyRows = new JMenuItem(getSpringLocaleDelegate().getMessage(
 				"ResultPanel.14","Kopiere markierte Zeilen"));
 		
 		final JPopupMenuFactory factory = new JPopupMenuFactory() {
@@ -357,7 +357,7 @@ public class GenericObjectTaskController extends RefreshableTaskController {
 		if (filter == null) {
 			//the filter has been deleted
 			Errors.getInstance().showExceptionDialog(this.getParent(), new CommonBusinessException(
-					getCommonLocaleDelegate().getMessage("GenericObjectTaskController.1", "Der Filter \"{0}\" existiert nicht mehr.", sFilterName)));
+					getSpringLocaleDelegate().getMessage("GenericObjectTaskController.1", "Der Filter \"{0}\" existiert nicht mehr.", sFilterName)));
 		}		
 		else {
 			if (Modules.getInstance().isModuleEntity(filter.getEntityName())) {
@@ -387,10 +387,10 @@ public class GenericObjectTaskController extends RefreshableTaskController {
 		final int iMaxRowCount = ClientParameterProvider.getInstance().getIntValue(ParameterProvider.KEY_MAX_ROWCOUNT_FOR_SEARCHRESULT_IN_TASKLIST, 500);
 
 		final TruncatableCollection<GenericObjectWithDependantsVO> trunccollgovo = GenericObjectDelegate.getInstance().getRestrictedNumberOfGenericObjects(Modules.getInstance().getModuleIdByEntityName(filter.getEntityName()), clctexpr, stRequiredAttributeIds, stRequiredSubEntityNames, iMaxRowCount);
-		String sLabel = getCommonLocaleDelegate().getMessage(
+		String sLabel = getSpringLocaleDelegate().getMessage(
 				"GenericObjectTaskController.2", "{0} Datens\u00e4tze gefunden.", trunccollgovo.totalSize());
 		if (trunccollgovo.isTruncated()) {
-			sLabel += " " + getCommonLocaleDelegate().getMessage(
+			sLabel += " " + getSpringLocaleDelegate().getMessage(
 					"GenericObjectTaskController.3", "Das Ergebnis wurde nach {0} Zeilen abgeschnitten.", trunccollgovo.size());
 		}
 		//this.mpTaskViews.get(filter).tfStatusBar.setText(sLabel);
@@ -444,7 +444,7 @@ public class GenericObjectTaskController extends RefreshableTaskController {
 		//final TruncatableCollection<MasterDataVO> trunccollmdvo = MasterDataDelegate.getInstance().getMasterData(filter.getEntityName(), filter.getInternalSearchCondition(), false);
 		ProxyList<MasterDataWithDependantsVO> lst = MasterDataDelegate.getInstance().getMasterDataProxyList(filter.getEntityName(), clctsexpr);
 		
-		String sLabel = getCommonLocaleDelegate().getMessage("GenericObjectTaskController.2", "{0} Datens\u00e4tze gefunden.", lst.size());
+		String sLabel = getSpringLocaleDelegate().getMessage("GenericObjectTaskController.2", "{0} Datens\u00e4tze gefunden.", lst.size());
 //		if (trunccollmdvo.isTruncated()) {
 //			sLabel += " Das Ergebnis wurde nach " + trunccollmdvo.size() + " Zeilen abgeschnitten.";
 //		}
@@ -610,14 +610,14 @@ public class GenericObjectTaskController extends RefreshableTaskController {
 
 		try {
 			if(!oldFilter.isEditable())
-				throw new NuclosBusinessException(getCommonLocaleDelegate().getMessage(
+				throw new NuclosBusinessException(getSpringLocaleDelegate().getMessage(
 						"SaveFilterController.4","Der Suchfilter darf von Ihnen nicht ge\u00e4ndert werden."));
 
 			EnterNameDescriptionPanel newNamePanel = new EnterNameDescriptionPanel();
 			newNamePanel.getTextFieldName().setText(oldFilter.getName());
 			newNamePanel.getTextFieldDescription().setText(oldFilter.getDescription());
 
-			int result = SaveFilterController.showDialog(getParent(), getCommonLocaleDelegate().getMessage(
+			int result = SaveFilterController.showDialog(getParent(), getSpringLocaleDelegate().getMessage(
 					"SaveFilterController.9", "Bestehenden Filter \"{0}\" \u00e4ndern", oldFilterName), newNamePanel, oldFilterName, Command.Overwrite);
 			if(result == JOptionPane.OK_OPTION) {
 				EntitySearchFilter newFilter = new EntitySearchFilter();

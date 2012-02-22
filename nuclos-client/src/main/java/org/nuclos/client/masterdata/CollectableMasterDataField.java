@@ -30,7 +30,7 @@ import org.nuclos.common.collect.collectable.CollectableFieldFormat;
 import org.nuclos.common.collect.collectable.CollectableUtils;
 import org.nuclos.common.collect.exception.CollectableFieldFormatException;
 import org.nuclos.common.collect.exception.CollectableFieldValidationException;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
@@ -80,7 +80,7 @@ public class CollectableMasterDataField extends AbstractCollectableField {
 			}
 			catch(CollectableFieldFormatException e) {
 				throw new NuclosFatalException(
-						CommonLocaleDelegate.getInstance().getMessage(
+						SpringLocaleDelegate.getInstance().getMessage(
 								"CollectableMasterDataField.1", "Der Datentyp des Standardwerts der Entit\u00e4t {0} entspricht nicht dem Datentyp der Entit\u00e4t.", clctmd.getField("name")),e);
 			}
 			catch(ClassNotFoundException e) {
@@ -124,7 +124,7 @@ public class CollectableMasterDataField extends AbstractCollectableField {
 		if (result != null && clctef.getJavaClass().equals(Date.class)) {
 			try {
 				if (result instanceof String) {
-					result = CommonLocaleDelegate.getInstance().getDateFormat().parse((String)result);
+					result = SpringLocaleDelegate.getInstance().getDateFormat().parse((String)result);
 					//result = DateFormat.getDateInstance().parse((String)result);
 				}
 				else {

@@ -25,7 +25,7 @@ import org.nuclos.client.masterdata.MasterDataDelegate;
 import org.nuclos.client.masterdata.MasterDataModuleDelegate;
 import org.nuclos.common.ModuleProvider;
 import org.nuclos.common.NuclosEntity;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 
 /**
@@ -80,7 +80,7 @@ public class Modules extends ModuleProvider {
 	public String getEntityLabelByModuleId(Integer iModuleId) throws NoSuchElementException {
 		String label = labelsById.get(iModuleId);
 		if (label == null) {
-			label = CommonLocaleDelegate.getInstance().getResource(
+			label = SpringLocaleDelegate.getInstance().getResource(
 					MasterDataModuleDelegate.getInstance().getResourceSIdForLabel(iModuleId), 
 					this.getModuleById(iModuleId).getField("name", String.class));
 			labelsById.put(iModuleId, label);

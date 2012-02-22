@@ -25,7 +25,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
 import org.nuclos.client.ui.model.MutableListModel;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.util.Assert;
@@ -63,20 +63,20 @@ public abstract class SelectObjectsPanel<T> extends JPanel {
 	protected final JList jlstAvailableColumns = newList();
 	protected final JList jlstSelectedColumns = newList();
 	
-	private CommonLocaleDelegate cld;
+	private SpringLocaleDelegate localeDelegate;
 
 	protected SelectObjectsPanel() {
 		super(new BorderLayout());
 	}
 	
 	@Autowired
-	void setCommonLocaleDelegate(CommonLocaleDelegate cld) {
+	void setSpringLocaleDelegate(SpringLocaleDelegate cld) {
 		Assert.notNull(cld);
-		this.cld = cld;
+		this.localeDelegate = cld;
 	}
 	
-	protected CommonLocaleDelegate getCommonLocaleDelegate() {
-		return cld;
+	protected SpringLocaleDelegate getSpringLocaleDelegate() {
+		return localeDelegate;
 	}
 
 	/**

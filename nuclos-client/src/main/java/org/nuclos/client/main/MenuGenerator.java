@@ -56,7 +56,7 @@ import org.nuclos.common.ApplicationProperties;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Pair;
 import org.nuclos.common.collection.Predicate;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.XMLUtils;
 import org.w3c.dom.Document;
@@ -422,7 +422,7 @@ public class MenuGenerator {
 
 	private void replaceTranslation(Element menuElement) {
 		if(nullIfEmpty(menuElement.getAttribute("resId")) != null)
-			menuElement.setAttribute("text", CommonLocaleDelegate.getInstance().getMessage(
+			menuElement.setAttribute("text", SpringLocaleDelegate.getInstance().getMessage(
 					menuElement.getAttribute("resId"), menuElement.getAttribute("text"), ApplicationProperties.getInstance().getName()));
 		else if(nullIfEmpty(menuElement.getAttribute("text")) != null)
 			menuElement.setAttribute("text", MessageFormat.format(menuElement.getAttribute("text"), ApplicationProperties.getInstance().getName()));

@@ -76,7 +76,7 @@ import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
 import org.nuclos.common.dal.vo.EntityObjectVO;
 import org.nuclos.common.entityobject.CollectableEOEntity;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.CommonRunnable;
 import org.nuclos.common2.IdUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
@@ -298,7 +298,7 @@ public class GenerationController {
 
 	public static String getModuleLabel(Integer id) {
 		EntityMetaDataVO meta = MetaDataClientProvider.getInstance().getEntity(IdUtils.toLongId(id));
-		return CommonLocaleDelegate.getInstance().getLabelFromMetaDataVO(meta);
+		return SpringLocaleDelegate.getInstance().getLabelFromMetaDataVO(meta);
 	}
 
 	/**
@@ -321,15 +321,15 @@ public class GenerationController {
 		if (bMulti) {
 			String message;
 			if(generatoractionvo.isGroupAttributes()) {
-				message = CommonLocaleDelegate.getInstance().getMessage(
+				message = SpringLocaleDelegate.getInstance().getMessage(
 						"GenericObjectCollectController.71a","Create one or more grouped objects of type \"{1}\" from the selected objects of type \"{0}\"?", sSourceModuleName, sTargetModuleName);
 			}
 			else {
-				message = CommonLocaleDelegate.getInstance().getMessage(
+				message = SpringLocaleDelegate.getInstance().getMessage(
 						"GenericObjectCollectController.72","Soll aus den markierten Objekten vom Typ \"{0}\" jeweils ein Objekt vom Typ \"{1}\" erzeugt werden?", sSourceModuleName, sTargetModuleName);
 			}
 			iBtn = JOptionPane.showConfirmDialog(this.pane, message, 
-					CommonLocaleDelegate.getInstance().getMessage(
+					SpringLocaleDelegate.getInstance().getMessage(
 							"GenericObjectCollectController.5","{0} erzeugen", sTargetModuleName), JOptionPane.OK_CANCEL_OPTION);
 		}
 		else {
@@ -344,10 +344,10 @@ public class GenerationController {
 					LOG.error(e);
 				}
 			}
-			final String sMessage = CommonLocaleDelegate.getInstance().getMessage(
+			final String sMessage = SpringLocaleDelegate.getInstance().getMessage(
 					"GenericObjectCollectController.71","Soll aus dem/der aktuellen {0} ein(e) {1} erzeugt werden?", sSourceModuleName, sTargetModuleName);
 			iBtn = JOptionPane.showConfirmDialog(this.pane, sMessage, 
-					CommonLocaleDelegate.getInstance().getMessage(
+					SpringLocaleDelegate.getInstance().getMessage(
 							"GenericObjectCollectController.5","{0} erzeugen", sTargetModuleName), JOptionPane.OK_CANCEL_OPTION);
 		}
 		return iBtn;
@@ -447,7 +447,7 @@ public class GenerationController {
 			});
 			new MultiCollectablesActionController<Pair<Collection<EntityObjectVO>, Long>, GenerationResult>(
 				parent, sourceWithParameters, 
-				CommonLocaleDelegate.getInstance().getMessage("R00022892", "Objektgenerierung"), parent.getTabIcon(),
+				SpringLocaleDelegate.getInstance().getMessage("R00022892", "Objektgenerierung"), parent.getTabIcon(),
 				new MultiGenerateAction(parent, action)
 			).run(panel);
 		}
@@ -520,7 +520,7 @@ public class GenerationController {
 				@Override
 				public void run() {
 					goclct.setPointerInformation(new PointerCollection(
-							CommonLocaleDelegate.getInstance().getMessageFromResource(message)), null);
+							SpringLocaleDelegate.getInstance().getMessageFromResource(message)), null);
 				}
 			});
 		}
@@ -537,7 +537,7 @@ public class GenerationController {
 				@Override
 				public void run() {
 					mdclct.setPointerInformation(new PointerCollection(
-							CommonLocaleDelegate.getInstance().getMessageFromResource(message)), null);
+							SpringLocaleDelegate.getInstance().getMessageFromResource(message)), null);
 				}
 			});
 		}

@@ -32,7 +32,7 @@ import org.jdesktop.jxlayer.JXLayer;
 import org.nuclos.client.ui.labeled.LabeledEditorPane;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
 import org.nuclos.common.collect.collectable.searchcondition.ComparisonOperator;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 
 /**
  * A <code>CollectableComponent</code> that presents a value in a <code>JEditorPane</code>.
@@ -135,7 +135,7 @@ public class CollectableEditorPane extends CollectableTextComponent {
 			res.addSeparator();
 		}
 		
-		JRadioButtonMenuItem miHTML = new JRadioButtonMenuItem(new AbstractAction(CommonLocaleDelegate.getInstance().getMessage(
+		JRadioButtonMenuItem miHTML = new JRadioButtonMenuItem(new AbstractAction(SpringLocaleDelegate.getInstance().getMessage(
 				"CollectableEditorPane.view", "Ansicht")) {
 			@Override
 			public void actionPerformed(ActionEvent e) {

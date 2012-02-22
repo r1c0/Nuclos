@@ -21,7 +21,7 @@ import java.io.StringReader;
 import java.util.EnumSet;
 import java.util.Set;
 
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common.NuclosBusinessException;
 import org.nuclos.common.NuclosEntity;
 
@@ -68,13 +68,13 @@ public class MasterDataLayoutHelper {
 
 	public static void checkLayoutMLExistence(String sEntityName) throws NuclosBusinessException {
 		boolean searchable = MasterDataDelegate.getInstance().getMetaData(sEntityName).isSearchable();
-		final CommonLocaleDelegate cld = CommonLocaleDelegate.getInstance();
+		final SpringLocaleDelegate localeDelegate = SpringLocaleDelegate.getInstance();
 		if (!isLayoutMLAvailable(sEntityName,searchable) && !hasSpecialLayout(sEntityName)) {
-			String form = searchable ? cld.getResource("R00011933", "Suchmaske") 
-					: cld.getResource("R00022868", "Eingabemaske");
-			String entityName = cld.getLabelFromMetaDataVO(
+			String form = searchable ? localeDelegate.getResource("R00011933", "Suchmaske") 
+					: localeDelegate.getResource("R00022868", "Eingabemaske");
+			String entityName = localeDelegate.getLabelFromMetaDataVO(
 					MasterDataDelegate.getInstance().getMetaData(sEntityName));
-			throw new NuclosBusinessException(cld.getMessage("masterdata.error.layout.missing",
+			throw new NuclosBusinessException(localeDelegate.getMessage("masterdata.error.layout.missing",
 				"Das Layout f\u00fcr die {0} der Entit\u00e4t '{1}' fehlt", form, entityName));
 		}
 	}

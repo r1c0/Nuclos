@@ -25,7 +25,7 @@ import java.util.Date;
 
 import org.nuclos.client.attribute.AttributeCache;
 import org.nuclos.client.ui.model.AbstractListTableModel;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.server.attribute.valueobject.AttributeCVO;
 import org.nuclos.server.genericobject.valueobject.LogbookVO;
 
@@ -43,14 +43,14 @@ class LogbookTableModel extends AbstractListTableModel<LogbookVO> {
 
 	// NOTE: "Feld" is used (hard-coded) in LogbookPanel to access the column
 	private static final String[] asColumnNames =
-			{CommonLocaleDelegate.getInstance().getMessage("LogbookController.5", "Ge\u00e4ndert am"), 
-			CommonLocaleDelegate.getInstance().getMessage("LogbookController.7", "Ge\u00e4ndert von"), 
-			CommonLocaleDelegate.getInstance().getMessage("LogbookController.8", "Feld"), 
-			CommonLocaleDelegate.getInstance().getMessage("LogbookController.9", "Alter Wert"), 
-			CommonLocaleDelegate.getInstance().getMessage("LogbookController.10", "Neuer Wert"), 
-			CommonLocaleDelegate.getInstance().getMessage("LogbookController.11", "ID")};
+			{SpringLocaleDelegate.getInstance().getMessage("LogbookController.5", "Ge\u00e4ndert am"), 
+			SpringLocaleDelegate.getInstance().getMessage("LogbookController.7", "Ge\u00e4ndert von"), 
+			SpringLocaleDelegate.getInstance().getMessage("LogbookController.8", "Feld"), 
+			SpringLocaleDelegate.getInstance().getMessage("LogbookController.9", "Alter Wert"), 
+			SpringLocaleDelegate.getInstance().getMessage("LogbookController.10", "Neuer Wert"), 
+			SpringLocaleDelegate.getInstance().getMessage("LogbookController.11", "ID")};
 
-	private final DateFormat dateformat = CommonLocaleDelegate.getInstance().getDateTimeFormat(); // new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
+	private final DateFormat dateformat = SpringLocaleDelegate.getInstance().getDateTimeFormat(); // new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
 
 	LogbookTableModel(Collection<LogbookVO> colllogbookvo, AttributeCVO attrcvoHeader) {
 		super(new ArrayList<LogbookVO>(colllogbookvo));
@@ -107,9 +107,9 @@ class LogbookTableModel extends AbstractListTableModel<LogbookVO> {
 				break;
 			case COLUMN_LABEL:
 				if(logbookvo.isMigrated())
-					result = CommonLocaleDelegate.getInstance().getMessage("LogbookTableModel.1","(migriert)");
+					result = SpringLocaleDelegate.getInstance().getMessage("LogbookTableModel.1","(migriert)");
 				else if(logbookvo.getAttribute() != null)
-					result = CommonLocaleDelegate.getInstance().getLabelFromAttributeCVO(
+					result = SpringLocaleDelegate.getInstance().getLabelFromAttributeCVO(
 							AttributeCache.getInstance().getAttribute(logbookvo.getAttribute()));
 				else
 					result = logbookvo.getLabel(); // masterdata only

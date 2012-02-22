@@ -111,7 +111,7 @@ import org.nuclos.common.collect.collectable.CollectableValueIdField;
 import org.nuclos.common.collection.Pair;
 import org.nuclos.common.collection.multimap.MultiListHashMap;
 import org.nuclos.common.collection.multimap.MultiListMap;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.EntityAndFieldName;
 import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.StringUtils;
@@ -1121,7 +1121,7 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 		private void handleLegacyResourceId(Attributes attributes) {
 			final String resourceId = attributes.getValue(ATTRIBUTE_LOCALERESOURCEID);
 			if (resourceId != null) {
-				String text = CommonLocaleDelegate.getInstance().getTextForStaticLabel(resourceId);
+				String text = SpringLocaleDelegate.getInstance().getTextForStaticLabel(resourceId);
 				getStaticLocalizationHandler().setTranslation(text);
 			}
 		}
@@ -1182,7 +1182,7 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 					sb.append('"');
 					sb.append(' ');
 				}
-				sb.append("(").append(CommonLocaleDelegate.getInstance().getMessage(
+				sb.append("(").append(SpringLocaleDelegate.getInstance().getMessage(
 						"LayoutMLParser.12", "Klasse")).append(": ");
 				sb.append(comp.getClass().getName());
 				sb.append(')');
@@ -2178,7 +2178,7 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 
 			@Override
 			public void endElement(String sUriNameSpace, String sSimpleName, String sQualifiedName) {
-				String text = CommonLocaleDelegate.getInstance().selectBestTranslation(translations);
+				String text = SpringLocaleDelegate.getInstance().selectBestTranslation(translations);
 				if (text != null) {
 					getStaticLocalizationHandler().setTranslation(text);
 				}

@@ -85,7 +85,7 @@ import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.dal.vo.PivotInfo;
 import org.nuclos.common.dal.vo.SystemFields;
 import org.nuclos.common.entityobject.CollectableEOEntityField;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.CommonRunnable;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonFatalException;
@@ -160,16 +160,16 @@ public class ResultController<Clct extends Collectable> {
 
 	private MouseListener mouselistenerTableDblClick;
 	
-	private CommonLocaleDelegate cld;
+	private SpringLocaleDelegate localeDelegate;
 
 	/**
 	 * action: Define as new Search result
 	 *
 	 * @deprecated Does nothing.
 	 */
-	private final Action actDefineAsNewSearchResult = new CommonAbstractAction(getCommonLocaleDelegate().getMessage(
+	private final Action actDefineAsNewSearchResult = new CommonAbstractAction(getSpringLocaleDelegate().getMessage(
 			"ResultController.3","Als neues Suchergebnis"),
-			Icons.getInstance().getIconEmpty16(), getCommonLocaleDelegate().getMessage(
+			Icons.getInstance().getIconEmpty16(), getSpringLocaleDelegate().getMessage(
 					"ResultController.4","Ausgew\u00e4hlte Datens\u00e4tze als neues Suchergebnis anzeigen")) {
 
 		@Override
@@ -203,11 +203,11 @@ public class ResultController<Clct extends Collectable> {
 	public ResultController(CollectableEntity clcte, ISearchResultStrategy<Clct> srs) {
 		this.srs = srs;
 		srs.setResultController(this);
-		actDeleteSelectedCollectables = new CommonAbstractAction(CommonLocaleDelegate.getInstance().getMessage(
+		actDeleteSelectedCollectables = new CommonAbstractAction(SpringLocaleDelegate.getInstance().getMessage(
 				"ResultController.10","L\u00f6schen..."),
 				(clctctl instanceof GenericObjectCollectController)? // quick and dirty... I know
 				Icons.getInstance().getIconDelete16() : Icons.getInstance().getIconRealDelete16(),
-				CommonLocaleDelegate.getInstance().getMessage(
+				SpringLocaleDelegate.getInstance().getMessage(
 						"ResultController.5","Ausgew\u00e4hlte Datens\u00e4tze l\u00f6schen")) {
 
 			@Override
@@ -219,12 +219,12 @@ public class ResultController<Clct extends Collectable> {
 	}
 	
 	@Autowired
-	void setCommonLocaleDelegate(CommonLocaleDelegate cld) {
-		this.cld = cld;
+	void setSpringLocaleDelegate(SpringLocaleDelegate cld) {
+		this.localeDelegate = cld;
 	}
 	
-	protected CommonLocaleDelegate getCommonLocaleDelegate() {
-		return cld;
+	protected SpringLocaleDelegate getSpringLocaleDelegate() {
+		return localeDelegate;
 	}
 
 	/**
@@ -592,18 +592,18 @@ public class ResultController<Clct extends Collectable> {
 	public void setStatusBar(JTable tblResult, boolean bResultTruncated, int iTotalNumberOfRecords) {
 		String sStatus;
 		if (iTotalNumberOfRecords == 0) {
-			sStatus = getCommonLocaleDelegate().getMessage(
+			sStatus = getSpringLocaleDelegate().getMessage(
 					"ResultController.9","Keinen zur Suchanfrage passenden Datensatz gefunden.");
 		}
 		else if (iTotalNumberOfRecords == 1) {
-			sStatus = getCommonLocaleDelegate().getMessage(
+			sStatus = getSpringLocaleDelegate().getMessage(
 					"ResultController.2","1 Datensatz gefunden.");
 		}
 		else {
-			sStatus = getCommonLocaleDelegate().getMessage(
+			sStatus = getSpringLocaleDelegate().getMessage(
 					"ResultController.1","{0} Datens\u00e4tze gefunden.", Integer.toString(iTotalNumberOfRecords));
 			if (bResultTruncated) {
-				sStatus += getCommonLocaleDelegate().getMessage(
+				sStatus += getSpringLocaleDelegate().getMessage(
 						"ResultController.6"," Das Ergebnis wurde nach {0} Zeilen abgeschnitten.", tblResult.getRowCount());
 			}
 		}
@@ -619,21 +619,21 @@ public class ResultController<Clct extends Collectable> {
 
 		if (clctctl.multipleCollectablesSelected()) {
 			final int iCount = clctctl.getResultTable().getSelectedRowCount();
-			final String sMessagePattern = getCommonLocaleDelegate().getMessage(
+			final String sMessagePattern = getSpringLocaleDelegate().getMessage(
 					"ResultController.13","Sollen die ausgew\u00e4hlten {0} Datens\u00e4tze wirklich gel\u00f6scht werden?");
 			final String sMessage = MessageFormat.format(sMessagePattern, iCount);
-			final int btn = JOptionPane.showConfirmDialog(clctctl.getFrame(), sMessage, getCommonLocaleDelegate().getMessage(
+			final int btn = JOptionPane.showConfirmDialog(clctctl.getFrame(), sMessage, getSpringLocaleDelegate().getMessage(
 					"ResultController.7","Datens\u00e4tze l\u00f6schen"), JOptionPane.YES_NO_OPTION);
 			if (btn == JOptionPane.YES_OPTION) {
 				new DeleteSelectedCollectablesController<Clct>(clctctl).run(clctctl.getMultiActionProgressPanel(iCount));
 			}
 		}
 		else {
-			final String sMessagePattern = getCommonLocaleDelegate().getMessage(
+			final String sMessagePattern = getSpringLocaleDelegate().getMessage(
 					"ResultController.12","Soll der ausgew\u00e4hlte Datensatz ({0}) wirklich gel\u00f6scht werden?");
 			final String sMessage = MessageFormat.format(sMessagePattern,
 					getSelectedCollectableFromTableModel().getIdentifierLabel());
-			final int btn = JOptionPane.showConfirmDialog(clctctl.getFrame(), sMessage, getCommonLocaleDelegate().getMessage(
+			final int btn = JOptionPane.showConfirmDialog(clctctl.getFrame(), sMessage, getSpringLocaleDelegate().getMessage(
 					"ResultController.8","Datensatz l\u00f6schen"), JOptionPane.YES_NO_OPTION);
 
 			if (btn == JOptionPane.YES_OPTION) {
@@ -644,7 +644,7 @@ public class ResultController<Clct extends Collectable> {
 							clctctl.checkedDeleteSelectedCollectable();
 						}
 						catch (CommonPermissionException ex) {
-							final String sErrorMsg = getCommonLocaleDelegate().getMessage(
+							final String sErrorMsg = getSpringLocaleDelegate().getMessage(
 									"ResultController.11","Sie verf\u00fcgen nicht \u00fcber die ausreichenden Rechte, um diesen Datensatz zu l\u00f6schen.");
 							Errors.getInstance().showExceptionDialog(clctctl.getFrame(), sErrorMsg, ex);
 						}
@@ -875,7 +875,7 @@ public class ResultController<Clct extends Collectable> {
 
 		final Map<String, Integer> mpWidths = panel.getVisibleColumnWidth(fields.getSelectedFields());
 		ctl.setModel(fields);
-		final boolean bOK = ctl.run(getCommonLocaleDelegate().getMessage(
+		final boolean bOK = ctl.run(getSpringLocaleDelegate().getMessage(
 				"SelectColumnsController.1","Anzuzeigende Spalten ausw\u00e4hlen"));
 
 		if (bOK) {

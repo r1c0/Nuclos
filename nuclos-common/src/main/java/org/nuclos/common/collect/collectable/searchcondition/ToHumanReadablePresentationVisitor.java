@@ -21,7 +21,7 @@ import org.nuclos.common.collect.collectable.DefaultCollectableEntityProvider;
 import org.nuclos.common.collect.collectable.searchcondition.visit.AtomicVisitor;
 import org.nuclos.common.collect.collectable.searchcondition.visit.CompositeVisitor;
 import org.nuclos.common.collect.collectable.searchcondition.visit.Visitor;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 
 /**
  * Visitor for creating a human readable string representation of a search
@@ -53,7 +53,7 @@ public class ToHumanReadablePresentationVisitor implements Visitor<String, Runti
 		final StringBuilder sb = new StringBuilder(cond.getFieldLabel());
 		sb.append(' ');		
 		ComparisonOperator compop = cond.getComparisonOperator();
-		sb.append(CommonLocaleDelegate.getInstance().getMessage(compop.getResourceIdForLabel(), null));
+		sb.append(SpringLocaleDelegate.getInstance().getMessage(compop.getResourceIdForLabel(), null));
 		if (compop.getOperandCount() > 1) {
 			sb.append(' ');
 			// the cast is needed for the correct method dispatch
@@ -68,7 +68,7 @@ public class ToHumanReadablePresentationVisitor implements Visitor<String, Runti
 			return cond.getConditionName();
 		
 		final StringBuilder sb = new StringBuilder();
-		final String sOperator = CommonLocaleDelegate.getInstance().getMessage(
+		final String sOperator = SpringLocaleDelegate.getInstance().getMessage(
 				cond.getLogicalOperator().getResourceIdForLabel(), null);
 		switch (cond.getOperandCount()) {
 			case 0:
@@ -118,10 +118,10 @@ public class ToHumanReadablePresentationVisitor implements Visitor<String, Runti
 		String referenedEntityLabel = referencedEntity.getLabel();
 		CollectableSearchCondition condSub = cond.getSubCondition();
 		if (condSub != null) {
-			return CommonLocaleDelegate.getInstance().getMessage("searchCondition.referencesWith", null, 
+			return SpringLocaleDelegate.getInstance().getMessage("searchCondition.referencesWith", null, 
 				referenedEntityLabel, condSub.accept(this));
 		} else {
-			return CommonLocaleDelegate.getInstance().getMessage("searchCondition.references", null,
+			return SpringLocaleDelegate.getInstance().getMessage("searchCondition.references", null,
 				referenedEntityLabel);
 		}
 	}
@@ -134,10 +134,10 @@ public class ToHumanReadablePresentationVisitor implements Visitor<String, Runti
 		String subEntityLabel = cond.getSubEntity().getLabel();
 		CollectableSearchCondition condSub = cond.getSubCondition();
 		if (condSub != null) {
-			return CommonLocaleDelegate.getInstance().getMessage("searchCondition.existsWith", null, 
+			return SpringLocaleDelegate.getInstance().getMessage("searchCondition.existsWith", null, 
 				subEntityLabel, condSub.accept(this));
 		} else {
-			return CommonLocaleDelegate.getInstance().getMessage("searchCondition.exists", null,
+			return SpringLocaleDelegate.getInstance().getMessage("searchCondition.exists", null,
 				subEntityLabel);
 		}
 	}
@@ -164,7 +164,7 @@ public class ToHumanReadablePresentationVisitor implements Visitor<String, Runti
 		if(truecond.getConditionName() != null)
 			return truecond.getConditionName();
 		
-		return CommonLocaleDelegate.getInstance().getMessage("searchCondition.true", null);
+		return SpringLocaleDelegate.getInstance().getMessage("searchCondition.true", null);
 	}
 
 	//
@@ -224,7 +224,7 @@ public class ToHumanReadablePresentationVisitor implements Visitor<String, Runti
 	public String visitComparisonWithParameter(CollectableComparisonWithParameter comp) {
 		if(comp.getConditionName() != null)
 			return comp.getConditionName();
-		return "<" + CommonLocaleDelegate.getInstance().getText(comp.getParameter()) + ">";
+		return "<" + SpringLocaleDelegate.getInstance().getText(comp.getParameter()) + ">";
 	}
 
 	@Override

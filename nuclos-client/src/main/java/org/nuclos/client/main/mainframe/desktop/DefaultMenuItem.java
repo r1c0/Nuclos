@@ -48,7 +48,7 @@ import org.nuclos.client.resource.ResourceCache;
 import org.nuclos.client.synthetica.NuclosThemeSettings;
 import org.nuclos.client.ui.Icons;
 import org.nuclos.common.WorkspaceDescription;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 
 abstract class DefaultMenuItem extends JLabel implements DragGestureListener {
 	
@@ -191,12 +191,12 @@ abstract class DefaultMenuItem extends JLabel implements DragGestureListener {
 			return;
 		}
 		
-		final CommonLocaleDelegate cld = CommonLocaleDelegate.getInstance();
+		final SpringLocaleDelegate localeDelegate = SpringLocaleDelegate.getInstance();
 		final JPopupMenu popup = new JPopupMenu();
 		
-		popup.add(new JLabel("<html><b>"+ cld.getMessage("DefaultMenuItem.4", "Eigenschaften")+"</b></html>"));
+		popup.add(new JLabel("<html><b>"+ localeDelegate.getMessage("DefaultMenuItem.4", "Eigenschaften")+"</b></html>"));
 		final JMenuItem miPosition = new JMenuItem(new AbstractAction(
-				cld.getMessage("DefaultMenuItem.5",
+				localeDelegate.getMessage("DefaultMenuItem.5",
 						"Position"), Icons.getInstance().getIconEmpty16()) {
 					@Override
 					public void actionPerformed(ActionEvent e) {
@@ -206,7 +206,7 @@ abstract class DefaultMenuItem extends JLabel implements DragGestureListener {
 		popup.add(miPosition);
 				
 		final JMenuItem miSelectAction = new JMenuItem(new AbstractAction(
-		cld.getMessage("DefaultMenuItem.1",
+		localeDelegate.getMessage("DefaultMenuItem.1",
 				"Aktion"), Icons.getInstance().getIconEmpty16()) {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -228,7 +228,7 @@ abstract class DefaultMenuItem extends JLabel implements DragGestureListener {
 		
 		popup.addSeparator();
 		final JMenuItem miRemove = new JMenuItem(new AbstractAction(
-				cld.getMessage("DefaultMenuItem.3",
+				localeDelegate.getMessage("DefaultMenuItem.3",
 						"Menu Eintrag entfernen"), Icons.getInstance().getIconMinus16()) {
 					@Override
 					public void actionPerformed(ActionEvent e) {
@@ -247,7 +247,7 @@ abstract class DefaultMenuItem extends JLabel implements DragGestureListener {
 	public void setAction(Action action) {
 		this.action = action;
 		this.setText(action==null?
-				CommonLocaleDelegate.getInstance().getMessage(
+				SpringLocaleDelegate.getInstance().getMessage(
 						"DefaultMenuItem.2", "Aktion nicht gefunden"):(String) action.getValue(Action.NAME));
 	}
 	

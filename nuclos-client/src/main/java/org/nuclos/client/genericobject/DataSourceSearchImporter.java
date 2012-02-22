@@ -34,7 +34,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import org.apache.log4j.Logger;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonPermissionException;
 import org.nuclos.client.datasource.DatasourceDelegate;
@@ -110,7 +110,7 @@ public class DataSourceSearchImporter implements ExtSourceSearchImporter {
 		   String plainSQL = DatasourceDelegate.getInstance().createSQL(dsXML);
 		   resultPlainCondition = new PlainSubCondition("SELECT \""+columnAlias+"\" FROM ("+plainSQL+")",datasourceVO.getName());
 		  }  catch (CommonBusinessException ex) {
-		   final String sMessage = CommonLocaleDelegate.getInstance().getMessage(
+		   final String sMessage = SpringLocaleDelegate.getInstance().getMessage(
 				   "DataSourceSearchImporter.1", "Beim Lesen der Datenquelle ist ein Fehler aufgetreten.");
 		   Errors.getInstance().showExceptionDialog(new JPanel(), sMessage, ex);
 		  } 
@@ -126,7 +126,7 @@ public class DataSourceSearchImporter implements ExtSourceSearchImporter {
 
 		JComboBox dataSourceCombo = new JComboBox();
 		JLabel dataSourceLabel = new JLabel(
-				CommonLocaleDelegate.getInstance().getMessage("DataSourceSearchImporter.6", "Datenquelle"));
+				SpringLocaleDelegate.getInstance().getMessage("DataSourceSearchImporter.6", "Datenquelle"));
 		JLabel[] labels = new JLabel[] { dataSourceLabel };
 		JComboBox[] combos = new JComboBox[] { dataSourceCombo };
 
@@ -137,13 +137,13 @@ public class DataSourceSearchImporter implements ExtSourceSearchImporter {
 			allAllowedDatasources = getAllowedDatasources();
 		} catch (CommonPermissionException e) {
 			JOptionPane.showMessageDialog(parentComponent, 
-					CommonLocaleDelegate.getInstance().getMessage(
+					SpringLocaleDelegate.getInstance().getMessage(
 							"DataSourceSearchImporter.2", "Es ist keine Datenquelle gefunden worden f\u00fcr die Sie eine Berechtigung haben."));
 			return;
 		}
 		if(allAllowedDatasources != null && allAllowedDatasources.size() == 0){
 			JOptionPane.showMessageDialog(parentComponent, 
-					CommonLocaleDelegate.getInstance().getMessage(
+					SpringLocaleDelegate.getInstance().getMessage(
 							"DataSourceSearchImporter.3", "Keine passende Datenquelle vorhanden."));
 			return;
 		}
@@ -182,7 +182,7 @@ public class DataSourceSearchImporter implements ExtSourceSearchImporter {
 			//check selected column
 			if (dataSourceCombo.getSelectedItem() == null) {
 				JOptionPane.showMessageDialog(parentComponent,
-					CommonLocaleDelegate.getInstance().getMessage(
+					SpringLocaleDelegate.getInstance().getMessage(
 							"DataSourceSearchImporter.4", "Bitte Datenquelle w\u00e4hlen"));
 				decision = showDialog(dataSourcePanel);
 
@@ -224,13 +224,13 @@ public class DataSourceSearchImporter implements ExtSourceSearchImporter {
 
 	private int showDialog(JComponent contents) {
 		return JOptionPane.showOptionDialog(parentComponent, contents,
-			CommonLocaleDelegate.getInstance().getMessage(
+			SpringLocaleDelegate.getInstance().getMessage(
 					"DataSourceSearchImporter.5", "Datenquelle: Auswahl"), JOptionPane.OK_CANCEL_OPTION,
 				JOptionPane.DEFAULT_OPTION, null, null, contents);
 	}
 	
 	@Override
 	public String toString(){
-		return CommonLocaleDelegate.getInstance().getMessage("DataSourceSearchImporter.6", "Datenquelle");
+		return SpringLocaleDelegate.getInstance().getMessage("DataSourceSearchImporter.6", "Datenquelle");
 	}	
 }

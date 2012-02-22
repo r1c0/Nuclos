@@ -60,7 +60,7 @@ import org.nuclos.common.collect.collectable.CollectableField;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Transformer;
 import org.nuclos.common.preferences.PreferencesConverter;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
@@ -79,14 +79,14 @@ public class CopyPreferencesPanel extends JPanel {
 		userCollectableCbx = new JComboBox(getUserNames().toArray());
 		AutoCompleteDecorator.decorate(userCollectableCbx);
 
-		JLabel label = new JLabel(CommonLocaleDelegate.getInstance().getMessage(
+		JLabel label = new JLabel(SpringLocaleDelegate.getInstance().getMessage(
 				"nuclos.preferences.transfer.sourceuser", null));
 		label.setLabelFor(userCollectableCbx);
 
 		Box sourceUserBox = UIUtils.createHorizontalBox(label, userCollectableCbx, 5, null);
 		//		
 		JPanel prefsPanel = new JPanel(new BorderLayout());
-		prefsPanel.setBorder(new TitledBorder(CommonLocaleDelegate.getInstance().getMessage(
+		prefsPanel.setBorder(new TitledBorder(SpringLocaleDelegate.getInstance().getMessage(
 				"nuclos.user.preferences", null)));
 
 		tree = new JXTree(new PreferencesTreeModel());
@@ -156,7 +156,7 @@ public class CopyPreferencesPanel extends JPanel {
 		PreferencesTreeModel model = new PreferencesTreeModel();
 		PreferencesExportNode rootTreeNode = model.getRoot();
 
-		PreferencesExportNode entitiesTreeNode = new PreferencesExportNode(CommonLocaleDelegate.getInstance().getMessage(
+		PreferencesExportNode entitiesTreeNode = new PreferencesExportNode(SpringLocaleDelegate.getInstance().getMessage(
 				"nuclos.preferences.entity.layoutconfig", null));
 		for (String nodeKey : prefs.keySet()) {
 			Matcher matcher = ENTITY_KEY_PATTERN.matcher(nodeKey);

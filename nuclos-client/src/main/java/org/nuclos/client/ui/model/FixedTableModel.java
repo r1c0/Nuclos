@@ -24,7 +24,7 @@ import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
 import javax.swing.table.AbstractTableModel;
 
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 
 /**
  * Table for displaying items together with a 'fixed' checkbox.
@@ -98,7 +98,7 @@ public class FixedTableModel<T> extends AbstractTableModel {
 				if (this.fixedObjSet.size() + 1 >= objectListModel.getSize()) {
 					JOptionPane.showMessageDialog(
 						null,
-						CommonLocaleDelegate.getInstance().getMessage(
+						SpringLocaleDelegate.getInstance().getMessage(
 							"SelectFixedColumnsController.2",
 							"Es d\u00fcrfen nicht alle Spalten ausgeblendet und fixiert werden"));
 

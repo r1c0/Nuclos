@@ -25,7 +25,7 @@ import java.util.List;
 import javax.swing.Icon;
 import javax.swing.JTree;
 
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.CommonRunnable;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.client.explorer.ExplorerNode;
@@ -101,7 +101,7 @@ public class DatasourceReportExplorerNode extends AbstractDatasourceExplorerNode
 	private static class ShowDetailsAction extends TreeNodeAction {
 
 		public ShowDetailsAction(JTree tree) {
-			super(ACTIONCOMMAND_SHOW_DETAILS, CommonLocaleDelegate.getInstance().getMessage(
+			super(ACTIONCOMMAND_SHOW_DETAILS, SpringLocaleDelegate.getInstance().getMessage(
 					"RuleExplorerNode.1","Details anzeigen"), tree);
 		}
 

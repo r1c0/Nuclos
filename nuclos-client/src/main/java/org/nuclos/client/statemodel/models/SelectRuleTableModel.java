@@ -16,7 +16,7 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.statemodel.models;
 
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 
 
 import java.rmi.RemoteException;
@@ -39,8 +39,8 @@ import org.nuclos.client.statemodel.SortedRuleVO;
 public class SelectRuleTableModel extends AbstractTableModel {
 
 	private static final String[] asColumnNames = {
-		CommonLocaleDelegate.getInstance().getMessage("SelectRuleTableModel.2","Regel"), 
-		CommonLocaleDelegate.getInstance().getMessage("SelectRuleTableModel.1","Beschreibung")};
+		SpringLocaleDelegate.getInstance().getMessage("SelectRuleTableModel.2","Regel"), 
+		SpringLocaleDelegate.getInstance().getMessage("SelectRuleTableModel.1","Beschreibung")};
 
 	private List<SortedRuleVO> lstRules;
 

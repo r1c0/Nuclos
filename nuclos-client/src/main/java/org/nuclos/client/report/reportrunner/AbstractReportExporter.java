@@ -35,7 +35,7 @@ import javax.print.attribute.PrintRequestAttributeSet;
 
 import org.apache.log4j.Logger;
 import org.nuclos.client.report.ReportDelegate;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.IOUtils;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.SystemUtils;
@@ -70,18 +70,18 @@ public abstract class AbstractReportExporter implements ReportExporter {
 
 	private String sReportFileName;
 	
-	private CommonLocaleDelegate cld;
+	private SpringLocaleDelegate localeDelegate;
 	
 	protected AbstractReportExporter() {
 	}
 	
 	@Autowired
-	void setCommonLocaleDelegate(CommonLocaleDelegate cld) {
-		this.cld = cld;
+	void setSpringLocaleDelegate(SpringLocaleDelegate cld) {
+		this.localeDelegate = cld;
 	}
 	
-	protected CommonLocaleDelegate getCommonLocaleDelegate() {
-		return cld;
+	protected SpringLocaleDelegate getSpringLocaleDelegate() {
+		return localeDelegate;
 	}
 
 	@Override
@@ -178,7 +178,7 @@ public abstract class AbstractReportExporter implements ReportExporter {
 				final File fileExportDir = new File(sExportPath);
 				if (!fileExportDir.exists()) {
 					if (!fileExportDir.mkdir()) {
-						throw new NuclosReportException(CommonLocaleDelegate.getInstance().getMessage(
+						throw new NuclosReportException(SpringLocaleDelegate.getInstance().getMessage(
 								"AbstractReportExporter.1", "Das Verzeichnis {0} konnte nicht angelegt werden.", sExportPath));
 					}
 				}
@@ -197,14 +197,14 @@ public abstract class AbstractReportExporter implements ReportExporter {
 			if (sSourceFile != null) {
 				final org.nuclos.server.report.ByteArrayCarrier bac = outputvo.getSourceFileContent();
 				if (bac == null) {
-					throw new NuclosReportException(CommonLocaleDelegate.getInstance().getMessage(
+					throw new NuclosReportException(SpringLocaleDelegate.getInstance().getMessage(
 							"AbstractReportExporter.2", "Die Dokumentvorlage \"{0}\" konnte nicht gelesen werden.", sSourceFile));
 				}
 				IOUtils.writeToBinaryFile(fileDestination, bac.getData());
 			}
 		}
 		catch (IOException ex) {
-			throw new NuclosReportException(CommonLocaleDelegate.getInstance().getMessage(
+			throw new NuclosReportException(SpringLocaleDelegate.getInstance().getMessage(
 					"AbstractReportExporter.3", "Die Datei \"{0}\" konnte nicht erstellt werden.", sFileName) + "\n", ex);
 		}
 	}
@@ -226,7 +226,7 @@ public abstract class AbstractReportExporter implements ReportExporter {
 				SystemUtils.open(sFileName);
 			}
 			catch (IOException ex) {
-				throw new NuclosReportException(CommonLocaleDelegate.getInstance().getMessage(
+				throw new NuclosReportException(SpringLocaleDelegate.getInstance().getMessage(
 						"AbstractReportExporter.4", "Die Datei {0} konnte nicht ge\u00f6ffnet werden.", sFileName), ex);
 			}
 		}
@@ -254,7 +254,7 @@ public abstract class AbstractReportExporter implements ReportExporter {
 	          if(null != prservDflt) {
 	        	  prservices = new PrintService[] {prservDflt};
 	          } else {
-	        	  throw new NuclosReportException(CommonLocaleDelegate.getInstance().getMessage(
+	        	  throw new NuclosReportException(SpringLocaleDelegate.getInstance().getMessage(
 	        			  "AbstractReportExporter.5", "Es ist kein passender Print-Service installiert."));
 	          }
 	        }

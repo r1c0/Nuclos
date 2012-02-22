@@ -27,7 +27,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import org.nuclos.client.wizard.util.MoreOptionPanel;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 
 public class TableLayoutBuilder implements TableLayoutConstants {
 
@@ -129,9 +129,9 @@ public class TableLayoutBuilder implements TableLayoutConstants {
 	}	
 
 	public TableLayoutBuilder addLocalizedLabel(String resourceId, String toolTipResourceId, int valign) {
-		String text = CommonLocaleDelegate.getInstance().getMessage(resourceId, null) + ":";
+		String text = SpringLocaleDelegate.getInstance().getMessage(resourceId, null) + ":";
 		String toolTip = (toolTipResourceId != null) 
-				? CommonLocaleDelegate.getInstance().getMessage(toolTipResourceId, null) : null;
+				? SpringLocaleDelegate.getInstance().getMessage(toolTipResourceId, null) : null;
 		return addLabel(text, toolTip, valign);
 	}	
 	

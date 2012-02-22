@@ -19,7 +19,7 @@ package org.nuclos.client.datasource.querybuilder.gui;
 import org.apache.log4j.Logger;
 import org.nuclos.client.datasource.querybuilder.QueryBuilderConstants;
 import org.nuclos.client.ui.UIUtils;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 
 
 import java.util.ArrayList;
@@ -52,10 +52,10 @@ public class ParameterModel extends DefaultTableModel {
 	public static final int COLUMN_VLP = 3;
 
 	public static final String[] captions = {
-		CommonLocaleDelegate.getInstance().getMessage("ParameterModel.7","Parametername"), 
-		CommonLocaleDelegate.getInstance().getMessage("ParameterModel.2","Datentyp"), 
-		CommonLocaleDelegate.getInstance().getMessage("ParameterModel.6","Anzeigename"), 
-		CommonLocaleDelegate.getInstance().getMessage("ParameterModel.9","Valuelistprovider")};
+		SpringLocaleDelegate.getInstance().getMessage("ParameterModel.7","Parametername"), 
+		SpringLocaleDelegate.getInstance().getMessage("ParameterModel.2","Datentyp"), 
+		SpringLocaleDelegate.getInstance().getMessage("ParameterModel.6","Anzeigename"), 
+		SpringLocaleDelegate.getInstance().getMessage("ParameterModel.9","Valuelistprovider")};
 	
 	public static final Class<?>[] classes = {String.class, String.class};
 	
@@ -63,15 +63,15 @@ public class ParameterModel extends DefaultTableModel {
 	private final boolean blnWithParameterLabelColumn;
 
 	protected static final ParameterDataType[] adatatype = {
-			new ParameterDataType(QueryBuilderConstants.PARAMETER_TYPE_STRING, CommonLocaleDelegate.getInstance().getMessage(
+			new ParameterDataType(QueryBuilderConstants.PARAMETER_TYPE_STRING, SpringLocaleDelegate.getInstance().getMessage(
 					"ParameterModel.8","Text")),
-			new ParameterDataType(QueryBuilderConstants.PARAMETER_TYPE_INTEGER, CommonLocaleDelegate.getInstance().getMessage(
+			new ParameterDataType(QueryBuilderConstants.PARAMETER_TYPE_INTEGER, SpringLocaleDelegate.getInstance().getMessage(
 					"ParameterModel.5","Integer")),
-			new ParameterDataType(QueryBuilderConstants.PARAMETER_TYPE_DOUBLE, CommonLocaleDelegate.getInstance().getMessage(
+			new ParameterDataType(QueryBuilderConstants.PARAMETER_TYPE_DOUBLE, SpringLocaleDelegate.getInstance().getMessage(
 					"ParameterModel.4","Double")),
-			new ParameterDataType(QueryBuilderConstants.PARAMETER_TYPE_BOOLEAN, CommonLocaleDelegate.getInstance().getMessage(
+			new ParameterDataType(QueryBuilderConstants.PARAMETER_TYPE_BOOLEAN, SpringLocaleDelegate.getInstance().getMessage(
 					"ParameterModel.1","Boolean")),
-			new ParameterDataType(QueryBuilderConstants.PARAMETER_TYPE_DATE, CommonLocaleDelegate.getInstance().getMessage(
+			new ParameterDataType(QueryBuilderConstants.PARAMETER_TYPE_DATE, SpringLocaleDelegate.getInstance().getMessage(
 					"ParameterModel.3","Datum"))
 	};
 

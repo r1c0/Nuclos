@@ -103,7 +103,7 @@ public class RuleStateModelExplorerNode extends AbstractRuleExplorerNode {
 	private class ShowDetailsAction extends TreeNodeAction {
 
 		public ShowDetailsAction(JTree tree) {
-			super(ACTIONCOMMAND_SHOW_DETAILS, getCommonLocaleDelegate().getMessage("RuleExplorerNode.1","Details anzeigen"), tree);
+			super(ACTIONCOMMAND_SHOW_DETAILS, getSpringLocaleDelegate().getMessage("RuleExplorerNode.1","Details anzeigen"), tree);
 		}
 
 		@Override

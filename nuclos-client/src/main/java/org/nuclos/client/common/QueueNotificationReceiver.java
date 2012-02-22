@@ -31,7 +31,7 @@ import javax.naming.Context;
 import org.apache.log4j.Logger;
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.SpringApplicationContextHolder;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.springframework.jms.listener.SimpleMessageListenerContainer;
 
 /**
@@ -122,7 +122,7 @@ public class QueueNotificationReceiver {
 				container.setMessageListener(this);
 			}
 			catch (Exception ex) {
-				throw new NuclosFatalException(CommonLocaleDelegate.getInstance().getMessage(
+				throw new NuclosFatalException(SpringLocaleDelegate.getInstance().getMessage(
 						"TopicNotificationReceiver.4", "Der JMS-Abonnent f\u00fcr die Queue {0} konnte nicht registriert werden.", queuename), ex);
 			}
 		}
@@ -142,7 +142,7 @@ public class QueueNotificationReceiver {
 				}
 			}
 			catch(JMSException e) {
-				throw new NuclosFatalException(CommonLocaleDelegate.getInstance().getMessage(
+				throw new NuclosFatalException(SpringLocaleDelegate.getInstance().getMessage(
 						"QueueNotificationReceiver.3", "Der JMS-Abonnent f\u00fcr die Queue {0} konnte nicht registriert werden.", queuename), e);
 			}
 		}

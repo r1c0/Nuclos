@@ -163,7 +163,7 @@ public class GenericObjectExplorerNode extends ExplorerNode<GenericObjectTreeNod
 		}
 
 		final CompositeTreeNodeAction result = new CompositeTreeNodeAction(
-				getCommonLocaleDelegate().getMessage("RuleExplorerNode.5","Arbeitsschritte"), lst);
+				getSpringLocaleDelegate().getMessage("RuleExplorerNode.5","Arbeitsschritte"), lst);
 		return result;
 	}
 
@@ -296,7 +296,7 @@ public class GenericObjectExplorerNode extends ExplorerNode<GenericObjectTreeNod
 
 						if (goimpSource.getGenericObjectId() == getTreeNode().getId()) {
 							throw new CommonBusinessException(
-									getCommonLocaleDelegate().getMessage(
+									getSpringLocaleDelegate().getMessage(
 											"GenericObjectExplorerNode.1", "Der ausgew\u00e4hlte Knoten kann nicht Knoten von sich selber sein!"));
 						}
 
@@ -325,7 +325,7 @@ public class GenericObjectExplorerNode extends ExplorerNode<GenericObjectTreeNod
 		 */
 		RemoveFromParentGroupAction(JTree tree) {
 			super(ACTIONCOMMAND_REMOVE_FROM_PARENT_GROUP, 
-					getCommonLocaleDelegate().getMessage("ExplorerController.3","Aus der Gruppe entfernen"), tree);
+					getSpringLocaleDelegate().getMessage("ExplorerController.3","Aus der Gruppe entfernen"), tree);
 		}
 
 		@Override
@@ -376,7 +376,7 @@ public class GenericObjectExplorerNode extends ExplorerNode<GenericObjectTreeNod
 		 */
 		RemoveRelationAction(JTree tree) {
 			super(ACTIONCOMMAND_REMOVE_RELATION, 
-					getCommonLocaleDelegate().getMessage("GenericObjectExplorerNode.2", "Beziehung entfernen") + "...", tree);
+					getSpringLocaleDelegate().getMessage("GenericObjectExplorerNode.2", "Beziehung entfernen") + "...", tree);
 		}
 
 		@Override
@@ -403,7 +403,7 @@ public class GenericObjectExplorerNode extends ExplorerNode<GenericObjectTreeNod
 				@Override
 				public void handleError(Exception ex) {
 					Errors.getInstance().showExceptionDialog(null, 
-							getCommonLocaleDelegate().getMessage("GenericObjectExplorerNode.3", "Fehler beim entfernen der Beziehungen"), ex);
+							getSpringLocaleDelegate().getMessage("GenericObjectExplorerNode.3", "Fehler beim entfernen der Beziehungen"), ex);
 				}
 			};
 
@@ -426,10 +426,10 @@ public class GenericObjectExplorerNode extends ExplorerNode<GenericObjectTreeNod
 				final GenericObjectTreeNode gotreenodeSource = bForward ? gotreenodeParent : gotreenode;
 				final GenericObjectTreeNode gotreenodeTarget = bForward ? gotreenode : gotreenodeParent;
 
-				final String sMessage = getCommonLocaleDelegate().getMessage("GenericObjectExplorerNode.4", "Soll die Beziehung von {0} zu {1} entfernt werden?", gotreenodeSource.getLabel(), gotreenodeTarget.getLabel());
+				final String sMessage = getSpringLocaleDelegate().getMessage("GenericObjectExplorerNode.4", "Soll die Beziehung von {0} zu {1} entfernt werden?", gotreenodeSource.getLabel(), gotreenodeTarget.getLabel());
 
 				final int iBtn = JOptionPane.showConfirmDialog(this.getParent(), sMessage, 
-						getCommonLocaleDelegate().getMessage("GenericObjectExplorerNode.2", "Beziehung entfernen"), JOptionPane.OK_CANCEL_OPTION);
+						getSpringLocaleDelegate().getMessage("GenericObjectExplorerNode.2", "Beziehung entfernen"), JOptionPane.OK_CANCEL_OPTION);
 				if (iBtn == JOptionPane.OK_OPTION) {
 					UIUtils.runCommand(tree, new CommonRunnable() {
 						@Override
@@ -438,7 +438,7 @@ public class GenericObjectExplorerNode extends ExplorerNode<GenericObjectTreeNod
 							if (iRelationId == null) {
 								// for backwards compatibility only: this might happen for old deserialized nodes that don't have a relation id yet.
 								throw new NuclosBusinessException(
-										getCommonLocaleDelegate().getMessage("GenericObjectExplorerNode.5", "Die Beziehung kann nicht entfernt werden, da die Beziehungs-Id fehlt. Bitte aktualisieren Sie die Baumansicht und versuchen Sie es erneut."));
+										getSpringLocaleDelegate().getMessage("GenericObjectExplorerNode.5", "Die Beziehung kann nicht entfernt werden, da die Beziehungs-Id fehlt. Bitte aktualisieren Sie die Baumansicht und versuchen Sie es erneut."));
 							}
 							else {
 								GenericObjectDelegate.getInstance().removeRelation(iRelationId, gotreenodeTarget.getId(), gotreenodeTarget.getModuleId());

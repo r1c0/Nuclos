@@ -57,11 +57,11 @@ public class DefaultSelectObjectsPanel<T> extends SelectObjectsPanel<T> {
 	protected void init() {
 		this.pnlMain.setLayout(new GridBagLayout());
 		this.pnlAvailableObjects.setLayout(new BorderLayout());
-		this.labAvailableColumns.setText(getCommonLocaleDelegate().getMessage("DefaultSelectObjectsPanel.6","Verf\u00fcgbar"));
+		this.labAvailableColumns.setText(getSpringLocaleDelegate().getMessage("DefaultSelectObjectsPanel.6","Verf\u00fcgbar"));
 		this.pnlMiddleButtons.setLayout(new GridBagLayout());
 		this.pnlSelectedColumns.setLayout(new BorderLayout());
 		this.pnlRightButtons.setLayout(new GridBagLayout());
-		this.labSelectedColumns.setText(getCommonLocaleDelegate().getMessage("DefaultSelectObjectsPanel.1","Ausgew\u00e4hlt"));
+		this.labSelectedColumns.setText(getSpringLocaleDelegate().getMessage("DefaultSelectObjectsPanel.1","Ausgew\u00e4hlt"));
 		this.pnlMain.setBorder(BorderFactory.createEmptyBorder(5, 5, 10, 5));
 		this.scrlpnAvailableColumns.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
 		this.scrlpnAvailableColumns.setPreferredSize(new Dimension(200, 300));
@@ -72,10 +72,10 @@ public class DefaultSelectObjectsPanel<T> extends SelectObjectsPanel<T> {
 		this.scrlpnSelectedColumns.setPreferredSize(new Dimension(200, 300));
 		if (header != null) {
 			final JTabbedPane tabbed = new JTabbedPane();
-			tabbed.add(getCommonLocaleDelegate().getMessage("select.panel.column", "Spalten"), pnlMain);
+			tabbed.add(getSpringLocaleDelegate().getMessage("select.panel.column", "Spalten"), pnlMain);
 			final JPanel panel = new JPanel(new BorderLayout());
 			panel.add(header, BorderLayout.NORTH);
-			tabbed.add(getCommonLocaleDelegate().getMessage("select.panel.pivot", "Pivot"), new JScrollPane(panel));
+			tabbed.add(getSpringLocaleDelegate().getMessage("select.panel.pivot", "Pivot"), new JScrollPane(panel));
 			add(tabbed, BorderLayout.CENTER);
 		}
 		else {
@@ -113,13 +113,13 @@ public class DefaultSelectObjectsPanel<T> extends SelectObjectsPanel<T> {
 		this.btnUp.setIcon(Icons.getInstance().getIconUp16());
 		this.btnDown.setIcon(Icons.getInstance().getIconDown16());
 
-		this.btnLeft.setToolTipText(getCommonLocaleDelegate().getMessage(
+		this.btnLeft.setToolTipText(getSpringLocaleDelegate().getMessage(
 				"DefaultSelectObjectsPanel.3","Markierte Objekte nicht ausw\u00e4hlen"));
-		this.btnRight.setToolTipText(getCommonLocaleDelegate().getMessage(
+		this.btnRight.setToolTipText(getSpringLocaleDelegate().getMessage(
 				"DefaultSelectObjectsPanel.2","Markierte Objekte ausw\u00e4hlen"));
-		this.btnUp.setToolTipText(getCommonLocaleDelegate().getMessage(
+		this.btnUp.setToolTipText(getSpringLocaleDelegate().getMessage(
 				"DefaultSelectObjectsPanel.4","Markiertes Objekt nach oben verschieben"));
-		this.btnDown.setToolTipText(getCommonLocaleDelegate().getMessage(
+		this.btnDown.setToolTipText(getSpringLocaleDelegate().getMessage(
 				"DefaultSelectObjectsPanel.5","Markiertes Objekt nach unten verschieben"));
 		this.btnUp.setVisible(false);
 		this.btnDown.setVisible(false);

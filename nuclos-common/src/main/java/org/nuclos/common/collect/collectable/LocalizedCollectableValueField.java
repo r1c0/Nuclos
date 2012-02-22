@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.Localizable;
 
@@ -34,12 +34,12 @@ import org.nuclos.common2.Localizable;
 public class LocalizedCollectableValueField extends CollectableValueField implements Serializable {
 
 	public static LocalizedCollectableValueField fromResourceId(Object oValue, String resId) {
-		final String text = CommonLocaleDelegate.getInstance().getTextFallback(resId, "<[" + oValue + "]>");
+		final String text = SpringLocaleDelegate.getInstance().getTextFallback(resId, "<[" + oValue + "]>");
 		return new LocalizedCollectableValueField(oValue, text);		
 	}
 	
 	public static LocalizedCollectableValueField fromLocalizable(Object oValue, Localizable loc) {
-		final String text = CommonLocaleDelegate.getInstance().getText(loc);
+		final String text = SpringLocaleDelegate.getInstance().getText(loc);
 		return new LocalizedCollectableValueField(oValue, text);		
 	}
 	

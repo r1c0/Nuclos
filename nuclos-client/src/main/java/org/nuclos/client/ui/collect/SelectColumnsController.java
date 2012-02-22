@@ -21,7 +21,7 @@ import java.awt.Component;
 import org.nuclos.client.ui.DefaultSelectObjectsPanel;
 import org.nuclos.client.ui.SelectObjectsController;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 
 /**
  * Controller for selecting visible columns.
@@ -37,18 +37,18 @@ public class SelectColumnsController extends SelectObjectsController<Collectable
 	private static class SelectColumnsPanel<T> extends DefaultSelectObjectsPanel<T> {
 
 		SelectColumnsPanel() {
-			this.labAvailableColumns.setText(CommonLocaleDelegate.getInstance().getMessage(
+			this.labAvailableColumns.setText(SpringLocaleDelegate.getInstance().getMessage(
 					"SelectColumnsController.7","Verf\u00fcgbare Spalten"));
-			this.labSelectedColumns.setText(CommonLocaleDelegate.getInstance().getMessage(
+			this.labSelectedColumns.setText(SpringLocaleDelegate.getInstance().getMessage(
 					"SelectColumnsController.2","Ausgew\u00e4hlte Spalten"));
 
-			this.btnLeft.setToolTipText(CommonLocaleDelegate.getInstance().getMessage(
+			this.btnLeft.setToolTipText(SpringLocaleDelegate.getInstance().getMessage(
 					"SelectColumnsController.4","Markierte Spalte(n) nicht anzeigen"));
-			this.btnRight.setToolTipText(CommonLocaleDelegate.getInstance().getMessage(
+			this.btnRight.setToolTipText(SpringLocaleDelegate.getInstance().getMessage(
 					"SelectColumnsController.3","Markierte Spalte(n) anzeigen"));
-			this.btnUp.setToolTipText(CommonLocaleDelegate.getInstance().getMessage(
+			this.btnUp.setToolTipText(SpringLocaleDelegate.getInstance().getMessage(
 					"SelectColumnsController.5","Markierte Spalte nach oben verschieben"));
-			this.btnDown.setToolTipText(CommonLocaleDelegate.getInstance().getMessage(
+			this.btnDown.setToolTipText(SpringLocaleDelegate.getInstance().getMessage(
 					"SelectColumnsController.6","Markierte Spalte nach unten verschieben"));
 
 			this.btnUp.setVisible(true);

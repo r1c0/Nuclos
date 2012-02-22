@@ -38,7 +38,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 
 import org.nuclos.common.NuclosImage;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.client.gef.AbstractShapeViewer;
 import org.nuclos.client.gef.shapes.AbstractConnector;
 import org.nuclos.client.gef.shapes.ContainerShape;
@@ -241,7 +241,7 @@ public class StateShape extends ContainerShape implements ImageObserver {
 
 	@Override
 	public void afterCreate() {
-		statevo = new StateVO(new Integer(-getId()), null, CommonLocaleDelegate.getInstance().getMessage(
+		statevo = new StateVO(new Integer(-getId()), null, SpringLocaleDelegate.getInstance().getMessage(
 				"StateShape.1", "Neuer Status"), "", null, null);
 		super.afterCreate();
 	}

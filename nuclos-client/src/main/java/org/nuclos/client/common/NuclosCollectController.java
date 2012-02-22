@@ -100,7 +100,7 @@ import org.nuclos.common.collect.exception.CollectableFieldFormatException;
 import org.nuclos.common.collect.exception.CollectableValidationException;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Predicate;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.CommonRunnable;
 import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.PreferencesUtils;
@@ -321,11 +321,11 @@ public abstract class NuclosCollectController<Clct extends Collectable> extends 
 
 		//final Action actRefresh = new ChainedAction(this.getRefreshCurrentCollectableAction(), actGrabFocus);
 
-		this.getCollectPanel().setTabbedPaneToolTipTextAt(CollectPanel.TAB_SEARCH, getCommonLocaleDelegate().getMessage(
+		this.getCollectPanel().setTabbedPaneToolTipTextAt(CollectPanel.TAB_SEARCH, getSpringLocaleDelegate().getMessage(
 				"NuclosCollectController.13","Suche (F7) (Strg+F)"));
-		this.getCollectPanel().setTabbedPaneToolTipTextAt(CollectPanel.TAB_RESULT, getCommonLocaleDelegate().getMessage(
+		this.getCollectPanel().setTabbedPaneToolTipTextAt(CollectPanel.TAB_RESULT, getSpringLocaleDelegate().getMessage(
 				"NuclosCollectController.7","Ergebnis (F8)"));
-		this.getCollectPanel().setTabbedPaneToolTipTextAt(CollectPanel.TAB_DETAILS, getCommonLocaleDelegate().getMessage(
+		this.getCollectPanel().setTabbedPaneToolTipTextAt(CollectPanel.TAB_DETAILS, getSpringLocaleDelegate().getMessage(
 				"NuclosCollectController.3","Details (F2)"));
 
 		// the search action
@@ -521,7 +521,7 @@ public abstract class NuclosCollectController<Clct extends Collectable> extends 
 	public static NuclosCollectController<?> createFromPreferences(final Preferences prefs)  throws PreferencesException {
 		final String sEntity = prefs.get(PREFS_KEY_ENTITY, null);
 		if (sEntity == null) {
-			throw new PreferencesException(CommonLocaleDelegate.getInstance().getMessage(
+			throw new PreferencesException(SpringLocaleDelegate.getInstance().getMessage(
 					"NuclosCollectController.6","Entit\u00e4t {0} fehlt in den Benutzereinstellungen.", sEntity));
 		}
 
@@ -529,7 +529,7 @@ public abstract class NuclosCollectController<Clct extends Collectable> extends 
 		allowed = SecurityCache.getInstance().isReadAllowedForModule(sEntity, null) || SecurityCache.getInstance().isReadAllowedForMasterData(sEntity);
 
 		if(!allowed) {
-			throw new PreferencesException(CommonLocaleDelegate.getInstance().getMessage(
+			throw new PreferencesException(SpringLocaleDelegate.getInstance().getMessage(
 					"NuclosCollectController.17", "Sie haben kein Recht die Entit\u00e4t ''{0}'' zu verwenden.", sEntity));
 		}
 
@@ -559,7 +559,7 @@ public abstract class NuclosCollectController<Clct extends Collectable> extends 
 						}
 						break;
 					default:
-						throw new PreferencesException(CommonLocaleDelegate.getInstance().getMessage(
+						throw new PreferencesException(SpringLocaleDelegate.getInstance().getMessage(
 								"NuclosCollectController.14","Ung\u00fcltiger Erfassungsstatus in den Benutzereinstellungen: {0}", iCollectState));
 					}
 				}
@@ -584,7 +584,7 @@ public abstract class NuclosCollectController<Clct extends Collectable> extends 
 		allowed = SecurityCache.getInstance().isReadAllowedForModule(rp.entity, null) || SecurityCache.getInstance().isReadAllowedForMasterData(rp.entity);
 
 		if(!allowed) {
-			throw new PreferencesException(CommonLocaleDelegate.getInstance().getMessage(
+			throw new PreferencesException(SpringLocaleDelegate.getInstance().getMessage(
 					"NuclosCollectController.17", "Sie haben kein Recht die Entit\u00e4t ''{0}'' zu verwenden.", rp.entity));
 		}
 
@@ -611,7 +611,7 @@ public abstract class NuclosCollectController<Clct extends Collectable> extends 
 					}
 					break;
 				default:
-					throw new PreferencesException(CommonLocaleDelegate.getInstance().getMessage(
+					throw new PreferencesException(SpringLocaleDelegate.getInstance().getMessage(
 							"NuclosCollectController.14","Ung\u00fcltiger Erfassungsstatus in den Benutzereinstellungen: {0}", rp.iCollectState));
 				}
 			}
@@ -818,7 +818,7 @@ public abstract class NuclosCollectController<Clct extends Collectable> extends 
 			}
 			catch (NuclosBusinessRuleException ex2) {
 				Errors.getInstance().showExceptionDialog(this.getFrame(),
-						getCommonLocaleDelegate().getMessage("NuclosCollectController.1","{0}, da das Speichern eine Gesch\u00e4ftsregel verletzen w\u00fcrde.", sMessage1), ex2);
+						getSpringLocaleDelegate().getMessage("NuclosCollectController.1","{0}, da das Speichern eine Gesch\u00e4ftsregel verletzen w\u00fcrde.", sMessage1), ex2);
 			}
 		}
 	}
@@ -954,9 +954,9 @@ public abstract class NuclosCollectController<Clct extends Collectable> extends 
 	protected void setupSearchToolBar() {
 
 		final Action actSaveFilter
-			= new CommonAbstractAction(getCommonLocaleDelegate().getMessage("NuclosCollectController.9","Filter speichern"),
+			= new CommonAbstractAction(getSpringLocaleDelegate().getMessage("NuclosCollectController.9","Filter speichern"),
 						Icons.getInstance().getIconSave16(),
-						getCommonLocaleDelegate().getMessage("NuclosCollectController.5","Eingestelltes Suchkriterium als Filter speichern")) {
+						getSpringLocaleDelegate().getMessage("NuclosCollectController.5","Eingestelltes Suchkriterium als Filter speichern")) {
 			@Override
             public void actionPerformed(ActionEvent ev) {
 				cmdSaveFilter();
@@ -964,9 +964,9 @@ public abstract class NuclosCollectController<Clct extends Collectable> extends 
 		};
 
 		final Action actRemoveFilter
-			= new CommonAbstractAction(getCommonLocaleDelegate().getMessage("NuclosCollectController.8","Filter l\u00f6schen"),
+			= new CommonAbstractAction(getSpringLocaleDelegate().getMessage("NuclosCollectController.8","Filter l\u00f6schen"),
 						Icons.getInstance().getIconDelete16(),
-						getCommonLocaleDelegate().getMessage("NuclosCollectController.2","Ausgew\u00e4hlten Filter l\u00f6schen")) {
+						getSpringLocaleDelegate().getMessage("NuclosCollectController.2","Ausgew\u00e4hlten Filter l\u00f6schen")) {
 			@Override
             public void actionPerformed(ActionEvent ev) {
 				cmdRemoveFilter();
@@ -989,7 +989,7 @@ public abstract class NuclosCollectController<Clct extends Collectable> extends 
 
 		};
 		cpSearchFilter.setOpaque(false);
-		BlackLabel bl = new BlackLabel(cpSearchFilter, getCommonLocaleDelegate().getMessage("CollectController.Search.Filter","Filter"));
+		BlackLabel bl = new BlackLabel(cpSearchFilter, getSpringLocaleDelegate().getMessage("CollectController.Search.Filter","Filter"));
 		bl.setName("blChooseFilter");
 		this.getSearchPanel().addToolBarComponent(bl);
 
@@ -1008,7 +1008,7 @@ public abstract class NuclosCollectController<Clct extends Collectable> extends 
 		btnSaveFilter.setName("btnSaveFilter");
 		btnRemoveFilter.setName("btnRemoveFilter");
 		getSearchPanel().cmbbxSearchFilter.setName("cmbbxSearchFilter");
-		getSearchPanel().cmbbxSearchFilter.setToolTipText(getCommonLocaleDelegate().getMessage(
+		getSearchPanel().cmbbxSearchFilter.setToolTipText(getSpringLocaleDelegate().getMessage(
 				"NuclosCollectController.15","W\u00e4hlen Sie hier einen Suchfilter aus"));
 		getSearchPanel().cmbbxSearchFilter.addActionListener(this.alSearchFilter);
 
@@ -1025,12 +1025,12 @@ public abstract class NuclosCollectController<Clct extends Collectable> extends 
 					final SearchFilter filter = (SearchFilter) oValue;
 
 					if (result instanceof JLabel && !StringUtils.isNullOrEmpty(filter.getLabelResourceId())) {
-						((JLabel) result).setText(getCommonLocaleDelegate().getTextFallback(
+						((JLabel) result).setText(getSpringLocaleDelegate().getTextFallback(
 								filter.getLabelResourceId(), filter.getName()));
 					}
 
 					if (!StringUtils.isNullOrEmpty(filter.getDescriptionResourceId())) {
-						sToolTip = getCommonLocaleDelegate().getTextFallback(
+						sToolTip = getSpringLocaleDelegate().getTextFallback(
 								filter.getDescriptionResourceId(), filter.getDescriptionResourceId());
 					}
 					else {
@@ -1081,7 +1081,7 @@ public abstract class NuclosCollectController<Clct extends Collectable> extends 
 			@Override
             public void run() throws CommonValidationException {
 				if (!stopEditingInSearch()) {
-					throw new CommonValidationException(getCommonLocaleDelegate().getMessage(
+					throw new CommonValidationException(getSpringLocaleDelegate().getMessage(
 							"NuclosCollectController.4","Die eingegebene Suchbedingung ist ung\u00fcltig bzw. unvollst\u00e4ndig."));
 				}
 				try {
@@ -1124,7 +1124,7 @@ public abstract class NuclosCollectController<Clct extends Collectable> extends 
 	protected void cmdRemoveFilter() {
 		final SearchFilter filter = getSelectedSearchFilter();
 		if (filter != null) {
-			if (JOptionPane.showConfirmDialog(this.getFrame(), getCommonLocaleDelegate().getMessage(
+			if (JOptionPane.showConfirmDialog(this.getFrame(), getSpringLocaleDelegate().getMessage(
 					"NuclosCollectController.16","Wollen Sie den Filter \"{0}\" wirklich l\u00f6schen?", filter.getName()), "Filter l\u00f6schen", JOptionPane.OK_CANCEL_OPTION) == JOptionPane.OK_OPTION) {
 				UIUtils.runCommand(this.getFrame(), new CommonRunnable() {
 					@Override
@@ -1248,7 +1248,7 @@ public abstract class NuclosCollectController<Clct extends Collectable> extends 
 
 				}
 				catch (Exception ex) {
-					Errors.getInstance().showExceptionDialog(getFrame(), getCommonLocaleDelegate().getMessage(
+					Errors.getInstance().showExceptionDialog(getFrame(), getSpringLocaleDelegate().getMessage(
 							"NuclosCollectController.12","Suchbedingung kann nicht in der Suchmaske dargestellt werden."), ex);
 				}
 			}
@@ -1286,7 +1286,7 @@ public abstract class NuclosCollectController<Clct extends Collectable> extends 
 								}
 							});
 					controller.setModel(ro);
-					if (controller.run(getCommonLocaleDelegate().getMessage("NuclosCollectController.11","Regeln ausf\u00fchren"))) {
+					if (controller.run(getSpringLocaleDelegate().getMessage("NuclosCollectController.11","Regeln ausf\u00fchren"))) {
 						//execute the selected Rules
 						final List<RuleVO> lstRuleToExecute = CollectionUtils.typecheck(controller.getSelectedObjects(), RuleVO.class);
 						if (lstRuleToExecute != null && !lstRuleToExecute.isEmpty()) {
@@ -1347,7 +1347,7 @@ public abstract class NuclosCollectController<Clct extends Collectable> extends 
 		@Override
 		protected void init() {
 			super.init();
-			cbxSaveAfterRuleExecution.setText(CommonLocaleDelegate.getInstance().getMessage(
+			cbxSaveAfterRuleExecution.setText(SpringLocaleDelegate.getInstance().getMessage(
 					"NuclosCollectController.10","Objekt nach Regelausf\u00fchrung speichern"));
 			this.pnlMain.add(cbxSaveAfterRuleExecution, new GridBagConstraints(2, 2, 1, 1, 1.0, 1.0
 					, GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));

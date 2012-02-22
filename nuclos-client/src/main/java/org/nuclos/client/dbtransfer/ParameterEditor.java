@@ -33,7 +33,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import org.nuclos.client.ui.Icons;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.StringUtils;
 
 public class ParameterEditor {
@@ -43,13 +43,13 @@ public class ParameterEditor {
 	public final static Icon COMPARE_ICON_VALUE_CHANGED = Icons.getInstance().getIconEdit16();
 	public final static Icon COMPARE_ICON_VALUE_NOT_CHANGED = Icons.getInstance().getIconEmpty16();
 	
-	public final static String COMPARE_DESCRIPTION_NEW = CommonLocaleDelegate.getInstance().getMessage(
+	public final static String COMPARE_DESCRIPTION_NEW = SpringLocaleDelegate.getInstance().getMessage(
 			"dbtransfer.import.parameterpanel.9", "Konfigurationsdatei enth\u00e4lt diesen Parameter zus\u00e4tzlich.");
-	public final static String COMPARE_DESCRIPTION_DELETED = CommonLocaleDelegate.getInstance().getMessage(
+	public final static String COMPARE_DESCRIPTION_DELETED = SpringLocaleDelegate.getInstance().getMessage(
 			"dbtransfer.import.parameterpanel.10", "In Konfigurationsdatei nicht mehr enthalten.");
-	public final static String COMPARE_DESCRIPTION_VALUE_CHANGED = CommonLocaleDelegate.getInstance().getMessage(
+	public final static String COMPARE_DESCRIPTION_VALUE_CHANGED = SpringLocaleDelegate.getInstance().getMessage(
 			"dbtransfer.import.parameterpanel.11", "Konfigurationsdatei enth\u00e4tlt einen anderen Wert.");
-	public final static String COMPARE_DESCRIPTION_VALUE_NOT_CHANGED = CommonLocaleDelegate.getInstance().getMessage(
+	public final static String COMPARE_DESCRIPTION_VALUE_NOT_CHANGED = SpringLocaleDelegate.getInstance().getMessage(
 			"dbtransfer.import.parameterpanel.12", "Unver\u00e4ndert.");
 	
 	private final ParameterComparison parameter;
@@ -66,7 +66,7 @@ public class ParameterEditor {
 	private final Collection<ChangeListener> changeListener = new ArrayList<ChangeListener>();
 	
 	public ParameterEditor(ParameterComparison parameterComparison) {
-		final CommonLocaleDelegate cld = CommonLocaleDelegate.getInstance();
+		final SpringLocaleDelegate localeDelegate = SpringLocaleDelegate.getInstance();
 		parameter = parameterComparison;
 		final Icon iconCompare;
 		final String sCompare;
@@ -75,9 +75,9 @@ public class ParameterEditor {
 			sCompare = COMPARE_DESCRIPTION_NEW;
 			iconCompare = COMPARE_ICON_NEW;
 			tfParameter.setBackground(cDeactivatedBack);
-			rbIncoming.setToolTipText(cld.getMessage(
+			rbIncoming.setToolTipText(localeDelegate.getMessage(
 					"dbtransfer.import.parameterpanel.13", "Parameter wird angelegt."));
-			rbOther.setToolTipText(cld.getMessage(
+			rbOther.setToolTipText(localeDelegate.getMessage(
 					"dbtransfer.import.parameterpanel.14", "Parameter anlegen und neuen Wert setzen."));
 			rbIncoming.setSelected(true);
 			rbCurrent.setVisible(false);
@@ -86,11 +86,11 @@ public class ParameterEditor {
 			sCompare = COMPARE_DESCRIPTION_DELETED;
 			iconCompare = COMPARE_ICON_DELETED;
 			tfParameter.setBackground(cDeleteBack);
-			rbIncoming.setToolTipText(cld.getMessage(
+			rbIncoming.setToolTipText(localeDelegate.getMessage(
 					"dbtransfer.import.parameterpanel.15", "Parameter wird entfernt!"));
-			rbCurrent.setToolTipText(cld.getMessage(
+			rbCurrent.setToolTipText(localeDelegate.getMessage(
 					"dbtransfer.import.parameterpanel.16", "Parameter behalten."));
-			rbOther.setToolTipText(cld.getMessage(
+			rbOther.setToolTipText(localeDelegate.getMessage(
 					"dbtransfer.import.parameterpanel.17", "Parameter behalten und neuen Wert setzen."));
 			rbIncoming.setSelected(true);
 			
@@ -111,9 +111,9 @@ public class ParameterEditor {
 		
 		lbParam = new JLabel(this.parameter.getField("name", String.class));
 		lbParam.setToolTipText("<html><b>" 
-				+ cld.getMessage("dbtransfer.import.parameterpanel.6", "Vergleich von Aktueller- und Importkonfiguration") 
+				+ localeDelegate.getMessage("dbtransfer.import.parameterpanel.6", "Vergleich von Aktueller- und Importkonfiguration") 
 				+ ": " + sCompare + "</b><br>"
-				+ cld.getMessage("dbtransfer.import.parameterpanel.8", "Parameter Beschreibung") 
+				+ localeDelegate.getMessage("dbtransfer.import.parameterpanel.8", "Parameter Beschreibung") 
 				+ ": " + StringUtils.emptyIfNull(parameter.getField("description", String.class)) 
 				+ "</html>");
 		lbParam.setIcon(iconCompare);

@@ -154,7 +154,7 @@ public class ResourceCollectController extends MasterDataCollectController{
 //			String sExtension = resourceFile.getFilename().substring(resourceFile.getFilename().indexOf('.')+1).toLowerCase();
 //			if (clct.getField("type").getValue().equals("Icon") && (!sExtension.equals("png") &&
 //					!sExtension.equals("jpg") && !sExtension.equals("bmp") && !sExtension.equals("jpeg") && !sExtension.equals("gif"))) {
-//				throw new CollectableFieldValidationException(CommonLocaleDelegate.getMessage("ResourceCollectController.1", "Die Datei {0} ist kein Bild.", resourceFile.getFilename()));
+//				throw new CollectableFieldValidationException(SpringLocaleDelegate.getMessage("ResourceCollectController.1", "Die Datei {0} ist kein Bild.", resourceFile.getFilename()));
 //			}
 //		}
     }

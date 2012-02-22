@@ -53,7 +53,7 @@ import org.apache.log4j.Logger;
 import org.nuclos.client.NuclosIcons;
 import org.nuclos.client.security.NuclosRemoteServerSession;
 import org.nuclos.client.ui.UIUtils;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.exception.CommonBusinessException;
 
 /**
@@ -82,7 +82,7 @@ public class NuclosConsoleGui extends JPanel {
 
 	private final JTextField txfArgument;
 
-	private final JButton btnStart = new JButton(new AbstractAction(CommonLocaleDelegate.getInstance().getMessage(
+	private final JButton btnStart = new JButton(new AbstractAction(SpringLocaleDelegate.getInstance().getMessage(
 			"NuclosConsoleGui.3","Aktion starten...")) {
 		@Override
 		public void actionPerformed(ActionEvent e) {
@@ -93,7 +93,7 @@ public class NuclosConsoleGui extends JPanel {
 
 	Thread thread = null;
 
-	private final JButton btnCancel = new JButton(new AbstractAction(CommonLocaleDelegate.getInstance().getMessage(
+	private final JButton btnCancel = new JButton(new AbstractAction(SpringLocaleDelegate.getInstance().getMessage(
 			"NuclosConsoleGui.2","Aktion abbrechen...")) {
 		@Override
 		public void actionPerformed(ActionEvent e) {
@@ -105,7 +105,7 @@ public class NuclosConsoleGui extends JPanel {
 
 	private static final List<String> shortCuts = NuclosConsole.getInstance().LSTCOMMANDS;
 
-	private JButton btnClearOutput = new JButton(new AbstractAction(CommonLocaleDelegate.getInstance().getMessage(
+	private JButton btnClearOutput = new JButton(new AbstractAction(SpringLocaleDelegate.getInstance().getMessage(
 			"NuclosConsoleGui.5","Ausgabe l\u00f6schen")) {
 		@Override
 		public void actionPerformed(ActionEvent e) {
@@ -152,7 +152,7 @@ public class NuclosConsoleGui extends JPanel {
 	}
 
 	private void showShortCuts() {
-		cmbxCommands.addItem(CommonLocaleDelegate.getInstance().getMessage(
+		cmbxCommands.addItem(SpringLocaleDelegate.getInstance().getMessage(
 				"NuclosConsoleGui.8","Manuelle Eingabe (Argument)"));
 		if (shortCuts.size() == 0) {
 			cmbxCommands.setEnabled(false);
@@ -170,7 +170,7 @@ public class NuclosConsoleGui extends JPanel {
 		cmdPnl.setLayout(layout);
 		GridBagConstraints constraints = new GridBagConstraints();
 		constraints.insets = new Insets(5, 5, 5, 5);
-		JLabel actLabel = new JLabel(CommonLocaleDelegate.getInstance().getMessage("NuclosConsoleGui.1","Aktion"));
+		JLabel actLabel = new JLabel(SpringLocaleDelegate.getInstance().getMessage("NuclosConsoleGui.1","Aktion"));
 		actLabel.setPreferredSize(new Dimension(150, 20));
 		constraints.gridx = 0;
 		constraints.gridy = 0;
@@ -179,7 +179,7 @@ public class NuclosConsoleGui extends JPanel {
 		constraints.gridx = 1;
 		constraints.gridy = 0;
 		cmdPnl.add(cmbxCommands, constraints);
-		JLabel argumentsLabel = new JLabel(CommonLocaleDelegate.getInstance().getMessage("NuclosConsoleGui.4","Argumente"));
+		JLabel argumentsLabel = new JLabel(SpringLocaleDelegate.getInstance().getMessage("NuclosConsoleGui.4","Argumente"));
 		argumentsLabel.setPreferredSize(new Dimension(150, 20));
 		constraints.gridx = 0;
 		constraints.gridy = 1;
@@ -310,7 +310,7 @@ public class NuclosConsoleGui extends JPanel {
 
 		panel.showShortCuts();
 		final JFrame frame = new JFrame();
-		frame.setTitle(CommonLocaleDelegate.getInstance().getMessage("NuclosConsoleGui.7","Management Console"));
+		frame.setTitle(SpringLocaleDelegate.getInstance().getMessage("NuclosConsoleGui.7","Management Console"));
 		frame.setSize(new Dimension(800, 500));
 		frame.setResizable(false);
 		frame.setLocationRelativeTo(parent);
@@ -382,9 +382,9 @@ public class NuclosConsoleGui extends JPanel {
 	}
 
 	static class LoginPanel extends JPanel {
-		private JLabel lbUser = new JLabel(CommonLocaleDelegate.getInstance().getMessage(
+		private JLabel lbUser = new JLabel(SpringLocaleDelegate.getInstance().getMessage(
 				"NuclosConsoleGui.6","Benutzername"));
-		private JLabel lbPassword = new JLabel(CommonLocaleDelegate.getInstance().getMessage(
+		private JLabel lbPassword = new JLabel(SpringLocaleDelegate.getInstance().getMessage(
 				"NuclosConsoleGui.9","Passwort"));
 		JTextField loginField = new JTextField();
 		JPasswordField passwordField = new JPasswordField();

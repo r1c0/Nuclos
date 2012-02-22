@@ -38,7 +38,7 @@ import org.nuclos.client.ui.CommonClientWorkerAdapter;
 import org.nuclos.client.ui.CommonMultiThreader;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.common.collect.collectable.Collectable;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.server.navigation.treenode.GenericObjectTreeNode;
 
@@ -172,7 +172,7 @@ public class DefaultTransferHandler extends TransferHandler {
 					@Override
 					public void run() {
 						try {
-							JOptionPane.showMessageDialog(parent, CommonLocaleDelegate.getInstance().getMessage(
+							JOptionPane.showMessageDialog(parent, SpringLocaleDelegate.getInstance().getMessage(
 									"ExplorerController.16","Dieser Datentransfer wird von dem ausgew\u00e4hlten Objekt nicht unterst\u00fctzt."));
 						}
 						catch (Exception e) {

@@ -81,7 +81,7 @@ public class RelationExplorerNode extends ExplorerNode<RelationTreeNode> {
 
 		ShowDetailsAction(JTree tree) {
 			super(ACTIONCOMMAND_SHOW_DETAILS, 
-					getCommonLocaleDelegate().getMessage("RelationExplorerNode.3","Details anzeigen"), tree);
+					getSpringLocaleDelegate().getMessage("RelationExplorerNode.3","Details anzeigen"), tree);
 		}
 
 		@Override
@@ -115,7 +115,7 @@ public class RelationExplorerNode extends ExplorerNode<RelationTreeNode> {
 		 */
 		RemoveAction(JTree tree) {
 			super(ACTIONCOMMAND_REMOVE, 
-					getCommonLocaleDelegate().getMessage("RelationExplorerNode.1","Beziehung entfernen") + "...", tree);
+					getSpringLocaleDelegate().getMessage("RelationExplorerNode.1","Beziehung entfernen") + "...", tree);
 		}
 
 		@Override
@@ -143,11 +143,11 @@ public class RelationExplorerNode extends ExplorerNode<RelationTreeNode> {
 				final GenericObjectTreeNode lotreenodeSource = bForward ? lotreenodeParent : lotreenodeChild;
 				final GenericObjectTreeNode lotreenodeTarget = bForward ? lotreenodeChild : lotreenodeParent;
 
-				final String sMessage = getCommonLocaleDelegate().getMessage(
+				final String sMessage = getSpringLocaleDelegate().getMessage(
 						"GenericObjectExplorerNode.4", "Soll die Beziehung von {0} zu {1} entfernt werden?", lotreenodeSource.getLabel(), lotreenodeTarget.getLabel());
 
 				final int iBtn = JOptionPane.showConfirmDialog(this.getParent(), sMessage, 
-						getCommonLocaleDelegate().getMessage("RelationExplorerNode.2","Beziehung entfernen"), JOptionPane.OK_CANCEL_OPTION);
+						getSpringLocaleDelegate().getMessage("RelationExplorerNode.2","Beziehung entfernen"), JOptionPane.OK_CANCEL_OPTION);
 				if (iBtn == JOptionPane.OK_OPTION) {
 					UIUtils.runCommand(this.getParent(), new CommonRunnable() {
 						@Override

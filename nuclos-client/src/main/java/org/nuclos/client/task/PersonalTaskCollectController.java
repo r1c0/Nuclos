@@ -135,7 +135,7 @@ public class PersonalTaskCollectController extends MasterDataCollectController {
 
 	private void setupDetailsToolBar() {
 		// final JToolBar toolbar = (JToolBar)this.getDetailsPanel().getCustomToolBarArea();
-		final String sSingletaskButtonName = getCommonLocaleDelegate().getMessage("EditPersonalTaskDefinitionPanel.Button.Singletask",null);
+		final String sSingletaskButtonName = getSpringLocaleDelegate().getMessage("EditPersonalTaskDefinitionPanel.Button.Singletask",null);
 		sSingletaskButton = new JButton(
 			new AbstractAction(sSingletaskButtonName) {
 
@@ -173,7 +173,7 @@ public class PersonalTaskCollectController extends MasterDataCollectController {
 	private boolean splitTaskForOwners(boolean createMode, MasterDataWithDependantsVO mdvo, final String sSingletaskButtonName)
 		throws CommonBusinessException {
 		boolean result = false;
-		final String sMessage = getCommonLocaleDelegate().getMessage("EditPersonalTaskDefinitionPanel.Singletask.Secure", null);
+		final String sMessage = getSpringLocaleDelegate().getMessage("EditPersonalTaskDefinitionPanel.Singletask.Secure", null);
 		final String sSecureTitle = sSingletaskButtonName;
 		int createSingleTasksSecure = JOptionPane.showConfirmDialog(this.getParent(), sMessage, sSecureTitle, JOptionPane.YES_NO_OPTION);
 		switch(createSingleTasksSecure) {

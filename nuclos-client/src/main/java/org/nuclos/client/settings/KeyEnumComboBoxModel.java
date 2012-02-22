@@ -18,7 +18,7 @@ package org.nuclos.client.settings;
 
 import javax.swing.DefaultComboBoxModel;
 
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.KeyEnum;
 import org.nuclos.common2.Localizable;
 
@@ -60,7 +60,7 @@ public class KeyEnumComboBoxModel<T extends KeyEnum<?>> extends DefaultComboBoxM
 		@Override
 		public String toString() {
 			if (value instanceof Localizable) {
-				return CommonLocaleDelegate.getInstance().getText((Localizable)value);
+				return SpringLocaleDelegate.getInstance().getText((Localizable)value);
 			}
 			else {
 				return String.valueOf(value.getValue());

@@ -72,7 +72,7 @@ import org.nuclos.common.collect.collectable.CollectableValueField;
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
 import org.nuclos.common.transport.vo.EntityFieldMetaDataTO;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.LocaleInfo;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonFatalException;
@@ -145,7 +145,7 @@ public class EntityRelationshipModelEditPanel extends JPanel {
 	
 	private boolean isPopupShown;
 	
-	private CommonLocaleDelegate cld;
+	private SpringLocaleDelegate localeDelegate;
 	
 
 	public EntityRelationshipModelEditPanel(MainFrame mf) {
@@ -158,8 +158,8 @@ public class EntityRelationshipModelEditPanel extends JPanel {
 	}
 	
 	@Autowired
-	void setCommonLocaleDelegate(CommonLocaleDelegate cld) {
-		this.cld = cld;
+	void setSpringLocaleDelegate(SpringLocaleDelegate cld) {
+		this.localeDelegate = cld;
 	}
 	
 	public void setIsPopupShown(boolean shown) {
@@ -194,28 +194,28 @@ public class EntityRelationshipModelEditPanel extends JPanel {
 					if(cell.getSource() != null && cell.getTarget() != null) {
 						EntityMetaDataVO voSource = (EntityMetaDataVO)cell.getSource().getValue();
 						EntityMetaDataVO voTarget = (EntityMetaDataVO)cell.getTarget().getValue();
-						sb.append(cld.getMessage("nuclos.entityrelation.editor.2", "", voSource.getEntity(), voTarget.getEntity()));
+						sb.append(localeDelegate.getMessage("nuclos.entityrelation.editor.2", "", voSource.getEntity(), voTarget.getEntity()));
 					}
 					else 
-						sb.append(cld.getMessage("nuclos.entityrelation.editor.1", "Bezug zu Stammdaten"));
+						sb.append(localeDelegate.getMessage("nuclos.entityrelation.editor.1", "Bezug zu Stammdaten"));
 				}
 				else if(sStyle.indexOf(DIAMONDARROW) >= 0) {
 					if(cell.getSource() != null && cell.getTarget() != null) {
 						EntityMetaDataVO voSource = (EntityMetaDataVO)cell.getSource().getValue();
 						EntityMetaDataVO voTarget = (EntityMetaDataVO)cell.getTarget().getValue();
-						sb.append(cld.getMessage("nuclos.entityrelation.editor.4", "", voSource.getEntity(), voTarget.getEntity()));						
+						sb.append(localeDelegate.getMessage("nuclos.entityrelation.editor.4", "", voSource.getEntity(), voTarget.getEntity()));						
 					}
 					else
-					sb.append(cld.getMessage("nuclos.entityrelation.editor.3", "Bezug zu Vorg\u00e4ngen (Unterformularbezug)"));
+					sb.append(localeDelegate.getMessage("nuclos.entityrelation.editor.3", "Bezug zu Vorg\u00e4ngen (Unterformularbezug)"));
 				}
 				else if(sStyle.indexOf(OVALARROW) >= 0) {
 					if(cell.getSource() != null && cell.getTarget() != null) {
 						EntityMetaDataVO voSource = (EntityMetaDataVO)cell.getSource().getValue();
 						EntityMetaDataVO voTarget = (EntityMetaDataVO)cell.getTarget().getValue();
-						sb.append(cld.getMessage("nuclos.entityrelation.editor.6", "", voSource.getEntity(), voTarget.getEntity()));
+						sb.append(localeDelegate.getMessage("nuclos.entityrelation.editor.6", "", voSource.getEntity(), voTarget.getEntity()));
 					}
 					else
-						sb.append(cld.getMessage("nuclos.entityrelation.editor.5", ""));
+						sb.append(localeDelegate.getMessage("nuclos.entityrelation.editor.5", ""));
 				}
 			}
 			else {
@@ -234,12 +234,12 @@ public class EntityRelationshipModelEditPanel extends JPanel {
 		double sizeHeader [][] = {{TableLayout.PREFERRED, 5, TableLayout.PREFERRED, 10}, {10, 25,10}};		
 		panelHeader = new JPanel();
 		panelHeader.setLayout(new TableLayout(sizeHeader));
-		clcttfName.setLabelText(cld.getMessage("nuclos.entityfield.entityrelation.name.label","Name"));
-		clcttfName.setToolTipText(cld.getMessage("nuclos.entityfield.entityrelation.name.description","Name"));
+		clcttfName.setLabelText(localeDelegate.getMessage("nuclos.entityfield.entityrelation.name.label","Name"));
+		clcttfName.setToolTipText(localeDelegate.getMessage("nuclos.entityfield.entityrelation.name.description","Name"));
 		clcttfName.setColumns(20);
 		panelHeader.add(this.clcttfName.getJComponent(), "0,1");
-		clcttfDescription.setLabelText(cld.getMessage("nuclos.entityfield.entityrelation.description.label","Beschreibung"));
-		clcttfDescription.setToolTipText(cld.getMessage("nuclos.entityfield.entityrelation.description.description","Beschreibung"));
+		clcttfDescription.setLabelText(localeDelegate.getMessage("nuclos.entityfield.entityrelation.description.label","Beschreibung"));
+		clcttfDescription.setToolTipText(localeDelegate.getMessage("nuclos.entityfield.entityrelation.description.description","Beschreibung"));
 		clcttfDescription.setColumns(20);
 		panelHeader.add(this.clcttfDescription.getJComponent(), "2,1");
 		
@@ -288,7 +288,7 @@ public class EntityRelationshipModelEditPanel extends JPanel {
 						fireChangeListenEvent();
 					}
 					else if(cell.getValue() instanceof EntityFieldMetaDataVO) {
-						int opt = JOptionPane.showConfirmDialog(mainPanel, cld.getMessage(
+						int opt = JOptionPane.showConfirmDialog(mainPanel, localeDelegate.getMessage(
 								"nuclos.entityrelation.editor.7", "M\u00f6chten Sie die Verbindung wirklich l\u00f6sen?"));
 						if(opt != 0){
 							return;
@@ -629,7 +629,7 @@ public class EntityRelationshipModelEditPanel extends JPanel {
 		
 		JPopupMenu pop = new JPopupMenu();
 		
-		JMenuItem i1 = new JMenuItem(cld.getMessage("nuclos.entityrelation.editor.16", "neue Entit\u00e4t"));
+		JMenuItem i1 = new JMenuItem(localeDelegate.getMessage("nuclos.entityrelation.editor.16", "neue Entit\u00e4t"));
 		i1.addActionListener(new ActionListener() {
 			
 			@Override
@@ -653,7 +653,7 @@ public class EntityRelationshipModelEditPanel extends JPanel {
 			}
 		});
 		
-		JMenuItem i3 = new JMenuItem(cld.getMessage("nuclos.entityrelation.editor.8", "zoom in"));
+		JMenuItem i3 = new JMenuItem(localeDelegate.getMessage("nuclos.entityrelation.editor.8", "zoom in"));
 		i3.addActionListener(new ActionListener() {
 			
 			@Override
@@ -662,7 +662,7 @@ public class EntityRelationshipModelEditPanel extends JPanel {
 			}
 		});
 		
-		JMenuItem i4 = new JMenuItem(cld.getMessage("nuclos.entityrelation.editor.9", "zoom out"));
+		JMenuItem i4 = new JMenuItem(localeDelegate.getMessage("nuclos.entityrelation.editor.9", "zoom out"));
 		i4.addActionListener(new ActionListener() {
 			
 			@Override
@@ -685,7 +685,7 @@ public class EntityRelationshipModelEditPanel extends JPanel {
 	protected JPopupMenu createRelationPopupMenu(final mxCell cell, boolean delete, boolean objectGeneration) {
 		
 		JPopupMenu pop = new JPopupMenu();
-		JMenuItem i1 = new JMenuItem(cld.getMessage("nuclos.entityrelation.editor.10","Bezug zu Stammdaten bearbeiten"));
+		JMenuItem i1 = new JMenuItem(localeDelegate.getMessage("nuclos.entityrelation.editor.10","Bezug zu Stammdaten bearbeiten"));
 		
 		i1.addActionListener(new ActionListener() {
 			
@@ -695,7 +695,7 @@ public class EntityRelationshipModelEditPanel extends JPanel {
 			}
 		});
 		
-		JMenuItem i2 = new JMenuItem(cld.getMessage("nuclos.entityrelation.editor.11", "Unterfomularbezug bearbeiten"));
+		JMenuItem i2 = new JMenuItem(localeDelegate.getMessage("nuclos.entityrelation.editor.11", "Unterfomularbezug bearbeiten"));
 		i2.addActionListener(new ActionListener() {
 			
 			@Override
@@ -705,13 +705,13 @@ public class EntityRelationshipModelEditPanel extends JPanel {
 
 		});
 		
-		JMenuItem i4 = new JMenuItem(cld.getMessage("nuclos.entityrelation.editor.12", "Verbindung l\u00f6sen"));
+		JMenuItem i4 = new JMenuItem(localeDelegate.getMessage("nuclos.entityrelation.editor.12", "Verbindung l\u00f6sen"));
 		i4.addActionListener(new ActionListener() {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				
-				int opt = JOptionPane.showConfirmDialog(mainPanel, cld.getMessage(
+				int opt = JOptionPane.showConfirmDialog(mainPanel, localeDelegate.getMessage(
 						"nuclos.entityrelation.editor.7", "M\u00f6chten Sie die Verbindung wirklich l\u00f6sen?")); 
 				if(opt != 0){
 					return;
@@ -750,7 +750,7 @@ public class EntityRelationshipModelEditPanel extends JPanel {
 			}
 		});
 		
-		JMenuItem i5 = new JMenuItem(cld.getMessage("nuclos.entityrelation.editor.13", "Arbeitsschritt bearbeiten"));
+		JMenuItem i5 = new JMenuItem(localeDelegate.getMessage("nuclos.entityrelation.editor.13", "Arbeitsschritt bearbeiten"));
 		i5.addActionListener(new ActionListener() {
 			
 			@Override
@@ -972,7 +972,7 @@ public class EntityRelationshipModelEditPanel extends JPanel {
 	protected JPopupMenu createPopupMenuEntity(final mxCell cell, boolean newCell) {
 		
 		JPopupMenu pop = new JPopupMenu();
-		JMenuItem i1 = new JMenuItem(cld.getMessage("nuclos.entityrelation.editor.14","Symbol l\u00f6schen"));
+		JMenuItem i1 = new JMenuItem(localeDelegate.getMessage("nuclos.entityrelation.editor.14","Symbol l\u00f6schen"));
 		i1.addActionListener(new ActionListener() {
 			
 			@Override
@@ -997,7 +997,7 @@ public class EntityRelationshipModelEditPanel extends JPanel {
 		
 		
 		
-		JMenuItem iWizard = new JMenuItem(cld.getMessage("nuclos.entityrelation.editor.15","Wizard \u00f6ffnen"));
+		JMenuItem iWizard = new JMenuItem(localeDelegate.getMessage("nuclos.entityrelation.editor.15","Wizard \u00f6ffnen"));
 		iWizard.addActionListener(new ActionListener() {
 			
 			@Override
@@ -1025,7 +1025,7 @@ public class EntityRelationshipModelEditPanel extends JPanel {
 			pop.add(iWizard);			
 		}
 		else {			
-			JMenuItem iNew = new JMenuItem(cld.getMessage("nuclos.entityrelation.editor.16","neue Entit\u00e4t"));
+			JMenuItem iNew = new JMenuItem(localeDelegate.getMessage("nuclos.entityrelation.editor.16","neue Entit\u00e4t"));
 			iNew.addActionListener(new ActionListener() {
 				
 				@Override
@@ -1037,7 +1037,7 @@ public class EntityRelationshipModelEditPanel extends JPanel {
 						wizard.setEntityToEdit(vo);					
 					}
 					else {
-						cell.setValue(cld.getMessage("nuclos.entityrelation.editor.16","neue Entit\u00e4t"));
+						cell.setValue(localeDelegate.getMessage("nuclos.entityrelation.editor.16","neue Entit\u00e4t"));
 						mxGraph graph = graphComponent.getGraph();
 						graph.refresh();
 					}
@@ -1399,10 +1399,10 @@ public class EntityRelationshipModelEditPanel extends JPanel {
 				if(cell.getValue() instanceof EntityFieldMetaDataVO) {
 					String sDefault = ((EntityFieldMetaDataVO)cell.getValue()).getField();
 					sFieldName = JOptionPane.showInputDialog(EntityRelationshipModelEditPanel.this, 
-						cld.getMessage("nuclos.entityrelation.editor.17", "Bitte geben Sie den Namen des Feldes an!"), sDefault);
+						localeDelegate.getMessage("nuclos.entityrelation.editor.17", "Bitte geben Sie den Namen des Feldes an!"), sDefault);
 				}
 				else 
-					sFieldName = JOptionPane.showInputDialog(EntityRelationshipModelEditPanel.this, cld.getMessage(
+					sFieldName = JOptionPane.showInputDialog(EntityRelationshipModelEditPanel.this, localeDelegate.getMessage(
 							"nuclos.entityrelation.editor.17", "Bitte geben Sie den Namen des Feldes an!"));
 				if(sFieldName == null || sFieldName.length() < 1) {
 					if(cell.getValue() instanceof String)
@@ -1415,7 +1415,7 @@ public class EntityRelationshipModelEditPanel extends JPanel {
 				
 				for(EntityFieldMetaDataVO voField : MetaDataDelegate.getInstance().getAllEntityFieldsByEntity(voSource.getEntity()).values()){
 					if(voField.getField().equals(sFieldName)){
-						JOptionPane.showMessageDialog(EntityRelationshipModelEditPanel.this, cld.getMessage(
+						JOptionPane.showMessageDialog(EntityRelationshipModelEditPanel.this, localeDelegate.getMessage(
 								"nuclos.entityrelation.editor.18", "Der Feldname ist schon vorhanden"));
 						blnNotSet = true;
 						break;

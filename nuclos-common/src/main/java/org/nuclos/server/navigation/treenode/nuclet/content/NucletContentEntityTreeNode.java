@@ -17,7 +17,7 @@
 package org.nuclos.server.navigation.treenode.nuclet.content;
 
 import org.nuclos.common.dal.vo.EntityObjectVO;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 
 /**
  * <br>
@@ -35,7 +35,7 @@ public class NucletContentEntityTreeNode extends DefaultNucletContentEntryTreeNo
 	
 	@Override
 	public String getName() {
-		return CommonLocaleDelegate.getInstance().getLabelFromMetaDataVO(getMetaData(eo.getField("entity", String.class)));
+		return SpringLocaleDelegate.getInstance().getLabelFromMetaDataVO(getMetaData(eo.getField("entity", String.class)));
 	}
 
 }

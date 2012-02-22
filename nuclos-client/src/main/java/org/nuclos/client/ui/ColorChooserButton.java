@@ -33,7 +33,7 @@ import javax.swing.JPanel;
 
 import org.nuclos.client.main.Main;
 import org.nuclos.client.synthetica.NuclosThemeSettings;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 
 public class ColorChooserButton extends JButton {
 
@@ -46,11 +46,11 @@ public class ColorChooserButton extends JButton {
 		addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				final CommonLocaleDelegate cld = CommonLocaleDelegate.getInstance();
+				final SpringLocaleDelegate localeDelegate = SpringLocaleDelegate.getInstance();
 				JPanel contentPanel = new JPanel(new BorderLayout());
 				JPanel actionsPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 2));
-				JButton btSave = new JButton(cld.getMessage("ColorChooserButton.2","Speichern"));
-				JButton btCancel = new JButton(cld.getMessage("ColorChooserButton.3","Abbrechen"));
+				JButton btSave = new JButton(localeDelegate.getMessage("ColorChooserButton.2","Speichern"));
+				JButton btCancel = new JButton(localeDelegate.getMessage("ColorChooserButton.3","Abbrechen"));
 				actionsPanel.add(btSave);
 				actionsPanel.add(btCancel);
 				contentPanel.add(actionsPanel, BorderLayout.SOUTH);
@@ -60,9 +60,9 @@ public class ColorChooserButton extends JButton {
 				
 				final JDialog dialog;
 				if (parent==null) {
-					dialog = new JDialog(Main.getInstance().getMainFrame(), cld.getMessage("ColorChooserButton.1","Farbe ändern"), true);
+					dialog = new JDialog(Main.getInstance().getMainFrame(), localeDelegate.getMessage("ColorChooserButton.1","Farbe ändern"), true);
 				} else {
-					dialog = new JDialog(parent, cld.getMessage("ColorChooserButton.1","Farbe ändern"), true);
+					dialog = new JDialog(parent, localeDelegate.getMessage("ColorChooserButton.1","Farbe ändern"), true);
 				}
 				dialog.setContentPane(contentPanel);
 				dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);

@@ -18,7 +18,7 @@ package org.nuclos.client.ui.collect.searcheditor;
 
 import org.nuclos.common.collect.collectable.searchcondition.CollectableSearchCondition;
 import org.nuclos.common.collect.collectable.searchcondition.SearchConditionUtils;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 
 import java.awt.BorderLayout;
 
@@ -44,7 +44,7 @@ public class SearchEditorPanel extends JPanel {
 
 	private final RootNode nodeRoot = new RootNode();
 	private final JTree tree = new JTree(nodeRoot);
-	private final JButton btnSimplify = new JButton(CommonLocaleDelegate.getInstance().getMessage(
+	private final JButton btnSimplify = new JButton(SpringLocaleDelegate.getInstance().getMessage(
 			"SearchEditorPanel.1","Vereinfachen"));
 
 	public SearchEditorPanel() {
@@ -63,7 +63,7 @@ public class SearchEditorPanel extends JPanel {
 		pnlTree.add(new JScrollPane(this.tree), BorderLayout.CENTER);
 
 		pnlButtons.add(this.btnSimplify);
-		this.btnSimplify.setToolTipText(CommonLocaleDelegate.getInstance().getMessage(
+		this.btnSimplify.setToolTipText(SpringLocaleDelegate.getInstance().getMessage(
 				"SearchEditorPanel.2","Suchbedingung vereinfachen"));
 	}
 	

@@ -23,7 +23,7 @@ import java.util.List;
 import org.nuclos.common.collect.collectable.CollectableField;
 import org.nuclos.common.collect.collectable.CollectableFieldsProvider;
 import org.nuclos.common.collect.collectable.LocalizedCollectableValueField;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.KeyEnum;
 import org.nuclos.common2.Localizable;
 import org.nuclos.common2.exception.CommonBusinessException;
@@ -51,7 +51,7 @@ public class EnumCollectableFieldsProvider implements CollectableFieldsProvider 
 			Class<? extends Enum<?>> clazz = (Class<? extends Enum<?>>) Class.forName(this.showEnum).asSubclass(Enum.class);
 			for (Enum<?> e : clazz.getEnumConstants()) {
 				Object value = (e instanceof KeyEnum) ? ((KeyEnum<?>) e).getValue() : e.name();
-				String text = (e instanceof Localizable) ? CommonLocaleDelegate.getInstance().getText((Localizable) e) : e.toString();
+				String text = (e instanceof Localizable) ? SpringLocaleDelegate.getInstance().getText((Localizable) e) : e.toString();
 				CollectableField cf = new LocalizedCollectableValueField(value, text);
 				result.add(cf);
 			}

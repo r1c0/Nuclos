@@ -35,7 +35,7 @@ import org.jdesktop.swingx.renderer.LabelProvider;
 import org.nuclos.client.common.LocaleDelegate;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Transformer;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.LocaleInfo;
 
 public class TranslationPanel extends JPanel {
@@ -85,10 +85,10 @@ public class TranslationPanel extends JPanel {
 		public String getColumnName(int column) {
 			switch (column) {
 			case 0:
-				return CommonLocaleDelegate.getInstance().getMessage(
+				return SpringLocaleDelegate.getInstance().getMessage(
 						"wizard.step.entitytranslationstable.3", null);
 			case 1:
-				return CommonLocaleDelegate.getInstance().getMessage(
+				return SpringLocaleDelegate.getInstance().getMessage(
 						"wizard.step.entitytranslationstable.4", null);
 			}
 			return null;
@@ -153,7 +153,7 @@ public class TranslationPanel extends JPanel {
 		@Override
 		protected String getValueAsString(CellContext context) {
 			if (context.getValue() == null) {
-				String bestTranslation = CommonLocaleDelegate.getInstance().selectBestTranslation(translations);
+				String bestTranslation = SpringLocaleDelegate.getInstance().selectBestTranslation(translations);
 				return (bestTranslation != null) ? bestTranslation : defaultText;
 			}
 			return super.getValueAsString(context);
@@ -165,7 +165,7 @@ public class TranslationPanel extends JPanel {
 		int option =JOptionPane.showConfirmDialog(
 			parent,
 			translationPanel,
-			CommonLocaleDelegate.getInstance().getMessage("action.EditTranslationsForLocale", null),
+			SpringLocaleDelegate.getInstance().getMessage("action.EditTranslationsForLocale", null),
 			JOptionPane.OK_CANCEL_OPTION,
 			JOptionPane.PLAIN_MESSAGE);
 		if (option == JOptionPane.OK_OPTION) {

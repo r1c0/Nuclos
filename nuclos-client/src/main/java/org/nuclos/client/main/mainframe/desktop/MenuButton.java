@@ -64,7 +64,7 @@ import org.nuclos.client.synthetica.NuclosThemeSettings;
 import org.nuclos.client.ui.Icons;
 import org.nuclos.client.ui.resource.ResourceIconChooser;
 import org.nuclos.common.WorkspaceDescription;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.LangUtils;
 
 abstract class MenuButton extends DesktopItem implements DragGestureListener {
@@ -407,14 +407,14 @@ abstract class MenuButton extends DesktopItem implements DragGestureListener {
 		}
 		hideMenu();
 		
-		final CommonLocaleDelegate cld = CommonLocaleDelegate.getInstance();
+		final SpringLocaleDelegate localeDelegate = SpringLocaleDelegate.getInstance();
 		final JPopupMenu popup = new JPopupMenu();
 
-		popup.add(new JLabel("<html><b>"+ cld.getMessage("MenuButton.5", "Eigenschaften")+"</b></html>"));
+		popup.add(new JLabel("<html><b>"+ localeDelegate.getMessage("MenuButton.5", "Eigenschaften")+"</b></html>"));
 		
-		JMenu myIcons = new JMenu(cld.getMessage("MenuButton.8", "Meine Icons"));
+		JMenu myIcons = new JMenu(localeDelegate.getMessage("MenuButton.8", "Meine Icons"));
 		final JMenuItem miSelectResourceIcon = new JMenuItem(new AbstractAction(
-				cld.getMessage("MenuButton.2",
+				localeDelegate.getMessage("MenuButton.2",
 						"Standard Icon auswählen"), Icons.getInstance().getIconEmpty16()) {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -427,7 +427,7 @@ abstract class MenuButton extends DesktopItem implements DragGestureListener {
 		});
 		myIcons.add(miSelectResourceIcon);
 		final JMenuItem miSelectResourceIconHover = new JMenuItem(new AbstractAction(
-				cld.getMessage("MenuButton.7",
+				localeDelegate.getMessage("MenuButton.7",
 						"Mouseover Icon auswählen"), Icons.getInstance().getIconEmpty16()) {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -441,9 +441,9 @@ abstract class MenuButton extends DesktopItem implements DragGestureListener {
 		myIcons.add(miSelectResourceIconHover);
 		popup.add(myIcons);
 		
-		JMenu nuclosIcons = new JMenu(cld.getMessage("MenuButton.9", "Nuclos Icons"));
+		JMenu nuclosIcons = new JMenu(localeDelegate.getMessage("MenuButton.9", "Nuclos Icons"));
 		final JMenuItem miSelectNuclosIcon = new JMenuItem(new AbstractAction(
-				cld.getMessage("MenuButton.2",
+				localeDelegate.getMessage("MenuButton.2",
 						"Standard Icon auswählen"), Icons.getInstance().getIconEmpty16()) {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -458,7 +458,7 @@ abstract class MenuButton extends DesktopItem implements DragGestureListener {
 		popup.add(nuclosIcons);
 		
 		/*final JMenuItem miSelectNuclosResourceIcon = new JMenuItem(new AbstractAction(
-				CommonLocaleDelegate.getMessage("DesktopStartTab.2",
+				SpringLocaleDelegate.getMessage("DesktopStartTab.2",
 						"Ressource Icon auswählen")) {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -472,7 +472,7 @@ abstract class MenuButton extends DesktopItem implements DragGestureListener {
 		popup.add(miSelectNuclosResourceIcon);*/
 		
 		final JMenuItem miSelectAction = new JMenuItem(new AbstractAction(
-		cld.getMessage("MenuButton.3",
+		localeDelegate.getMessage("MenuButton.3",
 				"Aktion", Icons.getInstance().getIconEmpty16())) {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -492,7 +492,7 @@ abstract class MenuButton extends DesktopItem implements DragGestureListener {
 		});
 		popup.add(miSelectAction);
 		final JMenuItem miAddMenuItem = new JMenuItem(new AbstractAction(
-				cld.getMessage("MenuButton.4",
+				localeDelegate.getMessage("MenuButton.4",
 						"Menu Eintrag hinzufügen"), Icons.getInstance().getIconPlus16()) {
 					@Override
 					public void actionPerformed(ActionEvent e) {
@@ -507,7 +507,7 @@ abstract class MenuButton extends DesktopItem implements DragGestureListener {
 		
 		popup.addSeparator();
 		final JMenuItem miRemove = new JMenuItem(new AbstractAction(
-				cld.getMessage("MenuButton.6",
+				localeDelegate.getMessage("MenuButton.6",
 						"Menu Button entfernen"), Icons.getInstance().getIconMinus16()) {
 					@Override
 					public void actionPerformed(ActionEvent e) {

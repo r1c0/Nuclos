@@ -70,7 +70,7 @@ import org.nuclos.common.collect.collectable.searchcondition.CollectableSearchCo
 import org.nuclos.common.collect.collectable.searchcondition.ComparisonOperator;
 import org.nuclos.common.collect.exception.CollectableFieldFormatException;
 import org.nuclos.common2.ClientPreferences;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.PreferencesUtils;
 import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.common2.exception.PreferencesException;
@@ -497,9 +497,9 @@ public class SubFormFilter {
          }
           catch(CollectableFieldFormatException e) {
         	LOG.warn("include failed: " + e, e);
-            JOptionPane.showConfirmDialog(null, CommonLocaleDelegate.getInstance().getMessage(
+            JOptionPane.showConfirmDialog(null, SpringLocaleDelegate.getInstance().getMessage(
             		"subform.filter.exception", "Das Format der Suchkomponente '{0}' ist nicht korrekt.", cef.getLabel()), 
-            		CommonLocaleDelegate.getInstance().getMessage("subform.filter.exception.title", "Formatfehler"), 
+            		SpringLocaleDelegate.getInstance().getMessage("subform.filter.exception.title", "Formatfehler"), 
             		JOptionPane.CLOSED_OPTION, JOptionPane.ERROR_MESSAGE);
             return true;
          }
@@ -583,9 +583,9 @@ public class SubFormFilter {
    	}
    	catch(CollectableFieldFormatException e) {
     	LOG.warn("getFilterValue failed: " + e, e);
-   		JOptionPane.showConfirmDialog(null, CommonLocaleDelegate.getInstance().getMessage(
+   		JOptionPane.showConfirmDialog(null, SpringLocaleDelegate.getInstance().getMessage(
    			"subform.filter.exception", "Das Format der Suchkomponente '{0}' ist nicht korrekt.", clctcomp.getEntityField().getLabel()), 
-   			CommonLocaleDelegate.getInstance().getMessage("subform.filter.exception.title", "Formatfehler"), 
+   			SpringLocaleDelegate.getInstance().getMessage("subform.filter.exception.title", "Formatfehler"), 
    			JOptionPane.CLOSED_OPTION, JOptionPane.ERROR_MESSAGE);
    	}
    	return null;

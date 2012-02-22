@@ -19,7 +19,7 @@ package org.nuclos.common.genericobject;
 import java.util.Date;
 import java.util.prefs.Preferences;
 
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.RelativeDate;
 import org.nuclos.common.NuclosFatalException;
@@ -75,7 +75,7 @@ public class CollectableGenericObjectEntityField extends AbstractCollectableEnti
 
 	@Override
 	public String getDescription() {
-		return CommonLocaleDelegate.getInstance().getDescriptionFromAttributeCVO(attrcvo);
+		return SpringLocaleDelegate.getInstance().getDescriptionFromAttributeCVO(attrcvo);
 	}
 
 	@Override
@@ -103,7 +103,7 @@ public class CollectableGenericObjectEntityField extends AbstractCollectableEnti
 
 	@Override
 	public String getLabel() {
-		return CommonLocaleDelegate.getInstance().getLabelFromAttributeCVO(attrcvo);
+		return SpringLocaleDelegate.getInstance().getLabelFromAttributeCVO(attrcvo);
 	}
 
 	@Override

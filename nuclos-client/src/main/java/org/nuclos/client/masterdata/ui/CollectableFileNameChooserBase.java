@@ -35,7 +35,7 @@ import org.nuclos.common.collect.collectable.CollectableEntityField;
 import org.nuclos.common.collect.collectable.CollectableField;
 import org.nuclos.common.collect.collectable.CollectableValueField;
 import org.nuclos.common.collect.exception.CollectableFieldFormatException;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 
 /**
  * Base class for collectable file choosers in master data, storing file name and path instead of a file object.
@@ -158,7 +158,7 @@ public abstract class CollectableFileNameChooserBase extends AbstractCollectable
 		final JPopupMenu result = new JPopupMenu();
 
 		final JMenuItem miClear = new JMenuItem(
-				CommonLocaleDelegate.getInstance().getMessage("CollectableFileNameChooserBase.1","Zur\u00fccksetzen"));
+				SpringLocaleDelegate.getInstance().getMessage("CollectableFileNameChooserBase.1","Zur\u00fccksetzen"));
 		boolean bClearEnabled;
 		try {
 			bClearEnabled = this.getField().getValue() != null;

@@ -273,7 +273,7 @@ public class ReportCollectController extends MasterDataCollectController {
 			break;
 
 		default:
-			throw new NuclosFatalException(getCommonLocaleDelegate().getMessage(
+			throw new NuclosFatalException(getSpringLocaleDelegate().getMessage(
 					"ReportExecutionCollectController.5","Unbekannter Reporttyp: {0}", outputType));
 		}
 	}
@@ -318,7 +318,7 @@ public class ReportCollectController extends MasterDataCollectController {
 		//final JToolBar toolbar = UIUtils.createNonFloatableToolBar();
 
 		btnExportFile.setIcon(Icons.getInstance().getIconExport16());
-		btnExportFile.setToolTipText(getCommonLocaleDelegate().getMessage(
+		btnExportFile.setToolTipText(getSpringLocaleDelegate().getMessage(
 				"ReportCollectController.1", "Reportvorlage exportieren"));
 		btnExportFile.addActionListener(new ActionListener() {
 			@Override
@@ -328,7 +328,7 @@ public class ReportCollectController extends MasterDataCollectController {
 		});
 
 		btnPreview.setIcon(Icons.getInstance().getIconPlay16());
-		btnPreview.setToolTipText(getCommonLocaleDelegate().getMessage(
+		btnPreview.setToolTipText(getSpringLocaleDelegate().getMessage(
 				"ReportCollectController.2", "Layoutansicht"));
 		btnPreview.addActionListener(new ActionListener() {
 			@Override
@@ -427,10 +427,10 @@ public class ReportCollectController extends MasterDataCollectController {
 				existsAnyOutputFormat = true;
 				boolean subreportsallowed = false;
 				if (md.getField("destination").getValue() == null)
-					throw new CollectableFieldValidationException(getCommonLocaleDelegate().getMessage(
+					throw new CollectableFieldValidationException(getSpringLocaleDelegate().getMessage(
 							"ReportCollectController.4", "Bitte geben Sie f\u00fcr jedes Ausgabeformat ein Ausgabemedium an."));
 				if (md.getField("format").getValue() == null)
-					throw new CollectableFieldValidationException(getCommonLocaleDelegate().getMessage(
+					throw new CollectableFieldValidationException(getSpringLocaleDelegate().getMessage(
 							"ReportCollectController.5", "Bitte geben Sie f\u00fcr jedes Ausgabeformat ein Ausgabeformat an."));
 				final File fileSource = (md.getField("sourceFile").getValue() != null ? new File((String)md.getField("sourceFile").getValue()) : new File(""));
 				final File fileDestination  = (md.getField("parameter").getValue() != null ? new File((String)md.getField("parameter").getValue()) : new File(""));
@@ -439,56 +439,56 @@ public class ReportCollectController extends MasterDataCollectController {
 				switch (getOutputType()) {
 					case EXCEL: {
 						if ((fileSourceCollect.getName().equals("")) || (!fileSourceCollect.getName().toLowerCase().endsWith(".xls")))
-							throw new CollectableFieldValidationException(getCommonLocaleDelegate().getMessage(
+							throw new CollectableFieldValidationException(getSpringLocaleDelegate().getMessage(
 									"ReportCollectController.8", "Bitte geben Sie f\u00fcr das Ausgabeformat XLS eine MS Excel Vorlage (.xls) an."));
 						if ((!fileDestinationCollect.getName().equals("")) && (!fileDestinationCollect.isDirectory()) && (!fileDestinationCollect.getName().toLowerCase().endsWith(".xls")))
-							throw new CollectableFieldValidationException(getCommonLocaleDelegate().getMessage(
+							throw new CollectableFieldValidationException(getSpringLocaleDelegate().getMessage(
 									"ReportCollectController.9", "Bitte geben Sie f\u00fcr das Ausgabeformat XLS eine MS Excel Zieldatei (.xls) an."));
 						if ((md.getField("destination").getValue().toString().endsWith("Server")))
-							throw new CollectableFieldValidationException(getCommonLocaleDelegate().getMessage(
+							throw new CollectableFieldValidationException(getSpringLocaleDelegate().getMessage(
 									"ReportCollectController.31", "Ausgabemedium \u00fcber Server ist momentan nur f\u00fcr das Ausgabeformat PDF erlaubt."));
 						break;
 					}
 					default: {
 						if (md.getField("format").getValue().equals("DOC")) {
 							if ((fileSource.getName().equals("")) || (!fileSource.getName().toLowerCase().endsWith(".doc")))
-								throw new CollectableFieldValidationException(getCommonLocaleDelegate().getMessage(
+								throw new CollectableFieldValidationException(getSpringLocaleDelegate().getMessage(
 										"ReportCollectController.6", "Bitte geben Sie f\u00fcr das Ausgabeformat DOC eine MS Word Vorlage (.doc) an."));
 							if ((!fileDestination.getName().equals("")) && (!fileDestination.isDirectory()) && (!fileDestination.getName().toLowerCase().endsWith(".doc")))
-								throw new CollectableFieldValidationException(getCommonLocaleDelegate().getMessage(
+								throw new CollectableFieldValidationException(getSpringLocaleDelegate().getMessage(
 										"ReportCollectController.7", "Bitte geben Sie f\u00fcr das Ausgabeformat DOC eine MS Word Zieldatei (.doc) an."));
 							if ((md.getField("destination").getValue().toString().endsWith("Server")))
-								throw new CollectableFieldValidationException(getCommonLocaleDelegate().getMessage(
+								throw new CollectableFieldValidationException(getSpringLocaleDelegate().getMessage(
 										"ReportCollectController.31", "Ausgabemedium \u00fcber Server ist momentan nur f\u00fcr das Ausgabeformat PDF erlaubt."));
 						}
 						else if (md.getField("format").getValue().equals("XLS")) {
 							if ((fileSource.getName().equals("")) || (!fileSource.getName().toLowerCase().endsWith(".xls")))
-								throw new CollectableFieldValidationException(getCommonLocaleDelegate().getMessage(
+								throw new CollectableFieldValidationException(getSpringLocaleDelegate().getMessage(
 										"ReportCollectController.8", "Bitte geben Sie f\u00fcr das Ausgabeformat XLS eine MS Excel Vorlage (.xls) an."));
 							if ((!fileDestination.getName().equals("")) && (!fileDestination.isDirectory()) && (!fileDestination.getName().toLowerCase().endsWith(".xls")))
-								throw new CollectableFieldValidationException(getCommonLocaleDelegate().getMessage(
+								throw new CollectableFieldValidationException(getSpringLocaleDelegate().getMessage(
 										"ReportCollectController.9", "Bitte geben Sie f\u00fcr das Ausgabeformat XLS eine MS Excel Zieldatei (.xls) an."));
 							if ((md.getField("destination").getValue().toString().endsWith("Server")))
-								throw new CollectableFieldValidationException(getCommonLocaleDelegate().getMessage(
+								throw new CollectableFieldValidationException(getSpringLocaleDelegate().getMessage(
 										"ReportCollectController.31", "Ausgabemedium \u00fcber Server ist momentan nur f\u00fcr das Ausgabeformat PDF erlaubt."));
 						}
 						else if (md.getField("format").getValue().equals("CSV")) {
 							if ((md.getField("destination").getValue().toString().endsWith("Server")))
-								throw new CollectableFieldValidationException(getCommonLocaleDelegate().getMessage(
+								throw new CollectableFieldValidationException(getSpringLocaleDelegate().getMessage(
 										"ReportCollectController.31", "Ausgabemedium \u00fcber Server ist momentan nur f\u00fcr das Ausgabeformat PDF erlaubt."));
 						}
 						else if (md.getField("format").getValue().equals("TSV")) {
 							if ((md.getField("destination").getValue().toString().endsWith("Server")))
-								throw new CollectableFieldValidationException(getCommonLocaleDelegate().getMessage(
+								throw new CollectableFieldValidationException(getSpringLocaleDelegate().getMessage(
 										"ReportCollectController.31", "Ausgabemedium \u00fcber Server ist momentan nur f\u00fcr das Ausgabeformat PDF erlaubt."));
 						}
 						else if (md.getField("format").getValue().equals("PDF")) {
 							String fileName = fileSource.getName().toLowerCase();
 							if (fileName.isEmpty() || !(fileName.endsWith(".xml") || fileName.endsWith(".jrxml")))
-								throw new CollectableFieldValidationException(getCommonLocaleDelegate().getMessage(
+								throw new CollectableFieldValidationException(getSpringLocaleDelegate().getMessage(
 										"ReportCollectController.10", "Bitte geben Sie f\u00fcr das Ausgabeformat PDF eine Jasper Reports Vorlage (.xml, .jrxml) an."));
 							if ((!fileDestination.getName().equals("")) && (!fileDestination.isDirectory()) && (!fileDestination.getName().toLowerCase().endsWith(".pdf")))
-								throw new CollectableFieldValidationException(getCommonLocaleDelegate().getMessage(
+								throw new CollectableFieldValidationException(getSpringLocaleDelegate().getMessage(
 										"ReportCollectController.11", "Bitte geben Sie f\u00fcr das Ausgabeformat PDF eine PDF Zieldatei (.pdf) an."));
 							subreportsallowed = true;
 						}
@@ -508,7 +508,7 @@ public class ReportCollectController extends MasterDataCollectController {
 				}
 			}
 		if (!existsAnyOutputFormat)
-			throw new CollectableFieldValidationException(getCommonLocaleDelegate().getMessage(
+			throw new CollectableFieldValidationException(getSpringLocaleDelegate().getMessage(
 					"ReportCollectController.12", "Bitte geben Sie mindestens ein Ausgabeformat an."));
 	}
 
@@ -624,7 +624,7 @@ public class ReportCollectController extends MasterDataCollectController {
 			}
 
 			if (sFileName == null || clct == null) {
-				JOptionPane.showMessageDialog(getFrame(), getCommonLocaleDelegate().getMessage(
+				JOptionPane.showMessageDialog(getFrame(), getSpringLocaleDelegate().getMessage(
 						"ReportCollectController.14", "Dieses Objekt enth\u00e4lt keine Vorlagedatei."));
 				return;
 			}
@@ -632,7 +632,7 @@ public class ReportCollectController extends MasterDataCollectController {
 		else {
 			clct = getSubFormController(NuclosEntity.REPORTOUTPUT.getEntityName()).getSelectedCollectable();
 			if (clct == null) {
-				JOptionPane.showMessageDialog(getFrame(), getCommonLocaleDelegate().getMessage(
+				JOptionPane.showMessageDialog(getFrame(), getSpringLocaleDelegate().getMessage(
 						"ReportCollectController.15", "Bitte w\u00e4hlen Sie das Ausgabeformat aus, dessen Vorlagedatei exportiert werden soll."));
 				return;
 			}
@@ -640,7 +640,7 @@ public class ReportCollectController extends MasterDataCollectController {
 			sFileName = (String) clct.getValue("sourceFile");
 
 			if (sFileName == null) {
-				JOptionPane.showMessageDialog(getFrame(), getCommonLocaleDelegate().getMessage(
+				JOptionPane.showMessageDialog(getFrame(), getSpringLocaleDelegate().getMessage(
 						"ReportCollectController.16", "Das ausgew\u00e4hlte Ausgabeformat enth\u00e4lt keine Vorlagedatei."));
 				return;
 			}
@@ -648,14 +648,14 @@ public class ReportCollectController extends MasterDataCollectController {
 
 		final org.nuclos.server.report.ByteArrayCarrier bacFileContent = (org.nuclos.server.report.ByteArrayCarrier) clct.getValue("sourceFileContent");
 		if (bacFileContent == null) {
-			JOptionPane.showMessageDialog(getFrame(), getCommonLocaleDelegate().getMessage(
+			JOptionPane.showMessageDialog(getFrame(), getSpringLocaleDelegate().getMessage(
 					"ReportCollectController.17", "Die Vorlagedatei kann nicht exportiert werden, da sie noch nicht importiert wurde."));
 			return;
 		}
 
 		boolean includeSubreports = false;
 		if (clct.getDependantCollectableMasterDataMap().getValues(NuclosEntity.SUBREPORT.getEntityName()).size() > 0)
-			includeSubreports = JOptionPane.showOptionDialog(getFrame(), getCommonLocaleDelegate().getMessage(
+			includeSubreports = JOptionPane.showOptionDialog(getFrame(), getSpringLocaleDelegate().getMessage(
 					"ReportCollectController.question.exportsubreports", "Sollen Subreports exportiert werden?"), "Subreports", 
 					JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, null) == JOptionPane.YES_OPTION;
 
@@ -667,9 +667,9 @@ public class ReportCollectController extends MasterDataCollectController {
 			final File targetDirectory = fileChooser.getSelectedFile();
 			final File targetFile = new File(targetDirectory, sFileName);
 			if (targetFile.exists())
-				if (JOptionPane.showConfirmDialog(getFrame(), getCommonLocaleDelegate().getMessage(
+				if (JOptionPane.showConfirmDialog(getFrame(), getSpringLocaleDelegate().getMessage(
 						"ReportCollectController.18", "Die Datei \"{0}\" existiert bereits. Wollen Sie sie \u00fcberschreiben?", 
-						targetFile.getPath()), getCommonLocaleDelegate().getMessage(
+						targetFile.getPath()), getSpringLocaleDelegate().getMessage(
 								"ReportCollectController.19", "Vorlage exportieren"), 
 						JOptionPane.YES_NO_OPTION) != JOptionPane.YES_OPTION)
 					return;
@@ -687,16 +687,16 @@ public class ReportCollectController extends MasterDataCollectController {
 					if (subreportfilename != null) {
 						final org.nuclos.server.report.ByteArrayCarrier bacFileSubreportContent = (org.nuclos.server.report.ByteArrayCarrier) subreport.getValue("sourcefileContent");
 						if (bacFileSubreportContent == null) {
-							JOptionPane.showMessageDialog(getFrame(), getCommonLocaleDelegate().getMessage(
+							JOptionPane.showMessageDialog(getFrame(), getSpringLocaleDelegate().getMessage(
 									"ReportCollectController.17", "Die Vorlagedatei kann nicht exportiert werden, da sie noch nicht importiert wurde."));
 							continue;
 						}
 
 						File subreportFile = new File(targetDirectory, subreportfilename);
 						if (subreportFile.exists())
-							if (JOptionPane.showConfirmDialog(getFrame(), getCommonLocaleDelegate().getMessage(
+							if (JOptionPane.showConfirmDialog(getFrame(), getSpringLocaleDelegate().getMessage(
 									"ReportCollectController.18", "Die Datei \"{0}\" existiert bereits. Wollen Sie sie \u00fcberschreiben?", subreportFile.getPath()), 
-									getCommonLocaleDelegate().getMessage("ReportCollectController.19", "Vorlage exportieren"), JOptionPane.YES_NO_OPTION) != JOptionPane.YES_OPTION)
+									getSpringLocaleDelegate().getMessage("ReportCollectController.19", "Vorlage exportieren"), JOptionPane.YES_NO_OPTION) != JOptionPane.YES_OPTION)
 								continue;
 
 						try {
@@ -728,7 +728,7 @@ public class ReportCollectController extends MasterDataCollectController {
 
 						if (collReportOutputVO.size() == 0) {
 							JOptionPane.showMessageDialog(ReportCollectController.this.getFrame(),
-									getCommonLocaleDelegate().getMessage("ReportCollectController.20", "Diesem Report/Formular wurde keine Vorlage zugewiesen, dessen Layout als Vorschau angezeigt werden k\u00f6nnte."));
+									getSpringLocaleDelegate().getMessage("ReportCollectController.20", "Diesem Report/Formular wurde keine Vorlage zugewiesen, dessen Layout als Vorschau angezeigt werden k\u00f6nnte."));
 							return;
 						}
 						else if (collReportOutputVO.size() == 1)
@@ -737,7 +737,7 @@ public class ReportCollectController extends MasterDataCollectController {
 							Collectable clctReportOutput = ReportCollectController.this.getSubFormController(NuclosEntity.REPORTOUTPUT.getEntityName()).getSelectedCollectable();
 							if(clctReportOutput == null) {
 								JOptionPane.showMessageDialog(ReportCollectController.this.getFrame(),
-										getCommonLocaleDelegate().getMessage("ReportCollectController.21", "Bitte w\u00e4hlen Sie die Vorlage aus, dessen Layout als Vorschau angezeigt werden soll."));
+										getSpringLocaleDelegate().getMessage("ReportCollectController.21", "Bitte w\u00e4hlen Sie die Vorlage aus, dessen Layout als Vorschau angezeigt werden soll."));
 								return;
 							}
 							outputvo = facade.getReportOutput((Integer)clctReportOutput.getId());
@@ -745,7 +745,7 @@ public class ReportCollectController extends MasterDataCollectController {
 
 						if (outputvo == null || outputvo.getSourceFile() == null) {
 							JOptionPane.showMessageDialog(ReportCollectController.this.getFrame(),
-									getCommonLocaleDelegate().getMessage("ReportCollectController.22", "Ein Fehler bei der Anzeige des Layouts der Vorlage ist aufgetreten. M\u00f6glicherweise wurde keine Vorlage zugewiesen."));
+									getSpringLocaleDelegate().getMessage("ReportCollectController.22", "Ein Fehler bei der Anzeige des Layouts der Vorlage ist aufgetreten. M\u00f6glicherweise wurde keine Vorlage zugewiesen."));
 							return;
 						}
 
@@ -784,7 +784,7 @@ public class ReportCollectController extends MasterDataCollectController {
 
 			jrviewer = new JRViewer(jrprint);
 
-			final JFrame frame = new JFrame(getCommonLocaleDelegate().getMessage(
+			final JFrame frame = new JFrame(getSpringLocaleDelegate().getMessage(
 					"ReportCollectController.23", "Vorschau") + " " + jrprint.getName());
 			frame.getContentPane().add(jrviewer);
 
@@ -833,11 +833,11 @@ public class ReportCollectController extends MasterDataCollectController {
 					}
 					else
 						Errors.getInstance().showExceptionDialog(null,
-								getCommonLocaleDelegate().getMessage(
+								getSpringLocaleDelegate().getMessage(
 										"ReportCollectController.24", "Es kann auf die Vorlage nicht zugegriffen werden.\nFolgender Pfad wurde benutzt um auf die Vorlage zuzugreifen") + ":\n" + originalFile.getAbsolutePath(), new CommonBusinessException());
 				}
 				else
-					Errors.getInstance().showExceptionDialog(null, getCommonLocaleDelegate().getMessage(
+					Errors.getInstance().showExceptionDialog(null, getSpringLocaleDelegate().getMessage(
 							"ReportCollectController.25", "Dieses Formular/ dieser Report hat keine Vorlagedatei die ge\u00f6ffnet werden kann."), new CommonBusinessException());
 			} else {
 				String sFileName = reportOutputVO.getSourceFile();
@@ -852,11 +852,11 @@ public class ReportCollectController extends MasterDataCollectController {
 			}
 		} catch (NuclosReportException e) {
 			Errors.getInstance().showExceptionDialog(null,
-					getCommonLocaleDelegate().getMessage(
+					getSpringLocaleDelegate().getMessage(
 							"ReportCollectController.26", "Fehler beim Erstellen der Vorschau.\nEs konnte nicht auf den Inhalt der Vorlage zugegriffen werden."), e);
 		} catch (IOException e) {
 			Errors.getInstance().showExceptionDialog(null,
-					getCommonLocaleDelegate().getMessage(
+					getSpringLocaleDelegate().getMessage(
 							"ReportCollectController.27", "Die Vorschau konnte nicht gespeichert werden.\nDer Zielpfad zur Datei sollte sein") + ":\n" + targetFile.getAbsolutePath(), e);
 		}
 	}

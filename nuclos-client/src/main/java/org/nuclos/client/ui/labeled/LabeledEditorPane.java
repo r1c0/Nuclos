@@ -41,7 +41,7 @@ import org.nuclos.client.ui.Icons;
 import org.nuclos.client.ui.ToolTipTextProvider;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.common.collection.Pair;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.StringUtils;
 
@@ -70,23 +70,23 @@ public class LabeledEditorPane extends LabeledTextComponent {
 												   "InsertTableDataCell"};
 	private static final Map<String, Pair<String, Icon>> actionPresentation = new HashMap<String, Pair<String,Icon>>();
 	static {
-		final CommonLocaleDelegate cld = CommonLocaleDelegate.getInstance();
+		final SpringLocaleDelegate localeDelegate = SpringLocaleDelegate.getInstance();
 		
-		actionPresentation.put("font-bold", new Pair<String, Icon>(cld.getMessage(
+		actionPresentation.put("font-bold", new Pair<String, Icon>(localeDelegate.getMessage(
 				"CollectableEditorPane.textBold", "Fett"), Icons.getInstance().getIconTextBold()));
-		actionPresentation.put("font-italic", new Pair<String, Icon>(cld.getMessage(
+		actionPresentation.put("font-italic", new Pair<String, Icon>(localeDelegate.getMessage(
 				"CollectableEditorPane.textItalic", "Kursiv"), Icons.getInstance().getIconTextItalic()));
-		actionPresentation.put("font-underline", new Pair<String, Icon>(cld.getMessage(
+		actionPresentation.put("font-underline", new Pair<String, Icon>(localeDelegate.getMessage(
 				"CollectableEditorPane.textUnderline", "Unterstrichen"), Icons.getInstance().getIconTextUnderline()));
-		actionPresentation.put("InsertUnorderedListItem", new Pair<String, Icon>(cld.getMessage(
+		actionPresentation.put("InsertUnorderedListItem", new Pair<String, Icon>(localeDelegate.getMessage(
 				"CollectableEditorPane.listUnordered", "Unsortierte Liste"), Icons.getInstance().getIconListUnordered()));
-		actionPresentation.put("InsertOrderedListItem", new Pair<String, Icon>(cld.getMessage(
+		actionPresentation.put("InsertOrderedListItem", new Pair<String, Icon>(localeDelegate.getMessage(
 				"CollectableEditorPane.listOrdered", "Sortierte Liste"), Icons.getInstance().getIconListOrdered()));
-		actionPresentation.put("InsertTable", new Pair<String, Icon>(cld.getMessage(
+		actionPresentation.put("InsertTable", new Pair<String, Icon>(localeDelegate.getMessage(
 				"CollectableEditorPane.table", "Tabelle einfügen"), Icons.getInstance().getIconInsertTable16()));
-		actionPresentation.put("InsertTableRow", new Pair<String, Icon>(cld.getMessage(
+		actionPresentation.put("InsertTableRow", new Pair<String, Icon>(localeDelegate.getMessage(
 				"CollectableEditorPane.tableRow", "Zeile einfügen"), Icons.getInstance().getIconInsertRow16()));
-		actionPresentation.put("InsertTableDataCell", new Pair<String, Icon>(cld.getMessage(
+		actionPresentation.put("InsertTableDataCell", new Pair<String, Icon>(localeDelegate.getMessage(
 				"CollectableEditorPane.tableDataCell", "Zelle einfügen"), Icons.getInstance().getIconInsertCell16()));
 	}
 	

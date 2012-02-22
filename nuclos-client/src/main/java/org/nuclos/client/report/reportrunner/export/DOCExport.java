@@ -24,7 +24,7 @@ import org.apache.log4j.Logger;
 import org.jawin.DispatchPtr;
 import org.jawin.win32.Ole32;
 import org.nuclos.client.report.reportrunner.AbstractReportExporter;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.server.report.NuclosReportException;
 import org.nuclos.server.report.NuclosReportPrintJob;
 import org.nuclos.server.report.print.DOCPrintJob;
@@ -92,7 +92,7 @@ public class DOCExport extends AbstractReportExporter {
 
 		if (sSourceFileName == null || sSourceFileName.length() == 0) {
 			throw new NuclosReportException(
-					CommonLocaleDelegate.getInstance().getMessage(
+					SpringLocaleDelegate.getInstance().getMessage(
 							"DOCExport.1", "Word-Datei konnte nicht erstellt werden, da keine Vorlage angegeben wurde."));
 		}
 
@@ -132,8 +132,8 @@ public class DOCExport extends AbstractReportExporter {
 						DispatchPtr textinput = field.getObject("TextInput");
 						if (field != null && value != null) {
 							if (value instanceof Date) {
-								field.put("Result", CommonLocaleDelegate.getInstance().getDateFormat().format((Date) value));
-								textinput.put("Default", CommonLocaleDelegate.getInstance().getDateFormat().format((Date) value));
+								field.put("Result", SpringLocaleDelegate.getInstance().getDateFormat().format((Date) value));
+								textinput.put("Default", SpringLocaleDelegate.getInstance().getDateFormat().format((Date) value));
 							} else if (value instanceof Number) {
 								field.put("Result", value.toString());
 								textinput.put("Default", value.toString());
@@ -177,7 +177,7 @@ public class DOCExport extends AbstractReportExporter {
 		}
 		catch (Throwable e) {
 			throw new NuclosReportException(
-					CommonLocaleDelegate.getInstance().getMessage(
+					SpringLocaleDelegate.getInstance().getMessage(
 							"DOCExport.2", "Die Datei {0} konnte nicht erstellt werden", sFileName) + ":\n" + e.getMessage(), e);
 		}
 		finally {
@@ -207,7 +207,7 @@ public class DOCExport extends AbstractReportExporter {
 			}
 			catch (Throwable e) {
 				throw new NuclosReportException(
-						CommonLocaleDelegate.getInstance().getMessage(
+						SpringLocaleDelegate.getInstance().getMessage(
 								"DOCExport.2", "Die Datei {0} konnte nicht erstellt werden", sFileName) + ":\n" + e.getMessage(), e);
 			}
 		}

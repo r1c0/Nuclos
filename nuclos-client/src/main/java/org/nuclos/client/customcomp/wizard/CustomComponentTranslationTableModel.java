@@ -22,7 +22,7 @@ import java.util.List;
 import javax.swing.table.AbstractTableModel;
 
 import org.nuclos.common.TranslationVO;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 
 public class CustomComponentTranslationTableModel extends AbstractTableModel {
 
@@ -96,14 +96,14 @@ public class CustomComponentTranslationTableModel extends AbstractTableModel {
 
 	@Override
 	public String getColumnName(int column) {
-		final CommonLocaleDelegate cld = CommonLocaleDelegate.getInstance();
+		final SpringLocaleDelegate localeDelegate = SpringLocaleDelegate.getInstance();
 		switch(column) {
 			case 0:
-				return cld.getText("nuclos.resplan.l10n.language");
+				return localeDelegate.getText("nuclos.resplan.l10n.language");
 			case 1:
-				return cld.getText("nuclos.resplan.l10n.label");
+				return localeDelegate.getText("nuclos.resplan.l10n.label");
 			case 2:
-				return cld.getText("nuclos.resplan.l10n.menupath");
+				return localeDelegate.getText("nuclos.resplan.l10n.menupath");
 			default:
 				return "";
 		}

@@ -27,7 +27,7 @@ import javax.swing.Icon;
 import javax.swing.JTree;
 import javax.swing.tree.TreePath;
 
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.CommonRunnable;
 import org.nuclos.client.datasource.admin.CollectableDataSource;
 import org.nuclos.client.datasource.admin.DatasourceCollectController;
@@ -136,7 +136,7 @@ public class DatasourceExplorerNode extends AbstractDatasourceExplorerNode {
 	private static class ShowDetailsAction extends TreeNodeAction {
 
 		public ShowDetailsAction(JTree tree) {
-			super(ACTIONCOMMAND_SHOW_DETAILS, CommonLocaleDelegate.getInstance().getMessage(
+			super(ACTIONCOMMAND_SHOW_DETAILS, SpringLocaleDelegate.getInstance().getMessage(
 					"RuleExplorerNode.1","Details anzeigen"), tree);
 		}
 
@@ -160,7 +160,7 @@ public class DatasourceExplorerNode extends AbstractDatasourceExplorerNode {
 					public void run() {
 						if (datasourceVo.getPermission() == DatasourceVO.PERMISSION_NONE) {
 							Errors.getInstance().showExceptionDialog(tree, new NuclosBusinessException(
-									CommonLocaleDelegate.getInstance().getMessage(
+									SpringLocaleDelegate.getInstance().getMessage(
 											"DatasourceExplorerNode.3", "Sie haben keine Berechtigungen auf die Datenquelle {0}", datasourceVo.getName())));
 						}
 						else {

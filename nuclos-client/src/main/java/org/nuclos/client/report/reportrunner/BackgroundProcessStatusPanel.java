@@ -16,7 +16,7 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.report.reportrunner;
 
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 
 
 import java.awt.BorderLayout;
@@ -56,9 +56,9 @@ public class BackgroundProcessStatusPanel extends JPanel {
 
 	private final JTable tblStatus = new JTable(tblmodel);
 
-	private final JButton btnClear = new JButton(CommonLocaleDelegate.getInstance().getMessage(
+	private final JButton btnClear = new JButton(SpringLocaleDelegate.getInstance().getMessage(
 			"BackgroundProcessStatusPanel.4","Zur\u00fccksetzen"));
-	private final JButton btnStopProcess = new JButton(CommonLocaleDelegate.getInstance().getMessage(
+	private final JButton btnStopProcess = new JButton(SpringLocaleDelegate.getInstance().getMessage(
 			"BackgroundProcessStatusPanel.2","Prozess beenden"));
 
 	public BackgroundProcessStatusPanel() {
@@ -79,11 +79,11 @@ public class BackgroundProcessStatusPanel extends JPanel {
 		this.add(scrlpn, BorderLayout.CENTER);
 		this.add(pnlButtons, BorderLayout.SOUTH);
 
-		btnStopProcess.setToolTipText(CommonLocaleDelegate.getInstance().getMessage(
+		btnStopProcess.setToolTipText(SpringLocaleDelegate.getInstance().getMessage(
 				"BackgroundProcessStatusPanel.3","Prozesse beenden"));
 		btnStopProcess.setEnabled(false);
 		pnlButtons.add(btnStopProcess);
-		btnClear.setToolTipText(CommonLocaleDelegate.getInstance().getMessage(
+		btnClear.setToolTipText(SpringLocaleDelegate.getInstance().getMessage(
 				"BackgroundProcessStatusPanel.1","Beendete Prozesse aus der Liste entfernen"));
 		btnClear.setEnabled(false);
 		pnlButtons.add(btnClear);

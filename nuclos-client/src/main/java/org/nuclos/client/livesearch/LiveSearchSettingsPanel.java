@@ -49,7 +49,7 @@ import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Transformer;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
 import org.nuclos.common2.ClientPreferences;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.PreferencesUtils;
 import org.nuclos.common2.exception.PreferencesException;
 
@@ -71,7 +71,7 @@ public class LiveSearchSettingsPanel extends JPanel {
 			Errors.getInstance().showExceptionDialog(this, "Exception while reading the preferences.", e);
 		}
 
-		JLabel label = new JLabel(CommonLocaleDelegate.getInstance().getResource(
+		JLabel label = new JLabel(SpringLocaleDelegate.getInstance().getResource(
 				"livesearch.settings.text", ""));
 		label.setBorder(new EmptyBorder(20, 20, 20, 20));
 		add(label, BorderLayout.NORTH);

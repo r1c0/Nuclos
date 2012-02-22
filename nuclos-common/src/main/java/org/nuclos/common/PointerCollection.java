@@ -23,7 +23,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.nuclos.common.collection.multimap.MultiListHashMap;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.StringUtils;
 
 public class PointerCollection implements Serializable{
@@ -183,7 +183,7 @@ public class PointerCollection implements Serializable{
 		if (p.message == null)
 			return null;
 		
-		return CommonLocaleDelegate.getInstance().getMessage(p.message, p.message, p.localizeParameter);
+		return SpringLocaleDelegate.getInstance().getMessage(p.message, p.message, p.localizeParameter);
 	}
 	
 	public static class Pointer implements Serializable{

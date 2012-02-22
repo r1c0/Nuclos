@@ -179,7 +179,7 @@ public class XLSExport extends AbstractReportExporter {
 
 		}
 		catch (Throwable ex) {
-			throw new NuclosReportException(getCommonLocaleDelegate().getMessage(
+			throw new NuclosReportException(getSpringLocaleDelegate().getMessage(
 					"DOCExport.2", "Die Datei {0} konnte nicht erstellt werden", sFileName) + ".\n", ex);
 		}
 		finally {
@@ -213,7 +213,7 @@ public class XLSExport extends AbstractReportExporter {
 				Ole32.CoUninitialize();
 			}
 			catch (Throwable ex) {
-				throw new NuclosReportException(getCommonLocaleDelegate().getMessage(
+				throw new NuclosReportException(getSpringLocaleDelegate().getMessage(
 						"DOCExport.2", "Die Datei {0} konnte nicht erstellt werden", sFileName) + ".\n", ex);
 			}
 		}
@@ -300,7 +300,7 @@ public class XLSExport extends AbstractReportExporter {
 		final char[] acAlphabet = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'};
 		final int iLetterCount = acAlphabet.length;
 		if (iColumnIndex < 1 || iColumnIndex > 256) {
-			throw new NuclosBusinessException(getCommonLocaleDelegate().getMessage(
+			throw new NuclosBusinessException(getSpringLocaleDelegate().getMessage(
 					"XLSExport.1", "Der Excel-Spaltenindex muss zwischen 1 und 256 liegen."));
 		}
 
@@ -323,7 +323,7 @@ public class XLSExport extends AbstractReportExporter {
 			result = reportOutputVO.getSheetname();
 		}
 		if (result == null || result.equals("")) {
-			result = getCommonLocaleDelegate().getMessage("XLSExport.2", "Daten aus Nucleus");
+			result = getSpringLocaleDelegate().getMessage("XLSExport.2", "Daten aus Nucleus");
 		}
 
 		return result;

@@ -32,7 +32,7 @@ import org.nuclos.common.NuclosPassword;
 import org.nuclos.common.collect.exception.CollectableFieldValidationException;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Transformer;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.DateUtils;
 import org.nuclos.common2.InternalTimestamp;
 import org.nuclos.common2.PreferencesUtils;
@@ -82,18 +82,18 @@ public class CollectableUtils {
 
 			if (oValue instanceof Integer) {
 				if (((Integer) oValue).toString().length() > maxlength)
-					throw new CollectableFieldValidationException(CommonLocaleDelegate.getInstance().getMessage(
+					throw new CollectableFieldValidationException(SpringLocaleDelegate.getInstance().getMessage(
 							"CollectableUtils.6","Der Wert \"{0}\" ist zu gross f\u00fcr das Feld \"{1}\"", oValue, clctef.getLabel()));
 			} else if (oValue instanceof String) {
 				if (((String) oValue).length() > maxlength)
-					throw new CollectableFieldValidationException(CommonLocaleDelegate.getInstance().getMessage(
+					throw new CollectableFieldValidationException(SpringLocaleDelegate.getInstance().getMessage(
 							"CollectableUtils.7","Der Wert \"{0}\" ist zu gross f\u00fcr das Feld \"{1}\"", oValue, clctef.getLabel()));
 			} else if (oValue instanceof Double){
 
 				BigDecimal bd = BigDecimal.valueOf((Double) oValue);
 				int digitsBeforeSep = bd.precision() - bd.scale();
 				if (digitsBeforeSep > maxlength - clctef.getPrecision())
-					throw new CollectableFieldValidationException(CommonLocaleDelegate.getInstance().getMessage(
+					throw new CollectableFieldValidationException(SpringLocaleDelegate.getInstance().getMessage(
 							"CollectableUtils.8","Der Wert \"{0}\" ist zu gross f\u00fcr das Feld \"{1}\"", oValue, clctef.getLabel()));
 			}
 		}
@@ -110,10 +110,10 @@ public class CollectableUtils {
 		if (clctf.getFieldType() != clctef.getFieldType() && !NuclosEOField.isEOFieldWithForceValueSearch(clctef.getName())) {
 			String msg;
 			if(clctef.getFieldType() == CollectableEntityField.TYPE_VALUEFIELD)
-				msg = CommonLocaleDelegate.getInstance().getMessage(
+				msg = SpringLocaleDelegate.getInstance().getMessage(
 						"CollectableUtils.2","Das Feld \"{0}\" darf keine Id enthalten.", clctef.getLabel());
 			else
-				msg = CommonLocaleDelegate.getInstance().getMessage(
+				msg = SpringLocaleDelegate.getInstance().getMessage(
 						"CollectableUtils.4","Das Feld \"{0}\" muss eine Id enthalten.", clctef.getLabel());
 			throw new CollectableFieldValidationException(msg);
 		}
@@ -129,7 +129,7 @@ public class CollectableUtils {
 			throws CollectableFieldValidationException {
 		// check null/nullable:
 		if (clctf.isNull() && !clctef.isNullable()) {
-			String msg = CommonLocaleDelegate.getInstance().getMessage(
+			String msg = SpringLocaleDelegate.getInstance().getMessage(
 					"CollectableUtils.3","Das Feld \"{0}\" darf nicht leer sein.", clctef.getLabel());
 			throw new CollectableFieldValidationException(msg);
 		}
@@ -158,7 +158,7 @@ public class CollectableUtils {
 			}
 			//NUCLEUSINT-1142
 			if (!clsEntity.isAssignableFrom(clsValue) && !NuclosPassword.class.equals(clsEntity)) {
-				String msg = CommonLocaleDelegate.getInstance().getMessage(
+				String msg = SpringLocaleDelegate.getInstance().getMessage(
 						"CollectableUtils.5","Der Wert \"{0}\" hat nicht den f\u00fcr das Feld \"{1}\" vorgeschriebenen Datentyp {2}, sondern den Datentyp {3}.", oValue, clctef.getLabel(), clsEntity.getName(), clsValue.getName());
 				throw new CollectableFieldValidationException(msg);
 			}
@@ -207,7 +207,7 @@ public class CollectableUtils {
 					break;
 				}
 				default:
-					throw new CommonFatalException(CommonLocaleDelegate.getInstance().getMessage(
+					throw new CommonFatalException(SpringLocaleDelegate.getInstance().getMessage(
 							"CollectableUtils.11","Unbekannter Feldtyp: {0}", iFieldType));
 			}
 		}
@@ -295,7 +295,7 @@ public class CollectableUtils {
 				result = CollectableValueIdField.NULL;
 				break;
 			default:
-				throw new IllegalStateException(CommonLocaleDelegate.getInstance().getMessage(
+				throw new IllegalStateException(SpringLocaleDelegate.getInstance().getMessage(
 						"CollectableUtils.9","Invalid fieldtype: {0}", iFieldType));
 		}
 		assert result != null;

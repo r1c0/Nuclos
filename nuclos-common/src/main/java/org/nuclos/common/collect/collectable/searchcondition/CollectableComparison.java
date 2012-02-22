@@ -32,7 +32,7 @@ import org.nuclos.common.collect.collectable.CollectableValueField;
 import org.nuclos.common.collect.collectable.CollectableValueIdField;
 import org.nuclos.common.collect.collectable.searchcondition.visit.AtomicVisitor;
 import org.nuclos.common.collection.CollectionUtils;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 
 /**
  * A comparison with a value as a <code>CollectableSearchCondition</code>.
@@ -119,7 +119,7 @@ public final class CollectableComparison extends AtomicCollectableSearchConditio
 		String format = field.getFormatOutput();
 		if (format == null) {
 			if (Date.class.isAssignableFrom(field.getJavaClass())) {
-				return CommonLocaleDelegate.getInstance().getDateFormat().format(comparand.getValue());
+				return SpringLocaleDelegate.getInstance().getDateFormat().format(comparand.getValue());
 			}
 		}
 		if (format == null) {

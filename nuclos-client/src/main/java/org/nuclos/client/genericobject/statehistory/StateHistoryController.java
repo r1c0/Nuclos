@@ -41,7 +41,7 @@ import org.nuclos.client.ui.Controller;
 import org.nuclos.client.ui.Errors;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.common.NuclosFatalException;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.server.genericobject.valueobject.GenericObjectWithDependantsVO;
 import org.nuclos.server.statemodel.valueobject.StateHistoryVO;
@@ -141,11 +141,11 @@ public class StateHistoryController extends Controller {
 	}
 
 	private static String getTitle(String sGenericObjectIdentifier, int iGenericObjectId, int iModuleId) {
-		final StringBuffer sbTitle = new StringBuffer(CommonLocaleDelegate.getInstance().getMessage(
+		final StringBuffer sbTitle = new StringBuffer(SpringLocaleDelegate.getInstance().getMessage(
 				"StateHistoryController.1", "Statushistorie f\u00fcr") + " ");
 
 		if (sGenericObjectIdentifier == null) {
-			sbTitle.append(CommonLocaleDelegate.getInstance().getMessage(
+			sbTitle.append(SpringLocaleDelegate.getInstance().getMessage(
 					"LogbookController.13", "das Objekt mit der Id") + " ");
 			sbTitle.append(Integer.toString(iGenericObjectId));
 		}

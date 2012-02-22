@@ -26,7 +26,7 @@ import org.nuclos.client.ui.Errors;
 import org.nuclos.client.ui.collect.model.SortableCollectableTableModel;
 import org.nuclos.common.collect.collectable.CollectableEntity;
 import org.nuclos.common.collect.collectable.CollectableSorting;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.exception.CommonBusinessException;
 
 /**
@@ -60,7 +60,7 @@ public class LayoutResultController<Clct extends CollectableMasterDataWithDepend
 		for (SortKey sortKey : sortKeys) {
 			final String fieldName = rtm.getCollectableEntityField(sortKey.getColumn()).getName();
 			if(fieldName.equals("layoutML")){
-				Errors.getInstance().showExceptionDialog(controller.getFrame(), CommonLocaleDelegate.getInstance().getMessage(
+				Errors.getInstance().showExceptionDialog(controller.getFrame(), SpringLocaleDelegate.getInstance().getMessage(
 						"LayoutCollectController.7","Eine Sortierung nach der Spalte \"LayoutML\" ist nicht durchf\u00fchrbar."), new CommonBusinessException(""));
 				rtm.setSortKeys(controller.getLastSortKeys(), false);
 				valid = false;

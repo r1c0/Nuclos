@@ -70,7 +70,7 @@ import org.nuclos.common.NuclosImage;
 import org.nuclos.common.collect.collectable.CollectableField;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Pair;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonValidationException;
@@ -514,11 +514,11 @@ public class StateModelEditor2 extends JPanel {
 			child.setVertex(true);
 			model.add(parent, child, index++);
 					
-			statevo.setStatename(CommonLocaleDelegate.getInstance().getResource(
+			statevo.setStatename(SpringLocaleDelegate.getInstance().getResource(
 					StateDelegate.getInstance().getResourceSIdForName(
 							statevo.getId()), statevo.getStatename()));
 			//LocaleDelegate.getInstance().getResourceByIntId(StateDelegate.getInstance().getResourceIdForName(statevo.getId())));
-			statevo.setDescription(CommonLocaleDelegate.getInstance().getResource(
+			statevo.setDescription(SpringLocaleDelegate.getInstance().getResource(
 					StateDelegate.getInstance().getResourceSIdForDescription(
 							statevo.getId()), statevo.getDescription()));
 			//LocaleDelegate.getInstance().getResourceByIntId(StateDelegate.getInstance().getResourceIdForDescription(statevo.getId())));

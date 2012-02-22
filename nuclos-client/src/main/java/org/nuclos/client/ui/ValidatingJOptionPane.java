@@ -31,7 +31,7 @@ import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.exception.CommonBusinessException;
 
 /**
@@ -63,7 +63,7 @@ public abstract class ValidatingJOptionPane extends JOptionPane {
 		private Component compInvalid;
 
 		public ErrorInfo() {
-			this(CommonLocaleDelegate.getInstance().getMessage("ValidatingJOptionPane.1", "Ung\u00fcltige Eingabe."), null);
+			this(SpringLocaleDelegate.getInstance().getMessage("ValidatingJOptionPane.1", "Ung\u00fcltige Eingabe."), null);
 		}
 
 		public ErrorInfo(String sMessage, Component compInvalid) {
@@ -279,7 +279,7 @@ public abstract class ValidatingJOptionPane extends JOptionPane {
 							final String sErrorMsg = ex.getErrorMessage();
 							if (sErrorMsg != null) {
 								JOptionPane.showMessageDialog(result, sErrorMsg, 
-										CommonLocaleDelegate.getInstance().getMessage(
+										SpringLocaleDelegate.getInstance().getMessage(
 												"ValidatingJOptionPane.2", "Fehler"), JOptionPane.ERROR_MESSAGE);
 							}
 

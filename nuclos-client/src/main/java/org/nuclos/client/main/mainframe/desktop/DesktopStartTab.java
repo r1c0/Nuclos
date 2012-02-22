@@ -57,7 +57,7 @@ import org.nuclos.client.ui.Icons;
 import org.nuclos.client.ui.WrapLayout;
 import org.nuclos.common.WorkspaceDescription;
 import org.nuclos.common.WorkspaceDescription.Desktop;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
@@ -79,12 +79,12 @@ public abstract class DesktopStartTab {
 
 	private final List<DesktopItem> desktopItems = new ArrayList<DesktopItem>();
 	
-	private CommonLocaleDelegate cld;
+	private SpringLocaleDelegate localeDelegate;
 	
 	private ResourceCache resourceCache;
 	
 	private final Action actAddMenubutton = new AbstractAction(
-			cld.getMessage("DesktopStartTab.1", "Menu Button hinzufügen"), 
+			localeDelegate.getMessage("DesktopStartTab.1", "Menu Button hinzufügen"), 
 			Icons.getInstance().getIconPlus16()) {
 		@Override
 		public void actionPerformed(ActionEvent e) {
@@ -95,7 +95,7 @@ public abstract class DesktopStartTab {
 	};
 	
 	private final Action actEditDesktop = new AbstractAction(
-			cld.getMessage("DesktopStartTab.2", "Desktop Eigenschaften"), 
+			localeDelegate.getMessage("DesktopStartTab.2", "Desktop Eigenschaften"), 
 			Icons.getInstance().getIconEdit16()) {
 		@Override
 		public void actionPerformed(ActionEvent e) {
@@ -120,7 +120,7 @@ public abstract class DesktopStartTab {
 	};
 	
 	private final Action actHideDesktop = new AbstractAction(
-			cld.getMessage("DesktopStartTab.3", "Desktop ausblenden"), 
+			localeDelegate.getMessage("DesktopStartTab.3", "Desktop ausblenden"), 
 			Icons.getInstance().getIconEmpty16()) {
 		@Override
 		public void actionPerformed(ActionEvent e) {
@@ -129,7 +129,7 @@ public abstract class DesktopStartTab {
 	};
 	
 	private final Action actHideToolBar = new AbstractAction(
-			cld.getMessage("DesktopStartTab.4", "Symbolleiste ausblenden",
+			localeDelegate.getMessage("DesktopStartTab.4", "Symbolleiste ausblenden",
 			Icons.getInstance().getIconEmpty16())) {
 		@Override
 		public void actionPerformed(ActionEvent e) {
@@ -139,7 +139,7 @@ public abstract class DesktopStartTab {
 	};
 	
 	private final Action actRestoreDesktop = new AbstractAction(
-			cld.getMessage("DesktopStartTab.5", "Auf Vorlage zurücksetzen"), 
+			localeDelegate.getMessage("DesktopStartTab.5", "Auf Vorlage zurücksetzen"), 
 			Icons.getInstance().getIconUndo16()) {
 		@Override
 		public void actionPerformed(ActionEvent e) {
@@ -195,8 +195,8 @@ public abstract class DesktopStartTab {
 	}
 	
 	@Autowired
-	void setCommonLocaleDelegate(CommonLocaleDelegate cld) {
-		this.cld = cld;
+	void setSpringLocaleDelegate(SpringLocaleDelegate cld) {
+		this.localeDelegate = cld;
 	}
 	
 	public abstract void hide();

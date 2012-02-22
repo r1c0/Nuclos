@@ -72,7 +72,7 @@ import org.nuclos.common.collect.collectable.CollectableEntityField;
 import org.nuclos.common.collect.collectable.CollectableValueField;
 import org.nuclos.common.collect.exception.CollectableFieldFormatException;
 import org.nuclos.common.collection.CollectionUtils;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.CommonRunnable;
 import org.nuclos.common2.EntityAndFieldName;
 import org.nuclos.common2.IOUtils;
@@ -114,7 +114,7 @@ public abstract class LayoutCollectController extends MasterDataCollectControlle
 
 		@Override
 		public String getDescription() {
-			return getCommonLocaleDelegate().getMessage("LayoutCollectController.12","LayoutML-Dateien (*.layoutml)");
+			return getSpringLocaleDelegate().getMessage("LayoutCollectController.12","LayoutML-Dateien (*.layoutml)");
 		}
 	};
 	protected final FileFilter filefilterXml = new FileFilter() {
@@ -125,7 +125,7 @@ public abstract class LayoutCollectController extends MasterDataCollectControlle
 
 		@Override
 		public String getDescription() {
-			return getCommonLocaleDelegate().getMessage("LayoutCollectController.18","XML-Dateien (*.xml)");
+			return getSpringLocaleDelegate().getMessage("LayoutCollectController.18","XML-Dateien (*.xml)");
 		}
 	};
 
@@ -190,7 +190,7 @@ public abstract class LayoutCollectController extends MasterDataCollectControlle
 		//final JToolBar toolbarCustomDetails = UIUtils.createNonFloatableToolBar();
 
 		final JButton btnTest = new JButton(Icons.getInstance().getIconTest());
-		btnTest.setToolTipText(getCommonLocaleDelegate().getMessage("LayoutCollectController.14","Layout testen"));
+		btnTest.setToolTipText(getSpringLocaleDelegate().getMessage("LayoutCollectController.14","Layout testen"));
 		btnTest.setMnemonic('T');
 		btnTest.addActionListener(new ActionListener() {
 			@Override
@@ -202,7 +202,7 @@ public abstract class LayoutCollectController extends MasterDataCollectControlle
 		this.getDetailsPanel().addToolBarComponent(btnTest);
 
 		final JButton btnImport = new JButton(Icons.getInstance().getIconImport16());
-		btnImport.setToolTipText(getCommonLocaleDelegate().getMessage("LayoutCollectController.11","Layout importieren"));
+		btnImport.setToolTipText(getSpringLocaleDelegate().getMessage("LayoutCollectController.11","Layout importieren"));
 		btnImport.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent ev) {
@@ -213,7 +213,7 @@ public abstract class LayoutCollectController extends MasterDataCollectControlle
 		this.getDetailsPanel().addToolBarComponent(btnImport);
 
 		final JButton btnExport = new JButton(Icons.getInstance().getIconExport16());
-		btnExport.setToolTipText(getCommonLocaleDelegate().getMessage("LayoutCollectController.10","Layout exportieren"));
+		btnExport.setToolTipText(getSpringLocaleDelegate().getMessage("LayoutCollectController.10","Layout exportieren"));
 		btnExport.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent ev) {
@@ -254,7 +254,7 @@ public abstract class LayoutCollectController extends MasterDataCollectControlle
 							importXml(file);
 						} catch (IOException ex) {
 							Errors.getInstance().showExceptionDialog(getFrame(), 
-									getCommonLocaleDelegate().getMessage(
+									getSpringLocaleDelegate().getMessage(
 											"LayoutCollectController.3","Beim Lesen der Datei ist ein Fehler aufgetreten."), ex);
 						} catch (/* CommonBusiness */ Exception ex) {
 							Errors.getInstance().showExceptionDialog(getFrame(), ex.getMessage(), ex);
@@ -280,9 +280,9 @@ public abstract class LayoutCollectController extends MasterDataCollectControlle
 
 			boolean bDoExport = true;
 			if (file.exists()) {
-				final String sMessage = getCommonLocaleDelegate().getMessage(
+				final String sMessage = getSpringLocaleDelegate().getMessage(
 						"LayoutCollectController.6","Die angegebene Datei (\"{0}\") existiert schon. Soll sie \u00fcberschrieben werden?", file.getName());
-				final int iBtnConfirm = JOptionPane.showConfirmDialog(this.getFrame(), sMessage, getCommonLocaleDelegate().getMessage(
+				final int iBtnConfirm = JOptionPane.showConfirmDialog(this.getFrame(), sMessage, getSpringLocaleDelegate().getMessage(
 						"LayoutCollectController.9","Layout-Export"), JOptionPane.OK_CANCEL_OPTION);
 				bDoExport = (iBtnConfirm == JOptionPane.OK_OPTION);
 			}
@@ -331,7 +331,7 @@ public abstract class LayoutCollectController extends MasterDataCollectControlle
 				}
 
 				final String sLayoutName = (String) getDetailsPanel().getEditModel().getCollectableComponentModelFor("name").getField().getValue();
-				String sTitle = getCommonLocaleDelegate().getMessage("LayoutCollectController.13","LayoutML Test");
+				String sTitle = getSpringLocaleDelegate().getMessage("LayoutCollectController.13","LayoutML Test");
 				if (sLayoutName != null) {
 					sTitle += ": " + sLayoutName;
 				}
@@ -477,21 +477,21 @@ public abstract class LayoutCollectController extends MasterDataCollectControlle
 
 	private static String getTooltipText(CollectableComponent clctcomp) {
 		final CollectableEntityField clctef = clctcomp.getEntityField();
-		return "<html>" + "<b>"+CommonLocaleDelegate.getInstance().getMessage("LayoutCollectController.2","Attributname:")+"</b> " 
+		return "<html>" + "<b>"+SpringLocaleDelegate.getInstance().getMessage("LayoutCollectController.2","Attributname:")+"</b> " 
 				+ clctcomp.getFieldName() + "<br>" + "<b>"
-				+ CommonLocaleDelegate.getInstance().getMessage("LayoutCollectController.17","Min. Breite/H\u00f6he in Pixeln:")
+				+ SpringLocaleDelegate.getInstance().getMessage("LayoutCollectController.17","Min. Breite/H\u00f6he in Pixeln:")
 				+ "</b> " + getText(clctcomp.getJComponent().getMinimumSize()) + "<br>" + "<b>"
-				+ CommonLocaleDelegate.getInstance().getMessage("LayoutCollectController.15","Max. Breite/H\u00f6he in Pixeln:")
+				+ SpringLocaleDelegate.getInstance().getMessage("LayoutCollectController.15","Max. Breite/H\u00f6he in Pixeln:")
 				+ "</b>" + getText(clctcomp.getJComponent().getMaximumSize()) + "<br>" + "<b>"
-				+ CommonLocaleDelegate.getInstance().getMessage("LayoutCollectController.5","Bevorz. Breite/H\u00f6he in Pixeln:")
+				+ SpringLocaleDelegate.getInstance().getMessage("LayoutCollectController.5","Bevorz. Breite/H\u00f6he in Pixeln:")
 				+ "</b>" + getText(clctcomp.getJComponent().getPreferredSize()) + "<br>" + "<b>"
-				+ CommonLocaleDelegate.getInstance().getMessage("LayoutCollectController.1","Anzeigename des Attributs:")+"</b> " 
+				+ SpringLocaleDelegate.getInstance().getMessage("LayoutCollectController.1","Anzeigename des Attributs:")+"</b> " 
 				+ clctef.getLabel() + "<br>"
-				+ "<b>"+ CommonLocaleDelegate.getInstance().getMessage("LayoutCollectController.16","Maximall\u00e4nge des Attributs:")
+				+ "<b>"+ SpringLocaleDelegate.getInstance().getMessage("LayoutCollectController.16","Maximall\u00e4nge des Attributs:")
 				+ "</b> " + LangUtils.defaultIfNull(LangUtils.toString(clctef.getMaxLength()), "&lt;keine&gt;") + "<br>" + "<b>"
-				+ CommonLocaleDelegate.getInstance().getMessage("LayoutCollectController.8","Komponentenklasse:")
+				+ SpringLocaleDelegate.getInstance().getMessage("LayoutCollectController.8","Komponentenklasse:")
 				+ "</b> " + clctcomp.getClass().getSimpleName() + "<br>" + "<b>"
-				+ CommonLocaleDelegate.getInstance().getMessage("LayoutCollectController.4","Beschreibung des Attributs:")
+				+ SpringLocaleDelegate.getInstance().getMessage("LayoutCollectController.4","Beschreibung des Attributs:")
 				+ "</b><br>" + htmlFormatted(clctef.getDescription(), 60) + "</html>";
 	}
 

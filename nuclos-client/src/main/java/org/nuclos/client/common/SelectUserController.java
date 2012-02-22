@@ -22,7 +22,7 @@ import java.util.List;
 import org.nuclos.client.masterdata.ui.ColorCellRenderer;
 import org.nuclos.client.ui.DefaultSelectObjectsPanel;
 import org.nuclos.client.ui.SelectObjectsController;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataWithDependantsVOWrapper;
 
@@ -49,9 +49,9 @@ public class SelectUserController<T extends MasterDataVO> extends SelectObjectsC
 
 			this.btnLeft.setToolTipText(text3);
 			this.btnRight.setToolTipText(text4);
-			this.btnUp.setToolTipText(CommonLocaleDelegate.getInstance().getMessage(
+			this.btnUp.setToolTipText(SpringLocaleDelegate.getInstance().getMessage(
 					"SelectUserController.1", "Markierte Benutzer nach oben verschieben"));
-			this.btnDown.setToolTipText(CommonLocaleDelegate.getInstance().getMessage(
+			this.btnDown.setToolTipText(SpringLocaleDelegate.getInstance().getMessage(
 					"SelectUserController.2", "Markierte Benutzer nach unten verschieben"));
 
 			this.btnUp.setVisible(false);
@@ -69,10 +69,10 @@ public class SelectUserController<T extends MasterDataVO> extends SelectObjectsC
 		this.getPanel().getJListSelectedObjects().setCellRenderer(new ColorCellRenderer());
 
 		String tooltipTxt = "<html>";
-		tooltipTxt += getCommonLocaleDelegate().getMessage("SelectUserController.3", "Beim Synchronisieren:") + "<br>";
-		tooltipTxt += getCommonLocaleDelegate().getMessage("SelectUserController.4", "gelb - Benutzer wird in Nuclos angelegt.") + "<br>";
-		tooltipTxt += getCommonLocaleDelegate().getMessage("SelectUserController.5", "blau - Benutzerdaten werden in Nuclos aktualisiert.") + "<br>";
-		tooltipTxt += getCommonLocaleDelegate().getMessage("SelectUserController.6", "rot  - Benutzer wird in Nuclos gel\u00f6scht.") + "<br>";
+		tooltipTxt += getSpringLocaleDelegate().getMessage("SelectUserController.3", "Beim Synchronisieren:") + "<br>";
+		tooltipTxt += getSpringLocaleDelegate().getMessage("SelectUserController.4", "gelb - Benutzer wird in Nuclos angelegt.") + "<br>";
+		tooltipTxt += getSpringLocaleDelegate().getMessage("SelectUserController.5", "blau - Benutzerdaten werden in Nuclos aktualisiert.") + "<br>";
+		tooltipTxt += getSpringLocaleDelegate().getMessage("SelectUserController.6", "rot  - Benutzer wird in Nuclos gel\u00f6scht.") + "<br>";
 		tooltipTxt += "</html>";
 		this.getPanel().getJListAvailableObjects().setToolTipText(tooltipTxt);
 		this.getPanel().getJListSelectedObjects().setToolTipText(tooltipTxt);

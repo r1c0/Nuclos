@@ -50,7 +50,7 @@ import org.nuclos.common.collect.collectable.DefaultCollectableEntityProvider;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableComparison;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableSearchCondition;
 import org.nuclos.common.collect.collectable.searchcondition.ComparisonOperator;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.DateUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.fileimport.CommonParseException;
@@ -94,7 +94,7 @@ public class FileImportController<Clct extends Collectable> {
 
 		@Override
 		public String getDescription() {
-			return CommonLocaleDelegate.getInstance().getMessage(
+			return SpringLocaleDelegate.getInstance().getMessage(
 					"FileImport.1", "Strukturierte ASCII-Dateien (*.cvs,*.asc,*.txt)");
 		}
 	};
@@ -113,7 +113,7 @@ public class FileImportController<Clct extends Collectable> {
 	}
 
 	public void run(final String sTarget) {
-		final CommonLocaleDelegate cld = CommonLocaleDelegate.getInstance();
+		final SpringLocaleDelegate localeDelegate = SpringLocaleDelegate.getInstance();
 		final FileImportPanel pnlImport = new FileImportPanel();
 
 		Integer iTargetId = null;
@@ -128,9 +128,9 @@ public class FileImportController<Clct extends Collectable> {
 			sTargetLabel = (String) mdcvo.getField("name");
 		}
 		if (iTargetId == null) {
-			JOptionPane.showMessageDialog(clct.getFrame(), cld.getMessage(
+			JOptionPane.showMessageDialog(clct.getFrame(), localeDelegate.getMessage(
 					"FileImport.2", "Es kann kein Importziel f\u00fcr {0} gefunden werden.", sTargetLabel), 
-					cld.getMessage("FileImport.3", "Fehler beim Import"), JOptionPane.ERROR_MESSAGE);
+					localeDelegate.getMessage("FileImport.3", "Fehler beim Import"), JOptionPane.ERROR_MESSAGE);
 		}
 
 		final CollectableEntityField clctef = DefaultCollectableEntityProvider.getInstance().getCollectableEntity(NuclosEntity.IMPORT.getEntityName()).getEntityField("importtarget");
@@ -152,17 +152,17 @@ public class FileImportController<Clct extends Collectable> {
 		});
 
 		final ValidatingJOptionPane optionPane = new ValidatingJOptionPane(clct.getFrame(), 
-				cld.getMessage("FileImport.6", "Import"), pnlImport) {
+				localeDelegate.getMessage("FileImport.6", "Import"), pnlImport) {
 
 			@Override
 			protected void validateInput() throws ValidatingJOptionPane.ErrorInfo {
 				if (pnlImport.tfFile.getText().equals("")) {
-					throw new ValidatingJOptionPane.ErrorInfo(cld.getMessage(
+					throw new ValidatingJOptionPane.ErrorInfo(localeDelegate.getMessage(
 							"FileImport.4", "Es wurde keine zu importierende Datei angegeben."), pnlImport.tfFile);
 				}
 				else {
 					if (pnlImport.cbImportStructure.getSelectedItem() == null) {
-						throw new ValidatingJOptionPane.ErrorInfo(cld.getMessage(
+						throw new ValidatingJOptionPane.ErrorInfo(localeDelegate.getMessage(
 								"FileImport.5", "Es wurde keine anzuwendende Strukturtabelle angegeben."), pnlImport.cbImportStructure);
 					}
 					else {
@@ -188,7 +188,7 @@ public class FileImportController<Clct extends Collectable> {
 								catch (InterruptedException e) {
 									Thread.currentThread().interrupt();
 									setBackgroundProcessFinishedStatus(entry, BackgroundProcessInfo.Status.CANCELLED, 
-											cld.getMessage("FileImport.7", "Der Prozess wird unterbrochen."));
+											localeDelegate.getMessage("FileImport.7", "Der Prozess wird unterbrochen."));
 								}
 							}
 
@@ -219,12 +219,12 @@ public class FileImportController<Clct extends Collectable> {
 								super.paint();
 								if(this.entry != null && this.entry.getStatus() == BackgroundProcessInfo.Status.CANCELLED){
 									setBackgroundProcessFinishedStatus(entry, BackgroundProcessInfo.Status.ERROR, 
-											cld.getMessage("FileImport.8", "Der Import wurde abgebrochen. Es konnten nicht alle Daten importiert werden."));
+											localeDelegate.getMessage("FileImport.8", "Der Import wurde abgebrochen. Es konnten nicht alle Daten importiert werden."));
 								} else {
 									setBackgroundProcessFinishedStatus(entry, BackgroundProcessInfo.Status.DONE, getImportSuccessMessage(fileImport));
 									final JPanel pnlResult = getImportResultPanel(fileImport);
 									JOptionPane.showMessageDialog(clct.getFrame(), pnlResult, 
-											cld.getMessage("FileImport.6", "Import"), JOptionPane.INFORMATION_MESSAGE);
+											localeDelegate.getMessage("FileImport.6", "Import"), JOptionPane.INFORMATION_MESSAGE);
 									//JOptionPane.showMessageDialog(parent, "Import erfolgreich abgeschlossen. Es wurden " + fileImport.getCountCreated() + " Datens\u00e4tze erstellt und " + fileImport.getCountUpdated() + " Datens\u00e4tze aktualisiert.\n" + fileImport.getCountError() + " Datens\u00e4tze konnten nicht importiert werden.", "Import", JOptionPane.INFORMATION_MESSAGE);
 								}
 								clct.getResultController().getSearchResultStrategy().cmdRefreshResult();
@@ -233,7 +233,7 @@ public class FileImportController<Clct extends Collectable> {
 							@Override
 							public void handleError(Exception ex) {
 								setBackgroundProcessFinishedStatus(entry, BackgroundProcessInfo.Status.ERROR, 
-										cld.getMessage("FileImport.9", "Import fehlgeschlagen."));
+										localeDelegate.getMessage("FileImport.9", "Import fehlgeschlagen."));
 								Errors.getInstance().showExceptionDialog(clct.getFrame(), ex);
 							}
 							
@@ -258,7 +258,7 @@ public class FileImportController<Clct extends Collectable> {
 									final JScrollPane scrPane = new JScrollPane();
 									scrPane.getViewport().add(taErrors);
 									scrPane.setBorder(BorderFactory.createTitledBorder(
-											cld.getMessage("FileImport.10", "Liste der Fehlermeldungen")));
+											localeDelegate.getMessage("FileImport.10", "Liste der Fehlermeldungen")));
 									pnlResult.add(scrPane, BorderLayout.CENTER);
 								}
 								pnlResult.validate();
@@ -266,7 +266,7 @@ public class FileImportController<Clct extends Collectable> {
 							}
 
 							private String getImportSuccessMessage(FileImport fileImport) {
-								return cld.getMessage("FileImport.11", "Import erfolgreich abgeschlossen. Es wurden {0} Datens\u00e4tze erstellt und {1} Datens\u00e4tze aktualisiert.\n{2} Datens\u00e4tze konnten nicht importiert werden.", fileImport.getCountCreated(), fileImport.getCountUpdated(), fileImport.getCountError());
+								return localeDelegate.getMessage("FileImport.11", "Import erfolgreich abgeschlossen. Es wurden {0} Datens\u00e4tze erstellt und {1} Datens\u00e4tze aktualisiert.\n{2} Datens\u00e4tze konnten nicht importiert werden.", fileImport.getCountCreated(), fileImport.getCountUpdated(), fileImport.getCountError());
 								//"Import erfolgreich abgeschlossen. Es wurden " + fileImport.getCountCreated() +
 									//	" Datens\u00e4tze erstellt und " + fileImport.getCountUpdated() + " Datens\u00e4tze aktualisiert.\n" +
 										//fileImport.getCountError() + " Datens\u00e4tze konnten nicht importiert werden.";
@@ -274,7 +274,7 @@ public class FileImportController<Clct extends Collectable> {
 						};					
 						final BackgroundProcessStatusDialog dlgStatus = BackgroundProcessStatusController.getStatusDialog(UIUtils.getFrameForComponent(clct.getFrame().getParent()));
 						Future<?> future = CommonMultiThreader.getInstance().executeInterruptible(workerAdapter);		
-						BackgroundProcessTableEntry entry = new BackgroundProcessTableEntry(cld.getMessage(
+						BackgroundProcessTableEntry entry = new BackgroundProcessTableEntry(localeDelegate.getMessage(
 								"FileImport.12", "Dateiimport: {0}", file.getName()), 
 							BackgroundProcessInfo.Status.RUNNING, DateUtils.now(), future);
 						workerAdapter.setBackgroundProcessTableEntry(entry);
@@ -307,8 +307,8 @@ public class FileImportController<Clct extends Collectable> {
 			this.add(pnlWest, BorderLayout.WEST);
 			this.add(pnlEast, BorderLayout.CENTER);
 
-			pnlWest.add(new JLabel(CommonLocaleDelegate.getInstance().getMessage("FileImport.13", "Zu importierende Datei:")));
-			pnlWest.add(new JLabel(CommonLocaleDelegate.getInstance().getMessage("FileImport.14", "Anzuwendende Strukturtabelle:")));
+			pnlWest.add(new JLabel(SpringLocaleDelegate.getInstance().getMessage("FileImport.13", "Zu importierende Datei:")));
+			pnlWest.add(new JLabel(SpringLocaleDelegate.getInstance().getMessage("FileImport.14", "Anzuwendende Strukturtabelle:")));
 
 			pnlEast.add(pnlFileChooser);
 			pnlEast.add(cbImportStructure);

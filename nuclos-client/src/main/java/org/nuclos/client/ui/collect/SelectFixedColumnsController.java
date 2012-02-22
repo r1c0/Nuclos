@@ -201,7 +201,7 @@ public class SelectFixedColumnsController extends SelectObjectsController<Collec
 
 		if (lstNotSelected.size() == 0) {
 			JOptionPane.showMessageDialog(this.getParent(), 
-					getCommonLocaleDelegate().getMessage(
+					getSpringLocaleDelegate().getMessage(
 							"SelectFixedColumnsController.3","Es d\u00fcrfen nicht alle Spalten ausgeblendet oder fixiert werden."));
 		}
 		else {

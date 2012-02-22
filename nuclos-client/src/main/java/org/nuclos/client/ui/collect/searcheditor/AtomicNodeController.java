@@ -109,7 +109,7 @@ public class AtomicNodeController extends Controller {
 	 */
 	public void runAdd(SearchConditionTreeNode nodeParent) {
 		final AtomicNodePanel pnl = new AtomicNodePanel();
-		final int iBtn = this.newOptionPane(getCommonLocaleDelegate().getMessage(
+		final int iBtn = this.newOptionPane(getSpringLocaleDelegate().getMessage(
 				"AtomicNodeController.1","Einfache Bedingung hinzuf\u00fcgen"), pnl).showDialog();
 
 		if (iBtn == JOptionPane.OK_OPTION) {
@@ -133,7 +133,7 @@ public class AtomicNodeController extends Controller {
 	public void runEdit(AtomicSearchConditionTreeNode node) {
 		final AtomicNodePanel pnl = new AtomicNodePanel();
 		pnl.setSearchCondition(node.getSearchCondition());
-		final int iBtn = this.newOptionPane(getCommonLocaleDelegate().getMessage(
+		final int iBtn = this.newOptionPane(getSpringLocaleDelegate().getMessage(
 				"AtomicNodeController.2","Einfache Bedingung bearbeiten"), pnl).showDialog();
 
 		if (iBtn == JOptionPane.OK_OPTION) {
@@ -183,14 +183,14 @@ public class AtomicNodeController extends Controller {
 		private CollectableComponent clctcompValue;
 		private final CommonJTextField tfLikeComparand = new CommonJTextField(MAX_COLUMNS);
 
-		private final JLabel labCompareWith = new JLabel(getCommonLocaleDelegate().getMessage(
+		private final JLabel labCompareWith = new JLabel(getSpringLocaleDelegate().getMessage(
 				"AtomicNodeController.3","Vergleich mit"));
 		private final JPanel pnlValueOrOtherField = new JPanel(new LineLayout(LineLayout.HORIZONTAL, 5, true));
-		private final JRadioButton radiobtnValue = new JRadioButton(getCommonLocaleDelegate().getMessage(
+		private final JRadioButton radiobtnValue = new JRadioButton(getSpringLocaleDelegate().getMessage(
 				"AtomicNodeController.4","Wert"));
-		private final JRadioButton radiobtnOtherField = new JRadioButton(getCommonLocaleDelegate().getMessage(
+		private final JRadioButton radiobtnOtherField = new JRadioButton(getSpringLocaleDelegate().getMessage(
 				"AtomicNodeController.5","anderem Feld"));
-		private final JRadioButton radiobtnParameter = new JRadioButton(getCommonLocaleDelegate().getMessage(
+		private final JRadioButton radiobtnParameter = new JRadioButton(getSpringLocaleDelegate().getMessage(
 				"AtomicNodeController.9","Parameter"));
 		private final ButtonGroup btngrpValueOrOtherField = new ButtonGroup();
 
@@ -205,12 +205,12 @@ public class AtomicNodeController extends Controller {
 			final JPanel pnl = new JPanel(new GridBagLayout());
 			this.add(pnl, new GridBagConstraints(0, 0, 1, 1, 1.0, 1.0, GridBagConstraints.SOUTHWEST, GridBagConstraints.NONE, new Insets(0,0,0,0), 0, 0));
 
-			pnl.add(new JLabel(getCommonLocaleDelegate().getMessage("AtomicNodeController.6","Feld")), 
+			pnl.add(new JLabel(getSpringLocaleDelegate().getMessage("AtomicNodeController.6","Feld")), 
 					new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0, GridBagConstraints.SOUTHWEST, GridBagConstraints.NONE, 
 					new Insets(0, 0, 2, 5), 0, 0));
 			pnl.add(cmbbxEntityField, new GridBagConstraints(0, 2, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 5), 0, 0));
 
-			pnl.add(new JLabel(getCommonLocaleDelegate().getMessage("AtomicNodeController.7","Operator")), 
+			pnl.add(new JLabel(getSpringLocaleDelegate().getMessage("AtomicNodeController.7","Operator")), 
 					new GridBagConstraints(1, 1, 1, 1, 0.0, 0.0, GridBagConstraints.SOUTHWEST, GridBagConstraints.NONE, 
 					new Insets(0, 0, 2, 5), 0, 0));
 			pnl.add(cmbbxOperator, new GridBagConstraints(1, 2, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 5), 0, 0));
@@ -220,7 +220,7 @@ public class AtomicNodeController extends Controller {
 				public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
 					String label = null;
 					if (value != null) {
-						label = getCommonLocaleDelegate().getMessage(((ComparisonOperator) value).getResourceIdForLabel(), null);
+						label = getSpringLocaleDelegate().getMessage(((ComparisonOperator) value).getResourceIdForLabel(), null);
 					}
 					return super.getListCellRendererComponent(list, label, index, isSelected, cellHasFocus);
 				}
@@ -358,7 +358,7 @@ public class AtomicNodeController extends Controller {
 				// special case: comparison with parameter
 				final ComparisonParameter parameter = (ComparisonParameter) cmbbxParameter.getSelectedItem();
 				if (!parameter.isCompatible(clctef)) {
-					throw new CommonValidationException(getCommonLocaleDelegate().getMessage("AtomicNodeController.10", null));
+					throw new CommonValidationException(getSpringLocaleDelegate().getMessage("AtomicNodeController.10", null));
 				}
 				return new CollectableComparisonWithParameter(clctef, compop, parameter);
 			}
@@ -368,7 +368,7 @@ public class AtomicNodeController extends Controller {
 
 				// check that the fields match:
 				if(clctef.getJavaClass() != clctefOtherField.getJavaClass()) {
-					throw new CommonValidationException(getCommonLocaleDelegate().getMessage("AtomicNodeController.8","Die Datentypen der Felder stimmen nicht \u00fcberein."));
+					throw new CommonValidationException(getSpringLocaleDelegate().getMessage("AtomicNodeController.8","Die Datentypen der Felder stimmen nicht \u00fcberein."));
 				}
 				return new CollectableComparisonWithOtherField(clctef, compop, clctefOtherField);
 			}

@@ -50,7 +50,7 @@ import org.nuclos.client.ui.collect.result.NuclosResultController;
 import org.nuclos.client.ui.collect.result.ResultPanel;
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.CommonRunnable;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonValidationException;
@@ -69,10 +69,10 @@ public class SearchResultTemplateController {
 	
 	private static final Logger LOG = Logger.getLogger(SearchResultTemplateController.class);
 	
-	private final Action actSaveTemplate = new CommonAbstractAction(CommonLocaleDelegate.getInstance().getMessage(
+	private final Action actSaveTemplate = new CommonAbstractAction(SpringLocaleDelegate.getInstance().getMessage(
 			"SearchResultTemplateController.1", "Suchergebnisvorlage speichern"), 
 			Icons.getInstance().getIconSave16(),
-			CommonLocaleDelegate.getInstance().getMessage(
+			SpringLocaleDelegate.getInstance().getMessage(
 					"SearchResultTemplateController.2", "Eingestelltes Ergebnisformat als Suchergebnisvorlage speichern")) {
 
 		@Override
@@ -81,10 +81,10 @@ public class SearchResultTemplateController {
 		}
 	};
 
-	private final Action actRemoveTemplate = new CommonAbstractAction(CommonLocaleDelegate.getInstance().getMessage(
+	private final Action actRemoveTemplate = new CommonAbstractAction(SpringLocaleDelegate.getInstance().getMessage(
 			"SearchResultTemplateController.3", "Suchergebnisvorlage l\u00f6schen"), 
 			Icons.getInstance().getIconDelete16(),
-			CommonLocaleDelegate.getInstance().getMessage(
+			SpringLocaleDelegate.getInstance().getMessage(
 					"SearchResultTemplateController.4", "Ausgew\u00e4hlte Suchergebnisvorlage l\u00f6schen")) {
 
 		@Override
@@ -111,7 +111,7 @@ public class SearchResultTemplateController {
 		///*btnSaveTemplate =*/ toolbar.add(actSaveTemplate);
 		///*btnRemoveTemplate =*/ toolbar.add(actRemoveTemplate);
 		resultPanel.addToolBarComponent(new BlackLabel(getSearchResultTemplateComboBox(), 
-				CommonLocaleDelegate.getInstance().getMessage("R00016434","Suchergebnisvorlage")));
+				SpringLocaleDelegate.getInstance().getMessage("R00016434","Suchergebnisvorlage")));
 		resultPanel.addPopupExtraSeparator();
 		resultPanel.addPopupExtraMenuItem(new JMenuItem(actSaveTemplate));
 		resultPanel.addPopupExtraMenuItem(new JMenuItem(actRemoveTemplate));
@@ -131,7 +131,7 @@ public class SearchResultTemplateController {
 	 */
 	private void init(){
 		this.getSearchResultTemplateComboBox().setName("cmbbxSearchResultTemplate");
-		this.getSearchResultTemplateComboBox().setToolTipText(CommonLocaleDelegate.getInstance().getMessage(
+		this.getSearchResultTemplateComboBox().setToolTipText(SpringLocaleDelegate.getInstance().getMessage(
 				"SearchResultTemplateController.5", "W\u00e4hlen Sie hier eine Suchergebnisvorlage aus"));
 		this.getSearchResultTemplateComboBox().addActionListener(this.alSearchResultTemplates);
 
@@ -369,9 +369,9 @@ public class SearchResultTemplateController {
 		final SearchResultTemplate template = this.getSelectedSearchResultTemplate();
 		if (template != null) {
 			final String sTemplateName = template.getName();
-			final String sMessage = CommonLocaleDelegate.getInstance().getMessage(
+			final String sMessage = SpringLocaleDelegate.getInstance().getMessage(
 					"SearchResultTemplateController.6", "Wollen Sie die Suchergebnisvorlage \"{0}\" wirklich l\u00f6schen?", sTemplateName);
-			final int iBtn = JOptionPane.showConfirmDialog(getFrame(), sMessage, CommonLocaleDelegate.getInstance().getMessage(
+			final int iBtn = JOptionPane.showConfirmDialog(getFrame(), sMessage, SpringLocaleDelegate.getInstance().getMessage(
 					"SearchResultTemplateController.3", "Suchergebnisvorlage l\u00f6schen"),
 					JOptionPane.OK_CANCEL_OPTION);
 			if (iBtn == JOptionPane.OK_OPTION) {

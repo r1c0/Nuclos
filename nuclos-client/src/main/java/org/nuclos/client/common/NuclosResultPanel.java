@@ -86,7 +86,7 @@ import org.nuclos.common.collect.collectable.CollectableEntityField;
 import org.nuclos.common.collect.collectable.CollectableField;
 import org.nuclos.common.security.Permission;
 import org.nuclos.common2.ClientPreferences;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.DateUtils;
 import org.nuclos.common2.IOUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
@@ -318,11 +318,11 @@ public class NuclosResultPanel<Clct extends Collectable> extends ResultPanel<Clc
 	 */
 	@Override
 	public void cmdExport(final CollectController<Clct> clctctl) {
-		final CommonLocaleDelegate cld = CommonLocaleDelegate.getInstance();
+		final SpringLocaleDelegate localeDelegate = SpringLocaleDelegate.getInstance();
 		final JFileChooser filechooser = NuclosResultPanel.this.getFileChooser(
-			cld.getMessage("NuclosResultPanel.1", "Export"), 
-			cld.getMessage("NuclosResultPanel.2", "Exportieren in selektierte Datei"), clctctl);
-		final JCheckBox cbxDeepExport = new JCheckBox(cld.getMessage(
+			localeDelegate.getMessage("NuclosResultPanel.1", "Export"), 
+			localeDelegate.getMessage("NuclosResultPanel.2", "Exportieren in selektierte Datei"), clctctl);
+		final JCheckBox cbxDeepExport = new JCheckBox(localeDelegate.getMessage(
 				"NuclosResultPanel.3", "Tiefer Export?"));
 		
 		filechooser.addPropertyChangeListener(new PropertyChangeListener() {
@@ -348,7 +348,7 @@ public class NuclosResultPanel<Clct extends Collectable> extends ResultPanel<Clc
 				@Override
 				public void work() throws CommonBusinessException{
 					if (file == null) {
-						throw new NuclosFatalException(cld.getMessage(
+						throw new NuclosFatalException(localeDelegate.getMessage(
 								"NuclosResultPanel.4", "Bitte geben Sie einen Dateinamen f\u00fcr den Export ein!"));
 					}
 
@@ -407,15 +407,15 @@ public class NuclosResultPanel<Clct extends Collectable> extends ResultPanel<Clc
 					super.paint();
 					if(this.entry != null && this.entry.getStatus() == BackgroundProcessInfo.Status.CANCELLED){
 						setBackgroundProcessFinishedStatus(entry, BackgroundProcessInfo.Status.ERROR, 
-								cld.getMessage("NuclosResultPanel.5", "Der Export wurde abgebrochen. Es wurden keine Daten exportiert"));
+								localeDelegate.getMessage("NuclosResultPanel.5", "Der Export wurde abgebrochen. Es wurden keine Daten exportiert"));
 					}
 					else if(this.entry != null && this.entry.getStatus() == BackgroundProcessInfo.Status.ERROR){
 						setBackgroundProcessFinishedStatus(entry, BackgroundProcessInfo.Status.ERROR, 
-								cld.getMessage("NuclosResultPanel.6", "Der Export ist fehlgeschlagen."));
+								localeDelegate.getMessage("NuclosResultPanel.6", "Der Export ist fehlgeschlagen."));
 					}
 					else {
 						setBackgroundProcessFinishedStatus(entry, BackgroundProcessInfo.Status.DONE, 
-								cld.getMessage("NuclosResultPanel.7", "Der Export wurde erfolgreich abgeschlossen."));
+								localeDelegate.getMessage("NuclosResultPanel.7", "Der Export wurde erfolgreich abgeschlossen."));
 					}
 				}
 
@@ -429,7 +429,7 @@ public class NuclosResultPanel<Clct extends Collectable> extends ResultPanel<Clc
 			final BackgroundProcessStatusDialog dlgStatus = BackgroundProcessStatusController.getStatusDialog(UIUtils.getFrameForComponent(clctctl.getFrame().getParent()));
 			Future<?> future = CommonMultiThreader.getInstance().executeInterruptible(workerAdapter);
 			BackgroundProcessTableEntry entry = new BackgroundProcessTableEntry(
-					cld.getMessage("NuclosResultPanel.18", "XML-Export"), BackgroundProcessInfo.Status.RUNNING, DateUtils.now(), future);
+					localeDelegate.getMessage("NuclosResultPanel.18", "XML-Export"), BackgroundProcessInfo.Status.RUNNING, DateUtils.now(), future);
 			workerAdapter.setBackgroundProcessTableEntry(entry);
 			dlgStatus.getStatusPanel().getModel().addEntry(entry);
 			dlgStatus.setVisible(true);
@@ -449,22 +449,22 @@ public class NuclosResultPanel<Clct extends Collectable> extends ResultPanel<Clc
 	 */
 	@Override
 	public void cmdImport(final CollectController<Clct> clctctl) {
-		final JFileChooser filechooser = this.getFileChooser(CommonLocaleDelegate.getInstance().getMessage(
+		final JFileChooser filechooser = this.getFileChooser(SpringLocaleDelegate.getInstance().getMessage(
 				"NuclosResultPanel.8", "Import"), 
-				CommonLocaleDelegate.getInstance().getMessage(
+				SpringLocaleDelegate.getInstance().getMessage(
 						"NuclosResultPanel.9", "Importieren der selektierten Datei"), clctctl);
 		final int iBtn = filechooser.showOpenDialog(getParent());
 		if (iBtn == JFileChooser.APPROVE_OPTION) {
 
 			if (filechooser.getSelectedFile() == null) {
-				throw new NuclosFatalException(CommonLocaleDelegate.getInstance().getMessage(
+				throw new NuclosFatalException(SpringLocaleDelegate.getInstance().getMessage(
 						"NuclosResultPanel.10", "Bitte geben Sie einen Dateinamen f\u00fcr den Import ein!"));
 			}
 
-			String sMessage = CommonLocaleDelegate.getInstance().getMessage(
+			String sMessage = SpringLocaleDelegate.getInstance().getMessage(
 					"NuclosResultPanel.11", "Sollen die Daten der ausgew\u00e4hlten Datei [{0}] wirklich importiert werden?", filechooser.getSelectedFile().getName());
 			final int iBtnOption = JOptionPane.showConfirmDialog(this, sMessage, 
-					CommonLocaleDelegate.getInstance().getMessage("NuclosResultPanel.12", "Entit\u00e4tsdaten-Import"),
+					SpringLocaleDelegate.getInstance().getMessage("NuclosResultPanel.12", "Entit\u00e4tsdaten-Import"),
 					JOptionPane.OK_CANCEL_OPTION);
 			if (iBtnOption != JOptionPane.OK_OPTION) {
 				return;
@@ -517,17 +517,17 @@ public class NuclosResultPanel<Clct extends Collectable> extends ResultPanel<Clc
 					super.paint();
 					if(this.entry != null && this.entry.getStatus() == BackgroundProcessInfo.Status.CANCELLED){
 						setBackgroundProcessFinishedStatus(entry, BackgroundProcessInfo.Status.ERROR, 
-								CommonLocaleDelegate.getInstance().getMessage(
+								SpringLocaleDelegate.getInstance().getMessage(
 										"NuclosResultPanel.13", "Der Import wurde abgebrochen. Es wurden keine Daten importiert"));
 					}
 					else if(this.entry != null && this.entry.getStatus() == BackgroundProcessInfo.Status.ERROR){
 						setBackgroundProcessFinishedStatus(entry, BackgroundProcessInfo.Status.ERROR, 
-								CommonLocaleDelegate.getInstance().getMessage(
+								SpringLocaleDelegate.getInstance().getMessage(
 										"NuclosResultPanel.14", "Der Import ist fehlgeschlagen."));
 					}
 					else {
 						setBackgroundProcessFinishedStatus(entry, BackgroundProcessInfo.Status.DONE, 
-								CommonLocaleDelegate.getInstance().getMessage(
+								SpringLocaleDelegate.getInstance().getMessage(
 										"NuclosResultPanel.15", "Der Import wurde erfolgreich abgeschlossen."));
 					}
 				}
@@ -541,7 +541,7 @@ public class NuclosResultPanel<Clct extends Collectable> extends ResultPanel<Clc
 
 			final BackgroundProcessStatusDialog dlgStatus = BackgroundProcessStatusController.getStatusDialog(UIUtils.getFrameForComponent(clctctl.getFrame().getParent()));
 			Future<?> future = CommonMultiThreader.getInstance().executeInterruptible(workerAdapter);
-			BackgroundProcessTableEntry entry = new BackgroundProcessTableEntry(CommonLocaleDelegate.getInstance().
+			BackgroundProcessTableEntry entry = new BackgroundProcessTableEntry(SpringLocaleDelegate.getInstance().
 					getMessage("NuclosResultPanel.17", "XML-Import"), BackgroundProcessInfo.Status.RUNNING, DateUtils.now(), future);
 			workerAdapter.setBackgroundProcessTableEntry(entry);
 			dlgStatus.getStatusPanel().getModel().addEntry(entry);
@@ -578,7 +578,7 @@ public class NuclosResultPanel<Clct extends Collectable> extends ResultPanel<Clc
 
 		@Override
 		public String getDescription() {
-			return CommonLocaleDelegate.getInstance().getMessage(
+			return SpringLocaleDelegate.getInstance().getMessage(
 					"NuclosResultPanel.16", "Komprimierte Dateien (*.zip)");
 		}
 	};

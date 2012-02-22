@@ -18,7 +18,7 @@ package org.nuclos.client.explorer.node.rule;
 
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Pair;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonFinderException;
 import org.nuclos.client.rule.RuleDelegate;
@@ -117,12 +117,12 @@ public class StateModelNode extends AbstractRuleTreeNode {
 				}
 			}
 			catch (CommonFinderException ex) {
-				final String sMessage = getCommonLocaleDelegate().getMessage(
+				final String sMessage = getSpringLocaleDelegate().getMessage(
 						"DirectoryRuleNode.5","Fehler beim Erzeugen des Baumes");
 				Errors.getInstance().showExceptionDialog(null, sMessage, ex);
 			}
 			catch (CommonBusinessException ex) {
-				final String sMessage = getCommonLocaleDelegate().getMessage(
+				final String sMessage = getSpringLocaleDelegate().getMessage(
 						"DirectoryRuleNode.5","Fehler beim Erzeugen des Baumes");
 				Errors.getInstance().showExceptionDialog(null, sMessage, ex);
 			}
@@ -159,12 +159,12 @@ public class StateModelNode extends AbstractRuleTreeNode {
 				}
 			}
 			catch (CommonFinderException ex) {
-				final String sMessage = getCommonLocaleDelegate().getMessage(
+				final String sMessage = getSpringLocaleDelegate().getMessage(
 						"DirectoryRuleNode.5","Fehler beim Erzeugen des Baumes");
 				Errors.getInstance().showExceptionDialog(null, sMessage, ex);
 			}
 			catch (CommonBusinessException ex) {
-				final String sMessage = getCommonLocaleDelegate().getMessage(
+				final String sMessage = getSpringLocaleDelegate().getMessage(
 						"DirectoryRuleNode.5","Fehler beim Erzeugen des Baumes");
 				Errors.getInstance().showExceptionDialog(null, sMessage, ex);
 			}
@@ -189,7 +189,7 @@ public class StateModelNode extends AbstractRuleTreeNode {
 
 		final String startNumText = (startNumeral == null) ? "initial" : startNumeral.toString();
 
-		return CommonLocaleDelegate.getInstance().getMessage(
+		return SpringLocaleDelegate.getInstance().getMessage(
 				"StateModelNode.1", "Status\u00fcbergang ") + startNumText + " -> " + endNumeral;
 	}
 

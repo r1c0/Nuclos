@@ -53,7 +53,7 @@ public class RuleEventsCollectableFieldsProvider implements CollectableFieldsPro
 		List<CollectableField> result = new ArrayList<CollectableField>();
 		
 		for (Integer id : mpActions.keySet()) {
-			result.add(new CollectableValueIdField(id, CommonLocaleDelegate.getMessage(mpActions.get(id), null)));
+			result.add(new CollectableValueIdField(id, SpringLocaleDelegate.getMessage(mpActions.get(id), null)));
 		}
 
 		return result;

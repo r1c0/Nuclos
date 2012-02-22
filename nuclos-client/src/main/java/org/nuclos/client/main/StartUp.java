@@ -57,7 +57,7 @@ import org.nuclos.client.ui.UIUtils;
 import org.nuclos.client.ui.collect.component.CollectableComponentFactory;
 import org.nuclos.common.ApplicationProperties;
 import org.nuclos.common.NuclosFatalException;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.StringUtils;
@@ -244,7 +244,7 @@ public class StartUp  {
 //		Preferences prefs = ClientPreferences.getUserPreferences();
 //		Preferences localeNode = prefs.node("locale");
 //		LocaleInfo localeInfo = LocaleDelegate.getInstance().getBestLocale(LocaleInfo.parseTag(localeNode.get("locale", null)));
-//		CommonLocaleDelegate.setLocaleInfo(localeInfo);
+//		SpringLocaleDelegate.setLocaleInfo(localeInfo);
 	}
 
 	private void createGUI() {
@@ -360,7 +360,7 @@ public class StartUp  {
 
 						            //register dock menu
 						            PopupMenu macDockMenu = new PopupMenu();
-						            MenuItem miDockLogoutExit = new MenuItem(CommonLocaleDelegate.getInstance().getResource("miLogoutExit", "Abmelden und Beenden"));
+						            MenuItem miDockLogoutExit = new MenuItem(SpringLocaleDelegate.getInstance().getResource("miLogoutExit", "Abmelden und Beenden"));
 						            miDockLogoutExit.addActionListener(new ActionListener() {
 										@Override
 										public void actionPerformed(ActionEvent e) {

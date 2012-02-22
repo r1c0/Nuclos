@@ -81,7 +81,7 @@ public class ExportImportCollectController extends MasterDataCollectController {
 		//final JToolBar toolbarCustomDetails = UIUtils.createNonFloatableToolBar();
 
 		this.btnCopyFile.setIcon(Icons.getInstance().getIconExport16());
-		this.btnCopyFile.setToolTipText(getCommonLocaleDelegate().getMessage(
+		this.btnCopyFile.setToolTipText(getSpringLocaleDelegate().getMessage(
 				"ExportImportCollectController.1", "Archivierte Export/Import Datei vom Server holen"));
 		this.btnCopyFile.addActionListener(new ActionListener(){
 			@Override
@@ -98,15 +98,15 @@ public class ExportImportCollectController extends MasterDataCollectController {
 	}
 
 	private void cmdCopyFile(final CollectController<CollectableMasterDataWithDependants> clctctl){
-		final JFileChooser filechooser = this.getFileChooser(getCommonLocaleDelegate().getMessage(
+		final JFileChooser filechooser = this.getFileChooser(getSpringLocaleDelegate().getMessage(
 				"ExportImportCollectController.2", "Export/Import Datei speichern"), 
-				getCommonLocaleDelegate().getMessage(
+				getSpringLocaleDelegate().getMessage(
 						"ExportImportCollectController.3", "Kopieren der archivierten Export/Import Datei"));
 
 		final int iBtn = filechooser.showSaveDialog(getParent());
 		if (iBtn == JFileChooser.APPROVE_OPTION) {
 			if (filechooser.getSelectedFile() == null) {
-				throw new NuclosFatalException(getCommonLocaleDelegate().getMessage(
+				throw new NuclosFatalException(getSpringLocaleDelegate().getMessage(
 						"ExportImportCollectController.4", "Bitte geben Sie einen Dateinamen ein!"));
 			}
 
@@ -124,11 +124,11 @@ public class ExportImportCollectController extends MasterDataCollectController {
 						IOUtils.writeToBinaryFile(new File(sFileName), fZip.getContents());
 					}
 					catch (RuntimeException e) {
-						throw new NuclosFatalException(getCommonLocaleDelegate().getMessage(
+						throw new NuclosFatalException(getSpringLocaleDelegate().getMessage(
 								"ExportImportCollectController.5", "Ein Fehler beim Kopieren der Datei ist aufgetreten") + ": "+e);
 					}
 					catch (IOException e){
-						throw new NuclosFatalException(getCommonLocaleDelegate().getMessage(
+						throw new NuclosFatalException(getSpringLocaleDelegate().getMessage(
 								"ExportImportCollectController.5", "Ein Fehler beim Kopieren der Datei ist aufgetreten") + ": "+e);
 					}
 				}
@@ -156,7 +156,7 @@ public class ExportImportCollectController extends MasterDataCollectController {
 
 		@Override
 		public String getDescription() {
-			return getCommonLocaleDelegate().getMessage(
+			return getSpringLocaleDelegate().getMessage(
 					"ExportImportCollectController.6", "Komprimierte Dateien (*{0})", ZIP_EXTENSION);
 		}
 	};

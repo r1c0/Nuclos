@@ -71,7 +71,7 @@ public class TimelimitTaskView extends TaskView {
 	private final JScrollPane scrlpn = new JScrollPane();
 	private final JTable tblTasks = new CommonJTable();
 	
-	private final PopupButton popupExtras = new PopupButton(getCommonLocaleDelegate().getMessage(
+	private final PopupButton popupExtras = new PopupButton(getSpringLocaleDelegate().getMessage(
 			"PopupButton.Extras","Extras"));
 
 	public TimelimitTaskView() {
@@ -99,9 +99,9 @@ public class TimelimitTaskView extends TaskView {
 		btnRefresh.putClientProperty("hideActionText", Boolean.TRUE);
 		btnFinish.putClientProperty("hideActionText", Boolean.TRUE);
 
-		this.btnShowAllTasks.setText(getCommonLocaleDelegate().getMessage(
+		this.btnShowAllTasks.setText(getSpringLocaleDelegate().getMessage(
 				"TimelimitTaskView.1","Alle Fristen"));
-		this.btnShowAllTasks.setToolTipText(getCommonLocaleDelegate().getMessage(
+		this.btnShowAllTasks.setToolTipText(getSpringLocaleDelegate().getMessage(
 				"TimelimitTaskView.2","Auch erledigte Fristen anzeigen"));
 
 		this.scrlpn.getViewport().setView(tblTasks);

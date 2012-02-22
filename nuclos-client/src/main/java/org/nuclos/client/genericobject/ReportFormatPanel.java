@@ -16,7 +16,7 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.genericobject;
 
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 
 
 import java.awt.GridBagConstraints;
@@ -50,19 +50,19 @@ public class ReportFormatPanel extends JPanel {
 	private JRadioButton rbCsv = new JRadioButton();
 
 	public ReportFormatPanel() {
-		final CommonLocaleDelegate cld = CommonLocaleDelegate.getInstance();
+		final SpringLocaleDelegate localeDelegate = SpringLocaleDelegate.getInstance();
 		rbXls.setActionCommand("XLS");
 		rbPdf.setActionCommand("PDF");
 		rbCsv.setActionCommand("CSV");
 		border1 = BorderFactory.createEmptyBorder(1, 1, 1, 1);
 		lblHeadline.setToolTipText("");
-		lblHeadline.setText(cld.getMessage("ReportFormatPanel.2","Bitte w\u00e4hlen Sie das Zielformat aus:"));
+		lblHeadline.setText(localeDelegate.getMessage("ReportFormatPanel.2","Bitte w\u00e4hlen Sie das Zielformat aus:"));
 		setBorder(border1);
 		setLayout(gridBagLayout1);
 		rbPdf.setSelected(true);
-		rbPdf.setText(cld.getMessage("ReportFormatPanel.1","Adobe(tm) Acrobat Reader (PDF)"));
-		rbXls.setText(cld.getMessage("ReportFormatPanel.4","Microsoft(tm) Excel Worksheet (XLS)"));
-		rbCsv.setText(cld.getMessage("ReportFormatPanel.3","CSV"));
+		rbPdf.setText(localeDelegate.getMessage("ReportFormatPanel.1","Adobe(tm) Acrobat Reader (PDF)"));
+		rbXls.setText(localeDelegate.getMessage("ReportFormatPanel.4","Microsoft(tm) Excel Worksheet (XLS)"));
+		rbCsv.setText(localeDelegate.getMessage("ReportFormatPanel.3","CSV"));
 		add(lblHeadline, new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0
 				, GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 0, 4, 0), 0, 0));
 		add(rbPdf, new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0

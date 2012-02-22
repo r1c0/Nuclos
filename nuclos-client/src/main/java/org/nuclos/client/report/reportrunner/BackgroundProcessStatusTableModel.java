@@ -16,7 +16,7 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.report.reportrunner;
 
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 
 
 import java.text.DateFormat;
@@ -41,10 +41,10 @@ import javax.swing.table.AbstractTableModel;
 public class BackgroundProcessStatusTableModel extends AbstractTableModel implements Observer {
 
 	private static final String[] captions = {
-		CommonLocaleDelegate.getInstance().getMessage("BackgroundProcessStatusTableModel.4","Status"), 
-		CommonLocaleDelegate.getInstance().getMessage("BackgroundProcessStatusTableModel.1","Hintergrundprozess"), 
-		CommonLocaleDelegate.getInstance().getMessage("BackgroundProcessStatusTableModel.3","Startzeit"), 
-		CommonLocaleDelegate.getInstance().getMessage("BackgroundProcessStatusTableModel.2","Meldung")};
+		SpringLocaleDelegate.getInstance().getMessage("BackgroundProcessStatusTableModel.4","Status"), 
+		SpringLocaleDelegate.getInstance().getMessage("BackgroundProcessStatusTableModel.1","Hintergrundprozess"), 
+		SpringLocaleDelegate.getInstance().getMessage("BackgroundProcessStatusTableModel.3","Startzeit"), 
+		SpringLocaleDelegate.getInstance().getMessage("BackgroundProcessStatusTableModel.2","Meldung")};
 
 	private final List<BackgroundProcessInfo> lstProcesses = new ArrayList<BackgroundProcessInfo>();
 

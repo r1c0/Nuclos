@@ -20,7 +20,7 @@ import java.lang.reflect.Constructor;
 
 import org.apache.commons.lang.NotImplementedException;
 
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.client.common.DatasourceBasedCollectableFieldsProvider;
@@ -81,7 +81,7 @@ public class GenericObjectCollectableFieldsProviderFactory implements Collectabl
 		if (sEntityName == null || sEntityName.equals(clcte.getName())) {
 			final CollectableEntityField clctef = clcte.getEntityField(sFieldName);
 			if (!clctef.isReferencing()) {
-				throw new NuclosFatalException(CommonLocaleDelegate.getInstance().getMessage(
+				throw new NuclosFatalException(SpringLocaleDelegate.getInstance().getMessage(
 						"GenericObjectCollectableFieldsProviderFactory.1",
 						"Das Feld {0} in der Entit\u00e4t {1} referenziert keine andere Entit\u00e4t.", 
 						clctef.getName(), clcte.getName()));
@@ -132,7 +132,7 @@ public class GenericObjectCollectableFieldsProviderFactory implements Collectabl
 			result = new DBObjectCollectableFieldsProvider();
 		}
 		else {
-			throw new NuclosFatalException(CommonLocaleDelegate.getInstance().getMessage(
+			throw new NuclosFatalException(SpringLocaleDelegate.getInstance().getMessage(
 					"GenericObjectCollectableFieldsProviderFactory.2", "Unbekannter valuelist-provider Typ: {0}", sCustomType));
 		}
 		return result;

@@ -28,7 +28,7 @@ import javax.swing.JRadioButton;
 import javax.swing.border.Border;
 
 import org.nuclos.client.ui.LineLayout;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common.NuclosBusinessException;
 import org.nuclos.common.UsageCriteria;
 import org.nuclos.server.report.NuclosReportException;
@@ -65,13 +65,13 @@ public class ChoiceListOrReportExportPanel extends JPanel {
 		this.pnlList = pnlList;
 		pnlPrechoice.setLayout(new LineLayout(LineLayout.VERTICAL));
 		lblHeadline.setToolTipText("");
-		lblHeadline.setText(CommonLocaleDelegate.getInstance().getMessage(
+		lblHeadline.setText(SpringLocaleDelegate.getInstance().getMessage(
 				"ChoiceListOrReportExportPanel.1", "Bitte Aktion ausw\u00e4hlen:"));
 		rbList.setActionCommand("List");
 		rbReport.setActionCommand("Report");
-		rbList.setText(CommonLocaleDelegate.getInstance().getMessage(
+		rbList.setText(SpringLocaleDelegate.getInstance().getMessage(
 				"ChoiceListOrReportExportPanel.2", "Suchergebnisliste drucken"));
-		rbReport.setText(CommonLocaleDelegate.getInstance().getMessage(
+		rbReport.setText(SpringLocaleDelegate.getInstance().getMessage(
 				"ChoiceListOrReportExportPanel.3", "Formulare f\u00fcr ausgew\u00e4hlte Objekte drucken"));
 		rbList.setSelected(true);
 		bgPrechoice.add(rbList);

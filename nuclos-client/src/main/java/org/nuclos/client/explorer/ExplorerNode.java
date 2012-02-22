@@ -69,7 +69,7 @@ import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Predicate;
 import org.nuclos.common.collection.multimap.MultiListHashMap;
 import org.nuclos.common.collection.multimap.MultiListMap;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.CommonRunnable;
 import org.nuclos.common2.IdUtils;
 import org.nuclos.common2.LangUtils;
@@ -118,7 +118,7 @@ public class ExplorerNode<TN extends TreeNode> extends DefaultMutableTreeNode {
 	
 	private MainController mainController;
 	
-	private transient CommonLocaleDelegate cld;
+	private transient SpringLocaleDelegate localeDelegate;
 
 	/**
 	 * Use <code>ExplorerNodeFactory.newExplorerNode()</code> to create <code>ExplorerNode</code>s
@@ -133,7 +133,7 @@ public class ExplorerNode<TN extends TreeNode> extends DefaultMutableTreeNode {
 	 * Maven don't like this.
 	 * {@link org.springframework.beans.factory.aspectj.AbstractInterfaceDrivenDependencyInjectionAspect}.
 	public Object readResolve() throws ObjectStreamException {
-		setCommonLocaleDelegate(CommonLocaleDelegate.getInstance());
+		setSpringLocaleDelegate(SpringLocaleDelegate.getInstance());
 		return this;
 	}
 	 */
@@ -146,12 +146,12 @@ public class ExplorerNode<TN extends TreeNode> extends DefaultMutableTreeNode {
 	}
 	
 	@Autowired
-	void setCommonLocaleDelegate(CommonLocaleDelegate cld) {
-		this.cld = cld;
+	void setSpringLocaleDelegate(SpringLocaleDelegate cld) {
+		this.localeDelegate = cld;
 	}
 	
-	protected CommonLocaleDelegate getCommonLocaleDelegate() {
-		return cld;
+	protected SpringLocaleDelegate getSpringLocaleDelegate() {
+		return localeDelegate;
 	}
 
 	/**
@@ -376,12 +376,12 @@ public class ExplorerNode<TN extends TreeNode> extends DefaultMutableTreeNode {
 		result.addAll(getExpandCollapseActions(tree));
 
 		final TreeNodeAction exploreractCopy = new ChainedTreeNodeAction(ACTIONCOMMAND_COPY, 
-				getCommonLocaleDelegate().getMessage("ExplorerNode.4","Kopieren"),
+				getSpringLocaleDelegate().getMessage("ExplorerNode.4","Kopieren"),
 				TransferHandler.getCopyAction(), tree);
 		result.add(exploreractCopy);
 
 		final TreeNodeAction exploreractPaste = new ChainedTreeNodeAction(ACTIONCOMMAND_PASTE, 
-				getCommonLocaleDelegate().getMessage("ExplorerNode.2","Einf\u00fcgen"),
+				getSpringLocaleDelegate().getMessage("ExplorerNode.2","Einf\u00fcgen"),
 				TransferHandler.getPasteAction(), tree);
 		result.add(exploreractPaste);
 
@@ -574,7 +574,7 @@ public class ExplorerNode<TN extends TreeNode> extends DefaultMutableTreeNode {
 
 		public ShowInOwnTabAction(JTree tree) {
 			super(ACTIONCOMMAND_SHOW_IN_OWN_TAB, 
-					getCommonLocaleDelegate().getMessage("ExplorerNode.3","In eigenem Reiter anzeigen"), tree);
+					getSpringLocaleDelegate().getMessage("ExplorerNode.3","In eigenem Reiter anzeigen"), tree);
 		}
 
 		@Override
@@ -594,7 +594,7 @@ public class ExplorerNode<TN extends TreeNode> extends DefaultMutableTreeNode {
 
 		public RefreshAction(JTree tree) {
 			super(ACTIONCOMMAND_REFRESH, 
-					getCommonLocaleDelegate().getMessage("ExplorerNode.1","Aktualisieren"), tree);
+					getSpringLocaleDelegate().getMessage("ExplorerNode.1","Aktualisieren"), tree);
 		}
 
 		@Override
@@ -620,7 +620,7 @@ public class ExplorerNode<TN extends TreeNode> extends DefaultMutableTreeNode {
 
 		public ExpandAction(JTree tree) {
 			super(ACTIONCOMMAND_EXPAND, 
-					getCommonLocaleDelegate().getMessage("ExplorerNode.5","Unterelemente aufklappen"), tree);
+					getSpringLocaleDelegate().getMessage("ExplorerNode.5","Unterelemente aufklappen"), tree);
 		}
 
 		@Override
@@ -646,7 +646,7 @@ public class ExplorerNode<TN extends TreeNode> extends DefaultMutableTreeNode {
 
 		public CollapseAction(JTree tree) {
 			super(ACTIONCOMMAND_COLLAPSE, 
-					getCommonLocaleDelegate().getMessage("ExplorerNode.6","Unterelemente zuklappen"), tree);
+					getSpringLocaleDelegate().getMessage("ExplorerNode.6","Unterelemente zuklappen"), tree);
 		}
 
 		@Override
@@ -769,7 +769,7 @@ public class ExplorerNode<TN extends TreeNode> extends DefaultMutableTreeNode {
 
 		protected ShowDetailsAction(String command, String labelResourceId, JTree tree, boolean newTab) {
 			super(command, 
-					getCommonLocaleDelegate().getText(labelResourceId), tree);
+					getSpringLocaleDelegate().getText(labelResourceId), tree);
 			this.newTab = newTab;
 		}
 
@@ -804,7 +804,7 @@ public class ExplorerNode<TN extends TreeNode> extends DefaultMutableTreeNode {
 
 		public ShowListAction(JTree tree) {
 			super(ACTIONCOMMAND_SHOW_IN_LIST, 
-					getCommonLocaleDelegate().getMessage("ExplorerNode.ShowList", "Unterelemente in Liste anzeigen"), tree);
+					getSpringLocaleDelegate().getMessage("ExplorerNode.ShowList", "Unterelemente in Liste anzeigen"), tree);
 		}
 
 		@Override
@@ -870,7 +870,7 @@ public class ExplorerNode<TN extends TreeNode> extends DefaultMutableTreeNode {
 				@Override
 				public void handleError(Exception ex) {
 					Errors.getInstance().showExceptionDialog(null, 
-							getCommonLocaleDelegate().getMessage("GenericObjectExplorerNode.3", "Fehler beim entfernen der Beziehungen"), ex);
+							getSpringLocaleDelegate().getMessage("GenericObjectExplorerNode.3", "Fehler beim entfernen der Beziehungen"), ex);
 				}
 			};
 

@@ -28,7 +28,7 @@ import org.nuclos.common.ParameterProvider;
 import org.nuclos.common.SpringApplicationContextHolder;
 import org.nuclos.common.attribute.DynamicAttributeVO;
 import org.nuclos.common.security.Permission;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonFatalException;
@@ -98,7 +98,7 @@ public class GenericObjectTreeNodeFactory {
 		ModuleProvider modules = SpringApplicationContextHolder.getBean(ModuleProvider.class);
 		MetaDataProvider metaprovider = SpringApplicationContextHolder.getBean(MetaDataProvider.class);
 		Map<String, Object> values = getReadableAttributes(username, gowdvo, attrprovider);
-		return CommonLocaleDelegate.getInstance().getTreeViewLabel(
+		return SpringLocaleDelegate.getInstance().getTreeViewLabel(
 				values, modules.getEntityNameByModuleId(gowdvo.getModuleId()), metaprovider);
 	}
 
@@ -113,7 +113,7 @@ public class GenericObjectTreeNodeFactory {
 		ModuleProvider modules = SpringApplicationContextHolder.getBean(ModuleProvider.class);
 		MetaDataProvider metaprovider = SpringApplicationContextHolder.getBean(MetaDataProvider.class);
 		Map<String, Object> values = getReadableAttributes(username, gowdvo, attrprovider);
-		return CommonLocaleDelegate.getInstance().getTreeViewDescription(
+		return SpringLocaleDelegate.getInstance().getTreeViewDescription(
 				values, modules.getEntityNameByModuleId(gowdvo.getModuleId()), metaprovider);
 	}
 

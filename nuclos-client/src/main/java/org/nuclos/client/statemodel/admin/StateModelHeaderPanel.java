@@ -19,7 +19,7 @@ package org.nuclos.client.statemodel.admin;
 import org.nuclos.client.ui.collect.CollectableComponentsProvider;
 import org.nuclos.client.ui.collect.DefaultCollectableComponentsProvider;
 import org.nuclos.client.ui.collect.component.CollectableTextField;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 
 
 import java.awt.BorderLayout;
@@ -59,16 +59,16 @@ public class StateModelHeaderPanel extends JPanel {
 		GridBagConstraints gbc = new GridBagConstraints();
 		gbc.anchor = GridBagConstraints.WEST;
 		gbc.insets.right = 10;
-		clcttfName.setLabelText(CommonLocaleDelegate.getInstance().getMessage(
+		clcttfName.setLabelText(SpringLocaleDelegate.getInstance().getMessage(
 				"StateModelHeaderPanel.3","Name"));
-		clcttfName.setToolTipText(CommonLocaleDelegate.getInstance().getMessage(
+		clcttfName.setToolTipText(SpringLocaleDelegate.getInstance().getMessage(
 				"StateModelHeaderPanel.4","Name des Statusmodells"));
 		clcttfName.setColumns(20);
 		pnlTextFields.add(this.clcttfName.getJComponent(), gbc);
 
-		clcttfDescription.setLabelText(CommonLocaleDelegate.getInstance().getMessage(
+		clcttfDescription.setLabelText(SpringLocaleDelegate.getInstance().getMessage(
 				"StateModelHeaderPanel.1","Beschreibung"));
-		clcttfDescription.setToolTipText(CommonLocaleDelegate.getInstance().getMessage(
+		clcttfDescription.setToolTipText(SpringLocaleDelegate.getInstance().getMessage(
 				"StateModelHeaderPanel.2","Beschreibung des Statusmodells"));
 		gbc.insets.right = 5;
 		pnlTextFields.add(this.clcttfDescription.getJLabel(), gbc);

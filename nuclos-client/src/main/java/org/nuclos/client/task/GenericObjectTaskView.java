@@ -104,7 +104,7 @@ public class GenericObjectTaskView extends TaskView implements IMainFrameTabClos
 	private final JMenuItem btnPrint = new JMenuItem();
 	private final JMenuItem btnRename = new JMenuItem();
 
-	private final PopupButton popupExtras = new PopupButton(getCommonLocaleDelegate().getMessage("PopupButton.Extras","Extras"));
+	private final PopupButton popupExtras = new PopupButton(getSpringLocaleDelegate().getMessage("PopupButton.Extras","Extras"));
 
 	private final JScrollPane scrlpn = new JScrollPane();
 	private final JTable tbl = new CommonJTable();
@@ -132,7 +132,7 @@ public class GenericObjectTaskView extends TaskView implements IMainFrameTabClos
 		this.tfStatusBar.setMinimumSize(new Dimension(0, this.tfStatusBar.getPreferredSize().height));
 
 		toolbar.add(btnRefresh);
-		btnRefresh.setToolTipText(getCommonLocaleDelegate().getMessage(
+		btnRefresh.setToolTipText(getSpringLocaleDelegate().getMessage(
 				"PersonalTaskController.3","Aufgabenliste aktualisieren"));
 		this.popupExtras.add(btnPrint);
 		
@@ -245,7 +245,7 @@ public class GenericObjectTaskView extends TaskView implements IMainFrameTabClos
 				} else {
 					result.setSortKeys(Collections.<SortKey>emptyList(), false);
 					throw new CommonBusinessException(
-							getCommonLocaleDelegate().getMessage(
+							getSpringLocaleDelegate().getMessage(
 									"GenericObjectTaskView.1", "Das Suchergebnis kann nicht nach Unterformularspalten sortiert werden."));
 				}
 			}
@@ -309,7 +309,7 @@ public class GenericObjectTaskView extends TaskView implements IMainFrameTabClos
 				PreferencesUtils.writeSortKeysToPrefs(getPreferences(), ((SortableCollectableTableModel<?>) getTableModel()).getSortKeys());
 			} catch (PreferencesException e1) {
 				Errors.getInstance().showExceptionDialog(this.getParent(), 
-						getCommonLocaleDelegate().getMessage(
+						getSpringLocaleDelegate().getMessage(
 								"gotaskview.error.save.sortorder", "Fehler beim Abspeichern der Sortierreihenfolge des Suchfilters."), e1);
 			}
 		}

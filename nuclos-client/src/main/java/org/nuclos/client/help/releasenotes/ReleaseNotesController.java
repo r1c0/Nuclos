@@ -106,9 +106,9 @@ public class ReleaseNotesController extends Controller {
 		final MainFrameTab ifrm = Main.getInstance().getMainController().newMainFrameTab(null, version.getShortName());
 		String text =
 			"<html><h1>" + version.getLongName() + "</h1>" +
-			"<p>" + getCommonLocaleDelegate().getMessage("nuclos.newversion.releasenotes.notice", null).replace("\n", "<br>") + "</p>" + 
+			"<p>" + getSpringLocaleDelegate().getMessage("nuclos.newversion.releasenotes.notice", null).replace("\n", "<br>") + "</p>" + 
 			"<p><a href='" + getNuclosReleaseNotesURL() + "'>" + 
-			getCommonLocaleDelegate().getMessage("nuclos.newversion.releasenotes.open", null) + "</a></p></html>";
+			getSpringLocaleDelegate().getMessage("nuclos.newversion.releasenotes.open", null) + "</a></p></html>";
 		
 		final HtmlPanel pnlReleaseNotes = new HtmlPanel(text);
 		pnlReleaseNotes.btnClose.addActionListener(new ActionListener() {
@@ -217,7 +217,7 @@ public class ReleaseNotesController extends Controller {
 					ifrm.setVisible(true);
 				}
 				catch (/* IO */ Exception ex) {
-					final String sMessage = getCommonLocaleDelegate().getMessage(
+					final String sMessage = getSpringLocaleDelegate().getMessage(
 							"ReleaseNotesController.1", "Die Release Notes k\u00f6nnen nicht angezeigt werden.");
 					Logger.getLogger(ReleaseNotesController.class).debug(sMessage);
 					//Errors.getInstance().showExceptionDialog(ReleaseNotesController.this.getParent(), sMessage, ex);

@@ -45,7 +45,7 @@ public class ResourceBundleResolverUtils {
 	 * Calls {{@link #getMessageInternal(ResourceBundle, Transformer, String, Object...)} with
 	 * a {@link RecursiveResolver}.
 	 */
-	public static String getMessageInternal(CommonLocaleDelegate.LookupService service, String rid, Object ... params) {
+	public static String getMessageInternal(SpringLocaleDelegate.LookupService service, String rid, Object ... params) {
 		return getMessageInternal(service, new RecursiveResolver(service, rid), rid, params);
 	}
 
@@ -62,7 +62,7 @@ public class ResourceBundleResolverUtils {
 	 * @exception java.lang.RuntimeException if a reference recursion occurs, or
 	 *            a reference does not exist
 	 */
-	public static String getMessageInternal(CommonLocaleDelegate.LookupService service, Transformer<String, String> resolver, String rid, Object...params) {
+	public static String getMessageInternal(SpringLocaleDelegate.LookupService service, Transformer<String, String> resolver, String rid, Object...params) {
 		String resourceText = null;
 		try {
 			resourceText = service.getResource(rid.toString());
@@ -85,15 +85,15 @@ public class ResourceBundleResolverUtils {
 	 */
 	public static class RecursiveResolver implements Transformer<String, String> {
 
-		private final CommonLocaleDelegate.LookupService service;
+		private final SpringLocaleDelegate.LookupService service;
 		private final List<String> chain;
 
-		public RecursiveResolver(CommonLocaleDelegate.LookupService service) {
+		public RecursiveResolver(SpringLocaleDelegate.LookupService service) {
 			this.service = service;
 			this.chain = Collections.emptyList();
 		}
 
-		public RecursiveResolver(CommonLocaleDelegate.LookupService service, String rid) {
+		public RecursiveResolver(SpringLocaleDelegate.LookupService service, String rid) {
 			this.service = service;
 			this.chain = Collections.singletonList(rid);
 		}

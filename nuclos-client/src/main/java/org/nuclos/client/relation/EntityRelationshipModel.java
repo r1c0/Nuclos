@@ -54,12 +54,12 @@ public class EntityRelationshipModel extends AbstractCollectableBean<EntityRelat
 			super(NuclosEntity.ENTITYRELATION.getEntityName(), "Relationen erstellen");
 			final String entity = NuclosEntity.ENTITYRELATION.getEntityName();
 			this.addCollectableEntityField(new DefaultCollectableEntityField(FIELDNAME_NAME, String.class, 
-					getCommonLocaleDelegate().getMessage("CollectableStateModel.3","Name"),
-					getCommonLocaleDelegate().getMessage("CollectableRelationModel.4","Name des Relationenmodells"), 
+					getSpringLocaleDelegate().getMessage("CollectableStateModel.3","Name"),
+					getSpringLocaleDelegate().getMessage("CollectableRelationModel.4","Name des Relationenmodells"), 
 					null, null, false, CollectableField.TYPE_VALUEFIELD, null, null, entity));
 			this.addCollectableEntityField(new DefaultCollectableEntityField(FIELDNAME_DESCRIPTION, String.class,
-					getCommonLocaleDelegate().getMessage("CollectableStateModel.1","Beschreibung"), 
-					getCommonLocaleDelegate().getMessage("CollectableRelationModel.2","Beschreibung des Relationenmodells"), 
+					getSpringLocaleDelegate().getMessage("CollectableStateModel.1","Beschreibung"), 
+					getSpringLocaleDelegate().getMessage("CollectableRelationModel.2","Beschreibung des Relationenmodells"), 
 					null, null, true, CollectableField.TYPE_VALUEFIELD, null, null, entity));
 		}
 

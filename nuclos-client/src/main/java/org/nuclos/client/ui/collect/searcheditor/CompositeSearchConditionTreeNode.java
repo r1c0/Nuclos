@@ -25,7 +25,7 @@ import org.nuclos.common.collect.collectable.searchcondition.AbstractCollectable
 import org.nuclos.common.collect.collectable.searchcondition.CollectableSearchCondition;
 import org.nuclos.common.collect.collectable.searchcondition.CompositeCollectableSearchCondition;
 import org.nuclos.common.collect.collectable.searchcondition.LogicalOperator;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 
 import java.awt.Component;
 import java.awt.datatransfer.Transferable;
@@ -123,7 +123,7 @@ public class CompositeSearchConditionTreeNode extends SearchConditionTreeNode {
 
 	@Override
 	protected String getLabelForExpandedState() {
-		return CommonLocaleDelegate.getInstance().getMessage(
+		return SpringLocaleDelegate.getInstance().getMessage(
 			this.getSearchCondition().getLogicalOperator().getResourceIdForLabel(), null);
 	}
 
@@ -156,9 +156,9 @@ public class CompositeSearchConditionTreeNode extends SearchConditionTreeNode {
 		}
 
 		private static String getName(CompositeSearchConditionTreeNode node) {
-			String opLabel = CommonLocaleDelegate.getInstance().getMessage(
+			String opLabel = SpringLocaleDelegate.getInstance().getMessage(
 				LogicalOperator.getComplementalLogicalOperator(node.getLogicalOperator()).getResourceIdForLabel(), null); 
-			return CommonLocaleDelegate.getInstance().getMessage(
+			return SpringLocaleDelegate.getInstance().getMessage(
 					"CompositeSearchConditionTreeNode.1", "In {0}-Knoten \u00e4ndern", opLabel);
 		}
 

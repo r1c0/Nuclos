@@ -18,7 +18,7 @@ package org.nuclos.common.collect.collectable;
 
 import org.nuclos.common.collect.exception.CollectableFieldValidationException;
 import org.nuclos.common.collect.exception.CollectableValidationException;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 
 
 import org.nuclos.common2.LangUtils;
@@ -37,18 +37,18 @@ import org.springframework.beans.factory.annotation.Configurable;
 @Configurable
 public abstract class AbstractCollectable implements Collectable {
 	
-	private CommonLocaleDelegate cld;
+	private SpringLocaleDelegate localeDelegate;
 	
 	protected AbstractCollectable() {
 	}
 	
 	@Autowired
-	void setCommonLocaleDelegate(CommonLocaleDelegate cld) {
-		this.cld = cld;
+	void setSpringLocaleDelegate(SpringLocaleDelegate cld) {
+		this.localeDelegate = cld;
 	}
 	
-	protected CommonLocaleDelegate getCommonLocaleDelegate() {
-		return cld;
+	protected SpringLocaleDelegate getSpringLocaleDelegate() {
+		return localeDelegate;
 	}
 
 	/**
@@ -125,7 +125,7 @@ public abstract class AbstractCollectable implements Collectable {
 	public void validate(CollectableEntity clcte) throws CollectableValidationException {
 		if (!this.isComplete()) {
 			throw new IllegalStateException(
-					getCommonLocaleDelegate().getMessage("AbstractCollectable.1","Das Objekt muss vollst\u00e4ndig geladen sein."));
+					getSpringLocaleDelegate().getMessage("AbstractCollectable.1","Das Objekt muss vollst\u00e4ndig geladen sein."));
 		}
 		for (String sFieldName : clcte.getFieldNames()) {
 			final CollectableField clctf = this.getField(sFieldName);

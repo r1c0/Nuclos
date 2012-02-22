@@ -41,7 +41,7 @@ import javax.swing.text.View;
 import javax.swing.text.ViewFactory;
 import javax.swing.text.html.HTMLEditorKit;
 
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 
 /**
  * Panel to display an HTML document.
@@ -161,7 +161,7 @@ public class HtmlPanel extends JPanel {
 		scrlpn.getViewport().add(editorpn, null);
 		pnlCenter.add(scrlpn, BorderLayout.CENTER);
 
-		btnClose.setText(CommonLocaleDelegate.getInstance().getMessage("ExplorerController.27", "Schlie\u00dfen"));
+		btnClose.setText(SpringLocaleDelegate.getInstance().getMessage("ExplorerController.27", "Schlie\u00dfen"));
 		final JPanel pnlButtons = new JPanel();
 		pnlButtons.setBorder(BorderFactory.createEmptyBorder(5, 0, 5, 0));
 		pnlButtons.add(btnClose, null);

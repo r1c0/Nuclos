@@ -87,7 +87,7 @@ import org.nuclos.common.collect.exception.CollectableValidationException;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Transformer;
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.CommonRunnable;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
@@ -99,7 +99,7 @@ public abstract class EntityCollectController<Clct extends Collectable> extends 
 
 	private static final Logger LOG = Logger.getLogger(EntityCollectController.class);
 
-	private final static String loadingLabelText = CommonLocaleDelegate.getInstance().getMessage("entity.collect.controller.loading.label", "Ladevorgang...");
+	private final static String loadingLabelText = SpringLocaleDelegate.getInstance().getMessage("entity.collect.controller.loading.label", "Ladevorgang...");
 	private final static String notLoadingLabelText = "              ";
 	protected JLabel loadingLabel;
 	protected SubFormsLoader subFormsLoader;
@@ -758,7 +758,7 @@ public abstract class EntityCollectController<Clct extends Collectable> extends 
 			if (SwingUtilities.isRightMouseButton(e)) {
 				if (pointerException != null) {
 					final JPopupMenu menu = new JPopupMenu();
-					final String itemLabel = getCommonLocaleDelegate().getMessage("EntityCollectController.1", "Herkunft anzeigen") + "...";
+					final String itemLabel = getSpringLocaleDelegate().getMessage("EntityCollectController.1", "Herkunft anzeigen") + "...";
 					final JMenuItem originItem = new JMenuItem(itemLabel, iconPointer);
 					originItem.addActionListener(new ActionListener() {
 						@Override
@@ -791,7 +791,7 @@ public abstract class EntityCollectController<Clct extends Collectable> extends 
 				final JPopupMenu menu = new JPopupMenu();
 
 				if (pc.getMainPointer().message != null) {
-					final String itemLabel = getCommonLocaleDelegate().getMessage("EntityCollectController.2", "Hinweis");
+					final String itemLabel = getSpringLocaleDelegate().getMessage("EntityCollectController.2", "Hinweis");
 					final JMenuItem mainItem = new JMenuItem(itemLabel, iconPointer);
 					mainItem.addActionListener(new ActionListener() {
 						@Override
@@ -803,7 +803,7 @@ public abstract class EntityCollectController<Clct extends Collectable> extends 
 					menu.addSeparator();
 				}
 
-				final String fieldNotFoundLabel = getCommonLocaleDelegate().getMessage("EntityCollectController.3", "unbekanntes Attribut");
+				final String fieldNotFoundLabel = getSpringLocaleDelegate().getMessage("EntityCollectController.3", "unbekanntes Attribut");
 				final List<JMenuItem> menuItems = new ArrayList<JMenuItem>();
 				for (final String field : pc.getFields()) {
 					EntityFieldMetaDataVO efMeta;
@@ -814,7 +814,7 @@ public abstract class EntityCollectController<Clct extends Collectable> extends 
 					}
 					final boolean fieldNotFound = efMeta == null;
 					final String fieldLabel = fieldNotFound ? (field + " (" + fieldNotFoundLabel + ")") 
-							: getCommonLocaleDelegate().getLabelFromMetaFieldDataVO(efMeta);
+							: getSpringLocaleDelegate().getLabelFromMetaFieldDataVO(efMeta);
 					final JMenuItem fieldItem = new JMenuItem(fieldLabel);
 
 					fieldItem.addActionListener(new ActionListener() {
@@ -837,7 +837,7 @@ public abstract class EntityCollectController<Clct extends Collectable> extends 
 									}
 								}
 								if (fieldNotInLayout) {
-									showPointerBubble(btnPointer, getCommonLocaleDelegate().getMessage(
+									showPointerBubble(btnPointer, getSpringLocaleDelegate().getMessage(
 											"EntityCollectController.4", "Attribut nicht im Layout gefunden!") +
 										"<br/>" + getHtmlList(pc.getLocalizedFieldPointers(field)));
 								}
@@ -1110,8 +1110,8 @@ public abstract class EntityCollectController<Clct extends Collectable> extends 
 					result.setOpaque(false);
 
 					if (oValue == null) {
-						result.setText(getCommonLocaleDelegate().getMessage("GenericObjectCollectController.9","Arbeitsschritt"));
-						result.setToolTipText(getCommonLocaleDelegate().getMessage(
+						result.setText(getSpringLocaleDelegate().getMessage("GenericObjectCollectController.9","Arbeitsschritt"));
+						result.setToolTipText(getSpringLocaleDelegate().getMessage(
 								"GenericObjectCollectController.17","Bitte w\u00e4hlen Sie einen Arbeitsschritt aus."));
 					}
 					else {
@@ -1119,7 +1119,7 @@ public abstract class EntityCollectController<Clct extends Collectable> extends 
 						final GeneratorActionVO actvo = (GeneratorActionVO) oValue;
 						final String sSourceModuleName = GenerationController.getModuleLabel(actvo.getSourceModuleId());
 						final String sTargetModuleName = GenerationController.getModuleLabel(actvo.getTargetModuleId());
-						result.setToolTipText(getCommonLocaleDelegate().getMessage(
+						result.setToolTipText(getSpringLocaleDelegate().getMessage(
 								"GenericObjectCollectController.46","Erzeugt einen {0} aus dem/der aktuellen {1}", sTargetModuleName, sSourceModuleName));
 					}
 					return result;

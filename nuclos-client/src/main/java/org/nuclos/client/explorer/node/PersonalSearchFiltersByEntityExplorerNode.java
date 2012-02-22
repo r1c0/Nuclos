@@ -102,7 +102,7 @@ public class PersonalSearchFiltersByEntityExplorerNode extends ExplorerNode<Pers
 
 		SearchInEntityAction(JTree tree) {
 			super(ACTIONCOMMAND_SEARCHINENTITY, 
-					getCommonLocaleDelegate().getMessage("PersonalSearchFiltersByEntityExplorerNode.1","Suchen") + "...", tree);
+					getSpringLocaleDelegate().getMessage("PersonalSearchFiltersByEntityExplorerNode.1","Suchen") + "...", tree);
 		}
 
 		@Override

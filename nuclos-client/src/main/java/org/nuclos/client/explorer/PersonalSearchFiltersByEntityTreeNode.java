@@ -74,14 +74,14 @@ public class PersonalSearchFiltersByEntityTreeNode extends AbstractTreeNode<Obje
 
 	@Override
 	public String getDescription() {
-		return getCommonLocaleDelegate().getMessage("PersonalSearchFiltersByEntityTreeNode.1","Pers\u00f6nliche Suchfilter f\u00fcr die Entit\u00e4t") + " \"" + this.getEntityLabel() + "\"";
+		return getSpringLocaleDelegate().getMessage("PersonalSearchFiltersByEntityTreeNode.1","Pers\u00f6nliche Suchfilter f\u00fcr die Entit\u00e4t") + " \"" + this.getEntityLabel() + "\"";
 	}
 
 	private String getEntityLabel() {
 		if (Modules.getInstance().isModuleEntity(this.getEntity())) {
 			return Modules.getInstance().getEntityLabelByModuleId(this.getModuleId());
 		}
-		return getCommonLocaleDelegate().getLabelFromMetaDataVO(MasterDataDelegate.getInstance().getMetaData(this.getEntity()));//MasterDataDelegate.getInstance().getMetaData(this.getEntity()).getLabel();
+		return getSpringLocaleDelegate().getLabelFromMetaDataVO(MasterDataDelegate.getInstance().getMetaData(this.getEntity()));//MasterDataDelegate.getInstance().getMetaData(this.getEntity()).getLabel();
 	}
 
 	@Override

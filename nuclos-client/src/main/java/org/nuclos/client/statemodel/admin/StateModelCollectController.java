@@ -143,7 +143,7 @@ public class StateModelCollectController extends NuclosCollectController<Collect
 	public StateModelCollectController(JComponent parent, MainFrameTab tabIfAny) {
 		super(parent, CollectableStateModel.clcte);
 
-		ifrm = tabIfAny!=null ? tabIfAny : newInternalFrame(getCommonLocaleDelegate().getMessage(
+		ifrm = tabIfAny!=null ? tabIfAny : newInternalFrame(getSpringLocaleDelegate().getMessage(
 				"StateModelCollectController.4","Statusmodelle verwalten"));
 		// getSearchStrategy().setCompleteCollectablesStrategy(new CompleteCollectableStateModelsStrategy(this));
 
@@ -209,7 +209,7 @@ public class StateModelCollectController extends NuclosCollectController<Collect
 			/*final JToolBar toolbarCustomDetails = UIUtils.createNonFloatableToolBar();
 			JButton btnLocale = new JButton();
 			btnLocale.setIcon(Icons.getInstance().getIconRelate());
-			btnLocale.setToolTipText(CommonLocaleDelegate.getMessage("MetaDataCollectController.27", "\u00dcbersetzungstool"));
+			btnLocale.setToolTipText(SpringLocaleDelegate.getMessage("MetaDataCollectController.27", "\u00dcbersetzungstool"));
 			btnLocale.setAction(new CommonAbstractAction(btnLocale) {
 				@Override
                 public void actionPerformed(ActionEvent ev) {
@@ -381,7 +381,7 @@ public class StateModelCollectController extends NuclosCollectController<Collect
 
 	@Override
 	protected CollectableStateModel updateCollectable(CollectableStateModel clct, Object oAdditionalData) throws CommonBusinessException {
-		throw new CommonFatalException(getCommonLocaleDelegate().getMessage(
+		throw new CommonFatalException(getSpringLocaleDelegate().getMessage(
 				"StateModelCollectController.2","Sammelbearbeitung ist hier noch nicht m\u00f6glich."));
 	}
 
@@ -421,7 +421,7 @@ public class StateModelCollectController extends NuclosCollectController<Collect
 			SecurityCache.getInstance().revalidate();
 		}
 		catch(Exception e) {
-			throw new CommonBusinessException(getCommonLocaleDelegate().getMessage(
+			throw new CommonBusinessException(getSpringLocaleDelegate().getMessage(
 					"StateModelCollectController.1","Der serverseitige Cache konnte nicht invalidiert werden!"), e);
 		}
 
@@ -456,7 +456,7 @@ public class StateModelCollectController extends NuclosCollectController<Collect
 
 	@Override
 	protected String getEntityLabel() {
-		return getCommonLocaleDelegate().getMessage("StateModelCollectController.3","Statusmodell");
+		return getSpringLocaleDelegate().getMessage("StateModelCollectController.3","Statusmodell");
 	}
 
 	/**

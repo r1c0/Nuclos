@@ -24,7 +24,7 @@ import java.util.List;
 import org.nuclos.common.collect.collectable.CollectableField;
 import org.nuclos.common.collect.collectable.CollectableFieldsProvider;
 import org.nuclos.common.collect.collectable.CollectableValueIdField;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.client.masterdata.MasterDataDelegate;
 import org.nuclos.server.masterdata.valueobject.MasterDataMetaFieldVO;
@@ -61,8 +61,8 @@ public class AllCollectableEntityFieldsCollectableFieldsProvider implements Coll
 				for(MasterDataMetaFieldVO fieldVO : lstFieldVO) {
 					//result.add(new CollectableValueIdField(fieldVO.getId(), mdmcvoSubEntity.getLabel() + "." + fieldVO.getLabel()));
 					result.add(new CollectableValueIdField(fieldVO.getId(), 
-							CommonLocaleDelegate.getInstance().getLabelFromMetaDataVO(mdmcvoSubEntity) + "." 
-							+ CommonLocaleDelegate.getInstance().getResource(fieldVO.getResourceSIdForLabel(), fieldVO.getLabel())));
+							SpringLocaleDelegate.getInstance().getLabelFromMetaDataVO(mdmcvoSubEntity) + "." 
+							+ SpringLocaleDelegate.getInstance().getResource(fieldVO.getResourceSIdForLabel(), fieldVO.getLabel())));
 				}
 			}
 		}

@@ -34,7 +34,7 @@ import org.nuclos.client.wizard.steps.NuclosEntityTranslationStep;
 import org.nuclos.client.wizard.steps.NuclosEntityTreeValueStep;
 import org.nuclos.client.wizard.steps.NuclosUserGroupRightsStep;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.pietschy.wizard.WizardEvent;
 import org.pietschy.wizard.WizardListener;
 
@@ -62,49 +62,49 @@ public class ShowNuclosWizard  {
 	}
 
 	public void showWizard(JTabbedPane desktopPane, JFrame mainFrame) {
-		final CommonLocaleDelegate cld = CommonLocaleDelegate.getInstance();
+		final SpringLocaleDelegate localeDelegate = SpringLocaleDelegate.getInstance();
 		
 		final MainFrameTab ifrm = Main.getInstance().getMainController().newMainFrameTab(null, 
-				cld.getMessage("wizard.show.17", "Nucleus Entit\u00e4tenwizard <Neue Entit\u00e4t>"));
+				localeDelegate.getMessage("wizard.show.17", "Nucleus Entit\u00e4tenwizard <Neue Entit\u00e4t>"));
 
-		NuclosEntityNameStep step1 = new NuclosEntityNameStep(cld.getMessage(
+		NuclosEntityNameStep step1 = new NuclosEntityNameStep(localeDelegate.getMessage(
 				"wizard.show.1", "Entit\u00e4ten erstellen"), 
-				cld.getMessage("wizard.show.2", "Bitte geben Sie den Namen der Entit\u00e4t ein"));
+				localeDelegate.getMessage("wizard.show.2", "Bitte geben Sie den Namen der Entit\u00e4t ein"));
 		if(toEdit != null)
 			step1.setEntityToEdit(toEdit);
-		NuclosEntityCommonPropertiesStep step2 = new NuclosEntityCommonPropertiesStep(cld.getMessage(
+		NuclosEntityCommonPropertiesStep step2 = new NuclosEntityCommonPropertiesStep(localeDelegate.getMessage(
 				"wizard.show.3", "Definition allgemeiner Eigenschaften"), 
-				cld.getMessage("wizard.show.4", "Bitte tragen Sie hier die allgemeinen Eigenschaften ein"));
+				localeDelegate.getMessage("wizard.show.4", "Bitte tragen Sie hier die allgemeinen Eigenschaften ein"));
 		step2.setParentComponent(ifrm);
-		NuclosEntityOptionStep step3 = new NuclosEntityOptionStep(cld.getMessage(
+		NuclosEntityOptionStep step3 = new NuclosEntityOptionStep(localeDelegate.getMessage(
 				"wizard.show.5", "Definition von Attributen"), 
-				cld.getMessage("wizard.show.6", "Wie m\u00f6chten Sie die Attribute der Entit\u00e4t erstellen?"));
-		NuclosEntityAttributeInputStep step4 = new NuclosEntityAttributeInputStep(cld.getMessage(
+				localeDelegate.getMessage("wizard.show.6", "Wie m\u00f6chten Sie die Attribute der Entit\u00e4t erstellen?"));
+		NuclosEntityAttributeInputStep step4 = new NuclosEntityAttributeInputStep(localeDelegate.getMessage(
 				"wizard.show.7", "Attribute bearbeiten"), 
-				cld.getMessage("wizard.show.8", "F\u00fcgen Sie Attribute hinzu in dem Sie auf den Button Attribute hinzuf\u00fcgen dr\u00fccken"));
+				localeDelegate.getMessage("wizard.show.8", "F\u00fcgen Sie Attribute hinzu in dem Sie auf den Button Attribute hinzuf\u00fcgen dr\u00fccken"));
 		step4.setParentComponent(ifrm);
 		step4.setComplete(true);
-		NuclosEntityProcessStep step41 = new NuclosEntityProcessStep(cld.getMessage(
+		NuclosEntityProcessStep step41 = new NuclosEntityProcessStep(localeDelegate.getMessage(
 				"wizard.show.processes", "Aktionen definieren"), 
-				cld.getMessage("wizard.show.processes.summary", "Definition von Aktionen für die Verwendung unterschiedlicher Layouts und Statusmodelle."));
-		NuclosEntityMenuStep step42 = new NuclosEntityMenuStep(cld.getMessage(
+				localeDelegate.getMessage("wizard.show.processes.summary", "Definition von Aktionen für die Verwendung unterschiedlicher Layouts und Statusmodelle."));
+		NuclosEntityMenuStep step42 = new NuclosEntityMenuStep(localeDelegate.getMessage(
 				"wizard.show.menu", "Menue konfigurieren"), 
-				cld.getMessage("wizard.show.menu.summary", "Konfigurieren Sie die Menueeintraege für diese Entitaet. Wenn Sie keine Eintraege definieren, wird ein Standard-Menueeintrag generiert."));
-		NuclosEntityTreeValueStep step5 = new NuclosEntityTreeValueStep(cld.getMessage(
+				localeDelegate.getMessage("wizard.show.menu.summary", "Konfigurieren Sie die Menueeintraege für diese Entitaet. Wenn Sie keine Eintraege definieren, wird ein Standard-Menueeintrag generiert."));
+		NuclosEntityTreeValueStep step5 = new NuclosEntityTreeValueStep(localeDelegate.getMessage(
 				"wizard.show.9", "Baumdarstellung definieren"), "<html><body>"
-				+ cld.getMessage("wizard.show.10", "Definition von Fenstertitel und Baumdarstellung")
+				+ localeDelegate.getMessage("wizard.show.10", "Definition von Fenstertitel und Baumdarstellung")
 				+ "</body></html>");
-		NuclosUserGroupRightsStep step6 = new NuclosUserGroupRightsStep(cld.getMessage(
+		NuclosUserGroupRightsStep step6 = new NuclosUserGroupRightsStep(localeDelegate.getMessage(
 				"wizard.show.11", "Rechte verwalten"), 
-				cld.getMessage("wizard.show.11", "Rechte verwalten"));
+				localeDelegate.getMessage("wizard.show.11", "Rechte verwalten"));
 		step6.setComplete(true);
-		NuclosEntityTranslationStep step7 = new NuclosEntityTranslationStep(cld.getMessage(
+		NuclosEntityTranslationStep step7 = new NuclosEntityTranslationStep(localeDelegate.getMessage(
 				"wizard.show.12", "\u00dcbersetzen"), 
-				cld.getMessage("wizard.show.12", "\u00dcbersetzen"));
+				localeDelegate.getMessage("wizard.show.12", "\u00dcbersetzen"));
 		step7.setComplete(true);
 		NuclosEntitySQLLayoutStep step8 = new NuclosEntitySQLLayoutStep(
-				cld.getMessage("wizard.show.13", "SQL und Layout erzeugen"), 
-				cld.getMessage("wizard.show.14", "M\u00f6chten Sie SQL-Skripte und eine Standardmaske von Nucleus erstellen lassen"));
+				localeDelegate.getMessage("wizard.show.13", "SQL und Layout erzeugen"), 
+				localeDelegate.getMessage("wizard.show.14", "M\u00f6chten Sie SQL-Skripte und eine Standardmaske von Nucleus erstellen lassen"));
 		step8.setComplete(true);
 		model.setLastVisible(false);
 		model.add(step1);

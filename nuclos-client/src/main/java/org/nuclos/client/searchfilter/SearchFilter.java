@@ -19,7 +19,7 @@ package org.nuclos.client.searchfilter;
 import java.util.Date;
 
 import org.nuclos.common.collect.collectable.searchcondition.CollectableSearchCondition;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common.NuclosBusinessException;
@@ -178,11 +178,11 @@ public abstract class SearchFilter {
 
 	public static void validate(String sFilterName) throws IllegalStateException {
 		if (StringUtils.isNullOrEmpty(sFilterName)) {
-			throw new IllegalStateException(CommonLocaleDelegate.getInstance().getMessage(
+			throw new IllegalStateException(SpringLocaleDelegate.getInstance().getMessage(
 					"SearchFilter.1", "Filtername darf nicht leer sein."));
 		}
 		if (sFilterName.matches(".*\\\\.*")) {
-			throw new IllegalStateException(CommonLocaleDelegate.getInstance().getMessage(
+			throw new IllegalStateException(SpringLocaleDelegate.getInstance().getMessage(
 					"SearchFilter.2", "Filtername darf keinen Backslash (\"\\\") enthalten."));
 		}
 	}

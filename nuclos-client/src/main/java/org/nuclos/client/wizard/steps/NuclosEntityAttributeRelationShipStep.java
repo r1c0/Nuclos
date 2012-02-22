@@ -131,25 +131,25 @@ public class NuclosEntityAttributeRelationShipStep extends NuclosEntityAttribute
 		layout.setHGap(5);
 		this.setLayout(layout);
 
-		lbEntity = new JLabel(cld.getMessage("wizard.step.attributerelationship.1", "Verweis auf Entit\u00e4t")+": ");
+		lbEntity = new JLabel(localeDelegate.getMessage("wizard.step.attributerelationship.1", "Verweis auf Entit\u00e4t")+": ");
 		cbxEntity = new JComboBox();
-		cbxEntity.setToolTipText(cld.getMessage("wizard.step.attributerelationship.tooltip.1", "Verweis auf Entit\u00e4t"));
+		cbxEntity.setToolTipText(localeDelegate.getMessage("wizard.step.attributerelationship.tooltip.1", "Verweis auf Entit\u00e4t"));
 
-		lbFields = new JLabel(cld.getMessage("wizard.step.attributerelationship.2", "Auswahl f\u00fcr Fremdschl\u00fcsselaufbau")+": ");
+		lbFields = new JLabel(localeDelegate.getMessage("wizard.step.attributerelationship.2", "Auswahl f\u00fcr Fremdschl\u00fcsselaufbau")+": ");
 
-		lbAlternativeLabel = new JLabel(cld.getMessage("wizard.step.attributerelationship.3", "Fremdschl\u00fcsselaufbau")+": ");
+		lbAlternativeLabel = new JLabel(localeDelegate.getMessage("wizard.step.attributerelationship.3", "Fremdschl\u00fcsselaufbau")+": ");
 		tfAlternativeLabel = new JTextField();
-		tfAlternativeLabel.setToolTipText(cld.getMessage("wizard.step.attributerelationship.tooltip.3", "Fremdschl\u00fcsselaufbau"));
+		tfAlternativeLabel.setToolTipText(localeDelegate.getMessage("wizard.step.attributerelationship.tooltip.3", "Fremdschl\u00fcsselaufbau"));
 		tfAlternativeLabel.addFocusListener(NuclosWizardUtils.createWizardFocusAdapter());
 
-		lbOnDeleteCascade = new JLabel(cld.getMessage("wizard.step.attributerelationship.deletecascade.label", "Cascade on delete"));
+		lbOnDeleteCascade = new JLabel(localeDelegate.getMessage("wizard.step.attributerelationship.deletecascade.label", "Cascade on delete"));
 		cbOnDeleteCascade = new JCheckBox();
-		cbOnDeleteCascade.setToolTipText(cld.getMessage(
+		cbOnDeleteCascade.setToolTipText(localeDelegate.getMessage(
 				"wizard.step.attributerelationship.deletecascade.description", "Delete all referencing objects in this entity if the referenced object is deleted."));
 
-		lbValueListProvider = new JLabel(cld.getMessage("wizard.step.attributerelationship.4", "Suchfeld"));
+		lbValueListProvider = new JLabel(localeDelegate.getMessage("wizard.step.attributerelationship.4", "Suchfeld"));
 		cbValueListProvider = new JCheckBox();
-		cbValueListProvider.setToolTipText(cld.getMessage("wizard.step.attributerelationship.tooltip.4", "Suchfeld"));
+		cbValueListProvider.setToolTipText(localeDelegate.getMessage("wizard.step.attributerelationship.tooltip.4", "Suchfeld"));
 
 		lbInfo = new JLabel();
 
@@ -201,7 +201,7 @@ public class NuclosEntityAttributeRelationShipStep extends NuclosEntityAttribute
 								setFieldNames.add(voField.getField());
 						}
 						if(!NuclosEntityAttributeRelationShipStep.this.model.isEditMode())
-							tfAlternativeLabel.setText(cld.getResource(vo.getLocaleResourceIdForTreeView(), ""));
+							tfAlternativeLabel.setText(localeDelegate.getResource(vo.getLocaleResourceIdForTreeView(), ""));
 						try {
 							checkReferenceField();
 						}
@@ -318,12 +318,12 @@ public class NuclosEntityAttributeRelationShipStep extends NuclosEntityAttribute
 
 		if(parentWizardModel.hasRows() && model.isEditMode() && !parentWizardModel.isVirtual()) {
 			cbxEntity.setEnabled(false);
-			cbxEntity.setToolTipText(cld.getMessage(
+			cbxEntity.setToolTipText(localeDelegate.getMessage(
 					"wizard.step.attributerelationship.tooltip.5", "Verweis kann nicht geändert werden. Da bereits Datensätze vorhanden sind."));
 		}
 		else {
 			cbxEntity.setEnabled(true);
-			cbxEntity.setToolTipText(cld.getMessage(
+			cbxEntity.setToolTipText(localeDelegate.getMessage(
 					"wizard.step.attributerelationship.tooltip.1", "Verweis auf Entit\u00e4t"));
 		}
 
@@ -390,13 +390,13 @@ public class NuclosEntityAttributeRelationShipStep extends NuclosEntityAttribute
 			  invalid = false;
 		  }
 		  catch(Exception e){
-			  throw new InvalidStateException(cld.getMessage(
+			  throw new InvalidStateException(localeDelegate.getMessage(
 					  "wizard.step.attributerelationship.7", "Es wurde ein ungültiger Eintrag gefunden: " + sName, sName));
 		  }
 		}
 
 		if(invalid){
-			throw new InvalidStateException(cld.getMessage(
+			throw new InvalidStateException(localeDelegate.getMessage(
 					"wizard.step.attributerelationship.8", "Es wurde kein gültiger Referenzeintrag gefunden!"));
 		}
 

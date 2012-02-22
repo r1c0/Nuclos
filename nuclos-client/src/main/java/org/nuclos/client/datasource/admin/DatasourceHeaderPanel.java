@@ -30,7 +30,7 @@ import org.nuclos.client.ui.collect.component.CollectableComboBox;
 import org.nuclos.client.ui.collect.component.CollectableTextField;
 import org.nuclos.client.valuelistprovider.EntityCollectableFieldsProvider;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 
 /**
  * Header for the edit panels.
@@ -55,7 +55,7 @@ public class DatasourceHeaderPanel extends JPanel {
 			CollectableEntityField clctefEntity,
 			CollectableEntityField clctefDescription) {
 		super(new BorderLayout());
-		final CommonLocaleDelegate cld = CommonLocaleDelegate.getInstance();
+		final SpringLocaleDelegate localeDelegate = SpringLocaleDelegate.getInstance();
 		clcttfName = new CollectableTextField(clctefName);
 		if (clctefEntity != null) {
 			clbxEntity = new CollectableComboBox(clctefEntity);
@@ -77,8 +77,8 @@ public class DatasourceHeaderPanel extends JPanel {
 
 		gbc.gridx = 0;
 		gbc.gridy = 0;
-		clcttfName.setLabelText(cld.getMessage("DatasourceHeaderPanel.3","Name"));
-		clcttfName.setToolTipText(cld.getMessage("DatasourceHeaderPanel.4","Name des Reports/Formulars"));
+		clcttfName.setLabelText(localeDelegate.getMessage("DatasourceHeaderPanel.3","Name"));
+		clcttfName.setToolTipText(localeDelegate.getMessage("DatasourceHeaderPanel.4","Name des Reports/Formulars"));
 		clcttfName.setColumns(50);
 		pnlTextFields.add(this.clcttfName.getJLabel(), gbc);
 
@@ -89,8 +89,8 @@ public class DatasourceHeaderPanel extends JPanel {
 		if (clctefEntity != null) {
 			gbc.gridx = 2;
 			gbc.insets = new Insets(2, 20, 2, 2);
-			clbxEntity.setLabelText(cld.getMessage("nuclos.entityfield.recordgrant.entity.label","Entity"));
-			clbxEntity.setToolTipText(cld.getMessage("nuclos.entityfield.recordgrant.entity.description","Entity"));
+			clbxEntity.setLabelText(localeDelegate.getMessage("nuclos.entityfield.recordgrant.entity.label","Entity"));
+			clbxEntity.setToolTipText(localeDelegate.getMessage("nuclos.entityfield.recordgrant.entity.description","Entity"));
 			pnlTextFields.add(this.clbxEntity.getJLabel(), gbc);
 			gbc.gridx = 3;
 			gbc.insets = new Insets(2, 2, 2, 2);
@@ -101,8 +101,8 @@ public class DatasourceHeaderPanel extends JPanel {
 		gbc.gridy = 1;
 		gbc.weightx = 0.0;
 		gbc.fill = GridBagConstraints.NONE;
-		clcttfDescription.setLabelText(cld.getMessage("DatasourceHeaderPanel.1","Beschreibung"));
-		clcttfDescription.setToolTipText(cld.getMessage("DatasourceHeaderPanel.2","Beschreibung des Reports/Formulars"));
+		clcttfDescription.setLabelText(localeDelegate.getMessage("DatasourceHeaderPanel.1","Beschreibung"));
+		clcttfDescription.setToolTipText(localeDelegate.getMessage("DatasourceHeaderPanel.2","Beschreibung des Reports/Formulars"));
 		pnlTextFields.add(this.clcttfDescription.getJLabel(), gbc);
 
 		gbc.gridx = 1;

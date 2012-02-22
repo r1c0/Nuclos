@@ -63,7 +63,7 @@ import org.nuclos.common.dal.vo.EntityObjectVO;
 import org.nuclos.common.entityobject.CollectableEOEntity;
 import org.nuclos.common.masterdata.CollectableMasterDataEntity;
 import org.nuclos.common.masterdata.MakeMasterDataValueIdField;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.EntityAndFieldName;
 import org.nuclos.common2.IdUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
@@ -286,9 +286,9 @@ public class Utils {
 							final Collection<CollectableComponent> collclctcomp = clctcompprovider.getCollectableComponentsFor(sInitialFocusFieldName);
 							if (collclctcomp.isEmpty()) {
 								if (bShowWarnings) {
-									final String sMessage = CommonLocaleDelegate.getInstance().getMessage(
+									final String sMessage = SpringLocaleDelegate.getInstance().getMessage(
 											"ClientUtils.1", "Das angegebene Feld f\u00fcr den initialen Fokus existiert nicht.");
-									JOptionPane.showMessageDialog(frame, sMessage, CommonLocaleDelegate.getInstance().getMessage("ClientUtils.2", "Hinweis"), 
+									JOptionPane.showMessageDialog(frame, sMessage, SpringLocaleDelegate.getInstance().getMessage("ClientUtils.2", "Hinweis"), 
 											JOptionPane.WARNING_MESSAGE);
 								}
 							}
@@ -321,20 +321,20 @@ public class Utils {
 							}
 							else {
 								if (bShowWarnings) {
-									final String sMessage = CommonLocaleDelegate.getInstance().getMessage(
+									final String sMessage = SpringLocaleDelegate.getInstance().getMessage(
 											"ClientUtils.3", "Das angegebene Feld in der Entit\u00e4t f\u00fcr den initialen Fokus existiert nicht.");
 									JOptionPane.showMessageDialog(frame, sMessage, 
-											CommonLocaleDelegate.getInstance().getMessage("ClientUtils.2", "Hinweis"), 
+											SpringLocaleDelegate.getInstance().getMessage("ClientUtils.2", "Hinweis"), 
 											JOptionPane.WARNING_MESSAGE);
 								}
 							}
 						}
 						else {
 							if (bShowWarnings) {
-								final String sMessage = CommonLocaleDelegate.getInstance().getMessage(
+								final String sMessage = SpringLocaleDelegate.getInstance().getMessage(
 										"ClientUtils.4", "Die angegebene Entit\u00e4t f\u00fcr den initialen Fokus existiert nicht.");
 								JOptionPane.showMessageDialog(frame, sMessage, 
-										CommonLocaleDelegate.getInstance().getMessage("ClientUtils.2", "Hinweis"), 
+										SpringLocaleDelegate.getInstance().getMessage("ClientUtils.2", "Hinweis"), 
 										JOptionPane.WARNING_MESSAGE);
 							}
 						}

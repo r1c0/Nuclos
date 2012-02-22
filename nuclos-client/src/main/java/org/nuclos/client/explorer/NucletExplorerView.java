@@ -50,7 +50,7 @@ import org.nuclos.client.ui.model.ChoiceList;
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common2.ClientPreferences;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.PreferencesUtils;
 import org.nuclos.common2.ServiceLocator;
 import org.nuclos.server.navigation.ejb3.TreeNodeFacadeRemote;
@@ -82,7 +82,7 @@ public class NucletExplorerView extends DefaultExplorerView implements ExplorerV
 		
 		btnAddContent.setFocusable(false);
 		
-		btnAddContent.setAction(new AbstractAction(CommonLocaleDelegate.getInstance().getMessage(
+		btnAddContent.setAction(new AbstractAction(SpringLocaleDelegate.getInstance().getMessage(
 				"NucletExplorerNode.1", "Zuweisen"), Icons.getInstance().getIconRelate()) {
 
 			@Override
@@ -111,7 +111,7 @@ public class NucletExplorerView extends DefaultExplorerView implements ExplorerV
 
 		selectCtrl.setModel(ro);
 		final boolean userPressedOk = selectCtrl.run(
-				CommonLocaleDelegate.getInstance().getMessage(
+				SpringLocaleDelegate.getInstance().getMessage(
 						"NucletExplorerNode.2", "Nuclet Zuweisung"));
 		final NucletContentSelectObjectPanel selectPanel = (NucletContentSelectObjectPanel) selectCtrl.getPanel();
 		PreferencesUtils.putRectangle(prefs, PREFS_NODE_ADDREMOVE_DIALOG_SIZE, selectPanel.getBounds());

@@ -37,7 +37,7 @@ import org.nuclos.client.jms.MultiMessageListenerContainer;
 import org.nuclos.common.JMSConstants;
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.SpringApplicationContextHolder;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.listener.SimpleMessageListenerContainer;
 import org.springframework.stereotype.Component;
@@ -70,7 +70,7 @@ public class TopicNotificationReceiver {
 	
 	private List<TopicInfo> infos = new ArrayList<TopicInfo>();
 	
-	// private CommonLocaleDelegate cld;
+	// private SpringLocaleDelegate cld;
 	
 	private ConnectionFactory jmsFactory;
 
@@ -128,7 +128,7 @@ public class TopicNotificationReceiver {
 	}
 	
 	// @Autowired
-	void setCommonLocaleDelegate(CommonLocaleDelegate cld) {
+	void setSpringLocaleDelegate(SpringLocaleDelegate cld) {
 		// this.cld = cld;
 	}
 	
@@ -214,7 +214,7 @@ public class TopicNotificationReceiver {
 		private TopicSession topicsession;
 		private TopicSubscriber topicsubscriber;
 		
-		// private CommonLocaleDelegate cld;
+		// private SpringLocaleDelegate cld;
 
 		public WeakReferenceMessageListener(TopicInfo info) {
 			this.topicname = info.getTopic();
@@ -223,7 +223,7 @@ public class TopicNotificationReceiver {
 		}
 		
 		// @Autowired
-		void setCommonLocaleDelegate(CommonLocaleDelegate cld) {
+		void setSpringLocaleDelegate(SpringLocaleDelegate cld) {
 			// this.cld = cld;
 		}
 

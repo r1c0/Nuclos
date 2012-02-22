@@ -25,7 +25,7 @@ import org.nuclos.client.ui.collect.component.CollectableComponent;
 import org.nuclos.client.ui.multiaction.MultiCollectablesActionController;
 import org.nuclos.common.collect.collectable.Collectable;
 import org.nuclos.common.collect.collectable.CollectableField;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.exception.CommonBusinessException;
 
 /**
@@ -71,26 +71,26 @@ public class UpdateSelectedCollectablesController <Clct extends Collectable> ext
 
 		@Override
 		public String getText(Clct clct) {
-			return CommonLocaleDelegate.getInstance().getMessage(
+			return SpringLocaleDelegate.getInstance().getMessage(
 					"UpdateSelectedCollectablesController.1", "Datensatz {0} wird ge\u00e4ndert...", MultiCollectablesActionController.getCollectableLabel(ctl.getEntityName(), clct));//"Datensatz " + clct.getIdentifierLabel() + " wird ge\u00e4ndert...";
 		}
 
 		@Override
 		public String getSuccessfulMessage(Clct clct, Object oResult) {
-			return CommonLocaleDelegate.getInstance().getMessage(
+			return SpringLocaleDelegate.getInstance().getMessage(
 					"UpdateSelectedCollectablesController.2", "Datensatz {0} erfolgreich ge\u00e4ndert.", MultiCollectablesActionController.getCollectableLabel(ctl.getEntityName(), clct));//"Datensatz " + clct.getIdentifierLabel() + " erfolgreich ge\u00e4ndert.";
 		}
 
 		@Override
 		public String getConfirmStopMessage() {
-			return CommonLocaleDelegate.getInstance().getMessage(
+			return SpringLocaleDelegate.getInstance().getMessage(
 					"UpdateSelectedCollectablesController.3", "Wollen Sie das \u00c4ndern der Datens\u00e4tze an dieser Stelle beenden?\n(Die bisher ge\u00e4nderten Datens\u00e4tze bleiben in jedem Fall ge\u00e4ndert.)");
 			//"Wollen Sie das \u00c4ndern der Datens\u00e4tze an dieser Stelle beenden?\n(Die bisher ge\u00e4nderten Datens\u00e4tze bleiben in jedem Fall ge\u00e4ndert.)";
 		}
 
 		@Override
 		public String getExceptionMessage(Clct clct, Exception ex) {
-			return CommonLocaleDelegate.getInstance().getMessage(
+			return SpringLocaleDelegate.getInstance().getMessage(
 					"UpdateSelectedCollectablesController.4", "Datensatz {0} konnte nicht ge\u00e4ndert werden.", MultiCollectablesActionController.getCollectableLabel(ctl.getEntityName(), clct)) + ex.getMessage();
 			//"Datensatz " + clct.getIdentifierLabel() + " konnte nicht ge\u00e4ndert werden. " + ex.getMessage();
 		}
@@ -103,7 +103,7 @@ public class UpdateSelectedCollectablesController <Clct extends Collectable> ext
 	}
 
 	public UpdateSelectedCollectablesController(CollectController<Clct> ctl) throws CommonBusinessException {
-		super(ctl, CommonLocaleDelegate.getInstance().getMessage(
+		super(ctl, SpringLocaleDelegate.getInstance().getMessage(
 				"UpdateSelectedCollectablesController.5", "Datens\u00e4tze \u00e4ndern"), new UpdateAction<Clct>(ctl), ctl.getCompleteSelectedCollectables());
 	}
 

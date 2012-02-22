@@ -75,14 +75,14 @@ public class SaveSearchResultTemplateController extends Controller {
 			// Ask the user if he wants to overwrite the selected template or add a new one:
 			final SaveNameDescriptionPanel pnl = new SaveNameDescriptionPanel();
 
-			pnl.getRadioButtonOverwrite().setText(getCommonLocaleDelegate().getMessage(
+			pnl.getRadioButtonOverwrite().setText(getSpringLocaleDelegate().getMessage(
 					"SaveSearchResultTemplateController.1", "Bestehende Suchergebnisvorlage \"{0}\" \u00e4ndern", templateSelected.getName()));
-			pnl.getRadioButtonNew().setText(getCommonLocaleDelegate().getMessage(
+			pnl.getRadioButtonNew().setText(getSpringLocaleDelegate().getMessage(
 					"SaveSearchResultTemplateController.2", "Neue Suchergebnisvorlage anlegen"));
 			// default is overwrite:
 			pnl.getRadioButtonOverwrite().setSelected(true);
 
-			final String sTitle = getCommonLocaleDelegate().getMessage(
+			final String sTitle = getSpringLocaleDelegate().getMessage(
 					"SaveSearchResultTemplateController.3", "Aktuelles Suchergebnisformat speichern");
 
 			final int iBtn = JOptionPane.showConfirmDialog(getParent(), pnl, sTitle, JOptionPane.OK_CANCEL_OPTION,
@@ -100,11 +100,11 @@ public class SaveSearchResultTemplateController extends Controller {
 
 			switch (result) {
 				case New:
-					sTitleEnterTemplate = getCommonLocaleDelegate().getMessage(
+					sTitleEnterTemplate = getSpringLocaleDelegate().getMessage(
 							"SaveSearchResultTemplateController.2", "Neue Suchergebnisvorlage anlegen");
 					break;
 				case Overwrite:
-					sTitleEnterTemplate = getCommonLocaleDelegate().getMessage(
+					sTitleEnterTemplate = getSpringLocaleDelegate().getMessage(
 							"SaveSearchResultTemplateController.4", "Bestehende Suchergebnisvorlage \u00e4ndern");
 					pnlEnterTemplate.getTextFieldName().setText(templateSelected.getName());
 					pnlEnterTemplate.getTextFieldDescription().setText(templateSelected.getDescription());
@@ -122,7 +122,7 @@ public class SaveSearchResultTemplateController extends Controller {
 				protected void validateInput() throws ErrorInfo {
 					final String sTemplateName = pnlEnterTemplate.getTextFieldName().getText();
 					if (StringUtils.isNullOrEmpty(sTemplateName)) {
-						throw new ErrorInfo(getCommonLocaleDelegate().getMessage(
+						throw new ErrorInfo(getSpringLocaleDelegate().getMessage(
 								"SaveSearchResultTemplateController.5", "Bitte geben Sie einen Namen f\u00fcr die Suchergebnisvorlage an."), pnlEnterTemplate.getTextFieldName());
 					}
 					try {
@@ -139,7 +139,7 @@ public class SaveSearchResultTemplateController extends Controller {
 						(resultFinal == Command.Overwrite && !LangUtils.equals(templateSelected.getName(), pnlEnterTemplate.getTextFieldName().getText()));
 
 					if (bMustCheckUniqueness && getSearchResultTemplates().contains(sTemplateName)) {
-						throw new ErrorInfo(getCommonLocaleDelegate().getMessage(
+						throw new ErrorInfo(getSpringLocaleDelegate().getMessage(
 								"SaveSearchResultTemplateController.6", "Eine Suchergebnisvorlage mit diesem Namen existiert bereits."), pnlEnterTemplate.getTextFieldName());
 					}
 				}
@@ -165,12 +165,12 @@ public class SaveSearchResultTemplateController extends Controller {
 				ClientPreferences.getUserPreferences().flush();
 			}
 			catch (PreferencesException ex) {
-				final String sMessage = getCommonLocaleDelegate().getMessage(
+				final String sMessage = getSpringLocaleDelegate().getMessage(
 						"SaveSearchResultTemplateController.7", "Die Benutzereinstellungen konnten nicht geschrieben werden.");
 				throw new NuclosFatalException(sMessage, ex);
 			}
 			catch (BackingStoreException ex) {
-				final String sMessage = getCommonLocaleDelegate().getMessage(
+				final String sMessage = getSpringLocaleDelegate().getMessage(
 						"SaveSearchResultTemplateController.7", "Die Benutzereinstellungen konnten nicht geschrieben werden.");
 				throw new NuclosFatalException(sMessage, ex);
 			}

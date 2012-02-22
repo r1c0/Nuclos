@@ -63,7 +63,7 @@ import org.nuclos.client.synthetica.NuclosThemeSettings;
 import org.nuclos.client.ui.Errors;
 import org.nuclos.client.ui.Icons;
 import org.nuclos.common.collection.CollectionUtils;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 
 public class ResourceIconChooser extends JPanel {
 	
@@ -307,22 +307,22 @@ public class ResourceIconChooser extends JPanel {
 	}
 	
 	public void showDialog(String sSelectedResource) {
-		final CommonLocaleDelegate cld = CommonLocaleDelegate.getInstance();
+		final SpringLocaleDelegate localeDelegate = SpringLocaleDelegate.getInstance();
 		
 		JPanel contentPanel = new JPanel(new BorderLayout(5, 5));
 		contentPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 		contentPanel.add(this, BorderLayout.CENTER);
 		
 		JPanel actionsPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 2));
-		JButton btSave = new JButton(cld.getMessage("ResourceIconChooser.1","Speichern"));
-		JButton btCancel = new JButton(cld.getMessage("ResourceIconChooser.2","Abbrechen"));
+		JButton btSave = new JButton(localeDelegate.getMessage("ResourceIconChooser.1","Speichern"));
+		JButton btCancel = new JButton(localeDelegate.getMessage("ResourceIconChooser.2","Abbrechen"));
 		actionsPanel.add(btSave);
 		actionsPanel.add(btCancel);
 		contentPanel.add(actionsPanel, BorderLayout.SOUTH);
 		
 		setSelected(sSelectedResource);
 		
-		final JDialog dialog = new JDialog(Main.getInstance().getMainFrame(), cld.getMessage(
+		final JDialog dialog = new JDialog(Main.getInstance().getMainFrame(), localeDelegate.getMessage(
 				"ResourceIconChooser.3","Ressource Icon auswählen"), true);
 		dialog.setContentPane(contentPanel);
 		dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);

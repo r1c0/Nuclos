@@ -65,9 +65,9 @@ import org.springframework.stereotype.Component;
  * @author marc.jackisch
  */
 @Component
-public class CommonLocaleDelegate {
+public class SpringLocaleDelegate {
 
-	private static final Logger LOG = Logger.getLogger(CommonLocaleDelegate.class);
+	private static final Logger LOG = Logger.getLogger(SpringLocaleDelegate.class);
 
 	public static interface LookupService {
 
@@ -110,13 +110,13 @@ public class CommonLocaleDelegate {
 
 	};
 	
-	private static CommonLocaleDelegate INSTANCE;
+	private static SpringLocaleDelegate INSTANCE;
 	
 	//
 
 	private LookupService keyLookup;
 	
-	CommonLocaleDelegate() {
+	SpringLocaleDelegate() {
 		INSTANCE = this;
 	}
 	
@@ -125,7 +125,7 @@ public class CommonLocaleDelegate {
 		this.keyLookup = lookupService;
 	}
 	
-	public static CommonLocaleDelegate getInstance() {
+	public static SpringLocaleDelegate getInstance() {
 		return INSTANCE;
 	}
 

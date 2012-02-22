@@ -48,7 +48,7 @@ import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.collect.collectable.CollectableField;
 import org.nuclos.common.collect.collectable.CollectableFieldsProvider;
 import org.nuclos.common.collection.CollectionUtils;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
@@ -241,7 +241,7 @@ public class ParameterPanel extends JPanel {
 				}
 			}
 			catch (NumberFormatException ex) {
-				throw new CommonValidationException(CommonLocaleDelegate.getInstance().getMessage(
+				throw new CommonValidationException(SpringLocaleDelegate.getInstance().getMessage(
 						"ParameterPanel.1", "''{0}'' ist keine g\u00fcltige Zahl.", ((JTextField) comp).getText()), ex);
 			}
 		}

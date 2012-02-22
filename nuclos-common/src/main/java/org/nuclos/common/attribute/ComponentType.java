@@ -16,7 +16,7 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.common.attribute;
 
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 
 import java.util.NoSuchElementException;
 
@@ -31,11 +31,11 @@ import java.util.NoSuchElementException;
  */
 public enum ComponentType {
 	
-	TEXTFIELD(CommonLocaleDelegate.getInstance().getMessage("ComponentType.5","Textfeld"), false, true, false),
-	DROPDOWN(CommonLocaleDelegate.getInstance().getMessage("ComponentType.1","Auswahlliste"), false, false, false),
-	COMBOBOX(CommonLocaleDelegate.getInstance().getMessage("ComponentType.2","ComboBox (editierbar)"), false, true, true),
-	LISTOFVALUES(CommonLocaleDelegate.getInstance().getMessage("ComponentType.4","Suchfeld"), true, false, false),
-	LOOKUP(CommonLocaleDelegate.getInstance().getMessage("ComponentType.1","Nachschlagefeld"), true, true, false);
+	TEXTFIELD(SpringLocaleDelegate.getInstance().getMessage("ComponentType.5","Textfeld"), false, true, false),
+	DROPDOWN(SpringLocaleDelegate.getInstance().getMessage("ComponentType.1","Auswahlliste"), false, false, false),
+	COMBOBOX(SpringLocaleDelegate.getInstance().getMessage("ComponentType.2","ComboBox (editierbar)"), false, true, true),
+	LISTOFVALUES(SpringLocaleDelegate.getInstance().getMessage("ComponentType.4","Suchfeld"), true, false, false),
+	LOOKUP(SpringLocaleDelegate.getInstance().getMessage("ComponentType.1","Nachschlagefeld"), true, true, false);
 
 	private final String sLabel;
 	private final boolean bSearchable;
@@ -84,7 +84,7 @@ public enum ComponentType {
 				return componenttype;
 			}
 		}
-		throw new NoSuchElementException(CommonLocaleDelegate.getInstance().getMessage(
+		throw new NoSuchElementException(SpringLocaleDelegate.getInstance().getMessage(
 				"ComponentType.3","Es gibt keinen passenden Komponenten-Typ f\u00fcr diese Kombination."));
 	}
 

@@ -16,7 +16,7 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.report.reportrunner;
 
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 
 import java.awt.Dimension;
 import java.awt.Frame;
@@ -37,7 +37,7 @@ public class BackgroundProcessStatusDialog extends JDialog {
 	private BackgroundProcessStatusPanel pnlStatus = new BackgroundProcessStatusPanel();
 
 	public BackgroundProcessStatusDialog(Frame owner) {
-		super(owner, CommonLocaleDelegate.getInstance().getMessage(
+		super(owner, SpringLocaleDelegate.getInstance().getMessage(
 				"BackgroundProcessStatusDialog.1","Hintergrundprozesse"), false);
 		setSize(400, 200);
 		//setLocation(100, 100);

@@ -107,7 +107,7 @@ public class NucletCollectController extends MasterDataCollectController {
 		//final JToolBar toolbarCustomDetails = UIUtils.createNonFloatableToolBar();
 
 		final JButton newMakeTreeRoot = new JButton(
-				getCommonLocaleDelegate().getText("NucletCollectController.5", "Nuclet Bestandteile"),
+				getSpringLocaleDelegate().getText("NucletCollectController.5", "Nuclet Bestandteile"),
 				btnMakeTreeRoot.getIcon());
 
 		for (ActionListener al : btnMakeTreeRoot.getActionListeners())
@@ -122,7 +122,7 @@ public class NucletCollectController extends MasterDataCollectController {
 		this.getDetailsPanel().addToolBarComponent(newMakeTreeRoot);
 
 		btnShowDependences = new JButton(Icons.getInstance().getIconTree16());
-		btnShowDependences.setText(getCommonLocaleDelegate().getText("NucletCollectController.6", "Baum der Nuclets"));
+		btnShowDependences.setText(getSpringLocaleDelegate().getText("NucletCollectController.6", "Baum der Nuclets"));
 		btnShowDependences.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -132,8 +132,8 @@ public class NucletCollectController extends MasterDataCollectController {
 		this.getResultPanel().addToolBarComponent(btnShowDependences);
 
 		btnImport = new JButton(Icons.getInstance().getIconImport16());
-		btnImport.setToolTipText(getCommonLocaleDelegate().getText("NucletCollectController.1", "Nuclet importieren..."));
-		btnImport.setText(getCommonLocaleDelegate().getText("NucletCollectController.3", "Importieren"));
+		btnImport.setToolTipText(getSpringLocaleDelegate().getText("NucletCollectController.1", "Nuclet importieren..."));
+		btnImport.setText(getSpringLocaleDelegate().getText("NucletCollectController.3", "Importieren"));
 		btnImport.addActionListener(new ActionListener() {
 
 			@Override
@@ -157,8 +157,8 @@ public class NucletCollectController extends MasterDataCollectController {
 		this.getResultPanel().addToolBarComponent(btnImport);
 
 		btnExport = new JButton(Icons.getInstance().getIconExport16());
-		btnExport.setToolTipText(getCommonLocaleDelegate().getText("NucletCollectController.2", "Nuclet exportieren..."));
-		btnExport.setText(getCommonLocaleDelegate().getText("NucletCollectController.4", "Exportieren"));
+		btnExport.setToolTipText(getSpringLocaleDelegate().getText("NucletCollectController.2", "Nuclet exportieren..."));
+		btnExport.setText(getSpringLocaleDelegate().getText("NucletCollectController.4", "Exportieren"));
 		btnExport.addActionListener(new ActionListener() {
 
 			@Override

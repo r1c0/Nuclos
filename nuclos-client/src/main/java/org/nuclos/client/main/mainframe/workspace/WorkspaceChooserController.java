@@ -82,7 +82,7 @@ import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Predicate;
 import org.nuclos.common.collection.Transformer;
 import org.nuclos.common.dal.vo.EntityObjectVO;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.StringUtils;
@@ -107,7 +107,7 @@ public class WorkspaceChooserController {
 	private static List<Long> workspaceOrderIds;
 	private static List<String> workspaceOrder;
 	
-	private CommonLocaleDelegate cld;
+	private SpringLocaleDelegate localeDelegate;
 	
 	WorkspaceChooserController() {
 		// initWorkspaceChooser();
@@ -131,8 +131,8 @@ public class WorkspaceChooserController {
 	}
 	
 	@Autowired
-	void setCommonLocaleDelegate(CommonLocaleDelegate cld) {
-		this.cld = cld;
+	void setSpringLocaleDelegate(SpringLocaleDelegate cld) {
+		this.localeDelegate = cld;
 	}
 	
 	/**
@@ -318,7 +318,7 @@ public class WorkspaceChooserController {
 				wa.putBooleanParameter("assigned", wovo.isAssigned());
 				genericActions.add(new GenericAction(wa, new ActionWithMenuPath(
 						new String[]{
-								CommonLocaleDelegate.getInstance().getMessage("nuclos.entity.workspace.label", "Arbeitsumgebung")
+								SpringLocaleDelegate.getInstance().getMessage("nuclos.entity.workspace.label", "Arbeitsumgebung")
 						}, action)));
 			}
 		}
@@ -440,7 +440,7 @@ public class WorkspaceChooserController {
 		}
 		
 		menu.addLabel("<html><b>"
-				+ CommonLocaleDelegate.getInstance().getMessage("WorkspaceChooserController.2","Arbeitsumgebung")
+				+ SpringLocaleDelegate.getInstance().getMessage("WorkspaceChooserController.2","Arbeitsumgebung")
 				+ "</b></html>");
 		
 		/**
@@ -520,7 +520,7 @@ public class WorkspaceChooserController {
 	
 	private static Action newRefreshAction() {
 		return new AbstractAction(
-				CommonLocaleDelegate.getInstance().getMessage(
+				SpringLocaleDelegate.getInstance().getMessage(
 						"WorkspaceChooserController.13","Leiste aktualisieren"), 
 				MainFrame.resizeAndCacheIcon(Icons.getInstance().getIconRefresh16(), ICON_SIZE)) {
 
@@ -546,7 +546,7 @@ public class WorkspaceChooserController {
 	
 	private static Action newNewWorkspaceAction() {
 		return new AbstractAction(
-				CommonLocaleDelegate.getInstance().getMessage("WorkspaceChooserController.1","Neu"), 
+				SpringLocaleDelegate.getInstance().getMessage("WorkspaceChooserController.1","Neu"), 
 				MainFrame.resizeAndCacheIcon(Icons.getInstance().getIconNew16(), ICON_SIZE)) {
 
 				@Override
@@ -575,7 +575,7 @@ public class WorkspaceChooserController {
 	
 	private static Action newEditAction(final WorkspaceVO wovo) {
 		return new AbstractAction(
-				CommonLocaleDelegate.getInstance().getMessage("WorkspaceChooserController.3","Eigenschaften"), 
+				SpringLocaleDelegate.getInstance().getMessage("WorkspaceChooserController.3","Eigenschaften"), 
 				MainFrame.resizeAndCacheIcon(Icons.getInstance().getIconEdit16(), ICON_SIZE)) {
 
 				@Override
@@ -603,16 +603,16 @@ public class WorkspaceChooserController {
 	
 	private static Action newCloneAction(final WorkspaceVO wovo) {
 		return new AbstractAction(
-				CommonLocaleDelegate.getInstance().getMessage("WorkspaceChooserController.4","Klonen"), 
+				SpringLocaleDelegate.getInstance().getMessage("WorkspaceChooserController.4","Klonen"), 
 				MainFrame.resizeAndCacheIcon(Icons.getInstance().getIconClone16(), ICON_SIZE)) {
 
 				@Override
 				public void actionPerformed(ActionEvent e) {
 					final MainFrame mf = Main.getInstance().getMainFrame();
 					String newName = JOptionPane.showInputDialog(mf, 
-						CommonLocaleDelegate.getInstance().getMessage(
+						SpringLocaleDelegate.getInstance().getMessage(
 								"WorkspaceChooserController.6","Arbeitsumgebung \"{0}\" klonen",wovo.getWoDesc().getName()) + ":", 
-						CommonLocaleDelegate.getInstance().getMessage("WorkspaceChooserController.5","Neuer Name"), 
+						SpringLocaleDelegate.getInstance().getMessage("WorkspaceChooserController.5","Neuer Name"), 
 						JOptionPane.INFORMATION_MESSAGE);
 					
 					if (!StringUtils.looksEmpty(newName)) {
@@ -646,7 +646,7 @@ public class WorkspaceChooserController {
 	
 	private static Action newRemoveAction(final WorkspaceVO wovo) {
 		return new AbstractAction(
-				CommonLocaleDelegate.getInstance().getMessage("WorkspaceChooserController.7","Löschen"), 
+				SpringLocaleDelegate.getInstance().getMessage("WorkspaceChooserController.7","Löschen"), 
 				MainFrame.resizeAndCacheIcon(Icons.getInstance().getIconRealDelete16(), ICON_SIZE)) {
 				
 				private static final long serialVersionUID = 1L;
@@ -659,10 +659,10 @@ public class WorkspaceChooserController {
 					final MainFrame mf = Main.getInstance().getMainFrame();
 					if (JOptionPane.YES_OPTION == 
 						JOptionPane.showConfirmDialog(mf, 
-							CommonLocaleDelegate.getInstance().getMessage(
+							SpringLocaleDelegate.getInstance().getMessage(
 									"WorkspaceChooserController.8","Möchten Sie wirklich die Arbeitsumgebung \"{0}\" löschen?",
 									wovo.getWoDesc().getName()), 
-							CommonLocaleDelegate.getInstance().getMessage("WorkspaceChooserController.9","Sind Sie sicher?"), 
+							SpringLocaleDelegate.getInstance().getMessage("WorkspaceChooserController.9","Sind Sie sicher?"), 
 							JOptionPane.YES_NO_OPTION)) {
 						
 						if (wovo.equals(getSelectedWorkspace()) && !RestoreUtils.clearWorkspace()) {
@@ -703,7 +703,7 @@ public class WorkspaceChooserController {
 	
 	private static Action newAssignAction(final WorkspaceVO wovo, final Label lb) {
 		return new AbstractAction(
-				CommonLocaleDelegate.getInstance().getMessage(
+				SpringLocaleDelegate.getInstance().getMessage(
 						"WorkspaceChooserController.10","Benutzergruppen zuweisen"), 
 				MainFrame.resizeAndCacheIcon(Icons.getInstance().getIconRelate(), ICON_SIZE)) {
 				
@@ -743,13 +743,13 @@ public class WorkspaceChooserController {
 					selectCtrl.setModel(cl);
 					
 					// result ok=true
-					if (selectCtrl.run(CommonLocaleDelegate.getInstance().getMessage(
+					if (selectCtrl.run(SpringLocaleDelegate.getInstance().getMessage(
 							"WorkspaceChooserController.11","Arbeitsumgebung Benutzergruppen zuweisen"))) {
 						final Icon icoBackup = lb.getIcon();
 						final String toolTipBackup = lb.getToolTipText();
 						
 						lb.setIcon(MainFrame.resizeAndCacheIcon(Icons.getInstance().getIconSaveS16(), ICON_SIZE));
-						lb.setToolTipText(CommonLocaleDelegate.getInstance().getResource(
+						lb.setToolTipText(SpringLocaleDelegate.getInstance().getResource(
 								"WorkspaceChooserController.12","Zuweisung wird gespeichert") + "...");
 						
 						WorkspaceChooserController.setEnabled(false);
@@ -805,7 +805,7 @@ public class WorkspaceChooserController {
 	private static Action newPublishAction(final WorkspaceVO wovo, final Label lb) {
 		final MainFrame mf = Main.getInstance().getMainFrame();
 		return new AbstractAction(
-				CommonLocaleDelegate.getInstance().getMessage("WorkspaceChooserController.14","Änderungen in Vorlage publizieren"), 
+				SpringLocaleDelegate.getInstance().getMessage("WorkspaceChooserController.14","Änderungen in Vorlage publizieren"), 
 				MainFrame.resizeAndCacheIcon(Icons.getInstance().getIconRedo16(), ICON_SIZE)) {
 
 					private static final long serialVersionUID = 1L;
@@ -826,7 +826,7 @@ public class WorkspaceChooserController {
 										wp.isPublishTableColumnConfiguration(),
 										wp.isPublishToolbarConfiguration());
 								
-								final String message = CommonLocaleDelegate.getInstance().getMessage(
+								final String message = SpringLocaleDelegate.getInstance().getMessage(
 										"WorkspaceChooserController.16","Änderungen erfolgreich publiziert.");
 								SwingUtilities.invokeLater(new Runnable() {
 									@Override
@@ -848,7 +848,7 @@ public class WorkspaceChooserController {
 	
 	public static Action newRestoreAction(final WorkspaceVO wovo) {
 		return new AbstractAction(
-				CommonLocaleDelegate.getInstance().getMessage("WorkspaceChooserController.15","Auf Vorlage zurücksetzen"), 
+				SpringLocaleDelegate.getInstance().getMessage("WorkspaceChooserController.15","Auf Vorlage zurücksetzen"), 
 				MainFrame.resizeAndCacheIcon(Icons.getInstance().getIconUndo16(), ICON_SIZE)) {
 
 					private static final long serialVersionUID = 1L;
@@ -871,9 +871,9 @@ public class WorkspaceChooserController {
 				}
 				final MainFrame mf = Main.getInstance().getMainFrame();
 				if (JOptionPane.YES_OPTION == JOptionPane.showConfirmDialog(mf,
-					CommonLocaleDelegate.getInstance().getMessage(
+					SpringLocaleDelegate.getInstance().getMessage(
 							"MainFrame.restoreDefaultWorkspace.2","Möchten Sie wirklich die Arbeitsumgebung auf den Ausgangszustand zurücksetzen?"),
-					CommonLocaleDelegate.getInstance().getMessage(
+					SpringLocaleDelegate.getInstance().getMessage(
 							"MainFrame.restoreDefaultWorkspace.1","Arbeitsumgebung zurücksetzen"),
 					JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE)) {
 					try {
@@ -907,9 +907,9 @@ public class WorkspaceChooserController {
 		}
 		final MainFrame mf = Main.getInstance().getMainFrame();
 		if (JOptionPane.YES_OPTION == JOptionPane.showConfirmDialog(mf,
-				CommonLocaleDelegate.getInstance().getMessage(
+				SpringLocaleDelegate.getInstance().getMessage(
 						"MainFrame.restoreDefaultWorkspace.2","Möchten Sie wirklich die Arbeitsumgebung auf den Ausgangszustand zurücksetzen?"),
-				CommonLocaleDelegate.getInstance().getMessage(
+				SpringLocaleDelegate.getInstance().getMessage(
 						"MainFrame.restoreDefaultWorkspace.1","Arbeitsumgebung zurücksetzen"),
 				JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE)) {
 			try {

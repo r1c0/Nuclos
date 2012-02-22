@@ -75,7 +75,7 @@ public class SearchFilterTreeNode extends EntitySearchResultTreeNode {
 			return new SearchFilterTreeNode(SearchFilters.forEntity(this.getEntity()).get(this.getFilterName(), this.getOwner()));
 		}
 		catch (NoSuchElementException ex) {
-			throw new CommonFinderException(getCommonLocaleDelegate().getMessage(
+			throw new CommonFinderException(getSpringLocaleDelegate().getMessage(
 					"SearchFilterTreeNode.1","Der Suchfilter existiert nicht mehr") + ".", ex);
 		}
 		catch (PreferencesException ex) {
@@ -101,7 +101,7 @@ public class SearchFilterTreeNode extends EntitySearchResultTreeNode {
 	public String getLabel() {
 		try {
 			if (getSearchFilter().getLabelResourceId() != null) {
-				return getCommonLocaleDelegate().getTextFallback(getSearchFilter().getLabelResourceId(), super.getLabel());
+				return getSpringLocaleDelegate().getTextFallback(getSearchFilter().getLabelResourceId(), super.getLabel());
 			}
 		}
 		catch (Exception ex) {
@@ -114,7 +114,7 @@ public class SearchFilterTreeNode extends EntitySearchResultTreeNode {
 	public String getDescription() {
 		try {
 			if (getSearchFilter().getDescriptionResourceId() != null) {
-				return getCommonLocaleDelegate().getTextFallback(getSearchFilter().getDescriptionResourceId(), super.getDescription());
+				return getSpringLocaleDelegate().getTextFallback(getSearchFilter().getDescriptionResourceId(), super.getDescription());
 			}
 		}
 		catch (Exception ex) {

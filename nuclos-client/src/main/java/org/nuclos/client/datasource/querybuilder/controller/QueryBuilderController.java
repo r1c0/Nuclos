@@ -50,7 +50,7 @@ import javax.swing.table.TableColumn;
 
 import org.apache.log4j.Logger;
 
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.client.datasource.DatasourceDelegate;
 import org.nuclos.client.datasource.querybuilder.QueryBuilderEditor;
 import org.nuclos.client.datasource.querybuilder.gui.ColumnEntry;
@@ -225,7 +225,7 @@ public class QueryBuilderController extends AbstractController implements ShapeM
 	private class DeleteTableAction extends AbstractAction {
 
 		DeleteTableAction() {
-			super(CommonLocaleDelegate.getInstance().getMessage(
+			super(SpringLocaleDelegate.getInstance().getMessage(
 					"QueryBuilderController.1", "Ausgew\u00e4hlte Tabelle l\u00f6schen"));
 		}
 
@@ -238,7 +238,7 @@ public class QueryBuilderController extends AbstractController implements ShapeM
 	private class DeleteRelationAction extends AbstractAction {
 
 		DeleteRelationAction() {
-			super(CommonLocaleDelegate.getInstance().getMessage(
+			super(SpringLocaleDelegate.getInstance().getMessage(
 					"QueryBuilderController.2", "Relation l\u00f6schen"));
 		}
 
@@ -253,7 +253,7 @@ public class QueryBuilderController extends AbstractController implements ShapeM
 		private final RelationConnector connector;
 
 		EditRelationAction(RelationConnector shape) {
-			super(CommonLocaleDelegate.getInstance().getMessage(
+			super(SpringLocaleDelegate.getInstance().getMessage(
 					"QueryBuilderController.3", "Eigenschaften..."));
 			connector = shape;
 		}
@@ -949,7 +949,7 @@ public class QueryBuilderController extends AbstractController implements ShapeM
 				break;
 		}
 
-		if (JOptionPane.showConfirmDialog(UIUtils.getFrameForComponent(editor), pnlJoin, CommonLocaleDelegate.getInstance().getMessage(
+		if (JOptionPane.showConfirmDialog(UIUtils.getFrameForComponent(editor), pnlJoin, SpringLocaleDelegate.getInstance().getMessage(
 				"QueryBuilderController.4", "Eigenschaften von Relation"),
 				JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE, null) == JOptionPane.OK_OPTION) {
 			connector.setJoinType(pnlJoin.getJoinType());

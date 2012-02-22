@@ -40,7 +40,7 @@ import org.nuclos.client.ui.collect.component.model.DetailsComponentModelEvent;
 import org.nuclos.client.ui.collect.component.model.SearchComponentModelEvent;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.collect.collectable.CollectableValueField;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonValidationException;
@@ -130,7 +130,7 @@ public class DataTypeCollectController extends MasterDataCollectController{
 		String sJavaType = (String)clct.getField("javatyp").getValue();
 		if(sJavaType == null) {
 			throw new CommonValidationException(
-					CommonLocaleDelegate.getInstance().getMessage(
+					SpringLocaleDelegate.getInstance().getMessage(
 							"DataTypeCollectController.1","Kein Java Datentyp gesetzt"));
 		}
 
@@ -138,7 +138,7 @@ public class DataTypeCollectController extends MasterDataCollectController{
 			Integer iScale = (Integer)clct.getField("scale").getValue();
 			if(iScale == null) {
 				throw new CommonValidationException(
-						CommonLocaleDelegate.getInstance().getMessage("DataTypeCollectController.2","Keine Vorkommastellen gesetzt"));
+						SpringLocaleDelegate.getInstance().getMessage("DataTypeCollectController.2","Keine Vorkommastellen gesetzt"));
 			}
 		}
 

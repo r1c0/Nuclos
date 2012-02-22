@@ -98,7 +98,7 @@ public class NuclosEntityAttributeValueListShipStep extends NuclosEntityAttribut
 		pnlName = new JPanel();
 		pnlName.setLayout(new BorderLayout(5, 5));
 		
-		lbName = new JLabel(cld.getMessage("wizard.step.attributevaluelist.7", "Name"));
+		lbName = new JLabel(localeDelegate.getMessage("wizard.step.attributevaluelist.7", "Name"));
 		tfName = new JTextField();
 		
 		tfName.setDocument(new LimitSpecialCharacterDocument(25));
@@ -106,7 +106,7 @@ public class NuclosEntityAttributeValueListShipStep extends NuclosEntityAttribut
 		pnlName.add(lbName, BorderLayout.WEST);
 		pnlName.add(tfName, BorderLayout.CENTER);
 		
-		lbInfo = new JLabel(cld.getMessage(
+		lbInfo = new JLabel(localeDelegate.getMessage(
 				"wizard.step.attributevaluelist.1","Entität ist schon vorhanden. Bitte anderen Namen vergeben!"));
 		lbInfo.setForeground(Color.RED);
 		lbInfo.setVisible(false);
@@ -237,15 +237,15 @@ public class NuclosEntityAttributeValueListShipStep extends NuclosEntityAttribut
         public String getColumnName(int column) {
 	        switch(column) {
             case 0:
-	            return cld.getMessage("wizard.step.attributevaluelist.2", "Wert");
+	            return localeDelegate.getMessage("wizard.step.attributevaluelist.2", "Wert");
             case 1:
-	            return cld.getMessage("wizard.step.attributevaluelist.3", "Mnemonic");
+	            return localeDelegate.getMessage("wizard.step.attributevaluelist.3", "Mnemonic");
             case 2:
-	            return cld.getMessage("wizard.step.attributevaluelist.4", "Beschreibung");
+	            return localeDelegate.getMessage("wizard.step.attributevaluelist.4", "Beschreibung");
             case 3:
-	            return cld.getMessage("wizard.step.attributevaluelist.5", "Gültig von");
+	            return localeDelegate.getMessage("wizard.step.attributevaluelist.5", "Gültig von");
             case 4:
-	            return cld.getMessage("wizard.step.attributevaluelist.6", "Gültig bis");
+	            return localeDelegate.getMessage("wizard.step.attributevaluelist.6", "Gültig bis");
             default:
             	return super.getColumnName(column);
             }

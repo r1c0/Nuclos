@@ -32,7 +32,7 @@ import javax.swing.border.EmptyBorder;
 import org.nuclos.client.ui.Icons;
 import org.nuclos.client.ui.TextFieldWithButton;
 import org.nuclos.client.ui.ToolTipTextProvider;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 
 /**
  * Component that displays a filename and lets the user choose a file via a JFileChooser.
@@ -87,7 +87,7 @@ public class FileChooserComponent extends JPanel {
 		this.add(labIcon, BorderLayout.WEST);
 		this.add(cmpFileName, BorderLayout.CENTER);
 		//this.add(btnBrowse, BorderLayout.EAST);
-		this.btnBrowse.setToolTipText(CommonLocaleDelegate.getInstance().getMessage(
+		this.btnBrowse.setToolTipText(SpringLocaleDelegate.getInstance().getMessage(
 				"file.chooser.component.tooltip", "Datei ausw\u00e4hlen"));
 
 		this.labIcon.setOpaque(false);

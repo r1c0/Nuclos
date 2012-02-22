@@ -60,7 +60,7 @@ import org.nuclos.common.collect.exception.CollectableFieldFormatException;
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
 import org.nuclos.common.format.FormattingTransformer;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.IdUtils;
 import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.ServiceLocator;
@@ -266,7 +266,7 @@ public class CollectableListOfValues extends LabeledCollectableComponentWithVLP 
 		final JPopupMenu result = super.newJPopupMenu();
 		if (!this.isSearchComponent()) {
 			final JMenuItem miClear = new JMenuItem(
-					CommonLocaleDelegate.getInstance().getMessage("CollectableFileNameChooserBase.1","Zur\u00fccksetzen"));
+					SpringLocaleDelegate.getInstance().getMessage("CollectableFileNameChooserBase.1","Zur\u00fccksetzen"));
 			boolean bClearEnabled;
 			try {
 				bClearEnabled = this.getBrowseButton().isEnabled() && (this.getField().getValueId() != null);

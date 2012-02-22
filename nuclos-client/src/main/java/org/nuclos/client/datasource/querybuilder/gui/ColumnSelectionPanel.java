@@ -30,7 +30,7 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.client.datasource.querybuilder.controller.QueryBuilderController;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.database.query.definition.Table;
@@ -58,7 +58,7 @@ public class ColumnSelectionPanel extends JPanel {
 	private class ClearColumnAction extends AbstractAction {
 
 		ClearColumnAction() {
-			super(CommonLocaleDelegate.getInstance().getMessage("ColumnSelectionPanel.2","Spalte zur\u00fccksetzen"));
+			super(SpringLocaleDelegate.getInstance().getMessage("ColumnSelectionPanel.2","Spalte zur\u00fccksetzen"));
 		}
 
 		@Override
@@ -70,7 +70,7 @@ public class ColumnSelectionPanel extends JPanel {
 	private class ClearAllColumnsAction extends AbstractAction {
 
 		ClearAllColumnsAction() {
-			super(CommonLocaleDelegate.getInstance().getMessage("ColumnSelectionPanel.1","Alle Spalten zur\u00fccksetzen"));
+			super(SpringLocaleDelegate.getInstance().getMessage("ColumnSelectionPanel.1","Alle Spalten zur\u00fccksetzen"));
 		}
 
 		@Override

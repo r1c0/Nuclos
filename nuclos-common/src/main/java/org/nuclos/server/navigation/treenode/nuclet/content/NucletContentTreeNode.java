@@ -23,7 +23,7 @@ import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.SpringApplicationContextHolder;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.exception.CommonFinderException;
 import org.nuclos.server.navigation.ejb3.TreeNodeFacadeRemote;
@@ -96,7 +96,7 @@ public class NucletContentTreeNode implements TreeNode {
 
 	@Override
 	public String getLabel() {
-		return CommonLocaleDelegate.getInstance().getLabelFromMetaDataVO(getMetaData());
+		return SpringLocaleDelegate.getInstance().getLabelFromMetaDataVO(getMetaData());
 	}
 
 	@Override

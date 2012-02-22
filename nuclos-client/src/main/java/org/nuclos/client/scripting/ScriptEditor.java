@@ -32,7 +32,7 @@ import javax.tools.Diagnostic.Kind;
 import org.nuclos.client.main.Main;
 import org.nuclos.client.rule.admin.RuleEditPanel;
 import org.nuclos.common.NuclosScript;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.server.ruleengine.NuclosCompileException.ErrorMessage;
 
 public class ScriptEditor extends JPanel {
@@ -51,14 +51,14 @@ public class ScriptEditor extends JPanel {
         editPanel.getJavaEditorPanel().setContentType("text/groovy");
 
         JToolBar toolBar = new JToolBar();
-        toolBar.add(new AbstractAction(CommonLocaleDelegate.getInstance().getText(
+        toolBar.add(new AbstractAction(SpringLocaleDelegate.getInstance().getText(
         		"nuclos.resplan.wizard.step5.scriptEditor.compile", null)) {
             @Override
             public void actionPerformed(ActionEvent e) {
                 compile();
             }
         });
-        toolBar.add(new AbstractAction(CommonLocaleDelegate.getInstance().getText(
+        toolBar.add(new AbstractAction(SpringLocaleDelegate.getInstance().getText(
         		"nuclos.resplan.wizard.step5.scriptEditor.close", null)) {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -74,7 +74,7 @@ public class ScriptEditor extends JPanel {
     }
 
     public void run() {
-        JDialog dialog = new JDialog(Main.getInstance().getMainFrame(), CommonLocaleDelegate.getInstance().getText(
+        JDialog dialog = new JDialog(Main.getInstance().getMainFrame(), SpringLocaleDelegate.getInstance().getText(
         		"nuclos.resplan.wizard.step5.scriptEditor.title", null));
         dialog.setModal(true);
         dialog.getContentPane().add(this);

@@ -23,7 +23,7 @@ import java.util.prefs.BackingStoreException;
 import org.apache.commons.lang.NullArgumentException;
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.preferences.AbstractMapBasedPreferences;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.server.common.ejb3.PreferencesFacadeRemote;
 import org.nuclos.server.common.valueobject.PreferencesVO;
 
@@ -64,7 +64,7 @@ public class NuclosPreferencesRoot extends AbstractMapBasedPreferences.Root {
 		try {
 			if (this.isDirty()) {
 				if (facade == null) {
-					throw new NuclosFatalException(CommonLocaleDelegate.getInstance().getMessage(
+					throw new NuclosFatalException(SpringLocaleDelegate.getInstance().getMessage(
 							"NuclosPreferences.1", "Benutzereinstellungen k\u00f6nnen nicht gespeichert werden."));
 				}
 				else {

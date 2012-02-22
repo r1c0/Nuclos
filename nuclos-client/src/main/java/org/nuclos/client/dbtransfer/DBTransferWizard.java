@@ -26,7 +26,7 @@ import java.util.Set;
 import javax.swing.Action;
 import javax.swing.JButton;
 
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.pietschy.wizard.ButtonBar;
 import org.pietschy.wizard.InvalidStateException;
 import org.pietschy.wizard.Wizard;
@@ -77,14 +77,14 @@ public class DBTransferWizard extends Wizard {
 				JButton previousButton, JButton nextButton, JButton lastButton,
 				JButton finishButton, JButton cancelButton, JButton closeButton) {
 				
-				final CommonLocaleDelegate cld = CommonLocaleDelegate.getInstance();
-				previousButton.setText(cld.getMessage("wizard.buttonbar.previous", "zur\u00fcck"));
-				nextButton.setText(cld.getMessage("wizard.buttonbar.next", "weiter"));
+				final SpringLocaleDelegate localeDelegate = SpringLocaleDelegate.getInstance();
+				previousButton.setText(localeDelegate.getMessage("wizard.buttonbar.previous", "zur\u00fcck"));
+				nextButton.setText(localeDelegate.getMessage("wizard.buttonbar.next", "weiter"));
 				lastButton.setText(">>");
-				finishButton.setText(cld.getMessage("wizard.buttonbar.finish", "Fertig"));
-				cancelButton.setText(cld.getMessage("wizard.buttonbar.cancel", "Verwerfen"));
+				finishButton.setText(localeDelegate.getMessage("wizard.buttonbar.finish", "Fertig"));
+				cancelButton.setText(localeDelegate.getMessage("wizard.buttonbar.cancel", "Verwerfen"));
 				cancelButton.setPreferredSize(new Dimension(80, cancelButton.getPreferredSize().height));
-				closeButton.setText(cld.getMessage("wizard.buttonbar.close", "Schliessen"));
+				closeButton.setText(localeDelegate.getMessage("wizard.buttonbar.close", "Schliessen"));
 				
 				super.layoutButtons(helpButton, previousButton, nextButton, lastButton,
 					finishButton, cancelButton, closeButton);
@@ -129,7 +129,7 @@ public class DBTransferWizard extends Wizard {
 		@Override
 		protected Object handleGetObject(String key) {
 			if ("StaticModelOverview.title".equals(key)){
-				return CommonLocaleDelegate.getInstance().getMessage(
+				return SpringLocaleDelegate.getInstance().getMessage(
 						"wizard.statemodel.overview", "\u00dcbersicht");
 			}
 			return mainBundle.getString(key);

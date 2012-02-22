@@ -133,7 +133,7 @@ public class RuleExplorerNode extends AbstractRuleExplorerNode {
 	private class ShowDetailsAction extends TreeNodeAction {
 
 		public ShowDetailsAction(JTree tree) {
-			super(ACTIONCOMMAND_SHOW_DETAILS, getCommonLocaleDelegate().getMessage("RuleExplorerNode.1","Details anzeigen"), tree);
+			super(ACTIONCOMMAND_SHOW_DETAILS, getSpringLocaleDelegate().getMessage("RuleExplorerNode.1","Details anzeigen"), tree);
 		}
 
 		@Override
@@ -176,7 +176,7 @@ public class RuleExplorerNode extends AbstractRuleExplorerNode {
 	private class RemoveUsageAction extends TreeNodeAction {
 
 		public RemoveUsageAction(JTree tree) {
-			super(ACTIONCOMMAND_REMOVE_USAGE, getCommonLocaleDelegate().getMessage("RuleExplorerNode.3","Verwendung l\u00f6schen"), tree);
+			super(ACTIONCOMMAND_REMOVE_USAGE, getSpringLocaleDelegate().getMessage("RuleExplorerNode.3","Verwendung l\u00f6schen"), tree);
 		}
 
 		@Override
@@ -195,9 +195,9 @@ public class RuleExplorerNode extends AbstractRuleExplorerNode {
 			final RuleAndRuleUsageEntity ruleUsage = ((RuleNode) explorerNode.getTreeNode()).getRuleEntity();
 			if (ruleUsage != null) {
 				try {
-					String sMessage = getCommonLocaleDelegate().getMessage("RuleExplorerNode.2","Soll die Verwendung wirklich gel\u00f6scht werden") + "?";
+					String sMessage = getSpringLocaleDelegate().getMessage("RuleExplorerNode.2","Soll die Verwendung wirklich gel\u00f6scht werden") + "?";
 					final int btn = JOptionPane.showConfirmDialog(tree, sMessage, 
-							getCommonLocaleDelegate().getMessage("RuleExplorerNode.4","Verwendung l\u00f6schen"), JOptionPane.YES_NO_OPTION);
+							getSpringLocaleDelegate().getMessage("RuleExplorerNode.4","Verwendung l\u00f6schen"), JOptionPane.YES_NO_OPTION);
 
 					if (btn == JOptionPane.YES_OPTION) {
 						RuleDelegate.getInstance().removeRuleUsage(ruleUsage.getEventName(), ruleUsage.getEntity(), ruleUsage.getRuleVo().getId());

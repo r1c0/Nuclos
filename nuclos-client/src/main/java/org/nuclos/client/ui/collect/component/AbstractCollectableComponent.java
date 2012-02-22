@@ -107,7 +107,7 @@ import org.nuclos.common.collect.exception.CollectableFieldFormatException;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Predicate;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonFatalException;
@@ -133,15 +133,15 @@ public abstract class AbstractCollectableComponent
 
 	private static final Logger LOG = Logger.getLogger(AbstractCollectableComponent.class);
 
-	protected static final String TEXT_NOCHANGE = CommonLocaleDelegate.getInstance().getMessage(
+	protected static final String TEXT_NOCHANGE = SpringLocaleDelegate.getInstance().getMessage(
 			"AbstractCollectableComponent.13","Keine \u00c4nderung vornehmen");
-	protected static final String TEXT_CLEAR = CommonLocaleDelegate.getInstance().getMessage(
+	protected static final String TEXT_CLEAR = SpringLocaleDelegate.getInstance().getMessage(
 			"AbstractCollectableComponent.11","Feld leeren");
-	protected static final String TEXT_SHOWDETAILS = CommonLocaleDelegate.getInstance().getMessage(
+	protected static final String TEXT_SHOWDETAILS = SpringLocaleDelegate.getInstance().getMessage(
 			"AbstractCollectableComponent.7","Details anzeigen...");
-	protected static final String TEXT_NEW = CommonLocaleDelegate.getInstance().getMessage(
+	protected static final String TEXT_NEW = SpringLocaleDelegate.getInstance().getMessage(
 			"AbstractCollectableComponent.context.new","Neu...");
-	protected static final String TEXT_REFRESH = CommonLocaleDelegate.getInstance().getMessage(
+	protected static final String TEXT_REFRESH = SpringLocaleDelegate.getInstance().getMessage(
 			"AbstractCollectableComponent.context.refresh","Aktualisieren...");
 
 	/**
@@ -185,7 +185,7 @@ public abstract class AbstractCollectableComponent
 	 */
 	private CollectableEntity clcte;
 	
-	private CommonLocaleDelegate cld;
+	private SpringLocaleDelegate localeDelegate;
 
 //	/**
 //	 * @param clctef
@@ -228,12 +228,12 @@ public abstract class AbstractCollectableComponent
 	}
 	
 	@Autowired
-	void setCommonLocaleDelegate(CommonLocaleDelegate cld) {
-		this.cld = cld;
+	void setSpringLocaleDelegate(SpringLocaleDelegate cld) {
+		this.localeDelegate = cld;
 	}
 	
-	protected CommonLocaleDelegate getCommonLocaleDelegate() {
-		return cld;
+	protected SpringLocaleDelegate getSpringLocaleDelegate() {
+		return localeDelegate;
 	}
 
 	public static synchronized void setCommonValuesBackgroundColor(Color color) {
@@ -270,7 +270,7 @@ public abstract class AbstractCollectableComponent
     public void setModel(CollectableComponentModel clctcompmodel) {
 		if (clctcompmodel.isSearchModel() != isSearchComponent()) {
 			throw new CommonFatalException(
-					getCommonLocaleDelegate().getMessage(
+					getSpringLocaleDelegate().getMessage(
 							"AbstractCollectableComponent.14","Model und View stimmen in der Eigenschaft \"searchable\" nicht \u00fcberein."));
 		}
 		if (getModel() != null) {
@@ -875,7 +875,7 @@ public abstract class AbstractCollectableComponent
 			}
 
 			private String getBadSearchConditionErrorMessage() {
-				return getCommonLocaleDelegate().getMessage(
+				return getSpringLocaleDelegate().getMessage(
 						"AbstractCollectableComponent.8","Die angegebene Suchbedingung kann in der Komponente f\u00fcr das Feld {0} nicht dargestellt werden.", getFieldName());
 			}
 		});
@@ -912,7 +912,7 @@ public abstract class AbstractCollectableComponent
 	protected String getTooltipTextForSearchConditionNone() {
 		final StringBuffer sb = new StringBuffer(getEntityField().getLabel());
 		sb.append(" (");
-		sb.append(getCommonLocaleDelegate().getMessage("comparisonOperator.NONE.description", "NONE"));
+		sb.append(getSpringLocaleDelegate().getMessage("comparisonOperator.NONE.description", "NONE"));
 		sb.append(")");
 		return sb.toString();
 	}
@@ -928,7 +928,7 @@ public abstract class AbstractCollectableComponent
 			result = (searchcond == null) ? getTooltipTextForSearchConditionNone() : searchcond.accept(new ToHumanReadablePresentationVisitor());
 		}
 		catch (CollectableFieldFormatException ex) {
-			result = getCommonLocaleDelegate().getMessage("AbstractCollectableComponent.5","<Ung\u00fcltige Suchbedingung:"+ex.getMessage()+">",ex.getMessage());
+			result = getSpringLocaleDelegate().getMessage("AbstractCollectableComponent.5","<Ung\u00fcltige Suchbedingung:"+ex.getMessage()+">",ex.getMessage());
 		}
 		return result;
 	}
@@ -947,16 +947,16 @@ public abstract class AbstractCollectableComponent
 			if (getDetailsModel().isValueToBeChanged()) {
 				final CollectableField clctf = getFieldFromView();
 				final String sValue = clctf.isNull() ? 
-						getCommonLocaleDelegate().getMessage("AbstractCollectableComponent.2","<gel\u00f6scht>") : 
-							getCommonLocaleDelegate().getMessage("AbstractCollectableComponent.1","<ge\u00e4ndert>");
+						getSpringLocaleDelegate().getMessage("AbstractCollectableComponent.2","<gel\u00f6scht>") : 
+							getSpringLocaleDelegate().getMessage("AbstractCollectableComponent.1","<ge\u00e4ndert>");
 				result = sLabel + " = " + sValue;
 			}
 			else {
-				result = sLabel + " (" + getCommonLocaleDelegate().getMessage("AbstractCollectableComponent.3","<keine \u00c4nderung>") + ")";
+				result = sLabel + " (" + getSpringLocaleDelegate().getMessage("AbstractCollectableComponent.3","<keine \u00c4nderung>") + ")";
 			}
 		}
 		catch (CollectableFieldFormatException ex) {
-			result = getCommonLocaleDelegate().getMessage("AbstractCollectableComponent.4","<Ung\u00fcltiger Wert>");
+			result = getSpringLocaleDelegate().getMessage("AbstractCollectableComponent.4","<Ung\u00fcltiger Wert>");
 		}
 		return result;
 	}
@@ -1080,7 +1080,7 @@ public abstract class AbstractCollectableComponent
 			throw new IllegalStateException();
 		}
 		final JPopupMenu result = new JPopupMenu(
-				getCommonLocaleDelegate().getMessage("AbstractCollectableComponent.16","Vergleichsoperator"));
+				getSpringLocaleDelegate().getMessage("AbstractCollectableComponent.16","Vergleichsoperator"));
 
 		// 1. comparison operators:
 		final ButtonGroup btngrpComparisonOperators = new ButtonGroup();
@@ -1107,10 +1107,10 @@ public abstract class AbstractCollectableComponent
 
 		for(ComparisonOperator compop : supportedComparisonOperators) {
 			JMenuItem mi = new JRadioButtonMenuItem(
-					getCommonLocaleDelegate().getMessage(compop.getResourceIdForLabel(), null));
+					getSpringLocaleDelegate().getMessage(compop.getResourceIdForLabel(), null));
 			mi.setActionCommand(compop.name());
 			mi.setToolTipText(
-					getCommonLocaleDelegate().getMessage(compop.getResourceIdForDescription(), null));
+					getSpringLocaleDelegate().getMessage(compop.getResourceIdForDescription(), null));
 			result.add(mi);
 			btngrpComparisonOperators.add(mi);
 			mi.addItemListener(itemlistener);
@@ -1157,11 +1157,11 @@ public abstract class AbstractCollectableComponent
 	private static void addRightOperandToPopupMenu(JPopupMenu result, final AbstractCollectableComponent clctcomp) {
 		result.addSeparator();
 		final ButtonGroup btngrpCompareWith = new ButtonGroup();
-		final CommonLocaleDelegate cld = CommonLocaleDelegate.getInstance();
+		final SpringLocaleDelegate localeDelegate = SpringLocaleDelegate.getInstance();
 		
 		final JRadioButtonMenuItem miValue = new JRadioButtonMenuItem(
-				cld.getMessage("AbstractCollectableComponent.17","Wertvergleich"));
-		miValue.setToolTipText(cld.getMessage(
+				localeDelegate.getMessage("AbstractCollectableComponent.17","Wertvergleich"));
+		miValue.setToolTipText(localeDelegate.getMessage(
 				"AbstractCollectableComponent.10","Dieses Feld mit einem festen Wert vergleichen"));
 		result.add(miValue);
 		btngrpCompareWith.add(miValue);
@@ -1180,8 +1180,8 @@ public abstract class AbstractCollectableComponent
 
 
 		final JRadioButtonMenuItem miOtherField = new JRadioButtonMenuItem(
-				cld.getMessage("AbstractCollectableComponent.12","Feldvergleich..."));
-		miOtherField.setToolTipText(cld.getMessage(
+				localeDelegate.getMessage("AbstractCollectableComponent.12","Feldvergleich..."));
+		miOtherField.setToolTipText(localeDelegate.getMessage(
 				"AbstractCollectableComponent.9","Dieses Feld mit dem Inhalt eines anderen Felds vergleichen"));
 		result.add(miOtherField);
 		btngrpCompareWith.add(miOtherField);
@@ -1207,8 +1207,8 @@ public abstract class AbstractCollectableComponent
 				cmbbx.setSelectedItem(clctcomp.getComparisonOtherField());
 
 				final int iBtn = JOptionPane.showConfirmDialog(clctcomp.getJComponent(), new Object[] {
-					cld.getMessage("AbstractCollectableComponent.6","Anderes Feld: "), cmbbx},
-					cld.getMessage("AbstractCollectableComponent.15","Vergleich mit anderem Feld"), JOptionPane.OK_CANCEL_OPTION);
+					localeDelegate.getMessage("AbstractCollectableComponent.6","Anderes Feld: "), cmbbx},
+					localeDelegate.getMessage("AbstractCollectableComponent.15","Vergleich mit anderem Feld"), JOptionPane.OK_CANCEL_OPTION);
 
 				if (iBtn == JOptionPane.OK_OPTION) {
 					clctcomp.setWithComparison((CollectableEntityField) cmbbx.getSelectedItem());
@@ -1233,9 +1233,9 @@ public abstract class AbstractCollectableComponent
 
 		final List<ComparisonParameter> compatibleParameters = ComparisonParameter.getCompatibleParameters(clctcomp.getEntityField());
 		final JRadioButtonMenuItem miParameterField = new JRadioButtonMenuItem(
-				cld.getMessage("AbstractCollectableComponent.18", null));
+				localeDelegate.getMessage("AbstractCollectableComponent.18", null));
 		miParameterField.setToolTipText(
-				cld.getMessage("AbstractCollectableComponent.19", null));
+				localeDelegate.getMessage("AbstractCollectableComponent.19", null));
 		btngrpCompareWith.add(miParameterField);
 		if (compatibleParameters.size() > 0) {
 			result.add(miParameterField);
@@ -1248,8 +1248,8 @@ public abstract class AbstractCollectableComponent
 					cmbbx.setSelectedItem(clctcomp.getComparisonParameter());
 
 					final int opt = JOptionPane.showConfirmDialog(clctcomp.getJComponent(),
-						new Object[] { cld.getMessage("AbstractCollectableComponent.20", null), cmbbx },
-						cld.getMessage("AbstractCollectableComponent.19", null), JOptionPane.OK_CANCEL_OPTION);
+						new Object[] { localeDelegate.getMessage("AbstractCollectableComponent.20", null), cmbbx },
+						localeDelegate.getMessage("AbstractCollectableComponent.19", null), JOptionPane.OK_CANCEL_OPTION);
 
 					if (opt == JOptionPane.OK_OPTION) {
 						clctcomp.setWithComparison((ComparisonParameter) cmbbx.getSelectedItem());

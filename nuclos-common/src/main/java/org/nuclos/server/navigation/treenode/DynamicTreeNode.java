@@ -68,7 +68,7 @@ public class DynamicTreeNode<Id> extends AbstractTreeNode<Id>{
 	private String getLabel(MasterDataVO mdVO) {
 		String sFolderName = null;
 		try {
-			sFolderName = getCommonLocaleDelegate().getText((String)mdVO.getField("foldername"), "");
+			sFolderName = getSpringLocaleDelegate().getText((String)mdVO.getField("foldername"), "");
 		} catch (Exception e) {}
 
 		if (StringUtils.isNullOrEmpty(sFolderName)) {
@@ -80,11 +80,11 @@ public class DynamicTreeNode<Id> extends AbstractTreeNode<Id>{
 			ModuleProvider modules = SpringApplicationContextHolder.getBean(ModuleProvider.class);
 			if (modules.isModuleEntity(sEntityName)) {
 				MetaDataProvider metaprovider = SpringApplicationContextHolder.getBean(MetaDataProvider.class);
-				return getCommonLocaleDelegate().getResource(metaprovider.getEntity(sEntityName).getLocaleResourceIdForLabel(), null);
+				return getSpringLocaleDelegate().getResource(metaprovider.getEntity(sEntityName).getLocaleResourceIdForLabel(), null);
 			}
 			MasterDataMetaProvider cache = SpringApplicationContextHolder.getBean(MasterDataMetaProvider.class);
 			if (cache != null) {
-				return getCommonLocaleDelegate().getLabelFromMetaDataVO(cache.getMetaData(sEntityName));//MasterDataMetaCache.getInstance().getMetaData(sEntityName).getLabel();
+				return getSpringLocaleDelegate().getLabelFromMetaDataVO(cache.getMetaData(sEntityName));//MasterDataMetaCache.getInstance().getMetaData(sEntityName).getLabel();
 			}
 		}
 		return sFolderName;

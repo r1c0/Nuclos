@@ -25,7 +25,7 @@ import java.util.Set;
 import org.nuclos.common.collect.collectable.CollectableField;
 import org.nuclos.common.collect.collectable.CollectableFieldsProvider;
 import org.nuclos.common.collect.collectable.CollectableValueIdField;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.client.genericobject.Modules;
 import org.nuclos.client.masterdata.MasterDataDelegate;
@@ -67,9 +67,9 @@ public class SubFormFieldsCollectableFieldsProvider implements CollectableFields
 				for(MasterDataMetaFieldVO fieldVO : lstFieldVO) {
 					//result.add(new CollectableValueIdField(fieldVO.getId(), mdmcvoSubEntity.getLabel() + "." + fieldVO.getLabel()));
 					result.add(new CollectableValueIdField(fieldVO.getId(), 
-							CommonLocaleDelegate.getInstance().getLabelFromMetaDataVO(
+							SpringLocaleDelegate.getInstance().getLabelFromMetaDataVO(
 									mdmcvoSubEntity) + "." 
-									+ CommonLocaleDelegate.getInstance().getResource(
+									+ SpringLocaleDelegate.getInstance().getResource(
 									fieldVO.getResourceSIdForLabel(), fieldVO.getLabel())));
 				}
 			}

@@ -24,7 +24,7 @@ import org.nuclos.common.SpringApplicationContextHolder;
 import org.nuclos.common.collect.collectable.AbstractCollectableEntityField;
 import org.nuclos.common.collect.collectable.CollectableComponentTypes;
 import org.nuclos.common.collect.collectable.CollectableField;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.server.masterdata.valueobject.MasterDataMetaFieldVO;
@@ -119,12 +119,12 @@ public class CollectableMasterDataLookupKeyEntityField extends AbstractCollectab
 
 	@Override
 	public String getDescription() {
-		return CommonLocaleDelegate.getInstance().getTextFallback(mdmetafield.getResourceSIdForDescription(), this.mdmetafield.getDescription());
+		return SpringLocaleDelegate.getInstance().getTextFallback(mdmetafield.getResourceSIdForDescription(), this.mdmetafield.getDescription());
 	}
 
 	@Override
 	public String getLabel() {
-		return CommonLocaleDelegate.getInstance().getTextFallback(mdmetafield.getResourceSIdForLabel(), this.mdmetafield.getLabel());
+		return SpringLocaleDelegate.getInstance().getTextFallback(mdmetafield.getResourceSIdForLabel(), this.mdmetafield.getLabel());
 	}
 
 	@Override

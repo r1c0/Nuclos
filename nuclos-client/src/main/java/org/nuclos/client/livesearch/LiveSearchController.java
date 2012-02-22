@@ -77,7 +77,7 @@ import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
 import org.nuclos.common.dal.vo.EntityObjectVO;
 import org.nuclos.common2.ClientPreferences;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.CommonRunnable;
 import org.nuclos.common2.EntityAndFieldName;
 import org.nuclos.common2.PreferencesUtils;
@@ -158,7 +158,7 @@ public class LiveSearchController implements LiveSearchSearchPaneListener, LiveS
         resultPane = new LiveSearchPane();
         resultPane.addLiveSearchPaneListener(this);
 
-        bubbleMessage = CommonLocaleDelegate.getInstance().getResource("livesearch.controller.overflow", null);
+        bubbleMessage = SpringLocaleDelegate.getInstance().getResource("livesearch.controller.overflow", null);
 
         searchComponent.addFocusListener(new FocusAdapter() {
 			@Override
@@ -274,8 +274,8 @@ public class LiveSearchController implements LiveSearchSearchPaneListener, LiveS
         Collections.sort(allEntities, new Comparator<EntityMetaDataVO>() {
             @Override
             public int compare(EntityMetaDataVO o1, EntityMetaDataVO o2) {
-                String l1 = CommonLocaleDelegate.getInstance().getLabelFromMetaDataVO(o1);
-                String l2 = CommonLocaleDelegate.getInstance().getLabelFromMetaDataVO(o2);
+                String l1 = SpringLocaleDelegate.getInstance().getLabelFromMetaDataVO(o1);
+                String l2 = SpringLocaleDelegate.getInstance().getLabelFromMetaDataVO(o2);
                 return l1.compareTo(l2);
             }});
 
@@ -397,7 +397,7 @@ public class LiveSearchController implements LiveSearchSearchPaneListener, LiveS
 	    	    		}
 	    	    		else if(fieldMetas.isEmpty()) {
 	    	    			JOptionPane.showMessageDialog(mf, 
-	    	    					CommonLocaleDelegate.getInstance().getResource("livesearch.controller.nolayout", "No layout available"));
+	    	    					SpringLocaleDelegate.getInstance().getResource("livesearch.controller.nolayout", "No layout available"));
 	    	    		}
 	    	    		else {
 	    	    			EntityFieldMetaDataVO fm = fieldMetas.get(0);
@@ -433,7 +433,7 @@ public class LiveSearchController implements LiveSearchSearchPaneListener, LiveS
     				}
     				else {
     	    			JOptionPane.showMessageDialog(mf, 
-    	    					CommonLocaleDelegate.getInstance().getResource("livesearch.controller.nolayout", "No layout available"));
+    	    					SpringLocaleDelegate.getInstance().getResource("livesearch.controller.nolayout", "No layout available"));
     				}
     			}
     		}
@@ -786,7 +786,7 @@ public class LiveSearchController implements LiveSearchSearchPaneListener, LiveS
                 else if (nuclosResource != null)
     					rowIcon = NuclosResourceCache.getNuclosResourceIcon(nuclosResource);
 
-                String treeRep = CommonLocaleDelegate.getInstance().getTreeViewFromMetaDataVO(searchDef.entity);
+                String treeRep = SpringLocaleDelegate.getInstance().getTreeViewFromMetaDataVO(searchDef.entity);
                 String title = StringUtils.replaceParameters(treeRep, new ParameterTransformer(entityObject));
 
                 Map<String, String> matchMap = new HashMap<String, String>();
@@ -808,7 +808,7 @@ public class LiveSearchController implements LiveSearchSearchPaneListener, LiveS
                                     + fieldValue.substring(endIndex);
 
                                 String fieldLabel
-                                    = CommonLocaleDelegate.getInstance().getLabelFromMetaFieldDataVO(fdef);
+                                    = SpringLocaleDelegate.getInstance().getLabelFromMetaFieldDataVO(fdef);
 
                                 matchMap.put(fieldLabel, hilighedValue);
                             }

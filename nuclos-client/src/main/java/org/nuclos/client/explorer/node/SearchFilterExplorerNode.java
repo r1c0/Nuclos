@@ -98,16 +98,16 @@ public class SearchFilterExplorerNode extends ExplorerNode<SearchFilterTreeNode>
 
 		RemoveFilterAction(JTree tree) {
 			super(ACTIONCOMMAND_REMOVEFILTER, 
-					getCommonLocaleDelegate().getMessage("SearchFilterExplorerNode.1","Filter l\u00f6schen") + "...", tree);
+					getSpringLocaleDelegate().getMessage("SearchFilterExplorerNode.1","Filter l\u00f6schen") + "...", tree);
 		}
 
 		@Override
 		public void actionPerformed(ActionEvent ev) {
 			final String sFilterName = getTreeNode().getFilterName();
-			final String sMessage = getCommonLocaleDelegate().getMessage(
+			final String sMessage = getSpringLocaleDelegate().getMessage(
 					"SearchFilterExplorerNode.5", "Wollen Sie den Filter \"{0}\" wirklich l\u00f6schen?", sFilterName);
 			final int iBtn = JOptionPane.showConfirmDialog(this.getJTree(), sMessage, 
-					getCommonLocaleDelegate().getMessage("SearchFilterExplorerNode.2","Filter l\u00f6schen"),
+					getSpringLocaleDelegate().getMessage("SearchFilterExplorerNode.2","Filter l\u00f6schen"),
 					JOptionPane.OK_CANCEL_OPTION);
 			if (iBtn == JOptionPane.OK_OPTION) {
 				cmdRemoveFilter();
@@ -138,7 +138,7 @@ public class SearchFilterExplorerNode extends ExplorerNode<SearchFilterTreeNode>
 
 		ShowFilterInTaskPanelAction(JTree tree) {
 			super(ACTIONCOMMAND_SHOWINTASKPANEL, 
-					getCommonLocaleDelegate().getMessage("SearchFilterExplorerNode.3","Als Aufgabenliste anzeigen"), tree);
+					getSpringLocaleDelegate().getMessage("SearchFilterExplorerNode.3","Als Aufgabenliste anzeigen"), tree);
 		}
 
 		@Override
@@ -169,7 +169,7 @@ public class SearchFilterExplorerNode extends ExplorerNode<SearchFilterTreeNode>
 
 		ShowResultAction(JTree tree) {
 			super(ACTIONCOMMAND_SHOW_RESULT, 
-					getCommonLocaleDelegate().getMessage("SearchFilterExplorerNode.4","Suchergebnis anzeigen"), tree);
+					getSpringLocaleDelegate().getMessage("SearchFilterExplorerNode.4","Suchergebnis anzeigen"), tree);
 		}
 
 		@Override

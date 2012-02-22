@@ -70,7 +70,7 @@ import org.nuclos.common.collect.collectable.searchcondition.LogicalOperator;
 import org.nuclos.common.collection.Pair;
 import org.nuclos.common.dal.vo.SystemFields;
 import org.nuclos.common.time.LocalTime;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.KeyEnum;
 import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.StringUtils;
@@ -113,7 +113,7 @@ public class ResPlanController extends CustomComponentController {
 	void init(CustomComponentVO vo) {
 		componentVO = vo;
 		configVO = ResPlanConfigVO.fromBytes(vo.getData());
-		resourceVO = configVO.getResources(CommonLocaleDelegate.getInstance().getUserLocaleInfo());
+		resourceVO = configVO.getResources(SpringLocaleDelegate.getInstance().getUserLocaleInfo());
 
 		resEntity = CollectableHelper.getForEntity(configVO.getResourceEntity());
 		entryEntity = CollectableHelper.getForEntity(configVO.getEntryEntity());
@@ -444,12 +444,12 @@ public class ResPlanController extends CustomComponentController {
 				if (!resPlanModel.isCollectableEntryValid(entry)) {
 					// if entry is invalid, remove it from the collection and add an error message instead
 					iter.remove();
-					messages.add(getCommonLocaleDelegate().getMessage("nuclos.resplan.invalidEntry", null, entry.getIdentifierLabel()));
+					messages.add(getSpringLocaleDelegate().getMessage("nuclos.resplan.invalidEntry", null, entry.getIdentifierLabel()));
 				}
 			}
 			resPlanModel.setData(resources, entries);
 			if (truncated) {
-				messages.add(getCommonLocaleDelegate().getMessage("nuclos.resplan.limitSearchResult", null, resourceLimit));
+				messages.add(getSpringLocaleDelegate().getMessage("nuclos.resplan.limitSearchResult", null, resourceLimit));
 			}
 			if (messages.size() > 0) {
 				component.setInfoMessages(messages, showMessage);
@@ -509,7 +509,7 @@ public class ResPlanController extends CustomComponentController {
 		private TimeGranularity(GranularityType type, TimeModel<Date> timeModel) {
 			this.type = type;
 			this.timeModel = timeModel;
-			this.cwLabel = CommonLocaleDelegate.getInstance().getText("nuclos.resplan.cw.label");
+			this.cwLabel = SpringLocaleDelegate.getInstance().getText("nuclos.resplan.cw.label");
 		}
 
 		public GranularityType getType() {
@@ -532,12 +532,12 @@ public class ResPlanController extends CustomComponentController {
 
 		@Override
 		public String getCategoryName(int category) {
-			final CommonLocaleDelegate cld = CommonLocaleDelegate.getInstance();
+			final SpringLocaleDelegate localeDelegate = SpringLocaleDelegate.getInstance();
 			switch (category) {
-			case 0: return cld.getText("nuclos.resplan.granularity.month", null);
-			case 1: return cld.getText("nuclos.resplan.granularity.calendarWeek", null);
-			case 2: return cld.getText("nuclos.resplan.granularity.day", null);
-			case 3: return cld.getText("nuclos.resplan.granularity.time", null);
+			case 0: return localeDelegate.getText("nuclos.resplan.granularity.month", null);
+			case 1: return localeDelegate.getText("nuclos.resplan.granularity.calendarWeek", null);
+			case 2: return localeDelegate.getText("nuclos.resplan.granularity.day", null);
+			case 3: return localeDelegate.getText("nuclos.resplan.granularity.time", null);
 			}
 			return null;
 		}

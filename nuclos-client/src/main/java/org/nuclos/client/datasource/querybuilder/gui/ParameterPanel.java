@@ -51,7 +51,7 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.client.layout.wysiwyg.editor.ui.panels.valuelistprovidereditor.ValueListProviderEditor;
 import org.nuclos.client.layout.wysiwyg.editor.util.InterfaceGuidelines;
@@ -81,9 +81,9 @@ public class ParameterPanel extends JPanel {
 	private ParameterModel parameterModel;
 	private final JComboBox cmbbxTypes = new JComboBox(ParameterModel.adatatype);
 
-	private final Action actNew = new NewParameterAction(CommonLocaleDelegate.getInstance().getMessage(
+	private final Action actNew = new NewParameterAction(SpringLocaleDelegate.getInstance().getMessage(
 			"ParameterPanel.1","Neuer Parameter"), Icons.getInstance().getIconNew16());
-	private final Action actDelete = new DeleteParameterAction(CommonLocaleDelegate.getInstance().getMessage(
+	private final Action actDelete = new DeleteParameterAction(SpringLocaleDelegate.getInstance().getMessage(
 			"ParameterPanel.2","Parameter l\u00f6schen"), Icons.getInstance().getIconDelete16());
 
 	private final boolean blnWithValuelistProviderColumn;
@@ -289,7 +289,7 @@ public class ParameterPanel extends JPanel {
 				valuelistprovider.setText(vo.getType());
 			}
 			else {
-				valuelistprovider.setText(CommonLocaleDelegate.getInstance().getMessage(
+				valuelistprovider.setText(SpringLocaleDelegate.getInstance().getMessage(
 						"ParameterPanel.4", "Kein ValueListprovider definiert"));
 			}
 
@@ -335,7 +335,7 @@ public class ParameterPanel extends JPanel {
 				stopCellEditing();
 			}
 			else {
-				valuelistprovider.setText(CommonLocaleDelegate.getInstance().getMessage("ParameterPanel.4", "Kein ValueListprovider definiert"));
+				valuelistprovider.setText(SpringLocaleDelegate.getInstance().getMessage("ParameterPanel.4", "Kein ValueListprovider definiert"));
 				vo = null;
 			}
 		}

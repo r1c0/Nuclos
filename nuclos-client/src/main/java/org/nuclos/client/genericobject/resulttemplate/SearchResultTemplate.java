@@ -33,7 +33,7 @@ import org.nuclos.common.collection.Pair;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
 import org.nuclos.common.dal.vo.SystemFields;
 import org.nuclos.common.entityobject.CollectableEOEntity;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.IdUtils;
 import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.PreferencesUtils;
@@ -219,11 +219,11 @@ public class SearchResultTemplate {
 
 	public static void validate(String sTemplateName) throws IllegalStateException {
 		if (StringUtils.isNullOrEmpty(sTemplateName)) {
-			throw new IllegalStateException(CommonLocaleDelegate.getInstance().getMessage(
+			throw new IllegalStateException(SpringLocaleDelegate.getInstance().getMessage(
 					"SearchResultTemplate.3","Der Name darf nicht leer sein."));
 		}
 		if (sTemplateName.matches(".*\\\\.*")) {
-			throw new IllegalStateException(CommonLocaleDelegate.getInstance().getMessage(
+			throw new IllegalStateException(SpringLocaleDelegate.getInstance().getMessage(
 					"SearchResultTemplate.2","Der Name darf keinen Backslash (\"\\\") enthalten."));
 		}
 	}
@@ -286,7 +286,7 @@ public class SearchResultTemplate {
 	public static SearchResultTemplate get(Preferences prefsParent, String sTemplateName) throws PreferencesException {
 		final String sEncodedTemplateName = encoded(sTemplateName);
 		if (!PreferencesUtils.nodeExists(prefsParent, sEncodedTemplateName)) {
-			throw new NoSuchElementException(CommonLocaleDelegate.getInstance().getMessage(
+			throw new NoSuchElementException(SpringLocaleDelegate.getInstance().getMessage(
 					"SearchResultTemplate.4","Es existiert keine Suchergebnisvorlage mit dem Namen {0}.", sTemplateName));
 		}
 
@@ -406,9 +406,9 @@ public class SearchResultTemplate {
 				return true;
 			}
 		};
-		result.setName(CommonLocaleDelegate.getInstance().getMessage(
+		result.setName(SpringLocaleDelegate.getInstance().getMessage(
 				"SearchResultTemplate.1","<Alle>"));
-		result.setDescription(CommonLocaleDelegate.getInstance().getMessage(
+		result.setDescription(SpringLocaleDelegate.getInstance().getMessage(
 				"SearchResultTemplate.5","Standard Suchergebnisvorlage"));
 		assert result.isDefaultTemplate();
 		return result;

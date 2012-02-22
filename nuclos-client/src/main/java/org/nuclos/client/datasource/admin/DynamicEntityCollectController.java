@@ -46,7 +46,7 @@ import org.nuclos.common.collect.exception.CollectableValidationException;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.database.query.definition.QueryTable;
 import org.nuclos.common.masterdata.CollectableMasterDataEntity;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.IOUtils;
 import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.exception.CommonBusinessException;
@@ -128,14 +128,14 @@ public class DynamicEntityCollectController extends AbstractDatasourceCollectCon
 	protected void deleteCollectable(CollectableDataSource clct) throws CommonBusinessException {
 		final List<DatasourceVO> lstUsages = DatasourceDelegate.getInstance().getUsagesForDatasource(clct.getDatasourceVO());
 		if (!lstUsages.isEmpty()) {
-			final CommonLocaleDelegate cld = CommonLocaleDelegate.getInstance();
+			final SpringLocaleDelegate localeDelegate = SpringLocaleDelegate.getInstance();
 			final int iBtn = JOptionPane.showConfirmDialog(this.getFrame(), 
-					cld.getMessage("DatasourceCollectController.8","Diese Datenquelle wird in anderen Datenquellen verwendet.") + "\n" +
-				cld.getMessage("DatasourceCollectController.1","Das L\u00f6schen f\u00fchrt dazu, dass folgende Datenquellen nicht mehr ausf\u00fchrbar sind") + ":\n" + getUsagesAsString(lstUsages) +
-					"\n" + cld.getMessage("DatasourceCollectController.24","Wollen sie die Datenquelle dennoch l\u00f6schen?"), 
-					cld.getMessage("DatasourceCollectController.20","Umbenennung best\u00e4tigen"), JOptionPane.YES_NO_OPTION);
+					localeDelegate.getMessage("DatasourceCollectController.8","Diese Datenquelle wird in anderen Datenquellen verwendet.") + "\n" +
+				localeDelegate.getMessage("DatasourceCollectController.1","Das L\u00f6schen f\u00fchrt dazu, dass folgende Datenquellen nicht mehr ausf\u00fchrbar sind") + ":\n" + getUsagesAsString(lstUsages) +
+					"\n" + localeDelegate.getMessage("DatasourceCollectController.24","Wollen sie die Datenquelle dennoch l\u00f6schen?"), 
+					localeDelegate.getMessage("DatasourceCollectController.20","Umbenennung best\u00e4tigen"), JOptionPane.YES_NO_OPTION);
 			if (iBtn != JOptionPane.OK_OPTION) {
-				throw new CommonBusinessException(cld.getMessage("DatasourceCollectController.15","L\u00f6schen wurde durch den Benutzer abgebrochen."));
+				throw new CommonBusinessException(localeDelegate.getMessage("DatasourceCollectController.15","L\u00f6schen wurde durch den Benutzer abgebrochen."));
 			}
 			DatasourceDelegate.getInstance().setInvalid(lstUsages);
 		}
@@ -162,14 +162,14 @@ public class DynamicEntityCollectController extends AbstractDatasourceCollectCon
 		if (bDataSourceNameWasChanged) {
 			final List<DatasourceVO> lstUsages = DatasourceDelegate.getInstance().getUsagesForDatasource(dynamicEntityVO);
 			if (!lstUsages.isEmpty()) {
-				final CommonLocaleDelegate cld = CommonLocaleDelegate.getInstance();
+				final SpringLocaleDelegate localeDelegate = SpringLocaleDelegate.getInstance();
 				final int iBtn = JOptionPane.showConfirmDialog(this.getFrame(), 
-						cld.getMessage("DatasourceCollectController.9","Diese Datenquelle wird in anderen Datenquellen verwendet.") + "\n" +
-					cld.getMessage("DatasourceCollectController.11","Eine Umbenennung f\u00fchrt dazu, dass folgende Datenquellen nicht mehr ausf\u00fchrbar sind:") + "\n" +
-						getUsagesAsString(lstUsages) + "\n" + cld.getMessage("DatasourceCollectController.23","Wollen sie dennoch speichern?"), 
-						cld.getMessage("DatasourceCollectController.21","Umbenennung best\u00e4tigen"), JOptionPane.YES_NO_OPTION);
+						localeDelegate.getMessage("DatasourceCollectController.9","Diese Datenquelle wird in anderen Datenquellen verwendet.") + "\n" +
+					localeDelegate.getMessage("DatasourceCollectController.11","Eine Umbenennung f\u00fchrt dazu, dass folgende Datenquellen nicht mehr ausf\u00fchrbar sind:") + "\n" +
+						getUsagesAsString(lstUsages) + "\n" + localeDelegate.getMessage("DatasourceCollectController.23","Wollen sie dennoch speichern?"), 
+						localeDelegate.getMessage("DatasourceCollectController.21","Umbenennung best\u00e4tigen"), JOptionPane.YES_NO_OPTION);
 				if (iBtn != JOptionPane.OK_OPTION) {
-					throw new CommonBusinessException(cld.getMessage("DatasourceCollectController.18","Speichern wurde durch den Benutzer abgebrochen."));
+					throw new CommonBusinessException(localeDelegate.getMessage("DatasourceCollectController.18","Speichern wurde durch den Benutzer abgebrochen."));
 				}
 				DatasourceDelegate.getInstance().setInvalid(lstUsages);
 			}
@@ -184,7 +184,7 @@ public class DynamicEntityCollectController extends AbstractDatasourceCollectCon
 	@Override
 	protected CollectableDataSource updateCollectable(CollectableDataSource clct, Object oAdditionalData) throws CommonBusinessException {
 		/** @todo implement */
-		throw new NuclosFatalException(CommonLocaleDelegate.getInstance().getMessage(
+		throw new NuclosFatalException(SpringLocaleDelegate.getInstance().getMessage(
 				"DatasourceCollectController.17","Sammelbearbeitung ist hier noch nicht m\u00f6glich."));
 	}
 
@@ -253,7 +253,7 @@ public class DynamicEntityCollectController extends AbstractDatasourceCollectCon
 	protected void importXML(String sXML) throws NuclosBusinessException {
 		final String sWarnings = QueryBuilderEditor.getSkippedElements(pnlEdit.getQueryEditor().setXML(sXML));
 		if (sWarnings.length() > 0) {
-			JOptionPane.showMessageDialog(parent, CommonLocaleDelegate.getInstance().getMessage(
+			JOptionPane.showMessageDialog(parent, SpringLocaleDelegate.getInstance().getMessage(
 					"DatasourceCollectController.12","Folgende Elemente existieren nicht mehr in dem aktuellen Datenbankschema\n und wurden daher entfernt:") + "\n" + sWarnings);
 		}
 		detailsChanged(pnlEdit.getQueryEditor());
@@ -275,7 +275,7 @@ public class DynamicEntityCollectController extends AbstractDatasourceCollectCon
 		try {
 			final DatasourceFacadeRemote dataSourceFacade = ServiceLocator.getInstance().getFacade(DatasourceFacadeRemote.class);
 			dataSourceFacade.validateSqlFromXML(pnlEdit.getQueryEditor().getXML(new DatasourceEntityOptions(true)));
-			JOptionPane.showMessageDialog(getFrame(), CommonLocaleDelegate.getInstance().getMessage(
+			JOptionPane.showMessageDialog(getFrame(), SpringLocaleDelegate.getInstance().getMessage(
 					"DatasourceCollectController.10","Die SQL Abfrage ist syntaktisch korrekt."));
 		}
 		catch (Exception ex) {

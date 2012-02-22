@@ -50,7 +50,7 @@ import javax.swing.event.ChangeListener;
 import org.apache.log4j.Logger;
 import org.nuclos.client.statemodel.panels.rights.RightTransfer.RoleRight;
 import org.nuclos.client.ui.Icons;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 
 /**
  * 
@@ -78,7 +78,7 @@ public class RightAndMandatoryColumnHeader implements RightAndMandatoryConstants
 			if (SwingUtilities.isRightMouseButton(e)) {
 				if (multiEditListener != null) {
 					final JPopupMenu menu = new JPopupMenu();
-					JMenuItem itemNull = new JMenuItem(CommonLocaleDelegate.getInstance().getMessage(
+					JMenuItem itemNull = new JMenuItem(SpringLocaleDelegate.getInstance().getMessage(
 							"RightAndMandatory.1", "Alle nicht sichtbar"), ICON_NO_RIGHT);
 					itemNull.addActionListener(new ActionListener() {
 						@Override
@@ -87,7 +87,7 @@ public class RightAndMandatoryColumnHeader implements RightAndMandatoryConstants
 						}
 					});
 					menu.add(itemNull);
-					JMenuItem itemRead = new JMenuItem(CommonLocaleDelegate.getInstance().getMessage(
+					JMenuItem itemRead = new JMenuItem(SpringLocaleDelegate.getInstance().getMessage(
 							"RightAndMandatory.2", "Alle lesen"), ICON_READ);
 					itemRead.addActionListener(new ActionListener() {
 						@Override
@@ -96,7 +96,7 @@ public class RightAndMandatoryColumnHeader implements RightAndMandatoryConstants
 						}
 					});
 					menu.add(itemRead);
-					JMenuItem itemWrite = new JMenuItem(CommonLocaleDelegate.getInstance().getMessage(
+					JMenuItem itemWrite = new JMenuItem(SpringLocaleDelegate.getInstance().getMessage(
 							"RightAndMandatory.3", "Alle schreiben"), ICON_WRITE);
 					itemWrite.addActionListener(new ActionListener() {
 						@Override
@@ -106,7 +106,7 @@ public class RightAndMandatoryColumnHeader implements RightAndMandatoryConstants
 					});
 					menu.add(itemWrite);
 					menu.addSeparator();
-					JMenuItem itemCopy = new JMenuItem(CommonLocaleDelegate.getInstance().getMessage(
+					JMenuItem itemCopy = new JMenuItem(SpringLocaleDelegate.getInstance().getMessage(
 							"RightAndMandatory.4", "Kopieren"), Icons.getInstance().getIconCopy16());
 					itemCopy.addActionListener(new ActionListener() {
 						@Override
@@ -115,7 +115,7 @@ public class RightAndMandatoryColumnHeader implements RightAndMandatoryConstants
 						}
 					});
 					menu.add(itemCopy);
-					JMenuItem itemPaste = new JMenuItem(CommonLocaleDelegate.getInstance().getMessage(
+					JMenuItem itemPaste = new JMenuItem(SpringLocaleDelegate.getInstance().getMessage(
 							"RightAndMandatory.5", "Einfügen"), Icons.getInstance().getIconPaste16());
 					itemPaste.addActionListener(new ActionListener() {
 						@Override

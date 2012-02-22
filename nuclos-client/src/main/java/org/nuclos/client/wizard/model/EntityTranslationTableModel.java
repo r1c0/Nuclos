@@ -22,7 +22,7 @@ import java.util.List;
 import javax.swing.table.AbstractTableModel;
 
 import org.nuclos.common.TranslationVO;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 
 public class EntityTranslationTableModel extends AbstractTableModel {
 
@@ -93,18 +93,18 @@ public class EntityTranslationTableModel extends AbstractTableModel {
 
 	@Override
 	public String getColumnName(int column) {
-		final CommonLocaleDelegate cld = CommonLocaleDelegate.getInstance();
+		final SpringLocaleDelegate localeDelegate = SpringLocaleDelegate.getInstance();
 		switch(column) {
 		case 0:
-			return cld.getMessage("wizard.step.entitytranslationstable.3", "Sprache");
+			return localeDelegate.getMessage("wizard.step.entitytranslationstable.3", "Sprache");
 		case 1:
-			return cld.getMessage("wizard.step.entitytranslationstable.5", "Beschriftung Label");		
+			return localeDelegate.getMessage("wizard.step.entitytranslationstable.5", "Beschriftung Label");		
 		case 2:
-			return cld.getMessage("wizard.step.entitytranslationstable.6", "Men\u00fcpfad");
+			return localeDelegate.getMessage("wizard.step.entitytranslationstable.6", "Men\u00fcpfad");
 		case 3:
-			return cld.getMessage("wizard.step.entitytranslationstable.7", "Anzeige Knotendarstellung");
+			return localeDelegate.getMessage("wizard.step.entitytranslationstable.7", "Anzeige Knotendarstellung");
 		case 4:
-			return cld.getMessage("wizard.step.entitytranslationstable.8", "Bezeichnung des Knoten Tooltips");
+			return localeDelegate.getMessage("wizard.step.entitytranslationstable.8", "Bezeichnung des Knoten Tooltips");
 		default:
 			return "";
 		}

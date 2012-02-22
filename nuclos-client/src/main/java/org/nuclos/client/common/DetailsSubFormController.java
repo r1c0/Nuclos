@@ -95,7 +95,7 @@ import org.nuclos.common.collection.PredicateUtils;
 import org.nuclos.common.collection.Transformer;
 import org.nuclos.common.collection.ValueObjectList;
 import org.nuclos.common.masterdata.CollectableMasterDataEntity;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.IdUtils;
 import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.ServiceLocator;
@@ -227,7 +227,7 @@ public abstract class DetailsSubFormController<Clct extends Collectable>
 		}
 
 		if (!lstFieldNames.isEmpty()) { // if empty, return an empty list.
-			JMenuItem mi1 = new JMenuItem(getCommonLocaleDelegate().getMessage("DetailsSubFormController.1", "Alle setzen"));
+			JMenuItem mi1 = new JMenuItem(getSpringLocaleDelegate().getMessage("DetailsSubFormController.1", "Alle setzen"));
 			mi1.addActionListener(new ActionListener() {
 
 				@Override
@@ -249,7 +249,7 @@ public abstract class DetailsSubFormController<Clct extends Collectable>
 					}
 				}
 			});
-			JMenuItem mi2 = new JMenuItem(getCommonLocaleDelegate().getMessage("DetailsSubFormController.2", "Alle zurücksetzen"));
+			JMenuItem mi2 = new JMenuItem(getSpringLocaleDelegate().getMessage("DetailsSubFormController.2", "Alle zurücksetzen"));
 			mi2.addActionListener(new ActionListener() {
 
 				@Override
@@ -292,7 +292,7 @@ public abstract class DetailsSubFormController<Clct extends Collectable>
 		final CollectableEntityField clctef = getCollectableTableModel().getCollectableEntityField(iColumn);
 		if (clctef.getJavaClass() == Boolean.class && getSubForm().isColumnVisible(clctef.getName())) {
 
-			JMenuItem mi1 = new JMenuItem(getCommonLocaleDelegate().getMessage("DetailsSubFormController.1", "Alle setzen"));
+			JMenuItem mi1 = new JMenuItem(getSpringLocaleDelegate().getMessage("DetailsSubFormController.1", "Alle setzen"));
 			mi1.addActionListener(new ActionListener() {
 	
 				@Override
@@ -310,7 +310,7 @@ public abstract class DetailsSubFormController<Clct extends Collectable>
 				}
 			});
 			mi1.setEnabled(!getSubForm().getSubFormFilter().isFilteringActive());
-			JMenuItem mi2 = new JMenuItem(getCommonLocaleDelegate().getMessage("DetailsSubFormController.2", "Alle zurücksetzen"));
+			JMenuItem mi2 = new JMenuItem(getSpringLocaleDelegate().getMessage("DetailsSubFormController.2", "Alle zurücksetzen"));
 			mi2.addActionListener(new ActionListener() {
 	
 				@Override
@@ -333,7 +333,7 @@ public abstract class DetailsSubFormController<Clct extends Collectable>
 			result.add(mi2);
 			result.add(new JSeparator());
 	
-			JMenuItem mi3 = new JMenuItem(getCommonLocaleDelegate().getMessage(
+			JMenuItem mi3 = new JMenuItem(getSpringLocaleDelegate().getMessage(
 					"DetailsSubFormController.setselected", "Selektierte Zeilen setzen"));
 			mi3.addActionListener(new ActionListener() {
 				@Override
@@ -350,7 +350,7 @@ public abstract class DetailsSubFormController<Clct extends Collectable>
 				}
 			});
 			mi3.setEnabled(!getSubForm().getSubFormFilter().isFilteringActive() && getSelectedCollectables().size() > 0);
-			JMenuItem mi4 = new JMenuItem(getCommonLocaleDelegate().getMessage(
+			JMenuItem mi4 = new JMenuItem(getSpringLocaleDelegate().getMessage(
 					"DetailsSubFormController.resetselected", "Selektierte Zeilen zurücksetzen"));
 			mi4.addActionListener(new ActionListener() {
 				@Override
@@ -377,7 +377,7 @@ public abstract class DetailsSubFormController<Clct extends Collectable>
 		
 		if (SecurityCache.getInstance().isActionAllowed(Actions.ACTION_WORKSPACE_ASSIGN) &&
 				MainFrame.getWorkspace().isAssigned()) {
-			final JMenuItem miPublishColumns = new JMenuItem(new AbstractAction(getCommonLocaleDelegate().getMessage(
+			final JMenuItem miPublishColumns = new JMenuItem(new AbstractAction(getSpringLocaleDelegate().getMessage(
 					"DetailsSubFormController.4", "Spalten in Vorlage publizieren"), 
 					Icons.getInstance().getIconRedo16()) {
 				@Override
@@ -396,7 +396,7 @@ public abstract class DetailsSubFormController<Clct extends Collectable>
 		}
 		
 		JMenuItem miRestoreColumns = new JMenuItem(new AbstractAction(
-				getCommonLocaleDelegate().getMessage("DetailsSubFormController.3", "Alle Spalten auf Vorlage zurücksetzen"), 
+				getSpringLocaleDelegate().getMessage("DetailsSubFormController.3", "Alle Spalten auf Vorlage zurücksetzen"), 
 				Icons.getInstance().getIconUndo16()) {
 			private static final long serialVersionUID = 1L;
 			@Override
@@ -583,7 +583,7 @@ public abstract class DetailsSubFormController<Clct extends Collectable>
 	 */
 	public List<Clct> getCollectables(boolean bIncludeIncompleteOnes, boolean bIncludeRemovedOnes, boolean bPrepareForSavingAndValidate) throws CommonValidationException {
 		if (!this.stopEditing()) {
-			throw new CommonValidationException(getCommonLocaleDelegate().getMessage(
+			throw new CommonValidationException(getSpringLocaleDelegate().getMessage(
 					"details.subform.controller", "Ung\u00fcltige Eingabe im Unterformular ''{0}''", getCollectableEntity().getLabel()));
 				//"Ung\u00fcltige Eingabe im Unterformular \"" + getCollectableEntity().getLabel() + "\"");
 		}
@@ -606,7 +606,7 @@ public abstract class DetailsSubFormController<Clct extends Collectable>
 
 	public List<Clct> prepareAndValidateCollectables(List<Clct> result, boolean bIncludeIncompleteOnes, boolean bIncludeRemovedOnes, boolean bPrepareForSavingAndValidate) throws CommonValidationException {
 		if (!this.stopEditing()) {
-			throw new CommonValidationException(getCommonLocaleDelegate().getMessage(
+			throw new CommonValidationException(getSpringLocaleDelegate().getMessage(
 					"details.subform.controller", "Ung\u00fcltige Eingabe im Unterformular ''{0}''", getCollectableEntity().getLabel()));
 		}
 
@@ -666,7 +666,7 @@ public abstract class DetailsSubFormController<Clct extends Collectable>
 							clct.getField(sFieldName).validate(clctef);
 						}
 						catch (CollectableFieldValidationException ex) {
-							final String sMessage = getCommonLocaleDelegate().getMessage(
+							final String sMessage = getSpringLocaleDelegate().getMessage(
 									"details.subform.controller", "Ung\u00fcltige Eingabe im Unterformular ''{0}''", clcte.getLabel()) + ex.getMessage();
 							throw new CommonValidationException(sMessage, ex);
 						}
@@ -1095,7 +1095,7 @@ public abstract class DetailsSubFormController<Clct extends Collectable>
 	                    }
 	            	}
 
-	            	entityLabel = CommonLocaleDelegate.getInstance().getLabelFromMetaDataVO(
+	            	entityLabel = SpringLocaleDelegate.getInstance().getLabelFromMetaDataVO(
 	            			MetaDataClientProvider.getInstance().getEntity(entityname));
 
 	            	if (clct != null) {
@@ -1114,14 +1114,14 @@ public abstract class DetailsSubFormController<Clct extends Collectable>
 	            }
 
 	            if (noReferenceFound) {
-	            	String bubbleInfo = getCommonLocaleDelegate().getMessage(
+	            	String bubbleInfo = getSpringLocaleDelegate().getMessage(
 	            			"MasterDataSubFormController.4", "Dieses Unterformular enthält keine Referenzspalte zur Entität ${entity}.", entityLabel);
 	            	new Bubble(getSubForm().getJTable(), bubbleInfo, 10, Bubble.Position.NO_ARROW_CENTER).setVisible(true);
 	            } else {
-	            	String sNotImported = getCommonLocaleDelegate().getMessage(
+	            	String sNotImported = getSpringLocaleDelegate().getMessage(
 	            			"MasterDataSubFormController.5", "Der Valuelist Provider verhindert das Anlegen von ${count} Unterformular Datensätzen.", countNotImported);
 
-	                getCollectController().getDetailsPanel().setStatusBarText(getCommonLocaleDelegate().getMessage(
+	                getCollectController().getDetailsPanel().setStatusBarText(getSpringLocaleDelegate().getMessage(
 	                		"MasterDataSubFormController.6", "${count} Unterformular Datensätze angelegt.", countImported) + (countNotImported == 0 ? "": " " + sNotImported));
 	                if (countNotImported != 0) {
 	                	new Bubble(getCollectController().getDetailsPanel().tfStatusBar, sNotImported, 10, Bubble.Position.UPPER) .setVisible(true);
@@ -1198,7 +1198,7 @@ public abstract class DetailsSubFormController<Clct extends Collectable>
 		}
 		catch (PointerException e) {
         	LOG.warn("visitDrop fails with PointerException: " + e);
-			Bubble bubble = new Bubble(DetailsSubFormController.this.getJTable(), getCommonLocaleDelegate().getMessage(
+			Bubble bubble = new Bubble(DetailsSubFormController.this.getJTable(), getSpringLocaleDelegate().getMessage(
 					"details.subform.controller.2", "Diese Funktion wird nur unter Microsoft Windows unterstützt!"),5, Bubble.Position.NW);
 			bubble.setVisible(true);
 		}

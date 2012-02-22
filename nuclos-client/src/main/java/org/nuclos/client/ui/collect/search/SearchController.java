@@ -43,7 +43,7 @@ import org.nuclos.common.collect.collectable.searchcondition.CollectableSearchCo
 import org.nuclos.common.collect.collectable.searchcondition.InvalidCollectableSearchConditionException;
 import org.nuclos.common.collect.collectable.searchcondition.ToHumanReadablePresentationVisitor;
 import org.nuclos.common.collect.exception.CollectableFieldFormatException;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 
 /**
  * Controller for the Search panel.
@@ -61,8 +61,8 @@ public class SearchController<Clct extends Collectable> extends CommonController
 		private boolean bLocked;
 
 		ToggleSearchEditorAction() {
-			super(CommonLocaleDelegate.getInstance().getMessage("CollectController.28","Sucheditor"), 
-					null, CommonLocaleDelegate.getInstance().getMessage("CollectController.29","Sucheditor anzeigen/verbergen"));
+			super(SpringLocaleDelegate.getInstance().getMessage("CollectController.28","Sucheditor"), 
+					null, SpringLocaleDelegate.getInstance().getMessage("CollectController.29","Sucheditor anzeigen/verbergen"));
 		}
 
 		@Override
@@ -88,12 +88,12 @@ public class SearchController<Clct extends Collectable> extends CommonController
 							final CollectableSearchCondition cond = cc.getSearchPanel().getSearchEditorPanel().getSearchCondition();
 							if (cond != null && !cond.isSyntacticallyCorrect()) {
 								bSelected = true;
-								throw new InvalidCollectableSearchConditionException(getCommonLocaleDelegate().getMessage(
+								throw new InvalidCollectableSearchConditionException(getSpringLocaleDelegate().getMessage(
 										"CollectController.17","Die Suchbedingung ist unvollst\u00e4ndig."));
 							}
 							else if (!cc.getSearchPanel().canDisplayConditionInFields(cond)) {
 								bSelected = true;
-								throw new InvalidCollectableSearchConditionException(getCommonLocaleDelegate().getMessage(
+								throw new InvalidCollectableSearchConditionException(getSpringLocaleDelegate().getMessage(
 										"CollectController.18","Eine zusammengesetzte Suchbedingung kann nur im Sucheditor, nicht in der Suchmaske dargestellt werden."));
 							}
 							else {
@@ -109,7 +109,7 @@ public class SearchController<Clct extends Collectable> extends CommonController
 					}
 					catch (Exception ex) {
 						// TODO don't catch and wrap RuntimeExceptions here!
-						final String sMessage = getCommonLocaleDelegate().getMessage(
+						final String sMessage = getSpringLocaleDelegate().getMessage(
 								"CollectController.16","Diese Suchbedingung kann nur im Sucheditor, nicht in der Suchmaske dargestellt werden.") + "\n" + ex.getMessage();
 						// undo button press:
 						bSelected = !bSelected;
@@ -129,7 +129,7 @@ public class SearchController<Clct extends Collectable> extends CommonController
 	 * action: New with search values
 	 */
 	private final Action actNewWithSearchValues = new CommonAbstractAction("Neu", Icons.getInstance().getIconNewWithSearchValues16(),
-			getCommonLocaleDelegate().getMessage(
+			getSpringLocaleDelegate().getMessage(
 					"CollectController.31","\u00dcbernahme der Suchkriterien in den neuen Datensatz")) {
 
 		@Override
@@ -147,7 +147,7 @@ public class SearchController<Clct extends Collectable> extends CommonController
 	 * TODO: Move to ResultController???
 	 */
 	private final Action actSearch = new CommonAbstractAction("Suchen", Icons.getInstance().getIconFind16(), 
-			getCommonLocaleDelegate().getMessage("CollectController.30","Suche starten")) {
+			getSpringLocaleDelegate().getMessage("CollectController.30","Suche starten")) {
 
 		@Override
         public void actionPerformed(ActionEvent ev) {
@@ -161,7 +161,7 @@ public class SearchController<Clct extends Collectable> extends CommonController
 	 * action: Clear Search Condition
 	 */
 	private final AbstractAction actClearSearchCondition = new CommonAbstractAction(Icons.getInstance().getIconClearSearch16(),
-			getCommonLocaleDelegate().getMessage("CollectController.27","Suchbedingung leeren")) {
+			getSpringLocaleDelegate().getMessage("CollectController.27","Suchbedingung leeren")) {
 
 		@Override
         public void actionPerformed(ActionEvent ev) {
@@ -323,19 +323,19 @@ public class SearchController<Clct extends Collectable> extends CommonController
 		try {
 			final CollectableSearchCondition searchcond = cc.getCollectableSearchConditionToDisplay();
 			if (searchcond == null) {
-				sSearchCondition = getCommonLocaleDelegate().getMessage(
+				sSearchCondition = getSpringLocaleDelegate().getMessage(
 						"CollectController.2","<Alle> (Keine Einschr\u00e4nkung)");
 			} else {
 				sSearchCondition = searchcond.accept(new ToHumanReadablePresentationVisitor());
 			}
 			if(displayMixedSearchCondition()){
-				addStatusMsg = getCommonLocaleDelegate().getMessage("CollectController.22","Kombinierte ");
+				addStatusMsg = getSpringLocaleDelegate().getMessage("CollectController.22","Kombinierte ");
 			}
 		}
 		catch (CollectableFieldFormatException ex) {
-			sSearchCondition = getCommonLocaleDelegate().getMessage("CollectController.3","<Ung\u00fcltig>");
+			sSearchCondition = getSpringLocaleDelegate().getMessage("CollectController.3","<Ung\u00fcltig>");
 		}
-		getSearchPanel().setStatusBarText(addStatusMsg + getCommonLocaleDelegate().getMessage(
+		getSearchPanel().setStatusBarText(addStatusMsg + getSpringLocaleDelegate().getMessage(
 				"CollectController.26","Suchbedingung: ") + sSearchCondition);
 	}
 

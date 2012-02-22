@@ -39,7 +39,7 @@ import org.jdesktop.swingx.JXCollapsiblePane;
 import org.nuclos.client.ui.Icons;
 import org.nuclos.client.ui.collect.component.CollectableComponent;
 import org.nuclos.common.collection.CollectionUtils;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.StringUtils;
 
 /**
@@ -80,7 +80,7 @@ public class SubFormFilterPanel extends JXCollapsiblePane {
 		if (fixedTable) {
 			resetFilterButtonPanel.setPreferredSize(new Dimension(SubformRowHeader.COLUMN_SIZE, 20));
 			resetFilterButton.setIcon(Icons.getInstance().getIconClearSearch16());
-			resetFilterButton.setToolTipText(CommonLocaleDelegate.getInstance().getMessage(
+			resetFilterButton.setToolTipText(SpringLocaleDelegate.getInstance().getMessage(
 					"subform.filter.tooltip", "Filterkriterien l\u00f6schen"));
 			resetFilterButtonPanel.add(resetFilterButton, BorderLayout.CENTER);
 		}

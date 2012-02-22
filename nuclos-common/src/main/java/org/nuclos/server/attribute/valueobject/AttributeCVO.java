@@ -301,7 +301,7 @@ public class AttributeCVO extends NuclosValueObject implements Cloneable {
 					return datatype;
 				}
 			}
-			//?? throw new NuclosFatalException(CommonLocaleDelegate.getMessage("AttributeCVO.1","{0} ist kein g\u00fcltiger Datentyp f\u00fcr Attribute.", sJavaClassName));
+			//?? throw new NuclosFatalException(SpringLocaleDelegate.getMessage("AttributeCVO.1","{0} ist kein g\u00fcltiger Datentyp f\u00fcr Attribute.", sJavaClassName));
 			throw new NuclosFatalException(StringUtils.getParameterizedExceptionMessage("attributecvo.exception.2", sJavaClassName)); 
 				//sJavaClassName + " ist kein g\u00fcltiger Datentyp f\u00fcr Attribute.");
 		}

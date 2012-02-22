@@ -24,7 +24,7 @@ import org.nuclos.common.collect.collectable.CollectableValueField;
 import org.nuclos.common.collect.collectable.CollectableValueIdField;
 import org.nuclos.common.collect.collectable.DefaultCollectableEntityField;
 import org.nuclos.common.collection.Transformer;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 
 import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.exception.CommonFatalException;
@@ -49,21 +49,21 @@ public class CollectableStateRoleAttributeGroup extends AbstractCollectable {
 	public static class Entity extends AbstractCollectableEntity {
 		public Entity() {
 			super("stateroleattributegroup", 
-					CommonLocaleDelegate.getInstance().getMessage("CollectableStateRoleAttributeGroup.3","Attributgruppe f\u00fcr statusabh\u00e4ngige Rechte"));
+					SpringLocaleDelegate.getInstance().getMessage("CollectableStateRoleAttributeGroup.3","Attributgruppe f\u00fcr statusabh\u00e4ngige Rechte"));
 			final String entity = "stateroleattributegroup";
 			this.addCollectableEntityField(new DefaultCollectableEntityField(FIELDNAME_ROLE, String.class, 
-					getCommonLocaleDelegate().getMessage("CollectableStateRoleAttributeGroup.4","Benutzergruppe"),
-					getCommonLocaleDelegate().getMessage("CollectableStateRoleAttributeGroup.9","\u00dcbergeordnete Benutzergruppe (Rolle)"), 
+					getSpringLocaleDelegate().getMessage("CollectableStateRoleAttributeGroup.4","Benutzergruppe"),
+					getSpringLocaleDelegate().getMessage("CollectableStateRoleAttributeGroup.9","\u00dcbergeordnete Benutzergruppe (Rolle)"), 
 					null, null, false, CollectableField.TYPE_VALUEIDFIELD, "staterole",
 					CollectableValueIdField.NULL, null, null, entity));
 			this.addCollectableEntityField(new DefaultCollectableEntityField(FIELDNAME_ATTRIBUTEGROUP, String.class, 
-					getCommonLocaleDelegate().getMessage("CollectableStateRoleAttributeGroup.1","Attributgruppe"), 
-					getCommonLocaleDelegate().getMessage("CollectableStateRoleAttributeGroup.2","Attributgruppe"), 
+					getSpringLocaleDelegate().getMessage("CollectableStateRoleAttributeGroup.1","Attributgruppe"), 
+					getSpringLocaleDelegate().getMessage("CollectableStateRoleAttributeGroup.2","Attributgruppe"), 
 					null, null, false, CollectableField.TYPE_VALUEIDFIELD, NuclosEntity.ENTITYFIELDGROUP.getEntityName(),
 					CollectableValueIdField.NULL, null, null, entity));
 			this.addCollectableEntityField(new DefaultCollectableEntityField(FIELDNAME_WRITEABLE, Boolean.class, 
-					getCommonLocaleDelegate().getMessage("CollectableStateRoleAttributeGroup.8","Schreibrecht?"), 
-					getCommonLocaleDelegate().getMessage("CollectableStateRoleAttributeGroup.7","Schreiben erlaubt?"), 
+					getSpringLocaleDelegate().getMessage("CollectableStateRoleAttributeGroup.8","Schreibrecht?"), 
+					getSpringLocaleDelegate().getMessage("CollectableStateRoleAttributeGroup.7","Schreiben erlaubt?"), 
 					null, null, false, CollectableField.TYPE_VALUEFIELD, null, null, entity));
 		}
 	}
@@ -115,7 +115,7 @@ public class CollectableStateRoleAttributeGroup extends AbstractCollectable {
 			result = new CollectableValueField(Boolean.valueOf(this.agpvo.isWritable()));
 		}
 		else {
-			throw new IllegalArgumentException(CommonLocaleDelegate.getInstance().getMessage(
+			throw new IllegalArgumentException(SpringLocaleDelegate.getInstance().getMessage(
 					"CollectableStateRoleAttributeGroup.5","Feld nicht vorhanden: ") + sFieldName);
 		}
 		return result;
@@ -134,7 +134,7 @@ public class CollectableStateRoleAttributeGroup extends AbstractCollectable {
 			this.agpvo.setWritable(((Boolean) clctfValue.getValue()).booleanValue());
 		}
 		else {
-			throw new IllegalArgumentException(CommonLocaleDelegate.getInstance().getMessage(
+			throw new IllegalArgumentException(SpringLocaleDelegate.getInstance().getMessage(
 					"CollectableStateRoleAttributeGroup.6","Feld nicht vorhanden: ") + sFieldName);
 		}
 

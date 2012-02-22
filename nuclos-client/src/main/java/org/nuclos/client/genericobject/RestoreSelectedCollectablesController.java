@@ -18,7 +18,7 @@ package org.nuclos.client.genericobject;
 
 
 import org.nuclos.client.ui.multiaction.MultiCollectablesActionController;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.exception.CommonBusinessException;
 
 /**
@@ -49,25 +49,25 @@ public class RestoreSelectedCollectablesController
 
 		@Override
 		public String getText(CollectableGenericObjectWithDependants clct) {
-			return CommonLocaleDelegate.getInstance().getMessage(
+			return SpringLocaleDelegate.getInstance().getMessage(
 					"RestoreSelectedCollectablesController.1", "Datensatz {0} wird wiederhergestellt...", MultiCollectablesActionController.getCollectableLabel(ctl.getEntityName(), clct));
 		}
 
 		@Override
 		public String getSuccessfulMessage(CollectableGenericObjectWithDependants clct, Object oResult) {
-			return CommonLocaleDelegate.getInstance().getMessage(
+			return SpringLocaleDelegate.getInstance().getMessage(
 					"RestoreSelectedCollectablesController.2", "Datensatz {0} erfolgreich wiederhergestellt.", MultiCollectablesActionController.getCollectableLabel(ctl.getEntityName(), clct));
 		}
 
 		@Override
 		public String getConfirmStopMessage() {
-			return CommonLocaleDelegate.getInstance().getMessage(
+			return SpringLocaleDelegate.getInstance().getMessage(
 					"RestoreSelectedCollectablesController.3", "Wollen Sie die Wiederherstellung der Datens\u00e4tze an dieser Stelle beenden?\n(Die bisher wiederhergestellten Datens\u00e4tze bleiben in jedem Fall erhalten.)");
 		}
 
 		@Override
 		public String getExceptionMessage(CollectableGenericObjectWithDependants clct, Exception ex) {
-			return CommonLocaleDelegate.getInstance().getMessage(
+			return SpringLocaleDelegate.getInstance().getMessage(
 					"RestoreSelectedCollectablesController.4", "Datensatz {0} konnte nicht wiederhergestellt werden.", MultiCollectablesActionController.getCollectableLabel(ctl.getEntityName(), clct)) + " " + ex.getMessage();
 		}
 
@@ -78,7 +78,7 @@ public class RestoreSelectedCollectablesController
 	}
 
 	public RestoreSelectedCollectablesController(GenericObjectCollectController ctl) {
-		super(ctl, CommonLocaleDelegate.getInstance().getMessage("RestoreSelectedCollectablesController.5", "Datens\u00e4tze wiederherstellen"), new RestoreAction(ctl), ctl.getSelectedCollectables());
+		super(ctl, SpringLocaleDelegate.getInstance().getMessage("RestoreSelectedCollectablesController.5", "Datens\u00e4tze wiederherstellen"), new RestoreAction(ctl), ctl.getSelectedCollectables());
 	}
 
 }	// class RestoreSelectedCollectablesController

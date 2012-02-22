@@ -22,7 +22,7 @@ import java.util.Collections;
 import java.util.Comparator;
 
 import org.nuclos.client.ui.model.AbstractListTableModel;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 
 
 class MultiActionProgressTableModel extends AbstractListTableModel<MultiActionProgressLine> {
@@ -32,9 +32,9 @@ class MultiActionProgressTableModel extends AbstractListTableModel<MultiActionPr
 	public static final int COLUMN_STATE = 2;
 
 	private static final String[] defaultColumnNames = {
-		CommonLocaleDelegate.getInstance().getMessage("MultiActionProgressTableModel.1","ID"), 
-		CommonLocaleDelegate.getInstance().getMessage("MultiActionProgressTableModel.2","Ergebnis"), 
-		CommonLocaleDelegate.getInstance().getMessage("MultiActionProgressTableModel.3","Status")};
+		SpringLocaleDelegate.getInstance().getMessage("MultiActionProgressTableModel.1","ID"), 
+		SpringLocaleDelegate.getInstance().getMessage("MultiActionProgressTableModel.2","Ergebnis"), 
+		SpringLocaleDelegate.getInstance().getMessage("MultiActionProgressTableModel.3","Status")};
 	private String[] aColumnNames;
 
 	private Comparator<MultiActionProgressLine> compResultColumn = new ResultColumnComparator();

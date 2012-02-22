@@ -50,7 +50,7 @@ import org.nuclos.client.wizard.steps.NuclosEntityAttributeTranslationStep;
 import org.nuclos.common.TranslationVO;
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.LocaleInfo;
 
 
@@ -59,8 +59,8 @@ public class RelationAttributePanel extends JPanel {
 	private static final Logger LOG = Logger.getLogger(RelationAttributePanel.class);
 
 	private static String[] labels = {
-		CommonLocaleDelegate.getInstance().getMessage("wizard.step.entitytranslationstable.1", "Anzeigename"), 
-		CommonLocaleDelegate.getInstance().getMessage("wizard.step.entitytranslationstable.2", "Beschreibung")};
+		SpringLocaleDelegate.getInstance().getMessage("wizard.step.entitytranslationstable.1", "Anzeigename"), 
+		SpringLocaleDelegate.getInstance().getMessage("wizard.step.entitytranslationstable.2", "Beschreibung")};
 
 	private JLabel lbLabel;
 	private JTextField tfLabel;	
@@ -383,9 +383,9 @@ public class RelationAttributePanel extends JPanel {
 		sDBColumn = voField.getDbColumn();
 		
 		
-		tfLabel.setText(CommonLocaleDelegate.getInstance().getResource(
+		tfLabel.setText(SpringLocaleDelegate.getInstance().getResource(
 				voField.getLocaleResourceIdForLabel(), voField.getFallbacklabel()));
-		tfDescription.setText(CommonLocaleDelegate.getInstance().getResource(
+		tfDescription.setText(SpringLocaleDelegate.getInstance().getResource(
 				voField.getLocaleResourceIdForDescription(), ""));
 		
 		cbForeignField.setSelectedItem(voField.getForeignEntityField());

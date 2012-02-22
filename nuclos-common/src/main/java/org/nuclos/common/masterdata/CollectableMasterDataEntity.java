@@ -31,7 +31,7 @@ import org.nuclos.common.collect.collectable.CollectableValueField;
 import org.nuclos.common.collect.collectable.DefaultCollectableEntityField;
 import org.nuclos.common.collect.exception.CollectableFieldFormatException;
 import org.nuclos.common.collection.CollectionUtils;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.server.masterdata.valueobject.MasterDataMetaFieldVO;
@@ -72,7 +72,7 @@ public class CollectableMasterDataEntity implements CollectableEntity {
 
 	@Override
 	public String getLabel() {
-		return CommonLocaleDelegate.getInstance().getLabelFromMetaDataVO(mdmetavo);//this.mdmetavo.getLabel();
+		return SpringLocaleDelegate.getInstance().getLabelFromMetaDataVO(mdmetavo);//this.mdmetavo.getLabel();
 	}
 
 	public MasterDataMetaVO getMasterDataMetaCVO() {
@@ -149,8 +149,8 @@ public class CollectableMasterDataEntity implements CollectableEntity {
 				result = new DefaultCollectableEntityField(
 							sFieldName,
 							mdmetafieldvo.getJavaClass(),
-							CommonLocaleDelegate.getInstance().getResource(mdmetafieldvo.getResourceSIdForLabel(), mdmetafieldvo.getLabel()),
-							CommonLocaleDelegate.getInstance().getResource(mdmetafieldvo.getResourceSIdForDescription(), mdmetafieldvo.getDescription()),
+							SpringLocaleDelegate.getInstance().getResource(mdmetafieldvo.getResourceSIdForLabel(), mdmetafieldvo.getLabel()),
+							SpringLocaleDelegate.getInstance().getResource(mdmetafieldvo.getResourceSIdForDescription(), mdmetafieldvo.getDescription()),
 							mdmetafieldvo.getDataScale(),
 							mdmetafieldvo.getDataPrecision(),
 							mdmetafieldvo.isNullable(),

@@ -35,7 +35,7 @@ import org.nuclos.common.collection.MasterDataToEntityObjectTransformer;
 import org.nuclos.common.collection.Pair;
 import org.nuclos.common.collection.PredicateUtils;
 import org.nuclos.common.dal.vo.EntityObjectVO;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.EntityAndFieldName;
 import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.TruncatableCollection;
@@ -82,7 +82,7 @@ public class MasterDataDelegate {
 
 	private Map<String, MasterDataMetaVO> metaDataCache;
 	
-	private CommonLocaleDelegate cld;
+	private SpringLocaleDelegate localeDelegate;
 	
 	private MasterDataCache masterDataCache;
 
@@ -103,8 +103,8 @@ public class MasterDataDelegate {
 	}
 	
 	@Autowired
-	void setCommonLocaleDelegate(CommonLocaleDelegate cld) {
-		this.cld = cld;
+	void setSpringLocaleDelegate(SpringLocaleDelegate cld) {
+		this.localeDelegate = cld;
 	}
 	
 	@Autowired
@@ -155,7 +155,7 @@ public class MasterDataDelegate {
 		 try{
 			 return getMetaDataCache().values();
 		 }catch(RuntimeException ex){
-			 final String sMessage = cld.getMessage(
+			 final String sMessage = localeDelegate.getMessage(
 					 "MasterDataDelegate.1", "Fehler beim Laden der Metadaten f\u00fcr alle Entit\u00e4ten.");
 			 throw new CommonFatalException(sMessage,ex);
 		 }
@@ -176,7 +176,7 @@ public class MasterDataDelegate {
 			 if (result == null) {
 				 result = getMetaDataNoCache(sEntityName);
 				 if(result == null) {
-					 throw new CommonFatalException(cld.getMessage(
+					 throw new CommonFatalException(localeDelegate.getMessage(
 							 "MasterDataDelegate.2", "Keine Metadaten f\u00fcr die Entit\u00e4t {0} vorhanden.", sEntityName));
 				 }
 				 else {
@@ -186,7 +186,7 @@ public class MasterDataDelegate {
 			 assert result != null;
 			 return result;
 		 }catch(RuntimeException ex){
-			 final String sMessage = cld.getMessage(
+			 final String sMessage = localeDelegate.getMessage(
 					 "MasterDataDelegate.3", "Fehler beim Laden der Metadaten f\u00fcr die Entit\u00e4t {0}.", sEntityName);
 			 throw new CommonFatalException(sMessage, ex);
 		 }
@@ -217,7 +217,7 @@ public class MasterDataDelegate {
 			 if (result == null) {
 				 result = getMetaDataNoCache(iEntityId);
 				 if(result == null) {
-					 throw new CommonFatalException(cld.getMessage(
+					 throw new CommonFatalException(localeDelegate.getMessage(
 							 "MasterDataDelegate.2", "Keine Metadaten f\u00fcr die Entit\u00e4t {0} vorhanden.", iEntityId));
 				 }
 				 else {
@@ -228,7 +228,7 @@ public class MasterDataDelegate {
 			 return result;
 		 }
 		 catch (RuntimeException ex) {
-			 final String sMessage = cld.getMessage(
+			 final String sMessage = localeDelegate.getMessage(
 					 "MasterDataDelegate.4", "Fehler beim Laden der Daten f\u00fcr die Entit\u00e4t {0}.", iEntityId);
 			 throw new CommonFatalException(sMessage, ex);
 		 }
@@ -243,7 +243,7 @@ public class MasterDataDelegate {
 			 return this.getMasterDataFacade().getMetaDataByModuleId(iModuleId);
 		 }
 		 catch (RuntimeException ex) {
-			 final String sMessage = cld.getMessage(
+			 final String sMessage = localeDelegate.getMessage(
 					 "MasterDataDelegate.5", "Fehler beim Ermitteln der verf\u00fcgbaren Unterentit\u00e4ten f\u00fcr das Modul {0}.", iModuleId);
 			 throw new NuclosBusinessException(sMessage, ex);
 		 }
@@ -259,7 +259,7 @@ public class MasterDataDelegate {
 			 return this.getMasterDataFacade().getSubEntities(iModuleId);
 		 }
 		 catch (RuntimeException ex) {
-			 final String sMessage = cld.getMessage(
+			 final String sMessage = localeDelegate.getMessage(
 					 "MasterDataDelegate.5", "Fehler beim Ermitteln der verf\u00fcgbaren Unterentit\u00e4ten f\u00fcr das Modul {0}.", iModuleId);
 			 throw new NuclosBusinessException(sMessage, ex);
 		 }
@@ -310,7 +310,7 @@ public class MasterDataDelegate {
 			 return result;
 		 }
 		 catch (RuntimeException ex) {
-			 final String sMessage = cld.getMessage(
+			 final String sMessage = localeDelegate.getMessage(
 					 "MasterDataDelegate.4", "Fehler beim Laden der Daten f\u00fcr die Entit\u00e4t {0}.", sEntityName);
 			 throw new CommonFatalException(sMessage, ex);
 		 }
@@ -331,7 +331,7 @@ public class MasterDataDelegate {
 			 return result;
 		 }
 		 catch (RuntimeException ex) {
-			 final String sMessage = cld.getMessage(
+			 final String sMessage = localeDelegate.getMessage(
 					 "MasterDataDelegate.4", "Fehler beim Laden der Daten f\u00fcr die Entit\u00e4t {0}.", sEntityName);
 			 throw new CommonFatalException(sMessage, ex);
 		 }

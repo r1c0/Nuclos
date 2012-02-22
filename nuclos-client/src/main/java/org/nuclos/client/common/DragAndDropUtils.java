@@ -29,7 +29,7 @@ import org.jawin.DispatchPtr;
 import org.jawin.win32.Ole32;
 import org.nuclos.client.report.reportrunner.AbstractReportExporter;
 import org.nuclos.common.PointerException;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.IOUtils;
 import org.nuclos.common2.StringUtils;
 
@@ -49,7 +49,7 @@ public abstract class DragAndDropUtils {
 		}
 		catch(Exception e) {
 			throw new PointerException(
-					CommonLocaleDelegate.getInstance().getMessage(
+					SpringLocaleDelegate.getInstance().getMessage(
 							"details.subform.controller.2", "Diese Funktion wird nur unter Microsoft Windows unterstützt!"));
 		}
 		
@@ -79,14 +79,14 @@ public abstract class DragAndDropUtils {
 			application.close();
 			
 		} catch (Exception e) {
-			throw new PointerException(CommonLocaleDelegate.getInstance().getMessage(
+			throw new PointerException(SpringLocaleDelegate.getInstance().getMessage(
 					"details.subform.controller.2", "Diese Funktion wird nur unter Microsoft Windows unterstützt!"));
 		}
 		finally {			
 			 try {
 				 Ole32.CoUninitialize();
 			} catch (Exception e2) {
-				throw new PointerException(CommonLocaleDelegate.getInstance().getMessage(
+				throw new PointerException(SpringLocaleDelegate.getInstance().getMessage(
 						"details.subform.controller.2", "Diese Funktion wird nur unter Microsoft Windows unterstützt!"));
 			}
 		}

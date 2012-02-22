@@ -47,7 +47,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import org.nuclos.client.ui.Icons;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 
 /**
  * 
@@ -759,7 +759,7 @@ public class RightAndMandatoryRow implements RightAndMandatoryConstants{
 							
 							final JPopupMenu menu = new JPopupMenu();
 							if (nullRightAllowed) {
-								JMenuItem itemNull = new JMenuItem(CommonLocaleDelegate.getInstance().getMessage(
+								JMenuItem itemNull = new JMenuItem(SpringLocaleDelegate.getInstance().getMessage(
 										"RightAndMandatory.1", "Alle nicht sichtbar"), ICON_NO_RIGHT);
 								itemNull.addActionListener(new ActionListener() {
 									@Override
@@ -767,14 +767,14 @@ public class RightAndMandatoryRow implements RightAndMandatoryConstants{
 								});
 								menu.add(itemNull);
 							}
-							JMenuItem itemRead = new JMenuItem(CommonLocaleDelegate.getInstance().getMessage(
+							JMenuItem itemRead = new JMenuItem(SpringLocaleDelegate.getInstance().getMessage(
 									"RightAndMandatory.2", "Alle lesen"), ICON_READ);
 							itemRead.addActionListener(new ActionListener() {
 								@Override
 								public void actionPerformed(ActionEvent e) {setAllRoleRights(false);detailsChangedListener.stateChanged(new ChangeEvent(this));}
 							});
 							menu.add(itemRead);
-							JMenuItem itemWrite = new JMenuItem(CommonLocaleDelegate.getInstance().getMessage(
+							JMenuItem itemWrite = new JMenuItem(SpringLocaleDelegate.getInstance().getMessage(
 									"RightAndMandatory.3", "Alle schreiben"), ICON_WRITE);
 							itemWrite.addActionListener(new ActionListener() {
 								@Override

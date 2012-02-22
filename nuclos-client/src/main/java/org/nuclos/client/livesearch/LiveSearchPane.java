@@ -49,7 +49,7 @@ import javax.swing.table.TableColumn;
 import org.nuclos.client.ui.event.PopupMenuMouseAdapter;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Pair;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 
 class LiveSearchPane extends JPanel {
 
@@ -164,7 +164,7 @@ class LiveSearchPane extends JPanel {
         }
     };
     
-    private Action openMultiAction = new AbstractAction(CommonLocaleDelegate.getInstance().getResource(
+    private Action openMultiAction = new AbstractAction(SpringLocaleDelegate.getInstance().getResource(
     		"livesearch.reslist.open", "Open selected")) {
 
 		@Override
@@ -173,7 +173,7 @@ class LiveSearchPane extends JPanel {
 		}
 	};
 
-    private Action openDetailsAction = new AbstractAction(CommonLocaleDelegate.getInstance().getResource(
+    private Action openDetailsAction = new AbstractAction(SpringLocaleDelegate.getInstance().getResource(
     		"livesearch.reslist.opendetails", "Open Details")) {
 
 		@Override

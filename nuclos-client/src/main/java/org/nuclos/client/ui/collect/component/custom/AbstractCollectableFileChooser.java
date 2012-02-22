@@ -87,7 +87,7 @@ public abstract class AbstractCollectableFileChooser extends AbstractCollectable
 			this.getFileChooser().setFileName(file.getFilename());
 			this.getFileChooser().setIcon(FileIcons.getIcon(file.getFiletype()));
 			this.getFileChooser().setToolTipText(
-					getCommonLocaleDelegate().getMessage(
+					getSpringLocaleDelegate().getMessage(
 							"collectable.file.chooser.tooltip", "Sie k\u00f6nnen die Datei \u00fcber das Kontextmen\u00fc \u00f6ffnen."));
 		}
 	}

@@ -811,7 +811,7 @@ public abstract class SubFormController extends Controller
 			result = clctcompmodel.getField();
 		}
 		else {
-			throw new CommonFatalException(getCommonLocaleDelegate().getMessage("SubFormController.1",
+			throw new CommonFatalException(getSpringLocaleDelegate().getMessage("SubFormController.1",
 				"Die Entit\u00e4t der Vaterkomponente ({0}) muss der Entit\u00e4t des Unterformulars ({1}) oder der Entit\u00e4t des \u00fcbergeordneten Formulars ({2}) entsprechen.",
 				sParentComponentEntityName, this.getCollectableEntity().getName(), this.getParentEntityName()));
 		}
@@ -820,7 +820,7 @@ public abstract class SubFormController extends Controller
 			throw new NuclosFieldNotInModelException();
 		}
 		else if(result == null) {
-			throw new CommonFatalException(getCommonLocaleDelegate().getMessage(
+			throw new CommonFatalException(getSpringLocaleDelegate().getMessage(
 					"SubFormController.2", "Das Feld ({0}) ist nicht in der Entität ({1}) vorhanden!", sParentComponentEntityName, this.getParentEntityName()));
 		}
 

@@ -127,7 +127,7 @@ public class TimelimitTaskController extends RefreshableTaskController {
 	private MainFrameTab tab;
 
 	private final Action actPerformTask = new CommonAbstractAction("Zugeordnete Objekte anzeigen", Icons.getInstance().getIconModule(),
-			getCommonLocaleDelegate().getMessage("TimelimitTaskController.16","Zugeordnete Objekte anzeigen")) {
+			getSpringLocaleDelegate().getMessage("TimelimitTaskController.16","Zugeordnete Objekte anzeigen")) {
 
 		@Override
 		public void actionPerformed(ActionEvent ev) {
@@ -136,7 +136,7 @@ public class TimelimitTaskController extends RefreshableTaskController {
 	};
 
 	private final Action actRemoveTask = new CommonAbstractAction("L\u00f6schen...", Icons.getInstance().getIconDelete16(),
-			getCommonLocaleDelegate().getMessage("TimelimitTaskController.2","Ausgew\u00e4hlte Frist l\u00f6schen")) {
+			getSpringLocaleDelegate().getMessage("TimelimitTaskController.2","Ausgew\u00e4hlte Frist l\u00f6schen")) {
 
 		@Override
 		public void actionPerformed(ActionEvent ev) {
@@ -145,7 +145,7 @@ public class TimelimitTaskController extends RefreshableTaskController {
 	};
 
 	private final Action actFinishTask = new CommonAbstractAction("Erledigt", Icons.getInstance().getIconProperties16(),
-			getCommonLocaleDelegate().getMessage("TimelimitTaskController.1","Ausgew\u00e4hlte Frist als erledigt/unerledigt markieren")) {
+			getSpringLocaleDelegate().getMessage("TimelimitTaskController.1","Ausgew\u00e4hlte Frist als erledigt/unerledigt markieren")) {
 
 		@Override
 		public void actionPerformed(ActionEvent ev) {
@@ -153,7 +153,7 @@ public class TimelimitTaskController extends RefreshableTaskController {
 		}
 	};
 
-	final Action actPrint = new CommonAbstractAction(getCommonLocaleDelegate().getMessage(
+	final Action actPrint = new CommonAbstractAction(getSpringLocaleDelegate().getMessage(
 			"TimelimitTaskController.11","Fristenliste drucken"), 
 		Icons.getInstance().getIconPrintReport16(), null) {
 
@@ -223,7 +223,7 @@ public class TimelimitTaskController extends RefreshableTaskController {
 						TimelimitTaskController.this.storeColumnOrder(tbl);
 					}
 					catch (PreferencesException ex) {
-						final String sMessage = getCommonLocaleDelegate().getMessage(
+						final String sMessage = getSpringLocaleDelegate().getMessage(
 								"TimelimitTaskController.7","Die Spaltenreihenfolge konnte nicht gespeichert werden.");
 						Errors.getInstance().showExceptionDialog(tbl, sMessage, ex);
 					}
@@ -236,7 +236,7 @@ public class TimelimitTaskController extends RefreshableTaskController {
 					storeColumnWidthsInPrefs(tbl);
 				}
 				catch(PreferencesException ex) {
-					final String sMessage = getCommonLocaleDelegate().getMessage(
+					final String sMessage = getSpringLocaleDelegate().getMessage(
 							"PersonalTaskController.28","Die Spaltenbreite konnte nicht gespeichert werden.");
 					Errors.getInstance().showExceptionDialog(tbl, sMessage, ex);
 				}
@@ -277,7 +277,7 @@ public class TimelimitTaskController extends RefreshableTaskController {
 		table.addMouseListener(new DoubleClickListener(timelimittaskview));
 
 		final Action actRefresh = new CommonAbstractAction(Icons.getInstance().getIconRefresh16(),
-				getCommonLocaleDelegate().getMessage("TimelimitTaskController.10","Fristenliste aktualisieren")) {
+				getSpringLocaleDelegate().getMessage("TimelimitTaskController.10","Fristenliste aktualisieren")) {
 
 			@Override
 			public void actionPerformed(ActionEvent ev) {
@@ -425,7 +425,7 @@ public class TimelimitTaskController extends RefreshableTaskController {
 			}
 		});
 		
-		tab.setTitle(getCommonLocaleDelegate().getMessage("tabTimelimits", "Fristen"));
+		tab.setTitle(getSpringLocaleDelegate().getMessage("tabTimelimits", "Fristen"));
 		tab.setTabIcon(Icons.getInstance().getIconTabTimtlimit());
 		tab.setLayeredComponent(TimelimitTaskController.this.timelimittaskview);
 		tab.setTabStoreController(new TaskController.TaskTabStoreController(TaskController.RestorePreferences.TIMELIMIT, TimelimitTaskController.this.timelimittaskview));
@@ -459,9 +459,9 @@ public class TimelimitTaskController extends RefreshableTaskController {
 		final List<TimelimitTaskVO> lstSelectedTimelimitTasks = getSelectedTimelimitTasks(taskview);
 		if (!lstSelectedTimelimitTasks.isEmpty() && lstSelectedTimelimitTasks != null) {
 			
-			final String sMessage = getCommonLocaleDelegate().getMessage(
+			final String sMessage = getSpringLocaleDelegate().getMessage(
 					"TimelimitTaskController.12","Soll(en) die ausgew\u00e4hlte(n) Frist(e) als unerledigt markiert werden?");
-			final int iBtn = JOptionPane.showConfirmDialog(this.getParent(), sMessage, getCommonLocaleDelegate().getMessage(
+			final int iBtn = JOptionPane.showConfirmDialog(this.getParent(), sMessage, getSpringLocaleDelegate().getMessage(
 					"TimelimitTaskController.9","Friste als unerledigt markieren"),
 					JOptionPane.YES_NO_OPTION);
 			if (iBtn == JOptionPane.YES_OPTION) {
@@ -525,13 +525,13 @@ public class TimelimitTaskController extends RefreshableTaskController {
 		if (!lstSelectedTimelimitTasks.isEmpty() && lstSelectedTimelimitTasks != null) {
 			final String sMessage;
 			if(lstSelectedTimelimitTasks.size() == 1)
-				sMessage = getCommonLocaleDelegate().getMessage(
+				sMessage = getSpringLocaleDelegate().getMessage(
 						"TimelimitTaskController.14","Wollen Sie den ausgew\u00e4hlten Eintrag wirklich l\u00f6schen?") + "\n";
 			else
-				sMessage = getCommonLocaleDelegate().getMessage(
+				sMessage = getSpringLocaleDelegate().getMessage(
 						"TimelimitTaskController.15","Wollen Sie die ausgew\u00e4hlten Eintr\u00e4ge wirklich l\u00f6schen?") + "\n";
 			
-			final int btn = JOptionPane.showConfirmDialog(this.getParent(), sMessage, getCommonLocaleDelegate().getMessage(
+			final int btn = JOptionPane.showConfirmDialog(this.getParent(), sMessage, getSpringLocaleDelegate().getMessage(
 					"TimelimitTaskController.8","Eintr\u00e4ge l\u00f6schen"),
 					JOptionPane.YES_NO_OPTION);
 
@@ -648,9 +648,9 @@ public class TimelimitTaskController extends RefreshableTaskController {
 			});
 		}
 		else {
-			final String sMessage = getCommonLocaleDelegate().getMessage(
+			final String sMessage = getSpringLocaleDelegate().getMessage(
 					"TimelimitTaskController.6","Dieser Frist ist kein Objekt zugeordnet.");
-			JOptionPane.showMessageDialog(taskview, sMessage, getCommonLocaleDelegate().getMessage(
+			JOptionPane.showMessageDialog(taskview, sMessage, getSpringLocaleDelegate().getMessage(
 					"TimelimitTaskController.18","Zugeordnetes Objekt anzeigen"), JOptionPane.ERROR_MESSAGE);
 		}
 	}
@@ -852,18 +852,18 @@ public class TimelimitTaskController extends RefreshableTaskController {
 						final GenericObjectIdModuleProcess goimp = (GenericObjectIdModuleProcess) transferable.getTransferData(new GenericObjectIdModuleProcess.DataFlavor());
 
 						if (taskvoTarget.getCompleted() != null) {
-							final String sMessage = getCommonLocaleDelegate().getMessage(
+							final String sMessage = getSpringLocaleDelegate().getMessage(
 									"TimelimitTaskController.5","Dieser Eintrag ist bereits abgeschlossen. Er kann nicht mehr ver\u00e4ndert werden.");
 							throw new NuclosBusinessException(sMessage);
 						}
 						boolean bDoIt = (taskvoTarget.getGenericObjectId() == null);
 						if (!bDoIt) {
-							final String sQuestion = getCommonLocaleDelegate().getMessage(
+							final String sQuestion = getSpringLocaleDelegate().getMessage(
 									"TimelimitTaskController.13","Soll das Objekt \"{0}\" zugeordnet werden?", goimp.getGenericObjectIdentifier()) + "\n" 
-									+ getCommonLocaleDelegate().getMessage(
+									+ getSpringLocaleDelegate().getMessage(
 											"TimelimitTaskController.3","Die bestehende Zuordnung zu \"{0}\" wird dadurch aufgehoben.", taskvoTarget.getIdentifier());
 							final int iBtn = JOptionPane.showConfirmDialog(this.parent, sQuestion, 
-									getCommonLocaleDelegate().getMessage("TimelimitTaskController.17","Zugeordnetes Objekt \u00e4ndern"),
+									getSpringLocaleDelegate().getMessage("TimelimitTaskController.17","Zugeordnetes Objekt \u00e4ndern"),
 									JOptionPane.OK_CANCEL_OPTION);
 							bDoIt = (iBtn == JOptionPane.OK_OPTION);
 						}
@@ -877,7 +877,7 @@ public class TimelimitTaskController extends RefreshableTaskController {
 					}
 				}
 				catch (UnsupportedFlavorException ex) {
-					JOptionPane.showMessageDialog(parent, getCommonLocaleDelegate().getMessage(
+					JOptionPane.showMessageDialog(parent, getSpringLocaleDelegate().getMessage(
 							"TimelimitTaskController.4","Dieser Datentransfer wird von dem ausgew\u00e4hlten Objekt nicht unterst\u00fctzt."));
 				}
 				catch (IOException ex) {

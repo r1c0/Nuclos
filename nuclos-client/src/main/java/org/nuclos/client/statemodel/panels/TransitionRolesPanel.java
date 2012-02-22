@@ -29,7 +29,7 @@ import javax.swing.ListSelectionModel;
 
 import org.nuclos.client.statemodel.models.StateRoleTableModel;
 import org.nuclos.client.ui.Icons;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 
 /**
  * Shows the roles attached to a transition.
@@ -56,11 +56,11 @@ public class TransitionRolesPanel extends JPanel {
 
 	private void init() {
 		btnAdd.setIcon(Icons.getInstance().getIconNew16());
-		btnAdd.setToolTipText(CommonLocaleDelegate.getInstance().getMessage(
+		btnAdd.setToolTipText(SpringLocaleDelegate.getInstance().getMessage(
 				"TransitionRolesPanel.1","Neue Benutzergruppe zuordnen"));
 		btnAdd.setActionCommand("add");
 		btnDelete.setIcon(Icons.getInstance().getIconDelete16());
-		btnDelete.setToolTipText(CommonLocaleDelegate.getInstance().getMessage(
+		btnDelete.setToolTipText(SpringLocaleDelegate.getInstance().getMessage(
 				"TransitionRolesPanel.2","Zuordnung aufheben"));
 		btnDelete.setActionCommand("remove");
 

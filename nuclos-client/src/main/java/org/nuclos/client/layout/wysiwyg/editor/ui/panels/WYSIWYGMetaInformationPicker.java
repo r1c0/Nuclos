@@ -48,7 +48,7 @@ import org.nuclos.client.layout.wysiwyg.WYSIWYGStringsAndLabels.BUTTON_LABELS;
 import org.nuclos.client.layout.wysiwyg.WYSIWYGStringsAndLabels.TABLELAYOUT_PANEL;
 import org.nuclos.client.layout.wysiwyg.editor.util.InterfaceGuidelines;
 import org.nuclos.client.layout.wysiwyg.editor.util.valueobjects.TableLayoutPanel;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 
 /**
  * This Class displays a Dialog for picking Metainformation.
@@ -150,7 +150,7 @@ public class WYSIWYGMetaInformationPicker extends JDialog {
 			
 		});
 		freeExpr = new JCheckBox(
-				CommonLocaleDelegate.getInstance().getMessageFromResource("wysiwg.metainformation.picker.freeexpr"));
+				SpringLocaleDelegate.getInstance().getMessageFromResource("wysiwg.metainformation.picker.freeexpr"));
 		this.add(freeExpr, new TableLayoutConstraints(1, 2, 3, 2));
 		freeExpr.setVisible(true);
 		

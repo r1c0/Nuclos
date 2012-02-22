@@ -18,7 +18,7 @@ package org.nuclos.client.genericobject.ui;
 
 import javax.swing.*;
 
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 
 import java.awt.*;
 
@@ -42,13 +42,13 @@ public class EnterNameDescriptionPanel extends JPanel {
 	}
 
 	private void init() {
-		this.add(new JLabel(CommonLocaleDelegate.getInstance().getMessage(
+		this.add(new JLabel(SpringLocaleDelegate.getInstance().getMessage(
 				"EnterNameDescriptionPanel.1", "Name")), 
 				new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0, GridBagConstraints.WEST,
 		    GridBagConstraints.NONE, new Insets(0, 0, 5, 5), 0, 0));
 		this.add(tfName, new GridBagConstraints(1, 0, 1, 1, 0.0, 0.0, GridBagConstraints.WEST,
 		    GridBagConstraints.NONE, new Insets(0, 0, 5, 5), 0, 0));
-		this.add(new JLabel(CommonLocaleDelegate.getInstance().getMessage(
+		this.add(new JLabel(SpringLocaleDelegate.getInstance().getMessage(
 				"EnterNameDescriptionPanel.2", "Beschreibung")), 
 				new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0, GridBagConstraints.WEST,
 		    GridBagConstraints.NONE, new Insets(0, 0, 5, 5), 0, 0));

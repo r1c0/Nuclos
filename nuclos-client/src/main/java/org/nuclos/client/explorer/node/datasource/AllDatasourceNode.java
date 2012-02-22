@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.exception.CommonPermissionException;
 import org.nuclos.client.datasource.DatasourceDelegate;
 import org.nuclos.client.explorer.node.datasource.DatasourceNode.DatasourceUsage;
@@ -36,9 +36,9 @@ import org.nuclos.server.report.valueobject.DatasourceVO;
 public class AllDatasourceNode extends DirectoryDatasourceNode {
 
 	public AllDatasourceNode() {
-		super(false, CommonLocaleDelegate.getInstance().getMessage(
+		super(false, SpringLocaleDelegate.getInstance().getMessage(
 				"AllDatasourceNode.1", "Alle Datenquellen"), 
-				CommonLocaleDelegate.getInstance().getMessage(
+				SpringLocaleDelegate.getInstance().getMessage(
 						"AllDatasourceNode.1", "Alle Datenquellen"), null);
 	}
 

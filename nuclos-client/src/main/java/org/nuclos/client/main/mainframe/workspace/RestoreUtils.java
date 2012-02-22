@@ -54,7 +54,7 @@ import org.nuclos.common.WorkspaceDescriptionDefaultsFactory;
 import org.nuclos.common.WorkspaceVO;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Predicate;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.PreferencesUtils;
 import org.nuclos.common2.ServiceLocator;
@@ -665,7 +665,7 @@ public class RestoreUtils {
 
 			for (int i = 0; i < wdTabbed.getTabs().size(); i++) {
 				final WorkspaceDescription.Tab wdTab = wdTabbed.getTabs().get(i);
-				final MainFrameTab tab = new MainFrameTab(CommonLocaleDelegate.getInstance().getMessage(
+				final MainFrameTab tab = new MainFrameTab(SpringLocaleDelegate.getInstance().getMessage(
 						"WorkspaceRestore.restoring","Wiederherstellen")+"...");
 				tab.setNeverClose(wdTab.isNeverClose());
 				tab.setFromAssigned(wdTab.isFromAssigned());

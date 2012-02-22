@@ -32,7 +32,7 @@ import org.nuclos.client.ui.Errors;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.client.ui.collect.result.ResultPanel;
 import org.nuclos.client.ui.table.TableUtils;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.server.genericobject.ProxyList;
 
 /**
@@ -138,7 +138,7 @@ public class ChangeListenerForResultTableVerticalScrollBar implements ChangeList
 								LOG.info("Resetting vertical scrollbar because of " + e);
 								model.setValue(0);
 
-								final String sMessage = CommonLocaleDelegate.getInstance().getMessage(
+								final String sMessage = SpringLocaleDelegate.getInstance().getMessage(
 										"ChangeListenerForResultTableVerticalScrollBar.1", "Beim Nachladen von Datens\u00e4tzen ist ein Fehler ist aufgetreten. Die Datens\u00e4tze k\u00f6nnen nicht angezeigt werden.");
 								Errors.getInstance().showExceptionDialog(ifrm, sMessage, e);
 							}							

@@ -106,7 +106,7 @@ public class SubFormEntryExplorerNode<TN extends SubFormEntryTreeNode> extends E
 
         public RemoveAction(JTree tree) {
 			super(ACTIONCOMMAND_REMOVE, 
-					getCommonLocaleDelegate().getMessage("MasterDataExplorerNode.1", "L\u00f6schen")+ "...", tree);
+					getSpringLocaleDelegate().getMessage("MasterDataExplorerNode.1", "L\u00f6schen")+ "...", tree);
 
 			javax.swing.tree.TreeNode tnParent = SubFormEntryExplorerNode.this.getParent();
 			if (tnParent instanceof SubFormExplorerNode && ((SubFormExplorerNode) tnParent).getTreeNode() instanceof SubFormTreeNode) {
@@ -151,9 +151,9 @@ public class SubFormEntryExplorerNode<TN extends SubFormEntryTreeNode> extends E
 		public void askAndRemove() {
 			if (isEnabled()) {
 				final String sName = getTreeNode().getLabel();
-				final String sMessage = getCommonLocaleDelegate().getMessage("SubFormEntryExplorerNode.3", "Wollen Sie den Unterformulareintrag \"{0}\" wirklich l\u00f6schen?", sName);
+				final String sMessage = getSpringLocaleDelegate().getMessage("SubFormEntryExplorerNode.3", "Wollen Sie den Unterformulareintrag \"{0}\" wirklich l\u00f6schen?", sName);
 				final int iBtn = JOptionPane.showConfirmDialog(this.getParent(), sMessage, 
-						getCommonLocaleDelegate().getMessage("SubFormEntryExplorerNode.2", "Unterformulareintrag l\u00f6schen"),
+						getSpringLocaleDelegate().getMessage("SubFormEntryExplorerNode.2", "Unterformulareintrag l\u00f6schen"),
 						JOptionPane.OK_CANCEL_OPTION);
 				if (iBtn == JOptionPane.OK_OPTION) {
 					remove(getJTree());
@@ -234,8 +234,8 @@ public class SubFormEntryExplorerNode<TN extends SubFormEntryTreeNode> extends E
 
 		ShowReferenceAction(final String entityName, final Integer id, JTree tree, String action) {
 			super(action, 
-					getCommonLocaleDelegate().getMessage("SubFormEntryExplorerNode.1", "{0} öffnen", 
-					getCommonLocaleDelegate().getLabelFromMetaDataVO(MetaDataClientProvider.getInstance().getEntity(entityName))), tree);
+					getSpringLocaleDelegate().getMessage("SubFormEntryExplorerNode.1", "{0} öffnen", 
+					getSpringLocaleDelegate().getLabelFromMetaDataVO(MetaDataClientProvider.getInstance().getEntity(entityName))), tree);
 			this.entityName = entityName;
 			this.id = id;
 		}

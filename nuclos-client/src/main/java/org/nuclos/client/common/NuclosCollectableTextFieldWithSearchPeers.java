@@ -36,7 +36,7 @@ import org.nuclos.common.collect.collectable.searchcondition.LogicalOperator;
 import org.nuclos.common.collect.collectable.searchcondition.SearchConditionUtils;
 import org.nuclos.common.collect.exception.CollectableFieldFormatException;
 import org.nuclos.common.collection.CollectionUtils;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 
 /**
  * Collectable text field which can be enhanced by a number of search peers.
@@ -77,7 +77,7 @@ public class NuclosCollectableTextFieldWithSearchPeers extends CollectableTextFi
 			result = super.newJPopupMenu();
 			result.addSeparator();
 
-			final Action act = new AbstractAction(CommonLocaleDelegate.getInstance().getMessage(
+			final Action act = new AbstractAction(SpringLocaleDelegate.getInstance().getMessage(
 					"NuclosCollectableTextFieldWithSearchPeers.1", "Suche erweitern")) {
 				@Override
 				public void actionPerformed(ActionEvent ev) {

@@ -16,7 +16,7 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.statemodel.models;
 
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 
 
 import java.rmi.RemoteException;
@@ -40,8 +40,8 @@ import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 public class SelectRoleTableModel extends AbstractTableModel {
 
 	protected static String[] columnNames = {
-		CommonLocaleDelegate.getInstance().getMessage("SelectRoleTableModel.1","Benutzergruppe"), 
-		CommonLocaleDelegate.getInstance().getMessage("SelectRoleTableModel.2","Beschreibung")};
+		SpringLocaleDelegate.getInstance().getMessage("SelectRoleTableModel.1","Benutzergruppe"), 
+		SpringLocaleDelegate.getInstance().getMessage("SelectRoleTableModel.2","Beschreibung")};
 	protected List<MasterDataVO> lstRoles = null;
 	protected List<MasterDataVO> lstExcludeRoles = new ArrayList<MasterDataVO>();
 

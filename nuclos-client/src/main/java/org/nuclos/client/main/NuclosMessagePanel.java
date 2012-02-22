@@ -29,7 +29,7 @@ import javax.swing.Timer;
 import org.apache.log4j.Logger;
 
 import org.nuclos.client.ui.UIUtils;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 
 /**
  * <br>Created by Novabit Informationssysteme GmbH
@@ -50,7 +50,7 @@ public class NuclosMessagePanel extends JPanel {
 	/**
 	 * the text to display in the "messages button".
 	 */
-	private static final String MESSAGESBUTTON_TEXT = CommonLocaleDelegate.getInstance().getMessage(
+	private static final String MESSAGESBUTTON_TEXT = SpringLocaleDelegate.getInstance().getMessage(
 			"NucleusStatusBar.1","Meldungen");
 
 	/**

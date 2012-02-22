@@ -36,7 +36,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.MouseInputAdapter;
 
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 
 public class TableRowIndicator extends MouseInputAdapter { 
     public static Cursor resizeCursor = Cursor.getPredefinedCursor(Cursor.N_RESIZE_CURSOR);
@@ -167,7 +167,7 @@ public class TableRowIndicator extends MouseInputAdapter {
 				}
 			}
 			
-			JMenuItem mi = new JMenuItem(CommonLocaleDelegate.getInstance().getMessage(
+			JMenuItem mi = new JMenuItem(SpringLocaleDelegate.getInstance().getMessage(
 					"TableRowIndicator.1", "Zeilenh√∂he zur√ºcksetzen"));
 			mi.addActionListener(new ActionListener() {
 				

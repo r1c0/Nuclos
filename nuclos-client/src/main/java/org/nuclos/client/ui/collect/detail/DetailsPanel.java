@@ -62,7 +62,7 @@ import org.nuclos.client.ui.collect.component.model.DetailsComponentModel;
 import org.nuclos.client.ui.collect.component.model.DetailsEditModel;
 import org.nuclos.client.ui.collect.indicator.CollectPanelIndicator;
 import org.nuclos.common.collect.collectable.CollectableField;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 
 /**
  * Details panel for collecting data.
@@ -260,9 +260,9 @@ public class DetailsPanel extends SearchOrDetailsPanel {
 				Icons.getInstance().getIconRefresh16());
 
 		this.btnRefreshCurrentCollectable.setToolTipText(bDisguise ?
-			CommonLocaleDelegate.getInstance().getMessage(
+			SpringLocaleDelegate.getInstance().getMessage(
 					"DetailsPanel.1", "Die Bearbeitung des Datensatzes abbrechen (\u00c4nderungen verwerfen)") :
-				CommonLocaleDelegate.getInstance().getMessage(
+				SpringLocaleDelegate.getInstance().getMessage(
 						"DetailsPanel.2", "Aktualisieren (Datensatz neu laden und \u00c4nderungen verwerfen)"));
 	}
 
@@ -287,7 +287,7 @@ public class DetailsPanel extends SearchOrDetailsPanel {
 				sb.append(" = ");
 				final CollectableField clctfValue = clctcompmodel.getField();
 				if (clctfValue.isNull()) {
-					sb.append(CommonLocaleDelegate.getInstance().getMessage("DetailsPanel.3", "<leer>"));
+					sb.append(SpringLocaleDelegate.getInstance().getMessage("DetailsPanel.3", "<leer>"));
 				}
 				else {
 					sb.append(clctfValue.toString());

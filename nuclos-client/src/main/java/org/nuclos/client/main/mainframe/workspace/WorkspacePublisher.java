@@ -19,7 +19,7 @@ import javax.swing.JPanel;
 import javax.swing.JSeparator;
 
 import org.nuclos.client.main.Main;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 
 public class WorkspacePublisher {
 	
@@ -43,7 +43,7 @@ public class WorkspacePublisher {
 	private boolean saved;
 	
 	public WorkspacePublisher(boolean forceStructureChange) {
-		final CommonLocaleDelegate cld = CommonLocaleDelegate.getInstance();
+		final SpringLocaleDelegate localeDelegate = SpringLocaleDelegate.getInstance();
 		contentPanel = new JPanel();
 		contentPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 		
@@ -66,15 +66,15 @@ public class WorkspacePublisher {
 				new double[] {20, TableLayout.PREFERRED},
 							  rowArray);
 		
-		chbxStructureChange = new JCheckBox(cld.getMessage(
+		chbxStructureChange = new JCheckBox(localeDelegate.getMessage(
 				"WorkspacePublisher.6","Struktur des Hauptfensters (Fensteraufteilung)"));
-		chbxStructureUpdate = new JCheckBox(cld.getMessage(
+		chbxStructureUpdate = new JCheckBox(localeDelegate.getMessage(
 				"WorkspacePublisher.4","Name, Icon, Position der Trenner und des Fensters"));
-		chbxStarttabConfiguration = new JCheckBox(cld.getMessage(
+		chbxStarttabConfiguration = new JCheckBox(localeDelegate.getMessage(
 				"WorkspacePublisher.7","Starttab Konfigurationen"));
-		chbxTableColumnConfiguration = new JCheckBox(cld.getMessage(
+		chbxTableColumnConfiguration = new JCheckBox(localeDelegate.getMessage(
 				"WorkspacePublisher.8","Spalteneinstellungen aller Entitäten und Unterformulare"));
-		chbxToolbarConfiguration = new JCheckBox(cld.getMessage(
+		chbxToolbarConfiguration = new JCheckBox(localeDelegate.getMessage(
 				"WorkspacePublisher.9","Symbolleisten aller Entitäten"));
 		
 		// DEV ---
@@ -83,7 +83,7 @@ public class WorkspacePublisher {
 		
 		int y = 0;
 		if (forceStructureChange) {
-			contentPanel.add(new JLabel(cld.getMessage(
+			contentPanel.add(new JLabel(localeDelegate.getMessage(
 					"WorkspacePublisher.5","Aufgrund der geänderten Fensteraufteilung können nur alle Änderungen publiziert werden.")), 
 					"0, "+y+", 1, "+y++);
 			chbxStructureChange.setSelected(true);
@@ -102,13 +102,13 @@ public class WorkspacePublisher {
 		
 		y++;
 		JPanel actionsPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 2));
-		btSave = new JButton(cld.getMessage("WorkspacePublisher.2","Speichern"));
-		btCancel = new JButton(cld.getMessage("WorkspacePublisher.3","Abbrechen"));
+		btSave = new JButton(localeDelegate.getMessage("WorkspacePublisher.2","Speichern"));
+		btCancel = new JButton(localeDelegate.getMessage("WorkspacePublisher.3","Abbrechen"));
 		actionsPanel.add(btSave);
 		actionsPanel.add(btCancel);
 		contentPanel.add(actionsPanel, "0, "+y+", 1, "+y++);
 		
-		dialog = new JDialog(Main.getInstance().getMainFrame(), cld.getMessage(
+		dialog = new JDialog(Main.getInstance().getMainFrame(), localeDelegate.getMessage(
 				"WorkspacePublisher.1","Arbeitsumgebung bearbeiten"), true);
 		dialog.setContentPane(contentPanel);
 		dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);

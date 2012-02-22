@@ -24,7 +24,7 @@ import org.apache.log4j.Logger;
 
 import org.nuclos.common.collect.collectable.CollectableField;
 import org.nuclos.common.collect.collectable.CollectableFieldsProvider;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.client.common.MetaDataClientProvider;
 import org.nuclos.client.common.security.SecurityCache;
@@ -76,7 +76,7 @@ public class ProcessCollectableFieldsProvider implements CollectableFieldsProvid
 				this.oEntityId = iModuleId;
 			}
 			catch (Exception ex) {
-				throw new NuclosFatalException(CommonLocaleDelegate.getInstance().getMessage(
+				throw new NuclosFatalException(SpringLocaleDelegate.getInstance().getMessage(
 						"ProcessCollectableFieldsProvider.1", "Der Parameter \"module\" muss den Namen einer Modul-Entit\u00e4t enthalten.\n\"{0}\" ist keine g\u00fcltige Modul-Entit\u00e4t.", oValue), ex) ;
 			}
 		}

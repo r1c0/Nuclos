@@ -19,7 +19,7 @@ package org.nuclos.common.collect.collectable;
 import java.io.Serializable;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.Localizable;
 
@@ -30,12 +30,12 @@ import org.nuclos.common2.Localizable;
 public class LocalizedCollectableValueIdField extends CollectableValueIdField implements Serializable {
 
 	public static LocalizedCollectableValueIdField fromResourceId(Integer oValueId, Object oValue, String resId) {
-		final String text = CommonLocaleDelegate.getInstance().getTextFallback(resId, "<[" + oValue + "]>");
+		final String text = SpringLocaleDelegate.getInstance().getTextFallback(resId, "<[" + oValue + "]>");
 		return new LocalizedCollectableValueIdField(oValueId, oValue, text);		
 	}
 	
 	public static LocalizedCollectableValueIdField fromLocalizable(Integer oValueId, Object oValue, Localizable loc) {
-		final String text = CommonLocaleDelegate.getInstance().getText(loc);
+		final String text = SpringLocaleDelegate.getInstance().getText(loc);
 		return new LocalizedCollectableValueIdField(oValueId, oValue, text);		
 	}
 	

@@ -322,7 +322,7 @@ public class TaskController extends Controller {
 				Integer refreshInterval = mapRefreshIntervals.get(sFilterName);
 				refreshInterval = (refreshInterval != null && refreshInterval >= 0)? refreshInterval : 0;
 				if (SecurityCache.getInstance().isActionAllowed(Actions.ACTION_TASKLIST) &&
-					sFilterName.startsWith(getCommonLocaleDelegate().getMessage("tabMyTasks", "Meine Aufgaben"))) {
+					sFilterName.startsWith(getSpringLocaleDelegate().getMessage("tabMyTasks", "Meine Aufgaben"))) {
 					MainFrameTab tab = new MainFrameTab();
 					taskTabbed.addTab(tab, false);
 					ctlPersonalTasks.showPersonalTasks(tab);
@@ -330,7 +330,7 @@ public class TaskController extends Controller {
 					MainFrame.setSelectedTab(tab);
 				}
 				else if (SecurityCache.getInstance().isActionAllowed(Actions.ACTION_TIMELIMIT_LIST) &&
-					sFilterName.startsWith(getCommonLocaleDelegate().getMessage("tabTimelimits", "Fristen"))) {
+					sFilterName.startsWith(getSpringLocaleDelegate().getMessage("tabTimelimits", "Fristen"))) {
 					MainFrameTab tab = new MainFrameTab();
 					taskTabbed.addTab(tab, false);
 					ctlTimelimitTasks.showTimelimitTasks(tab);
@@ -414,7 +414,7 @@ public class TaskController extends Controller {
 
 			final GenericObjectTaskView newView = ctlGenericObjectTasks.newGenericObjectTaskView(filter);
 			final String sLabel = StringUtils.isNullOrEmpty(filter.getLabelResourceId()) ? filter.getName() 
-					: getCommonLocaleDelegate().getTextFallback(filter.getLabelResourceId(), filter.getName());
+					: getSpringLocaleDelegate().getTextFallback(filter.getLabelResourceId(), filter.getName());
 			tab.addMainFrameTabListener(new MainFrameTabAdapter() {
 				@Override
 				public boolean tabClosing(MainFrameTab tab) {
@@ -460,7 +460,7 @@ public class TaskController extends Controller {
 								TaskController.this.storeSortingColumnToPrefs(goTaskView);
 							}
 							catch (PreferencesException ex) {
-								final String sMessage = getCommonLocaleDelegate().getMessage(
+								final String sMessage = getSpringLocaleDelegate().getMessage(
 										"tasklist.error.column.order", "Die Spaltenreihenfolge konnte nicht gespeichert werden.");
 								Errors.getInstance().showExceptionDialog(goTaskView.getJTable(), sMessage, ex);
 							}
@@ -482,7 +482,7 @@ public class TaskController extends Controller {
 							TaskController.this.storeColumnOrderAndWidthsInPrefs(goTaskView);
 						}
 						catch (PreferencesException ex) {
-							final String sMessage = getCommonLocaleDelegate().getMessage(
+							final String sMessage = getSpringLocaleDelegate().getMessage(
 									"tasklist.error.column.order", "Die Spaltenreihenfolge konnte nicht gespeichert werden.");
 							Errors.getInstance().showExceptionDialog(goTaskView.getJTable(), sMessage, ex);
 						}
@@ -548,7 +548,7 @@ public class TaskController extends Controller {
 			}
 		}
 		catch (NuclosFatalException ex) {
-			Errors.getInstance().showExceptionDialog(getParent(), getCommonLocaleDelegate().getMessage(
+			Errors.getInstance().showExceptionDialog(getParent(), getSpringLocaleDelegate().getMessage(
 					"tasklist.error.load", "Die Aufgaben-Liste kann nicht geladen werden."), ex);
 		}
 	}
@@ -581,7 +581,7 @@ public class TaskController extends Controller {
 				closeGenericObjectTaskView(view);
 			}
 			catch (PreferencesException ex) {
-				throw new NuclosFatalException(getCommonLocaleDelegate().getMessage(
+				throw new NuclosFatalException(getSpringLocaleDelegate().getMessage(
 						"tasklist.error.delete.searchfilter", "Der Suchfilter {0} konnte nicht aus der Aufgabenleiste entfernt werden.", searchFilter.getName()), ex);
 			}
 		}

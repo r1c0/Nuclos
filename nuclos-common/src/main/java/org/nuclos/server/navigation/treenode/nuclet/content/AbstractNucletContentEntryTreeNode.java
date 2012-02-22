@@ -26,7 +26,7 @@ import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.SpringApplicationContextHolder;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
 import org.nuclos.common.dal.vo.EntityObjectVO;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.common2.exception.CommonFinderException;
@@ -114,7 +114,7 @@ public abstract class AbstractNucletContentEntryTreeNode implements TreeNode {
 	 * @return
 	 */
 	public final String getLabelWithEntity() {
-		return CommonLocaleDelegate.getInstance().getLabelFromMetaDataVO(getMetaData(entity)) + ": " + getName();
+		return SpringLocaleDelegate.getInstance().getLabelFromMetaDataVO(getMetaData(entity)) + ": " + getName();
 	}
 
 	/**

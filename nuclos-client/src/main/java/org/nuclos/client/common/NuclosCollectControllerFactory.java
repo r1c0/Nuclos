@@ -47,7 +47,7 @@ import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.UsageCriteria;
 import org.nuclos.common.WorkspaceDescription.EntityPreferences;
 import org.nuclos.common.statemodel.Statemodel;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.common2.exception.CommonPermissionException;
@@ -118,7 +118,7 @@ public class NuclosCollectControllerFactory {
 			if(sm == null) {
 				JOptionPane.showMessageDialog(
 					parent,
-					CommonLocaleDelegate.getInstance().getMessage(
+					SpringLocaleDelegate.getInstance().getMessage(
 							"NuclosCollectControllerFactory.2", "Es ist kein Statusmodell definiert. Das Modul kann nicht geöffnet werden.\nDie Statusmodellverwaltung finden Sie im Menü Konfiguration."),
 					sEntityName,
 					JOptionPane.WARNING_MESSAGE);
@@ -179,11 +179,11 @@ public class NuclosCollectControllerFactory {
 				// if there is no MasterDataCollectController for this entity, an exception will be thrown here.
 				return newMasterDataCollectController(parent, sEntityName, tabIfAny);
 			} else {
-				throw new CommonPermissionException(CommonLocaleDelegate.getInstance().getMessage(
+				throw new CommonPermissionException(SpringLocaleDelegate.getInstance().getMessage(
 						"NuclosCollectControllerFactory.1", "Sie haben kein Recht in der Entit\u00e4t ''{0}'' zu lesen.", 
-						CommonLocaleDelegate.getInstance().getLabelFromMetaDataVO(
+						SpringLocaleDelegate.getInstance().getLabelFromMetaDataVO(
 								MasterDataDelegate.getInstance().getMetaData(sEntityName))));
-					//"Sie haben kein Recht in der Entit\u00e4t \"" + CommonLocaleDelegate.getLabelFromMetaDataVO(MasterDataDelegate.getInstance().getMetaData(sEntityName)) + "\" zu lesen.");
+					//"Sie haben kein Recht in der Entit\u00e4t \"" + SpringLocaleDelegate.getLabelFromMetaDataVO(MasterDataDelegate.getInstance().getMetaData(sEntityName)) + "\" zu lesen.");
 			}
 		}
 	}

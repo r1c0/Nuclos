@@ -24,7 +24,7 @@ import javax.swing.JLabel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.springframework.beans.factory.annotation.Configurable;
 
 /**
@@ -81,11 +81,11 @@ public class NuclosEntityFinalStep extends NuclosEntityAbstractStep {
 	public void prepare() {
 		super.prepare();
 		if(this.model.isEditMode()) {
-			this.lbName.setText(CommonLocaleDelegate.getInstance().getMessage(
+			this.lbName.setText(SpringLocaleDelegate.getInstance().getMessage(
 					"wizard.step.final.1", "Entit\u00e4t {0} ge\u00e4ndert", this.model.getEntityName()) + " ...");
 		}
 		else {
-			this.lbName.setText(CommonLocaleDelegate.getInstance().getMessage(
+			this.lbName.setText(SpringLocaleDelegate.getInstance().getMessage(
 					"wizard.step.final.2", "Entit\u00e4t {0} erstellt", this.model.getEntityName()) + " ...");
 		}
 		ta.setText(getResultText());		

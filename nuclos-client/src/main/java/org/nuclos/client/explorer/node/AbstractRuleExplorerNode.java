@@ -108,7 +108,7 @@ public abstract class AbstractRuleExplorerNode extends ExplorerNode<AbstractRule
 					}
 					catch (CommonBusinessException ex) {
 						Errors.getInstance().showExceptionDialog(parent, 
-								getCommonLocaleDelegate().getMessage(
+								getSpringLocaleDelegate().getMessage(
 										"AbstractRuleExplorerNode.3","Regel kann nicht eingef\u00fcgt werden. Evtl. ist die Regel schon vorhanden") + ".", ex);
 						refresh(tree);
 					}
@@ -126,7 +126,7 @@ public abstract class AbstractRuleExplorerNode extends ExplorerNode<AbstractRule
 					}
 					catch (CommonBusinessException ex) {
 						Errors.getInstance().showExceptionDialog(parent, 
-								getCommonLocaleDelegate().getMessage(
+								getSpringLocaleDelegate().getMessage(
 										"AbstractRuleExplorerNode.4","Regel kann nicht eingef\u00fcgt werden. Evtl. ist die Regel schon vorhanden") + ".", ex);
 						refreshParent(tree);
 					}
@@ -166,12 +166,12 @@ public abstract class AbstractRuleExplorerNode extends ExplorerNode<AbstractRule
 		}
 
 		final TreeNodeAction exploreractCopy = new ChainedTreeNodeAction(ACTIONCOMMAND_COPY, 
-				getCommonLocaleDelegate().getMessage("AbstractRuleExplorerNode.2","Kopieren"),
+				getSpringLocaleDelegate().getMessage("AbstractRuleExplorerNode.2","Kopieren"),
 				TransferHandler.getCopyAction(), tree);
 		result.add(exploreractCopy);
 
 		final TreeNodeAction exploreractPaste = new ChainedTreeNodeAction(ACTIONCOMMAND_PASTE, 
-				getCommonLocaleDelegate().getMessage("AbstractRuleExplorerNode.1","Einf\u00fcgen"),
+				getSpringLocaleDelegate().getMessage("AbstractRuleExplorerNode.1","Einf\u00fcgen"),
 				TransferHandler.getPasteAction(), tree);
 		result.add(exploreractPaste);
 

@@ -21,7 +21,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.nuclos.common.NuclosFatalException;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.LangUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
@@ -45,7 +45,7 @@ public abstract class AbstractTreeNode<Id> implements TreeNode {
 	private String sDescription;
 	private List<? extends TreeNode> lstSubNodes;
 	
-	private transient CommonLocaleDelegate cld;
+	private transient SpringLocaleDelegate localeDelegate;
 
 	/**
 	 * @param id the tree node's id. May be <code>null</code>.
@@ -73,18 +73,18 @@ public abstract class AbstractTreeNode<Id> implements TreeNode {
 	 * Maven don't like this.
 	 * {@link org.springframework.beans.factory.aspectj.AbstractInterfaceDrivenDependencyInjectionAspect}.
 	public Object readResolve() throws ObjectStreamException {
-		setCommonLocaleDelegate(CommonLocaleDelegate.getInstance());
+		setSpringLocaleDelegate(SpringLocaleDelegate.getInstance());
 		return this;
 	}
 	 */
 	
 	@Autowired
-	void setCommonLocaleDelegate(CommonLocaleDelegate cld) {
-		this.cld = cld;
+	void setSpringLocaleDelegate(SpringLocaleDelegate cld) {
+		this.localeDelegate = cld;
 	}
 	
-	protected CommonLocaleDelegate getCommonLocaleDelegate() {
-		return cld;
+	protected SpringLocaleDelegate getSpringLocaleDelegate() {
+		return localeDelegate;
 	}
 
 	/**

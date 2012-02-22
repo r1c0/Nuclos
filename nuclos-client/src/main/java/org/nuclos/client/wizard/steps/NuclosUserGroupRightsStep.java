@@ -35,7 +35,7 @@ import org.nuclos.client.wizard.util.NuclosWizardUtils;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.collect.collectable.CollectableField;
 import org.nuclos.common.collect.collectable.LocalizedCollectableValueField;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.KeyEnum;
 import org.nuclos.common2.Localizable;
 import org.nuclos.common2.exception.CommonFatalException;
@@ -128,7 +128,7 @@ public class NuclosUserGroupRightsStep extends NuclosEntityAbstractStep {
 				}
 				Object value = (e instanceof KeyEnum) ? ((KeyEnum<?>) e).getValue() : e.name();
 				String text = (e instanceof Localizable) ? 
-						CommonLocaleDelegate.getInstance().getText((Localizable) e) : e.toString();
+						SpringLocaleDelegate.getInstance().getText((Localizable) e) : e.toString();
 				CollectableField cf = new LocalizedCollectableValueField(value, text);
 				cmbUserRights.addItem(cf);
 			}

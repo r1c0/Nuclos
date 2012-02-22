@@ -36,7 +36,7 @@ import org.nuclos.common.collect.collectable.CollectableUtils;
 import org.nuclos.common.collect.collectable.DefaultCollectableEntityProvider;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableSearchCondition;
 import org.nuclos.common.collection.CollectionUtils;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.PreferencesUtils;
 import org.nuclos.common2.exception.PreferencesException;
 
@@ -88,9 +88,9 @@ public class EntitySearchFilter extends SearchFilter {
 				return true;
 			}
 		};
-		result.setName(CommonLocaleDelegate.getInstance().getMessage(
+		result.setName(SpringLocaleDelegate.getInstance().getMessage(
 				"EntitySearchFilter.1","<Alle>"));
-		result.setDescription(CommonLocaleDelegate.getInstance().getMessage(
+		result.setDescription(SpringLocaleDelegate.getInstance().getMessage(
 				"EntitySearchFilter.3","Standardfilter (Keine Einschr\u00e4nkung)"));		
 		
 		assert result.isDefaultFilter();
@@ -159,7 +159,7 @@ public class EntitySearchFilter extends SearchFilter {
 		EntitySearchFilter result = SearchFilterCache.getInstance().getEntitySearchFilter(sFilterName, sOwner);
 
 		if (result == null) {
-			throw new NoSuchElementException(CommonLocaleDelegate.getInstance().getMessage(
+			throw new NoSuchElementException(SpringLocaleDelegate.getInstance().getMessage(
 					"EntitySearchFilter.2","Es existiert kein Suchfilter mit dem Namen {0}.", sFilterName));
 		}
 		

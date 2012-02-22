@@ -39,7 +39,7 @@ import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableCellRenderer;
 
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.client.datasource.querybuilder.QueryBuilderIcons;
 import org.nuclos.common.database.query.definition.Table;
 
@@ -123,9 +123,9 @@ public class TableSelectionPanel extends JPanel implements DragGestureListener {
 		scrlpnSavedQueries.setViewportView(tblQueries);
 
 		final JTabbedPane tabpn = new JTabbedPane(JTabbedPane.TOP);
-		tabpn.add(CommonLocaleDelegate.getInstance().getMessage(
+		tabpn.add(SpringLocaleDelegate.getInstance().getMessage(
 				"TableSelectionPanel.3","Entit\u00e4ten"), scrlpnSystemObjects);
-		tabpn.add(CommonLocaleDelegate.getInstance().getMessage(
+		tabpn.add(SpringLocaleDelegate.getInstance().getMessage(
 				"TableSelectionPanel.2","Datenquellen"), scrlpnSavedQueries);
 
 		if (blnShowParameterPanel) {

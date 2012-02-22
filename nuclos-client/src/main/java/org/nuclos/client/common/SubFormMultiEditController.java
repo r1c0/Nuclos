@@ -64,13 +64,13 @@ class SubFormMultiEditController<Clct extends Collectable> extends SelectObjects
 		/** @todo remove those optimistic assumptions below */
 		final String columnName = this.subform.getUniqueMasterColumnName();
 		if (columnName == null) {
-			throw new CommonFatalException(getCommonLocaleDelegate().getMessage(
+			throw new CommonFatalException(getSpringLocaleDelegate().getMessage(
 					"SubFormMultiEditController.1", "Im Unterformular {0} wurde keine eindeutige Spalte (unique master column) definiert.", subform.getEntityName()));
 		}
 
 		final int colIndex = model.findColumnByFieldName(columnName);
 		if (colIndex < 0) {
-			throw new CommonFatalException(getCommonLocaleDelegate().getMessage(
+			throw new CommonFatalException(getSpringLocaleDelegate().getMessage(
 					"SubFormMultiEditController.2", "Im Unterformular {0} ist keine eindeutige Spalte (unique master column) namens {1} vorhanden.", subform.getEntityName(), columnName));
 		}
 
@@ -110,7 +110,7 @@ class SubFormMultiEditController<Clct extends Collectable> extends SelectObjects
 		ro.setFixed(fixed);
 		setModel(ro);
 		final boolean bOK = run(
-				getCommonLocaleDelegate().getMessage(
+				getSpringLocaleDelegate().getMessage(
 						"SubFormMultiEditController.3", "Mehrere Datens\u00e4tze in Unterformular einf\u00fcgen/l\u00f6schen"));
 
 		if (bOK) {

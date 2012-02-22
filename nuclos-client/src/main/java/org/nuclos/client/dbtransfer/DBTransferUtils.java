@@ -31,7 +31,7 @@ import javax.swing.filechooser.FileFilter;
 
 import org.apache.log4j.Logger;
 import org.nuclos.common.dbtransfer.TransferNuclet;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.ServiceLocator;
 import org.nuclos.server.dbtransfer.TransferFacadeRemote;
 
@@ -126,7 +126,7 @@ public class DBTransferUtils {
 	
 	protected TransferNuclet[] getAvaiableNuclets() {
 		List<TransferNuclet> result = getTransferFacade().getAvaiableNuclets();
-		result.add(0, new TransferNuclet(null, "<" + CommonLocaleDelegate.getInstance().getMessage(
+		result.add(0, new TransferNuclet(null, "<" + SpringLocaleDelegate.getInstance().getMessage(
 				"configuration.transfer.utils.fullinstance", "komplette Nuclos Instanz") + ">"));
 		return result.toArray(new TransferNuclet[0]);
 	}

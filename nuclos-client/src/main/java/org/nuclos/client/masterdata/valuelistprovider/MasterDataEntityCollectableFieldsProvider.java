@@ -31,7 +31,7 @@ import org.nuclos.common.collect.collectable.CollectableFieldsProvider;
 import org.nuclos.common.collect.collectable.LocalizedCollectableValueField;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Transformer;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.server.masterdata.valueobject.MasterDataMetaVO;
 
@@ -83,8 +83,8 @@ public class MasterDataEntityCollectableFieldsProvider implements CollectableFie
 		final List<CollectableField> result = CollectionUtils.transform(colmdmVO_menupath, new Transformer<MasterDataMetaVO, CollectableField>() {
 			@Override
 			public CollectableField transform(MasterDataMetaVO mdmVO) {
-				String label = CommonLocaleDelegate.getInstance().getLabelFromMetaDataVO(mdmVO); 
-				//String label = CommonLocaleDelegate.getText(mdmVO);
+				String label = SpringLocaleDelegate.getInstance().getLabelFromMetaDataVO(mdmVO); 
+				//String label = SpringLocaleDelegate.getText(mdmVO);
 				if (Modules.getInstance().isModuleEntity(mdmVO.getEntityName()))
 					label += " (Modul)";
 				return new LocalizedCollectableValueField(mdmVO.getEntityName(), label);

@@ -41,7 +41,7 @@ import org.nuclos.client.main.Main;
 import org.nuclos.client.main.mainframe.MainFrame;
 import org.nuclos.client.security.NuclosRemoteServerSession;
 import org.nuclos.common.ApplicationProperties;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.common2.exception.CommonRemoteException;
@@ -196,12 +196,12 @@ public class Errors {
 			int iMessageType) {
 		String sErrorText;
 		if (sErrorMsg == null) {
-			String localizedMessage = CommonLocaleDelegate.getInstance().getMessageFromResource(ex.getLocalizedMessage());
+			String localizedMessage = SpringLocaleDelegate.getInstance().getMessageFromResource(ex.getLocalizedMessage());
 			sErrorText = localizedMessage != null ? localizedMessage : ex.getLocalizedMessage();
 		}
 		else {
-			String resMessage = CommonLocaleDelegate.getInstance().getMessageFromResource(sErrorMsg);
-			String localizedMessage = CommonLocaleDelegate.getInstance().getMessageFromResource(ex.getLocalizedMessage());
+			String resMessage = SpringLocaleDelegate.getInstance().getMessageFromResource(sErrorMsg);
+			String localizedMessage = SpringLocaleDelegate.getInstance().getMessageFromResource(ex.getLocalizedMessage());
 
 			sErrorText = (resMessage != null ? resMessage : sErrorMsg) + "\n" + (localizedMessage != null ? localizedMessage : ex.getLocalizedMessage());
 		}
@@ -229,7 +229,7 @@ public class Errors {
 		final ExceptionMessagePanel pnl = new ExceptionMessagePanel(dlg, iMessageType);
 
 		// Main message:
-		String resMessage = sErrorMsg != null ? CommonLocaleDelegate.getInstance().getMessageFromResource(sErrorMsg) : null;
+		String resMessage = sErrorMsg != null ? SpringLocaleDelegate.getInstance().getMessageFromResource(sErrorMsg) : null;
 		String sErrorText = (resMessage != null ? resMessage : failsafeGetMessage("Errors.3","An error occured"));
 		final String sReasonableMessage = getReasonableMessage(t);
 		if (sReasonableMessage != null) {
@@ -343,7 +343,7 @@ public class Errors {
 		String result = null;
 
 		if (t != null) {
-			String resMessage = CommonLocaleDelegate.getInstance().getMessageFromResource(getRealDetailMessage(t));
+			String resMessage = SpringLocaleDelegate.getInstance().getMessageFromResource(getRealDetailMessage(t));
 			if (isReasonableException(t)) {
 				result = resMessage != null ? resMessage : t.getLocalizedMessage();
 			}
@@ -422,7 +422,7 @@ public class Errors {
 
 	private static String failsafeGetMessage(String resid, String def, Object ... args) {
 		try {
-			return CommonLocaleDelegate.getInstance().getMessage(resid, null, args);
+			return SpringLocaleDelegate.getInstance().getMessage(resid, null, args);
 		}
 		catch(Exception e) {
 			LOG.info("failsafeGetMessage: " + e);

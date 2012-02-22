@@ -41,7 +41,7 @@ import org.nuclos.common.UsageCriteria;
 import org.nuclos.common.collect.collectable.CollectableEntity;
 import org.nuclos.common.collection.BinaryPredicate;
 import org.nuclos.common.collection.CollectionUtils;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.EntityAndFieldName;
 import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.exception.CommonFinderException;
@@ -174,7 +174,7 @@ public class GenericObjectLayoutCache {
 		
 		final String sLayoutML = this.gometa.getLayoutML(this.getLayoutId(usagecriteria, bSearchScreen));	
 		if(sLayoutML == null) {
-			throw new NuclosFatalException(CommonLocaleDelegate.getInstance().getMessage(
+			throw new NuclosFatalException(SpringLocaleDelegate.getInstance().getMessage(
 					"GenericObjectLayoutCache.1", "Die Maske f\u00fcr das Modul {0} konte nicht geladen werden.\nEs wurde noch kein Layout zugewiesen.", Modules.getInstance().getEntityLabelByModuleId(iModuleId)));
 		}
 			
@@ -235,10 +235,10 @@ public class GenericObjectLayoutCache {
 			catch (CommonFinderException ex) {
 				final String sMessage;
 				if (bSearchScreen)
-					sMessage = CommonLocaleDelegate.getInstance().getMessage(
+					sMessage = SpringLocaleDelegate.getInstance().getMessage(
 							"GenericObjectLayoutCache.3", "Ein passendes Such-Layout f\u00fcr {0} konnte nicht gefunden werden.\nEs wurde noch kein Layout zugewiesen.", usagecriteria);
 				else
-					sMessage = CommonLocaleDelegate.getInstance().getMessage(
+					sMessage = SpringLocaleDelegate.getInstance().getMessage(
 							"GenericObjectLayoutCache.2", "Ein passendes Layout f\u00fcr {0} konnte nicht gefunden werden.\nEs wurde noch kein Layout zugewiesen.", usagecriteria);
 				throw new NuclosFatalException(sMessage, ex);
 			}

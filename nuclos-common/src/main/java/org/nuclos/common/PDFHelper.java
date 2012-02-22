@@ -40,7 +40,7 @@ import net.sf.jasperreports.engine.design.JasperDesign;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
 import org.nuclos.common.dal.vo.PivotInfo;
 import org.nuclos.common.entityobject.CollectableEOEntityField;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.exception.CommonFatalException;
 
 /**
@@ -125,15 +125,15 @@ public class PDFHelper {
 		final Font fontPlain = new Font(regularFont.getName(), Font.PLAIN, regularFont.getSize());
 		final Font fontBold = new Font(regularFont.getName(), Font.BOLD, boldFont.getSize());
 		if (pageHeader == null) {
-			throw new CommonFatalException(CommonLocaleDelegate.getInstance().getMessage(
+			throw new CommonFatalException(SpringLocaleDelegate.getInstance().getMessage(
 					"ReportController.5","Bereich <PageHeader> muss in der Suchergebnisvorlage definiert sein."));
 		}
 		if (columnHeader == null) {
-			throw new CommonFatalException(CommonLocaleDelegate.getInstance().getMessage(
+			throw new CommonFatalException(SpringLocaleDelegate.getInstance().getMessage(
 					"ReportController.3","Bereich <ColumnHeader> muss in der Suchergebnisvorlage definiert sein."));
 		}
 		if (detail == null) {
-			throw new CommonFatalException(CommonLocaleDelegate.getInstance().getMessage(
+			throw new CommonFatalException(SpringLocaleDelegate.getInstance().getMessage(
 					"ReportController.4","Bereich <Detail> muss in der Suchergebnisvorlage definiert sein."));
 		}
 

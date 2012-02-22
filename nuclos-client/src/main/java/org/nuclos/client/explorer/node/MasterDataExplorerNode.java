@@ -91,7 +91,7 @@ public class MasterDataExplorerNode<TN extends MasterDataTreeNode<Integer>> exte
 	}
 
 	protected MasterDataExplorerNode<TN>.RemoveAction newRemoveAction(JTree tree) {
-		return new RemoveAction(tree, getCommonLocaleDelegate().getMessage("MasterDataExplorerNode.1", "L\u00f6schen")+ "...");
+		return new RemoveAction(tree, getSpringLocaleDelegate().getMessage("MasterDataExplorerNode.1", "L\u00f6schen")+ "...");
 	}
 
 	private TreeNodeAction newGeneratorAction(JTree tree) {
@@ -101,7 +101,7 @@ public class MasterDataExplorerNode<TN extends MasterDataTreeNode<Integer>> exte
 		}
 
 		final CompositeTreeNodeAction result = new CompositeTreeNodeAction(
-				getCommonLocaleDelegate().getMessage("RuleExplorerNode.5","Arbeitsschritte"), lst);
+				getSpringLocaleDelegate().getMessage("RuleExplorerNode.5","Arbeitsschritte"), lst);
 		return result;
 	}
 
@@ -130,9 +130,9 @@ public class MasterDataExplorerNode<TN extends MasterDataTreeNode<Integer>> exte
 		@Override
 		public void actionPerformed(ActionEvent ev) {
 			final String sName = getTreeNode().getLabel();
-			final String sMessage = getCommonLocaleDelegate().getMessage("MasterDataExplorerNode.3", "Wollen Sie das Objekt \"{0}\" wirklich l\u00f6schen?", sName);
+			final String sMessage = getSpringLocaleDelegate().getMessage("MasterDataExplorerNode.3", "Wollen Sie das Objekt \"{0}\" wirklich l\u00f6schen?", sName);
 			final int iBtn = JOptionPane.showConfirmDialog(this.getParent(), sMessage, 
-					getCommonLocaleDelegate().getMessage("MasterDataExplorerNode.2", "Objekt l\u00f6schen"),
+					getSpringLocaleDelegate().getMessage("MasterDataExplorerNode.2", "Objekt l\u00f6schen"),
 					JOptionPane.OK_CANCEL_OPTION);
 			if (iBtn == JOptionPane.OK_OPTION) {
 				cmdRemove();

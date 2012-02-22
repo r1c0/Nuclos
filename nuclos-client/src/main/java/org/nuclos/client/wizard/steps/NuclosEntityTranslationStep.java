@@ -43,7 +43,7 @@ import org.nuclos.client.wizard.util.NuclosWizardUtils;
 import org.nuclos.common.TranslationVO;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.LocaleInfo;
 import org.pietschy.wizard.InvalidStateException;
 import org.springframework.beans.factory.annotation.Configurable;
@@ -150,7 +150,7 @@ public class NuclosEntityTranslationStep extends NuclosEntityAbstractStep {
 			return;
 		}
 		
-		LocaleInfo userLocaleInfo = CommonLocaleDelegate.getInstance().getUserLocaleInfo();
+		LocaleInfo userLocaleInfo = SpringLocaleDelegate.getInstance().getUserLocaleInfo();
 		
 		for(LocaleInfo voLocale : loadLocales()) {
 			String sLocaleLabel = voLocale.language; 

@@ -29,7 +29,7 @@ import org.nuclos.client.ui.multiaction.MultiCollectablesActionController.Action
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.collection.Pair;
 import org.nuclos.common.dal.vo.EntityObjectVO;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.CommonRunnable;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
@@ -94,11 +94,11 @@ class MultiGenerateAction implements Action<Pair<Collection<EntityObjectVO>, Lon
 	public String getText(Pair<Collection<EntityObjectVO>, Long> sources) {
 		if (sources.x.size() == 1) {
 			String entity = MetaDataClientProvider.getInstance().getEntity(generatoractionvo.getTargetModuleId().longValue()).getEntity();
-			return CommonLocaleDelegate.getInstance().getTreeViewLabel(
+			return SpringLocaleDelegate.getInstance().getTreeViewLabel(
 					sources.x.iterator().next(), entity, MetaDataClientProvider.getInstance());
 		}
 		else {
-			return CommonLocaleDelegate.getInstance().getMessage(
+			return SpringLocaleDelegate.getInstance().getMessage(
 					"generation.multiple", "Objektgenerierung f\u00fcr {0} Objekte ...", sources.x.size());
 		}
 	}
@@ -111,29 +111,29 @@ class MultiGenerateAction implements Action<Pair<Collection<EntityObjectVO>, Lon
 	@Override
 	public String getSuccessfulMessage(Pair<Collection<EntityObjectVO>, Long> sources, GenerationResult rResult) {
 		if (!StringUtils.isNullOrEmpty(rResult.getError())) {
-			return CommonLocaleDelegate.getInstance().getMessage(
+			return SpringLocaleDelegate.getInstance().getMessage(
 					"generation.unsaved",
 					"Generated obect could not be saved: \\n{0} \\nPlease edit object in details view (see context menu).",
-					CommonLocaleDelegate.getInstance().getMessageFromResource(rResult.getError()));
+					SpringLocaleDelegate.getInstance().getMessageFromResource(rResult.getError()));
 		}
 		else {
 			String entity = MetaDataClientProvider.getInstance().getEntity(generatoractionvo.getTargetModuleId().longValue()).getEntity();
-			return CommonLocaleDelegate.getInstance().getMessage("R00022880",
+			return SpringLocaleDelegate.getInstance().getMessage("R00022880",
 					"Object \"{0}\" successfully generated.",
-					CommonLocaleDelegate.getInstance().getTreeViewLabel(
+					SpringLocaleDelegate.getInstance().getTreeViewLabel(
 							rResult.getGeneratedObject(), entity, MetaDataClientProvider.getInstance()));
 		}
 	}
 
 	@Override
 	public String getConfirmStopMessage() {
-		return CommonLocaleDelegate.getInstance().getMessage(
+		return SpringLocaleDelegate.getInstance().getMessage(
 				"R00022886", "Wollen Sie die Objektgenerierung an dieser Stelle beenden?\n(Die bisher generierten Objekte bleiben in jedem Fall erhalten.)");
 	}
 
 	@Override
 	public String getExceptionMessage(Pair<Collection<EntityObjectVO>, Long> sources, Exception ex) {
-		return CommonLocaleDelegate.getInstance().getMessage(
+		return SpringLocaleDelegate.getInstance().getMessage(
 				"R00022883", "Objektgenerierung fehlgeschlagen. \\n{1}", ex.getMessage());
 	}
 

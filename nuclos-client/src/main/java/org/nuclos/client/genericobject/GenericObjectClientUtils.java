@@ -55,7 +55,7 @@ import org.nuclos.common.collect.collectable.searchcondition.visit.Visitor;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Pair;
 import org.nuclos.common.collection.Transformer;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonPermissionException;
 import org.nuclos.server.common.ModuleConstants;
@@ -228,7 +228,7 @@ public class GenericObjectClientUtils {
 		final String sEntityName = Modules.getInstance().getEntityNameByModuleId(iModuleId);
 
 		if (!SecurityCache.getInstance().isReadAllowedForModule(sEntityName, iGenericObjectId)) {
-			throw new CommonPermissionException(CommonLocaleDelegate.getInstance().getMessage(
+			throw new CommonPermissionException(SpringLocaleDelegate.getInstance().getMessage(
 					"GenericObjectclientUtils.1", "Sie haben nicht das Recht, dieses Objekt anzuzeigen."));
 		}
 
@@ -245,7 +245,7 @@ public class GenericObjectClientUtils {
 		final String sEntityName = Modules.getInstance().getEntityNameByModuleId(iModuleId);
 
 		if (!SecurityCache.getInstance().isWriteAllowedForModule(sEntityName, null)) {
-			throw new CommonPermissionException(CommonLocaleDelegate.getInstance().getMessage(
+			throw new CommonPermissionException(SpringLocaleDelegate.getInstance().getMessage(
 					"GenericObjectclientUtils.2", "Sie haben nicht das Recht, dieses Objekt anzulegen."));
 		}
 

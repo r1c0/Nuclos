@@ -27,7 +27,7 @@ import javax.swing.JOptionPane;
 import org.nuclos.client.statemodel.models.SelectRoleTableModel;
 import org.nuclos.client.statemodel.panels.InsertRolePanel;
 import org.nuclos.client.ui.table.TableUtils;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 
 /**
@@ -66,7 +66,7 @@ public class InsertRoleController {
 				}
 			}
 		});
-		JDialog dlg = optionPane.createDialog(parent, CommonLocaleDelegate.getInstance().getMessage(
+		JDialog dlg = optionPane.createDialog(parent, SpringLocaleDelegate.getInstance().getMessage(
 				"InsertRoleController.1","Benutzergruppenauswahl"));
 		dlg.setResizable(true);
 		dlg.setVisible(true);

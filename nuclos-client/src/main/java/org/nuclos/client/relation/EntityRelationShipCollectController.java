@@ -84,7 +84,7 @@ public class EntityRelationShipCollectController extends NuclosCollectController
 	 */
 	public EntityRelationShipCollectController(JComponent parent, MainFrame mf, MainFrameTab tabIfAny) {
 		super(parent, EntityRelationshipModel.clcte);
-		ifrm = tabIfAny!=null ? tabIfAny : newInternalFrame(getCommonLocaleDelegate().getMessage(
+		ifrm = tabIfAny!=null ? tabIfAny : newInternalFrame(getSpringLocaleDelegate().getMessage(
 				"nuclos.entityrelation.controller.2","Relationen Editor")); 
 		
 		this.initialize(this.pnlCollect);
@@ -98,11 +98,11 @@ public class EntityRelationShipCollectController extends NuclosCollectController
 		this.getDetailsPanel().setEditView(DefaultEditView.newDetailsEditView(pnlEdit, pnlEdit.newCollectableComponentsProvider()));
 		
 		this.setInternalFrame(ifrm, tabIfAny==null);
-		ifrm.setTitle(getCommonLocaleDelegate().getMessage("nuclos.entityrelation.controller.2","Relationen Editor"));
+		ifrm.setTitle(getSpringLocaleDelegate().getMessage("nuclos.entityrelation.controller.2","Relationen Editor"));
 		//final JPanel pnlCustomToolBarAreaDetails = new JPanel();		
 		//pnlCustomToolBarAreaDetails.setLayout(new BorderLayout());
 		//pnlCustomToolBarAreaDetails.setPreferredSize(new Dimension(25,25));
-		JButton bt = new JButton(getCommonLocaleDelegate().getMessage(
+		JButton bt = new JButton(getSpringLocaleDelegate().getMessage(
 				"nuclos.entityrelation.controller.3", "Entit\u00e4ten ausw\u00e4hlen"));
 		//JToolBar bar = UIUtils.createNonFloatableToolBar();
 		//bar.setOpaque(false);
@@ -142,7 +142,7 @@ public class EntityRelationShipCollectController extends NuclosCollectController
 		
 		double cells [][] = {{5, TableLayout.PREFERRED, 5}, {5, TableLayout.PREFERRED,5}};	
 		
-		JDialog dia = new JDialog(Main.getInstance().getMainFrame(), getCommonLocaleDelegate().getMessage(
+		JDialog dia = new JDialog(Main.getInstance().getMainFrame(), getSpringLocaleDelegate().getMessage(
 				"nuclos.entityrelation.controller.1", "Entit\u00e4ten f\u00fcr Datenmodell ausw\u00e4hlen"), true);
 		EntityChoicePanel panel = new EntityChoicePanel(dia, lstInModel);
 		dia.setLayout(new TableLayout(cells));
@@ -204,7 +204,7 @@ public class EntityRelationShipCollectController extends NuclosCollectController
 
 	@Override
 	protected String getEntityLabel() {
-		return getCommonLocaleDelegate().getText("nuclos.entity.entityrelation.label", "Relationen Editor") ;
+		return getSpringLocaleDelegate().getText("nuclos.entity.entityrelation.label", "Relationen Editor") ;
 	}
 
 	@Override

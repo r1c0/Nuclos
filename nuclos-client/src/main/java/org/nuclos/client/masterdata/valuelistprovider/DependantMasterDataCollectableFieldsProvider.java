@@ -29,7 +29,7 @@ import org.nuclos.common.collect.collectable.CollectableEntityField;
 import org.nuclos.common.collect.collectable.CollectableEntityProvider;
 import org.nuclos.common.collect.collectable.CollectableField;
 import org.nuclos.common.collect.collectable.DefaultCollectableEntityProvider;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 
 /**
  * <code>CollectableFieldsProvider</code> for dependant masterdata in Nucleus.
@@ -120,7 +120,7 @@ public class DependantMasterDataCollectableFieldsProvider extends ManagedCollect
 	@Override
 	public List<CollectableField> getCollectableFields() {
 		if (this.sFieldToDisplay == null) {
-			throw new IllegalArgumentException(CommonLocaleDelegate.getInstance().getMessage(
+			throw new IllegalArgumentException(SpringLocaleDelegate.getInstance().getMessage(
 					"DependantMasterDataCollectableFieldsProvider.1",
 					"Die Entit\u00e4t {0} hat kein identifizierendes Feld.", sForeignEntityName));
 		}

@@ -25,7 +25,7 @@ import javax.swing.table.AbstractTableModel;
 
 import org.nuclos.common.collect.collectable.CollectableField;
 import org.nuclos.common.collect.collectable.LocalizedCollectableValueField;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.KeyEnum;
 import org.nuclos.common2.Localizable;
 import org.nuclos.server.common.MasterDataPermission;
@@ -46,21 +46,21 @@ public class EntityRightsSelectTableModel extends AbstractTableModel {
 	
 	public EntityRightsSelectTableModel() {
 		super();
-		final CommonLocaleDelegate cld = CommonLocaleDelegate.getInstance();
+		final SpringLocaleDelegate localeDelegate = SpringLocaleDelegate.getInstance();
 		lstUserRights = new ArrayList<MasterDataVO>();
 		mapPermission = new HashMap<String, Integer>();
-		mapPermission.put(cld.getMessage(
+		mapPermission.put(localeDelegate.getMessage(
 				"masterdata.permission.read", "Lesen"), MasterDataPermission.READONLY.getValue());
-		mapPermission.put(cld.getMessage(
+		mapPermission.put(localeDelegate.getMessage(
 				"masterdata.permission.write", "Lesen/Schreiben"), MasterDataPermission.READWRITE.getValue());
-		mapPermission.put(cld.getMessage(
+		mapPermission.put(localeDelegate.getMessage(
 				"masterdata.permission.delete", "Lesen/Schreiben/L\u00f6schen"), MasterDataPermission.DELETE.getValue());	
 	}
 	
 	public void setType(int type) {
 		this.iType = type;
 		if(iType == TYPE_STATEMODEL) {
-			mapPermission.put(CommonLocaleDelegate.getInstance().getMessage(
+			mapPermission.put(SpringLocaleDelegate.getInstance().getMessage(
 					"module.permission.delete.physical", "Lesen/Schreiben/Physikalisch L\u00f6schen"), 15);
 		}
 		this.fireTableDataChanged();
@@ -142,7 +142,7 @@ public class EntityRightsSelectTableModel extends AbstractTableModel {
 			if(i.intValue() != ModulePermission.DELETE_PHYSICALLY.getValue().intValue()) {
 				MasterDataPermission permission = MasterDataPermission.getInstance(i);
 				Object value = (permission instanceof KeyEnum) ? ((KeyEnum<?>) permission).getValue() : permission.name();
-				String text = (permission instanceof Localizable) ? CommonLocaleDelegate.getInstance().getText(
+				String text = (permission instanceof Localizable) ? SpringLocaleDelegate.getInstance().getText(
 						(Localizable) permission) : permission.toString();
 				CollectableField cf = new LocalizedCollectableValueField(value, text);			
 				return cf;
@@ -162,9 +162,9 @@ public class EntityRightsSelectTableModel extends AbstractTableModel {
 	public String getColumnName(int column) {
 		switch (column) {
 		case 0:
-			return CommonLocaleDelegate.getInstance().getMessage("wizard.step.entityrightstable.1", "Gruppe");
+			return SpringLocaleDelegate.getInstance().getMessage("wizard.step.entityrightstable.1", "Gruppe");
 		case 1:
-			return CommonLocaleDelegate.getInstance().getMessage("wizard.step.entityrightstable.2", "Rechte");
+			return SpringLocaleDelegate.getInstance().getMessage("wizard.step.entityrightstable.2", "Rechte");
 		default:			
 			return "";
 		}		

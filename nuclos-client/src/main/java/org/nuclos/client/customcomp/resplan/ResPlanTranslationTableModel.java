@@ -25,7 +25,7 @@ import javax.swing.table.AbstractTableModel;
 
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Transformer;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.LocaleInfo;
 
 public class ResPlanTranslationTableModel extends AbstractTableModel {
@@ -132,7 +132,7 @@ public class ResPlanTranslationTableModel extends AbstractTableModel {
 
 	@Override
 	public String getColumnName(int column) {
-		return CommonLocaleDelegate.getInstance().getText(
+		return SpringLocaleDelegate.getInstance().getText(
 				"nuclos.resplan.l10n.labels." + columns[column]);
 	}
 }

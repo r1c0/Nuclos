@@ -26,7 +26,7 @@ import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.client.common.ClientParameterProvider;
 import org.nuclos.client.masterdata.wiki.WikiDelegate;
 import org.nuclos.client.ui.collect.CollectController;
@@ -67,7 +67,7 @@ public class WikiController {
 	 */
 	public String getBaseURL() {
 		if (ClientParameterProvider.getInstance().getValue(ClientParameterProvider.KEY_WIKI_BASE_URL) == null) {
-			throw new NuclosFatalException(CommonLocaleDelegate.getInstance().getMessage(
+			throw new NuclosFatalException(SpringLocaleDelegate.getInstance().getMessage(
 					"WikiController.1", "Die BaseURL f\u00fcr das Wiki muss in T_AD_PARAMETER angegeben werden."));
 		}
 		return ClientParameterProvider.getInstance().getValue(ClientParameterProvider.KEY_WIKI_BASE_URL);
@@ -153,7 +153,7 @@ public class WikiController {
 			
 		}
 		else {
-			throw new NuclosFatalException(CommonLocaleDelegate.getInstance().getMessage(
+			throw new NuclosFatalException(SpringLocaleDelegate.getInstance().getMessage(
 					"WikiController.2", "Keine Komponente zum Anzeigen im Wiki gefunden."));
 		}
 	}

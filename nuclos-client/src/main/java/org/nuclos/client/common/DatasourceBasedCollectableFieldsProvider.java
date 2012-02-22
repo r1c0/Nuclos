@@ -27,7 +27,7 @@ import org.nuclos.client.valuelistprovider.cache.CacheableCollectableFieldsProvi
 import org.nuclos.common.collect.collectable.CollectableField;
 import org.nuclos.common.collect.collectable.CollectableValueField;
 import org.nuclos.common.collect.collectable.CollectableValueIdField;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.server.report.valueobject.DatasourceParameterVO;
@@ -92,7 +92,7 @@ public class DatasourceBasedCollectableFieldsProvider implements CacheableCollec
 				}
 				catch (Exception e) {
 					throw new CommonFatalException(
-							CommonLocaleDelegate.getInstance().getMessage(
+							SpringLocaleDelegate.getInstance().getMessage(
 									"datasource.collectable.fieldsprovider", "Fehler beim Laden der Datenquelle ''{0}'':\n", oValue), e);
 					//"Fehler beim Laden der Datenquelle \"" + oValue + "\":\n", e);
 				}
@@ -106,7 +106,7 @@ public class DatasourceBasedCollectableFieldsProvider implements CacheableCollec
 				}
 				catch (CommonBusinessException e) {
 					throw new CommonFatalException(
-							CommonLocaleDelegate.getInstance().getMessage(
+							SpringLocaleDelegate.getInstance().getMessage(
 									"datasource.collectable.fieldsprovider", "Fehler beim Laden der Datenquelle ''{0}'':\n", oValue), e);
 					//"Fehler beim Laden der Datenquelle \"" + oValue + "\":\n", e);
 				}
@@ -119,7 +119,7 @@ public class DatasourceBasedCollectableFieldsProvider implements CacheableCollec
 				}
 				catch (CommonBusinessException e) {
 					throw new CommonFatalException(
-							CommonLocaleDelegate.getInstance().getMessage(
+							SpringLocaleDelegate.getInstance().getMessage(
 									"datasource.collectable.fieldsprovider", "Fehler beim Laden der Datenquelle ''{0}'':\n", oValue), e);
 						//"Fehler beim Laden der Datenquelle \"" + oValue + "\":\n", e);
 				}

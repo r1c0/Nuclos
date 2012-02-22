@@ -22,7 +22,7 @@ import java.util.List;
 import javax.swing.table.AbstractTableModel;
 
 import org.nuclos.common.TranslationVO;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 
 public class SearchFilterResourceTableModel extends AbstractTableModel {
 
@@ -96,14 +96,14 @@ public class SearchFilterResourceTableModel extends AbstractTableModel {
 
 	@Override
 	public String getColumnName(int column) {
-		final CommonLocaleDelegate cld = CommonLocaleDelegate.getInstance();
+		final SpringLocaleDelegate localeDelegate = SpringLocaleDelegate.getInstance();
 		switch (column) {
 			case 0:
-				return cld.getMessage("wizard.step.entitytranslationstable.3", "Sprache");
+				return localeDelegate.getMessage("wizard.step.entitytranslationstable.3", "Sprache");
 			case 1:
-				return cld.getMessage("wizard.step.entitytranslationstable.4", "Beschriftung");
+				return localeDelegate.getMessage("wizard.step.entitytranslationstable.4", "Beschriftung");
 			case 2:
-				return cld.getMessage("wizard.step.entitytranslationstable.2", "Beschreibung");
+				return localeDelegate.getMessage("wizard.step.entitytranslationstable.2", "Beschreibung");
 			default:
 				return "";
 		}

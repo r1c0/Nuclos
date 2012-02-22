@@ -47,7 +47,7 @@ import org.nuclos.client.main.Main;
 import org.nuclos.client.ui.Errors;
 import org.nuclos.client.ui.Icons;
 import org.nuclos.client.ui.SimpleDocumentListener;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.server.ruleengine.NuclosCompileException.ErrorMessage;
 
@@ -141,11 +141,11 @@ public class RuleEditPanel extends JPanel {
 		pnlRulesEditor.add(splitpn, BorderLayout.CENTER);
 
 		final JTabbedPane tabpn = new JTabbedPane();
-		tabpn.add(CommonLocaleDelegate.getInstance().getMessage("RuleEditPanel.1","Regel"), pnlRulesEditor);
+		tabpn.add(SpringLocaleDelegate.getInstance().getMessage("RuleEditPanel.1","Regel"), pnlRulesEditor);
 
 		if(pnlUsage != null) {
 			add(pnlHeader, BorderLayout.NORTH);
-			tabpn.add(CommonLocaleDelegate.getInstance().getMessage("RuleEditPanel.2","Verwendung"), pnlUsage);
+			tabpn.add(SpringLocaleDelegate.getInstance().getMessage("RuleEditPanel.2","Verwendung"), pnlUsage);
 		}
 		this.add(tabpn, BorderLayout.CENTER);
 	}

@@ -50,12 +50,12 @@ public abstract class MasterDataTreeNode<Id> extends AbstractTreeNode<Id> implem
 
 	protected String getIdentifier(MasterDataVO mdvo) {
 		MetaDataProvider metaprovider = SpringApplicationContextHolder.getBean(MetaDataProvider.class);
-		return getCommonLocaleDelegate().getTreeViewLabel(mdvo, getEntityName(), metaprovider);
+		return getSpringLocaleDelegate().getTreeViewLabel(mdvo, getEntityName(), metaprovider);
 	}
 
 	protected String getDescription(MasterDataVO mdvo) {
 		MetaDataProvider metaprovider = SpringApplicationContextHolder.getBean(MetaDataProvider.class);
-		return getCommonLocaleDelegate().getTreeViewDescription(mdvo, getEntityName(), metaprovider);
+		return getSpringLocaleDelegate().getTreeViewDescription(mdvo, getEntityName(), metaprovider);
 	}
 
 	@Override

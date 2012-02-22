@@ -106,14 +106,14 @@ public class GenericObjectLayoutCollectController extends LayoutCollectControlle
 	protected LayoutRoot parseLayoutML() throws CommonBusinessException, IOException {
 		final String sLayoutML = this.getLayoutMLFromEditor();
 		if (sLayoutML == null) {
-			throw new NuclosBusinessException(getCommonLocaleDelegate().getMessage(
+			throw new NuclosBusinessException(getSpringLocaleDelegate().getMessage(
 					"GenericObjectLayoutCollectController.1","Die LayoutML-Definition ist leer."));
 		}
 		final LayoutMLParser parser = new LayoutMLParser();
 		
 //		final CollectableGenericObjectEntityForAllAttributes clcte = CollectableGenericObjectEntityForAllAttributes.getInstance(Modules.ENTITYNAME_GENERALSEARCH);
 		final EntityMetaDataVO eMeta = MetaDataClientProvider.getInstance().getEntity(getUsedEntityName());
-		final String label = getCommonLocaleDelegate().getText(eMeta.getLocaleResourceIdForLabel(), null);
+		final String label = getSpringLocaleDelegate().getText(eMeta.getLocaleResourceIdForLabel(), null);
 		final Map<String, EntityFieldMetaDataVO> mapEfMeta = MetaDataClientProvider.getInstance().getAllEntityFieldsByEntity(eMeta.getEntity());		
 		
 		if (eMeta.isStateModel()) {

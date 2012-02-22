@@ -22,7 +22,7 @@ import javax.swing.JPanel;
 import javax.swing.JRadioButtonMenuItem;
 
 import org.nuclos.client.ui.PopupButton;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
@@ -31,16 +31,16 @@ public abstract class TaskView extends JPanel implements ScheduledRefreshable {
 	
 	private final int[] intervals = new int[] {	0, 5, 10, 30};
 	private final String[] intervalLabels = new String[] {
-		getCommonLocaleDelegate().getMessage("TaskController.Refresh.0.name","Manuell aktualisieren"),
-		getCommonLocaleDelegate().getMessage("TaskController.Refresh.5.name","Alle 5 Minuten aktualisieren"),
-		getCommonLocaleDelegate().getMessage("TaskController.Refresh.10.name","Alle 10 Minuten aktualisieren"),
-		getCommonLocaleDelegate().getMessage("TaskController.Refresh.30.name","Alle 30 Minuten aktualisieren")
+		getSpringLocaleDelegate().getMessage("TaskController.Refresh.0.name","Manuell aktualisieren"),
+		getSpringLocaleDelegate().getMessage("TaskController.Refresh.5.name","Alle 5 Minuten aktualisieren"),
+		getSpringLocaleDelegate().getMessage("TaskController.Refresh.10.name","Alle 10 Minuten aktualisieren"),
+		getSpringLocaleDelegate().getMessage("TaskController.Refresh.30.name","Alle 30 Minuten aktualisieren")
 	};
 	private final String[] intervalDescs = new String[] {
-			getCommonLocaleDelegate().getMessage("TaskController.Refresh.0.desc","Manuell aktualisieren"),
-			getCommonLocaleDelegate().getMessage("TaskController.Refresh.5.desc","Alle 5 Minuten aktualisieren"),
-			getCommonLocaleDelegate().getMessage("TaskController.Refresh.10.desc","Alle 10 Minuten aktualisieren"),
-			getCommonLocaleDelegate().getMessage("TaskController.Refresh.30.desc","Alle 30 Minuten aktualisieren")
+			getSpringLocaleDelegate().getMessage("TaskController.Refresh.0.desc","Manuell aktualisieren"),
+			getSpringLocaleDelegate().getMessage("TaskController.Refresh.5.desc","Alle 5 Minuten aktualisieren"),
+			getSpringLocaleDelegate().getMessage("TaskController.Refresh.10.desc","Alle 10 Minuten aktualisieren"),
+			getSpringLocaleDelegate().getMessage("TaskController.Refresh.30.desc","Alle 30 Minuten aktualisieren")
 	};
 	
 	private final ButtonGroup bgRefreshInterval = new ButtonGroup();
@@ -48,7 +48,7 @@ public abstract class TaskView extends JPanel implements ScheduledRefreshable {
 
 	private int refreshInterval = 0;
 	
-	private CommonLocaleDelegate cld;
+	private SpringLocaleDelegate localeDelegate;
 	
 	public TaskView() {
 		for (int i = 0; i < intervals.length; i++) {
@@ -60,17 +60,17 @@ public abstract class TaskView extends JPanel implements ScheduledRefreshable {
 	}
 	
 	@Autowired
-	void setCommonLocaleDelegate(CommonLocaleDelegate cld) {
-		this.cld = cld;
+	void setSpringLocaleDelegate(SpringLocaleDelegate cld) {
+		this.localeDelegate = cld;
 	}
 	
-	protected CommonLocaleDelegate getCommonLocaleDelegate() {
-		return cld;
+	protected SpringLocaleDelegate getSpringLocaleDelegate() {
+		return localeDelegate;
 	}
 	
 	protected void addRefreshIntervalsToPopupButton(PopupButton pb) {
 		pb.addSeparator();
-		pb.add(new JLabel("<html><b>"+getCommonLocaleDelegate().getMessage("TaskView.intervalRefresh","Intervall Aktualisierung")+"</b></html>"));
+		pb.add(new JLabel("<html><b>"+getSpringLocaleDelegate().getMessage("TaskView.intervalRefresh","Intervall Aktualisierung")+"</b></html>"));
 		for (int i = 0; i < rbRefresIntervals.length; i++) {
 			pb.add(rbRefresIntervals[i]);
 		}

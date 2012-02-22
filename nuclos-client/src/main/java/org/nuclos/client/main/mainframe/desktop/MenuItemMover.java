@@ -58,7 +58,7 @@ import org.apache.log4j.Logger;
 import org.nuclos.client.main.Main;
 import org.nuclos.client.synthetica.NuclosThemeSettings;
 import org.nuclos.client.ui.Icons;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 
 public class MenuItemMover extends JPanel {
 
@@ -153,17 +153,17 @@ public class MenuItemMover extends JPanel {
 	}
 	
 	public void showDialog(DefaultMenuItem selected) {
-		final CommonLocaleDelegate cld = CommonLocaleDelegate.getInstance();
+		final SpringLocaleDelegate localeDelegate = SpringLocaleDelegate.getInstance();
 		final JDialog dialog = new JDialog(Main.getInstance().getMainFrame(), 
-				cld.getMessage("MenuItemMover.3","Reihenfolge ändern"), true);
+				localeDelegate.getMessage("MenuItemMover.3","Reihenfolge ändern"), true);
 		
 		JPanel contentPanel = new JPanel(new BorderLayout(5, 5));
 		contentPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 		contentPanel.add(this, BorderLayout.CENTER);
 		
 		JPanel actionsPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 2));
-		JButton btSave = new JButton(cld.getMessage("MenuItemMover.1","Speichern"));
-		JButton btCancel = new JButton(cld.getMessage("MenuItemMover.2","Abbrechen"));
+		JButton btSave = new JButton(localeDelegate.getMessage("MenuItemMover.1","Speichern"));
+		JButton btCancel = new JButton(localeDelegate.getMessage("MenuItemMover.2","Abbrechen"));
 		actionsPanel.add(btSave);
 		actionsPanel.add(btCancel);
 		contentPanel.add(actionsPanel, BorderLayout.SOUTH);

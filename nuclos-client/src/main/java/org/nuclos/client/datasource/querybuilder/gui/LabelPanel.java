@@ -23,7 +23,7 @@ import java.awt.Rectangle;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 
 /**
  * @todo enter class description.
@@ -37,14 +37,14 @@ import org.nuclos.common2.CommonLocaleDelegate;
 public class LabelPanel extends JPanel {
 	
 	private String[] labels = {
-			CommonLocaleDelegate.getInstance().getMessage("LabelPanel.8","Tabelle"), 
-			CommonLocaleDelegate.getInstance().getMessage("LabelPanel.7","Spalte"), 
-			CommonLocaleDelegate.getInstance().getMessage("LabelPanel.1","Alias"), 
-			CommonLocaleDelegate.getInstance().getMessage("LabelPanel.5","Sichtbar"), 
-			CommonLocaleDelegate.getInstance().getMessage("LabelPanel.3","Gruppierung"), 
-			CommonLocaleDelegate.getInstance().getMessage("LabelPanel.6","Sortierung"), 
-			CommonLocaleDelegate.getInstance().getMessage("LabelPanel.2","Bedingung"), 
-			CommonLocaleDelegate.getInstance().getMessage("LabelPanel.4","oder")};
+			SpringLocaleDelegate.getInstance().getMessage("LabelPanel.8","Tabelle"), 
+			SpringLocaleDelegate.getInstance().getMessage("LabelPanel.7","Spalte"), 
+			SpringLocaleDelegate.getInstance().getMessage("LabelPanel.1","Alias"), 
+			SpringLocaleDelegate.getInstance().getMessage("LabelPanel.5","Sichtbar"), 
+			SpringLocaleDelegate.getInstance().getMessage("LabelPanel.3","Gruppierung"), 
+			SpringLocaleDelegate.getInstance().getMessage("LabelPanel.6","Sortierung"), 
+			SpringLocaleDelegate.getInstance().getMessage("LabelPanel.2","Bedingung"), 
+			SpringLocaleDelegate.getInstance().getMessage("LabelPanel.4","oder")};
 	
 	private ColumnSelectionTable table;
 	

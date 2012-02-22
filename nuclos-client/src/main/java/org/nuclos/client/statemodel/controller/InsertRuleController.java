@@ -66,7 +66,7 @@ public class InsertRuleController extends Controller {
 			}
 		});
 		final JDialog dlg = optionPane.createDialog(this.getParent(), 
-				getCommonLocaleDelegate().getMessage("InsertRuleController.1","Regelauswahl"));
+				getSpringLocaleDelegate().getMessage("InsertRuleController.1","Regelauswahl"));
 		dlg.setResizable(true);
 		dlg.setVisible(true);
 		boolean result = false;

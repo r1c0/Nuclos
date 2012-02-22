@@ -48,7 +48,7 @@ import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
 import org.nuclos.common.transport.vo.EntityFieldMetaDataTO;
 import org.nuclos.common.transport.vo.EntityMetaDataTO;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.LocaleInfo;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
@@ -90,7 +90,7 @@ public class MyGraphModel extends mxGraphModel {
 	
 	Map<EntityFieldMetaDataVO, List<TranslationVO>> mpTransation;
 	
-	private CommonLocaleDelegate cld;
+	private SpringLocaleDelegate localeDelegate;
 
 	public MyGraphModel() {
 	}
@@ -112,8 +112,8 @@ public class MyGraphModel extends mxGraphModel {
 	}
 	
 	@Autowired
-	void setCommonLocaleDelegate(CommonLocaleDelegate cld) {
-		this.cld = cld;
+	void setSpringLocaleDelegate(SpringLocaleDelegate cld) {
+		this.localeDelegate = cld;
 	}
 	
 	@Override
@@ -155,11 +155,11 @@ public class MyGraphModel extends mxGraphModel {
 						if(sEntity.length() == 0) {
 							boolean blnNotSet = true;
 							while(blnNotSet) {
-								sEntity = JOptionPane.showInputDialog(editPanel, cld.getMessage(
+								sEntity = JOptionPane.showInputDialog(editPanel, localeDelegate.getMessage(
 										"nuclos.entityrelation.editor.20", "Bitte geben Sie den Namen der neuen Entit\u00e4t an!"));
 								for(EntityMetaDataVO voMeta : MetaDataDelegate.getInstance().getAllEntities()) {
 									if(voMeta.getEntity().equals(sEntity)){
-										JOptionPane.showMessageDialog(editPanel, cld.getMessage(
+										JOptionPane.showMessageDialog(editPanel, localeDelegate.getMessage(
 												"nuclos.entityrelation.editor.19", "Entit\u00e4t schon vorhanden"));
 										blnNotSet = true;
 										break;
@@ -221,7 +221,7 @@ public class MyGraphModel extends mxGraphModel {
 	public JPopupMenu createRelationPopupMenu(final mxCell cell, boolean delete) {
 		
 		final JPopupMenu pop = new JPopupMenu();
-		JMenuItem i1 = new JMenuItem(cld.getMessage(
+		JMenuItem i1 = new JMenuItem(localeDelegate.getMessage(
 				"nuclos.entityrelation.editor.1", "Bezug zu Stammdaten"));
 		i1.addActionListener(new ActionListener() {
 			
@@ -248,7 +248,7 @@ public class MyGraphModel extends mxGraphModel {
 				double cellsDialog [][] = {{5, TableLayout.PREFERRED, 5}, {5, TableLayout.PREFERRED,5}};	
 				JDialog dia = new JDialog(mf);
 				dia.setLayout(new TableLayout(cellsDialog));
-				dia.setTitle(cld.getMessage(
+				dia.setTitle(localeDelegate.getMessage(
 						"nuclos.entityrelation.editor.10",  "Bezug zu Stammdaten bearbeiten"));
 				dia.setLocationRelativeTo(editPanel);
 				dia.add(panel, "1,1");
@@ -280,7 +280,7 @@ public class MyGraphModel extends mxGraphModel {
 			}
 		});
 		
-		final JMenuItem i2 = new JMenuItem(cld.getMessage(
+		final JMenuItem i2 = new JMenuItem(localeDelegate.getMessage(
 				"nuclos.entityrelation.editor.3", "Bezug zu Vorg\u00e4ngen (Unterformularbezug)"));
 		i2.addActionListener(new ActionListener() {
 			
@@ -303,7 +303,7 @@ public class MyGraphModel extends mxGraphModel {
 				String sFieldName = null;
 				boolean blnNotSet = true;
 				while(blnNotSet) {   
-					sFieldName = JOptionPane.showInputDialog(editPanel, cld.getMessage(
+					sFieldName = JOptionPane.showInputDialog(editPanel, localeDelegate.getMessage(
 							"nuclos.entityrelation.editor.1","Bitte geben Sie den Namen des Feldes an!"));
 					if(sFieldName == null || sFieldName.length() < 1) {
 						MyGraphModel.this.remove(cell);					
@@ -357,7 +357,7 @@ public class MyGraphModel extends mxGraphModel {
 			}
 		});
 		
-		final JMenuItem i4 = new JMenuItem(cld.getMessage(
+		final JMenuItem i4 = new JMenuItem(localeDelegate.getMessage(
 				"nuclos.entityrelation.editor.5", "Arbeitsschritt"));
 		i4.addActionListener(new ActionListener() {
 			
@@ -426,7 +426,7 @@ public class MyGraphModel extends mxGraphModel {
 			}
 		});
 		
-		JMenuItem i5 = new JMenuItem(cld.getMessage(
+		JMenuItem i5 = new JMenuItem(localeDelegate.getMessage(
 				"nuclos.entityrelation.editor.12","Verbindung l\u00f6sen"));
 		i5.addActionListener(new ActionListener() {
 			
@@ -453,7 +453,7 @@ public class MyGraphModel extends mxGraphModel {
 	protected JPopupMenu createPopupMenuEntity(final mxCell cell, boolean newCell) {
 		
 		JPopupMenu pop = new JPopupMenu();
-		JMenuItem i1 = new JMenuItem(cld.getMessage(
+		JMenuItem i1 = new JMenuItem(localeDelegate.getMessage(
 				"nuclos.entityrelation.editor.14", "Symbol l\u00f6schen"));
 		i1.addActionListener(new ActionListener() {
 			
@@ -471,7 +471,7 @@ public class MyGraphModel extends mxGraphModel {
 			return pop;
 		}
 		
-		JMenuItem iWizard = new JMenuItem(cld.getMessage(
+		JMenuItem iWizard = new JMenuItem(localeDelegate.getMessage(
 				"nuclos.entityrelation.editor.15","Wizard \u00f6ffnen"));
 		iWizard.addActionListener(new ActionListener() {
 			
@@ -494,7 +494,7 @@ public class MyGraphModel extends mxGraphModel {
 			pop.add(iWizard);			
 		}
 		else {			
-			JMenuItem iNew = new JMenuItem(cld.getMessage(
+			JMenuItem iNew = new JMenuItem(localeDelegate.getMessage(
 					"nuclos.entityrelation.editor.16","neue Entit\u00e4t"));
 			iNew.addActionListener(new ActionListener() {
 				
@@ -515,7 +515,7 @@ public class MyGraphModel extends mxGraphModel {
 						}
 					}
 					else {
-						cell.setValue(cld.getMessage(
+						cell.setValue(localeDelegate.getMessage(
 								"nuclos.entityrelation.editor.16","neue Entit\u00e4t"));
 						mxGraph graph = graphComponent.getGraph();
 						graph.refresh();

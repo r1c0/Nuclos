@@ -312,7 +312,7 @@ public class DynamicAttributeVO implements Serializable, Cloneable {
 	private static String getDisplayableFieldName(AttributeCVO attrcvo) {
 		//"\"" + attrcvo.getLabel() + "\" (Attributname: \"" + attrcvo.getName() + "\")";
 		return StringUtils.getParameterizedExceptionMessage("dynamicattrvo.invalid.field.value.7", attrcvo.getLabel(), attrcvo.getName());
-		//CommonLocaleDelegate.getMessage("DynamicAttributeVO.1","\"{0}\" (Attributname: \"{1}\")", CommonLocaleDelegate.getLabelFromAttributeCVO(attrcvo), attrcvo.getName());
+		//SpringLocaleDelegate.getMessage("DynamicAttributeVO.1","\"{0}\" (Attributname: \"{1}\")", CommonLocaleDelegate.getLabelFromAttributeCVO(attrcvo), attrcvo.getName());
 	}
 
 	/**

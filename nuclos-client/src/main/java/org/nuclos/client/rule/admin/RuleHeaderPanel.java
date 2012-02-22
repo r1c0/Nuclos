@@ -20,7 +20,7 @@ import org.nuclos.client.ui.collect.CollectableComponentsProvider;
 import org.nuclos.client.ui.collect.DefaultCollectableComponentsProvider;
 import org.nuclos.client.ui.collect.component.CollectableCheckBox;
 import org.nuclos.client.ui.collect.component.CollectableTextField;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -51,15 +51,15 @@ public class RuleHeaderPanel extends JPanel {
 
 	public RuleHeaderPanel() {
 		super(new GridBagLayout());
-		final CommonLocaleDelegate cld = CommonLocaleDelegate.getInstance();
+		final SpringLocaleDelegate localeDelegate = SpringLocaleDelegate.getInstance();
 		this.setBorder(BorderFactory.createEmptyBorder(5, 5, 0, 5));
 
 		final GridBagConstraints gbc = new GridBagConstraints();
 		gbc.anchor = GridBagConstraints.WEST;
 		gbc.insets.bottom = 5;
 		gbc.insets.right = 5;
-		clcttfName.setLabelText(cld.getMessage("RuleHeaderPanel.4","Name"));
-		clcttfName.setToolTipText(cld.getMessage("RuleHeaderPanel.5","Name der Regel"));
+		clcttfName.setLabelText(localeDelegate.getMessage("RuleHeaderPanel.4","Name"));
+		clcttfName.setToolTipText(localeDelegate.getMessage("RuleHeaderPanel.5","Name der Regel"));
 		gbc.weightx = 0.0;
 		this.add(this.clcttfName.getJLabel(), gbc);
 
@@ -72,8 +72,8 @@ public class RuleHeaderPanel extends JPanel {
 		gbc.gridwidth = 1;
 		gbc.weightx = 0.0;
 		gbc.insets.right = 5;
-		clcttfDescription.setLabelText(cld.getMessage("RuleHeaderPanel.2","Beschreibung"));
-		clcttfDescription.setToolTipText(cld.getMessage("RuleHeaderPanel.3","Beschreibung der Regel"));
+		clcttfDescription.setLabelText(localeDelegate.getMessage("RuleHeaderPanel.2","Beschreibung"));
+		clcttfDescription.setToolTipText(localeDelegate.getMessage("RuleHeaderPanel.3","Beschreibung der Regel"));
 		this.add(this.clcttfDescription.getJLabel(), gbc);
 
 		gbc.weightx = 1.0;
@@ -84,14 +84,14 @@ public class RuleHeaderPanel extends JPanel {
 
 		gbc.gridwidth = 1;
 		gbc.weightx = 0.0;
-		clctchkbxActive.setLabelText(cld.getMessage("RuleHeaderPanel.1","Aktiv?"));
-		clctchkbxActive.setToolTipText(cld.getMessage("RuleHeaderPanel.6","Steuert, ob die Regel ausgef\u00fchrt wird"));
+		clctchkbxActive.setLabelText(localeDelegate.getMessage("RuleHeaderPanel.1","Aktiv?"));
+		clctchkbxActive.setToolTipText(localeDelegate.getMessage("RuleHeaderPanel.6","Steuert, ob die Regel ausgef\u00fchrt wird"));
 		this.add(this.clctchkbxActive.getJCheckBox(), gbc);
 		
 		gbc.gridwidth = 1;
 		gbc.weightx = 0.0;
-		clctchkbxDebug.setLabelText(cld.getMessage("RuleHeaderPanel.7","Debug?"));
-		clctchkbxDebug.setToolTipText(cld.getMessage("RuleHeaderPanel.8","Steuert, ob Debugausgaben ausgegeben werden"));
+		clctchkbxDebug.setLabelText(localeDelegate.getMessage("RuleHeaderPanel.7","Debug?"));
+		clctchkbxDebug.setToolTipText(localeDelegate.getMessage("RuleHeaderPanel.8","Steuert, ob Debugausgaben ausgegeben werden"));
 		this.add(this.clctchkbxDebug.getJCheckBox(), gbc);
 	}
 

@@ -57,7 +57,7 @@ public abstract class AbstractSearchResultTreeNode extends AbstractTreeNode<Obje
 
 	@Override
 	public String getLabel() {
-		return getCommonLocaleDelegate().getMessage("GenericObjectCollectController.93","Suchergebnis ({0})", this.getFilterName()); 
+		return getSpringLocaleDelegate().getMessage("GenericObjectCollectController.93","Suchergebnis ({0})", this.getFilterName()); 
 		//MessageFormat.format(locale.getResourceById(locale.getUserLocaleId(), "searchresult.treenode.label"), this.getFilterName());
 		//"Suchergebnis (" + this.getFilterName() + ')';
 	}

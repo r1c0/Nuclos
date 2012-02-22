@@ -85,45 +85,45 @@ public class RuleNode extends AbstractRuleTreeNode {
 
 			final List<StateModelNode> transitionNodes = createTransitionNodes();
 			if (transitionNodes != null && transitionNodes.size() > 0) {
-				subNodeList.add(new DirectoryRuleNode(false, getCommonLocaleDelegate().getMessage(
+				subNodeList.add(new DirectoryRuleNode(false, getSpringLocaleDelegate().getMessage(
 						"RuleNode.11","Status\u00fcberg\u00e4nge"), 
-						getCommonLocaleDelegate().getMessage("RuleNode.12","Status\u00fcberg\u00e4nge"), transitionNodes, true));
+						getSpringLocaleDelegate().getMessage("RuleNode.12","Status\u00fcberg\u00e4nge"), transitionNodes, true));
 			}
 
 			final List<RuleGenerationNode> generationNodes = createGenerationNodes();
 			if (generationNodes != null && generationNodes.size() > 0) {
-				subNodeList.add(new DirectoryRuleNode(false, getCommonLocaleDelegate().getMessage("RuleNode.6","Objektgenerierung"), 
-						getCommonLocaleDelegate().getMessage("RuleNode.7","Objektgenerierung"), generationNodes, true));
+				subNodeList.add(new DirectoryRuleNode(false, getSpringLocaleDelegate().getMessage("RuleNode.6","Objektgenerierung"), 
+						getSpringLocaleDelegate().getMessage("RuleNode.7","Objektgenerierung"), generationNodes, true));
 			}
 
 			final List<EntityRuleNode> saveEntityNodes = createEventEntityRulesNode(RuleTreeModel.SAVE_EVENT_NAME);
 			if (saveEntityNodes != null && saveEntityNodes.size() > 0) {
-				subNodeList.add(new DirectoryRuleNode(false, getCommonLocaleDelegate().getMessage("RuleNode.9","Speichern pro Entit\u00e4t"), 
-						getCommonLocaleDelegate().getMessage("RuleNode.10","Speichern pro Entit\u00e4t"), saveEntityNodes, true));
+				subNodeList.add(new DirectoryRuleNode(false, getSpringLocaleDelegate().getMessage("RuleNode.9","Speichern pro Entit\u00e4t"), 
+						getSpringLocaleDelegate().getMessage("RuleNode.10","Speichern pro Entit\u00e4t"), saveEntityNodes, true));
 			}
 
 			final List<EntityRuleNode> deleteEntityNodes = createEventEntityRulesNode(RuleTreeModel.DELETE_EVENT_NAME);
 			if (deleteEntityNodes != null && deleteEntityNodes.size() > 0) {
-				subNodeList.add(new DirectoryRuleNode(false, getCommonLocaleDelegate().getMessage("RuleNode.4","L\u00f6schen pro Entit\u00e4t"), 
-						getCommonLocaleDelegate().getMessage("RuleNode.5","L\u00f6schen pro Entit\u00e4t"), deleteEntityNodes, true));
+				subNodeList.add(new DirectoryRuleNode(false, getSpringLocaleDelegate().getMessage("RuleNode.4","L\u00f6schen pro Entit\u00e4t"), 
+						getSpringLocaleDelegate().getMessage("RuleNode.5","L\u00f6schen pro Entit\u00e4t"), deleteEntityNodes, true));
 			}
 
 			final List<EntityRuleNode> userEventEntityNodes = createEventEntityRulesNode(RuleTreeModel.USER_EVENT_NAME);
 			if (userEventEntityNodes != null && userEventEntityNodes.size() > 0) {
-				subNodeList.add(new DirectoryRuleNode(false, getCommonLocaleDelegate().getMessage("RuleNode.1","Benutzeraktion pro Entit\u00e4t"), 
-						getCommonLocaleDelegate().getMessage("RuleNode.2","Entit\u00e4ten in denen der Benutzer diese Regel manuell starten kann"), userEventEntityNodes, true));
+				subNodeList.add(new DirectoryRuleNode(false, getSpringLocaleDelegate().getMessage("RuleNode.1","Benutzeraktion pro Entit\u00e4t"), 
+						getSpringLocaleDelegate().getMessage("RuleNode.2","Entit\u00e4ten in denen der Benutzer diese Regel manuell starten kann"), userEventEntityNodes, true));
 			}
 
 			final Collection<RuleEventUsageVO> collTimelimit = RuleDelegate.getInstance().getByEventAndRule(RuleTreeModel.FRIST_EVENT_NAME, this.ruleVo.getId());
 			if (collTimelimit != null && collTimelimit.size() > 0) {
-				subNodeList.add(new TimelimitNode(getCommonLocaleDelegate().getMessage("RuleNode.3","Fristen"), 
-						getCommonLocaleDelegate().getMessage("RuleNode.8","Regeln die t\u00e4glich vom System ausgef\u00fchrt werden"), false));
+				subNodeList.add(new TimelimitNode(getSpringLocaleDelegate().getMessage("RuleNode.3","Fristen"), 
+						getSpringLocaleDelegate().getMessage("RuleNode.8","Regeln die t\u00e4glich vom System ausgef\u00fchrt werden"), false));
 			}
 
 			final List<CodeVO> codes = CodeDelegate.getInstance().getAll();
 			if (codes != null && codes.size() > 0) {
-				subNodeList.add(new LibraryTreeNode(getCommonLocaleDelegate().getText("treenode.rules.library.label"), 
-						getCommonLocaleDelegate().getText("treenode.rules.library.description")));
+				subNodeList.add(new LibraryTreeNode(getSpringLocaleDelegate().getText("treenode.rules.library.label"), 
+						getSpringLocaleDelegate().getText("treenode.rules.library.description")));
 			}
 			setSubNodes(subNodeList);
 		}

@@ -29,7 +29,7 @@ import org.nuclos.client.main.Main;
 import org.nuclos.client.main.mainframe.workspace.WorkspaceFrame;
 import org.nuclos.client.synthetica.NuclosThemeSettings;
 import org.nuclos.client.ui.CommonJFrame;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 
 public class ExternalFrame extends CommonJFrame implements WorkspaceFrame{
 
@@ -51,7 +51,7 @@ public class ExternalFrame extends CommonJFrame implements WorkspaceFrame{
 		contentpane.add(pnlDesktop, BorderLayout.CENTER);
 		
 		setIconImage(NuclosIcons.getInstance().getFrameIcon().getImage());
-		setTitle("Nuclos " + CommonLocaleDelegate.getInstance().getMessage("ExternalFrame.Title","Erweiterungsfenster {0}",number));
+		setTitle("Nuclos " + SpringLocaleDelegate.getInstance().getMessage("ExternalFrame.Title","Erweiterungsfenster {0}",number));
 		Main.getInstance().getMainFrame().setupLiveSearchKey(this);
 	}
 	

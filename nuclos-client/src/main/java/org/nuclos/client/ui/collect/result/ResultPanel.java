@@ -75,7 +75,7 @@ import org.nuclos.common.WorkspaceDescription.EntityPreferences;
 import org.nuclos.common.collect.collectable.Collectable;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
 import org.nuclos.common.collect.collectable.CollectableUtils;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 
 /**
  * <br>Result panel for collecting data
@@ -90,7 +90,7 @@ public class ResultPanel<Clct extends Collectable> extends JPanel {
 
 	private final CollectPanelIndicator cpi = new CollectPanelIndicator(CollectPanel.TAB_RESULT);
 	
-	private final CommonLocaleDelegate cld = CommonLocaleDelegate.getInstance();
+	private final SpringLocaleDelegate localeDelegate = SpringLocaleDelegate.getInstance();
 
 	/**
 	 * the toolbar.
@@ -99,7 +99,7 @@ public class ResultPanel<Clct extends Collectable> extends JPanel {
 
 	private int popbtnExtraIndex = -1;
 
-	private final PopupButton popbtnExtra = new PopupButton(CommonLocaleDelegate.getInstance().getMessage("PopupButton.Extras","Extras"));
+	private final PopupButton popbtnExtra = new PopupButton(SpringLocaleDelegate.getInstance().getMessage("PopupButton.Extras","Extras"));
 
 	/**
 	 * Button: "Enter New mode"
@@ -171,15 +171,15 @@ public class ResultPanel<Clct extends Collectable> extends JPanel {
 	 * TODO: make private.
 	 */
 	public final JPopupMenu popupmenuRow = new JPopupMenu();
-	public final JMenuItem miPopupEdit = new JMenuItem(cld.getMessage("ResultPanel.3","Bearbeiten"));
-	public final JMenuItem miPopupClone = new JMenuItem(cld.getMessage("ResultPanel.7","Klonen"));
-	public final JMenuItem miPopupDelete = new JMenuItem(cld.getMessage("ResultPanel.8","L\u00f6schen..."));
-	public final JMenuItem miPopupDefineAsNewSearchResult = new JMenuItem(cld.getMessage("ResultPanel.1","Als neues Suchergebnis"));
+	public final JMenuItem miPopupEdit = new JMenuItem(localeDelegate.getMessage("ResultPanel.3","Bearbeiten"));
+	public final JMenuItem miPopupClone = new JMenuItem(localeDelegate.getMessage("ResultPanel.7","Klonen"));
+	public final JMenuItem miPopupDelete = new JMenuItem(localeDelegate.getMessage("ResultPanel.8","L\u00f6schen..."));
+	public final JMenuItem miPopupDefineAsNewSearchResult = new JMenuItem(localeDelegate.getMessage("ResultPanel.1","Als neues Suchergebnis"));
 	public final JMenuItem miPopupOpenInNewTab = new JMenuItem();
 	public final JMenuItem miPopupBookmark = new JMenuItem();
-	public final JMenuItem miPopupCopyCells = new JMenuItem(cld.getMessage("ResultPanel.13","Kopiere markierte Zellen"));
-	public final JMenuItem miPopupCopyRows = new JMenuItem(cld.getMessage("ResultPanel.14","Kopiere markierte Zeilen"));
-	public final JMenu miGenerations = new JMenu(cld.getMessage("ResultPanel.12","Arbeitsschritte"));
+	public final JMenuItem miPopupCopyCells = new JMenuItem(localeDelegate.getMessage("ResultPanel.13","Kopiere markierte Zellen"));
+	public final JMenuItem miPopupCopyRows = new JMenuItem(localeDelegate.getMessage("ResultPanel.14","Kopiere markierte Zeilen"));
+	public final JMenu miGenerations = new JMenu(localeDelegate.getMessage("ResultPanel.12","Arbeitsschritte"));
 
 	public ResultPanel() {
 		super(new BorderLayout());
@@ -295,8 +295,8 @@ public class ResultPanel<Clct extends Collectable> extends JPanel {
 		this.btnEdit.setName("btnEdit");
 		this.btnEdit.setIcon(Icons.getInstance().getIconEdit16());
 		this.btnEdit.setEnabled(false);
-		this.btnEdit.setToolTipText(cld.getMessage("ResultPanel.2","Ausgew\u00e4hlte Datens\u00e4tze ansehen/bearbeiten"));
-		this.btnEdit.setText(cld.getMessage("ResultPanel.4","Bearbeiten"));
+		this.btnEdit.setToolTipText(localeDelegate.getMessage("ResultPanel.2","Ausgew\u00e4hlte Datens\u00e4tze ansehen/bearbeiten"));
+		this.btnEdit.setText(localeDelegate.getMessage("ResultPanel.4","Bearbeiten"));
 		this.btnEdit.putClientProperty("hideActionText", Boolean.TRUE);
 
 		this.btnDelete.setName("btnDelete");
@@ -311,11 +311,11 @@ public class ResultPanel<Clct extends Collectable> extends JPanel {
 
 		this.btnRefresh.setName("btnRefresh");
 		this.btnRefresh.setIcon(Icons.getInstance().getIconRefresh16());
-		this.btnRefresh.setToolTipText(cld.getMessage("ResultPanel.9","Liste aktualisieren (Erneut suchen)"));
+		this.btnRefresh.setToolTipText(localeDelegate.getMessage("ResultPanel.9","Liste aktualisieren (Erneut suchen)"));
 
 		this.btnSelectColumns.setName("btnSelectColumns");
 		this.btnSelectColumns.setIcon(Icons.getInstance().getIconSelectVisibleColumns16());
-		this.btnSelectColumns.setText(cld.getMessage("ResultPanel.11","Spalten ein-/ausblenden"));
+		this.btnSelectColumns.setText(localeDelegate.getMessage("ResultPanel.11","Spalten ein-/ausblenden"));
 
 		//result.addSeparator();
 		//result.add(btnExport);
@@ -326,11 +326,11 @@ public class ResultPanel<Clct extends Collectable> extends JPanel {
 
 		this.btnExport.setName("btnExport");
 		this.btnExport.setIcon(Icons.getInstance().getIconExport16());
-		this.btnExport.setText(cld.getMessage("ResultPanel.10","Selektierte Daten Exportieren"));
+		this.btnExport.setText(localeDelegate.getMessage("ResultPanel.10","Selektierte Daten Exportieren"));
 
 		this.btnImport.setName("btnImport");
 		this.btnImport.setIcon(Icons.getInstance().getIconImport16());
-		this.btnImport.setText(cld.getMessage("ResultPanel.5","Daten Importieren"));
+		this.btnImport.setText(localeDelegate.getMessage("ResultPanel.5","Daten Importieren"));
 	}
 
 	public void addPopupExtraSeparator() {

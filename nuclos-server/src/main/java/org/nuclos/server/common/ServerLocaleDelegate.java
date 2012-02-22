@@ -30,13 +30,13 @@ import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.LocaleInfo;
 import org.nuclos.server.common.ejb3.LocaleFacadeLocal;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 import org.springframework.beans.factory.annotation.Autowired;
 
-public class ServerLocaleDelegate implements CommonLocaleDelegate.LookupService {
+public class ServerLocaleDelegate implements SpringLocaleDelegate.LookupService {
 	
 	private static ServerLocaleDelegate INSTANCE;
 	

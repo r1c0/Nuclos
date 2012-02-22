@@ -51,7 +51,7 @@ import org.nuclos.common.PointerException;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
 import org.nuclos.common.collect.collectable.CollectableValueField;
 import org.nuclos.common.collect.exception.CollectableFieldFormatException;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.CommonRunnable;
 import org.nuclos.common2.IOUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
@@ -94,7 +94,7 @@ public abstract class CollectableDocumentFileChooserBase extends AbstractCollect
 	@Override
 	public JPopupMenu newJPopupMenu() {
 		final JPopupMenu popupmenu = new JPopupMenu();
-		final JMenuItem miOpen = new JMenuItem(CommonLocaleDelegate.getInstance().getMessage(
+		final JMenuItem miOpen = new JMenuItem(SpringLocaleDelegate.getInstance().getMessage(
 				"CollectableDocumentFileChooserBase.1","\u00d6ffnen"));
 		popupmenu.add(miOpen);
 		miOpen.addActionListener(new ActionListener() {
@@ -103,7 +103,7 @@ public abstract class CollectableDocumentFileChooserBase extends AbstractCollect
 				cmdOpenFile();
 			}
 		});
-		final JMenuItem miSaveAs = new JMenuItem(CommonLocaleDelegate.getInstance().getMessage(
+		final JMenuItem miSaveAs = new JMenuItem(SpringLocaleDelegate.getInstance().getMessage(
 				"CollectableDocumentFileChooserBase.2","Speichern unter..."));
 		popupmenu.add(miSaveAs);
 		miSaveAs.addActionListener(new ActionListener() {
@@ -112,7 +112,7 @@ public abstract class CollectableDocumentFileChooserBase extends AbstractCollect
 				cmdSaveAs();
 			}
 		});
-		final JMenuItem miReset = new JMenuItem(CommonLocaleDelegate.getInstance().getMessage(
+		final JMenuItem miReset = new JMenuItem(SpringLocaleDelegate.getInstance().getMessage(
 				"CollectableFileNameChooserBase.1","Zur\u00fccksetzen"));
 		popupmenu.add(miReset);
 		miReset.addActionListener(new ActionListener() {
@@ -165,7 +165,7 @@ public abstract class CollectableDocumentFileChooserBase extends AbstractCollect
 					if (file1 != null) {
 						final byte[] abContents = file1.getContents();
 						if (abContents == null) {
-							throw new NuclosBusinessException(CommonLocaleDelegate.getInstance().getMessage(
+							throw new NuclosBusinessException(SpringLocaleDelegate.getInstance().getMessage(
 									"CollectableDocumentFileChooserBase.3","Die Datei ist leer."));
 						}
 						String sFileName = file1.getFilename();
@@ -193,7 +193,7 @@ public abstract class CollectableDocumentFileChooserBase extends AbstractCollect
 				if (file1 != null) {
 					final byte[] abContents = file1.getContents();
 					if (abContents == null) {
-						throw new NuclosBusinessException(CommonLocaleDelegate.getInstance().getMessage(
+						throw new NuclosBusinessException(SpringLocaleDelegate.getInstance().getMessage(
 								"CollectableDocumentFileChooserBase.3","Die Datei ist leer."));
 					}
 
@@ -437,7 +437,7 @@ public abstract class CollectableDocumentFileChooserBase extends AbstractCollect
 		catch(PointerException e){
         	LOG.warn("visitDrop fails with PointerException: " + e);
 			Bubble bubble = new Bubble(CollectableDocumentFileChooserBase.this.getControlComponent(), 
-					CommonLocaleDelegate.getInstance().getMessage(
+					SpringLocaleDelegate.getInstance().getMessage(
 							"details.subform.controller.2", "Diese Funktion wird nur unter Microsoft Windows unterstützt!"),
 					5, Bubble.Position.NW);
 			bubble.setVisible(true);

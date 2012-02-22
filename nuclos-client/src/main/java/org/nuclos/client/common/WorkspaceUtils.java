@@ -67,7 +67,7 @@ import org.nuclos.common.entityobject.CollectableEOEntityProvider;
 import org.nuclos.common.genericobject.CollectableGenericObjectEntityField;
 import org.nuclos.common.masterdata.CollectableMasterDataEntity;
 import org.nuclos.common.masterdata.CollectableMasterDataForeignKeyEntityField;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
@@ -1089,7 +1089,7 @@ public class WorkspaceUtils {
 		} else {
 			final WorkspaceDescription assignedWd = getPrefsFacade().getWorkspace(assignedWorkspaceId).getWoDesc();
 			if (getPrefsFacade().isWorkspaceStructureChanged(assignedWorkspaceId, MainFrame.getWorkspace().getId())) {
-				throw new CommonBusinessException(CommonLocaleDelegate.getInstance().getMessage(
+				throw new CommonBusinessException(SpringLocaleDelegate.getInstance().getMessage(
 						"Desktop.not.restoreable", "Desktop kann nicht zurückgesetzt werden. Die Struktur der Vorlage entspricht nicht der aktuellen Arbeitsumgebung."));
 			} else {
 				// find tabbed in current workspace...

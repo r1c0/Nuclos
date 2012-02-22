@@ -34,7 +34,7 @@ import org.nuclos.client.ui.model.MutableListModel;
 import org.nuclos.client.ui.renderer.TopTableCellRendererDelegate;
 import org.nuclos.client.ui.table.TableUtils;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 
 /*
  *  TODO: For generification: is this class always used for CollectableEntityField?
@@ -52,15 +52,15 @@ public class SelectFixedColumnsPanel extends DefaultSelectObjectsPanel<Collectab
 	
 	public SelectFixedColumnsPanel(JComponent header) {
 		super(header);
-		final CommonLocaleDelegate cld = CommonLocaleDelegate.getInstance();
+		final SpringLocaleDelegate localeDelegate = SpringLocaleDelegate.getInstance();
 		
-		this.labAvailableColumns.setText(cld.getMessage("SelectFixedColumnsController.8","Verf\u00fcgbare Spalten"));
-		this.labSelectedColumns.setText(cld.getMessage("SelectFixedColumnsController.1","Ausgew\u00e4hlte Spalten"));
+		this.labAvailableColumns.setText(localeDelegate.getMessage("SelectFixedColumnsController.8","Verf\u00fcgbare Spalten"));
+		this.labSelectedColumns.setText(localeDelegate.getMessage("SelectFixedColumnsController.1","Ausgew\u00e4hlte Spalten"));
 
-		this.btnLeft.setToolTipText(cld.getMessage("SelectFixedColumnsController.5","Markierte Spalte(n) nicht anzeigen"));
-		this.btnRight.setToolTipText(cld.getMessage("SelectFixedColumnsController.4","Markierte Spalte(n) anzeigen"));
-		this.btnUp.setToolTipText(cld.getMessage("SelectFixedColumnsController.6","Markierte Spalte nach oben verschieben"));
-		this.btnDown.setToolTipText(cld.getMessage("SelectFixedColumnsController.7","Markierte Spalte nach unten verschieben"));
+		this.btnLeft.setToolTipText(localeDelegate.getMessage("SelectFixedColumnsController.5","Markierte Spalte(n) nicht anzeigen"));
+		this.btnRight.setToolTipText(localeDelegate.getMessage("SelectFixedColumnsController.4","Markierte Spalte(n) anzeigen"));
+		this.btnUp.setToolTipText(localeDelegate.getMessage("SelectFixedColumnsController.6","Markierte Spalte nach oben verschieben"));
+		this.btnDown.setToolTipText(localeDelegate.getMessage("SelectFixedColumnsController.7","Markierte Spalte nach unten verschieben"));
 
 		this.btnUp.setVisible(true);
 		this.btnDown.setVisible(true);

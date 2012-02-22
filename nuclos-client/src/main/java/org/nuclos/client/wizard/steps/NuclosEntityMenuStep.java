@@ -168,8 +168,8 @@ public class NuclosEntityMenuStep extends NuclosEntityAbstractStep {
 		try {
 			subformdata = subFormController.getCollectables(true, true, true);
 		} catch (CommonValidationException e1) {
-			JOptionPane.showMessageDialog(this, cld.getMessageFromResource(e1.getMessage()),
-	    			cld.getMessage("wizard.step.menu.error.title", "Achtung!"), 
+			JOptionPane.showMessageDialog(this, localeDelegate.getMessageFromResource(e1.getMessage()),
+	    			localeDelegate.getMessage("wizard.step.menu.error.title", "Achtung!"), 
 	    			JOptionPane.OK_OPTION);
  	        throw new InvalidStateException();
 		}
@@ -195,8 +195,8 @@ public class NuclosEntityMenuStep extends NuclosEntityAbstractStep {
 
 			for (LocaleInfo li : LocaleDelegate.getInstance().getAllLocales(false)) {
 				String fieldname = "menupath_" + li.getTag();
-				String label = getCommonLocaleDelegate().getMessage("EntityMenuCollectableEntity.translationfield.label", "Menu path ({0})", li.title);
-				String description = getCommonLocaleDelegate().getMessage("EntityMenuCollectableEntity.translationfield.description", "Menu path ({0}). Use \\ to create submenus.", li.title);
+				String label = getSpringLocaleDelegate().getMessage("EntityMenuCollectableEntity.translationfield.label", "Menu path ({0})", li.title);
+				String description = getSpringLocaleDelegate().getMessage("EntityMenuCollectableEntity.translationfield.description", "Menu path ({0}). Use \\ to create submenus.", li.title);
 				DefaultCollectableEntityField field = new DefaultCollectableEntityField(fieldname, String.class, label,
 						description, null, null, false, CollectableField.TYPE_VALUEFIELD, null, null, NuclosEntity.ENTITYMENU.getEntityName());
 				field.setCollectableEntity(this);

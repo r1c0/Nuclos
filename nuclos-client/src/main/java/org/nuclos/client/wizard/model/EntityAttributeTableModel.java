@@ -26,7 +26,7 @@ import java.util.Map;
 import javax.swing.table.AbstractTableModel;
 
 import org.nuclos.common.TranslationVO;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.StringUtils;
 
 public class EntityAttributeTableModel extends AbstractTableModel {
@@ -185,26 +185,26 @@ public class EntityAttributeTableModel extends AbstractTableModel {
 
 	@Override
 	public String getColumnName(int column) {
-		final CommonLocaleDelegate cld = CommonLocaleDelegate.getInstance();
+		final SpringLocaleDelegate localeDelegate = SpringLocaleDelegate.getInstance();
 		switch (column) {
 		case 0:
-			return cld.getMessage("wizard.step.attributeproperties.1", "Anzeigename");
+			return localeDelegate.getMessage("wizard.step.attributeproperties.1", "Anzeigename");
 		case 1:
-			return cld.getMessage("wizard.step.attributeproperties.2", "Beschreibung");
+			return localeDelegate.getMessage("wizard.step.attributeproperties.2", "Beschreibung");
 		case 2:
-			return cld.getMessage("wizard.step.attributeproperties.3", "Datentyp");		
+			return localeDelegate.getMessage("wizard.step.attributeproperties.3", "Datentyp");		
 		case 3:
-			return cld.getMessage("wizard.datatype.3", "Feldbreite");
+			return localeDelegate.getMessage("wizard.datatype.3", "Feldbreite");
 		case 4:
-			return cld.getMessage("wizard.datatype.4", "Nachkommastellen");
+			return localeDelegate.getMessage("wizard.datatype.4", "Nachkommastellen");
 		case 5:
-			return cld.getMessage("wizard.step.attributeproperties.7", "Eindeutig");
+			return localeDelegate.getMessage("wizard.step.attributeproperties.7", "Eindeutig");
 		case 6:
-			return cld.getMessage("wizard.step.attributeproperties.8", "Logbuch");
+			return localeDelegate.getMessage("wizard.step.attributeproperties.8", "Logbuch");
 		case 7:
-			return cld.getMessage("wizard.step.attributeproperties.9", "Pflichtfeld");
+			return localeDelegate.getMessage("wizard.step.attributeproperties.9", "Pflichtfeld");
 		case 8:
-			return cld.getMessage("wizard.step.attributeproperties.10", "Feldname");
+			return localeDelegate.getMessage("wizard.step.attributeproperties.10", "Feldname");
 		case 9:
 			return "Attributegruppe"; //getMessage("wizard.step.attributeproperties.10", "Attributegruppe");
 

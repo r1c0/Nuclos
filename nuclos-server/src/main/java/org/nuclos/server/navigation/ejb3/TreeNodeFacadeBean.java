@@ -51,7 +51,7 @@ import org.nuclos.common.dal.vo.EntityObjectVO;
 import org.nuclos.common.dal.vo.SystemFields;
 import org.nuclos.common.dblayer.JoinType;
 import org.nuclos.common.security.Permission;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.IdUtils;
 import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.StringUtils;
@@ -452,7 +452,7 @@ public class TreeNodeFacadeBean extends NuclosFacadeBean implements TreeNodeFaca
 		query.where(builder.equal(t.baseColumn("STRRELATIONTYPE", String.class), relationType));
 		String resourceId = CollectionUtils.getFirst(dataBaseHelper.getDbAccess().executeQuery(query));
 		if (resourceId != null) {
-			CommonLocaleDelegate.getInstance().getMessage(resourceId, relationType);
+			SpringLocaleDelegate.getInstance().getMessage(resourceId, relationType);
 		}
 		return null;
 	}

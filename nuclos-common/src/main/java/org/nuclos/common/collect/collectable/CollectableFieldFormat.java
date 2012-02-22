@@ -37,7 +37,7 @@ import org.nuclos.common.NuclosPassword;
 import org.nuclos.common.ParameterProvider;
 import org.nuclos.common.SpringApplicationContextHolder;
 import org.nuclos.common.collect.exception.CollectableFieldFormatException;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.DateTime;
 import org.nuclos.common2.ExtendedRelativeDate;
 import org.nuclos.common2.InternalTimestamp;
@@ -217,28 +217,28 @@ public abstract class CollectableFieldFormat {
 
 		@Override
 		public String format(String sOutputFormat, Object oValue) {
-			final CommonLocaleDelegate cld = CommonLocaleDelegate.getInstance();
+			final SpringLocaleDelegate localeDelegate = SpringLocaleDelegate.getInstance();
 			if (oValue == null) {
 				return null;
 			}
 			else if (oValue.toString().equalsIgnoreCase(RelativeDate.today().toString())) {
-				return cld.getMessage("datechooser.today.label", "Heute");
+				return localeDelegate.getMessage("datechooser.today.label", "Heute");
 			}
 			else if (oValue instanceof ExtendedRelativeDate) {
-				return ((ExtendedRelativeDate)oValue).getString(cld.getMessage("datechooser.today.label", "Heute"));
+				return ((ExtendedRelativeDate)oValue).getString(localeDelegate.getMessage("datechooser.today.label", "Heute"));
 			}
 			else if(sOutputFormat != null) {
 				SimpleDateFormat sdf = new SimpleDateFormat(sOutputFormat);
 				return sdf.format(oValue);
 			}
 			else {
-				return cld.getDateFormat().format(oValue);
+				return localeDelegate.getDateFormat().format(oValue);
 			}
 		}
 
 		@Override
 		public java.util.Date parse(String sInputFormat, String sText) throws CollectableFieldFormatException {
-			final CommonLocaleDelegate cld = CommonLocaleDelegate.getInstance();
+			final SpringLocaleDelegate localeDelegate = SpringLocaleDelegate.getInstance();
 			java.util.Date result = null;
 
 			if (StringUtils.looksEmpty(sText)) {
@@ -247,7 +247,7 @@ public abstract class CollectableFieldFormat {
 
 			sText = sText.toUpperCase();
 
-			String labelToday = cld.getMessage("datechooser.today.label", "Heute");
+			String labelToday = localeDelegate.getMessage("datechooser.today.label", "Heute");
 			if (sText.equalsIgnoreCase(RelativeDate.today().toString()) || sText.equalsIgnoreCase(labelToday)) {
 				result = RelativeDate.today();
 			}
@@ -270,7 +270,7 @@ public abstract class CollectableFieldFormat {
 				}
 				else {
 					throw new CollectableFieldFormatException(
-							cld.getMessage("CollectableFieldFormat.3","Invalid date: {0}", sText));
+							localeDelegate.getMessage("CollectableFieldFormat.3","Invalid date: {0}", sText));
 				}
 
 				sDateWithoutToday = sDateWithoutToday.substring(1).trim();
@@ -292,7 +292,7 @@ public abstract class CollectableFieldFormat {
 					}
 					else {
 						throw new CollectableFieldFormatException(
-								cld.getMessage("CollectableFieldFormat.4","Invalid date: {0}", sText));
+								localeDelegate.getMessage("CollectableFieldFormat.4","Invalid date: {0}", sText));
 					}
 
 					sDateWithoutToday = sDateWithoutToday.substring(0, sDateWithoutToday.length()-1).trim();
@@ -309,7 +309,7 @@ public abstract class CollectableFieldFormat {
 				}
 				catch (NumberFormatException e) {
 					throw new CollectableFieldFormatException(
-							cld.getMessage("CollectableFieldFormat.5","Invalid date: {0}", sText), e);
+							localeDelegate.getMessage("CollectableFieldFormat.5","Invalid date: {0}", sText), e);
 				}
 			}
 			else {
@@ -325,7 +325,7 @@ public abstract class CollectableFieldFormat {
 					}
 					if (result == null) {
 						try {
-							result = tryParse(((SimpleDateFormat) cld.getDateFormat()).toPattern(), sText);
+							result = tryParse(((SimpleDateFormat) localeDelegate.getDateFormat()).toPattern(), sText);
 						}
 						catch (ParseException ex) {
 							throw (pe != null) ? pe : ex;
@@ -333,7 +333,7 @@ public abstract class CollectableFieldFormat {
 					}
 				}
 				catch (ParseException ex) {
-						throw new CollectableFieldFormatException(cld.getMessage("CollectableFieldFormat.6","Invalid date: {0}", sText), ex);
+						throw new CollectableFieldFormatException(localeDelegate.getMessage("CollectableFieldFormat.6","Invalid date: {0}", sText), ex);
 				}
 			}
 			return result;
@@ -415,7 +415,7 @@ public abstract class CollectableFieldFormat {
 				throw new NuclosFatalException("Kein g\u00fcltiger Zeitstempel: " + oValue + " (" + oValue.getClass() + ").");
 			}
 			if (isFormatWithTime()) {
-				return CommonLocaleDelegate.getInstance().getDateTimeFormat().format(oValue);
+				return SpringLocaleDelegate.getInstance().getDateTimeFormat().format(oValue);
 			}
 			else {
 				return super.format(sOutputFormat, oValue);
@@ -428,7 +428,7 @@ public abstract class CollectableFieldFormat {
 				return null;
 			}
 			try {
-				return new InternalTimestamp(CommonLocaleDelegate.getInstance().getDateTimeFormat().parse(sText).getTime());
+				return new InternalTimestamp(SpringLocaleDelegate.getInstance().getDateTimeFormat().parse(sText).getTime());
 			}
 			catch (ParseException ex) {
 				return new InternalTimestamp(super.parse(sInputFormat, sText).getTime());
@@ -445,7 +445,7 @@ public abstract class CollectableFieldFormat {
 			}
 			NumberFormat nf;
 			if (sOutputFormat == null) {
-				nf = CommonLocaleDelegate.getInstance().getIntegerFormat();
+				nf = SpringLocaleDelegate.getInstance().getIntegerFormat();
 			}
 			else {
 				nf = new DecimalFormat(sOutputFormat);
@@ -458,7 +458,7 @@ public abstract class CollectableFieldFormat {
 			if (StringUtils.looksEmpty(sText)) {
 				return null;
 			}
-			final CommonLocaleDelegate cld = CommonLocaleDelegate.getInstance();
+			final SpringLocaleDelegate localeDelegate = SpringLocaleDelegate.getInstance();
 			try {
 				// try input format first
 				ParseException pe = null;
@@ -482,16 +482,16 @@ public abstract class CollectableFieldFormat {
 
 				if (new BigInteger(result.toString()).compareTo(new BigInteger(new Integer(Integer.MAX_VALUE).toString())) > 0) {
 					throw new CollectableFieldFormatException(
-							cld.getMessage("CollectableFieldFormat.13","Number too big: {0}", sText));
+							localeDelegate.getMessage("CollectableFieldFormat.13","Number too big: {0}", sText));
 				}
 				return result.intValue();
 			}
 			catch (ParseException ex) {
 				throw new CollectableFieldFormatException(
-						cld.getMessage("CollectableFieldFormat.11","Invalid integer number: {0}", sText), ex);
+						localeDelegate.getMessage("CollectableFieldFormat.11","Invalid integer number: {0}", sText), ex);
 			} catch (NumberFormatException ex) {
 				throw new CollectableFieldFormatException(
-						cld.getMessage("CollectableFieldFormat.12","Invalid integer number: {0}", sText), ex);
+						localeDelegate.getMessage("CollectableFieldFormat.12","Invalid integer number: {0}", sText), ex);
 			}
 
 		}
@@ -542,7 +542,7 @@ public abstract class CollectableFieldFormat {
 			}
 			catch (ParseException ex) {
 				throw new CollectableFieldFormatException(
-						CommonLocaleDelegate.getInstance().getMessage("CollectableFieldFormat.8","Invalid decimal number: {0}", sText), ex);
+						SpringLocaleDelegate.getInstance().getMessage("CollectableFieldFormat.8","Invalid decimal number: {0}", sText), ex);
 			}
 		}
 	}	// class CollectableDoubleFormat
@@ -553,8 +553,8 @@ public abstract class CollectableFieldFormat {
 		private final String labelNo;
 
 		public CollectableBooleanFormat() {
-			this.labelYes = CommonLocaleDelegate.getInstance().getTextFallback("CollectableBooleanFormat.yes", "yes") ;
-			this.labelNo = CommonLocaleDelegate.getInstance().getTextFallback("CollectableBooleanFormat.no", "no") ;
+			this.labelYes = SpringLocaleDelegate.getInstance().getTextFallback("CollectableBooleanFormat.yes", "yes") ;
+			this.labelNo = SpringLocaleDelegate.getInstance().getTextFallback("CollectableBooleanFormat.no", "no") ;
 		}
 
 		@Override
@@ -583,7 +583,7 @@ public abstract class CollectableFieldFormat {
 			}
 			else {
 				throw new CollectableFieldFormatException(
-					CommonLocaleDelegate.getInstance().getMessage("CollectableFieldFormat.2","Invalid boolean: {0} (expected \"{1}\" or \"{2}\").", sText, labelYes, labelNo));
+					SpringLocaleDelegate.getInstance().getMessage("CollectableFieldFormat.2","Invalid boolean: {0} (expected \"{1}\" or \"{2}\").", sText, labelYes, labelNo));
 			}
 		}
 	}	// class CollectableBooleanFormat
@@ -625,7 +625,7 @@ public abstract class CollectableFieldFormat {
 			}
 			catch (ParseException ex) {
 				throw new CollectableFieldFormatException(
-						CommonLocaleDelegate.getInstance().getMessage("CollectableFieldFormat.10","Invalid decimal number: {0}", sText), ex);
+						SpringLocaleDelegate.getInstance().getMessage("CollectableFieldFormat.10","Invalid decimal number: {0}", sText), ex);
 			}
 		}
 	}	// class CollectableBigDecimalFormat
@@ -639,7 +639,7 @@ public abstract class CollectableFieldFormat {
 		@Override
 		public Object parse(String sInputFormat, String sText) throws CollectableFieldFormatException {
 			throw new UnsupportedOperationException(
-					CommonLocaleDelegate.getInstance().getMessage("CollectableFieldFormat.1","DefaultFormat.parse not implemented."));
+					SpringLocaleDelegate.getInstance().getMessage("CollectableFieldFormat.1","DefaultFormat.parse not implemented."));
 		}
 	}
 }	// class CollectableFieldFormat

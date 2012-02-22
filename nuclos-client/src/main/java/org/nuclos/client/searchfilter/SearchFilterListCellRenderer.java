@@ -24,7 +24,7 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 
 import org.nuclos.client.main.Main;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.StringUtils;
 
 public class SearchFilterListCellRenderer extends DefaultListCellRenderer {
@@ -37,12 +37,12 @@ public class SearchFilterListCellRenderer extends DefaultListCellRenderer {
 			final SearchFilter filter = (SearchFilter) oValue;
 
 			if (result instanceof JLabel && !StringUtils.isNullOrEmpty(filter.getLabelResourceId())) {
-				((JLabel) result).setText(CommonLocaleDelegate.getInstance().getTextFallback(
+				((JLabel) result).setText(SpringLocaleDelegate.getInstance().getTextFallback(
 						filter.getLabelResourceId(), filter.getName()));
 			}
 
 			if (!StringUtils.isNullOrEmpty(filter.getDescriptionResourceId())) {
-				sToolTip = CommonLocaleDelegate.getInstance().getTextFallback(
+				sToolTip = SpringLocaleDelegate.getInstance().getTextFallback(
 						filter.getDescriptionResourceId(), filter.getDescriptionResourceId());
 			}
 			else {

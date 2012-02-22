@@ -24,7 +24,7 @@ import org.nuclos.common.collect.collectable.CollectableValueField;
 import org.nuclos.common.collect.collectable.CollectableValueIdField;
 import org.nuclos.common.collect.collectable.DefaultCollectableEntityField;
 import org.nuclos.common.collection.Transformer;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 
 import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.exception.CommonFatalException;
@@ -48,21 +48,21 @@ public class CollectableStateRoleSubForm extends AbstractCollectable{
 	public static class Entity extends AbstractCollectableEntity {
 		public Entity() {
 			super("stateroleentity", 
-					CommonLocaleDelegate.getInstance().getMessage("CollectableStateRoleSubForm.9","Unterformulare f\u00fcr statusabh\u00e4ngige Rechte"));
+					SpringLocaleDelegate.getInstance().getMessage("CollectableStateRoleSubForm.9","Unterformulare f\u00fcr statusabh\u00e4ngige Rechte"));
 			final String entity = "stateroleentity";
 			
 			this.addCollectableEntityField(new DefaultCollectableEntityField(FIELDNAME_ROLE, String.class, 
-					getCommonLocaleDelegate().getMessage("CollectableStateRoleSubForm.1","Benutzergruppe"),
-					getCommonLocaleDelegate().getMessage("CollectableStateRoleSubForm.6","\u00dcbergeordnete Benutzergruppe (Rolle)"), null, null, false, CollectableField.TYPE_VALUEIDFIELD, "staterole",
+					getSpringLocaleDelegate().getMessage("CollectableStateRoleSubForm.1","Benutzergruppe"),
+					getSpringLocaleDelegate().getMessage("CollectableStateRoleSubForm.6","\u00dcbergeordnete Benutzergruppe (Rolle)"), null, null, false, CollectableField.TYPE_VALUEIDFIELD, "staterole",
 					CollectableValueIdField.NULL, null, null, entity));
 			this.addCollectableEntityField(new DefaultCollectableEntityField(FIELDNAME_SUBFORM,	String.class, 
-					getCommonLocaleDelegate().getMessage("CollectableStateRoleSubForm.7","Unterformular"), 
-					getCommonLocaleDelegate().getMessage("CollectableStateRoleSubForm.8","Unterformular"), null, null, false, CollectableField.TYPE_VALUEFIELD, "entity",
+					getSpringLocaleDelegate().getMessage("CollectableStateRoleSubForm.7","Unterformular"), 
+					getSpringLocaleDelegate().getMessage("CollectableStateRoleSubForm.8","Unterformular"), null, null, false, CollectableField.TYPE_VALUEFIELD, "entity",
 					CollectableValueField.NULL, null, null, entity));
 			this.addCollectableEntityField(new DefaultCollectableEntityField(FIELDNAME_WRITEABLE,
 					Boolean.class, 
-					getCommonLocaleDelegate().getMessage("CollectableStateRoleSubForm.5","Schreibrecht?"), 
-					getCommonLocaleDelegate().getMessage("CollectableStateRoleSubForm.4","Schreiben erlaubt?"), 
+					getSpringLocaleDelegate().getMessage("CollectableStateRoleSubForm.5","Schreibrecht?"), 
+					getSpringLocaleDelegate().getMessage("CollectableStateRoleSubForm.4","Schreiben erlaubt?"), 
 					null, null, false, CollectableField.TYPE_VALUEFIELD, null, null, entity));
 		}
 	}
@@ -114,7 +114,7 @@ public class CollectableStateRoleSubForm extends AbstractCollectable{
 			result = new CollectableValueField(Boolean.valueOf(this.sfpvo.isWriteable()));
 		}
 		else {
-			throw new IllegalArgumentException(getCommonLocaleDelegate().getMessage(
+			throw new IllegalArgumentException(getSpringLocaleDelegate().getMessage(
 					"CollectableStateRoleSubForm.2","Feld nicht vorhanden: ") + sFieldName);
 		}
 		return result;
@@ -132,7 +132,7 @@ public class CollectableStateRoleSubForm extends AbstractCollectable{
 			this.sfpvo.setWriteable(((Boolean) clctfValue.getValue()).booleanValue());
 		}
 		else {
-			throw new IllegalArgumentException(getCommonLocaleDelegate().getMessage(
+			throw new IllegalArgumentException(getSpringLocaleDelegate().getMessage(
 					"CollectableStateRoleSubForm.3","Feld nicht vorhanden: ") + sFieldName);
 		}
 

@@ -25,7 +25,7 @@ import java.util.List;
 
 import javax.swing.table.AbstractTableModel;
 
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
@@ -38,7 +38,7 @@ public abstract class AbstractListTableModel<R> extends AbstractTableModel imple
 
 	private List<R> lstRows;
 	
-	private transient CommonLocaleDelegate cld;
+	private transient SpringLocaleDelegate localeDelegate;
 
 	public AbstractListTableModel() {
 		setRows(new ArrayList<R>());
@@ -57,18 +57,18 @@ public abstract class AbstractListTableModel<R> extends AbstractTableModel imple
 	 * Maven don't like this.
 	 * {@link org.springframework.beans.factory.aspectj.AbstractInterfaceDrivenDependencyInjectionAspect}.
 	public Object readResolve() throws ObjectStreamException {
-		setCommonLocaleDelegate(CommonLocaleDelegate.getInstance());
+		setSpringLocaleDelegate(SpringLocaleDelegate.getInstance());
 		return this;
 	}
 	 */
 	
 	@Autowired
-	void setCommonLocaleDelegate(CommonLocaleDelegate cld) {
-		this.cld = cld;
+	void setSpringLocaleDelegate(SpringLocaleDelegate cld) {
+		this.localeDelegate = cld;
 	}
 	
-	protected CommonLocaleDelegate getCommonLocaleDelegate() {
-		return cld;
+	protected SpringLocaleDelegate getSpringLocaleDelegate() {
+		return localeDelegate;
 	}
 
 	public void setRows(List<R> lstRows) {

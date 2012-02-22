@@ -31,7 +31,7 @@ import javax.swing.JToolBar;
 import javax.swing.ListSelectionModel;
 import javax.swing.table.TableCellRenderer;
 
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.client.masterdata.SortableRuleTableModel;
 import org.nuclos.client.ui.Icons;
 
@@ -60,18 +60,18 @@ public class GenerationRulesPanel extends JPanel {
 	}
 
 	private void init() {
-		final CommonLocaleDelegate cld = CommonLocaleDelegate.getInstance();
+		final SpringLocaleDelegate localeDelegate = SpringLocaleDelegate.getInstance();
 		btnAdd.setIcon(Icons.getInstance().getIconNew16());
-		btnAdd.setToolTipText(cld.getMessage("GenerationRulesPanel.1", "Neue Regel zuordnen"));
+		btnAdd.setToolTipText(localeDelegate.getMessage("GenerationRulesPanel.1", "Neue Regel zuordnen"));
 		btnAdd.setActionCommand("add");
 		btnDelete.setIcon(Icons.getInstance().getIconDelete16());
-		btnDelete.setToolTipText(cld.getMessage("GenerationRulesPanel.2", "Zuordnung aufheben"));
+		btnDelete.setToolTipText(localeDelegate.getMessage("GenerationRulesPanel.2", "Zuordnung aufheben"));
 		btnDelete.setActionCommand("remove");
 		btnUp.setIcon(Icons.getInstance().getIconUp16());
-		btnUp.setToolTipText(cld.getMessage("GenerationRulesPanel.3", "Nach oben verschieben"));
+		btnUp.setToolTipText(localeDelegate.getMessage("GenerationRulesPanel.3", "Nach oben verschieben"));
 		btnUp.setActionCommand("moveUp");
 		btnDown.setIcon(Icons.getInstance().getIconDown16());
-		btnDown.setToolTipText(cld.getMessage("GenerationRulesPanel.4", "Nach unten verschieben"));
+		btnDown.setToolTipText(localeDelegate.getMessage("GenerationRulesPanel.4", "Nach unten verschieben"));
 		btnDown.setActionCommand("moveDown");
 
 		toolbar.setFloatable(false);

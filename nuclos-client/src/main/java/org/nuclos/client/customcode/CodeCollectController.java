@@ -64,7 +64,7 @@ public class CodeCollectController extends MasterDataCollectController {
 	private RuleEditPanel pnlEdit;
 
 	private final Action actCheckRuleSource = new CommonAbstractAction(Icons.getInstance().getIconValidate16(), 
-			getCommonLocaleDelegate().getMessage("RuleCollectController.2", "Quelltext pr\u00fcfen")) {
+			getSpringLocaleDelegate().getMessage("RuleCollectController.2", "Quelltext pr\u00fcfen")) {
 		@Override
 		public void actionPerformed(ActionEvent ev) {
 			cmdCheckRuleSource();
@@ -129,7 +129,7 @@ public class CodeCollectController extends MasterDataCollectController {
 
 				try {
 					codeDelegate.compile(mdvo);
-					JOptionPane.showMessageDialog(CodeCollectController.this.getFrame(), getCommonLocaleDelegate().getMessage(
+					JOptionPane.showMessageDialog(CodeCollectController.this.getFrame(), getSpringLocaleDelegate().getMessage(
 							"CodeCollectController.compiledsuccessfully", "Quellcode erfolgreich kompiliert."));
 				}
 				catch (NuclosCompileException ex) {
@@ -224,7 +224,7 @@ public class CodeCollectController extends MasterDataCollectController {
 		catch (NuclosCompileException ex) {
 			pnlEdit.setMessages(ex.getErrorMessages());
 			throw new PointerException("RuleCollectController.4");
-			//throw new CommonBusinessException(CommonLocaleDelegate.getMessage("RuleCollectController.4", "Fehler beim \u00dcbersetzen des Quellcodes.\nBitte \u00fcberpr\u00fcfen Sie die Meldungen."));
+			//throw new CommonBusinessException(SpringLocaleDelegate.getMessage("RuleCollectController.4", "Fehler beim \u00dcbersetzen des Quellcodes.\nBitte \u00fcberpr\u00fcfen Sie die Meldungen."));
 		}
 		catch (CommonBusinessException ex) {
 			throw new PointerException(ex.getMessage(), ex);
@@ -247,7 +247,7 @@ public class CodeCollectController extends MasterDataCollectController {
 		catch (NuclosCompileException ex) {
 			pnlEdit.setMessages(ex.getErrorMessages());
 			throw new PointerException("RuleCollectController.4");
-			//throw new CommonBusinessException(CommonLocaleDelegate.getMessage("RuleCollectController.4", "Fehler beim \u00dcbersetzen des Quellcodes.\nBitte \u00fcberpr\u00fcfen Sie die Meldungen."));
+			//throw new CommonBusinessException(SpringLocaleDelegate.getMessage("RuleCollectController.4", "Fehler beim \u00dcbersetzen des Quellcodes.\nBitte \u00fcberpr\u00fcfen Sie die Meldungen."));
 		}
 		catch (CommonBusinessException ex) {
 			throw new PointerException(ex.getMessage(), ex);
@@ -285,7 +285,7 @@ public class CodeCollectController extends MasterDataCollectController {
 	@Override
 	protected CollectableMasterDataWithDependants newCollectableWithDefaultValues() {
 		CollectableMasterDataWithDependants result = super.newCollectable();
-		result.setField("name", new CollectableValueField(getCommonLocaleDelegate().getText(
+		result.setField("name", new CollectableValueField(getSpringLocaleDelegate().getText(
 				"CodeCollectController.fieldvalue.name.temp", " ")));
 		return result;
 	}

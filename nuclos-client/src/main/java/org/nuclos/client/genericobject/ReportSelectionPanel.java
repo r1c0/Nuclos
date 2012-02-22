@@ -31,7 +31,7 @@ import javax.swing.table.DefaultTableCellRenderer;
 
 import org.jdesktop.swingx.JXPanel;
 import org.nuclos.client.ui.table.TableUtils;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.server.report.valueobject.ReportOutputVO;
 import org.nuclos.server.report.valueobject.ReportVO;
 
@@ -49,10 +49,10 @@ public class ReportSelectionPanel extends JXPanel {
 	protected class ReportSelectionTableModel extends AbstractTableModel {
 
 		protected final String[] captions = {
-			CommonLocaleDelegate.getInstance().getMessage("ReportSelectionPanel.1", "Formular"),
-			CommonLocaleDelegate.getInstance().getMessage("R00011618", "Vorlage"),
-			CommonLocaleDelegate.getInstance().getMessage("ReportSelectionPanel.2", "Format"), 
-			CommonLocaleDelegate.getInstance().getMessage("ReportSelectionPanel.3", "Ausgabemedium")};
+			SpringLocaleDelegate.getInstance().getMessage("ReportSelectionPanel.1", "Formular"),
+			SpringLocaleDelegate.getInstance().getMessage("R00011618", "Vorlage"),
+			SpringLocaleDelegate.getInstance().getMessage("ReportSelectionPanel.2", "Format"), 
+			SpringLocaleDelegate.getInstance().getMessage("ReportSelectionPanel.3", "Ausgabemedium")};
 		
 		protected ArrayList<ReportEntry> lstReports = new ArrayList<ReportEntry>();
 
@@ -80,7 +80,7 @@ public class ReportSelectionPanel extends JXPanel {
 					case 3:
 						String sResult = "";
 						if (entry.getOutput() != null) {
-							sResult += CommonLocaleDelegate.getInstance().getText(entry.getOutput().getDestination());
+							sResult += SpringLocaleDelegate.getInstance().getText(entry.getOutput().getDestination());
 							if (entry.getOutput().getParameter() != null &&
 									entry.getOutput().getParameter().length() > 0) {
 								sResult += (" (" + entry.getOutput().getParameter() + ")");
@@ -141,7 +141,7 @@ public class ReportSelectionPanel extends JXPanel {
 	private ReportSelectionTableModel model = new ReportSelectionTableModel();
 	private JTable tblReports = new JTable(model);
 	private JScrollPane scrReports = new JScrollPane(tblReports);
-	private JCheckBox cbAttachReport = new JCheckBox(CommonLocaleDelegate.getInstance().getMessage(
+	private JCheckBox cbAttachReport = new JCheckBox(SpringLocaleDelegate.getInstance().getMessage(
 			"ReportSelectionPanel.4", "Dokument anh\u00e4ngen"));
 
 	public ReportSelectionPanel() {

@@ -47,7 +47,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 
 import org.nuclos.client.ui.Icons;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.LangUtils;
 
 
@@ -296,7 +296,7 @@ public class StateViewComponent extends JPanel {
 		final JPopupMenu popup = new JPopupMenu();
 
 		if (mpSubsequentStatesAction.size() > 0) {
-			JLabel lbl = new JLabel(CommonLocaleDelegate.getInstance().getResource(
+			JLabel lbl = new JLabel(SpringLocaleDelegate.getInstance().getResource(
 					"StateViewComponent.01", "M\u00f6gliche Statuswechsel:"));
 			lbl.setFont(lbl.getFont().deriveFont(Font.BOLD));
 			popup.add(lbl);

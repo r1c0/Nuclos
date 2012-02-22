@@ -33,7 +33,7 @@ import org.nuclos.client.statemodel.panels.TransitionRulesPanel;
 import org.nuclos.client.statemodel.shapes.StateTransition;
 import org.nuclos.client.ui.Errors;
 import org.nuclos.common.collection.Pair;
-import org.nuclos.common2.CommonLocaleDelegate;
+import org.nuclos.common2.SpringLocaleDelegate;
 
 /**
  * Controller for transition properties
@@ -127,7 +127,7 @@ public class TransitionPropertiesController {
 		try {
 			if (ev.getActionCommand().equals("add")) {
 				final InsertRuleController controller = new InsertRuleController(parent);
-				if (controller.run(CommonLocaleDelegate.getInstance().getMessage(
+				if (controller.run(SpringLocaleDelegate.getInstance().getMessage(
 						"TransitionPropertiesController.1","Liste der verf\u00fcgbaren Regeln"), pnlTransitionRules.getModel().getRules())) {
 					for (int i = 0; i < controller.getRulesPanel().getTblRules().getSelectedRowCount(); i++) {
 						parent.addRule(controller.getRulesPanel().getRow(controller.getRulesPanel().getTblRules().getSelectedRows()[i]));
@@ -199,7 +199,7 @@ public class TransitionPropertiesController {
 		try {
 			if (ev.getActionCommand().equals("add")) {
 				final InsertRoleController controller = new InsertRoleController(parent);
-				if (controller.run(CommonLocaleDelegate.getInstance().getMessage(
+				if (controller.run(SpringLocaleDelegate.getInstance().getMessage(
 						"TransitionPropertiesController.2","Verf\u00fcgbare Benutzergruppen"), model.getRoles())) {
 					for (int i = 0; i < controller.pnlRoles.getTblRoles().getSelectedRowCount(); i++) {
 						parent.addRole(controller.pnlRoles.getRow(controller.pnlRoles.getTblRoles().getSelectedRows()[i]));
