@@ -95,6 +95,10 @@ public class LiveSearchController implements LiveSearchSearchPaneListener, LiveS
 	private static final Logger LOG = Logger.getLogger(LiveSearchController.class);
 
 	private static final int MAX_RESULTS = 500;
+	
+	private static LiveSearchController INSTANCE;
+	
+	//
 
 	private JFrame                              parentFrame;
     private SearchComponent                     searchComponent;
@@ -118,6 +122,7 @@ public class LiveSearchController implements LiveSearchSearchPaneListener, LiveS
     private ResourceCache resourceCache;
 
     LiveSearchController() {
+    	INSTANCE = this;
 	}
     
     @Autowired
@@ -130,8 +135,11 @@ public class LiveSearchController implements LiveSearchSearchPaneListener, LiveS
     	this.parentFrame = parentFrame;
     }
     
-    @PostConstruct
-    void init() {
+    public static LiveSearchController getInstance() {
+    	return INSTANCE;
+    }
+    
+    public final void init() {
         // this.parentFrame = parentFrame;
         searchComponent = new SearchComponent();
         searchComponent.setMaximumSize(searchComponent.getPreferredSize());

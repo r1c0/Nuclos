@@ -124,6 +124,7 @@ import org.nuclos.common2.PreferencesUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.PreferencesException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
 
 /**
  * The "main frame" of the application. Contains as little control logic as possible.
@@ -263,8 +264,7 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 	}
 	 */
 	
-	@PostConstruct
-	void postConstruct() 
+	public final void postConstruct() 
 	{
 		ValidationLayerFactory.setCurrentPainter(clientParameterProvider.getValue(
 				ParameterProvider.KEY_CLIENT_VALIDATION_LAYER_PAINTER_NAME));
@@ -338,7 +338,7 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 		super.setTitle(ApplicationProperties.getInstance().getCurrentVersion().getAppName());
 	}
 
-	public void init(String sUserName, String sNucleusServerName) {
+	public final void init(String sUserName, String sNucleusServerName) {
 		this.setTitle(sUserName, sNucleusServerName);
 		setBackground(NuclosThemeSettings.BACKGROUND_ROOTPANE);
 		JPanel contentpane = (JPanel) getContentPane();

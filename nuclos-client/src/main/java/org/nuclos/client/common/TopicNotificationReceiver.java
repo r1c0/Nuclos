@@ -155,7 +155,7 @@ public class TopicNotificationReceiver {
 		}
 	}
 	
-	public synchronized void realSubscribe() {
+	public synchronized final void realSubscribe() {
 		deferredSubscribe = false;
 		for (TopicInfo i: infos) {
 			WeakReferenceMessageListener weakrefmsglistener = new WeakReferenceMessageListener(i);

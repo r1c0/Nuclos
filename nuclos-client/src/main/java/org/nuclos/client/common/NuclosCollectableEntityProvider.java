@@ -57,7 +57,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class NuclosCollectableEntityProvider implements CollectableEntityProvider {
 
-	private static CollectableEntityProvider INSTANCE;
+	private static NuclosCollectableEntityProvider INSTANCE;
 	
 	//
 
@@ -65,7 +65,7 @@ public class NuclosCollectableEntityProvider implements CollectableEntityProvide
 	
 	private AttributeCache attributeCache;
 
-	public static CollectableEntityProvider getInstance() {
+	public static NuclosCollectableEntityProvider getInstance() {
 		return INSTANCE;
 	}
 
@@ -73,8 +73,7 @@ public class NuclosCollectableEntityProvider implements CollectableEntityProvide
 		INSTANCE = this;
 	}
 	
-	@PostConstruct
-	void init() {
+	public final void init() {
 		attributeCache.fill();
 
 		this.mpSpecialEntities.put(CollectableRule.clcte.getName(), CollectableRule.clcte);

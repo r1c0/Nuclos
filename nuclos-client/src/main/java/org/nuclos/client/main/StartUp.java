@@ -42,10 +42,12 @@ import org.apache.log4j.helpers.LogLog;
 import org.nuclos.client.NuclosIcons;
 import org.nuclos.client.common.MetaDataClientProvider;
 import org.nuclos.client.common.NuclosCollectableComponentFactory;
+import org.nuclos.client.common.NuclosCollectableEntityProvider;
 import org.nuclos.client.common.TopicNotificationReceiver;
 import org.nuclos.client.common.prefs.NuclosPreferencesFactory;
 import org.nuclos.client.common.security.SecurityDelegate;
 import org.nuclos.client.genericobject.Modules;
+import org.nuclos.client.livesearch.LiveSearchController;
 import org.nuclos.client.login.LoginController;
 import org.nuclos.client.login.LoginEvent;
 import org.nuclos.client.login.LoginListener;
@@ -175,9 +177,8 @@ public class StartUp  {
 						// set Nuclos dock icon
 						macAppClass.getMethod("setDockIconImage", java.awt.Image.class).invoke(macAppObject, NuclosIcons.getInstance().getBigTransparentApplicationIcon512().getImage());
 					}
+					// really subscribe to the topics collected at startup time
 					TopicNotificationReceiver.getInstance().realSubscribe();
-					// ???
-					Main.getInstance().getMainFrame().init("", "");
 				}
 				catch (Exception e) {
 					LOG.fatal("Startup failed: " + e, e);
@@ -263,6 +264,15 @@ public class StartUp  {
 						@Override
                         public void run() {
 							try {
+								// LiveSearchController, NuclosCollectableEntityProvider and MainFrame
+								// need access to (locale) resources. This is the first place
+								// where we know the locale.
+								LiveSearchController.getInstance().init();
+								NuclosCollectableEntityProvider.getInstance().init();								
+								Main.getInstance().getMainFrame().postConstruct();
+								// ???
+								Main.getInstance().getMainFrame().init("", "");
+								
 								Modules.initialize();
 								MetaDataClientProvider.initialize();
 								setInitialLocaleBundle();
