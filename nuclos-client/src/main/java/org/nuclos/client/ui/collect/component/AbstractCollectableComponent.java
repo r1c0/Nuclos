@@ -1369,6 +1369,10 @@ public abstract class AbstractCollectableComponent
 			else {
 				bInsertEnabled = SecurityCache.getInstance().isWriteAllowedForMasterData(referencedEntity);
 			}
+
+			boolean blnEntityIsEditable = MetaDataClientProvider.getInstance().getEntity(referencedEntity).isEditable();
+			if (!blnEntityIsEditable)
+				bInsertEnabled = blnEntityIsEditable;
 		}
 		result.setEnabled(bInsertEnabled && getJComponent().isEnabled());
 
