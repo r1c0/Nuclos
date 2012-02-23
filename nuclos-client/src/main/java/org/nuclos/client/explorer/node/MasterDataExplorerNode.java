@@ -112,7 +112,7 @@ public class MasterDataExplorerNode<TN extends MasterDataTreeNode<Integer>> exte
 		if (lstActions.size() > 0) {
 			for (Iterator<GeneratorActionVO> iterator = lstActions.iterator(); iterator.hasNext();) {
 				GeneratorActionVO generatorActionVO = iterator.next();
-				result.add(new GeneratorAction(tree, generatorActionVO, new UsageCriteria(iModuleId, null)));
+				result.add(new GeneratorAction(tree, generatorActionVO, new UsageCriteria(iModuleId, null, null)));
 			}
 		}
 		return result;

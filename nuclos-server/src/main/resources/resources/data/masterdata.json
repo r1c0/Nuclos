@@ -6212,6 +6212,7 @@
       [
         "entity",
         "process",
+        "state",
         "searchScreen"
       ]
     ],
@@ -6259,6 +6260,22 @@
         "unique": false,
         "labelres": "nuclos.entityfield.layoutUsage.process.label",
         "descriptionres": "nuclos.entityfield.layoutUsage.process.description"
+      },
+      {
+        "name": "state",
+        "dbfield": "STRVALUE_T_MD_STATE",
+        "label": "Status",
+        "description": "Statusnumeral",
+        "foreignentity": "nuclos_state",
+        "datatype": "java.lang.String",
+        "datascale": 255,
+        "nullable": true,
+        "searchable": false,
+        "logbook": false,
+        "unique": false,
+		"foreignentityfield": "${numeral} ${name}",
+        "labelres": "nuclos.entityfield.layoutUsage.state.label",
+        "descriptionres": "nuclos.entityfield.layoutUsage.state.description"
       },
       {
         "name": "searchScreen",

@@ -1223,7 +1223,7 @@ public class XmlImportFacadeBean extends NuclosFacadeBean implements XmlImportFa
 	 * @return Process name
 	 */
 	private Integer getReferenecedStatusId(Integer iModuleId, Integer iProcessId, String status) {
-		UsageCriteria usagecriteria = new UsageCriteria(iModuleId, iProcessId);
+		UsageCriteria usagecriteria = new UsageCriteria(iModuleId, iProcessId, null);
 
 		Integer stateModelId = StateModelUsagesCache.getInstance().getStateUsages().getStateModel(usagecriteria);
 		Collection<StateVO> states = ServerServiceLocator.getInstance().getFacade(StateFacadeLocal.class).getStatesByModel(stateModelId);

@@ -344,7 +344,8 @@ public class GenericObjectVO extends NuclosValueObject implements Cloneable {
 	 */
 	public UsageCriteria getUsageCriteria(AttributeProvider attrprovider) {
 		return new UsageCriteria(this.getModuleId(),
-				this.getSystemAttributeValueId(NuclosEOField.PROCESS.getMetaData().getId().intValue()));
+				this.getSystemAttributeValueId(NuclosEOField.PROCESS.getMetaData().getId().intValue()),
+				this.getSystemAttributeValueId(NuclosEOField.STATE.getMetaData().getId().intValue()));
 	}
 
 	/**

@@ -772,7 +772,9 @@ public class GeneratorFacadeBean extends NuclosFacadeBean implements GeneratorFa
 		final GenericObjectMetaDataCache lometacache = GenericObjectMetaDataCache.getInstance();
 		final AttributeProvider attrprovider = AttributeCache.getInstance();
 
-		final UsageCriteria criteria = new UsageCriteria(gavo.getTargetModuleId(), IdUtils.unsafeToId(target.getFieldId(NuclosEOField.PROCESS.getName())));
+		final UsageCriteria criteria = new UsageCriteria(gavo.getTargetModuleId(), 
+				IdUtils.unsafeToId(target.getFieldId(NuclosEOField.PROCESS.getName())),
+				IdUtils.unsafeToId(target.getFieldId(NuclosEOField.STATE.getName())));
 		final int iLayoutIdTarget = lometacache.getBestMatchingLayoutId(criteria, false);
 		final Set<String> setEntityNamesTarget = lometacache.getSubFormEntityNamesByLayoutId(iLayoutIdTarget);
 
@@ -793,7 +795,8 @@ public class GeneratorFacadeBean extends NuclosFacadeBean implements GeneratorFa
 
 		if (StringUtils.isNullOrEmpty(subentity.getField("sourceType", String.class))) {
 			for (EntityObjectVO source : sources) {
-				final UsageCriteria sourcecriteria = new UsageCriteria(gavo.getSourceModuleId(), IdUtils.unsafeToId(source.getFieldId(NuclosEOField.PROCESS.getName())));
+				final UsageCriteria sourcecriteria = new UsageCriteria(gavo.getSourceModuleId(),
+						IdUtils.unsafeToId(source.getFieldId(NuclosEOField.PROCESS.getName())), IdUtils.unsafeToId(source.getFieldId(NuclosEOField.STATE.getName())));
 				final int iLayoutIdSource = lometacache.getBestMatchingLayoutId(sourcecriteria, false);
 				final Set<String> setEntityNamesSource = lometacache.getSubFormEntityNamesByLayoutId(iLayoutIdSource);
 

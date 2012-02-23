@@ -211,7 +211,8 @@ public class GenericObjectMetaDataCache implements GenericObjectMetaDataProvider
 			t.baseColumn("INTID_T_MD_LAYOUT", Integer.class),
 			t.baseColumn("STRENTITY", String.class),
 			t.baseColumn("INTID_T_MD_PROCESS", Integer.class),
-			t.baseColumn("BLNSEARCHSCREEN", Boolean.class));
+			t.baseColumn("BLNSEARCHSCREEN", Boolean.class),
+			t.baseColumn("INTID_T_MD_STATE", Integer.class));
 		List<LayoutUsageVO> result = dataBaseHelper.getDbAccess().executeQuery(query, new Transformer<DbTuple, LayoutUsageVO>() {
 			@Override
 			public LayoutUsageVO transform(DbTuple tuple) {
@@ -219,7 +220,7 @@ public class GenericObjectMetaDataCache implements GenericObjectMetaDataProvider
 					final Integer iEntityId = metaDataServerProvider.getEntity(tuple.get(1, String.class)).getId().intValue();
 					return new LayoutUsageVO(
 						tuple.get(0, Integer.class),
-						new UsageCriteria(iEntityId, tuple.get(2, Integer.class)),
+						new UsageCriteria(iEntityId, tuple.get(2, Integer.class), tuple.get(4, Integer.class)),
 						Boolean.TRUE.equals(tuple.get(3, Boolean.class)));
 				}
 				catch (Exception ex) {

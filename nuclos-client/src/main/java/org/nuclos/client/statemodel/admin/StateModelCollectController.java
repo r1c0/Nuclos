@@ -318,11 +318,12 @@ public class StateModelCollectController extends NuclosCollectController<Collect
 			Integer iModule =  md.getEntityObjectVO().getFieldIds().get("nuclos_module").intValue();
 
 			Integer iProcess = (md.getEntityObjectVO().getFieldId("process") == null) ? null : md.getEntityObjectVO().getFieldId("process").intValue();
+			Integer iStatus = (md.getEntityObjectVO().getFieldId("state") == null) ? null : md.getEntityObjectVO().getFieldId("state").intValue();
 			String sModuleName = Modules.getInstance().getEntityNameByModuleId(iModule);
 
 			CollectableGenericObjectEntity e = new CollectableGenericObjectEntity(sModuleName, sModuleName, Collections.singletonList(""));
 			LayoutRoot lRoot = GenericObjectLayoutCache.getInstance().getLayout(e
-				, new UsageCriteria(iModule, iProcess), false, null, valueListProviderCache);
+				, new UsageCriteria(iModule, iProcess, iStatus), false, null, valueListProviderCache);
 
 			JComponent jcomp = lRoot.getRootComponent();
 

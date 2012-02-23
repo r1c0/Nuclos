@@ -35,16 +35,31 @@
 						<subform-column controltype="combobox" insertable="no" name="process">
 							<valuelist-provider type="process"/>
 						</subform-column>
+						<subform-column controltype="combobox" insertable="no" name="state">
+							<valuelist-provider type="statusNumeral">
+								<parameter name="provideIdFields" value="true" />
+        					</valuelist-provider>
+						</subform-column>
 					</subform>
 				</panel>
 			</tabbedpane>
 		</panel>
 	</layout>
 	<rules>
-		<rule name="Abhängigkeit Module">
+		<rule name="Abhaengigkeit Module">
 			<event entity="nuclos_layoutUsage" sourcecomponent="entity" type="value-changed"/>
 			<actions>
+				<clear targetcomponent="process"/>
+				<clear targetcomponent="state"/>
 				<refresh-valuelist parameter-for-sourcecomponent="entityName" targetcomponent="process"/>
+				<refresh-valuelist parameter-for-sourcecomponent="entityName" targetcomponent="state"/>
+			</actions>
+		</rule>
+		<rule name="Abhaengigkeit Module1">
+			<event entity="nuclos_layoutUsage" sourcecomponent="process" type="value-changed"/>
+			<actions>
+				<clear targetcomponent="state"/>
+				<refresh-valuelist parameter-for-sourcecomponent="process" targetcomponent="state"/>
 			</actions>
 		</rule>
 	</rules>

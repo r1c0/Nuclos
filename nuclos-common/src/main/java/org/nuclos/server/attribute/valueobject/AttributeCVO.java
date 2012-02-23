@@ -458,7 +458,8 @@ public class AttributeCVO extends NuclosValueObject implements Cloneable {
 	 * @return Is this a pure value field?
 	 */
 	private boolean isValueField() {
-		return this.isModifiable() && !this.isSearchable() && !this.isInsertable();
+		return getExternalEntity() == null;
+		//return this.isModifiable() && !this.isSearchable() && !this.isInsertable();
 	}
 
 	/**

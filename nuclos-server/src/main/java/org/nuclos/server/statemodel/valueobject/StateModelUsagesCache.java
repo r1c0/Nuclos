@@ -120,7 +120,7 @@ public class StateModelUsagesCache {
 		
 		for (DbTuple tuple : dataBaseHelper.getDbAccess().executeQuery(query)) {
 			final UsageCriteria usagecriteria = new UsageCriteria(
-				tuple.get(2, Integer.class), tuple.get(3, Integer.class));
+				tuple.get(2, Integer.class), tuple.get(3, Integer.class), null);
 			result.add(new StateModelUsages.StateModelUsage(
 				tuple.get(0, Integer.class), tuple.get(1, Integer.class), usagecriteria));
 		}

@@ -29,6 +29,7 @@ import org.nuclos.common.collect.collectable.CollectableFieldsProvider;
 import org.nuclos.common.collect.collectable.CollectableValueField;
 import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.exception.CommonBusinessException;
+import org.nuclos.client.common.MetaDataClientProvider;
 import org.nuclos.client.genericobject.Modules;
 import org.nuclos.client.statemodel.StateDelegate;
 import org.nuclos.common.NuclosFatalException;
@@ -45,7 +46,9 @@ public class StatusNumeralCollectableFieldsProvider implements CollectableFields
 	private static final Logger log = Logger.getLogger(StatusNumeralCollectableFieldsProvider.class);
 
 	private Integer iModuleId;
+	private Object oEntityName;
 	private Integer iProcessId;
+	private boolean bProvideIdFields = false;
 
 	/**
 	 * valid parameters:
@@ -62,6 +65,7 @@ public class StatusNumeralCollectableFieldsProvider implements CollectableFields
 		if (sName.equals("moduleId")) {
 			iModuleId = (Integer) oValue;
 		} else if (sName.equals("module")) {
+			this.oEntityName = null;
 			try {
 				final String sEntityName = (String) oValue;
 				iModuleId = Modules.getInstance().getModuleIdByEntityName(sEntityName);
@@ -75,7 +79,14 @@ public class StatusNumeralCollectableFieldsProvider implements CollectableFields
 			}
 		}
 		else if (sName.equals("process")) {
-			iProcessId = (Integer) oValue;
+			iProcessId = oValue == null ? null : ((oValue instanceof Long) ? Integer.parseInt(oValue.toString()) : (Integer)oValue);
+		} 
+		else if (sName.equals("entityName")) {
+			this.iModuleId = null;
+			this.oEntityName = oValue;
+		}
+		else if (sName.equals("provideIdFields")) {
+			bProvideIdFields = Boolean.valueOf((String)oValue);
 		}
 		else {
 			// ignore
@@ -87,14 +98,19 @@ public class StatusNumeralCollectableFieldsProvider implements CollectableFields
 		log.debug("getCollectableFields - iModuleId = " + iModuleId);
 		log.debug("getCollectableFields - iProcessId = " + iProcessId);
 		
-		if (iModuleId == null && iProcessId == null)
+		if (oEntityName == null && iModuleId == null && iProcessId == null)
 			return Collections.emptyList();
+
+		if (iModuleId == null && oEntityName != null) {
+			final String sEntity = (String) oEntityName;
+			iModuleId = MetaDataClientProvider.getInstance().getEntity(sEntity).getId().intValue();
+		}
 		
 		final Map<Integer, StateVO> mpState = new HashMap<Integer, StateVO>();
 		final List<CollectableField> result = new ArrayList<CollectableField>();
 		
 		if (iProcessId != null) {
-			Integer iStateModelId = StateDelegate.getInstance().getStateModelId(new UsageCriteria(iModuleId, iProcessId));
+			Integer iStateModelId = StateDelegate.getInstance().getStateModelId(new UsageCriteria(iModuleId, iProcessId, null));
 			
 			for (StateVO statevo : StateDelegate.getInstance().getStatesByModel(iStateModelId)) {
 				mpState.put(statevo.getId(), statevo);
@@ -110,7 +126,10 @@ public class StatusNumeralCollectableFieldsProvider implements CollectableFields
 		}
 		
 		for (StateVO statevo : mpState.values()) {
-			result.add(new CollectableValueField(statevo.getNumeral().toString() + " " + statevo.getStatename()));
+			if (bProvideIdFields)
+				result.add(new CollectableValueIdField(statevo.getId(), statevo.getNumeral().toString() + " " + statevo.getStatename()));
+			else
+				result.add(new CollectableValueField(statevo.getNumeral().toString() + " " + statevo.getStatename()));
 		}
 
 		Collections.sort(result);

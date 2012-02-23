@@ -752,7 +752,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 				getSpringLocaleDelegate().getMessage("nuclos.entityfield.eo.state.label","Status")), 6);
 
 		//pnlCustomToolBarAreaSearch.add(toolSearchState, gbc);
-		setSearchStatesAccordingToUsageCriteria(new UsageCriteria(iModuleId, null));
+		setSearchStatesAccordingToUsageCriteria(new UsageCriteria(iModuleId, null, null));
 		//getSearchPanel().setCustomToolBarArea(pnlCustomToolBarAreaSearch);
 	}
 
@@ -1845,7 +1845,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	 */
 	@Override
 	protected LayoutRoot getInitialLayoutMLDefinitionForSearchPanel() {
-		LayoutRoot layoutRoot = getLayoutFromCache(new UsageCriteria(getModuleId(), null),
+		LayoutRoot layoutRoot = getLayoutFromCache(new UsageCriteria(getModuleId(), null, null),
 			new CollectState(CollectState.OUTERSTATE_SEARCH, CollectState.SEARCHMODE_UNSYNCHED));
 		getLayoutMLButtonsActionListener().setComponentsEnabled(false);
 		return layoutRoot;
@@ -4064,7 +4064,8 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	private UsageCriteria getUsageCriteriaFromView(boolean bSearchPanel) throws CollectableFieldFormatException {
 		final Integer iModuleId = bSearchPanel ? getModuleId() : getSelectedCollectableModuleId();
 		return new UsageCriteria(iModuleId,
-			getUsageCriteriaFieldIdFromView(bSearchPanel)
+				getUsageCriteriaProcessIdFromView(bSearchPanel),
+				getUsageCriteriaStatusIdFromView(bSearchPanel)
 		);
 	}
 
@@ -4074,7 +4075,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	 * @return the value id of the given quintuple field
 	 * @throws CollectableFieldFormatException
 	 */
-	private Integer getUsageCriteriaFieldIdFromView(boolean bSearchPanel)
+	private Integer getUsageCriteriaProcessIdFromView(boolean bSearchPanel)
 	throws CollectableFieldFormatException {
 		// 1. makeConsistent:
 		for (CollectableComponent clctcomp : getEditView(bSearchPanel).getCollectableComponentsFor(NuclosEOField.PROCESS.getMetaData().getField()))
@@ -4086,12 +4087,44 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	}
 
 	/**
+	 * @param bSearchPanel Use SearchPanel? (false: use Details panel)
+	 * @param sSystemAttributeKey key of the quintuple field name in system parameters
+	 * @return the value id of the given quintuple field
+	 * @throws CollectableFieldFormatException
+	 */
+	private Integer getUsageCriteriaStatusIdFromView(boolean bSearchPanel)
+	throws CollectableFieldFormatException {
+		if (bSearchPanel) {
+			// 1. makeConsistent:
+			for (CollectableComponent clctcomp : getEditView(bSearchPanel).getCollectableComponentsFor(NuclosEOField.STATE.getMetaData().getField()))
+				clctcomp.makeConsistent();
+	
+			// 2. read model:
+			final CollectableComponentModel clctcompmodel = getEditView(bSearchPanel).getModel().getCollectableComponentModelFor(NuclosEOField.STATE.getMetaData().getField());
+			return (clctcompmodel == null) ? null : (Integer) clctcompmodel.getField().getValueId();
+		} else {
+			Collectable clct = getSelectedCollectable();
+			if (clct == null) { // it is a new collectable.
+				final Integer iModuleId = bSearchPanel ? getModuleId() : getSelectedCollectableModuleId();
+				UsageCriteria uc = new UsageCriteria(iModuleId,
+						getUsageCriteriaProcessIdFromView(bSearchPanel),
+						null
+				);
+				return StateDelegate.getInstance().getStatemodel(uc).getInitialStateId();
+			}
+			
+			return getSystemAttributeId(getSelectedCollectable(), NuclosEOField.STATE.getMetaData().getField());
+		}
+	}
+
+	/**
 	 * @param clct
 	 * @return the UsageCriteria contained in the given Collectable.
 	 */
 	protected static UsageCriteria getUsageCriteria(CollectableGenericObject clct) {
 		return new UsageCriteria(clct.getGenericObjectCVO().getModuleId(),
-			getSystemAttributeId(clct, NuclosEOField.PROCESS.getMetaData().getField())
+			getSystemAttributeId(clct, NuclosEOField.PROCESS.getMetaData().getField()), 
+			getSystemAttributeId(clct, NuclosEOField.STATE.getMetaData().getField())
 		);
 	}
 
@@ -4271,12 +4304,18 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 
 	private UsageCriteria getUsageCriteriaFromFieldsMap(Map<String, CollectableField> mpFields) {
 		return new UsageCriteria(getModuleId(),
-			getValueIdFromUsageCriteriaField(mpFields)
+				getProcessIdFromUsageCriteriaField(mpFields), 
+				getStatusIdFromUsageCriteriaField(mpFields)
 		);
 	}
 
-	private Integer getValueIdFromUsageCriteriaField(Map<String, CollectableField> mpFields) {
+	private Integer getProcessIdFromUsageCriteriaField(Map<String, CollectableField> mpFields) {
 		final CollectableField clctfField = mpFields.get(NuclosEOField.PROCESS.getMetaData().getField());
+		return (clctfField == null) ? null : (Integer) clctfField.getValueId();
+	}
+
+	private Integer getStatusIdFromUsageCriteriaField(Map<String, CollectableField> mpFields) {
+		final CollectableField clctfField = mpFields.get(NuclosEOField.STATE.getMetaData().getField());
 		return (clctfField == null) ? null : (Integer) clctfField.getValueId();
 	}
 
@@ -5234,6 +5273,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 					setSubsequentStatesVisible(false, false);
 					setStatesDefaultPathVisible(false, false);
 				}
+				getLayoutMLButtonsActionListener().setComponentsEnabled(false);
 				break;
 
 			default:
@@ -5289,6 +5329,9 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 				LOG.debug("removeUsageCriteriaFieldListeners");
 				removeUsageCriteriaFieldListeners(false);
 			}
+			if (ev.getNewCollectState().getInnerState() == CollectState.DETAILSMODE_EDIT
+					|| ev.getNewCollectState().getInnerState() == CollectState.DETAILSMODE_NEW_CHANGED) 
+				getLayoutMLButtonsActionListener().setComponentsEnabled(false);
 		}
 	}	// inner class GenericObjectCollectStateListener
 
@@ -5517,7 +5560,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 						for (CollectableField clctField : MasterDataDelegate.getInstance().getProcessByUsage(getModuleId(), false))
 							if (((String)clctField.getValue()).equals(scm.getField().getValue())) {
 								// reload layout according to the 'process' field
-								reloadLayout(new UsageCriteria(getModuleId(), (Integer)clctField.getValueId()), getCollectState(), true, true);
+								reloadLayout(new UsageCriteria(getModuleId(), (Integer)clctField.getValueId(), null), getCollectState(), true, true);
 								detailsChanged(clctcomp);
 								break;
 							}

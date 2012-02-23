@@ -114,7 +114,7 @@ public class NuclosCollectControllerFactory {
 		}
 
 		if (iModuleId != null) {
-			Statemodel sm = StateDelegate.getInstance().getStatemodel(new UsageCriteria(iModuleId, null));
+			Statemodel sm = StateDelegate.getInstance().getStatemodel(new UsageCriteria(iModuleId, null, null));
 			if(sm == null) {
 				JOptionPane.showMessageDialog(
 					parent,

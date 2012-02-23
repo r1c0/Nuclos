@@ -92,7 +92,7 @@ public class StatusCollectableFieldsProvider implements CollectableFieldsProvide
 		final List<CollectableField> result = new ArrayList<CollectableField>();
 		
 		if (iProcessId != null) {
-			Integer iStateModelId = StateDelegate.getInstance().getStateModelId(new UsageCriteria(iModuleId, iProcessId));
+			Integer iStateModelId = StateDelegate.getInstance().getStateModelId(new UsageCriteria(iModuleId, iProcessId, null));
 			
 			for (StateVO statevo : StateDelegate.getInstance().getStatesByModel(iStateModelId)) {
 				mpState.put(statevo.getId(), statevo);

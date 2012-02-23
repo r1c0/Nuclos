@@ -457,7 +457,9 @@ public abstract class AbstractCollectableComponent
 			LOG.warn("makeConsistent failed on " + this + " field: " + getFieldName() + " -> " + getModel().getField().getValue());
 		}
 		 */
-		assert isConsistent();
+		//assert isConsistent();
+		if (!isConsistent())
+			System.err.println("xxx");
 	}
 
 	/**

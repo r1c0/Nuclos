@@ -44,10 +44,12 @@ public class UsageCriteria implements Serializable, Comparable<UsageCriteria> {
 
 	private final Integer iModuleId;
 	private final Integer iProcessId;
+	private final Integer iStatusId;
 
-	public UsageCriteria(Integer iModuleId, Integer iProcessId) {
+	public UsageCriteria(Integer iModuleId, Integer iProcessId, Integer iStatusId) {
 		this.iModuleId = iModuleId;
 		this.iProcessId = iProcessId;
+		this.iStatusId = iStatusId;
 	}
 
 	public Integer getModuleId() {
@@ -56,6 +58,10 @@ public class UsageCriteria implements Serializable, Comparable<UsageCriteria> {
 
 	public Integer getProcessId() {
 		return iProcessId;
+	}
+
+	public Integer getStatusId() {
+		return iStatusId;
 	}
 
 	@Override
@@ -69,19 +75,23 @@ public class UsageCriteria implements Serializable, Comparable<UsageCriteria> {
 		}
 		else {
 			final UsageCriteria that = (UsageCriteria) o;
-			result = LangUtils.equals(this.getModuleId(), that.getModuleId()) && LangUtils.equals(this.getProcessId(), that.getProcessId());
+			result = LangUtils.equals(this.getModuleId(), that.getModuleId())
+					&& LangUtils.equals(this.getProcessId(), that.getProcessId())
+							&& LangUtils.equals(this.getStatusId(), that.getStatusId());
 		}
 		return result;
 	}
 
 	@Override
 	public int hashCode() {
-		return LangUtils.hashCode(getModuleId()) ^ LangUtils.hashCode(getProcessId());
+		return LangUtils.hashCode(getModuleId())
+				^ LangUtils.hashCode(getProcessId())
+				^ LangUtils.hashCode(getStatusId());
 	}
 
 	@Override
 	public String toString() {
-		return "(ModuleId: " + getModuleId() + ", ProcessId: " + getProcessId() + ")";
+		return "(ModuleId: " + getModuleId() + ", ProcessId: " + getProcessId() + ", StatusId: " + getStatusId() + ")";
 	}
 
 	/**
@@ -93,7 +103,8 @@ public class UsageCriteria implements Serializable, Comparable<UsageCriteria> {
 	public static Collection<String> getContainedAttributeNames() {
 		return Arrays.asList(
 				// module is not an attribute - it cannot be switched dynamically.
-			NuclosEOField.PROCESS.getMetaData().getField()
+			NuclosEOField.PROCESS.getMetaData().getField(),
+			NuclosEOField.STATE.getMetaData().getField()
 		);
 	}
 
@@ -131,7 +142,9 @@ public class UsageCriteria implements Serializable, Comparable<UsageCriteria> {
 		if (that == null) {
 			throw new NullArgumentException("that");
 		}
-		return isComparable(this.getModuleId(), that.getModuleId()) && isComparable(this.getProcessId(), that.getProcessId());
+		return isComparable(this.getModuleId(), that.getModuleId())
+				&& isComparable(this.getProcessId(), that.getProcessId())
+				&& isComparable(this.getStatusId(), that.getStatusId());
 	}
 
 	/**
@@ -156,7 +169,7 @@ public class UsageCriteria implements Serializable, Comparable<UsageCriteria> {
 	}
 
 	private int asBinary() {
-		return (binary(this.getModuleId()) << 1) | (binary(this.getProcessId()));
+		return (binary(this.getModuleId()) << 2) | (binary(this.getProcessId()) << 1) | (binary(this.getStatusId()));
 	}
 
 	private static int binary(Integer i) {
@@ -234,7 +247,8 @@ public class UsageCriteria implements Serializable, Comparable<UsageCriteria> {
 	 * @postcondition result.isLessOrEqual(q1) && result.isLessOrEqual(q2)
 	 */
 	public static UsageCriteria getGreatestCommonUsageCriteria(UsageCriteria q1, UsageCriteria q2) {
-		final UsageCriteria result = new UsageCriteria(gcf(q1.getModuleId(), q2.getModuleId()), gcf(q1.getProcessId(), q2.getProcessId()));
+		final UsageCriteria result = new UsageCriteria(gcf(q1.getModuleId(), q2.getModuleId()),
+				gcf(q1.getProcessId(), q2.getProcessId()), gcf(q1.getStatusId(), q2.getStatusId()));
 		assert result.isLessOrEqual(q1) && result.isLessOrEqual(q2);
 		return result;
 	}

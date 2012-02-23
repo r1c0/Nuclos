@@ -13680,6 +13680,36 @@
     "text": "Name der Aktion"
   },
   {
+    "resourceID": "nuclos.entityfield.layoutUsage.state.label",
+    "locale": "i-default",
+    "text": "State"
+  },
+  {
+    "resourceID": "nuclos.entityfield.layoutUsage.state.label",
+    "locale": "en",
+    "text": "State"
+  },
+  {
+    "resourceID": "nuclos.entityfield.layoutUsage.state.label",
+    "locale": "de",
+    "text": "Status"
+  },
+  {
+    "resourceID": "nuclos.entityfield.layoutUsage.state.description",
+    "locale": "i-default",
+    "text": "State numeral/name"
+  },
+  {
+    "resourceID": "nuclos.entityfield.layoutUsage.state.description",
+    "locale": "en",
+    "text": "State numeral/name"
+  },
+  {
+    "resourceID": "nuclos.entityfield.layoutUsage.state.description",
+    "locale": "de",
+    "text": "Statusnumeral/-name"
+  },
+  {
     "resourceID": "nuclos.entityfield.formUsage.form.description",
     "locale": "i-default",
     "text": "Form name"
