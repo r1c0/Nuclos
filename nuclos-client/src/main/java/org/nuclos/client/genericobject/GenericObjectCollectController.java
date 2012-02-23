@@ -2627,7 +2627,12 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	private void loadLayoutForDetailsTab(CollectableGenericObject clct, CollectState collectstate) throws CommonBusinessException {
 		LOG.debug("loadLayoutForDetailsTab start");
 		boolean transferContents = !collectstate.isDetailsModeNew();
-		this.reloadLayout(getUsageCriteria(clct), collectstate, transferContents, false);
+		if (collectstate.isDetailsModeNew()) {
+			this.reloadLayout(getUsageCriteriaFromView(false), collectstate, transferContents, false);
+			
+		}
+		else
+			this.reloadLayout(getUsageCriteria(clct), collectstate, transferContents, false);
 		LOG.debug("loadLayoutForDetailsTab done");
 	}
 
@@ -4110,7 +4115,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 						getUsageCriteriaProcessIdFromView(bSearchPanel),
 						null
 				);
-				return StateDelegate.getInstance().getStatemodel(uc).getInitialStateId();
+				return getInitialStateId(uc);
 			}
 			
 			return getSystemAttributeId(getSelectedCollectable(), NuclosEOField.STATE.getMetaData().getField());
@@ -4123,8 +4128,8 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	 */
 	protected static UsageCriteria getUsageCriteria(CollectableGenericObject clct) {
 		return new UsageCriteria(clct.getGenericObjectCVO().getModuleId(),
-			getSystemAttributeId(clct, NuclosEOField.PROCESS.getMetaData().getField()), 
-			getSystemAttributeId(clct, NuclosEOField.STATE.getMetaData().getField())
+				getSystemAttributeId(clct, NuclosEOField.PROCESS.getMetaData().getField()), 
+				getSystemAttributeId(clct, NuclosEOField.STATE.getMetaData().getField())
 		);
 	}
 
