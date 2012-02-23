@@ -318,6 +318,7 @@
     <rule name="Abhängigkeit Quellaktion -> Status">
       <event type="value-changed" entity="nuclos_generationUsage" sourcecomponent="process"/>
       <actions>
+		<clear targetcomponent="state"/>
         <refresh-valuelist entity="nuclos_generationUsage" targetcomponent="state" parameter-for-sourcecomponent="process"/>
       </actions>
     </rule>
