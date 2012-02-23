@@ -4112,7 +4112,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 			return (clctcompmodel == null) ? null : (Integer) clctcompmodel.getField().getValueId();
 		} else {
 			Collectable clct = getSelectedCollectable();
-			if (clct == null) { // it is a new collectable.
+			if (clct == null || getCollectStateModel().getDetailsMode() == CollectState.DETAILSMODE_NEW) { // it is a new collectable.
 				final Integer iModuleId = bSearchPanel ? getModuleId() : getSelectedCollectableModuleId();
 				UsageCriteria uc = new UsageCriteria(iModuleId,
 						getUsageCriteriaProcessIdFromView(bSearchPanel),
