@@ -29,9 +29,12 @@ import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import org.nuclos.api.context.InputDelegate;
+import org.nuclos.api.context.InputValidationException;
+import org.nuclos.client.main.Main;
 
 @SuppressWarnings("serial")
 public class InputDelegatePane extends JPanel {
@@ -79,8 +82,13 @@ public class InputDelegatePane extends JPanel {
 		ok.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				result.set(ics.evaluate());
-				dialog.setVisible(false);
+				try {
+					result.set(ics.evaluate());
+					dialog.setVisible(false);
+				}
+				catch (InputValidationException ex) {
+					JOptionPane.showMessageDialog(dialog, ex.getMessage(), Main.getMainFrame().getTitle(), JOptionPane.ERROR_MESSAGE);
+				}
 			}
 		});
 		

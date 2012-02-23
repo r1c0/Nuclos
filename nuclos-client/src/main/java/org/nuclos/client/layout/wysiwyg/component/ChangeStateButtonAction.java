@@ -113,6 +113,11 @@ public class ChangeStateButtonAction<Clct extends Collectable> implements Collec
 				return false;
 			}
 			
+			if (controller.getCollectState().isDetailsModeNew()) {
+				// only possible state is initial state
+				return false;
+			}
+			
 			String sTargetState = probs.getProperty("targetState");
 			Integer targetState = null;
 			try {
