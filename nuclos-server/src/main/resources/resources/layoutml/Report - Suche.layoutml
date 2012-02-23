@@ -44,6 +44,11 @@
                 <valuelist-provider type="process"/></subform-column>
               <subform-column name="module" enabled="yes" visible="yes" insertable="no" controltype="combobox">
                 <valuelist-provider type="entityId"/></subform-column>
+			  <subform-column controltype="combobox" insertable="no" name="state">
+				<valuelist-provider type="statusNumeral">
+					<parameter name="provideIdFields" value="true" />
+				</valuelist-provider>
+			  </subform-column>
             </subform>
           </panel>
         </panel>
@@ -166,4 +171,22 @@
     </panel>
   </panel>
 </layout>
+  <rules>
+    <rule name="Regel 1">
+      <event type="value-changed" entity="nuclos_formUsage" sourcecomponent="module"/>
+      <actions>
+		<clear targetcomponent="process"/>
+		<clear targetcomponent="state"/>
+		<refresh-valuelist parameter-for-sourcecomponent="entityName" targetcomponent="process"/>
+		<refresh-valuelist parameter-for-sourcecomponent="entityName" targetcomponent="state"/>
+      </actions>
+    </rule>
+    <rule name="Regel2">
+		<event entity="nuclos_formUsage" sourcecomponent="process" type="value-changed"/>
+		<actions>
+			<clear targetcomponent="state"/>
+			<refresh-valuelist parameter-for-sourcecomponent="process" targetcomponent="state"/>
+		</actions>
+	</rule>
+  </rules>
 </layoutml>

@@ -21,8 +21,10 @@ import java.util.List;
 
 import javax.annotation.security.RolesAllowed;
 
+import org.nuclos.common.UsageCriteria;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonCreateException;
+import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.common2.exception.CommonFinderException;
 import org.nuclos.common2.exception.CommonPermissionException;
 import org.nuclos.common2.exception.CommonRemoveException;
@@ -288,5 +290,15 @@ public interface RuleEngineFacadeRemote {
 	 */
 	@RolesAllowed("Login")
 	void invalidateCache();
+	
+   /**
+    * finds rules by usage criteria
+    * @param usagecriteria
+    * @param sEventName
+    * @return collection of rule usages
+    */
+	@RolesAllowed("Login")
+   public Collection<RuleVO> findRulesByUsageAndEvent(String sEventName, UsageCriteria usagecriteria);
+
 
 }

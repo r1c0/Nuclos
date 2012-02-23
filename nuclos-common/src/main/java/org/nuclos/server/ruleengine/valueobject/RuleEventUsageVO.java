@@ -41,6 +41,8 @@ public class RuleEventUsageVO extends NuclosValueObject {
 	private Integer iRuleId;
 	private String sRule;
 	private Integer iOrder;
+	private Integer iProcessId;
+	private Integer iStatusId;
 
 	/**
 	 * constructor to be called by server only
@@ -52,6 +54,8 @@ public class RuleEventUsageVO extends NuclosValueObject {
 	 * @param iRuleId id of rule
 	 * @param sRule name of rule (joined)
 	 * @param iOrder order number
+	 * @param iProcessId id of process
+	 * @param iStatusId id of status
 	 * @param dCreated creation date of underlying database record
 	 * @param sCreated creator of underlying database record
 	 * @param dChanged last changed date of underlying database record
@@ -59,7 +63,7 @@ public class RuleEventUsageVO extends NuclosValueObject {
 	 * @param iVersion version for underlying database record
 	 */
 	public RuleEventUsageVO(Integer iId, String sEvent, String sEntity, Integer iRuleId,
-			String sRule, Integer iOrder, java.util.Date dCreated, String sCreated, java.util.Date dChanged, String sChanged,
+			String sRule, Integer iOrder, Integer iProcessId, Integer iStatusId, java.util.Date dCreated, String sCreated, java.util.Date dChanged, String sChanged,
 			Integer iVersion) {
 		super(iId, dCreated, sCreated, dChanged, sChanged, iVersion);
 		this.sEvent = sEvent;
@@ -67,6 +71,8 @@ public class RuleEventUsageVO extends NuclosValueObject {
 		this.iRuleId = iRuleId;
 		this.sRule = sRule;
 		this.iOrder = iOrder;
+		this.iProcessId = iProcessId;
+		this.iStatusId = iStatusId;
 	}
 
 	/**
@@ -165,6 +171,38 @@ public class RuleEventUsageVO extends NuclosValueObject {
 	}
 
 	/**
+	 * get process id of underlying database record
+	 * @return process id of underlying database record
+	 */
+	public Integer getProcessId() {
+		return iProcessId;
+	}
+
+	/**
+	 * set process id of underlying database record
+	 * @param iProcessId process id of underlying database record
+	 */
+	public void setProcessId(Integer iProcessId) {
+		this.iProcessId = iProcessId;
+	}
+	
+	/**
+	 * get status id of underlying database record
+	 * @return status id of underlying database record
+	 */
+	public Integer getStatusId() {
+		return iStatusId;
+	}
+
+	/**
+	 * set status id of underlying database record
+	 * @param iStatusId status id of underlying database record
+	 */
+	public void setStatusId(Integer iStatusId) {
+		this.iStatusId = iStatusId;
+	}
+	
+	/**
 	 * validity checker
 	 */
 	@Override
@@ -192,6 +230,8 @@ public class RuleEventUsageVO extends NuclosValueObject {
 		result.append(",event=").append(getEntity());
 		result.append(",rule=").append(getRule());
 		result.append(",order=").append(getOrder());
+		result.append(",processId=").append(getProcessId());
+		result.append(",statusId=").append(getStatusId());
 		result.append("]");
 		return result.toString();
 	}

@@ -21,6 +21,7 @@ import java.util.List;
 
 import org.nuclos.common.NuclosBusinessException;
 import org.nuclos.common.NuclosFatalException;
+import org.nuclos.common.UsageCriteria;
 import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonFatalException;
@@ -247,6 +248,21 @@ public class RuleDelegate {
 			throw new CommonFatalException(e.getMessage(), e);
 		}
 	}
+	
+   /**
+    * finds rules by usage criteria
+    * @param usagecriteria
+    * @param sEventName
+    * @return collection of rule
+    */
+   public Collection<RuleVO> findRulesByUsageAndEvent(String sEventName, UsageCriteria usagecriteria) {
+	   try {
+			return this.getRuleEngineFacade().findRulesByUsageAndEvent(sEventName, usagecriteria);
+		}
+		catch (RuntimeException ex) {
+			throw new CommonFatalException(ex);
+		}
+   }
 
    /**
     * Get all referenced entity names for a certain rule event.

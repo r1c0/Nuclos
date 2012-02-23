@@ -27,6 +27,7 @@ import java.awt.event.ItemListener;
 import java.beans.PropertyChangeListener;
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -91,6 +92,7 @@ import org.nuclos.client.ui.model.ChoiceList;
 import org.nuclos.common.Actions;
 import org.nuclos.common.NuclosBusinessException;
 import org.nuclos.common.NuclosFatalException;
+import org.nuclos.common.UsageCriteria;
 import org.nuclos.common.WorkspaceDescription.EntityPreferences;
 import org.nuclos.common.collect.collectable.Collectable;
 import org.nuclos.common.collect.collectable.CollectableEntity;
@@ -102,6 +104,7 @@ import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Predicate;
 import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.CommonRunnable;
+import org.nuclos.common2.IdUtils;
 import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.PreferencesUtils;
 import org.nuclos.common2.StringUtils;
@@ -111,6 +114,7 @@ import org.nuclos.common2.exception.CommonValidationException;
 import org.nuclos.common2.exception.PreferencesException;
 import org.nuclos.server.attribute.BadGenericObjectException;
 import org.nuclos.server.common.NuclosUpdateException;
+import org.nuclos.server.genericobject.valueobject.GeneratorActionVO;
 import org.nuclos.server.ruleengine.NuclosBusinessRuleException;
 import org.nuclos.server.ruleengine.valueobject.RuleEventUsageVO;
 import org.nuclos.server.ruleengine.valueobject.RuleVO;
@@ -1268,15 +1272,8 @@ public abstract class NuclosCollectController<Clct extends Collectable> extends 
 			UIUtils.runCommand(this.getFrame(), new CommonRunnable() {
 				@Override
                 public void run() throws CommonBusinessException {
-					final Collection<RuleVO> collRules = RuleDelegate.getInstance().getByEventAndEntityOrdered(RuleEventUsageVO.USER_EVENT, sEntityName);
-							//RuleTreeModel.USER_EVENT_NAME, iEntityId);
-					// remove inactive rules
-					CollectionUtils.removeAll(collRules, new Predicate<RuleVO>() {
-						@Override
-                        public boolean evaluate(RuleVO rulevo) {
-							return !rulevo.isActive();
-						}
-					});
+					final Collection<RuleVO> collRules = getUserRules();
+					
 					final ChoiceList<RuleVO> ro = new ChoiceList<RuleVO>();
 					ro.set(collRules,
 							new Comparator<RuleVO>() {
@@ -1458,6 +1455,10 @@ public abstract class NuclosCollectController<Clct extends Collectable> extends 
 	public Clct newCollectable() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	public Collection<RuleVO> getUserRules() {
+		return Collections.EMPTY_LIST;
 	}
 
 	/**

@@ -102,8 +102,12 @@ public class StatusNumeralCollectableFieldsProvider implements CollectableFields
 			return Collections.emptyList();
 
 		if (iModuleId == null && oEntityName != null) {
+			if (oEntityName instanceof String) {
 			final String sEntity = (String) oEntityName;
 			iModuleId = MetaDataClientProvider.getInstance().getEntity(sEntity).getId().intValue();
+		} else {
+			iModuleId = Integer.parseInt(oEntityName.toString());
+		}
 		}
 		
 		final Map<Integer, StateVO> mpState = new HashMap<Integer, StateVO>();

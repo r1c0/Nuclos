@@ -38,6 +38,7 @@ import org.nuclos.common.ParameterProvider;
 import org.nuclos.common.PropertiesMap;
 import org.nuclos.common.RuleNotification;
 import org.nuclos.common.SearchConditionUtils;
+import org.nuclos.common.UsageCriteria;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableComparison;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableSearchCondition;
 import org.nuclos.common.collect.collectable.searchcondition.ComparisonOperator;
@@ -47,7 +48,6 @@ import org.nuclos.common.collection.TransformerUtils;
 import org.nuclos.common.dal.vo.EntityObjectVO;
 import org.nuclos.common.dal.vo.SystemFields;
 import org.nuclos.common2.IdUtils;
-import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonCreateException;
@@ -72,6 +72,8 @@ import org.nuclos.server.customcode.codegenerator.RuleCodeGenerator;
 import org.nuclos.server.customcode.codegenerator.RuleCodeGenerator.AbstractRuleTemplateType;
 import org.nuclos.server.dal.provider.NucletDalProvider;
 import org.nuclos.server.dblayer.DbTuple;
+import org.nuclos.server.dblayer.query.DbColumnExpression;
+import org.nuclos.server.dblayer.query.DbCondition;
 import org.nuclos.server.dblayer.query.DbFrom;
 import org.nuclos.server.dblayer.query.DbQuery;
 import org.nuclos.server.dblayer.query.DbQueryBuilder;
@@ -147,9 +149,23 @@ public class RuleEngineFacadeBean extends NuclosFacadeBean implements RuleEngine
 		//		if (!Modules.getInstance().getUsesRuleEngine(Modules.getInstance().getModuleIdByEntityName(metacache.getMetaDataById(iEntityId).getEntityName()))) {
 		//			throw new IllegalArgumentException("iModuleId");
 		//		}
-
-		final List<RuleVO> lstRules = new ArrayList<RuleVO>(RuleCache.getInstance().getByEventAndEntityOrdered(sEventName, sEntity));
-
+			
+		UsageCriteria uc;
+		if (loccvoCurrent.getMasterData() != null) {
+			Integer entityId = IdUtils.unsafeToId(MetaDataServerProvider.getInstance().getEntity(sEntity));
+			uc = new UsageCriteria(entityId, null, null);
+		} else {
+			Integer iProcessId = loccvoCurrent.getGenericObject().getProcessId();
+			Integer iStatusId = loccvoCurrent.getGenericObject().getStatusId();
+			if (iStatusId == null) {
+				StateFacadeLocal facade = ServerServiceLocator.getInstance().getFacade(StateFacadeLocal.class);
+				iStatusId = facade.getInitialState(new UsageCriteria(loccvoCurrent.getGenericObject().getModuleId(), iProcessId, null)).getId();
+			}
+			uc = new UsageCriteria(loccvoCurrent.getGenericObject().getModuleId(), iProcessId, iStatusId);
+		}
+		
+		final List<RuleVO> lstRules = new ArrayList<RuleVO>(findRulesByUsageAndEvent(sEventName, uc));
+		
 		// We can now execute the rules in their order
 		info("BEGIN    executing business rules for event \"" + sEventName + "\" and entity " + sEntity + "..."); //Modules.getInstance().getEntityNameByModuleId(iModuleId)
 		final RuleObjectContainerCVO result = this.executeBusinessRules(lstRules, loccvoCurrent, false);
@@ -382,6 +398,61 @@ public class RuleEngineFacadeBean extends NuclosFacadeBean implements RuleEngine
 		this.checkReadAllowed(NuclosEntity.RULE);
 		return RuleCache.getInstance().getByEventAndEntityOrdered(sEventName, sEntity);
 	}
+	
+   /**
+    * finds rules by usage criteria
+    * @param usagecriteria
+    * @param sEventName
+    * @return collection of rule
+    */
+   public Collection<RuleVO> findRulesByUsageAndEvent(String sEventName, UsageCriteria usagecriteria) {
+
+      List<RuleVO> ruleVOs = new ArrayList<RuleVO>();
+
+      DbQueryBuilder builder = dataBaseHelper.getDbAccess().getQueryBuilder();
+      DbQuery<Integer> query = builder.createQuery(Integer.class);
+      DbFrom t = query.from("V_MD_RULE_EVENT").alias(SystemFields.BASE_ALIAS);
+      query.select(t.baseColumn("INTID_T_MD_RULE", Integer.class));
+      DbCondition cond = builder.equal(t.baseColumn("STRMASTERDATA", String.class),
+    		  MetaDataServerProvider.getInstance().getEntity(IdUtils.toLongId(usagecriteria.getModuleId())).getEntity());
+        
+      query.where(builder.and(cond, builder.equal(t.baseColumn("STREVENT", String.class), sEventName)));
+
+      DbColumnExpression<Integer> cp = t.baseColumn("INTID_T_MD_PROCESS", Integer.class);
+      final Integer iProcessId = usagecriteria.getProcessId();
+      if (iProcessId == null) {
+         query.addToWhereAsAnd(builder.and(cond, cp.isNull()));
+      } else {
+         query.addToWhereAsAnd(builder.and(cond, builder.or(cp.isNull(), builder.equal(cp, iProcessId))));
+      }
+      DbColumnExpression<Integer> cs = t.baseColumn("INTID_T_MD_STATE", Integer.class);
+      final Integer iStatusId = usagecriteria.getStatusId();
+      if (iStatusId == null) {
+         query.addToWhereAsAnd(builder.and(cond, cs.isNull()));
+      } else {
+         query.addToWhereAsAnd(builder.and(cond, builder.or(cs.isNull(), builder.equal(cs, iStatusId))));
+      }
+  	
+      query.orderBy(builder.asc(t.baseColumn("INTORDER", Integer.class)));
+
+      List<Integer> collUsableRuleIds = dataBaseHelper.getDbAccess().executeQuery(query);
+
+      for (Integer ruleId : collUsableRuleIds) {
+        try {
+           ruleVOs.add(MasterDataWrapper.getRuleVO(
+        		   getMasterDataFacade().get(NuclosEntity.RULE.getEntityName(), ruleId)));
+        }
+        catch (CommonPermissionException ex) {
+           throw new CommonFatalException(ex);
+        }
+        catch (CommonFinderException ex) {
+           throw new CommonFatalException(ex);
+        }
+     }
+      
+      return ruleVOs;
+   }
+
 
 	/**
 	 * Create an ruleUsage for the given module and eventname.

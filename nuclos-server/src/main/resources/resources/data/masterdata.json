@@ -6371,7 +6371,8 @@
       [
         "form",
         "module",
-        "process"
+        "process",
+        "state"
       ]
     ],
     "nuclos_entityfield": [
@@ -6420,6 +6421,22 @@
         "unique": false,
         "labelres": "nuclos.entityfield.formUsage.process.label",
         "descriptionres": "nuclos.entityfield.formUsage.process.description"
+      },
+      {
+        "name": "state",
+        "dbfield": "STRVALUE_T_MD_STATE",
+        "label": "Status",
+        "description": "Statusnumeral",
+        "foreignentity": "nuclos_state",
+        "datatype": "java.lang.String",
+        "datascale": 255,
+        "nullable": true,
+        "searchable": false,
+        "logbook": false,
+        "unique": false,
+		"foreignentityfield": "${numeral} ${name}",
+        "labelres": "nuclos.entityfield.formUsage.state.label",
+        "descriptionres": "nuclos.entityfield.formUsage.state.description"
       }
     ]
   },
@@ -6491,6 +6508,37 @@
         "unique": false,
         "labelres": "nuclos.entityfield.ruleUsage.order.label",
         "descriptionres": "nuclos.entityfield.ruleUsage.order.description"
+      }
+      {
+        "name": "process",
+        "dbfield": "STRVALUE_T_MD_PROCESS",
+        "label": "Aktion",
+        "description": "Name der Aktion",
+        "foreignentity": "nuclos_process",
+        "datatype": "java.lang.String",
+        "datascale": 255,
+        "nullable": true,
+        "searchable": false,
+        "logbook": false,
+        "unique": false,
+        "labelres": "nuclos.entityfield.ruleUsage.process.label",
+        "descriptionres": "nuclos.entityfield.ruleUsage.process.description"
+      },
+      {
+        "name": "state",
+        "dbfield": "STRVALUE_T_MD_STATE",
+        "label": "Status",
+        "description": "Statusnumeral",
+        "foreignentity": "nuclos_state",
+        "datatype": "java.lang.String",
+        "datascale": 255,
+        "nullable": true,
+        "searchable": false,
+        "logbook": false,
+        "unique": false,
+		"foreignentityfield": "${numeral} ${name}",
+        "labelres": "nuclos.entityfield.ruleUsage.state.label",
+        "descriptionres": "nuclos.entityfield.ruleUsage.state.description"
       }
     ]
   },

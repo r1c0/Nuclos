@@ -85,8 +85,8 @@ public class MasterDataEntityCollectableFieldsProvider implements CollectableFie
 			public CollectableField transform(MasterDataMetaVO mdmVO) {
 				String label = SpringLocaleDelegate.getInstance().getLabelFromMetaDataVO(mdmVO); 
 				//String label = SpringLocaleDelegate.getText(mdmVO);
-				if (Modules.getInstance().isModuleEntity(mdmVO.getEntityName()))
-					label += " (Modul)";
+				//if (Modules.getInstance().isModuleEntity(mdmVO.getEntityName()))
+					//label += " (Modul)";
 				return new LocalizedCollectableValueField(mdmVO.getEntityName(), label);
 			}
 		});

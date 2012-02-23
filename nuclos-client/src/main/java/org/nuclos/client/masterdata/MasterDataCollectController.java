@@ -67,6 +67,7 @@ import org.nuclos.client.main.mainframe.MainFrameTab;
 import org.nuclos.client.masterdata.datatransfer.MasterDataIdAndEntity;
 import org.nuclos.client.masterdata.datatransfer.MasterDataVOTransferable;
 import org.nuclos.client.masterdata.valuelistprovider.MasterDataCollectableFieldsProviderFactory;
+import org.nuclos.client.rule.RuleDelegate;
 import org.nuclos.client.searchfilter.EntitySearchFilter;
 import org.nuclos.client.ui.Errors;
 import org.nuclos.client.ui.Icons;
@@ -113,6 +114,7 @@ import org.nuclos.common.collect.collectable.searchcondition.LogicalOperator;
 import org.nuclos.common.collect.collectable.searchcondition.SearchConditionUtils;
 import org.nuclos.common.collect.exception.CollectableFieldFormatException;
 import org.nuclos.common.collection.CollectionUtils;
+import org.nuclos.common.collection.Predicate;
 import org.nuclos.common.collection.Transformer;
 import org.nuclos.common.dal.vo.EntityObjectVO;
 import org.nuclos.common.masterdata.CollectableMasterDataEntity;
@@ -135,6 +137,7 @@ import org.nuclos.server.masterdata.valueobject.MasterDataWithDependantsVO;
 import org.nuclos.server.navigation.treenode.GroupSearchResultTreeNode;
 import org.nuclos.server.navigation.treenode.MasterDataSearchResultTreeNode;
 import org.nuclos.server.navigation.treenode.TreeNode;
+import org.nuclos.server.ruleengine.valueobject.RuleEventUsageVO;
 import org.nuclos.server.ruleengine.valueobject.RuleVO;
 import org.xml.sax.InputSource;
 
@@ -1710,6 +1713,22 @@ public class MasterDataCollectController extends EntityCollectController<Collect
 	public List<GeneratorActionVO> getGeneratorActions() {
 		Integer entityId = IdUtils.unsafeToId(MetaDataClientProvider.getInstance().getEntity(getEntity()).getId());
 		return GeneratorActions.getActions(entityId, null, null);
+	}
+
+	@Override
+	public Collection<RuleVO> getUserRules() {
+		Integer entityId = IdUtils.unsafeToId(MetaDataClientProvider.getInstance().getEntity(getEntity()).getId());
+		UsageCriteria uc = new UsageCriteria(entityId, null, null);
+		
+		final Collection<RuleVO> collRules = RuleDelegate.getInstance().findRulesByUsageAndEvent(RuleEventUsageVO.USER_EVENT, uc);
+		// remove inactive rules
+		CollectionUtils.removeAll(collRules, new Predicate<RuleVO>() {
+			@Override
+            public boolean evaluate(RuleVO rulevo) {
+				return !rulevo.isActive();
+			}
+		});
+		return collRules;
 	}
 
 }	 // class MasterDataCollectController

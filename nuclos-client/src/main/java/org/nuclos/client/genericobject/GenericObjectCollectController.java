@@ -113,6 +113,7 @@ import org.nuclos.client.masterdata.MasterDataSubFormController;
 import org.nuclos.client.masterdata.valuelistprovider.MasterDataCollectableFieldsProviderFactory;
 import org.nuclos.client.resource.NuclosResourceCache;
 import org.nuclos.client.resource.ResourceCache;
+import org.nuclos.client.rule.RuleDelegate;
 import org.nuclos.client.searchfilter.EntitySearchFilter;
 import org.nuclos.client.searchfilter.SearchFilter;
 import org.nuclos.client.searchfilter.SearchFilters;
@@ -209,6 +210,7 @@ import org.nuclos.common.collect.collectable.searchcondition.LogicalOperator;
 import org.nuclos.common.collect.collectable.searchcondition.SearchConditionUtils;
 import org.nuclos.common.collect.exception.CollectableFieldFormatException;
 import org.nuclos.common.collection.CollectionUtils;
+import org.nuclos.common.collection.Predicate;
 import org.nuclos.common.collection.PredicateUtils;
 import org.nuclos.common.collection.Transformer;
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
@@ -242,6 +244,7 @@ import org.nuclos.server.genericobject.valueobject.LogbookVO;
 import org.nuclos.server.masterdata.valueobject.DependantMasterDataMap;
 import org.nuclos.server.navigation.treenode.EntitySearchResultTreeNode;
 import org.nuclos.server.navigation.treenode.GenericObjectTreeNode;
+import org.nuclos.server.ruleengine.valueobject.RuleEventUsageVO;
 import org.nuclos.server.ruleengine.valueobject.RuleVO;
 import org.nuclos.server.statemodel.valueobject.MandatoryFieldVO;
 import org.nuclos.server.statemodel.valueobject.StateVO;
@@ -4126,10 +4129,10 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	 * @param clct
 	 * @return the UsageCriteria contained in the given Collectable.
 	 */
-	protected static UsageCriteria getUsageCriteria(CollectableGenericObject clct) {
-		return new UsageCriteria(clct.getGenericObjectCVO().getModuleId(),
-				getSystemAttributeId(clct, NuclosEOField.PROCESS.getMetaData().getField()), 
-				getSystemAttributeId(clct, NuclosEOField.STATE.getMetaData().getField())
+	protected UsageCriteria getUsageCriteria(Collectable clct) {
+		return new UsageCriteria(((CollectableGenericObject)clct).getGenericObjectCVO().getModuleId(),
+				getSystemAttributeId(((CollectableGenericObject)clct), NuclosEOField.PROCESS.getMetaData().getField()), 
+				getSystemAttributeId(((CollectableGenericObject)clct), NuclosEOField.STATE.getMetaData().getField())
 		);
 	}
 
@@ -4142,7 +4145,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	 * @return the greatest common quintuple contained in the given Collection
 	 * @precondition CollectionUtils.isNonEmpty(collclct)
 	 */
-	protected static UsageCriteria getGreatestCommonUsageCriteriaFromCollectables(Collection<? extends CollectableGenericObject> collclct) {
+	protected UsageCriteria getGreatestCommonUsageCriteriaFromCollectables(Collection<? extends CollectableGenericObject> collclct) {
 		class GetUsageCriteria implements Transformer<CollectableGenericObject, UsageCriteria> {
 			@Override
 			public UsageCriteria transform(CollectableGenericObject clct) {
@@ -5932,4 +5935,24 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		GenerationController controller = new GenerationController(sources, generatoractionvo, this, getFrame());
 		controller.generateGenericObject();
 	}
+
+
+	@Override
+	public Collection<RuleVO> getUserRules() {
+		try {
+			UsageCriteria uc = getUsageCriteriaFromView(false);		
+			final Collection<RuleVO> collRules = RuleDelegate.getInstance().findRulesByUsageAndEvent(RuleEventUsageVO.USER_EVENT, uc);
+			// remove inactive rules
+			CollectionUtils.removeAll(collRules, new Predicate<RuleVO>() {
+				@Override
+	            public boolean evaluate(RuleVO rulevo) {
+					return !rulevo.isActive();
+				}
+			});
+			return collRules;
+		} catch (Exception e) {
+			return Collections.EMPTY_LIST;
+		}
+	}
+
 }	// class GenericObjectCollectController

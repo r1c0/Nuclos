@@ -107,8 +107,12 @@ public class ProcessCollectableFieldsProvider implements CollectableFieldsProvid
 			iEntityId = (Integer) oEntityId;
 		}
 		if (iEntityId == null && oEntityName != null) {
-			final String sEntity = (String) oEntityName;
-			iEntityId = MetaDataClientProvider.getInstance().getEntity(sEntity).getId().intValue();
+			if (oEntityName instanceof String) {
+				final String sEntity = (String) oEntityName;
+				iEntityId = MetaDataClientProvider.getInstance().getEntity(sEntity).getId().intValue();
+			} else {
+				iEntityId = Integer.parseInt(oEntityName.toString());
+			}
 		}
 		log.debug("getCollectableFields - iModuleId = " + iEntityId);
 		List<CollectableField> result = new ArrayList<CollectableField>();

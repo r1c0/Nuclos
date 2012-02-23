@@ -133,8 +133,15 @@ public class ExecuteRuleButtonAction<Clct extends Collectable> implements Collec
 			}	
 		}
 		
-		if (ruleToExecute != null && ruleToExecute.isActive() && !ruleToExecute.isRemoved()) {
-			return true;
+		if (ruleToExecute != null) {
+			if (controller instanceof MasterDataCollectController) {
+				if (((MasterDataCollectController)controller).getUserRules().contains(ruleToExecute))
+					return true;
+			}
+			else if (controller instanceof GenericObjectCollectController) {
+				if (((GenericObjectCollectController)controller).getUserRules().contains(ruleToExecute))
+					return true;
+			}
 		}
 		return false;
 	}

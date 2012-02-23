@@ -427,12 +427,19 @@ public class ReportFacadeBean extends NuclosFacadeBean implements ReportFacadeRe
       query.select(t.baseColumn("INTID_T_UD_REPORT", Integer.class));
       DbCondition cond = builder.equal(t.baseColumn("INTID_T_MD_MODULE", Integer.class), usagecriteria.getModuleId());
 
-      DbColumnExpression<Integer> c = t.baseColumn("INTID_T_MD_PROCESS", Integer.class);
+      DbColumnExpression<Integer> cp = t.baseColumn("INTID_T_MD_PROCESS", Integer.class);
       final Integer iProcessId = usagecriteria.getProcessId();
       if (iProcessId == null) {
-         query.where(builder.and(cond, c.isNull()));
+         query.where(builder.and(cond, cp.isNull()));
       } else {
-         query.where(builder.and(cond, builder.or(c.isNull(), builder.equal(c, iProcessId))));
+         query.where(builder.and(cond, builder.or(cp.isNull(), builder.equal(cp, iProcessId))));
+      }
+      DbColumnExpression<Integer> cs = t.baseColumn("INTID_T_MD_STATE", Integer.class);
+      final Integer iStatusId = usagecriteria.getStatusId();
+      if (iStatusId == null) {
+         query.addToWhereAsAnd(builder.and(cond, cs.isNull()));
+      } else {
+         query.addToWhereAsAnd(builder.and(cond, builder.or(cs.isNull(), builder.equal(cs, iStatusId))));
       }
 
       List<Integer> collUsableReportIds = dataBaseHelper.getDbAccess().executeQuery(query);

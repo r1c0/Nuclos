@@ -47,6 +47,9 @@ import org.nuclos.client.console.NuclosConsole;
 import org.nuclos.client.entityobject.CollectableEntityObject;
 import org.nuclos.client.explorer.ExplorerController;
 import org.nuclos.client.explorer.node.rule.RuleTreeModel;
+import org.nuclos.client.genericobject.valuelistprovider.ProcessCollectableFieldsProvider;
+import org.nuclos.client.genericobject.valuelistprovider.StateCollectableFieldsProvider;
+import org.nuclos.client.genericobject.valuelistprovider.StatusNumeralCollectableFieldsProvider;
 import org.nuclos.client.main.Main;
 import org.nuclos.client.main.mainframe.MainFrameTab;
 import org.nuclos.client.masterdata.MasterDataSubFormController;
@@ -65,7 +68,9 @@ import org.nuclos.client.ui.collect.CollectStateEvent;
 import org.nuclos.client.ui.collect.DefaultEditView;
 import org.nuclos.client.ui.collect.EditView;
 import org.nuclos.client.ui.collect.SubForm;
+import org.nuclos.client.ui.collect.SubForm.ClearAction;
 import org.nuclos.client.ui.collect.SubForm.Column;
+import org.nuclos.client.ui.collect.SubForm.RefreshValueListAction;
 import org.nuclos.client.ui.collect.component.CollectableComponentType;
 import org.nuclos.client.ui.collect.detail.DetailsPanel;
 import org.nuclos.client.ui.collect.result.ResultPanel;
@@ -154,13 +159,29 @@ public class RuleCollectController extends EntityCollectController<CollectableRu
 		Column entityColumn = new Column("entity", null, new CollectableComponentType(CollectableComponentTypes.TYPE_COMBOBOX, null), true, true, false, null, null);
 		entityColumn.setValueListProvider(new MasterDataEntityCollectableFieldsProvider());
 		entityColumn.getValueListProvider().setParameter("module", true);
-
+		
 		Column eventColumn = new Column("event", null, new CollectableComponentType(CollectableComponentTypes.TYPE_COMBOBOX, null), true, true, false, null, null);
 		eventColumn.setValueListProvider(new RuleEventsCollectableFieldsProvider());
 
+		Column processColumn = new Column("process", null, new CollectableComponentType(CollectableComponentTypes.TYPE_COMBOBOX, null), true, true, false, null, null);
+		processColumn.setValueListProvider(new ProcessCollectableFieldsProvider());
+
+		Column statusColumn = new Column("state", null, new CollectableComponentType(CollectableComponentTypes.TYPE_COMBOBOX, null), true, true, false, null, null);
+		statusColumn.setValueListProvider(new StatusNumeralCollectableFieldsProvider());
+		statusColumn.getValueListProvider().setParameter("provideIdFields", "true");
+
+		entityColumn.addClearAction(new ClearAction("process"));
+		entityColumn.addClearAction(new ClearAction("state"));
+		processColumn.addClearAction(new ClearAction("state"));
+		processColumn.addRefreshValueListAction(new RefreshValueListAction("process", NuclosEntity.RULEUSAGE.getEntityName(), "entity", "entityName"));
+		statusColumn.addRefreshValueListAction(new RefreshValueListAction("state", NuclosEntity.RULEUSAGE.getEntityName(), "entity", "entityName"));
+		statusColumn.addRefreshValueListAction(new RefreshValueListAction("state", NuclosEntity.RULEUSAGE.getEntityName(), "process", "process"));
+		
 		this.subform.addColumn(entityColumn);
 		this.subform.addColumn(eventColumn);
-
+		this.subform.addColumn(processColumn);
+		this.subform.addColumn(statusColumn);
+		
 		this.subformctlUsage = new MasterDataSubFormController(getFrame(), parent, this.getDetailsPanel().getEditModel(), getEntityName(),
 				subform, this.getPreferences(), this.getEntityPreferences(), valueListProviderCache);
 	}

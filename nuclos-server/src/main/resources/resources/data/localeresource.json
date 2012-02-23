@@ -13725,6 +13725,36 @@
     "text": "Name des Formulars"
   },
   {
+    "resourceID": "nuclos.entityfield.formUsage.state.label",
+    "locale": "i-default",
+    "text": "State"
+  },
+  {
+    "resourceID": "nuclos.entityfield.formUsage.state.label",
+    "locale": "en",
+    "text": "State"
+  },
+  {
+    "resourceID": "nuclos.entityfield.formUsage.state.label",
+    "locale": "de",
+    "text": "Status"
+  },
+  {
+    "resourceID": "nuclos.entityfield.formUsage.state.description",
+    "locale": "i-default",
+    "text": "State numeral/name"
+  },
+  {
+    "resourceID": "nuclos.entityfield.formUsage.state.description",
+    "locale": "en",
+    "text": "State numeral/name"
+  },
+  {
+    "resourceID": "nuclos.entityfield.formUsage.state.description",
+    "locale": "de",
+    "text": "Statusnumeral/-name"
+  },
+  {
     "resourceID": "nuclos.entityfield.ruleUsage.entity.description",
     "locale": "i-default",
     "text": "Entity"
@@ -13738,6 +13768,66 @@
     "resourceID": "nuclos.entityfield.ruleUsage.entity.description",
     "locale": "de",
     "text": "Entität"
+  },
+  {
+    "resourceID": "nuclos.entityfield.ruleUsage.process.label",
+    "locale": "i-default",
+    "text": "Action"
+  },
+  {
+    "resourceID": "nuclos.entityfield.ruleUsage.process.label",
+    "locale": "en",
+    "text": "Action"
+  },
+  {
+    "resourceID": "nuclos.entityfield.ruleUsage.process.label",
+    "locale": "de",
+    "text": "Aktion"
+  },
+  {
+    "resourceID": "nuclos.entityfield.ruleUsage.process.description",
+    "locale": "i-default",
+    "text": "Action name"
+  },
+  {
+    "resourceID": "nuclos.entityfield.ruleUsage.process.description",
+    "locale": "en",
+    "text": "Action name"
+  },
+  {
+    "resourceID": "nuclos.entityfield.ruleUsage.process.description",
+    "locale": "de",
+    "text": "Name der Aktion"
+  },
+  {
+    "resourceID": "nuclos.entityfield.ruleUsage.state.label",
+    "locale": "i-default",
+    "text": "State"
+  },
+  {
+    "resourceID": "nuclos.entityfield.ruleUsage.state.label",
+    "locale": "en",
+    "text": "State"
+  },
+  {
+    "resourceID": "nuclos.entityfield.ruleUsage.state.label",
+    "locale": "de",
+    "text": "Status"
+  },
+  {
+    "resourceID": "nuclos.entityfield.ruleUsage.state.description",
+    "locale": "i-default",
+    "text": "State numeral/name"
+  },
+  {
+    "resourceID": "nuclos.entityfield.ruleUsage.state.description",
+    "locale": "en",
+    "text": "State numeral/name"
+  },
+  {
+    "resourceID": "nuclos.entityfield.ruleUsage.state.description",
+    "locale": "de",
+    "text": "Statusnumeral/-name"
   },
   {
     "resourceID": "nuclos.entityfield.generalsearchdocument.comment.description",
@@ -14447,17 +14537,17 @@
   {
     "resourceID": "nuclos.entityfield.generationUsage.state.description",
     "locale": "i-default",
-    "text": "State of object"
+    "text": "State numeral/name"
   },
   {
     "resourceID": "nuclos.entityfield.generationUsage.state.description",
     "locale": "en",
-    "text": "State of object"
+    "text": "State numeral/name"
   },
   {
     "resourceID": "nuclos.entityfield.generationUsage.state.description",
     "locale": "de",
-    "text": "Status des Objektes"
+    "text": "Statusnumeral/-name"
   },
   {
     "resourceID": "nuclos.entityfield.genericobjectrelation.source.description",
