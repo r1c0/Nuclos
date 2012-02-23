@@ -18,6 +18,7 @@ package org.nuclos.client.ui;
 
 import java.awt.Component;
 
+import org.nuclos.client.main.Main;
 import org.nuclos.client.main.MainController;
 import org.nuclos.common2.SpringLocaleDelegate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,12 +55,10 @@ public abstract class Controller {
 		return localeDelegate;
 	}
 
-	// @Autowired
-	void setMainController(MainController mainController) {
-		this.mainController = mainController;
-	}
-	
 	protected MainController getMainController() {
+		if (mainController == null) {
+			mainController = Main.getInstance().getMainController();
+		}
 		return mainController;
 	}
 

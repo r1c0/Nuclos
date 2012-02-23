@@ -52,6 +52,8 @@ import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 import org.nuclos.server.navigation.treenode.GenericObjectTreeNode;
 import org.nuclos.server.ruleengine.NuclosBusinessRuleException;
 import org.nuclos.server.ruleengine.valueobject.RuleVO;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 /**
  * Business Delegate for <code>GenericObjectFacadeBean</code> and <code>GeneratorFacadeBean</code>.
@@ -62,33 +64,33 @@ import org.nuclos.server.ruleengine.valueobject.RuleVO;
  * @author	<a href="mailto:Christoph.Radig@novabit.de">Christoph.Radig</a>
  * @version 01.00.00
  */
+@Component
 public class GenericObjectDelegate {
 	
 	private static final Logger LOG = Logger.getLogger(GenericObjectDelegate.class);
 	
-	private static GenericObjectDelegate singleton;
+	private static GenericObjectDelegate INSTANCE;
 
-	private final GenericObjectFacadeRemote gofacade;
+	// 
+	
+	private GenericObjectFacadeRemote gofacade;
 
-	private static Map<Integer, String> resourceMapCache;
+	private Map<Integer, String> resourceMapCache;
 
 	/**
 	 * Use getInstance() to get the one and only instance of this class.
 	 */
-	private GenericObjectDelegate() {
-		try {
-			this.gofacade = ServiceLocator.getInstance().getFacade(GenericObjectFacadeRemote.class);
-		}
-		catch (RuntimeException ex) {
-			throw new NuclosFatalException(ex);
-		}
+	GenericObjectDelegate() {
+		INSTANCE = this;
 	}
-
-	public static synchronized GenericObjectDelegate getInstance() {
-		if (singleton == null) {
-			singleton = new GenericObjectDelegate();
-		}
-		return singleton;
+	
+	public static GenericObjectDelegate getInstance() {
+		return INSTANCE;
+	}
+	
+	@Autowired
+	final void setGenericObjectFacadeRemote(GenericObjectFacadeRemote genericObjectFacadeRemote) {
+		this.gofacade = genericObjectFacadeRemote;
 	}
 
 	protected GenericObjectFacadeRemote getGenericObjectFacade() {

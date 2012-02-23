@@ -68,5 +68,4 @@ public abstract class NuclosEntityAttributeAbstractStep extends PanelWizardStep 
 		return model;
 	}
 
-	
 }

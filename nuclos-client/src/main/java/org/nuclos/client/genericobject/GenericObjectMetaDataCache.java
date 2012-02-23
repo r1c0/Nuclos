@@ -41,7 +41,7 @@ import org.nuclos.common2.EntityAndFieldName;
 import org.nuclos.common2.exception.CommonFinderException;
 import org.nuclos.server.attribute.valueobject.AttributeCVO;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Configurable;
+import org.springframework.stereotype.Component;
 
 /**
  * Client side leased object meta data cache (singleton).
@@ -52,12 +52,16 @@ import org.springframework.beans.factory.annotation.Configurable;
  * @author	<a href="mailto:Christoph.Radig@novabit.de">Christoph.Radig</a>
  * @version 01.00.00
  */
-@Configurable
+@Component
 public class GenericObjectMetaDataCache implements GenericObjectMetaDataProvider {
 
+	private static final Logger LOG = Logger.getLogger(GenericObjectMetaDataCache.class);
+	
 	private static GenericObjectMetaDataCache INSTANCE;
 
-	private final Logger log = Logger.getLogger(this.getClass());
+	//
+	
+	private GenericObjectDelegate genericObjectDelegate;
 
 	private GenericObjectMetaDataVO lometacvo;
 
@@ -66,23 +70,26 @@ public class GenericObjectMetaDataCache implements GenericObjectMetaDataProvider
 	private TopicNotificationReceiver tnr; 
 
 	private GenericObjectMetaDataCache() {
+		INSTANCE = this;
 	}
 	
 	@PostConstruct
-	void init() {
+	final void init() {
 		this.setup();
 		tnr.subscribe(JMSConstants.TOPICNAME_METADATACACHE, messagelistener);
 	}
 	
 	@Autowired
-	void setTopicNotificationReceiver(TopicNotificationReceiver tnr) {
+	final void setTopicNotificationReceiver(TopicNotificationReceiver tnr) {
 		this.tnr = tnr;
 	}
+	
+	@Autowired
+	final void setGenericObjectDelegate(GenericObjectDelegate genericObjectDelegate) {
+		this.genericObjectDelegate = genericObjectDelegate;
+	}
 
-	public static synchronized GenericObjectMetaDataCache getInstance() {
-		if (INSTANCE == null) {
-			INSTANCE = new GenericObjectMetaDataCache();
-		}
+	public static GenericObjectMetaDataCache getInstance() {
 		return INSTANCE;
 	}
 
@@ -180,7 +187,7 @@ public class GenericObjectMetaDataCache implements GenericObjectMetaDataProvider
 	}
 
 	private void setup() {
-		this.lometacvo = GenericObjectDelegate.getInstance().getMetaDataCVO();
+		this.lometacvo = genericObjectDelegate.getMetaDataCVO();
 		this.fireCacheableChanged();
 	}
 
@@ -208,7 +215,7 @@ public class GenericObjectMetaDataCache implements GenericObjectMetaDataProvider
 	private final MessageListener messagelistener = new MessageListener() {
 		@Override
 		public void onMessage(Message msg) {
-			log.info("Received notification from server: meta data changed.");
+			LOG.info("Received notification from server: meta data changed.");
 			GenericObjectMetaDataCache.this.revalidate();
 		}
 	};

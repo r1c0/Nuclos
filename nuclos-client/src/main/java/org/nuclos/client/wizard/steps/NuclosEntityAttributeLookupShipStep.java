@@ -35,6 +35,7 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.annotation.PostConstruct;
 import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -61,6 +62,7 @@ import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
 import org.nuclos.common2.SpringLocaleDelegate;
 import org.pietschy.wizard.InvalidStateException;
+import org.springframework.beans.factory.annotation.Configurable;
 
 /**
 * <br>
@@ -70,7 +72,7 @@ import org.pietschy.wizard.InvalidStateException;
 * @author <a href="mailto:marc.finke@novabit.de">Marc Finke</a>
 * @version 01.00.00
 */
-
+@Configurable
 public class NuclosEntityAttributeLookupShipStep extends NuclosEntityAttributeAbstractStep {
 
 	private static final Logger LOG = Logger.getLogger(NuclosEntityAttributeLookupShipStep.class);
@@ -100,23 +102,24 @@ public class NuclosEntityAttributeLookupShipStep extends NuclosEntityAttributeAb
 
 
 	public NuclosEntityAttributeLookupShipStep() {
-		initComponents();
+		// initComponents();
 	}
 
 	public NuclosEntityAttributeLookupShipStep(String name, String summary) {
 		super(name, summary);
-		initComponents();
+		// initComponents();
 	}
 
 	public NuclosEntityAttributeLookupShipStep(String name, String summary, Icon icon) {
 		super(name, summary, icon);
-		initComponents();
+		// initComponents();
 	}
 
 	public void setAttributeList(List<Attribute> lst) {
 		this.lstAttributes = lst;
 	}
 
+	@PostConstruct
 	@Override
 	protected void initComponents() {
 		double size [][] = {{TableLayout.PREFERRED,40, TableLayout.FILL}, {20,20,20,20,100,20,TableLayout.PREFERRED, TableLayout.FILL}};

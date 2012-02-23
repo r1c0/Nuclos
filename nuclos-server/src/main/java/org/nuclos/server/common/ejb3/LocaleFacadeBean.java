@@ -346,7 +346,7 @@ public class LocaleFacadeBean implements LocaleFacadeRemote {
 		return CollectionUtils.getFirst(dataBaseHelper.getDbAccess().executeQuery(query));
 	}
 
-	@Cacheable(value="localeAllResource", key="#p0")
+	@Cacheable(value="localeAllResource", key="#p0", condition="#p0 != null")
 	public Map<String, String> getAllResourcesById(String resourceId) {
 		Map<String, String> map = new HashMap<String, String>();
 		for (MasterDataVO mdvo : XMLEntities.getData(NuclosEntity.LOCALERESOURCE).findAllVO("resourceID", resourceId)) {
@@ -382,7 +382,7 @@ public class LocaleFacadeBean implements LocaleFacadeRemote {
 
 	@Caching(evict= {
 			@CacheEvict(value="localeResource", key="#p1.cacheKey(#p0)"), 
-			@CacheEvict(value="localeAllResource", key="#p0")
+			@CacheEvict(value="localeAllResource", key="#p0", condition="#p0 != null")
 			})
 	public void update(String resourceId, LocaleInfo localeInfo, String text) {
 		if (text != null) {
@@ -394,7 +394,7 @@ public class LocaleFacadeBean implements LocaleFacadeRemote {
 
 	@Caching(evict= {
 			@CacheEvict(value="localeResource", allEntries=true), 
-			@CacheEvict(value="localeAllResource", key="#p0")
+			@CacheEvict(value="localeAllResource", key="#p0", condition="#p0 != null")
 			})
 	public void deleteResource(String resourceId) {
 		if (resourceId != null) {
@@ -465,7 +465,7 @@ public class LocaleFacadeBean implements LocaleFacadeRemote {
 
 	@Caching(evict= {
 			@CacheEvict(value="localeResource", key="#p1.cacheKey(#p0)"), 
-			@CacheEvict(value="localeAllResource", key="#p0")
+			@CacheEvict(value="localeAllResource", key="#p0", condition="#p0 != null")
 			})
 	public String insert(String sResourceId, LocaleInfo localeInfo, String sText, boolean internal) {
 		final Integer nextId = dataBaseHelper.getNextIdAsInteger(internal ? "resids" : "idfactory");
