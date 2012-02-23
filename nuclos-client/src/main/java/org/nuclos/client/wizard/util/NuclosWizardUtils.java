@@ -109,9 +109,9 @@ public class NuclosWizardUtils {
 
 			String strDatabaseTyp = (String)vo.getField("databasetyp");
 			String strName = (String)vo.getField("name");
-			if(strName.equals("Referenz Feld"))
+			if(strName.equals("Referenzfeld"))
 				continue;
-			if(strName.equals("Nachschlage Feld"))
+			if(strName.equals("Nachschlagefeld"))
 				continue;
 
 			if(StringUtils.equals(javaType, strJavaTyp) && StringUtils.equals(outputFormat, strOutputFormat) &&

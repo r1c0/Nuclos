@@ -7,7 +7,14 @@
     "databasetyp": "varchar"
   },
   {
-    "name": "Referenz Feld",
+    "name": "Referenzfeld",
+    "scale": 255,
+    "precision": 0,
+    "javatyp": "java.lang.String",
+    "databasetyp": "varchar"
+  },
+  {
+    "name": "Nachschlagefeld",
     "scale": 255,
     "precision": 0,
     "javatyp": "java.lang.String",
