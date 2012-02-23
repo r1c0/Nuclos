@@ -21,6 +21,7 @@ import java.util.Properties;
 import org.nuclos.client.genericobject.GeneratorActions;
 import org.nuclos.client.genericobject.GenericObjectCollectController;
 import org.nuclos.client.masterdata.MasterDataCollectController;
+import org.nuclos.client.rule.RuleDelegate;
 import org.nuclos.client.ui.Errors;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.client.ui.collect.CollectActionAdapter;
@@ -31,6 +32,7 @@ import org.nuclos.common.collect.collectable.Collectable;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonFinderException;
 import org.nuclos.server.genericobject.valueobject.GeneratorActionVO;
+import org.nuclos.server.ruleengine.valueobject.RuleVO;
 
 
 /**
@@ -68,16 +70,21 @@ public class GeneratorButtonAction<Clct extends Collectable> implements CollectA
 					 */
 
 					String sactionId = probs.getProperty("generatortoexecute");
-					Integer actionId = null;
+					
+					GeneratorActionVO generatorToExecute = null;
 					try {
-						actionId = Integer.parseInt(sactionId);
-					}
-					catch (NumberFormatException e) {
-						Errors.getInstance().showExceptionDialog(controller.getCollectPanel(), e);
-						return;
-					}
-				
-					GeneratorActionVO generatorToExecute = GeneratorActions.getGeneratorAction(actionId);
+						generatorToExecute = GeneratorActions.getGeneratorAction(sactionId);
+					} catch (Exception e) {
+						// do nothing.
+					}	
+					if (generatorToExecute == null) {
+						try {
+							generatorToExecute = GeneratorActions.getGeneratorAction(Integer.parseInt(sactionId));
+						} catch (Exception e) {
+							// do nothing.
+						}	
+					}	
+			
 					if (generatorToExecute != null) {
 						if (controller instanceof MasterDataCollectController) {
 							if (((MasterDataCollectController)controller).getGeneratorActions().contains(generatorToExecute))
@@ -110,15 +117,21 @@ public class GeneratorButtonAction<Clct extends Collectable> implements CollectA
 		}
 		
 		String sactionId = probs.getProperty("generatortoexecute");
-		Integer actionId = null;
+
+		GeneratorActionVO generatorToExecute = null;
 		try {
-			actionId = Integer.parseInt(sactionId);
+			generatorToExecute = GeneratorActions.getGeneratorAction(sactionId);
+		} catch (Exception e) {
+			// do nothing.
+		}	
+		if (generatorToExecute == null) {
+			try {
+				generatorToExecute = GeneratorActions.getGeneratorAction(Integer.parseInt(sactionId));
+			} catch (Exception e) {
+				// do nothing.
+			}	
 		}
-		catch (NumberFormatException e) {
-			return false;
-		}
-	
-		GeneratorActionVO generatorToExecute = GeneratorActions.getGeneratorAction(actionId);
+		
 		if (generatorToExecute != null) {
 			if (controller instanceof MasterDataCollectController) {
 				if (((MasterDataCollectController)controller).getGeneratorActions().contains(generatorToExecute))

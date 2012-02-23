@@ -794,7 +794,7 @@ public class LayoutMLGenerator implements LayoutMLConstants {
 				String rule = (String)c.getProperties().getProperty(WYSIWYGStaticButton.PROPERTY_ACTIONCOMMAND_PROPERTIES).getValue();
 				RuleVO ruleVO = RuleDelegate.getInstance().get(rule);
 				WYSIYWYGProperty temp = new WYSIYWYGProperty();
-				temp.addWYSIYWYGPropertySet(new WYSIYWYGPropertySet("ruletoexecute", ruleVO.getId() + ""));
+				temp.addWYSIYWYGPropertySet(new WYSIYWYGPropertySet("ruletoexecute", ruleVO.getRule() + ""));
 				block.append(getLayoutMLCollectableComponentProperty(temp, blockDeep + 1));
 			} catch (Exception e) {
 				LOG.warn("getLayoutMLForStaticButton failed: " + e, e);
@@ -822,7 +822,7 @@ public class LayoutMLGenerator implements LayoutMLConstants {
 				}
 				if (generatorActionVO != null) {
 					WYSIYWYGProperty temp = new WYSIYWYGProperty();
-					temp.addWYSIYWYGPropertySet(new WYSIYWYGPropertySet("generatortoexecute", generatorActionVO.getId() + ""));
+					temp.addWYSIYWYGPropertySet(new WYSIYWYGPropertySet("generatortoexecute", generatorActionVO.getName() + ""));
 					block.append(getLayoutMLCollectableComponentProperty(temp, blockDeep + 1));
 				}
 			} catch (Exception e) {
@@ -853,7 +853,7 @@ public class LayoutMLGenerator implements LayoutMLConstants {
 				
 				if (stateVO != null) {
 					WYSIYWYGProperty temp = new WYSIYWYGProperty();
-					temp.addWYSIYWYGPropertySet(new WYSIYWYGPropertySet("targetState", stateVO.getId() + ""));
+					temp.addWYSIYWYGPropertySet(new WYSIYWYGPropertySet("targetState", stateVO.getNumeral() + ""));
 					block.append(getLayoutMLCollectableComponentProperty(temp, blockDeep + 1));
 				}
 			} catch (Exception e) {

@@ -104,7 +104,6 @@ public class GeneratorActions {
 
 	}
 
-
 	/**
 	 * gets a generator action by id.
 	 * @param iGeneratorActionId the generator action id
@@ -114,10 +113,22 @@ public class GeneratorActions {
 	public static GeneratorActionVO getGeneratorAction(Integer iGeneratorActionId) {
 		GeneratorActionVO result = getInstance().generatorcvo.getGeneratorAction(iGeneratorActionId);
 		
-		assert result != null;
+		//assert result != null;
 		return result;
 	}
 
+	/**
+	 * gets a generator action by name.
+	 * @param sGeneratorName the generator action name
+	 * @return GeneratorActionVO the generator action
+	 * @postcondition result != null
+	 */
+	public static GeneratorActionVO getGeneratorAction(String sGeneratorName) {
+		GeneratorActionVO result = getInstance().generatorcvo.getGeneratorAction(sGeneratorName);
+		
+		//assert result != null;
+		return result;
+	}
 
 	/**
 	 * invalidates the cache so  the generator actions are reread the next time.

@@ -860,22 +860,48 @@ public class LayoutMLLoader implements LayoutMLConstants {
 						String label = atts.getValue("name");
 						String valueId = atts.getValue("value");
 					if ("ruletoexecute".equals(label)) {
-						RuleVO ruleToExecute;
+						RuleVO ruleToExecute = null;
 						try {
-							ruleToExecute = RuleDelegate.getInstance().get(Integer.parseInt(valueId));
+							try {
+								ruleToExecute = RuleDelegate.getInstance().get(valueId);
+							} catch (Exception e) {
+								// do nothing.
+							}	
+							if (ruleToExecute == null) {
+								try {
+									ruleToExecute = RuleDelegate.getInstance().get(Integer.parseInt(valueId));
+								} catch (Exception e) {
+									// do nothing.
+								}	
+							}
 							final PropertyValue<String> pv = (PropertyValue<String>) 
 									peekComponent().getProperties().getProperty(WYSIWYGStaticButton.PROPERTY_ACTIONCOMMAND_PROPERTIES);
-							pv.setValue(ruleToExecute.getRule());
+							if (ruleToExecute != null) {
+								pv.setValue(ruleToExecute.getRule());
+							}
 						} catch (Exception e) {
 							LOG.warn("startElement failed: " + e, e);
 						}
 					} else if ("generatortoexecute".equals(label)) {
-						GeneratorActionVO generatorToExecute;
+						GeneratorActionVO generatorToExecute = null;
 						try {
-							generatorToExecute = GeneratorActions.getGeneratorAction(Integer.parseInt(valueId));
+							try {
+								generatorToExecute = GeneratorActions.getGeneratorAction(valueId);
+							} catch (Exception e) {
+								// do nothing.
+							}	
+							if (generatorToExecute == null) {
+								try {
+									generatorToExecute = GeneratorActions.getGeneratorAction(Integer.parseInt(valueId));
+								} catch (Exception e) {
+									// do nothing.
+								}	
+							}
 							final PropertyValue<String> pv = (PropertyValue<String>) 
 									peekComponent().getProperties().getProperty(WYSIWYGStaticButton.PROPERTY_ACTIONCOMMAND_PROPERTIES);
-							pv.setValue(generatorToExecute.getName());
+							if (generatorToExecute != null) {
+								pv.setValue(generatorToExecute.getName());
+							}
 						} catch (Exception e) {
 							LOG.warn("startElement failed: " + e, e);
 						}

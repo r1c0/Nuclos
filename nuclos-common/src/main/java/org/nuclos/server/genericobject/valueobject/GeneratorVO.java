@@ -92,10 +92,9 @@ public class GeneratorVO implements Serializable {
 				result.add(generatoractionvo);
 			}
 		}
-		assert result != null;
+		//assert result != null;
 		return result;
 	}
-
 
 	/**
 	 * gets a generator action by id.
@@ -105,13 +104,30 @@ public class GeneratorVO implements Serializable {
 	 */
 	public GeneratorActionVO getGeneratorAction(Integer iGeneratorActionId) {
 		GeneratorActionVO result = null;
-		final MetaDataProvider mdProv = SpringApplicationContextHolder.getBean(MetaDataProvider.class);
 		for (GeneratorActionVO generatoractionvo : lstActions) {
 			if (generatoractionvo.getId().equals(iGeneratorActionId)) {
 				result = generatoractionvo;
 			}
 		}
-		assert result != null;
+		//assert result != null;
+		return result;
+	}
+
+	/**
+	 * gets a generator action by name.
+	 * @param sGeneratorName the generator action name
+	 * @return GeneratorActionVO the generator action
+	 * @postcondition result != null
+	 */
+	public GeneratorActionVO getGeneratorAction(String sGeneratorName) {
+		GeneratorActionVO result = null;
+		final MetaDataProvider mdProv = SpringApplicationContextHolder.getBean(MetaDataProvider.class);
+		for (GeneratorActionVO generatoractionvo : lstActions) {
+			if (generatoractionvo.getName().equals(sGeneratorName)) {
+				result = generatoractionvo;
+			}
+		}
+		//assert result != null;
 		return result;
 	}
 

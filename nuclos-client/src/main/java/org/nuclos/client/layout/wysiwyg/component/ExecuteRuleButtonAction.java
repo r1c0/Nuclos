@@ -70,15 +70,22 @@ public class ExecuteRuleButtonAction<Clct extends Collectable> implements Collec
 					 */
 
 					String sruleId = probs.getProperty("ruletoexecute");
-					Integer ruleId = null;
+					
+
+					RuleVO ruleToExecute = null;
 					try {
-						ruleId = Integer.parseInt(sruleId);
+						ruleToExecute = RuleDelegate.getInstance().get(sruleId);
+					} catch (Exception e) {
+						// do nothing.
+					}	
+					if (ruleToExecute == null) {
+						try {
+							ruleToExecute = RuleDelegate.getInstance().get(Integer.parseInt(sruleId));
+						} catch (Exception e) {
+							// do nothing.
+						}	
 					}
-					catch (NumberFormatException e) {
-						Errors.getInstance().showExceptionDialog(controller.getCollectPanel(), e);
-						return;
-					}
-					RuleVO ruleToExecute = RuleDelegate.getInstance().get(ruleId);
+					
 					if (ruleToExecute != null) {
 						List<RuleVO> rule = new ArrayList<RuleVO>();
 						rule.add(ruleToExecute);
@@ -110,23 +117,24 @@ public class ExecuteRuleButtonAction<Clct extends Collectable> implements Collec
 			return false;
 		}
 		
+		String sruleId = probs.getProperty("ruletoexecute");
+
+		RuleVO ruleToExecute = null;
 		try {
-			String sruleId = probs.getProperty("ruletoexecute");
-			Integer ruleId = null;
+			ruleToExecute = RuleDelegate.getInstance().get(sruleId);
+		} catch (Exception e) {
+			// do nothing.
+		}	
+		if (ruleToExecute == null) {
 			try {
-				ruleId = Integer.parseInt(sruleId);
-			}
-			catch (NumberFormatException e) {
-				return false;
-			}
-			
-			RuleVO ruleToExecute = RuleDelegate.getInstance().get(ruleId);
-			if (ruleToExecute != null && ruleToExecute.isActive() && !ruleToExecute.isRemoved()) {
-				return true;
-			}
+				ruleToExecute = RuleDelegate.getInstance().get(Integer.parseInt(sruleId));
+			} catch (Exception e) {
+				// do nothing.
+			}	
 		}
-		catch (CommonFinderException e) {
-			// do nothing
+		
+		if (ruleToExecute != null && ruleToExecute.isActive() && !ruleToExecute.isRemoved()) {
+			return true;
 		}
 		return false;
 	}
