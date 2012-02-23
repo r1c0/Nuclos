@@ -37,6 +37,7 @@ import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.ParameterProvider;
 import org.nuclos.common.SearchConditionUtils;
+import org.nuclos.common.SpringApplicationContextHolder;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
 import org.nuclos.common.collect.collectable.CollectableValueIdField;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableComparison;
@@ -69,6 +70,7 @@ import org.nuclos.common2.exception.CommonRemoveException;
 import org.nuclos.common2.exception.CommonStaleVersionException;
 import org.nuclos.common2.exception.CommonValidationException;
 import org.nuclos.server.attribute.ejb3.AttributeFacadeLocal;
+import org.nuclos.server.attribute.ejb3.LayoutFacadeBean;
 import org.nuclos.server.autosync.XMLEntities;
 import org.nuclos.server.common.MasterDataMetaCache;
 import org.nuclos.server.common.MetaDataServerProvider;
@@ -362,6 +364,7 @@ public class MasterDataFacadeHelper {
 				break;
 			case LAYOUT:
 				MetaDataServerProvider.getInstance().revalidate(true);
+				SpringApplicationContextHolder.getBean(LayoutFacadeBean.class).evictCaches();
 				break;
 			case LAYOUTUSAGE:
 				MetaDataServerProvider.getInstance().revalidate(true);

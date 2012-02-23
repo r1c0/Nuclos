@@ -19,6 +19,7 @@ package org.nuclos.server.attribute.ejb3;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -59,6 +60,9 @@ import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 import org.nuclos.server.ruleengine.NuclosBusinessRuleException;
 import org.nuclos.server.transfer.XmlExportImportHelper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.transaction.annotation.Transactional;
 import org.xml.sax.InputSource;
 
@@ -154,6 +158,7 @@ public class LayoutFacadeBean extends MasterDataFacadeBean implements LayoutFaca
 	 * @return the detail layout for the given entity name if any, otherwise null
 	 */
 	@RolesAllowed("Login")
+	@Cacheable(value="mdLayoutML", key="#p0")
 	public String getMasterDataLayout(String sEntity) {
 		return getMasterDataLayout(sEntity, false);
 	}
@@ -195,6 +200,7 @@ public class LayoutFacadeBean extends MasterDataFacadeBean implements LayoutFaca
 	 * @param iLayoutId
 	 */
 	@RolesAllowed("Login")
+	@Cacheable(value="goLayout", key="#p0")
 	public Map<EntityAndFieldName, String> getSubFormEntityAndParentSubFormEntityNamesByLayoutId(Integer iLayoutId) {
 		String sLayoutML = null;
 
@@ -254,14 +260,15 @@ public class LayoutFacadeBean extends MasterDataFacadeBean implements LayoutFaca
 	}
 
 	private Map<EntityAndFieldName, String> getSubFormEntityAndParentSubFormEntityNamesMD(String entityName, boolean forImportOrExport) {
+		
 		String sLayoutML = getMasterDataLayout(entityName);
-
-		Map<EntityAndFieldName, String> result = new HashMap<EntityAndFieldName, String>();
+		final Map<EntityAndFieldName, String> result;
 
 		if (sLayoutML == null) {
 			// special handling for entities with manually build layouts which are not saved in the database
 			NuclosEntity entity = NuclosEntity.getByName(entityName);
 			if (entity != null) {
+				result = new HashMap<EntityAndFieldName, String>();
 				switch (entity) {
 				case RULE:
 					result.put(new EntityAndFieldName(NuclosEntity.RULEUSAGE, "rule"), null);
@@ -305,8 +312,8 @@ public class LayoutFacadeBean extends MasterDataFacadeBean implements LayoutFaca
 				if (!metaVO.isSystemEntity()) {
 					throw new NuclosFatalException(
 						StringUtils.getParameterizedExceptionMessage("layout.facade.exception.2", entityName));
-						//"Die Eingabemaske f\u00fcr die Entit\u00e4t \"" + entityName + "\" fehlt.");
 				}
+				result = Collections.emptyMap();
 			}
 		}
 		else {
@@ -314,22 +321,10 @@ public class LayoutFacadeBean extends MasterDataFacadeBean implements LayoutFaca
 				final InputSource inSrc = new InputSource(new StringReader(sLayoutML));
 				inSrc.setSystemId("entity=" + entityName + ":forImportOrExport=" + forImportOrExport);
 				if (forImportOrExport) {
-					Map<EntityAndFieldName, String> subformtree = new LayoutMLParser().getSubFormEntityAndParentSubFormEntityNames(inSrc);
-
-					for (EntityAndFieldName eafn : subformtree.keySet()) {
-						//String sSubform = eafn.getEntityName();
-						//String sForeignKeyFieldName = XmlExportImportHelper.getForeignKeyFieldName(eafn.getEntityName(), eafn.getFieldName(), sSubform);
-						//result.put(new EntityAndFieldName(sSubform, sForeignKeyFieldName), subformtree.get(eafn));
-						/* Das kann so wohl kaum stimmen, s. XmlExportFacadeBean.exportGOEntity(); tentativer Fix (10/2009): */
-						String sSubform = eafn.getEntityName();
-						String sParentEntityName = subformtree.get(eafn);
-						String sForeignKeyFieldName = XmlExportImportHelper.getForeignKeyFieldName(
-							(sParentEntityName == null ? entityName : sParentEntityName), eafn.getFieldName(), sSubform);
-						result.put(new EntityAndFieldName(sSubform, sForeignKeyFieldName), sParentEntityName/*?!*/);
-					}
+					result = getSubFormEntityAndParentSubFormEntityNamesMDforIE(inSrc, entityName);
 				}
 				else {
-					return new LayoutMLParser().getSubFormEntityAndParentSubFormEntityNames(inSrc);
+					result = getSubFormEntityAndParentSubFormEntityNamesMD(inSrc, entityName);
 				}
 			} catch (LayoutMLException e) {
 				throw new NuclosFatalException(e);
@@ -339,14 +334,39 @@ public class LayoutFacadeBean extends MasterDataFacadeBean implements LayoutFaca
 		return result;
 	}
 
+	@Cacheable(value="mdLayout", key="#p1")
+	Map<EntityAndFieldName, String> getSubFormEntityAndParentSubFormEntityNamesMD(
+			InputSource inSrc, String entityName) throws LayoutMLException {
+		
+		return new LayoutMLParser().getSubFormEntityAndParentSubFormEntityNames(inSrc);
+	}
+	
+	@Cacheable(value="mdLayoutImportExport", key="#p1")
+	Map<EntityAndFieldName, String> getSubFormEntityAndParentSubFormEntityNamesMDforIE(
+			InputSource inSrc, String entityName) throws LayoutMLException {
+		
+		final Map<EntityAndFieldName, String> result = new HashMap<EntityAndFieldName, String>();
+		final Map<EntityAndFieldName, String> subformtree = new LayoutMLParser().getSubFormEntityAndParentSubFormEntityNames(inSrc);
+		for (EntityAndFieldName eafn : subformtree.keySet()) {
+			//String sSubform = eafn.getEntityName();
+			//String sForeignKeyFieldName = XmlExportImportHelper.getForeignKeyFieldName(eafn.getEntityName(), eafn.getFieldName(), sSubform);
+			//result.put(new EntityAndFieldName(sSubform, sForeignKeyFieldName), subformtree.get(eafn));
+			/* Das kann so wohl kaum stimmen, s. XmlExportFacadeBean.exportGOEntity(); tentativer Fix (10/2009): */
+			String sSubform = eafn.getEntityName();
+			String sParentEntityName = subformtree.get(eafn);
+			String sForeignKeyFieldName = XmlExportImportHelper.getForeignKeyFieldName(
+				(sParentEntityName == null ? entityName : sParentEntityName), eafn.getFieldName(), sSubform);
+			result.put(new EntityAndFieldName(sSubform, sForeignKeyFieldName), sParentEntityName/*?!*/);
+		}
+		return result;
+	}
+
 	private Map<EntityAndFieldName, String> getSubFormEntityAndParentSubFormEntityNamesByGO(GenericObjectVO govo) throws CommonFinderException {
 		final AttributeProvider attrprovider = AttributeCache.getInstance();
 		final GenericObjectMetaDataProvider lometadataprovider = GenericObjectMetaDataCache.getInstance();
 		final int iBestMatchingLayoutId = lometadataprovider.getBestMatchingLayoutId(govo.getUsageCriteria(attrprovider), false);
 		return getSubFormEntityAndParentSubFormEntityNamesByLayoutId(iBestMatchingLayoutId);
 	}
-
-
 
 	/**
 	 * returns the entity names of the subform entities along with their foreignkey field
@@ -376,6 +396,15 @@ public class LayoutFacadeBean extends MasterDataFacadeBean implements LayoutFaca
 		} catch (LayoutMLException e) {
 			throw new NuclosFatalException(e);
 		}
+	}
+	
+	@Caching(evict = { 
+			@CacheEvict(value="goLayout", allEntries=true), 
+			@CacheEvict(value="mdLayoutML", allEntries=true),
+			@CacheEvict(value="mdLayout", allEntries=true),
+			@CacheEvict(value="mdLayoutImportExport", allEntries=true)
+			})
+	public void evictCaches() {
 	}
 
 }

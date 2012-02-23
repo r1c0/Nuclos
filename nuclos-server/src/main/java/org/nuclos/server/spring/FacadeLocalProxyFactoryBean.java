@@ -20,6 +20,7 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+import java.util.Arrays;
 
 import org.nuclos.server.common.NuclosRemoteContextHolder;
 import org.springframework.beans.factory.FactoryBean;
@@ -44,6 +45,9 @@ public class FacadeLocalProxyFactoryBean<T> implements FactoryBean<T> {
 	
 	public void setFacadeBean(Object facadeBean) {
 		Assert.notNull(facadeBean);
+		final String classname = facadeBean.getClass().getName();
+		Assert.isTrue(classname.endsWith("FacadeBean"), "Facade bean name does not end with 'FacadeBean': " 
+				+ classname + " (" + Arrays.asList(facadeBean.getClass().getInterfaces()));
 		this.facadeBean = facadeBean;
 	}
 	
@@ -66,15 +70,20 @@ public class FacadeLocalProxyFactoryBean<T> implements FactoryBean<T> {
 		final Object proxy = Proxy.newProxyInstance(getClass().getClassLoader(), new Class<?>[] { facadeLocalInterface }, new InvocationHandler() {
 			@Override
 			public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-				try {
-					ctx.setRemotly(false);
-					final Method realMethod = fbc.getMethod(method.getName(), method.getParameterTypes());
-					return realMethod.invoke(facadeBean, args);
-				} catch (InvocationTargetException ex) {
-					throw ex.getTargetException();
-				} finally {
-					ctx.pop();
-				}
+						try {
+							ctx.setRemotly(false);
+							final Method realMethod = fbc.getMethod(method.getName(), method.getParameterTypes());
+							return realMethod.invoke(facadeBean, args);
+						}
+						catch (InvocationTargetException ex) {
+							throw ex.getTargetException();
+						}
+						catch (NoSuchMethodException e) {
+							throw e;
+						}
+						finally {
+							ctx.pop();
+						}
 			}
 		});
 		return (T) proxy;

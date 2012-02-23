@@ -110,31 +110,18 @@ public class FacadeLocalProxyBeanFactoryPostProcessor extends InstantiationAware
 				beanDefinition.setBeanClassName("org.nuclos.server.spring.FacadeLocalProxyFactoryBean");
 				beanDefinition.setPropertyValues(props);
 				
-				/*
-				beanDefinition.setFactoryBeanName("facadeLocalProxyFactory");
-				beanDefinition.setFactoryMethodName("getProxy");
-				beanDefinition.setConstructorArgumentValues(props);
-				beanDefinition.setBeanClassName(facadeLocalInterface);
-				beanDefinition.setBeanClass(facadeLocal);
-				 */
-				
 				final String beanName = mkBeanName(facadeLocalInterface);
 				registry.registerBeanDefinition(beanName, beanDefinition);
 				beanFactory.registerDependentBean(beanName, bn);
 				beanName2Class.put(beanName, facadeLocal);
 				
 				LOG.info("registered bean definition " + beanName + ": " + beanDefinition);
+				/*
 				LOG.info("contains bean definition for "  + beanName + ": " + beanFactory.containsBeanDefinition(beanName));
 				LOG.info("contains bean for "  + beanName + ": " + beanFactory.containsBean(beanName));
 				final Object bean = beanFactory.getSingleton(beanName);
 				LOG.info("bean for "  + beanName + ": " + beanFactory.getSingleton(beanName));
-				// LOG.info("bean type for "  + beanName + ": " + beanFactory.getType(beanName));
-				/*
-				beanFactory.applyBeanPropertyValues(bean, beanName);
-				LOG.info("bean for "  + beanName + ": " + beanFactory.getSingleton(beanName));
-				beanFactory.applyBeanPostProcessorsBeforeInitialization(bean, beanName);
-				LOG.info("bean for "  + beanName + ": " + beanFactory.getSingleton(beanName));
-				*/
+				 */
 			}
 		}
 		LOG.info("END");

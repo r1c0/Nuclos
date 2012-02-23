@@ -21,12 +21,18 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 
+import org.apache.log4j.Logger;
+import org.nuclos.common.SpringApplicationContextHolder;
 import org.nuclos.common2.ServiceLocator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
 public class ServerServiceLocator extends ServiceLocator {
+	
+	private static final Logger LOG = Logger.getLogger(ServerServiceLocator.class);
+	
+	//
 	
 	private NuclosRemoteContextHolder ctx;
 	
@@ -40,27 +46,50 @@ public class ServerServiceLocator extends ServiceLocator {
 
 	@Override
 	public <T> T getFacade(Class<T> c) {
-		final Object target = super.getFacade(c);
-		final Class<?> targetClass = target.getClass();
-		if (c.getSimpleName().endsWith("Local")) {
-			Object proxy = Proxy.newProxyInstance(getClass().getClassLoader(), new Class<?>[] {c}, new InvocationHandler() {
-				@Override
-				public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-					try {
-						ctx.setRemotly(false);
-						final Method realMethod = targetClass.getMethod(method.getName(), method.getParameterTypes());
-						return realMethod.invoke(target, args);
-					} catch (InvocationTargetException ex) {
-						throw ex.getTargetException();
-					} finally {
-						ctx.pop();
-					}
-				}
-			});
-			return (T) proxy;
+		final T result;
+		final String name = getBeanname(c);
+		if (name.endsWith("Local")) {
+			result = SpringApplicationContextHolder.getInstance().getBean(c);
+			assert Proxy.isProxyClass(result.getClass());
 		}
 		else {
-			return (T) target;
+			LOG.warn("Calling service " + c.getName() + " from within server - you should always use the local interface");
+			final T target = super.getFacade(c);
+			final Class<?> targetClass = target.getClass();
+			if (c.getSimpleName().endsWith("Local")) {
+				assert false;
+				Object proxy = Proxy.newProxyInstance(getClass().getClassLoader(), new Class<?>[] {c}, new InvocationHandler() {
+					@Override
+					public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+								try {
+									ctx.setRemotly(false);
+									final Method realMethod = targetClass.getMethod(method.getName(),
+											method.getParameterTypes());
+									return realMethod.invoke(target, args);
+								}
+								catch (InvocationTargetException ex) {
+									throw ex.getTargetException();
+								}
+								catch (NoSuchMethodException e) {
+									throw e;
+								}
+								finally {
+									ctx.pop();
+								}
+					}
+				});
+				result = (T) proxy;
+			}
+			else {
+				result = target;
+			}
 		}
+		return result;
 	}
+	
+	private String getBeanname(Class<?> c) {
+		String s = c.getSimpleName();
+		return s.substring(0, 1).toLowerCase() + s.substring(1);
+	}
+	
 }
