@@ -76,6 +76,8 @@ public class SearchFilterFacadeBean extends MasterDataFacadeBean implements Sear
 	
 	private MasterDataFacadeLocal masterDataFacade;
 	
+	private LocaleFacadeLocal localeFacade;
+	
 	public SearchFilterFacadeBean() {
 	}
 	
@@ -86,6 +88,15 @@ public class SearchFilterFacadeBean extends MasterDataFacadeBean implements Sear
 	
 	private final MasterDataFacadeLocal getMasterDataFacade() {
 		return masterDataFacade;
+	}
+	
+	private final LocaleFacadeLocal getLocaleFacade() {
+		return localeFacade;
+	}
+
+	@Autowired
+	final void setLocaleFacade(LocaleFacadeLocal localeFacade) {
+		this.localeFacade = localeFacade;
 	}
 
 	public Object modify(String sEntityName, MasterDataVO mdvo, DependantMasterDataMap mpDependants, List<TranslationVO> resources)

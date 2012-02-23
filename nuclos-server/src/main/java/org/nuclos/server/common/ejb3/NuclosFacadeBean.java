@@ -66,8 +66,6 @@ public abstract class NuclosFacadeBean {
 	
 	private NucletDalProvider nucletDalProvider;
 	
-	private LocaleFacadeLocal localFacade;
-	
 	// end Spring injected
 	
 	public NuclosFacadeBean() {
@@ -110,10 +108,6 @@ public abstract class NuclosFacadeBean {
 	
 	protected final RecordGrantUtils getRecordGrantUtils() {
 		return grantUtils;
-	}
-	
-	protected final LocaleFacadeLocal getLocaleFacade() {
-		return localFacade;
 	}
 	
 	protected final NucletDalProvider getNucletDalProvider() {

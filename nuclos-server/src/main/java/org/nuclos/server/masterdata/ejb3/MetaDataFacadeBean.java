@@ -157,6 +157,8 @@ public class MetaDataFacadeBean extends NuclosFacadeBean implements MetaDataFaca
 	
 	private MasterDataFacadeLocal masterDataFacade;
 	
+	private LocaleFacadeLocal localeFacade;
+	
 	public MetaDataFacadeBean() {
 	}
 
@@ -196,6 +198,15 @@ public class MetaDataFacadeBean extends NuclosFacadeBean implements MetaDataFaca
 	@Autowired
 	final void setMasterDataFacade(MasterDataFacadeLocal masterDataFacade) {
 		this.masterDataFacade = masterDataFacade;
+	}
+	
+	private final LocaleFacadeLocal getLocaleFacade() {
+		return localeFacade;
+	}
+
+	@Autowired
+	final void setLocaleFacade(LocaleFacadeLocal localeFacade) {
+		this.localeFacade = localeFacade;
 	}
 	
 	@PreDestroy

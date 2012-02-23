@@ -62,6 +62,8 @@ public class CustomComponentFacadeBean extends NuclosFacadeBean implements Custo
 	
 	private MasterDataFacadeLocal masterDataFacade;	
 	
+	private LocaleFacadeLocal localeFacade;
+	
 	public CustomComponentFacadeBean() {
 	}
 
@@ -72,6 +74,15 @@ public class CustomComponentFacadeBean extends NuclosFacadeBean implements Custo
 	
 	private final MasterDataFacadeLocal getMasterDataFacade() {
 		return masterDataFacade;
+	}
+
+	private final LocaleFacadeLocal getLocaleFacade() {
+		return localeFacade;
+	}
+
+	@Autowired
+	final void setLocaleFacade(LocaleFacadeLocal localeFacade) {
+		this.localeFacade = localeFacade;
 	}
 
 	private void notifyClients() {

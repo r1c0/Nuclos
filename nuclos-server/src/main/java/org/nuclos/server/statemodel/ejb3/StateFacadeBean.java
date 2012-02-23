@@ -73,6 +73,7 @@ import org.nuclos.server.common.SecurityCache;
 import org.nuclos.server.common.ServerServiceLocator;
 import org.nuclos.server.common.SessionUtils;
 import org.nuclos.server.common.StateCache;
+import org.nuclos.server.common.ejb3.LocaleFacadeLocal;
 import org.nuclos.server.common.ejb3.NuclosFacadeBean;
 import org.nuclos.server.common.valueobject.NuclosValueObject;
 import org.nuclos.server.dal.DalSupportForGO;
@@ -141,6 +142,8 @@ public class StateFacadeBean extends NuclosFacadeBean implements StateFacadeRemo
 	
 	private MasterDataFacadeLocal masterDataFacade;
 	
+	private LocaleFacadeLocal localeFacade;
+	
 	public StateFacadeBean() {
 	}
 	
@@ -164,6 +167,15 @@ public class StateFacadeBean extends NuclosFacadeBean implements StateFacadeRemo
 			masterDataFacade = ServerServiceLocator.getInstance().getFacade(MasterDataFacadeLocal.class);
 		}
 		return masterDataFacade;
+	}
+	
+	private final LocaleFacadeLocal getLocaleFacade() {
+		return localeFacade;
+	}
+
+	@Autowired
+	final void setLocaleFacade(LocaleFacadeLocal localeFacade) {
+		this.localeFacade = localeFacade;
 	}
 
 	/**

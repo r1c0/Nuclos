@@ -66,6 +66,7 @@ import org.nuclos.server.common.MetaDataServerProvider;
 import org.nuclos.server.common.RuleCache;
 import org.nuclos.server.common.SecurityCache;
 import org.nuclos.server.common.ServerParameterProvider;
+import org.nuclos.server.common.ejb3.LocaleFacadeLocal;
 import org.nuclos.server.common.ejb3.NuclosFacadeBean;
 import org.nuclos.server.dal.DalUtils;
 import org.nuclos.server.dal.processor.nuclet.JdbcEntityObjectProcessor;
@@ -132,6 +133,8 @@ public class TreeNodeFacadeBean extends NuclosFacadeBean implements TreeNodeFaca
 	
 	private MasterDataFacadeLocal masterDataFacade;
 	
+	private LocaleFacadeLocal localeFacade;
+	
 	public TreeNodeFacadeBean() {
 	}
 	
@@ -156,6 +159,15 @@ public class TreeNodeFacadeBean extends NuclosFacadeBean implements TreeNodeFaca
 	
 	private final MasterDataFacadeLocal getMasterDataFacade() {
 		return masterDataFacade;
+	}
+	
+	private final LocaleFacadeLocal getLocaleFacade() {
+		return localeFacade;
+	}
+
+	@Autowired
+	final void setLocaleFacade(LocaleFacadeLocal localeFacade) {
+		this.localeFacade = localeFacade;
 	}
 
 	/**
