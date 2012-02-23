@@ -534,8 +534,8 @@ public class NuclosEntityAttributeInputStep extends NuclosEntityAbstractStep {
 			step2b.setAttributeList(this.getModel().getAttributeModel().getAttributes());
 			step2b.setParentWizardModel(this.model);
             NuclosEntityAttributeLookupShipStep step2c = new NuclosEntityAttributeLookupShipStep(
-            		localeDelegate.getMessage("wizard.step.inputattribute.18", "Nachschlage-Enti\u00e4t definieren"), 
-            		localeDelegate.getMessage("wizard.step.inputattribute.18", "Nachschlage-Enti\u00e4t definieren"));
+            		localeDelegate.getMessage("wizard.step.inputattribute.18", "Nachschlage-Entit\u00e4t definieren"), 
+            		localeDelegate.getMessage("wizard.step.inputattribute.18", "Nachschlage-Entit\u00e4t definieren"));
             step2c.setAttributeList(this.getModel().getAttributeModel().getAttributes());
             step2c.setParentWizardModel(this.model);
 			NuclosEntityAttributeTranslationStep step3 = new NuclosEntityAttributeTranslationStep(localeDelegate.getMessage(
