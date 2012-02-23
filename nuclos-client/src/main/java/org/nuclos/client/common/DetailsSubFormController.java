@@ -304,7 +304,7 @@ public abstract class DetailsSubFormController<Clct extends Collectable>
 						blnChanged = true;
 					}
 					if (blnChanged) {
-						int last = DetailsSubFormController.this.getSubForm().getJTable().getRowCount();
+						int last = DetailsSubFormController.this.getSubForm().getJTable().getRowCount()-1;
 						((AbstractTableModel)DetailsSubFormController.this.getSubForm().getJTable().getModel()).fireTableRowsUpdated(0, last);
 					}
 				}
@@ -322,7 +322,7 @@ public abstract class DetailsSubFormController<Clct extends Collectable>
 						blnChanged = true;
 					}
 					if (blnChanged) {
-						int last = DetailsSubFormController.this.getSubForm().getJTable().getRowCount();
+						int last = DetailsSubFormController.this.getSubForm().getJTable().getRowCount()-1;;
 						((AbstractTableModel)DetailsSubFormController.this.getSubForm().getJTable().getModel()).fireTableRowsUpdated(0, last);
 					}
 				}
