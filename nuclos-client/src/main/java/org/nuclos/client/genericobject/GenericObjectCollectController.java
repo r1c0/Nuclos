@@ -5258,6 +5258,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 			case CollectState.DETAILSMODE_NEW:
 				// deselect potentially previously selected entry
 				getResultTable().clearSelection();
+				getLayoutMLButtonsActionListener().setComponentsEnabled(false);
 				break;
 			case CollectState.DETAILSMODE_NEW_SEARCHVALUE:
 				// deselect potentially previously selected entry

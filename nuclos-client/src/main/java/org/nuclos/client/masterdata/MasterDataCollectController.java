@@ -1283,7 +1283,7 @@ public class MasterDataCollectController extends EntityCollectController<Collect
 				oId.set(mddelegate.update(getEntityName(), clct.getMasterDataCVO(), mpclctDependants.toDependantMasterDataMap()));
 			}
 	  });
-      
+
       final MasterDataVO mdvoUpdated = this.mddelegate.get(this.getEntityName(), oId.get());
       return new CollectableMasterDataWithDependants(clct.getCollectableEntity(), new MasterDataWithDependantsVO(mdvoUpdated, this.readDependants(mdvoUpdated.getId())));
    }
