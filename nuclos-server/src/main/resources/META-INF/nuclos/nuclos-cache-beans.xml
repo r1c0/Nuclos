@@ -48,6 +48,10 @@
 					p:name="mdLayout" />
 				<bean class="org.springframework.cache.concurrent.ConcurrentMapCacheFactoryBean"
 					p:name="mdLayoutImportExport" />
+				<bean class="org.springframework.cache.concurrent.ConcurrentMapCacheFactoryBean"
+					p:name="localeResource" />
+				<bean class="org.springframework.cache.concurrent.ConcurrentMapCacheFactoryBean"
+					p:name="localeAllResource" />
 			</set>
 		</property>
 	</bean>

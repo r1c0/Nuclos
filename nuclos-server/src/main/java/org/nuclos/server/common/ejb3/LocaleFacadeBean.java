@@ -73,6 +73,9 @@ import org.nuclos.server.masterdata.valueobject.MasterDataMetaVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 import org.nuclos.server.ruleengine.NuclosBusinessRuleException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.transaction.annotation.Transactional;
@@ -97,6 +100,12 @@ public class LocaleFacadeBean implements LocaleFacadeRemote {
 	private static final String F_RESOURCEID = "resourceID";
 	private static final String F_TEXT = "text";
 	private static final String F_LOCALE = "locale";
+	
+	private static final long UPDATE_TIME = 60 * 20 * 1000L;
+	
+
+	private static final LocaleInfo NULL_LOCALE_INFO = LocaleInfo.I_DEFAULT;
+	private static final String NULL_LOCALE_STRING = LocaleInfo.I_DEFAULT_TAG;
 
 	/**
 	 * for simple caching implementation.
@@ -113,6 +122,10 @@ public class LocaleFacadeBean implements LocaleFacadeRemote {
 	};
 	
 	//
+	
+	private final Map<LocaleInfo, String> localeInfos = new ConcurrentHashMap<LocaleInfo, String>();
+	
+	private volatile long lastUpdate = -1L;
 	
 	private MasterDataFacadeHelper masterDataFacadeHelper;
 	
@@ -247,18 +260,33 @@ public class LocaleFacadeBean implements LocaleFacadeRemote {
 		}
 	}
 
-	private Map<LocaleInfo, String> getLocaleInfosWithParent() {
+	private Map<LocaleInfo, String> _getLocaleInfosWithParent() {
 		Map<LocaleInfo, String> map = new HashMap<LocaleInfo, String>();
 		for (MasterDataVO mdvo : masterDataFacade.getMasterData(NuclosEntity.LOCALE.getEntityName(), null, true)) {
 			LocaleInfo localeInfo = new LocaleInfo(mdvo.getField("name", String.class),
 				mdvo.getField("description", String.class), mdvo.getIntId(),
 				mdvo.getField("language", String.class), mdvo.getField("country", String.class));
 			String parentTag = mdvo.getField("parent", String.class);
+			if (parentTag == null) {
+				parentTag = NULL_LOCALE_STRING;
+			}
 			map.put(localeInfo, parentTag);
 		}
 		return map;
 	}
 
+	private Map<LocaleInfo, String> getLocaleInfosWithParent() {
+		long current = System.currentTimeMillis();
+		if (localeInfos.isEmpty() || current - lastUpdate > UPDATE_TIME) {
+			synchronized (localeInfos) {
+				localeInfos.clear();
+				localeInfos.putAll(_getLocaleInfosWithParent());
+				lastUpdate = current;
+			}
+		}
+		return localeInfos;
+	}
+	
 	private LocaleInfo getLocaleInfoForId(final Integer iLocale) {
 		return CollectionUtils.findFirst(getLocaleInfosWithParent().keySet(), new Predicate<LocaleInfo>() {
 			@Override
@@ -301,6 +329,7 @@ public class LocaleFacadeBean implements LocaleFacadeRemote {
 		return res.values();
 	}
 
+	@Cacheable(value="localeResource", key="#p0.cacheKey(#p1)")
 	public String getResourceById(LocaleInfo localeInfo, String sresourceId) {
 		MasterDataVO mdvo = XMLEntities.getData(NuclosEntity.LOCALERESOURCE).findVO("resourceID", sresourceId, "locale", localeInfo.language);
 		if (mdvo != null) {
@@ -317,6 +346,7 @@ public class LocaleFacadeBean implements LocaleFacadeRemote {
 		return CollectionUtils.getFirst(dataBaseHelper.getDbAccess().executeQuery(query));
 	}
 
+	@Cacheable(value="localeAllResource", key="#p0")
 	public Map<String, String> getAllResourcesById(String resourceId) {
 		Map<String, String> map = new HashMap<String, String>();
 		for (MasterDataVO mdvo : XMLEntities.getData(NuclosEntity.LOCALERESOURCE).findAllVO("resourceID", resourceId)) {
@@ -350,6 +380,10 @@ public class LocaleFacadeBean implements LocaleFacadeRemote {
 		throw new UnsupportedOperationException("TODO");
 	}
 
+	@Caching(evict= {
+			@CacheEvict(value="localeResource", key="#p1.cacheKey(#p0)"), 
+			@CacheEvict(value="localeAllResource", key="#p0")
+			})
 	public void update(String resourceId, LocaleInfo localeInfo, String text) {
 		if (text != null) {
 			dataBaseHelper.execute(DbStatementUtils.updateValues("T_MD_LOCALERESOURCE",
@@ -358,6 +392,10 @@ public class LocaleFacadeBean implements LocaleFacadeRemote {
 		}
 	}
 
+	@Caching(evict= {
+			@CacheEvict(value="localeResource", allEntries=true), 
+			@CacheEvict(value="localeAllResource", key="#p0")
+			})
 	public void deleteResource(String resourceId) {
 		if (resourceId != null) {
 			dataBaseHelper.execute(DbStatementUtils.deleteFrom("T_MD_LOCALERESOURCE",
@@ -425,6 +463,10 @@ public class LocaleFacadeBean implements LocaleFacadeRemote {
 		return insert(sResourceId, localeInfo, sText, false);
 	}
 
+	@Caching(evict= {
+			@CacheEvict(value="localeResource", key="#p1.cacheKey(#p0)"), 
+			@CacheEvict(value="localeAllResource", key="#p0")
+			})
 	public String insert(String sResourceId, LocaleInfo localeInfo, String sText, boolean internal) {
 		final Integer nextId = dataBaseHelper.getNextIdAsInteger(internal ? "resids" : "idfactory");
 
@@ -517,8 +559,10 @@ public class LocaleFacadeBean implements LocaleFacadeRemote {
 	public List<LocaleInfo> getParentChain(final LocaleInfo localeInfo) {
 		Map<LocaleInfo, String> localesWithParent = getLocaleInfosWithParent();
 		Map<String, LocaleInfo> localesByTag = new HashMap<String ,LocaleInfo>();
-		for (LocaleInfo li : localesWithParent.keySet())
+		
+		for (LocaleInfo li : localesWithParent.keySet()) {
 			localesByTag.put(li.getTag(), li);
+		}
 
 		Set<String> candidates = new HashSet<String>();
 		List<LocaleInfo> chain = new ArrayList<LocaleInfo>();
@@ -527,17 +571,25 @@ public class LocaleFacadeBean implements LocaleFacadeRemote {
 		String tag = localeInfo.getTag();
 		while (tag != null && candidates.add(tag)) {
 			LocaleInfo li = localesByTag.get(tag);
-			if (li != null)
+			if (li != null) {
 				chain.add(li);
-			tag = getParent(tag, localesWithParent.get(li));
+				tag = getParent(tag, localesWithParent.get(li));
+			}
+			else {
+				tag = getParent(tag, null);
+			}
 		}
 		// default locale and all parents
 		tag = getDefaultTag();
 		while (tag != null && candidates.add(tag)) {
 			LocaleInfo li = localesByTag.get(tag);
-			if (li != null)
+			if (li != null) {
 				chain.add(li);
-			tag = getParent(tag, localesWithParent.get(li));
+				tag = getParent(tag, localesWithParent.get(li));
+			}
+			else {
+				tag = getParent(tag, null);
+			}
 		}
 		// null locale
 		if (candidates.add(LocaleInfo.I_DEFAULT_TAG))
@@ -547,7 +599,7 @@ public class LocaleFacadeBean implements LocaleFacadeRemote {
 	}
 
 	private static String getParent(String tag, String parent) {
-		return (parent != null) ? parent : LocaleInfo.getStandardParentTag(tag);
+		return (parent != null && parent != NULL_LOCALE_STRING) ? parent : LocaleInfo.getStandardParentTag(tag);
 	}
 
 	public Date getLastChange() {

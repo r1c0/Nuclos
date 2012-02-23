@@ -95,10 +95,18 @@ public class LocaleInfo implements Serializable {
 	public static String getStandardParentTag(String tag) {
 		LocaleInfo li = LocaleInfo.parseTag(tag);
 		if (li != null && li.country != null) {
-   		return li.language;
-   	} else {
-   		return null;
-   	}
+			return li.language;
+		}
+		else {
+			return null;
+		}
+	}
+	
+	public String cacheKey(String resourceId) {
+		final StringBuilder result = new StringBuilder();
+		result.append(localeId).append('_').append(language).append('_').append(country);
+		result.append(':').append(resourceId);
+		return result.toString();
 	}
 
 	private static enum DescriptionComparator implements Comparator<LocaleInfo> {
