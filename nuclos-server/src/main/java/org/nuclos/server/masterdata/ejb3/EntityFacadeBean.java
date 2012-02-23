@@ -41,7 +41,6 @@ import org.nuclos.common.dal.vo.EntityObjectVO;
 import org.nuclos.common.entityobject.CollectableEOEntityField;
 import org.nuclos.common2.EntityAndFieldName;
 import org.nuclos.common2.LangUtils;
-import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.server.attribute.ejb3.LayoutFacadeLocal;
 import org.nuclos.server.common.DatasourceCache;

@@ -69,7 +69,6 @@ import org.nuclos.common.masterdata.CollectableMasterDataEntity;
 import org.nuclos.common2.DateUtils;
 import org.nuclos.common2.EntityAndFieldName;
 import org.nuclos.common2.IOUtils;
-import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.TruncatableCollection;
 import org.nuclos.common2.exception.CommonCreateException;

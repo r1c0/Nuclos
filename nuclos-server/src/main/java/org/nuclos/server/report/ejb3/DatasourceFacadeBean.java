@@ -35,7 +35,6 @@ import org.nuclos.common.database.query.definition.Schema;
 import org.nuclos.common.database.query.definition.Table;
 import org.nuclos.common.querybuilder.DatasourceUtils;
 import org.nuclos.common.querybuilder.NuclosDatasourceException;
-import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonCreateException;
 import org.nuclos.common2.exception.CommonFatalException;

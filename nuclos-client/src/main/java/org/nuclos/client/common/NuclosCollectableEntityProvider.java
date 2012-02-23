@@ -20,8 +20,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
 
-import javax.annotation.PostConstruct;
-
 import org.nuclos.client.attribute.AttributeCache;
 import org.nuclos.client.genericobject.CollectableGenericObjectEntity;
 import org.nuclos.client.genericobject.Modules;

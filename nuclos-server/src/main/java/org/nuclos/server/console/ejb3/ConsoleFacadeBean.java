@@ -28,7 +28,6 @@ import org.nuclos.common.JMSConstants;
 import org.nuclos.common.Priority;
 import org.nuclos.common.RuleNotification;
 import org.nuclos.common2.LangUtils;
-import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.server.autosync.SchemaValidator;
 import org.nuclos.server.common.AttributeCache;

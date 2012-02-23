@@ -39,7 +39,6 @@ import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Pair;
 import org.nuclos.common.collection.Transformer;
 import org.nuclos.common.dal.vo.SystemFields;
-import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.TruncatableCollection;
 import org.nuclos.common2.exception.CommonBusinessException;

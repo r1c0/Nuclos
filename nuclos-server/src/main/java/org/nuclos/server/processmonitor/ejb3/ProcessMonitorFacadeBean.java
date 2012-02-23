@@ -34,7 +34,6 @@ import org.nuclos.common.dal.vo.SystemFields;
 import org.nuclos.common.dblayer.JoinType;
 import org.nuclos.common2.DateTime;
 import org.nuclos.common2.SeriesUtils;
-import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonCreateException;
 import org.nuclos.common2.exception.CommonFatalException;

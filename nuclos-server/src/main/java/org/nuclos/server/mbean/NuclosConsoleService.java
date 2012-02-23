@@ -18,7 +18,6 @@ package org.nuclos.server.mbean;
 
 import org.apache.log4j.Logger;
 import org.nuclos.common.Actions;
-import org.nuclos.common2.ServiceLocator;
 import org.nuclos.server.common.SecurityCache;
 import org.nuclos.server.common.ServerServiceLocator;
 import org.nuclos.server.console.ejb3.ConsoleFacadeRemote;

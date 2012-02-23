@@ -35,9 +35,7 @@ import net.sf.jasperreports.engine.JRResultSetDataSource;
 
 import org.apache.log4j.Logger;
 import org.nuclos.common.NuclosFatalException;
-import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.StringUtils;
-import org.nuclos.server.common.ServerServiceLocator;
 import org.nuclos.server.dblayer.DbException;
 import org.nuclos.server.report.api.JRNuclosDataSource;
 import org.nuclos.server.report.ejb3.DatasourceFacadeLocal;

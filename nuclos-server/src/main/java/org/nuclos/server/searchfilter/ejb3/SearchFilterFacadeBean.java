@@ -34,7 +34,6 @@ import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Transformer;
 import org.nuclos.common.dal.DalSupportForMD;
 import org.nuclos.common2.LocaleInfo;
-import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.TruncatableCollection;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonCreateException;

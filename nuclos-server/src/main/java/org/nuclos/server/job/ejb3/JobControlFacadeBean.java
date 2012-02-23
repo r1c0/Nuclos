@@ -39,7 +39,6 @@ import org.nuclos.common.job.JobUtils;
 import org.nuclos.common.job.LogLevel;
 import org.nuclos.common2.DateUtils;
 import org.nuclos.common2.KeyEnum;
-import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.ValueValidationHelper;
 import org.nuclos.common2.communication.MailCommunicator;

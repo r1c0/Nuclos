@@ -26,7 +26,6 @@ import java.util.Map;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Transformer;
 import org.nuclos.server.dblayer.DbException;
-import org.nuclos.server.dblayer.statements.DbStatement;
 import org.nuclos.server.dblayer.statements.DbStructureChange;
 import org.nuclos.server.dblayer.statements.DbStructureChange.Type;
 import org.nuclos.server.dblayer.structure.DbArtifact;
@@ -38,7 +37,6 @@ import org.nuclos.server.dblayer.structure.DbSequence;
 import org.nuclos.server.dblayer.structure.DbSimpleView;
 import org.nuclos.server.dblayer.structure.DbTable;
 import org.nuclos.server.dblayer.structure.DbTableColumnGroup;
-import org.nuclos.server.dblayer.util.StatementToStringVisitor;
 
 public class SchemaUtils {
 	

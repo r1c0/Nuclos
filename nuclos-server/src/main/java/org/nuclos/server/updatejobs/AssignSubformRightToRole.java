@@ -22,7 +22,6 @@ import java.util.Iterator;
 
 import org.nuclos.common.UsageCriteria;
 import org.nuclos.common.dal.vo.SystemFields;
-import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.common2.exception.CommonFinderException;
 import org.nuclos.server.common.MasterDataMetaCache;

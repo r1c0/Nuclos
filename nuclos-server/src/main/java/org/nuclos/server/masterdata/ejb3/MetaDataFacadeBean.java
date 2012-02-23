@@ -67,7 +67,6 @@ import org.nuclos.common.valueobject.EntityRelationshipModelVO;
 import org.nuclos.common2.IOUtils;
 import org.nuclos.common2.IdUtils;
 import org.nuclos.common2.LocaleInfo;
-import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonCreateException;

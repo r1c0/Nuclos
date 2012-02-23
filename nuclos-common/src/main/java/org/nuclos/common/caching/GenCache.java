@@ -20,6 +20,7 @@
 package org.nuclos.common.caching;
 
 import java.util.HashMap;
+import java.util.Iterator;
 
 import org.apache.log4j.Logger;
 
@@ -48,7 +49,8 @@ public class GenCache<K, V> implements NBCache<K, V> {
 		return map.get(key);
 	}
 
-   public boolean containsKey(K key) {
-   	return map.containsKey(key);
-   }
+	public boolean containsKey(K key) {
+		return map.containsKey(key);
+	}
+
 }

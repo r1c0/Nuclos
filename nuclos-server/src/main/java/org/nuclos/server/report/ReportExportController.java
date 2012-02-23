@@ -33,7 +33,6 @@ import org.apache.log4j.Logger;
 import org.nuclos.common.NuclosFile;
 import org.nuclos.common.collect.collectable.CollectableFieldFormat;
 import org.nuclos.common.collection.CollectionUtils;
-import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.server.common.ServerServiceLocator;
 import org.nuclos.server.report.ejb3.DatasourceFacadeLocal;

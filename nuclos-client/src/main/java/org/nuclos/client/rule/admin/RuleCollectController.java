@@ -48,7 +48,6 @@ import org.nuclos.client.entityobject.CollectableEntityObject;
 import org.nuclos.client.explorer.ExplorerController;
 import org.nuclos.client.explorer.node.rule.RuleTreeModel;
 import org.nuclos.client.genericobject.valuelistprovider.ProcessCollectableFieldsProvider;
-import org.nuclos.client.genericobject.valuelistprovider.StateCollectableFieldsProvider;
 import org.nuclos.client.genericobject.valuelistprovider.StatusNumeralCollectableFieldsProvider;
 import org.nuclos.client.main.Main;
 import org.nuclos.client.main.mainframe.MainFrameTab;

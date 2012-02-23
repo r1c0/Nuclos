@@ -49,7 +49,6 @@ import org.nuclos.common.dbtransfer.NucletContentUID;
 import org.nuclos.common.dbtransfer.TransferOption;
 import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.LocaleInfo;
-import org.nuclos.common2.ServiceLocator;
 import org.nuclos.server.common.MetaDataServerProvider;
 import org.nuclos.server.common.ServerServiceLocator;
 import org.nuclos.server.common.ejb3.LocaleFacadeLocal;

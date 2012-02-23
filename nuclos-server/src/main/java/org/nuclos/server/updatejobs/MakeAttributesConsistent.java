@@ -19,7 +19,6 @@ package org.nuclos.server.updatejobs;
 import java.util.List;
 
 import org.nuclos.common.dal.vo.SystemFields;
-import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.exception.CommonFinderException;
 import org.nuclos.common2.exception.CommonPermissionException;
 import org.nuclos.server.attribute.ejb3.AttributeFacadeLocal;

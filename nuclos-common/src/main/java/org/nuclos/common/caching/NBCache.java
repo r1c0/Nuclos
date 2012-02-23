@@ -22,9 +22,10 @@ package org.nuclos.common.caching;
 public interface NBCache<K, V> {
 	
 	public static interface LookupProvider<K, V> {
-		public V lookup(K key);
+		V lookup(K key);
 	};
 	
-	public void clear();
-	public V get(K key);
+	void clear();
+	
+	V get(K key);
 }

@@ -56,7 +56,6 @@ import org.nuclos.common.masterdata.CollectableMasterDataEntity;
 import org.nuclos.common.statemodel.Statemodel;
 import org.nuclos.common.statemodel.StatemodelClosure;
 import org.nuclos.common2.IdUtils;
-import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonCreateException;
 import org.nuclos.common2.exception.CommonFatalException;

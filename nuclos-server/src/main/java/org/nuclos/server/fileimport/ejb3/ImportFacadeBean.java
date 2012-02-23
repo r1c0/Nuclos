@@ -31,7 +31,6 @@ import org.nuclos.common.dal.vo.EntityObjectVO;
 import org.nuclos.common.fileimport.ImportMode;
 import org.nuclos.common.fileimport.ImportResult;
 import org.nuclos.common2.LocaleInfo;
-import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonRemoveException;

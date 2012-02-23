@@ -22,7 +22,6 @@ import org.apache.log4j.Logger;
 import org.nuclos.common.collection.Pair;
 import org.nuclos.common.job.JobType;
 import org.nuclos.common2.KeyEnum;
-import org.nuclos.common2.ServiceLocator;
 import org.nuclos.server.common.ServerServiceLocator;
 import org.nuclos.server.job.ejb3.JobControlFacadeLocal;
 import org.nuclos.server.job.valueobject.JobVO;

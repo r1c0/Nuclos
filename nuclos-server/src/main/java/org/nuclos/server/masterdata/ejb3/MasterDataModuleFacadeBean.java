@@ -18,7 +18,6 @@ package org.nuclos.server.masterdata.ejb3;
 
 import javax.annotation.security.RolesAllowed;
 
-import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonCreateException;
 import org.nuclos.common2.exception.CommonFinderException;

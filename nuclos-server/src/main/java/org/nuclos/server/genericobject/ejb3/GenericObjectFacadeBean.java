@@ -31,7 +31,6 @@ import javax.annotation.security.RolesAllowed;
 
 import org.apache.commons.lang.NullArgumentException;
 import org.apache.log4j.Logger;
-import org.nuclos.common.AttributeProvider;
 import org.nuclos.common.GenericObjectMetaDataVO;
 import org.nuclos.common.NuclosBusinessException;
 import org.nuclos.common.NuclosEOField;
@@ -54,7 +53,6 @@ import org.nuclos.common2.EntityAndFieldName;
 import org.nuclos.common2.IdUtils;
 import org.nuclos.common2.InternalTimestamp;
 import org.nuclos.common2.LangUtils;
-import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.TruncatableCollection;
 import org.nuclos.common2.TruncatableCollectionDecorator;

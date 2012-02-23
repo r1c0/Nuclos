@@ -19,7 +19,6 @@ package org.nuclos.server.ruleengine.jobs;
 import java.util.Collection;
 
 import org.apache.log4j.Logger;
-import org.nuclos.common2.ServiceLocator;
 import org.nuclos.server.common.ServerServiceLocator;
 import org.nuclos.server.job.NuclosJob;
 import org.nuclos.server.job.SchedulableJob;

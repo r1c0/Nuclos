@@ -379,7 +379,7 @@ public class TableLayoutPanel extends JPanel implements DropTargetListener, Mous
 		c.paint(g);
 
 		glassPane.setPoint(new Point(-1000,-1000));
-		if (!Main.isMacOSX())
+		if (!Main.getInstance().isMacOSX())
 			glassPane.setVisible(true);
 
 		glassPane.setImage(image);

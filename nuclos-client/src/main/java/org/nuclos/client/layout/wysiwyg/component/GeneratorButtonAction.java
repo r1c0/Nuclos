@@ -21,7 +21,6 @@ import java.util.Properties;
 import org.nuclos.client.genericobject.GeneratorActions;
 import org.nuclos.client.genericobject.GenericObjectCollectController;
 import org.nuclos.client.masterdata.MasterDataCollectController;
-import org.nuclos.client.rule.RuleDelegate;
 import org.nuclos.client.ui.Errors;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.client.ui.collect.CollectActionAdapter;
@@ -32,7 +31,6 @@ import org.nuclos.common.collect.collectable.Collectable;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonFinderException;
 import org.nuclos.server.genericobject.valueobject.GeneratorActionVO;
-import org.nuclos.server.ruleengine.valueobject.RuleVO;
 
 
 /**

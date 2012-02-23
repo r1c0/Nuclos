@@ -30,7 +30,6 @@ import org.nuclos.common.TranslationVO;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Transformer;
 import org.nuclos.common2.LocaleInfo;
-import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.server.common.ServerServiceLocator;
 import org.nuclos.server.common.ejb3.LocaleFacadeLocal;

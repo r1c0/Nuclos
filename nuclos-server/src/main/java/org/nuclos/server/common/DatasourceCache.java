@@ -33,7 +33,6 @@ import org.nuclos.common.dal.DalSupportForMD;
 import org.nuclos.common.dal.util.DalTransformations;
 import org.nuclos.common.dal.vo.EntityObjectVO;
 import org.nuclos.common.dal.vo.SystemFields;
-import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.exception.CommonFinderException;
 import org.nuclos.common2.exception.CommonPermissionException;
 import org.nuclos.server.dal.provider.NucletDalProvider;

@@ -73,7 +73,6 @@ import org.nuclos.common.dbtransfer.TransferNuclet;
 import org.nuclos.common.dbtransfer.TransferOption;
 import org.nuclos.common2.IdUtils;
 import org.nuclos.common2.LangUtils;
-import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonValidationException;
 import org.nuclos.server.common.DatasourceCache;

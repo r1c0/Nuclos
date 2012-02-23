@@ -27,6 +27,7 @@ import org.apache.log4j.Logger;
 import org.nuclos.common.collect.collectable.CollectableField;
 import org.nuclos.common.collect.collectable.CollectableFieldsProvider;
 import org.nuclos.common.collect.collectable.CollectableValueField;
+import org.nuclos.common.collect.collectable.CollectableValueIdField;
 import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.client.common.MetaDataClientProvider;

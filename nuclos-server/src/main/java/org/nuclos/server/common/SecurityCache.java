@@ -45,7 +45,6 @@ import org.nuclos.common2.DateUtils;
 import org.nuclos.common2.IdUtils;
 import org.nuclos.common2.KeyEnum;
 import org.nuclos.common2.LangUtils;
-import org.nuclos.common2.ServiceLocator;
 import org.nuclos.server.autosync.XMLEntities;
 import org.nuclos.server.common.ejb3.SecurityFacadeBean;
 import org.nuclos.server.database.SpringDataBaseHelper;

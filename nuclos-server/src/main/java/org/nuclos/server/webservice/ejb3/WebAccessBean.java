@@ -35,7 +35,6 @@ import org.nuclos.common.dal.util.DalTransformations;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
 import org.nuclos.common.dal.vo.EntityObjectVO;
 import org.nuclos.common.security.Permission;
-import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.common2.exception.CommonFinderException;
 import org.nuclos.common2.exception.CommonPermissionException;
@@ -54,8 +53,8 @@ import org.nuclos.server.masterdata.ejb3.MasterDataFacadeLocal;
 import org.nuclos.server.ruleengine.NuclosBusinessRuleException;
 import org.nuclos.server.ruleengine.ejb3.RuleEngineFacadeLocal;
 import org.nuclos.server.ruleengine.valueobject.RuleObjectContainerCVO;
-import org.nuclos.server.ruleengine.valueobject.RuleVO;
 import org.nuclos.server.ruleengine.valueobject.RuleObjectContainerCVO.Event;
+import org.nuclos.server.ruleengine.valueobject.RuleVO;
 
 //Note2self: @EndpointConfig(configName="Standard WSSecurity Endpoint")
 //config in jboss-4.2.2.GA/server/nuclos/deploy/jbossws.sar/META-INF

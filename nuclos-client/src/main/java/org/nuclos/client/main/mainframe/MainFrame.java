@@ -54,7 +54,6 @@ import java.util.Set;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
-import javax.annotation.PostConstruct;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.BorderFactory;
@@ -117,14 +116,13 @@ import org.nuclos.common.collection.Pair;
 import org.nuclos.common.collection.Transformer;
 import org.nuclos.common.collection.multimap.MultiListHashMap;
 import org.nuclos.common.collection.multimap.MultiListMap;
-import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.CommonRunnable;
 import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.PreferencesUtils;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.PreferencesException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Configurable;
 
 /**
  * The "main frame" of the application. Contains as little control logic as possible.

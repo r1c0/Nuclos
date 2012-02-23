@@ -32,7 +32,6 @@ import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.dal.DalSupportForMD;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
-import org.nuclos.common2.ServiceLocator;
 import org.nuclos.server.database.SpringDataBaseHelper;
 import org.nuclos.server.dblayer.structure.DbArtifact;
 import org.nuclos.server.dblayer.structure.DbColumn;

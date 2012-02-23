@@ -40,7 +40,6 @@ import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.nuclos.common.ParameterProvider;
-import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.server.common.NuclosSystemParameters;
 import org.nuclos.server.common.ServerParameterProvider;

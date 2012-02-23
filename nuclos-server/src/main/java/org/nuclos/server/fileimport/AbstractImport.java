@@ -30,7 +30,6 @@ import org.nuclos.common.NuclosEOField;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.fileimport.ImportMode;
-import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.fileimport.FileImportResult;
 import org.nuclos.common2.fileimport.NuclosFileImportException;

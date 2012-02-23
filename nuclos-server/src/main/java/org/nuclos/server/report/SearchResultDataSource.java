@@ -41,7 +41,6 @@ import org.nuclos.common.dal.vo.EntityObjectVO;
 import org.nuclos.common.dal.vo.PivotInfo;
 import org.nuclos.common.entityobject.CollectableEOEntityField;
 import org.nuclos.common.genericobject.GenericObjectUtils;
-import org.nuclos.common2.ServiceLocator;
 import org.nuclos.server.common.AttributeCache;
 import org.nuclos.server.common.ServerServiceLocator;
 import org.nuclos.server.genericobject.Modules;

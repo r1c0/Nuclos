@@ -17,15 +17,13 @@
 package org.nuclos.server.ruleengine.jobs;
 
 import org.apache.log4j.Logger;
+import org.nuclos.server.common.ServerServiceLocator;
+import org.nuclos.server.report.NuclosQuartzJob;
+import org.nuclos.server.ruleengine.ejb3.RuleInterfaceFacadeLocal;
 import org.quartz.Job;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
-
-import org.nuclos.common2.ServiceLocator;
-import org.nuclos.server.common.ServerServiceLocator;
-import org.nuclos.server.report.NuclosQuartzJob;
-import org.nuclos.server.ruleengine.ejb3.RuleInterfaceFacadeLocal;
 
 /**
  * Quartz job that can be scheduled to change the state of any generic object.

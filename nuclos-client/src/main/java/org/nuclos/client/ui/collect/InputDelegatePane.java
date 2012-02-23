@@ -87,7 +87,7 @@ public class InputDelegatePane extends JPanel {
 					dialog.setVisible(false);
 				}
 				catch (InputValidationException ex) {
-					JOptionPane.showMessageDialog(dialog, ex.getMessage(), Main.getMainFrame().getTitle(), JOptionPane.ERROR_MESSAGE);
+					JOptionPane.showMessageDialog(dialog, ex.getMessage(), Main.getInstance().getMainFrame().getTitle(), JOptionPane.ERROR_MESSAGE);
 				}
 			}
 		});

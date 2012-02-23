@@ -31,7 +31,6 @@ import org.nuclos.common.NuclosEOField;
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
 import org.nuclos.common.dblayer.JoinType;
-import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.common2.exception.CommonValidationException;
 import org.nuclos.common2.layoutml.LayoutMLParser;

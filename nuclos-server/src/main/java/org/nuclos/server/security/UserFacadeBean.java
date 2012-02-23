@@ -36,7 +36,6 @@ import org.nuclos.common.mail.NuclosMail;
 import org.nuclos.common.security.UserFacadeRemote;
 import org.nuclos.common.security.UserVO;
 import org.nuclos.common2.LangUtils;
-import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonValidationException;

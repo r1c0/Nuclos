@@ -19,7 +19,6 @@ package org.nuclos.server.security;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.server.common.ServerServiceLocator;

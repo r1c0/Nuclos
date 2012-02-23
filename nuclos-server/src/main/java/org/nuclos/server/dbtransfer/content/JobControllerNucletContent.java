@@ -22,7 +22,6 @@ import java.util.List;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.dal.DalCallResult;
 import org.nuclos.common.dal.vo.EntityObjectVO;
-import org.nuclos.common2.ServiceLocator;
 import org.nuclos.server.common.ServerServiceLocator;
 import org.nuclos.server.dal.provider.NucletDalProvider;
 import org.nuclos.server.report.ejb3.SchedulerControlFacadeLocal;
