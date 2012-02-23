@@ -33,6 +33,7 @@ import org.nuclos.common.NuclosAttributeNotFoundException;
 import org.nuclos.common.NuclosBusinessException;
 import org.nuclos.common.NuclosEOField;
 import org.nuclos.common.NuclosFatalException;
+import org.nuclos.common.UsageCriteria;
 import org.nuclos.common.attribute.DynamicAttributeVO;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableIdCondition;
 import org.nuclos.common.collection.CollectionUtils;
@@ -314,7 +315,7 @@ public class GenericObjectFacadeHelper {
 	 * @deprecated This method doesn't respect the foreign key field name. Replace with fillDependants().
 	 */
 	@Deprecated
-	public void _fillDependants(GenericObjectWithDependantsVO lowdcvo,
+	public void _fillDependants(GenericObjectWithDependantsVO lowdcvo, UsageCriteria usage,
 			Set<String> stRequiredSubEntityNames, Map<EntityAndFieldName, String> subEntities, String username) throws CommonFinderException {
 
 		if (stRequiredSubEntityNames == null) {
@@ -338,7 +339,8 @@ public class GenericObjectFacadeHelper {
 		}
 
 		final Map<EntityAndFieldName, String> collSubEntities = (subEntities != null) ? subEntities :
-			getLayoutFacade().getSubFormEntityAndParentSubFormEntityNames(Modules.getInstance().getEntityNameByModuleId(lowdcvo.getModuleId()),lowdcvo.getId(),false);
+			// getLayoutFacade().getSubFormEntityAndParentSubFormEntityNames(Modules.getInstance().getEntityNameByModuleId(lowdcvo.getModuleId()),lowdcvo.getId(),false);
+			getLayoutFacade().getSubFormEntityAndParentSubFormEntityNamesByGO(usage);
 
 
 		for (EntityAndFieldName eafn : collSubEntities.keySet()) {
@@ -377,13 +379,17 @@ public class GenericObjectFacadeHelper {
 	public List<GenericObjectWithDependantsVO> getGenericObjects(Integer iModuleId, CollectableSearchExpression clctexpr, 
 		Set<String> stRequiredSubEntityNames, String username) {
 
+		final AttributeCache attributeCache = AttributeCache.getInstance();
 		final EntityMetaDataVO eMeta = MetaDataServerProvider.getInstance().getEntity(IdUtils.toLongId(iModuleId));
 		final List<GenericObjectWithDependantsVO> result = new ArrayList<GenericObjectWithDependantsVO>();
 		
-		for (EntityObjectVO eo : NucletDalProvider.getInstance().getEntityObjectProcessor(eMeta.getEntity()).getBySearchExpression(appendRecordGrants(clctexpr, eMeta.getEntity()), clctexpr.getSortingOrder()!=null)) {
-			final GenericObjectWithDependantsVO go = new GenericObjectWithDependantsVO(DalSupportForGO.getGenericObjectVO(eo), new DependantMasterDataMap());
+		for (EntityObjectVO eo : NucletDalProvider.getInstance().getEntityObjectProcessor(eMeta.getEntity()).getBySearchExpression(
+				appendRecordGrants(clctexpr, eMeta.getEntity()), clctexpr.getSortingOrder()!=null)) {
+			
+			final GenericObjectWithDependantsVO go = new GenericObjectWithDependantsVO(
+					DalSupportForGO.getGenericObjectVO(eo), new DependantMasterDataMap());
 			try {
-				_fillDependants(go, stRequiredSubEntityNames, null, username);
+				_fillDependants(go, go.getUsageCriteria(attributeCache), stRequiredSubEntityNames, null, username);
 			}
 			catch(CommonFinderException e) {
 				throw new NuclosFatalException(e);

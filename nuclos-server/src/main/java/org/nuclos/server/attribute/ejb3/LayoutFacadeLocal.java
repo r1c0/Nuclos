@@ -20,7 +20,9 @@ import java.util.Map;
 
 import javax.annotation.security.RolesAllowed;
 
+import org.nuclos.common.UsageCriteria;
 import org.nuclos.common2.EntityAndFieldName;
+import org.nuclos.common2.exception.CommonFinderException;
 
 // @Local
 public interface LayoutFacadeLocal {
@@ -63,10 +65,22 @@ public interface LayoutFacadeLocal {
 	 * @param entityName
 	 * @param id, id of MasterDataVO or GenericObjectVO
 	 * @param forImportOrExport, true if it is used for import- or export-routines
+	 * 
+	 * @deprecated This method is not very effective for generic objects. Consider to 
+	 * 		use {@link #getSubFormEntityAndParentSubFormEntityNamesByGO(UsageCriteria)}
+	 * 		or {@link #getSubFormEntityAndParentSubFormEntityNamesMD(String, boolean)}
+	 * 		directly.
 	 */
 	@RolesAllowed("Login")
 	Map<EntityAndFieldName, String> getSubFormEntityAndParentSubFormEntityNames(
 		String entityName, Integer id, boolean forImportOrExport);
+
+	@RolesAllowed("Login")
+	Map<EntityAndFieldName, String> getSubFormEntityAndParentSubFormEntityNamesByGO(UsageCriteria usage)
+		 throws CommonFinderException;
+
+	@RolesAllowed("Login")
+	Map<EntityAndFieldName, String> getSubFormEntityAndParentSubFormEntityNamesMD(String entityName, boolean forImportOrExport);
 
 	@RolesAllowed("Login")
 	Map<EntityAndFieldName, String> getSubFormEntityAndParentSubFormEntityNamesById(Integer iLayoutId);

@@ -38,6 +38,7 @@ import org.nuclos.common.NuclosEOField;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.SearchConditionUtils;
+import org.nuclos.common.UsageCriteria;
 import org.nuclos.common.attribute.DynamicAttributeVO;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableSearchCondition;
 import org.nuclos.common.collection.CollectionUtils;
@@ -136,6 +137,8 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 	
 	private MasterDataFacadeLocal masterDataFacade;
 	
+	private AttributeCache attributeCache;
+	
 	/**
 	 * @deprecated
 	 */
@@ -152,6 +155,13 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 	@Autowired
 	void setGenericObjectFacadeHelper(GenericObjectFacadeHelper genericObjectFacadeHelper) {
 		this.helper = genericObjectFacadeHelper;
+	}
+	
+	private AttributeCache getAttributeCache() {
+		if (attributeCache == null) {
+			attributeCache = AttributeCache.getInstance();
+		}
+		return attributeCache;
 	}
 	
 	private final MasterDataFacadeLocal getMasterDataFacade() {
@@ -239,7 +249,7 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 		else {
 			stSubEntityNames = stRequiredSubEntityNames;
 		}
-		_fillDependants(result, stSubEntityNames);
+		_fillDependants(result, result.getUsageCriteria(getAttributeCache()), stSubEntityNames);
 
 		assert result != null;
 		assert result.isComplete();
@@ -456,11 +466,11 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 
 		// remove all attribute and subform values on which the current user has no read permission
 		for (GenericObjectWithDependantsVO gowdvo : proxyList) {
-			Integer iStatus = gowdvo.getAttribute(NuclosEOField.STATE.getMetaData().getField(), AttributeCache.getInstance()).getValueId();
+			Integer iStatus = gowdvo.getAttribute(NuclosEOField.STATE.getMetaData().getField(), getAttributeCache()).getValueId();
 
 			if (iStatus != null) {
 				for (DynamicAttributeVO dynamicAttributeVO : gowdvo.getAttributes()) {
-					String sAtributeName = AttributeCache.getInstance().getAttribute(dynamicAttributeVO.getAttributeId()).getName();
+					String sAtributeName = getAttributeCache().getAttribute(dynamicAttributeVO.getAttributeId()).getName();
 
 					if (SecurityCache.getInstance().getAttributePermission(Modules.getInstance().getEntityNameByModuleId(gowdvo.getModuleId()), sAtributeName, iStatus) == null) {
 						dynamicAttributeVO.setValue(null);
@@ -511,7 +521,7 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 		for (EntityObjectVO eo : NucletDalProvider.getInstance().getEntityObjectProcessor(eMeta.getEntity()).getBySearchExpression(appendRecordGrants(clctexpr, eMeta), iMaxRowCount + 1, true)) {
 			final GenericObjectWithDependantsVO go = new GenericObjectWithDependantsVO(DalSupportForGO.getGenericObjectVO(eo), new DependantMasterDataMap());
 			try {
-				_fillDependants(go, stRequiredSubEntityNames);
+				_fillDependants(go, go.getUsageCriteria(getAttributeCache()), stRequiredSubEntityNames);
 			}
 			catch(CommonFinderException e) {
 				throw new NuclosFatalException(e);
@@ -583,7 +593,7 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 		for (EntityObjectVO eo : eos) {
 			final GenericObjectWithDependantsVO go = new GenericObjectWithDependantsVO(DalSupportForGO.getGenericObjectVO(eo), new DependantMasterDataMap());
 			try {
-				_fillDependants(go, stRequiredSubEntityNames);
+				_fillDependants(go, go.getUsageCriteria(getAttributeCache()), stRequiredSubEntityNames);
 			}
 			catch(CommonFinderException e) {
 				throw new NuclosFatalException(e);
@@ -618,7 +628,7 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 		final GenericObjectVO govoCreated = this.create(gowdvo);
 
 		final GenericObjectWithDependantsVO result = new GenericObjectWithDependantsVO(govoCreated, new DependantMasterDataMap());
-		_fillDependants(result, stRequiredSubEntityNames);
+		_fillDependants(result, result.getUsageCriteria(getAttributeCache()), stRequiredSubEntityNames);
 
 		return result;
 	}
@@ -814,10 +824,11 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 		final GenericObjectVO govoUpdated = this.modify(lowdcvo, lowdcvo.getDependants(), true);
 
 		final GenericObjectMetaDataCache lometadataprovider = GenericObjectMetaDataCache.getInstance();
-		final AttributeProvider attrprovider = AttributeCache.getInstance();
 		final GenericObjectWithDependantsVO result = new GenericObjectWithDependantsVO(govoUpdated, new DependantMasterDataMap());
-		final Set<String> collSubEntityNames = lometadataprovider.getSubFormEntityNamesByLayoutId(lometadataprovider.getBestMatchingLayoutId(govoUpdated.getUsageCriteria(attrprovider), false));
-		_fillDependants(result, collSubEntityNames);
+		final UsageCriteria usage = govoUpdated.getUsageCriteria(getAttributeCache());
+		final Set<String> collSubEntityNames = lometadataprovider.getSubFormEntityNamesByLayoutId(
+				lometadataprovider.getBestMatchingLayoutId(usage, false));
+		_fillDependants(result, usage, collSubEntityNames);
 
 		return result;
 	}
@@ -1045,6 +1056,7 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 				this.fireDeleteEvent(gowdvo, gowdvo.getDependants(), false);
 			}
 
+			final UsageCriteria usage = gowdvo.getUsageCriteria(getAttributeCache());
 			DalCallResult dalResult;
 			if (bDeletePhysically) {
 				for (EntityAndFieldName eafn : collSubEntities.keySet()) {
@@ -1054,7 +1066,7 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 						if (mpDependants.getData(eafn.getEntityName()).isEmpty()) {
 							Set<String> stSubForm = new HashSet<String>();
 							stSubForm.add(eafn.getEntityName());
-							_fillDependants(gowdvo, stSubForm);
+							_fillDependants(gowdvo, usage, stSubForm);
 						}
 
 						// mark all dependant data as removed
@@ -1174,7 +1186,7 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 //
 //		final Integer iAttributeId = NuclosSQLUtils.runSelect(NuclosDataSources.getDefaultDS(), sSql, new GetSingleIntegerOrDefault(null));
 //		if (iAttributeId != null) {
-//			final AttributeCVO attrcvo = AttributeCache.getInstance().getAttribute(iAttributeId);
+//			final AttributeCVO attrcvo = attributeCache.getAttribute(iAttributeId);
 //			throw new CommonRemoveException(StringUtils.getParameterizedExceptionMessage("genericobject.error.validation.attributes",
 //				attrcvo.getName(), attrcvo.getResourceSIdForLabel()));
 //		}
@@ -1248,13 +1260,13 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 			if (iAttributeIdLogbook == null) {
 				addLogbookIfPossible(result, mdVO);
 			}
-			else if (!AttributeCache.getInstance().contains(iAttributeIdLogbook)) {
+			else if (!getAttributeCache().contains(iAttributeIdLogbook)) {
 				// This may be the case when there is an old attribute entry in the logbook:
 				addLogbookIfPossible(result, mdVO);
 			}
 			else {
 				/** @todo consider attribute group permissions here ! */
-				final AttributeCVO attrcvo = AttributeCache.getInstance().getAttribute(iAttributeIdLogbook);
+				final AttributeCVO attrcvo = getAttributeCache().getAttribute(iAttributeIdLogbook);
 				if (attrcvo.isLogbookTracking()/*&& (SecurityCache.getInstance().getAttributegroupsRO(getCurrentUserName()).contains(attrcvo.getAttributegroupId()))*/)
 				{
 					addLogbookIfPossible(result, mdVO);
@@ -1537,8 +1549,7 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 		// @todo Note that writing to the logbook is always enabled here
 		// @todo Replace with LOFB.modify(..., false)?
 
-		final AttributeCache attrcache = AttributeCache.getInstance();
-		final Integer iAttributeId = attrcache.getAttribute(
+		final Integer iAttributeId = getAttributeCache().getAttribute(
 				DalSupportForGO.getGenericObject(iGenericObjectId).getModuleId(), sAttribute).getId();
 		final DynamicAttributeVO attrvo = new DynamicAttributeVO(iAttributeId, iValueId, oValue);
 		updateGenericObjectAttribute(attrvo, iGenericObjectId, true);
@@ -1579,7 +1590,7 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 	 */
 	@RolesAllowed("Login")
 	public int getStateIdByGenericObject(int iGenericObjectId) throws CommonFinderException{
-		final Integer iAttributeId = AttributeCache.getInstance().getAttribute(NuclosEOField.STATE.getMetaData().getId().intValue()).getId();
+		final Integer iAttributeId = getAttributeCache().getAttribute(NuclosEOField.STATE.getMetaData().getId().intValue()).getId();
 		return findAttributeByGoAndAttributeId(iGenericObjectId, iAttributeId).getValueId();
 	}
 
@@ -1657,8 +1668,10 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 	 * @deprecated This method doesn't respect the foreign key field name. Replace with fillDependants().
 	 */
 	@Deprecated
-	private void _fillDependants(GenericObjectWithDependantsVO lowdcvo, Set<String> stRequiredSubEntityNames) throws CommonFinderException {
-		helper._fillDependants(lowdcvo, stRequiredSubEntityNames, null, this.getCurrentUserName());
+	private void _fillDependants(GenericObjectWithDependantsVO lowdcvo, UsageCriteria usage, Set<String> stRequiredSubEntityNames) 
+			throws CommonFinderException {
+		
+		helper._fillDependants(lowdcvo, usage, stRequiredSubEntityNames, null, this.getCurrentUserName());
 	}
 
 	/**
@@ -1762,7 +1775,8 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 			DalSupportForGO.getEntityObjectProcesserForGenericObject(genericObjectId).insertOrUpdate(eo);
 		}
 		catch (DbException dbe) {
-			badAttributes.add(new BadAttributeValueException(-1, genericObjectId, canonicalValue, attributeId, AttributeCache.getInstance().getAttribute(attributeId), dbe.getMessage()));
+			badAttributes.add(new BadAttributeValueException(-1, genericObjectId, canonicalValue, attributeId, 
+					getAttributeCache().getAttribute(attributeId), dbe.getMessage()));
 		}
 
 		if (logbookTracking) {

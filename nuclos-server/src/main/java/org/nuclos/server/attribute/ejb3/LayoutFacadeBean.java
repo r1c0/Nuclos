@@ -31,6 +31,7 @@ import org.nuclos.common.GenericObjectMetaDataProvider;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.SearchConditionUtils;
+import org.nuclos.common.UsageCriteria;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableSearchCondition;
 import org.nuclos.common.collect.collectable.searchcondition.ComparisonOperator;
 import org.nuclos.common2.EntityAndFieldName;
@@ -230,6 +231,11 @@ public class LayoutFacadeBean extends MasterDataFacadeBean implements LayoutFaca
 	 * @param entityName
 	 * @param id, id of MasterDataVO or GenericObjectVO
 	 * @param forImportOrExport, true if it is used for import- or export-routines
+	 * 
+	 * @deprecated This method is not very effective for generic objects. Consider to 
+	 * 		use {@link #getSubFormEntityAndParentSubFormEntityNamesByGO(UsageCriteria)}
+	 * 		or {@link #getSubFormEntityAndParentSubFormEntityNamesMD(String, boolean)}
+	 * 		directly.
 	 */
 	// Caveat: Das Methodenformat und der Kommentar sind ein wenig verwirrend und verschleiern
 	// die internen Zusammenhaenge. Fuer Stammdaten ist eine Objekt-ID ueberhaupt nicht notwendig,
@@ -243,7 +249,11 @@ public class LayoutFacadeBean extends MasterDataFacadeBean implements LayoutFaca
 
 		if (Modules.getInstance().isModuleEntity(entityName)) {
 			try {
-				result = getSubFormEntityAndParentSubFormEntityNamesByGO(genericObjectFacade.get(id));
+				// The following 2 lines really hurt performance. tp)
+				final AttributeProvider attrprovider = AttributeCache.getInstance();
+				final GenericObjectVO govo = genericObjectFacade.get(id);
+				
+				result = getSubFormEntityAndParentSubFormEntityNamesByGO(govo.getUsageCriteria(attrprovider));
 			}
 			catch (CommonFinderException e) {
 				throw new CommonFatalException(e);
@@ -259,7 +269,8 @@ public class LayoutFacadeBean extends MasterDataFacadeBean implements LayoutFaca
 		return result;
 	}
 
-	private Map<EntityAndFieldName, String> getSubFormEntityAndParentSubFormEntityNamesMD(String entityName, boolean forImportOrExport) {
+	@RolesAllowed("Login")
+	public Map<EntityAndFieldName, String> getSubFormEntityAndParentSubFormEntityNamesMD(String entityName, boolean forImportOrExport) {
 		
 		String sLayoutML = getMasterDataLayout(entityName);
 		final Map<EntityAndFieldName, String> result;
@@ -361,10 +372,12 @@ public class LayoutFacadeBean extends MasterDataFacadeBean implements LayoutFaca
 		return result;
 	}
 
-	private Map<EntityAndFieldName, String> getSubFormEntityAndParentSubFormEntityNamesByGO(GenericObjectVO govo) throws CommonFinderException {
-		final AttributeProvider attrprovider = AttributeCache.getInstance();
+	@RolesAllowed("Login")
+	public Map<EntityAndFieldName, String> getSubFormEntityAndParentSubFormEntityNamesByGO(UsageCriteria usage) throws CommonFinderException{
+		// final AttributeProvider attrprovider = AttributeCache.getInstance();
 		final GenericObjectMetaDataProvider lometadataprovider = GenericObjectMetaDataCache.getInstance();
-		final int iBestMatchingLayoutId = lometadataprovider.getBestMatchingLayoutId(govo.getUsageCriteria(attrprovider), false);
+		// final int iBestMatchingLayoutId = lometadataprovider.getBestMatchingLayoutId(govo.getUsageCriteria(attrprovider), false);
+		final int iBestMatchingLayoutId = lometadataprovider.getBestMatchingLayoutId(usage, false);
 		return getSubFormEntityAndParentSubFormEntityNamesByLayoutId(iBestMatchingLayoutId);
 	}
 
