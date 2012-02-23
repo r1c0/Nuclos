@@ -73,6 +73,8 @@ public class ResizeLayoutWithMouse extends AbstractControlledListener implements
 	
 	private static boolean blnIsPerfomingAction = false;
 	
+	private static boolean blnMouseDragged = false;
+	
 	public static boolean isPerfomingAction() {
 		return blnIsPerfomingAction;
 	}
@@ -82,8 +84,10 @@ public class ResizeLayoutWithMouse extends AbstractControlledListener implements
 	 */
 	@Override
 	public void mouseDragged(MouseEvent e) {
+		blnMouseDragged = true;
+		
 		/** checking if something has to be done and if its a valid target */
-		if (isPerfomingAction() && cellToResize != null) {
+		if (cellToResize != null) {
 
 			double value = 0;
 			boolean column = false;
@@ -119,6 +123,7 @@ public class ResizeLayoutWithMouse extends AbstractControlledListener implements
 				column = true;
 				tableLayoutUtil.modifyTableLayoutSizes(value, column, cellToResize, false);
 			}
+		
 			/** refresh the painting */
 			((JPanel) tableLayoutUtil.getContainer()).updateUI();
 		}
@@ -131,7 +136,7 @@ public class ResizeLayoutWithMouse extends AbstractControlledListener implements
 	public void mouseMoved(MouseEvent e) {
 		Component c = e.getComponent();
 		setActionToPerform(getActionToPerformForJPanel(e));
-
+		
 		switch (getActionToPerform()) {
 			case PANEL_ALTER_COLUMN :
 				blnIsPerfomingAction = true;
@@ -254,6 +259,16 @@ public class ResizeLayoutWithMouse extends AbstractControlledListener implements
 
 	@Override
 	public void mouseExited(MouseEvent e) {
+		Component c = e.getComponent();
+
+		if (!blnMouseDragged) {
+			setActionToPerform(ActionToPerform.NOTHING_TO_DO);
+			mouseoverHighlightLine = new Point(-1, -1);
+			cellToResize = null;
+			
+			blnIsPerfomingAction = false;
+			c.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+		}
 	}
 
 	@Override
@@ -262,8 +277,16 @@ public class ResizeLayoutWithMouse extends AbstractControlledListener implements
 
 	@Override
 	public void mouseReleased(MouseEvent e) {
+		Component c = e.getComponent();
+
+		setActionToPerform(ActionToPerform.NOTHING_TO_DO);
 		mouseoverHighlightLine = new Point(-1, -1);
 		cellToResize = null;
+		
+		blnIsPerfomingAction = false;
+		blnMouseDragged = false;
+		
+		c.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 	}
 
 	/**

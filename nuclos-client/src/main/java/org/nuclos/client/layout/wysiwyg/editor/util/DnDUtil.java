@@ -106,6 +106,7 @@ public class DnDUtil {
    	    	WYSIWYGComponent item = (wysiwygComponent != null) ? wysiwygComponent: findWYSIWYGComponent(e.getComponent());
    	 		if (item != null) {	 
    	 			final WYSIWYGLayoutEditorPanel parent = component.getParentEditor();
+
    	 			if (parent != null && !parent.getTableLayoutPanel().isResizeDragPerformed()) {
    	 				parent.setComponentToMove(item);
    	 				parent.getTableLayoutPanel().initGlassPane((Component)item, e.getDragOrigin());

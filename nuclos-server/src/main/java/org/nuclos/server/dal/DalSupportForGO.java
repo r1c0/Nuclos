@@ -329,8 +329,8 @@ public class DalSupportForGO {
 			defaultValue,
 			efMeta.getSortorderASC(),
 			efMeta.getSortorderDESC(),
-			efMeta.getForeignEntity(),
-			efMeta.getForeignEntityField(),
+			efMeta.getForeignEntity() != null ? efMeta.getForeignEntity() : efMeta.getLookupEntity(),
+			efMeta.getForeignEntityField() != null ? efMeta.getForeignEntityField() : efMeta.getLookupEntityField(),
 			(permissions == null ? new HashMap<Integer, Permission>() : permissions),
 			efMeta.getLocaleResourceIdForLabel(),
 			efMeta.getLocaleResourceIdForDescription());

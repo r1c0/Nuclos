@@ -82,7 +82,12 @@ public class ForeignEntityFieldParser implements Iterable<IFieldRef> {
 		}
 		// this.foreignEntityField = foreignEntityField;
 		
-		final String fef = foreignEntityField.getForeignEntityField();
+		String fef = null;
+		if (foreignEntityField.getForeignEntity() != null)
+			fef = foreignEntityField.getForeignEntityField();
+		else if (foreignEntityField.getLookupEntity() != null)
+			fef = foreignEntityField.getLookupEntityField();
+		
 		if (fef == null) {
 			LOG.warn("Null/empty foreignEntityField in expression in " + foreignEntityField 
 					+ " is deprecated, use " + DEFAULT_FOREIGN_ENTITY_FIELD + " instead!");

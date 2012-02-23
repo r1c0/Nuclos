@@ -46,13 +46,13 @@ public class DbCompoundColumnExpression<T> extends DbExpression<T> {
 	public DbCompoundColumnExpression(DbFrom from, EntityFieldMetaDataVO field, boolean setAlias) {
 		super(from.getQuery().getBuilder(), (Class<T>) DalUtils.getDbType(field.getDataType()), 
 				setAlias ? field.getDbColumn() : null, mkConcat(from, field));
-		if (field.getForeignEntity() == null) {
+		if (field.getForeignEntity() == null && field.getLookupEntity() == null) {
 			throw new IllegalArgumentException();
 		}
 	}
 	
 	static final PreparedStringBuilder mkConcat(DbFrom from, EntityFieldMetaDataVO field) {
-		if (field.getForeignEntity() == null) {
+		if (field.getForeignEntity() == null && field.getLookupEntity() == null) {
 			throw new IllegalArgumentException();
 		}
 		final MetaDataProvider mdProv = MetaDataServerProvider.getInstance();
@@ -64,7 +64,7 @@ public class DbCompoundColumnExpression<T> extends DbExpression<T> {
 				toConcat.add("'" + ref.getContent() + "'");
 			}
 			else {
-				final EntityFieldMetaDataVO mdField = mdProv.getEntityField(field.getForeignEntity(), ref.getContent());
+				final EntityFieldMetaDataVO mdField = mdProv.getEntityField(field.getForeignEntity() != null ? field.getForeignEntity() : field.getLookupEntity(), ref.getContent());
 				final String qualifiedName = DbColumnExpression.mkQualifiedColumnName(
 						tableAlias, mdField.getDbColumn(), false).toString();
 				toConcat.add(qualifiedName);

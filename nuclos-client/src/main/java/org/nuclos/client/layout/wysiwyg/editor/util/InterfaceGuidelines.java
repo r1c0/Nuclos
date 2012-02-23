@@ -30,7 +30,7 @@ package org.nuclos.client.layout.wysiwyg.editor.util;
 public class InterfaceGuidelines {
     public static final int MINIMUM_SIZE = 5;
     
-    public static final int SENSITIVITY = 2;
+    public static final int SENSITIVITY = 5;
     public static final int DISTANCE_TO_OTHER_OBJECTS = 12;
     public static final int MARGIN_BETWEEN = 5;
     

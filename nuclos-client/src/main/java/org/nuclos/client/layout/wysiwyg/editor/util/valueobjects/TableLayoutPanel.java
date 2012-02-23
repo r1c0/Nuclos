@@ -90,6 +90,7 @@ import org.nuclos.client.layout.wysiwyg.editor.util.popupmenu.ChangeSizeMeasurem
 import org.nuclos.client.layout.wysiwyg.editor.util.popupmenu.ChangeSizeMeasurementPopupMultipleItems;
 import org.nuclos.client.layout.wysiwyg.editor.util.popupmenu.ChangeSizeMeasurementPopupRows;
 import org.nuclos.client.layout.wysiwyg.palette.PaletteController;
+import org.nuclos.client.main.Main;
 import org.nuclos.client.ui.Errors;
 import org.nuclos.common.NuclosBusinessException;
 import org.nuclos.common2.exception.CommonBusinessException;
@@ -378,7 +379,8 @@ public class TableLayoutPanel extends JPanel implements DropTargetListener, Mous
 		c.paint(g);
 
 		glassPane.setPoint(new Point(-1000,-1000));
-		glassPane.setVisible(true);
+		if (!Main.isMacOSX())
+			glassPane.setVisible(true);
 
 		glassPane.setImage(image);
 		glassPane.revalidate();
@@ -666,6 +668,11 @@ public class TableLayoutPanel extends JPanel implements DropTargetListener, Mous
 								
 								((Component) getComponentToMove()).setEnabled(enabledValue);
 								setComponentToMove(null);
+							}
+
+			   	 			final WYSIWYGLayoutEditorPanel parent = wysiwygComponent.getParentEditor();
+							if (parent != null) {
+								parent.getController().safePendingPropertyChanges();
 							}
 						} catch (HeadlessException e1) {
 						} catch (NuclosBusinessException e1) {

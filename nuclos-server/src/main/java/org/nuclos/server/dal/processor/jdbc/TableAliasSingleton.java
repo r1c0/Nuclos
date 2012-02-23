@@ -98,14 +98,14 @@ public class TableAliasSingleton {
 	}
 
 	public String getAlias(EntityFieldMetaDataVO meta) {
-		final String fentity = meta.getForeignEntity();
+		final String fentity = (meta.getForeignEntity() != null ? meta.getForeignEntity() : meta.getLookupEntity());
 		if (fentity == null) {
 			throw new IllegalArgumentException("Field " + meta + " is not a reference to a foreign entity");
 		}
 		final Pair<String,String> pair = newPair(fentity, meta.getField());
 		String result = TABLE_ALIASES.get(pair);
 		if (result == null) {
-			final String alias = meta.getForeignEntity();
+			final String alias = (meta.getForeignEntity() != null ? meta.getForeignEntity() : meta.getLookupEntity());
 			result = StringUtils.makeSQLIdentifierFrom("a_", alias, meta.getField(), Integer.toString(AI.incrementAndGet()));
 			TABLE_ALIASES.put(pair, result);
 		}
