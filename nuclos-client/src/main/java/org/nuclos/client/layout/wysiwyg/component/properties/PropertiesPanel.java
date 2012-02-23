@@ -414,7 +414,8 @@ public class PropertiesPanel extends JPanel implements SaveAndCancelButtonPanelC
 		}
 		
 		if (!checkOnly && tableLayoutUtil != null) {
-			tableLayoutUtil.getUndoRedoFunction().beginTransaction();
+			if (tableLayoutUtil.getUndoRedoFunction() != null)
+				tableLayoutUtil.getUndoRedoFunction().beginTransaction();
 		}
 		
 		if (!checkOnly && !exceptionOccured && valuesChanged) {
@@ -468,7 +469,8 @@ public class PropertiesPanel extends JPanel implements SaveAndCancelButtonPanelC
 		}
 
 		if (!checkOnly && tableLayoutUtil != null) {
-			tableLayoutUtil.getUndoRedoFunction().commitTransaction();
+			if (tableLayoutUtil.getUndoRedoFunction() != null)
+				tableLayoutUtil.getUndoRedoFunction().commitTransaction();
 		}
 
 		return exceptionOccured ? false : valuesChanged;
