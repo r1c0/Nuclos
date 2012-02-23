@@ -305,6 +305,19 @@ public class MasterDataCollectController extends EntityCollectController<Collect
             for (SubFormController subformctl : getSubFormControllersInDetails()) {
                collsubform.add(subformctl.getSubForm());
             }
+         // current state, subsequent states and custom actions:
+         			
+            switch (iDetailsMode) {
+     			case CollectState.DETAILSMODE_NEW:
+     			case CollectState.DETAILSMODE_NEW_SEARCHVALUE:
+     			case CollectState.DETAILSMODE_EDIT:
+     			case CollectState.DETAILSMODE_MULTIVIEW:
+     			case CollectState.DETAILSMODE_MULTIEDIT:
+     				getLayoutMLButtonsActionListener().setComponentsEnabled(false);
+     				break;
+
+     			default:
+ 			}	// switch
 
             respectRights(getDetailsPanel().getEditView().getCollectableComponents(), collsubform, ev.getNewCollectState());
 
