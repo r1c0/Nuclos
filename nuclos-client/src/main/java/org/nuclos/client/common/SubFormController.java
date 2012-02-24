@@ -601,7 +601,11 @@ public abstract class SubFormController extends Controller
 				JTable tbl = getJTable();
 				insertNewRow();
 				// TODO: und wenn die neue Zeile wg. Sortierung NICHT am Ende liegt???
-				tbl.addRowSelectionInterval(tbl.getRowCount() - 1, tbl.getRowCount() - 1);
+				final int lastRow = tbl.getRowCount() - 1;
+				// Hotfix for 'Strukturdefinition' -> Subform Attribute -> add row (to empty subform) (tp)
+				if (lastRow >= 0) {
+					tbl.addRowSelectionInterval(lastRow, lastRow);
+				}
 			}
 		} catch (CommonBusinessException e) {
 			Errors.getInstance().showExceptionDialog(getParent(), e);
