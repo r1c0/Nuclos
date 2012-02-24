@@ -89,12 +89,12 @@ public class ForeignEntityFieldParser implements Iterable<IFieldRef> {
 			fef = foreignEntityField.getLookupEntityField();
 		
 		if (fef == null) {
-			LOG.warn("Null/empty foreignEntityField in expression in " + foreignEntityField 
+			LOG.debug("Null/empty foreignEntityField in expression in " + foreignEntityField 
 					+ " is deprecated, use " + DEFAULT_FOREIGN_ENTITY_FIELD + " instead!");
 			this.ffieldname = DEFAULT_FOREIGN_ENTITY_FIELD;
 		}
 		else if (OLD_SIMPLE_REF_PATTERN.matcher(fef).matches()) {
-			LOG.warn("Old style foreignEntityField expression '" + fef + "' in "
+			LOG.debug("Old style foreignEntityField expression '" + fef + "' in "
 					+ foreignEntityField + " is deprecated, please enclose it: ${" + fef + "}");
 			this.ffieldname = "${" + fef + "}";
 		}
