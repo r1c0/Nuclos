@@ -18737,17 +18737,17 @@
   {
     "resourceID": "nuclos.entity.datasource.label",
     "locale": "i-default",
-    "text": "Report"
+    "text": "Report & Form"
   },
   {
     "resourceID": "nuclos.entity.datasource.label",
     "locale": "en",
-    "text": "Report"
+    "text": "Report & Form"
   },
   {
     "resourceID": "nuclos.entity.datasource.label",
     "locale": "de",
-    "text": "Report"
+    "text": "Report & Formular"
   },
   {
     "resourceID": "nuclos.entity.generationAttribute.label",

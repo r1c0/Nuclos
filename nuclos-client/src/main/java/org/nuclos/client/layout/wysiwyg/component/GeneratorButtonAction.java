@@ -113,6 +113,9 @@ public class GeneratorButtonAction<Clct extends Collectable> implements CollectA
 		if (!controller.getDetailsPanel().isVisible()) {
 			return false;
 		}
+		if (controller.getCollectStateModel().getCollectState().getInnerState() != CollectState.DETAILSMODE_VIEW) {
+			return false;
+		}
 		
 		String sactionId = probs.getProperty("generatortoexecute");
 

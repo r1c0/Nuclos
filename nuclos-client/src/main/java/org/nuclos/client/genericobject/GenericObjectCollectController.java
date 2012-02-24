@@ -5270,6 +5270,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 				// show subsequent state buttons only in current (non-historical) view and only if the current record is writable:
 				setSubsequentStatesVisible(bWritable, bViewingExistingRecord);
 				setStatesDefaultPathVisible(bWritable, bViewingExistingRecord);
+				getLayoutMLButtonsActionListener().fireComponentEnabledStateUpdate();
 				break;
 
 			case CollectState.DETAILSMODE_MULTIVIEW:
@@ -5338,9 +5339,6 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 				LOG.debug("removeUsageCriteriaFieldListeners");
 				removeUsageCriteriaFieldListeners(false);
 			}
-			if (ev.getNewCollectState().getInnerState() == CollectState.DETAILSMODE_EDIT
-					|| ev.getNewCollectState().getInnerState() == CollectState.DETAILSMODE_NEW_CHANGED) 
-				getLayoutMLButtonsActionListener().setComponentsEnabled(false);
 		}
 	}	// inner class GenericObjectCollectStateListener
 
