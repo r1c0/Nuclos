@@ -27,10 +27,14 @@ import java.util.Set;
 import org.nuclos.common.NuclosEOField;
 import org.nuclos.common.SearchConditionUtils;
 import org.nuclos.common.caching.GenCache;
+import org.nuclos.common.collect.collectable.CollectableValueField;
+import org.nuclos.common.collect.collectable.searchcondition.CollectableComparison;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableSearchCondition;
+import org.nuclos.common.collect.collectable.searchcondition.ComparisonOperator;
 import org.nuclos.common.collection.Pair;
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.dal.vo.EntityObjectVO;
+import org.nuclos.common.entityobject.CollectableEOEntityField;
 import org.nuclos.common.security.Permission;
 import org.nuclos.common.transport.GzipList;
 import org.nuclos.common2.StringUtils;
@@ -41,6 +45,7 @@ import org.nuclos.server.common.ServerServiceLocator;
 import org.nuclos.server.common.SessionUtils;
 import org.nuclos.server.common.ejb3.NuclosFacadeBean;
 import org.nuclos.server.common.ejb3.SecurityFacadeLocal;
+import org.nuclos.server.dal.processor.jdbc.impl.EOSearchExpressionUnparser;
 import org.nuclos.server.dal.processor.nuclet.JdbcEntityObjectProcessor;
 import org.nuclos.server.dal.provider.NucletDalProvider;
 import org.nuclos.server.genericobject.searchcondition.CollectableSearchExpression;
@@ -65,6 +70,9 @@ public class LiveSearchFacadeBean extends NuclosFacadeBean implements LiveSearch
 	void setSessionUtils(SessionUtils utils) {
 		this.utils = utils;
 	}
+	
+	private static final CollectableEOEntityField clctEOEFdeleted = new CollectableEOEntityField(NuclosEOField.LOGGICALDELETED.getMetaData(), "<dummy>");
+
 
 	/**
 	 * Perform live-search for one entity and search string.
@@ -96,6 +104,13 @@ public class LiveSearchFacadeBean extends NuclosFacadeBean implements LiveSearch
 				else
 					condition = SearchConditionUtils.or(condeq, condition);
 			}
+		}
+		
+		final EntityFieldMetaDataVO efDeleted = fields.get(clctEOEFdeleted.getName());
+		if (efDeleted != null) {
+			CollectableSearchCondition condSearchDeleted = new CollectableComparison(clctEOEFdeleted, ComparisonOperator.EQUAL, new CollectableValueField(false));
+
+			condition = SearchConditionUtils.and(condition, condSearchDeleted);
 		}
 
 		List<EntityObjectVO> dbResult;
