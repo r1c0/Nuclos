@@ -146,8 +146,10 @@ public class NuclosJMSBrokerTunnelServlet extends HttpSpringEmbeddedTunnelServle
             getServletContext().setAttribute("transportChannelListener", listener);
         }
         getServletContext().setAttribute("acceptListener", listener);
-        final HttpTransportFactory htf = new HttpTransportFactory();
-        getServletContext().setAttribute("transportFactory", htf);
+		// only with activemq 5.5.0
+        // final HttpTransportFactory htf = new HttpTransportFactory();
+        // getServletContext().setAttribute("transportFactory", htf);
+        
 		// -------------------------------------------------------------------------
         
 		// -------------------------------------------------------------------------
@@ -182,8 +184,11 @@ public class NuclosJMSBrokerTunnelServlet extends HttpSpringEmbeddedTunnelServle
         // set stuff from org.apache.activemq.transport.http.HttpTunnelServlet 
         // using reflection (to access private fields)
         setField("listener", (TransportAcceptListener)getServletContext().getAttribute("acceptListener"));
-        setField("transportFactory", (HttpTransportFactory)getServletContext().getAttribute("transportFactory"));
-        setField("transportOptions", (HashMap)getServletContext().getAttribute("transportOptions"));
+        
+		// only with activemq 5.5.0
+        // setField("transportFactory", (HttpTransportFactory)getServletContext().getAttribute("transportFactory"));
+        // setField("transportOptions", (HashMap)getServletContext().getAttribute("transportOptions"));
+        
         // setField("wireFormat", (TextWireFormat)getServletContext().getAttribute("wireFormat"));
         setField("wireFormat", createWireFormat());
 	}
