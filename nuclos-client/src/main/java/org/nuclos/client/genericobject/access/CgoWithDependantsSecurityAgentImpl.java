@@ -59,6 +59,9 @@ public class CgoWithDependantsSecurityAgentImpl implements CefSecurityAgent {
 			permission = SecurityCache.getInstance().getAttributePermission(
 					cgo.getCollectableEntity().getName(), field.getName(), iStatusId);
 		}
+		if (permission == null) {
+			return false;
+		}
 		return permission.includesReading();
 	}
 
