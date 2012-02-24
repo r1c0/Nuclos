@@ -158,7 +158,11 @@ public class DatasourceBasedCollectableFieldsProvider implements CacheableCollec
 							oConvertedValue = oValue.toString();
 						}
 						else if(Integer.class.getName().equals(dpvo.getDatatype())) {
-							oConvertedValue = Integer.parseInt(oValue.toString());
+							try {
+								oConvertedValue = Integer.parseInt(oValue.toString());
+							} catch (NumberFormatException e) {
+								oConvertedValue = 0; // use this as default here.
+							}
 						}
 					}
 

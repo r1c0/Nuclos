@@ -38352,12 +38352,12 @@
   {
     "resourceID": "NuclosCollectControllerFactory.2",
     "locale": "i-default",
-    "text": "The entity cannot be opened due to missing state model.\\nThe state model management can be found in the administration menu."
+    "text": "The entity cannot be opened due to missing state model.\\nThe state model management can be found in the configuration menu."
   },
   {
     "resourceID": "NuclosCollectControllerFactory.2",
     "locale": "en",
-    "text": "The entity cannot be opened due to missing state model.\\nThe state model management can be found in the administration menu."
+    "text": "The entity cannot be opened due to missing state model.\\nThe state model management can be found in the configuration menu."
   },
   {
     "resourceID": "NuclosCollectControllerFactory.2",

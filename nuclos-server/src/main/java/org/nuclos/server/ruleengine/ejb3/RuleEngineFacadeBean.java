@@ -152,7 +152,7 @@ public class RuleEngineFacadeBean extends NuclosFacadeBean implements RuleEngine
 			
 		UsageCriteria uc;
 		if (loccvoCurrent.getMasterData() != null) {
-			Integer entityId = IdUtils.unsafeToId(MetaDataServerProvider.getInstance().getEntity(sEntity));
+			Integer entityId = IdUtils.unsafeToId(MetaDataServerProvider.getInstance().getEntity(sEntity).getId());
 			uc = new UsageCriteria(entityId, null, null);
 		} else {
 			Integer iProcessId = loccvoCurrent.getGenericObject().getProcessId();
