@@ -40,6 +40,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.annotation.PostConstruct;
 import javax.swing.BorderFactory;
 import javax.swing.Icon;
 import javax.swing.JButton;
@@ -110,19 +111,23 @@ public class DBTransferImport {
 	private Transfer.Result importTransferResult = null;
 
 	private final DBTransferUtils utils = new DBTransferUtils();
-	private final DBTransferWizard wizard;
-	private final StaticModel model;
-	private final PanelWizardStep step1, step2, step3, step4, step5;
-
-	private final MainFrameTab ifrm = Main.getInstance().getMainController().newMainFrameTab(
-			null, localeDelegate.getMessage("dbtransfer.import.title", "Konfiguration importieren"));
+	
+	private DBTransferWizard wizard;
+	private StaticModel model;
+	private PanelWizardStep step1, step2, step3, step4, step5;
+	private MainFrameTab ifrm;
 	
 	public DBTransferImport(ActionListener notifyParent) {
 		if (notifyParent == null) {
 			throw new IllegalArgumentException("notifyParent must not be null");
 		}
 		this.notifyParent = notifyParent;
-
+	}
+	
+	@PostConstruct
+	final void init() {
+		ifrm = Main.getInstance().getMainController().newMainFrameTab(
+				null, localeDelegate.getMessage("dbtransfer.import.title", "Konfiguration importieren"));
 		I18n.setBundle(DBTransferWizard.getResourceBundle());
 
 		ifrm.setTabIcon(NuclosIcons.getInstance().getDefaultFrameIcon());
