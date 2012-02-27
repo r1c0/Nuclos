@@ -132,25 +132,14 @@ public class FacadeLocalProxyBeanFactoryPostProcessor extends InstantiationAware
 	}
 	
 	private void addPropertyRef(MutablePropertyValues props, String property, String refBeanName) {
-		// props.addPropertyValue(property, new RuntimeBeanNameReference(refBeanName));
 		props.addPropertyValue(property, new RuntimeBeanReference(refBeanName));
-		// props.addPropertyValue(property, beanFactory.getBeanDefinition(refBeanName));
 	}
-	
-	/*
-	private void addPropertyValue(ConstructorArgumentValues props, String property, Object value, String type) {
-		props.addGenericArgumentValue(new ConstructorArgumentValues.ValueHolder(value, type, property));
-	}
-	
-	private void addPropertyRef(ConstructorArgumentValues props, String property, String refBeanName) {
-		props.addGenericArgumentValue(new ConstructorArgumentValues.ValueHolder(new RuntimeBeanNameReference(refBeanName), property));
-	}
-	 */
 	
 	private String mkLocalInterfaceName(String facadeBean) {
 		final int len = facadeBean.length();
 		return facadeBean.substring(0, len - 4) + "Local";
 	}
+	
 	private String mkBeanName(String classname) {
 		final int len = classname.lastIndexOf('.');
 		return classname.substring(len + 1, len + 2).toLowerCase() + classname.substring(len + 2);
@@ -169,18 +158,8 @@ public class FacadeLocalProxyBeanFactoryPostProcessor extends InstantiationAware
 		return result;
 	}
 
-	/*
-	@Override
-	public PropertyValues postProcessPropertyValues(PropertyValues pvs, PropertyDescriptor[] pds, Object bean,
-			String beanName) throws BeansException {
-		if (interestedInBeanName(beanName)) {
-			LOG.info("postProcessPropertyValues for " + beanName + ": " + Arrays.asList(pvs.getPropertyValues()));
-		}
-		return pvs;
-	}
-	 */
-
 	private boolean interestedInBeanName(String beanName) {
 		return beanName.endsWith("Local") || beanName.startsWith("org.nuclos.server.spring.");
 	}
+	
 }

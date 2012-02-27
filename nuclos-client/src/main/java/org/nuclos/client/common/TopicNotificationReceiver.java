@@ -80,6 +80,7 @@ public class TopicNotificationReceiver {
 	private List<WeakReferenceMessageListener> weakmessagelistener = new LinkedList<WeakReferenceMessageListener>();
 
 	TopicNotificationReceiver() {
+		INSTANCE = this;
 	}
 	
 	@PostConstruct
@@ -119,7 +120,6 @@ public class TopicNotificationReceiver {
 					"TopicNotificationReceiver.3", "Die JMS-Topic-Verbindung konnte nicht aufgebaut werden."), e);
 			 */
 		}
-		INSTANCE = this;
 	}
 	
 	@Autowired

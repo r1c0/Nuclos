@@ -16,6 +16,8 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.server.spring;
 
+import java.util.Arrays;
+
 import org.apache.log4j.Logger;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
@@ -31,30 +33,16 @@ public class DebugBeanPostProcessor implements BeanPostProcessor {
 	
 	@Override
 	public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
-		/*
-		if (shouldLog(beanName)) {
-			LOG.info("before init: " + beanName + " -> " + bean.getClass().getName() + " (" + bean + ")");
-		}
-		 */
 		return bean;
 	}
 
 	@Override
 	public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
 		if (shouldLog(beanName)) {
-			LOG.info("after init: " + beanName + " -> " + bean.getClass().getName() + " (" + bean + ")");
+			final Class<?> beanClass = bean.getClass();
+			LOG.info("after init: " + beanName + " -> " + beanClass.getName() + " (" + bean 
+					+ ") direct interfaces: " + Arrays.asList(beanClass.getInterfaces()));
 		}
-		/*
-		if (beanName.endsWith("Local") && bean instanceof FactoryBean) {
-			// This is strange - but just invoke
-			try {
-				bean = ((FactoryBean<?>) bean).getObject();
-			}
-			catch (Exception e) {
-				throw new FatalBeanException("Can't use factory bean " + bean);
-			}
-		}
-		 */
 		return bean;
 	}
 	

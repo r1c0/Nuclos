@@ -22,6 +22,7 @@ import java.io.PrintStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.Properties;
 
 /**
@@ -43,6 +44,8 @@ public class ScmBuildInfo {
 		NoExitSecurityManager sm = null;
 		SvnkitBuildInfo svnkit = null;
 		try {
+			final File svnRoot = getSvnRootDir();
+			System.out.println("svn root: " + svnRoot);
 			File resources = getResourcesMainSrcRoot();
 			if (!resources.isDirectory()) {
 				System.out.println("can't find resources dir: " + resources + ", falling back to classpath");
@@ -60,17 +63,30 @@ public class ScmBuildInfo {
 				System.setSecurityManager(sm);
 				invokeMain("org.tmatesoft.svn.cli.SVN", new String[] {"info", "--xml"}, info);
 				invokeMain("org.tmatesoft.svn.cli.SVN", new String[] {"status", "--xml"}, status);
+				System.out.println("ScmBuildInfo: finished execution, written " + info + " and " + status);
 			}
 			catch (IllegalArgumentException e) {
 				// no svn?
 				System.out.println("svn info not available (no svnkit?): " + e);
+				e.printStackTrace(System.out);
+				info.delete();
+				status.delete();
+			}
+			catch (Exception e) {
+				System.out.println("svn info failed: " + e);
+				e.printStackTrace(System.out);
+				info.delete();
+				status.delete();
 			}
 			/*
 			svnkit = new SvnkitBuildInfo(getSvnWorkingDir());
 			svnkit.info(info);
 			svnkit.status(status);
 			 */
-			System.out.println("ScmBuildInfo: finished execution, written " + info + " and " + status);
+		}
+		catch (Exception e) {
+			System.out.println("svn info failed: " + e);
+			e.printStackTrace(System.out);
 		}
 		finally {
 			if (sm != null) {
@@ -118,27 +134,40 @@ public class ScmBuildInfo {
 		return getClassRoot().getParentFile().getParentFile();
 	}
 	
-	private static File getSvnWorkingDir() {
-		File result = getBaseDir().getParentFile();
-		File svn = new File(result, ".svn");
-		if (!svn.isDirectory()) {
+	private static File getSvnRootDir() {
+		final File start = getBaseDir();
+		File result = findSvn(start);
+		if (result == null) {
 			// fallback to java.class.path
-			result = null;
 			final String[] paths = System.getProperty("java.class.path").split(File.pathSeparator);
 			for (String p: paths) {
 				if (p.endsWith(EXPECTED_SUFFIX)) {
-					svn = new File(p.substring(0, p.length() - EXPECTED_SUFFIX.length()), ".svn");
-					if (svn.isDirectory()) {
-						result = svn.getParentFile();
+					result = findSvn(new File(p));
+					if (result != null) {
 						break;
 					}
 				}
 			}
 			if (result == null) {
-				throw new IllegalStateException("Can't determine svn working dir starting from " + result);
+				throw new IllegalStateException("Can't determine svn root dir starting from " + start);
 			}
 		}
 		return result;
+	}
+	
+	private static File findSvn(File start) {
+		File result = new File(start, ".svn");
+		while (!result.isDirectory()) {
+			start = start.getParentFile();
+			if (start == null) {
+				return null;
+			}
+			result = new File(start, ".svn");
+		}
+		if (result != null && result.isDirectory()) {
+			return result.getParentFile();
+		}
+		return null;
 	}
 	
 	private static void invokeMain(String className, String[] args, File out) throws FileNotFoundException {
@@ -147,6 +176,7 @@ public class ScmBuildInfo {
 		try {
 			final Class<?> clazz = Class.forName(className);
 			final Method main = clazz.getMethod("main", STRING_ARRAY_ARGS);
+			outStream.println("invoking " + main + " on " + Arrays.asList(args) + " out written to " + out);
 			main.invoke(null, (Object) args);
 		}
 		catch (ClassNotFoundException e) {
