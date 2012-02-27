@@ -223,7 +223,9 @@ public class NuclosCollectControllerFactory {
 			case RELATIONTYPE:
 				return factory.newRelationTypeCollectController(parent, tabIfAny);
 			case REPORT:
-				return factory.newReportCollectController(parent, tabIfAny);
+				return factory.newReportCollectController(parent, systemEntity, tabIfAny);
+			case FORM:
+				return factory.newReportCollectController(parent, systemEntity, tabIfAny);
 			case REPORTEXECUTION:
 				return factory.newReportExecutionCollectController(parent, tabIfAny);
 			case USER:

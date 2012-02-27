@@ -69,6 +69,7 @@ import org.nuclos.common.collect.collectable.CollectableValueField;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableSearchCondition;
 import org.nuclos.common.collect.exception.CollectableFieldFormatException;
 import org.nuclos.common.collect.exception.CollectableFieldValidationException;
+import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.CommonRunnable;
 import org.nuclos.common2.IOUtils;
 import org.nuclos.common2.KeyEnum;
@@ -104,6 +105,8 @@ public class ReportCollectController extends MasterDataCollectController {
 	private final JButton btnMakeTreeRoot = new JButton();
 	private final JButton btnExportFile = new JButton();
 
+	private final NuclosEntity outputEntity;
+	private final NuclosEntity subreportEntity;
 	private final ReportDelegate reportdelegate = new ReportDelegate();
 
 	private ReportVO.OutputType outputtype = ReportVO.OutputType.SINGLE;
@@ -126,25 +129,38 @@ public class ReportCollectController extends MasterDataCollectController {
 	 * *CollectController<~> cc = new *CollectController<~>(.., rc);
 	 * </code></pre>
 	 */
-	public ReportCollectController(JComponent parent, MainFrameTab tabIfAny) {
-		super(parent, NuclosEntity.REPORT, tabIfAny);
+	public ReportCollectController(JComponent parent, NuclosEntity entity, MainFrameTab tabIfAny) {
+		super(parent, entity, tabIfAny);
 
+		if (entity.equals(NuclosEntity.REPORT)) {
+			outputEntity = NuclosEntity.REPORTOUTPUT;
+			subreportEntity = NuclosEntity.SUBREPORT;
+		}
+		else if (entity.equals(NuclosEntity.FORM)) {
+			outputEntity = NuclosEntity.FORMOUTPUT;
+			subreportEntity = NuclosEntity.SUBFORM;
+		}
+		else
+			throw new IllegalArgumentException();
+		
 		setupDetailsToolBar();
 
 		clctcmbbxDataSource = (CollectableComboBox) getFirstComponent("datasource");
 		// todo: search panel?!
 		pnlFileChoosers = (JPanel) UIUtils.findJComponent(getDetailsPanel(), "filechoosers");
 
-		final CollectableComboBox cmbbxReportType = (CollectableComboBox) getFirstComponent("type");
+		/*final CollectableComboBox cmbbxReportType = (CollectableComboBox) getFirstComponent("type");
 		cmbbxReportType.getModel().addCollectableComponentModelListener(new CollectableComponentModelAdapter() {
 			@Override
 			public void collectableFieldChangedInModel(CollectableComponentModelEvent ev) {
 				final CollectableField clctf = ev.getNewValue();
 				ReportType reportType = KeyEnum.Utils.findEnum(ReportType.class, (Integer) clctf.getValue());
-				setReportType(reportType != null ? reportType : ReportType.REPORT);
+				setReportType(reportType != null ? reportType : (getEntity().equals(NuclosEntity.REPORT.getEntityName()) ? ReportType.REPORT : ReportType.FORM));
 			}
-		});
-
+		});*/
+		
+		setReportType(getEntity().equals(NuclosEntity.REPORT.getEntityName()) ? ReportType.REPORT : ReportType.FORM);
+	
 		final CollectableComboBox cmbbxOutputType = (CollectableComboBox) getFirstComponent("outputtype");
 		cmbbxOutputType.getModel().addCollectableComponentModelListener(new CollectableComponentModelAdapter() {
 			@Override
@@ -203,7 +219,7 @@ public class ReportCollectController extends MasterDataCollectController {
 		outputtype = outputType;
 
 		// todo: Is there a better way to connect the columns to the fieldnames?
-		final JTable tbl = getSubFormController(NuclosEntity.REPORTOUTPUT.getEntityName()).getSubForm().getJTable();
+		final JTable tbl = getSubFormController(outputEntity.getEntityName()).getSubForm().getJTable();
 		final TableColumnModel columnmodel = tbl.getColumnModel();
 		switch (outputtype) {
 		case SINGLE:
@@ -283,7 +299,7 @@ public class ReportCollectController extends MasterDataCollectController {
 	 */
 	@Override
 	protected void close() {
-		final JTable tbl = getSubFormController(NuclosEntity.REPORTOUTPUT.getEntityName()).getSubForm().getJTable();
+		final JTable tbl = getSubFormController(outputEntity.getEntityName()).getSubForm().getJTable();
 		final TableColumnModel columnmodel = tbl.getColumnModel();
 		if (tablecolumnDataSource != null) {
 			columnmodel.addColumn(tablecolumnDataSource);
@@ -363,7 +379,7 @@ public class ReportCollectController extends MasterDataCollectController {
 	 */
 	@Override
 	protected CollectableMasterDataWithDependants updateCurrentCollectable(CollectableMasterDataWithDependants clctEdited) throws CommonBusinessException {
-		getSubFormController(NuclosEntity.REPORTOUTPUT.getEntityName()).stopEditing();
+		getSubFormController(outputEntity.getEntityName()).stopEditing();
 
 		validateReport(clctEdited);
 
@@ -391,6 +407,21 @@ public class ReportCollectController extends MasterDataCollectController {
 		return new CollectableMasterDataWithDependants(clct.getCollectableEntity(),
 			new MasterDataWithDependantsVO(mdvoUpdated, readDependants(mdvoUpdated.getId())));
 	}
+	
+	@Override
+	public CollectableMasterDataWithDependants newCollectable() {
+		CollectableMasterDataWithDependants result = super.newCollectable();
+		result.setField("type", getEntity().equals(NuclosEntity.REPORT.getEntityName())
+				? new CollectableValueField(ReportType.REPORT.getValue()) : new CollectableValueField(ReportType.FORM.getValue()));
+		return result;
+	}
+	@Override
+	protected CollectableMasterDataWithDependants newCollectableWithDefaultValues() {
+		CollectableMasterDataWithDependants result = super.newCollectableWithDefaultValues();
+		result.setField("type", getEntity().equals(NuclosEntity.REPORT.getEntityName())
+				? new CollectableValueField(ReportType.REPORT.getValue()) : new CollectableValueField(ReportType.FORM.getValue()));
+		return result;
+	}
 
 	/**
 	 * Inserts the currently edited Collectable in the database. PDF template files are compiled by the report facade.
@@ -410,7 +441,7 @@ public class ReportCollectController extends MasterDataCollectController {
 		//		// We have to clear the ids for cloned objects:
 		//		@todo eliminate this workaround
 		final DependantMasterDataMap mpmdvoDependants = org.nuclos.common.Utils.clearIds(getAllSubFormData(null).toDependantMasterDataMap());
-
+		
 		final MasterDataVO mdvoInserted = reportdelegate.create(clctNew.getMasterDataCVO(), mpmdvoDependants);
 
 		//return CollectableMasterDataWithDependants.newInstance(mdclctNew.getCollectableEntity(), mdvoInserted);
@@ -422,7 +453,7 @@ public class ReportCollectController extends MasterDataCollectController {
 			if (!Character.isLetterOrDigit(ch) && !ch.equals('_') && !Character.isWhitespace(ch))
 				throw new CollectableFieldValidationException(StringUtils.getParameterizedExceptionMessage("ReportCollectController.3", ch));
 		boolean existsAnyOutputFormat = false;
-		for (CollectableMasterData md : getAllSubFormData(clctmdwd.getId()).getValues(NuclosEntity.REPORTOUTPUT.getEntityName()))
+		for (CollectableMasterData md : getAllSubFormData(clctmdwd.getId()).getValues(outputEntity.getEntityName()))
 			if (!md.isMarkedRemoved()) {
 				existsAnyOutputFormat = true;
 				boolean subreportsallowed = false;
@@ -519,18 +550,11 @@ public class ReportCollectController extends MasterDataCollectController {
 	 * @param clctmd
 	 */
 	private void adjustValuesToTypeAndOutputFormat(CollectableMasterData clctmd) throws CommonBusinessException {
-		ReportType reportType = KeyEnum.Utils.findEnum(ReportType.class, (Integer) clctmd.getField("type").getValue());
-		if (reportType == ReportType.REPORT) {
-			final CollectableTableModel<CollectableEntityObject> tblmodel = getSubFormController(NuclosEntity.FORMUSAGE.getEntityName()).getCollectableTableModel();
-			for (int n = tblmodel.getRowCount(); n > 0; n--)
-				tblmodel.remove(0);
-		}
-
 		switch (getOutputType()) {
 		case SINGLE: {
 			if (clctcmbbxDataSource != null && clctcmbbxDataSource.getJComboBox().getSelectedItem() != null) {
 				final CollectableField clctf = (CollectableField) clctcmbbxDataSource.getJComboBox().getSelectedItem();
-				final CollectableTableModel<CollectableEntityObject> tblmodel = getSubFormController(NuclosEntity.REPORTOUTPUT.getEntityName()).getCollectableTableModel();
+				final CollectableTableModel<CollectableEntityObject> tblmodel = getSubFormController(outputEntity.getEntityName()).getCollectableTableModel();
 				for (int i = 0; i < tblmodel.getRowCount(); i++)
 					tblmodel.getCollectable(i).setField("datasource", clctf);
 			}
@@ -539,7 +563,7 @@ public class ReportCollectController extends MasterDataCollectController {
 		case EXCEL: {
 			final String sDestination = (String) clctmd.getMasterDataCVO().getField("parameter");
 			final String sSourceFile = (String) clctmd.getMasterDataCVO().getField("sourceFile");
-			final CollectableTableModel<CollectableEntityObject> tblmodel = getSubFormController(NuclosEntity.REPORTOUTPUT.getEntityName()).getCollectableTableModel();
+			final CollectableTableModel<CollectableEntityObject> tblmodel = getSubFormController(outputEntity.getEntityName()).getCollectableTableModel();
 			for (int i = 0; i < tblmodel.getRowCount(); i++) {
 				final Collectable clct = tblmodel.getCollectable(i);
 				clct.setField("format", new CollectableValueField(ReportOutputVO.Format.XLS.getValue()));
@@ -559,7 +583,7 @@ public class ReportCollectController extends MasterDataCollectController {
 	 * @throws CommonBusinessException
 	 */
 	private void importFiles(CollectableMasterData clctmd) throws CommonBusinessException {
-		final CollectableTableModel<CollectableEntityObject> tblmodel = getSubFormController(NuclosEntity.REPORTOUTPUT.getEntityName()).getCollectableTableModel();
+		final CollectableTableModel<CollectableEntityObject> tblmodel = getSubFormController(outputEntity.getEntityName()).getCollectableTableModel();
 		for (int i = 0; i < tblmodel.getRowCount(); i++) {
 			final CollectableEntityObject clct = tblmodel.getCollectable(i);
 			final CollectableField clctfSource = clct.getField("sourceFile");
@@ -579,7 +603,7 @@ public class ReportCollectController extends MasterDataCollectController {
 				}
 			}
 
-			for (CollectableMasterData subreportclct : clct.getDependantCollectableMasterDataMap().getValues(NuclosEntity.SUBREPORT.getEntityName())) {
+			for (CollectableMasterData subreportclct : clct.getDependantCollectableMasterDataMap().getValues(subreportEntity.getEntityName())) {
 				final CollectableField subreportclctfSource = subreportclct.getField("sourcefilename");
 				if (subreportclctfSource != null) {
 					final String sourcefilename = (String) subreportclctfSource.getValue();
@@ -615,7 +639,7 @@ public class ReportCollectController extends MasterDataCollectController {
 		if (getOutputType() == ReportVO.OutputType.EXCEL) {
 			sFileName = (String) getSelectedCollectable().getMasterDataCVO().getField("sourceFile");
 
-			final CollectableTableModel<CollectableEntityObject> tblmodel = getSubFormController(NuclosEntity.REPORTOUTPUT.getEntityName()).getCollectableTableModel();
+			final CollectableTableModel<CollectableEntityObject> tblmodel = getSubFormController(outputEntity.getEntityName()).getCollectableTableModel();
 			for (int i = 0; i < tblmodel.getRowCount(); i++) {
 				clct = tblmodel.getCollectable(i);
 				final CollectableField clctfSource = clct.getField("sourceFileContent");
@@ -630,7 +654,7 @@ public class ReportCollectController extends MasterDataCollectController {
 			}
 		}
 		else {
-			clct = getSubFormController(NuclosEntity.REPORTOUTPUT.getEntityName()).getSelectedCollectable();
+			clct = getSubFormController(outputEntity.getEntityName()).getSelectedCollectable();
 			if (clct == null) {
 				JOptionPane.showMessageDialog(getFrame(), getSpringLocaleDelegate().getMessage(
 						"ReportCollectController.15", "Bitte w\u00e4hlen Sie das Ausgabeformat aus, dessen Vorlagedatei exportiert werden soll."));
@@ -654,7 +678,7 @@ public class ReportCollectController extends MasterDataCollectController {
 		}
 
 		boolean includeSubreports = false;
-		if (clct.getDependantCollectableMasterDataMap().getValues(NuclosEntity.SUBREPORT.getEntityName()).size() > 0)
+		if (clct.getDependantCollectableMasterDataMap().getValues(subreportEntity.getEntityName()).size() > 0)
 			includeSubreports = JOptionPane.showOptionDialog(getFrame(), getSpringLocaleDelegate().getMessage(
 					"ReportCollectController.question.exportsubreports", "Sollen Subreports exportiert werden?"), "Subreports", 
 					JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, null) == JOptionPane.YES_OPTION;
@@ -734,7 +758,7 @@ public class ReportCollectController extends MasterDataCollectController {
 						else if (collReportOutputVO.size() == 1)
 							outputvo = collReportOutputVO.iterator().next();
 						else if (collReportOutputVO.size() > 1) {
-							Collectable clctReportOutput = ReportCollectController.this.getSubFormController(NuclosEntity.REPORTOUTPUT.getEntityName()).getSelectedCollectable();
+							Collectable clctReportOutput = ReportCollectController.this.getSubFormController(outputEntity.getEntityName()).getSelectedCollectable();
 							if(clctReportOutput == null) {
 								JOptionPane.showMessageDialog(ReportCollectController.this.getFrame(),
 										getSpringLocaleDelegate().getMessage("ReportCollectController.21", "Bitte w\u00e4hlen Sie die Vorlage aus, dessen Layout als Vorschau angezeigt werden soll."));

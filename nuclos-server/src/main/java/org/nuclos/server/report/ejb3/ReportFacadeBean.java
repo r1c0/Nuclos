@@ -76,6 +76,7 @@ import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.dal.vo.SystemFields;
 import org.nuclos.common.dblayer.JoinType;
 import org.nuclos.common.querybuilder.NuclosDatasourceException;
+import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.IOUtils;
 import org.nuclos.common2.LocaleInfo;
 import org.nuclos.common2.SpringLocaleDelegate;
@@ -190,6 +191,7 @@ public class ReportFacadeBean extends NuclosFacadeBean implements ReportFacadeRe
     */
    public Collection<ReportVO> getReports() throws CommonPermissionException {
       this.checkReadAllowed(NuclosEntity.REPORT);
+	
       final Collection<ReportVO> collreport = new ArrayList<ReportVO>();
 
       for (MasterDataVO mdVO : getMasterDataFacade().getMasterData(NuclosEntity.REPORT.getEntityName(), null, true)) {
@@ -227,7 +229,7 @@ public class ReportFacadeBean extends NuclosFacadeBean implements ReportFacadeRe
 
       for (Integer intid : dataBaseHelper.getDbAccess().executeQuery(query)) {
          try {
-            MasterDataVO mdVO = getMasterDataFacade().get(NuclosEntity.REPORT.getEntityName(), intid);
+            MasterDataVO mdVO = getMasterDataFacade().get(type == ReportType.REPORT ? NuclosEntity.REPORT.getEntityName() : NuclosEntity.FORM.getEntityName(), intid);
             Collection<Integer> readableReports = SecurityCache.getInstance().getReadableReports(getCurrentUserName()).get(type);
             if (mdVO != null && readableReports.contains(mdVO.getIntId()))
                collreport.add(MasterDataWrapper.getReportVO(mdVO,getCurrentUserName()));
@@ -251,9 +253,13 @@ public class ReportFacadeBean extends NuclosFacadeBean implements ReportFacadeRe
     */
    public MasterDataVO create(MasterDataVO mdvo, DependantMasterDataMap mpDependants)
          throws CommonCreateException, NuclosReportException, CommonPermissionException, NuclosBusinessRuleException {
-      this.checkReadAllowed(NuclosEntity.REPORT);
-      final MasterDataVO result = getMasterDataFacade().create(NuclosEntity.REPORT.getEntityName(), mdvo, mpDependants);
-      compileAndSaveAllXML(result);
+	   NuclosEntity entity = NuclosEntity.REPORT;
+	   if (ReportType.FORM.getValue().equals(mdvo.getField("type")))
+		   entity = NuclosEntity.FORM;
+	   
+      this.checkReadAllowed(entity);
+      final MasterDataVO result = getMasterDataFacade().create(entity.getEntityName(), mdvo, mpDependants);
+      compileAndSaveAllXML(entity, result);
       SecurityCache.getInstance().invalidate();
       return result;
    }
@@ -266,9 +272,13 @@ public class ReportFacadeBean extends NuclosFacadeBean implements ReportFacadeRe
     * @return modified report
     */
    public Integer modify(MasterDataVO mdvo, DependantMasterDataMap mpDependants) throws CommonBusinessException {
-      this.checkReadAllowed(NuclosEntity.REPORT);
-      final Integer result = (Integer) getMasterDataFacade().modify(NuclosEntity.REPORT.getEntityName(), mdvo, mpDependants);
-      this.compileAndSaveAllXML(mdvo);
+	   NuclosEntity entity = NuclosEntity.REPORT;
+	   if (ReportType.FORM.getValue().equals(mdvo.getField("type")))
+		   entity = NuclosEntity.FORM;
+	   
+      this.checkReadAllowed(entity);
+      final Integer result = (Integer) getMasterDataFacade().modify(entity.getEntityName(), mdvo, mpDependants);
+      this.compileAndSaveAllXML(entity, mdvo);
 
       return result;
    }
@@ -280,23 +290,27 @@ public class ReportFacadeBean extends NuclosFacadeBean implements ReportFacadeRe
     */
    public void remove(MasterDataVO mdvo)
          throws CommonFinderException, CommonRemoveException, CommonStaleVersionException, CommonPermissionException, CommonCreateException, NuclosBusinessRuleException {
-      this.checkReadAllowed(NuclosEntity.REPORT);
-      getMasterDataFacade().remove(NuclosEntity.REPORT.getEntityName(), mdvo, true);
+	   NuclosEntity entity = NuclosEntity.REPORT;
+	   if (ReportType.FORM.getValue().equals(mdvo.getField("type")))
+		   entity = NuclosEntity.FORM;
+	   
+	  this.checkReadAllowed(entity);
+      getMasterDataFacade().remove(entity.getEntityName(), mdvo, true);
       SecurityCache.getInstance().invalidate();
    }
 
-   private void compileAndSaveAllXML(MasterDataVO mdvo) throws NuclosReportException {
+   private void compileAndSaveAllXML(NuclosEntity entity, MasterDataVO mdvo) throws NuclosReportException {
       for (ReportOutputVO reportoutput : getReportOutputs(mdvo.getIntId()))
       {
          // Format is null when and only when it is the search output template, which has to be PDF/XML
          if ( reportoutput.getFormat() == null || "PDF".equals(reportoutput.getFormat().getValue()) ) {
             if (reportoutput.getSourceFile() != null) {
-               compileAndSaveXML(reportoutput);
+               compileAndSaveXML(entity, reportoutput);
 
                // subreports are only allowed for forms and reports
                if (reportoutput.getFormat() != null) {
                   for (SubreportVO subreport : getSubreports(reportoutput.getId())) {
-                     compileAndSaveXML(subreport);
+                     compileAndSaveXML(entity, subreport);
                   }
                }
             }
@@ -312,7 +326,7 @@ public class ReportFacadeBean extends NuclosFacadeBean implements ReportFacadeRe
       }
    }
 
-   private void compileAndSaveXML(ReportOutputVO reportOutput) throws NuclosReportException {
+   private void compileAndSaveXML(NuclosEntity entity, ReportOutputVO reportOutput) throws NuclosReportException {
       final String sReportXML;
       try {
          sReportXML = new String(reportOutput.getSourceFileContent().getData(), CHARENCODING);
@@ -326,13 +340,13 @@ public class ReportFacadeBean extends NuclosFacadeBean implements ReportFacadeRe
       MasterDataVO mdvo = MasterDataWrapper.wrapReportOutputVO(reportOutput);
 
       try {
-         getMasterDataFacade().modify(NuclosEntity.REPORTOUTPUT.getEntityName(), mdvo, null);
+         getMasterDataFacade().modify(entity.equals(NuclosEntity.REPORT) ? NuclosEntity.REPORTOUTPUT.getEntityName() : NuclosEntity.FORMOUTPUT.getEntityName(), mdvo, null);
       } catch (Exception e) {
          throw new NuclosReportException(e);
       }
    }
 
-   private void compileAndSaveXML(SubreportVO subreport) throws NuclosReportException {
+   private void compileAndSaveXML(NuclosEntity entity, SubreportVO subreport) throws NuclosReportException {
       final String sReportXML;
       try {
          sReportXML = new String(subreport.getSourcefileContent().getData(), CHARENCODING);
@@ -343,10 +357,10 @@ public class ReportFacadeBean extends NuclosFacadeBean implements ReportFacadeRe
       final JasperReport jr = compileReport(sReportXML);
       subreport.setReportCLS(new ByteArrayCarrier(SerializationUtils.serialize(jr)));
 
-      MasterDataVO mdvo = MasterDataWrapper.wrapSubreportVO(subreport);
+      MasterDataVO mdvo = MasterDataWrapper.wrapSubreportVO(entity, subreport);
 
       try {
-         getMasterDataFacade().modify(NuclosEntity.SUBREPORT.getEntityName(), mdvo, null);
+         getMasterDataFacade().modify(entity.equals(NuclosEntity.REPORT) ? NuclosEntity.SUBREPORT.getEntityName() : NuclosEntity.SUBFORM.getEntityName(), mdvo, null);
       } catch (Exception e) {
          throw new NuclosReportException(e);
       }
@@ -391,7 +405,7 @@ public class ReportFacadeBean extends NuclosFacadeBean implements ReportFacadeRe
       List<SubreportVO> subreports = new ArrayList<SubreportVO>();
 
       CollectableComparison cond = SearchConditionUtils.newMDReferenceComparison(
-         MasterDataMetaCache.getInstance().getMetaData(NuclosEntity.SUBREPORT), "reportoutput", reportoutputId);
+	         MasterDataMetaCache.getInstance().getMetaData(NuclosEntity.SUBREPORT), "reportoutput", reportoutputId);
       Collection<MasterDataVO> mdSubreports = getMasterDataFacade().getMasterData(NuclosEntity.SUBREPORT.getEntityName(), cond, true);
 
       for (MasterDataVO mdVO : mdSubreports) {
@@ -448,7 +462,7 @@ public class ReportFacadeBean extends NuclosFacadeBean implements ReportFacadeRe
       for (ReportType rt : readableReports.keySet()) {
          for (Integer reportId : CollectionUtils.intersection(collUsableReportIds, readableReports.get(rt))) {
             try {
-               reports.add(MasterDataWrapper.getReportVO(getMasterDataFacade().get(NuclosEntity.REPORT.getEntityName(), reportId), getCurrentUserName()));
+               reports.add(MasterDataWrapper.getReportVO(getMasterDataFacade().get(NuclosEntity.FORM.getEntityName(), reportId), getCurrentUserName()));
             }
             catch (CommonPermissionException ex) {
                throw new CommonFatalException(ex);

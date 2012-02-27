@@ -30,6 +30,28 @@
           </panel>
         </panel>
         <panel visible="yes" opaque="yes">
+        <tabbedpane-constraints title="Verwendungen" enabled="yes" internalname="Verwendungen" />
+          <tablelayout columns="-1.0" rows="-1.0" />
+          <panel>
+            <tablelayout-constraints col1="0" col2="0" row1="0" row2="0" hAlign="2" vAlign="2" />
+            <tablelayout columns="12.0|-1.0" rows="12.0|-1.0" />
+            <subform name="SubForm_3" entity="nuclos_formUsage" toolbarorientation="vertical" enabled="yes" >
+              <tablelayout-constraints col1="1" col2="1" row1="1" row2="1" hAlign="2" vAlign="2" />
+              <minimum-size height="40" width="180" />
+              <preferred-size height="100" width="300" />
+              <initial-sorting-order name="module" sorting-order="ascending" />
+              <subform-column name="process" enabled="yes" visible="yes" insertable="no" controltype="combobox">
+                <valuelist-provider type="process"/></subform-column>
+              <subform-column name="module" enabled="yes" visible="yes" insertable="no" controltype="combobox">
+                <valuelist-provider type="entityId"/></subform-column>
+              <subform-column name="state" enabled="yes" visible="yes" insertable="no" controltype="combobox">
+                <valuelist-provider type="statusNumeral">
+                  <parameter name="provideIdFields" value="true" />
+                </valuelist-provider></subform-column>
+            </subform>
+          </panel>
+        </panel>
+        <panel visible="yes" opaque="yes">
         <tabbedpane-constraints title="Ausgabeformate" enabled="yes" internalname="Ausgabeformate">
           <translations>
             <translation lang="de" text="Ausgabeformate"/>
@@ -40,7 +62,7 @@
           <panel>
             <tablelayout-constraints col1="0" col2="0" row1="0" row2="0" hAlign="2" vAlign="2" />
             <tablelayout columns="12.0|-1.0" rows="12.0|130.0|13.0|-1.0" />
-            <subform name="SubForm_1" entity="nuclos_reportoutput" toolbarorientation="vertical" enabled="yes" >
+            <subform name="SubForm_1" entity="nuclos_formoutput" toolbarorientation="vertical" enabled="yes" >
               <tablelayout-constraints col1="1" col2="1" row1="1" row2="1" hAlign="2" vAlign="2" />
               <titled-border title="Ausgabeformate">
               </titled-border>
@@ -63,7 +85,7 @@
               <subform-column name="sourceFile" enabled="yes" visible="yes" insertable="yes" controltypeclass="org.nuclos.client.masterdata.ui.CollectableFileNameChooserFilesOnly"></subform-column>
               <subform-column name="datasource" enabled="yes" visible="yes" insertable="no"></subform-column>
             </subform>
-            <subform name="SubForm_2" entity="nuclos_subreport" foreignkeyfield-to-parent="reportoutput" toolbarorientation="vertical" enabled="yes" >
+            <subform name="SubForm_2" entity="nuclos_subform" foreignkeyfield-to-parent="formoutput" toolbarorientation="vertical" enabled="yes" >
               <tablelayout-constraints col1="1" col2="1" row1="3" row2="3" hAlign="2" vAlign="2" />
               <titled-border title="Subreports">
               </titled-border>
@@ -135,4 +157,22 @@
     </panel>
   </panel>
 </layout>
+  <rules>
+    <rule name="Regel2">
+      <event type="value-changed" entity="nuclos_formUsage" sourcecomponent="process"/>
+      <actions>
+        <clear targetcomponent="state"/>
+        <refresh-valuelist targetcomponent="state" parameter-for-sourcecomponent="process"/>
+      </actions>
+    </rule>
+    <rule name="Regel 1">
+      <event type="value-changed" entity="nuclos_formUsage" sourcecomponent="module"/>
+      <actions>
+        <clear targetcomponent="process"/>
+        <clear targetcomponent="state"/>
+        <refresh-valuelist targetcomponent="process" parameter-for-sourcecomponent="entityName"/>
+        <refresh-valuelist targetcomponent="state" parameter-for-sourcecomponent="entityName"/>
+      </actions>
+    </rule>
+  </rules>
 </layoutml>

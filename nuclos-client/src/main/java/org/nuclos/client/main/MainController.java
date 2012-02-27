@@ -1380,7 +1380,7 @@ public class MainController {
 			addGenericCommandAction(genericActions, "ResPlanWizard", cmdOpenCustomComponentWizard, menuPath);
 		}
 
-		addActionIfAllowed(menuActions, menuPath, NuclosEntity.REPORT, genericActions);
+		//addActionIfAllowed(menuActions, menuPath, NuclosEntity.REPORT, genericActions);
 		addActionIfAllowed(menuActions, menuPath, NuclosEntity.NUCLET, genericActions);
 
 		return menuActions;

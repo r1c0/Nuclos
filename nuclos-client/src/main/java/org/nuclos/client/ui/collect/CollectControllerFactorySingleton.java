@@ -368,9 +368,9 @@ public class CollectControllerFactorySingleton {
 	/**
 	 * @deprecated
 	 */
-	public ReportCollectController newReportCollectController(JComponent parent, MainFrameTab tabIfAny) {
-		final ISearchStrategy<CollectableMasterDataWithDependants> ss = new ReportSearchStrategy();
-		final ReportCollectController result = new ReportCollectController(parent, tabIfAny);
+	public ReportCollectController newReportCollectController(JComponent parent, NuclosEntity entity, MainFrameTab tabIfAny) {
+		final ISearchStrategy<CollectableMasterDataWithDependants> ss = new ReportSearchStrategy(entity);
+		final ReportCollectController result = new ReportCollectController(parent, entity, tabIfAny);
 		ss.setCollectController(result);
 		result.setSearchStrategy(ss);
 		initMasterData(result);

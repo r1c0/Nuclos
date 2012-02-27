@@ -861,9 +861,12 @@ public class MasterDataWrapper {
 		return vo;
 	}
 
-	public static MasterDataVO wrapSubreportVO(SubreportVO vo) {
+	public static MasterDataVO wrapSubreportVO(NuclosEntity entity, SubreportVO vo) {
 		Map<String, Object> mpFields = new HashMap<String,Object>();
-		mpFields.put("reportoutputId", vo.getReportOutputId());
+		if (entity.equals(NuclosEntity.FORM))
+			mpFields.put("formoutputId", vo.getReportOutputId());
+		else
+			mpFields.put("reportoutputId", vo.getReportOutputId());
 		mpFields.put("parametername", vo.getParameter());
 		mpFields.put("sourcefilename", vo.getSourcefileName());
 		mpFields.put("sourcefileContent", vo.getSourcefileContent());

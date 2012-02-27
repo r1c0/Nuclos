@@ -19455,6 +19455,21 @@
     "text": "Report"
   },
   {
+    "resourceID": "nuclos.entity.form.label",
+    "locale": "i-default",
+    "text": "Form"
+  },
+  {
+    "resourceID": "nuclos.entity.form.label",
+    "locale": "en",
+    "text": "Form"
+  },
+  {
+    "resourceID": "nuclos.entity.form.label",
+    "locale": "de",
+    "text": "Formular"
+  },
+  {
     "resourceID": "nuclos.entity.reportoutput.label",
     "locale": "i-default",
     "text": "Output control"
@@ -19648,6 +19663,36 @@
     "resourceID": "nuclos.entity.timelimitrule.menupath",
     "locale": "de",
     "text": "Konfiguration\\Regelwerke"
+  },
+  {
+    "resourceID": "nuclos.entity.report.menupath",
+    "locale": "i-default",
+    "text": "Configuration\\Report"
+  },
+  {
+    "resourceID": "nuclos.entity.report.menupath",
+    "locale": "en",
+    "text": "Configuration\\Report"
+  },
+  {
+    "resourceID": "nuclos.entity.report.menupath",
+    "locale": "de",
+    "text": "Konfiguration\\Report"
+  },
+  {
+    "resourceID": "nuclos.entity.form.menupath",
+    "locale": "i-default",
+    "text": "Configuration\\Report"
+  },
+  {
+    "resourceID": "nuclos.entity.form.menupath",
+    "locale": "en",
+    "text": "Configuration\\Report"
+  },
+  {
+    "resourceID": "nuclos.entity.form.menupath",
+    "locale": "de",
+    "text": "Konfiguration\\Report"
   },
   {
     "resourceID": "nuclos.entity.user.label",
