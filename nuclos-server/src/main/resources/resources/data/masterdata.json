@@ -1377,7 +1377,7 @@
   {
     "name": "Jobsteuerung",
     "entity": "nuclos_jobcontroller",
-    "searchable": true,
+    "searchable": false,
     "editable": true,
     "cacheable": false,
     "dbentity": "V_MD_JOBCONTROLLER",

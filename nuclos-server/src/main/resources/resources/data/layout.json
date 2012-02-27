@@ -184,11 +184,6 @@
     "nuclos_layoutUsage": [ { "entity": "nuclos_jobcontroller", "searchScreen": false } ]
   },
   {
-    "name": "Jobsteuerung - Suche",
-    "description": "Maske für Jobsteuerung Suche",
-    "nuclos_layoutUsage": [ { "entity": "nuclos_jobcontroller", "searchScreen": true } ]
-  },
-  {
     "name": "Suchfilter",
     "description": "Maske für Suchfilter",
     "nuclos_layoutUsage": [
