@@ -197,6 +197,8 @@ public class DalSupportForGO {
 	}
 
 	/**
+	 * Attention: Update flag is never set.
+	 * 
 	 * @deprecated Does not honour dependant objects. Consider reimplementation along the lines of
 	 * 		wrapGenericObjectVO of client.
 	 */

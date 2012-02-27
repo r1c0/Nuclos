@@ -401,7 +401,9 @@ public class RuleInterfaceFacadeBean extends NuclosFacadeBean {
 				goVO.setAttributes(govoCurrent.getAttributes());
 				goFacade.setValueObject(goVO);
 				newId = (Integer)mdFacade.modify(NuclosEntity.GENERICOBJECT.getEntityName(), MasterDataWrapper.wrapGenericObjectVO(goVO), null);*/
-				DalSupportForGO.getEntityObjectProcesserForGenericObject(iGenericObjectId).insertOrUpdate(DalSupportForGO.wrapGenericObjectVO(govoCurrent));
+				final EntityObjectVO eo = DalSupportForGO.wrapGenericObjectVO(govoCurrent);
+				eo.flagUpdate();
+				DalSupportForGO.getEntityObjectProcesserForGenericObject(iGenericObjectId).insertOrUpdate(eo);
 				newId = (govoCurrent.getId() != null) ? govoCurrent.getId() : iGenericObjectId;
 			}
 

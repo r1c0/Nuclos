@@ -33,6 +33,7 @@ import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.CommonRunnable;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
+import org.nuclos.server.genericobject.GeneratorFailedException;
 import org.nuclos.server.genericobject.ejb3.GenerationResult;
 import org.nuclos.server.genericobject.valueobject.GeneratorActionVO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -72,14 +73,21 @@ class MultiGenerateAction implements Action<Pair<Collection<EntityObjectVO>, Lon
 		invokeWithInputRequiredSupport.invoke(new CommonRunnable() {
 			@Override
 			public void run() throws CommonBusinessException {
-				if (generatoractionvo.isGroupAttributes()) {
-					result.set(GeneratorDelegate.getInstance().generateGenericObject(sources.x, sources.y, generatoractionvo));
-				}
-				else {
-					if (sources.x.size() > 1) {
-						throw new NuclosFatalException();
+				try {
+					if (generatoractionvo.isGroupAttributes()) {
+						result.set(GeneratorDelegate.getInstance().generateGenericObject(
+								sources.x, sources.y, generatoractionvo));
 					}
-					result.set(GeneratorDelegate.getInstance().generateGenericObject(sources.x.iterator().next().getId(), sources.y, generatoractionvo));
+					else {
+						if (sources.x.size() > 1) {
+							throw new NuclosFatalException();
+						}
+						result.set(GeneratorDelegate.getInstance().generateGenericObject(
+								sources.x.iterator().next().getId(), sources.y, generatoractionvo));
+					}
+				}
+				catch (GeneratorFailedException e) {
+					result.set(e.getGenerationResult());
 				}
 			}
 		}, context, parent);
@@ -117,6 +125,8 @@ class MultiGenerateAction implements Action<Pair<Collection<EntityObjectVO>, Lon
 					SpringLocaleDelegate.getInstance().getMessageFromResource(rResult.getError()));
 		}
 		else {
+			// dead code
+			assert false;
 			String entity = MetaDataClientProvider.getInstance().getEntity(generatoractionvo.getTargetModuleId().longValue()).getEntity();
 			return SpringLocaleDelegate.getInstance().getMessage("R00022880",
 					"Object \"{0}\" successfully generated.",

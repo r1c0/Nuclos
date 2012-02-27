@@ -81,6 +81,7 @@ import org.nuclos.common2.CommonRunnable;
 import org.nuclos.common2.IdUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonFinderException;
+import org.nuclos.server.genericobject.GeneratorFailedException;
 import org.nuclos.server.genericobject.ejb3.GenerationResult;
 import org.nuclos.server.genericobject.valueobject.GeneratorActionVO;
 import org.nuclos.server.masterdata.valueobject.DependantMasterDataMap;
@@ -409,13 +410,28 @@ public class GenerationController {
 									result.set(GeneratorDelegate.getInstance().generateGenericObject(pair.x, pair.y, action));
 								}
 							}, context, parent);
-							fireGenerationEvent(result.get());
+							fireGenerationSucessfulEvent(result.get());
 							if (!isHeadless()) {
-								showResult(result.get());
+								showGenerationSucessfulResult(result.get());
 								if (action.isRefreshSrcObject())
 									parentController.refreshCurrentCollectable();
 							}
-						} catch (CommonBusinessException e) {
+						}
+						catch (GeneratorFailedException e) {
+							fireGenerationWithExceptionEvent(e);
+							if (!isHeadless()) {
+								showGenerationWithExceptionResult(e);
+								if (action.isRefreshSrcObject()) {
+									try {
+										parentController.refreshCurrentCollectable();
+									}
+									catch (CommonBusinessException e2) {
+										Errors.getInstance().showExceptionDialog(parent, e2);
+									}
+								}
+							}
+						}
+						catch (CommonBusinessException e) {
 							Errors.getInstance().showExceptionDialog(parent, e);
 						}
 					}
@@ -435,12 +451,23 @@ public class GenerationController {
 									showGenericObject(result.getGeneratedObject(), action.getTargetModuleId());
 								}
 								else {
+									// dead code
+									assert false;
 									showIncompleteGenericObject(null, result.getGeneratedObject(), result.getError());
 								}
 							}
+						}	
+					} 
+					catch (GeneratorFailedException e) {
+						final GenerationResult result = e.getGenerationResult();
+						try {
+							showIncompleteGenericObject(null, result.getGeneratedObject(), result.getError());
 						}
-
-					} catch (CommonBusinessException e) {
+						catch (CommonBusinessException e2) {
+							Errors.getInstance().showExceptionDialog(pane, e2);
+						}
+					}
+					catch (CommonBusinessException e) {
 						Errors.getInstance().showExceptionDialog(pane, e);
 					}
 				}
@@ -453,19 +480,54 @@ public class GenerationController {
 		}
 	}
 
-	private void fireGenerationEvent(GenerationResult result) {
+	private void fireGenerationSucessfulEvent(GenerationResult result) {
 		for (GenerationListener l : listeners) {
-			l.generated(result);
+			l.generatedSucessful(result);
 		}
 	}
 
-	private void showResult(GenerationResult result) {
+	private void fireGenerationWithExceptionEvent(GeneratorFailedException result) {
+		for (GenerationListener l : listeners) {
+			l.generatedWithException(result);
+		}
+	}
+
+	private void showGenerationSucessfulResult(GenerationResult result) {
 		try {
 			Integer generatedGoId = IdUtils.unsafeToId(result.getGeneratedObject().getId());
 			EntityMetaDataVO meta = MetaDataClientProvider.getInstance().getEntity(IdUtils.toLongId(action.getTargetModuleId()));
-			if ((meta.isStateModel() && SecurityCache.getInstance().isWriteAllowedForModule(Modules.getInstance().getEntityNameByModuleId(action.getTargetModuleId()), generatedGoId))
+			if ((meta.isStateModel() && SecurityCache.getInstance().isWriteAllowedForModule(
+					Modules.getInstance().getEntityNameByModuleId(action.getTargetModuleId()), generatedGoId))
 					|| (!meta.isStateModel() && SecurityCache.getInstance().isWriteAllowedForMasterData(meta.getEntity())) ) {
+				
 				if (generatedGoId != null) {
+					if (action.isShowObject())
+						showGenericObject(result.getGeneratedObject(), action.getTargetModuleId());
+				}
+				else {
+					// dead code
+					assert false;
+					showIncompleteGenericObject(result.getSourceIds(), result.getGeneratedObject(), result.getError());
+				}
+			}
+		}
+		catch (CommonBusinessException ex) {
+			Errors.getInstance().showExceptionDialog(pane, ex);
+		}
+	}
+
+	private void showGenerationWithExceptionResult(GeneratorFailedException ex) {
+		final GenerationResult result = ex.getGenerationResult();
+		try {
+			Integer generatedGoId = IdUtils.unsafeToId(result.getGeneratedObject().getId());
+			EntityMetaDataVO meta = MetaDataClientProvider.getInstance().getEntity(IdUtils.toLongId(action.getTargetModuleId()));
+			if ((meta.isStateModel() && SecurityCache.getInstance().isWriteAllowedForModule(
+					Modules.getInstance().getEntityNameByModuleId(action.getTargetModuleId()), generatedGoId))
+					|| (!meta.isStateModel() && SecurityCache.getInstance().isWriteAllowedForMasterData(meta.getEntity())) ) {
+				
+				if (generatedGoId != null) {
+					// dead code
+					assert false;
 					if (action.isShowObject())
 						showGenericObject(result.getGeneratedObject(), action.getTargetModuleId());
 				}
@@ -474,8 +536,8 @@ public class GenerationController {
 				}
 			}
 		}
-		catch (CommonBusinessException ex) {
-			Errors.getInstance().showExceptionDialog(pane, ex);
+		catch (CommonBusinessException e) {
+			Errors.getInstance().showExceptionDialog(pane, e);
 		}
 	}
 
@@ -564,6 +626,10 @@ public class GenerationController {
 	}
 
 	public interface GenerationListener {
-		public void generated(GenerationResult result);
+		
+		void generatedSucessful(GenerationResult result);
+		
+		void generatedWithException(GeneratorFailedException result);
+		
 	}
 }

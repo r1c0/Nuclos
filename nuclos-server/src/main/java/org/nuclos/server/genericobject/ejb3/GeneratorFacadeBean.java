@@ -82,6 +82,7 @@ import org.nuclos.server.dblayer.query.DbFrom;
 import org.nuclos.server.dblayer.query.DbQuery;
 import org.nuclos.server.dblayer.query.DbQueryBuilder;
 import org.nuclos.server.dblayer.query.DbSelection;
+import org.nuclos.server.genericobject.GeneratorFailedException;
 import org.nuclos.server.genericobject.GenericObjectMetaDataCache;
 import org.nuclos.server.genericobject.Modules;
 import org.nuclos.server.genericobject.valueobject.GeneratorActionVO;
@@ -191,7 +192,9 @@ public class GeneratorFacadeBean extends NuclosFacadeBean implements GeneratorFa
 	 * @return id of generated generic object (if exactly one object was
 	 *         generated)
 	 */
-	public Long generateGenericObject(Long iSourceObjectId, String sGenerator) throws CommonFinderException, CommonPermissionException, NuclosBusinessRuleException, CommonStaleVersionException, CommonValidationException {
+	public Long generateGenericObject(Long iSourceObjectId, String sGenerator) 
+			throws CommonFinderException, CommonPermissionException, CommonStaleVersionException, CommonValidationException {
+		
 		return generateGenericObject(iSourceObjectId, null, getGeneratorActionByName(sGenerator)).getGeneratedObject().getId();
 	}
 
@@ -208,7 +211,9 @@ public class GeneratorFacadeBean extends NuclosFacadeBean implements GeneratorFa
 	 * @nucleus.permission mayWrite(generatoractionvo.getTargetModuleId())
 	 */
 	@RolesAllowed("Login")
-	public GenerationResult generateGenericObject(Long iSourceObjectId, Long parameterObjectId, GeneratorActionVO generatoractionvo) throws CommonFinderException, CommonPermissionException, NuclosBusinessRuleException, CommonStaleVersionException, CommonValidationException {
+	public GenerationResult generateGenericObject(Long iSourceObjectId, Long parameterObjectId, GeneratorActionVO generatoractionvo) 
+			throws CommonFinderException, CommonPermissionException, CommonStaleVersionException, CommonValidationException {
+		
 		EntityMetaDataVO sourceMeta = MetaDataServerProvider.getInstance().getEntity(IdUtils.toLongId(generatoractionvo.getSourceModuleId()));
 		EntityMetaDataVO targetMeta = MetaDataServerProvider.getInstance().getEntity(IdUtils.toLongId(generatoractionvo.getTargetModuleId()));
 
@@ -220,7 +225,9 @@ public class GeneratorFacadeBean extends NuclosFacadeBean implements GeneratorFa
 	}
 
 	@RolesAllowed("Login")
-	public Long generateGenericObject(RuleObjectContainerCVO loccvoSource, String sGenerator) throws CommonFinderException, CommonPermissionException, NuclosBusinessRuleException, CommonStaleVersionException, CommonValidationException {
+	public Long generateGenericObject(RuleObjectContainerCVO loccvoSource, String sGenerator) 
+			throws CommonFinderException, CommonPermissionException, CommonStaleVersionException, CommonValidationException {
+		
 		GeneratorActionVO generator = getGeneratorActionByName(sGenerator);
 		EntityMetaDataVO meta = MetaDataServerProvider.getInstance().getEntity(IdUtils.toLongId(generator.getSourceModuleId()));
 
@@ -260,7 +267,9 @@ public class GeneratorFacadeBean extends NuclosFacadeBean implements GeneratorFa
 	 * @throws CommonPermissionException
 	 */
 	@RolesAllowed("Login")
-	public GenerationResult generateGenericObject(Collection<EntityObjectVO> sourceObjects, Long parameterObjectId, GeneratorActionVO generatoractionvo) throws CommonFinderException, CommonPermissionException, NuclosBusinessRuleException, CommonStaleVersionException, CommonValidationException {
+	public GenerationResult generateGenericObject(Collection<EntityObjectVO> sourceObjects, Long parameterObjectId, GeneratorActionVO generatoractionvo) 
+			throws CommonFinderException, CommonPermissionException, CommonStaleVersionException, CommonValidationException {
+		
 		final EntityMetaDataVO sourceMeta = MetaDataServerProvider.getInstance().getEntity(IdUtils.toLongId(generatoractionvo.getSourceModuleId()));
 		final EntityMetaDataVO targetMeta = MetaDataServerProvider.getInstance().getEntity(IdUtils.toLongId(generatoractionvo.getTargetModuleId()));
 
@@ -409,7 +418,10 @@ public class GeneratorFacadeBean extends NuclosFacadeBean implements GeneratorFa
 				EntityObjectVO temp = DalSupportForGO.wrapGenericObjectVO(container.getGenericObject());
 				temp.setEntity(targetMeta.getEntity());
 				temp.setDependants(container.getDependants());
-				return new GenerationResult(CollectionUtils.transform(sourceObjects, new ExtractIdTransformer()), temp, ex.getMessage()) ;
+				final GenerationResult gr = new GenerationResult(CollectionUtils.transform(
+						sourceObjects, new ExtractIdTransformer()), temp, ex.getMessage()) ;
+				throw new GeneratorFailedException("Generation of generic object failed: " + temp 
+						+ " action: " + generatoractionvo, gr, ex);
 			}
 		}
 		else {
@@ -441,7 +453,11 @@ public class GeneratorFacadeBean extends NuclosFacadeBean implements GeneratorFa
 				EntityObjectVO temp = DalSupportForMD.getEntityObjectVO(entity, container.getMasterData());
 				temp.setEntity(targetMeta.getEntity());
 				temp.setDependants(container.getDependants());
-				return new GenerationResult(CollectionUtils.transform(sourceObjects, new ExtractIdTransformer()), temp, ex.getMessage()) ;
+				final GenerationResult gr = new GenerationResult(CollectionUtils.transform(
+						sourceObjects, new ExtractIdTransformer()), temp, ex.getMessage());
+				throw new GeneratorFailedException("Generation of MD object failed: " + temp 
+						+ " action: " + generatoractionvo, gr, ex);
+
 			}
 		}
 	}
@@ -1172,7 +1188,9 @@ public class GeneratorFacadeBean extends NuclosFacadeBean implements GeneratorFa
 	 * @ejb.interface-method view-type="both"
 	 * @ejb.permission role-name="Login"
 	 */
-	public EntityObjectVO generateGenericObjectWithoutCheckingPermission(Long iSourceObjectId, GeneratorActionVO generatoractionvo) throws CommonFinderException, CommonPermissionException, NuclosBusinessRuleException, CommonStaleVersionException, CommonValidationException {
+	public EntityObjectVO generateGenericObjectWithoutCheckingPermission(Long iSourceObjectId, GeneratorActionVO generatoractionvo) 
+			throws CommonFinderException, CommonPermissionException, CommonStaleVersionException, CommonValidationException {
+		
 		return generateGenericObject(iSourceObjectId, null, generatoractionvo).getGeneratedObject();
 	}
 

@@ -46,8 +46,7 @@ public interface GeneratorFacadeLocal {
 	Long generateGenericObject(
 			Long iSourceObjectId, String sGenerator)
 		throws CommonFinderException, CommonPermissionException,
-		NuclosBusinessRuleException, CommonStaleVersionException,
-		CommonValidationException;
+		CommonStaleVersionException, CommonValidationException;
 
 	/**
 	 * generate one or more generic objects from an existing generic object (copying selected attributes and subforms)
@@ -60,8 +59,7 @@ public interface GeneratorFacadeLocal {
 	Long generateGenericObject(
 		RuleObjectContainerCVO loccvoSource, String sGenerator)
 		throws CommonFinderException, CommonPermissionException,
-		NuclosBusinessRuleException, CommonStaleVersionException,
-		CommonValidationException;
+		CommonStaleVersionException, CommonValidationException;
 
 	/**
 	 * transfers (copies) a specified set of attributes from one generic object to another.
@@ -88,6 +86,6 @@ public interface GeneratorFacadeLocal {
 		throws CommonFatalException;
 
 	EntityObjectVO generateGenericObjectWithoutCheckingPermission(Long iSourceObjectId, GeneratorActionVO generatoractionvo)
-		throws CommonFinderException, CommonPermissionException, NuclosBusinessRuleException,
+		throws CommonFinderException, CommonPermissionException,
 		CommonStaleVersionException, CommonValidationException ;
 }

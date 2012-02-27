@@ -53,16 +53,14 @@ public interface GeneratorFacadeRemote {
     */
    @RolesAllowed("Login")
    GenerationResult generateGenericObject(Long iSourceObjectId, Long parameterObjectId, GeneratorActionVO generatoractionvo)
-   	throws CommonFinderException, CommonPermissionException, NuclosBusinessRuleException,
-      CommonStaleVersionException, CommonValidationException;
+   	throws CommonFinderException, CommonPermissionException, CommonStaleVersionException, CommonValidationException;
 
    @RolesAllowed("Login")
    Map<String, Collection<EntityObjectVO>> groupObjects(Collection<Long> sourceIds, GeneratorActionVO generatoractionvo);
 
    @RolesAllowed("Login")
    GenerationResult generateGenericObject(Collection<EntityObjectVO> sourceObjects, Long parameterObjectId, GeneratorActionVO generatoractionvo)
-   	throws CommonFinderException, CommonPermissionException, NuclosBusinessRuleException,
-      CommonStaleVersionException, CommonValidationException;
+   	throws CommonFinderException, CommonPermissionException, CommonStaleVersionException, CommonValidationException;
 
 	/**
 	 * update usages of rules
