@@ -324,7 +324,7 @@ public class TopicNotificationReceiver {
 		@Override
 		public void onMessage(Message msg) {
 			MessageListener delegate = reference.get();
-			LOG.info(MessageFormat.format("Received message from topic {0}: {1}\n\tfor {2}", topicname, msg, delegate));
+			LOG.info(MessageFormat.format("onMessage: Received message from topic {0}: {1}\n\tfor {2}", topicname, msg, delegate));
 			if(delegate != null) {
 				delegate.onMessage(msg);
 			}
@@ -389,7 +389,7 @@ public class TopicNotificationReceiver {
 
 		@Override
 		public void onMessage(Message message) {
-			LOG.info("Received heartbeat message " + message);
+			LOG.info("onMessage: Received heartbeat message " + message);
 		}		
 		
 	}
@@ -401,7 +401,7 @@ public class TopicNotificationReceiver {
 
 		@Override
 		public void onMessage(Message message) {
-			LOG.info("Dummy listener received and ignores message " + message);
+			LOG.info("onMessage: Dummy listener received and ignores message " + message);
 		}		
 		
 	}

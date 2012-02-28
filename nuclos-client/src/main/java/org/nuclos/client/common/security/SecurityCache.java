@@ -27,7 +27,6 @@ import javax.jms.MessageListener;
 import javax.jms.TextMessage;
 
 import org.apache.log4j.Logger;
-import org.jfree.util.Log;
 import org.nuclos.client.attribute.AttributeCache;
 import org.nuclos.client.common.TopicNotificationReceiver;
 import org.nuclos.client.main.Main;
@@ -109,12 +108,13 @@ public class SecurityCache {
 				}
 			}
 			if (clearcache) {
-				Log.info("JMS trigger clearcache in " + this);
+				LOG.info("onMessage: JMS trigger clearcache (security, attribute, menues) in " + this);
 				SecurityCache.this.revalidate();
 				attributeCache.revalidate();
 				UIUtils.runCommandLater(Main.getInstance().getMainFrame(), new CommonRunnable() {
 					@Override
 	                public void run() throws CommonBusinessException {
+						LOG.info("onMessage " + this + " refreshMenus...");
 						Main.getInstance().getMainController().refreshMenus();
 					}
 				});

@@ -385,6 +385,8 @@ public class GenericObjectImportCollectController extends MasterDataCollectContr
 		    		ProgressNotification notification = (ProgressNotification) objectMessage.getObject();
 
 		    		if (notification.getState() == ProgressNotification.RUNNING) {
+		    			LOG.info("onMessage " + this + " progressing...");
+
 		    			this.btnStart.setEnabled(false);
 		    			this.btnStop.setEnabled(true);
 
@@ -396,6 +398,7 @@ public class GenericObjectImportCollectController extends MasterDataCollectContr
 		    		}
 		    		else {
 		    			try {
+		    				LOG.info("onMessage " + this + " refreshCurrentCollectable...");
 		    				this.lastnotification = notification;
 							refreshCurrentCollectable(false);
 						}

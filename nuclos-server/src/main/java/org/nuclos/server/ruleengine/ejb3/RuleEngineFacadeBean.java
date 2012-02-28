@@ -30,6 +30,7 @@ import javax.annotation.security.RolesAllowed;
 
 import org.apache.commons.lang.NullArgumentException;
 import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 import org.nuclos.common.Actions;
 import org.nuclos.common.JMSConstants;
 import org.nuclos.common.NuclosEntity;
@@ -111,6 +112,8 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Transactional
 public class RuleEngineFacadeBean extends NuclosFacadeBean implements RuleEngineFacadeRemote {
+	
+	private static final Logger LOG = Logger.getLogger(RuleEngineFacadeBean.class);
 	
 	private CustomCodeManager ccm;
 
@@ -360,10 +363,9 @@ public class RuleEngineFacadeBean extends NuclosFacadeBean implements RuleEngine
 	 */
 	private void sendMessagesByJMS(List<RuleNotification> lstRuleNotifications) {
 		if (lstRuleNotifications.size() > 0) {
-
+			LOG.info("JMS send rule notifications: " + lstRuleNotifications);
 			for (RuleNotification notification : lstRuleNotifications) {
 				NuclosJMSUtils.sendObjectMessage(notification, JMSConstants.TOPICNAME_RULENOTIFICATION, this.getCurrentUserName());
-
 			}
 		}
 	}

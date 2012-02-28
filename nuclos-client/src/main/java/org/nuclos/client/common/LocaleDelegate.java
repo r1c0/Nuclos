@@ -395,9 +395,10 @@ public class LocaleDelegate implements SpringLocaleDelegate.LookupService, Messa
 	@Override
 	public void onMessage(Message arg0) {
 		synchronized(RB_LOCk) {
+			LOG.info("onMessage " + this + " RESOURCE_BUNDLE=null");
 			RESOURCE_BUNDLE = null;
 		}
-		LOG.info("Cleared cache " + this);
+		LOG.info("onMessage: cleared cache " + this);
 	}
 
 	@Override

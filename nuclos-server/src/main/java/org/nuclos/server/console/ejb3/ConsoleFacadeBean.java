@@ -22,6 +22,7 @@ import java.util.Map;
 
 import javax.annotation.security.RolesAllowed;
 
+import org.apache.log4j.Logger;
 import org.nuclos.common.CommandMessage;
 import org.nuclos.common.ConsoleConstants;
 import org.nuclos.common.JMSConstants;
@@ -65,6 +66,8 @@ import org.springframework.transaction.annotation.Transactional;
 @RolesAllowed("UseManagementConsole")
 public class ConsoleFacadeBean extends NuclosFacadeBean implements ConsoleFacadeRemote {
 	
+	private static final Logger LOG = Logger.getLogger(ConsoleFacadeBean.class);
+	
 	public ConsoleFacadeBean() {
 	}
 
@@ -76,15 +79,21 @@ public class ConsoleFacadeBean extends NuclosFacadeBean implements ConsoleFacade
 	 * @param sAuthor the author of the message
 	 */
 	public void sendClientNotification(String sMessage, String sUser, Priority priority, String sAuthor) {
-		NuclosJMSUtils.sendObjectMessage(new RuleNotification(priority, sMessage, sAuthor), JMSConstants.TOPICNAME_RULENOTIFICATION, LangUtils.defaultIfNull(sUser, JMSConstants.BROADCAST_MESSAGE));
+		LOG.info("JMS send client notification to user " + sUser + ": " + sMessage);
+		NuclosJMSUtils.sendObjectMessage(
+				new RuleNotification(priority, sMessage, sAuthor), JMSConstants.TOPICNAME_RULENOTIFICATION, 
+				LangUtils.defaultIfNull(sUser, JMSConstants.BROADCAST_MESSAGE));
 	}
 
 	/**
 	 * end all the clients of sUser
 	 * @param sUser if null for all users
 	 */
-	public void killSession(String sUser) {		
-		NuclosJMSUtils.sendObjectMessage(new CommandMessage(CommandMessage.CMD_SHUTDOWN), JMSConstants.TOPICNAME_RULENOTIFICATION, LangUtils.defaultIfNull(sUser, JMSConstants.BROADCAST_MESSAGE));
+	public void killSession(String sUser) {
+		LOG.info("JMS send killSession " + sUser);
+		NuclosJMSUtils.sendObjectMessage(
+				new CommandMessage(CommandMessage.CMD_SHUTDOWN), JMSConstants.TOPICNAME_RULENOTIFICATION, 
+				LangUtils.defaultIfNull(sUser, JMSConstants.BROADCAST_MESSAGE));
 	}
 
 	/**

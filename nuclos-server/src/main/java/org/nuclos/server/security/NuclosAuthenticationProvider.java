@@ -185,7 +185,7 @@ public class NuclosAuthenticationProvider implements AuthenticationProvider, Mes
 			try {
 				String text = ((TextMessage) message).getText();
 				if (StringUtils.isNullOrEmpty(text) || text.equals(NuclosEntity.LDAPSERVER.getEntityName())) {
-					LOG.info("Invalidate ldap servers.");
+					LOG.info("onMessage: Invalidate ldap servers.");
 					this.ldapAuthenticators = null;
 				}
 			}

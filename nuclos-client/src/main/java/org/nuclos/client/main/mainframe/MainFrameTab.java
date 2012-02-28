@@ -646,7 +646,7 @@ public class MainFrameTab extends JPanel implements IOverlayComponent, NuclosDro
 	@Configurable
 	public static class TranslucentLockableWithProgressUI extends TranslucentLockableUI implements MessageListener {
 
-		private static final Logger log = Logger.getLogger(TranslucentLockableWithProgressUI.class);
+		private static final Logger LOG = Logger.getLogger(TranslucentLockableWithProgressUI.class);
 
 		private final TextPainter textProgress;
 		private final TextPainter textMessage;
@@ -677,17 +677,17 @@ public class MainFrameTab extends JPanel implements IOverlayComponent, NuclosDro
 		public void setLocked(boolean locked) {
 			mutLocked.setValue(locked);
 			if (locked) {
-				log.info("subscribe to " + JMSConstants.TOPICNAME_LOCKEDTABPROGRESSNOTIFICATION + " with correlationId=" + correlationId);
+				LOG.info("subscribe to " + JMSConstants.TOPICNAME_LOCKEDTABPROGRESSNOTIFICATION + " with correlationId=" + correlationId);
 				tnr.subscribe(JMSConstants.TOPICNAME_LOCKEDTABPROGRESSNOTIFICATION, correlationId, TranslucentLockableWithProgressUI.this);
 			} else {
-				log.info("unsubscribe from " + JMSConstants.TOPICNAME_LOCKEDTABPROGRESSNOTIFICATION);
+				LOG.info("unsubscribe from " + JMSConstants.TOPICNAME_LOCKEDTABPROGRESSNOTIFICATION);
 				tnr.unsubscribe(TranslucentLockableWithProgressUI.this);
 			}
 			while (isDirty()) {
 				try {
 					Thread.sleep(100);
 				} catch (InterruptedException e) {
-					log.error(null, e);
+					LOG.error(null, e);
 				}
 			}
 			super.setLocked(locked);
@@ -700,13 +700,13 @@ public class MainFrameTab extends JPanel implements IOverlayComponent, NuclosDro
 			    	ObjectMessage objectMessage = (ObjectMessage) message;
 			    	if (objectMessage.getObject() instanceof LockedTabProgressNotification) {
 			    		LockedTabProgressNotification notification = (LockedTabProgressNotification) objectMessage.getObject();
-			    		log.info("receice "+notification);
+			    		LOG.info("onMessage: Received LockedTabProgressNotification " + notification);
 			    		setText(notification.getMessage(), LangUtils.defaultIfNull(notification.getPercent(), 0));
 			    	}
 			    }
 			}
 			catch (JMSException ex) {
-				log.error(ex);
+				LOG.error(ex);
 			}
 		}
 

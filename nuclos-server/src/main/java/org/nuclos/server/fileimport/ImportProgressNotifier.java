@@ -16,6 +16,7 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.server.fileimport;
 
+import org.apache.log4j.Logger;
 import org.nuclos.common.JMSConstants;
 import org.nuclos.common.ProgressNotification;
 import org.nuclos.common2.StringUtils;
@@ -30,6 +31,7 @@ import org.nuclos.server.jms.NuclosJMSUtils;
  */
 public class ImportProgressNotifier {
 
+	private static final Logger LOG = Logger.getLogger(ImportProgressNotifier.class);
 
 	private String correlationId;
 
@@ -85,6 +87,7 @@ public class ImportProgressNotifier {
 
 	private void notify(ProgressNotification notification) {
 		if (!StringUtils.isNullOrEmpty(correlationId)) {
+			LOG.info("JMS send import progress notification " + notification);
 			NuclosJMSUtils.sendObjectMessage(notification, JMSConstants.TOPICNAME_PROGRESSNOTIFICATION, correlationId);
 		}
 	}

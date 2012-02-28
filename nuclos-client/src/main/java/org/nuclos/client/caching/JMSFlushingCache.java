@@ -64,12 +64,26 @@ public class JMSFlushingCache<K, V> extends GenCache<K, V> implements MessageLis
 			String t;
 			try {
 				t = ((TextMessage) m).getText();
-				if(t != null && t.matches(pat))
+				if (t != null && t.matches(pat)) {
+					LOG.info("onMessage " + this + " pattern matches, clear cache...");
 					clear();
+				}
 			}
 			catch(JMSException e) {
 				LOG.warn("onMessage failed: " + e, e);
 			}
 		}
+	}
+	
+	@Override
+	public String toString() {
+		final StringBuilder result = new StringBuilder();
+		result.append("JMSFlushingCache[");
+		result.append("pattern=").append(pat);
+		result.append(",topic=").append(topic);
+		result.append(",receiver=").append(tnr);
+		result.append(",super=").append(super.toString());
+		result.append("]");
+		return result.toString();
 	}
 }

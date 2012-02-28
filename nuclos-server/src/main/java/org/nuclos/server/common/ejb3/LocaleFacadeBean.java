@@ -113,9 +113,10 @@ public class LocaleFacadeBean implements LocaleFacadeRemote {
 	 */
 	private static final Map<LocaleInfo, HashResourceBundle> CACHE = new ConcurrentHashMap<LocaleInfo, HashResourceBundle>();
 
-	private static final TransactionSynchronization ts = new TransactionSynchronizationAdapter() {
+	private static final TransactionSynchronization TX_SYNC = new TransactionSynchronizationAdapter() {
 		@Override
 		public void afterCommit() {
+			LOG.info("afterCommit: " + this + " clear cache, JMS send flush message...");
 			CACHE.clear();
 			NuclosJMSUtils.sendMessage("flush", JMSConstants.TOPICNAME_LOCALE, JMSConstants.BROADCAST_MESSAGE);
 		}
@@ -166,8 +167,8 @@ public class LocaleFacadeBean implements LocaleFacadeRemote {
 	private void internalFlush() {
 		try {
 			List<TransactionSynchronization> list = TransactionSynchronizationManager.getSynchronizations();
-			if (!list.contains(ts)) {
-				TransactionSynchronizationManager.registerSynchronization(ts);
+			if (!list.contains(TX_SYNC)) {
+				TransactionSynchronizationManager.registerSynchronization(TX_SYNC);
 			}
 		}
 		catch (IllegalStateException ex) {

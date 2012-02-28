@@ -54,6 +54,7 @@ public class ResourceCache {
 	private MessageListener messagelistener = new MessageListener() {
 		@Override
 		public void onMessage(Message msg) {
+			LOG.info("onMessage " + this + " invalidate...");
 			invalidate();			
 		}
 	};

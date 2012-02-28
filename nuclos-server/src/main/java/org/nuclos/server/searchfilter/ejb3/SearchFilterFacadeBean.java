@@ -17,6 +17,7 @@
 package org.nuclos.server.searchfilter.ejb3;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -24,6 +25,7 @@ import java.util.Map;
 
 import javax.annotation.security.RolesAllowed;
 
+import org.apache.log4j.Logger;
 import org.nuclos.common.JMSConstants;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.SearchConditionUtils;
@@ -68,6 +70,8 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Transactional
 public class SearchFilterFacadeBean extends MasterDataFacadeBean implements SearchFilterFacadeRemote {
+	
+	private static final Logger LOG = Logger.getLogger(SearchFilterFacadeBean.class);
 
 	//private final ClientNotifier clientnotifier = new ClientNotifier(JMSConstants.TOPICNAME_SEARCHFILTERCACHE);
 
@@ -252,6 +256,7 @@ public class SearchFilterFacadeBean extends MasterDataFacadeBean implements Sear
 	}
 
 	private void notifyClients(String[] asUsers) {
+		LOG.info("JMS send notify clients: " + Arrays.asList(asUsers));
 		NuclosJMSUtils.sendObjectMessage(asUsers, JMSConstants.TOPICNAME_SEARCHFILTERCACHE, null);
 		//clientnotifier.notifyClientsByUsers(asUsers);
 	}

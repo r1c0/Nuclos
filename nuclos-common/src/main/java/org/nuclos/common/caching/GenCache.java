@@ -52,5 +52,15 @@ public class GenCache<K, V> implements NBCache<K, V> {
 	public boolean containsKey(K key) {
 		return map.containsKey(key);
 	}
+	
+	@Override
+	public String toString() {
+		final StringBuilder result = new StringBuilder();
+		result.append(getClass().getSimpleName()).append("[");
+		result.append("prov=").append(look);
+		result.append(",mapsize=").append(map.size());
+		result.append("]");
+		return result.toString();
+	}
 
 }

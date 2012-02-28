@@ -73,7 +73,7 @@ public class SearchFilterCache {
 	private final MessageListener messagelistener = new MessageListener() {
 		@Override
         public void onMessage(Message msg) {
-			LOG.info("Received notification from server: search filter cache changed.");
+			LOG.info("onMessage: Received notification from server: search filter cache changed.");
 			SearchFilterCache.this.validate();
 			if (msg instanceof ObjectMessage) {
 				try {
@@ -85,17 +85,18 @@ public class SearchFilterCache {
 							UIUtils.runCommandLater(main.getMainFrame(), new CommonRunnable() {			
 								@Override
                                 public void run() throws CommonBusinessException {
+									LOG.info("onMessage " + this + " refreshTaskController...");
 									mc.refreshTaskController();
 								}
 							});	
 					}
 				}
 				catch (JMSException ex) {
-					LOG.warn("Exception thrown in JMS message listener.", ex);
+					LOG.warn("onMessage: Exception thrown in JMS message listener.", ex);
 				}
 			}
 			else {
-				LOG.warn("Message of type " + msg.getClass().getName() + " received, while a TextMessage was expected.");
+				LOG.warn("onMessage: Message of type " + msg.getClass().getName() + " received, while a TextMessage was expected.");
 			}			
 		}
 	};

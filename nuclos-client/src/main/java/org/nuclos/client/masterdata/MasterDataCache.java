@@ -83,15 +83,15 @@ public class MasterDataCache {
 			if (msg instanceof TextMessage) {
 				try {
 					sEntity = ((TextMessage) msg).getText();
-					LOG.info("JMS message is of type TextMessage, text is: " + sEntity);
+					LOG.info("onMessage: JMS message is of type TextMessage, text is: " + sEntity);
 				}
 				catch (JMSException ex) {
-					LOG.warn("Exception thrown in JMS message listener.", ex);
+					LOG.warn("onMessage: Exception thrown in JMS message listener.", ex);
 					sEntity = null;
 				}
 			}
 			else {
-				LOG.warn("Message of type " + msg.getClass().getName() + " received, while a TextMessage was expected.");
+				LOG.warn("onMessage: Message of type " + msg.getClass().getName() + " received, while a TextMessage was expected.");
 				sEntity = null;
 			}
 

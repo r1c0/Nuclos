@@ -68,7 +68,7 @@ public class MetaDataCache {
 	private final MessageListener messagelistener = new MessageListener() {
 		@Override
 		public void onMessage(Message msg) {
-			LOG.info("Received notification from server: meta data changed.");
+			LOG.info("onMessage: Received notification from server: meta data changed.");
 			MetaDataCache.this.invalidate();
 			if (msg instanceof TextMessage) {
 				try {
@@ -77,16 +77,17 @@ public class MetaDataCache {
 						UIUtils.runCommandLater(Main.getInstance().getMainFrame(), new CommonRunnable() {			
 							@Override
 							public void run() throws CommonBusinessException {
+								LOG.info("onMessage " + this + " refreshMenus...");
 								Main.getInstance().getMainController().refreshMenus();
 							}
 						});
 				}
 				catch (JMSException ex) {
-					LOG.warn("Exception thrown in JMS message listener.", ex);
+					LOG.warn("onMessage: Exception thrown in JMS message listener.", ex);
 				}
 			}
 			else {
-				LOG.warn("Message of type " + msg.getClass().getName() + " received, while a TextMessage was expected.");
+				LOG.warn("onMessage: Message of type " + msg.getClass().getName() + " received, while a TextMessage was expected.");
 			}			
 		}
 	};

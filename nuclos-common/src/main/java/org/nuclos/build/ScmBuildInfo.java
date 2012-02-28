@@ -58,11 +58,19 @@ public class ScmBuildInfo {
 			// printSystemProps();
 			System.out.println("user.dir: " + System.getProperty("user.dir"));
 			System.out.println("resources dir: " + resources);
+			final File svnPath;
+			if (svnRoot != null) {
+				svnPath = svnRoot;
+			}
+			else {
+				svnPath = resources;
+			}
+			System.out.println("svn path: " + svnPath);
 			try {
 				sm = new NoExitSecurityManager();
 				System.setSecurityManager(sm);
-				invokeMain("org.tmatesoft.svn.cli.SVN", new String[] {"info", "--xml"}, info);
-				invokeMain("org.tmatesoft.svn.cli.SVN", new String[] {"status", "--xml"}, status);
+				invokeMain("org.tmatesoft.svn.cli.SVN", new String[] {"info", "--xml", svnPath.toString() }, info);
+				invokeMain("org.tmatesoft.svn.cli.SVN", new String[] {"status", "--xml", svnPath.toString() }, status);
 				System.out.println("ScmBuildInfo: finished execution, written " + info + " and " + status);
 			}
 			catch (IllegalArgumentException e) {

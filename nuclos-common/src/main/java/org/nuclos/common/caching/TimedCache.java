@@ -73,4 +73,15 @@ public class TimedCache<K, V> implements NBCache<K, V> {
 		return v;
 	}
 
+	@Override
+	public String toString() {
+		final StringBuilder result = new StringBuilder();
+		result.append(getClass().getSimpleName()).append("[");
+		result.append("prov=").append(look);
+		result.append(",mapsize=").append(map.size());
+		result.append(",maxAgeMillis=").append(maxAgeMillis);
+		result.append("]");
+		return result.toString();
+	}
+
 }

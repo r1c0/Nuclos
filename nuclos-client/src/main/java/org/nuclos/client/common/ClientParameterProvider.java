@@ -61,8 +61,10 @@ public class ClientParameterProvider extends AbstractParameterProvider implement
 			TextMessage txtMessage = (TextMessage) message;
 			try {
 				LOG.debug("serverListener.onMessage(..) " + txtMessage.getText());
-				if (JMS_MESSAGE_ALL_PARAMETERS_ARE_REVALIDATED.equals(txtMessage.getText()))
+				if (JMS_MESSAGE_ALL_PARAMETERS_ARE_REVALIDATED.equals(txtMessage.getText())) {
+					LOG.info("onMessage " + this + " pattern matches, revalidate cache...");
 					ClientParameterProvider.this.revalidate();
+				}
 			}
 			catch(JMSException e) {
 				throw new CommonFatalException(e);
@@ -161,8 +163,10 @@ public class ClientParameterProvider extends AbstractParameterProvider implement
 		TextMessage txtMessage = (TextMessage) message;
 		try {
 			LOG.debug("serverListener.onMessage(..) " + txtMessage.getText());
-			if (JMS_MESSAGE_ALL_PARAMETERS_ARE_REVALIDATED.equals(txtMessage.getText()))
+			if (JMS_MESSAGE_ALL_PARAMETERS_ARE_REVALIDATED.equals(txtMessage.getText())) {
+				LOG.info("onMessage " + this + " pattern matches, clear cache...");
 				ClientParameterProvider.this.revalidate();
+			}
 		}
 		catch(JMSException e) {
 			throw new CommonFatalException(e);

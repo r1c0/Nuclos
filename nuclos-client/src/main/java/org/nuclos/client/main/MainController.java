@@ -252,10 +252,11 @@ public class MainController {
 				@Override
 				public void run() {
 					try {
+						LOG.info("onMessage " + this + " handleMessage...");
 						handleMessge(msg);
 					}
 					catch (Exception e) {
-						LOG.error("ParameterPanel failed: " + e, e);
+						LOG.error("onMessage: ParameterPanel failed: " + e, e);
 					}
 				}
 			});

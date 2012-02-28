@@ -293,7 +293,7 @@ public class MetaDataClientProvider extends AbstractProvider implements MetaData
 	private final MessageListener messagelistener = new MessageListener() {
 		@Override
         public void onMessage(Message msg) {
-			debug("Received notification from server: meta data changed.");
+			LOG.info("onMessage " + this + " revalidate cache...");
 			MetaDataClientProvider.this.revalidate();
 		}
 	};
