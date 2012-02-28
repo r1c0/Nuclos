@@ -156,7 +156,7 @@ public abstract class AbstractDatasourceCollectController extends NuclosCollectC
 			clct.getDatasourceVO().setSource(this.pnlEdit.getQueryEditor().getXML(new DatasourceEntityOptions(false)));
 		}
 		catch (CommonBusinessException ex) {
-			throw new CollectableValidationException(this.getCollectableEntity().getEntityField("datasourceXML"), ex);
+			throw new CollectableValidationException(this.getCollectableEntity().getEntityField("source"), ex);
 		}
 	}
 
