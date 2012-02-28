@@ -137,6 +137,7 @@ public class OptionGroup extends JPanel {
 			if (sValue == null) {
 				// unselect all buttons:
 				radiobtn.setSelected(false);
+				bg.clearSelection();
 			}
 			else {
 				// select matching button, if any:
