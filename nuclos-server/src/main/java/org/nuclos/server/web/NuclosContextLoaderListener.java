@@ -68,6 +68,10 @@ public class NuclosContextLoaderListener extends ContextLoaderListener {
 	 * 		Refer to https://jira.springsource.org/browse/SPR-488 for details. (tp)
 	 */
 	public static final String JNDI_LOG4J_INTERVAL = "java:comp/env/nuclos-conf-log4j-refresh";
+	
+	private static final long JMS_HEARTBEAT_INTERVAL = 10L * 60 * 1000;
+	
+	//
 
 	protected Logger log;
 
@@ -85,10 +89,10 @@ public class NuclosContextLoaderListener extends ContextLoaderListener {
 			
 			@Override
 			public void run() {
-				NuclosJMSUtils.sendMessage(Integer.toString(++i), JMSConstants.TOPICNAME_HEARTBEAT);
+				NuclosJMSUtils.sendMessageAfterCommit(Integer.toString(++i), JMSConstants.TOPICNAME_HEARTBEAT);
 			}
 		};
-		timer.schedule(task, 60000, 60000);
+		timer.schedule(task, JMS_HEARTBEAT_INTERVAL, JMS_HEARTBEAT_INTERVAL);
 	}
 
 	@Override

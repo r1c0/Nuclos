@@ -80,7 +80,7 @@ public class ConsoleFacadeBean extends NuclosFacadeBean implements ConsoleFacade
 	 */
 	public void sendClientNotification(String sMessage, String sUser, Priority priority, String sAuthor) {
 		LOG.info("JMS send client notification to user " + sUser + ": " + sMessage + ": " + this);
-		NuclosJMSUtils.sendObjectMessage(
+		NuclosJMSUtils.sendObjectMessageAfterCommit(
 				new RuleNotification(priority, sMessage, sAuthor), JMSConstants.TOPICNAME_RULENOTIFICATION, 
 				LangUtils.defaultIfNull(sUser, JMSConstants.BROADCAST_MESSAGE));
 	}
@@ -91,7 +91,7 @@ public class ConsoleFacadeBean extends NuclosFacadeBean implements ConsoleFacade
 	 */
 	public void killSession(String sUser) {
 		LOG.info("JMS send killSession " + sUser + ": " + this);
-		NuclosJMSUtils.sendObjectMessage(
+		NuclosJMSUtils.sendObjectMessageAfterCommit(
 				new CommandMessage(CommandMessage.CMD_SHUTDOWN), JMSConstants.TOPICNAME_RULENOTIFICATION, 
 				LangUtils.defaultIfNull(sUser, JMSConstants.BROADCAST_MESSAGE));
 	}

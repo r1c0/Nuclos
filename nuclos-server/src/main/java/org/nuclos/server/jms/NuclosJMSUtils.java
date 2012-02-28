@@ -28,13 +28,31 @@ import org.nuclos.common.SpringApplicationContextHolder;
 import org.springframework.context.ApplicationContext;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
+import org.springframework.transaction.support.TransactionSynchronizationAdapter;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 public class NuclosJMSUtils {
 	
 	private static final Logger LOG = Logger.getLogger(NuclosJMSUtils.class);
 	
+	public static void sendMessageAfterCommit(final String sMessageText, String topic) {
+		sendMessageAfterCommit(sMessageText, topic, null);
+	}
+	
 	public static void sendMessage(final String sMessageText, String topic) {
-		NuclosJMSUtils.sendMessage(sMessageText, topic, null);
+		sendMessage(sMessageText, topic, null);
+	}
+	
+	public static void sendMessageAfterCommit(final String sMessageText, final String topic, final String sReceiver) {
+		TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
+			
+			@Override
+			public void afterCommit() {
+				LOG.info("afterCommit: " + this + " JMS send: topic=" + topic + " receiver=" + sReceiver + ": " + sMessageText);
+				sendMessage(sMessageText, topic, sReceiver);
+			}
+			
+		});
 	}
 	
 	public static void sendMessage(final String sMessageText, final String topic, final String sReceiver) {
@@ -56,6 +74,18 @@ public class NuclosJMSUtils {
     	catch(Exception ex) {
     		throw new NuclosFatalException(ex);
     	}
+	}
+	
+	public static void sendObjectMessageAfterCommit(final Serializable object, final String topic, final String sReceiver) {
+		TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
+			
+			@Override
+			public void afterCommit() {
+				LOG.info("afterCommit: " + this + " JMS object send: topic=" + topic + " receiver=" + sReceiver + ": " + object);
+				sendObjectMessage(object, topic, sReceiver);
+			}
+			
+		});		
 	}
 	
 	public static void sendObjectMessage(final Serializable object, final String topic, final String sReceiver) {

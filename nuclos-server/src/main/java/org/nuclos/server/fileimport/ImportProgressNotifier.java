@@ -88,7 +88,7 @@ public class ImportProgressNotifier {
 	private void notify(ProgressNotification notification) {
 		if (!StringUtils.isNullOrEmpty(correlationId)) {
 			LOG.info("JMS send import progress notification " + notification + ": " + this);
-			NuclosJMSUtils.sendObjectMessage(notification, JMSConstants.TOPICNAME_PROGRESSNOTIFICATION, correlationId);
+			NuclosJMSUtils.sendObjectMessageAfterCommit(notification, JMSConstants.TOPICNAME_PROGRESSNOTIFICATION, correlationId);
 		}
 	}
 

@@ -55,7 +55,7 @@ public class CustomComponentFacadeBean extends NuclosFacadeBean implements Custo
 	private static final TransactionSynchronization TX_SYNC = new TransactionSynchronizationAdapter() {
 		@Override
 		public void afterCommit() {
-			NuclosJMSUtils.sendMessage(null, JMSConstants.TOPICNAME_CUSTOMCOMPONENTCACHE);
+			NuclosJMSUtils.sendMessageAfterCommit(null, JMSConstants.TOPICNAME_CUSTOMCOMPONENTCACHE);
 		}
 	};
 	

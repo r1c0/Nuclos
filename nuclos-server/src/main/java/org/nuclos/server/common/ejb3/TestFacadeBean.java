@@ -55,7 +55,7 @@ public class TestFacadeBean extends NuclosFacadeBean implements TestFacadeRemote
 	 */
 	public void testClientNotification(String topic, String message) {
 		LOG.info("JMS send: notify clients: " + this + " of message " + message);
-		NuclosJMSUtils.sendMessage(message, topic);
+		NuclosJMSUtils.sendMessageAfterCommit(message, topic);
 	}
 	
 }
