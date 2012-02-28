@@ -717,7 +717,9 @@ public class LayoutMLGenerator implements LayoutMLConstants {
 		LayoutMLBlock block = new LayoutMLBlock(blockDeep);
 
 		block.append("<" + ELEMENT_TITLEDSEPARATOR);
-		block.append(" " + ATTRIBUTE_TITLE + "=\"" + (String) c.getProperties().getProperty(WYSIWYGStaticTitledSeparator.PROPERTY_TITLE).getValue() + "\"");
+		block.append(" " + ATTRIBUTE_TITLE + "=\"" +
+			StringUtils.xmlEncode((String) c.getProperties().getProperty(
+				WYSIWYGStaticTitledSeparator.PROPERTY_TITLE).getValue()) + "\"");
 		block.append(">");
 
 		block.append(getLayoutMLTableLayoutConstraints(c, tableLayout, blockDeep + 1));
@@ -1317,7 +1319,7 @@ public class LayoutMLGenerator implements LayoutMLConstants {
 		if (border instanceof TitledBorder) {
 			block.append("<" + ELEMENT_TITLEDBORDER + " ");
 			block.append(ATTRIBUTE_TITLE + "=\"");
-			block.append(((TitledBorder) border).getTitle() + "\">");
+			block.append(StringUtils.xmlEncode(((TitledBorder) border).getTitle()) + "\">");
 			block.append(getLayoutMLTranslations(((TitledBorderWithTranslations) border).getTranslations(), blockDeep + 1));
 			block.linebreak();
 			block.append("</" + ELEMENT_TITLEDBORDER + ">");
