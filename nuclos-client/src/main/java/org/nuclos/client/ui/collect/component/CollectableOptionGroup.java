@@ -20,6 +20,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
 
+import javax.swing.JMenuItem;
+import javax.swing.JPopupMenu;
+
 import org.apache.commons.lang.NullArgumentException;
 
 import org.nuclos.client.ui.OptionGroup;
@@ -28,8 +31,10 @@ import org.nuclos.common.collect.collectable.CollectableField;
 import org.nuclos.common.collect.collectable.CollectableFieldFormat;
 import org.nuclos.common.collect.collectable.CollectableValueField;
 import org.nuclos.common.collect.exception.CollectableFieldFormatException;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonFatalException;
+import org.springframework.beans.factory.annotation.Configurable;
 
 /**
  * <code>Collectable OptionGroup</code> (group of radio buttons).
@@ -41,7 +46,6 @@ import org.nuclos.common2.exception.CommonFatalException;
  * @author	<a href="mailto:Boris.Sander@novabit.de">Boris Sander</a>
  * @version	01.00.00
  */
-
 public class CollectableOptionGroup extends AbstractCollectableComponent {
 	protected String sDefaultOption;
 	private final CollectableFieldFormat clctfformat;
@@ -92,6 +96,19 @@ public class CollectableOptionGroup extends AbstractCollectableComponent {
 		getOptionGroup().setValue(sText);
 
 		this.adjustAppearance();
+	}
+
+	@Override
+	public JPopupMenu newJPopupMenu() {
+		// Note that the default entries (as specified in AbstractCollectableComponent) are ignored.
+		final JPopupMenu result = new JPopupMenu();
+
+		final JMenuItem miClear = CollectableOptionGroup.this.newClearEntry();
+		if (CollectableOptionGroup.this.isSearchComponent()) {
+			miClear.setText(SpringLocaleDelegate.getInstance().getMessage("RootNode.2", "<Alle>"));
+		}
+		result.add(miClear);
+		return result;
 	}
 
 //	public void setField(CollectableField clctfValue) {

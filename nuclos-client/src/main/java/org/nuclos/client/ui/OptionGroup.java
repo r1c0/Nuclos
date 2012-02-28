@@ -19,7 +19,9 @@ package org.nuclos.client.ui;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseListener;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
@@ -93,7 +95,7 @@ public class OptionGroup extends JPanel {
 		}
 		this.revalidate();
 	}
-
+	
 	/**
 	 * adds an option (aka radio button) with the given properties.
 	 * @param sValue
@@ -114,7 +116,10 @@ public class OptionGroup extends JPanel {
 		radiobtn.getModel().setGroup(bg);
 		radiobtn.addActionListener(actionListener);
 		radiobtn.setEnabled(this.isEnabled());
-
+		MouseListener[] mls = getMouseListeners();
+		for (int i = 0; i < mls.length; i++) {
+			radiobtn.addMouseListener(mls[i]);
+		}
 		bg.add(radiobtn);
 		this.add(radiobtn);
 	}
