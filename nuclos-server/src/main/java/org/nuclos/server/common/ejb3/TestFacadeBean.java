@@ -18,6 +18,7 @@ package org.nuclos.server.common.ejb3;
 
 import javax.annotation.security.RolesAllowed;
 
+import org.apache.log4j.Logger;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableSearchCondition;
 import org.nuclos.server.jms.NuclosJMSUtils;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,6 +32,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 @RolesAllowed("PerformTests")
 public class TestFacadeBean extends NuclosFacadeBean implements TestFacadeRemote {
+	
+	private static final Logger LOG = Logger.getLogger(TestFacadeBean.class);
 	
 	public TestFacadeBean() {
 	}
@@ -51,6 +54,8 @@ public class TestFacadeBean extends NuclosFacadeBean implements TestFacadeRemote
 	 * @param message  the message
 	 */
 	public void testClientNotification(String topic, String message) {
+		LOG.info("JMS send: notify clients: " + this + " of message " + message);
 		NuclosJMSUtils.sendMessage(message, topic);
 	}
+	
 }

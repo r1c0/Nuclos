@@ -858,6 +858,7 @@ public class MasterDataFacadeBean extends NuclosFacadeBean implements MasterData
 	 * notifies clients that the meta data has changed, so they can invalidate their local caches.
 	 */
 	protected void notifyClients(NuclosEntity entity) {
+		LOG.info("JMS send: notify clients that entity " + entity.getEntityName() + " changed:" + this);
 		NuclosJMSUtils.sendMessage(entity.getEntityName(), JMSConstants.TOPICNAME_METADATACACHE);
 	}
 

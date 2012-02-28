@@ -26,6 +26,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import javax.annotation.PostConstruct;
 
+import org.apache.log4j.Logger;
 import org.nuclos.common.JMSConstants;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Transformer;
@@ -54,6 +55,8 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class ResourceCache {
+	
+	private static final Logger LOG = Logger.getLogger(ResourceCache.class);
 	
 	private Map<String, ResourceVO> mpResourcesByName;
 	private Map<Integer, ResourceVO> mpResourcesById;
@@ -212,6 +215,7 @@ public class ResourceCache {
 	}
 	
 	private void notifyClients() {
+		LOG.info("JMS send: notify clients that resources changed:" + this);
 		NuclosJMSUtils.sendMessage(null, JMSConstants.TOPICNAME_RESOURCECACHE);
 	}
 }

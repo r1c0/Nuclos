@@ -28,7 +28,7 @@ import javax.jms.MessageListener;
 import org.apache.log4j.Logger;
 import org.nuclos.client.attribute.AttributeCache;
 import org.nuclos.client.common.MetaDataClientProvider;
-import org.nuclos.client.common.TopicNotificationReceiver;
+import org.nuclos.client.jms.TopicNotificationReceiver;
 import org.nuclos.common.AttributeProvider;
 import org.nuclos.common.CacheableListener;
 import org.nuclos.common.GenericObjectMetaDataProvider;

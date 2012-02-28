@@ -36,6 +36,7 @@ import javax.jms.MessageListener;
 
 import org.apache.log4j.Logger;
 import org.nuclos.client.LocalUserProperties;
+import org.nuclos.client.jms.TopicNotificationReceiver;
 import org.nuclos.client.main.SwingLocaleSwitcher;
 import org.nuclos.common.ApplicationProperties;
 import org.nuclos.common.JMSConstants;

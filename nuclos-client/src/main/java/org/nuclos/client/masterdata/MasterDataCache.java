@@ -28,8 +28,8 @@ import javax.jms.MessageListener;
 import javax.jms.TextMessage;
 
 import org.apache.log4j.Logger;
-import org.nuclos.client.common.TopicNotificationReceiver;
 import org.nuclos.client.entityobject.EntityFacadeDelegate;
+import org.nuclos.client.jms.TopicNotificationReceiver;
 import org.nuclos.common.JMSConstants;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.collect.collectable.CollectableEntity;

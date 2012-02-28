@@ -974,7 +974,7 @@ public class SecurityCache implements SecurityCacheMBean {
 		TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
 			@Override
 			public synchronized void afterCommit() {
-				LOG.debug("Invalidating security cache...");
+				LOG.info("afterCommit: Invalidating security cache...");
 
 				mpUserRights.clear();
 				mpAttributeGroups.clear();
@@ -991,7 +991,7 @@ public class SecurityCache implements SecurityCacheMBean {
 			TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
 				@Override
 				public synchronized void afterCommit() {
-					LOG.debug("Invalidating security cache for user " + username + "...");
+					LOG.info("afterCommit: Invalidating security cache for user " + username + "...");
 					if (mpUserRights.containsKey(username)) {
 						mpUserRights.remove(username);
 					}
@@ -1080,13 +1080,13 @@ public class SecurityCache implements SecurityCacheMBean {
 	 * notifies clients that the leased object meta data has changed, so they can invalidate their local caches.
 	 */
 	private void notifyClients() {
+		LOG.info("JMS send: notify clients that leased object meta data changed: " + this);
 		NuclosJMSUtils.sendMessage(null, JMSConstants.TOPICNAME_SECURITYCACHE);
-		LOG.info("Notified clients that leased object meta data changed.");
 	}
 
 	private void notifyUser(String username) {
+		LOG.info("JMS send: notify user " + username + " that security data has changed: " + this);
 		NuclosJMSUtils.sendMessage(username, JMSConstants.TOPICNAME_SECURITYCACHE);
-		LOG.info("Notified user " + username + " that security data has changed.");
 	}
 	
 }	// class SecurityCache

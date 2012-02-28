@@ -31,6 +31,7 @@ import javax.jms.MessageListener;
 
 import org.apache.log4j.Logger;
 import org.nuclos.client.datasource.DatasourceDelegate;
+import org.nuclos.client.jms.TopicNotificationReceiver;
 import org.nuclos.client.masterdata.MetaDataDelegate;
 import org.nuclos.common.AbstractProvider;
 import org.nuclos.common.CommonMetaDataClientProvider;

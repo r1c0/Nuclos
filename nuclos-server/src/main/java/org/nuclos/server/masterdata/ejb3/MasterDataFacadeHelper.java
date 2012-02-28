@@ -216,6 +216,7 @@ public class MasterDataFacadeHelper {
 		if (sCachedEntityName == null) {
 			throw new NullArgumentException("sCachedEntityName");
 		}
+		LOG.info("JMS send: notify clients that master data changed:" + this);
 		NuclosJMSUtils.sendMessage(sCachedEntityName, JMSConstants.TOPICNAME_MASTERDATACACHE);
 	}
 

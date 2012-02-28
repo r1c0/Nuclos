@@ -363,7 +363,7 @@ public class RuleEngineFacadeBean extends NuclosFacadeBean implements RuleEngine
 	 */
 	private void sendMessagesByJMS(List<RuleNotification> lstRuleNotifications) {
 		if (lstRuleNotifications.size() > 0) {
-			LOG.info("JMS send rule notifications: " + lstRuleNotifications);
+			LOG.info("JMS send rule notifications: " + lstRuleNotifications + ": " + this);
 			for (RuleNotification notification : lstRuleNotifications) {
 				NuclosJMSUtils.sendObjectMessage(notification, JMSConstants.TOPICNAME_RULENOTIFICATION, this.getCurrentUserName());
 			}

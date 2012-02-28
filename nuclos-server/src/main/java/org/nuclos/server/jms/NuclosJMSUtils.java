@@ -40,9 +40,7 @@ public class NuclosJMSUtils {
 	public static void sendMessage(final String sMessageText, final String topic, final String sReceiver) {
 		try {
     		ApplicationContext context = SpringApplicationContextHolder.getApplicationContext();
-
 	    	JmsTemplate jmsTemplate = (JmsTemplate)context.getBean(topic);
-
 	    	jmsTemplate.send(new MessageCreator() {
 				
 				@Override

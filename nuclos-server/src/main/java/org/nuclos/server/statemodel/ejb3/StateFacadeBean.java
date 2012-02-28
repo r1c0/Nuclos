@@ -1472,9 +1472,11 @@ public class StateFacadeBean extends NuclosFacadeBean implements StateFacadeRemo
 	}
 
     public void invalidateCache() {
+		LOG.info("invalidatesCache: state cache and state model usages cache invalidated/revalidated");
 		stateCache.invalidate();
 		StateModelUsagesCache.getInstance().revalidate();
 
+		LOG.info("JMS send: notify clients that state models changed:" + this);
 		NuclosJMSUtils.sendMessage("invalidatecaches", JMSConstants.TOPICNAME_STATEMODEL);
 	}
 

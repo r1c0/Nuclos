@@ -26,7 +26,7 @@ import javax.jms.MessageListener;
 import javax.jms.TextMessage;
 
 import org.apache.log4j.Logger;
-import org.nuclos.client.common.TopicNotificationReceiver;
+import org.nuclos.client.jms.TopicNotificationReceiver;
 import org.nuclos.common.caching.GenCache;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;

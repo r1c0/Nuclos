@@ -1001,6 +1001,7 @@ public class TransferFacadeBean extends NuclosFacadeBean implements TransferFaca
 	}
 
 	private void revalidateCaches() {
+		LOG.info("revalidateCaches: Many caches invalidated/revalidated.");
 		RuleCache.getInstance().invalidate();
 		ResourceCache.getInstance().invalidate();
 		ServerParameterProvider.getInstance().revalidate();
@@ -1012,6 +1013,7 @@ public class TransferFacadeBean extends NuclosFacadeBean implements TransferFaca
 		StateCache.getInstance().invalidate();
 		StateModelUsagesCache.getInstance().revalidate();
 
+		LOG.info("JMS send: notify clients that custom components changed:" + this);
 		NuclosJMSUtils.sendMessage(null, JMSConstants.TOPICNAME_CUSTOMCOMPONENTCACHE);
 	}
 

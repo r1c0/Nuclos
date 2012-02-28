@@ -256,7 +256,7 @@ public class SearchFilterFacadeBean extends MasterDataFacadeBean implements Sear
 	}
 
 	private void notifyClients(String[] asUsers) {
-		LOG.info("JMS send notify clients: " + Arrays.asList(asUsers));
+		LOG.info("JMS send notify clients: " + Arrays.asList(asUsers) + ": " + this);
 		NuclosJMSUtils.sendObjectMessage(asUsers, JMSConstants.TOPICNAME_SEARCHFILTERCACHE, null);
 		//clientnotifier.notifyClientsByUsers(asUsers);
 	}

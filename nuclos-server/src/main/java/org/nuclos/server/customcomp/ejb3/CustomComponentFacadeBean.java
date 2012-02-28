@@ -52,7 +52,7 @@ public class CustomComponentFacadeBean extends NuclosFacadeBean implements Custo
 
 	private static final Logger LOG = Logger.getLogger(CustomComponentFacadeBean.class);
 
-	private static final TransactionSynchronization ts = new TransactionSynchronizationAdapter() {
+	private static final TransactionSynchronization TX_SYNC = new TransactionSynchronizationAdapter() {
 		@Override
 		public void afterCommit() {
 			NuclosJMSUtils.sendMessage(null, JMSConstants.TOPICNAME_CUSTOMCOMPONENTCACHE);
@@ -87,8 +87,8 @@ public class CustomComponentFacadeBean extends NuclosFacadeBean implements Custo
 	private void notifyClients() {
 		try {
 			List<TransactionSynchronization> list = TransactionSynchronizationManager.getSynchronizations();
-			if (!list.contains(ts)) {
-				TransactionSynchronizationManager.registerSynchronization(ts);
+			if (!list.contains(TX_SYNC)) {
+				TransactionSynchronizationManager.registerSynchronization(TX_SYNC);
 			}
 		}
 		catch (IllegalStateException ex) {

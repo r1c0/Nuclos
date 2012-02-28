@@ -38,15 +38,31 @@ public class MultiMessageListenerContainer extends SimpleMessageListenerContaine
 	public MultiMessageListenerContainer() {
 	}
 	
-	public synchronized void addMessageListener(MessageListener ml) {
-		if(lstMessageListener == null)
+	public synchronized void addMessageListener(WeakReferenceMessageListener ml) {
+		if (ml == null) {
+			throw new NullPointerException();
+		}
+		if(lstMessageListener == null) {
 			lstMessageListener = new LinkedList<WeakReference<MessageListener>>();
+		}
 		
-		lstMessageListener.add(new WeakReference<MessageListener>(ml));
-		LOG.info("addMessageListener " + ml + " to " + this);
+		boolean add = true;
+		for (WeakReference<MessageListener> ref : lstMessageListener) {
+			final MessageListener registered = ref.get();
+			if (registered != null) {
+				if (ml.equals(registered)) {
+					add = false;
+					break;
+				}
+			}
+		}
+		if (add) {
+			lstMessageListener.add(new WeakReference<MessageListener>(ml));
+			LOG.info("addMessageListener " + ml + " to " + this);
+		}
 	}
 	
-	public synchronized void deleteMessageListener(MessageListener ml) {
+	public synchronized void deleteMessageListener(WeakReferenceMessageListener ml) {
 		for (Iterator<WeakReference<MessageListener>> it = lstMessageListener.iterator(); it.hasNext(); ) {
 			final WeakReference<MessageListener> wr = it.next();
 			final MessageListener l = wr.get();

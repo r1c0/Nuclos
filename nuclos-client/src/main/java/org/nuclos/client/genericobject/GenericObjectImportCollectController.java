@@ -45,9 +45,9 @@ import javax.swing.table.TableColumn;
 
 import org.apache.log4j.Logger;
 import org.nuclos.client.common.DependantCollectableMasterDataMap;
-import org.nuclos.client.common.TopicNotificationReceiver;
 import org.nuclos.client.common.security.SecurityCache;
 import org.nuclos.client.fileimport.ImportDelegate;
+import org.nuclos.client.jms.TopicNotificationReceiver;
 import org.nuclos.client.main.mainframe.MainFrameTab;
 import org.nuclos.client.masterdata.CollectableMasterDataWithDependants;
 import org.nuclos.client.masterdata.MasterDataCollectController;

@@ -223,6 +223,7 @@ public class ServerParameterProvider extends AbstractParameterProvider implement
 	}
 
 	private void notifyClients(String sMessage) {
+		LOG.info("JMS send: notify clients that parameters changed:" + this);
 		NuclosJMSUtils.sendMessage(
 				JMS_MESSAGE_ALL_PARAMETERS_ARE_REVALIDATED, JMSConstants.TOPICNAME_PARAMETERPROVIDER);
 	}

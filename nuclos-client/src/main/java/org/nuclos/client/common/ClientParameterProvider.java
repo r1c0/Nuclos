@@ -27,6 +27,7 @@ import javax.jms.MessageListener;
 import javax.jms.TextMessage;
 
 import org.apache.log4j.Logger;
+import org.nuclos.client.jms.TopicNotificationReceiver;
 import org.nuclos.common.AbstractParameterProvider;
 import org.nuclos.common.JMSConstants;
 import org.nuclos.common2.exception.CommonFatalException;

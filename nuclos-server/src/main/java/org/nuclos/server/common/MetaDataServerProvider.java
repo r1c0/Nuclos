@@ -282,7 +282,7 @@ public class MetaDataServerProvider extends AbstractProvider implements MetaData
 			GenericObjectMetaDataCache.getInstance().layoutChanged(null);
 		}
 
-		debug("Notified clients that meta data changed.");
+		info("JMS send: notify clients that meta data changed: " + this);
 		NuclosJMSUtils.sendMessage("Meta data changed.", JMSConstants.TOPICNAME_METADATACACHE);
 	}
 
