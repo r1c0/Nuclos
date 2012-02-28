@@ -26,6 +26,7 @@ import java.io.FileOutputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
+import javax.annotation.PostConstruct;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
@@ -58,21 +59,27 @@ public class DBTransferExport {
 	private final Long nucletId;
 	
 	private final DBTransferUtils utils = new DBTransferUtils();
-	private final DBTransferWizard wizard;
-	private final StaticModel model;
-	private final PanelWizardStep step1, step2;
+	
+	private DBTransferWizard wizard;
+	private StaticModel model;
+	private PanelWizardStep step1, step2;
 	
 	private Exception exportException;
 	
 	private SpringLocaleDelegate localeDelegate;
 	
-	private final MainFrameTab ifrm = Main.getInstance().getMainController().newMainFrameTab(
-			null, localeDelegate.getMessage("dbtransfer.export.title", "Konfiguration exportieren"));
+	private MainFrameTab ifrm;
 	
 	public DBTransferExport(Long nucletId) {
 		this.nucletId = nucletId;
+	}
+	
+	@PostConstruct
+	final void init() {
 		I18n.setBundle(DBTransferWizard.getResourceBundle());
 		
+		ifrm = Main.getInstance().getMainController().newMainFrameTab(
+				null, localeDelegate.getMessage("dbtransfer.export.title", "Konfiguration exportieren"));
 		ifrm.setTabIcon(NuclosIcons.getInstance().getDefaultFrameIcon());
 		
 		step1 = newStep1(ifrm);
