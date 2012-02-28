@@ -51,7 +51,9 @@ import javax.swing.JSeparator;
 import javax.swing.JTable;
 import javax.swing.JViewport;
 import javax.swing.SwingUtilities;
+import javax.swing.RowSorter.SortKey;
 import javax.swing.table.AbstractTableModel;
+import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellRenderer;
 
 import org.apache.log4j.Logger;
@@ -95,10 +97,10 @@ import org.nuclos.common.collection.PredicateUtils;
 import org.nuclos.common.collection.Transformer;
 import org.nuclos.common.collection.ValueObjectList;
 import org.nuclos.common.masterdata.CollectableMasterDataEntity;
-import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.IdUtils;
 import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.ServiceLocator;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.common2.exception.CommonValidationException;
@@ -185,6 +187,7 @@ public abstract class DetailsSubFormController<Clct extends Collectable>
 					JPopupMenu pop = new JPopupMenu();
 
 					int iColumn = getSubForm().getJTable().getTableHeader().columnAtPoint(e.getPoint());
+					iColumn = getSubForm().getJTable().getTableHeader().getColumnModel().getColumn(iColumn).getModelIndex();
 					List<JComponent> lstColumnActions = getColumnIndicatorActions(iColumn);
 					if (!lstColumnActions.isEmpty())
 					{
@@ -281,14 +284,14 @@ public abstract class DetailsSubFormController<Clct extends Collectable>
 	/**
 	 * @return an list of jmenuitems. if no boolean entityfield available returns an empty list.
 	 */
-	List<JComponent> getColumnIndicatorActions(int iColumn) {
+	List<JComponent> getColumnIndicatorActions(final int iColumn) {
 		List<JComponent> result = new LinkedList<JComponent>();
 
 		if (iColumn == -1)
 		{
 			return result;
 		}
-
+		
 		final CollectableEntityField clctef = getCollectableTableModel().getCollectableEntityField(iColumn);
 		if (clctef.getJavaClass() == Boolean.class && getSubForm().isColumnVisible(clctef.getName())) {
 
@@ -374,6 +377,32 @@ public abstract class DetailsSubFormController<Clct extends Collectable>
 		
 		if (!result.isEmpty())
 			result.add(new JSeparator());
+		
+		if (SecurityCache.getInstance().isActionAllowed(Actions.ACTION_WORKSPACE_CUSTOMIZE_ENTITY_AND_SUBFORM_COLUMNS) ||
+					!MainFrame.getWorkspace().isAssigned()) {
+				final JMenuItem miPopupHideThisColumn = new JMenuItem(
+						SpringLocaleDelegate.getInstance().getMessage("DetailsSubFormController.5","Diese Spalte ausblenden"));
+				miPopupHideThisColumn.setIcon(Icons.getInstance().getIconRemoveColumn16());
+				miPopupHideThisColumn.addActionListener(new ActionListener() {
+					@Override
+	                public void actionPerformed(ActionEvent ev) {
+						fixedcolumnheader.hideCollectableEntityFieldColumn(clctef, 
+								new AbstractAction() {
+							@Override
+							public void actionPerformed(ActionEvent e) {
+								List<? extends SortKey> sortKeys = new ArrayList<SortKey>(getCollectableTableModel().getSortKeys());
+								for (SortKey sortKey : getCollectableTableModel().getSortKeys()) {
+									if (sortKey.getColumn() == iColumn)
+										sortKeys.remove(sortKey);
+								}
+								getCollectableTableModel().setSortKeys(sortKeys, true);
+							}
+						});
+					}
+				});
+				result.add(miPopupHideThisColumn);
+				result.add(new JSeparator());
+			}
 		
 		if (SecurityCache.getInstance().isActionAllowed(Actions.ACTION_WORKSPACE_ASSIGN) &&
 				MainFrame.getWorkspace().isAssigned()) {

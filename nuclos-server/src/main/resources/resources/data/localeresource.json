@@ -37135,6 +37135,21 @@
     "text": "Spalten in Vorlage publizieren"
   },
   {
+    "resourceID": "DetailsSubFormController.5",
+    "locale": "i-default",
+    "text": "Hide this column"
+  },
+  {
+    "resourceID": "DetailsSubFormController.5",
+    "locale": "en",
+    "text": "Hide this column"
+  },
+  {
+    "resourceID": "DetailsSubFormController.5",
+    "locale": "de",
+    "text": "Diese Spalte ausblenden"
+  },
+  {
     "resourceID": "SelectUserController.1",
     "locale": "i-default",
     "text": "Move selected users upward"

@@ -241,6 +241,23 @@ public class FixedColumnRowHeader extends SubformRowHeader {
 		}
 	}
 	
+	public void hideCollectableEntityFieldColumn(CollectableEntityField clctefToHide, final Action actAfterSelection) {
+		final Set<CollectableEntityField> lstFixed = getDisplayedHeaderTableFields();
+		
+		final List<CollectableEntityField> lstSelected = new ArrayList<CollectableEntityField>(lstFixed);
+		lstSelected.addAll(getDisplayedExternalTableFields());
+		final List<CollectableEntityField> lstSelectedNew = new ArrayList<CollectableEntityField>(lstSelected);
+		lstSelected.remove(clctefToHide);
+		
+		changeSelectedColumns(lstSelected, lstFixed, null, getVisibleColumnWidth(), null, actAfterSelection);
+		
+		// add DEselected to hidden in preferences
+		final Collection<? extends CollectableEntityField> collDeselected = CollectionUtils.subtract(lstSelected, lstSelectedNew);
+		for (CollectableEntityField clctef : collDeselected) {
+			WorkspaceUtils.addHiddenColumn(subFormPreferences, clctef.getName());
+		}
+	}
+	
 	/**
 	 * 
 	 * @param lstSelectedNew
