@@ -593,7 +593,7 @@ public class EntityObjectProcessor extends AbstractJdbcWithFieldsDalProcessor<En
 			}
 			if (add) {
 				if (debug) {
-					LOG.info("getJoinsForColumns: apply RefJoinCondition for " + m + " alias " + alias);
+					LOG.debug("getJoinsForColumns: apply RefJoinCondition for " + m + " alias " + alias);
 				}
 				result.add(tableAliasSingleton.getRefJoinCondition(m));
 			}			

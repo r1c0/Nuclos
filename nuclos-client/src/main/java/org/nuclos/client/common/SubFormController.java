@@ -737,7 +737,7 @@ public abstract class SubFormController extends Controller
 	}
 
 	protected final void setupTableModelListener() {
-		this.getSubForm().setupTableModelListener(LOG);
+		this.getSubForm().setupTableModelListener();
 	}
 
 	protected void removeTableModelListener() {

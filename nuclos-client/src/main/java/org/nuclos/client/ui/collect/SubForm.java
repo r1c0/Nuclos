@@ -1123,7 +1123,7 @@ public class SubForm extends JPanel implements TableCellRendererProvider, Action
 		return width;
 	}
 
-	public final void setupTableModelListener(final Logger log) {
+	public final void setupTableModelListener() {
 		this.tblmdllistener = new TableModelListener() {
 			@Override
             public void tableChanged(TableModelEvent ev) {
@@ -1137,7 +1137,7 @@ public class SubForm extends JPanel implements TableCellRendererProvider, Action
 							(ev.getType() == TableModelEvent.UPDATE && ev.getColumn() == TableModelEvent.ALL_COLUMNS && ev.getLastRow() == Integer.MAX_VALUE);
 					if (bRowsInserted) {
 						resetDefaultColumnWidths();
-						log.warn("Custom column widths should be used here.");	// Setting them manually.");
+						LOG.debug("Custom column widths should be used here.");	// Setting them manually.");
 					}
 				}
 				// TableModelEvents caused by sorting don't change the subform state:

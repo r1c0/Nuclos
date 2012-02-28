@@ -89,7 +89,7 @@ public class NuclosContextLoaderListener extends ContextLoaderListener {
 			
 			@Override
 			public void run() {
-				NuclosJMSUtils.sendMessageAfterCommit(Integer.toString(++i), JMSConstants.TOPICNAME_HEARTBEAT);
+				NuclosJMSUtils.sendMessage(Integer.toString(++i), JMSConstants.TOPICNAME_HEARTBEAT);
 			}
 		};
 		timer.schedule(task, JMS_HEARTBEAT_INTERVAL, JMS_HEARTBEAT_INTERVAL);

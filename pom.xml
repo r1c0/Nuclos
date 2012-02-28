@@ -5,7 +5,7 @@
 
 	<groupId>org.nuclos</groupId>
 	<artifactId>nuclos</artifactId>
-	<version>3.2-SNAPSHOT</version>
+	<version>3.3-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<name>Nuclos</name>
@@ -34,7 +34,7 @@
 	</ciManagement>
 	
 	<properties>
-		<nuclos.version.date>27.02.2012</nuclos.version.date>
+		<nuclos.version.date>28.02.2012</nuclos.version.date>
 		<nuclos.api.version>1.2.0</nuclos.api.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
