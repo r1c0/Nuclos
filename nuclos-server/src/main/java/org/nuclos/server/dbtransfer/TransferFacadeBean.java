@@ -275,7 +275,7 @@ public class TransferFacadeBean extends NuclosFacadeBean implements TransferFaca
 		contents.add(new DefaultNucletContent(NuclosEntity.REPORT, null, contents));
 		contents.add(new DefaultNucletContent(NuclosEntity.REPORTOUTPUT, NuclosEntity.REPORT, contents));
 		contents.add(new DefaultNucletContent(NuclosEntity.SUBREPORT, NuclosEntity.REPORTOUTPUT, contents));
-		contents.add(new DefaultNucletContent(NuclosEntity.FORMUSAGE, NuclosEntity.REPORT, contents));
+		contents.add(new DefaultNucletContent(NuclosEntity.FORMUSAGE, NuclosEntity.FORM, contents));
 
 		contents.add(new DefaultNucletContent(NuclosEntity.ROLE, null, contents));
 		contents.add(new DefaultNucletContent(NuclosEntity.ROLEACTION, NuclosEntity.ROLE, contents));
