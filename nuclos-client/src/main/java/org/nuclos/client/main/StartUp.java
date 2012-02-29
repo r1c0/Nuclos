@@ -57,9 +57,10 @@ import org.nuclos.client.ui.UIUtils;
 import org.nuclos.client.ui.collect.component.CollectableComponentFactory;
 import org.nuclos.common.ApplicationProperties;
 import org.nuclos.common.NuclosFatalException;
-import org.nuclos.common2.SpringLocaleDelegate;
+import org.nuclos.common.collection.Pair;
 import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.ServiceLocator;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.common2.exception.CommonPermissionException;
@@ -67,6 +68,7 @@ import org.nuclos.server.servermeta.ejb3.ServerMetaFacadeRemote;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.core.io.Resource;
 import org.springframework.util.Log4jConfigurer;
+import org.springframework.util.SystemPropertyUtils;
 
 /**
  * Controller responsible for starting up the Nucleus client.
@@ -222,8 +224,7 @@ public class StartUp  {
 		
 		// final String configurationfile = ApplicationProperties.getInstance().isFunctionBlockDev() 
 		// 		? "log4j-dev.properties" : "log4j.properties";
-		final String configurationfile = Boolean.getBoolean("functionblock.dev")
-				? "log4j-dev.properties" : "log4j.properties";
+		final String configurationfile = getLog4jConfigurationFile();
 		try {
 			LogLog.debug("Try to configure loggging from default configuration file: " + configurationfile);
 			Log4jConfigurer.initLogging("classpath:" + configurationfile);
@@ -237,6 +238,30 @@ public class StartUp  {
 		finally {
 			LogLog.setInternalDebugging(false);
 		}
+	}
+	
+	public static String getLog4jConfigurationFile() {
+		return Boolean.getBoolean("functionblock.dev")
+				? "log4j-dev.properties" : "log4j.properties";
+	}
+	
+	/**
+	 * 
+	 * @return 
+	 * 		x = logfile with path
+	 * 		y = date pattern
+	 */
+	public static Pair<String, String> getLogFile() {
+		Pair<String, String> result = new Pair("<not avaiable>", "");
+		try {
+			java.util.Properties clientLog4jProperties = new Properties();
+			clientLog4jProperties.load(StartUp.class.getClassLoader().getResourceAsStream(StartUp.getLog4jConfigurationFile()));
+			result.x = SystemPropertyUtils.resolvePlaceholders(clientLog4jProperties.getProperty("log4j.appender.logfile.File"));
+			result.y = clientLog4jProperties.getProperty("log4j.appender.logfile.DatePattern");
+		} catch (Exception ex) {
+			// do nothing
+		}
+		return result;
 	}
 
 	private void setInitialLocaleBundle() {

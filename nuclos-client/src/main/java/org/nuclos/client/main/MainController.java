@@ -49,6 +49,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
@@ -195,6 +196,7 @@ import org.nuclos.server.customcomp.valueobject.CustomComponentVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
+import org.springframework.util.SystemPropertyUtils;
 
 
 /**
@@ -882,13 +884,29 @@ public class MainController {
 		try {
 			final MainFrameTab internalFrame = newMainFrameTab(null, "Info");
 			String html = IOUtils.readFromTextStream(getClass().getClassLoader().getResourceAsStream("org/nuclos/client/help/about/about.html"), null);
+			
+			Pair<String, String> clientLogFile = StartUp.getLogFile();
+			String logDir = "";
+			String logFilename = clientLogFile.x;
+			String logDatePattern = clientLogFile.y;
+			try {
+				// try to extract dir and filename...
+				logDir = clientLogFile.x.substring(0, clientLogFile.x.lastIndexOf("/"));
+				logFilename = clientLogFile.x.substring(clientLogFile.x.lastIndexOf("/")+1) +
+						logDatePattern.replace("'", "");
+			} catch (Exception ex) {
+				// do nothing
+			}
+			
 			HtmlPanel htmlPanel = new HtmlPanel(
 				String.format(
 					html,
 					ApplicationProperties.getInstance().getCurrentVersion(), // %1$s
 					getUserName(),                                           // %2$s
 					getNuclosServerName(),                                   // %3$s
-					System.getProperty("java.version")                       // %4$s
+					System.getProperty("java.version"),                      // %4$s
+					logDir,							                         // %5$s
+					logFilename						                         // %6$s
 			));
 			htmlPanel.btnClose.addActionListener(new ActionListener() {
 				@Override
