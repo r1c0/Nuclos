@@ -998,7 +998,7 @@ public class NuclosEntityAttributeCommonPropertiesStep extends NuclosEntityAttri
 			blnNullable = Boolean.TRUE;
 		}
 
-		Boolean requiresDefault = blnNullable && cbMandatory.isSelected() && !parentWizardModel.isVirtual();
+		Boolean requiresDefault = !blnNullable && cbMandatory.isSelected() && !parentWizardModel.isVirtual();
 
 		if(this.getModel().getAttribute().getDatatyp().getJavaType().equals("java.util.Date") && this.parentWizardModel.isEditMode() && requiresDefault) {
 			Date date;
