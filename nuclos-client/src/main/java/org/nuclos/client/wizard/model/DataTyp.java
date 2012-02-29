@@ -219,7 +219,7 @@ public class DataTyp implements Cloneable {
 	}
 
 	public Integer getPrecision() {
-		if(precision != null && precision.intValue() == 0)
+		if(precision != null && precision.intValue() == 0 && !Double.class.getName().equals(getJavaType()))
 			return null;
 		return precision;
 	}
