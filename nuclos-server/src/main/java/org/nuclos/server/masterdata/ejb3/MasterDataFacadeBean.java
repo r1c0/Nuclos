@@ -670,6 +670,12 @@ public class MasterDataFacadeBean extends NuclosFacadeBean implements MasterData
 			final boolean useRuleEngineSave = this.getUsesRuleEngine(sEntityName, RuleEventUsageVO.SAVE_EVENT);
 			if(useRuleEngineSave) {
 				fireSaveEvent(Event.CREATE_BEFORE, sEntityName, mdvo, mpDependants, false);
+				// In the create case the changes from the rules must be reflected.
+				// This is the same as in modify. (tp)
+				final RuleObjectContainerCVO roccvoResult = this.fireSaveEvent(Event.MODIFY_BEFORE,
+						sEntityName, mdvo, mpDependants, false);
+				mdvo = roccvoResult.getMasterData();
+				mpDependants = roccvoResult.getDependants(true);
 			}
 
 			if (nuclosEntity == NuclosEntity.RELATIONTYPE) {
@@ -776,6 +782,8 @@ public class MasterDataFacadeBean extends NuclosFacadeBean implements MasterData
 		final boolean useRuleEngineSave = this.getUsesRuleEngine(sEntityName, RuleEventUsageVO.SAVE_EVENT);
 		if(useRuleEngineSave) {
 			this.debug("Modifying (Start rules)");
+			// In the modify case the changes from the rules must be reflected.
+			// This is the same as in create. (tp)
 			final RuleObjectContainerCVO roccvoResult = this.fireSaveEvent(Event.MODIFY_BEFORE,
 				sEntityName, mdvo, mpDependants, false);
 			mdvo = roccvoResult.getMasterData();
