@@ -6824,6 +6824,89 @@
     ]
   },
   {
+    "name": "Formularverwendung",
+    "entity": "nuclos_reportUsage",
+    "searchable": false,
+    "editable": true,
+    "cacheable": false,
+    "dbentity": "V_UD_REPORTUSAGE",
+    "importexport": true,
+    "systementity": true,
+    "labelres": "nuclos.entity.formUsage.label",
+    "logicaluniquefields": [
+      [
+        "form",
+        "module",
+        "process",
+        "state"
+      ]
+    ],
+    "nuclos_entityfield": [
+      {
+        "name": "form",
+        "dbfield": "STRVALUE_T_UD_REPORT",
+        "label": "Formular",
+        "description": "Name des Formulars",
+        "foreignentity": "nuclos_report",
+        "datatype": "java.lang.String",
+        "datascale": 255,
+        "nullable": false,
+        "searchable": false,
+        "logbook": false,
+        "unique": false,
+        "labelres": "nuclos.entityfield.formUsage.form.label",
+        "descriptionres": "nuclos.entityfield.formUsage.form.description"
+      },
+      {
+        "name": "module",
+        "dbfield": "STRVALUE_T_MD_MODULE",
+        "label": "Entität",
+        "description": "Name der Entität",
+        "foreignentity": "nuclos_entity",
+        "foreignentityfield": "entity",
+        "datatype": "java.lang.String",
+        "datascale": 255,
+        "nullable": false,
+        "searchable": false,
+        "logbook": false,
+        "unique": false,
+        "labelres": "nuclos.entityfield.formUsage.module.label",
+        "descriptionres": "nuclos.entityfield.formUsage.module.description"
+      },
+      {
+        "name": "process",
+        "dbfield": "STRVALUE_T_MD_PROCESS",
+        "label": "Aktion",
+        "description": "Name der Aktion",
+        "foreignentity": "nuclos_process",
+        "datatype": "java.lang.String",
+        "datascale": 255,
+        "nullable": true,
+        "searchable": false,
+        "logbook": false,
+        "unique": false,
+        "labelres": "nuclos.entityfield.formUsage.process.label",
+        "descriptionres": "nuclos.entityfield.formUsage.process.description"
+      },
+      {
+        "name": "state",
+        "dbfield": "STRVALUE_T_MD_STATE",
+        "label": "Status",
+        "description": "Statusnumeral",
+        "foreignentity": "nuclos_state",
+        "datatype": "java.lang.String",
+        "datascale": 255,
+        "nullable": true,
+        "searchable": false,
+        "logbook": false,
+        "unique": false,
+		"foreignentityfield": "${numeral} ${name}",
+        "labelres": "nuclos.entityfield.formUsage.state.label",
+        "descriptionres": "nuclos.entityfield.formUsage.state.description"
+      }
+    ]
+  },
+  {
     "name": "Regelverwendung",
     "entity": "nuclos_ruleUsage",
     "searchable": false,

@@ -48,6 +48,7 @@ public enum NuclosEntity {
 	ENTITYRELATION("entityrelation"),
 	EVENT("event"),
 	FORMUSAGE("formUsage"),
+	REPORTUSAGE("reportUsage"),
 	GENERALSEARCHCOMMENT("generalsearchcomment"),
 	GENERALSEARCHDOCUMENT("generalsearchdocument"),
 	GENERATION("generation"),
