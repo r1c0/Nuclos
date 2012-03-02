@@ -461,9 +461,10 @@ public class WYSIWYGSubForm extends JLayeredPane implements WYSIWYGComponent, Mo
 						if (ignore) {
 							continue;
 						}
-						
+												
 						WYSIWYGSubFormColumn column = new WYSIWYGSubFormColumn(this, field);
 						column.setProperties(PropertyUtils.getEmptyProperties(column, this.meta));
+
 						PropertyValueString value = new PropertyValueString(field.getName());
 						try {
 							column.getProperties().setProperty(WYSIWYGSubFormColumn.PROPERTY_NAME, value, null);
@@ -902,7 +903,7 @@ public class WYSIWYGSubForm extends JLayeredPane implements WYSIWYGComponent, Mo
 	 * @param entityname
 	 */
 	public void setEntity(String entityname) {
-		this.columns.clear();
+		//this.columns.clear();
 		setSubFormFromProperties();
 	}
 
