@@ -18,6 +18,7 @@ package org.nuclos.client.genericobject;
 
 import java.awt.CardLayout;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -86,6 +87,7 @@ public class ChoiceListOrReportExportController extends ReportFormatController {
 //				JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
         JOptionPane pane = new JOptionPane(pnlChoiceExport, JOptionPane.PLAIN_MESSAGE, JOptionPane.OK_CANCEL_OPTION, null, null, null);
         JDialog dialog = pane.createDialog(this.parent, sDialogTitle);
+        dialog.setPreferredSize(new Dimension(200, dialog.getHeight()));
         dialog.setResizable(true);
         dialog.setVisible(true);
         

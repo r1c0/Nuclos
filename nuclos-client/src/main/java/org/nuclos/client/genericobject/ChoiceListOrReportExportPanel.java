@@ -18,14 +18,18 @@ package org.nuclos.client.genericobject;
 
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridBagLayout;
 
+import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
+import javax.swing.JSeparator;
 import javax.swing.border.Border;
+import javax.swing.border.EmptyBorder;
 
 import org.nuclos.client.ui.LineLayout;
 import org.nuclos.common2.SpringLocaleDelegate;
@@ -56,13 +60,11 @@ public class ChoiceListOrReportExportPanel extends JPanel {
 	private JPanel pnlPrechoice = new JPanel();
 	private JPanel pnlPrechoiceHelp = new JPanel(new FlowLayout(FlowLayout.CENTER));
 	private JPanel pnlSelection = new JPanel(new CardLayout());
-	private ReportFormatPanel pnlList;
 	private ReportSelectionPanel pnlReport = new ReportSelectionPanel();
 
 	public ChoiceListOrReportExportPanel(ReportFormatPanel pnlList) {
 		setLayout(new BorderLayout());
 
-		this.pnlList = pnlList;
 		pnlPrechoice.setLayout(new LineLayout(LineLayout.VERTICAL));
 		lblHeadline.setToolTipText("");
 		lblHeadline.setText(SpringLocaleDelegate.getInstance().getMessage(
@@ -81,12 +83,22 @@ public class ChoiceListOrReportExportPanel extends JPanel {
 		pnlPrechoice.add(rbReport);
 
 		pnlPrechoiceHelp.add(pnlPrechoice);
-
+		pnlPrechoice.add(new JPanel());
+		pnlPrechoice.add(new JSeparator());
+		pnlList.setBorder(BorderFactory.createEmptyBorder(0, -35, 0, 0));
 		pnlSelection.add(pnlList, "List");
-		pnlSelection.add(pnlReport, "Report");
 
 		add(pnlPrechoiceHelp, BorderLayout.NORTH);
-		add(pnlSelection, BorderLayout.CENTER);
+		add(pnlList, BorderLayout.CENTER);
+	}
+
+	@Override
+	public Dimension getPreferredSize() {
+		Dimension result = super.getPreferredSize();
+		result.width = Math.max(320, result.width);
+		result.height = result.height + 25;
+
+		return result;
 	}
 
 	public void prepareSelectionPanel(UsageCriteria usagecriteria, int iObjectCount, String sSelectedFormat)
