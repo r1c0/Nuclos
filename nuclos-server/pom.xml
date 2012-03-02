@@ -162,11 +162,12 @@
 			<artifactId>postgresql</artifactId>
 			<version>9.0-801.jdbc4</version>
 		</dependency>
+		<!-- only needed for activemq 5.5.0 and better
 		<dependency>
 			<groupId>org.eclipse.jetty</groupId>
 			<artifactId>jetty-server</artifactId>
 			<version>8.1.0.RC0</version>
-			<!--
+			<!-
 				At present this seems to be needed because of:
 				
 java.lang.ClassNotFoundException: org.eclipse.jetty.server.Connector
@@ -183,7 +184,7 @@ java.lang.ClassNotFoundException: org.eclipse.jetty.server.Connector
 	 			http://activemq.apache.org/tomcat.html
 	 			
 	 			(tp)
-			 -->
+			 ->
 			<exclusions>
 				<exclusion>
 					<artifactId>servlet-api</artifactId>
@@ -195,6 +196,7 @@ java.lang.ClassNotFoundException: org.eclipse.jetty.server.Connector
 				</exclusion>
 			</exclusions>
 		</dependency>
+		-->
 		<dependency>
 			<groupId>org.apache.cxf</groupId>
 			<artifactId>cxf-rt-frontend-jaxws</artifactId>
