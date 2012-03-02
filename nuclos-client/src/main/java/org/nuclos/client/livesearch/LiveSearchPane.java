@@ -130,7 +130,6 @@ class LiveSearchPane extends JPanel {
 		});
 	}
 	
-	
 	private KeyListener forwardAllListener = new KeyListener() {
 		@Override
 		public void keyTyped(KeyEvent e) {

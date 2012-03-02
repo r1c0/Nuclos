@@ -193,12 +193,22 @@ public class LiveSearchController implements LiveSearchSearchPaneListener, LiveS
 
         @Override
         public void keyReleased(KeyEvent e) {
-        	conditionalForwad(e);
+        	if(e.getKeyCode() != KeyEvent.VK_ENTER)
+        		conditionalForwad(e);
+        	else {
+        		if (searchComponent.getButtonSelection())
+        			conditionalForwad(e);
+        		if(!searchComponent.getButtonSelection() && !currentResult.isEmpty())
+            		searchComponent.setButtonSelection(true);
+        		e.consume();
+        	}
         }
 
         @Override
         public void keyPressed(KeyEvent e) {
-        	conditionalForwad(e);
+        	if(e.getKeyCode() != KeyEvent.VK_ENTER)
+        		conditionalForwad(e);
+            	
         	if(e.getKeyCode() == KeyEvent.VK_ESCAPE)
         		if(searchComponent.getButtonSelection() || resultPane.getParent() != null) {
         			searchComponent.setButtonSelection(false);
@@ -336,6 +346,7 @@ public class LiveSearchController implements LiveSearchSearchPaneListener, LiveS
 						@Override
 						public void run() {
 							try {
+			                	searchComponent.setButtonSelection(false);
 								searchComponent.requestFocus();
 							}
 							catch (Exception e) {
