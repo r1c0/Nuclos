@@ -44,7 +44,7 @@ public class LockedTabProgressNotifier {
 		if (!StringUtils.isNullOrEmpty(correlationId)) {
 			LockedTabProgressNotification notification = new LockedTabProgressNotification(message, percent);
 			log.info("JMS send LockedTabProgressNotification " + notification + ": " + this);
-			NuclosJMSUtils.sendObjectMessageAfterCommit(notification, JMSConstants.TOPICNAME_LOCKEDTABPROGRESSNOTIFICATION, correlationId);
+			NuclosJMSUtils.sendObjectMessage(notification, JMSConstants.TOPICNAME_LOCKEDTABPROGRESSNOTIFICATION, correlationId);
 		}
 	}
 
