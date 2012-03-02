@@ -80,8 +80,6 @@ public interface Constants {
 	 */
 	public static final String CLIENT_SINGLEINSTANCE = "client.singleinstance";
 
-	public static final String TOMCAT_VERSION = "apache-tomcat-7.0.14";
-
 	public static final String DATABASE_ADAPTER = "database.adapter";
 	public static final String DATABASE_DRIVERJAR = "database.driverjar";
 	public static final String DATABASE_SERVER = "database.server";
@@ -109,4 +107,15 @@ public interface Constants {
 	public static final String DBOPTION_USE = "use";
 
 	public static final String UNINSTALL_REMOVEDATAANDLOGS = "uninstall.removedataandlogs";
+	
+	// versions
+	
+	public static final String POSTGRESQL_MAIN_VERSION = "9.1";
+	
+	public static final String POSTGRESQL_FULL_VERSION = "9.1.3-1";
+	
+	public static final String TOMCAT_FULL_VERSION = "7.0.26";
+	
+	public static final String TOMCAT_VERSION = "apache-tomcat-" + TOMCAT_FULL_VERSION;
+
 }

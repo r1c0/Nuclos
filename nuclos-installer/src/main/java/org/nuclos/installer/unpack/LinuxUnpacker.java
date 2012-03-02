@@ -25,17 +25,26 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.nuclos.installer.ConfigContext;
+import org.nuclos.installer.Constants;
 import org.nuclos.installer.InstallException;
 import org.nuclos.installer.mode.Installer;
 import org.nuclos.installer.util.FileUtils;
+import org.nuclos.installer.util.ProcessCommand;
 import org.nuclos.installer.util.PropUtils;
 
 public class LinuxUnpacker extends UnixoidUnpacker {
 
 	private static final Logger LOG = Logger.getLogger(LinuxUnpacker.class);
 
-	private static final String X86_INSTALLER = "postgresql-9.0.4-1-linux.bin";
-	private static final String X64_INSTALLER = "postgresql-9.0.4-1-linux-x64.bin";
+	private static final String X86_INSTALLER = "postgresql-" + Constants.POSTGRESQL_FULL_VERSION + "-linux.run";
+	private static final String X64_INSTALLER = "postgresql-" + Constants.POSTGRESQL_FULL_VERSION + "-linux-x64.run";
+	
+	//
+	
+	private final ProcessCommand pc = new ProcessCommand();
+	
+	public LinuxUnpacker() {
+	}
 
 	@Override
 	public String getDefaultValue(String key) {
@@ -43,13 +52,13 @@ public class LinuxUnpacker extends UnixoidUnpacker {
 			return "/opt/nuclos";
 		}
 		else if (POSTGRES_PREFIX.equals(key)) {
-			return "/opt/PostgreSQL/9.0";
+			return "/opt/PostgreSQL/" + Constants.POSTGRESQL_MAIN_VERSION;
 		}
 		else if (POSTGRES_DATADIR.equals(key)) {
-			return "/opt/PostgreSQL/9.0/data";
+			return "/opt/PostgreSQL/" + Constants.POSTGRESQL_MAIN_VERSION + "/data";
 		}
 		else if (POSTGRES_TABLESPACEPATH.equals(key)) {
-			return "/opt/PostgreSQL/9.0/data";
+			return "/opt/PostgreSQL/" + Constants.POSTGRESQL_MAIN_VERSION + "/data";
 		}
 		else {
 			return super.getDefaultValue(key);
@@ -107,22 +116,40 @@ public class LinuxUnpacker extends UnixoidUnpacker {
 		}
 	}
 
+	@Override
+	public boolean canInstall() {
+		try {
+			return isPrivileged() || pc.canGuiSu();
+		}
+		catch (IOException ex) {
+			LOG.error(ex);
+			return isPrivileged();
+		}
+	}
+	
 	private URL getPostgresInstallerUrl() throws InstallException {
-		if (!isAmd64() && getClass().getClassLoader().getResource(X86_INSTALLER) != null ) {
-			return getClass().getClassLoader().getResource(X86_INSTALLER);
+		URL result = null;
+		if (!isAmd64()) {
+			result = getClass().getClassLoader().getResource(X86_INSTALLER);
 		}
-		else if (isAmd64() && getClass().getClassLoader().getResource(X64_INSTALLER) != null) {
-			return getClass().getClassLoader().getResource(X64_INSTALLER);
+		else if (isAmd64()) {
+			result = getClass().getClassLoader().getResource(X64_INSTALLER);
+			// check if we can execute 32 bit programs
+			// well the postgres installer don't like this on linux
+			/*
+			if (result == null && new File("/usr/lib32").isDirectory()) {
+				result = getClass().getClassLoader().getResource(X86_INSTALLER);				
+			}
+			 */
 		}
-		else {
-			return null;
-		}
+		LOG.info("Postgresql installer URL is " + result);
+		return result;
 	}
 
 	@Override
 	public boolean isPostgresBundled() {
 		try {
-			return isPrivileged() && getPostgresInstallerUrl() != null;
+			return canInstall() && getPostgresInstallerUrl() != null;
 		}
 		catch (InstallException ex) {
 			LOG.error(ex);
@@ -138,7 +165,13 @@ public class LinuxUnpacker extends UnixoidUnpacker {
 			cb.error("error.postgresql.notbundled");
 		}
 
-		File f = new File(ConfigContext.getProperty(NUCLOS_HOME) + "/postgresql-9.0.3-1-linux.bin");
+		final File f;
+		if (isAmd64()) {
+			f = new File(ConfigContext.getProperty(NUCLOS_HOME) + "/postgresql-" + Constants.POSTGRESQL_FULL_VERSION + "-linux-x64.run");			
+		}
+		else {
+			f = new File(ConfigContext.getProperty(NUCLOS_HOME) + "/postgresql-" + Constants.POSTGRESQL_FULL_VERSION + "-linux.run");
+		}
 		f.deleteOnExit();
 		try {
 			FileUtils.copyInputStreamToFile(installerurl.openStream(), f, false);
@@ -161,8 +194,14 @@ public class LinuxUnpacker extends UnixoidUnpacker {
 
 		InputStreamReader reader = null;
 		try {
-			ProcessBuilder pb = new ProcessBuilder(command);
-			Process p = pb.start();
+			final Process p;
+			if (!isPrivileged() && pc.canGuiSu()) {
+				p = pc.guiSu(command, isPrivileged());
+			}
+			else {
+				ProcessBuilder pb = new ProcessBuilder(command);
+				p = pb.start();
+			}
 			if (p.waitFor() != 0) {
 				reader = new InputStreamReader(p.getInputStream());
 			    StringBuffer val = new StringBuffer();

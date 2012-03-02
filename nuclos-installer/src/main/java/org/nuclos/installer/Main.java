@@ -27,7 +27,9 @@ public class Main extends AbstractLauncher {
 		System.setProperty("jdbc.drivers", "org.postgresql.Driver");
 		if (!(u instanceof GenericUnpacker) && !u.isPrivileged()) {
 			i.warn("warn.privileged.access");
-			u = new GenericUnpacker(u);
+			if (!u.canInstall()) {
+				u = new GenericUnpacker(u);
+			}
 		}
 		ConfigContext.getCurrentConfig().setDefaults(u);
 		i.install(u);

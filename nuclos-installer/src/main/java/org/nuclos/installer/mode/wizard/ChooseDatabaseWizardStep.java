@@ -25,6 +25,7 @@ import javax.swing.ButtonGroup;
 import javax.swing.JLabel;
 import javax.swing.JRadioButton;
 
+import org.apache.log4j.Logger;
 import org.nuclos.installer.ConfigContext;
 import org.nuclos.installer.Constants;
 import org.nuclos.installer.L10n;
@@ -39,6 +40,8 @@ import org.pietschy.wizard.InvalidStateException;
  * <br>Please visit <a href="http://www.nuclos.de">www.nuclos.de</a>
  */
 public class ChooseDatabaseWizardStep extends AbstractWizardStep implements ActionListener, Constants {
+	
+	private static final Logger LOG = Logger.getLogger(ChooseDatabaseWizardStep.class);
 
 	private JLabel label = new JLabel();
 
@@ -86,7 +89,9 @@ public class ChooseDatabaseWizardStep extends AbstractWizardStep implements Acti
 	public void prepare() {
 		Unpacker u = getModel().getUnpacker();
 		List<PostgresService> pgs = u.getPostgresServices();
-		optInstall.setEnabled(u.isPrivileged() && u.isPostgresBundled() && (pgs == null || pgs.size() == 0));
+		final boolean canInstallPostgresql = u.isPostgresBundled() && (pgs == null || pgs.size() == 0);
+		LOG.info("checking if is it is possible to install postgresql... " + canInstallPostgresql);
+		optInstall.setEnabled(canInstallPostgresql);
 
 		if (!ConfigContext.containsKey(DATABASE_SETUP)) {
 			if (ConfigContext.isUpdate()) {

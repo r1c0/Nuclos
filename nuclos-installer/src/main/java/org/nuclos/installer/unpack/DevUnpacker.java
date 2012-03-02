@@ -33,6 +33,11 @@ public class DevUnpacker implements Unpacker, Constants {
 	}
 
 	@Override
+	public boolean canInstall() {
+		return isPrivileged();
+	}
+	
+	@Override
 	public boolean isProductRegistered() {
 		return false;
 	}

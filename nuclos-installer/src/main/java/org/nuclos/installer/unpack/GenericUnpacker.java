@@ -66,6 +66,11 @@ public class GenericUnpacker extends AbstractUnpacker {
 	}
 
 	@Override
+	public boolean canInstall() {
+		return isPrivileged();
+	}
+	
+	@Override
 	public List<PostgresService> getPostgresServices() {
 		return new ArrayList<PostgresService>();
 	}
@@ -77,7 +82,7 @@ public class GenericUnpacker extends AbstractUnpacker {
 
 	@Override
 	public void startup(Installer cb) throws InstallException {
-		log.info("Skipping stratup.");
+		log.info("Skipping startup.");
 	}
 
 	@Override

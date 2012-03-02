@@ -27,6 +27,7 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.nuclos.installer.ConfigContext;
+import org.nuclos.installer.Constants;
 import org.nuclos.installer.InstallException;
 import org.nuclos.installer.VersionInformation;
 import org.nuclos.installer.database.PostgresService;
@@ -48,8 +49,8 @@ public class WindowsUnpacker extends AbstractUnpacker {
 
 	private static final Logger LOG = Logger.getLogger(WindowsUnpacker.class);
 
-	private static final String X86_INSTALLER = "postgresql-9.0.4-1-windows.exe";
-	private static final String X64_INSTALLER = "postgresql-9.0.4-1-windows_x64.exe";
+	private static final String X86_INSTALLER = "postgresql-" + Constants.POSTGRESQL_FULL_VERSION + "-windows.exe";
+	private static final String X64_INSTALLER = "postgresql-" + Constants.POSTGRESQL_FULL_VERSION + "-windows-x64.exe";
 
 	private static final String HKLM_SOFTWARE_POSTGRES_INSTALLATIONS = "SOFTWARE\\PostgreSQL\\Installations";
 	private static final String HKLM_SOFTWARE_POSTGRES_SERVICES = "SOFTWARE\\PostgreSQL\\Services";
@@ -65,13 +66,13 @@ public class WindowsUnpacker extends AbstractUnpacker {
 			return System.getenv("ProgramFiles") + "\\Nuclos";
 		}
 		else if (POSTGRES_PREFIX.equals(key)) {
-			return System.getenv("ProgramFiles") + "\\PostgreSQL\\9.0";
+			return System.getenv("ProgramFiles") + "\\PostgreSQL\\"  + Constants.POSTGRESQL_MAIN_VERSION;
 		}
 		else if (POSTGRES_DATADIR.equals(key)) {
-			return System.getenv("ProgramFiles") + "\\PostgreSQL\\9.0\\data";
+			return System.getenv("ProgramFiles") + "\\PostgreSQL\\"  + Constants.POSTGRESQL_MAIN_VERSION + "\\data";
 		}
 		else if (POSTGRES_TABLESPACEPATH.equals(key)) {
-			return System.getenv("ProgramFiles") + "\\PostgreSQL\\9.0\\data";
+			return System.getenv("ProgramFiles") + "\\PostgreSQL\\" + Constants.POSTGRESQL_MAIN_VERSION + "\\data";
 		}
 		else {
 			return super.getDefaultValue(key);
@@ -179,25 +180,19 @@ public class WindowsUnpacker extends AbstractUnpacker {
 	}
 
 	private URL getPostgresInstallerUrl() throws InstallException {
+		URL result = null;
 		if (!isAmd64()) {
-			if (getClass().getClassLoader().getResource(X86_INSTALLER) != null) {
-				return getClass().getClassLoader().getResource(X86_INSTALLER);
-			}
-			else {
-				return null;
-			}
+			result = getClass().getClassLoader().getResource(X86_INSTALLER);
 		}
 		else if (isAmd64()) {
-			if (getClass().getClassLoader().getResource(X64_INSTALLER) != null) {
-				return getClass().getClassLoader().getResource(X64_INSTALLER);
-			}
-			else {
-				return null;
+			result = getClass().getClassLoader().getResource(X64_INSTALLER);
+			// on Windows we always could install 32 bit programs
+			if (result == null) {
+				result = getClass().getClassLoader().getResource(X86_INSTALLER);				
 			}
 		}
-		else {
-			return null;
-		}
+		LOG.info("Postgresql installer URL is " + result);
+		return result;
 	}
 
 	private boolean isServiceInstalled() throws InstallException {
@@ -345,6 +340,11 @@ public class WindowsUnpacker extends AbstractUnpacker {
 	}
 
 	@Override
+	public boolean canInstall() {
+		return isPrivileged();
+	}
+	
+	@Override
 	public boolean isProductRegistered() {
 		String uninstallname = "Nuclos (" + ConfigContext.getProperty(NUCLOS_INSTANCE) + ")";
 		try {
@@ -379,7 +379,13 @@ public class WindowsUnpacker extends AbstractUnpacker {
 			cb.error("error.postgresql.notbundled");
 		}
 
-		File f = new File(ConfigContext.getProperty(NUCLOS_HOME) + "/postgresql-9.0.4-1-windows.exe");
+		final File f;
+		if (isAmd64()) {
+			f = new File(ConfigContext.getProperty(NUCLOS_HOME) + "/postgresql-" + Constants.POSTGRESQL_FULL_VERSION + "-windows-x64.exe");
+		}
+		else {
+			f = new File(ConfigContext.getProperty(NUCLOS_HOME) + "/postgresql-" + Constants.POSTGRESQL_FULL_VERSION + "-windows.exe");
+		}
 		f.deleteOnExit();
 		try {
 			FileUtils.copyInputStreamToFile(installerurl.openStream(), f, false);

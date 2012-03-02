@@ -25,6 +25,7 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.nuclos.installer.ConfigContext;
+import org.nuclos.installer.Constants;
 import org.nuclos.installer.InstallException;
 import org.nuclos.installer.mode.Installer;
 import org.nuclos.installer.util.FileUtils;
@@ -34,7 +35,7 @@ public class MacUnpacker extends UnixoidUnpacker {
 
 	private static final Logger LOG = Logger.getLogger(MacUnpacker.class);
 
-	private static final String PG_NSTALLER_IMAGE = "postgresql-9.0.4-1-osx.dmg";
+	private static final String PG_NSTALLER_IMAGE = "postgresql-" + Constants.POSTGRESQL_FULL_VERSION + "-osx.dmg";
 
 	@Override
 	public String getDefaultValue(String key) {
@@ -42,13 +43,13 @@ public class MacUnpacker extends UnixoidUnpacker {
 			return "/Library/Nuclos";
 		}
 		else if (POSTGRES_PREFIX.equals(key)) {
-			return "/Library/PostgreSQL/9.0";
+			return "/Library/PostgreSQL/" + Constants.POSTGRESQL_MAIN_VERSION;
 		}
 		else if (POSTGRES_DATADIR.equals(key)) {
-			return "/Library/PostgreSQL/9.0/data";
+			return "/Library/PostgreSQL/" + Constants.POSTGRESQL_MAIN_VERSION + "/data";
 		}
 		else if (POSTGRES_TABLESPACEPATH.equals(key)) {
-			return "/Library/PostgreSQL/9.0/data";
+			return "/Library/PostgreSQL/"  + Constants.POSTGRESQL_MAIN_VERSION + "/data";
 		}
 		else if (JAVA_HOME.equals(key)) {
 			return "/Library/Java/Home";
@@ -115,6 +116,11 @@ public class MacUnpacker extends UnixoidUnpacker {
 	}
 
 	@Override
+	public boolean canInstall() {
+		return isPrivileged();
+	}
+	
+	@Override
 	public boolean isPostgresBundled() {
 		try {
 			return isPrivileged() && getPostgresInstallerUrl() != null;
@@ -148,7 +154,8 @@ public class MacUnpacker extends UnixoidUnpacker {
 		mount(cb, f);
 
 		// set installbuilder.sh filename
-		File installbuilder = new File("/Volumes/PostgreSQl 9.0.4-1/postgresql-9.0.4-1-osx.app/Contents/MacOS/installbuilder.sh");
+		File installbuilder = new File("/Volumes/PostgreSQl " + Constants.POSTGRESQL_FULL_VERSION 
+				+ "/postgresql-" + Constants.POSTGRESQL_FULL_VERSION + "-osx.app/Contents/MacOS/installbuilder.sh");
 
 		// Build process args, see http://www.enterprisedb.com/resources-community/pginst-guide
 		List<String> command = Arrays.asList(
@@ -221,7 +228,7 @@ public class MacUnpacker extends UnixoidUnpacker {
 	}
 
 	private void unmount(Installer cb) {
-		List<String> command = Arrays.asList("hdiutil", "detach", "/Volumes/PostgreSQl 9.0.4-1");
+		List<String> command = Arrays.asList("hdiutil", "detach", "/Volumes/PostgreSQl " + Constants.POSTGRESQL_FULL_VERSION);
 		LOG.info(command);
 
 		try {

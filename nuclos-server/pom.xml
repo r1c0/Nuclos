@@ -160,7 +160,6 @@
 		<dependency>
 			<groupId>postgresql</groupId>
 			<artifactId>postgresql</artifactId>
-			<version>9.0-801.jdbc4</version>
 		</dependency>
 		<!-- only needed for activemq 5.5.0 and better
 		<dependency>

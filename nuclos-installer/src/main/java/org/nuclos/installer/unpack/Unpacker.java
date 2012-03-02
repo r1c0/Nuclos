@@ -51,6 +51,14 @@ public interface Unpacker {
 	 * @return true if user has administration privileges, otherwise false
 	 */
 	public boolean isPrivileged();
+	
+	/**
+	 * Check if the current user is able to install programs (i.e. Postgres).
+	 * On Linux, we try to use an GUI su if the user is not root.
+	 * 
+	 * @return true if the user can install programs.
+	 */
+	public boolean canInstall();
 
 	/**
 	 * Check if product is registered, i.e. Windows-Registry or /etc/nuclos.ini

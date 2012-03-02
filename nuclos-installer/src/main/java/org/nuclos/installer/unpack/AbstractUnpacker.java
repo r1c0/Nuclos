@@ -125,7 +125,7 @@ public abstract class AbstractUnpacker implements Unpacker, Constants {
 			ConfigContext.setProperty(NUCLOS_INSTANCE, value);
 			if (ConfigContext.hasPropertyChanged(NUCLOS_INSTANCE) && isProductRegistered()) {
 				ConfigContext.setProperty(NUCLOS_INSTANCE, old);
-				throw new InstallException("validation.instance.name.taken", ConfigContext.getProperty(NUCLOS_INSTANCE));
+				throw new InstallException("validation.instance.name.taken", value);
 			}
 		}
 		else if (JAVA_HOME.equals(key)) {
@@ -198,7 +198,7 @@ public abstract class AbstractUnpacker implements Unpacker, Constants {
 			// Setup database
 			String dbsetup = ConfigContext.getProperty(DATABASE_SETUP);
 
-			if (DBOPTION_INSTALL.equals(dbsetup) && isPrivileged()) {
+			if (DBOPTION_INSTALL.equals(dbsetup) && canInstall()) {
 				cb.info("unpack.step.installdb");
 				installPostgres(cb);
 			}
@@ -351,7 +351,7 @@ public abstract class AbstractUnpacker implements Unpacker, Constants {
 				}
 			}
 
-			File temp30Tomcat = new File(nuclosHome, "apache-tomcat-7.0.11");
+			File temp30Tomcat = new File(nuclosHome, "apache-tomcat-" + Constants.TOMCAT_FULL_VERSION);
 			try {
 				if (temp30Tomcat.exists() && temp30Tomcat.isDirectory()) {
 					FileUtils.delete(temp30Tomcat, true);

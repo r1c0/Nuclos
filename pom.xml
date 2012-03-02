@@ -51,6 +51,11 @@
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
+				<groupId>postgresql</groupId>
+				<artifactId>postgresql</artifactId>
+				<version>9.1-901.jdbc4</version>
+			</dependency>
+			<dependency>
 				<groupId>org.apache.activemq</groupId>
 				<artifactId>activemq-core</artifactId>
 				<version>5.3.2</version>
@@ -547,11 +552,30 @@
 					</execution>
 				</executions>
 				<configuration>
+					<!-- 
+						My first attempt to enable this was not sucessful:
+						It seems to work in eclipse/STS but weaving was broken
+						with the mvn builds.
+
+						If you want to retry please double-check. (tp)
+					-->
+					<!-- sources>
+						<source>
+							<basedir>${basedir}/src/main/java</basedir>
+							<includes>
+								<include>**/*.aj</include>
+							</includes>
+						</source>
+					</sources -->
 					<outxml>true</outxml>
 					<aspectLibraries>
 						<aspectLibrary>
 							<groupId>org.springframework</groupId>
 							<artifactId>spring-aspects</artifactId>
+						</aspectLibrary>
+						<aspectLibrary>
+							<groupId>org.springframework.security</groupId>
+							<artifactId>spring-security-aspects</artifactId>
 						</aspectLibrary>
 					</aspectLibraries>
 					<source>1.6</source>
@@ -601,6 +625,8 @@
 			<url>http://maven.nuclos.de/content/groups/public</url>
 			<snapshots>
 				<enabled>false</enabled>
+				<!-- updatePolicy>always</updatePolicy -->
+				<updatePolicy>interval:10</updatePolicy>
 			</snapshots>
 		</repository>
 		<repository>

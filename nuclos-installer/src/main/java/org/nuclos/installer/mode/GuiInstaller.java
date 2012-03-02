@@ -184,7 +184,7 @@ public class GuiInstaller implements Installer, Constants {
 		this.frame = new JFrame(VersionInformation.getInstance().getName() + " " + VersionInformation.getInstance().getVersion() + " Installation");
 
 		this.model = new InstallWizardModel(startpath, unpacker, this);
-		this.wizard = new InstallWizard(model);
+		this.wizard = new InstallWizard(model, os.isPrivileged());
 
 		this.frame.setIconImage(InstallerIcons.getFrameIcon().getImage());
 		this.frame.setSize(640, 480);

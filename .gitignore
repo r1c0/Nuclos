@@ -14,4 +14,7 @@ target
 pom.xml.versionsBackup
 /velocity.log
 #META-INF
+/nuclos-installer/velocity.log
+/nuclos-installer/dist
+*~
 

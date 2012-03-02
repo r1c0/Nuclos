@@ -19,18 +19,29 @@ package org.nuclos.installer.mode.wizard;
 import java.awt.Desktop;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.IOException;
 import java.net.URI;
+import java.net.URISyntaxException;
 
+import org.apache.log4j.Logger;
 import org.nuclos.installer.ConfigContext;
 import org.nuclos.installer.Constants;
+import org.nuclos.installer.util.ProcessCommand;
 import org.pietschy.wizard.ButtonBar;
 import org.pietschy.wizard.Wizard;
 import org.pietschy.wizard.WizardModel;
 
 public class InstallWizard extends Wizard implements PropertyChangeListener {
 
-	public InstallWizard(WizardModel model) {
+	private static final Logger LOG = Logger.getLogger(InstallWizard.class);
+	
+	// 
+	
+	private final boolean isPrivileged;
+
+	public InstallWizard(WizardModel model, boolean isPrivileged) {
 		super(model);
+		this.isPrivileged = isPrivileged;
 		getModel().addPropertyChangeListener("activeStep", this);
 	}
 
@@ -60,16 +71,55 @@ public class InstallWizard extends Wizard implements PropertyChangeListener {
 			InstallerWizardModel model = (InstallerWizardModel)getModel();
 			if (getModel().getActiveStep() instanceof FinishWizardStep) {
 				FinishWizardStep fws = (FinishWizardStep)getModel().getActiveStep();
+				final URI uri;
+				try {
+					uri = new URI("http://localhost:" + ConfigContext.getProperty(Constants.HTTP_PORT) + "/"
+							+ ConfigContext.getProperty(Constants.NUCLOS_INSTANCE));
+				}
+				catch (URISyntaxException e) {
+					throw new IllegalArgumentException("Wrong URL", e);
+				}
+				LOG.info("URL to open Nuclos is '" + uri + "'");
 				if (fws.isOpenWebstart()) {
 					if (Desktop.isDesktopSupported()) {
 			            Desktop desktop = Desktop.getDesktop();
 			            try {
-							desktop.browse(new URI("http://localhost:" + ConfigContext.getProperty(Constants.HTTP_PORT) + "/"
-									+ ConfigContext.getProperty(Constants.NUCLOS_INSTANCE)));
+							desktop.browse(uri);
+							LOG.info("Browser has started with URL " + uri);
 						} catch (Exception ex) {
-							model.getCallback().info("error.open.webstart");
+							LOG.warn("Browser start failed", ex);
+							// Fallback
+							try {
+								final Process p = new ProcessCommand().browse(uri, isPrivileged);
+								if (p == null) {
+									model.getCallback().info("error.open.webstart");
+								}
+								LOG.info("Fallback browser has started with URL " + uri);
+							}
+							catch (IOException e) {
+								LOG.warn("Fallback browser start failed", e);
+								model.getCallback().info("error.open.webstart");
+							}
 						}
 			        }
+					else {
+						LOG.warn("Can't start browser; java Desktop API is not supported");
+						// Fallback
+						try {
+							final Process p = new ProcessCommand().browse(uri, isPrivileged);
+							if (p == null) {
+								model.getCallback().info("error.open.webstart");
+							}
+							LOG.info("Fallback browser has started with URL " + uri);
+						}
+						catch (IOException e) {
+							LOG.warn("Fallback browser start failed", e);
+							model.getCallback().info("error.open.webstart");
+						}
+					}
+				}
+				else {
+					LOG.info("Browser start is not requested by user");
 				}
 			}
 			model.getCallback().close();

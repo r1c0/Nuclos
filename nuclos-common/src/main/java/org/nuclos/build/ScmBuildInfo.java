@@ -38,7 +38,7 @@ public class ScmBuildInfo {
 	
 	private static final Class<?>[] STRING_ARRAY_ARGS = new Class<?>[] { String[].class };
 	
-	private static final String EXPECTED_SUFFIX = "/nuclos-common/target/classes";
+	private static final String EXPECTED_SUFFIX = "/nuclos-common/target/classes".replace('/', File.separatorChar);
 	
 	public static void main(String[] args) throws Exception {
 		NoExitSecurityManager sm = null;
