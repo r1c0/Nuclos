@@ -154,6 +154,8 @@ public class EntityRelationshipModelEditPanel extends JPanel {
 		lstChangeListener = new ArrayList<ChangeListener>();
 		lstRelations = new ArrayList<mxCell>();
 		mpRemoveRelation = new HashMap<EntityMetaDataVO, Set<EntityFieldMetaDataVO>>();
+		if (localeDelegate == null)
+			localeDelegate = SpringLocaleDelegate.getInstance();
 		init();		
 	}
 	

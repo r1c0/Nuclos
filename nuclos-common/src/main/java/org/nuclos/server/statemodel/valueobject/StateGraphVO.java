@@ -103,9 +103,10 @@ public class StateGraphVO implements Serializable {
 			if (StringUtils.isNullOrEmpty(this.getStateModel().getName())) {
 				throw new CommonValidationException("statemachine.error.validation.graph.modelname");
 			}
-			if (StringUtils.isNullOrEmpty(this.getStateModel().getDescription())) {
+			//NUCLOSINT-600
+			/*if (StringUtils.isNullOrEmpty(this.getStateModel().getDescription())) {
 				throw new CommonValidationException("statemachine.error.validation.graph.modeldescription");
-			}
+			}*/
 
 			/** @todo validate StateModelLayout! */
 
