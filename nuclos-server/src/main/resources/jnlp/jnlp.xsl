@@ -25,7 +25,15 @@
 				<all-permissions />
 			</security>
 			<resources>
-				<j2se version="1.6+" initial-heap-size="256m" max-heap-size="512m" />
+				<!--
+					-XX:+HeapDumpOnOutOfMemoryError
+					will only be used by jse7 because it is not mention at
+					http://docs.oracle.com/javase/6/docs/technotes/guides/javaws/developersguide/syntax.html
+					
+					See also:
+					http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6664424
+				-->
+				<j2se version="1.6+" initial-heap-size="256m" max-heap-size="512m" java-vm-args="-XX:+HeapDumpOnOutOfMemoryError -verbose:gc -ea"/>
 				<jar href="nuclos-client-{$nuclos.version}.jar" main="true" />
 				<xsl:for-each select="jnlp/jars/jar">
 					<jar href="{text()}" />
