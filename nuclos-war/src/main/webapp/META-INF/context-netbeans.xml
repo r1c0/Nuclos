@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+	Deployment under netbeans is different from eclipse:
+	
+	1. In the server.xml of the tomcat installation (base) 
+	   there must not be a <Context/> section.
+
+	2. Instead, there must be context.xml in
+	   nuclos-war/src/main/webapp/META-INF/
+
+	3. Because the <Context/> must refer to your (individual)
+	   nuclos configuration directory, you must use 
+	   this file (nuclos-war/src/main/webapp/META-INF/context-netbeans.xml)
+	   as template, copy it to nuclos-war/src/main/webapp/META-INF/context.xml
+	   and make the appropriate modifications.
+
+	4. If you (ever) change back to eclipse, please remember to delete (or rename)
+	   your nuclos-war/src/main/webapp/META-INF/context.xml file.
+
+	Thomas Pasch
+-->
+<Context antiJARLocking="true" path="/nuclos-war">
+        <Environment name="nuclos-conf-log4j" type="java.lang.String" value="file:///home/tpasch/Documents/nb/nuclos-conf/conf/log4j.properties"/>
+        <Environment name="nuclos-conf-jdbc" type="java.lang.String" value="file:///home/tpasch/Documents/nb/nuclos-conf/conf/jdbc.properties"/>
+        <Environment name="nuclos-conf-quartz" type="java.lang.String" value="file:///home/tpasch/Documents/nb/nuclos-conf/conf/quartz.properties"/>
+        <Environment name="nuclos-conf-server" type="java.lang.String" value="file:///home/tpasch/Documents/nb/nuclos-conf/conf/server.properties"/>
+        <!-- Environment name="nuclos-conf-log4j-refresh" type="java.lang.Integer"
+                value="60000" / -->
+</Context>

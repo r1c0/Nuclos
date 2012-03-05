@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<actions>
+        <action>
+            <actionName>run</actionName>
+            <goals>
+                <goal>process-classes</goal>
+                <goal>org.codehaus.mojo:exec-maven-plugin:1.2:exec</goal>
+            </goals>
+            <properties>
+                <exec.args>-ea -ms64m -mx192m -Dcom.sun.management.jmxremote="true" -Durl.jms=http://localhost:8080/nuclos-war/jmsbroker -Durl.remoting=http://localhost:8080/nuclos-war/remoting -Dfunctionblock.dev=true -Dsun.awt.disablegrab=true -classpath %classpath org.nuclos.client.main.Main</exec.args>
+                <exec.executable>java</exec.executable>
+                <exec.classpathScope>runtime</exec.classpathScope>
+            </properties>
+        </action>
+        <action>
+            <actionName>debug</actionName>
+            <goals>
+                <goal>process-classes</goal>
+                <goal>org.codehaus.mojo:exec-maven-plugin:1.2:exec</goal>
+            </goals>
+            <properties>
+                <exec.args>-Xdebug -Xrunjdwp:transport=dt_socket,server=n,address=${jpda.address} -ea -ms64m -mx192m -Dcom.sun.management.jmxremote="true" -Durl.jms=http://localhost:8080/nuclos-war/jmsbroker -Durl.remoting=http://localhost:8080/nuclos-war/remoting -Dfunctionblock.dev=true -Dsun.awt.disablegrab=true -classpath %classpath org.nuclos.client.main.Main</exec.args>
+                <exec.executable>java</exec.executable>
+                <exec.classpathScope>runtime</exec.classpathScope>
+                <jpda.listen>true</jpda.listen>
+            </properties>
+        </action>
+        <action>
+            <actionName>profile</actionName>
+            <goals>
+                <goal>process-classes</goal>
+                <goal>org.codehaus.mojo:exec-maven-plugin:1.2:exec</goal>
+            </goals>
+            <properties>
+                <exec.args>${profiler.args} -ea -ms64m -mx192m -Dcom.sun.management.jmxremote="true" -Durl.jms=http://localhost:8080/nuclos-war/jmsbroker -Durl.remoting=http://localhost:8080/nuclos-war/remoting -Dfunctionblock.dev=true -Dsun.awt.disablegrab=true -classpath %classpath org.nuclos.client.main.Main</exec.args>
+                <exec.executable>${profiler.java}</exec.executable>
+                <profiler.action>profile</profiler.action>
+            </properties>
+        </action>
+    </actions>

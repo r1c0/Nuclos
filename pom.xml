@@ -76,6 +76,10 @@
 						<artifactId>slf4j-api</artifactId>
 						<groupId>org.slf4j</groupId>
 					</exclusion>
+					<exclusion>
+						<artifactId>servlet-api-2.5</artifactId>
+						<groupId>org.mortbay.jetty</groupId>
+					</exclusion>
 					<!--
 						xmlpull is competing with xpp3 but 
 	 					has no BOM (unicode byte-order-marker) support
@@ -152,6 +156,12 @@
 				<groupId>commons-digester</groupId>
 				<artifactId>commons-digester</artifactId>
 				<version>1.7</version>
+				<exclusions>
+					<exclusion>
+						<artifactId>xml-apis</artifactId>
+						<groupId>xml-apis</groupId>
+					</exclusion>
+				</exclusions>
 			</dependency>
 			<dependency>
 				<groupId>commons-httpclient</groupId>
@@ -183,6 +193,12 @@
 				<groupId>dom4j</groupId>
 				<artifactId>dom4j</artifactId>
 				<version>1.6.1</version>
+				<exclusions>
+					<exclusion>
+						<artifactId>xml-apis</artifactId>
+						<groupId>xml-apis</groupId>
+					</exclusion>
+				</exclusions>
 			</dependency>
 			<dependency>
 				<groupId>com.lowagie</groupId>
@@ -203,6 +219,12 @@
 				<groupId>jasperreports</groupId>
 				<artifactId>jasperreports</artifactId>
 				<version>3.5.3</version>
+				<exclusions>
+					<exclusion>
+						<artifactId>xml-apis</artifactId>
+						<groupId>xml-apis</groupId>
+					</exclusion>
+				</exclusions>
 			</dependency>
 			<dependency>
 				<groupId>com.googlecode.json-simple</groupId>
@@ -332,6 +354,10 @@
 					<exclusion>
 						<artifactId>xpp3_min</artifactId>
 						<groupId>xpp3_min</groupId>
+					</exclusion>
+					<exclusion>
+						<artifactId>xmlpull</artifactId>
+						<groupId>xmlpull</groupId>
 					</exclusion>
 				</exclusions>
 			</dependency>

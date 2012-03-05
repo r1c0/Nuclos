@@ -34,10 +34,10 @@
 						<configuration>
 							<includeProjectDependencies>true</includeProjectDependencies>
 							<includePluginDependencies>true</includePluginDependencies>
-							<executableDependency>
+							<!-- executableDependency>
 								<groupId>org.tmatesoft.svnkit</groupId>
 								<artifactId>svnkit-cli</artifactId>
-							</executableDependency>
+							</executableDependency -->
 							<classpathScope>compile</classpathScope>
 							<!-- mainClass>org.tmatesoft.svn.cli.SVN</mainClass -->
 							<mainClass>org.nuclos.build.ScmBuildInfo</mainClass>
@@ -51,7 +51,7 @@
 						</goals>
 					</execution>
 				</executions>
-				<dependencies>
+				<!-- dependencies>
 					<dependency>
 						<groupId>org.tmatesoft.svnkit</groupId>
 						<artifactId>svnkit-cli</artifactId>
@@ -69,7 +69,7 @@
 							</exclusion>
 						</exclusions>
 					</dependency>
-				</dependencies>
+				</dependencies -->
 			</plugin>
 		</plugins>
 		<resources>
@@ -141,12 +141,6 @@
 		<dependency>
 			<groupId>commons-digester</groupId>
 			<artifactId>commons-digester</artifactId>
-			<exclusions>
-				<exclusion>
-					<artifactId>xml-apis</artifactId>
-					<groupId>xml-apis</groupId>
-				</exclusion>
-			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>commons-httpclient</groupId>
@@ -172,12 +166,6 @@
 		<dependency>
 			<groupId>dom4j</groupId>
 			<artifactId>dom4j</artifactId>
-			<exclusions>
-				<exclusion>
-					<artifactId>xml-apis</artifactId>
-					<groupId>xml-apis</groupId>
-				</exclusion>
-			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>com.lowagie</groupId>
@@ -186,12 +174,6 @@
 		<dependency>
 			<groupId>jasperreports</groupId>
 			<artifactId>jasperreports</artifactId>
-			<exclusions>
-				<exclusion>
-					<artifactId>xml-apis</artifactId>
-					<groupId>xml-apis</groupId>
-				</exclusion>
-			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>com.googlecode.json-simple</groupId>
@@ -293,16 +275,6 @@
 		<dependency>
 			<groupId>com.thoughtworks.xstream</groupId>
 			<artifactId>xstream</artifactId>
-			<exclusions>
-				<exclusion>
-					<artifactId>xmlpull</artifactId>
-					<groupId>xmlpull</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>xpp3_min</artifactId>
-					<groupId>xpp3</groupId>
-				</exclusion>
-			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.tmatesoft.svnkit</groupId>

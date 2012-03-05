@@ -12,9 +12,10 @@
 .settings
 target
 pom.xml.versionsBackup
-/velocity.log
+velocity.log
 #META-INF
-/nuclos-installer/velocity.log
 /nuclos-installer/dist
+nuclos-war/src/main/webapp/META-INF/context.xml
+nb-configuration.xml
 *~
 
