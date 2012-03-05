@@ -97,8 +97,14 @@ public class DirectoryRuleNode extends AbstractRuleTreeNode {
 				case SAVE_ENTITY:
 					setSubNodes(createEventEntityRulesNode(RuleTreeModel.SAVE_EVENT_NAME));
 					break;
+				case SAVE_AFTER_ENTITY:
+					setSubNodes(createEventEntityRulesNode(RuleTreeModel.SAVE_AFTER_EVENT_NAME));
+					break;
 				case DELETE_ENTITY:
 					setSubNodes(createEventEntityRulesNode(RuleTreeModel.DELETE_EVENT_NAME));
+					break;
+				case DELETE_AFTER_ENTITY:
+					setSubNodes(createEventEntityRulesNode(RuleTreeModel.DELETE_AFTER_EVENT_NAME));
 					break;
 				case USEREVENT_ENTITY:
 					setSubNodes(createEventEntityRulesNode(RuleTreeModel.USER_EVENT_NAME));
@@ -233,7 +239,9 @@ public class DirectoryRuleNode extends AbstractRuleTreeNode {
 
 		result.add(new DirectoryRuleNode(false, DirectoryRuleNode.MainDirectory.ALL_RULES, null, false));
 		result.add(new DirectoryRuleNode(false, DirectoryRuleNode.MainDirectory.SAVE_ENTITY, null, false));
+		result.add(new DirectoryRuleNode(false, DirectoryRuleNode.MainDirectory.SAVE_AFTER_ENTITY, null, false));
 		result.add(new DirectoryRuleNode(false, DirectoryRuleNode.MainDirectory.DELETE_ENTITY, null, false));
+		result.add(new DirectoryRuleNode(false, DirectoryRuleNode.MainDirectory.DELETE_AFTER_ENTITY, null, false));
 		result.add(new DirectoryRuleNode(false, DirectoryRuleNode.MainDirectory.USEREVENT_ENTITY, null, false));
 		result.add(new DirectoryRuleNode(false, DirectoryRuleNode.MainDirectory.STATE_TRANSITION, null, false));
 		result.add(new DirectoryRuleNode(false, DirectoryRuleNode.MainDirectory.OBJECT_GENERATION, null, false));
@@ -255,8 +263,12 @@ public class DirectoryRuleNode extends AbstractRuleTreeNode {
 				SpringLocaleDelegate.getInstance().getMessage("DirectoryRuleNode.16","Reglen die automatisch bei Status\u00fcberg\u00e4ngen ausgef\u00fchrt werden")),
 		SAVE_ENTITY(SpringLocaleDelegate.getInstance().getMessage("DirectoryRuleNode.17","Speichern pro Entit\u00e4t"), 
 				SpringLocaleDelegate.getInstance().getMessage("DirectoryRuleNode.12","Regeln die automatisch beim Speichern einer Entit\u00e4t ausgef\u00fchrt werden")),
+		SAVE_AFTER_ENTITY(SpringLocaleDelegate.getInstance().getMessage("DirectoryRuleNode.20","Speichern (Im Anschluss) pro Entit\u00e4t"), 
+				SpringLocaleDelegate.getInstance().getMessage("DirectoryRuleNode.19","Regeln die automatisch im Anschluss beim Speichern einer Entit\u00e4t ausgef\u00fchrt werden")),
 		DELETE_ENTITY(SpringLocaleDelegate.getInstance().getMessage("DirectoryRuleNode.8","L\u00f6schen pro Entit\u00e4t"), 
 				SpringLocaleDelegate.getInstance().getMessage("DirectoryRuleNode.11","Regeln die automatisch beim L\u00f6schen einer Entit\u00e4t ausgef\u00fchrt werden")),
+		DELETE_AFTER_ENTITY(SpringLocaleDelegate.getInstance().getMessage("DirectoryRuleNode.21","L\u00f6schen (Im Anschluss) pro Entit\u00e4t"), 
+				SpringLocaleDelegate.getInstance().getMessage("DirectoryRuleNode.22","Regeln die automatisch im Anschluss beim L\u00f6schen einer Entit\u00e4t ausgef\u00fchrt werden")),
 		USEREVENT_ENTITY(SpringLocaleDelegate.getInstance().getMessage("DirectoryRuleNode.3","Benutzeraktion pro Entit\u00e4t"), 
 				SpringLocaleDelegate.getInstance().getMessage("DirectoryRuleNode.13","Regeln die manuell durch den Benutzer gestartet werden k\u00f6nnen")),
 		ALL_RULES(SpringLocaleDelegate.getInstance().getMessage("DirectoryRuleNode.1","Alle Regeln"), 

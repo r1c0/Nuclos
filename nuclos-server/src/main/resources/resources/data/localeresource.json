@@ -20668,6 +20668,66 @@
     "resourceID": "RuleNode.10",
     "locale": "de",
     "text": "Speichern pro Entität"
+  },  
+  {
+    "resourceID": "RuleNode.13",
+    "locale": "i-default",
+    "text": "Save (afterwards) per entity"
+  },
+  {
+    "resourceID": "RuleNode.13",
+    "locale": "en",
+    "text": "Save (afterwards) per entity"
+  },
+  {
+    "resourceID": "RuleNode.13",
+    "locale": "de",
+    "text": "Speichern (Im Anschluss) pro Entität"
+  },
+  {
+    "resourceID": "RuleNode.14",
+    "locale": "i-default",
+    "text": "Save (afterwards) per entity"
+  },
+  {
+    "resourceID": "RuleNode.14",
+    "locale": "en",
+    "text": "Save (afterwards) per entity"
+  },
+  {
+    "resourceID": "RuleNode.14",
+    "locale": "de",
+    "text": "Speichern (Im Anschluss) pro Entität"
+  },
+  {
+    "resourceID": "RuleNode.15",
+    "locale": "i-default",
+    "text": "Deletion (afterwards) per entity"
+  },
+  {
+    "resourceID": "RuleNode.15",
+    "locale": "en",
+    "text": "Deletion (afterwards) per entity"
+  },
+  {
+    "resourceID": "RuleNode.15",
+    "locale": "de",
+    "text": "Löschen (Im Anschluss) pro Entität"
+  },
+  {
+    "resourceID": "RuleNode.16",
+    "locale": "i-default",
+    "text": "Deletion (afterwards) per entity"
+  },
+  {
+    "resourceID": "RuleNode.16",
+    "locale": "en",
+    "text": "Deletion (afterwards) per entity"
+  },
+  {
+    "resourceID": "RuleNode.16",
+    "locale": "de",
+    "text": "Löschen (Im Anschluss) pro Entität"
   },
   {
     "resourceID": "ExplorerPanel.3",
@@ -26235,6 +26295,21 @@
     "text": "Löschen pro Entität"
   },
   {
+    "resourceID": "DirectoryRuleNode.21",
+    "locale": "i-default",
+    "text": "Deletion (afterwards) per entity"
+  },
+  {
+    "resourceID": "DirectoryRuleNode.21",
+    "locale": "en",
+    "text": "Deletion (afterwards) per entity"
+  },
+  {
+    "resourceID": "DirectoryRuleNode.21",
+    "locale": "de",
+    "text": "Löschen (Im Anschluss) pro Entität"
+  },
+  {
     "resourceID": "CollectableStateRoleSubForm.5",
     "locale": "i-default",
     "text": "Write permission?"
@@ -29220,6 +29295,21 @@
     "text": "Speichern pro Entität"
   },
   {
+    "resourceID": "DirectoryRuleNode.20",
+    "locale": "i-default",
+    "text": "Save (afterwards) per entity"
+  },
+  {
+    "resourceID": "DirectoryRuleNode.20",
+    "locale": "en",
+    "text": "Save (afterwards) per entity"
+  },
+  {
+    "resourceID": "DirectoryRuleNode.20",
+    "locale": "de",
+    "text": "Speichern (Im Anschluss) pro Entität"
+  },
+  {
     "resourceID": "DirectoryRuleNode.18",
     "locale": "i-default",
     "text": "State transitions"
@@ -29248,6 +29338,21 @@
     "resourceID": "DirectoryRuleNode.12",
     "locale": "de",
     "text": "Regeln die automatisch beim Speichern einer Entität ausgeführt werden"
+  },
+  {
+    "resourceID": "DirectoryRuleNode.19",
+    "locale": "i-default",
+    "text": "Rules to run afterwards on save"
+  },
+  {
+    "resourceID": "DirectoryRuleNode.19",
+    "locale": "en",
+    "text": "Rules to run afterwards on save"
+  },
+  {
+    "resourceID": "DirectoryRuleNode.19",
+    "locale": "de",
+    "text": "Regeln die automatisch im Anschluss beim Speichern einer Entität ausgeführt werden"
   },
   {
     "resourceID": "DirectoryRuleNode.13",
@@ -29323,6 +29428,21 @@
     "resourceID": "DirectoryRuleNode.11",
     "locale": "de",
     "text": "Regeln die automatisch beim Löschen einer Entität ausgeführt werden"
+  },
+  {
+    "resourceID": "DirectoryRuleNode.22",
+    "locale": "i-default",
+    "text": "Rules to run afterwards on deletion"
+  },
+  {
+    "resourceID": "DirectoryRuleNode.22",
+    "locale": "en",
+    "text": "Rules to run afterwards on deletion"
+  },
+  {
+    "resourceID": "DirectoryRuleNode.22",
+    "locale": "de",
+    "text": "Regeln die automatisch im Anschluss beim Löschen einer Entität ausgeführt werden"
   },
   {
     "resourceID": "CollectableTask.20",

@@ -594,7 +594,7 @@ public class ExplorerNode<TN extends TreeNode> extends DefaultMutableTreeNode {
 
 		public RefreshAction(JTree tree) {
 			super(ACTIONCOMMAND_REFRESH, 
-					getSpringLocaleDelegate().getMessage("ExplorerNode.1","Aktualisieren"), tree);
+					getSpringLocaleDelegate().getInstance().getMessage("ExplorerNode.1","Aktualisieren"), tree);
 		}
 
 		@Override

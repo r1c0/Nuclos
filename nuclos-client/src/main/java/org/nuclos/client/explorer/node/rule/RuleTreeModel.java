@@ -17,13 +17,15 @@
 package org.nuclos.client.explorer.node.rule;
 
 import org.nuclos.common2.SpringLocaleDelegate;
+import org.nuclos.server.ruleengine.valueobject.RuleEventUsageVO;
 
 
 public class RuleTreeModel {
-
-	public static final String SAVE_EVENT_NAME = "Save";
-	public static final String USER_EVENT_NAME = "User";
-	public static final String DELETE_EVENT_NAME = "Delete";
+	public static final String SAVE_EVENT_NAME = RuleEventUsageVO.SAVE_EVENT;
+	public static final String SAVE_AFTER_EVENT_NAME = RuleEventUsageVO.SAVE_AFTER_EVENT;
+	public static final String USER_EVENT_NAME = RuleEventUsageVO.USER_EVENT;
+	public static final String DELETE_EVENT_NAME = RuleEventUsageVO.DELETE_EVENT;
+	public static final String DELETE_AFTER_EVENT_NAME = RuleEventUsageVO.DELETE_AFTER_EVENT;
 	public static final String FRIST_EVENT_NAME = SpringLocaleDelegate.getInstance().getMessage("RuleTreeModel.3","Frist");
 	public static final String ALL_RULES_NODE_LABEL = SpringLocaleDelegate.getInstance().getMessage("RuleTreeModel.1","Alle Regeln");
 	public static final String FRIST_NODE_LABEL = SpringLocaleDelegate.getInstance().getMessage("RuleTreeModel.4","Fristen");

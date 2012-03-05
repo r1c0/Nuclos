@@ -102,10 +102,22 @@ public class RuleNode extends AbstractRuleTreeNode {
 						getSpringLocaleDelegate().getMessage("RuleNode.10","Speichern pro Entit\u00e4t"), saveEntityNodes, true));
 			}
 
+			final List<EntityRuleNode> saveAfterEntityNodes = createEventEntityRulesNode(RuleTreeModel.SAVE_AFTER_EVENT_NAME);
+			if (saveAfterEntityNodes != null && saveAfterEntityNodes.size() > 0) {
+				subNodeList.add(new DirectoryRuleNode(false, getSpringLocaleDelegate().getMessage("RuleNode.13","Speichern (Im Anschluss) pro Entit\u00e4t"), 
+						getSpringLocaleDelegate().getMessage("RuleNode.14","Speichern (Im Anschluss) pro Entit\u00e4t"), saveAfterEntityNodes, true));
+			}
+
 			final List<EntityRuleNode> deleteEntityNodes = createEventEntityRulesNode(RuleTreeModel.DELETE_EVENT_NAME);
 			if (deleteEntityNodes != null && deleteEntityNodes.size() > 0) {
 				subNodeList.add(new DirectoryRuleNode(false, getSpringLocaleDelegate().getMessage("RuleNode.4","L\u00f6schen pro Entit\u00e4t"), 
 						getSpringLocaleDelegate().getMessage("RuleNode.5","L\u00f6schen pro Entit\u00e4t"), deleteEntityNodes, true));
+			}
+
+			final List<EntityRuleNode> deleteAfterEntityNodes = createEventEntityRulesNode(RuleTreeModel.DELETE_AFTER_EVENT_NAME);
+			if (deleteAfterEntityNodes != null && deleteAfterEntityNodes.size() > 0) {
+				subNodeList.add(new DirectoryRuleNode(false, getSpringLocaleDelegate().getMessage("RuleNode.15","L\u00f6schen (Im Anschluss) pro Entit\u00e4t"), 
+						getSpringLocaleDelegate().getMessage("RuleNode.16","L\u00f6schen (Im Anschluss) pro Entit\u00e4t"), deleteAfterEntityNodes, true));
 			}
 
 			final List<EntityRuleNode> userEventEntityNodes = createEventEntityRulesNode(RuleTreeModel.USER_EVENT_NAME);
