@@ -41,6 +41,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.geom.AffineTransform;
+import java.io.Closeable;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -257,7 +258,8 @@ public class StatePropertiesPanel extends JPanel {
 	}
 
 	@Configurable
-	public static class StateDependantRightsPanel extends JPanel implements RightAndMandatoryConstants{
+	public static class StateDependantRightsPanel extends JPanel 
+			implements RightAndMandatoryConstants, Closeable {
 		
 		public static final int LEFT_BORDER = 5;
 		
@@ -284,6 +286,8 @@ public class StatePropertiesPanel extends JPanel {
 		private StateVO statevo = null;
 		
 		private List<ChangeListener> lstDetailsChangedListeners = new ArrayList<ChangeListener>();
+		
+		private Thread showBubbleThread = null;
 		
 		private SpringLocaleDelegate localeDelegate;
 		
@@ -409,6 +413,23 @@ public class StatePropertiesPanel extends JPanel {
 			}
 		}
 		
+		@Override
+		public synchronized void close() {
+			if (showBubbleThread != null) {
+				showBubbleThread.interrupt();
+				showBubbleThread = null;
+			}
+		}
+		
+		@Override
+		public void finalize() throws Throwable {
+			if (showBubbleThread != null) {
+				LOG.error("Still having a showBubbleThread???");
+				close();
+			}
+			super.finalize();
+		}
+		
 		/**
 		 * 
 		 * @param usages
@@ -514,32 +535,47 @@ public class StatePropertiesPanel extends JPanel {
 				}
 				
 				if (showBubble) {
-					final Thread t = new Thread(new Runnable() {
-						@Override
-						public void run() {
-							boolean tryAgain = true;
-							while(tryAgain) {
-								try {
-									 Thread.currentThread().sleep(2000);
-								}
-								catch(InterruptedException e) {
-									LOG.warn("initMain: " + e, e);
-									tryAgain = false;
-								}
-								try {
-									roleSelection.getLocationOnScreen();
-									tryAgain = false;
-									(new Bubble(roleSelection, localeDelegate.getMessage(
-											"StatePropertiesPanel.15", "Einige Benutzergruppen sind ausgeblendet."), 
-											5, Bubble.Position.SE)).setVisible(true);
-								} catch (IllegalComponentStateException e) {
-									// do nothing. it is not shown
-									LOG.warn("initMain: " + e, e);
-								}
-							}
+					final String msg = localeDelegate.getMessage(
+							"StatePropertiesPanel.15", "Einige Benutzergruppen sind ausgeblendet.");
+					
+					synchronized(this) {
+						if (showBubbleThread != null) {
+							LOG.error("More than one showBubbleThread???");
+							showBubbleThread.interrupt();
 						}
-					}, "StateModelProperties.showBubble()");
-					t.start();
+						
+						showBubbleThread = new Thread(new Runnable() {
+							
+							@Override
+							public void run() {
+								final Thread me = Thread.currentThread();
+								boolean tryAgain = true;
+								while (tryAgain) {
+									tryAgain = tryAgain && !me.isInterrupted();
+									try {
+										 Thread.sleep(2000);
+									}
+									catch (InterruptedException e) {
+										LOG.info("showBubbleThread: Panel closed; " + e);
+										tryAgain = false;
+									}
+									tryAgain = tryAgain && !me.isInterrupted();
+									if (!tryAgain) break;
+									try {
+										roleSelection.getLocationOnScreen();
+										tryAgain = false;
+										(new Bubble(roleSelection, msg, 
+												5, Bubble.Position.SE)).setVisible(true);
+									} catch (IllegalComponentStateException e) {
+										// do nothing. it is not shown
+										LOG.info("showBubbleThread: roleSelection (still) not on screen; " + e);
+									}
+									tryAgain = tryAgain && !me.isInterrupted();
+								}
+							}						
+						}, "StateModelProperties.showBubble()");
+						showBubbleThread.start();
+					}
 				}
 			}
 			for (String role : rolesSorted.keySet()) {
