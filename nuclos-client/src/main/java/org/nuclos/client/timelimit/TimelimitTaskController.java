@@ -253,7 +253,7 @@ public class TimelimitTaskController extends RefreshableTaskController {
 		try {
 			PreferencesUtils.putIntegerArray(prefs, PREFS_NODE_TIMELIMITTASKS_REFRESH_INTERVAL_SELECTED, refreshInterval);
 		} catch (PreferencesException e1) {
-			Errors.getInstance().showExceptionDialog(this.getParent(), getSpringLocaleDelegate().getMessage(
+			Errors.getInstance().showExceptionDialog(this.getTabbedPane().getComponentPanel(), getSpringLocaleDelegate().getMessage(
 					"PersonalTaskController.18","Fehler beim Abspeichern der Einstellungen"), e1);
 		}
 	}
