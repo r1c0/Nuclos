@@ -847,7 +847,7 @@ public class NuclosEntityCommonPropertiesStep extends NuclosEntityAbstractStep i
 			public void actionPerformed(ActionEvent e) {
 				try {
 					 final CollectControllerFactorySingleton factory = CollectControllerFactorySingleton.getInstance();
-					 ResourceCollectController rcc = factory.newResourceCollectController(parent, null);
+					 ResourceCollectController rcc = factory.newResourceCollectController(null);
 					 rcc.addResouceSaveListener(NuclosEntityCommonPropertiesStep.this);
 					 rcc.runNew();
 				}
@@ -1119,7 +1119,7 @@ public class NuclosEntityCommonPropertiesStep extends NuclosEntityAbstractStep i
 			cbxIcon.addItem(vo);
 			cbxIcon.setSelectedItem(vo);
 		}
-		clct.getFrame().dispose();
+		clct.getTab().dispose();
 		this.requestFocus();
 	}
 

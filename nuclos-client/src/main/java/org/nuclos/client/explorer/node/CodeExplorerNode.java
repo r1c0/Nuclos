@@ -100,7 +100,7 @@ public class CodeExplorerNode extends AbstractRuleExplorerNode {
 			CodeVO codevo = codeNode.getCodeVO();
 			if (codevo != null) {
 				final CollectControllerFactorySingleton factory = CollectControllerFactorySingleton.getInstance();
-				CodeCollectController ctl = factory.newCodeCollectController(MainFrame.getPredefinedEntityOpenLocation(NuclosEntity.TIMELIMITRULE.getEntityName()), null);
+				CodeCollectController ctl = factory.newCodeCollectController(null);
 				try {
 					ctl.runViewSingleCollectableWithId(codevo.getId());
 				} catch (CommonBusinessException e) {

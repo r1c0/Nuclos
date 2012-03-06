@@ -83,15 +83,20 @@ abstract class MenuButton extends DesktopItem implements DragGestureListener {
 	
 	private final WorkspaceDescription.MenuButton prefs;
 
+	private final JPanel jpnMain;
+	private final JPanel jpnMenuItems;
 	private final JLabel jlbButton;
 	private Action action;
 	
 	private JWindow popupWindow;
 	private JComponent popupContent;
 	
+	private final Color defaultBackroundColor;
+	
 	private ImageIcon resourceIcon;
 	private ImageIcon resourceIconHover;
 	
+	private final boolean staticMenu;
 	private final int itemFontSize;
 	private final int itemTextHorizontalAlignment;
 	private final int itemTextHorizontalPadding;
@@ -102,7 +107,8 @@ abstract class MenuButton extends DesktopItem implements DragGestureListener {
 	
 	private final List<DefaultMenuItem> menuItems = new ArrayList<DefaultMenuItem>();
 	
-	public MenuButton(final WorkspaceDescription.MenuButton prefs, List<GenericAction> actions, 
+	public MenuButton(final WorkspaceDescription.MenuButton prefs, List<GenericAction> actions, Color defaultBackroundColor,
+			final boolean staticMenu,
 			int itemFontSize, int itemTextHorizontalAlignment, int itemTextHorizontalPadding, 
 			Color itemTextColor, Color itemTextColorHover, String itemResourceBackground, String itemResourceBackgroundHover) {
 		if (prefs == null) {
@@ -112,6 +118,10 @@ abstract class MenuButton extends DesktopItem implements DragGestureListener {
 		if (actions == null) {
 			actions = Main.getInstance().getMainController().getGenericActions();
 		}
+		
+		this.defaultBackroundColor = defaultBackroundColor;
+		
+		this.staticMenu = staticMenu;
 		this.itemFontSize = itemFontSize;
 		this.itemTextHorizontalAlignment = itemTextHorizontalAlignment;
 		this.itemTextHorizontalPadding = itemTextHorizontalPadding;
@@ -127,6 +137,24 @@ abstract class MenuButton extends DesktopItem implements DragGestureListener {
 				}
 			}
 		}
+		
+		jpnMain = new JPanel(new BorderLayout());
+		jpnMain.setOpaque(false);
+		jpnMenuItems = new JPanel();
+		jpnMenuItems.setLayout(new BoxLayout(jpnMenuItems, BoxLayout.Y_AXIS));
+		jpnMenuItems.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
+		jpnMenuItems.setOpaque(false);
+		jpnMenuItems.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseEntered(MouseEvent mev) {
+//				LOG.info("mouse over menu");
+			}
+
+			@Override
+			public void mouseExited(MouseEvent mev) {
+				hideMenu(mev);
+			}
+		});
 		
 		jlbButton = new JLabel() {
 			@Override
@@ -221,12 +249,21 @@ abstract class MenuButton extends DesktopItem implements DragGestureListener {
 
 			@Override
 			public void mouseExited(MouseEvent mev) {
-				if (popupWindow != null) {
+				if (staticMenu || menuItems.isEmpty()) {
+					hover = false;
+					jlbButton.repaint();
+				} else if (popupWindow != null) {
 					if (!isMouseOver())
 						hideMenu();
 				}						
 			}
 		});
+		
+		jpnMain.add(jlbButton, BorderLayout.NORTH);
+		if (staticMenu) {
+			jpnMain.add(jpnMenuItems, BorderLayout.CENTER);
+			updateMenuItemsPanel();
+		}
 		
 		setResourceIcon(prefs.getResourceIcon(), prefs.getNuclosResource());
 		setResourceIconHover(prefs.getResourceIconHover(), prefs.getNuclosResourceHover());
@@ -240,29 +277,14 @@ abstract class MenuButton extends DesktopItem implements DragGestureListener {
 	abstract void revalidateParent();
 
 	private void showMenu() {
-		if (popupWindow != null) {
+		if (staticMenu || popupWindow != null || menuItems.isEmpty()) {
 			// is showing
 			return;
 		}
 		
 //		LOG.info("show menu");
 		
-		JPanel jpnMenu = new JPanel();
-		jpnMenu.setLayout(new BoxLayout(jpnMenu, BoxLayout.Y_AXIS));
-		jpnMenu.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
-		jpnMenu.setOpaque(false);
-		
-		jpnMenu.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseEntered(MouseEvent mev) {
-//				LOG.info("mouse over menu");
-			}
-
-			@Override
-			public void mouseExited(MouseEvent mev) {
-				hideMenu(mev);
-			}
-		});
+		updateMenuItemsPanel();
 		
 		final JSplitPane split = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
 		split.addMouseListener(new MouseAdapter() {
@@ -273,7 +295,43 @@ abstract class MenuButton extends DesktopItem implements DragGestureListener {
 		});
 		
 		split.setOpaque(false);
-		JPanel emptypanel = new JPanel();
+		
+		final JPanel menuItemBackground = new JPanel(new BorderLayout(0,0)) {
+			@Override
+			public void paint(Graphics g) {
+				if (itemResourceBackground == null) {
+					Graphics2D g2 = (Graphics2D) g;
+					Object renderingHint = g2
+							.getRenderingHint(RenderingHints.KEY_ANTIALIASING);
+					g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+							RenderingHints.VALUE_ANTIALIAS_ON);
+			
+					Rectangle bounds = getBounds();
+					g2.setColor(defaultBackroundColor);
+					
+					int x = 1;
+					int width = bounds.width-2;
+					
+					g2.fillRoundRect(x, 2, width, bounds.height-4,
+							2, 2);
+			
+					g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+							renderingHint);
+				}
+				super.paint(g);
+			}
+			
+		};
+		menuItemBackground.setOpaque(false);
+		if (itemResourceBackground == null) {
+			menuItemBackground.setBorder(BorderFactory.createEmptyBorder(0, 2, 0, 2));
+		} else {
+			menuItemBackground.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
+		}
+		menuItemBackground.add(jpnMenuItems, BorderLayout.CENTER);
+		split.setTopComponent(menuItemBackground);
+		
+		final JPanel emptypanel = new JPanel();
 		emptypanel.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseExited(MouseEvent mev) {
@@ -281,7 +339,6 @@ abstract class MenuButton extends DesktopItem implements DragGestureListener {
 			}
 		});
 		emptypanel.setOpaque(false);
-		split.setTopComponent(jpnMenu);
 		split.setBottomComponent(emptypanel);
 
 		split.setDividerLocation(0);
@@ -304,19 +361,6 @@ abstract class MenuButton extends DesktopItem implements DragGestureListener {
 		split.invalidate();
 		
 		split.setVisible(true);
-		
-		for (final DefaultMenuItem mi : menuItems) {
-			JPanel itemFullSizePanel = new JPanel(new TableLayout(new double[]{TableLayout.FILL}, new double[]{TableLayout.PREFERRED})) {
-				@Override
-				public Dimension getMaximumSize() {
-					Dimension size = new Dimension(super.getMaximumSize().width, mi.getSize().height);
-					return size;
-				}
-			};
-			itemFullSizePanel.setOpaque(false);
-			itemFullSizePanel.add(mi, "0,0");
-			jpnMenu.add(itemFullSizePanel);
-		}
 		
 		popupWindow.setVisible(true);
 		popupWindow.pack();
@@ -344,6 +388,24 @@ abstract class MenuButton extends DesktopItem implements DragGestureListener {
 		};
 		Thread t = new Thread(r);
 		t.start();
+	}
+	
+	private void updateMenuItemsPanel() {
+		jpnMenuItems.removeAll();
+		for (final DefaultMenuItem mi : menuItems) {
+//			JPanel itemFullSizePanel = new JPanel(new TableLayout(new double[]{TableLayout.FILL}, new double[]{TableLayout.PREFERRED})) {
+//				@Override
+//				public Dimension getMaximumSize() {
+//					Dimension size = new Dimension(super.getMaximumSize().width, mi.getSize().height);
+//					return size;
+//				}
+//			};
+//			itemFullSizePanel.setOpaque(false);
+//			itemFullSizePanel.add(mi, "0,0");
+			jpnMenuItems.add(mi);
+		}
+		jpnMenuItems.revalidate();
+		jpnMenuItems.repaint();
 	}
 	
 	private boolean isMouseOver() {
@@ -608,7 +670,11 @@ abstract class MenuButton extends DesktopItem implements DragGestureListener {
 		prefs.addMenuItem(miPrefs);
 		
 		addMenuItem(getDefaultMenuItem(miPrefs, menuItemAction));
-		showMenu();
+		if (staticMenu) {
+			updateMenuItemsPanel();
+		} else {
+			showMenu();
+		}
 	}
 	
 	public DefaultMenuItem getDefaultMenuItem(WorkspaceDescription.MenuItem miPrefs, Action action) {
@@ -632,9 +698,9 @@ abstract class MenuButton extends DesktopItem implements DragGestureListener {
 			@Override
 			public void dragGestureRecognized(DragGestureEvent dge) {
 				if (MainFrame.isStarttabEditable()) {
-					Transferable transferable = new MenuItemTransferable(getPreferences());
-					this.setHover(false);
-					dge.startDrag(null, transferable, null);
+//					Transferable transferable = new MenuItemTransferable(getPreferences());
+//					this.setHover(false);
+//					dge.startDrag(null, transferable, null);
 				}
 			}
 			@Override
@@ -656,7 +722,11 @@ abstract class MenuButton extends DesktopItem implements DragGestureListener {
 					prefs.removeAllMenuItems();
 					prefs.addAllMenuItems(newPrefMenuItems);
 					
-					showMenu();
+					if (staticMenu) {
+						updateMenuItemsPanel();
+					} else {
+						showMenu();
+					}
 				}
 			}
 		};
@@ -711,7 +781,7 @@ abstract class MenuButton extends DesktopItem implements DragGestureListener {
 	}
 
 	public JComponent getJComponent() {
-		return jlbButton;
+		return jpnMain;
 	}
 
 	public WorkspaceDescription.MenuButton getPreferences() {

@@ -32,6 +32,7 @@ import org.nuclos.client.common.NuclosResultPanel;
 import org.nuclos.client.main.Main;
 import org.nuclos.client.main.mainframe.MainFrame;
 import org.nuclos.client.main.mainframe.MainFrameTab;
+import org.nuclos.client.main.mainframe.MainFrameTabbedPane;
 import org.nuclos.client.masterdata.CollectableMasterData;
 import org.nuclos.client.masterdata.MasterDataDelegate;
 import org.nuclos.client.masterdata.MetaDataDelegate;
@@ -71,7 +72,6 @@ public class EntityRelationShipCollectController extends NuclosCollectController
 
 	private final CollectPanel<EntityRelationshipModel> pnlCollect = new EntityRelationshipCollectPanel(false);
 	private final EntityRelationshipModelEditPanel pnlEdit;
-	private final MainFrameTab ifrm; 
 	
 	/**
 	 * You should use {@link org.nuclos.client.ui.collect.CollectControllerFactorySingleton} 
@@ -82,23 +82,20 @@ public class EntityRelationShipCollectController extends NuclosCollectController
 	 * *CollectController<~> cc = new *CollectController<~>(.., rc);
 	 * </code></pre>
 	 */
-	public EntityRelationShipCollectController(JComponent parent, MainFrame mf, MainFrameTab tabIfAny) {
-		super(parent, EntityRelationshipModel.clcte);
-		ifrm = tabIfAny!=null ? tabIfAny : newInternalFrame(getSpringLocaleDelegate().getMessage(
-				"nuclos.entityrelation.controller.2","Relationen Editor")); 
+	public EntityRelationShipCollectController(MainFrame mf, MainFrameTab tabIfAny) {
+		super(EntityRelationshipModel.clcte, tabIfAny);
 		
 		this.initialize(this.pnlCollect);
 		
 		//this.mf = mf;
 		
-		ifrm.setLayeredComponent(pnlCollect);
+		getTab().setLayeredComponent(pnlCollect);
 		
 		pnlEdit = new EntityRelationshipModelEditPanel(mf);
 		
 		this.getDetailsPanel().setEditView(DefaultEditView.newDetailsEditView(pnlEdit, pnlEdit.newCollectableComponentsProvider()));
 		
-		this.setInternalFrame(ifrm, tabIfAny==null);
-		ifrm.setTitle(getSpringLocaleDelegate().getMessage("nuclos.entityrelation.controller.2","Relationen Editor"));
+		getTab().setTitle(getSpringLocaleDelegate().getMessage("nuclos.entityrelation.controller.2","Relationen Editor"));
 		//final JPanel pnlCustomToolBarAreaDetails = new JPanel();		
 		//pnlCustomToolBarAreaDetails.setLayout(new BorderLayout());
 		//pnlCustomToolBarAreaDetails.setPreferredSize(new Dimension(25,25));
@@ -123,10 +120,6 @@ public class EntityRelationShipCollectController extends NuclosCollectController
 		this.getDetailsPanel().addToolBarComponent(bt);
 	}
 	
-	public final MainFrameTab getMainFrameTab() {
-		return ifrm;
-	}
-	
 	@Override
 	protected void cmdEnterNewMode() {
 		super.cmdEnterNewMode();
@@ -148,7 +141,7 @@ public class EntityRelationShipCollectController extends NuclosCollectController
 		dia.setLayout(new TableLayout(cells));
 		dia.add(panel, "1,1");
 		dia.pack();
-		dia.setLocationRelativeTo(this.getFrame());
+		dia.setLocationRelativeTo(this.getTab());
 		dia.setVisible(true);
 	
 		List<EntityMetaDataVO> lstEntites = panel.getSelectedEntites();

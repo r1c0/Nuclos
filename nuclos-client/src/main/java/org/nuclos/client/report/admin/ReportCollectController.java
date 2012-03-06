@@ -44,6 +44,7 @@ import org.nuclos.client.common.security.SecurityCache;
 import org.nuclos.client.entityobject.CollectableEntityObject;
 import org.nuclos.client.main.Main;
 import org.nuclos.client.main.mainframe.MainFrameTab;
+import org.nuclos.client.main.mainframe.MainFrameTabbedPane;
 import org.nuclos.client.masterdata.CollectableMasterData;
 import org.nuclos.client.masterdata.CollectableMasterDataWithDependants;
 import org.nuclos.client.masterdata.MasterDataCollectController;
@@ -129,8 +130,8 @@ public class ReportCollectController extends MasterDataCollectController {
 	 * *CollectController<~> cc = new *CollectController<~>(.., rc);
 	 * </code></pre>
 	 */
-	public ReportCollectController(JComponent parent, NuclosEntity entity, MainFrameTab tabIfAny) {
-		super(parent, entity, tabIfAny);
+	public ReportCollectController(NuclosEntity entity, MainFrameTab tabIfAny) {
+		super(entity, tabIfAny);
 
 		if (entity.equals(NuclosEntity.REPORT)) {
 			outputEntity = NuclosEntity.REPORTOUTPUT;
@@ -648,7 +649,7 @@ public class ReportCollectController extends MasterDataCollectController {
 			}
 
 			if (sFileName == null || clct == null) {
-				JOptionPane.showMessageDialog(getFrame(), getSpringLocaleDelegate().getMessage(
+				JOptionPane.showMessageDialog(getTab(), getSpringLocaleDelegate().getMessage(
 						"ReportCollectController.14", "Dieses Objekt enth\u00e4lt keine Vorlagedatei."));
 				return;
 			}
@@ -656,7 +657,7 @@ public class ReportCollectController extends MasterDataCollectController {
 		else {
 			clct = getSubFormController(outputEntity.getEntityName()).getSelectedCollectable();
 			if (clct == null) {
-				JOptionPane.showMessageDialog(getFrame(), getSpringLocaleDelegate().getMessage(
+				JOptionPane.showMessageDialog(getTab(), getSpringLocaleDelegate().getMessage(
 						"ReportCollectController.15", "Bitte w\u00e4hlen Sie das Ausgabeformat aus, dessen Vorlagedatei exportiert werden soll."));
 				return;
 			}
@@ -664,7 +665,7 @@ public class ReportCollectController extends MasterDataCollectController {
 			sFileName = (String) clct.getValue("sourceFile");
 
 			if (sFileName == null) {
-				JOptionPane.showMessageDialog(getFrame(), getSpringLocaleDelegate().getMessage(
+				JOptionPane.showMessageDialog(getTab(), getSpringLocaleDelegate().getMessage(
 						"ReportCollectController.16", "Das ausgew\u00e4hlte Ausgabeformat enth\u00e4lt keine Vorlagedatei."));
 				return;
 			}
@@ -672,14 +673,14 @@ public class ReportCollectController extends MasterDataCollectController {
 
 		final org.nuclos.server.report.ByteArrayCarrier bacFileContent = (org.nuclos.server.report.ByteArrayCarrier) clct.getValue("sourceFileContent");
 		if (bacFileContent == null) {
-			JOptionPane.showMessageDialog(getFrame(), getSpringLocaleDelegate().getMessage(
+			JOptionPane.showMessageDialog(getTab(), getSpringLocaleDelegate().getMessage(
 					"ReportCollectController.17", "Die Vorlagedatei kann nicht exportiert werden, da sie noch nicht importiert wurde."));
 			return;
 		}
 
 		boolean includeSubreports = false;
 		if (clct.getDependantCollectableMasterDataMap().getValues(subreportEntity.getEntityName()).size() > 0)
-			includeSubreports = JOptionPane.showOptionDialog(getFrame(), getSpringLocaleDelegate().getMessage(
+			includeSubreports = JOptionPane.showOptionDialog(getTab(), getSpringLocaleDelegate().getMessage(
 					"ReportCollectController.question.exportsubreports", "Sollen Subreports exportiert werden?"), "Subreports", 
 					JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, null) == JOptionPane.YES_OPTION;
 
@@ -687,11 +688,11 @@ public class ReportCollectController extends MasterDataCollectController {
 		fileChooser.setDialogType(JFileChooser.SAVE_DIALOG);
 		fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 
-		if (fileChooser.showOpenDialog(getFrame()) == JFileChooser.APPROVE_OPTION) {
+		if (fileChooser.showOpenDialog(getTab()) == JFileChooser.APPROVE_OPTION) {
 			final File targetDirectory = fileChooser.getSelectedFile();
 			final File targetFile = new File(targetDirectory, sFileName);
 			if (targetFile.exists())
-				if (JOptionPane.showConfirmDialog(getFrame(), getSpringLocaleDelegate().getMessage(
+				if (JOptionPane.showConfirmDialog(getTab(), getSpringLocaleDelegate().getMessage(
 						"ReportCollectController.18", "Die Datei \"{0}\" existiert bereits. Wollen Sie sie \u00fcberschreiben?", 
 						targetFile.getPath()), getSpringLocaleDelegate().getMessage(
 								"ReportCollectController.19", "Vorlage exportieren"), 
@@ -711,14 +712,14 @@ public class ReportCollectController extends MasterDataCollectController {
 					if (subreportfilename != null) {
 						final org.nuclos.server.report.ByteArrayCarrier bacFileSubreportContent = (org.nuclos.server.report.ByteArrayCarrier) subreport.getValue("sourcefileContent");
 						if (bacFileSubreportContent == null) {
-							JOptionPane.showMessageDialog(getFrame(), getSpringLocaleDelegate().getMessage(
+							JOptionPane.showMessageDialog(getTab(), getSpringLocaleDelegate().getMessage(
 									"ReportCollectController.17", "Die Vorlagedatei kann nicht exportiert werden, da sie noch nicht importiert wurde."));
 							continue;
 						}
 
 						File subreportFile = new File(targetDirectory, subreportfilename);
 						if (subreportFile.exists())
-							if (JOptionPane.showConfirmDialog(getFrame(), getSpringLocaleDelegate().getMessage(
+							if (JOptionPane.showConfirmDialog(getTab(), getSpringLocaleDelegate().getMessage(
 									"ReportCollectController.18", "Die Datei \"{0}\" existiert bereits. Wollen Sie sie \u00fcberschreiben?", subreportFile.getPath()), 
 									getSpringLocaleDelegate().getMessage("ReportCollectController.19", "Vorlage exportieren"), JOptionPane.YES_NO_OPTION) != JOptionPane.YES_OPTION)
 								continue;
@@ -738,7 +739,7 @@ public class ReportCollectController extends MasterDataCollectController {
 	 *
 	 */
 	private void cmdPreview() {
-		UIUtils.runCommand(getFrame(), new CommonRunnable() {
+		UIUtils.runCommand(getTab(), new CommonRunnable() {
 			@Override
 			public void run() throws CommonBusinessException {
 				ReportOutputVO outputvoFormat = null;
@@ -751,7 +752,7 @@ public class ReportCollectController extends MasterDataCollectController {
 						ReportOutputVO outputvo = null;
 
 						if (collReportOutputVO.size() == 0) {
-							JOptionPane.showMessageDialog(ReportCollectController.this.getFrame(),
+							JOptionPane.showMessageDialog(ReportCollectController.this.getTab(),
 									getSpringLocaleDelegate().getMessage("ReportCollectController.20", "Diesem Report/Formular wurde keine Vorlage zugewiesen, dessen Layout als Vorschau angezeigt werden k\u00f6nnte."));
 							return;
 						}
@@ -760,7 +761,7 @@ public class ReportCollectController extends MasterDataCollectController {
 						else if (collReportOutputVO.size() > 1) {
 							Collectable clctReportOutput = ReportCollectController.this.getSubFormController(outputEntity.getEntityName()).getSelectedCollectable();
 							if(clctReportOutput == null) {
-								JOptionPane.showMessageDialog(ReportCollectController.this.getFrame(),
+								JOptionPane.showMessageDialog(ReportCollectController.this.getTab(),
 										getSpringLocaleDelegate().getMessage("ReportCollectController.21", "Bitte w\u00e4hlen Sie die Vorlage aus, dessen Layout als Vorschau angezeigt werden soll."));
 								return;
 							}
@@ -768,7 +769,7 @@ public class ReportCollectController extends MasterDataCollectController {
 						}
 
 						if (outputvo == null || outputvo.getSourceFile() == null) {
-							JOptionPane.showMessageDialog(ReportCollectController.this.getFrame(),
+							JOptionPane.showMessageDialog(ReportCollectController.this.getTab(),
 									getSpringLocaleDelegate().getMessage("ReportCollectController.22", "Ein Fehler bei der Anzeige des Layouts der Vorlage ist aufgetreten. M\u00f6glicherweise wurde keine Vorlage zugewiesen."));
 							return;
 						}
@@ -824,7 +825,7 @@ public class ReportCollectController extends MasterDataCollectController {
 
 			frame.pack();
 			frame.setIconImage(Main.getInstance().getMainFrame().getIconImage());
-			frame.setLocationRelativeTo(getFrame());
+			frame.setLocationRelativeTo(getTab());
 			frame.setVisible(true);
 			//FIX ELISA-6498
 		}

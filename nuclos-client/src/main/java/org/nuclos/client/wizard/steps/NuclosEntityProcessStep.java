@@ -137,7 +137,7 @@ public class NuclosEntityProcessStep extends NuclosEntityAbstractStep {
 
 		Preferences prefs = java.util.prefs.Preferences.userRoot().node("org/nuclos/client/entitywizard/steps/process");
 
-		subFormController = new ProcessSubformController(this, tab, provider,ENTITYNAME_PROCESS, subform, prefs, NuclosEntityWizard.getEntityPreferences(), null);
+		subFormController = new ProcessSubformController(tab, provider,ENTITYNAME_PROCESS, subform, prefs, NuclosEntityWizard.getEntityPreferences(), null);
 		Collection<EntityObjectVO> data = model.getProcesses();
 
 		if (data != null) {
@@ -193,9 +193,9 @@ public class NuclosEntityProcessStep extends NuclosEntityAbstractStep {
 
 	private class ProcessSubformController extends MasterDataSubFormController {
 
-		public ProcessSubformController(Component parent, JComponent parentMdi, CollectableComponentModelProvider clctcompmodelproviderParent, String sParentEntityName, SubForm subform, Preferences prefsUserParent, 
+		public ProcessSubformController(MainFrameTab tab, CollectableComponentModelProvider clctcompmodelproviderParent, String sParentEntityName, SubForm subform, Preferences prefsUserParent, 
 				EntityPreferences entityPrefs, CollectableFieldsProviderCache valueListProviderCache) {
-			super(parent, parentMdi, clctcompmodelproviderParent, sParentEntityName, subform, prefsUserParent, entityPrefs, valueListProviderCache);
+			super(tab, clctcompmodelproviderParent, sParentEntityName, subform, prefsUserParent, entityPrefs, valueListProviderCache);
 		}
 
 		@Override

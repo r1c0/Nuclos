@@ -14,38 +14,24 @@
 //
 //You should have received a copy of the GNU Affero General Public License
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
-
 package org.nuclos.client.ui;
 
-import javax.swing.ImageIcon;
-
+import org.nuclos.client.main.mainframe.MainFrame;
 import org.nuclos.client.main.mainframe.MainFrameTab;
+import org.nuclos.client.main.mainframe.MainFrameTabbedPane;
 
-/**
- * A common super class which is shared by CollectController and other top-level
- * components.
- */
-public abstract class TopController extends MainFrameTabController {
+public class MainFrameTabController extends Controller<MainFrameTab> {
 
-	public TopController(MainFrameTab mainFrameTab) {
-		super(mainFrameTab);
+	public MainFrameTabController(MainFrameTab parent) {
+		super(parent);
 	}
 	
-	public TopController() {
-		super(null);
+	public MainFrameTab getTab() {
+		return getParent();
+	}
+	
+	public MainFrameTabbedPane getTabbedPane() {
+		return MainFrame.getTabbedPane(getParent());
 	}
 
-	public abstract ImageIcon getIcon();
-	
-	/**
-	 * asks the user to save the current record if necessary, so that it can be abandoned afterwards.
-	 * @return can the action be performed?
-	 */
-	public abstract boolean askAndSaveIfNecessary();
-	
-	/**
-	 * Writes the preferences of the controller
-	 */
-	public abstract void writePreferencesWhileClosing();
-	
 }

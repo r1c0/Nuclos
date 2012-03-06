@@ -107,11 +107,10 @@ public class PersonalSearchFiltersByEntityExplorerNode extends ExplorerNode<Pers
 
 		@Override
         public void actionPerformed(ActionEvent ev) {
-			final JComponent parent = MainFrame.getPredefinedEntityOpenLocation(getTreeNode().getEntity());
 			UIUtils.runCommand(getJTree(), new CommonRunnable() {
 				@Override
                 public void run() throws CommonBusinessException {
-					NuclosCollectControllerFactory.getInstance().newCollectController(parent, getTreeNode().getEntity(), null).run();
+					NuclosCollectControllerFactory.getInstance().newCollectController(getTreeNode().getEntity(), null).run();
 				}
 			});
 		}

@@ -64,6 +64,7 @@ import org.nuclos.client.genericobject.GenerationController;
 import org.nuclos.client.genericobject.GeneratorActions;
 import org.nuclos.client.genericobject.ReportController;
 import org.nuclos.client.main.mainframe.MainFrameTab;
+import org.nuclos.client.main.mainframe.MainFrameTabbedPane;
 import org.nuclos.client.masterdata.datatransfer.MasterDataIdAndEntity;
 import org.nuclos.client.masterdata.datatransfer.MasterDataVOTransferable;
 import org.nuclos.client.masterdata.valuelistprovider.MasterDataCollectableFieldsProviderFactory;
@@ -168,8 +169,6 @@ public class MasterDataCollectController extends EntityCollectController<Collect
 
    protected final MasterDataDelegate mddelegate = MasterDataDelegate.getInstance();
 
-   private final MainFrameTab ifrm;
-
    private Map<String, DetailsSubFormController<CollectableEntityObject>> mpsubformctlDetails;
 
    private MultiUpdateOfDependants multiupdateofdependants;
@@ -195,8 +194,8 @@ public class MasterDataCollectController extends EntityCollectController<Collect
 	* *CollectController<~> cc = new *CollectController<~>(.., rc);
 	* </code></pre>
     */
-   public MasterDataCollectController(JComponent parent, NuclosEntity systemEntity, MainFrameTab tabIfAny) {
-      this(parent, systemEntity.getEntityName(), tabIfAny);
+   public MasterDataCollectController(NuclosEntity systemEntity, MainFrameTab tabIfAny) {
+      this(systemEntity.getEntityName(), tabIfAny);
    }
 
    /**
@@ -208,8 +207,8 @@ public class MasterDataCollectController extends EntityCollectController<Collect
 	* *CollectController<~> cc = new *CollectController<~>(.., rc);
 	* </code></pre>
     */
-   protected MasterDataCollectController(JComponent parent, NuclosEntity systemEntity, MainFrameTab tabIfAny, boolean detailsWithScrollbar) {
-	   this(parent, systemEntity.getEntityName(), tabIfAny, detailsWithScrollbar);
+   protected MasterDataCollectController(NuclosEntity systemEntity, MainFrameTab tabIfAny, boolean detailsWithScrollbar) {
+	   this(systemEntity.getEntityName(), tabIfAny, detailsWithScrollbar);
    }
 
    /**
@@ -221,8 +220,8 @@ public class MasterDataCollectController extends EntityCollectController<Collect
 	* *CollectController<~> cc = new *CollectController<~>(.., rc);
 	* </code></pre>
     */
-   public MasterDataCollectController(JComponent parent, String sEntityName, MainFrameTab tabIfAny) {
-	   this(parent, sEntityName, tabIfAny, true);
+   public MasterDataCollectController(String sEntityName, MainFrameTab tabIfAny) {
+	   this(sEntityName, tabIfAny, true);
    }
 
    /**
@@ -234,8 +233,8 @@ public class MasterDataCollectController extends EntityCollectController<Collect
 	* *CollectController<~> cc = new *CollectController<~>(.., rc);
 	* </code></pre>
     */
-   protected MasterDataCollectController(JComponent parent, String sEntityName, MainFrameTab tabIfAny, boolean detailsWithScrollbar) {
-	   this(parent, sEntityName, tabIfAny, detailsWithScrollbar,
+   protected MasterDataCollectController(String sEntityName, MainFrameTab tabIfAny, boolean detailsWithScrollbar) {
+	   this(sEntityName, tabIfAny, detailsWithScrollbar,
 			   new NuclosResultController<CollectableMasterDataWithDependants>(sEntityName,
 					   new NuclosSearchResultStrategy<CollectableMasterDataWithDependants>()));
    }
@@ -248,9 +247,9 @@ public class MasterDataCollectController extends EntityCollectController<Collect
     * @param parent
     * @param sEntityName
     */
-   protected MasterDataCollectController(JComponent parent, NuclosEntity systemEntity, MainFrameTab tabIfAny,
+   protected MasterDataCollectController(NuclosEntity systemEntity, MainFrameTab tabIfAny,
 		   ResultController<CollectableMasterDataWithDependants> rc) {
-	   this(parent, systemEntity.getEntityName(), tabIfAny, true, rc);
+	   this(systemEntity.getEntityName(), tabIfAny, true, rc);
    }
 
 	/**
@@ -262,19 +261,17 @@ public class MasterDataCollectController extends EntityCollectController<Collect
 	 * *CollectController<~> cc = new *CollectController<~>(.., rc);
 	 * </code></pre>
 	 */
-   protected MasterDataCollectController(JComponent parent, String sEntityName, MainFrameTab tabIfAny,
+   protected MasterDataCollectController(String sEntityName, MainFrameTab tabIfAny,
 		   boolean detailsWithScrollbar, ResultController<CollectableMasterDataWithDependants> rc) {
-      super(parent, sEntityName, rc);
-      ifrm = tabIfAny != null ? tabIfAny : newInternalFrame();
+      super(sEntityName, tabIfAny, rc);
       // getSearchStrategy().setCompleteCollectablesStrategy(new CompleteCollectableMasterDataStrategy(this));
       final boolean bSearchPanelAvailable = this.mddelegate.getMetaData(sEntityName).isSearchable();
       this.detailsWithScrollbar = detailsWithScrollbar;
       final CollectPanel<CollectableMasterDataWithDependants> pnlCollect = new MasterDataCollectPanel(bSearchPanelAvailable);
-      this.ifrm.setLayeredComponent(pnlCollect);
+      getTab().setLayeredComponent(pnlCollect);
       this.initialize(pnlCollect);
-      this.setInternalFrame(this.ifrm, tabIfAny==null);
       this.setupEditPanelForDetailsTab();
-      this.setupShortcutsForTabs(ifrm);
+      this.setupShortcutsForTabs(getTab());
 
       this.getCollectStateModel().addCollectStateListener(new CollectStateAdapter() {
          @Override
@@ -358,9 +355,6 @@ public class MasterDataCollectController extends EntityCollectController<Collect
 		}
 		this.setupResultToolBar();
 		this.setupDetailsToolBar();
-
-		// todo: quick and dirty workaround for window size vs. wait cursor problem (order of initialize() and setInternalFrame() in Controller constructors) / UA
-		UIUtils.ensureMinimumSize(ifrm);
 
 		initSubFormsLoader();
 		setupDataTransfer();
@@ -550,7 +544,7 @@ public class MasterDataCollectController extends EntityCollectController<Collect
          this.btnExecuteRule.addActionListener(new ActionListener() {
          	@Override
             public void actionPerformed(ActionEvent ev) {
-               cmdExecuteRuleByUser(MasterDataCollectController.this.getFrame(), MasterDataCollectController.this.getEntityName(), MasterDataCollectController.this.getSelectedCollectable());
+               cmdExecuteRuleByUser(MasterDataCollectController.this.getTab(), MasterDataCollectController.this.getEntityName(), MasterDataCollectController.this.getSelectedCollectable());
             }
          });
          //toolbar.add(this.btnExecuteRule);
@@ -581,7 +575,6 @@ public class MasterDataCollectController extends EntityCollectController<Collect
 
 		if (bViewOrEdit) {
 			addGeneratorActions(bView, toolbarCustomActionsDetails);
-			UIUtils.ensureMinimumSize(getFrame());
 		}
 
 		this.getDetailsPanel().addToolBarComponents(toolbarCustomActionsDetails, toolbarCustomActionsDetailsIndex);
@@ -622,7 +615,7 @@ public class MasterDataCollectController extends EntityCollectController<Collect
    }
 
    protected void cmdJumpToTree() {
-      UIUtils.runCommand(this.getFrame(), new CommonRunnable() {
+      UIUtils.runCommand(this.getTab(), new CommonRunnable() {
       	@Override
          public void run() throws CommonFinderException, CommonPermissionException {
             final Integer iId = (Integer) getSelectedCollectableId();
@@ -648,7 +641,7 @@ public class MasterDataCollectController extends EntityCollectController<Collect
    }
 
    protected void cmdShowResultInExplorer() {
-      UIUtils.runCommand(this.getFrame(), new CommonRunnable() {
+      UIUtils.runCommand(this.getTab(), new CommonRunnable() {
       	@Override
          public void run() throws CollectableFieldFormatException {
             final String sFilterName = getCollectableEntity().getLabel() + Integer.toString(++iFilter);
@@ -783,7 +776,7 @@ public class MasterDataCollectController extends EntityCollectController<Collect
 	      }
       }
       catch (NuclosBusinessException ex) {
-      	Errors.getInstance().showExceptionDialog(getParent(), ex);
+      	Errors.getInstance().showExceptionDialog(getTab(), ex);
       	result = LayoutRoot.newEmptyLayoutRoot(true);
       }
 
@@ -791,8 +784,8 @@ public class MasterDataCollectController extends EntityCollectController<Collect
    }
 
    @Override
-   protected void showFrame() {
-      super.showFrame();
+   protected void selectTab() {
+      super.selectTab();
 
       setInitialComponentFocusInSearchTab();
    }
@@ -872,7 +865,7 @@ public class MasterDataCollectController extends EntityCollectController<Collect
       }
 
       return newDetailsSubFormController(subform, sParentEntityName, clctcompmodelprovider,
-    		  this.getFrame(), this.getParent(), this.getDetailsPanel(), this.getPreferences(), this.getEntityPreferences());
+    		  this.getTab(), this.getDetailsPanel(), this.getPreferences(), this.getEntityPreferences());
    }
 
    /**
@@ -1174,7 +1167,7 @@ public class MasterDataCollectController extends EntityCollectController<Collect
    public void setupChangeListenerForResultTableVerticalScrollBar() {
       final ProxyList<? extends Collectable> lstclct = getSearchStrategy().getCollectableProxyList();
       if (lstclct != null) {
-         this.getResultPanel().setupChangeListenerForResultTableVerticalScrollBar(lstclct, this.getFrame());
+         this.getResultPanel().setupChangeListenerForResultTableVerticalScrollBar(lstclct, this.getTab());
       }
    }
 
@@ -1544,10 +1537,10 @@ public class MasterDataCollectController extends EntityCollectController<Collect
    private void cmdPrint() {
       assert getCollectStateModel().getOuterState() == CollectState.OUTERSTATE_RESULT;
 
-      UIUtils.runCommand(getFrame(), new CommonRunnable() {
+      UIUtils.runCommand(getTab(), new CommonRunnable() {
       	@Override
          public void run() throws CommonBusinessException {
-            new ReportController(getFrame()).export(MasterDataCollectController.this.getResultTable(), null);
+            new ReportController(getTab()).export(MasterDataCollectController.this.getResultTable(), null);
          }
       });
    }
@@ -1707,7 +1700,7 @@ public class MasterDataCollectController extends EntityCollectController<Collect
 		for (CollectableMasterDataWithDependants clct : getSelectedCollectables()) {
 			sources.put(IdUtils.toLongId(clct.getId()), null);
 		}
-		GenerationController controller = new GenerationController(sources, generatoractionvo, this, getFrame());
+		GenerationController controller = new GenerationController(sources, generatoractionvo, this, getTab());
 		controller.generateGenericObject();
 	}
 

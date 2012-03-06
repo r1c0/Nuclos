@@ -35,7 +35,6 @@ import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.JButton;
 import javax.swing.JComponent;
-import javax.swing.JDesktopPane;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
@@ -52,11 +51,12 @@ import org.nuclos.client.genericobject.GenericObjectDelegate;
 import org.nuclos.client.genericobject.Modules;
 import org.nuclos.client.main.Main;
 import org.nuclos.client.main.mainframe.MainFrameTab;
+import org.nuclos.client.main.mainframe.MainFrameTabbedPane;
 import org.nuclos.client.ui.CommonAbstractAction;
-import org.nuclos.client.ui.Controller;
 import org.nuclos.client.ui.Errors;
 import org.nuclos.client.ui.Icons;
 import org.nuclos.client.ui.MainFrameTabAdapter;
+import org.nuclos.client.ui.MainFrameTabController;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common2.StringUtils;
@@ -76,13 +76,12 @@ import org.nuclos.server.genericobject.valueobject.LogbookVO;
  * @version 01.00.00
  */
 
-public class LogbookController extends Controller {
+public class LogbookController extends MainFrameTabController {
 	private final String PREFS_KEY_LOGBOOK = "logbook";
 
-	private final JComponent parentMdi;
 	private final int iModuleId;
 	private final int iGenericObjectId;
-	private MainFrameTab ifrm;
+	private MainFrameTab newTab;
 
 	private final LogbookPanel pnlLogbook = new LogbookPanel(null);
 	private final JButton btnRefresh = new JButton();
@@ -134,9 +133,8 @@ public class LogbookController extends Controller {
 	
 	private Preferences prefs;
 
-	public LogbookController(Component parent, JComponent parentMdi, int iModuleId, int iGenericObjectId, Preferences prefs) {
-		super(parent);
-		this.parentMdi = parentMdi;
+	public LogbookController(MainFrameTab source, int iModuleId, int iGenericObjectId, Preferences prefs) {
+		super(source);
 		this.iModuleId = iModuleId;
 		this.iGenericObjectId = iGenericObjectId;
 		this.prefs = prefs.node(PREFS_KEY_LOGBOOK);
@@ -151,20 +149,21 @@ public class LogbookController extends Controller {
 		
 		final String sTitle = getTitle(sGenericObjectIdentifier);
 
-		ifrm = Main.getInstance().getMainController().newMainFrameTab(null, sTitle);
+		newTab = Main.getInstance().getMainController().newMainFrameTab(null, sTitle);
 		//ifrm.setContentPane(pnlLogbook);
-		ifrm.setLayeredComponent(pnlLogbook);
-		parentMdi.add(ifrm);
-		this.setupInternalFrame();
+		newTab.setLayeredComponent(pnlLogbook);
+		// get tabbed pane for source
+		getTab().add(newTab);
+		this.setupTab();
 
-		setupEscapeKey(ifrm, pnlLogbook);
+		setupEscapeKey(newTab, pnlLogbook);
 
 		setupDoubleClickListener(pnlLogbook);
 
 		this.restoreFromPreferences();
 
 //		ifrm.pack();
-		ifrm.setVisible(true);
+		newTab.setVisible(true);
 	}
 
 	private void setupToolbar(final LogbookPanel pnlLogbook) {
@@ -340,18 +339,6 @@ public class LogbookController extends Controller {
 		catch (BackingStoreException ex) {
 			throw new NuclosFatalException(ex);
 		}
-//		PreferencesUtils.readWindowState(prefs, ifrm, 900, 300);
-		// There may be a conflict between saved coordinates of the logbook window and the visible part of the desktop pane.
-		// So if the logbook is not completely visible, it is centered.
-		if (parentMdi instanceof JDesktopPane) {
-			JDesktopPane desktop = (JDesktopPane) parentMdi;
-			if (!desktop.getVisibleRect().contains(ifrm.getBounds())) {
-				bCenterWindow = true;
-			}
-		}
-		if (bCenterWindow) {
-			UIUtils.centerOnDesktop(ifrm, getParent(), true);
-		}
 	}
 
 	private void writeToPreferences() {
@@ -359,7 +346,7 @@ public class LogbookController extends Controller {
 	}
 
 	private JComponent getFrame() {
-		return ifrm;
+		return newTab;
 	}
 
 	private void setupDoubleClickListener(final LogbookPanel pnlLogbook) {
@@ -405,7 +392,7 @@ public class LogbookController extends Controller {
 							dateHistorical);
 
 					final CollectableGenericObjectWithDependants clct = new CollectableGenericObjectWithDependants(lowdcvo);
-					NuclosCollectControllerFactory.getInstance().newGenericObjectCollectController(parentMdi, iModuleId, null).
+					NuclosCollectControllerFactory.getInstance().newGenericObjectCollectController(iModuleId, null).
 							runViewSingleHistoricalCollectable(clct, dateHistorical);
 					}
 				catch (/* CommonBusiness */ Exception ex) {
@@ -448,8 +435,8 @@ public class LogbookController extends Controller {
 		pnlLogbook.getTable().getActionMap().put(KEY_CLOSE, actClose);
 	}
 
-	private void setupInternalFrame() {
-		ifrm.addMainFrameTabListener(new MainFrameTabAdapter() {
+	private void setupTab() {
+		newTab.addMainFrameTabListener(new MainFrameTabAdapter() {
 			@Override
 			public boolean tabClosing(MainFrameTab tab) {
 				writeToPreferences();

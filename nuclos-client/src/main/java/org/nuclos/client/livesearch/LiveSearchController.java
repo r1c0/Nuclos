@@ -390,7 +390,7 @@ public class LiveSearchController implements LiveSearchSearchPaneListener, LiveS
 
     				NuclosCollectController<?> collectController
     				= NuclosCollectControllerFactory.getInstance()
-    					.newCollectController(mf.getHomePane(), entity, null);
+    					.newCollectController(entity, null);
     				collectController.runViewResults(cond);
     			}
     		}
@@ -438,7 +438,7 @@ public class LiveSearchController implements LiveSearchSearchPaneListener, LiveS
 
         				NuclosCollectController<?> collectController
         				= NuclosCollectControllerFactory.getInstance()
-        					.newCollectController(mf.getHomePane(), fm.getForeignEntity(), null);
+        					.newCollectController(fm.getForeignEntity(), null);
         				collectController.runViewResults(cond);
     				}
     				else {

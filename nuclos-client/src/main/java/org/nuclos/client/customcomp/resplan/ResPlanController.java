@@ -47,6 +47,7 @@ import org.nuclos.client.common.ClientParameterProvider;
 import org.nuclos.client.customcomp.CustomComponentController;
 import org.nuclos.client.customcomp.resplan.ResPlanPanel.NewCustomSearchFilter;
 import org.nuclos.client.main.Main;
+import org.nuclos.client.main.mainframe.MainFrameTab;
 import org.nuclos.client.scripting.GroovySupport;
 import org.nuclos.client.searchfilter.EntitySearchFilter;
 import org.nuclos.client.searchfilter.SearchFilters;
@@ -70,9 +71,9 @@ import org.nuclos.common.collect.collectable.searchcondition.LogicalOperator;
 import org.nuclos.common.collection.Pair;
 import org.nuclos.common.dal.vo.SystemFields;
 import org.nuclos.common.time.LocalTime;
-import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.KeyEnum;
 import org.nuclos.common2.LangUtils;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.PreferencesException;
@@ -100,11 +101,11 @@ public class ResPlanController extends CustomComponentController {
 
 	private Rectangle viewRectFromPreferences;
 
-	public ResPlanController(JComponent parent, CustomComponentVO componentVO) {
-		super(parent, componentVO.getInternalName());
+	public ResPlanController(CustomComponentVO componentVO, MainFrameTab tabIfAny) {
+		super(componentVO.getInternalName(), tabIfAny);
 		init(componentVO);
 	}
-
+	
 	@Override
 	public boolean askAndSaveIfNecessary() {
 		return true;

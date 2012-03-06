@@ -84,6 +84,7 @@ import javax.swing.tree.TreePath;
 
 import org.apache.log4j.Logger;
 import org.nuclos.client.main.mainframe.MainFrameTab;
+import org.nuclos.client.main.mainframe.MainFrameTabbedPane;
 import org.nuclos.client.ui.labeled.LabeledComponent;
 import org.nuclos.common2.CommonRunnable;
 import org.nuclos.common2.CommonRunnableAdapter;
@@ -307,14 +308,14 @@ public class UIUtils {
 	/**
 	 * @return the <code>JInternalFrame</code>, if any, containing the given component. <code>null</code> otherwise.
 	 */
-	public static MainFrameTab getInternalFrameForComponent(Component comp) {
+	public static MainFrameTab getTabForComponent(Component comp) {
 		if (comp == null) {
 			return null;
 		}
 		if (comp instanceof MainFrameTab) {
 			return (MainFrameTab) comp;
 		}
-		return getInternalFrameForComponent(comp.getParent());
+		return getTabForComponent(comp.getParent());
 	}
 
 	/**
@@ -322,8 +323,8 @@ public class UIUtils {
 	 * @return the innermost internal frame or window (whatever comes first), if any, containing the given component.
 	 * <code>null</code> otherwise.
 	 */
-	public static Component getInternalFrameOrWindowForComponent(JComponent comp) {
-		final MainFrameTab ifrm = getInternalFrameForComponent(comp);
+	public static Component getTabOrWindowForComponent(JComponent comp) {
+		final MainFrameTab ifrm = getTabForComponent(comp);
 		return (ifrm != null) ? ifrm : getWindowForComponent(comp);
 	}
 
@@ -732,15 +733,27 @@ public class UIUtils {
 	public static synchronized void setCommandHandler(CommandHandler ch) {
 		commandhandler = (ch == null) ? new DefaultCommandHandler() : ch;
 	}
+	
+	public static <T> T runCommandForTabbedPane(MainFrameTabbedPane parent, Callable<T> callable) {
+		return runCommand(parent==null?null:parent.getComponentPanel(), callable);
+	}
 
 	public static <T> T runCommand(Component parent, Callable<T> callable) {
 		return runCommand(parent, UIUtils.getCommandHandler(), callable, null);
+	}
+	
+	public static <T> T runCommandForTabbedPane(MainFrameTabbedPane parent, Callable<T> callable, T fallback) {
+		return runCommand(parent==null?null:parent.getComponentPanel(), callable, fallback);
 	}
 
 	public static <T> T runCommand(Component parent, Callable<T> callable, T fallback) {
 		return runCommand(parent, UIUtils.getCommandHandler(), callable, fallback);
 	}
 
+	public static <T> T runCommandForTabbedPane(MainFrameTabbedPane parent, CommandHandler ch, Callable<T> callable, T fallback) {
+		return runCommand(parent==null?null:parent.getComponentPanel(), ch, callable, fallback);
+	}
+	
 	public static <T> T runCommand(Component parent, CommandHandler ch, Callable<T> callable, T fallback) {
 		try {
 			try {
@@ -759,6 +772,16 @@ public class UIUtils {
 		}
 		return fallback;
 	}
+	
+	/**
+	 * Sets the wait cursor for <code>parent</code>, runs the given <code>runnable</code> and
+	 * restores the cursor afterwards. Catches any exception and shows it to the user.
+	 * @param parent may be <code>null</code>.
+	 * @param runnable
+	 */
+	public static void runCommandForTabbedPane(MainFrameTabbedPane parent, CommonRunnable runnable) {
+		runCommand(parent==null?null:parent.getComponentPanel(), runnable);
+	}
 
 	/**
 	 * Sets the wait cursor for <code>parent</code>, runs the given <code>runnable</code> and
@@ -769,6 +792,16 @@ public class UIUtils {
 	public static void runCommand(Component parent, CommonRunnable runnable) {
 		runCommand(parent, UIUtils.getCommandHandler(), runnable);
 	}
+	
+	/**
+	 * Runs the given <code>runnable</code>. Catches any exception and shows it to the user.
+	 * Shows no wait cursor, so it should be used for "short" commands only.
+	 * @param parent may be <code>null</code>.
+	 * @param runnable
+	 */
+	public static void runShortCommandForTabbedPane(MainFrameTabbedPane parent, CommonRunnable runnable) {
+		runShortCommand(parent==null?null:parent.getComponentPanel(), runnable);
+	}
 
 	/**
 	 * Runs the given <code>runnable</code>. Catches any exception and shows it to the user.
@@ -778,6 +811,17 @@ public class UIUtils {
 	 */
 	public static void runShortCommand(Component parent, CommonRunnable runnable) {
 		runCommand(parent, new NullCommandHandler(), runnable);
+	}
+	
+	/**
+	 * Runs the given <code>runnable</code>, performing pre- and post-actions defined by the given <code>CommandHandler</code>.
+	 * Catches any exception and shows it to the user.
+	 * @param parent may be <code>null</code>.
+	 * @param ch
+	 * @param runnable
+	 */
+	public static void runCommandForTabbedPane(MainFrameTabbedPane parent, CommandHandler ch, CommonRunnable runnable) {
+		runCommand(parent==null?null:parent.getComponentPanel(), ch, runnable);
 	}
 
 	/**
@@ -805,6 +849,17 @@ public class UIUtils {
 			Errors.getInstance().getCriticalErrorHandler().handleCriticalError(parent, error);
 		}
 	}
+	
+	/**
+	 * Sets the wait cursor for <code>parent</code>, runs the given <code>runnable</code> and
+	 * restores the cursor afterwards. Catches any exception and shows it to the user.
+	 * @param runnable
+	 * @param parent may be null.
+	 * @see #runCommand(Component, CommonRunnable)
+	 */
+	public static void runCommandForTabbedPane(MainFrameTabbedPane parent, final Runnable runnable) {
+		runCommand(parent==null?null:parent.getComponentPanel(), runnable);
+	}
 
 	/**
 	 * Sets the wait cursor for <code>parent</code>, runs the given <code>runnable</code> and
@@ -815,6 +870,15 @@ public class UIUtils {
 	 */
 	public static void runCommand(Component parent, final Runnable runnable) {
 		runCommand(parent, new CommonRunnableAdapter(runnable));
+	}
+	
+	/**
+	 * Calls <code>runCommand</code>, but later (using <code>EventQueue.invokeLater</code>).
+	 * @param runnable
+	 * @param parent may be null.
+	 */
+	public static void runCommandLaterForTabbedPane(final MainFrameTabbedPane parent, final CommonRunnable runnable) {
+		runCommandLater(parent==null?null:parent.getComponentPanel(), runnable);
 	}
 
 	/**
@@ -829,6 +893,16 @@ public class UIUtils {
 				runCommand(parent, runnable);
 			}
 		});
+	}
+	
+	/**
+	 * Calls <code>runShortCommand</code>, but later (using <code>EventQueue.invokeLater</code>).
+	 * Shows no wait cursor, so it should be used for "short" commands only.
+	 * @param runnable
+	 * @param parent may be null.
+	 */
+	public static void runShortCommandLaterForTabbedPane(final MainFrameTabbedPane parent, final CommonRunnable runnable) {
+		runShortCommandLater(parent==null?null:parent.getComponentPanel(), runnable);
 	}
 
 	/**
@@ -845,6 +919,17 @@ public class UIUtils {
 			}
 		});
 	}
+	
+	/**
+	 * Calls <code>runCommand</code>, but later (using <code>EventQueue.invokeLater</code>).
+	 * Shows no wait cursor, so it should be used for "short" commands only.
+	 * @param runnable
+	 * @param parent may be null.
+	 * @see #runCommandLater(Component, CommonRunnable)
+	 */
+	public static void runCommandLaterForTabbedPane(MainFrameTabbedPane parent, final Runnable runnable) {
+		runCommandLater(parent==null?null:parent.getComponentPanel(), runnable);
+	}
 
 	/**
 	 * Calls <code>runCommand</code>, but later (using <code>EventQueue.invokeLater</code>).
@@ -855,6 +940,16 @@ public class UIUtils {
 	 */
 	public static void runCommandLater(Component parent, final Runnable runnable) {
 		runCommandLater(parent, new CommonRunnableAdapter(runnable));
+	}
+	
+	/**
+	 * Calls <code>runShortCommand</code>, but later (using <code>EventQueue.invokeLater</code>).
+	 * @param runnable
+	 * @param parent may be null.
+	 * @see #runCommandLater(Component, CommonRunnable)
+	 */
+	public static void runShortCommandLaterForTabbedPane(MainFrameTabbedPane parent, final Runnable runnable) {
+		runShortCommandLater(parent==null?null:parent.getComponentPanel(), runnable);
 	}
 
 	/**

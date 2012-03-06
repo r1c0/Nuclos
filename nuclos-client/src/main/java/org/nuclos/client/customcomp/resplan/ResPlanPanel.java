@@ -66,6 +66,7 @@ import org.nuclos.client.customcomp.resplan.ResPlanController.GranularityType;
 import org.nuclos.client.customcomp.resplan.ResPlanController.RestorePreferences;
 import org.nuclos.client.customcomp.resplan.ResPlanController.TimeGranularity;
 import org.nuclos.client.main.Main;
+import org.nuclos.client.main.mainframe.MainFrameTab;
 import org.nuclos.client.searchfilter.EntitySearchFilter;
 import org.nuclos.client.searchfilter.SearchFilterListCellRenderer;
 import org.nuclos.client.ui.Bubble;
@@ -483,7 +484,7 @@ public class ResPlanPanel extends JPanel {
 
 		try {
 			final NuclosCollectController ctl = NuclosCollectControllerFactory.getInstance().newCollectController(
-					Main.getInstance().getMainFrame().getHomePane(), resPlanModel.getResourceEntity().getEntityName(), null);
+					resPlanModel.getResourceEntity().getEntityName(), null);
 			ctl.getSearchPanel().btnSearch.setAction(new CommonAbstractAction(Icons.getInstance().getIconFind16(), 
 					SpringLocaleDelegate.getInstance().getText("CollectController.30", "Suchen")) {
 				@Override
@@ -498,7 +499,7 @@ public class ResPlanPanel extends JPanel {
 							} catch (CollectableFieldFormatException e) {
 								throw new NuclosFatalException(e);
 							}
-							ctl.getFrame().dispose();
+							ctl.getTab().dispose();
 						}
 					});
 				}
@@ -761,9 +762,12 @@ public class ResPlanPanel extends JPanel {
 			UIUtils.runShortCommand(resPlan, new CommonRunnable() {
 				@Override
 				public void run() throws CommonBusinessException {
-					NuclosCollectController cntrl = NuclosCollectControllerFactory.getInstance().newCollectController(
-							controller.getFrame(),
-							resPlanModel.getEntryEntity().getCollectableEntity().getName(), null);
+					final MainFrameTab tabIfAny = new MainFrameTab();
+					final NuclosCollectController cntrl = NuclosCollectControllerFactory.getInstance().newCollectController(
+							resPlanModel.getEntryEntity().getCollectableEntity().getName(), tabIfAny);
+					Main.getInstance().getMainController().initMainFrameTab(controller, tabIfAny);
+					controller.getTab().add(tabIfAny);
+					
 					cntrl.addCollectableEventListener(new CollectControllerEventHandler(cntrl));
 					Collectable template = null;
 					if (interval != null && resource != null) {
@@ -782,8 +786,13 @@ public class ResPlanPanel extends JPanel {
 		UIUtils.runCommand(Main.getInstance().getMainFrame(), new CommonRunnable() {
 			@Override
 			public void run() throws CommonBusinessException {
-				NuclosCollectController cntrl = NuclosCollectControllerFactory.getInstance().newCollectController(
-						controller.getFrame(), entityName, null);
+				final MainFrameTab tabIfAny = new MainFrameTab();
+				final NuclosCollectController cntrl = NuclosCollectControllerFactory.getInstance().newCollectController(
+						entityName, null);
+				
+				Main.getInstance().getMainController().initMainFrameTab(cntrl, tabIfAny);
+				controller.getTab().add(tabIfAny);
+				
 				cntrl.addCollectableEventListener(new CollectControllerEventHandler(cntrl));
 				cntrl.runViewSingleCollectableWithId(clct.getId());
 			}
@@ -805,7 +814,7 @@ public class ResPlanPanel extends JPanel {
 			case NEW_DONE :
 			case DELETE_DONE:
 				try {
-					collectController.getFrame().dispose();
+					collectController.getTab().dispose();
 				} finally {
 					controller.refresh();
 				}

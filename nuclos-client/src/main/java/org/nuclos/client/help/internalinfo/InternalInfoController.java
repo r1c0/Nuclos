@@ -16,15 +16,14 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.help.internalinfo;
 
-import java.awt.Component;
 import java.io.File;
 import java.io.IOException;
 import java.util.prefs.Preferences;
 
-import javax.swing.JComponent;
-
 import org.apache.log4j.Logger;
 import org.nuclos.client.common.ClientParameterProvider;
+import org.nuclos.client.main.Main;
+import org.nuclos.client.main.mainframe.MainFrameTabbedPane;
 import org.nuclos.client.ui.Controller;
 import org.nuclos.client.ui.Errors;
 import org.nuclos.client.ui.UIUtils;
@@ -41,7 +40,7 @@ import org.nuclos.common2.ClientPreferences;
  * @version 01.00.00
  */
 
-public class InternalInfoController extends Controller {
+public class InternalInfoController extends Controller<MainFrameTabbedPane> {
 
 	private static final Logger LOG = Logger.getLogger(InternalInfoController.class);
 	
@@ -53,14 +52,15 @@ public class InternalInfoController extends Controller {
 	private final String sFilePath = ClientParameterProvider.getInstance().getValue(ParameterProvider.KEY_INTERNAL_INFORMATION_FILE_PATH);
 	private final File fileInternalInfoFile;
 
-	/**
-	 * @param parent
-	 * @param parentMdi the parent for MDI windows
-	 */
-	public InternalInfoController(Component parent, JComponent parentMdi) {
-		super(parent);
+	public InternalInfoController() {
+		super(null);
 
 		fileInternalInfoFile = sFilePath != null ? new File(sFilePath) : null;
+	}
+
+	@Override
+	public MainFrameTabbedPane getParent() {
+		return Main.getInstance().getMainFrame().getHomePane();
 	}
 
 	/**
@@ -79,14 +79,14 @@ public class InternalInfoController extends Controller {
 	 */
 	public void showInternalInfo() {
 		if (fileInternalInfoFile != null) {
-			UIUtils.runCommandLater(this.getParent(), new Runnable() {
+			UIUtils.runCommandLater(this.getParent().getSelectedComponent(), new Runnable() {
 				@Override
 				public void run() {
 					try {
 						if (!fileInternalInfoFile.exists()) {
 							final String sMessage = getSpringLocaleDelegate().getMessage(
 									"InternalInfoController.1", "Die Datei {0} f\u00fcr die Onlinehilfe existiert nicht.", fileInternalInfoFile.getAbsolutePath());
-							Errors.getInstance().showExceptionDialog(InternalInfoController.this.getParent(), new IOException(sMessage));
+							Errors.getInstance().showExceptionDialog(InternalInfoController.this.getParent().getSelectedComponent(), new IOException(sMessage));
 						}
 						else {
 							try {
@@ -95,7 +95,7 @@ public class InternalInfoController extends Controller {
 							catch (IOException ex) {
 								final String sMessage = getSpringLocaleDelegate().getMessage(
 										"InternalInfoController.2", "Die Informationen k\u00f6nnen nicht angezeigt werden.");
-								Errors.getInstance().showExceptionDialog(InternalInfoController.this.getParent(), sMessage, ex);
+								Errors.getInstance().showExceptionDialog(InternalInfoController.this.getParent().getSelectedComponent(), sMessage, ex);
 							}
 						}
 					}

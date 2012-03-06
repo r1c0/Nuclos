@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
@@ -45,6 +46,8 @@ import org.nuclos.client.attribute.AttributeCache;
 import org.nuclos.client.common.ClientParameterProvider;
 import org.nuclos.client.datasource.DatasourceDelegate;
 import org.nuclos.client.datasource.admin.DatasourceCollectController;
+import org.nuclos.client.main.mainframe.MainFrame;
+import org.nuclos.client.main.mainframe.MainFrameTabbedPane;
 import org.nuclos.client.report.ReportDelegate;
 import org.nuclos.client.report.reportrunner.BackgroundProcessStatusController;
 import org.nuclos.client.report.reportrunner.ReportAttachmentInfo;
@@ -65,8 +68,8 @@ import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.dal.vo.EntityObjectVO;
 import org.nuclos.common.format.FormattingTransformer;
 import org.nuclos.common.genericobject.GenericObjectUtils;
-import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.ServiceLocator;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.server.genericobject.searchcondition.CollectableSearchExpression;
@@ -88,7 +91,7 @@ import org.nuclos.server.report.valueobject.ResultVO;
  * @author	<a href="mailto:Boris.Sander@novabit.de">Boris Sander</a>
  * @version 01.00.00
  */
-public class ReportController extends Controller {
+public class ReportController extends Controller<JComponent> {
 
 	private static final Logger LOG = Logger.getLogger(ReportController.class);
 	
@@ -105,7 +108,7 @@ public class ReportController extends Controller {
 	/**
 	 * @param parent
 	 */
-	public ReportController(Component parent) throws NuclosFatalException {
+	public ReportController(JComponent parent) throws NuclosFatalException {
 		super(parent);
 		this.delegate = new ReportDelegate();
 	}
@@ -136,7 +139,7 @@ public class ReportController extends Controller {
 			String sDialogTitle = getSpringLocaleDelegate().getMessage("ReportController.15","Verf\u00fcgbare Formulare");
 			//int btnValue = JOptionPane.showConfirmDialog(this.getParent(), pnlSelection, sDialogTitle, JOptionPane.OK_CANCEL_OPTION);
 	        final JOptionPane pane = new JOptionPane(pnlSelection, JOptionPane.PLAIN_MESSAGE, JOptionPane.OK_CANCEL_OPTION, null, null, null);
-	        final JDialog dialog = pane.createDialog(this.getParent(), sDialogTitle);
+	        final JDialog dialog = pane.createDialog(getParent(), sDialogTitle);
 	        pnlSelection.addDoubleClickListener(new MouseAdapter() {
 				@Override
 				public void mouseClicked(MouseEvent e) {
@@ -263,7 +266,7 @@ public class ReportController extends Controller {
 										lstNewParameters.add(dspvo);
 									}
 								}
-								boolean result = DatasourceCollectController.createParamMap(lstNewParameters, params, ReportController.this.getParent());
+								boolean result = DatasourceCollectController.createParamMap(lstNewParameters, params, getParent());
 								if (result) {
 									params.put("GenericObjectID", sGenericObjectId);
 									params.put("intid", sGenericObjectId);
@@ -276,7 +279,7 @@ public class ReportController extends Controller {
 
 									sReportFilename = getPath(StringUtils.emptyIfNull(sReportFilename), clctlo);
 
-									final ReportThread reportThread = ReportRunner.createJob(ReportController.this.getParent(), params, reportvo, outputvo, true, null, sReportFilename, info);
+									final ReportThread reportThread = ReportRunner.createJob(getParent(), params, reportvo, outputvo, true, null, sReportFilename, info);
 									//we need to wait, because excel/pdf can't open many files in 1 second (NUCLEUSINT-333)
 									Thread.sleep(1000);
 									reportThread.start();
@@ -288,7 +291,7 @@ public class ReportController extends Controller {
 							SwingUtilities.invokeLater(new Runnable() {
 								@Override
 								public void run() {
-									Errors.getInstance().showExceptionDialog(ReportController.this.getParent(), 
+									Errors.getInstance().showExceptionDialog(getParent(), 
 											getSpringLocaleDelegate().getMessage("ReportController.10","Fehler beim Ausf\u00fchren des Reports") + ":", ex);
 								}
 							});
@@ -345,7 +348,7 @@ public class ReportController extends Controller {
 										setLastGeneratedFileName(null);
 									}
 
-									final ReportThread threadReport = ReportRunner.createJob(ReportController.this.getParent(), mpParams, reportvo, outputvo, true,
+									final ReportThread threadReport = ReportRunner.createJob(getParent(), mpParams, reportvo, outputvo, true,
 											Integer.getInteger(ClientParameterProvider.getInstance().getValue(ParameterProvider.KEY_REPORT_MAXROWCOUNT)), info);
 									threadReport.start();
 									threadReport.join();
@@ -362,7 +365,7 @@ public class ReportController extends Controller {
 							SwingUtilities.invokeLater(new Runnable() {
 								@Override
 								public void run() {
-									Errors.getInstance().showExceptionDialog(ReportController.this.getParent(), 
+									Errors.getInstance().showExceptionDialog(getParent(), 
 											getSpringLocaleDelegate().getMessage(
 													"ReportController.6","Die Ausf\u00fchrung des Reports wurde unerwartet unterbrochen") + ": ", ex);
 								}
@@ -372,7 +375,7 @@ public class ReportController extends Controller {
 							SwingUtilities.invokeLater(new Runnable() {
 								@Override
 								public void run() {
-									Errors.getInstance().showExceptionDialog(ReportController.this.getParent(), 
+									Errors.getInstance().showExceptionDialog(getParent(), 
 											getSpringLocaleDelegate().getMessage(
 													"ReportController.11","Fehler beim Ausf\u00fchren des Reports") + ":", ex);
 								}
@@ -469,13 +472,13 @@ public class ReportController extends Controller {
 			throws NuclosBusinessException {
 		final ReportFormatController formatController;
 		if (lstclctlo.isEmpty()) {
-			formatController = new ReportFormatController(this.getParent());
+			formatController = new ReportFormatController(getParent());
 			if (formatController.run(getSpringLocaleDelegate().getMessage("ReportController.13","Suchergebnis exportieren"))) {
 				export(clcteMain, searchexpr, lstclctefweSelected, bIncludeSubModules, formatController.getFormat());
 			}
 		}
 		else {
-			formatController = new ChoiceListOrReportExportController(this.getParent(), usagecriteria, lstclctlo.size());
+			formatController = new ChoiceListOrReportExportController(getParent(), usagecriteria, lstclctlo.size());
 			final boolean bSearchDialog = formatController.run(getSpringLocaleDelegate().getMessage(
 					"ReportController.12","Suchergebnis exportieren / Formulardruck"));
 			final ChoiceListOrReportExportPanel pnlChoiceExport = ((ChoiceListOrReportExportController) formatController).pnlChoiceExport;
@@ -504,7 +507,7 @@ public class ReportController extends Controller {
 	private void export(CollectableEntity clcteMain, CollectableSearchExpression searchexpr, List<? extends CollectableEntityField> lstclctefweSelected,
 			boolean bIncludeSubModules, ReportOutputVO.Format format) throws NuclosBusinessException {
 		try {
-			this.getParent().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+			getParent().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 
 			final String sMainEntityName = clcteMain.getName();
 			final Integer iModuleId = Modules.getInstance().getModuleIdByEntityName(sMainEntityName);
@@ -514,7 +517,7 @@ public class ReportController extends Controller {
 			switch (format) {
 				case PDF:
 					final JasperPrint printObj = delegate.prepareSearchResult(searchexpr, lstclctefweSelected, iModuleId, bIncludeSubModules);
-					ReportRunner.createExportJob(this.getParent(), printObj, format, null, null).start();
+					ReportRunner.createExportJob(getParent(), printObj, format, null, null).start();
 					break;
 
 				default:
@@ -523,12 +526,12 @@ public class ReportController extends Controller {
 							searchexpr, new HashSet<Integer>(lstAttributeIds), stRequiredSubEntityNames, false, bIncludeSubModules);
 
 					final ResultVO resultVO = convertGenericObjectListToResultVO(clcteMain, lstclctefweSelected, lstlowdcvo);
-					ReportRunner.createExportJob(this.getParent(), resultVO, format, null, null).start();
+					ReportRunner.createExportJob(getParent(), resultVO, format, null, null).start();
 					break;
 			}
 		}
 		finally {
-			this.getParent().setCursor(Cursor.getDefaultCursor());
+			getParent().setCursor(Cursor.getDefaultCursor());
 		}
 	}
 
@@ -584,9 +587,9 @@ public class ReportController extends Controller {
 
 	public void export(JTable table, String sDatasourceName) throws NuclosBusinessException {
 		try {
-			final ReportFormatController formatctl = new ReportFormatController(this.getParent());
+			final ReportFormatController formatctl = new ReportFormatController(getParent());
 			if (formatctl.run(getSpringLocaleDelegate().getMessage("ReportController.14","Tabelle exportieren"))) {
-				UIUtils.showWaitCursorForFrame(this.getParent(), true);
+				UIUtils.showWaitCursorForFrame(getParent(), true);
 				switch (formatctl.getFormat()) {
 					case PDF:
 						final int iRowCount = table.getModel().getRowCount();
@@ -616,18 +619,18 @@ public class ReportController extends Controller {
 						final TableModel tblmodel = new DefaultTableModel(aoData, aoColumns);
 
 						final JasperPrint jrprint = delegate.prepareTableModel(tblmodel);
-						ReportRunner.createExportJob(this.getParent(), jrprint, formatctl.getFormat(), null, sDatasourceName).start();
+						ReportRunner.createExportJob(getParent(), jrprint, formatctl.getFormat(), null, sDatasourceName).start();
 						break;
 
 					default :
 						final ResultVO resultvo = convertJTableToResultVO(table);
-						ReportRunner.createExportJob(this.getParent(), resultvo, formatctl.getFormat(), null, sDatasourceName).start();
+						ReportRunner.createExportJob(getParent(), resultvo, formatctl.getFormat(), null, sDatasourceName).start();
 						break;
 				}
 			}
 		}
 		finally {
-			UIUtils.showWaitCursorForFrame(this.getParent(), false);
+			UIUtils.showWaitCursorForFrame(getParent(), false);
 		}
 	}
 

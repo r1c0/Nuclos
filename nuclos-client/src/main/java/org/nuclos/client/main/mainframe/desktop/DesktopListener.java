@@ -16,6 +16,8 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.main.mainframe.desktop;
 
+import java.awt.Color;
+
 public interface DesktopListener {
 	
 	public void desktopShowing();
@@ -23,4 +25,8 @@ public interface DesktopListener {
 	public void desktopHiding();
 	
 	public void toolbarChange(boolean show);
+	
+	public void tabbarChange(boolean show);
+
+	public void backgroundChange(DesktopBackgroundPainter painter);
 }

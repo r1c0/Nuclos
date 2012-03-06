@@ -56,7 +56,6 @@ import javax.swing.JDialog;
 import javax.swing.JInternalFrame;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
-import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 import javax.swing.KeyStroke;
 import javax.swing.RowSorter.SortKey;
@@ -87,6 +86,7 @@ import org.nuclos.client.genericobject.Modules;
 import org.nuclos.client.main.Main;
 import org.nuclos.client.main.mainframe.MainFrame;
 import org.nuclos.client.main.mainframe.MainFrameTab;
+import org.nuclos.client.main.mainframe.MainFrameTabbedPane;
 import org.nuclos.client.masterdata.CollectableMasterDataWithDependants;
 import org.nuclos.client.ui.CommonAbstractAction;
 import org.nuclos.client.ui.CommonClientWorkerAdapter;
@@ -201,18 +201,6 @@ import org.springframework.util.Assert;
 public abstract class CollectController<Clct extends Collectable> extends TopController implements NuclosDropTargetVisitor {
 
 	private static final Logger LOG = Logger.getLogger(CollectController.class);
-
-	/**
-	 * the parent component for this controller
-	 * @deprecated Use {@link #getParent()}
-	 */
-	@Deprecated
-	protected final JComponent parent;
-
-	/**
-	 * the internal frame for this controller
-	 */
-	private MainFrameTab ifrm;
 
 	/**
 	 * the CollectPanel for this controller
@@ -550,12 +538,12 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	 * in this order.</em>
 	 * @param parent
 	 */
-	protected CollectController(JComponent parent, CollectableEntity clcte, ResultController<Clct> rc) {
-		super(parent);
-		this.parent = parent;
+	protected CollectController(CollectableEntity clcte, MainFrameTab tabIfAny, ResultController<Clct> rc) {
+		super();
 		this.clcte = clcte;
 		this.ctlResult = rc;
 		this.ctlResult.setCollectController(this);
+		setTab(tabIfAny);
 	}
 
 	/**
@@ -566,8 +554,8 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	 * *CollectController<~> cc = new *CollectController<~>(.., rc);
 	 * </code></pre>
 	 */
-	protected CollectController(JComponent parent, CollectableEntity clcte) {
-		this(parent, clcte, new ResultController<Clct>(clcte, new SearchResultStrategy<Clct>()));
+	protected CollectController(CollectableEntity clcte, MainFrameTab tabIfAny) {
+		this(clcte, tabIfAny, new ResultController<Clct>(clcte, new SearchResultStrategy<Clct>()));
 	}
 	
 	@Autowired
@@ -630,8 +618,8 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	 */
 	protected void initialize(CollectPanel<Clct> pnlCollect){
 		// set the name of the internal frame to this CollectController's entity name (for GUI testing purposes):
-		if (this.getFrame() != null) {
-			this.getFrame().setName("ifrm" + StringUtils.capitalized(clcte.getName()));
+		if (this.getTab() != null) {
+			this.getTab().setName("ifrm" + StringUtils.capitalized(clcte.getName()));
 		}
 
 		this.setCollectPanel(pnlCollect);
@@ -850,7 +838,7 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	 * @deprecated Move to SearchController.
 	 */
 	protected final void cmdDisplayCurrentSearchConditionInSearchPanelStatusBar() {
-		UIUtils.runShortCommand(this.getFrame(), new CommonRunnable() {
+		UIUtils.runShortCommand(this.getTab(), new CommonRunnable() {
 			@Override
             public void run() {
 				ctlSearch.displayCurrentSearchConditionInSearchPanelStatusBar();
@@ -887,11 +875,6 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	}
 
 	/**
-	 * @return a new internal frame for this controller.
-	 */
-	protected abstract MainFrameTab newInternalFrame();
-
-	/**
 	 * Locks or unlocks the frame, i.e. makes it (im)possible for the user to trigger any action on it.
 	 * This is mostly used for background processes
 	 * @param bLock lock if true, unlock else
@@ -901,15 +884,15 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 		if(bLock) {
 			iLockCount++;
 			if(iLockCount > 0) {
-				UIUtils.showWaitCursorForFrame(this.getFrame(), true);
-				CollectController.this.setTitle(getFrame().getTitle() + " (" + getSpringLocaleDelegate().getMessage(
+				UIUtils.showWaitCursorForFrame(this.getTab(), true);
+				CollectController.this.setTitle(getTab().getTitle() + " (" + getSpringLocaleDelegate().getMessage(
 						"CollectController.19","In Bearbeitung") + ")");
 			}
 		}
 		else {
 			iLockCount--;
 			if(iLockCount == 0) {
-				UIUtils.showWaitCursorForFrame(this.getFrame(), false);
+				UIUtils.showWaitCursorForFrame(this.getTab(), false);
 				CollectController.this.setTitle();
 			}
 		}
@@ -920,8 +903,8 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	 */
 	public void forceUnlockFrame() {
 		iLockCount = 0;
-		UIUtils.showWaitCursorForFrame(this.getFrame(), false);
-		CollectController.this.setTitle(getFrame().getTitle());
+		UIUtils.showWaitCursorForFrame(this.getTab(), false);
+		CollectController.this.setTitle(getTab().getTitle());
 	}
 
 	/**
@@ -936,10 +919,10 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 
 	/**
 	 * @param sTitle
-	 * @return a new internal frame for this controller, as specified by <code>newInternalFrame()</code>, with the given title.
+	 * @return a new tab for this controller, as specified by <code>newTab()</code>, with the given title.
 	 */
-	protected final MainFrameTab newInternalFrame(String sTitle) {
-		final MainFrameTab result = newInternalFrame();
+	protected final MainFrameTab newTab(String sTitle) {
+		final MainFrameTab result = newTab();
 		result.setTitle(sTitle);
 		return result;
 	}
@@ -993,11 +976,14 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	 * sets the internal frame to be used
 	 * @param ifrm
 	 */
-	protected void setInternalFrame(final MainFrameTab ifrm, boolean addToParent) {
-		this.ifrm = ifrm;
-
+	private void setTab(final MainFrameTab tabIfAny) {
+		super.setParent(tabIfAny == null ? newTab() : tabIfAny);
+		initTab();
+	}
+	
+	protected void initTab() {
 		// prevent that the frame is closed when changes are pending:
-		ifrm.addVetoableChangeListener(new VetoableChangeListener() {
+		getTab().addVetoableChangeListener(new VetoableChangeListener() {
 			@Override
             public void vetoableChange(PropertyChangeEvent evt) throws PropertyVetoException {
 				if (evt.getPropertyName().equals(JInternalFrame.IS_CLOSED_PROPERTY)) {
@@ -1018,8 +1004,7 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 		});
 
 		// override close behavior:
-
-		ifrm.addMainFrameTabListener(new MainFrameTabAdapter() {
+		getTab().addMainFrameTabListener(new MainFrameTabAdapter() {
 			@Override
 			public void tabSelected(MainFrameTab tab) {
 				setDefaultButton();
@@ -1031,17 +1016,15 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 			@Override
 			public void tabClosed(MainFrameTab tab) {
 				CollectController.this.close();
-				ifrm.removeMainFrameTabListener(this);
+				tab.removeMainFrameTabListener(this);
 			}
 		});
-
-		if (addToParent) {
-			// TODO this probably doesn't belong here - requires that the parent is a Container, and that shouldn't be.
-			this.parent.add(ifrm);
-		}
-
-		// sets the default window state for the frame:
-		//this.setDefaultWindowState(ifrm);
+	}
+	
+	protected MainFrameTab newTab() {
+		MainFrameTab tab = Main.getInstance().getMainController().newMainFrameTab(this);
+		MainFrame.getPredefinedEntityOpenLocation(this.getEntityName()).add(tab);
+		return tab;
 	}
 
 	/**
@@ -1131,7 +1114,7 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 			// this must be run later as the following actions might add or remove collectable component
 			// listeners, or other listeners that caused the event to be fired:
 			// TODO runCommandLater is critical here - synchronous execution (runCommand) would be desirable!
-			UIUtils.runShortCommandLater(getFrame(), new CommonRunnable() {
+			UIUtils.runShortCommandLater(getTab(), new CommonRunnable() {
 				@Override
                 public void run() throws CommonBusinessException {
 					CollectController.this.oSourceOfLastDetailsChange = oSource;
@@ -1378,7 +1361,7 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 		this.setCollectState(CollectState.OUTERSTATE_SEARCH, CollectState.SEARCHMODE_UNSYNCHED);
 
 		if (selectTab) {
-			this.showFrame();
+			this.selectTab();
 		}
 	}
 
@@ -1387,7 +1370,7 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 		if (cond != null) {
 			this.setCollectableSearchConditionInSearchPanel(cond);
 		}
-		this.showFrame();
+		this.selectTab();
 	}
 
 	/**
@@ -1396,7 +1379,7 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	public void runLookupCollectable(final ICollectableListOfValues clctlovSource) throws CommonBusinessException {
 
 		// show the internal frame in the front of the modal layer:
-		final MainFrameTab ifrm = this.getFrame();
+		final MainFrameTab ifrm = this.getTab();
 
 		ifrm.setVisible(true);
 
@@ -1430,7 +1413,7 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 				@Override
 				public void actionPerformed(ActionEvent e) {
 					acceptLookedUpCollectable(clctlovSource);
-					getFrame().dispose();
+					getTab().dispose();
 				}
 			});
 		}
@@ -1444,7 +1427,7 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 			public void mouseClicked(MouseEvent ev) {
 				if (SwingUtilities.isLeftMouseButton(ev) && ev.getClickCount() == 2) {
 					acceptLookedUpCollectable(clctlovSource);
-					getFrame().dispose();
+					getTab().dispose();
 				}
 			}
 		};
@@ -1456,7 +1439,7 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				acceptLookedUpCollectable(clctlovSource);
-				getFrame().dispose();
+				getTab().dispose();
 			}
 		});
 
@@ -1494,7 +1477,7 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 		this.setCollectState(CollectState.OUTERSTATE_DETAILS, CollectState.DETAILSMODE_NEW);
 
 		if (selectTab) {
-			this.showFrame();
+			this.selectTab();
 		}
 	}
 
@@ -1503,7 +1486,7 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 		if (clct != null) {
 			this.unsafeFillDetailsPanel(clct);
 		}
-		this.showFrame();
+		this.selectTab();
 	}
 
 	/**
@@ -1533,7 +1516,7 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 		}
 		this.viewSingleCollectable(clct);
 		if (bShow)
-			this.showFrame();
+			this.selectTab();
 	}
 
 	/**
@@ -1561,16 +1544,11 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 		fillResultPanel(getSearchStrategy().getSearchResult());
 		getResultTable().getSelectionModel().addSelectionInterval(0, getResultTable().getRowCount() - 1);
 		setCollectState(CollectState.OUTERSTATE_DETAILS, CollectState.DETAILSMODE_MULTIVIEW);
-		showFrame();
+		selectTab();
 	}
 
-	/**
-	 * Show the frame for the first time.
-	 * @deprecated This method is misused as a listener. Use an InternalFrameListener or CollectableStateListener instead.
-	 */
-	@Deprecated
-	protected void showFrame() {
-		this.getFrame().setVisible(true);
+	protected void selectTab() {
+		this.getTab().setVisible(true);
 	}
 
 	/**
@@ -1614,7 +1592,7 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 		this.setCollectState(CollectState.OUTERSTATE_RESULT, CollectState.RESULTMODE_NOSELECTION);
 
 		if (selectTab) {
-			this.showFrame();
+			this.selectTab();
 		}
 	}
 
@@ -1635,7 +1613,7 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	public final void runViewResults(List<? extends Object> oIds) throws CommonBusinessException {
 		getResultController().getSearchResultStrategy().viewList(oIds);
 		this.setCollectState(CollectState.OUTERSTATE_RESULT, CollectState.RESULTMODE_NOSELECTION);
-		this.showFrame();
+		this.selectTab();
 	}
 
 	/**
@@ -1650,7 +1628,7 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 		this.setCollectableSearchConditionInSearchPanel(cond);
 		ss.search();
 		this.setCollectState(CollectState.OUTERSTATE_RESULT, CollectState.RESULTMODE_NOSELECTION);
-		this.showFrame();
+		this.selectTab();
 	}
 
 	/**
@@ -1681,11 +1659,11 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 							// TODO may whatever mouselistener was installed should be removed from the table in "close()"
 
 							// Note that Controller.close() is called implicitly here:
-							getFrame().dispose();
+							getTab().dispose();
 						}
 					}
 					catch (Exception ex) {
-						Errors.getInstance().showExceptionDialog(getFrame(), ex);
+						Errors.getInstance().showExceptionDialog(getTab(), ex);
 					}
 				}
 			}
@@ -1696,7 +1674,7 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 			throw new IllegalStateException("this.isSearchPanelAvailable()");
 		}
 		this.setCollectableSearchConditionInSearchPanel(clctlovSource.getCollectableSearchCondition());
-		this.showFrame();
+		this.selectTab();
 		getResultController().getSearchResultStrategy().cmdSearch();
 		this.getCollectPanel().setTabbedPaneEnabledAt(CollectState.OUTERSTATE_DETAILS, false);
 		this.getCollectPanel().setTabbedPaneEnabledAt(CollectState.OUTERSTATE_SEARCH, false);
@@ -2105,7 +2083,7 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 		if (this.stopEditingInDetails()) {
 			this.bFrameMayBeClosed = this.askAndSaveIfNecessary();
 			if (this.bFrameMayBeClosed) {
-				this.getFrame().dispose();
+				this.getTab().dispose();
 			}
 		}
 	}
@@ -2114,7 +2092,7 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	 * command: switch to New mode
 	 */
 	protected void cmdEnterNewMode() {
-		UIUtils.runCommand(this.getFrame(), new Runnable() {
+		UIUtils.runCommand(this.getTab(), new Runnable() {
 			@Override
             public void run() {
 				enterNewMode();
@@ -2128,7 +2106,7 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	 * @deprecated Move to SearchController and make protected again.
 	 */
 	public void cmdEnterNewModeWithSearchValues() {
-		UIUtils.runCommand(this.getFrame(), new Runnable() {
+		UIUtils.runCommand(this.getTab(), new Runnable() {
 			@Override
             public void run() {
 				enterNewModeWithSearchValues();
@@ -2140,7 +2118,7 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	 * command: Bookmark selected Collectable
 	 */
 	protected void cmdBookmarkSelectedCollectable() {
-		UIUtils.runCommand(this.getFrame(), new CommonRunnable() {
+		UIUtils.runCommand(this.getTab(), new CommonRunnable() {
 			@Override
             public void run() throws CommonBusinessException {
 				bookmarkSelectedCollectable();
@@ -2156,17 +2134,17 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	 * command: Open selected Collectable in new tab
 	 */
 	protected void cmdOpenSelectedCollectableInNewTab() {
-		this.getFrame().lockLayerBusy();
+		this.getTab().lockLayerBusy();
 		openSelectedCollectableInNewTab();
 	}
 
 	protected void openSelectedCollectableInNewTab() {
 		String entity = getEntityName();
-		final JTabbedPane openInTabbed;
+		final MainFrameTabbedPane openInTabbed;
 		if (MainFrame.isPredefinedEntityOpenLocationSet(entity))
 			openInTabbed = MainFrame.getPredefinedEntityOpenLocation(entity);
 		else
-			openInTabbed = MainFrame.getTabbedPane(CollectController.this.getFrame());
+			openInTabbed = MainFrame.getTabbedPane(CollectController.this.getTab());
 
 		final List<Clct> selectedList = getSelectedCollectables();
 		final List<Thread> loadingThreads = new ArrayList<Thread>();
@@ -2186,7 +2164,7 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 						public void run() {
 							try {
 								if (currentIndex == openQuestionCount && size >= openQuestionCount*2) {
-									int res = JOptionPane.showConfirmDialog(openInTabbed,
+									int res = JOptionPane.showConfirmDialog(openInTabbed.getComponentPanel(),
 											getSpringLocaleDelegate().getMessage(
 													"CollectController.openInNewTab.1","Es wurden bereits {0} Tabs geöffnet. Möchten Sie die weiteren {1} Tabs auch noch öffnen?", openQuestionCount, (size-openQuestionCount)),
 											getSpringLocaleDelegate().getMessage(
@@ -2195,7 +2173,7 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 											JOptionPane.QUESTION_MESSAGE);
 
 									if (res == JOptionPane.NO_OPTION) {
-										getFrame().unlockLayer();
+										getTab().unlockLayer();
 										loadingThreads.clear();
 										return;
 									}
@@ -2204,7 +2182,7 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 								MainFrameTab tab = new MainFrameTab();
 								openInTabbed.add(tab);
 
-								NuclosCollectController<?> clct = NuclosCollectControllerFactory.getInstance().newCollectController(openInTabbed, getEntityName(), tab);
+								NuclosCollectController<?> clct = NuclosCollectControllerFactory.getInstance().newCollectController(getEntityName(), tab);
 								getMainController().initMainFrameTab(clct, tab);
 								tab.postAdd();
 
@@ -2214,7 +2192,7 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 								if (loadingThreads.size() > 0) {
 									loadingThreads.get(0).start();
 								} else {
-									getFrame().unlockLayer();
+									getTab().unlockLayer();
 								}
 							} catch(Exception e) {
 								throw new NuclosFatalException(e);
@@ -2229,7 +2207,7 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 		if (loadingThreads.size() > 0) {
 			loadingThreads.get(0).start();
 		} else {
-			this.getFrame().unlockLayer();
+			this.getTab().unlockLayer();
 		}
 	}
 
@@ -2237,7 +2215,7 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	 * command: Clone selected Collectable
 	 */
 	protected void cmdCloneSelectedCollectable() {
-		UIUtils.runCommand(this.getFrame(), new CommonRunnable() {
+		UIUtils.runCommand(this.getTab(), new CommonRunnable() {
 			@Override
             public void run() throws CommonBusinessException {
 				cloneSelectedCollectable();
@@ -2265,7 +2243,7 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 				this.setCollectState(CollectState.OUTERSTATE_DETAILS, CollectState.DETAILSMODE_NEW);
 			}
 			catch (CommonBusinessException ex) {
-				Errors.getInstance().showExceptionDialog(this.getFrame(), ex);
+				Errors.getInstance().showExceptionDialog(this.getTab(), ex);
 			}
 		}
 	}
@@ -2279,7 +2257,7 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 				this.setCollectState(CollectState.OUTERSTATE_DETAILS, CollectState.DETAILSMODE_NEW_SEARCHVALUE);
 			}
 			catch (CommonBusinessException ex) {
-				Errors.getInstance().showExceptionDialog(this.getFrame(), ex);
+				Errors.getInstance().showExceptionDialog(this.getTab(), ex);
 			}
 		}
 	}
@@ -2288,7 +2266,7 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	 * command: switch to View mode
 	 */
 	protected void cmdEnterViewMode() {
-		UIUtils.runCommand(this.getFrame(), new CommonRunnable() {
+		UIUtils.runCommand(this.getTab(), new CommonRunnable() {
 			@Override
             public void run() throws CommonBusinessException {
 				enterViewMode();
@@ -2307,7 +2285,7 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	}
 
 	protected void cmdEnterMultiViewMode() {
-		UIUtils.runCommand(this.getFrame(), new CommonRunnable() {
+		UIUtils.runCommand(this.getTab(), new CommonRunnable() {
 			@Override
             public void run() throws CommonBusinessException {
 				enterMultiViewMode();
@@ -2418,7 +2396,7 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 		// Ignore the result - refresh is always performed, even if stopEditingInDetails fails
 		this.stopEditingInDetails();
 
-		UIUtils.runShortCommand(this.getFrame(), new CommonRunnable() {
+		UIUtils.runShortCommand(this.getTab(), new CommonRunnable() {
 			@Override
             public void run() {
 				try {
@@ -2456,7 +2434,7 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 				}
 				catch (CommonBusinessException ex) {
 					final String sErrorMsg = "Der Datensatz konnte nicht neu geladen werden.";
-					Errors.getInstance().showExceptionDialog(getFrame(), sErrorMsg, ex);
+					Errors.getInstance().showExceptionDialog(getTab(), sErrorMsg, ex);
 				}
 			}
 		});
@@ -3025,13 +3003,13 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 				}
 				catch (CommonPermissionException ex) {
 					final String sErrorMsg = "Sie verf\u00fcgen nicht \u00fcber die ausreichenden Rechte, " + "um diesen Datensatz zu speichern.";
-					Errors.getInstance().showExceptionDialog(this.getFrame(), sErrorMsg, ex);
+					Errors.getInstance().showExceptionDialog(this.getTab(), sErrorMsg, ex);
 				}
 				catch (CommonStaleVersionException ex) {
 					final String sMessage = sMessage1 + ", " + "da er zwischenzeitlich von einem anderen Benutzer ge\u00e4ndert wurde.\n" +
 							"Sie m\u00fcssen den Datensatz neu laden und Ihre \u00c4nderungen dann erneut durchf\u00fchren.\n\n" +
 							getSpringLocaleDelegate().getMessage("CollectController.25","Soll der Datensatz jetzt neu geladen werden?");
-					final int iBtn = JOptionPane.showConfirmDialog(this.getFrame(), sMessage, 
+					final int iBtn = JOptionPane.showConfirmDialog(this.getTab(), sMessage, 
 							getSpringLocaleDelegate().getMessage("CollectController.9","Datensatz ge\u00e4ndert"),
 							JOptionPane.OK_CANCEL_OPTION);
 					if (iBtn == JOptionPane.OK_OPTION) {
@@ -3039,7 +3017,7 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 							this.refreshCurrentCollectable();
 						}
 						catch (CommonBusinessException ex2) {
-							Errors.getInstance().showExceptionDialog(this.getFrame(), ex2);
+							Errors.getInstance().showExceptionDialog(this.getTab(), ex2);
 						}
 					}
 				}
@@ -3049,17 +3027,17 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 					}
 					catch (CommonFinderException ex2) {
 						final String sErrorMsg = sMessage1 + ", da er zwischenzeitlich von einem anderen Benutzer gel\u00f6scht wurde.";
-						Errors.getInstance().showExceptionDialog(this.getFrame(), sErrorMsg, ex2);
+						Errors.getInstance().showExceptionDialog(this.getTab(), sErrorMsg, ex2);
 					}
 					catch (CommonBusinessException ex2) {
-						Errors.getInstance().showExceptionDialog(this.getFrame(), sMessage1 + ".", ex2);
+						Errors.getInstance().showExceptionDialog(this.getTab(), sMessage1 + ".", ex2);
 					}
 				}
 				catch (Exception ex) {
-					Errors.getInstance().showExceptionDialog(this.getFrame(), ex);
+					Errors.getInstance().showExceptionDialog(this.getTab(), ex);
 				}
 				catch (Error error) {
-					Errors.getInstance().getCriticalErrorHandler().handleCriticalError(this.getFrame(), error);
+					Errors.getInstance().getCriticalErrorHandler().handleCriticalError(this.getTab(), error);
 				}
 			}
 		}
@@ -3078,7 +3056,7 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	}
 
 	protected void handleCollectableValidationException(CollectableValidationException ex, String sMessage1) {
-		Errors.getInstance().showExceptionDialog(this.getFrame(), sMessage1 + ".", ex);
+		Errors.getInstance().showExceptionDialog(this.getTab(), sMessage1 + ".", ex);
 
 		// set focus to questionable field (if any):
 		final CollectableEntityField clctefInvalid = ex.getCollectableEntityField();
@@ -3118,7 +3096,7 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 		}
 		Clct clct = null;
 		try {
-			UIUtils.setWaitCursor(this.getFrame());
+			UIUtils.setWaitCursor(this.getTab());
 
 			LOG.debug("START save");
 			MessageType mt;
@@ -3166,7 +3144,7 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 				throw cbe;
 			}
 		} finally {
-			this.getFrame().setCursor(null);
+			this.getTab().setCursor(null);
 			LOG.debug("FINISHED save");
 		}
 	}
@@ -3235,11 +3213,11 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 
 		if (this.stopEditingInDetails()) {
 			final String sMessage = getSpringLocaleDelegate().getMessage("GenericObjectCollectController.74","Soll der angezeigte Datensatz ({0}) wirklich gel\u00f6scht werden?", getSelectedCollectable().getIdentifierLabel());
-			final int iBtn = JOptionPane.showConfirmDialog(this.getFrame(), sMessage, 
+			final int iBtn = JOptionPane.showConfirmDialog(this.getTab(), sMessage, 
 					getSpringLocaleDelegate().getMessage("GenericObjectCollectController.26","Datensatz l\u00f6schen"), JOptionPane.YES_NO_OPTION);
 
 			if (iBtn == JOptionPane.OK_OPTION) {
-				UIUtils.runCommand(this.getFrame(), new Runnable() {
+				UIUtils.runCommand(this.getTab(), new Runnable() {
 					@Override
                     public void run() {
 						cmdDeleteCurrentCollectableInDetailsImpl();
@@ -3297,11 +3275,11 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 		catch (CommonPermissionException ex) {
 			final String sErrorMessage = getSpringLocaleDelegate().getMessage(
 					"GenericObjectCollectController.69","Sie verf\u00fcgen nicht \u00fcber die ausreichenden Rechte, um diesen Datensatz zu l\u00f6schen.");
-			Errors.getInstance().showExceptionDialog(getFrame(), sErrorMessage, ex);
+			Errors.getInstance().showExceptionDialog(getTab(), sErrorMessage, ex);
 		}
 		catch (CommonBusinessException ex) {
 			if (!handleSpecialException(ex)) {
-				Errors.getInstance().showExceptionDialog(getFrame(), 
+				Errors.getInstance().showExceptionDialog(getTab(), 
 						getSpringLocaleDelegate().getMessage(
 								"GenericObjectCollectController.31","Der Datensatz konnte nicht gel\u00f6scht werden."), ex);
 			}
@@ -3474,7 +3452,7 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 
 		if (this.changesArePending()) {
 			try {
-				MainFrame.setSelectedTab(this.getFrame());
+				MainFrame.setSelectedTab(this.getTab());
 			} catch (Exception e) {
 				// TODO TABS: Ein Overlay Tab kann der MainFrame noch nicht finden... Quickfix try-catch
 				LOG.error(e.getMessage(), e);
@@ -3484,7 +3462,7 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 							"CollectController.32","Wenn Sie jetzt nicht speichern, werden diese \u00c4nderungen verloren gehen.") + "\n" + 
 							getSpringLocaleDelegate().getMessage("CollectController.20","Jetzt speichern?");
 
-			final int iBtn = JOptionPane.showConfirmDialog(this.getFrame(), sMsg, getSpringLocaleDelegate().getMessage(
+			final int iBtn = JOptionPane.showConfirmDialog(this.getTab(), sMsg, getSpringLocaleDelegate().getMessage(
 					"CollectController.10","Datensatz ge\u00e4ndert"),
 					JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
 
@@ -3500,7 +3478,7 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 					result = false;
 					final String sMessage = getSpringLocaleDelegate().getMessage(
 							"CollectController.24","Sie verf\u00fcgen nicht \u00fcber die ausreichenden Rechte, um dieses Objekt zu speichern.");
-					Errors.getInstance().showExceptionDialog(this.getFrame(), sMessage, ex);
+					Errors.getInstance().showExceptionDialog(this.getTab(), sMessage, ex);
 				}
 				catch (CommonBusinessException ex) {
 					result = false;
@@ -3512,10 +3490,10 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 					catch (CommonFinderException ex2) {
 						final String sErrorMsg = getSpringLocaleDelegate().getMessage(
 								"CollectController.1",", da er zwischenzeitlich von einem anderen Benutzer gel\u00f6scht wurde.");
-						Errors.getInstance().showExceptionDialog(this.getFrame(), sErrorMsg, ex2);
+						Errors.getInstance().showExceptionDialog(this.getTab(), sErrorMsg, ex2);
 					}
 					catch (CommonBusinessException ex2) {
-						Errors.getInstance().showExceptionDialog(this.getFrame(), sMessage1 + ".", ex2);
+						Errors.getInstance().showExceptionDialog(this.getTab(), sMessage1 + ".", ex2);
 					}
 					//final String sMessage = "Der Datensatz konnte nicht gespeichert werden.";
 					//Errors.getInstance().showExceptionDialog(this.getFrame(), sMessage, ex);
@@ -3524,7 +3502,7 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 					result = false;
 					final String sMessage = getSpringLocaleDelegate().getMessage(
 							"CollectController.11","Der Datensatz konnte nicht gespeichert werden.");
-					Errors.getInstance().showExceptionDialog(this.getFrame(), sMessage, ex);
+					Errors.getInstance().showExceptionDialog(this.getTab(), sMessage, ex);
 				}
 			}
 		}
@@ -3694,19 +3672,8 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 			this.setCollectState(CollectState.OUTERSTATE_SEARCH, CollectState.SEARCHMODE_UNSYNCHED);
 		}
 		catch (Exception ex) {
-			Errors.getInstance().showExceptionDialog(this.getFrame(), null, ex);
+			Errors.getInstance().showExceptionDialog(this.getTab(), null, ex);
 		}
-	}
-
-	public final MainFrameTab getFrame() {
-		return ifrm;
-	}
-
-	/**
-	 * TODO: Tidy this up (together with {@link #setInternalFrame(MainFrameTab, boolean)}.
-	 */
-	protected final void setFrame(MainFrameTab ifrm) {
-		this.ifrm = ifrm;
 	}
 
 	@Override
@@ -3817,7 +3784,7 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	 * @param sTitle
 	 */
 	protected void setTitle(String sTitle) {
-		this.getFrame().setTitle(sTitle);
+		this.getTab().setTitle(sTitle);
 	}
 
 	/**
@@ -4042,11 +4009,6 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 				}
 			}
 		}
-	}
-
-	@Override
-	public JComponent getParent() {
-		return parent;
 	}
 
 	/**
@@ -4370,7 +4332,7 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 			}
 		}
 		catch (Exception ex) {
-			Errors.getInstance().showExceptionDialog(getFrame(), ex);
+			Errors.getInstance().showExceptionDialog(getTab(), ex);
 		}
 	}
 
@@ -4404,7 +4366,7 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 					final CollectableGenericObject clctloSelected = (CollectableGenericObject) clctSelected;
 					// we must reload the partially loaded object:
 					final int iModuleId = clctloSelected .getGenericObjectCVO().getModuleId();
-					GenericObjectClientUtils.showDetails(MainFrame.getPredefinedEntityOpenLocation(MetaDataClientProvider.getInstance().getEntity(new Long(iModuleId)).getEntity()), iModuleId, clctloSelected.getId());
+					GenericObjectClientUtils.showDetails(iModuleId, clctloSelected.getId());
 				}
 				else {
 					final CollectableMasterDataWithDependants clctmdSelected = (CollectableMasterDataWithDependants) clctSelected;
@@ -4422,7 +4384,7 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	}
 
 	protected void invoke(CommonRunnable runnable) throws CommonBusinessException {
-		invokeWithInputRequiredSupport.invoke(runnable, getContext(), getFrame());
+		invokeWithInputRequiredSupport.invoke(runnable, getContext(), getTab());
 	}
 
 	protected DetailsController<Clct> getDetailsConroller() {

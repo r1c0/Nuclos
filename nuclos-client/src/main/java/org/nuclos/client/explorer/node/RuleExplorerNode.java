@@ -154,7 +154,7 @@ public class RuleExplorerNode extends AbstractRuleExplorerNode {
 			if (rulevo != null) {
 				final CollectControllerFactorySingleton factory = CollectControllerFactorySingleton.getInstance();
 				if(ruleNode.isTimeLimitRule) {
-					TimelimitRuleCollectController ctl = factory.newTimelimitRuleCollectController(MainFrame.getPredefinedEntityOpenLocation(NuclosEntity.TIMELIMITRULE.getEntityName()), null);
+					TimelimitRuleCollectController ctl = factory.newTimelimitRuleCollectController(null);
 					try {
 						ctl.runViewSingleCollectableWithId(rulevo.getId());
 					}
@@ -163,7 +163,7 @@ public class RuleExplorerNode extends AbstractRuleExplorerNode {
 					}
 				}
 				else {
-					RuleCollectController ctl = factory.newRuleCollectController(MainFrame.getPredefinedEntityOpenLocation(NuclosEntity.RULE.getEntityName()), null);
+					RuleCollectController ctl = factory.newRuleCollectController(null);
 					ctl.runViewSingleCollectable(new CollectableRule(rulevo));
 				}
 			}

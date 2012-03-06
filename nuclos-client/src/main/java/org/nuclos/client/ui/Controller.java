@@ -20,6 +20,7 @@ import java.awt.Component;
 
 import org.nuclos.client.main.Main;
 import org.nuclos.client.main.MainController;
+import org.nuclos.client.main.mainframe.MainFrameTabbedPane;
 import org.nuclos.common2.SpringLocaleDelegate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
@@ -34,15 +35,22 @@ import org.springframework.beans.factory.annotation.Configurable;
  * @version	01.00.00
  */
 @Configurable(preConstruction=true)
-public abstract class Controller {
+public abstract class Controller<Parent> {
 	
-	private final Component parent;
+	private Parent parent;
 	
 	private SpringLocaleDelegate localeDelegate;
 
 	private MainController mainController;
 	
-	public Controller(Component parent) {
+	public Controller(Parent parent) {
+		this.parent = parent;
+	}
+	
+	public void setParent(Parent parent) {
+		if (this.parent != null) {
+			throw new IllegalArgumentException("Parent already set");
+		}
 		this.parent = parent;
 	}
 	
@@ -66,7 +74,10 @@ public abstract class Controller {
 	 * @return the parent component of this controller, if any. This is generally used for issuing messages, as long as
 	 * the controller doesn't create its own GUI or as parent for the controller's own GUI.
 	 */
-	public Component getParent() {
+	public Parent getParent() {
+		if (parent == null) {
+			throw new IllegalArgumentException("Parent not set");
+		}
 		return parent;
 	}
 

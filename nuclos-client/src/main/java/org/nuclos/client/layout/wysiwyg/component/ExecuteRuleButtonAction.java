@@ -55,7 +55,7 @@ public class ExecuteRuleButtonAction<Clct extends Collectable> implements Collec
 			return;
 		}
 
-		UIUtils.runCommandLater(controller.getFrame(), new Runnable() {
+		UIUtils.runCommandLater(controller.getTab(), new Runnable() {
 			@Override
 			public void run() {
 				try {

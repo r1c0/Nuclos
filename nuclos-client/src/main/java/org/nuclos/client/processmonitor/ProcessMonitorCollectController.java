@@ -26,6 +26,7 @@ import org.apache.log4j.Logger;
 import org.nuclos.client.common.NuclosCollectController;
 import org.nuclos.client.console.NuclosConsole;
 import org.nuclos.client.main.mainframe.MainFrameTab;
+import org.nuclos.client.main.mainframe.MainFrameTabbedPane;
 import org.nuclos.client.masterdata.MasterDataSubFormController;
 import org.nuclos.client.ui.collect.CollectPanel;
 import org.nuclos.client.ui.collect.DefaultEditView;
@@ -46,7 +47,6 @@ public class ProcessMonitorCollectController extends NuclosCollectController<Col
 	private static final Logger LOG = Logger.getLogger(ProcessMonitorCollectController.class);
 
 	private final CollectPanel<CollectableProcessMonitorModel> pnlCollect = new CollectPanel<CollectableProcessMonitorModel>(false);
-	private final MainFrameTab ifrm;
 	// @SuppressWarnings("unused")
 	private final MasterDataSubFormController subformctlUsages;	
 	private final ProcessMonitorEditPanel pnlEdit;
@@ -60,8 +60,8 @@ public class ProcessMonitorCollectController extends NuclosCollectController<Col
 	 * *CollectController<~> cc = new *CollectController<~>(.., rc);
 	 * </code></pre>
 	 */
-	public ProcessMonitorCollectController(JComponent parent, MainFrameTab tabIfAny) {
-		this(parent, CollectableProcessMonitorModel.clcte, tabIfAny);
+	public ProcessMonitorCollectController(MainFrameTab tabIfAny) {
+		this(CollectableProcessMonitorModel.clcte, tabIfAny);
 	}
 
 	/**
@@ -73,16 +73,14 @@ public class ProcessMonitorCollectController extends NuclosCollectController<Col
 	 * *CollectController<~> cc = new *CollectController<~>(.., rc);
 	 * </code></pre>
 	 */
-	protected ProcessMonitorCollectController(JComponent parent,
-			CollectableEntity clcte, MainFrameTab tabIfAny) {
-		super(parent, clcte);
-		ifrm = tabIfAny!=null ? tabIfAny : newInternalFrame("Prozesse designen");
+	protected ProcessMonitorCollectController(CollectableEntity clcte, MainFrameTab tabIfAny) {
+		super(clcte, tabIfAny);
 		
 		this.initialize(this.pnlCollect);
 		
 		final SubForm subformUsages = new SubForm(NuclosEntity.STATEMODELUSAGE.getEntityName(), JToolBar.VERTICAL, "statemodel");
 		
-		this.subformctlUsages = new MasterDataSubFormController(getFrame(), parent, this.getDetailsEditView().getModel(),
+		this.subformctlUsages = new MasterDataSubFormController(getTab(), this.getDetailsEditView().getModel(),
 				this.getEntityName(), subformUsages, this.getPreferences(), this.getEntityPreferences(), valueListProviderCache);
 		
 		pnlEdit = new ProcessMonitorEditPanel(subformUsages);
@@ -90,13 +88,8 @@ public class ProcessMonitorCollectController extends NuclosCollectController<Col
 		this.getDetailsPanel().setEditView(DefaultEditView.newDetailsEditView(
 				pnlEdit, pnlEdit.getHeader().newCollectableComponentsProvider()));
 					
-		ifrm.setLayeredComponent(pnlCollect);
-		this.setInternalFrame(ifrm, tabIfAny==null);
+		getTab().setLayeredComponent(pnlCollect);
 		// TODO Auto-generated constructor stub
-	}
-	
-	public final MainFrameTab getMainFrameTab() {
-		return ifrm;
 	}
 	
 	/**

@@ -25,11 +25,17 @@ import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
+import javax.swing.AbstractAction;
 import javax.swing.JButton;
 import javax.swing.JColorChooser;
 import javax.swing.JDialog;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
+import javax.swing.SwingUtilities;
 
 import org.nuclos.client.main.Main;
 import org.nuclos.client.synthetica.NuclosThemeSettings;
@@ -39,6 +45,7 @@ public class ColorChooserButton extends JButton {
 
 	private Color color;
 	
+	@SuppressWarnings("serial")
 	public ColorChooserButton(String text, Color color, final JDialog parent) {
 		super(text);
 		this.color = color;
@@ -89,6 +96,17 @@ public class ColorChooserButton extends JButton {
 				dialog.setVisible(true);
 			}
 		});
+		
+		final JPopupMenu popup = new JPopupMenu();
+		final JMenuItem miDelete = new JMenuItem(new AbstractAction(SpringLocaleDelegate.getInstance().getMessage("ColorChooserButton.4", "Löschen"), Icons.getInstance().getIconRealDelete16()) {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				ColorChooserButton.this.color = null;
+			}
+		});
+		miDelete.setEnabled(color != null);
+		popup.add(miDelete);
+		setComponentPopupMenu(popup);
 	}
 
 	public Color getColor() {

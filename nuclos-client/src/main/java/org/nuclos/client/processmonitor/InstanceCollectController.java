@@ -29,6 +29,7 @@ import javax.swing.JToolBar;
 
 import org.nuclos.client.common.NuclosCollectController;
 import org.nuclos.client.main.mainframe.MainFrameTab;
+import org.nuclos.client.main.mainframe.MainFrameTabbedPane;
 import org.nuclos.client.masterdata.MasterDataDelegate;
 import org.nuclos.client.ui.Errors;
 import org.nuclos.client.ui.Icons;
@@ -56,7 +57,6 @@ import org.nuclos.server.processmonitor.valueobject.SubProcessVO;
  */
 public class InstanceCollectController extends NuclosCollectController<CollectableInstanceModel> {
 	
-	private final MainFrameTab ifrm;
 	private final CollectPanel<CollectableInstanceModel> pnlCollect = new CollectPanel<CollectableInstanceModel>(false);
 	private final InstanceViewPanel pnlView;
 
@@ -72,9 +72,8 @@ public class InstanceCollectController extends NuclosCollectController<Collectab
 	 * *CollectController<~> cc = new *CollectController<~>(.., rc);
 	 * </code></pre>
 	 */
-	public InstanceCollectController(JComponent parent, String entityName, MainFrameTab tabIfAny) {
-		super(parent, entityName);
-		ifrm = tabIfAny!=null ? tabIfAny : newInternalFrame("InstanceViewer");
+	public InstanceCollectController(String entityName, MainFrameTab tabIfAny) {
+		super(entityName, tabIfAny);
 		this.initialize(this.pnlCollect);
 		
 		this.setupDetailsToolBar();
@@ -84,14 +83,9 @@ public class InstanceCollectController extends NuclosCollectController<Collectab
 		
 		this.getDetailsPanel().setEditView(DefaultEditView.newDetailsEditView(pnlView, pnlView.pnlHeader.newCollectableComponentsProvider()));
 		
-		ifrm.setLayeredComponent(pnlCollect);
-		this.setInternalFrame(ifrm, tabIfAny==null);
+		getTab().setLayeredComponent(pnlCollect);
 		
 		this.getCollectStateModel().addCollectStateListener(new InstanceCollectStateListener());
-	}
-	
-	public final MainFrameTab getMainFrameTab() {
-		return ifrm;
 	}
 	
 	/**
@@ -105,7 +99,7 @@ public class InstanceCollectController extends NuclosCollectController<Collectab
 		btnSetPlanStart.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent ev) {
-				final InstanceSelectPlanStartController ctrl = new InstanceSelectPlanStartController(InstanceCollectController.this.getFrame());
+				final InstanceSelectPlanStartController ctrl = new InstanceSelectPlanStartController(InstanceCollectController.this.getTab());
 				final CollectableInstanceModel clctSelected = InstanceCollectController.this.getSelectedCollectable();
 				Integer iProcessMonitorId = (Integer)clctSelected.getValueId("processmonitor");
 				
@@ -124,7 +118,7 @@ public class InstanceCollectController extends NuclosCollectController<Collectab
 						}
 					}
 				} catch (CommonBusinessException e) {
-					Errors.getInstance().showExceptionDialog(InstanceCollectController.this.getFrame(), "Beim Plan Start setzen ist ein Fehler aufgetreten!", e);
+					Errors.getInstance().showExceptionDialog(InstanceCollectController.this.getTab(), "Beim Plan Start setzen ist ein Fehler aufgetreten!", e);
 				}
 			}
 		});
@@ -142,16 +136,16 @@ public class InstanceCollectController extends NuclosCollectController<Collectab
 				DateTime datePlanEnd = (DateTime) clctSelected.getValue("planend");
 				
 				if (datePlanStart == null || datePlanEnd == null){
-					JOptionPane.showMessageDialog(InstanceCollectController.this.getFrame(), "Plan Start und Plan Ende m\u00fcssen gesetzt sein bevor eine Instanz gestartet werden kann!");
+					JOptionPane.showMessageDialog(InstanceCollectController.this.getTab(), "Plan Start und Plan Ende m\u00fcssen gesetzt sein bevor eine Instanz gestartet werden kann!");
 				} else {
 					if (InstanceDelegate.getInstance().isProcessInstanceStarted(iInstanceId).booleanValue()){
-						JOptionPane.showMessageDialog(InstanceCollectController.this.getFrame(), "Instanz ist bereits gestartet!");
+						JOptionPane.showMessageDialog(InstanceCollectController.this.getTab(), "Instanz ist bereits gestartet!");
 					} else {
 						try {
 							InstanceDelegate.getInstance().createProcessInstance((Integer)clctSelected.getValueId("processmonitor"), (Integer)clctSelected.getId());
 							InstanceCollectController.this.refreshCurrentCollectable();
 						} catch (CommonBusinessException e) {
-							Errors.getInstance().showExceptionDialog(InstanceCollectController.this.getFrame(), "Beim Starten der Instanz ist ein Fehler aufgetreten!", e);
+							Errors.getInstance().showExceptionDialog(InstanceCollectController.this.getTab(), "Beim Starten der Instanz ist ein Fehler aufgetreten!", e);
 						}
 					}
 				}

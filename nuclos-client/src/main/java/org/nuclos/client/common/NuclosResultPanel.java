@@ -422,11 +422,11 @@ public class NuclosResultPanel<Clct extends Collectable> extends ResultPanel<Clc
 				@Override
 				public void handleError(Exception ex) {
 					entry.setStatus(BackgroundProcessInfo.Status.ERROR);
-					Errors.getInstance().showExceptionDialog(clctctl.getFrame(), ex);
+					Errors.getInstance().showExceptionDialog(clctctl.getTab(), ex);
 				}
 			};
 
-			final BackgroundProcessStatusDialog dlgStatus = BackgroundProcessStatusController.getStatusDialog(UIUtils.getFrameForComponent(clctctl.getFrame().getParent()));
+			final BackgroundProcessStatusDialog dlgStatus = BackgroundProcessStatusController.getStatusDialog(UIUtils.getFrameForComponent(clctctl.getTab().getParent()));
 			Future<?> future = CommonMultiThreader.getInstance().executeInterruptible(workerAdapter);
 			BackgroundProcessTableEntry entry = new BackgroundProcessTableEntry(
 					localeDelegate.getMessage("NuclosResultPanel.18", "XML-Export"), BackgroundProcessInfo.Status.RUNNING, DateUtils.now(), future);
@@ -535,11 +535,11 @@ public class NuclosResultPanel<Clct extends Collectable> extends ResultPanel<Clc
 				@Override
 				public void handleError(Exception ex) {
 					entry.setStatus(BackgroundProcessInfo.Status.ERROR);
-					Errors.getInstance().showExceptionDialog(clctctl.getFrame(), ex);
+					Errors.getInstance().showExceptionDialog(clctctl.getTab(), ex);
 				}
 			};
 
-			final BackgroundProcessStatusDialog dlgStatus = BackgroundProcessStatusController.getStatusDialog(UIUtils.getFrameForComponent(clctctl.getFrame().getParent()));
+			final BackgroundProcessStatusDialog dlgStatus = BackgroundProcessStatusController.getStatusDialog(UIUtils.getFrameForComponent(clctctl.getTab().getParent()));
 			Future<?> future = CommonMultiThreader.getInstance().executeInterruptible(workerAdapter);
 			BackgroundProcessTableEntry entry = new BackgroundProcessTableEntry(SpringLocaleDelegate.getInstance().
 					getMessage("NuclosResultPanel.17", "XML-Import"), BackgroundProcessInfo.Status.RUNNING, DateUtils.now(), future);

@@ -37,6 +37,7 @@ import org.nuclos.client.common.security.SecurityDelegate;
 import org.nuclos.client.entityobject.CollectableEntityObject;
 import org.nuclos.client.main.Main;
 import org.nuclos.client.main.mainframe.MainFrameTab;
+import org.nuclos.client.main.mainframe.MainFrameTabbedPane;
 import org.nuclos.client.masterdata.CollectableMasterData;
 import org.nuclos.client.masterdata.CollectableMasterDataWithDependants;
 import org.nuclos.client.masterdata.MasterDataCollectController;
@@ -88,8 +89,8 @@ public class PersonalTaskCollectController extends MasterDataCollectController {
 	 * *CollectController<~> cc = new *CollectController<~>(.., rc);
 	 * </code></pre>
 	 */
-	public PersonalTaskCollectController(JComponent parent, MainFrameTab tabIfAny) {
-		super(parent, NuclosEntity.TASKLIST, tabIfAny);
+	public PersonalTaskCollectController(MainFrameTab tabIfAny) {
+		super(NuclosEntity.TASKLIST, tabIfAny);
 		delegate = new TaskDelegate();
 		setupDetailsToolBar();
 		if(SecurityCache.getInstance().isSuperUser()){
@@ -175,7 +176,7 @@ public class PersonalTaskCollectController extends MasterDataCollectController {
 		boolean result = false;
 		final String sMessage = getSpringLocaleDelegate().getMessage("EditPersonalTaskDefinitionPanel.Singletask.Secure", null);
 		final String sSecureTitle = sSingletaskButtonName;
-		int createSingleTasksSecure = JOptionPane.showConfirmDialog(this.getParent(), sMessage, sSecureTitle, JOptionPane.YES_NO_OPTION);
+		int createSingleTasksSecure = JOptionPane.showConfirmDialog(this.getTab(), sMessage, sSecureTitle, JOptionPane.YES_NO_OPTION);
 		switch(createSingleTasksSecure) {
 			case JOptionPane.YES_OPTION:
 				Collection<TaskVO> taskvos = null;

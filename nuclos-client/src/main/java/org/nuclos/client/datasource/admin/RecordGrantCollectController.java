@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.swing.JComponent;
 import javax.swing.JOptionPane;
 
 import org.nuclos.client.common.security.SecurityCache;
@@ -34,6 +33,7 @@ import org.nuclos.client.datasource.querybuilder.QueryBuilderConstants;
 import org.nuclos.client.datasource.querybuilder.QueryBuilderEditor;
 import org.nuclos.client.datasource.querybuilder.gui.ColumnEntry;
 import org.nuclos.client.main.mainframe.MainFrameTab;
+import org.nuclos.client.main.mainframe.MainFrameTabbedPane;
 import org.nuclos.client.masterdata.MetaDataCache;
 import org.nuclos.client.ui.CommonClientWorker;
 import org.nuclos.client.ui.CommonClientWorkerAdapter;
@@ -74,8 +74,8 @@ public class RecordGrantCollectController extends AbstractDatasourceCollectContr
 	 * *CollectController<~> cc = new *CollectController<~>(.., rc);
 	 * </code></pre>
 	 */
-	public RecordGrantCollectController(JComponent parent, MainFrameTab tabIfAny) {
-		super(parent, new CollectableMasterDataEntity(
+	public RecordGrantCollectController(MainFrameTab tabIfAny) {
+		super(new CollectableMasterDataEntity(
 			MetaDataCache.getInstance().getMetaData(NuclosEntity.RECORDGRANT)), tabIfAny);
 
 		CollectableMasterDataEntity clctEntity = new CollectableMasterDataEntity(
@@ -128,7 +128,7 @@ public class RecordGrantCollectController extends AbstractDatasourceCollectContr
 	protected void deleteCollectable(CollectableDataSource clct) throws CommonBusinessException {
 		final List<DatasourceVO> lstUsages = DatasourceDelegate.getInstance().getUsagesForDatasource(clct.getDatasourceVO());
 		if (!lstUsages.isEmpty()) {
-			final int iBtn = JOptionPane.showConfirmDialog(this.getFrame(), getSpringLocaleDelegate().getMessage(
+			final int iBtn = JOptionPane.showConfirmDialog(this.getTab(), getSpringLocaleDelegate().getMessage(
 					"DatasourceCollectController.8","Diese Datenquelle wird in anderen Datenquellen verwendet.") + "\n" +
 					getSpringLocaleDelegate().getMessage(
 							"DatasourceCollectController.1","Das L\u00f6schen f\u00fchrt dazu, dass folgende Datenquellen nicht mehr ausf\u00fchrbar sind") + ":\n" + getUsagesAsString(lstUsages) +
@@ -165,7 +165,7 @@ public class RecordGrantCollectController extends AbstractDatasourceCollectContr
 		if (bDataSourceNameWasChanged) {
 			final List<DatasourceVO> lstUsages = DatasourceDelegate.getInstance().getUsagesForDatasource(recordGrantVO);
 			if (!lstUsages.isEmpty()) {
-				final int iBtn = JOptionPane.showConfirmDialog(this.getFrame(), getSpringLocaleDelegate().getMessage(
+				final int iBtn = JOptionPane.showConfirmDialog(this.getTab(), getSpringLocaleDelegate().getMessage(
 						"DatasourceCollectController.9","Diese Datenquelle wird in anderen Datenquellen verwendet.") + "\n" +
 						getSpringLocaleDelegate().getMessage(
 								"DatasourceCollectController.11","Eine Umbenennung f\u00fchrt dazu, dass folgende Datenquellen nicht mehr ausf\u00fchrbar sind:") + "\n" +
@@ -240,12 +240,12 @@ public class RecordGrantCollectController extends AbstractDatasourceCollectContr
 			final String sDatasourceXML = this.pnlEdit.getQueryEditor().getXML(new DatasourceEntityOptions(false));
 			final Map<String, Object> mpParams = CollectionUtils.newHashMap();
 
-			if (createParamMap(sDatasourceXML, mpParams, ifrm)) {
+			if (createParamMap(sDatasourceXML, mpParams, getTab())) {
 				result = datasourcedelegate.executeQuery(sDatasourceXML, mpParams, iMaxRowCount);
 			}
 		}
 		catch (CommonBusinessException ex) {
-			Errors.getInstance().showExceptionDialog(getFrame(), ex);
+			Errors.getInstance().showExceptionDialog(getTab(), ex);
 		}
 		return result;
 	}
@@ -267,7 +267,7 @@ public class RecordGrantCollectController extends AbstractDatasourceCollectContr
 	protected void importXML(String sXML) throws NuclosBusinessException {
 		final String sWarnings = QueryBuilderEditor.getSkippedElements(pnlEdit.getQueryEditor().setXML(sXML));
 		if (sWarnings.length() > 0) {
-			JOptionPane.showMessageDialog(parent, getSpringLocaleDelegate().getMessage(
+			JOptionPane.showMessageDialog(getTab(), getSpringLocaleDelegate().getMessage(
 					"DatasourceCollectController.12","Folgende Elemente existieren nicht mehr in dem aktuellen Datenbankschema\n und wurden daher entfernt:") + "\n" + sWarnings);
 		}
 		detailsChanged(pnlEdit.getQueryEditor());
@@ -289,11 +289,11 @@ public class RecordGrantCollectController extends AbstractDatasourceCollectContr
 		try {
 			final DatasourceFacadeRemote dataSourceFacade = ServiceLocator.getInstance().getFacade(DatasourceFacadeRemote.class);
 			dataSourceFacade.validateSqlFromXML(pnlEdit.getQueryEditor().getXML(new DatasourceEntityOptions(false)));
-			JOptionPane.showMessageDialog(getFrame(), getSpringLocaleDelegate().getMessage(
+			JOptionPane.showMessageDialog(getTab(), getSpringLocaleDelegate().getMessage(
 					"DatasourceCollectController.10","Die SQL Abfrage ist syntaktisch korrekt."));
 		}
 		catch (Exception ex) {
-			Errors.getInstance().showExceptionDialog(getFrame(), ex);
+			Errors.getInstance().showExceptionDialog(getTab(), ex);
 		}
 	}
 

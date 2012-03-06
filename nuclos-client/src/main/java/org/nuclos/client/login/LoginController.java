@@ -97,7 +97,7 @@ import org.springframework.security.core.AuthenticationException;
  * @version 01.00.00
  */
 @Configurable
-public class LoginController extends Controller {
+public class LoginController extends Controller<Component> {
 
 	private static final Logger LOG = Logger.getLogger(LoginController.class);
 	
@@ -206,7 +206,7 @@ public class LoginController extends Controller {
 		frame.getContentPane().add(optpn, BorderLayout.CENTER);
 		frame.pack();
 		frame.setResizable(false);
-		frame.setLocationRelativeTo(this.getParent());
+		frame.setLocationRelativeTo(null);
 		frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 
 		boolean attemptAutoLogin = false;

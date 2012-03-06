@@ -47,7 +47,7 @@ public class DummyButtonAction<Clct extends Collectable> implements CollectActio
 	public void run(CollectController<Clct> controller, Properties probs) {
 		MainFrameTab overlayFrame = new MainFrameTab("Dummy Button Aktion");
 		overlayFrame.setLayeredComponent(new JLabel(DUMMYBUTTONACTION.MESSAGE));
-		controller.getFrame().add(overlayFrame);
+		controller.getTab().add(overlayFrame);
 	}
 
 	@Override

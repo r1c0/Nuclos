@@ -126,7 +126,7 @@ public class NucletExplorerView extends DefaultExplorerView implements ExplorerV
 
 				getExplorerController().refreshTab(NucletExplorerView.this);
 			} catch(Exception e) {
-				Errors.getInstance().showExceptionDialog(getExplorerController().getParent(), e);
+				Errors.getInstance().showExceptionDialog(getExplorerController().getTabbedPane().getComponentPanel(), e);
 			}
 		}
 	}

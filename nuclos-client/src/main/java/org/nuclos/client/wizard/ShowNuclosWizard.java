@@ -17,11 +17,11 @@
 package org.nuclos.client.wizard;
 
 import javax.swing.JFrame;
-import javax.swing.JTabbedPane;
 
 import org.nuclos.client.main.Main;
 import org.nuclos.client.main.mainframe.MainFrame;
 import org.nuclos.client.main.mainframe.MainFrameTab;
+import org.nuclos.client.main.mainframe.MainFrameTabbedPane;
 import org.nuclos.client.resource.NuclosResourceCache;
 import org.nuclos.client.wizard.steps.NuclosEntityAttributeInputStep;
 import org.nuclos.client.wizard.steps.NuclosEntityCommonPropertiesStep;
@@ -61,7 +61,7 @@ public class ShowNuclosWizard  {
 		this.toEdit = vo;
 	}
 
-	public void showWizard(JTabbedPane desktopPane, JFrame mainFrame) {
+	public void showWizard(MainFrameTabbedPane desktopPane, JFrame mainFrame) {
 		final SpringLocaleDelegate localeDelegate = SpringLocaleDelegate.getInstance();
 		
 		final MainFrameTab ifrm = Main.getInstance().getMainController().newMainFrameTab(null, 

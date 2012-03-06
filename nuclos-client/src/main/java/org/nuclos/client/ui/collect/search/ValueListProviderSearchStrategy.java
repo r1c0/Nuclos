@@ -36,7 +36,7 @@ public class ValueListProviderSearchStrategy extends CollectSearchStrategy<Colle
 	@Override
 	public void search() {
 		final AbstractDatasourceCollectController cc = getAbstractDatasourceCollectController();
-		final MainFrameTab mft = cc.getMainFrameTab();
+		final MainFrameTab mft = cc.getTab();
 		try {
 			mft.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 			List<CollectableDataSource> result = CollectionUtils.transform(this.datasourcedelegate.getAllValuelistProvider(),

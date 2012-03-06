@@ -57,7 +57,7 @@ public abstract class CommonClientWorkerAdapter<T extends Collectable> implement
 
 	@Override
 	public JComponent getResultsComponent() {
-		return ctl.getFrame();
+		return ctl.getTab();
 	}
 
 	@Override

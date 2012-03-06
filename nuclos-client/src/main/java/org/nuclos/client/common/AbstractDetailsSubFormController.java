@@ -16,13 +16,11 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.common;
 
-import java.awt.Component;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.prefs.Preferences;
 
-import javax.swing.JComponent;
 import javax.swing.JTable;
 import javax.swing.RowSorter.SortKey;
 import javax.swing.SortOrder;
@@ -30,6 +28,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import org.apache.log4j.Logger;
+import org.nuclos.client.main.mainframe.MainFrameTab;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.client.ui.collect.SubForm;
 import org.nuclos.client.ui.collect.SubForm.SubFormToolListener;
@@ -74,10 +73,10 @@ public abstract class AbstractDetailsSubFormController<Clct extends Collectable>
 	 * @param clctfproviderfactory
 	 * @see #postCreate()
 	 */
-	public AbstractDetailsSubFormController(CollectableEntity clcte, Component parent, JComponent parentMdi, CollectableComponentModelProvider clctcompmodelproviderParent,
+	public AbstractDetailsSubFormController(CollectableEntity clcte, MainFrameTab tab, CollectableComponentModelProvider clctcompmodelproviderParent,
 			String sParentEntityName, SubForm subform, Preferences prefsUserParent, EntityPreferences entityPrefs, CollectableFieldsProviderFactory clctfproviderfactory) {
 
-		super(clcte, parent, parentMdi, clctcompmodelproviderParent, sParentEntityName, subform, false, prefsUserParent, entityPrefs, clctfproviderfactory);
+		super(clcte, tab, clctcompmodelproviderParent, sParentEntityName, subform, false, prefsUserParent, entityPrefs, clctfproviderfactory);
 
 		// initialize table model:
 		DetailsSubFormTableModel<Clct>  tblmdl = new DetailsSubFormTableModelImpl<Clct>(this.newCollectableList(new ArrayList<Clct>()));
@@ -204,7 +203,7 @@ public abstract class AbstractDetailsSubFormController<Clct extends Collectable>
 	 * lets the user add/remove multiple rows at once. This requires the subform to define a unique master data column.
 	 */
 	public void cmdMultiEdit() {
-		UIUtils.runCommand(this.getParent(), new Runnable() {
+		UIUtils.runCommandForTabbedPane(this.getMainFrameTabbedPane(), new Runnable() {
 			@Override
 			public void run() {
 				final SubForm subform = AbstractDetailsSubFormController.this.getSubForm();

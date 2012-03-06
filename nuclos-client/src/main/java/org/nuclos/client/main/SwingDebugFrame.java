@@ -350,6 +350,6 @@ public class SwingDebugFrame extends JFrame {
 	}
 
 	private CollectController<?> getController(Component comp) {
-		return ctrl.getControllerForInternalFrame(UIUtils.getInternalFrameForComponent(comp));
+		return ctrl.getControllerForTab(UIUtils.getTabForComponent(comp));
 	}
 }

@@ -34,7 +34,7 @@ public class StateModelSearchStrategy extends CollectSearchStrategy<CollectableS
 	@Override
 	public void search() {
 		final StateModelCollectController cc = getStateModelCollectController();
-		final MainFrameTab mft = cc.getMainFrameTab();
+		final MainFrameTab mft = cc.getTab();
 		try {
 			mft.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 			List<CollectableStateModel> result = CollectionUtils.transform(StateDelegate.getInstance().getAllStateModels(),

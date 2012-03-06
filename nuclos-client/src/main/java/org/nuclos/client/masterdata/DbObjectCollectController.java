@@ -19,6 +19,7 @@ package org.nuclos.client.masterdata;
 import javax.swing.JComponent;
 
 import org.nuclos.client.main.mainframe.MainFrameTab;
+import org.nuclos.client.main.mainframe.MainFrameTabbedPane;
 import org.nuclos.client.ui.collect.CollectStateEvent;
 import org.nuclos.client.ui.collect.CollectStateListener;
 import org.nuclos.common.NuclosEntity;
@@ -43,8 +44,8 @@ public class DbObjectCollectController extends MasterDataCollectController {
 	 * *CollectController<~> cc = new *CollectController<~>(.., rc);
 	 * </code></pre>
 	 */
-	public DbObjectCollectController(JComponent parent, MainFrameTab tabIfAny) {
-		super(parent, NuclosEntity.DBOBJECT.getEntityName(), tabIfAny);
+	public DbObjectCollectController(MainFrameTab tabIfAny) {
+		super(NuclosEntity.DBOBJECT.getEntityName(), tabIfAny);
 		this.getCollectStateModel().addCollectStateListener(new CollectStateListener() {
 			
 			@Override

@@ -38,9 +38,9 @@ import org.apache.log4j.Logger;
 import org.nuclos.client.common.MetaDataClientProvider;
 import org.nuclos.client.main.Main;
 import org.nuclos.client.main.mainframe.MainFrameTab;
-import org.nuclos.client.ui.Controller;
 import org.nuclos.client.ui.Errors;
 import org.nuclos.client.ui.MainFrameTabAdapter;
+import org.nuclos.client.ui.MainFrameTabController;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.client.ui.collect.CollectController;
 import org.nuclos.client.ui.popupmenu.JPopupMenuFactory;
@@ -61,7 +61,7 @@ import org.nuclos.common2.exception.CommonBusinessException;
  * @author	<a href="mailto:Christoph.Radig@novabit.de">Christoph.Radig</a>
  * @version	01.00.00
  */
-public class MultiCollectablesActionController <T,R> extends Controller {
+public class MultiCollectablesActionController <T,R> extends MainFrameTabController {
 	
 	private static final Logger LOG = Logger.getLogger(MultiCollectablesActionController.class);
 
@@ -130,8 +130,8 @@ public class MultiCollectablesActionController <T,R> extends Controller {
 	 * @param iconFrame
 	 * @param action
 	 */
-	public MultiCollectablesActionController(MainFrameTab parent, Collection<T> coll, String sTitle, Icon iconFrame, Action<T, R> action) {
-		super(parent);
+	public MultiCollectablesActionController(MainFrameTab tab, Collection<T> coll, String sTitle, Icon iconFrame, Action<T, R> action) {
+		super(tab);
 
 		this.coll = coll;
 		this.sTitle = sTitle;
@@ -144,12 +144,12 @@ public class MultiCollectablesActionController <T,R> extends Controller {
 	}
 
 	public MultiCollectablesActionController(CollectController<? extends Collectable> ctl, String sTitle, Action<T,R> action, Collection<T> collclct) {
-		this(ctl.getFrame(), collclct, sTitle, ctl.getFrame().getTabIcon(), action);
+		this(ctl.getTab(), collclct, sTitle, ctl.getTab().getTabIcon(), action);
 	}
 
 	public void run(final MultiActionProgressPanel pnl) {
-		final MainFrameTab ifrm = new MainFrameTab(sTitle);
-		ifrm.addMainFrameTabListener(new MainFrameTabAdapter() {
+		final MainFrameTab overlayTab = new MainFrameTab(sTitle);
+		overlayTab.addMainFrameTabListener(new MainFrameTabAdapter() {
 			@Override
 			public boolean tabClosing(MainFrameTab tab)	throws CommonBusinessException {
 				return closable;
@@ -162,18 +162,18 @@ public class MultiCollectablesActionController <T,R> extends Controller {
 				} catch (CommonBusinessException ex) {
 					final String sMessage = getSpringLocaleDelegate().getMessage(
 							"MultiCollectablesActionController.4","Nach dem Abschluss der Operation ist ein Fehler aufgetreten.");
-					Errors.getInstance().showExceptionDialog(getParent(), sMessage, ex);
+					Errors.getInstance().showExceptionDialog(getTabbedPane().getComponentPanel(), sMessage, ex);
 				}
 			}
 
 		});
 
 		//ifrm.setContentPane(pnl);
-		ifrm.setLayeredComponent(pnl);
-		ifrm.setTabIcon(this.iconFrame);
+		overlayTab.setLayeredComponent(pnl);
+		overlayTab.setTabIcon(this.iconFrame);
 		pnl.setStatus(getSpringLocaleDelegate().getMessage("MultiCollectablesActionController.1","Vorgang l\u00e4uft..."));
 
-		final MultiObjectsActionRunnable runnable = new MultiObjectsActionRunnable(this.coll.size(), ifrm, pnl);
+		final MultiObjectsActionRunnable runnable = new MultiObjectsActionRunnable(this.coll.size(), overlayTab, pnl);
 
 //		if (getParent() instanceof CommonJInternalFrame) {
 //			Main.getMainController().getControllerForInternalFrame((CommonJInternalFrame)getParent()).lockFrame(true);
@@ -193,7 +193,7 @@ public class MultiCollectablesActionController <T,R> extends Controller {
 					pnl.setStatus(getSpringLocaleDelegate().getMessage("MultiCollectablesActionController.2","Wird angehalten..."));
 					// disallow input:
 					//setModalGlassPane(ifrm);
-					ifrm.lockLayer();
+					overlayTab.lockLayer();
 					runnable.pause();
 				}
 				else {
@@ -208,7 +208,7 @@ public class MultiCollectablesActionController <T,R> extends Controller {
 			public void actionPerformed(ActionEvent ev) {
 				// pause the action while the user thinks about it...
 				runnable.pause();
-				final int iBtn = JOptionPane.showConfirmDialog(ifrm, action.getConfirmStopMessage(), 
+				final int iBtn = JOptionPane.showConfirmDialog(overlayTab, action.getConfirmStopMessage(), 
 						getSpringLocaleDelegate().getMessage("MultiCollectablesActionController.3","Operation beenden"),
 						JOptionPane.YES_NO_OPTION);
 				if (iBtn == JOptionPane.YES_OPTION) {
@@ -226,20 +226,18 @@ public class MultiCollectablesActionController <T,R> extends Controller {
 		pnl.btnClose.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent ev) {
-				ifrm.dispose();
+				overlayTab.dispose();
 //				UIUtils.runCommand(MultiCollectablesActionController.this.getParent(), new Runnable() {
 //					@Override
 //					public void run() {
 						try {
-							if (getParent() instanceof MainFrameTab) {
-								Main.getInstance().getMainController().getControllerForInternalFrame((MainFrameTab)getParent()).lockFrame(false);
-							}
+							Main.getInstance().getMainController().getControllerForTab(getTab()).lockFrame(false);
 							action.executeFinalAction();
 						}
 						catch (CommonBusinessException ex) {
 							final String sMessage = getSpringLocaleDelegate().getMessage(
 									"MultiCollectablesActionController.4","Nach dem Abschluss der Operation ist ein Fehler aufgetreten.");
-							Errors.getInstance().showExceptionDialog(getParent(), sMessage, ex);
+							Errors.getInstance().showExceptionDialog(getTabbedPane().getComponentPanel(), sMessage, ex);
 						}
 //					}
 //				});
@@ -267,7 +265,7 @@ public class MultiCollectablesActionController <T,R> extends Controller {
 						};
 						filechooser.addChoosableFileFilter(filefilter);
 						filechooser.setFileFilter(filefilter);
-						if(filechooser.showSaveDialog(MultiCollectablesActionController.this.getParent()) == JFileChooser.APPROVE_OPTION) {
+						if(filechooser.showSaveDialog(MultiCollectablesActionController.this.getTabbedPane().getComponentPanel()) == JFileChooser.APPROVE_OPTION) {
 							File file = filechooser.getSelectedFile();
 							if(file != null) {
 								if (file.isDirectory()) {
@@ -293,7 +291,7 @@ public class MultiCollectablesActionController <T,R> extends Controller {
 									writer.close();
 								}
 								catch (IOException ex) {
-									Errors.getInstance().showExceptionDialog(MultiCollectablesActionController.this.getParent(), "MultiCollectablesActionController.saveresulterror", ex);
+									Errors.getInstance().showExceptionDialog(MultiCollectablesActionController.this.getTabbedPane().getComponentPanel(), "MultiCollectablesActionController.saveresulterror", ex);
 								}
 							}
 						}
@@ -322,8 +320,8 @@ public class MultiCollectablesActionController <T,R> extends Controller {
 			}
 		}));
 
-		((MainFrameTab) getParent()).add(ifrm);
-		ifrm.setVisible(true);
+		getTab().add(overlayTab);
+		overlayTab.setVisible(true);
 
 		new Thread(runnable).start();
 	}
@@ -438,7 +436,7 @@ public class MultiCollectablesActionController <T,R> extends Controller {
 						try {
 							if (MultiCollectablesActionController.this.error) {
 								pnl.showProtocol(true);
-								JOptionPane.showMessageDialog(MultiCollectablesActionController.this.getParent(), 
+								JOptionPane.showMessageDialog(MultiCollectablesActionController.this.getTabbedPane().getComponentPanel(), 
 										getSpringLocaleDelegate().getMessageFromResource("MultiCollectablesActionController.erroroccurred"), 
 										Errors.getInstance().getAppName(), JOptionPane.ERROR_MESSAGE);
 							}

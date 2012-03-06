@@ -29,7 +29,6 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.swing.JButton;
-import javax.swing.JComponent;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileFilter;
@@ -44,6 +43,7 @@ import org.nuclos.client.datasource.querybuilder.QueryBuilderConstants;
 import org.nuclos.client.datasource.querybuilder.QueryBuilderEditor;
 import org.nuclos.client.datasource.querybuilder.gui.ColumnEntry;
 import org.nuclos.client.main.mainframe.MainFrameTab;
+import org.nuclos.client.main.mainframe.MainFrameTabbedPane;
 import org.nuclos.client.masterdata.MetaDataCache;
 import org.nuclos.client.ui.Errors;
 import org.nuclos.client.ui.Icons;
@@ -61,8 +61,8 @@ import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.collect.collectable.CollectableEntity;
 import org.nuclos.common.collect.exception.CollectableValidationException;
 import org.nuclos.common.querybuilder.DatasourceUtils;
-import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.IOUtils;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonValidationException;
@@ -78,7 +78,6 @@ public abstract class AbstractDatasourceCollectController extends NuclosCollectC
 
 	protected final DatasourceDelegate datasourcedelegate = DatasourceDelegate.getInstance();
 
-	protected MainFrameTab ifrm;
 	private boolean addTabToParent;
 	protected DatasourceEditPanel pnlEdit;
 	protected CollectPanel<CollectableDataSource> pnlCollect = new DatasourceCollectPanel(false);
@@ -98,15 +97,9 @@ public abstract class AbstractDatasourceCollectController extends NuclosCollectC
 	 * *CollectController<~> cc = new *CollectController<~>(.., rc);
 	 * </code></pre>
 	 */
-	protected AbstractDatasourceCollectController(JComponent parent,
-		CollectableEntity clcte, MainFrameTab tabIfAny) {
-		super(parent, clcte);
-		ifrm = tabIfAny;
+	protected AbstractDatasourceCollectController(CollectableEntity clcte, MainFrameTab tabIfAny) {
+		super(clcte, tabIfAny);
 		addTabToParent = tabIfAny==null;
-	}
-
-	public final MainFrameTab getMainFrameTab() {
-		return ifrm;
 	}
 
 	protected void initializeDatasourceCollectController(DatasourceEditPanel pnlEdit) {
@@ -114,12 +107,9 @@ public abstract class AbstractDatasourceCollectController extends NuclosCollectC
 
 		this.initialize(this.pnlCollect);
 
-		if (ifrm == null)
-		ifrm = newInternalFrame("Datenquellen verwalten");
+		getTab().setLayeredComponent(pnlCollect);
 
-		ifrm.setLayeredComponent(pnlCollect);
-
-		this.setupShortcutsForTabs(ifrm);
+		this.setupShortcutsForTabs(getTab());
 
 		this.setupDetailsToolBar();
 
@@ -128,8 +118,6 @@ public abstract class AbstractDatasourceCollectController extends NuclosCollectC
 		btnImport.setEnabled(true);
 		btnExport.setEnabled(true);
 		btnValidate.setEnabled(true);
-
-		this.setInternalFrame(ifrm, addTabToParent);
 
 		this.getCollectStateModel().addCollectStateListener(new DatasourcesCollectStateListener());
 	}
@@ -289,25 +277,25 @@ public abstract class AbstractDatasourceCollectController extends NuclosCollectC
 				return "*.xml";
 			}
 		});
-		final int iBtn = filechooser.showOpenDialog(this.getFrame());
+		final int iBtn = filechooser.showOpenDialog(this.getTab());
 		if (iBtn == JFileChooser.APPROVE_OPTION) {
 			final File file = filechooser.getSelectedFile();
 			if (file != null) {
 				this.getPreferences().put(PREFS_KEY_LASTIMPORTEXPORTPATH, file.getParent());
-				UIUtils.runCommand(this.getFrame(), new Runnable() {
+				UIUtils.runCommand(this.getTab(), new Runnable() {
 					@Override
 					public void run() {
 						try {
 							importXML(IOUtils.readFromTextFile(file, "UTF-8"));
 						}
 						catch (FileNotFoundException e) {
-							Errors.getInstance().showExceptionDialog(parent, e);
+							Errors.getInstance().showExceptionDialog(getTab(), e);
 						}
 						catch (IOException e) {
-							Errors.getInstance().showExceptionDialog(parent, e);
+							Errors.getInstance().showExceptionDialog(getTab(), e);
 						}
 						catch (NuclosBusinessException e) {
-							Errors.getInstance().showExceptionDialog(parent, e);
+							Errors.getInstance().showExceptionDialog(getTab(), e);
 						}
 					}
 				});
@@ -340,7 +328,7 @@ public abstract class AbstractDatasourceCollectController extends NuclosCollectC
 				return "*.xml";
 			}
 		});
-		final int iBtn = filechooser.showSaveDialog(this.getFrame());
+		final int iBtn = filechooser.showSaveDialog(this.getTab());
 		if (iBtn == JFileChooser.APPROVE_OPTION) {
 			final File file = filechooser.getSelectedFile();
 			if (file != null) {
@@ -350,17 +338,17 @@ public abstract class AbstractDatasourceCollectController extends NuclosCollectC
 					sPathName += ".xml";
 				}
 				final File xmlFile = new File(sPathName);
-				UIUtils.runCommand(this.getFrame(), new Runnable() {
+				UIUtils.runCommand(this.getTab(), new Runnable() {
 					@Override
 					public void run() {
 						try {
 							exportXML(xmlFile);
 						}
 						catch (IOException ex) {
-							Errors.getInstance().showExceptionDialog(getFrame(), ex);
+							Errors.getInstance().showExceptionDialog(getTab(), ex);
 						}
 						catch (CommonBusinessException ex) {
-							Errors.getInstance().showExceptionDialog(getFrame(), ex);
+							Errors.getInstance().showExceptionDialog(getTab(), ex);
 						}
 					}
 				});
@@ -371,7 +359,7 @@ public abstract class AbstractDatasourceCollectController extends NuclosCollectC
 	protected abstract void exportXML(File file) throws IOException, CommonBusinessException ;
 
 	protected void cmdValidateSql() {
-		UIUtils.runCommand(this.getFrame(), new Runnable() {
+		UIUtils.runCommand(this.getTab(), new Runnable() {
 			@Override
 			public void run() {
 				validateSQL();
@@ -405,7 +393,7 @@ public abstract class AbstractDatasourceCollectController extends NuclosCollectC
 				final Map<String, List<String>> mpWarnings = pnlEdit.getQueryEditor().setXML(datasourceVO.getSource());
 				final String sWarnings = QueryBuilderEditor.getSkippedElements(mpWarnings);
 				if (sWarnings.length() > 0) {
-					JOptionPane.showMessageDialog(parent, getSpringLocaleDelegate().getMessage(
+					JOptionPane.showMessageDialog(getTab(), getSpringLocaleDelegate().getMessage(
 							"DatasourceCollectController.13","Folgende Elemente existieren nicht mehr in dem aktuellen Datenbankschema und wurden daher entfernt") + ":\n" + sWarnings);
 				}
 				final List<DatasourceParameterVO> lstParams = datasourcedelegate.getParametersFromXML(datasourceVO.getSource());
@@ -427,7 +415,7 @@ public abstract class AbstractDatasourceCollectController extends NuclosCollectC
 							continue;
 						}
 
-						JOptionPane.showMessageDialog(parent, getSpringLocaleDelegate().getMessage(
+						JOptionPane.showMessageDialog(getTab(), getSpringLocaleDelegate().getMessage(
 								"DatasourceCollectController.5","Der Parameter \"{0}\" ist definiert, wird aber nicht verwendet.", sParameter));
 					}
 				}
@@ -437,7 +425,7 @@ public abstract class AbstractDatasourceCollectController extends NuclosCollectC
 						continue;
 					}
 					if (pnlEdit.isModelUsed() && !stDefinedParameters.contains(sParameter)) {
-						JOptionPane.showMessageDialog(parent, getSpringLocaleDelegate().getMessage(
+						JOptionPane.showMessageDialog(getTab(), getSpringLocaleDelegate().getMessage(
 								"DatasourceCollectController.6","Der Parameter \"{0}\" ist nicht definiert.", sParameter));
 					}
 				}

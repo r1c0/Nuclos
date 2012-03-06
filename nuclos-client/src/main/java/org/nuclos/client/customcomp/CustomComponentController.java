@@ -30,6 +30,7 @@ import org.nuclos.client.customcomp.resplan.ResPlanController;
 import org.nuclos.client.main.Main;
 import org.nuclos.client.main.mainframe.MainFrame;
 import org.nuclos.client.main.mainframe.MainFrameTab;
+import org.nuclos.client.main.mainframe.MainFrameTabbedPane;
 import org.nuclos.client.main.mainframe.workspace.ITabStoreController;
 import org.nuclos.client.main.mainframe.workspace.TabRestoreController;
 import org.nuclos.client.resource.NuclosResourceCache;
@@ -37,6 +38,7 @@ import org.nuclos.client.ui.CommonClientWorker;
 import org.nuclos.client.ui.CommonMultiThreader;
 import org.nuclos.client.ui.Errors;
 import org.nuclos.client.ui.MainFrameTabAdapter;
+import org.nuclos.client.ui.MainFrameTabController;
 import org.nuclos.client.ui.TopController;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.client.ui.UIUtils.CommandHandler;
@@ -56,16 +58,10 @@ public abstract class CustomComponentController extends TopController {
 	protected final Logger log = Logger.getLogger(this.getClass());
 
 	private final String componentName;
-	private MainFrameTab ifrm;
 
-	protected CustomComponentController(JComponent parent, String componentName) {
-		super(parent);
+	protected CustomComponentController(String componentName, MainFrameTab tab) {
+		super(tab);
 		this.componentName = componentName;
-	}
-
-	@Override
-	public JComponent getParent() {
-		return (JComponent) super.getParent();
 	}
 
 	public final String getCustomComponentName() {
@@ -84,8 +80,7 @@ public abstract class CustomComponentController extends TopController {
 	 * specific initialization.
 	 */
 	public void run() {
-		ifrm.setVisible(true);
-		MainFrame.setSelectedTab(ifrm);
+		getTab().setVisible(true);
 	}
 
 	protected abstract JComponent getComponent();
@@ -106,19 +101,19 @@ public abstract class CustomComponentController extends TopController {
 		// This is similar to UIUtils.runCommand but handles
 		try {
 			CommandHandler cmdHandler = UIUtils.getCommandHandler();
-			cmdHandler.commandStarted(ifrm);
+			cmdHandler.commandStarted(getTab());
 			try {
 				runnable.run();
 			} finally {
-				cmdHandler.commandFinished(ifrm);
+				cmdHandler.commandFinished(getTab());
 			}
 		} catch (Exception ex) {
 			boolean expectionHandled = handleSpecialException(ex);
 			if (!expectionHandled) {
-				Errors.getInstance().showExceptionDialog(ifrm, ex);
+				Errors.getInstance().showExceptionDialog(getTab(), ex);
 			}
 		} catch (Error error) {
-			Errors.getInstance().getCriticalErrorHandler().handleCriticalError(ifrm, error);
+			Errors.getInstance().getCriticalErrorHandler().handleCriticalError(getTab(), error);
 		}
 	}
 
@@ -131,12 +126,12 @@ public abstract class CustomComponentController extends TopController {
 	 * handling.
 	 */
 	protected void execute(final BackgroundTask task) {
-		final MainFrameTab ifrm = this.ifrm;
+		final MainFrameTab tab = this.getTab();
 		CommonMultiThreader.getInstance().execute(new CommonClientWorker() {
 			@Override
 			public void init() throws CommonBusinessException {
-				if (ifrm != null)
-					ifrm.lockLayer();
+				if (tab != null)
+					tab.lockLayer();
 				task.init();
 			}
 			@Override
@@ -145,18 +140,18 @@ public abstract class CustomComponentController extends TopController {
 			}
 			@Override
 			public void paint() throws CommonBusinessException {
-				if (ifrm != null)
-					ifrm.unlockLayer();
+				if (tab != null)
+					tab.unlockLayer();
 				task.done();
 			}
 			@Override
 			public JComponent getResultsComponent() {
-				return ifrm;
+				return tab;
 			}
 			@Override
 			public void handleError(Exception ex) {
-				if (ifrm != null)
-					ifrm.unlockLayer();
+				if (tab != null)
+					tab.unlockLayer();
 				Errors.getInstance().showExceptionDialog(getResultsComponent(), ex);
 			}
 		});
@@ -195,16 +190,19 @@ public abstract class CustomComponentController extends TopController {
 	 */
 	public static CustomComponentController newController(String customComponent, Class<?> controllerClazz, MainFrameTab tabIfAny) {
 		CustomComponentVO componentVO = CustomComponentCache.getInstance().getByName(customComponent);
+				
 		final CustomComponentController controller;
 		if ("org.nuclos.resplan".equals(componentVO.getComponentType()) && controllerClazz.isAssignableFrom(ResPlanController.class)) {
-			controller = new ResPlanController(MainFrame.getPredefinedEntityOpenLocation(customComponent), componentVO);
+			controller = new ResPlanController(componentVO, null);
 		} else {
 			throw new NuclosFatalException("Component " + componentVO.getInternalName() + " has an unsupported or incompatible component type");
 		}
+		
 		boolean newTab = false;
-		final MainFrameTab mainFrameTab;
+		final MainFrameTab mainFrameTab;		
 		String title = SpringLocaleDelegate.getInstance().getTextFallback(
 				componentVO.getLabelResourceId(), componentVO.getLabelResourceId());
+		
 		if (tabIfAny == null) {
 			newTab = true;
 			mainFrameTab = Main.getInstance().getMainController().newMainFrameTab(controller, title);
@@ -212,7 +210,7 @@ public abstract class CustomComponentController extends TopController {
 			mainFrameTab = tabIfAny;
 			mainFrameTab.setTitle(title);
 		}
-		controller.ifrm = mainFrameTab;
+		controller.setParent(mainFrameTab);
 		mainFrameTab.setLayeredComponent(controller.getComponent());
 		if (controller.isRestoreTab()) {
 			mainFrameTab.setTabStoreController(new CustomComponentTabStoreController(controller));
@@ -333,7 +331,4 @@ public abstract class CustomComponentController extends TopController {
 		return MainFrame.resizeAndCacheTabIcon(NuclosResourceCache.getNuclosResourceIcon("org.nuclos.client.resource.icon.glyphish.83-calendar.png"));
 	}
 
-	public MainFrameTab getFrame() {
-		return ifrm;
-	}
 }

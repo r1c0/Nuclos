@@ -60,6 +60,7 @@ import org.nuclos.client.main.Main;
 import org.nuclos.client.main.MainController;
 import org.nuclos.client.main.mainframe.MainFrame;
 import org.nuclos.client.main.mainframe.MainFrameTab;
+import org.nuclos.client.main.mainframe.MainFrameTabbedPane;
 import org.nuclos.client.main.mainframe.workspace.ITabStoreController;
 import org.nuclos.client.main.mainframe.workspace.TabRestoreController;
 import org.nuclos.client.masterdata.MasterDataDelegate;
@@ -163,8 +164,8 @@ public abstract class NuclosCollectController<Clct extends Collectable> extends 
 	 * *CollectController<~> cc = new *CollectController<~>(.., rc);
 	 * </code></pre>
 	 */
-	protected NuclosCollectController(JComponent parent, String sEntityName) {
-		this(parent, NuclosCollectableEntityProvider.getInstance().getCollectableEntity(sEntityName));
+	protected NuclosCollectController(String sEntityName, MainFrameTab tabIfAny) {
+		this(NuclosCollectableEntityProvider.getInstance().getCollectableEntity(sEntityName), tabIfAny);
 		this.sEntity = sEntityName;
 	}
 
@@ -176,8 +177,8 @@ public abstract class NuclosCollectController<Clct extends Collectable> extends 
 	 * *CollectController<~> cc = new *CollectController<~>(.., rc);
 	 * </code></pre>
 	 */
-	protected NuclosCollectController(JComponent parent, CollectableEntity clcte) {
-		super(parent, clcte, new NuclosResultController<Clct>(clcte, new NuclosSearchResultStrategy<Clct>()));
+	protected NuclosCollectController(CollectableEntity clcte, MainFrameTab tabIfAny) {
+		super(clcte, tabIfAny, new NuclosResultController<Clct>(clcte, new NuclosSearchResultStrategy<Clct>()));
 		this.sEntity = clcte.getName();
 	}
 
@@ -190,19 +191,14 @@ public abstract class NuclosCollectController<Clct extends Collectable> extends 
 	 * *CollectController<~> cc = new *CollectController<~>(.., rc);
 	 * </code></pre>
 	 */
-	protected NuclosCollectController(JComponent parent, String sEntityName, ResultController<Clct> rc) {
-		this(parent, NuclosCollectableEntityProvider.getInstance().getCollectableEntity(sEntityName), rc);
+	protected NuclosCollectController(String sEntityName, MainFrameTab tabIfAny, ResultController<Clct> rc) {
+		this(NuclosCollectableEntityProvider.getInstance().getCollectableEntity(sEntityName), tabIfAny, rc);
 		this.sEntity = sEntityName;
 	}
 
-	protected NuclosCollectController(JComponent parent, CollectableEntity clcte, ResultController<Clct> rc) {
-		super(parent, clcte, rc);
+	protected NuclosCollectController(CollectableEntity clcte, MainFrameTab tabIfAny, ResultController<Clct> rc) {
+		super(clcte, tabIfAny, rc);
 		this.sEntity = clcte.getName();
-	}
-
-	@Override
-	public JComponent getParent() {
-		return this.parent;
 	}
 
 	public String getEntity() {
@@ -374,7 +370,7 @@ public abstract class NuclosCollectController<Clct extends Collectable> extends 
 		Action actClose = new AbstractAction() {
 			@Override
             public void actionPerformed(ActionEvent e) {
-				getFrame().dispose();
+				getTab().dispose();
 			}
 		};
 		KeyBindingProvider.bindActionToComponent(KeyBindingProvider.CLOSE_CHILD, actClose, pnlCollect);
@@ -384,11 +380,6 @@ public abstract class NuclosCollectController<Clct extends Collectable> extends 
 			KeyBindingProvider.bindActionToComponent(KeyBindingProvider.EDIT_1, btnEdit.getAction(), getResultTable());
 			KeyBindingProvider.bindActionToComponent(KeyBindingProvider.EDIT_2, btnEdit.getAction(), getResultTable());
 		}
-	}
-
-	@Override
-	protected MainFrameTab newInternalFrame() {
-		return Main.getInstance().getMainController().newMainFrameTab(this);
 	}
 
 	@Override
@@ -532,11 +523,11 @@ public abstract class NuclosCollectController<Clct extends Collectable> extends 
 		}
 
 		try {
-			final NuclosCollectController<?> result = NuclosCollectControllerFactory.getInstance().newCollectController(MainFrame.getPredefinedEntityOpenLocation(sEntity), sEntity, null);
+			final NuclosCollectController<?> result = NuclosCollectControllerFactory.getInstance().newCollectController(sEntity, null);
 
 			final int iCollectState = result.restoreStateFromPreferences(prefs);
 
-			UIUtils.runCommandLater(MainFrame.getPredefinedEntityOpenLocation(sEntity), new CommonRunnable() {
+			UIUtils.runCommandLaterForTabbedPane(MainFrame.getPredefinedEntityOpenLocation(sEntity), new CommonRunnable() {
 				// This must be done later as reloading the layout in restoreStateFromPreferences is done later also:
 				@Override
 				public void run() throws CommonBusinessException {
@@ -586,11 +577,11 @@ public abstract class NuclosCollectController<Clct extends Collectable> extends 
 					"NuclosCollectController.17", "Sie haben kein Recht die Entit\u00e4t ''{0}'' zu verwenden.", rp.entity));
 		}
 
-		final NuclosCollectController<?> result = NuclosCollectControllerFactory.getInstance().newCollectController(Main.getInstance().getMainFrame().getHomePane(), rp.entity, tabIfAny);
+		final NuclosCollectController<?> result = NuclosCollectControllerFactory.getInstance().newCollectController(rp.entity, tabIfAny);
 
 		final int cs = result.restoreStateFromPreferences(rp.iCollectState, rp.searchCondition);
 
-		UIUtils.runCommandLater(tabIfAny != null? tabIfAny : Main.getInstance().getMainFrame().getHomePane(), new CommonRunnable() {
+		UIUtils.runCommandLater(tabIfAny != null? tabIfAny : Main.getInstance().getMainFrame().getHomePane().getComponentPanel(), new CommonRunnable() {
 			// This must be done later as reloading the layout in restoreStateFromPreferences is done later also:
 			@Override
 			public void run() throws CommonBusinessException {
@@ -808,14 +799,14 @@ public abstract class NuclosCollectController<Clct extends Collectable> extends 
 				throw ex;
 			}
 			catch (BadGenericObjectException ex2) {
-				Errors.getInstance().showExceptionDialog(this.getFrame(), null, ex2);
+				Errors.getInstance().showExceptionDialog(this.getTab(), null, ex2);
 			}
 			catch (NuclosUpdateException ex2) {
 				/** @todo this is a workaround. @see GenericObjectDelegate.update */
-				Errors.getInstance().showExceptionDialog(this.getFrame(), ex2);
+				Errors.getInstance().showExceptionDialog(this.getTab(), ex2);
 			}
 			catch (NuclosBusinessRuleException ex2) {
-				Errors.getInstance().showExceptionDialog(this.getFrame(),
+				Errors.getInstance().showExceptionDialog(this.getTab(),
 						getSpringLocaleDelegate().getMessage("NuclosCollectController.1","{0}, da das Speichern eine Gesch\u00e4ftsregel verletzen w\u00fcrde.", sMessage1), ex2);
 			}
 		}
@@ -1075,7 +1066,7 @@ public abstract class NuclosCollectController<Clct extends Collectable> extends 
 	 * Command: save filter
 	 */
 	protected void cmdSaveFilter() {
-		UIUtils.runCommand(this.getFrame(), new CommonRunnable() {
+		UIUtils.runCommand(this.getTab(), new CommonRunnable() {
 			@Override
             public void run() throws CommonValidationException {
 				if (!stopEditingInSearch()) {
@@ -1086,7 +1077,7 @@ public abstract class NuclosCollectController<Clct extends Collectable> extends 
 					final SearchFilter filterSelected = getSelectedSearchFilter();
 					SearchFilter filterCurrent = getCurrentSearchFilterFromSearchPanel();
 					final DefaultComboBoxModel model = (DefaultComboBoxModel) getSearchFilterComboBox().getModel();
-					final SaveFilterController.Command cmd = new SaveFilterController(getFrame(), getSearchFilters()).runSave(filterSelected, filterCurrent);
+					final SaveFilterController.Command cmd = new SaveFilterController(getTab(), getSearchFilters()).runSave(filterSelected, filterCurrent);
 					switch (cmd) {
 						case None:
 							// do nothing
@@ -1100,7 +1091,7 @@ public abstract class NuclosCollectController<Clct extends Collectable> extends 
 						case New:
 							filterCurrent = SearchFilterCache.getInstance().getSearchFilter(filterCurrent.getName(), filterCurrent.getOwner());
 							model.addElement(filterCurrent);
-							UIUtils.ensureMinimumSize(getFrame());
+							UIUtils.ensureMinimumSize(getTab());
 							getSearchFilterComboBox().setSelectedItem(filterCurrent);
 							break;
 
@@ -1109,7 +1100,7 @@ public abstract class NuclosCollectController<Clct extends Collectable> extends 
 					}
 				}
 				catch (CommonBusinessException ex) {
-					Errors.getInstance().showExceptionDialog(getFrame(), ex);
+					Errors.getInstance().showExceptionDialog(getTab(), ex);
 				}
 			}
 		});
@@ -1122,9 +1113,9 @@ public abstract class NuclosCollectController<Clct extends Collectable> extends 
 	protected void cmdRemoveFilter() {
 		final SearchFilter filter = getSelectedSearchFilter();
 		if (filter != null) {
-			if (JOptionPane.showConfirmDialog(this.getFrame(), getSpringLocaleDelegate().getMessage(
+			if (JOptionPane.showConfirmDialog(this.getTab(), getSpringLocaleDelegate().getMessage(
 					"NuclosCollectController.16","Wollen Sie den Filter \"{0}\" wirklich l\u00f6schen?", filter.getName()), "Filter l\u00f6schen", JOptionPane.OK_CANCEL_OPTION) == JOptionPane.OK_OPTION) {
-				UIUtils.runCommand(this.getFrame(), new CommonRunnable() {
+				UIUtils.runCommand(this.getTab(), new CommonRunnable() {
 					@Override
                     public void run() throws NuclosBusinessException{
 						getSearchFilters().remove(filter);
@@ -1229,7 +1220,7 @@ public abstract class NuclosCollectController<Clct extends Collectable> extends 
 	protected void cmdSetCollectableSearchConditionAccordingToFilter() {
 		assert this.isSearchPanelAvailable();
 
-		UIUtils.runShortCommand(this.getFrame(), new CommonRunnable() {
+		UIUtils.runShortCommand(this.getTab(), new CommonRunnable() {
 			@Override
             public void run() {
 				try {
@@ -1246,7 +1237,7 @@ public abstract class NuclosCollectController<Clct extends Collectable> extends 
 
 				}
 				catch (Exception ex) {
-					Errors.getInstance().showExceptionDialog(getFrame(), getSpringLocaleDelegate().getMessage(
+					Errors.getInstance().showExceptionDialog(getTab(), getSpringLocaleDelegate().getMessage(
 							"NuclosCollectController.12","Suchbedingung kann nicht in der Suchmaske dargestellt werden."), ex);
 				}
 			}
@@ -1263,7 +1254,7 @@ public abstract class NuclosCollectController<Clct extends Collectable> extends 
 		}
 		if (clct != null) {
 			final SelectController controller = new SelectController(iFrame);
-			UIUtils.runCommand(this.getFrame(), new CommonRunnable() {
+			UIUtils.runCommand(this.getTab(), new CommonRunnable() {
 				@Override
                 public void run() throws CommonBusinessException {
 					final Collection<RuleVO> collRules = getUserRules();
@@ -1455,13 +1446,10 @@ public abstract class NuclosCollectController<Clct extends Collectable> extends 
 		return Collections.EMPTY_LIST;
 	}
 
-	/**
-	 * TODO: Tidy this up (together with {@link #setFrame(MainFrameTab)}.
-	 */
 	@Override
-	protected final void setInternalFrame(MainFrameTab ifrm, boolean addToParent) {
-		super.setInternalFrame(ifrm, addToParent);
-		ifrm.setTabStoreController(new NuclosCollectController.NuclosCollectTabStoreController(this));
+	protected final void initTab() {
+		super.initTab();
+		getTab().setTabStoreController(new NuclosCollectController.NuclosCollectTabStoreController(this));
 	}
 
 	@Override

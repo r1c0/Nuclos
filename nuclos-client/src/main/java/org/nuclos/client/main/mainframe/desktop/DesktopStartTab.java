@@ -17,9 +17,11 @@
 package org.nuclos.client.main.mainframe.desktop;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
@@ -44,14 +46,17 @@ import javax.swing.TransferHandler;
 
 import org.apache.commons.httpclient.util.LangUtils;
 import org.apache.log4j.Logger;
+import org.jdesktop.swingx.painter.Painter;
 import org.jfree.util.Log;
 import org.nuclos.client.common.WorkspaceUtils;
 import org.nuclos.client.main.GenericAction;
 import org.nuclos.client.main.Main;
 import org.nuclos.client.main.mainframe.MainFrame;
 import org.nuclos.client.main.mainframe.MainFrameUtils;
+import org.nuclos.client.main.mainframe.StartTabPanel;
 import org.nuclos.client.resource.NuclosResourceCache;
 import org.nuclos.client.resource.ResourceCache;
+import org.nuclos.client.synthetica.NuclosThemeSettings;
 import org.nuclos.client.ui.Errors;
 import org.nuclos.client.ui.Icons;
 import org.nuclos.client.ui.WrapLayout;
@@ -74,9 +79,8 @@ public abstract class DesktopStartTab {
 	private JPanel jpnContent;
 	
 	private boolean isSetup = false;
-	
-	private ImageIcon backgroundImage;
 
+	private DesktopBackgroundPainter desktopBackgroundPainter;
 	private final List<DesktopItem> desktopItems = new ArrayList<DesktopItem>();
 	
 	private SpringLocaleDelegate localeDelegate;
@@ -112,6 +116,8 @@ public abstract class DesktopStartTab {
 				desktopPrefs.setResourceMenuBackground(editor.getResourceMenuBackground());
 				desktopPrefs.setResourceMenuBackgroundHover(editor.getResourceMenuBackgroundHover());
 				desktopPrefs.setResourceBackground(editor.getResourceBackground());
+				desktopPrefs.setRootpaneBackgroundColor(editor.isRootpaneBackgroundColor());
+				desktopPrefs.setStaticMenu(editor.isStaticMenu());
 				setupDesktop(Main.getInstance().getMainController().getGenericActions());
 				jpnMain.revalidate();
 				jpnMain.repaint();
@@ -138,6 +144,18 @@ public abstract class DesktopStartTab {
 		}
 	};
 	
+	private final Action actHideTabBar = new AbstractAction(
+			localeDelegate.getMessage("DesktopStartTab.6", "Tableiste ausblenden",
+			Icons.getInstance().getIconEmpty16())) {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			showTabBar(!MainFrameUtils.isActionSelected(this));
+			actHideDesktop.setEnabled(!MainFrameUtils.isActionSelected(this));
+			actHideToolBar.setEnabled(!MainFrameUtils.isActionSelected(this));
+			_getDesktop().setHideTabBar(MainFrameUtils.isActionSelected(this));
+		}
+	};
+	
 	private final Action actRestoreDesktop = new AbstractAction(
 			localeDelegate.getMessage("DesktopStartTab.5", "Auf Vorlage zurücksetzen"), 
 			Icons.getInstance().getIconUndo16()) {
@@ -147,25 +165,27 @@ public abstract class DesktopStartTab {
 		}
 	};
 	
+	private final Action actRemoveSplitPaneFixations = new AbstractAction(
+			localeDelegate.getMessage("DesktopStartTab.7", "Bereichsfixierungen aufheben")) {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			StartTabPanel.removeSplitPaneFixations(jpnMain);
+		}
+	};
+	
 	private final JPopupMenu contextMenu;
 
 	public DesktopStartTab() {
 		this.jpnMain = new JPanel(new BorderLayout(0, 0)){
 			@Override
-			protected void paintComponent(Graphics g) {
-				super.paintComponent(g);
-				if (backgroundImage != null) {
-					final Rectangle bounds = getBounds();
-					final int icoHeight = backgroundImage.getIconHeight();
-					final int icoWidth = backgroundImage.getIconWidth();
-					for (int i = 0; i < bounds.width / icoWidth + 1; i++) {
-						for (int j = 0; j < bounds.height / icoHeight + 1; j++) {
-							g.drawImage(backgroundImage.getImage(), i * icoWidth, j * icoHeight, null);
-						}
-					}
+			public void paint(Graphics g) {
+				if (desktopBackgroundPainter != null) {
+					desktopBackgroundPainter.paint((Graphics2D) g, getWidth(), getHeight());
 				}
-			}
+				super.paint(g);
+			}	
 		};
+		this.jpnMain.setOpaque(false);
 		
 		contextMenu = new JPopupMenu() {
 
@@ -183,9 +203,15 @@ public abstract class DesktopStartTab {
 		JCheckBoxMenuItem chckHideToolBar = new JCheckBoxMenuItem(actHideToolBar);
 //		chckHideToolBar.setIcon(Icons.getInstance().getIconEmpty16());
 		contextMenu.add(chckHideToolBar);
+		JCheckBoxMenuItem chckHideTabBar = new JCheckBoxMenuItem(actHideTabBar);
+		contextMenu.add(chckHideTabBar);
 		contextMenu.add(new JMenuItem(actHideDesktop));
 		contextMenu.addSeparator();
 		contextMenu.add(new JMenuItem(actRestoreDesktop));
+		if (MainFrame.isSplittingEnabled()) {
+			contextMenu.addSeparator();
+			contextMenu.add(new JMenuItem(actRemoveSplitPaneFixations));
+		}
 		this.jpnMain.setComponentPopupMenu(contextMenu);
 	}
 	
@@ -199,9 +225,18 @@ public abstract class DesktopStartTab {
 		this.localeDelegate = cld;
 	}
 	
+	public void setDesktopBackgroundPainter(DesktopBackgroundPainter desktopBackgroundPainter) {
+		this.desktopBackgroundPainter = desktopBackgroundPainter;
+		jpnMain.repaint();
+	}
+	
 	public abstract void hide();
 	
 	public abstract void showToolBar(boolean show);
+	
+	public abstract void showTabBar(boolean show);
+	
+	public abstract void desktopBackgroundChanged(DesktopBackgroundPainter painter);
 	
 	public void restoreDesktop() {
 		try {
@@ -220,19 +255,11 @@ public abstract class DesktopStartTab {
 		if (desktopPrefs != null) {
 			showToolBar(!desktopPrefs.isHideToolBar());
 			MainFrameUtils.setActionSelected(actHideToolBar, desktopPrefs.isHideToolBar());
-			try {
-				backgroundImage = null;
-				boolean resIcon = false;
-				if (desktopPrefs.getResourceBackground() != null) {
-					backgroundImage = resourceCache.getIconResource(desktopPrefs.getResourceBackground());
-					resIcon = true;
-				}
-				if (!resIcon && desktopPrefs.getNuclosResourceBackground() != null) {
-					backgroundImage = NuclosResourceCache.getNuclosResourceIcon(desktopPrefs.getNuclosResourceBackground());
-				}
-			} catch (Exception ex) {
-				Log.error(ex);
-			}
+			showTabBar(!desktopPrefs.isHideTabBar());
+			MainFrameUtils.setActionSelected(actHideTabBar, desktopPrefs.isHideTabBar());
+			actHideDesktop.setEnabled(!desktopPrefs.isHideTabBar());
+			actHideToolBar.setEnabled(!desktopPrefs.isHideTabBar());
+			desktopBackgroundChanged(getDesktopBackgroundPainter());
 			if (this.scrollPane != null) {
 				this.jpnMain.remove(this.scrollPane);
 				this.scrollPane.removeAll();
@@ -286,6 +313,31 @@ public abstract class DesktopStartTab {
 				}
 			}
 		}
+	}
+	
+	/**
+	 * 
+	 * @return
+	 */
+	public DesktopBackgroundPainter getDesktopBackgroundPainter() {
+		Color backgroundColor = desktopPrefs.isRootpaneBackgroundColor()?
+				NuclosThemeSettings.BACKGROUND_ROOTPANE : null;
+		ImageIcon backgroundImage = null;
+		try {
+			backgroundImage = null;
+			boolean resIcon = false;
+			if (desktopPrefs.getResourceBackground() != null) {
+				backgroundImage = resourceCache.getIconResource(desktopPrefs.getResourceBackground());
+				resIcon = true;
+			}
+			if (!resIcon && desktopPrefs.getNuclosResourceBackground() != null) {
+				backgroundImage = NuclosResourceCache.getNuclosResourceIcon(desktopPrefs.getNuclosResourceBackground());
+			}
+
+		} catch (Exception ex) {
+			Log.error(ex);
+		}
+		return new DesktopBackgroundPainter(backgroundColor, backgroundImage);
 	}
 	
 	private void revalidateDesktopItems() {
@@ -347,12 +399,22 @@ public abstract class DesktopStartTab {
 	}
 	
 	private MenuButton getMenuButton(WorkspaceDescription.MenuButton mbPrefs, List<GenericAction> actions) {
+		final Color defaultBackroundColor = desktopPrefs.isRootpaneBackgroundColor() ? NuclosThemeSettings.BACKGROUND_ROOTPANE : NuclosThemeSettings.BACKGROUND_PANEL;
+		final Color itemTextColor = desktopPrefs.getMenuItemTextColor() == null ?
+				(desktopPrefs.isRootpaneBackgroundColor() ? Color.WHITE : NuclosThemeSettings.BACKGROUND_ROOTPANE):
+				desktopPrefs.getMenuItemTextColor().toColor();
+		final Color itemTextHoverColor = desktopPrefs.getMenuItemTextHoverColor() == null ?
+				(desktopPrefs.isRootpaneBackgroundColor() ? NuclosThemeSettings.ICON_BLUE_LIGHTER : Color.BLACK):
+				desktopPrefs.getMenuItemTextHoverColor().toColor();
+		
 		final MenuButton mb = new MenuButton(mbPrefs, actions, 
+				defaultBackroundColor,
+				desktopPrefs.isStaticMenu(),
 				desktopPrefs.getMenuItemTextSize(),
 				desktopPrefs.getMenuItemTextHorizontalAlignment(),
 				desktopPrefs.getMenuItemTextHorizontalPadding(),
-				desktopPrefs.getMenuItemTextColor()==null?null:desktopPrefs.getMenuItemTextColor().toColor(), 
-				desktopPrefs.getMenuItemTextHoverColor()==null?null:desktopPrefs.getMenuItemTextHoverColor().toColor(),
+				itemTextColor, 
+				itemTextHoverColor,
 				desktopPrefs.getResourceMenuBackground(), 
 				desktopPrefs.getResourceMenuBackgroundHover()) {
 			@Override

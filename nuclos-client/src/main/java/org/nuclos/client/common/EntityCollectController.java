@@ -57,6 +57,7 @@ import org.nuclos.client.common.AbstractDetailsSubFormController.DetailsSubFormT
 import org.nuclos.client.entityobject.CollectableEntityObject;
 import org.nuclos.client.genericobject.GenerationController;
 import org.nuclos.client.main.mainframe.MainFrameTab;
+import org.nuclos.client.main.mainframe.MainFrameTabbedPane;
 import org.nuclos.client.masterdata.MasterDataSubFormController;
 import org.nuclos.client.masterdata.MetaDataCache;
 import org.nuclos.client.masterdata.valuelistprovider.MasterDataCollectableFieldsProviderFactory;
@@ -123,8 +124,8 @@ public abstract class EntityCollectController<Clct extends Collectable> extends 
 	 * *CollectController<~> cc = new *CollectController<~>(.., rc);
 	 * </code></pre>
 	 */
-	protected EntityCollectController(JComponent parent, String sEntityName) {
-		this(parent, NuclosCollectableEntityProvider.getInstance().getCollectableEntity(sEntityName));
+	protected EntityCollectController(String sEntityName, MainFrameTab tabIfAny) {
+		this(NuclosCollectableEntityProvider.getInstance().getCollectableEntity(sEntityName), tabIfAny);
 	}
 
 	/**
@@ -138,8 +139,8 @@ public abstract class EntityCollectController<Clct extends Collectable> extends 
 	 * *CollectController<~> cc = new *CollectController<~>(.., rc);
 	 * </code></pre>
 	 */
-	protected EntityCollectController(JComponent parent, CollectableEntity clcte) {
-		super(parent, clcte);
+	protected EntityCollectController(CollectableEntity clcte, MainFrameTab tabIfAny) {
+		super(clcte, tabIfAny);
 		this.loadingLabel = new JLabel(notLoadingLabelText);
 		this.loadingLabel.setName("loadingLabel");
 		subFormsLoader = new SubFormsLoader();
@@ -161,8 +162,8 @@ public abstract class EntityCollectController<Clct extends Collectable> extends 
 	 * *CollectController<~> cc = new *CollectController<~>(.., rc);
 	 * </code></pre>
 	 */
-	protected EntityCollectController(JComponent parent, String sEntityName, ResultController<Clct> rc) {
-		this(parent, NuclosCollectableEntityProvider.getInstance().getCollectableEntity(sEntityName), rc);
+	protected EntityCollectController(String sEntityName, MainFrameTab tabIfAny, ResultController<Clct> rc) {
+		this(NuclosCollectableEntityProvider.getInstance().getCollectableEntity(sEntityName), tabIfAny, rc);
 	}
 
 	/**
@@ -174,8 +175,8 @@ public abstract class EntityCollectController<Clct extends Collectable> extends 
 	 * *CollectController<~> cc = new *CollectController<~>(.., rc);
 	 * </code></pre>
 	 */
-	protected EntityCollectController(JComponent parent, CollectableEntity clcte, ResultController<Clct> rc) {
-		super(parent, clcte, rc);
+	protected EntityCollectController(CollectableEntity clcte, MainFrameTab tabIfAny, ResultController<Clct> rc) {
+		super(clcte, tabIfAny, rc);
 		this.loadingLabel = new JLabel(notLoadingLabelText);
 		this.loadingLabel.setName("loadingLabel");
 		subFormsLoader = new SubFormsLoader();
@@ -190,8 +191,8 @@ public abstract class EntityCollectController<Clct extends Collectable> extends 
 	}
 
 	protected void showLoading(boolean loading){
-		synchronized (getFrame()) {
-			String sTitle = getFrame().getTitle();
+		synchronized (getTab()) {
+			String sTitle = getTab().getTitle();
 			if(loading){
 				this.loadingLabel.setText(loadingLabelText);
 				this.loadingLabel.revalidate();
@@ -249,7 +250,7 @@ public abstract class EntityCollectController<Clct extends Collectable> extends 
 		if (sParentSubForm != null)
 			sParentEntityName = sParentSubForm;
 
-		return new SearchConditionSubFormController(getFrame(), parent, clctcompmodelprovider, sParentEntityName, subform,
+		return new SearchConditionSubFormController(getTab(), clctcompmodelprovider, sParentEntityName, subform,
 			getPreferences(), getEntityPreferences(), MasterDataCollectableFieldsProviderFactory.newFactory(null, valueListProviderCache));
 	}
 
@@ -336,10 +337,10 @@ public abstract class EntityCollectController<Clct extends Collectable> extends 
 
 	public MasterDataSubFormController newDetailsSubFormController(SubForm subform,
 			String sParentEntityName, CollectableComponentModelProvider clctcompmodelprovider,
-			MainFrameTab ifrmParent, JComponent parent, JComponent compDetails, Preferences prefs, EntityPreferences entityPrefs) {
+			MainFrameTab tab, JComponent compDetails, Preferences prefs, EntityPreferences entityPrefs) {
 		//subform.setLockedLayer();
 		MasterDataSubFormController controller = NuclosCollectControllerFactory.getInstance().newDetailsSubFormController(subform,
-				sParentEntityName, clctcompmodelprovider, ifrmParent, parent, compDetails, prefs, entityPrefs, valueListProviderCache);
+				sParentEntityName, clctcompmodelprovider, tab, compDetails, prefs, entityPrefs, valueListProviderCache);
 		controller.setParentController((EntityCollectController<CollectableEntityObject>) this);
 		return controller;
 	}
@@ -394,7 +395,7 @@ public abstract class EntityCollectController<Clct extends Collectable> extends 
 				this.setCollectState(CollectState.OUTERSTATE_DETAILS, CollectState.DETAILSMODE_NEW_CHANGED);
 			}
 			catch (CommonBusinessException ex) {
-				Errors.getInstance().showExceptionDialog(this.getFrame(), ex);
+				Errors.getInstance().showExceptionDialog(this.getTab(), ex);
 			}
 		}
 	}
@@ -763,7 +764,7 @@ public abstract class EntityCollectController<Clct extends Collectable> extends 
 					originItem.addActionListener(new ActionListener() {
 						@Override
 						public void actionPerformed(ActionEvent e) {
-							Errors.getInstance().showDetailedExceptionDialog(EntityCollectController.this.getFrame(), pointerException);
+							Errors.getInstance().showDetailedExceptionDialog(EntityCollectController.this.getTab(), pointerException);
 						}
 					});
 					menu.add(originItem);
@@ -1086,7 +1087,7 @@ public abstract class EntityCollectController<Clct extends Collectable> extends 
 				cmbbxActions.addActionListener(new ActionListener() {
 					@Override
 					public void actionPerformed(ActionEvent ev) {
-						UIUtils.runCommandLater(parent, new CommonRunnable() {
+						UIUtils.runCommandLater(getTab(), new CommonRunnable() {
 							@Override
 							public void run() {
 								if (cmbbxActions.getSelectedItem() instanceof GeneratorActionVO)

@@ -16,6 +16,7 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.genericobject.resulttemplate;
 
+import java.awt.Component;
 import java.util.prefs.BackingStoreException;
 
 import javax.swing.JComponent;
@@ -41,7 +42,7 @@ import org.nuclos.common2.exception.PreferencesException;
  * @author	<a href="mailto:Rostislav.Maksymovskyi@novabit.de">Rostislav Maksymovskyi</a>
  * @version	01.00.00
  */
-public class SaveSearchResultTemplateController extends Controller {
+public class SaveSearchResultTemplateController extends Controller<Component> {
 	
 	private static final Logger LOG = Logger.getLogger(SaveSearchResultTemplateController.class);
 	

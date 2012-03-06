@@ -25,6 +25,7 @@ import javax.swing.JComponent;
 import org.apache.log4j.Logger;
 import org.nuclos.client.common.LocaleDelegate;
 import org.nuclos.client.main.mainframe.MainFrameTab;
+import org.nuclos.client.main.mainframe.MainFrameTabbedPane;
 import org.nuclos.client.masterdata.CollectableMasterDataWithDependants;
 import org.nuclos.client.masterdata.MasterDataCollectController;
 import org.nuclos.client.masterdata.MasterDataSubFormController;
@@ -64,8 +65,8 @@ public class LocaleCollectController extends MasterDataCollectController {
 	 * *CollectController<~> cc = new *CollectController<~>(.., rc);
 	 * </code></pre>
 	 */
-	public LocaleCollectController(JComponent parent, MainFrameTab tabIfAny) {
-		super(parent, NuclosEntity.LOCALE, tabIfAny);
+	public LocaleCollectController(MainFrameTab tabIfAny) {
+		super(NuclosEntity.LOCALE, tabIfAny);
 	}
 
 	/**
@@ -77,8 +78,8 @@ public class LocaleCollectController extends MasterDataCollectController {
 	 * *CollectController<~> cc = new *CollectController<~>(.., rc);
 	 * </code></pre>
 	 */
-	public LocaleCollectController(JComponent parent, Collection<String> collresids, MainFrameTab tabIfAny) {
-		this(parent, tabIfAny);
+	public LocaleCollectController(Collection<String> collresids, MainFrameTab tabIfAny) {
+		this(tabIfAny);
 		this.collresid = collresids;
 	}
 

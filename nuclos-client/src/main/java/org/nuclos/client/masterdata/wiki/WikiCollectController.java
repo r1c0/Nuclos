@@ -23,6 +23,7 @@ import org.nuclos.common.collect.collectable.CollectableValueIdField;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.client.genericobject.Modules;
 import org.nuclos.client.main.mainframe.MainFrameTab;
+import org.nuclos.client.main.mainframe.MainFrameTabbedPane;
 import org.nuclos.client.masterdata.CollectableMasterData;
 import org.nuclos.client.masterdata.CollectableMasterDataWithDependants;
 import org.nuclos.client.masterdata.MasterDataCollectController;
@@ -91,8 +92,8 @@ public class WikiCollectController extends MasterDataCollectController{
 	 * *CollectController<~> cc = new *CollectController<~>(.., rc);
 	 * </code></pre>
 	 */
-	public WikiCollectController(JComponent parent, MainFrameTab tabIfAny) {
-		super(parent, NuclosEntity.WIKI, tabIfAny);
+	public WikiCollectController(MainFrameTab tabIfAny) {
+		super(NuclosEntity.WIKI, tabIfAny);
 		
 		this.getCollectStateModel().addCollectStateListener(new CollectStateAdapter () {
 			@Override

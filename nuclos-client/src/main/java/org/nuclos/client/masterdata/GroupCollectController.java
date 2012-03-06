@@ -21,6 +21,7 @@ import javax.swing.JComponent;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.client.common.security.SecurityCache;
 import org.nuclos.client.main.mainframe.MainFrameTab;
+import org.nuclos.client.main.mainframe.MainFrameTabbedPane;
 import org.nuclos.common.NuclosEntity;
 
 /**
@@ -43,8 +44,8 @@ public class GroupCollectController extends MasterDataCollectController {
 	 * *CollectController<~> cc = new *CollectController<~>(.., rc);
 	 * </code></pre>
 	 */
-	public GroupCollectController(JComponent parent, MainFrameTab tabIfAny) {
-		super(parent, NuclosEntity.GROUP, tabIfAny);
+	public GroupCollectController(MainFrameTab tabIfAny) {
+		super(NuclosEntity.GROUP, tabIfAny);
 	}
 
 	@Override

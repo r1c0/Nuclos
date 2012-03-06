@@ -19,6 +19,7 @@ package org.nuclos.client.datasource.admin;
 import java.awt.Component;
 import java.util.Set;
 
+import org.nuclos.client.main.mainframe.MainFrameTab;
 import org.nuclos.client.ui.CommonClientWorker;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.server.report.valueobject.ResultVO;
@@ -27,7 +28,7 @@ public interface DatasourceEditController {
 
 	public String generateSql() throws CommonBusinessException;
 
-	public Component getFrame();
+	public MainFrameTab getTab();
 
 	public void detailsChanged(Component c);
 

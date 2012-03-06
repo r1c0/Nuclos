@@ -88,8 +88,7 @@ public class SubFormExplorerNode<TN extends SubFormTreeNode<Integer>> extends Ex
 				final String sTargetSubFormEntity = getTreeNode().getMasterDataVO().getField("entity", String.class);
 				String sTargetSubFormForeignField = getTreeNode().getMasterDataVO().getField("field", String.class);
 
-				final GenericObjectCollectController goController = NuclosCollectControllerFactory.getInstance().newGenericObjectCollectController(
-					Main.getInstance().getMainFrame().getHomePane(), iTargetModuleId, null);
+				final GenericObjectCollectController goController = NuclosCollectControllerFactory.getInstance().newGenericObjectCollectController(iTargetModuleId, null);
 
 				goController.runViewSingleCollectable(
 					CollectableGenericObjectWithDependants.newCollectableGenericObject(
@@ -101,11 +100,11 @@ public class SubFormExplorerNode<TN extends SubFormTreeNode<Integer>> extends Ex
 						try {
 							goController.save();
 							refresh(tree);
-							goController.getFrame().dispose();
+							goController.getTab().dispose();
 						} catch (Exception e) {
 							// save failed... open controller
-							goController.getFrame().setVisible(true);
-							showBubbleCenter(goController.getFrame(), 
+							goController.getTab().setVisible(true);
+							showBubbleCenter(goController.getTab(), 
 									getSpringLocaleDelegate().getMessage("SubFormExplorerNode.1", "Ein Bearbeitungsfenster Objekt wurde geöffnet, ein Speichern ohne Benutzereingriff ist nicht möglich.<br/> Bitte prüfen Sie die Meldung: {0}", Errors.formatErrorForBubble(e.getMessage())));
 						}
 					}

@@ -70,6 +70,7 @@ import org.nuclos.client.NuclosIcons;
 import org.nuclos.client.common.MetaDataClientProvider;
 import org.nuclos.client.main.Main;
 import org.nuclos.client.main.mainframe.MainFrameTab;
+import org.nuclos.client.main.mainframe.MainFrameTabbedPane;
 import org.nuclos.client.masterdata.MasterDataDelegate;
 import org.nuclos.client.ui.Errors;
 import org.nuclos.client.ui.Icons;
@@ -83,8 +84,8 @@ import org.nuclos.common.dal.vo.EntityObjectVO;
 import org.nuclos.common.dbtransfer.PreviewPart;
 import org.nuclos.common.dbtransfer.Transfer;
 import org.nuclos.common.dbtransfer.TransferOption;
-import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.CommonRunnable;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.pietschy.wizard.I18n;
@@ -201,16 +202,16 @@ public class DBTransferImport {
 		}
 	}
 
-	public void showWizard(JTabbedPane desktopPane) {
+	public void showWizard(MainFrameTabbedPane homePane) {
       ifrm.setLayeredComponent(WizardFrame.createFrameInScrollPane(wizard));
-      int x = desktopPane.getWidth()/2-wizard.getPreferredSize().width/2;
-      int y = desktopPane.getHeight()/2-wizard.getPreferredSize().height/2;
+      int x = homePane.getComponentPanel().getWidth()/2-wizard.getPreferredSize().width/2;
+      int y = homePane.getComponentPanel().getHeight()/2-wizard.getPreferredSize().height/2;
       x = x<0?0:x;
       y = y<0?0:y;
       ifrm.setBounds(x, y, wizard.getWidth(), wizard.getHeight());
 //      ifrm.pack();
 
-      desktopPane.add(ifrm);
+      homePane.add(ifrm);
 
       ifrm.setVisible(true);
 	}

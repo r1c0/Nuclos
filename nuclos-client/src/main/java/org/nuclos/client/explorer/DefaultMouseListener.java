@@ -194,7 +194,7 @@ public class DefaultMouseListener extends MouseAdapter {
                         public void run() throws CommonBusinessException {
 							final Integer iModuleId = getCommonModuleId(collloexplorernodeSelected);
 							final GenericObjectCollectController ctlGenericObject = NuclosCollectControllerFactory.getInstance().
-									newGenericObjectCollectController(MainFrame.getPredefinedEntityOpenLocation(MetaDataClientProvider.getInstance().getEntity(iModuleId.longValue()).getEntity()), iModuleId, null);
+									newGenericObjectCollectController(iModuleId, null);
 							ctlGenericObject.setSearchDeleted(CollectableGenericObjectSearchExpression.SEARCH_BOTH);
 							ctlGenericObject.runViewResults(cond);
 						}

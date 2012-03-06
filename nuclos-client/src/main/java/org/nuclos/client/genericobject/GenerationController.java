@@ -102,9 +102,8 @@ public class GenerationController {
 
 	private final EntityCollectController<?> parentController;
 	private final MainFrameTab parent;
-	private final JTabbedPane pane;
 
-	private MainFrameTabbedPane parentForLookup;
+	private MainFrameTab parentForLookup;
 
 	private final List<GenerationListener> listeners = new ArrayList<GenerationController.GenerationListener>();
 
@@ -126,16 +125,11 @@ public class GenerationController {
 	};
 
 	public GenerationController(Map<Long, UsageCriteria> sources, GeneratorActionVO action, EntityCollectController<?> parentController, MainFrameTab parent) {
-		this(sources, action, parentController, parent, parent.getTabbedPane());
-	}
-
-	public GenerationController(Map<Long, UsageCriteria> sources, GeneratorActionVO action, EntityCollectController<?> parentController, MainFrameTab parent, JTabbedPane pane) {
 		super();
 		this.sources = sources;
 		this.action = action;
 		this.parentController = parentController;
 		this.parent = parent;
-		this.pane = pane;
 	}
 	
 	@Autowired
@@ -167,11 +161,11 @@ public class GenerationController {
 		listeners.remove(l);
 	}
 
-	public MainFrameTabbedPane getParentForLookup() {
+	public MainFrameTab getParentForLookup() {
 		return parentForLookup;
 	}
 
-	public void setParentForLookup(MainFrameTabbedPane parentForLookup) {
+	public void setParentForLookup(MainFrameTab parentForLookup) {
 		this.parentForLookup = parentForLookup;
 	}
 
@@ -242,14 +236,14 @@ public class GenerationController {
 								MetaDataClientProvider.getInstance().getEntity(action.getParameterEntityId().longValue());
 							final String pEntityStr = parameterEntity.getEntity();
 
-							final JComponent lookupParent = getParentForLookup() != null ? getParentForLookup() : parent;
+							final MainFrameTab lookupParent = getParentForLookup() != null ? getParentForLookup() : parent;
 							final ICollectableListOfValues lov = new EntityListOfValues(lookupParent);
-							final CollectController<?> ctl = NuclosCollectControllerFactory.getInstance().newCollectController(lookupParent, pEntityStr, null);
+							final CollectController<?> ctl = NuclosCollectControllerFactory.getInstance().newCollectController(pEntityStr, null);
 							if (vlp != null) {
 								ctl.getSearchStrategy().setValueListProviderDatasource(vlp);
 								ctl.getSearchStrategy().setValueListProviderDatasourceParameter(params);
 							}
-							ctl.getFrame().addMainFrameTabListener(tabListener);
+							ctl.getTab().addMainFrameTabListener(tabListener);
 
 							lov.addLookupListener(new LookupListener() {
 								@Override
@@ -329,7 +323,7 @@ public class GenerationController {
 				message = SpringLocaleDelegate.getInstance().getMessage(
 						"GenericObjectCollectController.72","Soll aus den markierten Objekten vom Typ \"{0}\" jeweils ein Objekt vom Typ \"{1}\" erzeugt werden?", sSourceModuleName, sTargetModuleName);
 			}
-			iBtn = JOptionPane.showConfirmDialog(this.pane, message, 
+			iBtn = JOptionPane.showConfirmDialog(parent, message, 
 					SpringLocaleDelegate.getInstance().getMessage(
 							"GenericObjectCollectController.5","{0} erzeugen", sTargetModuleName), JOptionPane.OK_CANCEL_OPTION);
 		}
@@ -347,7 +341,7 @@ public class GenerationController {
 			}
 			final String sMessage = SpringLocaleDelegate.getInstance().getMessage(
 					"GenericObjectCollectController.71","Soll aus dem/der aktuellen {0} ein(e) {1} erzeugt werden?", sSourceModuleName, sTargetModuleName);
-			iBtn = JOptionPane.showConfirmDialog(this.pane, sMessage, 
+			iBtn = JOptionPane.showConfirmDialog(parent, sMessage, 
 					SpringLocaleDelegate.getInstance().getMessage(
 							"GenericObjectCollectController.5","{0} erzeugen", sTargetModuleName), JOptionPane.OK_CANCEL_OPTION);
 		}
@@ -464,11 +458,11 @@ public class GenerationController {
 							showIncompleteGenericObject(null, result.getGeneratedObject(), result.getError());
 						}
 						catch (CommonBusinessException e2) {
-							Errors.getInstance().showExceptionDialog(pane, e2);
+							Errors.getInstance().showExceptionDialog(parent, e2);
 						}
 					}
 					catch (CommonBusinessException e) {
-						Errors.getInstance().showExceptionDialog(pane, e);
+						Errors.getInstance().showExceptionDialog(parent, e);
 					}
 				}
 			});
@@ -512,7 +506,7 @@ public class GenerationController {
 			}
 		}
 		catch (CommonBusinessException ex) {
-			Errors.getInstance().showExceptionDialog(pane, ex);
+			Errors.getInstance().showExceptionDialog(parent, ex);
 		}
 	}
 
@@ -537,7 +531,7 @@ public class GenerationController {
 			}
 		}
 		catch (CommonBusinessException e) {
-			Errors.getInstance().showExceptionDialog(pane, e);
+			Errors.getInstance().showExceptionDialog(parent, e);
 		}
 	}
 
@@ -560,24 +554,24 @@ public class GenerationController {
 	 */
 	private void showIncompleteGenericObject(Collection<Long> sourceIds, EntityObjectVO result, final String message) throws CommonBusinessException {
 		String entity = result.getEntity();
-		JTabbedPane pane;
+		MainFrameTabbedPane pane;
 		if (MainFrame.isPredefinedEntityOpenLocationSet(entity)) {
 			pane = MainFrame.getPredefinedEntityOpenLocation(entity);
 		}
 		else {
-			pane = this.pane;
+			pane = MainFrame.getTabbedPane(parent);
 		}
 		EntityMetaDataVO metaVO = MetaDataClientProvider.getInstance().getEntity(entity);
 		Map<String, EntityFieldMetaDataVO> mpFields = MetaDataClientProvider.getInstance().getAllEntityFieldsByEntity(entity);
 
 		if (metaVO.isStateModel()) {
-			final GenericObjectCollectController goclct = NuclosCollectControllerFactory.getInstance().newGenericObjectCollectController(pane, IdUtils.unsafeToId(metaVO.getId()), null);
+			final GenericObjectCollectController goclct = NuclosCollectControllerFactory.getInstance().newGenericObjectCollectController(IdUtils.unsafeToId(metaVO.getId()), null);
 			goclct.setCollectState(CollectState.OUTERSTATE_DETAILS, CollectState.DETAILSMODE_NEW_CHANGED);
 			goclct.setGenerationSourceIds(sourceIds);
 			CollectableEOEntity meta = new CollectableEOEntity(metaVO, mpFields);
 			goclct.unsafeFillDetailsPanel(new CollectableGenericObjectWithDependants(DalSupportForGO.getGenericObjectWithDependantsVO(result, meta)));
-			goclct.showFrame();
-			MainFrame.setSelectedTab(goclct.getFrame());
+			goclct.selectTab();
+			MainFrame.setSelectedTab(goclct.getTab());
 			SwingUtilities.invokeLater(new Runnable() {
 				@Override
 				public void run() {
@@ -587,14 +581,14 @@ public class GenerationController {
 			});
 		}
 		else {
-			final MasterDataCollectController mdclct = NuclosCollectControllerFactory.getInstance().newMasterDataCollectController(pane, metaVO.getEntity(), null);
+			final MasterDataCollectController mdclct = NuclosCollectControllerFactory.getInstance().newMasterDataCollectController(metaVO.getEntity(), null);
 			CollectableEOEntity meta = new CollectableEOEntity(metaVO, mpFields);
 			CollectableMasterDataWithDependants clctmdwd = new CollectableMasterDataWithDependants(meta, DalSupportForMD.getMasterDataWithDependantsVO(result));
 			final DependantMasterDataMap deps = result.getDependants();
 			clctmdwd.setDependantMasterDataMap(deps);
 			mdclct.runNewWith(clctmdwd);
 			mdclct.setCollectState(CollectState.OUTERSTATE_DETAILS, CollectState.DETAILSMODE_NEW_CHANGED);
-			MainFrame.setSelectedTab(mdclct.getFrame());
+			MainFrame.setSelectedTab(mdclct.getTab());
 			SwingUtilities.invokeLater(new Runnable() {
 				@Override
 				public void run() {

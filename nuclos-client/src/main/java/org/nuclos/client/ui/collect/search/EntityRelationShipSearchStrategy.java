@@ -37,7 +37,7 @@ public class EntityRelationShipSearchStrategy extends CollectSearchStrategy<Enti
 	@Override
 	public void search() {
 		final EntityRelationShipCollectController cc = getEntityRelationShipCollectController();
-		final MainFrameTab mft = cc.getMainFrameTab();
+		final MainFrameTab mft = cc.getTab();
 		try {
 			mft.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 			final Collection<MasterDataVO> colVO;

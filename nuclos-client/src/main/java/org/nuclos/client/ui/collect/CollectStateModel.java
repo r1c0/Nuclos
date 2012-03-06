@@ -96,15 +96,15 @@ public final class CollectStateModel <Clct extends Collectable> implements Colle
 				CollectStateModel.this.setOuterState(iTab);
 			}
 			catch (CommonBusinessException ex) {
-				Errors.getInstance().showExceptionDialog(ctlCollect.getFrame(), ex);
+				Errors.getInstance().showExceptionDialog(ctlCollect.getTab(), ex);
 				// back up to neutral mode - search mode:
 				try {
 					CollectStateModel.this.setCollectState(OUTERSTATE_SEARCH, SEARCHMODE_UNSYNCHED);
 				}
 				catch (Exception ex2) {
 					// even this did not work - close the collect frame:
-					Errors.getInstance().showExceptionDialog(ctlCollect.getFrame(), ex2);
-					ctlCollect.getFrame().dispose();
+					Errors.getInstance().showExceptionDialog(ctlCollect.getTab(), ex2);
+					ctlCollect.getTab().dispose();
 				}
 			}
 		}
@@ -453,7 +453,7 @@ public final class CollectStateModel <Clct extends Collectable> implements Colle
 				
 				String sMessage = localeDelegate.getMessage(
 						"CollectStateModel.6","Der Datensatz wurde zwischenzeitlich ge\u00e4ndert. Soll der Datensatz neu geladen werden?");
-				int result = JOptionPane.showConfirmDialog(this.ctlCollect.parent, sMessage, 
+				int result = JOptionPane.showConfirmDialog(this.ctlCollect.getTab(), sMessage, 
 						localeDelegate.getMessage("CollectStateModel.5","Datensatz ge\u00e4ndert"),
 						JOptionPane.YES_NO_OPTION);
 				

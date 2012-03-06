@@ -25,6 +25,7 @@ import javax.swing.SwingUtilities;
 import org.apache.log4j.Logger;
 import org.nuclos.client.common.DependantCollectableMasterDataMap;
 import org.nuclos.client.main.mainframe.MainFrameTab;
+import org.nuclos.client.main.mainframe.MainFrameTabbedPane;
 import org.nuclos.client.masterdata.CollectableMasterDataWithDependants;
 import org.nuclos.client.masterdata.MasterDataCollectController;
 import org.nuclos.client.resource.ResourceCache;
@@ -59,8 +60,8 @@ public class ResourceCollectController extends MasterDataCollectController{
 	 * *CollectController<~> cc = new *CollectController<~>(.., rc);
 	 * </code></pre>
 	 */
-	public ResourceCollectController(JComponent parent, MainFrameTab tabIfAny){
-		super(parent, NuclosEntity.RESOURCE, tabIfAny);
+	public ResourceCollectController(MainFrameTab tabIfAny){
+		super(NuclosEntity.RESOURCE, tabIfAny);
 
 		this.getCollectStateModel().addCollectStateListener(new CollectStateAdapter() {
 			@Override

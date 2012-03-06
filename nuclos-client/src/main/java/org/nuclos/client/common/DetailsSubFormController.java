@@ -50,10 +50,9 @@ import javax.swing.JPopupMenu;
 import javax.swing.JSeparator;
 import javax.swing.JTable;
 import javax.swing.JViewport;
-import javax.swing.SwingUtilities;
 import javax.swing.RowSorter.SortKey;
+import javax.swing.SwingUtilities;
 import javax.swing.table.AbstractTableModel;
-import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellRenderer;
 
 import org.apache.log4j.Logger;
@@ -63,6 +62,7 @@ import org.nuclos.client.genericobject.GenericObjectDelegate;
 import org.nuclos.client.genericobject.datatransfer.GenericObjectIdModuleProcess;
 import org.nuclos.client.genericobject.datatransfer.TransferableGenericObjects;
 import org.nuclos.client.main.mainframe.MainFrame;
+import org.nuclos.client.main.mainframe.MainFrameTab;
 import org.nuclos.client.masterdata.CollectableMasterData;
 import org.nuclos.client.masterdata.MasterDataDelegate;
 import org.nuclos.client.masterdata.datatransfer.MasterDataIdAndEntity;
@@ -149,10 +149,10 @@ public abstract class DetailsSubFormController<Clct extends Collectable>
 	 * @param subform
 	 * @param prefsUserParent the preferences of the parent controller
 	 */
-	public DetailsSubFormController(CollectableEntity clcte, Component parent, JComponent parentMdi,
+	public DetailsSubFormController(CollectableEntity clcte, MainFrameTab tab, 
 			CollectableComponentModelProvider clctcompmodelproviderParent, String sParentEntityName, final SubForm subform,
 			Preferences prefsUserParent, EntityPreferences entityPrefs, CollectableFieldsProviderFactory clctfproviderfactory) {
-		super(clcte, parent, parentMdi, clctcompmodelproviderParent, sParentEntityName, subform,
+		super(clcte, tab, clctcompmodelproviderParent, sParentEntityName, subform,
 				prefsUserParent, entityPrefs, clctfproviderfactory);
 
 		if (this.isColumnSelectionAllowed(sParentEntityName)) {
@@ -417,7 +417,7 @@ public abstract class DetailsSubFormController<Clct extends Collectable>
 								getCollectController().getEntity(), 
 								getSubFormPrefs());
 					} catch (CommonBusinessException e1) {
-						Errors.getInstance().showExceptionDialog(getParent(), e1);
+						Errors.getInstance().showExceptionDialog(getTab(), e1);
 					}
 				}
 			});
@@ -458,7 +458,7 @@ public abstract class DetailsSubFormController<Clct extends Collectable>
 								}
 							});
 				} catch (CommonBusinessException e1) {
-					Errors.getInstance().showExceptionDialog(getParent(), e1);
+					Errors.getInstance().showExceptionDialog(getTab(), e1);
 				}
 			}
 		});

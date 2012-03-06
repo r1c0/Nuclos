@@ -17,7 +17,6 @@
 package org.nuclos.client.common;
 
 import java.awt.AWTEvent;
-import java.awt.Component;
 import java.awt.EventQueue;
 import java.awt.Rectangle;
 import java.awt.event.KeyEvent;
@@ -31,7 +30,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.prefs.Preferences;
 
-import javax.swing.JComponent;
 import javax.swing.JTable;
 import javax.swing.KeyStroke;
 import javax.swing.ListSelectionModel;
@@ -49,8 +47,11 @@ import javax.swing.table.TableColumnModel;
 import org.apache.commons.httpclient.util.LangUtils;
 import org.apache.log4j.Logger;
 import org.nuclos.client.genericobject.Modules;
-import org.nuclos.client.ui.Controller;
+import org.nuclos.client.main.mainframe.MainFrame;
+import org.nuclos.client.main.mainframe.MainFrameTab;
+import org.nuclos.client.main.mainframe.MainFrameTabbedPane;
 import org.nuclos.client.ui.Errors;
+import org.nuclos.client.ui.MainFrameTabController;
 import org.nuclos.client.ui.SizeKnownEvent;
 import org.nuclos.client.ui.SizeKnownListener;
 import org.nuclos.client.ui.UIUtils;
@@ -95,7 +96,7 @@ import org.nuclos.common2.exception.CommonFatalException;
  * @author	<a href="mailto:Christoph.Radig@novabit.de">Christoph.Radig</a>
  * @version 01.00.00
  */
-public abstract class SubFormController extends Controller
+public abstract class SubFormController extends MainFrameTabController
 		implements TableCellRendererProvider, TableCellEditorProvider, SubFormParameterProvider, FocusActionListener {
 
 	private static final Logger LOG = Logger.getLogger(SubFormController.class);
@@ -106,14 +107,12 @@ public abstract class SubFormController extends Controller
 	 * this controller's subform
 	 */
 	private final SubForm subform;
-	/**
-	 * the parent for new MDI (internal) frames
-	 */
-	private final JComponent parentMdi;
+
 	/**
 	 * the <code>CollectableEntity</code> of the subform.
 	 */
 	private final CollectableEntity clcte;
+	
 	/**
 	 * Is this controller's subform searchable (to be used in a Search panel)?
 	 */
@@ -129,7 +128,7 @@ public abstract class SubFormController extends Controller
 
 	/**
 	 * @param parent
-	 * @param parentMdi
+	 * @param mainFrameTabbedPane
 	 * @param clctcompmodelproviderParent provides the enclosing <code>CollectController</code>'s <code>CollectableComponentModel</code>s.
 	 * This avoids handing the whole <code>CollectController</code> to the <code>SubFormController</code>.
 	 * May be <code>null</code> if there are no dependencies from subform columns to fields of the main form.
@@ -140,13 +139,17 @@ public abstract class SubFormController extends Controller
 	 * @param clctfproviderfactory
 	 * @precondition prefsUserParent != null
 	 */
-	public SubFormController(CollectableEntity clcte, Component parent, JComponent parentMdi,
+	public SubFormController(CollectableEntity clcte, MainFrameTab tab,
 			CollectableComponentModelProvider clctcompmodelproviderParent, String sParentEntityName, SubForm subform,
 			boolean bSearchable, Preferences prefsUserParent, EntityPreferences entityPrefs, CollectableFieldsProviderFactory clctfproviderfactory) {
 
-		super(parent);
+		super(tab);
+		
+		if (tab == null) {
+			throw new IllegalArgumentException("tab must not be null");
+		}
+		
 		this.clcte = clcte;
-		this.parentMdi = parentMdi;
 		this.clctcompmodelproviderParent = clctcompmodelproviderParent;
 		this.sParentEntityName = sParentEntityName;
 		this.subform = subform;
@@ -293,8 +296,8 @@ public abstract class SubFormController extends Controller
 		return this.sParentEntityName;
 	}
 
-	protected final JComponent getParentMdi() {
-		return this.parentMdi;
+	protected final MainFrameTabbedPane getMainFrameTabbedPane() {
+		return MainFrame.getTabbedPane(getTab());
 	}
 
 	/**
@@ -618,7 +621,7 @@ public abstract class SubFormController extends Controller
 	 * Command: removes the selected row
 	 */
 	public void cmdRemove() {
-		UIUtils.runCommand(this.getParent(), new Runnable() {
+		UIUtils.runCommandForTabbedPane(this.getMainFrameTabbedPane(), new Runnable() {
 			@Override
             public void run() {
 				if (stopEditing()) {

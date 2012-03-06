@@ -368,7 +368,7 @@ public class NuclosEntityAttributePropertiesStep extends NuclosEntityAttributeAb
 				final CollectControllerFactorySingleton factory = CollectControllerFactorySingleton.getInstance();
 				final MainFrameTab tabDataType = new MainFrameTab(localeDelegate.getMessage(
 						"wizard.step.attributeproperties.23", "Datentypen verwalten"));
-				final DataTypeCollectController dtcc = factory.newDataTypeCollectController(parent, tabDataType);
+				final DataTypeCollectController dtcc = factory.newDataTypeCollectController(tabDataType);
 				dtcc.addChangeListener(NuclosEntityAttributePropertiesStep.this);
 				parent.add(tabDataType);
 

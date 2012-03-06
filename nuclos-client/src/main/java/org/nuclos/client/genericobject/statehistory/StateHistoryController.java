@@ -36,9 +36,10 @@ import org.nuclos.client.genericobject.GenericObjectDelegate;
 import org.nuclos.client.genericobject.Modules;
 import org.nuclos.client.main.Main;
 import org.nuclos.client.main.mainframe.MainFrameTab;
+import org.nuclos.client.main.mainframe.MainFrameTabbedPane;
 import org.nuclos.client.statemodel.StateDelegate;
-import org.nuclos.client.ui.Controller;
 import org.nuclos.client.ui.Errors;
+import org.nuclos.client.ui.MainFrameTabController;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common2.SpringLocaleDelegate;
@@ -56,18 +57,16 @@ import org.nuclos.server.statemodel.valueobject.StateHistoryVO;
  * @version 01.00.00
  */
 
-public class StateHistoryController extends Controller {
-	private JComponent parent;
+public class StateHistoryController extends MainFrameTabController {
 
 	private int iModuleId;
 	private int iGenericObjectId;
 
 	/**
-	 * @param parent Typically, the <code>JDesktopPane</code> to add the internal frame
+	 * @param source Typically, the <code>JDesktopPane</code> to add the internal frame
 	 */
-	public StateHistoryController(JComponent parent) {
-		super(parent);
-		this.parent = parent;
+	public StateHistoryController(MainFrameTab source) {
+		super(source);
 	}
 
 	/**
@@ -85,17 +84,17 @@ public class StateHistoryController extends Controller {
 
 		final String sTitle = getTitle(sGenericObjectIdentifier, iGenericObjectId, iModuleId);
 
-		final MainFrameTab ifrm = Main.getInstance().getMainController().newMainFrameTab(null, sTitle);
+		final MainFrameTab newTab = Main.getInstance().getMainController().newMainFrameTab(null, sTitle);
 		//ifrm.setContentPane(pnlHistory);
-		ifrm.setLayeredComponent(pnlHistory);
-		parent.add(ifrm);
+		newTab.setLayeredComponent(pnlHistory);
+		getTab().add(newTab);
 
-		setupEscapeKey(ifrm, pnlHistory);
+		setupEscapeKey(newTab, pnlHistory);
 
 		setupDoubleClickListener(pnlHistory);
 
 //		ifrm.pack();
-		ifrm.setVisible(true);
+		newTab.setVisible(true);
 	}
 
 	private void setupDoubleClickListener(final StateHistoryPanel pnlStateHistory) {
@@ -112,18 +111,18 @@ public class StateHistoryController extends Controller {
 						cal.setTime(stateHistory.getCreatedAt());
 						cal.add(Calendar.MINUTE, 1);
 
-						cmdShowHistoricalGenericObject(parent, cal.getTime());
+						cmdShowHistoricalGenericObject(getTabbedPane(), cal.getTime());
 					}
 				}
 			}
 		});
 	}
 
-	private void cmdShowHistoricalGenericObject(final JComponent parent, final Date dateHistorical) {
+	private void cmdShowHistoricalGenericObject(final MainFrameTabbedPane parent, final Date dateHistorical) {
 		if (dateHistorical == null) {
 			throw new NullArgumentException("dateHistorical");
 		}
-		UIUtils.runCommand(parent, new Runnable() {
+		UIUtils.runCommandForTabbedPane(parent, new Runnable() {
 			@Override
 			public void run() {
 				try {
@@ -131,10 +130,10 @@ public class StateHistoryController extends Controller {
 							dateHistorical);
 
 					final CollectableGenericObjectWithDependants clct = new CollectableGenericObjectWithDependants(lowdcvo);
-					NuclosCollectControllerFactory.getInstance().newGenericObjectCollectController(parent, iModuleId, null).runViewSingleHistoricalCollectable(clct, dateHistorical);
+					NuclosCollectControllerFactory.getInstance().newGenericObjectCollectController(iModuleId, null).runViewSingleHistoricalCollectable(clct, dateHistorical);
 				}
 				catch (/* CommonBusiness */ Exception ex) {
-					Errors.getInstance().showExceptionDialog(parent, ex);
+					Errors.getInstance().showExceptionDialog(parent.getComponentPanel(), ex);
 				}
 			}
 		});

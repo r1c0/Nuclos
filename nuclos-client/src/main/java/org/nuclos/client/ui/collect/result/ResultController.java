@@ -464,7 +464,7 @@ public class ResultController<Clct extends Collectable> {
 					}
 				}
 				catch (CommonBusinessException ex) {
-					Errors.getInstance().showExceptionDialog(clctctl.getFrame(), ex);
+					Errors.getInstance().showExceptionDialog(clctctl.getTab(), ex);
 				}
 			}	// valueChanged
 		};
@@ -622,7 +622,7 @@ public class ResultController<Clct extends Collectable> {
 			final String sMessagePattern = getSpringLocaleDelegate().getMessage(
 					"ResultController.13","Sollen die ausgew\u00e4hlten {0} Datens\u00e4tze wirklich gel\u00f6scht werden?");
 			final String sMessage = MessageFormat.format(sMessagePattern, iCount);
-			final int btn = JOptionPane.showConfirmDialog(clctctl.getFrame(), sMessage, getSpringLocaleDelegate().getMessage(
+			final int btn = JOptionPane.showConfirmDialog(clctctl.getTab(), sMessage, getSpringLocaleDelegate().getMessage(
 					"ResultController.7","Datens\u00e4tze l\u00f6schen"), JOptionPane.YES_NO_OPTION);
 			if (btn == JOptionPane.YES_OPTION) {
 				new DeleteSelectedCollectablesController<Clct>(clctctl).run(clctctl.getMultiActionProgressPanel(iCount));
@@ -633,11 +633,11 @@ public class ResultController<Clct extends Collectable> {
 					"ResultController.12","Soll der ausgew\u00e4hlte Datensatz ({0}) wirklich gel\u00f6scht werden?");
 			final String sMessage = MessageFormat.format(sMessagePattern,
 					getSelectedCollectableFromTableModel().getIdentifierLabel());
-			final int btn = JOptionPane.showConfirmDialog(clctctl.getFrame(), sMessage, getSpringLocaleDelegate().getMessage(
+			final int btn = JOptionPane.showConfirmDialog(clctctl.getTab(), sMessage, getSpringLocaleDelegate().getMessage(
 					"ResultController.8","Datensatz l\u00f6schen"), JOptionPane.YES_NO_OPTION);
 
 			if (btn == JOptionPane.YES_OPTION) {
-				UIUtils.runCommand(clctctl.getFrame(), new Runnable() {
+				UIUtils.runCommand(clctctl.getTab(), new Runnable() {
 					@Override
                     public void run() {
 						try {
@@ -646,10 +646,10 @@ public class ResultController<Clct extends Collectable> {
 						catch (CommonPermissionException ex) {
 							final String sErrorMsg = getSpringLocaleDelegate().getMessage(
 									"ResultController.11","Sie verf\u00fcgen nicht \u00fcber die ausreichenden Rechte, um diesen Datensatz zu l\u00f6schen.");
-							Errors.getInstance().showExceptionDialog(clctctl.getFrame(), sErrorMsg, ex);
+							Errors.getInstance().showExceptionDialog(clctctl.getTab(), sErrorMsg, ex);
 						}
 						catch (CommonBusinessException ex) {
-							Errors.getInstance().showExceptionDialog(clctctl.getFrame(), "Der Datensatz konnte nicht gel\u00f6scht werden.", ex);
+							Errors.getInstance().showExceptionDialog(clctctl.getTab(), "Der Datensatz konnte nicht gel\u00f6scht werden.", ex);
 						}
 					}
 				});
@@ -867,7 +867,7 @@ public class ResultController<Clct extends Collectable> {
 	 * Lets the user select the columns to show in the result list.
 	 */
 	public void cmdSelectColumns(final ChoiceEntityFieldList fields) {
-		final SelectColumnsController ctl = new SelectColumnsController(clctctl.getFrame());
+		final SelectColumnsController ctl = new SelectColumnsController(clctctl.getTab());
 		// final List<CollectableEntityField> lstAvailable = (List<CollectableEntityField>) fields.getAvailableFields();
 		// final List<CollectableEntityField> lstSelected = (List<CollectableEntityField>) fields.getSelectedFields();
 		final ResultPanel<Clct> panel = getResultPanel();
@@ -879,7 +879,7 @@ public class ResultController<Clct extends Collectable> {
 				"SelectColumnsController.1","Anzuzeigende Spalten ausw\u00e4hlen"));
 
 		if (bOK) {
-			UIUtils.runCommand(clctctl.getFrame(), new CommonRunnable() {
+			UIUtils.runCommand(clctctl.getTab(), new CommonRunnable() {
 				@Override
                 public void run() throws CommonBusinessException {
 					final int iSelectedRow = tbl.getSelectedRow();

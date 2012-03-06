@@ -60054,6 +60054,36 @@
     "text": "Auf Vorlage zurücksetzen"
   },
   {
+    "resourceID": "DesktopStartTab.6",
+    "locale": "i-default",
+    "text": "Hide tab bar"
+  },
+  {
+    "resourceID": "DesktopStartTab.6",
+    "locale": "en",
+    "text": "Hide tab bar"
+  },
+  {
+    "resourceID": "DesktopStartTab.6",
+    "locale": "de",
+    "text": "Tableiste ausblenden"
+  },
+    {
+    "resourceID": "DesktopStartTab.7",
+    "locale": "i-default",
+    "text": "Remove pane fixations"
+  },
+  {
+    "resourceID": "DesktopStartTab.7",
+    "locale": "en",
+    "text": "Remove pane fixations"
+  },
+  {
+    "resourceID": "DesktopStartTab.7",
+    "locale": "de",
+    "text": "Bereichsfixierungen aufheben"
+  },
+  {
     "resourceID": "MenuButton.2",
     "locale": "i-default",
     "text": "Select default icon"
@@ -60307,6 +60337,36 @@
     "resourceID": "MainFrameTabbedPane.3",
     "locale": "de",
     "text": "Tableiste"
+  },
+  {
+    "resourceID": "MainFrameTabbedPane.4",
+    "locale": "i-default",
+    "text": "Hide start tab"
+  },
+  {
+    "resourceID": "MainFrameTabbedPane.4",
+    "locale": "en",
+    "text": "Hide start tab"
+  },
+  {
+    "resourceID": "MainFrameTabbedPane.4",
+    "locale": "de",
+    "text": "Starttab ausblenden"
+  },
+  {
+    "resourceID": "MainFrameTabbedPane.5",
+    "locale": "i-default",
+    "text": "Show start tab"
+  },
+  {
+    "resourceID": "MainFrameTabbedPane.5",
+    "locale": "en",
+    "text": "Show start tab"
+  },
+  {
+    "resourceID": "MainFrameTabbedPane.5",
+    "locale": "de",
+    "text": "Starttab einblenden"
   },
   {
     "resourceID": "MainFrameTab.2",
@@ -61436,17 +61496,17 @@
   {
     "resourceID": "DesktopStartTabEditor.8",
     "locale": "i-default",
-    "text": "Menu button label"
+    "text": "Menu button"
   },
   {
     "resourceID": "DesktopStartTabEditor.8",
     "locale": "en",
-    "text": "Menu button label"
+    "text": "Menu button"
   },
   {
     "resourceID": "DesktopStartTabEditor.8",
     "locale": "de",
-    "text": "Menu Button Beschriftung"
+    "text": "Menu Button"
   },
   {
     "resourceID": "DesktopStartTabEditor.9",
@@ -61646,17 +61706,122 @@
   {
     "resourceID": "DesktopStartTabEditor.22",
     "locale": "i-default",
-    "text": "Menu button backgrounds"
+    "text": "Menu item background"
   },
   {
     "resourceID": "DesktopStartTabEditor.22",
     "locale": "en",
-    "text": "Menu button backgrounds"
+    "text": "Menu item background"
   },
   {
     "resourceID": "DesktopStartTabEditor.22",
     "locale": "de",
-    "text": "Menu Button Hintergründe"
+    "text": "Menu Eintrag Hintergrund"
+  },
+  {
+    "resourceID": "DesktopStartTabEditor.23",
+    "locale": "i-default",
+    "text": "Rootpane background color"
+  },
+  {
+    "resourceID": "DesktopStartTabEditor.23",
+    "locale": "en",
+    "text": "Rootpane background color"
+  },
+  {
+    "resourceID": "DesktopStartTabEditor.23",
+    "locale": "de",
+    "text": "Rootpane Hintergrund Farbe"
+  },
+  {
+    "resourceID": "DesktopStartTabEditor.24",
+    "locale": "i-default",
+    "text": "Menu items"
+  },
+  {
+    "resourceID": "DesktopStartTabEditor.24",
+    "locale": "en",
+    "text": "Menu items"
+  },
+  {
+    "resourceID": "DesktopStartTabEditor.24",
+    "locale": "de",
+    "text": "Menu Einträge"
+  },
+  {
+    "resourceID": "DesktopStartTabEditor.25",
+    "locale": "i-default",
+    "text": "Show always menus"
+  },
+  {
+    "resourceID": "DesktopStartTabEditor.25",
+    "locale": "en",
+    "text": "Show always menus"
+  },
+  {
+    "resourceID": "DesktopStartTabEditor.25",
+    "locale": "de",
+    "text": "Menus immer anzeigen"
+  },
+  {
+    "resourceID": "MainFrameSplitPane.fixUpper",
+    "locale": "i-default",
+    "text": "Fix upper pane"
+  },
+  {
+    "resourceID": "MainFrameSplitPane.fixUpper",
+    "locale": "en",
+    "text": "Fix upper pane"
+  },
+  {
+    "resourceID": "MainFrameSplitPane.fixUpper",
+    "locale": "de",
+    "text": "Fixiere oberen Bereich"
+  },
+  {
+    "resourceID": "MainFrameSplitPane.fixLower",
+    "locale": "i-default",
+    "text": "Fix lower pane"
+  },
+  {
+    "resourceID": "MainFrameSplitPane.fixLower",
+    "locale": "en",
+    "text": "Fix lower pane"
+  },
+  {
+    "resourceID": "MainFrameSplitPane.fixLower",
+    "locale": "de",
+    "text": "Fixiere unteren Bereich"
+  },
+  {
+    "resourceID": "MainFrameSplitPane.fixLeft",
+    "locale": "i-default",
+    "text": "Fix left pane"
+  },
+  {
+    "resourceID": "MainFrameSplitPane.fixLeft",
+    "locale": "en",
+    "text": "Fix left pane"
+  },
+  {
+    "resourceID": "MainFrameSplitPane.fixLeft",
+    "locale": "de",
+    "text": "Fixiere linken Bereich"
+  },
+  {
+    "resourceID": "MainFrameSplitPane.fixRight",
+    "locale": "i-default",
+    "text": "Fix right pane"
+  },
+  {
+    "resourceID": "MainFrameSplitPane.fixRight",
+    "locale": "en",
+    "text": "Fix right pane"
+  },
+  {
+    "resourceID": "MainFrameSplitPane.fixRight",
+    "locale": "de",
+    "text": "Fixiere rechten Bereich"
   },
   {
     "resourceID": "ColorChooserButton.1",
@@ -61702,6 +61867,21 @@
     "resourceID": "ColorChooserButton.3",
     "locale": "de",
     "text": "Abbrechen"
+  },
+  {
+    "resourceID": "ColorChooserButton.4",
+    "locale": "i-default",
+    "text": "Delete"
+  },
+  {
+    "resourceID": "ColorChooserButton.4",
+    "locale": "en",
+    "text": "Delete"
+  },
+  {
+    "resourceID": "ColorChooserButton.4",
+    "locale": "de",
+    "text": "Löschen"
   },
   {
     "resourceID": "Desktop.not.restoreable",

@@ -154,7 +154,7 @@ public class NuclosResultController<Clct extends Collectable> extends ResultCont
 		final NuclosResultPanel<Clct> panel = getNuclosResultPanel();
 		final JTable tblResult = panel.getResultTable();
 		
-		UIUtils.runCommand(elisaController.getFrame(),
+		UIUtils.runCommand(elisaController.getTab(),
 			new CommandHandler() {
 				@Override
 				public void commandStarted(Component parent) {
@@ -255,7 +255,7 @@ public class NuclosResultController<Clct extends Collectable> extends ResultCont
 		// remember the widths of the currently visible columns
 		final Map<String, Integer> mpWidths = panel.getVisibleColumnWidth(fields.getSelectedFields());
 
-		UIUtils.runCommand(clctctl.getFrame(),
+		UIUtils.runCommand(clctctl.getTab(),
 				new CommandHandler() {
 					@Override
 					public void commandStarted(Component parent) {
@@ -481,7 +481,7 @@ public class NuclosResultController<Clct extends Collectable> extends ResultCont
 		
 		// final SelectFixedColumnsController ctl = new PivotController(clctctl.getFrame(), new PivotPanel(subFormFields), 
 		// 		(GenericObjectResultController) nucleusctl.getResultController());
-		final SelectFixedColumnsController ctl = newSelectColumnsController(nucleusctl.getFrame());
+		final SelectFixedColumnsController ctl = newSelectColumnsController(nucleusctl.getTab());
 		final SortedSet<CollectableEntityField> lstAvailable = fields.getAvailableFields();
 		final List<CollectableEntityField> lstSelected = fields.getSelectedFields();
 		final ChoiceEntityFieldList ro = new ChoiceEntityFieldList(panel.getFixedColumns());

@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.swing.JComponent;
 import javax.swing.JOptionPane;
 
 import org.nuclos.client.common.security.SecurityCache;
@@ -33,6 +32,7 @@ import org.nuclos.client.datasource.DatasourceDelegate;
 import org.nuclos.client.datasource.querybuilder.QueryBuilderEditor;
 import org.nuclos.client.datasource.querybuilder.gui.ColumnEntry;
 import org.nuclos.client.main.mainframe.MainFrameTab;
+import org.nuclos.client.main.mainframe.MainFrameTabbedPane;
 import org.nuclos.client.masterdata.MetaDataCache;
 import org.nuclos.client.ui.CommonClientWorker;
 import org.nuclos.client.ui.CommonClientWorkerAdapter;
@@ -46,9 +46,9 @@ import org.nuclos.common.collect.exception.CollectableValidationException;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.database.query.definition.QueryTable;
 import org.nuclos.common.masterdata.CollectableMasterDataEntity;
-import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.IOUtils;
 import org.nuclos.common2.ServiceLocator;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.server.report.ejb3.DatasourceFacadeRemote;
 import org.nuclos.server.report.valueobject.DatasourceVO;
@@ -74,8 +74,8 @@ public class DynamicEntityCollectController extends AbstractDatasourceCollectCon
 	 * *CollectController<~> cc = new *CollectController<~>(.., rc);
 	 * </code></pre>
 	 */
-	public DynamicEntityCollectController(JComponent parent, MainFrameTab tabIfAny) {
-		super(parent, new CollectableMasterDataEntity(
+	public DynamicEntityCollectController(MainFrameTab tabIfAny) {
+		super(new CollectableMasterDataEntity(
 			MetaDataCache.getInstance().getMetaData(NuclosEntity.DYNAMICENTITY)), tabIfAny);
 
 		CollectableMasterDataEntity clctEntity = new CollectableMasterDataEntity(
@@ -129,7 +129,7 @@ public class DynamicEntityCollectController extends AbstractDatasourceCollectCon
 		final List<DatasourceVO> lstUsages = DatasourceDelegate.getInstance().getUsagesForDatasource(clct.getDatasourceVO());
 		if (!lstUsages.isEmpty()) {
 			final SpringLocaleDelegate localeDelegate = SpringLocaleDelegate.getInstance();
-			final int iBtn = JOptionPane.showConfirmDialog(this.getFrame(), 
+			final int iBtn = JOptionPane.showConfirmDialog(this.getTab(), 
 					localeDelegate.getMessage("DatasourceCollectController.8","Diese Datenquelle wird in anderen Datenquellen verwendet.") + "\n" +
 				localeDelegate.getMessage("DatasourceCollectController.1","Das L\u00f6schen f\u00fchrt dazu, dass folgende Datenquellen nicht mehr ausf\u00fchrbar sind") + ":\n" + getUsagesAsString(lstUsages) +
 					"\n" + localeDelegate.getMessage("DatasourceCollectController.24","Wollen sie die Datenquelle dennoch l\u00f6schen?"), 
@@ -163,7 +163,7 @@ public class DynamicEntityCollectController extends AbstractDatasourceCollectCon
 			final List<DatasourceVO> lstUsages = DatasourceDelegate.getInstance().getUsagesForDatasource(dynamicEntityVO);
 			if (!lstUsages.isEmpty()) {
 				final SpringLocaleDelegate localeDelegate = SpringLocaleDelegate.getInstance();
-				final int iBtn = JOptionPane.showConfirmDialog(this.getFrame(), 
+				final int iBtn = JOptionPane.showConfirmDialog(this.getTab(), 
 						localeDelegate.getMessage("DatasourceCollectController.9","Diese Datenquelle wird in anderen Datenquellen verwendet.") + "\n" +
 					localeDelegate.getMessage("DatasourceCollectController.11","Eine Umbenennung f\u00fchrt dazu, dass folgende Datenquellen nicht mehr ausf\u00fchrbar sind:") + "\n" +
 						getUsagesAsString(lstUsages) + "\n" + localeDelegate.getMessage("DatasourceCollectController.23","Wollen sie dennoch speichern?"), 
@@ -226,12 +226,12 @@ public class DynamicEntityCollectController extends AbstractDatasourceCollectCon
 			final String sDatasourceXML = pnlEdit.getQueryEditor().getXML(new DatasourceEntityOptions(true));
 			final Map<String, Object> mpParams = CollectionUtils.newHashMap();
 
-			if (createParamMap(sDatasourceXML, mpParams, ifrm)) {
+			if (createParamMap(sDatasourceXML, mpParams, getTab())) {
 				result = datasourcedelegate.executeQuery(sDatasourceXML, mpParams, iMaxRowCount);
 			}
 		}
 		catch (CommonBusinessException ex) {
-			Errors.getInstance().showExceptionDialog(getFrame(), ex);
+			Errors.getInstance().showExceptionDialog(getTab(), ex);
 		}
 		return result;
 	}
@@ -253,7 +253,7 @@ public class DynamicEntityCollectController extends AbstractDatasourceCollectCon
 	protected void importXML(String sXML) throws NuclosBusinessException {
 		final String sWarnings = QueryBuilderEditor.getSkippedElements(pnlEdit.getQueryEditor().setXML(sXML));
 		if (sWarnings.length() > 0) {
-			JOptionPane.showMessageDialog(parent, SpringLocaleDelegate.getInstance().getMessage(
+			JOptionPane.showMessageDialog(getTab(), SpringLocaleDelegate.getInstance().getMessage(
 					"DatasourceCollectController.12","Folgende Elemente existieren nicht mehr in dem aktuellen Datenbankschema\n und wurden daher entfernt:") + "\n" + sWarnings);
 		}
 		detailsChanged(pnlEdit.getQueryEditor());
@@ -275,11 +275,11 @@ public class DynamicEntityCollectController extends AbstractDatasourceCollectCon
 		try {
 			final DatasourceFacadeRemote dataSourceFacade = ServiceLocator.getInstance().getFacade(DatasourceFacadeRemote.class);
 			dataSourceFacade.validateSqlFromXML(pnlEdit.getQueryEditor().getXML(new DatasourceEntityOptions(true)));
-			JOptionPane.showMessageDialog(getFrame(), SpringLocaleDelegate.getInstance().getMessage(
+			JOptionPane.showMessageDialog(getTab(), SpringLocaleDelegate.getInstance().getMessage(
 					"DatasourceCollectController.10","Die SQL Abfrage ist syntaktisch korrekt."));
 		}
 		catch (Exception ex) {
-			Errors.getInstance().showExceptionDialog(getFrame(), ex);
+			Errors.getInstance().showExceptionDialog(getTab(), ex);
 		}
 	}
 

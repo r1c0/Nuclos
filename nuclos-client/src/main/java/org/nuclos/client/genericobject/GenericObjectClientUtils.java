@@ -30,6 +30,7 @@ import org.nuclos.client.common.Utils;
 import org.nuclos.client.common.security.SecurityCache;
 import org.nuclos.client.genericobject.access.CgoWithDependantsSecurityAgentImpl;
 import org.nuclos.client.main.Main;
+import org.nuclos.client.main.mainframe.MainFrameTabbedPane;
 import org.nuclos.client.ui.collect.CollectController;
 import org.nuclos.common.CollectableEntityFieldWithEntityForExternal;
 import org.nuclos.common.NuclosFatalException;
@@ -219,12 +220,11 @@ public class GenericObjectClientUtils {
 
 	/**
 	 * Open a generic object of a certain module in the details view of a new GenericObjectCollectController
-	 * @param parent
 	 * @param iModuleId
 	 * @param iGenericObjectId
 	 * @throws CommonBusinessException
 	 */
-	public static void showDetails(JComponent parent, int iModuleId, int iGenericObjectId) throws CommonBusinessException {
+	public static void showDetails(int iModuleId, int iGenericObjectId) throws CommonBusinessException {
 		final String sEntityName = Modules.getInstance().getEntityNameByModuleId(iModuleId);
 
 		if (!SecurityCache.getInstance().isReadAllowedForModule(sEntityName, iGenericObjectId)) {
@@ -254,11 +254,10 @@ public class GenericObjectClientUtils {
 
 	/**
 	 * Open a collection of generic objects of unknown and possibly different modules in the appropriate view of the appropriate CollectController.
-	 * @param parent
 	 * @param collLeasedObjectIds
 	 * @throws CommonBusinessException
 	 */
-	public static void showDetails(JComponent parent, Collection<Integer> collLeasedObjectIds) throws CommonBusinessException {
+	public static void showDetails(Collection<Integer> collLeasedObjectIds) throws CommonBusinessException {
 		Collection<Integer> collAssetModuleIds = new HashSet<Integer>(collLeasedObjectIds.size());
 		for(Integer iAssetId : collLeasedObjectIds) {
 			collAssetModuleIds.add(GenericObjectDelegate.getInstance().getModuleContainingGenericObject(iAssetId));
@@ -267,12 +266,12 @@ public class GenericObjectClientUtils {
 
 		if(collLeasedObjectIds.size() == 1) {
 			// One related object must have a defined module, so open it in its detail view of the GenericObjectCollectController
-			final GenericObjectCollectController ctlLeasedObject = NuclosCollectControllerFactory.getInstance().newGenericObjectCollectController(parent, iCommonModuleId, null);
+			final GenericObjectCollectController ctlLeasedObject = NuclosCollectControllerFactory.getInstance().newGenericObjectCollectController(iCommonModuleId, null);
 			ctlLeasedObject.runViewSingleCollectableWithId(collLeasedObjectIds.iterator().next());
 		}
 		else if(iCommonModuleId != null) {
 			// If more than one related objects share one module, open them in the result view of the GenericObjectCollectController
-			final GenericObjectCollectController ctlLeasedObject = NuclosCollectControllerFactory.getInstance().newGenericObjectCollectController(parent, iCommonModuleId, null);
+			final GenericObjectCollectController ctlLeasedObject = NuclosCollectControllerFactory.getInstance().newGenericObjectCollectController(iCommonModuleId, null);
 			ctlLeasedObject.runViewResults(getSearchConditionForRelatedObjects(collLeasedObjectIds));
 		}
 	}

@@ -48,6 +48,7 @@ import org.nuclos.client.genericobject.GenericObjectCollectController;
 import org.nuclos.client.genericobject.GenericObjectDelegate;
 import org.nuclos.client.layout.LayoutUtils;
 import org.nuclos.client.main.mainframe.MainFrame;
+import org.nuclos.client.main.mainframe.MainFrameTab;
 import org.nuclos.client.masterdata.valuelistprovider.MasterDataCollectableFieldsProviderFactory;
 import org.nuclos.client.ui.Icons;
 import org.nuclos.client.ui.SizeKnownEvent;
@@ -113,7 +114,7 @@ public class MasterDataSubFormController extends DetailsSubFormController<Collec
 	int selectedColumn;
 
 	/**
-	 * @param parent
+	 * @param tab
 	 * @param clctcompmodelproviderParent provides <code>CollectableComponentModel</code>s. This avoids handing
 	 * the whole <code>CollectController</code> to the DetailsSubFormController.
 	 * @param sParentEntityName
@@ -121,10 +122,10 @@ public class MasterDataSubFormController extends DetailsSubFormController<Collec
 	 * @param prefsUserParent the preferences of the parent (controller)
 
 	 */
-	public MasterDataSubFormController(Component parent, JComponent parentMdi,
+	public MasterDataSubFormController(MainFrameTab tab,
 			CollectableComponentModelProvider clctcompmodelproviderParent, String sParentEntityName, final SubForm subform,
 			Preferences prefsUserParent, EntityPreferences entityPrefs, CollectableFieldsProviderCache valueListProviderCache) {
-		this(DefaultCollectableEntityProvider.getInstance().getCollectableEntity(subform.getEntityName()), parent, parentMdi, clctcompmodelproviderParent,
+		this(DefaultCollectableEntityProvider.getInstance().getCollectableEntity(subform.getEntityName()), tab, clctcompmodelproviderParent,
 				sParentEntityName, subform, prefsUserParent, entityPrefs, valueListProviderCache);
 	}
 
@@ -132,7 +133,7 @@ public class MasterDataSubFormController extends DetailsSubFormController<Collec
 	 * Ctor for creating a new MasterDataSubFormController with custom CollectableEntity.
 	 *
 	 * @param clcte
-	 * @param parent
+	 * @param tab
 	 * @param parentMdi
 	 * @param clctcompmodelproviderParent
 	 * @param sParentEntityName
@@ -140,10 +141,10 @@ public class MasterDataSubFormController extends DetailsSubFormController<Collec
 	 * @param prefsUserParent
 	 * @param valueListProviderCache
 	 */
-	public MasterDataSubFormController(CollectableEntity clcte, Component parent, JComponent parentMdi,
+	public MasterDataSubFormController(CollectableEntity clcte, MainFrameTab tab, 
 			CollectableComponentModelProvider clctcompmodelproviderParent, String sParentEntityName, final SubForm subform,
 			Preferences prefsUserParent, EntityPreferences entityPrefs, CollectableFieldsProviderCache valueListProviderCache) {
-		super(clcte, parent, parentMdi, clctcompmodelproviderParent, sParentEntityName, subform,
+		super(clcte, tab, clctcompmodelproviderParent, sParentEntityName, subform,
 				prefsUserParent, entityPrefs, MasterDataCollectableFieldsProviderFactory.newFactory(null, valueListProviderCache));
 
 		getSubForm().getJTable().getSelectionModel().addListSelectionListener(new ListSelectionListener() {
@@ -268,7 +269,7 @@ public class MasterDataSubFormController extends DetailsSubFormController<Collec
 	}
 
 	private void cmdShowDetails() throws CommonBusinessException {
-		UIUtils.runCommand(getParent(), new CommonRunnable() {
+		UIUtils.runCommandForTabbedPane(getMainFrameTabbedPane(), new CommonRunnable() {
 
 			@Override
 			public void run() throws CommonBusinessException {
@@ -294,7 +295,7 @@ public class MasterDataSubFormController extends DetailsSubFormController<Collec
 	private void showMasterData(final Object iMasterdataId,	String entityName) throws CommonBusinessException {
 		if(LayoutUtils.isSubformEntity(entityName))
 			return;
-		MasterDataCollectController ctlMasterdata = NuclosCollectControllerFactory.getInstance().newMasterDataCollectController(MainFrame.getPredefinedEntityOpenLocation(entityName), entityName, null);
+		MasterDataCollectController ctlMasterdata = NuclosCollectControllerFactory.getInstance().newMasterDataCollectController(entityName, null);
 		ctlMasterdata.runViewSingleCollectableWithId(iMasterdataId);
 	}
 
@@ -303,7 +304,7 @@ public class MasterDataSubFormController extends DetailsSubFormController<Collec
 		try {
 			final GenericObjectVO govo = GenericObjectDelegate.getInstance().get((Integer) iGenericObjectId);
 			final GenericObjectCollectController ctlGenericObject = NuclosCollectControllerFactory.getInstance().
-					newGenericObjectCollectController(MainFrame.getPredefinedEntityOpenLocation(MetaDataClientProvider.getInstance().getEntity(Integer.valueOf(govo.getModuleId()).longValue()).getEntity()), govo.getModuleId(), null);
+					newGenericObjectCollectController(govo.getModuleId(), null);
 
 			ctlGenericObject.runViewSingleCollectable(CollectableGenericObjectWithDependants.newCollectableGenericObject(govo));
 		}
@@ -440,7 +441,7 @@ public class MasterDataSubFormController extends DetailsSubFormController<Collec
 					if (hasDependantData) {
 						String sMessage = getSpringLocaleDelegate().getMessage(
 								"MasterDataSubFormController.2", "Der zu klonende Datensatz besitzt abh\u00e4ngige Unterformulardaten. Sollen diese auch geklont werden?");
-						result = JOptionPane.showConfirmDialog(getParent(), sMessage, 
+						result = JOptionPane.showConfirmDialog(getTab(), sMessage, 
 								getSpringLocaleDelegate().getMessage("MasterDataSubFormController.1", "Datensatz klonen"), JOptionPane.YES_NO_OPTION);
 					}
 

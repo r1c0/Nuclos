@@ -114,7 +114,7 @@ public class LayoutMLRuleEditorDialog extends JPanel implements SaveAndCancelBut
 		
 		tab = new MainFrameTab();
 		
-		ImageIcon controllerIcon = getController(editorPanel).getLayoutCollectController().getFrame().getTabIcon();
+		ImageIcon controllerIcon = getController(editorPanel).getLayoutCollectController().getTab().getTabIcon();
     	if(controllerIcon != null){
     		tab.setTabIcon(controllerIcon);
     	}
@@ -196,7 +196,7 @@ public class LayoutMLRuleEditorDialog extends JPanel implements SaveAndCancelBut
 		result.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		*/
 		
-		getController(editorPanel).getLayoutCollectController().getFrame().add(tab);
+		getController(editorPanel).getLayoutCollectController().getTab().add(tab);
 		tab.setTitle(LAYOUTML_RULE_EDITOR.TITLE_LAYOUTML_RULE_EDITOR);
 	}
 	

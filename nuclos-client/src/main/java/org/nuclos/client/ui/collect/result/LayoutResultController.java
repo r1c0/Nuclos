@@ -60,7 +60,7 @@ public class LayoutResultController<Clct extends CollectableMasterDataWithDepend
 		for (SortKey sortKey : sortKeys) {
 			final String fieldName = rtm.getCollectableEntityField(sortKey.getColumn()).getName();
 			if(fieldName.equals("layoutML")){
-				Errors.getInstance().showExceptionDialog(controller.getFrame(), SpringLocaleDelegate.getInstance().getMessage(
+				Errors.getInstance().showExceptionDialog(controller.getTab(), SpringLocaleDelegate.getInstance().getMessage(
 						"LayoutCollectController.7","Eine Sortierung nach der Spalte \"LayoutML\" ist nicht durchf\u00fchrbar."), new CommonBusinessException(""));
 				rtm.setSortKeys(controller.getLastSortKeys(), false);
 				valid = false;

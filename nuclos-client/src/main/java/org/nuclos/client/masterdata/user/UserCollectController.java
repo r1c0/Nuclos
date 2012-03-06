@@ -43,6 +43,7 @@ import org.nuclos.client.common.security.SecurityDelegate;
 import org.nuclos.client.ldap.LDAPDataDelegate;
 import org.nuclos.client.main.Main;
 import org.nuclos.client.main.mainframe.MainFrameTab;
+import org.nuclos.client.main.mainframe.MainFrameTabbedPane;
 import org.nuclos.client.masterdata.CollectableMasterDataWithDependants;
 import org.nuclos.client.masterdata.MasterDataCollectController;
 import org.nuclos.client.ui.CommonAbstractAction;
@@ -162,8 +163,8 @@ public class UserCollectController extends MasterDataCollectController {
 	 * *CollectController<~> cc = new *CollectController<~>(.., rc);
 	 * </code></pre>
      */
-	public UserCollectController(JComponent parent, MainFrameTab tabIfAny) {
-		super(parent, NuclosEntity.USER, tabIfAny,
+	public UserCollectController(MainFrameTab tabIfAny) {
+		super(NuclosEntity.USER, tabIfAny,
 				new UserResultController<CollectableMasterDataWithDependants>(NuclosEntity.USER.getEntityName(),
 				new NuclosSearchResultStrategy<CollectableMasterDataWithDependants>()));
 		this.setupDetailsToolBar();
@@ -345,7 +346,7 @@ public class UserCollectController extends MasterDataCollectController {
 		if(!synchronizeWithLDAP()){
 			return;
 		}
-		final SelectUserController<MasterDataVO> ctl = new SelectUserController<MasterDataVO>(clctctl.getFrame(), 
+		final SelectUserController<MasterDataVO> ctl = new SelectUserController<MasterDataVO>(clctctl.getTab(), 
 				getSpringLocaleDelegate().getMessage("UserCollectController.2", "LDAP Benutzer"),
 				getSpringLocaleDelegate().getMessage(
 						"UserCollectController.3", "Ausgew\u00e4hlte Benutzer synchronisieren"), null, null);
@@ -361,7 +362,7 @@ public class UserCollectController extends MasterDataCollectController {
 				"SelectUserController.7", "Mit LDAP Synchronisieren"));
 
 		if (bOK) {
-			UIUtils.runCommand(clctctl.getFrame(), new CommonRunnable() {
+			UIUtils.runCommand(clctctl.getTab(), new CommonRunnable() {
 				@Override
 				public void run() throws CommonBusinessException {
 					final int iSelectedRow = tbl.getSelectedRow();
@@ -410,7 +411,7 @@ public class UserCollectController extends MasterDataCollectController {
 
 	private boolean synchronizeWithLDAP() {
 		final boolean[] synchronizedWithLDAP = new boolean[] {false};
-		UIUtils.runCommand(this.getFrame(), new CommonRunnable() {
+		UIUtils.runCommand(this.getTab(), new CommonRunnable() {
 			@Override
 			public void run() throws CommonBusinessException {
 				try {
@@ -421,7 +422,7 @@ public class UserCollectController extends MasterDataCollectController {
 					LOG.warn("synchronizeWithLDAP failed: " + e, e);
 					final String sMessage = getSpringLocaleDelegate().getMessage("UserCollectController.4",
 						"LDAP Synchronisierung ist gescheitert.\nEine Liste der in LDAP registrierten Benutzer kann nicht dargestellt werden.");
-					Errors.getInstance().showExceptionDialog(getFrame(), sMessage, e);
+					Errors.getInstance().showExceptionDialog(getTab(), sMessage, e);
 					synchronizedWithLDAP[0] = false;
 				}
 			}
@@ -497,7 +498,7 @@ public class UserCollectController extends MasterDataCollectController {
 		public void actionPerformed(ActionEvent e) {
 			List<CollectableMasterDataWithDependants> selectedUsers = getSelectedCollectables();
 			CopyPreferencesPanel panel = new CopyPreferencesPanel(Main.getInstance().getMainController().getUserName());
-			int opt = JOptionPane.showConfirmDialog(UserCollectController.this.getParent(), panel,
+			int opt = JOptionPane.showConfirmDialog(getTab(), panel,
 					getSpringLocaleDelegate().getMessage("nuclos.preferences.transfer", null),
 				JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
 			if (opt == JOptionPane.OK_OPTION) {
@@ -508,7 +509,7 @@ public class UserCollectController extends MasterDataCollectController {
 					try {
 						facade.mergePreferencesForUser(userName, selectedPreferences);
 					} catch(CommonFinderException ex) {
-						Errors.getInstance().showExceptionDialog(UserCollectController.this.getParent(),
+						Errors.getInstance().showExceptionDialog(getTab(),
 								getSpringLocaleDelegate().getMessage("nuclos.preferences.transfer.error", userName), ex);
 					}
 				}

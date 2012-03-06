@@ -190,14 +190,14 @@ public class SearchFilterExplorerNode extends ExplorerNode<SearchFilterTreeNode>
 					if (Modules.getInstance().isModuleEntity(treenode.getEntity())) {
 						final Integer iModuleId = Modules.getInstance().getModuleIdByEntityName(treenode.getEntity());
 						final GenericObjectCollectController ctlGenericObject = NuclosCollectControllerFactory.getInstance().
-						newGenericObjectCollectController(MainFrame.getPredefinedEntityOpenLocation(MetaDataClientProvider.getInstance().getEntity(new Long(iModuleId)).getEntity()), iModuleId, null);
+						newGenericObjectCollectController(iModuleId, null);
 						final SearchFilter searchfilter = treenode.getSearchFilter();
 						ctlGenericObject.setSelectedSearchFilter(searchfilter);
 						ctlGenericObject.runViewResults(searchfilter.getSearchCondition());
 					}
 					else {
 						final MasterDataCollectController ctlMasterData = NuclosCollectControllerFactory.getInstance().
-						newMasterDataCollectController(MainFrame.getPredefinedEntityOpenLocation(treenode.getEntity()), treenode.getEntity(), null);
+						newMasterDataCollectController(treenode.getEntity(), null);
 						final SearchFilter searchfilter = treenode.getSearchFilter();
 						ctlMasterData.setSelectedSearchFilter(searchfilter);
 						ctlMasterData.runViewResults(searchfilter.getSearchCondition());

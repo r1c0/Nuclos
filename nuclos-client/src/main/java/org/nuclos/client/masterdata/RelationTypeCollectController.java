@@ -19,6 +19,7 @@ package org.nuclos.client.masterdata;
 import javax.swing.JComponent;
 
 import org.nuclos.client.main.mainframe.MainFrameTab;
+import org.nuclos.client.main.mainframe.MainFrameTabbedPane;
 import org.nuclos.client.ui.collect.component.CollectableComponent;
 import org.nuclos.common.collect.collectable.Collectable;
 import org.nuclos.common.NuclosBusinessException;
@@ -44,8 +45,8 @@ public class RelationTypeCollectController extends MasterDataCollectController {
 	 * *CollectController<~> cc = new *CollectController<~>(.., rc);
 	 * </code></pre>
 	 */
-	public RelationTypeCollectController(JComponent parent, MainFrameTab tabIfAny) {
-		super(parent, NuclosEntity.RELATIONTYPE, tabIfAny);
+	public RelationTypeCollectController( MainFrameTab tabIfAny) {
+		super(NuclosEntity.RELATIONTYPE, tabIfAny);
 	}
 
 	@Override

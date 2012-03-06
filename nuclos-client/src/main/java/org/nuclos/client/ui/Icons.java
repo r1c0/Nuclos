@@ -313,12 +313,20 @@ public class Icons {
 		return this.getIconByName("last-white-hover");
 	}
 
-	public Icon getIconTop16() {
-		return this.getIconByName("top");
+	public Icon getIconGoTop16() {
+		return this.getIconByName("gotop");
 	}
 
-	public Icon getIconBottom16() {
-		return this.getIconByName("bottom");
+	public Icon getIconGoBottom16() {
+		return this.getIconByName("gobottom");
+	}
+	
+	public Icon getIconGoFirst16() {
+		return this.getIconByName("gofirst");
+	}
+
+	public Icon getIconGoLast16() {
+		return this.getIconByName("golast");
 	}
 
 	public Icon getIconPlay16() {

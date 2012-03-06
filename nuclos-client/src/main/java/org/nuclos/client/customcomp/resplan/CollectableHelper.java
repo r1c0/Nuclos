@@ -138,7 +138,7 @@ public abstract class CollectableHelper<C extends Collectable> implements Collec
 	 */
 	public abstract Collectable cloneCollectable(Collectable clct) throws CommonBusinessException;
 
-	public abstract CollectController<C> newCollectController(JComponent parent) throws CommonBusinessException;
+	public abstract CollectController<C> newCollectController() throws CommonBusinessException;
 	
 	public static CollectableHelper<?> getForEntity(String entityName) {
 		return getForEntity(entityName, false);
@@ -265,8 +265,8 @@ public abstract class CollectableHelper<C extends Collectable> implements Collec
 		}
 		
 		@Override
-		public MasterDataCollectController newCollectController(JComponent parent) throws CommonBusinessException {
-			return NuclosCollectControllerFactory.getInstance().newMasterDataCollectController(parent, entity.getEntity(), null);
+		public MasterDataCollectController newCollectController() throws CommonBusinessException {
+			return NuclosCollectControllerFactory.getInstance().newMasterDataCollectController(entity.getEntity(), null);
 		}
 
 		private static MasterDataFacadeRemote getMDFacade() {
@@ -391,8 +391,8 @@ public abstract class CollectableHelper<C extends Collectable> implements Collec
 		}
 
 		@Override
-		public GenericObjectCollectController newCollectController(JComponent parent) throws CommonBusinessException {
-			return NuclosCollectControllerFactory.getInstance().newGenericObjectCollectController(parent, moduleId, null);
+		public GenericObjectCollectController newCollectController() throws CommonBusinessException {
+			return NuclosCollectControllerFactory.getInstance().newGenericObjectCollectController(moduleId, null);
 		}
 
 		private static GenericObjectFacadeRemote getGOFacade() {

@@ -581,6 +581,8 @@ public class PreferencesFacadeBean extends NuclosFacadeBean implements Preferenc
 			tbbTarget.setShowEntity(tbbSource.isShowEntity());
 
 			tbbTarget.setDesktop(tbbSource.getDesktop());
+			tbbTarget.setDesktopActive(tbbSource.isDesktopActive());
+			tbbTarget.setHideStartTab(tbbSource.isHideStartTab());
 		} else {
 			throw new UnsupportedOperationException("Unknown NestedContent type: " + ncSource.getClass());
 		}

@@ -87,10 +87,10 @@ public class DynamicEntitySubFormController extends MasterDataSubFormController 
 	private JMenuItem miDefineAsNewSearchResult = new JMenuItem(getSpringLocaleDelegate().getMessage(
 			"DynamicEntitySubFormController.1", "In Liste anzeigen"));
 
-	public DynamicEntitySubFormController(Component parent, JComponent parentMdi,
+	public DynamicEntitySubFormController(MainFrameTab tab,
 			CollectableComponentModelProvider clctcompmodelprovider, String sParentEntityName, SubForm subform,
 			Preferences prefsUserParent, EntityPreferences entityPrefs, CollectableFieldsProviderCache valueListProviderCache) {
-		super(parent, parentMdi, clctcompmodelprovider, sParentEntityName, subform, prefsUserParent, entityPrefs, valueListProviderCache);
+		super(tab, clctcompmodelprovider, sParentEntityName, subform, prefsUserParent, entityPrefs, valueListProviderCache);
 
 
 		setupDetailsStuff();
@@ -183,7 +183,7 @@ public class DynamicEntitySubFormController extends MasterDataSubFormController 
 	}
 
 	private void cmdShowDetails() {
-		UIUtils.runCommand(getParent(), new CommonRunnable() {
+		UIUtils.runCommandForTabbedPane(getMainFrameTabbedPane(), new CommonRunnable() {
 			@Override
             public void run() throws CommonBusinessException {
 				final Collectable clct = getSelectedCollectable();
@@ -195,8 +195,8 @@ public class DynamicEntitySubFormController extends MasterDataSubFormController 
 					GenericObjectVO govo = GenericObjectDelegate.getInstance().get((Integer) clct.getId());
 					entityName = MetaDataClientProvider.getInstance().getEntity(Integer.valueOf(govo.getModuleId()).longValue()).getEntity();
 				}
-				MainFrameTab tab = UIUtils.getInternalFrameForComponent(getSubForm().getJTable());
-				CollectController<?> controller = Main.getInstance().getMainController().getControllerForInternalFrame(tab);
+				MainFrameTab tab = UIUtils.getTabForComponent(getSubForm().getJTable());
+				CollectController<?> controller = Main.getInstance().getMainController().getControllerForTab(tab);
 
 				Main.getInstance().getMainController().showDetails(entityName, clct.getId(), false, controller);
 			}
@@ -204,7 +204,7 @@ public class DynamicEntitySubFormController extends MasterDataSubFormController 
 	}
 
 	private void cmdDefineSelectedCollectablesAsNewSearchResult() {
-		UIUtils.runCommand(getParent(), new CommonRunnable(){
+		UIUtils.runCommandForTabbedPane(getMainFrameTabbedPane(), new CommonRunnable(){
 			@Override
             public void run() throws CommonBusinessException {
 				final Collection<Collectable> collclct = CollectionUtils.typecheck(getSelectedCollectables(), Collectable.class);
@@ -231,7 +231,7 @@ public class DynamicEntitySubFormController extends MasterDataSubFormController 
 			private void showMasterDataInResult(
 				final CollectableSearchCondition cond, String entityName)
 				throws CommonBusinessException {
-				MasterDataCollectController ctlMasterdata = NuclosCollectControllerFactory.getInstance().newMasterDataCollectController(getParentMdi(), entityName, null);
+				MasterDataCollectController ctlMasterdata = NuclosCollectControllerFactory.getInstance().newMasterDataCollectController(entityName, null);
 				ctlMasterdata.runViewResults(cond);
 			}
 
@@ -240,7 +240,7 @@ public class DynamicEntitySubFormController extends MasterDataSubFormController 
 				try {
 					final Integer iModuleId = getCommonModuleId(collclct);
 					final GenericObjectCollectController ctlGenericObject = NuclosCollectControllerFactory.getInstance().
-							newGenericObjectCollectController(getParentMdi(), iModuleId, null);
+							newGenericObjectCollectController(iModuleId, null);
 					ctlGenericObject.setSearchDeleted(CollectableGenericObjectSearchExpression.SEARCH_BOTH);
 					ctlGenericObject.runViewResults(cond);
 				}

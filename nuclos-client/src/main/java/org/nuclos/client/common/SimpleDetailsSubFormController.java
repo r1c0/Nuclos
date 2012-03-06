@@ -16,12 +16,10 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.common;
 
-import java.awt.Component;
 import java.util.List;
 import java.util.prefs.Preferences;
 
-import javax.swing.JComponent;
-
+import org.nuclos.client.main.mainframe.MainFrameTab;
 import org.nuclos.client.ui.collect.SubForm;
 import org.nuclos.client.ui.collect.component.model.CollectableComponentModelProvider;
 import org.nuclos.common.WorkspaceDescription.EntityPreferences;
@@ -41,11 +39,11 @@ import org.nuclos.common.collect.collectable.DefaultCollectableEntityProvider;
  */
 public abstract class SimpleDetailsSubFormController<Clct extends Collectable> extends AbstractDetailsSubFormController<Clct> {
 
-	protected SimpleDetailsSubFormController(Component parent, JComponent parentMdi,
+	protected SimpleDetailsSubFormController(MainFrameTab tab,
 			CollectableComponentModelProvider clctcompmodelproviderParent, String sParentEntityName, SubForm subform,
 			Preferences prefsUserParent, EntityPreferences entityPrefs, CollectableFieldsProviderFactory clctfproviderfactory) {
 
-		super(DefaultCollectableEntityProvider.getInstance().getCollectableEntity(subform.getEntityName()), parent, parentMdi, 
+		super(DefaultCollectableEntityProvider.getInstance().getCollectableEntity(subform.getEntityName()), tab, 
 				clctcompmodelproviderParent, sParentEntityName, subform, prefsUserParent, 
 				entityPrefs, clctfproviderfactory);
 

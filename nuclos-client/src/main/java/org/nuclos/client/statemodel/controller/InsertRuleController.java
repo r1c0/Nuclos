@@ -16,11 +16,11 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.statemodel.controller;
 
-import java.awt.Component;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.rmi.RemoteException;
 
+import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 
@@ -39,11 +39,11 @@ import org.nuclos.client.ui.table.TableUtils;
  * @author	<a href="mailto:Boris.Sander@novabit.de">Boris Sander</a>
  * @version 01.00.00
  */
-public class InsertRuleController extends Controller {
+public class InsertRuleController extends Controller<JComponent> {
 
 	private InsertRulePanel pnlRules;
 
-	public InsertRuleController(Component parent) {
+	public InsertRuleController(JComponent parent) {
 		super(parent);
 	}
 
@@ -65,7 +65,7 @@ public class InsertRuleController extends Controller {
 				}
 			}
 		});
-		final JDialog dlg = optionPane.createDialog(this.getParent(), 
+		final JDialog dlg = optionPane.createDialog(getParent(), 
 				getSpringLocaleDelegate().getMessage("InsertRuleController.1","Regelauswahl"));
 		dlg.setResizable(true);
 		dlg.setVisible(true);

@@ -385,12 +385,12 @@ public class SubProcessShape extends ContainerShape implements ImageObserver {
 	/*
 	 * opens the statemodel window with the double clicked subprocess 
 	 */
-	public void openStateModel(JComponent parent) {			
+	public void openStateModel() {			
 		NuclosCollectController<CollectableStateModel> cont;
 		try {		
 			
 			cont = (NuclosCollectController<CollectableStateModel>) NuclosCollectControllerFactory.getInstance().
-				newCollectController(parent, NuclosEntity.STATEMODEL.getEntityName(), null);
+				newCollectController(NuclosEntity.STATEMODEL.getEntityName(), null);
 		
 			Collection<StateModelVO> col = StateDelegate.getInstance().getAllStateModels();
 			
@@ -423,7 +423,7 @@ public class SubProcessShape extends ContainerShape implements ImageObserver {
 
 	@Override
 	public void doubleClicked(JComponent parent) {
-		openStateModel(parent);
+		openStateModel();
 	}
 
 }	// class StateShape

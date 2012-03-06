@@ -49,7 +49,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Properties;
 import java.util.Set;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
@@ -72,7 +71,6 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
@@ -120,6 +118,7 @@ import org.nuclos.client.jms.TopicNotificationReceiver;
 import org.nuclos.client.login.LoginController;
 import org.nuclos.client.main.mainframe.MainFrame;
 import org.nuclos.client.main.mainframe.MainFrameTab;
+import org.nuclos.client.main.mainframe.MainFrameTabbedPane;
 import org.nuclos.client.main.mainframe.workspace.RestoreUtils;
 import org.nuclos.client.main.mainframe.workspace.WorkspaceChooserController;
 import org.nuclos.client.masterdata.MasterDataCache;
@@ -180,12 +179,12 @@ import org.nuclos.common.dal.vo.EntityMetaDataVO;
 import org.nuclos.common.dal.vo.EntityObjectVO;
 import org.nuclos.common.security.RemoteAuthenticationManager;
 import org.nuclos.common2.ClientPreferences;
-import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.CommonRunnable;
 import org.nuclos.common2.IOUtils;
 import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.PreferencesUtils;
 import org.nuclos.common2.ServiceLocator;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonFatalException;
@@ -196,7 +195,6 @@ import org.nuclos.server.customcomp.valueobject.CustomComponentVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
-import org.springframework.util.SystemPropertyUtils;
 
 
 /**
@@ -399,7 +397,7 @@ public class MainController {
 			loginController.increaseLoginProgressBar(StartUp.PROGRESS_CREATE_MAINFRAME);
 
 			LOG.debug(">>> init client communication...");
-			this.notificationdlg = new NuclosNotificationDialog(this.frm, this.getDesktopPane());
+			this.notificationdlg = new NuclosNotificationDialog(this.frm);
 			tnr.subscribe(JMSConstants.TOPICNAME_RULENOTIFICATION, messagelistener);
 			loginController.increaseLoginProgressBar(StartUp.PROGRESS_INIT_NOTIFICATION);
 
@@ -408,10 +406,10 @@ public class MainController {
 			loginController.increaseLoginProgressBar(StartUp.PROGRESS_CREATE_MAINMENU);
 
 			LOG.debug(">>> create explorer controller...");
-			this.ctlExplorer = new ExplorerController(frm);
+			this.ctlExplorer = new ExplorerController();
 
 			LOG.debug(">>> create task controller...");
-			this.ctlTasks = new TaskController(frm, getUserName());
+			this.ctlTasks = new TaskController(getUserName());
 
 			this.ctlTasks.setExplorerController(ctlExplorer);
 			this.ctlExplorer.setTaskController(ctlTasks);
@@ -476,7 +474,7 @@ public class MainController {
             at org.nuclos.client.main.MainController.showReleaseNotesIfNewVersion(MainController.java:1752)
             at org.nuclos.client.main.MainController.<init>(MainController.java:382)
              */
-			while (getDesktopPane() == null) {
+			while (getHomePane() == null) {
 				Thread.sleep(200);
 			}
 
@@ -504,7 +502,7 @@ public class MainController {
 				@Override
 				public void actionPerformed(ActionEvent ev) {
 					Component fundComponent = frm.getFocusOwner() != null ? frm.getFocusOwner() : frm.findComponentAt(frm.getMousePosition());
-					CollectController<?> clctctrl = getControllerForInternalFrame(UIUtils.getInternalFrameForComponent(fundComponent));
+					CollectController<?> clctctrl = getControllerForTab(UIUtils.getTabForComponent(fundComponent));
 
 					WikiController wikiCtrl = WikiController.getInstance();
 					wikiCtrl.openURLinBrowser(wikiCtrl.getWikiPageForComponent(fundComponent, clctctrl));
@@ -607,7 +605,7 @@ public class MainController {
 							@Override
 							public void run() {
 								try {
-									NuclosConsoleGui.showInFrame(frm.getHomePane());
+									NuclosConsoleGui.showInFrame(frm.getHomePane().getComponentPanel());
 								}
 								catch (Exception e) {
 									LOG.error("showInFrame failed: " + e, e);
@@ -626,7 +624,7 @@ public class MainController {
 						public void run() {
 							try {
 								ShowNuclosWizard w = new ShowNuclosWizard(false);
-								w.showWizard(MainController.this.getDesktopPane(), MainController.this.getFrame());
+								w.showWizard(MainController.this.getHomePane(), MainController.this.getFrame());
 							}
 							catch (Exception e) {
 								LOG.error("showWizard failed: " + e, e);
@@ -664,7 +662,7 @@ public class MainController {
 									try {
 										final CollectControllerFactorySingleton factory = CollectControllerFactorySingleton.getInstance();
 										Collection<MasterDataVO> colRelation = MasterDataDelegate.getInstance().getMasterData(NuclosEntity.ENTITYRELATION.getEntityName());
-										EntityRelationShipCollectController result = factory.newEntityRelationShipCollectController(MainController.this.getFrame().getHomePane(), MainController.this.getFrame(), null);
+										EntityRelationShipCollectController result = factory.newEntityRelationShipCollectController(MainController.this.getFrame(), null);
 										if(colRelation.size() > 0) {
 											MasterDataVO vo = colRelation.iterator().next();
 											result.runViewSingleCollectableWithId(vo.getId());
@@ -691,7 +689,7 @@ public class MainController {
 									try {
 										final CollectControllerFactorySingleton factory = CollectControllerFactorySingleton.getInstance();
 										Collection<MasterDataVO> colRelation = MasterDataDelegate.getInstance().getMasterData(NuclosEntity.ENTITYRELATION.getEntityName());
-										EntityRelationShipCollectController result = factory.newEntityRelationShipCollectController(MainController.this.getFrame().getHomePane(), MainController.this.getFrame(), null);
+										EntityRelationShipCollectController result = factory.newEntityRelationShipCollectController(MainController.this.getFrame(), null);
 										if(colRelation.size() > 0) {
 											MasterDataVO vo = colRelation.iterator().next();
 											result.runViewSingleCollectableWithId(vo.getId());
@@ -736,7 +734,7 @@ public class MainController {
 					// select all rows in the Result panel of the current CollectController (if any):
 					final MainFrameTab ifrm = (MainFrameTab) MainController.this.frm.getHomePane().getSelectedComponent();
 					if (ifrm != null) {
-						final CollectController<?> ctl = getControllerForInternalFrame(ifrm);
+						final CollectController<?> ctl = getControllerForTab(ifrm);
 						if (ctl != null && ctl.getCollectState().getOuterState() == CollectStateModel.OUTERSTATE_RESULT) {
 							ctl.getResultTable().selectAll();
 						}
@@ -769,7 +767,7 @@ public class MainController {
 
 				@Override
 				public void actionPerformed(ActionEvent evt) {
-					new ReleaseNotesController(getFrame(), getDesktopPane()).showReleaseNotes(ApplicationProperties.getInstance().getName());
+					new ReleaseNotesController().showReleaseNotes(ApplicationProperties.getInstance().getName());
 				}
 			};
 			cmdShowNuclosReleaseNotes  = new AbstractAction() {
@@ -1531,14 +1529,13 @@ public class MainController {
 							if (Modules.getInstance().isModuleEntity(entity)) {
 								final Integer iModuleId = Modules.getInstance().getModuleIdByEntityName(entity);
 								final GenericObjectCollectController ctlGenericObject = NuclosCollectControllerFactory.getInstance().
-								newGenericObjectCollectController(MainFrame.getPredefinedEntityOpenLocation(
-										mdProv.getEntity(new Long(iModuleId)).getEntity()), iModuleId, null);
+								newGenericObjectCollectController(iModuleId, null);
 								ctlGenericObject.setSelectedSearchFilter(searchfilter);
 								ctlGenericObject.runViewResults(searchfilter.getSearchCondition());
 							}
 							else {
 								final MasterDataCollectController ctlMasterData = NuclosCollectControllerFactory.getInstance().
-								newMasterDataCollectController(MainFrame.getPredefinedEntityOpenLocation(entity), entity, null);
+								newMasterDataCollectController(entity, null);
 								ctlMasterData.setSelectedSearchFilter(searchfilter);
 								ctlMasterData.runViewResults(searchfilter.getSearchCondition());
 							}
@@ -1730,7 +1727,7 @@ public class MainController {
 				String sEntity = ctrl.getEntityName();
 				if(mp.containsKey(sEntity)) {
 					CollectController<Collectable> ctrl1 = mp.get(sEntity);
-					if(ctrl1.getFrame().isShowing()) {
+					if(ctrl1.getTab().isShowing()) {
 						mp.put(sEntity, ctrl1);
 					}
 				}
@@ -1751,7 +1748,7 @@ public class MainController {
 		final List<TopController> result = new LinkedList<TopController>();
 
 		for (MainFrameTab ifrm : frm.getAllTabs()) {
-			final TopController ctl = this.getControllerForInternalFrame(ifrm, TopController.class);
+			final TopController ctl = this.getControllerForTab(ifrm, TopController.class);
 			if (ctl != null) {
 				result.add(ctl);
 			}
@@ -1761,15 +1758,15 @@ public class MainController {
 	}
 
 	/**
-	 * @param ifrm
+	 * @param tab
 	 * @return the <code>CollectController</code> (if any) for the given frame.
 	 */
-	public CollectController<?> getControllerForInternalFrame(MainFrameTab ifrm) {
-		return getControllerForInternalFrame(ifrm, CollectController.class);
+	public CollectController<?> getControllerForTab(MainFrameTab tab) {
+		return getControllerForTab(tab, CollectController.class);
 	}
 
-	public <C extends TopController> C getControllerForInternalFrame(MainFrameTab ifrm, Class<? extends C> clazz) {
-		Controller ctl = this.mpActiveControllers.get(ifrm);
+	public <C extends TopController> C getControllerForTab(MainFrameTab tab, Class<? extends C> clazz) {
+		Controller ctl = this.mpActiveControllers.get(tab);
 		if (clazz.isInstance(ctl)) {
 			return clazz.cast(ctl);
 		}
@@ -1869,7 +1866,7 @@ public class MainController {
 			}
 		}
 		if (ctl == null) {
-			ctl = NuclosCollectControllerFactory.getInstance().newCollectController(MainFrame.getPredefinedEntityOpenLocation(sEntityName), sEntityName, null);
+			ctl = NuclosCollectControllerFactory.getInstance().newCollectController(sEntityName, null);
 		}
 
 		if (listeningController != null) {
@@ -1883,11 +1880,11 @@ public class MainController {
 		if (!activateOnly) {
 			ctl.runViewSingleCollectableWithId(oId);
 		}
-		MainFrame.setSelectedTab(ctl.getFrame());
+		MainFrame.setSelectedTab(ctl.getTab());
 	}
 
 	public void showList(String entity, List<Object> ids) throws CommonBusinessException {
-		NuclosCollectController<?> controller = NuclosCollectControllerFactory.getInstance().newCollectController(MainFrame.getPredefinedEntityOpenLocation(entity), entity, null);
+		NuclosCollectController<?> controller = NuclosCollectControllerFactory.getInstance().newCollectController(entity, null);
 		controller.runViewResults(ids);
 	}
 
@@ -1907,7 +1904,7 @@ public class MainController {
 			}
 		}
 		if (ctl == null) {
-			ctl = NuclosCollectControllerFactory.getInstance().newCollectController(MainFrame.getPredefinedEntityOpenLocation(entity), entity, null);
+			ctl = NuclosCollectControllerFactory.getInstance().newCollectController(entity, null);
 		}
 		ctl.runViewMultipleCollectablesWithIds(ids);
 	}
@@ -1921,7 +1918,11 @@ public class MainController {
 	 * @throws CommonBusinessException
 	 */
 	public void showNew(String entityname, MainFrameTab parent, CollectableEventListener listener) throws CommonBusinessException {
-		final NuclosCollectController<?> controller = NuclosCollectControllerFactory.getInstance().newCollectController(parent, entityname, null);
+		MainFrameTab tabIfAny = new MainFrameTab();
+		final NuclosCollectController<?> controller = NuclosCollectControllerFactory.getInstance().newCollectController(entityname, tabIfAny);
+		Main.getInstance().getMainController().initMainFrameTab(controller, tabIfAny);
+		parent.add(tabIfAny);
+		
 		controller.addCollectableEventListener(listener);
 		controller.addCollectableEventListener(new CollectableEventListener() {
 			@Override
@@ -1930,7 +1931,7 @@ public class MainController {
 					SwingUtilities.invokeLater(new Runnable() {
 						@Override
 						public void run() {
-							controller.getFrame().dispose();
+							controller.getTab().dispose();
 						}
 					});
 				}
@@ -1945,12 +1946,12 @@ public class MainController {
 	 * @precondition sEntityName != null
 	 */
 	public CollectController<? extends Collectable> showDetails(String sEntityName) throws CommonBusinessException {
-		CollectController<? extends Collectable> clctcontroller = NuclosCollectControllerFactory.getInstance().newCollectController(this.getDesktopPane(), sEntityName, null);
+		CollectController<? extends Collectable> clctcontroller = NuclosCollectControllerFactory.getInstance().newCollectController(sEntityName, null);
 		clctcontroller.runNew();
 		return clctcontroller;
 	}
 
-	private JTabbedPane getDesktopPane() {
+	private MainFrameTabbedPane getHomePane() {
 		return this.getFrame().getHomePane();
 	}
 
@@ -1986,15 +1987,15 @@ public class MainController {
 	}
 
 	private void showReleaseNotesIfNewVersion() {
-		new ReleaseNotesController(this.getFrame(), this.getDesktopPane()).showReleaseNotesIfNewVersion();
+		new ReleaseNotesController().showReleaseNotesIfNewVersion();
 	}
 
 	protected void cmdShowInternalInfo() {
-		new InternalInfoController(this.getFrame(), this.getDesktopPane()).showInternalInfo();
+		new InternalInfoController().showInternalInfo();
 	}
 
 	private void showInternalInfoIfChanged() {
-		new InternalInfoController(this.getFrame(), this.getDesktopPane()).showInternalInfoIfChanged();
+		new InternalInfoController().showInternalInfoIfChanged();
 	}
 
 
@@ -2004,7 +2005,7 @@ public class MainController {
 			public void run() {
 				try {
 					String entity = ev.getActionCommand();
-					NuclosCollectController<?> ncc = NuclosCollectControllerFactory.getInstance().newCollectController(frm.getPredefinedEntityOpenLocation(entity), entity, null);
+					NuclosCollectController<?> ncc = NuclosCollectControllerFactory.getInstance().newCollectController(entity, null);
 					if(ncc != null) {
 						if (isNew) {
 							if (processId != null && ncc instanceof GenericObjectCollectController) {

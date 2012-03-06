@@ -69,12 +69,11 @@ public class ResetToTemplateUserActionListener implements ActionListener{
 			try {
 				PreferencesUtils.resetToTemplateUser(goCon.getEntityName());
 				CollectableSearchCondition searchCondition = goCon.getSearchStrategy().getCollectableSearchCondition();
-				NuclosCollectController<?> goConNew = NuclosCollectControllerFactory.getInstance().newCollectController(
-						Main.getInstance().getMainFrame().getHomePane(), goCon.getEntityName(), null);
+				NuclosCollectController<?> goConNew = NuclosCollectControllerFactory.getInstance().newCollectController(goCon.getEntityName(), null);
 				goConNew.runViewResults(searchCondition);
-				Rectangle goConBounds = goCon.getFrame().getBounds();
-				goConNew.getFrame().setBounds(goConBounds);
-				goCon.getFrame().dispose();
+				Rectangle goConBounds = goCon.getTab().getBounds();
+				goConNew.getTab().setBounds(goConBounds);
+				goCon.getTab().dispose();
 			} catch(NuclosBusinessException e1) {
 				Errors.getInstance().showExceptionDialog(goCon.getCollectPanel(), e1);
 			} catch(CommonPermissionException e1) {

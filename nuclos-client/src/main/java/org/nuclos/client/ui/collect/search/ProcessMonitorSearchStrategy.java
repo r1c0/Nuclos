@@ -36,7 +36,7 @@ public class ProcessMonitorSearchStrategy extends CollectSearchStrategy<Collecta
 	@Override
 	public void search() throws CommonBusinessException {
 		final ProcessMonitorCollectController cc = getProcessMonitorCollectController();
-		final MainFrameTab mft = cc.getMainFrameTab();
+		final MainFrameTab mft = cc.getTab();
 		try {
 			mft.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 			Collection<ProcessMonitorVO> col = ProcessMonitorDelegate.getInstance().getProcessModels();

@@ -29,6 +29,7 @@ import org.apache.log4j.Logger;
 import org.nuclos.client.common.security.SecurityCache;
 import org.nuclos.client.explorer.node.rule.RuleTreeModel;
 import org.nuclos.client.main.mainframe.MainFrameTab;
+import org.nuclos.client.main.mainframe.MainFrameTabbedPane;
 import org.nuclos.client.masterdata.CollectableMasterDataWithDependants;
 import org.nuclos.client.masterdata.MasterDataCollectController;
 import org.nuclos.client.rule.admin.RuleEditPanel;
@@ -80,8 +81,8 @@ public class CodeCollectController extends MasterDataCollectController {
 	 * *CollectController<~> cc = new *CollectController<~>(.., rc);
 	 * </code></pre>
 	 */
-	public CodeCollectController(JComponent parent, MainFrameTab tabIfAny) {
-		super(parent, NuclosEntity.CODE, tabIfAny, false);
+	public CodeCollectController(MainFrameTab tabIfAny) {
+		super(NuclosEntity.CODE, tabIfAny, false);
 
 		this.setupDetailsToolBar();
 
@@ -110,7 +111,7 @@ public class CodeCollectController extends MasterDataCollectController {
 	}
 
 	private void cmdCheckRuleSource() {
-		UIUtils.runCommand(this.getFrame(), new CommonRunnable() {
+		UIUtils.runCommand(this.getTab(), new CommonRunnable() {
 			@Override
 			public void run() throws CommonBusinessException {
 				// get the actual (edited) code
@@ -129,7 +130,7 @@ public class CodeCollectController extends MasterDataCollectController {
 
 				try {
 					codeDelegate.compile(mdvo);
-					JOptionPane.showMessageDialog(CodeCollectController.this.getFrame(), getSpringLocaleDelegate().getMessage(
+					JOptionPane.showMessageDialog(CodeCollectController.this.getTab(), getSpringLocaleDelegate().getMessage(
 							"CodeCollectController.compiledsuccessfully", "Quellcode erfolgreich kompiliert."));
 				}
 				catch (NuclosCompileException ex) {
@@ -292,7 +293,7 @@ public class CodeCollectController extends MasterDataCollectController {
 
 	@Override
 	protected void cmdJumpToTree() {
-		UIUtils.runCommand(this.getFrame(), new Runnable() {
+		UIUtils.runCommand(this.getTab(), new Runnable() {
 			@Override
 			public void run() {
 				try {
@@ -308,7 +309,7 @@ public class CodeCollectController extends MasterDataCollectController {
 
 	@Override
 	protected void cmdShowResultInExplorer() {
-		UIUtils.runCommand(this.getFrame(), new Runnable() {
+		UIUtils.runCommand(this.getTab(), new Runnable() {
 			@Override
 			public void run() {
 				try {

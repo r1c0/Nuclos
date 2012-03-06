@@ -76,7 +76,7 @@ import com.thoughtworks.xstream.io.xml.DomDriver;
  * @author <a href="mailto:Christoph.Radig@novabit.de">Christoph.Radig</a>
  * @version 01.00.00
  */
-public class TaskController extends Controller {
+public class TaskController extends Controller<MainFrameTabbedPane> {
 
 	private final static Logger LOG = Logger.getLogger(TaskController.class);
 	
@@ -108,13 +108,22 @@ public class TaskController extends Controller {
 	 * @param pnlTasks
 	 * @param sCurrentUser
 	 */
-	public TaskController(Component parent, String sCurrentUser) {
-		super(parent);
+	public TaskController(String sCurrentUser) {
+		super(null);
 
-		ctlPersonalTasks = new PersonalTaskController(parent, prefs, taskdelegate, sCurrentUser);
-		ctlTimelimitTasks = new TimelimitTaskController(parent, prefs, timelimittaskdelegate);
-		ctlGenericObjectTasks = new GenericObjectTaskController(parent);
+		ctlPersonalTasks = new PersonalTaskController(prefs, taskdelegate, sCurrentUser);
+		ctlTimelimitTasks = new TimelimitTaskController(prefs, timelimittaskdelegate);
+		ctlGenericObjectTasks = new GenericObjectTaskController();
 
+	}
+
+	@Override
+	public MainFrameTabbedPane getParent() {
+		return MainFrame.getHomePane(); // TODO PersonalTask Home in future here !!!
+	}
+
+	public MainFrameTabbedPane getTabbedPane() {
+		return getParent();
 	}
 
 	public void setExplorerController(ExplorerController ctlExplorer) {
@@ -550,7 +559,7 @@ public class TaskController extends Controller {
 			}
 		}
 		catch (NuclosFatalException ex) {
-			Errors.getInstance().showExceptionDialog(getParent(), getSpringLocaleDelegate().getMessage(
+			Errors.getInstance().showExceptionDialog(getTabbedPane().getComponentPanel(), getSpringLocaleDelegate().getMessage(
 					"tasklist.error.load", "Die Aufgaben-Liste kann nicht geladen werden."), ex);
 		}
 	}
@@ -563,7 +572,7 @@ public class TaskController extends Controller {
 	 */
 	public void cmdShowFilterInTaskPanel(final EntitySearchFilter searchFilter) {
 
-		UIUtils.runCommand(getParent(), new Runnable() {
+		UIUtils.runCommandForTabbedPane(getTabbedPane(), new Runnable() {
 			@Override
 			public void run() {
 				TaskController.this.addOrReplaceGenericObjectTaskViewFor(searchFilter, true);

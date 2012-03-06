@@ -57,6 +57,7 @@ import org.nuclos.client.main.Main;
 import org.nuclos.client.main.MainController;
 import org.nuclos.client.main.mainframe.MainFrame;
 import org.nuclos.client.main.mainframe.MainFrameTab;
+import org.nuclos.client.main.mainframe.MainFrameTabbedPane;
 import org.nuclos.client.ui.CommonClientWorkerAdapter;
 import org.nuclos.client.ui.CommonMultiThreader;
 import org.nuclos.client.ui.Errors;
@@ -599,7 +600,7 @@ public class ExplorerNode<TN extends TreeNode> extends DefaultMutableTreeNode {
 
 		@Override
         public void actionPerformed(ActionEvent ev) {
-			UIUtils.runCommand(getExplorerController().getParent(), new CommonRunnable() {
+			UIUtils.runCommandForTabbedPane(getExplorerController().getTabbedPane(), new CommonRunnable() {
 				@Override
                 public void run() throws CommonFinderException {
 					ExplorerNode.this.refresh(RefreshAction.this.getJTree(), true);
@@ -625,7 +626,7 @@ public class ExplorerNode<TN extends TreeNode> extends DefaultMutableTreeNode {
 
 		@Override
         public void actionPerformed(ActionEvent ev) {
-			UIUtils.runCommand(getExplorerController().getParent(), new Runnable() {
+			UIUtils.runCommandForTabbedPane(getExplorerController().getTabbedPane(), new Runnable() {
 				@Override
                 public void run() {
 					final TreePath treePath = new TreePath(ExplorerNode.this);
@@ -651,7 +652,7 @@ public class ExplorerNode<TN extends TreeNode> extends DefaultMutableTreeNode {
 
 		@Override
         public void actionPerformed(ActionEvent ev) {
-			UIUtils.runCommand(getExplorerController().getParent(), new Runnable() {
+			UIUtils.runCommandForTabbedPane(getExplorerController().getTabbedPane(), new Runnable() {
 				@Override
                 public void run() {
 					ExplorerNode.this.collapseAllChildren(CollapseAction.this.getJTree());
@@ -809,7 +810,7 @@ public class ExplorerNode<TN extends TreeNode> extends DefaultMutableTreeNode {
 
 		@Override
         public void actionPerformed(ActionEvent ev) {
-			UIUtils.runCommand(getExplorerController().getParent(), new Runnable() {
+			UIUtils.runCommandForTabbedPane(getExplorerController().getTabbedPane(), new Runnable() {
 				@Override
                 public void run() {
 					MultiListMap<String, Object> toOpen = new MultiListHashMap<String, Object>();
@@ -821,11 +822,11 @@ public class ExplorerNode<TN extends TreeNode> extends DefaultMutableTreeNode {
 
 					for (String entity : toOpen.keySet()) {
 						try {
-							NuclosCollectController<?> controller = NuclosCollectControllerFactory.getInstance().newCollectController(MainFrame.getPredefinedEntityOpenLocation(entity), entity, null);
+							NuclosCollectController<?> controller = NuclosCollectControllerFactory.getInstance().newCollectController(entity, null);
 							controller.runViewResults(toOpen.getValues(entity));
 						}
 						catch (CommonBusinessException ex) {
-							Errors.getInstance().showExceptionDialog(getExplorerController().getParent(), "StartTabPanel.error.open.list", ex);
+							Errors.getInstance().showExceptionDialog(getExplorerController().getTabbedPane().getComponentPanel(), "StartTabPanel.error.open.list", ex);
 						}
 					}
 				}
@@ -888,15 +889,15 @@ public class ExplorerNode<TN extends TreeNode> extends DefaultMutableTreeNode {
 				sources.put(IdUtils.toLongId(getTreeNode().getId()), usagecriteria);
 
 				String targetEntity = MetaDataClientProvider.getInstance().getEntity(generatoractionvo.getTargetModuleId().longValue()).getEntity();
-				JTabbedPane pane = MainFrame.getHomePane();
+				MainFrameTabbedPane pane = MainFrame.getHomePane();
 				if (MainFrame.isPredefinedEntityOpenLocationSet(targetEntity)) {
 					pane = MainFrame.getPredefinedEntityOpenLocation(targetEntity);
 				}
-				GenerationController controller = new GenerationController(sources, generatoractionvo, null, MainFrameTab.getMainFrameTabForComponent(getJTree()), pane);
+				GenerationController controller = new GenerationController(sources, generatoractionvo, null, MainFrameTab.getMainFrameTabForComponent(getJTree()));
 				controller.generateGenericObject();
 			}
 			catch (Exception ex) {
-				Errors.getInstance().showExceptionDialog(MainFrame.getHomePane(), ex);
+				Errors.getInstance().showExceptionDialog(MainFrame.getHomePane().getComponentPanel(), ex);
 			}
 		}
 	}	// inner class GeneratorAction

@@ -61,7 +61,7 @@ public class NuclosLOVListener implements CollectableListOfValues.LOVListener {
 	@Override
 	public void viewSearchResults(final CollectableListOfValues.Event ev) {
 		final CollectableComponent clctcomp = ev.getCollectableComponent();
-		UIUtils.runCommandLater(UIUtils.getInternalFrameOrWindowForComponent(clctcomp.getJComponent()), new CommonRunnable() {
+		UIUtils.runCommandLater(UIUtils.getTabOrWindowForComponent(clctcomp.getJComponent()), new CommonRunnable() {
 			@Override
 			public void run() throws CommonBusinessException {
 				final String sReferencedEntityName = clctcomp.getEntityField().getReferencedEntityName();
@@ -81,7 +81,7 @@ public class NuclosLOVListener implements CollectableListOfValues.LOVListener {
 			@Override
 			public void run() throws CommonBusinessException {
 				final String sReferencedEntityName = clctcomp.getEntityField().getReferencedEntityName();
-				final CollectController<?> ctl = NuclosCollectControllerFactory.getInstance().newCollectController(tab, sReferencedEntityName, null);
+				final CollectController<?> ctl = NuclosCollectControllerFactory.getInstance().newCollectController(sReferencedEntityName, null);
 				ctl.runLookupCollectable(ev.getCollectableListOfValues());
 			}
 		});
@@ -96,7 +96,7 @@ public class NuclosLOVListener implements CollectableListOfValues.LOVListener {
 				final Main main = Main.getInstance();
 				final MainController mc = main.getMainController();
 				final String sReferencedEntityName = clctcomp.getEntityField().getReferencedEntityName();
-				CollectController<?> controller = mc.getControllerForInternalFrame((MainFrameTab) 
+				CollectController<?> controller = mc.getControllerForTab((MainFrameTab) 
 						main.getMainFrame().getHomePane().getSelectedComponent());
 				Object oId = clctcomp.getField().getValueId();
 				if(oId instanceof Long) {
@@ -114,7 +114,7 @@ public class NuclosLOVListener implements CollectableListOfValues.LOVListener {
 	}
 
 	private static CollectController<? extends Collectable> newCollectController(String sEntityName) throws CommonBusinessException {
-		return NuclosCollectControllerFactory.getInstance().newCollectController(MainFrame.getPredefinedEntityOpenLocation(sEntityName), sEntityName, null);
+		return NuclosCollectControllerFactory.getInstance().newCollectController(sEntityName, null);
 	}
 
 	@Override
@@ -136,7 +136,7 @@ public class NuclosLOVListener implements CollectableListOfValues.LOVListener {
 	}
 
 	private MainFrameTab getTab(CollectableComponent comp) {
-		Component c = UIUtils.getInternalFrameOrWindowForComponent(comp.getControlComponent());
+		Component c = UIUtils.getTabOrWindowForComponent(comp.getControlComponent());
 		final MainFrameTab tab;
 		if (c instanceof MainFrameTab) {
 			tab = (MainFrameTab) c;

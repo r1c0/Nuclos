@@ -285,7 +285,7 @@ public class StartUp  {
                 public void loginSuccessful(final LoginEvent ev) {
 					log.debug("login start");
 
-					UIUtils.runCommand(null, new Runnable() {
+					UIUtils.runCommandForTabbedPane(null, new Runnable() {
 						@Override
                         public void run() {
 							try {

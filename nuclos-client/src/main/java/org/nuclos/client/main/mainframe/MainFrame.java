@@ -400,7 +400,7 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 		}
 
 		try {
-			tabbedPane.getLocationOnScreen();
+			tabbedPane.getComponentPanel().getLocationOnScreen();
 			return true;
 		} catch (IllegalComponentStateException e) {
 			LOG.info("isTabbedPaneVisible: " + e);
@@ -427,7 +427,7 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 	 *
 	 * @return
 	 */
-	public static JTabbedPane getTreeOpenLocation() {
+	public static MainFrameTabbedPane getTreeOpenLocation() {
 		return homeTreeTabbedPane;
 	}
 
@@ -467,7 +467,7 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 	 * @param entity
 	 * @return
 	 */
-	public static JTabbedPane getPredefinedEntityOpenLocation(String entity) {
+	public static MainFrameTabbedPane getPredefinedEntityOpenLocation(String entity) {
 		MainFrameTabbedPane result = null;
 		for (MainFrameTabbedPane tabbedPane : predefinedEntityOpenLocation.keySet()) {
 			if (predefinedEntityOpenLocation.getValues(tabbedPane).contains(entity)) {
@@ -481,7 +481,7 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 
 		if (!isTabbedPaneVisible(result)) {
 			MainFrameTabbedPane maxTabbedPane = getMaximizedTabbedPaneIfAny(result);
-			(new Bubble(maxTabbedPane,
+			(new Bubble(maxTabbedPane.getComponentPanel(),
 					SpringLocaleDelegate.getInstance().getMessage("MainFrame.3","Neuer Tab im ausgeblendeten Bereich."),
 				5,
 				Bubble.Position.NO_ARROW_CENTER)).setVisible(true);
@@ -535,6 +535,9 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 	private void initWindowMenu(Map<String, Map<String, Action>> commandMap, NuclosNotificationDialog notificationDialog) {
 		menuWindow = new JMenu();
 		miDeactivateSplitting = new JCheckBoxMenuItem(actDeactivateSplitting);
+		miDeactivateSplitting.setSelected(splittingDeactivated);
+		miDeactivateSplitting.setEnabled(splittingEnabled);
+		miDeactivateSplitting.setVisible(splittingEnabled);
 		
 		// Windows menu:
 		menuWindow.removeAll();
@@ -1155,7 +1158,7 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 			final JFrame frame = getJFrame(tabbedPane);
 
 			if (frame == this) {
-				pnlDesktop.remove(tabbedPane);
+				pnlDesktop.remove(tabbedPane.getComponentPanel());
 				restoreJSplitPanes(mtpp);
 				setFrameContent(mtpp.splitPaneRoot);
 
@@ -1193,9 +1196,9 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 	 */
 	private static void restoreJSplitPanes(MaximizedTabbedPaneParameter mtpp) {
 		if (mtpp.left) {
-			mtpp.splitPaneOrigin.setLeftComponent(mtpp.tabbedPane);
+			mtpp.splitPaneOrigin.setLeftComponent(mtpp.tabbedPane.getComponentPanel());
 		} else {
-			mtpp.splitPaneOrigin.setRightComponent(mtpp.tabbedPane);
+			mtpp.splitPaneOrigin.setRightComponent(mtpp.tabbedPane.getComponentPanel());
 		}
 		for (JSplitPane splitPane : mtpp.dividerLocations.keySet()) {
 			splitPane.setDividerLocation(mtpp.dividerLocations.get(splitPane));
@@ -1216,13 +1219,13 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 
 			if (frame == this) {
 				pnlDesktop.remove(mtpp.splitPaneRoot);
-				pnlDesktop.add(tabbedPane, BorderLayout.CENTER);
+				pnlDesktop.add(tabbedPane.getComponentPanel(), BorderLayout.CENTER);
 				pnlDesktop.validate();
 				pnlDesktop.repaint();
 
 			} else  if (frame instanceof ExternalFrame) {
 				((ExternalFrame) frame).clearFrameContent();
-				((ExternalFrame) frame).setFrameContent(tabbedPane);
+				((ExternalFrame) frame).setFrameContent(tabbedPane.getComponentPanel());
 				frame.validate();
 				frame.repaint();
 
@@ -1257,15 +1260,15 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 	 * @return
 	 */
 	private static MaximizedTabbedPaneParameter getMaximizedTabbedPaneParameter(MainFrameTabbedPane tabbedPane) {
-		if (tabbedPane.getParent() instanceof JSplitPane) {
-			final JSplitPane splitPane = (JSplitPane) tabbedPane.getParent();
-			final boolean left = splitPane.getLeftComponent() == tabbedPane;
+		if (tabbedPane.getComponentPanel().getParent() instanceof JSplitPane) {
+			final JSplitPane splitPane = (JSplitPane) tabbedPane.getComponentPanel().getParent();
+			final boolean left = splitPane.getLeftComponent() == tabbedPane.getComponentPanel();
 
 			final Map<JSplitPane, Integer> dividerLocations = new HashMap<JSplitPane, Integer>();
 			dividerLocations.put(splitPane, splitPane.getDividerLocation());
 
 			JSplitPane splitPaneRoot = null;
-			Container parent = tabbedPane.getParent();
+			Container parent = tabbedPane.getComponentPanel().getParent();
 			while (parent != null) {
 				if (parent instanceof JSplitPane) {
 					splitPaneRoot = (JSplitPane) parent;
@@ -1297,7 +1300,7 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 		// remove first to join necessary TabbedPanes
 		tabbedPaneSource.remove(tabIndexSource);
 
-		final Container parent = tabbedPaneToSplit.getParent();
+		final Container parent = tabbedPaneToSplit.getComponentPanel().getParent();
 
 		final JFrame frame = getJFrame(tabbedPaneToSplit);
 		final MainFrameTabbedPane newTabbedPane = createTabbedPane(frame);
@@ -1312,15 +1315,15 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 		boolean northOrWest = splitRange == SplitRange.NORTH || splitRange == SplitRange.WEST;
 
 		final JSplitPane newSplitPane;
-		final Dimension newSplitPaneSize = tabbedPaneToSplit.getSize();
+		final Dimension newSplitPaneSize = tabbedPaneToSplit.getComponentPanel().getSize();
 
 		if (parent instanceof JSplitPane) {
 			JSplitPane splitPaneParent = (JSplitPane) parent;
 			int parentDiverLocation = splitPaneParent.getDividerLocation();
-			boolean isLeftComponent = splitPaneParent.getLeftComponent() == tabbedPaneToSplit;
+			boolean isLeftComponent = splitPaneParent.getLeftComponent() == tabbedPaneToSplit.getComponentPanel();
 
-			splitPaneParent.remove(tabbedPaneToSplit);
-			newSplitPane = new JSplitPane(newOrientation, SPLIT_CONTINUOS_LAYOUT, northOrWest ? newTabbedPane : tabbedPaneToSplit, northOrWest ? tabbedPaneToSplit : newTabbedPane);
+			splitPaneParent.remove(tabbedPaneToSplit.getComponentPanel());
+			newSplitPane = new JSplitPane(newOrientation, SPLIT_CONTINUOS_LAYOUT, northOrWest ? newTabbedPane.getComponentPanel() : tabbedPaneToSplit.getComponentPanel(), northOrWest ? tabbedPaneToSplit.getComponentPanel() : newTabbedPane.getComponentPanel());
 
 			if (isLeftComponent) {
 				splitPaneParent.setLeftComponent(newSplitPane);
@@ -1333,8 +1336,8 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 
 		} else if (frame == MainFrame.this) {
 			// first SplitPane
-			pnlDesktop.remove(tabbedPaneToSplit);
-			newSplitPane = new JSplitPane(newOrientation, SPLIT_CONTINUOS_LAYOUT, northOrWest ? newTabbedPane : tabbedPaneToSplit, northOrWest ? tabbedPaneToSplit : newTabbedPane);
+			pnlDesktop.remove(tabbedPaneToSplit.getComponentPanel());
+			newSplitPane = new JSplitPane(newOrientation, SPLIT_CONTINUOS_LAYOUT, northOrWest ? newTabbedPane.getComponentPanel() : tabbedPaneToSplit.getComponentPanel(), northOrWest ? tabbedPaneToSplit.getComponentPanel() : newTabbedPane.getComponentPanel());
 
 			pnlDesktop.add(newSplitPane, BorderLayout.CENTER);
 			pnlDesktop.validate();
@@ -1342,7 +1345,7 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 
 		} else if (frame instanceof ExternalFrame) {
 			((ExternalFrame) frame).clearFrameContent();
-			newSplitPane = new JSplitPane(newOrientation, SPLIT_CONTINUOS_LAYOUT, northOrWest ? newTabbedPane : tabbedPaneToSplit, northOrWest ? tabbedPaneToSplit : newTabbedPane);
+			newSplitPane = new JSplitPane(newOrientation, SPLIT_CONTINUOS_LAYOUT, northOrWest ? newTabbedPane.getComponentPanel() : tabbedPaneToSplit.getComponentPanel(), northOrWest ? tabbedPaneToSplit.getComponentPanel() : newTabbedPane.getComponentPanel());
 
 			((ExternalFrame) frame).setFrameContent(newSplitPane);
 			frame.validate();
@@ -1445,7 +1448,7 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 	static MainFrameTabbedPane getTabbedPane(Point locOnScreen) {
 		for (MainFrameTabbedPane tabbedPane : getOrderedTabbedPanes()) {
 			try {
-				final Rectangle boundsOnScreen = new Rectangle(tabbedPane.getLocationOnScreen(), tabbedPane.getBounds().getSize());
+				final Rectangle boundsOnScreen = new Rectangle(tabbedPane.getComponentPanel().getLocationOnScreen(), tabbedPane.getComponentPanel().getBounds().getSize());
 				if (boundsOnScreen.contains(locOnScreen)) {
 					return tabbedPane;
 				}
@@ -1472,7 +1475,7 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 	 */
 	public static MainFrameTabbedPane getTabbedPane(MainFrameTab tab) {
 		for (MainFrameTabbedPane tabbedPane : frameContent.getAllValues()) {
-			if (tabbedPane.indexOfComponent(tab) > 0 || tabbedPane.getHiddenTabs().contains(tab)) {
+			if (tabbedPane.indexOfComponent(tab) >= 0 || tabbedPane.getHiddenTabs().contains(tab)) {
 				return tabbedPane;
 			}
 		}
@@ -1514,7 +1517,7 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 
 			if (!forcedFromFrameClose && tabbedPane.getTabCount() > 1) {
 				if (JOptionPane.YES_OPTION != JOptionPane.showConfirmDialog(
-					tabbedPane,
+					tabbedPane.getComponentPanel(),
 					localeDelegate.getMessage("MainFrame.1","Tab Leiste mit allen enthaltenen Tabs entfernen.\nMoechten Sie fortfahren?"),
 					localeDelegate.getMessage("MainFrame.2","Tab Leiste entfernen"), JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE))
 					return;
@@ -1528,8 +1531,8 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 			if (forcedFromFrameClose) {
 				frameContent.removeValue(frame, tabbedPane);
 			} else {
-				final JSplitPane splitPane = (JSplitPane) tabbedPane.getParent();
-				Component otherComp = splitPane.getLeftComponent() == tabbedPane ? splitPane.getRightComponent() : splitPane.getLeftComponent();
+				final JSplitPane splitPane = (JSplitPane) tabbedPane.getComponentPanel().getParent();
+				Component otherComp = splitPane.getLeftComponent() == tabbedPane.getComponentPanel() ? splitPane.getRightComponent() : splitPane.getLeftComponent();
 				splitPane.removeAll();
 				frameContent.removeValue(frame, tabbedPane);
 
@@ -1632,10 +1635,10 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 
 		ExternalFrame ef = new ExternalFrame(nextExternalFrameNumber);
 		ef.setLocation(position);
-		ef.setSize(newTabbedPane.getPreferredSize());
-		ef.setFrameContent(newTabbedPane);
+		ef.setSize(newTabbedPane.getComponentPanel().getPreferredSize());
+		ef.setFrameContent(newTabbedPane.getComponentPanel());
 		ef.setVisible(true);
-		ef.setFrameContent(newTabbedPane);
+		ef.setFrameContent(newTabbedPane.getComponentPanel());
 		newTabbedPane.adjustTabs();
 		frameContent.addValue(ef, newTabbedPane);
 
@@ -1978,7 +1981,7 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 	 * @param splittingDeactivated
 	 */
 	public void setSplittingDeactivated(boolean splittingDeactivated) {
-		splittingDeactivated = splittingDeactivated;
+		MainFrame.splittingDeactivated = splittingDeactivated;
 		miDeactivateSplitting.setSelected(splittingDeactivated);
 	}
 
@@ -1996,8 +1999,8 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 	 */
 	public void setSplittingEnabled(boolean enabled) {
 		MainFrame.splittingEnabled = enabled;
-		setSplittingDeactivated(!enabled);
 		miDeactivateSplitting.setEnabled(enabled);
+		miDeactivateSplitting.setVisible(enabled);
 	}
 
 	/**

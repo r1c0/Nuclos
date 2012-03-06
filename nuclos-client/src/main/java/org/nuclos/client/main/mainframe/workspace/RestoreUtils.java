@@ -29,6 +29,7 @@ import java.util.List;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JSplitPane;
+import javax.swing.SwingUtilities;
 
 import org.apache.log4j.Logger;
 import org.nuclos.client.common.prefs.PreferencesMigration;
@@ -37,6 +38,7 @@ import org.nuclos.client.main.GenericAction;
 import org.nuclos.client.main.Main;
 import org.nuclos.client.main.mainframe.ExternalFrame;
 import org.nuclos.client.main.mainframe.MainFrame;
+import org.nuclos.client.main.mainframe.MainFrameSplitPane;
 import org.nuclos.client.main.mainframe.MainFrameTab;
 import org.nuclos.client.main.mainframe.MainFrameTabbedPane;
 import org.nuclos.client.ui.CommonJFrame;
@@ -119,7 +121,7 @@ public class RestoreUtils {
 			wsFrame = MainFrame.createWorkspaceFrame();
 		}
 
-		CommonJFrame frame = wsFrame.getFrame();
+		final CommonJFrame frame = wsFrame.getFrame();
 
 		GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
 		GraphicsDevice[] devices = ge.getScreenDevices();
@@ -152,11 +154,19 @@ public class RestoreUtils {
 		if (!restoreAtStoredPosition) {
 			recNormalBounds.x = 40;
 			recNormalBounds.y = 40;
+			SwingUtilities.invokeLater(new Runnable() { // restore bounds later. This is needed for fixed splitpanes.
+				@Override
+				public void run() {
+					frame.setNormalBounds(recNormalBounds);
+					frame.setBounds(recNormalBounds);
+					frame.setExtendedState(iExtendedState);
+				}
+			});
+		} else {
+			frame.setNormalBounds(recNormalBounds);
+			frame.setBounds(recNormalBounds);
+			frame.setExtendedState(iExtendedState);
 		}
-
-		frame.setNormalBounds(recNormalBounds);
-		frame.setBounds(recNormalBounds);
-		frame.setExtendedState(iExtendedState);
 
 		if (wdFrame.isMainFrame()) {
 			Main.getInstance().getMainFrame().repositionSwitchingWorkspace();
@@ -410,6 +420,7 @@ public class RestoreUtils {
 		wdTabbed.setSelected(-1);
 		wdTabbed.setDesktop(tabbedPane.getDesktop());
 		wdTabbed.setDesktopActive(tabbedPane.isDesktopActive());
+		wdTabbed.setHideStartTab(!tabbedPane.isStartTabVisible());
 		int tabOrder = 0;
 		for (MainFrameTab tab : tabbedPane.getHiddenTabs()) {
 			if (storeTab(wdTabbed, tab)) {
@@ -435,12 +446,12 @@ public class RestoreUtils {
 	 * @param content
 	 * @param splitPane
 	 */
-	private synchronized static void storeSplitPane(MutableContent content, JSplitPane splitPane) {
+	private synchronized static void storeSplitPane(MutableContent content, MainFrameSplitPane splitPane) {
 		final WorkspaceDescription.Split wdSplit = new WorkspaceDescription.Split();
 		content.setContent(wdSplit);
-
 		wdSplit.setHorizontal(splitPane.getOrientation()==JSplitPane.HORIZONTAL_SPLIT);
 		wdSplit.setPosition(splitPane.getDividerLocation());
+		wdSplit.setFixedState(splitPane.getFixedState());
 		storeContent(wdSplit.getContentA(), splitPane.getLeftComponent());
 		storeContent(wdSplit.getContentB(), splitPane.getRightComponent());
 	}
@@ -451,10 +462,10 @@ public class RestoreUtils {
 	 * @param comp
 	 */
 	private synchronized static void storeContent(MutableContent content, Component comp) {
-		if (comp instanceof JSplitPane) {
-			storeSplitPane(content, (JSplitPane) comp);
-		} else if (comp instanceof MainFrameTabbedPane) {
-			storeTabbedPane(content, (MainFrameTabbedPane) comp);
+		if (comp instanceof MainFrameSplitPane) {
+			storeSplitPane(content, (MainFrameSplitPane) comp);
+		} else if (comp instanceof MainFrameTabbedPane.ComponentPanel) {
+			storeTabbedPane(content, ((MainFrameTabbedPane.ComponentPanel) comp).getMainFrameTabbedPane());
 		} else {
 			throw new IllegalArgumentException(comp.toString());
 		}
@@ -628,11 +639,13 @@ public class RestoreUtils {
 
 		@Override
 		public Component getEmptyContent() {
-			return result;
+			return result.getComponentPanel();
 		}
 
 		@Override
 		public void restoreContent() {
+			result.startInitiating();
+			
 			MainFrameTab toSelect = null;
 
 			if (wdTabbed.isHome()) result.setHome();
@@ -660,6 +673,7 @@ public class RestoreUtils {
 			}
 			result.setDesktop(wdTabbed.getDesktop(), cachedActions);
 			result.setDesktopActive(wdTabbed.isDesktopActive());
+			result.setStartTabVisible(!wdTabbed.isHideStartTab());
 
 			final int selected = wdTabbed.getSelected();
 
@@ -731,16 +745,22 @@ public class RestoreUtils {
 					threadList.add(t);
 				}
 			}
-
-			result.adjustTabs();
-			if (toSelect != null && wdTabbed.getSelected() >= 0) {
-				try {
-					result.setSelectedComponent(toSelect);
-				} catch(IllegalArgumentException e) {
-					// may be not all tabs are restored
-					LOG.info("restoreContent: " + e);
+			
+			final MainFrameTab selectLater = toSelect;
+			SwingUtilities.invokeLater(new Runnable() {
+				@Override
+				public void run() {
+					try {
+						result.finishInitiating();
+						if (selectLater != null && wdTabbed.getSelected() >= 0) {
+							result.setSelectedComponent(selectLater);
+						}
+					} catch(IllegalArgumentException e) {
+						// may be not all tabs are restoredaubspl
+						LOG.info("restoreContent: " + e);
+					}
 				}
-			}
+			});
 		}
 	}
 
@@ -750,13 +770,13 @@ public class RestoreUtils {
 		ContentRestorer crA;
 		ContentRestorer crB;
 
-		JSplitPane result;
+		MainFrameSplitPane result;
 
 		public SplitRestorer(WorkspaceDescription.Split wdSplit, JFrame frame) {
 			this.wdSplit = wdSplit;
 			crA = createContentRestorer(wdSplit.getContentA(), frame);
 			crB = createContentRestorer(wdSplit.getContentB(), frame);
-			result = new JSplitPane(wdSplit.isHorizontal()? JSplitPane.HORIZONTAL_SPLIT : JSplitPane.VERTICAL_SPLIT,
+			result = new MainFrameSplitPane(wdSplit.isHorizontal()? JSplitPane.HORIZONTAL_SPLIT : JSplitPane.VERTICAL_SPLIT,
 				MainFrame.SPLIT_CONTINUOS_LAYOUT,
 				crA.getEmptyContent(), crB.getEmptyContent());
 		}
@@ -770,7 +790,8 @@ public class RestoreUtils {
 		public void restoreContent() {
 			result.setOneTouchExpandable(MainFrame.SPLIT_ONE_TOUCH_EXPANDABLE);
 			result.setDividerLocation(wdSplit.getPosition());
-
+			result.setFixedState(wdSplit.getFixedState());
+			
 			crA.restoreContent();
 			crB.restoreContent();
 		}

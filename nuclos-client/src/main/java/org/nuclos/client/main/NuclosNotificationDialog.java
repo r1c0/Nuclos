@@ -57,6 +57,7 @@ import org.nuclos.client.common.NuclosCollectControllerFactory;
 import org.nuclos.client.genericobject.CollectableGenericObjectWithDependants;
 import org.nuclos.client.genericobject.GenericObjectCollectController;
 import org.nuclos.client.genericobject.GenericObjectDelegate;
+import org.nuclos.client.main.mainframe.MainFrame;
 import org.nuclos.client.ui.popupmenu.DefaultJPopupMenuListener;
 import org.nuclos.common.RuleNotification;
 import org.nuclos.server.genericobject.valueobject.GenericObjectVO;
@@ -93,8 +94,6 @@ public class NuclosNotificationDialog extends JDialog {
 
 	private final JTable tbl;
 
-	private final JComponent parentMdi;
-
 	private final String[] asHeaders = new String[] {
 			COL_PRIORITY, COL_MSGTEXT, COL_OWNER, COL_TIMESTAMP, COL_OBJSOURCE, COL_OBJDEST, COL_SOURCEID, COL_TARGETID
 	};
@@ -107,10 +106,8 @@ public class NuclosNotificationDialog extends JDialog {
 		}
 	};
 
-	NuclosNotificationDialog(Frame frmParent, JComponent parentMdi) {
+	NuclosNotificationDialog(Frame frmParent) {
 		super(frmParent, SpringLocaleDelegate.getInstance().getMessage("NuclosNotificationDialog.3","Meldungen"));
-
-		this.parentMdi = parentMdi;
 
 		this.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 
@@ -320,7 +317,7 @@ public class NuclosNotificationDialog extends JDialog {
 		try {
 			final GenericObjectVO govo = GenericObjectDelegate.getInstance().get(iGenericObjectId);
 			final GenericObjectCollectController ctlGenericObject =
-					NuclosCollectControllerFactory.getInstance().newGenericObjectCollectController(this.parentMdi, govo.getModuleId(), null);
+					NuclosCollectControllerFactory.getInstance().newGenericObjectCollectController(govo.getModuleId(), null);
 			ctlGenericObject.runViewSingleCollectable(CollectableGenericObjectWithDependants.newCollectableGenericObject(govo));
 		}
 		catch (CommonBusinessException ex) {
@@ -356,9 +353,4 @@ public class NuclosNotificationDialog extends JDialog {
 		});
 	}
 
-	@Override
-	public void setVisible(boolean b) {
-		setLocationRelativeTo(parentMdi);
-		super.setVisible(b);
-	}
 }	// class NuclosNotificationDialog

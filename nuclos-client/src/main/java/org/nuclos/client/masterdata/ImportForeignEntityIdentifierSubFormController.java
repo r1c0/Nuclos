@@ -16,13 +16,12 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.masterdata;
 
-import java.awt.Component;
 import java.util.prefs.Preferences;
 
-import javax.swing.JComponent;
 import javax.swing.JTable;
 import javax.swing.table.TableCellEditor;
 
+import org.nuclos.client.main.mainframe.MainFrameTab;
 import org.nuclos.client.masterdata.valuelistprovider.ReferencedEntityFieldCollectableFieldsProvider;
 import org.nuclos.client.ui.collect.SubForm;
 import org.nuclos.client.ui.collect.component.CollectableComboBox;
@@ -50,11 +49,11 @@ public class ImportForeignEntityIdentifierSubFormController extends MasterDataSu
 		this.parentController = parentController;
 	}
 
-	public ImportForeignEntityIdentifierSubFormController(Component parent, JComponent parentMdi,
-      CollectableComponentModelProvider clctcompmodelproviderParent,
+	public ImportForeignEntityIdentifierSubFormController(MainFrameTab tab, 
+	  CollectableComponentModelProvider clctcompmodelproviderParent,
       String sParentEntityName, SubForm subform,
       Preferences prefsUserParent, EntityPreferences entityPrefs, CollectableFieldsProviderCache valueListProviderCache) {
-      super(parent, parentMdi, clctcompmodelproviderParent,
+      super(tab, clctcompmodelproviderParent,
          sParentEntityName, subform, prefsUserParent, entityPrefs, valueListProviderCache);
       this.clctcompmodelproviderParent = clctcompmodelproviderParent;
    }

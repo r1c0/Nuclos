@@ -47,6 +47,7 @@ import org.apache.log4j.Logger;
 import org.nuclos.client.common.DependantCollectableMasterDataMap;
 import org.nuclos.client.common.SubFormController;
 import org.nuclos.client.main.mainframe.MainFrameTab;
+import org.nuclos.client.main.mainframe.MainFrameTabbedPane;
 import org.nuclos.client.masterdata.CollectableMasterDataWithDependants;
 import org.nuclos.client.masterdata.MasterDataCollectController;
 import org.nuclos.client.ui.CommonAbstractAction;
@@ -238,8 +239,8 @@ public class JobControlCollectController extends MasterDataCollectController {
 	 * *CollectController<~> cc = new *CollectController<~>(.., rc);
 	 * </code></pre>
 	 */
-	public JobControlCollectController(JComponent parent, MainFrameTab tabIfAny) {
-		super(parent, NuclosEntity.JOBCONTROLLER, tabIfAny);
+	public JobControlCollectController(MainFrameTab tabIfAny) {
+		super(NuclosEntity.JOBCONTROLLER, tabIfAny);
 
 		this.setupDetailsToolBar();
 
@@ -492,7 +493,7 @@ public class JobControlCollectController extends MasterDataCollectController {
 		else {
 			checkNameWithAlreadyScheduledJobs(this.getSelectedCollectable());
 			delegate.scheduleJob(this.getSelectedCollectable().getMasterDataCVO().getId());
-			UIUtils.runCommand(this.getFrame(), new CommonRunnable() {
+			UIUtils.runCommand(this.getTab(), new CommonRunnable() {
 				@Override
 				public void run() throws CommonBusinessException {
 					refreshCurrentCollectable();
@@ -503,7 +504,7 @@ public class JobControlCollectController extends MasterDataCollectController {
 
 	private void cmdUnscheduleJob() throws CommonBusinessException {
 		delegate.unscheduleJob(this.getSelectedCollectable().getMasterDataCVO().getId());
-		UIUtils.runCommand(this.getFrame(), new CommonRunnable() {
+		UIUtils.runCommand(this.getTab(), new CommonRunnable() {
 			@Override
 			public void run() throws CommonBusinessException {
 				refreshCurrentCollectable();
@@ -521,7 +522,7 @@ public class JobControlCollectController extends MasterDataCollectController {
 
 			@Override
 			public void paint() throws CommonBusinessException {
-				UIUtils.runCommand(getFrame(), new CommonRunnable() {
+				UIUtils.runCommand(getTab(), new CommonRunnable() {
 					@Override
 					public void run() throws CommonBusinessException {
 						try {
@@ -544,7 +545,7 @@ public class JobControlCollectController extends MasterDataCollectController {
 
 			@Override
 			public JComponent getResultsComponent() {
-				return getFrame();
+				return getTab();
 			}
 		});
 	}

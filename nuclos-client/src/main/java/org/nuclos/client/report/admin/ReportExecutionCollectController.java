@@ -40,6 +40,7 @@ import org.nuclos.client.common.ClientParameterProvider;
 import org.nuclos.client.common.KeyBindingProvider;
 import org.nuclos.client.genericobject.ReportSelectionPanel;
 import org.nuclos.client.main.mainframe.MainFrameTab;
+import org.nuclos.client.main.mainframe.MainFrameTabbedPane;
 import org.nuclos.client.masterdata.CollectableMasterData;
 import org.nuclos.client.masterdata.MasterDataCollectController;
 import org.nuclos.client.report.reportrunner.BackgroundProcessStatusController;
@@ -99,8 +100,8 @@ public class ReportExecutionCollectController extends MasterDataCollectControlle
 	 * *CollectController<~> cc = new *CollectController<~>(.., rc);
 	 * </code></pre>
 	 */
-	public ReportExecutionCollectController(JComponent parent, MainFrameTab tabIfAny) {
-		super(parent, NuclosEntity.REPORTEXECUTION, tabIfAny);
+	public ReportExecutionCollectController(MainFrameTab tabIfAny) {
+		super(NuclosEntity.REPORTEXECUTION, tabIfAny);
 		setupResultToolBar();
 		setExecuteState();
 	}
@@ -171,7 +172,7 @@ public class ReportExecutionCollectController extends MasterDataCollectControlle
 	private void execReport() {
 		final CollectableMasterData clctSelected = ReportExecutionCollectController.this.getSelectedCollectable();
 		if (clctSelected != null) {
-			execReport(getFrame(), clctSelected.getCollectableEntity().getName(), clctSelected.getMasterDataCVO());
+			execReport(getTab(), clctSelected.getCollectableEntity().getName(), clctSelected.getMasterDataCVO());
 		}
 	}
 	

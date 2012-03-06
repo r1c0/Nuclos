@@ -33,13 +33,13 @@ import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JScrollPane;
-import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
 import org.nuclos.client.NuclosIcons;
 import org.nuclos.client.main.Main;
 import org.nuclos.client.main.mainframe.MainFrameTab;
+import org.nuclos.client.main.mainframe.MainFrameTabbedPane;
 import org.nuclos.client.wizard.WizardFrame;
 import org.nuclos.common.dbtransfer.Transfer;
 import org.nuclos.common.dbtransfer.TransferNuclet;
@@ -122,10 +122,10 @@ public class DBTransferExport {
 		this.localeDelegate = cld;
 	}
 	
-	public void showWizard(JTabbedPane desktopPane) {
+	public void showWizard(MainFrameTabbedPane homePane) {
       ifrm.setLayeredComponent(WizardFrame.createFrameInScrollPane(wizard));
       
-      desktopPane.add(ifrm);
+      homePane.add(ifrm);
       
       ifrm.setVisible(true);
 	}

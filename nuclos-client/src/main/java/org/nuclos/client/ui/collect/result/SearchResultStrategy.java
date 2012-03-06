@@ -142,7 +142,7 @@ public class SearchResultStrategy<Clct extends Collectable> implements ISearchRe
 	 */
 	private void cmdSearchMultiThreaded(final SearchWorker<Clct> searchworker, final boolean bRefreshOnly) {
 		final CollectController<Clct> cc = getCollectController();
-		UIUtils.runShortCommand(cc.getFrame(), new CommonRunnable() {
+		UIUtils.runShortCommand(cc.getTab(), new CommonRunnable() {
 			@Override
             public void run() throws CommonValidationException {
 				if (searchworker == null) {
@@ -209,7 +209,7 @@ public class SearchResultStrategy<Clct extends Collectable> implements ISearchRe
 	@Deprecated
 	private void cmdSearchSingleThreaded(final boolean bRefreshOnly) {
 		final CollectController<Clct> cc = getCollectController();
-		UIUtils.runCommand(cc.getFrame(), new Runnable() {
+		UIUtils.runCommand(cc.getTab(), new Runnable() {
 			@Override
             public void run() {
 				try {
@@ -239,7 +239,7 @@ public class SearchResultStrategy<Clct extends Collectable> implements ISearchRe
 					}
 				}
 				catch (/* CommonBusiness */ Exception ex) {
-					Errors.getInstance().showExceptionDialog(cc.getFrame(), ex);
+					Errors.getInstance().showExceptionDialog(cc.getTab(), ex);
 				}
 			}
 		});

@@ -28,6 +28,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import org.nuclos.client.main.mainframe.MainFrameTab;
+import org.nuclos.client.main.mainframe.MainFrameTabbedPane;
 import org.nuclos.client.masterdata.CollectableMasterDataWithDependants;
 import org.nuclos.client.masterdata.MasterDataCollectController;
 import org.nuclos.client.ui.collect.CollectState;
@@ -91,8 +92,8 @@ public class DataTypeCollectController extends MasterDataCollectController{
 	 * *CollectController<~> cc = new *CollectController<~>(.., rc);
 	 * </code></pre>
 	 */
-	public DataTypeCollectController(JComponent parent, MainFrameTab tabIfAny) {
-		super(parent, NuclosEntity.DATATYP, tabIfAny);
+	public DataTypeCollectController(MainFrameTab tabIfAny) {
+		super(NuclosEntity.DATATYP, tabIfAny);
 		// this.init();
 		this.getCollectStateModel().addCollectStateListener(new DataTypeCollectStateListener());
 		lstChangeListener = new ArrayList<ChangeListener>();

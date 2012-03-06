@@ -26,6 +26,7 @@ import java.util.List;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+import org.nuclos.client.main.mainframe.MainFrameTabbedPane;
 import org.nuclos.client.masterdata.ui.GenerationRulesPanel;
 import org.nuclos.client.statemodel.SortedRuleVO;
 import org.nuclos.client.statemodel.controller.InsertRuleController;
@@ -55,10 +56,10 @@ public class GenerationRulesController {
 
 	private final GenerationRulesPanel pnlGenerationRules;
 	private final RulesActionListener alRules = new RulesActionListener();
-	private final Component parent;
+	private final MainFrameTabbedPane parent;
 	private final GenerationCollectController controller;
 
-	public GenerationRulesController(GenerationRulesPanel pnlGenerationRules, Component parent, GenerationCollectController controller) {
+	public GenerationRulesController(GenerationRulesPanel pnlGenerationRules, MainFrameTabbedPane parent, GenerationCollectController controller) {
 		this.pnlGenerationRules = pnlGenerationRules;
 		this.parent = parent;
 		this.controller = controller;
@@ -126,7 +127,7 @@ public class GenerationRulesController {
 		final SortableRuleTableModel model = pnlGenerationRules.getModel();
 		try {
 			if (ev.getActionCommand().equals("add")) {
-				final InsertRuleController controller = new InsertRuleController(parent);
+				final InsertRuleController controller = new InsertRuleController(parent.getComponentPanel());
 				if (controller.run(SpringLocaleDelegate.getInstance().getMessage(
 						"GenerationRulesController.1", "Liste der verf\u00fcgbaren Regeln"), pnlGenerationRules.getModel().getRules())) {
 					for (int i = 0; i < controller.getRulesPanel().getTblRules().getSelectedRowCount(); i++) {
@@ -156,7 +157,7 @@ public class GenerationRulesController {
 			this.controller.detailsChanged(parent);
 		}
 		catch (RemoteException ex) {
-			Errors.getInstance().showExceptionDialog(parent, ex.getMessage(), ex);
+			Errors.getInstance().showExceptionDialog(parent.getComponentPanel(), ex.getMessage(), ex);
 		}
 	}
 }

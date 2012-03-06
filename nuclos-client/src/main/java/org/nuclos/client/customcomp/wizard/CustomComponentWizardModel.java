@@ -187,7 +187,7 @@ public class CustomComponentWizardModel extends StaticModel {
 		wizard.getCancelAction().setEnabled(false);
 
 		componentVO.setData(configVO.toBytes());
-		UIUtils.runShortCommand(null, new CommonRunnable() {
+		UIUtils.runShortCommandForTabbedPane(null, new CommonRunnable() {
 			@Override
 			public void run() throws CommonBusinessException {
 				if (componentVO.getId() != null) {
@@ -299,7 +299,7 @@ public class CustomComponentWizardModel extends StaticModel {
 					int opt = JOptionPane.showConfirmDialog(CustomComponentWizardStep1.this, 
 							localeDelegate.getText("nuclos.resplan.wizard.step1.remove.check", null));
 					if (opt == JOptionPane.OK_OPTION) {
-						UIUtils.runShortCommand(null, new CommonRunnable() {
+						UIUtils.runShortCommandForTabbedPane(null, new CommonRunnable() {
 							@Override
 							public void run() throws CommonBusinessException {
 								CustomComponentVO vo = CustomComponentCache.getInstance().getByName(selectedComponent);

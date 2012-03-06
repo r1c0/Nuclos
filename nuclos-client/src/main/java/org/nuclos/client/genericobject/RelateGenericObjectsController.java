@@ -47,7 +47,7 @@ import org.nuclos.server.navigation.treenode.GenericObjectTreeNode;
  * @author	<a href="mailto:Christoph.Radig@novabit.de">Christoph.Radig</a>
  * @version 01.00.00
  */
-public class RelateGenericObjectsController extends Controller {
+public class RelateGenericObjectsController extends Controller<Component> {
 	private final Logger log = Logger.getLogger(this.getClass());
 
 	private final Collection<GenericObjectIdModuleProcess> collgoimpSource;

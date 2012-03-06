@@ -37,7 +37,7 @@ public class InstanceSearchStrategy extends CollectSearchStrategy<CollectableIns
 	@Override
 	public void search() throws CommonBusinessException {
 		final InstanceCollectController cc = getInstanceCollectController();
-		final MainFrameTab mft = cc.getMainFrameTab();
+		final MainFrameTab mft = cc.getTab();
 		try {
 			mft.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 			final Collection<MasterDataVO> col;

@@ -36,7 +36,7 @@ public class RuleSearchStrategy extends CollectSearchStrategy<CollectableRule> {
 	@Override
 	public void search() {
 		final RuleCollectController cc = getRuleCollectController();
-		final MainFrameTab mft = cc.getMainFrameTab();
+		final MainFrameTab mft = cc.getTab();
 		try {
 			mft.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 			List<CollectableRule> result = CollectionUtils.transform(this.ruledelegate.getAllRules(),

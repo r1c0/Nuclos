@@ -43,6 +43,7 @@ import javax.swing.table.TableColumn;
 
 import org.nuclos.client.common.DependantCollectableMasterDataMap;
 import org.nuclos.client.main.mainframe.MainFrameTab;
+import org.nuclos.client.main.mainframe.MainFrameTabbedPane;
 import org.nuclos.client.searchfilter.SearchFilterCache;
 import org.nuclos.client.searchfilter.SearchFilterDelegate;
 import org.nuclos.client.searchfilter.SearchFilterMode;
@@ -94,8 +95,8 @@ public class SearchFilterCollectController extends MasterDataCollectController {
 	 * *CollectController<~> cc = new *CollectController<~>(.., rc);
 	 * </code></pre>
 	 */
-	public SearchFilterCollectController(JComponent parent, MainFrameTab tabIfAny){
-		super(parent, NuclosEntity.SEARCHFILTER, tabIfAny, 
+	public SearchFilterCollectController(MainFrameTab tabIfAny){
+		super(NuclosEntity.SEARCHFILTER, tabIfAny, 
 				new SearchFilterResultController<CollectableMasterDataWithDependants>(NuclosEntity.SEARCHFILTER.getEntityName(),
 						new NuclosSearchResultStrategy<CollectableMasterDataWithDependants>()));
 
@@ -282,7 +283,7 @@ public class SearchFilterCollectController extends MasterDataCollectController {
 				this.setCollectState(CollectState.OUTERSTATE_DETAILS, CollectState.DETAILSMODE_EDIT);
 			}
 			catch (CommonBusinessException ex) {
-				Errors.getInstance().showExceptionDialog(this.getFrame(), ex);
+				Errors.getInstance().showExceptionDialog(this.getTab(), ex);
 			}
 		}
 	}

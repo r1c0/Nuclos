@@ -250,6 +250,7 @@ public class WorkspaceDescription implements Serializable {
 		private boolean alwaysHideHistory = false;
 		private boolean alwaysHideBookmark = false;
 		private boolean desktopActive = false;
+		private boolean hideStartTab = false;
 
 		private int selected;
 		private final List<Tab> tabs = new ArrayList<Tab>();
@@ -395,13 +396,24 @@ public class WorkspaceDescription implements Serializable {
 		public void setDesktopActive(boolean desktopActive) {
 			this.desktopActive = desktopActive;
 		}
+		public boolean isHideStartTab() {
+			return hideStartTab;
+		}
+		public void setHideStartTab(boolean hideStartTab) {
+			this.hideStartTab = hideStartTab;
+		}
 	}
 
 	public static class Split implements NestedContent {
 		private static final long serialVersionUID = 6637996725938917463L;
+		
+		public static final int FIXED_STATE_NONE = 0;
+		public static final int FIXED_STATE_LEFT = 1;
+		public static final int FIXED_STATE_RIGHT = 2;
 
 		private boolean horizontal;
 		private int position;
+		private int fixedState;
 		private final MutableContent contentA = new MutableContent();
 		private final MutableContent contentB = new MutableContent();
 		public boolean isHorizontal() {
@@ -415,6 +427,12 @@ public class WorkspaceDescription implements Serializable {
 		}
 		public void setPosition(int position) {
 			this.position = position;
+		}
+		public int getFixedState() {
+			return fixedState;
+		}
+		public void setFixedState(int fixedState) {
+			this.fixedState = fixedState;
 		}
 		public MutableContent getContentA() {
 			return contentA;
@@ -1135,6 +1153,9 @@ public class WorkspaceDescription implements Serializable {
 		private Color menuItemTextColor, menuItemTextHoverColor;
 		private String resourceMenuBackground, resourceMenuBackgroundHover, resourceBackground, nuclosResourceBackground;
 		private boolean hideToolBar = false;
+		private boolean hideTabBar = false;
+		private boolean rootpaneBackgroundColor = false;
+		private boolean staticMenu = false;
 		private List<DesktopItem> desktopItems;
 		public int getHorizontalGap() {
 			return horizontalGap;
@@ -1228,6 +1249,24 @@ public class WorkspaceDescription implements Serializable {
 		}
 		public void setHideToolBar(boolean hideToolBar) {
 			this.hideToolBar = hideToolBar;
+		}
+		public boolean isHideTabBar() {
+			return hideTabBar;
+		}
+		public void setHideTabBar(boolean hideTabBar) {
+			this.hideTabBar = hideTabBar;
+		}
+		public boolean isRootpaneBackgroundColor() {
+			return rootpaneBackgroundColor;
+		}
+		public void setRootpaneBackgroundColor(boolean rootpaneBackgroundColor) {
+			this.rootpaneBackgroundColor = rootpaneBackgroundColor;
+		}
+		public boolean isStaticMenu() {
+			return staticMenu;
+		}
+		public void setStaticMenu(boolean staticMenu) {
+			this.staticMenu = staticMenu;
 		}
 		private List<DesktopItem> _getDesktopItems() {
 			if (desktopItems == null)

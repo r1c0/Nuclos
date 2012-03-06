@@ -27,6 +27,7 @@ public class NuclosThemeSettings {
 	public static final Dimension TOOLBAR_SEPARATOR_V_MINIMUM = new Dimension(24, 8);
 	
 	public static final Color ICON_BLUE = new Color(97, 171, 215);
+	public static final Color ICON_BLUE_LIGHTER = new Color(130, 200, 255);
 
 	/**
 	 * Default for all panels:

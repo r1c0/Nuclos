@@ -397,7 +397,7 @@ public class WYSIWYGSubForm extends JLayeredPane implements WYSIWYGComponent, Mo
 					subform.setInitialSortingOrder(sortingOrder.getName(), sortingOrder.getSortingOrder());
 				}
 
-				this.controller = NuclosCollectControllerFactory.getInstance().newDetailsSubFormController(subform, meta.getCollectableEntity().getName(), clctmodelprovider, new MainFrameTab(), this, this, Preferences.userRoot().node("tmp"), new EntityPreferences(), null);
+				this.controller = NuclosCollectControllerFactory.getInstance().newDetailsSubFormController(subform, meta.getCollectableEntity().getName(), clctmodelprovider, new MainFrameTab(), this, Preferences.userRoot().node("tmp"), new EntityPreferences(), null);
 
 				if (subform.getJTable().getModel() instanceof SortableCollectableTableModel) {
 					this.model = (SortableCollectableTableModel<Collectable>) subform.getJTable().getModel();

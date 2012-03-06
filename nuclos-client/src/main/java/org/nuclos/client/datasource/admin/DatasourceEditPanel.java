@@ -123,7 +123,7 @@ public class DatasourceEditPanel extends JPanel {
 								sqlPanel.setSql(controller.generateSql());
 								}
 								catch (CommonBusinessException ex) {
-									Errors.getInstance().showExceptionDialog(controller.getFrame(), ex);
+									Errors.getInstance().showExceptionDialog(controller.getTab(), ex);
 								}
 							}
 						});
@@ -205,7 +205,7 @@ public class DatasourceEditPanel extends JPanel {
 				sSql = controller.generateSql();
 			}
 			catch (CommonBusinessException ex) {
-				Errors.getInstance().showExceptionDialog(controller.getFrame(), ex);
+				Errors.getInstance().showExceptionDialog(controller.getTab(), ex);
 			}
 		}
 		else {
@@ -302,7 +302,7 @@ public class DatasourceEditPanel extends JPanel {
 			btnGenerateSql.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent ev) {
-					UIUtils.runCommand(controller.getFrame(), new Runnable() {
+					UIUtils.runCommand(controller.getTab(), new Runnable() {
 						@Override
 						public void run() {
 							try {
@@ -316,7 +316,7 @@ public class DatasourceEditPanel extends JPanel {
 								controller.detailsChanged(sqlEditor);
 							}
 							catch (CommonBusinessException ex) {
-								Errors.getInstance().showExceptionDialog(controller.getFrame(), ex);
+								Errors.getInstance().showExceptionDialog(controller.getTab(), ex);
 							}
 						}
 					});
@@ -449,7 +449,7 @@ public class DatasourceEditPanel extends JPanel {
 			btnPreview.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent ev) {
-					UIUtils.runCommand(controller.getFrame(), new Runnable() {
+					UIUtils.runCommand(controller.getTab(), new Runnable() {
 						@Override
 						public void run() {
 							cmdPreview();
@@ -464,7 +464,7 @@ public class DatasourceEditPanel extends JPanel {
 			btnExport.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent ev) {
-					UIUtils.runCommand(controller.getFrame(), new Runnable() {
+					UIUtils.runCommand(controller.getTab(), new Runnable() {
 						@Override
 						public void run() {
 							cmdExport();
@@ -539,7 +539,7 @@ public class DatasourceEditPanel extends JPanel {
 		 */
 		void cmdExport() {
 			try {
-				new ReportController(this.getParent()).export(table, getDatasourceName());
+				new ReportController(controller.getTab()).export(table, getDatasourceName());
 			}
 			catch (CommonBusinessException ex) {
 				Errors.getInstance().showExceptionDialog(this.getParent(), ex);

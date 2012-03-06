@@ -164,8 +164,8 @@ public class TimelimitTaskController extends RefreshableTaskController {
 		}
 	};
 
-	public TimelimitTaskController(Component parent, Preferences prefsParent, TimelimitTaskDelegate tltaskDelegate) {
-		super(parent);
+	public TimelimitTaskController(Preferences prefsParent, TimelimitTaskDelegate tltaskDelegate) {
+		super();
 
 		this.timelimittaskview = new TimelimitTaskView();
 		this.tltaskDelegate = tltaskDelegate;
@@ -357,7 +357,7 @@ public class TimelimitTaskController extends RefreshableTaskController {
 	}
 
 	private void setupDataTransfer(JTable table) {
-		table.setTransferHandler(new TransferHandler(this.getParent()));
+		table.setTransferHandler(new TransferHandler(null));
 	}
 
 	private TimelimitTaskTableModel newTimelimitTaskTableModel() {
@@ -417,7 +417,7 @@ public class TimelimitTaskController extends RefreshableTaskController {
 	
 	public void cmdShowTimelimitTasks() {
 		if (tab == null) {
-			UIUtils.runCommand(this.getParent(), new Runnable() {
+			UIUtils.runCommandForTabbedPane(this.getTabbedPane(), new Runnable() {
 				@Override
 	            public void run() {
 					try {
@@ -486,11 +486,11 @@ public class TimelimitTaskController extends RefreshableTaskController {
 			
 			final String sMessage = getSpringLocaleDelegate().getMessage(
 					"TimelimitTaskController.12","Soll(en) die ausgew\u00e4hlte(n) Frist(e) als unerledigt markiert werden?");
-			final int iBtn = JOptionPane.showConfirmDialog(this.getParent(), sMessage, getSpringLocaleDelegate().getMessage(
+			final int iBtn = JOptionPane.showConfirmDialog(this.getTabbedPane().getComponentPanel(), sMessage, getSpringLocaleDelegate().getMessage(
 					"TimelimitTaskController.9","Friste als unerledigt markieren"),
 					JOptionPane.YES_NO_OPTION);
 			if (iBtn == JOptionPane.YES_OPTION) {
-				UIUtils.runCommand(this.getParent(), new Runnable() {
+				UIUtils.runCommandForTabbedPane(this.getTabbedPane(), new Runnable() {
 					@Override
 					public void run() {
 						try {
@@ -501,7 +501,7 @@ public class TimelimitTaskController extends RefreshableTaskController {
 							}
 						}
 						catch (/* CommonBusiness */ Exception ex) {
-							Errors.getInstance().showExceptionDialog(getParent(), ex);
+							Errors.getInstance().showExceptionDialog(getTabbedPane().getComponentPanel(), ex);
 						}
 					}
 				});
@@ -521,7 +521,7 @@ public class TimelimitTaskController extends RefreshableTaskController {
 	private void cmdFinishTimelimitTask(final TimelimitTaskView taskview, final boolean bRefresh) {
 		final List<TimelimitTaskVO> lstSelectedTimelimitTasks = getSelectedTimelimitTasks(taskview);
 		if (!lstSelectedTimelimitTasks.isEmpty() && lstSelectedTimelimitTasks != null) {
-			UIUtils.runCommand(this.getParent(), new Runnable() {
+			UIUtils.runCommandForTabbedPane(this.getTabbedPane(), new Runnable() {
 				@Override
 				public void run() {
 					try {
@@ -532,7 +532,7 @@ public class TimelimitTaskController extends RefreshableTaskController {
 						}
 					}
 					catch (/* CommonBusiness */Exception ex) {
-						Errors.getInstance().showExceptionDialog(getParent(), ex);
+						Errors.getInstance().showExceptionDialog(getTabbedPane().getComponentPanel(), ex);
 					}
 				}
 			});
@@ -556,12 +556,12 @@ public class TimelimitTaskController extends RefreshableTaskController {
 				sMessage = getSpringLocaleDelegate().getMessage(
 						"TimelimitTaskController.15","Wollen Sie die ausgew\u00e4hlten Eintr\u00e4ge wirklich l\u00f6schen?") + "\n";
 			
-			final int btn = JOptionPane.showConfirmDialog(this.getParent(), sMessage, getSpringLocaleDelegate().getMessage(
+			final int btn = JOptionPane.showConfirmDialog(this.getTabbedPane().getComponentPanel(), sMessage, getSpringLocaleDelegate().getMessage(
 					"TimelimitTaskController.8","Eintr\u00e4ge l\u00f6schen"),
 					JOptionPane.YES_NO_OPTION);
 
 			if (btn == JOptionPane.YES_OPTION) {
-				UIUtils.runCommand(this.getParent(), new Runnable() {
+				UIUtils.runCommandForTabbedPane(this.getTabbedPane(), new Runnable() {
 					@Override
 					public void run() {
 						try {
@@ -569,7 +569,7 @@ public class TimelimitTaskController extends RefreshableTaskController {
 								TimelimitTaskController.this.tltaskDelegate.remove(taskvo);
 						}
 						catch (CommonBusinessException ex) {
-							Errors.getInstance().showExceptionDialog(getParent(), ex);
+							Errors.getInstance().showExceptionDialog(getTabbedPane().getComponentPanel(), ex);
 						}
 						if (bRefresh) {
 							refreshTimelimitTaskView();
@@ -581,7 +581,7 @@ public class TimelimitTaskController extends RefreshableTaskController {
 	}
 
 	private void cmdRefreshTimelimitTaskView() {
-		UIUtils.runCommand(this.getParent(), new Runnable() {
+		UIUtils.runCommandForTabbedPane(this.getTabbedPane(), new Runnable() {
 			@Override
 			public void run() {
 				refreshTimelimitTaskView();
@@ -590,7 +590,7 @@ public class TimelimitTaskController extends RefreshableTaskController {
 	}
 
 	private void cmdPrintTimelimitTaskView() {
-		UIUtils.runCommand(this.getParent(), new Runnable() {
+		UIUtils.runCommandForTabbedPane(this.getTabbedPane(), new Runnable() {
 			@Override
 			public void run() {
 				printTimelimitTaskView();
@@ -630,10 +630,10 @@ public class TimelimitTaskController extends RefreshableTaskController {
 
 	void printTimelimitTaskView() {
 		try {
-			new ReportController(this.getParent()).export(this.timelimittaskview.getTable(), null );
+			new ReportController(getTab()).export(this.timelimittaskview.getTable(), null );
 		}
 		catch (CommonBusinessException ex) {
-			Errors.getInstance().showExceptionDialog(this.getParent(), ex);
+			Errors.getInstance().showExceptionDialog(this.getTabbedPane().getComponentPanel(), ex);
 		}
 	}
 
@@ -641,7 +641,7 @@ public class TimelimitTaskController extends RefreshableTaskController {
 		final List<TimelimitTaskVO> collSelectedTimilimitTasks = getSelectedTimelimitTasks(taskview);
 		
 		if(!collSelectedTimilimitTasks.isEmpty() && collSelectedTimilimitTasks != null){
-			UIUtils.runCommand(this.getParent(), new CommonRunnable() {
+			UIUtils.runCommandForTabbedPane(this.getTabbedPane(), new CommonRunnable() {
 				@Override
 				public void run() throws CommonBusinessException {
 					final Collection<Integer> collGenericObjectIds = new ArrayList<Integer>();
@@ -661,12 +661,12 @@ public class TimelimitTaskController extends RefreshableTaskController {
 					
 					if (collGenericObjectIds.size() == 1) {
 						final GenericObjectCollectController ctlGenericObject = NuclosCollectControllerFactory.getInstance().
-								newGenericObjectCollectController(MainFrame.getPredefinedEntityOpenLocation(MetaDataClientProvider.getInstance().getEntity(new Long(iCommonModuleId)).getEntity()), iCommonModuleId, null);
+								newGenericObjectCollectController(iCommonModuleId, null);
 						ctlGenericObject.runViewSingleCollectableWithId(collGenericObjectIds.iterator().next());						
 					}
 					else if (iCommonModuleId != null && iCommonModuleId != 0) {
 						final GenericObjectCollectController ctlGenericObject = NuclosCollectControllerFactory.getInstance().
-								newGenericObjectCollectController(MainFrame.getPredefinedEntityOpenLocation(MetaDataClientProvider.getInstance().getEntity(new Long(iCommonModuleId)).getEntity()), iCommonModuleId, null);
+								newGenericObjectCollectController(iCommonModuleId, null);
 						ctlGenericObject.runViewResults(getSearchConditionForRelatedObjects(collGenericObjectIds));
 					}
 				}

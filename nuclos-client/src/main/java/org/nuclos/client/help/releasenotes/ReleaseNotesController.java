@@ -35,7 +35,9 @@ import javax.swing.event.HyperlinkListener;
 import org.apache.log4j.Logger;
 import org.nuclos.client.help.HtmlPanel;
 import org.nuclos.client.main.Main;
+import org.nuclos.client.main.mainframe.MainFrame;
 import org.nuclos.client.main.mainframe.MainFrameTab;
+import org.nuclos.client.main.mainframe.MainFrameTabbedPane;
 import org.nuclos.client.ui.Controller;
 import org.nuclos.client.ui.MainFrameTabAdapter;
 import org.nuclos.client.ui.UIUtils;
@@ -54,7 +56,7 @@ import org.nuclos.common2.LangUtils;
  * @version 01.00.00
  */
 
-public class ReleaseNotesController extends Controller {
+public class ReleaseNotesController extends Controller<MainFrameTabbedPane> {
 	
 	private static final Logger LOG = Logger.getLogger(ReleaseNotesController.class);
 		
@@ -62,8 +64,6 @@ public class ReleaseNotesController extends Controller {
 	private static final String PREFS_KEY_BOUNDS = "bounds";
 	private static final String PREFS_NODE_RELEASENOTES = "releaseNotes";
 	private final Preferences prefs = ClientPreferences.getUserPreferences().node(PREFS_NODE_RELEASENOTES);
-
-	private final JComponent parentMdi;
 
 	private static final String NUCLOS_RELEASENOTES_URL_PREFIX = "http://wiki.nuclos.de/Nuclos_";
 	
@@ -87,14 +87,13 @@ public class ReleaseNotesController extends Controller {
 		}
 	}	
 	
-	/**
-	 * @param parent
-	 * @param parentMdi the parent for MDI windows
-	 */
-	public ReleaseNotesController(Component parent, JComponent parentMdi) {
-		super(parent);
+	public ReleaseNotesController() {
+		super(null);
+	}
 
-		this.parentMdi = parentMdi;
+	@Override
+	public MainFrameTabbedPane getParent() {
+		return MainFrame.getHomePane();
 	}
 
 	/**
@@ -148,7 +147,7 @@ public class ReleaseNotesController extends Controller {
 			}
 		});
 
-		parentMdi.add(ifrm);
+		getParent().add(ifrm);
 		ifrm.setVisible(true);
 	}
 	
@@ -172,7 +171,7 @@ public class ReleaseNotesController extends Controller {
 	 * shows the project release notes.
 	 */
 	public void showReleaseNotes(final String sProject) {
-		UIUtils.runCommandLater(this.getParent(), new Runnable() {
+		UIUtils.runCommandLater(this.getParent().getComponentPanel(), new Runnable() {
 			@Override
 			public void run() {
 				try {
@@ -213,7 +212,7 @@ public class ReleaseNotesController extends Controller {
 						}
 					});
 
-					parentMdi.add(ifrm);
+					getParent().add(ifrm);
 					ifrm.setVisible(true);
 				}
 				catch (/* IO */ Exception ex) {

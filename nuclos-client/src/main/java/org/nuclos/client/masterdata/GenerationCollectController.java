@@ -32,6 +32,7 @@ import org.nuclos.client.entityobject.CollectableEntityObject;
 import org.nuclos.client.genericobject.GeneratorActions;
 import org.nuclos.client.genericobject.GeneratorDelegate;
 import org.nuclos.client.main.mainframe.MainFrameTab;
+import org.nuclos.client.main.mainframe.MainFrameTabbedPane;
 import org.nuclos.client.masterdata.ui.GenerationRulesPanel;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.client.ui.collect.CollectPanel;
@@ -74,8 +75,8 @@ public class GenerationCollectController extends MasterDataCollectController {
 	 * *CollectController<~> cc = new *CollectController<~>(.., rc);
 	 * </code></pre>
 	 */
-	public GenerationCollectController(JComponent parent, MainFrameTab tabIfAny) {
-		super(parent, NuclosEntity.GENERATION, tabIfAny);
+	public GenerationCollectController(MainFrameTab tabIfAny) {
+		super(NuclosEntity.GENERATION, tabIfAny);
 	}
 
 	@Override
@@ -107,7 +108,7 @@ public class GenerationCollectController extends MasterDataCollectController {
 		super.setupEditPanelForDetailsTab();
 
 		GenerationRulesPanel grp = new GenerationRulesPanel();
-		generationRulesController = new GenerationRulesController(grp, getParent(), this);
+		generationRulesController = new GenerationRulesController(grp, getTabbedPane(), this);
 
 		final JPanel pnlRules = (JPanel) UIUtils.findJComponent(this.getDetailsPanel(), "pnlRules");
 		if (pnlRules != null) {

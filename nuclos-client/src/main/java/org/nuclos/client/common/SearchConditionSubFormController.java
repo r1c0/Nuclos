@@ -16,7 +16,6 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.common;
 
-import java.awt.Component;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
@@ -26,11 +25,12 @@ import java.util.TreeSet;
 import java.util.Vector;
 import java.util.prefs.Preferences;
 
-import javax.swing.JComponent;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 
 import org.apache.log4j.Logger;
+import org.nuclos.client.main.mainframe.MainFrameTab;
+import org.nuclos.client.main.mainframe.MainFrameTabbedPane;
 import org.nuclos.client.ui.DefaultSelectObjectsPanel;
 import org.nuclos.client.ui.SelectObjectsController;
 import org.nuclos.client.ui.UIUtils;
@@ -66,8 +66,8 @@ import org.nuclos.common.collect.collectable.searchcondition.TrueCondition;
 import org.nuclos.common.collect.collectable.searchcondition.visit.Visitor;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Predicate;
-import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.LangUtils;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonFatalException;
 
@@ -475,10 +475,10 @@ public class SearchConditionSubFormController extends SubFormController {
 
 	private SearchConditionTableModel tblmdl;
 
-	public SearchConditionSubFormController(Component parent, JComponent parentMdi,
+	public SearchConditionSubFormController(MainFrameTab tab,
 			CollectableComponentModelProvider clctcompmodelproviderParent, String sParentEntityName, final SubForm subform,
 			Preferences prefsUserParent, EntityPreferences entityPrefs, CollectableFieldsProviderFactory clctfproviderfactory) {
-		super(DefaultCollectableEntityProvider.getInstance().getCollectableEntity(subform.getEntityName()), parent, parentMdi, clctcompmodelproviderParent,
+		super(DefaultCollectableEntityProvider.getInstance().getCollectableEntity(subform.getEntityName()), tab, clctcompmodelproviderParent,
 				sParentEntityName, subform, true, prefsUserParent, entityPrefs, clctfproviderfactory);
 
 		subform.addSubFormToolListener(new SubFormToolListener() {
@@ -696,7 +696,7 @@ public class SearchConditionSubFormController extends SubFormController {
 	 * lets the user add/remove multiple rows at once. This requires the subform to define a unique master data column.
 	 */
 	public void cmdMultiEdit() {
-		UIUtils.runCommand(this.getParent(), new Runnable() {
+		UIUtils.runCommandForTabbedPane(this.getMainFrameTabbedPane(), new Runnable() {
 			@Override
 			public void run() {
 				final SubForm subform = getSubForm();

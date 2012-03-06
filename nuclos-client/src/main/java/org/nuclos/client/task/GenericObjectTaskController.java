@@ -121,9 +121,8 @@ public class GenericObjectTaskController extends RefreshableTaskController {
 	
 	private Map<Integer, GenericObjectTaskView> mpTaskViews;
 	
-	GenericObjectTaskController(Component parent) {
-		super(parent);
-
+	GenericObjectTaskController() {
+		super();
 		mpTaskViews= new HashMap<Integer, GenericObjectTaskView>();
 	}
 	
@@ -356,7 +355,7 @@ public class GenericObjectTaskController extends RefreshableTaskController {
 		
 		if (filter == null) {
 			//the filter has been deleted
-			Errors.getInstance().showExceptionDialog(this.getParent(), new CommonBusinessException(
+			Errors.getInstance().showExceptionDialog(this.getTabbedPane().getSelectedComponent(), new CommonBusinessException(
 					getSpringLocaleDelegate().getMessage("GenericObjectTaskController.1", "Der Filter \"{0}\" existiert nicht mehr.", sFilterName)));
 		}		
 		else {
@@ -470,15 +469,15 @@ public class GenericObjectTaskController extends RefreshableTaskController {
 	
 	void print(GenericObjectTaskView gotaskview) {
 		try {
-			new ReportController(this.getParent()).export(gotaskview.getJTable(), null);
+			new ReportController(getTabbedPane().getComponentPanel()).export(gotaskview.getJTable(), null);
 		}
 		catch (CommonBusinessException ex) {
-			Errors.getInstance().showExceptionDialog(this.getParent(), ex);
+			Errors.getInstance().showExceptionDialog(this.getTabbedPane().getComponentPanel(), ex);
 		}
 	}
 
 	private void cmdShowDetails(final GenericObjectTaskView gotaskview) {
-		UIUtils.runCommand(getParent(), new CommonRunnable() {
+		UIUtils.runCommandForTabbedPane(getTabbedPane(), new CommonRunnable() {
 			@Override
             public void run() throws CommonBusinessException {
 				final Collectable clctSelected = getSelectedCollectable(gotaskview);
@@ -487,7 +486,7 @@ public class GenericObjectTaskController extends RefreshableTaskController {
 						final CollectableGenericObject clctloSelected = (CollectableGenericObject) clctSelected;
 						// we must reload the partially loaded object:
 						final int iModuleId = clctloSelected .getGenericObjectCVO().getModuleId();
-						GenericObjectClientUtils.showDetails(MainFrame.getPredefinedEntityOpenLocation(MetaDataClientProvider.getInstance().getEntity(new Long(iModuleId)).getEntity()), iModuleId, clctloSelected.getId());
+						GenericObjectClientUtils.showDetails(iModuleId, clctloSelected.getId());
 					}
 					else {
 						final CollectableMasterDataWithDependants clctmdSelected = (CollectableMasterDataWithDependants) clctSelected;
@@ -499,7 +498,7 @@ public class GenericObjectTaskController extends RefreshableTaskController {
 	}
 	
 	private void cmdDefineSelectedCollectablesAsNewSearchResult(final GenericObjectTaskView gotaskview) {
-		UIUtils.runCommand(getParent(), new CommonRunnable(){
+		UIUtils.runCommandForTabbedPane(getTabbedPane(), new CommonRunnable(){
 			@Override
             public void run() throws CommonBusinessException {
 				final Collection<Collectable> collclct = getSelectedCollectables(gotaskview);
@@ -510,13 +509,13 @@ public class GenericObjectTaskController extends RefreshableTaskController {
 				if (Modules.getInstance().isModuleEntity(gotaskview.getFilter().getEntityName())) {
 					final Integer iModuleId = getCommonModuleId(collclct);
 					final GenericObjectCollectController ctlGenericObject = NuclosCollectControllerFactory.getInstance().
-							newGenericObjectCollectController(MainFrame.getPredefinedEntityOpenLocation(MetaDataClientProvider.getInstance().getEntity(new Long(iModuleId)).getEntity()), iModuleId, null);
+							newGenericObjectCollectController(iModuleId, null);
 					ctlGenericObject.setSearchDeleted(CollectableGenericObjectSearchExpression.SEARCH_BOTH);
 					ctlGenericObject.runViewResults(cond);
 				}
 				else {
 					MasterDataCollectController ctlMasterData = NuclosCollectControllerFactory.getInstance().
-						newMasterDataCollectController(MainFrame.getPredefinedEntityOpenLocation(gotaskview.getFilter().getEntityName()), gotaskview.getFilter().getEntityName(), null);
+						newMasterDataCollectController(gotaskview.getFilter().getEntityName(), null);
 					ctlMasterData.runViewResults(cond);
 				}				
 			}
@@ -617,7 +616,7 @@ public class GenericObjectTaskController extends RefreshableTaskController {
 			newNamePanel.getTextFieldName().setText(oldFilter.getName());
 			newNamePanel.getTextFieldDescription().setText(oldFilter.getDescription());
 
-			int result = SaveFilterController.showDialog(getParent(), getSpringLocaleDelegate().getMessage(
+			int result = SaveFilterController.showDialog(getTabbedPane().getComponentPanel(), getSpringLocaleDelegate().getMessage(
 					"SaveFilterController.9", "Bestehenden Filter \"{0}\" \u00e4ndern", oldFilterName), newNamePanel, oldFilterName, Command.Overwrite);
 			if(result == JOptionPane.OK_OPTION) {
 				EntitySearchFilter newFilter = new EntitySearchFilter();

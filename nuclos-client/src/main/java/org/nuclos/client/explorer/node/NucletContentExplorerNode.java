@@ -102,7 +102,7 @@ public class NucletContentExplorerNode extends ExplorerNode<NucletContentTreeNod
 					getTreeNodeFacade().addNucletContents(getTreeNode().getNucletId(), new HashSet<AbstractNucletContentEntryTreeNode>(contents.keySet()));
 					refresh(tree);
 				} catch(Exception e) {
-					Errors.getInstance().showExceptionDialog(getExplorerController().getParent(), e);
+					Errors.getInstance().showExceptionDialog(getExplorerController().getTabbedPane().getComponentPanel(), e);
 				}
 			}
 

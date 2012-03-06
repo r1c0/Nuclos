@@ -35,6 +35,7 @@ import org.nuclos.client.layout.admin.GenericObjectLayoutCollectController;
 import org.nuclos.client.ldap.LdapServerCollectController;
 import org.nuclos.client.main.mainframe.MainFrame;
 import org.nuclos.client.main.mainframe.MainFrameTab;
+import org.nuclos.client.main.mainframe.MainFrameTabbedPane;
 import org.nuclos.client.masterdata.CollectableMasterDataWithDependants;
 import org.nuclos.client.masterdata.DbObjectCollectController;
 import org.nuclos.client.masterdata.DbSourceCollectController;
@@ -114,9 +115,9 @@ public class CollectControllerFactorySingleton {
 	/**
 	 * @deprecated
 	 */
-	public DataTypeCollectController newDataTypeCollectController(JComponent parent, MainFrameTab tabIfAny) {
+	public DataTypeCollectController newDataTypeCollectController(MainFrameTab tabIfAny) {
 		final ISearchStrategy<CollectableMasterDataWithDependants> ss = new MasterDataSearchStrategy();
-		final DataTypeCollectController result = new DataTypeCollectController(parent, tabIfAny);
+		final DataTypeCollectController result = new DataTypeCollectController(tabIfAny);
 		ss.setCollectController(result);
 		result.setSearchStrategy(ss);
 		initMasterData(result);
@@ -126,9 +127,9 @@ public class CollectControllerFactorySingleton {
 	/**
 	 * @deprecated
 	 */
-	public WikiCollectController newWikiCollectController(JComponent parent, MainFrameTab tabIfAny) {
+	public WikiCollectController newWikiCollectController(MainFrameTab tabIfAny) {
 		final ISearchStrategy<CollectableMasterDataWithDependants> ss = new MasterDataSearchStrategy();
-		final WikiCollectController result = new WikiCollectController(parent, tabIfAny);
+		final WikiCollectController result = new WikiCollectController(tabIfAny);
 		ss.setCollectController(result);
 		result.setSearchStrategy(ss);
 		initMasterData(result);
@@ -138,9 +139,9 @@ public class CollectControllerFactorySingleton {
 	/**
 	 * @deprecated
 	 */
-	public SearchFilterCollectController newSearchFilterCollectController(JComponent parent, MainFrameTab tabIfAny) {
+	public SearchFilterCollectController newSearchFilterCollectController(MainFrameTab tabIfAny) {
 		final ISearchStrategy<CollectableMasterDataWithDependants> ss = new MasterDataSearchStrategy();
-		final SearchFilterCollectController result = new SearchFilterCollectController(parent, tabIfAny);
+		final SearchFilterCollectController result = new SearchFilterCollectController(tabIfAny);
 		ss.setCollectController(result);
 		result.setSearchStrategy(ss);
 		initMasterData(result);
@@ -150,9 +151,9 @@ public class CollectControllerFactorySingleton {
 	/**
 	 * @deprecated
 	 */
-	public ExportImportCollectController newExportImportCollectController(JComponent parent, MainFrameTab tabIfAny) {
+	public ExportImportCollectController newExportImportCollectController(MainFrameTab tabIfAny) {
 		final ISearchStrategy<CollectableMasterDataWithDependants> ss = new MasterDataSearchStrategy();
-		final ExportImportCollectController result = new ExportImportCollectController(parent, tabIfAny);
+		final ExportImportCollectController result = new ExportImportCollectController(tabIfAny);
 		ss.setCollectController(result);
 		result.setSearchStrategy(ss);
 		initMasterData(result);
@@ -162,9 +163,9 @@ public class CollectControllerFactorySingleton {
 	/**
 	 * @deprecated
 	 */
-	public ResourceCollectController newResourceCollectController(JComponent parent, MainFrameTab tabIfAny) {
+	public ResourceCollectController newResourceCollectController(MainFrameTab tabIfAny) {
 		final ISearchStrategy<CollectableMasterDataWithDependants> ss = new MasterDataSearchStrategy();
-		final ResourceCollectController result = new ResourceCollectController(parent, tabIfAny);
+		final ResourceCollectController result = new ResourceCollectController(tabIfAny);
 		ss.setCollectController(result);
 		result.setSearchStrategy(ss);
 		initMasterData(result);
@@ -174,9 +175,9 @@ public class CollectControllerFactorySingleton {
 	/**
 	 * @deprecated
 	 */
-	public UserCollectController newUserCollectController(JComponent parent, MainFrameTab tabIfAny) {
+	public UserCollectController newUserCollectController(MainFrameTab tabIfAny) {
 		final ISearchStrategy<CollectableMasterDataWithDependants> ss = new MasterDataSearchStrategy();
-		final UserCollectController result = new UserCollectController(parent, tabIfAny);
+		final UserCollectController result = new UserCollectController(tabIfAny);
 		ss.setCollectController(result);
 		result.setSearchStrategy(ss);
 		initMasterData(result);
@@ -186,9 +187,9 @@ public class CollectControllerFactorySingleton {
 	/**
 	 * @deprecated
 	 */
-	public RelationTypeCollectController newRelationTypeCollectController(JComponent parent, MainFrameTab tabIfAny) {
+	public RelationTypeCollectController newRelationTypeCollectController(MainFrameTab tabIfAny) {
 		final ISearchStrategy<CollectableMasterDataWithDependants> ss = new MasterDataSearchStrategy();
-		final RelationTypeCollectController result = new RelationTypeCollectController(parent, tabIfAny);
+		final RelationTypeCollectController result = new RelationTypeCollectController(tabIfAny);
 		ss.setCollectController(result);
 		result.setSearchStrategy(ss);
 		initMasterData(result);
@@ -198,9 +199,9 @@ public class CollectControllerFactorySingleton {
 	/**
 	 * @deprecated
 	 */
-	public GroupCollectController newGroupCollectController(JComponent parent, MainFrameTab tabIfAny) {
+	public GroupCollectController newGroupCollectController(MainFrameTab tabIfAny) {
 		final ISearchStrategy<CollectableMasterDataWithDependants> ss = new MasterDataSearchStrategy();
-		final GroupCollectController result = new GroupCollectController(parent, tabIfAny);
+		final GroupCollectController result = new GroupCollectController(tabIfAny);
 		ss.setCollectController(result);
 		result.setSearchStrategy(ss);
 		initMasterData(result);
@@ -210,9 +211,9 @@ public class CollectControllerFactorySingleton {
 	/**
 	 * @deprecated
 	 */
-	public GenerationCollectController newGenerationCollectController(JComponent parent, MainFrameTab tabIfAny) {
+	public GenerationCollectController newGenerationCollectController(MainFrameTab tabIfAny) {
 		final ISearchStrategy<CollectableMasterDataWithDependants> ss = new MasterDataSearchStrategy();
-		final GenerationCollectController result = new GenerationCollectController(parent, tabIfAny);
+		final GenerationCollectController result = new GenerationCollectController(tabIfAny);
 		ss.setCollectController(result);
 		result.setSearchStrategy(ss);
 		initMasterData(result);
@@ -222,9 +223,9 @@ public class CollectControllerFactorySingleton {
 	/**
 	 * @deprecated
 	 */
-	public LdapServerCollectController newLdapServerCollectController(JComponent parent, MainFrameTab tabIfAny) {
+	public LdapServerCollectController newLdapServerCollectController(MainFrameTab tabIfAny) {
 		final ISearchStrategy<CollectableMasterDataWithDependants> ss = new MasterDataSearchStrategy();
-		final LdapServerCollectController result = new LdapServerCollectController(parent, tabIfAny);
+		final LdapServerCollectController result = new LdapServerCollectController(tabIfAny);
 		ss.setCollectController(result);
 		result.setSearchStrategy(ss);
 		initMasterData(result);
@@ -234,9 +235,9 @@ public class CollectControllerFactorySingleton {
 	/**
 	 * @deprecated
 	 */
-	public DbSourceCollectController newDbSourceCollectController(JComponent parent, MainFrameTab tabIfAny) {
+	public DbSourceCollectController newDbSourceCollectController(MainFrameTab tabIfAny) {
 		final ISearchStrategy<CollectableMasterDataWithDependants> ss = new MasterDataSearchStrategy();
-		final DbSourceCollectController result = new DbSourceCollectController(parent, tabIfAny);
+		final DbSourceCollectController result = new DbSourceCollectController(tabIfAny);
 		ss.setCollectController(result);
 		result.setSearchStrategy(ss);
 		initMasterData(result);
@@ -246,9 +247,9 @@ public class CollectControllerFactorySingleton {
 	/**
 	 * @deprecated
 	 */
-	public DbObjectCollectController newDbObjectCollectController(JComponent parent, MainFrameTab tabIfAny) {
+	public DbObjectCollectController newDbObjectCollectController(MainFrameTab tabIfAny) {
 		final ISearchStrategy<CollectableMasterDataWithDependants> ss = new MasterDataSearchStrategy();
-		final DbObjectCollectController result = new DbObjectCollectController(parent, tabIfAny);
+		final DbObjectCollectController result = new DbObjectCollectController(tabIfAny);
 		ss.setCollectController(result);
 		result.setSearchStrategy(ss);
 		initMasterData(result);
@@ -258,9 +259,9 @@ public class CollectControllerFactorySingleton {
 	/**
 	 * @deprecated
 	 */
-	public NucletCollectController newNucletCollectController(JComponent parent, MainFrameTab tabIfAny) {
+	public NucletCollectController newNucletCollectController(MainFrameTab tabIfAny) {
 		final ISearchStrategy<CollectableMasterDataWithDependants> ss = new MasterDataSearchStrategy();
-		final NucletCollectController result = new NucletCollectController(parent, tabIfAny);
+		final NucletCollectController result = new NucletCollectController(tabIfAny);
 		ss.setCollectController(result);
 		result.setSearchStrategy(ss);
 		initMasterData(result);
@@ -270,9 +271,9 @@ public class CollectControllerFactorySingleton {
 	/**
 	 * @deprecated
 	 */
-	public LocaleCollectController newLocaleCollectController(JComponent parent, MainFrameTab tabIfAny) {
+	public LocaleCollectController newLocaleCollectController(MainFrameTab tabIfAny) {
 		final ISearchStrategy<CollectableMasterDataWithDependants> ss = new MasterDataSearchStrategy();
-		final LocaleCollectController result = new LocaleCollectController(parent, tabIfAny);
+		final LocaleCollectController result = new LocaleCollectController(tabIfAny);
 		ss.setCollectController(result);
 		result.setSearchStrategy(ss);
 		initMasterData(result);
@@ -282,9 +283,9 @@ public class CollectControllerFactorySingleton {
 	/**
 	 * @deprecated
 	 */
-	public LocaleCollectController newLocaleCollectController(JComponent parent, Collection<String> collresids, MainFrameTab tabIfAny) {
+	public LocaleCollectController newLocaleCollectController(Collection<String> collresids, MainFrameTab tabIfAny) {
 		final ISearchStrategy<CollectableMasterDataWithDependants> ss = new MasterDataSearchStrategy();
-		final LocaleCollectController result = new LocaleCollectController(parent, collresids, tabIfAny);
+		final LocaleCollectController result = new LocaleCollectController(collresids, tabIfAny);
 		ss.setCollectController(result);
 		result.setSearchStrategy(ss);
 		initMasterData(result);
@@ -294,9 +295,9 @@ public class CollectControllerFactorySingleton {
 	/**
 	 * @deprecated
 	 */
-	public JobControlCollectController newJobControlCollectController(JComponent parent, MainFrameTab tabIfAny) {
+	public JobControlCollectController newJobControlCollectController(MainFrameTab tabIfAny) {
 		final ISearchStrategy<CollectableMasterDataWithDependants> ss = new MasterDataSearchStrategy();
-		final JobControlCollectController result = new JobControlCollectController(parent, tabIfAny);
+		final JobControlCollectController result = new JobControlCollectController(tabIfAny);
 		ss.setCollectController(result);
 		result.setSearchStrategy(ss);
 		initMasterData(result);
@@ -306,9 +307,9 @@ public class CollectControllerFactorySingleton {
 	/**
 	 * @deprecated
 	 */
-	public TimelimitRuleCollectController newTimelimitRuleCollectController(JComponent parent, MainFrameTab tabIfAny) {
+	public TimelimitRuleCollectController newTimelimitRuleCollectController(MainFrameTab tabIfAny) {
 		final ISearchStrategy<CollectableMasterDataWithDependants> ss = new MasterDataSearchStrategy();
-		final TimelimitRuleCollectController result = new TimelimitRuleCollectController(parent, tabIfAny);
+		final TimelimitRuleCollectController result = new TimelimitRuleCollectController(tabIfAny);
 		ss.setCollectController(result);
 		result.setSearchStrategy(ss);
 		initMasterData(result);
@@ -318,9 +319,9 @@ public class CollectControllerFactorySingleton {
 	/**
 	 * @deprecated
 	 */
-	public GenericObjectImportStructureCollectController newGenericObjectImportStructureCollectController(JComponent parent, MainFrameTab tabIfAny) {
+	public GenericObjectImportStructureCollectController newGenericObjectImportStructureCollectController(MainFrameTab tabIfAny) {
 		final ISearchStrategy<CollectableMasterDataWithDependants> ss = new MasterDataSearchStrategy();
-		final GenericObjectImportStructureCollectController result = new GenericObjectImportStructureCollectController(parent, tabIfAny);
+		final GenericObjectImportStructureCollectController result = new GenericObjectImportStructureCollectController(tabIfAny);
 		ss.setCollectController(result);
 		result.setSearchStrategy(ss);
 		initMasterData(result);
@@ -330,9 +331,9 @@ public class CollectControllerFactorySingleton {
 	/**
 	 * @deprecated
 	 */
-	public GenericObjectImportCollectController newGenericObjectImportCollectController(JComponent parent, MainFrameTab tabIfAny) {
+	public GenericObjectImportCollectController newGenericObjectImportCollectController(MainFrameTab tabIfAny) {
 		final ISearchStrategy<CollectableMasterDataWithDependants> ss = new MasterDataSearchStrategy();
-		final GenericObjectImportCollectController result = new GenericObjectImportCollectController(parent, tabIfAny);
+		final GenericObjectImportCollectController result = new GenericObjectImportCollectController(tabIfAny);
 		ss.setCollectController(result);
 		result.setSearchStrategy(ss);
 		initMasterData(result);
@@ -342,9 +343,9 @@ public class CollectControllerFactorySingleton {
 	/**
 	 * @deprecated
 	 */
-	public CodeCollectController newCodeCollectController(JComponent parent, MainFrameTab tabIfAny) {
+	public CodeCollectController newCodeCollectController(MainFrameTab tabIfAny) {
 		final ISearchStrategy<CollectableMasterDataWithDependants> ss = new MasterDataSearchStrategy();
-		final CodeCollectController result = new CodeCollectController(parent, tabIfAny);
+		final CodeCollectController result = new CodeCollectController(tabIfAny);
 		ss.setCollectController(result);
 		result.setSearchStrategy(ss);
 		initMasterData(result);
@@ -356,9 +357,9 @@ public class CollectControllerFactorySingleton {
 	/**
 	 * @deprecated
 	 */
-	public ReportExecutionCollectController newReportExecutionCollectController(JComponent parent, MainFrameTab tabIfAny) {
+	public ReportExecutionCollectController newReportExecutionCollectController(MainFrameTab tabIfAny) {
 		final ISearchStrategy<CollectableMasterDataWithDependants> ss = new ReportExecutionSearchStrategy();
-		final ReportExecutionCollectController result = new ReportExecutionCollectController(parent, tabIfAny);
+		final ReportExecutionCollectController result = new ReportExecutionCollectController(tabIfAny);
 		ss.setCollectController(result);
 		result.setSearchStrategy(ss);
 		initMasterData(result);
@@ -368,9 +369,9 @@ public class CollectControllerFactorySingleton {
 	/**
 	 * @deprecated
 	 */
-	public ReportCollectController newReportCollectController(JComponent parent, NuclosEntity entity, MainFrameTab tabIfAny) {
+	public ReportCollectController newReportCollectController(NuclosEntity entity, MainFrameTab tabIfAny) {
 		final ISearchStrategy<CollectableMasterDataWithDependants> ss = new ReportSearchStrategy(entity);
-		final ReportCollectController result = new ReportCollectController(parent, entity, tabIfAny);
+		final ReportCollectController result = new ReportCollectController(entity, tabIfAny);
 		ss.setCollectController(result);
 		result.setSearchStrategy(ss);
 		initMasterData(result);
@@ -380,9 +381,9 @@ public class CollectControllerFactorySingleton {
 	/**
 	 * @deprecated
 	 */
-	public PersonalTaskCollectController newPersonalTaskCollectController(JComponent parent, MainFrameTab tabIfAny) {
+	public PersonalTaskCollectController newPersonalTaskCollectController(MainFrameTab tabIfAny) {
 		final ISearchStrategy<CollectableMasterDataWithDependants> ss = new PersonalTaskSearchStrategy();
-		final PersonalTaskCollectController result = new PersonalTaskCollectController(parent, tabIfAny);
+		final PersonalTaskCollectController result = new PersonalTaskCollectController(tabIfAny);
 		ss.setCollectController(result);
 		result.setSearchStrategy(ss);
 		initMasterData(result);
@@ -392,9 +393,9 @@ public class CollectControllerFactorySingleton {
 	/**
 	 * @deprecated
 	 */
-	public MasterDataCollectController newMasterDataCollectController(JComponent parent, NuclosEntity systemEntity, MainFrameTab tabIfAny) {
+	public MasterDataCollectController newMasterDataCollectController(NuclosEntity systemEntity, MainFrameTab tabIfAny) {
 		final ISearchStrategy<CollectableMasterDataWithDependants> ss = new MasterDataSearchStrategy();
-		final MasterDataCollectController result = new MasterDataCollectController(parent, systemEntity, tabIfAny);
+		final MasterDataCollectController result = new MasterDataCollectController(systemEntity, tabIfAny);
 		ss.setCollectController(result);
 		result.setSearchStrategy(ss);
 		initMasterData(result);
@@ -404,9 +405,9 @@ public class CollectControllerFactorySingleton {
 	/**
 	 * @deprecated
 	 */
-	public MasterDataCollectController newMasterDataCollectController(JComponent parent, String entity, MainFrameTab tabIfAny) {
+	public MasterDataCollectController newMasterDataCollectController(String entity, MainFrameTab tabIfAny) {
 		final ISearchStrategy<CollectableMasterDataWithDependants> ss = new MasterDataSearchStrategy();
-		final MasterDataCollectController result = new MasterDataCollectController(parent, entity, tabIfAny);
+		final MasterDataCollectController result = new MasterDataCollectController(entity, tabIfAny);
 		ss.setCollectController(result);
 		result.setSearchStrategy(ss);
 		initMasterData(result);
@@ -420,7 +421,7 @@ public class CollectControllerFactorySingleton {
 	/**
 	 * @deprecated
 	 */
-	public GenericObjectCollectController newGenericObjectCollectController(JComponent parent, Integer iModuleId, boolean bAutoInit, MainFrameTab tabIfAny) {
+	public GenericObjectCollectController newGenericObjectCollectController(Integer iModuleId, boolean bAutoInit, MainFrameTab tabIfAny) {
 		final ISearchStrategy<CollectableGenericObjectWithDependants> ss;
 		final MetaDataDelegate md = MetaDataDelegate.getInstance();
 		final EntityMetaDataVO mdvo = md.getEntityById(IdUtils.toLongId(iModuleId));
@@ -428,7 +429,7 @@ public class CollectControllerFactorySingleton {
 		ss = new GenericObjectViaEntityObjectSearchStrategy((CollectableEOEntity) cep.getCollectableEntity(mdvo.getEntity()));
 		// Old (pre-pivot) search strategy
 		// ss = new GenericObjectSearchStrategy();
-		final GenericObjectCollectController result = new GenericObjectCollectController(parent, iModuleId, false, tabIfAny);
+		final GenericObjectCollectController result = new GenericObjectCollectController(iModuleId, false, tabIfAny);
 		ss.setCollectController(result);
 		result.setSearchStrategy(ss);
 		ss.setCompleteCollectablesStrategy(new CompleteGenericObjectsStrategy());
@@ -440,9 +441,9 @@ public class CollectControllerFactorySingleton {
 	
 	// LayoutCollectController
 	
-	public GenericObjectLayoutCollectController newGenericObjectLayoutCollectController(JComponent parent, MainFrameTab tabIfAny) {
+	public GenericObjectLayoutCollectController newGenericObjectLayoutCollectController(MainFrameTab tabIfAny) {
 		final ISearchStrategy<CollectableMasterDataWithDependants> ss = new LayoutSearchStrategy(); 
-		final GenericObjectLayoutCollectController result = new GenericObjectLayoutCollectController(parent, tabIfAny);
+		final GenericObjectLayoutCollectController result = new GenericObjectLayoutCollectController(tabIfAny);
 		ss.setCollectController(result);
 		result.setSearchStrategy(ss);
 		return result;
@@ -450,33 +451,33 @@ public class CollectControllerFactorySingleton {
 	
 	// AbstractDatasourceCollectController
 	
-	public ValuelistProviderCollectController newValuelistProviderCollectController(JComponent parent, MainFrameTab tabIfAny) {
+	public ValuelistProviderCollectController newValuelistProviderCollectController(MainFrameTab tabIfAny) {
 		final ISearchStrategy<CollectableDataSource> ss = new ValueListProviderSearchStrategy(); 
-		final ValuelistProviderCollectController result = new ValuelistProviderCollectController(parent, tabIfAny);
+		final ValuelistProviderCollectController result = new ValuelistProviderCollectController(tabIfAny);
 		ss.setCollectController(result);
 		result.setSearchStrategy(ss);
 		return result;
 	}
 	
-	public DatasourceCollectController newDatasourceCollectController(JComponent parent, MainFrameTab tabIfAny) {
+	public DatasourceCollectController newDatasourceCollectController(MainFrameTab tabIfAny) {
 		final ISearchStrategy<CollectableDataSource> ss = new DatasourceSearchStrategy(); 
-		final DatasourceCollectController result = new DatasourceCollectController(parent, tabIfAny);
+		final DatasourceCollectController result = new DatasourceCollectController(tabIfAny);
 		ss.setCollectController(result);
 		result.setSearchStrategy(ss);
 		return result;
 	}
 	
-	public DynamicEntityCollectController newDynamicEntityCollectController(JComponent parent, MainFrameTab tabIfAny) {
+	public DynamicEntityCollectController newDynamicEntityCollectController(MainFrameTab tabIfAny) {
 		final ISearchStrategy<CollectableDataSource> ss = new DynamicEntitySearchStrategy(); 
-		final DynamicEntityCollectController result = new DynamicEntityCollectController(parent, tabIfAny);
+		final DynamicEntityCollectController result = new DynamicEntityCollectController(tabIfAny);
 		ss.setCollectController(result);
 		result.setSearchStrategy(ss);
 		return result;
 	}
 	
-	public RecordGrantCollectController newRecordGrantCollectController(JComponent parent, MainFrameTab tabIfAny) {
+	public RecordGrantCollectController newRecordGrantCollectController(MainFrameTab tabIfAny) {
 		final ISearchStrategy<CollectableDataSource> ss = new RecordGrantSearchStrategy(); 
-		final RecordGrantCollectController result = new RecordGrantCollectController(parent, tabIfAny);
+		final RecordGrantCollectController result = new RecordGrantCollectController(tabIfAny);
 		ss.setCollectController(result);
 		result.setSearchStrategy(ss);
 		return result;
@@ -487,9 +488,9 @@ public class CollectControllerFactorySingleton {
 	/**
 	 * @deprecated
 	 */
-	public EntityRelationShipCollectController newEntityRelationShipCollectController(JComponent parent, MainFrame mf, MainFrameTab tabIfAny) {
+	public EntityRelationShipCollectController newEntityRelationShipCollectController(MainFrame mf, MainFrameTab tabIfAny) {
 		final ISearchStrategy<EntityRelationshipModel> ss = new EntityRelationShipSearchStrategy();
-		final EntityRelationShipCollectController result = new EntityRelationShipCollectController(parent, mf, tabIfAny);
+		final EntityRelationShipCollectController result = new EntityRelationShipCollectController(mf, tabIfAny);
 		ss.setCollectController(result);
 		result.setSearchStrategy(ss);
 		return result;
@@ -498,9 +499,9 @@ public class CollectControllerFactorySingleton {
 	/**
 	 * @deprecated
 	 */
-	public InstanceCollectController newInstanceCollectController(JComponent parent, String entity, MainFrameTab tabIfAny) {
+	public InstanceCollectController newInstanceCollectController(String entity, MainFrameTab tabIfAny) {
 		final ISearchStrategy<CollectableInstanceModel> ss = new InstanceSearchStrategy();
-		final InstanceCollectController result = new InstanceCollectController(parent, entity, tabIfAny);
+		final InstanceCollectController result = new InstanceCollectController(entity, tabIfAny);
 		ss.setCollectController(result);
 		result.setSearchStrategy(ss);
 		return result;
@@ -509,9 +510,9 @@ public class CollectControllerFactorySingleton {
 	/**
 	 * @deprecated
 	 */
-	public ProcessMonitorCollectController newProcessMonitorCollectController(JComponent parent, MainFrameTab tabIfAny) {
+	public ProcessMonitorCollectController newProcessMonitorCollectController(MainFrameTab tabIfAny) {
 		final ISearchStrategy<CollectableProcessMonitorModel> ss = new ProcessMonitorSearchStrategy();
-		final ProcessMonitorCollectController result = new ProcessMonitorCollectController(parent, tabIfAny);
+		final ProcessMonitorCollectController result = new ProcessMonitorCollectController(tabIfAny);
 		ss.setCollectController(result);
 		result.setSearchStrategy(ss);
 		return result;
@@ -520,9 +521,9 @@ public class CollectControllerFactorySingleton {
 	/**
 	 * @deprecated
 	 */
-	public RuleCollectController newRuleCollectController(JComponent parent, MainFrameTab tabIfAny) {
+	public RuleCollectController newRuleCollectController(MainFrameTab tabIfAny) {
 		final ISearchStrategy<CollectableRule> ss = new RuleSearchStrategy();
-		final RuleCollectController result = new RuleCollectController(parent, tabIfAny);
+		final RuleCollectController result = new RuleCollectController(tabIfAny);
 		ss.setCollectController(result);
 		result.setSearchStrategy(ss);
 		return result;
@@ -533,9 +534,9 @@ public class CollectControllerFactorySingleton {
 	/**
 	 * @deprecated
 	 */
-	public StateModelCollectController newStateModelCollectController(JComponent parent, MainFrameTab tabIfAny) {
+	public StateModelCollectController newStateModelCollectController(MainFrameTab tabIfAny) {
 		final ISearchStrategy<CollectableStateModel> ss = new StateModelSearchStrategy();
-		final StateModelCollectController result = new StateModelCollectController(parent, tabIfAny);
+		final StateModelCollectController result = new StateModelCollectController(tabIfAny);
 		ss.setCollectController(result);
 		result.setSearchStrategy(ss);
 		ss.setCompleteCollectablesStrategy(new CompleteCollectableStateModelsStrategy(result));

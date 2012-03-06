@@ -60,7 +60,6 @@ import javax.swing.JLayeredPane;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
-import javax.swing.JTabbedPane;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 
@@ -88,8 +87,8 @@ import org.nuclos.common.Actions;
 import org.nuclos.common.JMSConstants;
 import org.nuclos.common.LockedTabProgressNotification;
 import org.nuclos.common.MutableBoolean;
-import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.LangUtils;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
@@ -955,7 +954,7 @@ public class MainFrameTab extends JPanel implements IOverlayComponent, NuclosDro
 	 * @return
 	 */
 	private int getTabIndex() {
-		JTabbedPane tabPane = getTabbedPane();
+		MainFrameTabbedPane tabPane = getTabbedPane();
 		if (tabPane == null) return -1;
 
 		for (int i = 0; i < tabPane.getTabCount() ; i++) {
@@ -973,8 +972,8 @@ public class MainFrameTab extends JPanel implements IOverlayComponent, NuclosDro
 	 */
 	public MainFrameTabbedPane getTabbedPane() {
 		Container parent = getParent();
-		if (parent instanceof MainFrameTabbedPane) {
-			MainFrameTabbedPane tabbedPane = (MainFrameTabbedPane) parent;
+		if (parent instanceof MainFrameTabbedPane.MFTabbedPane) {
+			MainFrameTabbedPane tabbedPane = ((MainFrameTabbedPane.MFTabbedPane) parent).getMainFrameTabbedPane();
 			return tabbedPane;
 		}
 		return null;

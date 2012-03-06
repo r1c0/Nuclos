@@ -85,12 +85,14 @@ abstract class DefaultMenuItem extends JLabel implements DragGestureListener {
 		
 		ImageIcon resIconBackground = null;
 		try {
-			resIconBackground = ResourceCache.getInstance().getIconResource(itemResourceBackground);
-			Dimension size = new Dimension(resIconBackground.getIconWidth(),resIconBackground.getIconHeight());
-			setSize(size);
-			setMinimumSize(size);
-			setMaximumSize(size);
-			setPreferredSize(size);
+			if (itemResourceBackground != null) {
+				resIconBackground = ResourceCache.getInstance().getIconResource(itemResourceBackground);
+				Dimension size = new Dimension(resIconBackground.getIconWidth(),resIconBackground.getIconHeight());
+				setSize(size);
+				setMinimumSize(size);
+				setMaximumSize(size);
+				setPreferredSize(size);
+			}
 		} catch (Exception ex) {
 			LOG.error(ex);
 		}
@@ -98,7 +100,9 @@ abstract class DefaultMenuItem extends JLabel implements DragGestureListener {
 		
 		ImageIcon resIconBackgroundHover = null;
 		try {
-			resIconBackgroundHover = ResourceCache.getInstance().getIconResource(itemResourceBackgroundHover);
+			if (itemResourceBackgroundHover != null) {
+				resIconBackgroundHover = ResourceCache.getInstance().getIconResource(itemResourceBackgroundHover);
+			}
 		} catch (Exception ex) {
 			LOG.error(ex);
 		}
@@ -256,7 +260,11 @@ abstract class DefaultMenuItem extends JLabel implements DragGestureListener {
 		if (this.hover != hover) {
 			repaint = true;
 			this.hover = hover;
-			setForeground(this.hover?Color.BLACK:NuclosThemeSettings.BACKGROUND_ROOTPANE);
+			if (itemTextColorHover != null) {
+				setForeground(itemTextColorHover);
+			} else {
+				setForeground(Color.BLACK);
+			}
 		}
 		if (repaint) {
 			repaint();
@@ -287,35 +295,35 @@ abstract class DefaultMenuItem extends JLabel implements DragGestureListener {
 		} else if (itemBackground != null) {
 			g.drawImage(itemBackground.getImage(),0,0,this);
 		} else {
-			Graphics2D g2 = (Graphics2D) g;
-			Object renderingHint = g2
-					.getRenderingHint(RenderingHints.KEY_ANTIALIASING);
-			g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-					RenderingHints.VALUE_ANTIALIAS_ON);
-	
-			Rectangle bounds = getBounds();
-			g2.setColor(NuclosThemeSettings.BACKGROUND_PANEL);
-			
-			int x = 1;
-			int width = bounds.width-2;
-			
-			if (this.itemTextHorizontalPadding > 0) {
-				switch (this.itemTextHorizontalAlignment) {
-				case SwingConstants.LEFT:
-					x += itemTextHorizontalPadding;
-					width -= itemTextHorizontalPadding;
-					break;
-				case SwingConstants.RIGHT:
-					width -= itemTextHorizontalPadding;
-					break;
-				}
-			}
-			
-			g2.fillRoundRect(x, 2, width, bounds.height-4,
-					4, 4);
-	
-			g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-					renderingHint);
+//			Graphics2D g2 = (Graphics2D) g;
+//			Object renderingHint = g2
+//					.getRenderingHint(RenderingHints.KEY_ANTIALIASING);
+//			g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+//					RenderingHints.VALUE_ANTIALIAS_ON);
+//	
+//			Rectangle bounds = getBounds();
+//			g2.setColor(NuclosThemeSettings.BACKGROUND_PANEL);
+//			
+//			int x = 1;
+//			int width = bounds.width-2;
+//			
+//			if (this.itemTextHorizontalPadding > 0) {
+//				switch (this.itemTextHorizontalAlignment) {
+//				case SwingConstants.LEFT:
+//					x += itemTextHorizontalPadding;
+//					width -= itemTextHorizontalPadding;
+//					break;
+//				case SwingConstants.RIGHT:
+//					width -= itemTextHorizontalPadding;
+//					break;
+//				}
+//			}
+//			
+//			g2.fillRoundRect(x, 2, width, bounds.height-4,
+//					4, 4);
+//	
+//			g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+//					renderingHint);
 		}
 		
 		super.paint(g);

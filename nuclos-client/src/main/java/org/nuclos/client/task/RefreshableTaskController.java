@@ -12,22 +12,33 @@ import java.util.concurrent.TimeUnit;
 import javax.swing.AbstractAction;
 
 import org.apache.log4j.Logger;
+import org.nuclos.client.main.mainframe.MainFrame;
+import org.nuclos.client.main.mainframe.MainFrameTabbedPane;
 import org.nuclos.client.ui.Controller;
 import org.nuclos.common.NuclosFatalException;
 
-public abstract class RefreshableTaskController extends Controller {
+public abstract class RefreshableTaskController extends Controller<MainFrameTabbedPane> {
 
     private static final Logger log = Logger.getLogger(RefreshableTaskController.class);
 
     protected ScheduledExecutorService scheduler = null;
     protected Map<ScheduledRefreshable, ScheduledFuture<?>> refreshandles = null;
 
-    public RefreshableTaskController(Component parent) {
-        super(parent);
+    public RefreshableTaskController() {
+        super(null);
         refreshandles = new HashMap<ScheduledRefreshable, ScheduledFuture<?>>();
     }
 
-    public abstract ScheduledRefreshable getSingleScheduledRefreshableView();
+    @Override
+	public MainFrameTabbedPane getParent() {
+		return MainFrame.getHomePane(); // TODO PersonalTask Home in future here !!!
+	}
+
+    public MainFrameTabbedPane getTabbedPane() {
+		return getParent();
+	}
+
+	public abstract ScheduledRefreshable getSingleScheduledRefreshableView();
 
     public abstract void refreshScheduled(ScheduledRefreshable sRefreshable);
 

@@ -49,6 +49,7 @@ import org.nuclos.client.common.security.SecurityCache;
 import org.nuclos.client.fileimport.ImportDelegate;
 import org.nuclos.client.jms.TopicNotificationReceiver;
 import org.nuclos.client.main.mainframe.MainFrameTab;
+import org.nuclos.client.main.mainframe.MainFrameTabbedPane;
 import org.nuclos.client.masterdata.CollectableMasterDataWithDependants;
 import org.nuclos.client.masterdata.MasterDataCollectController;
 import org.nuclos.client.ui.CommonAbstractAction;
@@ -128,8 +129,8 @@ public class GenericObjectImportCollectController extends MasterDataCollectContr
 	 * *CollectController<~> cc = new *CollectController<~>(.., rc);
 	 * </code></pre>
 	 */
-	public GenericObjectImportCollectController(JComponent parent, MainFrameTab tabIfAny) {
-		super(parent, NuclosEntity.IMPORTFILE.getEntityName(), tabIfAny);
+	public GenericObjectImportCollectController(MainFrameTab tabIfAny) {
+		super(NuclosEntity.IMPORTFILE.getEntityName(), tabIfAny);
 	}
 	
 	@PostConstruct

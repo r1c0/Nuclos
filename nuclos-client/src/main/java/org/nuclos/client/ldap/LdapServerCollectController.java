@@ -27,6 +27,7 @@ import javax.swing.JOptionPane;
 import org.apache.log4j.Logger;
 import org.nuclos.client.common.DependantCollectableMasterDataMap;
 import org.nuclos.client.main.mainframe.MainFrameTab;
+import org.nuclos.client.main.mainframe.MainFrameTabbedPane;
 import org.nuclos.client.masterdata.CollectableMasterDataWithDependants;
 import org.nuclos.client.masterdata.MasterDataCollectController;
 import org.nuclos.client.ui.CommonAbstractAction;
@@ -68,8 +69,8 @@ public class LdapServerCollectController extends MasterDataCollectController {
 	 * *CollectController<~> cc = new *CollectController<~>(.., rc);
 	 * </code></pre>
 	 */
-	public LdapServerCollectController(JComponent parent, MainFrameTab tabIfAny) {
-		super(parent, NuclosEntity.LDAPSERVER.getEntityName(), tabIfAny);
+	public LdapServerCollectController(MainFrameTab tabIfAny) {
+		super(NuclosEntity.LDAPSERVER.getEntityName(), tabIfAny);
 
 		this.setupDetailsToolBar();
 
@@ -143,7 +144,7 @@ public class LdapServerCollectController extends MasterDataCollectController {
 
 	public void cmdTryAuthentication() {
 		final String servername = (String)getSelectedCollectable().getField("servername").getValue();
-		UIUtils.runCommand(getFrame(), new Runnable() {
+		UIUtils.runCommand(getTab(), new Runnable() {
 			@Override
 			public void run() {
 				try {
@@ -152,12 +153,12 @@ public class LdapServerCollectController extends MasterDataCollectController {
 					JOptionPane optpn = new JOptionPane(inputpanel, JOptionPane.PLAIN_MESSAGE, JOptionPane.OK_CANCEL_OPTION);
 	
 					// perform the dialog:
-					JDialog dialog = optpn.createDialog(getFrame(), getSpringLocaleDelegate().getMessage(
+					JDialog dialog = optpn.createDialog(getTab(), getSpringLocaleDelegate().getMessage(
 							"LdapServerCollectController.testauthentication", "Anmeldung testen"));
 					dialog.setModal(true);
 					dialog.setResizable(false);
 					dialog.pack();
-					dialog.setLocationRelativeTo(getFrame());
+					dialog.setLocationRelativeTo(getTab());
 					dialog.setVisible(true);
 	
 					if (optpn.getValue() != null && JOptionPane.OK_OPTION == ((Integer)optpn.getValue()).intValue()) {
@@ -189,7 +190,7 @@ public class LdapServerCollectController extends MasterDataCollectController {
 										"LdapServerCollectController.testerror.message", "Der Test ist mit folgender Meldung fehlgeschlagen: {0}", ex.getMessage());
 								messagetype = JOptionPane.ERROR_MESSAGE;
 							}
-							JOptionPane.showMessageDialog(getFrame(), message, title, messagetype);
+							JOptionPane.showMessageDialog(getTab(), message, title, messagetype);
 						}
 					}
 				}

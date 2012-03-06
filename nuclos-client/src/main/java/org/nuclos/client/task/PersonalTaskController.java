@@ -69,6 +69,7 @@ import org.apache.log4j.Logger;
 import org.nuclos.client.common.KeyBinding;
 import org.nuclos.client.common.KeyBindingProvider;
 import org.nuclos.client.common.MetaDataClientProvider;
+import org.nuclos.client.common.NuclosCollectController;
 import org.nuclos.client.common.NuclosCollectControllerFactory;
 import org.nuclos.client.common.NuclosDropTargetListener;
 import org.nuclos.client.common.NuclosDropTargetVisitor;
@@ -87,6 +88,7 @@ import org.nuclos.client.ui.CommonAbstractAction;
 import org.nuclos.client.ui.Errors;
 import org.nuclos.client.ui.Icons;
 import org.nuclos.client.ui.MainFrameTabAdapter;
+import org.nuclos.client.ui.TopController;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.client.ui.collect.CollectController;
 import org.nuclos.client.ui.collect.CollectController.CollectableEventListener;
@@ -234,8 +236,8 @@ public class PersonalTaskController extends RefreshableTaskController implements
 		}
 	};
 
-	PersonalTaskController(Component parent, Preferences prefsParent, TaskDelegate taskdelegate, String sCurrentUser) {
-		super(parent);
+	PersonalTaskController(Preferences prefsParent, TaskDelegate taskdelegate, String sCurrentUser) {
+		super();
 		this.personaltaskview = new PersonalTaskView();
 		this.taskDelegate = taskdelegate;
 		this.sCurrentUser = sCurrentUser;
@@ -622,7 +624,7 @@ public class PersonalTaskController extends RefreshableTaskController implements
 
 	public void cmdShowPersonalTasks() {
 		if (tab == null) {
-			UIUtils.runCommand(this.getParent(), new Runnable() {
+			UIUtils.runCommandForTabbedPane(this.getTabbedPane(), new Runnable() {
 				@Override
 	            public void run() {
 					showPersonalTasks(new MainFrameTab());
@@ -664,7 +666,7 @@ public class PersonalTaskController extends RefreshableTaskController implements
 		try {
 			PreferencesUtils.putIntegerArray(getPreferences(), PREFS_NODE_PERSONALTASKS_BUTTON_ALL_PRESSED, showAllTasksButtonIsSelectedArray);
 		} catch (PreferencesException e1) {
-			Errors.getInstance().showExceptionDialog(this.getParent(), getSpringLocaleDelegate().getMessage(
+			Errors.getInstance().showExceptionDialog(this.getTabbedPane().getComponentPanel(), getSpringLocaleDelegate().getMessage(
 					"PersonalTaskController.17","Fehler beim Abspeichern der Einstellungen"), e1);
 		}
 	}
@@ -674,7 +676,7 @@ public class PersonalTaskController extends RefreshableTaskController implements
 		try {
 			PreferencesUtils.putIntegerArray(getPreferences(), PREFS_NODE_PERSONALTASKS_SHOW_TASKS_ITEM_SELECTED, showTasks);
 		} catch (PreferencesException e1) {
-			Errors.getInstance().showExceptionDialog(this.getParent(), getSpringLocaleDelegate().getMessage(
+			Errors.getInstance().showExceptionDialog(this.getTabbedPane().getComponentPanel(), getSpringLocaleDelegate().getMessage(
 					"PersonalTaskController.18","Fehler beim Abspeichern der Einstellungen"), e1);
 		}
 	}
@@ -732,7 +734,7 @@ public class PersonalTaskController extends RefreshableTaskController implements
 		try {
 			PreferencesUtils.writeSortKeysToPrefs(getPreferences(), this.personaltaskview.getPersonalTaskTableModel().getSortKeys());
 		} catch (PreferencesException e1) {
-			Errors.getInstance().showExceptionDialog(this.getParent(), getSpringLocaleDelegate().getMessage(
+			Errors.getInstance().showExceptionDialog(this.getTabbedPane().getComponentPanel(), getSpringLocaleDelegate().getMessage(
 					"PersonalTaskController.19","Fehler beim Abspeichern der Einstellungen"), e1);
 		}
 	}
@@ -752,7 +754,7 @@ public class PersonalTaskController extends RefreshableTaskController implements
 	private void cmdCompleteTask(final PersonalTaskView taskview) {
 		final List<TaskVO> lsttaskvo = getSelectedPersonalTasks(taskview);
 		if(!lsttaskvo.isEmpty() && lsttaskvo != null){
-			UIUtils.runCommand(this.getParent(), new Runnable() {
+			UIUtils.runCommandForTabbedPane(this.getTabbedPane(), new Runnable() {
 				@Override
 				public void run() {
 					try {
@@ -760,7 +762,7 @@ public class PersonalTaskController extends RefreshableTaskController implements
 							taskvo = taskDelegate.complete(taskvo);
 						refreshPersonalTaskView();
 					} catch (CommonBusinessException ex) {
-						Errors.getInstance().showExceptionDialog(getParent(), ex);
+						Errors.getInstance().showExceptionDialog(getTabbedPane().getComponentPanel(), ex);
 					}
 				}
 			});
@@ -772,11 +774,11 @@ public class PersonalTaskController extends RefreshableTaskController implements
 		if(!lsttaskvo.isEmpty() && lsttaskvo != null){
 			final String sMessage = getSpringLocaleDelegate().getMessage(
 					"PersonalTaskController.23","Soll(en) die ausgew\u00e4hlte(n) Aufgabe(n) als unerledigt markiert werden?");
-			final int iBtn = JOptionPane.showConfirmDialog(this.getParent(), sMessage, 
+			final int iBtn = JOptionPane.showConfirmDialog(this.getTabbedPane().getComponentPanel(), sMessage, 
 					getSpringLocaleDelegate().getMessage("PersonalTaskController.1","Aufgaben als unerledigt markieren"), 
 					JOptionPane.YES_NO_OPTION);
 			if (iBtn == JOptionPane.YES_OPTION) {
-				UIUtils.runCommand(this.getParent(), new Runnable() {
+				UIUtils.runCommandForTabbedPane(this.getTabbedPane(), new Runnable() {
 					@Override
 					public void run() {
 						try {
@@ -784,7 +786,7 @@ public class PersonalTaskController extends RefreshableTaskController implements
 								taskDelegate.uncomplete(taskvo);
 							refreshPersonalTaskView();
 						} catch (CommonBusinessException ex) {
-							Errors.getInstance().showExceptionDialog(getParent(), ex);
+							Errors.getInstance().showExceptionDialog(getTabbedPane().getComponentPanel(), ex);
 						}
 					}
 				});
@@ -798,10 +800,10 @@ public class PersonalTaskController extends RefreshableTaskController implements
 		final List<TaskVO> lsttaskvo = getSelectedPersonalTasks(taskview);
 		final String sMessage = getSpringLocaleDelegate().getMessage(
 				"PersonalTaskController.24","Soll(en) die ausgew\u00e4hlte(n) Aufgabe(n) wirklich gel\u00f6scht werden?");
-		final int btn = JOptionPane.showConfirmDialog(this.getParent(), sMessage, getSpringLocaleDelegate().getMessage(
+		final int btn = JOptionPane.showConfirmDialog(this.getTabbedPane().getComponentPanel(), sMessage, getSpringLocaleDelegate().getMessage(
 				"PersonalTaskController.2","Aufgaben l\u00f6schen"), JOptionPane.YES_NO_OPTION);
 		if (btn == JOptionPane.YES_OPTION) {
-			UIUtils.runCommand(this.getParent(), new Runnable() {
+			UIUtils.runCommandForTabbedPane(this.getTabbedPane(), new Runnable() {
 				@Override
 				public void run() {
 					try {
@@ -809,7 +811,7 @@ public class PersonalTaskController extends RefreshableTaskController implements
 							taskDelegate.remove(taskvo);
 						refreshPersonalTaskView();
 					} catch (CommonBusinessException ex) {
-						Errors.getInstance().showExceptionDialog(getParent(), ex);
+						Errors.getInstance().showExceptionDialog(getTabbedPane().getComponentPanel(), ex);
 					}
 				}
 			});
@@ -817,7 +819,7 @@ public class PersonalTaskController extends RefreshableTaskController implements
 	}
 
 	private void cmdRefreshPersonalTaskView() {
-		UIUtils.runCommand(this.getParent(), new Runnable() {
+		UIUtils.runCommandForTabbedPane(this.getTabbedPane(), new Runnable() {
 			@Override
 			public void run() {
 				refreshPersonalTaskView();
@@ -826,7 +828,7 @@ public class PersonalTaskController extends RefreshableTaskController implements
 	}
 
 	private void cmdPrintPersonalTaskView() {
-		UIUtils.runCommand(this.getParent(), new Runnable() {
+		UIUtils.runCommandForTabbedPane(this.getTabbedPane(), new Runnable() {
 			@Override
 			public void run() {
 				printPersonalTaskView();
@@ -860,7 +862,7 @@ public class PersonalTaskController extends RefreshableTaskController implements
 				TableUtils.setOptimalColumnWidths(this.personaltaskview.getTable());
 			}
 		} catch (NuclosBusinessException ex) {
-			Errors.getInstance().showExceptionDialog(this.getParent(), getSpringLocaleDelegate().getMessage(
+			Errors.getInstance().showExceptionDialog(this.getTabbedPane().getComponentPanel(), getSpringLocaleDelegate().getMessage(
 					"PersonalTaskController.20","Fehler beim Aktualisieren der Aufgabenliste"), ex);
 		} catch (Exception e) {
 			LOG.error("unhandled exception: " + e.toString(), e);
@@ -869,27 +871,35 @@ public class PersonalTaskController extends RefreshableTaskController implements
 
 	void printPersonalTaskView() {
 		try {
-			new ReportController(this.getParent()).export(this.personaltaskview.getTable(), null);
+			new ReportController(this.getTabbedPane().getComponentPanel()).export(this.personaltaskview.getTable(), null);
 		} catch (CommonBusinessException ex) {
-			Errors.getInstance().showExceptionDialog(this.getParent(), ex);
+			Errors.getInstance().showExceptionDialog(this.getTabbedPane().getComponentPanel(), ex);
 		} catch (Exception e) {
 			LOG.error("unhandled exception: " + e.toString(), e);
 		}
 	}
 
 	public void cmdNewPersonalTask(final boolean bRefresh, final boolean bInNewTab) {
-		UIUtils.runCommand(this.getParent(), new Runnable() {
+		UIUtils.runCommandForTabbedPane(this.getTabbedPane(), new Runnable() {
 			@Override
 			public void run() {
 				try {
+					MainFrameTab tabIfAny = null;
+					if (tab != null && !bInNewTab) {
+						tabIfAny = new MainFrameTab();
+					}
 					PersonalTaskCollectController newCollectController =
-						(PersonalTaskCollectController)NuclosCollectControllerFactory.getInstance().newMasterDataCollectController(
-							(tab != null && !bInNewTab) ? tab : MainFrame.getPredefinedEntityOpenLocation(NuclosEntity.TASKLIST.getEntityName()),
-							NuclosEntity.TASKLIST.getEntityName(), null);
+						(PersonalTaskCollectController)NuclosCollectControllerFactory.getInstance().newMasterDataCollectController(NuclosEntity.TASKLIST.getEntityName(), tabIfAny);
+					
+					if (tabIfAny != null) {
+						Main.getInstance().getMainController().initMainFrameTab(newCollectController, tabIfAny);
+						tab.add(tabIfAny);
+					}
+					
 					newCollectController.runNew();
 
 				} catch (CommonBusinessException ex) {
-					Errors.getInstance().showExceptionDialog(getParent(), ex);
+					Errors.getInstance().showExceptionDialog(getTabbedPane().getComponentPanel(), ex);
 				}
 			}
 		});
@@ -899,18 +909,25 @@ public class PersonalTaskController extends RefreshableTaskController implements
 		final int iSelectedRow = taskview.getTable().getSelectedRow();
 		if (iSelectedRow >= 0) {
 			final TaskVO taskvo = taskview.getPersonalTaskTableModel().getTask(iSelectedRow);
-			UIUtils.runCommand(this.getParent(), new Runnable() {
+			UIUtils.runCommandForTabbedPane(this.getTabbedPane(), new Runnable() {
 				@Override
 				public void run() {
 					try {
+						
 						if (tab != null && !bInNewTab) {
-							NuclosCollectControllerFactory.getInstance().newCollectController(tab, NuclosEntity.TASKLIST.getEntityName(), null).runViewSingleCollectableWithId(taskvo.getId());
+							final MainFrameTab tabIfAny = new MainFrameTab();
+							final NuclosCollectController<?> ctrl = NuclosCollectControllerFactory.getInstance().newCollectController(NuclosEntity.TASKLIST.getEntityName(), tabIfAny);
+							
+							Main.getInstance().getMainController().initMainFrameTab(ctrl, tabIfAny);
+							tab.add(tabIfAny);
+							
+							ctrl.runViewSingleCollectableWithId(taskvo.getId());
 						} else {
 							Main.getInstance().getMainController().showDetails(NuclosEntity.TASKLIST.getEntityName(), taskvo.getId());
 						}
 					}
 					catch(CommonBusinessException e) {
-						Errors.getInstance().showExceptionDialog(getParent(), e);
+						Errors.getInstance().showExceptionDialog(getTabbedPane().getComponentPanel(), e);
 					}
 				}
 			});
@@ -920,7 +937,7 @@ public class PersonalTaskController extends RefreshableTaskController implements
 	private void cmdPerformPersonalTask(final PersonalTaskView taskview) {
 		final Collection<TaskObjectVO> collGenericObjects = getRelatedObjects(taskview);
 		if(collGenericObjects != null && !collGenericObjects.isEmpty()) {
-			UIUtils.runCommand(this.getParent(), new CommonRunnable() {
+			UIUtils.runCommandForTabbedPane(this.getTabbedPane(), new CommonRunnable() {
 				@Override
 				public void run() throws CommonBusinessException {
 					final MetaDataProvider mdProv = MetaDataClientProvider.getInstance();
@@ -969,12 +986,10 @@ public class PersonalTaskController extends RefreshableTaskController implements
 						final EntityMetaDataVO mdEntity = mdProv.getEntity(entity);
 						final CollectController<?> newCollectController;
 						if (mdEntity.isStateModel().booleanValue()) {
-							newCollectController = NuclosCollectControllerFactory.getInstance().newGenericObjectCollectController(
-									MainFrame.getPredefinedEntityOpenLocation(entity), IdUtils.unsafeToId(mdEntity.getId()), null);
+							newCollectController = NuclosCollectControllerFactory.getInstance().newGenericObjectCollectController(IdUtils.unsafeToId(mdEntity.getId()), null);
 						}
 						else {
-							newCollectController = NuclosCollectControllerFactory.getInstance().newMasterDataCollectController(
-									MainFrame.getPredefinedEntityOpenLocation(entity), entity, null);
+							newCollectController = NuclosCollectControllerFactory.getInstance().newMasterDataCollectController(entity, null);
 						}
 						final List<Long> oIds = eObjectIds.get(entity);
 						switch(oIds.size()){

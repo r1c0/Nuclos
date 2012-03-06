@@ -25,6 +25,7 @@ import org.nuclos.client.common.DependantCollectableMasterDataMap;
 import org.nuclos.client.common.security.SecurityCache;
 import org.nuclos.client.fileimport.ImportDelegate;
 import org.nuclos.client.main.mainframe.MainFrameTab;
+import org.nuclos.client.main.mainframe.MainFrameTabbedPane;
 import org.nuclos.client.ui.collect.CollectStateAdapter;
 import org.nuclos.client.ui.collect.CollectStateEvent;
 import org.nuclos.client.ui.collect.component.CollectableCheckBox;
@@ -71,8 +72,8 @@ public class GenericObjectImportStructureCollectController extends MasterDataCol
 	 * *CollectController<~> cc = new *CollectController<~>(.., rc);
 	 * </code></pre>
 	 */
-	public GenericObjectImportStructureCollectController(JComponent parent, MainFrameTab tabIfAny) {
-		super(parent, NuclosEntity.IMPORT, tabIfAny);
+	public GenericObjectImportStructureCollectController(MainFrameTab tabIfAny) {
+		super(NuclosEntity.IMPORT, tabIfAny);
 		this.getCollectStateModel().addCollectStateListener(new CollectStateAdapter(){
 			@Override
             public void detailsModeEntered(CollectStateEvent ev) throws CommonBusinessException {

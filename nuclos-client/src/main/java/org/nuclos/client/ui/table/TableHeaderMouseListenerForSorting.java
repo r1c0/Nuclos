@@ -161,7 +161,7 @@ public class TableHeaderMouseListenerForSorting extends MouseAdapter {
 	 */
 	private Component getParentForTable() {
 		final Component result;
-		final Component compInternalFrame = UIUtils.getInternalFrameForComponent(this.tbl);
+		final Component compInternalFrame = UIUtils.getTabForComponent(this.tbl);
 		if (compInternalFrame != null) {
 			result = compInternalFrame;
 		}

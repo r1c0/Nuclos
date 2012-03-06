@@ -30,6 +30,7 @@ import org.nuclos.client.explorer.ExplorerController;
 import org.nuclos.client.explorer.node.rule.RuleTreeModel;
 import org.nuclos.client.main.Main;
 import org.nuclos.client.main.mainframe.MainFrameTab;
+import org.nuclos.client.main.mainframe.MainFrameTabbedPane;
 import org.nuclos.client.masterdata.CollectableMasterDataWithDependants;
 import org.nuclos.client.masterdata.MasterDataCollectController;
 import org.nuclos.client.rule.TimelimitRuleDelegate;
@@ -83,8 +84,8 @@ public class TimelimitRuleCollectController extends MasterDataCollectController 
 	 * *CollectController<~> cc = new *CollectController<~>(.., rc);
 	 * </code></pre>
 	 */
-	public TimelimitRuleCollectController(JComponent parent, MainFrameTab tabIfAny) {
-		super(parent, NuclosEntity.TIMELIMITRULE, tabIfAny, false);
+	public TimelimitRuleCollectController(MainFrameTab tabIfAny) {
+		super(NuclosEntity.TIMELIMITRULE, tabIfAny, false);
 		this.setupDetailsToolBar();
 		this.getCollectStateModel().addCollectStateListener(new RuleCollectStateListener());
 	}
@@ -103,7 +104,7 @@ public class TimelimitRuleCollectController extends MasterDataCollectController 
 
 	@Override
 	protected void cmdJumpToTree() {
-		UIUtils.runCommand(this.getFrame(), new Runnable() {
+		UIUtils.runCommand(this.getTab(), new Runnable() {
 			@Override
 			public void run() {
 				final Integer iRuleId = (Integer) getSelectedCollectableId();
@@ -114,7 +115,7 @@ public class TimelimitRuleCollectController extends MasterDataCollectController 
 
 	@Override
 	protected void cmdShowResultInExplorer() {
-		UIUtils.runCommand(this.getFrame(), new Runnable() {
+		UIUtils.runCommand(this.getTab(), new Runnable() {
 			@Override
 			public void run() {
 				Main.getInstance().getMainController().getExplorerController().cmdShowRuleUsage(null, null);
@@ -127,7 +128,7 @@ public class TimelimitRuleCollectController extends MasterDataCollectController 
 	}
 
 	private void cmdCheckRuleSource() {
-		UIUtils.runCommand(this.getFrame(), new CommonRunnable() {
+		UIUtils.runCommand(this.getTab(), new CommonRunnable() {
 			@Override
 			public void run() throws CommonBusinessException {
 				final TimelimitRuleDelegate ruleDelegate = TimelimitRuleDelegate.getInstance();
@@ -148,7 +149,7 @@ public class TimelimitRuleCollectController extends MasterDataCollectController 
 
 				try {
 					ruleDelegate.check(mdvo);
-					JOptionPane.showMessageDialog(TimelimitRuleCollectController.this.getFrame(), getSpringLocaleDelegate().getMessage(
+					JOptionPane.showMessageDialog(TimelimitRuleCollectController.this.getTab(), getSpringLocaleDelegate().getMessage(
 							"CodeCollectController.compiledsuccessfully", "Quellcode erfolgreich kompiliert."));
 				}
 				catch (NuclosCompileException ex) {

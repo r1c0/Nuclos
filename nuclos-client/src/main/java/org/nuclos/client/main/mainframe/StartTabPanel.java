@@ -21,6 +21,8 @@ import static org.nuclos.client.main.mainframe.MainFrameUtils.setActionSelected;
 import info.clearthought.layout.TableLayout;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
 import java.awt.dnd.DropTargetDragEvent;
 import java.awt.dnd.DropTargetDropEvent;
 import java.awt.dnd.DropTargetEvent;
@@ -67,6 +69,7 @@ import org.nuclos.client.common.OneDropNuclosDropTargetListener;
 import org.nuclos.client.main.GenericAction;
 import org.nuclos.client.main.Main;
 import org.nuclos.client.main.MainController;
+import org.nuclos.client.main.mainframe.desktop.DesktopBackgroundPainter;
 import org.nuclos.client.main.mainframe.desktop.DesktopListener;
 import org.nuclos.client.main.mainframe.desktop.DesktopStartTab;
 import org.nuclos.client.ui.Errors;
@@ -76,6 +79,7 @@ import org.nuclos.client.ui.UIUtils;
 import org.nuclos.client.ui.WrapLayout;
 import org.nuclos.client.ui.util.TableLayoutBuilder;
 import org.nuclos.common.ParameterProvider;
+import org.nuclos.common.WorkspaceDescription;
 import org.nuclos.common.WorkspaceDescription.Desktop;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Pair;
@@ -134,6 +138,18 @@ public class StartTabPanel extends JPanel implements NuclosDropTargetVisitor {
 				fireDesktopToolBarChange(show);
 			}
 		}
+		@Override
+		public void showTabBar(boolean show) {
+			if (isDesktopActive()) {
+				fireDesktopTabBarChange(show);
+			}
+		}
+		@Override
+		public void desktopBackgroundChanged(DesktopBackgroundPainter painter) {
+			if (isDesktopActive()) {
+				fireDesktopBackgroundChange(painter);
+			}
+		}
 	};
 
 	/**
@@ -158,6 +174,7 @@ public class StartTabPanel extends JPanel implements NuclosDropTargetVisitor {
 	private Action actionClearHistory;
 	private Action actionClearBookmark;
 	private Action actionActivateDesktop;
+	private Action actionRemoveSplitPaneFixations;
 
 	private boolean showEntityStartmenuEntries = true;
 	private boolean showAdministrationStartmenuEntries = false;
@@ -188,7 +205,7 @@ public class StartTabPanel extends JPanel implements NuclosDropTargetVisitor {
 	@PostConstruct
 	void init() {
 		setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-		setOpaque(true);
+		setOpaque(false);
 
 		jpnHiddenTabs.setOpaque(false);
 		jpnCenter.setOpaque(false);
@@ -357,7 +374,13 @@ public class StartTabPanel extends JPanel implements NuclosDropTargetVisitor {
 				setDesktopActive(true);
 			}
 		};
- 
+		actionRemoveSplitPaneFixations = new AbstractAction(
+				localeDelegate.getMessage("DesktopStartTab.7", "Bereichsfixierungen aufheben")) {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				StartTabPanel.removeSplitPaneFixations(StartTabPanel.this);
+			}
+		};
 	}
 
 	/**
@@ -471,6 +494,49 @@ public class StartTabPanel extends JPanel implements NuclosDropTargetVisitor {
 	 */
 	public Action getActivateDesktopAction() {
 		return actionActivateDesktop;
+	}
+	
+	/**
+	 * 
+	 * @return
+	 */
+	public Action getRemoveSplitPaneFixationsAction() {
+		return actionRemoveSplitPaneFixations;
+	}
+	
+	/**
+	 * 
+	 */
+	public static void removeSplitPaneFixations(Component comp) {
+		for (MainFrameSplitPane splitpane : getParentSplitPanes(comp)) {
+			splitpane.setFixedState(WorkspaceDescription.Split.FIXED_STATE_NONE);
+		}
+	}
+	
+	/**
+	 * 
+	 * @return
+	 */
+	public static List<MainFrameSplitPane> getParentSplitPanes(Component comp) {
+		List<MainFrameSplitPane> result = new ArrayList<MainFrameSplitPane>();
+		addParentSplitPanes(result, comp);
+		return result;
+	}
+	
+	/**
+	 * 
+	 * @param list
+	 * @param parent
+	 */
+	public static void addParentSplitPanes(List<MainFrameSplitPane> list, Component parent) {
+		if (parent == null) {
+			return;
+		}
+		
+		if (parent instanceof MainFrameSplitPane) {
+			list.add((MainFrameSplitPane) parent);
+		}
+		addParentSplitPanes(list, parent.getParent());
 	}
 
 	/**
@@ -1310,7 +1376,7 @@ public class StartTabPanel extends JPanel implements NuclosDropTargetVisitor {
 
 	private void viewList(String entity, List<Object> ids) {
 		try {
-			NuclosCollectController<?> controller = NuclosCollectControllerFactory.getInstance().newCollectController(MainFrame.getPredefinedEntityOpenLocation(entity), entity, null);
+			NuclosCollectController<?> controller = NuclosCollectControllerFactory.getInstance().newCollectController(entity, null);
 			controller.runViewResults(ids);
 		}
 		catch (CommonBusinessException ex) {
@@ -1472,15 +1538,19 @@ public class StartTabPanel extends JPanel implements NuclosDropTargetVisitor {
 			if (desktopActive) {
 				remove(jpnCenter);
 				add(desktop.getJComponent(), BorderLayout.CENTER);
-				setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0));
+				setBorderDesktop(desktop.getDesktopPreferences().isHideToolBar());
 				fireDesktopShowing();
 				if (desktop.getDesktopPreferences().isHideToolBar()) {
 					fireDesktopToolBarChange(false);
 				}
+				if (desktop.getDesktopPreferences().isHideTabBar()) {
+					fireDesktopTabBarChange(false);
+				}
+				fireDesktopBackgroundChange(desktop.getDesktopBackgroundPainter());
 			} else {
 				remove(desktop.getJComponent());
 				add(jpnCenter, BorderLayout.CENTER);
-				setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+				setBorderDefault();
 				fireDesktopHiding();
 			}
 			bRepaint = true;
@@ -1488,6 +1558,18 @@ public class StartTabPanel extends JPanel implements NuclosDropTargetVisitor {
 		this.desktopActive = desktopActive;
 		if (bRepaint)
 			repaint();
+	}
+	
+	private void setBorderDefault() {
+		setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+	}
+	
+	private void setBorderDesktop(boolean hideTabBar) {
+		setBorder(BorderFactory.createEmptyBorder(hideTabBar? 0 : 10, 0, 0, 0));
+	}
+	
+	public void setDesktopBackgroundPainter(DesktopBackgroundPainter desktopBackgroundPainter) {
+		desktop.setDesktopBackgroundPainter(desktopBackgroundPainter);
 	}
 	
 	public void addDesktopListener(DesktopListener dl) {
@@ -1513,6 +1595,19 @@ public class StartTabPanel extends JPanel implements NuclosDropTargetVisitor {
 	private void fireDesktopToolBarChange(boolean show) {
 		for (DesktopListener dl : this.desktopListener) {
 			dl.toolbarChange(show);
+		}
+	}
+	
+	private void fireDesktopTabBarChange(boolean show) {
+		for (DesktopListener dl : this.desktopListener) {
+			dl.tabbarChange(show);
+		}
+		setBorderDesktop(!show);
+	}
+	
+	private void fireDesktopBackgroundChange(DesktopBackgroundPainter painter) {
+		for (DesktopListener dl : this.desktopListener) {
+			dl.backgroundChange(painter);
 		}
 	}
 }

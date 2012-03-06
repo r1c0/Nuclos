@@ -52,7 +52,7 @@ import org.nuclos.client.ui.model.SortedListModel;
  * @version	01.00.00
  */
 
-public class SelectObjectsController<T> extends Controller {
+public class SelectObjectsController<T> extends Controller<Component> {
 
 	/**
 	 * Warning: Don't even think about making this non-final! (Thomas Pasch)

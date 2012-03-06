@@ -84,7 +84,7 @@ import org.nuclos.common2.exception.CommonValidationException;
  * @author	<a href="mailto:Christoph.Radig@novabit.de">Christoph.Radig</a>
  * @version 01.00.00
  */
-public class AtomicNodeController extends Controller {
+public class AtomicNodeController extends Controller<Component> {
 
 	private static final Logger log = Logger.getLogger(AtomicNodeController.class);
 

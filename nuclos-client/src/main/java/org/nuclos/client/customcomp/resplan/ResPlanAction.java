@@ -57,7 +57,7 @@ public class ResPlanAction extends AbstractAction {
 	@Override
 	public void actionPerformed(ActionEvent evt) {
 		final String internalName = evt.getActionCommand();
-		UIUtils.runCommand(MainFrame.getPredefinedEntityOpenLocation(internalName), new Runnable() {
+		UIUtils.runCommand(Main.getInstance().getMainFrame(), new Runnable() {
 			@Override
 			public void run() {
 				try {

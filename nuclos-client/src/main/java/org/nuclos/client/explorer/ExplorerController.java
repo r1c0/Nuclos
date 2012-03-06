@@ -16,7 +16,6 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.explorer;
 
-import java.awt.Component;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -39,6 +38,7 @@ import org.nuclos.client.explorer.node.rule.RuleTreeModel;
 import org.nuclos.client.main.Main;
 import org.nuclos.client.main.mainframe.MainFrame;
 import org.nuclos.client.main.mainframe.MainFrameTab;
+import org.nuclos.client.main.mainframe.MainFrameTabbedPane;
 import org.nuclos.client.main.mainframe.workspace.ITabStoreController;
 import org.nuclos.client.main.mainframe.workspace.TabRestoreController;
 import org.nuclos.client.masterdata.MasterDataLayoutHelper;
@@ -72,7 +72,7 @@ import com.thoughtworks.xstream.io.xml.DomDriver;
  * @author	<a href="mailto:Christoph.Radig@novabit.de">Christoph.Radig</a>
  * @version 01.00.00
  */
-public class ExplorerController extends Controller {
+public class ExplorerController extends Controller<MainFrameTabbedPane> {
 	
 	private static final Logger LOG = Logger.getLogger(ExplorerController.class);
 
@@ -96,11 +96,17 @@ public class ExplorerController extends Controller {
 
 	private final Map<ExplorerView, MainFrameTab> explorerTabs = new HashMap<ExplorerView, MainFrameTab>();
 
-	/**
-	 * @param parent the general parent (for displaying error messages etc.)
-	 */
-	public ExplorerController(Component parent) {
-		super(parent);
+	public ExplorerController() {
+		super(null);
+	}
+
+	@Override
+	public MainFrameTabbedPane getParent() {
+		return MainFrame.getHomeTreePane();
+	}
+
+	public MainFrameTabbedPane getTabbedPane() {
+		return getParent();
 	}
 
 	/**
@@ -427,7 +433,7 @@ public class ExplorerController extends Controller {
 	 * @param node an existing TreeNode to be shown in its own tab
 	 */
 	public void cmdShowInOwnTab(final TreeNode node) {
-		UIUtils.runCommand(this.getParent(), new Runnable() {
+		UIUtils.runCommandForTabbedPane(this.getTabbedPane(), new Runnable() {
 			@Override
             public void run() {
 				showInOwnTab(node);
@@ -448,7 +454,7 @@ public class ExplorerController extends Controller {
 	 * shows the filters in its own tab in the explorer.
 	 */
 	public void cmdShowPersonalSearchFilters() {
-		UIUtils.runCommand(this.getParent(), new Runnable() {
+		UIUtils.runCommandForTabbedPane(this.getTabbedPane(), new Runnable() {
 			@Override
             public void run() {
 				ExplorerController.this.addOrReplaceExplorerViewFor(new PersonalSearchFiltersTreeNode(), true);
@@ -461,7 +467,7 @@ public class ExplorerController extends Controller {
 	 * @param ruleIdToGoto	expand tree to the given ruleId, if the id s not null
 	 */
 	public void cmdShowRuleUsage(final Integer ruleIdToGoto, final String sRuleLabel) {
-		UIUtils.runCommand(this.getParent(), new CommonRunnable() {
+		UIUtils.runCommandForTabbedPane(this.getTabbedPane(), new CommonRunnable() {
 			@Override
             public void run() throws CommonFinderException {
 				final DirectoryRuleNode treenodeRoot = new DirectoryRuleNode(true, getSpringLocaleDelegate().getMessage(
@@ -483,7 +489,7 @@ public class ExplorerController extends Controller {
 									ruleExplorerNode.expandToLibraryRuleWithId(ruleIdToGoto, view.getJTree());
 							}
 							catch(CommonFinderException e) {
-								Errors.getInstance().showExceptionDialog(getParent(), e);
+								Errors.getInstance().showExceptionDialog(getTabbedPane().getComponentPanel(), e);
 							}
 						}
 					};
@@ -500,7 +506,7 @@ public class ExplorerController extends Controller {
 	 * shows the "rule usage" in its own tab in the explorer.
 	 */
 	public void cmdShowDatasources(final Integer datasourceIdToGoto) {
-		UIUtils.runCommand(this.getParent(), new CommonRunnable() {
+		UIUtils.runCommandForTabbedPane(this.getTabbedPane(), new CommonRunnable() {
 			@Override
             public void run() throws CommonFinderException {
 				final DirectoryDatasourceNode treenodeRoot = new DirectoryDatasourceNode(true, getSpringLocaleDelegate().getMessage(
@@ -517,7 +523,7 @@ public class ExplorerController extends Controller {
 								datasourceExplorerNode.expandToDatasourceWithId(datasourceIdToGoto, view.getJTree());
 							}
 							catch(CommonFinderException e) {
-								Errors.getInstance().showExceptionDialog(getParent(), e);
+								Errors.getInstance().showExceptionDialog(getTabbedPane().getComponentPanel(), e);
 							}
 						}
 					};

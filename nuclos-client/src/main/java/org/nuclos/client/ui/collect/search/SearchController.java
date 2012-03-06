@@ -105,7 +105,7 @@ public class SearchController<Clct extends Collectable> extends CommonController
 					catch (InvalidCollectableSearchConditionException ex) {
 						// undo button press:
 						bSelected = !bSelected;
-						Errors.getInstance().showExceptionDialog(cc.getFrame(), ex);
+						Errors.getInstance().showExceptionDialog(cc.getTab(), ex);
 					}
 					catch (Exception ex) {
 						// TODO don't catch and wrap RuntimeExceptions here!
@@ -113,7 +113,7 @@ public class SearchController<Clct extends Collectable> extends CommonController
 								"CollectController.16","Diese Suchbedingung kann nur im Sucheditor, nicht in der Suchmaske dargestellt werden.") + "\n" + ex.getMessage();
 						// undo button press:
 						bSelected = !bSelected;
-						Errors.getInstance().showExceptionDialog(cc.getFrame(), new InvalidCollectableSearchConditionException(sMessage, ex));
+						Errors.getInstance().showExceptionDialog(cc.getTab(), new InvalidCollectableSearchConditionException(sMessage, ex));
 					}
 					cc.getSearchPanel().setSearchEditorVisible(bSelected);
 				}
@@ -258,7 +258,7 @@ public class SearchController<Clct extends Collectable> extends CommonController
 	public void setupSearchEditor() {
 		final CollectController<Clct> cc = getCollectController();
 		final SearchEditorPanel pnlSearchEditor = cc.getSearchPanel().getSearchEditorPanel();
-		new SearchEditorController(cc.getFrame(), pnlSearchEditor, cc.getCollectableEntity(),
+		new SearchEditorController(cc.getTab(), pnlSearchEditor, cc.getCollectableEntity(),
 				cc.getCollectableFieldsProviderFactoryForSearchEditor(),
 				cc.getAdditionalSearchFields()
 		);

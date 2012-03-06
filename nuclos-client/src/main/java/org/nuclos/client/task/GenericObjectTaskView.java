@@ -370,7 +370,7 @@ public class GenericObjectTaskView extends TaskView implements IMainFrameTabClos
 					final CollectableGenericObject clctloSelected = (CollectableGenericObject) clctSelected;
 					// we must reload the partially loaded object:
 					final int iModuleId = clctloSelected .getGenericObjectCVO().getModuleId();
-					GenericObjectClientUtils.showDetails(MainFrame.getPredefinedEntityOpenLocation(MetaDataClientProvider.getInstance().getEntity(new Long(iModuleId)).getEntity()), iModuleId, clctloSelected.getId());
+					GenericObjectClientUtils.showDetails(iModuleId, clctloSelected.getId());
 				}
 				else {
 					final CollectableMasterDataWithDependants clctmdSelected = (CollectableMasterDataWithDependants) clctSelected;

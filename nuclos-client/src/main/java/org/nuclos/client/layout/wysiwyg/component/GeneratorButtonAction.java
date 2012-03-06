@@ -53,7 +53,7 @@ public class GeneratorButtonAction<Clct extends Collectable> implements CollectA
 			return;
 		}
 
-		UIUtils.runCommandLater(controller.getFrame(), new Runnable() {
+		UIUtils.runCommandLater(controller.getTab(), new Runnable() {
 			@Override
 			public void run() {
 				try {

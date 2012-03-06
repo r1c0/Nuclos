@@ -52,7 +52,6 @@ public class ProzessWizardCollectController extends NuclosCollectController<Enti
 
 	private final CollectPanel<EntityRelationshipModel> pnlCollect = new EntityRelationshipCollectPanel(false);
 	private final EntityRelationshipModelEditPanel pnlEdit;
-	private final MainFrameTab ifrm = newInternalFrame("Relationen-Editor");
 	
 	private MainFrame mf;
 	
@@ -65,21 +64,20 @@ public class ProzessWizardCollectController extends NuclosCollectController<Enti
 	 * *CollectController<~> cc = new *CollectController<~>(.., rc);
 	 * </code></pre>
 	 */
-	protected ProzessWizardCollectController(JComponent parent, MainFrame mf) {
-		super(parent, CollectableStateModel.clcte);
+	protected ProzessWizardCollectController(MainFrame mf, MainFrameTab tabIfAny) {
+		super(CollectableStateModel.clcte, tabIfAny);
 		
 		this.initialize(this.pnlCollect);
 		
 		this.mf = mf;
 		
-		ifrm.setLayeredComponent(pnlCollect);
+		getTab().setLayeredComponent(pnlCollect);
 		
 		pnlEdit = new EntityRelationshipModelEditPanel(mf);
 		
 		this.getDetailsPanel().setEditView(DefaultEditView.newDetailsEditView(pnlEdit, pnlEdit.newCollectableComponentsProvider()));
 		
-		this.setInternalFrame(ifrm, true);
-		ifrm.setTitle("Relationen-Editor");
+		getTab().setTitle("Relationen-Editor");
 	}
 	
 	

@@ -32,6 +32,7 @@ import org.nuclos.client.dbtransfer.DBTransferExport;
 import org.nuclos.client.dbtransfer.DBTransferImport;
 import org.nuclos.client.main.Main;
 import org.nuclos.client.main.mainframe.MainFrameTab;
+import org.nuclos.client.main.mainframe.MainFrameTabbedPane;
 import org.nuclos.client.ui.Icons;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.common.NuclosEntity;
@@ -66,8 +67,8 @@ public class NucletCollectController extends MasterDataCollectController {
 	 * *CollectController<~> cc = new *CollectController<~>(.., rc);
 	 * </code></pre>
 	 */
-	public NucletCollectController(JComponent parent, MainFrameTab tabIfAny) {
-		super(parent, NuclosEntity.NUCLET.getEntityName(), tabIfAny);
+	public NucletCollectController(MainFrameTab tabIfAny) {
+		super(NuclosEntity.NUCLET.getEntityName(), tabIfAny);
 	}
 
 	@Override
@@ -190,7 +191,7 @@ public class NucletCollectController extends MasterDataCollectController {
 	}
 
 	private void cmdShowNucletDependences() {
-		UIUtils.runCommand(this.getFrame(), new CommonRunnable() {
+		UIUtils.runCommand(this.getTab(), new CommonRunnable() {
 			@Override
 			public void run() throws CommonFinderException, CommonPermissionException {
 				Main.getInstance().getMainController().getExplorerController().cmdShowInOwnTab(new NuclosInstanceTreeNode());

@@ -128,7 +128,7 @@ public class FileImportController<Clct extends Collectable> {
 			sTargetLabel = (String) mdcvo.getField("name");
 		}
 		if (iTargetId == null) {
-			JOptionPane.showMessageDialog(clct.getFrame(), localeDelegate.getMessage(
+			JOptionPane.showMessageDialog(clct.getTab(), localeDelegate.getMessage(
 					"FileImport.2", "Es kann kein Importziel f\u00fcr {0} gefunden werden.", sTargetLabel), 
 					localeDelegate.getMessage("FileImport.3", "Fehler beim Import"), JOptionPane.ERROR_MESSAGE);
 		}
@@ -141,7 +141,7 @@ public class FileImportController<Clct extends Collectable> {
 			@Override
 			public void actionPerformed(ActionEvent ev) {
 				JFileChooser filechooser = getFileChooser();
-				final int iBtn = filechooser.showOpenDialog(clct.getFrame());
+				final int iBtn = filechooser.showOpenDialog(clct.getTab());
 				if (iBtn == JFileChooser.APPROVE_OPTION) {
 					final File file = filechooser.getSelectedFile();
 					if (file != null) {
@@ -151,7 +151,7 @@ public class FileImportController<Clct extends Collectable> {
 			}
 		});
 
-		final ValidatingJOptionPane optionPane = new ValidatingJOptionPane(clct.getFrame(), 
+		final ValidatingJOptionPane optionPane = new ValidatingJOptionPane(clct.getTab(), 
 				localeDelegate.getMessage("FileImport.6", "Import"), pnlImport) {
 
 			@Override
@@ -199,7 +199,7 @@ public class FileImportController<Clct extends Collectable> {
 							
 							private void setBackgroundProcessFinishedStatus(final BackgroundProcessTableEntry entry, final BackgroundProcessInfo.Status status, final String statusMessage) {
 								// set the status in status dialog:
-								UIUtils.runCommandLater(null, new Runnable() {
+								UIUtils.runCommandLaterForTabbedPane(null, new Runnable() {
 									@Override
 									public void run() {
 										try {
@@ -223,7 +223,7 @@ public class FileImportController<Clct extends Collectable> {
 								} else {
 									setBackgroundProcessFinishedStatus(entry, BackgroundProcessInfo.Status.DONE, getImportSuccessMessage(fileImport));
 									final JPanel pnlResult = getImportResultPanel(fileImport);
-									JOptionPane.showMessageDialog(clct.getFrame(), pnlResult, 
+									JOptionPane.showMessageDialog(clct.getTab(), pnlResult, 
 											localeDelegate.getMessage("FileImport.6", "Import"), JOptionPane.INFORMATION_MESSAGE);
 									//JOptionPane.showMessageDialog(parent, "Import erfolgreich abgeschlossen. Es wurden " + fileImport.getCountCreated() + " Datens\u00e4tze erstellt und " + fileImport.getCountUpdated() + " Datens\u00e4tze aktualisiert.\n" + fileImport.getCountError() + " Datens\u00e4tze konnten nicht importiert werden.", "Import", JOptionPane.INFORMATION_MESSAGE);
 								}
@@ -234,7 +234,7 @@ public class FileImportController<Clct extends Collectable> {
 							public void handleError(Exception ex) {
 								setBackgroundProcessFinishedStatus(entry, BackgroundProcessInfo.Status.ERROR, 
 										localeDelegate.getMessage("FileImport.9", "Import fehlgeschlagen."));
-								Errors.getInstance().showExceptionDialog(clct.getFrame(), ex);
+								Errors.getInstance().showExceptionDialog(clct.getTab(), ex);
 							}
 							
 							private JPanel getImportResultPanel(FileImport fileImport) {
@@ -272,7 +272,7 @@ public class FileImportController<Clct extends Collectable> {
 										//fileImport.getCountError() + " Datens\u00e4tze konnten nicht importiert werden.";
 							}
 						};					
-						final BackgroundProcessStatusDialog dlgStatus = BackgroundProcessStatusController.getStatusDialog(UIUtils.getFrameForComponent(clct.getFrame().getParent()));
+						final BackgroundProcessStatusDialog dlgStatus = BackgroundProcessStatusController.getStatusDialog(UIUtils.getFrameForComponent(clct.getTab().getParent()));
 						Future<?> future = CommonMultiThreader.getInstance().executeInterruptible(workerAdapter);		
 						BackgroundProcessTableEntry entry = new BackgroundProcessTableEntry(localeDelegate.getMessage(
 								"FileImport.12", "Dateiimport: {0}", file.getName()), 

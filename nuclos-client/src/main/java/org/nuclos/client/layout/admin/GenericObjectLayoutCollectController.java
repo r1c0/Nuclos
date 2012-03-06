@@ -30,6 +30,7 @@ import org.nuclos.client.genericobject.valuelistprovider.GenericObjectCollectabl
 import org.nuclos.client.layout.wysiwyg.CollectableWYSIWYGLayoutEditor.WYSIWYGDetailsComponentModel;
 import org.nuclos.client.layout.wysiwyg.WYSIWYGStringsAndLabels;
 import org.nuclos.client.main.mainframe.MainFrameTab;
+import org.nuclos.client.main.mainframe.MainFrameTabbedPane;
 import org.nuclos.client.masterdata.CollectableMasterDataWithDependants;
 import org.nuclos.client.masterdata.MasterDataDelegate;
 import org.nuclos.client.masterdata.valuelistprovider.MasterDataCollectableFieldsProviderFactory;
@@ -66,8 +67,8 @@ public class GenericObjectLayoutCollectController extends LayoutCollectControlle
 	 * *CollectController<~> cc = new *CollectController<~>(.., rc);
 	 * </code></pre>
 	 */
-	public GenericObjectLayoutCollectController(JComponent parent, MainFrameTab tabIfAny) {
-		super(parent, NuclosEntity.LAYOUT, tabIfAny);
+	public GenericObjectLayoutCollectController(MainFrameTab tabIfAny) {
+		super(NuclosEntity.LAYOUT, tabIfAny);
 	}
 
 	@Override

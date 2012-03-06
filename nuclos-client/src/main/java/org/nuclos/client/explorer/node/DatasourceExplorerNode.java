@@ -165,8 +165,7 @@ public class DatasourceExplorerNode extends AbstractDatasourceExplorerNode {
 						}
 						else {
 							final CollectControllerFactorySingleton factory = CollectControllerFactorySingleton.getInstance();
-							final DatasourceCollectController controller = factory.newDatasourceCollectController(
-									MainFrame.getPredefinedEntityOpenLocation(NuclosEntity.DATASOURCE.getEntityName()), null);
+							final DatasourceCollectController controller = factory.newDatasourceCollectController(null);
 							controller.runViewSingleCollectable(new CollectableDataSource(datasourceVo));
 						}
 					}

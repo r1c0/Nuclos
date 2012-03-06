@@ -55,6 +55,7 @@ import org.nuclos.client.genericobject.GenericObjectLayoutCache;
 import org.nuclos.client.genericobject.Modules;
 import org.nuclos.client.genericobject.valuelistprovider.ProcessCollectableFieldsProvider;
 import org.nuclos.client.main.mainframe.MainFrameTab;
+import org.nuclos.client.main.mainframe.MainFrameTabbedPane;
 import org.nuclos.client.masterdata.MasterDataSubFormController;
 import org.nuclos.client.masterdata.locale.LocaleCollectController;
 import org.nuclos.client.statemodel.StateDelegate;
@@ -99,7 +100,7 @@ public class StateModelCollectController extends NuclosCollectController<Collect
 	private static final Logger LOG = Logger.getLogger(StateModelCollectController.class);
 
 	private final CollectPanel<CollectableStateModel> pnlCollect = new StateModelCollectPanel(false);
-	private final MainFrameTab ifrm;
+
 	private final MasterDataSubFormController subformctlUsages;
 	private final StateModelEditPanel pnlEdit;
 
@@ -140,11 +141,9 @@ public class StateModelCollectController extends NuclosCollectController<Collect
 	 * *CollectController<~> cc = new *CollectController<~>(.., rc);
 	 * </code></pre>
 	 */
-	public StateModelCollectController(JComponent parent, MainFrameTab tabIfAny) {
-		super(parent, CollectableStateModel.clcte);
+	public StateModelCollectController(MainFrameTab tabIfAny) {
+		super(CollectableStateModel.clcte, tabIfAny);
 
-		ifrm = tabIfAny!=null ? tabIfAny : newInternalFrame(getSpringLocaleDelegate().getMessage(
-				"StateModelCollectController.4","Statusmodelle verwalten"));
 		// getSearchStrategy().setCompleteCollectablesStrategy(new CompleteCollectableStateModelsStrategy(this));
 
 		this.initialize(this.pnlCollect);
@@ -159,16 +158,16 @@ public class StateModelCollectController extends NuclosCollectController<Collect
 		EntityCollectableIdFieldsProvider moduleProvider = new EntityCollectableIdFieldsProvider();
 		moduleProvider.setParameter("restriction", moduleProvider.ENTITIES_WITH_STATEMODEL_ONLY);
 		subformUsages.getColumn("nuclos_module").setValueListProvider(moduleProvider);
-		this.subformctlUsages = new MasterDataSubFormController(getFrame(), parent, this.getDetailsEditView().getModel(),
+		this.subformctlUsages = new MasterDataSubFormController(getTab(), this.getDetailsEditView().getModel(),
 				this.getEntityName(), subformUsages, this.getPreferences(), this.getEntityPreferences(), valueListProviderCache);
 
 		pnlEdit = new StateModelEditPanel(subformUsages);
 
-		ifrm.setLayeredComponent(pnlCollect);
+		getTab().setLayeredComponent(pnlCollect);
 
 		this.getDetailsPanel().setEditView(DefaultEditView.newDetailsEditView(pnlEdit, pnlEdit.getHeader().newCollectableComponentsProvider()));
 
-		setupShortcutsForTabs(ifrm);
+		setupShortcutsForTabs(getTab());
 
 		this.pnlEdit.getStateModelEditor().addPrintEventListener(new ActionListener() {
 			@Override
@@ -178,7 +177,6 @@ public class StateModelCollectController extends NuclosCollectController<Collect
 		});
 
 		this.getCollectStateModel().addCollectStateListener(new StateModelCollectStateListener());
-		this.setInternalFrame(ifrm, tabIfAny==null);
 
 		this.setupDetailsToolBar();
 
@@ -194,10 +192,6 @@ public class StateModelCollectController extends NuclosCollectController<Collect
 		pnlEdit.splitpn.addPropertyChangeListener(JSplitPane.DIVIDER_LOCATION_PROPERTY, dividerChangeListener);
 	}
 
-	public final MainFrameTab getMainFrameTab() {
-		return ifrm;
-	}
-	
 	@Override
 	protected void close() {
 		subformctlUsages.close();
@@ -228,7 +222,7 @@ public class StateModelCollectController extends NuclosCollectController<Collect
 	}
 
 	public void runLocaleCollectControllerFor() {
-		UIUtils.runCommand(this.getParent(), new CommonRunnable() {
+		UIUtils.runCommandForTabbedPane(this.getTabbedPane(), new CommonRunnable() {
 			@Override
             public void run() throws CommonBusinessException {
 				Collection<String> collres = new ArrayList<String>();
@@ -244,7 +238,7 @@ public class StateModelCollectController extends NuclosCollectController<Collect
 					}
 				}
 				final CollectControllerFactorySingleton factory = CollectControllerFactorySingleton.getInstance();
-				LocaleCollectController cntr = factory.newLocaleCollectController(parent, collres, null);
+				LocaleCollectController cntr = factory.newLocaleCollectController(collres, null);
 				cntr.runViewSingleCollectableWithId(LocaleDelegate.getInstance().getDefaultLocale());
 			}
 		});

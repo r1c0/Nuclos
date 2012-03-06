@@ -117,12 +117,12 @@ public class RuleStateModelExplorerNode extends AbstractRuleExplorerNode {
 		 * @param explorerNode
 		 */
 		private void cmdShowDetails(final RuleStateModelExplorerNode explorerNode) {
-			UIUtils.runCommand(getExplorerController().getParent(), new CommonRunnable() {
+			UIUtils.runCommandForTabbedPane(getExplorerController().getTabbedPane(), new CommonRunnable() {
 				@Override
 				public void run() throws CommonBusinessException {
 					final CollectControllerFactorySingleton factory = CollectControllerFactorySingleton.getInstance();
 					final StateModelVO statemodelvo = ((StateModelNode) explorerNode.getTreeNode()).getStateModelVo();
-					final StateModelCollectController ctl = factory.newStateModelCollectController(MainFrame.getPredefinedEntityOpenLocation(NuclosEntity.STATEMODEL.getEntityName()), null);
+					final StateModelCollectController ctl = factory.newStateModelCollectController(null);
 					ctl.runViewSingleCollectable(ctl.readCollectable(new CollectableStateModel(statemodelvo)));
 				}
 			});

@@ -319,7 +319,7 @@ public class SearchResultTemplateController {
 	 * gets CommonJInternalFrame.
 	 */
 	private MainFrameTab getFrame() {
-		return ctl.getFrame();
+		return ctl.getTab();
 	}
 	
 	/**

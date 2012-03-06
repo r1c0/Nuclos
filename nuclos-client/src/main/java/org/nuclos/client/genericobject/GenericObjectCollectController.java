@@ -107,6 +107,7 @@ import org.nuclos.client.genericobject.valuelistprovider.GenericObjectCollectabl
 import org.nuclos.client.main.Main;
 import org.nuclos.client.main.mainframe.MainFrame;
 import org.nuclos.client.main.mainframe.MainFrameTab;
+import org.nuclos.client.main.mainframe.MainFrameTabbedPane;
 import org.nuclos.client.masterdata.CollectableMasterData;
 import org.nuclos.client.masterdata.MasterDataDelegate;
 import org.nuclos.client.masterdata.MasterDataSubFormController;
@@ -220,12 +221,12 @@ import org.nuclos.common.entityobject.CollectableEOEntityField;
 import org.nuclos.common.format.FormattingTransformer;
 import org.nuclos.common.genericobject.CollectableGenericObjectEntityField;
 import org.nuclos.common.security.Permission;
-import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.CommonRunnable;
 import org.nuclos.common2.DateUtils;
 import org.nuclos.common2.EntityAndFieldName;
 import org.nuclos.common2.IdUtils;
 import org.nuclos.common2.LangUtils;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonFatalException;
@@ -296,7 +297,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 			if (ev.collectableFieldHasChanged() || ev.getNewValue().getValue() == null) {
 				final String sFieldName = ev.getCollectableComponentModel().getFieldName();
 				LOG.debug("UsageCriteria field " + sFieldName + " changed in Details panel.");
-				UIUtils.runCommandLater(getFrame(), new Runnable() {
+				UIUtils.runCommandLater(getTab(), new Runnable() {
 					@Override
 					public void run() {
 						try {
@@ -328,7 +329,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 
 						}
 						catch (/* CommonBusiness */ Exception ex) {
-							Errors.getInstance().showExceptionDialog(getFrame(), 
+							Errors.getInstance().showExceptionDialog(getTab(), 
 									getSpringLocaleDelegate().getMessage("GenericObjectCollectController.15","Beim Nachladen eines Layouts ist ein Fehler aufgetreten."), ex);
 						}
 					}
@@ -343,14 +344,14 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 			if (ev.collectableFieldHasChanged()) {
 				final String sFieldName = ev.getCollectableComponentModel().getFieldName();
 				LOG.debug("UsageCriteria field " + sFieldName + " changed in Search panel. New value: " + ev.getNewValue());
-				UIUtils.runCommandLater(getFrame(), new Runnable() {
+				UIUtils.runCommandLater(getTab(), new Runnable() {
 					@Override
 					public void run() {
 						try {
 							reloadLayoutForSearchTab();
 						}
 						catch (/* CommonBusiness */ Exception ex) {
-							Errors.getInstance().showExceptionDialog(getFrame(), 
+							Errors.getInstance().showExceptionDialog(getTab(), 
 									getSpringLocaleDelegate().getMessage("GenericObjectCollectController.16","Beim Nachladen eines Layouts ist ein Fehler aufgetreten."), ex);
 						}
 					}
@@ -484,8 +485,6 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 
 	private Integer iSearchDeleted = CollectableGenericObjectSearchExpression.SEARCH_UNDELETED;
 
-	private final boolean noTabFromContructor;
-
 	/**
 	 * action: Delete selected Collectable (in Result panel)
 	 */
@@ -580,15 +579,14 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	 *
 	 * @deprecated bAutoInit is deprecated
 	 */
-	public GenericObjectCollectController(JComponent parent, Integer iModuleId, boolean bAutoInit, MainFrameTab tabIfAny) {
-		super(parent, CollectableGenericObjectEntity.getByModuleId(iModuleId),
+	public GenericObjectCollectController(Integer iModuleId, boolean bAutoInit, MainFrameTab tabIfAny) {
+		super(CollectableGenericObjectEntity.getByModuleId(iModuleId),
+				tabIfAny,
 				new GenericObjectResultController<CollectableGenericObjectWithDependants>(
 						CollectableGenericObjectEntity.getByModuleId(iModuleId),
 						new NuclosSearchResultStrategy<CollectableGenericObjectWithDependants>()));
-		setFrame(tabIfAny);
 		this.iModuleId = iModuleId;
 		// getSearchStrategy().setCompleteCollectablesStrategy(new CompleteGenericObjectsStrategy());
-		this.noTabFromContructor = (tabIfAny == null);
 		if (bAutoInit)
 			init();
 	}
@@ -602,14 +600,12 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	 * *CollectController<~> cc = new *CollectController<~>(.., rc);
 	 * </code></pre>
 	 */
-	protected GenericObjectCollectController(JComponent parent, Integer iModuleId, boolean bAutoInit,
+	protected GenericObjectCollectController(Integer iModuleId, boolean bAutoInit,
 			MainFrameTab tabIfAny, ResultController<CollectableGenericObjectWithDependants> rc)
 	{
-		super(parent, CollectableGenericObjectEntity.getByModuleId(iModuleId), rc);
-		setFrame(tabIfAny);
+		super(CollectableGenericObjectEntity.getByModuleId(iModuleId), tabIfAny, rc);
 		this.iModuleId = iModuleId;
 		// getSearchStrategy().setCompleteCollectablesStrategy(new CompleteGenericObjectsStrategy());
-		this.noTabFromContructor = (tabIfAny == null);
 		if (bAutoInit)
 			init();
 	}
@@ -645,12 +641,12 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	public void init() {
 		initialize(pnlCollect);
 
-		final MainFrameTab frame = !noTabFromContructor ? getFrame() : newInternalFrame();
-		frame.setLayeredComponent(pnlCollect);
+		final MainFrameTab tab = getTab();
+		tab.setLayeredComponent(pnlCollect);
 
 		setupEditPanels();
 		setupKeyActionsForResultPanelVerticalScrollBar();
-		setupShortcutsForTabs(frame);
+		setupShortcutsForTabs(tab);
 		setupToolbars();
 
 		setupResultTableHeaderRenderer();
@@ -659,7 +655,6 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		getCollectStateModel().addCollectStateListener(new GenericObjectCollectStateListener());
 
 		addCollectableEventListener(collectableEventListener);
-		setInternalFrame(frame, noTabFromContructor);
 
 		setupResultContextMenuGeneration();
 	}
@@ -1022,7 +1017,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 				final Date dateLastValid = this.dateHistorical;
 				setHistoricalDate(dateHistorical);
 
-				UIUtils.runCommandLater(getFrame(), new CommonRunnable() {
+				UIUtils.runCommandLater(getTab(), new CommonRunnable() {
 					@Override
 					public void run() throws CommonBusinessException {
 						final CollectableGenericObjectWithDependants clct;
@@ -1324,18 +1319,18 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		if (multipleCollectablesSelected()) {
 			final int iCount = getResultTable().getSelectedRowCount();
 			final String sMessage = getSpringLocaleDelegate().getMessage("GenericObjectCollectController.81","Sollen die ausgew\u00e4hlten {0} Datens\u00e4tze wirklich endg\u00fcltig gel\u00f6scht werden?\nDieser Vorgang kann nicht r\u00fcckg\u00e4ngig gemacht werden!", iCount);
-			final int btn = JOptionPane.showConfirmDialog(getFrame(), sMessage, 
+			final int btn = JOptionPane.showConfirmDialog(getTab(), sMessage, 
 					getSpringLocaleDelegate().getMessage("GenericObjectCollectController.20","Datens\u00e4tze endg\u00fcltig l\u00f6schen"), JOptionPane.YES_NO_OPTION);
 			if (btn == JOptionPane.YES_OPTION)
 				new DeleteSelectedCollectablesPhysicallyController(this).run(getMultiActionProgressPanel(iCount));
 		}
 		else {
 			final String sMessage = getSpringLocaleDelegate().getMessage("GenericObjectCollectController.76","Soll der ausgew\u00e4hlte Datensatz ({0}) wirklich endg\u00fcltig gel\u00f6scht werden?\nDieser Vorgang kann nicht r\u00fcckg\u00e4ngig gemacht werden!", getSelectedCollectable().getIdentifierLabel());
-			final int btn = JOptionPane.showConfirmDialog(getFrame(), sMessage, 
+			final int btn = JOptionPane.showConfirmDialog(getTab(), sMessage, 
 					getSpringLocaleDelegate().getMessage("GenericObjectCollectController.23","Datensatz endg\u00fcltig l\u00f6schen"), JOptionPane.YES_NO_OPTION);
 
 			if (btn == JOptionPane.YES_OPTION)
-				UIUtils.runCommand(getFrame(), new Runnable() {
+				UIUtils.runCommand(getTab(), new Runnable() {
 					@Override
 					public void run() {
 						try {
@@ -1343,10 +1338,10 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 						}
 						catch (CommonPermissionException ex) {
 							final String sErrorMsg = "Sie verf\u00fcgen nicht \u00fcber die ausreichenden Rechte, um diesen Datensatz endg\u00fcltig zu l\u00f6schen.";
-							Errors.getInstance().showExceptionDialog(getFrame(), sErrorMsg, ex);
+							Errors.getInstance().showExceptionDialog(getTab(), sErrorMsg, ex);
 						}
 						catch (CommonBusinessException ex) {
-							Errors.getInstance().showExceptionDialog(getFrame(), 
+							Errors.getInstance().showExceptionDialog(getTab(), 
 									getSpringLocaleDelegate().getMessage("GenericObjectCollectController.29","Der Datensatz konnte nicht endg\u00fcltig gel\u00f6scht werden."), ex);
 						}
 					}
@@ -1364,7 +1359,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		if (multipleCollectablesSelected()) {
 			final int iCount = getResultTable().getSelectedRowCount();
 			final String sMessage = getSpringLocaleDelegate().getMessage("GenericObjectCollectController.82","Sollen die ausgew\u00e4hlten {0} Datens\u00e4tze wirklich gel\u00f6scht werden?", iCount);
-			final int btn = JOptionPane.showConfirmDialog(getFrame(), sMessage, 
+			final int btn = JOptionPane.showConfirmDialog(getTab(), sMessage, 
 					getSpringLocaleDelegate().getMessage("GenericObjectCollectController.21","Datens\u00e4tze l\u00f6schen"), JOptionPane.YES_NO_OPTION);
 			if (btn == JOptionPane.YES_OPTION)
 				new DeleteSelectedCollectablesController<CollectableGenericObjectWithDependants>(this).run(getMultiActionProgressPanel(iCount));
@@ -1374,11 +1369,11 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		else {
 			final String sMessage = getSpringLocaleDelegate().getMessage("GenericObjectCollectController.77","Soll der ausgew\u00e4hlte Datensatz ({0}) wirklich gel\u00f6scht werden?",
 				getSelectedCollectable().getIdentifierLabel());
-			final int btn = JOptionPane.showConfirmDialog(getFrame(), sMessage, 
+			final int btn = JOptionPane.showConfirmDialog(getTab(), sMessage, 
 					getSpringLocaleDelegate().getMessage("GenericObjectCollectController.25","Datensatz l\u00f6schen"), JOptionPane.YES_NO_OPTION);
 
 			if (btn == JOptionPane.YES_OPTION)
-				UIUtils.runCommand(getFrame(), new Runnable() {
+				UIUtils.runCommand(getTab(), new Runnable() {
 					@Override
 					public void run() {
 						try {
@@ -1388,12 +1383,12 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 						catch (CommonPermissionException ex) {
 							final String sErrorMsg = getSpringLocaleDelegate().getMessage("GenericObjectCollectController.68","Sie verf\u00fcgen nicht \u00fcber die ausreichenden Rechte, um diesen Datensatz zu l\u00f6schen.");
 							getResultPanel().btnDelete.setSelected(false);
-							Errors.getInstance().showExceptionDialog(getFrame(), sErrorMsg, ex);
+							Errors.getInstance().showExceptionDialog(getTab(), sErrorMsg, ex);
 						}
 						catch (CommonBusinessException ex) {
 							getResultPanel().btnDelete.setSelected(false);
 							//Errors.getInstance().showExceptionDialog(getFrame(), SpringLocaleDelegate.getMessage("GenericObjectCollectController.30","Der Datensatz konnte nicht gel\u00f6scht werden."), ex);
-							Errors.getInstance().showExceptionDialog(getFrame(), 
+							Errors.getInstance().showExceptionDialog(getTab(), 
 									getSpringLocaleDelegate().getMessage("GenericObjectCollectController.30","Der Datensatz konnte nicht gel\u00f6scht werden."), new CommonRemoveException());
 						}
 					}
@@ -1413,7 +1408,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		if (multipleCollectablesSelected()) {
 			final int iCount = getResultTable().getSelectedRowCount();
 			final String sMessage = getSpringLocaleDelegate().getMessage("GenericObjectCollectController.83","Sollen die ausgew\u00e4hlten {0} Datens\u00e4tze wirklich wiederhergestellt werden?", iCount);
-			final int btn = JOptionPane.showConfirmDialog(getFrame(), sMessage, 
+			final int btn = JOptionPane.showConfirmDialog(getTab(), sMessage, 
 					getSpringLocaleDelegate().getMessage("GenericObjectCollectController.22","Datens\u00e4tze wiederherstellen"), JOptionPane.YES_NO_OPTION);
 			if (btn == JOptionPane.YES_OPTION)
 				new RestoreSelectedCollectablesController(GenericObjectCollectController.this).run(getMultiActionProgressPanel(iCount));
@@ -1423,11 +1418,11 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		else {
 			final String sMessage = getSpringLocaleDelegate().getMessage("GenericObjectCollectController.78","Soll der ausgew\u00e4hlte Datensatz ({0}) wirklich wiederhergestellt werden?",
 				getSelectedCollectable().getIdentifierLabel());
-			final int btn = JOptionPane.showConfirmDialog(getFrame(), sMessage, 
+			final int btn = JOptionPane.showConfirmDialog(getTab(), sMessage, 
 					getSpringLocaleDelegate().getMessage("GenericObjectCollectController.27","Datensatz wiederherstellen"), JOptionPane.YES_NO_OPTION);
 
 			if (btn == JOptionPane.YES_OPTION)
-				UIUtils.runCommand(getFrame(), new Runnable() {
+				UIUtils.runCommand(getTab(), new Runnable() {
 					@Override
 					public void run() {
 						try {
@@ -1437,11 +1432,11 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 						catch (CommonPermissionException ex) {
 							final String sErrorMsg = getSpringLocaleDelegate().getMessage("GenericObjectCollectController.66","Sie verf\u00fcgen nicht \u00fcber die ausreichenden Rechte, um diesen Datensatz wiederherzustellen.");
 							getResultPanel().btnDelete.setSelected(true);
-							Errors.getInstance().showExceptionDialog(getFrame(), sErrorMsg, ex);
+							Errors.getInstance().showExceptionDialog(getTab(), sErrorMsg, ex);
 						}
 						catch (CommonBusinessException ex) {
 							getResultPanel().btnDelete.setSelected(true);
-							Errors.getInstance().showExceptionDialog(getFrame(), 
+							Errors.getInstance().showExceptionDialog(getTab(), 
 									getSpringLocaleDelegate().getMessage("GenericObjectCollectController.32","Der Datensatz konnte nicht wiederhergestellt werden."), ex);
 						}
 					}
@@ -1459,11 +1454,11 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 
 		if (stopEditingInDetails()) {
 			final String sMessage = getSpringLocaleDelegate().getMessage("GenericObjectCollectController.75","Soll der angezeigte Datensatz ({0}) wirklich wiederhergestellt werden?", getSelectedCollectable().getIdentifierLabel());
-			final int iBtn = JOptionPane.showConfirmDialog(getFrame(), sMessage, 
+			final int iBtn = JOptionPane.showConfirmDialog(getTab(), sMessage, 
 					getSpringLocaleDelegate().getMessage("GenericObjectCollectController.28","Datensatz wiederherstellen"), JOptionPane.YES_NO_OPTION);
 
 			if (iBtn == JOptionPane.OK_OPTION)
-				UIUtils.runCommand(getFrame(), new Runnable() {
+				UIUtils.runCommand(getTab(), new Runnable() {
 					@Override
 					public void run() {
 						try {
@@ -1504,10 +1499,10 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 						}
 						catch (CommonPermissionException ex) {
 							final String sErrorMessage = getSpringLocaleDelegate().getMessage("GenericObjectCollectController.67","Sie verf\u00fcgen nicht \u00fcber die ausreichenden Rechte, um diesen Datensatz wiederherzustellen.");
-							Errors.getInstance().showExceptionDialog(getFrame(), sErrorMessage, ex);
+							Errors.getInstance().showExceptionDialog(getTab(), sErrorMessage, ex);
 						}
 						catch (CommonBusinessException ex) {
-							Errors.getInstance().showExceptionDialog(getFrame(), 
+							Errors.getInstance().showExceptionDialog(getTab(), 
 									getSpringLocaleDelegate().getMessage("GenericObjectCollectController.33","Der Datensatz konnte nicht wiederhergestellt werden."), ex);
 						}
 					}
@@ -1526,11 +1521,11 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 
 		if (stopEditingInDetails()) {
 			final String sMessage = getSpringLocaleDelegate().getMessage("GenericObjectCollectController.74","Soll der angezeigte Datensatz ({0}) wirklich gel\u00f6scht werden?", getSelectedCollectable().getIdentifierLabel());
-			final int iBtn = JOptionPane.showConfirmDialog(getFrame(), sMessage, 
+			final int iBtn = JOptionPane.showConfirmDialog(getTab(), sMessage, 
 					getSpringLocaleDelegate().getMessage("GenericObjectCollectController.26","Datensatz l\u00f6schen"), JOptionPane.YES_NO_OPTION);
 
 			if (iBtn == JOptionPane.OK_OPTION)
-				UIUtils.runCommand(getFrame(), new Runnable() {
+				UIUtils.runCommand(getTab(), new Runnable() {
 					@Override
 					public void run() {
 						cmdDeleteCurrentCollectableInDetailsImpl();
@@ -1592,7 +1587,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 			btnExecuteRule.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent ev) {
-					cmdExecuteRuleByUser(GenericObjectCollectController.this.getFrame(), GenericObjectCollectController.this.getEntityName(), GenericObjectCollectController.this.getSelectedCollectable());
+					cmdExecuteRuleByUser(GenericObjectCollectController.this.getTab(), GenericObjectCollectController.this.getEntityName(), GenericObjectCollectController.this.getSelectedCollectable());
 				}
 			});
 			//getFixedCustomDetailsToolBar().add(btnExecuteRule);
@@ -1819,8 +1814,8 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	}
 
 	@Override
-	protected void showFrame() {
-		super.showFrame();
+	protected void selectTab() {
+		super.selectTab();
 
 		setInitialComponentFocusInSearchTab();
 	}
@@ -1928,7 +1923,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		if (sParentSubForm != null)
 			sParentEntityName = sParentSubForm;
 
-		return new SearchConditionSubFormController(getFrame(), parent, clctcompmodelprovider, sParentEntityName, subform,
+		return new SearchConditionSubFormController(getTab(), clctcompmodelprovider, sParentEntityName, subform,
 			getPreferences(), getEntityPreferences(), MasterDataCollectableFieldsProviderFactory.newFactory(null, valueListProviderCache));
 	}
 
@@ -1946,7 +1941,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		if (sParentSubForm != null)
 			sParentEntityName = sParentSubForm;
 
-		MasterDataSubFormController result = newDetailsSubFormController(subform, sParentEntityName, clctcompmodelprovider, getFrame(), parent,
+		MasterDataSubFormController result = newDetailsSubFormController(subform, sParentEntityName, clctcompmodelprovider, getTab(), 
 				getDetailsPanel(), getPreferences(), getEntityPreferences());
 
 //		if (bUseInvalidMasterData)
@@ -2199,7 +2194,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	public void setupChangeListenerForResultTableVerticalScrollBar() {
 		final ProxyList<? extends Collectable> lstclct = getSearchStrategy().getCollectableProxyList();
 		if (lstclct != null)
-			getResultPanel().setupChangeListenerForResultTableVerticalScrollBar(lstclct, getFrame());
+			getResultPanel().setupChangeListenerForResultTableVerticalScrollBar(lstclct, getTab());
 	}
 
 	/**
@@ -3131,11 +3126,11 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 
 		if (stopEditingInDetails()) {
 			final String sMessage = getSpringLocaleDelegate().getMessage("GenericObjectCollectController.73","Soll der angezeigte Datensatz ({0}) wirklich endg\u00fcltig aus der Datenbank gel\u00f6scht werden?\nDieser Vorgang kann nicht r\u00fcckg\u00e4ngig gemacht werden! ", getSelectedCollectable().getIdentifierLabel());
-			final int iBtn = JOptionPane.showConfirmDialog(getFrame(), sMessage, 
+			final int iBtn = JOptionPane.showConfirmDialog(getTab(), sMessage, 
 					getSpringLocaleDelegate().getMessage("GenericObjectCollectController.24","Datensatz endg\u00fcltig l\u00f6schen"), JOptionPane.YES_NO_OPTION);
 
 			if (iBtn == JOptionPane.OK_OPTION)
-				UIUtils.runCommand(getFrame(), new Runnable() {
+				UIUtils.runCommand(getTab(), new Runnable() {
 					@Override
 					public void run() {
 						try {
@@ -3174,11 +3169,11 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 						}
 						catch (CommonPermissionException ex) {
 							final String sErrorMessage = getSpringLocaleDelegate().getMessage("GenericObjectCollectController.70","Sie verf\u00fcgen nicht \u00fcber die ausreichenden Rechte, um dieses Objekt zu l\u00f6schen.");
-							Errors.getInstance().showExceptionDialog(getFrame(), sErrorMessage, ex);
+							Errors.getInstance().showExceptionDialog(getTab(), sErrorMessage, ex);
 						}
 						catch (CommonBusinessException ex) {
 							if (!handlePointerException(ex))
-								Errors.getInstance().showExceptionDialog(getFrame(), 
+								Errors.getInstance().showExceptionDialog(getTab(), 
 										getSpringLocaleDelegate().getMessage("GenericObjectCollectController.18","Das Objekt konnte nicht gel\u00f6scht werden."), ex);
 						}
 					}
@@ -3187,7 +3182,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	}
 
 	private void cmdJumpToTree() {
-		UIUtils.runCommand(getFrame(), new CommonRunnable() {
+		UIUtils.runCommand(getTab(), new CommonRunnable() {
 			@Override
 			public void run() throws CommonFinderException {
 				CollectableGenericObjectWithDependants cgo = getSelectedCollectable();
@@ -3200,7 +3195,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	}
 
 	private void cmdShowStateHistory() {
-		UIUtils.runCommand(getFrame(), new CommonRunnable() {
+		UIUtils.runCommand(getTab(), new CommonRunnable() {
 			@Override
 			public void run() throws CommonBusinessException {
 				final CollectableGenericObject clctSelected = getSelectedCollectable();
@@ -3208,13 +3203,13 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 				final int iGenericObjectId = clctSelected.getGenericObjectCVO().getId();
 				final String sIdentifier = clctSelected.getIdentifierLabel();
 
-				new StateHistoryController(parent).run(getSelectedCollectableModuleId(), iGenericObjectId, sIdentifier);
+				new StateHistoryController(getTab()).run(getSelectedCollectableModuleId(), iGenericObjectId, sIdentifier);
 			}
 		});
 	}
 
 	private void cmdShowLogBook() {
-		UIUtils.runCommand(getFrame(), new Runnable() {
+		UIUtils.runCommand(getTab(), new Runnable() {
 			@Override
 			public void run() {
 				final CollectableGenericObject clctSelected = getSelectedCollectable();
@@ -3226,10 +3221,10 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 
 				try {
 					/** @todo frame vs. parent */
-					new LogbookController(getFrame(), parent, getSelectedCollectableModuleId(), iGenericObjectId, getPreferences()).run(sIdentifier);
+					new LogbookController(getTab(), getSelectedCollectableModuleId(), iGenericObjectId, getPreferences()).run(sIdentifier);
 				}
 				catch (CommonBusinessException ex) {
-					Errors.getInstance().showExceptionDialog(getFrame(), ex);
+					Errors.getInstance().showExceptionDialog(getTab(), ex);
 				}
 			}
 		});
@@ -3253,7 +3248,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	 */
 	public final void runViewSingleHistoricalCollectable(CollectableGenericObjectWithDependants clct, Date dateHistorical) {
 		viewSingleHistoricalCollectable(clct, dateHistorical);
-		getFrame().setVisible(true);
+		getTab().setVisible(true);
 	}
 
 	private void viewSingleHistoricalCollectable(CollectableGenericObjectWithDependants clct, Date dateHistorical) {
@@ -3294,7 +3289,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	 */
 	public final void runViewMultipleCollectables(List<CollectableGenericObjectWithDependants> lstclct, boolean bShowInDetails) {
 		viewMultipleCollectables(lstclct, bShowInDetails);
-		getFrame().setVisible(true);
+		getTab().setVisible(true);
 	}
 
 	/**
@@ -3316,7 +3311,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		if (bShowInDetails)
 			cmdEnterMultiViewMode();
 		else
-			UIUtils.runCommand(getFrame(), new CommonRunnable() {
+			UIUtils.runCommand(getTab(), new CommonRunnable() {
 				@Override
 				public void run() throws CommonBusinessException {
 					GenericObjectCollectController.this.setCollectState(CollectState.OUTERSTATE_RESULT, CollectState.RESULTMODE_NOSELECTION);
@@ -3378,7 +3373,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 				final ActionListener al = new ActionListener() {
 					@Override
 					public void actionPerformed(ActionEvent ev) {
-						UIUtils.runCommandLater(parent, new CommonRunnable() {
+						UIUtils.runCommandLater(getTab(), new CommonRunnable() {
 							@Override
 							public void run() {
 								final StateWrapper state = (StateWrapper) cmbbxCurrentState.getSelectedItem();
@@ -3450,7 +3445,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 					final ActionListener al = new ActionListener() {
 						@Override
 						public void actionPerformed(ActionEvent ev) {
-							UIUtils.runCommandLater(parent, new CommonRunnable() {
+							UIUtils.runCommandLater(getTab(), new CommonRunnable() {
 								@Override
 								public void run() {
 									if (item != stateCurrent && item != null && item.getId() != null) {
@@ -3546,7 +3541,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 				if (!isSelectedCollectableMarkedAsDeleted()) {
 					addGeneratorActions(bView, toolbarCustomActionsDetails);
 				}
-				UIUtils.ensureMinimumSize(getFrame());
+				UIUtils.ensureMinimumSize(getTab());
 			}
 		}
 
@@ -3657,7 +3652,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 			};
 		}
 
-		final int btn = JOptionPane.showConfirmDialog(getFrame(), argsOptionPane, 
+		final int btn = JOptionPane.showConfirmDialog(getTab(), argsOptionPane, 
 				getSpringLocaleDelegate().getMessage("GenericObjectCollectController.85","Statuswechsel durchf\u00fchren"),
 			JOptionPane.OK_CANCEL_OPTION);
 
@@ -3709,7 +3704,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 			};
 		}
 
-		final int btn = JOptionPane.showConfirmDialog(getFrame(), argsOptionPane, 
+		final int btn = JOptionPane.showConfirmDialog(getTab(), argsOptionPane, 
 				getSpringLocaleDelegate().getMessage("GenericObjectCollectController.85","Statuswechsel durchf\u00fchren"),
 			JOptionPane.OK_CANCEL_OPTION);
 
@@ -3739,7 +3734,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 
 		final StateWrapper stateCurrent = new StateWrapper(null, getSelectedGenericObjectStateNumeral(), getSelectedGenericObjectStateName(), getSelectedGenericObjectStateIcon(), "");
 
-		UIUtils.runShortCommand(getFrame(), new CommonRunnable() {
+		UIUtils.runShortCommand(getTab(), new CommonRunnable() {
 			@Override
 			public void run() throws CommonBusinessException {
 				if (getCollectStateModel().getDetailsMode() == CollectState.DETAILSMODE_EDIT ||
@@ -3791,7 +3786,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 
 		final StateWrapper stateCurrent = new StateWrapper(null, getSelectedGenericObjectStateNumeral(), getSelectedGenericObjectStateName(), getSelectedGenericObjectStateIcon(), "");
 
-		UIUtils.runShortCommand(getFrame(), new CommonRunnable() {
+		UIUtils.runShortCommand(getTab(), new CommonRunnable() {
 			@Override
 			public void run() throws CommonBusinessException {
 					if (getCollectStateModel().getDetailsMode() == CollectState.DETAILSMODE_EDIT ||
@@ -3900,7 +3895,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 					}
 				} else if (!(ex instanceof UserCancelledException)) {
 					final String sErrorMsg = getSpringLocaleDelegate().getMessage("GenericObjectCollectController.34","Der Statuswechsel konnte nicht vollzogen werden.");
-					Errors.getInstance().showExceptionDialog(getFrame(), sErrorMsg, ex);
+					Errors.getInstance().showExceptionDialog(getTab(), sErrorMsg, ex);
 				}
 
 				// redisplay the old status
@@ -3973,7 +3968,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 					}
 				} else {
 					final String sErrorMsg = getSpringLocaleDelegate().getMessage("GenericObjectCollectController.34","Der Statuswechsel konnte nicht vollzogen werden.");
-					Errors.getInstance().showExceptionDialog(getFrame(), sErrorMsg, ex);
+					Errors.getInstance().showExceptionDialog(getTab(), sErrorMsg, ex);
 				}
 
 				// redisplay the old status
@@ -4022,12 +4017,12 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	 */
 	private void cmdPrintCurrentGenericObject() {
 		try {
-			final ReportController reportController = new ReportController(getFrame());
+			final ReportController reportController = new ReportController(getTab());
 			final List<? extends CollectableGenericObject> lstclctlo = getSelectedCollectables();
 			reportController.exportForm(lstclctlo, getGreatestCommonUsageCriteriaFromCollectables(lstclctlo), getDocumentSubformEntityName(), getDocumentSubformColumns());
 		}
 		catch (Exception ex) {
-			Errors.getInstance().showExceptionDialog(getFrame(), ex);
+			Errors.getInstance().showExceptionDialog(getTab(), ex);
 		}
 	}
 
@@ -4060,7 +4055,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	 * @param clct
 	 */
 	private boolean hasFormsAssigned(CollectableGenericObjectWithDependants clct) {
-		final ReportController reportController = new ReportController(getFrame());
+		final ReportController reportController = new ReportController(getTab());
 		return reportController.hasFormsAssigned(getUsageCriteria(clct));
 	}
 
@@ -4341,12 +4336,12 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		final String sDocumentEntityName = this.getEntityName() + "document";
 		final String[] documentFieldNames = this.getDocumentSubformColumns();
 
-		UIUtils.runCommand(getFrame(), new CommonRunnable() {
+		UIUtils.runCommand(getTab(), new CommonRunnable() {
 			@Override
 			public void run() throws CommonBusinessException {
 				final ISearchStrategy<CollectableGenericObjectWithDependants> ss = getSearchStrategy();
 				final boolean bIncludeSubModules = ss.getIncludeSubModulesForSearch();
-				new ReportController(getFrame()).export(getCollectableEntity(), ss.getInternalSearchExpression(), getSelectedFields(),
+				new ReportController(getTab()).export(getCollectableEntity(), ss.getInternalSearchExpression(), getSelectedFields(),
 					lstclctlo, usagecriteria, bIncludeSubModules, sDocumentEntityName, documentFieldNames);
 			}
 		});
@@ -4368,7 +4363,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	}
 
 	private void cmdShowResultsInExplorer() {
-		UIUtils.runCommand(getFrame(), new CommonRunnable() {
+		UIUtils.runCommand(getTab(), new CommonRunnable() {
 			@Override
 			public void run() throws CommonBusinessException {
 				final ISearchStrategy<CollectableGenericObjectWithDependants> ss = getSearchStrategy();
@@ -4490,10 +4485,10 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 				respectRights(getDetailsPanel().getEditView().getCollectableLabels(), collsubform, usagecriteria, collectstate);
 
 				// ensure the (possibly new) edit panel is shown completely:
-				UIUtils.ensureMinimumSize(getFrame());
+				UIUtils.ensureMinimumSize(getTab());
 
 				// always revalidate:
-				getFrame().revalidate();
+				getTab().revalidate();
 			}
 			finally {
 				if (bAddUsageCriteriaFieldListeners)
@@ -5502,14 +5497,14 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	 * @param collGenericObjectIds
 	 */
 	private void openGenericObjectController(final Collection<Integer> collGenericObjectIds) {
-		UIUtils.runCommand(parent, new Runnable() {
+		UIUtils.runCommand(getTab(), new Runnable() {
 			@Override
 			public void run() {
 				try {
-					GenericObjectClientUtils.showDetails(parent, collGenericObjectIds);
+					GenericObjectClientUtils.showDetails(collGenericObjectIds);
 				}
 				catch (CommonBusinessException ex) {
-					Errors.getInstance().showExceptionDialog(parent, ex);
+					Errors.getInstance().showExceptionDialog(getTab(), ex);
 				}
 			}
 		});
@@ -5931,7 +5926,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		for (CollectableGenericObjectWithDependants clct : getSelectedCollectables()) {
 			sources.put(IdUtils.toLongId(clct.getId()), getUsageCriteria(clct));
 		}
-		GenerationController controller = new GenerationController(sources, generatoractionvo, this, getFrame());
+		GenerationController controller = new GenerationController(sources, generatoractionvo, this, getTab());
 		controller.generateGenericObject();
 	}
 

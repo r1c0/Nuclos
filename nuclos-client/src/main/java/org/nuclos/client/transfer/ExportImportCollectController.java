@@ -27,6 +27,7 @@ import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileFilter;
 
 import org.nuclos.client.main.mainframe.MainFrameTab;
+import org.nuclos.client.main.mainframe.MainFrameTabbedPane;
 import org.nuclos.client.masterdata.CollectableMasterDataWithDependants;
 import org.nuclos.client.masterdata.MasterDataCollectController;
 import org.nuclos.client.ui.CommonClientWorkerAdapter;
@@ -72,8 +73,8 @@ public class ExportImportCollectController extends MasterDataCollectController {
 	 * *CollectController<~> cc = new *CollectController<~>(.., rc);
 	 * </code></pre>
 	 */
-	public ExportImportCollectController(JComponent parent, MainFrameTab tabIfAny) {
-		super(parent, NuclosEntity.IMPORTEXPORT, tabIfAny);
+	public ExportImportCollectController(MainFrameTab tabIfAny) {
+		super(NuclosEntity.IMPORTEXPORT, tabIfAny);
 		this.setupDetailsToolBar();
 	}
 
@@ -103,7 +104,7 @@ public class ExportImportCollectController extends MasterDataCollectController {
 				getSpringLocaleDelegate().getMessage(
 						"ExportImportCollectController.3", "Kopieren der archivierten Export/Import Datei"));
 
-		final int iBtn = filechooser.showSaveDialog(getParent());
+		final int iBtn = filechooser.showSaveDialog(getTabbedPane().getComponentPanel());
 		if (iBtn == JFileChooser.APPROVE_OPTION) {
 			if (filechooser.getSelectedFile() == null) {
 				throw new NuclosFatalException(getSpringLocaleDelegate().getMessage(

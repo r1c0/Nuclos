@@ -49,7 +49,7 @@ import org.nuclos.common2.exception.CommonValidationException;
  * @author	<a href="mailto:maik.stueker@novabit.de">Maik Stueker</a>
  * @version	01.00.00
  */
-public class InstanceSelectPlanStartController extends Controller {
+public class InstanceSelectPlanStartController extends Controller<Component> {
 	
 	private JPanel jpnResult = new JPanel();
 	

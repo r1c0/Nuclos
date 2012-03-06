@@ -33,7 +33,6 @@ import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
 import javax.swing.JButton;
-import javax.swing.JComponent;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.JTextArea;
@@ -50,6 +49,7 @@ import org.nuclos.client.layout.wysiwyg.CollectableWYSIWYGLayoutEditor;
 import org.nuclos.client.layout.wysiwyg.CollectableWYSIWYGLayoutEditor.WYSIWYGDetailsComponentModel;
 import org.nuclos.client.main.Main;
 import org.nuclos.client.main.mainframe.MainFrameTab;
+import org.nuclos.client.main.mainframe.MainFrameTabbedPane;
 import org.nuclos.client.masterdata.CollectableMasterDataWithDependants;
 import org.nuclos.client.masterdata.MasterDataCollectController;
 import org.nuclos.client.ui.CommonJTextField;
@@ -72,12 +72,12 @@ import org.nuclos.common.collect.collectable.CollectableEntityField;
 import org.nuclos.common.collect.collectable.CollectableValueField;
 import org.nuclos.common.collect.exception.CollectableFieldFormatException;
 import org.nuclos.common.collection.CollectionUtils;
-import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.CommonRunnable;
 import org.nuclos.common2.EntityAndFieldName;
 import org.nuclos.common2.IOUtils;
 import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.LocaleInfo;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.XMLUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
@@ -135,8 +135,8 @@ public abstract class LayoutCollectController extends MasterDataCollectControlle
 	 * *CollectController<~> cc = new *CollectController<~>(.., rc);
 	 * </code></pre>
      */
-	protected LayoutCollectController(JComponent parent, NuclosEntity entity, MainFrameTab tabIfAny) {
-		super(parent, entity, tabIfAny, new LayoutResultController<CollectableMasterDataWithDependants>(
+	protected LayoutCollectController(NuclosEntity entity, MainFrameTab tabIfAny) {
+		super(entity, tabIfAny, new LayoutResultController<CollectableMasterDataWithDependants>(
 				entity.getEntityName(), new NuclosSearchResultStrategy<CollectableMasterDataWithDependants>()));
 
 		this.setupDetailsToolBar();
@@ -242,22 +242,22 @@ public abstract class LayoutCollectController extends MasterDataCollectControlle
 
 	protected void cmdImport() {
 		final JFileChooser filechooser = this.getFileChooser();
-		final int iBtn = filechooser.showOpenDialog(this.getFrame());
+		final int iBtn = filechooser.showOpenDialog(this.getTab());
 		if (iBtn == JFileChooser.APPROVE_OPTION) {
 			final File file = filechooser.getSelectedFile();
 			if (file != null) {
 				this.getPreferences().put(PREFS_KEY_LASTIMPORTEXPORTPATH, file.getAbsolutePath());
-				UIUtils.runCommand(this.getFrame(), new Runnable() {
+				UIUtils.runCommand(this.getTab(), new Runnable() {
 					@Override
 					public void run() {
 						try {
 							importXml(file);
 						} catch (IOException ex) {
-							Errors.getInstance().showExceptionDialog(getFrame(), 
+							Errors.getInstance().showExceptionDialog(getTab(), 
 									getSpringLocaleDelegate().getMessage(
 											"LayoutCollectController.3","Beim Lesen der Datei ist ein Fehler aufgetreten."), ex);
 						} catch (/* CommonBusiness */ Exception ex) {
-							Errors.getInstance().showExceptionDialog(getFrame(), ex.getMessage(), ex);
+							Errors.getInstance().showExceptionDialog(getTab(), ex.getMessage(), ex);
 						}
 					}
 				});
@@ -268,7 +268,7 @@ public abstract class LayoutCollectController extends MasterDataCollectControlle
 	protected void cmdExport() {
 		/** @todo try...catch or UIUtils.runCommand */
 		final JFileChooser filechooser = this.getFileChooser();
-		final int iBtn = filechooser.showSaveDialog(this.getFrame());
+		final int iBtn = filechooser.showSaveDialog(this.getTab());
 		if (iBtn == JFileChooser.APPROVE_OPTION) {
 			assert filechooser.getSelectedFile() != null;
 			String sPathName = filechooser.getSelectedFile().getAbsolutePath();
@@ -282,18 +282,18 @@ public abstract class LayoutCollectController extends MasterDataCollectControlle
 			if (file.exists()) {
 				final String sMessage = getSpringLocaleDelegate().getMessage(
 						"LayoutCollectController.6","Die angegebene Datei (\"{0}\") existiert schon. Soll sie \u00fcberschrieben werden?", file.getName());
-				final int iBtnConfirm = JOptionPane.showConfirmDialog(this.getFrame(), sMessage, getSpringLocaleDelegate().getMessage(
+				final int iBtnConfirm = JOptionPane.showConfirmDialog(this.getTab(), sMessage, getSpringLocaleDelegate().getMessage(
 						"LayoutCollectController.9","Layout-Export"), JOptionPane.OK_CANCEL_OPTION);
 				bDoExport = (iBtnConfirm == JOptionPane.OK_OPTION);
 			}
 			if (bDoExport) {
-				UIUtils.runCommand(this.getFrame(), new Runnable() {
+				UIUtils.runCommand(this.getTab(), new Runnable() {
 					@Override
 					public void run() {
 						try {
 							exportXml(file);
 						} catch (Exception ex) {
-							Errors.getInstance().showExceptionDialog(getFrame(), ex);
+							Errors.getInstance().showExceptionDialog(getTab(), ex);
 						}
 					}
 				});
@@ -305,7 +305,7 @@ public abstract class LayoutCollectController extends MasterDataCollectControlle
 	 * Command: test current layout.
 	 */
 	private void cmdTestLayout() {
-		UIUtils.runCommand(this.parent, new CommonRunnable() {
+		UIUtils.runCommand(this.getTabbedPane().getComponentPanel(), new CommonRunnable() {
 			@Override
 			public void run() throws CommonBusinessException {
 				final LayoutRoot layoutRoot;
@@ -326,7 +326,7 @@ public abstract class LayoutCollectController extends MasterDataCollectControlle
 					// if the layout is used for Search:
 					mpsubformctl = newDetailsSubFormControllersForLayout(getUsedEntityName(), layoutRoot);
 				} catch (CommonBusinessException ex) {
-					Errors.getInstance().showExceptionDialog(parent, ex);
+					Errors.getInstance().showExceptionDialog(getTab(), ex);
 					mpsubformctl = null;
 				}
 
@@ -339,20 +339,19 @@ public abstract class LayoutCollectController extends MasterDataCollectControlle
 				//NUCLEUSINT-285
 				Dimension preferredSize = getDetailsPanel().getPreferredSize();
 
-				final MainFrameTab ifrm = Main.getInstance().getMainController().newMainFrameTab(null, sTitle);
+				final MainFrameTab newTab = Main.getInstance().getMainController().newMainFrameTab(null, sTitle);
 				// ifrm.getContentPane().add(layoutRoot.getRootComponent());
-				ifrm.setLayeredComponent(layoutRoot.getRootComponent());
-				UIUtils.ensureSize(ifrm, preferredSize);
+				newTab.setLayeredComponent(layoutRoot.getRootComponent());
+				UIUtils.ensureSize(newTab, preferredSize);
 				//NUCLEUSINT-285
-				UIUtils.ensureMinimumSize(ifrm);
-				parent.add(ifrm);
-				UIUtils.centerOnDesktop(ifrm, parent, true);
-				ifrm.setVisible(true);
+				UIUtils.ensureMinimumSize(newTab);
+				getTabbedPane().add(newTab);
+				newTab.setVisible(true);
 
 				if (mpsubformctl != null) {
 					final EntityAndFieldName eafnInitialFocus = layoutRoot.getInitialFocusEntityAndFieldName();
 					if (eafnInitialFocus != null) {
-						Utils.setInitialComponentFocus(eafnInitialFocus, layoutRoot, mpsubformctl, ifrm, true);
+						Utils.setInitialComponentFocus(eafnInitialFocus, layoutRoot, mpsubformctl, newTab, true);
 					}
 				}
 			}
@@ -534,7 +533,7 @@ public abstract class LayoutCollectController extends MasterDataCollectControlle
 		}
 
 		return NuclosCollectControllerFactory.getInstance().newDetailsSubFormController(subform, sParentEntityName, layoutroot,
-				this.getFrame(), this.parent, layoutroot.getRootComponent(), prefs, new EntityPreferences(), null);
+				this.getTab(), layoutroot.getRootComponent(), prefs, new EntityPreferences(), null);
 	}
 
 	@Override

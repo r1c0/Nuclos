@@ -51,6 +51,7 @@ import org.nuclos.client.genericobject.valuelistprovider.ProcessCollectableField
 import org.nuclos.client.genericobject.valuelistprovider.StatusNumeralCollectableFieldsProvider;
 import org.nuclos.client.main.Main;
 import org.nuclos.client.main.mainframe.MainFrameTab;
+import org.nuclos.client.main.mainframe.MainFrameTabbedPane;
 import org.nuclos.client.masterdata.MasterDataSubFormController;
 import org.nuclos.client.masterdata.datatransfer.RuleAndRuleUsageEntity;
 import org.nuclos.client.masterdata.datatransfer.RuleCVOTransferable;
@@ -107,7 +108,7 @@ public class RuleCollectController extends EntityCollectController<CollectableRu
 	private static final Logger LOG = Logger.getLogger(RuleCollectController.class);
 
 	private final CollectPanel<CollectableRule> pnlCollect = new RuleCollectPanel(false);
-	private final MainFrameTab ifrm;
+
 	private final RuleDelegate ruledelegate = RuleDelegate.getInstance();
 	private final SubForm subform = new SubForm(NuclosEntity.RULEUSAGE.getEntityName(), JToolBar.VERTICAL);
 	private final RuleEditPanel pnlEdit = new RuleEditPanel(subform);
@@ -131,25 +132,22 @@ public class RuleCollectController extends EntityCollectController<CollectableRu
 	 * *CollectController<~> cc = new *CollectController<~>(.., rc);
 	 * </code></pre>
 	 */
-	public RuleCollectController(JComponent parent, MainFrameTab tabIfAny) {
-		super(parent, CollectableRule.clcte);
-		ifrm = tabIfAny!=null ? tabIfAny : newInternalFrame(getSpringLocaleDelegate().getMessage(
-				"RuleCollectController.1", "Regelwerke verwalten"));
+	public RuleCollectController(MainFrameTab tabIfAny) {
+		super(CollectableRule.clcte, tabIfAny);
 
 		//this.transferhandler = new RuleTransferHandler(parent);
 
 		this.initialize(this.pnlCollect);
 
-		ifrm.setLayeredComponent(pnlCollect);
+		getTab().setLayeredComponent(pnlCollect);
 
 		this.setupResultToolBar();
 		this.setupDetailsToolBar();
 
 		this.getDetailsPanel().setEditView(DefaultEditView.newDetailsEditView(pnlEdit, pnlEdit.getHeaderPanel().newCollectableComponentsProvider()));
 
-		this.setupShortcutsForTabs(ifrm);
+		this.setupShortcutsForTabs(getTab());
 
-		this.setInternalFrame(ifrm, tabIfAny==null);
 		this.setupDataTransfer();
 		this.getCollectStateModel().addCollectStateListener(new RuleCollectStateListener());
 
@@ -181,12 +179,8 @@ public class RuleCollectController extends EntityCollectController<CollectableRu
 		this.subform.addColumn(processColumn);
 		this.subform.addColumn(statusColumn);
 		
-		this.subformctlUsage = new MasterDataSubFormController(getFrame(), parent, this.getDetailsPanel().getEditModel(), getEntityName(),
+		this.subformctlUsage = new MasterDataSubFormController(getTab(), this.getDetailsPanel().getEditModel(), getEntityName(),
 				subform, this.getPreferences(), this.getEntityPreferences(), valueListProviderCache);
-	}
-
-	public final MainFrameTab getMainFrameTab() {
-		return ifrm;
 	}
 
 	@Override
@@ -226,7 +220,7 @@ public class RuleCollectController extends EntityCollectController<CollectableRu
 	}
 
 	private void cmdJumpToTree() {
-		UIUtils.runCommand(this.getFrame(), new Runnable() {
+		UIUtils.runCommand(this.getTab(), new Runnable() {
 			@Override
 			public void run() {
 				final Integer iRuleId = (Integer) getSelectedCollectableId();
@@ -240,7 +234,7 @@ public class RuleCollectController extends EntityCollectController<CollectableRu
 	}
 
 	private void cmdCheckRuleSource() {
-		UIUtils.runCommand(this.getFrame(), new CommonRunnable() {
+		UIUtils.runCommand(this.getTab(), new CommonRunnable() {
 			@Override
 			public void run() throws CommonBusinessException {
 				final RuleDelegate ruleDelegate = RuleDelegate.getInstance();
@@ -260,7 +254,7 @@ public class RuleCollectController extends EntityCollectController<CollectableRu
 
 				try {
 					ruleDelegate.compile(clctRule.getRuleVO());
-					JOptionPane.showMessageDialog(RuleCollectController.this.getFrame(), 
+					JOptionPane.showMessageDialog(RuleCollectController.this.getTab(), 
 							getSpringLocaleDelegate().getMessage(
 									"CodeCollectController.compiledsuccessfully", "Quellcode erfolgreich kompiliert."));
 				}
