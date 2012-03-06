@@ -198,6 +198,7 @@ public class StateGraphVO implements Serializable {
 
 				this.checkDuplicateTransition(statetransitionvo);
 				this.checkDuplicateDefaultTransition(statetransitionvo);
+				this.checkDefaultPathNotStartsFromInitialTransition(statetransitionvo);
 			}
 		}
 
@@ -237,6 +238,36 @@ public class StateGraphVO implements Serializable {
 		return duplicateTransitions;
 	}
 
+
+	/**
+	 * @param statetransitionvo
+	 * @throws CommonValidationException if the given transition is duplicated.
+	 */
+	private void checkDefaultPathNotStartsFromInitialTransition(StateTransitionVO statetransitionvo) throws CommonValidationException {
+		List<StateTransitionVO> forbiddenTransitions = getDefaultPathNotStartsFromInitialTransition(statetransitionvo);
+		if(forbiddenTransitions != null && !forbiddenTransitions.isEmpty()){
+			throw new CommonValidationException("statemachine.error.validation.graph.defaulttransition");
+		}
+	}
+
+	private List<StateTransitionVO> getDefaultPathNotStartsFromInitialTransition(StateTransitionVO statetransitionvo) {
+		List<StateTransitionVO> forbiddenTransitions = new ArrayList<StateTransitionVO>();
+		for (StateTransitionVO statetransitionvo2 : this.getTransitions()) {
+			if (!statetransitionvo2.isRemoved()) {
+				if (!statetransitionvo.getClientId().equals(statetransitionvo2.getClientId())) {
+					if ((statetransitionvo.getStateSource() != null) && (!statetransitionvo.isDefault())
+							&& (statetransitionvo2.getStateSource() != null)
+							&& (statetransitionvo2.getStateTarget().equals(statetransitionvo.getStateSource()))
+							&& (statetransitionvo2.isDefault()))
+					{
+						forbiddenTransitions.add(statetransitionvo2);
+					}
+				}
+			}
+		}
+		return forbiddenTransitions;
+	}
+
 	/**
 	 * @param statetransitionvo
 	 * @throws CommonValidationException if the given transition is duplicated.
@@ -253,13 +284,12 @@ public class StateGraphVO implements Serializable {
 			});
 			
 			List<Integer> checkedStateNumerals = new LinkedList<Integer>();
-			
+			boolean isFirst = true;
 			// finde alle trans die als source den end der letzten haben.
 			Integer iSubsequentState = startTransition.getStateTarget();
 			while (iSubsequentState != null) {
 				if (checkedStateNumerals.contains(iSubsequentState)) {
-					break;
-					//throw new CommonValidationException("statemachine.error.validation.graph.defaulttransition");					
+					throw new CommonValidationException("statemachine.error.validation.graph.defaulttransition");					
 				}
 				
 				final Integer iSubsequentStateSource = iSubsequentState;
@@ -268,14 +298,18 @@ public class StateGraphVO implements Serializable {
 				});
 				
 				if (subsequentTransition == null) {
-					StateTransitionVO subsequentStateTransition = CollectionUtils.findFirst(transitionVOs, new Predicate<StateTransitionVO>() {
-						@Override public boolean evaluate(StateTransitionVO t) { return !t.isRemoved() && t.getStateSource() == iSubsequentStateSource && t.isDefault() == false; }
+					if (isFirst)
+						throw new CommonValidationException("statemachine.error.validation.graph.defaulttransition");
+					/*StateTransitionVO subsequentStateTransition = CollectionUtils.findFirst(transitionVOs, new Predicate<StateTransitionVO>() {
+						@Override public boolean evaluate(StateTransitionVO t) { return !t.isRemoved() && t.getStateSource() == iSubsequentStateSource; }
 					});
-					if (subsequentStateTransition != null) {
-						//throw new CommonValidationException("statemachine.error.validation.graph.defaulttransition");
-					}
+					if (subsequentStateTransition == null) {
+						throw new CommonValidationException("statemachine.error.validation.graph.defaulttransition");
+					}*/
 					break;
 				}
+				
+				isFirst = false;
 				
 				// iterate next.
 				checkedStateNumerals.add(iSubsequentState);

@@ -60,6 +60,8 @@ public class StatemodelClosure implements Serializable {
 	public Statemodel getStatemodel(UsageCriteria crit) {
 		Statemodel res = statemodels.get(crit);
 		if(res == null)
+			res = statemodels.get(new UsageCriteria(crit.getModuleId(), crit.getProcessId(), null));
+		if(res == null)
 			res = statemodels.get(new UsageCriteria(crit.getModuleId(), null, null));
 		return res;
 	}

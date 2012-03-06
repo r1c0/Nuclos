@@ -295,6 +295,8 @@ public class Statemodel implements Serializable {
 			checkedStateNumerals.add(subsequentTransition.getId());
 			iSubsequentState = subsequentTransition.getStateTarget();
 			if (iSubsequentState.equals(stateToReach.getId())) {
+				if (!result.contains(iSubsequentState))
+					result.add(iSubsequentState);
 				return result;
 			}
 		}
