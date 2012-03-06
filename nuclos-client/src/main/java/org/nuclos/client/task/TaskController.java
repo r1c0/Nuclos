@@ -132,6 +132,8 @@ public class TaskController extends Controller {
 		ctlPersonalTasks.storeOrderBySelectedColumnToPreferences();
 		ctlPersonalTasks.storeShowAllTasksIsPressedToPreferences();
 		ctlPersonalTasks.storeShowDelegatedTasksIsSelectedToPreferences();
+		ctlPersonalTasks.storeIntervalTasksToPreferences();
+		ctlTimelimitTasks.storeIntervalTasksToPreferences();
 	}
 
 	public static class RestorePreferences implements Serializable {

@@ -110,6 +110,7 @@ public class TimelimitTaskController extends RefreshableTaskController {
 	private final static String PREFS_NODE_TIMELIMITTASKS = "timelimitTasks";
 	private static final String PREFS_NODE_SELECTEDFIELDS = "selectedFields";
 	private static final String PREFS_NODE_SELECTEDFIELDWIDTHS = "selectedFieldWidths";
+	private static final String PREFS_NODE_TIMELIMITTASKS_REFRESH_INTERVAL_SELECTED = "timelimitTasksRefreshSelected";
 
 	/**
 	 * popup menu for list of timelimit tasks
@@ -247,7 +248,29 @@ public class TimelimitTaskController extends RefreshableTaskController {
 				// do nothing
 			}
 		});
+	}	public void storeIntervalTasksToPreferences(){
+		final Integer[] refreshInterval = { new Integer((getSingleScheduledRefreshableView().getRefreshInterval()))};
+		try {
+			PreferencesUtils.putIntegerArray(prefs, PREFS_NODE_TIMELIMITTASKS_REFRESH_INTERVAL_SELECTED, refreshInterval);
+		} catch (PreferencesException e1) {
+			Errors.getInstance().showExceptionDialog(this.getParent(), getSpringLocaleDelegate().getMessage(
+					"PersonalTaskController.18","Fehler beim Abspeichern der Einstellungen"), e1);
+		}
 	}
+
+	private int readIntervalTasksFromPreferences() {
+		List<Integer> refreshIntervalTasksSelectedList;
+		try {
+			refreshIntervalTasksSelectedList = PreferencesUtils.getIntegerList(prefs, PREFS_NODE_TIMELIMITTASKS_REFRESH_INTERVAL_SELECTED);
+		} catch (PreferencesException ex) {
+			LOG.error(getSpringLocaleDelegate().getMessage(
+					"PersonalTaskController.10","Der Filterzustand konnte nicht aus den Einstellungen gelesen werden"), ex);
+			return 0;
+		}
+		if (refreshIntervalTasksSelectedList.isEmpty()) return 0 ;
+		return refreshIntervalTasksSelectedList.get(0);
+	}
+
 
 	/**
 	 * stores the order of the columns in the table
@@ -297,6 +320,8 @@ public class TimelimitTaskController extends RefreshableTaskController {
 
 		// use only action listener for "show finished" button:
 		timelimittaskview.btnShowAllTasks.addActionListener(actRefresh);
+
+		setRefreshIntervalForSingleViewRefreshable(readIntervalTasksFromPreferences());
 
 		table.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
 			@Override

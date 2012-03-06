@@ -138,6 +138,7 @@ public class PersonalTaskController extends RefreshableTaskController implements
 	private static final String PREFS_NODE_PERSONALTASKS = "personalTasks";
 	private static final String PREFS_NODE_PERSONALTASKS_BUTTON_ALL_PRESSED = "personalTasksButtonAllIsPressed";
 	private static final String PREFS_NODE_PERSONALTASKS_SHOW_TASKS_ITEM_SELECTED = "personalTasksShowTasksItemSelected";
+	private static final String PREFS_NODE_PERSONALTASKS_REFRESH_INTERVAL_SELECTED = "personalTasksRefreshSelected";
 	
 	private static final String PREFS_NODE_SELECTEDFIELDS = "selectedFields";
 	private static final String PREFS_NODE_SELECTEDFIELDWIDTHS = "selectedFieldWidths";
@@ -446,6 +447,8 @@ public class PersonalTaskController extends RefreshableTaskController implements
 		personaltaskview.ckbShowCompletedTasks.setSelected(readIsButtonAllTasksSelected());
 		personaltaskview.ckbShowCompletedTasks.addActionListener(actRefresh);
 
+		setRefreshIntervalForSingleViewRefreshable(readIntervalTasksFromPreferences());
+
 		personaltaskview.bgShowTasks.setSelected(personaltaskview.rbShowTask[readItemShowTasks()].getModel(), true);
 		for (int i = 0; i < personaltaskview.rbShowTask.length; i++) {
 			personaltaskview.rbShowTask[i].addActionListener(new ActionListener() {
@@ -700,6 +703,29 @@ public class PersonalTaskController extends RefreshableTaskController implements
 		}
 		if (isButtonDelegateTasksSelectedList.isEmpty()) return 0 ;
 		return isButtonDelegateTasksSelectedList.get(0);
+	}
+
+	public void storeIntervalTasksToPreferences(){
+		final Integer[] refreshInterval = { new Integer((getSingleScheduledRefreshableView().getRefreshInterval()))};
+		try {
+			PreferencesUtils.putIntegerArray(getPreferences(), PREFS_NODE_PERSONALTASKS_REFRESH_INTERVAL_SELECTED, refreshInterval);
+		} catch (PreferencesException e1) {
+			Errors.getInstance().showExceptionDialog(this.getParent(), getSpringLocaleDelegate().getMessage(
+					"PersonalTaskController.18","Fehler beim Abspeichern der Einstellungen"), e1);
+		}
+	}
+
+	private int readIntervalTasksFromPreferences() {
+		List<Integer> refreshIntervalTasksSelectedList;
+		try {
+			refreshIntervalTasksSelectedList = PreferencesUtils.getIntegerList(getPreferences(), PREFS_NODE_PERSONALTASKS_REFRESH_INTERVAL_SELECTED);
+		} catch (PreferencesException ex) {
+			LOG.error(getSpringLocaleDelegate().getMessage(
+					"PersonalTaskController.10","Der Filterzustand konnte nicht aus den Einstellungen gelesen werden"), ex);
+			return 0;
+		}
+		if (refreshIntervalTasksSelectedList.isEmpty()) return 0 ;
+		return refreshIntervalTasksSelectedList.get(0);
 	}
 
 	public void storeOrderBySelectedColumnToPreferences(){

@@ -79,6 +79,15 @@ public abstract class TaskView extends JPanel implements ScheduledRefreshable {
 	@Override
 	public void setRefreshInterval(int min){
 		this.refreshInterval = min;
+		for (int i = 0; i < intervals.length; i++) {
+			if (intervals[i] == min) {
+				rbRefresIntervals[i].setSelected(true);
+				bgRefreshInterval.setSelected(rbRefresIntervals[i].getModel(), true);
+			} else {
+				rbRefresIntervals[i].setSelected(false);
+				bgRefreshInterval.setSelected(rbRefresIntervals[i].getModel(), false);
+			}
+		}
 	}
 	
 	@Override
