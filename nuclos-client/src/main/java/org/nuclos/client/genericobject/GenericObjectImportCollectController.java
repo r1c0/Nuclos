@@ -132,22 +132,21 @@ public class GenericObjectImportCollectController extends MasterDataCollectContr
 		super(NuclosEntity.IMPORTFILE.getEntityName(), tabIfAny);
 	}
 	
-	@PostConstruct
-	void postConstruct() {
-		this.progressBar = new JProgressBar();
-		this.progressBar.setStringPainted(true);
-
-		Component placeHolder = getPlaceHolder(getDetailsPanel(), "lblPlaceholder1");
-		Container container = placeHolder.getParent();
-		TableLayout layoutManager = (TableLayout)container.getLayout();
-		TableLayoutConstraints constraints = layoutManager.getConstraints(placeHolder);
-
-		container.remove(placeHolder);
-		container.add(this.progressBar, constraints);
-
+	@Override
+	public void init() {
 		getCollectStateModel().addCollectStateListener(new CollectStateAdapter(){
 			@Override
-            public void detailsModeEntered(CollectStateEvent ev) throws CommonBusinessException {
+			public void detailsModeEntered(CollectStateEvent ev) throws CommonBusinessException {
+				progressBar = new JProgressBar();
+				progressBar.setStringPainted(true);
+
+				Component placeHolder = getPlaceHolder(getDetailsPanel(), "lblPlaceholder1");
+				Container container = placeHolder.getParent();
+				TableLayout layoutManager = (TableLayout)container.getLayout();
+				TableLayoutConstraints constraints = layoutManager.getConstraints(placeHolder);
+
+				container.remove(placeHolder);
+				container.add(progressBar, constraints);
 	            Integer importfileId = (Integer) getSelectedCollectableId();
 
 	            if (!SecurityCache.getInstance().isSuperUser()) {
@@ -157,7 +156,6 @@ public class GenericObjectImportCollectController extends MasterDataCollectContr
 		            	}
 		            }
 	            }
-
 	            resetProgressBars();
 
 	            if (ev.getNewCollectState().getInnerState() == CollectState.DETAILSMODE_VIEW) {
