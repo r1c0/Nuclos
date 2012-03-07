@@ -43,22 +43,12 @@ import org.nuclos.server.masterdata.ejb3.MasterDataFacadeLocal;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionSynchronization;
-import org.springframework.transaction.support.TransactionSynchronizationAdapter;
-import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 @Transactional
 public class CustomComponentFacadeBean extends NuclosFacadeBean implements CustomComponentFacadeRemote {
 
 	private static final Logger LOG = Logger.getLogger(CustomComponentFacadeBean.class);
 
-	private static final TransactionSynchronization TX_SYNC = new TransactionSynchronizationAdapter() {
-		@Override
-		public void afterCommit() {
-			NuclosJMSUtils.sendMessageAfterCommit(null, JMSConstants.TOPICNAME_CUSTOMCOMPONENTCACHE);
-		}
-	};
-	
 	private MasterDataFacadeLocal masterDataFacade;	
 	
 	private LocaleFacadeLocal localeFacade;
@@ -85,15 +75,7 @@ public class CustomComponentFacadeBean extends NuclosFacadeBean implements Custo
 	}
 
 	private void notifyClients() {
-		try {
-			List<TransactionSynchronization> list = TransactionSynchronizationManager.getSynchronizations();
-			if (!list.contains(TX_SYNC)) {
-				TransactionSynchronizationManager.registerSynchronization(TX_SYNC);
-			}
-		}
-		catch (IllegalStateException ex) {
-			LOG.warn("Error on transaction synchronization registration.", ex);
-		}
+		NuclosJMSUtils.sendMessageAfterCommit(null, JMSConstants.TOPICNAME_CUSTOMCOMPONENTCACHE);
 	}
 
 	public List<CustomComponentVO> getAll() {
@@ -199,7 +181,7 @@ public class CustomComponentFacadeBean extends NuclosFacadeBean implements Custo
 	}
 
 	private void setResourceIdForField(Integer iId, String column, String sResourceId) {
-		dataBaseHelper.getInstance().execute(
+		dataBaseHelper.execute(
 				DbStatementUtils.updateValues("T_MD_CUSTOMCOMPONENT", column, DbNull.escapeNull(sResourceId, String.class)).where("INTID", iId));
 	}
 

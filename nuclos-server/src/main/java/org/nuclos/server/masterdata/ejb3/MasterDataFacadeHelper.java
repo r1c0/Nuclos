@@ -350,6 +350,7 @@ public class MasterDataFacadeHelper {
 
 	static void invalidateCaches(String sEntityName, MasterDataVO mdvo) {
 		NuclosEntity nuclosEntity = NuclosEntity.getByName(sEntityName);
+		LOG.info("invalidateCaches(" + sEntityName  + ", " + mdvo + ")");
 		if (nuclosEntity != null) {
 			switch (nuclosEntity) {
 			case ROLE:
@@ -373,6 +374,8 @@ public class MasterDataFacadeHelper {
 			case PARAMETER:
 				ServerParameterProvider.getInstance().revalidate();
 				break;
+			default:
+				LOG.info("invalidateCaches: Nothing to do for " + sEntityName);
 			}
 		}
 	}
