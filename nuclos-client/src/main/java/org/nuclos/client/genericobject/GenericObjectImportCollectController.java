@@ -84,7 +84,6 @@ import org.springframework.beans.factory.annotation.Configurable;
  * <br>Created by Novabit Informationssysteme GmbH
  * <br>Please visit <a href="http://www.novabit.de">www.novabit.de</a>
  */
-@Configurable
 public class GenericObjectImportCollectController extends MasterDataCollectController implements MessageListener {
 
 	private static final Logger LOG = Logger.getLogger(GenericObjectImportCollectController.class);
