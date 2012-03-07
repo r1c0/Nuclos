@@ -101,7 +101,7 @@ public class DBTransferUtils {
 	}
 	
 	protected void startProgressThread(final JProgressBar progressBar, final int runUntil, final int sleepTime) {
-		new Thread(){
+		new Thread("DBTransferUtils.progressThread") {
 			@Override
 			public void run() {
 				try {

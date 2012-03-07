@@ -94,6 +94,12 @@
 	
 	<bean id="startup" class="org.nuclos.common.startup.Startup"/>
 
+	<!-- Global server timer -->
+	<bean id="timer" class="java.util.Timer" destroy-method="cancel">
+		<constructor-arg><value>NuclosClientTimer</value></constructor-arg>
+		<constructor-arg><value>true</value></constructor-arg>
+	</bean>
+
 	<bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
 		<property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_OVERRIDE" />
 		<property name="properties">

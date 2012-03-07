@@ -26,6 +26,7 @@ import java.util.TimerTask;
 
 import org.jfree.util.Log;
 import org.nuclos.common.ParameterProvider;
+import org.nuclos.common.SpringApplicationContextHolder;
 
 public class OneDropNuclosDropTargetListener extends NuclosDropTargetListener {
 	
@@ -64,7 +65,8 @@ public class OneDropNuclosDropTargetListener extends NuclosDropTargetListener {
 		onlyOnce = true;
 		dtde.rejectDrag();
 		final Point pointBeforeTimer = MouseInfo.getPointerInfo().getLocation();		
-		Timer timer = new Timer("waitfordrop");
+		// Timer timer = new Timer("waitfordrop");
+		final Timer timer = (Timer) SpringApplicationContextHolder.getBean("timer");
 		TimerTask task = new TimerTask() {
 			
 			@Override
@@ -91,7 +93,6 @@ public class OneDropNuclosDropTargetListener extends NuclosDropTargetListener {
 		};
 		
 		timer.schedule(task, milliseconds);
-		
 	}
 
 	@Override

@@ -544,7 +544,7 @@ public class ExplorerController extends Controller {
 					}
 					SwingUtilities.invokeLater(inAWT);
 				}
-			}, "Wait for worker").start();
+			}, "ExplorerController.runInAwtAfterWorkerThreadHasFinished").start();
 		}
 		else
 			inAWT.run();

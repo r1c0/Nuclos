@@ -375,7 +375,7 @@ abstract class DefaultMenuItem extends JLabel implements DragGestureListener {
 				}
 			}
 		};
-		Thread t = new Thread(r);
+		Thread t = new Thread(r, "DefaultMenuItem.flashLight");
 		t.start();
 	}
 	

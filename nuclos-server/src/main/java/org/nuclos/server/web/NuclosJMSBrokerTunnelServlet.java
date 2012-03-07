@@ -122,7 +122,7 @@ public class NuclosJMSBrokerTunnelServlet extends HttpSpringEmbeddedTunnelServle
 					try {
 						// Starting the connection could block due to
 						// wireformat negotiation, so start it in an async thread.
-						Thread startThread = new Thread("ActiveMQ Transport Initiator: " + transport.getRemoteAddress()) {
+						Thread startThread = new Thread("NuclosJMSBrokerTunnelServlet: ActiveMQ Transport Initiator: " + transport.getRemoteAddress()) {
 							@Override
 							public void run() {
 								try {

@@ -2222,7 +2222,7 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 						}
 					});
 				}
-			});
+			}, "CollectController.openSelectedCollectableInNewTab");
 			loadingThreads.add(t);
 		}
 

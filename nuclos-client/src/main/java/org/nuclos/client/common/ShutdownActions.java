@@ -108,7 +108,7 @@ public class ShutdownActions {
 				}
 			}
 		};
-		Runtime.getRuntime().addShutdownHook(new Thread(runnableHook));
+		Runtime.getRuntime().addShutdownHook(new Thread(runnableHook, "ShutdownActions.registerShutdown"));
 	}
 
 	public synchronized boolean isRegistered(int iOrder) {
