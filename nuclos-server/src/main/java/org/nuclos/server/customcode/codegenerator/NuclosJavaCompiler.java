@@ -368,6 +368,10 @@ public class NuclosJavaCompiler implements Closeable {
 					entityname = jas.getEntityname();
 					id = jas.getId();
 				}
+				// NPE in errors.add(new ErrorMessage(...
+				if (id == null) {
+					id = -1L;
+				}
 
 				errors.add(new ErrorMessage(diag.getKind(), sourcename, message, entityname, id,
 					shift(diag.getLineNumber(), dl), diag.getColumnNumber(),
