@@ -223,7 +223,7 @@ public class ReportExecutionCollectController extends MasterDataCollectControlle
 						}
 					}
 				} else {
-					final Thread collectiveThread = new Thread() {
+					final Thread collectiveThread = new Thread("ReportExecutionCollectController.execReport") {
 						{
 							BackgroundProcessStatusController.getStatusDialog(UIUtils.getFrameForComponent(parent)).setVisible(true);
 						}

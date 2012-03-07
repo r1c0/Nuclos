@@ -2271,7 +2271,7 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 						}
 					});
 				}
-			});
+			}, "MainFrame.showSwitchingWorkspace.invokeLater");
 			t.start();
 		}
 	}

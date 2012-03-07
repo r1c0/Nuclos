@@ -52,6 +52,7 @@ import javax.swing.event.AncestorEvent;
 import javax.swing.event.AncestorListener;
 
 import org.nuclos.client.synthetica.NuclosThemeSettings;
+import org.nuclos.common.SpringApplicationContextHolder;
 import org.nuclos.common.collection.Pair;
 
 public class Bubble extends Window implements AncestorListener, WindowListener {
@@ -232,12 +233,13 @@ public class Bubble extends Window implements AncestorListener, WindowListener {
 			relocate(parent);
 		}
 		if(timeout != null) {
-			final Timer timer = new Timer();
+			// final Timer timer = new Timer();
+			final Timer timer = (Timer) SpringApplicationContextHolder.getBean("timer");
 			timer.schedule(new TimerTask() {
 				@Override
 				public void run() {
 					dispose();
-					timer.cancel();
+					// timer.cancel();
 				}}, timeout * 1000);
 		}
 	}

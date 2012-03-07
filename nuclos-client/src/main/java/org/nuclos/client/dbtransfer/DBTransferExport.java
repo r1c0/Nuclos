@@ -235,7 +235,7 @@ public class DBTransferExport {
 //				progressBar.setValue(0);
 				ifrm.lockLayerWithProgress(Transfer.TOPIC_CORRELATIONID_CREATE);
 				
-				Thread t = new Thread(){
+				Thread t = new Thread("DBTransferExport.actionListener.startExport") {
 					@Override
 					public void run() {
 						try {

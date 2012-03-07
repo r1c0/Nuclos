@@ -550,7 +550,7 @@ public class ExplorerController extends Controller<MainFrameTabbedPane> {
 					}
 					SwingUtilities.invokeLater(inAWT);
 				}
-			}, "Wait for worker").start();
+			}, "ExplorerController.runInAwtAfterWorkerThreadHasFinished").start();
 		}
 		else
 			inAWT.run();

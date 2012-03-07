@@ -61,6 +61,7 @@ import org.nuclos.client.ui.collect.SearchOrDetailsPanel;
 import org.nuclos.client.ui.collect.component.model.DetailsComponentModel;
 import org.nuclos.client.ui.collect.component.model.DetailsEditModel;
 import org.nuclos.client.ui.collect.indicator.CollectPanelIndicator;
+import org.nuclos.common.SpringApplicationContextHolder;
 import org.nuclos.common.collect.collectable.CollectableField;
 import org.nuclos.common2.SpringLocaleDelegate;
 
@@ -395,13 +396,15 @@ public class DetailsPanel extends SearchOrDetailsPanel {
 					});
 				relocate(parent);
 			}
-			final Timer timer = new Timer();
+			// final Timer timer = new Timer();
+			final Timer timer = (Timer) SpringApplicationContextHolder.getBean("timer");
 			timer.schedule(new TimerTask() {
 				@Override
 				public void run() {
 					dispose();
-					timer.cancel();
+					// timer.cancel();
 				}}, 5 * 1000);
+			
 			setAlwaysOnTop(true);
 			UIUtils.setWindowOpacity(ComponentSpot.this, 0.5f);
 		}

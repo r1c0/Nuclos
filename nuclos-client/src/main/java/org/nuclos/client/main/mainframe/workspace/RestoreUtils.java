@@ -71,7 +71,7 @@ public class RestoreUtils {
 	private static final String NORMAL_BOUNDS = "normalBounds";
 	private static final String EXTENDED_STATE = "extendedState";
 
-	private static final String THREAD_NAME = "Workspace restoring...";
+	private static final String THREAD_NAME = "RestoreUtils.workspaceRestore.";
 	private static final List<Thread> threadList = new ArrayList<Thread>();
 
 	private static List<GenericAction> cachedActions;
@@ -334,7 +334,7 @@ public class RestoreUtils {
 					LOG.error("restoreWorkspaceThreaded failed: " + e, e);
 				}
 			}
-		}, THREAD_NAME);
+		}, THREAD_NAME + "restoreWorkspaceThreaded");
 		t.setDaemon(true);
 		threadList.add(t);
 
@@ -724,7 +724,7 @@ public class RestoreUtils {
 							LOG.error("restoreContent failed: " + e, e);
 						}
 					}
-				}, THREAD_NAME);
+				}, THREAD_NAME + "restoreContent");
 				t.setDaemon(true);
 				tab.addMainFrameTabListener(new MainFrameTabAdapter() {
 					@Override

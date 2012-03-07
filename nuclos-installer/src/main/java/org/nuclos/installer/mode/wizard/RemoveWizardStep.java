@@ -89,7 +89,7 @@ public class RemoveWizardStep extends AbstractWizardStep {
 					}
 				}
 			}
-		});
+		}, "RemoveWizardStep.prepare.unpack");
 		unpackThread.start();
 	}
 

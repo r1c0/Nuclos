@@ -253,7 +253,7 @@ public class MainController {
 				public void run() {
 					try {
 						LOG.info("onMessage " + this + " handleMessage...");
-						handleMessge(msg);
+						handleMessage(msg);
 					}
 					catch (Exception e) {
 						LOG.error("onMessage: ParameterPanel failed: " + e, e);
@@ -346,7 +346,7 @@ public class MainController {
 
 			DefaultCollectableEntityProvider.setInstance(NuclosCollectableEntityProvider.getInstance());
 
-			Thread threadGenericObjectMetaDataCache = new Thread() {
+			Thread threadGenericObjectMetaDataCache = new Thread("MainController.readMetaData") {
 
 				@Override
 				public void run() {
@@ -357,7 +357,7 @@ public class MainController {
 
 			loginController.increaseLoginProgressBar(StartUp.PROGRESS_READ_LOMETA);
 
-			Thread threadSearchFilterCache = new Thread() {
+			Thread threadSearchFilterCache = new Thread("MainController.readSearchFilter") {
 
 				@Override
 				public void run() {
@@ -458,7 +458,7 @@ public class MainController {
 				Errors.getInstance().showExceptionDialog(null, sMessage, ex);
 			}
 
-			Thread theadTaskController = new Thread() {
+			Thread theadTaskController = new Thread("MainController.refreshTasks") {
 				@Override
 				public void run() {
 					LOG.debug(">>> refresh tasks...");
@@ -2042,7 +2042,7 @@ public class MainController {
 		return new CollectableValueIdField(processId.intValue(), MasterDataCache.getInstance().get(NuclosEntity.PROCESS.getEntityName(), processId.intValue()).getField("name"));
 	}
 
-	private void handleMessge(final Message msg) {
+	private void handleMessage(final Message msg) {
 		try {
 			if (msg.getJMSCorrelationID() != null && (msg.getJMSCorrelationID().equals(MainController.this.getUserName()) || msg.getJMSCorrelationID().equals(JMSConstants.BROADCAST_MESSAGE)) && msg instanceof ObjectMessage)
 			{
@@ -2112,7 +2112,7 @@ public class MainController {
 												MainController.this.cmdExit();
 											}
 										}
-								  }).run();
+								  }, "MainController.handleMessage.cmdExit").run();
 							}
 						break;
 					}
@@ -2295,7 +2295,7 @@ public class MainController {
 			setMaximumSize(getPreferredSize());
 			setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 5));
 
-			Thread dm = new Thread(this, "MemoryMonitor");
+			Thread dm = new Thread(this, "MainController.MemoryMonitor");
 			dm.setDaemon(true);
 			dm.start();
 		}

@@ -56,6 +56,7 @@ import javax.swing.event.DocumentListener;
 import org.apache.log4j.Logger;
 import org.nuclos.client.ui.collect.component.CollectableListOfValues;
 import org.nuclos.client.ui.collect.component.ICollectableListOfValues;
+import org.nuclos.common.SpringApplicationContextHolder;
 import org.nuclos.common.collect.collectable.CollectableValueIdField;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
@@ -130,7 +131,7 @@ public class ListOfValues extends JPanel {
 
 	private SearchingWorker lastSearchingWorker = null;
 
-	private Timer lastTimer = null;
+	private TimerTask lastTimerTask = null;
 
 	private final TextFieldWithButton tf = new TextFieldWithButton(Icons.getInstance().getIconTextFieldButtonLOV()) {
 
@@ -374,7 +375,7 @@ public class ListOfValues extends JPanel {
 				if (searchOnLostFocus) {
 					actionSearch.actionPerformed(true);
 				} else {
-					if (lastTimer != null) lastTimer.cancel();
+					if (lastTimerTask != null) lastTimerTask.cancel();
 					if (lastSearchingWorker != null) lastSearchingWorker.setStopped(true);
 				}
 			}
@@ -412,17 +413,16 @@ public class ListOfValues extends JPanel {
 		private long enabledAt = 0l;
 
 		private void handleUpdate() {
-			if (enabledAt+25 >= System.currentTimeMillis()) {
-				// verarbeite nur Events die 25 ms nach einer Tastatureingabe getätigt wurden.
-
+			// verarbeite nur Events die 25 ms nach einer Tastatureingabe getätigt wurden.
+			if (enabledAt + 25 >= System.currentTimeMillis()) {
 				changesPending = true;
-
-				if (lastTimer != null) {
-					lastTimer.cancel();
+				if (lastTimerTask != null) {
+					lastTimerTask.cancel();
 				}
 
-				lastTimer = new Timer(this.getClass().getName() + " quick-search-delay");
-				TimerTask task = new TimerTask() {
+				// lastTimerTask = new Timer(this.getClass().getName() + " quick-search-delay");
+				final Timer timer = (Timer) SpringApplicationContextHolder.getBean("timer");
+				lastTimerTask = new TimerTask() {
 					@Override
 					public void run() {
 						UIUtils.invokeOnDispatchThread(new Runnable() {
@@ -435,7 +435,7 @@ public class ListOfValues extends JPanel {
 						});
 					}
 				};
-				lastTimer.schedule(task, QUICKSEARCH_DELAY_TIME);
+				timer.schedule(lastTimerTask, QUICKSEARCH_DELAY_TIME);
 			}
 		}
 

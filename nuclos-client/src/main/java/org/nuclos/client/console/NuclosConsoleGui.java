@@ -261,7 +261,7 @@ public class NuclosConsoleGui extends JPanel {
 
 				/** @todo what about resetting System.out/err? */
 			}
-		});
+		}, "NuclosConsoleGui.startCommand.parseAndInvoke");
 		thread.start();
 
 		new Thread(new Runnable() {
@@ -301,7 +301,7 @@ public class NuclosConsoleGui extends JPanel {
 					}
 				});
 			}
-		}).start();
+		}, "NuclosConsoleGui.startCommand.invokeOnDispatchThread").start();
 	}
 
 	public static JFrame showInFrame(JComponent parent) {
@@ -365,7 +365,7 @@ public class NuclosConsoleGui extends JPanel {
 					LOG.error("main failed: " + e, e);
 				}
 			}
-		}));
+		}, "NuclosConsoleGui.main.shutdownHook"));
 		final LoginPanel pnlLogin = new LoginPanel();
 		if (JOptionPane.showConfirmDialog(pnlLogin, pnlLogin, "NucleusConsoleGUI Login", JOptionPane.OK_CANCEL_OPTION) == JOptionPane.YES_OPTION)
 		{

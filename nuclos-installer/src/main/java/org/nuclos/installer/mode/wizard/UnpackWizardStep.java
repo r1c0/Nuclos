@@ -90,7 +90,7 @@ public class UnpackWizardStep extends AbstractWizardStep {
 					}
 				}
 			}
-		});
+		}, "UnpackWizardStep.prepare.unpack");
 		unpackThread.start();
 	}
 
