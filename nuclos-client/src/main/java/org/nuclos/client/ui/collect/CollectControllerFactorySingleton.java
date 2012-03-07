@@ -456,6 +456,7 @@ public class CollectControllerFactorySingleton {
 		final ValuelistProviderCollectController result = new ValuelistProviderCollectController(tabIfAny);
 		ss.setCollectController(result);
 		result.setSearchStrategy(ss);
+		result.init();
 		return result;
 	}
 	
@@ -464,6 +465,7 @@ public class CollectControllerFactorySingleton {
 		final DatasourceCollectController result = new DatasourceCollectController(tabIfAny);
 		ss.setCollectController(result);
 		result.setSearchStrategy(ss);
+		result.init();
 		return result;
 	}
 	
@@ -472,6 +474,7 @@ public class CollectControllerFactorySingleton {
 		final DynamicEntityCollectController result = new DynamicEntityCollectController(tabIfAny);
 		ss.setCollectController(result);
 		result.setSearchStrategy(ss);
+		result.init();
 		return result;
 	}
 	
@@ -480,6 +483,7 @@ public class CollectControllerFactorySingleton {
 		final RecordGrantCollectController result = new RecordGrantCollectController(tabIfAny);
 		ss.setCollectController(result);
 		result.setSearchStrategy(ss);
+		result.init();
 		return result;
 	}
 	
@@ -493,6 +497,7 @@ public class CollectControllerFactorySingleton {
 		final EntityRelationShipCollectController result = new EntityRelationShipCollectController(mf, tabIfAny);
 		ss.setCollectController(result);
 		result.setSearchStrategy(ss);
+		result.init();
 		return result;
 	}
 	
@@ -504,6 +509,7 @@ public class CollectControllerFactorySingleton {
 		final InstanceCollectController result = new InstanceCollectController(entity, tabIfAny);
 		ss.setCollectController(result);
 		result.setSearchStrategy(ss);
+		result.init();
 		return result;
 	}
 	
@@ -515,6 +521,7 @@ public class CollectControllerFactorySingleton {
 		final ProcessMonitorCollectController result = new ProcessMonitorCollectController(tabIfAny);
 		ss.setCollectController(result);
 		result.setSearchStrategy(ss);
+		result.init();
 		return result;
 	}
 	
@@ -526,6 +533,7 @@ public class CollectControllerFactorySingleton {
 		final RuleCollectController result = new RuleCollectController(tabIfAny);
 		ss.setCollectController(result);
 		result.setSearchStrategy(ss);
+		result.init();
 		return result;
 	}
 	
@@ -540,6 +548,7 @@ public class CollectControllerFactorySingleton {
 		ss.setCollectController(result);
 		result.setSearchStrategy(ss);
 		ss.setCompleteCollectablesStrategy(new CompleteCollectableStateModelsStrategy(result));
+		result.init();
 		return result;
 	}
 

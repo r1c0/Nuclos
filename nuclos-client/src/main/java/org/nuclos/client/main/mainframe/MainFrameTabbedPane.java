@@ -2271,4 +2271,10 @@ public class MainFrameTabbedPane {
 	public void add(MainFrameTab tab) {
 		mfTabbed.add(tab);
 	}
+
+	public void revalidate() {
+		mfTabbed.invalidate();
+		mfTabbed.revalidate();
+		mfTabbed.repaint();
+	}
 }

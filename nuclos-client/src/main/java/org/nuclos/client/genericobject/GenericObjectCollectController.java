@@ -639,6 +639,8 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	 * TODO: Make this protected again.
 	 */
 	public void init() {
+		super.init();
+		
 		initialize(pnlCollect);
 
 		final MainFrameTab tab = getTab();

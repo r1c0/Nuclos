@@ -270,6 +270,8 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	private final Map<String, Serializable> context = new HashMap<String, Serializable>();
 	
 	private InvokeWithInputRequiredSupport invokeWithInputRequiredSupport;
+	
+	private boolean newTabCreated = false;
 
 	/**
 	 * Messages for Collectable events
@@ -1022,9 +1024,19 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	}
 	
 	protected MainFrameTab newTab() {
-		MainFrameTab tab = Main.getInstance().getMainController().newMainFrameTab(this);
-		MainFrame.getPredefinedEntityOpenLocation(this.getEntityName()).add(tab);
+		MainFrameTab tab = new MainFrameTab();
+		newTabCreated = true;
 		return tab;
+	}
+	
+	/**
+	 * 
+	 */
+	public void init() {
+		if (newTabCreated) {
+			Main.getInstance().getMainController().initMainFrameTab(this, getTab());
+			MainFrame.getPredefinedEntityOpenLocation(getEntityName()).add(getTab());
+		}
 	}
 
 	/**
@@ -1548,7 +1560,7 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	}
 
 	protected void selectTab() {
-		this.getTab().setVisible(true);
+		getTab().setVisible(true);
 	}
 
 	/**

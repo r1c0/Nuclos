@@ -349,6 +349,8 @@ public class MasterDataCollectController extends EntityCollectController<Collect
 	 * TODO: Make this protected.
 	 */
 	public void init() {
+		super.init();
+		
 		if (this.isSearchPanelAvailable()) {
 			initSearchSubforms();
 			this.setupSearchToolBar();
