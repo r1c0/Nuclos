@@ -54,7 +54,7 @@ import org.springframework.transaction.annotation.Transactional;
  * <br>Created by Novabit Informationssysteme GmbH
  * <br>Please visit <a href="http://www.novabit.de">www.novabit.de</a>
  */
-@Transactional
+@Transactional(noRollbackFor= {Exception.class})
 @RolesAllowed("Login")
 public class TimelimitTaskFacadeBean extends NuclosFacadeBean implements TimelimitTaskFacadeRemote {
 	

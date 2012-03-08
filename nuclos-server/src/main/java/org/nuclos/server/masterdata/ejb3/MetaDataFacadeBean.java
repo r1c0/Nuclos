@@ -134,10 +134,7 @@ import org.springframework.transaction.interceptor.TransactionAspectSupport;
 * <br>Created by Novabit Informationssysteme GmbH
 * <br>Please visit <a href="http://www.novabit.de">www.novabit.de</a>
 */
-// @Stateless
-// @Local(MetaDataFacadeLocal.class)
-// @Remote(MetaDataFacadeRemote.class)
-@Transactional
+@Transactional(noRollbackFor= {Exception.class})
 public class MetaDataFacadeBean extends NuclosFacadeBean implements MetaDataFacadeRemote {
 
 	private static final Logger LOG = Logger.getLogger(MetaDataFacadeBean.class);

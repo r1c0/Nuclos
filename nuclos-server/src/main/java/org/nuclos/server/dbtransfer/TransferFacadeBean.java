@@ -153,7 +153,7 @@ import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
 
 
-@Transactional
+@Transactional(noRollbackFor= {Exception.class})
 @RolesAllowed("UseManagementConsole")
 public class TransferFacadeBean extends NuclosFacadeBean implements TransferFacadeRemote {
 

@@ -80,7 +80,7 @@ import org.springframework.transaction.interceptor.TransactionAspectSupport;
  * <br>Created by Novabit Informationssysteme GmbH
  * <br>Please visit <a href="http://www.novabit.de">www.novabit.de</a>
 */
-@Transactional
+@Transactional(noRollbackFor= {Exception.class})
 @RolesAllowed("Login")
 public class TimelimitRuleFacadeBean extends NuclosFacadeBean implements TimelimitRuleFacadeRemote {
 
@@ -324,7 +324,7 @@ public class TimelimitRuleFacadeBean extends NuclosFacadeBean implements Timelim
 		}
 	}
 
-	@Transactional(propagation=Propagation.REQUIRES_NEW)
+	@Transactional(propagation=Propagation.REQUIRES_NEW, noRollbackFor= {Exception.class})
     public Collection<String> getJobRules(Object oId) {
 		DbQueryBuilder builder = dataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<String> query = builder.createQuery(String.class);
@@ -374,7 +374,7 @@ public class TimelimitRuleFacadeBean extends NuclosFacadeBean implements Timelim
 		}
 	}
 
-	@Transactional(propagation=Propagation.REQUIRES_NEW)
+	@Transactional(propagation=Propagation.REQUIRES_NEW, rollbackFor= {Exception.class})
     public Pair<NuclosTimelimitRule, RuleInterface> prepareTimelimitRule(String ruleName, Integer sessionId) {
 		MasterDataVO mdvo = findByName(ruleName);
 		RuleVO rulevo = mdvo != null ? makeTimelimitRuleVO(mdvo) : null;
@@ -398,7 +398,7 @@ public class TimelimitRuleFacadeBean extends NuclosFacadeBean implements Timelim
 		return new Pair<NuclosTimelimitRule, RuleInterface>(ruleInstance, ri);
     }
 
-	@Transactional(propagation=Propagation.REQUIRES_NEW)
+	@Transactional(propagation=Propagation.REQUIRES_NEW, rollbackFor= {Exception.class})
     public Collection<Integer> executeTimelimitRule(NuclosTimelimitRule ruleInstance, RuleInterface ri) {
 	    return ruleInstance.getIntIds(ri);
     }
@@ -409,7 +409,7 @@ public class TimelimitRuleFacadeBean extends NuclosFacadeBean implements Timelim
 	 * @param ri the rule interface as parameter for executed method
 	 * @param iGenericObjectId the leased object id as parameter for executed method
 	 */
-	@Transactional(propagation=Propagation.REQUIRES_NEW)
+	@Transactional(propagation=Propagation.REQUIRES_NEW, rollbackFor= {Exception.class})
 	public void executeTimelimitRule(final NuclosTimelimitRule ruleInstance, final RuleInterface ri, final Integer iGenericObjectId) {
 		try {
 			ruleInstance.process(ri, iGenericObjectId);
@@ -420,9 +420,10 @@ public class TimelimitRuleFacadeBean extends NuclosFacadeBean implements Timelim
 			Logger.getLogger("TimelimitErrors").error(sErrorMessage);
 			LOG.warn(sErrorMessage);
 
-			// Let the transaction for this generic object id be rolled back and continue eventually with the next...
-			//getSessionContext().setRollbackOnly();
-			TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+			// Now the rollback is declared in annotation:
+			// obsolete: Let the transaction for this generic object id be rolled back and continue eventually with the next...
+			// obsolete: getSessionContext().setRollbackOnly();
+			// obsolete: TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
 		}
 	}
 

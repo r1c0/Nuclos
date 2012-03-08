@@ -44,7 +44,7 @@ import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
-@Transactional
+@Transactional(noRollbackFor= {Exception.class})
 public class CustomComponentFacadeBean extends NuclosFacadeBean implements CustomComponentFacadeRemote {
 
 	private static final Logger LOG = Logger.getLogger(CustomComponentFacadeBean.class);

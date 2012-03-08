@@ -45,7 +45,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 @RolesAllowed("Login")
-@Transactional
+@Transactional(noRollbackFor= {Exception.class})
 public class CodeFacadeBean extends NuclosFacadeBean implements CodeFacadeRemote {
 	
 	private MasterDataFacadeLocal masterDataFacade;

@@ -71,7 +71,7 @@ import org.springframework.transaction.interceptor.TransactionAspectSupport;
  * <br>Please visit <a href="http://www.novabit.de">www.novabit.de</a>
  */
 @RolesAllowed("Login")
-@Transactional
+@Transactional(noRollbackFor= {Exception.class})
 public class ImportFacadeBean extends NuclosFacadeBean implements ImportFacadeRemote {
 	
 	private Scheduler nuclosScheduler;
@@ -151,7 +151,7 @@ public class ImportFacadeBean extends NuclosFacadeBean implements ImportFacadeRe
 		}
 	}
 
-	@Transactional(propagation=Propagation.SUPPORTS)
+	@Transactional(propagation=Propagation.SUPPORTS, noRollbackFor= {Exception.class})
 	public List<FileImportResult> doImport(ImportContext context) throws NuclosFileImportException {
 		ImportFacadeLocal localInterface = ServerServiceLocator.getInstance().getFacade(ImportFacadeLocal.class);
 
@@ -226,7 +226,7 @@ public class ImportFacadeBean extends NuclosFacadeBean implements ImportFacadeRe
 		return result;
 	}
 
-	@Transactional(propagation=Propagation.REQUIRES_NEW)
+	@Transactional(propagation=Propagation.REQUIRES_NEW, noRollbackFor= {Exception.class})
     public List<FileImportResult> doAtomicImport(AbstractImport instance) throws NuclosFileImportException {
 		try {
 			return doImportInternal(instance);
@@ -237,7 +237,7 @@ public class ImportFacadeBean extends NuclosFacadeBean implements ImportFacadeRe
 		}
     }
 
-	@Transactional(propagation=Propagation.NOT_SUPPORTED)
+	@Transactional(propagation=Propagation.NOT_SUPPORTED, noRollbackFor= {Exception.class})
     public List<FileImportResult> doNonAtomicImport(AbstractImport instance) throws NuclosFileImportException {
 	    return doImportInternal(instance);
     }
@@ -315,7 +315,7 @@ public class ImportFacadeBean extends NuclosFacadeBean implements ImportFacadeRe
 	    return null;
     }
 
-	@Transactional(propagation=Propagation.REQUIRES_NEW)
+	@Transactional(propagation=Propagation.REQUIRES_NEW, noRollbackFor= {Exception.class})
 	public void setImportResult(Integer importfileId, ImportResult result, String summary) {
 		try {
 	    	MasterDataWithDependantsVO importfile = getMasterDataFacade().getWithDependants(NuclosEntity.IMPORTFILE.getEntityName(), importfileId);

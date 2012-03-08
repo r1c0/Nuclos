@@ -135,7 +135,7 @@ public class AutoDbSetup {
 		return CollectionUtils.getFirst(getInstalledVersions());
 	}
 
-	@Transactional(propagation=Propagation.REQUIRES_NEW)
+	@Transactional(propagation=Propagation.REQUIRES_NEW, noRollbackFor= {Exception.class})
 	public List<Pair<String, Date>> getInstalledVersions() {
 		DbQueryBuilder builder = dbAccess.getQueryBuilder();
 		DbQuery<DbTuple> query = builder.createTupleQuery();

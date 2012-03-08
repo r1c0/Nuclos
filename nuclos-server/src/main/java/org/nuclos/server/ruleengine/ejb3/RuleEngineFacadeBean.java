@@ -110,7 +110,7 @@ import org.springframework.transaction.annotation.Transactional;
  * <br>Created by Novabit Informationssysteme GmbH
  * <br>Please visit <a href="http://www.novabit.de">www.novabit.de</a>
  */
-@Transactional
+@Transactional(noRollbackFor= {Exception.class})
 public class RuleEngineFacadeBean extends NuclosFacadeBean implements RuleEngineFacadeRemote {
 	
 	private static final Logger LOG = Logger.getLogger(RuleEngineFacadeBean.class);

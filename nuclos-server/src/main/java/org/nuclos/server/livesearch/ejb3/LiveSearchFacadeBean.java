@@ -58,7 +58,7 @@ import org.springframework.transaction.annotation.Transactional;
  * is required for the search results, a pluggable module architecture exists
  * via the server-side configuration and implementations of LiveSearchAddFilter. 
  */
-@Transactional
+@Transactional(noRollbackFor= {Exception.class})
 public class LiveSearchFacadeBean extends NuclosFacadeBean implements LiveSearchFacadeRemote {
 	
 	private SessionUtils utils;
