@@ -47,4 +47,5 @@ public class ConsoleConstants {
 	public static final String CMD_CREATE_UNIQUECONSTRAINTS = "-createUniqueConstraints";
 	public static final String CMD_CREATE_FOREIGNCONSTRAINTS = "-createForeignConstraints";
 	public static final String CMD_VALIDATE_SCHEMA = "-validateSchema";
+	public static final String CMD_GENERATE_NUCLET_FROM_XLSX = "-generateNucletFromXLSX";
 }

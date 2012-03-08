@@ -38,6 +38,7 @@ import org.nuclos.client.attribute.AttributeDelegate;
 import org.nuclos.client.genericobject.GenericObjectMetaDataCache;
 import org.nuclos.client.layout.LayoutDelegate;
 import org.nuclos.client.masterdata.MasterDataDelegate;
+import org.nuclos.client.nuclet.NucletGenerator;
 import org.nuclos.client.report.ReportDelegate;
 import org.nuclos.client.rule.RuleDelegate;
 import org.nuclos.client.rule.TimelimitRuleDelegate;
@@ -102,7 +103,8 @@ public class NuclosConsole extends ConsoleConstants {
 			CMD_RESETUSERPREFERENCES, CMD_VALIDATEOBJECTGENERATIONS,
 			CMD_CHECKMASTERDATAVALUES, CMD_COMPILEDBOBJECTS,
 			CMD_SENDMESSAGE, CMD_KILLSESSION,
-			CMD_IMPORTTIMELIMITRULES, CMD_EXPORTTIMELIMITRULES, CMD_EXECUTE_TIMELIMITRULE_NOW
+			CMD_IMPORTTIMELIMITRULES, CMD_EXPORTTIMELIMITRULES, CMD_EXECUTE_TIMELIMITRULE_NOW,
+			CMD_GENERATE_NUCLET_FROM_XLSX
 	);
 
 	private static NuclosConsole INSTANCE;
@@ -784,6 +786,14 @@ public class NuclosConsole extends ConsoleConstants {
 		}
 		else if (sCommandLowerCase.equals(CMD_MIGRATESEARCHFILTER)) {
 			MigrateSearchFilterPreferences.migrate(sUserName);
+		}
+		else if (sCommandLowerCase.equals(CMD_GENERATE_NUCLET_FROM_XLSX)) {
+			NucletGenerator generator = new NucletGenerator();
+			if (asArgs.length == 1) {
+				generator.generateNucletFromXLSX(asArgs[0]);
+			} else {
+				generator.generateNucletFromXLSX();
+			}
 		}
 		else {
 			throw new CommonBusinessException("Unknown command: " + sCommand + "\n" + getUsage());
