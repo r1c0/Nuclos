@@ -247,9 +247,9 @@ public class FixedColumnRowHeader extends SubformRowHeader {
 		final List<CollectableEntityField> lstSelected = new ArrayList<CollectableEntityField>(lstFixed);
 		lstSelected.addAll(getDisplayedExternalTableFields());
 		final List<CollectableEntityField> lstSelectedNew = new ArrayList<CollectableEntityField>(lstSelected);
-		lstSelected.remove(clctefToHide);
+		lstSelectedNew.remove(clctefToHide);
 		
-		changeSelectedColumns(lstSelected, lstFixed, null, getVisibleColumnWidth(), null, actAfterSelection);
+		changeSelectedColumns(lstSelectedNew, lstFixed, null, getVisibleColumnWidth(), null, actAfterSelection);
 		
 		// add DEselected to hidden in preferences
 		final Collection<? extends CollectableEntityField> collDeselected = CollectionUtils.subtract(lstSelected, lstSelectedNew);
