@@ -74,7 +74,7 @@ public abstract class AbstractNucletContentEntryTreeNode implements TreeNode {
 
 		result.add(NuclosEntity.GROUP);
 		result.add(NuclosEntity.GROUPTYPE);
-		result.add(NuclosEntity.TASKSTATUS);
+		result.add(NuclosEntity.TODOSTATUS);
 		result.add(NuclosEntity.RELATIONTYPE);
 		result.add(NuclosEntity.RESOURCE);
 

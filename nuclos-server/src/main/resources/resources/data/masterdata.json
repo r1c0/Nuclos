@@ -3105,15 +3105,15 @@
   },
   {
     "name": "Bearbeitungsstatus",
-    "entity": "nuclos_taskstatus",
+    "entity": "nuclos_todostatus",
     "searchable": false,
     "editable": true,
     "cacheable": false,
     "dbentity": "V_UD_TODOSTATUS",
     "importexport": true,
     "systementity": true,
-    "labelres": "nuclos.entity.taskstatus.label",
-    "menupathres": "nuclos.entity.taskstatus.menupath",
+    "labelres": "nuclos.entity.todostatus.label",
+    "menupathres": "nuclos.entity.todostatus.menupath",
     "nuclosresource": "org.nuclos.client.resource.icon.glyphish-blue.15-tags.png",
     "uniquefields": [
       [
@@ -3132,8 +3132,8 @@
         "searchable": false,
         "logbook": false,
         "unique": true,
-        "labelres": "nuclos.entityfield.taskstatus.name.label",
-        "descriptionres": "nuclos.entityfield.taskstatus.name.description"
+        "labelres": "nuclos.entityfield.todostatus.name.label",
+        "descriptionres": "nuclos.entityfield.todostatus.name.description"
       },
       {
         "name": "description",
@@ -3146,8 +3146,8 @@
         "searchable": false,
         "logbook": false,
         "unique": false,
-        "labelres": "nuclos.entityfield.taskstatus.description.label",
-        "descriptionres": "nuclos.entityfield.taskstatus.description.description"
+        "labelres": "nuclos.entityfield.todostatus.description.label",
+        "descriptionres": "nuclos.entityfield.todostatus.description.description"
       },
       {
         "name": "nuclet",
@@ -3166,14 +3166,14 @@
   },
   {
     "name": "Dokumentenanhang",
-    "entity": "nuclos_taskfiles",
+    "entity": "nuclos_todofiles",
     "searchable": false,
     "editable": true,
     "cacheable": false,
     "dbentity": "V_UD_TODO_FILES",
     "importexport": true,
     "systementity": true,
-    "labelres": "nuclos.entity.taskfiles.label",
+    "labelres": "nuclos.entity.todofiles.label",
     "nuclos_entityfield": [
       {
         "name": "file",
@@ -3183,8 +3183,8 @@
         "datatype": "org.nuclos.server.genericobject.valueobject.GenericObjectDocumentFile",
         "nullable": false,
         "unique": false,
-        "labelres": "nuclos.entityfield.taskfiles.file.label",
-        "descriptionres": "nuclos.entityfield.taskfiles.file.description"
+        "labelres": "nuclos.entityfield.todofiles.file.label",
+        "descriptionres": "nuclos.entityfield.todofiles.file.description"
       },
       {
         "name": "description",
@@ -3197,36 +3197,36 @@
         "searchable": false,
         "logbook": false,
         "unique": false,
-        "labelres": "nuclos.entityfield.taskfiles.description.label",
-        "descriptionres": "nuclos.entityfield.taskfiles.description.description"
+        "labelres": "nuclos.entityfield.todofiles.description.label",
+        "descriptionres": "nuclos.entityfield.todofiles.description.description"
       },
       {
         "name": "tasklist",
         "dbfield": "STRVALUE_T_UD_TODOLIST",
         "label": "Aufgabenliste",
         "description": "Aufgabenliste",
-        "foreignentity": "nuclos_tasklist",
+        "foreignentity": "nuclos_todolist",
         "datatype": "java.lang.String",
         "datascale": 255,
         "nullable": false,
         "searchable": false,
         "logbook": false,
         "unique": false,
-        "labelres": "nuclos.entityfield.taskfiles.tasklist.label",
-        "descriptionres": "nuclos.entityfield.taskfiles.tasklist.description"
+        "labelres": "nuclos.entityfield.todofiles.tasklist.label",
+        "descriptionres": "nuclos.entityfield.todofiles.tasklist.description"
       }
     ]
   },
   {
     "name": "Aufgabe",
-    "entity": "nuclos_tasklist",
+    "entity": "nuclos_todolist",
     "searchable": true,
     "editable": true,
     "cacheable": false,
     "dbentity": "V_UD_TODOLIST",
     "importexport": false,
     "systementity": true,
-    "labelres": "nuclos.entity.tasklist.label",
+    "labelres": "nuclos.entity.todolist.label",
     "nuclos_entityfield": [
       {
         "name": "name",
@@ -3239,8 +3239,8 @@
         "searchable": false,
         "logbook": false,
         "unique": false,
-        "labelres": "nuclos.entityfield.tasklist.name.label",
-        "descriptionres": "nuclos.entityfield.tasklist.name.description"
+        "labelres": "nuclos.entityfield.todolist.name.label",
+        "descriptionres": "nuclos.entityfield.todolist.name.description"
       },
       {
         "name": "visibility",
@@ -3255,8 +3255,8 @@
         "logbook": false,
         "unique": false,
         "entityfieldDefault": "1",
-        "labelres": "nuclos.entityfield.tasklist.visibility.label",
-        "descriptionres": "nuclos.entityfield.tasklist.visibility.description"
+        "labelres": "nuclos.entityfield.todolist.visibility.label",
+        "descriptionres": "nuclos.entityfield.todolist.visibility.description"
       },
       {
         "name": "priority",
@@ -3270,8 +3270,8 @@
         "searchable": false,
         "logbook": false,
         "unique": false,
-        "labelres": "nuclos.entityfield.tasklist.priority.label",
-        "descriptionres": "nuclos.entityfield.tasklist.priority.description"
+        "labelres": "nuclos.entityfield.todolist.priority.label",
+        "descriptionres": "nuclos.entityfield.todolist.priority.description"
       },
       {
         "name": "scheduled",
@@ -3283,23 +3283,23 @@
         "searchable": false,
         "logbook": false,
         "unique": false,
-        "labelres": "nuclos.entityfield.tasklist.scheduled.label",
-        "descriptionres": "nuclos.entityfield.tasklist.scheduled.description"
+        "labelres": "nuclos.entityfield.todolist.scheduled.label",
+        "descriptionres": "nuclos.entityfield.todolist.scheduled.description"
       },
       {
         "name": "taskstatus",
         "dbfield": "STRVALUE_T_UD_TODOSTATUS",
         "label": "Bearbeitungsstatus",
         "description": "Bearbeitungsstatus",
-        "foreignentity": "nuclos_taskstatus",
+        "foreignentity": "nuclos_todostatus",
         "datatype": "java.lang.String",
         "datascale": 255,
         "nullable": true,
         "searchable": false,
         "logbook": false,
         "unique": false,
-        "labelres": "nuclos.entityfield.tasklist.taskstatus.label",
-        "descriptionres": "nuclos.entityfield.tasklist.taskstatus.description"
+        "labelres": "nuclos.entityfield.todolist.taskstatus.label",
+        "descriptionres": "nuclos.entityfield.todolist.taskstatus.description"
       },
       {
         "name": "description",
@@ -3312,8 +3312,8 @@
         "searchable": false,
         "logbook": false,
         "unique": false,
-        "labelres": "nuclos.entityfield.tasklist.description.label",
-        "descriptionres": "nuclos.entityfield.tasklist.description.description"
+        "labelres": "nuclos.entityfield.todolist.description.label",
+        "descriptionres": "nuclos.entityfield.todolist.description.description"
       },
       {
         "name": "comment",
@@ -3326,8 +3326,8 @@
         "searchable": false,
         "logbook": false,
         "unique": false,
-        "labelres": "nuclos.entityfield.tasklist.comment.label",
-        "descriptionres": "nuclos.entityfield.tasklist.comment.description"
+        "labelres": "nuclos.entityfield.todolist.comment.label",
+        "descriptionres": "nuclos.entityfield.todolist.comment.description"
       },
       {
         "name": "delegator",
@@ -3340,8 +3340,8 @@
         "searchable": false,
         "logbook": false,
         "unique": false,
-        "labelres": "nuclos.entityfield.tasklist.delegator.label",
-        "descriptionres": "nuclos.entityfield.tasklist.delegator.description"
+        "labelres": "nuclos.entityfield.todolist.delegator.label",
+        "descriptionres": "nuclos.entityfield.todolist.delegator.description"
       },
       {
         "name": "taskdelegator",
@@ -3356,8 +3356,8 @@
         "logbook": false,
         "unique": false,
 		"foreignentityfield": "${lastname}, ${firstname}",
-        "labelres": "nuclos.entityfield.tasklist.taskdelegator.label",
-        "descriptionres": "nuclos.entityfield.tasklist.taskdelegator.description"
+        "labelres": "nuclos.entityfield.todolist.taskdelegator.label",
+        "descriptionres": "nuclos.entityfield.todolist.taskdelegator.description"
       },
       {
         "name": "completed",
@@ -3369,21 +3369,21 @@
         "searchable": false,
         "logbook": false,
         "unique": false,
-        "labelres": "nuclos.entityfield.tasklist.completed.label",
-        "descriptionres": "nuclos.entityfield.tasklist.completed.description"
+        "labelres": "nuclos.entityfield.todolist.completed.label",
+        "descriptionres": "nuclos.entityfield.todolist.completed.description"
       }
     ]
   },
   {
     "name": "Aufgabenzuordnung",
-    "entity": "nuclos_taskobject",
+    "entity": "nuclos_todoobject",
     "searchable": false,
     "editable": true,
     "cacheable": false,
     "dbentity": "V_UD_TODO_OBJECT",
     "importexport": false,
     "systementity": true,
-    "labelres": "nuclos.entity.taskobject.label",
+    "labelres": "nuclos.entity.todoobject.label",
     "nuclos_entityfield": [
       {
         "name": "entityId",
@@ -3397,15 +3397,15 @@
         "searchable": false,
         "logbook": false,
         "unique": false,
-        "labelres": "nuclos.entityfield.taskobject.genericObject.label",
-        "descriptionres": "nuclos.entityfield.taskobject.genericObject.description"
+        "labelres": "nuclos.entityfield.todoobject.genericObject.label",
+        "descriptionres": "nuclos.entityfield.todoobject.genericObject.description"
       },
       {
         "name": "tasklist",
         "dbfield": "INTID_T_UD_TODOLIST",
         "label": "Aufgabenliste",
         "description": "Aufgabenliste",
-        "foreignentity": "nuclos_tasklist",
+        "foreignentity": "nuclos_todolist",
         "datatype": "java.lang.Integer",
         "datascale": 20,
         "dataprecision": 0,
@@ -3413,8 +3413,8 @@
         "searchable": false,
         "logbook": false,
         "unique": false,
-        "labelres": "nuclos.entityfield.taskobject.tasklist.label",
-        "descriptionres": "nuclos.entityfield.taskobject.tasklist.description"
+        "labelres": "nuclos.entityfield.todoobject.tasklist.label",
+        "descriptionres": "nuclos.entityfield.todoobject.tasklist.description"
       },
       {
         "name": "entity",
@@ -3427,8 +3427,8 @@
         "searchable": false,
         "logbook": false,
         "unique": false,
-        "labelres": "nuclos.entityfield.taskobject.entity.label",
-        "descriptionres": "nuclos.entityfield.taskobject.entity.description"
+        "labelres": "nuclos.entityfield.todoobject.entity.label",
+        "descriptionres": "nuclos.entityfield.todoobject.entity.description"
       }
     ]
   },
@@ -4730,7 +4730,7 @@
         "name": "tasklist",
         "dbfield": "INTID_T_UD_TODOLIST",
         "label": "Referenz zum Task",
-        "foreignentity": "nuclos_tasklist",
+        "foreignentity": "nuclos_todolist",
         "datatype": "java.lang.Integer",
         "datascale": 9,
         "dataprecision": 0,
@@ -10228,6 +10228,290 @@
         "unique": true,
         "labelres": "nuclos.entityfield.dummy.name.label",
         "descriptionres": "nuclos.entityfield.dummy.name.label"
+      }
+    ]
+  },
+  {
+    "name": "Task list",
+    "entity": "nuclos_dynamictasklist",
+    "searchable": false,
+    "editable": true,
+    "cacheable": true,
+    "dbentity": "V_MD_DYNAMICTASKLIST",
+    "importexport": true,
+    "systementity": true,
+    "labelres": "nuclos.entity.dynamictasklist.label",
+    "menupathres": "nuclos.entity.dynamictasklist.menupath",
+    "nuclosresource": "org.nuclos.client.resource.icon.glyphish-blue.12-eye.png",
+    "uniquefields": [ [ "name" ] ],
+    "nuclos_entityfield": [
+      {
+        "name": "valid",
+        "dbfield": "BLNVALID",
+        "datatype": "java.lang.Boolean",
+        "nullable": false,
+        "searchable": false,
+        "logbook": false,
+        "unique": false,
+        "labelres": "nuclos.entityfield.dynamictasklist.valid.label",
+        "descriptionres": "nuclos.entityfield.dynamictasklist.valid.description"
+      },
+      {
+        "name": "name",
+        "dbfield": "STRNAME",
+        "datatype": "java.lang.String",
+        "datascale": 255,
+        "nullable": false,
+        "searchable": false,
+        "logbook": false,
+        "unique": true,
+        "labelres": "nuclos.entityfield.dynamictasklist.name.label",
+        "descriptionres": "nuclos.entityfield.dynamictasklist.name.description"
+      },
+      {
+        "name": "description",
+        "dbfield": "STRDESCRIPTION",
+        "datatype": "java.lang.String",
+        "datascale": 4000,
+        "nullable": true,
+        "searchable": false,
+        "logbook": false,
+        "unique": false,
+        "labelres": "nuclos.entityfield.dynamictasklist.description.label",
+        "descriptionres": "nuclos.entityfield.dynamictasklist.description.description"
+      },
+      {
+        "name": "source",
+        "dbfield": "CLBXML",
+        "datatype": "java.lang.String",
+        "nullable": false,
+        "searchable": true,
+        "logbook": false,
+        "unique": false,
+        "labelres": "nuclos.entityfield.dynamictasklist.source.label",
+        "descriptionres": "nuclos.entityfield.dynamictasklist.source.description"
+      },
+      {
+        "name": "nuclet",
+        "dbfield": "STRVALUE_T_MD_NUCLET",
+        "foreignentity": "nuclos_nuclet",
+        "datatype": "java.lang.String",
+        "datascale": 255,
+        "nullable": true,
+        "searchable": false,
+        "logbook": false,
+        "foreignentityfield": "name",
+        "unique": false,
+        "labelres": "nuclet.foreign.label"
+      }
+    ]
+  },
+  {
+    "name": "Task list usage",
+    "entity": "nuclos_dynamictasklistUsage",
+    "searchable": true,
+    "editable": true,
+    "cacheable": false,
+    "dbentity": "V_MD_DYNAMICTASKLIST_USAGE",
+    "importexport": true,
+    "systementity": true,
+    "labelres": "nuclos.entity.dynamictasklistusage.label",
+    "nuclos_entityfield": [
+      {
+        "name": "tasklist",
+        "dbfield": "INTID_T_MD_DYNAMICTASKLIST",
+        "label": "Task list",
+        "description": "Task list",
+        "foreignentity": "nuclos_dynamictasklist",
+        "datatype": "java.lang.String",
+        "datascale": 255,
+        "nullable": false,
+        "searchable": true,
+        "logbook": false,
+        "unique": true
+      },
+      {
+        "name": "tasklistUsed",
+        "dbfield": "INTID_T_MD_DYNAMICTASKLIST_USED",
+        "label": "Used task list",
+        "description": "Used task list",
+        "foreignentity": "nuclos_dynamictasklist",
+        "datatype": "java.lang.String",
+        "datascale": 255,
+        "nullable": false,
+        "searchable": true,
+        "logbook": false,
+        "unique": true
+      }
+    ]
+  },
+  {
+    "name": "Taskliste",
+    "entity": "nuclos_tasklist",
+    "searchable": false,
+    "editable": true,
+    "cacheable": true,
+    "dbentity": "V_MD_TASKLIST",
+    "importexport": true,
+    "systementity": true,
+    "labelres": "nuclos.entity.tasklist.label",
+    "descriptionres": "nuclos.entity.tasklist.description",
+    "menupathres": "nuclos.entity.tasklist.menupath",
+    "nuclosresource": "org.nuclos.client.resource.icon.glyphish-blue.06-magnify.png",
+    "nuclos_entityfield": [
+      {
+        "name": "name",
+        "dbfield": "STRNAME",
+        "label": "Name",
+        "description": "Name der Taskliste",
+        "datatype": "java.lang.String",
+        "datascale": 255,
+        "nullable": false,
+        "searchable": false,
+        "logbook": false,
+        "unique": true,
+        "labelres": "nuclos.entityfield.tasklist.name.label",
+        "descriptionres": "nuclos.entityfield.tasklist.name.description"
+      },
+      {
+        "name": "description",
+        "dbfield": "STRDESCRIPTION",
+        "label": "Beschreibung",
+        "description": "Beschreibung der Taskliste",
+        "datatype": "java.lang.String",
+        "datascale": 255,
+        "nullable": true,
+        "searchable": false,
+        "logbook": false,
+        "unique": false,
+        "labelres": "nuclos.entityfield.tasklist.description.label",
+        "descriptionres": "nuclos.entityfield.tasklist.description.description"
+      },
+      {
+        "name": "labelres",
+        "dbfield": "STR_LOCALERESOURCE_L",
+        "label": "Ressourcen-ID für den Namen",
+        "datatype": "java.lang.String",
+        "datascale": 255,
+        "nullable": true,
+        "searchable": false,
+        "logbook": false,
+        "unique": false,
+        "resourcefield": true,
+        "labelres": "nuclos.entityfield.tasklist.labelres.label"
+      },
+      {
+        "name": "descriptionres",
+        "dbfield": "STR_LOCALERESOURCE_D",
+        "label": "Ressourcen-ID für die Beschreibung",
+        "datatype": "java.lang.String",
+        "datascale": 255,
+        "nullable": true,
+        "searchable": false,
+        "logbook": false,
+        "unique": false,
+        "resourcefield": true,
+        "labelres": "nuclos.entityfield.tasklist.descriptionres.label"
+      },
+      {
+        "name": "menupathres",
+        "dbfield": "STR_LOCALERESOURCE_M",
+        "label": "Ressourcen-ID für den Menüpfad",
+        "datatype": "java.lang.String",
+        "datascale": 255,
+        "nullable": true,
+        "searchable": false,
+        "logbook": false,
+        "unique": false,
+        "resourcefield": true,
+        "labelres": "nuclos.entityfield.tasklist.menupathres.label"
+      },
+      {
+        "name": "datasource",
+        "dbfield": "STRVALUE_T_MD_DYNAMICTASKLIST",
+        "datatype": "java.lang.String",
+        "datascale": 255,
+        "foreignentity": "nuclos_dynamictasklist",
+        "foreignentityfield": "name",
+        "nullable": false,
+        "searchable": false,
+        "logbook": false,
+        "labelres": "nuclos.entityfield.tasklist.datasource.label",
+        "descriptionres": "nuclos.entityfield.tasklist.datasource.description"
+      },
+      {
+        "name": "datasourceIdField",
+        "dbfield": "STRDATASOURCEIDFIELD",
+        "datatype": "java.lang.String",
+        "datascale": 255,
+        "nullable": true,
+        "searchable": false,
+        "logbook": false,
+        "labelres": "nuclos.entityfield.tasklist.datasourceidfield.label",
+        "descriptionres": "nuclos.entityfield.tasklist.datasourceidfield.description"
+      },
+      {
+        "name": "datasourceEntityField",
+        "dbfield": "STRDATASOURCEENTITYFIELD",
+        "datatype": "java.lang.String",
+        "datascale": 255,
+        "nullable": true,
+        "searchable": false,
+        "logbook": false,
+        "labelres": "nuclos.entityfield.tasklist.datasourceentityfield.label",
+        "descriptionres": "nuclos.entityfield.tasklist.datasourceentityfield.description"
+      },
+      {
+        "name": "nuclet",
+        "dbfield": "STRVALUE_T_MD_NUCLET",
+        "foreignentity": "nuclos_nuclet",
+        "datatype": "java.lang.String",
+        "datascale": 255,
+        "nullable": true,
+        "searchable": false,
+        "logbook": false,
+        "foreignentityfield": "name",
+        "unique": false,
+        "labelres": "nuclet.foreign.label"
+      }
+    ]
+  },
+  {
+    "entity": "nuclos_tasklistrole",
+    "searchable": false,
+    "editable": true,
+    "cacheable": false,
+    "dbentity": "V_MD_TASKLIST_ROLE",
+    "importexport": true,
+    "systementity": true,
+    "labelres": "nuclos.entity.tasklistrole.label",
+    "nuclos_entityfield": [
+      {
+        "name": "tasklist",
+        "dbfield": "STRVALUE_T_MD_TASKLIST",
+        "foreignentity": "nuclos_tasklist",
+        "datatype": "java.lang.String",
+        "datascale": 255,
+        "nullable": false,
+        "searchable": false,
+        "logbook": false,
+        "unique": true,
+        "labelres": "nuclos.entityfield.tasklistrole.tasklist.label",
+        "descriptionres": "nuclos.entityfield.tasklistrole.tasklist.description"
+      },
+      {
+        "name": "role",
+        "dbfield": "STRVALUE_T_MD_ROLE",
+        "foreignentity": "nuclos_role",
+        "datatype": "java.lang.String",
+        "datascale": 255,
+        "nullable": false,
+        "searchable": false,
+        "logbook": false,
+        "foreignentityfield": "name",
+        "unique": true,
+        "labelres": "nuclos.entityfield.tasklistrole.role.label",
+        "descriptionres": "nuclos.entityfield.tasklistrole.role.description"
       }
     ]
   }

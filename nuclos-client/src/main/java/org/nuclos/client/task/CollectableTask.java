@@ -67,41 +67,41 @@ public class CollectableTask extends AbstractCollectableBean<TaskVO> {
 			super("__task", SpringLocaleDelegate.getInstance().getMessage("CollectableTask.2","Titel"));
 
 			this.addCollectableEntityField(new DefaultCollectableEntityField(FIELDNAME_NAME, String.class,
-					getSpringLocaleDelegate().getMessage("nuclos.entityfield.tasklist.name.label","Titel"),
-					getSpringLocaleDelegate().getMessage("nuclos.entityfield.tasklist.name.description","Titel"), null, null, false, CollectableField.TYPE_VALUEFIELD, null, null, TASK_ENTITY));
+					getSpringLocaleDelegate().getMessage("nuclos.entityfield.todolist.name.label","Titel"),
+					getSpringLocaleDelegate().getMessage("nuclos.entityfield.todolist.name.description","Titel"), null, null, false, CollectableField.TYPE_VALUEFIELD, null, null, TASK_ENTITY));
 			this.addCollectableEntityField(new DefaultCollectableEntityField(FIELDNAME_VISIBILITY, Integer.class,
-					getSpringLocaleDelegate().getMessage("nuclos.entityfield.tasklist.visibility.label","Sichtbarkeit"),
-					getSpringLocaleDelegate().getMessage("nuclos.entityfield.tasklist.visibility.description","Sichtbarkeit"), null, null, true, CollectableField.TYPE_VALUEFIELD, null, null, TASK_ENTITY));
+					getSpringLocaleDelegate().getMessage("nuclos.entityfield.todolist.visibility.label","Sichtbarkeit"),
+					getSpringLocaleDelegate().getMessage("nuclos.entityfield.todolist.visibility.description","Sichtbarkeit"), null, null, true, CollectableField.TYPE_VALUEFIELD, null, null, TASK_ENTITY));
 			this.addCollectableEntityField(new DefaultCollectableEntityField(FIELDNAME_PRIORITY, Integer.class,
-					getSpringLocaleDelegate().getMessage("nuclos.entityfield.tasklist.priority.label","Priorit\u00e4t"),
-					getSpringLocaleDelegate().getMessage("nuclos.entityfield.tasklist.priority.description","Priorit\u00e4t"), null, null, true, CollectableField.TYPE_VALUEFIELD, null, null, TASK_ENTITY));
+					getSpringLocaleDelegate().getMessage("nuclos.entityfield.todolist.priority.label","Priorit\u00e4t"),
+					getSpringLocaleDelegate().getMessage("nuclos.entityfield.todolist.priority.description","Priorit\u00e4t"), null, null, true, CollectableField.TYPE_VALUEFIELD, null, null, TASK_ENTITY));
 			this.addCollectableEntityField(new DefaultCollectableEntityField(FIELDNAME_SCHEDULED, Date.class,
-					getSpringLocaleDelegate().getMessage("nuclos.entityfield.tasklist.scheduled.label","Termin"),
-					getSpringLocaleDelegate().getMessage("nuclos.entityfield.tasklist.scheduled.description","Termin"), null, null, true, CollectableField.TYPE_VALUEFIELD, null, null, TASK_ENTITY));
+					getSpringLocaleDelegate().getMessage("nuclos.entityfield.todolist.scheduled.label","Termin"),
+					getSpringLocaleDelegate().getMessage("nuclos.entityfield.todolist.scheduled.description","Termin"), null, null, true, CollectableField.TYPE_VALUEFIELD, null, null, TASK_ENTITY));
 			this.addCollectableEntityField(new DefaultCollectableEntityField(FIELDNAME_TASKSTATUS, String.class,
-					getSpringLocaleDelegate().getMessage("nuclos.entityfield.tasklist.taskstatus.label","Bearbeitungsstatus"),
-					getSpringLocaleDelegate().getMessage("nuclos.entityfield.tasklist.taskstatus.description","Bearbeitungsstatus"), null, null, true, CollectableField.TYPE_VALUEFIELD, null, null, TASK_ENTITY));
+					getSpringLocaleDelegate().getMessage("nuclos.entityfield.todolist.taskstatus.label","Bearbeitungsstatus"),
+					getSpringLocaleDelegate().getMessage("nuclos.entityfield.todolist.taskstatus.description","Bearbeitungsstatus"), null, null, true, CollectableField.TYPE_VALUEFIELD, null, null, TASK_ENTITY));
 			this.addCollectableEntityField(new DefaultCollectableEntityField(FIELDNAME_DESCRIPTION, String.class,
-					getSpringLocaleDelegate().getMessage("nuclos.entityfield.tasklist.description.label","Beschreibung"),
-					getSpringLocaleDelegate().getMessage("nuclos.entityfield.tasklist.description.description","Beschreibung"), null, null, true, CollectableField.TYPE_VALUEFIELD, null, null, TASK_ENTITY));
+					getSpringLocaleDelegate().getMessage("nuclos.entityfield.todolist.description.label","Beschreibung"),
+					getSpringLocaleDelegate().getMessage("nuclos.entityfield.todolist.description.description","Beschreibung"), null, null, true, CollectableField.TYPE_VALUEFIELD, null, null, TASK_ENTITY));
 			this.addCollectableEntityField(new DefaultCollectableEntityField(FIELDNAME_COMMENT, String.class,
-					getSpringLocaleDelegate().getMessage("nuclos.entityfield.tasklist.comment.label","Bemerkung"),
-					getSpringLocaleDelegate().getMessage("nuclos.entityfield.tasklist.comment.description","Bemerkung"), null, null, true, CollectableField.TYPE_VALUEFIELD, null, null, TASK_ENTITY));
+					getSpringLocaleDelegate().getMessage("nuclos.entityfield.todolist.comment.label","Bemerkung"),
+					getSpringLocaleDelegate().getMessage("nuclos.entityfield.todolist.comment.description","Bemerkung"), null, null, true, CollectableField.TYPE_VALUEFIELD, null, null, TASK_ENTITY));
 			this.addCollectableEntityField(new DefaultCollectableEntityField(FIELDNAME_DELEGATOR, String.class,
-					getSpringLocaleDelegate().getMessage("nuclos.entityfield.tasklist.taskdelegator.label","Ersteller"),
-					getSpringLocaleDelegate().getMessage("nuclos.entityfield.tasklist.taskdelegator.description","Ersteller"), null, null, true, CollectableField.TYPE_VALUEFIELD, null, null, TASK_ENTITY));
+					getSpringLocaleDelegate().getMessage("nuclos.entityfield.todolist.taskdelegator.label","Ersteller"),
+					getSpringLocaleDelegate().getMessage("nuclos.entityfield.todolist.taskdelegator.description","Ersteller"), null, null, true, CollectableField.TYPE_VALUEFIELD, null, null, TASK_ENTITY));
 			this.addCollectableEntityField(new DefaultCollectableEntityField(FIELDNAME_COMPLETED, Date.class,
-					getSpringLocaleDelegate().getMessage("nuclos.entityfield.tasklist.completed.label","Erledigt am"),
-					getSpringLocaleDelegate().getMessage("nuclos.entityfield.tasklist.completed.description","Erledigt am"), null, null, true, CollectableField.TYPE_VALUEFIELD, null, null, TASK_ENTITY));
+					getSpringLocaleDelegate().getMessage("nuclos.entityfield.todolist.completed.label","Erledigt am"),
+					getSpringLocaleDelegate().getMessage("nuclos.entityfield.todolist.completed.description","Erledigt am"), null, null, true, CollectableField.TYPE_VALUEFIELD, null, null, TASK_ENTITY));
 			this.addCollectableEntityField(new DefaultCollectableEntityField(FIELDNAME_OWNERNAME, String.class,
 					getSpringLocaleDelegate().getMessage("nuclos.entityfield.taskowner.user.label","Bearbeiter"),
 					getSpringLocaleDelegate().getMessage("nuclos.entityfield.taskowner.user.label","Bearbeiter"), null, null, true, CollectableField.TYPE_VALUEFIELD, null, null, TASK_ENTITY));
 			this.addCollectableEntityField(new DefaultCollectableEntityField(FIELDNAME_DELEGATORNAME, String.class,
-					getSpringLocaleDelegate().getMessage("nuclos.entityfield.tasklist.taskdelegator.label","Ersteller)"),
-					getSpringLocaleDelegate().getMessage("nuclos.entityfield.tasklist.taskdelegator.description","Ersteller"), null, null, true, CollectableField.TYPE_VALUEFIELD, null, null, TASK_ENTITY));
+					getSpringLocaleDelegate().getMessage("nuclos.entityfield.todolist.taskdelegator.label","Ersteller)"),
+					getSpringLocaleDelegate().getMessage("nuclos.entityfield.todolist.taskdelegator.description","Ersteller"), null, null, true, CollectableField.TYPE_VALUEFIELD, null, null, TASK_ENTITY));
 			this.addCollectableEntityField(new DefaultCollectableEntityField(FIELDNAME_RELATEDOBJECTS, String.class,
-					getSpringLocaleDelegate().getMessage("nuclos.entityfield.taskobject.genericObject.label","Zugeordnet(e) Objekt(e)"),
-					getSpringLocaleDelegate().getMessage("nuclos.entityfield.taskobject.genericObject.label","Zugeordnet(e) Objekt(e)"), null, null, true, CollectableField.TYPE_VALUEFIELD, null, null, TASK_ENTITY));
+					getSpringLocaleDelegate().getMessage("nuclos.entityfield.todoobject.genericObject.label","Zugeordnet(e) Objekt(e)"),
+					getSpringLocaleDelegate().getMessage("nuclos.entityfield.todoobject.genericObject.label","Zugeordnet(e) Objekt(e)"), null, null, true, CollectableField.TYPE_VALUEFIELD, null, null, TASK_ENTITY));
 			this.addCollectableEntityField(new DefaultCollectableEntityField(FIELDNAME_CREATEDAT, Date.class,  
 					getSpringLocaleDelegate().getMessage("CollectableTask.16","Erstellt am"),
 					getSpringLocaleDelegate().getMessage("CollectableTask.18","Erstellt am"), null, null, false, CollectableField.TYPE_VALUEFIELD, null, null, TASK_ENTITY));

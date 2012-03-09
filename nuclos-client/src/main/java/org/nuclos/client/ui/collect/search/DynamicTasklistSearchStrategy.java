@@ -25,13 +25,14 @@ import org.nuclos.client.datasource.admin.CollectableDataSource;
 import org.nuclos.client.main.mainframe.MainFrameTab;
 import org.nuclos.client.ui.Errors;
 import org.nuclos.common.collection.CollectionUtils;
+import org.nuclos.server.report.valueobject.DynamicTasklistVO;
 import org.nuclos.server.report.valueobject.RecordGrantVO;
 
-public class RecordGrantSearchStrategy extends CollectSearchStrategy<CollectableDataSource<RecordGrantVO>> {
+public class DynamicTasklistSearchStrategy extends CollectSearchStrategy<CollectableDataSource<DynamicTasklistVO>> {
 
 	private final DatasourceDelegate datasourcedelegate = DatasourceDelegate.getInstance();
 
-	public RecordGrantSearchStrategy() {
+	public DynamicTasklistSearchStrategy() {
 	}
 
 	@Override
@@ -40,8 +41,8 @@ public class RecordGrantSearchStrategy extends CollectSearchStrategy<Collectable
 		final MainFrameTab mft = cc.getTab();
 		try {
 			mft.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-			List<CollectableDataSource<RecordGrantVO>> result = CollectionUtils.transform(this.datasourcedelegate.getAllRecordGrant(),
-					new CollectableDataSource.MakeCollectable<RecordGrantVO>());
+			List<CollectableDataSource<DynamicTasklistVO>> result = CollectionUtils.transform(this.datasourcedelegate.getAllDynamicTasklists(),
+					new CollectableDataSource.MakeCollectable<DynamicTasklistVO>());
 			if (getCollectableIdListCondition() != null) {
 				result = CollectionUtils.applyFilter(result, new CollectableIdPredicate(getCollectableIdListCondition().getIds()));
 			}

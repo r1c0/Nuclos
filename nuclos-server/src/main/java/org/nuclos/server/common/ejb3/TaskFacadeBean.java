@@ -142,7 +142,7 @@ public class TaskFacadeBean extends NuclosFacadeBean implements TaskFacadeRemote
 
 		try {
 			CollectableComparison cond = SearchConditionUtils.newMDReferenceComparison(
-				MasterDataMetaCache.getInstance().getMetaData(NuclosEntity.TASKLIST),"taskdelegator", IdUtils.unsafeToId(delegatorId));
+				MasterDataMetaCache.getInstance().getMetaData(NuclosEntity.TODOLIST),"taskdelegator", IdUtils.unsafeToId(delegatorId));
 
 			for (TaskVO taskVO : getTaskVOsByCondition(cond)) {
 				if ((!bUnfinishedOnly || taskVO.getCompleted() == null) && (iPriority.equals(0) || iPriority.equals(taskVO.getPriority()))){
@@ -171,9 +171,9 @@ public class TaskFacadeBean extends NuclosFacadeBean implements TaskFacadeRemote
 
 	  CompositeCollectableSearchCondition condDelegator = new CompositeCollectableSearchCondition(LogicalOperator.OR);
 	  for(String owner : owners){
-		  condDelegator.addOperand(SearchConditionUtils.newMDComparison(MasterDataMetaCache.getInstance().getMetaData(NuclosEntity.TASKLIST.getEntityName()),"delegator",ComparisonOperator.EQUAL,owner));
+		  condDelegator.addOperand(SearchConditionUtils.newMDComparison(MasterDataMetaCache.getInstance().getMetaData(NuclosEntity.TODOLIST.getEntityName()),"delegator",ComparisonOperator.EQUAL,owner));
 	  }
-	  CollectableComparison condVisibility = SearchConditionUtils.newMDComparison(MasterDataMetaCache.getInstance().getMetaData(NuclosEntity.TASKLIST.getEntityName()),"visibility",ComparisonOperator.EQUAL,visibility);
+	  CollectableComparison condVisibility = SearchConditionUtils.newMDComparison(MasterDataMetaCache.getInstance().getMetaData(NuclosEntity.TODOLIST.getEntityName()),"visibility",ComparisonOperator.EQUAL,visibility);
 	  CompositeCollectableSearchCondition cond = new CompositeCollectableSearchCondition(LogicalOperator.AND);
 	  cond.addOperand(condDelegator);
 	  cond.addOperand(condVisibility);
@@ -243,7 +243,7 @@ public class TaskFacadeBean extends NuclosFacadeBean implements TaskFacadeRemote
 		}
 		try {
 			MasterDataWithDependantsVO mdvo = MasterDataWrapper.wrapTaskVO(taskvo);
-			MasterDataVO newMdvo = getMasterDataFacade().create(NuclosEntity.TASKLIST.getEntityName(), mdvo, mdvo.getDependants());
+			MasterDataVO newMdvo = getMasterDataFacade().create(NuclosEntity.TODOLIST.getEntityName(), mdvo, mdvo.getDependants());
 			dbTaskVO = getCompleteTaskVO(IdUtils.toLongId(newMdvo.getIntId()));
 			setOwnersForTask(IdUtils.toLongId(dbTaskVO.getId()), stOwners);
 		} catch (CommonCreateException ex) {
@@ -290,7 +290,7 @@ public class TaskFacadeBean extends NuclosFacadeBean implements TaskFacadeRemote
 		}
 		try {
 			MasterDataWithDependantsVO mdvo = MasterDataWrapper.wrapTaskVO(taskvo);
-			getMasterDataFacade().modify(NuclosEntity.TASKLIST.getEntityName(), mdvo, mdvo.getDependants());
+			getMasterDataFacade().modify(NuclosEntity.TODOLIST.getEntityName(), mdvo, mdvo.getDependants());
 			Long iTaskId = IdUtils.toLongId(taskvo.getId());
 			newTaskVO = getCompleteTaskVO(iTaskId);
 			if (collOwners != null) {
@@ -352,7 +352,7 @@ public class TaskFacadeBean extends NuclosFacadeBean implements TaskFacadeRemote
 	public void remove(TaskVO taskvo) throws CommonFinderException, CommonRemoveException, CommonStaleVersionException, NuclosBusinessException {
 		try {
 			deleteOwnersForTask(taskvo.getId());
-			getMasterDataFacade().remove(NuclosEntity.TASKLIST.getEntityName(),MasterDataWrapper.wrapTaskVO(taskvo),true);
+			getMasterDataFacade().remove(NuclosEntity.TODOLIST.getEntityName(),MasterDataWrapper.wrapTaskVO(taskvo),true);
 		} catch (CommonPermissionException ex) {
 			throw new NuclosBusinessException(ex);
 		}
@@ -461,7 +461,7 @@ public class TaskFacadeBean extends NuclosFacadeBean implements TaskFacadeRemote
 	}
 
 	private Collection<TaskVO> getTaskVOsByCondition(CollectableSearchCondition cond) throws CommonFinderException, NuclosBusinessException, CommonPermissionException {
-		return CollectionUtils.transform(getMasterDataFacade().getWithDependantsByCondition(NuclosEntity.TASKLIST.getEntityName(), cond),
+		return CollectionUtils.transform(getMasterDataFacade().getWithDependantsByCondition(NuclosEntity.TODOLIST.getEntityName(), cond),
 			new Transformer<MasterDataWithDependantsVO, TaskVO>() {
 			@Override
 			public TaskVO transform(MasterDataWithDependantsVO mdvo) {
@@ -471,7 +471,7 @@ public class TaskFacadeBean extends NuclosFacadeBean implements TaskFacadeRemote
 	}
 
 	private TaskVO getCompleteTaskVO(Long iId) throws CommonFinderException, CommonPermissionException, NuclosBusinessException {
-		MasterDataWithDependantsVO mdwdVO = getMasterDataFacade().getWithDependants(NuclosEntity.TASKLIST.getEntityName(), IdUtils.unsafeToId(iId));
+		MasterDataWithDependantsVO mdwdVO = getMasterDataFacade().getWithDependants(NuclosEntity.TODOLIST.getEntityName(), IdUtils.unsafeToId(iId));
 		return augmentDisplayNames(MasterDataWrapper.getTaskVO(mdwdVO, getObjectIdentifier(mdwdVO)));
 	}
 
@@ -499,7 +499,7 @@ public class TaskFacadeBean extends NuclosFacadeBean implements TaskFacadeRemote
 
 	private Map<Long, String> getObjectIdentifier(MasterDataWithDependantsVO mdwdVO) {
 		Map<Long, String> result = new HashMap<Long, String>();
-		for (EntityObjectVO md : mdwdVO.getDependants().getData(NuclosEntity.TASKOBJECT.getEntityName())) {
+		for (EntityObjectVO md : mdwdVO.getDependants().getData(NuclosEntity.TODOOBJECT.getEntityName())) {
 			final Long iObjectId = IdUtils.toLongId(md.getField("entityId", Integer.class));
 			String entity = md.getField("entity", String.class);
 			if (entity == null) {

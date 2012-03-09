@@ -30,6 +30,7 @@ import org.nuclos.client.genericobject.valuelistprovider.generation.GenerationAt
 import org.nuclos.client.genericobject.valuelistprovider.generation.GenerationSourceTypeCollectableFieldsProvider;
 import org.nuclos.client.genericobject.valuelistprovider.generation.GenerationSubEntityCollectableFieldsProvider;
 import org.nuclos.client.job.valuelistprovider.JobDBObjectCollectableFieldsProvider;
+import org.nuclos.client.tasklist.DynamicTasklistAttributeProvider;
 import org.nuclos.client.valuelistprovider.AttributeGroupFunctionCollectableFieldsProvider;
 import org.nuclos.client.valuelistprovider.DBObjectCollectableFieldsProvider;
 import org.nuclos.client.valuelistprovider.DBObjectTypeCollectableFieldsProvider;
@@ -210,6 +211,9 @@ public class MasterDataCollectableFieldsProviderFactory implements CollectableFi
 		}
 		else if (sCustomType.equals("assignableworkspaces")) {
 			result = new AssignableWorkspaceCollectableFieldsProvider();
+		}
+		else if (sCustomType.equals("dynamicTasklistAttributes")) {
+			result = new DynamicTasklistAttributeProvider();
 		}
 		else {
 			throw new NuclosFatalException(SpringLocaleDelegate.getInstance().getMessage(

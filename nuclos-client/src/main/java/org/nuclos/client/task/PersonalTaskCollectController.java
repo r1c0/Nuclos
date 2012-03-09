@@ -90,7 +90,7 @@ public class PersonalTaskCollectController extends MasterDataCollectController {
 	 * </code></pre>
 	 */
 	public PersonalTaskCollectController(MainFrameTab tabIfAny) {
-		super(NuclosEntity.TASKLIST, tabIfAny);
+		super(NuclosEntity.TODOLIST, tabIfAny);
 		delegate = new TaskDelegate();
 		setupDetailsToolBar();
 		if(SecurityCache.getInstance().isSuperUser()){
@@ -100,8 +100,8 @@ public class PersonalTaskCollectController extends MasterDataCollectController {
 			}
 		}
 
-		getSubFormController(NuclosEntity.TASKOBJECT.getEntityName()).getSubForm().getSubformTable().setTableCellRendererProvider(new CustomTableCellRendererProvider(getSubFormController(NuclosEntity.TASKOBJECT.getEntityName())));
-		getSubFormController(NuclosEntity.TASKOBJECT.getEntityName()).getSubForm().setToolbarFunctionState(ToolbarFunction.REMOVE, ToolbarFunctionState.ACTIVE);
+		getSubFormController(NuclosEntity.TODOOBJECT.getEntityName()).getSubForm().getSubformTable().setTableCellRendererProvider(new CustomTableCellRendererProvider(getSubFormController(NuclosEntity.TODOOBJECT.getEntityName())));
+		getSubFormController(NuclosEntity.TODOOBJECT.getEntityName()).getSubForm().setToolbarFunctionState(ToolbarFunction.REMOVE, ToolbarFunctionState.ACTIVE);
 		getSubFormController(NuclosEntity.TASKOWNER.getEntityName()).getSubForm().getSubformTable().getModel().addTableModelListener( new TableModelListener() {
  			@Override
 			public void tableChanged(TableModelEvent e) {

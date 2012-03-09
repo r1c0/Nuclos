@@ -16,7 +16,6 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.common;
 
-import org.nuclos.common.MetaDataProvider;
 import org.nuclos.common.collect.collectable.AbstractCollectableEntity;
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.entityobject.CollectableEOEntityField;
@@ -33,8 +32,7 @@ public class DoNotUseCollectableEntity extends AbstractCollectableEntity {
 	 */
 	public DoNotUseCollectableEntity(String sName, String sLabel) {
 		super(sName, sLabel);
-		final MetaDataProvider mdProv = MetaDataClientProvider.getInstance();
-		for (EntityFieldMetaDataVO ef: mdProv.getAllEntityFieldsByEntity(sName).values()) {
+		for (EntityFieldMetaDataVO ef: MetaDataClientProvider.getInstance().getAllEntityFieldsByEntity(sName).values()) {
 			final CollectableEOEntityField ce = new CollectableEOEntityField(ef, sName);
 			addCollectableEntityField(ce);
 		}

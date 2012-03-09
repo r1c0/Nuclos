@@ -37,6 +37,7 @@ import org.nuclos.common.JMSConstants;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.ParameterProvider;
 import org.nuclos.common.SearchConditionUtils;
+import org.nuclos.common.TranslationVO;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableSearchCondition;
 import org.nuclos.common.collect.collectable.searchcondition.ComparisonOperator;
 import org.nuclos.common.collection.CollectionUtils;
@@ -47,6 +48,7 @@ import org.nuclos.common.dal.vo.SystemFields;
 import org.nuclos.common2.LocaleInfo;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.TruncatableCollection;
+import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonCreateException;
 import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.common2.exception.CommonFinderException;
@@ -54,9 +56,15 @@ import org.nuclos.common2.exception.CommonPermissionException;
 import org.nuclos.common2.exception.CommonRemoveException;
 import org.nuclos.common2.exception.CommonStaleVersionException;
 import org.nuclos.common2.exception.CommonValidationException;
+import org.nuclos.server.autosync.SystemMasterDataVO;
 import org.nuclos.server.autosync.XMLEntities;
+import org.nuclos.server.common.LocaleUtils;
 import org.nuclos.server.common.MasterDataMetaCache;
 import org.nuclos.server.common.ServerParameterProvider;
+import org.nuclos.server.common.ServerServiceLocator;
+import org.nuclos.server.dal.provider.SystemEntityFieldMetaDataVO;
+import org.nuclos.server.dal.provider.SystemEntityMetaDataVO;
+import org.nuclos.server.dal.provider.SystemMetaDataProvider;
 import org.nuclos.server.database.SpringDataBaseHelper;
 import org.nuclos.server.dblayer.DbStatementUtils;
 import org.nuclos.server.dblayer.DbTuple;
@@ -625,6 +633,59 @@ public class LocaleFacadeBean implements LocaleFacadeRemote {
 	
 	final String getCurrentUserName() {
 		return SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
+	}
+	
+	public void setResources(String entity, MasterDataVO md) {
+		SystemEntityMetaDataVO meta = SystemMetaDataProvider.getInstance().getEntity(entity);
+		Map<String, SystemEntityFieldMetaDataVO> fields = SystemMetaDataProvider.getInstance().getAllEntityFieldsByEntity(entity);
+		
+		Map<Integer, LocaleInfo> lis = CollectionUtils.transformIntoMap(getAllLocales(false), new Transformer<LocaleInfo, Integer>() {
+			@Override
+			public Integer transform(LocaleInfo i) {
+				return i.localeId;
+			}
+		}, new Transformer<LocaleInfo, LocaleInfo>() {
+			@Override
+			public LocaleInfo transform(LocaleInfo i) {
+				return i;
+			}
+		});
+		
+		for (SystemEntityFieldMetaDataVO field : fields.values()) {
+			if (field.isResourceField()) {
+				String resourceId = md.getField(field.getField(), String.class);
+				for(TranslationVO vo : md.getResources()) {
+					LocaleInfo li = lis.get(vo.getLocaleId());
+
+					resourceId = setResourceForLocale(resourceId, li, vo.getLabels().get(field.getField()));
+					LocaleUtils.setResourceIdForDbField(meta.getDbEntity(), md.getIntId(), field.getDbColumn(), resourceId);
+				}
+			}
+		}
+	}
+	
+	public List<TranslationVO> getResources(String entity, Integer id) throws CommonBusinessException {
+		ArrayList<TranslationVO> result = new ArrayList<TranslationVO>();
+		Map<String, SystemEntityFieldMetaDataVO> fields = SystemMetaDataProvider.getInstance().getAllEntityFieldsByEntity(entity);
+		
+		MasterDataFacadeLocal service = ServerServiceLocator.getInstance().getFacade(MasterDataFacadeLocal.class);
+		MasterDataVO md = service.get(entity, id);
+
+		for (LocaleInfo li : getAllLocales(false)) {
+			Map<String, String> labels = new HashMap<String, String>();
+			
+			for (SystemEntityFieldMetaDataVO field : fields.values()) {
+				if (field.isResourceField()) {
+					String resourceId = md.getField(field.getField(), String.class);
+					if (resourceId != null) {
+						labels.put(field.getField(), getResourceById(li, resourceId));
+					}
+				}
+			}
+			TranslationVO vo = new TranslationVO(li.localeId, li.title, li.language, labels);
+			result.add(vo);
+		}
+		return result;
 	}
 	
 	@PreDestroy

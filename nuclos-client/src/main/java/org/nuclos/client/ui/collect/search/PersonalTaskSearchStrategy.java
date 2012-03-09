@@ -39,7 +39,7 @@ public class PersonalTaskSearchStrategy extends MasterDataSearchStrategy {
 		Integer iUser = SecurityDelegate.getInstance().getUserId(sUser);
 		CompositeCollectableSearchCondition taskCondition = new CompositeCollectableSearchCondition(LogicalOperator.OR);
 		CollectableSearchCondition delegatorCondition = SearchConditionUtils.newMDReferenceComparison(MetaDataCache
-				.getInstance().getMetaData(NuclosEntity.TASKLIST), "taskdelegator", iUser, sUser);
+				.getInstance().getMetaData(NuclosEntity.TODOLIST), "taskdelegator", iUser, sUser);
 		CollectableSearchCondition ownerCondition = SearchConditionUtils.newMDReferenceComparison(MetaDataCache
 				.getInstance().getMetaData(NuclosEntity.TASKOWNER), "user", iUser, sUser);
 		CollectableSubCondition ownerSubCondition = new CollectableSubCondition(NuclosEntity.TASKOWNER.getEntityName(),

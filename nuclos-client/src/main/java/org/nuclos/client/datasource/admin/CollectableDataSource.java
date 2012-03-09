@@ -28,6 +28,7 @@ import org.nuclos.common.collection.Transformer;
 import org.nuclos.common.masterdata.CollectableMasterDataEntity;
 import org.nuclos.server.report.valueobject.DatasourceVO;
 import org.nuclos.server.report.valueobject.DynamicEntityVO;
+import org.nuclos.server.report.valueobject.DynamicTasklistVO;
 import org.nuclos.server.report.valueobject.RecordGrantVO;
 import org.nuclos.server.report.valueobject.ValuelistProviderVO;
 
@@ -41,7 +42,7 @@ import org.nuclos.server.report.valueobject.ValuelistProviderVO;
  * @version 01.00.00
  * todo: can this class be replaced with the masterdata mechanism?
  */
-public class CollectableDataSource extends AbstractCollectableBean<DatasourceVO> {
+public class CollectableDataSource<T extends DatasourceVO> extends AbstractCollectableBean<T> {
 
 	public static final String FIELDNAME_NAME = "name";
 	public static final String FIELDNAME_DESCRIPTION = "description";
@@ -55,7 +56,7 @@ public class CollectableDataSource extends AbstractCollectableBean<DatasourceVO>
 
 	public final CollectableEntity clcte;
 
-	public CollectableDataSource(DatasourceVO datasourcevo) {
+	public CollectableDataSource(T datasourcevo) {
 		super(datasourcevo);
 		if (datasourcevo instanceof DynamicEntityVO) {
 			clcte = new CollectableMasterDataEntity(MetaDataCache.getInstance().getMetaData(NuclosEntity.DYNAMICENTITY));
@@ -63,12 +64,14 @@ public class CollectableDataSource extends AbstractCollectableBean<DatasourceVO>
 			clcte = new CollectableMasterDataEntity(MetaDataCache.getInstance().getMetaData(NuclosEntity.VALUELISTPROVIDER));
 		} else if (datasourcevo instanceof RecordGrantVO) {
 			clcte = new CollectableMasterDataEntity(MetaDataCache.getInstance().getMetaData(NuclosEntity.RECORDGRANT));
+		} else if (datasourcevo instanceof DynamicTasklistVO) {
+			clcte = new CollectableMasterDataEntity(MetaDataCache.getInstance().getMetaData(NuclosEntity.DYNAMICTASKLIST));
 		} else {
 			clcte = new CollectableMasterDataEntity(MetaDataCache.getInstance().getMetaData(NuclosEntity.DATASOURCE));
 		}
 	}
 
-	public DatasourceVO getDatasourceVO() {
+	public T getDatasourceVO() {
 		return this.getBean();
 	}
 
@@ -121,10 +124,10 @@ public class CollectableDataSource extends AbstractCollectableBean<DatasourceVO>
 		return result.toString();
 	}
 
-	public static class MakeCollectable implements Transformer<DatasourceVO, CollectableDataSource> {
+	public static class MakeCollectable<T extends DatasourceVO> implements Transformer<T, CollectableDataSource<T>> {
 		@Override
-		public CollectableDataSource transform(DatasourceVO datasourcevo) {
-			return new CollectableDataSource(datasourcevo);
+		public CollectableDataSource<T> transform(T datasourcevo) {
+			return new CollectableDataSource<T>(datasourcevo);
 		}
 	}
 

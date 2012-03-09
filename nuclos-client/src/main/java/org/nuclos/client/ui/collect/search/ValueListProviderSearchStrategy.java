@@ -25,8 +25,9 @@ import org.nuclos.client.datasource.admin.CollectableDataSource;
 import org.nuclos.client.main.mainframe.MainFrameTab;
 import org.nuclos.client.ui.Errors;
 import org.nuclos.common.collection.CollectionUtils;
+import org.nuclos.server.report.valueobject.ValuelistProviderVO;
 
-public class ValueListProviderSearchStrategy extends CollectSearchStrategy<CollectableDataSource> {
+public class ValueListProviderSearchStrategy extends CollectSearchStrategy<CollectableDataSource<ValuelistProviderVO>> {
 
 	private final DatasourceDelegate datasourcedelegate = DatasourceDelegate.getInstance();
 
@@ -39,8 +40,8 @@ public class ValueListProviderSearchStrategy extends CollectSearchStrategy<Colle
 		final MainFrameTab mft = cc.getTab();
 		try {
 			mft.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-			List<CollectableDataSource> result = CollectionUtils.transform(this.datasourcedelegate.getAllValuelistProvider(),
-					new CollectableDataSource.MakeCollectable());
+			List<CollectableDataSource<ValuelistProviderVO>> result = CollectionUtils.transform(this.datasourcedelegate.getAllValuelistProvider(),
+					new CollectableDataSource.MakeCollectable<ValuelistProviderVO>());
 			if (getCollectableIdListCondition() != null) {
 				result = CollectionUtils.applyFilter(result, new CollectableIdPredicate(getCollectableIdListCondition().getIds()));
 			}

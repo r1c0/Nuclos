@@ -40,6 +40,7 @@ import org.nuclos.client.jms.TopicNotificationReceiver;
 import org.nuclos.client.main.SwingLocaleSwitcher;
 import org.nuclos.common.ApplicationProperties;
 import org.nuclos.common.JMSConstants;
+import org.nuclos.common.TranslationVO;
 import org.nuclos.common2.ClientPreferences;
 import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.LocaleInfo;
@@ -407,6 +408,10 @@ public class LocaleDelegate implements SpringLocaleDelegate.LookupService, Messa
 		return remoteInterface.getResourceById(li, key);
 	}
 	
+	public List<TranslationVO> getResources(String entity, Integer id) throws CommonBusinessException {
+		return remoteInterface.getResources(entity, id);
+	}
+
 	@Override
 	public synchronized void destroy() {
 		tnr.unsubscribe(this);

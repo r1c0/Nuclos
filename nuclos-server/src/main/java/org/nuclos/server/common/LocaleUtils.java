@@ -56,9 +56,7 @@ public class LocaleUtils {
 	public static void setResourceIdForField(String sEntityTable, Integer iId, String sFieldName, String sResourceId) {
 		String sColumn = getColumnByFieldName(sFieldName);
 		if (sColumn != null) {
-			SpringDataBaseHelper.getInstance().execute(DbStatementUtils
-				.updateValues(sEntityTable, sColumn, DbNull.escapeNull(sResourceId, String.class))
-				.where("INTID", iId));
+			setResourceIdForDbField(sEntityTable, iId, sColumn, sResourceId);
 		}
 	}
 	
@@ -72,4 +70,9 @@ public class LocaleUtils {
 		return CollectionUtils.getFirst(SpringDataBaseHelper.getInstance().getDbAccess().executeQuery(query));
 	}
 
+	public static void setResourceIdForDbField(String sEntityTable, Integer iId, String sDbFieldName, String sResourceId) {
+		SpringDataBaseHelper.getInstance().execute(DbStatementUtils
+				.updateValues(sEntityTable, sDbFieldName, DbNull.escapeNull(sResourceId, String.class))
+				.where("INTID", iId));
+	}
 }

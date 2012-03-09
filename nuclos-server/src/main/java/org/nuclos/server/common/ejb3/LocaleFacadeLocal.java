@@ -22,6 +22,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.nuclos.common.HashResourceBundle;
+import org.nuclos.common.TranslationVO;
 import org.nuclos.common2.LocaleInfo;
 import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
@@ -87,4 +88,6 @@ public interface LocaleFacadeLocal {
 	String insert(String sResourceId, LocaleInfo localeInfo, String sText);
 
 	boolean isResourceId(String s);
+	
+	void setResources(String entity, MasterDataVO md);
 }

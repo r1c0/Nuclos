@@ -303,8 +303,8 @@ public class LayoutFacadeBean extends MasterDataFacadeBean implements LayoutFaca
 				case GENERATION:
 					result.put(new EntityAndFieldName(NuclosEntity.RULEGENERATION, "generation"), null);
 					break;
-				case TASKLIST:
-					result.put(new EntityAndFieldName(NuclosEntity.TASKOBJECT, "tasklist"), null);
+				case TODOLIST:
+					result.put(new EntityAndFieldName(NuclosEntity.TODOOBJECT, "tasklist"), null);
 					result.put(new EntityAndFieldName(NuclosEntity.TASKOWNER, "tasklist"), null);					
 					break;
 				case REPORT:

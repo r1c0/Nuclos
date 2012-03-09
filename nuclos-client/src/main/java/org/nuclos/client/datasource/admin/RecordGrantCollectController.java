@@ -63,7 +63,7 @@ import org.nuclos.server.report.valueobject.ResultVO;
  * @author	<a href="mailto:Boris.Sander@novabit.de">Boris Sander</a>
  * @version 01.00.00
  */
-public class RecordGrantCollectController extends AbstractDatasourceCollectController implements DatasourceEditController {
+public class RecordGrantCollectController extends AbstractDatasourceCollectController<RecordGrantVO> implements DatasourceEditController {
 
 	/**
 	 * You should use {@link org.nuclos.client.ui.collect.CollectControllerFactorySingleton} 
@@ -108,89 +108,16 @@ public class RecordGrantCollectController extends AbstractDatasourceCollectContr
 	}
 
 	@Override
-	public CollectableDataSource findCollectableById(String sEntity, Object oId) throws CommonBusinessException {
-		return new CollectableDataSource(datasourcedelegate.getRecordGrant((Integer) oId));
+	public CollectableDataSource<RecordGrantVO> findCollectableById(String sEntity, Object oId) throws CommonBusinessException {
+		return new CollectableDataSource<RecordGrantVO>(datasourcedelegate.getRecordGrant((Integer) oId));
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public CollectableDataSource newCollectable() {
-		return new CollectableDataSource(new RecordGrantVO(null, null, null, null, null, null));
-	}
-
-	/**
-	 * @throws NuclosBusinessException
-	 * @todo This method probably shouldn't popup an option pane. @see CollectModel for a discussion
-	 */
-	@Override
-	protected void deleteCollectable(CollectableDataSource clct) throws CommonBusinessException {
-		final List<DatasourceVO> lstUsages = DatasourceDelegate.getInstance().getUsagesForDatasource(clct.getDatasourceVO());
-		if (!lstUsages.isEmpty()) {
-			final int iBtn = JOptionPane.showConfirmDialog(this.getTab(), getSpringLocaleDelegate().getMessage(
-					"DatasourceCollectController.8","Diese Datenquelle wird in anderen Datenquellen verwendet.") + "\n" +
-					getSpringLocaleDelegate().getMessage(
-							"DatasourceCollectController.1","Das L\u00f6schen f\u00fchrt dazu, dass folgende Datenquellen nicht mehr ausf\u00fchrbar sind") + ":\n" + getUsagesAsString(lstUsages) +
-					"\n" + getSpringLocaleDelegate().getMessage(
-							"DatasourceCollectController.24","Wollen sie die Datenquelle dennoch l\u00f6schen?"), 
-							getSpringLocaleDelegate().getMessage("DatasourceCollectController.20","Umbenennung best\u00e4tigen"), 
-							JOptionPane.YES_NO_OPTION);
-			if (iBtn != JOptionPane.OK_OPTION) {
-				throw new CommonBusinessException(getSpringLocaleDelegate().getMessage(
-						"DatasourceCollectController.15","L\u00f6schen wurde durch den Benutzer abgebrochen."));
-			}
-			DatasourceDelegate.getInstance().setInvalid(lstUsages);
-		}
-
-		datasourcedelegate.removeRecordGrant((RecordGrantVO) clct.getDatasourceVO());
-
-		pnlEdit.getQueryEditor().getController().refreshSchema();
-	}
-
-	/**
-	 * @param clctEdited
-	 * @return
-	 * @throws NuclosBusinessException
-	 */
-	@Override
-	protected CollectableDataSource updateCurrentCollectable(CollectableDataSource clctEdited) throws CommonBusinessException {
-		//validateParameters();
-
-		final List<String> lstUsedDatasources = pnlEdit.getQueryEditor().getUsedDatasources();
-
-		final RecordGrantVO recordGrantVO = (RecordGrantVO) clctEdited.getDatasourceVO();
-
-		final boolean bDataSourceNameWasChanged = !datasourcedelegate.getRecordGrant(clctEdited.getId()).getName().equals(recordGrantVO.getName());
-		if (bDataSourceNameWasChanged) {
-			final List<DatasourceVO> lstUsages = DatasourceDelegate.getInstance().getUsagesForDatasource(recordGrantVO);
-			if (!lstUsages.isEmpty()) {
-				final int iBtn = JOptionPane.showConfirmDialog(this.getTab(), getSpringLocaleDelegate().getMessage(
-						"DatasourceCollectController.9","Diese Datenquelle wird in anderen Datenquellen verwendet.") + "\n" +
-						getSpringLocaleDelegate().getMessage(
-								"DatasourceCollectController.11","Eine Umbenennung f\u00fchrt dazu, dass folgende Datenquellen nicht mehr ausf\u00fchrbar sind:") + "\n" +
-						getUsagesAsString(lstUsages) + "\n" + getSpringLocaleDelegate().getMessage(
-								"DatasourceCollectController.23","Wollen sie dennoch speichern?"), 
-								getSpringLocaleDelegate().getMessage("DatasourceCollectController.21","Umbenennung best\u00e4tigen"), JOptionPane.YES_NO_OPTION);
-				if (iBtn != JOptionPane.OK_OPTION) {
-					throw new CommonBusinessException(getSpringLocaleDelegate().getMessage(
-							"DatasourceCollectController.18","Speichern wurde durch den Benutzer abgebrochen."));
-				}
-				DatasourceDelegate.getInstance().setInvalid(lstUsages);
-			}
-		}
-		final RecordGrantVO recordGrantVOUpdated = datasourcedelegate.modifyRecordGrant(recordGrantVO, lstUsedDatasources);
-
-		pnlEdit.getQueryEditor().getController().refreshSchema();
-
-		return new CollectableDataSource(recordGrantVOUpdated);
-	}
-
-	@Override
-	protected CollectableDataSource updateCollectable(CollectableDataSource clct, Object oAdditionalData) throws CommonBusinessException {
-		/** @todo implement */
-		throw new NuclosFatalException(getSpringLocaleDelegate().getMessage(
-				"DatasourceCollectController.17","Sammelbearbeitung ist hier noch nicht m\u00f6glich."));
+	public CollectableDataSource<RecordGrantVO> newCollectable() {
+		return new CollectableDataSource<RecordGrantVO>(new RecordGrantVO(null, null, null, null, null, null));
 	}
 	
 	@Override
@@ -198,27 +125,6 @@ public class RecordGrantCollectController extends AbstractDatasourceCollectContr
 		//NUCLOSINT-1015
 		pnlEdit.getQueryEditor().setParameter(QueryBuilderConstants.RECORDGRANT_SYSTEMPARAMETERS);
 		super.readValuesFromEditPanel(clct, bSearchTab);
-	}
-
-	/**
-	 * @param clctNew
-	 * @return
-	 * @throws NuclosBusinessException
-	 */
-	@Override
-	protected CollectableDataSource insertCollectable(CollectableDataSource clctNew) throws CommonBusinessException {
-		if (clctNew.getId() != null) {
-			throw new IllegalArgumentException("clctNew");
-		}
-		
-		//NUCLOSINT-1015
-//		pnlEdit.getQueryEditor().setParameter(QueryBuilderConstants.RECORDGRANT_SYSTEMPARAMETERS);
-		final RecordGrantVO recordGrantVO = datasourcedelegate.createRecordGrant((RecordGrantVO) clctNew.getDatasourceVO(),
-				pnlEdit.getQueryEditor().getUsedDatasources());
-
-		pnlEdit.getQueryEditor().getController().refreshSchema();
-
-		return new CollectableDataSource(recordGrantVO);
 	}
 
 	/**
@@ -295,29 +201,6 @@ public class RecordGrantCollectController extends AbstractDatasourceCollectContr
 		catch (Exception ex) {
 			Errors.getInstance().showExceptionDialog(getTab(), ex);
 		}
-	}
-
-	@Override
-	public void execute(final CommonClientWorker worker) {
-		CommonMultiThreader.getInstance().execute(new CommonClientWorkerAdapter<CollectableDataSource>(this) {
-
-			@Override
-			public void init() throws CommonBusinessException {
-				super.init();
-				worker.init();
-			}
-
-			@Override
-			public void work() throws CommonBusinessException {
-				worker.work();
-			}
-
-			@Override
-			public void paint() throws CommonBusinessException {
-				worker.paint();
-				super.paint();
-			}
-		});
 	}
 
 	@Override

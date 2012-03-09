@@ -22,7 +22,9 @@ import java.util.List;
 import java.util.Map;
 
 import org.nuclos.common.HashResourceBundle;
+import org.nuclos.common.TranslationVO;
 import org.nuclos.common2.LocaleInfo;
+import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonCreateException;
 import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.common2.exception.CommonFinderException;
@@ -109,4 +111,6 @@ public interface LocaleFacadeRemote {
 	List<LocaleInfo> getParentChain(LocaleInfo localeInfo);
 
 	Date getLastChange();
+	
+	List<TranslationVO> getResources(String entity, Integer id) throws CommonBusinessException;
 }

@@ -16,8 +16,7 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.server.dal.provider;
 
-import org.nuclos.common.AbstractProvider;
 
-public class AbstractDalProvider extends AbstractProvider {
+public class AbstractDalProvider {
 
 }

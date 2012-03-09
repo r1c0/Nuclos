@@ -22,12 +22,14 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.NullArgumentException;
 import org.apache.commons.lang.ObjectUtils;
 import org.nuclos.common.MasterDataMetaProvider;
 import org.nuclos.common.SpringApplicationContextHolder;
+import org.nuclos.common.TranslationVO;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Transformer;
 import org.nuclos.common2.InternalTimestamp;
@@ -89,6 +91,11 @@ public class MasterDataVO extends AbstractNuclosValueObject<Object> {
 	 */
 	private boolean systemRecord;
 
+	/**
+	 * If this object contains fields for resource-ids, a list of translations can be supplied.
+	 */
+	private List<TranslationVO> resources;
+	
 	/**
 	 * constructor to be called by server and client
 	 * @param oId primary key of underlying database record
@@ -581,5 +588,12 @@ public class MasterDataVO extends AbstractNuclosValueObject<Object> {
 	protected final DependantMasterDataMap getMdDependants() {
 		return mpDependants;
 	}
-	
+
+	public List<TranslationVO> getResources() {
+		return resources;
+	}
+
+	public void setResources(List<TranslationVO> resources) {
+		this.resources = resources;
+	}
 }	// class MasterDataVO

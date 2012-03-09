@@ -250,13 +250,18 @@
     "name": "Aufgabe",
     "description": "Maske für Aufgabe",
     "nuclos_layoutUsage": [
-    	{ "entity": "nuclos_tasklist", "searchScreen": false }
-    	{ "entity": "nuclos_tasklist", "searchScreen": true }
+    	{ "entity": "nuclos_todolist", "searchScreen": false }
+    	{ "entity": "nuclos_todolist", "searchScreen": true }
     ]
   },
   {
     "name": "Bearbeitungsstatus (Aufgaben)",
     "description": "Maske für Bearbeitungsstatus (Aufgaben)",
-    "nuclos_layoutUsage": [ { "entity": "nuclos_taskstatus", "searchScreen": false } ]
+    "nuclos_layoutUsage": [ { "entity": "nuclos_todostatus", "searchScreen": false } ]
+  },
+  {
+    "name": "Aufgabenliste",
+    "description": "Maske für Aufgabenlisten",
+    "nuclos_layoutUsage": [ { "entity": "nuclos_tasklist", "searchScreen": false } ]
   }
 ]

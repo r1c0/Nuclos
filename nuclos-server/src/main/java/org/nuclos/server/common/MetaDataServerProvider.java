@@ -26,7 +26,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import javax.annotation.PostConstruct;
 
-import org.nuclos.common.AbstractProvider;
+import org.apache.log4j.Logger;
 import org.nuclos.common.CommonMetaDataServerProvider;
 import org.nuclos.common.JMSConstants;
 import org.nuclos.common.MetaDataProvider;
@@ -57,7 +57,9 @@ import org.springframework.beans.factory.annotation.Autowired;
  * An caching singleton for accessing the meta data information
  * on the server side.
  */
-public class MetaDataServerProvider extends AbstractProvider implements MetaDataProvider, CommonMetaDataServerProvider {
+public class MetaDataServerProvider implements MetaDataProvider<EntityMetaDataVO, EntityFieldMetaDataVO>, CommonMetaDataServerProvider<EntityMetaDataVO, EntityFieldMetaDataVO> {
+	
+	private static final Logger LOG = Logger.getLogger(MetaDataServerProvider.class);
 	
 	private static MetaDataServerProvider INSTANCE;
 	
@@ -282,7 +284,7 @@ public class MetaDataServerProvider extends AbstractProvider implements MetaData
 			GenericObjectMetaDataCache.getInstance().layoutChanged(null);
 		}
 
-		info("JMS send: notify clients that meta data changed: " + this);
+		LOG.info("JMS send: notify clients that meta data changed: " + this);
 		NuclosJMSUtils.sendMessageAfterCommit("Meta data changed.", JMSConstants.TOPICNAME_METADATACACHE);
 	}
 

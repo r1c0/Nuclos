@@ -33,7 +33,6 @@ import org.apache.log4j.Logger;
 import org.nuclos.client.datasource.DatasourceDelegate;
 import org.nuclos.client.jms.TopicNotificationReceiver;
 import org.nuclos.client.masterdata.MetaDataDelegate;
-import org.nuclos.common.AbstractProvider;
 import org.nuclos.common.CommonMetaDataClientProvider;
 import org.nuclos.common.JMSConstants;
 import org.nuclos.common.MetaDataProvider;
@@ -44,8 +43,8 @@ import org.nuclos.common.dal.util.DalTransformations;
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
 import org.nuclos.common.dal.vo.PivotInfo;
-import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.LangUtils;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.server.report.valueobject.DynamicEntityVO;
 import org.springframework.beans.factory.InitializingBean;
@@ -61,7 +60,7 @@ import org.springframework.beans.factory.annotation.Configurable;
  * </p>
  */
 @Configurable
-public class MetaDataClientProvider extends AbstractProvider implements MetaDataProvider, CommonMetaDataClientProvider, InitializingBean {
+public class MetaDataClientProvider implements MetaDataProvider<EntityMetaDataVO, EntityFieldMetaDataVO>, CommonMetaDataClientProvider<EntityMetaDataVO, EntityFieldMetaDataVO>, InitializingBean {
 
 	private static final Logger LOG = Logger.getLogger(MetaDataClientProvider.class);
 	

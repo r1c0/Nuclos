@@ -347,11 +347,11 @@ public class SpringLocaleDelegate {
 		return result;
 	}
 
-	public String getTreeViewLabel(MasterDataVO mdvo, String entityname, MetaDataProvider metaDataProvider) {
+	public String getTreeViewLabel(MasterDataVO mdvo, String entityname, MetaDataProvider<? extends EntityMetaDataVO, ? extends EntityFieldMetaDataVO> metaDataProvider) {
 		return getTreeViewLabel(mdvo.getFields(), entityname, metaDataProvider);
 	}
 
-	public String getTreeViewLabel(GenericObjectVO govo, String entityname, MetaDataProvider metaDataProvider) {
+	public String getTreeViewLabel(GenericObjectVO govo, String entityname, MetaDataProvider<? extends EntityMetaDataVO, ? extends EntityFieldMetaDataVO> metaDataProvider) {
 		Map<String, Object> values = new HashMap<String, Object>();
 		for (DynamicAttributeVO att : govo.getAttributes()) {
 			values.put(metaDataProvider.getEntityField(entityname, att.getAttributeId().longValue()).getField(), att.getValue());
@@ -359,11 +359,11 @@ public class SpringLocaleDelegate {
 		return getTreeViewLabel(values, entityname, metaDataProvider);
 	}
 
-	public String getTreeViewLabel(EntityObjectVO eovo, String entityname, MetaDataProvider metaDataProvider) {
+	public String getTreeViewLabel(EntityObjectVO eovo, String entityname, MetaDataProvider<? extends EntityMetaDataVO, ? extends EntityFieldMetaDataVO> metaDataProvider) {
 		return getTreeViewLabel(eovo.getFields(), entityname, metaDataProvider);
 	}
 
-	public String getTreeViewLabel(Collectable clct, String entityname, MetaDataProvider metaDataProvider) {
+	public String getTreeViewLabel(Collectable clct, String entityname, MetaDataProvider<? extends EntityMetaDataVO, ? extends EntityFieldMetaDataVO> metaDataProvider) {
 		Map<String, Object> values = new HashMap<String, Object>();
 		for (EntityFieldMetaDataVO field : metaDataProvider.getAllEntityFieldsByEntity(entityname).values()) {
 			CollectableField value = clct.getField(field.getField());
@@ -377,7 +377,7 @@ public class SpringLocaleDelegate {
 		return getTreeViewLabel(values, entityname, metaDataProvider);
 	}
 
-	public String getTreeViewLabel(Map<String, Object> values, String entityname, MetaDataProvider metaDataProvider) {
+	public String getTreeViewLabel(Map<String, Object> values, String entityname, MetaDataProvider<? extends EntityMetaDataVO, ? extends EntityFieldMetaDataVO> metaDataProvider) {
 		String result = getTreeViewFromMetaDataVO(metaDataProvider.getEntity(entityname));
 		if (result != null) {
 			return replace(result, values, entityname, metaDataProvider);
@@ -403,11 +403,11 @@ public class SpringLocaleDelegate {
 		return result;
 	}
 
-	public String getTreeViewDescription(MasterDataVO mdvo, String entityname, MetaDataProvider metaDataProvider) {
+	public String getTreeViewDescription(MasterDataVO mdvo, String entityname, MetaDataProvider<? extends EntityMetaDataVO, ? extends EntityFieldMetaDataVO> metaDataProvider) {
 		return getTreeViewDescription(mdvo.getFields(), entityname, metaDataProvider);
 	}
 
-	public String getTreeViewDescription(GenericObjectVO govo, String entityname, MetaDataProvider metaDataProvider) {
+	public String getTreeViewDescription(GenericObjectVO govo, String entityname, MetaDataProvider<? extends EntityMetaDataVO, ? extends EntityFieldMetaDataVO> metaDataProvider) {
 		Map<String, Object> values = new HashMap<String, Object>();
 		for (DynamicAttributeVO att : govo.getAttributes()) {
 			values.put(metaDataProvider.getEntityField(entityname, att.getAttributeId().longValue()).getField(), att.getValue());
@@ -415,11 +415,11 @@ public class SpringLocaleDelegate {
 		return getTreeViewDescription(values, entityname, metaDataProvider);
 	}
 
-	public String getTreeViewDescription(EntityObjectVO eovo, String entityname, MetaDataProvider metaDataProvider) {
+	public String getTreeViewDescription(EntityObjectVO eovo, String entityname, MetaDataProvider<? extends EntityMetaDataVO, ? extends EntityFieldMetaDataVO> metaDataProvider) {
 		return getTreeViewDescription(eovo.getFields(), entityname, metaDataProvider);
 	}
 
-	public String getTreeViewDescription(Collectable clct, String entityname, MetaDataProvider metaDataProvider) {
+	public String getTreeViewDescription(Collectable clct, String entityname, MetaDataProvider<? extends EntityMetaDataVO, ? extends EntityFieldMetaDataVO> metaDataProvider) {
 		Map<String, Object> values = new HashMap<String, Object>();
 		for (EntityFieldMetaDataVO field : metaDataProvider.getAllEntityFieldsByEntity(entityname).values()) {
 			CollectableField value = clct.getField(field.getField());
@@ -433,7 +433,7 @@ public class SpringLocaleDelegate {
 		return getTreeViewLabel(values, entityname, metaDataProvider);
 	}
 
-	public String getTreeViewDescription(Map<String, Object> values, String entityname, MetaDataProvider metaDataProvider) {
+	public String getTreeViewDescription(Map<String, Object> values, String entityname, MetaDataProvider<? extends EntityMetaDataVO, ? extends EntityFieldMetaDataVO> metaDataProvider) {
 		String result = getTreeViewDescriptionFromMetaDataVO(metaDataProvider.getEntity(entityname));
 		if (result != null) {
 			return replace(result, values, entityname, metaDataProvider);
@@ -455,7 +455,7 @@ public class SpringLocaleDelegate {
 		}
 	}
 
-	private String replace(String input, Map<String, Object> values, String entityname, MetaDataProvider metaDataProvider) {
+	private String replace(String input, Map<String, Object> values, String entityname, MetaDataProvider<? extends EntityMetaDataVO, ? extends EntityFieldMetaDataVO> metaDataProvider) {
 		int sidx = 0;
 		while ((sidx = input.indexOf("${", sidx)) >= 0) {
 			int eidx = input.indexOf("}", sidx);
@@ -473,7 +473,7 @@ public class SpringLocaleDelegate {
 		return input;
 	}
 
-	private String findReplacement(String sKey, String sFlag, Map<String, Object> values, String entityname, MetaDataProvider metaDataProvider) {
+	private String findReplacement(String sKey, String sFlag, Map<String, Object> values, String entityname, MetaDataProvider<? extends EntityMetaDataVO, ? extends EntityFieldMetaDataVO> metaDataProvider) {
 		String sResIfNull = "";
 		if(sFlag != null) {
 			for(StringTokenizer st = new StringTokenizer(sFlag, ":"); st.hasMoreElements(); ) {

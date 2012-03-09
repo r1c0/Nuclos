@@ -205,7 +205,7 @@ public class AutoDbSetup {
 			List<DbTableData> dumps = reader.getDumps();
 
 			//
-			SystemMetaDataProvider provider = SystemMetaDataProvider.getSystemMetaDataProvider();
+			SystemMetaDataProvider provider = SystemMetaDataProvider.getInstance();
 			EntityObjectMetaDbHelper eoHelper = new EntityObjectMetaDbHelper(dbAccess, provider);
 			artifacts.addAll(eoHelper.getSchema().values());
 

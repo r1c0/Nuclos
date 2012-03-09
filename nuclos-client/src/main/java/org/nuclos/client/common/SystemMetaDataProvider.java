@@ -14,7 +14,7 @@
 //
 //You should have received a copy of the GNU Affero General Public License
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
-package org.nuclos.server.dal.provider;
+package org.nuclos.client.common;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -23,32 +23,30 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.nuclos.client.masterdata.MetaDataDelegate;
 import org.nuclos.common.MetaDataProvider;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Transformer;
 import org.nuclos.common2.exception.CommonFatalException;
-import org.nuclos.server.autosync.SystemMasterDataMetaVO;
-import org.nuclos.server.autosync.XMLEntities;
+import org.nuclos.server.dal.provider.SystemEntityFieldMetaDataVO;
+import org.nuclos.server.dal.provider.SystemEntityMetaDataVO;
 
-/**
- * An implementation for accessing the system (i.e. JSON, like 'masterdata.json')
- * meta data information on the server side.
- */
 public class SystemMetaDataProvider implements MetaDataProvider<SystemEntityMetaDataVO, SystemEntityFieldMetaDataVO> {
 
-	private static final SystemMetaDataProvider INSTANCE = new SystemMetaDataProvider(XMLEntities.getSystemEntities().values());
+	private static SystemMetaDataProvider INSTANCE = new SystemMetaDataProvider();
 	
 	private final Map<String, SystemEntityMetaDataVO> entities = new HashMap<String, SystemEntityMetaDataVO>();
 
+	SystemMetaDataProvider(){
+		for (SystemEntityMetaDataVO meta : MetaDataDelegate.getInstance().getSystemMetaData()) {
+			entities.put(meta.getEntity(), meta);
+		}
+		INSTANCE = this;
+	}
+	
 	public static SystemMetaDataProvider getInstance() {
 		return INSTANCE;
-	}
-
-	private SystemMetaDataProvider(Collection<? extends SystemMasterDataMetaVO> entities) {
-		for (SystemMasterDataMetaVO mdMeta : entities) {
-			registerEntity(mdMeta);
-		}
 	}
 
 	@Override
@@ -74,12 +72,6 @@ public class SystemMetaDataProvider implements MetaDataProvider<SystemEntityMeta
 				return metaDataVO;
 		}
 		return null;
-	}
-
-	protected SystemEntityMetaDataVO registerEntity(SystemMasterDataMetaVO mdMeta) {
-		SystemEntityMetaDataVO wrapper = new SystemEntityMetaDataVO(mdMeta);
-		entities.put(mdMeta.getEntityName(), wrapper);
-		return wrapper;
 	}
 
 	@Override
@@ -138,5 +130,4 @@ public class SystemMetaDataProvider implements MetaDataProvider<SystemEntityMeta
 			});
 		}
 	}
-
 }

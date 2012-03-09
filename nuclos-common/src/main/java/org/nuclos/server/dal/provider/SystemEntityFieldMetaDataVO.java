@@ -66,4 +66,11 @@ public class SystemEntityFieldMetaDataVO extends EntityFieldMetaDataVO {
 			this.setOnDeleteCascade(((SystemMasterDataMetaFieldVO) mdFieldMeta).isOnDeleteCascade());
 		}
 	}
+	
+	public boolean isResourceField() {
+		if (mdFieldMeta instanceof SystemMasterDataMetaFieldVO) {
+			return ((SystemMasterDataMetaFieldVO) mdFieldMeta).isResourceField();
+		}
+		return false;
+	}
 }

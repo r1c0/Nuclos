@@ -88,6 +88,8 @@ import org.nuclos.server.dal.DalUtils;
 import org.nuclos.server.dal.processor.ProcessorFactorySingleton;
 import org.nuclos.server.dal.processor.nuclet.JdbcEntityObjectProcessor;
 import org.nuclos.server.dal.provider.NucletDalProvider;
+import org.nuclos.server.dal.provider.SystemEntityMetaDataVO;
+import org.nuclos.server.dal.provider.SystemMetaDataProvider;
 import org.nuclos.server.database.SpringDataBaseHelper;
 import org.nuclos.server.dblayer.DbAccess;
 import org.nuclos.server.dblayer.DbException;
@@ -1630,5 +1632,10 @@ public class MetaDataFacadeBean extends NuclosFacadeBean implements MetaDataFaca
 	@Override
 	public List<EntityObjectVO> getEntityMenus() {
 		return NucletDalProvider.getInstance().getEntityObjectProcessor(NuclosEntity.ENTITYMENU).getAll();
+	}
+
+	@Override
+	public Collection<SystemEntityMetaDataVO> getSystemMetaData() {
+		return SystemMetaDataProvider.getInstance().getAllEntities();
 	}
 }

@@ -415,7 +415,7 @@ public class SecurityCache implements SecurityCacheMBean {
 					mpByEntityName.put(entity, mp.max(mpByEntityName.get(entity)));
 				}
 				if (getAllowedActions().contains(Actions.ACTION_TASKLIST)){
-					mpByEntityName.put(NuclosEntity.TASKLIST.getEntityName(), MasterDataPermission.DELETE);
+					mpByEntityName.put(NuclosEntity.TODOLIST.getEntityName(), MasterDataPermission.DELETE);
 				}
 			}
 

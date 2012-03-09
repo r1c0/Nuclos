@@ -34,6 +34,7 @@ import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileFilter;
 
 import org.apache.log4j.Logger;
+import org.nuclos.client.common.EntityCollectController;
 import org.nuclos.client.common.NuclosCollectController;
 import org.nuclos.client.common.NuclosResultPanel;
 import org.nuclos.client.common.security.SecurityCache;
@@ -45,6 +46,9 @@ import org.nuclos.client.datasource.querybuilder.gui.ColumnEntry;
 import org.nuclos.client.main.mainframe.MainFrameTab;
 import org.nuclos.client.main.mainframe.MainFrameTabbedPane;
 import org.nuclos.client.masterdata.MetaDataCache;
+import org.nuclos.client.ui.CommonClientWorker;
+import org.nuclos.client.ui.CommonClientWorkerAdapter;
+import org.nuclos.client.ui.CommonMultiThreader;
 import org.nuclos.client.ui.Errors;
 import org.nuclos.client.ui.Icons;
 import org.nuclos.client.ui.UIUtils;
@@ -70,7 +74,7 @@ import org.nuclos.server.report.valueobject.DatasourceParameterVO;
 import org.nuclos.server.report.valueobject.DatasourceVO;
 import org.nuclos.server.report.valueobject.RecordGrantVO;
 
-public abstract class AbstractDatasourceCollectController extends NuclosCollectController<CollectableDataSource>  {
+public abstract class AbstractDatasourceCollectController<T extends DatasourceVO> extends NuclosCollectController<CollectableDataSource<T>>  {
 
 	private static final Logger LOG = Logger.getLogger(AbstractDatasourceCollectController.class);
 
@@ -80,7 +84,7 @@ public abstract class AbstractDatasourceCollectController extends NuclosCollectC
 
 	private boolean addTabToParent;
 	protected DatasourceEditPanel pnlEdit;
-	protected CollectPanel<CollectableDataSource> pnlCollect = new DatasourceCollectPanel(false);
+	protected CollectPanel<CollectableDataSource<T>> pnlCollect = new DatasourceCollectPanel(false);
 
 	protected JButton btnImport;
 	protected JButton btnExport;
@@ -120,6 +124,98 @@ public abstract class AbstractDatasourceCollectController extends NuclosCollectC
 		btnValidate.setEnabled(true);
 
 		this.getCollectStateModel().addCollectStateListener(new DatasourcesCollectStateListener());
+	}
+	
+	/**
+	 * @throws NuclosBusinessException
+	 * @todo This method probably shouldn't popup an option pane. @see CollectModel for a discussion
+	 */
+	@Override
+	protected final void deleteCollectable(CollectableDataSource<T> clct) throws CommonBusinessException {
+		final List<DatasourceVO> lstUsages = DatasourceDelegate.getInstance().getUsagesForDatasource(clct.getDatasourceVO());
+		if (!lstUsages.isEmpty()) {
+			final int iBtn = JOptionPane.showConfirmDialog(this.getTab(), getSpringLocaleDelegate().getMessage(
+					"DatasourceCollectController.8","Diese Datenquelle wird in anderen Datenquellen verwendet.") + "\n" +
+					getSpringLocaleDelegate().getMessage(
+							"DatasourceCollectController.1","Das L\u00f6schen f\u00fchrt dazu, dass folgende Datenquellen nicht mehr ausf\u00fchrbar sind") + ":\n" + getUsagesAsString(lstUsages) +
+					"\n" + getSpringLocaleDelegate().getMessage(
+							"DatasourceCollectController.24","Wollen sie die Datenquelle dennoch l\u00f6schen?"), 
+							getSpringLocaleDelegate().getMessage("DatasourceCollectController.20","Umbenennung best\u00e4tigen"), 
+							JOptionPane.YES_NO_OPTION);
+			if (iBtn != JOptionPane.OK_OPTION) {
+				throw new CommonBusinessException(getSpringLocaleDelegate().getMessage(
+						"DatasourceCollectController.15","L\u00f6schen wurde durch den Benutzer abgebrochen."));
+			}
+			DatasourceDelegate.getInstance().setInvalid(lstUsages);
+		}
+
+		datasourcedelegate.remove(clct.getDatasourceVO());
+
+		pnlEdit.getQueryEditor().getController().refreshSchema();
+	}
+
+	/**
+	 * @param clctEdited
+	 * @return
+	 * @throws NuclosBusinessException
+	 */
+	@Override
+	protected final CollectableDataSource<T> updateCurrentCollectable(CollectableDataSource<T> clctEdited) throws CommonBusinessException {
+		//validateParameters();
+
+		final List<String> lstUsedDatasources = pnlEdit.getQueryEditor().getUsedDatasources();
+
+		final DatasourceVO datasourceVO = clctEdited.getDatasourceVO();
+
+		final boolean bDataSourceNameWasChanged = !datasourcedelegate.getDatasource(clctEdited.getId()).getName().equals(datasourceVO.getName());
+		if (bDataSourceNameWasChanged) {
+			final List<DatasourceVO> lstUsages = DatasourceDelegate.getInstance().getUsagesForDatasource(clctEdited.getId());
+			if (!lstUsages.isEmpty()) {
+				final int iBtn = JOptionPane.showConfirmDialog(this.getTab(), getSpringLocaleDelegate().getMessage(
+						"DatasourceCollectController.9","Diese Datenquelle wird in anderen Datenquellen verwendet.") + "\n" +
+						getSpringLocaleDelegate().getMessage("DatasourceCollectController.11","Eine Umbenennung f\u00fchrt dazu, dass folgende Datenquellen nicht mehr ausf\u00fchrbar sind:") + "\n" +
+						getUsagesAsString(lstUsages) + "\n" + getSpringLocaleDelegate().getMessage(
+								"DatasourceCollectController.23","Wollen sie dennoch speichern?"), 
+								getSpringLocaleDelegate().getMessage("DatasourceCollectController.21","Umbenennung best\u00e4tigen"), 
+								JOptionPane.YES_NO_OPTION);
+				if (iBtn != JOptionPane.OK_OPTION) {
+					throw new CommonBusinessException(getSpringLocaleDelegate().getMessage(
+							"DatasourceCollectController.18","Speichern wurde durch den Benutzer abgebrochen."));
+				}
+				DatasourceDelegate.getInstance().setInvalid(lstUsages);
+			}
+		}
+		final DatasourceVO datasourceVOUpdated = datasourcedelegate.modify(datasourceVO, null, lstUsedDatasources);
+
+		pnlEdit.getQueryEditor().getController().refreshSchema();
+
+		return new CollectableDataSource(datasourceVOUpdated);
+	}
+
+	@Override
+	protected final CollectableDataSource<T> updateCollectable(CollectableDataSource<T> clct, Object oAdditionalData) throws CommonBusinessException {
+		/** @todo implement */
+		throw new NuclosFatalException(getSpringLocaleDelegate().getMessage(
+				"DatasourceCollectController.17","Sammelbearbeitung ist hier noch nicht m\u00f6glich."));
+	}
+
+	/**
+	 * @param clctNew
+	 * @return
+	 * @throws NuclosBusinessException
+	 */
+	@Override
+	protected final CollectableDataSource<T> insertCollectable(CollectableDataSource<T> clctNew) throws CommonBusinessException {
+		if (clctNew.getId() != null) {
+			throw new IllegalArgumentException("clctNew");
+		}
+		
+		final DatasourceVO datasourceVO = datasourcedelegate.create(clctNew.getDatasourceVO(), null,
+				pnlEdit.getQueryEditor().getUsedDatasources());
+
+		pnlEdit.getQueryEditor().getController().refreshSchema();
+
+		return new CollectableDataSource(datasourceVO);
 	}
 
 
@@ -467,6 +563,28 @@ public abstract class AbstractDatasourceCollectController extends NuclosCollectC
 		}
 		return result;
 	}
+	
+	public void execute(final CommonClientWorker worker) {
+		CommonMultiThreader.getInstance().execute(new CommonClientWorkerAdapter<CollectableDataSource<T>>(this) {
+
+			@Override
+			public void init() throws CommonBusinessException {
+				super.init();
+				worker.init();
+			}
+
+			@Override
+			public void work() throws CommonBusinessException {
+				worker.work();
+			}
+
+			@Override
+			public void paint() throws CommonBusinessException {
+				worker.paint();
+				super.paint();
+			}
+		});
+	}
 
 	protected class DatasourcesCollectStateListener extends CollectStateAdapter {
 		@Override
@@ -499,7 +617,7 @@ public abstract class AbstractDatasourceCollectController extends NuclosCollectC
 		}
 	}
 
-	private class DatasourceCollectPanel extends CollectPanel<CollectableDataSource> {
+	private class DatasourceCollectPanel<T> extends CollectPanel {
 
 		DatasourceCollectPanel(boolean bSearchPanelAvailable) {
 			super(bSearchPanelAvailable);

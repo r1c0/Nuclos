@@ -35,6 +35,7 @@ import org.nuclos.common2.exception.CommonFinderException;
 import org.nuclos.common2.exception.CommonPermissionException;
 import org.nuclos.common2.exception.CommonRemoveException;
 import org.nuclos.common2.exception.CommonStaleVersionException;
+import org.nuclos.server.dal.provider.SystemEntityMetaDataVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataMetaVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 import org.nuclos.server.ruleengine.NuclosBusinessRuleException;
@@ -184,4 +185,7 @@ public interface MetaDataFacadeRemote extends CommonMetaDataServerProvider {
 
 	@RolesAllowed("Login")
 	List<EntityObjectVO> getEntityMenus();
+	
+	@RolesAllowed("Login")
+	Collection<SystemEntityMetaDataVO> getSystemMetaData();
 }

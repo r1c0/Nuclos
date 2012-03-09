@@ -45,6 +45,7 @@ import org.nuclos.server.masterdata.ejb3.MasterDataFacadeLocal;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 import org.nuclos.server.report.valueobject.DatasourceVO;
 import org.nuclos.server.report.valueobject.DynamicEntityVO;
+import org.nuclos.server.report.valueobject.DynamicTasklistVO;
 import org.nuclos.server.report.valueobject.RecordGrantVO;
 import org.nuclos.server.report.valueobject.ValuelistProviderVO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,49 +58,52 @@ import org.springframework.stereotype.Component;
  * <br>Please visit <a href="http://www.novabit.de">www.novabit.de</a>
  *
  * @author	<a href="mailto:Lars.Rueckemann@novabit.de">Lars Rueckemann</a>
- * 
+ *
  * TODO: Re-check if all methods must be synchronized! (tp)
  */
 @Component
 public class DatasourceCache {
-	
+
 	private static final Logger LOG = Logger.getLogger(DatasourceCache.class);
 
 	private static DatasourceCache INSTANCE;
-	
+
 	//
 
 	/** map which contains all datasources */
-	private final Map<Integer, DatasourceVO> mpDatasourcesById 
+	private final Map<Integer, DatasourceVO> mpDatasourcesById
 		= new ConcurrentHashMap<Integer, DatasourceVO>();
 
 	/** map which contains the datasources where the user has at least read permission */
-	private final Map<String, List<DatasourceVO>> mpDatasourcesByCreator 
+	private final Map<String, List<DatasourceVO>> mpDatasourcesByCreator
 		= new ConcurrentHashMap<String, List<DatasourceVO>>();
 
 	/** map which contains all datasources */
-	private final Map<Integer, ValuelistProviderVO> mpValuelistProviderById 
+	private final Map<Integer, ValuelistProviderVO> mpValuelistProviderById
 		= new ConcurrentHashMap<Integer, ValuelistProviderVO>();
 
 	/** map which contains all record grants */
-	private final Map<Integer, RecordGrantVO> mpRecordGrantById 
+	private final Map<Integer, RecordGrantVO> mpRecordGrantById
 		= new ConcurrentHashMap<Integer, RecordGrantVO>();
 
 	/** map which contains all datasources */
-	private final Map<Integer, DynamicEntityVO> mpDynamicEntitiesById 
+	private final Map<Integer, DynamicEntityVO> mpDynamicEntitiesById
 		= new ConcurrentHashMap<Integer, DynamicEntityVO>();
-	
+
 	private final Map<String, DynamicEntityVO> mapDynamicEntities
 		= new ConcurrentHashMap<String, DynamicEntityVO>();
-	
+
+	private final Map<Integer, DynamicTasklistVO> mpDynamicTasklistById
+		= new ConcurrentHashMap<Integer, DynamicTasklistVO>();
+
 	private DatasourceServerUtils datasourceServerUtils;
-	
+
 	private SpringDataBaseHelper dataBaseHelper;
-	
+
 	private SecurityCache securityCache;
-	
+
 	private NucletDalProvider nucletDalProvider;
-	
+
 
 	DatasourceCache() {
 		INSTANCE = this;
@@ -108,27 +112,27 @@ public class DatasourceCache {
 	public static DatasourceCache getInstance() {
 		return INSTANCE;
 	}
-	
+
 	@PostConstruct
 	public final void init() {
-		findDatasourcesById();		
+		findDatasourcesById();
 	}
-	
+
 	@Autowired
 	void setDatasourceServerUtils(DatasourceServerUtils datasourceServerUtils) {
 		this.datasourceServerUtils = datasourceServerUtils;
 	}
-	
+
 	@Autowired
 	void setDataBaseHelper(SpringDataBaseHelper dataBaseHelper) {
 		this.dataBaseHelper = dataBaseHelper;
 	}
-	
+
 	@Autowired
 	void setSecurityCache(SecurityCache securityCache) {
 		this.securityCache = securityCache;
 	}
-	
+
 	@Autowired
 	void setNucletDalProvider(NucletDalProvider nucletDalProvider) {
 		this.nucletDalProvider = nucletDalProvider;
@@ -138,30 +142,35 @@ public class DatasourceCache {
 		LOG.info("Initializing DatasourceCache");
 		// Check if it is 'too early'
 		NucletDalProvider.getInstance();
-		for (EntityObjectVO eoVO : 
+		for (EntityObjectVO eoVO :
 			nucletDalProvider.getEntityObjectProcessor(NuclosEntity.DATASOURCE).getAll()) {
 			mpDatasourcesById.put(eoVO.getId().intValue(),
 					MasterDataWrapper.getDatasourceVO(DalSupportForMD.wrapEntityObjectVO(eoVO), "INITIAL"));
 		}
-		for (EntityObjectVO eoVO : 
+		for (EntityObjectVO eoVO :
 			nucletDalProvider.getEntityObjectProcessor(NuclosEntity.VALUELISTPROVIDER).getAll()) {
 			mpValuelistProviderById.put(eoVO.getId().intValue(),
 					MasterDataWrapper.getValuelistProviderVO(DalSupportForMD.wrapEntityObjectVO(eoVO)));
 		}
-		for (EntityObjectVO eoVO : 
+		for (EntityObjectVO eoVO :
 			nucletDalProvider.getEntityObjectProcessor(NuclosEntity.DYNAMICENTITY).getAll()) {
 			mpDynamicEntitiesById.put(eoVO.getId().intValue(),
 					MasterDataWrapper.getDynamicEntityVO(DalSupportForMD.wrapEntityObjectVO(eoVO)));
 		}
-		for (EntityObjectVO eoVO : 
+		for (EntityObjectVO eoVO :
 			nucletDalProvider.getEntityObjectProcessor(NuclosEntity.RECORDGRANT).getAll()) {
 			mpRecordGrantById.put(eoVO.getId().intValue(),
 					MasterDataWrapper.getRecordGrantVO(DalSupportForMD.wrapEntityObjectVO(eoVO)));
 		}
 		if (mapDynamicEntities.isEmpty()) {
 			mapDynamicEntities.putAll(Collections.unmodifiableMap(CollectionUtils.generateLookupMap(
-					mpDynamicEntitiesById.values() /*getAllDynamicEntities()*/, 
+					mpDynamicEntitiesById.values() /*getAllDynamicEntities()*/,
 					DalTransformations.getDynamicEntityName())));
+		}
+		for (EntityObjectVO eoVO :
+			nucletDalProvider.getEntityObjectProcessor(NuclosEntity.DYNAMICTASKLIST).getAll()) {
+			mpDynamicTasklistById.put(eoVO.getId().intValue(),
+					MasterDataWrapper.getDynamicTasklistVO(DalSupportForMD.wrapEntityObjectVO(eoVO)));
 		}
 		LOG.info("Finished initializing DatasourceCache.");
 	}
@@ -208,6 +217,7 @@ public class DatasourceCache {
 		mpValuelistProviderById.clear();
 		mpRecordGrantById.clear();
 		mpDynamicEntitiesById.clear();
+		mpDynamicTasklistById.clear();
 
 		datasourceServerUtils.invalidateCache();
 		findDatasourcesById();
@@ -260,7 +270,7 @@ public class DatasourceCache {
 			return dynamicentityname;
 		}
 	}
-	
+
 	/**
 	 * get all valuelist provider
 	 * @return
@@ -343,6 +353,33 @@ public class DatasourceCache {
 			findDatasourcesById();
 
 		return mpDynamicEntitiesById.get(iDynamicEntityId);
+	}
+
+	/**
+	 * get all dynamic task lists
+	 * @return
+	 */
+	public Collection<DynamicTasklistVO> getAllDynamicTasklists() {
+		List<DynamicTasklistVO> result = new ArrayList<DynamicTasklistVO>();
+
+		if (mpDynamicTasklistById.isEmpty())
+			findDatasourcesById();
+
+		result.addAll(mpDynamicTasklistById.values());
+
+		return result;
+	}
+
+	/**
+	 * get a  dynamic task lists
+	 * @param iDynamicTasklistId
+	 * @return
+	 */
+	public DynamicTasklistVO getDynamicTasklist(Integer iDynamicTasklistId) {
+		if (mpDynamicTasklistById.isEmpty())
+			findDatasourcesById();
+
+		return mpDynamicTasklistById.get(iDynamicTasklistId);
 	}
 
 	/**

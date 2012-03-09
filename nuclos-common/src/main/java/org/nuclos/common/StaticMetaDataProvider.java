@@ -35,7 +35,7 @@ import org.nuclos.common2.exception.CommonFatalException;
  * You use this class to define desired <em>changes</em> to your DB (meta) data model.
  * </p>
  */
-public class StaticMetaDataProvider extends AbstractProvider implements MetaDataProvider {
+public class StaticMetaDataProvider implements MetaDataProvider<EntityMetaDataVO, EntityFieldMetaDataVO> {
 
 	public StaticMetaDataProvider(){
 	}

@@ -32,6 +32,7 @@ import org.nuclos.common.valueobject.EntityRelationshipModelVO;
 import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonFatalException;
+import org.nuclos.server.dal.provider.SystemEntityMetaDataVO;
 import org.nuclos.server.masterdata.ejb3.MasterDataFacadeRemote;
 import org.nuclos.server.masterdata.ejb3.MetaDataFacadeRemote;
 import org.nuclos.server.masterdata.valueobject.DependantMasterDataMap;
@@ -295,5 +296,9 @@ public class MetaDataDelegate implements CommonMetaDataServerProvider {
 
 	public List<EntityObjectVO> getEntityMenus() {
 		return getMetaDataFacade().getEntityMenus();
+	}
+	
+	public Collection<SystemEntityMetaDataVO> getSystemMetaData() {
+		return getMetaDataFacade().getSystemMetaData();
 	}
 }

@@ -77,14 +77,14 @@ public class EntityObjectMetaDbHelper {
 		SYSTEM_COLUMNS.put("INTVERSION", new DbColumnType(NUMERIC, 9, 0));
 	}
 
-	private final MetaDataProvider provider;
+	private final MetaDataProvider<? extends EntityMetaDataVO, ? extends EntityFieldMetaDataVO> provider;
 	private final DbAccess dbAccess;
 
-	public EntityObjectMetaDbHelper(MetaDataProvider provider) {
+	public EntityObjectMetaDbHelper(MetaDataProvider<? extends EntityMetaDataVO, ? extends EntityFieldMetaDataVO> provider) {
 		this(SpringDataBaseHelper.getInstance().getDbAccess(), provider);
 	}
 
-	public EntityObjectMetaDbHelper(DbAccess dbAccess, MetaDataProvider provider) {
+	public EntityObjectMetaDbHelper(DbAccess dbAccess, MetaDataProvider<? extends EntityMetaDataVO, ? extends EntityFieldMetaDataVO> provider) {
 		this.dbAccess = dbAccess;
 		this.provider = provider;
 	}

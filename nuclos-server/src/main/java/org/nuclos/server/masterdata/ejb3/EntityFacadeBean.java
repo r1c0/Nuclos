@@ -186,7 +186,7 @@ public class EntityFacadeBean extends NuclosFacadeBean implements EntityFacadeRe
 	public List<CollectableValueIdField> getQuickSearchResult(String entity, String field, String search, Integer vlpId, Map<String, Object> vlpParameter, Integer iMaxRowCount) {
 		final List<CollectableValueIdField> result = new ArrayList<CollectableValueIdField>();
 		try {
-			final MetaDataProvider provider = MetaDataServerProvider.getInstance();
+			final MetaDataProvider<EntityMetaDataVO, EntityFieldMetaDataVO> provider = MetaDataServerProvider.getInstance();
 			final EntityFieldMetaDataVO efMeta = provider.getEntityField(entity, field);
 			
 			final EntityMetaDataVO eForeignMeta = provider.getEntity(efMeta.getForeignEntity() != null ? efMeta.getForeignEntity() : efMeta.getLookupEntity());

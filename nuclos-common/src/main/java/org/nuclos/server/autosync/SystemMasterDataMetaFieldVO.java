@@ -27,6 +27,7 @@ import static org.nuclos.server.autosync.SystemMasterDataVO.VERSION;
 public class SystemMasterDataMetaFieldVO extends MasterDataMetaFieldVO {
 
 	private final boolean onDeleteCascade;
+	private final boolean isResourceField;
 	
 	SystemMasterDataMetaFieldVO(Integer iId, String sFieldName,
 		String sDbFieldName, String sLabel, String sDescription,
@@ -38,7 +39,7 @@ public class SystemMasterDataMetaFieldVO extends MasterDataMetaFieldVO {
 		String sOutputFormat, boolean bNullable, boolean bSearchable,
 		boolean bUnique, boolean bInvariant, boolean bLogToLogbook,
 		String resourceIdForLabel, String resourceIdForDescription,
-		boolean bIndexed, boolean onDeleteCascade, Integer iOrder)
+		boolean bIndexed, boolean onDeleteCascade, Integer iOrder, boolean isResourceField)
 	{
 		super(iId, sFieldName, sDbFieldName, sLabel, sDescription, sDefaultValue,
 			sForeignEntityName, sForeignEntityFieldName, sUnreferencedForeignEntityName, sUnreferencedForeignEntityFieldName,
@@ -49,9 +50,14 @@ public class SystemMasterDataMetaFieldVO extends MasterDataMetaFieldVO {
 			CHANGED_DATE, CHANGED_USER, VERSION, resourceIdForLabel,
 			resourceIdForDescription, bIndexed, iOrder);
 		this.onDeleteCascade = onDeleteCascade;
+		this.isResourceField = isResourceField;
 	}
 	
 	public boolean isOnDeleteCascade() {
 		return onDeleteCascade;
+	}
+	
+	public boolean isResourceField() {
+		return isResourceField;
 	}
 }

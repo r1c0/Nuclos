@@ -20,6 +20,7 @@ import java.util.Collection;
 import java.util.List;
 
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
+import org.nuclos.common.dal.vo.EntityMetaDataVO;
 import org.nuclos.common.dal.vo.PivotInfo;
 
 /**
@@ -28,7 +29,7 @@ import org.nuclos.common.dal.vo.PivotInfo;
  * @author Thomas Pasch
  * @since Nuclos 3.1.06
  */
-public interface CommonMetaDataClientProvider extends CommonMetaDataProvider {
+public interface CommonMetaDataClientProvider<S extends EntityMetaDataVO, T extends EntityFieldMetaDataVO> extends CommonMetaDataProvider<S, T> {
 
 	/**
 	 * Return all (pseudo) fields/columns that can be accessed in a subform used as pivot table. 
@@ -39,7 +40,7 @@ public interface CommonMetaDataClientProvider extends CommonMetaDataProvider {
 	 * 		the pivot multi-value support.
 	 * @return All (pseudo) fields.
 	 */
-    Collection<EntityFieldMetaDataVO> getAllPivotEntityFields(PivotInfo info, List<String> valueColumns);
+    Collection<T> getAllPivotEntityFields(PivotInfo info, List<String> valueColumns);
     
 	/**
 	 * Get the base entity name of a dynamic entity.

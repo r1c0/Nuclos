@@ -24,6 +24,8 @@ import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
 import org.nuclos.server.dal.processor.json.AbstractJsonDalProcessor;
 import org.nuclos.server.dal.processor.nuclos.JsonEntityFieldMetaDataProcessor;
+import org.nuclos.server.dal.provider.SystemEntityFieldMetaDataVO;
+import org.nuclos.server.dal.provider.SystemEntityMetaDataVO;
 import org.nuclos.server.dal.provider.SystemMetaDataProvider;
 
 public class EntityFieldMetaDataProcessor extends AbstractJsonDalProcessor<EntityFieldMetaDataVO>
@@ -37,7 +39,7 @@ implements JsonEntityFieldMetaDataProcessor{
 	public List<EntityFieldMetaDataVO> getAll() {
 		List<EntityFieldMetaDataVO> result = new ArrayList<EntityFieldMetaDataVO>();
 		
-		MetaDataProvider jsonEntityProvider = SystemMetaDataProvider.getSystemMetaDataProvider();
+		MetaDataProvider<SystemEntityMetaDataVO, SystemEntityFieldMetaDataVO> jsonEntityProvider = SystemMetaDataProvider.getInstance();
 		
 		for (EntityMetaDataVO eMeta : jsonEntityProvider.getAllEntities()) {
 			for (EntityFieldMetaDataVO efMeta : jsonEntityProvider.getAllEntityFieldsByEntity(eMeta.getEntity()).values()) {
@@ -52,7 +54,7 @@ implements JsonEntityFieldMetaDataProcessor{
 	public List<EntityFieldMetaDataVO> getByParent(String parent) {
 		List<EntityFieldMetaDataVO> result = new ArrayList<EntityFieldMetaDataVO>();
 		
-		MetaDataProvider jsonEntityProvider = SystemMetaDataProvider.getSystemMetaDataProvider();
+		MetaDataProvider<SystemEntityMetaDataVO, SystemEntityFieldMetaDataVO> jsonEntityProvider = SystemMetaDataProvider.getInstance();
 		
 		for (EntityFieldMetaDataVO efMeta : jsonEntityProvider.getAllEntityFieldsByEntity(parent).values()) {
 			result.add(efMeta);

@@ -1,4 +1,4 @@
-//Copyright (C) 2011  Novabit Informationssysteme GmbH
+//Copyright (C) 2010  Novabit Informationssysteme GmbH
 //
 //This file is part of Nuclos.
 //
@@ -14,18 +14,19 @@
 //
 //You should have received a copy of the GNU Affero General Public License
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
-package org.nuclos.common;
+package org.nuclos.server.report.valueobject;
 
-import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
-import org.nuclos.common.dal.vo.EntityMetaDataVO;
+import org.nuclos.server.common.valueobject.NuclosValueObject;
 
+public class DynamicTasklistVO extends DatasourceVO {
+	
+	public DynamicTasklistVO(NuclosValueObject evo, String sName,
+		String sDescription, String sEntity, Boolean bValid, String sDatasourceXML, Integer nucletId) {
+		super(evo, sName, sDescription, bValid, sDatasourceXML, nucletId, PERMISSION_NONE);
+	}
 
-/**
- * Common interface implemented by MetaData Delegates, Facades, and Providers. 
- * 
- * @author Thomas Pasch
- * @since Nuclos 3.1.01
- */
-public interface CommonMetaDataProvider<S extends EntityMetaDataVO, T extends EntityFieldMetaDataVO> {
-
+	public DynamicTasklistVO(String sName, String sDescription,
+		String sDatasourceXML, String sEntity, Boolean bValid, Integer nucletId) {
+		super(sName, sDescription, sDatasourceXML, bValid, nucletId);
+	}
 }

@@ -94,6 +94,8 @@ import org.nuclos.server.customcode.codegenerator.NuclosJavaCompiler;
 import org.nuclos.server.customcode.codegenerator.WsdlCodeGenerator;
 import org.nuclos.server.dal.processor.nuclet.JdbcEntityObjectProcessor;
 import org.nuclos.server.dal.provider.NucletDalProvider;
+import org.nuclos.server.dal.provider.SystemEntityFieldMetaDataVO;
+import org.nuclos.server.dal.provider.SystemMetaDataProvider;
 import org.nuclos.server.dblayer.DbTuple;
 import org.nuclos.server.dblayer.query.DbColumnExpression;
 import org.nuclos.server.dblayer.query.DbCondition;
@@ -722,6 +724,11 @@ public class MasterDataFacadeBean extends NuclosFacadeBean implements MasterData
 					this.getServerValidatesMasterDataValues(), null,
 					mpEntityAndParentEntityName);
 			}
+			
+			if (NuclosEntity.getByName(sEntityName) != null && mdvo.getResources() != null) {
+				LocaleFacadeLocal localeFacade = ServerServiceLocator.getInstance().getFacade(LocaleFacadeLocal.class);
+				localeFacade.setResources(sEntityName, mdvo);
+			}
 
 			if (NuclosEntity.WEBSERVICE.getEntityName().equals(sEntityName)) {
 				try {
@@ -823,6 +830,11 @@ public class MasterDataFacadeBean extends NuclosFacadeBean implements MasterData
 			result = helper.modifySingleRow(sEntityName, mdvo, this.getCurrentUserName(), this.getServerValidatesMasterDataValues());
 //		}
 
+		if (NuclosEntity.getByName(sEntityName) != null && mdvo.getResources() != null) {
+			LocaleFacadeLocal localeFacade = ServerServiceLocator.getInstance().getFacade(LocaleFacadeLocal.class);
+			localeFacade.setResources(sEntityName, mdvo);
+		}
+			
 		if(mpDependants != null) {
 
 			modifyDependants(sEntityName, mdvo.getIntId(), mdvo.isRemoved(),

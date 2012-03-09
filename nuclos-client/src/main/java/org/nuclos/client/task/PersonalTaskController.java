@@ -306,7 +306,7 @@ public class PersonalTaskController extends RefreshableTaskController implements
 					vNum = oValue.toString();
 				}
 				this.setText(getSpringLocaleDelegate().getTextFallback(
-						"nuclos.entityfield.tasklist.visibility."+vNum, "<[" + oValue + "]>"));
+						"nuclos.entityfield.todolist.visibility."+vNum, "<[" + oValue + "]>"));
 			}
 			return comp;
 		}
@@ -889,7 +889,7 @@ public class PersonalTaskController extends RefreshableTaskController implements
 						tabIfAny = new MainFrameTab();
 					}
 					PersonalTaskCollectController newCollectController =
-						(PersonalTaskCollectController)NuclosCollectControllerFactory.getInstance().newMasterDataCollectController(NuclosEntity.TASKLIST.getEntityName(), tabIfAny);
+						(PersonalTaskCollectController)NuclosCollectControllerFactory.getInstance().newMasterDataCollectController(NuclosEntity.TODOLIST.getEntityName(), tabIfAny);
 					
 					if (tabIfAny != null) {
 						Main.getInstance().getMainController().initMainFrameTab(newCollectController, tabIfAny);
@@ -916,14 +916,14 @@ public class PersonalTaskController extends RefreshableTaskController implements
 						
 						if (tab != null && !bInNewTab) {
 							final MainFrameTab tabIfAny = new MainFrameTab();
-							final NuclosCollectController<?> ctrl = NuclosCollectControllerFactory.getInstance().newCollectController(NuclosEntity.TASKLIST.getEntityName(), tabIfAny);
+							final NuclosCollectController<?> ctrl = NuclosCollectControllerFactory.getInstance().newCollectController(NuclosEntity.TODOLIST.getEntityName(), tabIfAny);
 							
 							Main.getInstance().getMainController().initMainFrameTab(ctrl, tabIfAny);
 							tab.add(tabIfAny);
 							
 							ctrl.runViewSingleCollectableWithId(taskvo.getId());
 						} else {
-							Main.getInstance().getMainController().showDetails(NuclosEntity.TASKLIST.getEntityName(), taskvo.getId());
+							Main.getInstance().getMainController().showDetails(NuclosEntity.TODOLIST.getEntityName(), taskvo.getId());
 						}
 					}
 					catch(CommonBusinessException e) {

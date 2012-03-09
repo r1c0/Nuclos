@@ -17,8 +17,12 @@
 package org.nuclos.client.masterdata;
 
 
+import info.clearthought.layout.TableLayout;
+import info.clearthought.layout.TableLayoutConstraints;
+
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Container;
 import java.awt.datatransfer.Transferable;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -48,6 +52,7 @@ import org.apache.log4j.Logger;
 import org.nuclos.client.common.DependantCollectableMasterDataMap;
 import org.nuclos.client.common.DetailsSubFormController;
 import org.nuclos.client.common.EntityCollectController;
+import org.nuclos.client.common.LocaleDelegate;
 import org.nuclos.client.common.MetaDataClientProvider;
 import org.nuclos.client.common.MultiUpdateOfDependants;
 import org.nuclos.client.common.NuclosCollectableListOfValues;
@@ -63,8 +68,8 @@ import org.nuclos.client.explorer.ExplorerDelegate;
 import org.nuclos.client.genericobject.GenerationController;
 import org.nuclos.client.genericobject.GeneratorActions;
 import org.nuclos.client.genericobject.ReportController;
+import org.nuclos.client.i18n.ui.TranslationsController;
 import org.nuclos.client.main.mainframe.MainFrameTab;
-import org.nuclos.client.main.mainframe.MainFrameTabbedPane;
 import org.nuclos.client.masterdata.datatransfer.MasterDataIdAndEntity;
 import org.nuclos.client.masterdata.datatransfer.MasterDataVOTransferable;
 import org.nuclos.client.masterdata.valuelistprovider.MasterDataCollectableFieldsProviderFactory;
@@ -104,6 +109,7 @@ import org.nuclos.common.CollectableEntityFieldWithEntity;
 import org.nuclos.common.NuclosBusinessException;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.NuclosFatalException;
+import org.nuclos.common.TranslationVO;
 import org.nuclos.common.UsageCriteria;
 import org.nuclos.common.collect.collectable.Collectable;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
@@ -114,16 +120,18 @@ import org.nuclos.common.collect.collectable.searchcondition.CompositeCollectabl
 import org.nuclos.common.collect.collectable.searchcondition.LogicalOperator;
 import org.nuclos.common.collect.collectable.searchcondition.SearchConditionUtils;
 import org.nuclos.common.collect.exception.CollectableFieldFormatException;
+import org.nuclos.common.collect.exception.CollectableValidationException;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Predicate;
 import org.nuclos.common.collection.Transformer;
 import org.nuclos.common.dal.vo.EntityObjectVO;
 import org.nuclos.common.masterdata.CollectableMasterDataEntity;
-import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.CommonRunnable;
 import org.nuclos.common2.EntityAndFieldName;
 import org.nuclos.common2.IdUtils;
 import org.nuclos.common2.LangUtils;
+import org.nuclos.common2.LocaleInfo;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonFinderException;
 import org.nuclos.common2.exception.CommonPermissionException;
@@ -173,6 +181,8 @@ public class MasterDataCollectController extends EntityCollectController<Collect
 
    private MultiUpdateOfDependants multiupdateofdependants;
 
+   private TranslationsController ctlTranslations;
+   
    /**
     * the global search filter (if any) used for the recent search
     */
@@ -366,6 +376,11 @@ public class MasterDataCollectController extends EntityCollectController<Collect
 						new NuclosFocusTraversalPolicy(getDetailsPanel().getLayoutRoot().getRootComponent()));
 
 		setupResultContextMenuGeneration();
+		
+		if (NuclosEntity.getByName(getEntityName()) != null) {
+			ctlTranslations = new TranslationsController(this);
+			getCollectStateModel().addCollectStateListener(ctlTranslations);
+		}
 	}
 
 	@Override
@@ -1728,4 +1743,13 @@ public class MasterDataCollectController extends EntityCollectController<Collect
 		return collRules;
 	}
 
+	@Override
+	protected void readValuesFromEditPanel(CollectableMasterDataWithDependants clct, boolean bSearchTab) throws CollectableValidationException {
+		super.readValuesFromEditPanel(clct, bSearchTab);
+		if (ctlTranslations != null) {
+			clct.getMasterDataCVO().setResources(ctlTranslations.getResources());
+		}
+	}
+
+	
 }	 // class MasterDataCollectController

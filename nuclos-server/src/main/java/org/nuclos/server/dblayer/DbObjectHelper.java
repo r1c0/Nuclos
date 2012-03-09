@@ -298,7 +298,7 @@ public class DbObjectHelper {
 	 * @param name
 	 * @return
 	 */
-	public static boolean isUsedAsCalculatedAttribute(String name, MetaDataProvider metaProvider) {
+	public static boolean isUsedAsCalculatedAttribute(String name, MetaDataProvider<EntityMetaDataVO, EntityFieldMetaDataVO> metaProvider) {
 		if (name.startsWith("CA"))
 			for (EntityMetaDataVO eMeta : metaProvider.getAllEntities())
 				for (EntityFieldMetaDataVO efMeta : metaProvider.getAllEntityFieldsByEntity(eMeta.getEntity()).values())

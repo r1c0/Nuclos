@@ -528,7 +528,7 @@ public class TransferFacadeBean extends NuclosFacadeBean implements TransferFaca
 		return t;
 	}
 
-	private MetaDataProvider getMetaDataProvider(List<EntityObjectVO> entities, List<EntityObjectVO> fields) {
+	private MetaDataProvider<EntityMetaDataVO, EntityFieldMetaDataVO> getMetaDataProvider(List<EntityObjectVO> entities, List<EntityObjectVO> fields) {
 		StaticMetaDataProvider result = new StaticMetaDataProvider();
 		for (EntityMetaDataVO eMeta : MetaDataServerProvider.getInstance().getAllEntities()) {
 			// only system entities...
@@ -574,7 +574,7 @@ public class TransferFacadeBean extends NuclosFacadeBean implements TransferFaca
 				TransferUtils.getContentType(contentTypes, NuclosEntity.ENTITYFIELD).getNcObjects(existingNucletIds, transferOptions),
 				nucletInterfaceEntityFields);
 		
-		MetaDataProvider currentProvider = getMetaDataProvider(currentEntities, currentFields);
+		MetaDataProvider<EntityMetaDataVO, EntityFieldMetaDataVO> currentProvider = getMetaDataProvider(currentEntities, currentFields);
 		Map<String, DbTable> currentSchema = (new EntityObjectMetaDbHelper(dbAccess, currentProvider)).getSchema();
 
 		List<EntityObjectVO> transferredEntities = CollectionUtils.concat(
@@ -584,7 +584,7 @@ public class TransferFacadeBean extends NuclosFacadeBean implements TransferFaca
 				mpImportData.get(NuclosEntity.ENTITYFIELD.getEntityName()),
 				nucletInterfaceEntityFields);
 		
-		MetaDataProvider transferredProvider = getMetaDataProvider(transferredEntities, transferredFields);
+		MetaDataProvider<EntityMetaDataVO, EntityFieldMetaDataVO> transferredProvider = getMetaDataProvider(transferredEntities, transferredFields);
 		Map<String, DbTable> transferredSchema = (new EntityObjectMetaDbHelper(dbAccess, transferredProvider)).getSchema();
 
 		List<DbStructureChange> dbChangeStmts = SchemaUtils.modify(currentSchema.values(), transferredSchema.values());
@@ -599,7 +599,7 @@ public class TransferFacadeBean extends NuclosFacadeBean implements TransferFaca
 			notifierHelper.notifyNextStep();
 			PreviewPart pp = new PreviewPart();
 
-			MetaDataProvider provForEntityName = null;
+			MetaDataProvider<EntityMetaDataVO, EntityFieldMetaDataVO> provForEntityName = null;
 			DbTable table = null;
 			DbTableArtifact artifact = null;
 			DbSimpleView view = null;
@@ -682,7 +682,7 @@ public class TransferFacadeBean extends NuclosFacadeBean implements TransferFaca
 	}
 
 	private void resetUniqueFields(List<EntityObjectVO> transferredFields,
-		MetaDataProvider transferredProvider, PreviewPart pp,
+		MetaDataProvider<EntityMetaDataVO, EntityFieldMetaDataVO> transferredProvider, PreviewPart pp,
 		DbUniqueConstraint dbu) {
 		if(pp.getWarning() > 0) {
 			for(EntityMetaDataVO vo : transferredProvider.getAllEntities()) {
@@ -730,7 +730,7 @@ public class TransferFacadeBean extends NuclosFacadeBean implements TransferFaca
 		}
 	}
 
-	private String getEntityNameFromTable(String table, MetaDataProvider prov) {
+	private String getEntityNameFromTable(String table, MetaDataProvider<EntityMetaDataVO, EntityFieldMetaDataVO> prov) {
 		for (EntityMetaDataVO eMeta : prov.getAllEntities())
 			if (EntityObjectMetaDbHelper.getTableName(eMeta).equalsIgnoreCase(table))
 				return eMeta.getEntity();

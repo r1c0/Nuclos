@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
+import org.nuclos.common.dal.vo.EntityMetaDataVO;
 import org.nuclos.common.dal.vo.PivotInfo;
 
 /**
@@ -28,7 +29,7 @@ import org.nuclos.common.dal.vo.PivotInfo;
  * @author Thomas Pasch
  * @since Nuclos 3.1.06
  */
-public interface CommonMetaDataServerProvider extends CommonMetaDataProvider {
+public interface CommonMetaDataServerProvider<S extends EntityMetaDataVO, T extends EntityFieldMetaDataVO> extends CommonMetaDataProvider<S, T> {
 
 	/**
 	 * Return all (pseudo) fields/columns that can be accessed in a subform used as pivot table. 
@@ -39,7 +40,7 @@ public interface CommonMetaDataServerProvider extends CommonMetaDataProvider {
 	 * 		data contains the info with <code>null</code> as value and value type. In general this is 
 	 * 		<em>unsuited</em> for client use.
 	 */
-    Map<String, EntityFieldMetaDataVO> getAllPivotEntityFields(PivotInfo info);
+    Map<String, T> getAllPivotEntityFields(PivotInfo info);
     
 	List<String> getPossibleIdFactories();
 

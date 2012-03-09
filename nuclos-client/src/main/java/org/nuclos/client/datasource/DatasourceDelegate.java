@@ -19,11 +19,13 @@ package org.nuclos.client.datasource;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.nuclos.common.NuclosBusinessException;
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.database.query.definition.Schema;
 import org.nuclos.common.database.query.definition.Table;
+import org.nuclos.common.querybuilder.NuclosDatasourceException;
 import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonFatalException;
@@ -31,22 +33,24 @@ import org.nuclos.common2.exception.CommonFinderException;
 import org.nuclos.common2.exception.CommonPermissionException;
 import org.nuclos.common2.exception.CommonStaleVersionException;
 import org.nuclos.common2.exception.CommonValidationException;
+import org.nuclos.server.masterdata.valueobject.DependantMasterDataMap;
 import org.nuclos.server.report.ejb3.DatasourceFacadeRemote;
 import org.nuclos.server.report.valueobject.DatasourceParameterVO;
 import org.nuclos.server.report.valueobject.DatasourceVO;
 import org.nuclos.server.report.valueobject.DynamicEntityVO;
+import org.nuclos.server.report.valueobject.DynamicTasklistVO;
 import org.nuclos.server.report.valueobject.RecordGrantVO;
 import org.nuclos.server.report.valueobject.ResultVO;
 import org.nuclos.server.report.valueobject.ValuelistProviderVO;
 import org.nuclos.server.ruleengine.NuclosBusinessRuleException;
 
 /**
- * The Delegate for DatasourceFacadeBean.
+ * The Delegate for DatasourceFacadeBean. <br>
  * <br>
- * <br>Created by Novabit Informationssysteme GmbH
- * <br>Please visit <a href="http://www.novabit.de">www.novabit.de</a>
- *
- * @author	<a href="mailto:Lars.Rueckemann@novabit.de">Lars Rueckemann</a>
+ * Created by Novabit Informationssysteme GmbH <br>
+ * Please visit <a href="http://www.novabit.de">www.novabit.de</a>
+ * 
+ * @author <a href="mailto:Lars.Rueckemann@novabit.de">Lars Rueckemann</a>
  * @version 01.00.00
  */
 public class DatasourceDelegate {
@@ -87,24 +91,23 @@ public class DatasourceDelegate {
 	}
 
 	/**
-    * get a list of DatasourceVO which uses the datasource
-    *
-    * @param datasourceVO
-    * 						could also be an instance of
-    * 						<code>DynamicEntityVO</code> or
-    * 						<code>ValuelistProviderVO</code>
-    * @return
+	 * get a list of DatasourceVO which uses the datasource
+	 * 
+	 * @param datasourceVO
+	 *            could also be an instance of <code>DynamicEntityVO</code> or
+	 *            <code>ValuelistProviderVO</code>
+	 * @return
 	 * @throws CommonPermissionException
 	 * @throws CommonFinderException
-    */
-   public List<DatasourceVO> getUsagesForDatasource(DatasourceVO datasourceVO) throws CommonFinderException, CommonPermissionException {
-   	try {
+	 */
+	public List<DatasourceVO> getUsagesForDatasource(DatasourceVO datasourceVO) throws CommonFinderException, CommonPermissionException {
+		try {
 			return this.getDatasourceFacade().getUsagesForDatasource(datasourceVO);
 		}
 		catch (RuntimeException ex) {
 			throw new CommonFatalException(ex);
 		}
-   }
+	}
 
 	public List<DatasourceVO> getUsingByForDatasource(Integer iDatasourceId) throws CommonFinderException, CommonPermissionException {
 		try {
@@ -115,7 +118,8 @@ public class DatasourceDelegate {
 		}
 	}
 
-	public void setInvalid(final List<DatasourceVO> lstdatasourcevo) throws CommonFinderException, CommonPermissionException, CommonStaleVersionException, CommonValidationException, NuclosBusinessRuleException {
+	public void setInvalid(final List<DatasourceVO> lstdatasourcevo) throws CommonFinderException, CommonPermissionException, CommonStaleVersionException, CommonValidationException,
+			NuclosBusinessRuleException {
 		try {
 			for (DatasourceVO datasourcevo : lstdatasourcevo) {
 				datasourcevo.setValid(false);
@@ -129,6 +133,7 @@ public class DatasourceDelegate {
 
 	/**
 	 * Get datasource with the specified name.
+	 * 
 	 * @param sName
 	 * @return DatasourceVO
 	 */
@@ -143,6 +148,7 @@ public class DatasourceDelegate {
 
 	/**
 	 * Get dynamic entity with the specified name.
+	 * 
 	 * @param sDynamicEntity
 	 * @return DynamicEntityVO
 	 */
@@ -157,6 +163,7 @@ public class DatasourceDelegate {
 
 	/**
 	 * Get valuelist provider with the specified name.
+	 * 
 	 * @param sValuelistProvider
 	 * @return ValuelistProviderVO
 	 */
@@ -192,20 +199,20 @@ public class DatasourceDelegate {
 	}
 
 	/**
-    * get dynamic entity value object
-    *
-    * @param iDynamicEntityId
-    *                primary key of dynamic entity
-    * @return DynamicEntityVO
-    */
-   public DynamicEntityVO getDynamicEntity(Integer iDynamicEntityId) throws CommonPermissionException {
-   	try {
+	 * get dynamic entity value object
+	 * 
+	 * @param iDynamicEntityId
+	 *            primary key of dynamic entity
+	 * @return DynamicEntityVO
+	 */
+	public DynamicEntityVO getDynamicEntity(Integer iDynamicEntityId) throws CommonPermissionException {
+		try {
 			return getDatasourceFacade().getDynamicEntity(iDynamicEntityId);
 		}
 		catch (RuntimeException ex) {
 			throw new CommonFatalException(ex);
 		}
-   }
+	}
 
 	/**
 	 * @return collection of all ValuelistProviderVOs
@@ -220,57 +227,15 @@ public class DatasourceDelegate {
 	}
 
 	/**
-    * get valuelist provider value object
-    *
-    * @param iValuelistProviderId
-    *                primary key of valuelist provider
-    * @return ValuelistProviderVO
-    */
-   public ValuelistProviderVO getValuelistProvider(Integer iValuelistProviderId) throws CommonPermissionException {
-   	try {
+	 * get valuelist provider value object
+	 * 
+	 * @param iValuelistProviderId
+	 *            primary key of valuelist provider
+	 * @return ValuelistProviderVO
+	 */
+	public ValuelistProviderVO getValuelistProvider(Integer iValuelistProviderId) throws CommonPermissionException {
+		try {
 			return getDatasourceFacade().getValuelistProvider(iValuelistProviderId);
-		}
-		catch (RuntimeException ex) {
-			throw new CommonFatalException(ex);
-		}
-   }
-
-	/**
-	 * @param dynamicEntityVOs
-	 * @param lstUsedDynamicEntities
-	 * @return the newly created dynamic entity
-	 */
-	public DynamicEntityVO createDynamicEntity(DynamicEntityVO dynamicEntityVO, List<String> lstUsedDynamicEntities) throws CommonBusinessException {
-		try {
-			return getDatasourceFacade().createDynamicEntity(dynamicEntityVO, lstUsedDynamicEntities);
-		}
-		catch (RuntimeException ex) {
-			throw new CommonFatalException(ex);
-		}
-	}
-
-	/**
-	 * @param valuelistProviderVO
-	 * @param lstUsedValuelistProvider
-	 * @return the newly created valuelist provider
-	 */
-	public ValuelistProviderVO createValuelistProvider(ValuelistProviderVO valuelistProviderVO, List<String> lstUsedValuelistProvider) throws CommonBusinessException {
-		try {
-			return getDatasourceFacade().createValuelistProvider(valuelistProviderVO, lstUsedValuelistProvider);
-		}
-		catch (RuntimeException ex) {
-			throw new CommonFatalException(ex);
-		}
-	}
-
-	/**
-	 * @param recordGrantVO
-	 * @param lstUsedRecordGrant
-	 * @return the newly created RecordGrant
-	 */
-	public RecordGrantVO createRecordGrant(RecordGrantVO recordGrantVO, List<String> lstUsedRecordGrant) throws CommonBusinessException {
-		try {
-			return getDatasourceFacade().createRecordGrant(recordGrantVO, lstUsedRecordGrant);
 		}
 		catch (RuntimeException ex) {
 			throw new CommonFatalException(ex);
@@ -294,9 +259,9 @@ public class DatasourceDelegate {
 	 * @param dsvo
 	 * @return the newly created datasource
 	 */
-	public DatasourceVO createDatasource(DatasourceVO dsvo, List<String> lstUsedDatasources) throws CommonBusinessException {
+	public DatasourceVO create(DatasourceVO dsvo, DependantMasterDataMap dependants, List<String> lstUsedDatasources) throws CommonBusinessException {
 		try {
-			return getDatasourceFacade().create(dsvo, lstUsedDatasources);
+			return getDatasourceFacade().create(dsvo, dependants, lstUsedDatasources);
 		}
 		catch (RuntimeException ex) {
 			throw new CommonFatalException(ex);
@@ -306,45 +271,9 @@ public class DatasourceDelegate {
 	/**
 	 * @param datasourceVO
 	 */
-	public void removeDatasource(DatasourceVO datasourceVO) throws CommonBusinessException {
+	public void remove(DatasourceVO datasourceVO) throws CommonBusinessException {
 		try {
 			getDatasourceFacade().remove(datasourceVO);
-		}
-		catch (RuntimeException ex) {
-			throw new CommonFatalException(ex);
-		}
-	}
-
-	/**
-	 * @param dynamicEntityVO
-	 */
-	public void removeDynamicEntity(DynamicEntityVO dynamicEntityVO) throws CommonBusinessException {
-		try {
-			getDatasourceFacade().removeDynamicEntity(dynamicEntityVO);
-		}
-		catch (RuntimeException ex) {
-			throw new CommonFatalException(ex);
-		}
-	}
-
-	/**
-	 * @param valuelistProviderVO
-	 */
-	public void removeValuelistProvider(ValuelistProviderVO valuelistProviderVO) throws CommonBusinessException {
-		try {
-			getDatasourceFacade().removeValuelistProvider(valuelistProviderVO);
-		}
-		catch (RuntimeException ex) {
-			throw new CommonFatalException(ex);
-		}
-	}
-
-	/**
-	 * @param recordGrantVO
-	 */
-	public void removeRecordGrant(RecordGrantVO recordGrantVO) throws CommonBusinessException {
-		try {
-			getDatasourceFacade().removeRecordGrant(recordGrantVO);
 		}
 		catch (RuntimeException ex) {
 			throw new CommonFatalException(ex);
@@ -355,51 +284,9 @@ public class DatasourceDelegate {
 	 * @param dsvo
 	 * @return the modified datasource
 	 */
-	public DatasourceVO modifyDatasource(DatasourceVO dsvo, List<String> lstUsedDatasources) throws CommonBusinessException {
+	public DatasourceVO modify(DatasourceVO dsvo, DependantMasterDataMap dependants, List<String> lstUsedDatasources) throws CommonBusinessException {
 		try {
-			return getDatasourceFacade().modify(dsvo, lstUsedDatasources);
-		}
-		catch (RuntimeException ex) {
-			throw new CommonFatalException(ex);
-		}
-	}
-
-	/**
-	 * @param dynamicEntityVO
-	 * @param lstUsedDynamicEntities
-	 * @return the modified dynamic entity
-	 */
-	public DynamicEntityVO modifyDynamicEntity(DynamicEntityVO dynamicEntityVO, List<String> lstUsedDynamicEntities) throws CommonBusinessException {
-		try {
-			return getDatasourceFacade().modifyDynamicEntity(dynamicEntityVO, lstUsedDynamicEntities);
-		}
-		catch (RuntimeException ex) {
-			throw new CommonFatalException(ex);
-		}
-	}
-
-	/**
-	 * @param valuelistProviderVO
-	 * @param lstUsedValuelistProvider
-	 * @return the modified valuelist provider
-	 */
-	public ValuelistProviderVO modifyValuelistProvider(ValuelistProviderVO valuelistProviderVO, List<String> lstUsedValuelistProvider) throws CommonBusinessException {
-		try {
-			return getDatasourceFacade().modifyValuelistProvider(valuelistProviderVO, lstUsedValuelistProvider);
-		}
-		catch (RuntimeException ex) {
-			throw new CommonFatalException(ex);
-		}
-	}
-
-	/**
-	 * @param recordGrantVO
-	 * @param lstUsedRecordGrant
-	 * @return the modified RecordGrant
-	 */
-	public RecordGrantVO modifyRecordGrant(RecordGrantVO recordGrantVO, List<String> lstUsedRecordGrant) throws CommonBusinessException {
-		try {
-			return getDatasourceFacade().modifyRecordGrant(recordGrantVO, lstUsedRecordGrant);
+			return getDatasourceFacade().modify(dsvo, null, lstUsedDatasources);
 		}
 		catch (RuntimeException ex) {
 			throw new CommonFatalException(ex);
@@ -408,6 +295,7 @@ public class DatasourceDelegate {
 
 	/**
 	 * execute a datasource by datasource id
+	 * 
 	 * @param iDatasourceId
 	 * @param mpParams
 	 * @return
@@ -424,6 +312,7 @@ public class DatasourceDelegate {
 
 	/**
 	 * execute a datasource by datasource xml
+	 * 
 	 * @param sDatasourceXML
 	 * @param mpParams
 	 * @param iMaxRowCount
@@ -487,6 +376,7 @@ public class DatasourceDelegate {
 
 	/**
 	 * Get datasource with the specified id.
+	 * 
 	 * @param iId
 	 * @return the datasource with the specified id.
 	 */
@@ -500,7 +390,7 @@ public class DatasourceDelegate {
 	}
 
 	/**
-	 *
+	 * 
 	 * @return
 	 */
 	public Schema getSchemaTables() {
@@ -515,7 +405,7 @@ public class DatasourceDelegate {
 	}
 
 	/**
-	 *
+	 * 
 	 * @param table
 	 * @return
 	 */
@@ -541,23 +431,24 @@ public class DatasourceDelegate {
 	}
 
 	/**
-    * get RecordGrant value object
-    *
-    * @param iRecordGrantId
-    *                primary key of RecordGrant
-    * @return RecordGrantVO
-    */
-   public RecordGrantVO getRecordGrant(Integer iRecordGrantId) throws CommonPermissionException {
-   	try {
+	 * get RecordGrant value object
+	 * 
+	 * @param iRecordGrantId
+	 *            primary key of RecordGrant
+	 * @return RecordGrantVO
+	 */
+	public RecordGrantVO getRecordGrant(Integer iRecordGrantId) throws CommonPermissionException {
+		try {
 			return getDatasourceFacade().getRecordGrant(iRecordGrantId);
 		}
 		catch (RuntimeException ex) {
 			throw new CommonFatalException(ex);
 		}
-   }
+	}
 
 	/**
 	 * Get RecordGrant with the specified name.
+	 * 
 	 * @param sRecordGrant
 	 * @return RecordGrantVO
 	 */
@@ -570,4 +461,25 @@ public class DatasourceDelegate {
 		}
 	}
 
-}	// class DatasourceDelegate
+	public Collection<DynamicTasklistVO> getAllDynamicTasklists() throws CommonPermissionException {
+		try {
+			return getDatasourceFacade().getDynamicTasklists();
+		}
+		catch (RuntimeException ex) {
+			throw new CommonFatalException(ex);
+		}
+	}
+	
+	public DynamicTasklistVO getDynamicTasklist(Integer id) throws CommonPermissionException {
+		try {
+			return getDatasourceFacade().getDynamicTasklist(id);
+		}
+		catch (RuntimeException ex) {
+			throw new CommonFatalException(ex);
+		}
+	}
+	
+	public Set<String> getDynamicTasklistAttributes(Integer dtlId) throws CommonPermissionException, NuclosDatasourceException {
+		return getDatasourceFacade().getDynamicTasklistAttributes(dtlId);
+	}
+} // class DatasourceDelegate

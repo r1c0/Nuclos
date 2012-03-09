@@ -24,7 +24,9 @@ import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -79,6 +81,8 @@ public class DatasourceEditPanel extends JPanel {
 	public static final int INDEX_MODEL = 0;
 	public static final int INDEX_SQL = 1;
 	public static final int INDEX_PREVIEW = 2;
+	
+	private Map<String, JComponent> tabs = new HashMap<String, JComponent>();
 
 	public DatasourceEditPanel(DatasourceEditController controller,
 			CollectableEntityField clctefName,
@@ -263,6 +267,10 @@ public class DatasourceEditPanel extends JPanel {
 		else {
 			sqlPanel.edit();
 		}
+	}
+	
+	public void addComponent(String resourceId, JComponent c) {
+		tabs.put(resourceId, c);
 	}
 
 	class SqlPanel extends JPanel {

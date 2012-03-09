@@ -26,27 +26,27 @@ import org.nuclos.common.dal.vo.EntityMetaDataVO;
 /**
  * Interface implemented by MetaDataProviders for accessing meta data information.
  */
-public interface MetaDataProvider extends CommonMetaDataProvider {
+public interface MetaDataProvider<S extends EntityMetaDataVO, T extends EntityFieldMetaDataVO> extends CommonMetaDataProvider<S, T> {
 
 	public static final String NAMESPACE_NUCLOS = "NUC";
 
 	public static final String NAMESPACE_DEFAULT = "DEF";
 
-	Collection<EntityMetaDataVO> getAllEntities();
+	Collection<S> getAllEntities();
 
-	EntityMetaDataVO getEntity(Long id);
+	S getEntity(Long id);
 
-	EntityMetaDataVO getEntity(String entity);
+	S getEntity(String entity);
 
-	EntityMetaDataVO getEntity(NuclosEntity entity);
+	S getEntity(NuclosEntity entity);
 
-	Map<String, EntityFieldMetaDataVO> getAllEntityFieldsByEntity(String entity);
+	Map<String, T> getAllEntityFieldsByEntity(String entity);
 
-    EntityFieldMetaDataVO getEntityField(String entity, String field);
+    T getEntityField(String entity, String field);
 
-	EntityFieldMetaDataVO getEntityField(String entity, Long fieldId);
+	T getEntityField(String entity, Long fieldId);
 
-	EntityFieldMetaDataVO getRefField(String baseEntity, String subform);
+	T getRefField(String baseEntity, String subform);
 
 	/**
 	 * Get the base entity name of a dynamic entity.

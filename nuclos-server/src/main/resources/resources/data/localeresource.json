@@ -765,32 +765,32 @@
     "text": "Rolle"
   },
   {
-    "resourceID": "nuclos.entityfield.taskobject.tasklist.label",
+    "resourceID": "nuclos.entityfield.todoobject.todolist.label",
     "locale": "i-default",
     "text": "Task"
   },
   {
-    "resourceID": "nuclos.entityfield.taskobject.tasklist.label",
+    "resourceID": "nuclos.entityfield.todoobject.todolist.label",
     "locale": "en",
     "text": "Task"
   },
   {
-    "resourceID": "nuclos.entityfield.taskobject.tasklist.label",
+    "resourceID": "nuclos.entityfield.todoobject.todolist.label",
     "locale": "de",
     "text": "Aufgabe"
   },
   {
-    "resourceID": "nuclos.entityfield.taskobject.entity.label",
+    "resourceID": "nuclos.entityfield.todoobject.entity.label",
     "locale": "i-default",
     "text": "Entity"
   },
   {
-    "resourceID": "nuclos.entityfield.taskobject.entity.label",
+    "resourceID": "nuclos.entityfield.todoobject.entity.label",
     "locale": "en",
     "text": "Entity"
   },
   {
-    "resourceID": "nuclos.entityfield.taskobject.entity.label",
+    "resourceID": "nuclos.entityfield.todoobject.entity.label",
     "locale": "de",
     "text": "Entität"
   },
@@ -3690,47 +3690,47 @@
     "text": "Beschreibung"
   },
   {
-    "resourceID": "nuclos.entityfield.tasklist.completed.label",
+    "resourceID": "nuclos.entityfield.todolist.completed.label",
     "locale": "i-default",
     "text": "Finished on"
   },
   {
-    "resourceID": "nuclos.entityfield.tasklist.completed.label",
+    "resourceID": "nuclos.entityfield.todolist.completed.label",
     "locale": "en",
     "text": "Finished on"
   },
   {
-    "resourceID": "nuclos.entityfield.tasklist.completed.label",
+    "resourceID": "nuclos.entityfield.todolist.completed.label",
     "locale": "de",
     "text": "Erledigt am"
   },
   {
-    "resourceID": "nuclos.entityfield.tasklist.taskstatus.label",
+    "resourceID": "nuclos.entityfield.todolist.taskstatus.label",
     "locale": "i-default",
     "text": "Process status"
   },
   {
-    "resourceID": "nuclos.entityfield.tasklist.taskstatus.label",
+    "resourceID": "nuclos.entityfield.todolist.taskstatus.label",
     "locale": "en",
     "text": "Process status"
   },
   {
-    "resourceID": "nuclos.entityfield.tasklist.taskstatus.label",
+    "resourceID": "nuclos.entityfield.todolist.taskstatus.label",
     "locale": "de",
     "text": "Bearbeitungsstatus"
   },
   {
-    "resourceID": "nuclos.entityfield.tasklist.priority.label",
+    "resourceID": "nuclos.entityfield.todolist.priority.label",
     "locale": "i-default",
     "text": "Priority"
   },
   {
-    "resourceID": "nuclos.entityfield.tasklist.priority.label",
+    "resourceID": "nuclos.entityfield.todolist.priority.label",
     "locale": "en",
     "text": "Priority"
   },
   {
-    "resourceID": "nuclos.entityfield.tasklist.priority.label",
+    "resourceID": "nuclos.entityfield.todolist.priority.label",
     "locale": "de",
     "text": "Priorität"
   },
@@ -4965,32 +4965,32 @@
     "text": "Source XML"
   },
   {
-    "resourceID": "nuclos.entityfield.tasklist.scheduled.label",
+    "resourceID": "nuclos.entityfield.todolist.scheduled.label",
     "locale": "i-default",
     "text": "Time limit"
   },
   {
-    "resourceID": "nuclos.entityfield.tasklist.scheduled.label",
+    "resourceID": "nuclos.entityfield.todolist.scheduled.label",
     "locale": "en",
     "text": "Time limit"
   },
   {
-    "resourceID": "nuclos.entityfield.tasklist.scheduled.label",
+    "resourceID": "nuclos.entityfield.todolist.scheduled.label",
     "locale": "de",
     "text": "Termin"
   },
   {
-    "resourceID": "nuclos.entityfield.taskobject.genericObject.label",
+    "resourceID": "nuclos.entityfield.todoobject.genericObject.label",
     "locale": "i-default",
     "text": "Referenced objects"
   },
   {
-    "resourceID": "nuclos.entityfield.taskobject.genericObject.label",
+    "resourceID": "nuclos.entityfield.todoobject.genericObject.label",
     "locale": "en",
     "text": "Referenced objects"
   },
   {
-    "resourceID": "nuclos.entityfield.taskobject.genericObject.label",
+    "resourceID": "nuclos.entityfield.todoobject.genericObject.label",
     "locale": "de",
     "text": "Zugeordnete Objekte"
   },
@@ -5055,17 +5055,17 @@
     "text": "Gültig von"
   },
   {
-    "resourceID": "nuclos.entityfield.taskstatus.name.label",
+    "resourceID": "nuclos.entityfield.todostatus.name.label",
     "locale": "i-default",
     "text": "Status name"
   },
   {
-    "resourceID": "nuclos.entityfield.taskstatus.name.label",
+    "resourceID": "nuclos.entityfield.todostatus.name.label",
     "locale": "en",
     "text": "Status name"
   },
   {
-    "resourceID": "nuclos.entityfield.taskstatus.name.label",
+    "resourceID": "nuclos.entityfield.todostatus.name.label",
     "locale": "de",
     "text": "Statusname"
   },
@@ -6195,17 +6195,17 @@
     "text": "Interface Reserve 1"
   },
   {
-    "resourceID": "nuclos.entityfield.tasklist.name.label",
+    "resourceID": "nuclos.entityfield.todolist.name.label",
     "locale": "i-default",
     "text": "Title"
   },
   {
-    "resourceID": "nuclos.entityfield.tasklist.name.label",
+    "resourceID": "nuclos.entityfield.todolist.name.label",
     "locale": "en",
     "text": "Title"
   },
   {
-    "resourceID": "nuclos.entityfield.tasklist.name.label",
+    "resourceID": "nuclos.entityfield.todolist.name.label",
     "locale": "de",
     "text": "Titel"
   },
@@ -6225,32 +6225,32 @@
     "text": "Zuständiger Benutzer"
   },
   {
-    "resourceID": "nuclos.entityfield.tasklist.comment.label",
+    "resourceID": "nuclos.entityfield.todolist.comment.label",
     "locale": "i-default",
     "text": "Remark"
   },
   {
-    "resourceID": "nuclos.entityfield.tasklist.comment.label",
+    "resourceID": "nuclos.entityfield.todolist.comment.label",
     "locale": "en",
     "text": "Remark"
   },
   {
-    "resourceID": "nuclos.entityfield.tasklist.comment.label",
+    "resourceID": "nuclos.entityfield.todolist.comment.label",
     "locale": "de",
     "text": "Bemerkung"
   },
   {
-    "resourceID": "nuclos.entityfield.tasklist.description.label",
+    "resourceID": "nuclos.entityfield.todolist.description.label",
     "locale": "i-default",
     "text": "Description"
   },
   {
-    "resourceID": "nuclos.entityfield.tasklist.description.label",
+    "resourceID": "nuclos.entityfield.todolist.description.label",
     "locale": "en",
     "text": "Description"
   },
   {
-    "resourceID": "nuclos.entityfield.tasklist.description.label",
+    "resourceID": "nuclos.entityfield.todolist.description.label",
     "locale": "de",
     "text": "Beschreibung"
   },
@@ -7065,17 +7065,17 @@
     "text": "Benutzergruppe"
   },
   {
-    "resourceID": "nuclos.entityfield.taskstatus.description.label",
+    "resourceID": "nuclos.entityfield.todostatus.description.label",
     "locale": "i-default",
     "text": "Description"
   },
   {
-    "resourceID": "nuclos.entityfield.taskstatus.description.label",
+    "resourceID": "nuclos.entityfield.todostatus.description.label",
     "locale": "en",
     "text": "Description"
   },
   {
-    "resourceID": "nuclos.entityfield.taskstatus.description.label",
+    "resourceID": "nuclos.entityfield.todostatus.description.label",
     "locale": "de",
     "text": "Beschreibung"
   },
@@ -7800,62 +7800,62 @@
     "text": "Objekt"
   },
   {
-    "resourceID": "nuclos.entityfield.tasklist.delegator.label",
+    "resourceID": "nuclos.entityfield.todolist.delegator.label",
     "locale": "i-default",
     "text": "Creator (old)"
   },
   {
-    "resourceID": "nuclos.entityfield.tasklist.delegator.label",
+    "resourceID": "nuclos.entityfield.todolist.delegator.label",
     "locale": "en",
     "text": "Creator (old)"
   },
   {
-    "resourceID": "nuclos.entityfield.tasklist.delegator.label",
+    "resourceID": "nuclos.entityfield.todolist.delegator.label",
     "locale": "de",
     "text": "Ersteller (alt)"
   },
   {
-    "resourceID": "nuclos.entityfield.tasklist.delegator.description",
+    "resourceID": "nuclos.entityfield.todolist.delegator.description",
     "locale": "i-default",
     "text": "Creator (old)"
   },
   {
-    "resourceID": "nuclos.entityfield.tasklist.delegator.description",
+    "resourceID": "nuclos.entityfield.todolist.delegator.description",
     "locale": "en",
     "text": "Creator (old)"
   },
   {
-    "resourceID": "nuclos.entityfield.tasklist.delegator.description",
+    "resourceID": "nuclos.entityfield.todolist.delegator.description",
     "locale": "de",
     "text": "Ersteller (alt)"
   },
   {
-    "resourceID": "nuclos.entityfield.tasklist.taskdelegator.label",
+    "resourceID": "nuclos.entityfield.todolist.taskdelegator.label",
     "locale": "i-default",
     "text": "Creator"
   },
   {
-    "resourceID": "nuclos.entityfield.tasklist.taskdelegator.label",
+    "resourceID": "nuclos.entityfield.todolist.taskdelegator.label",
     "locale": "en",
     "text": "Creator"
   },
   {
-    "resourceID": "nuclos.entityfield.tasklist.taskdelegator.label",
+    "resourceID": "nuclos.entityfield.todolist.taskdelegator.label",
     "locale": "de",
     "text": "Ersteller"
   },
   {
-    "resourceID": "nuclos.entityfield.tasklist.taskdelegator.description",
+    "resourceID": "nuclos.entityfield.todolist.taskdelegator.description",
     "locale": "i-default",
     "text": "Creator"
   },
   {
-    "resourceID": "nuclos.entityfield.tasklist.taskdelegator.description",
+    "resourceID": "nuclos.entityfield.todolist.taskdelegator.description",
     "locale": "en",
     "text": "Creator"
   },
   {
-    "resourceID": "nuclos.entityfield.tasklist.taskdelegator.description",
+    "resourceID": "nuclos.entityfield.todolist.taskdelegator.description",
     "locale": "de",
     "text": "Ersteller"
   },
@@ -7965,17 +7965,17 @@
     "text": "Zielfeld der Spalte"
   },
   {
-    "resourceID": "nuclos.entityfield.tasklist.scheduled.description",
+    "resourceID": "nuclos.entityfield.todolist.scheduled.description",
     "locale": "i-default",
     "text": "Time limit"
   },
   {
-    "resourceID": "nuclos.entityfield.tasklist.scheduled.description",
+    "resourceID": "nuclos.entityfield.todolist.scheduled.description",
     "locale": "en",
     "text": "Time limit"
   },
   {
-    "resourceID": "nuclos.entityfield.tasklist.scheduled.description",
+    "resourceID": "nuclos.entityfield.todolist.scheduled.description",
     "locale": "de",
     "text": "Termin"
   },
@@ -10755,47 +10755,47 @@
     "text": "Zielentität der Spalte"
   },
   {
-    "resourceID": "nuclos.entityfield.tasklist.completed.description",
+    "resourceID": "nuclos.entityfield.todolist.completed.description",
     "locale": "i-default",
     "text": "Resolution date of the task"
   },
   {
-    "resourceID": "nuclos.entityfield.tasklist.completed.description",
+    "resourceID": "nuclos.entityfield.todolist.completed.description",
     "locale": "en",
     "text": "Resolution date of the task"
   },
   {
-    "resourceID": "nuclos.entityfield.tasklist.completed.description",
+    "resourceID": "nuclos.entityfield.todolist.completed.description",
     "locale": "de",
     "text": "Datum an dem die Aufgabe erledigt wurde."
   },
   {
-    "resourceID": "nuclos.entityfield.tasklist.comment.description",
+    "resourceID": "nuclos.entityfield.todolist.comment.description",
     "locale": "i-default",
     "text": "Remark"
   },
   {
-    "resourceID": "nuclos.entityfield.tasklist.comment.description",
+    "resourceID": "nuclos.entityfield.todolist.comment.description",
     "locale": "en",
     "text": "Remark"
   },
   {
-    "resourceID": "nuclos.entityfield.tasklist.comment.description",
+    "resourceID": "nuclos.entityfield.todolist.comment.description",
     "locale": "de",
     "text": "Bemerkung"
   },
   {
-    "resourceID": "nuclos.entityfield.tasklist.description.description",
+    "resourceID": "nuclos.entityfield.todolist.description.description",
     "locale": "i-default",
     "text": "Description"
   },
   {
-    "resourceID": "nuclos.entityfield.tasklist.description.description",
+    "resourceID": "nuclos.entityfield.todolist.description.description",
     "locale": "en",
     "text": "Description"
   },
   {
-    "resourceID": "nuclos.entityfield.tasklist.description.description",
+    "resourceID": "nuclos.entityfield.todolist.description.description",
     "locale": "de",
     "text": "Beschreibung"
   },
@@ -11790,17 +11790,17 @@
     "text": "Zuständiger Benutzer"
   },
   {
-    "resourceID": "nuclos.entityfield.taskobject.genericObject.description",
+    "resourceID": "nuclos.entityfield.todoobject.genericObject.description",
     "locale": "i-default",
     "text": "Object"
   },
   {
-    "resourceID": "nuclos.entityfield.taskobject.genericObject.description",
+    "resourceID": "nuclos.entityfield.todoobject.genericObject.description",
     "locale": "en",
     "text": "Object"
   },
   {
-    "resourceID": "nuclos.entityfield.taskobject.genericObject.description",
+    "resourceID": "nuclos.entityfield.todoobject.genericObject.description",
     "locale": "de",
     "text": "Objekt"
   },
@@ -12000,17 +12000,17 @@
     "text": "Beschreibung"
   },
   {
-    "resourceID": "nuclos.entityfield.tasklist.name.description",
+    "resourceID": "nuclos.entityfield.todolist.name.description",
     "locale": "i-default",
     "text": "Task title"
   },
   {
-    "resourceID": "nuclos.entityfield.tasklist.name.description",
+    "resourceID": "nuclos.entityfield.todolist.name.description",
     "locale": "en",
     "text": "Task title"
   },
   {
-    "resourceID": "nuclos.entityfield.tasklist.name.description",
+    "resourceID": "nuclos.entityfield.todolist.name.description",
     "locale": "de",
     "text": "Titel der Aufgabe"
   },
@@ -12525,32 +12525,32 @@
     "text": "Name der Strukturdefinition"
   },
   {
-    "resourceID": "nuclos.entityfield.tasklist.priority.description",
+    "resourceID": "nuclos.entityfield.todolist.priority.description",
     "locale": "i-default",
     "text": "Task priority"
   },
   {
-    "resourceID": "nuclos.entityfield.tasklist.priority.description",
+    "resourceID": "nuclos.entityfield.todolist.priority.description",
     "locale": "en",
     "text": "Task priority"
   },
   {
-    "resourceID": "nuclos.entityfield.tasklist.priority.description",
+    "resourceID": "nuclos.entityfield.todolist.priority.description",
     "locale": "de",
     "text": "Priorität der Aufgabe"
   },
   {
-    "resourceID": "nuclos.entityfield.tasklist.taskstatus.description",
+    "resourceID": "nuclos.entityfield.todolist.taskstatus.description",
     "locale": "i-default",
     "text": "Task process status"
   },
   {
-    "resourceID": "nuclos.entityfield.tasklist.taskstatus.description",
+    "resourceID": "nuclos.entityfield.todolist.taskstatus.description",
     "locale": "en",
     "text": "Task process status"
   },
   {
-    "resourceID": "nuclos.entityfield.tasklist.taskstatus.description",
+    "resourceID": "nuclos.entityfield.todolist.taskstatus.description",
     "locale": "de",
     "text": "Bearbeitungsstatus der Aufgabe"
   },
@@ -13470,17 +13470,17 @@
     "text": "Bemerkung zur Währung"
   },
   {
-    "resourceID": "nuclos.entityfield.taskstatus.description.description",
+    "resourceID": "nuclos.entityfield.todostatus.description.description",
     "locale": "i-default",
     "text": "Description for status"
   },
   {
-    "resourceID": "nuclos.entityfield.taskstatus.description.description",
+    "resourceID": "nuclos.entityfield.todostatus.description.description",
     "locale": "en",
     "text": "Description for status"
   },
   {
-    "resourceID": "nuclos.entityfield.taskstatus.description.description",
+    "resourceID": "nuclos.entityfield.todostatus.description.description",
     "locale": "de",
     "text": "Beschreibung des Status"
   },
@@ -15330,17 +15330,17 @@
     "text": "Konfiguration\\Sonstige"
   },
   {
-    "resourceID": "nuclos.entity.taskstatus.menupath",
+    "resourceID": "nuclos.entity.todostatus.menupath",
     "locale": "i-default",
     "text": "Configuration\\Miscellaneous"
   },
   {
-    "resourceID": "nuclos.entity.taskstatus.menupath",
+    "resourceID": "nuclos.entity.todostatus.menupath",
     "locale": "en",
     "text": "Configuration\\Miscellaneous"
   },
   {
-    "resourceID": "nuclos.entity.taskstatus.menupath",
+    "resourceID": "nuclos.entity.todostatus.menupath",
     "locale": "de",
     "text": "Konfiguration\\Sonstige"
   },
@@ -15975,17 +15975,17 @@
     "text": "Objekt"
   },
   {
-    "resourceID": "nuclos.entityfield.taskstatus.name.description",
+    "resourceID": "nuclos.entityfield.todostatus.name.description",
     "locale": "i-default",
     "text": "Status name"
   },
   {
-    "resourceID": "nuclos.entityfield.taskstatus.name.description",
+    "resourceID": "nuclos.entityfield.todostatus.name.description",
     "locale": "en",
     "text": "Status name"
   },
   {
-    "resourceID": "nuclos.entityfield.taskstatus.name.description",
+    "resourceID": "nuclos.entityfield.todostatus.name.description",
     "locale": "de",
     "text": "Name des Status"
   },
@@ -17010,17 +17010,17 @@
     "text": "Formatangabe für Spaltenimport"
   },
   {
-    "resourceID": "nuclos.entityfield.taskobject.tasklist.description",
+    "resourceID": "nuclos.entityfield.todoobject.todolist.description",
     "locale": "i-default",
     "text": "Task list"
   },
   {
-    "resourceID": "nuclos.entityfield.taskobject.tasklist.description",
+    "resourceID": "nuclos.entityfield.todoobject.todolist.description",
     "locale": "en",
     "text": "Task list"
   },
   {
-    "resourceID": "nuclos.entityfield.taskobject.tasklist.description",
+    "resourceID": "nuclos.entityfield.todoobject.todolist.description",
     "locale": "de",
     "text": "Aufgabenliste"
   },
@@ -19155,42 +19155,42 @@
     "text": "Konfiguration\\Import & Export"
   },
   {
-    "resourceID": "nuclos.entity.tasklist.menupath",
+    "resourceID": "nuclos.entity.todolist.menupath",
     "locale": "i-default",
     "text": "Administration\\Master data\\Other"
   },
   {
-    "resourceID": "nuclos.entity.tasklist.menupath",
+    "resourceID": "nuclos.entity.todolist.menupath",
     "locale": "en",
     "text": "Administration\\Master data\\Other"
   },
   {
-    "resourceID": "nuclos.entity.tasklist.menupath",
+    "resourceID": "nuclos.entity.todolist.menupath",
     "locale": "de",
     "text": "Administration\\Stammdaten\\Sonstige"
   },
   {
-    "resourceID": "nuclos.entity.taskstatus.menupath",
+    "resourceID": "nuclos.entity.todostatus.menupath",
     "locale": "i-default",
     "text": "Task status"
   },
   {
-    "resourceID": "nuclos.entity.taskstatus.menupath",
+    "resourceID": "nuclos.entity.todostatus.menupath",
     "locale": "en",
     "text": "Task status"
   },
   {
-    "resourceID": "nuclos.entity.taskstatus.menupath",
+    "resourceID": "nuclos.entity.todostatus.menupath",
     "locale": "de",
     "text": "Bearbeitungsstatus"
   },
   {
-    "resourceID": "nuclos.entity.tasklist.label",
+    "resourceID": "nuclos.entity.todolist.label",
     "locale": "i-default",
     "text": "Task"
   },
   {
-    "resourceID": "nuclos.entity.tasklist.label",
+    "resourceID": "nuclos.entity.todolist.label",
     "locale": "en",
     "text": "Task"
   },
@@ -19200,122 +19200,122 @@
     "text": "Aufgabe"
   },
   {
-    "resourceID": "nuclos.entity.taskobject.label",
+    "resourceID": "nuclos.entity.todoobject.label",
     "locale": "i-default",
     "text": "Task delegation"
   },
   {
-    "resourceID": "nuclos.entity.taskobject.label",
+    "resourceID": "nuclos.entity.todoobject.label",
     "locale": "en",
     "text": "Task delegation"
   },
   {
-    "resourceID": "nuclos.entity.taskobject.label",
+    "resourceID": "nuclos.entity.todoobject.label",
     "locale": "de",
     "text": "Aufgabenzuordnung"
   },
   {
-    "resourceID": "nuclos.entity.taskfiles.label",
+    "resourceID": "nuclos.entity.todofiles.label",
     "locale": "i-default",
     "text": "Task documents"
   },
   {
-    "resourceID": "nuclos.entity.taskfiles.label",
+    "resourceID": "nuclos.entity.todofiles.label",
     "locale": "en",
     "text": "Task documents"
   },
   {
-    "resourceID": "nuclos.entity.taskfiles.label",
+    "resourceID": "nuclos.entity.todofiles.label",
     "locale": "de",
     "text": "Dokumentenanhang (Aufgaben)"
   },
   {
-    "resourceID": "nuclos.entityfield.taskfiles.file.label",
+    "resourceID": "nuclos.entityfield.todofiles.file.label",
     "locale": "i-default",
     "text": "Document"
   },
   {
-    "resourceID": "nuclos.entityfield.taskfiles.file.label",
+    "resourceID": "nuclos.entityfield.todofiles.file.label",
     "locale": "en",
     "text": "Document"
   },
   {
-    "resourceID": "nuclos.entityfield.taskfiles.file.label",
+    "resourceID": "nuclos.entityfield.todofiles.file.label",
     "locale": "de",
     "text": "Dokument"
   },
   {
-    "resourceID": "nuclos.entityfield.taskfiles.file.description",
+    "resourceID": "nuclos.entityfield.todofiles.file.description",
     "locale": "i-default",
     "text": "Document"
   },
   {
-    "resourceID": "nuclos.entityfield.taskfiles.file.description",
+    "resourceID": "nuclos.entityfield.todofiles.file.description",
     "locale": "en",
     "text": "Document"
   },
   {
-    "resourceID": "nuclos.entityfield.taskfiles.file.description",
+    "resourceID": "nuclos.entityfield.todofiles.file.description",
     "locale": "de",
     "text": "Dokument"
   },
   {
-    "resourceID": "nuclos.entityfield.taskfiles.description.label",
+    "resourceID": "nuclos.entityfield.todofiles.description.label",
     "locale": "i-default",
     "text": "Description"
   },
   {
-    "resourceID": "nuclos.entityfield.taskfiles.description.label",
+    "resourceID": "nuclos.entityfield.todofiles.description.label",
     "locale": "en",
     "text": "Description"
   },
   {
-    "resourceID": "nuclos.entityfield.taskfiles.description.label",
+    "resourceID": "nuclos.entityfield.todofiles.description.label",
     "locale": "de",
     "text": "Beschreibung"
   },
   {
-    "resourceID": "nuclos.entityfield.taskfiles.description.description",
+    "resourceID": "nuclos.entityfield.todofiles.description.description",
     "locale": "i-default",
     "text": "Description"
   },
   {
-    "resourceID": "nuclos.entityfield.taskfiles.description.description",
+    "resourceID": "nuclos.entityfield.todofiles.description.description",
     "locale": "en",
     "text": "Description"
   },
   {
-    "resourceID": "nuclos.entityfield.taskfiles.description.description",
+    "resourceID": "nuclos.entityfield.todofiles.description.description",
     "locale": "de",
     "text": "Beschreibung"
   },
   {
-    "resourceID": "nuclos.entityfield.taskfiles.tasklist.label",
+    "resourceID": "nuclos.entityfield.todofiles.tasklist.label",
     "locale": "i-default",
     "text": "Task list"
   },
   {
-    "resourceID": "nuclos.entityfield.taskfiles.tasklist.label",
+    "resourceID": "nuclos.entityfield.todofiles.tasklist.label",
     "locale": "en",
     "text": "Task list"
   },
   {
-    "resourceID": "nuclos.entityfield.taskfiles.tasklist.label",
+    "resourceID": "nuclos.entityfield.todofiles.tasklist.label",
     "locale": "de",
     "text": "Aufgabenliste"
   },
   {
-    "resourceID": "nuclos.entityfield.taskfiles.tasklist.description",
+    "resourceID": "nuclos.entityfield.todofiles.tasklist.description",
     "locale": "i-default",
     "text": "Task list"
   },
   {
-    "resourceID": "nuclos.entityfield.taskfiles.tasklist.description",
+    "resourceID": "nuclos.entityfield.todofiles.tasklist.description",
     "locale": "en",
     "text": "Task list"
   },
   {
-    "resourceID": "nuclos.entityfield.taskfiles.tasklist.description",
+    "resourceID": "nuclos.entityfield.todofiles.tasklist.description",
     "locale": "de",
     "text": "Aufgabenliste"
   },
@@ -19890,17 +19890,17 @@
     "text": "Gruppe"
   },
   {
-    "resourceID": "nuclos.entity.taskstatus.label",
+    "resourceID": "nuclos.entity.todostatus.label",
     "locale": "i-default",
     "text": "Task status"
   },
   {
-    "resourceID": "nuclos.entity.taskstatus.label",
+    "resourceID": "nuclos.entity.todostatus.label",
     "locale": "en",
     "text": "Task status"
   },
   {
-    "resourceID": "nuclos.entity.taskstatus.label",
+    "resourceID": "nuclos.entity.todostatus.label",
     "locale": "de",
     "text": "Aufgabenstatus"
   },
@@ -59109,62 +59109,62 @@
     "text": "Übergeordnete Benutzergruppe"
   },
   {
-    "resourceID": "nuclos.entityfield.tasklist.visibility.label",
+    "resourceID": "nuclos.entityfield.todolist.visibility.label",
     "locale": "i-default",
     "text": "Visibility"
   },
   {
-    "resourceID": "nuclos.entityfield.tasklist.visibility.label",
+    "resourceID": "nuclos.entityfield.todolist.visibility.label",
     "locale": "en",
     "text": "Visibility"
   },
   {
-    "resourceID": "nuclos.entityfield.tasklist.visibility.label",
+    "resourceID": "nuclos.entityfield.todolist.visibility.label",
     "locale": "de",
     "text": "Sichtbarkeit"
   },
   {
-    "resourceID": "nuclos.entityfield.tasklist.visibility.description",
+    "resourceID": "nuclos.entityfield.todolist.visibility.description",
     "locale": "i-default",
     "text": "Visibility"
   },
   {
-    "resourceID": "nuclos.entityfield.tasklist.visibility.description",
+    "resourceID": "nuclos.entityfield.todolist.visibility.description",
     "locale": "en",
     "text": "Visibility"
   },
   {
-    "resourceID": "nuclos.entityfield.tasklist.visibility.description",
+    "resourceID": "nuclos.entityfield.todolist.visibility.description",
     "locale": "de",
     "text": "Sichtbarkeit"
   },
   {
-    "resourceID": "nuclos.entityfield.tasklist.visibility.1",
+    "resourceID": "nuclos.entityfield.todolist.visibility.1",
     "locale": "i-default",
     "text": "private"
   },
   {
-    "resourceID": "nuclos.entityfield.tasklist.visibility.1",
+    "resourceID": "nuclos.entityfield.todolist.visibility.1",
     "locale": "en",
     "text": "private"
   },
   {
-    "resourceID": "nuclos.entityfield.tasklist.visibility.1",
+    "resourceID": "nuclos.entityfield.todolist.visibility.1",
     "locale": "de",
     "text": "privat"
   },
   {
-    "resourceID": "nuclos.entityfield.tasklist.visibility.2",
+    "resourceID": "nuclos.entityfield.todolist.visibility.2",
     "locale": "i-default",
     "text": "public"
   },
   {
-    "resourceID": "nuclos.entityfield.tasklist.visibility.2",
+    "resourceID": "nuclos.entityfield.todolist.visibility.2",
     "locale": "en",
     "text": "public"
   },
   {
-    "resourceID": "nuclos.entityfield.tasklist.visibility.2",
+    "resourceID": "nuclos.entityfield.todolist.visibility.2",
     "locale": "de",
     "text": "öffentlich"
   },
@@ -64402,5 +64402,480 @@
     "resourceID": "WorkspaceEditor.alwaysreset",
     "locale": "de",
     "text": "Zuletzt geöffnete Tabs immer auf Vorlage zurücksetzen"
+  },
+  {
+    "resourceID": "nuclos.entity.dynamictasklist.label",
+    "locale": "en",
+    "text": "Dynamic task list"
+  },
+  {
+    "resourceID": "nuclos.entity.dynamictasklist.label",
+    "locale": "de",
+    "text": "Dynamische Taskliste"
+  },
+  {
+    "resourceID": "nuclos.entity.dynamictasklist.menupath",
+    "locale": "i-default",
+    "text": "Configuration\\Data sources"
+  },
+  {
+    "resourceID": "nuclos.entity.dynamictasklist.menupath",
+    "locale": "en",
+    "text": "Configuration\\Data sources"
+  },
+  {
+    "resourceID": "nuclos.entity.dynamictasklist.menupath",
+    "locale": "de",
+    "text": "Konfiguration\\Datenquellen"
+  },
+  {
+    "resourceID": "nuclos.entityfield.dynamictasklist.valid.label",
+    "locale": "i-default",
+    "text": "SQL valid?"
+  },
+  {
+    "resourceID": "nuclos.entityfield.dynamictasklist.valid.label",
+    "locale": "en",
+    "text": "SQL valid?"
+  },
+  {
+    "resourceID": "nuclos.entityfield.dynamictasklist.valid.label",
+    "locale": "de",
+    "text": "SQL Abfrage gültig?"
+  },
+  {
+    "resourceID": "nuclos.entityfield.dynamictasklist.valid.description",
+    "locale": "i-default",
+    "text": "SQL valid?"
+  },
+  {
+    "resourceID": "nuclos.entityfield.dynamictasklist.valid.description",
+    "locale": "en",
+    "text": "SQL valid?"
+  },
+  {
+    "resourceID": "nuclos.entityfield.dynamictasklist.valid.description",
+    "locale": "de",
+    "text": "SQL Abfrage gültig?"
+  },
+  {
+    "resourceID": "nuclos.entityfield.dynamictasklist.source.label",
+    "locale": "i-default",
+    "text": "XML"
+  },
+  {
+    "resourceID": "nuclos.entityfield.dynamictasklist.source.label",
+    "locale": "en",
+    "text": "XML"
+  },
+  {
+    "resourceID": "nuclos.entityfield.dynamictasklist.source.label",
+    "locale": "de",
+    "text": "XML"
+  },
+  {
+    "resourceID": "nuclos.entityfield.dynamictasklist.source.description",
+    "locale": "i-default",
+    "text": "Dynamic task list definition in XML"
+  },
+  {
+    "resourceID": "nuclos.entityfield.dynamictasklist.source.description",
+    "locale": "en",
+    "text": "Dynamic task list definition in XML"
+  },
+  {
+    "resourceID": "nuclos.entityfield.dynamictasklist.source.description",
+    "locale": "de",
+    "text": "Definition der dynamischen Taskliste in XML"
+  },
+  {
+    "resourceID": "nuclos.entityfield.dynamictasklist.name.label",
+    "locale": "i-default",
+    "text": "Name"
+  },
+  {
+    "resourceID": "nuclos.entityfield.dynamictasklist.name.label",
+    "locale": "en",
+    "text": "Name"
+  },
+  {
+    "resourceID": "nuclos.entityfield.dynamictasklist.name.label",
+    "locale": "de",
+    "text": "Name"
+  },
+  {
+    "resourceID": "nuclos.entityfield.dynamictasklist.name.description",
+    "locale": "i-default",
+    "text": "Name of dynamic task list"
+  },
+  {
+    "resourceID": "nuclos.entityfield.dynamictasklist.name.description",
+    "locale": "en",
+    "text": "Name of dynamic task list"
+  },
+  {
+    "resourceID": "nuclos.entityfield.dynamictasklist.name.description",
+    "locale": "de",
+    "text": "Name der dynamischen Taskliste"
+  },
+  {
+    "resourceID": "nuclos.entityfield.dynamictasklist.description.label",
+    "locale": "i-default",
+    "text": "Description"
+  },
+  {
+    "resourceID": "nuclos.entityfield.dynamictasklist.description.label",
+    "locale": "en",
+    "text": "Description"
+  },
+  {
+    "resourceID": "nuclos.entityfield.dynamictasklist.description.label",
+    "locale": "de",
+    "text": "Beschreibung"
+  },
+  {
+    "resourceID": "nuclos.entityfield.dynamictasklist.description.description",
+    "locale": "i-default",
+    "text": "Description of dynamic task list"
+  },
+  {
+    "resourceID": "nuclos.entityfield.dynamictasklist.description.description",
+    "locale": "en",
+    "text": "Description of dynamic task list"
+  },
+  {
+    "resourceID": "nuclos.entityfield.dynamictasklist.description.description",
+    "locale": "de",
+    "text": "Beschreibung der dynamischen Taskliste"
+  },
+  {
+    "resourceID": "nuclos.entity.dynamictasklistusage.label",
+    "locale": "i-default",
+    "text": "Dynamic task list usage"
+  },
+  {
+    "resourceID": "nuclos.entity.dynamictasklistusage.label",
+    "locale": "en",
+    "text": "Dynamic task list usage"
+  },
+  {
+    "resourceID": "nuclos.entity.dynamictasklistusage.label",
+    "locale": "de",
+    "text": "Verwendung von dynamischen Tasklisten"
+  },
+  {
+    "resourceID": "nuclos.entity.tasklist.label",
+    "locale": "i-default",
+    "text": "Task lists"
+  },
+  {
+    "resourceID": "nuclos.entity.tasklist.label",
+    "locale": "en",
+    "text": "Task lists"
+  },
+  {
+    "resourceID": "nuclos.entity.tasklist.label",
+    "locale": "de",
+    "text": "Aufgabenlisten"
+  },
+  {
+    "resourceID": "nuclos.entity.tasklist.description",
+    "locale": "i-default",
+    "text": "Task lists"
+  },
+  {
+    "resourceID": "nuclos.entity.tasklist.description",
+    "locale": "en",
+    "text": "Task lists"
+  },
+  {
+    "resourceID": "nuclos.entity.tasklist.description",
+    "locale": "de",
+    "text": "Aufgabenlisten"
+  },
+  {
+    "resourceID": "nuclos.entity.tasklist.menupath",
+    "locale": "i-default",
+    "text": "Configuration"
+  },
+  {
+    "resourceID": "nuclos.entity.tasklist.menupath",
+    "locale": "en",
+    "text": "Configuration"
+  },
+  {
+    "resourceID": "nuclos.entity.tasklist.menupath",
+    "locale": "de",
+    "text": "Konfiguration"
+  },
+  {
+    "resourceID": "nuclos.entityfield.tasklist.name.label",
+    "locale": "i-default",
+    "text": "Name"
+  },
+  {
+    "resourceID": "nuclos.entityfield.tasklist.name.label",
+    "locale": "en",
+    "text": "Name"
+  },
+  {
+    "resourceID": "nuclos.entityfield.tasklist.name.label",
+    "locale": "de",
+    "text": "Name"
+  },
+  {
+    "resourceID": "nuclos.entityfield.tasklist.name.description",
+    "locale": "i-default",
+    "text": "Name of this task list"
+  },
+  {
+    "resourceID": "nuclos.entityfield.tasklist.name.description",
+    "locale": "en",
+    "text": "Name of this task list"
+  },
+  {
+    "resourceID": "nuclos.entityfield.tasklist.name.description",
+    "locale": "de",
+    "text": "Name der Aufgabenquelle"
+  },
+  {
+    "resourceID": "nuclos.entityfield.tasklist.description.label",
+    "locale": "i-default",
+    "text": "Description"
+  },
+  {
+    "resourceID": "nuclos.entityfield.tasklist.description.label",
+    "locale": "en",
+    "text": "Description"
+  },
+  {
+    "resourceID": "nuclos.entityfield.tasklist.description.label",
+    "locale": "de",
+    "text": "Beschreibung"
+  },
+  {
+    "resourceID": "nuclos.entityfield.tasklist.description.description",
+    "locale": "i-default",
+    "text": "Description of this task list"
+  },
+  {
+    "resourceID": "nuclos.entityfield.tasklist.description.description",
+    "locale": "en",
+    "text": "Description of this task list"
+  },
+  {
+    "resourceID": "nuclos.entityfield.tasklist.description.description",
+    "locale": "de",
+    "text": "Beschreibung der Aufgabenquelle"
+  },
+  {
+    "resourceID": "nuclos.entityfield.tasklist.labelres.label",
+    "locale": "i-default",
+    "text": "Resource id for label"
+  },
+  {
+    "resourceID": "nuclos.entityfield.tasklist.labelres.label",
+    "locale": "en",
+    "text": "Resource id for label"
+  },
+  {
+    "resourceID": "nuclos.entityfield.tasklist.labelres.label",
+    "locale": "de",
+    "text": "Ressourcen-Id für die Beschriftung"
+  },
+  {
+    "resourceID": "nuclos.entityfield.tasklist.descriptionres.label",
+    "locale": "i-default",
+    "text": "Resource id for description"
+  },
+  {
+    "resourceID": "nuclos.entityfield.tasklist.descriptionres.label",
+    "locale": "en",
+    "text": "Resource id for description"
+  },
+  {
+    "resourceID": "nuclos.entityfield.tasklist.descriptionres.label",
+    "locale": "de",
+    "text": "Ressourcen-Id für die Beschreibung"
+  },
+  {
+    "resourceID": "nuclos.entityfield.tasklist.menupathres.label",
+    "locale": "i-default",
+    "text": "Resource id for menupath"
+  },
+  {
+    "resourceID": "nuclos.entityfield.tasklist.menupathres.label",
+    "locale": "en",
+    "text": "Resource id for menupath"
+  },
+  {
+    "resourceID": "nuclos.entityfield.tasklist.menupathres.label",
+    "locale": "de",
+    "text": "Ressourcen-Id für den Menüpfad"
+  },
+  {
+    "resourceID": "nuclos.entityfield.tasklist.datasource.label",
+    "locale": "i-default",
+    "text": "Dynamic task list"
+  },
+  {
+    "resourceID": "nuclos.entityfield.tasklist.datasource.label",
+    "locale": "en",
+    "text": "Dynamic task list"
+  },
+  {
+    "resourceID": "nuclos.entityfield.tasklist.datasource.label",
+    "locale": "de",
+    "text": "Dynamische Aufgabenliste"
+  },
+  {
+    "resourceID": "nuclos.entityfield.tasklist.datasource.description",
+    "locale": "i-default",
+    "text": "Select a datasource as dynamic task list"
+  },
+  {
+    "resourceID": "nuclos.entityfield.tasklist.datasource.description",
+    "locale": "en",
+    "text": "Select a datasource as dynamic task list"
+  },
+  {
+    "resourceID": "nuclos.entityfield.tasklist.datasource.description",
+    "locale": "de",
+    "text": "Wählen Sie eine Datenquelle als dynamische Aufgabenliste"
+  },
+  {
+    "resourceID": "nuclos.entityfield.tasklist.datasourceidfield.label",
+    "locale": "i-default",
+    "text": "Object id field"
+  },
+  {
+    "resourceID": "nuclos.entityfield.tasklist.datasourceidfield.label",
+    "locale": "en",
+    "text": "Object id field"
+  },
+  {
+    "resourceID": "nuclos.entityfield.tasklist.datasourceidfield.label",
+    "locale": "de",
+    "text": "Attribut mit Objekt-Id"
+  },
+  {
+    "resourceID": "nuclos.entityfield.tasklist.datasourceidfield.description",
+    "locale": "i-default",
+    "text": "Select a field of the datasource that contains the id of an object that is represented by a task item."
+  },
+  {
+    "resourceID": "nuclos.entityfield.tasklist.datasourceidfield.description",
+    "locale": "en",
+    "text": "Select a field of the datasource that contains the id of an object that is represented by a task item."
+  },
+  {
+    "resourceID": "nuclos.entityfield.tasklist.datasourceidfield.description",
+    "locale": "de",
+    "text": "Wählen Sie ein Attribut der Datenquelle, das die Id des Datensatzes enthält, den diese Aufgabe repräsentiert."
+  },
+  {
+    "resourceID": "nuclos.entityfield.tasklist.datasourceentityfield.label",
+    "locale": "i-default",
+    "text": "Entity name field"
+  },
+  {
+    "resourceID": "nuclos.entityfield.tasklist.datasourceentityfield.label",
+    "locale": "en",
+    "text": "Entity name field"
+  },
+  {
+    "resourceID": "nuclos.entityfield.tasklist.datasourceentityfield.label",
+    "locale": "de",
+    "text": "Attribut mit Entitätsname"
+  },
+  {
+    "resourceID": "nuclos.entityfield.tasklist.datasourceentityfield.description",
+    "locale": "i-default",
+    "text": "Select a field of the datasource that contains the name of the entity of the object that is represented by a task item."
+  },
+  {
+    "resourceID": "nuclos.entityfield.tasklist.datasourceentityfield.description",
+    "locale": "en",
+    "text": "Select a field of the datasource that contains the name of the entity of the object that is represented by a task item."
+  },
+  {
+    "resourceID": "nuclos.entityfield.tasklist.datasourceentityfield.description",
+    "locale": "de",
+    "text": "Wählen Sie ein Attribut der Datenquelle, das den Namen der Entität des Datensatzes enthält, den diese Aufgabe repräsentiert."
+  },
+  {
+    "resourceID": "nuclos.entity.tasklistrole.label",
+    "locale": "i-default",
+    "text": "Assigned roles for task lists"
+  },
+  {
+    "resourceID": "nuclos.entity.tasklistrole.label",
+    "locale": "en",
+    "text": "Assigned roles for task lists"
+  },
+  {
+    "resourceID": "nuclos.entity.tasklistrole.label",
+    "locale": "de",
+    "text": "Zugrordnete Rollen für Tasklisten"
+  },
+  {
+    "resourceID": "nuclos.entityfield.tasklistrole.tasklist.label",
+    "locale": "i-default",
+    "text": "Task list"
+  },
+  {
+    "resourceID": "nuclos.entityfield.tasklistrole.tasklist.label",
+    "locale": "en",
+    "text": "Task list"
+  },
+  {
+    "resourceID": "nuclos.entityfield.tasklistrole.tasklist.label",
+    "locale": "de",
+    "text": "Aufgabenliste"
+  },
+  {
+    "resourceID": "nuclos.entityfield.tasklistrole.tasklist.description",
+    "locale": "i-default",
+    "text": "Task list"
+  },
+  {
+    "resourceID": "nuclos.entityfield.tasklistrole.tasklist.description",
+    "locale": "en",
+    "text": "Task list"
+  },
+  {
+    "resourceID": "nuclos.entityfield.tasklistrole.tasklist.description",
+    "locale": "de",
+    "text": "Aufgabenliste"
+  },
+  {
+    "resourceID": "nuclos.entityfield.tasklistrole.role.label",
+    "locale": "i-default",
+    "text": "Role"
+  },
+  {
+    "resourceID": "nuclos.entityfield.tasklistrole.role.label",
+    "locale": "en",
+    "text": "Role"
+  },
+  {
+    "resourceID": "nuclos.entityfield.tasklistrole.role.label",
+    "locale": "de",
+    "text": "Rolle"
+  },
+  {
+    "resourceID": "nuclos.entityfield.tasklistrole.role.description",
+    "locale": "i-default",
+    "text": "Role"
+  },
+  {
+    "resourceID": "nuclos.entityfield.tasklistrole.role.description",
+    "locale": "en",
+    "text": "Role"
+  },
+  {
+    "resourceID": "nuclos.entityfield.tasklistrole.role.description",
+    "locale": "de",
+    "text": "Rolle"
   }
 ]

@@ -59,6 +59,7 @@ import org.nuclos.server.processmonitor.valueobject.SubProcessVO;
 import org.nuclos.server.report.ByteArrayCarrier;
 import org.nuclos.server.report.valueobject.DatasourceVO;
 import org.nuclos.server.report.valueobject.DynamicEntityVO;
+import org.nuclos.server.report.valueobject.DynamicTasklistVO;
 import org.nuclos.server.report.valueobject.RecordGrantVO;
 import org.nuclos.server.report.valueobject.ReportOutputVO;
 import org.nuclos.server.report.valueobject.ReportVO;
@@ -669,6 +670,19 @@ public class MasterDataWrapper {
 		return vo;
 	}
 
+	public static DynamicTasklistVO getDynamicTasklistVO(MasterDataVO mdVO) {
+		DynamicTasklistVO vo = new DynamicTasklistVO(
+			getBaseVO(mdVO),
+			(String)mdVO.getField("name"),
+			(String)mdVO.getField("description"),
+			mdVO.getField("entity", String.class),
+			(Boolean)mdVO.getField("valid"),
+			(String)mdVO.getField("source"),
+			mdVO.getField("nucletId", Integer.class));
+
+		return vo;
+	}
+
 	public static MasterDataVO wrapValuelistProviderVO(ValuelistProviderVO vo) {
 		Map<String, Object> mpFields = new HashMap<String,Object>();
 		mpFields.put("name", vo.getName());
@@ -705,7 +719,7 @@ public class MasterDataWrapper {
 	}
 
 	public static TaskVO getTaskVO(MasterDataWithDependantsVO mdVO, Map<Long, String> mapObjectIdentifier) {
-		Collection<EntityObjectVO> mdTaskObjects = mdVO.getDependants().getData(NuclosEntity.TASKOBJECT.getEntityName());
+		Collection<EntityObjectVO> mdTaskObjects = mdVO.getDependants().getData(NuclosEntity.TODOOBJECT.getEntityName());
 
 		Collection<TaskObjectVO> taskObjects = new ArrayList<TaskObjectVO>();
 		for (EntityObjectVO md : mdTaskObjects) {
@@ -749,9 +763,9 @@ public class MasterDataWrapper {
 			mpFields.put("completed", new java.sql.Date(vo.getCompleted().getTime()));
 
 		DependantMasterDataMap dependants = new DependantMasterDataMap();
-		final String entity = NuclosEntity.TASKOBJECT.getEntityName();
+		final String entity = NuclosEntity.TODOOBJECT.getEntityName();
 		for (TaskObjectVO toVO : vo.getRelatedObjects())
-			dependants.addData(entity, 
+			dependants.addData(entity,
 					DalSupportForMD.getEntityObjectVO(entity, wrapTaskObjectVO(toVO)));
 
 		MasterDataVO mdVO = new MasterDataVO(vo.getId(), vo.getChangedAt(), vo.getCreatedBy(), vo.getChangedAt(), vo.getChangedBy(), vo.getVersion(), mpFields);

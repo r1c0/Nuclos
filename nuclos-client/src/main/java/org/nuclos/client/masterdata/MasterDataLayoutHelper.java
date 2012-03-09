@@ -42,6 +42,7 @@ public class MasterDataLayoutHelper {
 		NuclosEntity.DYNAMICENTITY,
 		NuclosEntity.VALUELISTPROVIDER,
 		NuclosEntity.RECORDGRANT,
+		NuclosEntity.DYNAMICTASKLIST,
 		NuclosEntity.STATEMODEL,
 		NuclosEntity.RULE,
 		NuclosEntity.TIMELIMITRULE,

@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="ISO-8859-15"?>
+<!DOCTYPE layoutml SYSTEM "http://www.novabit.de/technologies/layoutml/layoutml.dtd">
+<layoutml>
+<layout>
+  <panel visible="yes" opaque="yes">
+    <tablelayout columns="-1.0" rows="-1.0" />
+    <panel>
+      <tablelayout-constraints col1="0" col2="0" row1="0" row2="0" hAlign="2" vAlign="2" />
+      <tablelayout columns="12.0|5.0|131.0|92.0|5.0|106.0|96.0|5.0|12.0|152.0|109.0|5.0|71.0|100.0|-1.0|12.0" rows="12.0|20.0|5.0|20.0|44.0|5.0|22.0|5.0|22.0|18.0|-1.0|20.0|12.0" />
+      <collectable-component fill-control-horizontally="yes" name="name" insertable="yes" opaque="yes" visible="yes" enabled="yes" controltype="textfield" show-only="label">
+        <tablelayout-constraints col1="2" col2="2" row1="1" row2="1" hAlign="2" vAlign="1" />
+        <minimum-size height="16" width="15" />
+        <preferred-size height="16" width="50" />
+      </collectable-component>
+      <collectable-component fill-control-horizontally="yes" name="description" rows="3" columns="30" insertable="yes" opaque="yes" visible="yes" enabled="yes" controltype="textarea" show-only="control">
+        <tablelayout-constraints col1="3" col2="7" row1="3" row2="4" hAlign="2" vAlign="2" />
+        <minimum-size height="20" width="35" />
+        <preferred-size height="20" width="70" />
+      </collectable-component>
+      <collectable-component fill-control-horizontally="yes" name="name" columns="30" insertable="yes" opaque="yes" visible="yes" enabled="yes" controltype="textfield" show-only="control">
+        <tablelayout-constraints col1="3" col2="5" row1="1" row2="1" hAlign="2" vAlign="1" />
+        <minimum-size height="20" width="35" />
+        <preferred-size height="20" width="70" />
+      </collectable-component>
+      <collectable-component fill-control-horizontally="yes" name="createdBy" insertable="yes" opaque="yes" visible="yes" enabled="yes" controltype="textfield" show-only="label">
+        <tablelayout-constraints col1="2" col2="2" row1="11" row2="11" hAlign="2" vAlign="1" />
+        <minimum-size height="16" width="15" />
+        <preferred-size height="16" width="50" />
+      </collectable-component>
+      <collectable-component fill-control-horizontally="yes" name="createdBy" columns="30" insertable="yes" opaque="yes" visible="yes" enabled="no" controltype="textfield" show-only="control">
+        <tablelayout-constraints col1="3" col2="3" row1="11" row2="11" hAlign="2" vAlign="1" />
+        <minimum-size height="20" width="35" />
+        <preferred-size height="20" width="70" />
+      </collectable-component>
+      <collectable-component fill-control-horizontally="yes" name="createdAt" insertable="yes" opaque="yes" visible="yes" enabled="yes" controltype="textfield" show-only="label">
+        <tablelayout-constraints col1="5" col2="5" row1="11" row2="11" hAlign="2" vAlign="1" />
+        <minimum-size height="16" width="15" />
+        <preferred-size height="16" width="50" />
+      </collectable-component>
+      <collectable-component fill-control-horizontally="yes" name="createdAt" columns="30" insertable="yes" opaque="yes" visible="yes" enabled="no" controltype="textfield" show-only="control">
+        <tablelayout-constraints col1="6" col2="6" row1="11" row2="11" hAlign="2" vAlign="1" />
+        <minimum-size height="20" width="35" />
+        <preferred-size height="20" width="70" />
+      </collectable-component>
+      <collectable-component fill-control-horizontally="yes" name="changedBy" insertable="yes" opaque="yes" visible="yes" enabled="yes" controltype="textfield" show-only="label">
+        <tablelayout-constraints col1="9" col2="9" row1="11" row2="11" hAlign="2" vAlign="1" />
+        <minimum-size height="16" width="15" />
+        <preferred-size height="16" width="50" />
+      </collectable-component>
+      <collectable-component fill-control-horizontally="yes" name="changedBy" columns="30" insertable="yes" opaque="yes" visible="yes" enabled="no" controltype="textfield" show-only="control">
+        <tablelayout-constraints col1="10" col2="10" row1="11" row2="11" hAlign="2" vAlign="1" />
+        <minimum-size height="20" width="35" />
+        <preferred-size height="20" width="70" />
+      </collectable-component>
+      <collectable-component fill-control-horizontally="yes" name="changedAt" insertable="yes" opaque="yes" visible="yes" enabled="yes" controltype="textfield" show-only="label">
+        <tablelayout-constraints col1="12" col2="12" row1="11" row2="11" hAlign="2" vAlign="1" />
+        <minimum-size height="16" width="15" />
+        <preferred-size height="16" width="50" />
+      </collectable-component>
+      <collectable-component fill-control-horizontally="yes" name="changedAt" columns="30" insertable="yes" opaque="yes" visible="yes" enabled="no" controltype="textfield" show-only="control">
+        <tablelayout-constraints col1="13" col2="13" row1="11" row2="11" hAlign="2" vAlign="1" />
+        <minimum-size height="20" width="35" />
+        <preferred-size height="20" width="70" />
+      </collectable-component>
+      <collectable-component fill-control-horizontally="yes" name="description" insertable="yes" opaque="yes" visible="yes" enabled="yes" controltype="textfield" show-only="label">
+        <tablelayout-constraints col1="2" col2="2" row1="3" row2="3" hAlign="2" vAlign="0" />
+        <minimum-size height="16" width="15" />
+        <preferred-size height="16" width="50" />
+      </collectable-component>
+      <tabbedpane  name="Tabbedpane_1">
+        <tablelayout-constraints col1="2" col2="14" row1="10" row2="10" hAlign="2" vAlign="2" />
+        <minimum-size height="40" width="180" />
+        <preferred-size height="100" width="300" />
+        <panel visible="yes" opaque="yes">
+        <tabbedpane-constraints title="Benutzergruppen" enabled="yes" internalname="Benutzergruppen">
+          <translations>
+            <translation lang="de" text="Benutzergruppen"/>
+            <translation lang="en" text="Role"/>
+          </translations>
+        </tabbedpane-constraints>
+          <tablelayout columns="-1.0" rows="-1.0" />
+          <panel>
+            <tablelayout-constraints col1="0" col2="0" row1="0" row2="0" hAlign="2" vAlign="2" />
+            <tablelayout columns="12.0|-1.0|12.0" rows="12.0|-1.0|12.0" />
+            <subform name="SubForm_1" entity="nuclos_tasklistrole" foreignkeyfield-to-parent="tasklist" toolbarorientation="vertical" enabled="yes" >
+              <tablelayout-constraints col1="1" col2="1" row1="1" row2="1" hAlign="2" vAlign="2" />
+              <minimum-size height="40" width="180" />
+              <preferred-size height="100" width="300" />
+            </subform>
+          </panel>
+        </panel>
+        <panel visible="yes" opaque="yes">
+        <tabbedpane-constraints title="Beschriftungen" enabled="yes" internalname="Beschriftungen">
+          <translations>
+            <translation lang="de" text="Beschriftungen"/>
+            <translation lang="en" text="Labels"/>
+          </translations>
+        </tabbedpane-constraints>
+          <tablelayout columns="-1.0" rows="-1.0" />
+          <panel>
+            <tablelayout-constraints col1="0" col2="0" row1="0" row2="0" hAlign="2" vAlign="2" />
+            <tablelayout columns="12.0|-1.0|12.0" rows="12.0|-1.0|12.0" />
+            <label name="NUCLOS_RESOURCES" enabled="yes" text="NUCLOS_RESOURCES">
+              <tablelayout-constraints col1="1" col2="1" row1="1" row2="1" hAlign="2" vAlign="2" />
+              <minimum-size height="14" width="106" />
+              <preferred-size height="22" width="50" />
+            </label>
+          </panel>
+        </panel>
+      </tabbedpane>
+      <collectable-component fill-control-horizontally="yes" name="datasource" insertable="yes" opaque="yes" visible="yes" enabled="yes" controltype="textfield" show-only="label">
+        <tablelayout-constraints col1="2" col2="2" row1="6" row2="6" hAlign="2" vAlign="1" />
+        <minimum-size height="22" width="15" />
+        <preferred-size height="22" width="50" />
+      </collectable-component>
+      <collectable-component fill-control-horizontally="yes" name="datasource" insertable="yes" opaque="yes" visible="yes" enabled="yes" controltype="listofvalues" show-only="control">
+        <tablelayout-constraints col1="3" col2="7" row1="6" row2="6" hAlign="2" vAlign="1" />
+        <minimum-size height="22" width="35" />
+        <preferred-size height="22" width="70" />
+      </collectable-component>
+      <collectable-component fill-control-horizontally="yes" name="datasourceIdField" insertable="yes" opaque="yes" visible="yes" enabled="yes" controltype="textfield" show-only="label">
+        <tablelayout-constraints col1="2" col2="2" row1="8" row2="8" hAlign="2" vAlign="1" />
+        <minimum-size height="22" width="15" />
+        <preferred-size height="22" width="50" />
+      </collectable-component>
+      <collectable-component fill-control-horizontally="yes" name="datasourceIdField" insertable="yes" opaque="yes" visible="yes" enabled="yes" controltype="combobox" show-only="control">
+        <tablelayout-constraints col1="3" col2="7" row1="8" row2="8" hAlign="2" vAlign="1" />
+        <minimum-size height="22" width="35" />
+        <preferred-size height="22" width="70" />
+        <valuelist-provider type="dynamicTasklistAttributes">
+          <parameter name="dynamictasklist" value="" />
+        </valuelist-provider>
+      </collectable-component>
+      <collectable-component fill-control-horizontally="yes" name="datasourceEntityField" insertable="yes" opaque="yes" visible="yes" enabled="yes" controltype="textfield" show-only="label">
+        <tablelayout-constraints col1="9" col2="9" row1="8" row2="8" hAlign="2" vAlign="1" />
+        <minimum-size height="22" width="15" />
+        <preferred-size height="22" width="50" />
+      </collectable-component>
+      <collectable-component fill-control-horizontally="yes" name="datasourceEntityField" insertable="yes" opaque="yes" visible="yes" enabled="yes" controltype="combobox" show-only="control">
+        <tablelayout-constraints col1="10" col2="13" row1="8" row2="8" hAlign="2" vAlign="1" />
+        <minimum-size height="22" width="35" />
+        <preferred-size height="22" width="70" />
+        <valuelist-provider type="dynamicTasklistAttributes">
+          <parameter name="dynamictasklist" value="" />
+        </valuelist-provider>
+      </collectable-component>
+    </panel>
+  </panel>
+</layout>
+  <rules>
+    <rule name="Regel 1">
+      <event type="value-changed" sourcecomponent="datasource"/>
+      <actions>
+        <clear targetcomponent="datasourceIdField"/>
+        <clear targetcomponent="datasourceEntityField"/>
+        <refresh-valuelist targetcomponent="datasourceIdField" parameter-for-sourcecomponent="dynamictasklist"/>
+        <refresh-valuelist targetcomponent="datasourceEntityField" parameter-for-sourcecomponent="dynamictasklist"/>
+      </actions>
+    </rule>
+  </rules>
+</layoutml>

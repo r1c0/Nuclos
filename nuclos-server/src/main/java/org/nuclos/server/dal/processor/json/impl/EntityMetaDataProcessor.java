@@ -25,6 +25,8 @@ import org.nuclos.common.MetaDataProvider;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
 import org.nuclos.server.dal.processor.json.AbstractJsonDalProcessor;
 import org.nuclos.server.dal.processor.nuclos.JsonEntityMetaDataProcessor;
+import org.nuclos.server.dal.provider.SystemEntityFieldMetaDataVO;
+import org.nuclos.server.dal.provider.SystemEntityMetaDataVO;
 import org.nuclos.server.dal.provider.SystemMetaDataProvider;
 
 public class EntityMetaDataProcessor extends AbstractJsonDalProcessor<EntityMetaDataVO> 
@@ -38,7 +40,7 @@ implements JsonEntityMetaDataProcessor {
 	public List<EntityMetaDataVO> getAll() {
 		List<EntityMetaDataVO> result = new ArrayList<EntityMetaDataVO>();
 		
-		MetaDataProvider jsonEntityProvider = SystemMetaDataProvider.getSystemMetaDataProvider();
+		MetaDataProvider<SystemEntityMetaDataVO, SystemEntityFieldMetaDataVO> jsonEntityProvider = SystemMetaDataProvider.getInstance();
 		
 		List<EntityMetaDataVO> entities = new ArrayList<EntityMetaDataVO>(jsonEntityProvider.getAllEntities());
 		Collections.sort(entities, new Comparator<EntityMetaDataVO>() {

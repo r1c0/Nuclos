@@ -144,6 +144,8 @@ public class NuclosCollectControllerFactory {
 						return factory.newValuelistProviderCollectController(tabIfAny);
 					case RECORDGRANT:
 						return factory.newRecordGrantCollectController(tabIfAny);
+					case DYNAMICTASKLIST:
+						return factory.newDynamicTasklistCollectController(tabIfAny);
 					case STATEMODEL:
 						return factory.newStateModelCollectController(tabIfAny);
 					case PROCESSMONITOR:
@@ -242,7 +244,7 @@ public class NuclosCollectControllerFactory {
 				return factory.newWikiCollectController(tabIfAny);
 			case DATATYP:
 				return factory.newDataTypeCollectController(tabIfAny);
-			case TASKLIST:
+			case TODOLIST:
 				return factory.newPersonalTaskCollectController(tabIfAny);
 			}
 		}

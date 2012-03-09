@@ -139,8 +139,6 @@ public abstract class LayoutCollectController extends MasterDataCollectControlle
 		super(entity, tabIfAny, new LayoutResultController<CollectableMasterDataWithDependants>(
 				entity.getEntityName(), new NuclosSearchResultStrategy<CollectableMasterDataWithDependants>()));
 
-		this.setupDetailsToolBar();
-
 		/** @todo The old temp files will be deleted by a shutdown hook. */
 		// this.getFrame().addInternalFrameListener(new InternalFrameAdapter() {
 		// public void internalFrameClosed(InternalFrameEvent ev) {
@@ -150,6 +148,12 @@ public abstract class LayoutCollectController extends MasterDataCollectControlle
 		// });
 	}
 	
+	@Override
+	public void init() {
+		super.init();
+		this.setupDetailsToolBar();
+	}
+
 	/**
 	 * @deprecated Move to LayoutResultController.
 	 */

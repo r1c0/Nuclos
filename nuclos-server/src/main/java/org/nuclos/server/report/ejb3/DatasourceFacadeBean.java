@@ -20,8 +20,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.annotation.security.RolesAllowed;
 
@@ -60,6 +62,7 @@ import org.nuclos.server.dblayer.query.DbQueryBuilder;
 import org.nuclos.server.dblayer.statements.DbPlainStatement;
 import org.nuclos.server.masterdata.MasterDataWrapper;
 import org.nuclos.server.masterdata.ejb3.MasterDataFacadeLocal;
+import org.nuclos.server.masterdata.valueobject.DependantMasterDataMap;
 import org.nuclos.server.masterdata.valueobject.MasterDataMetaVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 import org.nuclos.server.report.NuclosReportException;
@@ -67,7 +70,9 @@ import org.nuclos.server.report.SchemaCache;
 import org.nuclos.server.report.valueobject.DatasourceParameterVO;
 import org.nuclos.server.report.valueobject.DatasourceVO;
 import org.nuclos.server.report.valueobject.DynamicEntityVO;
+import org.nuclos.server.report.valueobject.DynamicTasklistVO;
 import org.nuclos.server.report.valueobject.RecordGrantVO;
+import org.nuclos.server.report.valueobject.ResultColumnVO;
 import org.nuclos.server.report.valueobject.ResultVO;
 import org.nuclos.server.report.valueobject.ValuelistProviderVO;
 import org.nuclos.server.ruleengine.NuclosBusinessRuleException;
@@ -85,11 +90,12 @@ public class DatasourceFacadeBean extends NuclosFacadeBean implements Datasource
 
 	private static final Logger LOG = Logger.getLogger(DatasourceFacadeBean.class);
 
-   private static enum DataSourceType {
-		DYNAMICENTITY(NuclosEntity.DYNAMICENTITY, NuclosEntity.DYNAMICENTITYUSAGE, "dynamicEntity"),
-		VALUELISTPROVIDER(NuclosEntity.VALUELISTPROVIDER, NuclosEntity.VALUELISTPROVIDERUSAGE, "valuelistProvider"),
-		RECORDGRANT(NuclosEntity.RECORDGRANT, NuclosEntity.RECORDGRANTUSAGE, "recordGrant"),
-		DATASOURCE(NuclosEntity.DATASOURCE, NuclosEntity.DATASOURCEUSAGE, "datasource");
+	private static enum DataSourceType {
+		DYNAMICENTITY(NuclosEntity.DYNAMICENTITY, NuclosEntity.DYNAMICENTITYUSAGE, "dynamicEntity"), 
+		VALUELISTPROVIDER(NuclosEntity.VALUELISTPROVIDER, NuclosEntity.VALUELISTPROVIDERUSAGE, "valuelistProvider"), 
+		RECORDGRANT(NuclosEntity.RECORDGRANT, NuclosEntity.RECORDGRANTUSAGE, "recordGrant"), 
+		DATASOURCE(NuclosEntity.DATASOURCE, NuclosEntity.DATASOURCEUSAGE, "datasource"), 
+		DYNAMICTASKLIST(NuclosEntity.DYNAMICTASKLIST, NuclosEntity.DYNAMICTASKLISTUSAGE, "dynamictasklist");
 
 		final NuclosEntity entity;
 		final NuclosEntity entityUsage;
@@ -111,26 +117,36 @@ public class DatasourceFacadeBean extends NuclosFacadeBean implements Datasource
 				return MasterDataWrapper.getValuelistProviderVO(deVO);
 			case RECORDGRANT:
 				return MasterDataWrapper.getRecordGrantVO(deVO);
+			case DYNAMICTASKLIST:
+				return MasterDataWrapper.getDynamicTasklistVO(deVO);
 			default:
 				return MasterDataWrapper.getDatasourceVO(deVO, userName);
 			}
 		}
+		
+		public MasterDataVO unwrap(DatasourceVO dsVO) {
+			return MasterDataWrapper.wrapDatasourceVO(dsVO);
+		}
 
-	   public static DataSourceType getFromDatasourceVO(DatasourceVO datasourceVO) {
-	   	if (datasourceVO instanceof DynamicEntityVO) {
-	   		return DataSourceType.DYNAMICENTITY;
-	   	} else if (datasourceVO instanceof ValuelistProviderVO) {
-	   		return DataSourceType.VALUELISTPROVIDER;
-	   	} else if (datasourceVO instanceof RecordGrantVO) {
-	   		return DataSourceType.RECORDGRANT;
-	   	} else {
-	   		return DataSourceType.DATASOURCE;
-	   	}
-	   }
-   }
-   
-   //
-   
+		public static DataSourceType getFromDatasourceVO(DatasourceVO datasourceVO) {
+			if (datasourceVO instanceof DynamicEntityVO) {
+				return DataSourceType.DYNAMICENTITY;
+			}
+			else if (datasourceVO instanceof ValuelistProviderVO) {
+				return DataSourceType.VALUELISTPROVIDER;
+			}
+			else if (datasourceVO instanceof RecordGrantVO) {
+				return DataSourceType.RECORDGRANT;
+			}
+			else if (datasourceVO instanceof DynamicTasklistVO) {
+				return DataSourceType.DYNAMICTASKLIST;
+			}
+			else {
+				return DataSourceType.DATASOURCE;
+			}
+		}
+	}
+
 	private DatasourceServerUtils utils;
 
 	private MasterDataFacadeLocal masterDataFacade;
@@ -154,7 +170,7 @@ public class DatasourceFacadeBean extends NuclosFacadeBean implements Datasource
 
 	/**
 	 * get all datasources
-	 *
+	 * 
 	 * @return set of datasources
 	 * @throws CommonPermissionException
 	 */
@@ -165,7 +181,7 @@ public class DatasourceFacadeBean extends NuclosFacadeBean implements Datasource
 
 	/**
 	 * get all datasources
-	 *
+	 * 
 	 * @return set of datasources
 	 */
 	public Collection<DatasourceVO> getDatasourcesForCurrentUser() {
@@ -174,29 +190,28 @@ public class DatasourceFacadeBean extends NuclosFacadeBean implements Datasource
 
 	/**
 	 * get datasource value object
-	 *
+	 * 
 	 * @param iId
-	 *                primary key of datasource
+	 *            primary key of datasource
 	 * @return datasource value object
 	 */
 	@RolesAllowed("Login")
 	public DatasourceVO get(Integer iId) throws CommonFinderException, CommonPermissionException {
 		return DatasourceCache.getInstance().getDatasourcesById(iId, getCurrentUserName());
 
-		/* todo how should we handle permissions here? - It is necessary, that
-		// all users have the right to execute inline datasources
-		if (result.getPermission() == DatasourceVO.PERMISSION_NONE) {
-		    throw new CommonPermissionException();
-		}
-		return result;
-		*/
+		/*
+		 * todo how should we handle permissions here? - It is necessary, that
+		 * // all users have the right to execute inline datasources if
+		 * (result.getPermission() == DatasourceVO.PERMISSION_NONE) { throw new
+		 * CommonPermissionException(); } return result;
+		 */
 	}
 
 	/**
 	 * get datasource value object
-	 *
+	 * 
 	 * @param sDatasourceName
-	 *                name of datasource
+	 *            name of datasource
 	 * @return datasource value object
 	 */
 	@RolesAllowed("Login")
@@ -206,497 +221,234 @@ public class DatasourceFacadeBean extends NuclosFacadeBean implements Datasource
 
 	/**
 	 * get valuelist provider value object
-	 *
+	 * 
 	 * @param sValuelistProvider
-	 *                name of valuelist provider
+	 *            name of valuelist provider
 	 * @return valuelist provider value object
 	 */
 	@RolesAllowed("Login")
-	public ValuelistProviderVO getValuelistProvider(String sValuelistProvider) throws CommonFinderException,
-			CommonPermissionException {
+	public ValuelistProviderVO getValuelistProvider(String sValuelistProvider) throws CommonFinderException, CommonPermissionException {
 		return DatasourceCache.getInstance().getValuelistProviderByName(sValuelistProvider);
 	}
 
 	/**
 	 * get dynamic entity value object
-	 *
+	 * 
 	 * @param sDynamicEntity
-	 *                name of valuelist provider
+	 *            name of valuelist provider
 	 * @return dynamic entity value object
 	 */
 	@RolesAllowed("Login")
-	public DynamicEntityVO getDynamicEntity(String sDynamicEntity) throws CommonFinderException,
-			CommonPermissionException {
+	public DynamicEntityVO getDynamicEntity(String sDynamicEntity) throws CommonFinderException, CommonPermissionException {
 		return DatasourceCache.getInstance().getDynamicEntityByName(sDynamicEntity);
 	}
 
 	/**
-	* get a Datasource by id regardless of permisssions
-	* @param iDatasourceId
-	* @return
-	* @throws CommonPermissionException
-	*/
+	 * get a Datasource by id regardless of permisssions
+	 * 
+	 * @param iDatasourceId
+	 * @return
+	 * @throws CommonPermissionException
+	 */
 	@RolesAllowed("Login")
 	public DatasourceVO getDatasourceById(Integer iDatasourceId) {
 		return DatasourceCache.getInstance().get(iDatasourceId);
 	}
 
-   /**
-    * create new datasource
-    *
-    * @param datasourcevo
-    *                value object
-    * @return new datasource
-    */
-   public DatasourceVO create(DatasourceVO datasourcevo, List<String> lstUsedDatasources)
-		throws CommonCreateException, CommonValidationException, NuclosBusinessRuleException, CommonPermissionException {
-	   
-   	datasourcevo.validate();
-   	updateValidFlag(datasourcevo);
+	/**
+	 * create new datasource
+	 * 
+	 * @param datasourcevo
+	 *            value object
+	 * @return new datasource
+	 */
+	public DatasourceVO create(DatasourceVO datasourcevo, DependantMasterDataMap dependants, List<String> lstUsedDatasources) throws CommonCreateException, CommonValidationException, NuclosBusinessRuleException,
+			CommonPermissionException {
+		DataSourceType type = DataSourceType.getFromDatasourceVO(datasourcevo);
+		String entity = type.entity.getEntityName();
+		this.checkWriteAllowed(entity);
+		
+		datasourcevo.validate();
+		updateValidFlag(datasourcevo);
 
-   	MasterDataVO mdVO = getMasterDataFacade().create(NuclosEntity.DATASOURCE.getEntityName(), MasterDataWrapper.wrapDatasourceVO(datasourcevo), null);
-   	DatasourceVO dbDataSourceVO = MasterDataWrapper.getDatasourceVO(mdVO, getCurrentUserName());
-   	getMasterDataFacade().notifyClients(NuclosEntity.DATASOURCE.getEntityName());
-
-   	SecurityCache.getInstance().invalidate();
-   	try {
+		if (NuclosEntity.RECORDGRANT.getEntityName().equals(entity)) {
+			RecordGrantVO rg = (RecordGrantVO) datasourcevo;
+			try {
+				if (rg.getValid()) {
+					DatasourceUtils.validateRecordGrantSQL(rg.getEntity(), createSQL(rg.getSource()));
+				}
+			}
+			catch (NuclosDatasourceException e1) {
+				throw new CommonFatalException(e1);
+			}
+		}
+		
+		MasterDataVO mdVO = getMasterDataFacade().create(entity, type.unwrap(datasourcevo), null);
+		getMasterDataFacade().notifyClients(entity);
+		
+		DatasourceVO dbDataSourceVO = MasterDataWrapper.getDatasourceVO(mdVO, getCurrentUserName());
+		
+		try {
 			replaceUsedDatasourceList(dbDataSourceVO, lstUsedDatasources);
 		}
-		catch(CommonFinderException e) {
+		catch (CommonFinderException e) {
 			throw new CommonFatalException(e);
 		}
-		catch(CommonRemoveException e) {
+		catch (CommonRemoveException e) {
 			throw new CommonFatalException(e);
 		}
-		catch(CommonStaleVersionException e) {
+		catch (CommonStaleVersionException e) {
 			throw new CommonFatalException(e);
 		}
-   	DatasourceCache.getInstance().invalidate();
-   	SchemaCache.getInstance().invalidate();
+		
+		invalidateCaches(type);
 
-   	return dbDataSourceVO;
-   }
+		return type.wrap(mdVO, getCurrentUserName());
+	}
 
-   /**
-    * create new dynamic entity
-    *
-    * @param dynamicEntityVO
-    *                value object
-    * @param lstUsedDynamicEntities
-    * 					list of used dynamic entity names
-    * @return new dynamic entity
-    */
-   public DynamicEntityVO createDynamicEntity(DynamicEntityVO dynamicEntityVO, List<String> lstUsedDynamicEntities) 
-		   throws CommonCreateException, CommonValidationException, NuclosBusinessRuleException, CommonPermissionException {
-	   
-   	dynamicEntityVO.validate();
-   	updateValidFlag(dynamicEntityVO);
+	/**
+	 * modify an existing datasource without usages
+	 * 
+	 * @param datasourcevo
+	 * @throws CommonFinderException
+	 * @throws CommonPermissionException
+	 * @throws CommonStaleVersionException
+	 * @throws CommonValidationException
+	 */
+	public void modify(DatasourceVO datasourcevo) throws CommonFinderException, CommonPermissionException, CommonStaleVersionException, CommonValidationException, NuclosBusinessRuleException {
+		modify(datasourcevo, null, null, false);
+	}
 
-   	processChangingDynamicEntity(dynamicEntityVO, null, true);
-   	MasterDataVO mdVO = getMasterDataFacade().create(NuclosEntity.DYNAMICENTITY.getEntityName(), MasterDataWrapper.wrapDatasourceVO(dynamicEntityVO), null);
-   	DynamicEntityVO dbDynamicEntityVO = MasterDataWrapper.getDynamicEntityVO(mdVO);
-   	getMasterDataFacade().notifyClients(NuclosEntity.DYNAMICENTITY.getEntityName());
+	/**
+	 * modify an existing datasource
+	 * 
+	 * @param datasourcevo
+	 *            value object
+	 * @return modified datasource
+	 */
+	public DatasourceVO modify(DatasourceVO datasourcevo, DependantMasterDataMap dependants, List<String> lstUsedDatasources) throws CommonFinderException, CommonPermissionException, CommonStaleVersionException,
+			CommonValidationException, NuclosBusinessRuleException, CommonRemoteException {
 
-   	try {
-			replaceUsedDatasourceList(dbDynamicEntityVO, lstUsedDynamicEntities);
-		}
-		catch(CommonFinderException e) {
-			throw new CommonFatalException(e);
-		}
-		catch(CommonRemoveException e) {
-			throw new CommonFatalException(e);
-		}
-		catch(CommonStaleVersionException e) {
-			throw new CommonFatalException(e);
-		}
-   	DatasourceCache.getInstance().invalidate();
-   	SchemaCache.getInstance().invalidate();
-   	MetaDataServerProvider.getInstance().revalidate(true);
+		return modify(datasourcevo, dependants, lstUsedDatasources, true);
+	}
 
-   	return dbDynamicEntityVO;
-   }
+	private DatasourceVO modify(DatasourceVO datasourcevo, DependantMasterDataMap dependants, List<String> lstUsedDatasources, boolean modifyUsedDatasources) throws CommonFinderException, CommonPermissionException,
+			CommonStaleVersionException, CommonValidationException, NuclosBusinessRuleException, CommonRemoteException {
+		DataSourceType type = DataSourceType.getFromDatasourceVO(datasourcevo);
+		String entity = type.entity.getEntityName();
+		this.checkWriteAllowed(entity);
+		
+		datasourcevo.validate();
+		updateValidFlag(datasourcevo);
 
-   /**
-    * create new valuelist provider
-    *
-    * @param valuelistProviderVO
-    *                value object
-    * @param lstUsedValuelistProvider
-    * 					list of used valuelist provider names
-    * @return new valuelist provider
-    */
-   public ValuelistProviderVO createValuelistProvider(ValuelistProviderVO valuelistProviderVO, List<String> lstUsedValuelistProvider) 
-		   throws CommonCreateException, CommonValidationException, NuclosBusinessRuleException, CommonPermissionException {
-	   
-   	valuelistProviderVO.validate();
-   	updateValidFlag(valuelistProviderVO);
+		try {
+			validateUniqueConstraint(datasourcevo);
 
-   	MasterDataVO mdVO = getMasterDataFacade().create(NuclosEntity.VALUELISTPROVIDER.getEntityName(), MasterDataWrapper.wrapDatasourceVO(valuelistProviderVO), null);
-   	ValuelistProviderVO dbValuelistProviderVO = MasterDataWrapper.getValuelistProviderVO(mdVO);
-   	getMasterDataFacade().notifyClients(NuclosEntity.VALUELISTPROVIDER.getEntityName());
-
-   	try {
-			replaceUsedDatasourceList(dbValuelistProviderVO, lstUsedValuelistProvider);
-		}
-		catch(CommonFinderException e) {
-			throw new CommonFatalException(e);
-		}
-		catch(CommonRemoveException e) {
-			throw new CommonFatalException(e);
-		}
-		catch(CommonStaleVersionException e) {
-			throw new CommonFatalException(e);
-		}
-   	DatasourceCache.getInstance().invalidate();
-   	SchemaCache.getInstance().invalidate();
-
-   	return dbValuelistProviderVO;
-   }
-
-   /**
-    * create new RecordGrant
-    *
-    * @param recordGrantVO
-    *                value object
-    * @param lstUsedRecordGrant
-    * 					list of used RecordGrant names
-    * @return new RecordGrant
-    */
-   public RecordGrantVO createRecordGrant(RecordGrantVO recordGrantVO, List<String> lstUsedRecordGrant) 
-		   throws CommonCreateException, CommonValidationException, NuclosBusinessRuleException, CommonPermissionException {
-	   
-	   recordGrantVO.validate();
-   	updateValidFlag(recordGrantVO);
-
-   	try {
-   		if (recordGrantVO.getValid())
-   			DatasourceUtils.validateRecordGrantSQL(recordGrantVO.getEntity(), createSQL(recordGrantVO.getSource()));
-    }
-    catch(NuclosDatasourceException e1) {
-    	throw new CommonFatalException(e1);
-    }
-   	MasterDataVO mdVO = getMasterDataFacade().create(NuclosEntity.RECORDGRANT.getEntityName(), MasterDataWrapper.wrapDatasourceVO(recordGrantVO), null);
-   	RecordGrantVO dbRecordGrantVO = MasterDataWrapper.getRecordGrantVO(mdVO);
-   	getMasterDataFacade().notifyClients(NuclosEntity.RECORDGRANT.getEntityName());
-
-   	try {
-			replaceUsedDatasourceList(dbRecordGrantVO, lstUsedRecordGrant);
-		}
-		catch(CommonFinderException e) {
-			throw new CommonFatalException(e);
-		}
-		catch(CommonRemoveException e) {
-			throw new CommonFatalException(e);
-		}
-		catch(CommonStaleVersionException e) {
-			throw new CommonFatalException(e);
-		}
-   	DatasourceCache.getInstance().invalidate();
-   	SchemaCache.getInstance().invalidate();
-
-   	return dbRecordGrantVO;
-   }
-
-   /**
-    * modify an existing datasource without usages
-    *
-    * @param datasourcevo
-    * @throws CommonFinderException
-    * @throws CommonPermissionException
-    * @throws CommonStaleVersionException
-    * @throws CommonValidationException
-    */
-   public void modify(DatasourceVO datasourcevo) 
-		   throws CommonFinderException, CommonPermissionException, CommonStaleVersionException, CommonValidationException, NuclosBusinessRuleException {
-	   
-   	DataSourceType nuclosEntity = DataSourceType.getFromDatasourceVO(datasourcevo);
-   	switch (nuclosEntity) {
-   		case DATASOURCE:
-   			modify(datasourcevo, null, false);
-   			break;
-   		case DYNAMICENTITY:
-   			modifyDynamicEntity((DynamicEntityVO) datasourcevo, null, false);
-   			break;
-   		case VALUELISTPROVIDER:
-   			modifyValuelistProvider((ValuelistProviderVO) datasourcevo, null, false);
-   			break;
-   	}
-   }
-
-   /**
-    * modify an existing dynamic entity
-    *
-    * @param dynamicEntityVO
-    * @param lstUsedDynamicEntities
-    * @return modified dynamic entity
-    * @throws CommonFinderException
-    * @throws CommonPermissionException
-    * @throws CommonStaleVersionException
-    * @throws CommonValidationException
-    */
-   public DynamicEntityVO modifyDynamicEntity(DynamicEntityVO dynamicEntityVO, List<String> lstUsedDynamicEntities) 
-		   throws CommonFinderException, CommonPermissionException, CommonStaleVersionException, CommonValidationException, NuclosBusinessRuleException {
-	   
-   	return modifyDynamicEntity(dynamicEntityVO, lstUsedDynamicEntities, true);
-   }
-
-   private DynamicEntityVO modifyDynamicEntity(DynamicEntityVO dynamicEntityVO, List<String> lstUsedDynamicEntities, boolean modifyUsedDatasources) throws CommonFinderException, CommonPermissionException, CommonStaleVersionException, CommonValidationException, NuclosBusinessRuleException {
-   	dynamicEntityVO.validate();
-   	updateValidFlag(dynamicEntityVO);
-
-   	DynamicEntityVO dbDynamicEntityVO;
-   	try {
-   		dbDynamicEntityVO = MasterDataWrapper.getDynamicEntityVO(
-				getMasterDataFacade().get(NuclosEntity.DYNAMICENTITY.getEntityName(),dynamicEntityVO.getId()));
-   		this.checkWriteAllowed(NuclosEntity.DYNAMICENTITY);
-
-			if(dbDynamicEntityVO.getVersion() != dynamicEntityVO.getVersion()) {
-				throw new CommonStaleVersionException("dynamic entity", dynamicEntityVO.toString(), dbDynamicEntityVO.toString());
+			MasterDataVO dsAsMd = getMasterDataFacade().get(entity, datasourcevo.getId());
+			
+			if (NuclosEntity.DATASOURCE.getEntityName().equals(entity)) {
+				if (DatasourceCache.getInstance().getPermission(dsAsMd.getIntId(), getCurrentUserName()) != DatasourceVO.PERMISSION_READWRITE) {
+					throw new CommonPermissionException();
+				}
 			}
-
-			processChangingDynamicEntity(dynamicEntityVO, dbDynamicEntityVO, true);
-			getMasterDataFacade().modify(NuclosEntity.DYNAMICENTITY.getEntityName(), MasterDataWrapper.wrapDatasourceVO(dynamicEntityVO), null);
+			
+			if (NuclosEntity.DYNAMICENTITY.getEntityName().equals(entity)) {
+				processChangingDynamicEntity((DynamicEntityVO) datasourcevo, (DynamicEntityVO) type.wrap(dsAsMd, getCurrentUserName()), true);
+			}
+			
+			if (dsAsMd.getVersion() != datasourcevo.getVersion()) {
+				throw new CommonStaleVersionException(entity, datasourcevo.toString(), dsAsMd.toString());
+			}
+			getMasterDataFacade().modify(entity, type.unwrap(datasourcevo), null);
 
 			if (modifyUsedDatasources) {
 				// store the list of used datasources
-				replaceUsedDatasourceList(dbDynamicEntityVO, lstUsedDynamicEntities);
+				replaceUsedDatasourceList(datasourcevo, lstUsedDatasources);
 			}
+
+			invalidateCaches(type);
+			
+			dsAsMd = getMasterDataFacade().get(entity, datasourcevo.getId());
+			return type.wrap(dsAsMd, getCurrentUserName());
 		}
-		catch(CommonCreateException ex) {
-			throw new NuclosFatalException(ex);
-		}
-		catch(CommonRemoveException ex) {
+		catch (CommonRemoveException ex) {
 			throw new NuclosBusinessRuleException(ex);
 		}
-
-		DatasourceCache.getInstance().invalidate();
-		SchemaCache.getInstance().invalidate();
-		MetaDataServerProvider.getInstance().revalidate(true);
-
-		return DatasourceCache.getInstance().getDynamicEntity(dbDynamicEntityVO.getId());
-   }
-
-   /**
-    * modify an existing valuelist provider
-    *
-    * @param datasourcevo
-    * @param lstUsedValuelistProvider
-    * @return modified valuelist provider
-    * @throws CommonFinderException
-    * @throws CommonPermissionException
-    * @throws CommonStaleVersionException
-    * @throws CommonValidationException
-    */
-   public ValuelistProviderVO modifyValuelistProvider(ValuelistProviderVO valuelistProviderVO, List<String> lstUsedValuelistProvider) 
-		   throws CommonFinderException, CommonPermissionException, CommonStaleVersionException, CommonValidationException, NuclosBusinessRuleException {
-	   
-   	return modifyValuelistProvider(valuelistProviderVO, lstUsedValuelistProvider, true);
-   }
-
-   private ValuelistProviderVO modifyValuelistProvider(ValuelistProviderVO valuelistProviderVO, List<String> lstUsedValuelistProvider, boolean modifyUsedDatasources) throws CommonFinderException, CommonPermissionException, CommonStaleVersionException, CommonValidationException, NuclosBusinessRuleException {
-   	valuelistProviderVO.validate();
-   	updateValidFlag(valuelistProviderVO);
-
-   	ValuelistProviderVO dbValuelistProviderVO;
-   	try {
-   		dbValuelistProviderVO = MasterDataWrapper.getValuelistProviderVO(
-				getMasterDataFacade().get(NuclosEntity.VALUELISTPROVIDER.getEntityName(),valuelistProviderVO.getId()));
-   		this.checkWriteAllowed(NuclosEntity.VALUELISTPROVIDER);
-
-			if(dbValuelistProviderVO.getVersion() != valuelistProviderVO.getVersion()) {
-				throw new CommonStaleVersionException("value list provider", valuelistProviderVO.toString(), dbValuelistProviderVO.toString());
-			}
-
-			getMasterDataFacade().modify(NuclosEntity.VALUELISTPROVIDER.getEntityName(), MasterDataWrapper.wrapDatasourceVO(valuelistProviderVO), null);
-
-			if (modifyUsedDatasources) {
-				// store the list of used datasources
-				replaceUsedDatasourceList(dbValuelistProviderVO, lstUsedValuelistProvider);
-			}
-		}
-		catch(CommonCreateException ex) {
+		catch (CommonCreateException ex) {
 			throw new NuclosFatalException(ex);
 		}
-		catch(CommonRemoveException ex) {
-			throw new NuclosBusinessRuleException(ex);
+		catch (CommonFatalException ex) {
+			throw new NuclosFatalException(ex);
 		}
+	}
 
-		DatasourceCache.getInstance().invalidate();
-		SchemaCache.getInstance().invalidate();
-
-		return DatasourceCache.getInstance().getValuelistProvider(dbValuelistProviderVO.getId());
-   }
-
-   /**
-    * modify an existing RecordGrant
-    *
-    * @param recordGrantVO
-    * @param lstUsedRecordGrant
-    * @return modified valuelist provider
-    * @throws CommonFinderException
-    * @throws CommonPermissionException
-    * @throws CommonStaleVersionException
-    * @throws CommonValidationException
-    */
-   public RecordGrantVO modifyRecordGrant(RecordGrantVO recordGrantVO, List<String> lstUsedRecordGrant) 
-		   throws CommonFinderException, CommonPermissionException, CommonStaleVersionException, CommonValidationException, NuclosBusinessRuleException {
-	   
-   	return modifyRecordGrant(recordGrantVO, lstUsedRecordGrant, true);
-   }
-
-   private RecordGrantVO modifyRecordGrant(RecordGrantVO recordGrantVO, List<String> lstUsedRecordGrant, boolean modifyUsedDatasources) throws CommonFinderException, CommonPermissionException, CommonStaleVersionException, CommonValidationException, NuclosBusinessRuleException {
-	recordGrantVO.validate();
-   	updateValidFlag(recordGrantVO);
-
-   	RecordGrantVO dbRecordGrantVO;
-   	try {
-   		dbRecordGrantVO = MasterDataWrapper.getRecordGrantVO(
-				getMasterDataFacade().get(NuclosEntity.RECORDGRANT.getEntityName(),recordGrantVO.getId()));
-   		this.checkWriteAllowed(NuclosEntity.RECORDGRANT);
-
-			if(dbRecordGrantVO.getVersion() != recordGrantVO.getVersion()) {
-				throw new CommonStaleVersionException("record grant", recordGrantVO.toString(), dbRecordGrantVO.toString());
-			}
-
+	/**
+	 * 
+	 * @param newDEs
+	 *            (dynamic entities of this list would be created)
+	 * @param oldDEs
+	 *            (dynamic entities of this list would be deleted)
+	 */
+	public void processChangingDynamicEntities(Collection<DynamicEntityVO> newDEs, Collection<DynamicEntityVO> oldDEs, boolean bExecute, List<String> script) {
+		for (DynamicEntityVO oldDEVO : oldDEs) {
 			try {
-		   		if (recordGrantVO.getValid())
-		   			DatasourceUtils.validateRecordGrantSQL(recordGrantVO.getEntity(), createSQL(recordGrantVO.getSource()));
-		    }
-		    catch(NuclosDatasourceException e1) {
-		    	throw new CommonFatalException(e1);
-		    }
-			getMasterDataFacade().modify(NuclosEntity.RECORDGRANT.getEntityName(), MasterDataWrapper.wrapDatasourceVO(recordGrantVO), null);
-
-			if (modifyUsedDatasources) {
-				// store the list of used datasources
-				replaceUsedDatasourceList(dbRecordGrantVO, lstUsedRecordGrant);
-			}
-		}
-		catch(CommonCreateException ex) {
-			throw new NuclosFatalException(ex);
-		}
-		catch(CommonRemoveException ex) {
-			throw new NuclosBusinessRuleException(ex);
-		}
-
-		DatasourceCache.getInstance().invalidate();
-		SchemaCache.getInstance().invalidate();
-
-		return DatasourceCache.getInstance().getRecordGrant(dbRecordGrantVO.getId());
-   }
-
-   /**
-    * modify an existing datasource
-    *
-    * @param datasourcevo
-    *                value object
-    * @return modified datasource
-    */
-   public DatasourceVO modify(DatasourceVO datasourcevo, List<String> lstUsedDatasources) 
-		   throws CommonFinderException, CommonPermissionException, CommonStaleVersionException, CommonValidationException, 
-		   NuclosBusinessRuleException, CommonRemoteException {
-	   
-   	return modify(datasourcevo, lstUsedDatasources, true);
-   }
-
-   private DatasourceVO modify(DatasourceVO datasourcevo, List<String> lstUsedDatasources, boolean modifyUsedDatasources) throws CommonFinderException, CommonPermissionException, CommonStaleVersionException, CommonValidationException, NuclosBusinessRuleException, CommonRemoteException {
-   	datasourcevo.validate();
-   	updateValidFlag(datasourcevo);
-
-   	try {
-   		validateUniqueConstraint(datasourcevo);
-
-   		DatasourceVO dbDatasourceVO = MasterDataWrapper.getDatasourceVO(
-   			getMasterDataFacade().get(NuclosEntity.DATASOURCE.getEntityName(), datasourcevo.getId()), getCurrentUserName());
-
-   		if (DatasourceCache.getInstance().getPermission(dbDatasourceVO.getId(), getCurrentUserName()) != DatasourceVO.PERMISSION_READWRITE) {
-   			throw new CommonPermissionException();
-   		}
-   		if (dbDatasourceVO.getVersion() != datasourcevo.getVersion()) {
-   			throw new CommonStaleVersionException("datasource", datasourcevo.toString(), dbDatasourceVO.toString());
-   		}
-   		getMasterDataFacade().modify(NuclosEntity.DATASOURCE.getEntityName(), MasterDataWrapper.wrapDatasourceVO(datasourcevo), null);
-
-   		if (modifyUsedDatasources) {
-   			// store the list of used datasources
-   			replaceUsedDatasourceList(datasourcevo, lstUsedDatasources);
-   		}
-
-   		DatasourceCache.getInstance().invalidate();
-   		SchemaCache.getInstance().invalidate();
-
-   		return DatasourceCache.getInstance().get(datasourcevo.getId());
-   	}
-		catch(CommonRemoveException ex) {
-			throw new NuclosBusinessRuleException(ex);
-		}
-		catch(CommonCreateException ex) {
-			throw new NuclosFatalException(ex);
-		}
-		catch(CommonFatalException ex) {
-			throw new NuclosFatalException(ex);
-		}
-   }
-
-   /**
-    *
-    * @param newDEs (dynamic entities of this list would be created)
-    * @param oldDEs (dynamic entities of this list would be deleted)
-    */
-   public void processChangingDynamicEntities(Collection<DynamicEntityVO> newDEs, Collection<DynamicEntityVO> oldDEs, boolean bExecute, List<String> script) {
-   	for (DynamicEntityVO oldDEVO : oldDEs) {
-   		try {
 				this.processChangingDynamicEntity(null, oldDEVO, false, false, bExecute, script);
-			} catch (CommonValidationException e) {
+			}
+			catch (CommonValidationException e) {
 				// no validation here
 			}
-   	}
-   	for (DynamicEntityVO newDEVO : newDEs) {
-   		try {
+		}
+		for (DynamicEntityVO newDEVO : newDEs) {
+			try {
 				this.processChangingDynamicEntity(newDEVO, null, false, false, bExecute, script);
-			} catch (CommonValidationException e) {
+			}
+			catch (CommonValidationException e) {
 				// no validation here
 			}
-   	}
-   	// revalidate meta cache
-   	MasterDataMetaCache.getInstance().revalidate();
-   }
+		}
+		// revalidate meta cache
+		MasterDataMetaCache.getInstance().revalidate();
+	}
 
-   /**
-    * revalidates MasterDataMetaCache after process
-    *
-    * @param newDEVO
-    * @param oldDEVO
-    * @param validate
-    * @throws CommonValidationException (only if validate is true)
-    */
-   private void processChangingDynamicEntity(DynamicEntityVO newDEVO, DynamicEntityVO oldDEVO, boolean validate) throws CommonValidationException {
-   	this.processChangingDynamicEntity(newDEVO, oldDEVO, validate, true, true, new ArrayList<String>());
-   }
+	/**
+	 * revalidates MasterDataMetaCache after process
+	 * 
+	 * @param newDEVO
+	 * @param oldDEVO
+	 * @param validate
+	 * @throws CommonValidationException
+	 *             (only if validate is true)
+	 */
+	private void processChangingDynamicEntity(DynamicEntityVO newDEVO, DynamicEntityVO oldDEVO, boolean validate) throws CommonValidationException {
+		this.processChangingDynamicEntity(newDEVO, oldDEVO, validate, true, true, new ArrayList<String>());
+	}
 
-   /**
-    *
-    * @param newDEVO
-    * @param oldDEVO
-    * @param validate
-    * @param revalidateMasterDataMetaCache
-    * @throws CommonValidationException (only if validate is true)
-    */
-   private void processChangingDynamicEntity(DynamicEntityVO newDEVO, DynamicEntityVO oldDEVO, boolean validate, boolean revalidateMasterDataMetaCache, boolean bExecute, List<String> script) throws CommonValidationException {
-   	String sqlSelect = null;
-   	if (newDEVO != null) {
+	/**
+	 * 
+	 * @param newDEVO
+	 * @param oldDEVO
+	 * @param validate
+	 * @param revalidateMasterDataMetaCache
+	 * @throws CommonValidationException
+	 *             (only if validate is true)
+	 */
+	private void processChangingDynamicEntity(DynamicEntityVO newDEVO, DynamicEntityVO oldDEVO, boolean validate, boolean revalidateMasterDataMetaCache, boolean bExecute, List<String> script)
+			throws CommonValidationException {
+		String sqlSelect = null;
+		if (newDEVO != null) {
 			if (validate) {
 				try {
-					debug("validate dynamic entity name \"" + newDEVO.getName() + "\"");
+					LOG.debug("validate dynamic entity name \"" + newDEVO.getName() + "\"");
 					DatasourceUtils.validateDynEntityName(newDEVO.getName());
 					sqlSelect = createSQL(newDEVO.getSource());
-					debug("validate dynamic entity sql <SQL>" + sqlSelect + "</SQL>");
+					LOG.debug("validate dynamic entity sql <SQL>" + sqlSelect + "</SQL>");
 					DatasourceUtils.validateDynEntitySQL(sqlSelect);
-				} catch(NuclosDatasourceException e) {
+				}
+				catch (NuclosDatasourceException e) {
 					throw new CommonFatalException(e);
 				}
 			}
-   	}
+		}
 
 		DbAccess dbAccess = dataBaseHelper.getDbAccess();
 		if (oldDEVO != null) {
@@ -704,156 +456,150 @@ public class DatasourceFacadeBean extends NuclosFacadeBean implements Datasource
 			try {
 				sqlToExecute = "drop view " + MasterDataMetaVO.DYNAMIC_ENTITY_VIEW_PREFIX + oldDEVO.getName();
 				script.add(sqlToExecute);
-				if (bExecute) dbAccess.execute(new DbPlainStatement(sqlToExecute));
-				info("deleted dynamic entity <SQL>" + sqlToExecute + "</SQL>");
-			} catch (DbException e) {
-				error("could not deleted dynamic entity <SQL>" + sqlToExecute + "</SQL> ERROR: " + e.getMessage());
+				if (bExecute)
+					dbAccess.execute(new DbPlainStatement(sqlToExecute));
+				LOG.info("deleted dynamic entity <SQL>" + sqlToExecute + "</SQL>");
+			}
+			catch (DbException e) {
+				LOG.error("could not deleted dynamic entity <SQL>" + sqlToExecute + "</SQL> ERROR: " + e.getMessage());
 			}
 		}
 		if (newDEVO != null) {
 			String sqlToExecute = null;
 			try {
-				info("creating dynamic entity " + newDEVO.getName() + "...");
-				sqlToExecute = "create view " + MasterDataMetaVO.DYNAMIC_ENTITY_VIEW_PREFIX + newDEVO.getName() + " as " +
-				(sqlSelect!=null?sqlSelect:createSQL(newDEVO.getSource()));
+				LOG.info("creating dynamic entity " + newDEVO.getName() + "...");
+				sqlToExecute = "create view " + MasterDataMetaVO.DYNAMIC_ENTITY_VIEW_PREFIX + newDEVO.getName() + " as " + (sqlSelect != null ? sqlSelect : createSQL(newDEVO.getSource()));
 				script.add(sqlToExecute);
-				if (bExecute) dbAccess.execute(new DbPlainStatement(sqlToExecute));
-				info("created dynamic entity <SQL>" + sqlToExecute + "</SQL>");
-			} catch (Exception e) {
-				error("could not create dynamic entity <SQL>" + sqlToExecute + "</SQL> ERROR: " + e.getMessage());
+				if (bExecute)
+					dbAccess.execute(new DbPlainStatement(sqlToExecute));
+				LOG.info("created dynamic entity <SQL>" + sqlToExecute + "</SQL>");
+			}
+			catch (Exception e) {
+				LOG.error("could not create dynamic entity <SQL>" + sqlToExecute + "</SQL> ERROR: " + e.getMessage());
 			}
 		}
-		if (revalidateMasterDataMetaCache) MasterDataMetaCache.getInstance().revalidate();
-   }
+		if (revalidateMasterDataMetaCache)
+			MasterDataMetaCache.getInstance().revalidate();
+	}
 
-   private void validateUniqueConstraint(DatasourceVO datasourcevo) throws CommonValidationException {
-   	try {
-   		//final DatasourceLocal datasource = datasourceHome.findByName(datasourcevo.getDatasource());
-   		DatasourceVO foundDatasourceVO = this.get(datasourcevo.getName());
-   		//if(datasourcevo.getId().intValue() != datasource.getId().intValue()){
-   		if(foundDatasourceVO != null && datasourcevo.getId().intValue() != foundDatasourceVO.getId().intValue()){
-				throw new CommonValidationException(
-					StringUtils.getParameterizedExceptionMessage("validation.unique.constraint", "Name", "Data source"));
-   		}
-   	} catch (CommonFinderException e) {
-     		// No element found -> validation O.K.
-     	} catch (CommonPermissionException e) {
-     		// No element found -> validation O.K.
-     	}
-   }
+	private void validateUniqueConstraint(DatasourceVO datasourcevo) throws CommonValidationException {
+		try {
+			// final DatasourceLocal datasource =
+			// datasourceHome.findByName(datasourcevo.getDatasource());
+			DatasourceVO foundDatasourceVO = this.get(datasourcevo.getName());
+			// if(datasourcevo.getId().intValue() !=
+			// datasource.getId().intValue()){
+			if (foundDatasourceVO != null && datasourcevo.getId().intValue() != foundDatasourceVO.getId().intValue()) {
+				throw new CommonValidationException(StringUtils.getParameterizedExceptionMessage("validation.unique.constraint", "Name", "Data source"));
+			}
+		}
+		catch (CommonFinderException e) {
+			// No element found -> validation O.K.
+		}
+		catch (CommonPermissionException e) {
+			// No element found -> validation O.K.
+		}
+	}
 
-   /**
-    * @param datasourceVO
-    * @param referencedDatasources
-    * @throws CommonPermissionException
-    * @throws CommonFinderException
-    * @throws CommonStaleVersionException
-    * @throws CommonRemoveException
-    * @throws NuclosBusinessRuleException
-    * @throws CommonCreateException
-    */
-   private void replaceUsedDatasourceList(DatasourceVO datasourceVO, List<String> referencedDatasources) throws CommonFinderException, CommonPermissionException, NuclosBusinessRuleException, CommonRemoveException, CommonStaleVersionException, CommonCreateException {
-	   DataSourceType datasourceType = DataSourceType.getFromDatasourceVO(datasourceVO);
-	   MasterDataMetaCache metaCache = MasterDataMetaCache.getInstance();
-	   MasterDataMetaVO usageMeta = metaCache.getMetaData(datasourceType.entityUsage);
-	   String usageEntityName = datasourceType.entityUsage.getEntityName();
+	/**
+	 * @param datasourceVO
+	 * @param referencedDatasources
+	 * @throws CommonPermissionException
+	 * @throws CommonFinderException
+	 * @throws CommonStaleVersionException
+	 * @throws CommonRemoveException
+	 * @throws NuclosBusinessRuleException
+	 * @throws CommonCreateException
+	 */
+	private void replaceUsedDatasourceList(DatasourceVO datasourceVO, List<String> referencedDatasources) throws CommonFinderException, CommonPermissionException, NuclosBusinessRuleException,
+			CommonRemoveException, CommonStaleVersionException, CommonCreateException {
+		DataSourceType datasourceType = DataSourceType.getFromDatasourceVO(datasourceVO);
+		MasterDataMetaCache metaCache = MasterDataMetaCache.getInstance();
+		MasterDataMetaVO usageMeta = metaCache.getMetaData(datasourceType.entityUsage);
+		String usageEntityName = datasourceType.entityUsage.getEntityName();
 
-	   // 1. remove all entries for this id:
-	   CollectableComparison condUsage = SearchConditionUtils.newMDReferenceComparison(
-		   usageMeta,
-		   datasourceType.fieldEntity,
-		   datasourceVO.getId());
-	   for(MasterDataVO mdVO : getMasterDataFacade().getMasterData(usageEntityName, condUsage, true))
-		   getMasterDataFacade().remove(usageEntityName, mdVO, false);
+		// 1. remove all entries for this id:
+		CollectableComparison condUsage = SearchConditionUtils.newMDReferenceComparison(usageMeta, datasourceType.fieldEntity, datasourceVO.getId());
+		for (MasterDataVO mdVO : getMasterDataFacade().getMasterData(usageEntityName, condUsage, true))
+			getMasterDataFacade().remove(usageEntityName, mdVO, false);
 
-	   // 2. insert the new entries:
-	   for(String dataSourceName : referencedDatasources) {
-		   CollectableComparison condDatasource = SearchConditionUtils.newMDComparison(
-			   metaCache.getMetaData(datasourceType.entity.getEntityName()),
-			   "name",
-			   org.nuclos.common.collect.collectable.searchcondition.ComparisonOperator.EQUAL,
-			   dataSourceName);
-		   Collection<MasterDataVO> usedDatasources
-		   = getMasterDataFacade().getMasterData(
-			   datasourceType.entity.getEntityName(),
-			   condDatasource,
-			   true);
+		// 2. insert the new entries:
+		for (String dataSourceName : referencedDatasources) {
+			CollectableComparison condDatasource = SearchConditionUtils.newMDComparison(metaCache.getMetaData(datasourceType.entity.getEntityName()), "name",
+					org.nuclos.common.collect.collectable.searchcondition.ComparisonOperator.EQUAL, dataSourceName);
+			Collection<MasterDataVO> usedDatasources = getMasterDataFacade().getMasterData(datasourceType.entity.getEntityName(), condDatasource, true);
 
-		   for(MasterDataVO usedDatasource : usedDatasources) {
-			   MasterDataVO newEntryVO = new MasterDataVO(usageMeta, true);
-			   newEntryVO.setField(datasourceType.fieldEntity+"Id", datasourceVO.getId());
-			   newEntryVO.setField(datasourceType.fieldEntityUsed+"Id", usedDatasource.getId());
+			for (MasterDataVO usedDatasource : usedDatasources) {
+				MasterDataVO newEntryVO = new MasterDataVO(usageMeta, true);
+				newEntryVO.setField(datasourceType.fieldEntity + "Id", datasourceVO.getId());
+				newEntryVO.setField(datasourceType.fieldEntityUsed + "Id", usedDatasource.getId());
 
-			   getMasterDataFacade().create(usageEntityName, newEntryVO, null);
-		   }
-	   }
-   }
+				getMasterDataFacade().create(usageEntityName, newEntryVO, null);
+			}
+		}
+	}
 
-   /**
-    * get a list of DatasourceVO which uses the datasource with the given id
-    *
-    * ONLY for datasources, NOT for dynamic entities and valuelist provider
-    * @see also <code>getUsagesForDatasource(DatasourceVO datasourceVO)</code>
-    *
-    * @param iDatasourceId
-    * @return
-    * @throws CommonFinderException
-    * @throws CommonPermissionException
-    */
-   @RolesAllowed("Login")
-   public List<DatasourceVO> getUsagesForDatasource(final Integer iDatasourceId) throws CommonFinderException, CommonPermissionException {
-   	return getUsagesForDatasource(get(iDatasourceId));
-   }
+	/**
+	 * get a list of DatasourceVO which uses the datasource with the given id
+	 * 
+	 * ONLY for datasources, NOT for dynamic entities and valuelist provider
+	 * 
+	 * @see also <code>getUsagesForDatasource(DatasourceVO datasourceVO)</code>
+	 * 
+	 * @param iDatasourceId
+	 * @return
+	 * @throws CommonFinderException
+	 * @throws CommonPermissionException
+	 */
+	@RolesAllowed("Login")
+	public List<DatasourceVO> getUsagesForDatasource(final Integer iDatasourceId) throws CommonFinderException, CommonPermissionException {
+		return getUsagesForDatasource(get(iDatasourceId));
+	}
 
-   /**
-    * get a list of DatasourceVO which uses the datasource
-    *
-    * @param datasourceVO
-    * 						could also be an instance of
-    * 						<code>DynamicEntityVO</code> or
-    * 						<code>ValuelistProviderVO</code>
-    * @return
-    * @throws CommonPermissionException
-    * @throws CommonFinderException
-    */
-   @RolesAllowed("Login")
-   public List<DatasourceVO> getUsagesForDatasource(DatasourceVO datasourceVO) throws CommonFinderException, CommonPermissionException {
-   	final DataSourceType datasourceType = DataSourceType.getFromDatasourceVO(datasourceVO);
+	/**
+	 * get a list of DatasourceVO which uses the datasource
+	 * 
+	 * @param datasourceVO
+	 *            could also be an instance of <code>DynamicEntityVO</code> or
+	 *            <code>ValuelistProviderVO</code>
+	 * @return
+	 * @throws CommonPermissionException
+	 * @throws CommonFinderException
+	 */
+	@RolesAllowed("Login")
+	public List<DatasourceVO> getUsagesForDatasource(DatasourceVO datasourceVO) throws CommonFinderException, CommonPermissionException {
+		final DataSourceType datasourceType = DataSourceType.getFromDatasourceVO(datasourceVO);
 
-   	List<DatasourceVO> result = new ArrayList<DatasourceVO>();
+		List<DatasourceVO> result = new ArrayList<DatasourceVO>();
 
-   	CollectableComparison cond = SearchConditionUtils.newMDReferenceComparison(
-         MasterDataMetaCache.getInstance().getMetaData(datasourceType.entityUsage),datasourceType.fieldEntityUsed, datasourceVO.getId());
+		CollectableComparison cond = SearchConditionUtils.newMDReferenceComparison(MasterDataMetaCache.getInstance().getMetaData(datasourceType.entityUsage), datasourceType.fieldEntityUsed,
+				datasourceVO.getId());
 
-   	for (MasterDataVO usageVO : getMasterDataFacade().getMasterData(datasourceType.entityUsage.getEntityName(), cond, true)) {
-   		MasterDataVO deVO = getMasterDataFacade().get(datasourceType.entity.getEntityName(), usageVO.getField(datasourceType.fieldEntityUsed+"Id"));
-   		if (!datasourceVO.getId().equals(deVO.getId())) {
-   			result.add(datasourceType.wrap(deVO, getCurrentUserName()));
-   		}
-   	}
+		for (MasterDataVO usageVO : getMasterDataFacade().getMasterData(datasourceType.entityUsage.getEntityName(), cond, true)) {
+			MasterDataVO deVO = getMasterDataFacade().get(datasourceType.entity.getEntityName(), usageVO.getField(datasourceType.fieldEntityUsed + "Id"));
+			if (!datasourceVO.getId().equals(deVO.getId())) {
+				result.add(datasourceType.wrap(deVO, getCurrentUserName()));
+			}
+		}
 
-   	return result;
-   }
+		return result;
+	}
 
-   /**
-    * get a list of DatasourceCVO which are used by the datasource with the
-    * given id
-    *
-    * @param iDatasourceId
-    * @return
-    * @throws CommonFinderException
-    * @throws CommonPermissionException
-    */
-	public List<DatasourceVO> getUsingByForDatasource(final Integer iDatasourceId)
-		throws CommonFinderException, CommonPermissionException {
+	/**
+	 * get a list of DatasourceCVO which are used by the datasource with the
+	 * given id
+	 * 
+	 * @param iDatasourceId
+	 * @return
+	 * @throws CommonFinderException
+	 * @throws CommonPermissionException
+	 */
+	public List<DatasourceVO> getUsingByForDatasource(final Integer iDatasourceId) throws CommonFinderException, CommonPermissionException {
 
 		DbQueryBuilder builder = dataBaseHelper.getDbAccess().getQueryBuilder();
 		DbQuery<DbTuple> query = builder.createTupleQuery();
 		DbFrom t = query.from("T_UD_DATASOURCEUSAGE").alias(SystemFields.BASE_ALIAS);
-		query.multiselect(
-			t.baseColumn("INTID", Integer.class),
-			t.baseColumn("INTID_T_UD_DATASOURCE", Integer.class),
-			t.baseColumn("INTID_T_UD_DATASOURCE_USED", Integer.class));
+		query.multiselect(t.baseColumn("INTID", Integer.class), t.baseColumn("INTID_T_UD_DATASOURCE", Integer.class), t.baseColumn("INTID_T_UD_DATASOURCE_USED", Integer.class));
 		query.where(builder.equal(t.baseColumn("INTID_T_UD_DATASOURCE", Integer.class), iDatasourceId));
 
 		List<DatasourceVO> result = new ArrayList<DatasourceVO>();
@@ -863,255 +609,181 @@ public class DatasourceFacadeBean extends NuclosFacadeBean implements Datasource
 				MasterDataVO mdVO = getMasterDataFacade().get(NuclosEntity.DATASOURCE.getEntityName(), dataSourceUsed);
 				result.add(MasterDataWrapper.getDatasourceVO(mdVO, getCurrentUserName()));
 			}
-			catch(CommonFinderException ex) {
+			catch (CommonFinderException ex) {
 				throw new NuclosFatalException(ex);
 			}
-			catch(CommonPermissionException ex) {
+			catch (CommonPermissionException ex) {
 				throw new NuclosFatalException(ex);
 			}
 		}
 		return result;
 	}
 
-   /**
-    * delete an existing datasource
-    *
-    * @param datasourcevo
-    *                value object
-    */
-	public void remove(DatasourceVO datasourcevo) 
-			throws CommonFinderException, CommonRemoveException, CommonPermissionException, CommonStaleVersionException, 
-			NuclosBusinessRuleException {
+	/**
+	 * delete an existing datasource
+	 * 
+	 * @param datasourcevo
+	 *            value object
+	 */
+	public void remove(DatasourceVO datasourcevo) throws CommonFinderException, CommonRemoveException, CommonPermissionException, CommonStaleVersionException, NuclosBusinessRuleException {
+		DataSourceType type = DataSourceType.getFromDatasourceVO(datasourcevo);
+		String entity = type.entity.getEntityName();
+		this.checkDeleteAllowed(entity);
 		
-   	DatasourceVO dbDatasourceVO = MasterDataWrapper.getDatasourceVO(getMasterDataFacade().get(NuclosEntity.DATASOURCE.getEntityName(), datasourcevo.getId()), getCurrentUserName());
+		MasterDataVO dsAsMd = getMasterDataFacade().get(entity, datasourcevo.getId());
+		
+		if (NuclosEntity.DATASOURCE.getEntityName().equals(entity)) {
+			if (DatasourceCache.getInstance().getPermission(dsAsMd.getIntId(), getCurrentUserName()) != DatasourceVO.PERMISSION_READWRITE) {
+				throw new CommonPermissionException();
+			}
+		}
+		
+		if (NuclosEntity.DYNAMICENTITY.getEntityName().equals(entity)) {
+			try {
+				processChangingDynamicEntity(null, (DynamicEntityVO) datasourcevo, false);
+			}
+			catch (CommonValidationException e) {
+				// no validation here
+				LOG.info("removeDynamicEntity: " + e);
+			}
+		}
+		
+		if (dsAsMd.getVersion() != datasourcevo.getVersion()) {
+			throw new CommonStaleVersionException(entity, dsAsMd.toString(), datasourcevo.toString());
+		}
 
-  		if (DatasourceCache.getInstance().getPermission(dbDatasourceVO.getId(), getCurrentUserName()) != DatasourceVO.PERMISSION_READWRITE) {
-  			throw new CommonPermissionException();
-  		}
-  		if (dbDatasourceVO.getVersion() != datasourcevo.getVersion()) {
-  			throw new CommonStaleVersionException("data source", datasourcevo.toString(), dbDatasourceVO.toString());
-  		}
-
-  		getMasterDataFacade().remove(NuclosEntity.DATASOURCE.getEntityName(), MasterDataWrapper.wrapDatasourceVO(datasourcevo), false);
-  		getMasterDataFacade().notifyClients(NuclosEntity.DATASOURCE.getEntityName());
+		getMasterDataFacade().remove(entity, type.unwrap(datasourcevo), false);
+		getMasterDataFacade().notifyClients(entity);
+		
 		try {
-			replaceUsedDatasourceList(datasourcevo, Collections.<String>emptyList());
+			replaceUsedDatasourceList(datasourcevo, Collections.<String> emptyList());
 		}
-		catch(CommonCreateException e) {
+		catch (CommonCreateException e) {
 			throw new CommonFatalException(e);
 		}
-		SecurityCache.getInstance().invalidate();
-		DatasourceCache.getInstance().invalidate();
-		SchemaCache.getInstance().invalidate();
-   }
-
-   /**
-    * delete an existing dynamic entity
-    *
-    * @param dynamicEntityVO
-    *                value object
-    */
-	public void removeDynamicEntity(DynamicEntityVO dynamicEntityVO) 
-			throws CommonFinderException, CommonRemoveException, CommonPermissionException, CommonStaleVersionException, 
-			NuclosBusinessRuleException {
 		
-   	DynamicEntityVO dbDynamicEntityVO = MasterDataWrapper.getDynamicEntityVO(getMasterDataFacade().get(NuclosEntity.DYNAMICENTITY.getEntityName(), dynamicEntityVO.getId()));
-   	this.checkDeleteAllowed(NuclosEntity.DYNAMICENTITY);
+		invalidateCaches(type);
+	}
 
-  		if (dbDynamicEntityVO.getVersion() != dynamicEntityVO.getVersion()) {
-  			throw new CommonStaleVersionException("dynamic entity", dynamicEntityVO.toString(), dbDynamicEntityVO.toString());
-  		}
-
-  		try {
-			processChangingDynamicEntity(null, dbDynamicEntityVO, false);
+	/**
+	 * @param datasourcevo
+	 */
+	private void updateValidFlag(DatasourceVO datasourcevo) {
+		try {
+			this.validateSqlFromXML(datasourcevo.getSource());
+			datasourcevo.setValid(Boolean.TRUE);
 		}
-		catch(CommonValidationException e) {
-			// no validation here
-			LOG.info("removeDynamicEntity: " + e);
-		}
-  		getMasterDataFacade().remove(NuclosEntity.DYNAMICENTITY.getEntityName(), MasterDataWrapper.wrapDatasourceVO(dbDynamicEntityVO), false);
-  		getMasterDataFacade().notifyClients(NuclosEntity.DYNAMICENTITY.getEntityName());
-
-  		try {
-			replaceUsedDatasourceList(dbDynamicEntityVO, Collections.<String>emptyList());
-		}
-		catch(CommonCreateException e) {
-			throw new CommonFatalException(e);
-		}
-  		DatasourceCache.getInstance().invalidate();
-  		SchemaCache.getInstance().invalidate();
-  		MetaDataServerProvider.getInstance().revalidate(true);
-   }
-
-   /**
-    * delete an existing valuelist provider
-    *
-    * @param valuelistProviderVO
-    *                value object
-    */
-	public void removeValuelistProvider(ValuelistProviderVO valuelistProviderVO) 
-			throws CommonFinderException, CommonRemoveException, CommonPermissionException, CommonStaleVersionException, NuclosBusinessRuleException {
-		
-   	ValuelistProviderVO dbValuelistProviderVO = MasterDataWrapper.getValuelistProviderVO(getMasterDataFacade().get(NuclosEntity.VALUELISTPROVIDER.getEntityName(), valuelistProviderVO.getId()));
-   	this.checkDeleteAllowed(NuclosEntity.VALUELISTPROVIDER);
-
-  		if (dbValuelistProviderVO.getVersion() != valuelistProviderVO.getVersion()) {
-  			throw new CommonStaleVersionException("value list provider", valuelistProviderVO.toString(), dbValuelistProviderVO.toString());
-  		}
-
-  		getMasterDataFacade().remove(NuclosEntity.VALUELISTPROVIDER.getEntityName(), MasterDataWrapper.wrapDatasourceVO(dbValuelistProviderVO), false);
-  		getMasterDataFacade().notifyClients(NuclosEntity.VALUELISTPROVIDER.getEntityName());
-
-  		try {
-			replaceUsedDatasourceList(dbValuelistProviderVO, Collections.<String>emptyList());
-		}
-		catch(CommonCreateException e) {
-			throw new CommonFatalException(e);
-		}
-  		DatasourceCache.getInstance().invalidate();
-  		SchemaCache.getInstance().invalidate();
-   }
-
-   /**
-    * delete an existing RecordGrant
-    *
-    * @param recordGrantVO
-    *                value object
-    */
-   public void removeRecordGrant(RecordGrantVO recordGrantVO) 
-		   throws CommonFinderException, CommonRemoveException, CommonPermissionException, CommonStaleVersionException, NuclosBusinessRuleException {
-	   
-	   	RecordGrantVO dbRecordGrantVO = MasterDataWrapper.getRecordGrantVO(
-	   			getMasterDataFacade().get(NuclosEntity.RECORDGRANT.getEntityName(), recordGrantVO.getId()));
-   		this.checkDeleteAllowed(NuclosEntity.RECORDGRANT);
-
-  		if (dbRecordGrantVO.getVersion() != recordGrantVO.getVersion()) {
-  			throw new CommonStaleVersionException("record grant", recordGrantVO.toString(), dbRecordGrantVO.toString());
-  		}
-
-  		getMasterDataFacade().remove(NuclosEntity.RECORDGRANT.getEntityName(), MasterDataWrapper.wrapDatasourceVO(dbRecordGrantVO), false);
-  		getMasterDataFacade().notifyClients(NuclosEntity.RECORDGRANT.getEntityName());
-
-  		try {
-			replaceUsedDatasourceList(dbRecordGrantVO, Collections.<String>emptyList());
-		}
-		catch(CommonCreateException e) {
-			throw new CommonFatalException(e);
-		}
-  		DatasourceCache.getInstance().invalidate();
-  		SchemaCache.getInstance().invalidate();
-   }
-
-   /**
-    * @param datasourcevo
-    */
-   private void updateValidFlag(DatasourceVO datasourcevo) {
-   	try {
-   		this.validateSqlFromXML(datasourcevo.getSource());
-   		datasourcevo.setValid(Boolean.TRUE);
-		}
-		catch(CommonValidationException e) {
+		catch (CommonValidationException e) {
 			LOG.info("updateValidFlag: " + e);
 			datasourcevo.setValid(Boolean.FALSE);
 		}
-		catch(NuclosDatasourceException e) {
+		catch (NuclosDatasourceException e) {
 			LOG.info("updateValidFlag: " + e);
 			datasourcevo.setValid(Boolean.FALSE);
 		}
-   }
+	}
 
-   /**
-    * Retrieve the parameters a datasource accepts.
-    * @param sDatasourceXML
-    * @return
-    * @throws NuclosFatalException
-    * @throws NuclosDatasourceException
-    */
-   @RolesAllowed("Login")
-   public List<DatasourceParameterVO> getParameters(String sDatasourceXML) throws NuclosFatalException, NuclosDatasourceException {
+	/**
+	 * Retrieve the parameters a datasource accepts.
+	 * 
+	 * @param sDatasourceXML
+	 * @return
+	 * @throws NuclosFatalException
+	 * @throws NuclosDatasourceException
+	 */
+	@RolesAllowed("Login")
+	public List<DatasourceParameterVO> getParameters(String sDatasourceXML) throws NuclosFatalException, NuclosDatasourceException {
 		return utils.getParameters(sDatasourceXML);
-   }
+	}
 
-  /**
-   * Retrieve the parameters a datasource accepts.
-   * @param iDatasourceId
-   * @return
-   * @throws NuclosFatalException
-   * @throws NuclosDatasourceException
-   */
-   @RolesAllowed("Login")
-  public List<DatasourceParameterVO> getParameters(Integer iDatasourceId) throws NuclosFatalException, NuclosDatasourceException {
+	/**
+	 * Retrieve the parameters a datasource accepts.
+	 * 
+	 * @param iDatasourceId
+	 * @return
+	 * @throws NuclosFatalException
+	 * @throws NuclosDatasourceException
+	 */
+	@RolesAllowed("Login")
+	public List<DatasourceParameterVO> getParameters(Integer iDatasourceId) throws NuclosFatalException, NuclosDatasourceException {
 		return utils.getParameters(iDatasourceId);
-  }
+	}
 
-   /**
-    * validate the given DatasourceXML
-    *
-    * @param sDatasourceXML
-    * @throws CommonValidationException
-    * @throws NuclosReportException
-    */
-   @RolesAllowed("Login")
-   public void validateSqlFromXML(String sDatasourceXML) throws CommonValidationException, NuclosDatasourceException {
-   	final String sSql = this.createSQL(sDatasourceXML,this.getTestParameters(sDatasourceXML));
+	/**
+	 * validate the given DatasourceXML
+	 * 
+	 * @param sDatasourceXML
+	 * @throws CommonValidationException
+	 * @throws NuclosReportException
+	 */
+	@RolesAllowed("Login")
+	public void validateSqlFromXML(String sDatasourceXML) throws CommonValidationException, NuclosDatasourceException {
+		final String sSql = this.createSQL(sDatasourceXML, this.getTestParameters(sDatasourceXML));
 
-   	this.validateSql(sSql);
-   }
+		this.validateSql(sSql);
+	}
 
-   /**
-    * validate the given SQL
-    *
-    * @param sql
-    * @throws CommonValidationException
-    * @throws NuclosReportException
-    */
-   @RolesAllowed("Login")
-   public void validateSql(String sql) throws CommonValidationException, NuclosDatasourceException {
+	/**
+	 * validate the given SQL
+	 * 
+	 * @param sql
+	 * @throws CommonValidationException
+	 * @throws NuclosReportException
+	 */
+	@RolesAllowed("Login")
+	public void validateSql(String sql) throws CommonValidationException, NuclosDatasourceException {
 		try {
 			dataBaseHelper.getDbAccess().checkSyntax(sql);
-		} catch (DbException e) {
-			throw new CommonValidationException(StringUtils.getParameterizedExceptionMessage("datasource.error.invalid.statement", e.getMessage()), e);//"Die Abfrage ist ung\u00ef\u00bf\u00bdltig.\n" + e.getMessage(), e);
 		}
-   }
+		catch (DbException e) {
+			throw new CommonValidationException(StringUtils.getParameterizedExceptionMessage("datasource.error.invalid.statement", e.getMessage()), e);// "Die Abfrage ist ung\u00ef\u00bf\u00bdltig.\n"
+																																						// +
+																																						// e.getMessage(),
+																																						// e);
+		}
+	}
 
-  /**
-   * get sql string for datasource definition
-   * @param iDatasourceId id of datasource
-   * @return string containing sql
-   */
-  public String createSQL(Integer iDatasourceId, Map<String, Object> mpParams) throws NuclosDatasourceException {
-     return utils.createSQL(iDatasourceId, mpParams);
-  }
+	/**
+	 * get sql string for datasource definition
+	 * 
+	 * @param iDatasourceId
+	 *            id of datasource
+	 * @return string containing sql
+	 */
+	public String createSQL(Integer iDatasourceId, Map<String, Object> mpParams) throws NuclosDatasourceException {
+		return utils.createSQL(iDatasourceId, mpParams);
+	}
 
-   /**
-    * get sql string for datasource definition without parameter definition
-    *
-    * @param sDatasourceXML
-    *                xml of datasource
-    * @return string containing sql
-    */
+	/**
+	 * get sql string for datasource definition without parameter definition
+	 * 
+	 * @param sDatasourceXML
+	 *            xml of datasource
+	 * @return string containing sql
+	 */
 	@RolesAllowed("Login")
-   public String createSQL(String sDatasourceXML) throws NuclosDatasourceException {
-      return utils.createSQL(sDatasourceXML);
-   }
+	public String createSQL(String sDatasourceXML) throws NuclosDatasourceException {
+		return utils.createSQL(sDatasourceXML);
+	}
 
-   /**
-    * get sql string for datasource definition
-    *
-    * @param sDatasourceXML
-    *                xml of datasource
-    * @return string containing sql
-    */
+	/**
+	 * get sql string for datasource definition
+	 * 
+	 * @param sDatasourceXML
+	 *            xml of datasource
+	 * @return string containing sql
+	 */
 	@RolesAllowed("Login")
-   public String createSQL(String sDatasourceXML, Map<String, Object> mpParams) throws NuclosDatasourceException {
-  		return utils.createSQL(sDatasourceXML, mpParams);
-   }
+	public String createSQL(String sDatasourceXML, Map<String, Object> mpParams) throws NuclosDatasourceException {
+		return utils.createSQL(sDatasourceXML, mpParams);
+	}
 
-  	/**
-	 * get sql string for report execution.
-	 * check that this method is only called by the local interface as there is no authorization applied.
-	 *
-	 * @param iDatasourceId id of datasource
+	/**
+	 * get sql string for report execution. check that this method is only
+	 * called by the local interface as there is no authorization applied.
+	 * 
+	 * @param iDatasourceId
+	 *            id of datasource
 	 * @return string containing sql
 	 */
 	public String createSQLForReportExecution(String name, Map<String, Object> mpParams) throws NuclosDatasourceException {
@@ -1125,7 +797,7 @@ public class DatasourceFacadeBean extends NuclosFacadeBean implements Datasource
 
 	/**
 	 * set test values for every parameter for sysntax check
-	 *
+	 * 
 	 * @param sDatasourceXML
 	 * @return Map<String sName, String sValue>
 	 */
@@ -1136,18 +808,18 @@ public class DatasourceFacadeBean extends NuclosFacadeBean implements Datasource
 		try {
 			lstParams = this.getParameters(sDatasourceXML);
 		}
-		catch(NuclosDatasourceException e) {
+		catch (NuclosDatasourceException e) {
 			// No parameters defined?
 			LOG.info("getTestParameters: " + e);
 			return result;
 		}
 
-		for(DatasourceParameterVO paramvo : lstParams) {
+		for (DatasourceParameterVO paramvo : lstParams) {
 			final String sValue;
-			if("java.lang.String".equals(paramvo.getDatatype())) {
+			if ("java.lang.String".equals(paramvo.getDatatype())) {
 				sValue = "abc";
 			}
-			else if("java.util.Date".equals(paramvo.getDatatype())) {
+			else if ("java.util.Date".equals(paramvo.getDatatype())) {
 				sValue = "01.01.2000";
 			}
 			else {
@@ -1162,105 +834,106 @@ public class DatasourceFacadeBean extends NuclosFacadeBean implements Datasource
 		result.put("username", getCurrentUserName());
 
 		return result;
-   }
+	}
 
-   /**
-    * invalidate datasource cache
-    */
+	/**
+	 * invalidate datasource cache
+	 */
 	@RolesAllowed("Login")
-   public void invalidateCache() {
-      DatasourceCache.getInstance().invalidate();
-   }
+	public void invalidateCache() {
+		DatasourceCache.getInstance().invalidate();
+	}
 
-   /**
-    * get all DynamicEntities
-    *
-    * @return set of DynamicEntityVO
-    * @throws CommonPermissionException
-    */
+	/**
+	 * get all DynamicEntities
+	 * 
+	 * @return set of DynamicEntityVO
+	 * @throws CommonPermissionException
+	 */
 	@RolesAllowed("Login")
-   public Collection<DynamicEntityVO> getDynamicEntities() {
-//   	this.checkReadAllowed(ENTITY_NAME_DYNAMICENTITY);
-   	return DatasourceCache.getInstance().getAllDynamicEntities();
-   }
+	public Collection<DynamicEntityVO> getDynamicEntities() {
+		// this.checkReadAllowed(ENTITY_NAME_DYNAMICENTITY);
+		return DatasourceCache.getInstance().getAllDynamicEntities();
+	}
 
-   /**
-    * get dynamic entity value object
-    *
-    * @param iDynamicEntityId
-    *                primary key of dynamic entity
-    * @return DynamicEntityVO
-    */
+	/**
+	 * get dynamic entity value object
+	 * 
+	 * @param iDynamicEntityId
+	 *            primary key of dynamic entity
+	 * @return DynamicEntityVO
+	 */
 	@RolesAllowed("Login")
-   public DynamicEntityVO getDynamicEntity(Integer iDynamicEntityId) throws CommonPermissionException {
-//   	this.checkReadAllowed(ENTITY_NAME_DYNAMICENTITY);
-   	return DatasourceCache.getInstance().getDynamicEntity(iDynamicEntityId);
-   }
+	public DynamicEntityVO getDynamicEntity(Integer iDynamicEntityId) throws CommonPermissionException {
+		// this.checkReadAllowed(ENTITY_NAME_DYNAMICENTITY);
+		return DatasourceCache.getInstance().getDynamicEntity(iDynamicEntityId);
+	}
 
-   /**
-    * get all ValuelistProvider
-    *
-    * @return set of ValuelistProviderVO
-    * @throws CommonPermissionException
-    */
+	/**
+	 * get all ValuelistProvider
+	 * 
+	 * @return set of ValuelistProviderVO
+	 * @throws CommonPermissionException
+	 */
 	@RolesAllowed("Login")
-   public Collection<ValuelistProviderVO> getValuelistProvider() throws CommonPermissionException {
-//   	this.checkReadAllowed(ENTITY_NAME_VALUELISTPROVIDER);
-   	return DatasourceCache.getInstance().getAllValuelistProvider();
-   }
+	public Collection<ValuelistProviderVO> getValuelistProvider() throws CommonPermissionException {
+		// this.checkReadAllowed(ENTITY_NAME_VALUELISTPROVIDER);
+		return DatasourceCache.getInstance().getAllValuelistProvider();
+	}
 
-   /**
-    * get valuelist provider value object
-    *
-    * @param iValuelistProviderId
-    *                primary key of valuelist provider
-    * @return ValuelistProviderVO
-    */
+	/**
+	 * get valuelist provider value object
+	 * 
+	 * @param iValuelistProviderId
+	 *            primary key of valuelist provider
+	 * @return ValuelistProviderVO
+	 */
 	@RolesAllowed("Login")
-   public ValuelistProviderVO getValuelistProvider(Integer iValuelistProviderId) throws CommonPermissionException {
-//   	this.checkReadAllowed(ENTITY_NAME_VALUELISTPROVIDER);
-   	return DatasourceCache.getInstance().getValuelistProvider(iValuelistProviderId);
-   }
+	public ValuelistProviderVO getValuelistProvider(Integer iValuelistProviderId) throws CommonPermissionException {
+		// this.checkReadAllowed(ENTITY_NAME_VALUELISTPROVIDER);
+		return DatasourceCache.getInstance().getValuelistProvider(iValuelistProviderId);
+	}
 
-   /**
-    * get all RecordGrant
-    *
-    * @return set of RecordGrantVO
-    * @throws CommonPermissionException
-    */
+	/**
+	 * get all RecordGrant
+	 * 
+	 * @return set of RecordGrantVO
+	 * @throws CommonPermissionException
+	 */
 	@RolesAllowed("Login")
-   public Collection<RecordGrantVO> getRecordGrant() throws CommonPermissionException {
-//   	this.checkReadAllowed(ENTITY_NAME_VALUELISTPROVIDER);
-   	return DatasourceCache.getInstance().getAllRecordGrant();
-   }
+	public Collection<RecordGrantVO> getRecordGrant() throws CommonPermissionException {
+		// this.checkReadAllowed(ENTITY_NAME_VALUELISTPROVIDER);
+		return DatasourceCache.getInstance().getAllRecordGrant();
+	}
 
-   /**
-    * get RecordGrant value object
-    *
-    * @param iRecordGrantId
-    *                primary key of RecordGrant
-    * @return RecordGrantVO
-    */
+	/**
+	 * get RecordGrant value object
+	 * 
+	 * @param iRecordGrantId
+	 *            primary key of RecordGrant
+	 * @return RecordGrantVO
+	 */
 	@RolesAllowed("Login")
-   public RecordGrantVO getRecordGrant(Integer iRecordGrantId) throws CommonPermissionException {
-//   	this.checkReadAllowed(ENTITY_NAME_VALUELISTPROVIDER);
-   	return DatasourceCache.getInstance().getRecordGrant(iRecordGrantId);
-   }
+	public RecordGrantVO getRecordGrant(Integer iRecordGrantId) throws CommonPermissionException {
+		// this.checkReadAllowed(ENTITY_NAME_VALUELISTPROVIDER);
+		return DatasourceCache.getInstance().getRecordGrant(iRecordGrantId);
+	}
 
-   /**
-    * get RecordGrant value object
-    *
-    * @param sRecordGrant
-    *                name of RecordGrant
-    * @return RecordGrant value object
-    */
+	/**
+	 * get RecordGrant value object
+	 * 
+	 * @param sRecordGrant
+	 *            name of RecordGrant
+	 * @return RecordGrant value object
+	 */
 	@RolesAllowed("Login")
-   public RecordGrantVO getRecordGrant(String sRecordGrant) throws CommonFinderException, CommonPermissionException {
-   	return DatasourceCache.getInstance().getRecordGrantByName(sRecordGrant);
-   }
+	public RecordGrantVO getRecordGrant(String sRecordGrant) throws CommonFinderException, CommonPermissionException {
+		return DatasourceCache.getInstance().getRecordGrantByName(sRecordGrant);
+	}
 
 	/**
 	 * get a datasource result by datasource id
+	 * 
 	 * @param iDatasourceId
 	 * @param mpParams
 	 * @param iMaxRowCount
@@ -1278,8 +951,11 @@ public class DatasourceFacadeBean extends NuclosFacadeBean implements Datasource
 
 	/**
 	 * gets a datasource result by datasource xml
-	 * @param sDatasourceXML datasource id
-	 * @param mpParams parameters
+	 * 
+	 * @param sDatasourceXML
+	 *            datasource id
+	 * @param mpParams
+	 *            parameters
 	 * @param iMaxRowCount
 	 * @return report/form filled with data
 	 */
@@ -1287,11 +963,12 @@ public class DatasourceFacadeBean extends NuclosFacadeBean implements Datasource
 		final ResultVO result = new ResultVO();
 		final String sQuery = createSQL(sDatasourceXML, mpParams);
 
-		return dataBaseHelper.getDbAccess().executePlainQueryAsResultVO(sQuery, iMaxRowCount==null?-1:iMaxRowCount);
+		return dataBaseHelper.getDbAccess().executePlainQueryAsResultVO(sQuery, iMaxRowCount == null ? -1 : iMaxRowCount);
 	}
 
 	public Schema getSchemaTables() {
-		//return SchemaCache.getSchema(ServerParameterProvider.getInstance().getValue(ParameterProvider.KEY_NUCLOS_SCHEMA));
+		// return
+		// SchemaCache.getSchema(ServerParameterProvider.getInstance().getValue(ParameterProvider.KEY_NUCLOS_SCHEMA));
 		return SchemaCache.getInstance().getCurrentSchema();
 	}
 
@@ -1299,15 +976,54 @@ public class DatasourceFacadeBean extends NuclosFacadeBean implements Datasource
 	 * @throws CommonPermissionException
 	 */
 	public Table getSchemaColumns(Table table) {
-		//SchemaCache.getColumns(ServerParameterProvider.getInstance().getValue(ParameterProvider.KEY_NUCLOS_SCHEMA), table);
-		//SchemaCache.getConstraints(ServerParameterProvider.getInstance().getValue(ParameterProvider.KEY_NUCLOS_SCHEMA), table);
+		// SchemaCache.getColumns(ServerParameterProvider.getInstance().getValue(ParameterProvider.KEY_NUCLOS_SCHEMA),
+		// table);
+		// SchemaCache.getConstraints(ServerParameterProvider.getInstance().getValue(ParameterProvider.KEY_NUCLOS_SCHEMA),
+		// table);
 		SchemaCache.getInstance().fillTableColumnsAndConstraints(table);
 		return table;
 	}
 
-    public String createSQLOriginalParameter(String sDatasourceXML)
-        throws NuclosDatasourceException {
-	    return utils.createSQLOriginalParameter(sDatasourceXML);
-    }
+	public String createSQLOriginalParameter(String sDatasourceXML) throws NuclosDatasourceException {
+		return utils.createSQLOriginalParameter(sDatasourceXML);
+	}
 
+	@RolesAllowed("Login")
+	public DynamicTasklistVO getDynamicTasklist(Integer id) throws CommonPermissionException {
+		return DatasourceCache.getInstance().getDynamicTasklist(id);
+	}
+	
+	private void invalidateCaches(DataSourceType type) {
+		DatasourceCache.getInstance().invalidate();
+		SchemaCache.getInstance().invalidate();
+		switch (type) {
+			case DATASOURCE:
+				SecurityCache.getInstance().invalidate();
+				break;
+			case DYNAMICENTITY: 
+				MetaDataServerProvider.getInstance().revalidate(true);
+				break;
+		}
+	}
+
+	@Override
+	public Collection<DynamicTasklistVO> getDynamicTasklists() throws CommonPermissionException {
+		return DatasourceCache.getInstance().getAllDynamicTasklists();
+	}
+
+	@Override
+	public Set<String> getDynamicTasklistAttributes(Integer dtlId) throws CommonPermissionException, NuclosDatasourceException {
+		checkReadAllowed(NuclosEntity.TASKLIST);
+		DynamicTasklistVO dtl = DatasourceCache.getInstance().getDynamicTasklist(dtlId);
+		
+		String sQuery = createSQL(dtl.getSource(), new HashMap<String, Object>());
+
+		ResultVO result = dataBaseHelper.getDbAccess().executePlainQueryAsResultVO(sQuery, 1);
+		
+		Set<String> attributes = new HashSet<String>();
+		for (ResultColumnVO col : result.getColumns()) {
+			attributes.add(col.getColumnLabel());
+		}
+		return attributes;
+	}
 }

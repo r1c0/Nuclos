@@ -24,6 +24,7 @@ import org.nuclos.client.customcode.CodeCollectController;
 import org.nuclos.client.datasource.admin.CollectableDataSource;
 import org.nuclos.client.datasource.admin.DatasourceCollectController;
 import org.nuclos.client.datasource.admin.DynamicEntityCollectController;
+import org.nuclos.client.datasource.admin.DynamicTasklistCollectController;
 import org.nuclos.client.datasource.admin.RecordGrantCollectController;
 import org.nuclos.client.datasource.admin.ValuelistProviderCollectController;
 import org.nuclos.client.entityobject.CollectableEOEntityClientProvider;
@@ -68,6 +69,7 @@ import org.nuclos.client.task.PersonalTaskCollectController;
 import org.nuclos.client.transfer.ExportImportCollectController;
 import org.nuclos.client.ui.collect.search.DatasourceSearchStrategy;
 import org.nuclos.client.ui.collect.search.DynamicEntitySearchStrategy;
+import org.nuclos.client.ui.collect.search.DynamicTasklistSearchStrategy;
 import org.nuclos.client.ui.collect.search.EntityRelationShipSearchStrategy;
 import org.nuclos.client.ui.collect.search.GenericObjectViaEntityObjectSearchStrategy;
 import org.nuclos.client.ui.collect.search.ISearchStrategy;
@@ -91,6 +93,11 @@ import org.nuclos.common.collect.collectable.CollectableEntityProvider;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
 import org.nuclos.common.entityobject.CollectableEOEntity;
 import org.nuclos.common2.IdUtils;
+import org.nuclos.server.report.valueobject.DatasourceVO;
+import org.nuclos.server.report.valueobject.DynamicEntityVO;
+import org.nuclos.server.report.valueobject.DynamicTasklistVO;
+import org.nuclos.server.report.valueobject.RecordGrantVO;
+import org.nuclos.server.report.valueobject.ValuelistProviderVO;
 
 public class CollectControllerFactorySingleton {
 	
@@ -446,13 +453,14 @@ public class CollectControllerFactorySingleton {
 		final GenericObjectLayoutCollectController result = new GenericObjectLayoutCollectController(tabIfAny);
 		ss.setCollectController(result);
 		result.setSearchStrategy(ss);
+		result.init();
 		return result;
 	}
 	
 	// AbstractDatasourceCollectController
 	
 	public ValuelistProviderCollectController newValuelistProviderCollectController(MainFrameTab tabIfAny) {
-		final ISearchStrategy<CollectableDataSource> ss = new ValueListProviderSearchStrategy(); 
+		final ISearchStrategy<CollectableDataSource<ValuelistProviderVO>> ss = new ValueListProviderSearchStrategy(); 
 		final ValuelistProviderCollectController result = new ValuelistProviderCollectController(tabIfAny);
 		ss.setCollectController(result);
 		result.setSearchStrategy(ss);
@@ -461,7 +469,7 @@ public class CollectControllerFactorySingleton {
 	}
 	
 	public DatasourceCollectController newDatasourceCollectController(MainFrameTab tabIfAny) {
-		final ISearchStrategy<CollectableDataSource> ss = new DatasourceSearchStrategy(); 
+		final ISearchStrategy<CollectableDataSource<DatasourceVO>> ss = new DatasourceSearchStrategy(); 
 		final DatasourceCollectController result = new DatasourceCollectController(tabIfAny);
 		ss.setCollectController(result);
 		result.setSearchStrategy(ss);
@@ -470,7 +478,7 @@ public class CollectControllerFactorySingleton {
 	}
 	
 	public DynamicEntityCollectController newDynamicEntityCollectController(MainFrameTab tabIfAny) {
-		final ISearchStrategy<CollectableDataSource> ss = new DynamicEntitySearchStrategy(); 
+		final ISearchStrategy<CollectableDataSource<DynamicEntityVO>> ss = new DynamicEntitySearchStrategy(); 
 		final DynamicEntityCollectController result = new DynamicEntityCollectController(tabIfAny);
 		ss.setCollectController(result);
 		result.setSearchStrategy(ss);
@@ -479,8 +487,17 @@ public class CollectControllerFactorySingleton {
 	}
 	
 	public RecordGrantCollectController newRecordGrantCollectController(MainFrameTab tabIfAny) {
-		final ISearchStrategy<CollectableDataSource> ss = new RecordGrantSearchStrategy(); 
+		final ISearchStrategy<CollectableDataSource<RecordGrantVO>> ss = new RecordGrantSearchStrategy(); 
 		final RecordGrantCollectController result = new RecordGrantCollectController(tabIfAny);
+		ss.setCollectController(result);
+		result.setSearchStrategy(ss);
+		result.init();
+		return result;
+	}
+	
+	public DynamicTasklistCollectController newDynamicTasklistCollectController(MainFrameTab tabIfAny) {
+		final ISearchStrategy<CollectableDataSource<DynamicTasklistVO>> ss = new DynamicTasklistSearchStrategy();
+		final DynamicTasklistCollectController result = new DynamicTasklistCollectController(tabIfAny);
 		ss.setCollectController(result);
 		result.setSearchStrategy(ss);
 		result.init();
