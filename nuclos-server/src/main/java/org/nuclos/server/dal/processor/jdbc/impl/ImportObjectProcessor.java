@@ -39,6 +39,7 @@ import org.nuclos.server.dblayer.statements.DbInsertStatement;
 import org.nuclos.server.dblayer.statements.DbTableStatement;
 import org.nuclos.server.dblayer.statements.DbUpdateStatement;
 import org.nuclos.server.fileimport.ImportStructure;
+import org.springframework.beans.factory.annotation.Configurable;
 
 /**
  * Implementation for importing objects from files into database.
@@ -48,6 +49,7 @@ import org.nuclos.server.fileimport.ImportStructure;
  * <br>Created by Novabit Informationssysteme GmbH
  * <br>Please visit <a href="http://www.novabit.de">www.novabit.de</a>
  */
+@Configurable
 public class ImportObjectProcessor extends EntityObjectProcessor {
 
 	private static final Logger LOG = Logger.getLogger(AbstractJdbcDalProcessor.class);

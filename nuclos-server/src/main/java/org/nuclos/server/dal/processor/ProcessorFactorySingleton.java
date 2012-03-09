@@ -43,6 +43,7 @@ import org.nuclos.common.dal.vo.PivotInfo;
 import org.nuclos.common.dal.vo.SystemFields;
 import org.nuclos.common.dblayer.JoinType;
 import org.nuclos.common2.exception.CommonFatalException;
+import org.nuclos.server.common.DatasourceServerUtils;
 import org.nuclos.server.common.MetaDataServerProvider;
 import org.nuclos.server.dal.DalUtils;
 import org.nuclos.server.dal.processor.jdbc.TableAliasSingleton;
@@ -54,6 +55,7 @@ import org.nuclos.server.dal.processor.jdbc.impl.EntityObjectProcessor;
 import org.nuclos.server.dal.processor.jdbc.impl.ImportObjectProcessor;
 import org.nuclos.server.dal.processor.jdbc.impl.WorkspaceProcessor;
 import org.nuclos.server.dal.processor.nuclet.JdbcEntityObjectProcessor;
+import org.nuclos.server.database.SpringDataBaseHelper;
 import org.nuclos.server.fileimport.ImportStructure;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -74,6 +76,10 @@ public class ProcessorFactorySingleton {
 	//
 	
 	private TableAliasSingleton tableAliasSingleton;
+	
+	private SpringDataBaseHelper dataBaseHelper;
+	
+	private DatasourceServerUtils datasourceServerUtils;
 
 	private ProcessorFactorySingleton() {
 		INSTANCE = this;
@@ -86,6 +92,16 @@ public class ProcessorFactorySingleton {
 	@Autowired
 	void setTableAliasSingleton(TableAliasSingleton tableAliasSingleton) {
 		this.tableAliasSingleton = tableAliasSingleton;
+	}
+	
+	@Autowired
+	void setSpringDataBaseHelper(SpringDataBaseHelper dataBaseHelper) {
+		this.dataBaseHelper = dataBaseHelper;
+	}
+	
+	@Autowired
+	void setDatasourceServerUtils(DatasourceServerUtils datasourceServerUtils) {
+		this.datasourceServerUtils = datasourceServerUtils;
 	}
 
 	private static int countFieldsForInitiatingFieldMap(Collection<EntityFieldMetaDataVO> colEfMeta) {
@@ -186,7 +202,14 @@ public class ProcessorFactorySingleton {
 	public JdbcEntityObjectProcessor newEntityObjectProcessor(EntityMetaDataVO eMeta, Collection<EntityFieldMetaDataVO> colEfMeta, boolean addSystemColumns) {
 		final Class<? extends IDalVO> type = EntityObjectVO.class;
 		final ProcessorConfiguration config = newProcessorConfiguration(type, eMeta, colEfMeta, addSystemColumns);
-		return new EntityObjectProcessor(config);
+		final EntityObjectProcessor result = new EntityObjectProcessor(config);
+		
+		// HACK: force spring, as @Autowired on EntityObjectProcessor does not work (tp)
+		result.setDataBaseHelper(dataBaseHelper);
+		result.setTableAliasSingleton(tableAliasSingleton);
+		result.setDatasourceServerUtils(datasourceServerUtils);
+		
+		return result;
 	}
 
 	private ProcessorConfiguration newProcessorConfiguration(Class<? extends IDalVO> type, EntityMetaDataVO eMeta, Collection<EntityFieldMetaDataVO> colEfMeta, boolean addSystemColumns) {

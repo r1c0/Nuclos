@@ -62,24 +62,24 @@ import org.springframework.beans.factory.annotation.Autowired;
 public abstract class AbstractJdbcDalProcessor<DalVO extends IDalVO> extends AbstractDalProcessor<DalVO> {
 
 	private static final Logger LOG = Logger.getLogger(AbstractJdbcDalProcessor.class);
-	
+
 	protected SpringDataBaseHelper dataBaseHelper;
 
-   // This must be clone and hence cannot be final.
-   protected List<IColumnToVOMapping<? extends Object>> allColumns;
-   private Set<IColumnToVOMapping<? extends Object>> allColumnsAsSet;
+	// This must be clone and hence cannot be final.
+	protected List<IColumnToVOMapping<? extends Object>> allColumns;
+	private Set<IColumnToVOMapping<? extends Object>> allColumnsAsSet;
 
-   public AbstractJdbcDalProcessor(Class<DalVO> type, List<IColumnToVOMapping<? extends Object>> allColumns) {
-      super(type);
-      this.allColumns = allColumns;
-      this.allColumnsAsSet = new HashSet<IColumnToVOMapping<? extends Object>>(allColumns);
-      checkColumns();
-   }
-   
-   @Autowired
-   void setDataBaseHelper(SpringDataBaseHelper dataBaseHelper) {
-	   this.dataBaseHelper = dataBaseHelper;
-   }
+	public AbstractJdbcDalProcessor(Class<DalVO> type, List<IColumnToVOMapping<? extends Object>> allColumns) {
+		super(type);
+		this.allColumns = allColumns;
+		this.allColumnsAsSet = new HashSet<IColumnToVOMapping<? extends Object>>(allColumns);
+		checkColumns();
+	}
+
+	@Autowired
+	public void setDataBaseHelper(SpringDataBaseHelper dataBaseHelper) {
+		this.dataBaseHelper = dataBaseHelper;
+	}
 
 	public Object clone() {
 		final AbstractJdbcDalProcessor<DalVO> clone;

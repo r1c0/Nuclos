@@ -2101,11 +2101,20 @@ public class RuleInterface extends CustomCodeInterface {
 	 * @return Has one of the given fields changed in the current object?
 	 */
 	public boolean hasFieldChanged(String sEntityName, String...sFieldName) {
+		final Integer id;
 		if (Modules.getInstance().isModuleEntity(sEntityName)) {
-			return this.hasFieldChanged(sEntityName, this.roccvo.getGenericObject().getId(), sFieldName);
+			id = roccvo.getGenericObject().getId();
+			if (id == null) {
+				return true;
+			}
+			return this.hasFieldChanged(sEntityName, id, sFieldName);
 		}
 		else {
-			return this.hasFieldChanged(sEntityName, this.roccvo.getMasterData().getIntId(), sFieldName);
+			id = roccvo.getMasterData().getIntId();
+			if (id == null) {
+				return true;
+			}
+			return this.hasFieldChanged(sEntityName, id, sFieldName);
 		}
 
 	}

@@ -17,7 +17,9 @@
 package org.nuclos.server.dal.processor.jdbc.impl;
 
 import org.nuclos.server.dal.processor.ProcessorConfiguration;
+import org.springframework.beans.factory.annotation.Configurable;
 
+@Configurable
 public class DynamicEntityObjectProcessor extends EntityObjectProcessor {
 
 	public DynamicEntityObjectProcessor(ProcessorConfiguration config) {

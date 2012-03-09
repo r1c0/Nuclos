@@ -112,8 +112,10 @@ public class NuclosDalProvider extends AbstractDalProvider {
 	}
 
 	public DynamicMetaDataProcessor getDynamicEntityMetaProcessor() {
-		if(dynMetaDataProcessor == null)
-			dynMetaDataProcessor = new DynamicMetaDataProcessor();
+		if (dynMetaDataProcessor == null) {
+			// dynMetaDataProcessor = new DynamicMetaDataProcessor();
+			throw new IllegalStateException("too early");
+		}
 	    return dynMetaDataProcessor;
     }
 	

@@ -5,7 +5,9 @@ import java.util.List;
 import org.nuclos.common.dal.vo.IDalWithFieldsVO;
 import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.server.dal.processor.IColumnToVOMapping;
+import org.springframework.beans.factory.annotation.Configurable;
 
+@Configurable
 public abstract class AbstractJdbcWithFieldsDalProcessor<DalVO extends IDalWithFieldsVO<?>> extends AbstractJdbcDalProcessor<DalVO> {
 
 	private int maxFieldCount = 20;

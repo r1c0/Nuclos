@@ -191,6 +191,8 @@ public class MasterDataFacadeHelper {
 	
 	private SpringDataBaseHelper dataBaseHelper;
 	
+	private NucletDalProvider nucletDalProvider;
+	
 	public MasterDataFacadeHelper() {
 	}
 	
@@ -207,6 +209,11 @@ public class MasterDataFacadeHelper {
 	@Autowired
 	void setDataBaseHelper(SpringDataBaseHelper dataBaseHelper) {
 		this.dataBaseHelper = dataBaseHelper;
+	}
+	
+	@Autowired
+	void setNucletDalProvider(NucletDalProvider nucletDalProvider) {
+		this.nucletDalProvider = nucletDalProvider;
 	}
 
 	void close() {
@@ -226,7 +233,7 @@ public class MasterDataFacadeHelper {
 			return mdVO;
 		}
 
-		JdbcEntityObjectProcessor eoProcessor = NucletDalProvider.getInstance().getEntityObjectProcessor(mdmetavo.getEntityName());
+		JdbcEntityObjectProcessor eoProcessor = nucletDalProvider.getEntityObjectProcessor(mdmetavo.getEntityName());
 		EntityObjectVO eoResult = eoProcessor.getByPrimaryKey(IdUtils.toLongId(oId));
 		try {
 			grantUtils.checkInternal(mdmetavo.getEntityName(), IdUtils.toLongId(oId));
@@ -527,7 +534,7 @@ public class MasterDataFacadeHelper {
 	            }
 	            break;
 			case DBOBJECT:
-				for (EntityObjectVO source : NucletDalProvider.getInstance().getEntityObjectProcessor(NuclosEntity.DBSOURCE).getBySearchExpression(
+				for (EntityObjectVO source : nucletDalProvider.getEntityObjectProcessor(NuclosEntity.DBSOURCE).getBySearchExpression(
 					appendRecordGrants(new CollectableSearchExpression(
 						SearchConditionUtils.newEOComparison(NuclosEntity.DBSOURCE.getEntityName(), "dbobject", ComparisonOperator.EQUAL, mdvo.getField("name"), MetaDataServerProvider.getInstance())
 						), sEntityName)
@@ -570,7 +577,7 @@ public class MasterDataFacadeHelper {
 			throw new CommonPermissionException("masterdata.error.change.own.user.name");
 		}
 
-		JdbcEntityObjectProcessor eoProcessor = NucletDalProvider.getInstance().getEntityObjectProcessor(mdmetavo.getEntityName());
+		JdbcEntityObjectProcessor eoProcessor = nucletDalProvider.getEntityObjectProcessor(mdmetavo.getEntityName());
 		EntityObjectVO eoVO = DalSupportForMD.getEntityObjectVO(sEntityName, mdvo);
 		DalUtils.updateVersionInformation(eoVO, sUserName);
 		eoVO.flagUpdate();
@@ -640,7 +647,7 @@ public class MasterDataFacadeHelper {
 		}
 		mdvoToCreate.setId(result);
 
-		JdbcEntityObjectProcessor eoProcessor = NucletDalProvider.getInstance().getEntityObjectProcessor(mdmetavo.getEntityName());
+		JdbcEntityObjectProcessor eoProcessor = nucletDalProvider.getEntityObjectProcessor(mdmetavo.getEntityName());
 		EntityObjectVO eoVO = DalSupportForMD.getEntityObjectVO(sEntityName, mdvoToCreate);
 		DalUtils.updateVersionInformation(eoVO, sUserName);
 		eoVO.flagNew();
@@ -993,7 +1000,7 @@ public class MasterDataFacadeHelper {
 	 * @postcondition result != null
 	 */
 	public TruncatableCollection<MasterDataVO> getGenericMasterData(String sEntityName, final CollectableSearchCondition cond, final boolean bAll) {
-		JdbcEntityObjectProcessor eoProcessor = NucletDalProvider.getInstance().getEntityObjectProcessor(sEntityName);
+		JdbcEntityObjectProcessor eoProcessor = nucletDalProvider.getEntityObjectProcessor(sEntityName);
 
 		CollectableSearchExpression clctexpr = new CollectableSearchExpression(cond);
 		List<EntityObjectVO> eoResult = eoProcessor.getBySearchExpression(appendRecordGrants(clctexpr, sEntityName), bAll ? null : MAXROWS + 1, false);
@@ -1159,7 +1166,7 @@ public class MasterDataFacadeHelper {
 		EntityMetaDataVO eMetaUsingThisView = null;
 
 		final String objectName = oldSource != null? oldSource.getField("dbobject", String.class) : newSource.getField("dbobject", String.class);
-		final List<EntityObjectVO> dbObject = NucletDalProvider.getInstance().getEntityObjectProcessor(NuclosEntity.DBOBJECT).getBySearchExpression(
+		final List<EntityObjectVO> dbObject = nucletDalProvider.getEntityObjectProcessor(NuclosEntity.DBOBJECT).getBySearchExpression(
 			new CollectableSearchExpression(SearchConditionUtils.newEOComparison(NuclosEntity.DBOBJECT.getEntityName(),
 				"name", ComparisonOperator.EQUAL, objectName, MetaDataServerProvider.getInstance())));
 		if (dbObject.isEmpty())
