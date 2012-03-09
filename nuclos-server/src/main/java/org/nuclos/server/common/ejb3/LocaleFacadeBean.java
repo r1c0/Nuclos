@@ -90,7 +90,7 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
  * <br>Created by Novabit Informationssysteme GmbH
  * <br>Please visit <a href="http://www.novabit.de">www.novabit.de</a>
  */
-@Transactional
+@Transactional(noRollbackFor= {Exception.class})
 public class LocaleFacadeBean implements LocaleFacadeRemote {
 
 	private static final Logger LOG = Logger.getLogger(LocaleFacadeBean.class);
@@ -163,7 +163,7 @@ public class LocaleFacadeBean implements LocaleFacadeRemote {
 		internalFlush();
 	}
 
-	@Transactional
+	@Transactional(noRollbackFor= {Exception.class})
 	private void internalFlush() {
 		try {
 			List<TransactionSynchronization> list = TransactionSynchronizationManager.getSynchronizations();

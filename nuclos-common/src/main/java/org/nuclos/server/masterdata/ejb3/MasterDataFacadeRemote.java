@@ -301,7 +301,7 @@ public interface MasterDataFacadeRemote {
 	 * take some time.
 	 * @param sOutputFileName the name of the csv file to which the results are written.
 	 */
-	@Transactional(propagation = Propagation.NOT_SUPPORTED)
+	@Transactional(propagation = Propagation.NOT_SUPPORTED, noRollbackFor= {Exception.class})
 	@RolesAllowed("UseManagementConsole")
 	void checkMasterDataValues(String sOutputFileName);
 

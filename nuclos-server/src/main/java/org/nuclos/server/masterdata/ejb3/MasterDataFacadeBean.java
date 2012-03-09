@@ -131,7 +131,7 @@ import org.springframework.transaction.annotation.Transactional;
  * Created by Novabit Informationssysteme GmbH <br>
  * Please visit <a href="http://www.novabit.de">www.novabit.de</a>
  */
-@Transactional
+@Transactional(noRollbackFor= {Exception.class})
 public class MasterDataFacadeBean extends NuclosFacadeBean implements MasterDataFacadeRemote {
 
 	private static final Logger LOG = Logger.getLogger(MasterDataFacadeBean.class);
@@ -1355,7 +1355,7 @@ public class MasterDataFacadeBean extends NuclosFacadeBean implements MasterData
 	 * @param sOutputFileName the name of the csv file to which the results are
 	 *           written.
 	 */
-	@Transactional(propagation = Propagation.NOT_SUPPORTED)
+	@Transactional(propagation = Propagation.NOT_SUPPORTED, noRollbackFor= {Exception.class})
 	@RolesAllowed("UseManagementConsole")
 	public void checkMasterDataValues(String sOutputFileName) {
 		final PrintStream ps;

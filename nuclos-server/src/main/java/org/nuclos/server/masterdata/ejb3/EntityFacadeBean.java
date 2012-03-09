@@ -74,9 +74,7 @@ import org.springframework.transaction.annotation.Transactional;
  * <br>Created by Novabit Informationssysteme GmbH
  * <br>Please visit <a href="http://www.novabit.de">www.novabit.de</a>
  */
-// @Stateless
-// @Remote(EntityFacadeRemote.class)
-@Transactional
+@Transactional(noRollbackFor= {Exception.class})
 public class EntityFacadeBean extends NuclosFacadeBean implements EntityFacadeRemote {
 
 	private static final Logger LOG = Logger.getLogger(EntityFacadeBean.class);

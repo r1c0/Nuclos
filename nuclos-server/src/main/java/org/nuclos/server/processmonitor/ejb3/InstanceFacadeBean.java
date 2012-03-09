@@ -73,10 +73,7 @@ import org.springframework.transaction.annotation.Transactional;
  * @version 00.01.000
  * @todo restrict
  */
-// @Stateless
-// @Local(InstanceFacadeLocal.class)
-// @Remote(InstanceFacadeRemote.class)
-@Transactional
+@Transactional(noRollbackFor= {Exception.class})
 public class InstanceFacadeBean extends NuclosFacadeBean implements InstanceFacadeRemote, InstanceConstants {
 
 	private GeneratorFacadeLocal generatorFacade;

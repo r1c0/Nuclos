@@ -123,7 +123,13 @@ public class NuclosRemoteInvocationExecutor implements RemoteInvocationExecutor 
 				inputContext.set(context);
 			}
 			Object result = invoke.invoke(param);
-			txManager.commit(tx);
+			if (tx.isRollbackOnly()) {
+				LOG.warn("Transaction is marked for rollback-only, rolling back now: " + invoke + "(" + param + "): " + result);
+				txManager.rollback(tx);
+			}
+			else {
+				txManager.commit(tx);
+			}
 			return result;
 		} 
 		catch (InvocationTargetException e) {

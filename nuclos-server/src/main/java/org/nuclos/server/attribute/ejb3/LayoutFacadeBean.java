@@ -73,7 +73,7 @@ import org.xml.sax.InputSource;
  * <br>Created by Novabit Informationssysteme GmbH
  * <br>Please visit <a href="http://www.novabit.de">www.novabit.de</a>
  */
-@Transactional
+@Transactional(noRollbackFor= {Exception.class})
 public class LayoutFacadeBean extends MasterDataFacadeBean implements LayoutFacadeRemote {
 	
 	private GenericObjectFacadeLocal genericObjectFacade;

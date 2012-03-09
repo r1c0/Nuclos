@@ -74,7 +74,7 @@ import org.springframework.transaction.annotation.Transactional;
  * <br>Created by Novabit Informationssysteme GmbH
  * <br>Please visit <a href="http://www.novabit.de">www.novabit.de</a>
  */
-@Transactional
+@Transactional(noRollbackFor= {Exception.class})
 public class JobControlFacadeBean extends MasterDataFacadeBean implements JobControlFacadeRemote {
 
 	private static final Logger LOG = Logger.getLogger(JobControlFacadeBean.class);
@@ -221,7 +221,7 @@ public class JobControlFacadeBean extends MasterDataFacadeBean implements JobCon
 	 * Execute this method in a separate transaction (TransactionAttributeType.REQUIRES_NEW)
 	 * to avoid transaction isolation locks that last for the complete job execution.
 	 */
-	@Transactional(propagation=Propagation.REQUIRES_NEW)
+	@Transactional(propagation=Propagation.REQUIRES_NEW, noRollbackFor= {Exception.class})
     public Pair<JobVO, MasterDataVO> prepare(Object oId) {
 		try {
 			//get the JobVO
@@ -354,7 +354,7 @@ public class JobControlFacadeBean extends MasterDataFacadeBean implements JobCon
 	 * @param oId - id of job to execute
 	 */
 	@RolesAllowed("Login")
-	@Transactional(propagation=Propagation.NOT_SUPPORTED)
+	@Transactional(propagation=Propagation.NOT_SUPPORTED, noRollbackFor= {Exception.class})
 	public void startJobImmediately(Object oId) throws CommonBusinessException {
 		checkWriteAllowed(NuclosEntity.JOBCONTROLLER);
 		try {
@@ -372,7 +372,7 @@ public class JobControlFacadeBean extends MasterDataFacadeBean implements JobCon
 	 * @throws CommonCreateException
 	 * @throws NuclosBusinessRuleException
 	 */
-	@Transactional(propagation=Propagation.REQUIRES_NEW)
+	@Transactional(propagation=Propagation.REQUIRES_NEW, noRollbackFor= {Exception.class})
 	public void writeToJobRunMessages(Integer iSessionId, String sLevel, String sMessage, String sRuleName) {
 		try {
 			Map<String, Object> mpFields = new HashMap<String, Object>();
@@ -460,7 +460,7 @@ public class JobControlFacadeBean extends MasterDataFacadeBean implements JobCon
 		});
 	}
 
-	@Transactional(propagation=Propagation.REQUIRES_NEW)
+	@Transactional(propagation=Propagation.REQUIRES_NEW, noRollbackFor= {Exception.class})
     public void setJobExecutionResult(Object oResult, Date dFireTime, Date dNextFireTime, JobVO jobVO, MasterDataVO jobRun) {
 	    try {
 	    	if (jobRun != null) {
@@ -504,7 +504,7 @@ public class JobControlFacadeBean extends MasterDataFacadeBean implements JobCon
 	    }
     }
 
-	@Transactional(propagation=Propagation.REQUIRES_NEW)
+	@Transactional(propagation=Propagation.REQUIRES_NEW, noRollbackFor= {Exception.class})
     public void setJobExecutionResultError(Object oId, Date dFireTime, Date sNextFireTime, Integer iSessionId, String sErrorMessage) {
 	    try {
 	    	JobVO jobVO = makeJobVO(oId);

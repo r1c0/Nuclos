@@ -111,7 +111,7 @@ import org.springframework.transaction.annotation.Transactional;
  * Created by Novabit Informationssysteme GmbH <br>
  * Please visit <a href="http://www.novabit.de">www.novabit.de</a>
  */
-@Transactional
+@Transactional(noRollbackFor= {Exception.class})
 public class GeneratorFacadeBean extends NuclosFacadeBean implements GeneratorFacadeRemote {
 
 	private static final Integer iAttributeIdOrigin = NuclosEOField.ORIGIN.getMetaData().getId().intValue();

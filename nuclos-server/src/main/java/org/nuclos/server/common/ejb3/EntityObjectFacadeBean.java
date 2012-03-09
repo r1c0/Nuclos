@@ -68,7 +68,7 @@ import org.springframework.transaction.annotation.Transactional;
  * @author Thomas Pasch
  * @since Nuclos 3.1.01
  */
-@Transactional
+@Transactional(noRollbackFor= {Exception.class})
 @RolesAllowed("Login")
 public class EntityObjectFacadeBean extends NuclosFacadeBean implements EntityObjectFacadeRemote {
 

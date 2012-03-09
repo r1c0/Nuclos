@@ -84,7 +84,7 @@ import org.springframework.transaction.annotation.Transactional;
  *
  * @todo restrict
  */
-@Transactional
+@Transactional(noRollbackFor= {Exception.class})
 public class ProcessMonitorFacadeBean extends NuclosFacadeBean implements ProcessMonitorFacadeRemote {
 
 	private MasterDataFacadeLocal masterDataFacade;

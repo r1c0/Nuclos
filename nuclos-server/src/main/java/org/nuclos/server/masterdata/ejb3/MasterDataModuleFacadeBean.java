@@ -41,10 +41,7 @@ import org.springframework.transaction.annotation.Transactional;
 * <br>Created by Novabit Informationssysteme GmbH
 * <br>Please visit <a href="http://www.novabit.de">www.novabit.de</a>
 */
-// @Stateless
-// @Local(MasterDataModuleFacadeLocal.class)
-// @Remote(MasterDataModuleFacadeRemote.class)
-@Transactional
+@Transactional(noRollbackFor= {Exception.class})
 public class MasterDataModuleFacadeBean extends NuclosFacadeBean implements MasterDataModuleFacadeRemote {
 
 	private final static String MODULE_TABLE = "t_md_entity";

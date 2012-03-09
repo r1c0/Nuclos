@@ -123,7 +123,7 @@ import org.springframework.transaction.annotation.Transactional;
  * <br>Please visit <a href="http://www.novabit.de">www.novabit.de</a>
  * @todo restrict
  */
-@Transactional
+@Transactional(noRollbackFor= {Exception.class})
 @RolesAllowed("Login")
 public class StateFacadeBean extends NuclosFacadeBean implements StateFacadeRemote {
 	

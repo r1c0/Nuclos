@@ -52,7 +52,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-@Transactional(propagation=Propagation.REQUIRES_NEW)
+@Transactional(propagation=Propagation.REQUIRES_NEW, noRollbackFor= {Exception.class})
 public class NuclosUserDetailsService implements org.nuclos.server.security.UserDetailsService {
 
 	private static final Logger log = Logger.getLogger(MasterDataFacadeHelper.class);

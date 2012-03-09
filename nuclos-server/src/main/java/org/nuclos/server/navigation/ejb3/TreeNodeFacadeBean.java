@@ -119,7 +119,7 @@ import org.springframework.transaction.annotation.Transactional;
  *
  * @todo restrict
 */
-@Transactional
+@Transactional(noRollbackFor= {Exception.class})
 @RolesAllowed("Login")
 public class TreeNodeFacadeBean extends NuclosFacadeBean implements TreeNodeFacadeRemote {
 

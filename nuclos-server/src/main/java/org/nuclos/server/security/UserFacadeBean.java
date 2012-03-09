@@ -57,7 +57,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-@Transactional(propagation=Propagation.REQUIRED)
+@Transactional(propagation=Propagation.REQUIRED, noRollbackFor= {Exception.class})
 @RolesAllowed("Login")
 public class UserFacadeBean extends NuclosFacadeBean implements UserFacadeRemote {
 	
