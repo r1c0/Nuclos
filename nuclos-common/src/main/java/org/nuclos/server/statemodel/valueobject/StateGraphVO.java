@@ -19,11 +19,13 @@ package org.nuclos.server.statemodel.valueobject;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.nuclos.common.collection.BinaryPredicate;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Predicate;
 import org.nuclos.common2.StringUtils;
@@ -244,28 +246,59 @@ public class StateGraphVO implements Serializable {
 	 * @throws CommonValidationException if the given transition is duplicated.
 	 */
 	private void checkDefaultPathNotStartsFromInitialTransition(StateTransitionVO statetransitionvo) throws CommonValidationException {
-		List<StateTransitionVO> forbiddenTransitions = getDefaultPathNotStartsFromInitialTransition(statetransitionvo);
-		if(forbiddenTransitions != null && !forbiddenTransitions.isEmpty()){
+		if (!getDefaultPathNotStartsFromInitialTransition(statetransitionvo)) {
 			throw new CommonValidationException("statemachine.error.validation.graph.defaulttransition");
 		}
 	}
 
-	private List<StateTransitionVO> getDefaultPathNotStartsFromInitialTransition(StateTransitionVO statetransitionvo) {
-		List<StateTransitionVO> forbiddenTransitions = new ArrayList<StateTransitionVO>();
+	private boolean getDefaultPathNotStartsFromInitialTransition(final StateTransitionVO statetransitionvo) {
+		List<StateTransitionVO> checkedTransitions = new ArrayList<StateTransitionVO>();
+		if (!statetransitionvo.isDefault() || statetransitionvo.isRemoved())
+			return true;
+		
+		// find start transition - there has to be one because of the checks before.
+		List<StateTransitionVO> transitionVOs = new LinkedList<StateTransitionVO>(getTransitions());
+		StateTransitionVO startTransition = CollectionUtils.findFirst(transitionVOs, new Predicate<StateTransitionVO>() {
+			@Override public boolean evaluate(StateTransitionVO t) { return !t.isRemoved() && t.getStateSource() == null && t.isAutomatic() == true; }
+		});
+		
+		if (statetransitionvo.getStateSource().equals(startTransition.getStateTarget()))
+			return true;
+		
 		for (StateTransitionVO statetransitionvo2 : this.getTransitions()) {
 			if (!statetransitionvo2.isRemoved()) {
 				if (!statetransitionvo.getClientId().equals(statetransitionvo2.getClientId())) {
-					if ((statetransitionvo.getStateSource() != null) && (!statetransitionvo.isDefault())
-							&& (statetransitionvo2.getStateSource() != null)
-							&& (statetransitionvo2.getStateTarget().equals(statetransitionvo.getStateSource()))
-							&& (statetransitionvo2.isDefault()))
+					if ((statetransitionvo.getStateSource() != null)
+							&& (statetransitionvo2.getStateTarget() != null)
+							&& (statetransitionvo2.getStateTarget().equals(statetransitionvo.getStateSource())))
 					{
-						forbiddenTransitions.add(statetransitionvo2);
+						checkedTransitions.add(statetransitionvo2);
 					}
 				}
 			}
 		}
-		return forbiddenTransitions;
+		if (checkedTransitions.isEmpty())
+			return true;
+		for (StateVO state : getStates()) {
+			if (state.getId().equals(statetransitionvo.getStateSource())) {
+				System.err.println("source statetransitionvo " + state.getNumeral());
+				break;
+			}
+		}
+		
+		for (Iterator iterator = checkedTransitions.iterator(); iterator.hasNext();) {
+			StateTransitionVO checkedTransition = (StateTransitionVO) iterator.next();
+			if (checkedTransition.isDefault()) {
+				for (StateVO state : getStates()) {
+					if (state.getId().equals(statetransitionvo.getStateSource())) {
+						System.err.println("source checked " + state.getNumeral());
+						break;
+					}
+				}
+				return true;
+			}
+		}
+		return false;
 	}
 
 	/**
