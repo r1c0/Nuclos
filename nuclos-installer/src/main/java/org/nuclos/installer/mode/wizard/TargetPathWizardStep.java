@@ -70,15 +70,33 @@ public class TargetPathWizardStep extends AbstractWizardStep implements ActionLi
 
 	@Override
 	public void prepare() {
-		File nuclosHome = new File(ConfigContext.getCurrentConfig().getProperty(NUCLOS_HOME));
-		final File parent = nuclosHome.getParentFile();
-		if (!parent.canWrite() || !parent.isDirectory()) {
+		File nuclosHome;
+		String nh = ConfigContext.getCurrentConfig().getProperty(NUCLOS_HOME);
+		if (nh == null) {
 			File f = new File(System.getProperty("user.home"));
 			if (f.canWrite() && f.isDirectory()) {
 				nuclosHome = new File(f, "nuclos");
 			}
+			else {
+				nuclosHome = null;
+			}
 		}
-		txtTargetPath.setText(nuclosHome.toString());
+		else {
+			nuclosHome = new File(nh);
+			final File parent = nuclosHome.getParentFile();
+			if (!parent.canWrite() || !parent.isDirectory()) {
+				File f = new File(System.getProperty("user.home"));
+				if (f.canWrite() && f.isDirectory()) {
+					nuclosHome = new File(f, "nuclos");
+				}
+			}
+		}
+		if (nuclosHome != null) {
+			txtTargetPath.setText(nuclosHome.toString());
+		}
+		else {
+			txtTargetPath.setText("");
+		}
 	}
 
 	@Override
