@@ -27,7 +27,9 @@ import org.nuclos.server.dal.processor.IColumnToVOMapping;
 import org.nuclos.server.dal.processor.jdbc.AbstractJdbcDalProcessor;
 import org.nuclos.server.dal.processor.nuclet.IEOGenericObjectProcessor;
 import org.nuclos.server.dblayer.DbException;
+import org.springframework.beans.factory.annotation.Configurable;
 
+@Configurable
 public class EOGenericObjectProcessor extends AbstractJdbcDalProcessor<EOGenericObjectVO>
 	implements IEOGenericObjectProcessor {
 	

@@ -27,9 +27,11 @@ import org.nuclos.server.dal.processor.IColumnToVOMapping;
 import org.nuclos.server.dal.processor.jdbc.AbstractJdbcDalProcessor;
 import org.nuclos.server.dal.processor.nuclet.JdbcEntityMetaDataProcessor;
 import org.nuclos.server.dblayer.DbException;
+import org.springframework.beans.factory.annotation.Configurable;
 
+@Configurable
 public class EntityMetaDataProcessor extends AbstractJdbcDalProcessor<EntityMetaDataVO> 
-implements JdbcEntityMetaDataProcessor {
+	implements JdbcEntityMetaDataProcessor {
 	
 	private final IColumnToVOMapping<Long> idColumn;
 	

@@ -35,7 +35,9 @@ public class DynamicFieldMetaDataProcessor implements IDalReadSpecification<Enti
 
 	@Override
     public List<EntityFieldMetaDataVO> getAll() {
-		return new ArrayList<EntityFieldMetaDataVO>(DynamicMetaDataProcessor.getDynamicFieldsForView(entity.getDbEntity(), entity.getId()).values());
+		return new ArrayList<EntityFieldMetaDataVO>(
+				DynamicMetaDataProcessor.getInstance().getDynamicFieldsForView(
+						entity.getDbEntity(), entity.getId()).values());
     }
 
 	@Override

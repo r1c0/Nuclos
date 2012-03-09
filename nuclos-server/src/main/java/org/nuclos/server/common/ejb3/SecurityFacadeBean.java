@@ -26,6 +26,7 @@ import javax.annotation.PostConstruct;
 import javax.annotation.security.RolesAllowed;
 import javax.security.auth.login.LoginException;
 
+import org.apache.log4j.Logger;
 import org.nuclos.common.ApplicationProperties;
 import org.nuclos.common.ParameterProvider;
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
@@ -41,6 +42,7 @@ import org.nuclos.server.common.MetaDataServerProvider;
 import org.nuclos.server.common.ModulePermissions;
 import org.nuclos.server.common.SecurityCache;
 import org.nuclos.server.common.ServerParameterProvider;
+import org.nuclos.server.database.SpringDataBaseHelper;
 import org.nuclos.server.dblayer.DbInvalidResultSizeException;
 import org.nuclos.server.dblayer.DbStatementUtils;
 import org.nuclos.server.dblayer.DbTuple;
@@ -49,6 +51,7 @@ import org.nuclos.server.dblayer.query.DbFrom;
 import org.nuclos.server.dblayer.query.DbQuery;
 import org.nuclos.server.dblayer.query.DbQueryBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -58,21 +61,34 @@ import org.springframework.transaction.annotation.Transactional;
  * Please visit <a href="http://www.novabit.de">www.novabit.de</a>
 */
 @Transactional(noRollbackFor= {Exception.class})
-public class SecurityFacadeBean extends NuclosFacadeBean implements SecurityFacadeRemote {
+public class SecurityFacadeBean implements SecurityFacadeRemote {
+	
+	private static final Logger LOG = Logger.getLogger(SecurityFacadeBean.class);
 	
 	private ServerParameterProvider serverParameterProvider;
+	
+	private SpringDataBaseHelper dataBaseHelper;
 	
 	public SecurityFacadeBean() {
 	}
 
 	@PostConstruct
 	public void postConstruct() {
-      this.info("Authentication successful.");
+		LOG.info("Authentication successful.");
 	}
 	
 	@Autowired
 	void setServerParameterProvider(ServerParameterProvider serverParameterProvider) {
 		this.serverParameterProvider = serverParameterProvider;
+	}
+	
+	@Autowired
+	void setDataBaseHelper(SpringDataBaseHelper dataBaseHelper) {
+		this.dataBaseHelper = dataBaseHelper;
+	}
+
+	private final String getCurrentUserName() {
+		return SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
 	}
 
 	/**
@@ -82,7 +98,7 @@ public class SecurityFacadeBean extends NuclosFacadeBean implements SecurityFaca
     @RolesAllowed("Login")
 	public Integer login() {
 		final Integer result = writeLoginProtocol(this.getCurrentUserName());
-		this.info("User " + this.getCurrentUserName() + " successfully logged in.");
+		LOG.info("User " + this.getCurrentUserName() + " successfully logged in.");
 		return result;
 	}
 
@@ -93,7 +109,7 @@ public class SecurityFacadeBean extends NuclosFacadeBean implements SecurityFaca
     @RolesAllowed("Login")
 	public void logout(Integer iSessionId) throws LoginException {
 		this.writeLogoutProtocol(iSessionId);
-		this.info("User " + this.getCurrentUserName() + " logged out.");
+		LOG.info("User " + this.getCurrentUserName() + " logged out.");
 	}
 
 	/**

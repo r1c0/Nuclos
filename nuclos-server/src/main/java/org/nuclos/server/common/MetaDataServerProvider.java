@@ -327,20 +327,24 @@ public class MetaDataServerProvider extends AbstractProvider implements MetaData
 
 		private Map<String, EntityMetaDataVO> buildMapMetaDataByEntity() {
 			Map<String, EntityMetaDataVO> result = new HashMap<String, EntityMetaDataVO>();
-			/**
+			
+			/*
 			 * Nuclet Entities
 			 */
 			for (EntityMetaDataVO eMeta : nucletDalProvider.getEntityMetaDataProcessor().getAll()){
 				result.put(eMeta.getEntity(), eMeta);
 			}
 
-			/**
+			/*
 			 * Nuclos Entities
 			 */
 			for (EntityMetaDataVO eMeta : nuclosDalProvider.getEntityMetaDataProcessor().getAll()){
 				result.put(eMeta.getEntity(), eMeta);
 			}
 
+			/*
+			 * Dynamic Entities
+			 */
 			for(EntityMetaDataVO meta : dynamicMetaDataProcessor.getDynamicEntities())
 				result.put(meta.getEntity(), meta);
 
@@ -381,7 +385,7 @@ public class MetaDataServerProvider extends AbstractProvider implements MetaData
 		private Map<String, Map<String, EntityFieldMetaDataVO>> buildMapFieldMetaData(Map<String, EntityMetaDataVO> mapMetaDataByEntity) {
 			Map<String, Map<String, EntityFieldMetaDataVO>> result = new HashMap<String, Map<String,EntityFieldMetaDataVO>>();
 
-			/**
+			/*
 			 * Nuclet Entities
 			 */
 			for (EntityMetaDataVO eMeta : nucletDalProvider.getEntityMetaDataProcessor().getAll()){
@@ -394,7 +398,7 @@ public class MetaDataServerProvider extends AbstractProvider implements MetaData
 				}
 			}
 
-			/**
+			/*
 			 * Nuclos Entities
 			 */
 			for (EntityMetaDataVO eMeta : nuclosDalProvider.getEntityMetaDataProcessor().getAll()){
@@ -405,14 +409,11 @@ public class MetaDataServerProvider extends AbstractProvider implements MetaData
 					result.get(eMeta.getEntity()).put(efMeta.getField(), efMeta);
 				}
 			}
-
-			for(String dyna : DynamicMetaDataProcessor.getDynamicEntityViews()) {
-				String entity = DynamicMetaDataProcessor.getEntityNameFromDynamicViewName(dyna);
-				Long entityId = mapMetaDataByEntity.containsKey(entity)?mapMetaDataByEntity.get(entity).getId():null;
-				if (entityId != null) {
-					result.put(entity, DynamicMetaDataProcessor.getDynamicFieldsForView(dyna, entityId));
-				}
-			}
+			
+			/*
+			 * Dynamic Entities
+			 */
+			DynamicMetaDataProcessor.getInstance().addDynamicEntities(result, mapMetaDataByEntity);
 
 			return result;
 		}

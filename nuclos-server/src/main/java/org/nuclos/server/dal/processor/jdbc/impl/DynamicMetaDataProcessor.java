@@ -39,15 +39,39 @@ import org.nuclos.server.database.SpringDataBaseHelper;
 import org.nuclos.server.dblayer.structure.DbColumn;
 import org.nuclos.server.dblayer.structure.DbTable;
 import org.nuclos.server.dblayer.structure.DbTableType;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.stereotype.Component;
 
+@Component
+@Lazy
 public class DynamicMetaDataProcessor implements IDalReadSpecification<EntityMetaDataVO> {
 
 	public static final String DYNAMIC_ENTITY_VIEW_PREFIX = "V_DE_";//if you change this value, change the exception text <datasource.validation.dynamic.entity.name.1> too.
 	public static final String DYNAMIC_ENTITY_PREFIX = "dyn_";
 
 	private static final Logger LOG = Logger.getLogger(DynamicMetaDataProcessor.class);
+	
+	private static DynamicMetaDataProcessor INSTANCE;
+	
+	//
+	
+	private SpringDataBaseHelper dataBaseHelper;
 
-	public DynamicMetaDataProcessor() {
+	DynamicMetaDataProcessor() {
+		INSTANCE = this;
+	}
+	
+	public static DynamicMetaDataProcessor getInstance() {
+		if (INSTANCE.dataBaseHelper == null) {
+			throw new IllegalStateException("too early");
+		}
+		return INSTANCE;
+	}
+	
+	@Autowired
+	final void setSpringDataBaseHelper(SpringDataBaseHelper dataBaseHelper) {
+		this.dataBaseHelper = dataBaseHelper;
 	}
 
 	@Override
@@ -78,8 +102,8 @@ public class DynamicMetaDataProcessor implements IDalReadSpecification<EntityMet
 		return CollectionUtils.transform(getAll(), DalTransformations.getId());
 	}
 
-	public static Collection<String> getDynamicEntityViews() {
-		return CollectionUtils.applyFilter(SpringDataBaseHelper.getInstance().getDbAccess().getTableNames(DbTableType.VIEW), new Predicate<String>() {
+	private Collection<String> getDynamicEntityViews() {
+		return CollectionUtils.applyFilter(dataBaseHelper.getDbAccess().getTableNames(DbTableType.VIEW), new Predicate<String>() {
 			@Override
 			public boolean evaluate(String t) {
 				return t.toUpperCase().startsWith(DYNAMIC_ENTITY_VIEW_PREFIX);
@@ -87,7 +111,7 @@ public class DynamicMetaDataProcessor implements IDalReadSpecification<EntityMet
 		});
 	}
 
-	public static List<EntityMetaDataVO> getDynamicEntities() {
+	public List<EntityMetaDataVO> getDynamicEntities() {
 		ArrayList<EntityMetaDataVO> res = new ArrayList<EntityMetaDataVO>();
 		long id = -1000l;
 		for(String viewName : getDynamicEntityViews()) {
@@ -113,18 +137,28 @@ public class DynamicMetaDataProcessor implements IDalReadSpecification<EntityMet
 		return res;
 	}
 
-	public static String getEntityNameFromDynamicViewName(String viewName) {
+	private String getEntityNameFromDynamicViewName(String viewName) {
         return DYNAMIC_ENTITY_PREFIX + viewName.substring(DYNAMIC_ENTITY_VIEW_PREFIX.length()).toLowerCase();
     }
 
-	public static final Set<String> stExcludedFieldNamesForDynamicGeneration = new HashSet<String>(
+	private static final Set<String> stExcludedFieldNamesForDynamicGeneration = new HashSet<String>(
 		Arrays.asList("INTID", "DATCREATED", "STRCREATED", "DATCHANGED", "STRCHANGED", "INTVERSION", "BLNDELETED")
 	);
+	
+	public void addDynamicEntities(Map<String, Map<String, EntityFieldMetaDataVO>> result, Map<String, EntityMetaDataVO> mapMetaDataByEntity) {
+		for(String dyna : getDynamicEntityViews()) {
+			String entity = getEntityNameFromDynamicViewName(dyna);
+			Long entityId = mapMetaDataByEntity.containsKey(entity) ? mapMetaDataByEntity.get(entity).getId():null;
+			if (entityId != null) {
+				result.put(entity, getDynamicFieldsForView(dyna, entityId));
+			}
+		}
+	}
 
-	public static Map<String, EntityFieldMetaDataVO> getDynamicFieldsForView(String viewName, long entityId) {
+	public Map<String, EntityFieldMetaDataVO> getDynamicFieldsForView(String viewName, long entityId) {
 		Map<String, EntityFieldMetaDataVO> res = new HashMap<String, EntityFieldMetaDataVO>();
 		String entityName = getEntityNameFromDynamicViewName(viewName);
-		DbTable tableMetaData = SpringDataBaseHelper.getInstance().getDbAccess().getTableMetaData(viewName);
+		DbTable tableMetaData = dataBaseHelper.getDbAccess().getTableMetaData(viewName);
 
 		long columnId = entityId - 1;
 		for(DbColumn column : tableMetaData.getTableArtifacts(DbColumn.class)) {
@@ -138,7 +172,7 @@ public class DynamicMetaDataProcessor implements IDalReadSpecification<EntityMet
 		return res;
 	}
 
-	public static EntityFieldMetaDataVO newDynamicFieldVO(DbColumn dbColumn, long columnId, String entity, long entityId) {
+	private EntityFieldMetaDataVO newDynamicFieldVO(DbColumn dbColumn, long columnId, String entity, long entityId) {
 		EntityFieldMetaDataVO result = DalUtils.getFieldMeta(dbColumn);
 		result.setId(columnId);
 		result.setEntityId(entityId);

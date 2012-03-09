@@ -286,6 +286,9 @@ public class RuleInterfaceFacadeBean extends NuclosFacadeBean {
 		DynamicAttributeVO result;
 
 		Integer iAttributeId = null;
+		if (iGenericObjectId == null) {
+			return new DynamicAttributeVO(iAttributeId, null, null);
+		}
 		try {
 			iAttributeId = attributeCache.getAttribute(this.getModuleId(iGenericObjectId), sAttribute).getId();
 			result = getGenericObjectFacade().findAttributeByGoAndAttributeId(iGenericObjectId, iAttributeId);

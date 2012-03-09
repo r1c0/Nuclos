@@ -267,7 +267,7 @@
 
 	<bean id="masterdataMetaProvider" class="org.nuclos.server.common.MasterDataMetaCache"/>
 
-	<bean id="moduleProvider" class="org.nuclos.server.genericobject.Modules"/>
+	<bean id="moduleProvider" class="org.nuclos.server.genericobject.Modules" />
 
 	<bean id="metaDataProvider" class="org.nuclos.server.common.MetaDataServerProvider"/>
 

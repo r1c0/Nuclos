@@ -76,6 +76,10 @@ import org.nuclos.server.genericobject.searchcondition.CollectableSearchExpressi
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
+/** 
+ * TODO: @Autowired (and @Configurable ?) do not work here - but why?
+ * 		 Instead we hard-wire in ProcessorFactorySingleton at present. (tp)
+ */
 @Configurable
 public class EntityObjectProcessor extends AbstractJdbcWithFieldsDalProcessor<EntityObjectVO>
 	implements JdbcEntityObjectProcessor {
@@ -156,12 +160,12 @@ public class EntityObjectProcessor extends AbstractJdbcWithFieldsDalProcessor<En
 	}
 	
 	@Autowired
-	void setDatasourceServerUtils(DatasourceServerUtils datasourceServerUtils) {
+	public void setDatasourceServerUtils(DatasourceServerUtils datasourceServerUtils) {
 		this.datasourceServerUtils = datasourceServerUtils;
 	}
 	
 	@Autowired
-	void setTableAliasSingleton(TableAliasSingleton tableAliasSingleton) {
+	public void setTableAliasSingleton(TableAliasSingleton tableAliasSingleton) {
 		this.tableAliasSingleton = tableAliasSingleton;
 	}
 
