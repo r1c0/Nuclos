@@ -562,10 +562,17 @@ public class NuclosEntityNameStep extends NuclosEntityAbstractStep {
 					}
 					else {
 						String sEntity = (String)voRole.getField("entity");
-						Long lEntity = MetaDataClientProvider.getInstance().getEntity(sEntity).getId();
-						if(lEntity.equals(voEntity.getId()) && role.equals(voRole.getField("role"))) {
-							voAdd = voRole;
-							break;
+						try {
+							Long lEntity = MetaDataClientProvider.getInstance().getEntity(sEntity).getId();
+							if(lEntity.equals(voEntity.getId()) && role.equals(voRole.getField("role"))) {
+								voAdd = voRole;
+								break;
+							}
+						}
+						catch (CommonFatalException ex) {
+							// entity in colRoleMasterdata does not exist anymore
+							LOG.warn(ex.getMessage());
+							continue;
 						}
 					}
 				}
