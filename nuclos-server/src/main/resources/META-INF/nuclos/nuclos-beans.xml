@@ -124,12 +124,13 @@
 	<!-- JDBC start -->
 
 	<bean id="nuclosDataSource" class="org.nuclos.server.database.NuclosBasicDatasource" destroy-method="close">
-        <property name="driverClassName" value="${driverClassName}"/>
-        <property name="url" value="${jdbcUrl}"/>
-        <property name="username" value="${username}"/>
-        <property name="password" value="${password}"/>
-        <property name="accessToUnderlyingConnectionAllowed" value="true"/>
-    </bean>
+		<qualifier value="nuclos" />
+		<property name="driverClassName" value="${driverClassName}" />
+		<property name="url" value="${jdbcUrl}" />
+		<property name="username" value="${username}" />
+		<property name="password" value="${password}" />
+		<property name="accessToUnderlyingConnectionAllowed" value="true" />
+	</bean>
 
     <!-- JDBC end -->
 

@@ -146,6 +146,7 @@ import org.nuclos.server.ruleengine.NuclosCompileException;
 import org.nuclos.server.ruleengine.NuclosCompileException.ErrorMessage;
 import org.nuclos.server.statemodel.valueobject.StateModelUsagesCache;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
@@ -300,6 +301,7 @@ public class TransferFacadeBean extends NuclosFacadeBean implements TransferFaca
 	}
 	
 	@Autowired
+	@Qualifier("nuclos")
 	void setDataSource(DataSource dataSource) {
 		this.dataSource = dataSource;
 	}
