@@ -5586,20 +5586,21 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	protected void newCollectableWithDependantSearchValues() throws NuclosBusinessException {
 		Collection<SearchConditionSubFormController> collscsfc = getSubFormControllersInSearch();
 		Collection<DetailsSubFormController<CollectableEntityObject>> colldsfc = getSubFormControllersInDetails();
-
 		// iterate over each search subform
 		for (SearchConditionSubFormController scsfc : collscsfc)
 			// handel only subforms of the first hierarchie
 			if (scsfc.getSubForm().getParentSubForm() == null)
 				// iterate over each detail subform
-				for (DetailsSubFormController<CollectableEntityObject> dsfc : colldsfc)
+				for (DetailsSubFormController<CollectableEntityObject> dsfc : colldsfc) {
 					if(dsfc.getEntityAndForeignKeyFieldName().getEntityName().equals(scsfc.getEntityAndForeignKeyFieldName().getEntityName()))
 						if (dsfc.getSubForm().isEnabled()) {
 							SubForm.SubFormTableModel searchTableModel = scsfc.getSearchConditionTableModel();
 							CollectableTableModel<CollectableEntityObject> detailsTableModel = dsfc.getCollectableTableModel();
+							Collection<CollectableMasterData> newCollectables = new ArrayList<CollectableMasterData>();
 							// iterate over each row found in the search subform
 							for (int iSearchRow = 0; iSearchRow < searchTableModel.getRowCount(); iSearchRow++) {
 								CollectableMasterData clctmd = dsfc.insertNewRow();
+								newCollectables.add(clctmd);
 								// iterate over each column found in the search subform
 								for (int iSearchColumn = 0; iSearchColumn < searchTableModel.getColumnCount(); iSearchColumn++)
 									// iterate over each coresponding column found in the detail subform
@@ -5630,19 +5631,26 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 															oSearchValue = ((CollectableLikeCondition)oClctSearchCondition).getLikeComparand();
 
 														if (oSearchValue != null) {
-															clctmd.getMasterDataCVO().setField(sFieldName, oSearchValue);
-
 															if (oSearchValueId != null) {
 																clctmd.setField(sFieldName, new CollectableValueIdField(oSearchValueId, oSearchValue));
-																clctmd.getMasterDataCVO().setField(sFieldName+"Id", oSearchValueId);
+																if (clctmd.getMasterDataCVO() != null)
+																	clctmd.getMasterDataCVO().setField(sFieldName+"Id", oSearchValueId);
+															} else {
+																clctmd.setField(sFieldName, new CollectableValueField(oSearchValue));
+																if (clctmd.getMasterDataCVO() != null)
+																	clctmd.getMasterDataCVO().setField(sFieldName, oSearchValue);
 															}
-
+															newCollectables.remove(clctmd);
 															detailsChanged(dsfc.getSubForm());
 														}
 													}
 												}
 											}
 										}
+									}
+								for (CollectableMasterData clctmd : newCollectables) {
+									dsfc.getCollectableTableModel().remove(clctmd);
+								}
 							}
 						}
 	}
