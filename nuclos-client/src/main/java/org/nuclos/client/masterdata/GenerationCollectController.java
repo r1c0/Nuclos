@@ -108,7 +108,7 @@ public class GenerationCollectController extends MasterDataCollectController {
 		super.setupEditPanelForDetailsTab();
 
 		GenerationRulesPanel grp = new GenerationRulesPanel();
-		generationRulesController = new GenerationRulesController(grp, getTabbedPane(), this);
+		generationRulesController = new GenerationRulesController(grp, getTab(), this);
 
 		final JPanel pnlRules = (JPanel) UIUtils.findJComponent(this.getDetailsPanel(), "pnlRules");
 		if (pnlRules != null) {
