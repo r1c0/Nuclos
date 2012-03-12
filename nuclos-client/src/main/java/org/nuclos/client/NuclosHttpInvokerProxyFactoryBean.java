@@ -31,6 +31,18 @@ public class NuclosHttpInvokerProxyFactoryBean extends HttpInvokerProxyFactoryBe
 
 	private static final Logger LOG = Logger.getLogger(NuclosHttpInvokerProxyFactoryBean.class);
 	
+	/**
+	 * Whether to turn INFO logging of profiling data on.
+	 */
+	private static final boolean PROFILE = true;
+	
+	/**
+	 * Minimum delay for calls in order to appear in LOG. 
+	 */
+	private static final long PROFILE_MIN_MS = 150L;
+	
+	//
+	
 	private NuclosHttpInvokerAttributeContext ctx;
 	
 	public NuclosHttpInvokerProxyFactoryBean() {
@@ -53,7 +65,25 @@ public class NuclosHttpInvokerProxyFactoryBean extends HttpInvokerProxyFactoryBe
 				LOG.debug(entry.getKey() + ": " + String.valueOf(entry.getValue()));
 			}
 		}
-		return super.executeRequest(invocation);
+		
+		final long before;
+		if (PROFILE) {
+			before = System.currentTimeMillis();
+		}
+		else {
+			before = 0L;
+		}
+		
+		final RemoteInvocationResult result = super.executeRequest(invocation);
+		
+		if (PROFILE) {
+			final long call = System.currentTimeMillis() - before;
+			if (call >= PROFILE_MIN_MS) {
+				LOG.info("remote invocation of " + invocation + " took " + call + " ms");
+			}
+		}
+		
+		return result;
 	}
 
 }
