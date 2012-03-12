@@ -162,7 +162,7 @@
     	<property name="destinationName" value="topic/ruleNotification"></property>
     </bean>
 
-    <bean id="topic.masterdataCache" class="org.springframework.jms.listener.SimpleMessageListenerContainer" parent="topic">
+    <bean id="topic.masterdataCache" class="org.nuclos.client.jms.MultiMessageListenerContainer" parent="topic">
     	<property name="destinationName" value="topic/masterdataCache"></property>
     </bean>
 
@@ -441,6 +441,11 @@
 	<bean id="userService" parent="httpInvokerProxyFactoryBean">
 	    <property name="serviceUrl" value="${url.remoting}/UserService"/>
 	    <property name="serviceInterface" value="org.nuclos.common.security.UserFacadeRemote"/>
+	</bean>
+	
+	<bean id="tasklistService" parent="httpInvokerProxyFactoryBean">
+	    <property name="serviceUrl" value="${url.remoting}/TasklistService"/>
+	    <property name="serviceInterface" value="org.nuclos.common.tasklist.TasklistFacadeRemote"/>
 	</bean>
 
 	<!-- bean id="lookupService" class="org.nuclos.client.common.LocaleDelegate">

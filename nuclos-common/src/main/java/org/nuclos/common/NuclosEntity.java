@@ -136,6 +136,7 @@ public enum NuclosEntity {
 	SUBREPORT("subreport"),
 	SUBFORM("subform"),
 	TASKLIST("tasklist"),
+	TASKLISTROLE("tasklistrole"),
 	TODOLIST("todolist"),
 	TODOSTATUS("todostatus"),
 	TODOOBJECT("todoobject"),

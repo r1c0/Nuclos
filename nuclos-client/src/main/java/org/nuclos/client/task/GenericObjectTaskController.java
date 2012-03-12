@@ -16,7 +16,6 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.task;
 
-import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -59,7 +58,6 @@ import org.nuclos.client.genericobject.Modules;
 import org.nuclos.client.genericobject.ReportController;
 import org.nuclos.client.genericobject.ui.EnterNameDescriptionPanel;
 import org.nuclos.client.main.Main;
-import org.nuclos.client.main.mainframe.MainFrame;
 import org.nuclos.client.masterdata.CollectableMasterDataWithDependants;
 import org.nuclos.client.masterdata.MasterDataCollectController;
 import org.nuclos.client.masterdata.MasterDataDelegate;
@@ -129,6 +127,7 @@ public class GenericObjectTaskController extends RefreshableTaskController {
 	public GenericObjectTaskView newGenericObjectTaskView(EntitySearchFilter filter) {
 		checkFilter(filter);
 		final GenericObjectTaskView gotaskview = new GenericObjectTaskView(filter);
+		gotaskview.init();
 		this.mpTaskViews.put(filter.getId(), gotaskview);
 		refresh(gotaskview);
 		setupActions(gotaskview);

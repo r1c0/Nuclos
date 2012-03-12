@@ -88,7 +88,6 @@ import org.nuclos.client.ui.CommonAbstractAction;
 import org.nuclos.client.ui.Errors;
 import org.nuclos.client.ui.Icons;
 import org.nuclos.client.ui.MainFrameTabAdapter;
-import org.nuclos.client.ui.TopController;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.client.ui.collect.CollectController;
 import org.nuclos.client.ui.collect.CollectController.CollectableEventListener;
@@ -239,6 +238,7 @@ public class PersonalTaskController extends RefreshableTaskController implements
 	PersonalTaskController(Preferences prefsParent, TaskDelegate taskdelegate, String sCurrentUser) {
 		super();
 		this.personaltaskview = new PersonalTaskView();
+		this.personaltaskview.init();
 		this.taskDelegate = taskdelegate;
 		this.sCurrentUser = sCurrentUser;
 		this.popupPersonal = new PersonalTasksPopupMenu(personaltaskview);

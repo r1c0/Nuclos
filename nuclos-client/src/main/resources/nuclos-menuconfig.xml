@@ -87,6 +87,8 @@ command-attributes:
 		<menuitem text="Fristen anzeigen" resId="miShowTimelimitTasks" commandreference="MainController.cmdShowTimelimitTasks" />
 
 		<separator />
+		<menu text="Aufgabenlisten" resId="miTasklists" />
+		<separator />
 		<menuitem text="Eigenes ^Passwort &#x00e4;ndern..." resId="miChPass" accelerator="alt pressed F3" commandreference="MainController.cmdChangePassword" />
         <menuitem text="Einstellungen" resId="miSettings" commandreference="MainController.cmdOpenSettings" />
 		<separator />

@@ -23,6 +23,10 @@ import java.util.Set;
 
 import javax.annotation.security.RolesAllowed;
 
+import org.nuclos.common.NuclosFatalException;
+import org.nuclos.common.database.query.definition.Schema;
+import org.nuclos.common.database.query.definition.Table;
+import org.nuclos.common.querybuilder.NuclosDatasourceException;
 import org.nuclos.common2.exception.CommonCreateException;
 import org.nuclos.common2.exception.CommonFinderException;
 import org.nuclos.common2.exception.CommonPermissionException;
@@ -30,10 +34,6 @@ import org.nuclos.common2.exception.CommonRemoteException;
 import org.nuclos.common2.exception.CommonRemoveException;
 import org.nuclos.common2.exception.CommonStaleVersionException;
 import org.nuclos.common2.exception.CommonValidationException;
-import org.nuclos.common.NuclosFatalException;
-import org.nuclos.common.database.query.definition.Schema;
-import org.nuclos.common.database.query.definition.Table;
-import org.nuclos.common.querybuilder.NuclosDatasourceException;
 import org.nuclos.server.masterdata.valueobject.DependantMasterDataMap;
 import org.nuclos.server.report.NuclosReportException;
 import org.nuclos.server.report.valueobject.DatasourceParameterVO;
@@ -385,4 +385,8 @@ public interface DatasourceFacadeRemote {
 	
 	@RolesAllowed("Login")
 	Set<String> getDynamicTasklistAttributes(Integer dtlId) throws CommonPermissionException, NuclosDatasourceException;
+	
+	@RolesAllowed("Login")
+	ResultVO getDynamicTasklistData(Integer dtlId) throws CommonPermissionException, NuclosDatasourceException;
+	
 }

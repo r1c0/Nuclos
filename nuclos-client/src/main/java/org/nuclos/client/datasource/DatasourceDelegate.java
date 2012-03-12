@@ -482,4 +482,9 @@ public class DatasourceDelegate {
 	public Set<String> getDynamicTasklistAttributes(Integer dtlId) throws CommonPermissionException, NuclosDatasourceException {
 		return getDatasourceFacade().getDynamicTasklistAttributes(dtlId);
 	}
+
+	public ResultVO getDynamicTasklistData(Integer dtlId) throws CommonPermissionException, NuclosDatasourceException {
+		return getDatasourceFacade().getDynamicTasklistData(dtlId);
+	}
+	
 } // class DatasourceDelegate

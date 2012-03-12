@@ -52,6 +52,7 @@ import org.nuclos.server.dblayer.DbTuple;
 import org.nuclos.server.dblayer.query.DbColumnExpression;
 import org.nuclos.server.dblayer.query.DbCondition;
 import org.nuclos.server.dblayer.query.DbFrom;
+import org.nuclos.server.dblayer.query.DbJoin;
 import org.nuclos.server.dblayer.query.DbQuery;
 import org.nuclos.server.dblayer.query.DbQueryBuilder;
 import org.nuclos.server.genericobject.Modules;
@@ -133,6 +134,8 @@ public class SecurityCache implements SecurityCacheMBean {
 		private Collection<CompulsorySearchFilter> collCompulsorySearchFilters;
 		private Set<String> actions;
 		private Set<Integer> roleIds;
+		private Set<Integer> dynamicTasklistIds;
+		
 		private Integer userId;
 		private Boolean isSuperUser;
 
@@ -301,6 +304,13 @@ public class SecurityCache implements SecurityCacheMBean {
 			}
 			return roleIds;
 		}
+		
+		public synchronized Set<Integer> getDynamicTasklistIds() {
+			if (dynamicTasklistIds == null) {
+				dynamicTasklistIds = readDynamicTasklistIds();
+			}
+			return roleIds;
+		}
 
 		private ModulePermissions readModulePermissions() {
 			DbQueryBuilder builder = dataBaseHelper.getDbAccess().getQueryBuilder();
@@ -428,6 +438,17 @@ public class SecurityCache implements SecurityCacheMBean {
 			DbFrom t = query.from("T_MD_ROLE_USER").alias(SystemFields.BASE_ALIAS);
 			query.select(t.baseColumn("INTID_T_MD_ROLE", Integer.class));
 			query.where(builder.equal(t.baseColumn("INTID_T_MD_USER", Integer.class), getUserId()));
+			return new HashSet<Integer>(dataBaseHelper.getDbAccess().executeQuery(query.distinct(true)));
+		}
+		
+		private Set<Integer> readDynamicTasklistIds() {
+			DbQueryBuilder builder = dataBaseHelper.getDbAccess().getQueryBuilder();
+			DbQuery<Integer> query = builder.createQuery(Integer.class);
+			DbFrom t1 = query.from("T_MD_TASKLIST").alias(SystemFields.BASE_ALIAS);
+			DbJoin t2 = t1.join("T_MD_TASKLIST_ROLE", JoinType.INNER).alias("T2").on("INTID", "INTID_T_MD_TASKLIST", Integer.class);
+			DbJoin t3 = t2.join("T_MD_ROLE_USER", JoinType.INNER).alias("T3").on("INTID_T_MD_ROLE", "INTID_T_MD_ROLE", Integer.class);
+			query.select(t1.baseColumn("INTID", Integer.class));
+			query.where(builder.equal(t3.baseColumn("INTID_T_MD_USER", Integer.class), getUserId()));
 			return new HashSet<Integer>(dataBaseHelper.getDbAccess().executeQuery(query.distinct(true)));
 		}
 
@@ -1025,6 +1046,10 @@ public class SecurityCache implements SecurityCacheMBean {
 
 	public Set<Integer> getUserRoles(String sUserName) {
 		return getUserRights(sUserName).getRoleIds();
+	}
+	
+	public Set<Integer> getDynamicTasklists(String sUserName) {
+		return getUserRights(sUserName).getDynamicTasklistIds();
 	}
 
 	private UserRights getUserRights(String sUserName) {

@@ -251,5 +251,10 @@
 	    <property name="service" ref="userService"/>
 	    <property name="serviceInterface" value="org.nuclos.common.security.UserFacadeRemote"/>
 	</bean>
+	
+	<bean name="/TasklistService" parent="httpInvokerServiceExporter">
+	    <property name="service" ref="tasklistService"/>
+	    <property name="serviceInterface" value="org.nuclos.common.tasklist.TasklistFacadeRemote"/>
+	</bean>
 </beans>
 

@@ -34,7 +34,6 @@ import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileFilter;
 
 import org.apache.log4j.Logger;
-import org.nuclos.client.common.EntityCollectController;
 import org.nuclos.client.common.NuclosCollectController;
 import org.nuclos.client.common.NuclosResultPanel;
 import org.nuclos.client.common.security.SecurityCache;
@@ -44,7 +43,6 @@ import org.nuclos.client.datasource.querybuilder.QueryBuilderConstants;
 import org.nuclos.client.datasource.querybuilder.QueryBuilderEditor;
 import org.nuclos.client.datasource.querybuilder.gui.ColumnEntry;
 import org.nuclos.client.main.mainframe.MainFrameTab;
-import org.nuclos.client.main.mainframe.MainFrameTabbedPane;
 import org.nuclos.client.masterdata.MetaDataCache;
 import org.nuclos.client.ui.CommonClientWorker;
 import org.nuclos.client.ui.CommonClientWorkerAdapter;
@@ -167,8 +165,8 @@ public abstract class AbstractDatasourceCollectController<T extends DatasourceVO
 
 		final DatasourceVO datasourceVO = clctEdited.getDatasourceVO();
 
-		final boolean bDataSourceNameWasChanged = !datasourcedelegate.getDatasource(clctEdited.getId()).getName().equals(datasourceVO.getName());
-		if (bDataSourceNameWasChanged) {
+		CollectableDataSource<? extends DatasourceVO> db = findCollectableById(getEntityName(), clctEdited.getId());
+		if (db != null && !db.getDatasourceVO().getName().equals(datasourceVO.getName())) {
 			final List<DatasourceVO> lstUsages = DatasourceDelegate.getInstance().getUsagesForDatasource(clctEdited.getId());
 			if (!lstUsages.isEmpty()) {
 				final int iBtn = JOptionPane.showConfirmDialog(this.getTab(), getSpringLocaleDelegate().getMessage(

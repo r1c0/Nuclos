@@ -16,7 +16,6 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.task;
 
-import java.awt.Component;
 import java.io.Serializable;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -36,6 +35,7 @@ import javax.swing.table.TableColumn;
 
 import org.apache.log4j.Logger;
 import org.nuclos.client.common.security.SecurityCache;
+import org.nuclos.client.datasource.DatasourceDelegate;
 import org.nuclos.client.explorer.ExplorerController;
 import org.nuclos.client.main.Main;
 import org.nuclos.client.main.MainController;
@@ -57,11 +57,14 @@ import org.nuclos.client.ui.collect.CollectableTableHelper;
 import org.nuclos.client.ui.table.TableUtils;
 import org.nuclos.common.Actions;
 import org.nuclos.common.NuclosFatalException;
+import org.nuclos.common.tasklist.TasklistDefinition;
 import org.nuclos.common2.ClientPreferences;
 import org.nuclos.common2.PreferencesUtils;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
+import org.nuclos.common2.exception.CommonPermissionException;
 import org.nuclos.common2.exception.PreferencesException;
+import org.nuclos.server.report.valueobject.DynamicTasklistVO;
 
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
@@ -98,8 +101,11 @@ public class TaskController extends Controller<MainFrameTabbedPane> {
 	private final PersonalTaskController ctlPersonalTasks;
 	private final TimelimitTaskController ctlTimelimitTasks;
 	private final GenericObjectTaskController ctlGenericObjectTasks;
+	private final DynamicTaskController ctlDynamicTasks;
 
 	private final Map<GenericObjectTaskView, MainFrameTab> taskTabs = new HashMap<GenericObjectTaskView, MainFrameTab>();
+	
+	private final Map<DynamicTaskView, MainFrameTab> dynamictasklistTabs = new HashMap<DynamicTaskView, MainFrameTab>();
 
 	/**
 	 *
@@ -114,7 +120,7 @@ public class TaskController extends Controller<MainFrameTabbedPane> {
 		ctlPersonalTasks = new PersonalTaskController(prefs, taskdelegate, sCurrentUser);
 		ctlTimelimitTasks = new TimelimitTaskController(prefs, timelimittaskdelegate);
 		ctlGenericObjectTasks = new GenericObjectTaskController();
-
+		ctlDynamicTasks = new DynamicTaskController();
 	}
 
 	@Override
@@ -406,6 +412,49 @@ public class TaskController extends Controller<MainFrameTabbedPane> {
 			return null;
 		}
 	}
+	
+	private DynamicTaskView addOrReplaceDynamicTaskViewFor(TasklistDefinition tasklist) {
+		DynamicTaskView view = getTaskViewFor(tasklist);
+		DynamicTasklistVO dtl;
+		try {
+			dtl = DatasourceDelegate.getInstance().getDynamicTasklist(tasklist.getDynamicTasklistId());
+		}
+		catch (CommonPermissionException e) {
+			Errors.getInstance().showExceptionDialog(Main.getInstance().getMainFrame(), e);
+			return null;
+		}
+		
+		if(view == null) {
+			MainFrameTab tab = new MainFrameTab();
+			final DynamicTaskView newView = ctlDynamicTasks.newDynamicTaskView(dtl);
+			final String sLabel = StringUtils.isNullOrEmpty(tasklist.getLabelResourceId()) ? tasklist.getName() : getSpringLocaleDelegate().getTextFallback(tasklist.getLabelResourceId(), tasklist.getName());
+			tab.addMainFrameTabListener(new MainFrameTabAdapter() {
+				@Override
+				public boolean tabClosing(MainFrameTab tab) {
+					removeDynamicTaskView(newView);
+					return true;
+				}
+				@Override
+				public void tabClosed(MainFrameTab tab) {
+					tab.removeMainFrameTabListener(this);
+				}
+			});
+
+			tab.setTabIcon(Icons.getInstance().getIconFilter16());
+			tab.setTitle(sLabel);
+			tab.setLayeredComponent(newView);
+			//tab.setTabStoreController(new TaskTabStoreController(RestorePreferences., newView));
+
+			dynamictasklistTabs.put(newView, tab);
+
+			MainFrame.addTab(tab);
+			MainFrame.setSelectedTab(tab);
+			return newView;
+		} 
+		else {
+			return view;
+		}
+	}
 
 	/**
 	 *
@@ -546,6 +595,17 @@ public class TaskController extends Controller<MainFrameTabbedPane> {
 		}
 		return result;
 	}
+	
+	private DynamicTaskView getTaskViewFor(TasklistDefinition tasklist) {
+		DynamicTaskView result = null;
+		for (DynamicTaskView view : dynamictasklistTabs.keySet()) {
+			if (tasklist.getDynamicTasklistId().equals(view.getDynamicTasklist().getId())) {
+				result = view;
+				break;
+			}
+		}
+		return result;
+	}
 
 	/**
 	 * refreshes all task views
@@ -556,6 +616,9 @@ public class TaskController extends Controller<MainFrameTabbedPane> {
 			ctlTimelimitTasks.refreshTimelimitTaskView();
 			for (GenericObjectTaskView gotaskview : taskTabs.keySet()) {
 				ctlGenericObjectTasks.refresh(gotaskview);
+			}
+			for (DynamicTaskView view : dynamictasklistTabs.keySet()) {
+				ctlDynamicTasks.refresh(view);
 			}
 		}
 		catch (NuclosFatalException ex) {
@@ -638,6 +701,10 @@ public class TaskController extends Controller<MainFrameTabbedPane> {
 	private void removeGenericObjectTaskView(GenericObjectTaskView view) {
 		taskTabs.remove(view);
 	}
+	
+	private void removeDynamicTaskView(DynamicTaskView view) {
+		dynamictasklistTabs.remove(view);
+	}
 
 	/**
 	 *
@@ -645,6 +712,9 @@ public class TaskController extends Controller<MainFrameTabbedPane> {
 	 */
 	public boolean isTaskTab(MainFrameTab tab) {
 		if (taskTabs.values().contains(tab))
+			return true;
+		
+		if (dynamictasklistTabs.values().contains(tab))
 			return true;
 
 		if (ctlPersonalTasks.getTab() == tab)
@@ -657,6 +727,15 @@ public class TaskController extends Controller<MainFrameTabbedPane> {
 			return true;
 
 		return false;
+	}
+	
+	public void cmdShowTasklist(final TasklistDefinition tasklist) {
+		UIUtils.runCommandForTabbedPane(getTabbedPane(), new Runnable() {
+			@Override
+			public void run() {
+				addOrReplaceDynamicTaskViewFor(tasklist);
+			}
+		});
 	}
 
 } // class TaskController

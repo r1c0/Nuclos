@@ -1026,4 +1026,15 @@ public class DatasourceFacadeBean extends NuclosFacadeBean implements Datasource
 		}
 		return attributes;
 	}
+
+	@Override
+	public ResultVO getDynamicTasklistData(Integer dtlId) throws CommonPermissionException, NuclosDatasourceException {
+		if (!SecurityCache.getInstance().isSuperUser(getCurrentUserName()) && !SecurityCache.getInstance().getDynamicTasklists(getCurrentUserName()).contains(dtlId)) {
+			throw new CommonPermissionException("Permission denied for dynamic task list with id " + dtlId);
+		}
+		
+		DynamicTasklistVO dtl = DatasourceCache.getInstance().getDynamicTasklist(dtlId);
+		String sQuery = createSQL(dtl.getSource(), new HashMap<String, Object>());
+		return dataBaseHelper.getDbAccess().executePlainQueryAsResultVO(sQuery, -1);
+	}
 }

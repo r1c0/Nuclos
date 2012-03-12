@@ -16,9 +16,6 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.task;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.dnd.DropTarget;
 import java.awt.dnd.DropTargetDragEvent;
@@ -35,33 +32,24 @@ import java.util.List;
 import java.util.Map;
 import java.util.prefs.Preferences;
 
-import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JMenuItem;
-import javax.swing.JScrollPane;
 import javax.swing.JTable;
-import javax.swing.JTextField;
-import javax.swing.JToolBar;
-import javax.swing.ListSelectionModel;
 import javax.swing.RowSorter.SortKey;
 import javax.swing.SortOrder;
 
 import org.apache.log4j.Logger;
 import org.nuclos.client.common.ClientParameterProvider;
-import org.nuclos.client.common.MetaDataClientProvider;
 import org.nuclos.client.common.NuclosDropTargetVisitor;
 import org.nuclos.client.common.OneDropNuclosDropTargetListener;
 import org.nuclos.client.genericobject.CollectableGenericObject;
 import org.nuclos.client.genericobject.GenericObjectClientUtils;
 import org.nuclos.client.genericobject.Modules;
 import org.nuclos.client.main.Main;
-import org.nuclos.client.main.mainframe.MainFrame;
 import org.nuclos.client.masterdata.CollectableMasterDataWithDependants;
 import org.nuclos.client.searchfilter.EntitySearchFilter;
 import org.nuclos.client.ui.Errors;
 import org.nuclos.client.ui.IMainFrameTabClosableController;
-import org.nuclos.client.ui.PopupButton;
-import org.nuclos.client.ui.StatusBarTextField;
-import org.nuclos.client.ui.UIUtils;
 import org.nuclos.client.ui.collect.model.CollectableTableModel;
 import org.nuclos.client.ui.collect.model.GenericObjectsResultTableModel;
 import org.nuclos.client.ui.collect.model.MasterDataResultTableModel;
@@ -99,64 +87,21 @@ public class GenericObjectTaskView extends TaskView implements IMainFrameTabClos
 	private static final String PREFS_NODE_SELECTEDFIELDS = "selectedFields";
 	private static final String PREFS_NODE_SELECTEDFIELDWIDTHS = "selectedFieldWidths";
 
-	private final JToolBar toolbar = UIUtils.createNonFloatableToolBar();
-	private final JButton btnRefresh = new JButton();
 	private final JMenuItem btnPrint = new JMenuItem();
 	private final JMenuItem btnRename = new JMenuItem();
 
-	private final PopupButton popupExtras = new PopupButton(getSpringLocaleDelegate().getMessage("PopupButton.Extras","Extras"));
-
-	private final JScrollPane scrlpn = new JScrollPane();
 	private final JTable tbl = new CommonJTable();
-
-	public final JTextField tfStatusBar = new StatusBarTextField(" ");
 
 	private EntitySearchFilter filter;
 
-	private final Logger log = Logger.getLogger(this.getClass());
-
-	public GenericObjectTaskView() {
-		this.init();
-	}	// ctor
-
 	public GenericObjectTaskView(EntitySearchFilter filter) {
-		this();
 		this.setFilter(filter);
 	}
 
-	private void init() {
-		this.setLayout(new BorderLayout());
-		this.add(toolbar, BorderLayout.NORTH);
-		this.add(scrlpn, BorderLayout.CENTER);
-		this.add(UIUtils.newStatusBar(tfStatusBar), BorderLayout.SOUTH);
-		this.tfStatusBar.setMinimumSize(new Dimension(0, this.tfStatusBar.getPreferredSize().height));
-
-		toolbar.add(btnRefresh);
-		btnRefresh.setToolTipText(getSpringLocaleDelegate().getMessage(
-				"PersonalTaskController.3","Aufgabenliste aktualisieren"));
-		this.popupExtras.add(btnPrint);
-		
-		this.popupExtras.add(btnRename);
-		
-		super.addRefreshIntervalsToPopupButton(popupExtras);
-		this.toolbar.add(popupExtras);
-
-//		toolbar.add(btnSelectColumns);
-//		this.btnSelectColumns.setIcon(Icons.getInstance().iconSelectColumn16);
-//		this.btnSelectColumns.setToolTipText("Spalten ein-/ausblenden");
-
-		scrlpn.getViewport().add(tbl, null);
-		tbl.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
-//		tbl.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
-		tbl.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-		scrlpn.setBackground(Color.WHITE);
-		tbl.setBackground(Color.WHITE);
-		UIUtils.setupCopyAction(tbl);
+	@Override
+	public void init() {
+		super.init();
 		setupDragDrop();
-	}
-	
-	JButton getRefreshButton() {
-		return btnRefresh;
 	}
 	
 	JMenuItem getPrintMenuItem() {
@@ -269,7 +214,7 @@ public class GenericObjectTaskView extends TaskView implements IMainFrameTabClos
 			lstFieldNameOrderTemp = PreferencesUtils.getStringList(getPreferences(), PREFS_NODE_SELECTEDFIELDS);
 		}
 		catch (PreferencesException ex) {
-			log.error("Failed to retrieve list of selected fields from the preferences. They will be empty.");
+			LOG.error("Failed to retrieve list of selected fields from the preferences. They will be empty.");
 			lstFieldNameOrderTemp = new ArrayList<String>();
 		}
 		final List<String> lstFieldNameOrder = lstFieldNameOrderTemp;
@@ -323,7 +268,7 @@ public class GenericObjectTaskView extends TaskView implements IMainFrameTabClos
 			return PreferencesUtils.readSortKeysFromPrefs(getPreferences());
 		}
 		catch (PreferencesException ex) {
-			log.error("The column order could not be loaded from preferences.", ex);
+			LOG.error("The column order could not be loaded from preferences.", ex);
 			return Collections.emptyList();
 		}
 	}
@@ -334,7 +279,7 @@ public class GenericObjectTaskView extends TaskView implements IMainFrameTabClos
 			lstColumnWidths = PreferencesUtils.getIntegerList(getPreferences(), PREFS_NODE_SELECTEDFIELDWIDTHS);
 		}
 		catch (PreferencesException ex) {
-			log.error("Die Spaltenbreite konnte nicht aus den Preferences geladen werden.", ex);
+			LOG.error("Die Spaltenbreite konnte nicht aus den Preferences geladen werden.", ex);
 			return lstColumnWidths;
 		}
 
@@ -388,27 +333,23 @@ public class GenericObjectTaskView extends TaskView implements IMainFrameTabClos
 
 	@Override
 	public void visitDropActionChanged(DropTargetDragEvent dtde) {}
-	
-	
-	
-//	/**
-//	 * command: select columns
-//	 * Lets the user select the columns to show in the result list.
-//	 */
-//	private void cmdSelectColumns() {
-//		final SelectColumnsController ctl = new SelectColumnsController(this);
-//		final List lstAvailable = fields.getAvailableFields();
-//		final List lstSelected = fields.getSelectedFields();
-//		final boolean bOK = ctl.run(lstAvailable, lstSelected);
-//
-//		if (bOK) {
-//			final CollectableTableModel model = (CollectableTableModel) this.getCollectPanel().
-//			    getResultPanel().getResultTable().getModel();
-//			this.fields.set(ctl.getAvailableColumns(), ctl.getSelectedColumns());
-//			model.setColumns(this.fields.getSelectedFields());
-//			this.storeSelectedFieldsInPrefs(this.fields.getSelectedFields());
-//			TableUtils.setPreferredColumnWidth(this.getCollectPanel().getResultPanel().getResultTable(), 100, TABLE_INSETS);
-//		}
-//	}
 
+	@Override
+	protected List<JComponent> getToolbarComponents() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	protected List<JComponent> getExtrasMenuComponents() {
+		List<JComponent> result = new ArrayList<JComponent>();
+		result.add(btnPrint);
+		result.add(btnRename);
+		return result;
+	}
+
+	@Override
+	protected JTable getTable() {
+		return tbl;
+	}
 }	// class GenericObjectTaskView

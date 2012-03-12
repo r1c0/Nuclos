@@ -16,23 +16,23 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.task;
 
-import java.awt.BorderLayout;
 import java.awt.Color;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.Action;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JMenuItem;
+import javax.swing.JPopupMenu;
 import javax.swing.JRadioButtonMenuItem;
-import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JToggleButton;
-import javax.swing.JToolBar;
 import javax.swing.ListSelectionModel;
 
-import org.nuclos.client.ui.PopupButton;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.client.ui.table.CommonJTable;
 import org.nuclos.client.ui.table.TableUtils;
@@ -48,8 +48,6 @@ import org.nuclos.client.ui.table.TableUtils;
  */
 public class PersonalTaskView extends TaskView {
 
-	private final JToolBar toolbar = UIUtils.createNonFloatableToolBar();
-	private final JButton btnRefresh = new JButton();
 	private final JButton btnNew = new JButton();
 	private final JMenuItem btnEdit = new JMenuItem();
 	private final JMenuItem btnPerform = new JMenuItem();
@@ -85,76 +83,25 @@ public class PersonalTaskView extends TaskView {
 	
 	final JCheckBoxMenuItem ckbShowCompletedTasks = new JCheckBoxMenuItem();
 
-	private final JScrollPane scrlpn = new JScrollPane();
 	private final JTable tblTasks = new CommonJTable();
-	
-	private final PopupButton popupExtras = new PopupButton(getSpringLocaleDelegate().getMessage(
-			"PopupButton.Extras","Extras"));
 
-	public PersonalTaskView() {
-		this.init();
-	}
-
-	private void init() {
-		this.setLayout(new BorderLayout());
-		this.add(this.toolbar, BorderLayout.NORTH);
-		this.add(this.scrlpn, BorderLayout.CENTER);
-
-		this.toolbar.add(btnRefresh);
-		this.toolbar.add(btnNew);
-		this.toolbar.add(btnComplete);
-		
-		this.popupExtras.add(btnPerform);
-		this.popupExtras.add(btnEdit);
-		this.popupExtras.add(btnPrint);
-		this.popupExtras.add(btnRemove);
-		this.popupExtras.add(ckbShowCompletedTasks);
-		this.popupExtras.addSeparator();
-		this.popupExtras.add(new JLabel("<html><b>"+getSpringLocaleDelegate().getMessage(
-				"PersonalTaskView.7","Filter nach Priorit\u00e4t")+"</b></html>"));
-		for (int i = 0; i < rbPrio.length; i++) {
-			this.bgPriority.add(rbPrio[i]);
-			this.popupExtras.add(rbPrio[i]);
-		}
-		this.popupExtras.addSeparator();
-		this.popupExtras.add(new JLabel("<html><b>"+getSpringLocaleDelegate().getMessage(
-				"PersonalTaskView.5","Aufgaben anzeigen")+"</b></html>"));
-		for (int i = 0; i < rbShowTask.length; i++) {
-			this.bgShowTasks.add(rbShowTask[i]);
-			this.popupExtras.add(rbShowTask[i]);
-		}	
-		
-		super.addRefreshIntervalsToPopupButton(popupExtras);
-		this.toolbar.add(popupExtras);
-
-		btnRefresh.putClientProperty("hideActionText", Boolean.TRUE);
-		btnNew.putClientProperty("hideActionText", Boolean.TRUE);
-		btnComplete.putClientProperty("hideActionText", Boolean.TRUE);
-		
-		this.ckbShowCompletedTasks.setText(getSpringLocaleDelegate().getMessage(
-				"PersonalTaskView.9", "Auch erledigte anzeigen"));
-		this.ckbShowCompletedTasks.setToolTipText(getSpringLocaleDelegate().getMessage(
-				"PersonalTaskView.10", "Erledigte und nicht erledigte Aufgaben anzeigen"));
-
-		this.scrlpn.getViewport().setView(tblTasks);
+	@Override
+	public void init() {
+		super.init();
 		this.tblTasks.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 		this.tblTasks.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-		this.scrlpn.setBackground(Color.WHITE);
 		this.tblTasks.setBackground(Color.WHITE);
 		this.tblTasks.setColumnSelectionAllowed(true);
 		UIUtils.setupCopyAction(this.tblTasks);
 	}
 
-	JTable getTable() {
+	@Override
+	public JTable getTable() {
 		return tblTasks;
 	}
 	
 	JToggleButton getCompleteButton() {
 		return btnComplete;
-	}
-	
-	JButton getRefreshButton() {
-		return btnRefresh;
 	}
 	
 	JMenuItem getEditMenuItem() {
@@ -184,5 +131,44 @@ public class PersonalTaskView extends TaskView {
 
 	public PersonalTaskTableModel getPersonalTaskTableModel() {
 		return (PersonalTaskTableModel) this.tblTasks.getModel();
+	}
+
+	@Override
+	protected List<JComponent> getToolbarComponents() {
+		List<JComponent> result = new ArrayList<JComponent>();
+		btnNew.putClientProperty("hideActionText", Boolean.TRUE);
+		btnComplete.putClientProperty("hideActionText", Boolean.TRUE);
+		result.add(btnNew);
+		result.add(btnComplete);
+		return result;
+	}
+
+	@Override
+	protected List<JComponent> getExtrasMenuComponents() {
+		List<JComponent> result = new ArrayList<JComponent>();
+		this.ckbShowCompletedTasks.setText(getSpringLocaleDelegate().getMessage(
+				"PersonalTaskView.9", "Auch erledigte anzeigen"));
+		this.ckbShowCompletedTasks.setToolTipText(getSpringLocaleDelegate().getMessage(
+				"PersonalTaskView.10", "Erledigte und nicht erledigte Aufgaben anzeigen"));
+		result.add(btnPerform);
+		result.add(btnEdit);
+		result.add(btnPrint);
+		result.add(btnRemove);
+		result.add(ckbShowCompletedTasks);
+		result.add(new JPopupMenu.Separator());
+		result.add(new JLabel("<html><b>"+getSpringLocaleDelegate().getMessage(
+				"PersonalTaskView.7","Filter nach Priorit\u00e4t")+"</b></html>"));
+		for (int i = 0; i < rbPrio.length; i++) {
+			this.bgPriority.add(rbPrio[i]);
+			result.add(rbPrio[i]);
+		}
+		result.add(new JPopupMenu.Separator());
+		result.add(new JLabel("<html><b>"+getSpringLocaleDelegate().getMessage(
+				"PersonalTaskView.5","Aufgaben anzeigen")+"</b></html>"));
+		for (int i = 0; i < rbShowTask.length; i++) {
+			this.bgShowTasks.add(rbShowTask[i]);
+			result.add(rbShowTask[i]);
+		}
+		return result;
 	}
 }

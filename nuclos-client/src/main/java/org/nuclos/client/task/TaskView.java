@@ -16,18 +16,42 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.task;
 
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.util.List;
+
 import javax.swing.ButtonGroup;
+import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButtonMenuItem;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.JTextField;
+import javax.swing.JToolBar;
+import javax.swing.ListSelectionModel;
 
 import org.nuclos.client.ui.PopupButton;
+import org.nuclos.client.ui.StatusBarTextField;
+import org.nuclos.client.ui.UIUtils;
 import org.nuclos.common2.SpringLocaleDelegate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
 @Configurable(preConstruction=true)
 public abstract class TaskView extends JPanel implements ScheduledRefreshable {
+	
+	private final JToolBar toolbar = UIUtils.createNonFloatableToolBar();
+	
+	private final PopupButton popupExtras = new PopupButton(getSpringLocaleDelegate().getMessage("PopupButton.Extras","Extras"));
+	
+	private final JScrollPane scrlpn = new JScrollPane();
+
+	private final JButton btnRefresh = new JButton();
+	
+	public final JTextField tfStatusBar = new StatusBarTextField(" ");
 	
 	private final int[] intervals = new int[] {	0, 5, 10, 30};
 	private final String[] intervalLabels = new String[] {
@@ -57,6 +81,42 @@ public abstract class TaskView extends JPanel implements ScheduledRefreshable {
 			bgRefreshInterval.add(rb);
 			rbRefresIntervals[i] = rb;
 		}
+	}
+	
+	public void init() {
+		this.setLayout(new BorderLayout());
+		this.add(toolbar, BorderLayout.NORTH);
+		this.add(scrlpn, BorderLayout.CENTER);
+		this.add(UIUtils.newStatusBar(tfStatusBar), BorderLayout.SOUTH);
+		this.tfStatusBar.setMinimumSize(new Dimension(0, this.tfStatusBar.getPreferredSize().height));
+
+		toolbar.add(btnRefresh);
+		btnRefresh.setToolTipText(getSpringLocaleDelegate().getMessage(
+				"PersonalTaskController.3","Aufgabenliste aktualisieren"));
+		
+		List<JComponent> tbc = getToolbarComponents();
+		if (tbc != null) {
+			for (JComponent c : tbc) {
+				toolbar.add(c);
+			}
+		}
+		
+		List<JComponent> emc = getExtrasMenuComponents();
+		if (emc != null) {
+			for (JComponent c : emc) {
+				popupExtras.add(c);
+			}
+		}
+		
+		addRefreshIntervalsToPopupButton(popupExtras);
+		this.toolbar.add(popupExtras);
+
+		scrlpn.getViewport().add(getTable(), null);
+		getTable().setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+		getTable().setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+		scrlpn.setBackground(Color.WHITE);
+		getTable().setBackground(Color.WHITE);
+		UIUtils.setupCopyAction(getTable());
 	}
 	
 	@Autowired
@@ -110,4 +170,13 @@ public abstract class TaskView extends JPanel implements ScheduledRefreshable {
 		return rbRefresIntervals;
 	}
 	
+	public JButton getRefreshButton() {
+		return btnRefresh;
+	}
+	
+	protected abstract List<JComponent> getToolbarComponents();
+	
+	protected abstract List<JComponent> getExtrasMenuComponents();
+	
+	protected abstract JTable getTable();
 }

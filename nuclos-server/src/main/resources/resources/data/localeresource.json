@@ -19210,7 +19210,7 @@
     "text": "Task"
   },
   {
-    "resourceID": "nuclos.entity.tasklist.label",
+    "resourceID": "nuclos.entity.todolist.label",
     "locale": "de",
     "text": "Aufgabe"
   },
@@ -64892,5 +64892,20 @@
     "resourceID": "nuclos.entityfield.tasklistrole.role.description",
     "locale": "de",
     "text": "Rolle"
+  },
+  {
+    "resourceID": "miTasklists",
+    "locale": "i-default",
+    "text": "Task lists"
+  },
+  {
+    "resourceID": "miTasklists",
+    "locale": "en",
+    "text": "Task lists"
+  },
+  {
+    "resourceID": "miTasklists",
+    "locale": "de",
+    "text": "Aufgabenlisten"
   }
 ]

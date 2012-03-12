@@ -16,21 +16,20 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.timelimit;
 
-import java.awt.BorderLayout;
 import java.awt.Color;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.Action;
-import javax.swing.JButton;
 import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JComponent;
 import javax.swing.JMenuItem;
-import javax.swing.JScrollPane;
+import javax.swing.JPopupMenu;
 import javax.swing.JTable;
 import javax.swing.JToggleButton;
-import javax.swing.JToolBar;
 import javax.swing.ListSelectionModel;
 
 import org.nuclos.client.task.TaskView;
-import org.nuclos.client.ui.PopupButton;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.client.ui.table.CommonJTable;
 import org.nuclos.client.ui.table.TableUtils;
@@ -48,8 +47,6 @@ import org.nuclos.client.ui.table.TableUtils;
 
 public class TimelimitTaskView extends TaskView {
 
-	private final JToolBar toolbar = UIUtils.createNonFloatableToolBar();
-	private final JButton btnRefresh = new JButton();
 	private final JMenuItem btnPerform = new JMenuItem();
 	private final JMenuItem btnRemove = new JMenuItem();
 	private final JMenuItem btnPrint = new JMenuItem();
@@ -68,47 +65,13 @@ public class TimelimitTaskView extends TaskView {
 
 	final JCheckBoxMenuItem btnShowAllTasks = new JCheckBoxMenuItem();
 
-	private final JScrollPane scrlpn = new JScrollPane();
 	private final JTable tblTasks = new CommonJTable();
-	
-	private final PopupButton popupExtras = new PopupButton(getSpringLocaleDelegate().getMessage(
-			"PopupButton.Extras","Extras"));
 
-	public TimelimitTaskView() {
-		this.init();
-	} // ctor
-
-	private void init() {
-		this.setLayout(new BorderLayout());
-		this.add(this.toolbar, BorderLayout.NORTH);
-		this.add(this.scrlpn, BorderLayout.CENTER);
-
-		this.toolbar.add(btnRefresh);
-		this.toolbar.add(btnFinish);
-		
-		this.popupExtras.add(btnPerform);
-		this.popupExtras.add(btnPrint);
-		this.popupExtras.add(btnRemove);
-		this.popupExtras.addSeparator();
-		this.popupExtras.add(btnShowAllTasks);
-		
-		super.addRefreshIntervalsToPopupButton(popupExtras);
-		this.toolbar.add(popupExtras);
-
-		// don't show text, only the icon:
-		btnRefresh.putClientProperty("hideActionText", Boolean.TRUE);
-		btnFinish.putClientProperty("hideActionText", Boolean.TRUE);
-
-		this.btnShowAllTasks.setText(getSpringLocaleDelegate().getMessage(
-				"TimelimitTaskView.1","Alle Fristen"));
-		this.btnShowAllTasks.setToolTipText(getSpringLocaleDelegate().getMessage(
-				"TimelimitTaskView.2","Auch erledigte Fristen anzeigen"));
-
-		this.scrlpn.getViewport().setView(tblTasks);
+	@Override
+	public void init() {
+		super.init();
 		this.tblTasks.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 		this.tblTasks.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-		
-		this.scrlpn.setBackground(Color.WHITE);
 		this.tblTasks.setBackground(Color.WHITE);
 		UIUtils.setupCopyAction(this.tblTasks);
 	}
@@ -116,13 +79,11 @@ public class TimelimitTaskView extends TaskView {
 	/**
 	 * @return the table containing time limit tasks
 	 */
-	JTable getTable() {
+	@Override
+	public JTable getTable() {
 		return tblTasks;
 	}
 	
-	JButton getRefreshButton() {
-		return btnRefresh;
-	}
 	
 	JMenuItem getPerformMenuItem() {
 		return btnPerform;
@@ -154,6 +115,29 @@ public class TimelimitTaskView extends TaskView {
 	 */
 	public TimelimitTaskTableModel getTimelimitTaskTableModel() {
 		return (TimelimitTaskTableModel) this.tblTasks.getModel();
+	}
+
+	@Override
+	protected List<JComponent> getToolbarComponents() {
+		List<JComponent> result = new ArrayList<JComponent>();
+		btnFinish.putClientProperty("hideActionText", Boolean.TRUE);
+		result.add(btnFinish);
+		return result;
+	}
+
+	@Override
+	protected List<JComponent> getExtrasMenuComponents() {
+		List<JComponent> result = new ArrayList<JComponent>();
+		this.btnShowAllTasks.setText(getSpringLocaleDelegate().getMessage(
+				"TimelimitTaskView.1","Alle Fristen"));
+		this.btnShowAllTasks.setToolTipText(getSpringLocaleDelegate().getMessage(
+				"TimelimitTaskView.2","Auch erledigte Fristen anzeigen"));
+		result.add(btnPerform);
+		result.add(btnPrint);
+		result.add(btnRemove);
+		result.add(new JPopupMenu.Separator());
+		result.add(btnShowAllTasks);
+		return result;
 	}
 
 }	// class TimelimitTaskView

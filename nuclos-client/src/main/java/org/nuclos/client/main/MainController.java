@@ -137,6 +137,8 @@ import org.nuclos.client.searchfilter.EntitySearchFilter;
 import org.nuclos.client.searchfilter.SearchFilterCache;
 import org.nuclos.client.security.NuclosRemoteServerSession;
 import org.nuclos.client.task.TaskController;
+import org.nuclos.client.tasklist.TasklistAction;
+import org.nuclos.client.tasklist.TasklistCache;
 import org.nuclos.client.ui.ClipboardUtils;
 import org.nuclos.client.ui.Controller;
 import org.nuclos.client.ui.Errors;
@@ -178,6 +180,7 @@ import org.nuclos.common.collection.Predicate;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
 import org.nuclos.common.dal.vo.EntityObjectVO;
 import org.nuclos.common.security.RemoteAuthenticationManager;
+import org.nuclos.common.tasklist.TasklistDefinition;
 import org.nuclos.common2.ClientPreferences;
 import org.nuclos.common2.CommonRunnable;
 import org.nuclos.common2.IOUtils;
@@ -1304,6 +1307,7 @@ public class MainController {
 	public static final String GENERIC_SEARCHFILTER_ACTION = "nuclosGenericSearchFilterAction";
 	public static final String GENERIC_RESTORE_WORKSPACE_ACTION = "nuclosGenericRestoreWorkspaceAction";
 	public static final String GENERIC_REPORT_ACTION = "nuclosGenericReportAction";
+	public static final String GENERIC_TASKLIST_ACTION = "nuclosGenericTasklistAction";
 
 	public List<GenericAction> getGenericActions() {
 		List<GenericAction> result = new ArrayList<GenericAction>();
@@ -1315,6 +1319,7 @@ public class MainController {
 		getEntityMenuActions(sortedResult);
 		getNucletComponentMenuActions(sortedResult);
 		getCustomComponentMenuActions(sortedResult);
+		getTasklistMenuActions(sortedResult);
 
 		final Collator collator = Collator.getInstance(Locale.getDefault());
 		final Comparator<String[]> arrayCollator = ComparatorUtils.arrayComparator(collator);
@@ -1624,6 +1629,44 @@ public class MainController {
 		}
 
 		return action;
+	}
+	
+	public List<Pair<String[], Action>> getTasklistMenuActions() {
+		return getTasklistMenuActions(null);
+	}
+	
+	private List<Pair<String[], Action>> getTasklistMenuActions(List<GenericAction> genericActions) {
+		List<Pair<String[], Action>> result = new ArrayList<Pair<String[], Action>>();
+		
+		String miFile = localeDelegate.getText("miFile");
+		String miTasklists = localeDelegate.getText("miTasklists");
+		String[] mainPath = new String[] { miFile, miTasklists };
+		
+		for (TasklistDefinition def : TasklistCache.getInstance().getTasklists()) {
+			Action action = new TasklistAction(def);
+			result.add(Pair.makePair(mainPath, action));
+			if (genericActions != null) {
+				WorkspaceDescription.Action wa = new WorkspaceDescription.Action();
+				wa.setAction(GENERIC_TASKLIST_ACTION);
+				wa.putStringParameter("name", def.getName());
+				genericActions.add(new GenericAction(wa, new ActionWithMenuPath(mainPath, action)));
+			}
+			
+			if (def.getMenupathResourceId() != null) {
+				String[] menuPath = splitMenuPath(localeDelegate.getTextFallback(def.getMenupathResourceId(), def.getMenupathResourceId()));
+				
+				if (menuPath != null && menuPath.length > 0 && action != null) {
+					result.add(Pair.makePair(menuPath, action));
+					if (genericActions != null) {
+						WorkspaceDescription.Action wa = new WorkspaceDescription.Action();
+						wa.setAction(GENERIC_TASKLIST_ACTION);
+						wa.putStringParameter("name", def.getName());
+						genericActions.add(new GenericAction(wa, new ActionWithMenuPath(menuPath, action)));
+					}
+				}
+			}
+		};
+		return result;
 	}
 
 	private static String[] splitMenuPath(String menuPath) {

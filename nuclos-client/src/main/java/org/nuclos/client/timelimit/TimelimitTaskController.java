@@ -56,7 +56,6 @@ import javax.swing.table.TableColumn;
 import org.apache.log4j.Logger;
 import org.nuclos.client.common.KeyBinding;
 import org.nuclos.client.common.KeyBindingProvider;
-import org.nuclos.client.common.MetaDataClientProvider;
 import org.nuclos.client.common.NuclosCollectControllerFactory;
 import org.nuclos.client.explorer.ExplorerController;
 import org.nuclos.client.genericobject.GenericObjectCollectController;
@@ -168,6 +167,7 @@ public class TimelimitTaskController extends RefreshableTaskController {
 		super();
 
 		this.timelimittaskview = new TimelimitTaskView();
+		this.timelimittaskview.init();
 		this.tltaskDelegate = tltaskDelegate;
 		this.popupTimelimit = new TimelimitTasksPopupMenu(timelimittaskview);
 		this.prefs = prefsParent.node(PREFS_NODE_TIMELIMITTASKS);

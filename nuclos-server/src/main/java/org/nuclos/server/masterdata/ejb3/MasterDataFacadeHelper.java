@@ -363,6 +363,7 @@ public class MasterDataFacadeHelper {
 			case ROLE:
 			case ACTION:
 			case REPORT:
+			case TASKLIST:
 				SecurityCache.getInstance().invalidate();
 				break;
 			case USER:

@@ -261,6 +261,8 @@
 	<bean id="lookupService" class="org.nuclos.server.common.ServerLocaleDelegate" />
 
 	<bean id="userService" class="org.nuclos.server.security.UserFacadeBean"/>
+	
+	<bean id="tasklistService" class="org.nuclos.server.tasklist.TasklistFacadeBean"/>
 
 	<bean id="parameterProvider" class="org.nuclos.server.common.ServerParameterProvider" depends-on="appContext"/>
 

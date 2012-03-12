@@ -10318,7 +10318,7 @@
     "labelres": "nuclos.entity.dynamictasklistusage.label",
     "nuclos_entityfield": [
       {
-        "name": "tasklist",
+        "name": "dynamictasklist",
         "dbfield": "INTID_T_MD_DYNAMICTASKLIST",
         "label": "Task list",
         "description": "Task list",
@@ -10331,8 +10331,8 @@
         "unique": true
       },
       {
-        "name": "tasklistUsed",
-        "dbfield": "INTID_T_MD_DYNAMICTASKLIST_USED",
+        "name": "dynamictasklistUsed",
+        "dbfield": "INTID_T_MD_DYNAMICTL_USED",
         "label": "Used task list",
         "description": "Used task list",
         "foreignentity": "nuclos_dynamictasklist",

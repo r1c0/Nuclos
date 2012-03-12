@@ -73,7 +73,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JSplitPane;
-import javax.swing.JTabbedPane;
 import javax.swing.JWindow;
 import javax.swing.SwingUtilities;
 
@@ -997,6 +996,7 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 		menuAdditions.addAll(mc.getEntityMenuActions());
 		menuAdditions.addAll(mc.getCustomComponentMenuActions());
 		menuAdditions.addAll(mc.getNucletComponentMenuActions());
+		menuAdditions.addAll(mc.getTasklistMenuActions());
 
 		final Collator collator = Collator.getInstance(Locale.getDefault());
 		final Comparator<String[]> arrayCollator = ComparatorUtils.arrayComparator(collator);
