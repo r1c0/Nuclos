@@ -1323,7 +1323,7 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 			boolean isLeftComponent = splitPaneParent.getLeftComponent() == tabbedPaneToSplit.getComponentPanel();
 
 			splitPaneParent.remove(tabbedPaneToSplit.getComponentPanel());
-			newSplitPane = new JSplitPane(newOrientation, SPLIT_CONTINUOS_LAYOUT, northOrWest ? newTabbedPane.getComponentPanel() : tabbedPaneToSplit.getComponentPanel(), northOrWest ? tabbedPaneToSplit.getComponentPanel() : newTabbedPane.getComponentPanel());
+			newSplitPane = new MainFrameSplitPane(newOrientation, SPLIT_CONTINUOS_LAYOUT, northOrWest ? newTabbedPane.getComponentPanel() : tabbedPaneToSplit.getComponentPanel(), northOrWest ? tabbedPaneToSplit.getComponentPanel() : newTabbedPane.getComponentPanel());
 
 			if (isLeftComponent) {
 				splitPaneParent.setLeftComponent(newSplitPane);
@@ -1337,7 +1337,7 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 		} else if (frame == MainFrame.this) {
 			// first SplitPane
 			pnlDesktop.remove(tabbedPaneToSplit.getComponentPanel());
-			newSplitPane = new JSplitPane(newOrientation, SPLIT_CONTINUOS_LAYOUT, northOrWest ? newTabbedPane.getComponentPanel() : tabbedPaneToSplit.getComponentPanel(), northOrWest ? tabbedPaneToSplit.getComponentPanel() : newTabbedPane.getComponentPanel());
+			newSplitPane = new MainFrameSplitPane(newOrientation, SPLIT_CONTINUOS_LAYOUT, northOrWest ? newTabbedPane.getComponentPanel() : tabbedPaneToSplit.getComponentPanel(), northOrWest ? tabbedPaneToSplit.getComponentPanel() : newTabbedPane.getComponentPanel());
 
 			pnlDesktop.add(newSplitPane, BorderLayout.CENTER);
 			pnlDesktop.validate();
@@ -1345,7 +1345,7 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 
 		} else if (frame instanceof ExternalFrame) {
 			((ExternalFrame) frame).clearFrameContent();
-			newSplitPane = new JSplitPane(newOrientation, SPLIT_CONTINUOS_LAYOUT, northOrWest ? newTabbedPane.getComponentPanel() : tabbedPaneToSplit.getComponentPanel(), northOrWest ? tabbedPaneToSplit.getComponentPanel() : newTabbedPane.getComponentPanel());
+			newSplitPane = new MainFrameSplitPane(newOrientation, SPLIT_CONTINUOS_LAYOUT, northOrWest ? newTabbedPane.getComponentPanel() : tabbedPaneToSplit.getComponentPanel(), northOrWest ? tabbedPaneToSplit.getComponentPanel() : newTabbedPane.getComponentPanel());
 
 			((ExternalFrame) frame).setFrameContent(newSplitPane);
 			frame.validate();
