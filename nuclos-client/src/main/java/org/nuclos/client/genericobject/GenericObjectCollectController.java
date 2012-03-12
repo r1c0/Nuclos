@@ -138,6 +138,7 @@ import org.nuclos.client.ui.collect.CollectableComponentsProvider;
 import org.nuclos.client.ui.collect.DefaultEditView;
 import org.nuclos.client.ui.collect.DeleteSelectedCollectablesController;
 import org.nuclos.client.ui.collect.SubForm;
+import org.nuclos.client.ui.collect.CollectController.MessageType;
 import org.nuclos.client.ui.collect.UpdateSelectedCollectablesController.UpdateAction;
 import org.nuclos.client.ui.collect.UserCancelledException;
 import org.nuclos.client.ui.collect.component.CollectableComboBox;
@@ -1712,6 +1713,8 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 							clct.getGenericObjectCVO(), getAllSubFormData(clct).toDependantMasterDataMap());
 					GenericObjectDelegate.getInstance().executeBusinessRules(
 							lstRuleVO, go, bSaveAfterRuleExecution);
+					
+					broadcastCollectableEvent(clct, MessageType.EDIT_DONE);
 				}
 				finally {
 					setDetailsChangedIgnored(false);

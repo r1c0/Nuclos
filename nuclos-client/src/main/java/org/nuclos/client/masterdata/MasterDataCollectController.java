@@ -85,6 +85,7 @@ import org.nuclos.client.ui.collect.CollectStateEvent;
 import org.nuclos.client.ui.collect.DefaultEditView;
 import org.nuclos.client.ui.collect.EditView;
 import org.nuclos.client.ui.collect.SubForm;
+import org.nuclos.client.ui.collect.CollectController.MessageType;
 import org.nuclos.client.ui.collect.component.CollectableComboBox;
 import org.nuclos.client.ui.collect.component.CollectableComponent;
 import org.nuclos.client.ui.collect.component.CollectableComponentFactory;
@@ -615,6 +616,8 @@ public class MasterDataCollectController extends EntityCollectController<Collect
 				final MasterDataWithDependantsVO md = new MasterDataWithDependantsVO(
 						clct.getMasterDataCVO(), getAllSubFormData(clct.getId()).toDependantMasterDataMap());
 				mddelegate.executeBusinessRules(getEntityName(), lstRuleVO, md, bSaveAfterRuleExecution);
+				
+				broadcastCollectableEvent(clct, MessageType.EDIT_DONE);
 			}
 			finally {
 				setDetailsChangedIgnored(false);
