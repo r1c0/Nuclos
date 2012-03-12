@@ -396,7 +396,7 @@ public class ReportRunner implements Runnable, BackgroundProcessInfo, CommonInte
 
 						setBackgroundProcessInterruptionIntervalForCurrentThread();
 						new PDFExport().export((sDatasourceName != null) ? sDatasourceName : localeDelegate.getMessage("ReportRunner.2", "Suchergebnis"), 
-								jasperPrint, null, reportoutputvo.getDestination());
+								jasperPrint, null, reportoutputvo != null ? reportoutputvo.getDestination() : ReportOutputVO.Destination.SCREEN);
 
 					}
 					else if (this.resultVO != null) {
