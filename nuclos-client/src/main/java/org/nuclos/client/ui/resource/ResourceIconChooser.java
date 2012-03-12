@@ -295,6 +295,8 @@ public class ResourceIconChooser extends JPanel {
 	}
 	
 	public String getResourceIconName(int index) {
+		if (index == -1)
+			return null;
 		return iconNames.get(index);
 	}
 	
