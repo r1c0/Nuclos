@@ -108,6 +108,7 @@ import org.nuclos.server.navigation.treenode.nuclet.content.NucletContentEntityT
 import org.nuclos.server.navigation.treenode.nuclet.content.NucletContentProcessTreeNode;
 import org.nuclos.server.navigation.treenode.nuclet.content.NucletContentRuleTreeNode;
 import org.nuclos.server.navigation.treenode.nuclet.content.NucletContentTreeNode;
+import org.nuclos.server.navigation.treenode.nuclet.content.ReportNucletContentTreeNode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -628,7 +629,13 @@ public class TreeNodeFacadeBean extends NuclosFacadeBean implements TreeNodeFaca
 	private List<NucletContentTreeNode> getNucletContentTypes(Long nucletId) {
 		List<NucletContentTreeNode> result = new ArrayList<NucletContentTreeNode>();
 		for (NuclosEntity ne : AbstractNucletContentEntryTreeNode.getNucletContentEntities()) {
-			result.add(new NucletContentTreeNode(nucletId, ne));
+			switch (ne) {
+			case REPORT:
+				result.add(new ReportNucletContentTreeNode(nucletId));
+				break;
+			default:
+				result.add(new NucletContentTreeNode(nucletId, ne));	
+			}
 		}
 		return result;
 	}

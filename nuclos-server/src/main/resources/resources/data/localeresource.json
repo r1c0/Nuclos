@@ -18735,6 +18735,21 @@
     "text": "Konfiguration\\Sonstige"
   },
   {
+    "resourceID": "report.and.form",
+    "locale": "i-default",
+    "text": "Report & Form"
+  },
+  {
+    "resourceID": "report.and.form",
+    "locale": "en",
+    "text": "Report & Form"
+  },
+  {
+    "resourceID": "report.and.form",
+    "locale": "de",
+    "text": "Report & Formular"
+  },
+  {
     "resourceID": "nuclos.entity.datasource.label",
     "locale": "i-default",
     "text": "Report & Form"

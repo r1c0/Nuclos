@@ -77,6 +77,7 @@ import org.nuclos.server.navigation.treenode.nuclet.content.NucletContentCustomC
 import org.nuclos.server.navigation.treenode.nuclet.content.NucletContentEntityTreeNode;
 import org.nuclos.server.navigation.treenode.nuclet.content.NucletContentRuleTreeNode;
 import org.nuclos.server.navigation.treenode.nuclet.content.NucletContentTreeNode;
+import org.nuclos.server.navigation.treenode.nuclet.content.ReportNucletContentTreeNode;
 
 /**
  * Factory for creating <code>ExplorerNode</code>s out of <code>TreeNode</code>s.
@@ -145,7 +146,10 @@ public class ExplorerNodeFactory {
 		this.putConstructor(OwnDatasourceNode.class, DatasourceDirectoryExplorerNode.class);
 
 		this.putConstructor(NucletTreeNode.class, NucletExplorerNode.class);
+		
 		this.putConstructor(NucletContentTreeNode.class, NucletContentExplorerNode.class);
+		this.putConstructor(ReportNucletContentTreeNode.class, NucletContentExplorerNode.class);
+		
 		this.putConstructor(DefaultNucletContentEntryTreeNode.class, NucletContentEntryExplorerNode.class);
 		this.putConstructor(NucletContentEntityTreeNode.class, NucletContentEntityExplorerNode.class);
 		this.putConstructor(NucletContentCustomComponentTreeNode.class, NucletContentCustomComponentExplorerNode.class);
