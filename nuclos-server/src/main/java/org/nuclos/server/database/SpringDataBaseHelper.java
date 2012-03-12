@@ -45,6 +45,7 @@ import org.nuclos.server.dblayer.statements.DbStatement;
 import org.nuclos.server.dblayer.structure.DbTableType;
 import org.nuclos.server.dblayer.util.StatementToStringVisitor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 /**
@@ -87,6 +88,7 @@ public class SpringDataBaseHelper {
 	}
 	
 	@Autowired
+	@Qualifier("nuclos")
 	void setDataSource(DataSource dataSource) {
 		this.dataSource = dataSource;
 	}

@@ -126,6 +126,7 @@ import org.nuclos.server.resource.ResourceCache;
 import org.nuclos.server.resource.valueobject.ResourceVO;
 import org.nuclos.server.ruleengine.NuclosBusinessRuleException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.datasource.DataSourceUtils;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -152,6 +153,7 @@ public class ReportFacadeBean extends NuclosFacadeBean implements ReportFacadeRe
 	}
 
 	@Autowired
+	@Qualifier("nuclos")
 	void setDataSource(DataSource dataSource) {
 		this.dataSource = dataSource;
 	}
