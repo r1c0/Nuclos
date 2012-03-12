@@ -36,6 +36,16 @@ public class NuclosRemoteInvocationExecutor implements RemoteInvocationExecutor 
 	private static final Logger LOG = Logger.getLogger(NuclosRemoteInvocationExecutor.class);
 	
 	/**
+	 * Whether to turn INFO logging of profiling data on.
+	 */
+	private static final boolean PROFILE = true;
+	
+	/**
+	 * Minimum delay for calls in order to appear in LOG. 
+	 */
+	private static final long PROFILE_MIN_MS = 150L;
+	
+	/**
 	 * Spring injected.
 	 */
 	private SpringInputContext inputContext;
@@ -100,6 +110,8 @@ public class NuclosRemoteInvocationExecutor implements RemoteInvocationExecutor 
 		def.setName("nuclosRemoveInvocationTxDef");
 		def.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRED);
 		final TransactionStatus tx = txManager.getTransaction(def);
+		
+		long before = 0L, after = 0L;
 		try {
 			userContext.setTimeZone((TimeZone) invoke.getAttribute("user.timezone"));
 			remoteContext.setRemotly(true);
@@ -122,14 +134,24 @@ public class NuclosRemoteInvocationExecutor implements RemoteInvocationExecutor 
 				}
 				inputContext.set(context);
 			}
-			Object result = invoke.invoke(param);
+			
+			if (PROFILE) {
+				before = System.currentTimeMillis();
+			}
+			
+			final Object result = invoke.invoke(param);
+			
+			if (PROFILE) {
+				after = System.currentTimeMillis();
+			}
+			
 			if (tx.isRollbackOnly()) {
 				LOG.warn("Transaction is marked for rollback-only, rolling back now: " + invoke + "(" + param + "): " + result);
 				txManager.rollback(tx);
 			}
 			else {
 				txManager.commit(tx);
-			}
+			}			
 			return result;
 		} 
 		catch (InvocationTargetException e) {
@@ -146,6 +168,15 @@ public class NuclosRemoteInvocationExecutor implements RemoteInvocationExecutor 
 			userContext.clear();
 			remoteContext.clear();
 			inputContext.clear();
+			
+			if (PROFILE) {
+				final long call = after - before;
+				if (call >= PROFILE_MIN_MS) {
+					final long now = System.currentTimeMillis();
+					LOG.info("client invocation of " + invoke + " took " + (now - before) 
+							+ " (" + call + ") ms");
+				}
+			}
 		}
 	}
 	
