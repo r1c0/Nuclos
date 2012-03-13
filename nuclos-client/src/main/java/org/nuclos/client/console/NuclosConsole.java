@@ -38,7 +38,7 @@ import org.nuclos.client.attribute.AttributeDelegate;
 import org.nuclos.client.genericobject.GenericObjectMetaDataCache;
 import org.nuclos.client.layout.LayoutDelegate;
 import org.nuclos.client.masterdata.MasterDataDelegate;
-import org.nuclos.client.nuclet.NucletGenerator;
+import org.nuclos.client.nuclet.generator.NucletGenerator;
 import org.nuclos.client.report.ReportDelegate;
 import org.nuclos.client.rule.RuleDelegate;
 import org.nuclos.client.rule.TimelimitRuleDelegate;
@@ -104,7 +104,7 @@ public class NuclosConsole extends ConsoleConstants {
 			CMD_CHECKMASTERDATAVALUES, CMD_COMPILEDBOBJECTS,
 			CMD_SENDMESSAGE, CMD_KILLSESSION,
 			CMD_IMPORTTIMELIMITRULES, CMD_EXPORTTIMELIMITRULES, CMD_EXECUTE_TIMELIMITRULE_NOW,
-			CMD_GENERATE_NUCLET_FROM_XLSX
+			CMD_NUCLET_GENERATION_FROM_XLSX, CMD_NUCLET_GENERATION_CREATE_EMPTY_XLSX_FILE
 	);
 
 	private static NuclosConsole INSTANCE;
@@ -787,10 +787,18 @@ public class NuclosConsole extends ConsoleConstants {
 		else if (sCommandLowerCase.equals(CMD_MIGRATESEARCHFILTER)) {
 			MigrateSearchFilterPreferences.migrate(sUserName);
 		}
-		else if (sCommandLowerCase.equals(CMD_GENERATE_NUCLET_FROM_XLSX)) {
+		else if (sCommandLowerCase.equals(CMD_NUCLET_GENERATION_CREATE_EMPTY_XLSX_FILE.toLowerCase())) {
 			NucletGenerator generator = new NucletGenerator();
-			if (asArgs.length == 1) {
-				generator.generateNucletFromXLSX(asArgs[0]);
+			if (asArgs.length == 2) {
+				generator.createEmptyXLSXFile(asArgs[1]);
+			} else {
+				generator.createEmptyXLSXFile();
+			}
+		}
+		else if (sCommandLowerCase.equals(CMD_NUCLET_GENERATION_FROM_XLSX.toLowerCase())) {
+			NucletGenerator generator = new NucletGenerator();
+			if (asArgs.length == 2) {
+				generator.generateNucletFromXLSX(asArgs[1]);
 			} else {
 				generator.generateNucletFromXLSX();
 			}

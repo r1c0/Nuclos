@@ -14,7 +14,7 @@
 //
 //You should have received a copy of the GNU Affero General Public License
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
-package org.nuclos.server.dbtransfer;
+package org.nuclos.common.dbtransfer;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -22,15 +22,15 @@ import java.io.UnsupportedEncodingException;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-class ZipOutput {
+public class ZipOutput {
 
 	private ZipOutputStream out;
 
-	ZipOutput(OutputStream out) {
+	public ZipOutput(OutputStream out) {
 		this.out = new ZipOutputStream(out);
 	}
 
-	void addEntry(String name, byte[] bytes) {
+	public void addEntry(String name, byte[] bytes) {
 		ZipEntry e = new ZipEntry(name);
 		try {
 			out.putNextEntry(e);
@@ -42,7 +42,7 @@ class ZipOutput {
 		}
 	}
 
-	void addEntry(String name, String content) {
+	public void addEntry(String name, String content) {
 		try {
 			addEntry(name, content.getBytes("UTF-8"));
 		} catch (UnsupportedEncodingException e) {
@@ -50,7 +50,7 @@ class ZipOutput {
 		}
 	}
 
-	void close() {
+	public void close() {
 		try {
 			out.close();
 		} catch (IOException e) {

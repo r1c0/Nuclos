@@ -16,9 +16,11 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.server.dbtransfer;
 
+import java.util.Date;
 import java.util.List;
 
 import org.nuclos.common.NuclosBusinessException;
+import org.nuclos.common.ApplicationProperties.Version;
 import org.nuclos.common.dbtransfer.Transfer;
 import org.nuclos.common.dbtransfer.TransferNuclet;
 import org.nuclos.common.dbtransfer.TransferOption;
@@ -59,4 +61,23 @@ public interface TransferFacadeRemote {
 	 * @return
 	 */
 	List<TransferNuclet> getAvaiableNuclets();
+	
+	/**
+	 * 
+	 * @param transferVersion
+	 * @param nucletUID
+	 * @param appName
+	 * @param version
+	 * @param database
+	 * @param exportDate
+	 * @param exportOptions
+	 */
+	String createMetaDataRoot(Integer transferVersion,
+			String nucletUID,
+			String appName,
+			Version version,
+			String database,
+			Date exportDate,
+			TransferOption.Map exportOptions);
+
 }

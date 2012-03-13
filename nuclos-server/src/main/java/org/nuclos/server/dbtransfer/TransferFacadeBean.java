@@ -48,6 +48,7 @@ import javax.sql.DataSource;
 
 import org.apache.log4j.Logger;
 import org.nuclos.common.ApplicationProperties;
+import org.nuclos.common.ApplicationProperties.Version;
 import org.nuclos.common.JMSConstants;
 import org.nuclos.common.MetaDataProvider;
 import org.nuclos.common.NuclosBusinessException;
@@ -69,8 +70,10 @@ import org.nuclos.common.dal.vo.SystemFields;
 import org.nuclos.common.dbtransfer.NucletContentUID;
 import org.nuclos.common.dbtransfer.PreviewPart;
 import org.nuclos.common.dbtransfer.Transfer;
+import org.nuclos.common.dbtransfer.TransferConstants;
 import org.nuclos.common.dbtransfer.TransferNuclet;
 import org.nuclos.common.dbtransfer.TransferOption;
+import org.nuclos.common.dbtransfer.ZipOutput;
 import org.nuclos.common2.IdUtils;
 import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.StringUtils;
@@ -156,21 +159,11 @@ import com.thoughtworks.xstream.io.xml.DomDriver;
 
 @Transactional(noRollbackFor= {Exception.class})
 @RolesAllowed("UseManagementConsole")
-public class TransferFacadeBean extends NuclosFacadeBean implements TransferFacadeRemote {
+public class TransferFacadeBean extends NuclosFacadeBean implements TransferFacadeRemote, TransferConstants {
 
 	private static final Logger LOG = Logger.getLogger(TransferFacadeBean.class);
-
-	private static final Integer TRANSFER_VERSION = 1;
-
-	private static final String ROOT_ENTRY_NAME = "nuclet_exportParameter.xml";
-
-	private static final String UID = "nuclet_contentuid.xml";
-
-	private static final String TABLE_ENTRY_SUFFIX = ".eo.xml";
 	
 	private static enum Process {CREATE, PREPARE, RUN};
-	
-	//
 	
 	private DataSource dataSource;
 	
@@ -829,6 +822,23 @@ public class TransferFacadeBean extends NuclosFacadeBean implements TransferFaca
 			getDatabaseType(),
 			new Date(),
 			exportOptions);
+	}
+	
+	public String createMetaDataRoot(Integer transferVersion,
+		String nucletUID,
+		String appName,
+		Version version,
+		String database,
+		Date exportDate,
+		TransferOption.Map exportOptions) {
+		return toXML(new MetaDataRoot(
+			transferVersion,
+			nucletUID,
+			appName,
+			version,
+			database,
+			exportDate,
+			exportOptions));
 	}
 
 	private static int getNewUserCount(List<EntityObjectVO> importUsers) {

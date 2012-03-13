@@ -47,6 +47,7 @@ import org.nuclos.common.dal.vo.EntityMetaDataVO;
 import org.nuclos.common.dal.vo.EntityObjectVO;
 import org.nuclos.common.dbtransfer.NucletContentUID;
 import org.nuclos.common.dbtransfer.TransferOption;
+import org.nuclos.common.nuclet.AbstractNucletContentConstants;
 import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.LocaleInfo;
 import org.nuclos.server.common.MetaDataServerProvider;
@@ -58,20 +59,9 @@ import org.nuclos.server.dblayer.DbException;
 import org.nuclos.server.dbtransfer.NucletContentMap;
 import org.nuclos.server.dbtransfer.TransferUtils;
 import org.nuclos.server.genericobject.searchcondition.CollectableSearchExpression;
-import org.nuclos.server.navigation.treenode.nuclet.content.AbstractNucletContentEntryTreeNode;
 
-public abstract class AbstractNucletContent implements INucletContent {
+public abstract class AbstractNucletContent implements INucletContent, AbstractNucletContentConstants {
 	private Logger log;
-
-	/**
-	 *
-	 */
-	public static final String FOREIGN_FIELD_TO_NUCLET = AbstractNucletContentEntryTreeNode.FOREIGN_FIELD_TO_NUCLET;
-
-	/**
-	 *
-	 */
-	public static final String LOCALE_RESOURCE_MAPPING_FIELD_NAME = "AbstractNucletContent.localeResourceMapping";
 
 	private final NuclosEntity entity;
 	private final NuclosEntity parententity;
