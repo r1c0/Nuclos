@@ -177,7 +177,7 @@ public class GenericObjectImportStructureCollectController extends MasterDataCol
 	 * Show all removed columns again, so they can be saved with their width, and are restored when opened again.
 	 */
 	@Override
-	protected void close() {
+	public void close() {
 		final JTable tbl = getSubFormController(NuclosEntity.IMPORTATTRIBUTE.getEntityName()).getSubForm().getJTable();
 		final TableColumnModel columnmodel = tbl.getColumnModel();
 		if (tablecolumnPreserve != null) {

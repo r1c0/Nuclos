@@ -90,11 +90,6 @@ public class TimelimitRuleCollectController extends MasterDataCollectController 
 		this.getCollectStateModel().addCollectStateListener(new RuleCollectStateListener());
 	}
 
-	@Override
-	protected void close() {
-		super.close();
-	}
-
 	private void setupDetailsToolBar() {
 		final JButton btnCheckRuleSource = new JButton(this.actCheckRuleSource);
 		btnCheckRuleSource.setName("btnCheckRuleSource");

@@ -679,7 +679,7 @@ public class MasterDataCollectController extends EntityCollectController<Collect
    }
 
    @Override
-   protected void close() {
+   public void close() {
       super.close();
       this.closeSubFormControllers();
    }

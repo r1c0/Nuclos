@@ -193,7 +193,7 @@ public class StateModelCollectController extends NuclosCollectController<Collect
 	}
 
 	@Override
-	protected void close() {
+	public void close() {
 		subformctlUsages.close();
 		pnlEdit.getStateModelEditor().getStateModelEditorPropertiesPanel()
 			.getStatePropertiesPanel().getStateDependantRightsPanel().close();

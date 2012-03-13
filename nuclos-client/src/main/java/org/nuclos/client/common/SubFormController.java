@@ -106,7 +106,7 @@ public abstract class SubFormController extends MainFrameTabController
 	/**
 	 * this controller's subform
 	 */
-	private final SubForm subform;
+	private SubForm subform;
 
 	/**
 	 * the <code>CollectableEntity</code> of the subform.
@@ -189,6 +189,10 @@ public abstract class SubFormController extends MainFrameTabController
 		this.removeListSelectionListener(this.getJTable());
 //		this.storeColumnOrderAndWidths(this.getJTable());
 		getSubForm().removeSubFormToolListener(subformToolListener);
+		
+		// close SubForm support
+		subform.close();
+		subform = null;
 	}
 	
 	public void setIgnorePreferencesUpdate(boolean ignore) {

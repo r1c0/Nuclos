@@ -219,7 +219,10 @@ public class NuclosEntityAttributeValueListShipStep extends NuclosEntityAttribut
 		
 		this.model.getAttribute().setValueList(new ArrayList<ValueList>(lstValues));
 		this.model.getAttribute().setValueListName(tfName.getText());
-			
+		
+		// close Subform support
+		subform.close();
+		subform = null;
 	}
 	
 	

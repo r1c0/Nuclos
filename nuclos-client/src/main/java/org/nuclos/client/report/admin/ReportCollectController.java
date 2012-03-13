@@ -299,7 +299,7 @@ public class ReportCollectController extends MasterDataCollectController {
 	 * Show all removed columns again, so they can be saved with their width, and are restored when opened again.
 	 */
 	@Override
-	protected void close() {
+	public void close() {
 		final JTable tbl = getSubFormController(outputEntity.getEntityName()).getSubForm().getJTable();
 		final TableColumnModel columnmodel = tbl.getColumnModel();
 		if (tablecolumnDataSource != null) {

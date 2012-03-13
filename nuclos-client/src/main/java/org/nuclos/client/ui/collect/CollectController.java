@@ -35,6 +35,7 @@ import java.awt.event.MouseListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyVetoException;
 import java.beans.VetoableChangeListener;
+import java.io.Closeable;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -198,7 +199,8 @@ import org.springframework.util.Assert;
  * TODO try to split up some of the responsibilities in separate classes, but don't sacrifice flexibility, don't make
  * things even more complicated and don't mess up the views with controller code. That's not an easy task...
  */
-public abstract class CollectController<Clct extends Collectable> extends TopController implements NuclosDropTargetVisitor {
+public abstract class CollectController<Clct extends Collectable> extends TopController 
+	implements NuclosDropTargetVisitor, Closeable {
 
 	private static final Logger LOG = Logger.getLogger(CollectController.class);
 
@@ -315,7 +317,7 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 		}
 	};
 
-	protected final FocusListener collectableComponentSearchFocusListener = new FocusListener() {
+	protected FocusListener collectableComponentSearchFocusListener = new FocusListener() {
 		@Override
 		public void focusLost(FocusEvent e) {}
 		@Override
@@ -1051,7 +1053,7 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	 * Called when the internal frame is closed. Releases all resources held by the controller.
 	 * This is the right place to remove all listeners.
 	 */
-	protected void close() {
+	public void close() {
 		// Search panel:
 		if (this.isSearchPanelAvailable()) {
 			this.ctlSearch.close();
@@ -1062,6 +1064,9 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 
 		// Details panel:
 		this.ctlDetails.close();
+		
+		// Partial fix for http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=7079260
+		collectableComponentSearchFocusListener = null;
 	}
 
 	@Override

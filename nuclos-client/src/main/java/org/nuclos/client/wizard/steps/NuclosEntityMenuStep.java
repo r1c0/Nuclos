@@ -182,6 +182,10 @@ public class NuclosEntityMenuStep extends NuclosEntityAbstractStep {
 		model.setEntityMenus(entityMenus);
 		subFormController.close();
 		super.applyState();
+		
+		// close SubForm support
+		subform.close();
+		subform = null;
 	}
 
 	public static class EntityMenuCollectableEntity extends AbstractCollectableEntity {
