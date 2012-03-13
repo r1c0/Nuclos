@@ -105,7 +105,7 @@ public abstract class SubFormController extends Controller
 	/**
 	 * this controller's subform
 	 */
-	private final SubForm subform;
+	private SubForm subform;
 	/**
 	 * the parent for new MDI (internal) frames
 	 */
@@ -186,6 +186,10 @@ public abstract class SubFormController extends Controller
 		this.removeListSelectionListener(this.getJTable());
 //		this.storeColumnOrderAndWidths(this.getJTable());
 		getSubForm().removeSubFormToolListener(subformToolListener);
+		
+		// close SubForm support
+		subform.close();
+		subform = null;
 	}
 	
 	public void setIgnorePreferencesUpdate(boolean ignore) {

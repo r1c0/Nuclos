@@ -109,7 +109,7 @@ public class RuleCollectController extends EntityCollectController<CollectableRu
 	private final CollectPanel<CollectableRule> pnlCollect = new RuleCollectPanel(false);
 	private final MainFrameTab ifrm;
 	private final RuleDelegate ruledelegate = RuleDelegate.getInstance();
-	private final SubForm subform = new SubForm(NuclosEntity.RULEUSAGE.getEntityName(), JToolBar.VERTICAL);
+	private SubForm subform = new SubForm(NuclosEntity.RULEUSAGE.getEntityName(), JToolBar.VERTICAL);
 	private final RuleEditPanel pnlEdit = new RuleEditPanel(subform);
 	private final MasterDataSubFormController subformctlUsage;
 
@@ -190,9 +190,13 @@ public class RuleCollectController extends EntityCollectController<CollectableRu
 	}
 
 	@Override
-	protected void close() {
+	public void close() {
 		super.close();
 		this.subformctlUsage.close();
+		
+		// close Subform support
+		subform.close();
+		subform = null;
 	}
 
 	private void setupResultToolBar() {

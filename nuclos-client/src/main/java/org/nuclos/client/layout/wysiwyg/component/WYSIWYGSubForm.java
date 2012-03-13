@@ -233,6 +233,13 @@ public class WYSIWYGSubForm extends JLayeredPane implements WYSIWYGComponent, Mo
 		this.setLayout(new BorderLayout());
 	}
 	
+	@Override
+	protected void finalize() {
+		// close Subform support
+		subform.close();
+		subform = null;
+	}
+	
 	/**
 	 * 
 	 * @return the entity the subform is related to

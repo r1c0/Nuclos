@@ -33,6 +33,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.beans.PropertyChangeEvent;
+import java.io.Closeable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -151,7 +152,8 @@ import org.nuclos.common2.exception.CommonFatalException;
  * <br>Created by Novabit Informationssysteme GmbH
  * <br>Please visit <a href="http://www.novabit.de">www.novabit.de</a>
  */
-public class SubForm extends JPanel implements TableCellRendererProvider, ActionListener {
+public class SubForm extends JPanel 
+	implements TableCellRendererProvider, ActionListener, Closeable {
 
 	private static final Logger LOG = Logger.getLogger(SubForm.class);
 
@@ -405,6 +407,11 @@ public class SubForm extends JPanel implements TableCellRendererProvider, Action
 		this.init();
 
 		assert this.getForeignKeyFieldToParent() == foreignKeyFieldToParent;
+	}
+	
+	@Override
+	public void close() {
+		LOG.info("close()");
 	}
 	
 	public void addColumnModelListener(TableColumnModelListener tblcolumnlistener) {

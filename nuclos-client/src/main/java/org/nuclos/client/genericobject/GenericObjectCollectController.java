@@ -793,7 +793,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	}
 
 	@Override
-	protected void close() {
+	public void close() {
 		closeSubFormControllersInSearch();
 		closeSubFormControllersInDetails();
 

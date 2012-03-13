@@ -189,6 +189,10 @@ public class NuclosEntityProcessStep extends NuclosEntityAbstractStep {
 		model.setProcesses(processes);
 		subFormController.close();
 		super.applyState();
+		
+		// close Subform support
+		subform.close();
+		subform = null;
 	}
 
 	private class ProcessSubformController extends MasterDataSubFormController {

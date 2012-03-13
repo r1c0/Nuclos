@@ -88,11 +88,6 @@ public class CodeCollectController extends MasterDataCollectController {
 		this.getCollectStateModel().addCollectStateListener(new RuleCollectStateListener());
 	}
 	
-	@Override
-	protected void close() {
-		super.close();
-	}
-
 	private void setupDetailsToolBar() {
 		// additional functionality in Details panel:
 		//final JToolBar toolbar = UIUtils.createNonFloatableToolBar();
