@@ -24,12 +24,14 @@ import org.nuclos.client.nuclet.generator.NucletGenerator;
 import org.nuclos.common.NuclosBusinessException;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.dal.vo.EntityObjectVO;
+import org.nuclos.common2.StringUtils;
 
 public class EntityFieldGroupNucletContentGenerator extends AbstractNucletContentGenerator {
 	
 	public static final String SHEET = "AttributeGroups";
 	
 	public static final int COL_NAME = 0;			// STRING
+	public static final int COLUMN_COUNT = 1;
 	
 	public static final String FIELD_NAME = "name";
 
@@ -51,11 +53,16 @@ public class EntityFieldGroupNucletContentGenerator extends AbstractNucletConten
 			
 			newEntityObject();
 			
-			for (Cell cell : row) {
+			boolean emptyRow = true;
+			for (int i = 0; i < COLUMN_COUNT; i++) {
+				final Cell cell = row.getCell(i); // could be null!
 				try {
-					switch (cell.getColumnIndex()) {
+					switch (i) {
 					case COL_NAME:
-						storeField(FIELD_NAME, cell.getStringCellValue());
+						storeField(FIELD_NAME, getStringValue(cell));
+						if (!StringUtils.looksEmpty(getStringValue(cell))) {
+							emptyRow = false;
+						}
 						break;
 					}
 				} catch (Exception ex) {
@@ -63,7 +70,8 @@ public class EntityFieldGroupNucletContentGenerator extends AbstractNucletConten
 				}
 			}
 			
-			finishEntityObject();
+			if (!emptyRow)
+				finishEntityObject();
 		}
 	}
 

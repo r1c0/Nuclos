@@ -25,15 +25,21 @@ import java.util.Map;
 import javax.annotation.PostConstruct;
 
 import org.apache.commons.httpclient.util.LangUtils;
+import org.nuclos.client.common.LocaleDelegate;
 import org.nuclos.client.layout.AbstractLayoutMLFactory;
+import org.nuclos.common.NuclosEOField;
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
 import org.nuclos.common.dal.vo.EntityObjectVO;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.exception.CommonBusinessException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
 @Configurable
 public class NucletGeneratorLayoutMLFactory extends AbstractLayoutMLFactory {
+
+	private SpringLocaleDelegate localeDelegate;
 	
 	private final NucletGenerator generator;
 	private List<EntityMetaDataVO> metaEntity;
@@ -43,6 +49,11 @@ public class NucletGeneratorLayoutMLFactory extends AbstractLayoutMLFactory {
 	public NucletGeneratorLayoutMLFactory(NucletGenerator generator) {
 		super();
 		this.generator = generator;
+	}
+	
+	@Autowired
+	void setSpringLocaleDelegate(SpringLocaleDelegate localeDelegate) {
+		this.localeDelegate = localeDelegate;
 	}
 	
 	@PostConstruct
@@ -63,7 +74,14 @@ public class NucletGeneratorLayoutMLFactory extends AbstractLayoutMLFactory {
 
 	@Override
 	public String getResourceText(String resourceId) {
-		return generator.getResourceText(resourceId);
+		String result = generator.getResourceText(resourceId);
+		if (result == null) {
+			result = localeDelegate.getMessage(resourceId, ""); // for meta fields (DATCREATED, etc.)
+		}
+		if (result == null) {
+			result = "["+resourceId+"]";
+		}
+		return result;
 	}
 
 	@Override
@@ -94,8 +112,17 @@ public class NucletGeneratorLayoutMLFactory extends AbstractLayoutMLFactory {
 	}
 	
 	public String generateLayout(String entity, boolean groupAttributes, boolean withSubforms, boolean withEditFields) throws CommonBusinessException {
-		final String result = generateLayout(entity, getEntityFieldMetaData(entity), groupAttributes, withSubforms, withEditFields);
+		final String result = generateLayout(entity, addMetaFields(getEntityFieldMetaData(entity)), groupAttributes, withSubforms, withEditFields);
 		return result;
 	}
 
+	private List<EntityFieldMetaDataVO> addMetaFields(List<EntityFieldMetaDataVO> fields) {
+		List<EntityFieldMetaDataVO> result = new ArrayList<EntityFieldMetaDataVO>(fields.size()+4);
+		result.addAll(fields);
+		result.add(NuclosEOField.CREATEDBY.getMetaData());
+		result.add(NuclosEOField.CREATEDAT.getMetaData());
+		result.add(NuclosEOField.CHANGEDBY.getMetaData());
+		result.add(NuclosEOField.CHANGEDAT.getMetaData());
+		return result;
+	}
 }

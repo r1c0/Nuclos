@@ -97,6 +97,10 @@ public abstract class AbstractNucletContentGenerator implements AbstractNucletCo
 	}
 	
 	protected String storeLocaleResource(String resourceField, String text) {
+		if (StringUtils.looksEmpty(text)) {
+			return null;
+		}
+		
 		String result = "RNucGen" + generator.getNextId();
 		
 		for (LocaleInfo locale : generator.getLocales()) {
@@ -118,7 +122,7 @@ public abstract class AbstractNucletContentGenerator implements AbstractNucletCo
 	}
 	
 	protected void error(Cell cell, Exception ex) {
-		error(String.format("Cell [%s:%s], ", cell.getRowIndex()+1, cell.getColumnIndex()+1, ex.getMessage()));
+		error(String.format("[Row %s, Column %s], %s", cell==null?"null":cell.getRowIndex()+1, cell==null?"null":cell.getColumnIndex()+1, ex.getMessage()));
 	}
 	
 	protected void warning(String warning) {
@@ -129,12 +133,16 @@ public abstract class AbstractNucletContentGenerator implements AbstractNucletCo
 		return result;
 	}
 	
+	public String getStringValue(Cell cell) {
+		return cell==null ? null : cell.getStringCellValue();
+	}
+	
 	public Integer getIntegerValue(Cell cell) {
-		return new Double(cell.getNumericCellValue()).intValue();
+		return cell==null ? null : new Double(cell.getNumericCellValue()).intValue();
 	}
 	
 	public boolean getBooleanValue(Cell cell) {
-		return StringUtils.equalsIgnoreCase(cell.getStringCellValue(), "y");
+		return StringUtils.equalsIgnoreCase(cell==null?"n":cell.getStringCellValue(), "y");
 	}
 	
 	public abstract void generateEntityObjects();

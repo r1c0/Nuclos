@@ -24,6 +24,7 @@ import org.nuclos.client.nuclet.generator.NucletGenerator;
 import org.nuclos.common.NuclosBusinessException;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.dal.vo.EntityObjectVO;
+import org.nuclos.common2.StringUtils;
 
 public class EntityNucletContentGenerator extends AbstractNucletContentGenerator {
 	
@@ -33,12 +34,16 @@ public class EntityNucletContentGenerator extends AbstractNucletContentGenerator
 	public static final int COL_TABLE_NAME = 1;					// STRING
 	public static final int COL_LABEL = 2;						// STRING
 	public static final int COL_MENU = 3;						// STRING
-	public static final int COL_SEARCHABLE = 4;					// BOOLEAN
-	public static final int COL_CACHEABLE = 5;					// BOOLEAN
-	public static final int COL_LOGBOOK = 6;					// BOOLEAN
-	public static final int COL_EDITABLE = 7;					// BOOLEAN
-	public static final int COL_STATEMODEL = 8;					// BOOLEAN
-	public static final int COL_SYSTEM_ID_PREFIX = 9;			// STRING
+	public static final int COL_MENUSHORTCUT = 4;				// STRING
+	public static final int COL_ACCELERATOR = 5;				// STRING
+	public static final int COL_ACCELERATOR_MODIFIER = 6;		// INTEGER
+	public static final int COL_SEARCHABLE = 7;					// BOOLEAN
+	public static final int COL_CACHEABLE = 8;					// BOOLEAN
+	public static final int COL_LOGBOOK = 9;					// BOOLEAN
+	public static final int COL_EDITABLE = 10;					// BOOLEAN
+	public static final int COL_STATEMODEL = 11;				// BOOLEAN
+	public static final int COL_SYSTEM_ID_PREFIX = 12;			// STRING
+	public static final int COLUMN_COUNT = 13;
 	
 	public static final String FIELD_ENTITY = "entity";
 
@@ -60,20 +65,35 @@ public class EntityNucletContentGenerator extends AbstractNucletContentGenerator
 			
 			newEntityObject();
 			
-			for (Cell cell : row) {
+			boolean emptyRow = true;
+			for (int i = 0; i < COLUMN_COUNT; i++) {
+				final Cell cell = row.getCell(i); // could be null!
 				try {
-					switch (cell.getColumnIndex()) {
+					switch (i) {
 					case COL_NAME:
-						storeField(FIELD_ENTITY, cell.getStringCellValue());
+						storeField(FIELD_ENTITY, getStringValue(cell));
+						if (!StringUtils.looksEmpty(getStringValue(cell))) {
+							emptyRow = false;
+						}
 						break;
 					case COL_TABLE_NAME:
-						storeField("dbentity", cell.getStringCellValue());
+						storeField("dbentity", getStringValue(cell));
 						break;
 					case COL_LABEL:
-						storeLocaleResource("localeresourcel", cell.getStringCellValue());
+						storeLocaleResource("localeresourcel", getStringValue(cell));
+						storeLocaleResource("localeresourced", getStringValue(cell));
 						break;
 					case COL_MENU:
-						storeLocaleResource("localeresourcem", cell.getStringCellValue());
+						storeLocaleResource("localeresourcem", getStringValue(cell));
+						break;
+					case COL_MENUSHORTCUT:
+						storeField("menushortcut", getStringValue(cell));
+						break;
+					case COL_ACCELERATOR:
+						storeField("accelerator", getStringValue(cell));
+						break;
+					case COL_ACCELERATOR_MODIFIER:
+						storeField("acceleratormodifier", getIntegerValue(cell));
 						break;
 					case COL_SEARCHABLE:
 						storeField("searchable", getBooleanValue(cell));
@@ -91,7 +111,7 @@ public class EntityNucletContentGenerator extends AbstractNucletContentGenerator
 						storeField("usessatemodel", getBooleanValue(cell));
 						break;
 					case COL_SYSTEM_ID_PREFIX:
-						storeField("systemidprefix", cell.getStringCellValue());
+						storeField("systemidprefix", getStringValue(cell));
 						break;
 					}
 				} catch (Exception ex) {
@@ -99,8 +119,22 @@ public class EntityNucletContentGenerator extends AbstractNucletContentGenerator
 				}
 			}
 			
-			finishEntityObject();
+			if (!emptyRow)
+				finishEntityObject();
 		}
+	}
+	
+	@Override
+	protected boolean finishEntityObject() {
+		boolean result = super.finishEntityObject();
+		if (result) {
+			// add static not nullable fields here
+			fields.put("fieldvalueentity", false);
+			fields.put("treerelation", false);
+			fields.put("treegroup", false);		
+			fields.put("importexport", false);		
+		}
+		return result;
 	}
 	
 	public Long getIdByName(String entity) throws NuclosBusinessException {

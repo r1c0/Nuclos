@@ -35,6 +35,7 @@ import javax.annotation.PostConstruct;
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileFilter;
 
+import org.apache.log4j.Logger;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -55,7 +56,6 @@ import org.nuclos.common2.InternalTimestamp;
 import org.nuclos.common2.LocaleInfo;
 import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.StringUtils;
-import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.server.common.ejb3.LocaleFacadeRemote;
 import org.nuclos.server.dbtransfer.TransferFacadeRemote;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -66,6 +66,8 @@ import com.thoughtworks.xstream.io.xml.DomDriver;
 
 @Configurable
 public class NucletGenerator implements TransferConstants {
+	
+	private static final Logger LOG = Logger.getLogger(NucletGenerator.class);
 	
 	public static final String XLSX_FILE_VERSION = "1.0";
 	
@@ -189,8 +191,10 @@ public class NucletGenerator implements TransferConstants {
 		    info("Empty XLSX file created: " + xlsxFile);
 		    
 		} catch (FileNotFoundException e) {
+			LOG.error(e.getMessage(), e);
 			Errors.getInstance().showExceptionDialog(null, e);
 		} catch (IOException e) {
+			LOG.error(e.getMessage(), e);
 			Errors.getInstance().showExceptionDialog(null, e);
 		}
 	}
@@ -199,6 +203,8 @@ public class NucletGenerator implements TransferConstants {
 	 * use File Chooser
 	 */
 	public void generateNucletFromXLSX() {
+		info("Nuclet generation started...");
+		
 		final JFileChooser filechooser = new JFileChooser();
 		final FileFilter filefilter = new FileFilter() {
 			@Override
@@ -225,6 +231,7 @@ public class NucletGenerator implements TransferConstants {
 					nucletFileName = nucletName + NUCLET_FILE_EXTENSION;
 					generateNucletFromXLSX(new FileInputStream(file));
 				} catch (FileNotFoundException e) {
+					LOG.error(e.getMessage(), e);
 					Errors.getInstance().showExceptionDialog(null, e);
 				}
 			}
@@ -237,6 +244,8 @@ public class NucletGenerator implements TransferConstants {
 	 * @param xlsxFile
 	 */
 	public void generateNucletFromXLSX(String xlsxFile) {
+		info("Nuclet generation started...");
+		
 		try {
 			path = xlsxFile.substring(0, xlsxFile.lastIndexOf(File.separator));
 			nucletName = xlsxFile.substring(xlsxFile.lastIndexOf(File.separator)+1, xlsxFile.length());
@@ -244,6 +253,7 @@ public class NucletGenerator implements TransferConstants {
 			nucletFileName = nucletName + NUCLET_FILE_EXTENSION;
 			generateNucletFromXLSX(new FileInputStream(xlsxFile));
 		} catch (FileNotFoundException e) {
+			LOG.error(e.getMessage(), e);
 			Errors.getInstance().showExceptionDialog(null, e);
 		}
 	}
@@ -292,8 +302,10 @@ public class NucletGenerator implements TransferConstants {
 		    info("Nuclet generated: " + nucletFile);
 						
 		} catch (IOException e) {
+			LOG.error(e.getMessage(), e);
 			Errors.getInstance().showExceptionDialog(null, e);
 		} catch (NuclosBusinessException e) {
+			LOG.error(e.getMessage(), e);
 			Errors.getInstance().showExceptionDialog(null, e);
 		} 
 	}
@@ -348,7 +360,7 @@ public class NucletGenerator implements TransferConstants {
 	private List<EntityObjectVO> generateLayouts() {
 		List<EntityObjectVO> result = new ArrayList<EntityObjectVO>();
 		for (EntityObjectVO eoEntity : genEntity.getResult()) {
-			final String entity = eoEntity.getEntity();
+			final String entity = eoEntity.getField("entity", String.class);
 			try {
 				final String layoutML = layoutMLFactory.generateLayout(entity, false, false, true);
 				final EntityObjectVO eo = new EntityObjectVO();
@@ -363,7 +375,8 @@ public class NucletGenerator implements TransferConstants {
 				
 				result.add(eo);
 				
-			} catch (CommonBusinessException e) {
+			} catch (Exception e) {
+				LOG.error(e.getMessage(), e);
 				error(String.format("During layout generation for entity \"%s\" an error has occurred: %s", entity, e.getMessage()));
 			}
 		}

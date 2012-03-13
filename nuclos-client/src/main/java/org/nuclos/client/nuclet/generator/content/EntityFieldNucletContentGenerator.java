@@ -21,6 +21,7 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.nuclos.client.nuclet.generator.NucletGenerator;
 import org.nuclos.common.NuclosEntity;
+import org.nuclos.common2.StringUtils;
 
 public class EntityFieldNucletContentGenerator extends AbstractNucletContentGenerator {
 	
@@ -29,27 +30,28 @@ public class EntityFieldNucletContentGenerator extends AbstractNucletContentGene
 	public static final int COL_ENTITY_NAME = 0;			// STRING
 	public static final int COL_NAME = 1;					// STRING
 	public static final int COL_COLUMN = 2;					// STRING
-	public static final int COL_LABEL = 4;					// STRING
-	public static final int COL_ATTRBIUTE_GROUP = 5;		// STRING
-	public static final int COL_DATATYPE = 6;				// STRING
-	public static final int COL_DATASCALE = 7;				// INTEGER
-	public static final int COL_DATAPRECISION = 8;			// INTEGER
-	public static final int COL_READONLY = 9;				// BOOLEAN
-	public static final int COL_NULLABLE = 10;				// BOOLEAN
-	public static final int COL_UNIQUE = 11;				// BOOLEAN
-	public static final int COL_LOGBOOK = 12;				// BOOLEAN
-	public static final int COL_MODIFIABLE = 13;			// BOOLEAN
-	public static final int COL_FOREIGN_ENTITY = 14;		// STRING
-	public static final int COL_FOREIGN_ENTITY_FIELD = 15;	// STRING
-	public static final int COL_SEARCHABLE = 16;			// BOOLEAN
-	public static final int COL_DELETE_ON_CASCADE = 17;		// BOOLEAN
-	public static final int COL_INDEXED = 18;				// BOOLEAN
-	public static final int COL_LOOKUP_ENTITY = 19;			// STRING
-	public static final int COL_LOOKUP_ENTITY_FIELD = 20;	// STRING
-	public static final int COL_FORMAT_INPUT = 21;			// STRING
-	public static final int COL_FORMAT_OUTPUT = 22;			// STRING
-	public static final int COL_DEFAULT_VALUE = 23;			// STRING
-	public static final int COL_CALC_FUNCTION = 24;			// STRING
+	public static final int COL_LABEL = 3;					// STRING
+	public static final int COL_ATTRBIUTE_GROUP = 4;		// STRING
+	public static final int COL_DATATYPE = 5;				// STRING
+	public static final int COL_DATASCALE = 6;				// INTEGER
+	public static final int COL_DATAPRECISION = 7;			// INTEGER
+	public static final int COL_READONLY = 8;				// BOOLEAN
+	public static final int COL_NULLABLE = 9;				// BOOLEAN
+	public static final int COL_UNIQUE = 10;				// BOOLEAN
+	public static final int COL_LOGBOOK = 11;				// BOOLEAN
+	public static final int COL_MODIFIABLE = 12;			// BOOLEAN
+	public static final int COL_FOREIGN_ENTITY = 13;		// STRING
+	public static final int COL_FOREIGN_ENTITY_FIELD = 14;	// STRING
+	public static final int COL_SEARCHABLE = 15;			// BOOLEAN
+	public static final int COL_DELETE_ON_CASCADE = 16;		// BOOLEAN
+	public static final int COL_INDEXED = 17;				// BOOLEAN
+	public static final int COL_LOOKUP_ENTITY = 18;			// STRING
+	public static final int COL_LOOKUP_ENTITY_FIELD = 19;	// STRING
+	public static final int COL_FORMAT_INPUT = 20;			// STRING
+	public static final int COL_FORMAT_OUTPUT = 21;			// STRING
+	public static final int COL_DEFAULT_VALUE = 22;			// STRING
+	public static final int COL_CALC_FUNCTION = 23;			// STRING
+	public static final int COLUMN_COUNT = 24;
 	
 	private final EntityNucletContentGenerator entityGenerator;
 	private final EntityFieldGroupNucletContentGenerator entityFieldGroupGenerator;
@@ -76,29 +78,38 @@ public class EntityFieldNucletContentGenerator extends AbstractNucletContentGene
 				continue; // header row
 			
 			newEntityObject();
+			storeField("order", row.getRowNum());
 			
-			for (Cell cell : row) {
+			boolean emptyRow = true;
+			for (int i = 0; i < COLUMN_COUNT; i++) {
+				final Cell cell = row.getCell(i); // could be null!
 				try {
-					switch (cell.getColumnIndex()) {
+					switch (i) {
 					case COL_ENTITY_NAME:
-						storeField("entity", cell.getStringCellValue());
-						storeFieldId("entity", entityGenerator.getIdByName(cell.getStringCellValue()));
+						storeField("entity", getStringValue(cell));
+						storeFieldId("entity", entityGenerator.getIdByName(getStringValue(cell)));
+						if (!StringUtils.looksEmpty(getStringValue(cell))) {
+							emptyRow = false;
+						}
 						break;
 					case COL_NAME:
-						storeField("field", cell.getStringCellValue());
+						storeField("field", getStringValue(cell));
 						break;
 					case COL_COLUMN:
-						storeField("dbfield", cell.getStringCellValue());
+						storeField("dbfield", getStringValue(cell));
 						break;
 					case COL_LABEL:
-						storeLocaleResource("localeresourcel", cell.getStringCellValue());
+						storeLocaleResource("localeresourcel", getStringValue(cell));
+						storeLocaleResource("localeresourced", getStringValue(cell));
 						break;
 					case COL_ATTRBIUTE_GROUP:
-						storeField("entityfieldgroup", cell.getStringCellValue());
-						storeFieldId("entityfieldgroup", entityFieldGroupGenerator.getIdByName(cell.getStringCellValue()));
+						if (!StringUtils.looksEmpty(getStringValue(cell))) {
+							storeField("entityfieldgroup", getStringValue(cell));
+							storeFieldId("entityfieldgroup", entityFieldGroupGenerator.getIdByName(getStringValue(cell)));
+						}
 						break;
 					case COL_DATATYPE:
-						storeField("datatype", cell.getStringCellValue());
+						storeField("datatype", getStringValue(cell));
 						break;
 					case COL_DATASCALE:
 						storeField("datascale", getIntegerValue(cell));
@@ -122,10 +133,10 @@ public class EntityFieldNucletContentGenerator extends AbstractNucletContentGene
 						storeField("modifiable", getBooleanValue(cell));
 						break;
 					case COL_FOREIGN_ENTITY:
-						storeField("foreignentity", cell.getStringCellValue());
+						storeField("foreignentity", getStringValue(cell));
 						break;
 					case COL_FOREIGN_ENTITY_FIELD:
-						storeField("foreignentityfield", cell.getStringCellValue());
+						storeField("foreignentityfield", getStringValue(cell));
 						break;
 					case COL_SEARCHABLE:
 						storeField("searchable", getBooleanValue(cell));
@@ -137,22 +148,22 @@ public class EntityFieldNucletContentGenerator extends AbstractNucletContentGene
 						storeField("indexed", getBooleanValue(cell));
 						break;
 					case COL_LOOKUP_ENTITY:
-						storeField("lookupentity", cell.getStringCellValue());
+						storeField("lookupentity", getStringValue(cell));
 						break;
 					case COL_LOOKUP_ENTITY_FIELD:
-						storeField("lookupentityfield", cell.getStringCellValue());
+						storeField("lookupentityfield", getStringValue(cell));
 						break;
 					case COL_FORMAT_INPUT:
-						storeField("formatinput", cell.getStringCellValue());
+						storeField("formatinput", getStringValue(cell));
 						break;
 					case COL_FORMAT_OUTPUT:
-						storeField("formatoutput", cell.getStringCellValue());
+						storeField("formatoutput", getStringValue(cell));
 						break;
 					case COL_DEFAULT_VALUE:
-						storeField("valuedefault", cell.getStringCellValue());
+						storeField("valuedefault", getStringValue(cell));
 						break;
 					case COL_CALC_FUNCTION:
-						storeField("calcfunction", cell.getStringCellValue());
+						storeField("calcfunction", getStringValue(cell));
 						break;
 					}
 				} catch (Exception ex) {
@@ -160,8 +171,22 @@ public class EntityFieldNucletContentGenerator extends AbstractNucletContentGene
 				}
 			}
 			
-			finishEntityObject();
+			if (!emptyRow)
+				finishEntityObject();
 		}
 	}
+
+	@Override
+	protected boolean finishEntityObject() {
+		boolean result = super.finishEntityObject();
+		if (result) {
+			// add static not nullable fields here
+			fields.put("showmnemonic", false);
+			fields.put("insertable", false);
+		}
+		return result;
+	}
+	
+	
 
 }
