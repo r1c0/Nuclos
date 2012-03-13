@@ -700,7 +700,12 @@ public abstract class StandardSqlDBAccess extends AbstractDBAccess {
             if (query.getGroupRestriction() != null) {
                 ps.append(" HAVING ").append(getPreparedString(query.getGroupRestriction()));
             }
-            if (!query.getOrderList().isEmpty()) {
+            prepareOrderBy(ps, query);
+            return ps;
+        }
+        
+        protected void prepareOrderBy(PreparedStringBuilder ps, DbQuery<?> query) {
+        	if (!query.getOrderList().isEmpty()) {
                 String sep = " ORDER BY ";
                 for (DbOrder order : query.getOrderList()) {
                     ps.append(sep);
@@ -709,7 +714,6 @@ public abstract class StandardSqlDBAccess extends AbstractDBAccess {
                     sep = ", ";
                 }
             }
-            return ps;
         }
 
         protected void prepareSelect(PreparedStringBuilder ps, DbQuery<?> query) {

@@ -247,5 +247,14 @@ public abstract class TransactSqlDbAccess extends StandardSqlDBAccess {
 				ps = ps.append(String.format("TOP %d ", query.getMaxResults()));
 			}
 		}
+		
+		@Override
+		protected PreparedStringBuilder buildPreparedString(DbQuery<?> query) {
+			PreparedStringBuilder ps = super.buildPreparedString(query);
+			if (query.getOffset() != null) {
+				ps.appendf(" OFFSET %d ROWS", query.getOffset()); //SQL Server 2012 only?
+			}
+			return ps;
+		}
 	}
 }

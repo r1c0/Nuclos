@@ -172,9 +172,6 @@ public abstract class DbAccess {
 	// Statements
 	//
 
-	/**
-	 * @deprecated Use an IBatch for executing structural DB changes.
-	 */
 	public int execute(DbBuildableStatement statement) throws DbException {
 		return execute(Collections.singletonList(statement));
 	}
@@ -185,14 +182,9 @@ public abstract class DbAccess {
 	 * Note: This method may be overridden in order to support batch execution.
 	 * It is up to the implementation to find consecutive commands which
 	 * can be executed in as batch statements.
-	 * 
-	 * @deprecated Use an IBatch for executing structural DB changes.
 	 */
 	public abstract int execute(List<? extends DbBuildableStatement> statements) throws DbException;
 
-	/**
-	 * @deprecated Use an IBatch for executing structural DB changes.
-	 */
 	public final int execute(DbBuildableStatement statement1, DbBuildableStatement...statements) throws DbException {
 		return execute(CollectionUtils.asList(statement1, statements));
 	}

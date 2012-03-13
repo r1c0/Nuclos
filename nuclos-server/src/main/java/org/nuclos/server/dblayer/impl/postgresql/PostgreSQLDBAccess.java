@@ -416,6 +416,9 @@ public class PostgreSQLDBAccess extends StandardSqlDBAccess {
 			if (query.getMaxResults() != -1) {
 				ps.appendf(" LIMIT %d", query.getMaxResults());
 			}
+			if (query.getOffset() != null) {
+				ps.appendf(" OFFSET %d", query.getOffset());
+			}
 			return ps;
 		}
 	}

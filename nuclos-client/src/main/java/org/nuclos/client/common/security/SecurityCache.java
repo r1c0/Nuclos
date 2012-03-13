@@ -348,4 +348,7 @@ public class SecurityCache {
 		return superUser;
 	}
 	
+	public String getUsername() {
+		return username;
+	}
 }	// class SecurityCache

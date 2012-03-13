@@ -45,6 +45,7 @@ public class DbQuery<T extends Object> {
 	private List<DbExpression<?>> groupList;
 	private DbCondition groupRestriction;
 	private List<DbOrder> orderList;
+	private Integer offset;
 	
 	DbQuery(DbQueryBuilder builder, Class<T> resultType) {
 		this.builder = builder;
@@ -213,6 +214,14 @@ public class DbQuery<T extends Object> {
 
 	public <U> DbQuery<U> subquery(Class<U> type) {
 		return builder.createQuery(type);
+	}
+
+	public Integer getOffset() {
+		return offset;
+	}
+
+	public void offset(Integer offset) {
+		this.offset = offset;
 	}
 
 	void registerAlias(DbFrom from, String tableAlias) {

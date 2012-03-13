@@ -39,5 +39,12 @@ public class NuclosDateTime extends InternalTimestamp implements Serializable, N
 			return new NuclosDateTime(date.getTime());
 		}
 	}
+	
+	public static Date toDate(NuclosDateTime ndt) {
+		if (ndt == null)
+			return null;
+		else
+			return new Date(ndt.getTime());
+	}
 
 }

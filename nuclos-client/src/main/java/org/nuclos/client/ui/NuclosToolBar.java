@@ -41,6 +41,12 @@ public class NuclosToolBar extends JToolBar {
 		setLayout(orientation==JToolBar.HORIZONTAL? new WrapLayout(WrapLayout.LEFT) : new BoxLayout(this, BoxLayout.Y_AXIS));
 		setMinimumSize(new Dimension(4, 4));
 	}
+	
+	public NuclosToolBar(int orientation, int wrapLayout) {
+		super();
+		setLayout(orientation==JToolBar.HORIZONTAL? new WrapLayout(wrapLayout) : new BoxLayout(this, BoxLayout.Y_AXIS));
+		setMinimumSize(new Dimension(4, 4));
+	}
 
 	@Override
 	public void addSeparator() {

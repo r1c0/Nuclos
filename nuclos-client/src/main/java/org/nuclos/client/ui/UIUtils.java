@@ -416,6 +416,12 @@ public class UIUtils {
 		|| (p0.y < p1.y && (p0.y + r0.height < p1.y + r1.height)))
 			parent.getViewport().setViewPosition(comp.getBounds().getLocation());
 	}
+	
+	public static JToolBar createNonFloatableToolBar(int orientation, int wrapLayout) {
+		final JToolBar result = new NuclosToolBar(orientation, wrapLayout);
+		result.setFloatable(false);
+		return result;
+	}
 
 	public static JToolBar createNonFloatableToolBar(int orientation) {
 		final JToolBar result = new NuclosToolBar(orientation);

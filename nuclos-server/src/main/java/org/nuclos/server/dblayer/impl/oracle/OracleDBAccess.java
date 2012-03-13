@@ -275,13 +275,41 @@ public class OracleDBAccess extends StandardSqlDBAccess {
 		public DbExpression<Date> convertInternalTimestampToDate(DbExpression<InternalTimestamp> x) {
 			return buildExpressionSql(Date.class, "TRUNC(", x, ")");
 		}
+		
+		@Override
+		protected void prepareSelect(PreparedStringBuilder ps, DbQuery<?> query) {
+			if (query.getOffset() == null) {
+				super.prepareSelect(ps, query);
+			} else {
+				ps.append("SELECT ");
+				if (query.isDistinct())
+					ps.append("DISTINCT ");
+				ps = ps.append("* FROM (SELECT ROW_NUMBER() OVER (");
+				super.prepareOrderBy(ps, query);
+				ps = ps.append(") AS RN, ");
+			}
+		}
+		
+		@Override
+		protected void prepareOrderBy(PreparedStringBuilder ps, DbQuery<?> query) {
+			if (query.getOffset() == null) {
+				super.prepareOrderBy(ps, query);
+			} 
+			// else, do nothing here
+			// order by in <code>prepareSelect</code>
+		}
 
 		@Override
 		protected PreparedStringBuilder buildPreparedString(DbQuery<?> query) {
 			PreparedStringBuilder ps = super.buildPreparedString(query);
-			if (query.getMaxResults() != -1) {
+			if (query.getMaxResults() != -1 && query.getOffset() == null) {
 				ps.prepend("SELECT * FROM (");
 				ps.appendf(") WHERE ROWNUM <= %d", query.getMaxResults());
+			} else if (query.getOffset() != null) {
+				ps.appendf(") WHERE RN > %d", query.getOffset());
+				if (query.getMaxResults() != -1){
+					ps.appendf(" AND RN <= %d", query.getOffset().intValue() + query.getMaxResults());
+				}
 			}
 			return ps;
 		}

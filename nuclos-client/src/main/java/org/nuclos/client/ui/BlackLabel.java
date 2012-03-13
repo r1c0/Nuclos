@@ -42,6 +42,8 @@ public class BlackLabel extends JPanel {
 	private final JLabel label;
 	private final JComponent content;
 	
+	private boolean gradientPaint = true;
+	
 	public BlackLabel(JComponent content, String label) {
 		this(content, createJLabel(label));
 	}
@@ -72,6 +74,14 @@ public class BlackLabel extends JPanel {
 		
 	}
 
+	public boolean isGradientPaint() {
+		return gradientPaint;
+	}
+
+	public void setGradientPaint(boolean gradientPaint) {
+		this.gradientPaint = gradientPaint;
+	}
+
 	@Override
 	public void paint(Graphics g) {
 		Graphics2D g2 = (Graphics2D) g;
@@ -84,13 +94,17 @@ public class BlackLabel extends JPanel {
 			Object antialiasing = g2.getRenderingHint(RenderingHints.KEY_ANTIALIASING);
 	        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON); 
 			
-			final Point2D center = new Point2D.Float((width-contentWidth), (height/2));
-			final float radius = (width-contentWidth)/2;
-		    final Point2D focus = new Point2D.Float((width-contentWidth)/2*3, (height/2));
-		    final float[] dist = {0.0f, 1.0f};
-		    final Color[] colors = {NuclosThemeSettings.BACKGROUND_COLOR4, NuclosThemeSettings.BACKGROUND_COLOR3};
-		    g2.setPaint(new RadialGradientPaint(center, radius, focus,
-		                                        dist, colors, CycleMethod.NO_CYCLE));
+	        if (gradientPaint) {
+				final Point2D center = new Point2D.Float((width-contentWidth), (height/2));
+				final float radius = (width-contentWidth)/2;
+			    final Point2D focus = new Point2D.Float((width-contentWidth)/2*3, (height/2));
+			    final float[] dist = {0.0f, 1.0f};
+			    final Color[] colors = {NuclosThemeSettings.BACKGROUND_COLOR4, NuclosThemeSettings.BACKGROUND_COLOR3};
+			    g2.setPaint(new RadialGradientPaint(center, radius, focus,
+			                                        dist, colors, CycleMethod.NO_CYCLE));
+	        } else {
+	        	g2.setColor(NuclosThemeSettings.BACKGROUND_COLOR3);
+	        }
 		    g2.fillRoundRect(0, 0, width, height, 6, 6);
 		    
 		    g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, antialiasing); 

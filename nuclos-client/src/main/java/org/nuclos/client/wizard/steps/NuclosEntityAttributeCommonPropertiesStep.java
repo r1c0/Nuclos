@@ -91,7 +91,7 @@ public class NuclosEntityAttributeCommonPropertiesStep extends NuclosEntityAttri
 	private static final Logger LOG = Logger.getLogger(NuclosEntityAttributeCommonPropertiesStep.class);
 
 	static String[] forbiddenNames = {"INTID","DATCREATED", "STRCREATED", "DATCHANGED", "STRCHANGED", "INTVERSION",
-		"STRSYSTEMID", "INTID_T_MD_PROCESS", "STRORIGIN", "BLNDELETED", "INTID_T_MD_STATE"};
+		"STRSYSTEMID", "INTID_T_MD_PROCESS", "STRORIGIN", "BLNNUCLOSDELETED", "INTID_T_MD_STATE"};
 
 	JLabel lbLabel;
 	JTextField tfLabel;

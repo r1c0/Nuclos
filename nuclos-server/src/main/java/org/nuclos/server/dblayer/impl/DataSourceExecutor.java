@@ -190,6 +190,8 @@ public abstract class DataSourceExecutor implements DbExecutor {
         } else if (value instanceof Date) {
             if (javaType == InternalTimestamp.class) {
                 stmt.setTimestamp(index, new java.sql.Timestamp(((InternalTimestamp) value).getTime()));
+            } else if (javaType == NuclosDateTime.class) {
+                stmt.setTimestamp(index, new java.sql.Timestamp(((NuclosDateTime) value).getTime()));
             } else {
                 stmt.setDate(index, new java.sql.Date(((Date) value).getTime()));
             }
