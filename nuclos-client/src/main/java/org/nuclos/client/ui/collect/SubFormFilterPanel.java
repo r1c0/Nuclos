@@ -19,6 +19,7 @@ package org.nuclos.client.ui.collect;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.GridBagLayout;
+import java.io.Closeable;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -33,6 +34,7 @@ import javax.swing.event.TableColumnModelListener;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 
+import org.apache.log4j.Logger;
 import org.jdesktop.swingx.HorizontalLayout;
 import org.jdesktop.swingx.JXCollapsiblePane;
 
@@ -53,7 +55,11 @@ import org.nuclos.common2.StringUtils;
  * @author	<a href="mailto:martin.weber@novabit.de">Martin Weber</a>
  * @version 01.00.00
  */
-public class SubFormFilterPanel extends JXCollapsiblePane {
+public class SubFormFilterPanel extends JXCollapsiblePane implements Closeable {
+	
+	private static final Logger LOG = Logger.getLogger(SubFormFilterPanel.class);
+
+	//
 	
 	private JPanel filterPanel = new JPanel(new HorizontalLayout());
 	private JPanel resetFilterButtonPanel = new JPanel(new BorderLayout());
@@ -63,6 +69,8 @@ public class SubFormFilterPanel extends JXCollapsiblePane {
 	private Boolean fixedTable = false;;
 	
 	private Map<String, CollectableComponent> column2component = new HashMap<String, CollectableComponent>();
+	
+	private boolean closed = false;
 	
 	public SubFormFilterPanel(TableColumnModel columnModel, Map<String, CollectableComponent> column2component, Boolean fixedTable) {
 		setLayout(new BorderLayout());
@@ -88,6 +96,25 @@ public class SubFormFilterPanel extends JXCollapsiblePane {
 		arrangeFilterComponents();
 		
 		addListener();
+	}
+	
+	@Override
+	public void close() {
+		// Close is needed for avoiding memory leaks
+		// If you want to change something here, please consult me (tp).  
+		if (!closed) {
+			LOG.info("close(): " + this);
+			filterPanel = null;
+			columnModel = null;
+			column2component.clear();
+			column2component = null;
+			
+			// JXCollapsiblePane
+			removeAll();
+			// setContentPane(null);
+			
+			closed = true;
+		}
 	}
 
 	/**

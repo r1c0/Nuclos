@@ -22,6 +22,7 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.Closeable;
 
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
@@ -35,6 +36,7 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableModel;
 
+import org.apache.log4j.Logger;
 import org.nuclos.client.ui.Icons;
 
 /**
@@ -42,8 +44,13 @@ import org.nuclos.client.ui.Icons;
  * Displays an RowIndicator column in front o each row
  * @author <a href="mailto:rainer.schneider@novabit.de">rainer.schneider</a>
  */
-public class SubformRowHeader {
+public class SubformRowHeader implements Closeable {
+	
+	private static final Logger LOG = Logger.getLogger(SubformRowHeader.class);
+
 	public static final int COLUMN_SIZE = 20;
+	
+	// 
 
 	/** table which display the header columns */
 	private final JTable headerTable;
@@ -55,6 +62,8 @@ public class SubformRowHeader {
 
 	/** listener to synchronize the header table with the external table */
 	private final TableModelListener externalTableModelListener;
+	
+	private boolean closed = false;
 	
 	/**
 	 * initializes the header table and the listeners
@@ -84,6 +93,20 @@ public class SubformRowHeader {
 	public SubformRowHeader(SubForm.SubFormTable tbl, JScrollPane scrlpnOriginalTable) {
 		this();
 		setExternalTable(tbl, scrlpnOriginalTable);
+	}
+	
+	@Override
+	public void close() {
+		// Close is needed for avoiding memory leaks
+		// If you want to change something here, please consult me (tp). 
+		if (!closed) {
+			LOG.info("close(): " + this);
+			// headerTable = null;
+			scrlpnOriginalTable = null;
+			externalTable = null;
+			// externalTableModelListener = null;
+			closed = true;
+		}
 	}
 
 	/**

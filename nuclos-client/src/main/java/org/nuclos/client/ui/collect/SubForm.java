@@ -130,6 +130,7 @@ import org.nuclos.common.collect.collectable.DefaultCollectableEntityField;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableComparison;
 import org.nuclos.common.collect.collectable.searchcondition.ComparisonOperator;
 import org.nuclos.common.collect.exception.CollectableFieldFormatException;
+import org.nuclos.common.collection.Pair;
 import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.StringUtils;
@@ -271,6 +272,57 @@ public class SubForm extends JPanel
 		}
 	}
 
+	private static class SubformTableColumnModel extends DefaultTableColumnModel
+			implements Closeable {
+
+		private TableModel tableModel;
+
+		private boolean closed = false;
+		
+		private SubformTableColumnModel(TableModel tableModel) {
+			this.tableModel = tableModel;
+		}
+
+		@Override
+		public void close() {
+			// Close is needed for avoiding memory leaks
+			// If you want to change something here, please consult me (tp).  
+			if (!closed) {
+				LOG.info("close() SubformTableColumnModel: " + this);
+				tableModel = null;
+				tableColumns.clear();
+				closed = true;
+			}
+		}
+
+		@Override
+		public void addColumn(TableColumn column) {
+			if (tableModel instanceof SubFormTableModel) {
+				// NUCLEUSINT-742: the identifier of the column is now the entity field name
+				// (instead of the localized label)
+				String fieldName = ((SubFormTableModel) tableModel).getColumnFieldName(column.getModelIndex());
+				column.setIdentifier(fieldName);
+			}
+			super.addColumn(column);
+		}
+
+		@Override
+		public void propertyChange(PropertyChangeEvent evt) {
+			super.propertyChange(evt);
+			fireColumnPropertyChange(evt);
+		}
+
+		protected void fireColumnPropertyChange(PropertyChangeEvent evt) {
+			Object[] listeners = listenerList.getListenerList();
+			for (int i = listeners.length - 2; i >= 0; i -= 2) {
+				if (listeners[i] == TableColumnModelListener.class
+						&& listeners[i + 1] instanceof TableColumnModelExtListener) {
+					((TableColumnModelExtListener) listeners[i + 1]).columnPropertyChange(evt);
+				}
+			}
+		}
+	}
+
 	/* the minimum row height for the table(s). */
 	public static final int MIN_ROWHEIGHT = 20;
 	private static final Color LAYER_BUSY_COLOR = new Color(128, 128, 128, 128);
@@ -289,7 +341,7 @@ public class SubForm extends JPanel
 	private final JPanel         contentPane = new JPanel(new BorderLayout());
 	private final JScrollPane    scrollPane = new JScrollPane();
 
-	private final SubFormTable   subformtbl;
+	private SubFormTable   subformtbl;
 
 	private SubFormFilter        subformfilter;
 
@@ -339,7 +391,11 @@ public class SubForm extends JPanel
 	private List<SubFormToolListener> listeners;
 
 	private PopupMenuMouseAdapter popupMenuAdapter;
-
+	
+	private final List<Pair<JComponent,MouseListener>> myMouseListener = new ArrayList<Pair<JComponent,MouseListener>>();
+	
+	private boolean closed = false;
+	
 	/**
 	 * @param entityName
 	 * @param iToolBarOrientation @see JToolbar#setOrientation
@@ -410,8 +466,29 @@ public class SubForm extends JPanel
 	}
 	
 	@Override
-	public void close() {
-		LOG.info("close()");
+	public final void close() {
+		// Close is needed for avoiding memory leaks
+		// If you want to change something here, please consult me (tp).  
+		if (!closed) {
+			LOG.info("close(): " + this);
+			if (rowHeader != null) {
+				rowHeader.close();
+			}
+			rowHeader = null;
+			if (subformtbl != null) {
+				subformtbl.close();
+			}
+			subformtbl = null;
+			if (subformfilter != null) {
+				subformfilter.close();
+			}
+			subformfilter = null;
+			for (Pair<JComponent,MouseListener> p: myMouseListener) {
+				p.getX().removeMouseListener(p.getY());
+			}
+			myMouseListener.clear();
+			closed = true;
+		}
 	}
 	
 	public void addColumnModelListener(TableColumnModelListener tblcolumnlistener) {
@@ -569,15 +646,22 @@ public class SubForm extends JPanel
 		rowHeader = createTableRowHeader(subformtbl, scrollPane);
 		subformtbl.setRowHeaderTable(rowHeader);
 		
-		subformtbl.addMouseListener(newToolbarContextMenuListener(subformtbl, subformtbl));
-		scrollPane.getViewport().addMouseListener(newToolbarContextMenuListener(scrollPane.getViewport(), subformtbl));
-
-		//toolbar.add(btnNew);
-		//toolbar.add(btnRemove);
-		//toolbar.add(btnMultiEdit);
+		// subformtbl.addMouseListener(newToolbarContextMenuListener(subformtbl, subformtbl));
+		addToolbarMouseListener(subformtbl, subformtbl, subformtbl);
+		// scrollPane.getViewport().addMouseListener(newToolbarContextMenuListener(scrollPane.getViewport(), subformtbl));
+		addToolbarMouseListener(scrollPane.getViewport(), scrollPane.getViewport(), subformtbl);		
 	}
 	
-	public MouseListener newToolbarContextMenuListener(final JComponent parent, final JTable table) {
+	private void addToolbarMouseListener(JComponent src, JComponent parent, JTable table) {
+		final MouseListener ml = newToolbarContextMenuListener(parent, table);
+		src.addMouseListener(ml);
+		myMouseListener.add(new Pair<JComponent,MouseListener>(src, ml));
+	}
+	
+	/**
+	 * @Deprecated Never use this directly, instead use {@link #addToolbarMenuItems(List)}.
+	 */
+	private MouseListener newToolbarContextMenuListener(final JComponent parent, final JTable table) {
 		MouseListener res = new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent mev) {
@@ -675,8 +759,10 @@ public class SubForm extends JPanel
 		this.subformtbl.setRowHeaderTable(rowHeader);
 		newTableRowHeader.setExternalTable(subformtbl, scrollPane);
 		
-		rowHeader.getHeaderTable().addMouseListener(newToolbarContextMenuListener(rowHeader.getHeaderTable(), rowHeader.getHeaderTable()));
-		scrollPane.getRowHeader().addMouseListener(newToolbarContextMenuListener(scrollPane.getRowHeader(), rowHeader.getHeaderTable()));
+		// rowHeader.getHeaderTable().addMouseListener(newToolbarContextMenuListener(rowHeader.getHeaderTable(), rowHeader.getHeaderTable()));
+		addToolbarMouseListener(rowHeader.getHeaderTable(), rowHeader.getHeaderTable(), rowHeader.getHeaderTable());
+		// scrollPane.getRowHeader().addMouseListener(newToolbarContextMenuListener(scrollPane.getRowHeader(), rowHeader.getHeaderTable()));
+		addToolbarMouseListener(scrollPane.getRowHeader(), scrollPane.getRowHeader(), rowHeader.getHeaderTable());
 	}
 
 	public SubformRowHeader getSubformRowHeader() {
@@ -1580,7 +1666,8 @@ public class SubForm extends JPanel
 	/**
 	 * inner class SubForm.Table.
 	 */
-	public static class SubFormTable extends CommonJTable {
+	public static class SubFormTable extends CommonJTable
+			implements Closeable {
 
 		private TableCellEditorProvider celleditorprovider;
 		private TableCellRendererProvider cellrendererprovider;
@@ -1591,11 +1678,15 @@ public class SubForm extends JPanel
 
 		private boolean newRowOnNext = false;
 
+		private SubformTableColumnModel myTableColumnModel;
+		
+		private boolean closed = false;
+
 		public SubFormTable() {
 			setCellSelectionEnabled(true);
 		}
 
-		public SubFormTable(SubForm sub){
+		private SubFormTable(SubForm sub){
 			this();
 			this.subform = sub;
 		}
@@ -1604,6 +1695,23 @@ public class SubForm extends JPanel
 			return subform;
 		}
 
+		@Override
+		public void close() {
+			// Close is needed for avoiding memory leaks
+			// If you want to change something here, please consult me (tp).
+			if (!closed) {
+				LOG.info("close() SubFormTable: " + this);
+				if (myTableColumnModel != null) {
+					myTableColumnModel.close();
+				}
+				myTableColumnModel = null;
+				if (rowheader != null) {
+					rowheader.close();
+				}
+				rowheader = null;
+				closed = true;
+			}
+		}
 
 		@Override
 		public void changeSelection(final int rowIndex, final int columnIndex, boolean toggle, boolean extend) {
@@ -1715,38 +1823,13 @@ public class SubForm extends JPanel
 
 			return rowCol;
 		}
-
+		
 		@Override
-		protected TableColumnModel createDefaultColumnModel() {
-			return new DefaultTableColumnModel() {
-
-				@Override
-				public void addColumn(TableColumn column) {
-					TableModel model = getModel();
-					if (model instanceof SubFormTableModel) {
-						// NUCLEUSINT-742: the identifier of the column is now the entity field name
-						// (instead of the localized label)
-						String fieldName = ((SubFormTableModel) model).getColumnFieldName(column.getModelIndex());
-						column.setIdentifier(fieldName);
-					}
-					super.addColumn(column);
-				}
-
-				@Override
-				public void propertyChange(PropertyChangeEvent evt) {
-					super.propertyChange(evt);
-					fireColumnPropertyChange(evt);
-				}
-
-				protected void fireColumnPropertyChange(PropertyChangeEvent evt) {
-					Object[] listeners = listenerList.getListenerList();
-					for (int i = listeners.length-2; i>=0; i-=2) {
-						if (listeners[i]==TableColumnModelListener.class && listeners[i+1] instanceof TableColumnModelExtListener) {
-							((TableColumnModelExtListener)listeners[i+1]).columnPropertyChange(evt);
-						}
-					}
-				}
-			};
+		protected SubformTableColumnModel createDefaultColumnModel() {
+			if (myTableColumnModel == null) {
+				myTableColumnModel = new SubformTableColumnModel(getModel());
+			}
+			return myTableColumnModel;
 		}
 
 		public void setRowHeaderTable(SubformRowHeader rowheader) {
