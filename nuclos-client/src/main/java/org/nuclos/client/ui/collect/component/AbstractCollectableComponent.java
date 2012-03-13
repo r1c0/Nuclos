@@ -642,7 +642,7 @@ public abstract class AbstractCollectableComponent
 		getSearchModel().setSearchCondition(cond);
 
 		assert LangUtils.equals(getSearchModel().getSearchCondition(), cond);
-		assert !canDisplay(cond) || isConsistent();
+		// assert !canDisplay(cond) || isConsistent();
 	}
 
 	@Override
