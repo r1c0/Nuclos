@@ -22,6 +22,7 @@ import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.io.Closeable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -85,24 +86,26 @@ import org.nuclos.common2.exception.PreferencesException;
  * @author	<a href="mailto:martin.weber@novabit.de">Martin Weber</a>
  * @version 01.00.00
  */
-public class SubFormFilter {
+public class SubFormFilter implements Closeable {
 
 	private static final Logger LOG = Logger.getLogger(SubFormFilter.class);
 
-   private JToggleButton filterButton;
-   private JCheckBoxMenuItem miFilter;
+	private JToggleButton filterButton;
+	private JCheckBoxMenuItem miFilter;
 
-   private Map<String, CollectableComponent> column2component = new HashMap<String, CollectableComponent>();
+	private Map<String, CollectableComponent> column2component = new HashMap<String, CollectableComponent>();
 
-   private SubForm subform;
-   private SubFormFilterPanel fixedSubFormFilter;
-   private SubFormFilterPanel externalSubFormFilter;
-   private CollectableFieldsProviderFactory collectableFieldsProviderFactory;
+	private SubForm subform;
+	private SubFormFilterPanel fixedSubFormFilter;
+	private SubFormFilterPanel externalSubFormFilter;
+	private CollectableFieldsProviderFactory collectableFieldsProviderFactory;
 
-   private JTable fixedTable;
-   private SubFormTable externalTable;
+	private JTable fixedTable;
+	private SubFormTable externalTable;
 
-   private boolean filteringActive = false;
+	private boolean filteringActive = false;
+
+	private boolean closed = false;
 
    public SubFormFilter(SubForm subform, JTable fixedTable, TableColumnModel fixedColumnModel, SubFormTable externalTable, TableColumnModel externalColumnModel, 
 		   JToggleButton filterButton, JCheckBoxMenuItem miFilter, CollectableFieldsProviderFactory collectableFieldsProviderFactory) {
@@ -118,6 +121,32 @@ public class SubFormFilter {
       initSearchFilterComponents();
 
       addActionListener();
+   }
+   
+	@Override
+	public void close() {
+		// Close is needed for avoiding memory leaks
+		// If you want to change something here, please consult me (tp).
+		if (!closed) {
+			LOG.info("close(): " + this);
+			column2component.clear();
+			column2component = null;
+			subform = null;
+			fixedSubFormFilter = null;
+			fixedTable = null;
+			externalTable = null;
+			
+			if (externalSubFormFilter != null) {
+				externalSubFormFilter.close();
+			}
+			externalSubFormFilter = null;
+			if (fixedSubFormFilter != null) {
+				fixedSubFormFilter.close();
+			}
+			fixedSubFormFilter = null;
+			
+			closed = true;
+		}
    }
 
    /**
