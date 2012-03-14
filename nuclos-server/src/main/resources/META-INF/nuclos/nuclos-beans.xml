@@ -276,15 +276,12 @@
 
 	<bean id="serviceLocator" class="org.nuclos.server.common.ServerServiceLocator" depends-on="appContext"/>
 
-	<!-- Caching init on startup -->
-	<bean id="nuclosCacheService" class="org.nuclos.server.mbean.NuclosCacheService" depends-on="appContext"/>
-	
 	<bean id="ruleCache" class="org.nuclos.server.common.RuleCache" />
 
 	<bean id="stateCache" class="org.nuclos.server.common.StateCache" />
 
 	<!-- quartz scheduler instance start -->
-    <bean id="nuclosScheduler" class="org.springframework.scheduling.quartz.SchedulerFactoryBean" depends-on="nuclosCacheService">
+    <bean id="nuclosScheduler" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
 	    <property name="dataSource" ref="nuclosDataSource"></property>
 	    <property name="nonTransactionalDataSource" ref="nuclosDataSource"></property>
 	    <property name="quartzProperties">

@@ -23,9 +23,16 @@ import org.nuclos.server.common.ServerServiceLocator;
 import org.nuclos.server.console.ejb3.ConsoleFacadeRemote;
 import org.nuclos.server.security.NuclosLocalServerSession;
 
+/**
+ * @deprecated Not in use.
+ */
 public class NuclosConsoleService implements NuclosConsoleServiceMBean {
 
 	protected static final Logger log = Logger.getLogger(NuclosConsoleService.class);
+	
+	public NuclosConsoleService() {
+		
+	}
 	
 	/**
 	 * 

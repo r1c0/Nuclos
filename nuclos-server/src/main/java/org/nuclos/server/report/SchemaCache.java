@@ -48,6 +48,8 @@ import org.nuclos.server.dblayer.structure.DbConstraint.DbUniqueConstraint;
 import org.nuclos.server.dblayer.structure.DbNullable;
 import org.nuclos.server.dblayer.structure.DbTable;
 import org.nuclos.server.dblayer.structure.DbTableType;
+import org.nuclos.server.mbean.MBeanAgent;
+import org.nuclos.server.mbean.MasterDataMetaCacheMBean;
 import org.nuclos.server.mbean.SchemaCacheMBean;
 import org.nuclos.server.report.valueobject.DatasourceVO;
 import org.nuclos.server.report.valueobject.DynamicEntityVO;
@@ -87,6 +89,8 @@ public class SchemaCache implements SchemaCacheMBean {
 
    SchemaCache() {
 	   INSTANCE = this;
+		// register this cache as MBean
+		MBeanAgent.registerCache(INSTANCE, SchemaCacheMBean.class);
    }
    
    @PostConstruct

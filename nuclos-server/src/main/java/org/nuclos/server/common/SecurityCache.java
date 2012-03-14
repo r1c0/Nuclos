@@ -61,6 +61,8 @@ import org.nuclos.server.jms.NuclosJMSUtils;
 import org.nuclos.server.masterdata.ejb3.MasterDataFacadeLocal;
 import org.nuclos.server.masterdata.valueobject.MasterDataMetaVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
+import org.nuclos.server.mbean.MBeanAgent;
+import org.nuclos.server.mbean.MasterDataMetaCacheMBean;
 import org.nuclos.server.mbean.SecurityCacheMBean;
 import org.nuclos.server.report.valueobject.ReportVO.ReportType;
 import org.nuclos.server.security.NuclosLocalServerSession;
@@ -665,18 +667,13 @@ public class SecurityCache implements SecurityCacheMBean {
 	}
 
 	public static SecurityCache getInstance() {
-		/*
-		if (INSTANCE == null) {
-			INSTANCE = new SecurityCache();
-			// register this cache as MBean
-			//MBeanAgent.registerCache(singleton, SecurityCacheMBean.class);
-		}
-		 */
 		return INSTANCE;
 	}
 
 	SecurityCache() {
 		INSTANCE = this;
+		// register this cache as MBean
+		MBeanAgent.registerCache(INSTANCE, SecurityCacheMBean.class);
 	}
 	
 	@Autowired
