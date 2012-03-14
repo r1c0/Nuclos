@@ -20,6 +20,7 @@ import java.awt.AWTEvent;
 import java.awt.EventQueue;
 import java.awt.Rectangle;
 import java.awt.event.KeyEvent;
+import java.io.Closeable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -97,7 +98,7 @@ import org.nuclos.common2.exception.CommonFatalException;
  * @version 01.00.00
  */
 public abstract class SubFormController extends MainFrameTabController
-		implements TableCellRendererProvider, TableCellEditorProvider, SubFormParameterProvider, FocusActionListener {
+		implements TableCellRendererProvider, TableCellEditorProvider, SubFormParameterProvider, FocusActionListener, Closeable {
 
 	private static final Logger LOG = Logger.getLogger(SubFormController.class);
 
@@ -185,14 +186,16 @@ public abstract class SubFormController extends MainFrameTabController
 		subform.addColumnModelListener(newSubFormTablePreferencesUpdateListener());
 	}
 
+	@Override
 	public void close() {
-		this.removeListSelectionListener(this.getJTable());
-//		this.storeColumnOrderAndWidths(this.getJTable());
-		getSubForm().removeSubFormToolListener(subformToolListener);
+		LOG.info("close(): " + this);
+		removeListSelectionListener(this.getJTable());
+		subform.removeSubFormToolListener(subformToolListener);
 		
-		// close SubForm support
-		subform.close();
-		subform = null;
+		// Don't close SubForm here (this will kill the 'next' feature)
+		// Yes, that means that the controller is used AFTER closed. (tp)
+		// subform.close();
+		// subform = null;
 	}
 	
 	public void setIgnorePreferencesUpdate(boolean ignore) {
@@ -206,7 +209,6 @@ public abstract class SubFormController extends MainFrameTabController
 	protected class PreferencesUpdateListener implements TableColumnModelListener  {		
 		@Override
 		public void columnSelectionChanged(ListSelectionEvent ev) {
-//			System.out.println("columnSelectionChanged " + ev);
 			if (!isIgnorePreferencesUpdate) {
 //				storeColumnOrderAndWidths(getJTable());
 			}
@@ -214,7 +216,6 @@ public abstract class SubFormController extends MainFrameTabController
 		
 		@Override
 		public void columnMoved(TableColumnModelEvent ev) {
-//			System.out.println("columnMoved " + ev);
 			if (!isIgnorePreferencesUpdate) {
 				storeColumnOrderAndWidths(getJTable());
 			}
@@ -222,7 +223,6 @@ public abstract class SubFormController extends MainFrameTabController
 		
 		@Override
 		public void columnMarginChanged(ChangeEvent ev) {
-//			System.out.println("columnMarginChanged " + ev);
 			if (!isIgnorePreferencesUpdate) {
 				storeColumnOrderAndWidths(getJTable());
 			}
@@ -254,11 +254,11 @@ public abstract class SubFormController extends MainFrameTabController
 
 
 	public final SubForm getSubForm() {
-		return this.subform;
+		return subform;
 	}
 
 	protected final JTable getJTable() {
-		return this.getSubForm().getJTable();
+		return subform.getJTable();
 	}
 
 	/**

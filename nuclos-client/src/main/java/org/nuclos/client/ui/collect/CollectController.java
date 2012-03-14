@@ -1053,6 +1053,7 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	 * Called when the internal frame is closed. Releases all resources held by the controller.
 	 * This is the right place to remove all listeners.
 	 */
+	@Override
 	public void close() {
 		// Search panel:
 		if (this.isSearchPanelAvailable()) {
