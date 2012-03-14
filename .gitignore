@@ -18,4 +18,6 @@ velocity.log
 nuclos-war/src/main/webapp/META-INF/context.xml
 nb-configuration.xml
 *~
+.springBeans
+
 

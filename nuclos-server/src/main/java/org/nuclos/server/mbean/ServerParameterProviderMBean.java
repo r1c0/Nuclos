@@ -31,8 +31,7 @@ import java.util.Map;
  */
 
 public interface ServerParameterProviderMBean {
-	public Collection<String>getParameterNames();
+	public Collection<String> getParameterNames();
 	public Map<String, String> getAllParameters();
 	public String getValue(String sParameter);
-	// public Map<String, String> getSystemParameters();
 }

@@ -43,6 +43,7 @@ import org.nuclos.server.masterdata.valueobject.MasterDataMetaVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 import org.nuclos.server.mbean.MBeanAgent;
 import org.nuclos.server.mbean.MasterDataMetaCacheMBean;
+import org.nuclos.server.mbean.RuleCacheMBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -79,6 +80,8 @@ public class MasterDataMetaCache implements MasterDataMetaCacheMBean, MasterData
 
 	MasterDataMetaCache() {
 		INSTANCE = this;
+		// register this cache as MBean
+		MBeanAgent.registerCache(INSTANCE, MasterDataMetaCacheMBean.class);
 	}
 
 	/**
