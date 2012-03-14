@@ -359,30 +359,30 @@ public class RuleDelegate {
 		}
 	}
 
-	public void createRuleUsageForId(String eventName, String entity, Integer ruleToInsertId, Integer ruleBeforeId) throws CommonBusinessException {
+	public void createRuleUsageForId(String eventName, String entity, Integer processId, Integer statusId, Integer ruleToInsertId, Integer ruleBeforeId) throws CommonBusinessException {
 
 		try {
-			getRuleEngineFacade().createRuleUsageInEntity(eventName, entity, ruleToInsertId, ruleBeforeId);
+			getRuleEngineFacade().createRuleUsageInEntity(eventName, entity, processId, statusId, ruleToInsertId, ruleBeforeId);
 		}
 		catch (RuntimeException ex) {
 			throw new CommonBusinessException(ex);
 		}
 	}
 
-	public void moveRuleUsageForId(String eventName, String entity, Integer ruleToInsertId, Integer ruleBeforeId) throws CommonBusinessException {
+	public void moveRuleUsageForId(String eventName, String entity, Integer processId, Integer statusId, Integer ruleToInsertId, Integer ruleBeforeId) throws CommonBusinessException {
 
 		try {
-			getRuleEngineFacade().moveRuleUsageInEntity(eventName, entity, ruleToInsertId, ruleBeforeId);
+			getRuleEngineFacade().moveRuleUsageInEntity(eventName, entity, processId, statusId, ruleToInsertId, ruleBeforeId);
 		}
 		catch (RuntimeException ex) {
 			throw new CommonBusinessException(ex);
 		}
 	}
 
-	public void removeRuleUsage(String eventName, String entity, Integer ruleToRemove) throws CommonBusinessException {
+	public void removeRuleUsage(String eventName, String entity, Integer processId, Integer statusId, Integer ruleToRemove) throws CommonBusinessException {
 
 		try {
-			getRuleEngineFacade().removeRuleUsage(eventName, entity, ruleToRemove);
+			getRuleEngineFacade().removeRuleUsage(eventName, entity, processId, statusId, ruleToRemove);
 		}
 		catch (RuntimeException ex) {
 			throw new CommonBusinessException(ex);

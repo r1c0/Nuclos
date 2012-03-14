@@ -81,7 +81,7 @@ public class NucletExplorerNode extends ExplorerNode<NucletTreeNode> {
 			if (!contents.isEmpty()) {
 				try {
 					getTreeNodeFacade().addNucletContents(getTreeNode().getId().longValue(), contents);
-					refresh(tree);
+					refresh(tree, true);
 				} catch(Exception e) {
 					Errors.getInstance().showExceptionDialog(getExplorerController().getTabbedPane().getComponentPanel(), e);
 				}

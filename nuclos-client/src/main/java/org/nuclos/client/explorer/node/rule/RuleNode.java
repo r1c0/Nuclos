@@ -18,15 +18,25 @@ package org.nuclos.client.explorer.node.rule;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.nuclos.client.common.MetaDataClientProvider;
 import org.nuclos.client.customcode.CodeDelegate;
+import org.nuclos.client.explorer.node.rule.EntityRuleNode.EntityRuleUsageProcessNode;
+import org.nuclos.client.explorer.node.rule.EntityRuleNode.EntityRuleUsageStatusNode;
+import org.nuclos.client.masterdata.MasterDataCache;
 import org.nuclos.client.masterdata.datatransfer.RuleAndRuleUsageEntity;
 import org.nuclos.client.rule.RuleDelegate;
+import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.collection.CollectionUtils;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.server.customcode.valueobject.CodeVO;
 import org.nuclos.server.genericobject.valueobject.GeneratorActionVO;
+import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 import org.nuclos.server.navigation.treenode.TreeNode;
 import org.nuclos.server.ruleengine.valueobject.RuleEngineGenerationVO;
 import org.nuclos.server.ruleengine.valueobject.RuleEventUsageVO;
@@ -42,6 +52,8 @@ public class RuleNode extends AbstractRuleTreeNode {
 	private RuleVO ruleVo;
 	private String entity;
 	private String eventName;
+	private Integer statusId = null;
+	private Integer processId = null;
 	private final boolean isAllRuleSubnode;
 	public final boolean isTimeLimitRule;
 
@@ -58,10 +70,12 @@ public class RuleNode extends AbstractRuleTreeNode {
 		this(aRuleVo, aRuleVo.getId(), aRuleVo.getRule(), aRuleVo.getDescription(), null, RuleNodeType.RULE, aIsAllRuleSubnodeFlag, false);
 	}
 
-	public RuleNode(RuleVO aRuleVo, String aEventName, String aEntity) {
+	public RuleNode(RuleVO aRuleVo, String aEventName, String aEntity, Integer processId, Integer statusId) {
 		this(aRuleVo, aRuleVo.getId(), aRuleVo.getRule(), aRuleVo.getDescription(), new ArrayList<AbstractRuleTreeNode>(), RuleNodeType.RULE, false, false);
 		this.eventName = aEventName;
 		this.entity = aEntity;
+		this.statusId = statusId;
+		this.processId = processId;
 	}
 
 	public RuleNode(RuleVO aRuleVo, String aEventName, boolean isTimeLimitRule) {
@@ -98,31 +112,31 @@ public class RuleNode extends AbstractRuleTreeNode {
 
 			final List<EntityRuleNode> saveEntityNodes = createEventEntityRulesNode(RuleTreeModel.SAVE_EVENT_NAME);
 			if (saveEntityNodes != null && saveEntityNodes.size() > 0) {
-				subNodeList.add(new DirectoryRuleNode(false, getSpringLocaleDelegate().getMessage("RuleNode.9","Speichern pro Entit\u00e4t"), 
-						getSpringLocaleDelegate().getMessage("RuleNode.10","Speichern pro Entit\u00e4t"), saveEntityNodes, true));
+				subNodeList.add(new DirectoryRuleNode(false, getSpringLocaleDelegate().getMessage("RuleNode.9","Speichern"), 
+						getSpringLocaleDelegate().getMessage("RuleNode.10","Speichern"), saveEntityNodes, true));
 			}
 
 			final List<EntityRuleNode> saveAfterEntityNodes = createEventEntityRulesNode(RuleTreeModel.SAVE_AFTER_EVENT_NAME);
 			if (saveAfterEntityNodes != null && saveAfterEntityNodes.size() > 0) {
-				subNodeList.add(new DirectoryRuleNode(false, getSpringLocaleDelegate().getMessage("RuleNode.13","Speichern (Im Anschluss) pro Entit\u00e4t"), 
-						getSpringLocaleDelegate().getMessage("RuleNode.14","Speichern (Im Anschluss) pro Entit\u00e4t"), saveAfterEntityNodes, true));
+				subNodeList.add(new DirectoryRuleNode(false, getSpringLocaleDelegate().getMessage("RuleNode.13","Speichern (Im Anschluss)"), 
+						getSpringLocaleDelegate().getMessage("RuleNode.14","Speichern (Im Anschluss)"), saveAfterEntityNodes, true));
 			}
 
 			final List<EntityRuleNode> deleteEntityNodes = createEventEntityRulesNode(RuleTreeModel.DELETE_EVENT_NAME);
 			if (deleteEntityNodes != null && deleteEntityNodes.size() > 0) {
-				subNodeList.add(new DirectoryRuleNode(false, getSpringLocaleDelegate().getMessage("RuleNode.4","L\u00f6schen pro Entit\u00e4t"), 
-						getSpringLocaleDelegate().getMessage("RuleNode.5","L\u00f6schen pro Entit\u00e4t"), deleteEntityNodes, true));
+				subNodeList.add(new DirectoryRuleNode(false, getSpringLocaleDelegate().getMessage("RuleNode.4","L\u00f6schen"), 
+						getSpringLocaleDelegate().getMessage("RuleNode.5","L\u00f6schen"), deleteEntityNodes, true));
 			}
 
 			final List<EntityRuleNode> deleteAfterEntityNodes = createEventEntityRulesNode(RuleTreeModel.DELETE_AFTER_EVENT_NAME);
 			if (deleteAfterEntityNodes != null && deleteAfterEntityNodes.size() > 0) {
-				subNodeList.add(new DirectoryRuleNode(false, getSpringLocaleDelegate().getMessage("RuleNode.15","L\u00f6schen (Im Anschluss) pro Entit\u00e4t"), 
-						getSpringLocaleDelegate().getMessage("RuleNode.16","L\u00f6schen (Im Anschluss) pro Entit\u00e4t"), deleteAfterEntityNodes, true));
+				subNodeList.add(new DirectoryRuleNode(false, getSpringLocaleDelegate().getMessage("RuleNode.15","L\u00f6schen (Im Anschluss)"), 
+						getSpringLocaleDelegate().getMessage("RuleNode.16","L\u00f6schen (Im Anschluss)"), deleteAfterEntityNodes, true));
 			}
 
 			final List<EntityRuleNode> userEventEntityNodes = createEventEntityRulesNode(RuleTreeModel.USER_EVENT_NAME);
 			if (userEventEntityNodes != null && userEventEntityNodes.size() > 0) {
-				subNodeList.add(new DirectoryRuleNode(false, getSpringLocaleDelegate().getMessage("RuleNode.1","Benutzeraktion pro Entit\u00e4t"), 
+				subNodeList.add(new DirectoryRuleNode(false, getSpringLocaleDelegate().getMessage("RuleNode.1","Benutzeraktion"), 
 						getSpringLocaleDelegate().getMessage("RuleNode.2","Entit\u00e4ten in denen der Benutzer diese Regel manuell starten kann"), userEventEntityNodes, true));
 			}
 
@@ -144,10 +158,87 @@ public class RuleNode extends AbstractRuleTreeNode {
 	private List<EntityRuleNode> createEventEntityRulesNode(String sEventName) {
 		final List<EntityRuleNode> result = new ArrayList<EntityRuleNode>();
 
+		final Map<String, Map<Integer, List<EntityRuleUsageStatusNode>>> entityRuleNodeMap = new HashMap<String, Map<Integer,List<EntityRuleUsageStatusNode>>>();
+
 		final Collection<RuleEventUsageVO> collSaveEvent = RuleDelegate.getInstance().getByEventAndRule(sEventName, this.ruleVo.getId());
 		if (collSaveEvent != null && collSaveEvent.size() > 0) {
 			for (RuleEventUsageVO usageVO : collSaveEvent) {
-				result.add(new EntityRuleNode(sEventName, null, usageVO.getEntity() + " (" + usageVO.getOrder() + ")", null, false));
+				Map<Integer, List<EntityRuleUsageStatusNode>> ruleUsageProcessMap = entityRuleNodeMap.get(usageVO.getEntity());
+				if (ruleUsageProcessMap == null) {
+					ruleUsageProcessMap = new HashMap<Integer, List<EntityRuleUsageStatusNode>>();
+				}
+				
+				Integer processId = usageVO.getProcessId() == null ? new Integer(-1) : usageVO.getProcessId();
+				List<EntityRuleUsageStatusNode> ruleUsageStatusNodes = ruleUsageProcessMap.get(processId);
+				if (ruleUsageStatusNodes == null) {
+					ruleUsageStatusNodes = new ArrayList<EntityRuleUsageStatusNode>();
+				}
+				
+				try {
+					final String statusLabel;
+					Integer statusId = usageVO.getStatusId() == null ? new Integer(-1) : usageVO.getStatusId();
+					if (statusId.intValue() == -1)
+						statusLabel = SpringLocaleDelegate.getInstance().getResource("EntityRuleNode.1", "<Jeder Status>");
+					else {
+						MasterDataVO mdvoStatus = MasterDataCache.getInstance().get(NuclosEntity.STATE.getEntityName(), statusId);
+						statusLabel = mdvoStatus.getField("numeral").toString() + " " + mdvoStatus.getField("name").toString();
+					}
+					ruleUsageStatusNodes.add(new EntityRuleUsageStatusNode(sEventName, null, usageVO.getEntity(), usageVO.getProcessId(), usageVO.getStatusId(), statusLabel  + " (" + usageVO.getOrder() + ")", true));
+					
+					ruleUsageProcessMap.put(processId, ruleUsageStatusNodes);
+					entityRuleNodeMap.put(usageVO.getEntity(), ruleUsageProcessMap);
+				} catch (Exception e) {
+					continue;
+				}
+			}
+			
+			for (Map.Entry<String, Map<Integer, List<EntityRuleUsageStatusNode>>> entityRuleNodeEntry : entityRuleNodeMap.entrySet()) {
+				EntityRuleNode entityRuleNode
+					= new EntityRuleNode(sEventName, null, entityRuleNodeEntry.getKey(), null, false, null, null);
+				List<EntityRuleUsageProcessNode> entityRuleNodeSubNodes = new ArrayList<EntityRuleNode.EntityRuleUsageProcessNode>();
+				for (Map.Entry<Integer, List<EntityRuleUsageStatusNode>> ruleUsageProcessNodeEntry : entityRuleNodeEntry.getValue().entrySet()) {
+					try {
+						final String processLabel;
+						Integer processId = ruleUsageProcessNodeEntry.getKey();
+						if (processId.intValue() == -1)
+							processLabel = SpringLocaleDelegate.getInstance().getResource("EntityRuleNode.2", "<Alle Aktionen>");
+						else
+							processLabel = MasterDataCache.getInstance().get(NuclosEntity.PROCESS.getEntityName(), processId).getField("name").toString();
+						EntityRuleUsageProcessNode entityRuleUsageProcessNode = new EntityRuleUsageProcessNode(sEventName, null, 
+								entityRuleNodeEntry.getKey(), processId, processLabel);
+						
+						List<EntityRuleUsageStatusNode> entityRuleUsageStatusNodes
+							= new ArrayList<EntityRuleNode.EntityRuleUsageStatusNode>(ruleUsageProcessNodeEntry.getValue());
+						Collections.sort(entityRuleUsageStatusNodes, new Comparator<EntityRuleUsageStatusNode>() {
+							@Override
+							public int compare(EntityRuleUsageStatusNode o1,
+									EntityRuleUsageStatusNode o2) {
+								if (o1.statusId == null || o1.statusId.equals(new Integer(-1)))
+									return -1;
+								else
+									return o1.getLabel().compareTo(o2.getLabel());
+							}
+						});
+						entityRuleUsageProcessNode.setSubNodes(entityRuleUsageStatusNodes);
+						entityRuleNodeSubNodes.add(entityRuleUsageProcessNode);
+					} catch (Exception e) {
+						continue;
+					}
+					
+					Collections.sort(entityRuleNodeSubNodes, new Comparator<EntityRuleUsageProcessNode>() {
+						@Override
+						public int compare(EntityRuleUsageProcessNode o1,
+								EntityRuleUsageProcessNode o2) {
+							if (o1.processId == null || o1.processId.equals(new Integer(-1)))
+								return -1;
+							else
+								return o1.getLabel().compareTo(o2.getLabel());
+						}
+					});
+					
+					entityRuleNode.setSubNodes(entityRuleNodeSubNodes);
+				}
+				result.add(entityRuleNode);
 			}
 		}
 
@@ -196,12 +287,12 @@ public class RuleNode extends AbstractRuleTreeNode {
 
 	@Override
 	public Boolean hasSubNodes() {
-		return null;
+		return isAllRuleSubnode ? Boolean.FALSE : null;
 	}
 
 	@Override
 	public RuleAndRuleUsageEntity getRuleEntity() {
-		return new RuleAndRuleUsageEntity(this.ruleVo, this.eventName, this.entity);
+		return new RuleAndRuleUsageEntity(this.ruleVo, this.eventName, this.entity, this.processId, this.statusId);
 	}
 
 	public RuleVO getRuleVo() {
