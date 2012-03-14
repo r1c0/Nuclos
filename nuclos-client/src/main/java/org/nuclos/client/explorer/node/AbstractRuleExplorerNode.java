@@ -31,6 +31,8 @@ import org.nuclos.client.explorer.ExplorerNode;
 import org.nuclos.client.explorer.node.rule.AbstractRuleTreeNode;
 import org.nuclos.client.explorer.node.rule.CodeTreeNode;
 import org.nuclos.client.explorer.node.rule.DirectoryRuleNode;
+import org.nuclos.client.explorer.node.rule.EntityRuleNode.EntityRuleUsageProcessNode;
+import org.nuclos.client.explorer.node.rule.EntityRuleNode.EntityRuleUsageStatusNode;
 import org.nuclos.client.explorer.node.rule.LibraryTreeNode;
 import org.nuclos.client.explorer.node.rule.RuleTreeModel;
 import org.nuclos.client.explorer.node.rule.TimelimitNode;
@@ -58,7 +60,23 @@ public abstract class AbstractRuleExplorerNode extends ExplorerNode<AbstractRule
 	public AbstractRuleExplorerNode(TreeNode treenode) {
 		super(treenode);
 	}
+	
+	@Override
+	public void refresh(JTree tree) throws CommonFinderException {
+		TreeNode tn = getTreeNode();
+		if (tn instanceof EntityRuleUsageProcessNode)
+			((ExplorerNode<?>)getParent().getParent()).refresh(tree);
+		if (tn instanceof EntityRuleUsageStatusNode)
+			((ExplorerNode<?>)getParent().getParent().getParent()).refresh(tree);
+	
+		super.refresh(tree);
+	}
 
+	@Override
+	public boolean getAllowsChildren() {
+		return isLeaf() ? false : super.getAllowsChildren();
+	}
+	
 	@Override
 	public boolean importTransferData(Component parent,
 			Transferable transferable, JTree tree) throws IOException,
@@ -230,7 +248,7 @@ public abstract class AbstractRuleExplorerNode extends ExplorerNode<AbstractRule
 		}
 		else if (getTreeNode() instanceof DirectoryRuleNode) {
 			if (((DirectoryRuleNode) getTreeNode()).isRoot()) {
-				this.refresh(jTree);
+				this.refresh(jTree, true);
 				for (int i = 0; i < getChildCount(); i++) {
 					final AbstractRuleExplorerNode childNode = (AbstractRuleExplorerNode) getChildAt(i);
 					if (childNode.getLabel().equals(RuleTreeModel.FRIST_NODE_LABEL)) {

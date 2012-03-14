@@ -39,6 +39,7 @@ import javax.swing.JTabbedPane;
 import javax.swing.JTree;
 import javax.swing.SwingUtilities;
 import javax.swing.TransferHandler;
+import javax.swing.UIManager;
 import javax.swing.event.TreeExpansionEvent;
 import javax.swing.event.TreeExpansionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -180,7 +181,11 @@ public class ExplorerNode<TN extends TreeNode> extends DefaultMutableTreeNode {
 	@Override
 	public boolean isLeaf() {
 		final Boolean bHasSubNodes = this.getTreeNode().hasSubNodes();
-		return (bHasSubNodes != null) && bHasSubNodes.booleanValue();
+		return bHasSubNodes == null ? false : !bHasSubNodes.booleanValue();
+	}
+	@Override
+	public int getChildCount() {
+		return super.getChildCount();
 	}
 
 	/**
@@ -270,7 +275,7 @@ public class ExplorerNode<TN extends TreeNode> extends DefaultMutableTreeNode {
 		else {
 			treenode.refresh();
 		}
-		treenode.removeSubNodes();
+		//treenode.removeSubNodes();
 		loadChildren(true);
 
 		assert getChildrenHaveBeenLoaded();
@@ -510,6 +515,7 @@ public class ExplorerNode<TN extends TreeNode> extends DefaultMutableTreeNode {
 	 */
 	public Icon getIcon() {
 		// use default icon by default ;-)
+		
 		return null;
 	}
 
@@ -602,7 +608,7 @@ public class ExplorerNode<TN extends TreeNode> extends DefaultMutableTreeNode {
 			UIUtils.runCommand(getExplorerController().getParent(), new CommonRunnable() {
 				@Override
                 public void run() throws CommonFinderException {
-					ExplorerNode.this.refresh(RefreshAction.this.getJTree(), true);
+					ExplorerNode.this.refresh(RefreshAction.this.getJTree());
 
 					// To be sure to correlate the label of the tab also when changed...
 					if (ExplorerNode.this.isRoot()) {
@@ -620,7 +626,7 @@ public class ExplorerNode<TN extends TreeNode> extends DefaultMutableTreeNode {
 
 		public ExpandAction(JTree tree) {
 			super(ACTIONCOMMAND_EXPAND, 
-					getSpringLocaleDelegate().getMessage("ExplorerNode.5","Unterelemente aufklappen"), tree);
+					getSpringLocaleDelegate().getInstance().getMessage("ExplorerNode.5","Unterelemente aufklappen"), tree);
 		}
 
 		@Override

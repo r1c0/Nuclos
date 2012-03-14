@@ -6916,6 +6916,15 @@
     "importexport": true,
     "systementity": true,
     "labelres": "nuclos.entity.ruleUsage.label",
+    "logicaluniquefields": [
+      [
+        "rule",
+        "entity",
+        "event",
+        "process",
+        "state"
+      ]
+    ],
     "nuclos_entityfield": [
       {
         "name": "rule",
@@ -6986,7 +6995,7 @@
         "nullable": true,
         "searchable": false,
         "logbook": false,
-        "unique": false,
+        "unique": true,
         "labelres": "nuclos.entityfield.ruleUsage.process.label",
         "descriptionres": "nuclos.entityfield.ruleUsage.process.description"
       },
@@ -7001,7 +7010,7 @@
         "nullable": true,
         "searchable": false,
         "logbook": false,
-        "unique": false,
+        "unique": true,
 		"foreignentityfield": "${numeral} ${name}",
         "labelres": "nuclos.entityfield.ruleUsage.state.label",
         "descriptionres": "nuclos.entityfield.ruleUsage.state.description"

@@ -484,7 +484,7 @@ public class RuleCollectController extends EntityCollectController<CollectableRu
 					if (CollectionUtils.isNonEmpty(lstclctruleSelected)) {
 						final List<RuleAndRuleUsageEntity> tranferableList = new ArrayList<RuleAndRuleUsageEntity>(lstclctruleSelected.size());
 						for (CollectableRule clctrule : lstclctruleSelected) {
-							tranferableList.add(new RuleAndRuleUsageEntity(clctrule.getRuleVO(), null, null));
+							tranferableList.add(new RuleAndRuleUsageEntity(clctrule.getRuleVO(), null, null, null, null));
 						}
 						result = new RuleCVOTransferable(tranferableList);
 					}

@@ -20,7 +20,9 @@ import javax.swing.Icon;
 
 import org.nuclos.client.explorer.node.rule.DirectoryRuleNode;
 import org.nuclos.client.explorer.node.rule.EntityRuleNode;
+import org.nuclos.client.explorer.node.rule.RuleNode;
 import org.nuclos.client.explorer.node.rule.TimelimitNode;
+import org.nuclos.client.explorer.node.rule.EntityRuleNode.EntityRuleUsageStatusNode;
 import org.nuclos.client.ui.Icons;
 import org.nuclos.server.navigation.treenode.TreeNode;
 
@@ -38,6 +40,14 @@ public class RuleEntityExplorerNode extends AbstractRuleExplorerNode {
 	public RuleEntityExplorerNode(TreeNode treenode) {
 		super(treenode);
 	}
+	
+	@Override
+	public boolean isLeaf() {
+		if (getTreeNode() instanceof EntityRuleUsageStatusNode)
+			return ((EntityRuleUsageStatusNode)getTreeNode()).isLeaf();
+		return super.isLeaf();
+	}
+
 
 	@Override
 	public Icon getIcon() {

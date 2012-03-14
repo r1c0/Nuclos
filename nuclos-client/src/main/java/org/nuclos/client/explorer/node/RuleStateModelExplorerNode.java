@@ -24,6 +24,7 @@ import javax.swing.Icon;
 import javax.swing.JTree;
 
 import org.nuclos.client.explorer.ExplorerNode;
+import org.nuclos.client.explorer.node.rule.RuleNode;
 import org.nuclos.client.explorer.node.rule.RuleNodeType;
 import org.nuclos.client.explorer.node.rule.StateModelNode;
 import org.nuclos.client.main.mainframe.MainFrame;
@@ -55,6 +56,13 @@ public class RuleStateModelExplorerNode extends AbstractRuleExplorerNode {
 
 	public RuleStateModelExplorerNode(TreeNode treenode) {
 		super(treenode);
+	}
+	
+	@Override
+	public boolean isLeaf() {
+		if (getTreeNode() instanceof StateModelNode)
+			return ((StateModelNode)getTreeNode()).isAllRuleSubnode();
+		return super.isLeaf();
 	}
 
 	@Override

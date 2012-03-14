@@ -91,7 +91,7 @@ public class MasterDataWrapper {
 		mpFields.put("rule", vo.getRule());
 		mpFields.put("order", vo.getOrder());
 		mpFields.put("processId", vo.getProcessId());
-		mpFields.put("statusId", vo.getStatusId());
+		mpFields.put("stateId", vo.getStatusId());
 
 		return new MasterDataVO(vo.getId(), vo.getChangedAt(), vo.getCreatedBy(), vo.getChangedAt(), vo.getChangedBy(), vo.getVersion(), mpFields);
 	}
@@ -105,7 +105,7 @@ public class MasterDataWrapper {
 			(String)mdVO.getField("rule"),
 			(Integer)mdVO.getField("order"),
 			(Integer)mdVO.getField("processId"),
-			(Integer)mdVO.getField("statusId"),
+			(Integer)mdVO.getField("stateId"),
 			mdVO.getCreatedAt(),
 			mdVO.getCreatedBy(),
 			mdVO.getChangedAt(),

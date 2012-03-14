@@ -82,12 +82,14 @@ public class RuleEventUsageVO extends NuclosValueObject {
 	 * @param iRuleId id of rule
 	 * @param iOrder order number
 	 */
-	public RuleEventUsageVO(String sEvent, String sEntity, Integer iRuleId, Integer iOrder) {
+	public RuleEventUsageVO(String sEvent, String sEntity, Integer iProcessId, Integer iStatusId, Integer iRuleId, Integer iOrder) {
 		super();
 		this.sEvent = sEvent;
 		this.sEntity = sEntity;
 		this.iRuleId = iRuleId;
 		this.iOrder = iOrder;
+		this.iProcessId = iProcessId;
+		this.iStatusId = iStatusId;
 	}
 
 	/**

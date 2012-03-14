@@ -20657,77 +20657,77 @@
   {
     "resourceID": "RuleNode.10",
     "locale": "i-default",
-    "text": "Save per entity"
+    "text": "Save"
   },
   {
     "resourceID": "RuleNode.10",
     "locale": "en",
-    "text": "Save per entity"
+    "text": "Save"
   },
   {
     "resourceID": "RuleNode.10",
     "locale": "de",
-    "text": "Speichern pro Entität"
+    "text": "Speichern"
   },  
   {
     "resourceID": "RuleNode.13",
     "locale": "i-default",
-    "text": "Save (afterwards) per entity"
+    "text": "Save (afterwards)"
   },
   {
     "resourceID": "RuleNode.13",
     "locale": "en",
-    "text": "Save (afterwards) per entity"
+    "text": "Save (afterwards)"
   },
   {
     "resourceID": "RuleNode.13",
     "locale": "de",
-    "text": "Speichern (Im Anschluss) pro Entität"
+    "text": "Speichern (Im Anschluss)"
   },
   {
     "resourceID": "RuleNode.14",
     "locale": "i-default",
-    "text": "Save (afterwards) per entity"
+    "text": "Save (afterwards)"
   },
   {
     "resourceID": "RuleNode.14",
     "locale": "en",
-    "text": "Save (afterwards) per entity"
+    "text": "Save (afterwards)"
   },
   {
     "resourceID": "RuleNode.14",
     "locale": "de",
-    "text": "Speichern (Im Anschluss) pro Entität"
+    "text": "Speichern (Im Anschluss)"
   },
   {
     "resourceID": "RuleNode.15",
     "locale": "i-default",
-    "text": "Deletion (afterwards) per entity"
+    "text": "Deletion (afterwards)"
   },
   {
     "resourceID": "RuleNode.15",
     "locale": "en",
-    "text": "Deletion (afterwards) per entity"
+    "text": "Deletion (afterwards)"
   },
   {
     "resourceID": "RuleNode.15",
     "locale": "de",
-    "text": "Löschen (Im Anschluss) pro Entität"
+    "text": "Löschen (Im Anschluss)"
   },
   {
     "resourceID": "RuleNode.16",
     "locale": "i-default",
-    "text": "Deletion (afterwards) per entity"
+    "text": "Deletion (afterwards)"
   },
   {
     "resourceID": "RuleNode.16",
     "locale": "en",
-    "text": "Deletion (afterwards) per entity"
+    "text": "Deletion (afterwards)"
   },
   {
     "resourceID": "RuleNode.16",
     "locale": "de",
-    "text": "Löschen (Im Anschluss) pro Entität"
+    "text": "Löschen (Im Anschluss)"
   },
   {
     "resourceID": "ExplorerPanel.3",
@@ -23592,17 +23592,17 @@
   {
     "resourceID": "RuleNode.1",
     "locale": "i-default",
-    "text": "User action per entity"
+    "text": "User action"
   },
   {
     "resourceID": "RuleNode.1",
     "locale": "en",
-    "text": "User action per entity"
+    "text": "User action"
   },
   {
     "resourceID": "RuleNode.1",
     "locale": "de",
-    "text": "Benutzeraktion pro Entität"
+    "text": "Benutzeraktion"
   },
   {
     "resourceID": "RuleNode.7",
@@ -23637,32 +23637,32 @@
   {
     "resourceID": "RuleNode.5",
     "locale": "i-default",
-    "text": "Deletion per entity"
+    "text": "Deletion"
   },
   {
     "resourceID": "RuleNode.5",
     "locale": "en",
-    "text": "Deletion per entity"
+    "text": "Deletion"
   },
   {
     "resourceID": "RuleNode.5",
     "locale": "de",
-    "text": "Löschen pro Entität"
+    "text": "Löschen"
   },
   {
     "resourceID": "RuleNode.4",
     "locale": "i-default",
-    "text": "Deletion per entity"
+    "text": "Deletion"
   },
   {
     "resourceID": "RuleNode.4",
     "locale": "en",
-    "text": "Deletion per entity"
+    "text": "Deletion"
   },
   {
     "resourceID": "RuleNode.4",
     "locale": "de",
-    "text": "Löschen pro Entität"
+    "text": "Löschen"
   },
   {
     "resourceID": "MainController.1",
@@ -26282,32 +26282,32 @@
   {
     "resourceID": "DirectoryRuleNode.8",
     "locale": "i-default",
-    "text": "Deletion per entity"
+    "text": "Deletion"
   },
   {
     "resourceID": "DirectoryRuleNode.8",
     "locale": "en",
-    "text": "Deletion per entity"
+    "text": "Deletion"
   },
   {
     "resourceID": "DirectoryRuleNode.8",
     "locale": "de",
-    "text": "Löschen pro Entität"
+    "text": "Löschen"
   },
   {
     "resourceID": "DirectoryRuleNode.21",
     "locale": "i-default",
-    "text": "Deletion (afterwards) per entity"
+    "text": "Deletion (afterwards)"
   },
   {
     "resourceID": "DirectoryRuleNode.21",
     "locale": "en",
-    "text": "Deletion (afterwards) per entity"
+    "text": "Deletion (afterwards)"
   },
   {
     "resourceID": "DirectoryRuleNode.21",
     "locale": "de",
-    "text": "Löschen (Im Anschluss) pro Entität"
+    "text": "Löschen (Im Anschluss)"
   },
   {
     "resourceID": "CollectableStateRoleSubForm.5",
@@ -26477,17 +26477,17 @@
   {
     "resourceID": "DirectoryRuleNode.3",
     "locale": "i-default",
-    "text": "User action per entity"
+    "text": "User action"
   },
   {
     "resourceID": "DirectoryRuleNode.3",
     "locale": "en",
-    "text": "User action per entity"
+    "text": "User action"
   },
   {
     "resourceID": "DirectoryRuleNode.3",
     "locale": "de",
-    "text": "Benutzeraktion pro Entität"
+    "text": "Benutzeraktion"
   },
   {
     "resourceID": "TimelimitTaskController.16",
@@ -29282,32 +29282,32 @@
   {
     "resourceID": "DirectoryRuleNode.17",
     "locale": "i-default",
-    "text": "Save per entity"
+    "text": "Save"
   },
   {
     "resourceID": "DirectoryRuleNode.17",
     "locale": "en",
-    "text": "Save per entity"
+    "text": "Save"
   },
   {
     "resourceID": "DirectoryRuleNode.17",
     "locale": "de",
-    "text": "Speichern pro Entität"
+    "text": "Speichern"
   },
   {
     "resourceID": "DirectoryRuleNode.20",
     "locale": "i-default",
-    "text": "Save (afterwards) per entity"
+    "text": "Save (afterwards)"
   },
   {
     "resourceID": "DirectoryRuleNode.20",
     "locale": "en",
-    "text": "Save (afterwards) per entity"
+    "text": "Save (afterwards)"
   },
   {
     "resourceID": "DirectoryRuleNode.20",
     "locale": "de",
-    "text": "Speichern (Im Anschluss) pro Entität"
+    "text": "Speichern (Im Anschluss)"
   },
   {
     "resourceID": "DirectoryRuleNode.18",
@@ -29444,6 +29444,36 @@
     "locale": "de",
     "text": "Regeln die automatisch im Anschluss beim Löschen einer Entität ausgeführt werden"
   },
+  {
+    "resourceID": "EntityRuleNode.1",
+    "locale": "i-default",
+    "text": "<any state>"
+  },
+  {
+    "resourceID": "EntityRuleNode.1",
+    "locale": "en",
+    "text": "<any state>"
+  },
+  {
+    "resourceID": "EntityRuleNode.1",
+    "locale": "de",
+    "text": "<Jeder Status>"
+  },  
+  {
+    "resourceID": "EntityRuleNode.2",
+    "locale": "i-default",
+    "text": "<all actions>"
+  },
+  {
+    "resourceID": "EntityRuleNode.2",
+    "locale": "en",
+    "text": "<all actions>"
+  },
+  {
+    "resourceID": "EntityRuleNode.2",
+    "locale": "de",
+    "text": "<Alle Aktionen>"
+  },  
   {
     "resourceID": "CollectableTask.20",
     "locale": "i-default",
@@ -29942,17 +29972,17 @@
   {
     "resourceID": "RuleNode.9",
     "locale": "i-default",
-    "text": "Save per entity"
+    "text": "Save"
   },
   {
     "resourceID": "RuleNode.9",
     "locale": "en",
-    "text": "Save per entity"
+    "text": "Save"
   },
   {
     "resourceID": "RuleNode.9",
     "locale": "de",
-    "text": "Speichern pro Entität"
+    "text": "Speichern"
   },
   {
     "resourceID": "GenericObjectCollectController.27",

@@ -52,6 +52,11 @@ public class CodeExplorerNode extends AbstractRuleExplorerNode {
 	public Icon getIcon() {
 		return ((CodeTreeNode) getUserObject()).isActive() ? Icons.getInstance().getIconRuleNode() : Icons.getInstance().getIconRuleNodeDisabled();
 	}
+	
+	@Override
+	public boolean isLeaf() {
+		return true;
+	}
 
 	@Override
 	public String getDefaultTreeNodeActionCommand(JTree tree) {

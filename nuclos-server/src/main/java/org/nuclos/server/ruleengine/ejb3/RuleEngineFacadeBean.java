@@ -49,6 +49,7 @@ import org.nuclos.common.collection.TransformerUtils;
 import org.nuclos.common.dal.vo.EntityObjectVO;
 import org.nuclos.common.dal.vo.SystemFields;
 import org.nuclos.common2.IdUtils;
+import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonCreateException;
@@ -461,14 +462,17 @@ public class RuleEngineFacadeBean extends NuclosFacadeBean implements RuleEngine
 	 * The oder of the new usage is dependent of the ruleBeforeId
 	 *
 	 * @param sEventname
-	 * @param iModuleId
+	 * @param sEntity
+	 * @param processId
+	 * @param statusId
 	 * @param ruleToInsertId
 	 * @param ruleBeforeId - null the new usage is inserted at the end
 	 * 					- not null the new usage is inserted after the usage with the ruleBeforeId
 	 * @throws CommonCreateException
 	 * @throws CommonPermissionException
 	 */
-	public void createRuleUsageInEntity(String sEventname, String sEntity, Integer ruleToInsertId, Integer ruleBeforeId) 
+	public void createRuleUsageInEntity(String sEventname, String sEntity,
+			Integer processId, Integer statusId, Integer ruleToInsertId, Integer ruleBeforeId) 
 			throws CommonCreateException, CommonPermissionException {
 		
 		// @todo the name is misspelled (Module).
@@ -508,7 +512,7 @@ public class RuleEngineFacadeBean extends NuclosFacadeBean implements RuleEngine
 				iNewRuleOrder = iLastRuleOrder + 1;
 			}
 
-			RuleEventUsageVO reUsageVO = new RuleEventUsageVO(sEventname, sEntity, ruleToInsertId, iNewRuleOrder);
+			RuleEventUsageVO reUsageVO = new RuleEventUsageVO(sEventname, sEntity, processId, statusId, ruleToInsertId, iNewRuleOrder);
 			getMasterDataFacade().create(NuclosEntity.RULEUSAGE.getEntityName(), MasterDataWrapper.wrapREUsageVO(reUsageVO),null);
 
 			RuleCache.getInstance().invalidate();
@@ -521,7 +525,9 @@ public class RuleEngineFacadeBean extends NuclosFacadeBean implements RuleEngine
 	/**
 	 * remove an rule usage for the rule with the given id in the given module and the eventName
 	 * @param eventName
-	 * @param moduleId
+	 * @param entity
+	 * @param processId
+	 * @param statusId
 	 * @param iRuleIdToRemove id of rule to remove
 	 * @throws CommonPermissionException
 	 * @throws CommonStaleVersionException
@@ -529,7 +535,8 @@ public class RuleEngineFacadeBean extends NuclosFacadeBean implements RuleEngine
 	 * @throws CommonFinderException
 	 * @throws NuclosBusinessRuleException
 	 */
-	public void removeRuleUsage(String eventName, String entity, Integer iRuleIdToRemove) 
+	public void removeRuleUsage(String eventName, String entity,
+			Integer processId, Integer statusId, Integer iRuleIdToRemove) 
 			throws CommonPermissionException, NuclosBusinessRuleException, CommonFinderException, CommonRemoveException, CommonStaleVersionException {
 		
 		this.checkWriteAllowed(NuclosEntity.RULE);
@@ -538,7 +545,9 @@ public class RuleEngineFacadeBean extends NuclosFacadeBean implements RuleEngine
 		Collection<MasterDataVO> mdVOList = getMasterDataFacade().getDependantMasterData(NuclosEntity.RULEUSAGE.getEntityName(), "rule", iRuleIdToRemove);
 
 		for (MasterDataVO vo : mdVOList) {
-			if (vo.getField("event").equals(eventName))
+			if (vo.getField("event").equals(eventName)
+					&& LangUtils.equals(vo.getField("stateId"), statusId)
+					&& LangUtils.equals(vo.getField("processId"), processId))
 				reUsageList.add(MasterDataWrapper.getREUsageVO(vo));
 		}
 
@@ -569,13 +578,15 @@ public class RuleEngineFacadeBean extends NuclosFacadeBean implements RuleEngine
 	/**
 	 *
 	 * @param eventName
-	 * @param moduleId
+	 * @param entity
+	 * @param processId
+	 * @param statusId
 	 * @param ruleToMoveId
 	 * @param ruleBeforeId
 	 * @throws CommonCreateException
 	 * @throws CommonPermissionException
 	 */
-	public void moveRuleUsageInEntity(String eventName, String entity, Integer ruleToMoveId, Integer ruleBeforeId) 
+	public void moveRuleUsageInEntity(String eventName, String entity, Integer processId, Integer statusId, Integer ruleToMoveId, Integer ruleBeforeId) 
 			throws CommonCreateException, CommonPermissionException {
 		
 		this.checkWriteAllowed(NuclosEntity.RULE);
@@ -584,7 +595,9 @@ public class RuleEngineFacadeBean extends NuclosFacadeBean implements RuleEngine
 		Collection<MasterDataVO> mdVOList = getRuleUsageForEntity(entity);
 
 		for (MasterDataVO vo : mdVOList) {
-			if (vo.getField("event").equals(eventName))
+			if (vo.getField("event").equals(eventName)
+					&& LangUtils.equals(vo.getField("stateId"), statusId)
+					&& LangUtils.equals(vo.getField("processId"), processId))
 				reVOList.add(MasterDataWrapper.getREUsageVO(vo));
 		}
 
@@ -1208,10 +1221,10 @@ public class RuleEngineFacadeBean extends NuclosFacadeBean implements RuleEngine
 		protected List<String> getImports() {
 			List<String> imports = new ArrayList<String>();
 			CollectionUtils.addAll(imports, IMPORTS);
-			final String additionalImports = serverParameterProvider.getValue(ParameterProvider.KEY_ADDITIONAL_IMPORTS_FOR_RULES);
+			/*final String additionalImports = serverParameterProvider.getValue(ParameterProvider.KEY_ADDITIONAL_IMPORTS_FOR_RULES);
 			if (additionalImports != null) {
 				CollectionUtils.addAll(imports, additionalImports.split(","));
-			}
+			}*/
 			imports.addAll(getWebserviceImports());
 			return imports;
 		}

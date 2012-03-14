@@ -31,12 +31,16 @@ public class RuleAndRuleUsageEntity {
 	private final RuleVO ruleVo;
 	private final String eventName;
 	private final String entity;
+	private final Integer statusId;
+	private final Integer processId;
 
-	public RuleAndRuleUsageEntity(RuleVO aRuleVo, String aEventName, String aEntity) {
+	public RuleAndRuleUsageEntity(RuleVO aRuleVo, String aEventName, String aEntity, Integer processId, Integer statusId) {
 		super();
 		this.ruleVo = aRuleVo;
 		this.eventName = aEventName;
 		this.entity = aEntity;
+		this.statusId = statusId;
+		this.processId = processId;
 	}
 
 	public String getEventName() {
@@ -45,6 +49,14 @@ public class RuleAndRuleUsageEntity {
 
 	public String getEntity() {
 		return entity;
+	}
+
+	public Integer getProcessId() {
+		return processId;
+	}
+
+	public Integer getStatusId() {
+		return statusId;
 	}
 
 	public RuleVO getRuleVo() {

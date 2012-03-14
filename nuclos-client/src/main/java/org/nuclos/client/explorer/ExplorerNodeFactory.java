@@ -133,6 +133,8 @@ public class ExplorerNodeFactory {
 		this.putConstructor(StateModelNode.class, RuleStateModelExplorerNode.class);
 		this.putConstructor(RuleGenerationNode.class, RuleObjectGenerationExplorerNode.class);
 		this.putConstructor(EntityRuleNode.class, RuleEntityExplorerNode.class);
+		this.putConstructor(EntityRuleNode.EntityRuleUsageStatusNode.class, RuleEntityExplorerNode.class);
+		this.putConstructor(EntityRuleNode.EntityRuleUsageProcessNode.class, RuleEntityExplorerNode.class);
 		this.putConstructor(TimelimitNode.class, RuleEntityExplorerNode.class);
 		this.putConstructor(DirectoryRuleNode.class, RuleEntityExplorerNode.class);
 		this.putConstructor(CodeTreeNode.class, CodeExplorerNode.class);

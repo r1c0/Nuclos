@@ -162,7 +162,7 @@ public class DirectoryRuleNode extends AbstractRuleTreeNode {
 		for (String entityName : ruleUsageEntitiesByEvent) {
 			result.add(new EntityRuleNode(sEventName, entityName,
 				SpringLocaleDelegate.getInstance().getLabelFromMetaDataVO(MetaDataClientProvider.getInstance().getEntity(entityName)),
-				null, false));
+				null, false, null, null));
 		}
 
 		Collections.sort(result, new Comparator<EntityRuleNode>() {

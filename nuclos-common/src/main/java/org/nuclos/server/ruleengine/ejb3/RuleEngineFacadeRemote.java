@@ -71,7 +71,9 @@ public interface RuleEngineFacadeRemote {
 	 * The oder of the new usage is dependent of the ruleBeforeId
 	 *
 	 * @param sEventname
-	 * @param iModuleId
+	 * @param sEntity
+	 * @param processId
+	 * @param statusId
 	 * @param ruleToInsertId
 	 * @param ruleBeforeId - null the new usage is inserted at the end
 	 * 					- not null the new usage is inserted after the usage with the ruleBeforeId
@@ -79,13 +81,15 @@ public interface RuleEngineFacadeRemote {
 	 * @throws CommonPermissionException
 	 */
 	void createRuleUsageInEntity(String sEventname,
-		String sEntity, Integer ruleToInsertId, Integer ruleBeforeId)
+		String sEntity, Integer processId, Integer statusId, Integer ruleToInsertId, Integer ruleBeforeId)
 		throws CommonCreateException, CommonPermissionException;
 
 	/**
 	 * remove an rule usage for the rule with the given id in the given module and the eventName
 	 * @param eventName
-	 * @param moduleId
+	 * @param entity
+	 * @param processId
+	 * @param statusId
 	 * @param iRuleIdToRemove id of rule to remove
 	 * @throws CommonPermissionException
 	 * @throws CommonStaleVersionException
@@ -94,20 +98,22 @@ public interface RuleEngineFacadeRemote {
 	 * @throws NuclosBusinessRuleException
 	 */
 	void removeRuleUsage(String eventName, String entity,
-		Integer iRuleIdToRemove) 
+			Integer processId, Integer statusId, Integer iRuleIdToRemove) 
 				throws CommonPermissionException, NuclosBusinessRuleException, CommonFinderException, CommonRemoveException, CommonStaleVersionException;
 
 	/**
 	 *
 	 * @param eventName
-	 * @param moduleId
+	 * @param entity
+	 * @param processId
+	 * @param statusId
 	 * @param ruleToMoveId
 	 * @param ruleBeforeId
 	 * @throws CommonCreateException
 	 * @throws CommonPermissionException
 	 */
 	void moveRuleUsageInEntity(String eventName,
-		String entity, Integer ruleToMoveId, Integer ruleBeforeId)
+		String entity, Integer processId, Integer statusId, Integer ruleToMoveId, Integer ruleBeforeId)
 		throws CommonCreateException, CommonPermissionException;
 
 	/**

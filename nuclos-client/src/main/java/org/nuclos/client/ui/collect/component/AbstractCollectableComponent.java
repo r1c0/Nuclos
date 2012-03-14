@@ -458,8 +458,6 @@ public abstract class AbstractCollectableComponent
 		}
 		 */
 		//assert isConsistent();
-		if (!isConsistent())
-			System.err.println("xxx");
 	}
 
 	/**

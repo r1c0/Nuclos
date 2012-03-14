@@ -29,6 +29,8 @@ import javax.swing.JTree;
 
 import org.apache.log4j.Logger;
 import org.nuclos.client.explorer.ExplorerNode;
+import org.nuclos.client.explorer.node.rule.EntityRuleNode;
+import org.nuclos.client.explorer.node.rule.EntityRuleNode.EntityRuleUsageStatusNode;
 import org.nuclos.client.explorer.node.rule.RuleNode;
 import org.nuclos.client.main.Main;
 import org.nuclos.client.main.mainframe.MainFrame;
@@ -66,6 +68,13 @@ public class RuleExplorerNode extends AbstractRuleExplorerNode {
 
 	public RuleExplorerNode(TreeNode treenode) {
 		super(treenode);
+	}	
+	
+	@Override
+	public boolean isLeaf() {
+		if (getTreeNode() instanceof RuleNode)
+			return !((RuleNode)getTreeNode()).isAllRuleSubnode();
+		return super.isLeaf();
 	}
 
 	@Override
@@ -200,7 +209,8 @@ public class RuleExplorerNode extends AbstractRuleExplorerNode {
 							getSpringLocaleDelegate().getMessage("RuleExplorerNode.4","Verwendung l\u00f6schen"), JOptionPane.YES_NO_OPTION);
 
 					if (btn == JOptionPane.YES_OPTION) {
-						RuleDelegate.getInstance().removeRuleUsage(ruleUsage.getEventName(), ruleUsage.getEntity(), ruleUsage.getRuleVo().getId());
+						RuleDelegate.getInstance().removeRuleUsage(ruleUsage.getEventName(), ruleUsage.getEntity(),
+								ruleUsage.getProcessId(), ruleUsage.getStatusId(), ruleUsage.getRuleVo().getId());
 						((ExplorerNode<?>) RuleExplorerNode.this.getParent()).refresh(tree);
 					}
 				}
