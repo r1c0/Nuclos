@@ -20,6 +20,7 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.prefs.Preferences;
 
+import org.nuclos.common.NuclosImage;
 import org.nuclos.common.collect.collectable.access.CefSecurityAgent;
 import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.RelativeDate;
@@ -75,7 +76,7 @@ public abstract class AbstractCollectableEntityField implements CollectableEntit
 	@Override
     public int getDefaultCollectableComponentType() {
 		final int result;
-		if (this.isIdField()) {
+		if (this.isIdField() && this.getJavaClass() != NuclosImage.class) {
 			// default is combobox. listofvalues must be specified as controltype explicitly.
 			result = CollectableComponentTypes.TYPE_COMBOBOX;
 		}
