@@ -70,6 +70,9 @@ public class DbCompoundColumnExpression<T> extends DbExpression<T> {
 			}
 		}
 		final StandardSqlDBAccess dbAccess = from.getQuery().getBuilder().getDBAccess();
+		if (toConcat.size() == 1) {
+			return new PreparedStringBuilder(toConcat.get(0));
+		}
 		return new PreparedStringBuilder(dbAccess.getSqlForConcat(toConcat));
 	}
 
