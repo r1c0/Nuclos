@@ -1194,11 +1194,24 @@ public abstract class StandardSqlDBAccess extends AbstractDBAccess {
         return name;
     }
 
-    @Override
-    public String getSqlForConcat(String x, String y) {
-        // or JDBC escape syntax? String.format("{fn concat(%s,%s)}", x, y);
-        return String.format("CONCAT(%s,%s)", x, y);
-    }
+	@Override
+	public String getSqlForConcat(String x, String y) {
+		// or JDBC escape syntax? String.format("{fn concat(%s,%s)}", x, y);
+		return String.format("CONCAT(%s,%s)", x, y);
+	}
+
+	@Override
+	public String getSqlForConcat(List<String> l) {
+		if (l == null || l.isEmpty()) {
+			throw new IllegalArgumentException();
+		}
+		final Iterator<String> it = l.iterator();
+		String result = it.next();
+		while (it.hasNext()) {
+			result = getSqlForConcat(result, it.next());
+		}
+		return result;
+	}
 
     protected String getSqlForCast(String x, DbColumnType columnType) {
         return String.format("CAST(%s AS %s)", x, getDataType(columnType));

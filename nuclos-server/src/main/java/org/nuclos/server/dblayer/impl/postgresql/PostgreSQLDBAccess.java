@@ -27,6 +27,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -350,7 +351,22 @@ public class PostgreSQLDBAccess extends StandardSqlDBAccess {
 
 	@Override
 	public String getSqlForConcat(String x, String y) {
-		return String.format("%s||%s", x, y);
+		return String.format("COALESCE(CAST(%s as text), '') || COALESCE(CAST(%s as text), '')", x, y);
+	}
+
+	@Override
+	public String getSqlForConcat(List<String> l) {
+		if (l == null || l.isEmpty()) {
+			throw new IllegalArgumentException();
+		}
+		final StringBuilder result = new StringBuilder("COALESCE(CAST(");
+		for (Iterator<String> it = l.iterator(); it.hasNext();) {
+			result.append(it.next()).append(" as text), '')");
+			if (it.hasNext()) {
+				result.append(" || COALESCE(CAST(");
+			}
+		}
+		return result.toString();
 	}
 
 	@Override

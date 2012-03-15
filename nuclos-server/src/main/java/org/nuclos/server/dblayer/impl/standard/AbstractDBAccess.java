@@ -18,6 +18,7 @@ package org.nuclos.server.dblayer.impl.standard;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.nuclos.server.dblayer.DbAccess;
 import org.nuclos.server.dblayer.DbException;
@@ -66,6 +67,8 @@ public abstract class AbstractDBAccess extends DbAccess {
 	}
 
     public abstract String getSqlForConcat(String x, String y);
+    
+    public abstract String getSqlForConcat(List<String> l);
 
 	protected abstract IBatch getSqlForInsert(DbInsertStatement insertStmt);
 

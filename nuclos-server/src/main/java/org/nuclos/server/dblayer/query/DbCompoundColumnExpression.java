@@ -58,7 +58,6 @@ public class DbCompoundColumnExpression<T> extends DbExpression<T> {
 		final MetaDataProvider mdProv = MetaDataServerProvider.getInstance();
 		final String tableAlias = TableAliasSingleton.getInstance().getAlias(field);
 		final List<String> toConcat = new ArrayList<String>();
-		String firstQualifiedName = null; 
 		for (IFieldRef ref: new ForeignEntityFieldParser(field)) {
 			if (ref.isConstant()) {
 				toConcat.add("'" + ref.getContent() + "'");
@@ -68,27 +67,10 @@ public class DbCompoundColumnExpression<T> extends DbExpression<T> {
 				final String qualifiedName = DbColumnExpression.mkQualifiedColumnName(
 						tableAlias, mdField.getDbColumn(), false).toString();
 				toConcat.add(qualifiedName);
-				if (firstQualifiedName == null) {
-					firstQualifiedName = qualifiedName;
-				}
 			}
 		}
-		if (firstQualifiedName == null) {
-			throw new IllegalArgumentException();
-		}
-		if (toConcat.size() == 1) {
-			// No 'CASE WHEN' if there is only one ref (and not a compound ref).
-			return new PreparedStringBuilder(toConcat.get(0));
-		}
-		
 		final StandardSqlDBAccess dbAccess = from.getQuery().getBuilder().getDBAccess();
-		final Iterator<String> it = toConcat.iterator();
-		String result = it.next();
-		while (it.hasNext()) {
-			result = dbAccess.getSqlForConcat(result, it.next());
-		}
-		return PreparedStringBuilder.concat("CASE WHEN (", firstQualifiedName, " IS NOT NULL) THEN ", 
-				result, " ELSE NULL END ");
+		return new PreparedStringBuilder(dbAccess.getSqlForConcat(toConcat));
 	}
 
 }
