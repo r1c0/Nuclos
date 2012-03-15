@@ -795,7 +795,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	@Override
 	public void close() {
 		closeSubFormControllersInSearch();
-		closeSubFormControllersInDetails();
+		closeSubFormControllers(getSubFormControllersInDetails());
 
 		super.close();
 	}
@@ -1786,7 +1786,8 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		getDetailsPanel().setEditView(DefaultEditView.newDetailsEditView(compEdit, layoutrootDetails, layoutrootDetails.getInitialFocusEntityAndFieldName()));
 		this.layoutrootDetails = layoutrootDetails;
 		// create a controller for each subform (after closing the old ones):
-		closeSubFormControllersInDetails();
+		closeSubFormControllers(getSubFormControllersInDetails());
+		
 		Map<String, SubForm> mpSubForm = layoutrootDetails.getMapOfSubForms();
 		Map<String, DetailsSubFormController<CollectableEntityObject>> mpSubFormController = newDetailsSubFormControllers(mpSubForm);
 		setMapOfSubFormControllersInDetails(mpSubFormController);
@@ -4550,21 +4551,16 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 			}
 
 			final JComponent compEditNew = getDetailsPanel().newEditComponent(layoutroot.getRootComponent());
-			//if (cmpStateStandardView.getItemCount() != 0) {
-				JPanel pnl = new JPanel(new BorderLayout());
-			    pnl.add(cmpStateStandardView, BorderLayout.NORTH);
-			    pnl.add(compEditNew, BorderLayout.CENTER);
-				getDetailsPanel().setEditView(DefaultEditView.newDetailsEditView(pnl, layoutroot, layoutroot.getInitialFocusEntityAndFieldName()));
-			//} else {
-				//getDetailsPanel().setEditView(DefaultEditView.newDetailsEditView(compEditNew, layoutroot, layoutroot.getInitialFocusEntityAndFieldName()));
-			//}
+			JPanel pnl = new JPanel(new BorderLayout());
+		    pnl.add(cmpStateStandardView, BorderLayout.NORTH);
+		    pnl.add(compEditNew, BorderLayout.CENTER);
+			getDetailsPanel().setEditView(DefaultEditView.newDetailsEditView(pnl, layoutroot, layoutroot.getInitialFocusEntityAndFieldName()));
 
 			// layoutrootDetails is used for the ordered field names:
 			layoutrootDetails = layoutroot;
-
-			// Note that the old subform controllers must be closed before creating the new ones, so that the
-			// column order and widths are preserved (first stored and then read):
-			closeSubFormControllersInDetails();
+			
+			final Collection<DetailsSubFormController<CollectableEntityObject>> oldDetailsControllers 
+				= getSubFormControllersInDetails();
 
 			// 2. transfer data in subforms:
 			Map<String, SubForm> mpSubForm = layoutroot.getMapOfSubForms();
@@ -4575,6 +4571,10 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 				transferSubFormData(getMapOfSubFormControllersInDetails(), mpNewSubFormControllers);
 			setMapOfSubFormControllersInDetails(mpNewSubFormControllers);
 
+			// Note that the old subform controllers must be closed before creating the new ones, so that the
+			// column order and widths are preserved (first stored and then read):
+			closeSubFormControllers(oldDetailsControllers);
+			
 			// 3. setup subform controllers
 			setupSubFormController(mpSubForm, mpNewSubFormControllers);
 
@@ -4589,13 +4589,6 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	}
 
 	/**
-	 * closes all subform controllers in the Details panel.
-	 */
-	protected void closeSubFormControllersInDetails() {
-		closeSubFormControllers(getSubFormControllersInDetails());
-	}
-
-	/**
 	 * closes all subform controllers in the Search panel.
 	 */
 	private void closeSubFormControllersInSearch() {
@@ -4607,8 +4600,10 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	 * @precondition collsubformctl != null
 	 */
 	private static void closeSubFormControllers(Collection<? extends SubFormController> collsubformctl) {
-		for (SubFormController subformctl : collsubformctl)
+		for (SubFormController subformctl : collsubformctl) {
 			subformctl.close();
+		}
+		collsubformctl.clear();
 	}
 
 	/**

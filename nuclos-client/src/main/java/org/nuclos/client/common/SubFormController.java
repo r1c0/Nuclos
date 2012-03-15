@@ -97,7 +97,8 @@ import org.nuclos.common2.exception.CommonFatalException;
  * @version 01.00.00
  */
 public abstract class SubFormController extends Controller
-		implements TableCellRendererProvider, TableCellEditorProvider, SubFormParameterProvider, FocusActionListener, Closeable {
+		implements TableCellRendererProvider, TableCellEditorProvider, 
+		SubFormParameterProvider, FocusActionListener, Closeable {
 
 	private static final Logger LOG = Logger.getLogger(SubFormController.class);
 
@@ -127,6 +128,8 @@ public abstract class SubFormController extends Controller
 	private final CollectableFieldsProviderFactory clctfproviderfactory;
 	
 	protected boolean isIgnorePreferencesUpdate = true;
+	
+	private boolean closed = false;
 
 	/**
 	 * @param parent
@@ -183,16 +186,18 @@ public abstract class SubFormController extends Controller
 		subform.addColumnModelListener(newSubFormTablePreferencesUpdateListener());
 	}
 
-	@Override
+	// @Override
 	public void close() {
-		LOG.info("close(): " + this);
-		removeListSelectionListener(this.getJTable());
-		subform.removeSubFormToolListener(subformToolListener);
-		
-		// Don't close SubForm here (this will kill the 'next' feature)
-		// Yes, that means that the controller is used AFTER closed. (tp)
-		// subform.close();
-		// subform = null;
+		if (!closed) {
+			LOG.info("close(): " + this);
+			removeListSelectionListener(this.getJTable());
+			subform.removeSubFormToolListener(subformToolListener);
+			
+			subform.close();
+			subform = null;
+			
+			closed = true;
+		}
 	}
 	
 	public void setIgnorePreferencesUpdate(boolean ignore) {
