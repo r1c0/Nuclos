@@ -602,16 +602,25 @@ public class StateFacadeBean extends NuclosFacadeBean implements StateFacadeRemo
 		dbStateVO.setDescription(clientStateVO.getDescription());
 		dbStateVO.setModelId(modelVO.getId());
 		dbStateVO.setTabbedPaneName(clientStateVO.getTabbedPaneName());
-
-		getMasterDataFacade().modify(NuclosEntity.STATE.getEntityName(), MasterDataWrapper.wrapStateVO(dbStateVO), null);
-
+		
 		String labelResId = LocaleUtils.getResourceIdForField(STATE_TABLE, dbStateVO.getId(), LocaleUtils.FIELD_LABEL);
 		String descriptionResId = LocaleUtils.getResourceIdForField(STATE_TABLE, dbStateVO.getId(), LocaleUtils.FIELD_DESCRIPTION);
+		
+		MasterDataVO mdvo = MasterDataWrapper.wrapStateVO(dbStateVO);
+		mdvo.setField("labelres", labelResId);
+		mdvo.setField("descriptionres", descriptionResId);
+		getMasterDataFacade().modify(NuclosEntity.STATE.getEntityName(), mdvo, null);
+
 		if (labelResId != null) {
-			getLocaleFacade().updateResource(labelResId, dbStateVO.getStatename());
+			getLocaleFacade().setResourceForLocale(labelResId, getLocaleFacade().getUserLocale(), dbStateVO.getStatename());
+		} else {
+			LocaleUtils.setResourceIdForField(STATE_TABLE, dbStateVO.getId(), LocaleUtils.FIELD_LABEL, getLocaleFacade().setDefaultResource(null, dbStateVO.getStatename()));
 		}
+		
 		if (descriptionResId != null) {
-			getLocaleFacade().updateResource(descriptionResId, dbStateVO.getDescription());
+			getLocaleFacade().setResourceForLocale(descriptionResId, getLocaleFacade().getUserLocale(), dbStateVO.getDescription());
+		} else {
+			LocaleUtils.setResourceIdForField(STATE_TABLE, dbStateVO.getId(), LocaleUtils.FIELD_DESCRIPTION, getLocaleFacade().setDefaultResource(null, dbStateVO.getStatename()));
 		}
 	}
 
