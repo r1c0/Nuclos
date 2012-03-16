@@ -56,6 +56,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JScrollPane;
+import javax.swing.SwingUtilities;
 
 import org.apache.log4j.Logger;
 import org.nuclos.client.common.ClientParameterProvider;
@@ -188,6 +189,8 @@ public class StartTabPanel extends JPanel implements NuclosDropTargetVisitor {
 
 	private Set<String> reducedBookmarkEntities = new HashSet<String>();
 	private final Map<String, ExpandOrReduceAction> bookmarkExpandOrReduceActions = new HashMap<String, StartTabPanel.ExpandOrReduceAction>();
+	
+	private boolean initiating;
 	
 	private SpringLocaleDelegate localeDelegate;
 	
@@ -817,6 +820,10 @@ public class StartTabPanel extends JPanel implements NuclosDropTargetVisitor {
 	 *
 	 */
 	void setupStartmenu() {
+		if (initiating) {
+			return;
+		}
+		
 		UIUtils.runCommand(StartTabPanel.this, new CommonRunnable() {
 			@Override
 			public void run() throws CommonBusinessException {
@@ -1566,6 +1573,30 @@ public class StartTabPanel extends JPanel implements NuclosDropTargetVisitor {
 	
 	private void setBorderDesktop(boolean hideTabBar) {
 		setBorder(BorderFactory.createEmptyBorder(hideTabBar? 0 : 10, 0, 0, 0));
+	}
+	
+	/**
+	 * 
+	 */
+	public void startInitiating() {
+		initiating = true;
+	}
+	
+	/**
+	 * 
+	 */
+	public void finishInitiating() {
+		initiating = false;
+		if (desktopActive) {
+			SwingUtilities.invokeLater(new Runnable() {
+				@Override
+				public void run() {
+					setupStartmenu();
+				}
+			});
+		} else {
+			setupStartmenu();
+		}
 	}
 	
 	public void setDesktopBackgroundPainter(DesktopBackgroundPainter desktopBackgroundPainter) {

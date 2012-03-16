@@ -1139,6 +1139,7 @@ public class MainFrameTabbedPane {
 	 * 
 	 */
 	public void startInitiating() {
+		startTab.startInitiating();
 		ignoreAdjustTabs = true;
 	}
 	
@@ -1146,6 +1147,7 @@ public class MainFrameTabbedPane {
 	 * 
 	 */
 	public void finishInitiating() {
+		startTab.finishInitiating();
 		ignoreAdjustTabs = false;
 		adjustTabs();
 	}
