@@ -23,23 +23,30 @@ import javax.swing.JTable;
 
 import org.apache.log4j.Logger;
 import org.nuclos.client.ui.table.CommonJTable;
+import org.nuclos.common.tasklist.TasklistDefinition;
 import org.nuclos.server.report.valueobject.DynamicTasklistVO;
 
 public class DynamicTaskView extends TaskView {
-	
+
+	private final TasklistDefinition def;
 	private final DynamicTasklistVO dynamicTasklist;
-	
+
 	private final JTable tbl = new CommonJTable();
 
-	public DynamicTaskView(DynamicTasklistVO dynamicTasklist) {
+	public DynamicTaskView(TasklistDefinition def, DynamicTasklistVO dynamicTasklist) {
+		this.def = def;
 		this.dynamicTasklist = dynamicTasklist;
 	}
-	
+
 	@Override
 	public void init() {
 		super.init();
 	}
-	
+
+	public TasklistDefinition getDef() {
+		return def;
+	}
+
 	public DynamicTasklistVO getDynamicTasklist() {
 		return dynamicTasklist;
 	}

@@ -66,6 +66,9 @@ public abstract class AbstractNucletContentEntryTreeNode implements TreeNode {
 		result.add(NuclosEntity.VALUELISTPROVIDER);
 		result.add(NuclosEntity.RECORDGRANT);
 
+		result.add(NuclosEntity.DYNAMICTASKLIST);
+		result.add(NuclosEntity.TASKLIST);
+
 		result.add(NuclosEntity.RULE);
 		result.add(NuclosEntity.TIMELIMITRULE);
 		result.add(NuclosEntity.CODE);

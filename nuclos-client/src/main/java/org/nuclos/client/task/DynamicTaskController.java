@@ -19,11 +19,13 @@ package org.nuclos.client.task;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.swing.AbstractAction;
 import javax.swing.JComponent;
+import javax.swing.JTable;
 import javax.swing.table.TableModel;
 
 import org.apache.log4j.Logger;
@@ -31,10 +33,14 @@ import org.nuclos.client.common.KeyBinding;
 import org.nuclos.client.common.KeyBindingProvider;
 import org.nuclos.client.datasource.DatasourceDelegate;
 import org.nuclos.client.genericobject.ReportController;
+import org.nuclos.client.main.Main;
 import org.nuclos.client.ui.Errors;
 import org.nuclos.client.ui.Icons;
 import org.nuclos.client.ui.UIUtils;
+import org.nuclos.common.NuclosFatalException;
+import org.nuclos.common.tasklist.TasklistDefinition;
 import org.nuclos.common2.CommonRunnable;
+import org.nuclos.common2.IdUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.server.report.valueobject.DynamicTasklistVO;
 import org.nuclos.server.report.valueobject.ResultVO;
@@ -49,30 +55,29 @@ import org.nuclos.server.report.valueobject.ResultVO;
  * @version 01.00.00
  */
 public class DynamicTaskController extends RefreshableTaskController {
-	
+
 	private static final Logger LOG = Logger.getLogger(DynamicTaskController.class);
-	
+
 	private Map<Integer, DynamicTaskView> views;
-	
+
 	DynamicTaskController() {
 		super();
 		views= new HashMap<Integer, DynamicTaskView>();
 	}
-	
-	public DynamicTaskView newDynamicTaskView(DynamicTasklistVO dtl) {
-		final DynamicTaskView taskview = new DynamicTaskView(dtl);
+
+	public DynamicTaskView newDynamicTaskView(TasklistDefinition def, DynamicTasklistVO dtl) {
+		final DynamicTaskView taskview = new DynamicTaskView(def, dtl);
 		taskview.init();
 		views.put(dtl.getId(), taskview);
 		refresh(taskview);
-		
+
 		setActions(taskview);
 		setPopupMenuListener(taskview);
 		setRenderers(taskview);
-		
+
 		KeyBinding keybinding = KeyBindingProvider.REFRESH;
 		taskview.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(keybinding.getKeystroke(), keybinding.getKey());
 		taskview.getActionMap().put(keybinding.getKey(), new AbstractAction() {
-
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				refresh(taskview);
@@ -84,7 +89,7 @@ public class DynamicTaskController extends RefreshableTaskController {
 
 	private void setActions(final DynamicTaskView view) {
 		super.addRefreshIntervalActions(view);
-		
+
 		//add mouse listener for double click in table:
 		view.getTable().addMouseListener(new MouseAdapter() {
 			@Override
@@ -94,23 +99,23 @@ public class DynamicTaskController extends RefreshableTaskController {
 				}
 			}
 		});
-		
+
 		view.getRefreshButton().setAction(new AbstractAction("", Icons.getInstance().getIconRefresh16()) {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				cmdRefresh(view);
 			}
 		});
-	}	
-	
-	private void setRenderers(DynamicTaskView view) {
-		
 	}
-	
+
+	private void setRenderers(DynamicTaskView view) {
+
+	}
+
 	private void setPopupMenuListener(final DynamicTaskView taskview){
 
 	}
-	
+
 	private void cmdRefresh(final DynamicTaskView gotaskview) {
 		UIUtils.runCommand(gotaskview, new CommonRunnable() {
 			@Override
@@ -128,20 +133,19 @@ public class DynamicTaskController extends RefreshableTaskController {
 			}
 		});
 	}
-	
+
 	void refresh(DynamicTaskView taskview) {
 		DynamicTasklistVO dtl = taskview.getDynamicTasklist();
 		try {
 			ResultVO vo = DatasourceDelegate.getInstance().getDynamicTasklistData(dtl.getId());
-			TableModel mdl = new DynamicTaskTableModel(vo);
-			
+			TableModel mdl = new DynamicTaskTableModel(taskview.getDef(), vo);
 			taskview.getTable().setModel(mdl);
 		}
 		catch (CommonBusinessException e) {
 			Errors.getInstance().showExceptionDialog(taskview, e);
 		}
 	}
-	
+
 	void print(DynamicTaskView gotaskview) {
 		try {
 			new ReportController(getTabbedPane().getComponentPanel()).export(gotaskview.getTable(), null);
@@ -151,20 +155,54 @@ public class DynamicTaskController extends RefreshableTaskController {
 		}
 	}
 
-	private void cmdShowDetails(final DynamicTaskView gotaskview) {
-		
+	private void cmdShowDetails(final DynamicTaskView view) {
+		JTable table = view.getTable();
+		String idfield = view.getDef().getDynamicTasklistIdFieldname();
+		String entityfield = view.getDef().getDynamicTasklistEntityFieldname();
+		if (idfield != null && entityfield != null) {
+			if (table.getModel() instanceof DynamicTaskTableModel) {
+				DynamicTaskTableModel model = (DynamicTaskTableModel) table.getModel();
+
+				int[] selection = table.getSelectedRows();
+				for (int i : selection) {
+					final Object oId = model.getValueByField(i, idfield);
+					final Long id;
+					if (oId instanceof Double) {
+						id = ((Double)oId).longValue();
+					}
+					else {
+						id = IdUtils.toLongId(oId);
+					}
+					final String entity = (String) model.getValueByField(i, entityfield);
+					UIUtils.runCommandLater(Main.getInstance().getMainController().getTaskController().getTabFor(view), new Runnable() {
+						@Override
+						public void run() {
+							try {
+								Main.getInstance().getMainController().showDetails(entity, id);
+							}
+							catch (CommonBusinessException e) {
+								Errors.getInstance().showExceptionDialog(view, e);
+							}
+						};
+					});
+				}
+			}
+		}
 	}
 
 	@Override
 	public ScheduledRefreshable getSingleScheduledRefreshableView() {
-		// TODO Auto-generated method stub
-		return null;
+		throw new IllegalStateException();
 	}
 
 	@Override
 	public void refreshScheduled(ScheduledRefreshable sRefreshable) {
-		// TODO Auto-generated method stub
-		
+		if (sRefreshable instanceof DynamicTaskView){
+			refresh((DynamicTaskView)sRefreshable);
+		}
+		else {
+			throw new IllegalStateException();
+		}
 	}
 }
 

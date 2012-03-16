@@ -45,18 +45,18 @@ import org.springframework.transaction.annotation.Transactional;
 public class TasklistFacadeBean extends NuclosFacadeBean implements TasklistFacadeRemote {
 
 	private final static Logger LOG = Logger.getLogger(TasklistFacadeBean.class);
-	
+
 	private MasterDataFacadeLocal mdfacade;
-	
+
 	@Autowired
 	public void setMasterDataFacade(MasterDataFacadeLocal facade) {
 		this.mdfacade = facade;
 	}
-	
+
 	@Override
 	public Collection<TasklistDefinition> getUsersTasklists() {
 		Collection<TasklistDefinition> result = new ArrayList<TasklistDefinition>();
-		
+
 		for (Integer iRoleId : SecurityCache.getInstance().getUserRoles(getCurrentUserName())) {
 			final CollectableSearchCondition cond = SearchConditionUtils.newMDReferenceComparison(MasterDataMetaCache.getInstance().getMetaData(NuclosEntity.TASKLISTROLE), "role", iRoleId);
 
@@ -78,8 +78,8 @@ public class TasklistFacadeBean extends NuclosFacadeBean implements TasklistFaca
 				def.setMenupathResourceId(tasklist.getField("menupathres", String.class));
 				def.setDynamicTasklistId(tasklist.getField("datasourceId", Integer.class));
 				def.setDynamicTasklistIdFieldname(tasklist.getField("datasourceIdField", String.class));
-				def.setDynamicTasklistEntityFieldname(tasklist.getField("datasoureEntityName", String.class));
-				
+				def.setDynamicTasklistEntityFieldname(tasklist.getField("datasourceEntityField", String.class));
+
 				result.add(def);
 			}
 		}

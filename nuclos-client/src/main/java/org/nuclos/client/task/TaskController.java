@@ -82,7 +82,7 @@ import com.thoughtworks.xstream.io.xml.DomDriver;
 public class TaskController extends Controller<MainFrameTabbedPane> {
 
 	private final static Logger LOG = Logger.getLogger(TaskController.class);
-	
+
 	private static final String PREFS_NODE_SELECTEDFIELDS = "selectedFields";
 	private static final String PREFS_NODE_SELECTEDFIELDWIDTHS = "selectedFieldWidths";
 
@@ -104,7 +104,7 @@ public class TaskController extends Controller<MainFrameTabbedPane> {
 	private final DynamicTaskController ctlDynamicTasks;
 
 	private final Map<GenericObjectTaskView, MainFrameTab> taskTabs = new HashMap<GenericObjectTaskView, MainFrameTab>();
-	
+
 	private final Map<DynamicTaskView, MainFrameTab> dynamictasklistTabs = new HashMap<DynamicTaskView, MainFrameTab>();
 
 	/**
@@ -221,7 +221,7 @@ public class TaskController extends Controller<MainFrameTabbedPane> {
 		public void restoreFromPreferences(String preferencesXML, final MainFrameTab tab) throws Exception {
 			RestorePreferences rp = fromXML(preferencesXML);
 			final MainController mc = Main.getInstance().getMainController();
-			
+
 			switch (rp.type) {
 				case RestorePreferences.PERSONAL:
 					if (SecurityCache.getInstance().isActionAllowed(Actions.ACTION_TASKLIST)) {
@@ -412,7 +412,7 @@ public class TaskController extends Controller<MainFrameTabbedPane> {
 			return null;
 		}
 	}
-	
+
 	private DynamicTaskView addOrReplaceDynamicTaskViewFor(TasklistDefinition tasklist) {
 		DynamicTaskView view = getTaskViewFor(tasklist);
 		DynamicTasklistVO dtl;
@@ -423,10 +423,10 @@ public class TaskController extends Controller<MainFrameTabbedPane> {
 			Errors.getInstance().showExceptionDialog(Main.getInstance().getMainFrame(), e);
 			return null;
 		}
-		
+
 		if(view == null) {
 			MainFrameTab tab = new MainFrameTab();
-			final DynamicTaskView newView = ctlDynamicTasks.newDynamicTaskView(dtl);
+			final DynamicTaskView newView = ctlDynamicTasks.newDynamicTaskView(tasklist, dtl);
 			final String sLabel = StringUtils.isNullOrEmpty(tasklist.getLabelResourceId()) ? tasklist.getName() : getSpringLocaleDelegate().getTextFallback(tasklist.getLabelResourceId(), tasklist.getName());
 			tab.addMainFrameTabListener(new MainFrameTabAdapter() {
 				@Override
@@ -443,14 +443,13 @@ public class TaskController extends Controller<MainFrameTabbedPane> {
 			tab.setTabIcon(Icons.getInstance().getIconFilter16());
 			tab.setTitle(sLabel);
 			tab.setLayeredComponent(newView);
-			//tab.setTabStoreController(new TaskTabStoreController(RestorePreferences., newView));
 
 			dynamictasklistTabs.put(newView, tab);
 
 			MainFrame.addTab(tab);
 			MainFrame.setSelectedTab(tab);
 			return newView;
-		} 
+		}
 		else {
 			return view;
 		}
@@ -473,7 +472,7 @@ public class TaskController extends Controller<MainFrameTabbedPane> {
 			// This filter is not yet in the task list; create a new tab for it
 
 			final GenericObjectTaskView newView = ctlGenericObjectTasks.newGenericObjectTaskView(filter);
-			final String sLabel = StringUtils.isNullOrEmpty(filter.getLabelResourceId()) ? filter.getName() 
+			final String sLabel = StringUtils.isNullOrEmpty(filter.getLabelResourceId()) ? filter.getName()
 					: getSpringLocaleDelegate().getTextFallback(filter.getLabelResourceId(), filter.getName());
 			tab.addMainFrameTabListener(new MainFrameTabAdapter() {
 				@Override
@@ -595,7 +594,15 @@ public class TaskController extends Controller<MainFrameTabbedPane> {
 		}
 		return result;
 	}
-	
+
+	protected MainFrameTab getTabFor(DynamicTaskView view) {
+		MainFrameTab result = dynamictasklistTabs.get(view);
+		if (result == null) {
+			throw new NuclosFatalException("No tab for DynamicTaskView found");
+		}
+		return result;
+	}
+
 	private DynamicTaskView getTaskViewFor(TasklistDefinition tasklist) {
 		DynamicTaskView result = null;
 		for (DynamicTaskView view : dynamictasklistTabs.keySet()) {
@@ -701,7 +708,7 @@ public class TaskController extends Controller<MainFrameTabbedPane> {
 	private void removeGenericObjectTaskView(GenericObjectTaskView view) {
 		taskTabs.remove(view);
 	}
-	
+
 	private void removeDynamicTaskView(DynamicTaskView view) {
 		dynamictasklistTabs.remove(view);
 	}
@@ -713,7 +720,7 @@ public class TaskController extends Controller<MainFrameTabbedPane> {
 	public boolean isTaskTab(MainFrameTab tab) {
 		if (taskTabs.values().contains(tab))
 			return true;
-		
+
 		if (dynamictasklistTabs.values().contains(tab))
 			return true;
 
@@ -728,7 +735,7 @@ public class TaskController extends Controller<MainFrameTabbedPane> {
 
 		return false;
 	}
-	
+
 	public void cmdShowTasklist(final TasklistDefinition tasklist) {
 		UIUtils.runCommandForTabbedPane(getTabbedPane(), new Runnable() {
 			@Override

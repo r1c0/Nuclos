@@ -262,6 +262,10 @@ public class TransferFacadeBean extends NuclosFacadeBean implements TransferFaca
 		contents.add(new DefaultNucletContent(NuclosEntity.RECORDGRANT, null, contents));
 		contents.add(new DefaultNucletContent(NuclosEntity.RECORDGRANTUSAGE, NuclosEntity.RECORDGRANT, contents));
 
+		contents.add(new DefaultNucletContent(NuclosEntity.DYNAMICTASKLIST ,null, contents));
+		contents.add(new DefaultNucletContent(NuclosEntity.DYNAMICTASKLISTUSAGE, NuclosEntity.DYNAMICTASKLIST, contents));
+		contents.add(new DefaultNucletContent(NuclosEntity.TASKLIST, null, contents));
+		
 		contents.add(new WebserviceNucletContent(contents));
 		contents.add(new WorkspaceNucletContent(contents));
 		contents.add(new CustomComponentNucletContent(contents));
@@ -282,6 +286,7 @@ public class TransferFacadeBean extends NuclosFacadeBean implements TransferFaca
 		contents.add(new DefaultNucletContent(NuclosEntity.ROLESUBFORMCOLUMN, NuclosEntity.ROLESUBFORM, contents));
 		contents.add(new DefaultNucletContent(NuclosEntity.ROLEREPORT, NuclosEntity.ROLE, contents));
 		contents.add(new DefaultNucletContent(NuclosEntity.ROLEWORKSPACE, NuclosEntity.ROLE, contents));
+		contents.add(new DefaultNucletContent(NuclosEntity.TASKLISTROLE, NuclosEntity.ROLE, contents));
 
 		contents.add(new SearchFilterNucletContent(contents));
 		contents.add(new DefaultNucletContent(NuclosEntity.SEARCHFILTERUSER, NuclosEntity.SEARCHFILTER, contents));

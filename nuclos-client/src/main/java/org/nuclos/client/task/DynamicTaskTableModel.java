@@ -16,8 +16,12 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.task;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.swing.table.DefaultTableModel;
 
+import org.nuclos.common.tasklist.TasklistDefinition;
 import org.nuclos.server.report.valueobject.ResultColumnVO;
 import org.nuclos.server.report.valueobject.ResultVO;
 
@@ -26,13 +30,39 @@ public class DynamicTaskTableModel extends DefaultTableModel {
 
 	private final ResultVO resultvo;
 
-	public DynamicTaskTableModel(ResultVO resultvo) {
+	private final Map<Integer, Integer> columns;
+
+	public DynamicTaskTableModel(TasklistDefinition def, ResultVO resultvo) {
 		this.resultvo = resultvo;
+		this.columns = new HashMap<Integer, Integer>();
+		int index = 0;
+		for (int i = 0; i < resultvo.getColumnCount(); i++) {
+			ResultColumnVO col = resultvo.getColumns().get(i);
+			if (col.getColumnLabel().equals(def.getDynamicTasklistIdFieldname())) {
+				continue;
+			}
+			else if (col.getColumnLabel().equals(def.getDynamicTasklistEntityFieldname())) {
+				continue;
+			}
+			else {
+				columns.put(index++, i);
+			}
+		}
+	}
+
+	public Object getValueByField(int i, String field) {
+		for (int j = 0; j < resultvo.getColumnCount(); j++) {
+			ResultColumnVO col = resultvo.getColumns().get(j);
+			if (col.getColumnLabel().equals(field)) {
+				return resultvo.getRows().get(i)[j];
+			}
+		}
+		throw new RuntimeException();
 	}
 
 	@Override
 	public int getColumnCount() {
-		return resultvo.getColumns().size();
+		return columns.size();
 	}
 
 	@Override
@@ -53,7 +83,7 @@ public class DynamicTaskTableModel extends DefaultTableModel {
 
 	@Override
 	public Object getValueAt(int iRow, int iColumn) {
-		final ResultColumnVO columnVO = resultvo.getColumns().get(iColumn);
+		final ResultColumnVO columnVO = resultvo.getColumns().get(columns.get(iColumn));
 		return columnVO.format(resultvo.getRows().get(iRow)[iColumn]);
 	}
 
@@ -64,6 +94,6 @@ public class DynamicTaskTableModel extends DefaultTableModel {
 
 	@Override
 	public String getColumnName(int columnIndex) {
-		return resultvo.getColumns().get(columnIndex).getColumnLabel();
+		return resultvo.getColumns().get(columns.get(columnIndex)).getColumnLabel();
 	}
 }
