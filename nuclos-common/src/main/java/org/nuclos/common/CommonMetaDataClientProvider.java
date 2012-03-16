@@ -21,6 +21,7 @@ import java.util.List;
 
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
+import org.nuclos.common.dal.vo.EntityObjectVO;
 import org.nuclos.common.dal.vo.PivotInfo;
 
 /**
@@ -49,5 +50,11 @@ public interface CommonMetaDataClientProvider<S extends EntityMetaDataVO, T exte
 	 * @return Returns the base entity name. Returns the original entity name if there is no dynamic entity with the given name.
 	 */
 	String getBaseEntity(String dynamicentityname);
+	
+	/**
+	 * 
+	 * @return all entity menus
+	 */
+	List<EntityObjectVO> getAllEntityMenus();
 	
 }

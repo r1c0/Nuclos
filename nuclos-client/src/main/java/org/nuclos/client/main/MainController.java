@@ -1431,7 +1431,7 @@ public class MainController {
 
 		Set<String> customConfigurationEntities = new HashSet<String>();
 
-		for (EntityObjectVO conf : MetaDataDelegate.getInstance().getEntityMenus()) {
+		for (EntityObjectVO conf : mdProv.getAllEntityMenus()) {
 			EntityMetaDataVO meta = mdProv.getEntity(conf.getFieldId("entity"));
 			String[] menuPath = splitMenuPath(localeDelegate.getResource(conf.getField("menupath", String.class), null));
 

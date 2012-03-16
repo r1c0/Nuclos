@@ -42,6 +42,7 @@ import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.dal.util.DalTransformations;
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
+import org.nuclos.common.dal.vo.EntityObjectVO;
 import org.nuclos.common.dal.vo.PivotInfo;
 import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.SpringLocaleDelegate;
@@ -284,6 +285,10 @@ public class MetaDataClientProvider implements MetaDataProvider<EntityMetaDataVO
 		throw new CommonFatalException("entity field with id=" + fieldId + " in " + entity + " does not exists.");
 	}
 
+	@Override
+	public List<EntityObjectVO> getAllEntityMenus() {
+		return dataCache.getListEntityMenus();
+	}
 
 	public synchronized void revalidate(){
 		dataCache.buildMaps();
@@ -313,6 +318,7 @@ public class MetaDataClientProvider implements MetaDataProvider<EntityMetaDataVO
 		private Map<Long, EntityMetaDataVO> mapMetaDataById = null;
 		private Map<String, Map<String, EntityFieldMetaDataVO>> mapFieldMetaData = null;
 		private Map<PivotInfo, Map<String, EntityFieldMetaDataVO>> mapPivotMetaData = new ConcurrentHashMap<PivotInfo, Map<String,EntityFieldMetaDataVO>>();
+		private List<EntityObjectVO> lstEntityMenus = null;
 
 		private Map<String, DynamicEntityVO> mapDynamicEntities;
 
@@ -363,6 +369,14 @@ public class MetaDataClientProvider implements MetaDataProvider<EntityMetaDataVO
 				return mapDynamicEntities;
 			}
 		}
+		
+		public List<EntityObjectVO> getListEntityMenus() {
+			if (isRevalidating()) {
+				return getListEntityMenus();
+			} else {
+				return lstEntityMenus;
+			}
+		}
 
 		private Map<String, Map<String, EntityFieldMetaDataVO>> buildMapFieldMetaData(Collection<EntityMetaDataVO> allEntities) {
 			return MetaDataDelegate.getInstance().getAllEntityFieldsByEntitiesGz(
@@ -397,6 +411,9 @@ public class MetaDataClientProvider implements MetaDataProvider<EntityMetaDataVO
 			mapPivotMetaData.clear();
 
 			mapDynamicEntities = Collections.unmodifiableMap(CollectionUtils.generateLookupMap(DatasourceDelegate.getInstance().getAllDynamicEntities(), DalTransformations.getDynamicEntityName()));
+			
+			lstEntityMenus = MetaDataDelegate.getInstance().getEntityMenus();
+			
 			revalidating = false;
 		}
 
