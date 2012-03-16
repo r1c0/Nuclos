@@ -708,10 +708,10 @@ public class WYSIWYGMetaInformation implements LayoutMLConstants {
 					}
 				}
 				else if (ATTRIBUTEVALUE_LISTOFVALUES.equals(controlType)) {
-					if (f.getForeignEntity() != null && !f.isSearchable()) {
+					if (f.getForeignEntity() != null && f.isSearchable()) {
 						result.add(f.getFieldName());
 					}
-					if (f.getLookupEntity() != null && !f.isSearchable()) {
+					if (f.getLookupEntity() != null && f.isSearchable()) {
 						result.add(f.getFieldName());
 					}
 				}
