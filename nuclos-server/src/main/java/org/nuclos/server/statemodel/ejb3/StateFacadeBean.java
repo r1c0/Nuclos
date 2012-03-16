@@ -620,7 +620,7 @@ public class StateFacadeBean extends NuclosFacadeBean implements StateFacadeRemo
 		if (descriptionResId != null) {
 			getLocaleFacade().setResourceForLocale(descriptionResId, getLocaleFacade().getUserLocale(), dbStateVO.getDescription());
 		} else {
-			LocaleUtils.setResourceIdForField(STATE_TABLE, dbStateVO.getId(), LocaleUtils.FIELD_DESCRIPTION, getLocaleFacade().setDefaultResource(null, dbStateVO.getStatename()));
+			LocaleUtils.setResourceIdForField(STATE_TABLE, dbStateVO.getId(), LocaleUtils.FIELD_DESCRIPTION, getLocaleFacade().setDefaultResource(null, dbStateVO.getDescription()));
 		}
 	}
 
