@@ -77,14 +77,14 @@ public class SecurityCache {
 	private ModulePermissions modulepermissions;
 	private MasterDataPermissions masterdatapermissions;
 
-	private Map<PermissionKey.AttributePermissionKey, Permission> mpAttributePermission 
+	private final Map<PermissionKey.AttributePermissionKey, Permission> mpAttributePermission 
 		= new ConcurrentHashMap<PermissionKey.AttributePermissionKey, Permission>();
-	private Map<PermissionKey.SubFormPermissionKey, Map<Integer, Permission>> mpSubFormPermission 
+	private final Map<PermissionKey.SubFormPermissionKey, Map<Integer, Permission>> mpSubFormPermission 
 		= new ConcurrentHashMap<PermissionKey.SubFormPermissionKey, Map<Integer, Permission>>();
 
-	private Map<PermissionKey.ModulePermissionKey, ModulePermission> modulePermissionsCache 
+	private final Map<PermissionKey.ModulePermissionKey, ModulePermission> modulePermissionsCache 
 		= new ConcurrentHashMap<PermissionKey.ModulePermissionKey, ModulePermission>();
-	private Map<PermissionKey.MasterDataPermissionKey, MasterDataPermission> masterDataPermissionsCache 
+	private final Map<PermissionKey.MasterDataPermissionKey, MasterDataPermission> masterDataPermissionsCache 
 		= new ConcurrentHashMap<PermissionKey.MasterDataPermissionKey, MasterDataPermission>();
 	
 	private TopicNotificationReceiver tnr;
@@ -220,13 +220,16 @@ public class SecurityCache {
 		return isReadAllowedForMasterData(entity.getEntityName());
 	}
 
-	public synchronized boolean isNewAllowedForModule(String sModuleEntity) {
+	public boolean isNewAllowedForModule(String sModuleEntity) {
 		return LangUtils.defaultIfNull(modulepermissions.getNewAllowedByEntityName().get(sModuleEntity), false);
 	}
 
-	public synchronized boolean isNewAllowedForModuleAndProcess(Integer iModuleId, Integer iProcessId) {
-		return modulepermissions.getNewAllowedProcessesByModuleId().containsKey(iModuleId) &&
-			modulepermissions.getNewAllowedProcessesByModuleId().get(iModuleId).contains(iProcessId);
+	public boolean isNewAllowedForModuleAndProcess(Integer iModuleId, Integer iProcessId) {
+		final Set<Integer> processes = modulepermissions.getNewAllowedProcessesByModuleId().get(iModuleId);
+		// Allow process if (a) we have information about the module and (
+		//   (b) the new is always allowed or
+		//   (c) the new process is allowed from the current process). (tp)
+		return processes != null && (processes.contains(null) || processes.contains(iProcessId));
 	}
 
 	public boolean isWriteAllowedForModule(String sModuleEntity, Integer iGenericObjectId) {

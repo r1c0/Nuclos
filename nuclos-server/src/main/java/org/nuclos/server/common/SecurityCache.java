@@ -307,12 +307,18 @@ public class SecurityCache implements SecurityCacheMBean {
 		private ModulePermissions readModulePermissions() {
 			DbQueryBuilder builder = dataBaseHelper.getDbAccess().getQueryBuilder();
 
-			final Map<Pair<String, Integer>, ModulePermission> mpByEntityName = new HashMap<Pair<String, Integer>, ModulePermission>();
-			final Map<Pair<Integer, Integer>, ModulePermission> mpByModuleId = new HashMap<Pair<Integer, Integer>, ModulePermission>();
-			final Map<String, Boolean> mpNewAllowedByEntityName = new HashMap<String, Boolean>();
-			final Map<Integer, Boolean> mpNewAllowedByModuleId = new HashMap<Integer, Boolean>();
-			final Map<String, Set<Integer>> mpNewAllowedProcessesByEntityName = new HashMap<String, Set<Integer>>();
-			final Map<Integer, Set<Integer>> mpNewAllowedProcessesByModuleId = new HashMap<Integer, Set<Integer>>();
+			final Map<Pair<String, Integer>, ModulePermission> mpByEntityName 
+				= new ConcurrentHashMap<Pair<String, Integer>, ModulePermission>();
+			final Map<Pair<Integer, Integer>, ModulePermission> mpByModuleId 
+				= new ConcurrentHashMap<Pair<Integer, Integer>, ModulePermission>();
+			final Map<String, Boolean> mpNewAllowedByEntityName 
+				= new ConcurrentHashMap<String, Boolean>();
+			final Map<Integer, Boolean> mpNewAllowedByModuleId 
+				= new ConcurrentHashMap<Integer, Boolean>();
+			final Map<String, Set<Integer>> mpNewAllowedProcessesByEntityName 
+				= new ConcurrentHashMap<String, Set<Integer>>();
+			final Map<Integer, Set<Integer>> mpNewAllowedProcessesByModuleId 
+				= new ConcurrentHashMap<Integer, Set<Integer>>();
 
 			if (isSuperUser()) {
 				DbQuery<String> query = builder.createQuery(String.class);
@@ -395,7 +401,8 @@ public class SecurityCache implements SecurityCacheMBean {
 				}
 			}
 
-			return new ModulePermissions(mpByEntityName, mpByModuleId, mpNewAllowedByEntityName, mpNewAllowedByModuleId, mpNewAllowedProcessesByEntityName, mpNewAllowedProcessesByModuleId);
+			return new ModulePermissions(mpByEntityName, mpByModuleId, mpNewAllowedByEntityName, 
+					mpNewAllowedByModuleId, mpNewAllowedProcessesByEntityName, mpNewAllowedProcessesByModuleId);
 		}
 
 		private MasterDataPermissions readMasterDataPermissions() {
