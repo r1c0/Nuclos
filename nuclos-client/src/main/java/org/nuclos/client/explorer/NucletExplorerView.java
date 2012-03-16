@@ -79,9 +79,9 @@ public class NucletExplorerView extends DefaultExplorerView implements ExplorerV
 	@Override
 	public List<JComponent> getToolBarComponents() {
 		final JButton btnAddContent = new JButton();
-		
+
 		btnAddContent.setFocusable(false);
-		
+
 		btnAddContent.setAction(new AbstractAction(SpringLocaleDelegate.getInstance().getMessage(
 				"NucletExplorerNode.1", "Zuweisen"), Icons.getInstance().getIconRelate()) {
 
@@ -100,8 +100,8 @@ public class NucletExplorerView extends DefaultExplorerView implements ExplorerV
 
 	private void cmdShowAddRemoveDialog(final JTree jTree) {
 		SelectObjectsController<AbstractNucletContentEntryTreeNode> selectCtrl =
-			new SelectObjectsController<AbstractNucletContentEntryTreeNode>(null, new NucletContentSelectObjectPanel());
-		
+			new SelectObjectsController<AbstractNucletContentEntryTreeNode>(jTree, new NucletContentSelectObjectPanel());
+
 		List<AbstractNucletContentEntryTreeNode> curAvailable = getTreeNodeFacade().getAvailableNucletContents();
 		List<AbstractNucletContentEntryTreeNode> curSelected = getTreeNodeFacade().getNucletContent(nucletnode);
 
@@ -120,7 +120,7 @@ public class NucletExplorerView extends DefaultExplorerView implements ExplorerV
 			try {
 				Collection<AbstractNucletContentEntryTreeNode> removed = CollectionUtils.subtract(curSelected, selectCtrl.getSelectedObjects());
 				Collection<AbstractNucletContentEntryTreeNode> added = CollectionUtils.subtract(selectCtrl.getSelectedObjects(), curSelected);
-						
+
 				getTreeNodeFacade().removeNucletContents(new HashSet<AbstractNucletContentEntryTreeNode>(removed));
 				getTreeNodeFacade().addNucletContents(nucletnode.getId().longValue(), new HashSet<AbstractNucletContentEntryTreeNode>(added));
 
