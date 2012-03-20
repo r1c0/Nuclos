@@ -840,6 +840,7 @@ public class MainFrameTabbedPane {
 
 		final BlackLabel bl = new BlackLabel(jpnTabbedPaneControl, 
 				localeDelegate.getMessage("MainFrameTabbedPane.3","Tableiste"));
+		bl.setGradientPaint(false);
 		startTabToolBar.add(bl);
 
 		/**

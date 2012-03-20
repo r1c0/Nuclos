@@ -81,7 +81,10 @@ public class NuclosLOVListener implements CollectableListOfValues.LOVListener {
 			@Override
 			public void run() throws CommonBusinessException {
 				final String sReferencedEntityName = clctcomp.getEntityField().getReferencedEntityName();
-				final CollectController<?> ctl = NuclosCollectControllerFactory.getInstance().newCollectController(sReferencedEntityName, null);
+				final MainFrameTab overlay = new MainFrameTab();
+				final CollectController<?> ctl = NuclosCollectControllerFactory.getInstance().newCollectController(sReferencedEntityName, overlay);
+				Main.getInstance().getMainController().initMainFrameTab(ctl, overlay);
+				tab.add(overlay);
 				ctl.runLookupCollectable(ev.getCollectableListOfValues());
 			}
 		});
