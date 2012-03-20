@@ -88,10 +88,12 @@ public class CommonJFrame extends JFrame {
 			if (frame.isMaximized()) {
 				log.debug("frame maximized");
 				frame.setNormalBounds(frame.rectNormalBoundsBeforeLastMove);
+//				frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
 			}
 			else {
 				log.debug("frame normal");
 				frame.setNormalBounds(frame.getBounds());
+				frame.setExtendedState(JFrame.NORMAL);
 			}
 		}
 	};  // inner class ComponentListener

@@ -150,6 +150,10 @@ public class RestoreUtils {
 				}
 			}
 		}
+		
+		frame.setNormalBounds(recNormalBounds);
+		frame.setBounds(recNormalBounds);
+		frame.setExtendedState(iExtendedState);
 
 		if (!restoreAtStoredPosition) {
 			recNormalBounds.x = 40;
@@ -162,11 +166,7 @@ public class RestoreUtils {
 					frame.setExtendedState(iExtendedState);
 				}
 			});
-		} else {
-			frame.setNormalBounds(recNormalBounds);
-			frame.setBounds(recNormalBounds);
-			frame.setExtendedState(iExtendedState);
-		}
+		} 
 
 		if (wdFrame.isMainFrame()) {
 			Main.getInstance().getMainFrame().repositionSwitchingWorkspace();
