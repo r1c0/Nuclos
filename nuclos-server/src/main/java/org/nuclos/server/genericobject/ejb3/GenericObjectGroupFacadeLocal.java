@@ -42,7 +42,7 @@ public interface GenericObjectGroupFacadeLocal {
 
 	/**
 	 * @param iGroupId
-	 * @return the ids of the genericobjects, which are assigned to the given objectgroup
+	 * @return the ids of the genericobjects, which are assigned to the given object group.
 	 */
 	Set<Integer> getGenericObjectIdsForGroup(Integer iModuleId,
 		Integer iGroupId);

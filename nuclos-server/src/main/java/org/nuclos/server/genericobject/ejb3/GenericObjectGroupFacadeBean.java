@@ -101,7 +101,7 @@ public class GenericObjectGroupFacadeBean implements GenericObjectGroupFacadeRem
 
 	/**
 	 * @param iGroupId
-	 * @return the ids of the genericobjects, which are assigned to the given objectgroup
+	 * @return the ids of the genericobjects, which are assigned to the given object group.
 	 */
 	public Set<Integer> getGenericObjectIdsForGroup(Integer iModuleId, Integer iGroupId) {
 		DbQueryBuilder builder = dataBaseHelper.getDbAccess().getQueryBuilder();
