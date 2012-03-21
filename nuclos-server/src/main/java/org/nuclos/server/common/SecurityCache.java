@@ -1051,9 +1051,16 @@ public class SecurityCache implements SecurityCacheMBean {
 			= new PermissionKey.AttributePermissionKey(sEntity, sAttributeName, iStateId);
 		if (!mpAttributePermission.containsKey(attributePermissionKey)) {
 			Permission permission = getSecurityFacade().getAttributePermission(sEntity, sAttributeName, iStateId);
+			if (permission == null) {
+				permission = Permission.NONE;
+			}
 			mpAttributePermission.put(attributePermissionKey, permission);
 		}
-		return mpAttributePermission.get(attributePermissionKey);
+		final Permission result = mpAttributePermission.get(attributePermissionKey);
+		if (Permission.NONE.equals(result)) {
+			return null;
+		}
+		return result;
 	}
 
 	private SecurityFacadeBean getSecurityFacade() {

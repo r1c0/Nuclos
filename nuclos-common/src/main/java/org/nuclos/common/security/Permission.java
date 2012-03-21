@@ -29,8 +29,9 @@ package org.nuclos.common.security;
 public enum Permission {
 
 	/**
-	 * may neither read nor write.
-	 * @todo use null for this purpose
+	 * May neither read nor write. This is often (but not always) represented as 
+	 * <code>null</code>. However the value is useful as value part of a 
+	 * ConcurrentHashMap (where null is not allowed).
 	 */
 	NONE("<Keine>"),
 
