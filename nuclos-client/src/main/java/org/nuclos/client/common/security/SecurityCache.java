@@ -226,10 +226,7 @@ public class SecurityCache {
 
 	public boolean isNewAllowedForModuleAndProcess(Integer iModuleId, Integer iProcessId) {
 		final Set<Integer> processes = modulepermissions.getNewAllowedProcessesByModuleId().get(iModuleId);
-		// Allow process if (a) we have information about the module and (
-		//   (b) the new is always allowed or
-		//   (c) the new process is allowed from the current process). (tp)
-		return processes != null && (processes.contains(null) || processes.contains(iProcessId));
+		return processes != null && processes.contains(iProcessId);
 	}
 
 	public boolean isWriteAllowedForModule(String sModuleEntity, Integer iGenericObjectId) {

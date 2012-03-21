@@ -54,11 +54,32 @@ public class ModulePermissions implements Serializable {
     	return mpNewAllowedByModuleId;
     }
 
+	/**
+	 * Create the module (aka GenericObject) permission object.
+	 * This are the permissions for an (individual, pre-selected) user.
+	 * 
+	 * @param mpByEntityName 
+	 * 			Map of Pair((String) entity name, (Integer) object group) -> ModulePermission.
+	 * 			Null of PairX is not allowed.
+	 * 			Null for PairY is for 'no object group'.
+	 * @param mpByModuleId
+	 * 			Map of Pair((Integer) moduleId, (Integer) object group) -> ModulePermission.
+	 * 			Null of PairX is not allowed.
+	 * 			Null for PairY is for 'no object group'.
+	 * @param mpNewAllowedByEntityName
+	 * 			Map of ((String) entity name) -> Boolean
+	 * @param mpNewAllowedByModuleId
+	 * 			Map of ((Integer) moduleId) -> Boolean
+	 * @param mpNewAllowedProcessesByEntityName
+	 * 			Map of ((String) entity name) -> Set of ((Integer) processIds/actions).
+	 * 			The result set includes 'null' if new is allowed for the default (no action) case.
+	 * @param mpNewAllowedProcessesByModuleId
+	 * 			Map of ((Integer) moduleId) -> Set of ((Integer) processIds/actions).
+	 * 			The result set includes 'null' if new is allowed for the default (no action) case.
+	 */
 	public ModulePermissions(
-			Map<Pair<String, Integer>,
-			ModulePermission> mpByEntityName,
-			Map<Pair<Integer, Integer>,
-			ModulePermission> mpByModuleId,
+			Map<Pair<String, Integer>, ModulePermission> mpByEntityName,
+			Map<Pair<Integer, Integer>, ModulePermission> mpByModuleId,
 			Map<String, Boolean> mpNewAllowedByEntityName,
 			Map<Integer, Boolean> mpNewAllowedByModuleId,
 			Map<String, Set<Integer>> mpNewAllowedProcessesByEntityName,
