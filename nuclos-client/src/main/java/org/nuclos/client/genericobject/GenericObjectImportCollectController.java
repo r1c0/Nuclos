@@ -140,12 +140,17 @@ public class GenericObjectImportCollectController extends MasterDataCollectContr
 				progressBar.setStringPainted(true);
 
 				Component placeHolder = getPlaceHolder(getDetailsPanel(), "lblPlaceholder1");
-				Container container = placeHolder.getParent();
-				TableLayout layoutManager = (TableLayout)container.getLayout();
-				TableLayoutConstraints constraints = layoutManager.getConstraints(placeHolder);
+				// You only can replace the place holder once. (tp)
+				if (placeHolder != null) {
+					Container container = placeHolder.getParent();
+					TableLayout layoutManager = (TableLayout)container.getLayout();
+					TableLayoutConstraints constraints = layoutManager.getConstraints(placeHolder);
 
-				container.remove(placeHolder);
-				container.add(progressBar, constraints);
+					container.remove(placeHolder);
+					container.add(progressBar, constraints);
+				}
+				
+				
 	            Integer importfileId = (Integer) getSelectedCollectableId();
 
 	            if (!SecurityCache.getInstance().isSuperUser()) {
