@@ -47,6 +47,34 @@ import org.nuclos.common.collect.collectable.CollectableEntityField;
  * @version 01.00.00
  */
 public class NuclosCollectableTextArea extends CollectableTextArea {
+	
+	private static class FocusForward extends AbstractAction {
+		
+		private FocusForward() {
+			super("insert-tab");
+		}
+		
+		@Override
+        public void actionPerformed(ActionEvent evt) {
+			((Component) evt.getSource()).transferFocus();
+		}		
+	}
+	
+	public static class FocusBackward extends AbstractAction {
+		
+		private FocusBackward() {
+			super("Move Focus Backwards");
+		}
+		
+		@Override
+        public void actionPerformed(ActionEvent evt) {
+			((Component) evt.getSource()).transferFocusBackward();
+		}		
+	}
+	
+	private static final FocusForward FOCUS_FORWARD = new FocusForward();
+	
+	private static final FocusBackward FOCUS_BACKWORD = new FocusBackward();
 
 	public NuclosCollectableTextArea(CollectableEntityField clctef, Boolean bSearchable) {
 		super(clctef, bSearchable);
@@ -62,23 +90,9 @@ public class NuclosCollectableTextArea extends CollectableTextArea {
 	// Override the tab key
 	private void overrideActionMap() {
 		JTextArea component = getJTextArea();
-
-		// The actions
-		Action nextFocusAction = new AbstractAction("insert-tab") {
-			@Override
-            public void actionPerformed(ActionEvent evt) {
-				((Component) evt.getSource()).transferFocus();
-			}
-		};
-		Action prevFocusAction = new AbstractAction("Move Focus Backwards") {
-			@Override
-            public void actionPerformed(ActionEvent evt) {
-				((Component) evt.getSource()).transferFocusBackward();
-			}
-		};
 		// Add actions
-		component.getActionMap().put(nextFocusAction.getValue(Action.NAME), nextFocusAction);
-		component.getKeymap().addActionForKeyStroke(KeyStroke.getKeyStroke(KeyEvent.VK_TAB, KeyEvent.SHIFT_MASK), prevFocusAction);
+		component.getActionMap().put(FOCUS_FORWARD.getValue(Action.NAME), FOCUS_FORWARD);
+		component.getKeymap().addActionForKeyStroke(KeyStroke.getKeyStroke(KeyEvent.VK_TAB, KeyEvent.SHIFT_MASK), FOCUS_BACKWORD);
 	}
 
 	/**
