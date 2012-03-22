@@ -185,8 +185,12 @@ public abstract class SubFormController extends Controller
 		
 		subform.addColumnModelListener(newSubFormTablePreferencesUpdateListener());
 	}
+	
+	public boolean isClosed() {
+		return closed;
+	}
 
-	// @Override
+	@Override
 	public void close() {
 		if (!closed) {
 			LOG.info("close(): " + this);

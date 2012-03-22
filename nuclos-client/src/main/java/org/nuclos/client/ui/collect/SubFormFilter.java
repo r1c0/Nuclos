@@ -199,7 +199,9 @@ public class SubFormFilter implements Closeable {
 	               //NUCLEUSINT-789 i
 	               @Override
 	               public void itemStateChanged(ItemEvent e) {
-	                  filter();
+	            	   if (!closed) {
+	            		   filter();
+	            	   }
 	               }
 	            });
             }
@@ -209,7 +211,9 @@ public class SubFormFilter implements Closeable {
                //NUCLEUSINT-789 i
                @Override
                public void stateChanged(ChangeEvent e) {
-                  filter();
+            	   if (!closed) {
+            		   filter();
+            	   }
                }
             });
 
@@ -220,7 +224,9 @@ public class SubFormFilter implements Closeable {
 
 					@Override
 					public void focusLost(FocusEvent e) {
-						filter();
+						if (!closed) {
+							filter();
+						}
 					}
 
 					@Override
@@ -240,7 +246,9 @@ public class SubFormFilter implements Closeable {
                @Override
                public void focusLost(FocusEvent e) {
                   saveSearchTerm(subform.getEntityName(), cef.getName(), clctcomp);
-                  filter();
+                  if (!closed) {
+                	  filter();
+                  }
                }
 
                @Override

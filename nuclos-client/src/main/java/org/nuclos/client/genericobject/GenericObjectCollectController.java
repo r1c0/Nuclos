@@ -2450,14 +2450,16 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 							? (Integer) clctfield.getValueId()
 								: null;
 
-							String entityname = mdsubformctl.getEntityAndForeignKeyFieldName().getEntityName();
-							Permission permission = SecurityCache.getInstance().getSubFormPermission(
-								entityname, iStatusId);
-
-							if(permission == null)
-								mdsubformctl.clear();
-							else
-								mdsubformctl.fillSubForm(collmdcvo);
+							if (!mdsubformctl.isClosed()) {
+								String entityname = mdsubformctl.getEntityAndForeignKeyFieldName().getEntityName();
+								Permission permission = SecurityCache.getInstance().getSubFormPermission(
+									entityname, iStatusId);
+	
+								if(permission == null)
+									mdsubformctl.clear();
+								else
+									mdsubformctl.fillSubForm(collmdcvo);
+							}
 						}
 						finally {
 							if(!bWasDetailsChangedIgnored)
@@ -2465,8 +2467,10 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 						}
 						GenericObjectCollectController.this.getSubFormsLoader().setSubFormLoaded(
 							mdsubformctl.getCollectableEntity().getName(), true);
-						mdsubformctl.getSubForm().forceUnlockFrame();
-						mdsubformctl.selectFirstRow();
+						if (!mdsubformctl.isClosed()) {
+							mdsubformctl.getSubForm().forceUnlockFrame();
+							mdsubformctl.selectFirstRow();
+						}
 					}
 			}
 		};
