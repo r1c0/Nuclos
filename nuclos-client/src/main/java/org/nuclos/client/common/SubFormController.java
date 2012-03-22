@@ -185,17 +185,23 @@ public abstract class SubFormController extends MainFrameTabController
 		
 		subform.addColumnModelListener(newSubFormTablePreferencesUpdateListener());
 	}
+		
+	public boolean isClosed() {
+		return closed;
+	}
 
 	@Override
 	public void close() {
-		LOG.info("close(): " + this);
-		removeListSelectionListener(this.getJTable());
-		subform.removeSubFormToolListener(subformToolListener);
-		
-		// Don't close SubForm here (this will kill the 'next' feature)
-		// Yes, that means that the controller is used AFTER closed. (tp)
-		// subform.close();
-		// subform = null;
+		if (!closed) {
+			LOG.info("close(): " + this);
+			removeListSelectionListener(this.getJTable());
+			subform.removeSubFormToolListener(subformToolListener);
+			
+			subform.close();
+			subform = null;
+			
+			closed = true;
+		}
 	}
 	
 	public void setIgnorePreferencesUpdate(boolean ignore) {

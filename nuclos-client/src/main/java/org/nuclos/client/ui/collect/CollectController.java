@@ -1043,12 +1043,13 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 		}
 	}
 
-	/**
-	 *
-	 */
 	protected void setDefaultButton() {
 		if (CollectController.this.getSearchPanel().getRootPane() != null)
 			CollectController.this.getSearchPanel().getRootPane().setDefaultButton(CollectController.this.getSearchPanel().btnSearch);
+	}
+	
+	public boolean isClosed() {
+		return closed;
 	}
 
 	/**
