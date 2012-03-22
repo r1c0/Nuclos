@@ -93,4 +93,9 @@ public class EntityObjectDelegate implements EntityObjectCommon {
 		facade.createOrUpdatePlain(entity);
 	}
 
+	@Override
+	public Integer getVersion(String entity, Long id) throws CommonPermissionException {
+		return facade.getVersion(entity, id);
+	}
+
 }

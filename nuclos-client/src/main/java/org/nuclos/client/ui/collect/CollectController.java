@@ -81,6 +81,7 @@ import org.nuclos.client.common.NuclosCollectControllerFactory;
 import org.nuclos.client.common.NuclosDropTargetVisitor;
 import org.nuclos.client.common.OneDropNuclosDropTargetListener;
 import org.nuclos.client.common.WorkspaceUtils;
+import org.nuclos.client.entityobject.EntityObjectDelegate;
 import org.nuclos.client.genericobject.CollectableGenericObject;
 import org.nuclos.client.genericobject.GenericObjectClientUtils;
 import org.nuclos.client.genericobject.Modules;
@@ -160,6 +161,7 @@ import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Transformer;
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common2.CommonRunnable;
+import org.nuclos.common2.IdUtils;
 import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
@@ -199,7 +201,7 @@ import org.springframework.util.Assert;
  * TODO try to split up some of the responsibilities in separate classes, but don't sacrifice flexibility, don't make
  * things even more complicated and don't mess up the views with controller code. That's not an easy task...
  */
-public abstract class CollectController<Clct extends Collectable> extends TopController 
+public abstract class CollectController<Clct extends Collectable> extends TopController
 	implements NuclosDropTargetVisitor, Closeable {
 
 	private static final Logger LOG = Logger.getLogger(CollectController.class);
@@ -270,9 +272,9 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	private ISearchStrategy<Clct> ss;
 
 	private final Map<String, Serializable> context = new HashMap<String, Serializable>();
-	
+
 	private InvokeWithInputRequiredSupport invokeWithInputRequiredSupport;
-	
+
 	private boolean newTabCreated = false;
 
 	/**
@@ -329,7 +331,7 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	/**
 	 * action: New
 	 */
-	private final Action actNew = new CommonAbstractAction(getSpringLocaleDelegate().getMessage("CollectController.39","Neu"), 
+	private final Action actNew = new CommonAbstractAction(getSpringLocaleDelegate().getMessage("CollectController.39","Neu"),
 			Icons.getInstance().getIconNew16(),
 			getSpringLocaleDelegate().getMessage("CollectController.23","Neuen Datensatz erfassen")) {
 
@@ -344,7 +346,7 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	/**
 	 * action: Save
 	 */
-	private final Action actSave = new CommonAbstractAction(getSpringLocaleDelegate().getMessage("CollectController.40","Speichern"), 
+	private final Action actSave = new CommonAbstractAction(getSpringLocaleDelegate().getMessage("CollectController.40","Speichern"),
 			Icons.getInstance().getIconSave16(),
 			getSpringLocaleDelegate().getMessage("CollectController.6","\u00c4nderungen an diesem Datensatz speichern")) {
 
@@ -357,8 +359,8 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	/**
 	 * action: Bookmark
 	 */
-	private final Action actBookmark = new CommonAbstractAction(getSpringLocaleDelegate().getMessage("CollectController.105","Lesezeichen setzen"), 
-			Icons.getInstance().getIconBookmark16(), 
+	private final Action actBookmark = new CommonAbstractAction(getSpringLocaleDelegate().getMessage("CollectController.105","Lesezeichen setzen"),
+			Icons.getInstance().getIconBookmark16(),
 			getSpringLocaleDelegate().getMessage("CollectController.106","Lesezeichen auf den Start Tabs setzen")) {
 
 		@Override
@@ -376,8 +378,8 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	/**
 	 * action: Bookmark
 	 */
-	private final Action actCopyCells = new CommonAbstractAction(getSpringLocaleDelegate().getMessage("ResultPanel.13","Kopiere markierte Zellen"), 
-			Icons.getInstance().getIconCopy16(), 
+	private final Action actCopyCells = new CommonAbstractAction(getSpringLocaleDelegate().getMessage("ResultPanel.13","Kopiere markierte Zellen"),
+			Icons.getInstance().getIconCopy16(),
 			getSpringLocaleDelegate().getMessage("ResultPanel.13","Kopiere markierte Zellen")) {
 
 		@Override
@@ -390,8 +392,8 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	/**
 	 * action: Bookmark
 	 */
-	private final Action actCopyRows = new CommonAbstractAction(getSpringLocaleDelegate().getMessage("ResultPanel.14","Kopiere markierte Zeilen"), 
-			Icons.getInstance().getIconCopy16(), 
+	private final Action actCopyRows = new CommonAbstractAction(getSpringLocaleDelegate().getMessage("ResultPanel.14","Kopiere markierte Zeilen"),
+			Icons.getInstance().getIconCopy16(),
 			getSpringLocaleDelegate().getMessage("ResultPanel.14","Kopiere markierte Zeilen")) {
 
 		@Override
@@ -405,8 +407,8 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	/**
 	 * action: Open in new tab
 	 */
-	private final Action actOpenInNewTab = new CommonAbstractAction(getSpringLocaleDelegate().getMessage("CollectController.107","In neuem Tab \u00f6ffnen"), 
-			Icons.getInstance().getIconOpenInNewTab16(), 
+	private final Action actOpenInNewTab = new CommonAbstractAction(getSpringLocaleDelegate().getMessage("CollectController.107","In neuem Tab \u00f6ffnen"),
+			Icons.getInstance().getIconOpenInNewTab16(),
 			getSpringLocaleDelegate().getMessage("CollectController.108","Details in neuem Tab \u00f6ffnen")) {
 
 		@Override
@@ -424,7 +426,7 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	/**
 	 * action: Clone
 	 */
-	private final Action actClone = new CommonAbstractAction(getSpringLocaleDelegate().getMessage("CollectController.38","Klonen"), 
+	private final Action actClone = new CommonAbstractAction(getSpringLocaleDelegate().getMessage("CollectController.38","Klonen"),
 			Icons.getInstance().getIconClone16(),
 			getSpringLocaleDelegate().getMessage("CollectController.7","Ausgew\u00e4hlten Datensatz klonen")) {
 
@@ -440,7 +442,7 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	 * action: Refresh
 	 */
 	private final Action actRefreshCurrentCollectable = new CommonAbstractAction(getSpringLocaleDelegate().getMessage("CollectController.37","Aktualisieren"),
-			Icons.getInstance().getIconRefresh16(), 
+			Icons.getInstance().getIconRefresh16(),
 			getSpringLocaleDelegate().getMessage("CollectController.4","Aktualisieren (Datensatz neu laden und \u00c4nderungen verwerfen)")) {
 
 		@Override
@@ -561,7 +563,7 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	protected CollectController(CollectableEntity clcte, MainFrameTab tabIfAny) {
 		this(clcte, tabIfAny, new ResultController<Clct>(clcte, new SearchResultStrategy<Clct>()));
 	}
-	
+
 	@Autowired
 	void setInvokeWithInputRequiredSupport(InvokeWithInputRequiredSupport invokeWithInputRequiredSupport) {
 		Assert.notNull(invokeWithInputRequiredSupport);
@@ -984,7 +986,7 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 		super.setParent(tabIfAny == null ? newTab() : tabIfAny);
 		initTab();
 	}
-	
+
 	protected void initTab() {
 		// prevent that the frame is closed when changes are pending:
 		getTab().addVetoableChangeListener(new VetoableChangeListener() {
@@ -1024,15 +1026,15 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 			}
 		});
 	}
-	
+
 	protected MainFrameTab newTab() {
 		MainFrameTab tab = new MainFrameTab();
 		newTabCreated = true;
 		return tab;
 	}
-	
+
 	/**
-	 * 
+	 *
 	 */
 	public void init() {
 		if (newTabCreated) {
@@ -1065,7 +1067,7 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 
 		// Details panel:
 		this.ctlDetails.close();
-		
+
 		// Partial fix for http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=7079260
 		collectableComponentSearchFocusListener = null;
 	}
@@ -1625,7 +1627,7 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	/**
 	 * alternative entry point: view all (in Results tab)
 	 * @precondition this.isSearchPanelAvailable()
-	 * 
+	 *
 	 * TODO: Argument should be List<Long>.
 	 */
 	public final void runViewResults(List<? extends Object> oIds) throws CommonBusinessException {
@@ -2618,7 +2620,7 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	 * @throws CommonBusinessException
 	 */
 	protected Integer getVersionOfCollectableById(String sEntity, Object oId) throws CommonBusinessException {
-		return findCollectableById(sEntity, oId).getVersion();
+		return EntityObjectDelegate.getInstance().getVersion(sEntity, IdUtils.toLongId(oId));
 	}
 
 	/**
@@ -3027,7 +3029,7 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 					final String sMessage = sMessage1 + ", " + "da er zwischenzeitlich von einem anderen Benutzer ge\u00e4ndert wurde.\n" +
 							"Sie m\u00fcssen den Datensatz neu laden und Ihre \u00c4nderungen dann erneut durchf\u00fchren.\n\n" +
 							getSpringLocaleDelegate().getMessage("CollectController.25","Soll der Datensatz jetzt neu geladen werden?");
-					final int iBtn = JOptionPane.showConfirmDialog(this.getTab(), sMessage, 
+					final int iBtn = JOptionPane.showConfirmDialog(this.getTab(), sMessage,
 							getSpringLocaleDelegate().getMessage("CollectController.9","Datensatz ge\u00e4ndert"),
 							JOptionPane.OK_CANCEL_OPTION);
 					if (iBtn == JOptionPane.OK_OPTION) {
@@ -3231,7 +3233,7 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 
 		if (this.stopEditingInDetails()) {
 			final String sMessage = getSpringLocaleDelegate().getMessage("GenericObjectCollectController.74","Soll der angezeigte Datensatz ({0}) wirklich gel\u00f6scht werden?", getSelectedCollectable().getIdentifierLabel());
-			final int iBtn = JOptionPane.showConfirmDialog(this.getTab(), sMessage, 
+			final int iBtn = JOptionPane.showConfirmDialog(this.getTab(), sMessage,
 					getSpringLocaleDelegate().getMessage("GenericObjectCollectController.26","Datensatz l\u00f6schen"), JOptionPane.YES_NO_OPTION);
 
 			if (iBtn == JOptionPane.OK_OPTION) {
@@ -3297,7 +3299,7 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 		}
 		catch (CommonBusinessException ex) {
 			if (!handleSpecialException(ex)) {
-				Errors.getInstance().showExceptionDialog(getTab(), 
+				Errors.getInstance().showExceptionDialog(getTab(),
 						getSpringLocaleDelegate().getMessage(
 								"GenericObjectCollectController.31","Der Datensatz konnte nicht gel\u00f6scht werden."), ex);
 			}
@@ -3477,7 +3479,7 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 			}
 			final String sMsg = getSpringLocaleDelegate().getMessage(
 					"CollectController.14","Der Datensatz wurde ge\u00e4ndert.") + "\n" + getSpringLocaleDelegate().getMessage(
-							"CollectController.32","Wenn Sie jetzt nicht speichern, werden diese \u00c4nderungen verloren gehen.") + "\n" + 
+							"CollectController.32","Wenn Sie jetzt nicht speichern, werden diese \u00c4nderungen verloren gehen.") + "\n" +
 							getSpringLocaleDelegate().getMessage("CollectController.20","Jetzt speichern?");
 
 			final int iBtn = JOptionPane.showConfirmDialog(this.getTab(), sMsg, getSpringLocaleDelegate().getMessage(

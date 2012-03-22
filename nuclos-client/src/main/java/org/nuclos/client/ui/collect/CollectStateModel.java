@@ -47,7 +47,7 @@ import org.nuclos.common2.exception.CommonFinderException;
  */
 
 public final class CollectStateModel <Clct extends Collectable> implements CollectStateConstants {
-	
+
 	private static final Logger LOG = Logger.getLogger(CollectStateModel.class);
 
 	/**
@@ -411,11 +411,22 @@ public final class CollectStateModel <Clct extends Collectable> implements Colle
 
 	}  // setDetailsMode
 
+	public void performVersionCheck() {
+		performVersionCheck(CollectState.isDetailsModeChangesPending(this.iDetailsMode));
+	}
+
+	private void performVersionCheck(int iDetailsMode) {
+		performVersionCheck(true);
+		this.iDetailsMode = iDetailsMode;
+	}
+
 	/**
-	 * @todo This method needs refactoring. It shouldn't enable the tabbed pane itself - just perform a version check.
+	 * @todo This method needs refactoring.
+	 * 	It shouldn't enable the tabbed pane itself - just perform a version check.
+	 * 	tsc: whole version check (with actions) should happen in some controller, not in the model!
 	 * @param iDetailsMode
 	 */
-	private void performVersionCheck(int iDetailsMode) {
+	private void performVersionCheck(boolean withPrompt) {
 		final SpringLocaleDelegate localeDelegate = SpringLocaleDelegate.getInstance();
 		try {
 			final Clct clctOld = this.ctlCollect.getSelectedCollectable();
@@ -423,22 +434,16 @@ public final class CollectStateModel <Clct extends Collectable> implements Colle
 			try {
 				iNewVersion = this.ctlCollect.getVersionOfCollectableById(this.ctlCollect.getEntityName(), clctOld.getId());
 			}
-			catch (CommonFinderException ex) {
+			catch (Exception ex) {
 				final String sMessage = localeDelegate.getMessage(
 						"CollectStateModel.7","Der Datensatz wurde zwischenzeitlich gel\u00f6scht.");
 				/** @todo performVersionCheck should throw CommonFinderException! */
 				throw new CommonFatalException(sMessage, ex);
 			}
-			catch (CommonBusinessException ex) {
-				final String sMessage = localeDelegate.getMessage(
-						"CollectStateModel.3","Beim Pr\u00fcfen der Version des Datensatzes ist ein Fehler aufgetreten.");
-				throw new CommonFatalException(sMessage, ex);
-				// this must not happen
-			}
-			
+
 			final int iOldVersion = clctOld.getVersion();
 			LOG.debug("performVersionCheck: Old version: " + iOldVersion + " - New version: " + iNewVersion);
-			
+
 			if (iNewVersion == iOldVersion) {
 				this.setEditedCollectable(clctOld);
 				// we don't want to use the new object so the user needn't retype the first keystroke
@@ -450,16 +455,16 @@ public final class CollectStateModel <Clct extends Collectable> implements Colle
 							"CollectStateModel.9","Neuere Version erwartet."));
 				}
 				assert iNewVersion > iOldVersion;
-				
+
 				String sMessage = localeDelegate.getMessage(
 						"CollectStateModel.6","Der Datensatz wurde zwischenzeitlich ge\u00e4ndert. Soll der Datensatz neu geladen werden?");
-				int result = JOptionPane.showConfirmDialog(this.ctlCollect.getTab(), sMessage, 
+				int result = withPrompt ? JOptionPane.showConfirmDialog(this.ctlCollect.getTab(), sMessage,
 						localeDelegate.getMessage("CollectStateModel.5","Datensatz ge\u00e4ndert"),
-						JOptionPane.YES_NO_OPTION);
-				
+						JOptionPane.YES_NO_OPTION) : JOptionPane.YES_OPTION;
+
 				if (result == JOptionPane.YES_OPTION) {
 					final Clct clctNew;
-					
+
 					try {
 						clctNew = this.ctlCollect.readSelectedCollectable();
 					}
@@ -475,9 +480,9 @@ public final class CollectStateModel <Clct extends Collectable> implements Colle
 						throw new CommonFatalException(sMessage, ex);
 						// this must not happen
 					}
-					
+
 					this.setEditedCollectable(clctNew);
-					
+
 					try {
 						this.ctlCollect.safeFillDetailsPanel(clctNew);
 					}
@@ -487,25 +492,23 @@ public final class CollectStateModel <Clct extends Collectable> implements Colle
 						throw new CommonFatalException(sMessage, ex);
 						// this will be caught further down.
 					}
-					
+
 					this.ctlCollect.getResultController().replaceSelectedCollectableInTableModel(clctNew);
 				}
 				else {
 					this.setEditedCollectable(clctOld);
 				}
-				
+
 				/* Note that there is a little flaw here. At this point, we should go back to the view mode,
 				 * as the user's change is reverted. Then, however, the object would be reread on the next
 				 * keystroke, which is unnecessary. We don't want to make things more complicated than
 				 * necessary, so we stay in edit mode here. Conflicts will be rare, anyway.
 				 */
 			}
-			
+
 			/** @todo enable tabbed pane outside of this method */
 			this.pnlCollect.setTabbedPaneEnabledAt(OUTERSTATE_SEARCH, false);
 			this.pnlCollect.setTabbedPaneEnabledAt(OUTERSTATE_RESULT, false);
-			
-			this.iDetailsMode = iDetailsMode;
 		}
 		catch (RuntimeException ex) {
 			final String sErrorMsg = localeDelegate.getMessage(

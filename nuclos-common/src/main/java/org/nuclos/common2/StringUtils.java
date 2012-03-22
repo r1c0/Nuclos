@@ -709,7 +709,7 @@ public class StringUtils {
 	public static boolean equalsIgnoreCase(String s1, String s2) {
 		return (s1 == null) ? (s2 == null) : s1.equalsIgnoreCase(s2);
 	}
-	
+
 	public static int compareIgnoreCase(String s1, String s2) {
 		return (s1 == null) ? ((s2 == null) ? 0 : 1) : s1.compareToIgnoreCase(s2);
 	}
@@ -766,31 +766,31 @@ public class StringUtils {
 					accept = true;
 					break;
 				// german umlaut support
-				case 'ä':
+				case '\u00e4':
 					c = 'a';
 					accept = true;
 					break;
-				case 'ö':
+				case '\u00f6':
 					c = 'o';
 					accept = true;
 					break;
-				case 'ü':
+				case '\u00fc':
 					c = 'u';
 					accept = true;
 					break;
-				case 'ß':
+				case '\u00df':
 					c = 's';
 					accept = true;
 					break;
-				case 'Ä':
+				case '\u00c4':
 					c = 'A';
 					accept = true;
 					break;
-				case 'Ö':
+				case '\u00d6':
 					c = 'O';
 					accept = true;
 					break;
-				case 'Ü':
+				case '\u00dc':
 					c = 'U';
 					accept = true;
 					break;

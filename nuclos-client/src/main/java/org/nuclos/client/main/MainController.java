@@ -150,6 +150,7 @@ import org.nuclos.client.ui.collect.CollectController;
 import org.nuclos.client.ui.collect.CollectController.CollectableEventListener;
 import org.nuclos.client.ui.collect.CollectController.MessageType;
 import org.nuclos.client.ui.collect.CollectControllerFactorySingleton;
+import org.nuclos.client.ui.collect.CollectState;
 import org.nuclos.client.ui.collect.CollectStateModel;
 import org.nuclos.client.ui.collect.detail.DetailsCollectableEventListener;
 import org.nuclos.client.ui.collect.search.ReportExecutionSearchStrategy;
@@ -267,21 +268,21 @@ public class MainController {
 	};
 
 	private DirectHelpActionListener dha;
-	
+
 	private NucletComponentRepository nucletComponentRepository;
-	
+
 	private SpringLocaleDelegate localeDelegate;
-	
+
 	private MetaDataClientProvider mdProv;
-	
+
 	private TopicNotificationReceiver tnr;
-	
+
 	private ResourceCache resourceCache;
-	
+
 	private SecurityCache securityCache;
-	
+
 	// private Main main;
-	
+
 	/**
 	 * @param sUserName name of the logged in user
 	 * @param sNuclosServerName name of the Nucleus server connected to.
@@ -292,37 +293,37 @@ public class MainController {
 		this.sNuclosServerName = sNuclosServerName;
 		this.loginController = loginController;
 	}
-	
+
 	@Autowired
 	void setSecurityCache(SecurityCache securityCache) {
 		this.securityCache = securityCache;
 	}
-	
+
 	@Autowired
 	void setResourceCache(ResourceCache resourceCache) {
 		this.resourceCache = resourceCache;
 	}
-	
-	@Autowired 
+
+	@Autowired
 	void setTopicNotificationReceiver(TopicNotificationReceiver tnr) {
 		this.tnr = tnr;
 	}
-	
+
 	@Autowired
 	void setMetaDataClientProvider(MetaDataClientProvider mdProv) {
 		this.mdProv = mdProv;
 	}
-	
+
 	@Autowired
 	public void setNucletComponentRepository(NucletComponentRepository ncr) {
 		this.nucletComponentRepository = ncr;
 	}
-	
+
 	@Autowired
 	public void setMainFrame(MainFrame mainFrame) {
 		this.frm = mainFrame;
 	}
-	
+
 	@Autowired
 	public void setSpringLocaleDelegate(SpringLocaleDelegate cld) {
 		this.localeDelegate = cld;
@@ -333,7 +334,7 @@ public class MainController {
 		debugFrame = new SwingDebugFrame(this);
 		try {
 			cmdExecuteRport = createEntityAction(NuclosEntity.REPORTEXECUTION);
-			
+
 			/** @todo this is a workaround - because Main.getMainController() is called to get the user name */
 			Main.getInstance().setMainController(this);
 
@@ -416,16 +417,16 @@ public class MainController {
 
 			this.ctlTasks.setExplorerController(ctlExplorer);
 			this.ctlExplorer.setTaskController(ctlTasks);
-			
+
 			initActions();
 
 			LOG.debug(">>> restore last workspace...");
 			try {
 				Main.getInstance().getMainFrame().readMainFramePreferences(prefs);
 				RestoreUtils.restoreWorkspaceThreaded(
-						MainFrame.getLastWorkspaceIdFromPreferences(), 
+						MainFrame.getLastWorkspaceIdFromPreferences(),
 						MainFrame.getLastWorkspaceFromPreferences(),
-						MainFrame.getLastAlwaysOpenWorkspaceIdFromPreferences(), 
+						MainFrame.getLastAlwaysOpenWorkspaceIdFromPreferences(),
 						MainFrame.getLastAlwaysOpenWorkspaceFromPreferences());
 			}
 			catch (Exception ex) {
@@ -518,11 +519,11 @@ public class MainController {
 			throw new ExceptionInInitializerError(e);
 		}
 	}
-			
+
 	private void initActions() {
 		try {
 			dha = new DirectHelpActionListener();
-			
+
 			// init Actions
 			cmdDirectHelp = new AbstractAction() {
 				@Override
@@ -713,7 +714,7 @@ public class MainController {
 				public void actionPerformed(ActionEvent e) {
 					cmdOpenSettings();
 				}
-			};		
+			};
 			cmdRefreshClientCaches = new AbstractAction() {
 
 				@Override
@@ -824,13 +825,13 @@ public class MainController {
 	private Action cmdOpenEntityWizard;
 
 	private Action cmdOpenCustomComponentWizard;
-	
+
 	private Action cmdOpenRelationEditor;
-	
+
 	private Action cmdOpenSettings;
 
 	public Action cmdRefreshClientCaches;
-	
+
 	private Action cmdSelectAll;
 
 	private Action cmdHelpContents;
@@ -861,7 +862,7 @@ public class MainController {
 
 		JOptionPane p = new JOptionPane(panel,
 			JOptionPane.PLAIN_MESSAGE, JOptionPane.OK_CANCEL_OPTION,	null);
-		JDialog dlg = p.createDialog(Main.getInstance().getMainFrame(), 
+		JDialog dlg = p.createDialog(Main.getInstance().getMainFrame(),
 				SpringLocaleDelegate.getInstance().getMessage("R00022927", "Einstellungen"));
 		dlg.pack();
 		dlg.setResizable(true);
@@ -885,7 +886,7 @@ public class MainController {
 		try {
 			final MainFrameTab internalFrame = newMainFrameTab(null, "Info");
 			String html = IOUtils.readFromTextStream(getClass().getClassLoader().getResourceAsStream("org/nuclos/client/help/about/about.html"), null);
-			
+
 			Pair<String, String> clientLogFile = StartUp.getLogFile();
 			String logDir = "";
 			String logFilename = clientLogFile.x;
@@ -898,7 +899,7 @@ public class MainController {
 			} catch (Exception ex) {
 				// do nothing
 			}
-			
+
 			HtmlPanel htmlPanel = new HtmlPanel(
 				String.format(
 					html,
@@ -933,7 +934,7 @@ public class MainController {
 			internalFrame.setVisible(true);
         }
         catch(Exception e) {
-        	Errors.getInstance().showExceptionDialog(Main.getInstance().getMainFrame(), 
+        	Errors.getInstance().showExceptionDialog(Main.getInstance().getMainFrame(),
         			localeDelegate.getMessage("MainController.26", "Die Infos k\u00f6nnen nicht angezeigt werden."), e);
         }
 	}
@@ -1470,14 +1471,14 @@ public class MainController {
 		}
 		return entityMenuActions;
 	}
-	
+
 	public List<Pair<String[], Action>> getNucletComponentMenuActions() {
 		return getNucletComponentMenuActions(null);
 	}
-	
+
 	private List<Pair<String[], Action>> getNucletComponentMenuActions(List<GenericAction> genericActions) {
 		List<Pair<String[], Action>> nucletComponentMenuAction = new ArrayList<Pair<String[],Action>>();
-		
+
 		if (nucletComponentRepository != null) {
 		for (INucletComponent nc : nucletComponentRepository.getNucletComponents()) {
 			String[] menuPath = nc.getMenuPath();
@@ -1494,7 +1495,7 @@ public class MainController {
 			}
 		}
 		}
-		
+
 		return nucletComponentMenuAction;
 	}
 
@@ -1557,7 +1558,7 @@ public class MainController {
 			}
 		}
 	}
-	
+
 	private void addReportActions(List<GenericAction> genericActions) {
 		try {
 			for (final MasterDataVO mdReport : CollectionUtils.sorted(
@@ -1580,7 +1581,7 @@ public class MainController {
 					wa.setAction(GENERIC_REPORT_ACTION);
 					wa.putStringParameter("report", mdReport.getField("name", String.class));
 					genericActions.add(new GenericAction(wa, new ActionWithMenuPath(new String[]{
-							localeDelegate.getMessage("nuclos.entity.reportExecution.label", "Reporting ausführen")
+							localeDelegate.getMessage("nuclos.entity.reportExecution.label", "Reporting ausfÃ¼hren")
 							}, action)));
 				}
 			}
@@ -1630,18 +1631,18 @@ public class MainController {
 
 		return action;
 	}
-	
+
 	public List<Pair<String[], Action>> getTasklistMenuActions() {
 		return getTasklistMenuActions(null);
 	}
-	
+
 	private List<Pair<String[], Action>> getTasklistMenuActions(List<GenericAction> genericActions) {
 		List<Pair<String[], Action>> result = new ArrayList<Pair<String[], Action>>();
-		
+
 		String miFile = localeDelegate.getText("miFile");
 		String miTasklists = localeDelegate.getText("miTasklists");
 		String[] mainPath = new String[] { miFile, miTasklists };
-		
+
 		for (TasklistDefinition def : TasklistCache.getInstance().getTasklists()) {
 			Action action = new TasklistAction(def);
 			result.add(Pair.makePair(mainPath, action));
@@ -1651,10 +1652,10 @@ public class MainController {
 				wa.putStringParameter("name", def.getName());
 				genericActions.add(new GenericAction(wa, new ActionWithMenuPath(mainPath, action)));
 			}
-			
+
 			if (def.getMenupathResourceId() != null) {
 				String[] menuPath = splitMenuPath(localeDelegate.getTextFallback(def.getMenupathResourceId(), def.getMenupathResourceId()));
-				
+
 				if (menuPath != null && menuPath.length > 0 && action != null) {
 					result.add(Pair.makePair(menuPath, action));
 					if (genericActions != null) {
@@ -1923,7 +1924,12 @@ public class MainController {
 		if (!activateOnly) {
 			ctl.runViewSingleCollectableWithId(oId);
 		}
+
 		MainFrame.setSelectedTab(ctl.getTab());
+
+		if (activateOnly) {
+			ctl.getCollectStateModel().performVersionCheck();
+		}
 	}
 
 	public void showList(String entity, List<Object> ids) throws CommonBusinessException {
@@ -1965,7 +1971,7 @@ public class MainController {
 		final NuclosCollectController<?> controller = NuclosCollectControllerFactory.getInstance().newCollectController(entityname, tabIfAny);
 		Main.getInstance().getMainController().initMainFrameTab(controller, tabIfAny);
 		parent.add(tabIfAny);
-		
+
 		controller.addCollectableEventListener(listener);
 		controller.addCollectableEventListener(new CollectableEventListener() {
 			@Override
@@ -2113,8 +2119,8 @@ public class MainController {
 					final CommandMessage command = (CommandMessage) ((ObjectMessage) msg).getObject();
 					switch (command.getCommand()) {
 						case CommandMessage.CMD_SHUTDOWN :
-							getNotificationDialog().addMessage(new RuleNotification(Priority.HIGH, 
-									localeDelegate.getMessage("MainController.19","Der Client wird auf Anweisung des Administrators in 10 Sekunden beendet."), 
+							getNotificationDialog().addMessage(new RuleNotification(Priority.HIGH,
+									localeDelegate.getMessage("MainController.19","Der Client wird auf Anweisung des Administrators in 10 Sekunden beendet."),
 									"Administrator"));
 							getNotificationDialog().setVisible(true);
 
@@ -2414,7 +2420,7 @@ public class MainController {
 	public String getMainMenuConfiguration() {
 		return localeDelegate.getMessage("MainMenuConfiguration", "Konfiguration").replace("^", "");
 	}
-	
+
 	public Preferences getMainFramePreferences() {
 		return prefs;
 	}

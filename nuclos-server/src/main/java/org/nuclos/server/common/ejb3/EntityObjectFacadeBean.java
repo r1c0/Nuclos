@@ -366,9 +366,14 @@ public class EntityObjectFacadeBean extends NuclosFacadeBean implements EntityOb
 				entity.flagNew();
 			}
 		}
-		
+
 		final JdbcEntityObjectProcessor processor = NucletDalProvider.getInstance().getEntityObjectProcessor(name);
 		processor.insertOrUpdate(entity);
 	}
 
+	@Override
+	public Integer getVersion(String entity, Long id) throws CommonPermissionException {
+		checkReadAllowed(entity);
+		return getNucletDalProvider().getEntityObjectProcessor(entity).getVersion(id);
+	}
 }
