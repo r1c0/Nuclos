@@ -274,8 +274,10 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	private final Map<String, Serializable> context = new HashMap<String, Serializable>();
 
 	private InvokeWithInputRequiredSupport invokeWithInputRequiredSupport;
-
+	
 	private boolean newTabCreated = false;
+	
+	private boolean closed = false;
 
 	/**
 	 * Messages for Collectable events
@@ -1058,19 +1060,25 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	 */
 	@Override
 	public void close() {
-		// Search panel:
-		if (this.isSearchPanelAvailable()) {
-			this.ctlSearch.close();
+		if (!closed) {
+			LOG.info("close(): " + this);
+			
+			// Search panel:
+			if (this.isSearchPanelAvailable()) {
+				this.ctlSearch.close();
+			}
+	
+			// Result panel:
+			this.ctlResult.close();
+	
+			// Details panel:
+			this.ctlDetails.close();
+			
+			// Partial fix for http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=7079260
+			collectableComponentSearchFocusListener = null;
+			
+			closed = true;
 		}
-
-		// Result panel:
-		this.ctlResult.close();
-
-		// Details panel:
-		this.ctlDetails.close();
-
-		// Partial fix for http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=7079260
-		collectableComponentSearchFocusListener = null;
 	}
 
 	@Override

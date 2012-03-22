@@ -301,13 +301,6 @@ public abstract class AbstractDetailsSubFormController<Clct extends Collectable>
 		isIgnorePreferencesUpdate = false;
 	}
 
-	@Override
-	public void close() {
-		super.close();
-
-//		this.storeColumnOrderToPreferences();
-	}
-
 	/**
 	 * <code>TableModel</code> that can be used in a Details subform.
 	 */

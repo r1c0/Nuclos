@@ -98,7 +98,8 @@ import org.nuclos.common2.exception.CommonFatalException;
  * @version 01.00.00
  */
 public abstract class SubFormController extends MainFrameTabController
-		implements TableCellRendererProvider, TableCellEditorProvider, SubFormParameterProvider, FocusActionListener, Closeable {
+		implements TableCellRendererProvider, TableCellEditorProvider, 
+		SubFormParameterProvider, FocusActionListener, Closeable {
 
 	private static final Logger LOG = Logger.getLogger(SubFormController.class);
 
@@ -126,6 +127,8 @@ public abstract class SubFormController extends MainFrameTabController
 	private final CollectableFieldsProviderFactory clctfproviderfactory;
 	
 	protected boolean isIgnorePreferencesUpdate = true;
+	
+	private boolean closed = false;
 
 	/**
 	 * @param parent
