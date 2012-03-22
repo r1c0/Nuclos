@@ -110,4 +110,15 @@ public interface EntityObjectCommon {
 	@RolesAllowed("Login")
 	void createOrUpdatePlain(EntityObjectVO entity) throws CommonPermissionException;
 
+	/**
+	 * Get current version number.
+	 * Used for high-performance version checks that do not require to load the entire object.
+	 *
+	 * @param entity Name of entity
+	 * @param id Id of object
+	 * @return Current version from database layer
+	 * @throws CommonPermissionException If user is not allowed to read data of that entity.
+	 */
+	@RolesAllowed("Login")
+	Integer getVersion(String entity, Long id) throws CommonPermissionException;
 }

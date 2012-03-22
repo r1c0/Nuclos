@@ -82,6 +82,7 @@ import org.nuclos.client.common.NuclosCollectControllerFactory;
 import org.nuclos.client.common.NuclosDropTargetVisitor;
 import org.nuclos.client.common.OneDropNuclosDropTargetListener;
 import org.nuclos.client.common.WorkspaceUtils;
+import org.nuclos.client.entityobject.EntityObjectDelegate;
 import org.nuclos.client.genericobject.CollectableGenericObject;
 import org.nuclos.client.genericobject.GenericObjectClientUtils;
 import org.nuclos.client.genericobject.Modules;
@@ -160,6 +161,7 @@ import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Transformer;
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common2.CommonRunnable;
+import org.nuclos.common2.IdUtils;
 import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
@@ -2636,7 +2638,7 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	 * @throws CommonBusinessException
 	 */
 	protected Integer getVersionOfCollectableById(String sEntity, Object oId) throws CommonBusinessException {
-		return findCollectableById(sEntity, oId).getVersion();
+		return EntityObjectDelegate.getInstance().getVersion(sEntity, IdUtils.toLongId(oId));
 	}
 
 	/**

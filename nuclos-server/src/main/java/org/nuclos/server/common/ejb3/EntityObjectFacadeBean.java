@@ -371,4 +371,9 @@ public class EntityObjectFacadeBean extends NuclosFacadeBean implements EntityOb
 		processor.insertOrUpdate(entity);
 	}
 
+	@Override
+	public Integer getVersion(String entity, Long id) throws CommonPermissionException {
+		checkReadAllowed(entity);
+		return getNucletDalProvider().getEntityObjectProcessor(entity).getVersion(id);
+}
 }
