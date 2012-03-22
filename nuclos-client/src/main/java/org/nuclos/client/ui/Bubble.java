@@ -41,7 +41,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
-
 import javax.swing.AbstractAction;
 import javax.swing.JButton;
 import javax.swing.JComponent;
@@ -51,16 +50,25 @@ import javax.swing.SwingUtilities;
 import javax.swing.event.AncestorEvent;
 import javax.swing.event.AncestorListener;
 
+import org.apache.log4j.Logger;
+
 import org.nuclos.client.synthetica.NuclosThemeSettings;
 import org.nuclos.common.SpringApplicationContextHolder;
 import org.nuclos.common.collection.Pair;
 
 public class Bubble extends Window implements AncestorListener, WindowListener {
+	
+	private static final Logger LOG = Logger.getLogger(Bubble.class);
+
 	public static enum Position {
 		SW_CONTAINER_RELATIVE(0.2, 0.5, 0.25) {
 	        @Override
 	        public Shape getShape(int width, int height, int arcSize, Component parent) {
-	        	if (parent != null && parent.getParent() != null) {
+	        	if (parent != null) {
+	        		if (parent.getParent() != null) {
+	        			LOG.warn("Bubble: relative position is unknown: parent component " + parent + " has no parent set."
+	        					+ " Hint: the parent component is not on displayed or on screen or wrong.");
+	        		}
 	        		return new RelativeBubbleShape(this, 1, 1, width, height, arcSize, parent.getX() - 10);
 				}
 	        	else {
@@ -70,8 +78,13 @@ public class Bubble extends Window implements AncestorListener, WindowListener {
 
 			@Override
             public void relocate(Bubble bubble, Component parent, Point parentLocation, Dimension parentSize, Dimension size) {
-				if (parent != null && parent.getParent() != null) {
-					bubble.setBounds(Math.max(parent.getParent().getLocationOnScreen().x + 10, parentLocation.x - size.width + 10), parentLocation.y + parentSize.height - 10, size.width, size.height);
+				if (parent != null) {
+	        		if (parent.getParent() != null) {
+	        			LOG.warn("Bubble: relative position is unknown: parent component " + parent + " has no parent set."
+	        					+ " Hint: the parent component is not on displayed or on screen or wrong.");
+	        		}
+					bubble.setBounds(Math.max(parent.getParent().getLocationOnScreen().x + 10, parentLocation.x - size.width + 10), 
+							parentLocation.y + parentSize.height - 10, size.width, size.height);
 				}
 	        	else {
 	        		throw new UnsupportedOperationException();
