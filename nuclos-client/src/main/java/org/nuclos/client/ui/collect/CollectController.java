@@ -37,6 +37,7 @@ import java.beans.PropertyVetoException;
 import java.beans.VetoableChangeListener;
 import java.io.Closeable;
 import java.io.Serializable;
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -222,7 +223,7 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	 * the CollectPanel for this controller
 	 * TODO Why is this an extra field inside the frame?
 	 */
-	private CollectPanel<Clct> pnlCollect;
+	private WeakReference<CollectPanel<Clct>> pnlCollect;
 
 	/**
 	 * the model used for synchronizing the navigation buttons with the selection in the result table and the result table model.
@@ -955,7 +956,7 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	 * @param pnlCollect
 	 */
 	private void setCollectPanel(CollectPanel<Clct> pnlCollect) {
-		this.pnlCollect = pnlCollect;
+		this.pnlCollect = new WeakReference<CollectPanel<Clct>>(pnlCollect);
 
 		this.statemodel = new CollectStateModel<Clct>(this.getCollectPanel(), this);
 
@@ -1605,7 +1606,7 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 		// fill result table:
 		this.fillResultPanel(new ArrayList<Clct>(Collections.singletonList(clct)));
 
-		this.pnlCollect.getResultPanel().getResultTable().setRowSelectionInterval(0, 0);
+		getCollectPanel().getResultPanel().getResultTable().setRowSelectionInterval(0, 0);
 		// select the one result row
 
 		this.cmdEnterViewMode();
@@ -3735,7 +3736,9 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	 * @return the CollectPanel, containing the Search-, Result- and DetailsPanels.
 	 */
 	public CollectPanel<Clct> getCollectPanel() {
-		return this.pnlCollect;
+		final CollectPanel<Clct> result = pnlCollect.get();
+		assert result != null || isClosed();
+		return result;
 	}
 
 	/**
