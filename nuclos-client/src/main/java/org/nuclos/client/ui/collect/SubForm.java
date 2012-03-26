@@ -339,7 +339,7 @@ public class SubForm extends JPanel
 	private final JToolBar       toolbar;
 
 	private final JPanel         contentPane = new JPanel(new BorderLayout());
-	private final JScrollPane    scrollPane = new JScrollPane();
+	private JScrollPane    scrollPane = new JScrollPane();
 
 	private SubFormTable   subformtbl;
 
@@ -350,7 +350,8 @@ public class SubForm extends JPanel
 
 	private final List<LookupListener>		lookupListener = new ArrayList<LookupListener>();
 
-	protected List<FocusActionListener> lstFocusActionListener;
+	protected final List<FocusActionListener> lstFocusActionListener
+		= new ArrayList<FocusActionListener>();
 
 	/**
 	 * NUCLOSINT-63: To display the size of subform list in the corresponding tab.
@@ -361,8 +362,10 @@ public class SubForm extends JPanel
 	 * maps column names to columns
 	 */
 	private final Map<String, Column> mpColumns = new LinkedHashMap<String, Column>();
-	private final Map<CollectableEntityField, TableCellRenderer> mpColumnRenderer = new HashMap<CollectableEntityField, TableCellRenderer>();
-	private final Map<CollectableEntityField, CollectableComponentTableCellEditor> mpStaticColumnEditors = new HashMap<CollectableEntityField, CollectableComponentTableCellEditor>();
+	private final Map<CollectableEntityField, TableCellRenderer> mpColumnRenderer 
+		= new HashMap<CollectableEntityField, TableCellRenderer>();
+	private final Map<CollectableEntityField, CollectableComponentTableCellEditor> mpStaticColumnEditors 
+		= new HashMap<CollectableEntityField, CollectableComponentTableCellEditor>();
 
 	private List<ChangeListener> lstchangelistener = new LinkedList<ChangeListener>();
 
@@ -487,6 +490,13 @@ public class SubForm extends JPanel
 				p.getX().removeMouseListener(p.getY());
 			}
 			myMouseListener.clear();
+			
+			// Partial fix for http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=7079260
+			popupMenuAdapter = null;
+			scrollPane = null;
+			mpStaticColumnEditors.clear();
+			lstFocusActionListener.clear();
+			
 			closed = true;
 		}
 	}
@@ -2066,17 +2076,10 @@ public class SubForm extends JPanel
     }
 
     public void addFocusActionListener(FocusActionListener fal) {
-    	if(lstFocusActionListener == null) {
-    		lstFocusActionListener = new ArrayList<FocusActionListener>();
-    	}
     	lstFocusActionListener.add(fal);
     }
 
     public void removeFocusActionListener(FocusActionListener fal) {
-    	if(lstFocusActionListener == null) {
-    		lstFocusActionListener = new ArrayList<FocusActionListener>();
-    		return;
-    	}
     	lstFocusActionListener.remove(fal);
     }
 
