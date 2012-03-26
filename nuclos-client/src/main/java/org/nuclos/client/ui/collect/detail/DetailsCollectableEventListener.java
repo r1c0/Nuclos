@@ -27,6 +27,7 @@ import org.nuclos.client.ui.collect.CollectStateEvent;
 import org.nuclos.client.ui.collect.CollectController.CollectableEventListener;
 import org.nuclos.client.ui.collect.CollectController.MessageType;
 import org.nuclos.common.collect.collectable.Collectable;
+import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
 
 /**
@@ -99,5 +100,16 @@ public class DetailsCollectableEventListener extends CollectStateAdapter impleme
 			});
 		}
     }
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof DetailsCollectableEventListener) {
+			DetailsCollectableEventListener that = (DetailsCollectableEventListener) obj;
+			return LangUtils.equals(this.sourceController.get(), that.sourceController.get())
+				&& LangUtils.equals(this.targetController.get(), that.targetController.get());
+		}
+		return false;
+	}
+
 
 }
