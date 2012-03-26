@@ -272,57 +272,6 @@ public class SubForm extends JPanel
 		}
 	}
 
-	private static class SubformTableColumnModel extends DefaultTableColumnModel
-			implements Closeable {
-
-		private TableModel tableModel;
-
-		private boolean closed = false;
-		
-		private SubformTableColumnModel(TableModel tableModel) {
-			this.tableModel = tableModel;
-		}
-
-		@Override
-		public void close() {
-			// Close is needed for avoiding memory leaks
-			// If you want to change something here, please consult me (tp).  
-			if (!closed) {
-				LOG.info("close() SubformTableColumnModel: " + this);
-				tableModel = null;
-				tableColumns.clear();
-				closed = true;
-			}
-		}
-
-		@Override
-		public void addColumn(TableColumn column) {
-			if (tableModel instanceof SubFormTableModel) {
-				// NUCLEUSINT-742: the identifier of the column is now the entity field name
-				// (instead of the localized label)
-				String fieldName = ((SubFormTableModel) tableModel).getColumnFieldName(column.getModelIndex());
-				column.setIdentifier(fieldName);
-			}
-			super.addColumn(column);
-		}
-
-		@Override
-		public void propertyChange(PropertyChangeEvent evt) {
-			super.propertyChange(evt);
-			fireColumnPropertyChange(evt);
-		}
-
-		protected void fireColumnPropertyChange(PropertyChangeEvent evt) {
-			Object[] listeners = listenerList.getListenerList();
-			for (int i = listeners.length - 2; i >= 0; i -= 2) {
-				if (listeners[i] == TableColumnModelListener.class
-						&& listeners[i + 1] instanceof TableColumnModelExtListener) {
-					((TableColumnModelExtListener) listeners[i + 1]).columnPropertyChange(evt);
-				}
-			}
-		}
-	}
-
 	/* the minimum row height for the table(s). */
 	public static final int MIN_ROWHEIGHT = 20;
 	private static final Color LAYER_BUSY_COLOR = new Color(128, 128, 128, 128);
@@ -1679,6 +1628,71 @@ public class SubForm extends JPanel
 	public static class SubFormTable extends CommonJTable
 			implements Closeable {
 
+		public static class SubFormTableRowSorter extends TableRowSorter<TableModel> {
+			SubFormTableRowSorter(TableModel model) {
+				super(model);
+			}
+
+			@Override
+			public boolean isSortable(int column) {
+				// At the moment, sorting still is performed via the SortableTableModel
+				return false;
+			}
+		}
+
+		/**
+		 * TODO: It would be very nice to have a static inner class here. However,
+		 * 		 when I tried this (with a reference to the TableModel in the constructor)
+		 * 		 I trashed the WYSIWYG subform editor (e.g. properties is complex Subform 
+		 * 		 cases (Accelingua)). (tp)
+		 */
+		private class SubformTableColumnModel extends DefaultTableColumnModel
+				implements Closeable {
+			
+			private boolean closed = false;
+
+			private SubformTableColumnModel(TableModel model) {
+			}
+
+			@Override
+			public void close() {
+				// Close is needed for avoiding memory leaks
+				// If you want to change something here, please consult me (tp).  
+				if (!closed) {
+					LOG.info("close() SubformTableColumnModel: " + this);
+					tableColumns.clear();
+					closed = true;
+				}
+			}
+
+			@Override
+			public void addColumn(TableColumn column) {
+				if (getModel() instanceof SubFormTableModel) {
+					// NUCLEUSINT-742: the identifier of the column is now the entity field name
+					// (instead of the localized label)
+					String fieldName = ((SubFormTableModel) getModel()).getColumnFieldName(column.getModelIndex());
+					column.setIdentifier(fieldName);
+				}
+				super.addColumn(column);
+			}
+
+			@Override
+			public void propertyChange(PropertyChangeEvent evt) {
+				super.propertyChange(evt);
+				fireColumnPropertyChange(evt);
+			}
+
+			protected void fireColumnPropertyChange(PropertyChangeEvent evt) {
+				Object[] listeners = listenerList.getListenerList();
+				for (int i = listeners.length - 2; i >= 0; i -= 2) {
+					if (listeners[i] == TableColumnModelListener.class
+							&& listeners[i + 1] instanceof TableColumnModelExtListener) {
+						((TableColumnModelExtListener) listeners[i + 1]).columnPropertyChange(evt);
+					}
+				}
+			}
+		}
+
 		private TableCellEditorProvider celleditorprovider;
 		private TableCellRendererProvider cellrendererprovider;
 		private SubForm subform;
@@ -1688,7 +1702,7 @@ public class SubForm extends JPanel
 
 		private boolean newRowOnNext = false;
 
-		private SubformTableColumnModel myTableColumnModel;
+		// private SubformTableColumnModel myTableColumnModel;
 		
 		private boolean closed = false;
 
@@ -1711,10 +1725,14 @@ public class SubForm extends JPanel
 			// If you want to change something here, please consult me (tp).
 			if (!closed) {
 				LOG.info("close() SubFormTable: " + this);
-				if (myTableColumnModel != null) {
-					myTableColumnModel.close();
+				if (getModel() instanceof SubformTableColumnModel) {
+					((SubformTableColumnModel) getModel()).close();
 				}
-				myTableColumnModel = null;
+				if (getColumnModel() instanceof SubformTableColumnModel) {
+					((SubformTableColumnModel) getColumnModel()).close();
+				}
+				// not allowed by swing
+				// setModel(null);
 				if (rowheader != null) {
 					rowheader.close();
 				}
@@ -1836,10 +1854,7 @@ public class SubForm extends JPanel
 		
 		@Override
 		protected SubformTableColumnModel createDefaultColumnModel() {
-			if (myTableColumnModel == null) {
-				myTableColumnModel = new SubformTableColumnModel(getModel());
-			}
-			return myTableColumnModel;
+			return new SubformTableColumnModel(getModel());
 		}
 
 		public void setRowHeaderTable(SubformRowHeader rowheader) {
@@ -2034,17 +2049,14 @@ public class SubForm extends JPanel
 			super.setModel(dataModel);
 			setRowSorter(new SubFormTableRowSorter(dataModel));
 		}
-
-		public static class SubFormTableRowSorter extends TableRowSorter<TableModel> {
-			SubFormTableRowSorter(TableModel model) {
-				super(model);
+		
+		@Override
+		public void setColumnModel(TableColumnModel columnModel) {
+			final TableColumnModel old = getColumnModel();
+			if (old instanceof SubformTableColumnModel) {
+				((SubformTableColumnModel) old).close();
 			}
-
-			@Override
-			public boolean isSortable(int column) {
-				// At the moment, sorting still is performed via the SortableTableModel
-				return false;
-			}
+			super.setColumnModel(columnModel);
 		}
 
 		public boolean isCalculateRowHeight() {

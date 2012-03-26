@@ -54,6 +54,7 @@ import javax.swing.JLabel;
 import javax.swing.JLayeredPane;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JTable;
 import javax.swing.JToolBar;
 import javax.swing.JViewport;
 import javax.swing.RowSorter.SortKey;
@@ -85,6 +86,7 @@ import org.nuclos.client.layout.wysiwyg.component.properties.PropertyValueValuel
 import org.nuclos.client.layout.wysiwyg.datatransfer.TransferableComponent;
 import org.nuclos.client.layout.wysiwyg.editor.ui.panels.WYSIWYGLayoutEditorPanel;
 import org.nuclos.client.layout.wysiwyg.editor.ui.panels.layoutmlrule.LayoutMLRuleEditorDialog;
+import org.nuclos.client.layout.wysiwyg.editor.util.TableLayoutUtil;
 import org.nuclos.client.layout.wysiwyg.editor.util.mouselistener.PropertiesDisplayMouseListener;
 import org.nuclos.client.layout.wysiwyg.editor.util.valueobjects.TableLayoutPanel;
 import org.nuclos.client.layout.wysiwyg.editor.util.valueobjects.WYSIWYGInitialSortingOrder;
@@ -483,31 +485,35 @@ public class WYSIWYGSubForm extends JLayeredPane implements WYSIWYGComponent, Mo
 					}
 				}
 				
+				final TableLayoutUtil layoutUtil = getParentEditor().getTableLayoutUtil();
 				for (Map.Entry<String, WYSIWYGSubFormColumn> e : columns.entrySet()) {
-					WYSIWYGSubFormColumn wc = e.getValue();
+					final WYSIWYGSubFormColumn wc = e.getValue();
 					String label = (String) wc.getProperties().getProperty(WYSIWYGSubFormColumn.PROPERTY_LABEL).getValue();
 					Integer columnWidth = (Integer) wc.getProperties().getProperty(WYSIWYGSubFormColumn.PROPERTY_COLUMNWIDTH).getValue();
 					Column c = new SubForm.Column(e.getKey(), label, null, true, true, true, 10, 10, columnWidth);
 
 					//NUCLEUSINT-556
-					wc.addMouseListener(new PropertiesDisplayMouseListener(wc, this.getParentEditor().getTableLayoutUtil()));
+					wc.addMouseListener(new PropertiesDisplayMouseListener(wc, layoutUtil));
 					subform.addColumn(c);
 				}
 				
+				final JTable table = subform.getJTable();
 				// fire change to update column labels
-				this.subform.getJTable().tableChanged(new TableModelEvent(this.subform.getSubformRowHeader().getHeaderTable().getModel(), TableModelEvent.HEADER_ROW));
+				table.tableChanged(new TableModelEvent(this.subform.getSubformRowHeader().getHeaderTable().getModel(), 
+						TableModelEvent.HEADER_ROW));
 
 				this.add(this.subform, BorderLayout.CENTER);
 
-				for (MouseListener ml : this.subform.getJTable().getTableHeader().getMouseListeners()) {
-					this.subform.getJTable().getTableHeader().removeMouseListener(ml);
+				for (MouseListener ml : table.getTableHeader().getMouseListeners()) {
+					table.getTableHeader().removeMouseListener(ml);
 				}
-				this.subform.getJTable().getTableHeader().addMouseListener(this);
+				table.getTableHeader().addMouseListener(this);
 				try {
 					//NUCLEUSINT-265
-					subform.getSubformTable().addMouseListener(new PropertiesDisplayMouseListener( this, this.getParentEditor().getTableLayoutUtil()));
-					((JViewport)this.subform.getJTable().getParent()).addMouseListener(new PropertiesDisplayMouseListener( this, this.getParentEditor().getTableLayoutUtil()));
-					((JPanel)this.subform.getJTable().getTableHeader().getParent()).addMouseListener(new PropertiesDisplayMouseListener( this, this.getParentEditor().getTableLayoutUtil()));
+					final PropertiesDisplayMouseListener pdml = new PropertiesDisplayMouseListener(this, layoutUtil);
+					subform.getSubformTable().addMouseListener(pdml);
+					((JViewport) table.getParent()).addMouseListener(pdml);
+					((JPanel) table.getTableHeader().getParent()).addMouseListener(pdml);
 				} catch (ClassCastException e) {
 					
 				}
@@ -517,14 +523,14 @@ public class WYSIWYGSubForm extends JLayeredPane implements WYSIWYGComponent, Mo
 				
 				//NUCLEUSINT-926
 				if (lastViewPosition != null)
-					this.subform.getJTable().scrollRectToVisible(lastViewPosition);
+					table.scrollRectToVisible(lastViewPosition);
 				
 				SubFormFilter subFormFilter = this.subform.getSubFormFilter();
 				if (subFormFilter != null)
 					subFormFilter.removeFiltering();
 				subform.resetDefaultColumnWidths();
 				
-				subform.getJTable().getColumnModel().addColumnModelListener(new SubFormTableColumnModelListener(false));
+				table.getColumnModel().addColumnModelListener(new SubFormTableColumnModelListener(false));
 				if (subform.getSubformRowHeader() != null) {
 					subform.getSubformRowHeader().getHeaderTable().getColumnModel().addColumnModelListener(new SubFormTableColumnModelListener(true));
 				}
