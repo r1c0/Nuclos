@@ -2540,7 +2540,9 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	 * @param CollectableEventListener
 	 */
 	public final void addCollectableEventListener(CollectableEventListener l) {
-		collectableListeners.add(l);
+		if (!collectableListeners.contains(l)) {
+			collectableListeners.add(l);
+		}
 	}
 
 	/**
