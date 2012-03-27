@@ -262,7 +262,7 @@ public class StateGraphVO implements Serializable {
 			@Override public boolean evaluate(StateTransitionVO t) { return !t.isRemoved() && t.getStateSource() == null && t.isAutomatic() == true; }
 		});
 		
-		if (statetransitionvo.getStateSource().equals(startTransition.getStateTarget()))
+		if (startTransition == null || statetransitionvo.getStateSource() == null || statetransitionvo.getStateSource().equals(startTransition.getStateTarget()))
 			return true;
 		
 		for (StateTransitionVO statetransitionvo2 : this.getTransitions()) {
@@ -281,7 +281,6 @@ public class StateGraphVO implements Serializable {
 			return true;
 		for (StateVO state : getStates()) {
 			if (state.getId().equals(statetransitionvo.getStateSource())) {
-				System.err.println("source statetransitionvo " + state.getNumeral());
 				break;
 			}
 		}
@@ -291,7 +290,6 @@ public class StateGraphVO implements Serializable {
 			if (checkedTransition.isDefault()) {
 				for (StateVO state : getStates()) {
 					if (state.getId().equals(statetransitionvo.getStateSource())) {
-						System.err.println("source checked " + state.getNumeral());
 						break;
 					}
 				}
