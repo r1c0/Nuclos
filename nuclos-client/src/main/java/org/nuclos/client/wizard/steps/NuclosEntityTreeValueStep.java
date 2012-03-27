@@ -58,6 +58,7 @@ import org.nuclos.client.masterdata.MetaDataDelegate;
 import org.nuclos.client.ui.Errors;
 import org.nuclos.client.ui.dnd.IReorderable;
 import org.nuclos.client.ui.dnd.TableRowTransferHandler;
+import org.nuclos.client.ui.gc.ListenerUtil;
 import org.nuclos.client.wizard.model.Attribute;
 import org.nuclos.client.wizard.model.EntityTreeViewTableModel;
 import org.nuclos.client.wizard.util.MoreOptionPanel;
@@ -352,7 +353,7 @@ public class NuclosEntityTreeValueStep extends NuclosEntityAbstractStep {
 			}
 		});
 
-		tfTooltip.getDocument().addDocumentListener(new DocumentListener() {
+		ListenerUtil.registerDocumentListener(tfTooltip.getDocument(), new DocumentListener() {
 
 			@Override
 			public void removeUpdate(DocumentEvent e) {
@@ -724,11 +725,58 @@ public class NuclosEntityTreeValueStep extends NuclosEntityAbstractStep {
 	}
 
 	@Override
+	public void close() {
+		scrollAttribute = null;
+		lAttribute = null;
+
+		lbValue = null;
+		btnAddToValueField = null;
+		tfValue = null;
+
+		lbTooltip = null;
+		tfTooltip = null;
+		btnAddToTooltipField = null;
+
+		lbDirectory = null;
+		tfDirectory = null;
+		btnDirectory = null;
+
+		lbReportName = null;
+		tfReportName = null;
+		btnReportName = null;
+
+		lbMultiEditEquation = null;
+		tfMultiEditEquation = null;
+		btnMultiEditEquation = null;
+
+		paneTreeView = null;
+		tblTreeView = null;
+
+		lbTreeViewSubform = null;
+		
+		if (subForms != null) {
+			subForms.clear();
+		}
+		subForms = null;
+		
+		tableModel = null;
+
+		cbxSubformRefField = null;
+
+		pnlMoreOptions = null;
+
+		refNameCellEditor = null;
+
+		super.close();
+	}
+
+	@Override
 	public void applyState() throws InvalidStateException {
-		super.applyState();
 		if(tblTreeView.getCellEditor() != null)
 			tblTreeView.getCellEditor().stopCellEditing();
 		model.setTreeView(tableModel.getRows());
+		
+		super.applyState();
 	}
 
 	private SortedSet<String> getRefFieldTo(String subformEntityName) {

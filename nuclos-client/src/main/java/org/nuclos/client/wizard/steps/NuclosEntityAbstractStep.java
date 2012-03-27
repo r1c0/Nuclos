@@ -16,12 +16,16 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.wizard.steps;
 
+import java.io.Closeable;
+
 import javax.annotation.PostConstruct;
 import javax.swing.Icon;
 import javax.swing.JComponent;
 
+import org.apache.log4j.Logger;
 import org.nuclos.client.wizard.NuclosEntityWizardStaticModel;
 import org.nuclos.common2.SpringLocaleDelegate;
+import org.pietschy.wizard.InvalidStateException;
 import org.pietschy.wizard.PanelWizardStep;
 import org.pietschy.wizard.WizardModel;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,7 +40,9 @@ import org.springframework.beans.factory.annotation.Configurable;
 * @version 01.00.00
 */
 @Configurable
-public abstract class NuclosEntityAbstractStep extends PanelWizardStep {
+public abstract class NuclosEntityAbstractStep extends PanelWizardStep implements Closeable {
+	
+	private static final Logger LOG = Logger.getLogger(NuclosEntityAbstractStep.class);
 	
 	NuclosEntityWizardStaticModel model;
 	
@@ -75,6 +81,20 @@ public abstract class NuclosEntityAbstractStep extends PanelWizardStep {
 	public void init(WizardModel model) {
 		super.init(model);
 		this.model = (NuclosEntityWizardStaticModel)model;
+	}
+	
+	@Override
+	public void abortBusy() {
+		close();
+	}
+	
+	@Override
+	public void close() {
+		LOG.info("close(): " + this);
+		removeAll();
+		model = null;
+		parent = null;
+		localeDelegate = null;
 	}
 
 }

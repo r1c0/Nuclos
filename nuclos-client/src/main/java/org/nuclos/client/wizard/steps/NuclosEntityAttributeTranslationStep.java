@@ -60,12 +60,14 @@ public class NuclosEntityAttributeTranslationStep extends NuclosEntityAttributeA
 
 	private static final Logger LOG = Logger.getLogger(NuclosEntityAttributeTranslationStep.class);
 
+	public static final String[] labels = TranslationVO.labelsField;
+	
+	//
+	
 	private JScrollPane scrolPane;
 	private JTable tblAttributes;
 	
 	private EntityAttributeTranslationTableModel tablemodel;
-	
-	public static String[] labels = TranslationVO.labelsField;
 	
 	private NuclosEntityWizardStaticModel parentWizardModel;
 	
@@ -214,10 +216,24 @@ public class NuclosEntityAttributeTranslationStep extends NuclosEntityAttributeA
 	}
 
 	@Override
+	public void close() {
+		scrolPane = null;
+		tblAttributes = null;
+		
+		tablemodel = null;
+		
+		parentWizardModel = null;
+				
+		super.close();
+	}
+
+	@Override
 	public void applyState() throws InvalidStateException {
 		if(this.tblAttributes.getCellEditor() != null)
 			this.tblAttributes.getCellEditor().stopCellEditing();
 		this.model.setTranslation(tablemodel.getRows());
+		
+		super.applyState();
 	}
 	
 	public void setParentWizardModel(NuclosEntityWizardStaticModel model) {

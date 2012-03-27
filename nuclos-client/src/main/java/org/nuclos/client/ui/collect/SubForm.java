@@ -38,6 +38,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
+import java.util.EventListener;
 import java.util.EventObject;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -158,7 +159,7 @@ public class SubForm extends JPanel
 
 	private static final Logger LOG = Logger.getLogger(SubForm.class);
 
-	public static interface SubFormToolListener {
+	public static interface SubFormToolListener extends EventListener {
 		void toolbarAction(String actionCommand);
 	};
 

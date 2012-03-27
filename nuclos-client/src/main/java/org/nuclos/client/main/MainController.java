@@ -616,24 +616,15 @@ public class MainController {
 							}
 						});
 					}};
+					
 			cmdOpenEntityWizard = new AbstractAction(
 					localeDelegate.getMessage("miEntityWizard", "Entity Wizard"),
 					MainFrame.resizeAndCacheTabIcon(NuclosResourceCache.getNuclosResourceIcon("org.nuclos.client.resource.icon.glyphish-blue.81-dashboard.png"))) {
 
 				@Override
 				public void actionPerformed(ActionEvent evt) {
-					UIUtils.runCommand(frm, new Runnable() {
-						@Override
-						public void run() {
-							try {
-								ShowNuclosWizard w = new ShowNuclosWizard(false);
-								w.showWizard(MainController.this.getDesktopPane(), MainController.this.getFrame());
-							}
-							catch (Exception e) {
-								LOG.error("showWizard failed: " + e, e);
-							}
-						}
-					});
+					final JTabbedPane desktopPane = MainController.this.getDesktopPane();
+					UIUtils.runCommand(frm, new ShowNuclosWizard.NuclosWizardRoRunnable(desktopPane));
 				}};
 			cmdOpenCustomComponentWizard = new AbstractAction(
 					localeDelegate.getMessage("miResPlanWizard", "Ressourcenplanung"),

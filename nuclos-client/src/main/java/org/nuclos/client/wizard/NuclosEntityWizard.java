@@ -17,10 +17,12 @@
 package org.nuclos.client.wizard;
 
 import java.awt.event.ActionEvent;
+import java.util.Iterator;
 
 import javax.swing.Action;
 
 import org.nuclos.client.main.mainframe.MainFrame;
+import org.nuclos.client.wizard.steps.NuclosEntityAbstractStep;
 import org.nuclos.common.WorkspaceDescription.EntityPreferences;
 import org.pietschy.wizard.ButtonBar;
 import org.pietschy.wizard.InvalidStateException;
@@ -72,6 +74,15 @@ public class NuclosEntityWizard extends Wizard {
 			}
 
 		};
+	}
+	
+	@Override
+	public void close() {
+		super.close();
+		for (Iterator<NuclosEntityAbstractStep> it = getModel().stepIterator(); it.hasNext();) {
+			final NuclosEntityAbstractStep step = it.next();
+			step.close();
+		}
 	}
 	
 	public static EntityPreferences getEntityPreferences() {

@@ -109,48 +109,50 @@ public class NuclosEntityAttributePropertiesStep extends NuclosEntityAttributeAb
 	private static final String ACTIONCOMMAND_MAXVALUE = "actionMaxValue";
 	private static final String ACTIONCOMMAND_MINVALUEDATE = "actionMinValueDate";
 	private static final String ACTIONCOMMAND_MAXVALUEDATE = "actionMaxValueDate";
+	
+	//
 
-	JLabel lbName;
-	JTextField tfName;
-	JLabel lbDesc;
-	JTextField tfDesc;
-	JLabel lbDatatyp;
-	JComboBox cbxDatatyp;
-	JLabel lbJavatype;
-	JComboBox cbxJavatype;
-	JLabel lbFieldWidth;
-	JTextField tfFieldWidth;
-	JLabel lbFieldPrecision;
-	JTextField tfFieldPrecision;
-	JLabel lbOutputFormat;
-	JTextField tfOutputFormat;
-	JLabel lbReference;
-	JCheckBox cbxReference;
-	JLabel lbValueList;
-	JCheckBox cbxValueList;
-	JLabel lbInfo;
+	private JLabel lbName;
+	private JTextField tfName;
+	private JLabel lbDesc;
+	private JTextField tfDesc;
+	private JLabel lbDatatyp;
+	private JComboBox cbxDatatyp;
+	private JLabel lbJavatype;
+	private JComboBox cbxJavatype;
+	private JLabel lbFieldWidth;
+	private JTextField tfFieldWidth;
+	private JLabel lbFieldPrecision;
+	private JTextField tfFieldPrecision;
+	private JLabel lbOutputFormat;
+	private JTextField tfOutputFormat;
+	private JLabel lbReference;
+	private JCheckBox cbxReference;
+	private JLabel lbValueList;
+	private JCheckBox cbxValueList;
+	private JLabel lbInfo;
 
-	JLabel lbMinValue;
-	JLabel lbMaxValue;
-	JTextField tfMinValue;
-	JTextField tfMaxValue;
+	private JLabel lbMinValue;
+	private JLabel lbMaxValue;
+	private JTextField tfMinValue;
+	private JTextField tfMaxValue;
 
-	DateChooser datMinValue;
-	DateChooser datMaxValue;
+	private DateChooser datMinValue;
+	private DateChooser datMaxValue;
 
-	boolean columnTypeChangeAllowed;
+	private boolean columnTypeChangeAllowed;
 
-	JButton btnDataTyp;
+	private JButton btnDataTyp;
 
-	boolean blnDescModified;
+	private boolean blnDescModified;
 
-	NuclosEntityWizardStaticModel parentWizardModel;
+	private NuclosEntityWizardStaticModel parentWizardModel;
 
-	JComponent parent;
+	private JComponent parent;
 
-	String customtypename;
+	private String customtypename;
 
-	DataTyp customtype;
+	private DataTyp customtype;
 
 	public NuclosEntityAttributePropertiesStep() {
 		// initComponents();
@@ -595,6 +597,49 @@ public class NuclosEntityAttributePropertiesStep extends NuclosEntityAttributeAb
     }
 
 	@Override
+	public void close() {
+		lbName = null;
+		tfName = null;
+		lbDesc = null;
+		tfDesc = null;
+		lbDatatyp = null;
+		cbxDatatyp = null;
+		lbJavatype = null;
+		cbxJavatype = null;
+		lbFieldWidth = null;
+		tfFieldWidth = null;
+		lbFieldPrecision = null;
+		tfFieldPrecision = null;
+		lbOutputFormat = null;
+		tfOutputFormat = null;
+		lbReference = null;
+		cbxReference = null;
+		lbValueList = null;
+		cbxValueList = null;
+		lbInfo = null;
+
+		lbMinValue = null;
+		lbMaxValue = null;
+		tfMinValue = null;
+		tfMaxValue = null;
+
+		datMinValue = null;
+		datMaxValue = null;
+
+		btnDataTyp = null;
+
+		parentWizardModel = null;
+
+		parent = null;
+
+		customtypename = null;
+
+		customtype = null;
+		
+		super.close();
+	}
+
+	@Override
 	public void applyState() throws InvalidStateException {
 		try {
 	        validateMinMaxValues();
@@ -607,7 +652,6 @@ public class NuclosEntityAttributePropertiesStep extends NuclosEntityAttributeAb
         	Errors.getInstance().showExceptionDialog(this, e);
         	throw new InvalidStateException(e.toString());
 		}
-		super.applyState();
 		model.setName(tfName.getText());
 		model.setDesc(tfDesc.getText());
 		DataTyp selectedType = (DataTyp) cbxDatatyp.getSelectedItem();
@@ -688,6 +732,8 @@ public class NuclosEntityAttributePropertiesStep extends NuclosEntityAttributeAb
 			model.nextStep();
 			model.refreshModelState();
 		}
+		
+		super.applyState();
 	}
 
 	private void validateMinMaxValues() throws CommonValidationException {

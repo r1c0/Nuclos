@@ -21,9 +21,11 @@ import java.util.Map;
 
 public class TranslationVO implements Serializable {
 
-	public static String labelsEntity[] = {"titel","menupath","treeview","treeviewdescription"};
-	public static String labelsField[] = {"label","description"};
-	public static String labelsCustomComponent[] = {"label","menupath"};
+	public static final String labelsEntity[] = {"titel","menupath","treeview","treeviewdescription"};
+	public static final String labelsField[] = {"label","description"};
+	public static final String labelsCustomComponent[] = {"label","menupath"};
+	
+	//
 
 	private Integer iLanguage;
 	private String sLanguage;

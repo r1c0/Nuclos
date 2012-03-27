@@ -71,10 +71,12 @@ public class NuclosEntityProcessStep extends NuclosEntityAbstractStep {
 
 	private static final String ENTITYNAME_PROCESS = NuclosEntity.PROCESS.getEntityName();
 
+	public static final String[] labels = TranslationVO.labelsEntity;
+	
+	//
+
 	private SubForm subform;
 	private MasterDataSubFormController subFormController;
-
-	public static String[] labels = TranslationVO.labelsEntity;
 
 	public NuclosEntityProcessStep() {
 		// initComponents();
@@ -153,6 +155,20 @@ public class NuclosEntityProcessStep extends NuclosEntityAbstractStep {
 	}
 
 	@Override
+	public void close() {
+		if (subFormController != null) {
+			subFormController.close();
+		}
+		subFormController = null;
+		if (subform != null) {
+			subform.close();
+		}
+		subform = null;
+
+		super.close();
+	}
+
+	@Override
 	public void applyState() throws InvalidStateException {
 		final SpringLocaleDelegate localeDelegate = SpringLocaleDelegate.getInstance();
 		List<CollectableEntityObject> subformdata;
@@ -193,6 +209,8 @@ public class NuclosEntityProcessStep extends NuclosEntityAbstractStep {
 		// close Subform support
 		subform.close();
 		subform = null;
+		
+		super.applyState();
 	}
 
 	private class ProcessSubformController extends MasterDataSubFormController {

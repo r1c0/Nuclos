@@ -626,7 +626,9 @@ public class MasterDataSubFormController extends DetailsSubFormController<Collec
 	}
 
 	private void removeListSelectionListener() {
-		getJTable().getSelectionModel().removeListSelectionListener(this.rowselectionlistener);
+		if (getSubForm() != null) {
+			getJTable().getSelectionModel().removeListSelectionListener(this.rowselectionlistener);
+		}
 		this.rowselectionlistener = null;
 	}
 

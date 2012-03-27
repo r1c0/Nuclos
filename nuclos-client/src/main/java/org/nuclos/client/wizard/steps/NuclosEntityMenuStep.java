@@ -73,10 +73,12 @@ public class NuclosEntityMenuStep extends NuclosEntityAbstractStep {
 
 	private static final String ENTITYNAME_MENU = NuclosEntity.ENTITYMENU.getEntityName();
 
+	public static final String[] labels = TranslationVO.labelsEntity;
+	
+	//
+
 	private SubForm subform;
 	private MasterDataSubFormController subFormController;
-
-	public static String[] labels = TranslationVO.labelsEntity;
 
 	public NuclosEntityMenuStep() {
 		// initComponents();
@@ -115,7 +117,8 @@ public class NuclosEntityMenuStep extends NuclosEntityAbstractStep {
 		SubForm.Column column = new SubForm.Column("menupath", "Menupath", new CollectableComponentType(CollectableComponentTypes.TYPE_TEXTFIELD, null), false, false, false, 0, 0);
 		subform.addColumn(column);
 
-		SubForm.Column column2 = new SubForm.Column("process", clcte.getEntityField("process").getLabel(), new CollectableComponentType(CollectableComponentTypes.TYPE_COMBOBOX, null), true, model.isStateModel(), false, 0, 0);
+		SubForm.Column column2 = new SubForm.Column("process", clcte.getEntityField("process").getLabel(), 
+				new CollectableComponentType(CollectableComponentTypes.TYPE_COMBOBOX, null), true, model.isStateModel(), false, 0, 0);
 		column2.setValueListProvider(new ProcessCollectableFieldsProvider());
 		subform.addColumn(column2);
 
@@ -163,6 +166,21 @@ public class NuclosEntityMenuStep extends NuclosEntityAbstractStep {
 	}
 
 	@Override
+	public void close() {
+		// close SubForm support
+		if (subFormController != null) {
+			subFormController.close();
+		}
+		subFormController = null;
+		if (subform !=  null) {
+			subform.close();
+		}
+		subform = null;		
+
+		super.close();
+	}
+
+	@Override
 	public void applyState() throws InvalidStateException {
 		List<CollectableEntityObject> subformdata;
 		try {
@@ -180,12 +198,8 @@ public class NuclosEntityMenuStep extends NuclosEntityAbstractStep {
 			}
 		});
 		model.setEntityMenus(entityMenus);
-		subFormController.close();
-		super.applyState();
 		
-		// close SubForm support
-		subform.close();
-		subform = null;
+		super.applyState();
 	}
 
 	public static class EntityMenuCollectableEntity extends AbstractCollectableEntity {

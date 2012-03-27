@@ -59,12 +59,14 @@ import org.springframework.beans.factory.annotation.Configurable;
 @Configurable
 public class NuclosEntityTranslationStep extends NuclosEntityAbstractStep {
 
+	public static final String[] labels = TranslationVO.labelsEntity;
+	
+	//
+	
 	private JScrollPane scrolPane;
 	private JTable attributeTable;
 	
 	private EntityTranslationTableModel tablemodel;
-	
-	public static String[] labels = TranslationVO.labelsEntity;
 	
 	public NuclosEntityTranslationStep() {	
 		// initComponents();		
@@ -195,6 +197,16 @@ public class NuclosEntityTranslationStep extends NuclosEntityAbstractStep {
 	}
 
 	@Override
+	public void close() {
+		scrolPane = null;
+		attributeTable = null;
+		
+		tablemodel = null;
+		
+		super.close();
+	}
+
+	@Override
 	public void applyState() throws InvalidStateException {
 		stopCellEditing();
 		model.setTranslation(tablemodel.getRows());
@@ -214,6 +226,7 @@ public class NuclosEntityTranslationStep extends NuclosEntityAbstractStep {
 		if(delResource)
 			model.setNodeTooltipResource(null);
 		
+		super.applyState();
 	}
 
 	private boolean checkTranslationForNull(String key) {

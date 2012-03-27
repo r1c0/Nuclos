@@ -208,6 +208,22 @@ public class NuclosEntityAttributeValueListShipStep extends NuclosEntityAttribut
 	}
 
 	@Override
+	public void close() {
+		lbName = null;
+		tfName = null;
+		pnlName = null;
+		lbInfo = null;
+
+		if (subform != null) {
+			subform.close();
+		}
+		subform = null;
+		lstValues = null;
+				
+		super.close();
+	}
+
+	@Override
 	public void applyState() throws InvalidStateException {
 		super.applyState();
 		this.model.nextStep();
@@ -223,6 +239,8 @@ public class NuclosEntityAttributeValueListShipStep extends NuclosEntityAttribut
 		// close Subform support
 		subform.close();
 		subform = null;
+		
+		super.applyState();
 	}
 	
 	

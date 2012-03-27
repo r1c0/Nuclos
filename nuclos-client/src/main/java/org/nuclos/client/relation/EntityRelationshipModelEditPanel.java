@@ -442,9 +442,7 @@ public class EntityRelationshipModelEditPanel extends JPanel {
 					if(cell.getValue() != null && cell.getValue() instanceof EntityMetaDataVO) {
 						EntityMetaDataVO voMeta = (EntityMetaDataVO)cell.getValue();						
 						EntityMetaDataVO vo = MetaDataClientProvider.getInstance().getEntity(voMeta.getEntity());
-						ShowNuclosWizard wizard = new ShowNuclosWizard(false);
-						wizard.setEntityToEdit(vo);
-						wizard.showWizard(mf.getHomePane(), mf);
+						new ShowNuclosWizard.NuclosWizardEditRunnable(false, mf.getHomePane(), vo).run();
 					}
 					else if(cell.getValue() != null && cell.getValue() instanceof EntityFieldMetaDataVO) {
 						if(cell.getStyle() != null && cell.getStyle().indexOf(OPENARROW) >= 0)
@@ -1004,13 +1002,12 @@ public class EntityRelationshipModelEditPanel extends JPanel {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				ShowNuclosWizard wizard = new ShowNuclosWizard(false);
 				if(cell.getValue() != null && cell.getValue() instanceof EntityMetaDataVO) {
 					String sValue = ((EntityMetaDataVO)cell.getValue()).getEntity();
 					if(sValue.length() > 0) {
 						try {
-							EntityMetaDataVO vo = MetaDataClientProvider.getInstance().getEntity(sValue);
-							wizard.setEntityToEdit(vo);
+							final EntityMetaDataVO vo = MetaDataClientProvider.getInstance().getEntity(sValue);
+							new ShowNuclosWizard.NuclosWizardEditRunnable(false, mf.getHomePane(), vo).run();
 						}
 						catch(Exception e1) {
 							// neue Entity
@@ -1018,7 +1015,6 @@ public class EntityRelationshipModelEditPanel extends JPanel {
 						}			
 					}
 				}
-				wizard.showWizard(mf.getHomePane(), mf);
 			}
 		});
 		
@@ -1032,18 +1028,16 @@ public class EntityRelationshipModelEditPanel extends JPanel {
 				
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					ShowNuclosWizard wizard = new ShowNuclosWizard(false);
 					if(cell.getValue() != null && cell.getValue() instanceof EntityMetaDataVO) {
-						EntityMetaDataVO voTMP = (EntityMetaDataVO)cell.getValue();
-						EntityMetaDataVO vo = MetaDataClientProvider.getInstance().getEntity(voTMP.getEntity());
-						wizard.setEntityToEdit(vo);					
+						final EntityMetaDataVO voTMP = (EntityMetaDataVO)cell.getValue();
+						final EntityMetaDataVO vo = MetaDataClientProvider.getInstance().getEntity(voTMP.getEntity());
+						new ShowNuclosWizard.NuclosWizardEditRunnable(false, mf.getHomePane(), vo).run();
 					}
 					else {
 						cell.setValue(localeDelegate.getMessage("nuclos.entityrelation.editor.16","neue Entit\u00e4t"));
 						mxGraph graph = graphComponent.getGraph();
 						graph.refresh();
 					}
-					wizard.showWizard(mf.getHomePane(), mf);
 				}
 			});			
 			pop.add(iNew);

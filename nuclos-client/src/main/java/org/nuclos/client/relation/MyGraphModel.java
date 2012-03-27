@@ -477,15 +477,13 @@ public class MyGraphModel extends mxGraphModel {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				ShowNuclosWizard wizard = new ShowNuclosWizard(false);
 				if(cell.getValue() != null && cell.getValue() instanceof EntityMetaDataVO) {
 					String sValue = ((EntityMetaDataVO)cell.getValue()).getEntity();
 					if(sValue.length() > 0) {
-						EntityMetaDataVO vo = MetaDataClientProvider.getInstance().getEntity(sValue);
-						wizard.setEntityToEdit(vo);
+						final EntityMetaDataVO vo = MetaDataClientProvider.getInstance().getEntity(sValue);
+						new ShowNuclosWizard.NuclosWizardEditRunnable(false, mf.getHomePane(), vo).run();
 					}
 				}
-				wizard.showWizard(mf.getHomePane(), mf);
 			}
 		});
 		
@@ -500,13 +498,12 @@ public class MyGraphModel extends mxGraphModel {
 				
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					ShowNuclosWizard wizard = new ShowNuclosWizard(false);
 					if(cell.getValue() != null && cell.getValue() instanceof EntityMetaDataVO) {
 						String sValue = ((EntityMetaDataVO)cell.getValue()).getEntity();
 						if(sValue.length() > 0) {
 							try {
-								EntityMetaDataVO vo = MetaDataClientProvider.getInstance().getEntity(sValue);
-								wizard.setEntityToEdit(vo);
+								final EntityMetaDataVO vo = MetaDataClientProvider.getInstance().getEntity(sValue);
+								new ShowNuclosWizard.NuclosWizardEditRunnable(false, mf.getHomePane(), vo).run();
 							}
 							catch(CommonFatalException e1) {
 								// do noting here Entity does not exist
@@ -520,7 +517,6 @@ public class MyGraphModel extends mxGraphModel {
 						mxGraph graph = graphComponent.getGraph();
 						graph.refresh();
 					}
-					wizard.showWizard(mf.getHomePane(), mf);
 				}
 			});			
 			pop.add(iNew);

@@ -108,9 +108,21 @@ public class NuclosUserGroupRightsStep extends NuclosEntityAbstractStep {
 	}
 
 	@Override
+	public void close() {
+		table = null;
+		scroll = null;
+		userRightsModel = null;
+		col = null;
+		cmbUserRights = null;
+		
+		super.close();
+	}
+
+	@Override
 	public void applyState() throws InvalidStateException {
+		this.model.setUserRights(this.userRightsModel.getUserRights());
+		
 		super.applyState();		
-		this.model.setUserRights(this.userRightsModel.getUserRights());				
 	}
 
 	@Override

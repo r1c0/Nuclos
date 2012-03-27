@@ -90,51 +90,53 @@ public class NuclosEntityAttributeCommonPropertiesStep extends NuclosEntityAttri
 
 	private static final Logger LOG = Logger.getLogger(NuclosEntityAttributeCommonPropertiesStep.class);
 
-	static String[] forbiddenNames = {"INTID","DATCREATED", "STRCREATED", "DATCHANGED", "STRCHANGED", "INTVERSION",
+	static final String[] forbiddenNames = {"INTID","DATCREATED", "STRCREATED", "DATCHANGED", "STRCHANGED", "INTVERSION",
 		"STRSYSTEMID", "INTID_T_MD_PROCESS", "STRORIGIN", "BLNDELETED", "INTID_T_MD_STATE"};
+	
+	//
 
-	JLabel lbLabel;
-	JTextField tfLabel;
-	JLabel lbDefaultValue;
-	JTextField tfDefaultValue;
-	JComboBox cbxDefaultValue;
-	DateChooser dateDefaultValue;
-	JCheckBox cbDefaultValue;
-	JLabel lbDBFieldName;
-	JTextField tfDBFieldName;
-	JLabel lbDBFieldNameComplete;
-	JTextField tfDBFieldNameComplete;
+	private JLabel lbLabel;
+	private JTextField tfLabel;
+	private JLabel lbDefaultValue;
+	private JTextField tfDefaultValue;
+	private JComboBox cbxDefaultValue;
+	private DateChooser dateDefaultValue;
+	private JCheckBox cbDefaultValue;
+	private JLabel lbDBFieldName;
+	private JTextField tfDBFieldName;
+	private JLabel lbDBFieldNameComplete;
+	private JTextField tfDBFieldNameComplete;
 
-	JLabel lbDistinct;
-	JCheckBox cbDistinct;
-	JLabel lbLogBook;
-	JCheckBox cbLogBook;
-	JLabel lbMandatory;
-	JCheckBox cbMandatory;
+	private JLabel lbDistinct;
+	private JCheckBox cbDistinct;
+	private JLabel lbLogBook;
+	private JCheckBox cbLogBook;
+	private JLabel lbMandatory;
+	private JCheckBox cbMandatory;
 
-	JTextField tfMandatory;
-	JComboBox cbxMandatory;
-	DateChooser dateMandatory;
-	JCheckBox cbMandatoryValue;
+	private JTextField tfMandatory;
+	private JComboBox cbxMandatory;
+	private DateChooser dateMandatory;
+	private JCheckBox cbMandatoryValue;
 
-	JLabel lbIndexed;
-	JCheckBox cbIndexed;
+	private JLabel lbIndexed;
+	private JCheckBox cbIndexed;
 
-	JLabel lbAttributeGroup;
-	JComboBox cbxAttributeGroup;
+	private JLabel lbAttributeGroup;
+	private JComboBox cbxAttributeGroup;
 
-	JLabel lbCalcFunction;
-	JComboBox cbxCalcFunction;
+	private JLabel lbCalcFunction;
+	private JComboBox cbxCalcFunction;
 
-	JLabel lbCalculationScript;
-	JButton btCalculationScript;
+	private JLabel lbCalculationScript;
+	private JButton btCalculationScript;
 
-	boolean blnLabelModified;
-	boolean blnDefaultSelected;
+	private boolean blnLabelModified;
+	private boolean blnDefaultSelected;
 
-	JPanel pnlMoreOptions;
+	private JPanel pnlMoreOptions;
 
-	NuclosEntityWizardStaticModel parentWizardModel;
+	private NuclosEntityWizardStaticModel parentWizardModel;
 
 
 	public NuclosEntityAttributeCommonPropertiesStep() {
@@ -932,6 +934,51 @@ public class NuclosEntityAttributeCommonPropertiesStep extends NuclosEntityAttri
 	public void setParentWizardModel(NuclosEntityWizardStaticModel model) {
 		this.parentWizardModel = model;
 	}
+	
+	@Override
+	public void close() {
+		lbLabel = null;
+		tfLabel = null;
+		lbDefaultValue = null;
+		tfDefaultValue = null;
+		cbxDefaultValue = null;
+		dateDefaultValue = null;
+		cbDefaultValue = null;
+		lbDBFieldName = null;
+		tfDBFieldName = null;
+		lbDBFieldNameComplete = null;
+		tfDBFieldNameComplete = null;
+
+		lbDistinct = null;
+		cbDistinct = null;
+		lbLogBook = null;
+		cbLogBook = null;
+		lbMandatory = null;
+		cbMandatory = null;
+
+		tfMandatory = null;
+		cbxMandatory = null;
+		dateMandatory = null;
+		cbMandatoryValue = null;
+
+		lbIndexed = null;
+		cbIndexed = null;
+
+		lbAttributeGroup = null;
+		cbxAttributeGroup = null;
+
+		lbCalcFunction = null;
+		cbxCalcFunction = null;
+
+		lbCalculationScript = null;
+		btCalculationScript = null;
+
+		pnlMoreOptions = null;
+
+		parentWizardModel = null;
+		
+		super.close();
+	}
 
 	@Override
 	public void applyState() throws InvalidStateException {
@@ -986,9 +1033,6 @@ public class NuclosEntityAttributeCommonPropertiesStep extends NuclosEntityAttri
 			JLabel lb = new JLabel(sMessage);
 			JOptionPane.showMessageDialog(this, lb);
 			throw new InvalidStateException("");
-		}
-		else {
-			super.applyState();
 		}
 
 		Boolean blnNullable;
@@ -1078,6 +1122,8 @@ public class NuclosEntityAttributeCommonPropertiesStep extends NuclosEntityAttri
 		if (parentWizardModel.isVirtual()) {
 			attr.setReadonly(parentWizardModel.isEditable());
 		}
+		
+		super.applyState();
 	}
 
 	static class LimitCharacterDocument extends PlainDocument {

@@ -977,9 +977,59 @@ public class NuclosEntityCommonPropertiesStep extends NuclosEntityAbstractStep i
 	}
 
 	@Override
-    public void applyState() throws InvalidStateException {
-	    super.applyState();
+	public void close() {
+		lbLabelSingular = null;
+		tfLabelSingular = null;
+		lbMenupath = null;
+		cbMenupath = null;
+		btMenupath = null;
+		lbSystemIdPrefix = null;
+		tfSystemIdPrefix = null;
+		lbIconCustom = null;
+		cbxIcon = null;
+		btNewIcon = null;
 
+		lbAccelerator = null;
+		cbxModifier = null;
+		tfMnemonic = null;
+
+		lbLogbook = null;
+		cbLogbook = null;
+		lbSearchable = null;
+		cbSearchable = null;
+		lbEditable = null;
+		cbEditable = null;
+
+		lbShowRelation = null;
+		cbShowRelation = null;
+		lbShowGroups = null;
+		cbShowGroups = null;
+
+		lbStateModel = null;
+		cbStateModel = null;
+
+		lbVirtual = null;
+		cbxVirtual = null;
+		lbIdFactory = null;
+		cbxIdFactory = null;
+
+		lbCache = null;
+		cbCache = null;
+		lbTableName = null;
+		tfTableName = null;
+		lbInternalEntityName = null;
+		tfInternalEntityName = null;
+
+		lbIcon = null;
+		nuclosIconChooser = null;
+
+		pnlMoreOptions = null;
+
+		super.close();
+	}
+
+	@Override
+    public void applyState() throws InvalidStateException {
 	    model.setMenuPath((String)cbMenupath.getSelectedItem());
 	    model.setVirtualentity((String)cbxVirtual.getSelectedItem());
 	    model.setIdFactory((String) cbxIdFactory.getSelectedItem());
@@ -1108,6 +1158,8 @@ public class NuclosEntityCommonPropertiesStep extends NuclosEntityAbstractStep i
 				model.refreshModelState();
 			}
 		}
+	    
+	    super.applyState();
     }
 
 
