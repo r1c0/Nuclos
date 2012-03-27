@@ -1394,7 +1394,10 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 	 * @throws CommonBusinessException if tab is not closable
 	 */
 	static void closeTab(MainFrameTab tab, Point mousePosition) throws CommonBusinessException {
-		getTabbedPane(tab).closeTab(tab, mousePosition);
+		final MainFrameTabbedPane mtab = getTabbedPane(tab);
+		if (mtab != null) {
+			mtab.closeTab(tab, mousePosition);
+		}
 	}
 
 	/**
@@ -1476,8 +1479,8 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 				return tabbedPane;
 			}
 		}
-
-		throw new NuclosFatalException("Tab not found");
+		LOG.warn("Tab not found in MainFrame: " + tab);
+		return null;
 	}
 
 	/**

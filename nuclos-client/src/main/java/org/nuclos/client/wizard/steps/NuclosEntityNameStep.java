@@ -53,6 +53,7 @@ import org.nuclos.client.masterdata.MasterDataDelegate;
 import org.nuclos.client.masterdata.MetaDataDelegate;
 import org.nuclos.client.resource.ResourceCache;
 import org.nuclos.client.ui.Errors;
+import org.nuclos.client.ui.gc.ListenerUtil;
 import org.nuclos.client.wizard.model.Attribute;
 import org.nuclos.client.wizard.model.DataTyp;
 import org.nuclos.client.wizard.model.EntityAttributeTableModel;
@@ -352,8 +353,7 @@ public class NuclosEntityNameStep extends NuclosEntityAbstractStep {
 				}
 			}
 		});
-
-		btnRemove.addActionListener(new ActionListener() {
+		ListenerUtil.registerActionListener(btnRemove, new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {

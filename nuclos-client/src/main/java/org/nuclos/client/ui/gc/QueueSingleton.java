@@ -71,7 +71,7 @@ public class QueueSingleton {
 				ref = queue.poll();
 				if (ref != null) {
 					// final Object o = ref.get();
-					final IRegister c = map.get(ref);
+					final IRegister c = map.remove(ref);
 					if (c != null) {
 						c.unregister();
 					}
