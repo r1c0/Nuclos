@@ -29,8 +29,6 @@ import javax.swing.JTree;
 
 import org.apache.log4j.Logger;
 import org.nuclos.client.explorer.ExplorerNode;
-import org.nuclos.client.explorer.node.rule.EntityRuleNode;
-import org.nuclos.client.explorer.node.rule.EntityRuleNode.EntityRuleUsageStatusNode;
 import org.nuclos.client.explorer.node.rule.RuleNode;
 import org.nuclos.client.main.Main;
 import org.nuclos.client.main.mainframe.MainFrame;

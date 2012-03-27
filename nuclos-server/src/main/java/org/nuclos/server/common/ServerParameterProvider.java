@@ -37,7 +37,6 @@ import org.nuclos.server.dblayer.query.DbQuery;
 import org.nuclos.server.dblayer.query.DbQueryBuilder;
 import org.nuclos.server.jms.NuclosJMSUtils;
 import org.nuclos.server.mbean.MBeanAgent;
-import org.nuclos.server.mbean.MasterDataMetaCacheMBean;
 import org.nuclos.server.mbean.ServerParameterProviderMBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;

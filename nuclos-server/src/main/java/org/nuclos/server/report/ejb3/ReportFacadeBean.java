@@ -76,7 +76,6 @@ import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.dal.vo.SystemFields;
 import org.nuclos.common.dblayer.JoinType;
 import org.nuclos.common.querybuilder.NuclosDatasourceException;
-import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.IOUtils;
 import org.nuclos.common2.LocaleInfo;
 import org.nuclos.common2.SpringLocaleDelegate;

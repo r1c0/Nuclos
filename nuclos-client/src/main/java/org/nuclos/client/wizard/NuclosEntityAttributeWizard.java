@@ -18,7 +18,6 @@ package org.nuclos.client.wizard;
 
 import java.util.Iterator;
 
-import org.nuclos.client.wizard.steps.NuclosEntityAbstractStep;
 import org.nuclos.client.wizard.steps.NuclosEntityAttributeAbstractStep;
 import org.pietschy.wizard.ButtonBar;
 import org.pietschy.wizard.Wizard;

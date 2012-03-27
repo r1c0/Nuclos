@@ -50,10 +50,9 @@ import javax.swing.JPopupMenu;
 import javax.swing.JSeparator;
 import javax.swing.JTable;
 import javax.swing.JViewport;
-import javax.swing.SwingUtilities;
 import javax.swing.RowSorter.SortKey;
+import javax.swing.SwingUtilities;
 import javax.swing.table.AbstractTableModel;
-import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellRenderer;
 
 import org.apache.log4j.Logger;

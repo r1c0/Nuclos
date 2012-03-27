@@ -23,7 +23,6 @@ import javax.swing.Icon;
 import org.apache.log4j.Logger;
 import org.nuclos.client.wizard.NuclosEntityAttributeWizardStaticModel;
 import org.nuclos.common2.SpringLocaleDelegate;
-import org.pietschy.wizard.InvalidStateException;
 import org.pietschy.wizard.PanelWizardStep;
 import org.pietschy.wizard.WizardModel;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -20,7 +20,6 @@
 package org.nuclos.common.caching;
 
 import java.util.HashMap;
-import java.util.Iterator;
 
 import org.apache.log4j.Logger;
 

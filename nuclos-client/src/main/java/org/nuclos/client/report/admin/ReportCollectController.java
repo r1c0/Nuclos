@@ -69,7 +69,6 @@ import org.nuclos.common.collect.collectable.CollectableValueField;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableSearchCondition;
 import org.nuclos.common.collect.exception.CollectableFieldFormatException;
 import org.nuclos.common.collect.exception.CollectableFieldValidationException;
-import org.nuclos.common2.CommonLocaleDelegate;
 import org.nuclos.common2.CommonRunnable;
 import org.nuclos.common2.IOUtils;
 import org.nuclos.common2.KeyEnum;

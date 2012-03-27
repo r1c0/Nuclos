@@ -24,7 +24,6 @@ import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 
 import org.apache.commons.lang.NullArgumentException;
-
 import org.nuclos.client.ui.OptionGroup;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
 import org.nuclos.common.collect.collectable.CollectableField;
@@ -34,7 +33,6 @@ import org.nuclos.common.collect.exception.CollectableFieldFormatException;
 import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonFatalException;
-import org.springframework.beans.factory.annotation.Configurable;
 
 /**
  * <code>Collectable OptionGroup</code> (group of radio buttons).

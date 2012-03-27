@@ -17,7 +17,6 @@
 package org.nuclos.server.dblayer.query;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import org.nuclos.common.MetaDataProvider;

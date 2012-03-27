@@ -32,7 +32,6 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 
 import org.apache.activemq.broker.TransportConnector;
-import org.apache.activemq.thread.Scheduler;
 import org.apache.activemq.xbean.XBeanBrokerService;
 import org.apache.log4j.ClearThreadLocalMap;
 import org.apache.log4j.Logger;

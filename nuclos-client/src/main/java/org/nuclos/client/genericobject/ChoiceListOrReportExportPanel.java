@@ -29,12 +29,11 @@ import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JSeparator;
 import javax.swing.border.Border;
-import javax.swing.border.EmptyBorder;
 
 import org.nuclos.client.ui.LineLayout;
-import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common.NuclosBusinessException;
 import org.nuclos.common.UsageCriteria;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.server.report.NuclosReportException;
 
 /**

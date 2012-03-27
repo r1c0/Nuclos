@@ -49,7 +49,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Properties;
 import java.util.Set;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
@@ -149,7 +148,6 @@ import org.nuclos.client.ui.collect.CollectController;
 import org.nuclos.client.ui.collect.CollectController.CollectableEventListener;
 import org.nuclos.client.ui.collect.CollectController.MessageType;
 import org.nuclos.client.ui.collect.CollectControllerFactorySingleton;
-import org.nuclos.client.ui.collect.CollectState;
 import org.nuclos.client.ui.collect.CollectStateModel;
 import org.nuclos.client.ui.collect.detail.DetailsCollectableEventListener;
 import org.nuclos.client.ui.collect.search.ReportExecutionSearchStrategy;
@@ -181,12 +179,12 @@ import org.nuclos.common.dal.vo.EntityMetaDataVO;
 import org.nuclos.common.dal.vo.EntityObjectVO;
 import org.nuclos.common.security.RemoteAuthenticationManager;
 import org.nuclos.common2.ClientPreferences;
-import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.CommonRunnable;
 import org.nuclos.common2.IOUtils;
 import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.PreferencesUtils;
 import org.nuclos.common2.ServiceLocator;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonFatalException;
@@ -197,7 +195,6 @@ import org.nuclos.server.customcomp.valueobject.CustomComponentVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
-import org.springframework.util.SystemPropertyUtils;
 
 
 /**
