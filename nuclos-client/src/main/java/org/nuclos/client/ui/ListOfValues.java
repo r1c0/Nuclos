@@ -56,6 +56,7 @@ import javax.swing.event.DocumentListener;
 import org.apache.log4j.Logger;
 import org.nuclos.client.ui.collect.component.CollectableListOfValues;
 import org.nuclos.client.ui.collect.component.ICollectableListOfValues;
+import org.nuclos.client.ui.labeled.ILabeledComponentSupport;
 import org.nuclos.common.SpringApplicationContextHolder;
 import org.nuclos.common.collect.collectable.CollectableValueIdField;
 import org.nuclos.common2.StringUtils;
@@ -79,10 +80,6 @@ public class ListOfValues extends JPanel {
 
 	private static final int QUICKSEARCH_POPUP_ROWS = 16;
 
-	private ToolTipTextProvider tooltiptextprovider;
-
-	private QuickSearchResulting quickSearchResulting;
-
 	private static final KeyStroke ENTER = KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0, true);
 
 	private static final KeyStroke UP = KeyStroke.getKeyStroke(KeyEvent.VK_UP, 0, true);
@@ -102,7 +99,13 @@ public class ListOfValues extends JPanel {
 	private static final String QUICK_SEARCH_NAV_DOWN = "quickSearchNavDown";
 
 	private static final String QUICK_SEARCH_CANCEL = "quickSearchCancel";
+	
+	// 
+	
+	private ILabeledComponentSupport support;
 
+	private QuickSearchResulting quickSearchResulting;
+	
 	private QuickSearchSelectedListener quickSearchSelectedListener;
 
 	private ActionListener quickSearchCanceledListener;
@@ -133,11 +136,17 @@ public class ListOfValues extends JPanel {
 
 	private TimerTask lastTimerTask = null;
 
-	private final TextFieldWithButton tf = new TextFieldWithButton(Icons.getInstance().getIconTextFieldButtonLOV()) {
+	private final LovTextFieldWithButton tf;
+	
+	private class LovTextFieldWithButton extends TextFieldWithButton {
+	
+		LovTextFieldWithButton(ILabeledComponentSupport support) {
+			super(Icons.getInstance().getIconTextFieldButtonLOV(), support);
+		}
 
 		@Override
 		public String getToolTipText(MouseEvent ev) {
-			final ToolTipTextProvider provider = ListOfValues.this.tooltiptextprovider;
+			final ToolTipTextProvider provider = support.getToolTipTextProvider();
 			return (provider != null) ? provider.getDynamicToolTipText() : super.getToolTipText(ev);
 		}
 
@@ -240,9 +249,14 @@ public class ListOfValues extends JPanel {
 
 	};
 
-	public ListOfValues() {
+	public ListOfValues(ILabeledComponentSupport support) {
 		super(new BorderLayout(2, 0));
-
+		if (support == null) {
+			throw new NullPointerException();
+		}		
+		this.support = support;
+		tf = new LovTextFieldWithButton(support);
+		
 		this.setOpaque(false);
 		super.addFocusListener(new LovFocusListener());
 
@@ -309,8 +323,8 @@ public class ListOfValues extends JPanel {
 		this.tf.setToolTipText(sText);
 	}
 
-	public void setToolTipTextProvider(ToolTipTextProvider tooltiptextprovider) {
-		this.tooltiptextprovider = tooltiptextprovider;
+	void setToolTipTextProvider(ToolTipTextProvider tooltiptextprovider) {
+		support.setToolTipTextProvider(tooltiptextprovider);
 		if (tooltiptextprovider != null) {
 			ToolTipManager.sharedInstance().registerComponent(this.getJTextField());
 		}
@@ -324,9 +338,11 @@ public class ListOfValues extends JPanel {
 		this.btnBrowse.setEnabled(!quickSearchOnly);
 	}
 
+	/*
 	public void setBackgroundColorProviderForTextField(ColorProvider colorproviderBackground) {
 		this.tf.setBackgroundColorProviderForTextField(colorproviderBackground);
 	}
+	 */
 
 	@Override
 	public void setName(String sName) {
@@ -541,7 +557,8 @@ public class ListOfValues extends JPanel {
 
 		@Override
 		public void work() throws CommonBusinessException {
-			qsResult = (quickSearchResulting != null ? quickSearchResulting.getQuickSearchResult(inputString) : new ArrayList<CollectableValueIdField>());
+			qsResult = (quickSearchResulting != null ? 
+					quickSearchResulting.getQuickSearchResult(inputString) : new ArrayList<CollectableValueIdField>());
 
 			if (!searchRunning)
 				return;
@@ -708,21 +725,21 @@ public class ListOfValues extends JPanel {
 		}
 
 		final Color defaultColor = this.tf.getBackground();
-		final ColorProvider colorProvider = this.tf.getBackgroundColorProviderForTextField();
+		final ColorProvider colorProvider = support.getColorProvider();
 
-		Thread t = new Thread(new Runnable() {
+		final Thread t = new Thread(new Runnable() {
 			@Override
 			public void run() {
 				try {
-					Thread.currentThread().sleep(200);
-					ListOfValues.this.tf.setBackgroundColorProviderForTextField(null);
+					Thread.sleep(200);
+					support.setColorProvider(null);
 					ListOfValues.this.tf.setBackground(color);
 					ListOfValues.this.tf.repaint();
 
-					Thread.currentThread().sleep(500);
+					Thread.sleep(500);
 					ListOfValues.this.tf.setBackground(defaultColor);
 					ListOfValues.this.tf.repaint();
-					ListOfValues.this.tf.setBackgroundColorProviderForTextField(colorProvider);
+					support.setColorProvider(colorProvider);
 
 					alertRunning = false;
 				} catch (Exception ex) {
@@ -734,18 +751,10 @@ public class ListOfValues extends JPanel {
 		t.start();
 	}
 
-	/**
-	 *
-	 * @return
-	 */
 	public QuickSearchResulting getQuickSearchResulting() {
 		return quickSearchResulting;
 	}
 
-	/**
-	 *
-	 * @param quickSearchResulting
-	 */
 	public void setQuickSearchResulting(QuickSearchResulting quickSearchResulting) {
 		this.quickSearchResulting = quickSearchResulting;
 	}

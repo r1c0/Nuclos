@@ -73,29 +73,17 @@ public class WYSIWYGCollectableTextfield extends WYSIWYGCollectableComponent {
 		this.addDragGestureListener();
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * @see org.nuclos.client.layout.wysiwyg.component.WYSIWYGCollectableComponent#getAdditionalContextMenuItems(int)
-	 */
 	@Override
 	public List<JMenuItem> getAdditionalContextMenuItems(int xClick) {
 		List<JMenuItem> list = new ArrayList<JMenuItem>();
 		return list;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * @see org.nuclos.client.layout.wysiwyg.component.WYSIWYGCollectableComponent#render()
-	 */
 	@Override
 	protected void render() {
 
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * @see java.awt.Component#setName(java.lang.String)
-	 */
 	@Override
 	public void setName(String name) {
 		if (component != null) {
@@ -103,10 +91,6 @@ public class WYSIWYGCollectableTextfield extends WYSIWYGCollectableComponent {
 		}
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * @see javax.swing.JComponent#setBackground(java.awt.Color)
-	 */
 	@Override
 	public void setBackground(Color bg) {
 		if (component != null) {
@@ -114,10 +98,6 @@ public class WYSIWYGCollectableTextfield extends WYSIWYGCollectableComponent {
 		}
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * @see javax.swing.JComponent#setBorder(javax.swing.border.Border)
-	 */
 	@Override
 	public void setBorder(Border border) {
 		if (component != null) {
@@ -131,10 +111,6 @@ public class WYSIWYGCollectableTextfield extends WYSIWYGCollectableComponent {
 		}
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * @see javax.swing.JComponent#setEnabled(boolean)
-	 */
 	@Override
 	public void setEnabled(boolean enabled) {
 		if (component != null) {
@@ -148,10 +124,6 @@ public class WYSIWYGCollectableTextfield extends WYSIWYGCollectableComponent {
 		}
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * @see javax.swing.JComponent#setFont(java.awt.Font)
-	 */
 	@Override
 	public void setFont(Font font) {
 		if (component != null) {
@@ -161,10 +133,6 @@ public class WYSIWYGCollectableTextfield extends WYSIWYGCollectableComponent {
 		}
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * @see javax.swing.JComponent#setMinimumSize(java.awt.Dimension)
-	 */
 	@Override
 	public void setMinimumSize(Dimension minimumSize) {
 		if (component != null) {
@@ -172,10 +140,6 @@ public class WYSIWYGCollectableTextfield extends WYSIWYGCollectableComponent {
 		}
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * @see javax.swing.JComponent#setOpaque(boolean)
-	 */
 	@Override
 	public void setOpaque(boolean isOpaque) {
 		if (component != null) {
@@ -183,10 +147,6 @@ public class WYSIWYGCollectableTextfield extends WYSIWYGCollectableComponent {
 		}
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * @see javax.swing.JComponent#setPreferredSize(java.awt.Dimension)
-	 */
 	@Override
 	public void setPreferredSize(Dimension preferredSize) {
 		if (component != null) {
@@ -194,10 +154,6 @@ public class WYSIWYGCollectableTextfield extends WYSIWYGCollectableComponent {
 		}
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * @see javax.swing.JComponent#setToolTipText(java.lang.String)
-	 */
 	@Override
 	public void setToolTipText(String toolTipText) {
 		if (component != null) {
@@ -205,16 +161,12 @@ public class WYSIWYGCollectableTextfield extends WYSIWYGCollectableComponent {
 		}
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * @see org.nuclos.client.layout.wysiwyg.component.WYSIWYGCollectableComponent#validateProperties(java.util.Map)
-	 */
 	@Override
 	public void validateProperties(Map<String, PropertyValue<Object>> values) throws NuclosBusinessException {
 	}
 	
 	@Configurable
-	private class WYSIWYGLabeledTextField extends LabeledTextField {
+	private static class WYSIWYGLabeledTextField extends LabeledTextField {
 		
 		/**
 		 * 
@@ -225,7 +177,7 @@ public class WYSIWYGCollectableTextfield extends WYSIWYGCollectableComponent {
 		
 		@PostConstruct
 		void init() {
-			setBackgroundColorProvider(new ColorProvider() {
+			support.setColorProvider(new ColorProvider() {
 				@Override
 				public Color getColor(Color colorDefault) {
 					if (backgroundcolor == null && !NuclosThemeSettings.BACKGROUND_PANEL.equals(colorDefault)) {

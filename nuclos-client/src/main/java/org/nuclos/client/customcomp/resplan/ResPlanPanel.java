@@ -76,6 +76,7 @@ import org.nuclos.client.ui.Icons;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.client.ui.collect.CollectController.CollectableEventListener;
 import org.nuclos.client.ui.collect.CollectController.MessageType;
+import org.nuclos.client.ui.labeled.LabeledComponentSupport;
 import org.nuclos.client.ui.popupmenu.AbstractJPopupMenuListener;
 import org.nuclos.client.ui.resplan.Interval;
 import org.nuclos.client.ui.resplan.JResPlanComponent;
@@ -139,7 +140,9 @@ public class ResPlanPanel extends JPanel {
 
 		JToolBar tb = UIUtils.createNonFloatableToolBar();
 		tb.setFloatable(false);
-		tb.add(new AbstractAction(localeDelegate.getText("nuclos.resplan.action.refresh", null), Icons.getInstance().getIconRefresh16()) {
+		tb.add(new AbstractAction(localeDelegate.getText("nuclos.resplan.action.refresh", null), 
+				Icons.getInstance().getIconRefresh16()) {
+			
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				controller.refresh();
@@ -149,10 +152,11 @@ public class ResPlanPanel extends JPanel {
 		
 		this.timeHorizon = new Interval<Date>(model.getDefaultViewFrom(), model.getDefaultViewUntil());
 
-		startDateChooser = new DateChooser(timeHorizon.getStart());
+		final LabeledComponentSupport support = new LabeledComponentSupport();
+		startDateChooser = new DateChooser(support, timeHorizon.getStart());
 		startDateChooser.setMinimumSize(startDateChooser.getPreferredSize());
 		startDateChooser.setMaximumSize(startDateChooser.getPreferredSize());
-		endDateChooser = new DateChooser(timeHorizon.getEnd());
+		endDateChooser = new DateChooser(support, timeHorizon.getEnd());
 		endDateChooser.setMinimumSize(endDateChooser.getPreferredSize());
 		endDateChooser.setMaximumSize(endDateChooser.getPreferredSize());
 

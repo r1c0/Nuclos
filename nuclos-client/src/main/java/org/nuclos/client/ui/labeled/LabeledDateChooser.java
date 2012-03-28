@@ -21,7 +21,6 @@ import java.util.Date;
 import javax.swing.JComponent;
 import javax.swing.text.JTextComponent;
 
-import org.nuclos.client.ui.ColorProvider;
 import org.nuclos.client.ui.DateChooser;
 import org.nuclos.client.ui.ToolTipTextProvider;
 import org.nuclos.client.ui.UIUtils;
@@ -40,17 +39,19 @@ public class LabeledDateChooser extends LabeledTextComponent {
 
 	private final DateChooser datechooser;
 
-	public LabeledDateChooser() {
-		this(false);
+	public LabeledDateChooser(LabeledComponentSupport support) {
+		this(support, false);
 	}
 
-	public LabeledDateChooser(boolean bTodayIsRelative) {
-		this(bTodayIsRelative, true, null, false);
+	public LabeledDateChooser(LabeledComponentSupport support, boolean bTodayIsRelative) {
+		this(support, bTodayIsRelative, true, null, false);
 	}
 
-	public LabeledDateChooser(boolean bTodayIsRelative, boolean isNullable, String inputFormat, boolean bSearchable) {
-		super(isNullable, Date.class, inputFormat, bSearchable);
-		this.datechooser = new DateChooser(bTodayIsRelative);
+	public LabeledDateChooser(LabeledComponentSupport support, boolean bTodayIsRelative, boolean isNullable, 
+			String inputFormat, boolean bSearchable) {
+		
+		super(support, isNullable, Date.class, inputFormat, bSearchable);
+		this.datechooser = new DateChooser(support, bTodayIsRelative);
 		initValidation(isNullable, Date.class, inputFormat);
 		if(this.validationLayer != null){
 			this.addControl(this.validationLayer);
@@ -60,9 +61,11 @@ public class LabeledDateChooser extends LabeledTextComponent {
 		this.getJLabel().setLabelFor(this.datechooser);
 	}
 
-	public LabeledDateChooser(boolean bTodayIsRelative, boolean isNullable, String inputFormat, String outputFormat, boolean bSearchable) {
-		super(isNullable, Date.class, inputFormat, bSearchable);
-		this.datechooser = new DateChooser(bTodayIsRelative);
+	public LabeledDateChooser(LabeledComponentSupport support, boolean bTodayIsRelative, boolean isNullable, 
+			String inputFormat, String outputFormat, boolean bSearchable) {
+		
+		super(support, isNullable, Date.class, inputFormat, bSearchable);
+		this.datechooser = new DateChooser(support, bTodayIsRelative);
 		if(outputFormat != null && outputFormat.length() > 1)
 			this.datechooser.setOutputFormat(outputFormat);
 		initValidation(isNullable, Date.class, inputFormat);
@@ -85,30 +88,17 @@ public class LabeledDateChooser extends LabeledTextComponent {
 	}
 
 	@Override
-	public void setToolTipTextProviderForControl(final ToolTipTextProvider tooltiptextprovider) {
+	void setToolTipTextProviderForControl(final ToolTipTextProvider tooltiptextprovider) {
 		ToolTipTextProvider labeledDateChooserToolTipTextProvider = new ToolTipTextProvider() {
 			@Override
             public String getDynamicToolTipText() {
-				return StringUtils.concatHtml(tooltiptextprovider.getDynamicToolTipText(), LabeledDateChooser.this.getValidationToolTip());
+				return StringUtils.concatHtml(tooltiptextprovider.getDynamicToolTipText(), 
+						support.getValidationToolTip());
 			}
 		};
 		super.setToolTipTextProviderForControl(labeledDateChooserToolTipTextProvider);
-		this.datechooser.setToolTipTextProvider(labeledDateChooserToolTipTextProvider);
+		// this.datechooser.setToolTipTextProvider(labeledDateChooserToolTipTextProvider);
 	}
-
-	/*private class LabeledDateChooserToolTipTextProvider implements ToolTipTextProvider {
-		ToolTipTextProvider wrappedProvider;
-
-		public LabeledDateChooserToolTipTextProvider(ToolTipTextProvider wrappedProvider){
-			this.wrappedProvider = wrappedProvider;
-		}
-
-		public String getDynamicToolTipText() {
-			String startToolTip = "<HTML><BODY>";
-			String endToolTip = "</BODY></HTML>";
-			return startToolTip + this.wrappedProvider.getDynamicToolTipText() + LabeledDateChooser.this.getValidationToolTip() + endToolTip;
-		}
-	}*/
 
 	public DateChooser getDateChooser() {
 		return this.datechooser;
@@ -134,11 +124,13 @@ public class LabeledDateChooser extends LabeledTextComponent {
 		datechooser.setColumns(iColumns);
 	}
 
+	/*
 	@Override
 	public void setBackgroundColorProvider(ColorProvider colorproviderBackground) {
 		super.setBackgroundColorProvider(colorproviderBackground);
 		this.datechooser.setBackgroundColorProviderForTextField(colorproviderBackground);
 	}
+	 */
 
 	@Override
 	public void setName(String sName) {

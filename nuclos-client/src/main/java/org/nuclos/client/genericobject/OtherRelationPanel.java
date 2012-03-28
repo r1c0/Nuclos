@@ -38,6 +38,7 @@ import org.nuclos.client.ui.ValidatingJOptionPane.ErrorInfo;
 import org.nuclos.client.ui.collect.component.CollectableComboBox;
 import org.nuclos.client.ui.collect.component.model.CollectableComponentModelAdapter;
 import org.nuclos.client.ui.collect.component.model.CollectableComponentModelEvent;
+import org.nuclos.client.ui.labeled.LabeledComponentSupport;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.SearchConditionUtils;
@@ -67,8 +68,11 @@ class OtherRelationPanel extends JPanel {
 	private final SwappableRelationPanel relationpanel;
 	private final CenterPanel pnlCenter;
 	private final CollectableComboBox clctcmbbxRelationType;
-	private final DateChooser datechooserValidFrom = new DateChooser();
-	private final DateChooser datechooserValidUntil = new DateChooser();
+	
+	private final LabeledComponentSupport support = new LabeledComponentSupport();
+	private final DateChooser datechooserValidFrom = new DateChooser(support);
+	private final DateChooser datechooserValidUntil = new DateChooser(support);
+	
 	private final JTextArea taDescription = new JTextArea(3, 20);
 
 	private final Collection<GenericObjectIdModuleProcess> collgoimpSource;

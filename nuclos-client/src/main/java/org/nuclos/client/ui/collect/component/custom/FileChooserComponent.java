@@ -32,6 +32,7 @@ import javax.swing.border.EmptyBorder;
 import org.nuclos.client.ui.Icons;
 import org.nuclos.client.ui.TextFieldWithButton;
 import org.nuclos.client.ui.ToolTipTextProvider;
+import org.nuclos.client.ui.labeled.LabeledComponentSupport;
 import org.nuclos.common2.SpringLocaleDelegate;
 
 /**
@@ -49,7 +50,10 @@ public class FileChooserComponent extends JPanel {
 
 	private final JLabel labIcon = new JLabel();
 	
-	private final TextFieldWithButton cmpFileName = new TextFieldWithButton(Icons.getInstance().getIconTextFieldButtonFile()) {
+	private final LabeledComponentSupport support = new LabeledComponentSupport();
+
+	private final TextFieldWithButton cmpFileName = new TextFieldWithButton(
+			Icons.getInstance().getIconTextFieldButtonFile(), support) {
 
 		@Override
 		public String getToolTipText(MouseEvent ev) {

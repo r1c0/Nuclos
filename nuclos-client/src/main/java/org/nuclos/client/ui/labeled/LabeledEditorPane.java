@@ -98,13 +98,14 @@ public class LabeledEditorPane extends LabeledTextComponent {
 
 		@Override
 		public String getToolTipText(MouseEvent ev) {
-			final ToolTipTextProvider provider = LabeledEditorPane.this.getToolTipTextProviderForControl();
-			return StringUtils.concatHtml(provider != null ? provider.getDynamicToolTipText() : super.getToolTipText(ev), LabeledEditorPane.this.getValidationToolTip());
+			final ToolTipTextProvider provider = support.getToolTipTextProvider();
+			return StringUtils.concatHtml(provider != null ? provider.getDynamicToolTipText() : super.getToolTipText(ev), 
+					support.getValidationToolTip());
 		}
 
 		@Override
 		public Color getBackground() {
-			final ColorProvider colorproviderBackground = LabeledEditorPane.this.getBackgroundColorProvider();
+			final ColorProvider colorproviderBackground = support.getColorProvider();
 			final Color colorDefault = super.getBackground();
 			return (colorproviderBackground != null) ? colorproviderBackground.getColor(colorDefault) : colorDefault;
 		}
@@ -218,7 +219,7 @@ public class LabeledEditorPane extends LabeledTextComponent {
 	}
 
 	@Override
-	public void setToolTipTextProviderForControl(ToolTipTextProvider tooltiptextprovider) {
+	void setToolTipTextProviderForControl(ToolTipTextProvider tooltiptextprovider) {
 		super.setToolTipTextProviderForControl(tooltiptextprovider);
 		if (tooltiptextprovider != null) {
 			// This is necessary to enable dynamic tooltips for the text area:

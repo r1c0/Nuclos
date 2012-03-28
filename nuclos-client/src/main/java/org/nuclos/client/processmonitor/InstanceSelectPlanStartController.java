@@ -36,6 +36,7 @@ import javax.swing.event.DocumentListener;
 
 import org.nuclos.client.ui.Controller;
 import org.nuclos.client.ui.DateChooser;
+import org.nuclos.client.ui.labeled.LabeledComponentSupport;
 import org.nuclos.common2.DateTime;
 import org.nuclos.common2.SeriesUtils;
 import org.nuclos.common2.exception.CommonValidationException;
@@ -53,8 +54,9 @@ public class InstanceSelectPlanStartController extends Controller {
 	
 	private JPanel jpnResult = new JPanel();
 	
-	private DateChooser dateFrom = new DateChooser();
-	private DateChooser dateUntil = new DateChooser();
+	private final LabeledComponentSupport support = new LabeledComponentSupport();
+	private final DateChooser dateFrom = new DateChooser(support);
+	private DateChooser dateUntil = new DateChooser(support);
 	
 	private JComboBox cmbPlanStart = new JComboBox();
 	

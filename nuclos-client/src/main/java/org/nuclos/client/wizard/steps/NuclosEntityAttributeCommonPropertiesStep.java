@@ -61,6 +61,7 @@ import org.nuclos.client.ui.Bubble;
 import org.nuclos.client.ui.Bubble.Position;
 import org.nuclos.client.ui.DateChooser;
 import org.nuclos.client.ui.Errors;
+import org.nuclos.client.ui.labeled.LabeledComponentSupport;
 import org.nuclos.client.wizard.NuclosEntityWizardStaticModel;
 import org.nuclos.client.wizard.model.Attribute;
 import org.nuclos.client.wizard.model.ValueList;
@@ -162,6 +163,8 @@ public class NuclosEntityAttributeCommonPropertiesStep extends NuclosEntityAttri
 		layout.setVGap(3);
 		layout.setHGap(5);
 		this.setLayout(layout);
+		
+		final LabeledComponentSupport support = new LabeledComponentSupport();
 
 		lbLabel = new JLabel(localeDelegate.getMessage("wizard.step.attributeproperties.10", "Feldname")+": ");
 		tfLabel = new JTextField();
@@ -176,7 +179,7 @@ public class NuclosEntityAttributeCommonPropertiesStep extends NuclosEntityAttri
 		cbxDefaultValue.setVisible(false);
 		cbxDefaultValue.setToolTipText(localeDelegate.getMessage("wizard.step.attributeproperties.tooltip.11", "Standardwert"));
 
-		dateDefaultValue = new DateChooser(true);
+		dateDefaultValue = new DateChooser(support, true);
 		dateDefaultValue.setVisible(false);
 		dateDefaultValue.setToolTipText(localeDelegate.getMessage("wizard.step.attributeproperties.tooltip.11", "Standardwert"));
 
@@ -203,7 +206,7 @@ public class NuclosEntityAttributeCommonPropertiesStep extends NuclosEntityAttri
 		cbxMandatory = new JComboBox();
 		cbxMandatory.setVisible(false);
 		cbxMandatory.setToolTipText(localeDelegate.getMessage("wizard.step.attributeproperties.tooltip.27", "Defaultwert für Pflichtfeld"));
-		dateMandatory = new DateChooser();
+		dateMandatory = new DateChooser(support);
 		dateMandatory.setVisible(false);
 		dateMandatory.setToolTipText(localeDelegate.getMessage("wizard.step.attributeproperties.tooltip.27", "Defaultwert für Pflichtfeld"));
 		cbMandatoryValue = new JCheckBox();

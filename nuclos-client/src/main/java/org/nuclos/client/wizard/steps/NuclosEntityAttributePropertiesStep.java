@@ -51,6 +51,7 @@ import org.nuclos.client.masterdata.CollectableMasterDataWithDependants;
 import org.nuclos.client.ui.DateChooser;
 import org.nuclos.client.ui.Errors;
 import org.nuclos.client.ui.collect.CollectControllerFactorySingleton;
+import org.nuclos.client.ui.labeled.LabeledComponentSupport;
 import org.nuclos.client.wizard.DataTypeCollectController;
 import org.nuclos.client.wizard.NuclosEntityWizardStaticModel;
 import org.nuclos.client.wizard.model.Attribute;
@@ -253,13 +254,15 @@ public class NuclosEntityAttributePropertiesStep extends NuclosEntityAttributeAb
 		tfMaxValue.setEnabled(false);
 		tfMaxValue.addActionListener(this);
 
-		datMinValue = new DateChooser();
+		final LabeledComponentSupport support = new LabeledComponentSupport();
+
+		datMinValue = new DateChooser(support);
 		datMinValue.setActionCommand(ACTIONCOMMAND_MINVALUEDATE);
 		datMinValue.setVisible(false);
 		datMinValue.setToolTipText(localeDelegate.getMessage("wizard.step.attributeproperties.tooltip.23", "Bestimmen Sie einen Mindeswert, der in der Eingabemaske validiert wird."));
 		datMinValue.addActionListener(this);
 
-		datMaxValue = new DateChooser();
+		datMaxValue = new DateChooser(support);
 		datMaxValue.setActionCommand(ACTIONCOMMAND_MAXVALUEDATE);
 		datMaxValue.setToolTipText(localeDelegate.getMessage("wizard.step.attributeproperties.tooltip.24", "Bestimmen Sie einen Maximalwert, der in der Eingabemaske validiert wird."));
 		datMaxValue.setVisible(false);

@@ -61,13 +61,13 @@ import javax.swing.JRootPane;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 import javax.swing.Timer;
-import javax.swing.ToolTipManager;
 import javax.swing.text.Document;
 
 import org.apache.log4j.Logger;
-import org.nuclos.common2.SpringLocaleDelegate;
+import org.nuclos.client.ui.labeled.LabeledComponentSupport;
 import org.nuclos.common2.DateUtils;
 import org.nuclos.common2.RelativeDate;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonValidationException;
 
@@ -157,18 +157,18 @@ public class DateChooser extends JComponent implements Serializable {
 	private JButton btnNone;
 	private javax.swing.Timer timerShiftTimePeriod;
 
-	private ToolTipTextProvider tooltiptextproviderForTextField;
-
 	private final boolean bTodayIsRelative;
 
 	private String actionCommand;
+	
+	private final LabeledComponentSupport support;
 
 	/**
 	 * Creates a <code>DateChooser</code> with no initial date and with the default number of columns.
 	 * @postcondition !isTodayRelative()
 	 */
-	public DateChooser() {
-		this(false);
+	public DateChooser(LabeledComponentSupport support) {
+		this(support, false);
 
 		assert !isTodayRelative();
 	}
@@ -176,8 +176,8 @@ public class DateChooser extends JComponent implements Serializable {
 	/**
 	 * Creates a <code>DateChooser</code> with the given initial date.
 	 */
-	public DateChooser(Date date) {
-		this(date, DEFAULT_COLUMNCOUNT, false);
+	public DateChooser(LabeledComponentSupport support, Date date) {
+		this(support, date, DEFAULT_COLUMNCOUNT, false);
 	}
 
 	/**
@@ -185,8 +185,8 @@ public class DateChooser extends JComponent implements Serializable {
 	 * @param bTodayIsRelative
 	 * @postcondition isTodayRelative() == bTodayIsRelative
 	 */
-	public DateChooser(boolean bTodayIsRelative) {
-		this(null, DEFAULT_COLUMNCOUNT, bTodayIsRelative);
+	public DateChooser(LabeledComponentSupport support, boolean bTodayIsRelative) {
+		this(support, null, DEFAULT_COLUMNCOUNT, bTodayIsRelative);
 
 		assert isTodayRelative() == bTodayIsRelative;
 	}
@@ -202,7 +202,12 @@ public class DateChooser extends JComponent implements Serializable {
 	 * @param bTodayIsRelative
 	 * @postcondition isTodayRelative() == bTodayIsRelative
 	 */
-	public DateChooser(Date date, int iColumns, boolean bTodayIsRelative) {
+	public DateChooser(LabeledComponentSupport support, Date date, int iColumns, boolean bTodayIsRelative) {
+		if (support == null) {
+			throw new NullPointerException();
+		}
+		
+		this.support = support;
 		this.bTodayIsRelative = bTodayIsRelative;
 
 		this.setupControl(iColumns);
@@ -296,7 +301,7 @@ public class DateChooser extends JComponent implements Serializable {
 
 	private void setupControl(int iColumns) {
 		this.setLayout(new BorderLayout(2, 0));
-		this.tfDate = new TextFieldWithButton(Icons.getInstance().getIconTextFieldButtonCalendar()) {
+		this.tfDate = new TextFieldWithButton(Icons.getInstance().getIconTextFieldButtonCalendar(), support) {
 
 			/**
 			 * shows the dynamic tooltip text, if a tooltiptextprovider was set.
@@ -307,7 +312,7 @@ public class DateChooser extends JComponent implements Serializable {
 			 */
 			@Override
 			public String getToolTipText(MouseEvent ev) {
-				final ToolTipTextProvider provider = DateChooser.this.getToolTipTextProvider();
+				final ToolTipTextProvider provider = support.getToolTipTextProvider();
 				return (provider != null) ? provider.getDynamicToolTipText() : super.getToolTipText(ev);
 			}
 
@@ -372,19 +377,14 @@ public class DateChooser extends JComponent implements Serializable {
 	/**
 	 * @param tooltiptextprovider may be <code>null</code>, to enable static tooltip text.
 	 */
+	/*
 	public void setToolTipTextProvider(ToolTipTextProvider tooltiptextprovider) {
 		this.tooltiptextproviderForTextField = tooltiptextprovider;
 		if (tooltiptextprovider != null) {
 			ToolTipManager.sharedInstance().registerComponent(this.getJTextField());
 		}
 	}
-
-	/**
-	 * @return the <code>ToolTipTextProvider</code> for this component, if any.
 	 */
-	public ToolTipTextProvider getToolTipTextProvider() {
-		return this.tooltiptextproviderForTextField;
-	}
 
 	/**
 	 * sets the (static) tooltip text for this component. The tooltip text is shown in the text field.
@@ -547,9 +547,11 @@ public class DateChooser extends JComponent implements Serializable {
 		UIUtils.setCombinedName(this.btnDropDown, sName, "btnDropDown");
 	}
 
+	/*
 	public void setBackgroundColorProviderForTextField(ColorProvider colorproviderBackground) {
 		this.tfDate.setBackgroundColorProviderForTextField(colorproviderBackground);
 	}
+	 */
 
 	public String getActionCommand() {
 		return actionCommand;

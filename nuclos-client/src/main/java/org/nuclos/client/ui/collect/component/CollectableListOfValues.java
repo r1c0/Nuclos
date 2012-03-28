@@ -44,6 +44,7 @@ import org.nuclos.client.ui.collect.CollectController.CollectableEventListener;
 import org.nuclos.client.ui.collect.CollectController.MessageType;
 import org.nuclos.client.ui.collect.component.model.CollectableComponentModelEvent;
 import org.nuclos.client.ui.collect.component.model.SearchComponentModelEvent;
+import org.nuclos.client.ui.labeled.LabeledComponentSupport;
 import org.nuclos.client.ui.labeled.LabeledListOfValues;
 import org.nuclos.client.ui.popupmenu.JPopupMenuListener;
 import org.nuclos.client.valuelistprovider.cache.CollectableFieldsProviderCache.CachingCollectableFieldsProvider;
@@ -152,7 +153,7 @@ public class CollectableListOfValues extends LabeledCollectableComponentWithVLP 
 	 * @precondition clctef.isReferencing()
 	 */
 	public CollectableListOfValues(final CollectableEntityField clctef, boolean bSearchable) {
-		super(clctef, new LabeledListOfValues(), bSearchable);
+		super(clctef, new LabeledListOfValues(new LabeledComponentSupport()), bSearchable);
 
 		if (clctef == null) {
 			throw new NullArgumentException("clctef");

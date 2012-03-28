@@ -24,6 +24,7 @@ import javax.swing.JLabel;
 import javax.swing.JTable;
 import javax.swing.table.TableCellRenderer;
 
+import org.nuclos.client.ui.labeled.ILabeledComponentSupport;
 import org.nuclos.client.ui.labeled.LabeledComponent;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
 import org.nuclos.common.collect.collectable.CollectableField;
@@ -44,10 +45,11 @@ public abstract class LabeledCollectableComponent extends AbstractCollectableCom
 
 	protected LabeledCollectableComponent(CollectableEntityField clctef, LabeledComponent labcomp, boolean bSearchable) {
 		super(clctef, labcomp, bSearchable);
-
-		getLabeledComponent().setToolTipTextProviderForControl(this);
-
-		getLabeledComponent().setBackgroundColorProvider(new BackgroundColorProvider());
+		final LabeledComponent lc = getLabeledComponent();
+		final ILabeledComponentSupport support = lc.getLabeledComponentSupport();
+		
+		support.setToolTipTextProvider(this);
+		support.setColorProvider(new BackgroundColorProvider());
 	}
 
 	public LabeledComponent getLabeledComponent() {

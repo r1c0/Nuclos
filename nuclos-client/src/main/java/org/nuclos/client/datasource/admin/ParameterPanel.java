@@ -44,6 +44,7 @@ import org.nuclos.client.genericobject.valuelistprovider.GenericObjectCollectabl
 import org.nuclos.client.masterdata.valuelistprovider.MasterDataCollectableFieldsProviderFactory;
 import org.nuclos.client.ui.DateChooser;
 import org.nuclos.client.ui.Errors;
+import org.nuclos.client.ui.labeled.LabeledComponentSupport;
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.collect.collectable.CollectableField;
 import org.nuclos.common.collect.collectable.CollectableFieldsProvider;
@@ -161,7 +162,8 @@ public class ParameterPanel extends JPanel {
 					comp = tf;
 				}
 				else if (paramvo.getDatatype().equals("java.util.Date")) {
-					final DateChooser datechooser = new DateChooser();
+					final LabeledComponentSupport support = new LabeledComponentSupport();
+					final DateChooser datechooser = new DateChooser(support);
 					datechooser.setName(paramvo.getParameter());
 					comp = datechooser;
 				}

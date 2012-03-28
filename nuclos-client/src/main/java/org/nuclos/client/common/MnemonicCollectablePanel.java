@@ -40,21 +40,19 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
 import org.apache.log4j.Logger;
-
-import org.nuclos.common.collect.collectable.CollectableEntityField;
-import org.nuclos.common.collect.collectable.CollectableField;
-import org.nuclos.common.collect.collectable.CollectableValueIdField;
-import org.nuclos.common.collect.exception.CollectableFieldFormatException;
-import org.nuclos.common2.exception.CommonBusinessException;
-import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.client.genericobject.GenericObjectMetaDataCache;
-import org.nuclos.client.ui.ToolTipTextProvider;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.client.ui.collect.component.DelegatingCollectablePanel;
 import org.nuclos.client.ui.collect.component.model.CollectableComponentModel;
 import org.nuclos.client.ui.labeled.LabeledComboBox;
 import org.nuclos.client.ui.labeled.LabeledComponent;
 import org.nuclos.client.ui.popupmenu.JPopupMenuListener;
+import org.nuclos.common.collect.collectable.CollectableEntityField;
+import org.nuclos.common.collect.collectable.CollectableField;
+import org.nuclos.common.collect.collectable.CollectableValueIdField;
+import org.nuclos.common.collect.exception.CollectableFieldFormatException;
+import org.nuclos.common2.exception.CommonBusinessException;
+import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.server.attribute.valueobject.AttributeValueVO;
 
 /**
@@ -177,11 +175,6 @@ public class MnemonicCollectablePanel extends DelegatingCollectablePanel {
 		@Override
 		public void setEnabled(boolean pEnabled){
 			this.cEnabled = pEnabled;
-		}
-
-		@Override
-		protected ToolTipTextProvider getToolTipTextProviderForControl() {
-			return getToolTipTextProviderForControl();
 		}
 
 		public void setVisibleControl(boolean visible){

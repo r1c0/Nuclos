@@ -25,10 +25,6 @@ import javax.swing.text.JTextComponent;
 import org.jdesktop.jxlayer.JXLayer;
 import org.nuclos.client.ui.ValidationLayerFactory;
 import org.nuclos.client.ui.ValidationLayerFactory.InputValidator;
-import org.nuclos.client.ui.ValidationLayerFactory.NullableInputValidator;
-import org.nuclos.client.ui.ValidationLayerFactory.RangeInputValidator;
-import org.nuclos.client.ui.ValidationLayerFactory.RegExpInputValidator;
-import org.nuclos.client.ui.ValidationLayerFactory.TypeInputValidator;
 
 /**
  * A labeled text component.
@@ -42,8 +38,26 @@ import org.nuclos.client.ui.ValidationLayerFactory.TypeInputValidator;
 
 public abstract class LabeledTextComponent extends LabeledComponent {
 
-	public LabeledTextComponent() {
+	// ***** Layered *****
+	protected JXLayer<JComponent> validationLayer;
+	protected boolean needLayeredValidation;
+
+	protected LabeledTextComponent() {
 		super();
+	}
+
+	protected LabeledTextComponent(LabeledComponentSupport support) {
+		super(support);
+	}
+
+	protected LabeledTextComponent(boolean isNullable, Class<?> javaClass, String inputFormat, boolean bSearchable) {
+		this.needLayeredValidation = checkIfNeedLayeredValidation(isNullable, inputFormat, bSearchable);
+	}
+
+	protected LabeledTextComponent(LabeledComponentSupport support, boolean isNullable, 
+			Class<?> javaClass, String inputFormat, boolean bSearchable) {
+		
+		this.needLayeredValidation = checkIfNeedLayeredValidation(isNullable, inputFormat, bSearchable);
 	}
 
 	public abstract JTextComponent getJTextComponent();
@@ -58,16 +72,6 @@ public abstract class LabeledTextComponent extends LabeledComponent {
 		this.getJTextComponent().setEditable(bEditable);
 	}
 
-	// ***** Layered *****
-	protected JXLayer<JComponent> validationLayer;
-	protected List<InputValidator<JTextComponent>> inputValidators;
-	protected boolean needLayeredValidation;
-
-	public LabeledTextComponent(boolean isNullable, Class<?> javaClass, String inputFormat, boolean bSearchable) {
-		super();
-		this.needLayeredValidation = checkIfNeedLayeredValidation(isNullable, inputFormat, bSearchable);
-	}
-
 	private boolean checkIfNeedLayeredValidation(boolean isNullable, String inputFormat, boolean bSearchable) {
 		return !bSearchable && (!isNullable || (inputFormat != null && inputFormat.trim().length() > 0));
 	}
@@ -75,48 +79,15 @@ public abstract class LabeledTextComponent extends LabeledComponent {
 	protected abstract JComponent getLayeredComponent();
 	protected abstract JTextComponent getLayeredTextComponent();
 
-	protected void initValidators(boolean isNullable, Class<?> javaClass, String inputFormat){
-		this.inputValidators = new ArrayList<InputValidator<JTextComponent>>();
-		if(!isNullable){
-			inputValidators.add(new NullableInputValidator<JTextComponent>(getLayeredTextComponent()));
-		}
-		if(inputFormat != null && inputFormat.trim().length() > 0){
-			if(javaClass.equals(String.class)){
-				inputValidators.add(new RegExpInputValidator<JTextComponent>(getLayeredTextComponent(), inputFormat));
-			} else {
-				inputValidators.add(new RangeInputValidator<JTextComponent>(getLayeredTextComponent(), javaClass, inputFormat));
-			}
-		} else {
-			if(!javaClass.equals(String.class)){
-				inputValidators.add(new TypeInputValidator<JTextComponent>(getLayeredTextComponent(), javaClass));
+	protected void initValidation(boolean isNullable, Class<?> javaClass, String inputFormat) {
+		if (needLayeredValidation){
+			support.initValidators(getLayeredTextComponent(), isNullable, javaClass, inputFormat);
+			final List<InputValidator<JTextComponent>> inputValidators = support.getInputValidators();
+			if (inputValidators != null && inputValidators.size() > 0){
+				validationLayer = ValidationLayerFactory.createValidationLayer(getLayeredComponent(), 
+						new ArrayList<InputValidator<?>>(inputValidators));
 			}
 		}
 	}
 	
-	protected String getValidationToolTip(){
-		StringBuffer validationToolTip = new StringBuffer("");
-		validationToolTip.append("<html><body>");
-		int i = 0;
-		if(inputValidators != null){
-			for(InputValidator<JTextComponent> validator : inputValidators){
-				if (i > 0) validationToolTip.append("<br/>");
-				validationToolTip.append(validator.getValidationMessage());
-			}
-			i++;
-		}
-		validationToolTip.append("</body></html>");
-		return validationToolTip.toString();
-	}
-
-	protected void initValidation(boolean isNullable, Class<?> javaClass, String inputFormat) {
-		//JComponent controlComponent = getLayeredComponent();
-		if(this.needLayeredValidation){
-			initValidators(isNullable, javaClass, inputFormat);
-			if(this.inputValidators != null && this.inputValidators.size() > 0){
-				this.validationLayer = ValidationLayerFactory.createValidationLayer(getLayeredComponent(), new ArrayList<InputValidator<?>>(inputValidators));
-				//controlComponent = this.layer;
-			}
-		}
-		//this.addControl(controlComponent);
-	}	
 }  // class LabeledTextComponent

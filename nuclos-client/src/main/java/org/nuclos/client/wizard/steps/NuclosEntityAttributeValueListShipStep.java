@@ -46,6 +46,7 @@ import org.nuclos.client.common.MetaDataClientProvider;
 import org.nuclos.client.ui.DateChooser;
 import org.nuclos.client.ui.collect.SubForm;
 import org.nuclos.client.ui.gc.ListenerUtil;
+import org.nuclos.client.ui.labeled.LabeledComponentSupport;
 import org.nuclos.client.wizard.model.ValueList;
 import org.nuclos.client.wizard.util.NuclosWizardUtils;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
@@ -346,10 +347,12 @@ public class NuclosEntityAttributeValueListShipStep extends NuclosEntityAttribut
 	
 	class DateEditor extends AbstractCellEditor implements TableCellEditor {
 
+		private final LabeledComponentSupport support = new LabeledComponentSupport();
+
 		private DateChooser dateChooser;
 		
 		public DateEditor() {
-			dateChooser = new DateChooser();
+			dateChooser = new DateChooser(support);
 		}
 		
 		@Override

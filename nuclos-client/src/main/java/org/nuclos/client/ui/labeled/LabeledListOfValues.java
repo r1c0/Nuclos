@@ -18,9 +18,7 @@ package org.nuclos.client.ui.labeled;
 
 import javax.swing.JComponent;
 
-import org.nuclos.client.ui.ColorProvider;
 import org.nuclos.client.ui.ListOfValues;
-import org.nuclos.client.ui.ToolTipTextProvider;
 import org.nuclos.client.ui.UIUtils;
 
 /**
@@ -35,25 +33,13 @@ import org.nuclos.client.ui.UIUtils;
 
 public class LabeledListOfValues extends LabeledComponent {
 
-	private final ListOfValues lov = new ListOfValues();
+	private final ListOfValues lov;
 
-	public LabeledListOfValues() {
-		super();
-
+	public LabeledListOfValues(LabeledComponentSupport support) {
+		super(support);
+		lov = new ListOfValues(support);
 		this.addControl(this.lov);
 		this.getJLabel().setLabelFor(this.lov);
-	}
-
-	@Override
-	public void setToolTipTextProviderForControl(ToolTipTextProvider tooltiptextprovider) {
-		super.setToolTipTextProviderForControl(tooltiptextprovider);
-		this.lov.setToolTipTextProvider(tooltiptextprovider);
-	}
-
-	@Override
-	public void setBackgroundColorProvider(ColorProvider colorproviderBackground) {
-		super.setBackgroundColorProvider(colorproviderBackground);
-		this.lov.setBackgroundColorProviderForTextField(colorproviderBackground);
 	}
 
 	public ListOfValues getListOfValues() {
