@@ -123,18 +123,27 @@ public class MainFrameTabbedPane {
 	private final ImageIcon maximizedFirstTabHomeIcon = MainFrame.resizeAndCacheTabIcon(Icons.getInstance().getIconTabbedPaneMaximized_Home());
 	private final ImageIcon maximizedFirstTabHomeTreeIcon = MainFrame.resizeAndCacheTabIcon(Icons.getInstance().getIconTabbedPaneMaximized_HomeTree());
 
-	private final JLabel lbFirstTabComponent = new JLabel(defaultFirstTabIcon) {
+	private static class FirstTabLabel extends JLabel {
+		
+		private FirstTabLabel(ImageIcon icon) {
+			super(icon);
+		}
+		
 		@Override
 		public Dimension getSize() {
 			final Dimension result = super.getSize();
 			result.height = MainFrameTabbedPane.DEFAULT_TAB_COMPONENT_HEIGHT;
 			return result;
 		}
+		
 		@Override
 		public int getHeight() {
 			return MainFrameTabbedPane.DEFAULT_TAB_COMPONENT_HEIGHT;
 		}
-	};
+	}
+	
+	private final JLabel lbFirstTabComponent = new FirstTabLabel(defaultFirstTabIcon);
+	
 	private final JLabel lbClose = new JLabel(Icons.getInstance().getIconTabbedPaneClose());
 	private final JLabel lbMax = new JLabel(Icons.getInstance().getIconTabbedPaneMax());
 	private boolean maximizedTabs = false;
@@ -167,10 +176,7 @@ public class MainFrameTabbedPane {
 		super.finalize();
 	}
 
-	/**
-	 *
-	 */
-	public class DragParameter {
+	public static class DragParameter {
 		public final MainFrameTabbedPane originTabbedPane;
 
 		MainFrameTabbedPane mouseOverTabbedPane;
@@ -193,10 +199,7 @@ public class MainFrameTabbedPane {
 		}
 	}
 
-	/**
-	 *
-	 */
-	public class DragWindow extends Window {
+	public static class DragWindow extends Window {
 
 		public DragWindow(Frame owner, Image image, Dimension imageSize) {
 			super(owner);
@@ -211,9 +214,6 @@ public class MainFrameTabbedPane {
 
 	}
 
-	/**
-	 *
-	 */
 	public MainFrameTabbedPane() {
 		content = new ComponentPanel(this);
 		startTab = new StartTabPanel(MainFrameTabbedPane.this);
@@ -749,10 +749,7 @@ public class MainFrameTabbedPane {
 		DropTarget drop = new DropTarget(this.lbFirstTabComponent, new NuclosDropTargetListener(mfTabbed));
 		drop.setActive(true);
 	}
-
-	/**
-	 *
-	 */
+	
 	private void setupStartTab() {
 		final SpringLocaleDelegate localeDelegate = SpringLocaleDelegate.getInstance();
 		startTabMain = new JPanel(new BorderLayout()) {
@@ -1296,7 +1293,7 @@ public class MainFrameTabbedPane {
 		return startTab.countHiddenTabs();
 	}
 
-	private class ShowHideJCheckBoxMenuItem extends JCheckBoxMenuItem {
+	private static class ShowHideJCheckBoxMenuItem extends JCheckBoxMenuItem {
 
 		public ShowHideJCheckBoxMenuItem(Action a) {
 			super(a);
@@ -1312,14 +1309,15 @@ public class MainFrameTabbedPane {
 	public void setDesktop(Desktop desktop, List<GenericAction> actions) {
 		startTab.setDesktop(desktop, actions);
 	}
+	
 	public boolean isDesktopActive() {
 		return startTab.isDesktopActive();
 	}
+	
 	public void setDesktopActive(boolean desktopActive) {
 		startTab.setDesktopActive(desktopActive);
 	}
 	
-	@SuppressWarnings("serial")
 	public class MFTabbedPane extends JTabbedPane implements NuclosDropTargetVisitor {
 		
 		private final MainFrameTabbedPane mainFrameTabbedPane;
@@ -2111,7 +2109,7 @@ public class MainFrameTabbedPane {
 		
 	}
 	
-	public class EmptyPanel extends JPanel {
+	public static class EmptyPanel extends JPanel {
 		
 		private final ImageIcon bgImg = new ImageIcon(NuclosIcons.getInstance().getBigTransparentApplicationIcon512().getImage());
 		

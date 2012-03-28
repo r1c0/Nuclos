@@ -1321,7 +1321,10 @@ public class StartTabPanel extends JPanel implements NuclosDropTargetVisitor {
 	 */
 	private void removeHiddenTab(MainFrameTab tab, boolean updateCO) {
 		hiddenTabs.remove(tab);
-		jpnHiddenTabs.remove(hiddenTabLinks.get(tab));
+		final LinkLabel hidden = hiddenTabLinks.get(tab);
+		if (hidden != null) {
+			jpnHiddenTabs.remove(hidden);
+		}
 		hiddenTabLinks.remove(tab);
 
 		if (updateCO) {
@@ -1533,12 +1536,15 @@ public class StartTabPanel extends JPanel implements NuclosDropTargetVisitor {
 	Desktop getDesktop() {
 		return desktop.getDesktopPreferences();
 	}
+	
 	void setDesktop(Desktop desktopPreferences, List<GenericAction> actions) {
 		this.desktop.setDesktopPreferences(desktopPreferences, actions);
 	}
+	
 	boolean isDesktopActive() {
 		return desktopActive;
 	}
+	
 	void setDesktopActive(boolean desktopActive) {
 		boolean bRepaint = false;
 		if (this.desktopActive != desktopActive) {

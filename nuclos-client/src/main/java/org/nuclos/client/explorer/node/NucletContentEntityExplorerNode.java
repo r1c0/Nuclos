@@ -31,6 +31,7 @@ import org.nuclos.client.common.MetaDataClientProvider;
 import org.nuclos.client.explorer.ExplorerNode;
 import org.nuclos.client.main.Main;
 import org.nuclos.client.main.mainframe.MainFrame;
+import org.nuclos.client.main.mainframe.MainFrameTabbedPane;
 import org.nuclos.client.ui.Icons;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.client.ui.tree.TreeNodeAction;
@@ -99,7 +100,7 @@ public class NucletContentEntityExplorerNode extends ExplorerNode<NucletContentE
 		 * @param explorernode
 		 */
 		private void cmdShowDetails(final NucletContentEntityExplorerNode explorernode) {
-			final JTabbedPane desktopPane = Main.getInstance().getMainFrame().getHomePane();
+			final MainFrameTabbedPane desktopPane = Main.getInstance().getMainFrame().getHomePane();
 			final EntityMetaDataVO entity = MetaDataClientProvider.getInstance().getEntity(
 					getTreeNode().getEntityObjectVO().getField("entity", String.class));
 			UIUtils.runCommand(this.getParent(), new ShowNuclosWizard.NuclosWizardEditRunnable(true, desktopPane, entity));

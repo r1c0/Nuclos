@@ -71,6 +71,7 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
@@ -624,7 +625,7 @@ public class MainController {
 
 				@Override
 				public void actionPerformed(ActionEvent evt) {
-					final JTabbedPane desktopPane = MainController.this.getHomePane();
+					final MainFrameTabbedPane desktopPane = MainController.this.getHomePane();
 					UIUtils.runCommand(frm, new ShowNuclosWizard.NuclosWizardRoRunnable(desktopPane));
 				}};
 			cmdOpenCustomComponentWizard = new AbstractAction(

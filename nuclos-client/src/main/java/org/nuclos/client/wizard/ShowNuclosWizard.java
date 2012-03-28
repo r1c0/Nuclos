@@ -17,6 +17,8 @@
 package org.nuclos.client.wizard;
 
 
+import javax.swing.JTabbedPane;
+
 import org.apache.log4j.Logger;
 import org.nuclos.client.main.Main;
 import org.nuclos.client.main.mainframe.MainFrame;
@@ -45,9 +47,9 @@ public class ShowNuclosWizard  {
 
 	public static class NuclosWizardRoRunnable implements Runnable {
 		
-		private final JTabbedPane desktopPane;
+		private final MainFrameTabbedPane desktopPane;
 		
-		public NuclosWizardRoRunnable(JTabbedPane desktopPane) {
+		public NuclosWizardRoRunnable(MainFrameTabbedPane desktopPane) {
 			this.desktopPane = desktopPane;
 		}
 		
@@ -68,11 +70,11 @@ public class ShowNuclosWizard  {
 		
 		private final boolean editMode;
 		
-		private final JTabbedPane desktopPane;
+		private final MainFrameTabbedPane desktopPane;
 		
 		private final EntityMetaDataVO entity;
 		
-		public NuclosWizardEditRunnable(boolean editMode, JTabbedPane desktopPane, EntityMetaDataVO entity) {
+		public NuclosWizardEditRunnable(boolean editMode, MainFrameTabbedPane desktopPane, EntityMetaDataVO entity) {
 			this.editMode = editMode;
 			this.desktopPane = desktopPane;
 			this.entity = entity;
@@ -107,7 +109,7 @@ public class ShowNuclosWizard  {
 		this.toEdit = vo;
 	}
 
-	public void showWizard(final JTabbedPane desktopPane) {
+	public void showWizard(final MainFrameTabbedPane desktopPane) {
 		final SpringLocaleDelegate localeDelegate = SpringLocaleDelegate.getInstance();
 		
 		final MainFrameTab ifrm = Main.getInstance().getMainController().newMainFrameTab(null, 
@@ -180,14 +182,14 @@ public class ShowNuclosWizard  {
 			public void wizardClosed(WizardEvent e) {
 				ifrm.dispose();
 				ifrm.removeAll();
-				desktopPane.remove(ifrm);
+				desktopPane.removeTab(ifrm);
 			}
 
 			@Override
 			public void wizardCancelled(WizardEvent e) {
 				ifrm.dispose();
 				ifrm.removeAll();
-				desktopPane.remove(ifrm);
+				desktopPane.removeTab(ifrm);
 			}
 		});
 
