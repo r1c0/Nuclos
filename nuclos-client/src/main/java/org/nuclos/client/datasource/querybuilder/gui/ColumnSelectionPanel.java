@@ -95,7 +95,7 @@ public class ColumnSelectionPanel extends JPanel {
 		this.controller = controller;
 		init();
 	}
-
+	
 	private void init() {
 		table.setModel(model);
 		model.removeAllColumns();

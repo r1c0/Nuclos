@@ -757,7 +757,9 @@ public abstract class SubFormController extends MainFrameTabController
 	}
 
 	protected void removeTableModelListener() {
-		this.getSubForm().removeTableModelListener();
+		if (getSubForm() != null) {
+			getSubForm().removeTableModelListener();
+		}
 	}
 
 	protected final void setupColumnModelListener() {
@@ -765,7 +767,9 @@ public abstract class SubFormController extends MainFrameTabController
 	}
 
 	protected void removeColumnModelListener() {
-		this.getSubForm().removeColumnModelListener();
+		if (getSubForm() != null) {
+			getSubForm().removeColumnModelListener();
+		}
 	}
 
 	protected CollectableFieldsProviderFactory getCollectableFieldsProviderFactory() {

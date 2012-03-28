@@ -101,20 +101,22 @@ public class NuclosEntityAttributeInputStep extends NuclosEntityAbstractStep {
 
 	private static final Logger LOG = Logger.getLogger(NuclosEntityAttributeInputStep.class);
 
-	JScrollPane scrolPane;
-	JTable tblAttributes;
-	JButton btUp;
-	JButton btDown;
-	JPanel panelAttributes;
+	private static final String[] sEditFields = {"STRCREATED","DATCREATED","STRCHANGED","DATCHANGED"};
+	
+	//
 
-	JButton btnNewAttribute;
-	JButton btnDropAttribute;
-	JButton btnEditAttribute;
-	TableColumn colGroup;
+	private JScrollPane scrolPane;
+	private JTable tblAttributes;
+	private JButton btUp;
+	private JButton btDown;
+	private JPanel panelAttributes;
 
-	static String[] sEditFields = {"STRCREATED","DATCREATED","STRCHANGED","DATCHANGED"};
+	private JButton btnNewAttribute;
+	private JButton btnDropAttribute;
+	private JButton btnEditAttribute;
+	private TableColumn colGroup;
 
-	EntityAttributeTableModel entityModel;
+	private EntityAttributeTableModel entityModel;
 
 
 	public NuclosEntityAttributeInputStep() {
@@ -129,6 +131,25 @@ public class NuclosEntityAttributeInputStep extends NuclosEntityAbstractStep {
 	public NuclosEntityAttributeInputStep(String name, String summary, Icon icon) {
 		super(name, summary, icon);
 		// initComponents();
+	}
+	
+	public static class VisiblePropertyChangeListener implements PropertyChangeListener {
+		
+		private final JOptionPane pane;
+		private final JDialog dia;
+		
+		private VisiblePropertyChangeListener(JOptionPane pane, JDialog dia) {
+			this.pane = pane;
+			this.dia = dia;
+		}
+		
+        @Override
+		public void propertyChange(PropertyChangeEvent e) {
+            String prop = e.getPropertyName();
+            if (dia.isVisible() && (e.getSource() == pane) && (prop.equals(JOptionPane.VALUE_PROPERTY))) {
+                dia.setVisible(false);
+            }
+        }		
 	}
 
 	@PostConstruct
@@ -272,15 +293,8 @@ public class NuclosEntityAttributeInputStep extends NuclosEntityAbstractStep {
 									"Das Unterformular wird ebenfalls aus der Maske herausgenommen.");
 							final JOptionPane pane = new JOptionPane(sText, JOptionPane.WARNING_MESSAGE, JOptionPane.YES_NO_OPTION);
 							final JDialog dia = new JDialog(Main.getInstance().getMainFrame(), true);
-							pane.addPropertyChangeListener(new PropertyChangeListener() {
-							        @Override
-									public void propertyChange(PropertyChangeEvent e) {
-							            String prop = e.getPropertyName();
-							            if (dia.isVisible() && (e.getSource() == pane) && (prop.equals(JOptionPane.VALUE_PROPERTY))) {
-							                dia.setVisible(false);
-							            }
-							        }
-							    });
+							pane.addPropertyChangeListener(
+									new VisiblePropertyChangeListener(pane, dia));
 
 							dia.setContentPane(pane);
 							dia.setTitle(localeDelegate.getMessage(
@@ -425,10 +439,27 @@ public class NuclosEntityAttributeInputStep extends NuclosEntityAbstractStep {
 			btnNewAttribute.setEnabled(false);
 		}
 	}
+	
+	@Override
+	public void close() {
+		scrolPane = null;
+		tblAttributes = null;
+		btUp = null;
+		btDown = null;
+		panelAttributes = null;
+
+		btnNewAttribute = null;
+		btnDropAttribute = null;
+		btnEditAttribute = null;
+		colGroup = null;
+
+		entityModel = null;
+		
+		super.close();
+	}
 
 	@Override
 	public void applyState() throws InvalidStateException {
-		super.applyState();
 		EntityAttributeTableModel tableModel = (EntityAttributeTableModel)tblAttributes.getModel();
 		List<String> missingreferences = new ArrayList<String>();
 		for (Attribute a : tableModel.getAttributes()) {
@@ -449,6 +480,8 @@ public class NuclosEntityAttributeInputStep extends NuclosEntityAbstractStep {
 	        throw new InvalidStateException();
 		}
 		NuclosEntityAttributeInputStep.this.model.setAttributeModel(entityModel);
+		
+		super.applyState();
 	}
 
 	private void initTableSorter() {
@@ -577,10 +610,14 @@ public class NuclosEntityAttributeInputStep extends NuclosEntityAbstractStep {
 
 					tabAttribute.dispose();
 					TableUtils.setOptimalColumnWidths(tblAttributes);
+					
+					parent.remove(tabAttribute);
 				}
+				
 				@Override
 				public void wizardCancelled(WizardEvent e) {
 					tabAttribute.dispose();
+					parent.remove(tabAttribute);
 				}
 			});
 

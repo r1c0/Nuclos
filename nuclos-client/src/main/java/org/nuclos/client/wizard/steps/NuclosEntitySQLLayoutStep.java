@@ -159,55 +159,57 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 
 	private static final Logger LOG = Logger.getLogger(Main.class);
 
-	static String[] labels = NuclosWizardConstants.labels;
-	static String[] labelsFields = {
+	static final String[] labels = NuclosWizardConstants.labels;
+	static final String[] labelsFields = {
 		SpringLocaleDelegate.getInstance().getMessage(
 				"wizard.step.entitytranslationstable.1", "Anzeigename"), 
 		SpringLocaleDelegate.getInstance().getMessage(
 				"wizard.step.entitytranslationstable.2", "Beschreibung")};
-	static String[] sEditFields = {"STRCREATED", "DATCREATED", "STRCHANGED", "DATCHANGED" };
+	static final String[] sEditFields = {"STRCREATED", "DATCREATED", "STRCHANGED", "DATCHANGED" };
 
-	static int I_CELL_HEIGHT = 35;
-	static int I_CELL_HEIGHT_EXT = 30;
-	static int I_CELL_WIDTH = 35;
-	static int I_CELL_WIDTH_EXT = 50;
-	static int I_MAX_WIDTH_GROUP = 35;
-	static int I_SUBFORM_PANEL_HEIGHT = 300;
-	static int I_SUBFORM_HEIGHT = 250;
-	static int I_PANEL_SUBFORM_HEIGHT = 200;
-	static int I_PANEL_WIDTH = 150;
-	static int I_EDITCELL_WIDTH = 250;
-	static int I_EDITCELL_HEIGTH = 50;
-	static int I_CREATEAT_WIDTH = 85;
-	static int I_CREATEBY_WIDTH = 75;
+	static final int I_CELL_HEIGHT = 35;
+	static final int I_CELL_HEIGHT_EXT = 30;
+	static final int I_CELL_WIDTH = 35;
+	static final int I_CELL_WIDTH_EXT = 50;
+	static final int I_MAX_WIDTH_GROUP = 35;
+	static final int I_SUBFORM_PANEL_HEIGHT = 300;
+	static final int I_SUBFORM_HEIGHT = 250;
+	static final int I_PANEL_SUBFORM_HEIGHT = 200;
+	static final int I_PANEL_WIDTH = 150;
+	static final int I_EDITCELL_WIDTH = 250;
+	static final int I_EDITCELL_HEIGTH = 50;
+	static final int I_CREATEAT_WIDTH = 85;
+	static final int I_CREATEBY_WIDTH = 75;
 
-	JLabel lbRowColorScript;
-	JButton btRowColorScript;
+	//
+	
+	private JLabel lbRowColorScript;
+	private JButton btRowColorScript;
 
-	JLabel lbLayout;
-	JCheckBox cbLayout;
-	JLabel lbAttributeGroup;
-	JCheckBox cbAttributeGroup;
-	JLabel lbSubforms;
-	JCheckBox cbSubforms;
-	JLabel lbEditFields;
-	JCheckBox cbEditFields;
+	private JLabel lbLayout;
+	private JCheckBox cbLayout;
+	private JLabel lbAttributeGroup;
+	private JCheckBox cbAttributeGroup;
+	private JLabel lbSubforms;
+	private JCheckBox cbSubforms;
+	private JLabel lbEditFields;
+	private JCheckBox cbEditFields;
 
-	JLabel lbAttributeText;
+	private JLabel lbAttributeText;
 
-	boolean changeLayout;
-	boolean hasEntityLayout;
+	private boolean changeLayout;
+	private boolean hasEntityLayout;
 
-	JPanel panelAttributes;
-	JScrollPane sPane;
-	JList listAttributeOrder;
-	JTree treeAttributeOrder;
-	JButton btUp;
-	JButton btDown;
+	private JPanel panelAttributes;
+	private JScrollPane sPane;
+	private JList listAttributeOrder;
+	private JTree treeAttributeOrder;
+	private JButton btUp;
+	private JButton btDown;
 
-	Map<String, String> mpFieldNameChanged;
+	private Map<String, String> mpFieldNameChanged;
 
-	MyTreeModel treeModel;
+	private MyTreeModel treeModel;
 
 	private MasterDataFacadeRemote masterDataFacadeRemote;
 
@@ -477,13 +479,45 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 	}
 
 	@Override
-	public void applyState() throws InvalidStateException {
-		super.applyState();
+	public void close() {
+		lbRowColorScript = null;
+		btRowColorScript = null;
 
+		lbLayout = null;
+		cbLayout = null;
+		lbAttributeGroup = null;
+		cbAttributeGroup = null;
+		lbSubforms = null;
+		cbSubforms = null;
+		lbEditFields = null;
+		cbEditFields = null;
+
+		lbAttributeText = null;
+
+		panelAttributes = null;
+		sPane = null;
+		listAttributeOrder = null;
+		treeAttributeOrder = null;
+		btUp = null;
+		btDown = null;
+
+		if (mpFieldNameChanged != null) {
+			mpFieldNameChanged.clear();
+		}
+		mpFieldNameChanged = null;
+
+		treeModel = null;
+
+		super.close();
+	}
+
+	@Override
+	public void applyState() throws InvalidStateException {
 		if(!createOrModifyEntity()) {
 			return;
 		}
 
+		super.applyState();
 	}
 
 	@Override

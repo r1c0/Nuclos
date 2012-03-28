@@ -100,6 +100,21 @@ public class NucletCollectController extends MasterDataCollectController {
 		updateExportButtonState();
 		return result;
 	}
+	
+	public static class DetailsToolbarPropertyChangeListener implements PropertyChangeListener {
+		
+		private final JButton newMakeTreeRoot;
+		
+		private DetailsToolbarPropertyChangeListener(JButton newMakeTreeRoot) {
+			this.newMakeTreeRoot = newMakeTreeRoot;
+		}
+		
+		@Override
+		public void propertyChange(PropertyChangeEvent evt) {
+			newMakeTreeRoot.setEnabled((Boolean) evt.getNewValue());
+		}
+
+	}
 
 	/**
 	 * @deprecated Move to DetailsController hierarchy.
@@ -113,12 +128,8 @@ public class NucletCollectController extends MasterDataCollectController {
 
 		for (ActionListener al : btnMakeTreeRoot.getActionListeners())
 			newMakeTreeRoot.addActionListener(al);
-		btnMakeTreeRoot.addPropertyChangeListener("enabled", new PropertyChangeListener() {
-			@Override
-			public void propertyChange(PropertyChangeEvent evt) {
-				newMakeTreeRoot.setEnabled((Boolean) evt.getNewValue());
-			}
-		});
+		btnMakeTreeRoot.addPropertyChangeListener("enabled", 
+				new DetailsToolbarPropertyChangeListener(newMakeTreeRoot));
 
 		this.getDetailsPanel().addToolBarComponent(newMakeTreeRoot);
 

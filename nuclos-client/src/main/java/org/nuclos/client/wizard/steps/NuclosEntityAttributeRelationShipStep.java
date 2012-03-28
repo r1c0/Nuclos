@@ -76,31 +76,31 @@ public class NuclosEntityAttributeRelationShipStep extends NuclosEntityAttribute
 
 	private static final Logger LOG = Logger.getLogger(NuclosEntityAttributeRelationShipStep.class);
 
-	JLabel lbEntity;
-	JComboBox cbxEntity;
+	private JLabel lbEntity;
+	private JComboBox cbxEntity;
 
-	JLabel lbFields;
+	private JLabel lbFields;
 
-	JScrollPane scrollPane;
-	JList listFields;
-	JButton btSelect;
+	private JScrollPane scrollPane;
+	private JList listFields;
+	private JButton btSelect;
 
-	JLabel lbInfo;
+	private JLabel lbInfo;
 
-	JLabel lbAlternativeLabel;
-	JTextField tfAlternativeLabel;
+	private JLabel lbAlternativeLabel;
+	private JTextField tfAlternativeLabel;
 
-	EntityMetaDataVO voSelected;
+	private EntityMetaDataVO voSelected;
 
-	JLabel lbValueListProvider;
-	JCheckBox cbValueListProvider;
+	private JLabel lbValueListProvider;
+	private JCheckBox cbValueListProvider;
 
-	JLabel lbOnDeleteCascade;
-	JCheckBox cbOnDeleteCascade;
+	private JLabel lbOnDeleteCascade;
+	private JCheckBox cbOnDeleteCascade;
 
-	List<Attribute> lstAttributes;
+	private List<Attribute> lstAttributes;
 
-	NuclosEntityWizardStaticModel parentWizardModel;
+	private NuclosEntityWizardStaticModel parentWizardModel;
 
 
 	public NuclosEntityAttributeRelationShipStep() {
@@ -367,11 +367,43 @@ public class NuclosEntityAttributeRelationShipStep extends NuclosEntityAttribute
 	}
 
 	@Override
+	public void close() {
+		lbEntity = null;
+		cbxEntity = null;
+
+		lbFields = null;
+
+		scrollPane = null;
+		listFields = null;
+		btSelect = null;
+
+		lbInfo = null;
+
+		lbAlternativeLabel = null;
+		tfAlternativeLabel = null;
+
+		voSelected = null;
+
+		lbValueListProvider = null;
+		cbValueListProvider = null;
+
+		lbOnDeleteCascade = null;
+		cbOnDeleteCascade = null;
+
+		lstAttributes = null;
+
+		parentWizardModel = null;
+		
+		super.close();
+	}
+
+	@Override
 	public void applyState() throws InvalidStateException {
 		checkReferenceField();
-		super.applyState();
 		this.model.nextStep();
 		this.model.refreshModelState();
+		
+		super.applyState();
 	}
 
 

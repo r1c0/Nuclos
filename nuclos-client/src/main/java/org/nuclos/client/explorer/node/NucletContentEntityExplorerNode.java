@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Set;
 
 import javax.swing.Icon;
+import javax.swing.JTabbedPane;
 import javax.swing.JTree;
 
 import org.apache.log4j.Logger;
@@ -34,7 +35,9 @@ import org.nuclos.client.ui.Icons;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.client.ui.tree.TreeNodeAction;
 import org.nuclos.client.wizard.ShowNuclosWizard;
+import org.nuclos.client.wizard.ShowNuclosWizard.NuclosWizardEditRunnable;
 import org.nuclos.common.NuclosFatalException;
+import org.nuclos.common.dal.vo.EntityMetaDataVO;
 import org.nuclos.common2.CommonRunnable;
 import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.exception.CommonBusinessException;
@@ -97,14 +100,10 @@ public class NucletContentEntityExplorerNode extends ExplorerNode<NucletContentE
 		 * @param explorernode
 		 */
 		private void cmdShowDetails(final NucletContentEntityExplorerNode explorernode) {
-			UIUtils.runCommand(this.getParent(), new CommonRunnable() {
-				@Override
-				public void run() throws CommonBusinessException {
-					ShowNuclosWizard w = new ShowNuclosWizard(true);
-					w.setEntityToEdit(MetaDataClientProvider.getInstance().getEntity(getTreeNode().getEntityObjectVO().getField("entity", String.class)));
-					w.showWizard(Main.getInstance().getMainFrame().getHomePane(), Main.getInstance().getMainFrame());
-				}
-			});
+			final JTabbedPane desktopPane = Main.getInstance().getMainFrame().getHomePane();
+			final EntityMetaDataVO entity = MetaDataClientProvider.getInstance().getEntity(
+					getTreeNode().getEntityObjectVO().getField("entity", String.class));
+			UIUtils.runCommand(this.getParent(), new ShowNuclosWizard.NuclosWizardEditRunnable(true, desktopPane, entity));
 		}
 	}	// inner class ShowDetailsAction
 	

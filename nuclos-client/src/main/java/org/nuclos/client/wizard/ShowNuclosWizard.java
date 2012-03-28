@@ -18,7 +18,10 @@ package org.nuclos.client.wizard;
 
 import javax.swing.JFrame;
 
+import org.apache.log4j.Logger;
+import org.nuclos.client.common.MetaDataClientProvider;
 import org.nuclos.client.main.Main;
+import org.nuclos.client.main.MainController;
 import org.nuclos.client.main.mainframe.MainFrame;
 import org.nuclos.client.main.mainframe.MainFrameTab;
 import org.nuclos.client.main.mainframe.MainFrameTabbedPane;
@@ -34,25 +37,72 @@ import org.nuclos.client.wizard.steps.NuclosEntityTranslationStep;
 import org.nuclos.client.wizard.steps.NuclosEntityTreeValueStep;
 import org.nuclos.client.wizard.steps.NuclosUserGroupRightsStep;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
+import org.nuclos.common2.CommonRunnable;
 import org.nuclos.common2.SpringLocaleDelegate;
+import org.nuclos.common2.exception.CommonBusinessException;
 import org.pietschy.wizard.WizardEvent;
 import org.pietschy.wizard.WizardListener;
 
 public class ShowNuclosWizard  {
+	
+	private static final Logger LOG = Logger.getLogger(ShowNuclosWizard.class);
 
-	NuclosEntityWizardStaticModel model;
-	boolean blnEditMode;
-	EntityMetaDataVO toEdit;
-
-	/**
-	 * @param args
-	 */
-	public static void main(String[] args) {
-		ShowNuclosWizard show = new ShowNuclosWizard(false);
-		show.showWizard(null, null);
+	public static class NuclosWizardRoRunnable implements Runnable {
+		
+		private final JTabbedPane desktopPane;
+		
+		public NuclosWizardRoRunnable(JTabbedPane desktopPane) {
+			this.desktopPane = desktopPane;
+		}
+		
+		@Override
+		public void run() {
+			try {
+				ShowNuclosWizard w = new ShowNuclosWizard(false);
+				w.showWizard(desktopPane);
+			}
+			catch (Exception e) {
+				LOG.error("showWizard failed: " + e, e);
+			}
+		}
+		
 	}
 
-	public ShowNuclosWizard(boolean editMode) {
+	public static class NuclosWizardEditRunnable implements CommonRunnable {
+		
+		private final boolean editMode;
+		
+		private final JTabbedPane desktopPane;
+		
+		private final EntityMetaDataVO entity;
+		
+		public NuclosWizardEditRunnable(boolean editMode, JTabbedPane desktopPane, EntityMetaDataVO entity) {
+			this.editMode = editMode;
+			this.desktopPane = desktopPane;
+			this.entity = entity;
+		}
+		
+		@Override
+		public void run() {
+			ShowNuclosWizard w = new ShowNuclosWizard(editMode);
+			w.setEntityToEdit(entity);
+			w.showWizard(desktopPane);
+		}
+		
+	}
+
+	private NuclosEntityWizardStaticModel model;
+	private boolean blnEditMode;
+	private EntityMetaDataVO toEdit;
+	
+	//
+
+	public static void main(String[] args) {
+		ShowNuclosWizard show = new ShowNuclosWizard(false);
+		show.showWizard(null);
+	}
+
+	private ShowNuclosWizard(boolean editMode) {
 		model = new NuclosEntityWizardStaticModel();
 		this.blnEditMode = editMode;
 	}
@@ -61,7 +111,7 @@ public class ShowNuclosWizard  {
 		this.toEdit = vo;
 	}
 
-	public void showWizard(MainFrameTabbedPane desktopPane, JFrame mainFrame) {
+	public void showWizard(final JTabbedPane desktopPane) {
 		final SpringLocaleDelegate localeDelegate = SpringLocaleDelegate.getInstance();
 		
 		final MainFrameTab ifrm = Main.getInstance().getMainController().newMainFrameTab(null, 
@@ -133,30 +183,21 @@ public class ShowNuclosWizard  {
 			@Override
 			public void wizardClosed(WizardEvent e) {
 				ifrm.dispose();
+				ifrm.removeAll();
+				desktopPane.remove(ifrm);
 			}
 
 			@Override
 			public void wizardCancelled(WizardEvent e) {
 				ifrm.dispose();
+				ifrm.removeAll();
+				desktopPane.remove(ifrm);
 			}
 		});
 
 		ifrm.setLayeredComponent(WizardFrame.createFrameInScrollPane(wizard));
-//		ifrm.setLayeredComponent(new WizardFrame(wizard));
-
-//		int x = desktopPane.getWidth()/2-wizard.getPreferredSize().width/2;
-//      int y = desktopPane.getHeight()/2-wizard.getPreferredSize().height/2;
-//      x = x<0?0:x;
-//      y = y<0?0:y;
-//      ifrm.setBounds(x, y, wizard.getWidth(), wizard.getHeight());
-
-
-//		ifrm.pack();
-
 		desktopPane.add(ifrm);
-
 		ifrm.setVisible(true);
-
 	}
 
 }

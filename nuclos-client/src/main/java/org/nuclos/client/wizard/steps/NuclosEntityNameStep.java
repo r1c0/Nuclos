@@ -91,20 +91,20 @@ public class NuclosEntityNameStep extends NuclosEntityAbstractStep {
 
 	private static final Logger LOG = Logger.getLogger(NuclosEntityNameStep.class);
 
-	JLabel lbName;
-	JTextField tfName;
+	private JLabel lbName;
+	private JTextField tfName;
 
-	JLabel lbChoice;
-	JComboBox cmbEntity;
+	private JLabel lbChoice;
+	private JComboBox cmbEntity;
 
-	JLabel lbInfo;
+	private JLabel lbInfo;
 
-	String sEntityName;
+	private String sEntityName;
 
-	JButton btnRemove;
+	private JButton btnRemove;
 
-	Collection<EntityMetaDataVO> colMasterdata;
-	EntityMetaDataVO toEdit;
+	private Collection<EntityMetaDataVO> colMasterdata;
+	private EntityMetaDataVO toEdit;
 
 
 	public NuclosEntityNameStep() {
@@ -501,14 +501,42 @@ public class NuclosEntityNameStep extends NuclosEntityAbstractStep {
 	}
 
 	@Override
+	public void close() {
+		lbName = null;
+		tfName = null;
+
+		lbChoice = null;
+		cmbEntity = null;
+
+		lbInfo = null;
+
+		sEntityName = null;
+
+		btnRemove = null;
+
+		/*
+		if (colMasterdata != null) {
+			// unmodifiable 
+			colMasterdata.clear();
+		}
+		 */
+		colMasterdata = null;
+		
+		toEdit = null;
+
+		super.close();
+	}
+
+	@Override
 	public void applyState() throws InvalidStateException {
-		super.applyState();
 		if(this.model.getUserRights().size() < 1) {
 			loadUserRights(null);
 		}
 		model.getParentFrame().setTitle(localeDelegate.getMessage(
 				"wizard.step.entityname.5", "Nucleus Entit\u00e4tenwizard") 
 				+ " " + model.getEntityName());
+		
+		super.applyState();
 	}
 
 	@Override

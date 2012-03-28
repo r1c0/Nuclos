@@ -494,7 +494,12 @@ public abstract class DetailsSubFormController<Clct extends Collectable>
 	 */
 	@Override
 	public void close() {
-		TableUtils.removeMouseListenersForSortingFromTableHeader(this.getJTable());
+		if (getSubForm() != null) {
+			final JTable table = getJTable();
+			if (table != null) {
+				TableUtils.removeMouseListenersForSortingFromTableHeader(table);
+			}
+		}
 
 		this.removeColumnModelListener();
 		this.removeTableModelListener();

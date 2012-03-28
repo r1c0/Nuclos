@@ -78,44 +78,44 @@ public class NuclosEntityOptionStep extends NuclosEntityAbstractStep {
 
 	private static final Logger LOG = Logger.getLogger(NuclosEntityOptionStep.class);
 
-	JLabel lbName;
+	private JLabel lbName;
 
-	ButtonGroup bGroup;
-	JRadioButton rbGatherAttributes;
-	JRadioButton rbCopyAttributes;
-	JRadioButton rbAssignAttributes;
-	JRadioButton rbTemplateAttributes;
-	JRadioButton rbImportTable;
+	private ButtonGroup bGroup;
+	private JRadioButton rbGatherAttributes;
+	private JRadioButton rbCopyAttributes;
+	private JRadioButton rbAssignAttributes;
+	private JRadioButton rbTemplateAttributes;
+	private JRadioButton rbImportTable;
 
-	JLabel lbEntity;
-	JComboBox cbxEntity;
-	JScrollPane scrollFields;
-	JTable tblFields;
+	private JLabel lbEntity;
+	private JComboBox cbxEntity;
+	private JScrollPane scrollFields;
+	private JTable tblFields;
 
-	JComboBox cbxTable;
+	private JComboBox cbxTable;
 
-	JPanel pnlImport;
+	private JPanel pnlImport;
 
-	JLabel lbImportServer;
-	JTextField tfImportServer;
-	JLabel lbImportPort;
-	JTextField tfImportPort;
-	JLabel lbImportDatabase;
-	JComboBox cbxImportDatabase;
-	JLabel lbImportUser;
-	JTextField tfImportUser;
-	JLabel lbImportPassword;
-	JTextField tfImportPassword;
-	JLabel lbImportSSID;
-	JTextField tfImportSSID;
+	private JLabel lbImportServer;
+	private JTextField tfImportServer;
+	private JLabel lbImportPort;
+	private JTextField tfImportPort;
+	private JLabel lbImportDatabase;
+	private JComboBox cbxImportDatabase;
+	private JLabel lbImportUser;
+	private JTextField tfImportUser;
+	private JLabel lbImportPassword;
+	private JTextField tfImportPassword;
+	private JLabel lbImportSSID;
+	private JTextField tfImportSSID;
 
-	JLabel lbUrl;
-	JTextField tfUrl;
+	private JLabel lbUrl;
+	private JTextField tfUrl;
 
-	JButton btConnect;
+	private JButton btConnect;
 
-	JLabel lbImportTables;
-	JComboBox cbxImportTables;
+	private JLabel lbImportTables;
+	private JComboBox cbxImportTables;
 
 	public NuclosEntityOptionStep() {
 		// initComponents();
@@ -605,9 +605,51 @@ public class NuclosEntityOptionStep extends NuclosEntityAbstractStep {
 	}
 
 	@Override
-	public void applyState() throws InvalidStateException {
-		super.applyState();
+	public void close() {
+		lbName = null;
 
+		bGroup = null;
+		rbGatherAttributes = null;
+		rbCopyAttributes = null;
+		rbAssignAttributes = null;
+		rbTemplateAttributes = null;
+		rbImportTable = null;
+
+		lbEntity = null;
+		cbxEntity = null;
+		scrollFields = null;
+		tblFields = null;
+
+		cbxTable = null;
+
+		pnlImport = null;
+
+		lbImportServer = null;
+		tfImportServer = null;
+		lbImportPort = null;
+		tfImportPort = null;
+		lbImportDatabase = null;
+		cbxImportDatabase = null;
+		lbImportUser = null;
+		tfImportUser = null;
+		lbImportPassword = null;
+		tfImportPassword = null;
+		lbImportSSID = null;
+		tfImportSSID = null;
+
+		lbUrl = null;
+		tfUrl = null;
+
+		btConnect = null;
+
+		lbImportTables = null;
+		cbxImportTables = null;
+
+		super.close();
+	}
+
+	@Override
+	public void applyState() throws InvalidStateException {
 		if(rbCopyAttributes.isSelected() || rbAssignAttributes.isSelected()) {
 			EntityAttributeSelectTableModel model =  (EntityAttributeSelectTableModel)tblFields.getModel();
 			List<Attribute> lstAttribute = model.getAttributes();
@@ -673,6 +715,8 @@ public class NuclosEntityOptionStep extends NuclosEntityAbstractStep {
 			}
 			this.model.setAttributeModel(modelAttribute);
 		}
+		
+		super.applyState();
 	}
 
 	private Long getHighestInternalId() {

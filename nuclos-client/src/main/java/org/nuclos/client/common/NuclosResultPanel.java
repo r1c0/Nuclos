@@ -311,6 +311,25 @@ public class NuclosResultPanel<Clct extends Collectable> extends ResultPanel<Clc
 		super.setVisibleTable(visibility);
 		tblFixedResult.setVisible(visibility);
 	}
+	
+	public static class ExportPropertyChangeListener implements PropertyChangeListener {
+		
+		private final JFileChooser filechooser;
+		
+		private final JCheckBox cbxDeepExport;
+		
+		private ExportPropertyChangeListener(JFileChooser filechooser, JCheckBox cbxDeepExport) {
+			this.filechooser = filechooser;
+			this.cbxDeepExport = cbxDeepExport;
+		}
+		
+		@Override
+		public void propertyChange(PropertyChangeEvent evt) {
+			if("ancestor".equals(evt.getPropertyName()))
+				filechooser.getParent().add(cbxDeepExport, BorderLayout.SOUTH);
+		}
+		
+	}
 
 	/**
 	 * command: export
@@ -325,13 +344,7 @@ public class NuclosResultPanel<Clct extends Collectable> extends ResultPanel<Clc
 		final JCheckBox cbxDeepExport = new JCheckBox(localeDelegate.getMessage(
 				"NuclosResultPanel.3", "Tiefer Export?"));
 		
-		filechooser.addPropertyChangeListener(new PropertyChangeListener() {
-			@Override
-			public void propertyChange(PropertyChangeEvent evt) {
-				if("ancestor".equals(evt.getPropertyName()))
-					filechooser.getParent().add(cbxDeepExport, BorderLayout.SOUTH);
-			}
-		});
+		filechooser.addPropertyChangeListener(new ExportPropertyChangeListener(filechooser, cbxDeepExport));
 		
 		if (filechooser.showSaveDialog(getParent()) == JFileChooser.APPROVE_OPTION) {
 			final File file = filechooser.getSelectedFile();
