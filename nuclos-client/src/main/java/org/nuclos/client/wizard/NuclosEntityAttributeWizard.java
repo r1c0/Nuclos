@@ -48,6 +48,12 @@ public class NuclosEntityAttributeWizard extends Wizard {
 	}	
 
 	@Override
+	public void cancel() {
+		super.cancel();
+		close();
+	}
+	
+	@Override
 	public void close() {
 		super.close();
 		for (Iterator<NuclosEntityAttributeAbstractStep> it = getModel().stepIterator(); it.hasNext();) {
