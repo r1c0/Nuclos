@@ -62,7 +62,6 @@ import org.nuclos.server.masterdata.ejb3.MasterDataFacadeLocal;
 import org.nuclos.server.masterdata.valueobject.MasterDataMetaVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 import org.nuclos.server.mbean.MBeanAgent;
-import org.nuclos.server.mbean.MasterDataMetaCacheMBean;
 import org.nuclos.server.mbean.SecurityCacheMBean;
 import org.nuclos.server.report.valueobject.ReportVO.ReportType;
 import org.nuclos.server.security.NuclosLocalServerSession;

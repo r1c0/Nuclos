@@ -18,7 +18,6 @@ package org.nuclos.server.web;
 
 import java.lang.reflect.Field;
 import java.net.URI;
-import java.util.HashMap;
 
 import javax.servlet.ServletException;
 

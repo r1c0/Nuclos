@@ -29,7 +29,6 @@ import org.nuclos.common2.exception.CommonValidationException;
 import org.nuclos.server.genericobject.valueobject.GeneratorActionVO;
 import org.nuclos.server.genericobject.valueobject.GeneratorUsageVO;
 import org.nuclos.server.genericobject.valueobject.GenericObjectVO;
-import org.nuclos.server.ruleengine.NuclosBusinessRuleException;
 import org.nuclos.server.ruleengine.valueobject.RuleObjectContainerCVO;
 
 // @Local

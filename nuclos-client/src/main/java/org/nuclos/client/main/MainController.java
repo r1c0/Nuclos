@@ -150,7 +150,6 @@ import org.nuclos.client.ui.collect.CollectController;
 import org.nuclos.client.ui.collect.CollectController.CollectableEventListener;
 import org.nuclos.client.ui.collect.CollectController.MessageType;
 import org.nuclos.client.ui.collect.CollectControllerFactorySingleton;
-import org.nuclos.client.ui.collect.CollectState;
 import org.nuclos.client.ui.collect.CollectStateModel;
 import org.nuclos.client.ui.collect.detail.DetailsCollectableEventListener;
 import org.nuclos.client.ui.collect.search.ReportExecutionSearchStrategy;

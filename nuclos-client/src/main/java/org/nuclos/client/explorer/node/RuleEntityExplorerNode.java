@@ -20,9 +20,8 @@ import javax.swing.Icon;
 
 import org.nuclos.client.explorer.node.rule.DirectoryRuleNode;
 import org.nuclos.client.explorer.node.rule.EntityRuleNode;
-import org.nuclos.client.explorer.node.rule.RuleNode;
-import org.nuclos.client.explorer.node.rule.TimelimitNode;
 import org.nuclos.client.explorer.node.rule.EntityRuleNode.EntityRuleUsageStatusNode;
+import org.nuclos.client.explorer.node.rule.TimelimitNode;
 import org.nuclos.client.ui.Icons;
 import org.nuclos.server.navigation.treenode.TreeNode;
 

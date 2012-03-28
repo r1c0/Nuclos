@@ -24,7 +24,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.nuclos.client.common.MetaDataClientProvider;
 import org.nuclos.client.customcode.CodeDelegate;
 import org.nuclos.client.explorer.node.rule.EntityRuleNode.EntityRuleUsageProcessNode;
 import org.nuclos.client.explorer.node.rule.EntityRuleNode.EntityRuleUsageStatusNode;

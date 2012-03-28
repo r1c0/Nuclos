@@ -35,7 +35,6 @@ import org.nuclos.common.Actions;
 import org.nuclos.common.JMSConstants;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.NuclosFatalException;
-import org.nuclos.common.ParameterProvider;
 import org.nuclos.common.PropertiesMap;
 import org.nuclos.common.RuleNotification;
 import org.nuclos.common.SearchConditionUtils;

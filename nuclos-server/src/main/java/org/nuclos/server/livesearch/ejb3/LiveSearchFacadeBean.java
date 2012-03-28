@@ -45,7 +45,6 @@ import org.nuclos.server.common.ServerServiceLocator;
 import org.nuclos.server.common.SessionUtils;
 import org.nuclos.server.common.ejb3.NuclosFacadeBean;
 import org.nuclos.server.common.ejb3.SecurityFacadeLocal;
-import org.nuclos.server.dal.processor.jdbc.impl.EOSearchExpressionUnparser;
 import org.nuclos.server.dal.processor.nuclet.JdbcEntityObjectProcessor;
 import org.nuclos.server.dal.provider.NucletDalProvider;
 import org.nuclos.server.genericobject.searchcondition.CollectableSearchExpression;

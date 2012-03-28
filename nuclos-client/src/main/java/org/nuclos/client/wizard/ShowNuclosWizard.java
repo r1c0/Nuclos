@@ -16,12 +16,9 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.wizard;
 
-import javax.swing.JFrame;
 
 import org.apache.log4j.Logger;
-import org.nuclos.client.common.MetaDataClientProvider;
 import org.nuclos.client.main.Main;
-import org.nuclos.client.main.MainController;
 import org.nuclos.client.main.mainframe.MainFrame;
 import org.nuclos.client.main.mainframe.MainFrameTab;
 import org.nuclos.client.main.mainframe.MainFrameTabbedPane;
@@ -39,7 +36,6 @@ import org.nuclos.client.wizard.steps.NuclosUserGroupRightsStep;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
 import org.nuclos.common2.CommonRunnable;
 import org.nuclos.common2.SpringLocaleDelegate;
-import org.nuclos.common2.exception.CommonBusinessException;
 import org.pietschy.wizard.WizardEvent;
 import org.pietschy.wizard.WizardListener;
 

@@ -35,7 +35,6 @@ import org.nuclos.client.ui.Icons;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.client.ui.tree.TreeNodeAction;
 import org.nuclos.client.wizard.ShowNuclosWizard;
-import org.nuclos.client.wizard.ShowNuclosWizard.NuclosWizardEditRunnable;
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
 import org.nuclos.common2.CommonRunnable;

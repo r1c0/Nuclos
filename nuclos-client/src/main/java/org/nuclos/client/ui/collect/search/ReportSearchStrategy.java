@@ -24,7 +24,6 @@ import org.nuclos.client.report.ReportDelegate;
 import org.nuclos.common.CollectableEntityFieldWithEntity;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
-import org.nuclos.common.collect.collectable.CollectableField;
 import org.nuclos.common.collect.collectable.CollectableValueField;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableComparison;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableSearchCondition;
@@ -33,7 +32,6 @@ import org.nuclos.common.collect.collectable.searchcondition.CompositeCollectabl
 import org.nuclos.common.collect.collectable.searchcondition.LogicalOperator;
 import org.nuclos.common.collect.exception.CollectableFieldFormatException;
 import org.nuclos.common.masterdata.CollectableMasterDataEntity;
-import org.nuclos.common2.KeyEnum;
 import org.nuclos.server.report.valueobject.ReportVO.ReportType;
 
 public class ReportSearchStrategy extends MasterDataSearchStrategy {

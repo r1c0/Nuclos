@@ -49,7 +49,6 @@ import org.nuclos.server.dblayer.structure.DbNullable;
 import org.nuclos.server.dblayer.structure.DbTable;
 import org.nuclos.server.dblayer.structure.DbTableType;
 import org.nuclos.server.mbean.MBeanAgent;
-import org.nuclos.server.mbean.MasterDataMetaCacheMBean;
 import org.nuclos.server.mbean.SchemaCacheMBean;
 import org.nuclos.server.report.valueobject.DatasourceVO;
 import org.nuclos.server.report.valueobject.DynamicEntityVO;
