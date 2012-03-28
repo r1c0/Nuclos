@@ -1,6 +1,8 @@
 package org.nuclos.client.ui.gc;
 
+import java.awt.Window;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowListener;
 import java.lang.ref.Reference;
 import java.lang.ref.WeakReference;
 import java.util.EventListener;
@@ -10,6 +12,9 @@ import javax.swing.JTextField;
 import javax.swing.JComboBox;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.Document;
+
+import org.nuclos.client.ui.collect.SubForm;
+import org.nuclos.client.ui.collect.SubForm.SubFormToolListener;
 
 public class ListenerUtil {
 	
@@ -153,6 +158,76 @@ public class ListenerUtil {
 		
 	}
 	
+	private final static class WindowRegister implements IRegister {
+		
+		private final WeakReference<Window> b;
+		
+		private final WindowAdapter a;
+		
+		private WindowRegister(Window b, WindowAdapter a) {
+			this.b = new WeakReference<Window>(b);
+			this.a = a;
+		}
+
+		@Override
+		public void register() {
+			final Window bb = b.get();
+			if (bb != null) {
+				bb.addWindowListener(a);
+				QueueSingleton.getInstance().register(this);
+			}
+		}
+
+		@Override
+		public void unregister() {
+			final Window bb = b.get();
+			if (bb != null) {
+				bb.removeWindowListener(a);
+			}
+		}
+
+		@Override
+		public Reference<EventListener> getReference() {
+			return a.getReference();
+		}
+		
+	}
+	
+	private final static class SubFormToolRegister implements IRegister {
+		
+		private final WeakReference<SubForm> b;
+		
+		private final SubformToolAdapter a;
+		
+		private SubFormToolRegister(SubForm b, SubformToolAdapter a) {
+			this.b = new WeakReference<SubForm>(b);
+			this.a = a;
+		}
+
+		@Override
+		public void register() {
+			final SubForm bb = b.get();
+			if (bb != null) {
+				bb.addSubFormToolListener(a);
+				QueueSingleton.getInstance().register(this);
+			}
+		}
+
+		@Override
+		public void unregister() {
+			final SubForm bb = b.get();
+			if (bb != null) {
+				bb.removeSubFormToolListener(a);
+			}
+		}
+
+		@Override
+		public Reference<EventListener> getReference() {
+			return a.getReference();
+		}
+		
+	}
+	
 	private ListenerUtil() {
 		// Never invoked.
 	}
@@ -179,6 +254,18 @@ public class ListenerUtil {
 		final DocumentAdapter a = new DocumentAdapter(l);
 		final IRegister register = new DocumentRegister(b, a);
 		register.register();
+	}
+
+	public static void registerWindowListener(Window b, WindowListener l) {
+		final WindowAdapter a = new WindowAdapter(l);
+		final IRegister register = new WindowRegister(b, a);
+		register.register();
+	}
+	
+	public static void registerSubFormToolListener(SubForm b, SubFormToolListener l) {
+		final SubformToolAdapter a = new SubformToolAdapter(l);
+		final IRegister register = new SubFormToolRegister(b, a);
+		register.register();		
 	}
 
 }

@@ -118,6 +118,25 @@ public class ReportController extends Controller<JComponent> {
 		String sNewPath = (String)Modules.getInstance().getModuleById(iModuleId).getField("documentpath");
 		return getPath(StringUtils.emptyIfNull(sNewPath), clctlo);
 	}
+	
+	private static class ReportSelectionPanelMouseListener extends MouseAdapter {
+		
+        final JOptionPane pane;
+        final JDialog dialog;
+        
+        private ReportSelectionPanelMouseListener(JOptionPane pane, JDialog dialog) {
+        	this.pane = pane;
+        	this.dialog = dialog;
+        }
+        
+		@Override
+		public void mouseClicked(MouseEvent e) {
+			if (e.getClickCount() == 2) {
+				pane.setValue(JOptionPane.OK_OPTION);
+				dialog.hide();
+			}
+		}
+	}
 
 	/**
 	 * shows dialog to choose export form for a list of selected leased objects, using only common forms of selection
@@ -140,16 +159,8 @@ public class ReportController extends Controller<JComponent> {
 			//int btnValue = JOptionPane.showConfirmDialog(this.getParent(), pnlSelection, sDialogTitle, JOptionPane.OK_CANCEL_OPTION);
 	        final JOptionPane pane = new JOptionPane(pnlSelection, JOptionPane.PLAIN_MESSAGE, JOptionPane.OK_CANCEL_OPTION, null, null, null);
 	        final JDialog dialog = pane.createDialog(getParent(), sDialogTitle);
-	        pnlSelection.addDoubleClickListener(new MouseAdapter() {
-				@Override
-				public void mouseClicked(MouseEvent e) {
-					if (e.getClickCount() == 2) {
-						pane.setValue(JOptionPane.OK_OPTION);
-						dialog.hide();
-					}
-				}
-			});
-	        
+	        	    
+	        pnlSelection.addDoubleClickListener(new ReportSelectionPanelMouseListener(pane, dialog));
 	       
 	        dialog.setResizable(true);
 	        dialog.setVisible(true);
@@ -202,6 +213,26 @@ public class ReportController extends Controller<JComponent> {
 		}
 	}
 
+	// show Background Process dialog for file attachment information.
+	private static class StatusDialogRunnable implements Runnable {
+		
+		private final ReportSelectionPanel pnlSelection;
+		
+		private StatusDialogRunnable(ReportSelectionPanel pnlSelection) {
+			this.pnlSelection = pnlSelection;
+		}
+		
+		@Override
+		public void run() {
+			try {
+				BackgroundProcessStatusController.getStatusDialog(UIUtils.getFrameForComponent(pnlSelection)).setVisible(true);
+			}
+			catch (Exception e) {
+				LOG.error("executeForm failed: " + e, e);
+			}																									
+		}
+	}
+	
 	/**
 	 * executes the selected form for each single leased object, one after the other
 	 * @param pnlSelection
@@ -223,17 +254,7 @@ public class ReportController extends Controller<JComponent> {
 
 		// show Background Process dialog for file attachment information.
 		if (bFilesBeAttached) {
-			SwingUtilities.invokeLater(new Runnable() {
-				@Override
-				public void run() {
-					try {
-						BackgroundProcessStatusController.getStatusDialog(UIUtils.getFrameForComponent(pnlSelection)).setVisible(true);
-					}
-					catch (Exception e) {
-						LOG.error("executeForm failed: " + e, e);
-					}																									
-				}
-			});
+			SwingUtilities.invokeLater(new StatusDialogRunnable(pnlSelection));
 		}
 
 		final ReportVO reportvo = entry.getReport();

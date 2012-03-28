@@ -22,6 +22,7 @@ import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseListener;
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -715,7 +716,27 @@ public class CollectableComboBox extends LabeledCollectableComponentWithVLP impl
 	protected Integer getColumns() {
 		return null;
 	}
+	
+	private static class My2CollectableComponentDetailTableCellRenderer extends CollectableComponentDetailTableCellRenderer {
 
+		private My2CollectableComponentDetailTableCellRenderer() {
+		}
+		
+		@Override
+		protected void setValue(Object value) {
+			if (value instanceof AbstractCollectableSearchCondition)
+				setToolTipText(((CollectableSearchCondition)value).accept(new ToHumanReadablePresentationVisitor()));
+			if (value instanceof CollectableComparison) {
+				value = ((CollectableComparison) value).getComparand();
+			}
+			if (value instanceof AtomicCollectableSearchCondition)
+				value = ((AtomicCollectableSearchCondition)value).getComparandAsString();
+
+			super.setValue(value);
+		}
+		
+	}
+	
 	@Override
 	public TableCellRenderer getTableCellRenderer() {
 		if (!isSearchComponent() && getValueListProvider() != null) {
@@ -764,30 +785,10 @@ public class CollectableComboBox extends LabeledCollectableComponentWithVLP impl
 			};
 		} else if (isSearchComponent()){
 			//NOAINT-215
-			return new CollectableComponentDetailTableCellRenderer() {
-
-				@Override
-				protected void setValue(Object value) {
-					if (value instanceof AbstractCollectableSearchCondition)
-						setToolTipText(((CollectableSearchCondition)value).accept(new ToHumanReadablePresentationVisitor()));
-					if (value instanceof CollectableComparison) {
-						value = ((CollectableComparison) value).getComparand();
-					}
-					if (value instanceof AtomicCollectableSearchCondition)
-						value = ((AtomicCollectableSearchCondition)value).getComparandAsString();
-
-					super.setValue(value);
-				}
-			};
+			return new My2CollectableComponentDetailTableCellRenderer();
 		}
 		else {
-			return new CollectableComponentDetailTableCellRenderer() {
-
-				@Override
-				protected void setValue(Object value) {
-					super.setValue(value);
-				}
-			};
+			return new CollectableComponentDetailTableCellRenderer();
 		}
 	}
 

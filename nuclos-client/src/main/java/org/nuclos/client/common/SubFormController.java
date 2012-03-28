@@ -65,6 +65,7 @@ import org.nuclos.client.ui.collect.component.CollectableComponentFactory;
 import org.nuclos.client.ui.collect.component.model.CollectableComponentModel;
 import org.nuclos.client.ui.collect.component.model.CollectableComponentModelProvider;
 import org.nuclos.client.ui.collect.model.CollectableEntityFieldBasedTableModel;
+import org.nuclos.client.ui.gc.ListenerUtil;
 import org.nuclos.client.ui.table.TableCellEditorProvider;
 import org.nuclos.client.ui.table.TableCellRendererProvider;
 import org.nuclos.common.NuclosEOField;
@@ -168,7 +169,7 @@ public abstract class SubFormController extends MainFrameTabController
 		assert this.getCollectableEntity().getName().equals(this.getSubForm().getEntityName());
 
 		// Inititialize listeners for toolbar actions:
-		subform.addSubFormToolListener(subformToolListener);
+		ListenerUtil.registerSubFormToolListener(subform, subformToolListener);
 
 		this.setupListSelectionListener(subform);
 

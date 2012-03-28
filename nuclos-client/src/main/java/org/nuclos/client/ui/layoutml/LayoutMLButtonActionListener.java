@@ -17,8 +17,8 @@
 package org.nuclos.client.ui.layoutml;
 
 import java.awt.event.ActionListener;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.WeakHashMap;
 
 import javax.swing.JComponent;
 
@@ -30,7 +30,7 @@ public abstract class LayoutMLButtonActionListener implements ActionListener {
 	private final Map<JComponent, String> mpParentComps;
 	
 	public LayoutMLButtonActionListener() {
-		this.mpParentComps = new HashMap<JComponent, String>();
+		this.mpParentComps = new WeakHashMap<JComponent, String>();
 	}
 	
 	public void setParentComponent(JComponent parent, String sActionCommand) {

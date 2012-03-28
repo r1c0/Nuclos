@@ -35,6 +35,7 @@ import org.nuclos.client.ui.collect.SubForm.SubFormToolListener;
 import org.nuclos.client.ui.collect.component.model.CollectableComponentModelProvider;
 import org.nuclos.client.ui.collect.model.SortableCollectableTableModel;
 import org.nuclos.client.ui.collect.model.SortableCollectableTableModelImpl;
+import org.nuclos.client.ui.gc.ListenerUtil;
 import org.nuclos.client.ui.table.TableUtils;
 import org.nuclos.common.NuclosEOField;
 import org.nuclos.common.WorkspaceDescription.EntityPreferences;
@@ -85,8 +86,7 @@ public abstract class AbstractDetailsSubFormController<Clct extends Collectable>
 		getJTable().setModel(tblmdl);
 
 		// Inititialize listeners for toolbar actions:
-
-		subform.addSubFormToolListener(new SubFormToolListener() {
+		ListenerUtil.registerSubFormToolListener(subform, new SubFormToolListener() {
 			@Override
 			public void toolbarAction(String actionCommand) {
 				if(SubForm.ToolbarFunction.fromCommandString(actionCommand) == SubForm.ToolbarFunction.MULTIEDIT)

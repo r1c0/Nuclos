@@ -45,6 +45,7 @@ import org.apache.log4j.Logger;
 import org.nuclos.client.common.MetaDataClientProvider;
 import org.nuclos.client.ui.DateChooser;
 import org.nuclos.client.ui.collect.SubForm;
+import org.nuclos.client.ui.gc.ListenerUtil;
 import org.nuclos.client.wizard.model.ValueList;
 import org.nuclos.client.wizard.util.NuclosWizardUtils;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
@@ -123,7 +124,7 @@ public class NuclosEntityAttributeValueListShipStep extends NuclosEntityAttribut
 		subform.getSubformTable().setDefaultEditor(String.class, editor);
 		subform.getSubformTable().setDefaultEditor(Date.class, new DateEditor());
 		
-		subform.addSubFormToolListener(new SubForm.SubFormToolListener() {
+		ListenerUtil.registerSubFormToolListener(subform, new SubForm.SubFormToolListener() {
 			@Override
 			public void toolbarAction(String actionCommand) {
 				if(SubForm.ToolbarFunction.fromCommandString(actionCommand) == SubForm.ToolbarFunction.NEW) {

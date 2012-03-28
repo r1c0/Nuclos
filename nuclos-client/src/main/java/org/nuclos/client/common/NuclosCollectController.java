@@ -26,6 +26,7 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.beans.PropertyChangeListener;
 import java.io.Serializable;
+import java.lang.ref.WeakReference;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -443,23 +444,22 @@ public abstract class NuclosCollectController<Clct extends Collectable> extends 
 
 	protected void restoreInstanceStateFromPreferences(Map<String, String> inheritControllerPreferences) {}
 
-	/**
-	 *
-	 *
-	 */
 	public static class NuclosCollectTabStoreController implements ITabStoreController {
 
-		private NuclosCollectController<?> ctl;
+		private WeakReference<NuclosCollectController<?>> refCtl;
 
 		public NuclosCollectTabStoreController(NuclosCollectController<?> ctl) {
-			super();
-			this.ctl = ctl;
+			this.refCtl = new WeakReference<NuclosCollectController<?>>(ctl);
 		}
 
 		@Override
 		public String getPreferencesXML() {
-			RestorePreferences rp = new RestorePreferences();
-
+			final NuclosCollectController<?> ctl = refCtl.get();
+			if (ctl == null) {
+				throw new NullPointerException("Controller has already been gc'ed");
+			}
+			
+			final RestorePreferences rp = new RestorePreferences();
 			rp.entity = ctl.getEntity();
 			try {
 				if (ctl.getCollectStateModel().getOuterState() == CollectState.OUTERSTATE_DETAILS) {
@@ -846,97 +846,115 @@ public abstract class NuclosCollectController<Clct extends Collectable> extends 
 
 		Utils.prepareCollectableForSaving(clctCurrent, clcteCurrent);
 	}
+	
+	private static class MyLayoutMLButtonActionListener<Clct extends Collectable> extends LayoutMLButtonActionListener {
+		
+		private WeakReference<CollectController<Clct>> refCc;
+		
+		private MyLayoutMLButtonActionListener(CollectController<Clct> cc) {
+			this.refCc = new WeakReference<CollectController<Clct>>(cc);
+		}
+		
+		@Override
+		public void actionPerformed(ActionEvent ev) {
+			final CollectController<Clct> cc = refCc.get();
+			if (cc == null) {
+				return;
+			}
+			
+			final String sActionCommand = ev.getActionCommand();
+			//NUCLOSINT-743 State and Rule Button Action
+			String targetState = "_targetState=";
+			String ruletoexecute = "_ruletoexecute=";
+			String generatortoexecute = "_generatortoexecute=";
+			try {
+				if (sActionCommand.contains(STATIC_BUTTON.STATE_CHANGE_ACTION + targetState)) {
+					Properties stateProperties = new Properties();
+					String state = sActionCommand.substring(sActionCommand.indexOf(targetState) + targetState.length(), sActionCommand.length());
+					stateProperties.put("targetState", state);
+					((CollectActionAdapter<Clct>) Class.forName(STATIC_BUTTON.STATE_CHANGE_ACTION).newInstance()).run(cc, stateProperties);
+				} else if (sActionCommand.contains(STATIC_BUTTON.EXECUTE_RULE_ACTION + ruletoexecute)) {
+					Properties ruleProperties = new Properties();
+					String ruleId = sActionCommand.substring(sActionCommand.indexOf(ruletoexecute) + ruletoexecute.length(), sActionCommand.length());
+					ruleProperties.put("ruletoexecute", ruleId);
+					((CollectActionAdapter<Clct>) Class.forName(STATIC_BUTTON.EXECUTE_RULE_ACTION).newInstance()).run(cc, ruleProperties);
+				} else if (sActionCommand.contains(STATIC_BUTTON.GENERATOR_ACTION + generatortoexecute)) {
+					Properties generatorProperties = new Properties();
+					String generatorId = sActionCommand.substring(sActionCommand.indexOf(generatortoexecute) + generatortoexecute.length(), sActionCommand.length());
+					generatorProperties.put("generatortoexecute", generatorId);
+					((CollectActionAdapter<Clct>) Class.forName(STATIC_BUTTON.GENERATOR_ACTION).newInstance()).run(cc, generatorProperties);
+				} else {
+					((CollectActionAdapter<Clct>) Class.forName(sActionCommand).newInstance()).run(cc, new Properties());
+				}
+
+			}
+			catch (InstantiationException ex) {
+				throw new CommonFatalException(ex);
+			}
+			catch (IllegalAccessException ex) {
+				throw new CommonFatalException(ex);
+			}
+			catch (ClassNotFoundException ex) {
+				throw new CommonFatalException(ex);
+			}
+		}
+		
+		@Override
+		public boolean enableParentComponent(String sActionCommand) {
+			if (sActionCommand == null)
+				return false;
+			
+			final CollectController<Clct> cc = refCc.get();
+			if (cc == null) {
+				return false;
+			}
+			
+			boolean result = false;
+			//NUCLOSINT-743 State and Rule Button Action
+			String targetState = "_targetState=";
+			String ruletoexecute = "_ruletoexecute=";
+			String generatortoexecute = "_generatortoexecute=";
+			try {
+				if (sActionCommand.contains(STATIC_BUTTON.STATE_CHANGE_ACTION + targetState)) {
+					Properties stateProperties = new Properties();
+					String state = sActionCommand.substring(sActionCommand.indexOf(targetState) + targetState.length(), sActionCommand.length());
+					stateProperties.put("targetState", state);
+					result = ((CollectActionAdapter<Clct>) Class.forName(STATIC_BUTTON.STATE_CHANGE_ACTION).newInstance()).isRunnable(cc, stateProperties);
+				} else if (sActionCommand.contains(STATIC_BUTTON.EXECUTE_RULE_ACTION + ruletoexecute)) {
+					Properties ruleProperties = new Properties();
+					String ruleId = sActionCommand.substring(sActionCommand.indexOf(ruletoexecute) + ruletoexecute.length(), sActionCommand.length());
+					ruleProperties.put("ruletoexecute", ruleId);
+					result = ((CollectActionAdapter<Clct>) Class.forName(STATIC_BUTTON.EXECUTE_RULE_ACTION).newInstance()).isRunnable(cc, ruleProperties);
+				} else if (sActionCommand.contains(STATIC_BUTTON.GENERATOR_ACTION + generatortoexecute)) {
+					Properties generatorProperties = new Properties();
+					String generatorId = sActionCommand.substring(sActionCommand.indexOf(generatortoexecute) + generatortoexecute.length(), sActionCommand.length());
+					generatorProperties.put("generatortoexecute", generatorId);
+					result = ((CollectActionAdapter<Clct>) Class.forName(STATIC_BUTTON.GENERATOR_ACTION).newInstance()).isRunnable(cc, generatorProperties);
+				} else {
+					result = ((CollectActionAdapter<Clct>) Class.forName(sActionCommand).newInstance()).isRunnable(cc, new Properties());
+				}
+			}
+			catch (InstantiationException ex) {
+				throw new CommonFatalException(ex);
+			}
+			catch (IllegalAccessException ex) {
+				throw new CommonFatalException(ex);
+			}
+			catch (ClassNotFoundException ex) {
+				throw new CommonFatalException(ex);
+			}			
+			return result;
+		}
+	}
 
 	/**
 	 * @return <code>ActionListener</code> defining actions for buttons in the LayoutML definition. May be <code>null</code>.
 	 */
 	protected LayoutMLButtonActionListener getLayoutMLButtonsActionListener() {
-		if (this.alLayoutMLButtons == null) {
-			this.alLayoutMLButtons = new LayoutMLButtonActionListener() {
-				@Override
-				public void actionPerformed(ActionEvent ev) {
-					final String sActionCommand = ev.getActionCommand();
-					//NUCLOSINT-743 State and Rule Button Action
-					String targetState = "_targetState=";
-					String ruletoexecute = "_ruletoexecute=";
-					String generatortoexecute = "_generatortoexecute=";
-					try {
-						if (sActionCommand.contains(STATIC_BUTTON.STATE_CHANGE_ACTION + targetState)) {
-							Properties stateProperties = new Properties();
-							String state = sActionCommand.substring(sActionCommand.indexOf(targetState) + targetState.length(), sActionCommand.length());
-							stateProperties.put("targetState", state);
-							((CollectActionAdapter<Clct>) Class.forName(STATIC_BUTTON.STATE_CHANGE_ACTION).newInstance()).run(NuclosCollectController.this, stateProperties);
-						} else if (sActionCommand.contains(STATIC_BUTTON.EXECUTE_RULE_ACTION + ruletoexecute)) {
-							Properties ruleProperties = new Properties();
-							String ruleId = sActionCommand.substring(sActionCommand.indexOf(ruletoexecute) + ruletoexecute.length(), sActionCommand.length());
-							ruleProperties.put("ruletoexecute", ruleId);
-							((CollectActionAdapter<Clct>) Class.forName(STATIC_BUTTON.EXECUTE_RULE_ACTION).newInstance()).run(NuclosCollectController.this, ruleProperties);
-						} else if (sActionCommand.contains(STATIC_BUTTON.GENERATOR_ACTION + generatortoexecute)) {
-							Properties generatorProperties = new Properties();
-							String generatorId = sActionCommand.substring(sActionCommand.indexOf(generatortoexecute) + generatortoexecute.length(), sActionCommand.length());
-							generatorProperties.put("generatortoexecute", generatorId);
-							((CollectActionAdapter<Clct>) Class.forName(STATIC_BUTTON.GENERATOR_ACTION).newInstance()).run(NuclosCollectController.this, generatorProperties);
-						} else {
-							((CollectActionAdapter<Clct>) Class.forName(sActionCommand).newInstance()).run(NuclosCollectController.this, new Properties());
-						}
-
-					}
-					catch (InstantiationException ex) {
-						throw new CommonFatalException(ex);
-					}
-					catch (IllegalAccessException ex) {
-						throw new CommonFatalException(ex);
-					}
-					catch (ClassNotFoundException ex) {
-						throw new CommonFatalException(ex);
-					}
-				}
-				@Override
-				public boolean enableParentComponent(String sActionCommand) {
-					if (sActionCommand == null)
-						return false;
-					
-					boolean result = false;
-					
-					//NUCLOSINT-743 State and Rule Button Action
-					String targetState = "_targetState=";
-					String ruletoexecute = "_ruletoexecute=";
-					String generatortoexecute = "_generatortoexecute=";
-					try {
-						if (sActionCommand.contains(STATIC_BUTTON.STATE_CHANGE_ACTION + targetState)) {
-							Properties stateProperties = new Properties();
-							String state = sActionCommand.substring(sActionCommand.indexOf(targetState) + targetState.length(), sActionCommand.length());
-							stateProperties.put("targetState", state);
-							result = ((CollectActionAdapter<Clct>) Class.forName(STATIC_BUTTON.STATE_CHANGE_ACTION).newInstance()).isRunnable(NuclosCollectController.this, stateProperties);
-						} else if (sActionCommand.contains(STATIC_BUTTON.EXECUTE_RULE_ACTION + ruletoexecute)) {
-							Properties ruleProperties = new Properties();
-							String ruleId = sActionCommand.substring(sActionCommand.indexOf(ruletoexecute) + ruletoexecute.length(), sActionCommand.length());
-							ruleProperties.put("ruletoexecute", ruleId);
-							result = ((CollectActionAdapter<Clct>) Class.forName(STATIC_BUTTON.EXECUTE_RULE_ACTION).newInstance()).isRunnable(NuclosCollectController.this, ruleProperties);
-						} else if (sActionCommand.contains(STATIC_BUTTON.GENERATOR_ACTION + generatortoexecute)) {
-							Properties generatorProperties = new Properties();
-							String generatorId = sActionCommand.substring(sActionCommand.indexOf(generatortoexecute) + generatortoexecute.length(), sActionCommand.length());
-							generatorProperties.put("generatortoexecute", generatorId);
-							result = ((CollectActionAdapter<Clct>) Class.forName(STATIC_BUTTON.GENERATOR_ACTION).newInstance()).isRunnable(NuclosCollectController.this, generatorProperties);
-						} else {
-							result = ((CollectActionAdapter<Clct>) Class.forName(sActionCommand).newInstance()).isRunnable(NuclosCollectController.this, new Properties());
-						}
-					}
-					catch (InstantiationException ex) {
-						throw new CommonFatalException(ex);
-					}
-					catch (IllegalAccessException ex) {
-						throw new CommonFatalException(ex);
-					}
-					catch (ClassNotFoundException ex) {
-						throw new CommonFatalException(ex);
-					}
-					
-					return result;
-				}
-			};
+		if (alLayoutMLButtons == null) {
+			alLayoutMLButtons = new MyLayoutMLButtonActionListener<Clct>(NuclosCollectController.this);
 		}
-		return this.alLayoutMLButtons;
+		return alLayoutMLButtons;
 	}
 
 
