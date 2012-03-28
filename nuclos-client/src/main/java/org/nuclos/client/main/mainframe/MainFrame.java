@@ -35,7 +35,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowFocusListener;
-import java.awt.event.WindowListener;
 import java.awt.image.BufferedImage;
 import java.lang.reflect.Field;
 import java.net.URL;
@@ -74,6 +73,7 @@ import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
+import javax.swing.JToggleButton;
 import javax.swing.JWindow;
 import javax.swing.SwingUtilities;
 
@@ -102,6 +102,7 @@ import org.nuclos.client.ui.CommonJFrame;
 import org.nuclos.client.ui.Icons;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.client.ui.ValidationLayerFactory;
+import org.nuclos.client.ui.gc.ListenerUtil;
 import org.nuclos.client.ui.util.TableLayoutBuilder;
 import org.nuclos.common.Actions;
 import org.nuclos.common.ApplicationProperties;
@@ -531,6 +532,68 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 		res.put("liveSearch", liveSearchController.getSearchComponent());
 		return res;
 	}
+	
+	private static class ToFrontAction extends AbstractAction {
+		
+		private final JFrame frame;
+		
+		private ToFrontAction(String title, JFrame frame) {
+			super(title);
+			this.frame = frame;
+		}
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			frame.setVisible(true);
+		}
+		
+	}
+	
+	//init WindowListener to set correct state of notificationButton and menuItem
+	private static class NotificationDialogListener extends WindowAdapter {
+		
+		private final JToggleButton btnNotify;
+		
+		private final JCheckBoxMenuItem miWindowNotificationDialog;
+		
+		private NotificationDialogListener(JToggleButton btnNotify, JCheckBoxMenuItem miWindowNotificationDialog) {
+			this.btnNotify = btnNotify;
+			this.miWindowNotificationDialog = miWindowNotificationDialog;
+		}
+		
+		@Override
+		public void windowClosed(WindowEvent ev) {
+			btnNotify.setSelected(false);
+			miWindowNotificationDialog.setSelected(false);
+		}
+
+		@Override
+		public void windowOpened(WindowEvent ev) {
+			btnNotify.setSelected(true);
+			miWindowNotificationDialog.setSelected(true);
+		}
+	}
+	
+	//init WindowListener to set correct state of menuItem
+	private static class WindowBackgroundTasksListener extends WindowAdapter {
+		
+		private final JCheckBoxMenuItem miWindowBackgroundTasks;
+		
+		private WindowBackgroundTasksListener(JCheckBoxMenuItem miWindowBackgroundTasks) {
+			this.miWindowBackgroundTasks = miWindowBackgroundTasks;
+		}
+
+		@Override
+		public void windowClosed(WindowEvent ev) {
+			miWindowBackgroundTasks.setSelected(false);
+		}
+
+		@Override
+		public void windowOpened(WindowEvent ev) {
+			miWindowBackgroundTasks.setSelected(true);
+		}
+
+	}
 
 	private void initWindowMenu(Map<String, Map<String, Action>> commandMap, NuclosNotificationDialog notificationDialog) {
 		menuWindow = new JMenu();
@@ -573,16 +636,11 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 				String title = (frame instanceof ExternalFrame) ?
 					localeDelegate.getMessage("ExternalFrame.Title","Erweiterungsfenster {0}",((WorkspaceFrame) frame).getNumber()) :
 						localeDelegate.getMessage("MainFrame.Title","Hauptfenster");
-				JMenuItem miFrameToFront = new JMenuItem(new AbstractAction("Nuclos " + title) {
-
-					@Override
-					public void actionPerformed(ActionEvent e) {
-						frame.setVisible(true);
-					}
-				});
+				JMenuItem miFrameToFront = new JMenuItem(new ToFrontAction("Nuclos " + title, frame));
 				menuWindow.add(miFrameToFront);
 			}
-		}menuWindow.addSeparator();
+		}
+		menuWindow.addSeparator();
 
 		menuWindow.add(miPreviousTab);
 		menuWindow.add(miNextTab);
@@ -643,36 +701,11 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 			}
 		});
 
-		//init WindowListener to set correct state of notificationButton and menuItem
-		final WindowListener notificationDialogListener = new WindowAdapter() {
-			@Override
-			public void windowClosed(WindowEvent ev) {
-				getMessagePanel().btnNotify.setSelected(false);
-				miWindowNotificationDialog.setSelected(false);
-			}
-
-			@Override
-			public void windowOpened(WindowEvent ev) {
-				getMessagePanel().btnNotify.setSelected(true);
-				miWindowNotificationDialog.setSelected(true);
-			}
-		};
-
-		//init WindowListener to set correct state of menuItem
-		final WindowListener windowBackgroundTasks = new WindowAdapter() {
-			@Override
-			public void windowClosed(WindowEvent ev) {
-				miWindowBackgroundTasks.setSelected(false);
-			}
-
-			@Override
-			public void windowOpened(WindowEvent ev) {
-				miWindowBackgroundTasks.setSelected(true);
-			}
-
-		};
-		notificationDialog.addWindowListener(notificationDialogListener);
-		BackgroundProcessStatusController.getStatusDialog(this).addWindowListener(windowBackgroundTasks);
+		ListenerUtil.registerWindowListener(notificationDialog, 
+				new NotificationDialogListener(getMessagePanel().btnNotify, miWindowNotificationDialog));
+		// notificationDialog.addWindowListener(notificationDialogListener);
+		BackgroundProcessStatusController.getStatusDialog(this).addWindowListener(
+				new WindowBackgroundTasksListener(miWindowBackgroundTasks));
 	}
 
 	/**

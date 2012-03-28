@@ -39,6 +39,7 @@ import org.nuclos.client.ui.collect.SubForm.SubFormToolListener;
 import org.nuclos.client.ui.collect.component.CollectableComboBox;
 import org.nuclos.client.ui.collect.component.CollectableComponentTableCellEditor;
 import org.nuclos.client.ui.collect.component.model.CollectableComponentModelProvider;
+import org.nuclos.client.ui.gc.ListenerUtil;
 import org.nuclos.client.ui.model.ChoiceList;
 import org.nuclos.client.ui.table.TableUtils;
 import org.nuclos.common.WorkspaceDescription.EntityPreferences;
@@ -481,7 +482,7 @@ public class SearchConditionSubFormController extends SubFormController {
 		super(DefaultCollectableEntityProvider.getInstance().getCollectableEntity(subform.getEntityName()), parent, parentMdi, clctcompmodelproviderParent,
 				sParentEntityName, subform, true, prefsUserParent, entityPrefs, clctfproviderfactory);
 
-		subform.addSubFormToolListener(new SubFormToolListener() {
+		ListenerUtil.registerSubFormToolListener(subform, new SubFormToolListener() {
 			@Override
 			public void toolbarAction(String actionCommand) {
 				if(SubForm.ToolbarFunction.fromCommandString(actionCommand) == SubForm.ToolbarFunction.MULTIEDIT)

@@ -63,6 +63,7 @@ import org.nuclos.client.ui.collect.component.LookupEvent;
 import org.nuclos.client.ui.collect.component.LookupListener;
 import org.nuclos.client.ui.collect.component.model.CollectableComponentModelProvider;
 import org.nuclos.client.ui.event.PopupMenuMouseAdapter;
+import org.nuclos.client.ui.gc.ListenerUtil;
 import org.nuclos.client.valuelistprovider.cache.CollectableFieldsProviderCache;
 import org.nuclos.common.NuclosBusinessException;
 import org.nuclos.common.NuclosFatalException;
@@ -177,8 +178,8 @@ public class MasterDataSubFormController extends DetailsSubFormController<Collec
 				getSubForm().setToolbarFunctionState(TB_CLONE, SubForm.ToolbarFunctionState.DISABLED);
 			}
 		});
-		getSubForm().addSubFormToolListener(cloneListener);
-
+		
+		ListenerUtil.registerSubFormToolListener(getSubForm(), cloneListener);
 		setupSubFormTableContextMenue();
 	}
 

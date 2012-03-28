@@ -151,6 +151,7 @@ import org.nuclos.client.ui.collect.CollectControllerFactorySingleton;
 import org.nuclos.client.ui.collect.CollectStateModel;
 import org.nuclos.client.ui.collect.detail.DetailsCollectableEventListener;
 import org.nuclos.client.ui.collect.search.ReportExecutionSearchStrategy;
+import org.nuclos.client.ui.gc.ListenerUtil;
 import org.nuclos.client.wiki.WikiController;
 import org.nuclos.client.wizard.ShowNuclosWizard;
 import org.nuclos.common.Actions;
@@ -388,7 +389,7 @@ public class MainController {
 			// this.frm = new MainFrame(this.getUserName(), this.getNuclosServerName());
 
 			this.frm.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
-			this.frm.addWindowListener(new WindowAdapter() {
+			ListenerUtil.registerWindowListener(frm, new WindowAdapter() {
 				@Override
 				public void windowClosing(WindowEvent ev) {
 					cmdWindowClosing();
@@ -2145,14 +2146,6 @@ public class MainController {
 		@Override
 		public void put(Preferences prefs, TopController ctl) throws PreferencesException {
 			throw new NotImplementedException("@deprecated: Use TabRestoreController");
-			/*
-			if (ctl instanceof CustomComponentController) {
-				prefs.put(PREFS_KEY_CUSTOMCOMP, ((CustomComponentController) ctl).getCustomComponentName());
-				((CustomComponentController) ctl).storeInstanceState(prefs);
-			} if (ctl instanceof NuclosCollectController) {
-				((NuclosCollectController<?>) ctl).writeToPreferences(prefs);
-			}
-			*/
 		}
 	}
 
@@ -2160,6 +2153,7 @@ public class MainController {
 	 * inner class IsDisplaying
 	 */
 	private static class IsCollectControllerDisplaying implements Predicate<TopController> {
+		
 		private final String sEntityName;
 		private final Object iId;
 

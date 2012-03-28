@@ -2416,10 +2416,44 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 			}
 		}	// inner class ComboBoxElementProcessor
 
+		public static class LayoutMLButton extends JButton {
+			
+			private LayoutMLButton() {
+			}
+			
+			@Override
+			public void setActionCommand(String actionCommand) {
+				super.setActionCommand(actionCommand);
+				
+				ActionListener[] als = getActionListeners();
+				for (int i = 0; i < als.length; i++) {
+					ActionListener al = als[i];
+					if (al instanceof LayoutMLButtonActionListener)
+						((LayoutMLButtonActionListener)al).setParentComponent(this, actionCommand);
+				}
+			}
+			
+		}
+		
+		public static class LayoutMLButtonLocalizationHandler implements LocalizationHandler {
+			
+			private final JButton btn;
+			
+			private LayoutMLButtonLocalizationHandler(JButton btn) {
+				this.btn = btn;
+			}
+			
+			@Override
+			public void setTranslation(String translation) {
+				btn.setText(translation);
+			}
+		}
+		
 		/**
 		 * inner class <code>ButtonElementProcessor</code>. Processes a button element.
 		 */
 		private class ButtonElementProcessor extends ComponentElementProcessor {
+			
 			/**
 			 * constructs a <code>JButton</code>, configures it according to the XML attributes
 			 * and pushes it on the stack.
@@ -2430,19 +2464,7 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 			 */
 			@Override
             public void startElement(String sUriNameSpace, String sSimpleName, String sQualifiedName, Attributes attributes) {
-				final JButton btn = new JButton() {
-					@Override
-					public void setActionCommand(String actionCommand) {
-						super.setActionCommand(actionCommand);
-						
-						ActionListener[] als = getActionListeners();
-						for (int i = 0; i < als.length; i++) {
-							ActionListener al = als[i];
-							if (al instanceof LayoutMLButtonActionListener)
-								((LayoutMLButtonActionListener)al).setParentComponent(this, actionCommand);
-						}
-					}
-				};
+				final JButton btn = new LayoutMLButton();
 
 				// name:
 				final String sName = attributes.getValue(ATTRIBUTE_NAME);
@@ -2462,12 +2484,7 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 				btn.setEnabled(bEnabled);
 
 				btn.setText(sLabel);
-				localizationHandler = new LocalizationHandler() {
-					@Override
-					public void setTranslation(String translation) {
-						btn.setText(translation);
-					}
-				};
+				localizationHandler = new LayoutMLButtonLocalizationHandler(btn);
 				handleLegacyResourceId(attributes);
 
 				final String sToolTip = attributes.getValue(ATTRIBUTE_TOOLTIP);

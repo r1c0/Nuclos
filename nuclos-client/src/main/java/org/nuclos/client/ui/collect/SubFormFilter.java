@@ -59,6 +59,7 @@ import org.nuclos.client.ui.collect.component.CollectableComponentFactory;
 import org.nuclos.client.ui.collect.component.CollectableDateChooser;
 import org.nuclos.client.ui.collect.component.CollectableTextField;
 import org.nuclos.client.ui.collect.component.LabeledCollectableComponentWithVLP;
+import org.nuclos.client.ui.gc.ListenerUtil;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
 import org.nuclos.common.collect.collectable.CollectableField;
 import org.nuclos.common.collect.collectable.CollectableFieldsProvider;
@@ -153,7 +154,7 @@ public class SubFormFilter implements Closeable {
     * actionlistener to collapse or expand the searchfilter panels
     */
    private void addActionListener() {
-	  subform.addSubFormToolListener(new SubForm.SubFormToolListener() {
+	   ListenerUtil.registerSubFormToolListener(subform, new SubForm.SubFormToolListener() {
 		@Override
 		public void toolbarAction(String actionCommand) {
 			if(SubForm.ToolbarFunction.fromCommandString(actionCommand) == SubForm.ToolbarFunction.FILTER) {

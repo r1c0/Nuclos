@@ -75,7 +75,7 @@ public class QueueSingleton {
 					if (c != null) {
 						c.unregister();
 					}
-					LOG.info("unregistered " + c);
+					LOG.info("unregistered " + c + ", mapSize=" + map.size());
 				}
 			} while (ref != null);
 		}
