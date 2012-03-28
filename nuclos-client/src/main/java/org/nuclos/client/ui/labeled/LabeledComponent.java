@@ -27,7 +27,6 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.ToolTipManager;
 
-import org.nuclos.client.ui.ColorProvider;
 import org.nuclos.client.ui.ToolTipTextProvider;
 import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.StringUtils;
@@ -59,23 +58,31 @@ public abstract class LabeledComponent extends JPanel {
 	private static final GridBagConstraints gbcLabel = new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE,
 			new Insets(VERTICAL_MARGIN, 0, VERTICAL_MARGIN, 5), 0, 0);
 
-	private ToolTipTextProvider tooltiptextprovider;
-
-	private ColorProvider colorproviderBackground;
-
 	private final JLabel lab = new JLabel();
 
 	private final JPanel pnlControl = new JPanel(new BorderLayout());
+	
+	protected final LabeledComponentSupport support;
 
 	protected LabeledComponent() {
+		this(new LabeledComponentSupport());
+	}
+	
+	protected LabeledComponent(LabeledComponentSupport support) {
 		super(new GridBagLayout());
+		if (support == null) {
+			throw new NullPointerException();
+		}
+		
+		this.support = support;
 		this.pnlControl.setOpaque(false);
-		this.setOpaque(false);
+		this.setOpaque(false);		
+	}
+	
+	public ILabeledComponentSupport getLabeledComponentSupport() {
+		return support;
 	}
 
-	/**
-	 * @return the label
-	 */
 	public JLabel getJLabel() {
 		return this.lab;
 	}
@@ -193,33 +200,11 @@ public abstract class LabeledComponent extends JPanel {
 	 * tooltip manager to enable tooltips.
 	 * @param tooltiptextprovider May be <code>null</code> to enable the static tooltip text.
 	 */
-	public void setToolTipTextProviderForControl(ToolTipTextProvider tooltiptextprovider) {
-		this.tooltiptextprovider = tooltiptextprovider;
+	void setToolTipTextProviderForControl(ToolTipTextProvider tooltiptextprovider) {
+		support.setToolTipTextProvider(tooltiptextprovider);
 		if (tooltiptextprovider != null) {
 			ToolTipManager.sharedInstance().registerComponent(this.getControlComponent());
 		}
-	}
-
-	/**
-	 * @return the tooltip text provider for the control's (dynamic) tooltip. May be <code>null</code>.
-	 */
-	protected ToolTipTextProvider getToolTipTextProviderForControl() {
-		return this.tooltiptextprovider;
-	}
-
-	/**
-	 * @return the background color provider for dynamically changing the background color.
-	 */
-	public ColorProvider getBackgroundColorProvider() {
-		return this.colorproviderBackground;
-	}
-
-	/**
-	 * sets the background color provider for dynamically changing the background color.
-	 * @param colorproviderBackground
-	 */
-	public void setBackgroundColorProvider(ColorProvider colorproviderBackground) {
-		this.colorproviderBackground = colorproviderBackground;
 	}
 
 	/**
@@ -262,13 +247,5 @@ public abstract class LabeledComponent extends JPanel {
 	public void setOpaque(boolean isOpaque) {
 		// ignore
 	}
-
-//	/**
-//	 * adds the given component as a "prefix" to (that is in the west of) the control component.
-//	 * @param comp
-//	 */
-//	public void addControlComponentPrefix(JComponent comp) {
-//		this.pnlControl.add(comp, BorderLayout.WEST);
-//	}
 
 }  // class LabeledComponent

@@ -231,7 +231,7 @@ public class WYSIWYGCollectableTextArea extends WYSIWYGCollectableComponent {
 		
 		@PostConstruct
 		void init() {
-			setBackgroundColorProvider(new ColorProvider() {
+			support.setColorProvider(new ColorProvider() {
 				@Override
 				public Color getColor(Color colorDefault) {
 					if (backgroundcolor == null && !NuclosThemeSettings.BACKGROUND_PANEL.equals(colorDefault)) {

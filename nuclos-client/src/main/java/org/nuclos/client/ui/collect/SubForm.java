@@ -1096,10 +1096,10 @@ public class SubForm extends JPanel
 				}
 			}
 			clctcomp.setToolTipText(clctef.getDescription());
-			try {
-				((LabeledComponent)clctcomp.getJComponent()).setBackgroundColorProvider(null);
-			} catch (Exception ex) {
-				// ignore if not LabeledComponent
+			
+			final JComponent c = clctcomp.getJComponent();
+			if (c instanceof LabeledComponent) {
+				((LabeledComponent) c).getLabeledComponentSupport().setColorProvider(null);
 			}
 			mpColumnRenderer.put(clctef, clctcomp.getTableCellRenderer());
 		}

@@ -222,16 +222,11 @@ public class WYSIWYGCollectableComboBox extends WYSIWYGCollectableComponent {
 	@Configurable
 	private class WYSIWYGLabeledComboBox extends LabeledComboBox {
 
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
-		
 		private Color backgroundcolor;
 		
 		@PostConstruct
 		void init() {
-			setBackgroundColorProvider(new ColorProvider() {
+			support.setColorProvider(new ColorProvider() {
 				@Override
 				public Color getColor(Color colorDefault) {
 					if (backgroundcolor == null && !NuclosThemeSettings.BACKGROUND_PANEL.equals(colorDefault)) {

@@ -35,6 +35,7 @@ import java.awt.image.RescaleOp;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 
+import org.nuclos.client.ui.labeled.ILabeledComponentSupport;
 import org.nuclos.client.ui.labeled.LabeledComboBox;
 
 /**
@@ -46,38 +47,25 @@ public abstract class TextFieldWithButton extends CommonJTextField {
 	
 	private Icon iconButton;
 	
-	private ColorProvider colorproviderBackground;
-	
 	private final Cursor curIcon = new Cursor(Cursor.DEFAULT_CURSOR);
 	private final Cursor curNotEditable = curIcon;
 	private final Cursor curDefault;
+	
+	private final ILabeledComponentSupport support;
 	
 	private ButtonState bs = ButtonState.NORMAL;
 	
 	private final int fadeWidthLeft = 7;
 	
-	public void setBackgroundColorProviderForTextField(ColorProvider colorproviderBackground) {
-		this.colorproviderBackground = colorproviderBackground;
-	}
-	
-	public ColorProvider getBackgroundColorProviderForTextField() {
-		return this.colorproviderBackground;
-	}
-	
-	@Override
-	public Color getBackground() {
-		final Color colorDefault = super.getBackground();
-		return (colorproviderBackground != null) ? colorproviderBackground.getColor(colorDefault) : colorDefault;
-	}
-	
-	public abstract boolean isButtonEnabled();
-	
-	public abstract void buttonClicked();
-	
-	public TextFieldWithButton(Icon iconButton) {
+	public TextFieldWithButton(Icon iconButton, ILabeledComponentSupport support) {
 		if (iconButton == null) {
 			throw new IllegalArgumentException("iconButton must not be null!");
 		}
+		if (support == null) {
+			throw new IllegalArgumentException();
+		}
+		
+		this.support = support;
 		this.iconButton = iconButton;
 		this.curDefault = getCursor();
 		this.setPreferredSize(new Dimension(this.getPreferredSize().width, LabeledComboBox.DEFAULT_PREFERRED_SIZE.height));
@@ -129,6 +117,23 @@ public abstract class TextFieldWithButton extends CommonJTextField {
 			public void focusGained(FocusEvent e) {
 			}
 		});
+	}
+	
+	public abstract boolean isButtonEnabled();
+	
+	public abstract void buttonClicked();
+	
+	@Override
+	public Color getBackground() {
+		final Color colorDefault = super.getBackground();
+		if (support == null) {
+			return colorDefault;
+		}
+		final ColorProvider colorproviderBackground = support.getColorProvider();
+		if (colorproviderBackground == null) {
+			return colorDefault;			
+		}
+		return colorproviderBackground.getColor(colorDefault);
 	}
 	
 	private boolean isMouseOverButton(MouseEvent me) {

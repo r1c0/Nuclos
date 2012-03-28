@@ -31,6 +31,7 @@ import javax.swing.border.Border;
 import org.nuclos.client.layout.wysiwyg.component.properties.PropertyValue;
 import org.nuclos.client.synthetica.NuclosThemeSettings;
 import org.nuclos.client.ui.ColorProvider;
+import org.nuclos.client.ui.labeled.LabeledComponentSupport;
 import org.nuclos.client.ui.labeled.LabeledListOfValues;
 import org.nuclos.common.NuclosBusinessException;
 import org.springframework.beans.factory.annotation.Configurable;
@@ -212,16 +213,15 @@ public class WYSIWYGCollectableListOfValues extends WYSIWYGCollectableComponent 
 	@Configurable
 	private class WYSIWYGLabeledListOfValues extends LabeledListOfValues {
 
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
-		
 		private Color backgroundcolor;
+		
+		private WYSIWYGLabeledListOfValues() {
+			super(new LabeledComponentSupport());
+		}
 		
 		@PostConstruct
 		void init() {
-			setBackgroundColorProvider(new ColorProvider() {
+			support.setColorProvider(new ColorProvider() {
 				@Override
 				public Color getColor(Color colorDefault) {
 					if (backgroundcolor == null && !NuclosThemeSettings.BACKGROUND_PANEL.equals(colorDefault)) {

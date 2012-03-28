@@ -58,7 +58,8 @@ public class LabeledComboBox extends LabeledComponent {
 	
 	public static final Dimension DEFAULT_PREFERRED_SIZE = (new JTextField()).getPreferredSize();
 	
-	private final TextFieldWithButton tfDisabled = new TextFieldWithButton(Icons.getInstance().getIconTextFieldButtonCombobox()) {
+	private final TextFieldWithButton tfDisabled = new TextFieldWithButton(
+			Icons.getInstance().getIconTextFieldButtonCombobox(), support) {
 		
 		@Override
 		public boolean isButtonEnabled() {
@@ -76,7 +77,7 @@ public class LabeledComboBox extends LabeledComponent {
 		
 		@Override
 		public Color getBackground() {
-			final ColorProvider colorproviderBackground = LabeledComboBox.this.getBackgroundColorProvider();
+			final ColorProvider colorproviderBackground = support.getColorProvider();
 			return (colorproviderBackground != null) ? colorproviderBackground.getColor(NuclosThemeSettings.BACKGROUND_INACTIVEFIELD) : NuclosThemeSettings.BACKGROUND_INACTIVEFIELD;
 		}
 		
@@ -94,13 +95,13 @@ public class LabeledComboBox extends LabeledComponent {
 		 */
 		@Override
 		public String getToolTipText(MouseEvent ev) {
-			final ToolTipTextProvider provider = LabeledComboBox.this.getToolTipTextProviderForControl();
+			final ToolTipTextProvider provider = support.getToolTipTextProvider();
 			return (provider != null) ? provider.getDynamicToolTipText() : super.getToolTipText(ev);
 		}
 
 		@Override
 		public Color getBackground() {
-			final ColorProvider colorproviderBackground = LabeledComboBox.this.getBackgroundColorProvider();
+			final ColorProvider colorproviderBackground = support.getColorProvider();
 			final Color colorDefault = super.getBackground();
 			return (colorproviderBackground != null) ? colorproviderBackground.getColor(colorDefault) : colorDefault;
 		}

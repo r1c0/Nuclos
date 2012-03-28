@@ -47,13 +47,14 @@ public class LabeledTextField extends LabeledTextComponent {
 
 		@Override
 		public String getToolTipText(MouseEvent ev) {
-			final ToolTipTextProvider provider = LabeledTextField.this.getToolTipTextProviderForControl();
-			return StringUtils.concatHtml(provider != null ? provider.getDynamicToolTipText() : super.getToolTipText(ev), LabeledTextField.this.getValidationToolTip());
+			final ToolTipTextProvider provider = support.getToolTipTextProvider();
+			return StringUtils.concatHtml(provider != null ? provider.getDynamicToolTipText() : super.getToolTipText(ev), 
+					support.getValidationToolTip());
 		}
 
 		@Override
 		public Color getBackground() {
-			final ColorProvider colorproviderBackground = LabeledTextField.this.getBackgroundColorProvider();
+			final ColorProvider colorproviderBackground = support.getColorProvider();
 			final Color colorDefault = super.getBackground();
 			return (colorproviderBackground != null) ? colorproviderBackground.getColor(colorDefault) : colorDefault;
 		}

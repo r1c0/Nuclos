@@ -31,6 +31,7 @@ import javax.swing.text.JTextComponent;
 
 import org.apache.log4j.Logger;
 import org.nuclos.client.ui.DateChooser;
+import org.nuclos.client.ui.labeled.LabeledComponentSupport;
 import org.nuclos.client.ui.labeled.LabeledDateChooser;
 import org.nuclos.common.NuclosDateTime;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
@@ -107,7 +108,10 @@ public class CollectableDateChooser extends CollectableTextComponent {
 	 * @see DateChooser#isTodayRelative()
 	 */
 	public CollectableDateChooser(CollectableEntityField clctef, boolean bSearchable, boolean bTodayIsRelative) {
-		super(clctef, new LabeledDateChooser(bTodayIsRelative, clctef.isNullable(), clctef.getFormatInput(), clctef.getFormatOutput(), bSearchable), bSearchable);
+		super(clctef, 
+				new LabeledDateChooser(new LabeledComponentSupport(),
+						bTodayIsRelative, clctef.isNullable(), clctef.getFormatInput(), 
+						clctef.getFormatOutput(), bSearchable), bSearchable);
 		if (clctef.getJavaClass() != Date.class && clctef.getJavaClass() != InternalTimestamp.class && clctef.getJavaClass() != NuclosDateTime.class) {
 			throw new CommonFatalException("collectable.date.chooser.exception");//"Datum erwartet.");
 		}
