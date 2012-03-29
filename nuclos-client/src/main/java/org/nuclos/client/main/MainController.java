@@ -389,7 +389,8 @@ public class MainController {
 			// this.frm = new MainFrame(this.getUserName(), this.getNuclosServerName());
 
 			this.frm.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
-			ListenerUtil.registerWindowListener(frm, new WindowAdapter() {
+			// Attention: Not ListenerUtil here!
+			frm.addWindowListener(new WindowAdapter() {
 				@Override
 				public void windowClosing(WindowEvent ev) {
 					cmdWindowClosing();

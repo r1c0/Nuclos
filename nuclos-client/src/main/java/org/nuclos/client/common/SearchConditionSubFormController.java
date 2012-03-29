@@ -482,7 +482,7 @@ public class SearchConditionSubFormController extends SubFormController {
 		super(DefaultCollectableEntityProvider.getInstance().getCollectableEntity(subform.getEntityName()), parent, parentMdi, clctcompmodelproviderParent,
 				sParentEntityName, subform, true, prefsUserParent, entityPrefs, clctfproviderfactory);
 
-		ListenerUtil.registerSubFormToolListener(subform, new SubFormToolListener() {
+		ListenerUtil.registerSubFormToolListener(subform, this, new SubFormToolListener() {
 			@Override
 			public void toolbarAction(String actionCommand) {
 				if(SubForm.ToolbarFunction.fromCommandString(actionCommand) == SubForm.ToolbarFunction.MULTIEDIT)

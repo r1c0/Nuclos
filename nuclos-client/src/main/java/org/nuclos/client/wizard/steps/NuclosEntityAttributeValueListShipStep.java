@@ -125,7 +125,7 @@ public class NuclosEntityAttributeValueListShipStep extends NuclosEntityAttribut
 		subform.getSubformTable().setDefaultEditor(String.class, editor);
 		subform.getSubformTable().setDefaultEditor(Date.class, new DateEditor());
 		
-		ListenerUtil.registerSubFormToolListener(subform, new SubForm.SubFormToolListener() {
+		ListenerUtil.registerSubFormToolListener(subform, this, new SubForm.SubFormToolListener() {
 			@Override
 			public void toolbarAction(String actionCommand) {
 				if(SubForm.ToolbarFunction.fromCommandString(actionCommand) == SubForm.ToolbarFunction.NEW) {
