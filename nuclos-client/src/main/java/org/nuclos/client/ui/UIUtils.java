@@ -83,6 +83,7 @@ import javax.swing.text.View;
 import javax.swing.tree.TreePath;
 
 import org.apache.log4j.Logger;
+import org.nuclos.client.image.ImageScaler;
 import org.nuclos.client.main.mainframe.MainFrameTab;
 import org.nuclos.client.ui.labeled.LabeledComponent;
 import org.nuclos.common2.CommonRunnable;
@@ -1432,12 +1433,14 @@ public class UIUtils {
 	}
 
 	public static Image resizeImage(Image img, int width, int height) {
-		return img.getScaledInstance(width, height,  java.awt.Image.SCALE_SMOOTH);
+		// return img.getScaledInstance(width, height,  java.awt.Image.SCALE_SMOOTH);
+		return ImageScaler.scaleImage(img, width, height);
 	}
 
 	public static ImageIcon resizeImageIcon(ImageIcon imgico, int width, int height) {
-		Image img = imgico.getImage();
-		Image newimg = img.getScaledInstance(width, height,  java.awt.Image.SCALE_SMOOTH);
+		final Image img = imgico.getImage();
+		// final Image newimg = img.getScaledInstance(width, height,  java.awt.Image.SCALE_SMOOTH);
+		final Image newimg = ImageScaler.scaleImage(img, width, height);
 		return new ImageIcon(newimg);
 	}
 

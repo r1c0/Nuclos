@@ -25,6 +25,7 @@ import javax.swing.Icon;
 import javax.swing.ImageIcon;
 
 import org.apache.log4j.Logger;
+import org.nuclos.client.image.ImageScaler;
 import org.nuclos.client.resource.ResourceCache;
 import org.nuclos.client.ui.Icons;
 import org.nuclos.common.ApplicationProperties;
@@ -113,7 +114,9 @@ public class NuclosIcons {
 		if (icon == null) {
 			icon = getBigTransparentApplicationIcon();
 		}
-		return new ImageIcon(icon.getImage().getScaledInstance(size, size, Image.SCALE_SMOOTH));
+		// final Image image = icon.getImage().getScaledInstance(size, size, Image.SCALE_SMOOTH);
+		final Image image = ImageScaler.scaleImage(icon.getImage(), size, size);
+		return new ImageIcon(image);
 	}
 	
 	

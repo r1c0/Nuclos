@@ -29,6 +29,7 @@ import javax.swing.JLabel;
 import javax.swing.JToolTip;
 import javax.swing.SwingConstants;
 
+import org.nuclos.client.image.ImageScaler;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.common.NuclosImage;
 
@@ -77,7 +78,8 @@ public class LabeledImage extends LabeledMediaComponent {
 					int width = ii.getIconWidth();
 					Dimension dimScreen = Toolkit.getDefaultToolkit().getScreenSize();
 					if(dimScreen.width <= width || dimScreen.height <= height) {
-						Image imageScaled = ii.getImage().getScaledInstance(dimScreen.width, dimScreen.height, Image.SCALE_DEFAULT);
+						// final Image imageScaled = ii.getImage().getScaledInstance(dimScreen.width, dimScreen.height, Image.SCALE_DEFAULT);
+						final Image imageScaled = ImageScaler.scaleImage(ii.getImage(), dimScreen);
 						ii = new ImageIcon(imageScaled);
 					}
 					
