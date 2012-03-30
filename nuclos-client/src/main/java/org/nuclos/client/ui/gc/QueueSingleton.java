@@ -20,6 +20,8 @@ package org.nuclos.client.ui.gc;
 import java.lang.ref.ReferenceQueue;
 import java.lang.ref.Reference;
 import java.util.EventListener;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -51,7 +53,8 @@ public class QueueSingleton {
 	private final Map<Reference<EventListener>, IRegister> eventListener2Register 
 		= new ConcurrentHashMap<Reference<EventListener>, IRegister>();
 	
-	private final Map<Object,EventListener> outer2Listener = new WeakHashMap<Object, EventListener>();
+	private final Map<Object,List<EventListener>> outer2Listener 
+			= new WeakHashMap<Object, List<EventListener>>();
 	
 	QueueSingleton() {
 		INSTANCE = this;
@@ -78,7 +81,12 @@ public class QueueSingleton {
 	public void dependant(Object outer, EventListener realListener) {
 		synchronized (outer2Listener) {
 			LOG.info("Added outer ref " + outer + ", mapSize=" + outer2Listener.size());
-			outer2Listener.put(outer, realListener);
+			List<EventListener> list = outer2Listener.get(outer);
+			if (list == null) {
+				list = new LinkedList<EventListener>();
+				outer2Listener.put(outer, list);
+			}
+			list.add(realListener);
 		}
 	}
 	
