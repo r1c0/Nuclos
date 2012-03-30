@@ -88,6 +88,22 @@ public class NuclosJMSUtils {
 		});		
 	}
 	
+	/**
+	 * Commit or Rollback
+	 * @param object
+	 * @param topic
+	 * @param sReceiver
+	 */
+	public static void sendObjectMessageAfterCompletion(final Serializable object, final String topic, final String sReceiver) {
+		TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
+			@Override
+			public void afterCompletion(int status) {
+				LOG.info("afterCompletion: " + this + " JMS object send: topic=" + topic + " receiver=" + sReceiver + ": " + object);
+				sendObjectMessage(object, topic, sReceiver);
+			}
+		});		
+	}
+	
 	public static void sendObjectMessage(final Serializable object, final String topic, final String sReceiver) {
 		try {
     		ApplicationContext context = SpringApplicationContextHolder.getApplicationContext();
