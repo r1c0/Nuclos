@@ -207,11 +207,6 @@ public class MetaDataFacadeBean extends NuclosFacadeBean implements MetaDataFaca
 		this.localeFacade = localeFacade;
 	}
 	
-	@PreDestroy
-	public void preDestroy() {
-		this.helper.close();
-	}
-
 	@Override
     @RolesAllowed("Login")
 	public Collection<EntityMetaDataVO> getAllEntities() {

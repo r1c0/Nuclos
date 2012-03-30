@@ -246,6 +246,11 @@ public class MainController {
 	 */
 	private final Map<MainFrameTab, TopController> mpActiveControllers = CollectionUtils.newHashMap();
 
+	/**
+	 * Subscribed to TOPICNAME_RULENOTIFICATION.
+	 * 
+	 * @see #init()
+	 */
 	private final MessageListener messagelistener = new MessageListener() {
 		@Override
 		public void onMessage(final Message msg) {

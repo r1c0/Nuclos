@@ -62,6 +62,11 @@ public class CustomComponentCache {
 	
 	private TopicNotificationReceiver tnr;
 	
+	/**
+	 * Subscribed to TOPICNAME_CUSTOMCOMPONENTCACHE.
+	 * 
+	 * @see #init()
+	 */
 	private final MessageListener messagelistener = new MessageListener() {
 		@Override
 		public void onMessage(Message msg) {

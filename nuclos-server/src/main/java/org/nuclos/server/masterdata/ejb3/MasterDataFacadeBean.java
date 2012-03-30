@@ -171,11 +171,6 @@ public class MasterDataFacadeBean extends NuclosFacadeBean implements MasterData
 			ParameterProvider.KEY_SERVER_VALIDATES_MASTERDATAVALUES));
 	}
 
-	@PreDestroy
-	public void preDestroy() {
-		this.helper.close();
-	}
-
 	/**
 	 * @return Is the server supposed to validate master data values before
 	 *         storing them?
@@ -862,7 +857,21 @@ public class MasterDataFacadeBean extends NuclosFacadeBean implements MasterData
 	}
 
 	/**
+	 * notifies clients that the contents of an entity has changed.
+	 *
+	 * @param sCachedEntityName name of the cached entity.
+	 * @precondition sCachedEntityName != null
+	 */
+	public void notifyClients(String sCachedEntityName) {
+		helper.notifyClients(sCachedEntityName);
+	}
+
+	/**
 	 * notifies clients that the meta data has changed, so they can invalidate their local caches.
+	 * <p>
+	 * TODO: Why on hell does this method sends to TOPICNAME_METADATACACHE but the above <code>notifyClients</code>
+	 * sends to TOPICNAME_MASTERDATACACHE???
+	 * </p>
 	 */
 	protected void notifyClients(NuclosEntity entity) {
 		LOG.info("JMS send: notify clients that entity " + entity.getEntityName() + " changed:" + this);
@@ -1165,16 +1174,6 @@ public class MasterDataFacadeBean extends NuclosFacadeBean implements MasterData
     @RolesAllowed("UseManagementConsole")
 	public void revalidateMasterDataMetaCache() {
 		MasterDataMetaCache.getInstance().revalidate();
-	}
-
-	/**
-	 * notifies clients that the contents of an entity has changed.
-	 *
-	 * @param sCachedEntityName name of the cached entity.
-	 * @precondition sCachedEntityName != null
-	 */
-    public void notifyClients(String sCachedEntityName) {
-		helper.notifyClients(sCachedEntityName);
 	}
 
 	/**

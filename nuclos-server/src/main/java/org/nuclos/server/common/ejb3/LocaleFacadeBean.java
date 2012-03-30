@@ -118,7 +118,7 @@ public class LocaleFacadeBean implements LocaleFacadeRemote {
 		public void afterCommit() {
 			LOG.info("afterCommit: " + this + " clear cache, JMS send flush message...");
 			CACHE.clear();
-			NuclosJMSUtils.sendMessage("flush", JMSConstants.TOPICNAME_LOCALE, JMSConstants.BROADCAST_MESSAGE);
+			NuclosJMSUtils.sendMessage(null, JMSConstants.TOPICNAME_LOCALE, null);
 		}
 	};
 	

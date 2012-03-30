@@ -82,7 +82,11 @@ public interface ParameterProvider {
 
 	public static final String KEY_DEFAULT_LOCALE = "Default Locale";
 
+	/**
+	 * @deprecated Get rid of this!
+	 */
 	public static final String JMS_MESSAGE_ALL_PARAMETERS_ARE_REVALIDATED = "All parameters are revalidated.";
+	
 	public static final String	KEY_TEMPLATE_USER	= "PREFERENCES_TEMPLATE_USER";
 
 	public static final String KEY_DATASOURCE_TABLE_FILTER = "Datasource Table Filter";
