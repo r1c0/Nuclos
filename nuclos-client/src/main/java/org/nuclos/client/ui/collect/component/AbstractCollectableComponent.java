@@ -1372,7 +1372,7 @@ public abstract class AbstractCollectableComponent
 			if (!blnEntityIsEditable)
 				bInsertEnabled = blnEntityIsEditable;
 		}
-		result.setEnabled(bInsertEnabled && getJComponent().isEnabled());
+		result.setEnabled(bInsertEnabled && getControlComponent().isEnabled());
 
 		result.addActionListener(new ActionListener() {
 			@Override

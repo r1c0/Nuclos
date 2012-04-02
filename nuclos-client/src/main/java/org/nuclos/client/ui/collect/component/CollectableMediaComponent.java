@@ -89,22 +89,4 @@ public abstract class CollectableMediaComponent extends LabeledCollectableCompon
 	public void searchConditionChangedInModel(final SearchComponentModelEvent ev) {
 		// media can not be searched		
 	}
-
-	/**
-	 * The "enabled" property of <code>CollectableTextComponent</code> is mapped to the
-	 * "editable" property of <code>LabeledTextComponent</code> to ensure that copy (as in "copy&paste")
-	 * works on disabled text components.
-	 * @param bEnabled
-	 */
-	@Override
-	public void setEnabled(boolean bEnabled) {
-		// media component always false
-		this.getLabeledMediaComponent().setEditable(false);
-	}
-
-	@Override
-	public void setInsertable(boolean bInsertable) {
-		
-	}
-
 }	// class CollectableTextComponent

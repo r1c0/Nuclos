@@ -144,7 +144,12 @@ public class NuclosCollectableImage extends CollectableMediaComponent implements
 						}
 						// final Image imageScaled = ii.getImage().getScaledInstance(w, h, Image.SCALE_DEFAULT);
 						final Image imageScaled = ImageScaler.scaleImage(ii.getImage(), w, h);
-						this.getMediaComponent().setIcon(new ImageIcon(imageScaled));
+						
+						ImageIcon icon = new ImageIcon(imageScaled);
+						
+						// set icon for both states, because if the component is disabled it should look the same way.
+						this.getMediaComponent().setIcon(icon);
+						this.getMediaComponent().setDisabledIcon(icon);
 					}
 					this.nuclosImage = ni;
 					JComponent comp = NuclosCollectableImage.this.getJComponent();
@@ -214,6 +219,11 @@ public class NuclosCollectableImage extends CollectableMediaComponent implements
 						LOG.warn(e1);
 					}
 				}
+			}
+
+			@Override
+			public boolean isEnabled() {
+				return getControlComponent().isEnabled();
 			}
 		});
 
@@ -287,6 +297,11 @@ public class NuclosCollectableImage extends CollectableMediaComponent implements
 					updateView(new CollectableValueField(null));
 					viewToModel(new CollectableValueField(null));
 				}
+			}
+
+			@Override
+			public boolean isEnabled() {
+				return getControlComponent().isEnabled();
 			}
 		});
 
@@ -516,6 +531,10 @@ public class NuclosCollectableImage extends CollectableMediaComponent implements
 
 		@Override
 		public void dragOver(DropTargetDragEvent dtde) {
+			if (!getControlComponent().isEnabled()) {
+				dtde.rejectDrag();
+				return;
+			}
 			Transferable trans = dtde.getTransferable();
 			DataFlavor flavor[] = trans.getTransferDataFlavors();
 			if (flavor != null && flavor.length > 0) {

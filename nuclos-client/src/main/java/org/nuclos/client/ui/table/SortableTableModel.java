@@ -36,6 +36,12 @@ import javax.swing.table.TableModel;
 public interface SortableTableModel extends TableModel {
 
 	/**
+	 * Check if a certain column is sortable or not (i.e. image columns)
+	 */
+	public boolean isSortable(int column);
+	
+	
+	/**
 	 * Returns the current sort keys, or an empty list.
 	 */
 	public List<? extends SortKey> getSortKeys();
