@@ -181,6 +181,7 @@ import org.nuclos.common.dal.vo.EntityObjectVO;
 import org.nuclos.common.security.RemoteAuthenticationManager;
 import org.nuclos.common2.ClientPreferences;
 import org.nuclos.common2.CommonRunnable;
+import org.nuclos.common2.Delayer;
 import org.nuclos.common2.IOUtils;
 import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.PreferencesUtils;
@@ -266,6 +267,14 @@ public class MainController {
 					}
 				}
 			});
+		}
+	};
+	
+	private final Runnable refreshMenusLater = new Runnable() {
+		@Override
+		public void run() {
+			LOG.info("refreshMenusLater");
+			refreshMenus();
 		}
 	};
 
@@ -1696,8 +1705,19 @@ public class MainController {
 		frm.setTitle(getUserName(), getNuclosServerName());
 	}
 
-	public void refreshMenus(){
+	/**
+	 * @deprecated Use setupMenuBar().
+	 */
+	public void refreshMenus() {
 		setupMenuBar();
+	}
+	
+	/**
+	 * As setupMenuBar() is an extremly costly operation, we only do it once 
+	 * within a grace period.
+	 */
+	public void refreshMenusLater() {
+		Delayer.invokeLaterOnlyOnce(300L, refreshMenusLater);
 	}
 
 	public void refreshTaskController() {

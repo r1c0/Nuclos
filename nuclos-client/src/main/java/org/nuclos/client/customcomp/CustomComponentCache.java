@@ -72,18 +72,7 @@ public class CustomComponentCache {
 		public void onMessage(Message msg) {
 			LOG.info("onMessage " + this + " revalidate cache...");
 			revalidate();
-			SwingUtilities.invokeLater(new Runnable() {
-				@Override
-				public void run() {
-					try {
-						LOG.info("onMessage " + this + " refreshMenus...");
-						Main.getInstance().getMainController().refreshMenus();
-					}
-					catch (Exception e) {
-						LOG.error("onMessage failed: " + e, e);
-					}
-				}
-			});
+			Main.getInstance().getMainController().refreshMenusLater();
 		}
 	};
 
