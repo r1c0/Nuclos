@@ -335,7 +335,7 @@ public class ListOfValues extends JPanel {
 		super.setEnabled(bEnabled);
 
 		this.tf.setEditable(bEnabled);
-		this.btnBrowse.setEnabled(!quickSearchOnly);
+		this.btnBrowse.setEnabled(!quickSearchOnly && bEnabled);
 	}
 
 	/*

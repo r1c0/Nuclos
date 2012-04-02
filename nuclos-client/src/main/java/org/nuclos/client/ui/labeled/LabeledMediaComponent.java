@@ -44,11 +44,6 @@ public abstract class LabeledMediaComponent extends LabeledComponent {
 		return this.getJMediaComponent();
 	}
 
-	@Override
-	protected void setControlsEditable(boolean bEditable) {
-		// no edit mode
-	}
-
 	// ***** Layered *****
 	protected JXLayer<JComponent> validationLayer;
 	protected boolean needLayeredValidation;
@@ -63,8 +58,6 @@ public abstract class LabeledMediaComponent extends LabeledComponent {
 	}
 
 	protected abstract JComponent getLayeredComponent();
-	protected abstract JLabel getLayeredLabel();
-
-
 	
+	protected abstract JLabel getLayeredLabel();
 }  // class LabeledTextComponent
