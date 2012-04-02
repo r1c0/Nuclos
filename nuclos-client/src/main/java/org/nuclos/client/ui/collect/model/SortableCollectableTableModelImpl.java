@@ -29,6 +29,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import org.nuclos.client.ui.table.SortableTableModelEvent;
+import org.nuclos.common.NuclosImage;
 import org.nuclos.common.collect.collectable.Collectable;
 import org.nuclos.common.collect.collectable.CollectableComparatorFactory;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
@@ -69,6 +70,15 @@ public class SortableCollectableTableModelImpl <Clct extends Collectable>
 		ensureMaxColumnSortKeys(this.getColumnCount() - 1);
 		super.removeColumn(iColumn);
 	}
+	
+	@Override
+	public boolean isSortable(int column) {
+		CollectableEntityField cef = getCollectableEntityField(column);
+		if (NuclosImage.class.equals(cef.getJavaClass())) {
+			return false;
+		}
+		return true;
+	}
 
 	@Override
 	public List<? extends SortKey> getSortKeys() {
@@ -78,7 +88,7 @@ public class SortableCollectableTableModelImpl <Clct extends Collectable>
 	@Override
 	public void setSortKeys(List<? extends SortKey> sortKeys, boolean sortImmediately) throws IllegalArgumentException {
 		for (SortKey sortKey : new ArrayList<SortKey>(sortKeys)) {
-			if (sortKey.getColumn() == -1) {
+			if (sortKey.getColumn() == -1 || !isSortable(sortKey.getColumn())) {
 				// column not selected any more
 				sortKeys.remove(sortKey);
 			} else {
@@ -99,6 +109,10 @@ public class SortableCollectableTableModelImpl <Clct extends Collectable>
 
 	@Override
 	public void toggleSortOrder(final int column, boolean sortImmediately) {
+		if (!isSortable(column)) {
+			return;
+		}
+		
 		List<SortKey> newSortKeys = new LinkedList<SortKey>(sortKeys);
 		int currentSortIndex = CollectionUtils.indexOfFirst(sortKeys, new Predicate<SortKey>() {
 			@Override public boolean evaluate(SortKey t) { return t.getColumn() == column; }
