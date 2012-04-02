@@ -73,11 +73,14 @@ public class SortableCollectableTableModelImpl <Clct extends Collectable>
 
 	@Override
 	public boolean isSortable(int column) {
-		CollectableEntityField cef = getCollectableEntityField(column);
-		if (NuclosImage.class.equals(cef.getJavaClass())) {
-			return false;
+		if (column >= 0 && column < getColumnCount()) {
+			CollectableEntityField cef = getCollectableEntityField(column);
+			if (NuclosImage.class.equals(cef.getJavaClass())) {
+				return false;
+			}
+			return true;
 		}
-		return true;
+		return false;
 	}
 
 	@Override

@@ -349,6 +349,8 @@ public class SubForm extends JPanel
 	
 	private boolean closed = false;
 	
+	private boolean readonly = false;
+	
 	/**
 	 * @param entityName
 	 * @param iToolBarOrientation @see JToolbar#setOrientation
@@ -802,14 +804,22 @@ public class SubForm extends JPanel
 
 	@Override
 	public void setEnabled(boolean enabled) {
+		enabled = enabled && !readonly;
 		super.setEnabled(enabled);
-
 		setToolbarFunctionState(ToolbarFunction.NEW,
-			enabled ? ToolbarFunctionState.ACTIVE : ToolbarFunctionState.DISABLED);
+				enabled ? ToolbarFunctionState.ACTIVE : ToolbarFunctionState.DISABLED);
 		setToolbarFunctionState(ToolbarFunction.MULTIEDIT,
 			uniqueMasterColumnName != null
 			? (enabled ? ToolbarFunctionState.ACTIVE : ToolbarFunctionState.DISABLED)
 			: ToolbarFunctionState.HIDDEN);
+	}
+	
+	public void setReadOnly(boolean readonly) {
+		this.readonly = readonly;
+	}
+	
+	public boolean isReadOnly() {
+		return readonly;
 	}
 
 	public void setCollectableComponentFactory(CollectableComponentFactory collectableComponentFactory) {

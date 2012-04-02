@@ -1995,6 +1995,7 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 				subform = new SubForm(sEntityName, LangUtils.defaultIfNull(iOrientation, JToolBar.HORIZONTAL),
 						sForeignKeyFieldToParent);
 
+				subform.setReadOnly(!bEnabled && !bCreateSearchableComponents);
 				subform.setEnabled(bEnabled);
 
 				final String sControllerType = attributes.getValue(ATTRIBUTE_CONTROLLERTYPE);

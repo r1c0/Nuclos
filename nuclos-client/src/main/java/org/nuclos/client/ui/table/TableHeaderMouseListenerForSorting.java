@@ -110,7 +110,7 @@ public class TableHeaderMouseListenerForSorting extends MouseAdapter {
 
 							// Map physical column to column in model; not desired for column width, but essential for sorting...
 							iColumn = convertColumnIndexToModel(iColumn);
-							if (tblmodel.isSortable(iColumn)) {
+							if (iColumn == -1 || tblmodel.isSortable(iColumn)) {
 								sortColumn( iColumn, tbl);
 						}
 					}
