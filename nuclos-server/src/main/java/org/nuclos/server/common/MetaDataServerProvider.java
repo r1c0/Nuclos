@@ -283,7 +283,7 @@ public class MetaDataServerProvider extends AbstractProvider implements MetaData
 		}
 
 		info("JMS send: notify clients that meta data changed: " + this);
-		NuclosJMSUtils.sendMessageAfterCommit("Meta data changed.", JMSConstants.TOPICNAME_METADATACACHE);
+		NuclosJMSUtils.sendOnceAfterCommit("Meta data changed.", JMSConstants.TOPICNAME_METADATACACHE);
 	}
 
 	@Override

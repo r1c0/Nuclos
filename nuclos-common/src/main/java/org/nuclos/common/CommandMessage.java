@@ -56,4 +56,17 @@ public class CommandMessage implements Serializable {
 		return "CommandMessage[" + iCommand + "]";
 	}
 	
+	@Override
+	public boolean equals(Object other) {
+		if (this == other) return true;
+		if (!(other instanceof CommandMessage)) return false;
+		final CommandMessage o = (CommandMessage) other;
+		return iCommand == o.iCommand;
+	}
+	
+	@Override
+	public int hashCode() {
+		return 267261 + iCommand;
+	}
+	
 }

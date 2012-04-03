@@ -2063,7 +2063,7 @@ public class MainController {
 
 	private void handleMessage(final Message msg) {
 		try {
-			if (msg.getJMSCorrelationID() != null && (msg.getJMSCorrelationID().equals(MainController.this.getUserName()) || msg.getJMSCorrelationID().equals(JMSConstants.BROADCAST_MESSAGE)) && msg instanceof ObjectMessage)
+			if ((msg.getJMSCorrelationID() == null || msg.getJMSCorrelationID().equals(MainController.this.getUserName())) && msg instanceof ObjectMessage)
 			{
 				final Object objMessage = ((ObjectMessage) msg).getObject();
 

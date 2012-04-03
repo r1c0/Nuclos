@@ -17,6 +17,7 @@
 package org.nuclos.server.jms;
 
 import java.io.Serializable;
+import java.util.List;
 
 import javax.jms.JMSException;
 import javax.jms.Message;
@@ -28,6 +29,7 @@ import org.nuclos.common.SpringApplicationContextHolder;
 import org.springframework.context.ApplicationContext;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
+import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationAdapter;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
@@ -57,8 +59,7 @@ public class NuclosJMSUtils {
 	
 	public static void sendMessage(final String sMessageText, final String topic, final String sReceiver) {
 		try {
-    		ApplicationContext context = SpringApplicationContextHolder.getApplicationContext();
-	    	JmsTemplate jmsTemplate = (JmsTemplate)context.getBean(topic);
+			final JmsTemplate jmsTemplate = getTemplate(topic);
 	    	jmsTemplate.send(new MessageCreator() {
 				
 				@Override
@@ -106,8 +107,7 @@ public class NuclosJMSUtils {
 	
 	public static void sendObjectMessage(final Serializable object, final String topic, final String sReceiver) {
 		try {
-    		ApplicationContext context = SpringApplicationContextHolder.getApplicationContext();
-	    	JmsTemplate jmsTemplate = (JmsTemplate)context.getBean(topic);
+			final JmsTemplate jmsTemplate = getTemplate(topic);
 	    	jmsTemplate.send(new MessageCreator() {
 				
 				@Override
@@ -123,6 +123,34 @@ public class NuclosJMSUtils {
     	catch(Exception ex) {
     		throw new NuclosFatalException(ex);
     	}
+	}
+	
+	public static void sendOnceAfterCommit(String text, String topic) {
+		final JMSSendOnceAfterCommitSynchronization ts = getJMSSendOnceAfterCommitSynchronization();
+		ts.queue(topic, text);
+	}
+	
+	public static void sendOnceAfterCommit(Serializable object, String topic) {
+		final JMSSendOnceAfterCommitSynchronization ts = getJMSSendOnceAfterCommitSynchronization();
+		ts.queue(topic, object);
+	}
+	
+	private static JMSSendOnceAfterCommitSynchronization getJMSSendOnceAfterCommitSynchronization() {
+		final List<TransactionSynchronization> txSyncs = TransactionSynchronizationManager.getSynchronizations();
+		for (TransactionSynchronization ts: txSyncs) {
+			if (ts instanceof JMSSendOnceAfterCommitSynchronization) {
+				return (JMSSendOnceAfterCommitSynchronization) ts;
+			}
+		}
+		final JMSSendOnceAfterCommitSynchronization tsNew = new JMSSendOnceAfterCommitSynchronization();
+		TransactionSynchronizationManager.registerSynchronization(tsNew);
+		return tsNew;
+	}
+	
+	private static JmsTemplate getTemplate(String topic) {
+		final ApplicationContext context = SpringApplicationContextHolder.getApplicationContext();
+    	final JmsTemplate jmsTemplate = (JmsTemplate)context.getBean(topic);
+    	return jmsTemplate;
 	}
 	
 	private static void logSendMessage(String topic, Object body, Message msg) throws JMSException {

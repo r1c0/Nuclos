@@ -91,7 +91,9 @@ public interface JMSConstants {
 	 * 			TextMessage: name of entity to reinvalidate. <code>null</code> is not allowed.</dd>
 	 * 		<dt>Receiver</dt><dd>
 	 * 			Client: MetaDataClientProvider and GenericObjectMetaDataCache and 
-	 * 			MetaDataCache.</dd>
+	 * 			MetaDataCache.
+	 * 			Because there are several listeners, {@link org.nuclos.client.jms.MultiMessageListenerContainer}
+	 * 			is used.</dd>
 	 * 		<dt>Action triggered</dt><dd>
 	 * 			{@link org.nuclos.client.common.MetaDataClientProvider#revalidate()}
 	 * 			(message content is not honored) and
@@ -326,14 +328,4 @@ public interface JMSConstants {
 	 */
 	public static final String TOPICNAME_HEARTBEAT = "topic.heartBeat";
 	
-	// MESSAGE TYPES
-
-	/**
-	 * Alias which is used to send a message to all logged in users
-	 * 
-	 * @deprecated Only used with {@link #TOPICNAME_RULENOTIFICATION}.
-	 * 		Use <code>null</code> in all other cases.
-	 */
-	public static final String BROADCAST_MESSAGE = "ALL_USERS";
-
 }

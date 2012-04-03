@@ -1016,7 +1016,7 @@ public class TransferFacadeBean extends NuclosFacadeBean implements TransferFaca
 		StateModelUsagesCache.getInstance().revalidate();
 
 		LOG.info("JMS send: notify clients that custom components changed:" + this);
-		NuclosJMSUtils.sendMessageAfterCommit(null, JMSConstants.TOPICNAME_CUSTOMCOMPONENTCACHE);
+		NuclosJMSUtils.sendOnceAfterCommit(null, JMSConstants.TOPICNAME_CUSTOMCOMPONENTCACHE);
 	}
 
 	private void logDalCallResult(List<DalCallResult> dcrs, StringBuffer sbErrorMessage) {
