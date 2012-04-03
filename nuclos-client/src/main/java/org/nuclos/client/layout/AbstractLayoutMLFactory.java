@@ -437,14 +437,6 @@ public abstract class AbstractLayoutMLFactory {
 			 util.insertComponentTo(panelGroup, cell);
 			 counter++;
 
-			 cell = new LayoutCell();
-			 cell.setCellX(counter);
-			 cell.setCellY(counter);
-			 cell.setCellHeight(InterfaceGuidelines.MARGIN_BETWEEN);
-			 cell.setCellWidth(I_CELL_WIDTH);
-			 util.addRow(cell);
-
-			 counter++;
 		 }
 		return counter;
 	}
@@ -555,18 +547,6 @@ public abstract class AbstractLayoutMLFactory {
 			 }
 			 else
 				 util.insertComponentTo((WYSIWYGComponent)c, new TableLayoutConstraints(2, counter));
-			 counter++;
-			 cell = new LayoutCell();
-			 cell.setCellX(counter);
-			 cell.setCellY(counter);
-			 cell.setCellHeight(InterfaceGuidelines.MARGIN_BETWEEN);
-			 if(field.getDataType().equals("java.lang.String")) {
-				 cell.setCellWidth(c.getPreferredSize().width*2);
-			 }
-			 else
-				 cell.setCellWidth(c.getPreferredSize().width);
-			 util.addRow(cell);
-
 			 counter++;
 		 }
 		return counter;
