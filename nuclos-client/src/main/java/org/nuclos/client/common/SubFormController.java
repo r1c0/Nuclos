@@ -169,7 +169,7 @@ public abstract class SubFormController extends MainFrameTabController
 		assert this.getCollectableEntity().getName().equals(this.getSubForm().getEntityName());
 
 		// Inititialize listeners for toolbar actions:
-		ListenerUtil.registerSubFormToolListener(subform, subformToolListener);
+		ListenerUtil.registerSubFormToolListener(subform, null, subformToolListener);
 
 		this.setupListSelectionListener(subform);
 

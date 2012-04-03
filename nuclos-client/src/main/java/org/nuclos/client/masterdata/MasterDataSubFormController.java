@@ -180,7 +180,7 @@ public class MasterDataSubFormController extends DetailsSubFormController<Collec
 			}
 		});
 		
-		ListenerUtil.registerSubFormToolListener(getSubForm(), cloneListener);
+		ListenerUtil.registerSubFormToolListener(getSubForm(), null, cloneListener);
 		setupSubFormTableContextMenue();
 	}
 

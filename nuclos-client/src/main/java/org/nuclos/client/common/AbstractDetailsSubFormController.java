@@ -86,7 +86,7 @@ public abstract class AbstractDetailsSubFormController<Clct extends Collectable>
 		getJTable().setModel(tblmdl);
 
 		// Inititialize listeners for toolbar actions:
-		ListenerUtil.registerSubFormToolListener(subform, new SubFormToolListener() {
+		ListenerUtil.registerSubFormToolListener(subform, this, new SubFormToolListener() {
 			@Override
 			public void toolbarAction(String actionCommand) {
 				if(SubForm.ToolbarFunction.fromCommandString(actionCommand) == SubForm.ToolbarFunction.MULTIEDIT)

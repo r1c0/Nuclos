@@ -1,3 +1,20 @@
+//Copyright (C) 2012  Novabit Informationssysteme GmbH
+//
+//This file is part of Nuclos.
+//
+//Nuclos is free software: you can redistribute it and/or modify
+//it under the terms of the GNU Affero General Public License as published by
+//the Free Software Foundation, either version 3 of the License, or
+//(at your option) any later version.
+//
+//Nuclos is distributed in the hope that it will be useful,
+//but WITHOUT ANY WARRANTY; without even the implied warranty of
+//MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//GNU Affero General Public License for more details.
+//
+//You should have received a copy of the GNU Affero General Public License
+//along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
+//
 package org.nuclos.client.ui.gc;
 
 import java.lang.ref.ReferenceQueue;
@@ -6,6 +23,7 @@ import java.util.EventListener;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.WeakHashMap;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.annotation.PostConstruct;
@@ -28,10 +46,12 @@ public class QueueSingleton {
 	
 	private Timer timer;
 	
-	private ReferenceQueue<EventListener> queue = new ReferenceQueue<EventListener>();
+	private final ReferenceQueue<EventListener> queue = new ReferenceQueue<EventListener>();
 	
-	private Map<Reference<EventListener>, IRegister> map 
+	private final Map<Reference<EventListener>, IRegister> eventListener2Register 
 		= new ConcurrentHashMap<Reference<EventListener>, IRegister>();
+	
+	private final Map<Object,EventListener> outer2Listener = new WeakHashMap<Object, EventListener>();
 	
 	QueueSingleton() {
 		INSTANCE = this;
@@ -52,7 +72,14 @@ public class QueueSingleton {
 	}
 	
 	public void register(IRegister register) {
-		map.put(register.getReference(), register);
+		eventListener2Register.put(register.getReference(), register);
+	}
+	
+	public void dependant(Object outer, EventListener realListener) {
+		synchronized (outer2Listener) {
+			LOG.info("Added outer ref " + outer + ", mapSize=" + outer2Listener.size());
+			outer2Listener.put(outer, realListener);
+		}
 	}
 	
 	public ReferenceQueue<EventListener> getQueue() {
@@ -71,11 +98,11 @@ public class QueueSingleton {
 				ref = queue.poll();
 				if (ref != null) {
 					// final Object o = ref.get();
-					final IRegister c = map.remove(ref);
+					final IRegister c = eventListener2Register.remove(ref);
 					if (c != null) {
 						c.unregister();
+						LOG.info("unregistered " + c + ", mapSize=" + eventListener2Register.size());
 					}
-					LOG.info("unregistered " + c + ", mapSize=" + map.size());
 				}
 			} while (ref != null);
 		}

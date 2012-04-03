@@ -154,7 +154,7 @@ public class SubFormFilter implements Closeable {
     * actionlistener to collapse or expand the searchfilter panels
     */
    private void addActionListener() {
-	   ListenerUtil.registerSubFormToolListener(subform, new SubForm.SubFormToolListener() {
+	   ListenerUtil.registerSubFormToolListener(subform, this, new SubForm.SubFormToolListener() {
 		@Override
 		public void toolbarAction(String actionCommand) {
 			if(SubForm.ToolbarFunction.fromCommandString(actionCommand) == SubForm.ToolbarFunction.FILTER) {

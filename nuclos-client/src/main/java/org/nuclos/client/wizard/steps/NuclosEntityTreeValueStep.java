@@ -353,7 +353,7 @@ public class NuclosEntityTreeValueStep extends NuclosEntityAbstractStep {
 			}
 		});
 
-		ListenerUtil.registerDocumentListener(tfTooltip.getDocument(), new DocumentListener() {
+		ListenerUtil.registerDocumentListener(tfTooltip.getDocument(), this, new DocumentListener() {
 
 			@Override
 			public void removeUpdate(DocumentEvent e) {

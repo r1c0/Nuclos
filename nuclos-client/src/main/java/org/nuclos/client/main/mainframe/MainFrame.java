@@ -706,11 +706,10 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 			}
 		});
 
-		ListenerUtil.registerWindowListener(notificationDialog, 
+		ListenerUtil.registerWindowListener(notificationDialog, miWindowNotificationDialog,
 				new NotificationDialogListener(getMessagePanel().btnNotify, miWindowNotificationDialog));
-		// notificationDialog.addWindowListener(notificationDialogListener);
-		BackgroundProcessStatusController.getStatusDialog(this).addWindowListener(
-				new WindowBackgroundTasksListener(miWindowBackgroundTasks));
+		ListenerUtil.registerWindowListener(BackgroundProcessStatusController.getStatusDialog(this),
+				miWindowBackgroundTasks, new WindowBackgroundTasksListener(miWindowBackgroundTasks));
 	}
 
 	/**

@@ -1,3 +1,20 @@
+//Copyright (C) 2012  Novabit Informationssysteme GmbH
+//
+//This file is part of Nuclos.
+//
+//Nuclos is free software: you can redistribute it and/or modify
+//it under the terms of the GNU Affero General Public License as published by
+//the Free Software Foundation, either version 3 of the License, or
+//(at your option) any later version.
+//
+//Nuclos is distributed in the hope that it will be useful,
+//but WITHOUT ANY WARRANTY; without even the implied warranty of
+//MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//GNU Affero General Public License for more details.
+//
+//You should have received a copy of the GNU Affero General Public License
+//along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
+//
 package org.nuclos.client.ui.gc;
 
 import java.awt.Window;
@@ -16,6 +33,26 @@ import javax.swing.text.Document;
 import org.nuclos.client.ui.collect.SubForm;
 import org.nuclos.client.ui.collect.SubForm.SubFormToolListener;
 
+/**
+ * A utility class for registering (gui) listeners that get garbage collected.
+ * <p>
+ * Sometimes you want to register a temporary (gui) component as a listener to a permanent
+ * (gui) component. However, when you do this, the temporary component will <em>never</em>
+ * get garbage collected. This is because the event producer class hold an reference to the 
+ * listener class. Hence the listener will be alive as long as the sender class is alive.
+ * </p><p>
+ * The consequence of this is that you dig a memory hole if you register a temporary component
+ * as a listener to a permanent component.
+ * </p><p>
+ * This is drop-in solution for this problem. Instead of registering the listener class with
+ * the event producer class directly, just use the static utility methods of this class. 
+ * </p><p>
+ * ATTENTION: Don't register anonymous inner class listeners with this utility class <em>
+ * without setting the outer class object</em>. The will be garbage collected directly!
+ * </p>
+ * @since Nuclos 3.3.0
+ * @author Thomas Pasch
+ */
 public class ListenerUtil {
 	
 	private final static class ButtonRegister implements IRegister {
@@ -232,40 +269,88 @@ public class ListenerUtil {
 		// Never invoked.
 	}
 	
-	public static void registerActionListener(AbstractButton b, ActionListener l) {
+	private static void dependant(Object outer, EventListener realListener) {
+		if (outer != null) {
+			QueueSingleton.getInstance().dependant(outer, realListener);
+		}
+	}
+	
+	/**
+	 * <p>
+	 * ATTENTION: Don't register anonymous inner class listeners with this utility class <em>
+	 * without setting the outer class object</em>. The will be garbage collected directly!
+	 * </p>
+	 */
+	public static void registerActionListener(AbstractButton b, Object outer, ActionListener l) {
 		final ActionAdapter a = new ActionAdapter(l);
 		final IRegister register = new ButtonRegister(b, a);
 		register.register();
+		dependant(outer, l);
 	}
 
-	public static void registerActionListener(JTextField b, ActionListener l) {
+	/**
+	 * <p>
+	 * ATTENTION: Don't register anonymous inner class listeners with this utility class <em>
+	 * without setting the outer class object</em>. The will be garbage collected directly!
+	 * </p>
+	 */
+	public static void registerActionListener(JTextField b, Object outer, ActionListener l) {
 		final ActionAdapter a = new ActionAdapter(l);
 		final IRegister register = new JTextFieldRegister(b, a);
 		register.register();
+		dependant(outer, l);
 	}
 
-	public static void registerActionListener(JComboBox b, ActionListener l) {
+	/**
+	 * <p>
+	 * ATTENTION: Don't register anonymous inner class listeners with this utility class <em>
+	 * without setting the outer class object</em>. The will be garbage collected directly!
+	 * </p>
+	 */
+	public static void registerActionListener(JComboBox b, Object outer, ActionListener l) {
 		final ActionAdapter a = new ActionAdapter(l);
 		final IRegister register = new JComboBoxRegister(b, a);
 		register.register();
+		dependant(outer, l);
 	}
 
-	public static void registerDocumentListener(Document b, DocumentListener l) {
+	/**
+	 * <p>
+	 * ATTENTION: Don't register anonymous inner class listeners with this utility class <em>
+	 * without setting the outer class object</em>. The will be garbage collected directly!
+	 * </p>
+	 */
+	public static void registerDocumentListener(Document b, Object outer, DocumentListener l) {
 		final DocumentAdapter a = new DocumentAdapter(l);
 		final IRegister register = new DocumentRegister(b, a);
 		register.register();
+		dependant(outer, l);
 	}
 
-	public static void registerWindowListener(Window b, WindowListener l) {
+	/**
+	 * <p>
+	 * ATTENTION: Don't register anonymous inner class listeners with this utility class <em>
+	 * without setting the outer class object</em>. The will be garbage collected directly!
+	 * </p>
+	 */
+	public static void registerWindowListener(Window b, Object outer, WindowListener l) {
 		final WindowAdapter a = new WindowAdapter(l);
 		final IRegister register = new WindowRegister(b, a);
 		register.register();
+		dependant(outer, l);
 	}
 	
-	public static void registerSubFormToolListener(SubForm b, SubFormToolListener l) {
+	/**
+	 * <p>
+	 * ATTENTION: Don't register anonymous inner class listeners with this utility class <em>
+	 * without setting the outer class object</em>. The will be garbage collected directly!
+	 * </p>
+	 */
+	public static void registerSubFormToolListener(SubForm b, Object outer, SubFormToolListener l) {
 		final SubformToolAdapter a = new SubformToolAdapter(l);
 		final IRegister register = new SubFormToolRegister(b, a);
 		register.register();		
+		dependant(outer, l);
 	}
 
 }

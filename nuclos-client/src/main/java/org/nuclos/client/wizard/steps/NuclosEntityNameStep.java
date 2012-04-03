@@ -353,7 +353,7 @@ public class NuclosEntityNameStep extends NuclosEntityAbstractStep {
 				}
 			}
 		});
-		ListenerUtil.registerActionListener(btnRemove, new ActionListener() {
+		ListenerUtil.registerActionListener(btnRemove, this, new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
