@@ -105,7 +105,7 @@ public class DynamicEntitySubFormController extends MasterDataSubFormController 
 		fixedTable.setEnabled(false);
 		fixedTable.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 
-		this.getSubForm().setEnabled(false);
+		this.getSubForm().setReadOnly(true);
 
 		// double click:
 		MouseAdapter mouseAdapter = new MouseAdapter() {
