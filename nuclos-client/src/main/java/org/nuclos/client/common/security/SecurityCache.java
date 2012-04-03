@@ -111,13 +111,7 @@ public class SecurityCache {
 				LOG.info("onMessage: JMS trigger clearcache (security, attribute, menues) in " + this);
 				SecurityCache.this.revalidate();
 				attributeCache.revalidate();
-				UIUtils.runCommandLater(Main.getInstance().getMainFrame(), new CommonRunnable() {
-					@Override
-	                public void run() throws CommonBusinessException {
-						LOG.info("onMessage " + this + " refreshMenus...");
-						Main.getInstance().getMainController().refreshMenus();
-					}
-				});
+				Main.getInstance().getMainController().refreshMenusLater();
 			}
 		}
 	};

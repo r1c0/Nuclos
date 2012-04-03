@@ -78,14 +78,9 @@ public class MetaDataCache {
 			if (msg instanceof TextMessage) {
 				try {
 					NuclosEntity entity = NuclosEntity.getByName(((TextMessage)msg).getText());
-					if (!(entity == NuclosEntity.DYNAMICENTITY || entity == NuclosEntity.LAYOUT))
-						UIUtils.runCommandLater(Main.getInstance().getMainFrame(), new CommonRunnable() {			
-							@Override
-							public void run() throws CommonBusinessException {
-								LOG.info("onMessage " + this + " refreshMenus...");
-								Main.getInstance().getMainController().refreshMenus();
-							}
-						});
+					if (!(entity == NuclosEntity.DYNAMICENTITY || entity == NuclosEntity.LAYOUT)) {
+						Main.getInstance().getMainController().refreshMenusLater();
+					}
 				}
 				catch (JMSException ex) {
 					LOG.warn("onMessage: Exception thrown in JMS message listener.", ex);

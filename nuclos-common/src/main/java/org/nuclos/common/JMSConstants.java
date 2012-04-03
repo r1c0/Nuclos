@@ -98,7 +98,7 @@ public interface JMSConstants {
 	 * 			{@link org.nuclos.client.genericobject.GenericObjectMetaDataCache#revalidate()}
 	 * 			(message content is not honored) and
 	 * 			{@link org.nuclos.client.main.MainController#refreshMenus()} (but only if entity is 
-	 * 			a dynamic entity or a layout).
+	 * 			<em>not</em> a dynamic entity or a layout).
 	 * 			</dd>
 	 * </dl>
 	 */
