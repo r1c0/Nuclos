@@ -295,6 +295,11 @@ public class MetaDataClientProvider implements MetaDataProvider<EntityMetaDataVO
 		LOG.info("Revalidated cache " + this);
 	}
 
+	/**
+	 * Subscribed to TOPICNAME_METADATACACHE.
+	 * 
+	 * @see #afterPropertiesSet()
+	 */
 	private final MessageListener messagelistener = new MessageListener() {
 		@Override
         public void onMessage(Message msg) {

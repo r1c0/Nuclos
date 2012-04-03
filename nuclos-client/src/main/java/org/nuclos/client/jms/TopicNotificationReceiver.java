@@ -49,6 +49,11 @@ public class TopicNotificationReceiver {
 
 	private static final Logger LOG = Logger.getLogger(TopicNotificationReceiver.class);
 	
+	/**
+	 * Subscribed to TOPICNAME_HEARTBEAT.
+	 * 
+	 * @see #init()
+	 */
 	private static final HeartBeatMessageListener heartBeatListener = new HeartBeatMessageListener();
 	
 	static final DummyMessageListener dummyListener = new DummyMessageListener();

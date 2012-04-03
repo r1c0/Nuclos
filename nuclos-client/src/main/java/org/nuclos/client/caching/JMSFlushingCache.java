@@ -31,20 +31,20 @@ import org.nuclos.common.caching.GenCache;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
+/**
+ * @deprecated Only one usage in nuclos. Get rid of it!
+ */
 @Configurable
 public class JMSFlushingCache<K, V> extends GenCache<K, V> implements MessageListener {
 	
 	private static final Logger LOG = Logger.getLogger(JMSFlushingCache.class);
 	
-	private String pat;
-	
 	private String topic;
 	
 	private TopicNotificationReceiver tnr;
 
-	public JMSFlushingCache(String topic, String messagePattern, LookupProvider<K, V> lookupProvider) {
+	public JMSFlushingCache(String topic, LookupProvider<K, V> lookupProvider) {
 		super(lookupProvider);
-		this.pat = messagePattern;
 		this.topic = topic;
 	}
 	
@@ -64,10 +64,8 @@ public class JMSFlushingCache<K, V> extends GenCache<K, V> implements MessageLis
 			String t;
 			try {
 				t = ((TextMessage) m).getText();
-				if (t != null && t.matches(pat)) {
-					LOG.info("onMessage " + this + " pattern matches, clear cache...");
-					clear();
-				}
+				LOG.info("onMessage " + this + " pattern matches, clear cache...");
+				clear();
 			}
 			catch(JMSException e) {
 				LOG.warn("onMessage failed: " + e, e);
@@ -79,7 +77,6 @@ public class JMSFlushingCache<K, V> extends GenCache<K, V> implements MessageLis
 	public String toString() {
 		final StringBuilder result = new StringBuilder();
 		result.append("JMSFlushingCache[");
-		result.append("pattern=").append(pat);
 		result.append(",topic=").append(topic);
 		result.append(",receiver=").append(tnr);
 		result.append(",super=").append(super.toString());

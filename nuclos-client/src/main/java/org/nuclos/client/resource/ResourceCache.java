@@ -51,6 +51,11 @@ public class ResourceCache {
 	
 	private static ResourceCache INSTANCE;
 	
+	/**
+	 * Subscribed to TOPICNAME_RESOURCECACHE.
+	 * 
+	 * @see #init()
+	 */
 	private MessageListener messagelistener = new MessageListener() {
 		@Override
 		public void onMessage(Message msg) {

@@ -281,12 +281,13 @@ public class StateDelegate {
 
 	private JMSFlushingCache<Integer, StatemodelClosure> closureCache
 		= new JMSFlushingCache<Integer, StatemodelClosure>(
-			JMSConstants.TOPICNAME_STATEMODEL, ".*",
+			JMSConstants.TOPICNAME_STATEMODEL, 
 			new GenCache.LookupProvider<Integer, StatemodelClosure>() {
-			@Override
-            public StatemodelClosure lookup(Integer moduleId) {
-				return facade.getStatemodelClosureForModule(moduleId);
-            }});
+				@Override
+	            public StatemodelClosure lookup(Integer moduleId) {
+					return facade.getStatemodelClosureForModule(moduleId);
+	            }
+			});
 
 	public StatemodelClosure getStatemodelClosure(Integer moduleId) {
 		return closureCache.get(moduleId);

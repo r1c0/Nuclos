@@ -70,6 +70,11 @@ public class SearchFilterCache {
 	
 	private TopicNotificationReceiver tnr;
 
+	/**
+	 * Subscribed to TOPICNAME_SEARCHFILTERCACHE.
+	 * 
+	 * @see #init()
+	 */
 	private final MessageListener messagelistener = new MessageListener() {
 		@Override
         public void onMessage(Message msg) {
@@ -77,18 +82,26 @@ public class SearchFilterCache {
 			SearchFilterCache.this.validate();
 			if (msg instanceof ObjectMessage) {
 				try {
-					String[] asUsers = (String[])((ObjectMessage)msg).getObject();
+					final String[] asUsers = (String[])((ObjectMessage)msg).getObject();
 					final Main main = Main.getInstance();
 					final MainController mc = main.getMainController();
+					final String userName = mc.getUserName();
+					
+					boolean refresh = true;
 					for (String sUser : asUsers) {
-						if (!(mc.getUserName().equals(sUser)))
-							UIUtils.runCommandLater(main.getMainFrame(), new CommonRunnable() {			
-								@Override
-                                public void run() throws CommonBusinessException {
-									LOG.info("onMessage " + this + " refreshTaskController...");
-									mc.refreshTaskController();
-								}
-							});	
+						if (userName.equals(sUser)) {
+							refresh = false;
+						}
+					}
+					
+					if (refresh) {
+						UIUtils.runCommandLater(main.getMainFrame(), new CommonRunnable() {			
+							@Override
+                            public void run() throws CommonBusinessException {
+								LOG.info("onMessage " + this + " refreshTaskController...");
+								mc.refreshTaskController();
+							}
+						});	
 					}
 				}
 				catch (JMSException ex) {

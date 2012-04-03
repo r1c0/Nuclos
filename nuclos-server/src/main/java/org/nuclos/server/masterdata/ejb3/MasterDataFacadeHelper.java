@@ -216,10 +216,7 @@ public class MasterDataFacadeHelper {
 		this.nucletDalProvider = nucletDalProvider;
 	}
 
-	void close() {
-	}
-
-	void notifyClients(String sCachedEntityName) {
+	public void notifyClients(String sCachedEntityName) {
 		if (sCachedEntityName == null) {
 			throw new NullArgumentException("sCachedEntityName");
 		}

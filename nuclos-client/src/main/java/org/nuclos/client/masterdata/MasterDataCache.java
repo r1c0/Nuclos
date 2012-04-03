@@ -76,6 +76,11 @@ public class MasterDataCache {
 	
 	private EntityFacadeDelegate entityFacadeDelegate;
 
+	/**
+	 * Subscribed to TOPICNAME_MASTERDATACACHE.
+	 * 
+	 * @see #init()
+	 */
 	private final MessageListener messagelistener = new MessageListener() {
 		@Override
 		public void onMessage(Message msg) {

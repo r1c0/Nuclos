@@ -65,6 +65,11 @@ public class MetaDataCache {
 	
 	private MasterDataDelegate masterDataDelegate;
 	
+	/**
+	 * Subscribed to TOPICNAME_METADATACACHE.
+	 * 
+	 * @see #init()
+	 */
 	private final MessageListener messagelistener = new MessageListener() {
 		@Override
 		public void onMessage(Message msg) {

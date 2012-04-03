@@ -212,6 +212,11 @@ public class GenericObjectMetaDataCache implements GenericObjectMetaDataProvider
 		}
 	}
 	
+	/**
+	 * Subscribed to TOPICNAME_METADATACACHE.
+	 * 
+	 * @see #init()
+	 */
 	private final MessageListener messagelistener = new MessageListener() {
 		@Override
 		public void onMessage(Message msg) {
