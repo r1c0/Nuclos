@@ -16,6 +16,8 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.common;
 
+import org.nuclos.common2.LangUtils;
+
 /**
  * Notification sent by rules for messages on the client.
  * <br>
@@ -80,6 +82,44 @@ public class RuleNotification extends SimpleClientNotification {
 
 	public void setTargetIdentifier(String targetIdentifier) {
 		this.targetIdentifier = targetIdentifier;
+	}
+	
+	@Override
+	public boolean equals(Object other) {
+		if (this == other) return true;
+		if (!(other instanceof RuleNotification)) return false;
+		final RuleNotification o = (RuleNotification) other;
+		return LangUtils.equals(getMessage(), o.getMessage())
+				&& LangUtils.equals(getSourceIdentifier(), o.getSourceIdentifier())
+				&& LangUtils.equals(getTargetIdentifier(), o.getTargetIdentifier())
+				&& LangUtils.equals(getSourceId(), o.getSourceId())
+				&& LangUtils.equals(getTargetId(), o.getTargetId());
+	}
+	
+	@Override 
+	public int hashCode() {
+		int result = 8728721;
+		String s = getMessage();
+		if (s != null) {
+			result += 3 * s.hashCode();
+		}
+		s = getSourceIdentifier();
+		if (s != null) {
+			result += 5 * s.hashCode();
+		}
+		s = getTargetIdentifier();
+		if (s != null) {
+			result += 7 * s.hashCode();
+		}
+		Integer i = getSourceId();
+		if (i != null) {
+			result += 11 * i.hashCode();
+		}
+		i = getTargetId();
+		if (i != null) {
+			result += 13 * i.hashCode();
+		}
+		return result;
 	}
 
 	@Override

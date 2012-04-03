@@ -111,6 +111,9 @@ public class QueueSingleton {
 						c.unregister();
 						LOG.info("unregistered " + c + ", mapSize=" + eventListener2Register.size());
 					}
+					else {
+						LOG.info("removed gc'ed ref " + ref + ", mapSize=" + eventListener2Register.size());
+					}
 				}
 			} while (ref != null);
 		}

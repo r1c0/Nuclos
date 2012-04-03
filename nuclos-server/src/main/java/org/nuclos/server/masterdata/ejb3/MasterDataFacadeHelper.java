@@ -221,7 +221,7 @@ public class MasterDataFacadeHelper {
 			throw new NullArgumentException("sCachedEntityName");
 		}
 		LOG.info("JMS send: notify clients that master data changed:" + this);
-		NuclosJMSUtils.sendMessageAfterCommit(sCachedEntityName, JMSConstants.TOPICNAME_MASTERDATACACHE);
+		NuclosJMSUtils.sendOnceAfterCommit(sCachedEntityName, JMSConstants.TOPICNAME_MASTERDATACACHE);
 	}
 
 	public MasterDataVO getMasterDataCVOById(final MasterDataMetaVO mdmetavo, final Object oId) throws CommonFinderException {

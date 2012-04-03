@@ -1486,7 +1486,7 @@ public class StateFacadeBean extends NuclosFacadeBean implements StateFacadeRemo
 		StateModelUsagesCache.getInstance().revalidate();
 
 		LOG.info("JMS send: notify clients that state models changed:" + this);
-		NuclosJMSUtils.sendMessageAfterCommit(null, JMSConstants.TOPICNAME_STATEMODEL);
+		NuclosJMSUtils.sendOnceAfterCommit(null, JMSConstants.TOPICNAME_STATEMODEL);
 	}
 
     public String getResourceSIdForName(Integer iStateId) {

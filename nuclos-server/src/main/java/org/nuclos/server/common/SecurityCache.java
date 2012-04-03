@@ -69,8 +69,8 @@ import org.nuclos.server.statemodel.valueobject.StateModelUsages.StateModelUsage
 import org.nuclos.server.statemodel.valueobject.StateModelUsagesCache;
 import org.nuclos.server.statemodel.valueobject.StateTransitionVO;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationAdapter;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
@@ -84,7 +84,6 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
  * @version 00.01.000
  */
 @Component
-@Lazy
 public class SecurityCache implements SecurityCacheMBean {
 
 	private static final Logger LOG = Logger.getLogger(SecurityCache.class);
@@ -121,6 +120,19 @@ public class SecurityCache implements SecurityCacheMBean {
 	private final Map<UserSubForm, Map<Integer, Permission>> mpSubForms
 		= new ConcurrentHashMap<SecurityCache.UserSubForm, Map<Integer,Permission>>();
 
+
+	private final TransactionSynchronization invalidate = new TransactionSynchronizationAdapter() {
+		@Override
+		public synchronized void afterCommit() {
+			LOG.info("afterCommit: Invalidating security cache...");
+
+			mpUserRights.clear();
+			mpAttributeGroups.clear();
+			mpSubForms.clear();
+			mpAttributePermission.clear();
+		}
+	};
+	
 	private class UserRights {
 
 		private final String sUserName;
@@ -995,23 +1007,24 @@ public class SecurityCache implements SecurityCacheMBean {
 
 	@Override
 	public void invalidate() {
-		TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
-			@Override
-			public synchronized void afterCommit() {
-				LOG.info("afterCommit: Invalidating security cache...");
-
-				mpUserRights.clear();
-				mpAttributeGroups.clear();
-				mpSubForms.clear();
-				mpAttributePermission.clear();
-
-				notifyUser(null);
-			}
-		});
+		if (TransactionSynchronizationManager.getSynchronizations().contains(invalidate)) {
+			return;
+		}
+		
+		notifyUser(null);
+		TransactionSynchronizationManager.registerSynchronization(invalidate);
 	}
 
 	public void invalidate(final String username) {
 		if (username != null) {
+			// If we find the invalidate transaction synchronization the complete
+			// cache is invalidated. Hence, there is no need to invalidate for 
+			// a individual user. (tp)
+			if (TransactionSynchronizationManager.getSynchronizations().contains(invalidate)) {
+				return;
+			}
+			
+			notifyUser(username);
 			TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
 				@Override
 				public synchronized void afterCommit() {
@@ -1029,7 +1042,6 @@ public class SecurityCache implements SecurityCacheMBean {
 							mpAttributeGroups.remove(uag);
 						}
 					}
-					notifyUser(username);
 				}
 			});
 		}
@@ -1116,7 +1128,7 @@ public class SecurityCache implements SecurityCacheMBean {
 	 */
 	private void notifyUser(String username) {
 		LOG.info("JMS send: notify user " + username + " that security data has changed: " + this);
-		NuclosJMSUtils.sendMessage(username, JMSConstants.TOPICNAME_SECURITYCACHE);
+		NuclosJMSUtils.sendOnceAfterCommit(username, JMSConstants.TOPICNAME_SECURITYCACHE);
 	}
 	
 }	// class SecurityCache

@@ -80,9 +80,14 @@ public class ConsoleFacadeBean extends NuclosFacadeBean implements ConsoleFacade
 	 */
 	public void sendClientNotification(String sMessage, String sUser, Priority priority, String sAuthor) {
 		LOG.info("JMS send client notification to user " + sUser + ": " + sMessage + ": " + this);
-		NuclosJMSUtils.sendObjectMessageAfterCommit(
-				new RuleNotification(priority, sMessage, sAuthor), JMSConstants.TOPICNAME_RULENOTIFICATION, 
-				LangUtils.defaultIfNull(sUser, JMSConstants.BROADCAST_MESSAGE));
+		final RuleNotification rn = new RuleNotification(priority, sMessage, sAuthor);
+		if (sUser != null) {
+			NuclosJMSUtils.sendObjectMessageAfterCommit(
+					rn, JMSConstants.TOPICNAME_RULENOTIFICATION, sUser);
+		}
+		else {
+			NuclosJMSUtils.sendOnceAfterCommit(rn, JMSConstants.TOPICNAME_RULENOTIFICATION);
+		}
 	}
 
 	/**
@@ -91,9 +96,15 @@ public class ConsoleFacadeBean extends NuclosFacadeBean implements ConsoleFacade
 	 */
 	public void killSession(String sUser) {
 		LOG.info("JMS send killSession " + sUser + ": " + this);
-		NuclosJMSUtils.sendObjectMessageAfterCommit(
-				new CommandMessage(CommandMessage.CMD_SHUTDOWN), JMSConstants.TOPICNAME_RULENOTIFICATION, 
-				LangUtils.defaultIfNull(sUser, JMSConstants.BROADCAST_MESSAGE));
+		final CommandMessage cm = new CommandMessage(CommandMessage.CMD_SHUTDOWN);
+		if (sUser != null) {
+			NuclosJMSUtils.sendObjectMessageAfterCommit(
+					cm, JMSConstants.TOPICNAME_RULENOTIFICATION, sUser);
+		}
+		else {
+			NuclosJMSUtils.sendOnceAfterCommit(
+					cm, JMSConstants.TOPICNAME_RULENOTIFICATION);
+		}
 	}
 
 	/**
