@@ -283,6 +283,10 @@ public class DatasourceFacadeBean extends NuclosFacadeBean implements Datasource
 			}
 		}
 		
+		if (NuclosEntity.DYNAMICENTITY.getEntityName().equals(entity)) {
+			processChangingDynamicEntity((DynamicEntityVO) datasourcevo, null, true);
+		}
+		
 		MasterDataVO mdVO = getMasterDataFacade().create(entity, type.unwrap(datasourcevo), null);
 		getMasterDataFacade().notifyClients(entity);
 		
