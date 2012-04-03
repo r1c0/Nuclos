@@ -86,7 +86,7 @@ public class ConsoleFacadeBean extends NuclosFacadeBean implements ConsoleFacade
 					rn, JMSConstants.TOPICNAME_RULENOTIFICATION, sUser);
 		}
 		else {
-			NuclosJMSUtils.sendOnceAfterCommit(rn, JMSConstants.TOPICNAME_RULENOTIFICATION);
+			NuclosJMSUtils.sendOnceAfterCommitDelayed(rn, JMSConstants.TOPICNAME_RULENOTIFICATION);
 		}
 	}
 
@@ -102,7 +102,7 @@ public class ConsoleFacadeBean extends NuclosFacadeBean implements ConsoleFacade
 					cm, JMSConstants.TOPICNAME_RULENOTIFICATION, sUser);
 		}
 		else {
-			NuclosJMSUtils.sendOnceAfterCommit(
+			NuclosJMSUtils.sendOnceAfterCommitDelayed(
 					cm, JMSConstants.TOPICNAME_RULENOTIFICATION);
 		}
 	}

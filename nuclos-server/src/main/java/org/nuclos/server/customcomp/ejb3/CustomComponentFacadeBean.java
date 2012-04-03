@@ -75,7 +75,7 @@ public class CustomComponentFacadeBean extends NuclosFacadeBean implements Custo
 	}
 
 	private void notifyClients() {
-		NuclosJMSUtils.sendOnceAfterCommit(null, JMSConstants.TOPICNAME_CUSTOMCOMPONENTCACHE);
+		NuclosJMSUtils.sendOnceAfterCommitDelayed(null, JMSConstants.TOPICNAME_CUSTOMCOMPONENTCACHE);
 	}
 
 	public List<CustomComponentVO> getAll() {

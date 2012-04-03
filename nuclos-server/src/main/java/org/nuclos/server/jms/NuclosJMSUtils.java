@@ -125,24 +125,24 @@ public class NuclosJMSUtils {
     	}
 	}
 	
-	public static void sendOnceAfterCommit(String text, String topic) {
-		final JMSSendOnceAfterCommitSynchronization ts = getJMSSendOnceAfterCommitSynchronization();
+	public static void sendOnceAfterCommitDelayed(String text, String topic) {
+		final JMSOnceAfterCommitSynchronization ts = getJMSOnceAfterCommitSynchronization();
 		ts.queue(topic, text);
 	}
 	
-	public static void sendOnceAfterCommit(Serializable object, String topic) {
-		final JMSSendOnceAfterCommitSynchronization ts = getJMSSendOnceAfterCommitSynchronization();
+	public static void sendOnceAfterCommitDelayed(Serializable object, String topic) {
+		final JMSOnceAfterCommitSynchronization ts = getJMSOnceAfterCommitSynchronization();
 		ts.queue(topic, object);
 	}
 	
-	private static JMSSendOnceAfterCommitSynchronization getJMSSendOnceAfterCommitSynchronization() {
+	private static JMSOnceAfterCommitSynchronization getJMSOnceAfterCommitSynchronization() {
 		final List<TransactionSynchronization> txSyncs = TransactionSynchronizationManager.getSynchronizations();
 		for (TransactionSynchronization ts: txSyncs) {
-			if (ts instanceof JMSSendOnceAfterCommitSynchronization) {
-				return (JMSSendOnceAfterCommitSynchronization) ts;
+			if (ts instanceof JMSOnceAfterCommitSynchronization) {
+				return (JMSOnceAfterCommitSynchronization) ts;
 			}
 		}
-		final JMSSendOnceAfterCommitSynchronization tsNew = new JMSSendOnceAfterCommitSynchronization();
+		final JMSOnceAfterCommitSynchronization tsNew = new JMSOnceAfterCommitSynchronization(new JMSSendToGlobalQueue());
 		TransactionSynchronizationManager.registerSynchronization(tsNew);
 		return tsNew;
 	}

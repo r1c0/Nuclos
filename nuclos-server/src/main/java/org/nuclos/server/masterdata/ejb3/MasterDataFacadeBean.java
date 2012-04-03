@@ -875,7 +875,7 @@ public class MasterDataFacadeBean extends NuclosFacadeBean implements MasterData
 	 */
 	protected void notifyClients(NuclosEntity entity) {
 		LOG.info("JMS send: notify clients that entity " + entity.getEntityName() + " changed:" + this);
-		NuclosJMSUtils.sendOnceAfterCommit(entity.getEntityName(), JMSConstants.TOPICNAME_METADATACACHE);
+		NuclosJMSUtils.sendOnceAfterCommitDelayed(entity.getEntityName(), JMSConstants.TOPICNAME_METADATACACHE);
 	}
 
 	private boolean hasUserRole(String sUser, DependantMasterDataMap mpDependants) {

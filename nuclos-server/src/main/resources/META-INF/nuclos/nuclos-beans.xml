@@ -120,6 +120,13 @@
 	<!-- Server Startup: Logging version (and svn) information -->
 
 	<bean id="startup" class="org.nuclos.common.startup.Startup"/>
+	
+	<!-- Single JMS sending queue -->
+	<bean id="jmsSendOnce" class="org.nuclos.common.JMSOnceSyncDelayed">
+		<constructor-arg>
+			<bean class="org.nuclos.server.jms.JMSSendOnce" />
+		</constructor-arg>
+	</bean>
 
 	<!-- JDBC start -->
 

@@ -1,9 +1,6 @@
 package org.nuclos.server.jms;
 
 import java.io.Serializable;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
@@ -29,8 +26,8 @@ public class JMSSendOnce extends JMSOnce {
 		}
 		for (String topic: topic2ObjectMessage.keySet()) {
 			final Set<Serializable> set = topic2ObjectMessage.get(topic);
-			for (Serializable text: set) {
-				NuclosJMSUtils.sendObjectMessage(text, topic, null);
+			for (Serializable object: set) {
+				NuclosJMSUtils.sendObjectMessage(object, topic, null);
 			}
 		}
 		clear();
