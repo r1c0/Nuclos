@@ -2,21 +2,26 @@ package org.nuclos.server.jms;
 
 import java.io.Serializable;
 
+import org.nuclos.common.IJMSOnce;
 import org.springframework.transaction.support.TransactionSynchronization;
 
-public class JMSSendOnceAfterCommitSynchronization implements TransactionSynchronization {
+public class JMSOnceAfterCommitSynchronization implements TransactionSynchronization {
 	
-	private final JMSSendOnce sendOnce = new JMSSendOnce();
+	private final IJMSOnce once;
 	
-	public JMSSendOnceAfterCommitSynchronization() {
+	public JMSOnceAfterCommitSynchronization(IJMSOnce once) {
+		if (once == null) {
+			throw new NullPointerException();
+		}
+		this.once = once;
 	}
 	
 	public void queue(String topic, String text) {
-		sendOnce.queue(topic, text);
+		once.queue(topic, text);
 	}
 	
 	public void queue(String topic, Serializable object) {
-		sendOnce.queue(topic, object);
+		once.queue(topic, object);
 	}
 	
 	//
@@ -43,7 +48,7 @@ public class JMSSendOnceAfterCommitSynchronization implements TransactionSynchro
 
 	@Override
 	public void afterCommit() {
-		sendOnce.once();
+		once.once();
 	}
 
 	@Override

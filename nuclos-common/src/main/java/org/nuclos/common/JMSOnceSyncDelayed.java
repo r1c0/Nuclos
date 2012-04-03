@@ -2,11 +2,21 @@ package org.nuclos.common;
 
 import java.io.Serializable;
 
-public class JMSOnceSync implements IJMSOnce {
+import org.nuclos.common2.Delayer;
+
+public class JMSOnceSyncDelayed implements IJMSOnce {
+	
+	private final Runnable runnable = new Runnable() {
+		
+		@Override
+		public void run() {
+			wrapped.once();
+		}
+	};
 	
 	private IJMSOnce wrapped;
 	
-	public JMSOnceSync(IJMSOnce wrapped) {
+	public JMSOnceSyncDelayed(IJMSOnce wrapped) {
 		if (wrapped == null) {
 			throw new NullPointerException();
 		}
@@ -30,7 +40,7 @@ public class JMSOnceSync implements IJMSOnce {
 
 	@Override
 	public synchronized void once() {
-		wrapped.once();
+		Delayer.runOnlyOnce(300L, runnable);
 	}
 
 }

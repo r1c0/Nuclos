@@ -216,6 +216,6 @@ public class ResourceCache {
 	
 	private void notifyClients() {
 		LOG.info("JMS send: notify clients that resources changed:" + this);
-		NuclosJMSUtils.sendOnceAfterCommit(null, JMSConstants.TOPICNAME_RESOURCECACHE);
+		NuclosJMSUtils.sendOnceAfterCommitDelayed(null, JMSConstants.TOPICNAME_RESOURCECACHE);
 	}
 }
