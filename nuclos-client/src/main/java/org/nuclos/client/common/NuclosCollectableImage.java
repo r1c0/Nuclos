@@ -60,6 +60,7 @@ import org.apache.log4j.Logger;
 import org.nuclos.client.desktop.DesktopUtils;
 import org.nuclos.client.entityobject.CollectableEntityObjectField;
 import org.nuclos.client.genericobject.CollectableGenericObjectAttributeField;
+import org.nuclos.client.image.ImageScaler;
 import org.nuclos.client.masterdata.CollectableMasterDataField;
 import org.nuclos.client.ui.Errors;
 import org.nuclos.client.ui.collect.component.CollectableMediaComponent;
@@ -141,8 +142,8 @@ public class NuclosCollectableImage extends CollectableMediaComponent implements
 							w = (int) (ii.getIconWidth() * scale);
 							h = (int) (ii.getIconHeight() * scale);
 						}
-						Image imageScaled = ii.getImage().getScaledInstance(w, h, Image.SCALE_DEFAULT);
-						
+						// final Image imageScaled = ii.getImage().getScaledInstance(w, h, Image.SCALE_DEFAULT);
+						final Image imageScaled = ImageScaler.scaleImage(ii.getImage(), w, h);
 						ImageIcon icon = new ImageIcon(imageScaled);
 						
 						// set icon for both states, because if the component is disabled it should look the same way.
@@ -358,7 +359,8 @@ public class NuclosCollectableImage extends CollectableMediaComponent implements
 			if (comp instanceof LabeledImage) {
 				LabeledImage li = (LabeledImage) comp;
 				ImageIcon ii = new ImageIcon(b);
-				Image scaledImageForLabeled = ii.getImage().getScaledInstance(li.getWidth(), li.getHeight(), Image.SCALE_DEFAULT);
+				// final Image scaledImageForLabeled = ii.getImage().getScaledInstance(li.getWidth(), li.getHeight(), Image.SCALE_DEFAULT);
+				final Image scaledImageForLabeled = ImageScaler.scaleImage(ii.getImage(), li.getWidth(), li.getHeight());
 				li.getJMediaComponent().setIcon(new ImageIcon(scaledImageForLabeled));
 				li.setNuclosImage(nuclosImage);
 				nuclosImage.setThmubnail(getScaled(b, 20, 20));

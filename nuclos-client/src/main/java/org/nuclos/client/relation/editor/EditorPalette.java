@@ -24,6 +24,7 @@ import java.awt.Font;
 import java.awt.GradientPaint;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Image;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.datatransfer.DataFlavor;
@@ -39,6 +40,8 @@ import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.TransferHandler;
+
+import org.nuclos.client.image.ImageScaler;
 
 import com.mxgraph.model.mxCell;
 import com.mxgraph.model.mxGeometry;
@@ -290,12 +293,11 @@ public class EditorPalette extends JPanel
 				new Object[] { cell }, bounds);
 
 		// Scales the image if it's too large for the library
-		if (icon != null)
-		{
-			if (icon.getIconWidth() > 32 || icon.getIconHeight() > 32)
-			{
-				icon = new ImageIcon(icon.getImage().getScaledInstance(32, 32,
-						0));
+		if (icon != null) {
+			if (icon.getIconWidth() > 32 || icon.getIconHeight() > 32) {
+				// final Image image = icon.getImage().getScaledInstance(32, 32, 0);
+				final Image image = ImageScaler.scaleImage(icon.getImage(), 32, 32);
+				icon = new ImageIcon(image);
 			}
 		}
 

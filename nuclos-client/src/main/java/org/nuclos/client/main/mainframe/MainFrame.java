@@ -84,6 +84,7 @@ import org.nuclos.client.common.KeyBindingProvider;
 import org.nuclos.client.common.MetaDataClientProvider;
 import org.nuclos.client.common.Utils;
 import org.nuclos.client.common.security.SecurityCache;
+import org.nuclos.client.image.ImageScaler;
 import org.nuclos.client.livesearch.LiveSearchController;
 import org.nuclos.client.main.Main;
 import org.nuclos.client.main.MainController;
@@ -123,6 +124,8 @@ import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.PreferencesException;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.awt.Image;
 
 /**
  * The "main frame" of the application. Contains as little control logic as possible.
@@ -1128,8 +1131,9 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 		        g2.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
 		        g2.drawImage(imgico.getImage(), w > h ? 0 : (h-w)/2, w > h ? (w-h)/2 : 0, null);
 		        g2.dispose();
-
-				cached =  new ImageIcon(bi.getScaledInstance(max, -1, java.awt.Image.SCALE_SMOOTH));
+		        // final Image image = bi.getScaledInstance(max, -1, java.awt.Image.SCALE_SMOOTH);
+		        final Image image = ImageScaler.scaleImage(bi, max, -1);
+				cached =  new ImageIcon(image);
 				icoCache.put(max, cached);
 			}
 

@@ -22,6 +22,7 @@ import java.util.Map;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 
+import org.nuclos.client.image.ImageScaler;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
 import org.nuclos.common.dal.vo.EntityObjectVO;
@@ -41,7 +42,9 @@ import org.nuclos.common2.SpringLocaleDelegate;
 	
 	public LiveSearchResultRow(EntityObjectVO theObject, ImageIcon icon, EntityMetaDataVO entityMeta, String titleString, Map<String, String> matchDescriptions) {
 		this.theObject = theObject;
-		this.icon = new ImageIcon(icon.getImage().getScaledInstance(ICON_SIZE, ICON_SIZE, Image.SCALE_SMOOTH));		
+		// final Image image = icon.getImage().getScaledInstance(ICON_SIZE, ICON_SIZE, Image.SCALE_SMOOTH);
+		final Image image = ImageScaler.scaleImage(icon.getImage(), ICON_SIZE, ICON_SIZE);
+		this.icon = new ImageIcon(image);		
 	    this.entityMeta = entityMeta;
 	    this.titleString = titleString;
 	    this.matchDescriptions = matchDescriptions;
