@@ -21,6 +21,8 @@ import java.awt.Color;
 import java.awt.Component;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.EventListener;
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
@@ -45,6 +47,7 @@ import org.apache.log4j.Logger;
 import org.nuclos.client.common.MetaDataClientProvider;
 import org.nuclos.client.ui.DateChooser;
 import org.nuclos.client.ui.collect.SubForm;
+import org.nuclos.client.ui.gc.IReferenceHolder;
 import org.nuclos.client.ui.gc.ListenerUtil;
 import org.nuclos.client.ui.labeled.LabeledComponentSupport;
 import org.nuclos.client.wizard.model.ValueList;
@@ -63,7 +66,7 @@ import org.springframework.beans.factory.annotation.Configurable;
 * @version 01.00.00
 */
 @Configurable
-public class NuclosEntityAttributeValueListShipStep extends NuclosEntityAttributeAbstractStep {
+public class NuclosEntityAttributeValueListShipStep extends NuclosEntityAttributeAbstractStep implements IReferenceHolder {
 	
 	private static final Logger LOG = Logger.getLogger(NuclosEntityAttributeValueListShipStep.class);
 
@@ -74,6 +77,8 @@ public class NuclosEntityAttributeValueListShipStep extends NuclosEntityAttribut
 
 	private SubForm subform = new SubForm("Werteliste", JToolBar.VERTICAL);	
 	private List<ValueList> lstValues;
+	
+	private final List<Object> ref = new LinkedList<Object>();
 	
 
 	public NuclosEntityAttributeValueListShipStep() {	
@@ -221,10 +226,16 @@ public class NuclosEntityAttributeValueListShipStep extends NuclosEntityAttribut
 		}
 		subform = null;
 		lstValues = null;
+		ref.clear();
 				
 		super.close();
 	}
 
+	@Override
+	public void addRef(EventListener o) {
+		ref.add(o);
+	}
+	
 	@Override
 	public void applyState() throws InvalidStateException {
 		super.applyState();

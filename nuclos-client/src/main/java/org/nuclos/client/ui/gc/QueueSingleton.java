@@ -53,9 +53,6 @@ public class QueueSingleton {
 	private final Map<Reference<EventListener>, IRegister> eventListener2Register 
 		= new ConcurrentHashMap<Reference<EventListener>, IRegister>();
 	
-	private final Map<Object,List<EventListener>> outer2Listener 
-			= new WeakHashMap<Object, List<EventListener>>();
-	
 	QueueSingleton() {
 		INSTANCE = this;
 	}
@@ -76,18 +73,6 @@ public class QueueSingleton {
 	
 	public void register(IRegister register) {
 		eventListener2Register.put(register.getReference(), register);
-	}
-	
-	public void dependant(Object outer, EventListener realListener) {
-		synchronized (outer2Listener) {
-			LOG.info("Added outer ref " + outer + ", mapSize=" + outer2Listener.size());
-			List<EventListener> list = outer2Listener.get(outer);
-			if (list == null) {
-				list = new LinkedList<EventListener>();
-				outer2Listener.put(outer, list);
-			}
-			list.add(realListener);
-		}
 	}
 	
 	public ReferenceQueue<EventListener> getQueue() {

@@ -206,7 +206,7 @@ public class NuclosEntityAttributeRelationShipStep extends NuclosEntityAttribute
 							checkReferenceField();
 						}
 						catch(Exception e1) {
-							LOG.info("itemStateChanged failed: " + e1, e1);
+							LOG.debug("itemStateChanged: checkReference failed: " + e1);
 							tfAlternativeLabel.setText("");
 							NuclosEntityAttributeRelationShipStep.this.model.getAttribute().setField(null);
 						}
@@ -238,16 +238,12 @@ public class NuclosEntityAttributeRelationShipStep extends NuclosEntityAttribute
 
 			@Override
 			public void mouseClicked(MouseEvent e) {
-
 				if(SwingUtilities.isLeftMouseButton(e)) {
 					if(e.getClickCount() == 2) {
 						 setKeyDescription();
 					}
 				}
 			}
-
-
-
 		});
 
 		cbOnDeleteCascade.addItemListener(new ItemListener() {
@@ -295,7 +291,6 @@ public class NuclosEntityAttributeRelationShipStep extends NuclosEntityAttribute
 				}
 			}
 		});
-
 	}
 
 	@Override
@@ -326,11 +321,9 @@ public class NuclosEntityAttributeRelationShipStep extends NuclosEntityAttribute
 			cbxEntity.setToolTipText(localeDelegate.getMessage(
 					"wizard.step.attributerelationship.tooltip.1", "Verweis auf Entit\u00e4t"));
 		}
-
 	}
 
 	private void fillEntityCombobox() {
-
 		ItemListener ilArray[] = cbxEntity.getItemListeners();
 		for(ItemListener il : ilArray) {
 			cbxEntity.removeItemListener(il);
@@ -409,29 +402,31 @@ public class NuclosEntityAttributeRelationShipStep extends NuclosEntityAttribute
 
 	private void checkReferenceField() throws InvalidStateException {
 		String sField = this.model.getAttribute().getField();
-		if(sField == null || sField.length() < 1)
+		if (sField == null || sField.length() < 1)
 			return;
-		Pattern referencedEntityPattern = Pattern.compile ("[$][{][\\w\\[\\]]+[}]");
-	    Matcher referencedEntityMatcher = referencedEntityPattern.matcher (sField);
-	    boolean invalid = true;
+		Pattern referencedEntityPattern = Pattern.compile("\\$\\{[\\w\\[\\]]+\\}");
+		Matcher referencedEntityMatcher = referencedEntityPattern.matcher(sField);
+		boolean invalid = true;
 		while (referencedEntityMatcher.find()) {
-		  String sName = referencedEntityMatcher.group().substring(2,referencedEntityMatcher.group().length()-1);
-
-		  try {
-			  MetaDataDelegate.getInstance().getEntityField(model.getAttribute().getMetaVO().getEntity(), sName);
-			  invalid = false;
-		  }
-		  catch(Exception e){
-			  throw new InvalidStateException(localeDelegate.getMessage(
-					  "wizard.step.attributerelationship.7", "Es wurde ein ungültiger Eintrag gefunden: " + sName, sName));
-		  }
+			String sName = referencedEntityMatcher.group().substring(2, referencedEntityMatcher.group().length() - 1);
+			try {
+				MetaDataDelegate.getInstance().getEntityField(model.getAttribute().getMetaVO().getEntity(), sName);
+				invalid = false;
+			}
+			catch (Exception e) {
+				throw new InvalidStateException(localeDelegate.getMessage(
+						"wizard.step.attributerelationship.7", "Es wurde ein ungültiger Eintrag gefunden: " + sName,
+						sName));
+			}
 		}
 
-		if(invalid){
+		if (invalid) {
+			final String msg = "Es wurde kein gültiger Referenzeintrag gefunden: Feld '" 
+					+ sField + "'";
 			throw new InvalidStateException(localeDelegate.getMessage(
-					"wizard.step.attributerelationship.8", "Es wurde kein gültiger Referenzeintrag gefunden!"));
+					"wizard.step.attributerelationship.8", msg));
+			// LOG.warn(msg);
 		}
-
 	}
 
 	private void setKeyDescription() {

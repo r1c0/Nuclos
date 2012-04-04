@@ -26,8 +26,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Enumeration;
+import java.util.EventListener;
 import java.util.EventObject;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.prefs.Preferences;
@@ -64,6 +66,7 @@ import org.nuclos.client.ui.collect.component.CollectableComponentFactory;
 import org.nuclos.client.ui.collect.component.model.CollectableComponentModel;
 import org.nuclos.client.ui.collect.component.model.CollectableComponentModelProvider;
 import org.nuclos.client.ui.collect.model.CollectableEntityFieldBasedTableModel;
+import org.nuclos.client.ui.gc.IReferenceHolder;
 import org.nuclos.client.ui.gc.ListenerUtil;
 import org.nuclos.client.ui.table.TableCellEditorProvider;
 import org.nuclos.client.ui.table.TableCellRendererProvider;
@@ -99,7 +102,7 @@ import org.nuclos.common2.exception.CommonFatalException;
  */
 public abstract class SubFormController extends Controller
 		implements TableCellRendererProvider, TableCellEditorProvider, 
-		SubFormParameterProvider, FocusActionListener, Closeable {
+		SubFormParameterProvider, FocusActionListener, Closeable, IReferenceHolder {
 
 	private static final Logger LOG = Logger.getLogger(SubFormController.class);
 
@@ -131,6 +134,8 @@ public abstract class SubFormController extends Controller
 	protected boolean isIgnorePreferencesUpdate = true;
 	
 	private boolean closed = false;
+	
+	private final List<Object> ref = new LinkedList<Object>();
 
 	/**
 	 * @param parent
@@ -201,8 +206,14 @@ public abstract class SubFormController extends Controller
 			subform.close();
 			subform = null;
 			
+			ref.clear();
 			closed = true;
 		}
+	}
+	
+	@Override
+	public void addRef(EventListener o) {
+		ref.add(o);
 	}
 	
 	public void setIgnorePreferencesUpdate(boolean ignore) {
@@ -892,8 +903,5 @@ public abstract class SubFormController extends Controller
 	public void focusAction(EventObject eObject) {
 		cmdInsert();
 	}
-
-
-
 
 }	// class SubFormController
