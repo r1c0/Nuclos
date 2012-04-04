@@ -35,7 +35,7 @@ public class Delayer<T> extends TimerTask {
 			if (ONCE_MAP.containsKey(h)) return;
 			final IRealHandler<T> handler = new RealHandler<T>(h);
 			delayer = new Delayer<T>(handler, gracePeriodMillis);
-			ONCE_MAP.put(handler, handler);
+			ONCE_MAP.put(h, handler);
 		}
 		if (delayer != null)
 			delayer.schedule();
@@ -67,7 +67,7 @@ public class Delayer<T> extends TimerTask {
 	
 	//
 	
-	private final IRealHandler<T> handler;
+	private IRealHandler<T> handler;
 	
 	private final long gracePeriodMillis;
 	
@@ -101,6 +101,10 @@ public class Delayer<T> extends TimerTask {
 		}
 		else {
 			handler.trigger();
+			// This is important, don't skip it!
+			// As the WeakHashMap has strong reference to <em>value</em>,
+			// we must invalidate wrapped to get gc'ed. (tp)
+			handler = null;
 		}
 	}
 	
@@ -112,11 +116,14 @@ public class Delayer<T> extends TimerTask {
 	
 	private static final class RealHandler<T> implements IRealHandler<T> {
 		
-		private final IHandler<T> wrapped;
+		private IHandler<T> wrapped;
 		
 		private boolean touched = false;
 		
 		public RealHandler(IHandler<T> wrapped) {
+			if (wrapped == null) {
+				throw new NullPointerException();
+			}
 			this.wrapped = wrapped;
 		}
 		
@@ -129,6 +136,14 @@ public class Delayer<T> extends TimerTask {
 		@Override
 		public void trigger() {
 			wrapped.trigger();
+			// This is important, don't skip it!
+			// As the WeakHashMap has strong reference to <em>value</em>,
+			// we must invalidate wrapped to get gc'ed. (tp)
+			final IHandler<T> temp = wrapped;
+			wrapped = null;
+			synchronized (ONCE_MAP) {
+				ONCE_MAP.remove(temp);
+			}
 		}
 		
 		@Override
@@ -140,11 +155,14 @@ public class Delayer<T> extends TimerTask {
 	
 	private static final class RealRunnableHandler<T> implements IRealHandler<T> {
 		
-		private final Runnable wrapped;
+		private Runnable wrapped;
 		
 		private boolean touched = false;
 		
 		public RealRunnableHandler(Runnable wrapped) {
+			if (wrapped == null) {
+				throw new NullPointerException();
+			}
 			this.wrapped = wrapped;
 		}
 		
@@ -156,6 +174,14 @@ public class Delayer<T> extends TimerTask {
 		@Override
 		public void trigger() {
 			wrapped.run();
+			// This is important, don't skip it!
+			// As the WeakHashMap has strong reference to <em>value</em>,
+			// we must invalidate wrapped to get gc'ed. (tp)
+			final Runnable temp = wrapped;
+			wrapped = null;
+			synchronized (ONCE_MAP) {
+				ONCE_MAP.remove(temp);
+			}
 		}
 		
 		@Override
@@ -167,11 +193,14 @@ public class Delayer<T> extends TimerTask {
 
 	private static final class InvokeRunnableLaterHandler<T> implements IRealHandler<T> {
 		
-		private final Runnable wrapped;
+		private Runnable wrapped;
 		
 		private boolean touched = false;
 		
 		public InvokeRunnableLaterHandler(Runnable wrapped) {
+			if (wrapped == null) {
+				throw new NullPointerException();
+			}
 			this.wrapped = wrapped;
 		}
 		
@@ -183,6 +212,14 @@ public class Delayer<T> extends TimerTask {
 		@Override
 		public void trigger() {
 			SwingUtilities.invokeLater(wrapped);
+			// This is important, don't skip it!
+			// As the WeakHashMap has strong reference to <em>value</em>,
+			// we must invalidate wrapped to get gc'ed. (tp)
+			final Runnable temp = wrapped;
+			wrapped = null;
+			synchronized (ONCE_MAP) {
+				ONCE_MAP.remove(temp);
+			}
 		}
 		
 		@Override

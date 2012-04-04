@@ -17,12 +17,16 @@
 package org.nuclos.client.wizard.steps;
 
 import java.io.Closeable;
+import java.util.EventListener;
+import java.util.LinkedList;
+import java.util.List;
 
 import javax.annotation.PostConstruct;
 import javax.swing.Icon;
 import javax.swing.JComponent;
 
 import org.apache.log4j.Logger;
+import org.nuclos.client.ui.gc.IReferenceHolder;
 import org.nuclos.client.wizard.NuclosEntityWizardStaticModel;
 import org.nuclos.common2.SpringLocaleDelegate;
 import org.pietschy.wizard.PanelWizardStep;
@@ -39,7 +43,7 @@ import org.springframework.beans.factory.annotation.Configurable;
 * @version 01.00.00
 */
 @Configurable
-public abstract class NuclosEntityAbstractStep extends PanelWizardStep implements Closeable {
+public abstract class NuclosEntityAbstractStep extends PanelWizardStep implements Closeable, IReferenceHolder {
 	
 	private static final Logger LOG = Logger.getLogger(NuclosEntityAbstractStep.class);
 	
@@ -48,6 +52,8 @@ public abstract class NuclosEntityAbstractStep extends PanelWizardStep implement
 	JComponent parent;
 	
 	SpringLocaleDelegate localeDelegate;
+	
+	private final List<Object> ref = new LinkedList<Object>();
 
 	public NuclosEntityAbstractStep() {
 	}
@@ -94,6 +100,12 @@ public abstract class NuclosEntityAbstractStep extends PanelWizardStep implement
 		model = null;
 		parent = null;
 		localeDelegate = null;
+		ref.clear();
 	}
 
+	@Override
+	public void addRef(EventListener o) {
+		ref.add(o);
+	}
+	
 }

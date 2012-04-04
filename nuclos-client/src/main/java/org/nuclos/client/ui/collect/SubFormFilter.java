@@ -25,7 +25,10 @@ import java.awt.event.ItemListener;
 import java.io.Closeable;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.EventListener;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
@@ -59,6 +62,7 @@ import org.nuclos.client.ui.collect.component.CollectableComponentFactory;
 import org.nuclos.client.ui.collect.component.CollectableDateChooser;
 import org.nuclos.client.ui.collect.component.CollectableTextField;
 import org.nuclos.client.ui.collect.component.LabeledCollectableComponentWithVLP;
+import org.nuclos.client.ui.gc.IReferenceHolder;
 import org.nuclos.client.ui.gc.ListenerUtil;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
 import org.nuclos.common.collect.collectable.CollectableField;
@@ -87,7 +91,7 @@ import org.nuclos.common2.exception.PreferencesException;
  * @author	<a href="mailto:martin.weber@novabit.de">Martin Weber</a>
  * @version 01.00.00
  */
-public class SubFormFilter implements Closeable {
+public class SubFormFilter implements Closeable, IReferenceHolder {
 
 	private static final Logger LOG = Logger.getLogger(SubFormFilter.class);
 
@@ -107,6 +111,8 @@ public class SubFormFilter implements Closeable {
 	private boolean filteringActive = false;
 
 	private boolean closed = false;
+	
+	private final List<Object> ref = new LinkedList<Object>();
 
    public SubFormFilter(SubForm subform, JTable fixedTable, TableColumnModel fixedColumnModel, SubFormTable externalTable, TableColumnModel externalColumnModel, 
 		   JToggleButton filterButton, JCheckBoxMenuItem miFilter, CollectableFieldsProviderFactory collectableFieldsProviderFactory) {
@@ -146,6 +152,7 @@ public class SubFormFilter implements Closeable {
 			}
 			fixedSubFormFilter = null;
 			
+			ref.clear();
 			closed = true;
 		}
    }
@@ -173,6 +180,11 @@ public class SubFormFilter implements Closeable {
 	});
    }
 
+	@Override
+	public void addRef(EventListener o) {
+		ref.add(o);
+	}
+	
    /**
     * create collectablecomponents as search components and assign them to the corresponding column
     */

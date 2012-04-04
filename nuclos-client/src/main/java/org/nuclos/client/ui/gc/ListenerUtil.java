@@ -269,9 +269,9 @@ public class ListenerUtil {
 		// Never invoked.
 	}
 	
-	private static void dependant(Object outer, EventListener realListener) {
+	private static void dependant(IReferenceHolder outer, EventListener realListener) {
 		if (outer != null) {
-			QueueSingleton.getInstance().dependant(outer, realListener);
+			outer.addRef(realListener);
 		}
 	}
 	
@@ -281,7 +281,7 @@ public class ListenerUtil {
 	 * without setting the outer class object</em>. The will be garbage collected directly!
 	 * </p>
 	 */
-	public static void registerActionListener(AbstractButton b, Object outer, ActionListener l) {
+	public static void registerActionListener(AbstractButton b, IReferenceHolder outer, ActionListener l) {
 		final ActionAdapter a = new ActionAdapter(l);
 		final IRegister register = new ButtonRegister(b, a);
 		register.register();
@@ -294,7 +294,7 @@ public class ListenerUtil {
 	 * without setting the outer class object</em>. The will be garbage collected directly!
 	 * </p>
 	 */
-	public static void registerActionListener(JTextField b, Object outer, ActionListener l) {
+	public static void registerActionListener(JTextField b, IReferenceHolder outer, ActionListener l) {
 		final ActionAdapter a = new ActionAdapter(l);
 		final IRegister register = new JTextFieldRegister(b, a);
 		register.register();
@@ -307,7 +307,7 @@ public class ListenerUtil {
 	 * without setting the outer class object</em>. The will be garbage collected directly!
 	 * </p>
 	 */
-	public static void registerActionListener(JComboBox b, Object outer, ActionListener l) {
+	public static void registerActionListener(JComboBox b, IReferenceHolder outer, ActionListener l) {
 		final ActionAdapter a = new ActionAdapter(l);
 		final IRegister register = new JComboBoxRegister(b, a);
 		register.register();
@@ -320,7 +320,7 @@ public class ListenerUtil {
 	 * without setting the outer class object</em>. The will be garbage collected directly!
 	 * </p>
 	 */
-	public static void registerDocumentListener(Document b, Object outer, DocumentListener l) {
+	public static void registerDocumentListener(Document b, IReferenceHolder outer, DocumentListener l) {
 		final DocumentAdapter a = new DocumentAdapter(l);
 		final IRegister register = new DocumentRegister(b, a);
 		register.register();
@@ -333,7 +333,7 @@ public class ListenerUtil {
 	 * without setting the outer class object</em>. The will be garbage collected directly!
 	 * </p>
 	 */
-	public static void registerWindowListener(Window b, Object outer, WindowListener l) {
+	public static void registerWindowListener(Window b, IReferenceHolder outer, WindowListener l) {
 		final WindowAdapter a = new WindowAdapter(l);
 		final IRegister register = new WindowRegister(b, a);
 		register.register();
@@ -346,7 +346,7 @@ public class ListenerUtil {
 	 * without setting the outer class object</em>. The will be garbage collected directly!
 	 * </p>
 	 */
-	public static void registerSubFormToolListener(SubForm b, Object outer, SubFormToolListener l) {
+	public static void registerSubFormToolListener(SubForm b, IReferenceHolder outer, SubFormToolListener l) {
 		final SubformToolAdapter a = new SubformToolAdapter(l);
 		final IRegister register = new SubFormToolRegister(b, a);
 		register.register();		

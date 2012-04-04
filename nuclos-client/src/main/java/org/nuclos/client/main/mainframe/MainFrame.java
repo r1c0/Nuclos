@@ -44,7 +44,9 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Enumeration;
+import java.util.EventListener;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -102,6 +104,7 @@ import org.nuclos.client.ui.CommonJFrame;
 import org.nuclos.client.ui.Icons;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.client.ui.ValidationLayerFactory;
+import org.nuclos.client.ui.gc.IReferenceHolder;
 import org.nuclos.client.ui.gc.ListenerUtil;
 import org.nuclos.client.ui.util.TableLayoutBuilder;
 import org.nuclos.common.Actions;
@@ -597,6 +600,20 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 
 	}
 
+	private static class MyCheckBoxMenuItem extends JCheckBoxMenuItem implements IReferenceHolder {
+		
+		private final List<Object> ref = new LinkedList<Object>();
+		
+		public MyCheckBoxMenuItem() {
+		}
+		
+		@Override
+		public void addRef(EventListener o) {
+			ref.add(o);
+		}
+					
+	}
+	
 	private void initWindowMenu(Map<String, Map<String, Action>> commandMap, NuclosNotificationDialog notificationDialog) {
 		menuWindow = new JMenu();
 		miDeactivateSplitting = new JCheckBoxMenuItem(actDeactivateSplitting);
@@ -607,8 +624,8 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 		// Windows menu:
 		menuWindow.removeAll();
 		
-		final JCheckBoxMenuItem miWindowNotificationDialog = new JCheckBoxMenuItem();
-		final JCheckBoxMenuItem miWindowBackgroundTasks = new JCheckBoxMenuItem();
+		final MyCheckBoxMenuItem miWindowNotificationDialog = new MyCheckBoxMenuItem();
+		final MyCheckBoxMenuItem miWindowBackgroundTasks = new MyCheckBoxMenuItem();
 		JMenuItem miNextTab = new JMenuItem();
 		JMenuItem miPreviousTab = new JMenuItem();
 		JMenuItem miCloseAllTabs = new JMenuItem();
