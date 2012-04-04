@@ -469,6 +469,7 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 					return; //NUCLOSINT-1160
 				}
 				final String sTargetComponentName = transferaction.getTargetComponentName();
+				final CollectableComponentModel clctcompmodelSource = mpclctcompmodel.get(transferaction.getSourceFieldName());
 				final CollectableComponentModel clctcompmodelTarget = mpclctcompmodel.get(sTargetComponentName);
 				if (clctcompmodelTarget == null) {
 					throw new SAXException(StringUtils.getParameterizedExceptionMessage("LayoutMLParser.5", sTargetComponentName));
@@ -478,7 +479,9 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 				clctlovSource.addLookupListener(new LookupListener() {
 					@Override
 					public void lookupSuccessful(LookupEvent ev) {
-						transferValue(ev.getSelectedCollectable(), transferaction.getSourceFieldName(), clctcompmodelTarget);
+						if (!clctcompmodelSource.isInitializing()) {
+							transferValue(ev.getSelectedCollectable(), transferaction.getSourceFieldName(), clctcompmodelTarget);
+						}
 					}
 
 					@Override
@@ -490,6 +493,7 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 
 			private void handleClearAction(final ClearAction clearaction, final CollectableListOfValues clctlovSource) throws SAXException {
 				final String sTargetComponentName = clearaction.getTargetComponentName();
+				final CollectableComponentModel clctcompmodelSource = clctlovSource.getModel();
 				final CollectableComponentModel clctcompmodelTarget = mpclctcompmodel.get(sTargetComponentName);
 				if (clctcompmodelTarget == null) {
 					throw new SAXException(StringUtils.getParameterizedExceptionMessage("LayoutMLParser.5", sTargetComponentName));
@@ -498,7 +502,9 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 				clctlovSource.addLookupListener(new LookupListener() {
 					@Override
                     public void lookupSuccessful(LookupEvent ev) {
-						clctcompmodelTarget.clear();
+						if (!clctcompmodelSource.isInitializing()) {
+							clctcompmodelTarget.clear();
+						}
 					}
 
 					@Override
@@ -534,9 +540,9 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 							@Override
 							public void collectableFieldChangedInModel(CollectableComponentModelEvent ev) {
 								/** @todo check if this is correct! */
-//								if(ev.collectableFieldHasChanged()) {
-								clctcompmodelTarget.clear();
-//								}
+								if (!ev.getCollectableComponentModel().isInitializing()) {
+									clctcompmodelTarget.clear();
+								}
 							}
 						});
 					}
