@@ -21,6 +21,7 @@ import java.util.Date;
 import org.apache.commons.lang.NullArgumentException;
 import org.apache.commons.lang.builder.ToStringBuilder;
 
+import org.nuclos.client.ui.UIUtils;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
 import org.nuclos.common.collect.collectable.CollectableField;
 import org.nuclos.common.collect.collectable.CollectableUtils;
@@ -129,10 +130,16 @@ public abstract class CollectableComponentModel {
 	 */
 	public abstract void setField(CollectableField clctfValue);
 	
-	public void setFieldInitial(CollectableField clctValue) {
-		isInitializing = true;
-		setField(clctValue);
-		isInitializing = false;
+	public void setFieldInitial(final CollectableField clctValue) {
+		UIUtils.invokeOnDispatchThread(new Runnable() {
+			
+			@Override
+			public void run() {
+				isInitializing = true;
+				setField(clctValue);
+				isInitializing = false;
+			}
+		});
 	}
 
 	/**
