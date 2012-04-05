@@ -504,7 +504,8 @@ public abstract class DetailsSubFormController<Clct extends Collectable>
 		this.removeColumnModelListener();
 		this.removeTableModelListener();
 
-		getSubForm().storeTableFilter(getParentEntityName());
+		if(getSubForm() != null)
+			getSubForm().storeTableFilter(getParentEntityName());
 
 		super.close();
 	}
