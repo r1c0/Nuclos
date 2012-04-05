@@ -279,10 +279,10 @@ public class ChangeSizeMeasurementPopupRows implements ActionListener {
 				try {
 					Integer amount = Integer.parseInt(count);
 					for( int i = 0; i < amount; i++) {
-						actionPerformed(new ActionEvent(e.getSource(), e.getID(), "ADDROWBORDER"));
+						//actionPerformed(new ActionEvent(e.getSource(), e.getID(), "ADDROWBORDER"));
 						actionPerformed(new ActionEvent(e.getSource(), e.getID(), "ADDBOTTOM"));
 					}
-					actionPerformed(new ActionEvent(e.getSource(), e.getID(), "ADDROWBORDER"));
+					//actionPerformed(new ActionEvent(e.getSource(), e.getID(), "ADDROWBORDER"));
 				} catch (NumberFormatException e1) {
 					//nothing to do
 				}
@@ -302,11 +302,11 @@ public class ChangeSizeMeasurementPopupRows implements ActionListener {
 					Integer amount = Integer.parseInt(count);
 					for(int i = 0; i < amount; i++) {
 						actionPerformed(new ActionEvent(e.getSource(), e.getID(), "ADDTOP"));
-						cellForEditing.setCellY(cellForEditing.getCellY() - 1);
-						actionPerformed(new ActionEvent(e.getSource(), e.getID(), "ADDROWBORDER"));
+//						cellForEditing.setCellY(cellForEditing.getCellY() - 1);
+//						actionPerformed(new ActionEvent(e.getSource(), e.getID(), "ADDROWBORDER"));
 					}
-					cellForEditing.setCellY(cellForEditing.getCellY() + amount * 2 -1);
-					actionPerformed(new ActionEvent(e.getSource(), e.getID(), "ADDROWBORDER"));
+//					cellForEditing.setCellY(cellForEditing.getCellY() + amount * 2 -1);
+//					actionPerformed(new ActionEvent(e.getSource(), e.getID(), "ADDROWBORDER"));
 				}
 				catch(NumberFormatException e1) {
 					// nothing to do
