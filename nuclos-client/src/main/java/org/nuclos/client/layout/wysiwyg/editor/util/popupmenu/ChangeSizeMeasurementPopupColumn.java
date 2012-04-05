@@ -272,12 +272,12 @@ public class ChangeSizeMeasurementPopupColumn implements ActionListener, Seriali
 			try {
 			Integer amount = Integer.parseInt(count);
 				for( int i = 0; i < amount; i++) {
-				actionPerformed(new ActionEvent(e.getSource(), e.getID(), "ADDCOLBORDER"));
-				cellForEditing.setCellX(cellForEditing.getCellX() - 1);
+//				actionPerformed(new ActionEvent(e.getSource(), e.getID(), "ADDCOLBORDER"));
+//				cellForEditing.setCellX(cellForEditing.getCellX() - 1);
 				actionPerformed(new ActionEvent(e.getSource(), e.getID(), "ADDRIGHT"));
 				cellForEditing.setCellX(cellForEditing.getCellX() - 1);
 				}
-				actionPerformed(new ActionEvent(e.getSource(), e.getID(), "ADDCOLBORDER"));
+//				actionPerformed(new ActionEvent(e.getSource(), e.getID(), "ADDCOLBORDER"));
 			} catch (NumberFormatException e1) {
 				//nothing to do
 			}
@@ -294,12 +294,12 @@ public class ChangeSizeMeasurementPopupColumn implements ActionListener, Seriali
 			try {
 				Integer amount = Integer.parseInt(count);
 				for( int i = 0; i < amount; i++) {
-					cellForEditing.setCellX(cellForEditing.getCellX() - 1);	
-					actionPerformed(new ActionEvent(e.getSource(), e.getID(), "ADDCOLBORDER"));
+//					cellForEditing.setCellX(cellForEditing.getCellX() - 1);	
+//					actionPerformed(new ActionEvent(e.getSource(), e.getID(), "ADDCOLBORDER"));
 					actionPerformed(new ActionEvent(e.getSource(), e.getID(), "ADDLEFT"));
 				}
-				cellForEditing.setCellX(cellForEditing.getCellX() - 1);	
-				actionPerformed(new ActionEvent(e.getSource(), e.getID(), "ADDCOLBORDER"));
+//				cellForEditing.setCellX(cellForEditing.getCellX() - 1);	
+//				actionPerformed(new ActionEvent(e.getSource(), e.getID(), "ADDCOLBORDER"));
 			} catch (NumberFormatException e1) {
 				//nothing to do
 			}
