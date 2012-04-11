@@ -583,7 +583,8 @@ public class NuclosResultController<Clct extends Collectable> extends ResultCont
 							sortKeys.add(idx, new SortKey(sortKey.getColumn(), SortOrder.ASCENDING));
 						}
 					}
-					tblmodel.setSortKeys(sortKeys, true);
+					tblmodel.setSortKeys(sortKeys, false);
+			        getSearchResultStrategy().cmdRefreshResult();
 				}
 			});
 			popupmenuColumn.add(miPopupSortThisColumnAsc);
@@ -602,7 +603,8 @@ public class NuclosResultController<Clct extends Collectable> extends ResultCont
 							sortKeys.add(idx, new SortKey(sortKey.getColumn(), SortOrder.DESCENDING));
 						}
 					}
-					tblmodel.setSortKeys(sortKeys, true);
+					tblmodel.setSortKeys(sortKeys, false);
+			        getSearchResultStrategy().cmdRefreshResult();
 				}
 			});
 			popupmenuColumn.add(miPopupSortThisColumnDec);
@@ -619,7 +621,8 @@ public class NuclosResultController<Clct extends Collectable> extends ResultCont
 							sortKeys.remove(sortKey);
 						}
 					}
-					tblmodel.setSortKeys(sortKeys, true);
+					tblmodel.setSortKeys(sortKeys, false);
+			        getSearchResultStrategy().cmdRefreshResult();
 				}
 			});
 			popupmenuColumn.add(miPopupSortThisColumnNone);
