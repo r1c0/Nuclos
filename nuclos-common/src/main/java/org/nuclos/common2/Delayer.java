@@ -17,6 +17,8 @@ public class Delayer<T> extends TimerTask {
 		
 		void touch(T event);
 		
+		void resetTouched();
+		
 		void trigger();
 		
 	}
@@ -32,7 +34,12 @@ public class Delayer<T> extends TimerTask {
 	public static <T> void delayOnlyOnce(long gracePeriodMillis, IHandler<T> h) {
 		final Delayer<T> delayer;
 		synchronized (ONCE_MAP) {
-			if (ONCE_MAP.containsKey(h)) return;
+			final IRealHandler<T> old = (IRealHandler<T>) ONCE_MAP.get(h);
+			if (old != null) {
+				// prolong grace period
+				old.touch(null);
+				return;
+			}
 			final IRealHandler<T> handler = new RealHandler<T>(h);
 			delayer = new Delayer<T>(handler, gracePeriodMillis);
 			ONCE_MAP.put(h, handler);
@@ -44,7 +51,12 @@ public class Delayer<T> extends TimerTask {
 	public static <T> void runOnlyOnce(long gracePeriodMillis, final Runnable runnable) {
 		final Delayer<T> delayer;
 		synchronized (ONCE_MAP) {
-			if (ONCE_MAP.containsKey(runnable)) return;
+			final IRealHandler<T> old = (IRealHandler<T>) ONCE_MAP.get(runnable);
+			if (old != null) {
+				// prolong grace period
+				old.touch(null);
+				return;
+			}
 			final IRealHandler<T> handler = new RealRunnableHandler<T>(runnable);
 			delayer = new Delayer<T>(handler, gracePeriodMillis);
 			ONCE_MAP.put(runnable, handler);
@@ -56,7 +68,12 @@ public class Delayer<T> extends TimerTask {
 	public static <T> void invokeLaterOnlyOnce(long gracePeriodMillis, final Runnable runnable) {
 		final Delayer<T> delayer;
 		synchronized (ONCE_MAP) {
-			if (ONCE_MAP.containsKey(runnable)) return;
+			final IRealHandler<T> old = (IRealHandler<T>) ONCE_MAP.get(runnable);
+			if (old != null) {
+				// prolong grace period
+				old.touch(null);
+				return;
+			}
 			final IRealHandler<T> handler = new InvokeRunnableLaterHandler<T>(runnable);
 			delayer = new Delayer<T>(handler, gracePeriodMillis);
 			ONCE_MAP.put(runnable, handler);
@@ -90,16 +107,17 @@ public class Delayer<T> extends TimerTask {
 	}
 	
 	private void schedule() {
-		timer.schedule(this, gracePeriodMillis);
+		timer.schedule(this, gracePeriodMillis, gracePeriodMillis);
 	}
 
 	@Override
 	public void run() {
 		final boolean touched = handler.isTouched();
 		if (touched) {
-			schedule();
+			handler.resetTouched();
 		}
 		else {
+			cancel();
 			handler.trigger();
 			// This is important, don't skip it!
 			// As the WeakHashMap has strong reference to <em>value</em>,
@@ -118,7 +136,7 @@ public class Delayer<T> extends TimerTask {
 		
 		private IHandler<T> wrapped;
 		
-		private boolean touched = false;
+		private volatile boolean touched = false;
 		
 		public RealHandler(IHandler<T> wrapped) {
 			if (wrapped == null) {
@@ -131,6 +149,11 @@ public class Delayer<T> extends TimerTask {
 		public void touch(T event) {
 			touched = true;
 			wrapped.touch(event);
+		}
+		
+		@Override
+		public void resetTouched() {
+			touched = false;
 		}
 		
 		@Override
@@ -157,7 +180,7 @@ public class Delayer<T> extends TimerTask {
 		
 		private Runnable wrapped;
 		
-		private boolean touched = false;
+		private volatile boolean touched = false;
 		
 		public RealRunnableHandler(Runnable wrapped) {
 			if (wrapped == null) {
@@ -169,6 +192,11 @@ public class Delayer<T> extends TimerTask {
 		@Override
 		public void touch(T event) {
 			touched = true;
+		}
+		
+		@Override
+		public void resetTouched() {
+			touched = false;
 		}
 		
 		@Override
@@ -195,7 +223,7 @@ public class Delayer<T> extends TimerTask {
 		
 		private Runnable wrapped;
 		
-		private boolean touched = false;
+		private volatile boolean touched = false;
 		
 		public InvokeRunnableLaterHandler(Runnable wrapped) {
 			if (wrapped == null) {
@@ -207,6 +235,11 @@ public class Delayer<T> extends TimerTask {
 		@Override
 		public void touch(T event) {
 			touched = true;
+		}
+		
+		@Override
+		public void resetTouched() {
+			touched = false;
 		}
 		
 		@Override
