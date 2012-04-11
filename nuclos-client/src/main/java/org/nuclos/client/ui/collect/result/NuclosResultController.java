@@ -569,7 +569,7 @@ public class NuclosResultController<Clct extends Collectable> extends ResultCont
 			
 			final SortableTableModel tblmodel = (SortableTableModel)getNuclosResultPanel().getResultTable().getModel();
 			final JMenuItem miPopupSortThisColumnAsc = new JMenuItem(
-					SpringLocaleDelegate.getInstance().getMessage("DetailsSubFormController.4","Aufsteigen sortieren"));
+					SpringLocaleDelegate.getInstance().getMessage("NuclosResultController.4","Aufsteigen sortieren"));
 			miPopupSortThisColumnAsc.setIcon(Icons.getInstance().getIconUp16());
 			miPopupSortThisColumnAsc.addActionListener(new ActionListener() {
 				@Override
@@ -588,7 +588,7 @@ public class NuclosResultController<Clct extends Collectable> extends ResultCont
 			});
 			popupmenuColumn.add(miPopupSortThisColumnAsc);
 			final JMenuItem miPopupSortThisColumnDec = new JMenuItem(
-					SpringLocaleDelegate.getInstance().getMessage("DetailsSubFormController.5","Absteigen sortieren"));
+					SpringLocaleDelegate.getInstance().getMessage("NuclosResultController.5","Absteigen sortieren"));
 			miPopupSortThisColumnDec.setIcon(Icons.getInstance().getIconDown16());
 			miPopupSortThisColumnDec.addActionListener(new ActionListener() {
 				@Override
@@ -607,7 +607,7 @@ public class NuclosResultController<Clct extends Collectable> extends ResultCont
 			});
 			popupmenuColumn.add(miPopupSortThisColumnDec);
 			final JMenuItem miPopupSortThisColumnNone = new JMenuItem(
-					SpringLocaleDelegate.getInstance().getMessage("DetailsSubFormController.6","Sortierung aufheben"));
+					SpringLocaleDelegate.getInstance().getMessage("NuclosResultController.6","Sortierung aufheben"));
 			miPopupSortThisColumnNone.setIcon(Icons.getInstance().getIconUndo16());
 			miPopupSortThisColumnNone.addActionListener(new ActionListener() {
 				@Override
