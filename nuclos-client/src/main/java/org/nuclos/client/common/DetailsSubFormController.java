@@ -51,6 +51,7 @@ import javax.swing.JSeparator;
 import javax.swing.JTable;
 import javax.swing.JViewport;
 import javax.swing.RowSorter.SortKey;
+import javax.swing.SortOrder;
 import javax.swing.SwingUtilities;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableCellRenderer;
@@ -290,6 +291,60 @@ public abstract class DetailsSubFormController<Clct extends Collectable>
 		{
 			return result;
 		}
+		
+		final JMenuItem miPopupSortThisColumnAsc = new JMenuItem(
+				SpringLocaleDelegate.getInstance().getMessage("DetailsSubFormController.6","Aufsteigen sortieren"));
+		miPopupSortThisColumnAsc.setIcon(Icons.getInstance().getIconUp16());
+		miPopupSortThisColumnAsc.addActionListener(new ActionListener() {
+			@Override
+            public void actionPerformed(ActionEvent ev) {
+				List<SortKey> sortKeys = new ArrayList<SortKey>(getCollectableTableModel().getSortKeys());
+				for (SortKey sortKey : getCollectableTableModel().getSortKeys()) {
+					int idx = getCollectableTableModel().getSortKeys().indexOf(sortKey);
+					if (sortKey.getColumn() == iColumn) {
+						sortKeys.remove(sortKey);
+						sortKeys.add(idx, new SortKey(sortKey.getColumn(), SortOrder.ASCENDING));
+					}
+				}
+				getCollectableTableModel().setSortKeys(sortKeys, true);
+			}
+		});
+		result.add(miPopupSortThisColumnAsc);
+		final JMenuItem miPopupSortThisColumnDec = new JMenuItem(
+				SpringLocaleDelegate.getInstance().getMessage("DetailsSubFormController.7","Absteigen sortieren"));
+		miPopupSortThisColumnDec.setIcon(Icons.getInstance().getIconDown16());
+		miPopupSortThisColumnDec.addActionListener(new ActionListener() {
+			@Override
+            public void actionPerformed(ActionEvent ev) {
+				List<SortKey> sortKeys = new ArrayList<SortKey>(getCollectableTableModel().getSortKeys());
+				for (SortKey sortKey : getCollectableTableModel().getSortKeys()) {
+					int idx = getCollectableTableModel().getSortKeys().indexOf(sortKey);
+					if (sortKey.getColumn() == iColumn) {
+						sortKeys.remove(sortKey);
+						sortKeys.add(idx, new SortKey(sortKey.getColumn(), SortOrder.DESCENDING));
+					}
+				}
+				getCollectableTableModel().setSortKeys(sortKeys, true);
+			}
+		});
+		result.add(miPopupSortThisColumnDec);
+		final JMenuItem miPopupSortThisColumnNone = new JMenuItem(
+				SpringLocaleDelegate.getInstance().getMessage("DetailsSubFormController.8","Sortierung aufheben"));
+		miPopupSortThisColumnNone.setIcon(Icons.getInstance().getIconUndo16());
+		miPopupSortThisColumnNone.addActionListener(new ActionListener() {
+			@Override
+            public void actionPerformed(ActionEvent ev) {
+				List<SortKey> sortKeys = new ArrayList<SortKey>(getCollectableTableModel().getSortKeys());
+				for (SortKey sortKey : getCollectableTableModel().getSortKeys()) {
+					if (sortKey.getColumn() == iColumn) {
+						sortKeys.remove(sortKey);
+					}
+				}
+				getCollectableTableModel().setSortKeys(sortKeys, true);
+			}
+		});
+		result.add(miPopupSortThisColumnNone);
+		result.add(new JSeparator());
 		
 		final CollectableEntityField clctef = getCollectableTableModel().getCollectableEntityField(iColumn);
 		if (clctef.getJavaClass() == Boolean.class && getSubForm().isColumnVisible(clctef.getName())) {

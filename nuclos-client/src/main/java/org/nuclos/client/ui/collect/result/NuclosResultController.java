@@ -39,6 +39,8 @@ import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.SortOrder;
+import javax.swing.RowSorter.SortKey;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
@@ -564,14 +566,73 @@ public class NuclosResultController<Clct extends Collectable> extends ResultCont
 		public TableHeaderColumnPopupListener() {
 			super();
 			this.usedHeader = getNuclosResultPanel().getResultTable().getTableHeader();
+			
+			final SortableTableModel tblmodel = (SortableTableModel)getNuclosResultPanel().getResultTable().getModel();
+			final JMenuItem miPopupSortThisColumnAsc = new JMenuItem(
+					SpringLocaleDelegate.getInstance().getMessage("DetailsSubFormController.4","Aufsteigen sortieren"));
+			miPopupSortThisColumnAsc.setIcon(Icons.getInstance().getIconUp16());
+			miPopupSortThisColumnAsc.addActionListener(new ActionListener() {
+				@Override
+	            public void actionPerformed(ActionEvent ev) {
+					final int iColumn = usedHeader.columnAtPoint(getLatestOpenPoint());
+					List<SortKey> sortKeys = new ArrayList<SortKey>(tblmodel.getSortKeys());
+					for (SortKey sortKey : tblmodel.getSortKeys()) {
+						int idx = tblmodel.getSortKeys().indexOf(sortKey);
+						if (sortKey.getColumn() == iColumn) {
+							sortKeys.remove(sortKey);
+							sortKeys.add(idx, new SortKey(sortKey.getColumn(), SortOrder.ASCENDING));
+						}
+					}
+					tblmodel.setSortKeys(sortKeys, true);
+				}
+			});
+			popupmenuColumn.add(miPopupSortThisColumnAsc);
+			final JMenuItem miPopupSortThisColumnDec = new JMenuItem(
+					SpringLocaleDelegate.getInstance().getMessage("DetailsSubFormController.5","Absteigen sortieren"));
+			miPopupSortThisColumnDec.setIcon(Icons.getInstance().getIconDown16());
+			miPopupSortThisColumnDec.addActionListener(new ActionListener() {
+				@Override
+	            public void actionPerformed(ActionEvent ev) {
+					final int iColumn = usedHeader.columnAtPoint(getLatestOpenPoint());
+					List<SortKey> sortKeys = new ArrayList<SortKey>(tblmodel.getSortKeys());
+					for (SortKey sortKey : tblmodel.getSortKeys()) {
+						int idx = tblmodel.getSortKeys().indexOf(sortKey);
+						if (sortKey.getColumn() == iColumn) {
+							sortKeys.remove(sortKey);
+							sortKeys.add(idx, new SortKey(sortKey.getColumn(), SortOrder.DESCENDING));
+						}
+					}
+					tblmodel.setSortKeys(sortKeys, true);
+				}
+			});
+			popupmenuColumn.add(miPopupSortThisColumnDec);
+			final JMenuItem miPopupSortThisColumnNone = new JMenuItem(
+					SpringLocaleDelegate.getInstance().getMessage("DetailsSubFormController.6","Sortierung aufheben"));
+			miPopupSortThisColumnNone.setIcon(Icons.getInstance().getIconUndo16());
+			miPopupSortThisColumnNone.addActionListener(new ActionListener() {
+				@Override
+	            public void actionPerformed(ActionEvent ev) {
+					final int iColumn = usedHeader.columnAtPoint(getLatestOpenPoint());
+					List<SortKey> sortKeys = new ArrayList<SortKey>(tblmodel.getSortKeys());
+					for (SortKey sortKey : tblmodel.getSortKeys()) {
+						if (sortKey.getColumn() == iColumn) {
+							sortKeys.remove(sortKey);
+						}
+					}
+					tblmodel.setSortKeys(sortKeys, true);
+				}
+			});
+			popupmenuColumn.add(miPopupSortThisColumnNone);
+
 			if (SecurityCache.getInstance().isActionAllowed(Actions.ACTION_WORKSPACE_CUSTOMIZE_ENTITY_AND_SUBFORM_COLUMNS) ||
 					!MainFrame.getWorkspace().isAssigned()) {
-				this.popupmenuColumn.add(createHideColumnItem());
 				this.popupmenuColumn.addSeparator();
+				this.popupmenuColumn.add(createHideColumnItem());
 			}
 			
 			if (SecurityCache.getInstance().isActionAllowed(Actions.ACTION_WORKSPACE_ASSIGN) &&
 					MainFrame.getWorkspace().isAssigned()) {
+				this.popupmenuColumn.addSeparator();
 				this.popupmenuColumn.add(createPublishColumnsItem());
 			}
 			this.popupmenuColumn.add(createRestoreColumnsItem());

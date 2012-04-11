@@ -37195,6 +37195,51 @@
     "text": "Spalten in Vorlage publizieren"
   },
   {
+    "resourceID": "NuclosResultController.4",
+    "locale": "i-default",
+    "text": "Sort ascending"
+  },
+  {
+    "resourceID": "NuclosResultController.4",
+    "locale": "en",
+    "text": "Sort ascending"
+  },
+  {
+    "resourceID": "NuclosResultController.4",
+    "locale": "de",
+    "text": "Aufsteigend sortieren"
+  },
+  {
+    "resourceID": "NuclosResultController.5",
+    "locale": "i-default",
+    "text": "Sort descending"
+  },
+  {
+    "resourceID": "NuclosResultController.5",
+    "locale": "en",
+    "text": "Sort descending"
+  },
+  {
+    "resourceID": "NuclosResultController.5",
+    "locale": "de",
+    "text": "Absteigend sortieren"
+  },
+  {
+    "resourceID": "NuclosResultController.6",
+    "locale": "i-default",
+    "text": "Remove sort order"
+  },
+  {
+    "resourceID": "NuclosResultController.6",
+    "locale": "en",
+    "text": "Remove sort order"
+  },
+  {
+    "resourceID": "NuclosResultController.6",
+    "locale": "de",
+    "text": "Sortierung aufheben"
+  },
+  {
     "resourceID": "SubFormController.1",
     "locale": "i-default",
     "text": "The entity of the parent component ({0}) must correspond with the entity of the subform ({1}) or with the entity of the superordinate form."
@@ -37298,6 +37343,51 @@
     "resourceID": "DetailsSubFormController.5",
     "locale": "de",
     "text": "Diese Spalte ausblenden"
+  },
+  {
+    "resourceID": "DetailsSubFormController.6",
+    "locale": "i-default",
+    "text": "Sort ascending"
+  },
+  {
+    "resourceID": "DetailsSubFormController.6",
+    "locale": "en",
+    "text": "Sort ascending"
+  },
+  {
+    "resourceID": "DetailsSubFormController.6",
+    "locale": "de",
+    "text": "Aufsteigend sortieren"
+  },
+  {
+    "resourceID": "DetailsSubFormController.7",
+    "locale": "i-default",
+    "text": "Sort descending"
+  },
+  {
+    "resourceID": "DetailsSubFormController.7",
+    "locale": "en",
+    "text": "Sort descending"
+  },
+  {
+    "resourceID": "DetailsSubFormController.7",
+    "locale": "de",
+    "text": "Absteigend sortieren"
+  },
+  {
+    "resourceID": "DetailsSubFormController.8",
+    "locale": "i-default",
+    "text": "Remove sort order"
+  },
+  {
+    "resourceID": "DetailsSubFormController.8",
+    "locale": "en",
+    "text": "Remove sort order"
+  },
+  {
+    "resourceID": "DetailsSubFormController.8",
+    "locale": "de",
+    "text": "Sortierung aufheben"
   },
   {
     "resourceID": "SelectUserController.1",
