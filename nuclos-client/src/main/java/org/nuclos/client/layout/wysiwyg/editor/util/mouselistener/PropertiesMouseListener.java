@@ -77,7 +77,7 @@ public class PropertiesMouseListener implements MouseListener {
 			Point loc = container.getCurrentTableLayoutUtil().getContainer().getMousePosition();
 			if (loc == null) {
 				loc = (Point)e.getLocationOnScreen().clone();
-				SwingUtilities.convertPointFromScreen(loc, e.getComponent());
+				SwingUtilities.convertPointFromScreen(loc, container.getCurrentTableLayoutUtil().getContainer());
 			}
 			popup.showComponentPropertiesPopup(loc);
 		}
