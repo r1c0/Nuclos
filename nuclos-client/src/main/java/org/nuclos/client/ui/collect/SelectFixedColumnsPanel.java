@@ -108,6 +108,7 @@ public class SelectFixedColumnsPanel extends DefaultSelectObjectsPanel<Collectab
 
 	public void addMouseListenerSelectedJComponent(MouseListener aListener) {
 		this.getJListSelectedObjects().addMouseListener(aListener);
+		this.tblSelectedColumn.addMouseListener(aListener);
 	}
 
 	public void addSelectionListnerSelectedJCmponent(ListSelectionListener aListener) {
