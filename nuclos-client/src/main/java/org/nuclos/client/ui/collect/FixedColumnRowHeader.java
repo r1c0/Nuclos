@@ -34,12 +34,14 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.RowSorter;
+import javax.swing.RowSorter.SortKey;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.RowSorterEvent;
@@ -201,7 +203,7 @@ public class FixedColumnRowHeader extends SubformRowHeader {
 	 * command: select columns
 	 * Lets the user select the columns to show in the result list.
 	 */
-	private void cmdSelectColumns() {
+	private void cmdSelectColumns(final SortableTableModel tblmodel) {
 		if (!SecurityCache.getInstance().isActionAllowed(Actions.ACTION_WORKSPACE_CUSTOMIZE_ENTITY_AND_SUBFORM_COLUMNS) &&
 				MainFrame.getWorkspace().isAssigned()) {
 			return;
@@ -231,10 +233,28 @@ public class FixedColumnRowHeader extends SubformRowHeader {
 
 		if (bOK) {
 			final List<CollectableEntityField> lstSelectedNew = ctl.getSelectedObjects();
-			changeSelectedColumns(ctl.getSelectedObjects(), ctl.getFixedObjects(), null, mpWidths, null, null);
+			final List<Integer> lstSortColumns = new ArrayList<Integer>(); 
+			final Collection<? extends CollectableEntityField> collDeselected = CollectionUtils.subtract(lstSelectedOld, lstSelectedNew);
+			for (CollectableEntityField colEntityField : collDeselected) {
+				lstSortColumns.add(this.getExternalModel().findColumnByFieldName(colEntityField.getName()));
+			}
+			changeSelectedColumns(ctl.getSelectedObjects(), ctl.getFixedObjects(), null, mpWidths, null, new AbstractAction() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					List<? extends SortKey> sortKeys = new ArrayList<SortKey>(tblmodel.getSortKeys());
+					for (Iterator iterator = lstSortColumns.iterator(); iterator.hasNext();) {
+						Integer iColumn = (Integer) iterator.next();
+
+						for (SortKey sortKey : tblmodel.getSortKeys()) {
+							if (sortKey.getColumn() == iColumn.intValue())
+								sortKeys.remove(sortKey);
+						}
+					}
+					tblmodel.setSortKeys(sortKeys, true);
+				}
+			});
 			
 			// add DEselected to hidden in preferences
-			final Collection<? extends CollectableEntityField> collDeselected = CollectionUtils.subtract(lstSelectedOld, lstSelectedNew);
 			for (CollectableEntityField clctef : collDeselected) {
 				WorkspaceUtils.addHiddenColumn(subFormPreferences, clctef.getName());
 			}
@@ -461,7 +481,7 @@ public class FixedColumnRowHeader extends SubformRowHeader {
 	 * @param tblmodel
 	 * @param runnableSort Runnable to execute for sorting the table. If <code>null</code>, <code>tblmodel.sort()</code> is performed.
 	 */
-	private void addMouseListenerForSortingToTableHeader(JTable tbl, SortableTableModel tblmodel, CommonRunnable runnableSort) {
+	private void addMouseListenerForSortingToTableHeader(final JTable tbl, final SortableTableModel tblmodel, CommonRunnable runnableSort) {
 		// clicking header does not mean column selection, but sorting:
 
 		if (this.sortingListener == null) {
@@ -476,7 +496,7 @@ public class FixedColumnRowHeader extends SubformRowHeader {
 				@Override
 				protected void sortColumn(int iColumn, Component windowComponent) throws CommonBusinessException {
 					if (iColumn == -1) {
-						cmdSelectColumns();
+						cmdSelectColumns(tblmodel);
 					}
 					else {
 						super.sortColumn(iColumn, windowComponent);
