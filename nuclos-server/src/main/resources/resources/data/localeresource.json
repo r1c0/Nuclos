@@ -47814,6 +47814,16 @@
     "text": "Fehler beim Einlesen der Daten. "
   },
   {
+    "resourceID": "module.permission.no",
+    "locale": "i-default",
+    "text": "No"
+  },
+  {
+    "resourceID": "module.permission.no",
+    "locale": "de",
+    "text": "Keine"
+  },
+  {
     "resourceID": "module.permission.read",
     "locale": "i-default",
     "text": "Read"
@@ -47852,6 +47862,16 @@
     "resourceID": "module.permission.delete.physical",
     "locale": "de",
     "text": "Lesen\/Schreiben\/Physikalisch Löschen"
+  },
+  {
+    "resourceID": "masterdata.permission.no",
+    "locale": "i-default",
+    "text": "No"
+  },
+  {
+    "resourceID": "masterdata.permission.no",
+    "locale": "de",
+    "text": "Keine"
   },
   {
     "resourceID": "masterdata.permission.read",
