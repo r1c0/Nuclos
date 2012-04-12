@@ -170,8 +170,10 @@ public class DalSupportForMD {
 		}
 
 		List<String> lstFieldsForEquality = new ArrayList<String>();
-		if(eMeta.getFieldsForEquality() != null)
-			lstFieldsForEquality = new ArrayList<String>(Arrays.asList(eMeta.getFieldsForEquality().split(";")));
+		if(eMeta.getFieldsForEquality() != null) {
+			lstFieldsForEquality = new ArrayList<String>(Arrays.asList(
+					eMeta.getFieldsForEquality().split(EntityMetaDataVO.FIELDS_FOR_EQUALITY_PATTERN)));
+		}
 
 		MasterDataMetaVO result;
 		if (!eMeta.isDynamic()) {
