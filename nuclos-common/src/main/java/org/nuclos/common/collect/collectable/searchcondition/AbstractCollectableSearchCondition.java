@@ -32,16 +32,21 @@ import java.awt.datatransfer.UnsupportedFlavorException;
  */
 public abstract class AbstractCollectableSearchCondition implements CollectableSearchCondition {
 	
-	private String conditionName;
-
-	public static final DataFlavor dataflavorSearchCondition = new DataFlavor(CollectableSearchCondition.class,
+	public static final DataFlavor DATAFLAVOR_SEARCHCONDITION = new DataFlavor(CollectableSearchCondition.class,
 			"Suchbedingung");
+	
+	// 
+
+	private String conditionName;
+	
+	protected AbstractCollectableSearchCondition() {
+	}
 
 	@Override
 	public final Object getTransferData(DataFlavor flavor) throws UnsupportedFlavorException {
 		final Object result;
 
-		if (flavor.equals(dataflavorSearchCondition)) {
+		if (flavor.equals(DATAFLAVOR_SEARCHCONDITION)) {
 			result = this;
 		}
 		else if (flavor.equals(DataFlavor.stringFlavor)) {
@@ -56,7 +61,7 @@ public abstract class AbstractCollectableSearchCondition implements CollectableS
 
 	@Override
 	public final DataFlavor[] getTransferDataFlavors() {
-		return new DataFlavor[]{dataflavorSearchCondition, DataFlavor.stringFlavor};
+		return new DataFlavor[]{DATAFLAVOR_SEARCHCONDITION, DataFlavor.stringFlavor};
 	}
 
 	@Override

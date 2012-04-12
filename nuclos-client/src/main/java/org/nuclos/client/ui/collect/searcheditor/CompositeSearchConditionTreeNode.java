@@ -136,7 +136,7 @@ public class CompositeSearchConditionTreeNode extends SearchConditionTreeNode {
 	public boolean importTransferData(Component parent, Transferable transferable, JTree tree) throws IOException,
 			UnsupportedFlavorException {
 		final CollectableSearchCondition cond = (CollectableSearchCondition) transferable.getTransferData(
-				AbstractCollectableSearchCondition.dataflavorSearchCondition);
+				AbstractCollectableSearchCondition.DATAFLAVOR_SEARCHCONDITION);
 		this.add(newInstance(cond));
 		this.refresh(tree);
 

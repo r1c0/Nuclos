@@ -128,7 +128,7 @@ public class SubConditionTreeNode extends SearchConditionTreeNode {
 	public boolean importTransferData(Component parent, Transferable transferable, JTree tree) throws IOException,
 			UnsupportedFlavorException {
 		/** @todo refactor (copied from RootNode) */
-		final CollectableSearchCondition cond = (CollectableSearchCondition) transferable.getTransferData(AbstractCollectableSearchCondition.dataflavorSearchCondition);
+		final CollectableSearchCondition cond = (CollectableSearchCondition) transferable.getTransferData(AbstractCollectableSearchCondition.DATAFLAVOR_SEARCHCONDITION);
 
 		boolean bDoIt = false;
 		if (this.getChildCount() == 0) {
