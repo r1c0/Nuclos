@@ -302,35 +302,30 @@ public class CollectableComboBox extends LabeledCollectableComponentWithVLP impl
 		}
 	}
 
-	private Set<RefreshValueListWorker> runningRefreshs = Collections.synchronizedSet(new HashSet<CollectableComboBox.RefreshValueListWorker>());
+	private Set<RefreshValueListWorker> runningRefreshs = Collections.synchronizedSet(new HashSet<RefreshValueListWorker>());
 
 	private void releasePreviousRefreshs() {
 		synchronized(runningRefreshs) {
 			for (RefreshValueListWorker refresh : runningRefreshs) {
-				if (!refresh.cancel(true)) {
-					refresh.cancelDone();
-				}
+				refresh.cancel(true);
 			}
 		}
 	}
 
 	private class RefreshValueListWorker extends SwingWorker<List<CollectableField>, Object> {
 
-		boolean cancelDone = false;
+		private RefreshValueListWorker() {
+		}
 
 		@Override
 		protected List<CollectableField> doInBackground() throws Exception {
 			return getValueListProvider() == null ? Collections.<CollectableField>emptyList() : getValueListProvider().getCollectableFields();
 		}
 
-		void cancelDone() {
-			cancelDone = true;
-		}
-
 		@Override
 		protected void done() {
 			try {
-				if (!isCancelled() && !cancelDone) {
+				if (!isCancelled()) {
 					setComboBoxModel(get(), false);
 					getJComboBox().setCursor(null);
 				}
