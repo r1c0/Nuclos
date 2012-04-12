@@ -16,6 +16,10 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.server.report;
 
+import java.awt.Color;
+import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -26,11 +30,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
+
 import net.sf.jasperreports.engine.JRDataSource;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRField;
 
 import org.apache.log4j.Logger;
+import org.nuclos.common.NuclosImage;
 import org.nuclos.common.PDFHelper;
 import org.nuclos.common.attribute.DynamicAttributeVO;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
@@ -218,10 +226,29 @@ public class SearchResultDataSource implements JRDataSource {
 				}
 			}
 		}
+		else if (row instanceof NuclosImage) {
+			if (((NuclosImage)row).getContent() == null)
+				return null;
+			
+			// remove transparency for pdf output.
+			try {
+				BufferedImage in = ImageIO.read(new ByteArrayInputStream(((NuclosImage)row).getContent()));
+				BufferedImage out = new BufferedImage(in.getWidth(), in.getHeight(), BufferedImage.TYPE_INT_RGB);
+				Graphics2D g2d = out.createGraphics();
+				g2d.setBackground(Color.white);
+				g2d.clearRect(0, 0, out.getWidth(), out.getHeight());
+				g2d.fillRect(0, 0, out.getWidth(), out.getHeight());				
+				g2d.drawImage(in, 0, 0, out.getWidth(), out.getHeight(), null);
+				g2d.dispose(); 
+				return out;
+			} catch (Exception e) {
+    			// do nothing
+			}
+			return new ImageIcon(((NuclosImage)row).getContent()).getImage();
+		}
 		else {
 			return CollectableFieldFormat.getInstance(type).format(outputFormat, row);
 		}
 		return result.toString();
 	}
-
 }	// class SearchResultDataSource

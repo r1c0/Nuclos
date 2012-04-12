@@ -26,13 +26,16 @@ import java.util.List;
 
 import javax.swing.table.TableModel;
 
+import net.sf.jasperreports.engine.JRElement;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRReport;
 import net.sf.jasperreports.engine.JRReportFont;
 import net.sf.jasperreports.engine.JRTextElement;
 import net.sf.jasperreports.engine.design.JRDesignBand;
+import net.sf.jasperreports.engine.design.JRDesignElement;
 import net.sf.jasperreports.engine.design.JRDesignExpression;
 import net.sf.jasperreports.engine.design.JRDesignField;
+import net.sf.jasperreports.engine.design.JRDesignImage;
 import net.sf.jasperreports.engine.design.JRDesignStaticText;
 import net.sf.jasperreports.engine.design.JRDesignTextField;
 import net.sf.jasperreports.engine.design.JasperDesign;
@@ -192,7 +195,11 @@ public class PDFHelper {
 			final JRDesignField jrdesignfield = new JRDesignField();
 			jrdesignfield.setName(sFieldName);
 			try {
+				if (!sClassName.equals(NuclosImage.class.getName())) {
 				jrdesignfield.setValueClass(String.class);
+				} else {
+					jrdesignfield.setValueClass(java.awt.Image.class);
+				}
 				jrdesign.addField(jrdesignfield);
 			}
 			catch (JRException ex) {
@@ -210,21 +217,42 @@ public class PDFHelper {
 			staticField.setFont(boldFont);
 			columnHeader.addElement(staticField);
 
-			JRDesignTextField dataField = new JRDesignTextField();
+			JRDesignElement dataField;
+			if (!sClassName.equals(NuclosImage.class.getName())) {
+				dataField = new JRDesignTextField();
+				
+				((JRDesignTextField)dataField).setTextAlignment(textAlign);
+				((JRDesignTextField)dataField).setVerticalAlignment(JRDesignImage.VERTICAL_ALIGN_MIDDLE);
+				((JRDesignTextField)dataField).setFont(regularFont);
+				((JRDesignTextField)dataField).setBlankWhenNull(true);
+
+				final String sFieldValue = "$F{" + sFieldName + "}";
+
+				JRDesignExpression expression = new JRDesignExpression();
+				expression.setText(sFieldValue);
+				expression.setValueClass(String.class);
+				((JRDesignTextField)dataField).setExpression(expression);
+				((JRDesignTextField)dataField).setStretchWithOverflow(true);
+			}
+			else {
+				dataField = new JRDesignImage(jrdesign);
+				
+				((JRDesignImage)dataField).setHorizontalAlignment(JRDesignImage.HORIZONTAL_ALIGN_CENTER);
+				((JRDesignImage)dataField).setVerticalAlignment(JRDesignImage.VERTICAL_ALIGN_MIDDLE);
+
+				final String sFieldValue = "$F{" + sFieldName + "}";
+
+				JRDesignExpression expression = new JRDesignExpression();
+				expression.setText(sFieldValue);
+				expression.setValueClass(java.awt.Image.class);
+				((JRDesignImage)dataField).setExpression(expression);	
+				((JRDesignImage)dataField).setMode(JRElement.MODE_TRANSPARENT);
+			}
+
+			dataField.setHeight(14);
 			dataField.setX(iCurrentX);
 			dataField.setWidth(iFieldWidth);
-			dataField.setHeight(14);
-			dataField.setTextAlignment(textAlign);
-			dataField.setFont(regularFont);
-			dataField.setBlankWhenNull(true);
-
-			final String sFieldValue = "$F{" + sFieldName + "}";
-
-			JRDesignExpression expression = new JRDesignExpression();
-			expression.setText(sFieldValue);
-			expression.setValueClass(String.class);
-			dataField.setExpression(expression);
-			dataField.setStretchWithOverflow(true);
+			
 			detail.addElement(dataField);
 
 			iCurrentX += iFieldWidth + 10;
