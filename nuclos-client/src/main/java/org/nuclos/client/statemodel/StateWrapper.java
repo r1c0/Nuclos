@@ -91,6 +91,10 @@ public class StateWrapper implements Comparable<StateWrapper> {
 		return getNumeralText() + " " + (sName == null ? "N/A" : sName);
 	}
 
+	public String getStatusText() {
+		return (sName == null ? "N/A" : sName);
+	}
+
 	public String getCombinedStatusText() {
 		return getNumeralText() + " (" + (sName == null ? "N/A" : sName) + ")";
 	}
