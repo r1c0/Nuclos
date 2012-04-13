@@ -3644,8 +3644,8 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		final boolean bMultiEdit = getCollectState().isDetailsModeMultiViewOrEdit();
 
 		String sQuestion = bMultiEdit
-		? getSpringLocaleDelegate().getMessage("GenericObjectCollectController.79","Soll der Wechsel in den Status {0} f\u00fcr die ausgew\u00e4hlten Objekte wirklich durchgef\u00fchrt werden?\nDie vorgenommenen \u00c4nderungen an dem Objekt werden gespeichert.", stateNew.getCombinedStatusText())
-			: getSpringLocaleDelegate().getMessage("GenericObjectCollectController.80","Soll der Wechsel in den Status {0} wirklich durchgef\u00fchrt werden?", stateNew.getCombinedStatusText());
+		? getSpringLocaleDelegate().getMessage("GenericObjectCollectController.79","Soll der Wechsel in den Status \"{0}\" f\u00fcr die ausgew\u00e4hlten Objekte wirklich durchgef\u00fchrt werden?\nDie vorgenommenen \u00c4nderungen an dem Objekt werden gespeichert.", stateNew.getStatusText())
+			: getSpringLocaleDelegate().getMessage("GenericObjectCollectController.80","Soll der Wechsel in den Status \"{0}\" wirklich durchgef\u00fchrt werden?", stateNew.getStatusText());
 
 		Object[] argsOptionPane = new Object[] {sQuestion};
 		if (stateNew.getDescription() != null && !stateNew.getDescription().isEmpty()) {
@@ -3696,8 +3696,8 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		final boolean bMultiEdit = getCollectState().isDetailsModeMultiViewOrEdit();
 
 		String sQuestion = bMultiEdit
-		? getSpringLocaleDelegate().getMessage("GenericObjectCollectController.79","Soll der Wechsel in den Status {0} f\u00fcr die ausgew\u00e4hlten Objekte wirklich durchgef\u00fchrt werden?\nDie vorgenommenen \u00c4nderungen an dem Objekt werden gespeichert.", stateFinal.getCombinedStatusText())
-			: getSpringLocaleDelegate().getMessage("GenericObjectCollectController.80","Soll der Wechsel in den Status {0} wirklich durchgef\u00fchrt werden?", stateFinal.getCombinedStatusText());
+		? getSpringLocaleDelegate().getMessage("GenericObjectCollectController.79","Soll der Wechsel in den Status \"{0}\" f\u00fcr die ausgew\u00e4hlten Objekte wirklich durchgef\u00fchrt werden?\nDie vorgenommenen \u00c4nderungen an dem Objekt werden gespeichert.", stateFinal.getStatusText())
+			: getSpringLocaleDelegate().getMessage("GenericObjectCollectController.80","Soll der Wechsel in den Status \"{0}\" wirklich durchgef\u00fchrt werden?", stateFinal.getStatusText());
 
 		Object[] argsOptionPane = new Object[] {sQuestion};
 		if (stateFinal.getDescription() != null && !stateFinal.getDescription().isEmpty()) {
@@ -5192,7 +5192,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		}
 
 		ChangeStateForSelectedCollectablesController(GenericObjectCollectController ctl, StateWrapper stateNew,  final List<Integer> statesNew) throws CommonBusinessException {
-			super(ctl, SpringLocaleDelegate.getInstance().getMessage("GenericObjectCollectController.88","Statuswechsel in Status {0}", stateNew.getCombinedStatusText()), new ChangeStateAction(ctl, stateNew, statesNew), ctl.getCompleteSelectedCollectables());
+			super(ctl, SpringLocaleDelegate.getInstance().getMessage("GenericObjectCollectController.88","Statuswechsel in Status \"{0}\"", stateNew.getStatusText()), new ChangeStateAction(ctl, stateNew, statesNew), ctl.getCompleteSelectedCollectables());
 		}
 
 	}	// class ChangeStateForSelectedCollectablesController
