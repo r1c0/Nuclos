@@ -231,8 +231,16 @@ public abstract class TransactSqlDbAccess extends StandardSqlDBAccess {
 
 		@Override
 		public DbExpression<String> convertDateToString(DbExpression<java.util.Date> x, String pattern) {
-			if (pattern.equals(DATE_PATTERN_GERMAN)) {
+			if (pattern.equalsIgnoreCase(DATE_PATTERN_GERMAN)) {
 				return buildExpressionSql(String.class, "CONVERT(VARCHAR(10),", x, ",104)");
+			} else if (pattern.equalsIgnoreCase(DATE_PATTERN_ENGLISH)) {
+				return buildExpressionSql(String.class, "CONVERT(VARCHAR(10),", x, ",103)");
+			} else if (pattern.equalsIgnoreCase(DATE_PATTERN_USA1)) {
+				return buildExpressionSql(String.class, "CONVERT(VARCHAR(10),", x, ",101)");
+			} else if (pattern.equalsIgnoreCase(DATE_PATTERN_USA2)) {
+				return buildExpressionSql(String.class, "CONVERT(VARCHAR(10),", x, ",110)");
+			} else if (pattern.equalsIgnoreCase(DATE_PATTERN_OTHER)) {
+				return buildExpressionSql(String.class, "CONVERT(VARCHAR(10),", x, ",105)");
 			} else {
 				throw new UnsupportedOperationException("Unsupported date pattern '" +pattern + "'");
 			}

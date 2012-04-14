@@ -16,6 +16,8 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.server.dal.processor.jdbc.impl;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -56,6 +58,7 @@ import org.nuclos.common.dal.vo.EntityMetaDataVO;
 import org.nuclos.common.dal.vo.PivotInfo;
 import org.nuclos.common.dblayer.JoinType;
 import org.nuclos.common2.RelativeDate;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.server.common.MetaDataServerProvider;
 import org.nuclos.server.common.SecurityCache;
@@ -413,7 +416,12 @@ public class EOSearchExpressionUnparser {
 			DbExpression<String> x = getDbColumn(cond.getEntityField()).as(String.class);
 			if (cond.getEntityField().getJavaClass() == java.util.Date.class) {
 				// TODO: ...
-				x = queryBuilder.convertDateToString(x.as(java.util.Date.class), DbQueryBuilder.DATE_PATTERN_GERMAN);
+				String pattern = DbQueryBuilder.DATE_PATTERN_GERMAN;
+				DateFormat df = SpringLocaleDelegate.getInstance().getDateFormat();
+				if (df instanceof SimpleDateFormat) {
+					pattern = ((SimpleDateFormat)df).toPattern();
+				}
+				x = queryBuilder.convertDateToString(x.as(java.util.Date.class), pattern);
 			} else {
 				x = queryBuilder.upper(x.as(String.class));
 			}
