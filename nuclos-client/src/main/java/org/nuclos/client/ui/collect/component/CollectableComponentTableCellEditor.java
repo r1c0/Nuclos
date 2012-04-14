@@ -29,7 +29,6 @@ import javax.swing.table.TableCellEditor;
 
 import org.apache.commons.lang.NullArgumentException;
 import org.apache.log4j.Logger;
-
 import org.nuclos.client.ui.Errors;
 import org.nuclos.client.ui.collect.component.model.CollectableComponentModelEvent;
 import org.nuclos.client.ui.collect.component.model.CollectableComponentModelHelper;
@@ -222,7 +221,7 @@ public class CollectableComponentTableCellEditor extends AbstractCellEditor impl
 	}
 
 	@Override
-    public Component getTableCellEditorComponent(JTable tbl, Object oValue, boolean bSelected, int iRow, int iColumn) {
+    public Component getTableCellEditorComponent(final JTable tbl, Object oValue, boolean bSelected, final int iRow, final int iColumn) {
 		final CollectableComponent clctcomp = this.getCollectableComponent();
 		log.debug("getTableCellEditorComponent - row: " + iRow + " - column: " + iColumn + " - component name: " + clctcomp.getFieldName() + " - selected: " + bSelected);
 
@@ -250,7 +249,15 @@ public class CollectableComponentTableCellEditor extends AbstractCellEditor impl
 			final CollectableTextField clcttextfield = (CollectableTextField)clctcomp;
 			clcttextfield.getJTextComponent().setInputVerifier(textInputVerifier);
 		}
-
+		if (!this.isSearchable() && clctcomp instanceof CollectableComboBox) {
+			final CollectableComboBox clctcombobox = (CollectableComboBox)clctcomp;
+			((JTextField)clctcombobox.getJComboBox().getEditor().getEditorComponent()).setInputVerifier(textInputVerifier);
+		}
+		if (!this.isSearchable() && clctcomp instanceof CollectableListOfValues) {
+			final CollectableListOfValues clctlov = (CollectableListOfValues)clctcomp;
+			clctlov.getJTextField().setInputVerifier(textInputVerifier);
+		}
+		
 		JComponent result = this.clctcomp.getJComponent();
 		if (result instanceof LabeledComponent) {
 			/** @todo find a better solution */
@@ -263,6 +270,7 @@ public class CollectableComponentTableCellEditor extends AbstractCellEditor impl
 //			result.setBackground(bSelected ? tbl.getSelectionBackground() : tbl.getBackground());
 //			result.setForeground(bSelected ? tbl.getSelectionForeground() : tbl.getForeground());
 		}
+		
 		return result;
 	}
 
@@ -307,7 +315,7 @@ public class CollectableComponentTableCellEditor extends AbstractCellEditor impl
 				return false;
 			}
 			bCheckState = false;
-			return result;
+			return false;
 		}
 	};
 
@@ -355,7 +363,7 @@ public class CollectableComponentTableCellEditor extends AbstractCellEditor impl
 				return false;
 			}
 			bCheckState = false;
-			return result;
+			return false;
 		}
 	};
 

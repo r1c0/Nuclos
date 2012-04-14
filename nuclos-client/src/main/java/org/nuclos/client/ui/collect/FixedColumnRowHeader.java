@@ -16,15 +16,20 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.ui.collect;
 
+import java.awt.AWTEvent;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
+import java.awt.event.InvocationEvent;
+import java.awt.event.KeyEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Enumeration;
+import java.util.EventObject;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -41,6 +46,7 @@ import javax.swing.JLabel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.RowSorter;
+import javax.swing.SwingUtilities;
 import javax.swing.RowSorter.SortKey;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ListSelectionEvent;
@@ -56,11 +62,14 @@ import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableModel;
 
 import org.apache.log4j.Logger;
+import org.apache.poi.hssf.record.formula.TblPtg;
+import org.nuclos.client.common.FocusActionListener;
 import org.nuclos.client.common.WorkspaceUtils;
 import org.nuclos.client.common.security.SecurityCache;
 import org.nuclos.client.main.mainframe.MainFrame;
 import org.nuclos.client.ui.Icons;
 import org.nuclos.client.ui.UIUtils;
+import org.nuclos.client.ui.collect.SubForm.SubFormTable;
 import org.nuclos.client.ui.collect.SubForm.SubFormTableModel;
 import org.nuclos.client.ui.collect.component.model.ChoiceEntityFieldList;
 import org.nuclos.client.ui.collect.model.CollectableEntityFieldBasedTableModel;
@@ -711,9 +720,97 @@ public class FixedColumnRowHeader extends SubformRowHeader {
 		private TableCellEditorProvider cellEditorProvider;
 		private TableCellRendererProvider cellRendererProvider;
 
-		private JTable externalTable;
+		private SubFormTable externalTable;
 
 		public HeaderTable() {
+		}
+		
+		@Override
+		public void changeSelection(final int rowIndex, final int columnIndex, boolean toggle, boolean extend) {
+			changeSelection(rowIndex, columnIndex, toggle, extend, false);
+		}
+
+		public void changeSelection(final int rowIndex, final int columnIndex, boolean toggle, boolean extend, boolean external) {
+			AWTEvent event = EventQueue.getCurrentEvent();
+			if(event instanceof KeyEvent) {
+				((KeyEvent) event).consume();
+			}
+			int iSelRow = getSelectedRow();
+			super.changeSelection(rowIndex, columnIndex, toggle, extend);
+			if(event instanceof KeyEvent || event instanceof InvocationEvent) {
+				int colCount = getColumnCount();
+				if(!external && (columnIndex == 0 || columnIndex == colCount)) {
+					if (externalTable != null) { 
+						externalTable.changeSelection(iSelRow, 0, toggle, extend, true);
+						return;
+					}
+				}
+				if(isCellEditable(rowIndex, columnIndex)) {
+					SwingUtilities.invokeLater(new Runnable() {
+						@Override
+						public void run() {
+							if (editCellAt(rowIndex, columnIndex)) {
+								Component editor = getEditorComponent();
+								if(editor != null)
+									editor.requestFocusInWindow();
+							}
+						}
+					});
+				} else {
+					final int rowCol[] = getNextEditableCell(this, rowIndex, columnIndex);
+					if(!external && (rowCol[1] == 0 || rowCol[1] == colCount || rowIndex != rowCol[0])) {
+						if (externalTable != null) { 
+							externalTable.changeSelection(iSelRow, 0, toggle, extend, true);
+							return;
+						}
+					}
+					if (isCellEditable(rowCol[0], rowCol[1])) {
+						if (editCellAt(rowCol[0], rowCol[1])) {
+							Component editor = getEditorComponent();
+							if(editor != null) {
+								editor.requestFocusInWindow();
+								if(rowCol[0] < getRowCount())
+									changeSelection(rowCol[0], rowCol[1], false, false);
+							}
+						}
+					} else {
+						if((rowCol[1] == 0 || rowCol[1] == colCount - 1)) {
+							if (externalTable != null) { 
+								externalTable.changeSelection(iSelRow, 0, toggle, extend, true);
+								return;
+							}
+						}
+					}
+				}
+			}
+		}
+		
+		private int[] getNextEditableCell(JTable table, int row, int col) {
+			int rowCol[] = {row,col};
+			int colCount = getColumnCount();
+			boolean colFound = false;
+			for(int i = col; i < colCount; i++) {
+				if(table.isCellEditable(row, i)) {
+					colFound = true;
+					rowCol[1] = i;
+					break;
+				}
+			}
+
+			if(!colFound) {
+				row++;
+				if(row >= getRowCount())
+					return rowCol;
+				for(int i = 0; i < col; i++) {
+					if(table.isCellEditable(row, i)) {
+						rowCol[0] = row;
+						rowCol[1] = i;
+						break;
+					}
+				}
+			}
+
+			return rowCol;
 		}
 
 		@Override
@@ -765,7 +862,7 @@ public class FixedColumnRowHeader extends SubformRowHeader {
 			return result;
 		}
 
-		public void setExternalTable(JTable aExternalTable) {
+		public void setExternalTable(SubFormTable aExternalTable) {
 			this.externalTable = aExternalTable;
 		}
 
@@ -836,6 +933,8 @@ public class FixedColumnRowHeader extends SubformRowHeader {
 
 		@Override
 		public boolean isCellEditable(int row, int column) {
+			if (column == 0)
+				return false;
 			return (column != ROWMARKERCOLUMN_INDEX) && externalModel.isCellEditable(row, column - ROWMARKERCOLUMN_COUNT);
 		}
 
