@@ -36,8 +36,12 @@ import org.nuclos.server.dblayer.impl.util.PreparedStringBuilder.Parameter;
 
 public abstract class DbQueryBuilder implements Serializable {
 
-	public static final String DATE_PATTERN_GERMAN = "dd.mm.yyyy";
-
+	public static final String DATE_PATTERN_GERMAN = "dd.MM.yyyy";
+	public static final String DATE_PATTERN_ENGLISH = "dd/MM/yyyy";
+	public static final String DATE_PATTERN_USA1 = "MM/dd/yyyy";
+	public static final String DATE_PATTERN_USA2 = "MM-dd-yyyy";
+	public static final String DATE_PATTERN_OTHER = "dd-MM-yyyy";
+	
 	protected DbQueryBuilder() {
 	}
 
@@ -99,7 +103,7 @@ public abstract class DbQueryBuilder implements Serializable {
 	public abstract StandardSqlDBAccess getDBAccess();
 
 	public DbExpression<String> convertDateToString(DbExpression<java.util.Date> x, String pattern) {
-		return buildExpressionSql(String.class, "TO_CHAR(", x, ", ", SQLUtils2.escape(pattern), ")");
+		return buildExpressionSql(String.class, "TO_CHAR(", x, ", '", SQLUtils2.escape(pattern), "')");
 	}
 
 	public DbExpression<java.util.Date> convertInternalTimestampToDate(DbExpression<InternalTimestamp> x) {

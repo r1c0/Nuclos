@@ -17,8 +17,11 @@
 
 package org.nuclos.server.livesearch.ejb3;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -37,6 +40,7 @@ import org.nuclos.common.dal.vo.EntityObjectVO;
 import org.nuclos.common.entityobject.CollectableEOEntityField;
 import org.nuclos.common.security.Permission;
 import org.nuclos.common.transport.GzipList;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.server.common.MetaDataServerProvider;
@@ -47,6 +51,7 @@ import org.nuclos.server.common.ejb3.NuclosFacadeBean;
 import org.nuclos.server.common.ejb3.SecurityFacadeLocal;
 import org.nuclos.server.dal.processor.nuclet.JdbcEntityObjectProcessor;
 import org.nuclos.server.dal.provider.NucletDalProvider;
+import org.nuclos.server.dblayer.query.DbQueryBuilder;
 import org.nuclos.server.genericobject.searchcondition.CollectableSearchExpression;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -170,7 +175,20 @@ public class LiveSearchFacadeBean extends NuclosFacadeBean implements LiveSearch
 				for(String fieldName : fieldsUsedForSearch) {
 					Permission p = attributeRights.get(fieldName); // null = no rights at all!
 					if(p != null && p.includesReading()) {
-						String value = StringUtils.emptyIfNull(obj.getField(fieldName, String.class)).toUpperCase();
+						String value;
+						Object fld = obj.getField(fieldName);
+						if (fld instanceof Date) {
+							DateFormat df = new SimpleDateFormat(DbQueryBuilder.DATE_PATTERN_GERMAN);
+							DateFormat dfLocale = SpringLocaleDelegate.getInstance().getDateFormat();
+							if (dfLocale instanceof SimpleDateFormat) {
+								df = dfLocale;;
+							}
+							value = fld == null ? "" : df.format((Date)fld).toUpperCase();
+						} else if (fld instanceof String) {
+							value = StringUtils.emptyIfNull((String)fld).toUpperCase();
+						} else {
+							value = fld == null ? "" : fld.toString().toUpperCase();
+						}
 						if(value.indexOf(upperSearchString) >= 0)
 							foundMatch = true;
 					}
@@ -196,7 +214,8 @@ public class LiveSearchFacadeBean extends NuclosFacadeBean implements LiveSearch
 		if(eoField != null && !eoField.isForceValueSearch())
 			return false;
 
-		if(!fieldMeta.getDataType().equals(String.class.getName()))
+		if(!fieldMeta.getDataType().equals(String.class.getName())
+				&& !fieldMeta.getDataType().equals(Date.class.getName()))
 			return false;
 
 		// References sometimes come with a string-class declaration, but

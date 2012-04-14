@@ -25,9 +25,11 @@ import java.awt.event.FocusEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.rmi.RemoteException;
+import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -805,8 +807,17 @@ public class LiveSearchController implements LiveSearchSearchPaneListener, LiveS
                     EntityFieldMetaDataVO fdef = searchDef.fields.get(fieldName);
                     NuclosEOField eoField = NuclosEOField.getByField(fieldName);
                     if(eoField == null || eoField.isForceValueSearch()) {
-                        if(fdef.getDataType().equals(String.class.getName()) && !hideFields.contains(fdef.getField())) {
-                            String fieldValue = StringUtils.emptyIfNull(entityObject.getField(fieldName, String.class));
+                        if((fdef.getDataType().equals(String.class.getName()) || fdef.getDataType().equals(Date.class.getName())) && !hideFields.contains(fdef.getField())) {
+                            String fieldValue;
+                            Object fld = entityObject.getField(fieldName);
+    						if (fld instanceof Date) {
+    							DateFormat df = SpringLocaleDelegate.getInstance().getDateFormat();
+    							fieldValue = fld == null ? "" : df.format((Date)fld);
+    						} else if (fld instanceof String) {
+    							fieldValue = StringUtils.emptyIfNull((String)fld);
+    						} else {
+    							fieldValue = fld == null ? "" : fld.toString();
+    						}
                             int matchIndex = fieldValue.toLowerCase().indexOf(lowerCaseSearchString);
                             if(matchIndex >= 0) {
                                 int endIndex = matchIndex + searchDef.search.length();
