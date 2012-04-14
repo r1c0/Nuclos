@@ -28,6 +28,7 @@ import java.awt.GridLayout;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.InvocationEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -63,6 +64,7 @@ import javax.swing.JTable;
 import javax.swing.JToggleButton;
 import javax.swing.JToolBar;
 import javax.swing.JViewport;
+import javax.swing.KeyStroke;
 import javax.swing.ListSelectionModel;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingUtilities;
@@ -92,6 +94,7 @@ import org.nuclos.client.ui.Icons;
 import org.nuclos.client.ui.SizeKnownListener;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.client.ui.URIMouseAdapter;
+import org.nuclos.client.ui.collect.FixedColumnRowHeader.HeaderTable;
 import org.nuclos.client.ui.collect.component.CollectableComponent;
 import org.nuclos.client.ui.collect.component.CollectableComponentFactory;
 import org.nuclos.client.ui.collect.component.CollectableComponentTableCellEditor;
@@ -1639,6 +1642,10 @@ public class SubForm extends JPanel
 	public static class SubFormTable extends CommonJTable
 			implements Closeable {
 
+		@Override
+		public boolean isRequestFocusEnabled() {
+			return true;
+		}
 		public static class SubFormTableRowSorter extends TableRowSorter<TableModel> {
 			SubFormTableRowSorter(TableModel model) {
 				super(model);
@@ -1754,9 +1761,17 @@ public class SubForm extends JPanel
 
 		@Override
 		public void changeSelection(final int rowIndex, final int columnIndex, boolean toggle, boolean extend) {
+			changeSelection(rowIndex, columnIndex, toggle, extend, false);
+			
+			int colCount = getColumnCount();
+			if(columnIndex == colCount-1) {
+				newRowOnNext = true;
+			}	
+		}
+		public void changeSelection(final int rowIndex, final int columnIndex, boolean toggle, boolean extend, final boolean fixed) {
 			super.changeSelection(rowIndex, columnIndex, toggle, extend);
-			AWTEvent event = EventQueue.getCurrentEvent();
-			if(event instanceof KeyEvent) {
+			final AWTEvent event = EventQueue.getCurrentEvent();
+			if(event instanceof KeyEvent || event instanceof InvocationEvent) {
 				if(newRowOnNext) {
 					if(getRowCount() == 1) {
 						for(FocusActionListener fal : subform.getFocusActionLister()) {
@@ -1778,12 +1793,28 @@ public class SubForm extends JPanel
 				int colCount = getColumnCount();
 				if(columnIndex == colCount-1) {
 					newRowOnNext = true;
-				}
+				}	
+				
+				if (!fixed && columnIndex == 0) {
+					SubformRowHeader rowHeader = getSubForm().getSubformRowHeader();
+					boolean blnHasFixedRows = (rowHeader != null && rowHeader.getHeaderTable().getColumnCount() > 1);
+					if (blnHasFixedRows) {
+						if (!(rowHeader.getHeaderTable() instanceof HeaderTable))
+							rowHeader.getHeaderTable().changeSelection(rowIndex, 0, false, false);
+						else
+							((HeaderTable)rowHeader.getHeaderTable()).changeSelection(rowIndex, 0, false, false, true);
+						return;
+					}
+				} 
 
 				if(isCellEditable(rowIndex, columnIndex)) {
 					SwingUtilities.invokeLater(new Runnable() {
 						@Override
 						public void run() {
+							if (rowIndex == 0 && columnIndex == 0
+									&& !fixed)
+								return;
+								
 							if (editCellAt(rowIndex, columnIndex)) {
 								Component editor = getEditorComponent();
 								if(editor != null)
@@ -1795,6 +1826,8 @@ public class SubForm extends JPanel
 				else {
 					final int rowCol[] = getNextEditableCell(this, rowIndex, columnIndex);
 					if (isCellEditable(rowCol[0], rowCol[1])) {
+						if(!fixed && event instanceof KeyEvent && ((KeyEvent)event).isConsumed())
+							return;
 						SwingUtilities.invokeLater(new Runnable() {
 							@Override
 							public void run() {

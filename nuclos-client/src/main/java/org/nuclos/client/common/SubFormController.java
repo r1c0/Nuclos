@@ -59,6 +59,9 @@ import org.nuclos.client.ui.SizeKnownListener;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.client.ui.collect.CollectableTableHelper;
 import org.nuclos.client.ui.collect.SubForm;
+import org.nuclos.client.ui.collect.SubformRowHeader;
+import org.nuclos.client.ui.collect.FixedColumnRowHeader.HeaderTable;
+import org.nuclos.client.ui.collect.SubForm.SubFormTable;
 import org.nuclos.client.ui.collect.SubForm.SubFormTableModel;
 import org.nuclos.client.ui.collect.SubForm.ToolbarFunction;
 import org.nuclos.client.ui.collect.SubFormParameterProvider;
@@ -680,10 +683,10 @@ public abstract class SubFormController extends Controller
 
 	public class FocusListSelectionListener implements ListSelectionListener {
 
-		private final JTable tbl;
+		private final SubFormTable tbl;
 		private final KeyStroke tabKeyStroke = KeyStroke.getKeyStroke(KeyEvent.VK_TAB, 0);
 
-		public FocusListSelectionListener(JTable tbl) {
+		public FocusListSelectionListener(SubFormTable tbl) {
 			this.tbl = tbl;
 		}
 
@@ -691,19 +694,32 @@ public abstract class SubFormController extends Controller
 		public void valueChanged(final ListSelectionEvent e) {
 			AWTEvent currentEvent = EventQueue.getCurrentEvent();
 	        if(currentEvent instanceof KeyEvent){
-	        	KeyEvent ke = (KeyEvent)currentEvent;
-	            if(!KeyStroke.getKeyStrokeForEvent(ke).equals(tabKeyStroke))
+	        	final KeyEvent ke = (KeyEvent)currentEvent;
+	            if(!KeyStroke.getKeyStrokeForEvent(ke).equals(tabKeyStroke) || ke.isConsumed())
 	            	return;
 	            int rowIndex = tbl.getSelectedRow();
 	            int columnIndex = tbl.getSelectedColumn();
-	            if(rowIndex == 0 && columnIndex == 0 && e.getLastIndex() > 0) {
-					SubFormController.this.cmdInsert();
-					SwingUtilities.invokeLater(new Runnable() {
+	            if(((rowIndex == 1 && columnIndex == -1) || (rowIndex == 0 && columnIndex == 0)) && e.getLastIndex() > 0) {
+		            ke.consume();
+		            int idxRow = e.getLastIndex(); 
+		            if (rowIndex == 0 && columnIndex == 0 && e.getLastIndex() > 0) {
+		            	SubFormController.this.cmdInsert();
+		            	idxRow = idxRow + 1;
+		            }
+		            final int iRow = idxRow;
+		            SwingUtilities.invokeLater(new Runnable() {
 
 						@Override
 						public void run() {
-							tbl.editCellAt(e.getLastIndex()+1, 0);
-							tbl.getEditorComponent().requestFocusInWindow();
+							SubformRowHeader rowHeader = tbl.getSubForm().getSubformRowHeader();
+							boolean blnHasFixedRows = (rowHeader != null && rowHeader.getHeaderTable().getColumnCount() > 1);
+							if (!blnHasFixedRows) 
+								tbl.changeSelection(iRow, 0, false, false);
+							else
+								if (!(rowHeader.getHeaderTable() instanceof HeaderTable))
+									rowHeader.getHeaderTable().changeSelection(iRow, 0, false, false);
+								else
+									((HeaderTable)rowHeader.getHeaderTable()).changeSelection(iRow, 0, false, false, true);
 						}
 					});
 
@@ -746,7 +762,7 @@ public abstract class SubFormController extends Controller
 	}
 
 	private void setupListSelectionListener(final SubForm subform) {
-		final JTable tbl = subform.getJTable();
+		final SubFormTable tbl = subform.getSubformTable();
 
 		// initialize listener for row selection in the table:
 		this.listselectionlistener = new IsRemovableListSelectionListener(tbl);
