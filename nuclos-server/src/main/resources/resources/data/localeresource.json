@@ -32902,17 +32902,32 @@
   {
     "resourceID": "AbstractCollectableComponent.7",
     "locale": "i-default",
-    "text": "Show details..."
+    "text": "Show table details..."
   },
   {
     "resourceID": "AbstractCollectableComponent.7",
     "locale": "en",
-    "text": "Show details..."
+    "text": "Show table details..."
   },
   {
     "resourceID": "AbstractCollectableComponent.7",
     "locale": "de",
-    "text": "Details anzeigen..."
+    "text": "Tabellendetails anzeigen..."
+  },
+  {
+    "resourceID": "AbstractCollectableComponent.22",
+    "locale": "i-default",
+    "text": "Show column details..."
+  },
+  {
+    "resourceID": "AbstractCollectableComponent.22",
+    "locale": "en",
+    "text": "Show column details..."
+  },
+  {
+    "resourceID": "AbstractCollectableComponent.22",
+    "locale": "de",
+    "text": "Spaltendetails anzeigen..."
   },
   {
     "resourceID": "AbstractCollectableComponent.9",

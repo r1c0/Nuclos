@@ -236,7 +236,7 @@ public class GenericObjectTaskController extends RefreshableTaskController {
 	private void setupPopupMenuListener(final GenericObjectTaskView gotaskview){
 		//context menu:		
 		final JMenuItem miDetails = new JMenuItem(getSpringLocaleDelegate().getMessage(
-				"AbstractCollectableComponent.7","Details anzeigen..."));
+				"AbstractCollectableComponent.7","Tabellendetails anzeigen..."));
 		final JMenuItem miDefineAsNewSearchResult = new JMenuItem(getSpringLocaleDelegate().getMessage(
 				"ExplorerController.22", "In Liste anzeigen"));
 		final JMenuItem miCopyCells = new JMenuItem(getSpringLocaleDelegate().getMessage(

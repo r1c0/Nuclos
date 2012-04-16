@@ -83,7 +83,7 @@ public class DynamicEntitySubFormController extends MasterDataSubFormController 
 	private static final Logger LOG = Logger.getLogger(DynamicEntitySubFormController.class);
 	
 	private JMenuItem miDetails = new JMenuItem(getSpringLocaleDelegate().getMessage(
-			"AbstractCollectableComponent.7","Details anzeigen..."));
+			"AbstractCollectableComponent.7","Tabellendetails anzeigen..."));
 	private JMenuItem miDefineAsNewSearchResult = new JMenuItem(getSpringLocaleDelegate().getMessage(
 			"DynamicEntitySubFormController.1", "In Liste anzeigen"));
 
