@@ -402,7 +402,7 @@ public class EntityObjectProcessor extends AbstractJdbcWithFieldsDalProcessor<En
 
 		DbCondition objectgroup = from.baseColumn("intid", Long.class).in(groupsubquery);
 
-		query.where(query.getRestriction() != null ? (query.getBuilder().and(query.getRestriction(), objectgroup)) : objectgroup);
+		query.addToWhereAsAnd(query.getRestriction() != null ? (query.getBuilder().and(query.getRestriction(), objectgroup)) : objectgroup);
 		return dataBaseHelper.getDbAccess().executeQuery(query);
 	}
 
