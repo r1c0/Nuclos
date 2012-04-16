@@ -251,11 +251,11 @@ public class CollectableComponentTableCellEditor extends AbstractCellEditor impl
 		}
 		if (!this.isSearchable() && clctcomp instanceof CollectableComboBox) {
 			final CollectableComboBox clctcombobox = (CollectableComboBox)clctcomp;
-			((JTextField)clctcombobox.getJComboBox().getEditor().getEditorComponent()).setInputVerifier(textInputVerifier);
+			((JTextField)clctcombobox.getJComboBox().getEditor().getEditorComponent()).setInputVerifier(vlpInputVerifier);
 		}
 		if (!this.isSearchable() && clctcomp instanceof CollectableListOfValues) {
 			final CollectableListOfValues clctlov = (CollectableListOfValues)clctcomp;
-			clctlov.getJTextField().setInputVerifier(textInputVerifier);
+			clctlov.getJTextField().setInputVerifier(vlpInputVerifier);
 		}
 		
 		JComponent result = this.clctcomp.getJComponent();
@@ -351,6 +351,35 @@ public class CollectableComponentTableCellEditor extends AbstractCellEditor impl
 				exception = ex;
 				return false;
 			}
+		}
+
+		@Override
+		public boolean shouldYieldFocus(JComponent comp) {
+			final boolean result = verify(comp);
+			if (!result && !bCheckState) {
+				bCheckState = true;
+				final String sMessage = StringUtils.getParameterizedExceptionMessage("field.invalid.value", clctef.getLabel());//"Das Feld \"" + clctef.getLabel() + "\" hat keinen g\u00fcltigen Wert.";
+				Errors.getInstance().showExceptionDialog(null, sMessage, exception);
+				return false;
+			}
+			bCheckState = false;
+			return false;
+		}
+	};
+	
+	/**
+	 * Verifies the input of the text field
+	 * It has two states: checkstate = true or false
+	 * In this way it is possible to show a ExceptionDialog
+	 * (the ExceptionDialog needs the focus to show it self)
+	 */
+	private InputVerifier vlpInputVerifier = new InputVerifier() {
+		private CollectableFieldFormatException exception;
+		private boolean bCheckState;
+
+		@Override
+		public boolean verify(JComponent comp) {
+			return true;
 		}
 
 		@Override
