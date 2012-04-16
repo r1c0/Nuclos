@@ -40,6 +40,7 @@ import org.nuclos.common.dal.vo.EntityObjectVO;
 import org.nuclos.common.entityobject.CollectableEOEntityField;
 import org.nuclos.common.security.Permission;
 import org.nuclos.common.transport.GzipList;
+import org.nuclos.common2.IdUtils;
 import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonFatalException;
@@ -148,6 +149,7 @@ public class LiveSearchFacadeBean extends NuclosFacadeBean implements LiveSearch
 	 */
 	private ArrayList<Pair<EntityObjectVO, Set<String>>> attributeRightsFilter(List<EntityObjectVO> dbResult, final String entity, String searchString, HashSet<String> fieldsUsedForSearch) {
 	    ArrayList<Pair<EntityObjectVO, Set<String>>> res = new ArrayList<Pair<EntityObjectVO, Set<String>>>();
+	    
 	    String upperSearchString = searchString.toUpperCase();
 		
 		GenCache<Long, Map<String, Permission>> permissionCache
@@ -167,7 +169,11 @@ public class LiveSearchFacadeBean extends NuclosFacadeBean implements LiveSearch
 				}});
 
 		for(EntityObjectVO obj : dbResult) {
+			if (!checkReadAllowed(entity, IdUtils.unsafeToId(obj.getId())))
+				continue;
+				
 			Long stateId = obj.getFieldId("nuclosState");
+			    
 			if(stateId != null) {
 				Map<String, Permission> attributeRights = permissionCache.get(stateId);
 				HashSet<String> hideAttributes = new HashSet<String>();

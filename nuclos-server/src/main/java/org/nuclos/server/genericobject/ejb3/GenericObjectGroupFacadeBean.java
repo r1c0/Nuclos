@@ -28,6 +28,7 @@ import org.nuclos.common2.exception.CommonFinderException;
 import org.nuclos.common2.exception.CommonPermissionException;
 import org.nuclos.common2.exception.CommonRemoveException;
 import org.nuclos.common2.exception.CommonStaleVersionException;
+import org.nuclos.server.common.ServerServiceLocator;
 import org.nuclos.server.database.SpringDataBaseHelper;
 import org.nuclos.server.dblayer.query.DbFrom;
 import org.nuclos.server.dblayer.query.DbQuery;
@@ -53,7 +54,7 @@ public class GenericObjectGroupFacadeBean implements GenericObjectGroupFacadeRem
 	private MasterDataFacadeHelper masterDataFacadeHelper;
 	
 	private SpringDataBaseHelper dataBaseHelper;
-	
+
 	private MasterDataFacadeLocal masterDataFacade;
 	
 	public GenericObjectGroupFacadeBean() {
@@ -68,9 +69,11 @@ public class GenericObjectGroupFacadeBean implements GenericObjectGroupFacadeRem
 	final void setDataBaseHelper(SpringDataBaseHelper springDataBaseHelper) {
 		this.dataBaseHelper = springDataBaseHelper;
 	}
-	
-	public final void setMasterDataFacade(MasterDataFacadeLocal masterDataFacade) {
-		this.masterDataFacade = masterDataFacade;
+
+	private MasterDataFacadeLocal getMasterDataFacade() {
+		if (masterDataFacade == null)
+			masterDataFacade = ServerServiceLocator.getInstance().getFacade(MasterDataFacadeLocal.class);
+		return masterDataFacade;
 	}
 	
 	/**
@@ -143,10 +146,10 @@ public class GenericObjectGroupFacadeBean implements GenericObjectGroupFacadeRem
 		throws NuclosBusinessRuleException, CommonFinderException, CommonRemoveException,
 			CommonStaleVersionException, CommonPermissionException, CommonCreateException
 	{
-		MasterDataMetaVO mdmetavo = masterDataFacade.getMetaData(NuclosEntity.GENERICOBJECTGROUP.getEntityName());
+		MasterDataMetaVO mdmetavo = getMasterDataFacade().getMetaData(NuclosEntity.GENERICOBJECTGROUP.getEntityName());
 		Integer intId = findIntId(iGenericObjectId, iGroupId);
 		MasterDataVO mdvo = masterDataFacadeHelper.getMasterDataCVOById(mdmetavo, intId);
-		masterDataFacade.remove(NuclosEntity.GENERICOBJECTGROUP.getEntityName(), mdvo, false);
+		getMasterDataFacade().remove(NuclosEntity.GENERICOBJECTGROUP.getEntityName(), mdvo, false);
 	}
 
 	private static Integer findIntId(int genericObjectId, int groupId) {
@@ -176,10 +179,10 @@ public class GenericObjectGroupFacadeBean implements GenericObjectGroupFacadeRem
 	public void addToGroup(int iGenericObjectId, int iGroupId)
 		throws NuclosBusinessRuleException, CommonCreateException, CommonPermissionException
 	{
-		MasterDataMetaVO mdmetavo = masterDataFacade.getMetaData(NuclosEntity.GENERICOBJECTGROUP.getEntityName());
+		MasterDataMetaVO mdmetavo = getMasterDataFacade().getMetaData(NuclosEntity.GENERICOBJECTGROUP.getEntityName());
 		MasterDataVO mdvo = new MasterDataVO(mdmetavo, true);
 		mdvo.setField("groupId", iGroupId);
 		mdvo.setField("genericObjectId", iGenericObjectId);
-		mdvo = masterDataFacade.create(NuclosEntity.GENERICOBJECTGROUP.getEntityName(), mdvo, null);
+		mdvo = getMasterDataFacade().create(NuclosEntity.GENERICOBJECTGROUP.getEntityName(), mdvo, null);
 	}
 }
