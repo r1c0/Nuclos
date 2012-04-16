@@ -330,6 +330,31 @@ public abstract class NuclosFacadeBean {
 	/**
 	 * checks if the current user is allowed to read at least one of the given entities (masterdata or genericobject)
 	 * @param sEntityName
+	 * @param entityId
+	 * @return true/false if reading of the entity (masterdata or genericobject) is not allowed for the current user.
+	 */
+	protected boolean checkReadAllowed(String sEntityName, Integer entityId) {
+		boolean isReadAllowed = false;
+		String sEntityLabel;
+		if(modules.isModuleEntity(sEntityName)) {
+			sEntityLabel = modules.getEntityLabelByModuleName(sEntityName);
+			if(securityCache.isReadAllowedForModule(this.getCurrentUserName(), sEntityName, entityId)) {
+			  isReadAllowed = true;
+			}
+		}
+		else {
+			sEntityLabel = SpringLocaleDelegate.getInstance().getLabelFromMetaDataVO(masterDataMetaCache.getMetaData(sEntityName));
+			//masterDataMetaCache.getMetaData(sEntityName[i]).getLabel();
+			if(securityCache.isReadAllowedForMasterData(this.getCurrentUserName(), sEntityName)) {
+			  isReadAllowed = true;
+			}
+		}
+		return isReadAllowed;
+	}
+	
+	/**
+	 * checks if the current user is allowed to read at least one of the given entities (masterdata or genericobject)
+	 * @param sEntityName
 	 * @throws CommonPermissionException if reading of the entity (masterdata or genericobject) is not allowed for the current user.
 	 */
 	protected void checkReadAllowed(String... sEntityName) throws CommonPermissionException {
