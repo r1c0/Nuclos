@@ -376,7 +376,8 @@ public class EntityObjectProcessor extends AbstractJdbcWithFieldsDalProcessor<En
 		searchExpression = addJoinedRefs(searchExpression);
 		
 		EOSearchExpressionUnparser unparser = new EOSearchExpressionUnparser(query, eMeta);
-		unparser.unparseSearchCondition(getSearchConditionWithDeletedAndVLP(searchExpression));
+		CollectableSearchCondition searchConditionWithDeletedAndVLP = getSearchConditionWithDeletedAndVLP(searchExpression);
+		unparser.unparseSearchCondition(searchConditionWithDeletedAndVLP);
 		unparser.unparseSortingOrder(searchExpression.getSortingOrder());
 
 		DbQueryBuilder builder = dataBaseHelper.getDbAccess().getQueryBuilder();
@@ -402,7 +403,10 @@ public class EntityObjectProcessor extends AbstractJdbcWithFieldsDalProcessor<En
 
 		DbCondition objectgroup = from.baseColumn("intid", Long.class).in(groupsubquery);
 
-		query.addToWhereAsAnd(query.getRestriction() != null ? (query.getBuilder().and(query.getRestriction(), objectgroup)) : objectgroup);
+		if (searchConditionWithDeletedAndVLP != null)
+			query.where(query.getRestriction() != null ? (query.getBuilder().and(query.getRestriction(), objectgroup)) : objectgroup);
+		else
+			query.addToWhereAsAnd(query.getRestriction() != null ? (query.getBuilder().and(query.getRestriction(), objectgroup)) : objectgroup);
 		return dataBaseHelper.getDbAccess().executeQuery(query);
 	}
 
