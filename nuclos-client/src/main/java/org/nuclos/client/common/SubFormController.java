@@ -765,7 +765,7 @@ public abstract class SubFormController extends MainFrameTabController
 	}
 
 	private void setupListSelectionListener(final SubForm subform) {
-		final JTable tbl = subform.getJTable();
+		final SubFormTable tbl = subform.getSubformTable();
 
 		// initialize listener for row selection in the table:
 		this.listselectionlistener = new IsRemovableListSelectionListener(tbl);
