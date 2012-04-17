@@ -275,7 +275,7 @@ public class ExplorerNode<TN extends TreeNode> extends DefaultMutableTreeNode {
 		else {
 			treenode.refresh();
 		}
-		//treenode.removeSubNodes();
+		treenode.removeSubNodes();
 		loadChildren(true);
 
 		assert getChildrenHaveBeenLoaded();
