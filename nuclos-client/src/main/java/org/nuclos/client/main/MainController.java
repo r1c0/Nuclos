@@ -1702,7 +1702,7 @@ public class MainController {
 		LocaleDelegate.getInstance().flush();
 		refreshMenus();
 		refreshTaskController();
-		frm.setTitle(getUserName(), getNuclosServerName());
+		frm.setTitle();
 	}
 
 	/**
