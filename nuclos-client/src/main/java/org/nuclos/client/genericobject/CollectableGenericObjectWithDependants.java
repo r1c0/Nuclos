@@ -20,6 +20,7 @@ import java.util.Collection;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.nuclos.client.common.MetaDataClientProvider;
 import org.nuclos.client.common.Utils;
 import org.nuclos.client.entityobject.CollectableEntityObject;
 import org.nuclos.client.masterdata.CollectableWithDependants;
@@ -102,6 +103,15 @@ public class CollectableGenericObjectWithDependants extends CollectableGenericOb
 			final CollectableEOEntity clctmde = (CollectableEOEntity) ce;
 			final Collection<EntityObjectVO> collmdvoDependants = this.getGenericObjectWithDependantsCVO().getDependants().getData(sSubEntityName);
 			final List<CollectableEntityObject> result = CollectionUtils.transform(collmdvoDependants, new CollectableEntityObject.MakeCollectable(clctmde));
+			assert result != null;
+			return result;
+		}
+		else if (ce instanceof CollectableGenericObjectEntity) {
+			final CollectableGenericObjectEntity clctgoe = (CollectableGenericObjectEntity)ce;
+			final Collection<EntityObjectVO> collmdvoDependants = this.getGenericObjectWithDependantsCVO().getDependants().getData(sSubEntityName);
+			final CollectableEOEntity cee = new CollectableEOEntity(MetaDataClientProvider.getInstance().getEntity(clctgoe.getName()),
+					MetaDataClientProvider.getInstance().getAllEntityFieldsByEntity(clctgoe.getName()));
+			final List<CollectableEntityObject> result = CollectionUtils.transform(collmdvoDependants, new CollectableEntityObject.MakeCollectable(cee));
 			assert result != null;
 			return result;
 		}
