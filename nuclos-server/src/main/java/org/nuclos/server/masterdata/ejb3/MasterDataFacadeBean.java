@@ -923,6 +923,9 @@ public class MasterDataFacadeBean extends NuclosFacadeBean implements MasterData
 		NuclosEntity nuclosEntity = NuclosEntity.getByName(sEntityName);
 
 		mdvo.remove();
+		
+		this.fireDeleteEvent(sEntityName, mdvo, mdvo.getDependants(), false);
+		
 		if(bRemoveDependants) {
 			LayoutFacadeLocal layoutFacade = ServerServiceLocator.getInstance().getFacade(LayoutFacadeLocal.class);
 			Map<EntityAndFieldName, String> mpEntityAndParentEntityName = layoutFacade.getSubFormEntityAndParentSubFormEntityNames(
@@ -931,8 +934,6 @@ public class MasterDataFacadeBean extends NuclosFacadeBean implements MasterData
 				mdvo.getDependants(), mdvo.isRemoved(), null, mpEntityAndParentEntityName);
 			helper.removeDependants(mdp);
 		}
-
-		this.fireDeleteEvent(sEntityName, mdvo, mdvo.getDependants(), false);
 
 		if (NuclosEntity.WEBSERVICE.getEntityName().equals(sEntityName)) {
 			try {
