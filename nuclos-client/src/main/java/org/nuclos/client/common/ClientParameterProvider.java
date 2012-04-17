@@ -28,6 +28,7 @@ import javax.jms.TextMessage;
 
 import org.apache.log4j.Logger;
 import org.nuclos.client.jms.TopicNotificationReceiver;
+import org.nuclos.client.main.Main;
 import org.nuclos.common.AbstractParameterProvider;
 import org.nuclos.common.JMSConstants;
 import org.nuclos.common2.exception.CommonFatalException;
@@ -65,6 +66,7 @@ public class ClientParameterProvider extends AbstractParameterProvider implement
 				if (JMS_MESSAGE_ALL_PARAMETERS_ARE_REVALIDATED.equals(txtMessage.getText())) {
 					LOG.info("onMessage " + this + " pattern matches, revalidate cache...");
 					ClientParameterProvider.this.revalidate();
+					Main.getInstance().getMainFrame().setTitle();
 				}
 			}
 			catch(JMSException e) {

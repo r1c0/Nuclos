@@ -39,6 +39,7 @@ import java.awt.image.BufferedImage;
 import java.lang.reflect.Field;
 import java.net.URL;
 import java.text.Collator;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -124,6 +125,7 @@ import org.nuclos.common2.CommonRunnable;
 import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.PreferencesUtils;
 import org.nuclos.common2.SpringLocaleDelegate;
+import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.PreferencesException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -338,12 +340,19 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 		return msgPanel;
 	}
 
-	public void setTitle(String sUserName, String sNucleusServerName) {
-		super.setTitle(ApplicationProperties.getInstance().getCurrentVersion().getAppName());
+	public void setTitle() {
+		String template = "{0} {1}";
+		String application = ApplicationProperties.getInstance().getCurrentVersion().getAppName();
+		String version = ApplicationProperties.getInstance().getCurrentVersion().getVersionNumber();
+		String instance = ClientParameterProvider.getInstance().getValue(ParameterProvider.KEY_NUCLOS_INSTANCE_NAME);
+		if (!StringUtils.isNullOrEmpty(instance)) {
+			template = "{0} {1} ({2})";
+		}
+		super.setTitle(MessageFormat.format(template, application, version, instance));
 	}
 
 	public final void init(String sUserName, String sNucleusServerName) {
-		this.setTitle(sUserName, sNucleusServerName);
+		this.setTitle();
 		setBackground(NuclosThemeSettings.BACKGROUND_ROOTPANE);
 		JPanel contentpane = (JPanel) getContentPane();
 		contentpane.setLayout(new BorderLayout());
