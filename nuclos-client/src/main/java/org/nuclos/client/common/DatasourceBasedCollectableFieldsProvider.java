@@ -197,10 +197,10 @@ public class DatasourceBasedCollectableFieldsProvider implements CacheableCollec
 	 */
 	@Override
 	public List<CollectableField> getCollectableFields() throws CommonBusinessException {
-		List<CollectableField> lstFields = new ArrayList<CollectableField>();
+		final List<CollectableField> lstFields = new ArrayList<CollectableField>();
 		
 		final DatasourceVO dsvoUsed = getDatasourceVO();
-		if(dsvoUsed != null) {
+		if (dsvoUsed != null) {
 			
 			// Create copy and set all parameters not specified so far with null value to complete SQL statement in datasource
 			Map<String, Object> queryParams = new HashMap<String, Object>(mpParameters);
@@ -211,29 +211,34 @@ public class DatasourceBasedCollectableFieldsProvider implements CacheableCollec
 			}
 			
 			// refresh list from datasource
-			ResultVO result = DatasourceDelegate.getInstance().executeQuery(dsvoUsed.getSource(), queryParams, null);
+			final ResultVO result = DatasourceDelegate.getInstance().executeQuery(dsvoUsed.getSource(), queryParams, null);
 			int iIndexValue = -1;
 			int iIndexId = -1;
-			List<ResultColumnVO> columns = result.getColumns();
-			for (int iIndex = 0; iIndex < columns.size(); iIndex++) {
-				ResultColumnVO rcvo = columns.get(iIndex);
-				if(rcvo.getColumnLabel().equalsIgnoreCase(sValueFieldName)) {
+			final List<ResultColumnVO> columns = result.getColumns();
+			final int len = columns.size();
+			for (int iIndex = 0; iIndex < len; ++iIndex) {
+				final ResultColumnVO rcvo = columns.get(iIndex);
+				final String label = rcvo.getColumnLabel();
+				if(label.equalsIgnoreCase(sValueFieldName)) {
 					iIndexValue = iIndex;
 				}
 				// Note: the "else" here has the effect that the sIdFieldName lookup is skipped if
 				// it's equal to sValueFieldName => no id index which (=> plain-vanilla value fields)
-				else if(rcvo.getColumnLabel().equalsIgnoreCase(sIdFieldName)) {
+				else if(label.equalsIgnoreCase(sIdFieldName)) {
 					iIndexId = iIndex;
 				}
 			}
+			if (iIndexValue < 0) {
+				throw new IllegalArgumentException("In data source '" + dsvo + "', there is no field '" + sValueFieldName + "'.");
+			}
 			
 			for(Object[] oValue : result.getRows()) {
-				if (oValue[iIndexValue] != null && (iIndexId == -1 || oValue[iIndexId] != null)) {
-					if(iIndexId == -1) {
+				if (oValue[iIndexValue] != null) {
+					if (iIndexId == -1) {
 						lstFields.add(new CollectableValueField(oValue[iIndexValue]));
 					}
-					else {
-						Integer iId = ((Number) (oValue[iIndexId])).intValue();
+					else if (oValue[iIndexId] != null) {
+						final Integer iId = ((Number) (oValue[iIndexId])).intValue();
 						lstFields.add(new CollectableValueIdField(iId, oValue[iIndexValue]));
 					}
 				}
