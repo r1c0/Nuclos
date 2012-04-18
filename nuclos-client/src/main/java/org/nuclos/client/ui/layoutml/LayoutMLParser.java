@@ -224,27 +224,50 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 		}
 
 		private static class TargetComponentAction implements Action {
+			
 			private final String sTargetComponentName;
 
-			TargetComponentAction(String sTargetComponentName) {
+			private TargetComponentAction(String sTargetComponentName) {
 				this.sTargetComponentName = sTargetComponentName;
 			}
 
 			public String getTargetComponentName() {
 				return sTargetComponentName;
 			}
+			
+			@Override
+			public String toString() {
+				final StringBuilder result = new StringBuilder();
+				result.append("TargetComponentAction[");
+				result.append("target=");
+				result.append(sTargetComponentName);
+				result.append("]");
+				return result.toString();
+			}
 		}
 
 		private static class ClearAction extends TargetComponentAction {
-			ClearAction(String sTargetComponentName) {
+			
+			private ClearAction(String sTargetComponentName) {
 				super(sTargetComponentName);
+			}
+						
+			@Override
+			public String toString() {
+				final StringBuilder result = new StringBuilder();
+				result.append("ClearAction[");
+				result.append("target=");
+				result.append(getTargetComponentName());
+				result.append("]");
+				return result.toString();
 			}
 		}
 
 		private static class TransferLookedUpValueAction extends TargetComponentAction {
+			
 			private final String sSourceFieldName;
 
-			TransferLookedUpValueAction(String sTargetComponentName, String sSourceFieldName) {
+			private TransferLookedUpValueAction(String sTargetComponentName, String sSourceFieldName) {
 				super(sTargetComponentName);
 				this.sSourceFieldName = sSourceFieldName;
 			}
@@ -252,13 +275,26 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 			public String getSourceFieldName() {
 				return sSourceFieldName;
 			}
+			
+			@Override
+			public String toString() {
+				final StringBuilder result = new StringBuilder();
+				result.append("TransferLookedUpValueAction[");
+				result.append("target=");
+				result.append(getTargetComponentName());
+				result.append("srcField=");
+				result.append(sSourceFieldName);
+				result.append("]");
+				return result.toString();
+			}
 		}
 
 		private static class RefreshValueListAction extends TargetComponentAction {
+			
 			private final String sTargetComponentEntityName;
 			private final String sParameterNameForSourceComponent;
 
-			RefreshValueListAction(String sTargetComponentName, String sTargetComponentEntityName,
+			private RefreshValueListAction(String sTargetComponentName, String sTargetComponentEntityName,
 					String sParameterNameForSourceComponent) {
 				super(sTargetComponentName);
 				this.sTargetComponentEntityName = sTargetComponentEntityName;
@@ -274,6 +310,20 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 			 */
 			public String getParameterNameForSourceComponent() {
 				return sParameterNameForSourceComponent;
+			}
+			
+			@Override
+			public String toString() {
+				final StringBuilder result = new StringBuilder();
+				result.append("RefreshValueListAction[");
+				result.append("target=");
+				result.append(getTargetComponentName());
+				result.append(",targetEntity=");
+				result.append(sTargetComponentEntityName);
+				result.append(",parameterNameSrc=");
+				result.append(sParameterNameForSourceComponent);
+				result.append("]");
+				return result.toString();
 			}
 		}
 
@@ -469,7 +519,8 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 					return; //NUCLOSINT-1160
 				}
 				final String sTargetComponentName = transferaction.getTargetComponentName();
-				final CollectableComponentModel clctcompmodelSource = mpclctcompmodel.get(transferaction.getSourceFieldName());
+				// Patch by Frank Pavlic (added by tp, verified by ts)
+				final CollectableComponentModel clctcompmodelSource = clctlovSource.getModel();
 				final CollectableComponentModel clctcompmodelTarget = mpclctcompmodel.get(sTargetComponentName);
 				if (clctcompmodelTarget == null) {
 					throw new SAXException(StringUtils.getParameterizedExceptionMessage("LayoutMLParser.5", sTargetComponentName));
