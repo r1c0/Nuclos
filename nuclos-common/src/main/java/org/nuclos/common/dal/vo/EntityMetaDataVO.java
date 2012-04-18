@@ -18,6 +18,7 @@ package org.nuclos.common.dal.vo;
 
 import java.util.Collection;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
 import org.nuclos.common.NuclosScript;
@@ -34,6 +35,8 @@ import org.nuclos.common2.LangUtils;
  * @version 01.00.00
  */
 public class EntityMetaDataVO extends AbstractDalVOWithVersion {
+	
+	public static final String FIELDS_FOR_EQUALITY_PATTERN = "\\s*[,;]\\s*";
 
 	private String entity;
 	private String dbEntity;
@@ -221,6 +224,9 @@ public class EntityMetaDataVO extends AbstractDalVOWithVersion {
 	}
 
 	public void setFieldsForEquality(String fieldsForEquality) {
+		if (fieldsForEquality != null) {
+			fieldsForEquality = fieldsForEquality.trim();
+		}
 		this.fieldsForEquality = fieldsForEquality;
 	}
 
@@ -314,6 +320,15 @@ public class EntityMetaDataVO extends AbstractDalVOWithVersion {
 		return acceleratorModifier;
 	}
 
+	/**
+	 * A string containing all field names that are used for equal.
+	 * Field name are separated by ';'. Leading and trailing white 
+	 * spaces are ignored.
+	 * 
+	 * TODO: 
+	 * At present we also accept ',' as separator, as it is used in
+	 * the entity wizard.
+	 */
 	public String getFieldsForEquality() {
 		return fieldsForEquality;
 	}

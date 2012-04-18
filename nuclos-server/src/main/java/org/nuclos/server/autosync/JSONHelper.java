@@ -29,6 +29,7 @@ import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Transformer;
 import org.nuclos.common.dal.DalSupportForMD;
+import org.nuclos.common.dal.vo.EntityMetaDataVO;
 import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.server.masterdata.valueobject.DependantMasterDataMap;
 import org.nuclos.server.masterdata.valueobject.MasterDataMetaFieldVO;
@@ -198,7 +199,8 @@ public class JSONHelper {
 	}
 
 	static Set<String> parseFieldsForEquality(String fieldsForEquality) {
-		return (fieldsForEquality != null) ? new HashSet<String>(Arrays.asList(fieldsForEquality.split(";"))) : null;
+		return (fieldsForEquality != null) ? new HashSet<String>(Arrays.asList(fieldsForEquality.split(
+				EntityMetaDataVO.FIELDS_FOR_EQUALITY_PATTERN))) : null;
 	}
 
 	static Class<?> parseDatatype(String datatype) {

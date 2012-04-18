@@ -30,10 +30,12 @@ import org.nuclos.client.entityobject.CollectableEOEntityClientProvider;
 import org.nuclos.client.entityobject.CollectableEntityObject;
 import org.nuclos.client.masterdata.CollectableWithDependants;
 import org.nuclos.client.masterdata.MasterDataDelegate;
+import org.nuclos.common.CloneUtils;
 import org.nuclos.common.ParameterProvider;
 import org.nuclos.common.collect.collectable.AbstractCollectable;
 import org.nuclos.common.collect.collectable.Collectable;
 import org.nuclos.common.collect.collectable.Collectable.GetId;
+import org.nuclos.common.collect.collectable.CollectableEntity;
 import org.nuclos.common.collect.collectable.CollectableField;
 import org.nuclos.common.collect.collectable.DefaultCollectableEntityProvider;
 import org.nuclos.common.collection.CollectionUtils;
@@ -422,13 +424,13 @@ public class MultiUpdateOfDependants {
  		 */
 		private static Collection<String> getFieldsForEquality(String sSubEntityName, String sParentFieldName) {
 			final Collection<String> result;
-			org.nuclos.common.collect.collectable.CollectableEntity ce = DefaultCollectableEntityProvider.getInstance().getCollectableEntity(sSubEntityName);
-			if(ce instanceof CollectableMasterDataEntity) {
-				CollectableMasterDataEntity cmde = (CollectableMasterDataEntity) ce;
-				result = cmde.getMasterDataMetaCVO().getFieldsForEquality();
+			final CollectableEntity ce = DefaultCollectableEntityProvider.getInstance().getCollectableEntity(sSubEntityName);
+			if (ce instanceof CollectableMasterDataEntity) {
+				final CollectableMasterDataEntity cmde = (CollectableMasterDataEntity) ce;
+				result = CloneUtils.cloneCollection(cmde.getMasterDataMetaCVO().getFieldsForEquality());
 			}
 			else {
-				result = ce.getFieldNames();
+				result = CloneUtils.cloneCollection(ce.getFieldNames());
 			}
 			result.remove(sParentFieldName);
 			return result;
