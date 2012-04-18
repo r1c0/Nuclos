@@ -47,8 +47,15 @@ public abstract class AtomicCollectableSearchCondition extends AbstractCollectab
 	private transient ComparisonOperator compop;
 
 	AtomicCollectableSearchCondition(CollectableEntityField clctef, ComparisonOperator compop) {
-		if (compop == ComparisonOperator.NONE)
+		if (clctef == null) {
+			throw new NullPointerException("clctef");
+		}
+		if (compop == null) {
+			throw new NullPointerException("compop");
+		}
+		if (compop == ComparisonOperator.NONE) {
 			throw new IllegalArgumentException("compop");
+		}
 		this.clctef = clctef;
 		this.compop = compop;
 	}
