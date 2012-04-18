@@ -1735,6 +1735,10 @@ public class MainController {
 		MasterDataCache.getInstance().invalidate(null);
 		MasterDataDelegate.getInstance().invalidateLayoutCache();
 		MetaDataCache.getInstance().invalidate();
+		
+		// BOS problem with custom icon 
+		MetaDataClientProvider.getInstance().revalidate();
+		
 		securityCache.revalidate();
 		AttributeCache.getInstance().revalidate();
 		GenericObjectLayoutCache.getInstance().invalidate();
