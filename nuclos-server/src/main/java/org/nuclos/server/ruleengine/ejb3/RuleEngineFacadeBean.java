@@ -35,6 +35,7 @@ import org.nuclos.common.Actions;
 import org.nuclos.common.JMSConstants;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.NuclosFatalException;
+import org.nuclos.common.ParameterProvider;
 import org.nuclos.common.PropertiesMap;
 import org.nuclos.common.RuleNotification;
 import org.nuclos.common.SearchConditionUtils;
@@ -1220,10 +1221,10 @@ public class RuleEngineFacadeBean extends NuclosFacadeBean implements RuleEngine
 		protected List<String> getImports() {
 			List<String> imports = new ArrayList<String>();
 			CollectionUtils.addAll(imports, IMPORTS);
-			/*final String additionalImports = serverParameterProvider.getValue(ParameterProvider.KEY_ADDITIONAL_IMPORTS_FOR_RULES);
+			final String additionalImports = serverParameterProvider.getValue(ParameterProvider.KEY_ADDITIONAL_IMPORTS_FOR_RULES);
 			if (additionalImports != null) {
 				CollectionUtils.addAll(imports, additionalImports.split(","));
-			}*/
+			}
 			imports.addAll(getWebserviceImports());
 			return imports;
 		}
