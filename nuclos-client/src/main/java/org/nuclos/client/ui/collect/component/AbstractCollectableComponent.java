@@ -138,7 +138,7 @@ public abstract class AbstractCollectableComponent
 	protected static final String TEXT_CLEAR = SpringLocaleDelegate.getInstance().getMessage(
 			"AbstractCollectableComponent.11","Feld leeren");
 	protected static final String TEXT_SHOWDETAILS = SpringLocaleDelegate.getInstance().getMessage(
-			"AbstractCollectableComponent.22","Spaltendetails anzeigen...");
+			"AbstractCollectableComponent.22","Details anzeigen...");
 	protected static final String TEXT_NEW = SpringLocaleDelegate.getInstance().getMessage(
 			"AbstractCollectableComponent.context.new","Neu...");
 	protected static final String TEXT_REFRESH = SpringLocaleDelegate.getInstance().getMessage(
