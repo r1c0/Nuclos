@@ -56,6 +56,9 @@ public abstract class AtomicCollectableSearchCondition extends AbstractCollectab
 		if (compop == ComparisonOperator.NONE) {
 			throw new IllegalArgumentException("compop");
 		}
+		if (clctef.getEntityName() == null) {
+			throw new NullPointerException("clctef.getEntityName()");
+		}
 		this.clctef = clctef;
 		this.compop = compop;
 	}
@@ -130,8 +133,14 @@ public abstract class AtomicCollectableSearchCondition extends AbstractCollectab
 
 	private void writeObject(ObjectOutputStream oos) throws IOException {
 		oos.defaultWriteObject();
-		// CollectableEntityField generally is not serializable, but DefaultCollectableEntityField is:
-		oos.writeObject(new DefaultCollectableEntityField(clctef, clctef.getEntityName()));
+		// additional fun with polymedics...
+		if (clctef.getEntityName() == null) {
+			oos.writeObject(null);
+		}
+		else {
+			// CollectableEntityField generally is not serializable, but DefaultCollectableEntityField is:
+			oos.writeObject(new DefaultCollectableEntityField(clctef, clctef.getEntityName()));
+		}
 		// ComparisonOperator is not serializable:
 		oos.writeInt(getComparisonOperator().getIntValue());
 	}
