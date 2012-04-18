@@ -43,9 +43,11 @@ import org.nuclos.installer.util.FileUtils;
  */
 public abstract class UnixoidUnpacker extends AbstractUnpacker {
 
-	private static final Logger log = Logger.getLogger(UnixoidUnpacker.class);
+	private static final Logger LOG = Logger.getLogger(UnixoidUnpacker.class);
 
 	protected static final String FILENAME_REGISTRY = "/etc/nuclos.ini";
+
+	protected static final String FILENAME_POSTGRES_REGISTRY = "/etc/postgres-reg.ini";
 
 	@Override
 	public void unpack(Installer cb) throws InstallException {
@@ -72,12 +74,20 @@ public abstract class UnixoidUnpacker extends AbstractUnpacker {
 			if (!registry.exists()) {
 				return false;
 			}
+			else if (!registry.canRead()) {
+				LOG.warn("Unable to read registry file '" + FILENAME_REGISTRY + "' to determine product registration.");
+				return false;
+			}
 			else {
-				FileInputStream fio = new FileInputStream(registry);
-				Ini ini = new Ini(fio);
-				boolean registered = ini.containsKey(uninstallname);
-				fio.close();
-				return registered;
+				final FileInputStream fio = new FileInputStream(registry);
+				try {
+					final Ini ini = new Ini(fio);
+					final boolean registered = ini.containsKey(uninstallname);
+					return registered;
+				}
+				finally {
+					fio.close();
+				}
 			}
 		}
 		catch (Exception e) {
@@ -97,32 +107,39 @@ public abstract class UnixoidUnpacker extends AbstractUnpacker {
 		if (pgservices == null) {
 			try {
 				pgservices = new ArrayList<PostgresService>();
-				File postgres_registration = new File("/etc/postgres-reg.ini");
+				final File postgres_registration = new File(FILENAME_POSTGRES_REGISTRY);
 				if (postgres_registration.exists()) {
-					FileInputStream fio = new FileInputStream(postgres_registration);
-					Ini ini = new Ini(fio);
-
-					for (Section section : ini.values()) {
-						if (section == null || section.getName() == null || section.getName().trim().isEmpty()) {
-							continue;
+					if (postgres_registration.canRead()) {
+						final FileInputStream fio = new FileInputStream(postgres_registration);
+						try {
+							Ini ini = new Ini(fio);
+							
+							for (Section section : ini.values()) {
+								if (section == null || section.getName() == null || section.getName().trim().isEmpty()) {
+									continue;
+								}
+								PostgresService pgservice = new PostgresService();
+								pgservice.serviceId = section.get("ServiceID", String.class);
+								pgservice.version = section.get("Version", String.class);
+								pgservice.port = section.get("Port", Integer.class);
+								pgservice.superUser = section.get("Superuser", String.class);
+								pgservice.baseDirectory = section.get("InstallationDirectory", String.class);
+								pgservice.dataDirectory = section.get("DataDirectory", String.class);
+								LOG.info("Service found: " + pgservice);
+								pgservices.add(pgservice);
+							}
 						}
-
-						PostgresService pgservice = new PostgresService();
-						pgservice.serviceId = section.get("ServiceID", String.class);
-						pgservice.version = section.get("Version", String.class);
-						pgservice.port = section.get("Port", Integer.class);
-						pgservice.superUser = section.get("Superuser", String.class);
-						pgservice.baseDirectory = section.get("InstallationDirectory", String.class);
-						pgservice.dataDirectory = section.get("DataDirectory", String.class);
-						log.info("Service found: " + pgservice);
-						pgservices.add(pgservice);
+						finally {
+							fio.close();
+						}
 					}
-
-					fio.close();
+					else {
+						LOG.warn("Unable to read registry file '" + FILENAME_POSTGRES_REGISTRY + "' to determine postgres services.");
+					}
 				}
 			}
 			catch (Exception ex) {
-				log.error("Error listing postgresql services.", ex);
+				LOG.error("Error listing postgresql services.", ex);
 				throw new RuntimeException(ex);
 			}
 		}
@@ -135,16 +152,32 @@ public abstract class UnixoidUnpacker extends AbstractUnpacker {
 			cb.info("unpack.step.register.product");
 			File nuclos_registration = new File(FILENAME_REGISTRY);
 			if (!nuclos_registration.exists()) {
-				nuclos_registration.createNewFile();
+				boolean create;
+				try {
+					create = nuclos_registration.createNewFile();
+				}
+				catch (IOException e) {
+					// this could happen if a non-root user installs
+					create = false;
+					LOG.warn("Creation of file '" + FILENAME_REGISTRY + "' failed", e);
+				}
+				if (!create) {
+					LOG.warn("Unable to create '" + FILENAME_REGISTRY + "'");
+				}
 			}
-			Ini ini = new Ini(nuclos_registration);
-			String productname = "Nuclos (" + ConfigContext.getProperty(NUCLOS_INSTANCE) + ")";
-			ini.put(productname, "Version", VersionInformation.getInstance().toString());
-			ini.put(productname, "Path", ConfigContext.getProperty(NUCLOS_HOME));
-			ini.store();
+			final String productname = "Nuclos (" + ConfigContext.getProperty(NUCLOS_INSTANCE) + ")";
+			if (nuclos_registration.canWrite()) {
+				Ini ini = new Ini(nuclos_registration);
+				ini.put(productname, "Version", VersionInformation.getInstance().toString());
+				ini.put(productname, "Path", ConfigContext.getProperty(NUCLOS_HOME));
+				ini.store();
+			}
+			else {
+				LOG.warn("Unable to register product '" + productname + "' in file '" + FILENAME_REGISTRY + "'");
+			}
 		}
 		catch (Exception ex) {
-			log.error(ex);
+			LOG.error(ex);
 			throw new InstallException(ex);
 		}
 	}
@@ -155,14 +188,22 @@ public abstract class UnixoidUnpacker extends AbstractUnpacker {
 			cb.info("remove.step.unregister.product");
 			File nuclos_registration = new File(FILENAME_REGISTRY);
 			if (nuclos_registration.exists()) {
-				String productname = "Nuclos (" + ConfigContext.getProperty(NUCLOS_INSTANCE) + ")";
-				Ini ini = new Ini(nuclos_registration);
-				ini.remove(productname);
-				ini.store();
+				final String productname = "Nuclos (" + ConfigContext.getProperty(NUCLOS_INSTANCE) + ")";
+				if (nuclos_registration.canWrite()) {
+					Ini ini = new Ini(nuclos_registration);
+					ini.remove(productname);
+					ini.store();
+				}
+				else {
+					LOG.warn("Unable to deregister product '" + productname + "' in file " + FILENAME_REGISTRY);
+				}
+			}
+			else {
+				LOG.warn("No file '" + FILENAME_REGISTRY + "' to deregister install");
 			}
 		}
 		catch (Exception ex) {
-			log.error(ex);
+			LOG.error(ex);
 			throw new InstallException(ex);
 		}
 	}
@@ -175,7 +216,7 @@ public abstract class UnixoidUnpacker extends AbstractUnpacker {
 			    reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
 			    String val = reader.readLine();
 			    reader.close();
-			    log.info("Machine is " + val);
+			    LOG.info("Machine is " + val);
 			    return val.contains("64");
 			}
 			else {
@@ -183,7 +224,7 @@ public abstract class UnixoidUnpacker extends AbstractUnpacker {
 			}
 		}
 		catch (Exception ex) {
-			log.error(ex);
+			LOG.error(ex);
 			throw new InstallException(ex);
 		}
 		finally {
@@ -191,7 +232,7 @@ public abstract class UnixoidUnpacker extends AbstractUnpacker {
 				try {
 					reader.close();
 				} catch (IOException e) {
-					log.error(e);
+					LOG.error(e);
 				}
 			}
 		}
