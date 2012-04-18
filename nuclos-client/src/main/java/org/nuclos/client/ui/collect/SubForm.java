@@ -1492,7 +1492,9 @@ public class SubForm extends JPanel
 			final SubFormTableModel subformtblmdl, CollectableFieldsProviderFactory clctfproviderfactory,
 			String sParentEntityName, CollectableEntity clcte) {
 		// setup a table cell editor for each column:
-		if (this.isEnabled()) {
+		// if commented out for NUCLOSINT-1425 (ts, tp):
+		// if (this.isEnabled()) 
+		{
 			final String sForeignKeyFieldName = this.getForeignKeyFieldName(sParentEntityName, clcte);
 
 			for (int iColumnNr = 0; iColumnNr < subformtblmdl.getColumnCount(); iColumnNr++) {
