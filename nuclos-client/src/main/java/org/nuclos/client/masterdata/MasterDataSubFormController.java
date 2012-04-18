@@ -192,7 +192,7 @@ public class MasterDataSubFormController extends DetailsSubFormController<Collec
 				final JPopupMenu result = new JPopupMenu();
 
 				JMenuItem miDetails = new JMenuItem(getSpringLocaleDelegate().getMessage(
-						"AbstractCollectableComponent.7","Details anzeigen..."));
+						"AbstractCollectableComponent.7","Tabellendetails anzeigen..."));
 				JMenuItem miEdit = new JMenuItem(getSpringLocaleDelegate().getMessage(
 						"AbstractCollectableComponent.21","Zelle bearbeiten"));
 
