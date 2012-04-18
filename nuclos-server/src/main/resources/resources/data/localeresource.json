@@ -32932,17 +32932,17 @@
   {
     "resourceID": "AbstractCollectableComponent.22",
     "locale": "i-default",
-    "text": "Show column details..."
+    "text": "Show details..."
   },
   {
     "resourceID": "AbstractCollectableComponent.22",
     "locale": "en",
-    "text": "Show column details..."
+    "text": "Show details..."
   },
   {
     "resourceID": "AbstractCollectableComponent.22",
     "locale": "de",
-    "text": "Spaltendetails anzeigen..."
+    "text": "Details anzeigen..."
   },
   {
     "resourceID": "AbstractCollectableComponent.9",
