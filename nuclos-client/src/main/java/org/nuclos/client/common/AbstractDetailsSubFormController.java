@@ -104,7 +104,10 @@ public abstract class AbstractDetailsSubFormController<Clct extends Collectable>
 					sortKey = new SortKey(iColumn, sInitialSortingOrder.equals("ascending") ? SortOrder.ASCENDING : SortOrder.DESCENDING);
 				}
 			}
-			this.getCollectableTableModel().setSortKeys(Collections.singletonList(sortKey), true);
+			// this.getCollectableTableModel().setSortKeys(Collections.singletonList(sortKey), true);
+			final List<SortKey> sortKeys = new ArrayList<SortKey>();
+			sortKeys.add(sortKey);
+			this.getCollectableTableModel().setSortKeys(sortKeys, true);
 		}
 
 		if (this.isColumnSelectionAllowed(sParentEntityName)) {

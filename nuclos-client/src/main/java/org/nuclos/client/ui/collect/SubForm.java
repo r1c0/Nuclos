@@ -892,7 +892,11 @@ public class SubForm extends JPanel
 		return this.mpColumns.get(sColumnName);
 	}
 
-	// Handling of intial sorting order (from layoutml).
+	/**
+	 * Handling of intial sorting order (from layoutml).
+	 *
+	 * @deprecated Sorting order is persisted into user preferences, so why is this? (tp)
+	 */
 	public String getInitialSortingColumn() {
 		return this.sInitialSortingColumn;
 	}
