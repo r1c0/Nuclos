@@ -47,6 +47,7 @@ import org.nuclos.client.masterdata.CollectableMasterDataWithDependants;
 import org.nuclos.client.masterdata.MasterDataCache;
 import org.nuclos.client.masterdata.MasterDataCollectController;
 import org.nuclos.client.masterdata.MasterDataDelegate;
+import org.nuclos.client.statemodel.StateDelegate;
 import org.nuclos.client.ui.CommonClientWorkerAdapter;
 import org.nuclos.client.ui.CommonMultiThreader;
 import org.nuclos.client.ui.Errors;
@@ -64,8 +65,10 @@ import org.nuclos.client.ui.multiaction.MultiActionProgressLine;
 import org.nuclos.client.ui.multiaction.MultiActionProgressPanel;
 import org.nuclos.client.ui.multiaction.MultiActionProgressResultHandler;
 import org.nuclos.client.ui.multiaction.MultiCollectablesActionController;
+import org.nuclos.common.NuclosEOField;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.PointerCollection;
+import org.nuclos.common.PointerException;
 import org.nuclos.common.UsageCriteria;
 import org.nuclos.common.collect.collectable.Collectable;
 import org.nuclos.common.collection.CollectionUtils;
@@ -453,7 +456,7 @@ public class GenerationController {
 								else {
 									// dead code
 									assert false;
-									showIncompleteGenericObject(null, result.getGeneratedObject(), result.getError());
+									showIncompleteGenericObject(null, result.getGeneratedObject(), result.getError(), null);
 								}
 							}
 						}	
@@ -461,7 +464,7 @@ public class GenerationController {
 					catch (GeneratorFailedException e) {
 						final GenerationResult result = e.getGenerationResult();
 						try {
-							showIncompleteGenericObject(null, result.getGeneratedObject(), result.getError());
+							showIncompleteGenericObject(null, result.getGeneratedObject(), result.getError(), null);
 						}
 						catch (CommonBusinessException e2) {
 							Errors.getInstance().showExceptionDialog(pane, e2);
@@ -507,7 +510,7 @@ public class GenerationController {
 				else {
 					// dead code
 					assert false;
-					showIncompleteGenericObject(result.getSourceIds(), result.getGeneratedObject(), result.getError());
+					showIncompleteGenericObject(result.getSourceIds(), result.getGeneratedObject(), result.getError(), null);
 				}
 			}
 		}
@@ -532,7 +535,7 @@ public class GenerationController {
 						showGenericObject(result.getGeneratedObject(), action.getTargetModuleId());
 				}
 				else {
-					showIncompleteGenericObject(result.getSourceIds(), result.getGeneratedObject(), result.getError());
+					showIncompleteGenericObject(result.getSourceIds(), result.getGeneratedObject(), result.getError(), ex.getCause());
 				}
 			}
 		}
@@ -556,9 +559,10 @@ public class GenerationController {
 
 	/**
 	 * Open an incomplete generated object in its own controller.
+	 * @param cause 
 	 * @throws CommonBusinessException
 	 */
-	private void showIncompleteGenericObject(Collection<Long> sourceIds, EntityObjectVO result, final String message) throws CommonBusinessException {
+	private void showIncompleteGenericObject(Collection<Long> sourceIds, EntityObjectVO result, final String message, final Throwable cause) throws CommonBusinessException {
 		String entity = result.getEntity();
 		JTabbedPane pane;
 		if (MainFrame.isPredefinedEntityOpenLocationSet(entity)) {
@@ -575,14 +579,29 @@ public class GenerationController {
 			goclct.setCollectState(CollectState.OUTERSTATE_DETAILS, CollectState.DETAILSMODE_NEW_CHANGED);
 			goclct.setGenerationSourceIds(sourceIds);
 			CollectableEOEntity meta = new CollectableEOEntity(metaVO, mpFields);
-			goclct.unsafeFillDetailsPanel(new CollectableGenericObjectWithDependants(DalSupportForGO.getGenericObjectWithDependantsVO(result, meta)));
+			
+			if (result.getFieldId(NuclosEOField.STATE.getName()) == null) {
+				UsageCriteria usagecriteria = new UsageCriteria(
+						IdUtils.unsafeToId(metaVO.getId()), 
+						IdUtils.unsafeToId(result.getFieldId(NuclosEOField.PROCESS.getName())), 
+						null);
+				result.getFieldIds().put(NuclosEOField.STATE.getName(), 
+						IdUtils.toLongId(StateDelegate.getInstance().getStatemodel(usagecriteria).getInitialStateId()));
+			}
+			
+			goclct.unsafeFillDetailsPanel(new CollectableGenericObjectWithDependants(DalSupportForGO.getGenericObjectWithDependantsVO(result, meta)), 
+					/*getUsageCriteriaFromClctOnly=*/true);
 			goclct.showFrame();
 			MainFrame.setSelectedTab(goclct.getFrame());
 			SwingUtilities.invokeLater(new Runnable() {
 				@Override
 				public void run() {
-					goclct.setPointerInformation(new PointerCollection(
+					if (cause != null && cause instanceof Exception && PointerException.extractPointerExceptionIfAny((Exception) cause) != null) {
+						goclct.setPointerInformation(PointerException.extractPointerExceptionIfAny((Exception) cause).getPointerCollection(), null);
+					} else {
+						goclct.setPointerInformation(new PointerCollection(
 							SpringLocaleDelegate.getInstance().getMessageFromResource(message)), null);
+					}
 				}
 			});
 		}
@@ -598,8 +617,12 @@ public class GenerationController {
 			SwingUtilities.invokeLater(new Runnable() {
 				@Override
 				public void run() {
-					mdclct.setPointerInformation(new PointerCollection(
+					if (cause != null && cause instanceof Exception && PointerException.extractPointerExceptionIfAny((Exception) cause) != null) {
+						mdclct.setPointerInformation(PointerException.extractPointerExceptionIfAny((Exception) cause).getPointerCollection(), null);
+					} else {
+						mdclct.setPointerInformation(new PointerCollection(
 							SpringLocaleDelegate.getInstance().getMessageFromResource(message)), null);
+					}
 				}
 			});
 		}

@@ -20,6 +20,7 @@ import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
+import java.util.TreeSet;
 
 import org.apache.commons.lang.NullArgumentException;
 import org.apache.log4j.Logger;
@@ -65,17 +66,6 @@ public final class DependantMasterDataMap implements Serializable {
 	 */
 	public DependantMasterDataMap(String sDependantEntityName, List<EntityObjectVO> collmdvoDependants) {
 		this.addAllData(sDependantEntityName, collmdvoDependants);
-	}
-
-	/**
-	 * @param sDependantEntityName
-	 * @param collmdvoDependants Collection<MasterDataVO>
-	 * @precondition collmdvoDependants != null
-	 * @postcondition this.get(sDependantEntityName).equals(collmdvoDependants)
-	 */
-	@Deprecated
-	public DependantMasterDataMap(String sDependantEntityName, Collection<MasterDataVO> collmdvoDependants) {
-		this.addAllValues(sDependantEntityName, collmdvoDependants);
 	}
 
 	/**
@@ -252,27 +242,37 @@ public final class DependantMasterDataMap implements Serializable {
 	}
 
 	public static String getForeignKeyField(MasterDataMetaVO mdmetavo, String foreignEntityName) {
-		String foreignKeyField = ModuleConstants.DEFAULT_FOREIGNKEYFIELDNAME;
-		for (MasterDataMetaFieldVO field : mdmetavo.getFields()) {
-			if (foreignEntityName.equals(field.getForeignEntity())) {
-				foreignKeyField = field.getFieldName();
-				break;
-			}
-		}
-		return foreignKeyField + "Id";
+		return getForeignKeyField(mdmetavo, foreignEntityName, true);
 	}
 
 	public static String getForeignKeyField(MasterDataMetaVO mdmetavo, String foreignEntityName, boolean withId) {
-		if(withId)
-			return getForeignKeyField(mdmetavo, foreignEntityName);
-		String foreignKeyField = ModuleConstants.DEFAULT_FOREIGNKEYFIELDNAME;
+		final String foreignKeyField;
+		final Set<String> foreignKeyFields = new TreeSet<String>();
 		for (MasterDataMetaFieldVO field : mdmetavo.getFields()) {
 			if (foreignEntityName.equals(field.getForeignEntity())) {
-				foreignKeyField = field.getFieldName();
-				break;
+				foreignKeyFields.add(field.getFieldName());
 			}
 		}
-		return foreignKeyField;
+		switch (foreignKeyFields.size()) {
+		case 0:
+			foreignKeyField = ModuleConstants.DEFAULT_FOREIGNKEYFIELDNAME;
+			break;
+		case 1:
+			foreignKeyField = foreignKeyFields.iterator().next();
+			break;
+		default:
+			// more than one...
+			if (foreignKeyFields.contains(ModuleConstants.DEFAULT_FOREIGNKEYFIELDNAME)) {
+				foreignKeyField = ModuleConstants.DEFAULT_FOREIGNKEYFIELDNAME;
+			} else {
+				foreignKeyField = foreignKeyFields.iterator().next();
+			}
+		}
+		if (withId) {
+			return foreignKeyField + "Id";
+		} else {
+			return foreignKeyField;
+		}
 	}
 	
 	public boolean getPendingChanges() {

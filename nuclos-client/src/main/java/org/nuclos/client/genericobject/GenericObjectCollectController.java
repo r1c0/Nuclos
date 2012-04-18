@@ -2215,16 +2215,21 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		final DefaultBoundedRangeModel model = (DefaultBoundedRangeModel) scrlbarVertical.getModel();
 		GenericObjectResultPanel.removePreviousChangeListenersForResultTableVerticalScrollBar(model);
 	}
-
+	
 	@Override
 	protected void unsafeFillDetailsPanel(CollectableGenericObjectWithDependants clct) throws CommonBusinessException {
+		this.unsafeFillDetailsPanel(clct, false);
+	}
+
+	
+	protected void unsafeFillDetailsPanel(CollectableGenericObjectWithDependants clct, boolean getUsageCriteriaFromClctOnly) throws CommonBusinessException {
 		LOG.debug("GenericObjectCollectController.unsafeFillDetailsPanel start");
 
 		// Don't reload the layout after update - only if quintuple fields changed. */
 		if (bReloadLayout)
 			// Load the right layout if it is not already there:
 			// Note that quintuple field listeners are removed here:
-			loadLayoutForDetailsTab(clct, getCollectStateModel().getCollectState());
+			loadLayoutForDetailsTab(clct, getCollectStateModel().getCollectState(), getUsageCriteriaFromClctOnly);
 		else
 			// Restore the default setting (Next time, reload the layout):
 			bReloadLayout = true;
@@ -2634,11 +2639,13 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		return sbResult.toString();
 	}
 
-	private void loadLayoutForDetailsTab(CollectableGenericObject clct, CollectState collectstate) throws CommonBusinessException {
+	private void loadLayoutForDetailsTab(CollectableGenericObject clct, CollectState collectstate, boolean getUsageCriteriaFromClctOnly) throws CommonBusinessException {
 		LOG.debug("loadLayoutForDetailsTab start");
 		boolean transferContents = !collectstate.isDetailsModeNew();
 		if (collectstate.isDetailsModeNew()) {
-			this.reloadLayout(getUsageCriteriaFromView(false), collectstate, transferContents, false);
+			this.reloadLayout(getUsageCriteriaFromClctOnly?
+					getUsageCriteria(clct) :
+					getUsageCriteriaFromView(false), collectstate, transferContents, false);
 			
 		}
 		else
