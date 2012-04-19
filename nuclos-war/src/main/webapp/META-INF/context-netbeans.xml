@@ -20,6 +20,9 @@
 	Thomas Pasch
 -->
 <Context antiJARLocking="true" path="/nuclos-war">
+	<Loader
+        loaderClass="org.springframework.instrument.classloading.tomcat.TomcatInstrumentableClassLoader"/>
+
         <Environment name="nuclos-conf-log4j" type="java.lang.String" value="file:///home/tpasch/Documents/nb/nuclos-conf/conf/log4j.properties"/>
         <Environment name="nuclos-conf-jdbc" type="java.lang.String" value="file:///home/tpasch/Documents/nb/nuclos-conf/conf/jdbc.properties"/>
         <Environment name="nuclos-conf-quartz" type="java.lang.String" value="file:///home/tpasch/Documents/nb/nuclos-conf/conf/quartz.properties"/>

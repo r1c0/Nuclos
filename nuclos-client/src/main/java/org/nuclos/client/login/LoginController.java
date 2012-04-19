@@ -372,6 +372,9 @@ public class LoginController extends Controller {
 		List<LocaleInfo> clientCachedLocaleInfo
 			= LocalUserProperties.getInstance().getLoginLocaleSelection();
 
+		if (localeDelegate == null) {
+			throw new IllegalStateException("Spring injection failed: Most probably cause: You need load-time weaving but started client without -javaagent.");
+		}
 		Collection<LocaleInfo> localeInfo = localeDelegate.getAllLocales(false);
 
 		LocalUserProperties props = LocalUserProperties.getInstance();
