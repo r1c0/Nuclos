@@ -2936,7 +2936,7 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 		final boolean bWasDetailsChangedIgnored = this.isDetailsChangedIgnored();
 		this.setDetailsChangedIgnored(true);
 		try {
-			final Clct clctNew = this.newCollectable();
+			final Clct clctNew = this.newCollectableWithDefaultValues();
 			this.readValuesFromEditPanel(clctNew, false);
 			this.prepareCollectableForSaving(clctNew, this.getCollectableEntityForDetails());
 			this.validate(clctNew);

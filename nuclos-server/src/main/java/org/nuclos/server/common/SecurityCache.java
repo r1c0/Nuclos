@@ -355,12 +355,21 @@ public class SecurityCache implements SecurityCacheMBean {
 					mpNewAllowedByEntityName.put(entityName, Boolean.TRUE);
 					mpNewAllowedByModuleId.put(iModuleId, Boolean.TRUE);
 
+					DbQuery<Integer> processQuery = builder.createQuery(Integer.class);
+					DbFrom p = processQuery.from("T_MD_PROCESS").alias(SystemFields.BASE_ALIAS);
+					processQuery.select(p.baseColumn("INTID", Integer.class));
+					processQuery.where(builder.equal(p.baseColumn("INTID_T_MD_MODULE", Integer.class), iModuleId));
+					List<Integer> allProcesses = dataBaseHelper.getDbAccess().executeQuery(processQuery);
+					
 					Set<Integer> newAllowedProcesses = new HashSet<Integer>();
 					for (Integer iStateModelId : stateModelUsagesCache.getStateUsages().getStateModelIdsByModuleId(iModuleId)) {
 						StateTransitionVO initialTransitionVO = getStateCache().getInitialTransistionByModel(iStateModelId);
 						if (iStateModelId != null && initialTransitionVO != null) {
 							for (UsageCriteria uc : stateModelUsagesCache.getStateUsages().getUsageCriteriaByStateModelId(iStateModelId)) {
 								newAllowedProcesses.add(uc.getProcessId());
+								if (uc.getProcessId() == null) {
+									newAllowedProcesses.addAll(allProcesses);
+								}
 							}
 						}
 					}
@@ -402,6 +411,14 @@ public class SecurityCache implements SecurityCacheMBean {
 						mpNewAllowedByModuleId.put(iModuleId, isNewAllowed);
 					}
 
+					DbQuery<Integer> processQuery = builder.createQuery(Integer.class);
+					DbFrom p = processQuery.from("T_MD_PROCESS").alias(SystemFields.BASE_ALIAS);
+					processQuery.select(p.baseColumn("INTID", Integer.class));
+					processQuery.where(builder.equal(p.baseColumn("INTID_T_MD_MODULE", Integer.class), iModuleId));
+					List<Integer> allProcesses = dataBaseHelper.getDbAccess().executeQuery(processQuery);
+					
+					boolean isNewAllowedForUndefinedProcess = false;
+					
 					/** is new process allowed is defined in state model. */
 					if (!mpNewAllowedProcessesByModuleId.containsKey(iModuleId)) {
 						Set<Integer> newAllowedProcesses = new HashSet<Integer>();
@@ -413,9 +430,24 @@ public class SecurityCache implements SecurityCacheMBean {
 							if (isNewAllowed) {
 								for (UsageCriteria uc : stateModelUsagesCache.getStateUsages().getUsageCriteriaByStateModelId(iStateModelId)) {
 									newAllowedProcesses.add(uc.getProcessId());
+									if (uc.getProcessId() == null) {
+										isNewAllowedForUndefinedProcess = true;
+									}
+								}
+							}
+							else {
+								for (UsageCriteria uc : stateModelUsagesCache.getStateUsages().getUsageCriteriaByStateModelId(iStateModelId)) {
+									if (uc.getProcessId() != null) {
+										allProcesses.remove(uc.getProcessId());
+									}
 								}
 							}
 						}
+						
+						if (isNewAllowedForUndefinedProcess) {
+							newAllowedProcesses.addAll(allProcesses);
+						}
+						
 						mpNewAllowedProcessesByEntityName.put(entityName, newAllowedProcesses);
 						mpNewAllowedProcessesByModuleId.put(iModuleId, newAllowedProcesses);
 					}

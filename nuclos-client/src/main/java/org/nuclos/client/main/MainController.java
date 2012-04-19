@@ -71,7 +71,6 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
@@ -105,7 +104,6 @@ import org.nuclos.client.customcomp.CustomComponentController;
 import org.nuclos.client.customcomp.resplan.ResPlanAction;
 import org.nuclos.client.customcomp.wizard.CustomComponentWizard;
 import org.nuclos.client.explorer.ExplorerController;
-import org.nuclos.client.genericobject.CollectableGenericObjectWithDependants;
 import org.nuclos.client.genericobject.GeneratorActions;
 import org.nuclos.client.genericobject.GenericObjectCollectController;
 import org.nuclos.client.genericobject.GenericObjectDelegate;
@@ -154,7 +152,6 @@ import org.nuclos.client.ui.collect.CollectControllerFactorySingleton;
 import org.nuclos.client.ui.collect.CollectStateModel;
 import org.nuclos.client.ui.collect.detail.DetailsCollectableEventListener;
 import org.nuclos.client.ui.collect.search.ReportExecutionSearchStrategy;
-import org.nuclos.client.ui.gc.ListenerUtil;
 import org.nuclos.client.wiki.WikiController;
 import org.nuclos.client.wizard.ShowNuclosWizard;
 import org.nuclos.common.Actions;
@@ -162,7 +159,6 @@ import org.nuclos.common.ApplicationProperties;
 import org.nuclos.common.CommandInformationMessage;
 import org.nuclos.common.CommandMessage;
 import org.nuclos.common.JMSConstants;
-import org.nuclos.common.NuclosEOField;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.Priority;
 import org.nuclos.common.RuleNotification;
@@ -172,9 +168,6 @@ import org.nuclos.common.collect.collectable.Collectable;
 import org.nuclos.common.collect.collectable.CollectableField;
 import org.nuclos.common.collect.collectable.CollectableValueIdField;
 import org.nuclos.common.collect.collectable.DefaultCollectableEntityProvider;
-import org.nuclos.common.collect.collectable.searchcondition.CollectableComparison;
-import org.nuclos.common.collect.collectable.searchcondition.CollectableSearchCondition;
-import org.nuclos.common.collect.collectable.searchcondition.ComparisonOperator;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.ComparatorUtils;
 import org.nuclos.common.collection.Pair;
@@ -187,6 +180,7 @@ import org.nuclos.common2.ClientPreferences;
 import org.nuclos.common2.CommonRunnable;
 import org.nuclos.common2.Delayer;
 import org.nuclos.common2.IOUtils;
+import org.nuclos.common2.IdUtils;
 import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.PreferencesUtils;
 import org.nuclos.common2.ServiceLocator;
@@ -1607,6 +1601,10 @@ public class MainController {
 		if (!securityCache.isReadAllowedForEntity(entity)) {
 			return null;
 		}
+		
+		if (isNew && entitymetavo.isStateModel() && !securityCache.isNewAllowedForModuleAndProcess(IdUtils.unsafeToId(entitymetavo.getId()), IdUtils.unsafeToId(processId))) {
+			return null;
+		}
 
 		Action action = new AbstractAction() {
 
@@ -2078,25 +2076,15 @@ public class MainController {
 					String entity = ev.getActionCommand();
 					NuclosCollectController<?> ncc = NuclosCollectControllerFactory.getInstance().newCollectController(entity, null);
 					if(ncc != null) {
+						if (processId != null && ncc instanceof GenericObjectCollectController) {
+							GenericObjectCollectController gcc = (GenericObjectCollectController) ncc;
+							gcc.setProcess(getProcessField(processId));
+						}
 						if (isNew) {
-							if (processId != null && ncc instanceof GenericObjectCollectController) {
-								GenericObjectCollectController gcc = (GenericObjectCollectController) ncc;
-								CollectableGenericObjectWithDependants clct = gcc.newCollectable();
-								clct.setField(NuclosEOField.PROCESS.getName(), getProcessField(processId));
-								gcc.runNewWith(clct);
-							}
-							else {
-								ncc.runNew(true);
-							}
+							ncc.runNew(true);
 						}
 						else {
-							if (processId != null && ncc instanceof GenericObjectCollectController) {
-								CollectableSearchCondition cond = new CollectableComparison(ncc.getCollectableEntity().getEntityField(NuclosEOField.PROCESS.getName()), ComparisonOperator.EQUAL, getProcessField(processId));
-								ncc.runSearchWith(cond);
-							}
-							else {
-								ncc.run();
-							}
+							ncc.run();
 						}
 					}
 				}

@@ -107,8 +107,8 @@ import org.nuclos.client.genericobject.valuelistprovider.GenericObjectCollectabl
 import org.nuclos.client.main.Main;
 import org.nuclos.client.main.mainframe.MainFrame;
 import org.nuclos.client.main.mainframe.MainFrameTab;
-import org.nuclos.client.main.mainframe.MainFrameTabbedPane;
 import org.nuclos.client.masterdata.CollectableMasterData;
+import org.nuclos.client.masterdata.MasterDataCache;
 import org.nuclos.client.masterdata.MasterDataDelegate;
 import org.nuclos.client.masterdata.MasterDataSubFormController;
 import org.nuclos.client.masterdata.valuelistprovider.MasterDataCollectableFieldsProviderFactory;
@@ -561,6 +561,8 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 			return Boolean.FALSE;
 		}
 	};
+	
+	private CollectableField process;
 
 	/**
 	 * Use the static method <code>newGenericObjectCollectController</code> to create new instances.
@@ -4942,6 +4944,9 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 			break;
 		default:
 			sPrefix = getEntityLabel();
+			if (getProcess() != null) {
+				sPrefix += " (" + getProcess().getValue() + ")";
+			}
 			sMode = asTabs[iTab];
 		}
 
@@ -5009,6 +5014,8 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 
 		String searchFilterName;
 		String resultTemplateName;
+		
+		Integer processId;
 	}
 
 	private static String toXML(RestorePreferences rp) {
@@ -5031,6 +5038,10 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		SearchResultTemplate template = searchResultTemplatesController.getSelectedSearchResultTemplate();
 		rp.resultTemplateName = (template == null || template.isDefaultTemplate()) ? null : template.getName();
 
+		if (getProcess() != null) {
+			rp.processId = (Integer) getProcess().getValueId();
+		}
+		
 		inheritControllerPreferences.put(GenericObjectCollectController.class.getName(), toXML(rp));
 		super.storeInstanceStateToPreferences(inheritControllerPreferences);
 	}
@@ -5057,6 +5068,15 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 					break;
 				}
 
+		if (rp.processId != null) {
+			try {
+				process = new CollectableValueIdField(rp.processId.intValue(), MasterDataCache.getInstance().get(NuclosEntity.PROCESS.getEntityName(), rp.processId.intValue()).getField("name"));
+			} 
+			catch (CommonFinderException e) {
+				LOG.warn("Could not restore process setting because process could not be found.", e);
+			}
+		}
+		
 		super.restoreInstanceStateFromPreferences(inheritControllerPreferences);
 	}
 
@@ -5960,4 +5980,36 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		}
 	}
 
+	public CollectableField getProcess() {
+		return process;
+	}
+
+	public void setProcess(CollectableField process) {
+		this.process = process;
+		setProcessSearchCondition();
+	}
+
+	@Override
+	protected CollectableGenericObjectWithDependants newCollectableWithDefaultValues() {
+		final CollectableGenericObjectWithDependants result = super.newCollectableWithDefaultValues();
+		if (getProcess() != null) {
+			result.setField(NuclosEOField.PROCESS.getName(), new CollectableValueIdField(getProcess().getValueId(), getProcess().getValue()));
+		}
+		return result;
+	}
+
+	@Override
+	protected void clearSearchFields() {
+		super.clearSearchFields();
+		setProcessSearchCondition();
+	}
+	
+	private void setProcessSearchCondition() {
+		if (getProcess() != null && isSearchPanelAvailable()) {
+			CollectableComponentModel m = getSearchEditView().getModel().getCollectableComponentModelFor(NuclosEOField.PROCESS.getName());
+			if (m != null) {
+				m.setField(new CollectableValueIdField(getProcess().getValueId(), getProcess().getValue()));
+			}
+		}
+	}
 }	// class GenericObjectCollectController
