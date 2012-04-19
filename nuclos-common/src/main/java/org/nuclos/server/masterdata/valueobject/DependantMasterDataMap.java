@@ -57,6 +57,17 @@ public final class DependantMasterDataMap implements Serializable {
 	 */
 	public DependantMasterDataMap() {
 	}
+	
+	/**
+	 * @param sDependantEntityName
+	 * @param collmdvoDependants Collection<MasterDataVO>
+	 * @precondition collmdvoDependants != null
+	 * @postcondition this.get(sDependantEntityName).equals(collmdvoDependants)
+	 */
+	@Deprecated
+	public DependantMasterDataMap(String sDependantEntityName, Collection<MasterDataVO> collmdvoDependants) {
+		this.addAllValues(sDependantEntityName, collmdvoDependants);
+	}
 
 	/**
 	 * @param sDependantEntityName
