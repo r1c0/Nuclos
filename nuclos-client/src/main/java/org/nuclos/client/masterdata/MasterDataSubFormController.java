@@ -27,7 +27,6 @@ import java.util.List;
 import java.util.prefs.Preferences;
 
 import javax.swing.JButton;
-import javax.swing.JComponent;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
@@ -38,6 +37,7 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import org.apache.log4j.Logger;
+import org.nuclos.client.common.AbstractDetailsSubFormController;
 import org.nuclos.client.common.DetailsSubFormController;
 import org.nuclos.client.common.EntityCollectController;
 import org.nuclos.client.common.MetaDataClientProvider;
@@ -47,9 +47,10 @@ import org.nuclos.client.genericobject.CollectableGenericObjectWithDependants;
 import org.nuclos.client.genericobject.GenericObjectCollectController;
 import org.nuclos.client.genericobject.GenericObjectDelegate;
 import org.nuclos.client.layout.LayoutUtils;
-import org.nuclos.client.main.mainframe.MainFrame;
 import org.nuclos.client.main.mainframe.MainFrameTab;
 import org.nuclos.client.masterdata.valuelistprovider.MasterDataCollectableFieldsProviderFactory;
+import org.nuclos.client.scripting.ScriptEvaluator;
+import org.nuclos.client.scripting.context.SubformControllerScriptContext;
 import org.nuclos.client.ui.Icons;
 import org.nuclos.client.ui.SizeKnownEvent;
 import org.nuclos.client.ui.SizeKnownListener;
@@ -152,7 +153,19 @@ public class MasterDataSubFormController extends DetailsSubFormController<Collec
 			@Override
             public void valueChanged(ListSelectionEvent e) {
 				final ListSelectionModel lsm = (ListSelectionModel) e.getSource();
-				final boolean bEnabled = !lsm.isSelectionEmpty() && lsm.getMaxSelectionIndex() == lsm.getMinSelectionIndex() && MasterDataSubFormController.this.isEnabled();
+				boolean enabled = !lsm.isSelectionEmpty() && lsm.getMaxSelectionIndex() == lsm.getMinSelectionIndex() && MasterDataSubFormController.this.isEnabled();
+				if (enabled && getSubForm().getCloneEnabledScript() != null) {
+					for (int i : getSubForm().getJTable().getSelectedRows()) {
+						Collectable c = getCollectables().get(getSubForm().getSubformTable().convertRowIndexToModel(i));
+						
+						Object o = ScriptEvaluator.getInstance().eval(getSubForm().getCloneEnabledScript(), new SubformControllerScriptContext(MasterDataSubFormController.this, c), enabled);
+						if (o instanceof Boolean) {
+							enabled = (Boolean) o;
+						}
+					}
+				}
+				final boolean bEnabled = enabled;
+				
 				UIUtils.invokeOnDispatchThread(new Runnable() {
 					@Override
 					public void run() {
@@ -606,12 +619,12 @@ public class MasterDataSubFormController extends DetailsSubFormController<Collec
 							// single selection
 							controller.getSubForm().setEnabled(true);
 							CollectableEntityObject clct = getSelectedCollectable();
-							controller.fillAsSubFormChild(clct);
+							controller.fillAsSubFormChild(MasterDataSubFormController.this, clct);
 							controller.selectFirstRow();
 						}
 						else {
 							// multi-selection
-							controller.fillAsSubFormChild(null);
+							controller.fillAsSubFormChild(MasterDataSubFormController.this, null);
 							controller.getSubForm().setEnabled(false);
 						}
 					}
@@ -648,7 +661,7 @@ public class MasterDataSubFormController extends DetailsSubFormController<Collec
 	 * fills the subform (child subform) depending on the selected parent data
 	 * @param clct
 	 */
-	private void fillAsSubFormChild(final CollectableEntityObject clct) {
+	private void fillAsSubFormChild(final AbstractDetailsSubFormController<?> sfc, final CollectableEntityObject clct) {
 		UIUtils.invokeOnDispatchThread(new Runnable() {
 			@Override
 			public void run() {
@@ -659,6 +672,7 @@ public class MasterDataSubFormController extends DetailsSubFormController<Collec
 				getCollectController().setDetailsChangedIgnored(true);
 				try {
 					MasterDataSubFormController.this.updateTableModel(lstclctmd);
+					getSubForm().setNewEnabled(new SubformControllerScriptContext(sfc, clct));
 				}
 				finally {
 					getCollectController().setDetailsChangedIgnored(bWasDetailsChangedIgnored);
@@ -667,7 +681,7 @@ public class MasterDataSubFormController extends DetailsSubFormController<Collec
 				// if subform contains no data, clear all dependant subforms as well
 				if (lstclctmd == null) {
 					for (MasterDataSubFormController subformcontroller : getChildSubFormController()) {
-						subformcontroller.fillAsSubFormChild(null);
+						subformcontroller.fillAsSubFormChild(MasterDataSubFormController.this, null);
 					}
 				}
 			}
@@ -681,7 +695,7 @@ public class MasterDataSubFormController extends DetailsSubFormController<Collec
 	public void fillAllChildSubForms() throws NuclosBusinessException {
 		for (MasterDataSubFormController child : getChildSubFormController()) {
 			for (CollectableEntityObject data : getCollectables()) {
-				child.fillAsSubFormChild(data);
+				child.fillAsSubFormChild(this, data);
 				child.fillAllChildSubForms();
 			}
 		}

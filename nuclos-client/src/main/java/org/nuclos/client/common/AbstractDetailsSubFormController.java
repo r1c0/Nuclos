@@ -17,7 +17,6 @@
 package org.nuclos.client.common;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.prefs.Preferences;
 
@@ -29,6 +28,8 @@ import javax.swing.event.ChangeListener;
 
 import org.apache.log4j.Logger;
 import org.nuclos.client.main.mainframe.MainFrameTab;
+import org.nuclos.client.scripting.ScriptEvaluator;
+import org.nuclos.client.scripting.context.SubFormFieldScriptContext;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.client.ui.collect.SubForm;
 import org.nuclos.client.ui.collect.SubForm.SubFormToolListener;
@@ -341,7 +342,17 @@ public abstract class AbstractDetailsSubFormController<Clct extends Collectable>
 		@Override
 		public boolean isCellEditable(int iRow, int iColumn) {
 			final String sColumnName = this.getCollectableEntityField(iColumn).getName();
-			return AbstractDetailsSubFormController.this.isColumnEnabled(sColumnName) && AbstractDetailsSubFormController.this.isRowEditable(iRow);
+			if (isColumnEnabled(sColumnName) && isRowEditable(iRow)) {
+				Collectable c = getRow(iRow);
+				if (c.getId() != null && getSubForm().getEditEnabledScript() != null) {
+					Object o = ScriptEvaluator.getInstance().eval(getSubForm().getEditEnabledScript(), new SubFormFieldScriptContext(AbstractDetailsSubFormController.this, getRow(iRow), this.getCollectableEntityField(iColumn)), true);
+					if (o instanceof Boolean) {
+						return (Boolean)o;
+					}
+				}
+				return true;
+			}
+			return false;
 		}
 
 		/**

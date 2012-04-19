@@ -115,6 +115,7 @@ import org.nuclos.client.masterdata.valuelistprovider.MasterDataCollectableField
 import org.nuclos.client.resource.NuclosResourceCache;
 import org.nuclos.client.resource.ResourceCache;
 import org.nuclos.client.rule.RuleDelegate;
+import org.nuclos.client.scripting.context.CollectControllerScriptContext;
 import org.nuclos.client.searchfilter.EntitySearchFilter;
 import org.nuclos.client.searchfilter.SearchFilter;
 import org.nuclos.client.searchfilter.SearchFilters;
@@ -2462,6 +2463,8 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 									mdsubformctl.clear();
 								else
 									mdsubformctl.fillSubForm(collmdcvo);
+								
+								mdsubformctl.getSubForm().setNewEnabled(new CollectControllerScriptContext(GenericObjectCollectController.this, new ArrayList<DetailsSubFormController<?>>(getSubFormControllersInDetails())));
 							}
 						}
 						finally {

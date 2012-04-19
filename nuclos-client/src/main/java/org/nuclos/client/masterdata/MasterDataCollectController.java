@@ -17,12 +17,8 @@
 package org.nuclos.client.masterdata;
 
 
-import info.clearthought.layout.TableLayout;
-import info.clearthought.layout.TableLayoutConstraints;
-
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Container;
 import java.awt.datatransfer.Transferable;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -52,7 +48,6 @@ import org.apache.log4j.Logger;
 import org.nuclos.client.common.DependantCollectableMasterDataMap;
 import org.nuclos.client.common.DetailsSubFormController;
 import org.nuclos.client.common.EntityCollectController;
-import org.nuclos.client.common.LocaleDelegate;
 import org.nuclos.client.common.MetaDataClientProvider;
 import org.nuclos.client.common.MultiUpdateOfDependants;
 import org.nuclos.client.common.NuclosCollectableListOfValues;
@@ -74,6 +69,7 @@ import org.nuclos.client.masterdata.datatransfer.MasterDataIdAndEntity;
 import org.nuclos.client.masterdata.datatransfer.MasterDataVOTransferable;
 import org.nuclos.client.masterdata.valuelistprovider.MasterDataCollectableFieldsProviderFactory;
 import org.nuclos.client.rule.RuleDelegate;
+import org.nuclos.client.scripting.context.CollectControllerScriptContext;
 import org.nuclos.client.searchfilter.EntitySearchFilter;
 import org.nuclos.client.ui.Errors;
 import org.nuclos.client.ui.Icons;
@@ -109,7 +105,6 @@ import org.nuclos.common.CollectableEntityFieldWithEntity;
 import org.nuclos.common.NuclosBusinessException;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.NuclosFatalException;
-import org.nuclos.common.TranslationVO;
 import org.nuclos.common.UsageCriteria;
 import org.nuclos.common.collect.collectable.Collectable;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
@@ -130,7 +125,6 @@ import org.nuclos.common2.CommonRunnable;
 import org.nuclos.common2.EntityAndFieldName;
 import org.nuclos.common2.IdUtils;
 import org.nuclos.common2.LangUtils;
-import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonFinderException;
@@ -1011,6 +1005,8 @@ public class MasterDataCollectController extends EntityCollectController<Collect
 							   try {
 								   mdsubformctl.getSubForm().getJTable().setBackground(Color.WHITE);
 								   mdsubformctl.fillSubForm(collmdvo);
+								   mdsubformctl.getSubForm().setNewEnabled(new CollectControllerScriptContext(MasterDataCollectController.this, new ArrayList<DetailsSubFormController<?>>(getSubFormControllersInDetails())));
+								   
 								   updateLoadedSubFormData(clct, collmdvo);
 							   }
 							   finally {
@@ -1018,6 +1014,7 @@ public class MasterDataCollectController extends EntityCollectController<Collect
 									   MasterDataCollectController.this.setDetailsChangedIgnored(bWasDetailsChangedIgnored);
 								   }
 							   }
+							   
 							   MasterDataCollectController.this.getSubFormsLoader().setSubFormLoaded(mdsubformctl.getCollectableEntity().getName(), true);
 							   mdsubformctl.getSubForm().forceUnlockFrame();
 						   }

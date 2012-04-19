@@ -108,6 +108,7 @@ import org.nuclos.client.ui.event.TableColumnModelAdapter;
 import org.nuclos.common.NuclosBusinessException;
 import org.nuclos.common.NuclosEOField;
 import org.nuclos.common.NuclosFatalException;
+import org.nuclos.common.NuclosScript;
 import org.nuclos.common.WorkspaceDescription.EntityPreferences;
 import org.nuclos.common.collect.collectable.Collectable;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
@@ -128,7 +129,7 @@ import org.nuclos.common2.layoutml.LayoutMLConstants;
  * @author <a href="mailto:hartmut.beckschulze@novabit.de">hartmut.beckschulze</a>
  * @version 01.00.00
  */
-public class WYSIWYGSubForm extends JLayeredPane implements WYSIWYGComponent, MouseListener {
+public class WYSIWYGSubForm extends JLayeredPane implements WYSIWYGComponent, MouseListener, WYSIWYGScriptComponent {
 	
 	private boolean isInitialLoading = true;
 
@@ -143,12 +144,17 @@ public class WYSIWYGSubForm extends JLayeredPane implements WYSIWYGComponent, Mo
 	public static final String PROPERTY_INITIALSORTINGORDER = PROPERTY_LABELS.INITIALSORTINGORDER;
 	//NUCLEUSINT-390
 	public static final String PROPERTY_PARENT_SUBFORM = PROPERTY_LABELS.PARENT_SUBFORM;
+	public static final String PROPERTY_NEW_ENABLED = PROPERTY_LABELS.NEW_ENABLED;
+	public static final String PROPERTY_EDIT_ENABLED = PROPERTY_LABELS.EDIT_ENABLED;
+	public static final String PROPERTY_DELETE_ENABLED = PROPERTY_LABELS.DELETE_ENABLED;
+	public static final String PROPERTY_CLONE_ENABLED = PROPERTY_LABELS.CLONE_ENABLED;
 
 	public static final String[][] PROPERTIES_TO_LAYOUTML_ATTRIBUTES = new String[][]{{PROPERTY_NAME, ATTRIBUTE_NAME}, {PROPERTY_ENTITY, ATTRIBUTE_ENTITY}, {PROPERTY_FOREIGNKEY, ATTRIBUTE_FOREIGNKEYFIELDTOPARENT}, {PROPERTY_TOOLBARORIENTATION, ATTRIBUTE_TOOLBARORIENTATION}, {PROPERTY_ENABLED, ATTRIBUTE_ENABLED}, {PROPERTY_UNIQUEMASTERCOLUMN, ATTRIBUTE_UNIQUEMASTERCOLUMN}, {PROPERTY_CONTROLLERTYPE, ATTRIBUTE_CONTROLLERTYPE}, {PROPERTY_PARENT_SUBFORM, ATTRIBUTE_PARENTSUBFORM}};
 
 	public static final String[][] PROPERTY_VALUES_STATIC = new String[][]{{PROPERTY_TOOLBARORIENTATION, ATTRIBUTEVALUE_HORIZONTAL, ATTRIBUTEVALUE_VERTICAL, ATTRIBUTEVALUE_HIDE}};
 
-	private static final String[] PROPERTY_NAMES = new String[]{PROPERTY_NAME, PROPERTY_ENTITY, PROPERTY_FOREIGNKEY, PROPERTY_TOOLBARORIENTATION, PROPERTY_PREFFEREDSIZE, PROPERTY_ENABLED, PROPERTY_BACKGROUNDCOLOR, PROPERTY_BORDER, PROPERTY_UNIQUEMASTERCOLUMN, PROPERTY_CONTROLLERTYPE, PROPERTY_PARENT_SUBFORM};
+	private static final String[] PROPERTY_NAMES = new String[]{PROPERTY_NAME, PROPERTY_ENTITY, PROPERTY_FOREIGNKEY, PROPERTY_TOOLBARORIENTATION, PROPERTY_PREFFEREDSIZE, PROPERTY_ENABLED, PROPERTY_BACKGROUNDCOLOR, PROPERTY_BORDER, PROPERTY_UNIQUEMASTERCOLUMN, PROPERTY_CONTROLLERTYPE, PROPERTY_PARENT_SUBFORM,
+		PROPERTY_NEW_ENABLED, PROPERTY_EDIT_ENABLED, PROPERTY_DELETE_ENABLED, PROPERTY_CLONE_ENABLED};
 
 	private static final PropertyClass[] PROPERTY_CLASSES = new PropertyClass[]{
 			new PropertyClass(PROPERTY_NAME, String.class),
@@ -163,7 +169,11 @@ public class WYSIWYGSubForm extends JLayeredPane implements WYSIWYGComponent, Mo
 			new PropertyClass(PROPERTY_CONTROLLERTYPE, String.class),
 			new PropertyClass(PROPERTY_INITIALSORTINGORDER, WYSIWYGInitialSortingOrder.class),
 			//NUCLEUSINT-390
-			new PropertyClass(PROPERTY_PARENT_SUBFORM, String.class)};
+			new PropertyClass(PROPERTY_PARENT_SUBFORM, String.class),
+			new PropertyClass(PROPERTY_NEW_ENABLED, NuclosScript.class),
+			new PropertyClass(PROPERTY_EDIT_ENABLED, NuclosScript.class),
+			new PropertyClass(PROPERTY_DELETE_ENABLED, NuclosScript.class),
+			new PropertyClass(PROPERTY_CLONE_ENABLED, NuclosScript.class)};
 
 	private static final PropertySetMethod[] PROPERTY_SETMETHODS = new PropertySetMethod[]{
 			new PropertySetMethod(PROPERTY_NAME, "setName"),
@@ -191,12 +201,21 @@ public class WYSIWYGSubForm extends JLayeredPane implements WYSIWYGComponent, Mo
 			new PropertyFilter(PROPERTY_CONTROLLERTYPE, EXPERT_MODE),
 			new PropertyFilter(PROPERTY_INITIALSORTINGORDER, DISABLED),
 			//NUCLEUSINT-390
-			new PropertyFilter(PROPERTY_PARENT_SUBFORM, EXPERT_MODE)
+			new PropertyFilter(PROPERTY_PARENT_SUBFORM, EXPERT_MODE),
+			new PropertyFilter(PROPERTY_NEW_ENABLED, EXPERT_MODE),
+			new PropertyFilter(PROPERTY_EDIT_ENABLED, EXPERT_MODE),
+			new PropertyFilter(PROPERTY_DELETE_ENABLED, EXPERT_MODE),
+			new PropertyFilter(PROPERTY_CLONE_ENABLED, EXPERT_MODE)
 			};
 	
 	//NUCLEUSINT-413 unique mastercolumn is filled with the foreign keys defined for the used entity
 	//NUCLEUSINT-390 parent subform
 	public static final String[][] PROPERTY_VALUES_FROM_METAINFORMATION = new String[][]{{PROPERTY_ENTITY, WYSIWYGMetaInformation.META_ENTITY_NAMES}, {PROPERTY_FOREIGNKEY, WYSIWYGMetaInformation.META_ENTITY_FIELD_NAMES_REFERENCING},  {PROPERTY_UNIQUEMASTERCOLUMN, WYSIWYGMetaInformation.META_ENTITY_FIELD_NAMES_REFERENCING},  {PROPERTY_PARENT_SUBFORM, WYSIWYGMetaInformation.META_POSSIBLE_PARENT_SUBFORMS}};
+
+	public static final String[][] PROPERTIES_TO_SCRIPT_ELEMENTS = new String[][]{{PROPERTY_NEW_ENABLED, ELEMENT_NEW_ENABLED}, 
+		{PROPERTY_EDIT_ENABLED, ELEMENT_EDIT_ENABLED}, 
+		{PROPERTY_DELETE_ENABLED, ELEMENT_DELETE_ENABLED}, 
+		{PROPERTY_CLONE_ENABLED, ELEMENT_CLONE_ENABLED} };
 
 	private ComponentProperties properties;
 
@@ -1142,5 +1161,10 @@ public class WYSIWYGSubForm extends JLayeredPane implements WYSIWYGComponent, Mo
 			return CollectionUtils.sorted(cols);
 
 		return null;
+	}
+
+	@Override
+	public String[][] getPropertyScriptElementLink() {
+		return PROPERTIES_TO_SCRIPT_ELEMENTS;
 	}
 }

@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.nuclos.api.context.ScriptContext;
+import org.nuclos.client.common.AbstractDetailsSubFormController;
 import org.nuclos.client.common.DetailsSubFormController;
 import org.nuclos.client.masterdata.MasterDataSubFormController;
 import org.nuclos.common.collect.collectable.Collectable;
@@ -34,10 +35,10 @@ import org.nuclos.common2.exception.CommonValidationException;
 
 public class SubformControllerScriptContext implements ScriptContext, ExpressionEvaluator {
 
-	private final DetailsSubFormController<?> sfc;
+	private final AbstractDetailsSubFormController<?> sfc;
 	private final Collectable c;
 
-	public SubformControllerScriptContext(DetailsSubFormController<?> sfc, Collectable c) {
+	public SubformControllerScriptContext(AbstractDetailsSubFormController<?> sfc, Collectable c) {
 		this.sfc = sfc;
 		this.c = c;
 	}

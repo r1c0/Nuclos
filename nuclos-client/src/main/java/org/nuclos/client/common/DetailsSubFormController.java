@@ -67,6 +67,8 @@ import org.nuclos.client.main.mainframe.MainFrameTab;
 import org.nuclos.client.masterdata.CollectableMasterData;
 import org.nuclos.client.masterdata.MasterDataDelegate;
 import org.nuclos.client.masterdata.datatransfer.MasterDataIdAndEntity;
+import org.nuclos.client.scripting.ScriptEvaluator;
+import org.nuclos.client.scripting.context.SubformControllerScriptContext;
 import org.nuclos.client.synthetica.NuclosThemeSettings;
 import org.nuclos.client.ui.Bubble;
 import org.nuclos.client.ui.Errors;
@@ -931,13 +933,22 @@ public abstract class DetailsSubFormController<Clct extends Collectable>
 
 	@Override
 	public boolean isRowRemovable(int row) {
+		boolean result = true;
 		if (getMultiUpdateOfDependants() != null) {
 			Collectable clct = getCollectables().get(row);
 			if (clct.getId() != null && !getMultiUpdateOfDependants().isCollectableEditable(getEntityAndForeignKeyFieldName().getEntityName(), clct)) {
-				return false;
+				result = false;
 			}
 		}
-		return true;
+		if (result && getSubForm().getDeleteEnabledScript() != null) {
+			Collectable c = getCollectables().get(row);
+			
+			Object o = ScriptEvaluator.getInstance().eval(getSubForm().getDeleteEnabledScript(), new SubformControllerScriptContext(DetailsSubFormController.this, c), result);
+			if (o instanceof Boolean) {
+				result = (Boolean) o;
+			}
+		}
+		return result;
 	}
 
 	@Override

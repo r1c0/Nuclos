@@ -98,6 +98,7 @@ import org.nuclos.client.ui.collect.component.model.SearchComponentModel;
 import org.nuclos.client.ui.collect.component.model.SearchComponentModelEvent;
 import org.nuclos.client.ui.labeled.LabeledComponent;
 import org.nuclos.client.ui.labeled.LabeledTextArea;
+import org.nuclos.common.NuclosScript;
 import org.nuclos.common.caching.GenCache;
 import org.nuclos.common.collect.collectable.Collectable;
 import org.nuclos.common.collect.collectable.CollectableComponentTypes;
@@ -111,9 +112,9 @@ import org.nuclos.common.collect.collectable.CollectableValueIdField;
 import org.nuclos.common.collection.Pair;
 import org.nuclos.common.collection.multimap.MultiListHashMap;
 import org.nuclos.common.collection.multimap.MultiListMap;
-import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.EntityAndFieldName;
 import org.nuclos.common2.LangUtils;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonFatalException;
@@ -1014,6 +1015,11 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 			this.mpElementProcessors.put(ELEMENT_INITIALSORTINGORDER, new InitialSortingOrderProcessor());
 			this.mpElementProcessors.put(ELEMENT_TRANSLATIONS, new TranslationsElementProcessor());
 			this.mpElementProcessors.put(ELEMENT_TRANSLATION, new TranslationElementProcessor());
+			
+			this.mpElementProcessors.put(ELEMENT_NEW_ENABLED, new ScriptElementProcessor());
+			this.mpElementProcessors.put(ELEMENT_EDIT_ENABLED, new ScriptElementProcessor());
+			this.mpElementProcessors.put(ELEMENT_DELETE_ENABLED, new ScriptElementProcessor());
+			this.mpElementProcessors.put(ELEMENT_CLONE_ENABLED, new ScriptElementProcessor());
 		}
 
 		/**
@@ -3391,6 +3397,40 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 						sParameterNameForSourceComponent);
 				BuildFormHandler.this.rule.collActions.add(act);
 			}
+		}
+		
+		private class ScriptElementProcessor implements ElementProcessor {
+
+			private NuclosScript script;
+
+			@Override
+			public void startElement(String sUriNameSpace, String sSimpleName, String sQualifiedName, Attributes attributes) throws SAXException {
+				sbChars = new StringBuffer();
+				script = new NuclosScript();
+				script.setLanguage(attributes.getValue(ATTRIBUTE_LANGUAGE));
+			}
+
+			@Override
+			public void endElement(String sUriNameSpace, String sSimpleName, String sQualifiedName) throws SAXException {
+				script.setSource(sbChars.toString().trim());
+				if (stack.peekComponent() instanceof SubForm) {
+					SubForm subform = (SubForm) stack.peekComponent();
+					if (ELEMENT_NEW_ENABLED.equals(sQualifiedName)) {
+						subform.setNewEnabledScript(script);
+					}
+					else if (ELEMENT_EDIT_ENABLED.equals(sQualifiedName)) {
+						subform.setEditEnabledScript(script);
+					}
+					else if (ELEMENT_DELETE_ENABLED.equals(sQualifiedName)) {
+						subform.setDeleteEnabledScript(script);				
+					}
+					else if (ELEMENT_CLONE_ENABLED.equals(sQualifiedName)) {
+						subform.setCloneEnabledScript(script);
+					}
+				}
+				sbChars = null;
+			}
+			
 		}
 
 		/**

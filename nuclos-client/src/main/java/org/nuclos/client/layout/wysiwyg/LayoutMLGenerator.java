@@ -100,6 +100,7 @@ import org.nuclos.client.layout.wysiwyg.editor.util.valueobjects.layoutmlrules.L
 import org.nuclos.client.layout.wysiwyg.editor.util.valueobjects.layoutmlrules.LayoutMLRules;
 import org.nuclos.client.rule.RuleDelegate;
 import org.nuclos.client.statemodel.StateDelegate;
+import org.nuclos.common.NuclosScript;
 import org.nuclos.common2.IdUtils;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonValidationException;
@@ -275,6 +276,10 @@ public class LayoutMLGenerator implements LayoutMLConstants {
 			}
 		}
 
+		block.append(getScriptProperty(WYSIWYGSubForm.PROPERTY_NEW_ENABLED, ELEMENT_NEW_ENABLED, subform.getProperties(), blockDeep + 1));
+		block.append(getScriptProperty(WYSIWYGSubForm.PROPERTY_EDIT_ENABLED, ELEMENT_EDIT_ENABLED, subform.getProperties(), blockDeep + 1));
+		block.append(getScriptProperty(WYSIWYGSubForm.PROPERTY_DELETE_ENABLED, ELEMENT_DELETE_ENABLED, subform.getProperties(), blockDeep + 1));
+		block.append(getScriptProperty(WYSIWYGSubForm.PROPERTY_CLONE_ENABLED, ELEMENT_CLONE_ENABLED, subform.getProperties(), blockDeep + 1));
 		block.linebreak();
 		block.append("</" + ELEMENT_SUBFORM + ">");
 
@@ -1734,6 +1739,29 @@ public class LayoutMLGenerator implements LayoutMLConstants {
 			return block.getStringBuffer();
 		}
 		return new StringBuffer();
+	}
+	
+	private synchronized StringBuffer getScriptProperty(String property, String element, ComponentProperties cp, int blockDeep) {
+		LayoutMLBlock block = new LayoutMLBlock(blockDeep);
+
+		NuclosScript script = (NuclosScript) cp.getProperty(property).getValue();
+		if (script == null) {
+			return new StringBuffer();
+		}
+
+		block.append("<" + element + " ");
+		block.append(ATTRIBUTE_LANGUAGE + "=\"");
+		block.append(script.getLanguage());
+		block.append("\">");
+		block.linebreak();
+		block.append("<![CDATA[");
+		block.linebreak();
+		block.append(script.getSource());
+		block.linebreak();
+		block.append("]]>");
+		block.linebreak();
+		block.append("</" + element + ">");
+		return block.getStringBuffer();
 	}
 	
 	/** LayoutMLDependencies are not supported by the Parser, is therefor commented out */

@@ -51,6 +51,7 @@ import org.nuclos.client.layout.wysiwyg.component.TranslationMap;
 import org.nuclos.client.layout.wysiwyg.component.WYSIWYGCollectableComponent;
 import org.nuclos.client.layout.wysiwyg.component.WYSIWYGCollectableOptionGroup;
 import org.nuclos.client.layout.wysiwyg.component.WYSIWYGComponent;
+import org.nuclos.client.layout.wysiwyg.component.WYSIWYGScriptComponent;
 import org.nuclos.client.layout.wysiwyg.component.WYSIWYGScrollPane;
 import org.nuclos.client.layout.wysiwyg.component.WYSIWYGSplitPane;
 import org.nuclos.client.layout.wysiwyg.component.WYSIWYGStaticButton;
@@ -71,6 +72,7 @@ import org.nuclos.client.layout.wysiwyg.component.properties.PropertyValue;
 import org.nuclos.client.layout.wysiwyg.component.properties.PropertyValueBoolean;
 import org.nuclos.client.layout.wysiwyg.component.properties.PropertyValueFont;
 import org.nuclos.client.layout.wysiwyg.component.properties.PropertyValueInitialSortingOrder;
+import org.nuclos.client.layout.wysiwyg.component.properties.PropertyValueScript;
 import org.nuclos.client.layout.wysiwyg.component.properties.PropertyValueString;
 import org.nuclos.client.layout.wysiwyg.component.properties.PropertyValueTranslations;
 import org.nuclos.client.layout.wysiwyg.component.properties.PropertyValueValuelistProvider;
@@ -93,6 +95,7 @@ import org.nuclos.client.rule.RuleDelegate;
 import org.nuclos.client.statemodel.StateDelegate;
 import org.nuclos.client.ui.Errors;
 import org.nuclos.common.NuclosFatalException;
+import org.nuclos.common.NuclosScript;
 import org.nuclos.common2.LocaleInfo;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.XMLUtils;
@@ -282,6 +285,12 @@ public class LayoutMLLoader implements LayoutMLConstants {
 			// LayoutMLDependencyProcessor());
 			// this.mapProcessors.put(ELEMENT_DEPENDENCIES, new
 			// LayoutMLDependenciesProcessor());
+			
+			// Script processors
+			this.mapProcessors.put(ELEMENT_NEW_ENABLED, new ScriptElementProcessor(ELEMENT_NEW_ENABLED));
+			this.mapProcessors.put(ELEMENT_EDIT_ENABLED, new ScriptElementProcessor(ELEMENT_EDIT_ENABLED));
+			this.mapProcessors.put(ELEMENT_DELETE_ENABLED, new ScriptElementProcessor(ELEMENT_DELETE_ENABLED));
+			this.mapProcessors.put(ELEMENT_CLONE_ENABLED, new ScriptElementProcessor(ELEMENT_CLONE_ENABLED));
 		}
 
 
@@ -1755,6 +1764,44 @@ public class LayoutMLLoader implements LayoutMLConstants {
 
 			@Override
 			public void closeElement() throws SAXException {
+			}
+		}
+		
+		private class ScriptElementProcessor implements ElementProcessor {
+
+			private final String element;
+			NuclosScript script;
+			
+			public ScriptElementProcessor(String element) {
+				super();
+				this.element = element;
+			}
+
+			@Override
+			public void startElement(Attributes atts) throws SAXException {
+				sbChars = new StringBuffer();
+				script = new NuclosScript();
+				script.setLanguage(atts.getValue(ATTRIBUTE_LANGUAGE));
+			}
+
+			@Override
+			public void closeElement() throws SAXException {
+				script.setSource(sbChars.toString().trim());
+				sbChars = null;
+				try {
+					WYSIWYGComponent c = peekComponent();
+					if (c instanceof WYSIWYGScriptComponent) {
+						WYSIWYGScriptComponent sc = (WYSIWYGScriptComponent) c;
+						for (String[] link : sc.getPropertyScriptElementLink()) {
+							if (element.equals(link[1])) {
+								c.setProperty(link[0], new PropertyValueScript(script), PropertyUtils.getValueClass(c, link[0]));
+							}
+						}
+					}
+				} catch (CommonBusinessException ex) {
+					log.error(ex);
+					Errors.getInstance().showExceptionDialog(null, ex);
+				}
 			}
 		}
 	}

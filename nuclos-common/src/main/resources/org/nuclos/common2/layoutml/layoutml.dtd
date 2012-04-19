@@ -82,7 +82,7 @@ continuous-layout (%boolean;) #IMPLIED
 >
 
 <!ELEMENT subform ((%layoutconstraints;)?,(%borders;),(%sizes;),initial-sorting-order?,background?,description?,
-    subform-column*)>
+    subform-column*,new-enabled?,edit-enabled?,delete-enabled?,clone-enabled?)>
 <!ATTLIST subform
 name CDATA #IMPLIED
 entity CDATA #REQUIRED
@@ -114,6 +114,26 @@ width CDATA #IMPLIED
 <!ATTLIST initial-sorting-order
  name CDATA #REQUIRED
  sorting-order (ascending|descending) #REQUIRED
+ >
+ 
+<!ELEMENT new-enabled (#PCDATA)>
+<!ATTLIST new-enabled
+ language CDATA #REQUIRED
+ >
+ 
+<!ELEMENT edit-enabled (#PCDATA)>
+<!ATTLIST edit-enabled
+ language CDATA #REQUIRED
+ >
+ 
+<!ELEMENT delete-enabled (#PCDATA)>
+<!ATTLIST delete-enabled
+ language CDATA #REQUIRED
+ >
+ 
+<!ELEMENT clone-enabled (#PCDATA)>
+<!ATTLIST clone-enabled
+ language CDATA #REQUIRED
  >
 
 <!ELEMENT scrollpane ((%layoutconstraints;)?,(%borders;),(%sizes;),((%container;)|textarea|collectable-component)?)>

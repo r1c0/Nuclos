@@ -64,7 +64,6 @@ import javax.swing.JTable;
 import javax.swing.JToggleButton;
 import javax.swing.JToolBar;
 import javax.swing.JViewport;
-import javax.swing.KeyStroke;
 import javax.swing.ListSelectionModel;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingUtilities;
@@ -88,8 +87,10 @@ import org.apache.log4j.Logger;
 import org.jdesktop.jxlayer.JXLayer;
 import org.jdesktop.jxlayer.plaf.ext.LockableUI;
 import org.jdesktop.swingx.event.TableColumnModelExtListener;
+import org.nuclos.api.context.ScriptContext;
 import org.nuclos.client.common.FocusActionListener;
 import org.nuclos.client.common.Utils;
+import org.nuclos.client.scripting.ScriptEvaluator;
 import org.nuclos.client.ui.Icons;
 import org.nuclos.client.ui.SizeKnownListener;
 import org.nuclos.client.ui.UIUtils;
@@ -121,6 +122,7 @@ import org.nuclos.client.ui.table.TableCellRendererProvider;
 import org.nuclos.client.ui.table.TableUtils;
 import org.nuclos.common.NuclosEOField;
 import org.nuclos.common.NuclosFieldNotInModelException;
+import org.nuclos.common.NuclosScript;
 import org.nuclos.common.collect.collectable.Collectable;
 import org.nuclos.common.collect.collectable.CollectableComponentTypes;
 import org.nuclos.common.collect.collectable.CollectableEntity;
@@ -135,8 +137,8 @@ import org.nuclos.common.collect.collectable.searchcondition.CollectableComparis
 import org.nuclos.common.collect.collectable.searchcondition.ComparisonOperator;
 import org.nuclos.common.collect.exception.CollectableFieldFormatException;
 import org.nuclos.common.collection.Pair;
-import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.LangUtils;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonFatalException;
@@ -353,6 +355,11 @@ public class SubForm extends JPanel
 	private boolean closed = false;
 	
 	private boolean readonly = false;
+	
+	private NuclosScript newEnabledScript;
+	private NuclosScript editEnabledScript;
+	private NuclosScript deleteEnabledScript;
+	private NuclosScript cloneEnabledScript;
 	
 	/**
 	 * @param entityName
@@ -815,6 +822,17 @@ public class SubForm extends JPanel
 			uniqueMasterColumnName != null
 			? (enabled ? ToolbarFunctionState.ACTIVE : ToolbarFunctionState.DISABLED)
 			: ToolbarFunctionState.HIDDEN);
+	}
+	
+	public void setNewEnabled(ScriptContext sc) {
+		boolean enabled = isEnabled();
+		if (enabled && getNewEnabledScript() != null) {
+			Object o = ScriptEvaluator.getInstance().eval(getNewEnabledScript(), sc, enabled);
+			if (o instanceof Boolean) {
+				enabled = (Boolean) o;
+			}
+		}
+		setToolbarFunctionState(ToolbarFunction.NEW, enabled ? ToolbarFunctionState.ACTIVE : ToolbarFunctionState.DISABLED);
 	}
 	
 	public void setReadOnly(boolean readonly) {
@@ -2148,6 +2166,38 @@ public class SubForm extends JPanel
     public List<FocusActionListener> getFocusActionLister() {
     	return lstFocusActionListener;
     }
+
+	public NuclosScript getNewEnabledScript() {
+		return newEnabledScript;
+	}
+
+	public void setNewEnabledScript(NuclosScript newEnabledScript) {
+		this.newEnabledScript = newEnabledScript;
+	}
+
+	public NuclosScript getEditEnabledScript() {
+		return editEnabledScript;
+	}
+
+	public void setEditEnabledScript(NuclosScript editEnabledScript) {
+		this.editEnabledScript = editEnabledScript;
+	}
+
+	public NuclosScript getDeleteEnabledScript() {
+		return deleteEnabledScript;
+	}
+
+	public void setDeleteEnabledScript(NuclosScript deleteEnabledScript) {
+		this.deleteEnabledScript = deleteEnabledScript;
+	}
+
+	public NuclosScript getCloneEnabledScript() {
+		return cloneEnabledScript;
+	}
+
+	public void setCloneEnabledScript(NuclosScript cloneEnabledScript) {
+		this.cloneEnabledScript = cloneEnabledScript;
+	}
 
 	/**
 	 * <code>TableModel</code> that can be used in a <code>SubForm</code>.

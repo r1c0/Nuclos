@@ -105,6 +105,11 @@ public interface LayoutMLConstants {
 	public static final String ELEMENT_INITIALSORTINGORDER = "initial-sorting-order";
 	public static final String ELEMENT_TRANSLATIONS = "translations";
 	public static final String ELEMENT_TRANSLATION = "translation";
+	
+	public static final String ELEMENT_NEW_ENABLED = "new-enabled";
+	public static final String ELEMENT_EDIT_ENABLED = "edit-enabled";
+	public static final String ELEMENT_DELETE_ENABLED = "delete-enabled";
+	public static final String ELEMENT_CLONE_ENABLED = "clone-enabled";
 
 	// constants for XML attributes used in the LayoutML:
 	public static final String ATTRIBUTE_NAME = "name";
@@ -202,6 +207,7 @@ public interface LayoutMLConstants {
 	public static final String ATTRIBUTE_COLUMNWIDTH = "width";
 	public static final String ATTRIBUTE_NEXTFOCUSCOMPONENT = "nextfocuscomponent";
 	public static final String ATTRIBUTE_ICON = "icon";
+	public static final String ATTRIBUTE_LANGUAGE = "language";
 
 
 	// constants for XML attribute values used in the LayoutML:

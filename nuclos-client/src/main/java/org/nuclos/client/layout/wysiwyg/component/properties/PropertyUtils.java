@@ -71,6 +71,7 @@ import org.nuclos.client.layout.wysiwyg.editor.util.valueobjects.WYSIYWYGPropert
 import org.nuclos.client.ui.collect.component.CollectableOptionGroup;
 import org.nuclos.common.NuclosBusinessException;
 import org.nuclos.common.NuclosFatalException;
+import org.nuclos.common.NuclosScript;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.layoutml.LayoutMLConstants;
 
@@ -500,6 +501,8 @@ public class PropertyUtils implements LayoutMLConstants {
 			return new PropertyValueFont();
 		} else if (propertyClass.equals(TranslationMap.class)) {
 			return new PropertyValueTranslations();
+		} else if (propertyClass.equals(NuclosScript.class)) {
+			return new PropertyValueScript();
 		}
 		throw new NuclosFatalException(WYSIWYGStringsAndLabels.partedString(PROPERTYUTILS.ERRORMESSAGE_NO_PROPERTYVALUE_FOR_PROPERTY, property,c.getClass().toString()));
 	}
