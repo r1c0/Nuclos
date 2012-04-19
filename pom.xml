@@ -39,6 +39,10 @@
 		<spring.version>3.1.1.RELEASE</spring.version>
 		<spring.security.version>3.1.0.RELEASE</spring.security.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<aspectj.phase.1>compile</aspectj.phase.1>
+		<aspectj.phase.2>test-compile</aspectj.phase.2>
+		<!-- aspectj.phase.1>help</aspectj.phase.1>
+		<aspectj.phase.2>help</aspectj.phase.2 -->
 	</properties>
 
 	<modules>
@@ -304,6 +308,16 @@
 				<version>${spring.version}</version>
 			</dependency>
 			<dependency>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-instrument-tomcat</artifactId>
+				<version>${spring.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-instrument</artifactId>
+				<version>${spring.version}</version>
+			</dependency>
+			<dependency>
 				<groupId>org.apache.poi</groupId>
 				<artifactId>poi</artifactId>
 				<version>3.7</version>
@@ -388,6 +402,11 @@
 			<dependency>
 				<groupId>org.aspectj</groupId>
 				<artifactId>aspectjtools</artifactId>
+				<version>1.6.12</version>
+			</dependency>
+			<dependency>
+				<groupId>org.aspectj</groupId>
+				<artifactId>aspectjweaver</artifactId>
 				<version>1.6.12</version>
 			</dependency>
 			
@@ -491,6 +510,27 @@
 										</execute>
 									</action>
 								</pluginExecution>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>org.codehaus.mojo</groupId>
+										<artifactId>aspectj-maven-plugin</artifactId>
+										<versionRange>[1.0,)</versionRange>
+										<goals>
+											<goal>${aspectj.phase.1}</goal>
+											<goal>${aspectj.phase.2}</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<!-- execute>
+											<runOnIncremental>true</runOnIncremental>
+										</execute -->
+										<!-- 
+											This should disable aspectj weaving for eclipse.
+											In reality, it does nothing.
+										 -->
+										<ignore/>
+									</action>
+								</pluginExecution>
 							</pluginExecutions>
 						</lifecycleMappingMetadata>
 					</configuration>
@@ -584,8 +624,8 @@
 				<executions>
 					<execution>
 						<goals>
-							<goal>compile</goal>
-							<goal>test-compile</goal>
+							<goal>${aspectj.phase.1}</goal>
+							<goal>${aspectj.phase.2}</goal>
 						</goals>
 					</execution>
 				</executions>
@@ -700,4 +740,15 @@
 		</snapshotRepository>
 	</distributionManagement>
 
+	<profiles>
+		<profile>
+			<id>no-ctw</id>
+			<properties>
+				<aspectj.phase.1>help</aspectj.phase.1>
+				<aspectj.phase.2>help</aspectj.phase.2>
+			</properties>
+		</profile>
+	</profiles>
+
 </project>
+
