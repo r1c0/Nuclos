@@ -35,6 +35,7 @@ import java.awt.image.RescaleOp;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 
+import org.nuclos.client.synthetica.NuclosThemeSettings;
 import org.nuclos.client.ui.labeled.ILabeledComponentSupport;
 import org.nuclos.client.ui.labeled.LabeledComboBox;
 
@@ -189,12 +190,17 @@ public abstract class TextFieldWithButton extends CommonJTextField {
 		final Rectangle r = getIconRectangle();
 		
 		if (!isSelectingText()) {
+			final Color bgColor;
+			if (!isOpaque() && !isEditable() && Color.WHITE.equals(getBackground())) {
+				bgColor = NuclosThemeSettings.BACKGROUND_PANEL;
+			} else {
+				bgColor = getBackground();
+			}
 			if (fadeLeft()) {
-				final Color bgColor = getBackground();
 				g2d.setPaint(new GradientPaint(new Point(r.x-fadeWidthLeft, r.y), new Color(bgColor.getRed(), bgColor.getGreen(), bgColor.getBlue(), 0), new Point(r.x-1, r.y), bgColor));
 				g2d.fillRect(r.x-fadeWidthLeft, r.y, fadeWidthLeft, r.height);
 			}
-			g2d.setColor(getBackground());
+			g2d.setColor(bgColor);
 			g2d.fillRect(r.x, r.y, r.width, r.height);
 		}
 		g2d.drawImage(bs.getImageIcon().getImage(), r.x, r.y, null);

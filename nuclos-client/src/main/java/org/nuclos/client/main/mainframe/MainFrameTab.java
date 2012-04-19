@@ -713,8 +713,8 @@ public class MainFrameTab extends JPanel implements IOverlayComponent, NuclosDro
 			if (mutLocked.getValue() && isLocked()) {
 				percent = percent < 0 ? 0 : percent > 100 ? 100 : percent;
 				int progress = percent / 5;
-				StringBuffer sbProgress = new StringBuffer(27);
-				sbProgress.append('[');
+				StringBuffer sbProgress = new StringBuffer(34);
+				sbProgress.append("     [");
 				for (int i = 1; i <= 20; i++) {
 					sbProgress.append(i <= progress ? '=' : '-');
 				}

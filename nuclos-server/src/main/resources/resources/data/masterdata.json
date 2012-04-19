@@ -928,6 +928,7 @@
         "label": "Modulobjekt",
         "description": "Modulobjekt",
         "foreignentity": "nuclos_genericobject",
+        "ondeletecascade": true,
         "datatype": "java.lang.Integer",
         "datascale": 9,
         "nullable": false,
