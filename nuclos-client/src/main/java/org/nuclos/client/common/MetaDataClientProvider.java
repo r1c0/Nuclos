@@ -104,6 +104,14 @@ public class MetaDataClientProvider implements MetaDataProvider<EntityMetaDataVO
 
 	/**
 	 *
+	 * @return
+	 */
+    public Collection<DynamicEntityVO> getAllDynEntities() {
+		return dataCache.getMapDynamicEntities().values();
+	}
+
+	/**
+	 *
 	 * @param id
 	 * @return
 	 */
