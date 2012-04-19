@@ -52,6 +52,7 @@ import org.nuclos.common2.ClientPreferences;
 import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.PreferencesUtils;
 import org.nuclos.common2.exception.PreferencesException;
+import org.nuclos.server.report.valueobject.DynamicEntityVO;
 
 public class LiveSearchSettingsPanel extends JPanel {
 
@@ -89,6 +90,9 @@ public class LiveSearchSettingsPanel extends JPanel {
 			}
 		});
 		for (EntityMetaDataVO md : MetaDataClientProvider.getInstance().getAllEntities())
+			if (!systemEntities.contains(md.getEntity()) && SecurityCache.getInstance().isReadAllowedForEntity(md.getEntity()))
+				allEntities.add(md.getEntity());
+		for (DynamicEntityVO md : MetaDataClientProvider.getInstance().getAllDynEntities())
 			if (!systemEntities.contains(md.getEntity()) && SecurityCache.getInstance().isReadAllowedForEntity(md.getEntity()))
 				allEntities.add(md.getEntity());
 		Collections.sort(allEntities);

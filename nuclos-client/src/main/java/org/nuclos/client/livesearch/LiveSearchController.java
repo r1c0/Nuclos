@@ -54,6 +54,8 @@ import org.nuclos.client.common.NuclosCollectController;
 import org.nuclos.client.common.NuclosCollectControllerFactory;
 import org.nuclos.client.common.security.SecurityCache;
 import org.nuclos.client.entityobject.EntityFacadeDelegate;
+import org.nuclos.client.genericobject.GenericObjectDelegate;
+import org.nuclos.client.genericobject.Modules;
 import org.nuclos.client.main.Main;
 import org.nuclos.client.main.MainController;
 import org.nuclos.client.main.mainframe.MainFrame;
@@ -67,6 +69,7 @@ import org.nuclos.client.ui.Icons;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.common.NuclosEOField;
 import org.nuclos.common.NuclosEntity;
+import org.nuclos.common.attribute.DynamicAttributeVO;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableSearchCondition;
 import org.nuclos.common.collect.collectable.searchcondition.SearchConditionUtils;
 import org.nuclos.common.collection.CollectionUtils;
@@ -80,12 +83,15 @@ import org.nuclos.common.dal.vo.EntityObjectVO;
 import org.nuclos.common2.ClientPreferences;
 import org.nuclos.common2.CommonRunnable;
 import org.nuclos.common2.EntityAndFieldName;
+import org.nuclos.common2.IdUtils;
+import org.nuclos.common2.InternalTimestamp;
 import org.nuclos.common2.PreferencesUtils;
 import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.PreferencesException;
+import org.nuclos.server.genericobject.valueobject.GenericObjectVO;
 import org.nuclos.server.livesearch.ejb3.LiveSearchFacadeRemote;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -472,7 +478,7 @@ public class LiveSearchController implements LiveSearchSearchPaneListener, LiveS
     	List<EntityFieldMetaDataVO> res = new ArrayList<EntityFieldMetaDataVO>();
     	Map<String, EntityFieldMetaDataVO> fields
     		= MetaDataClientProvider.getInstance().getAllEntityFieldsByEntity(row.entityMeta.getEntity());
-    	for(EntityFieldMetaDataVO fieldMeta : fields.values()) {
+		for(EntityFieldMetaDataVO fieldMeta : fields.values()) {
     		// Field is foreign key, the target entity has a layout, and the
     		// reference is not null?
     		if(fieldMeta.getForeignEntity() != null
@@ -488,6 +494,30 @@ public class LiveSearchController implements LiveSearchSearchPaneListener, LiveS
 	                for(EntityAndFieldName ef : subStuff.keySet())
 	                	if(ef.getEntityName().equals(row.entityName)) {
 	                		res.add(fieldMeta);
+	                		break;
+	                	}
+                }
+                catch(RemoteException e) {
+                	throw new CommonBusinessException(e);
+                }
+    		} else if(fieldMeta.getForeignEntity() != null
+        			&& !MasterDataLayoutHelper.isLayoutMLAvailable(fieldMeta.getForeignEntity(), false)
+        			&& row.theObject.getFieldIds().get(fieldMeta.getField()) != null
+        			&& row.entityMeta.isDynamic()) {
+    			try {
+    				Integer iGenericObjectId = IdUtils.unsafeToId(row.theObject.getFieldIds().get(fieldMeta.getField()));
+        			Integer iModuleId = GenericObjectDelegate.getInstance().get(iGenericObjectId).getModuleId();
+        			String sForeignEntity = Modules.getInstance().getEntityNameByModuleId(iModuleId);
+        			// Check, whether the layout contains the row's entity
+	                Map<EntityAndFieldName, String> subStuff
+	                = EntityFacadeDelegate.getInstance().getSubFormEntityAndParentSubFormEntityNames(
+	                		sForeignEntity,
+	                		MasterDataDelegate.getInstance().getLayoutId(sForeignEntity, false));
+	                for(EntityAndFieldName ef : subStuff.keySet())
+	                	if(ef.getEntityName().equals(row.entityName)) {
+	                		EntityFieldMetaDataVO fldMeta = (EntityFieldMetaDataVO)fieldMeta.clone();
+	                		fldMeta.setForeignEntity(sForeignEntity); //ugly
+	                		res.add(fldMeta);
 	                		break;
 	                	}
                 }
@@ -798,9 +828,48 @@ public class LiveSearchController implements LiveSearchSearchPaneListener, LiveS
                 else if (nuclosResource != null)
     					rowIcon = NuclosResourceCache.getNuclosResourceIcon(nuclosResource);
 
-                String treeRep = SpringLocaleDelegate.getInstance().getTreeViewFromMetaDataVO(searchDef.entity);
-                String title = StringUtils.replaceParameters(treeRep, new ParameterTransformer(entityObject));
+                String title = "";
+                if (!searchDef.entity.isDynamic()) {
+                	String treeRep = SpringLocaleDelegate.getInstance().getTreeViewFromMetaDataVO(searchDef.entity);
+                    title = StringUtils.replaceParameters(treeRep, new ParameterTransformer(entityObject));
+                } else {
+                	EntityMetaDataVO eEntityMetaData = null;
+                	Map<String, EntityFieldMetaDataVO> fields
+            		= MetaDataClientProvider.getInstance().getAllEntityFieldsByEntity(searchDef.entity.getEntity());
+                	for(EntityFieldMetaDataVO fieldMeta : fields.values()) {
+                		if(fieldMeta.getForeignEntity() != null
+                    			&& !MasterDataLayoutHelper.isLayoutMLAvailable(fieldMeta.getForeignEntity(), false)
+                    			&& entityObject.getFieldIds().get(fieldMeta.getField()) != null) {
+                			try {
+                				Integer iGenericObjectId = IdUtils.unsafeToId(entityObject.getFieldIds().get(fieldMeta.getField()));
+                				GenericObjectVO genericObjectVO = GenericObjectDelegate.getInstance().get(iGenericObjectId);
+                				
+                    			String sForeignEntity = Modules.getInstance().getEntityNameByModuleId(genericObjectVO.getModuleId());
+                    			// Check, whether the layout contains the row's entity
+            	                Map<EntityAndFieldName, String> subStuff
+            	                = EntityFacadeDelegate.getInstance().getSubFormEntityAndParentSubFormEntityNames(
+            	                		sForeignEntity,
+            	                		MasterDataDelegate.getInstance().getLayoutId(sForeignEntity, false));
+            	                for(EntityAndFieldName ef : subStuff.keySet())
+            	                	if(ef.getEntityName().equals(searchDef.entity.getEntity())) {
+            	                		eEntityMetaData = MetaDataClientProvider.getInstance().getEntity(sForeignEntity);
+            	            			String treeRep = SpringLocaleDelegate.getInstance().getTreeViewFromMetaDataVO(eEntityMetaData);
+            	                        title = StringUtils.replaceParameters(treeRep, new ParameterTransformer(wrapGenericObjectVO(genericObjectVO)));
+            	                		break;
+            	                	}
+            	                if (eEntityMetaData != null)
+            	                	break;
+                            }
+                            catch(Exception e) {
+                            	// ignore.
+                            }
+                		}
+                	}
 
+                    if (eEntityMetaData == null)
+                    	continue;
+                }
+                
                 Map<String, String> matchMap = new HashMap<String, String>();
                 // Line 2: list of attribute matches
                 for(String fieldName : searchDef.fields.keySet()) {
@@ -871,6 +940,38 @@ public class LiveSearchController implements LiveSearchSearchPaneListener, LiveS
             }
         }
     }
+
+	/**
+	 */
+	private static EntityObjectVO wrapGenericObjectVO(GenericObjectVO go) {
+		EntityObjectVO eo = new EntityObjectVO();
+
+		eo.setEntity(Modules.getInstance().getEntityNameByModuleId(go.getModuleId()));
+
+		eo.setId(IdUtils.toLongId(go.getId()));
+		eo.setCreatedBy(go.getCreatedBy());
+		eo.setCreatedAt(InternalTimestamp.toInternalTimestamp(go.getCreatedAt()));
+		eo.setChangedBy(go.getChangedBy());
+		eo.setChangedAt(InternalTimestamp.toInternalTimestamp(go.getChangedAt()));
+		eo.setVersion(go.getVersion());
+
+		eo.initFields(go.getAttributes().size(), go.getAttributes().size());
+		for (DynamicAttributeVO attr : go.getAttributes()) {
+			final String field = org.nuclos.client.attribute.AttributeCache.getInstance().getAttribute(attr.getAttributeId()).getName();
+			if (attr.isRemoved()) {
+				eo.getFields().remove(field);
+				eo.getFieldIds().remove(field);
+			} else {
+				eo.getFields().put(field, attr.getValue());
+				if (attr.getValueId() != null) {
+					eo.getFieldIds().put(field, IdUtils.toLongId(attr.getValueId()));
+				}
+			}
+		}
+		eo.getFields().put(NuclosEOField.LOGGICALDELETED.getMetaData().getField(), go.isDeleted());
+
+		return eo;
+	}
 
     @Override
     public void buttonSelectionChanged(boolean shallShowResult) {

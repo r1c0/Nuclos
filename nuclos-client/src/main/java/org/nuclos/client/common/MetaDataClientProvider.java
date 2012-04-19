@@ -104,6 +104,14 @@ public class MetaDataClientProvider extends AbstractProvider implements MetaData
 
 	/**
 	 *
+	 * @return
+	 */
+    public Collection<DynamicEntityVO> getAllDynEntities() {
+		return dataCache.getMapDynamicEntities().values();
+	}
+
+	/**
+	 *
 	 * @param id
 	 * @return
 	 */
