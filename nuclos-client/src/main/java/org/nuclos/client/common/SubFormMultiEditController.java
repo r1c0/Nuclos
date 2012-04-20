@@ -19,6 +19,7 @@ package org.nuclos.client.common;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.Iterator;
 import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -30,10 +31,14 @@ import org.nuclos.client.ui.collect.SubForm;
 import org.nuclos.client.ui.collect.component.CollectableComboBox;
 import org.nuclos.client.ui.collect.component.CollectableComponentTableCellEditor;
 import org.nuclos.client.ui.collect.model.CollectableTableModel;
+import org.nuclos.client.ui.collect.model.SortableCollectableTableModel;
 import org.nuclos.client.ui.model.ChoiceList;
 import org.nuclos.common.collect.collectable.Collectable;
 import org.nuclos.common.collect.collectable.CollectableComparator;
 import org.nuclos.common.collect.collectable.CollectableField;
+import org.nuclos.common.collect.collectable.LocalizedCollectableValueField;
+import org.nuclos.common2.LangUtils;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.exception.CommonFatalException;
 
 /**
@@ -85,18 +90,25 @@ class SubFormMultiEditController<Clct extends Collectable> extends SelectObjects
 		final List<CollectableField> oldSelectedObjects = new ArrayList<CollectableField>();
 		final Collection<CollectableField> fixed = new ArrayList<CollectableField>();
 
+		final List<CollectableField> oldAvailableObjectsList = new ArrayList<CollectableField>(oldAvailableObjects);
 		// iterate through the table and compute selected fields:
 		for (int row = 0; row < model.getRowCount(); ++row) {
 			final CollectableField value = model.getValueAt(row, colIndex);
-
-			// int oldAvailableIdx = oldAvailableObjects.indexOf(value);
-			if(oldAvailableObjects.contains(value)) {
-				oldSelectedObjects.add(value);
-				oldAvailableObjects.remove(value);
-				log.debug("Value " + value + " removed from available objects.");
-			}
-			else {
-				log.debug("Value " + value + " not found in available objects.");
+			for (Iterator iterator = oldAvailableObjectsList.iterator(); iterator.hasNext();) {
+				CollectableField collectableField = (CollectableField) iterator.next();
+				if (collectableField.isIdField() && value.isIdField()) {
+					if (LangUtils.equals(new Long(collectableField.getValueId().toString()), new Long(value.getValueId().toString()))) {
+						oldSelectedObjects.add(collectableField);
+						oldAvailableObjects.remove(collectableField);
+						break;
+					}
+				} else {
+					if (LangUtils.equals(collectableField.getValue(), value.getValue())) {
+						oldSelectedObjects.add(collectableField);
+						oldAvailableObjects.remove(collectableField);
+						break;
+					}
+				}
 			}
 
 			if (!controller.isRowRemovable(row)) {
@@ -118,21 +130,46 @@ class SubFormMultiEditController<Clct extends Collectable> extends SelectObjects
 
 			// 1. iterate through the table model and remove all rows that are not selected:
 			for (int iRow = model.getRowCount() - 1; iRow >= 0; --iRow) {
-				final Object oValue = model.getValueAt(iRow, colIndex);
-				if (!lstNewSelectedObjects.contains(oValue)) {
-					model.remove(iRow);
+				final CollectableField value = model.getValueAt(iRow, colIndex);
+				boolean blnRemove = true;
+				for (Iterator iterator = lstNewSelectedObjects.iterator(); iterator.hasNext();) {
+					CollectableField collectableField = (CollectableField) iterator.next();
+					if (collectableField.isIdField() && value.isIdField()) {
+						if (LangUtils.equals(new Long(collectableField.getValueId().toString()), new Long(value.getValueId().toString()))) {
+							blnRemove = false;
+							break;
+						}
+					} else {
+						if (LangUtils.equals(collectableField.getValue(), value.getValue())) {
+							blnRemove = false;
+							break;
+						}
+					}
 				}
+				if (blnRemove)
+					model.remove(iRow);
+				
 			}
 
+			
+			List<Object> newFields = new ArrayList<Object>();
 			// 2. iterate through the selected objects and add a row for each that is not contained in the table model already:
 			for (Object oSelected : lstNewSelectedObjects) {
+				
 				if (!isContainedInTableModel(oSelected, model, colIndex)) {
 					// add row
-					final Clct clctNew = controller.newCollectable();
-					clctNew.setField(columnName, (CollectableField) oSelected);
-					model.add(clctNew);
+					newFields.add(oSelected);
+					
 				}
 			}
+			for (Object o : newFields) {
+				final Clct clctNew = controller.newCollectable();
+				clctNew.setField(columnName, (CollectableField) o);
+				model.add(clctNew);
+			}
+			
+			if (model instanceof SortableCollectableTableModel)
+				((SortableCollectableTableModel)model).sort();
 		}
 	}
 
@@ -150,13 +187,21 @@ class SubFormMultiEditController<Clct extends Collectable> extends SelectObjects
 		return realResult;
 	}
 
-	private static <Clct extends Collectable> boolean isContainedInTableModel(Object oSelected, CollectableTableModel<Clct> tblmdl, int iColumn) {
+	private static boolean isContainedInTableModel(Object oSelected, CollectableTableModel tblmdl, int iColumn) {
 		boolean result = false;
 		for (int iRow = 0; iRow < tblmdl.getRowCount(); ++iRow) {
-			final Object oValue = tblmdl.getValueAt(iRow, iColumn);
-			if (oValue.equals(oSelected)) {
-				result = true;
-				break;
+			final CollectableField value = tblmdl.getValueAt(iRow, iColumn);
+			final CollectableField collectableField = (CollectableField)oSelected;
+			if (collectableField.isIdField() && value.isIdField()) {
+				if (LangUtils.equals(new Long(collectableField.getValueId().toString()), new Long(value.getValueId().toString()))) {
+					result = true;
+					break;
+				}
+			} else {
+				if (LangUtils.equals(collectableField.getValue(), value.getValue())) {
+					result = true;
+					break;
+				}
 			}
 		}
 		return result;
