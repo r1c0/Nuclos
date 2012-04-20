@@ -510,27 +510,6 @@
 										</execute>
 									</action>
 								</pluginExecution>
-								<pluginExecution>
-									<pluginExecutionFilter>
-										<groupId>org.codehaus.mojo</groupId>
-										<artifactId>aspectj-maven-plugin</artifactId>
-										<versionRange>[1.0,)</versionRange>
-										<goals>
-											<goal>${aspectj.phase.1}</goal>
-											<goal>${aspectj.phase.2}</goal>
-										</goals>
-									</pluginExecutionFilter>
-									<action>
-										<!-- execute>
-											<runOnIncremental>true</runOnIncremental>
-										</execute -->
-										<!-- 
-											This should disable aspectj weaving for eclipse.
-											In reality, it does nothing.
-										 -->
-										<ignore/>
-									</action>
-								</pluginExecution>
 							</pluginExecutions>
 						</lifecycleMappingMetadata>
 					</configuration>
