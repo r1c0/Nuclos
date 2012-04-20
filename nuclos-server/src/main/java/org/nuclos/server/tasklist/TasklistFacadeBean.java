@@ -18,6 +18,8 @@ package org.nuclos.server.tasklist;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.annotation.security.RolesAllowed;
 
@@ -25,18 +27,15 @@ import org.apache.log4j.Logger;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.SearchConditionUtils;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableSearchCondition;
-import org.nuclos.common.collect.collectable.searchcondition.ComparisonOperator;
 import org.nuclos.common.tasklist.TasklistDefinition;
 import org.nuclos.common.tasklist.TasklistFacadeRemote;
+import org.nuclos.common2.IdUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
-import org.nuclos.common2.exception.CommonFinderException;
-import org.nuclos.common2.exception.CommonPermissionException;
 import org.nuclos.server.common.MasterDataMetaCache;
 import org.nuclos.server.common.SecurityCache;
 import org.nuclos.server.common.ejb3.NuclosFacadeBean;
 import org.nuclos.server.masterdata.ejb3.MasterDataFacadeLocal;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
-import org.nuclos.server.searchfilter.valueobject.SearchFilterVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -57,31 +56,43 @@ public class TasklistFacadeBean extends NuclosFacadeBean implements TasklistFaca
 	public Collection<TasklistDefinition> getUsersTasklists() {
 		Collection<TasklistDefinition> result = new ArrayList<TasklistDefinition>();
 
-		for (Integer iRoleId : SecurityCache.getInstance().getUserRoles(getCurrentUserName())) {
-			final CollectableSearchCondition cond = SearchConditionUtils.newMDReferenceComparison(MasterDataMetaCache.getInstance().getMetaData(NuclosEntity.TASKLISTROLE), "role", iRoleId);
-
-			for (MasterDataVO tasklistrole : mdfacade.getMasterData(NuclosEntity.TASKLISTROLE.getEntityName(), cond, true)) {
-				MasterDataVO tasklist;
-				try {
-					tasklist = mdfacade.get(NuclosEntity.TASKLIST.getEntityName(), tasklistrole.getField("tasklistId"));
-				}
-				catch (CommonBusinessException e) {
-					LOG.warn(e);
-					continue;
-				}
-
-				TasklistDefinition def = new TasklistDefinition(tasklist.getIntId());
-				def.setName(tasklist.getField("name", String.class));
-				def.setDescription(tasklist.getField("description", String.class));
-				def.setLabelResourceId(tasklist.getField("labelres", String.class));
-				def.setDescriptionResourceId(tasklist.getField("descriptionres", String.class));
-				def.setMenupathResourceId(tasklist.getField("menupathres", String.class));
-				def.setDynamicTasklistId(tasklist.getField("datasourceId", Integer.class));
-				def.setDynamicTasklistIdFieldname(tasklist.getField("datasourceIdField", String.class));
-				def.setDynamicTasklistEntityFieldname(tasklist.getField("datasourceEntityField", String.class));
-
-				result.add(def);
+		final Set<Integer> tasklists = new HashSet<Integer>();
+		if (SecurityCache.getInstance().isSuperUser(getCurrentUserName())) {
+			for (Object id : mdfacade.getMasterDataIds(NuclosEntity.TASKLIST.getEntityName())) {
+				tasklists.add(IdUtils.unsafeToId(id));
 			}
+		}
+		else {
+			for (Integer iRoleId : SecurityCache.getInstance().getUserRoles(getCurrentUserName())) {
+				final CollectableSearchCondition cond = SearchConditionUtils.newMDReferenceComparison(MasterDataMetaCache.getInstance().getMetaData(NuclosEntity.TASKLISTROLE), "role", iRoleId);
+				for (MasterDataVO tasklistrole : mdfacade.getMasterData(NuclosEntity.TASKLISTROLE.getEntityName(), cond, true)) {
+					tasklists.add(IdUtils.unsafeToId(tasklistrole.getField("tasklistId")));
+				}
+			}
+		}
+		
+		for (Integer tasklistId : tasklists) {
+			MasterDataVO tasklist;
+			try {
+				tasklist = mdfacade.get(NuclosEntity.TASKLIST.getEntityName(), tasklistId);
+			}
+			catch (CommonBusinessException e) {
+				LOG.warn(e);
+				continue;
+			}
+
+			TasklistDefinition def = new TasklistDefinition(tasklist.getIntId());
+			def.setName(tasklist.getField("name", String.class));
+			def.setDescription(tasklist.getField("description", String.class));
+			def.setLabelResourceId(tasklist.getField("labelres", String.class));
+			def.setDescriptionResourceId(tasklist.getField("descriptionres", String.class));
+			def.setMenupathResourceId(tasklist.getField("menupathres", String.class));
+			def.setDynamicTasklistId(tasklist.getField("datasourceId", Integer.class));
+			def.setTaskEntity(tasklist.getField("taskentity", String.class));
+			def.setDynamicTasklistIdFieldname(tasklist.getField("datasourceIdField", String.class));
+			def.setDynamicTasklistEntityFieldname(tasklist.getField("datasourceEntityField", String.class));
+
+			result.add(def);
 		}
 		return result;
 	}

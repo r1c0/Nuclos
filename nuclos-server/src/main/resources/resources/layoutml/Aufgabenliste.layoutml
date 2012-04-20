@@ -144,6 +144,19 @@
           <parameter name="dynamictasklist" value="" />
         </valuelist-provider>
       </collectable-component>
+      <collectable-component fill-control-horizontally="yes" name="taskentity" insertable="yes" opaque="yes" visible="yes" enabled="yes" controltype="textfield" show-only="label">
+        <tablelayout-constraints col1="9" col2="9" row1="6" row2="6" hAlign="2" vAlign="1" />
+        <minimum-size height="22" width="15" />
+        <preferred-size height="22" width="50" />
+      </collectable-component>
+      <collectable-component fill-control-horizontally="yes" name="taskentity" insertable="no" opaque="yes" visible="yes" enabled="yes" controltype="combobox" show-only="control">
+        <tablelayout-constraints col1="10" col2="13" row1="6" row2="6" hAlign="2" vAlign="1" />
+        <minimum-size height="22" width="35" />
+        <preferred-size height="22" width="70" />
+        <valuelist-provider type="entityId">
+          <parameter name="nuclosentities" value="false" />
+        </valuelist-provider>
+      </collectable-component>
     </panel>
   </panel>
 </layout>

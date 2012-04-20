@@ -55,6 +55,9 @@ public class EntityCollectableFieldsProvider implements CollectableFieldsProvide
 
 	@Override
 	public void setParameter(String parameter, Object oValue) {
+		if (parameter.equalsIgnoreCase("nuclosentities")) {
+			includeSystemEntities = Boolean.parseBoolean((String)oValue);
+		}
 		if (parameter.equalsIgnoreCase("restriction")) {
 			if (ENTITIES_WITH_STATEMODEL_ONLY.equalsIgnoreCase((String) oValue)) {
 				bWithoutStatemodel = false;

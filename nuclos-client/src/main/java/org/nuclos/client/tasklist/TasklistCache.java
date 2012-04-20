@@ -59,6 +59,7 @@ public class TasklistCache {
 	}
 
 	private Map<String, TasklistDefinition> tasklists;
+	private Map<Integer, TasklistDefinition> tasklistsById;
 	
 	private TopicNotificationReceiver tnr;
 	
@@ -117,13 +118,23 @@ public class TasklistCache {
 		return result;
 	}
 	
+	public TasklistDefinition getById(Integer id) {
+		TasklistDefinition result = tasklistsById.get(id);
+		if (result == null)
+			throw new NuclosFatalException("No task list with id " + id);
+		return result;
+	}
+	
 	private synchronized void revalidate() {
 		tasklists = new ConcurrentHashMap<String, TasklistDefinition>();
+		tasklistsById = new ConcurrentHashMap<Integer, TasklistDefinition>();
 		LOG.info("Cleared cache " + this);
 		for (TasklistDefinition def : TasklistDelegate.getInstance().getUsersTasklists()) {
 			tasklists.put(def.getName(), def);
+			tasklistsById.put(def.getId(), def);
 		}
 		tasklists = Collections.unmodifiableMap(tasklists);
+		tasklistsById = Collections.unmodifiableMap(tasklistsById);
 		LOG.info("Revalidated (filled) cache " + this);
 	}
 }

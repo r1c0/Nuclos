@@ -65062,5 +65062,35 @@
     "resourceID": "miTasklists",
     "locale": "de",
     "text": "Aufgabenlisten"
+  },
+  {
+    "resourceID": "nuclos.entityfield.tasklist.taskentity.label",
+    "locale": "i-default",
+    "text": "Task entity"
+  },
+  {
+    "resourceID": "nuclos.entityfield.tasklist.taskentity.label",
+    "locale": "en",
+    "text": "Task entity"
+  },
+  {
+    "resourceID": "nuclos.entityfield.tasklist.taskentity.label",
+    "locale": "de",
+    "text": "Aufgabenentität"
+  },
+  {
+    "resourceID": "nuclos.entityfield.tasklist.taskentity.description",
+    "locale": "i-default",
+    "text": "Entity of the task object."
+  },
+  {
+    "resourceID": "nuclos.entityfield.tasklist.taskentity.description",
+    "locale": "en",
+    "text": "Entity of the task object."
+  },
+  {
+    "resourceID": "nuclos.entityfield.tasklist.taskentity.description",
+    "locale": "de",
+    "text": "Entität des Aufgabenobjekts."
   }
 ]

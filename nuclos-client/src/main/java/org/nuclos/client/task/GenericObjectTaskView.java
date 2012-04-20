@@ -50,6 +50,7 @@ import org.nuclos.client.masterdata.CollectableMasterDataWithDependants;
 import org.nuclos.client.searchfilter.EntitySearchFilter;
 import org.nuclos.client.ui.Errors;
 import org.nuclos.client.ui.IMainFrameTabClosableController;
+import org.nuclos.client.ui.collect.SubForm;
 import org.nuclos.client.ui.collect.model.CollectableTableModel;
 import org.nuclos.client.ui.collect.model.GenericObjectsResultTableModel;
 import org.nuclos.client.ui.collect.model.MasterDataResultTableModel;
@@ -96,6 +97,9 @@ public class GenericObjectTaskView extends TaskView implements IMainFrameTabClos
 
 	public GenericObjectTaskView(EntitySearchFilter filter) {
 		this.setFilter(filter);
+		
+		this.tbl.setRowHeight(SubForm.MIN_ROWHEIGHT);
+		this.tbl.setTableHeader(new TaskViewTableHeader(tbl.getColumnModel()));
 	}
 
 	@Override

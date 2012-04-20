@@ -46,6 +46,7 @@ import org.nuclos.client.main.mainframe.workspace.ITabStoreController;
 import org.nuclos.client.main.mainframe.workspace.TabRestoreController;
 import org.nuclos.client.searchfilter.EntitySearchFilter;
 import org.nuclos.client.searchfilter.SearchFilterCache;
+import org.nuclos.client.tasklist.TasklistCache;
 import org.nuclos.client.timelimit.TimelimitTaskController;
 import org.nuclos.client.timelimit.TimelimitTaskDelegate;
 import org.nuclos.client.ui.Controller;
@@ -62,7 +63,6 @@ import org.nuclos.common2.ClientPreferences;
 import org.nuclos.common2.PreferencesUtils;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
-import org.nuclos.common2.exception.CommonPermissionException;
 import org.nuclos.common2.exception.PreferencesException;
 import org.nuclos.server.report.valueobject.DynamicTasklistVO;
 
@@ -157,6 +157,7 @@ public class TaskController extends Controller<MainFrameTabbedPane> {
 		public static final int GENERIC = -1;
 		public static final int PERSONAL = 1;
 		public static final int TIMELIMIT = 2;
+		public static final int DYNAMIC = 3;
 
 		/**
 		 * use GENERIC, PERSONAL or TIMELIMIT
@@ -167,6 +168,12 @@ public class TaskController extends Controller<MainFrameTabbedPane> {
 		 * only for type GENERIC
 		 */
 		Integer searchFilterId;
+		
+		/**
+		 * only for type DYNAMIC
+		 */
+		Integer tasklistId;
+		String tasklistName;
 	}
 
 	private static String toXML(RestorePreferences rp) {
@@ -206,7 +213,11 @@ public class TaskController extends Controller<MainFrameTabbedPane> {
 			if (type == rp.GENERIC) {
 				rp.searchFilterId = ((GenericObjectTaskView)view).getFilter().getId();
 			}
-
+			if (type == rp.DYNAMIC) {
+				rp.tasklistId = ((DynamicTaskView)view).getDef().getId();
+				rp.tasklistName = ((DynamicTaskView)view).getDef().getName();
+			}
+			
 			return toXML(rp);
 		}
 	}
@@ -240,6 +251,16 @@ public class TaskController extends Controller<MainFrameTabbedPane> {
 				case RestorePreferences.GENERIC:
 					EntitySearchFilter filter = SearchFilterCache.getInstance().getEntitySearchFilterById(rp.searchFilterId);
 					mc.getTaskController().addOrReplaceGenericObjectTaskViewFor(filter, tab);
+					break;
+				case RestorePreferences.DYNAMIC:
+					TasklistDefinition def = null;
+					try {
+						def = TasklistCache.getInstance().getById(rp.tasklistId);
+					}
+					catch (Exception ex) {
+						def = TasklistCache.getInstance().getByName(rp.tasklistName);
+					}
+					mc.getTaskController().addOrReplaceDynamicTaskViewFor(def, tab);
 					break;
 				default:
 					throw new IllegalArgumentException("Task type: "+rp.type);
@@ -414,18 +435,25 @@ public class TaskController extends Controller<MainFrameTabbedPane> {
 	}
 
 	private DynamicTaskView addOrReplaceDynamicTaskViewFor(TasklistDefinition tasklist) {
-		DynamicTaskView view = getTaskViewFor(tasklist);
-		DynamicTasklistVO dtl;
+		MainFrameTab tab = new MainFrameTab();
 		try {
-			dtl = DatasourceDelegate.getInstance().getDynamicTasklist(tasklist.getDynamicTasklistId());
+			if (addOrReplaceDynamicTaskViewFor(tasklist, tab)) {
+				MainFrame.addTab(tab);
+				MainFrame.setSelectedTab(tab);
+			}
+			return getTaskViewFor(tasklist);
 		}
-		catch (CommonPermissionException e) {
-			Errors.getInstance().showExceptionDialog(Main.getInstance().getMainFrame(), e);
+		catch(CommonBusinessException e) {
+			LOG.error("addOrReplaceDynamicTaskViewFor failed: " + e, e);
 			return null;
 		}
+	}
+	
+	private boolean addOrReplaceDynamicTaskViewFor(TasklistDefinition tasklist, MainFrameTab tab) throws CommonBusinessException {
+		DynamicTaskView view = getTaskViewFor(tasklist);
+		DynamicTasklistVO dtl = DatasourceDelegate.getInstance().getDynamicTasklist(tasklist.getDynamicTasklistId());
 
 		if(view == null) {
-			MainFrameTab tab = new MainFrameTab();
 			final DynamicTaskView newView = ctlDynamicTasks.newDynamicTaskView(tasklist, dtl);
 			final String sLabel = StringUtils.isNullOrEmpty(tasklist.getLabelResourceId()) ? tasklist.getName() : getSpringLocaleDelegate().getTextFallback(tasklist.getLabelResourceId(), tasklist.getName());
 			tab.addMainFrameTabListener(new MainFrameTabAdapter() {
@@ -443,15 +471,16 @@ public class TaskController extends Controller<MainFrameTabbedPane> {
 			tab.setTabIcon(Icons.getInstance().getIconFilter16());
 			tab.setTitle(sLabel);
 			tab.setLayeredComponent(newView);
+			tab.setTabStoreController(new TaskTabStoreController(RestorePreferences.DYNAMIC, newView));
 
 			dynamictasklistTabs.put(newView, tab);
 
 			MainFrame.addTab(tab);
 			MainFrame.setSelectedTab(tab);
-			return newView;
+			return true;
 		}
 		else {
-			return view;
+			return false;
 		}
 	}
 

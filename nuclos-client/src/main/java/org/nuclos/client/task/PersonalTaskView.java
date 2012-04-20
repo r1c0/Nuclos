@@ -34,6 +34,7 @@ import javax.swing.JToggleButton;
 import javax.swing.ListSelectionModel;
 
 import org.nuclos.client.ui.UIUtils;
+import org.nuclos.client.ui.collect.SubForm;
 import org.nuclos.client.ui.table.CommonJTable;
 import org.nuclos.client.ui.table.TableUtils;
 
@@ -92,6 +93,8 @@ public class PersonalTaskView extends TaskView {
 		this.tblTasks.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 		this.tblTasks.setBackground(Color.WHITE);
 		this.tblTasks.setColumnSelectionAllowed(true);
+		this.tblTasks.setRowHeight(SubForm.MIN_ROWHEIGHT);
+		this.tblTasks.setTableHeader(new TaskViewTableHeader(tblTasks.getColumnModel()));
 		UIUtils.setupCopyAction(this.tblTasks);
 	}
 

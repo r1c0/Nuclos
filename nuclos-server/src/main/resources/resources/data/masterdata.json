@@ -10450,6 +10450,19 @@
         "descriptionres": "nuclos.entityfield.tasklist.datasource.description"
       },
       {
+        "name": "taskentity",
+        "dbfield": "STRVALUE_T_MD_ENTITY",
+        "datatype": "java.lang.String",
+        "datascale": 255,
+        "foreignentity": "nuclos_entity",
+        "foreignentityfield": "entity",
+        "nullable": true,
+        "searchable": false,
+        "logbook": false,
+        "labelres": "nuclos.entityfield.tasklist.taskentity.label",
+        "descriptionres": "nuclos.entityfield.tasklist.taskentity.description"
+      },
+      {
         "name": "datasourceIdField",
         "dbfield": "STRDATASOURCEIDFIELD",
         "datatype": "java.lang.String",

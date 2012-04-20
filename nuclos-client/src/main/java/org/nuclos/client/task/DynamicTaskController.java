@@ -19,7 +19,6 @@ package org.nuclos.client.task;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -27,6 +26,7 @@ import javax.swing.AbstractAction;
 import javax.swing.JComponent;
 import javax.swing.JTable;
 import javax.swing.table.TableModel;
+import javax.swing.table.TableRowSorter;
 
 import org.apache.log4j.Logger;
 import org.nuclos.client.common.KeyBinding;
@@ -37,7 +37,7 @@ import org.nuclos.client.main.Main;
 import org.nuclos.client.ui.Errors;
 import org.nuclos.client.ui.Icons;
 import org.nuclos.client.ui.UIUtils;
-import org.nuclos.common.NuclosFatalException;
+import org.nuclos.client.ui.collect.SubForm;
 import org.nuclos.common.tasklist.TasklistDefinition;
 import org.nuclos.common2.CommonRunnable;
 import org.nuclos.common2.IdUtils;
@@ -109,7 +109,8 @@ public class DynamicTaskController extends RefreshableTaskController {
 	}
 
 	private void setRenderers(DynamicTaskView view) {
-
+		view.getTable().setRowHeight(SubForm.MIN_ROWHEIGHT);
+		view.getTable().setTableHeader(new TaskViewTableHeader(view.getTable().getColumnModel()));
 	}
 
 	private void setPopupMenuListener(final DynamicTaskView taskview){
@@ -139,6 +140,7 @@ public class DynamicTaskController extends RefreshableTaskController {
 		try {
 			ResultVO vo = DatasourceDelegate.getInstance().getDynamicTasklistData(dtl.getId());
 			TableModel mdl = new DynamicTaskTableModel(taskview.getDef(), vo);
+			taskview.getTable().setRowSorter(new TableRowSorter<TableModel>(mdl));
 			taskview.getTable().setModel(mdl);
 		}
 		catch (CommonBusinessException e) {
@@ -157,9 +159,11 @@ public class DynamicTaskController extends RefreshableTaskController {
 
 	private void cmdShowDetails(final DynamicTaskView view) {
 		JTable table = view.getTable();
+		
+		String entity = view.getDef().getTaskEntity();
 		String idfield = view.getDef().getDynamicTasklistIdFieldname();
 		String entityfield = view.getDef().getDynamicTasklistEntityFieldname();
-		if (idfield != null && entityfield != null) {
+		if (idfield != null && (entityfield != null || entity != null)) {
 			if (table.getModel() instanceof DynamicTaskTableModel) {
 				DynamicTaskTableModel model = (DynamicTaskTableModel) table.getModel();
 
@@ -173,12 +177,12 @@ public class DynamicTaskController extends RefreshableTaskController {
 					else {
 						id = IdUtils.toLongId(oId);
 					}
-					final String entity = (String) model.getValueByField(i, entityfield);
+					final String _entity = entityfield != null ? (String) model.getValueByField(i, entityfield) : entity;
 					UIUtils.runCommandLater(Main.getInstance().getMainController().getTaskController().getTabFor(view), new Runnable() {
 						@Override
 						public void run() {
 							try {
-								Main.getInstance().getMainController().showDetails(entity, id);
+								Main.getInstance().getMainController().showDetails(_entity, id);
 							}
 							catch (CommonBusinessException e) {
 								Errors.getInstance().showExceptionDialog(view, e);

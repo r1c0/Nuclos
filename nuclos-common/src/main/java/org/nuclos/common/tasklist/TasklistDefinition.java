@@ -28,6 +28,7 @@ public class TasklistDefinition implements Serializable {
 	private String descriptionResourceId;
 	private String menupathResourceId;
 	private Integer dynamicTasklistId;
+	private String taskEntity;
 	private String dynamicTasklistIdFieldname;
 	private String dynamicTasklistEntityFieldname;
 
@@ -85,6 +86,14 @@ public class TasklistDefinition implements Serializable {
 
 	public void setDynamicTasklistId(Integer dynamicTasklistId) {
 		this.dynamicTasklistId = dynamicTasklistId;
+	}
+
+	public String getTaskEntity() {
+		return taskEntity;
+	}
+
+	public void setTaskEntity(String taskEntity) {
+		this.taskEntity = taskEntity;
 	}
 
 	public String getDynamicTasklistIdFieldname() {

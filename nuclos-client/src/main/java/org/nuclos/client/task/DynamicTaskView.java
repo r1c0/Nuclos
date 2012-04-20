@@ -21,11 +21,11 @@ import java.util.List;
 import javax.swing.JComponent;
 import javax.swing.JTable;
 
-import org.apache.log4j.Logger;
 import org.nuclos.client.ui.table.CommonJTable;
 import org.nuclos.common.tasklist.TasklistDefinition;
 import org.nuclos.server.report.valueobject.DynamicTasklistVO;
 
+@SuppressWarnings("serial")
 public class DynamicTaskView extends TaskView {
 
 	private final TasklistDefinition def;

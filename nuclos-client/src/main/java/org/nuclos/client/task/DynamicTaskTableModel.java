@@ -84,7 +84,7 @@ public class DynamicTaskTableModel extends DefaultTableModel {
 	@Override
 	public Object getValueAt(int iRow, int iColumn) {
 		final ResultColumnVO columnVO = resultvo.getColumns().get(columns.get(iColumn));
-		return columnVO.format(resultvo.getRows().get(iRow)[iColumn]);
+		return columnVO.format(resultvo.getRows().get(iRow)[columns.get(iColumn)]);
 	}
 
 	@Override
