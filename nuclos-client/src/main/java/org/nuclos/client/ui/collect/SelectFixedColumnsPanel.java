@@ -52,6 +52,13 @@ public class SelectFixedColumnsPanel extends DefaultSelectObjectsPanel<Collectab
 	
 	public SelectFixedColumnsPanel(JComponent header) {
 		super(header);
+	}
+
+	@PostConstruct
+	@Override
+	protected void init() {
+		super.init();
+		
 		final SpringLocaleDelegate localeDelegate = SpringLocaleDelegate.getInstance();
 		
 		this.labAvailableColumns.setText(localeDelegate.getMessage("SelectFixedColumnsController.8","Verf\u00fcgbare Spalten"));
@@ -64,12 +71,6 @@ public class SelectFixedColumnsPanel extends DefaultSelectObjectsPanel<Collectab
 
 		this.btnUp.setVisible(true);
 		this.btnDown.setVisible(true);
-	}
-
-	@PostConstruct
-	@Override
-	protected void init() {
-		super.init();
 
 		tblSelectedColumn = new JTable() {
 			@Override

@@ -623,20 +623,22 @@ public abstract class SubFormController extends Controller
 	 * Command: insert a new row.
 	 */
 	public void cmdInsert() {
-		// TODO: check if this really must be encapsuled with runCommand
-		try {
-			if (stopEditing()) {
-				JTable tbl = getJTable();
-				insertNewRow();
-				// TODO: und wenn die neue Zeile wg. Sortierung NICHT am Ende liegt???
-				final int lastRow = tbl.getRowCount() - 1;
-				// Hotfix for 'Strukturdefinition' -> Subform Attribute -> add row (to empty subform) (tp)
-				if (lastRow >= 0) {
-					tbl.addRowSelectionInterval(lastRow, lastRow);
+		if (getSubForm().getToolbarButton("NEW").isEnabled()) {
+			// TODO: check if this really must be encapsuled with runCommand
+			try {
+				if (stopEditing()) {
+					JTable tbl = getJTable();
+					insertNewRow();
+					// TODO: und wenn die neue Zeile wg. Sortierung NICHT am Ende liegt???
+					final int lastRow = tbl.getRowCount() - 1;
+					// Hotfix for 'Strukturdefinition' -> Subform Attribute -> add row (to empty subform) (tp)
+					if (lastRow >= 0) {
+						tbl.addRowSelectionInterval(lastRow, lastRow);
+					}
 				}
+			} catch (CommonBusinessException e) {
+				Errors.getInstance().showExceptionDialog(getParent(), e);
 			}
-		} catch (CommonBusinessException e) {
-			Errors.getInstance().showExceptionDialog(getParent(), e);
 		}
 	}
 
@@ -694,6 +696,9 @@ public abstract class SubFormController extends Controller
 		public void valueChanged(final ListSelectionEvent e) {
 			AWTEvent currentEvent = EventQueue.getCurrentEvent();
 	        if(currentEvent instanceof KeyEvent){
+	        	if (!getSubForm().getToolbarButton("NEW").isEnabled())
+	            	return;
+	            	
 	        	final KeyEvent ke = (KeyEvent)currentEvent;
 	            if(!KeyStroke.getKeyStrokeForEvent(ke).equals(tabKeyStroke) || ke.isConsumed())
 	            	return;
@@ -703,8 +708,8 @@ public abstract class SubFormController extends Controller
 		            ke.consume();
 		            int idxRow = e.getLastIndex(); 
 		            if (rowIndex == 0 && columnIndex == 0 && e.getLastIndex() > 0) {
-		            	SubFormController.this.cmdInsert();
-		            	idxRow = idxRow + 1;
+	            		SubFormController.this.cmdInsert();
+	            		idxRow = idxRow + 1;
 		            }
 		            final int iRow = idxRow;
 		            SwingUtilities.invokeLater(new Runnable() {
@@ -713,7 +718,7 @@ public abstract class SubFormController extends Controller
 						public void run() {
 							SubformRowHeader rowHeader = tbl.getSubForm().getSubformRowHeader();
 							boolean blnHasFixedRows = (rowHeader != null && rowHeader.getHeaderTable().getColumnCount() > 1);
-							if (!blnHasFixedRows) 
+							if (!blnHasFixedRows)
 								tbl.changeSelection(iRow, 0, false, false);
 							else
 								if (!(rowHeader.getHeaderTable() instanceof HeaderTable))
