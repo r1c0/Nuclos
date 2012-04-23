@@ -67,7 +67,6 @@ import org.nuclos.server.dal.DalUtils;
 import org.nuclos.server.dal.processor.jdbc.TableAliasSingleton;
 import org.nuclos.server.dblayer.EntityObjectMetaDbHelper;
 import org.nuclos.server.dblayer.query.DbColumnExpression;
-import org.nuclos.server.dblayer.query.DbCompoundColumnExpression;
 import org.nuclos.server.dblayer.query.DbCondition;
 import org.nuclos.server.dblayer.query.DbExpression;
 import org.nuclos.server.dblayer.query.DbFrom;
@@ -75,6 +74,7 @@ import org.nuclos.server.dblayer.query.DbJoin;
 import org.nuclos.server.dblayer.query.DbOrder;
 import org.nuclos.server.dblayer.query.DbQuery;
 import org.nuclos.server.dblayer.query.DbQueryBuilder;
+import org.nuclos.server.dblayer.query.DbReferencedCompoundColumnExpression;
 import org.nuclos.server.dblayer.query.DbSelection;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -522,7 +522,7 @@ public class EOSearchExpressionUnparser {
 						visitRefJoinCondition(new RefJoinCondition(entityField, tableAlias));
 					}
 					// We must repeat the SQL 'case when ...' expression here
-					return new DbCompoundColumnExpression<Object>(table, entityField, false);
+					return new DbReferencedCompoundColumnExpression<Object>(table, entityField, false);
 				}
 				// normal field case
 				else {
