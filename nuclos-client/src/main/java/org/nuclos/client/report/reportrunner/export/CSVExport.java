@@ -44,6 +44,7 @@ public class CSVExport extends AbstractReportExporter {
 	private final char cQuote;
 	private final boolean bWriteHeader;
 	private final String sFileSuffix;
+	private String fileName;
 
 	public CSVExport() {
 		this(';', 2, '\"', true, ".csv");
@@ -85,12 +86,17 @@ public class CSVExport extends AbstractReportExporter {
 			break;
 		}
 	}
+	
+	public String getFilename() {
+		return this.fileName;
+	}
 
 	private String createFile(final String sReportName, final ResultVO resultVO, String parameter) throws NuclosReportException {
 		String sFileName = null;
 
 		try {
 			sFileName = getFileName(createExportDir(parameter), sReportName, sFileSuffix);
+			this.fileName = sFileName;
 
 			final ExcelCSVPrinter excelCSVPrinter = new ExcelCSVPrinter(new FileWriter(sFileName, false), iQuoteLevel, cDelimiter, cQuote, false);
 			//final ExcelCSVPrinter excelCSVPrinter = new ExcelCSVPrinter(new OutputStreamWriter(new FileOutputStream(sFileName), "UTF8"), iQuoteLevel, cDelimiter, cQuote, false);
