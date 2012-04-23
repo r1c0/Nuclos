@@ -184,11 +184,14 @@ public class EntityFacadeBean extends NuclosFacadeBean implements EntityFacadeRe
 	private static final CollectableEOEntityField clctEOEFdeleted = new CollectableEOEntityField(NuclosEOField.LOGGICALDELETED.getMetaData(), "<dummy>");
 
 	public List<CollectableValueIdField> getQuickSearchResult(String entity, String field, String search, Integer vlpId, Map<String, Object> vlpParameter, Integer iMaxRowCount) {
+		final MetaDataProvider<EntityMetaDataVO, EntityFieldMetaDataVO> provider = MetaDataServerProvider.getInstance();
+		final EntityFieldMetaDataVO efMeta = provider.getEntityField(entity, field);
+		return getQuickSearchResult(entity, efMeta, search, vlpId, vlpParameter, iMaxRowCount);
+	}
+
+	public List<CollectableValueIdField> getQuickSearchResult(String entity, EntityFieldMetaDataVO efMeta, String search, Integer vlpId, Map<String, Object> vlpParameter, Integer iMaxRowCount) {
 		final List<CollectableValueIdField> result = new ArrayList<CollectableValueIdField>();
 		try {
-			final MetaDataProvider<EntityMetaDataVO, EntityFieldMetaDataVO> provider = MetaDataServerProvider.getInstance();
-			final EntityFieldMetaDataVO efMeta = provider.getEntityField(entity, field);
-			
 			final EntityMetaDataVO eForeignMeta = provider.getEntity(efMeta.getForeignEntity() != null ? efMeta.getForeignEntity() : efMeta.getLookupEntity());
 			final TableAliasSingleton tas = TableAliasSingleton.getInstance();
 			final String alias = tas.getAlias(efMeta);

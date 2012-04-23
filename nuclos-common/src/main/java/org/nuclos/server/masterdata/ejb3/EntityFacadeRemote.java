@@ -24,6 +24,7 @@ import javax.annotation.security.RolesAllowed;
 
 import org.nuclos.common.collect.collectable.CollectableField;
 import org.nuclos.common.collect.collectable.CollectableValueIdField;
+import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common2.EntityAndFieldName;
 
 // @Remote
@@ -63,6 +64,20 @@ public interface EntityFacadeRemote {
 	 */
 	@RolesAllowed("Login")
 	List<CollectableValueIdField> getQuickSearchResult(String entity, String field, String search, Integer vlpId, 
+			Map<String, Object> vlpParameter, Integer iMaxRowCount);
+
+	/**
+	 *
+	 * @param entity
+	 * @param efMeta
+	 * @param search
+	 * @param vlpId
+	 * @param vlpParameter
+	 * @param iMaxRowCount
+	 * @return
+	 */
+	@RolesAllowed("Login")
+	List<CollectableValueIdField> getQuickSearchResult(String entity, EntityFieldMetaDataVO efMeta, String search, Integer vlpId, 
 			Map<String, Object> vlpParameter, Integer iMaxRowCount);
 	
 	
