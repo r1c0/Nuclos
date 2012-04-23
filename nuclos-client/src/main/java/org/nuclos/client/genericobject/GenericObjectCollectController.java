@@ -2218,7 +2218,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	
 	@Override
 	protected void unsafeFillDetailsPanel(CollectableGenericObjectWithDependants clct) throws CommonBusinessException {
-		this.unsafeFillDetailsPanel(clct, false);
+		this.unsafeFillDetailsPanel(clct, getCollectState().isDetailsModeNew() && getProcess() != null);
 	}
 
 	

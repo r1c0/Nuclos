@@ -1041,8 +1041,14 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	 */
 	public void init() {
 		if (newTabCreated) {
-			Main.getInstance().getMainController().initMainFrameTab(this, getTab());
-			MainFrame.getPredefinedEntityOpenLocation(getEntityName()).add(getTab());
+			SwingUtilities.invokeLater(new Runnable() {
+				
+				@Override
+				public void run() {
+					Main.getInstance().getMainController().initMainFrameTab(CollectController.this, getTab());
+					MainFrame.getPredefinedEntityOpenLocation(getEntityName()).add(getTab());
+				}
+			});
 		}
 	}
 
@@ -1578,7 +1584,13 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	}
 
 	protected void selectTab() {
-		getTab().setVisible(true);
+		SwingUtilities.invokeLater(new Runnable() {
+			
+			@Override
+			public void run() {
+				getTab().setVisible(true);
+			}
+		});
 	}
 
 	/**
