@@ -241,6 +241,10 @@ public abstract class DetailsSubFormController<Clct extends Collectable>
 							for (Iterator<String> iterator = lstFieldNames.iterator(); iterator.hasNext();) {
 								String sFieldName = iterator.next();
 								if (DetailsSubFormController.this.getSubForm().isColumnEnabled(sFieldName)) {
+									int i = getCollectables().indexOf(clct);
+									if (i > -1 && !isRowEditable(i)) {
+										continue;
+									}
 									clct.setField(sFieldName, new CollectableValueField(Boolean.TRUE));
 									blnChanged = true;
 								}
@@ -263,6 +267,10 @@ public abstract class DetailsSubFormController<Clct extends Collectable>
 							for (Iterator<String> iterator = lstFieldNames.iterator(); iterator.hasNext();) {
 								String sFieldName = iterator.next();
 								if (DetailsSubFormController.this.getSubForm().isColumnEnabled(sFieldName)) {
+									int i = getCollectables().indexOf(clct);
+									if (i > -1 && !isRowEditable(i)) {
+										continue;
+									}
 									clct.setField(sFieldName, new CollectableValueField(Boolean.FALSE));
 									blnChanged = true;
 								}
@@ -357,6 +365,10 @@ public abstract class DetailsSubFormController<Clct extends Collectable>
 					List<Clct> clcts = DetailsSubFormController.this.getCollectables();
 					boolean blnChanged = false;
 					for (Clct clct : clcts) {
+						int i = getCollectables().indexOf(clct);
+						if (i > -1 && !isRowEditable(i)) {
+							continue;
+						}
 						clct.setField(clctef.getName(), new CollectableValueField(Boolean.TRUE));
 						blnChanged = true;
 					}
@@ -375,6 +387,10 @@ public abstract class DetailsSubFormController<Clct extends Collectable>
 					boolean blnChanged = false;
 					List<Clct> clcts = DetailsSubFormController.this.getCollectables();
 					for (Clct clct : clcts) {
+						int i = getCollectables().indexOf(clct);
+						if (i > -1 && !isRowEditable(i)) {
+							continue;
+						}
 						clct.setField(clctef.getName(), new CollectableValueField(Boolean.FALSE));
 						blnChanged = true;
 					}
