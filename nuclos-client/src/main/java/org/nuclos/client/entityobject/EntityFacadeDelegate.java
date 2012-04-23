@@ -23,6 +23,7 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 import org.nuclos.common.collect.collectable.CollectableField;
 import org.nuclos.common.collect.collectable.CollectableValueIdField;
+import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common2.EntityAndFieldName;
 import org.nuclos.server.masterdata.ejb3.EntityFacadeRemote;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -69,6 +70,12 @@ public class EntityFacadeDelegate implements EntityFacadeRemote {
 	public List<CollectableValueIdField> getQuickSearchResult(String entity, String field, String search,
 			Integer vlpId, Map<String, Object> vlpParameter, Integer iMaxRowCount) {
 		return facade.getQuickSearchResult(entity, field, search, vlpId, vlpParameter, iMaxRowCount);
+	}
+
+	@Override
+	public List<CollectableValueIdField> getQuickSearchResult(String entity, EntityFieldMetaDataVO efMeta, String search,
+			Integer vlpId, Map<String, Object> vlpParameter, Integer iMaxRowCount) {
+		return facade.getQuickSearchResult(entity, efMeta, search, vlpId, vlpParameter, iMaxRowCount);
 	}
 	
 	@Override

@@ -661,7 +661,7 @@ public class ListOfValues extends JPanel {
 		actionPerformedQuickSearchSelected(false);
 	}
 
-	private void actionPerformedQuickSearchSelected(boolean forceClear) {
+	protected void actionPerformedQuickSearchSelected(boolean forceClear) {
 		if (this.quickSearchSelectedListener != null) {
 			if (forceClear) {
 				this.quickSearchSelectedListener.actionPerformed(null);
@@ -682,6 +682,10 @@ public class ListOfValues extends JPanel {
 
 	public void setQuickSearchSelectedListener(final QuickSearchSelectedListener qssl) {
 		this.quickSearchSelectedListener = qssl;
+	}
+
+	public QuickSearchSelectedListener getQuickSearchSelectedListener() {
+		return quickSearchSelectedListener;
 	}
 
 	public void setQuickSearchCanceledListener(final ActionListener al) {

@@ -18,6 +18,8 @@ package org.nuclos.client.wizard.steps;
 
 import info.clearthought.layout.TableLayout;
 
+import java.awt.Component;
+import java.awt.IllegalComponentStateException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
@@ -41,8 +43,10 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
+import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.event.DocumentEvent;
@@ -54,6 +58,14 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.jdesktop.swingx.combobox.ListComboBoxModel;
 import org.nuclos.client.attribute.AttributeDelegate;
+import org.nuclos.client.common.MetaDataClientProvider;
+import org.nuclos.client.common.NuclosCollectControllerFactory;
+import org.nuclos.client.common.security.SecurityCache;
+import org.nuclos.client.genericobject.Modules;
+import org.nuclos.client.main.Main;
+import org.nuclos.client.main.MainController;
+import org.nuclos.client.main.mainframe.MainFrame;
+import org.nuclos.client.main.mainframe.MainFrameTab;
 import org.nuclos.client.masterdata.MasterDataDelegate;
 import org.nuclos.client.masterdata.MetaDataDelegate;
 import org.nuclos.client.scripting.ScriptEditor;
@@ -61,7 +73,18 @@ import org.nuclos.client.ui.Bubble;
 import org.nuclos.client.ui.Bubble.Position;
 import org.nuclos.client.ui.DateChooser;
 import org.nuclos.client.ui.Errors;
+import org.nuclos.client.ui.UIUtils;
+import org.nuclos.client.ui.collect.CollectController;
+import org.nuclos.client.ui.collect.CollectController.CollectableEventListener;
+import org.nuclos.client.ui.collect.CollectController.MessageType;
+import org.nuclos.client.ui.collect.WeakCollectableEventListener;
+import org.nuclos.client.ui.collect.component.ICollectableListOfValues;
+import org.nuclos.client.ui.collect.component.LookupListener;
 import org.nuclos.client.ui.labeled.LabeledComponentSupport;
+import org.nuclos.client.ui.popupmenu.DefaultJPopupMenuListener;
+import org.nuclos.client.ui.popupmenu.JPopupMenuFactory;
+import org.nuclos.client.ui.popupmenu.JPopupMenuListener;
+import org.nuclos.client.wizard.NuclosEntityAttributeWizardStaticModel;
 import org.nuclos.client.wizard.NuclosEntityWizardStaticModel;
 import org.nuclos.client.wizard.model.Attribute;
 import org.nuclos.client.wizard.model.ValueList;
@@ -72,8 +95,20 @@ import org.nuclos.client.wizard.util.NuclosWizardUtils;
 import org.nuclos.client.wizard.util.NumericFormatDocument;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.NuclosScript;
+import org.nuclos.common.collect.collectable.Collectable;
+import org.nuclos.common.collect.collectable.CollectableValueIdField;
+import org.nuclos.common.collect.collectable.DefaultCollectableEntityProvider;
+import org.nuclos.common.collect.collectable.searchcondition.CollectableSearchCondition;
+import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
+import org.nuclos.common2.CommonRunnable;
+import org.nuclos.common2.IdUtils;
+import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.RelativeDate;
+import org.nuclos.common2.ServiceLocator;
+import org.nuclos.common2.SpringLocaleDelegate;
+import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonValidationException;
+import org.nuclos.server.masterdata.ejb3.EntityFacadeRemote;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 import org.pietschy.wizard.InvalidStateException;
 import org.springframework.beans.factory.annotation.Configurable;
@@ -88,6 +123,270 @@ import org.springframework.beans.factory.annotation.Configurable;
 */
 @Configurable
 public class NuclosEntityAttributeCommonPropertiesStep extends NuclosEntityAttributeAbstractStep {
+	
+	public static class ListOfValues extends org.nuclos.client.ui.ListOfValues implements ICollectableListOfValues, JPopupMenuFactory, CollectableEventListener {
+		private EntityFieldMetaDataVO efMeta;
+		private SelectedListener selectedListener;
+		private CollectableValueIdField selectedfield;
+		private NuclosEntityAttributeWizardStaticModel model; 
+		
+		public static abstract class SelectedListener {
+			public abstract void actionPerformed(CollectableValueIdField itemSelected);
+		}
+		
+		public ListOfValues() {
+			super(new LabeledComponentSupport());			
+			super.setQuickSearchResulting(new QuickSearchResulting() {
+				@Override
+				protected List<CollectableValueIdField> getQuickSearchResult(String inputString) {
+					return ServiceLocator.getInstance().getFacade(EntityFacadeRemote.class).getQuickSearchResult(
+							null, efMeta, inputString, null, null, ICollectableListOfValues.QUICKSEARCH_MAX);
+				}
+			});
+			super.setQuickSearchCanceledListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					actionPerformedQuickSearchSelected(true);
+				}
+			});
+			super.setQuickSearchSelectedListener(new QuickSearchSelectedListener() {
+				@Override
+				public void actionPerformed(CollectableValueIdField itemSelected) {
+					ListOfValues.this.selectedfield = itemSelected;
+
+					if (selectedListener != null)
+						selectedListener.actionPerformed(itemSelected);
+					
+					if (itemSelected == null) {
+						getJTextField().setText("");
+					} else {
+						getJTextField().setText((String)itemSelected.getValue());
+					}
+				}
+			});	
+			
+			getBrowseButton().addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent ev) {
+					UIUtils.runCommandLater(getParent(), new CommonRunnable() {
+						@Override
+						public void run() throws CommonBusinessException {
+								final String sReferencedEntityName = efMeta.getForeignEntity();
+								final CollectController<?> ctl = NuclosCollectControllerFactory.getInstance().newCollectController(
+										MainFrame.getPredefinedEntityOpenLocation(sReferencedEntityName), sReferencedEntityName, null);
+								ctl.runLookupCollectable(ListOfValues.this);
+						}
+					});
+				}
+			});
+			
+			setupJPopupMenuListener(newJPopupMenuListener());
+		}
+
+		public void setEfMetaDataVO(EntityFieldMetaDataVO efMeta) {
+			this.efMeta = efMeta;
+		}
+		
+		@Override
+		public void acceptLookedUpCollectable(Collectable clctLookedUp) {
+			acceptLookedUpCollectable(clctLookedUp, null);
+		}
+		
+		@Override
+		public final void setQuickSearchCanceledListener(ActionListener al) {}
+		@Override
+		public final void setQuickSearchResulting(QuickSearchResulting quickSearchResulting) {}
+		@Override
+		public final void setQuickSearchSelectedListener(QuickSearchSelectedListener qssl) {}
+
+		public void setSelectedListener(final SelectedListener sl) {
+			this.selectedListener = sl;
+		}
+		public void setModel(NuclosEntityAttributeWizardStaticModel model) {
+			this.model = model;
+		}
+
+		@Override
+		public void acceptLookedUpCollectable(Collectable clctLookedUp, List<Collectable> additionalCollectables) {
+			if (getQuickSearchSelectedListener() != null && model != null) {
+				String sField = model.getAttribute().getField();
+				Pattern referencedEntityPattern = Pattern.compile("[$][{][\\w\\[\\]]+[}]");
+				Matcher referencedEntityMatcher = referencedEntityPattern.matcher(sField);
+				StringBuffer sb = new StringBuffer();
+
+				while (referencedEntityMatcher.find()) {
+					Object value = referencedEntityMatcher.group().substring(2, referencedEntityMatcher.group().length() - 1);
+
+					String sName = value.toString();
+					Object fieldValue = clctLookedUp.getField(sName);
+					if (fieldValue != null)
+						referencedEntityMatcher.appendReplacement(sb, fieldValue.toString());
+					else
+						referencedEntityMatcher.appendReplacement(sb, "");
+				}
+
+				// complete the transfer to the StringBuffer
+				referencedEntityMatcher.appendTail(sb);
+				sField = sb.toString();
+				
+				getQuickSearchSelectedListener().actionPerformed(
+						new CollectableValueIdField(clctLookedUp.getId(), sField));
+			}
+		}
+		
+		private void setupJPopupMenuListener(JPopupMenuListener popupmenulistener) {
+			addMouseListener(popupmenulistener);
+			getJTextField().addMouseListener(popupmenulistener);
+		}
+		
+		private JPopupMenuListener newJPopupMenuListener() {
+			return new DefaultJPopupMenuListener(this);
+		}
+
+		public JPopupMenu newJPopupMenu() {
+			final JPopupMenu result = new JPopupMenu();
+				result.add(newShowDetailsEntry());
+				result.add(newInsertEntry());
+				result.add(newClearEntry());
+			return result;
+		}
+		protected final JMenuItem newClearEntry() {
+			final JMenuItem result = new JMenuItem(
+					SpringLocaleDelegate.getInstance().getMessage("CollectableFileNameChooserBase.1","Zur\u00fccksetzen"));
+			boolean bClearEnabled = this.getBrowseButton().isEnabled() && selectedfield != null && selectedfield.getValueId() != null;
+			result.setEnabled(bClearEnabled);
+			result.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent ev) {
+					actionPerformedQuickSearchSelected(true);
+				}
+			});
+			return result;
+		}
+		protected final JMenuItem newShowDetailsEntry() {
+			final JMenuItem result = new JMenuItem(SpringLocaleDelegate.getInstance().getMessage(
+					"AbstractCollectableComponent.22","Details anzeigen..."));
+			final String sReferencedEntityName = efMeta.getForeignEntity();
+			boolean bShowDetailsEnabled = DefaultCollectableEntityProvider.getInstance().isEntityDisplayable(sReferencedEntityName)
+						&& selectedfield != null && selectedfield.getValueId() != null;
+			if (bShowDetailsEnabled) {
+				bShowDetailsEnabled = SecurityCache.getInstance().isReadAllowedForEntity(sReferencedEntityName);
+			}
+			result.setEnabled(bShowDetailsEnabled);
+			result.addActionListener(new ActionListener() {
+				@Override
+	            public void actionPerformed(ActionEvent ev) {
+					UIUtils.runCommandLater(getParent(), new CommonRunnable() {
+						@Override
+						public void run() throws CommonBusinessException {
+							final Main main = Main.getInstance();
+							final MainController mc = main.getMainController();
+							final String sReferencedEntityName = efMeta.getForeignEntity();
+							CollectController<?> controller = mc.getControllerForInternalFrame((MainFrameTab) 
+									main.getMainFrame().getHomePane().getSelectedComponent());
+							Object oId = selectedfield.getValueId();
+							if(oId instanceof Long) {
+								Long l = (Long)oId;
+								oId = new Integer(l.intValue());
+							}
+							mc.showDetails(sReferencedEntityName, oId, true, controller, new WeakCollectableEventListener(ListOfValues.this));
+						}
+					});
+				}
+			});
+			return result;
+		}
+		protected final JMenuItem newInsertEntry() {
+			final JMenuItem result = new JMenuItem(SpringLocaleDelegate.getInstance().getMessage(
+					"AbstractCollectableComponent.context.new","Neu..."));
+			String referencedEntity = efMeta.getForeignEntity();
+			boolean bInsertEnabled = DefaultCollectableEntityProvider.getInstance().isEntityDisplayable(referencedEntity);
+			if (bInsertEnabled) {
+				if (Modules.getInstance().existModule(referencedEntity)) {
+					bInsertEnabled = SecurityCache.getInstance().isNewAllowedForModule(referencedEntity);
+				}
+				else {
+					bInsertEnabled = SecurityCache.getInstance().isWriteAllowedForMasterData(referencedEntity);
+				}
+
+				boolean blnEntityIsEditable = MetaDataClientProvider.getInstance().getEntity(referencedEntity).isEditable();
+				if (!blnEntityIsEditable)
+					bInsertEnabled = blnEntityIsEditable;
+			}
+			result.setEnabled(bInsertEnabled && isEnabled());
+
+			Component c = UIUtils.getInternalFrameOrWindowForComponent(this);
+			final MainFrameTab tab;
+			if (c instanceof MainFrameTab) {
+				tab = (MainFrameTab) c;
+			} else {
+				MainFrameTab selectedTab = null;
+				try {
+					selectedTab = MainFrame.getSelectedTab(this.getLocationOnScreen());
+				} catch (IllegalComponentStateException e) {
+					//
+				} finally {
+					tab = selectedTab;
+				}
+			}
+			
+			result.addActionListener(new ActionListener() {
+				@Override
+	            public void actionPerformed(ActionEvent ev) {
+					UIUtils.runCommandLater(getParent(), new CommonRunnable() {
+						@Override
+						public void run() throws CommonBusinessException {
+							final String sReferencedEntityName = efMeta.getForeignEntity();
+							final CollectableEventListener listener = new WeakCollectableEventListener(ListOfValues.this);
+							Main.getInstance().getMainController().showNew(sReferencedEntityName, tab, listener);
+						}
+					});
+
+				}
+			});
+			return result;
+		}
+
+		@Override
+		public void handleCollectableEvent(Collectable collectable, MessageType messageType) {
+			switch (messageType) {
+				case EDIT_DONE:
+				case STATECHANGE_DONE:
+					if (LangUtils.equals(IdUtils.toLongId(collectable.getId()), selectedfield.getValueId())) {
+						acceptLookedUpCollectable(collectable);
+					}
+				case NEW_DONE:
+					acceptLookedUpCollectable(collectable);
+					break;
+			}
+		}
+
+		@Override
+		public void addLookupListener(LookupListener listener) {
+			//...
+		}
+
+		@Override
+		public void removeLookupListener(LookupListener listener) {
+			//...
+		}
+
+		@Override
+		public CollectableSearchCondition getCollectableSearchCondition() {
+			return null;
+		}
+
+		@Override
+		public boolean isSearchComponent() {
+			return false;
+		}
+
+		@Override
+		public Object getProperty(String sName) {
+			return null;
+		}
+	}
+
 
 	private static final Logger LOG = Logger.getLogger(NuclosEntityAttributeCommonPropertiesStep.class);
 
@@ -101,6 +400,7 @@ public class NuclosEntityAttributeCommonPropertiesStep extends NuclosEntityAttri
 	private JLabel lbDefaultValue;
 	private JTextField tfDefaultValue;
 	private JComboBox cbxDefaultValue;
+	private ListOfValues lovDefaultValue;
 	private DateChooser dateDefaultValue;
 	private JCheckBox cbDefaultValue;
 	private JLabel lbDBFieldName;
@@ -117,6 +417,7 @@ public class NuclosEntityAttributeCommonPropertiesStep extends NuclosEntityAttri
 
 	private JTextField tfMandatory;
 	private JComboBox cbxMandatory;
+	private ListOfValues lovMandatory;
 	private DateChooser dateMandatory;
 	private JCheckBox cbMandatoryValue;
 
@@ -175,9 +476,14 @@ public class NuclosEntityAttributeCommonPropertiesStep extends NuclosEntityAttri
 		tfDefaultValue = new JTextField();
 		tfDefaultValue.setToolTipText(localeDelegate.getMessage("wizard.step.attributeproperties.tooltip.11", "Standardwert"));
 		tfDefaultValue.addFocusListener(NuclosWizardUtils.createWizardFocusAdapter());
+		
 		cbxDefaultValue = new JComboBox();
 		cbxDefaultValue.setVisible(false);
 		cbxDefaultValue.setToolTipText(localeDelegate.getMessage("wizard.step.attributeproperties.tooltip.11", "Standardwert"));
+
+		lovDefaultValue = new ListOfValues();
+		lovDefaultValue.setVisible(false);
+		lovDefaultValue.setToolTipText(localeDelegate.getMessage("wizard.step.attributeproperties.tooltip.11", "Standardwert"));
 
 		dateDefaultValue = new DateChooser(support, true);
 		dateDefaultValue.setVisible(false);
@@ -206,9 +512,15 @@ public class NuclosEntityAttributeCommonPropertiesStep extends NuclosEntityAttri
 		cbxMandatory = new JComboBox();
 		cbxMandatory.setVisible(false);
 		cbxMandatory.setToolTipText(localeDelegate.getMessage("wizard.step.attributeproperties.tooltip.27", "Defaultwert für Pflichtfeld"));
+
+		lovMandatory = new ListOfValues();
+		lovMandatory.setVisible(false);
+		lovMandatory.setToolTipText(localeDelegate.getMessage("wizard.step.attributeproperties.tooltip.27", "Defaultwert für Pflichtfeld"));
+		
 		dateMandatory = new DateChooser(support);
 		dateMandatory.setVisible(false);
 		dateMandatory.setToolTipText(localeDelegate.getMessage("wizard.step.attributeproperties.tooltip.27", "Defaultwert für Pflichtfeld"));
+		
 		cbMandatoryValue = new JCheckBox();
 		cbMandatoryValue.setVisible(false);
 		cbMandatoryValue.setToolTipText(localeDelegate.getMessage("wizard.step.attributeproperties.tooltip.27", "Defaultwert für Pflichtfeld"));
@@ -277,6 +589,7 @@ public class NuclosEntityAttributeCommonPropertiesStep extends NuclosEntityAttri
 		this.add(lbDefaultValue, "0,1");
 		this.add(tfDefaultValue, "1,1 , 2,1");
 		this.add(cbxDefaultValue, "1,1 , 2,1");
+		this.add(lovDefaultValue, "1,1 , 2,1");
 		this.add(dateDefaultValue, "1,1 , 2,1");
 		this.add(cbDefaultValue, "1,1");
 		this.add(lbDistinct, "0,2");
@@ -287,6 +600,7 @@ public class NuclosEntityAttributeCommonPropertiesStep extends NuclosEntityAttri
 		this.add(cbMandatory, "1,4");
 		this.add(tfMandatory, "2,4");
 		this.add(cbxMandatory, "2,4");
+		this.add(lovMandatory, "2,4");
 		this.add(dateMandatory, "2,4");
 		this.add(cbMandatoryValue, "2,4");
 
@@ -596,7 +910,6 @@ public class NuclosEntityAttributeCommonPropertiesStep extends NuclosEntityAttri
 			cbxCalcFunction.addItemListener(il);
 		}
 	}
-
 	@Override
 	public void prepare() {
 		super.prepare();
@@ -727,7 +1040,7 @@ public class NuclosEntityAttributeCommonPropertiesStep extends NuclosEntityAttri
 
 		Object objMandatoryValue = getModel().getAttribute().getMandatoryValue();
 
-		if(getModel().isRefernzTyp()) {
+		if(getModel().isRefernzTyp() || getModel().isLookupTyp()) {
 
 			ItemListener listener[] = cbxDefaultValue.getItemListeners();
 			for(ItemListener il : listener){
@@ -737,13 +1050,16 @@ public class NuclosEntityAttributeCommonPropertiesStep extends NuclosEntityAttri
 			for(ItemListener il : listenerMandatory){
 				cbxMandatory.removeItemListener(il);
 			}
+			boolean isValueList = getModel().getAttribute().isValueListProvider();
 
-			cbxDefaultValue.setVisible(true);
+			cbxDefaultValue.setVisible(!isValueList);
+			lovDefaultValue.setVisible(isValueList);
 			tfDefaultValue.setVisible(false);
 			dateDefaultValue.setVisible(false);
 			cbDefaultValue.setVisible(false);
 
-			cbxMandatory.setVisible(this.parentWizardModel.isEditMode());
+			cbxMandatory.setVisible(!isValueList && this.parentWizardModel.isEditMode());
+			lovMandatory.setVisible(isValueList && this.parentWizardModel.isEditMode());
 			tfMandatory.setVisible(false);
 			dateMandatory.setVisible(false);
 			cbMandatoryValue.setVisible(false);
@@ -752,66 +1068,106 @@ public class NuclosEntityAttributeCommonPropertiesStep extends NuclosEntityAttri
 			List<DefaultValue> mandatoryModel = new ArrayList<DefaultValue>();
 
 			DefaultValue mandatoryValue = null;
-			Collection<MasterDataVO> colVO = MasterDataDelegate.getInstance().getMasterData(getModel().getAttribute().getMetaVO().getEntity());
-			for (MasterDataVO vo : colVO) {
-				String sField = getModel().getAttribute().getField();
-				if (sField == null)
-					break;
-				Pattern referencedEntityPattern = Pattern.compile("[$][{][\\w\\[\\]]+[}]");
-				Matcher referencedEntityMatcher = referencedEntityPattern.matcher(sField);
-				StringBuffer sb = new StringBuffer();
+			final String sEntity = !getModel().isLookupTyp() ? getModel().getAttribute().getMetaVO().getEntity() : getModel().getAttribute().getLookupMetaVO().getEntity();
+			
 
-				while (referencedEntityMatcher.find()) {
-					Object value = referencedEntityMatcher.group().substring(2, referencedEntityMatcher.group().length() - 1);
+			if (!isValueList) {
+				Collection<MasterDataVO> colVO = MasterDataDelegate.getInstance().getMasterData(sEntity);
+				for (MasterDataVO vo : colVO) {
+					String sField = getModel().getAttribute().getField();
+					if (sField == null)
+						break;
+					Pattern referencedEntityPattern = Pattern.compile("[$][{][\\w\\[\\]]+[}]");
+					Matcher referencedEntityMatcher = referencedEntityPattern.matcher(sField);
+					StringBuffer sb = new StringBuffer();
 
-					String sName = value.toString();
-					Object fieldValue = vo.getField(sName);
-					if (fieldValue != null)
-						referencedEntityMatcher.appendReplacement(sb, fieldValue.toString());
-					else
-						referencedEntityMatcher.appendReplacement(sb, "");
+					while (referencedEntityMatcher.find()) {
+						Object value = referencedEntityMatcher.group().substring(2, referencedEntityMatcher.group().length() - 1);
+
+						String sName = value.toString();
+						Object fieldValue = vo.getField(sName);
+						if (fieldValue != null)
+							referencedEntityMatcher.appendReplacement(sb, fieldValue.toString());
+						else
+							referencedEntityMatcher.appendReplacement(sb, "");
+					}
+
+					// complete the transfer to the StringBuffer
+					referencedEntityMatcher.appendTail(sb);
+					sField = sb.toString();
+					DefaultValue dv = new DefaultValue(vo.getIntId(), sField);
+					defaultModel.add(dv);
+					mandatoryModel.add(dv);
+					if (dv.getId().equals(objMandatoryValue)) {
+						mandatoryValue = dv;
+					}
 				}
 
-				// complete the transfer to the StringBuffer
-				referencedEntityMatcher.appendTail(sb);
-				sField = sb.toString();
-				DefaultValue dv = new DefaultValue(vo.getIntId(), sField);
-				defaultModel.add(dv);
-				mandatoryModel.add(dv);
-				if (dv.getId().equals(objMandatoryValue)) {
-					mandatoryValue = dv;
+				Collections.sort(defaultModel);
+				Collections.sort(mandatoryModel);
+
+				defaultModel.add(0, new DefaultValue(null, null));
+				mandatoryModel.add(0, new DefaultValue(null, null));
+	
+				cbxDefaultValue.setModel(new ListComboBoxModel<DefaultValue>(defaultModel));
+				cbxDefaultValue.setSelectedItem(getModel().getAttribute().getIdDefaultValue());
+	
+				cbxMandatory.setModel(new ListComboBoxModel<DefaultValue>(mandatoryModel));
+				if (mandatoryValue != null) {
+					cbxMandatory.setSelectedItem(mandatoryValue);
 				}
-			}
+	
+				for(ItemListener il : listener){
+					cbxDefaultValue.addItemListener(il);
+				}
+	
+				for(ItemListener il : listenerMandatory){
+					cbxMandatory.addItemListener(il);
+				}
+			} else {
+				final EntityFieldMetaDataVO efMetaDataVO = new EntityFieldMetaDataVO();
+				efMetaDataVO.setField(sEntity);
+				efMetaDataVO.setDataType(String.class.getName());
+				efMetaDataVO.setForeignEntity(sEntity);
+				efMetaDataVO.setForeignEntityField(getModel().getAttribute().getField());
 
-			Collections.sort(defaultModel);
-			Collections.sort(mandatoryModel);
-
-			defaultModel.add(0, new DefaultValue(null, null));
-			mandatoryModel.add(0, new DefaultValue(null, null));
-
-			cbxDefaultValue.setModel(new ListComboBoxModel<DefaultValue>(defaultModel));
-			cbxDefaultValue.setSelectedItem(getModel().getAttribute().getIdDefaultValue());
-
-			cbxMandatory.setModel(new ListComboBoxModel<DefaultValue>(mandatoryModel));
-			if (mandatoryValue != null) {
-				cbxMandatory.setSelectedItem(mandatoryValue);
-			}
-
-			for(ItemListener il : listener){
-				cbxDefaultValue.addItemListener(il);
-			}
-
-			for(ItemListener il : listenerMandatory){
-				cbxMandatory.addItemListener(il);
+				lovDefaultValue.setModel(getModel());
+				lovDefaultValue.setEfMetaDataVO(efMetaDataVO);
+				lovDefaultValue.setSelectedListener(new ListOfValues.SelectedListener() {
+					@Override
+					public void actionPerformed(CollectableValueIdField itemSelected) {
+						if (itemSelected == null) {
+							getModel().getAttribute().setIdDefaultValue(new DefaultValue(null, null));
+						} else {
+							getModel().getAttribute().setIdDefaultValue(
+								new DefaultValue(IdUtils.unsafeToId(itemSelected.getValueId()), (String)itemSelected.getValue()));
+						}
+					}
+				});
+				lovMandatory.setModel(getModel());
+				lovMandatory.setEfMetaDataVO(efMetaDataVO);
+				lovMandatory.setSelectedListener(new ListOfValues.SelectedListener() {
+					@Override
+					public void actionPerformed(CollectableValueIdField itemSelected) {
+						if (itemSelected == null) {
+							getModel().getAttribute().setMandatoryValue(new DefaultValue(null, null).getId());
+						} else {
+							getModel().getAttribute().setMandatoryValue
+								(new DefaultValue(IdUtils.unsafeToId(itemSelected.getValueId()), (String)itemSelected.getValue()).getId());	
+						}
+					}
+				});			
 			}
 		}
 		else if(getModel().getAttribute().getDatatyp().getJavaType().equals("java.util.Date")) {
 			dateDefaultValue.setVisible(true);
 			cbxDefaultValue.setVisible(false);
+			lovDefaultValue.setVisible(false);
 			tfDefaultValue.setVisible(false);
 			cbDefaultValue.setVisible(false);
 
 			cbxMandatory.setVisible(false);
+			lovMandatory.setVisible(false);
 			tfMandatory.setVisible(false);
 			dateMandatory.setVisible(this.parentWizardModel.isEditMode());
 			if(objMandatoryValue != null && objMandatoryValue instanceof Date) {
@@ -822,11 +1178,13 @@ public class NuclosEntityAttributeCommonPropertiesStep extends NuclosEntityAttri
 		}
 		else if(getModel().getAttribute().getDatatyp().getJavaType().equals("java.lang.Boolean")) {
 			cbxDefaultValue.setVisible(false);
+			lovDefaultValue.setVisible(false);
 			tfDefaultValue.setVisible(false);
 			dateDefaultValue.setVisible(false);
 			cbDefaultValue.setVisible(true);
 
 			cbxMandatory.setVisible(false);
+			lovMandatory.setVisible(false);
 			tfMandatory.setVisible(false);
 			dateMandatory.setVisible(false);
 			cbMandatoryValue.setVisible(this.parentWizardModel.isEditMode());
@@ -842,9 +1200,11 @@ public class NuclosEntityAttributeCommonPropertiesStep extends NuclosEntityAttri
 
 			cbxCalcFunction.setEnabled(false);
 			cbxDefaultValue.setVisible(true);
+			lovDefaultValue.setVisible(false);
 			tfDefaultValue.setVisible(false);
 			dateDefaultValue.setVisible(false);
 			cbDefaultValue.setVisible(false);
+
 			cbxDefaultValue.removeAllItems();
 			cbxDefaultValue.addItem(new DefaultValue(null, null));
 			cbxMandatory.addItem(new DefaultValue(null, null));
@@ -875,7 +1235,8 @@ public class NuclosEntityAttributeCommonPropertiesStep extends NuclosEntityAttri
 			}
 
 			cbMandatory.setEnabled(getModel().getAttribute().getId() != null);
-			cbxMandatory.setVisible(parentWizardModel.isEditMode() && getModel().getAttribute().getId() != null);
+			cbxMandatory.setVisible(true);
+			lovMandatory.setVisible(parentWizardModel.isEditMode() && getModel().getAttribute().getId() != null);
 			tfMandatory.setVisible(false);
 			dateMandatory.setVisible(false);
 			cbMandatoryValue.setVisible(false);
@@ -883,17 +1244,19 @@ public class NuclosEntityAttributeCommonPropertiesStep extends NuclosEntityAttri
 		else if(getModel().getAttribute().isImage() || getModel().getAttribute().isPasswordField() || getModel().getAttribute().isFileType()) {
 			cbMandatory.setEnabled(false);
 			cbxMandatory.setVisible(false);
+			lovMandatory.setVisible(false);
 			tfMandatory.setVisible(false);
 			dateMandatory.setVisible(false);
 			cbMandatoryValue.setVisible(false);
 		}
 		else {
 			cbxDefaultValue.setVisible(false);
+			lovDefaultValue.setVisible(false);
 			tfDefaultValue.setVisible(true);
 			dateDefaultValue.setVisible(false);
 			cbDefaultValue.setVisible(false);
-
 			cbxMandatory.setVisible(false);
+			lovMandatory.setVisible(false);
 			tfMandatory.setVisible(this.parentWizardModel.isEditMode());
 			if(objMandatoryValue != null) {
 				tfMandatory.setText(objMandatoryValue.toString());
@@ -945,6 +1308,7 @@ public class NuclosEntityAttributeCommonPropertiesStep extends NuclosEntityAttri
 		lbDefaultValue = null;
 		tfDefaultValue = null;
 		cbxDefaultValue = null;
+		lovDefaultValue = null;
 		dateDefaultValue = null;
 		cbDefaultValue = null;
 		lbDBFieldName = null;
@@ -961,6 +1325,7 @@ public class NuclosEntityAttributeCommonPropertiesStep extends NuclosEntityAttri
 
 		tfMandatory = null;
 		cbxMandatory = null;
+		lovMandatory = null;
 		dateMandatory = null;
 		cbMandatoryValue = null;
 

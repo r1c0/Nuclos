@@ -199,7 +199,7 @@ public class NuclosEntityAttributeValueListShipStep extends NuclosEntityAttribut
 				lstValues.add(s);
 			}
 			ValuelistTableModel model = (ValuelistTableModel)subform.getSubformTable().getModel();
-			model.fireTableDataChanged();					
+			model.fireTableDataChanged();
 		}
 		
 		if(model.getAttribute().getId() != null){
@@ -248,10 +248,6 @@ public class NuclosEntityAttributeValueListShipStep extends NuclosEntityAttribut
 		
 		this.model.getAttribute().setValueList(new ArrayList<ValueList>(lstValues));
 		this.model.getAttribute().setValueListName(tfName.getText());
-		
-		// close Subform support
-		subform.close();
-		subform = null;
 		
 		super.applyState();
 	}

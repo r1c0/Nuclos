@@ -1677,7 +1677,7 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	 *
 	 * @deprecated Move to ResultController.
 	 */
-	public final void runViewResults(final CollectableListOfValues clctlovSource) throws CommonBusinessException {
+	public final void runViewResults(final ICollectableListOfValues clctlovSource) throws CommonBusinessException {
 		// remove mouse listener for double click in table:
 		final JTable tbl = this.getResultTable();
 		tbl.removeMouseListener(this.getMouseListenerForTableDoubleClick());
