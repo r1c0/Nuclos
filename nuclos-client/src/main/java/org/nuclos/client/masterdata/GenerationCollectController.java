@@ -119,11 +119,12 @@ public class GenerationCollectController extends MasterDataCollectController {
 
 	@Override
 	protected void unsafeFillDetailsPanel(CollectableMasterDataWithDependants clct) throws NuclosBusinessException {
-		if (clct.getField("showobject").getValue() == null)
-			clct.setField("showobject", new CollectableValueField(Boolean.TRUE));
-		if (clct.getField("refreshsrcobject").getValue() == null)
-			clct.setField("refreshsrcobject", new CollectableValueField(Boolean.FALSE));
-		
+//		TSC: Deactivated for consistency of details and result view. User has to check field manually. (NUCLOSINT-1430)
+//		if (clct.getField("showobject").getValue() == null)
+//			clct.setField("showobject", new CollectableValueField(Boolean.TRUE));
+//		if (clct.getField("refreshsrcobject").getValue() == null)
+//			clct.setField("refreshsrcobject", new CollectableValueField(Boolean.FALSE));
+//		
 		super.unsafeFillDetailsPanel(clct);
 		
 		try {
@@ -131,6 +132,13 @@ public class GenerationCollectController extends MasterDataCollectController {
 		} catch (CommonPermissionException e) {
 			throw new NuclosBusinessException(e.getMessage(), e);
 		}
+	}
+	
+	@Override
+	protected CollectableMasterDataWithDependants newCollectableWithDefaultValues() {
+		final CollectableMasterDataWithDependants result = super.newCollectableWithDefaultValues();
+		result.setField("showobject", new CollectableValueField(Boolean.TRUE));
+		return result;
 	}
 
 	/**
