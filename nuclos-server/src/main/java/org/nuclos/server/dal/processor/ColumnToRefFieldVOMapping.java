@@ -20,9 +20,9 @@ import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.dal.vo.IDalVO;
 import org.nuclos.common.dal.vo.IDalWithFieldsVO;
 import org.nuclos.common2.exception.CommonFatalException;
-import org.nuclos.server.dblayer.query.DbCompoundColumnExpression;
 import org.nuclos.server.dblayer.query.DbExpression;
 import org.nuclos.server.dblayer.query.DbFrom;
+import org.nuclos.server.dblayer.query.DbReferencedCompoundColumnExpression;
 
 /**
  * Map a database column as a 'stringified' reference. 
@@ -52,7 +52,7 @@ public final class ColumnToRefFieldVOMapping<T extends Object> extends AbstractC
 	public DbExpression<T> getDbColumn(DbFrom from) {
 		final DbExpression<T> result;
 		if (field.getCalcFunction() == null) {
-			result = new DbCompoundColumnExpression<T>(from, field, true);
+			result = new DbReferencedCompoundColumnExpression<T>(from, field, true);
 		}
 		else {
 			throw new IllegalStateException();
