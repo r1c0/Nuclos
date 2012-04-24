@@ -43,7 +43,6 @@ import javax.swing.table.TableColumn;
 
 import org.nuclos.client.common.DependantCollectableMasterDataMap;
 import org.nuclos.client.main.mainframe.MainFrameTab;
-import org.nuclos.client.main.mainframe.MainFrameTabbedPane;
 import org.nuclos.client.searchfilter.SearchFilterCache;
 import org.nuclos.client.searchfilter.SearchFilterDelegate;
 import org.nuclos.client.searchfilter.SearchFilterMode;

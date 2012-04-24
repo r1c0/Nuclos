@@ -16,7 +16,6 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.masterdata;
 
-import javax.swing.JComponent;
 import javax.swing.JTable;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
@@ -25,7 +24,6 @@ import org.nuclos.client.common.DependantCollectableMasterDataMap;
 import org.nuclos.client.common.security.SecurityCache;
 import org.nuclos.client.fileimport.ImportDelegate;
 import org.nuclos.client.main.mainframe.MainFrameTab;
-import org.nuclos.client.main.mainframe.MainFrameTabbedPane;
 import org.nuclos.client.ui.collect.CollectStateAdapter;
 import org.nuclos.client.ui.collect.CollectStateEvent;
 import org.nuclos.client.ui.collect.component.CollectableCheckBox;

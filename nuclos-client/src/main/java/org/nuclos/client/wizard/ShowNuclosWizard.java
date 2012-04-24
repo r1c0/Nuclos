@@ -17,8 +17,6 @@
 package org.nuclos.client.wizard;
 
 
-import javax.swing.JTabbedPane;
-
 import org.apache.log4j.Logger;
 import org.nuclos.client.main.Main;
 import org.nuclos.client.main.mainframe.MainFrame;

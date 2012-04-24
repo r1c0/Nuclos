@@ -18,8 +18,6 @@ package org.nuclos.client.ui.collect;
 
 import java.util.Collection;
 
-import javax.swing.JComponent;
-
 import org.nuclos.client.customcode.CodeCollectController;
 import org.nuclos.client.datasource.admin.CollectableDataSource;
 import org.nuclos.client.datasource.admin.DatasourceCollectController;
@@ -36,7 +34,6 @@ import org.nuclos.client.layout.admin.GenericObjectLayoutCollectController;
 import org.nuclos.client.ldap.LdapServerCollectController;
 import org.nuclos.client.main.mainframe.MainFrame;
 import org.nuclos.client.main.mainframe.MainFrameTab;
-import org.nuclos.client.main.mainframe.MainFrameTabbedPane;
 import org.nuclos.client.masterdata.CollectableMasterDataWithDependants;
 import org.nuclos.client.masterdata.DbObjectCollectController;
 import org.nuclos.client.masterdata.DbSourceCollectController;

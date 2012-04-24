@@ -16,13 +16,10 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.masterdata;
 
-import javax.swing.JComponent;
-
-import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.client.common.security.SecurityCache;
 import org.nuclos.client.main.mainframe.MainFrameTab;
-import org.nuclos.client.main.mainframe.MainFrameTabbedPane;
 import org.nuclos.common.NuclosEntity;
+import org.nuclos.common2.exception.CommonBusinessException;
 
 /**
  * <code>MasterDataCollectController</code> for entity "group".

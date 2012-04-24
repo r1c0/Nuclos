@@ -25,7 +25,6 @@ import java.util.Map;
 import javax.annotation.PostConstruct;
 
 import org.apache.commons.httpclient.util.LangUtils;
-import org.nuclos.client.common.LocaleDelegate;
 import org.nuclos.client.layout.AbstractLayoutMLFactory;
 import org.nuclos.common.NuclosEOField;
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;

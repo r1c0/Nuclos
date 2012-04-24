@@ -51,25 +51,16 @@ import org.nuclos.client.layout.wysiwyg.editor.ui.panels.WYSIWYGLayoutEditorPane
 import org.nuclos.client.layout.wysiwyg.editor.util.InterfaceGuidelines;
 import org.nuclos.client.layout.wysiwyg.editor.util.TableLayoutUtil;
 import org.nuclos.client.layout.wysiwyg.editor.util.valueobjects.LayoutCell;
-import org.nuclos.client.masterdata.CollectableMasterData;
-import org.nuclos.client.masterdata.MasterDataDelegate;
-import org.nuclos.client.wizard.NuclosEntityWizardStaticModel;
 import org.nuclos.common.NuclosEOField;
-import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.NuclosImage;
-import org.nuclos.common.dal.DalSupportForMD;
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
-import org.nuclos.common.masterdata.CollectableMasterDataEntity;
 import org.nuclos.common2.InternalTimestamp;
 import org.nuclos.common2.LocaleInfo;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonFinderException;
 import org.nuclos.common2.exception.CommonPermissionException;
 import org.nuclos.common2.layoutml.LayoutMLConstants;
-import org.nuclos.server.masterdata.valueobject.DependantMasterDataMap;
-import org.nuclos.server.masterdata.valueobject.MasterDataMetaVO;
-import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 
 public abstract class AbstractLayoutMLFactory {
 	

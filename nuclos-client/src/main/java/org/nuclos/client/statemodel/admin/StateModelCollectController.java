@@ -55,7 +55,6 @@ import org.nuclos.client.genericobject.GenericObjectLayoutCache;
 import org.nuclos.client.genericobject.Modules;
 import org.nuclos.client.genericobject.valuelistprovider.ProcessCollectableFieldsProvider;
 import org.nuclos.client.main.mainframe.MainFrameTab;
-import org.nuclos.client.main.mainframe.MainFrameTabbedPane;
 import org.nuclos.client.masterdata.MasterDataSubFormController;
 import org.nuclos.client.masterdata.locale.LocaleCollectController;
 import org.nuclos.client.statemodel.StateDelegate;

@@ -33,7 +33,6 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
 import javax.annotation.security.RolesAllowed;
 
 import org.apache.commons.lang.NullArgumentException;
@@ -94,8 +93,6 @@ import org.nuclos.server.customcode.codegenerator.NuclosJavaCompiler;
 import org.nuclos.server.customcode.codegenerator.WsdlCodeGenerator;
 import org.nuclos.server.dal.processor.nuclet.JdbcEntityObjectProcessor;
 import org.nuclos.server.dal.provider.NucletDalProvider;
-import org.nuclos.server.dal.provider.SystemEntityFieldMetaDataVO;
-import org.nuclos.server.dal.provider.SystemMetaDataProvider;
 import org.nuclos.server.dblayer.DbTuple;
 import org.nuclos.server.dblayer.query.DbColumnExpression;
 import org.nuclos.server.dblayer.query.DbCondition;

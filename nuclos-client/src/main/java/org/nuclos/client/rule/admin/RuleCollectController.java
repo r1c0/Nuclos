@@ -51,7 +51,6 @@ import org.nuclos.client.genericobject.valuelistprovider.ProcessCollectableField
 import org.nuclos.client.genericobject.valuelistprovider.StatusNumeralCollectableFieldsProvider;
 import org.nuclos.client.main.Main;
 import org.nuclos.client.main.mainframe.MainFrameTab;
-import org.nuclos.client.main.mainframe.MainFrameTabbedPane;
 import org.nuclos.client.masterdata.MasterDataSubFormController;
 import org.nuclos.client.masterdata.datatransfer.RuleAndRuleUsageEntity;
 import org.nuclos.client.masterdata.datatransfer.RuleCVOTransferable;

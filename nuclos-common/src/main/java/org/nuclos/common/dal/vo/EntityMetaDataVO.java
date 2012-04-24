@@ -18,7 +18,6 @@ package org.nuclos.common.dal.vo;
 
 import java.util.Collection;
 import java.util.Set;
-import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
 import org.nuclos.common.NuclosScript;

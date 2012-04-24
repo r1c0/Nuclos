@@ -29,15 +29,13 @@ import javax.swing.text.Document;
 import javax.swing.text.PlainDocument;
 
 import org.apache.log4j.Logger;
-
+import org.nuclos.client.common.NuclosCollectControllerFactory;
+import org.nuclos.common.NuclosBusinessException;
+import org.nuclos.common.NuclosEntity;
+import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.common2.exception.CommonPermissionException;
-import org.nuclos.client.common.NuclosCollectControllerFactory;
-import org.nuclos.client.main.Main;
-import org.nuclos.common.NuclosBusinessException;
-import org.nuclos.common.NuclosFatalException;
-import org.nuclos.common.NuclosEntity;
 import org.nuclos.server.statemodel.valueobject.StateVO;
 
 /**

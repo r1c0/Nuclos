@@ -32,7 +32,6 @@ import org.nuclos.client.explorer.ExplorerNode;
 import org.nuclos.client.genericobject.CollectableGenericObjectWithDependants;
 import org.nuclos.client.genericobject.GenericObjectCollectController;
 import org.nuclos.client.genericobject.GenericObjectDelegate;
-import org.nuclos.client.main.Main;
 import org.nuclos.client.ui.Bubble;
 import org.nuclos.client.ui.Errors;
 import org.nuclos.client.ui.UIUtils;

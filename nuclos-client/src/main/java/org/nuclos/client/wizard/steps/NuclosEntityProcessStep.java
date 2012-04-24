@@ -18,7 +18,6 @@ package org.nuclos.client.wizard.steps;
 
 import info.clearthought.layout.TableLayout;
 
-import java.awt.Component;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -28,7 +27,6 @@ import java.util.prefs.Preferences;
 
 import javax.annotation.PostConstruct;
 import javax.swing.Icon;
-import javax.swing.JComponent;
 import javax.swing.JOptionPane;
 import javax.swing.JToolBar;
 

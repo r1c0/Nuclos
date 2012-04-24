@@ -17,7 +17,6 @@
 package org.nuclos.client.help.releasenotes;
 
 import java.awt.BorderLayout;
-import java.awt.Component;
 import java.awt.Desktop;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -27,7 +26,6 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.prefs.Preferences;
 
-import javax.swing.JComponent;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkEvent.EventType;
 import javax.swing.event.HyperlinkListener;

@@ -16,11 +16,8 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.ui;
 
-import java.awt.Component;
-
 import org.nuclos.client.main.Main;
 import org.nuclos.client.main.MainController;
-import org.nuclos.client.main.mainframe.MainFrameTabbedPane;
 import org.nuclos.common2.SpringLocaleDelegate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;

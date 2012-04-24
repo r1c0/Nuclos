@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.Set;
 
 import javax.swing.Icon;
-import javax.swing.JTabbedPane;
 import javax.swing.JTree;
 
 import org.apache.log4j.Logger;

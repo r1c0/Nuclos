@@ -16,14 +16,11 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.masterdata;
 
-import javax.swing.JComponent;
-
 import org.nuclos.client.main.mainframe.MainFrameTab;
-import org.nuclos.client.main.mainframe.MainFrameTabbedPane;
 import org.nuclos.client.ui.collect.component.CollectableComponent;
-import org.nuclos.common.collect.collectable.Collectable;
 import org.nuclos.common.NuclosBusinessException;
 import org.nuclos.common.NuclosEntity;
+import org.nuclos.common.collect.collectable.Collectable;
 
 /**
  * Controller for collecting group types.

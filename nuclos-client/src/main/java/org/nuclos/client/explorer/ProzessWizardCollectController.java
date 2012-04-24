@@ -16,9 +16,6 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.explorer;
 
-import javax.swing.JComponent;
-
-import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.client.common.NuclosCollectController;
 import org.nuclos.client.common.NuclosResultPanel;
 import org.nuclos.client.main.mainframe.MainFrame;
@@ -30,6 +27,7 @@ import org.nuclos.client.ui.collect.CollectPanel;
 import org.nuclos.client.ui.collect.DefaultEditView;
 import org.nuclos.client.ui.collect.component.CollectableTextField;
 import org.nuclos.client.ui.collect.result.ResultPanel;
+import org.nuclos.common2.exception.CommonBusinessException;
 
 /**
  * Controller for collecting state models.

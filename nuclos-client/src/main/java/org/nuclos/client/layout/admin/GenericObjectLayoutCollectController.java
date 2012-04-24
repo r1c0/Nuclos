@@ -20,8 +20,6 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.util.Map;
 
-import javax.swing.JComponent;
-
 import org.nuclos.client.common.MetaDataClientProvider;
 import org.nuclos.client.common.NuclosCollectableEntityProvider;
 import org.nuclos.client.genericobject.CollectableGenericObjectEntity;
@@ -30,7 +28,6 @@ import org.nuclos.client.genericobject.valuelistprovider.GenericObjectCollectabl
 import org.nuclos.client.layout.wysiwyg.CollectableWYSIWYGLayoutEditor.WYSIWYGDetailsComponentModel;
 import org.nuclos.client.layout.wysiwyg.WYSIWYGStringsAndLabels;
 import org.nuclos.client.main.mainframe.MainFrameTab;
-import org.nuclos.client.main.mainframe.MainFrameTabbedPane;
 import org.nuclos.client.masterdata.CollectableMasterDataWithDependants;
 import org.nuclos.client.masterdata.MasterDataDelegate;
 import org.nuclos.client.masterdata.valuelistprovider.MasterDataCollectableFieldsProviderFactory;

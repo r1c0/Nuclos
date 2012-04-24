@@ -26,7 +26,6 @@ import org.nuclos.client.nuclet.generator.NucletGenerator;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.dal.vo.EntityObjectVO;
 import org.nuclos.common.nuclet.AbstractNucletContentConstants;
-import org.nuclos.common2.InternalTimestamp;
 import org.nuclos.common2.LocaleInfo;
 import org.nuclos.common2.StringUtils;
 

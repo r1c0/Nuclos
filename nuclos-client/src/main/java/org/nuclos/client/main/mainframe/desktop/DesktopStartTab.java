@@ -22,7 +22,6 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.Rectangle;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.dnd.DragGestureEvent;
@@ -46,7 +45,6 @@ import javax.swing.TransferHandler;
 
 import org.apache.commons.httpclient.util.LangUtils;
 import org.apache.log4j.Logger;
-import org.jdesktop.swingx.painter.Painter;
 import org.jfree.util.Log;
 import org.nuclos.client.common.WorkspaceUtils;
 import org.nuclos.client.main.GenericAction;

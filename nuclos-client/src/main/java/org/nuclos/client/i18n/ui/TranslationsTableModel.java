@@ -17,7 +17,6 @@
 package org.nuclos.client.i18n.ui;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 

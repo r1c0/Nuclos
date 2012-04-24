@@ -22,7 +22,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 
-import javax.swing.JComponent;
 import javax.swing.JPanel;
 
 import org.apache.log4j.Logger;
@@ -32,7 +31,6 @@ import org.nuclos.client.entityobject.CollectableEntityObject;
 import org.nuclos.client.genericobject.GeneratorActions;
 import org.nuclos.client.genericobject.GeneratorDelegate;
 import org.nuclos.client.main.mainframe.MainFrameTab;
-import org.nuclos.client.main.mainframe.MainFrameTabbedPane;
 import org.nuclos.client.masterdata.ui.GenerationRulesPanel;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.client.ui.collect.CollectPanel;

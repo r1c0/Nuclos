@@ -16,7 +16,6 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.genericobject;
 
-import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -46,8 +45,6 @@ import org.nuclos.client.attribute.AttributeCache;
 import org.nuclos.client.common.ClientParameterProvider;
 import org.nuclos.client.datasource.DatasourceDelegate;
 import org.nuclos.client.datasource.admin.DatasourceCollectController;
-import org.nuclos.client.main.mainframe.MainFrame;
-import org.nuclos.client.main.mainframe.MainFrameTabbedPane;
 import org.nuclos.client.report.ReportDelegate;
 import org.nuclos.client.report.reportrunner.BackgroundProcessStatusController;
 import org.nuclos.client.report.reportrunner.ReportAttachmentInfo;

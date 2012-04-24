@@ -19,7 +19,6 @@ package org.nuclos.client.main.mainframe.desktop;
 import info.clearthought.layout.TableLayout;
 import info.clearthought.layout.TableLayoutConstraints;
 
-import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.Rectangle;

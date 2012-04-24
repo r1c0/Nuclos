@@ -21,7 +21,6 @@ import java.util.List;
 
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
-import javax.swing.JComponent;
 import javax.swing.JTree;
 
 import org.nuclos.client.common.MetaDataClientProvider;

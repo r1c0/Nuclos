@@ -31,17 +31,16 @@ import java.awt.event.ActionListener;
 import javax.swing.JOptionPane;
 
 import org.apache.log4j.Logger;
+import org.nuclos.client.common.NuclosCollectController;
+import org.nuclos.client.common.NuclosCollectControllerFactory;
+import org.nuclos.client.genericobject.GenericObjectCollectController;
+import org.nuclos.client.ui.Errors;
+import org.nuclos.common.NuclosBusinessException;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableSearchCondition;
 import org.nuclos.common2.PreferencesUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.common2.exception.CommonPermissionException;
-import org.nuclos.client.common.NuclosCollectController;
-import org.nuclos.client.common.NuclosCollectControllerFactory;
-import org.nuclos.client.genericobject.GenericObjectCollectController;
-import org.nuclos.client.main.Main;
-import org.nuclos.client.ui.Errors;
-import org.nuclos.common.NuclosBusinessException;
 
 /**
  * 

@@ -20,26 +20,19 @@ import java.awt.Component;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import javax.swing.JOptionPane;
 
 import org.nuclos.client.common.security.SecurityCache;
-import org.nuclos.client.datasource.DatasourceDelegate;
 import org.nuclos.client.datasource.querybuilder.QueryBuilderEditor;
 import org.nuclos.client.main.mainframe.MainFrameTab;
-import org.nuclos.client.main.mainframe.MainFrameTabbedPane;
 import org.nuclos.client.masterdata.MetaDataCache;
-import org.nuclos.client.ui.CommonClientWorker;
-import org.nuclos.client.ui.CommonClientWorkerAdapter;
-import org.nuclos.client.ui.CommonMultiThreader;
 import org.nuclos.client.ui.Errors;
 import org.nuclos.common.CollectableEntityFieldWithEntity;
 import org.nuclos.common.NuclosBusinessException;
 import org.nuclos.common.NuclosEntity;
-import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.database.query.definition.QueryTable;
 import org.nuclos.common.masterdata.CollectableMasterDataEntity;
@@ -47,7 +40,6 @@ import org.nuclos.common2.IOUtils;
 import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.server.report.ejb3.DatasourceFacadeRemote;
-import org.nuclos.server.report.valueobject.DatasourceVO;
 import org.nuclos.server.report.valueobject.ResultVO;
 import org.nuclos.server.report.valueobject.ValuelistProviderVO;
 

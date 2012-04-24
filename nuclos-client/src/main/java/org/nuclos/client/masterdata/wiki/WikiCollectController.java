@@ -16,14 +16,8 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.masterdata.wiki;
 
-import javax.swing.JComponent;
-
-import org.nuclos.common.collect.collectable.CollectableEntity;
-import org.nuclos.common.collect.collectable.CollectableValueIdField;
-import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.client.genericobject.Modules;
 import org.nuclos.client.main.mainframe.MainFrameTab;
-import org.nuclos.client.main.mainframe.MainFrameTabbedPane;
 import org.nuclos.client.masterdata.CollectableMasterData;
 import org.nuclos.client.masterdata.CollectableMasterDataWithDependants;
 import org.nuclos.client.masterdata.MasterDataCollectController;
@@ -36,6 +30,9 @@ import org.nuclos.client.ui.collect.component.model.CollectableComponentModelAda
 import org.nuclos.client.ui.collect.component.model.CollectableComponentModelEvent;
 import org.nuclos.client.ui.collect.component.model.CollectableComponentModelListener;
 import org.nuclos.common.NuclosEntity;
+import org.nuclos.common.collect.collectable.CollectableEntity;
+import org.nuclos.common.collect.collectable.CollectableValueIdField;
+import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.server.masterdata.valueobject.MasterDataMetaVO;
 
 /**
