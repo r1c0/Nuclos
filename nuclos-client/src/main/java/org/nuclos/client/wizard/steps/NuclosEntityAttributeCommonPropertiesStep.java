@@ -54,6 +54,7 @@ import javax.swing.event.DocumentListener;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.PlainDocument;
 
+import org.apache.commons.httpclient.util.LangUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.jdesktop.swingx.combobox.ListComboBoxModel;
@@ -61,6 +62,7 @@ import org.nuclos.client.attribute.AttributeDelegate;
 import org.nuclos.client.common.MetaDataClientProvider;
 import org.nuclos.client.common.NuclosCollectControllerFactory;
 import org.nuclos.client.common.security.SecurityCache;
+import org.nuclos.client.entityobject.EntityFacadeDelegate;
 import org.nuclos.client.genericobject.Modules;
 import org.nuclos.client.main.Main;
 import org.nuclos.client.main.MainController;
@@ -102,13 +104,10 @@ import org.nuclos.common.collect.collectable.searchcondition.CollectableSearchCo
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common2.CommonRunnable;
 import org.nuclos.common2.IdUtils;
-import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.RelativeDate;
-import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonValidationException;
-import org.nuclos.server.masterdata.ejb3.EntityFacadeRemote;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 import org.pietschy.wizard.InvalidStateException;
 import org.springframework.beans.factory.annotation.Configurable;
@@ -139,7 +138,7 @@ public class NuclosEntityAttributeCommonPropertiesStep extends NuclosEntityAttri
 			super.setQuickSearchResulting(new QuickSearchResulting() {
 				@Override
 				protected List<CollectableValueIdField> getQuickSearchResult(String inputString) {
-					return ServiceLocator.getInstance().getFacade(EntityFacadeRemote.class).getQuickSearchResult(
+					return EntityFacadeDelegate.getInstance().getQuickSearchResult(
 							null, efMeta, inputString, null, null, ICollectableListOfValues.QUICKSEARCH_MAX);
 				}
 			});
@@ -168,12 +167,28 @@ public class NuclosEntityAttributeCommonPropertiesStep extends NuclosEntityAttri
 			getBrowseButton().addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent ev) {
+					Component c = UIUtils.getTabOrWindowForComponent(ListOfValues.this);
+					final MainFrameTab tab;
+					if (c instanceof MainFrameTab) {
+						tab = (MainFrameTab) c;
+					} else {
+						MainFrameTab selectedTab = null;
+						try {
+							selectedTab = MainFrame.getSelectedTab(ListOfValues.this.getLocationOnScreen());
+						} catch (IllegalComponentStateException e) {
+							//
+						} finally {
+							tab = selectedTab;
+						}
+					}
 					UIUtils.runCommandLater(getParent(), new CommonRunnable() {
 						@Override
 						public void run() throws CommonBusinessException {
 								final String sReferencedEntityName = efMeta.getForeignEntity();
-								final CollectController<?> ctl = NuclosCollectControllerFactory.getInstance().newCollectController(
-										MainFrame.getPredefinedEntityOpenLocation(sReferencedEntityName), sReferencedEntityName, null);
+								final MainFrameTab overlay = new MainFrameTab();
+								final CollectController<?> ctl = NuclosCollectControllerFactory.getInstance().newCollectController(sReferencedEntityName, overlay);
+								Main.getInstance().getMainController().initMainFrameTab(ctl, overlay);
+								tab.add(overlay);
 								ctl.runLookupCollectable(ListOfValues.this);
 						}
 					});
@@ -282,7 +297,7 @@ public class NuclosEntityAttributeCommonPropertiesStep extends NuclosEntityAttri
 							final Main main = Main.getInstance();
 							final MainController mc = main.getMainController();
 							final String sReferencedEntityName = efMeta.getForeignEntity();
-							CollectController<?> controller = mc.getControllerForInternalFrame((MainFrameTab) 
+							CollectController<?> controller = mc.getControllerForTab((MainFrameTab) 
 									main.getMainFrame().getHomePane().getSelectedComponent());
 							Object oId = selectedfield.getValueId();
 							if(oId instanceof Long) {
@@ -315,7 +330,7 @@ public class NuclosEntityAttributeCommonPropertiesStep extends NuclosEntityAttri
 			}
 			result.setEnabled(bInsertEnabled && isEnabled());
 
-			Component c = UIUtils.getInternalFrameOrWindowForComponent(this);
+			Component c = UIUtils.getTabOrWindowForComponent(this);
 			final MainFrameTab tab;
 			if (c instanceof MainFrameTab) {
 				tab = (MainFrameTab) c;
@@ -328,7 +343,7 @@ public class NuclosEntityAttributeCommonPropertiesStep extends NuclosEntityAttri
 				} finally {
 					tab = selectedTab;
 				}
-			}
+			};
 			
 			result.addActionListener(new ActionListener() {
 				@Override
