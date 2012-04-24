@@ -125,7 +125,7 @@ public class DatasourceHeaderPanel extends JPanel {
 	}
 	
 	CollectableTextField getDescriptionField() {
-		return clcttfName;
+		return clcttfDescription;
 	}
 	
 	CollectableComboBox getEntityComboBox() {
