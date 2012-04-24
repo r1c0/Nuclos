@@ -38,6 +38,7 @@
 		<nuclos.api.version>1.2.0</nuclos.api.version>
 		<spring.version>3.1.1.RELEASE</spring.version>
 		<spring.security.version>3.1.0.RELEASE</spring.security.version>
+		<aspectj.version>1.6.12</aspectj.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<aspectj.phase.1>compile</aspectj.phase.1>
 		<aspectj.phase.2>test-compile</aspectj.phase.2>
@@ -387,17 +388,17 @@
 			<dependency>
 				<groupId>org.aspectj</groupId>
 				<artifactId>aspectjrt</artifactId>
-				<version>1.6.12</version>
+				<version>${aspectj.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.aspectj</groupId>
 				<artifactId>aspectjtools</artifactId>
-				<version>1.6.12</version>
+				<version>${aspectj.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.aspectj</groupId>
 				<artifactId>aspectjweaver</artifactId>
-				<version>1.6.12</version>
+				<version>${aspectj.version}</version>
 			</dependency>
 			
 			<!-- these is the V1 XmlPullParser API (e.g. XmlPullParserFactory) -->
@@ -582,12 +583,12 @@
 					<dependency>
 						<groupId>org.aspectj</groupId>
 						<artifactId>aspectjrt</artifactId>
-						<version>1.6.12</version>
+						<version>${aspectj.version}</version>
 					</dependency>
 					<dependency>
 						<groupId>org.aspectj</groupId>
 						<artifactId>aspectjtools</artifactId>
-						<version>1.6.12</version>
+						<version>${aspectj.version}</version>
 					</dependency>
 				</dependencies>
 				<executions>
