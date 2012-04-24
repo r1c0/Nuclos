@@ -18,7 +18,6 @@ package org.nuclos.client.common;
 
 import java.awt.Component;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.prefs.Preferences;
 

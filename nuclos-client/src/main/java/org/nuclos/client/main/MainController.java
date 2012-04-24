@@ -151,7 +151,6 @@ import org.nuclos.client.ui.collect.CollectControllerFactorySingleton;
 import org.nuclos.client.ui.collect.CollectStateModel;
 import org.nuclos.client.ui.collect.detail.DetailsCollectableEventListener;
 import org.nuclos.client.ui.collect.search.ReportExecutionSearchStrategy;
-import org.nuclos.client.ui.gc.ListenerUtil;
 import org.nuclos.client.wiki.WikiController;
 import org.nuclos.client.wizard.ShowNuclosWizard;
 import org.nuclos.common.Actions;

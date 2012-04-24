@@ -25,7 +25,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import javax.annotation.PostConstruct;
 import javax.jms.Message;
 import javax.jms.MessageListener;
-import javax.swing.SwingUtilities;
 
 import org.apache.log4j.Logger;
 import org.nuclos.client.jms.TopicNotificationReceiver;

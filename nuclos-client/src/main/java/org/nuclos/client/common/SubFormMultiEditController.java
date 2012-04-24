@@ -36,9 +36,7 @@ import org.nuclos.client.ui.model.ChoiceList;
 import org.nuclos.common.collect.collectable.Collectable;
 import org.nuclos.common.collect.collectable.CollectableComparator;
 import org.nuclos.common.collect.collectable.CollectableField;
-import org.nuclos.common.collect.collectable.LocalizedCollectableValueField;
 import org.nuclos.common2.LangUtils;
-import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.exception.CommonFatalException;
 
 /**

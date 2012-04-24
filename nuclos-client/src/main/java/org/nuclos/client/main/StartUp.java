@@ -252,7 +252,7 @@ public class StartUp  {
 	 * 		y = date pattern
 	 */
 	public static Pair<String, String> getLogFile() {
-		Pair<String, String> result = new Pair("<not avaiable>", "");
+		Pair<String, String> result = new Pair<String,String>("<not avaiable>", "");
 		try {
 			java.util.Properties clientLog4jProperties = new Properties();
 			clientLog4jProperties.load(StartUp.class.getClassLoader().getResourceAsStream(StartUp.getLog4jConfigurationFile()));
