@@ -14,12 +14,13 @@
 	   as template, copy it to nuclos-war/src/main/webapp/META-INF/context.xml
 	   and make the appropriate modifications.
 
-	4. If you (ever) change back to eclipse, please remember to delete (or rename)
-	   your nuclos-war/src/main/webapp/META-INF/context.xml file.
+	4. You could use this method under eclipse as well. However, remember that
+	   you do!
 
 	Thomas Pasch
 -->
 <Context antiJARLocking="true" path="/nuclos-war">
+	<!-- This is for AspectJ load-time weaving. Comment out if you do not need! -->
 	<Loader
         loaderClass="org.springframework.instrument.classloading.tomcat.TomcatInstrumentableClassLoader"/>
 
