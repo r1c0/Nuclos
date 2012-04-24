@@ -1480,7 +1480,7 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 	 */
 	public static void setSelectedTab(MainFrameTab tab) {
 		MainFrameTabbedPane tabbedPane = getTabbedPane(tab);
-		if (!tabbedPane.restoreHiddenTab(tab)) {
+		if (tabbedPane != null && !tabbedPane.restoreHiddenTab(tab)) {
 			tabbedPane.setSelectedComponent(tab);
 		}
 	}
