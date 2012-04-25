@@ -29,6 +29,11 @@ import org.nuclos.common2.SpringLocaleDelegate;
  */
 public class NucletContentEntityTreeNode extends DefaultNucletContentEntryTreeNode {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 8050423709843269305L;
+
 	public NucletContentEntityTreeNode(EntityObjectVO eo) {
 		super(eo);
 	}

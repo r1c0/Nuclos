@@ -33,6 +33,11 @@ import org.nuclos.server.navigation.treenode.TreeNode;
  */
 public class NuclosInstanceTreeNode implements TreeNode {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -667767640493311392L;
+	
 	private String label = "Nuclos";
 	private String description = "";
 

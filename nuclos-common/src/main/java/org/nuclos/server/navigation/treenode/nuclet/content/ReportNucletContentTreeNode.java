@@ -5,6 +5,11 @@ import org.nuclos.common2.SpringLocaleDelegate;
 
 public class ReportNucletContentTreeNode extends NucletContentTreeNode {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 2868651000987418829L;
+
 	public ReportNucletContentTreeNode(Long nucletId) {
 		super(nucletId, NuclosEntity.REPORT);
 	}
