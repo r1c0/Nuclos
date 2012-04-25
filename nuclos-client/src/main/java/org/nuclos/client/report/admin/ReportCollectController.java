@@ -705,7 +705,7 @@ public class ReportCollectController extends MasterDataCollectController {
 			}
 
 			if (includeSubreports)
-				for (CollectableMasterData subreport : clct.getDependantCollectableMasterDataMap().getValues(NuclosEntity.SUBREPORT.getEntityName())) {
+				for (CollectableMasterData subreport : clct.getDependantCollectableMasterDataMap().getValues(getSubReportEntity())) {
 					String subreportfilename = sFileName = (String) subreport.getValue("sourcefilename");
 					if (subreportfilename != null) {
 						final org.nuclos.server.report.ByteArrayCarrier bacFileSubreportContent = (org.nuclos.server.report.ByteArrayCarrier) subreport.getValue("sourcefileContent");
@@ -920,4 +920,12 @@ public class ReportCollectController extends MasterDataCollectController {
 		return getSearchStrategy().getCollectableSearchCondition();
 	}
 
+	public String getSubReportEntity() {
+		if (NuclosEntity.FORM.getEntityName().equals(getEntityName())) {
+			return NuclosEntity.SUBFORM.getEntityName();
+		}
+		else {
+			return NuclosEntity.SUBREPORT.getEntityName();
+		}
+	}
 }	// class ReportCollectController
