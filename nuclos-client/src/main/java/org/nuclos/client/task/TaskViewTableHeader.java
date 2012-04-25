@@ -53,7 +53,7 @@ public class TaskViewTableHeader extends JTableHeader {
 		this.ascendingSortIcon = UIManager.getIcon("Table.ascendingSortIcon");
 		this.descendingSortIcon = UIManager.getIcon("Table.descendingSortIcon");
 		if (!SecurityCache.getInstance().isActionAllowed(Actions.ACTION_WORKSPACE_CUSTOMIZE_ENTITY_AND_SUBFORM_COLUMNS) &&
-				MainFrame.getWorkspace().isAssigned()) {
+				MainFrame.getWorkspace() != null && MainFrame.getWorkspace().isAssigned()) {
 			setReorderingAllowed(false);
 		}
 	}

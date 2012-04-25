@@ -25,6 +25,7 @@ import org.nuclos.common.NuclosBusinessException;
 import org.nuclos.common.WorkspaceVO;
 import org.nuclos.common.WorkspaceDescription.EntityPreferences;
 import org.nuclos.common.WorkspaceDescription.SubFormPreferences;
+import org.nuclos.common.WorkspaceDescription.TasklistPreferences;
 import org.nuclos.common.dal.vo.EntityObjectVO;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonFinderException;
@@ -186,4 +187,6 @@ public interface PreferencesFacadeRemote {
 	 */
 	public void publishSubFormPreferences(WorkspaceVO customizedWovo, String entity, SubFormPreferences sfp) throws CommonBusinessException;
 
+	
+	public void publishTaskListPreferences(WorkspaceVO customizedWovo, TasklistPreferences tp) throws CommonBusinessException;
 }

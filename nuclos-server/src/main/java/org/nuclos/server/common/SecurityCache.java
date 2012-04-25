@@ -322,7 +322,7 @@ public class SecurityCache implements SecurityCacheMBean {
 			if (dynamicTasklistIds == null) {
 				dynamicTasklistIds = readDynamicTasklistIds();
 			}
-			return roleIds;
+			return dynamicTasklistIds;
 		}
 
 		private ModulePermissions readModulePermissions() {
@@ -499,8 +499,9 @@ public class SecurityCache implements SecurityCacheMBean {
 			DbFrom t1 = query.from("T_MD_TASKLIST").alias(SystemFields.BASE_ALIAS);
 			DbJoin t2 = t1.join("T_MD_TASKLIST_ROLE", JoinType.INNER).alias("T2").on("INTID", "INTID_T_MD_TASKLIST", Integer.class);
 			DbJoin t3 = t2.join("T_MD_ROLE_USER", JoinType.INNER).alias("T3").on("INTID_T_MD_ROLE", "INTID_T_MD_ROLE", Integer.class);
-			query.select(t1.baseColumn("INTID", Integer.class));
-			query.where(builder.equal(t3.baseColumn("INTID_T_MD_USER", Integer.class), getUserId()));
+			query.select(t1.baseColumn("INTID_T_MD_DYNAMICTASKLIST", Integer.class));
+			query.where(builder.and(builder.equal(t3.baseColumn("INTID_T_MD_USER", Integer.class), getUserId()),
+					builder.isNotNull(t1.baseColumn("INTID_T_MD_DYNAMICTASKLIST", Integer.class))));
 			return new HashSet<Integer>(dataBaseHelper.getDbAccess().executeQuery(query.distinct(true)));
 		}
 

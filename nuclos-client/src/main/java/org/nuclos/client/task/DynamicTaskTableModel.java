@@ -16,8 +16,8 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.task;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.table.DefaultTableModel;
 
@@ -28,26 +28,35 @@ import org.nuclos.server.report.valueobject.ResultVO;
 @SuppressWarnings("serial")
 public class DynamicTaskTableModel extends DefaultTableModel {
 
-	private final ResultVO resultvo;
+	private ResultVO resultvo;
 
-	private final Map<Integer, Integer> columns;
+	private List<String> columns;
 
-	public DynamicTaskTableModel(TasklistDefinition def, ResultVO resultvo) {
+	public DynamicTaskTableModel(TasklistDefinition def, ResultVO resultvo, List<String> columnOrder) {
 		this.resultvo = resultvo;
-		this.columns = new HashMap<Integer, Integer>();
-		int index = 0;
-		for (int i = 0; i < resultvo.getColumnCount(); i++) {
-			ResultColumnVO col = resultvo.getColumns().get(i);
-			if (col.getColumnLabel().equals(def.getDynamicTasklistIdFieldname())) {
-				continue;
-			}
-			else if (col.getColumnLabel().equals(def.getDynamicTasklistEntityFieldname())) {
+		this.columns = new ArrayList<String>();
+		for (String column : columnOrder) {
+			if (isMetaColumn(def, column) || !containsColumn(column)) {
 				continue;
 			}
 			else {
-				columns.put(index++, i);
+				this.columns.add(column);
 			}
 		}
+		for (int i = 0; i < resultvo.getColumnCount(); i++) {
+			ResultColumnVO col = resultvo.getColumns().get(i);
+			if (isMetaColumn(def, col.getColumnLabel()) || !containsColumn(col.getColumnLabel()) || this.columns.contains(col.getColumnLabel())) {
+				continue;
+			}
+			else {
+				this.columns.add(col.getColumnLabel());
+			}
+		}
+	}
+	
+	public void setData(ResultVO r) {
+		this.resultvo = r;
+		fireTableDataChanged();
 	}
 
 	public Object getValueByField(int i, String field) {
@@ -77,14 +86,17 @@ public class DynamicTaskTableModel extends DefaultTableModel {
 
 	@Override
 	public Class<?> getColumnClass(int columnIndex) {
-		return String.class;
-		//return resultvo.getColumns().get(columnIndex).getColumnClass();
+		final String column = columns.get(columnIndex);
+		final int index = getColumnIndex(column);
+		return resultvo.getColumns().get(index).getColumnClass();
 	}
 
 	@Override
 	public Object getValueAt(int iRow, int iColumn) {
-		final ResultColumnVO columnVO = resultvo.getColumns().get(columns.get(iColumn));
-		return columnVO.format(resultvo.getRows().get(iRow)[columns.get(iColumn)]);
+		final String column = columns.get(iColumn);
+		final int index = getColumnIndex(column);
+		final ResultColumnVO columnVO = resultvo.getColumns().get(index);
+		return resultvo.getRows().get(iRow)[index];
 	}
 
 	@Override
@@ -94,6 +106,31 @@ public class DynamicTaskTableModel extends DefaultTableModel {
 
 	@Override
 	public String getColumnName(int columnIndex) {
-		return resultvo.getColumns().get(columns.get(columnIndex)).getColumnLabel();
+		return columns.get(columnIndex);
+	}
+	
+	private boolean containsColumn(String column) {
+		return getColumnIndex(column) > -1;
+	}
+	
+	private int getColumnIndex(String column) {
+		int i = 0;
+		for (ResultColumnVO col : resultvo.getColumns()) {
+			if (col.getColumnLabel().equals(column)) {
+				return i;
+			}
+			i++;
+		}
+		return -1;
+	}
+	
+	private boolean isMetaColumn(TasklistDefinition def, String column) {
+		if (column.equals(def.getDynamicTasklistIdFieldname())) {
+			return true;
+		}
+		else if (column.equals(def.getDynamicTasklistEntityFieldname())) {
+			return true;
+		}
+		return false;
 	}
 }

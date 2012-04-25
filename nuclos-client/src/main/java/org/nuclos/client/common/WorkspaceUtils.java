@@ -55,6 +55,7 @@ import org.nuclos.common.WorkspaceDescription.Split;
 import org.nuclos.common.WorkspaceDescription.SubFormPreferences;
 import org.nuclos.common.WorkspaceDescription.Tabbed;
 import org.nuclos.common.WorkspaceDescription.TablePreferences;
+import org.nuclos.common.WorkspaceDescription.TasklistPreferences;
 import org.nuclos.common.WorkspaceVO;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
 import org.nuclos.common.collection.CollectionUtils;
@@ -67,8 +68,8 @@ import org.nuclos.common.entityobject.CollectableEOEntityProvider;
 import org.nuclos.common.genericobject.CollectableGenericObjectEntityField;
 import org.nuclos.common.masterdata.CollectableMasterDataEntity;
 import org.nuclos.common.masterdata.CollectableMasterDataForeignKeyEntityField;
-import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.ServiceLocator;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.server.common.ejb3.PreferencesFacadeRemote;
@@ -100,7 +101,7 @@ public class WorkspaceUtils {
 	 * @param tp
 	 * @return selected columns with fixed
 	 */
-	private static List<String> getSelectedColumns(TablePreferences tp) {
+	public static List<String> getSelectedColumns(TablePreferences tp) {
 		return CollectionUtils.transform(tp.getSelectedColumnPreferences(), 
 				new Transformer<ColumnPreferences, String>() {
 					@Override
@@ -285,7 +286,7 @@ public class WorkspaceUtils {
 	 * @param tp
 	 * @return selected column widths (incl. fixed)
 	 */
-	private static List<Integer> getColumnWidths(TablePreferences tp) {
+	public static List<Integer> getColumnWidths(TablePreferences tp) {
 		return CollectionUtils.transform(tp.getSelectedColumnPreferences(), 
 				new Transformer<ColumnPreferences, Integer>() {
 					@Override
@@ -355,7 +356,7 @@ public class WorkspaceUtils {
 	 * @param tp
 	 * @return
 	 */
-	private static Map<String, Integer> getColumnWidthsMap(TablePreferences tp) {
+	public static Map<String, Integer> getColumnWidthsMap(TablePreferences tp) {
 		Map<String, Integer> result = new HashMap<String, Integer>();
 		for (ColumnPreferences cp : tp.getSelectedColumnPreferences()) {
 			result.put(cp.getColumn(), cp.getWidth());
@@ -388,7 +389,7 @@ public class WorkspaceUtils {
 	 * @param ciResolver
 	 * @return
 	 */
-	private static List<SortKey> getSortKeys(TablePreferences tp, final IColumnIndexRecolver ciResolver) {
+	public static List<SortKey> getSortKeys(TablePreferences tp, final IColumnIndexRecolver ciResolver) {
 		return CollectionUtils.transform(tp.getColumnSortings(), 
 				new Transformer<ColumnSorting, SortKey>(){
 					@Override
@@ -768,7 +769,7 @@ public class WorkspaceUtils {
 	 * @param tp
 	 * @param fields
 	 */
-	private static void setColumnPreferences(TablePreferences tp, List<String> fields, List<Integer> fieldWidths) {
+	public static void setColumnPreferences(TablePreferences tp, List<String> fields, List<Integer> fieldWidths) {
 		if (SecurityCache.getInstance().isActionAllowed(Actions.ACTION_WORKSPACE_CUSTOMIZE_ENTITY_AND_SUBFORM_COLUMNS)
 				|| !MainFrame.getWorkspace().isAssigned()) {
 			
@@ -854,7 +855,7 @@ public class WorkspaceUtils {
 	 * @param sortKeys
 	 * @param cnResolver
 	 */
-	private static void setSortKeys(TablePreferences tp, List<? extends SortKey> sortKeys, IColumnNameResolver cnResolver) {
+	public static void setSortKeys(TablePreferences tp, List<? extends SortKey> sortKeys, IColumnNameResolver cnResolver) {
 		if (SecurityCache.getInstance().isActionAllowed(Actions.ACTION_WORKSPACE_CUSTOMIZE_ENTITY_AND_SUBFORM_COLUMNS)
 				|| !MainFrame.getWorkspace().isAssigned()) {
 			
@@ -1199,6 +1200,32 @@ public class WorkspaceUtils {
 		
 		if (restoreToSystemDefault) {
 			sfp.clearTablePreferences();
+		}
+	}
+	
+	public static void restoreTasklistPreferences(TasklistPreferences tp) throws CommonBusinessException {
+		final Long assignedWorkspaceId = MainFrame.getWorkspace().getAssignedWorkspace();
+		boolean restoreToSystemDefault = false;
+		
+		if (assignedWorkspaceId == null) {
+			// restore to first time
+			restoreToSystemDefault = true;
+		} else {
+			final WorkspaceDescription assignedWd = getPrefsFacade().getWorkspace(assignedWorkspaceId).getWoDesc();
+			if (assignedWd.containsTasklistPreferences(tp.getType(), tp.getName())) {
+				final TablePreferences assignedTp = assignedWd.getTasklistPreferences(tp.getType(), tp.getName()).getTablePreferences();
+				if (assignedTp.getSelectedColumnPreferences().isEmpty()) {
+					restoreToSystemDefault = true;
+				} else {
+					tp.getTablePreferences().clearAndImport(assignedTp);
+				}
+			} else {
+				restoreToSystemDefault = true;
+			}
+		}
+		
+		if (restoreToSystemDefault) {
+			tp.clearTablePreferences();
 		}
 	}
 	

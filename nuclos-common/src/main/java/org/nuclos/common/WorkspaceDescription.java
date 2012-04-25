@@ -44,6 +44,7 @@ public class WorkspaceDescription implements Serializable {
 	private String nuclosResource;
 	private List<Frame> frames;
 	private List<EntityPreferences> entityPreferences;
+	private List<TasklistPreferences> tasklistPreferences;
 
 	public WorkspaceDescription() {
 	}
@@ -185,6 +186,60 @@ public class WorkspaceDescription implements Serializable {
 
 	public void removeAllEntityPreferences() {
 		this._getEntityPreferences().clear();
+	}
+
+	private List<TasklistPreferences> _getTasklistPreferences() {
+		if (tasklistPreferences == null) {
+			tasklistPreferences = new ArrayList<WorkspaceDescription.TasklistPreferences>();
+		}
+		return tasklistPreferences;
+	}
+	
+	public List<TasklistPreferences> getTasklistPreferences() {
+		return _getTasklistPreferences();
+	}
+
+	public void setTasklistPreferences(List<TasklistPreferences> tasklistPreferences) {
+		this.tasklistPreferences = tasklistPreferences;
+	}
+	
+	public TasklistPreferences getTasklistPreferences(int type, String name) {
+		for (TasklistPreferences tp : _getTasklistPreferences()) {
+			if (LangUtils.equals(tp.getType(), type) && org.nuclos.common2.LangUtils.equals(tp.getName(), name)) {
+				return tp;
+			}
+		}
+		TasklistPreferences tp = new TasklistPreferences();
+		tp.setType(type);
+		tp.setName(name);
+		tp.setTablePreferences(new TablePreferences());
+		addTasklistPreferences(tp);
+		return tp;
+	}
+	
+	public boolean containsTasklistPreferences(int type, String name) {
+		for (TasklistPreferences tp : this._getTasklistPreferences()) {
+			if (LangUtils.equals(tp.getType(), type) && org.nuclos.common2.LangUtils.equals(tp.getName(), name)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	public void addTasklistPreferences(TasklistPreferences prefs) {
+		_getTasklistPreferences().add(prefs);
+	}
+	
+	public void addAllTasklistPreferences(Collection<TasklistPreferences> tlps) {
+		this._getTasklistPreferences().addAll(tlps);
+	}
+	
+	public void removeTasklistPreferences(TasklistPreferences tp) {
+		this._getTasklistPreferences().remove(tp);
+	}
+	
+	public void removeAllTasklistPreferences() {
+		this._getTasklistPreferences().clear();
 	}
 
 	public static class Tab implements Serializable {
@@ -1422,4 +1477,79 @@ public class WorkspaceDescription implements Serializable {
 		throw new CommonBusinessException("Workspace.contains.no.home.tabbed");
 	}
 
+	public static class TasklistPreferences implements Serializable {
+		
+		private static final long serialVersionUID = -1237247495790530796L;
+		
+		public static final int GENERIC = -1;
+		public static final int PERSONAL = 1;
+		public static final int TIMELIMIT = 2;
+		public static final int DYNAMIC = 3;
+		
+		private int type;
+		private String name;
+		private TablePreferences tablePreferences;
+		
+		public int getType() {
+			return type;
+		}
+		
+		public void setType(int type) {
+			this.type = type;
+		}
+		
+		public String getName() {
+			return name;
+		}
+		
+		public void setName(String name) {
+			this.name = name;
+		}
+		
+		private TablePreferences _getTablePreferences() {
+			if (this.tablePreferences == null)
+				this.tablePreferences = new TablePreferences();
+			return this.tablePreferences;
+		}
+		public TablePreferences getTablePreferences() {
+			return this._getTablePreferences();
+		}
+
+		public void clearTablePreferences() {
+			this._getTablePreferences().clear();
+		}
+		
+		public void setTablePreferences(TablePreferences tablePreferences) {
+			this.tablePreferences = tablePreferences;
+		}
+
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result + ((name == null) ? 0 : name.hashCode());
+			result = prime * result + type;
+			return result;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (obj == null)
+				return false;
+			if (getClass() != obj.getClass())
+				return false;
+			TasklistPreferences other = (TasklistPreferences) obj;
+			if (name == null) {
+				if (other.name != null)
+					return false;
+			}
+			else if (!name.equals(other.name))
+				return false;
+			if (type != other.type)
+				return false;
+			return true;
+		}
+	}
 }

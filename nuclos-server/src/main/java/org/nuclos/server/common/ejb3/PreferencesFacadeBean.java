@@ -44,6 +44,7 @@ import org.nuclos.common.WorkspaceDescription.Split;
 import org.nuclos.common.WorkspaceDescription.SubFormPreferences;
 import org.nuclos.common.WorkspaceDescription.Tab;
 import org.nuclos.common.WorkspaceDescription.Tabbed;
+import org.nuclos.common.WorkspaceDescription.TasklistPreferences;
 import org.nuclos.common.WorkspaceVO;
 import org.nuclos.common.collect.collectable.searchcondition.ComparisonOperator;
 import org.nuclos.common.collection.CollectionUtils;
@@ -483,6 +484,23 @@ public class PreferencesFacadeBean extends NuclosFacadeBean implements Preferenc
 			throw new IllegalArgumentException("Workspace is not assigned, publish not possible!");
 		}
 	}
+	
+	public void publishTaskListPreferences(WorkspaceVO customizedWovo, TasklistPreferences tp) throws CommonBusinessException {
+		if (!isAssignWorkspaceAllowed()) {
+			throw new CommonFatalException("Edit of assignable workspaces is not allowed!");
+		}
+
+		final Long assignedWorkspaceId = customizedWovo.getAssignedWorkspace();
+		if (assignedWorkspaceId != null) {
+			WorkspaceVO assignableWovo = getWorkspaceProcessor().getByPrimaryKey(assignedWorkspaceId);
+			TasklistPreferences assignableTp = assignableWovo.getWoDesc().getTasklistPreferences(tp.getType(), tp.getName());
+			assignableWovo.getWoDesc().removeTasklistPreferences(assignableTp);
+			assignableWovo.getWoDesc().addTasklistPreferences(tp);
+			storeWorkspace(assignableWovo);
+		} else {
+			throw new IllegalArgumentException("Workspace is not assigned, publish not possible!");
+		}
+	}
 
 	public void publishWorkspaceChanges(WorkspaceVO customizedWovo, boolean isPublishStructureChange, boolean isPublishStructureUpdate, 
 			boolean isPublishStarttabConfiguration, boolean isPublishTableColumnConfiguration, boolean isPublishToolbarConfiguration) 
@@ -542,6 +560,9 @@ public class PreferencesFacadeBean extends NuclosFacadeBean implements Preferenc
 		if (isPublishTableColumnConfiguration) {
 			assignableWovo.getWoDesc().removeAllEntityPreferences();
 			assignableWovo.getWoDesc().addAllEntityPreferences(customizedWovoFromDb.getWoDesc().getEntityPreferences());
+			
+			assignableWovo.getWoDesc().removeAllTasklistPreferences();
+			assignableWovo.getWoDesc().addAllTasklistPreferences(customizedWovoFromDb.getWoDesc().getTasklistPreferences());
 		}
 
 		/**
@@ -739,6 +760,9 @@ public class PreferencesFacadeBean extends NuclosFacadeBean implements Preferenc
 		if (!SecurityCache.getInstance().getAllowedActions(getCurrentUserName()).contains(Actions.ACTION_WORKSPACE_CUSTOMIZE_ENTITY_AND_SUBFORM_COLUMNS)) {
 			wdm.removeAllEntityPreferences();
 			wdm.addAllEntityPreferences(wda.getEntityPreferences());
+			
+			wdm.removeAllTasklistPreferences();
+			wdm.addAllTasklistPreferences(wda.getTasklistPreferences());
 		}
 
 		return mergedWovo;

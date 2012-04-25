@@ -654,7 +654,7 @@ public class TaskController extends Controller<MainFrameTabbedPane> {
 				ctlGenericObjectTasks.refresh(gotaskview);
 			}
 			for (DynamicTaskView view : dynamictasklistTabs.keySet()) {
-				ctlDynamicTasks.refresh(view);
+				ctlDynamicTasks.refresh(view, false);
 			}
 		}
 		catch (NuclosFatalException ex) {
