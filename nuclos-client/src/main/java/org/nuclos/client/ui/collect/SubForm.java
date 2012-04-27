@@ -159,6 +159,7 @@ import org.nuclos.common2.exception.CommonFatalException;
  * <br>Created by Novabit Informationssysteme GmbH
  * <br>Please visit <a href="http://www.novabit.de">www.novabit.de</a>
  */
+@SuppressWarnings("serial")
 public class SubForm extends JPanel 
 	implements TableCellRendererProvider, ActionListener, Closeable {
 
@@ -234,6 +235,24 @@ public class SubForm extends JPanel
 			public JMenuItem createMenuItem() {
 				JCheckBoxMenuItem res = new JCheckBoxMenuItem(SpringLocaleDelegate.getInstance().getMessage(
 						"SubForm.5","Datens\u00e4tze filtern"), Icons.getInstance().getIconFilter16());
+				res.setActionCommand(name());
+				return res;
+			}
+        },
+		TRANSFER {
+	        @Override
+	        public AbstractButton createButton() {
+	        	JToggleButton res = new JToggleButton(Icons.getInstance().getIconCopy16());
+	        	res.setSize(16, 16);
+	        	res.setToolTipText(SpringLocaleDelegate.getInstance().getMessage(
+	        			"SubForm.ToolbarFunction.TRANSFER", "Datensatz für alle Entit\u00e4ten \u00fcbernehmen"));
+	        	res.setActionCommand(name());
+		        return res;
+	        }
+			@Override
+			public JMenuItem createMenuItem() {
+				JCheckBoxMenuItem res = new JCheckBoxMenuItem(SpringLocaleDelegate.getInstance().getMessage(
+						"SubForm.ToolbarFunction.TRANSFER", "Datensatz für alle Entit\u00e4ten \u00fcbernehmen"), Icons.getInstance().getIconCopy16());
 				res.setActionCommand(name());
 				return res;
 			}
@@ -822,6 +841,10 @@ public class SubForm extends JPanel
 			uniqueMasterColumnName != null
 			? (enabled ? ToolbarFunctionState.ACTIVE : ToolbarFunctionState.DISABLED)
 			: ToolbarFunctionState.HIDDEN);
+		setToolbarFunctionState(ToolbarFunction.TRANSFER,
+			toolbarButtons.get(ToolbarFunction.TRANSFER.name()).isVisible()
+			? (enabled ? ToolbarFunctionState.ACTIVE : ToolbarFunctionState.DISABLED)
+			: ToolbarFunctionState.HIDDEN);
 	}
 	
 	public void setNewEnabled(ScriptContext sc) {
@@ -864,7 +887,7 @@ public class SubForm extends JPanel
 	/**
 	 * fires a <code>ChangeEvent</code> whenever the model of this <code>SubForm</code> changes.
 	 */
-	private synchronized void fireStateChanged() {
+	public synchronized void fireStateChanged() {
 		if(layer == null || (layer != null && !((LockableUI) layer.getUI()).isLocked())){
 			final ChangeEvent ev = new ChangeEvent(this);
 			for (ChangeListener changelistener : lstchangelistener) {

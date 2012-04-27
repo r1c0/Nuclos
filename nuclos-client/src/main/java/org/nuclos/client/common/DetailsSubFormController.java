@@ -53,6 +53,8 @@ import javax.swing.JViewport;
 import javax.swing.RowSorter.SortKey;
 import javax.swing.SortOrder;
 import javax.swing.SwingUtilities;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableCellRenderer;
 
@@ -75,6 +77,8 @@ import org.nuclos.client.ui.Errors;
 import org.nuclos.client.ui.Icons;
 import org.nuclos.client.ui.collect.FixedColumnRowHeader;
 import org.nuclos.client.ui.collect.SubForm;
+import org.nuclos.client.ui.collect.SubForm.ToolbarFunction;
+import org.nuclos.client.ui.collect.SubForm.ToolbarFunctionState;
 import org.nuclos.client.ui.collect.ToolTipsTableHeader;
 import org.nuclos.client.ui.collect.component.CollectableComponent;
 import org.nuclos.client.ui.collect.component.model.CollectableComponentModelProvider;
@@ -142,6 +146,28 @@ public abstract class DetailsSubFormController<Clct extends Collectable>
 	 */
 	private MultiUpdateOfDependants multiUpdateOfDependants;
 
+	private final SubForm.SubFormToolListener multieditToolListener = new SubForm.SubFormToolListener() {
+		@Override
+		public void toolbarAction(String actionCommand) {
+			ToolbarFunction cmd = SubForm.ToolbarFunction.fromCommandString(actionCommand);
+			if (ToolbarFunction.TRANSFER.equals(cmd) && getMultiUpdateOfDependants() != null) {
+				getMultiUpdateOfDependants().transfer(getSubForm());
+			}
+		}
+	};
+	
+	private final ListSelectionListener multieditSelectionListener = new ListSelectionListener() {
+		@Override
+		public void valueChanged(ListSelectionEvent e) {
+			if (getMultiUpdateOfDependants() != null && getMultiUpdateOfDependants().isTransferPossible(getSubForm())) {
+				getSubForm().setToolbarFunctionState(ToolbarFunction.TRANSFER, SubForm.ToolbarFunctionState.ACTIVE);
+			}
+			else {
+				getSubForm().setToolbarFunctionState(ToolbarFunction.TRANSFER, SubForm.ToolbarFunctionState.DISABLED);
+			}
+		}
+	};
+	
 	/**
 	 * @param parent
 	 * @param parentMdi
@@ -933,29 +959,32 @@ public abstract class DetailsSubFormController<Clct extends Collectable>
 	}
 
 	public void setMultiUpdateOfDependants(MultiUpdateOfDependants multiUpdateOfDependants) {
+		if (this.multiUpdateOfDependants != null) {
+			getSubForm().removeSubFormToolListener(this.multieditToolListener);
+			getSubForm().getJTable().getSelectionModel().removeListSelectionListener(multieditSelectionListener);
+			this.multiUpdateOfDependants.close();
+		}
 		this.multiUpdateOfDependants = multiUpdateOfDependants;
+		if (multiUpdateOfDependants != null) {
+			getSubForm().setTableCellRendererProvider(multiUpdateOfDependants);
+			getSubForm().addSubFormToolListener(multieditToolListener);
+			getSubForm().getJTable().getSelectionModel().addListSelectionListener(multieditSelectionListener);
+			getSubForm().setToolbarFunctionState(ToolbarFunction.TRANSFER, ToolbarFunctionState.DISABLED);
+		}
+		else {
+			getSubForm().setTableCellRendererProvider(this);
+			getSubForm().setToolbarFunctionState(ToolbarFunction.TRANSFER, ToolbarFunctionState.HIDDEN);
+		}
 	}
 
 	@Override
 	public boolean isRowEditable(int row) {
-		if (getMultiUpdateOfDependants() != null) {
-			Collectable clct = getCollectables().get(row);
-			if (clct.getId() != null && !getMultiUpdateOfDependants().isCollectableEditable(getEntityAndForeignKeyFieldName().getEntityName(), clct)) {
-				return false;
-			}
-		}
 		return true;
 	}
 
 	@Override
 	public boolean isRowRemovable(int row) {
 		boolean result = true;
-		if (getMultiUpdateOfDependants() != null) {
-			Collectable clct = getCollectables().get(row);
-			if (clct.getId() != null && !getMultiUpdateOfDependants().isCollectableEditable(getEntityAndForeignKeyFieldName().getEntityName(), clct)) {
-				result = false;
-			}
-		}
 		if (result && getSubForm().getDeleteEnabledScript() != null) {
 			Collectable c = getCollectables().get(row);
 			

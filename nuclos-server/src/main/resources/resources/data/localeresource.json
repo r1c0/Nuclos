@@ -65092,5 +65092,20 @@
     "resourceID": "nuclos.entityfield.tasklist.taskentity.description",
     "locale": "de",
     "text": "Entität des Aufgabenobjekts."
+  },
+  {
+    "resourceID": "SubForm.ToolbarFunction.TRANSFER",
+    "locale": "i-default",
+    "text": "Transfer entry to all entities"
+  },
+  {
+    "resourceID": "SubForm.ToolbarFunction.TRANSFER",
+    "locale": "en",
+    "text": "Transfer entry to all entities"
+  },
+  {
+    "resourceID": "SubForm.ToolbarFunction.TRANSFER",
+    "locale": "de",
+    "text": "Datensatz für alle Entit\u00e4ten \u00fcbernehmen"
   }
 ]
