@@ -37,6 +37,9 @@ import java.awt.event.WindowEvent;
 import java.awt.event.WindowFocusListener;
 import java.awt.image.BufferedImage;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 import java.net.URL;
 import java.text.Collator;
 import java.text.MessageFormat;
@@ -2338,6 +2341,19 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 				}
 			}, "MainFrame.showSwitchingWorkspace.invokeLater");
 			t.start();
+		}
+	}
+	
+	public static void setApplicationIconBadge(String text) {
+		if (Main.getInstance().isMacOSX() && Main.isMacOSXSnowLeopardOrBetter()) {
+			try {
+				Class<?> macAppClass = Class.forName("com.apple.eawt.Application");
+				Object macAppObject = macAppClass.getConstructor().newInstance();
+				Method macAppSetAboutHandlerMethod = macAppClass.getDeclaredMethod("setDockIconBadge", new Class[] { String.class });
+				macAppSetAboutHandlerMethod.invoke(macAppObject, new Object[] { text });
+			} catch (Exception ex) {
+				LOG.error(String.format("setApplicationIconBadge(%s): error=%s", text, ex.getMessage()), ex);
+			}
 		}
 	}
 
