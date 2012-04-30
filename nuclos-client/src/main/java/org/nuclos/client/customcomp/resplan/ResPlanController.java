@@ -25,6 +25,7 @@ import java.beans.PropertyChangeListener;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -232,6 +233,10 @@ public class ResPlanController extends CustomComponentController {
 
 	ResPlanConfigVO getConfigVO() {
 		return configVO;
+	}
+	
+	ResPlanResourceVO getResourceVO() {
+		return resourceVO;
 	}
 
 	List<TimeGranularity> getTimeGranularityOptions() {
@@ -478,22 +483,49 @@ public class ResPlanController extends CustomComponentController {
 	}
 
 	public static enum GranularityType implements KeyEnum<String> {
-		MONTH("month", 0),
-		WEEK("week", 1),
-		TIME("time", 3),
-		DAY("day", 2);
+		
+		MONTH("month", 0, Calendar.MONTH, 1000L * 60 * 60 * 24 * 30),
+		WEEK("week", 1, Calendar.WEEK_OF_YEAR, 1000L * 60 * 60 * 24 * 7),
+		@Deprecated
+		TIME("time", 3, -1, -1L),
+		DAY("day", 2, Calendar.DAY_OF_WEEK, 1000L * 60 * 60 * 24);
 
 		private final String name;
 		private final int level;
+		private final int calendarQuantizer;
+		private final long approxMillis;
 
-		private GranularityType(String name, int level) {
+		private GranularityType(String name, int level, int calendarQuantizer, long approxMillis) {
 			this.name = name;
 			this.level = level;
+			this.calendarQuantizer = calendarQuantizer;
+			this.approxMillis = approxMillis;
 		}
 
 		@Override
 		public String getValue() {
 			return name;
+		}
+		
+		public int getLevel() {
+			return level;
+		}
+		
+		public int getCalendarQuantizer() {
+			return calendarQuantizer;
+		}
+		
+		public long getApproxMillis() {
+			return approxMillis;
+		}
+		
+		public static GranularityType getGranularityForLevel(int level) {
+			for (GranularityType result: GranularityType.class.getEnumConstants()) {
+				if (result.getLevel() == level) {
+					return result;
+				}
+			}
+			return null;
 		}
 	}
 
@@ -506,7 +538,7 @@ public class ResPlanController extends CustomComponentController {
 		private final Map<Orientation, Integer> mapCellExtent = new HashMap<Orientation, Integer>();
 		private final String cwLabel;
 
-		private TimeGranularity(GranularityType type, TimeModel<Date> timeModel) {
+		TimeGranularity(GranularityType type, TimeModel<Date> timeModel) {
 			this.type = type;
 			this.timeModel = timeModel;
 			this.cwLabel = SpringLocaleDelegate.getInstance().getText("nuclos.resplan.cw.label");
@@ -555,6 +587,23 @@ public class ResPlanController extends CustomComponentController {
 				return String.format("%1$Td.%1$Tm", interval.getStart());
 			case 3:
 				return String.format("%Tk-%Tk", interval.getStart(), interval.getEnd());
+			default:
+				throw new IllegalArgumentException();
+			}
+		}
+
+		public String getCategoryValue(int category, Date start) {
+			switch (category) {
+			case 0:
+				calendar.setTime(start);
+				return String.format("%1$Tb %1$Ty", calendar);
+			case 1:
+				calendar.setTime(start);
+				return cwLabel + String.format("%02d", calendar.get(GregorianCalendar.WEEK_OF_YEAR));
+			case 2:
+				return String.format("%1$Td.%1$Tm", start);
+			case 3:
+				return String.format("%Tk", start);
 			default:
 				throw new IllegalArgumentException();
 			}

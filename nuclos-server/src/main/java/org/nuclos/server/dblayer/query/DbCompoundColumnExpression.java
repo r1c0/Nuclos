@@ -21,13 +21,13 @@ import java.util.List;
 
 import org.nuclos.common.MetaDataProvider;
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
+import org.nuclos.common.dblayer.IFieldRef;
 import org.nuclos.server.common.MetaDataServerProvider;
 import org.nuclos.server.dal.DalUtils;
 import org.nuclos.server.dal.processor.jdbc.TableAliasSingleton;
 import org.nuclos.server.dblayer.impl.standard.StandardSqlDBAccess;
 import org.nuclos.server.dblayer.impl.util.PreparedStringBuilder;
 import org.nuclos.server.dblayer.util.ForeignEntityFieldParser;
-import org.nuclos.server.dblayer.util.IFieldRef;
 
 /**
  * Column mapping for compound (one-)table expressions. This is used for nuclos 'stringified' 

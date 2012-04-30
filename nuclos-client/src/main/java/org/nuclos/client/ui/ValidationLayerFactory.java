@@ -225,7 +225,7 @@ public class ValidationLayerFactory {
     	}
     	
         @Override
-		public void paintLayer(Graphics2D g2, JXLayer<V> l) {
+		public void paintLayer(Graphics2D g2, JXLayer<? extends V> l) {
             // paints the layer as is
             super.paintLayer(g2, l);
 
@@ -327,7 +327,7 @@ public class ValidationLayerFactory {
         }
 
         @Override
-		public void paintLayer(Graphics2D g2, JXLayer<V> l) {
+		public void paintLayer(Graphics2D g2, JXLayer<? extends V> l) {
             super.paintLayer(g2, l);
 
             // There is no need to take insets into account for this painter

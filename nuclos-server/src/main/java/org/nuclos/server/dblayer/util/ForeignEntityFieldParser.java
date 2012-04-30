@@ -17,12 +17,12 @@
 package org.nuclos.server.dblayer.util;
 
 import java.util.Iterator;
-import java.util.NoSuchElementException;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
+import org.nuclos.common.dblayer.FieldRefIterator;
+import org.nuclos.common.dblayer.IFieldRef;
 
 /**
  * Parser for the expression language used in field references.
@@ -34,39 +34,6 @@ import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 public class ForeignEntityFieldParser implements Iterable<IFieldRef> {
 	
 	private static final Logger LOG = Logger.getLogger(ForeignEntityFieldParser.class);
-	
-	private static final class FieldRef implements IFieldRef {
-		
-		private final String content;
-		
-		private final boolean constant;
-		
-		private FieldRef(String content, boolean constant) {
-			this.content = content;
-			this.constant = constant;
-		}
-
-		@Override
-		public boolean isConstant() {
-			return constant;
-		}
-
-		@Override
-		public String getContent() {
-			return content;
-		}
-		
-		@Override
-		public String toString() {
-			final StringBuilder result = new StringBuilder();
-			result.append("FieldRef['").append(content);
-			result.append("', ").append(constant).append(']');
-			return result.toString();
-		}
-		
-	}
-	
-	private static final Pattern REF_PATTERN = Pattern.compile("\\$\\{(\\p{Alpha}[\\p{Alnum}_]*)\\}", Pattern.MULTILINE);
 	
 	private static final Pattern OLD_SIMPLE_REF_PATTERN = Pattern.compile("\\p{Alpha}[\\p{Alnum}_]*");
 	
@@ -108,67 +75,6 @@ public class ForeignEntityFieldParser implements Iterable<IFieldRef> {
 		return new FieldRefIterator(ffieldname);
 	}
 
-	private static class FieldRefIterator implements Iterator<IFieldRef> {
-	
-		private final String ffieldName;
-		
-		private final Matcher matcher;
-		
-		private final int len;
-		
-		private int index = 0;
-		
-		private IFieldRef next = null;
-		
-		private FieldRefIterator(String ffieldName) {
-			this.ffieldName = ffieldName;
-			this.len = ffieldName.length();
-			this.matcher = REF_PATTERN.matcher(ffieldName);
-		}
-		
-		@Override
-		public boolean hasNext() {
-			final boolean result;
-			if (matcher.find(index)) {
-				final int s = matcher.start();
-				if (s > index) {
-					next = new FieldRef(ffieldName.substring(index, s), true);
-					index = s;
-					result = true;
-				}
-				else {
-					next = new FieldRef(matcher.group(1), false);
-					index = matcher.end();
-					result = true;
-				}
-			} else if (index < len) {
-				next = new FieldRef(ffieldName.substring(index), true);
-				index = len;
-				result = true;
-			} else {
-				next = null;
-				result = false;
-			}
-			return result;
-		}
-	
-		@Override
-		public IFieldRef next() {
-			if (next == null && !hasNext()) {
-				throw new NoSuchElementException();
-			}
-			final IFieldRef result = next;
-			next = null;
-			return result;
-		}
-	
-		@Override
-		public void remove() {
-			throw new UnsupportedOperationException();
-		}
-		
-	}
-	
 	public static void main(String[] args) {
 		// final String test = "prefix${a}${test} -\n ${main} hiho ${error} ->";
 		// final String test = "${a}$b{";

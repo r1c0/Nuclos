@@ -14,7 +14,7 @@
 //
 //You should have received a copy of the GNU Affero General Public License
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
-package org.nuclos.server.dblayer.util;
+package org.nuclos.common.dblayer;
 
 /**
  * The AST result element from parsing the expression language used in field references.

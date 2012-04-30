@@ -562,7 +562,7 @@ public class SubForm extends JPanel
 	// class TranslucentLockableUI --->
 	private class TranslucentLockableUI extends LockableUI {
 		@Override
-		protected void paintLayer(Graphics2D g2, JXLayer<JComponent> l) {
+		protected void paintLayer(Graphics2D g2, JXLayer<? extends JComponent> l) {
 			super.paintLayer(g2, l);
 			if(isLocked()) {
 				g2.setColor(LAYER_BUSY_COLOR);
