@@ -2653,6 +2653,20 @@ public class RuleInterface extends CustomCodeInterface {
 	 * 	both, objectFieldForReportName and nameWithTimestamp could be combined!
 	 */
 	public Collection<NuclosFile> runPDFReport(String reportName, String entity, Integer iObjectId, String objectFieldForReportName, boolean nameWithTimestamp) {
+		return runPDFReport(reportName, entity, iObjectId, objectFieldForReportName, nameWithTimestamp, new HashMap<String, Object>());
+	}
+	
+	/**
+	 *
+	 * @param reportName
+	 * @param entity
+	 * @param iObjectId
+	 * @param objectFieldForReportName (if set report name would be like "reportName_VALUE-OF-THIS-FIELD.pdf" otherwise "reportName.pdf")
+	 * @param nameWithTimestamp (is set report name would be like "reportName_2010-06-01 12-05-00.pdf" otherwise "reportName.pdf"
+	 * 	both, objectFieldForReportName and nameWithTimestamp could be combined!
+	 * @param paramsArg report parameters (intid will be added automatically)
+	 */
+	public Collection<NuclosFile> runPDFReport(String reportName, String entity, Integer iObjectId, String objectFieldForReportName, boolean nameWithTimestamp, Map<String, Object> paramsArg) {
 		if (reportName == null) {
 			throw new NuclosFatalRuleException("reportName could not be null");
 		}
@@ -2674,7 +2688,7 @@ public class RuleInterface extends CustomCodeInterface {
 			final DateFormat dateformat = new SimpleDateFormat("yyyy-MM-dd HH-mm-ss", Locale.getDefault());
 			fileName += "_" + dateformat.format(Calendar.getInstance(Locale.getDefault()).getTime());
 		}
-		final Map<String, Object> mpParams = new HashMap<String, Object>();
+		final Map<String, Object> mpParams = new HashMap<String, Object>(paramsArg);
 		mpParams.put("intid", iObjectId);
 		mpParams.put("iGenericObjectId", iObjectId);
 
