@@ -705,6 +705,8 @@ public abstract class SubFormController extends MainFrameTabController
 	        	final KeyEvent ke = (KeyEvent)currentEvent;
 	            if(!KeyStroke.getKeyStrokeForEvent(ke).equals(tabKeyStroke) || ke.isConsumed())
 	            	return;
+	            if(ke.isShiftDown() || ke.isControlDown())
+	            	return;
 	            int rowIndex = tbl.getSelectedRow();
 	            int columnIndex = tbl.getSelectedColumn();
 	            if(((rowIndex == 1 && columnIndex == -1) || (rowIndex == 0 && columnIndex == 0)) && e.getLastIndex() > 0) {
