@@ -739,7 +739,7 @@ public class ResPlanPanel extends JPanel {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			// controller.getFrame().add(new ResPlanExportPanel());
-			final ResPlanExportDialog d = new ResPlanExportDialog(ResPlanPanel.this, controller.getFrame());
+			final ResPlanExportDialog d = new ResPlanExportDialog(ResPlanPanel.this, controller.getTab());
 		}
 	}
 
