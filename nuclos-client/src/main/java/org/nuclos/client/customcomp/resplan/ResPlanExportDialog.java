@@ -18,6 +18,7 @@ package org.nuclos.client.customcomp.resplan;
 
 import info.clearthought.layout.TableLayout;
 
+import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -33,13 +34,14 @@ import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.xml.xpath.XPathExpressionException;
 
 import org.apache.commons.io.filefilter.WildcardFileFilter;
 import org.apache.log4j.Logger;
-import org.jdesktop.swingx.combobox.EnumComboBoxModel;
 import org.nuclos.client.image.ImageType;
 import org.nuclos.client.main.Main;
 import org.nuclos.client.ui.resplan.JResPlanComponent;
@@ -56,8 +58,6 @@ public class ResPlanExportDialog extends JDialog {
 	
 	private static final Logger LOG = Logger.getLogger(ResPlanExportDialog.class);
 	
-	private static final File SVG_OUT = new File(System.getProperty("user.home") + File.separator + "test.svg");
-	
 	//
 	
 	private SpringLocaleDelegate sld;
@@ -66,12 +66,22 @@ public class ResPlanExportDialog extends JDialog {
 	
 	private final JComponent parent;
 	
-	private File save = SVG_OUT;
+	private File save;
+	
+	private JTextField file;
+	
+	private JComboBox fileTypes;
 	
 	public ResPlanExportDialog(ResPlanPanel panel, JComponent parent) {
 		super(Main.getInstance().getMainFrame().getFrame(), true);
 		this.panel = panel;
 		this.parent = parent;
+		
+		setResizable(false);
+		final String title = panel.getController().getTitle();
+		setTitle(title);
+		save = new File(System.getProperty("user.home") + File.separator + 
+				title.toLowerCase().replaceAll("[ \\t\\.\\!\\?\\,\\;]", "_") + ".svg");
 	}
 	
 	@Autowired
@@ -85,47 +95,31 @@ public class ResPlanExportDialog extends JDialog {
 		double inset = 5;
         double size[][] =
             {{border, 100, inset, 200, inset, 30, inset, 65, border},  // Columns
-             {border, 20, inset, 20, inset, 20, border}}; // Rows
+             {border, 20, inset, 20, inset, 30, border}}; // Rows
         final TableLayout tl = new TableLayout(size);
 		setLayout(tl);
-		
+				
 		final JLabel fileLabel = new JLabel(sld.getText("nuclos.resplan.dialog.file"), SwingConstants.RIGHT);
 		add(fileLabel, "1, 1");
-		final JTextField file = new JTextField();
-		file.setText(SVG_OUT.getAbsolutePath());
+		file = new JTextField();
+		file.setText(save.getPath());
 		add(file, "3, 1");
-		file.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				save = new File(file.getText());
-			}
-		});
 		
 		final JButton browse = new JButton("...");
 		add(browse, "5, 1");
 
 		final JLabel typeLabel = new JLabel(sld.getText("nuclos.resplan.dialog.type"), SwingConstants.RIGHT);
 		add(typeLabel, "1, 3");
-		final JComboBox fileTypes = new JComboBox(new String[] {
+		fileTypes = new JComboBox(new String[] {
 				ImageType.SVG.getFileExtension(), 
-				ImageType.EMF.getFileExtension()
+				ImageType.EMF.getFileExtension(),
+				ImageType.PNG.getFileExtension()
 				});
 		fileTypes.setSelectedIndex(0);
 		fileTypes.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				final String ext = "." + ((String) fileTypes.getSelectedItem());
-				final String filename = save.getName();
-				if (!filename.endsWith(ext)) {
-					int idx = filename.indexOf('.');
-					if (idx > 0) {
-						save = new File(save.getParentFile(), filename.substring(0, idx) + ext);
-					}
-					else {
-						save = new File(save.getParentFile(), filename + ext);
-					}
-					file.setText(save.getAbsolutePath());
-				}
+				checkFile();
 			}
 		});
 		add(fileTypes, "3, 3");		
@@ -140,16 +134,44 @@ public class ResPlanExportDialog extends JDialog {
 				final int returnVal = chooser.showSaveDialog(parent);
 				if (returnVal == JFileChooser.APPROVE_OPTION) {
 					save = chooser.getSelectedFile();
-					file.setText(save.getAbsolutePath());
+					checkFile();
 				}
 			}
 		});
 		
+		final JPanel buttons = new JPanel(new FlowLayout());
+		add(buttons, "1, 5, 7, 5");
+		
 		final JButton export = new JButton(sld.getText("nuclos.resplan.dialog.export"));
-		add(export, "3, 5");
+		buttons.add(export);
 		export.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				final String filePath = file.getText();
+				if (!filePath.equals(save.getPath())) {
+					save = new File(filePath);
+				}
+				checkFile();
+				if (save.exists()) {
+					String file = save.getAbsolutePath();
+					if (save.canWrite()) {
+						int ans = JOptionPane.showConfirmDialog(ResPlanExportDialog.this,
+								sld.getMessage("general.overwrite.file", "general.overwrite.file", file),
+								sld.getMessage("general.overwrite.file.title", "general.overwrite.file.title"), 
+								JOptionPane.OK_CANCEL_OPTION);
+						if (ans != JOptionPane.YES_OPTION) {
+							return;
+						}
+					}
+					else {
+						JOptionPane.showMessageDialog(ResPlanExportDialog.this, 
+								sld.getMessage("general.notwritable.file", "general.notwritable.file", file), 
+								sld.getMessage("general.notwritable.file.title", "general.notwritable.file.title"), 
+								JOptionPane.ERROR_MESSAGE);
+						return;
+					}
+				}
+				
 				final JResPlanComponent<Collectable, Date, Collectable> resPlan = panel.getResPlan();
 				final ImageType imageType = ImageType.getFromFileExtension((String) fileTypes.getSelectedItem());
 				final ResPlanExporter exporter = new ResPlanExporter(imageType, save, 
@@ -169,7 +191,7 @@ public class ResPlanExportDialog extends JDialog {
 		});
 		
 		final JButton cancel = new JButton(sld.getText("general.cancel"));
-		add(cancel, "5, 5, 7, 5");
+		buttons.add(cancel);
 		cancel.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -206,6 +228,21 @@ public class ResPlanExportDialog extends JDialog {
 			return pattern;
 		}
 		
+	}
+	
+	private void checkFile() {
+		final String ext = "." + ((String) fileTypes.getSelectedItem());
+		final String filename = save.getName();
+		if (!filename.endsWith(ext)) {
+			int idx = filename.lastIndexOf('.');
+			if (idx >= 0) {
+				save = new File(save.getParentFile(), filename.substring(0, idx) + ext);
+			}
+			else {
+				save = new File(save.getParentFile(), filename + ext);
+			}
+			file.setText(save.getAbsolutePath());
+		}		
 	}
 
 }

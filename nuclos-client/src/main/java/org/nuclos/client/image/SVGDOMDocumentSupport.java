@@ -16,12 +16,15 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.image;
 
+import java.awt.Color;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Result;
@@ -40,6 +43,7 @@ import org.apache.batik.transcoder.Transcoder;
 import org.apache.batik.transcoder.TranscoderException;
 import org.apache.batik.transcoder.TranscoderInput;
 import org.apache.batik.transcoder.TranscoderOutput;
+import org.apache.batik.transcoder.image.PNGTranscoder;
 import org.apache.batik.transcoder.svg2svg.SVGTranscoder;
 import org.apache.batik.util.XMLResourceDescriptor;
 import org.w3c.dom.DOMImplementation;
@@ -104,6 +108,30 @@ public class SVGDOMDocumentSupport extends SVGDOMImplementation {
 		return doc;
 	}
 	
+	public Float getHeight() {
+		final String h = doc.getDocumentElement().getAttribute("height");
+		final Float result;
+		if (h == null) {
+			result = null;
+		}
+		else {
+			result = Float.parseFloat(h);
+		}
+		return result;
+	}
+	
+	public Float getWidth() {
+		final String w = doc.getDocumentElement().getAttribute("width");
+		final Float result;
+		if (w == null) {
+			result = null;
+		}
+		else {
+			result = Float.parseFloat(w);
+		}
+		return result;
+	}
+	
 	public void writeAs(File file, ImageType type) throws IOException {
 		final OutputStream out = new FileOutputStream(file);
 		try {
@@ -121,6 +149,9 @@ public class SVGDOMDocumentSupport extends SVGDOMImplementation {
 			break;
 		case EMF:
 			writeAsEmf(out);
+			break;
+		case PNG:
+			writeAsPng(out);
 			break;
 		default:
 			throw new IllegalArgumentException("Can't output to " + type);
@@ -140,6 +171,31 @@ public class SVGDOMDocumentSupport extends SVGDOMImplementation {
 	public void writeAsEmf(OutputStream out) throws IOException {
 		final SVG2EMF svg2emf = new SVG2EMF();
 		svg2emf.convert(doc, out);
+	}
+
+	public void writeAsPng(File file) throws IOException {
+		final OutputStream out = new FileOutputStream(file);
+		try {
+			writeAsPng(out);
+		}
+		finally {
+			out.close();
+		}
+	}
+	
+	public void writeAsPng(OutputStream out) throws IOException {
+		final PNGTranscoder t = new PNGTranscoder();
+		t.addTranscodingHint(PNGTranscoder.KEY_FORCE_TRANSPARENT_WHITE, Boolean.TRUE);
+		t.addTranscodingHint(PNGTranscoder.KEY_BACKGROUND_COLOR, Color.white);
+		final Float h = getHeight();
+		if (h != null) {
+			t.addTranscodingHint(PNGTranscoder.KEY_HEIGHT, h);
+		}
+		final Float w = getWidth();
+		if (w != null) {
+			t.addTranscodingHint(PNGTranscoder.KEY_WIDTH, w);
+		}
+		write(t, out);
 	}
 
 	public void writeAsSvg(File file) throws IOException {

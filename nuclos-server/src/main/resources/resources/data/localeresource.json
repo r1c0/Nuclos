@@ -1,5 +1,65 @@
 [
   {
+    "resourceID": "general.notwritable.file.title",
+    "locale": "i-default",
+    "text": "Not writable!"
+  },
+  {
+    "resourceID": "general.notwritable.file.title",
+    "locale": "en",
+    "text": "Not writable!"
+  },
+  {
+    "resourceID": "general.notwritable.file.title",
+    "locale": "de",
+    "text": "Keine Schreibrechte!"
+  },
+  {
+    "resourceID": "general.notwritable.file",
+    "locale": "i-default",
+    "text": "Can't write file \n\"{0}\"!"
+  },
+  {
+    "resourceID": "general.notwritable.file",
+    "locale": "en",
+    "text": "Can't write file \n\"{0}\"!"
+  },
+  {
+    "resourceID": "general.notwritable.file",
+    "locale": "de",
+    "text": "Datei \n\"{0}\" kann nicht geschrieben werden!"
+  },
+  {
+    "resourceID": "general.overwrite.file.title",
+    "locale": "i-default",
+    "text": "Overwrite file?"
+  },
+  {
+    "resourceID": "general.overwrite.file.title",
+    "locale": "en",
+    "text": "Overwrite file?"
+  },
+  {
+    "resourceID": "general.overwrite.file.title",
+    "locale": "de",
+    "text": "Datei überschreiben?"
+  },
+  {
+    "resourceID": "general.overwrite.file",
+    "locale": "i-default",
+    "text": "Are you sure to really overwrite \n\"{0}\"?"
+  },
+  {
+    "resourceID": "general.overwrite.file",
+    "locale": "en",
+    "text": "Are you sure to really overwrite \n\"{0}\"?"
+  },
+  {
+    "resourceID": "general.overwrite.file",
+    "locale": "de",
+    "text": "Möchten Sie die Datei \n\"{0}\"\n wirklich überschreiben?"
+  },
+  {
     "resourceID": "general.cancel",
     "locale": "i-default",
     "text": "Cancel"

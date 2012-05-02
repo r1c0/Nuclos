@@ -57,10 +57,19 @@ public abstract class CustomComponentController extends TopController {
 
 	private final String componentName;
 	private MainFrameTab ifrm;
+	private String title;
 
 	protected CustomComponentController(JComponent parent, String componentName) {
 		super(parent);
 		this.componentName = componentName;
+	}
+	
+	protected void setTitle(String title) {
+		this.title = title;
+	}
+	
+	public String getTitle() {
+		return title;
 	}
 
 	@Override
@@ -201,10 +210,12 @@ public abstract class CustomComponentController extends TopController {
 		} else {
 			throw new NuclosFatalException("Component " + componentVO.getInternalName() + " has an unsupported or incompatible component type");
 		}
-		boolean newTab = false;
-		final MainFrameTab mainFrameTab;
 		String title = SpringLocaleDelegate.getInstance().getTextFallback(
 				componentVO.getLabelResourceId(), componentVO.getLabelResourceId());
+		controller.setTitle(title);
+		
+		boolean newTab = false;
+		final MainFrameTab mainFrameTab;
 		if (tabIfAny == null) {
 			newTab = true;
 			mainFrameTab = Main.getInstance().getMainController().newMainFrameTab(controller, title);

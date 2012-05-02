@@ -112,11 +112,6 @@ public class ResPlanExporter {
 	}
 	
 	public void run() throws IOException, XPathExpressionException {
-		LOG.info("granularity: " + granularity);
-		LOG.info("horizon: " + horizon);
-		LOG.info("model: " + model);
-		LOG.info("time: " + time);
-
 		final String uri = Thread.currentThread().getContextClassLoader().getResource(SVG_TEMPLATE).toExternalForm();
 		sdds = new SVGDOMDocumentSupport(uri);
 		
@@ -138,8 +133,6 @@ public class ResPlanExporter {
 		final TimeGranularity tg = new TimeGranularity(granularity, time);
 		final int quantizer = granularity.getCalendarQuantizer();
 		maxCategory = tg.getCategoryCount() - 1;
-		LOG.info("max category: " + maxCategory);
-		LOG.info("header categories: " + tg.getHeaderCategories());
 		realHorizon = new Interval<Date>(floorBound(horizon.getStart(), quantizer), 
 				ceilBound(horizon.getEnd(), quantizer));
 		millisForPx = granularity.getApproxMillis() / XPIXEL_FOR_TIME_CAT;
