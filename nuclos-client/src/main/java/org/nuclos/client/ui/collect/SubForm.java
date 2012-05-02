@@ -1765,49 +1765,99 @@ public class SubForm extends JPanel
 		}
 
 		@Override
-		public void changeSelection(final int rowIndex, final int columnIndex, boolean toggle, boolean extend) {
+		public void changeSelection(int rowIndex, final int columnIndex, boolean toggle, boolean extend) {
+			final AWTEvent event = EventQueue.getCurrentEvent();
+			if (event instanceof KeyEvent) {
+				final KeyEvent ke = (KeyEvent)event;
+	            if(ke.isShiftDown() || ke.isControlDown()) {
+	            	newRowOnNext = false;
+	            	if (columnIndex  == getColumnCount() - 1)
+	            		rowIndex = rowIndex + 1 == getRowCount() ? 0 : rowIndex + 1;
+	            }
+			}
 			changeSelection(rowIndex, columnIndex, toggle, extend, false);
-			
+
 			int colCount = getColumnCount();
 			if(columnIndex == colCount-1) {
-				newRowOnNext = true;
-			}	
+				if (event instanceof KeyEvent) {
+					final KeyEvent ke = (KeyEvent)event;
+		            if(!ke.isShiftDown() && !ke.isControlDown())
+		            	newRowOnNext = true;
+		            else
+		            	newRowOnNext = false;
+				} else
+					newRowOnNext = true;
+			}				
 		}
 		public void changeSelection(final int rowIndex, final int columnIndex, boolean toggle, boolean extend, final boolean fixed) {
 			super.changeSelection(rowIndex, columnIndex, toggle, extend);
 			final AWTEvent event = EventQueue.getCurrentEvent();
 			if(event instanceof KeyEvent || event instanceof InvocationEvent) {
 				if(newRowOnNext) {
-					if(getRowCount() == 1) {
-						for(FocusActionListener fal : subform.getFocusActionLister()) {
-							fal.focusAction(new EventObject(this));
-							SwingUtilities.invokeLater(new Runnable() {
-								@Override
-								public void run() {
-									if (editCellAt(rowIndex + 1, columnIndex)) {
-										Component editor = getEditorComponent();
-										if(editor != null)
-											editor.requestFocusInWindow();
+					if(getRowCount() == 1 && !(event instanceof InvocationEvent)) {
+						final KeyEvent ke = (KeyEvent)event;
+			            if(!ke.isShiftDown() && !ke.isControlDown()) {
+							for(FocusActionListener fal : subform.getFocusActionLister()) {
+								fal.focusAction(new EventObject(this));
+								SwingUtilities.invokeLater(new Runnable() {
+									@Override
+									public void run() {
+										if (editCellAt(rowIndex + 1, columnIndex)) {
+											Component editor = getEditorComponent();
+											if(editor != null)
+												editor.requestFocusInWindow();
+										}
 									}
-								}
-							});
-						}
+								});
+							}
+			            }
 					}
 					newRowOnNext = false;
 				}
 				int colCount = getColumnCount();
 				if(columnIndex == colCount-1) {
-					newRowOnNext = true;
+					if (event instanceof KeyEvent) {
+						final KeyEvent ke = (KeyEvent)event;
+			            if(!ke.isShiftDown() && !ke.isControlDown())
+			            	newRowOnNext = true;
+			            else
+			            	newRowOnNext = false;
+					} else
+						newRowOnNext = true;
 				}	
-				
-				if (!fixed && columnIndex == 0) {
+				boolean bShift = false;
+				if (event instanceof KeyEvent) {
+					final KeyEvent ke = (KeyEvent)event;
+					if(ke.isShiftDown() || ke.isControlDown()) {
+						bShift = true;
+					}
+				}
+				if (!fixed && (columnIndex == 0|| (columnIndex == getColumnCount() - 1 && bShift))) {
 					SubformRowHeader rowHeader = getSubForm().getSubformRowHeader();
 					boolean blnHasFixedRows = (rowHeader != null && rowHeader.getHeaderTable().getColumnCount() > 1);
 					if (blnHasFixedRows) {
 						if (!(rowHeader.getHeaderTable() instanceof HeaderTable))
-							rowHeader.getHeaderTable().changeSelection(rowIndex, 0, false, false);
+							if (event instanceof KeyEvent) {
+								final KeyEvent ke = (KeyEvent)event;
+								if(!ke.isShiftDown() && !ke.isControlDown()) {
+									rowHeader.getHeaderTable().changeSelection(rowIndex, 0, false, false);
+								} else {
+									rowHeader.getHeaderTable().changeSelection(rowIndex, rowHeader.getHeaderTable().getColumnCount() - 1, false, false);
+								}
+							}
+							else
+								rowHeader.getHeaderTable().changeSelection(rowIndex, 0, false, false);
 						else
-							((HeaderTable)rowHeader.getHeaderTable()).changeSelection(rowIndex, 0, false, false, true);
+							if (event instanceof KeyEvent) {
+								final KeyEvent ke = (KeyEvent)event;
+								if(!ke.isShiftDown() && !ke.isControlDown()) {
+									((HeaderTable)rowHeader.getHeaderTable()).changeSelection(rowIndex, 0, false, false, true);
+								} else {
+									((HeaderTable)rowHeader.getHeaderTable()).changeSelection(rowIndex, rowHeader.getHeaderTable().getColumnCount() - 1, false, false, true);
+								}
+							}
+							else
+								((HeaderTable)rowHeader.getHeaderTable()).changeSelection(rowIndex, 0, false, false, true);
 						return;
 					}
 				} 
@@ -1816,10 +1866,18 @@ public class SubForm extends JPanel
 					SwingUtilities.invokeLater(new Runnable() {
 						@Override
 						public void run() {
-							if (rowIndex == 0 && columnIndex == 0
-									&& !fixed)
-								return;
-								
+							if (event instanceof KeyEvent) {
+								final KeyEvent ke = (KeyEvent)event;
+					            if(!ke.isShiftDown() && !ke.isControlDown()) {
+									if (rowIndex == 0 && columnIndex == 0
+											&& !fixed)
+										return;
+					            }
+							} else {
+								if (rowIndex == 0 && columnIndex == 0
+										&& !fixed)
+									return;
+							}
 							if (editCellAt(rowIndex, columnIndex)) {
 								Component editor = getEditorComponent();
 								if(editor != null)
@@ -1829,7 +1887,7 @@ public class SubForm extends JPanel
 					});
 				}
 				else {
-					final int rowCol[] = getNextEditableCell(this, rowIndex, columnIndex);
+					final int rowCol[] = getNextEditableCell(this, rowIndex, columnIndex, bShift);
 					if (isCellEditable(rowCol[0], rowCol[1])) {
 						if(!fixed && event instanceof KeyEvent && ((KeyEvent)event).isConsumed())
 							return;
@@ -1851,7 +1909,7 @@ public class SubForm extends JPanel
 						if(newRowOnNext) {
 							for(FocusActionListener fal : subform.getFocusActionLister()) {
 								fal.focusAction(new EventObject(this));
-								final int col[] = getNextEditableCell(this, rowIndex, 0);
+								final int col[] = getNextEditableCell(this, rowIndex, 0, bShift);
 								SwingUtilities.invokeLater(new Runnable() {
 									@Override
 									public void run() {
@@ -1873,27 +1931,48 @@ public class SubForm extends JPanel
 
 		}
 
-		private int[] getNextEditableCell(JTable table, int row, int col) {
+		private int[] getNextEditableCell(JTable table, int row, int col, boolean bReverse) {
 			int rowCol[] = {row,col};
 			int colCount = getColumnCount();
 			boolean colFound = false;
-			for(int i = col; i < colCount; i++) {
-				if(table.isCellEditable(row, i)) {
-					colFound = true;
-					rowCol[1] = i;
-					break;
-				}
-			}
-
-			if(!colFound) {
-				row++;
-				if(row >= getRowCount())
-					return rowCol;
-				for(int i = 0; i < col; i++) {
+			if (!bReverse) {
+				for(int i = col; i < colCount; i++) {
 					if(table.isCellEditable(row, i)) {
-						rowCol[0] = row;
+						colFound = true;
 						rowCol[1] = i;
 						break;
+					}
+				}
+				if(!colFound) {
+					row++;
+					if(row >= getRowCount())
+						return rowCol;
+					for(int i = 0; i < col; i++) {
+						if(table.isCellEditable(row, i)) {
+							rowCol[0] = row;
+							rowCol[1] = i;
+							break;
+						}
+					}
+				}
+			} else {
+				for(int i = col; i > 0; i--) {
+					if(table.isCellEditable(row, i)) {
+						colFound = true;
+						rowCol[1] = i;
+						break;
+					}
+				}
+				if(!colFound) {
+					row--;
+					if(row <= 0)
+						return rowCol;
+					for(int i = colCount; i > 0; i--) {
+						if(table.isCellEditable(row, i)) {
+							rowCol[0] = row;
+							rowCol[1] = i;
+							break;
+						}
 					}
 				}
 			}

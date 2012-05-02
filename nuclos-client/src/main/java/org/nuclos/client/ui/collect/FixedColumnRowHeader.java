@@ -723,7 +723,15 @@ public class FixedColumnRowHeader extends SubformRowHeader {
 		}
 		
 		@Override
-		public void changeSelection(final int rowIndex, final int columnIndex, boolean toggle, boolean extend) {
+		public void changeSelection(int rowIndex, final int columnIndex, boolean toggle, boolean extend) {
+			final AWTEvent event = EventQueue.getCurrentEvent();
+			if (event instanceof KeyEvent) {
+				final KeyEvent ke = (KeyEvent)event;
+	            if(ke.isShiftDown() || ke.isControlDown()) {
+	            	if (columnIndex  == 0)
+	            		rowIndex = rowIndex - 1 == 0 ? 0 : rowIndex - 1;
+	            }
+			}
 			changeSelection(rowIndex, columnIndex, toggle, extend, false);
 		}
 
@@ -738,7 +746,19 @@ public class FixedColumnRowHeader extends SubformRowHeader {
 				int colCount = getColumnCount();
 				if(!external && (columnIndex == 0 || columnIndex == colCount)) {
 					if (externalTable != null) { 
-						externalTable.changeSelection(iSelRow, 0, toggle, extend, true);
+						if (event instanceof KeyEvent) {
+							final KeyEvent ke = (KeyEvent)event;
+							if(!ke.isShiftDown() && !ke.isControlDown()) {
+								externalTable.changeSelection(iSelRow, 0, toggle, extend, true);
+							} else {
+								if (rowIndex != -1)
+									externalTable.changeSelection(rowIndex, externalTable.getColumnCount() - 1, toggle, extend, true);
+								else
+									externalTable.changeSelection(externalTable.getRowCount() - 1, externalTable.getColumnCount() - 1, toggle, extend, true);
+							}
+						}
+						else
+							externalTable.changeSelection(iSelRow, 0, toggle, extend, true);
 						return;
 					}
 				}
@@ -754,7 +774,14 @@ public class FixedColumnRowHeader extends SubformRowHeader {
 						}
 					});
 				} else {
-					final int rowCol[] = getNextEditableCell(this, rowIndex, columnIndex);
+					boolean bShift = false;
+					if (event instanceof KeyEvent) {
+						final KeyEvent ke = (KeyEvent)event;
+						if(ke.isShiftDown() || ke.isControlDown()) {
+							bShift = true;
+						}
+					}
+					final int rowCol[] = getNextEditableCell(this, rowIndex, columnIndex, bShift);
 					if(!external && (rowCol[1] == 0 || rowCol[1] == colCount || rowIndex != rowCol[0])) {
 						if (externalTable != null) { 
 							externalTable.changeSelection(iSelRow, 0, toggle, extend, true);
@@ -782,27 +809,48 @@ public class FixedColumnRowHeader extends SubformRowHeader {
 			}
 		}
 		
-		private int[] getNextEditableCell(JTable table, int row, int col) {
+		private int[] getNextEditableCell(JTable table, int row, int col, boolean bReverse) {
 			int rowCol[] = {row,col};
 			int colCount = getColumnCount();
 			boolean colFound = false;
-			for(int i = col; i < colCount; i++) {
-				if(table.isCellEditable(row, i)) {
-					colFound = true;
-					rowCol[1] = i;
-					break;
-				}
-			}
-
-			if(!colFound) {
-				row++;
-				if(row >= getRowCount())
-					return rowCol;
-				for(int i = 0; i < col; i++) {
+			if (!bReverse) {
+				for(int i = col; i < colCount; i++) {
 					if(table.isCellEditable(row, i)) {
-						rowCol[0] = row;
+						colFound = true;
 						rowCol[1] = i;
 						break;
+					}
+				}
+				if(!colFound) {
+					row++;
+					if(row >= getRowCount())
+						return rowCol;
+					for(int i = 0; i < col; i++) {
+						if(table.isCellEditable(row, i)) {
+							rowCol[0] = row;
+							rowCol[1] = i;
+							break;
+						}
+					}
+				}
+			} else {
+				for(int i = col; i > 0; i--) {
+					if(table.isCellEditable(row, i)) {
+						colFound = true;
+						rowCol[1] = i;
+						break;
+					}
+				}
+				if(!colFound) {
+					row--;
+					if(row <= 0)
+						return rowCol;
+					for(int i = colCount; i > 0; i--) {
+						if(table.isCellEditable(row, i)) {
+							rowCol[0] = row;
+							rowCol[1] = i;
+							break;
+						}
 					}
 				}
 			}

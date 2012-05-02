@@ -58,13 +58,13 @@ import org.nuclos.client.ui.SizeKnownEvent;
 import org.nuclos.client.ui.SizeKnownListener;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.client.ui.collect.CollectableTableHelper;
-import org.nuclos.client.ui.collect.SubForm;
-import org.nuclos.client.ui.collect.SubformRowHeader;
 import org.nuclos.client.ui.collect.FixedColumnRowHeader.HeaderTable;
+import org.nuclos.client.ui.collect.SubForm;
 import org.nuclos.client.ui.collect.SubForm.SubFormTable;
 import org.nuclos.client.ui.collect.SubForm.SubFormTableModel;
 import org.nuclos.client.ui.collect.SubForm.ToolbarFunction;
 import org.nuclos.client.ui.collect.SubFormParameterProvider;
+import org.nuclos.client.ui.collect.SubformRowHeader;
 import org.nuclos.client.ui.collect.component.CollectableComponentFactory;
 import org.nuclos.client.ui.collect.component.model.CollectableComponentModel;
 import org.nuclos.client.ui.collect.component.model.CollectableComponentModelProvider;
@@ -701,6 +701,8 @@ public abstract class SubFormController extends Controller
 	            	
 	        	final KeyEvent ke = (KeyEvent)currentEvent;
 	            if(!KeyStroke.getKeyStrokeForEvent(ke).equals(tabKeyStroke) || ke.isConsumed())
+	            	return;
+	            if(ke.isShiftDown() || ke.isControlDown())
 	            	return;
 	            int rowIndex = tbl.getSelectedRow();
 	            int columnIndex = tbl.getSelectedColumn();
