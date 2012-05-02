@@ -633,7 +633,7 @@ public class MainFrameTab extends JPanel implements IOverlayComponent, NuclosDro
 		}
 
 		@Override
-		protected void paintLayer(Graphics2D g2, JXLayer<JComponent> l) {
+		protected void paintLayer(Graphics2D g2, JXLayer<? extends JComponent> l) {
 			super.paintLayer(g2, l);
          if (isLocked()) {
             g2.setColor(busyColor);
@@ -732,7 +732,7 @@ public class MainFrameTab extends JPanel implements IOverlayComponent, NuclosDro
 		}
 
 		@Override
-		protected void paintLayer(Graphics2D g2, JXLayer<JComponent> l) {
+		protected void paintLayer(Graphics2D g2, JXLayer<? extends JComponent> l) {
 			super.paintLayer(g2, l);
 			if (mutLocked.getValue()) {
 				textProgress.paint(g2, l, l.getWidth(), l.getHeight());
@@ -759,7 +759,7 @@ public class MainFrameTab extends JPanel implements IOverlayComponent, NuclosDro
 		}
 
 		@Override
-		protected void paintLayer(Graphics2D g2, JXLayer<JComponent> l) {
+		protected void paintLayer(Graphics2D g2, JXLayer<? extends JComponent> l) {
 			super.paintLayer(g2, l);
 			if (isLocked()) {
 				busyPainter.paint(g2, l, l.getWidth(), l.getHeight());

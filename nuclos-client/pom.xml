@@ -37,9 +37,32 @@
 	</build>
 
 	<dependencies>
-		<!-- Missing: - jawin.jar / .dll - jgraphx.jar - jnlp.jar - jsyntaxpane-0.9.5-b25.jar
-			- metadata-extractor-2.3.1.jar - synthetica.jar - syntheticaBlackMoon.jar
-			- TableLayout-bin-jdk1.5-2009-06-10.jar - wizard-0.1.12.jar -->
+		<dependency>
+			<groupId>org.apache.xmlgraphics</groupId>
+			<artifactId>batik-swing</artifactId>
+			<version>1.7</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.xmlgraphics</groupId>
+			<artifactId>batik-transcoder</artifactId>
+			<version>1.7</version>
+		</dependency>
+		<!--
+			Dark corner: 
+			http://code.google.com/p/svg2emf/
+			seems to have its own version of freehep-graphicsio-emf.
+			Original version does not run! 
+		 -->
+		<dependency>
+			<artifactId>svg2emf</artifactId>
+			<groupId>svg2emf</groupId>
+			<version>1</version>
+		</dependency>
+		<!-- dependency>
+			<artifactId>freehep-graphicsio-emf</artifactId>
+			<groupId>org.freehep</groupId>
+			<version>2.1.3</version>
+		</dependency -->
 		<dependency>
 			<groupId>com.jhlabs</groupId>
 			<artifactId>filters</artifactId>
@@ -58,7 +81,7 @@
 		<dependency>
 			<groupId>org.swinglabs</groupId>
 			<artifactId>jxlayer</artifactId>
-			<version>3.0.3</version>
+			<version>3.0.4</version>
 		</dependency>
 		<dependency>
 			<groupId>xalan</groupId>
@@ -72,9 +95,9 @@
 			</exclusions>
 		</dependency>
 		<dependency>
-			<groupId>de.novabit</groupId>
+			<groupId>org.swinglabs.swingx</groupId>
 			<artifactId>swingx-core</artifactId>
-			<version>1.6.2</version>
+			<version>1.6.3</version>
 		</dependency>
 		<dependency>
 			<groupId>de.novabit</groupId>
@@ -102,12 +125,12 @@
 			<version>2.3.1</version>
 		</dependency>
 		<dependency>
-			<groupId>de.novabit</groupId>
+			<groupId>tablelayout</groupId>
 			<artifactId>TableLayout</artifactId>
-			<version>1.0</version>
+			<version>20050920</version>
 		</dependency>
 		<dependency>
-			<groupId>de.novabit</groupId>
+			<groupId>org.pietschy</groupId>
 			<artifactId>wizard</artifactId>
 			<version>0.1.12</version>
 		</dependency>

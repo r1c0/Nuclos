@@ -89,10 +89,10 @@ import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.collect.collectable.Collectable;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableSearchCondition;
 import org.nuclos.common.collect.exception.CollectableFieldFormatException;
-import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.CommonRunnable;
 import org.nuclos.common2.DateUtils;
 import org.nuclos.common2.LangUtils;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonValidationException;
@@ -141,7 +141,7 @@ public class ResPlanPanel extends JPanel {
 
 		JToolBar tb = UIUtils.createNonFloatableToolBar();
 		tb.setFloatable(false);
-		tb.add(new AbstractAction(localeDelegate.getText("nuclos.resplan.action.refresh", null), 
+		tb.add(new AbstractAction(localeDelegate.getText("nuclos.resplan.action.refresh"), 
 				Icons.getInstance().getIconRefresh16()) {
 			
 			@Override
@@ -149,6 +149,7 @@ public class ResPlanPanel extends JPanel {
 				controller.refresh();
 			}
 		});
+		tb.add(exportAction);
 		tb.addSeparator();
 		
 		this.timeHorizon = new Interval<Date>(model.getDefaultViewFrom(), model.getDefaultViewUntil());
@@ -248,6 +249,14 @@ public class ResPlanPanel extends JPanel {
 		getActionMap().put("delete", removeAction);
 		//getActionMap().put("find", findAction);
 		KeyBindingProvider.bindActionToComponent(KeyBindingProvider.ACTIVATE_SEARCH_PANEL_2, findAction, this);
+	}
+	
+	JResPlanComponent<Collectable, Date, Collectable> getResPlan() {
+		return resPlan;
+	}
+	
+	ResPlanController getController() {
+		return controller;
 	}
 
 	public ListComboBoxModel<EntitySearchFilter> getSearchFilterModel() {
@@ -714,6 +723,36 @@ public class ResPlanPanel extends JPanel {
 
 		@Override
 		public void ancestorMoved(AncestorEvent event) {
+		}
+	}
+
+	private Action exportAction = new ExportAction();
+
+	class ExportAction extends AbstractAction {
+
+		ExportAction() {
+			super(SpringLocaleDelegate.getInstance().getText("nuclos.resplan.action.export"),
+					Icons.getInstance().getIconExport16());
+			// setEnabled(resPlanModel.isCreateAllowed());
+		}
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			// controller.getFrame().add(new ResPlanExportPanel());
+			final ResPlanExportDialog d = new ResPlanExportDialog(ResPlanPanel.this, controller.getFrame());
+			d.setTitle("Export");
+
+			/*
+			UIUtils.runShortCommand(resPlan, new CommonRunnable() {
+				@Override
+				public void run() throws CommonBusinessException {
+					NuclosCollectController cntrl = NuclosCollectControllerFactory.getInstance().newCollectController(
+							controller.getFrame(),
+							resPlanModel.getEntryEntity().getCollectableEntity().getName(), null);
+					cntrl.addCollectableEventListener(new CollectControllerEventHandler(cntrl));
+				}
+			});
+			 */
 		}
 	}
 

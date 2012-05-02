@@ -1,5 +1,20 @@
 [
   {
+    "resourceID": "general.cancel",
+    "locale": "i-default",
+    "text": "Cancel"
+  },
+  {
+    "resourceID": "general.cancel",
+    "locale": "en",
+    "text": "Cancel"
+  },
+  {
+    "resourceID": "general.cancel",
+    "locale": "de",
+    "text": "Abbrechen"
+  },
+  {
     "resourceID": "miFile",
     "locale": "i-default",
     "text": "^File"
@@ -58946,7 +58961,22 @@
   {
     "resourceID": "nuclos.resplan.action.refresh",
     "locale": "de",
-    "text": "Aktualisieren:"
+    "text": "Aktualisieren"
+  },
+  {
+    "resourceID": "nuclos.resplan.action.export",
+    "locale": "i-default",
+    "text": "Export as image"
+  },
+  {
+    "resourceID": "nuclos.resplan.action.export",
+    "locale": "en",
+    "text": "Export as image"
+  },
+  {
+    "resourceID": "nuclos.resplan.action.export",
+    "locale": "de",
+    "text": "Als Bild exportieren"
   },
   {
     "resourceID": "nuclos.resplan.action.switchOrientation",
@@ -59202,6 +59232,51 @@
     "resourceID": "nuclos.entity.librule.menupath",
     "locale": "de",
     "text": "Konfiguration\\Regelwerke"
+  },
+  {
+    "resourceID": "nuclos.resplan.dialog.file",
+    "locale": "i-default",
+    "text": "File to export"
+  },
+  {
+    "resourceID": "nuclos.resplan.dialog.file",
+    "locale": "en",
+    "text": "File to export"
+  },
+  {
+    "resourceID": "nuclos.resplan.dialog.file",
+    "locale": "de",
+    "text": "Datei für Export"
+  },
+  {
+    "resourceID": "nuclos.resplan.dialog.type",
+    "locale": "i-default",
+    "text": "File type"
+  },
+  {
+    "resourceID": "nuclos.resplan.dialog.type",
+    "locale": "en",
+    "text": "File type"
+  },
+  {
+    "resourceID": "nuclos.resplan.dialog.type",
+    "locale": "de",
+    "text": "Dateityp"
+  },
+  {
+    "resourceID": "nuclos.resplan.dialog.export",
+    "locale": "i-default",
+    "text": "Export"
+  },
+  {
+    "resourceID": "nuclos.resplan.dialog.export",
+    "locale": "en",
+    "text": "Export"
+  },
+  {
+    "resourceID": "nuclos.resplan.dialog.export",
+    "locale": "de",
+    "text": "Exportieren"
   },
   {
     "resourceID": "CodeCollectController.fieldvalue.name.temp",
