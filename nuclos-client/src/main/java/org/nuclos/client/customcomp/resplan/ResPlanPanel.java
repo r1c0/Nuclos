@@ -162,21 +162,21 @@ public class ResPlanPanel extends JPanel {
 		endDateChooser.setMinimumSize(endDateChooser.getPreferredSize());
 		endDateChooser.setMaximumSize(endDateChooser.getPreferredSize());
 
-		tb.add(new JLabel(localeDelegate.getText("nuclos.resplan.toolbar.from", null)));
+		tb.add(new JLabel(localeDelegate.getText("nuclos.resplan.toolbar.from")));
 		tb.add(startDateChooser);
 		tb.add(Box.createHorizontalStrut(5));
-		tb.add(new JLabel(localeDelegate.getText("nuclos.resplan.toolbar.until", null)));
+		tb.add(new JLabel(localeDelegate.getText("nuclos.resplan.toolbar.until")));
 		tb.add(endDateChooser);
 
 		timeGranularityModel = new ListComboBoxModel<ResPlanController.TimeGranularity>(controller.getTimeGranularityOptions());
 		tb.addSeparator();
-		tb.add(new JLabel(localeDelegate.getText("nuclos.resplan.toolbar.granularity", null)));
+		tb.add(new JLabel(localeDelegate.getText("nuclos.resplan.toolbar.granularity")));
 		timeGranularityComboBox = new JComboBox(timeGranularityModel);
 		tb.add(timeGranularityComboBox);
 		timeGranularityComboBox.setMaximumSize(Orientation.VERTICAL.updateExtent(timeGranularityComboBox.getPreferredSize(), 20));
 
 		tb.addSeparator();
-		tb.add(new JLabel(localeDelegate.getText("nuclos.resplan.toolbar.resourceFilter", null)));
+		tb.add(new JLabel(localeDelegate.getText("nuclos.resplan.toolbar.resourceFilter")));
 		searchFilterComboBox = new JComboBox();
 		searchFilterComboBox.setRenderer(new SearchFilterListCellRenderer());
 		refreshSearchFilter();
@@ -456,11 +456,11 @@ public class ResPlanPanel extends JPanel {
 				if (clct != null) {
 					JPopupMenu popupMenu = new JPopupMenu();
 					popupMenu.add(new AbstractAction(SpringLocaleDelegate.getInstance().getText(
-							"nuclos.resplan.action.showDetails", null)) {
+							"nuclos.resplan.action.showDetails")) {
 						@Override
 						public void actionPerformed(ActionEvent e) {
 							runDetailsCollectable(resPlanModel.getResourceEntity().getEntityName(), clct);
-						};
+						}
 					});
 					return popupMenu;
 				}
@@ -499,7 +499,7 @@ public class ResPlanPanel extends JPanel {
 			final NuclosCollectController ctl = NuclosCollectControllerFactory.getInstance().newCollectController(
 					resPlanModel.getResourceEntity().getEntityName(), null);
 			ctl.getSearchPanel().btnSearch.setAction(new CommonAbstractAction(Icons.getInstance().getIconFind16(), 
-					SpringLocaleDelegate.getInstance().getText("CollectController.30", "Suchen")) {
+					SpringLocaleDelegate.getInstance().getText("CollectController.30")) {
 				@Override
 				public void actionPerformed(ActionEvent ev) {
 					UIUtils.runCommand(getParent(), new CommonRunnable() {
@@ -626,7 +626,7 @@ public class ResPlanPanel extends JPanel {
 	}
 
 	private Action switchOrientationAction = new AbstractAction(
-			SpringLocaleDelegate.getInstance().getText("nuclos.resplan.action.switchOrientation", null), 
+			SpringLocaleDelegate.getInstance().getText("nuclos.resplan.action.switchOrientation"), 
 			Icons.getInstance().getIconRelate()) {
 		@Override
 		public void actionPerformed(ActionEvent e) {
@@ -646,7 +646,7 @@ public class ResPlanPanel extends JPanel {
 		}
 	};
 
-	private Action removeAction = new AbstractAction(SpringLocaleDelegate.getInstance().getText("nuclos.resplan.action.remove", null)) {
+	private Action removeAction = new AbstractAction(SpringLocaleDelegate.getInstance().getText("nuclos.resplan.action.remove")) {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			final SpringLocaleDelegate localeDelegate = SpringLocaleDelegate.getInstance();
@@ -673,7 +673,7 @@ public class ResPlanPanel extends JPanel {
 		}
 	};
 
-	private Action detailsAction = new AbstractAction(SpringLocaleDelegate.getInstance().getText("nuclos.resplan.action.showDetails", null)) {
+	private Action detailsAction = new AbstractAction(SpringLocaleDelegate.getInstance().getText("nuclos.resplan.action.showDetails")) {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			final List<Collectable> selectedEntries = resPlan.getSelectedEntries();
@@ -740,26 +740,13 @@ public class ResPlanPanel extends JPanel {
 		public void actionPerformed(ActionEvent e) {
 			// controller.getFrame().add(new ResPlanExportPanel());
 			final ResPlanExportDialog d = new ResPlanExportDialog(ResPlanPanel.this, controller.getFrame());
-			d.setTitle("Export");
-
-			/*
-			UIUtils.runShortCommand(resPlan, new CommonRunnable() {
-				@Override
-				public void run() throws CommonBusinessException {
-					NuclosCollectController cntrl = NuclosCollectControllerFactory.getInstance().newCollectController(
-							controller.getFrame(),
-							resPlanModel.getEntryEntity().getCollectableEntity().getName(), null);
-					cntrl.addCollectableEventListener(new CollectControllerEventHandler(cntrl));
-				}
-			});
-			 */
 		}
 	}
 
 	class RemoveAction extends AbstractAction {
 
 		public RemoveAction() {
-			super(SpringLocaleDelegate.getInstance().getText("nuclos.resplan.action.remove", null));
+			super(SpringLocaleDelegate.getInstance().getText("nuclos.resplan.action.remove"));
 		}
 
 		@Override
@@ -794,7 +781,7 @@ public class ResPlanPanel extends JPanel {
 		private Interval<Date> interval;
 
 		public AddAction(Collectable resource, Interval<Date> interval) {
-			super(SpringLocaleDelegate.getInstance().getText("nuclos.resplan.action.add", null));
+			super(SpringLocaleDelegate.getInstance().getText("nuclos.resplan.action.add"));
 			setEnabled(resPlanModel.isCreateAllowed());
 			this.resource = resource;
 			this.interval = interval;
@@ -863,12 +850,12 @@ public class ResPlanPanel extends JPanel {
 				}
 			}
 		}
-	};
+	}
 
 	public static class NewCustomSearchFilter extends EntitySearchFilter {
 
 		public NewCustomSearchFilter() {
-			setName(SpringLocaleDelegate.getInstance().getText("nuclos.resplan.action.newSearch", null));
+			setName(SpringLocaleDelegate.getInstance().getText("nuclos.resplan.action.newSearch"));
 		}
 
 		@Override
@@ -885,7 +872,7 @@ public class ResPlanPanel extends JPanel {
 		private boolean initialized;
 
 		public CustomSearchFilter() {
-			setName(SpringLocaleDelegate.getInstance().getText("nuclos.resplan.action.customSearch", null));
+			setName(SpringLocaleDelegate.getInstance().getText("nuclos.resplan.action.customSearch"));
 			id = ID_COUNTER--;
 		}
 
