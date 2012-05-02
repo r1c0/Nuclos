@@ -35,7 +35,7 @@ public class UserVO extends NuclosValueObject {
 	public static final String FIELD_EMAIL = "email";
 	public static final String FIELD_LASTNAME = "lastname";
 	public static final String FIELD_FIRSTNAME = "firstname";
-	public static final String FIELD_GROUP = "group";
+	public static final String FIELD_GROUP = "groupId";
 	public static final String FIELD_SUPERUSER = "superuser";
 	public static final String FIELD_LOCKED = "locked";
 	public static final String FIELD_PASSWORDCHANGED = "passwordchanged";
