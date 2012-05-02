@@ -37,6 +37,7 @@ import org.nuclos.client.ui.collect.model.CollectableTableModel;
 import org.nuclos.common.collect.collectable.Collectable;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
 import org.nuclos.common.collect.collectable.CollectableField;
+import org.nuclos.common2.SpringLocaleDelegate;
 
 public class SubFormTableCellRenderer implements TableCellRenderer {
 
@@ -104,26 +105,27 @@ public class SubFormTableCellRenderer implements TableCellRenderer {
 	}
 
 	private String buildToolTipText(Collection<CollectableEntityObject> equivalenceClass, Map<CollectableField, Integer> multiplicities, int column) {
-		String toolTipText = "<html>";
+		StringBuilder toolTipText = new StringBuilder("<html>");
 
 		Integer size = map.getParentCollectables().size();
 		if (equivalenceClass.size() != size) {
-			toolTipText += "Die Zeile ist in " + equivalenceClass.size() + " von " + size + " Entitäten vorhanden.<br>";
+			toolTipText.append(SpringLocaleDelegate.getInstance().getMessage("SubFormTableCellRenderer.1", "This entry is contained in {0} of {1} entities.<br>", equivalenceClass.size(), size));
 		}
 		else {
-			toolTipText += "Die Zeile ist in allen " + size + " Entitäten vorhanden.<br>";
+			toolTipText.append(SpringLocaleDelegate.getInstance().getMessage("SubFormTableCellRenderer.2", "This entry is contained in all {0} entities.<br>", size));
 		}
 
 		if (multiplicities != null) {
+			String fieldname = (String) map.getSubformController().getJTable().getColumnModel().getColumn(column).getHeaderValue();
 			if (multiplicities.size() == 0) {
-				toolTipText += "Keine dieser Entitäten einhält einen Wert im Feld \"" + (String) map.getSubformController().getJTable().getColumnModel().getColumn(column).getHeaderValue() + "\".";
+				toolTipText.append(SpringLocaleDelegate.getInstance().getMessage("SubFormTableCellRenderer.3", "None of these entities contains a value in the field \"{0}\".", fieldname));
 			}
 			else if (multiplicities.size() == 1) {
-				toolTipText += "Alle diese Entitäten einhalten den Wert \"" + multiplicities.entrySet().iterator().next().getKey() + "\" im Feld \""
-						+ (String) map.getSubformController().getJTable().getColumnModel().getColumn(column).getHeaderValue() + "\".";
+				CollectableField cf = multiplicities.entrySet().iterator().next().getKey();
+				toolTipText.append(SpringLocaleDelegate.getInstance().getMessage("SubFormTableCellRenderer.4", "Each of these entities contains the value \"{0}\" in field \"{1}\".", cf, fieldname));
 			}
 			else {
-				toolTipText += "Die darin enthaltenen Werte für \"" + (String) map.getSubformController().getJTable().getColumnModel().getColumn(column).getHeaderValue() + "\" sind:<br>";
+				toolTipText.append(SpringLocaleDelegate.getInstance().getMessage("SubFormTableCellRenderer.5", "The contained values in field \"{0}\" are:<br>", fieldname));
 
 				List<Entry<CollectableField, Integer>> entries = new LinkedList<Entry<CollectableField, Integer>>(multiplicities.entrySet());
 				Collections.sort(entries, new Comparator<Entry<CollectableField, Integer>>() {
@@ -137,13 +139,13 @@ public class SubFormTableCellRenderer implements TableCellRenderer {
 				});
 
 				for (Map.Entry<CollectableField, Integer> entry : entries) {
-					toolTipText += entry.getKey() + " (" + entry.getValue() + "x)<br>";
+					toolTipText.append(entry.getKey() + " (" + entry.getValue() + "x)<br>");
 				}
 			}
 		}
-		toolTipText += "</html>";
+		toolTipText.append("</html>");
 
-		return toolTipText;
+		return toolTipText.toString();
 	}
 
 	private String getFieldNameForColumn(int column) {

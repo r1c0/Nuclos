@@ -65242,5 +65242,80 @@
     "resourceID": "SubForm.ToolbarFunction.TRANSFER",
     "locale": "de",
     "text": "Datensatz für alle Entit\u00e4ten \u00fcbernehmen"
+  },
+  {
+    "resourceID": "SubFormTableCellRenderer.1",
+    "locale": "i-default",
+    "text": "This entry is contained in {0} of {1} entities.<br>"
+  },
+  {
+    "resourceID": "SubFormTableCellRenderer.1",
+    "locale": "en",
+    "text": "This entry is contained in {0} of {1} entities.<br>"
+  },
+  {
+    "resourceID": "SubFormTableCellRenderer.1",
+    "locale": "de",
+    "text": "Die Zeile ist in {0} von {1} Entitäten vorhanden.<br>"
+  },
+  {
+    "resourceID": "SubFormTableCellRenderer.2",
+    "locale": "i-default",
+    "text": "This entry is contained in all {0} entities.<br>"
+  },
+  {
+    "resourceID": "SubFormTableCellRenderer.2",
+    "locale": "en",
+    "text": "This entry is contained in all {0} entities.<br>"
+  },
+  {
+    "resourceID": "SubFormTableCellRenderer.2",
+    "locale": "de",
+    "text": "Die Zeile ist in allen {0} Entitäten vorhanden.<br>"
+  },
+  {
+    "resourceID": "SubFormTableCellRenderer.3",
+    "locale": "i-default",
+    "text": "None of these entities contains a value in the field \"{0}\"."
+  },
+  {
+    "resourceID": "SubFormTableCellRenderer.3",
+    "locale": "en",
+    "text": "None of these entities contains a value in the field \"{0}\"."
+  },
+  {
+    "resourceID": "SubFormTableCellRenderer.3",
+    "locale": "de",
+    "text": "Keine dieser Entitäten einhält einen Wert im Feld \"{0}\"."
+  },
+  {
+    "resourceID": "SubFormTableCellRenderer.4",
+    "locale": "i-default",
+    "text": "Each of these entities contains the value \"{0}\" in field \"{1}\"."
+  },
+  {
+    "resourceID": "SubFormTableCellRenderer.4",
+    "locale": "en",
+    "text": "Each of these entities contains the value \"{0}\" in field \"{1}\"."
+  },
+  {
+    "resourceID": "SubFormTableCellRenderer.4",
+    "locale": "de",
+    "text": "Alle diese Entitäten einhalten den Wert \"{0}\" im Feld \"{1}\"."
+  },
+  {
+    "resourceID": "SubFormTableCellRenderer.5",
+    "locale": "i-default",
+    "text": "The contained values in field \"{0}\" are:<br>"
+  },
+  {
+    "resourceID": "SubFormTableCellRenderer.5",
+    "locale": "en",
+    "text": "The contained values in field \"{0}\" are:<br>"
+  },
+  {
+    "resourceID": "SubFormTableCellRenderer.5",
+    "locale": "de",
+    "text": "Die darin enthaltenen Werte für \"{0}\" sind:<br>"
   }
 ]
