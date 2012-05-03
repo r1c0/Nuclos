@@ -1480,20 +1480,22 @@ public class MainController {
 		List<Pair<String[], Action>> nucletComponentMenuAction = new ArrayList<Pair<String[],Action>>();
 
 		if (nucletComponentRepository != null) {
-		for (INucletComponent nc : nucletComponentRepository.getNucletComponents()) {
-			String[] menuPath = nc.getMenuPath();
-			Action action = nc.getAction();
-			// If the component is not allowed to run (due to missing permissions), the action is disabled and skipped
-			if (menuPath != null && menuPath.length > 0 && action != null && action.isEnabled()) {
-				nucletComponentMenuAction.add(Pair.makePair(menuPath, action));
-				if (genericActions != null) {
-					WorkspaceDescription.Action wa = new WorkspaceDescription.Action();
-					wa.setAction(GENERIC_NUCLETCOMPONENT_ACTION);
-					wa.putStringParameter("nucletcomponent", nc.getClass().getName());
-					genericActions.add(new GenericAction(wa, new ActionWithMenuPath(menuPath, action)));
+			for (INucletComponent nc : nucletComponentRepository.getNucletComponents()) {
+				if (nc.isEnabled()) {
+					String[] menuPath = nc.getMenuPath();
+					Action action = nc.getAction();
+					// If the component is not allowed to run (due to missing permissions), the action is disabled and skipped
+					if (menuPath != null && menuPath.length > 0 && action != null && action.isEnabled()) {
+						nucletComponentMenuAction.add(Pair.makePair(menuPath, action));
+						if (genericActions != null) {
+							WorkspaceDescription.Action wa = new WorkspaceDescription.Action();
+							wa.setAction(GENERIC_NUCLETCOMPONENT_ACTION);
+							wa.putStringParameter("nucletcomponent", nc.getClass().getName());
+							genericActions.add(new GenericAction(wa, new ActionWithMenuPath(menuPath, action)));
+						}
+					}
 				}
 			}
-		}
 		}
 
 		return nucletComponentMenuAction;

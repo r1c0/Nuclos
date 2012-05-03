@@ -27,4 +27,6 @@ public interface INucletComponent {
 	public Action getAction();
 	
 	public String[] getMenuPath();
+	
+	public boolean isEnabled();
 }
