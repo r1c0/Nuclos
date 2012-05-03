@@ -64,7 +64,6 @@ public class ResPlanExporter {
 	
 	private final ImageType imageType;
 	private final File save;
-	private final ResPlanResourceVO vo;
 	private final CollectableNameProducer resourceNameProducer;
 	private final CollectableNameProducer entryNameProducer;
 	private final GranularityType granularity;
@@ -102,7 +101,6 @@ public class ResPlanExporter {
 			Interval<Date> horizon, ResPlanModel<Collectable, Date, Collectable> model, TimeModel<Date> time) {
 		this.imageType = imageType;
 		this.save = save;
-		this.vo = vo;
 		this.resourceNameProducer = new CollectableNameProducer(vo.getResourceLabel());
 		this.entryNameProducer = new CollectableNameProducer(vo.getBookingLabel());
 		this.granularity = granularity;
@@ -135,17 +133,19 @@ public class ResPlanExporter {
 		maxCategory = tg.getCategoryCount() - 1;
 		realHorizon = new Interval<Date>(floorBound(horizon.getStart(), quantizer), 
 				ceilBound(horizon.getEnd(), quantizer));
-		millisForPx = granularity.getApproxMillis() / XPIXEL_FOR_TIME_CAT;
+		millisForPx = getMillis(realHorizon.getStart(), quantizer) / XPIXEL_FOR_TIME_CAT;
 		maxX = getX(realHorizon.getEnd());
 		
 		for (int cat = 0; cat <= maxCategory; ++cat) {
 			final GranularityType gt = GranularityType.getGranularityForLevel(cat);
-			final int width = (int) (gt.getApproxMillis() / millisForPx);
+			// final int width = (int) (gt.getApproxMillis() / millisForPx);
 			final Calendar cal = Calendar.getInstance();
-			for (cal.setTime(floorBound(realHorizon.getStart(), gt.getCalendarQuantizer())); 
+			final int q = gt.getCalendarQuantizer();	
+			for (cal.setTime(floorBound(realHorizon.getStart(), q)); 
 					cal.getTime().before(realHorizon.getEnd()); 
-					cal.add(Calendar.SECOND, (int) (gt.getApproxMillis()/1000L))) 
-			{
+					montoneAdd(cal, q, 1)) {
+				
+				final int width = (int) (getMillis(cal.getTime(), q) / millisForPx);
 				// here x might be negative
 				float x = getX(cal.getTime());
 				float realWidth;
@@ -163,7 +163,7 @@ public class ResPlanExporter {
 				g.appendChild(sdds.createRect(x + XPIXEL_OFFSET, currentY, 
 						realWidth, YPIXEL_FOR_HEADER_CAT, 
 						"header"));
-				if (realWidth + 2 > XPIXEL_FOR_TIME_CAT) {
+				if (realWidth + 3 > XPIXEL_FOR_TIME_CAT) {
 					final String text = tg.getCategoryValue(cat, cal.getTime());
 					g.appendChild(sdds.createText(x + XPIXEL_OFFSET + realWidth/2, currentY + YPIXEL_HEADER_TXT_OFFSET, 
 						text, "headerTxt"));
@@ -174,7 +174,6 @@ public class ResPlanExporter {
 	}
 	
 	private void makeResPlanModel(SVGElement g) {
-		LOG.info("vo: " + vo);
 		int nor = 0;
 		for (Collectable r: model.getResources()) {
 			final float resourceStartY = currentY;
@@ -193,9 +192,6 @@ public class ResPlanExporter {
 				}
 
 				final String entryName = entryNameProducer.makeName(e);
-				LOG.info("Resource: " +  resourceName
-						+ " Entry: " + entryName 
-						+ " Interval: " + i);
 				final float x = getX(i.getStart());
 				final float width = getX(i.getEnd()) - x;
 				final SVGRectElement rect = sdds.createRect(x + XPIXEL_OFFSET, currentY + YPIXEL_RESOURCE_BORDER, width, 
@@ -234,6 +230,20 @@ public class ResPlanExporter {
 		return result;
 	}
 	
+	private long getMillis(Date date, int quantizer) {
+		final Calendar cal = Calendar.getInstance();
+		cal.setTime(date);
+		final int quant = cal.get(quantizer);
+		// side effect: modifies cal
+		dateFromQuant(cal, quant, quantizer);
+		final long low = cal.getTimeInMillis();
+		
+		// cal.set(quantizer, quant + 1);
+		montoneAdd(cal, quantizer, 1);
+		dateFromQuant(cal, cal.get(quantizer), quantizer);
+		return cal.getTimeInMillis() - low;
+	}
+	
 	private static Date floorBound(Date date, int quantizer) {
 		final Calendar cal = Calendar.getInstance();
 		cal.setTime(date);
@@ -244,8 +254,10 @@ public class ResPlanExporter {
 	private static Date ceilBound(Date date, int quantizer) {
 		final Calendar cal = Calendar.getInstance();
 		cal.setTime(date);
-		final int quant = cal.get(quantizer) + 1;
-		return dateFromQuant(cal, quant, quantizer);
+		// final int quant = cal.get(quantizer) + 1;
+		// cal.set(quantizer, cal.get(quantizer) + 1);
+		montoneAdd(cal, quantizer, 1);
+		return dateFromQuant(cal, cal.get(quantizer), quantizer);
 	}
 	
 	private static Date dateFromQuant(Calendar cal, int quant, int quantizer) {
@@ -290,6 +302,36 @@ public class ResPlanExporter {
 		}
 		final Date result = cal.getTime();
 		return result;
+	}
+	
+	private static void montoneAdd(Calendar cal, int field, int amount) {
+		final long millis = cal.getTimeInMillis();
+		cal.add(field, amount);
+		while (cal.getTimeInMillis() < millis) {
+			switch (field) {
+			case Calendar.WEEK_OF_YEAR:
+				field = Calendar.YEAR;
+				cal.add(field, 1);
+				break;
+			case Calendar.DAY_OF_WEEK:
+				field = Calendar.WEEK_OF_YEAR;
+				cal.add(field, 1);
+				break;
+			case Calendar.DAY_OF_MONTH:
+				field = Calendar.MONTH;
+				cal.add(field, 1);
+				break;
+			case Calendar.MONTH:
+				field = Calendar.YEAR;
+				cal.add(field, 1);
+				break;
+			case Calendar.YEAR:
+				// do nothing
+				break;
+			default:
+				throw new IllegalArgumentException();
+			}
+		}
 	}
 
 }
