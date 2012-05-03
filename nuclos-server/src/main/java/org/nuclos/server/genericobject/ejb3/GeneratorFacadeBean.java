@@ -403,9 +403,10 @@ public class GeneratorFacadeBean extends NuclosFacadeBean implements GeneratorFa
 				GenericObjectVO created = getGenericObjectFacade().create(new GenericObjectWithDependantsVO(container));
 
 				performDeferredActionsFromRules(lstActions, created.getId(), getGenericObjectFacade());
-
-				for (EntityObjectVO source : sourceObjects) {
-					relateCreatedGenericObjectToParent(IdUtils.unsafeToId(source.getId()), getGenericObjectFacade(), generatoractionvo, created.getId());
+				if (sourceMeta.isStateModel() && generatoractionvo.isCreateRelationBetweenObjects()) {
+					for (EntityObjectVO source : sourceObjects) {
+						relateCreatedGenericObjectToParent(IdUtils.unsafeToId(source.getId()), getGenericObjectFacade(), generatoractionvo, created.getId());
+					}
 				}
 
 				// execute rules (after)

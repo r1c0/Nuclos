@@ -392,6 +392,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	private final CollectPanel<CollectableGenericObjectWithDependants> pnlCollect = newCollectPanel();
 
 	private boolean bGenerated = false;
+	private GeneratorActionVO oGeneratorAction;
 	private Collection<Long> iGenericObjectIdSources;
 
 	private final GenericObjectDelegate lodelegate = GenericObjectDelegate.getInstance();
@@ -4013,12 +4014,16 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	@Override
 	public void save() throws CommonBusinessException {
 		super.save();
-		if (bGenerated && iGenericObjectIdSources != null) {
-			if (getSelectedGenericObjectId() != null) { // could be null if save is not possible (e.g. mandatory fields)
-				for (Long iGenericObjectIdSource : iGenericObjectIdSources) {
-					lodelegate.relate(IdUtils.unsafeToId(iGenericObjectIdSource), GenericObjectTreeNode.SystemRelationType.PREDECESSOR_OF.getValue(), getSelectedGenericObjectId(), getModuleId(), null, null, null);
+		if (bGenerated && iGenericObjectIdSources != null && oGeneratorAction != null) {
+			if (getSelectedGenericObjectId() != null && oGeneratorAction.isCreateRelationBetweenObjects()) { // could be null if save is not possible (e.g. mandatory fields)
+				final EntityMetaDataVO sourceMeta = MetaDataClientProvider.getInstance().getEntity(IdUtils.toLongId(oGeneratorAction.getSourceModuleId()));
+				if (sourceMeta.isStateModel()) {
+					for (Long iGenericObjectIdSource : iGenericObjectIdSources) {
+						lodelegate.relate(IdUtils.unsafeToId(iGenericObjectIdSource), GenericObjectTreeNode.SystemRelationType.PREDECESSOR_OF.getValue(), getSelectedGenericObjectId(), getModuleId(), null, null, null);
+					}
 				}
 				bGenerated = false;
+				setGenerationSource(null, null);
 			}
 		}
 	}
@@ -5214,10 +5219,15 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		@Override
 		public void searchModeEntered(CollectStateEvent ev) throws CommonBusinessException {
 			setInitialComponentFocusInSearchTab();
+			bGenerated = false;
+			setGenerationSource(null, null);
 		}
 
 		@Override
 		public void resultModeEntered(CollectStateEvent ev) throws NuclosBusinessException {
+			bGenerated = false;
+			setGenerationSource(null, null);
+			
 			if (ev.getOldCollectState().getOuterState() != CollectState.OUTERSTATE_RESULT)
 				setupChangeListenerForResultTableVerticalScrollBar();
 
@@ -5300,6 +5310,12 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 				setStatesDefaultPathVisible(false, false);
 			}	// switch
 
+			if (iDetailsMode != CollectState.DETAILSMODE_NEW_CHANGED
+					&& iDetailsMode != CollectState.DETAILSMODE_VIEW) {
+				bGenerated = false;
+				setGenerationSource(null, null);
+			}
+			
 			setDeleteButtonToggleInDetails();
 			// show custom actions only in view mode:
 			showCustomActions(iDetailsMode);
@@ -5912,8 +5928,9 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		return this.mpsubformctlDetails;
 	}
 
-	protected void setGenerationSourceIds(Collection<Long> ids) {
+	protected void setGenerationSource(Collection<Long> ids, GeneratorActionVO action) {
 		iGenericObjectIdSources = ids;
+		oGeneratorAction = action;
 		bGenerated = true;
 	}
 
