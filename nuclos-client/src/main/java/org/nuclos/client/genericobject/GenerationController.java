@@ -448,7 +448,7 @@ public class GenerationController {
 								else {
 									// dead code
 									assert false;
-									showIncompleteGenericObject(null, result.getGeneratedObject(), result.getError(), null);
+									showIncompleteGenericObject(null, result.getGeneratedObject(), action, result.getError(), null);
 								}
 							}
 						}	
@@ -456,7 +456,7 @@ public class GenerationController {
 					catch (GeneratorFailedException e) {
 						final GenerationResult result = e.getGenerationResult();
 						try {
-							showIncompleteGenericObject(null, result.getGeneratedObject(), result.getError(), null);
+							showIncompleteGenericObject(null, result.getGeneratedObject(), action, result.getError(), null);
 						}
 						catch (CommonBusinessException e2) {
 							Errors.getInstance().showExceptionDialog(parent, e2);
@@ -502,7 +502,7 @@ public class GenerationController {
 				else {
 					// dead code
 					assert false;
-					showIncompleteGenericObject(result.getSourceIds(), result.getGeneratedObject(), result.getError(), null);
+					showIncompleteGenericObject(result.getSourceIds(), result.getGeneratedObject(), action, result.getError(), null);
 				}
 			}
 		}
@@ -527,7 +527,7 @@ public class GenerationController {
 						showGenericObject(result.getGeneratedObject(), action.getTargetModuleId());
 				}
 				else {
-					showIncompleteGenericObject(result.getSourceIds(), result.getGeneratedObject(), result.getError(), ex.getCause());
+					showIncompleteGenericObject(result.getSourceIds(), result.getGeneratedObject(), action, result.getError(), ex.getCause());
 				}
 			}
 		}
@@ -554,7 +554,7 @@ public class GenerationController {
 	 * @param cause 
 	 * @throws CommonBusinessException
 	 */
-	private void showIncompleteGenericObject(Collection<Long> sourceIds, EntityObjectVO result, final String message, final Throwable cause) throws CommonBusinessException {
+	private void showIncompleteGenericObject(Collection<Long> sourceIds, EntityObjectVO result, GeneratorActionVO action, final String message, final Throwable cause) throws CommonBusinessException {
 		String entity = result.getEntity();
 		MainFrameTabbedPane pane;
 		if (MainFrame.isPredefinedEntityOpenLocationSet(entity)) {
@@ -569,7 +569,8 @@ public class GenerationController {
 		if (metaVO.isStateModel()) {
 			final GenericObjectCollectController goclct = NuclosCollectControllerFactory.getInstance().newGenericObjectCollectController(IdUtils.unsafeToId(metaVO.getId()), null);
 			goclct.setCollectState(CollectState.OUTERSTATE_DETAILS, CollectState.DETAILSMODE_NEW_CHANGED);
-			goclct.setGenerationSourceIds(sourceIds);
+			goclct.setGenerationSource(sourceIds, action);
+			
 			CollectableEOEntity meta = new CollectableEOEntity(metaVO, mpFields);
 			
 			if (result.getFieldId(NuclosEOField.STATE.getName()) == null) {

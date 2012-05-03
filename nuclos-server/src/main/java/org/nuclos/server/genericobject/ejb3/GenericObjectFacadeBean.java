@@ -1400,7 +1400,7 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 			throw new IllegalArgumentException("iModuleIdTarget");
 		}
 
-		this.checkWriteAllowedForModule(iModuleIdTarget, iGenericObjectIdSource);
+		//this.checkWriteAllowedForModule(iModuleIdTarget, iGenericObjectIdSource); // why do we have do check if write is allowed here. ?? especially we have to have the sourceModuleId here - not the moduleId from the target
 		this.checkWriteAllowedForModule(iModuleIdTarget, iGenericObjectIdTarget);
 
 		GenericObjectRelationVO relationVO = new GenericObjectRelationVO(
