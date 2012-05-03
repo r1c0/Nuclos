@@ -17,6 +17,7 @@
 package org.nuclos.common.collect.collectable;
 
 import org.nuclos.common2.LangUtils;
+import org.nuclos.common2.StringUtils;
 
 /**
  * Abstract implementation of a <code>CollectableField</code>.
@@ -41,6 +42,8 @@ public abstract class AbstractCollectableField implements CollectableField {
 	 */
 	@Override
 	public int compareTo(CollectableField that) {
+		if (getValue() instanceof String && that.getValue() instanceof String)
+			return StringUtils.compare((String)this.getValue(), (String)that.getValue());
 		return LangUtils.compare(this.getValue(), that.getValue());
 	}
 
@@ -82,8 +85,9 @@ public abstract class AbstractCollectableField implements CollectableField {
 				return LangUtils.equals(this.getValue(), that.getValue());
 			case CollectableField.TYPE_VALUEIDFIELD:
 				boolean eq = LangUtils.equals(this.getValueId(), that.getValueId());
-				if (strict)
+				if (strict) {
 					eq &= LangUtils.equals(this.getValue(), that.getValue());
+				}
 				return eq;
 			default:
 				throw new IllegalStateException("Invalid fieldtype: " + iFieldType);

@@ -18,6 +18,7 @@ package org.nuclos.common2;
 
 import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
+import java.text.Collator;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -712,6 +713,31 @@ public class StringUtils {
 
 	public static int compareIgnoreCase(String s1, String s2) {
 		return (s1 == null) ? ((s2 == null) ? 0 : 1) : s1.compareToIgnoreCase(s2);
+	}
+	
+	private static Collator collator = null;
+	
+	private static Collator getCollator() {
+		if (collator == null) {
+			collator = Collator.getInstance(SpringLocaleDelegate.getInstance().getLocale());
+			collator.setStrength(Collator.SECONDARY);// a == A, a < Ä
+		}
+		return collator;
+	}
+
+	public static boolean equals(String s1, String s2) {
+		if (s1 == null)
+			return s2 == null;
+		else {
+			return getCollator().equals(s1, s2);
+		}
+	}
+	
+	public static int compare(String s1, String s2) {
+		if (s1 == null)
+			return (s2 == null) ? 0 : 1;
+		else
+			return getCollator().compare(s1, s2);
 	}
 
 	private static final int MAX_SQL_ID_LENGTH = 21;
