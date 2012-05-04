@@ -28,8 +28,10 @@ import java.io.InputStream;
 import java.net.URL;
 import java.text.MessageFormat;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -53,11 +55,13 @@ import org.nuclos.client.common.security.SecurityCache;
 import org.nuclos.client.main.mainframe.MainFrame;
 import org.nuclos.client.synthetica.NuclosThemeSettings;
 import org.nuclos.common.ApplicationProperties;
+import org.nuclos.common.WorkspaceParameter;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Pair;
 import org.nuclos.common.collection.Predicate;
-import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.LangUtils;
+import org.nuclos.common2.SpringLocaleDelegate;
+import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.XMLUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -202,15 +206,24 @@ public class MenuGenerator {
 			menu.setVisible(setItemVisible);
 		}
 		else if(menuElement.getTagName().equals("menuitem")) {
-			if (MainFrame.getWorkspace() == null || MainFrame.getWorkspace().getWoDesc().isHideMenuBar()) {
-				if ("MainController.cmdExecuteRport".equals(menuElement.getAttribute("commandreference"))) {
+			final Set<String> controlable = new HashSet<String>();
+			controlable.add("MainController.cmdExecuteRport");
+			controlable.add("MainController.cmdShowPersonalSearchFilters");
+			controlable.add("MainController.cmdShowPersonalTasks");
+			controlable.add("MainController.cmdShowTimelimitTasks");
+			final String menuItem = menuElement.getAttribute("commandreference");
+			if (MainFrame.getWorkspace() == null) {
+				if (controlable.contains(menuItem)) {
 					return insertIndex;
-				} else if ("MainController.cmdShowPersonalSearchFilters".equals(menuElement.getAttribute("commandreference"))) {
-					return insertIndex;
-				} else if ("MainController.cmdShowPersonalTasks".equals(menuElement.getAttribute("commandreference"))) {
-					return insertIndex;
-				} else if ("MainController.cmdShowTimelimitTasks".equals(menuElement.getAttribute("commandreference"))) {
-					return insertIndex;
+				}
+			} else {
+				final String hideMenuItemsParameter = MainFrame.getWorkspace().getWoDesc().getParameter(WorkspaceParameter.HIDE_MENU_ITEMS);
+				if (!StringUtils.looksEmpty(hideMenuItemsParameter)) {
+					final Set<String> hideMenuItems = CollectionUtils.asSet(
+							MainFrame.getWorkspace().getWoDesc().getParameter(WorkspaceParameter.HIDE_MENU_ITEMS).split(";"));
+					if (controlable.contains(menuItem) && hideMenuItems.contains(menuItem)) {
+						return insertIndex;
+					}
 				}
 			}
 			Action a;

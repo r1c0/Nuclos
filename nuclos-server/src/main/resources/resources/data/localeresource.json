@@ -61349,6 +61349,36 @@
     "text": "Letzte Fenster Einstellungen übernehmen (Größe und Position)"
   },
   {
+    "resourceID": "WorkspaceEditor.13",
+    "locale": "i-default",
+    "text": "Parameter"
+  },
+  {
+    "resourceID": "WorkspaceEditor.13",
+    "locale": "en",
+    "text": "Parameter"
+  },
+  {
+    "resourceID": "WorkspaceEditor.13",
+    "locale": "de",
+    "text": "Parameter"
+  },
+  {
+    "resourceID": "WorkspaceEditor.14",
+    "locale": "i-default",
+    "text": "Value"
+  },
+  {
+    "resourceID": "WorkspaceEditor.14",
+    "locale": "en",
+    "text": "Value"
+  },
+  {
+    "resourceID": "WorkspaceEditor.14",
+    "locale": "de",
+    "text": "Wert"
+  },
+  {
     "resourceID": "NuclosSetting.menuBarOSspecific",
     "locale": "i-default",
     "text": "Operating system specific menu bar (Mac OS X only, requires reboot)"

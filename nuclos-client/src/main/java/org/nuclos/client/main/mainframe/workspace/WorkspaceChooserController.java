@@ -77,6 +77,7 @@ import org.nuclos.client.ui.model.ChoiceList;
 import org.nuclos.common.Actions;
 import org.nuclos.common.WorkspaceDescription;
 import org.nuclos.common.WorkspaceDescriptionDefaultsFactory;
+import org.nuclos.common.WorkspaceParameter;
 import org.nuclos.common.WorkspaceVO;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Predicate;
@@ -363,6 +364,10 @@ public class WorkspaceChooserController {
 					selectedWorkspace.importHeader(wovo.getWoDesc());
 					selectedWorkspace.getWoDesc().removeAllEntityPreferences();
 					selectedWorkspace.getWoDesc().addAllEntityPreferences(wovo.getWoDesc().getEntityPreferences());
+					selectedWorkspace.getWoDesc().removeAllTasklistPreferences();
+					selectedWorkspace.getWoDesc().addAllTasklistPreferences(wovo.getWoDesc().getTasklistPreferences());
+					selectedWorkspace.getWoDesc().removeAllParameters();
+					selectedWorkspace.getWoDesc().setAllParameters(wovo.getWoDesc().getParameters());
 				}
 				
 				contentPanel.repaint();
@@ -581,13 +586,15 @@ public class WorkspaceChooserController {
 				@Override
 				public void actionPerformed(ActionEvent e) {
 					boolean hideMenuBar = wovo.getWoDesc().isHideMenuBar();
+					String hideMenuItems = wovo.getWoDesc().getParameter(WorkspaceParameter.HIDE_MENU_ITEMS);
 					WorkspaceEditor we = new WorkspaceEditor(wovo);
 					try {
 						if (we.isSaved()) {
 							getPrefsFacade().storeWorkspaceHeaderOnly(wovo);
 							refreshWorkspaces();
 							if (wovo == MainFrame.getWorkspace()) {
-								if (hideMenuBar != wovo.getWoDesc().isHideMenuBar()) {
+								if (hideMenuBar != wovo.getWoDesc().isHideMenuBar() || 
+										!LangUtils.equals(hideMenuItems, wovo.getWoDesc().getParameter(WorkspaceParameter.HIDE_MENU_ITEMS))) {
 									Main.getInstance().getMainController().setupMenuBar();
 								}
 							}
@@ -621,6 +628,8 @@ public class WorkspaceChooserController {
 							wovo.importHeader(wovo.getWoDesc());
 							wovo.setName(newName);
 							wovo.getWoDesc().addAllEntityPreferences(wovo.getWoDesc().getEntityPreferences());
+							wovo.getWoDesc().addAllTasklistPreferences(wovo.getWoDesc().getTasklistPreferences());
+							wovo.getWoDesc().setAllParameters(wovo.getWoDesc().getParameters());
 
 							try {
 								addWorkspace(RestoreUtils.storeWorkspace(wovo), false);

@@ -197,6 +197,10 @@ public class ResourceIconChooser extends JPanel {
         worker.execute();
 	}	
 	
+	public void removeBorder() {
+		listScroller.setBorder(BorderFactory.createEmptyBorder());
+	}
+	
 	private class LoadWorker extends SwingWorker<List<ImageIcon>, Object> {
 
 		@Override

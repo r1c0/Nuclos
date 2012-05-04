@@ -45,6 +45,7 @@ public class WorkspaceDescription implements Serializable {
 	private List<Frame> frames;
 	private List<EntityPreferences> entityPreferences;
 	private List<TasklistPreferences> tasklistPreferences;
+	private Map<String, String> parameters;
 
 	public WorkspaceDescription() {
 	}
@@ -240,6 +241,36 @@ public class WorkspaceDescription implements Serializable {
 	
 	public void removeAllTasklistPreferences() {
 		this._getTasklistPreferences().clear();
+	}
+	
+	private Map<String, String> _getParameters() {
+		if (this.parameters == null) 
+			this.parameters = new HashMap<String, String>();
+		return this.parameters;
+	}
+	
+	public String getParameter(String parameter) {
+		return this._getParameters().get(parameter);
+	}
+	
+	public Map<String, String> getParameters() {
+		return new HashMap<String, String>(this._getParameters());
+	}
+	
+	public void setParameter(String parameter, String value) {
+		this._getParameters().put(parameter, value);
+	}
+	
+	public void setAllParameters(Map<String, String> parameters) {
+		this._getParameters().putAll(parameters);
+	}
+	
+	public void removeParameter(String parameter) {
+		this._getParameters().remove(parameter);
+	}
+	
+	public void removeAllParameters() {
+		this._getParameters().clear();
 	}
 
 	public static class Tab implements Serializable {

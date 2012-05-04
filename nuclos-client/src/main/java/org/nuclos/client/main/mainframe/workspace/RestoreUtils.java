@@ -297,6 +297,10 @@ public class RestoreUtils {
 		if (wovo.getWoDesc() != wd) {
 			wovo.getWoDesc().removeAllEntityPreferences();
 			wovo.getWoDesc().addAllEntityPreferences(wd.getEntityPreferences());
+			wovo.getWoDesc().removeAllTasklistPreferences();
+			wovo.getWoDesc().addAllTasklistPreferences(wd.getTasklistPreferences());
+			wovo.getWoDesc().removeAllParameters();
+			wovo.getWoDesc().setAllParameters(wd.getParameters());
 		}
 
 		MainFrame.setWorkspace(wovo);
