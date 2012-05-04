@@ -19,21 +19,22 @@ package org.nuclos.client.nuclet;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.nuclos.api.ui.MenuItem;
 import org.springframework.stereotype.Component;
 
 @Component
 public class NucletComponentRepository {
 
-	private List<INucletComponent> components = new ArrayList<INucletComponent>();
+	private List<MenuItem> menuItems = new ArrayList<MenuItem>();
 	
 	public NucletComponentRepository() {
 	}
 	
-	public void addNucletComponent(INucletComponent nc) {
-		components.add(nc);
+	public void addMenuItem(MenuItem mi) {
+		menuItems.add(mi);
 	}
 	
-	public List<INucletComponent> getNucletComponents() {
-		return new ArrayList<INucletComponent>(components);
+	public List<MenuItem> getMenuItems() {
+		return new ArrayList<MenuItem>(menuItems);
 	}
 }

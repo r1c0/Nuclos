@@ -87,6 +87,8 @@ import javax.swing.text.JTextComponent;
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.log4j.Logger;
 import org.jfree.util.Log;
+import org.nuclos.api.ui.MenuItem;
+import org.nuclos.api.ui.annotation.NucletComponent;
 import org.nuclos.client.LocalUserProperties;
 import org.nuclos.client.attribute.AttributeCache;
 import org.nuclos.client.common.ClientParameterProvider;
@@ -125,7 +127,6 @@ import org.nuclos.client.masterdata.MasterDataCollectController;
 import org.nuclos.client.masterdata.MasterDataDelegate;
 import org.nuclos.client.masterdata.MetaDataCache;
 import org.nuclos.client.masterdata.MetaDataDelegate;
-import org.nuclos.client.nuclet.INucletComponent;
 import org.nuclos.client.nuclet.NucletComponentRepository;
 import org.nuclos.client.relation.EntityRelationShipCollectController;
 import org.nuclos.client.report.admin.ReportExecutionCollectController;
@@ -1304,7 +1305,7 @@ public class MainController {
 
 	public static final String GENERIC_ENTITY_ACTION = "nuclosGenericEntityAction";
 	public static final String GENERIC_COMMAND_ACTION = "nuclosGenericCommandAction";
-	public static final String GENERIC_NUCLETCOMPONENT_ACTION = "nuclosGenericNucletComponentAction";
+	public static final String GENERIC_NUCLETCOMPONENT_MENUITEM_ACTION = "nuclosGenericNucletComponentMenuItemAction";
 	public static final String GENERIC_CUSTOMCOMPONENT_ACTION = "nuclosGenericCustomComponentAction";
 	public static final String GENERIC_SEARCHFILTER_ACTION = "nuclosGenericSearchFilterAction";
 	public static final String GENERIC_RESTORE_WORKSPACE_ACTION = "nuclosGenericRestoreWorkspaceAction";
@@ -1481,17 +1482,17 @@ public class MainController {
 		List<Pair<String[], Action>> nucletComponentMenuAction = new ArrayList<Pair<String[],Action>>();
 
 		if (nucletComponentRepository != null) {
-			for (INucletComponent nc : nucletComponentRepository.getNucletComponents()) {
-				if (nc.isEnabled()) {
-					String[] menuPath = nc.getMenuPath();
-					Action action = nc.getAction();
+			for (MenuItem mi : nucletComponentRepository.getMenuItems()) {
+				if (mi.isEnabled()) {
+					String[] menuPath = mi.getMenuPath();
+					Action action = mi.getAction();
 					// If the component is not allowed to run (due to missing permissions), the action is disabled and skipped
 					if (menuPath != null && menuPath.length > 0 && action != null && action.isEnabled()) {
 						nucletComponentMenuAction.add(Pair.makePair(menuPath, action));
 						if (genericActions != null) {
 							WorkspaceDescription.Action wa = new WorkspaceDescription.Action();
-							wa.setAction(GENERIC_NUCLETCOMPONENT_ACTION);
-							wa.putStringParameter("nucletcomponent", nc.getClass().getName());
+							wa.setAction(GENERIC_NUCLETCOMPONENT_MENUITEM_ACTION);
+							wa.putStringParameter("nucletcomponent.menuitem", mi.getClass().getName());
 							genericActions.add(new GenericAction(wa, new ActionWithMenuPath(menuPath, action)));
 						}
 					}

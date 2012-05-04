@@ -16,6 +16,8 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.nuclet;
 
+import org.nuclos.api.ui.MenuItem;
+import org.nuclos.api.ui.annotation.NucletComponent;
 import org.springframework.aop.framework.AopInfrastructureBean;
 import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.BeansException;
@@ -49,9 +51,9 @@ public class NucletComponentPostProcessor implements BeanPostProcessor, Ordered 
 			return bean;
 		}
 		Class<?> targetClass = AopUtils.getTargetClass(bean);
-		if (targetClass.isAnnotationPresent(org.nuclos.client.annotation.NucletComponent.class)) {
-			if (bean instanceof INucletComponent) {
-				ncr.addNucletComponent((INucletComponent) bean);
+		if (targetClass.isAnnotationPresent(NucletComponent.class)) {
+			if (bean instanceof MenuItem) {
+				ncr.addMenuItem((MenuItem) bean);
 			}
 		}
 		return bean;
