@@ -18,17 +18,21 @@ package org.nuclos.client.common;
 
 import java.awt.Component;
 import java.awt.Container;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
+import javax.swing.JRadioButton;
 import javax.swing.JToolBar;
 import javax.swing.LayoutFocusTraversalPolicy;
 
 import org.apache.log4j.Logger;
 import org.nuclos.client.ui.JInfoTabbedPane;
+import org.nuclos.client.ui.OptionGroup;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.client.ui.collect.SubForm;
 import org.nuclos.client.ui.labeled.LabeledComponent;
@@ -54,6 +58,16 @@ public class NuclosFocusTraversalPolicy extends	LayoutFocusTraversalPolicy {
 		if(aComponent instanceof JComponent) {
 			JComponent jComponent = (JComponent)aComponent;
 			Object obj = jComponent.getClientProperty(LayoutMLConstants.ATTRIBUTE_NEXTFOCUSCOMPONENT);
+			if (obj == null && jComponent.getParent() != null && jComponent.getParent() instanceof JComponent)
+				if (jComponent.getParent() instanceof OptionGroup) {
+					Enumeration elements = ((OptionGroup)jComponent.getParent()).getButtonGroup().getElements();
+					while (elements.hasMoreElements()) {
+						Object elem = elements.nextElement();
+						if (!elements.hasMoreElements() && elem.equals(jComponent))
+							obj = ((JComponent)jComponent.getParent()).getClientProperty(LayoutMLConstants.ATTRIBUTE_NEXTFOCUSCOMPONENT);
+					}
+				} else
+					obj = ((JComponent)jComponent.getParent()).getClientProperty(LayoutMLConstants.ATTRIBUTE_NEXTFOCUSCOMPONENT);
 			if(obj != null && obj instanceof String) {
 				if(aContainer instanceof JPanel) {
 					JComponent jFound = UIUtils.findJComponentStartsWithName((JPanel)aContainer, (String)obj);
