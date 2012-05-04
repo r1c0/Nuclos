@@ -326,6 +326,12 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 								subFormsLoader.resume();
 							}
 
+							UIUtils.runShortCommandLater(getFrame(), new CommonRunnable() {
+								@Override
+				                public void run() throws CommonBusinessException {
+									Utils.setComponentFocus(sFieldName, getDetailsPanel().getEditView(), null, false);
+								}
+							});
 						}
 						catch (/* CommonBusiness */ Exception ex) {
 							Errors.getInstance().showExceptionDialog(getFrame(), 
@@ -348,6 +354,8 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 					public void run() {
 						try {
 							reloadLayoutForSearchTab();
+							
+							Utils.setComponentFocus(sFieldName, getSearchPanel().getEditView(), null, false);
 						}
 						catch (/* CommonBusiness */ Exception ex) {
 							Errors.getInstance().showExceptionDialog(getFrame(), 
@@ -4476,7 +4484,6 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	private void reloadLayout(UsageCriteria usagecriteria, CollectState collectstate, boolean bTransferContents, boolean bAddUsageCriteriaFieldListeners)
 	throws CommonBusinessException {
 		/** @todo don't do this unless the layout really changed! */
-
 		if (bReloadingLayout)
 			throw new IllegalStateException("reloadLayout must not be called recursively!");
 
