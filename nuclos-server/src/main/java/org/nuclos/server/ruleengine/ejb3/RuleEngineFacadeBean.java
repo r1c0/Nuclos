@@ -1221,7 +1221,7 @@ public class RuleEngineFacadeBean extends NuclosFacadeBean implements RuleEngine
 		protected List<String> getImports() {
 			List<String> imports = new ArrayList<String>();
 			CollectionUtils.addAll(imports, IMPORTS);
-			final String additionalImports = serverParameterProvider.getValue(ParameterProvider.KEY_ADDITIONAL_IMPORTS_FOR_RULES);
+			final String additionalImports = ServerParameterProvider.getInstance().getValue(ParameterProvider.KEY_ADDITIONAL_IMPORTS_FOR_RULES);
 			if (additionalImports != null) {
 				CollectionUtils.addAll(imports, additionalImports.split(","));
 			}
