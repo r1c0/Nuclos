@@ -581,8 +581,8 @@ public class GeneratorFacadeBean extends NuclosFacadeBean implements GeneratorFa
 	}
 
 	private EntityObjectVO getGroupedGeneratedObject(GeneratorActionVO generator, Collection<Long> sourceIds) {
-		final String sourceEntity = Modules.getInstance().getEntityNameByModuleId(generator.getSourceModuleId());
-		final String targetEntity = Modules.getInstance().getEntityNameByModuleId(generator.getTargetModuleId());
+		final String sourceEntity = MetaDataServerProvider.getInstance().getEntity(IdUtils.toLongId(generator.getSourceModuleId())).getEntity();
+		final String targetEntity = MetaDataServerProvider.getInstance().getEntity(IdUtils.toLongId(generator.getTargetModuleId())).getEntity();
 		final Collection<MasterDataVO> attributes = getMasterDataFacade().getDependantMasterData(NuclosEntity.GENERATIONATTRIBUTE.getEntityName(), "generation", generator.getId());
 
 		String sTable = MetaDataServerProvider.getInstance().getEntity(sourceEntity).getDbEntity();
@@ -651,7 +651,9 @@ public class GeneratorFacadeBean extends NuclosFacadeBean implements GeneratorFa
 		final EntityObjectVO result = new EntityObjectVO();
 		result.initFields(1, 1);
 		result.setEntity(targetEntity);
-		result.getFields().put(NuclosEOField.LOGGICALDELETED.getMetaData().getField(), Boolean.FALSE);
+		if (MetaDataServerProvider.getInstance().getEntity(targetEntity).isStateModel()) {
+			result.getFields().put(NuclosEOField.LOGGICALDELETED.getMetaData().getField(), Boolean.FALSE);
+		}
 
 		for (MasterDataVO attribute : attributes) {
 			final String type = (String) attribute.getField("sourceType");

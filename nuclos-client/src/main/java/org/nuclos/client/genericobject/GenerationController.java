@@ -280,16 +280,23 @@ public class GenerationController {
 					UIUtils.runShortCommand(parent, generateRunnable);
 				}
 			}
+			else {
+				unlock(parent);
+			}
 		}
 		catch (Exception ex) {
 			Errors.getInstance().showExceptionDialog(parent, ex);
-			SwingUtilities.invokeLater(new Runnable() {
-				@Override
-				public void run() {
-					parent.unlockLayer();
-				}
-			});
+			unlock(parent);
 		}
+	}
+	
+	private void unlock(final MainFrameTab tab) {
+		SwingUtilities.invokeLater(new Runnable() {
+			@Override
+			public void run() {
+				tab.unlockLayer();
+			}
+		});
 	}
 
 	public static String getModuleLabel(Integer id) {
