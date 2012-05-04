@@ -100,9 +100,10 @@
 			</exclusions>
 		</dependency>
 		<dependency>
-			<groupId>org.swinglabs.swingx</groupId>
+			<!-- groupId>org.swinglabs.swingx</groupId -->
+			<groupId>de.novabit</groupId>
 			<artifactId>swingx-core</artifactId>
-			<version>1.6.3</version>
+			<version>1.6.2</version>
 		</dependency>
 		<dependency>
 			<groupId>de.novabit</groupId>
