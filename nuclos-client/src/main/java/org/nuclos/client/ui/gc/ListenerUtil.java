@@ -32,6 +32,8 @@ import javax.swing.text.Document;
 
 import org.nuclos.client.ui.collect.SubForm;
 import org.nuclos.client.ui.collect.SubForm.SubFormToolListener;
+import org.nuclos.client.ui.collect.component.CollectableListOfValues;
+import org.nuclos.client.ui.collect.component.LookupListener;
 
 /**
  * A utility class for registering (gui) listeners that get garbage collected.
@@ -265,6 +267,41 @@ public class ListenerUtil {
 		
 	}
 	
+	private final static class LookupRegister implements IRegister {
+		
+		private final WeakReference<CollectableListOfValues> b;
+		
+		private final LookupAdapter a;
+		
+		private LookupRegister(CollectableListOfValues b, LookupAdapter a) {
+			this.b = new WeakReference<CollectableListOfValues>(b);
+			this.a = a;
+		}
+
+		@Override
+		public void register() {
+			final CollectableListOfValues bb = b.get();
+			if (bb != null) {
+				bb.addLookupListener(a);
+				QueueSingleton.getInstance().register(this);
+			}
+		}
+
+		@Override
+		public void unregister() {
+			final CollectableListOfValues bb = b.get();
+			if (bb != null) {
+				bb.removeLookupListener(a);
+			}
+		}
+
+		@Override
+		public Reference<EventListener> getReference() {
+			return a.getReference();
+		}
+		
+	}
+	
 	private ListenerUtil() {
 		// Never invoked.
 	}
@@ -350,6 +387,19 @@ public class ListenerUtil {
 		final SubformToolAdapter a = new SubformToolAdapter(l);
 		final IRegister register = new SubFormToolRegister(b, a);
 		register.register();		
+		dependant(outer, l);
+	}
+
+	/**
+	 * <p>
+	 * ATTENTION: Don't register anonymous inner class listeners with this utility class <em>
+	 * without setting the outer class object</em>. The will be garbage collected directly!
+	 * </p>
+	 */
+	public static void registerLookupListener(CollectableListOfValues b, IReferenceHolder outer, LookupListener l) {
+		final LookupAdapter a = new LookupAdapter(l);
+		final IRegister register = new LookupRegister(b, a);
+		register.register();
 		dependant(outer, l);
 	}
 

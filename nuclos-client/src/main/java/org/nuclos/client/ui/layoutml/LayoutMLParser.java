@@ -74,6 +74,7 @@ import org.nuclos.client.ui.JInfoTabbedPane;
 import org.nuclos.client.ui.LineLayout;
 import org.nuclos.client.ui.SizeKnownListener;
 import org.nuclos.client.ui.TitledSeparator;
+import org.nuclos.client.ui.collect.CollectableComponentsProvider;
 import org.nuclos.client.ui.collect.DefaultCollectableComponentsProvider;
 import org.nuclos.client.ui.collect.SubForm;
 import org.nuclos.client.ui.collect.component.CollectableComboBox;
@@ -327,6 +328,84 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 			}
 		}
 
+		private static class LookupCollectableComponentModelListener implements CollectableComponentModelListener {
+			
+			private final GenCache<Object, Collectable> cache;
+			
+			private final CollectableComponentsProvider provider;
+			
+			private final List<Pair<String, CollectableComponentModel>> transfers;
+			
+			private final JComponent rootComponent;
+			
+			//
+			
+			private LookupCollectableComponentModelListener(GenCache<Object, Collectable> cache,
+					CollectableComponentsProvider provider,
+					List<Pair<String, CollectableComponentModel>> transfers,
+					JComponent rootComponent) {
+				this.cache = cache;
+				this.provider = provider;
+				this.transfers = transfers;
+				this.rootComponent = rootComponent;
+			}
+			
+			@Override
+			public void valueToBeChanged(DetailsComponentModelEvent ev) {
+			}
+			
+			@Override
+			public void searchConditionChangedInModel(SearchComponentModelEvent ev) {
+			}
+			
+			@Override
+			public void collectableFieldChangedInModel(CollectableComponentModelEvent ev) {
+				if (ev.collectableFieldHasChanged() && !ev.getCollectableComponentModel().isInitializing()) {
+					Object id = ev.getNewValue().getValueId();
+					Collectable clctSelected = null;
+					try {
+						clctSelected = cache.get(id);
+						for (Pair<String, CollectableComponentModel> t : transfers) {
+							transferValue(provider, clctSelected, t.getX(), t.getY());
+						}
+					} catch (Exception ex) {
+						Errors.getInstance().showExceptionDialog(rootComponent, ex);
+					}
+				}
+			}
+		}
+
+		private static class RuleLookupListener implements LookupListener {
+			
+			private final CollectableComponentsProvider provider;
+			
+			private final String sourceFieldName;
+			
+			private final CollectableComponentModel clctcompmodelSource;
+			
+			private final CollectableComponentModel clctcompmodelTarget;
+			
+			private RuleLookupListener(CollectableComponentsProvider provider, String sourceFieldName,
+					CollectableComponentModel clctcompmodelSource, CollectableComponentModel clctcompmodelTarget) {
+				this.provider = provider;
+				this.sourceFieldName = sourceFieldName;
+				this.clctcompmodelSource = clctcompmodelSource;
+				this.clctcompmodelTarget = clctcompmodelTarget;
+			}
+			
+			@Override
+			public void lookupSuccessful(LookupEvent ev) {
+				if (!clctcompmodelSource.isInitializing()) {
+					transferValue(provider, ev.getSelectedCollectable(), sourceFieldName, clctcompmodelTarget);
+				}
+			}
+
+			@Override
+            public int getPriority() {
+                return 1;
+            }
+		}
+
 		private class Rule {
 
 			private Event event;
@@ -430,7 +509,7 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 					}
 				}	// for
 			}
-
+			
 			private void handleLookupEvent() throws SAXException {
 				// get the event's source components:
 				final Collection<CollectableComponent> collclctcompSource = BuildFormHandler.this.getCollectableComponentsProvider().getCollectableComponentsFor(event.sSourceComponentName);
@@ -470,30 +549,12 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 						if (transfers.size() > 0) {
 							String referencedEntityName = clctcompSource.getEntityField().getReferencedEntityName();
 							if (referencedEntityName != null) {
-								final GenCache<Object, Collectable> cache = new GenCache<Object, Collectable>(new CollectableLookupProvider(clctcompSource.getEntityField().getEntityName(), clctcompSource.getEntityField().getName()));
-								clctcompSource.getModel().addCollectableComponentModelListener(new CollectableComponentModelListener() {
-									@Override
-									public void valueToBeChanged(DetailsComponentModelEvent ev) {
-									}
-									@Override
-									public void searchConditionChangedInModel(SearchComponentModelEvent ev) {
-									}
-									@Override
-									public void collectableFieldChangedInModel(CollectableComponentModelEvent ev) {
-										if (ev.collectableFieldHasChanged() && !ev.getCollectableComponentModel().isInitializing()) {
-											Object id = ev.getNewValue().getValueId();
-											Collectable clctSelected = null;
-											try {
-												clctSelected = cache.get(id);
-												for (Pair<String, CollectableComponentModel> t : transfers) {
-													transferValue(clctSelected, t.getX(), t.getY());
-												}
-											} catch (Exception ex) {
-												Errors.getInstance().showExceptionDialog(getRootComponent(), ex);
-											}
-										}
-									}
-								});
+								final GenCache<Object, Collectable> cache = new GenCache<Object, Collectable>(
+										new CollectableLookupProvider(clctcompSource.getEntityField().getEntityName(), 
+												clctcompSource.getEntityField().getName()));
+								
+								clctcompSource.getModel().addCollectableComponentModelListener(new LookupCollectableComponentModelListener(
+										cache, getCollectableComponentsProvider(), transfers, getRootComponent()));
 							}
 						}
 					}
@@ -513,7 +574,7 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 					handleClearAction(clearaction, clctlovSource);
 				}
 			}
-
+			
 			private void handleTransferLookedUpValueAction(final TransferLookedUpValueAction transferaction, final CollectableListOfValues clctlovSource) throws SAXException {
 				if (bCreateSearchableComponents) {
 					return; //NUCLOSINT-1160
@@ -527,19 +588,9 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 						//"Zielkomponente ist nicht im Layout vorhanden: " + sTargetComponentName);
 				}
 				/** @todo removeLookupListener - but where/when? */
-				clctlovSource.addLookupListener(new LookupListener() {
-					@Override
-					public void lookupSuccessful(LookupEvent ev) {
-						if (!clctcompmodelSource.isInitializing()) {
-							transferValue(ev.getSelectedCollectable(), transferaction.getSourceFieldName(), clctcompmodelTarget);
-						}
-					}
-
-					@Override
-                    public int getPriority() {
-	                    return 1;
-                    }
-				});
+				clctlovSource.addLookupListener(new RuleLookupListener(
+						getCollectableComponentsProvider(), transferaction.getSourceFieldName(), 
+						clctcompmodelSource, clctcompmodelTarget));
 			}
 
 			private void handleClearAction(final ClearAction clearaction, final CollectableListOfValues clctlovSource) throws SAXException {
@@ -704,7 +755,9 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 		/**
 		 * Transfers looked-up values.
 		 */
-		private void transferValue(Collectable clctSelected, String sourceFieldName, CollectableComponentModel clctcompmodelTarget) {
+		private static void transferValue(CollectableComponentsProvider provider, 
+				Collectable clctSelected, String sourceFieldName, CollectableComponentModel clctcompmodelTarget) {
+			
 			if (clctcompmodelTarget instanceof SearchComponentModel) {
 				return; //NUCLOSINT-1160
 			}
@@ -734,7 +787,7 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 							/** @todo this is definitely a workaround - the valuelist provider should probably move from
 							 * CollectableComboBox to CollectableComponentModel - but this can't be done at this time. 09.09.2004 CR */
 							try {
-								final Collection<CollectableComponent> collclctcompTarget = BuildFormHandler.this.getCollectableComponentsProvider().getCollectableComponentsFor(clctefTarget.getName());
+								final Collection<CollectableComponent> collclctcompTarget = provider.getCollectableComponentsFor(clctefTarget.getName());
 								final CollectableComboBox clctcmbbx = (CollectableComboBox) collclctcompTarget.iterator().next();
 								assert !clctfSource.isNull();
 								clctcompmodelTarget.setField(CollectableUtils.findCollectableFieldByValue(clctcmbbx.getValueList(), clctfSource));

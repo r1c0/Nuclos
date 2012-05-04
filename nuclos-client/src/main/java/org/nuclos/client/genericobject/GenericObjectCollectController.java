@@ -31,6 +31,7 @@ import java.awt.event.ItemListener;
 import java.awt.event.KeyEvent;
 import java.io.IOException;
 import java.io.Serializable;
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -397,7 +398,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	protected boolean bUseInvalidMasterData = false;
 
 	private final Integer iModuleId;
-	private final CollectPanel<CollectableGenericObjectWithDependants> pnlCollect = newCollectPanel();
+	private final WeakReference<CollectPanel<CollectableGenericObjectWithDependants>> pnlCollect = newCollectPanel();
 
 	private boolean bGenerated = false;
 	private GeneratorActionVO oGeneratorAction;
@@ -652,10 +653,11 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	 * TODO: Make this protected again.
 	 */
 	public void init() {
-		initialize(pnlCollect);
+		final CollectPanel<CollectableGenericObjectWithDependants> collectPanel = getCollectPanel();
+		initialize(collectPanel);
 
 		final MainFrameTab frame = !noTabFromContructor ? getFrame() : newInternalFrame();
-		frame.setLayeredComponent(pnlCollect);
+		frame.setLayeredComponent(collectPanel);
 
 		setupEditPanels();
 		setupKeyActionsForResultPanelVerticalScrollBar();
@@ -671,6 +673,14 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		setInternalFrame(frame, noTabFromContructor);
 
 		setupResultContextMenuGeneration();
+	}
+	
+	@Override
+	public CollectPanel<CollectableGenericObjectWithDependants> getCollectPanel() {
+		// super.getCollectPanel();
+		final CollectPanel<CollectableGenericObjectWithDependants> result = pnlCollect.get();
+		assert result != null || isClosed();
+		return result;
 	}
 
 	private void setupToolbars() {
@@ -1745,11 +1755,11 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 			}
 		});
 	}
-
+	
 	/** @todo pull down to CollectController */
-	protected CollectPanel<CollectableGenericObjectWithDependants> newCollectPanel() {
+	protected WeakReference<CollectPanel<CollectableGenericObjectWithDependants>> newCollectPanel() {
 		boolean bSearch = MetaDataClientProvider.getInstance().getEntity(this.sEntity).isSearchable();
-		return new GenericObjectCollectPanel(bSearch);
+		return new WeakReference(new GenericObjectCollectPanel(bSearch));
 	}
 
 	@Override
@@ -3285,7 +3295,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		lstResult.add(clct);
 		this.fillResultPanel(lstResult);
 
-		pnlCollect.getResultPanel().getResultTable().setRowSelectionInterval(0, 0);
+		getCollectPanel().getResultPanel().getResultTable().setRowSelectionInterval(0, 0);
 		// select the one result row
 
 		setHistoricalDate(dateHistorical);
@@ -3296,8 +3306,9 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	}
 
 	private void disableToolbarButtonsForHistoricalView() {
-		pnlCollect.setTabbedPaneEnabledAt(CollectState.OUTERSTATE_SEARCH, false);
-		pnlCollect.setTabbedPaneEnabledAt(CollectState.OUTERSTATE_RESULT, false);
+		final CollectPanel<CollectableGenericObjectWithDependants> collectPanel = getCollectPanel();
+		collectPanel.setTabbedPaneEnabledAt(CollectState.OUTERSTATE_SEARCH, false);
+		collectPanel.setTabbedPaneEnabledAt(CollectState.OUTERSTATE_RESULT, false);
 		getDetailsPanel().btnDelete.setEnabled(false);
 		actDeleteSelectedCollectablesPhysically.setEnabled(false);
 		btnExecuteRule.setEnabled(false);
@@ -3334,7 +3345,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		this.fillResultPanel(lstclct);
 
 		// select all result rows:
-		pnlCollect.getResultPanel().getResultTable().setRowSelectionInterval(0, lstclct.size() - 1);
+		getCollectPanel().getResultPanel().getResultTable().setRowSelectionInterval(0, lstclct.size() - 1);
 
 		if (bShowInDetails)
 			cmdEnterMultiViewMode();

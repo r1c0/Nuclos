@@ -83,42 +83,56 @@ public abstract class LabeledCollectableComponent extends AbstractCollectableCom
 	public void setFillControlHorizontally(boolean bFill) {
 		getLabeledComponent().setFillControlHorizontally(bFill);
 	}
+	
+	private static class LabeledTableCellRenderer implements TableCellRenderer {
+		
+		private TableCellRenderer parent;
+		
+		private final CollectableEntityField clctef;
+		
+		private LabeledTableCellRenderer(TableCellRenderer parent, CollectableEntityField clctef) {
+			this.parent = parent;
+			this.clctef = clctef;
+		}
+		
+		@Override
+		public Component getTableCellRendererComponent(JTable tbl, Object oValue, boolean bSelected, boolean bHasFocus, int iRow, int iColumn) {
+			Component comp = parent.getTableCellRendererComponent(tbl, oValue, bSelected, bHasFocus, iRow, iColumn);
+			if (comp instanceof JLabel) {
+				JLabel lb = (JLabel) comp;
+				CollectableFieldFormat format = CollectableFieldFormat.getInstance(clctef.getJavaClass());
+
+				final CollectableField cf = (CollectableField) oValue;
+				if (cf != null && cf.getValue() != null) {
+					if (cf.getValue() instanceof List) {
+						List<Object> values = (List<Object>) cf.getValue();
+						StringBuilder sb = new StringBuilder();
+						for (Object o : values) {
+							if (o != null) {
+								if (sb.length() > 0) {
+									sb.append(", ");
+								}
+								sb.append(format.format(clctef.getFormatOutput(), o));
+							}
+						}
+						lb.setText(sb.toString());
+					} else {
+						lb.setText(format.format(clctef.getFormatOutput(), cf.getValue()));
+					}
+				}
+				else {
+					lb.setText("");
+				}
+			}
+			return comp;
+		}
+		
+	}
 
 	@Override
 	public TableCellRenderer getTableCellRenderer() {
 		final TableCellRenderer parentRenderer = super.getTableCellRenderer();
-		return new TableCellRenderer() {
-			@Override
-			public Component getTableCellRendererComponent(JTable tbl, Object oValue, boolean bSelected, boolean bHasFocus, int iRow, int iColumn) {
-				Component comp = parentRenderer.getTableCellRendererComponent(tbl, oValue, bSelected, bHasFocus, iRow, iColumn);
-				if (comp instanceof JLabel) {
-					JLabel lb = (JLabel) comp;
-					CollectableFieldFormat format = CollectableFieldFormat.getInstance(getEntityField().getJavaClass());
-
-					final CollectableField cf = (CollectableField) oValue;
-					if (cf != null && cf.getValue() != null) {
-						if (cf.getValue() instanceof List) {
-							List<Object> values = (List<Object>) cf.getValue();
-							StringBuilder sb = new StringBuilder();
-							for (Object o : values) {
-								if (o != null) {
-									if (sb.length() > 0) {
-										sb.append(", ");
-									}
-									sb.append(format.format(getEntityField().getFormatOutput(), o));
-								}
-							}
-							lb.setText(sb.toString());
-						} else {
-							lb.setText(format.format(getEntityField().getFormatOutput(), cf.getValue()));
-						}
-					}
-					else {
-						lb.setText("");
-					}
-				}
-				return comp;
-			}
-		};
+		return new LabeledTableCellRenderer(parentRenderer, getEntityField());
 	}
+	
 }  // class LabeledCollectableComponent
