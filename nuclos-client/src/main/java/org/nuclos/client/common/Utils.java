@@ -347,6 +347,47 @@ public class Utils {
 		});
 	}
 
+
+	/**
+	 * sets the input focus to a certain collectable component in a LayoutML mask.
+	 * @param sFocusFieldName field name of the component that is to receive to focus.
+	 * @param clctcompprovider map of all collectable components in the layout
+	 * @param frame frame of the layout (for possible warning dialogs only)
+	 * @param bShowWarnings displays warnings for components not found for focussing
+	 * @precondition eafnInitialFocus != null
+	 */
+	public static void setComponentFocus(final String sFocusFieldName,
+			final CollectableComponentsProvider clctcompprovider, 
+			final MainFrameTab frame, final boolean bShowWarnings) {
+		// Must be invoked later, else focus is not set with compound components like LOVs
+		EventQueue.invokeLater(new Runnable() {
+			@Override
+            public void run() {
+				try {
+					if (sFocusFieldName != null) {
+						final Collection<CollectableComponent> collclctcomp = clctcompprovider.getCollectableComponentsFor(sFocusFieldName);
+						if (collclctcomp.isEmpty()) {
+							if (bShowWarnings) {
+								final String sMessage = SpringLocaleDelegate.getInstance().getMessage(
+										"ClientUtils.1", "Das angegebene Feld f\u00fcr den initialen Fokus existiert nicht.");
+								JOptionPane.showMessageDialog(frame, sMessage, SpringLocaleDelegate.getInstance().getMessage("ClientUtils.2", "Hinweis"), 
+										JOptionPane.WARNING_MESSAGE);
+							}
+						}
+						else {
+							final CollectableComponent clctcomp = collclctcomp.iterator().next();
+							final JComponent compFocus = clctcomp.getFocusableComponent();
+							compFocus.requestFocusInWindow();									
+						}
+					}
+				}
+				catch (Exception e) {
+					LOG.error("setComponentFocus failed: " + e, e);
+				}
+			}
+		});
+	}
+
 	/**
 	 * Returns a {@code Collectable} object for the given entity and id.
 	 * This method works for master data as well as generic objects.

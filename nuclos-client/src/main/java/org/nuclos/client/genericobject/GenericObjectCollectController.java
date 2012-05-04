@@ -328,6 +328,12 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 								subFormsLoader.resume();
 							}
 
+							UIUtils.runShortCommandLater(getFrame(), new CommonRunnable() {
+								@Override
+				                public void run() throws CommonBusinessException {
+									Utils.setComponentFocus(sFieldName, getDetailsPanel().getEditView(), null, false);
+								}
+							});
 						}
 						catch (/* CommonBusiness */ Exception ex) {
 							Errors.getInstance().showExceptionDialog(getTab(), 
@@ -350,6 +356,8 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 					public void run() {
 						try {
 							reloadLayoutForSearchTab();
+							
+							Utils.setComponentFocus(sFieldName, getSearchPanel().getEditView(), null, false);
 						}
 						catch (/* CommonBusiness */ Exception ex) {
 							Errors.getInstance().showExceptionDialog(getTab(), 
