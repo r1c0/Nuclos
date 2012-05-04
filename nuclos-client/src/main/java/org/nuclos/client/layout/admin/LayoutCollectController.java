@@ -43,6 +43,7 @@ import org.apache.log4j.Logger;
 import org.nuclos.client.common.DetailsSubFormController;
 import org.nuclos.client.common.LocaleDelegate;
 import org.nuclos.client.common.NuclosCollectControllerFactory;
+import org.nuclos.client.common.NuclosFocusTraversalPolicy;
 import org.nuclos.client.common.Utils;
 import org.nuclos.client.entityobject.CollectableEntityObject;
 import org.nuclos.client.layout.wysiwyg.CollectableWYSIWYGLayoutEditor;
@@ -338,6 +339,11 @@ public abstract class LayoutCollectController extends MasterDataCollectControlle
 				if (sLayoutName != null) {
 					sTitle += ": " + sLayoutName;
 				}
+				
+				layoutRoot.getRootComponent().setFocusCycleRoot(true);
+				layoutRoot.getRootComponent().setFocusTraversalPolicyProvider(true);
+				layoutRoot.getRootComponent().setFocusTraversalPolicy(
+								new NuclosFocusTraversalPolicy(layoutRoot.getRootComponent()));
 
 				//NUCLEUSINT-285
 				Dimension preferredSize = getDetailsPanel().getPreferredSize();

@@ -74,7 +74,7 @@ public class PropertyValueString implements PropertyValue<String> {
 		if (c.getPropertyValuesFromMetaInformation() != null){
 			for (String[] valueFromMeta : c.getPropertyValuesFromMetaInformation()){
 				if (valueFromMeta[0].equals(property)){
-					values = c.getProperties().getMetaInformation().getListOfMetaValues(c, valueFromMeta[1], dialog);
+					values = c.getProperties().getMetaInformation().getListOfMetaValues(c, valueFromMeta, dialog);
 				}
 			}
 		}
@@ -106,7 +106,7 @@ public class PropertyValueString implements PropertyValue<String> {
 		if (c.getPropertyValuesFromMetaInformation() != null){
 			for (String[] valueFromMeta : c.getPropertyValuesFromMetaInformation()){
 				if (valueFromMeta[0].equals(property)){
-					values = c.getProperties().getMetaInformation().getListOfMetaValues(c, valueFromMeta[1], dialog);
+					values = c.getProperties().getMetaInformation().getListOfMetaValues(c, valueFromMeta, dialog);
 				}
 			}
 		}

@@ -255,11 +255,15 @@ public class WYSIWYGMetaInformation implements LayoutMLConstants {
 	 * @param dialog
 	 * @return
 	 */
-	public List<StringResourceIdPair> getListOfMetaValues(WYSIWYGComponent c, String meta, PropertiesPanel dialog) {
+	public List<StringResourceIdPair> getListOfMetaValues(WYSIWYGComponent c, String[] valueFromMeta, PropertiesPanel dialog) {
 		List<StringResourceIdPair> result = new ArrayList<StringResourceIdPair>();
-
+		String prop = valueFromMeta[0];
+		String meta = valueFromMeta[1];
 		if (META_FIELD_NAMES.equals(meta)) {
-			result = getFittingFieldnamesForControlType(c);
+			if (prop.equals(WYSIWYGComponent.PROPERTY_NEXTFOCUSCOMPONENT))
+				result = getFittingFieldnames();
+			else
+				result = getFittingFieldnamesForControlType(c);
 		} else if (META_ENTITY_NAMES.equals(meta)) {
 			Collection<MasterDataMetaVO> entities = MetaDataCache.getInstance().getMetaData();
 			Set<String> allUsedEntities = new HashSet<String>(c.getParentEditor().getMainEditorPanel().getSubFormEntityNames());
@@ -488,6 +492,38 @@ public class WYSIWYGMetaInformation implements LayoutMLConstants {
 
 		}
 		return sortValues(result);
+	}
+
+
+	/**
+	 * Externalized Method called by public List<String> getListOfMetaValues(WYSIWYGComponent c, String meta, PropertiesDialog dialog)
+	 * Performs a lookup on fitting Fields for a ControlType
+	 *
+	 * @param c
+	 * @return
+	 */
+	private List<StringResourceIdPair> getFittingFieldnames(){
+		List<StringResourceIdPair> result = new ArrayList<StringResourceIdPair>();
+ 		Integer iModuleId;
+		try {
+			iModuleId = Modules.getInstance().getModuleIdByEntityName(entity.getName());
+		}
+		catch (NoSuchElementException ex) {
+			iModuleId = null;
+		}
+
+		if (iModuleId != null) {
+			for (AttributeCVO a : AttributeCache.getInstance().getAttributes()) {
+				result.add(new StringResourceIdPair(a.getName(), a.getResourceSIdForLabel()));
+			}
+		}
+		else {
+			for (String s : getEntityFieldNames(entity.getName())) {//entity.getFieldNames()) {
+				result.add(new StringResourceIdPair(s, null));
+			}
+		}
+
+		return result;
 	}
 
 	/**
