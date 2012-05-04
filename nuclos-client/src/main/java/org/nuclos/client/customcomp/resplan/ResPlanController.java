@@ -485,22 +485,20 @@ public class ResPlanController extends CustomComponentController {
 
 	public static enum GranularityType implements KeyEnum<String> {
 		
-		MONTH("month", 0, Calendar.MONTH, 1000L * 60 * 60 * 24 * 30),
-		WEEK("week", 1, Calendar.WEEK_OF_YEAR, 1000L * 60 * 60 * 24 * 7),
+		MONTH("month", 0, Calendar.MONTH),
+		WEEK("week", 1, Calendar.WEEK_OF_YEAR),
 		@Deprecated
-		TIME("time", 3, -1, -1L),
-		DAY("day", 2, Calendar.DAY_OF_WEEK, 1000L * 60 * 60 * 24);
+		TIME("time", 3, -1),
+		DAY("day", 2, Calendar.DAY_OF_WEEK);
 
 		private final String name;
 		private final int level;
 		private final int calendarQuantizer;
-		private final long approxMillis;
 
-		private GranularityType(String name, int level, int calendarQuantizer, long approxMillis) {
+		private GranularityType(String name, int level, int calendarQuantizer) {
 			this.name = name;
 			this.level = level;
 			this.calendarQuantizer = calendarQuantizer;
-			this.approxMillis = approxMillis;
 		}
 
 		@Override
@@ -514,10 +512,6 @@ public class ResPlanController extends CustomComponentController {
 		
 		public int getCalendarQuantizer() {
 			return calendarQuantizer;
-		}
-		
-		public long getApproxMillis() {
-			return approxMillis;
 		}
 		
 		public static GranularityType getGranularityForLevel(int level) {
