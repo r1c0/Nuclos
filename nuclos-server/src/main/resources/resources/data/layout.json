@@ -161,7 +161,7 @@
   {
     "name": "LDAPServer",
     "description": "Maske für LDAPServer",
-    "nuclos_layoutUsage": [ { "entity": "nuclos_ldapserver", "searchScreen": true }, { "entity": "nuclos_ldapserver", "searchScreen": false }]
+    "nuclos_layoutUsage": [ { "entity": "nuclos_ldapserver", "searchScreen": false }]
   },
   {
     "name": "Strukturdefinition für Objektimport",

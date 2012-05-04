@@ -108,6 +108,7 @@ public class LDAPDataFacadeBean extends NuclosFacadeBean implements LDAPDataFaca
 	 * @return a collection containing the search result for the given search expression.
 	 * TODO restrict permissions
 	 */
+	@SuppressWarnings("deprecation")
 	@RolesAllowed("Login")
 	public Collection<MasterDataWithDependantsVOWrapper> getUsers(String filterExpr, Object[] filterArgs) throws CommonBusinessException {
 		List<EntityObjectVO> servers = NucletDalProvider.getInstance().getEntityObjectProcessor(NuclosEntity.LDAPSERVER).getAll();
@@ -282,7 +283,9 @@ public class LDAPDataFacadeBean extends NuclosFacadeBean implements LDAPDataFaca
 		}
 
 		Boolean active = vo.getField("active", Boolean.class);
-		if (active != null && active) {
+		String sync = vo.getField("serversearchfilter", String.class);
+		
+		if (active != null && active && !StringUtils.isNullOrEmpty(sync)) {
 			List<String> nuclosfields = new ArrayList<String>(Arrays.asList("name", "firstname", "lastname"));
 			for (EntityObjectVO mdvo : dependants.getData(NuclosEntity.LDAPMAPPING.getEntityName())) {
 				String na = mdvo.getField("fieldNucleus", String.class);

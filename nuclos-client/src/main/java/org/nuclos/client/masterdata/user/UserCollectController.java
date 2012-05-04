@@ -295,8 +295,8 @@ public class UserCollectController extends MasterDataCollectController {
 	}
 
 	private void getAdditionalDataFromView(UserVO user) throws CommonBusinessException {
-		user.setSetPassword((Boolean)chkSetPassword.getFieldFromView().getValue());
-		user.setNotifyUser((Boolean)chkSendPassword.getFieldFromView().getValue());
+		user.setSetPassword(LangUtils.defaultIfNull((Boolean)chkSetPassword.getFieldFromView().getValue(), Boolean.FALSE));
+		user.setNotifyUser(LangUtils.defaultIfNull((Boolean)chkSendPassword.getFieldFromView().getValue(), Boolean.FALSE));
 		if (user.getSetPassword()) {
 			String passwd1 = (String)pwdPassword.getFieldFromView().getValue();
 			String passwd2 = (String)pwdPasswordRepeat.getFieldFromView().getValue();

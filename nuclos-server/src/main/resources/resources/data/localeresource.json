@@ -65317,5 +65317,20 @@
     "resourceID": "SubFormTableCellRenderer.5",
     "locale": "de",
     "text": "Die darin enthaltenen Werte für \"{0}\" sind:<br>"
+  },
+  {
+    "resourceID": "nuclos.entity.ldapserver.treeview",
+    "locale": "i-default",
+    "text": "${servername}: ${serverurl}"
+  },
+  {
+    "resourceID": "nuclos.entity.ldapserver.treeview",
+    "locale": "en",
+    "text": "${servername}: ${serverurl}"
+  },
+  {
+    "resourceID": "nuclos.entity.ldapserver.treeview",
+    "locale": "de",
+    "text": "${servername}: ${serverurl}"
   }
 ]

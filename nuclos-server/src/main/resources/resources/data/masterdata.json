@@ -59,7 +59,7 @@
     "name": "LDAP Konfiguration",
     "entity": "nuclos_ldapserver",
     "menupath": "Administration\\Sicherheit",
-    "searchable": true,
+    "searchable": false,
     "editable": true,
     "cacheable": true,
     "dbentity": "T_AD_LDAPSERVER",
@@ -67,6 +67,7 @@
     "systementity": true,
     "labelres": "nuclos.entity.ldapserver.label",
     "nuclosresource": "org.nuclos.client.resource.icon.glyphish-blue.145-persondot.png",
+    "treeviewres": "nuclos.entity.ldapserver.treeview",
     "nuclos_entityfield": [
       {
         "name": "servername",
