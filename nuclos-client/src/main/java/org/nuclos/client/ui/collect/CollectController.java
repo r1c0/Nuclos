@@ -626,6 +626,9 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	 * @param pnlCollect the CollectPanel to be used.
 	 */
 	protected void initialize(CollectPanel<Clct> pnlCollect){
+		if (pnlCollect == null) {
+			throw new NullPointerException();
+		}
 		// set the name of the internal frame to this CollectController's entity name (for GUI testing purposes):
 		if (this.getTab() != null) {
 			this.getTab().setName("ifrm" + StringUtils.capitalized(clcte.getName()));
