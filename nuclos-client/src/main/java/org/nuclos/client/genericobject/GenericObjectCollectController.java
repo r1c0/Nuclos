@@ -328,7 +328,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 								subFormsLoader.resume();
 							}
 
-							UIUtils.runShortCommandLater(getFrame(), new CommonRunnable() {
+							UIUtils.runShortCommandLater(getTab(), new CommonRunnable() {
 								@Override
 				                public void run() throws CommonBusinessException {
 									Utils.setComponentFocus(sFieldName, getDetailsPanel().getEditView(), null, false);
