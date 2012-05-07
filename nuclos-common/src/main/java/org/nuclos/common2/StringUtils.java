@@ -720,7 +720,7 @@ public class StringUtils {
 	private static Collator getCollator() {
 		if (collator == null) {
 			collator = Collator.getInstance(SpringLocaleDelegate.getInstance().getLocale());
-			collator.setStrength(Collator.SECONDARY);// a == A, a < Ä
+			collator.setStrength(Collator.SECONDARY);// a == A, a < Ã„
 		}
 		return collator;
 	}
