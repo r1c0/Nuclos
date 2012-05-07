@@ -43,17 +43,6 @@ public class CollectableEntityObjectField extends LocalizedCollectableValueField
 		//return (this.oValueId != null) ? CollectableField.TYPE_VALUEIDFIELD : CollectableField.TYPE_VALUEFIELD;
 	}
 
-	/**
-	 * @return (this.getValue() == null)
-	 */
-	@Override
-	public boolean isNull() {
-		//assert this.getFieldType() == CollectableField.TYPE_VALUEFIELD;
-		
-		return (this.getValue() == null);
-	}
-
-
 	@Override
 	public Object getValue() {
 		return this.oValue;
@@ -74,6 +63,17 @@ public class CollectableEntityObjectField extends LocalizedCollectableValueField
 	public String toDescription() {
 		final ToStringBuilder b = new ToStringBuilder(this).append(fieldType).append(sFieldName).append(oValueId).append(oValue);
 		return b.toString();
+	}
+	
+	@Override
+	public boolean isNull() {
+		if (getFieldType() == CollectableField.TYPE_VALUEFIELD) {
+			return getValue() == null;
+		}
+		else if (getFieldType() == CollectableField.TYPE_VALUEIDFIELD) {
+			return getValueId() == null;
+		}
+		throw new IllegalStateException();
 	}
 
 }
