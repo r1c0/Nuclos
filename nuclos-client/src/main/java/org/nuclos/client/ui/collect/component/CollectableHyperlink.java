@@ -88,17 +88,6 @@ public class CollectableHyperlink extends CollectableTextComponent {
 	
 	protected CollectableHyperlink(CollectableEntityField clctef, boolean bSearchable, LabeledHyperlink labHyperlink) {
 		super(clctef, labHyperlink, bSearchable);
-
-		this.getHyperlink().addFocusListener(new FocusAdapter() {
-			@Override
-			public void focusLost(FocusEvent e) {
-				try {
-					updateView(getFieldFromView());
-				} catch (CollectableFieldFormatException e1) {
-					LOG.debug("CollectableDateChooser: " + e1);
-				}
-			}
-		});
 	}
 	
 
