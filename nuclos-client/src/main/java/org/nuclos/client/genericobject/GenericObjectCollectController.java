@@ -398,7 +398,6 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	protected boolean bUseInvalidMasterData = false;
 
 	private final Integer iModuleId;
-	private final WeakReference<CollectPanel<CollectableGenericObjectWithDependants>> pnlCollect = newCollectPanel();
 
 	private boolean bGenerated = false;
 	private GeneratorActionVO oGeneratorAction;
@@ -653,6 +652,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	 * TODO: Make this protected again.
 	 */
 	public void init() {
+		_setCollectPanel(newCollectPanel());
 		final CollectPanel<CollectableGenericObjectWithDependants> collectPanel = getCollectPanel();
 		initialize(collectPanel);
 
@@ -675,14 +675,6 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		setupResultContextMenuGeneration();
 	}
 	
-	@Override
-	public CollectPanel<CollectableGenericObjectWithDependants> getCollectPanel() {
-		// super.getCollectPanel();
-		final CollectPanel<CollectableGenericObjectWithDependants> result = pnlCollect.get();
-		assert result != null || isClosed();
-		return result;
-	}
-
 	private void setupToolbars() {
 		if(this.isSearchPanelAvailable())
 			setupSearchToolBar();
