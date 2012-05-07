@@ -39,7 +39,6 @@ import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
 
 import org.apache.log4j.Logger;
-import org.nuclos.client.desktop.DesktopUtils;
 import org.nuclos.client.genericobject.CollectableGenericObjectFileChooser;
 import org.nuclos.client.ui.Bubble;
 import org.nuclos.client.ui.Errors;
@@ -51,9 +50,10 @@ import org.nuclos.common.PointerException;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
 import org.nuclos.common.collect.collectable.CollectableValueField;
 import org.nuclos.common.collect.exception.CollectableFieldFormatException;
-import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.CommonRunnable;
 import org.nuclos.common2.IOUtils;
+import org.nuclos.common2.SpringLocaleDelegate;
+import org.nuclos.common2.SystemUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
 
 /**
@@ -175,7 +175,7 @@ public abstract class CollectableDocumentFileChooserBase extends AbstractCollect
 						IOUtils.writeToBinaryFile(file, abContents);
 						LOG.debug("Schreiben der tempor\u00e4ren Datei war erfolgreich.");
 						file.deleteOnExit();
-						DesktopUtils.open(file);
+						SystemUtils.open(file);
 					}
 				}
 				catch (IOException ex) {

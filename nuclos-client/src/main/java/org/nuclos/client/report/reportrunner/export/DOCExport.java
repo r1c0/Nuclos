@@ -53,7 +53,7 @@ public class DOCExport extends AbstractReportExporter {
 
 		switch (destination) {
 		case FILE:
-			openFile(sFileName, true);
+			openFile(sFileName, false);
 			break;
 		case PRINTER_CLIENT:
 			openPrintDialog(sFileName, true, false);
@@ -69,7 +69,7 @@ public class DOCExport extends AbstractReportExporter {
 			break;
 		default:
 			// TYPE SCREEN
-			openFile(sFileName, false);
+			openFile(sFileName, true);
 			break;
 		}
 	}
