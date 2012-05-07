@@ -970,7 +970,7 @@ public class MasterDataCollectController extends EntityCollectController<Collect
 
 				   @Override
 				   public void work() throws NuclosBusinessException {
-					   if (interrupted) {
+					   if (interrupted || isClosed()) {
 						   return;
 					   }
 					   collmdvo = (clct.getId() == null) ?
@@ -994,7 +994,7 @@ public class MasterDataCollectController extends EntityCollectController<Collect
 				   public void paint() throws CommonBusinessException {
 				   	// if this worker is interrupted - it is a worker for an "old" subform/main object.
 					   // The data schould not be published to sub form! otherwise we will see a sub form data of another object!
-					   if (!interrupted) {
+					   if (!interrupted && !isClosed()) {
 						   synchronized (MasterDataCollectController.this) {
 							   final boolean bWasDetailsChangedIgnored = MasterDataCollectController.this.isDetailsChangedIgnored();
 							   MasterDataCollectController.this.setDetailsChangedIgnored(true);
