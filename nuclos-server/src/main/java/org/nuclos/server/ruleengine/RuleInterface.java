@@ -545,12 +545,7 @@ public class RuleInterface extends CustomCodeInterface {
 			}
 		}
 		
-		if (this.getGenericObject() != null) {
-			return this.getDependants(sEntityName, ModuleConstants.DEFAULT_FOREIGNKEYFIELDNAME);
-		}
-		else {
-			throw new NuclosFatalRuleException("rule.interface.error.3");//"Bitte geben Sie das Fremdschl\u00fcssel an.");
-		}
+		return this.getDependants(sEntityName, ModuleConstants.DEFAULT_FOREIGNKEYFIELDNAME);
 	}
 	
 	private void addDependants(String entityname, DependantMasterDataMap map, List<MasterDataVO> result) {
