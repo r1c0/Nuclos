@@ -684,6 +684,7 @@ public abstract class StandardSqlDBAccess extends AbstractDBAccess {
             PreparedStringBuilder ps = new PreparedStringBuilder();
             prepareSelect(ps, query);
             appendSelection(ps, query.getSelections());
+            postprocessSelect(ps, query);
             ps.append(" FROM ");
             appendFrom(ps, query.getRoots());
             if (query.getRestriction() != null) {
@@ -720,6 +721,10 @@ public abstract class StandardSqlDBAccess extends AbstractDBAccess {
             ps.append("SELECT ");
             if (query.isDistinct())
                 ps.append("DISTINCT ");
+        }
+        
+        protected void postprocessSelect(PreparedStringBuilder ps, DbQuery<?> query) {
+        	
         }
 
         private void appendSelection(PreparedStringBuilder ps, List<? extends DbSelection<?>> selections) {

@@ -284,12 +284,21 @@ public class OracleDBAccess extends StandardSqlDBAccess {
 				ps.append("SELECT ");
 				if (query.isDistinct())
 					ps.append("DISTINCT ");
-				ps = ps.append("* FROM (SELECT ROW_NUMBER() OVER (");
-				super.prepareOrderBy(ps, query);
-				ps = ps.append(") AS RN, ");
+				ps = ps.append("* FROM (SELECT ");
 			}
 		}
 		
+		@Override
+		protected void postprocessSelect(PreparedStringBuilder ps, DbQuery<?> query) {
+			if (query.getOffset() == null) {
+				super.postprocessSelect(ps, query);
+			} else {
+				ps = ps.append(", ROW_NUMBER() OVER (");
+				super.prepareOrderBy(ps, query);
+				ps = ps.append(") AS RN ");
+			}
+		}
+
 		@Override
 		protected void prepareOrderBy(PreparedStringBuilder ps, DbQuery<?> query) {
 			if (query.getOffset() == null) {
