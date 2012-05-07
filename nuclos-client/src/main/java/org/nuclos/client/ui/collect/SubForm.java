@@ -21,6 +21,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Graphics2D;
@@ -33,6 +34,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionAdapter;
 import java.beans.PropertyChangeEvent;
 import java.io.Closeable;
 import java.util.ArrayList;
@@ -105,6 +107,7 @@ import org.nuclos.client.ui.collect.component.DefaultCollectableComponentFactory
 import org.nuclos.client.ui.collect.component.LabeledCollectableComponentWithVLP;
 import org.nuclos.client.ui.collect.component.LookupEvent;
 import org.nuclos.client.ui.collect.component.LookupListener;
+import org.nuclos.client.ui.collect.component.TableCellCursor;
 import org.nuclos.client.ui.collect.component.model.CollectableComponentModelAdapter;
 import org.nuclos.client.ui.collect.component.model.CollectableComponentModelEvent;
 import org.nuclos.client.ui.collect.component.model.CollectableComponentModelListener;
@@ -1159,7 +1162,7 @@ public class SubForm extends JPanel
 			if (c instanceof LabeledComponent) {
 				((LabeledComponent) c).getLabeledComponentSupport().setColorProvider(null);
 			}
-			mpColumnRenderer.put(clctef, clctcomp.getTableCellRenderer());
+			mpColumnRenderer.put(clctef, clctcomp.getTableCellRenderer(true));
 		}
 	}
 
@@ -1323,7 +1326,8 @@ public class SubForm extends JPanel
 						clctefTarget.getFieldType(),
 						clctefTarget.getFormatInput(),
 						clctefTarget.getFormatOutput(),
-						clcte.getName());
+						clcte.getName(),
+						clctefTarget.getDefaultComponentType());
 
 				CollectableComponentType type = getTypeFromClassField(subformtblmdl, "datatype", iRow);
 				CollectableComponent clctcomp = DefaultCollectableComponentFactory.getInstance().newCollectableComponent(newEntityField, type, bSearchable);
@@ -2103,7 +2107,8 @@ public class SubForm extends JPanel
 									clctefTarget.getFieldType(),
 									clctefTarget.getFormatInput(),
 									clctefTarget.getFormatOutput(),
-									subform.entityName);
+									subform.entityName,
+									clctefTarget.getDefaultComponentType());
 
 							return getCellRendererFromClassField(newEntityField, "datatype", iRow);
 						}
@@ -2134,7 +2139,7 @@ public class SubForm extends JPanel
 			}
 
 			CollectableComponent comp = CollectableComponentFactory.getInstance().newCollectableComponent(entityField, new CollectableComponentType(typeId,null), false);
-			return comp.getTableCellRenderer();
+			return comp.getTableCellRenderer(true);
 		}
 
 		public TableCellEditorProvider getTableCellEditorProvider() {

@@ -156,7 +156,7 @@ public class ListOfValues extends JPanel {
 		}
 
 		@Override
-		public void buttonClicked() {
+		public void buttonClicked(MouseEvent me) {
 			ListOfValues.this.btnBrowse.doClick();
 		}
 

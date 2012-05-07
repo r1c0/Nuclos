@@ -144,8 +144,8 @@ public class CollectableTextField extends CollectableTextComponent implements Me
    }
 
 	@Override
-	public TableCellRenderer getTableCellRenderer() {
-		final TableCellRenderer parentRenderer = super.getTableCellRenderer();
+	public TableCellRenderer getTableCellRenderer(boolean subform) {
+		final TableCellRenderer parentRenderer = super.getTableCellRenderer(subform);
 		return new TableCellRenderer() {
 			@Override
 			public Component getTableCellRendererComponent(JTable tbl, Object oValue, boolean bSelected, boolean bHasFocus, int iRow, int iColumn) {

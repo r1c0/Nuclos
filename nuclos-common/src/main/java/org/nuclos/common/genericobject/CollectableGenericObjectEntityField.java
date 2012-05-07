@@ -19,9 +19,12 @@ package org.nuclos.common.genericobject;
 import java.util.Date;
 import java.util.prefs.Preferences;
 
+import org.apache.log4j.Logger;
 import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.RelativeDate;
+import org.nuclos.common2.StringUtils;
+import org.nuclos.common.DefaultComponentTypes;
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.attribute.ComponentType;
 import org.nuclos.common.collect.collectable.AbstractCollectableEntityField;
@@ -188,6 +191,10 @@ public class CollectableGenericObjectEntityField extends AbstractCollectableEnti
 	 */
 	@Override
 	public int getDefaultCollectableComponentType() {
+		if (getDefaultComponentType() != null) {
+			return super.getDefaultCollectableComponentType();
+		}
+		
 		final int result;
 		switch (ComponentType.findByFlags(attrcvo.isSearchable(), attrcvo.isModifiable(), attrcvo.isInsertable())) {
 			case TEXTFIELD:
@@ -212,6 +219,19 @@ public class CollectableGenericObjectEntityField extends AbstractCollectableEnti
 	@Override
 	public String getEntityName() {
 		return entityName;
+	}
+
+	@Override
+	public String getDefaultComponentType() {
+		if (entityFieldMeta == null) {
+			if (attrcvo == null) {
+				return null;
+			} else {
+				return attrcvo.getDefaultComponentType();
+			}
+		} else {
+			return entityFieldMeta.getDefaultComponentType();
+		}
 	}
 
 }	// class CollectableGenericObjectEntityField

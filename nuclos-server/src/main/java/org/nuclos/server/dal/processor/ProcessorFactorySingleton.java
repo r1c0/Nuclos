@@ -305,6 +305,7 @@ public class ProcessorFactorySingleton {
 		allColumns.add(createBeanMapping(SystemFields.BASE_ALIAS, type, "STRLOOKUPENTITYFIELD", "lookupEntityField", DT_STRING));
 
 		allColumns.add(createBeanMapping(SystemFields.BASE_ALIAS, type, "STRDATATYPE", "dataType", DT_STRING));
+		allColumns.add(createBeanMapping(SystemFields.BASE_ALIAS, type, "STRDEFAULTCOMPONENTTYPE", "defaultComponentType", DT_STRING));
 		allColumns.add(createBeanMapping(SystemFields.BASE_ALIAS, type, "INTDATASCALE", "scale", DT_INTEGER));
 		allColumns.add(createBeanMapping(SystemFields.BASE_ALIAS, type, "INTDATAPRECISION", "precision", DT_INTEGER));
 		allColumns.add(createBeanMapping(SystemFields.BASE_ALIAS, type, "STRFORMATINPUT", "formatInput", DT_STRING));

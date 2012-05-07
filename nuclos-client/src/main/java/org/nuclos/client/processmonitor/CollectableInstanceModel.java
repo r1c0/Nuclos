@@ -59,16 +59,16 @@ public class CollectableInstanceModel extends AbstractCollectableBean<InstanceVO
 			super(mdMetaVO.getEntityName(), mdMetaVO.getLabel());
 			final String entity = mdMetaVO.getEntityName();
 			this.addCollectableEntityField(new DefaultCollectableEntityField(FIELDNAME_NAME, String.class, mdMetaVO.getField(FIELDNAME_NAME).getLabel(),
-					mdMetaVO.getField(FIELDNAME_NAME).getDescription(), null, null, false, CollectableField.TYPE_VALUEFIELD, null, null, entity));
+					mdMetaVO.getField(FIELDNAME_NAME).getDescription(), null, null, false, CollectableField.TYPE_VALUEFIELD, null, null, entity, null));
 			this.addCollectableEntityField(new CollectableMasterDataForeignKeyEntityField(mdMetaVO.getField(FIELDNAME_PROCESSMODEL), entity));
 			this.addCollectableEntityField(new DefaultCollectableEntityField(FIELDNAME_PLANSTART, DateTime.class, mdMetaVO.getField(FIELDNAME_PLANSTART).getLabel(),
-					mdMetaVO.getField(FIELDNAME_PLANSTART).getDescription(), null, null, false, CollectableField.TYPE_VALUEFIELD, null, null, entity));
+					mdMetaVO.getField(FIELDNAME_PLANSTART).getDescription(), null, null, false, CollectableField.TYPE_VALUEFIELD, null, null, entity, null));
 			this.addCollectableEntityField(new DefaultCollectableEntityField(FIELDNAME_PLANEND, DateTime.class, mdMetaVO.getField(FIELDNAME_PLANEND).getLabel(),
-					mdMetaVO.getField(FIELDNAME_PLANEND).getDescription(), null, null, false, CollectableField.TYPE_VALUEFIELD, null, null, entity));
+					mdMetaVO.getField(FIELDNAME_PLANEND).getDescription(), null, null, false, CollectableField.TYPE_VALUEFIELD, null, null, entity, null));
 			this.addCollectableEntityField(new DefaultCollectableEntityField(FIELDNAME_REALSTART, DateTime.class, mdMetaVO.getField(FIELDNAME_REALSTART).getLabel(),
-					mdMetaVO.getField(FIELDNAME_REALSTART).getDescription(), null, null, false, CollectableField.TYPE_VALUEFIELD, null, null, entity));
+					mdMetaVO.getField(FIELDNAME_REALSTART).getDescription(), null, null, false, CollectableField.TYPE_VALUEFIELD, null, null, entity, null));
 			this.addCollectableEntityField(new DefaultCollectableEntityField(FIELDNAME_REALEND, DateTime.class, mdMetaVO.getField(FIELDNAME_REALEND).getLabel(),
-					mdMetaVO.getField(FIELDNAME_REALEND).getDescription(), null, null, false, CollectableField.TYPE_VALUEFIELD, null, null, entity));
+					mdMetaVO.getField(FIELDNAME_REALEND).getDescription(), null, null, false, CollectableField.TYPE_VALUEFIELD, null, null, entity, null));
 		}
 
 	}	// inner class Entity

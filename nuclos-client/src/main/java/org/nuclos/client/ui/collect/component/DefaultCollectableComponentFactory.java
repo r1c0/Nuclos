@@ -154,6 +154,12 @@ public class DefaultCollectableComponentFactory extends CollectableComponentFact
 			case CollectableComponentTypes.TYPE_DATECHOOSER:
 				result = new CollectableDateChooser(clctef, bSearchable);
 				break;
+			case CollectableComponentTypes.TYPE_HYPERLINK:
+				result = new CollectableHyperlink(clctef, bSearchable);
+				break;
+			case CollectableComponentTypes.TYPE_EMAIL:
+				result = new CollectableEmail(clctef, bSearchable);
+				break;
 			case CollectableComponentTypes.TYPE_OPTIONGROUP:
 				result = new CollectableOptionGroup(clctef, bSearchable);
 				break;

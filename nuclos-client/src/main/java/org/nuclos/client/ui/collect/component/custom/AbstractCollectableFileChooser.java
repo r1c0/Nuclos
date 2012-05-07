@@ -111,7 +111,7 @@ public abstract class AbstractCollectableFileChooser extends AbstractCollectable
 	 * @return a <code>CollectableComponentDefaultTableCellRenderer</code> even for non-searchable components.
 	 */
 	@Override
-	public TableCellRenderer getTableCellRenderer() {
+	public TableCellRenderer getTableCellRenderer(boolean subform) {
 		return new AttachmentTableCellRenderer();
 	}
 

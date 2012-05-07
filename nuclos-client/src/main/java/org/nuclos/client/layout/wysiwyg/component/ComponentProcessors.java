@@ -244,6 +244,24 @@ public class ComponentProcessors implements LayoutMLConstants {
 
 				dc.setMinimumSize(DEFAULTVALUE_DATECHOOSER_MINIMUMSIZE);
 				result = dc;
+			} else if (CONTROLTYPE_HYPERLINK.equals(controltype)) {
+				WYSIWYGCollectableHyperlink hl = new WYSIWYGCollectableHyperlink();
+				
+				properties = PropertyUtils.getEmptyProperties(hl, metaInf);
+				properties.setProperty(WYSIWYGCollectableComponent.PROPERTY_NAME, new PropertyValueString(name), String.class);
+				hl.setProperties(properties);
+
+				hl.setMinimumSize(DEFAULTVALUE_TEXTFIELD_MINIMUMSIZE);
+				result = hl;
+			} else if (CONTROLTYPE_EMAIL.equals(controltype)) {
+				WYSIWYGCollectableEmail em = new WYSIWYGCollectableEmail();
+				
+				properties = PropertyUtils.getEmptyProperties(em, metaInf);
+				properties.setProperty(WYSIWYGCollectableComponent.PROPERTY_NAME, new PropertyValueString(name), String.class);
+				em.setProperties(properties);
+
+				em.setMinimumSize(DEFAULTVALUE_TEXTFIELD_MINIMUMSIZE);
+				result = em;
 			} else if (ELEMENT_OPTIONGROUP.equals(controltype)) {
 				WYSIWYGCollectableOptionGroup og = new WYSIWYGCollectableOptionGroup(metaInf);
 				

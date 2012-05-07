@@ -57,17 +57,17 @@ public class CollectableRule extends AbstractCollectableBean<RuleVO> {
 			super(RULE_ENTITY, "Regel");
 
 			this.addCollectableEntityField(new DefaultCollectableEntityField(FIELDNAME_NAME, String.class, "Name",
-					"Name der Regel", null, null, false, CollectableField.TYPE_VALUEFIELD, null, null, RULE_ENTITY));
+					"Name der Regel", null, null, false, CollectableField.TYPE_VALUEFIELD, null, null, RULE_ENTITY, null));
 			this.addCollectableEntityField(new DefaultCollectableEntityField(FIELDNAME_DESCRIPTION, String.class,
-					"Beschreibung", "Beschreibung der Regel", null, null, true, CollectableField.TYPE_VALUEFIELD, null, null, RULE_ENTITY));
+					"Beschreibung", "Beschreibung der Regel", null, null, true, CollectableField.TYPE_VALUEFIELD, null, null, RULE_ENTITY, null));
 			this.addCollectableEntityField(new DefaultCollectableEntityField(FIELDNAME_RULESOURCE, String.class, "Code",
-					"Quellcode der Regel", null, null, false, CollectableField.TYPE_VALUEFIELD, null, null, RULE_ENTITY));
+					"Quellcode der Regel", null, null, false, CollectableField.TYPE_VALUEFIELD, null, null, RULE_ENTITY, null));
 			this.addCollectableEntityField(new DefaultCollectableEntityField(FIELDNAME_ACTIVE, Boolean.class,
-					"Aktiv?", "Aktivkennzeichen der Regel", null, null, false, CollectableField.TYPE_VALUEFIELD, null, null, RULE_ENTITY));
+					"Aktiv?", "Aktivkennzeichen der Regel", null, null, false, CollectableField.TYPE_VALUEFIELD, null, null, RULE_ENTITY, null));
 			this.addCollectableEntityField(new DefaultCollectableEntityField(FIELDNAME_DEBUG, Boolean.class,
-					"Debug?", "Debug-Flag der Regel", null, null, false, CollectableField.TYPE_VALUEFIELD, null, null, RULE_ENTITY));
+					"Debug?", "Debug-Flag der Regel", null, null, false, CollectableField.TYPE_VALUEFIELD, null, null, RULE_ENTITY, null));
 			this.addCollectableEntityField(new DefaultCollectableEntityField(FIELDNAME_NUCLET, String.class,
-					"Nuclet", "", null, null, true, CollectableField.TYPE_VALUEIDFIELD, null, null, RULE_ENTITY));
+					"Nuclet", "", null, null, true, CollectableField.TYPE_VALUEIDFIELD, null, null, RULE_ENTITY, null));
 		}
 	}	// inner class Entity
 

@@ -3753,6 +3753,15 @@
         "descriptionres": "nuclos.entityfield.Datatyp.databasetyp.description"
       },
       {
+        "name": "defaultcomponenttype",
+        "dbfield": "STRDEFAULTCOMPONENTTYPE",
+        "datatype": "java.lang.String",
+        "datascale": 255,
+        "nullable": true,
+        "labelres": "nuclos.entityfield.Datatyp.defaultcomponenttype.label",
+        "descriptionres": "nuclos.entityfield.Datatyp.defaultcomponenttype.description"
+      },
+      {
         "name": "nuclet",
         "dbfield": "STRVALUE_T_MD_NUCLET",
         "foreignentity": "nuclos_nuclet",
@@ -7629,6 +7638,13 @@
         "datatype": "java.lang.String",
         "datascale": 255,
         "nullable": false
+      },
+      {
+        "name": "defaultcomponenttype",
+        "dbfield": "STRDEFAULTCOMPONENTTYPE",
+        "datatype": "java.lang.String",
+        "datascale": 255,
+        "nullable": true
       },
       {
         "name": "foreignentity",

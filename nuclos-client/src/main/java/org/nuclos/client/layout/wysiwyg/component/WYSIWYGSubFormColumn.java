@@ -24,6 +24,8 @@ import java.util.Map;
 import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 
+import org.apache.log4j.Logger;
+import org.nuclos.client.common.MetaDataClientProvider;
 import org.nuclos.client.layout.wysiwyg.WYSIWYGEditorModes;
 import org.nuclos.client.layout.wysiwyg.WYSIWYGMetaInformation;
 import org.nuclos.client.layout.wysiwyg.WYSIWYGStringsAndLabels;
@@ -39,9 +41,11 @@ import org.nuclos.client.layout.wysiwyg.editor.ui.panels.WYSIWYGLayoutEditorPane
 import org.nuclos.client.layout.wysiwyg.editor.util.valueobjects.WYSIWYGValuelistProvider;
 import org.nuclos.client.layout.wysiwyg.editor.util.valueobjects.layoutmlrules.LayoutMLRules;
 import org.nuclos.client.ui.Errors;
+import org.nuclos.common.DefaultComponentTypes;
 import org.nuclos.common.NuclosBusinessException;
 import org.nuclos.common.collect.collectable.CollectableComponentTypes;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
+import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.layoutml.LayoutMLConstants;
@@ -58,6 +62,8 @@ import org.nuclos.common2.layoutml.LayoutMLConstants;
  * @version 01.00.00
  */
 public class WYSIWYGSubFormColumn extends JLabel implements WYSIWYGComponent, Serializable, WYSIWYGEditorModes {
+	
+	private static final Logger LOG = Logger.getLogger(WYSIWYGSubFormColumn.class);
 	
 	public static final String PROPERTY_NAME = PROPERTY_LABELS.NAME;
 	public static final String PROPERTY_LABEL = PROPERTY_LABELS.LABEL;
@@ -77,6 +83,8 @@ public class WYSIWYGSubFormColumn extends JLabel implements WYSIWYGComponent, Se
 		this.controlTypes.put(CollectableComponentTypes.TYPE_COMBOBOX, ATTRIBUTEVALUE_COMBOBOX);
 		this.controlTypes.put(CollectableComponentTypes.TYPE_CHECKBOX, ATTRIBUTEVALUE_CHECKBOX);
 		this.controlTypes.put(CollectableComponentTypes.TYPE_DATECHOOSER, ATTRIBUTEVALUE_DATECHOOSER);
+		this.controlTypes.put(CollectableComponentTypes.TYPE_HYPERLINK, ATTRIBUTEVALUE_HYPERLINK);
+		this.controlTypes.put(CollectableComponentTypes.TYPE_EMAIL, ATTRIBUTEVALUE_EMAIL);
 		this.controlTypes.put(CollectableComponentTypes.TYPE_OPTIONGROUP, ATTRIBUTEVALUE_OPTIONGROUP);
 		this.controlTypes.put(CollectableComponentTypes.TYPE_LISTOFVALUES, ATTRIBUTEVALUE_LISTOFVALUES);
 		this.controlTypes.put(CollectableComponentTypes.TYPE_FILECHOOSER, ATTRIBUTEVALUE_FILECHOOSER);
@@ -194,7 +202,7 @@ public class WYSIWYGSubFormColumn extends JLabel implements WYSIWYGComponent, Se
 		} else if (p.equals(PROPERTY_CONTROLTYPECLASS)) {
 			return new PropertyValueString();
 		} else if (p.equals(PROPERTY_CONTROLTYPE)) {
-			return new PropertyValueString(controlTypes.get(field.getDefaultCollectableComponentType()));
+			return new PropertyValueString(controlTypes.get(getDefaultCollectableComponentType()));
 		} else if (p.equals(PROPERTY_COLUMNS)) {
 			return new PropertyValueInteger(field.getMaxLength());
 		} else if (p.equals(PROPERTY_DEFAULTVALUES)) {
@@ -203,6 +211,21 @@ public class WYSIWYGSubFormColumn extends JLabel implements WYSIWYGComponent, Se
 			return new PropertyValueValuelistProvider();
 		}
 		return PropertyUtils.getPropertyValue(this, p);
+	}
+	
+	private int getDefaultCollectableComponentType() {
+		try {
+			EntityFieldMetaDataVO efMeta = MetaDataClientProvider.getInstance().getEntityField(subform.getEntityName(), field.getName());
+			if (StringUtils.equalsIgnoreCase(efMeta.getDefaultComponentType(), DefaultComponentTypes.HYPERLINK)) {
+				return CollectableComponentTypes.TYPE_HYPERLINK;
+			}
+			if (StringUtils.equalsIgnoreCase(efMeta.getDefaultComponentType(), DefaultComponentTypes.EMAIL)) {
+				return CollectableComponentTypes.TYPE_EMAIL;
+			}
+		} catch (Exception ex) {
+			LOG.error(ex.getMessage(), ex);
+		}
+		return field.getDefaultCollectableComponentType();
 	}
 	
 	public CollectableEntityField getEntityField() {

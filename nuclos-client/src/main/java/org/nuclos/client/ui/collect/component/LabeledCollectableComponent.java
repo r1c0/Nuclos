@@ -130,8 +130,8 @@ public abstract class LabeledCollectableComponent extends AbstractCollectableCom
 	}
 
 	@Override
-	public TableCellRenderer getTableCellRenderer() {
-		final TableCellRenderer parentRenderer = super.getTableCellRenderer();
+	public TableCellRenderer getTableCellRenderer(boolean subform) {
+		final TableCellRenderer parentRenderer = super.getTableCellRenderer(subform);
 		return new LabeledTableCellRenderer(parentRenderer, getEntityField());
 	}
 	

@@ -82,7 +82,7 @@ public class NuclosWizardUtils {
 	public static String COLUMN_DOUBLE_PREFFIX = "DBL";
 	public static String COLUMN_OBJECT_PREFFIX = "OBJ";
 
-	public static DataTyp getDataTyp(String javaType, Integer scale, Integer precision, String inputFormat, String outputFormat) throws CommonFinderException, CommonPermissionException{
+	public static DataTyp getDataTyp(String javaType, String defaultComponentType, Integer scale, Integer precision, String inputFormat, String outputFormat) throws CommonFinderException, CommonPermissionException{
 		DataTyp typ = null;
 		Collection<MasterDataVO> colMasterData = MasterDataDelegate.getInstance().getMasterData(NuclosEntity.DATATYP.getEntityName());
 
@@ -98,6 +98,7 @@ public class NuclosWizardUtils {
 
 		for(MasterDataVO vo : lstVO) {
 			String strJavaTyp = (String)vo.getField("javatyp");
+			String strDefaultComponentType = (String)vo.getField("defaultcomponenttype");
 			String strOutputFormat = (String)vo.getField("outputformat");
 			String strInputFormat = (String)vo.getField("inputformat");
 			Integer iScale = (Integer)vo.getField("scale");
@@ -116,14 +117,14 @@ public class NuclosWizardUtils {
 
 			if(StringUtils.equals(javaType, strJavaTyp) && StringUtils.equals(outputFormat, strOutputFormat) &&
 				/*StringUtils.equals(inputFormat, strInputFormat) &&*/ ObjectUtils.equals(scale, iScale) &&
-				ObjectUtils.equals(precision, iPrecision)) {
-				typ = new DataTyp(strName, strInputFormat, strOutputFormat, strDatabaseTyp, iScale, iPrecision, strJavaTyp);
+				ObjectUtils.equals(precision, iPrecision) && StringUtils.equals(defaultComponentType, strDefaultComponentType)) {
+				typ = new DataTyp(strName, strInputFormat, strOutputFormat, strDatabaseTyp, iScale, iPrecision, strJavaTyp, strDefaultComponentType);
 				break;
 			}
 		}
 		if(typ == null) {
 			 typ = new DataTyp(SpringLocaleDelegate.getInstance().getText("wizard.datatype.individual"), 
-					 inputFormat, outputFormat, null, scale, precision, javaType);
+					 inputFormat, outputFormat, null, scale, precision, javaType, defaultComponentType);
 		}
 		return typ;
 	}

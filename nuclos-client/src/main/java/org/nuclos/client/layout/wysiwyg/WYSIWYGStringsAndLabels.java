@@ -179,7 +179,7 @@ public class WYSIWYGStringsAndLabels {
 		public static final String PROPERTY_LABEL = "Eigenschaften";
 
 		public static final String PALETTE_ELEMENTNAME = "Combobox";
-		public static final String PALETTE_ELEMENTICON = "org/nuclos/client/layout/wysiwyg/palette/images/JComboBoxColor16.gif";
+		public static final String PALETTE_ELEMENTICON = "org/nuclos/client/layout/wysiwyg/palette/images/JTextFieldWithButtonColor16.gif";
 		public static final String PALETTE_ELEMENTTOOLTIP = "Auswahlfeld";
 
 		@Override
@@ -212,7 +212,7 @@ public class WYSIWYGStringsAndLabels {
 	// NUCLEUSINT-496
 	public static class COLLECTABLE_LABELED_COMBOBOX implements PaletteItemElement {
 		public static final String PALETTE_ELEMENTNAME = "Combobox mit Label";
-		public static final String PALETTE_ELEMENTICON = "org/nuclos/client/layout/wysiwyg/palette/images/JComboBoxColor16.gif";
+		public static final String PALETTE_ELEMENTICON = "org/nuclos/client/layout/wysiwyg/palette/images/JTextFieldWithButtonColor16.gif";
 		public static final String PALETTE_ELEMENTTOOLTIP = "Auswahlfeld";
 
 		@Override
@@ -246,7 +246,7 @@ public class WYSIWYGStringsAndLabels {
 		public static final String PROPERTY_LABEL = "Eigenschaften";
 
 		public static final String PALETTE_ELEMENTNAME = "Datechooser";
-		public static final String PALETTE_ELEMENTICON = "org/nuclos/client/layout/wysiwyg/palette/images/JTextFieldColor16.gif";
+		public static final String PALETTE_ELEMENTICON = "org/nuclos/client/layout/wysiwyg/palette/images/JTextFieldWithButtonColor16.gif";
 		public static final String PALETTE_ELEMENTTOOLTIP = "Komponente um Datumswerte auszuw\u00e4hlen";
 
 		@Override
@@ -279,7 +279,7 @@ public class WYSIWYGStringsAndLabels {
 	// NUCLEUSINT-496
 	public static class COLLECTABLE_LABELED_DATECHOOSER implements PaletteItemElement {
 		public static final String PALETTE_ELEMENTNAME = "Datechooser mit Label";
-		public static final String PALETTE_ELEMENTICON = "org/nuclos/client/layout/wysiwyg/palette/images/JTextFieldColor16.gif";
+		public static final String PALETTE_ELEMENTICON = "org/nuclos/client/layout/wysiwyg/palette/images/JTextFieldWithButtonColor16.gif";
 		public static final String PALETTE_ELEMENTTOOLTIP = "Komponente um Datumswerte auszuw\u00e4hlen";
 
 		@Override
@@ -306,6 +306,139 @@ public class WYSIWYGStringsAndLabels {
 		}
 	}
 
+	/**
+	 * @deprecated Should be done with the help of SpringLocaleDelegate and localeresource.json.
+	 */
+	public static class COLLECTABLE_HYPERLINK implements PaletteItemElement {
+		public static final String PROPERTY_LABEL = "Eigenschaften";
+
+		public static final String PALETTE_ELEMENTNAME = "Hyperlink";
+		public static final String PALETTE_ELEMENTICON = "org/nuclos/client/layout/wysiwyg/palette/images/JTextFieldWithButtonColor16.gif";
+		public static final String PALETTE_ELEMENTTOOLTIP = "Hyperlink";
+
+		@Override
+		public Icon getIcon() {
+			if ("".equals(PALETTE_ELEMENTICON))
+				return null;
+			return new ImageIcon(this.getClass().getClassLoader().getResource(PALETTE_ELEMENTICON));
+		}
+		@Override
+		public String getLabel() {
+			return PALETTE_ELEMENTNAME;
+		}
+		@Override
+		public String getToolTip() {
+			return PALETTE_ELEMENTTOOLTIP;
+		}
+		@Override
+		public boolean displayLabelAndIcon() {
+			return false;
+		}
+		@Override
+		public boolean isLabeledComponent() {
+			return false;
+		}
+	}
+
+	/**
+	 * @deprecated Should be done with the help of SpringLocaleDelegate and localeresource.json.
+	 */
+	public static class COLLECTABLE_LABELED_HYPERLINK implements PaletteItemElement {
+		public static final String PALETTE_ELEMENTNAME = "Hyperlink mit Label";
+		public static final String PALETTE_ELEMENTICON = "org/nuclos/client/layout/wysiwyg/palette/images/JTextFieldWithButtonColor16.gif";
+		public static final String PALETTE_ELEMENTTOOLTIP = "Hyperlink mit Label";
+
+		@Override
+		public Icon getIcon() {
+			if ("".equals(PALETTE_ELEMENTICON))
+				return null;
+			return new ImageIcon(this.getClass().getClassLoader().getResource(PALETTE_ELEMENTICON));
+		}
+		@Override
+		public String getLabel() {
+			return PALETTE_ELEMENTNAME;
+		}
+		@Override
+		public String getToolTip() {
+			return PALETTE_ELEMENTTOOLTIP;
+		}
+		@Override
+		public boolean displayLabelAndIcon() {
+			return false;
+		}
+		@Override
+		public boolean isLabeledComponent() {
+			return true;
+		}
+	}
+
+	/**
+	 * @deprecated Should be done with the help of SpringLocaleDelegate and localeresource.json.
+	 */
+	public static class COLLECTABLE_EMAIL implements PaletteItemElement {
+		public static final String PROPERTY_LABEL = "Eigenschaften";
+
+		public static final String PALETTE_ELEMENTNAME = "Email";
+		public static final String PALETTE_ELEMENTICON = "org/nuclos/client/layout/wysiwyg/palette/images/JTextFieldWithButtonColor16.gif";
+		public static final String PALETTE_ELEMENTTOOLTIP = "Email";
+
+		@Override
+		public Icon getIcon() {
+			if ("".equals(PALETTE_ELEMENTICON))
+				return null;
+			return new ImageIcon(this.getClass().getClassLoader().getResource(PALETTE_ELEMENTICON));
+		}
+		@Override
+		public String getLabel() {
+			return PALETTE_ELEMENTNAME;
+		}
+		@Override
+		public String getToolTip() {
+			return PALETTE_ELEMENTTOOLTIP;
+		}
+		@Override
+		public boolean displayLabelAndIcon() {
+			return false;
+		}
+		@Override
+		public boolean isLabeledComponent() {
+			return false;
+		}
+	}
+
+	/**
+	 * @deprecated Should be done with the help of SpringLocaleDelegate and localeresource.json.
+	 */
+	public static class COLLECTABLE_LABELED_EMAIL implements PaletteItemElement {
+		public static final String PALETTE_ELEMENTNAME = "Email mit Label";
+		public static final String PALETTE_ELEMENTICON = "org/nuclos/client/layout/wysiwyg/palette/images/JTextFieldWithButtonColor16.gif";
+		public static final String PALETTE_ELEMENTTOOLTIP = "Email mit Label";
+
+		@Override
+		public Icon getIcon() {
+			if ("".equals(PALETTE_ELEMENTICON))
+				return null;
+			return new ImageIcon(this.getClass().getClassLoader().getResource(PALETTE_ELEMENTICON));
+		}
+		@Override
+		public String getLabel() {
+			return PALETTE_ELEMENTNAME;
+		}
+		@Override
+		public String getToolTip() {
+			return PALETTE_ELEMENTTOOLTIP;
+		}
+		@Override
+		public boolean displayLabelAndIcon() {
+			return false;
+		}
+		@Override
+		public boolean isLabeledComponent() {
+			return true;
+		}
+	}
+
+	
 	/**
 	 * @deprecated Should be done with the help of SpringLocaleDelegate and localeresource.json.
 	 */
@@ -347,7 +480,7 @@ public class WYSIWYGStringsAndLabels {
 		public static final String PROPERTY_LABEL = "Eigenschaften";
 
 		public static final String PALETTE_ELEMENTNAME = "List of Values";
-		public static final String PALETTE_ELEMENTICON = "org/nuclos/client/layout/wysiwyg/palette/images/JTextFieldColor16.gif";
+		public static final String PALETTE_ELEMENTICON = "org/nuclos/client/layout/wysiwyg/palette/images/JTextFieldWithButtonColor16.gif";
 		public static final String PALETTE_ELEMENTTOOLTIP = "Komponente zum Heraussuchen von Werten";
 
 		@Override
@@ -380,7 +513,7 @@ public class WYSIWYGStringsAndLabels {
 	// NUCLEUSINT-496
 	public static class COLLECTABLE_LABELED_LISTOFVALUES implements PaletteItemElement {
 		public static final String PALETTE_ELEMENTNAME = "List of Values mit Label";
-		public static final String PALETTE_ELEMENTICON = "org/nuclos/client/layout/wysiwyg/palette/images/JTextFieldColor16.gif";
+		public static final String PALETTE_ELEMENTICON = "org/nuclos/client/layout/wysiwyg/palette/images/JTextFieldWithButtonColor16.gif";
 		public static final String PALETTE_ELEMENTTOOLTIP = "Komponente zum Heraussuchen von Werten";
 
 		@Override

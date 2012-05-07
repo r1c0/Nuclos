@@ -55,16 +55,16 @@ public class CollectableStateRoleAttributeGroup extends AbstractCollectable {
 					getSpringLocaleDelegate().getMessage("CollectableStateRoleAttributeGroup.4","Benutzergruppe"),
 					getSpringLocaleDelegate().getMessage("CollectableStateRoleAttributeGroup.9","\u00dcbergeordnete Benutzergruppe (Rolle)"), 
 					null, null, false, CollectableField.TYPE_VALUEIDFIELD, "staterole",
-					CollectableValueIdField.NULL, null, null, entity));
+					CollectableValueIdField.NULL, null, null, entity, null));
 			this.addCollectableEntityField(new DefaultCollectableEntityField(FIELDNAME_ATTRIBUTEGROUP, String.class, 
 					getSpringLocaleDelegate().getMessage("CollectableStateRoleAttributeGroup.1","Attributgruppe"), 
 					getSpringLocaleDelegate().getMessage("CollectableStateRoleAttributeGroup.2","Attributgruppe"), 
 					null, null, false, CollectableField.TYPE_VALUEIDFIELD, NuclosEntity.ENTITYFIELDGROUP.getEntityName(),
-					CollectableValueIdField.NULL, null, null, entity));
+					CollectableValueIdField.NULL, null, null, entity, null));
 			this.addCollectableEntityField(new DefaultCollectableEntityField(FIELDNAME_WRITEABLE, Boolean.class, 
 					getSpringLocaleDelegate().getMessage("CollectableStateRoleAttributeGroup.8","Schreibrecht?"), 
 					getSpringLocaleDelegate().getMessage("CollectableStateRoleAttributeGroup.7","Schreiben erlaubt?"), 
-					null, null, false, CollectableField.TYPE_VALUEFIELD, null, null, entity));
+					null, null, false, CollectableField.TYPE_VALUEFIELD, null, null, entity, null));
 		}
 	}
 

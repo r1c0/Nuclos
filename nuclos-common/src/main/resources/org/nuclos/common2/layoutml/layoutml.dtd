@@ -20,7 +20,7 @@
 <!ENTITY % layoutconstraints "tablelayout-constraints|borderlayout-constraints|gridbag-constraints|tabbedpane-constraints|splitpane-constraints">
 <!ENTITY % boolean "yes|no">
 <!-- NUCLEUSINT-1142 -->
-<!ENTITY % controltype "textfield|id-textfield|textarea|combobox|checkbox|optiongroup|listofvalues|datechooser|filechooser|image|password">
+<!ENTITY % controltype "textfield|id-textfield|textarea|combobox|checkbox|optiongroup|listofvalues|datechooser|filechooser|image|password|hyperlink|email">
 <!ENTITY % container "panel|empty-panel|subform|tabbedpane|scrollpane|splitpane">
 
 <!ELEMENT layoutml (definitions?, layout, dependencies?, rules?)>

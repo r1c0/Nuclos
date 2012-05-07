@@ -20,15 +20,17 @@ import java.awt.Color;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 
-import org.nuclos.common.collect.collectable.CollectableComponentTypes;
-import org.nuclos.common.collect.collectable.CollectableEntity;
-import org.nuclos.common.collect.collectable.CollectableEntityField;
 import org.nuclos.client.genericobject.CollectableGenericObjectFileChooser;
 import org.nuclos.client.ui.collect.component.CollectableComponent;
 import org.nuclos.client.ui.collect.component.CollectableComponentType;
 import org.nuclos.client.ui.collect.component.CollectableDateChooser;
+import org.nuclos.client.ui.collect.component.CollectableEmail;
+import org.nuclos.client.ui.collect.component.CollectableHyperlink;
 import org.nuclos.client.ui.collect.component.DefaultCollectableComponentFactory;
 import org.nuclos.common.ParameterProvider;
+import org.nuclos.common.collect.collectable.CollectableComponentTypes;
+import org.nuclos.common.collect.collectable.CollectableEntity;
+import org.nuclos.common.collect.collectable.CollectableEntityField;
 
 /**
  * Factory that creates <code>CollectableComponent</code>s in Nucleus.
@@ -78,6 +80,14 @@ public class NuclosCollectableComponentFactory extends DefaultCollectableCompone
 			case CollectableComponentTypes.TYPE_DATECHOOSER:
 				// NucleusCollectableDataChooser has set bTodayIsRelative=bSearchable
 				result = new CollectableDateChooser(clctef, bSearchable, bSearchable);
+				break;
+				
+			case CollectableComponentTypes.TYPE_HYPERLINK:
+				result = new CollectableHyperlink(clctef, bSearchable);
+				break;
+				
+			case CollectableComponentTypes.TYPE_EMAIL:
+				result = new CollectableEmail(clctef, bSearchable);
 				break;
 
 			case CollectableComponentTypes.TYPE_IDTEXTFIELD:

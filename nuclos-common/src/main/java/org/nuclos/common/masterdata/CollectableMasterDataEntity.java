@@ -159,7 +159,8 @@ public class CollectableMasterDataEntity implements CollectableEntity {
 							cfDefault,
 							mdmetafieldvo.getInputFormat(),
 							mdmetafieldvo.getOutputFormat(),
-							getName());
+							getName(),
+							mdmetafieldvo.getDefaultComponentType());
 			}
 			mpclctef.put(sFieldName, result);
 		}

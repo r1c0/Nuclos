@@ -330,7 +330,7 @@ public class PersonalTaskController extends RefreshableTaskController implements
 			final int iModelIndex = column.getModelIndex();
 			final CollectableEntityField clctef = this.personaltaskview.getPersonalTaskTableModel().getCollectableEntityField(iModelIndex);
 			final CollectableComponent clctcomp = CollectableComponentFactory.getInstance().newCollectableComponent(clctef, null, false);
-			column.setCellRenderer(clctcomp.getTableCellRenderer());
+			column.setCellRenderer(clctcomp.getTableCellRenderer(false));
 		}
 	}
 

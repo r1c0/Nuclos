@@ -21,6 +21,22 @@
     "databasetyp": "varchar"
   },
   {
+    "name": "Email",
+    "scale": 255,
+    "precision": 0,
+    "javatyp": "java.lang.String",
+    "databasetyp": "varchar",
+    "defaultcomponenttype": "Email"
+  },
+  {
+    "name": "Hyperlink",
+    "scale": 1000,
+    "precision": 0,
+    "javatyp": "java.lang.String",
+    "databasetyp": "varchar",
+    "defaultcomponenttype": "Hyperlink"
+  },
+  {
     "name": "Memo",
     "scale": 4000,
     "precision": 0,

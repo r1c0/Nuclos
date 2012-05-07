@@ -732,7 +732,7 @@ public class CollectableComboBox extends LabeledCollectableComponentWithVLP impl
 	}
 	
 	@Override
-	public TableCellRenderer getTableCellRenderer() {
+	public TableCellRenderer getTableCellRenderer(boolean subform) {
 		if (!isSearchComponent() && getValueListProvider() != null) {
 			return new CollectableComponentDetailTableCellRenderer() {
 

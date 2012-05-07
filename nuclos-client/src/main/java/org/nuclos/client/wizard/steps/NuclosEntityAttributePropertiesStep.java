@@ -173,7 +173,7 @@ public class NuclosEntityAttributePropertiesStep extends NuclosEntityAttributeAb
 	@Override
 	protected void initComponents() {
 		customtypename = localeDelegate.getText("wizard.datatype.individual");
-		customtype = new DataTyp(customtypename, null, null, null, null, null, null);
+		customtype = new DataTyp(customtypename, null, null, null, null, null, null, null);
 		
 		double size [][] = {
 				{TableLayout.PREFERRED, 200, 30, TableLayout.FILL}, 

@@ -229,6 +229,12 @@ public interface CollectableEntityField {
 	 */
 	@Deprecated
 	boolean isReferencedEntityDisplayable();
+	
+	/**
+	 * 
+	 * @return
+	 */
+	String getDefaultComponentType();
 
 	/**
 	 * @return the default CollectableComponent type for this field.

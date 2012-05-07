@@ -28,7 +28,10 @@ import javax.swing.JComponent;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
+import javax.swing.table.TableCellRenderer;
 
+import org.nuclos.client.ui.collect.SubForm.SubFormTable;
+import org.nuclos.client.ui.collect.component.TableCellCursor;
 import org.nuclos.common.collect.collectable.AbstractCollectableField;
 import org.nuclos.common2.LangUtils;
 
@@ -64,6 +67,23 @@ public class URIMouseAdapter extends MouseAdapter{
 			int row = table.rowAtPoint(e.getPoint());			
 			if(col < 0 || row < 0)
 				return;			
+			
+			final TableCellRenderer cellRenderer = table.getCellRenderer(row, col);
+			if ((cellRenderer instanceof TableCellCursor)) {
+				int colX = 0;
+				for (int i = 0; i < col; i++) {
+					colX = colX + table.getColumnModel().getColumn(i).getWidth();
+				}
+				final Cursor cellCursor = ((TableCellCursor)cellRenderer).getCursor(
+						table.getValueAt(row, col), 
+						table.getColumnModel().getColumn(col).getWidth(),
+						e.getX()-colX);
+				if (cellCursor != null) {
+					table.setCursor(cellCursor);
+					return;
+				}
+			}
+			
 			Object obj = table.getValueAt(row, col);
 			if(obj instanceof AbstractCollectableField) {
 				AbstractCollectableField field = (AbstractCollectableField)obj;

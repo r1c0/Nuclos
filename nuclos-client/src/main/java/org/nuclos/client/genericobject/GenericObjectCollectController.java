@@ -458,7 +458,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	//private boolean bEnteringHistoricalMode = false;
 
 	private final CollectableEntityField clctefHistoricalDate = new DefaultCollectableEntityField("historicalDate", Date.class,
-		null, null, null, null, true, CollectableField.TYPE_VALUEFIELD, null, null, "historicalDate");
+		null, null, null, null, true, CollectableField.TYPE_VALUEFIELD, null, null, "historicalDate", null);
 
 	private final CollectableDateChooser clctdatechooserHistorical = new CollectableDateChooser(clctefHistoricalDate, false);
 
@@ -628,7 +628,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 			final CollectableEntityField clctefSearchState = new DefaultCollectableEntityField("[status_num_plus_name]", String.class,
 				getSpringLocaleDelegate().getLabelFromAttributeCVO(AttributeCache.getInstance().getAttribute(
 						NuclosEOField.STATE.getMetaData().getId().intValue())),
-				null, null, null, true, CollectableField.TYPE_VALUEIDFIELD, null, null, getCollectableEntity().getName());
+				null, null, null, true, CollectableField.TYPE_VALUEIDFIELD, null, null, getCollectableEntity().getName(), null);
 			clctSearchState = new NuclosCollectableStateComboBox(clctefSearchState, true);
 		}
 		return clctSearchState;

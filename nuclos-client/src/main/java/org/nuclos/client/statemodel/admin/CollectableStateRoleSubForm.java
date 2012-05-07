@@ -54,16 +54,16 @@ public class CollectableStateRoleSubForm extends AbstractCollectable{
 			this.addCollectableEntityField(new DefaultCollectableEntityField(FIELDNAME_ROLE, String.class, 
 					getSpringLocaleDelegate().getMessage("CollectableStateRoleSubForm.1","Benutzergruppe"),
 					getSpringLocaleDelegate().getMessage("CollectableStateRoleSubForm.6","\u00dcbergeordnete Benutzergruppe (Rolle)"), null, null, false, CollectableField.TYPE_VALUEIDFIELD, "staterole",
-					CollectableValueIdField.NULL, null, null, entity));
+					CollectableValueIdField.NULL, null, null, entity, null));
 			this.addCollectableEntityField(new DefaultCollectableEntityField(FIELDNAME_SUBFORM,	String.class, 
 					getSpringLocaleDelegate().getMessage("CollectableStateRoleSubForm.7","Unterformular"), 
 					getSpringLocaleDelegate().getMessage("CollectableStateRoleSubForm.8","Unterformular"), null, null, false, CollectableField.TYPE_VALUEFIELD, "entity",
-					CollectableValueField.NULL, null, null, entity));
+					CollectableValueField.NULL, null, null, entity, null));
 			this.addCollectableEntityField(new DefaultCollectableEntityField(FIELDNAME_WRITEABLE,
 					Boolean.class, 
 					getSpringLocaleDelegate().getMessage("CollectableStateRoleSubForm.5","Schreibrecht?"), 
 					getSpringLocaleDelegate().getMessage("CollectableStateRoleSubForm.4","Schreiben erlaubt?"), 
-					null, null, false, CollectableField.TYPE_VALUEFIELD, null, null, entity));
+					null, null, false, CollectableField.TYPE_VALUEFIELD, null, null, entity, null));
 		}
 	}
 

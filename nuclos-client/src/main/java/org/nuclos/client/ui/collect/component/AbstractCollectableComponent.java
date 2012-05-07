@@ -1527,7 +1527,7 @@ public abstract class AbstractCollectableComponent
 	 * Successors may provide a more specific renderer here.
 	 */
 	@Override
-    public TableCellRenderer getTableCellRenderer() {
+    public TableCellRenderer getTableCellRenderer(boolean subform) {
 		if (isSearchComponent()) {
 			return new CollectableComponentDefaultTableCellRenderer();
 		}

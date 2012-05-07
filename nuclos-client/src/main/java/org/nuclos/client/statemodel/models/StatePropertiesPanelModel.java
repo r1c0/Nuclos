@@ -114,6 +114,11 @@ public class StatePropertiesPanelModel implements Serializable {
 		@Override
 		public String getReferencedEntityName() {
 			return null;
+		}
+
+		@Override
+		public String getDefaultComponentType() {
+			return null;
 		}	}
 	
 	public static final String PROPERTY_SHAPE_NAME = "ShapeName";

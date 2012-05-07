@@ -41,7 +41,7 @@ public class CollectableTaskOwner extends DefaultCollectable {
 			this.addCollectableEntityField(new DefaultCollectableEntityField(FIELDNAME_TASK, String.class, 
 					getSpringLocaleDelegate().getMessage("CollectableTaskOwner.1","Aufgabe"),
 					getSpringLocaleDelegate().getMessage("CollectableTaskOwner.2","Aufgabe"), null, null, false, CollectableField.TYPE_VALUEIDFIELD, "__task",
-					CollectableValueIdField.NULL, null, null, TASKOWNER_ENTITY));
+					CollectableValueIdField.NULL, null, null, TASKOWNER_ENTITY, null));
 
 			this.addCollectableEntityField(new TaskOwnerCollectableEntityField(FIELDNAME_USER, String.class, 
 					getSpringLocaleDelegate().getMessage("CollectableTaskOwner.4","Zust\u00e4ndig"), 
@@ -58,7 +58,7 @@ public class CollectableTaskOwner extends DefaultCollectable {
 				boolean bNullable, int iFieldType, String sReferencedEntityName, CollectableField clctfDefault, String sFormatInput, 
 				String sFormatOutput, String entityName) {
 			super(sName, cls, sLabel, sDescription, iMaxLength, null, bNullable, iFieldType, sReferencedEntityName, clctfDefault, 
-					sFormatInput, sFormatOutput, entityName);
+					sFormatInput, sFormatOutput, entityName, null);
 		}
 		
 		@Override

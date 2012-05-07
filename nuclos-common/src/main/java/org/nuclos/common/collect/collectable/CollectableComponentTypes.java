@@ -73,4 +73,8 @@ public interface CollectableComponentTypes {
 	 * NUCLEUSINT-1142
 	 */
 	public static final int TYPE_PASSWORDFIELD = 11;
+	
+	public static final int TYPE_HYPERLINK = 12;
+	
+	public static final int TYPE_EMAIL = 13;
 }  // class CollectableComponentTypes

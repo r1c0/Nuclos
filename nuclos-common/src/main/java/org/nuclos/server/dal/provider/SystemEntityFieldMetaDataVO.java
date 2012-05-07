@@ -32,6 +32,7 @@ public class SystemEntityFieldMetaDataVO extends EntityFieldMetaDataVO {
 		this.setField(mdFieldMeta.getFieldName());
 		this.setDbColumn(mdFieldMeta.getDBFieldName());
 		this.setDataType(mdFieldMeta.getJavaClass().getName());
+		this.setDefaultComponentType(mdFieldMeta.getDefaultComponentType());
 		this.setScale(mdFieldMeta.getDataScale());
 		this.setPrecision(mdFieldMeta.getDataPrecision());
 		this.setNullable(mdFieldMeta.isNullable());

@@ -67,7 +67,7 @@ public class FileChooserComponent extends JPanel {
 		}
 
 		@Override
-		public void buttonClicked() {
+		public void buttonClicked(MouseEvent me) {
 			FileChooserComponent.this.btnBrowse.doClick();
 		}
 

@@ -51,6 +51,7 @@ import org.nuclos.client.layout.wysiwyg.editor.ui.panels.WYSIWYGLayoutEditorPane
 import org.nuclos.client.layout.wysiwyg.editor.util.InterfaceGuidelines;
 import org.nuclos.client.layout.wysiwyg.editor.util.TableLayoutUtil;
 import org.nuclos.client.layout.wysiwyg.editor.util.valueobjects.LayoutCell;
+import org.nuclos.common.DefaultComponentTypes;
 import org.nuclos.common.NuclosEOField;
 import org.nuclos.common.NuclosImage;
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
@@ -536,6 +537,16 @@ public abstract class AbstractLayoutMLFactory {
 
 				 //util.modifyTableLayoutSizes(TableLayout.PREFERRED, true, cell, true, false);
 			 }
+			 else if(controltype.equals(LayoutMLConstants.CONTROLTYPE_HYPERLINK)){
+				 util.insertComponentTo((WYSIWYGComponent)c, new TableLayoutConstraints(2, counter, 3, counter,2,0));
+
+				 //util.modifyTableLayoutSizes(TableLayout.PREFERRED, true, cell, true, false);
+			 }
+			 else if(controltype.equals(LayoutMLConstants.CONTROLTYPE_EMAIL)){
+				 util.insertComponentTo((WYSIWYGComponent)c, new TableLayoutConstraints(2, counter, 3, counter,2,0));
+
+				 //util.modifyTableLayoutSizes(TableLayout.PREFERRED, true, cell, true, false);
+			 }
 			 else
 				 util.insertComponentTo((WYSIWYGComponent)c, new TableLayoutConstraints(2, counter));
 			 counter++;
@@ -578,6 +589,12 @@ public abstract class AbstractLayoutMLFactory {
 	}
 	
 	private String getCollectableComponentType(EntityFieldMetaDataVO f) {
+		
+		if(DefaultComponentTypes.EMAIL.equalsIgnoreCase(f.getDefaultComponentType()))
+			return LayoutMLConstants.CONTROLTYPE_EMAIL;
+		
+		if(DefaultComponentTypes.HYPERLINK.equalsIgnoreCase(f.getDefaultComponentType()))
+			return LayoutMLConstants.CONTROLTYPE_HYPERLINK;
 
 		if(f.getForeignEntity() != null && !f.isSearchable())
 			return LayoutMLConstants.CONTROLTYPE_COMBOBOX;

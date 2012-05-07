@@ -46,23 +46,25 @@ public class DataTyp implements Cloneable {
 	Integer precision;
 	Integer scale;
 	String javaType;
+	String defaultComponentType;
 
 	public DataTyp() {
 
 	}
 
 	public DataTyp(String name, String inputFormat, String outputFormat,
-			String databaseTyp, String javaTyp) {
+			String databaseTyp, String javaTyp, String defaultComponentType) {
 		super();
 		this.name = name;
 		this.inputFormat = inputFormat;
 		this.outputFormat = outputFormat;
 		this.databaseTyp = databaseTyp;
 		this.javaType = javaTyp;
+		this.defaultComponentType = defaultComponentType;
 	}
 
 	public DataTyp(String name, String inputFormat, String outputFormat,
-			String databaseTyp, Integer scale,Integer precision, String javaTyp) {
+			String databaseTyp, Integer scale,Integer precision, String javaTyp, String defaultComponentType) {
 		super();
 		this.name = name;
 		this.inputFormat = inputFormat;
@@ -71,6 +73,7 @@ public class DataTyp implements Cloneable {
 		this.precision = precision;
 		this.scale = scale;
 		this.javaType = javaTyp;
+		this.defaultComponentType = defaultComponentType;
 	}
 
 	public DataTyp(MasterDataVO voDataType) {
@@ -82,6 +85,7 @@ public class DataTyp implements Cloneable {
 		this.scale = (Integer)voDataType.getField("scale");
 		this.javaType = (String)voDataType.getField("javatyp");
 		this.databaseTyp = (String)voDataType.getField("databasetyp");
+		this.defaultComponentType = (String)voDataType.getField("defaultcomponenttype");
 	}
 
 	public boolean isRefenceTyp() {
@@ -257,6 +261,14 @@ public class DataTyp implements Cloneable {
 		this.javaType = javaType;
 	}
 
+	public String getDefaultComponentType() {
+		return defaultComponentType;
+	}
+
+	public void setDefaultComponentType(String defaultComponentType) {
+		this.defaultComponentType = defaultComponentType;
+	}
+
 	@Override
 	public String toString() {
 		return name;
@@ -264,7 +276,7 @@ public class DataTyp implements Cloneable {
 
 	@Override
 	public Object clone() throws CloneNotSupportedException {
-		return new DataTyp(name, inputFormat, outputFormat, databaseTyp, javaType);
+		return new DataTyp(name, inputFormat, outputFormat, databaseTyp, javaType, defaultComponentType);
 	}
 
 	public static List<DataTyp> getAllDataTyps() {
@@ -283,7 +295,8 @@ public class DataTyp implements Cloneable {
 		Collection<MasterDataVO> colVO = MasterDataDelegate.getInstance().getMasterData(NuclosEntity.DATATYP.getEntityName());
 		for(MasterDataVO vo : colVO) {
 			DataTyp typ = new DataTyp((String)vo.getField("name"), (String)vo.getField("inputformat"), (String)vo.getField("outputformat"),
-				(String)vo.getField("databasetyp"), (Integer)vo.getField("scale"), (Integer)vo.getField("precision"), (String)vo.getField("javatyp"));
+				(String)vo.getField("databasetyp"), (Integer)vo.getField("scale"), (Integer)vo.getField("precision"), (String)vo.getField("javatyp"), 
+				(String)vo.getField("defaultcomponenttype"));
 			if(typ.getName().equals("Referenzfeld"))
 				continue;
 			if(typ.getName().equals("Nachschlagefeld"))
@@ -295,15 +308,15 @@ public class DataTyp implements Cloneable {
 	}
 
 	public static DataTyp getReferenzTyp() {
-		return new DataTyp("Referenzfeld", null, null, "varchar", 255, 0, "java.lang.String");
+		return new DataTyp("Referenzfeld", null, null, "varchar", 255, 0, "java.lang.String", null);
 	}
 
 	public static DataTyp getLookupTyp() {
-		return new DataTyp("Nachschlagefeld", null, null, "varchar", 255, 0, "java.lang.String");
+		return new DataTyp("Nachschlagefeld", null, null, "varchar", 255, 0, "java.lang.String", null);
 	}
 
 	public static DataTyp getValueListTyp() {
-		return new DataTyp("explizite Werteliste", null, null, "varchar", 255, 0, "java.lang.String");
+		return new DataTyp("explizite Werteliste", null, null, "varchar", 255, 0, "java.lang.String", null);
 	}
 
 	public static DataTyp getDefaultDataTyp() throws CommonFinderException, CommonPermissionException  {
@@ -315,16 +328,17 @@ public class DataTyp implements Cloneable {
 			}
 		}
 		DataTyp typ = new DataTyp((String)vo.getField("name"), (String)vo.getField("inputformat"), (String)vo.getField("outputformat"),
-			(String)vo.getField("databasetyp"), (Integer)vo.getField("scale"), (Integer)vo.getField("precision"), (String)vo.getField("javatyp"));
+			(String)vo.getField("databasetyp"), (Integer)vo.getField("scale"), (Integer)vo.getField("precision"), (String)vo.getField("javatyp"),
+			(String)vo.getField("defaultcomponenttype"));
 		return typ;
 	}
 
 	public static DataTyp getDefaultStringTyp() {
-		return new DataTyp("Text", null, null, "varchar", 255, 0, "java.lang.String");
+		return new DataTyp("Text", null, null, "varchar", 255, 0, "java.lang.String", null);
 	}
 
 	public static DataTyp getDefaultDateTyp() {
-		return new DataTyp("Date", null, null, "varchar", null, null, "java.util.Date");
+		return new DataTyp("Date", null, null, "varchar", null, null, "java.util.Date", null);
 	}
 
 }

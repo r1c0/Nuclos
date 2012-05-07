@@ -50684,6 +50684,36 @@
     "text": "Datenbanktyp"
   },
   {
+    "resourceID": "nuclos.entityfield.Datatyp.defaultcomponenttype.label",
+    "locale": "i-default",
+    "text": "Default component type"
+  },
+  {
+    "resourceID": "nuclos.entityfield.Datatyp.defaultcomponenttype.label",
+    "locale": "en",
+    "text": "Default component type"
+  },
+  {
+    "resourceID": "nuclos.entityfield.Datatyp.defaultcomponenttype.label",
+    "locale": "de",
+    "text": "Standard Darstellungskomponente"
+  },
+  {
+    "resourceID": "nuclos.entityfield.Datatyp.defaultcomponenttype.description",
+    "locale": "i-default",
+    "text": "Default component type"
+  },
+  {
+    "resourceID": "nuclos.entityfield.Datatyp.defaultcomponenttype.description",
+    "locale": "en",
+    "text": "Default component type"
+  },
+  {
+    "resourceID": "nuclos.entityfield.Datatyp.defaultcomponenttype.description",
+    "locale": "de",
+    "text": "Standard Darstellungskomponente"
+  },
+  {
     "resourceID": "DataTypeCollectController.1",
     "locale": "i-default",
     "text": "No java type set"
@@ -65362,5 +65392,50 @@
     "resourceID": "nuclos.entity.ldapserver.treeview",
     "locale": "de",
     "text": "${servername}: ${serverurl}"
+  },
+  {
+    "resourceID": "Hyperlink.open",
+    "locale": "i-default",
+    "text": "Open"
+  },
+  {
+    "resourceID": "Hyperlink.open",
+    "locale": "en",
+    "text": "Open"
+  },
+  {
+    "resourceID": "Hyperlink.open",
+    "locale": "de",
+    "text": "Öffnen"
+  },
+  {
+    "resourceID": "Hyperlink.edit",
+    "locale": "i-default",
+    "text": "Edit"
+  },
+  {
+    "resourceID": "Hyperlink.edit",
+    "locale": "en",
+    "text": "Edit"
+  },
+  {
+    "resourceID": "Hyperlink.edit",
+    "locale": "de",
+    "text": "Bearbeiten"
+  },
+  {
+    "resourceID": "Email.defaultSystemMailClient.new",
+    "locale": "i-default",
+    "text": "New Email with default mail client"
+  },
+  {
+    "resourceID": "Email.defaultSystemMailClient.new",
+    "locale": "en",
+    "text": "New Email with default mail client"
+  },
+  {
+    "resourceID": "Email.defaultSystemMailClient.new",
+    "locale": "de",
+    "text": "Neue Email mit Standard-Mailprogramm"
   }
 ]

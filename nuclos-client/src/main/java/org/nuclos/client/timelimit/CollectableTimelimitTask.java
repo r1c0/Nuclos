@@ -65,44 +65,44 @@ public class CollectableTimelimitTask extends AbstractCollectableBean<TimelimitT
 			
 			this.addCollectableEntityField(new DefaultCollectableEntityField(FIELDNAME_DESCRIPTION, String.class, 
 					getSpringLocaleDelegate().getMessage("CollectableTimelimitTask.13","Frist"),
-					getSpringLocaleDelegate().getMessage("CollectableTimelimitTask.7","Beschreibung der Frist"), null, null, false, CollectableField.TYPE_VALUEFIELD, null, null, entity));
+					getSpringLocaleDelegate().getMessage("CollectableTimelimitTask.7","Beschreibung der Frist"), null, null, false, CollectableField.TYPE_VALUEFIELD, null, null, entity, null));
 			this.addCollectableEntityField(new DefaultCollectableEntityField(FIELDNAME_COMPLETED, Date.class, 
 					getSpringLocaleDelegate().getMessage("CollectableTimelimitTask.9","Erledigt am"),
-					getSpringLocaleDelegate().getMessage("CollectableTimelimitTask.2","Abgeschlossen am"), null, null, true, CollectableField.TYPE_VALUEFIELD, null, null, entity));
+					getSpringLocaleDelegate().getMessage("CollectableTimelimitTask.2","Abgeschlossen am"), null, null, true, CollectableField.TYPE_VALUEFIELD, null, null, entity, null));
 			this.addCollectableEntityField(new DefaultCollectableEntityField(FIELDNAME_EXPIRED, Date.class, 
 					getSpringLocaleDelegate().getMessage("CollectableTimelimitTask.1","Abgelaufen am"),
-					getSpringLocaleDelegate().getMessage("CollectableTimelimitTask.14","Frist abgelaufen am"), null, null, true, CollectableField.TYPE_VALUEFIELD, null, null, entity));
+					getSpringLocaleDelegate().getMessage("CollectableTimelimitTask.14","Frist abgelaufen am"), null, null, true, CollectableField.TYPE_VALUEFIELD, null, null, entity, null));
 			this.addCollectableEntityField(new DefaultCollectableEntityField(FIELDNAME_CREATEDAT, Date.class, 
 					getSpringLocaleDelegate().getMessage("CollectableTimelimitTask.10","Erstellt am"),
-					getSpringLocaleDelegate().getMessage("CollectableTimelimitTask.12","Erstellungsdatum"), null, null, false, CollectableField.TYPE_VALUEFIELD, null, null, entity));
+					getSpringLocaleDelegate().getMessage("CollectableTimelimitTask.12","Erstellungsdatum"), null, null, false, CollectableField.TYPE_VALUEFIELD, null, null, entity, null));
 			this.addCollectableEntityField(new DefaultCollectableEntityField(FIELDNAME_CREATEDBY, String.class, 
 					getSpringLocaleDelegate().getMessage("CollectableTimelimitTask.11","Erstellt von"),
-					getSpringLocaleDelegate().getMessage("CollectableTimelimitTask.5","Autor der Erstellung"), null, null, false, CollectableField.TYPE_VALUEFIELD, null, null, entity));
+					getSpringLocaleDelegate().getMessage("CollectableTimelimitTask.5","Autor der Erstellung"), null, null, false, CollectableField.TYPE_VALUEFIELD, null, null, entity, null));
 			this.addCollectableEntityField(new DefaultCollectableEntityField(FIELDNAME_CHANGEDAT, Date.class, 
 					getSpringLocaleDelegate().getMessage("CollectableTimelimitTask.15","Ge\u00e4ndert am"),
-					getSpringLocaleDelegate().getMessage("CollectableTimelimitTask.8","Datum der letzten \u00c4nderung"), null, null, false, CollectableField.TYPE_VALUEFIELD, null, null, entity));
+					getSpringLocaleDelegate().getMessage("CollectableTimelimitTask.8","Datum der letzten \u00c4nderung"), null, null, false, CollectableField.TYPE_VALUEFIELD, null, null, entity, null));
 			this.addCollectableEntityField(new DefaultCollectableEntityField(FIELDNAME_CHANGEDBY, String.class, 
 					getSpringLocaleDelegate().getMessage("CollectableTimelimitTask.16","Ge\u00e4ndert von"),
-					getSpringLocaleDelegate().getMessage("CollectableTimelimitTask.6","Autor der letzten \u00c4nderung"), null, null, false, CollectableField.TYPE_VALUEFIELD, null, null, entity));
+					getSpringLocaleDelegate().getMessage("CollectableTimelimitTask.6","Autor der letzten \u00c4nderung"), null, null, false, CollectableField.TYPE_VALUEFIELD, null, null, entity, null));
 			this.addCollectableEntityField(new DefaultCollectableEntityField(FIELDNAME_GENERICOBJECTID, Integer.class,
 					getSpringLocaleDelegate().getMessage("CollectableTimelimitTask.20","Objekt-ID"), 
 					getSpringLocaleDelegate().getMessage("CollectableTimelimitTask.17","ID des zugeordneten Objekts"), null, null, 
-				true, CollectableField.TYPE_VALUEFIELD, null, null, entity));
+				true, CollectableField.TYPE_VALUEFIELD, null, null, entity, null));
 			this.addCollectableEntityField(new DefaultCollectableEntityField(FIELDNAME_LEASEDOBJECTIDENTIFIERLABEL,
 					String.class, 
 					getSpringLocaleDelegate().getMessage("CollectableTimelimitTask.24","Zugeordnetes Objekt"), 
 					getSpringLocaleDelegate().getMessage("CollectableTimelimitTask.23","System-ID des zugeordneten Objekts"), null, null, true,
-					CollectableField.TYPE_VALUEFIELD, null, null, entity));
+					CollectableField.TYPE_VALUEFIELD, null, null, entity, null));
 			this.addCollectableEntityField(new DefaultCollectableEntityField(FIELDNAME_MODULEID, Integer.class, 
 					getSpringLocaleDelegate().getMessage("CollectableTimelimitTask.18","Modul-ID"),
-					getSpringLocaleDelegate().getMessage("CollectableTimelimitTask.19","Modul-ID des zugeordneten Objekts"), null, null, true, CollectableField.TYPE_VALUEFIELD, null, null, entity));
+					getSpringLocaleDelegate().getMessage("CollectableTimelimitTask.19","Modul-ID des zugeordneten Objekts"), null, null, true, CollectableField.TYPE_VALUEFIELD, null, null, entity, null));
 
 			this.addCollectableEntityField(new DefaultCollectableEntityField(FIELDNAME_STATUS, String.class, 
 					getSpringLocaleDelegate().getMessage("CollectableTimelimitTask.21","Status"),
-					getSpringLocaleDelegate().getMessage("CollectableTimelimitTask.22","Status des zugeordneten Objekts"), null, null, false, CollectableField.TYPE_VALUEFIELD, null, null, entity));
+					getSpringLocaleDelegate().getMessage("CollectableTimelimitTask.22","Status des zugeordneten Objekts"), null, null, false, CollectableField.TYPE_VALUEFIELD, null, null, entity, null));
 			this.addCollectableEntityField(new DefaultCollectableEntityField(FIELDNAME_PROCESS, String.class, 
 					getSpringLocaleDelegate().getMessage("CollectableTimelimitTask.3","Aktion"),
-					getSpringLocaleDelegate().getMessage("CollectableTimelimitTask.4","Aktion des zugeordneten Objekts"), null, null, false, CollectableField.TYPE_VALUEFIELD, null, null, entity));
+					getSpringLocaleDelegate().getMessage("CollectableTimelimitTask.4","Aktion des zugeordneten Objekts"), null, null, false, CollectableField.TYPE_VALUEFIELD, null, null, entity, null));
 		}
 
 		/**

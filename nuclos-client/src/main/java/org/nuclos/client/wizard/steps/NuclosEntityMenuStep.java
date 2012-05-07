@@ -216,7 +216,7 @@ public class NuclosEntityMenuStep extends NuclosEntityAbstractStep {
 				String label = getSpringLocaleDelegate().getMessage("EntityMenuCollectableEntity.translationfield.label", "Menu path ({0})", li.title);
 				String description = getSpringLocaleDelegate().getMessage("EntityMenuCollectableEntity.translationfield.description", "Menu path ({0}). Use \\ to create submenus.", li.title);
 				DefaultCollectableEntityField field = new DefaultCollectableEntityField(fieldname, String.class, label,
-						description, null, null, false, CollectableField.TYPE_VALUEFIELD, null, null, NuclosEntity.ENTITYMENU.getEntityName());
+						description, null, null, false, CollectableField.TYPE_VALUEFIELD, null, null, NuclosEntity.ENTITYMENU.getEntityName(), null);
 				field.setCollectableEntity(this);
 				this.addCollectableEntityField(field);
 			}

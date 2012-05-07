@@ -932,6 +932,8 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 			this.mpEnumeratedControlTypes.put(ATTRIBUTEVALUE_COMBOBOX, CollectableComponentTypes.TYPE_COMBOBOX);
 			this.mpEnumeratedControlTypes.put(ATTRIBUTEVALUE_CHECKBOX, CollectableComponentTypes.TYPE_CHECKBOX);
 			this.mpEnumeratedControlTypes.put(ATTRIBUTEVALUE_DATECHOOSER, CollectableComponentTypes.TYPE_DATECHOOSER);
+			this.mpEnumeratedControlTypes.put(ATTRIBUTEVALUE_HYPERLINK, CollectableComponentTypes.TYPE_HYPERLINK);
+			this.mpEnumeratedControlTypes.put(ATTRIBUTEVALUE_EMAIL, CollectableComponentTypes.TYPE_EMAIL);
 			this.mpEnumeratedControlTypes.put(ATTRIBUTEVALUE_OPTIONGROUP, CollectableComponentTypes.TYPE_OPTIONGROUP);
 			this.mpEnumeratedControlTypes.put(ATTRIBUTEVALUE_LISTOFVALUES, CollectableComponentTypes.TYPE_LISTOFVALUES);
 			this.mpEnumeratedControlTypes.put(ATTRIBUTEVALUE_FILECHOOSER, CollectableComponentTypes.TYPE_FILECHOOSER);

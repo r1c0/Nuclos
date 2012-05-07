@@ -334,6 +334,10 @@ public class WYSIWYGUniversalComponent extends WYSIWYGCollectableComponent {
 			return CollectableComponentTypes.TYPE_COMBOBOX;
 		if (sControlType.equals(ATTRIBUTEVALUE_DATECHOOSER))
 			return CollectableComponentTypes.TYPE_DATECHOOSER;
+		if (sControlType.equals(ATTRIBUTEVALUE_HYPERLINK))
+			return CollectableComponentTypes.TYPE_HYPERLINK;
+		if (sControlType.equals(ATTRIBUTEVALUE_EMAIL))
+			return CollectableComponentTypes.TYPE_EMAIL;
 		if (sControlType.equals(ATTRIBUTEVALUE_FILECHOOSER))
 			return CollectableComponentTypes.TYPE_FILECHOOSER;
 		if (sControlType.equals(ATTRIBUTEVALUE_IDTEXTFIELD))

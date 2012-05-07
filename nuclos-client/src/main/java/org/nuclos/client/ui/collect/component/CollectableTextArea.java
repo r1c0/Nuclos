@@ -117,13 +117,13 @@ public class CollectableTextArea extends CollectableTextComponent {
 	}
 
 	@Override
-	public TableCellRenderer getTableCellRenderer() {
+	public TableCellRenderer getTableCellRenderer(final boolean subform) {
 		return new TableCellRenderer() {
 			@Override
             public Component getTableCellRendererComponent(JTable tbl, Object oValue, boolean bSelected, boolean bHasFocus,
 					int iRow, int iColumn) {
 				
-				Component comp = CollectableTextArea.super.getTableCellRenderer().getTableCellRendererComponent(tbl, oValue, bSelected, bHasFocus, iRow, iColumn);
+				Component comp = CollectableTextArea.super.getTableCellRenderer(subform).getTableCellRendererComponent(tbl, oValue, bSelected, bHasFocus, iRow, iColumn);
 				if (comp instanceof JXLayer<?>) {
 					return comp;
 				}				

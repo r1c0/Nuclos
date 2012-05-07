@@ -51,6 +51,8 @@ import org.nuclos.client.layout.wysiwyg.component.WYSIWYGCollectableCheckBox;
 import org.nuclos.client.layout.wysiwyg.component.WYSIWYGCollectableComboBox;
 import org.nuclos.client.layout.wysiwyg.component.WYSIWYGCollectableComponent;
 import org.nuclos.client.layout.wysiwyg.component.WYSIWYGCollectableDateChooser;
+import org.nuclos.client.layout.wysiwyg.component.WYSIWYGCollectableEmail;
+import org.nuclos.client.layout.wysiwyg.component.WYSIWYGCollectableHyperlink;
 import org.nuclos.client.layout.wysiwyg.component.WYSIWYGCollectableImage;
 import org.nuclos.client.layout.wysiwyg.component.WYSIWYGCollectableLabel;
 import org.nuclos.client.layout.wysiwyg.component.WYSIWYGCollectableListOfValues;
@@ -653,7 +655,6 @@ public class LayoutMLGenerator implements LayoutMLConstants {
 		 * The type WYSIWYGCollectableOptionGroup is a WYSIWYGUniversalComponent.
 		 * There is no need to generate the 
 		 */
-		
 		if (c instanceof WYSIWYGCollectableTextfield) {
 			block.append(" " + ATTRIBUTE_CONTROLTYPE + "=\"" + CONTROLTYPE_TEXTFIELD + "\" " + ATTRIBUTE_SHOWONLY + "=\"" + ATTRIBUTEVALUE_CONTROL + "\"");
 		} else if (c instanceof WYSIWYGCollectableLabel) {
@@ -674,7 +675,11 @@ public class LayoutMLGenerator implements LayoutMLConstants {
 		} else if (c instanceof WYSIWYGCollectablePasswordfield) {
 			//NUCLEUSINT-1142
 			block.append(" " + ATTRIBUTE_CONTROLTYPE + "=\"" + CONTROLTYPE_PASSWORDFIELD + "\" " + ATTRIBUTE_SHOWONLY + "=\"" + ATTRIBUTEVALUE_CONTROL + "\"");
-		}
+		} else if (c instanceof WYSIWYGCollectableHyperlink) {
+			block.append(" " + ATTRIBUTE_CONTROLTYPE + "=\"" + CONTROLTYPE_HYPERLINK + "\" " + ATTRIBUTE_SHOWONLY + "=\"" + ATTRIBUTEVALUE_CONTROL + "\"");
+		} else if (c instanceof WYSIWYGCollectableEmail) {
+			block.append(" " + ATTRIBUTE_CONTROLTYPE + "=\"" + CONTROLTYPE_EMAIL + "\" " + ATTRIBUTE_SHOWONLY + "=\"" + ATTRIBUTEVALUE_CONTROL + "\"");
+		} 
 
 		block.append(">");
 

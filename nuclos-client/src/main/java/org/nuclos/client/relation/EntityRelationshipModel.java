@@ -56,11 +56,11 @@ public class EntityRelationshipModel extends AbstractCollectableBean<EntityRelat
 			this.addCollectableEntityField(new DefaultCollectableEntityField(FIELDNAME_NAME, String.class, 
 					getSpringLocaleDelegate().getMessage("CollectableStateModel.3","Name"),
 					getSpringLocaleDelegate().getMessage("CollectableRelationModel.4","Name des Relationenmodells"), 
-					null, null, false, CollectableField.TYPE_VALUEFIELD, null, null, entity));
+					null, null, false, CollectableField.TYPE_VALUEFIELD, null, null, entity, null));
 			this.addCollectableEntityField(new DefaultCollectableEntityField(FIELDNAME_DESCRIPTION, String.class,
 					getSpringLocaleDelegate().getMessage("CollectableStateModel.1","Beschreibung"), 
 					getSpringLocaleDelegate().getMessage("CollectableRelationModel.2","Beschreibung des Relationenmodells"), 
-					null, null, true, CollectableField.TYPE_VALUEFIELD, null, null, entity));
+					null, null, true, CollectableField.TYPE_VALUEFIELD, null, null, entity, null));
 		}
 
 	}	// inner class Entity

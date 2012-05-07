@@ -1212,6 +1212,7 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 
 		metaFieldVO.setFormatOutput(attr.getOutputFormat());
 		metaFieldVO.setDataType(attr.getDatatyp().getJavaType());
+		metaFieldVO.setDefaultComponentType(attr.getDatatyp().getDefaultComponentType());
 		metaFieldVO.setPrecision(attr.getDatatyp().getPrecision());
 		metaFieldVO.setScale(attr.getDatatyp().getScale());
 		metaFieldVO.setNullable(!attr.isMandatory());

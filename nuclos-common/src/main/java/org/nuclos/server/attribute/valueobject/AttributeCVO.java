@@ -80,6 +80,8 @@ public class AttributeCVO extends NuclosValueObject implements Cloneable {
 	
 	private String sResourceIdForLabel;
 	private String sResourceIdForDescription;
+	
+	private String sDefaultComponentType;
 
 	/**
 	 * constructor to be called by server only
@@ -115,7 +117,7 @@ public class AttributeCVO extends NuclosValueObject implements Cloneable {
 			boolean bSearchable, boolean bModifiable, boolean bInsertable, boolean bLogbookTracking,
 			boolean bSystemAttribute, boolean bShowMnemonic, Integer iDefaultValueId, Object oDefaultValue, String sSortationAsc,
 			String sSortationDesc, String sExternalEntityName, String sExternalEntityFieldName, Map<Integer, Permission> mpPermissions,
-			String sResourceIdForLabel, String sResourceIdForDescription) {
+			String sResourceIdForLabel, String sResourceIdForDescription, String sDefaultComponentType) {
 		super(evo);
 		this.iAttributeGroupId = iAttributegroupId;
 		this.sAttributeGroup = sAttributegroup;
@@ -144,13 +146,14 @@ public class AttributeCVO extends NuclosValueObject implements Cloneable {
 		this.mpPermissions = new HashMap<Integer, Permission>(mpPermissions);
 		this.sResourceIdForLabel = sResourceIdForLabel;
 		this.sResourceIdForDescription = sResourceIdForDescription;
+		this.sDefaultComponentType = sDefaultComponentType;
 	}
 
 	/**
 	 * creates a new attribute.
 	 */
 	public AttributeCVO() {
-		this(null, null, null, null, null, null, null, null, null, null, true, false, true, false, false, false, false, null, null, null, null, null, null, null);
+		this(null, null, null, null, null, null, null, null, null, null, true, false, true, false, false, false, false, null, null, null, null, null, null, null, null);
 	}
 
 	/**
@@ -181,7 +184,7 @@ public class AttributeCVO extends NuclosValueObject implements Cloneable {
 			String sFormatInput, String sFormatOutput, boolean bNullable,
 			boolean bSearchable, boolean bModifiable, boolean bInsertable, boolean bLogbookTracking,
 			boolean bSystemAttribute, boolean bShowMnemonic, Integer iDefaultValueId, Object oDefaultValue, String sSortationAsc,
-			String sSortationDesc, String sExternalEntityName, Integer iResourceIdForLabel, Integer iResourceIdForDescription) {
+			String sSortationDesc, String sExternalEntityName, Integer iResourceIdForLabel, Integer iResourceIdForDescription, String sDefaultComponentType) {
 		super();
 		this.iAttributeGroupId = iAttributeGroupId;
 		this.sAttributeGroup = null;
@@ -206,6 +209,7 @@ public class AttributeCVO extends NuclosValueObject implements Cloneable {
 		this.sSortationAsc = sSortationAsc;
 		this.sSortationDesc = sSortationDesc;
 		this.sExternalEntityName = sExternalEntityName;
+		this.sDefaultComponentType = sDefaultComponentType;
 	}
 
 	/**
@@ -932,5 +936,15 @@ public class AttributeCVO extends NuclosValueObject implements Cloneable {
 	public void setResourceIdForDescription(String sResourceId) {
 		this.sResourceIdForDescription = sResourceId;
 	}
+
+	public String getDefaultComponentType() {
+		return sDefaultComponentType;
+	}
+
+	public void setDefaultComponentType(String sDefaultComponentType) {
+		this.sDefaultComponentType = sDefaultComponentType;
+	}
+	
+	
 
 }	// class AttributeCVO

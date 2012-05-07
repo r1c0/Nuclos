@@ -56,6 +56,7 @@ public class EntityFieldMetaDataVO extends AbstractDalVOWithVersion implements C
 	private String lookupEntityField;
 
 	private String dataType;
+	private String defaultComponentType;
 	private Integer scale;
 	private Integer precision;
 	private String formatInput;
@@ -173,6 +174,14 @@ public class EntityFieldMetaDataVO extends AbstractDalVOWithVersion implements C
 
 	public void setDataType(String dataType) {
 		this.dataType = dataType;
+	}
+
+	public String getDefaultComponentType() {
+		return defaultComponentType;
+	}
+
+	public void setDefaultComponentType(String defaultComponentType) {
+		this.defaultComponentType = defaultComponentType;
 	}
 
 	public void setScale(Integer scale) {

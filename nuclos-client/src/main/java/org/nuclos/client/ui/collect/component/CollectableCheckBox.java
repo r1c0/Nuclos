@@ -170,7 +170,7 @@ public class CollectableCheckBox extends AbstractCollectableComponent {
 	}
 
 	@Override
-	public TableCellRenderer getTableCellRenderer() {
+	public TableCellRenderer getTableCellRenderer(boolean subform) {
 		return new CheckBoxTableCellRenderer();
 	}
 

@@ -89,8 +89,8 @@ public class CollectablePasswordField extends CollectableTextComponent {
 	}
 
 	@Override
-	public TableCellRenderer getTableCellRenderer() {
-		final TableCellRenderer parentRenderer = CollectablePasswordField.super.getTableCellRenderer();
+	public TableCellRenderer getTableCellRenderer(boolean subform) {
+		final TableCellRenderer parentRenderer = CollectablePasswordField.super.getTableCellRenderer(subform);
 		return new TableCellRenderer() {
 			@Override
 			public Component getTableCellRendererComponent(JTable tbl, Object oValue, boolean bSelected, boolean bHasFocus, int iRow, int iColumn) {

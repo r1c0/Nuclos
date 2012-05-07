@@ -556,6 +556,10 @@ public class Icons {
 	public ImageIcon getIconTextFieldButtonCombobox() {
 		return this.getIconByName("textFieldButton-combobox");
 	}
+	
+	public ImageIcon getIconTextFieldButtonHyperlink() {
+		return this.getIconByName("textFieldButton-hyperlink");
+	}
 
 	public ImageIcon getIconTabNotRestored() {
 		return this.getIconByName("tabNotRestored");

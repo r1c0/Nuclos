@@ -177,13 +177,13 @@ public class UserCollectController extends MasterDataCollectController {
 		super.initialize(pnlCollect);
 		final String entity = "User";
 		clctefSetPassword = new DefaultCollectableEntityField(UserVO.FIELD_SETPASSWORD, Boolean.class, 
-				"lblSetPassword", "tltSetPassword", null, null, true, CollectableField.TYPE_VALUEFIELD, null, null, entity);
+				"lblSetPassword", "tltSetPassword", null, null, true, CollectableField.TYPE_VALUEFIELD, null, null, entity, null);
 		clctefSendPassword = new DefaultCollectableEntityField(UserVO.FIELD_NOTIFYUSER, Boolean.class, 
-				"lblSendPassword", "tltSendPassword", null, null, true, CollectableField.TYPE_VALUEFIELD, null, null, entity);
+				"lblSendPassword", "tltSendPassword", null, null, true, CollectableField.TYPE_VALUEFIELD, null, null, entity, null);
 		clctefNewPassword = new DefaultCollectableEntityField(UserVO.FIELD_NEWPASSWORD, String.class, 
-				"lblNewPassword", "tltNewPassword", 255, null, true, CollectableField.TYPE_VALUEFIELD, null, null, entity);
+				"lblNewPassword", "tltNewPassword", 255, null, true, CollectableField.TYPE_VALUEFIELD, null, null, entity, null);
 		clctefNewPasswordRepeat = new DefaultCollectableEntityField(UserVO.FIELD_NEWPASSWORD, String.class, 
-				"lblNewPasswordRepeat", "tltNewPasswordRepeat", 255, null, true, CollectableField.TYPE_VALUEFIELD, null, null, entity);
+				"lblNewPasswordRepeat", "tltNewPasswordRepeat", 255, null, true, CollectableField.TYPE_VALUEFIELD, null, null, entity, null);
 
 		chkSetPassword = new CollectableCheckBox(clctefSetPassword);
 		chkSendPassword = new CollectableCheckBox(clctefSendPassword);

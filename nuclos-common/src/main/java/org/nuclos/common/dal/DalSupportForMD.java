@@ -238,6 +238,7 @@ public class DalSupportForMD {
 			/*String sLookupEntityName, */ efMeta.getLookupEntity(),
 			/*String sLookupEntityFieldName, */ efMeta.getLookupEntityField(),
 			/*Class<?> clsDataType,*/ clsDataType,
+			/*String sComponentType,*/ efMeta.getDefaultComponentType(),
 			/*Integer iDataScale,*/ efMeta.getScale(),
 			/*Integer iDataPrecision,*/ efMeta.getPrecision(),
 			/*String sInputFormat,*/ efMeta.getFormatInput(),

@@ -183,4 +183,9 @@ public class CollectableMasterDataLookupKeyEntityField extends AbstractCollectab
 		return entityName;
 	}
 
+	@Override
+	public String getDefaultComponentType() {
+		return this.mdmetafield.getDefaultComponentType();
+	}
+
 }	// class CollectableMasterDataLookupKeyEntityField

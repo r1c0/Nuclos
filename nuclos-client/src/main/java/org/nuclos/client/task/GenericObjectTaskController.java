@@ -227,7 +227,7 @@ public class GenericObjectTaskController extends RefreshableTaskController {
 			final int iModelIndex = column.getModelIndex();
 			final CollectableEntityField clctef = view.getTableModel().getCollectableEntityField(iModelIndex);
 			final CollectableComponent clctcomp = CollectableComponentFactory.getInstance().newCollectableComponent(clctef, null, false);
-			column.setCellRenderer(clctcomp.getTableCellRenderer());
+			column.setCellRenderer(clctcomp.getTableCellRenderer(false));
 		}
 	}
 	

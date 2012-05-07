@@ -21,10 +21,12 @@ import java.util.Date;
 import java.util.prefs.Preferences;
 
 import org.apache.commons.lang.NullArgumentException;
+import org.nuclos.common.DefaultComponentTypes;
 import org.nuclos.common.collect.exception.CollectableFieldValidationException;
 import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.RelativeDate;
+import org.nuclos.common2.StringUtils;
 
 
 
@@ -58,6 +60,7 @@ public class DefaultCollectableEntityField extends AbstractCollectableEntityFiel
 	private final String sReferencedEntityName;
 	private final String sFormatInput;
 	private final String sFormatOutput;
+	private final String sDefaultComponentType;
 
 	/**
 	 * @param sName
@@ -72,9 +75,9 @@ public class DefaultCollectableEntityField extends AbstractCollectableEntityFiel
 	 */
 	public DefaultCollectableEntityField(String sName, Class<?> cls, String sLabel, String sDescription,
 			Integer iMaxLength, Integer iPrecision, boolean bNullable, int iFieldType, String sFormatInput,
-			String sFormatOutput, String entityName) {
+			String sFormatOutput, String entityName, String sDefaultComponentType) {
 		this(sName, cls, sLabel, sDescription, iMaxLength, iPrecision, bNullable, iFieldType, null,
-				CollectableUtils.getNullField(iFieldType), sFormatInput, sFormatOutput, entityName);
+				CollectableUtils.getNullField(iFieldType), sFormatInput, sFormatOutput, entityName, sDefaultComponentType);
 		assert sName != null;
 		assert entityName != null;
 	}
@@ -95,7 +98,7 @@ public class DefaultCollectableEntityField extends AbstractCollectableEntityFiel
 	 */
 	public DefaultCollectableEntityField(String sName, Class<?> cls, String sLabel, String sDescription, Integer iMaxLength,
 			Integer iPrecision, boolean bNullable, int iFieldType, String sReferencedEntityName, CollectableField clctfDefault,
-			String sFormatInput, String sFormatOutput, String entityName) {
+			String sFormatInput, String sFormatOutput, String entityName, String sDefaultComponentType) {
 		if (clctfDefault == null) {
 			throw new NullArgumentException("clctfDefault");
 		}
@@ -112,6 +115,7 @@ public class DefaultCollectableEntityField extends AbstractCollectableEntityFiel
 		this.sReferencedEntityName = sReferencedEntityName;
 		this.sFormatInput = sFormatInput;
 		this.sFormatOutput = sFormatOutput;
+		this.sDefaultComponentType = sDefaultComponentType;
 		try {
 			CollectableUtils.validateFieldType(clctfDefault, this);
 			if (this.getJavaClass().equals(Date.class) && clctfDefault.getValue() != null &&
@@ -136,9 +140,17 @@ public class DefaultCollectableEntityField extends AbstractCollectableEntityFiel
 	 * @postcondition this.equals(clctef)
 	 */
 	public DefaultCollectableEntityField(CollectableEntityField clctef, String entityName) {
+		this(clctef, entityName, null);
+	}
+	
+	/**
+	 * @param clctef
+	 * @postcondition this.equals(clctef)
+	 */
+	public DefaultCollectableEntityField(CollectableEntityField clctef, String entityName, String sDefaultComponentType) {
 		this(clctef.getName(), clctef.getJavaClass(), clctef.getLabel(), clctef.getDescription(), clctef.getMaxLength(),
 				clctef.getPrecision(), clctef.isNullable(), clctef.getFieldType(), clctef.getReferencedEntityName(),
-				clctef.getDefault(), clctef.getFormatInput(), clctef.getFormatOutput(), entityName);
+				clctef.getDefault(), clctef.getFormatInput(), clctef.getFormatOutput(), entityName, sDefaultComponentType);
 		
 		assert sName != null;
 		assert entityName != null;
@@ -218,6 +230,11 @@ public class DefaultCollectableEntityField extends AbstractCollectableEntityFiel
 	@Override
 	public String getEntityName() {
 		return entityName;
+	}
+
+	@Override
+	public String getDefaultComponentType() {
+		return sDefaultComponentType;
 	}
 
 }	// class DefaultCollectableEntityField

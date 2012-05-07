@@ -80,14 +80,14 @@ public class NuclosCollectableStateComboBox extends CollectableComboBox {
 		return new DefaultCollectableEntityField(NuclosEOField.STATE.getMetaData().getField(), String.class,
 				SpringLocaleDelegate.getInstance().getLabelFromAttributeCVO(
 						AttributeCache.getInstance().getAttribute(NuclosEOField.STATE.getMetaData().getId().intValue())),
-				null, null, null, true, CollectableField.TYPE_VALUEIDFIELD, null, null, getEntityField().getEntityName());
+				null, null, null, true, CollectableField.TYPE_VALUEIDFIELD, null, null, getEntityField().getEntityName(), null);
 	}
 
 	private CollectableEntityField getStatusNumeral() {
 		return new DefaultCollectableEntityField(NuclosEOField.STATENUMBER.getMetaData().getField(), Integer.class,
 				SpringLocaleDelegate.getInstance().getLabelFromAttributeCVO(
 						AttributeCache.getInstance().getAttribute(NuclosEOField.STATENUMBER.getMetaData().getId().intValue())),
-				null, null, null, true, CollectableField.TYPE_VALUEIDFIELD, null, null, getEntityField().getEntityName());
+				null, null, null, true, CollectableField.TYPE_VALUEIDFIELD, null, null, getEntityField().getEntityName(), null);
 	}
 
 	@Override

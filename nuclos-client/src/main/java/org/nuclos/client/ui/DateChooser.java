@@ -322,7 +322,7 @@ public class DateChooser extends JComponent implements Serializable {
 			}
 
 			@Override
-			public void buttonClicked() {
+			public void buttonClicked(MouseEvent me) {
 				DateChooser.this.btnDropDown.doClick();
 			}
 		};

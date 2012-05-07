@@ -236,8 +236,8 @@ public abstract class DelegatingCollectableComponent implements CollectableCompo
 	}
 
 	@Override
-	public TableCellRenderer getTableCellRenderer() {
-		return this.getWrappedCollectableComponent().getTableCellRenderer();
+	public TableCellRenderer getTableCellRenderer(boolean subform) {
+		return this.getWrappedCollectableComponent().getTableCellRenderer(subform);
 	}
 
 	@Override

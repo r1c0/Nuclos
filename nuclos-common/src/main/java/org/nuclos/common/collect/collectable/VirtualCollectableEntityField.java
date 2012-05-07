@@ -103,4 +103,9 @@ public class VirtualCollectableEntityField extends AbstractCollectableEntityFiel
 	public String getEntityName() {
 		return sEntityName;
 	}
+
+	@Override
+	public String getDefaultComponentType() {
+		return null;
+	}
 }

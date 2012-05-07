@@ -131,7 +131,7 @@ public abstract class CollectableFileNameChooserBase extends AbstractCollectable
 	}
 
 	@Override
-	public TableCellRenderer getTableCellRenderer() {
+	public TableCellRenderer getTableCellRenderer(boolean subform) {
 		return new CollectableComponentDefaultTableCellRenderer() {
 			@Override
 			public Component getTableCellRendererComponent(JTable tbl, Object oValue, boolean bSelected, boolean bHasFocus, int iRow, int iColumn) {

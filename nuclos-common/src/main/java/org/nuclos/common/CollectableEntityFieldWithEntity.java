@@ -462,4 +462,9 @@ public class CollectableEntityFieldWithEntity implements CollectableEntityField,
 		return entityName;
 	}
 
+	@Override
+	public String getDefaultComponentType() {
+		return this.getField().getDefaultComponentType();
+	}
+
 }	// class CollectableEntityFieldWithEntity

@@ -185,4 +185,9 @@ public class CollectableMasterDataForeignKeyEntityField extends AbstractCollecta
 		return entityName;
 	}
 
+	@Override
+	public String getDefaultComponentType() {
+		return this.mdmetafield.getDefaultComponentType();
+	}
+
 }	// class CollectableMasterDataForeignKeyEntityField

@@ -335,7 +335,8 @@ public class DalSupportForGO {
 			efMeta.getForeignEntityField() != null ? efMeta.getForeignEntityField() : efMeta.getLookupEntityField(),
 			(permissions == null ? new HashMap<Integer, Permission>() : permissions),
 			efMeta.getLocaleResourceIdForLabel(),
-			efMeta.getLocaleResourceIdForDescription());
+			efMeta.getLocaleResourceIdForDescription(),
+			efMeta.getDefaultComponentType());
 
 		return vo;
 	}

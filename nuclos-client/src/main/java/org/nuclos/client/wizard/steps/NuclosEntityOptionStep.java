@@ -508,7 +508,7 @@ public class NuclosEntityOptionStep extends NuclosEntityAbstractStep {
 										}
 									}
 								} else {
-									attr.setDatatyp(NuclosWizardUtils.getDataTyp(field.getDataType(),
+									attr.setDatatyp(NuclosWizardUtils.getDataTyp(field.getDataType(), field.getDefaultComponentType(), 
 										field.getScale(), field.getPrecision(), field.getFormatInput(),
 										field.getFormatOutput()));
 								}

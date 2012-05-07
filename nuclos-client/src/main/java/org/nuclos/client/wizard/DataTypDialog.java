@@ -199,7 +199,7 @@ public class DataTypDialog extends JDialog{
 				
 				dataTyp = new DataTyp(newName, tfInputFormat.getText(), tfOutputFormat.getText(),
 					base.getDatabaseTyp(), Integer.parseInt(sFieldWidth), Integer.parseInt(sFieldPrecision), 
-					base.getJavaType());			
+					base.getJavaType(), null);			
 				blnOK = true;
 				DataTypDialog.this.setVisible(false);
 				DataTypDialog.this.dispose();

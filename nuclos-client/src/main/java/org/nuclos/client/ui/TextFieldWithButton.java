@@ -48,9 +48,9 @@ public abstract class TextFieldWithButton extends CommonJTextField {
 	
 	private Icon iconButton;
 	
-	private final Cursor curIcon = new Cursor(Cursor.DEFAULT_CURSOR);
-	private final Cursor curNotEditable = curIcon;
-	private final Cursor curDefault;
+	protected static final Cursor curIcon = new Cursor(Cursor.DEFAULT_CURSOR);
+	protected static final Cursor curNotEditable = curIcon;
+	protected final Cursor curDefault;
 	
 	private final ILabeledComponentSupport support;
 	
@@ -80,7 +80,7 @@ public abstract class TextFieldWithButton extends CommonJTextField {
 						TextFieldWithButton.this.repaint(getIconRectangleWithFades());
 					}
 				} else {
-					TextFieldWithButton.this.setCursor(TextFieldWithButton.this.isEditable() ? curDefault : curNotEditable);
+					TextFieldWithButton.this.setCursor(getDefaultCursor(me));
 					bs = ButtonState.NORMAL;
 					TextFieldWithButton.this.repaint(getIconRectangleWithFades());
 				}
@@ -104,8 +104,10 @@ public abstract class TextFieldWithButton extends CommonJTextField {
 				if (isButtonEnabled() && isMouseOverButton(me)) {
 					bs = ButtonState.PRESSED;
 					TextFieldWithButton.this.repaint(getIconRectangleWithFades());
-					buttonClicked();
-				} 
+					buttonClicked(me);
+				} else {
+					textClicked(me);
+				}
 			}
 		});
 		this.addFocusListener(new FocusListener() {
@@ -122,7 +124,15 @@ public abstract class TextFieldWithButton extends CommonJTextField {
 	
 	public abstract boolean isButtonEnabled();
 	
-	public abstract void buttonClicked();
+	public abstract void buttonClicked(MouseEvent me);
+	
+	public void textClicked(MouseEvent me) {
+		
+	}
+	
+	protected Cursor getDefaultCursor(MouseEvent me) {
+		return TextFieldWithButton.this.isEditable() ? curDefault : curNotEditable;
+	}
 	
 	@Override
 	public Color getBackground() {
@@ -160,10 +170,13 @@ public abstract class TextFieldWithButton extends CommonJTextField {
 		return r;
 	}
 	
-	private Rectangle getIconRectangle() {
+	public Rectangle getIconRectangle() {
+		return getIconRectangle(TextFieldWithButton.this.getSize());
+	}
+	
+	public static Rectangle getIconRectangle(Dimension dimTextField) {
 		final Rectangle r = new Rectangle();
 		
-		final Dimension dimTextField = TextFieldWithButton.this.getSize();
 		final ImageIcon ico = ButtonState.NORMAL.getImageIcon();
 		r.x = dimTextField.width - ico.getIconWidth() - 2;
 		r.y = (dimTextField.height - ico.getIconHeight()) / 2;
@@ -179,6 +192,10 @@ public abstract class TextFieldWithButton extends CommonJTextField {
 	
 	private boolean isSelectingText() {
 		return getSelectionStart() != getSelectionEnd();
+	}
+	
+	public Icon getButtonIcon() {
+		return iconButton;
 	}
 
 	@Override

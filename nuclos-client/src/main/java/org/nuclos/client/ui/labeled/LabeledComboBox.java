@@ -67,7 +67,7 @@ public class LabeledComboBox extends LabeledComponent {
 		}
 		
 		@Override
-		public void buttonClicked() {
+		public void buttonClicked(MouseEvent me) {
 		}
 		
 		@Override

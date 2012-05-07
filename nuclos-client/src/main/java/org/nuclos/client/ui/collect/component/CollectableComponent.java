@@ -303,7 +303,7 @@ public interface CollectableComponent {
 	 * @todo refactor Currently, you have to create a CollectableComponent first in order to call getTableCellRenderer().
 	 * At least, provide a static method that performs these two steps.
 	 */
-	TableCellRenderer getTableCellRenderer();
+	TableCellRenderer getTableCellRenderer(boolean subform);
 
 	/**
 	 * @param sName

@@ -143,6 +143,7 @@ public class JSONHelper {
 				(String) obj.get("lookupentity"),
 				(String) obj.get("lookupentityfield"),
 				parseDatatype((String) obj.get("datatype")),
+				(String) obj.get("defaultcomponenttype"),
 				// eigentlich sind Precision und Scale vertauscht (vergleicht man die Semantik von SQL, BigDecimal etc.)
 				coerce(obj.get("datascale"), Integer.class),
 				coerce(obj.get("dataprecision"), Integer.class),

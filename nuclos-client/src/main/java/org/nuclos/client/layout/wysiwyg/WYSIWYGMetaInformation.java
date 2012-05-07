@@ -122,6 +122,8 @@ public class WYSIWYGMetaInformation implements LayoutMLConstants {
 		this.mpEnumeratedControlTypes.put(ATTRIBUTEVALUE_COMBOBOX, CollectableComponentTypes.TYPE_COMBOBOX);
 		this.mpEnumeratedControlTypes.put(ATTRIBUTEVALUE_CHECKBOX, CollectableComponentTypes.TYPE_CHECKBOX);
 		this.mpEnumeratedControlTypes.put(ATTRIBUTEVALUE_DATECHOOSER, CollectableComponentTypes.TYPE_DATECHOOSER);
+		this.mpEnumeratedControlTypes.put(ATTRIBUTEVALUE_HYPERLINK, CollectableComponentTypes.TYPE_HYPERLINK);
+		this.mpEnumeratedControlTypes.put(ATTRIBUTEVALUE_EMAIL, CollectableComponentTypes.TYPE_EMAIL);
 		this.mpEnumeratedControlTypes.put(ATTRIBUTEVALUE_OPTIONGROUP, CollectableComponentTypes.TYPE_OPTIONGROUP);
 		this.mpEnumeratedControlTypes.put(ATTRIBUTEVALUE_LISTOFVALUES, CollectableComponentTypes.TYPE_LISTOFVALUES);
 		this.mpEnumeratedControlTypes.put(ATTRIBUTEVALUE_FILECHOOSER, CollectableComponentTypes.TYPE_FILECHOOSER);
@@ -457,12 +459,24 @@ public class WYSIWYGMetaInformation implements LayoutMLConstants {
 				case CollectableComponentTypes.TYPE_TEXTFIELD:
 					result.add(ATTRIBUTEVALUE_TEXTFIELD);
 					result.add(ATTRIBUTEVALUE_TEXTAREA);
+					result.add(ATTRIBUTEVALUE_HYPERLINK);
+					result.add(ATTRIBUTEVALUE_EMAIL);
 					break;
 				case CollectableComponentTypes.TYPE_CHECKBOX:
 					result.add(ATTRIBUTEVALUE_CHECKBOX);
 					break;
 				case CollectableComponentTypes.TYPE_DATECHOOSER:
 					result.add(ATTRIBUTEVALUE_DATECHOOSER);
+					break;
+				case CollectableComponentTypes.TYPE_HYPERLINK:
+					result.add(ATTRIBUTEVALUE_TEXTFIELD);
+					result.add(ATTRIBUTEVALUE_HYPERLINK);
+					result.add(ATTRIBUTEVALUE_EMAIL);
+					break;
+				case CollectableComponentTypes.TYPE_EMAIL:
+					result.add(ATTRIBUTEVALUE_TEXTFIELD);
+					result.add(ATTRIBUTEVALUE_HYPERLINK);
+					result.add(ATTRIBUTEVALUE_EMAIL);
 					break;
 				case CollectableComponentTypes.TYPE_OPTIONGROUP:
 					result.add(ATTRIBUTEVALUE_OPTIONGROUP);

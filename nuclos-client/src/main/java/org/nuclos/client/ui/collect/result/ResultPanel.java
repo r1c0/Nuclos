@@ -599,7 +599,7 @@ public class ResultPanel<Clct extends Collectable> extends JPanel {
 			final CollectableEntityField clctef = ((CollectableEntityFieldBasedTableModel) table.getModel()).getCollectableEntityField(column.getModelIndex());
 			final CollectableComponent clctcomp = CollectableComponentFactory.getInstance().newCollectableComponent(clctef, null, false);
 
-			final TableCellRenderer renderer = clctcomp.getTableCellRenderer();
+			final TableCellRenderer renderer = clctcomp.getTableCellRenderer(false);
 			iRowHeight = Math.max(iRowHeight, renderer.getTableCellRendererComponent(table, CollectableUtils.getNullField(clctef), true, true, 0, 0).getPreferredSize().height);
 			column.setCellRenderer(renderer);
 		}

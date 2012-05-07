@@ -53,11 +53,11 @@ public class CollectableStateRole extends DefaultCollectable {
 			this.addCollectableEntityField(new DefaultCollectableEntityField(FIELDNAME_STATE, String.class, 
 					getSpringLocaleDelegate().getMessage("CollectableStateRole.4","Status"),
 					getSpringLocaleDelegate().getMessage("CollectableStateRole.5","\u00dcbergeordneter Status"), null, null, false, CollectableField.TYPE_VALUEIDFIELD, NuclosEntity.STATE.getEntityName(),
-					CollectableValueIdField.NULL, null, null, entity));
+					CollectableValueIdField.NULL, null, null, entity, null));
 			this.addCollectableEntityField(new DefaultCollectableEntityField(FIELDNAME_ROLE, String.class, 
 					getSpringLocaleDelegate().getMessage("CollectableStateRole.1","Benutzergruppe"),
 					getSpringLocaleDelegate().getMessage("CollectableStateRole.2","Benutzergruppe (Rolle)"), null, null, false, CollectableField.TYPE_VALUEIDFIELD, NuclosEntity.ROLE.getEntityName(),
-					CollectableValueIdField.NULL, null, null, entity));
+					CollectableValueIdField.NULL, null, null, entity, null));
 		}
 	}
 

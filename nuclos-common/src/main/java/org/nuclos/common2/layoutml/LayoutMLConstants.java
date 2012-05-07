@@ -222,6 +222,8 @@ public interface LayoutMLConstants {
 	public static final String ATTRIBUTEVALUE_TEXTAREA = ELEMENT_TEXTAREA;
 	public static final String ATTRIBUTEVALUE_LISTOFVALUES = "listofvalues";
 	public static final String ATTRIBUTEVALUE_DATECHOOSER = "datechooser";
+	public static final String ATTRIBUTEVALUE_HYPERLINK = "hyperlink";
+	public static final String ATTRIBUTEVALUE_EMAIL = "email";
 	public static final String ATTRIBUTEVALUE_OPTIONGROUP = ELEMENT_OPTIONGROUP;
 	public static final String ATTRIBUTEVALUE_FILECHOOSER = "filechooser";
 	public static final String ATTRIBUTEVALUE_IMAGE = "image";
@@ -263,6 +265,8 @@ public interface LayoutMLConstants {
 	public static final String CONTROLTYPE_TEXTAREA = "textarea";
 	public static final String CONTROLTYPE_OPTIONGROUP = "optiongroup";
 	public static final String CONTROLTYPE_LABEL = "label";
+	public static final String CONTROLTYPE_EMAIL = "email";
+	public static final String CONTROLTYPE_HYPERLINK = "hyperlink";
 
 	// default element attribute values //NUCLEUSINT-485
 	public static final Dimension DEFAULTVALUE_BUTTON_MINIMUMSIZE = new Dimension(15, 22);
