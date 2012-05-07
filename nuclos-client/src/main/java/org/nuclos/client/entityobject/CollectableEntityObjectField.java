@@ -4,6 +4,7 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 import org.nuclos.client.common.MetaDataClientProvider;
 import org.nuclos.client.masterdata.MasterDataDelegate;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
+import org.nuclos.common.collect.collectable.CollectableField;
 import org.nuclos.common.collect.collectable.LocalizedCollectableValueField;
 import org.nuclos.common.collect.exception.CollectableFieldValidationException;
 import org.nuclos.common2.SpringLocaleDelegate;
@@ -64,4 +65,16 @@ public class CollectableEntityObjectField extends LocalizedCollectableValueField
 		return b.toString();
 	}
 
+	@Override
+	public boolean isNull() {
+		if (getFieldType() == CollectableField.TYPE_VALUEFIELD) {
+			return getValue() == null;
+		}
+		else if (getFieldType() == CollectableField.TYPE_VALUEIDFIELD) {
+			return getValueId() == null;
+		}
+		throw new IllegalStateException();
+	}
+
+	
 }
