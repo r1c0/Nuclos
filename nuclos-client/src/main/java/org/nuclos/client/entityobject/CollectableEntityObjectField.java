@@ -4,6 +4,7 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 import org.nuclos.client.common.MetaDataClientProvider;
 import org.nuclos.client.masterdata.MasterDataDelegate;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
+import org.nuclos.common.collect.collectable.CollectableField;
 import org.nuclos.common.collect.collectable.LocalizedCollectableValueField;
 import org.nuclos.common.collect.exception.CollectableFieldValidationException;
 import org.nuclos.common2.SpringLocaleDelegate;
@@ -41,6 +42,17 @@ public class CollectableEntityObjectField extends LocalizedCollectableValueField
 		return fieldType;
 		//return (this.oValueId != null) ? CollectableField.TYPE_VALUEIDFIELD : CollectableField.TYPE_VALUEFIELD;
 	}
+
+	/**
+	 * @return (this.getValue() == null)
+	 */
+	@Override
+	public boolean isNull() {
+		//assert this.getFieldType() == CollectableField.TYPE_VALUEFIELD;
+		
+		return (this.getValue() == null);
+	}
+
 
 	@Override
 	public Object getValue() {
