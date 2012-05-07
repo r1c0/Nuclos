@@ -405,6 +405,31 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
                 return 1;
             }
 		}
+		
+		private static class HandleClearLookupListener implements LookupListener {
+			
+			private final CollectableComponentModel clctcompmodelSource;
+			
+			private final CollectableComponentModel clctcompmodelTarget;
+			
+			private HandleClearLookupListener(
+					CollectableComponentModel clctcompmodelSource, CollectableComponentModel clctcompmodelTarget) {
+				this.clctcompmodelSource = clctcompmodelSource;
+				this.clctcompmodelTarget = clctcompmodelTarget;
+			}
+			
+			@Override
+            public void lookupSuccessful(LookupEvent ev) {
+				if (!clctcompmodelSource.isInitializing()) {
+					clctcompmodelTarget.clear();
+				}
+			}
+
+			@Override
+            public int getPriority() {
+                return 1;
+            }
+		}
 
 		private class Rule {
 
@@ -601,19 +626,8 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 					throw new SAXException(StringUtils.getParameterizedExceptionMessage("LayoutMLParser.5", sTargetComponentName));
 						//"Zielkomponente ist nicht im Layout vorhanden: " + sTargetComponentName);
 				}
-				clctlovSource.addLookupListener(new LookupListener() {
-					@Override
-                    public void lookupSuccessful(LookupEvent ev) {
-						if (!clctcompmodelSource.isInitializing()) {
-							clctcompmodelTarget.clear();
-						}
-					}
-
-					@Override
-                    public int getPriority() {
-	                    return 1;
-                    }
-				});
+				clctlovSource.addLookupListener(new HandleClearLookupListener(
+						clctcompmodelSource, clctcompmodelTarget));
 			}
 
 			private void handleValueChangedEvent() throws SAXException {

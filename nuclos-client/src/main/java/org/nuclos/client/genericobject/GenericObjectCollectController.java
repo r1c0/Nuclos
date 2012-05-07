@@ -129,6 +129,7 @@ import org.nuclos.client.ui.DateChooser;
 import org.nuclos.client.ui.Errors;
 import org.nuclos.client.ui.Icons;
 import org.nuclos.client.ui.UIUtils;
+import org.nuclos.client.ui.collect.CollectController;
 import org.nuclos.client.ui.collect.CollectPanel;
 import org.nuclos.client.ui.collect.CollectState;
 import org.nuclos.client.ui.collect.CollectStateAdapter;
@@ -807,6 +808,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	public void close() {
 		closeSubFormControllersInSearch();
 		closeSubFormControllers(getSubFormControllersInDetails());
+		resetTransferedDetailsData();
 
 		super.close();
 	}
@@ -3858,14 +3860,20 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	}
 
 	private void changeStateForSingleObjectAndSave(final StateWrapper stateNew) {
-		CommonMultiThreader.getInstance().execute(new CommonClientWorkerAdapter<CollectableGenericObjectWithDependants>(GenericObjectCollectController.this) {
+		class ChangeStateWorker1 extends CommonClientWorkerAdapter<CollectableGenericObjectWithDependants> {
+			
 			Integer iGenericObjectId;
 			Integer iModuleId;
 			StateWrapper stateCurrent;
 			CollectableGenericObjectWithDependants clct;
 
 			boolean errorOccurred = false;
-
+			
+			
+			private ChangeStateWorker1(CollectController<CollectableGenericObjectWithDependants> clt) {
+				super(clt);
+			}
+			
 			@Override
 			public void init() throws CommonBusinessException {
 				super.init();
@@ -3936,11 +3944,15 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 				cmbbxCurrentState.setSelectedItem(stateCurrent);
 				cmpStateStandardView.setSelectedItem(stateCurrent);
 			}
-		});
+		}
+		
+		CommonMultiThreader.getInstance().execute(new ChangeStateWorker1(
+				GenericObjectCollectController.this));
 	}
 
 	private void changeStatesForSingleObjectAndSave(final List<Integer> statesNew) {
-		CommonMultiThreader.getInstance().execute(new CommonClientWorkerAdapter<CollectableGenericObjectWithDependants>(GenericObjectCollectController.this) {
+		class ChangeStatesWorker2 extends CommonClientWorkerAdapter<CollectableGenericObjectWithDependants> {
+			
 			Integer iGenericObjectId;
 			Integer iModuleId;
 			StateWrapper stateCurrent;
@@ -3948,6 +3960,10 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 
 			boolean errorOccurred = false;
 
+			private ChangeStatesWorker2(CollectController<CollectableGenericObjectWithDependants> clt) {
+				super(clt);
+			}
+			
 			@Override
 			public void init() throws CommonBusinessException {
 				super.init();
@@ -4009,7 +4025,10 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 				cmbbxCurrentState.setSelectedItem(stateCurrent);
 				cmpStateStandardView.setSelectedItem(stateCurrent);
 			}
-		});
+		}
+		
+		CommonMultiThreader.getInstance().execute(new ChangeStatesWorker2(
+				GenericObjectCollectController.this));
 	}
 
 

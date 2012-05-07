@@ -163,7 +163,7 @@ public class SubForm extends JPanel
 
 	public static interface SubFormToolListener extends EventListener {
 		void toolbarAction(String actionCommand);
-	};
+	}
 
 	public static enum ToolbarFunction {
 		NEW {
@@ -249,7 +249,7 @@ public class SubForm extends JPanel
 				return null;
 			}
 		}
-	};
+	}
 
 	public static enum ToolbarFunctionState {
 		ACTIVE(true, true),
@@ -280,6 +280,22 @@ public class SubForm extends JPanel
 	private static final Color LAYER_BUSY_COLOR = new Color(128, 128, 128, 128);
 
 	private static final Logger  log = Logger.getLogger(SubForm.class);
+	
+	//
+
+	private final CollectableComponentModelAdapter editorChangeListener = new CollectableComponentModelAdapter() {
+		@Override
+		public void collectableFieldChangedInModel(CollectableComponentModelEvent ev) {
+			if (ev.collectableFieldHasChanged()) {
+				fireStateChanged();
+			}
+		}
+
+		@Override
+		public void searchConditionChangedInModel(SearchComponentModelEvent ev) {
+			fireStateChanged();
+		}
+	};
 
 	private JXLayer<JComponent>	 layer;
 	private AtomicInteger	     lockCount	= new AtomicInteger(0);
@@ -1239,7 +1255,7 @@ public class SubForm extends JPanel
 			@Override
 			public void columnMarginChanged(ChangeEvent e) {
 				useCustomColumnWidths = true;
-			};
+			}
 		};
 		subformtbl.getColumnModel().addColumnModelListener(this.columnmodellistener);
 	}
@@ -1344,6 +1360,128 @@ public class SubForm extends JPanel
 		Object oValue = (clctfParent.getFieldType() == CollectableField.TYPE_VALUEIDFIELD) ? clctfParent.getValueId() : clctfParent.getValue();
 		clctWithVLP.getValueListProvider().setParameter(rvlact.getParameterNameForSourceComponent(), oValue);
 	}
+	
+	private static class LookupValuesListener implements LookupListener {
+		
+		private final SubFormTableModel subformtblmdl;
+		
+		private final boolean bSearchable;
+		
+		private final SubFormTable subformtbl;
+		
+		private final Collection<TransferLookedUpValueAction> collTransferValueActions;
+		
+		private LookupValuesListener(SubFormTableModel subformtblmdl, boolean bSearchable, 
+				SubFormTable subformtbl, Collection<TransferLookedUpValueAction> collTransferValueActions) {
+			
+			this.subformtblmdl = subformtblmdl;
+			this.bSearchable = bSearchable;
+			this.subformtbl = subformtbl;
+			this.collTransferValueActions = collTransferValueActions;
+		}
+		
+		@Override
+		public void lookupSuccessful(LookupEvent ev) {
+			transferLookedUpValues(ev.getSelectedCollectable(), subformtblmdl, bSearchable, 
+					subformtbl.getEditingRow(), collTransferValueActions);
+		}
+
+		@Override
+        public int getPriority() {
+            return 1;
+        }
+	}
+	
+	private static class LookupClearListener implements LookupListener {
+		
+		private final SubFormTableModel subformtblmdl;
+		
+		private final SubFormTable subformtbl;
+		
+		final Collection<ClearAction> collClearActions;
+		
+		private LookupClearListener(SubFormTableModel subformtblmdl,
+				SubFormTable subformtbl, Collection<ClearAction> collClearActions) {
+			
+			this.subformtblmdl = subformtblmdl;
+			this.subformtbl = subformtbl;
+			this.collClearActions = collClearActions;
+		}
+		
+		@Override
+		public void lookupSuccessful(LookupEvent ev) {
+			clearValues(subformtblmdl, subformtbl.getEditingRow(), collClearActions);
+		}
+
+		@Override
+        public int getPriority() {
+            return 1;
+        }
+	}
+	
+	private class SubformModelListener implements CollectableComponentModelListener {
+		
+		private final SubFormTableModel subformtblmdl;
+		
+		private final boolean bSearchable;
+		
+		private final Collection<TransferLookedUpValueAction> collTransferValueActions;
+		
+		private final CollectableComponent clctcomp;
+		
+		private final Collection<ClearAction> collClearActions;
+		
+		private final CollectableComponentTableCellEditor result;
+		
+		private SubformModelListener(SubFormTableModel subformtblmdl, boolean bSearchable, 
+				SubFormTable subformtbl, Collection<TransferLookedUpValueAction> collTransferValueActions,
+				CollectableComponent clctcomp, Collection<ClearAction> collClearActions,
+				CollectableComponentTableCellEditor result) {
+			
+			this.subformtblmdl = subformtblmdl;
+			this.bSearchable = bSearchable;
+			this.collTransferValueActions = collTransferValueActions;
+			this.clctcomp = clctcomp;
+			this.collClearActions = collClearActions;
+			this.result = result;
+		}
+		
+		@Override
+		public void valueToBeChanged(DetailsComponentModelEvent ev) {
+		}
+
+		@Override
+		public void searchConditionChangedInModel(SearchComponentModelEvent ev) {
+		}
+
+		@Override
+		public void collectableFieldChangedInModel(CollectableComponentModelEvent ev) {
+			if (!collClearActions.isEmpty()) {
+				clearValues(subformtblmdl, result.getLastEditingRow(), collClearActions);
+			}
+			if (!collTransferValueActions.isEmpty()) {
+				Object id = null;
+				try {
+					CollectableField value = clctcomp.getField();
+					if (value instanceof CollectableValueIdField) {
+						id = ((CollectableValueIdField) value).getValueId();
+					}
+				} catch(CollectableFieldFormatException e1) {
+					LOG.warn("collectableFieldChangedInModel failed: " + e1, e1);
+				}
+				Collectable clct = null;
+				String referencedEntity = clctcomp.getEntityField().getReferencedEntityName();
+				if (referencedEntity != null) {
+					try {
+						clct = Utils.getReferencedCollectable(getEntityName(), clctcomp.getFieldName(), id);
+					} catch (CommonBusinessException ex) {
+						log.error(ex);
+					}
+				}
+				transferLookedUpValues(clct, subformtblmdl, bSearchable, result.getLastEditingRow(), collTransferValueActions);
+			}
+		}
+	}
 
 	/**
 	 * create a Teblecelleditor for the given CollectableEntityField
@@ -1369,32 +1507,14 @@ public class SubForm extends JPanel
 
 			final Collection<TransferLookedUpValueAction> collTransferValueActions = getTransferLookedUpValueActions(sColumnName);
 			if (!collTransferValueActions.isEmpty()) {
-				clctlov.addLookupListener(new LookupListener() {
-					@Override
-					public void lookupSuccessful(LookupEvent ev) {
-						transferLookedUpValues(ev.getSelectedCollectable(), subformtblmdl, bSearchable, subformtbl.getEditingRow(), collTransferValueActions);
-					}
-
-					@Override
-                    public int getPriority() {
-	                    return 1;
-                    }
-				});
+				clctlov.addLookupListener(new LookupValuesListener(
+						subformtblmdl, bSearchable, subformtbl, collTransferValueActions));
 			}
 
 			final Collection<ClearAction> collClearActions = getClearActions(sColumnName);
 			if (!collClearActions.isEmpty()) {
-				clctlov.addLookupListener(new LookupListener() {
-					@Override
-					public void lookupSuccessful(LookupEvent ev) {
-						clearValues(subformtblmdl, subformtbl.getEditingRow(), collClearActions);
-					}
-
-					@Override
-                    public int getPriority() {
-	                    return 1;
-                    }
-				});
+				clctlov.addLookupListener(new LookupClearListener(
+						subformtblmdl, subformtbl, collClearActions));						
 			}
 		//} else if (clctcomp instanceof CollectableComboBox) {
 		} else {
@@ -1403,43 +1523,9 @@ public class SubForm extends JPanel
 			if (!collClearActions.isEmpty() || !collTransferValueActions.isEmpty() ) {
 				// Better alternative: result.addCellEditorListener(new CellEditorListener()) with overridden editingStopped(ChangeEvent e)
 				// However, that solution had some issues with the save action and checkbox values which are not resolved...
-				result.addCollectableComponentModelListener(new CollectableComponentModelListener() {
-					@Override
-					public void valueToBeChanged(DetailsComponentModelEvent ev) {
-					}
-
-					@Override
-					public void searchConditionChangedInModel(SearchComponentModelEvent ev) {
-					}
-
-					@Override
-					public void collectableFieldChangedInModel(CollectableComponentModelEvent ev) {
-						if (!collClearActions.isEmpty()) {
-							clearValues(subformtblmdl, result.getLastEditingRow(), collClearActions);
-						}
-						if (!collTransferValueActions.isEmpty()) {
-							Object id = null;
-							try {
-								CollectableField value = clctcomp.getField();
-								if (value instanceof CollectableValueIdField) {
-									id = ((CollectableValueIdField) value).getValueId();
-								}
-							} catch(CollectableFieldFormatException e1) {
-								LOG.warn("collectableFieldChangedInModel failed: " + e1, e1);
-							}
-							Collectable clct = null;
-							String referencedEntity = clctcomp.getEntityField().getReferencedEntityName();
-							if (referencedEntity != null) {
-								try {
-									clct = Utils.getReferencedCollectable(getEntityName(), clctcomp.getFieldName(), id);
-								} catch (CommonBusinessException ex) {
-									log.error(ex);
-								}
-							}
-							transferLookedUpValues(clct, subformtblmdl, bSearchable, result.getLastEditingRow(), collTransferValueActions);
-						}
-					}
-				});
+				result.addCollectableComponentModelListener(new SubformModelListener(
+						subformtblmdl, bSearchable, subformtbl, collTransferValueActions, clctcomp, 
+						collClearActions, result));
 			}
 		}
 		return result;
@@ -1478,18 +1564,7 @@ public class SubForm extends JPanel
 	}
 
 	public CollectableComponentModelAdapter getCollectableTableCellEditorChangeListener() {
-		return new CollectableComponentModelAdapter() {
-		@Override
-		public void collectableFieldChangedInModel(CollectableComponentModelEvent ev) {
-			if (ev.collectableFieldHasChanged()) {
-				fireStateChanged();
-			}
-		}
-
-		@Override
-		public void searchConditionChangedInModel(SearchComponentModelEvent ev) {
-			fireStateChanged();
-		}};
+		return editorChangeListener;
 	}
 
 	public final void setupStaticTableCellEditors(final JTable tbl, boolean bSearchable, Preferences prefs,
@@ -2550,7 +2625,7 @@ public class SubForm extends JPanel
 				}
 			}
 		}
-	};
+	}
 
 	private class DoubleClickMouseAdapter extends MouseAdapter {
 		@Override
