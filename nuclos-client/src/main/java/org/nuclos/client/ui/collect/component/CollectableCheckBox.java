@@ -174,6 +174,9 @@ public class CollectableCheckBox extends AbstractCollectableComponent {
 		return new CheckBoxTableCellRenderer();
 	}
 
+	/** 
+	 * TODO: This REALLY should be static - but how to archive this? (tp)
+	 */
 	protected class CheckBoxTableCellRenderer extends CollectableComponentDefaultTableCellRenderer {
 		@Override
         public Component getTableCellRendererComponent(JTable tbl, Object oValue, boolean bSelected, boolean bHasFocus,

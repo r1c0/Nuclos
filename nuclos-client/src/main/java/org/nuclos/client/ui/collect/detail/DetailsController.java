@@ -16,6 +16,7 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.ui.collect.detail;
 
+import java.awt.color.CMMException;
 import java.awt.event.ActionEvent;
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -27,6 +28,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 
+import org.apache.log4j.Logger;
 import org.nuclos.client.common.DetailsSubFormController;
 import org.nuclos.client.common.MetaDataClientProvider;
 import org.nuclos.client.entityobject.CollectableEntityObject;
@@ -46,6 +48,7 @@ import org.nuclos.client.ui.collect.component.model.CollectableComponentModelEve
 import org.nuclos.client.ui.collect.component.model.CollectableComponentModelListener;
 import org.nuclos.client.ui.collect.component.model.DetailsComponentModel;
 import org.nuclos.client.ui.collect.component.model.DetailsComponentModelEvent;
+import org.nuclos.client.ui.gc.ListenerUtil;
 import org.nuclos.common.collect.collectable.Collectable;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
 import org.nuclos.common.collect.collectable.CollectableValueField;
@@ -57,8 +60,15 @@ import org.nuclos.common2.StringUtils;
  * Controller for the Details panel.
  */
 public class DetailsController<Clct extends Collectable> extends CommonController<Clct> {
+	
+	private static final Logger LOG = Logger.getLogger(DetailsController.class);
+	
+	//
 
-	private final CollectableComponentModelListener ccmlistener = new CollectableComponentModelAdapter() {
+	/**
+	 * Cannot be final because set to null in close(). (tp)
+	 */
+	private CollectableComponentModelListener ccmlistener = new CollectableComponentModelAdapter() {
 		@Override
 		public void collectableFieldChangedInModel(CollectableComponentModelEvent ev) {
 			final CollectController<Clct> cc = getCollectController();
@@ -145,7 +155,8 @@ public class DetailsController<Clct extends Collectable> extends CommonControlle
 	protected void addAdditionalChangeListeners() {
 		getCollectController().addAdditionalChangeListenersForDetails();
 		for (CollectableComponentModel m : getCollectableComponentModels()) {
-			m.addCollectableComponentModelListener(mdlListener);
+			// m.addCollectableComponentModelListener(mdlListener);
+			ListenerUtil.registerCollectableComponentModelListener(m, null, mdlListener);
 		}
 	}
 
@@ -195,22 +206,31 @@ public class DetailsController<Clct extends Collectable> extends CommonControlle
 		UIUtils.readSplitPaneStateFromPrefs(cc.getPreferences(), getDetailsPanel());
 	}
 
+	@Override
 	public void close() {
-		final DetailsPanel pnlDetails = this.getDetailsPanel();
-		pnlDetails.btnSave.setAction(null);
-		pnlDetails.btnRefreshCurrentCollectable.setAction(null);
-		pnlDetails.btnDelete.setAction(null);
-		pnlDetails.btnNew.setAction(null);
-		pnlDetails.btnClone.setAction(null);
-		pnlDetails.btnOpenInNewTab.setAction(null);
-		pnlDetails.btnBookmark.setAction(null);
-
-		pnlDetails.btnFirst.setAction(null);
-		pnlDetails.btnLast.setAction(null);
-		pnlDetails.btnPrevious.setAction(null);
-		pnlDetails.btnNext.setAction(null);
-
-		UIUtils.writeSplitPaneStateToPrefs(getCollectController().getPreferences(), getDetailsPanel());
+		if (!isClosed()) {
+			LOG.info("close(): " + this);
+			
+			final DetailsPanel pnlDetails = this.getDetailsPanel();
+			pnlDetails.btnSave.setAction(null);
+			pnlDetails.btnRefreshCurrentCollectable.setAction(null);
+			pnlDetails.btnDelete.setAction(null);
+			pnlDetails.btnNew.setAction(null);
+			pnlDetails.btnClone.setAction(null);
+			pnlDetails.btnOpenInNewTab.setAction(null);
+			pnlDetails.btnBookmark.setAction(null);
+	
+			pnlDetails.btnFirst.setAction(null);
+			pnlDetails.btnLast.setAction(null);
+			pnlDetails.btnPrevious.setAction(null);
+			pnlDetails.btnNext.setAction(null);
+	
+			UIUtils.writeSplitPaneStateToPrefs(getCollectController().getPreferences(), getDetailsPanel());
+			
+			ccmlistener = null;
+			
+			super.close();
+		}
 	}
 
 	/**

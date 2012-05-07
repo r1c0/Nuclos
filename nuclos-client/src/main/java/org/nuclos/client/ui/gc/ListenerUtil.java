@@ -34,6 +34,8 @@ import org.nuclos.client.ui.collect.SubForm;
 import org.nuclos.client.ui.collect.SubForm.SubFormToolListener;
 import org.nuclos.client.ui.collect.component.CollectableListOfValues;
 import org.nuclos.client.ui.collect.component.LookupListener;
+import org.nuclos.client.ui.collect.component.model.CollectableComponentModel;
+import org.nuclos.client.ui.collect.component.model.CollectableComponentModelListener;
 
 /**
  * A utility class for registering (gui) listeners that get garbage collected.
@@ -302,6 +304,41 @@ public class ListenerUtil {
 		
 	}
 	
+	private final static class CollectableComponentModelRegister implements IRegister {
+		
+		private final WeakReference<CollectableComponentModel> b;
+		
+		private final CollectableComponentModelAdapter a;
+		
+		private CollectableComponentModelRegister(CollectableComponentModel b, CollectableComponentModelAdapter a) {
+			this.b = new WeakReference<CollectableComponentModel>(b);
+			this.a = a;
+		}
+
+		@Override
+		public void register() {
+			final CollectableComponentModel bb = b.get();
+			if (bb != null) {
+				bb.addCollectableComponentModelListener(a);
+				QueueSingleton.getInstance().register(this);
+			}
+		}
+
+		@Override
+		public void unregister() {
+			final CollectableComponentModel bb = b.get();
+			if (bb != null) {
+				bb.removeCollectableComponentModelListener(a);
+			}
+		}
+
+		@Override
+		public Reference<EventListener> getReference() {
+			return a.getReference();
+		}
+		
+	}
+	
 	private ListenerUtil() {
 		// Never invoked.
 	}
@@ -399,6 +436,20 @@ public class ListenerUtil {
 	public static void registerLookupListener(CollectableListOfValues b, IReferenceHolder outer, LookupListener l) {
 		final LookupAdapter a = new LookupAdapter(l);
 		final IRegister register = new LookupRegister(b, a);
+		register.register();
+		dependant(outer, l);
+	}
+
+	/**
+	 * <p>
+	 * ATTENTION: Don't register anonymous inner class listeners with this utility class <em>
+	 * without setting the outer class object</em>. The will be garbage collected directly!
+	 * </p>
+	 */
+	public static void registerCollectableComponentModelListener(
+			CollectableComponentModel b, IReferenceHolder outer, CollectableComponentModelListener l) {
+		final CollectableComponentModelAdapter a = new CollectableComponentModelAdapter(l);
+		final IRegister register = new CollectableComponentModelRegister(b, a);
 		register.register();
 		dependant(outer, l);
 	}

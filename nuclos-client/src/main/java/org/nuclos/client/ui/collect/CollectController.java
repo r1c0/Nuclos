@@ -1083,6 +1083,7 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 			// Details panel:
 			this.ctlDetails.close();
 			
+			pnlCollect = null;
 			// Partial fix for http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=7079260
 			collectableComponentSearchFocusListener = null;
 			
@@ -3740,7 +3741,10 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	/**
 	 * @return the CollectPanel, containing the Search-, Result- and DetailsPanels.
 	 */
-	public CollectPanel<Clct> getCollectPanel() {
+	public final CollectPanel<Clct> getCollectPanel() {
+		if (pnlCollect == null) {
+			return null;
+		}
 		final CollectPanel<Clct> result = pnlCollect.get();
 		assert result != null || isClosed();
 		return result;
@@ -3759,21 +3763,33 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	 * @deprecated move to ResultController hierarchy.
 	 */
 	public SearchPanel getSearchPanel() {
-		return this.getCollectPanel().getSearchPanel();
+		final CollectPanel<Clct> panel = getCollectPanel();
+		if (panel == null) {
+			return null;
+		}
+		return panel.getSearchPanel();
 	}
 
 	/**
 	 * @deprecated Move this to ResultController.
 	 */
 	public ResultPanel<Clct> getResultPanel() {
-		return this.getCollectPanel().getResultPanel();
+		final CollectPanel<Clct> panel = getCollectPanel();
+		if (panel == null) {
+			return null;
+		}
+		return panel.getResultPanel();
 	}
 
 	/**
 	 * @deprecated Move this to DetailsController.
 	 */
 	public DetailsPanel getDetailsPanel() {
-		return this.getCollectPanel().getDetailsPanel();
+		final CollectPanel<Clct> panel = getCollectPanel();
+		if (panel == null) {
+			return null;
+		}
+		return panel.getDetailsPanel();
 	}
 
 	/**

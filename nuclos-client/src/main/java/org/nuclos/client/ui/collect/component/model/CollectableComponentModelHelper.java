@@ -34,6 +34,9 @@ import org.nuclos.common.collect.collectable.CollectableField;
 public class CollectableComponentModelHelper {
 
 	private final transient List<CollectableComponentModelListener> lstListeners = new LinkedList<CollectableComponentModelListener>();
+	
+	public CollectableComponentModelHelper() {
+	}
 
 	public synchronized void removeCollectableComponentModelListener(CollectableComponentModelListener l) {
 		this.lstListeners.remove(l);

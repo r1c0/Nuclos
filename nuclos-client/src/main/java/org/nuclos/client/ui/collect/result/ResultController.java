@@ -262,6 +262,9 @@ public class ResultController<Clct extends Collectable> {
 	}
 
 	private ResultPanel<Clct> getResultPanel() {
+		if (clctctl == null) {
+			return null;
+		}
 		return this.clctctl.getResultPanel();
 	}
 
@@ -560,26 +563,24 @@ public class ResultController<Clct extends Collectable> {
 	 */
 	public void close() {
 		final ResultPanel<Clct> pnlResult = getResultPanel();
-		pnlResult.btnRefresh.setAction(null);
-		pnlResult.btnNew.setAction(null);
-		pnlResult.btnBookmark.setAction(null);
-		pnlResult.btnClone.setAction(null);
-		pnlResult.btnDelete.setAction(null);
-		pnlResult.btnEdit.setAction(null);
-		pnlResult.btnSelectColumns.setAction(null);
-		pnlResult.btnExport.setAction(null);
-		pnlResult.btnImport.setAction(null);
-		pnlResult.miPopupEdit.setAction(null);
-		pnlResult.miPopupClone.setAction(null);
-		pnlResult.miPopupDelete.setAction(null);
-		pnlResult.miPopupOpenInNewTab.setAction(null);
-		pnlResult.miPopupBookmark.setAction(null);
-		pnlResult.miPopupDefineAsNewSearchResult.setAction(null);
-		UIUtils.removeAllMouseListeners(this.getResultPanel().getResultTable().getTableHeader());
-
-		/** @todo this doesn't really belong here */
-//		writeSelectedFieldsAndWidthsToPreferences();
-//		clctctl.writeColumnOrderToPreferences();
+		if (pnlResult != null) {
+			pnlResult.btnRefresh.setAction(null);
+			pnlResult.btnNew.setAction(null);
+			pnlResult.btnBookmark.setAction(null);
+			pnlResult.btnClone.setAction(null);
+			pnlResult.btnDelete.setAction(null);
+			pnlResult.btnEdit.setAction(null);
+			pnlResult.btnSelectColumns.setAction(null);
+			pnlResult.btnExport.setAction(null);
+			pnlResult.btnImport.setAction(null);
+			pnlResult.miPopupEdit.setAction(null);
+			pnlResult.miPopupClone.setAction(null);
+			pnlResult.miPopupDelete.setAction(null);
+			pnlResult.miPopupOpenInNewTab.setAction(null);
+			pnlResult.miPopupBookmark.setAction(null);
+			pnlResult.miPopupDefineAsNewSearchResult.setAction(null);
+			UIUtils.removeAllMouseListeners(pnlResult.getResultTable().getTableHeader());
+		}
 	}
 
 	/**

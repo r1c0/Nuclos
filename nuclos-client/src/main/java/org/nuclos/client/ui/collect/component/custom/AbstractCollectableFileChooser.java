@@ -115,12 +115,13 @@ public abstract class AbstractCollectableFileChooser extends AbstractCollectable
 		return new AttachmentTableCellRenderer();
 	}
 
+	/** 
+	 * TODO: This REALLY should be static - but how to archive this? (tp)
+	 */
 	protected class AttachmentTableCellRenderer extends CollectableComponentDefaultTableCellRenderer {
 		@Override
         public Component getTableCellRendererComponent(JTable tbl, Object oValue, boolean bSelected, boolean bHasFocus, int iRow, int iColumn) {
-
 			Component comp = super.getTableCellRendererComponent(tbl, oValue, bSelected, bHasFocus, iRow, iColumn);
-
 			return comp;
 		}
 	}

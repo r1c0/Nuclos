@@ -24,6 +24,7 @@ import javax.swing.Action;
 import javax.swing.event.TreeModelEvent;
 import javax.swing.event.TreeModelListener;
 
+import org.apache.log4j.Logger;
 import org.nuclos.client.ui.CommonAbstractAction;
 import org.nuclos.client.ui.Errors;
 import org.nuclos.client.ui.Icons;
@@ -49,6 +50,10 @@ import org.nuclos.common2.SpringLocaleDelegate;
  * Controller for the Search panel.
  */
 public class SearchController<Clct extends Collectable> extends CommonController<Clct> {
+	
+	private static final Logger LOG = Logger.getLogger(SearchController.class);
+	
+	//
 	
 	/**
 	 * Action for showing/hiding the search editor.
@@ -171,8 +176,10 @@ public class SearchController<Clct extends Collectable> extends CommonController
 
 	/**
 	 * Listener for searchcondition changes.
+	 * 
+	 * Cannot be final because set to null in close(). (tp)
 	 */
-	private final CollectableComponentModelListener ccmlistener = new CollectableComponentModelAdapter() {
+	private CollectableComponentModelListener ccmlistener = new CollectableComponentModelAdapter() {
 		@Override
 		public void searchConditionChangedInModel(SearchComponentModelEvent ev) {
 			final CollectController<Clct> cc = getCollectController();
@@ -300,15 +307,23 @@ public class SearchController<Clct extends Collectable> extends CommonController
 	/**
 	 * releases the resources (esp. listeners) for this controller.
 	 */
+	@Override
 	public void close() {
-		final CollectController<Clct> cc = getCollectController();
-		final SearchPanel pnlSearch = getSearchPanel();
-		pnlSearch.btnSearch.setAction(null);
-		pnlSearch.btnSearchEditor.setAction(null);
-		pnlSearch.btnClearSearchCondition.setAction(null);
-		pnlSearch.btnNew.setAction(null);
-
-		UIUtils.writeSplitPaneStateToPrefs(cc.getPreferences(), getSearchPanel());
+		if (!isClosed()) {
+			LOG.info("close(): " + this);
+			
+			final CollectController<Clct> cc = getCollectController();
+			final SearchPanel pnlSearch = getSearchPanel();
+			pnlSearch.btnSearch.setAction(null);
+			pnlSearch.btnSearchEditor.setAction(null);
+			pnlSearch.btnClearSearchCondition.setAction(null);
+			pnlSearch.btnNew.setAction(null);
+	
+			UIUtils.writeSplitPaneStateToPrefs(cc.getPreferences(), getSearchPanel());
+			ccmlistener = null;
+			
+			super.close();
+		}
 	}
 
 	/**
