@@ -53,8 +53,15 @@ public class LocalizedCollectableValueField extends CollectableValueField implem
 	
 	private String label;
 	
+	public LocalizedCollectableValueField() {
+		super(null);
+	}
 	public LocalizedCollectableValueField(Object oValue, String label) {
 		super(oValue);
+		this.label = label;
+	}
+	
+	protected void setLabel(String label) {
 		this.label = label;
 	}
 	

@@ -78,8 +78,20 @@ public class MasterDataEntityCollectableFieldsProvider implements CollectableFie
 			}
 		}
 
+		colmdmVO_menupath.add(MasterDataDelegate.getInstance().getMetaData(NuclosEntity.USER));
+		colmdmVO_menupath.add(MasterDataDelegate.getInstance().getMetaData(NuclosEntity.ROLE));
+		colmdmVO_menupath.add(MasterDataDelegate.getInstance().getMetaData(NuclosEntity.SEARCHFILTER));
+		colmdmVO_menupath.add(MasterDataDelegate.getInstance().getMetaData(NuclosEntity.JOBCONTROLLER));
+		colmdmVO_menupath.add(MasterDataDelegate.getInstance().getMetaData(NuclosEntity.PARAMETER));
+		colmdmVO_menupath.add(MasterDataDelegate.getInstance().getMetaData(NuclosEntity.LDAPSERVER));
+		colmdmVO_menupath.add(MasterDataDelegate.getInstance().getMetaData(NuclosEntity.WEBSERVICE));
+		colmdmVO_menupath.add(MasterDataDelegate.getInstance().getMetaData(NuclosEntity.LAYOUT));
+		colmdmVO_menupath.add(MasterDataDelegate.getInstance().getMetaData(NuclosEntity.STATEMODEL));
+		colmdmVO_menupath.add(MasterDataDelegate.getInstance().getMetaData(NuclosEntity.GENERATION));
 		colmdmVO_menupath.add(MasterDataDelegate.getInstance().getMetaData(NuclosEntity.GENERATIONSUBENTITY));
-
+		colmdmVO_menupath.add(MasterDataDelegate.getInstance().getMetaData(NuclosEntity.REPORT));
+		colmdmVO_menupath.add(MasterDataDelegate.getInstance().getMetaData(NuclosEntity.NUCLET));
+		
 		final List<CollectableField> result = CollectionUtils.transform(colmdmVO_menupath, new Transformer<MasterDataMetaVO, CollectableField>() {
 			@Override
 			public CollectableField transform(MasterDataMetaVO mdmVO) {
@@ -90,7 +102,7 @@ public class MasterDataEntityCollectableFieldsProvider implements CollectableFie
 				return new LocalizedCollectableValueField(mdmVO.getEntityName(), label);
 			}
 		});
-
+		
 		Collections.sort(result);
 
 		return result;
