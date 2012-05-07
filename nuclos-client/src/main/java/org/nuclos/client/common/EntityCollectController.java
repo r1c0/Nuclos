@@ -715,6 +715,10 @@ public abstract class EntityCollectController<Clct extends Collectable> extends 
 				@Override
 				public void run() {
 					try {
+						if (isClosed()) {
+							return;
+						}
+						
 						if(iDetailsMode == CollectState.DETAILSMODE_EDIT || iDetailsMode == CollectState.DETAILSMODE_VIEW) {
 							if(getResultTable().getSelectedRow() >= 0) {
 								getResultController().replaceCollectableInTableModel(readSelectedCollectable());
