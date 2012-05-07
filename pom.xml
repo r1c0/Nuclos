@@ -683,7 +683,7 @@
 			<name>Novabit Maven Repository</name>
 			<url>http://maven.nuclos.de/content/groups/public</url>
 			<snapshots>
-				<enabled>false</enabled>
+				<enabled>true</enabled>
 				<!-- updatePolicy>always</updatePolicy -->
 				<updatePolicy>interval:10</updatePolicy>
 			</snapshots>
