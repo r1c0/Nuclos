@@ -73,6 +73,8 @@ import org.nuclos.common.attribute.DynamicAttributeVO;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableComparison;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableSearchCondition;
 import org.nuclos.common.collect.collectable.searchcondition.ComparisonOperator;
+import org.nuclos.common.collection.CollectionUtils;
+import org.nuclos.common.collection.EntityObjectToMasterDataTransformer;
 import org.nuclos.common.collection.Pair;
 import org.nuclos.common.dal.vo.EntityObjectVO;
 import org.nuclos.common.fileimport.NuclosFileImport;
@@ -534,13 +536,34 @@ public class RuleInterface extends CustomCodeInterface {
 	 * @return Collection<MasterDataVO>
 	 */
 	public Collection<MasterDataVO> getDependants(String sEntityName) {
+		if (getRuleObjectContainerCVOIfAny() != null) {
+			DependantMasterDataMap map = getRuleObjectContainerCVO().getDependants();
+			if (!map.getEntityNames().contains(sEntityName)) {
+				List<MasterDataVO> result = new ArrayList<MasterDataVO>();
+				addDependants(sEntityName, map, result);
+				return result;
+			}
+		}
+		
 		if (this.getGenericObject() != null) {
 			return this.getDependants(sEntityName, ModuleConstants.DEFAULT_FOREIGNKEYFIELDNAME);
 		}
 		else {
 			throw new NuclosFatalRuleException("rule.interface.error.3");//"Bitte geben Sie das Fremdschl\u00fcssel an.");
 		}
-
+	}
+	
+	private void addDependants(String entityname, DependantMasterDataMap map, List<MasterDataVO> result) {
+		for (String entity : map.getEntityNames()) {
+			for (EntityObjectVO o : map.getData(entity)) {
+				if (o.getDependants().getEntityNames().contains(entityname)) {
+					result.addAll(CollectionUtils.transform(o.getDependants().getData(entityname), new EntityObjectToMasterDataTransformer()));
+				}
+				else {
+					addDependants(entityname, o.getDependants(), result);
+				}
+			}
+		}
 	}
 
 	/**
