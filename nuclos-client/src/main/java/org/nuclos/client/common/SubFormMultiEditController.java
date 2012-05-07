@@ -95,7 +95,7 @@ class SubFormMultiEditController<Clct extends Collectable> extends SelectObjects
 			for (Iterator iterator = oldAvailableObjectsList.iterator(); iterator.hasNext();) {
 				CollectableField collectableField = (CollectableField) iterator.next();
 				if (collectableField.isIdField() && value.isIdField()) {
-					if (LangUtils.equals(new Long(collectableField.getValueId().toString()), new Long(value.getValueId().toString()))) {
+					if (LangUtils.equals(new Long(collectableField.getValueId().toString()), new Long(value.getValueId() == null ? "-1" : value.getValueId().toString()))) {
 						oldSelectedObjects.add(collectableField);
 						oldAvailableObjects.remove(collectableField);
 						break;
@@ -133,7 +133,7 @@ class SubFormMultiEditController<Clct extends Collectable> extends SelectObjects
 				for (Iterator iterator = lstNewSelectedObjects.iterator(); iterator.hasNext();) {
 					CollectableField collectableField = (CollectableField) iterator.next();
 					if (collectableField.isIdField() && value.isIdField()) {
-						if (LangUtils.equals(new Long(collectableField.getValueId().toString()), new Long(value.getValueId().toString()))) {
+						if (value.getValueId() != null && LangUtils.equals(new Long(collectableField.getValueId().toString()), new Long(value.getValueId().toString()))) {
 							blnRemove = false;
 							break;
 						}
