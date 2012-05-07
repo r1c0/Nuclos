@@ -26,7 +26,9 @@ public class CollectableEntityObjectField extends LocalizedCollectableValueField
 		this.oValueId = ceo.getValueId(sFieldName);
 		this.fieldType = ceo.getCollectableEntity().getEntityField(sFieldName).getFieldType();
 		
-		if (!MetaDataClientProvider.getInstance().isEntity(this.oValue.toString())) {
+		if (this.oValue == null) {
+			setLabel("");
+		} else if (!MetaDataClientProvider.getInstance().isEntity(this.oValue.toString())) {
 			setLabel(this.oValue.toString());
 		} else {
 			MasterDataMetaVO mdmVO = MasterDataDelegate.getInstance().getMetaData(this.oValue.toString());
