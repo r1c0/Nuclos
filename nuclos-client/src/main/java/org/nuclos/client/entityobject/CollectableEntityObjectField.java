@@ -1,14 +1,17 @@
 package org.nuclos.client.entityobject;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
-import org.nuclos.common.collect.collectable.AbstractCollectableField;
+import org.nuclos.client.common.MetaDataClientProvider;
+import org.nuclos.client.masterdata.MasterDataDelegate;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
+import org.nuclos.common.collect.collectable.LocalizedCollectableValueField;
 import org.nuclos.common.collect.exception.CollectableFieldValidationException;
+import org.nuclos.common2.SpringLocaleDelegate;
+import org.nuclos.server.masterdata.valueobject.MasterDataMetaVO;
 
-public class CollectableEntityObjectField extends AbstractCollectableField {
+public class CollectableEntityObjectField extends LocalizedCollectableValueField {
 
 	private String sFieldName;
-	private CollectableEntityObject ceo;
 
 	private Object oValue;
 	private Object oValueId;
@@ -17,11 +20,18 @@ public class CollectableEntityObjectField extends AbstractCollectableField {
 
 	public CollectableEntityObjectField(String sFieldName, CollectableEntityObject ceo) {
 		super();
+		
 		this.sFieldName = sFieldName;
-		this.ceo = ceo;
 		this.oValue = ceo.getValue(sFieldName);
 		this.oValueId = ceo.getValueId(sFieldName);
-		fieldType = ceo.getCollectableEntity().getEntityField(sFieldName).getFieldType();
+		this.fieldType = ceo.getCollectableEntity().getEntityField(sFieldName).getFieldType();
+		
+		if (!MetaDataClientProvider.getInstance().isEntity(this.oValue.toString())) {
+			setLabel(this.oValue.toString());
+		} else {
+			MasterDataMetaVO mdmVO = MasterDataDelegate.getInstance().getMetaData(this.oValue.toString());
+			setLabel(SpringLocaleDelegate.getInstance().getLabelFromMetaDataVO(mdmVO));
+		}		
 	}
 
 	@Override
