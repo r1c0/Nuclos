@@ -623,7 +623,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 			init();
 	}
 	
-	private CollectableComboBox getSearchStateBox() {
+	protected CollectableComboBox getSearchStateBox() {
 		if (clctSearchState == null) {
 			final CollectableEntityField clctefSearchState = new DefaultCollectableEntityField("[status_num_plus_name]", String.class,
 				getSpringLocaleDelegate().getLabelFromAttributeCVO(AttributeCache.getInstance().getAttribute(
