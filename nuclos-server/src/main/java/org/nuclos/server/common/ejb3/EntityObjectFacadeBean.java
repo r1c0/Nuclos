@@ -44,16 +44,23 @@ import org.nuclos.common.dal.vo.EntityMetaDataVO;
 import org.nuclos.common.dal.vo.EntityObjectVO;
 import org.nuclos.common.dal.vo.PivotInfo;
 import org.nuclos.common.entityobject.CollectableEOEntityField;
+import org.nuclos.common2.EntityAndFieldName;
 import org.nuclos.common2.IdUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonFinderException;
 import org.nuclos.common2.exception.CommonPermissionException;
+import org.nuclos.server.attribute.ejb3.LayoutFacadeLocal;
+import org.nuclos.server.common.AttributeCache;
 import org.nuclos.server.common.MetaDataServerProvider;
+import org.nuclos.server.common.ModuleConstants;
 import org.nuclos.server.common.SecurityCache;
+import org.nuclos.server.common.ServerServiceLocator;
+import org.nuclos.server.dal.DalSupportForGO;
 import org.nuclos.server.dal.processor.ProcessorFactorySingleton;
 import org.nuclos.server.dal.processor.nuclet.JdbcEntityObjectProcessor;
 import org.nuclos.server.dal.provider.NucletDalProvider;
 import org.nuclos.server.entityobject.EntityObjectProxyList;
+import org.nuclos.server.genericobject.Modules;
 import org.nuclos.server.genericobject.ProxyList;
 import org.nuclos.server.genericobject.searchcondition.CollectableSearchExpression;
 import org.nuclos.server.masterdata.valueobject.DependantMasterDataMap;
@@ -72,9 +79,17 @@ import org.springframework.transaction.annotation.Transactional;
 @RolesAllowed("Login")
 public class EntityObjectFacadeBean extends NuclosFacadeBean implements EntityObjectFacadeRemote {
 
+	private LayoutFacadeLocal layoutFacade;
+
 	private static final Logger LOG = Logger.getLogger(EntityObjectFacadeBean.class);
 
 	public EntityObjectFacadeBean() {
+	}
+	
+	private LayoutFacadeLocal getLayoutFacade() {
+		if (layoutFacade == null)
+			layoutFacade = ServerServiceLocator.getInstance().getFacade(LayoutFacadeLocal.class);
+		return layoutFacade;
 	}
 
 	@Override
@@ -257,16 +272,24 @@ public class EntityObjectFacadeBean extends NuclosFacadeBean implements EntityOb
 		// base.setDependants(dmdm);
 	}
 
-	private String findRefField(EntityObjectVO base, String subform) {
-		final MetaDataServerProvider mdProv = MetaDataServerProvider.getInstance();
-		final Map<String, EntityFieldMetaDataVO> fields = mdProv.getAllEntityFieldsByEntity(subform);
-		for (String f: fields.keySet()) {
-			final EntityFieldMetaDataVO mdField = fields.get(f);
-			final String fEntity = mdField.getForeignEntity();
-			if (base.getEntity().equals(fEntity) || NuclosEntity.GENERICOBJECT.getEntityName().equals(fEntity)) {
-				return f;
+	private String findRefField(EntityObjectVO base, String subform) throws CommonFinderException {
+		final Map<EntityAndFieldName, String> collSubEntities;
+		if (Modules.getInstance().isModuleEntity(base.getEntity()))
+			collSubEntities = getLayoutFacade().getSubFormEntityAndParentSubFormEntityNamesByGO(DalSupportForGO.getGenericObjectVO(base).getUsageCriteria(AttributeCache.getInstance()));
+		else
+			collSubEntities = getLayoutFacade().getSubFormEntityAndParentSubFormEntityNamesMD(base.getEntity(), false);
+		
+		for (EntityAndFieldName eafn : collSubEntities.keySet()) {
+			String sSubEntityName = eafn.getEntityName();
+			// care only about subforms which are on the highest level and in the given set of entity names
+			if (collSubEntities.get(eafn) == null && (subform.equals(sSubEntityName) || NuclosEntity.GENERICOBJECT.getEntityName().equals(sSubEntityName))) {
+				String sForeignKeyField = eafn.getFieldName();
+				if (sForeignKeyField == null) {
+					sForeignKeyField = ModuleConstants.DEFAULT_FOREIGNKEYFIELDNAME;
+				}
+				return sForeignKeyField;
 			}
-		}
+		}		
 		return null;
 	}
 
