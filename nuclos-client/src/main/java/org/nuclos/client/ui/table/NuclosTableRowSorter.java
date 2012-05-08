@@ -20,7 +20,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 import javax.swing.SortOrder;
-import javax.swing.RowSorter.SortKey;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 

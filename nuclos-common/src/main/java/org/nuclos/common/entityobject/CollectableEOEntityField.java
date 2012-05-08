@@ -20,16 +20,13 @@ import java.util.prefs.Preferences;
 
 import org.apache.commons.lang.NullArgumentException;
 import org.apache.log4j.Logger;
-import org.nuclos.common.DefaultComponentTypes;
 import org.nuclos.common.SpringApplicationContextHolder;
 import org.nuclos.common.collect.collectable.AbstractCollectableEntityField;
-import org.nuclos.common.collect.collectable.CollectableComponentTypes;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
 import org.nuclos.common.collect.collectable.CollectableField;
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.masterdata.EnumeratedDefaultValueProvider;
 import org.nuclos.common2.SpringLocaleDelegate;
-import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonFatalException;
 
 /**

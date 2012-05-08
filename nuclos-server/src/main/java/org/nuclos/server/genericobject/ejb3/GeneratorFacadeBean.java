@@ -84,7 +84,6 @@ import org.nuclos.server.dblayer.query.DbQueryBuilder;
 import org.nuclos.server.dblayer.query.DbSelection;
 import org.nuclos.server.genericobject.GeneratorFailedException;
 import org.nuclos.server.genericobject.GenericObjectMetaDataCache;
-import org.nuclos.server.genericobject.Modules;
 import org.nuclos.server.genericobject.valueobject.GeneratorActionVO;
 import org.nuclos.server.genericobject.valueobject.GeneratorUsageVO;
 import org.nuclos.server.genericobject.valueobject.GeneratorVO;

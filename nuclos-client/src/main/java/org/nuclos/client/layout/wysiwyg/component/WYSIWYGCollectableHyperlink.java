@@ -31,7 +31,6 @@ import javax.swing.border.Border;
 import org.nuclos.client.layout.wysiwyg.component.properties.PropertyValue;
 import org.nuclos.client.synthetica.NuclosThemeSettings;
 import org.nuclos.client.ui.ColorProvider;
-import org.nuclos.client.ui.HyperlinkTextFieldWithButton;
 import org.nuclos.client.ui.labeled.LabeledComponent;
 import org.nuclos.client.ui.labeled.LabeledComponentSupport;
 import org.nuclos.client.ui.labeled.LabeledHyperlink;

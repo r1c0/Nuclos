@@ -30,7 +30,6 @@ import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.table.TableCellRenderer;
 
-import org.nuclos.client.ui.collect.SubForm.SubFormTable;
 import org.nuclos.client.ui.collect.component.TableCellCursor;
 import org.nuclos.common.collect.collectable.AbstractCollectableField;
 import org.nuclos.common2.LangUtils;

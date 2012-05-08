@@ -16,12 +16,9 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.ui.labeled;
 
-import java.util.Date;
-
 import javax.swing.JComponent;
 import javax.swing.text.JTextComponent;
 
-import org.nuclos.client.ui.DateChooser;
 import org.nuclos.client.ui.HyperlinkTextFieldWithButton;
 import org.nuclos.client.ui.ToolTipTextProvider;
 import org.nuclos.client.ui.UIUtils;

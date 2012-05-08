@@ -88,7 +88,6 @@ import org.apache.commons.lang.NotImplementedException;
 import org.apache.log4j.Logger;
 import org.jfree.util.Log;
 import org.nuclos.api.ui.MenuItem;
-import org.nuclos.api.ui.annotation.NucletComponent;
 import org.nuclos.client.LocalUserProperties;
 import org.nuclos.client.attribute.AttributeCache;
 import org.nuclos.client.common.ClientParameterProvider;
