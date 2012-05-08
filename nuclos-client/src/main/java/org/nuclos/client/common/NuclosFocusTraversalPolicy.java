@@ -22,11 +22,9 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
-import javax.swing.JRadioButton;
 import javax.swing.JToolBar;
 import javax.swing.LayoutFocusTraversalPolicy;
 

@@ -224,7 +224,6 @@ import org.nuclos.common.format.FormattingTransformer;
 import org.nuclos.common.genericobject.CollectableGenericObjectEntityField;
 import org.nuclos.common.security.Permission;
 import org.nuclos.common2.CommonRunnable;
-import org.nuclos.common2.CommonRunnableAdapter;
 import org.nuclos.common2.DateUtils;
 import org.nuclos.common2.EntityAndFieldName;
 import org.nuclos.common2.IdUtils;

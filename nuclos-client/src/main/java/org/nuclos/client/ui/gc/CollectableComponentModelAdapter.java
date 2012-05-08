@@ -17,11 +17,6 @@
 //
 package org.nuclos.client.ui.gc;
 
-import java.awt.event.ActionListener;
-
-import javax.swing.event.CellEditorListener;
-import javax.swing.event.ChangeEvent;
-
 import org.nuclos.client.ui.collect.component.model.CollectableComponentModelEvent;
 import org.nuclos.client.ui.collect.component.model.CollectableComponentModelListener;
 import org.nuclos.client.ui.collect.component.model.DetailsComponentModelEvent;

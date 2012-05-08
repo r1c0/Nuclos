@@ -43,7 +43,6 @@ import org.apache.log4j.Logger;
 import org.nuclos.client.genericobject.GenericObjectMetaDataCache;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.client.ui.collect.component.DelegatingCollectablePanel;
-import org.nuclos.client.ui.collect.component.model.CollectableComponentModel;
 import org.nuclos.client.ui.labeled.LabeledComboBox;
 import org.nuclos.client.ui.labeled.LabeledComponent;
 import org.nuclos.client.ui.popupmenu.JPopupMenuListener;
@@ -52,7 +51,6 @@ import org.nuclos.common.collect.collectable.CollectableField;
 import org.nuclos.common.collect.collectable.CollectableValueIdField;
 import org.nuclos.common.collect.exception.CollectableFieldFormatException;
 import org.nuclos.common2.exception.CommonBusinessException;
-import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.server.attribute.valueobject.AttributeValueVO;
 
 /**
