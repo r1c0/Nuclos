@@ -114,8 +114,8 @@ public class GenericObjectSearchPanel extends SearchPanel {
 			final Collection<CollectableComponent> collclctcomp = new ArrayList<CollectableComponent>();
 			collclctcomp.addAll(searchpanel.getEditView().getCollectableComponentsFor(atomiccond.getFieldName()));
 			for (CollectableComponent clctcomp : ((GenericObjectSearchPanel)searchpanel).getAdditionalSearchComponents()) {
-				if (clctcomp.getFieldName().equals(atomiccond.getFieldName()))
-				collclctcomp.add(clctcomp);
+				if (clctcomp != null && clctcomp.getFieldName().equals(atomiccond.getFieldName()))
+					collclctcomp.add(clctcomp);
 			}
 			return !collclctcomp.isEmpty() && CollectionUtils.forall(collclctcomp, new CanDisplay(atomiccond));
 		}

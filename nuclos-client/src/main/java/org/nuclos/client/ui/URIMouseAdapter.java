@@ -152,11 +152,13 @@ public class URIMouseAdapter extends MouseAdapter{
 			}
 		}
 	}	
-
+	
 	private void openURI(String sUri, JComponent parent) {
 		if (org.nuclos.common2.StringUtils.isNullOrEmpty(sUri))
 			return;
-
+		String str = org.nuclos.common2.StringUtils.emptyIfNull(sUri).toLowerCase();
+		boolean bHasProtocol = str.startsWith("http:") || str.startsWith("https:") || str.startsWith("file:") || str.startsWith("ftp:") || str.startsWith("mailto:");
+	
 		try {
 			if (Desktop.isDesktopSupported()) {
 				Desktop desktop = Desktop.getDesktop();
@@ -169,10 +171,10 @@ public class URIMouseAdapter extends MouseAdapter{
 						path = path.substring(path.indexOf("file:/") + 5);
 					uri = new URI(uri.getScheme(), uri.getHost(), path, uri.getFragment());
 				} else {
-					if(sUri.matches(LangUtils.URL_PATTERN))
-						uri = new URI("http://" + sUri);	
-					else
+					if(bHasProtocol)	
 						uri = new URI(sUri);
+					else
+						uri = new URI("http://" + sUri);
 				}
 				if (sUri.startsWith("file:")) {
 					if (desktop.isSupported(Desktop.Action.OPEN)) {

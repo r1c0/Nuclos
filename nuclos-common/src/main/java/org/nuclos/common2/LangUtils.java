@@ -57,29 +57,30 @@ public class LangUtils {
 		return !bPremise || bConclusion;
 	}
 
-	public static final String URL_PATTERN = "[a-z0-9-]+(.[a-z0-9-]+)*(:[0-9]+)?(/.*)?$|i";
 	public static boolean isValidURI(String sUri) {
 		if (org.nuclos.common2.StringUtils.isNullOrEmpty(sUri))
 			return false;
 		
+		String str = org.nuclos.common2.StringUtils.emptyIfNull(sUri).toLowerCase();
+		boolean bHasProtocol = str.startsWith("http:") || str.startsWith("https:") || str.startsWith("file:") || str.startsWith("ftp:") || str.startsWith("mailto:");
+	
 		try {
 			if (!sUri.startsWith("file:"))
-				if(!sUri.matches(URL_PATTERN))
+				if(bHasProtocol)
 					new URI(sUri).toURL();
 				else {
-					new URI("http://" + sUri).toURL();		
-					return true;
+					 if (!sUri.startsWith("www.")) //@todo use a pattern here.
+						 return false;
+					new URI("http://" + sUri).toURL();
 				}
 			else
 				new java.io.File(sUri).toURI().toURL();				
-		}
-		catch(Exception e) {
+		} catch(Exception e) {
 			// no valid URI Format
 			LOG.trace("isValiedURI: " + e);
 			return false;
-		}
-		String str = org.nuclos.common2.StringUtils.emptyIfNull(sUri).toLowerCase();
-		return str.startsWith("http:") || str.startsWith("https:") || str.startsWith("file:") || str.startsWith("ftp:") || str.startsWith("mailto:");
+		}		
+		return true;
 	}
 
 	/**
