@@ -5563,7 +5563,9 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		@Override
 		public SearchPanel newSearchPanel() {
 			final Collection<CollectableComponent> additionalSearchComponents = new ArrayList<CollectableComponent>();
-			additionalSearchComponents.add(searchStateBox);
+			if (searchStateBox != null) {
+				additionalSearchComponents.add(searchStateBox);
+			}
 			return new GenericObjectSearchPanel(additionalSearchComponents);
 		}
 

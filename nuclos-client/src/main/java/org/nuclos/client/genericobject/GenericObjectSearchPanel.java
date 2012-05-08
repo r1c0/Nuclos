@@ -56,8 +56,8 @@ public class GenericObjectSearchPanel extends SearchPanel {
 
 	public GenericObjectSearchPanel(Collection<CollectableComponent> additionalSearchComponents) {
 		super();
-		
 		this.additionalSearchComponents = additionalSearchComponents;
+		assert !this.additionalSearchComponents.contains(null);
 	}
 	
 	/** @todo	*/
