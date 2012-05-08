@@ -134,14 +134,51 @@ public class URIMouseAdapter extends MouseAdapter{
 	}	
 
 	
-	private void openURI(String uri, JComponent parent) {
+	private void openURI(String sUri, JComponent parent) {
+		if (org.nuclos.common2.StringUtils.isNullOrEmpty(sUri))
+			return;
+
 		try {
-			Desktop.getDesktop().browse(new URI(uri));
+			if (Desktop.isDesktopSupported()) {
+				Desktop desktop = Desktop.getDesktop();
+				
+				URI uri;
+				if (sUri.startsWith("file:")) {
+					uri = new java.io.File(sUri).toURI();
+					String path = uri.getPath();
+					if (path.indexOf("file:/") != -1)
+						path = path.substring(path.indexOf("file:/") + 5);
+					uri = new URI(uri.getScheme(), uri.getHost(), path, uri.getFragment());
+				} else {
+					if(sUri.matches(LangUtils.URL_PATTERN))
+						uri = new URI("http://" + sUri);	
+					else
+						uri = new URI(sUri);
+				}
+				if (sUri.startsWith("file:")) {
+					if (desktop.isSupported(Desktop.Action.OPEN)) {
+						java.io.File file = new java.io.File(uri);
+						if (file.exists())
+							Desktop.getDesktop().open(file);
+						return;
+					}
+				}
+				if (sUri.startsWith("mailto:")) {
+					if (desktop.isSupported(Desktop.Action.MAIL)) {
+						Desktop.getDesktop().mail(uri);
+						return;
+					}
+				}
+				
+				if (desktop.isSupported(Desktop.Action.BROWSE)) {
+					Desktop.getDesktop().browse(uri);				
+				}
+			}
+			
 		} catch (IOException ex) {
 			Errors.getInstance().showExceptionDialog(parent, "URIMouseAdapter.1", ex);
 		} catch (URISyntaxException ex) {
 			Errors.getInstance().showExceptionDialog(parent, "URIMouseAdapter.1", ex);
-		}
+		} 
 	}
-
 }

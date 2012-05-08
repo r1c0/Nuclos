@@ -57,10 +57,21 @@ public class LangUtils {
 		return !bPremise || bConclusion;
 	}
 
+	public static final String URL_PATTERN = "[a-z0-9-]+(.[a-z0-9-]+)*(:[0-9]+)?(/.*)?$|i";
 	public static boolean isValidURI(String sUri) {
+		if (org.nuclos.common2.StringUtils.isNullOrEmpty(sUri))
+			return false;
+		
 		try {
-			URI uri = new URI(sUri);
-			uri.toURL();
+			if (!sUri.startsWith("file:"))
+				if(!sUri.matches(URL_PATTERN))
+					new URI(sUri).toURL();
+				else {
+					new URI("http://" + sUri).toURL();		
+					return true;
+				}
+			else
+				new java.io.File(sUri).toURI().toURL();				
 		}
 		catch(Exception e) {
 			// no valid URI Format
@@ -68,7 +79,7 @@ public class LangUtils {
 			return false;
 		}
 		String str = org.nuclos.common2.StringUtils.emptyIfNull(sUri).toLowerCase();
-		return str.startsWith("http://") || str.startsWith("file://");
+		return str.startsWith("http:") || str.startsWith("https:") || str.startsWith("file:") || str.startsWith("ftp:") || str.startsWith("mailto:");
 	}
 
 	/**
