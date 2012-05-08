@@ -304,9 +304,16 @@ public class SubForm extends JPanel
 	private List<String>					  toolbarOrder;
 	private HashMap<String, JMenuItem>		  toolbarMenuItems;
 
-	private final JToolBar       toolbar;
+	/**
+	 * Can't be final because it must be set to null in close() to avoid memeory leaks. (tp)
+	 */
+	private JToolBar toolbar;
 
-	private final JPanel         contentPane = new JPanel(new BorderLayout());
+	/**
+	 * Can't be final because it must be set to null in close() to avoid memeory leaks. (tp)
+	 */
+	private JPanel contentPane = new JPanel(new BorderLayout());
+
 	private JScrollPane    scrollPane = new JScrollPane();
 
 	private SubFormTable   subformtbl;
@@ -465,12 +472,17 @@ public class SubForm extends JPanel
 			popupMenuAdapter = null;
 			scrollPane = null;
 			
+			contentPane = null;
+			toolbar = null;
+			
 			mpColumnRenderer.clear();
-			mpStaticColumnEditors.clear();
+			mpColumns.clear();
 			mpStaticColumnEditors.clear();
 			
 			lstchangelistener.clear();
 			lstFocusActionListener.clear();
+			listeners.clear();
+			myMouseListener.clear();
 			
 			closed = true;
 		}

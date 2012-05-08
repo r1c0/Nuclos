@@ -1083,6 +1083,7 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 			// Details panel:
 			this.ctlDetails.close();
 			
+			ss = null;
 			pnlCollect = null;
 			// Partial fix for http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=7079260
 			collectableComponentSearchFocusListener = null;

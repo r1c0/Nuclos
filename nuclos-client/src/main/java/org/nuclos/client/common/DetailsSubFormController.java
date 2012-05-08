@@ -576,6 +576,8 @@ public abstract class DetailsSubFormController<Clct extends Collectable>
 
 		if(getSubForm() != null)
 			getSubForm().storeTableFilter(getParentEntityName());
+		
+		fixedcolumnheader = null;
 
 		super.close();
 	}

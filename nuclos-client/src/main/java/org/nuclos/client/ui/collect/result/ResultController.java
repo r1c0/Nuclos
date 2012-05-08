@@ -145,8 +145,10 @@ public class ResultController<Clct extends Collectable> {
 
 	/**
 	 * the lists of available and selected fields, resp.
+	 * 
+	 * Not final because must be reset in close() to avoid memory leak. (tp)
 	 */
-	private final ChoiceEntityFieldList fields = new ChoiceEntityFieldList(null);
+	private ChoiceEntityFieldList fields = new ChoiceEntityFieldList(null);
 
 	/**
 	 * action: Edit selected Collectable (in Result panel)
@@ -562,6 +564,7 @@ public class ResultController<Clct extends Collectable> {
 	 * releases the resources (esp. listeners) for this controller.
 	 */
 	public void close() {
+		fields = null;
 		final ResultPanel<Clct> pnlResult = getResultPanel();
 		if (pnlResult != null) {
 			pnlResult.btnRefresh.setAction(null);
