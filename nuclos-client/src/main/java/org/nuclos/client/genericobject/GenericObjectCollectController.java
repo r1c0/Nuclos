@@ -226,6 +226,7 @@ import org.nuclos.common.format.FormattingTransformer;
 import org.nuclos.common.genericobject.CollectableGenericObjectEntityField;
 import org.nuclos.common.security.Permission;
 import org.nuclos.common2.CommonRunnable;
+import org.nuclos.common2.CommonRunnableAdapter;
 import org.nuclos.common2.DateUtils;
 import org.nuclos.common2.EntityAndFieldName;
 import org.nuclos.common2.IdUtils;
@@ -419,26 +420,24 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		new JRadioButtonMenuItem(getSpringLocaleDelegate().getMessage("GenericObjectCollectController.58","Nur gel\u00f6schte suchen")),
 		new JRadioButtonMenuItem(getSpringLocaleDelegate().getMessage("GenericObjectCollectController.49","Gel\u00f6schte und ungel\u00f6schte suchen"))
 	};
+	
+	// The following should be final but can't because they are 
+	// reset to null in close() to avoid memory leaks. (tp)
 
-	private final JCheckBoxMenuItem chkbxUseInvalidMasterData = new JCheckBoxMenuItem();
-	//private final JButton btnMakeTreeRoot = new JButton();
-	private final JMenuItem btnMakeTreeRoot = new JMenuItem();
-	//private final JButton btnShowStateHistory = new JButton();
-	private final JMenuItem btnShowStateHistory = new JMenuItem();
-	//private final JButton btnShowLogBook = new JButton();
-	private final JMenuItem btnShowLogBook = new JMenuItem();
-	private final JButton btnPrintDetails = new JButton();
-	//private final JButton btnResetViewToTemplateUser = new JButton();
-	private final JMenuItem btnResetViewToTemplateUser = new JMenuItem();
-	protected final JButton btnPrintResults = new JButton();
-	//private final JButton btnExecuteRule = new JButton();
-	private final JMenuItem btnExecuteRule = new JMenuItem();
-	//private final JToolBar toolbarFixCustomDetails = UIUtils.createNonFloatableToolBar();
-	//protected final JButton btnShowResultInExplorer = new JButton();
-	protected final JMenuItem btnShowResultInExplorer = new JMenuItem();
+	private JCheckBoxMenuItem chkbxUseInvalidMasterData = new JCheckBoxMenuItem();
+	private JMenuItem btnMakeTreeRoot = new JMenuItem();
+	private JMenuItem btnShowStateHistory = new JMenuItem();
+	private JMenuItem btnShowLogBook = new JMenuItem();
+	private JButton btnPrintDetails = new JButton();
+	private JMenuItem btnResetViewToTemplateUser = new JMenuItem();
+	protected JButton btnPrintResults = new JButton();
+	private JMenuItem btnExecuteRule = new JMenuItem();
+	protected JMenuItem btnShowResultInExplorer = new JMenuItem();
+	
+	// end of Menu Items
+	
 	private final JComboBox cmbbxCurrentState = new JComboBox();
 	private final StateViewComponent cmpStateStandardView = new StateViewComponent();
-	//private final JToolBar toolbarCustomActionsDetails = UIUtils.createNonFloatableToolBar();
 	private final List<Component> toolbarCustomActionsDetails = new ArrayList<Component>();
 	private int toolbarCustomActionsDetailsIndex = -1;
 	private LayoutRoot layoutrootDetails;
@@ -809,6 +808,18 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		closeSubFormControllersInSearch();
 		closeSubFormControllers(getSubFormControllersInDetails());
 		resetTransferedDetailsData();
+		
+		toolbarCustomActionsDetails.clear();
+		
+		chkbxUseInvalidMasterData = null;
+		btnMakeTreeRoot = null;
+		btnShowStateHistory = null;
+		btnShowLogBook = null;
+		btnPrintDetails = null;
+		btnResetViewToTemplateUser = null;
+		btnPrintResults = null;
+		btnExecuteRule = null;
+		btnShowResultInExplorer = null;
 
 		super.close();
 	}
@@ -3772,7 +3783,11 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 
 		final StateWrapper stateCurrent = new StateWrapper(null, getSelectedGenericObjectStateNumeral(), getSelectedGenericObjectStateName(), getSelectedGenericObjectStateIcon(), "");
 
-		UIUtils.runShortCommand(getTab(), new CommonRunnable() {
+		class ChangeStateWorker1 implements CommonRunnable {
+			
+			private ChangeStateWorker1() {
+			}
+			
 			@Override
 			public void run() throws CommonBusinessException {
 				if (getCollectStateModel().getDetailsMode() == CollectState.DETAILSMODE_EDIT ||
@@ -3806,7 +3821,9 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 				else
 					GenericObjectCollectController.this.changeStateForSingleObjectAndSave(stateNew);
 			}
-		});
+		}
+		
+		UIUtils.runShortCommand(getTab(), new ChangeStateWorker1());
 	}
 
 
@@ -3824,7 +3841,11 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 
 		final StateWrapper stateCurrent = new StateWrapper(null, getSelectedGenericObjectStateNumeral(), getSelectedGenericObjectStateName(), getSelectedGenericObjectStateIcon(), "");
 
-		UIUtils.runShortCommand(getTab(), new CommonRunnable() {
+		class ChangeStateWorker2 implements CommonRunnable {
+			
+			private ChangeStateWorker2() {
+			}
+			
 			@Override
 			public void run() throws CommonBusinessException {
 					if (getCollectStateModel().getDetailsMode() == CollectState.DETAILSMODE_EDIT ||
@@ -3858,11 +3879,13 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 					else
 						GenericObjectCollectController.this.changeStatesForSingleObjectAndSave(statesNew);
 				}
-		});
+		}
+		
+		UIUtils.runShortCommand(getTab(), new ChangeStateWorker2());
 	}
 
 	private void changeStateForSingleObjectAndSave(final StateWrapper stateNew) {
-		class ChangeStateWorker1 extends CommonClientWorkerAdapter<CollectableGenericObjectWithDependants> {
+		class ChangeStateWorker3 extends CommonClientWorkerAdapter<CollectableGenericObjectWithDependants> {
 			
 			Integer iGenericObjectId;
 			Integer iModuleId;
@@ -3872,7 +3895,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 			boolean errorOccurred = false;
 			
 			
-			private ChangeStateWorker1(CollectController<CollectableGenericObjectWithDependants> clt) {
+			private ChangeStateWorker3(CollectController<CollectableGenericObjectWithDependants> clt) {
 				super(clt);
 			}
 			
@@ -3948,12 +3971,12 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 			}
 		}
 		
-		CommonMultiThreader.getInstance().execute(new ChangeStateWorker1(
+		CommonMultiThreader.getInstance().execute(new ChangeStateWorker3(
 				GenericObjectCollectController.this));
 	}
 
 	private void changeStatesForSingleObjectAndSave(final List<Integer> statesNew) {
-		class ChangeStatesWorker2 extends CommonClientWorkerAdapter<CollectableGenericObjectWithDependants> {
+		class ChangeStatesWorker4 extends CommonClientWorkerAdapter<CollectableGenericObjectWithDependants> {
 			
 			Integer iGenericObjectId;
 			Integer iModuleId;
@@ -3962,7 +3985,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 
 			boolean errorOccurred = false;
 
-			private ChangeStatesWorker2(CollectController<CollectableGenericObjectWithDependants> clt) {
+			private ChangeStatesWorker4(CollectController<CollectableGenericObjectWithDependants> clt) {
 				super(clt);
 			}
 			
@@ -4029,7 +4052,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 			}
 		}
 		
-		CommonMultiThreader.getInstance().execute(new ChangeStatesWorker2(
+		CommonMultiThreader.getInstance().execute(new ChangeStatesWorker4(
 				GenericObjectCollectController.this));
 	}
 
@@ -4406,20 +4429,29 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 			}
 		});
 	}
+	
+	private static class JTabbedPaneChangeListener implements ChangeListener {
+		
+		private final Preferences preferences;
+		
+		private JTabbedPaneChangeListener(Preferences preferences) {
+			this.preferences = preferences;
+		}
+		
+		@Override
+		public void stateChanged(ChangeEvent e) {
+			JTabbedPane pane = (JTabbedPane)e.getSource();
+			String sTitle = pane.getTitleAt(pane.getSelectedIndex());
+			preferences.put(GenericObjectCollectController.TABSELECTED, sTitle);
+		}
+	}
 
 	private void addTabbedPaneListener(LayoutRoot root) {
 		List<JTabbedPane> lstTabs = new ArrayList<JTabbedPane>();
 		searchTabbedPanes(root.getRootComponent(), lstTabs);
-		for(JTabbedPane tabPane : lstTabs)
-			tabPane.addChangeListener(new ChangeListener() {
-
-				@Override
-				public void stateChanged(ChangeEvent e) {
-					JTabbedPane pane = (JTabbedPane)e.getSource();
-					String sTitle = pane.getTitleAt(pane.getSelectedIndex());
-					GenericObjectCollectController.this.getPreferences().put(GenericObjectCollectController.TABSELECTED, sTitle);
-				}
-			});
+		for(JTabbedPane tabPane : lstTabs) {
+			tabPane.addChangeListener(new JTabbedPaneChangeListener(GenericObjectCollectController.this.getPreferences()));
+		}
 	}
 
 	private void cmdShowResultsInExplorer() {

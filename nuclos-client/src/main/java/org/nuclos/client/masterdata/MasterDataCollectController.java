@@ -675,8 +675,11 @@ public class MasterDataCollectController extends EntityCollectController<Collect
    public void close() {
       super.close();
       this.closeSubFormControllers();
+      if (mpsubformctlDetails != null) {
+    	  mpsubformctlDetails.clear();
+      }
+      mpsubformctlDetails = null;
    }
-
 
 
    /**

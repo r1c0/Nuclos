@@ -188,6 +188,18 @@ public abstract class EntityCollectController<Clct extends Collectable> extends 
 		btnPointer.setName("btnPointer");
 		btnPointer.addMouseListener(getPointerContextListener());
 	}
+	
+	@Override
+	public void close() {
+		super.close();
+		if (mpsubformctlSearch != null) {
+			for (SearchConditionSubFormController search: mpsubformctlSearch.values()) {
+				search.close();
+			}
+			mpsubformctlSearch.clear();
+		}
+		mpsubformctlSearch = null;
+	}
 
 	protected void showLoading(boolean loading){
 		synchronized (getTab()) {
