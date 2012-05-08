@@ -943,7 +943,7 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	 * TODO refactor
 	 * @param pnlCollect
 	 */
-	private void setCollectPanel(CollectPanel<Clct> pnlCollect) {
+	final void setCollectPanel(CollectPanel<Clct> pnlCollect) {
 		this.pnlCollect = new WeakReference<CollectPanel<Clct>>(pnlCollect);
 
 		this.statemodel = new CollectStateModel<Clct>(this.getCollectPanel(), this);
@@ -3735,6 +3735,13 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 		final CollectPanel<Clct> result = pnlCollect.get();
 		assert result != null || isClosed();
 		return result;
+	}
+	
+	protected final void _setCollectPanel(WeakReference<CollectPanel<Clct>> pnlCollect) {
+		if (pnlCollect == null) {
+			throw new NullPointerException();
+		}
+		this.pnlCollect = pnlCollect; 
 	}
 
 	/**
