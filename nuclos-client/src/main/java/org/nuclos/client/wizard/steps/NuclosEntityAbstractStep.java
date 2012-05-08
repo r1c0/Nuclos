@@ -95,7 +95,7 @@ public abstract class NuclosEntityAbstractStep extends PanelWizardStep implement
 	
 	@Override
 	public void close() {
-		LOG.info("close(): " + this);
+		LOG.debug("close(): " + this);
 		removeAll();
 		model = null;
 		parent = null;

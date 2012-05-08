@@ -144,7 +144,7 @@ public class RestoreUtils {
 			GraphicsConfiguration[] gc = gd.getConfigurations();
 			for (int i=0; i < gc.length && !restoreAtStoredPosition; i++) {
 				Rectangle deviceBounds = gc[i].getBounds();
-				LOG.info("device bounds: " + deviceBounds);
+				LOG.debug("device bounds: " + deviceBounds);
 				if (deviceBounds.contains(recNormalBounds)) {
 					restoreAtStoredPosition = true;
 				}

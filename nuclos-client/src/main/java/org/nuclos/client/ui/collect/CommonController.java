@@ -76,7 +76,7 @@ public abstract class CommonController<Clct extends Collectable> implements Clos
 	@Override
 	public void close() {
 		if (!isClosed()) {
-			LOG.info("close(): " + this);
+			LOG.debug("close(): " + this);
 			closed = true;
 			
 			removeAdditionalChangeListeners();

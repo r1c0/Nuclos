@@ -91,10 +91,10 @@ public class QueueSingleton {
 					final IRegister c = eventListener2Register.remove(ref);
 					if (c != null) {
 						c.unregister();
-						LOG.info("unregistered " + c + ", mapSize=" + eventListener2Register.size());
+						LOG.debug("unregistered " + c + ", mapSize=" + eventListener2Register.size());
 					}
 					else {
-						LOG.info("removed gc'ed ref " + ref + ", mapSize=" + eventListener2Register.size());
+						LOG.debug("removed gc'ed ref " + ref + ", mapSize=" + eventListener2Register.size());
 					}
 				}
 			} while (ref != null);

@@ -209,8 +209,6 @@ public class DetailsController<Clct extends Collectable> extends CommonControlle
 	@Override
 	public void close() {
 		if (!isClosed()) {
-			LOG.info("close(): " + this);
-			
 			final DetailsPanel pnlDetails = this.getDetailsPanel();
 			pnlDetails.btnSave.setAction(null);
 			pnlDetails.btnRefreshCurrentCollectable.setAction(null);

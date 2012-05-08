@@ -171,8 +171,8 @@ public class CollectableTextField extends CollectableTextComponent implements Me
 	}
 
 	@Override
-	public TableCellRenderer getTableCellRenderer() {
-		final TableCellRenderer parentRenderer = super.getTableCellRenderer();
+	public TableCellRenderer getTableCellRenderer(boolean subform) {
+		final TableCellRenderer parentRenderer = super.getTableCellRenderer(subform);
 		final CommonJTextField ntf = getJTextField();
 		return new CollectableTextFieldCellRenderer(parentRenderer, ntf);
 	}

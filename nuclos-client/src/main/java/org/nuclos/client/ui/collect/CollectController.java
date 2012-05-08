@@ -1071,7 +1071,7 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	@Override
 	public void close() {
 		if (!closed) {
-			LOG.info("close(): " + this);
+			LOG.debug("close(): " + this);
 			
 			// Search panel:
 			if (this.isSearchPanelAvailable()) {

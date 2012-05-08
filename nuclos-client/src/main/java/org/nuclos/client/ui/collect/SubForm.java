@@ -480,7 +480,7 @@ public class SubForm extends JPanel
 		// Close is needed for avoiding memory leaks
 		// If you want to change something here, please consult me (tp).  
 		if (!closed) {
-			LOG.info("close(): " + this);
+			LOG.debug("close(): " + this);
 			if (rowHeader != null) {
 				rowHeader.close();
 			}

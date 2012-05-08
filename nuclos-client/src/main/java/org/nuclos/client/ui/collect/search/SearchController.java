@@ -310,8 +310,6 @@ public class SearchController<Clct extends Collectable> extends CommonController
 	@Override
 	public void close() {
 		if (!isClosed()) {
-			LOG.info("close(): " + this);
-			
 			final CollectController<Clct> cc = getCollectController();
 			final SearchPanel pnlSearch = getSearchPanel();
 			pnlSearch.btnSearch.setAction(null);

@@ -80,7 +80,7 @@ public abstract class NuclosEntityAttributeAbstractStep extends PanelWizardStep 
 	
 	@Override
 	public void close() {
-		LOG.info("close(): " + this);
+		LOG.debug("close(): " + this);
 		removeAll();
 		model = null;
 		localeDelegate = null;
