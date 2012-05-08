@@ -57,6 +57,7 @@ import org.nuclos.client.ui.SizeKnownListener;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.client.ui.collect.SubForm;
 import org.nuclos.client.ui.collect.SubForm.SubFormToolListener;
+import org.nuclos.client.ui.collect.SubForm.TransferLookedUpValueAction;
 import org.nuclos.client.ui.collect.component.CollectableComponent;
 import org.nuclos.client.ui.collect.component.CollectableComponentTableCellEditor;
 import org.nuclos.client.ui.collect.component.CollectableListOfValues;
@@ -327,6 +328,37 @@ public class MasterDataSubFormController extends DetailsSubFormController<Collec
 					"DynamicEntitySubFormController.2", "Der Datensatz kann nicht angezeigt werden. Bitte tragen Sie in der Datenquelle für die dynamische Entität, die Entität ein, die angezeigt werden soll!"));
 		}
 	}
+	
+	private static class LookupValuesListener implements LookupListener {
+		
+		private final SubForm.SubFormTableModel model;
+		
+		private final boolean searchable;
+		
+		private final int row;
+		
+		private final Collection<TransferLookedUpValueAction> valueActions;
+		
+		private LookupValuesListener(SubForm.SubFormTableModel model, boolean searchable, int row,
+				Collection<TransferLookedUpValueAction> valueActions) {
+			
+			this.model = model;
+			this.searchable = searchable;
+			this.row = row;
+			this.valueActions = valueActions;
+		}
+		
+		@Override
+		public void lookupSuccessful(LookupEvent ev) {
+			SubForm.transferLookedUpValues(ev.getSelectedCollectable(), model, searchable, 
+					row, valueActions);
+		}
+
+		@Override
+        public int getPriority() {
+            return 1;
+        }
+	}
 
 	/**
 	 *
@@ -392,17 +424,10 @@ public class MasterDataSubFormController extends DetailsSubFormController<Collec
 
                 	// set field
                     if (insert) {
-                        clctlov.addLookupListener(new LookupListener() {
-        					@Override
-        					public void lookupSuccessful(LookupEvent ev) {
-        						SubForm.transferLookedUpValues(ev.getSelectedCollectable(), getSubFormTableModel(), isSearchable(), row, getSubForm().getTransferLookedUpValueActions(field));
-        					}
-
-							@Override
-                            public int getPriority() {
-	                            return 1;
-                            }
-        				});
+                		final Collection<TransferLookedUpValueAction> valueActions =
+                				getSubForm().getTransferLookedUpValueActions(field);                		
+                        clctlov.addLookupListener(new LookupValuesListener(
+                        		getSubFormTableModel(), isSearchable(), row, valueActions));
                         try {
                             clctlov.acceptLookedUpCollectable(referenceClct);
                             clct.setField(clctlov.getFieldName(), clctlov.getField());
