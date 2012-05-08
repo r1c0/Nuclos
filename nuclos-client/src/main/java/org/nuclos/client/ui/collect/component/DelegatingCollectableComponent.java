@@ -101,6 +101,10 @@ public abstract class DelegatingCollectableComponent implements CollectableCompo
 		return this.getWrappedCollectableComponent().getModel();
 	}
 
+	/**
+	 * @deprecated Use constructor to initialize the model. 
+	 * 		The model itself shouldn't be changed after construction of the view.
+	 */
 	@Override
 	public void setModel(CollectableComponentModel clctcompmodel) {
 		this.getWrappedCollectableComponent().setModel(clctcompmodel);

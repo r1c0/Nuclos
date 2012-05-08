@@ -478,7 +478,12 @@ public class SubForm extends JPanel
 			// Partial fix for http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=7079260
 			popupMenuAdapter = null;
 			scrollPane = null;
+			
+			mpColumnRenderer.clear();
 			mpStaticColumnEditors.clear();
+			mpStaticColumnEditors.clear();
+			
+			lstchangelistener.clear();
 			lstFocusActionListener.clear();
 			
 			closed = true;

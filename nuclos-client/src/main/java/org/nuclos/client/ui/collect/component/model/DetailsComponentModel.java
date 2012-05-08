@@ -145,7 +145,7 @@ public class DetailsComponentModel extends CollectableComponentModel {
 	}
 
 	private void fireValueToBeChanged(boolean bValueToBeChanged) {
-		this.helper.fireValueToBeChanged(this, bValueToBeChanged);
+		getModelHelper().fireValueToBeChanged(this, bValueToBeChanged);
 	}
 
 	@Override

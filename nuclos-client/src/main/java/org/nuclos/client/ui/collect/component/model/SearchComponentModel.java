@@ -104,7 +104,7 @@ public class SearchComponentModel extends CollectableComponentModel {
 	}
 
 	private void fireSearchConditionChanged() {
-		helper.fireSearchConditionChanged(this);
+		getModelHelper().fireSearchConditionChanged(this);
 	}
 
 	/**

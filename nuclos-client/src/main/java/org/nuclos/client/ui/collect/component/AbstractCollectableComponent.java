@@ -81,6 +81,7 @@ import org.nuclos.client.ui.collect.component.model.SearchComponentModel;
 import org.nuclos.client.ui.collect.component.model.SearchComponentModelEvent;
 import org.nuclos.client.ui.collect.model.CollectableTableModel;
 import org.nuclos.client.ui.collect.model.SortableCollectableTableModel;
+import org.nuclos.client.ui.gc.ListenerUtil;
 import org.nuclos.client.ui.labeled.LabeledComboBox;
 import org.nuclos.client.ui.popupmenu.DefaultJPopupMenuListener;
 import org.nuclos.client.ui.popupmenu.JPopupMenuFactory;
@@ -246,7 +247,7 @@ public abstract class AbstractCollectableComponent
 	}
 
 	@Override
-    public CollectableComponentModel getModel() {
+    public final CollectableComponentModel getModel() {
 		return clctcompmodel;
 	}
 
@@ -266,6 +267,10 @@ public abstract class AbstractCollectableComponent
 		return (DetailsComponentModel) getModel();
 	}
 
+	/**
+	 * @deprecated Use constructor to initialize the model. 
+	 * 		The model itself shouldn't be changed after construction of the view.
+	 */
 	@Override
     public void setModel(CollectableComponentModel clctcompmodel) {
 		if (clctcompmodel.isSearchModel() != isSearchComponent()) {
@@ -277,7 +282,8 @@ public abstract class AbstractCollectableComponent
 			getModel().removeCollectableComponentModelListener(this);
 		}
 		this.clctcompmodel = clctcompmodel;
-		clctcompmodel.addCollectableComponentModelListener(this);
+		// this.clctcompmodel.addCollectableComponentModelListener(this);
+		ListenerUtil.registerCollectableComponentModelListener(this.clctcompmodel, null, this);
 	}
 
 	@Override
@@ -1711,6 +1717,8 @@ public abstract class AbstractCollectableComponent
 
 	/**
 	 * default table cell renderer for (search) CollectableComponents.
+	 * 
+	 * TODO: This REALLY should be static - but how to archive this? (tp)
 	 */
 	protected class CollectableComponentDefaultTableCellRenderer implements TableCellRenderer {
 

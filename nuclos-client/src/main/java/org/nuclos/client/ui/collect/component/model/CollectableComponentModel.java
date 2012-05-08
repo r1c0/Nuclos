@@ -44,7 +44,7 @@ import org.nuclos.common.NuclosImage;
  */
 public abstract class CollectableComponentModel {
 
-	protected final CollectableComponentModelHelper helper = new CollectableComponentModelHelper();
+	private final CollectableComponentModelHelper helper = new CollectableComponentModelHelper();
 	private CollectableEntityField clctef;
 	private CollectableField clctfValue;
 	
@@ -57,6 +57,10 @@ public abstract class CollectableComponentModel {
 	CollectableComponentModel(CollectableEntityField clctef) {
 		this.clctef = clctef;
 		this.clctfValue = clctef.getNullField();
+	}
+	
+	protected final CollectableComponentModelHelper getModelHelper() {
+		return helper;
 	}
 
 	/**

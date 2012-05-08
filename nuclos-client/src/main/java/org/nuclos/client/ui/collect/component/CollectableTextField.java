@@ -142,22 +142,39 @@ public class CollectableTextField extends CollectableTextComponent implements Me
    		ntf.addAutoCompleteItems(items);
    	}
    }
+   
+	private static class CollectableTextFieldCellRenderer implements TableCellRenderer {
+		
+		private final TableCellRenderer parentRenderer;
+		
+		// Don't use, this triggers a memory leak! (tp)
+		// private final CommonJTextField ntf;
+
+		private final int horizontalAlignment;
+		
+		private CollectableTextFieldCellRenderer(TableCellRenderer parentRenderer, CommonJTextField ntf) {
+			this.parentRenderer = parentRenderer;
+			this.horizontalAlignment = ntf.getHorizontalAlignment();
+		}
+
+		@Override
+		public Component getTableCellRendererComponent(JTable tbl, Object oValue, boolean bSelected, boolean bHasFocus,
+				int iRow, int iColumn) {
+			final Component comp = parentRenderer.getTableCellRendererComponent(tbl, oValue, bSelected, bHasFocus, iRow,
+					iColumn);
+			if (comp instanceof JLabel) {
+				final JLabel lb = (JLabel) comp;
+				lb.setHorizontalAlignment(horizontalAlignment);
+			}
+			return comp;
+		}
+	}
 
 	@Override
-	public TableCellRenderer getTableCellRenderer(boolean subform) {
-		final TableCellRenderer parentRenderer = super.getTableCellRenderer(subform);
-		return new TableCellRenderer() {
-			@Override
-			public Component getTableCellRendererComponent(JTable tbl, Object oValue, boolean bSelected, boolean bHasFocus, int iRow, int iColumn) {
-				Component comp = parentRenderer.getTableCellRendererComponent(tbl, oValue, bSelected, bHasFocus, iRow, iColumn);
-				if (comp instanceof JLabel) {
-					JLabel lb = (JLabel) comp;
-					final CommonJTextField ntf = getJTextField();
-					lb.setHorizontalAlignment(ntf.getHorizontalAlignment());
-				}
-				return comp;
-			}
-		};
+	public TableCellRenderer getTableCellRenderer() {
+		final TableCellRenderer parentRenderer = super.getTableCellRenderer();
+		final CommonJTextField ntf = getJTextField();
+		return new CollectableTextFieldCellRenderer(parentRenderer, ntf);
 	}
 
    @Override

@@ -170,6 +170,7 @@ import org.nuclos.client.ui.collect.result.ResultController;
 import org.nuclos.client.ui.collect.result.ResultPanel;
 import org.nuclos.client.ui.collect.search.ISearchStrategy;
 import org.nuclos.client.ui.collect.search.SearchPanel;
+import org.nuclos.client.ui.gc.ListenerUtil;
 import org.nuclos.client.ui.labeled.LabeledComponent;
 import org.nuclos.client.ui.layoutml.LayoutRoot;
 import org.nuclos.client.ui.multiaction.MultiActionProgressLine;
@@ -1751,7 +1752,8 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	/** @todo pull down to CollectController */
 	protected WeakReference<CollectPanel<CollectableGenericObjectWithDependants>> newCollectPanel() {
 		boolean bSearch = MetaDataClientProvider.getInstance().getEntity(this.sEntity).isSearchable();
-		return new WeakReference(new GenericObjectCollectPanel(bSearch));
+		return new WeakReference<CollectPanel<CollectableGenericObjectWithDependants>>(
+				new GenericObjectCollectPanel(getSearchStateBox(), bSearch));
 	}
 
 	@Override
@@ -1980,7 +1982,8 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	@Override
 	public void addAdditionalChangeListenersForSearch() {
 		super.addAdditionalChangeListenersForSearch();
-		getSearchStateBox().getSearchModel().addCollectableComponentModelListener(ccmlistenerSearchChanged);
+		// getSearchStateBox().getSearchModel().addCollectableComponentModelListener(ccmlistenerSearchChanged);
+		ListenerUtil.registerCollectableComponentModelListener(getSearchStateBox().getSearchModel(), null, ccmlistenerSearchChanged);
 	}
 
 	/**
@@ -4255,7 +4258,8 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 			final CollectableComponentModel clctcompmodel = clctcompmodelprovider.getCollectableComponentModelFor(sUsageCriteriaFieldName);
 			if (clctcompmodel != null) {
 				LOG.debug("add listener for field " + clctcompmodel.getFieldName());
-				clctcompmodel.addCollectableComponentModelListener(clctcomplistener);
+				// clctcompmodel.addCollectableComponentModelListener(clctcomplistener);
+				ListenerUtil.registerCollectableComponentModelListener(clctcompmodel, null, clctcomplistener);
 			}
 		}
 	}
@@ -5497,16 +5501,19 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 
 	}
 
-	protected class GenericObjectCollectPanel extends CollectPanel<CollectableGenericObjectWithDependants> {
+	protected static class GenericObjectCollectPanel extends CollectPanel<CollectableGenericObjectWithDependants> {
+		
+		private final CollectableComboBox searchStateBox;
 
-		protected GenericObjectCollectPanel(boolean bSearch) {
+		protected GenericObjectCollectPanel(CollectableComboBox searchStateBox, boolean bSearch) {
 			super(bSearch);
+			this.searchStateBox = searchStateBox;
 		}
 
 		@Override
 		public SearchPanel newSearchPanel() {
 			final Collection<CollectableComponent> additionalSearchComponents = new ArrayList<CollectableComponent>();
-			additionalSearchComponents.add(getSearchStateBox());
+			additionalSearchComponents.add(searchStateBox);
 			return new GenericObjectSearchPanel(additionalSearchComponents);
 		}
 
@@ -5751,10 +5758,11 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	}
 
 
-	private class GenericObjectEditView extends DefaultEditView {
+	private static class GenericObjectEditView extends DefaultEditView {
 
-		protected GenericObjectEditView(JComponent compRoot, CollectableComponentsProvider clctcompprovider, boolean bForSearch, EntityAndFieldName initialFocusField) {
-			super(compRoot, clctcompprovider, newGenericObjectEditModel(clctcompprovider, bForSearch), initialFocusField);
+		protected GenericObjectEditView(JComponent compRoot, CollectableComponentsProvider clctcompprovider, 
+				EditModel model, boolean bForSearch, EntityAndFieldName initialFocusField) {
+			super(compRoot, clctcompprovider, model, initialFocusField);
 		}
 
 	} // inner class GenericObjectEditView
@@ -5762,7 +5770,12 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	@Override
 	public GenericObjectEditView newSearchEditView(LayoutRoot layoutroot) {
 		final JComponent compEdit = getSearchPanel().newEditComponent(layoutroot.getRootComponent());
-		return new GenericObjectEditView(compEdit, new GenericObjectCollectableComponentsProvider(layoutroot), true, layoutroot.getInitialFocusEntityAndFieldName());
+		final GenericObjectCollectableComponentsProvider prov = 
+				new GenericObjectCollectableComponentsProvider(layoutroot, getSearchStateBox());
+		final boolean forSearch = true;
+		return new GenericObjectEditView(compEdit, 
+				prov, newGenericObjectEditModel(prov, forSearch),
+				forSearch, layoutroot.getInitialFocusEntityAndFieldName());
 	}
 
 	private EditModel newGenericObjectEditModel(CollectableComponentsProvider clctcompprovider, boolean bForSearch) {
@@ -5806,18 +5819,21 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 
 	} //inner class GenericObjectSearchEditModel
 
-	private class GenericObjectCollectableComponentsProvider implements CollectableComponentsProvider {
+	private static class GenericObjectCollectableComponentsProvider implements CollectableComponentsProvider {
 
-		private CollectableComponentsProvider mainProvider;
+		private final CollectableComponentsProvider mainProvider;
 
-		public GenericObjectCollectableComponentsProvider(CollectableComponentsProvider provider) {
-			mainProvider = provider;
+		private final CollectableComboBox searchStateBox;
+
+		public GenericObjectCollectableComponentsProvider(CollectableComponentsProvider provider, CollectableComboBox searchStateBox) {
+			this.mainProvider = provider;
+			this.searchStateBox = searchStateBox;
 		}
 
 		@Override
 		public Collection<CollectableComponent> getCollectableComponents() {
 			Collection<CollectableComponent> mainComponents = mainProvider.getCollectableComponents();
-			mainComponents.add(getSearchStateBox());
+			mainComponents.add(searchStateBox);
 			return mainComponents;
 		}
 
@@ -5829,7 +5845,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 					 || NuclosEOField.STATEICON.getMetaData().getField().equals(sFieldName)) {
 				Collection<CollectableComponent> result = new ArrayList<CollectableComponent>();
 				result.addAll(mainProvider.getCollectableComponentsFor(sFieldName));
-				result.add(getSearchStateBox());
+				result.add(searchStateBox);
 				return result;
 			}
 			return mainProvider.getCollectableComponentsFor(sFieldName);

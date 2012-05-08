@@ -305,7 +305,7 @@ public class CollectableWYSIWYGLayoutEditor extends AbstractCollectableComponent
 		}
 
 		public void fireEditorChanged() {
-			helper.fireCollectableFieldChanged(this, null, null);
+			getModelHelper().fireCollectableFieldChanged(this, null, null);
 		}
 
 		public boolean isSendingCollectableFieldChangedInModel() {

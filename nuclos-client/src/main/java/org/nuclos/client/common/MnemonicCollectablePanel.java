@@ -240,7 +240,7 @@ public class MnemonicCollectablePanel extends DelegatingCollectablePanel {
 	    }
 	};
 		
-	private CollectableComponentModel clctcompmodel;
+	// private CollectableComponentModel clctcompmodel;
 	private Map<String, AttributeValueVO> vIds;
 	
 	/**
@@ -454,6 +454,11 @@ public class MnemonicCollectablePanel extends DelegatingCollectablePanel {
 		return (DefaultComboBoxModel) this.getJComboBox().getModel();
 	}
 
+	/**
+	 * @deprecated Use constructor to initialize the model. 
+	 * 		The model itself shouldn't be changed after construction of the view.
+	 */
+	/*
 	@Override
 	public void setModel(CollectableComponentModel clctcompmodel) {
 		if (clctcompmodel.isSearchModel() != this.isSearchComponent()) {
@@ -466,11 +471,7 @@ public class MnemonicCollectablePanel extends DelegatingCollectablePanel {
 		this.clctcompmodel = clctcompmodel;
 		this.clctcompmodel.addCollectableComponentModelListener(this);
 	}
-
-	@Override
-	public CollectableComponentModel getModel() {
-		return this.clctcompmodel;
-	}
+	 */
 
 	@Override
 	protected void setupJPopupMenuListener(JPopupMenuListener popupmenulistener) {

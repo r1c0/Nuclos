@@ -16,10 +16,13 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.ui.collect;
 
+import java.io.Closeable;
 import java.util.Collection;
 
+import org.apache.log4j.Logger;
 import org.nuclos.client.ui.collect.component.model.CollectableComponentModel;
 import org.nuclos.client.ui.collect.component.model.CollectableComponentModelListener;
+import org.nuclos.client.ui.gc.ListenerUtil;
 import org.nuclos.common.collect.collectable.Collectable;
 import org.nuclos.common2.SpringLocaleDelegate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,13 +32,19 @@ import org.springframework.beans.factory.annotation.Configurable;
  * common controller for the Search and Details panels.
  */
 @Configurable(preConstruction=true)
-public abstract class CommonController<Clct extends Collectable> {
+public abstract class CommonController<Clct extends Collectable> implements Closeable {
+	
+	private static final Logger LOG = Logger.getLogger(CommonController.class);
+	
+	//
 	
 	private boolean bChangeListenersAdded;
 	
-	private final CollectController<Clct> cc;
+	private CollectController<Clct> cc;
 	
 	private SpringLocaleDelegate localeDelegate;
+	
+	private boolean closed = false;
 	
 	public CommonController(CollectController<Clct> cc) {
 		this.cc = cc;
@@ -63,6 +72,26 @@ public abstract class CommonController<Clct extends Collectable> {
 	protected abstract void addAdditionalChangeListeners();
 
 	protected abstract void removeAdditionalChangeListeners();
+	
+	@Override
+	public void close() {
+		if (!isClosed()) {
+			LOG.info("close(): " + this);
+			closed = true;
+			
+			removeAdditionalChangeListeners();
+			// getCollectableComponentModels().clear();
+			//
+			if (cc != null) {
+				cc.close();
+			}
+			cc = null;
+		}
+	}
+	
+	public final boolean isClosed() {
+		return closed;
+	}
 
 	/**
 	 * @return Have the change listeners for the Details tab been added?
@@ -108,7 +137,8 @@ public abstract class CommonController<Clct extends Collectable> {
 	 */
 	protected final void addCollectableComponentModelListeners() {
 		for (CollectableComponentModel clctcompmodel : this.getCollectableComponentModels()) {
-			clctcompmodel.addCollectableComponentModelListener(this.getCollectableComponentModelListener());
+			// clctcompmodel.addCollectableComponentModelListener(this.getCollectableComponentModelListener());
+			ListenerUtil.registerCollectableComponentModelListener(clctcompmodel, null, getCollectableComponentModelListener());
 		}
 	}
 

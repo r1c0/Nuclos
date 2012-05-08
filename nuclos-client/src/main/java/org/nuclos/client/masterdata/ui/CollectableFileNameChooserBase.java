@@ -132,6 +132,9 @@ public abstract class CollectableFileNameChooserBase extends AbstractCollectable
 
 	@Override
 	public TableCellRenderer getTableCellRenderer(boolean subform) {
+		 /* 
+		  * TODO: This REALLY should be static - but how to archive this? (tp)
+		  */
 		return new CollectableComponentDefaultTableCellRenderer() {
 			@Override
 			public Component getTableCellRendererComponent(JTable tbl, Object oValue, boolean bSelected, boolean bHasFocus, int iRow, int iColumn) {
