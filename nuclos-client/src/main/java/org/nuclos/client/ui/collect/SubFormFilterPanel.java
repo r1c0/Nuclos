@@ -103,7 +103,7 @@ public class SubFormFilterPanel extends JXCollapsiblePane implements Closeable {
 		// Close is needed for avoiding memory leaks
 		// If you want to change something here, please consult me (tp).  
 		if (!closed) {
-			LOG.info("close(): " + this);
+			LOG.debug("close(): " + this);
 			filterPanel = null;
 			columnModel = null;
 			column2component.clear();

@@ -202,7 +202,7 @@ public abstract class SubFormController extends Controller
 	@Override
 	public void close() {
 		if (!closed) {
-			LOG.info("close(): " + this);
+			LOG.debug("close(): " + this);
 			removeListSelectionListener(this.getJTable());
 			subform.removeSubFormToolListener(subformToolListener);
 			

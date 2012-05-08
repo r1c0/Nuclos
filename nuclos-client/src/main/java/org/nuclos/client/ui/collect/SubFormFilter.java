@@ -135,7 +135,7 @@ public class SubFormFilter implements Closeable, IReferenceHolder {
 		// Close is needed for avoiding memory leaks
 		// If you want to change something here, please consult me (tp).
 		if (!closed) {
-			LOG.info("close(): " + this);
+			LOG.debug("close(): " + this);
 			column2component.clear();
 			column2component = null;
 			subform = null;

@@ -100,7 +100,7 @@ public class SubformRowHeader implements Closeable {
 		// Close is needed for avoiding memory leaks
 		// If you want to change something here, please consult me (tp). 
 		if (!closed) {
-			LOG.info("close(): " + this);
+			LOG.debug("close(): " + this);
 			// headerTable = null;
 			scrlpnOriginalTable = null;
 			externalTable = null;
