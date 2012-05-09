@@ -32,16 +32,19 @@ import org.nuclos.common.collection.Pair;
  *
  * @author	<a href="mailto:Lars.Rueckemann@novabit.de">Lars Rueckemann</a>
  * @author	<a href="mailto:Christoph.Radig@novabit.de">Christoph Radig</a>
- * @version 01.00.00
+ * @author Thomas Pasch
  */
 public class DateUtils {
 
+	private static final int WEEK_START_DAY = Calendar.MONDAY;
+	
 	/**
 	 * the number of milliseconds per day (where a day has 24 hours).
 	 */
 	public static final int MILLISECONDS_PER_DAY = 24 * 60 * 60 * 1000;
 
 	private DateUtils() {
+		// Never invoked.
 	}
 
 	/**
@@ -354,6 +357,132 @@ public class DateUtils {
 		}
 		
 		return result.getTime();
+	}
+
+	/**
+	 * Give the duration in millis that passes from the quantized
+	 * date before the given date to the next quantized date after the given date.
+	 */
+	public static long getMillis(Date date, int quantizer) {
+		final Calendar cal = Calendar.getInstance();
+		cal.setTime(date);
+		final int quant = cal.get(quantizer);
+		// side effect: modifies cal
+		dateFromQuant(cal, quant, quantizer);
+		final long low = cal.getTimeInMillis();
+		
+		// cal.set(quantizer, quant + 1);
+		montoneAdd(cal, quantizer, 1);
+		dateFromQuant(cal, cal.get(quantizer), quantizer);
+		return cal.getTimeInMillis() - low;
+	}
+	
+	/**
+	 * Return the next quantized date before than given date.
+	 */
+	public static Date floorBound(Date date, int quantizer) {
+		final Calendar cal = Calendar.getInstance();
+		cal.setTime(date);
+		final int quant = cal.get(quantizer);
+		return dateFromQuant(cal, quant, quantizer);
+	}
+	
+	/**
+	 * Return the next quantized date after than given date.
+	 */
+	public static Date ceilBound(Date date, int quantizer) {
+		final Calendar cal = Calendar.getInstance();
+		cal.setTime(date);
+		// final int quant = cal.get(quantizer) + 1;
+		// cal.set(quantizer, cal.get(quantizer) + 1);
+		montoneAdd(cal, quantizer, 1);
+		return dateFromQuant(cal, cal.get(quantizer), quantizer);
+	}
+	
+	private static Date dateFromQuant(Calendar cal, int quant, int quantizer) {
+		switch (quantizer) {
+		case Calendar.WEEK_OF_YEAR:
+			cal.set(Calendar.DAY_OF_WEEK, 0);
+			cal.set(Calendar.HOUR_OF_DAY, 0);
+			cal.set(Calendar.MINUTE, 0);
+			cal.set(Calendar.SECOND, 1);
+			cal.set(Calendar.MILLISECOND, 0);
+			
+			cal.set(Calendar.WEEK_OF_YEAR, quant);
+			cal.set(Calendar.DAY_OF_WEEK, WEEK_START_DAY);
+			break;
+		case Calendar.DAY_OF_WEEK:
+			cal.set(Calendar.HOUR_OF_DAY, 0);
+			cal.set(Calendar.MINUTE, 0);
+			cal.set(Calendar.SECOND, 1);
+			cal.set(Calendar.MILLISECOND, 0);
+			
+			cal.set(Calendar.DAY_OF_WEEK, quant);
+			break;
+		case Calendar.DAY_OF_MONTH:
+			cal.set(Calendar.HOUR_OF_DAY, 0);
+			cal.set(Calendar.MINUTE, 0);
+			cal.set(Calendar.SECOND, 1);
+			cal.set(Calendar.MILLISECOND, 0);
+			
+			cal.set(Calendar.DAY_OF_MONTH, quant);
+			break;
+		case Calendar.MONTH:
+			cal.set(Calendar.DAY_OF_MONTH, 1);
+			cal.set(Calendar.HOUR_OF_DAY, 0);
+			cal.set(Calendar.MINUTE, 0);
+			cal.set(Calendar.SECOND, 1);
+			cal.set(Calendar.MILLISECOND, 0);
+			
+			cal.set(Calendar.MONTH, quant);
+			break;
+		case Calendar.YEAR:
+			cal.set(Calendar.DAY_OF_MONTH, 1);
+			cal.set(Calendar.HOUR_OF_DAY, 0);
+			cal.set(Calendar.MINUTE, 0);
+			cal.set(Calendar.SECOND, 1);
+			cal.set(Calendar.MILLISECOND, 0);
+			cal.set(Calendar.MONTH, 0);
+			break;
+		default:
+			throw new IllegalArgumentException();
+		}
+		final Date result = cal.getTime();
+		return result;
+	}
+	
+	/**
+	 * Add a amount of field to given Calendar. 
+	 * The returned date is always after given date if amount is positive.
+	 */
+	public static void montoneAdd(Calendar cal, int field, int amount) {
+		final long millis = cal.getTimeInMillis();
+		cal.add(field, amount);
+		while (cal.getTimeInMillis() < millis) {
+			switch (field) {
+			case Calendar.WEEK_OF_YEAR:
+				field = Calendar.YEAR;
+				cal.add(field, 1);
+				break;
+			case Calendar.DAY_OF_WEEK:
+				field = Calendar.WEEK_OF_YEAR;
+				cal.add(field, 1);
+				break;
+			case Calendar.DAY_OF_MONTH:
+				field = Calendar.MONTH;
+				cal.add(field, 1);
+				break;
+			case Calendar.MONTH:
+				field = Calendar.YEAR;
+				cal.add(field, 1);
+				break;
+			case Calendar.YEAR:
+				// do nothing
+				break;
+			default:
+				throw new IllegalArgumentException();
+			}
+		}
 	}
 
 }	// class DateUtils

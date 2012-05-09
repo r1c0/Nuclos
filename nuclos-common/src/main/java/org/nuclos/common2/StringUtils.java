@@ -713,6 +713,27 @@ public class StringUtils {
 	public static int compareIgnoreCase(String s1, String s2) {
 		return (s1 == null) ? ((s2 == null) ? 0 : 1) : s1.compareToIgnoreCase(s2);
 	}
+	
+	public static int compare(String s1, String s2) {
+		int result;
+		if (s1 != null) {
+			if (s2 != null) {
+				result = s1.compareTo(s2);
+			}
+			else {
+				result = -1;
+			}
+		}
+		else {
+			if (s2 != null) {
+				result = 1;
+			}
+			else {
+				result = 0;
+			}
+		}
+		return result;
+	}
 
 	private static final int MAX_SQL_ID_LENGTH = 21;
 
