@@ -16,6 +16,7 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.ui.model;
 
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
@@ -35,14 +36,10 @@ import javax.swing.DefaultListModel;
 public class CommonDefaultListModel<E> extends DefaultListModel implements MutableListModel<E> {
 
 	public CommonDefaultListModel() {
-		super();
 	}
 
 	public CommonDefaultListModel(List<E> lst) {
-		super();
-		for (Iterator<E> iter = lst.iterator(); iter.hasNext();) {
-			this.addElement(iter.next());
-		}
+		replace(lst);
 	}
 
 	@Override
@@ -53,6 +50,14 @@ public class CommonDefaultListModel<E> extends DefaultListModel implements Mutab
 	@Override
 	public E remove(int i) {
 		return (E) super.remove(i);
+	}
+
+	@Override
+	public void replace(Collection<E> newCollection) {
+		removeAllElements();
+		for (E elem: newCollection) {
+			this.addElement(elem);
+		}
 	}
 
 }  // class CommonDefaultListModel

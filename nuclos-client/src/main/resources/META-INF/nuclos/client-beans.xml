@@ -459,8 +459,6 @@
 
 	<bean id="moduleProvider" class="org.nuclos.client.genericobject.Modules" />
 
-	<bean id="metaDataProvider" class="org.nuclos.client.common.MetaDataClientProvider" />
-
 	<bean id="serviceLocator" class="org.nuclos.common2.ServiceLocator"/>
 	
 </beans>

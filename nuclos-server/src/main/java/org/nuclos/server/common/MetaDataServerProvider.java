@@ -52,11 +52,13 @@ import org.nuclos.server.genericobject.Modules;
 import org.nuclos.server.jms.NuclosJMSUtils;
 import org.nuclos.server.report.SchemaCache;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 /**
  * An caching singleton for accessing the meta data information
  * on the server side.
  */
+@Component("metaDataProvider")
 public class MetaDataServerProvider extends AbstractProvider implements MetaDataProvider, CommonMetaDataServerProvider {
 	
 	private static MetaDataServerProvider INSTANCE;
