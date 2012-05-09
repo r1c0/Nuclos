@@ -1110,12 +1110,12 @@ public class LayoutMLGenerator implements LayoutMLConstants {
 
 		block.append("<" + ELEMENT_TABBEDPANECONSTRAINTS + " ");
 		block.append(ATTRIBUTE_TITLE + "=\"");
-		block.append(title);
+		block.append(StringUtils.xmlEncode(title));
 		block.append("\" " + ATTRIBUTE_ENABLED + "=\"");
 		block.append(enabled ? ATTRIBUTEVALUE_YES : ATTRIBUTEVALUE_NO);
 		if(internalname != null) {
 			block.append("\" " + ATTRIBUTE_INTERNALNAME + "=\"");
-			block.append(internalname);
+			block.append(StringUtils.xmlEncode(internalname));
 		}
 		if(mnemonic != null && mnemonic > 0) {			
 			block.append("\" " + ATTRIBUTE_MNEMONIC + "=\"");
@@ -1234,7 +1234,7 @@ public class LayoutMLGenerator implements LayoutMLConstants {
 		if (cp.getProperty(WYSIWYGStaticTextfield.PROPERTY_DESCRIPTION) != null && cp.getProperty(WYSIWYGStaticTextfield.PROPERTY_DESCRIPTION).getValue() != null) {
 			LayoutMLBlock block = new LayoutMLBlock(blockDeep);
 			block.append("<" + ELEMENT_DESCRIPTION + ">");
-			block.append((String) cp.getProperty(WYSIWYGStaticTextfield.PROPERTY_DESCRIPTION).getValue());
+			block.append(StringUtils.xmlEncode((String) cp.getProperty(WYSIWYGStaticTextfield.PROPERTY_DESCRIPTION).getValue()));
 			block.append("</" + ELEMENT_DESCRIPTION + ">");
 			return block.getStringBuffer();
 		}
@@ -1384,7 +1384,7 @@ public class LayoutMLGenerator implements LayoutMLConstants {
 		LayoutMLBlock block = new LayoutMLBlock(blockDeep);
 
 		if (layoutMLRule.getRuleName().length() > 0)
-			block.append("<" + ELEMENT_RULE + " " + ATTRIBUTE_NAME + "=\"" + layoutMLRule.getRuleName() + "\">");
+			block.append("<" + ELEMENT_RULE + " " + ATTRIBUTE_NAME + "=\"" + StringUtils.xmlEncode(layoutMLRule.getRuleName()) + "\">");
 		else
 			block.append("<" + ELEMENT_RULE + ">");
 
@@ -1439,7 +1439,7 @@ public class LayoutMLGenerator implements LayoutMLConstants {
 		if (layoutMLRuleCondition.getConditionString().length() > 0) {
 			block.append("<" + ELEMENT_CONDITION + ">");
 			block.linebreak();
-			block.append(layoutMLRuleCondition.getConditionString());
+			block.append(StringUtils.xmlEncode(layoutMLRuleCondition.getConditionString()));
 			block.linebreak();
 			block.append("<" + ELEMENT_CONDITION + ">");
 			block.linebreak();
@@ -1504,7 +1504,7 @@ public class LayoutMLGenerator implements LayoutMLConstants {
 				}
 				block.append(ATTRIBUTE_TARGETCOMPONENT + "=\"" + layoutMLRuleAction.getTargetComponent() + "\" ");
 				if (!StringUtils.isNullOrEmpty(layoutMLRuleAction.getParameterForSourceComponent())) {
-					block.append(ATTRIBUTE_PARAMETER_FOR_SOURCECOMPONENT + "=\"" + layoutMLRuleAction.getParameterForSourceComponent() + "\"");
+					block.append(ATTRIBUTE_PARAMETER_FOR_SOURCECOMPONENT + "=\"" + StringUtils.xmlEncode(layoutMLRuleAction.getParameterForSourceComponent()) + "\"");
 				}
 				block.append("/>");
 			} else if (layoutMLRuleAction.getRuleAction().equals(LayoutMLRuleAction.TRANSFER_LOOKEDUP_VALUE)) {
@@ -1532,7 +1532,7 @@ public class LayoutMLGenerator implements LayoutMLConstants {
 		LayoutMLBlock block = new LayoutMLBlock(blockDeep);
 
 		block.append("<" + ELEMENT_VALUELISTPROVIDER);
-		block.append(" type=\"" + wysiwygStaticValuelistProvider.getType() + "\"");
+		block.append(" type=\"" + StringUtils.xmlEncode(wysiwygStaticValuelistProvider.getType()) + "\"");
 
 		if (wysiwygStaticValuelistProvider.getAllWYSIYWYGParameter().size() == 0) {
 			block.append("/>");
@@ -1559,9 +1559,9 @@ public class LayoutMLGenerator implements LayoutMLConstants {
 		LayoutMLBlock block = new LayoutMLBlock(blockDeep);
 
 		block.append("<" + ELEMENT_OPTIONS);
-		block.append(" name=\"" + options.getName() + "\"");
-		block.append(" default=\"" + options.getDefaultValue() + "\"");
-		block.append(" orientation=\"" + options.getOrientation() + "\"");
+		block.append(" name=\"" + StringUtils.xmlEncode(options.getName()) + "\"");
+		block.append(" default=\"" + StringUtils.xmlEncode(options.getDefaultValue()) + "\"");
+		block.append(" orientation=\"" + StringUtils.xmlEncode(options.getOrientation()) + "\"");
 		block.append(">");
 
 		for (WYSIWYGOption option : options.getAllOptionValues()) {
@@ -1586,11 +1586,11 @@ public class LayoutMLGenerator implements LayoutMLConstants {
 
 		block.append("<" + ELEMENT_OPTION);
 		if (!option.getName().equals(""))
-			block.append(" " + ATTRIBUTE_NAME + "=\"" + option.getName() + "\"");
-		block.append(" " + ATTRIBUTE_VALUE + "=\"" + option.getValue() + "\"");
-		block.append(" " + ATTRIBUTE_LABEL + "=\"" + option.getLabel() + "\"");
+			block.append(" " + ATTRIBUTE_NAME + "=\"" + StringUtils.xmlEncode(option.getName()) + "\"");
+		block.append(" " + ATTRIBUTE_VALUE + "=\"" + StringUtils.xmlEncode(option.getValue()) + "\"");
+		block.append(" " + ATTRIBUTE_LABEL + "=\"" + StringUtils.xmlEncode(option.getLabel()) + "\"");
 		if (!option.getMnemonic().equals(""))
-			block.append(" " + ATTRIBUTE_MNEMONIC + "=\"" + option.getMnemonic() + "\"");
+			block.append(" " + ATTRIBUTE_MNEMONIC + "=\"" + StringUtils.xmlEncode(option.getMnemonic()) + "\"");
 		block.append(">");
 		block.append(getLayoutMLTranslations(option.getTranslations(), blockDeep + 1));
 		block.linebreak();
@@ -1613,8 +1613,8 @@ public class LayoutMLGenerator implements LayoutMLConstants {
 
 		for (WYSIYWYGPropertySet propertySet : vector) {
 			block.append("<" + ELEMENT_PROPERTY);
-			block.append(" " + ATTRIBUTE_NAME + "=\"" + propertySet.getPropertyName() + "\"");
-			block.append(" " + ATTRIBUTE_VALUE + "=\"" + propertySet.getPropertyValue() + "\"");
+			block.append(" " + ATTRIBUTE_NAME + "=\"" + StringUtils.xmlEncode(propertySet.getPropertyName()) + "\"");
+			block.append(" " + ATTRIBUTE_VALUE + "=\"" + StringUtils.xmlEncode(propertySet.getPropertyValue()) + "\"");
 			block.append("/>");
 			if (vector.iterator().hasNext())
 				block.linebreak();
@@ -1636,8 +1636,8 @@ public class LayoutMLGenerator implements LayoutMLConstants {
 		/** <dependency dependant-field="process" depends-on="module"/> */
 
 		block.append("<" + ELEMENT_PARAMETER + " ");
-		block.append(ATTRIBUTE_NAME + "=\"" + wysiwygParameter.getParameterName() + "\" ");
-		block.append(ATTRIBUTE_VALUE + "=\"" + wysiwygParameter.getParameterValue() + "\" ");
+		block.append(ATTRIBUTE_NAME + "=\"" + StringUtils.xmlEncode(wysiwygParameter.getParameterName()) + "\" ");
+		block.append(ATTRIBUTE_VALUE + "=\"" + StringUtils.xmlEncode(wysiwygParameter.getParameterValue()) + "\" ");
 		block.append("/>");
 
 		return block.getStringBuffer();
