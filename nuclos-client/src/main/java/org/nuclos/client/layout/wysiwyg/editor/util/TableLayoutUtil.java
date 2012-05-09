@@ -56,6 +56,7 @@ import org.nuclos.client.layout.wysiwyg.editor.util.valueobjects.LayoutCell;
 import org.nuclos.client.layout.wysiwyg.editor.util.valueobjects.TableLayoutPanel;
 import org.nuclos.client.layout.wysiwyg.editor.util.valueobjects.layoutmlrules.LayoutMLRule;
 import org.nuclos.client.layout.wysiwyg.editor.util.valueobjects.layoutmlrules.LayoutMLRuleAction;
+import org.nuclos.client.layout.wysiwyg.editor.util.valueobjects.layoutmlrules.LayoutMLRuleActions;
 import org.nuclos.client.ui.Errors;
 import org.nuclos.common.NuclosBusinessException;
 import org.nuclos.common2.StringUtils;
@@ -538,6 +539,14 @@ public class TableLayoutUtil {
 	 * @param c
 	 */
 	public void removeComponentFromLayout(WYSIWYGComponent c) {
+		removeComponentFromLayout(c, false);
+	}
+
+	/**
+	 * This method removes a {@link WYSIWYGComponent} from the {@link TableLayoutPanel}.
+	 * @param c
+	 */
+	public void removeComponentFromLayout(WYSIWYGComponent c, boolean bShowExceptions) {
 		TableLayoutConstraints constraint = c.getParentEditor().getTableLayoutUtil().getConstraintForComponent(c);
 		changeToAbsoluteSizeForCellWithPreferredSize(c, constraint );
 		TableLayoutUtil tableLayoutUtil = c.getParentEditor().getTableLayoutUtil();
@@ -553,13 +562,17 @@ public class TableLayoutUtil {
 				if (c instanceof WYSIWYGSubForm) {
 					if (!StringUtils.isNullOrEmpty(root.getInitialFocusComponent().getEntity())) {
 						if (((String)c.getProperties().getProperty(WYSIWYGSubForm.PROPERTY_ENTITY).getValue()).equals(root.getInitialFocusComponent().getEntity())) {
-							throw new Exception(TABLELAYOUT_UTIL.ERRORMESSAGE_SUBFORM_NOT_DELETABLE_TARGET_OF_INITIAL_FOCUS);
+							if (bShowExceptions)
+								throw new Exception(TABLELAYOUT_UTIL.ERRORMESSAGE_SUBFORM_NOT_DELETABLE_TARGET_OF_INITIAL_FOCUS);
+							root.setInitialFocusComponent(null); // @see NUCLOSINT-1468
 						}
 					}
 				}
 				else if (c instanceof WYSIWYGCollectableComponent) {
 					if (((String)c.getProperties().getProperty(WYSIWYGCollectableComponent.PROPERTY_NAME).getValue()).equals(root.getInitialFocusComponent().getName())) {
-						throw new Exception(TABLELAYOUT_UTIL.ERRORMESSAGE_COMPONENT_NOT_DELETABLE_TARGET_OF_INITIAL_FOCUS);
+						if (bShowExceptions)
+							throw new Exception(TABLELAYOUT_UTIL.ERRORMESSAGE_COMPONENT_NOT_DELETABLE_TARGET_OF_INITIAL_FOCUS);
+						root.setInitialFocusComponent(null); // @see NUCLOSINT-1468
 					}
 				}
 			}
@@ -572,14 +585,17 @@ public class TableLayoutUtil {
 				if (o instanceof WYSIWYGComponent) {
 					WYSIWYGComponent comp = (WYSIWYGComponent)o;
 					if (comp.getLayoutMLRulesIfCapable() != null) {
-						for (LayoutMLRule rule : comp.getLayoutMLRulesIfCapable().getRules()) {
-							for (LayoutMLRuleAction action : rule.getLayoutMLRuleActions().getSingleActions()) {
+						for (LayoutMLRule rule : new Vector<LayoutMLRule>(comp.getLayoutMLRulesIfCapable().getRules())) {
+							LayoutMLRuleActions actions = rule.getLayoutMLRuleActions();
+							for (LayoutMLRuleAction action : new Vector<LayoutMLRuleAction>(actions.getSingleActions())) {
 								if (c instanceof WYSIWYGSubForm) {
 									WYSIWYGSubForm subForm = (WYSIWYGSubForm)c;
 									// NUCLEUSINT-436 action.getEntity may be null - but still valid
 									if (action.getEntity() != null) { 
 										if (action.getEntity().equals(subForm.getProperties().getProperty(WYSIWYGSubForm.PROPERTY_ENTITY).getValue())) {
+											if (bShowExceptions)
 												throw new Exception(TABLELAYOUT_UTIL.ERRORMESSAGE_SUBFORM_NOT_DELETEABLE_TARGET_OF_RULE);
+											actions.removeActionFromActions(action); // @see NUCLOSINT-1468
 										}
 									}
 								}
@@ -589,10 +605,16 @@ public class TableLayoutUtil {
 									if(!(c instanceof WYSIWYGCollectableLabel)) {
 										if(action.getTargetComponent().equals(
 											collectableComponent.getProperties().getProperty(WYSIWYGCollectableComponent.PROPERTY_NAME).getValue())) {
-											throw new Exception(TABLELAYOUT_UTIL.ERRORMESSAGE_COMPONENT_NOT_DELETABLE_TARGET_OF_RULE);
+											if (bShowExceptions)
+												throw new Exception(TABLELAYOUT_UTIL.ERRORMESSAGE_COMPONENT_NOT_DELETABLE_TARGET_OF_RULE);
+											actions.removeActionFromActions(action); // @see NUCLOSINT-1468
 										}
 									}
 								}
+							}
+
+							if (rule.getLayoutMLRuleActions().getSingleActions().isEmpty()) {
+								comp.getLayoutMLRulesIfCapable().clearRulesForComponent();
 							}
 						}
 					}
