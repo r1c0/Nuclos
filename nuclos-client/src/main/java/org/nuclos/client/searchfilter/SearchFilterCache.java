@@ -274,6 +274,9 @@ public class SearchFilterCache {
 	}
 
 	public void removeFilter(SearchFilter searchFilter) {
+		if (searchFilter == null) 
+			return;
+		
 		final Pair<String, String> pIdentifier = new Pair<String, String>(searchFilter.getName(), searchFilter.getOwner());
 		if (searchFilter instanceof EntitySearchFilter) {
 			for (Pair<String, String> pKey : mpEntitySearchFilter.keySet()) {
