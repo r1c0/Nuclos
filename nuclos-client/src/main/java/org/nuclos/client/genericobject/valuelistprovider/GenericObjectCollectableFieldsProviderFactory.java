@@ -65,9 +65,7 @@ public class GenericObjectCollectableFieldsProviderFactory implements Collectabl
 	public CollectableFieldsProvider newDefaultCollectableFieldsProvider(String sEntityName, String sFieldName) {
 		final CollectableFieldsProvider result;
 		if (sEntityName == null || sEntityName.equals(clcte.getName())) {
-			/** @todo this cast might fail if the parameter in the ctor isn't right */
-			final CollectableGenericObjectEntityField clctef = (CollectableGenericObjectEntityField) clcte.getEntityField(sFieldName);
-			result = new GenericObjectCollectableFieldsProvider(clctef);
+			result = new GenericObjectCollectableFieldsProvider(clcte.getEntityField(sFieldName));
 		}
 		else {
 			result = MasterDataCollectableFieldsProviderFactory.newMasterDataCollectableFieldsProvider(sEntityName, sFieldName);
