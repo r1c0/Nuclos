@@ -445,7 +445,15 @@ public class ProcessorFactorySingleton {
 	public DynamicEntityObjectProcessor newDynamicEntityObjectProcessor(EntityMetaDataVO eMeta, Collection<EntityFieldMetaDataVO> colEfMeta) {
 		final Class<? extends IDalVO> type = EntityObjectVO.class;
 		final ProcessorConfiguration config = newProcessorConfiguration(type, eMeta, colEfMeta, false);
-		return new DynamicEntityObjectProcessor(config);
+		
+		final DynamicEntityObjectProcessor result = new DynamicEntityObjectProcessor(config);
+		
+		// HACK: force spring, as @Autowired on EntityObjectProcessor does not work (tp)
+		result.setDataBaseHelper(dataBaseHelper);
+		result.setTableAliasSingleton(tableAliasSingleton);
+		result.setDatasourceServerUtils(datasourceServerUtils);
+		
+		return result;
 	}
 
 	public ImportObjectProcessor newImportObjectProcessor(EntityMetaDataVO eMeta, Collection<EntityFieldMetaDataVO> colEfMeta, ImportStructure structure) {
