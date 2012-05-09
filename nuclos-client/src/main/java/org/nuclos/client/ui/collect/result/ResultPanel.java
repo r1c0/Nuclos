@@ -317,12 +317,10 @@ public class ResultPanel<Clct extends Collectable> extends JPanel {
 		this.btnSelectColumns.setIcon(Icons.getInstance().getIconSelectVisibleColumns16());
 		this.btnSelectColumns.setText(localeDelegate.getMessage("ResultPanel.11","Spalten ein-/ausblenden"));
 
-		//result.addSeparator();
-		//result.add(btnExport);
-		//result.add(btnImport);
-		addPopupExtraSeparator();
-		addPopupExtraMenuItem(btnExport);
-		addPopupExtraMenuItem(btnImport);
+		// disabled 	NUCLOSINT-1480
+		//addPopupExtraSeparator();
+		//addPopupExtraMenuItem(btnExport);
+		//addPopupExtraMenuItem(btnImport);
 
 		this.btnExport.setName("btnExport");
 		this.btnExport.setIcon(Icons.getInstance().getIconExport16());
