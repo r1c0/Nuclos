@@ -274,7 +274,7 @@ public class ComponentPopUp {
 		catch(NuclosBusinessException e) {
 			Errors.getInstance().showExceptionDialog(null, e);
 		}
-		tableLayoutUtil.removeComponentFromLayout(wysiwygcomponent);
+		tableLayoutUtil.removeComponentFromLayout(wysiwygcomponent, true);
 	}
 
 	/**
