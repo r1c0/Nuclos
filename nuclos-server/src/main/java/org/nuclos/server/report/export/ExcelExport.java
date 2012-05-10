@@ -37,20 +37,27 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.NuclosFile;
 import org.nuclos.common.collect.collectable.CollectableFieldFormat;
 import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.exception.CommonBusinessException;
+import org.nuclos.server.masterdata.MasterDataWrapper;
+import org.nuclos.server.masterdata.ejb3.MasterDataFacadeLocal;
 import org.nuclos.server.report.Export;
 import org.nuclos.server.report.NuclosReportException;
 import org.nuclos.server.report.ReportFieldDefinition;
 import org.nuclos.server.report.ReportFieldDefinitionFactory;
 import org.nuclos.server.report.ejb3.DatasourceFacadeLocal;
+import org.nuclos.server.report.ejb3.ReportFacadeLocal;
 import org.nuclos.server.report.valueobject.ReportOutputVO;
+import org.nuclos.server.report.valueobject.ReportVO;
+import org.nuclos.server.report.valueobject.ReportVO.OutputType;
 import org.nuclos.server.report.valueobject.ResultColumnVO;
 import org.nuclos.server.report.valueobject.ResultVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 @Configurable
 public class ExcelExport implements Export {
@@ -59,6 +66,10 @@ public class ExcelExport implements Export {
 
 	private DatasourceFacadeLocal datasourceFacade;
 
+	private MasterDataFacadeLocal masterdataFacade;
+	
+	private ReportFacadeLocal reportFacade;
+	
 	public ExcelExport(ReportOutputVO.Format format) {
 		super();
 		this.format = format;
@@ -67,6 +78,16 @@ public class ExcelExport implements Export {
 	@Autowired
 	public void setDatasourceFacade(DatasourceFacadeLocal datasourceFacade) {
 		this.datasourceFacade = datasourceFacade;
+	}
+	
+	@Autowired
+	public void setMasterdataFacade(MasterDataFacadeLocal masterdatafacade) {
+		this.masterdataFacade = masterdatafacade;
+	}
+	
+	@Autowired
+	public void setReportFacade(ReportFacadeLocal reportFacade) {
+		this.reportFacade = reportFacade;
 	}
 
 	@Override
@@ -91,8 +112,21 @@ public class ExcelExport implements Export {
 	public NuclosFile export(ReportOutputVO output, Map<String, Object> params, Locale locale, int maxrows) throws NuclosReportException {
 		ResultVO resultvo;
 		try {
-			resultvo = datasourceFacade.executeQuery(output.getDatasourceId(), params, maxrows);
-			return export(newWorkbook(output), output.getSheetname(), resultvo, ReportFieldDefinitionFactory.getFieldDefinitions(resultvo), output.getDescription() != null ? output.getDescription() : "Export");
+			String username = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
+			ReportVO r = MasterDataWrapper.getReportVO(masterdataFacade.get(NuclosEntity.REPORT.getEntityName(), output.getReportId()), username);
+			if (r.getOutputType() == OutputType.EXCEL) {
+				NuclosFile result = null;
+				Workbook wb = newWorkbook(output);
+				for (ReportOutputVO ro : reportFacade.getReportOutputs(output.getReportId())) {
+					resultvo = datasourceFacade.executeQuery(ro.getDatasourceId(), params, maxrows);
+					result = export(wb, ro.getSheetname(), resultvo, ReportFieldDefinitionFactory.getFieldDefinitions(resultvo), r.getName());
+				}
+				return result;
+			}
+			else {
+				resultvo = datasourceFacade.executeQuery(output.getDatasourceId(), params, maxrows);
+				return export(newWorkbook(output), output.getSheetname(), resultvo, ReportFieldDefinitionFactory.getFieldDefinitions(resultvo), output.getDescription() != null ? output.getDescription() : "Export");
+			}
 		}
 		catch (IOException e1) {
 			throw new NuclosReportException(e1);

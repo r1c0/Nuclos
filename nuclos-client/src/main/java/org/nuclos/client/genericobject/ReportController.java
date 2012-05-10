@@ -64,6 +64,7 @@ import org.nuclos.server.report.ejb3.ReportFacadeRemote;
 import org.nuclos.server.report.valueobject.DatasourceParameterVO;
 import org.nuclos.server.report.valueobject.ReportOutputVO;
 import org.nuclos.server.report.valueobject.ReportVO;
+import org.nuclos.server.report.valueobject.ReportVO.OutputType;
 import org.nuclos.server.report.valueobject.ResultColumnVO;
 import org.nuclos.server.report.valueobject.ResultVO;
 
@@ -364,6 +365,11 @@ public class ReportController extends Controller<JComponent> {
 									}
 
 									bIsFirstOfMany = false;
+									
+									// execute only one reportoutput for "Excel-Sammelausgabe"
+									if (reportvo.getOutputType() == OutputType.EXCEL) {
+										break;
+									}
 								}
 							}
 						}
