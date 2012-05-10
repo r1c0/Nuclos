@@ -100,11 +100,6 @@
     "nuclos_layoutUsage": [ { "entity": "nuclos_parameter", "searchScreen": false } ]
   },
   {
-    "name": "Währung",
-    "description": "Maske für Entität \"currency\"",
-    "nuclos_layoutUsage": [ { "entity": "nuclos_currency", "searchScreen": false } ]
-  },
-  {
     "name": "Datentyp",
     "description": "Maske für Datentypen",
     "nuclos_layoutUsage": [
