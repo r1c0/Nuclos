@@ -308,7 +308,7 @@ public class RuleCollectController extends EntityCollectController<CollectableRu
 		}
 
 		// fill usage panel:
-		this.subformctlUsage.fillSubForm(clct.getId());
+		this.subformctlUsage.fillSubForm(rulevo.getId());
 	}
 
 	@Override

@@ -2057,11 +2057,11 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	 * @param mpDependants
 	 * @throws NuclosBusinessException
 	 */
-	public void fillSubForm(DependantCollectableMasterDataMap mpDependants) throws NuclosBusinessException {
+	public void fillSubForm(Integer iParentId, DependantCollectableMasterDataMap mpDependants) throws NuclosBusinessException {
 		for (String sEntityName : mpDependants.getEntityNames()) {
 			DetailsSubFormController<CollectableEntityObject> sfcontroller = getMapOfSubFormControllersInDetails().get(sEntityName);
 			if (sfcontroller instanceof MasterDataSubFormController)
-				((MasterDataSubFormController)sfcontroller).fillSubForm(mpDependants.toDependantMasterDataMap().getData(sEntityName));
+				((MasterDataSubFormController)sfcontroller).fillSubForm(iParentId, mpDependants.toDependantMasterDataMap().getData(sEntityName));
 		}
 	}
 
@@ -2314,12 +2314,12 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 						if(clct.getId() == null && dependants.getAllData().size() != 0){
 							for (String entity: dependants.getEntityNames())
 								if (entity.equals(mdsubformctl.getCollectableEntity().getName()))
-									mdsubformctl.fillSubForm(dependants.getData(entity));
+									mdsubformctl.fillSubForm(null, dependants.getData(entity));
 						}
 						else if (clct.getId() == null) {
 							mdsubformctl.clear();
 							mdsubformctl.getSubForm().getJTable().setBackground(Color.WHITE);
-							mdsubformctl.fillSubForm(new ArrayList<EntityObjectVO>());
+							mdsubformctl.fillSubForm(null, new ArrayList<EntityObjectVO>());
 						}
 						else {
 							if (mdsubformctl.isChildSubForm())
@@ -2432,6 +2432,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	throws NuclosBusinessException {
 		final SubFormsInterruptableClientWorker sfClientWorker = new SubFormsInterruptableClientWorker() {
 			Collection<EntityObjectVO>	collmdcvo;
+			Integer iParentId;
 
 			@Override
 			public void init() throws CommonBusinessException {
@@ -2445,12 +2446,14 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 			public void work() throws NuclosBusinessException {
 				if(interrupted)
 					return;
-				else
+				else {
+					iParentId = clct.getId();
 					collmdcvo = (clct.getId() == null)
 					? new ArrayList<EntityObjectVO>()
 						: MasterDataDelegate.getInstance().getDependantMasterData(
 							mdsubformctl.getCollectableEntity().getName(),
 							mdsubformctl.getForeignKeyFieldName(), clct.getId());
+				}
 			}
 
 			@Override
@@ -2488,7 +2491,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 								if(permission == null)
 									mdsubformctl.clear();
 								else
-									mdsubformctl.fillSubForm(collmdcvo);
+									mdsubformctl.fillSubForm(iParentId, collmdcvo);
 								
 								mdsubformctl.getSubForm().setNewEnabled(new CollectControllerScriptContext(GenericObjectCollectController.this, new ArrayList<DetailsSubFormController<?>>(getSubFormControllersInDetails())));
 							}
@@ -2517,7 +2520,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		Collection<EntityObjectVO> collmdvo = clct.getGenericObjectWithDependantsCVO().getDependants().getData(entityName);
 		/** @todo check if this is correct: Shouldn't we initialize the subform even if it is empty? */
 		if(!collmdvo.isEmpty())
-			subformctl.fillSubForm(collmdvo);
+			subformctl.fillSubForm(null, collmdvo);
 
 		EntityMetaDataVO entityMeta = MetaDataClientProvider.getInstance().getEntity(entityName);
 		boolean hasLoggingFields = false;
