@@ -270,6 +270,10 @@ public class ResPlanController extends CustomComponentController {
 	public void refresh() {
 		execute(new RefreshTask(true));
 	}
+	
+	@Override
+	public void close() {
+	}
 
 	@Override
 	public JComponent getComponent() {

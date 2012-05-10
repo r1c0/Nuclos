@@ -18,6 +18,7 @@
 package org.nuclos.client.ui;
 
 import java.awt.Component;
+import java.io.Closeable;
 
 import javax.swing.ImageIcon;
 
@@ -25,7 +26,7 @@ import javax.swing.ImageIcon;
  * A common super class which is shared by CollectController and other top-level
  * components.
  */
-public abstract class TopController extends Controller {
+public abstract class TopController extends Controller implements Closeable {
 
 	public TopController(Component parent) {
 		super(parent);
@@ -38,10 +39,5 @@ public abstract class TopController extends Controller {
 	 * @return can the action be performed?
 	 */
 	public abstract boolean askAndSaveIfNecessary();
-	
-	/**
-	 * Writes the preferences of the controller
-	 */
-	public abstract void writePreferencesWhileClosing();
 	
 }

@@ -1092,11 +1092,6 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 		}
 	}
 
-	@Override
-	public void writePreferencesWhileClosing() {
-		this.close();
-	}
-
 	/**
 	 * @return Does this <code>CollectController</code> have a Search panel?
 	 */
