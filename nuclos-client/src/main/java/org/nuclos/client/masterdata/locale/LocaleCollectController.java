@@ -33,6 +33,8 @@ import org.nuclos.client.ui.collect.component.model.CollectableComponentModel;
 import org.nuclos.common.NuclosBusinessException;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.collection.CollectionUtils;
+import org.nuclos.common.dal.DalSupportForMD;
+import org.nuclos.common.dal.vo.EntityObjectVO;
 import org.nuclos.common2.LocaleInfo;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonFinderException;
@@ -151,16 +153,16 @@ public class LocaleCollectController extends MasterDataCollectController {
 	private void loadLocaleResources(String sParentLocale, Integer iLocale) throws CommonFinderException, CommonPermissionException, NuclosBusinessException {
 		if (!(iLocale == null && sParentLocale == null)) {
 			if (this.collresid != null && !this.collresid.isEmpty()) {
-				this.fillLocaleResourceSubForm(this.getResourcesForDefaultLocaleByIntId(collresid));
+				this.fillLocaleResourceSubForm(iLocale, this.getResourcesForDefaultLocaleByIntId(collresid));
 			}
 			else {
-				this.fillLocaleResourceSubForm(this.getLocaleResourcesFor(sParentLocale, iLocale));
+				this.fillLocaleResourceSubForm(iLocale, this.getLocaleResourcesFor(sParentLocale, iLocale));
 			}
 		}
 	}
 
-	public void fillLocaleResourceSubForm(Collection<LocaleResource> collres)  throws NuclosBusinessException {
-		((MasterDataSubFormController)this.getSubFormController(NuclosEntity.LOCALERESOURCE.getEntityName())).fillSubForm(getLocaleResourceAsVO(collres));
+	public void fillLocaleResourceSubForm(Integer iLocale, Collection<LocaleResource> collres)  throws NuclosBusinessException {
+		((MasterDataSubFormController)this.getSubFormController(NuclosEntity.LOCALERESOURCE.getEntityName())).fillSubForm(iLocale, getLocaleResourceAsVO(collres));
 	}
 
 	/**
@@ -168,13 +170,13 @@ public class LocaleCollectController extends MasterDataCollectController {
 	 * @param collres collection of <code>LocaleResource</code> objects
 	 * @return collection of <code>MasterDataVO</code>
 	 */
-	private Collection<MasterDataVO> getLocaleResourceAsVO(Collection<LocaleResource> collres){
-		List<MasterDataVO> result = new ArrayList<MasterDataVO>();
+	private Collection<EntityObjectVO> getLocaleResourceAsVO(Collection<LocaleResource> collres){
+		List<EntityObjectVO> result = new ArrayList<EntityObjectVO>();
 		for (LocaleResource lr : collres) {
-			MasterDataVO mdvo = lr.getMasterDataVO();
-			mdvo.setField(F_RESOURCEID, lr.getResourceId());
-			mdvo.setField(F_TEXT, lr.getResource());
-			mdvo.setField(F_LOCALETEXT, lr.getTranslatedResource());
+			EntityObjectVO mdvo = DalSupportForMD.getEntityObjectVO(NuclosEntity.LOCALERESOURCE.getEntityName(), lr.getMasterDataVO());
+			mdvo.getFields().put(F_RESOURCEID, lr.getResourceId());
+			mdvo.getFields().put(F_TEXT, lr.getResource());
+			mdvo.getFields().put(F_LOCALETEXT, lr.getTranslatedResource());
 			result.add(mdvo);
 		}
 		return result;

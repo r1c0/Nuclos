@@ -580,14 +580,14 @@ public class MasterDataSubFormController extends DetailsSubFormController<Collec
 	 * @param oParentId
 	 * @throws NuclosBusinessException
 	 */
-	public void fillSubForm(Object oParentId) throws NuclosBusinessException {
-		this.setParentId(oParentId);
+	public void fillSubForm(Integer iParentId) throws NuclosBusinessException {
+		this.setParentId(iParentId);
 
-		final Collection<EntityObjectVO> collmdvo = (oParentId == null) ?
+		final Collection<EntityObjectVO> collmdvo = (iParentId == null) ?
 				new ArrayList<EntityObjectVO>() :
-				MasterDataDelegate.getInstance().getDependantMasterData(this.getCollectableEntity().getName(), this.getForeignKeyFieldName(), oParentId);
+				MasterDataDelegate.getInstance().getDependantMasterData(this.getCollectableEntity().getName(), this.getForeignKeyFieldName(), iParentId);
 
-		this.fillSubForm(collmdvo);
+		this.fillSubForm(iParentId, collmdvo);
 	}
 
 	/**
@@ -595,7 +595,9 @@ public class MasterDataSubFormController extends DetailsSubFormController<Collec
 	 * @param collmdvo
 	 * @throws NuclosBusinessException
 	 */
-	public void fillSubForm(final Collection<EntityObjectVO> collmdvo) throws NuclosBusinessException {
+	public void fillSubForm(Integer iParentId, final Collection<EntityObjectVO> collmdvo) throws NuclosBusinessException {
+		this.setParentId(iParentId);
+		
 		UIUtils.invokeOnDispatchThread(new Runnable() {
 			@Override
 			public void run() {

@@ -145,7 +145,7 @@ public class NuclosEntityProcessStep extends NuclosEntityAbstractStep {
 		if (data != null) {
 			try {
 				subFormController.clear();
-				subFormController.fillSubForm(data);
+				subFormController.fillSubForm(null, data);
 			} catch (NuclosBusinessException e) {
 				throw new NuclosFatalException(e);
 			}

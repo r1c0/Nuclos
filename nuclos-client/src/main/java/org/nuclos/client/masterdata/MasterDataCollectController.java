@@ -950,23 +950,24 @@ public class MasterDataCollectController extends EntityCollectController<Collect
 			   final MasterDataSubFormController mdsubformctl = (MasterDataSubFormController) subformctl;
 			   for (String entity: dependants.getEntityNames())
 					if (entity.equals(mdsubformctl.getCollectableEntity().getName()))
-						mdsubformctl.fillSubForm(dependants.getData(entity));
+						mdsubformctl.fillSubForm(null, dependants.getData(entity));
 			}
 			else if (clct.getId() == null) {
 			   final MasterDataSubFormController mdsubformctl = (MasterDataSubFormController) subformctl;
 			   mdsubformctl.clear();
-			   mdsubformctl.fillSubForm(new ArrayList<EntityObjectVO>());
+			   mdsubformctl.fillSubForm(null, new ArrayList<EntityObjectVO>());
 		   }
 		   else {
 			   SubFormsInterruptableClientWorker sfClientWorker = new SubFormsInterruptableClientWorker() {
 			   	Collection<EntityObjectVO> collmdvo;
+			   	Integer iParentId;
 			   	MasterDataSubFormController mdsubformctl = (MasterDataSubFormController) subformctl;
 
 				   @Override
 				   public void init() throws CommonBusinessException {
 					   if(!interrupted){
 						   mdsubformctl.clear();
-						   mdsubformctl.fillSubForm(new ArrayList<EntityObjectVO>());
+						   mdsubformctl.fillSubForm(null, new ArrayList<EntityObjectVO>());
 						   mdsubformctl.getSubForm().setLockedLayer();
 					   }
 				   }
@@ -976,6 +977,7 @@ public class MasterDataCollectController extends EntityCollectController<Collect
 					   if (interrupted || isClosed()) {
 						   return;
 					   }
+					   iParentId = (Integer) clct.getId();
 					   collmdvo = (clct.getId() == null) ?
 							   new ArrayList<EntityObjectVO>() :
 								   MasterDataDelegate.getInstance().getDependantMasterData(mdsubformctl.getCollectableEntity().getName(), mdsubformctl.getForeignKeyFieldName(), clct.getId());
@@ -1003,7 +1005,7 @@ public class MasterDataCollectController extends EntityCollectController<Collect
 							   MasterDataCollectController.this.setDetailsChangedIgnored(true);
 							   try {
 								   mdsubformctl.getSubForm().getJTable().setBackground(Color.WHITE);
-								   mdsubformctl.fillSubForm(collmdvo);
+								   mdsubformctl.fillSubForm(iParentId, collmdvo);
 								   updateLoadedSubFormData(clct, collmdvo);
 							   }
 							   finally {
