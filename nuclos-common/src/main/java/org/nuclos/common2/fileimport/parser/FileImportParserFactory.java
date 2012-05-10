@@ -227,8 +227,8 @@ public class FileImportParserFactory {
 		public Object parse(String sValue, String sFormat) throws CommonParseException {
 			// ignore format
 			/** @todo use format here */
-			String[] trueValues = { "ja", "yes", "true", "1", "wahr", "y", "j" };
-			String[] falseValues = { "nein", "no", "false", "0", "falsch", "n", "n" };
+			String[] trueValues = { "ja", "yes", "true", "1", "wahr", "y", "j", "t" };
+			String[] falseValues = { "nein", "no", "false", "0", "falsch", "n", "n", "f" };
 
 			if (!StringUtils.looksEmpty(sValue)) {
 				for (String string : trueValues) {
