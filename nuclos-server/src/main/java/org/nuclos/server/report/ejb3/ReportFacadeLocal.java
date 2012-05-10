@@ -23,8 +23,6 @@ import javax.print.DocFlavor;
 import javax.print.attribute.AttributeSet;
 import javax.print.attribute.PrintRequestAttributeSet;
 
-import net.sf.jasperreports.engine.JasperPrint;
-
 import org.nuclos.common.NuclosFile;
 import org.nuclos.common2.exception.CommonFinderException;
 import org.nuclos.common2.exception.CommonPermissionException;
@@ -73,12 +71,10 @@ public interface ReportFacadeLocal {
 	 * @param mpParams parameters
 	 * @return report/form filled with data
 	 */
-	JasperPrint prepareReport(Integer iReportOutputId,
+	NuclosFile prepareReport(Integer iReportOutputId,
 		Map<String, Object> mpParams, Integer iMaxRowCount)
 		throws CommonFinderException, NuclosReportException,
 		CommonPermissionException;
-
-	NuclosFile prepareCsvReport(Integer iReportOutputId, Map<String, Object> mpParams, Integer iMaxRowCount) throws CommonFinderException, NuclosReportException, CommonPermissionException;
 
 	public NuclosReportRemotePrintService lookupDefaultPrintService();
 

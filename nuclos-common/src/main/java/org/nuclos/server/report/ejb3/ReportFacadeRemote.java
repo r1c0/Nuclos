@@ -16,6 +16,7 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.server.report.ejb3;
 
+import java.io.ObjectInputStream;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -24,11 +25,6 @@ import javax.annotation.security.RolesAllowed;
 import javax.print.DocFlavor;
 import javax.print.attribute.AttributeSet;
 import javax.print.attribute.PrintRequestAttributeSet;
-import javax.swing.table.TableModel;
-
-import net.sf.jasperreports.engine.JRException;
-import net.sf.jasperreports.engine.JasperPrint;
-import net.sf.jasperreports.engine.design.JasperDesign;
 
 import org.nuclos.common.NuclosFile;
 import org.nuclos.common.UsageCriteria;
@@ -48,6 +44,7 @@ import org.nuclos.server.report.NuclosReportRemotePrintService;
 import org.nuclos.server.report.valueobject.ReportOutputVO;
 import org.nuclos.server.report.valueobject.ReportVO;
 import org.nuclos.server.report.valueobject.ReportVO.ReportType;
+import org.nuclos.server.report.valueobject.ResultVO;
 import org.nuclos.server.ruleengine.NuclosBusinessRuleException;
 
 // @Remote
@@ -118,27 +115,16 @@ public interface ReportFacadeRemote {
 	ReportOutputVO getReportOutput(Integer iReportOutputId)
 		throws CommonFinderException, CommonPermissionException;
 
+	NuclosFile testReport(Integer iReportOutputId) throws NuclosReportException;
+	
 	/**
 	 * gets a report/form filled with data
 	 * @param iReportOutputId
 	 * @param mpParams parameters
 	 * @return report/form filled with data
 	 */
-	JasperPrint prepareReport(Integer iReportOutputId,
-		Map<String, Object> mpParams, Integer iMaxRowCount)
-		throws CommonFinderException, NuclosReportException,
+	NuclosFile prepareReport(Integer iReportOutputId, Map<String, Object> mpParams, Integer iMaxRowCount) throws CommonFinderException, NuclosReportException,
 		CommonPermissionException;
-
-	NuclosFile prepareCsvReport(Integer iReportOutputId, Map<String, Object> mpParams, Integer iMaxRowCount) throws CommonFinderException, NuclosReportException, CommonPermissionException;
-
-	/**
-	 * gets an empty report/form
-	 * @param iReportOutputId report output id
-	 * @return empty report/form
-	 */
-	JasperPrint prepareEmptyReport(Integer iReportOutputId)
-		throws CommonFinderException, NuclosReportException,
-		CommonBusinessException;
 
 	/**
 	 * gets search result report filled with data
@@ -153,27 +139,19 @@ public interface ReportFacadeRemote {
 	 * @return search result report filled with data
 	 */
 	@RolesAllowed("Login")
-	JasperPrint prepareSearchResult(CollectableSearchExpression clctexpr,
+	NuclosFile prepareSearchResult(CollectableSearchExpression clctexpr,
 		List<? extends CollectableEntityField> lstclctefweSelected,
-		Integer iModuleId, boolean bIncludeSubModules)
+		Integer iModuleId, boolean bIncludeSubModules, ReportOutputVO.Format format)
 		throws NuclosReportException;
 
 	/**
-	 * @return search result report filled with data from the JTable
+	 * Export any {@link ResultVO} (converted TableModels for instance)
+	 * 
+	 * @return Exported ResultVO as document 
 	 * @throws NuclosReportException
 	 */
 	@RolesAllowed("Login")
-	JasperPrint prepareTableModel(TableModel tableModel)
-		throws NuclosReportException;
-
-	/**
-	 * @return jasper design for the search result
-	 * @throws NuclosReportException
-	 * @throws FinderException
-	 */
-	@RolesAllowed("Login")
-	JasperDesign getJrDesignForSearchResult()
-		throws JRException, NuclosReportException;
+	NuclosFile prepareExport(ResultVO resultvo, ReportOutputVO.Format format) throws NuclosReportException;
 
 	/**
 	 * @param iReportId report/form id

@@ -25,10 +25,6 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import net.sf.jasperreports.engine.JRException;
-import net.sf.jasperreports.engine.JasperExportManager;
-import net.sf.jasperreports.engine.JasperPrint;
-
 import org.apache.log4j.Logger;
 import org.nuclos.common.NuclosFile;
 import org.nuclos.common.collect.collectable.CollectableFieldFormat;
@@ -113,27 +109,6 @@ public class ReportExportController {
 				params.put(dspvo.getParameter(), null);
 			}
 		}
-		if (output.getFormat() == ReportOutputVO.Format.CSV) {
-			return exportCSV(output.getId(), params);
-		}
-		else if (output.getFormat() == ReportOutputVO.Format.PDF) {
-			return exportPDF(output.getId(), params);
-		}
-		else {
-			throw new CommonBusinessException("Only csv and pdf output available");
-		}
-	}
-
-	private NuclosFile exportCSV(Integer reportOutputId, Map<String, Object> params) throws CommonBusinessException {
-		return ServerServiceLocator.getInstance().getFacade(ReportFacadeLocal.class).prepareCsvReport(reportOutputId, params, null);
-	}
-
-	private NuclosFile exportPDF(Integer reportOutputId, Map<String, Object> params) throws CommonBusinessException {
-		JasperPrint jp = ServerServiceLocator.getInstance().getFacade(ReportFacadeLocal.class).prepareReport(reportOutputId, params, null);
-		try {
-			return new NuclosFile("test.pdf", JasperExportManager.exportReportToPdf(jp));
-		} catch (JRException e) {
-			throw new CommonBusinessException(e);
-		}
+		return ServerServiceLocator.getInstance().getFacade(ReportFacadeLocal.class).prepareReport(output.getId(), params, null);
 	}
 }

@@ -26,11 +26,6 @@ import javax.print.DocFlavor;
 import javax.print.PrintService;
 import javax.print.attribute.AttributeSet;
 import javax.print.attribute.PrintRequestAttributeSet;
-import javax.swing.table.TableModel;
-
-import net.sf.jasperreports.engine.JRException;
-import net.sf.jasperreports.engine.JasperPrint;
-import net.sf.jasperreports.engine.design.JasperDesign;
 
 import org.nuclos.common.NuclosBusinessException;
 import org.nuclos.common.NuclosFatalException;
@@ -45,7 +40,6 @@ import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonCreateException;
 import org.nuclos.common2.exception.CommonFatalException;
-import org.nuclos.common2.exception.CommonFinderException;
 import org.nuclos.common2.exception.CommonPermissionException;
 import org.nuclos.server.genericobject.searchcondition.CollectableSearchExpression;
 import org.nuclos.server.masterdata.valueobject.DependantMasterDataMap;
@@ -54,8 +48,10 @@ import org.nuclos.server.report.NuclosReportException;
 import org.nuclos.server.report.NuclosReportPrintJob;
 import org.nuclos.server.report.NuclosReportRemotePrintService;
 import org.nuclos.server.report.ejb3.ReportFacadeRemote;
+import org.nuclos.server.report.valueobject.ReportOutputVO;
 import org.nuclos.server.report.valueobject.ReportVO;
 import org.nuclos.server.report.valueobject.ReportVO.ReportType;
+import org.nuclos.server.report.valueobject.ResultVO;
 
 /**
  * Report delegate.
@@ -197,6 +193,14 @@ public class ReportDelegate {
 		}
 	}
 
+	public NuclosFile testReport(Integer iReportOutputId) throws NuclosReportException {
+		try {
+			return getReportFacade().testReport(iReportOutputId);
+		}
+		catch (RuntimeException ex) {
+			throw new CommonFatalException(ex);
+		}
+	}
 
 	/**
 	 *
@@ -206,23 +210,9 @@ public class ReportDelegate {
 	 * @return result of ReportFacade method
 	 * @throws CommonBusinessException
 	 */
-	public JasperPrint prepareReport(Integer id, Map<String, Object> params, Integer iMaxRowCount) throws CommonBusinessException {
+	public NuclosFile prepareReport(Integer id, Map<String, Object> params, Integer iMaxRowCount) throws CommonBusinessException {
 		try {
 			return getReportFacade().prepareReport(id, params, iMaxRowCount);
-		}
-		catch (RuntimeException ex) {
-			throw new CommonFatalException(ex);
-		}
-	}
-
-	/**
-	 * @param iReportOutputId
-	 * @return
-	 * @throws NuclosReportException
-	 */
-	public JasperPrint prepareEmptyReport(Integer iReportOutputId) throws CommonBusinessException {
-		try {
-			return getReportFacade().prepareEmptyReport(iReportOutputId);
 		}
 		catch (RuntimeException ex) {
 			throw new CommonFatalException(ex);
@@ -233,31 +223,19 @@ public class ReportDelegate {
 	 * TODO: Don't serialize CollectableEntityField and/or CollectableEntity! (tp)
 	 * Refer to {@link org.nuclos.common.CollectableEntityFieldWithEntity#readObject(ObjectInputStream)} for details.
 	 */
-	public JasperPrint prepareSearchResult(CollectableSearchExpression clctexpr,
-		List<? extends CollectableEntityField> lstclctefweSelected, Integer iModuleId, boolean bIncludeSubModules) throws NuclosReportException {
+	public NuclosFile prepareSearchResult(CollectableSearchExpression clctexpr,
+		List<? extends CollectableEntityField> lstclctefweSelected, Integer iModuleId, boolean bIncludeSubModules, ReportOutputVO.Format format) throws NuclosReportException {
 		try {
-			return getReportFacade().prepareSearchResult(clctexpr, lstclctefweSelected, iModuleId, bIncludeSubModules);
+			return getReportFacade().prepareSearchResult(clctexpr, lstclctefweSelected, iModuleId, bIncludeSubModules, format);
 		}
 		catch (RuntimeException ex) {
 			throw new CommonFatalException(ex);
 		}
 	}
 
-	public JasperDesign getJrDesignForSearchResult() throws NuclosReportException {
+	public NuclosFile prepareExport(ResultVO resultvo, ReportOutputVO.Format format) throws NuclosReportException {
 		try {
-			return getReportFacade().getJrDesignForSearchResult();
-		}
-		catch (RuntimeException ex) {
-			throw new CommonFatalException(ex);
-		}
-		catch (JRException ex) {
-			throw new CommonFatalException(ex);
-		}
-	}
-
-	public JasperPrint prepareTableModel(TableModel tableModel) throws NuclosReportException {
-		try {
-			return getReportFacade().prepareTableModel(tableModel);
+			return getReportFacade().prepareExport(resultvo, format);
 		}
 		catch (RuntimeException ex) {
 			throw new CommonFatalException(ex);
@@ -275,10 +253,6 @@ public class ReportDelegate {
 		catch (RuntimeException ex) {
 			throw new CommonFatalException(ex);
 		}
-	}
-
-	public NuclosFile prepareCsvReport(Integer iReportOutputId, Map<String, Object> mpParams, Integer iMaxRowCount) throws CommonFinderException, NuclosReportException, CommonPermissionException {
-		return reportfacade.prepareCsvReport(iReportOutputId, mpParams, iMaxRowCount);
 	}
 	
 	public PrintService lookupDefaultPrintService() {

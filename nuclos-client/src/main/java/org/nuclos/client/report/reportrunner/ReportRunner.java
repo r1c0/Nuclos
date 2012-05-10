@@ -17,35 +17,41 @@
 package org.nuclos.client.report.reportrunner;
 
 import java.awt.Component;
+import java.awt.GraphicsEnvironment;
+import java.awt.Rectangle;
 import java.io.File;
+import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Observable;
 import java.util.concurrent.Future;
 
+import javax.print.PrintService;
+import javax.print.PrintServiceLookup;
+import javax.print.ServiceUI;
+import javax.print.attribute.HashPrintRequestAttributeSet;
+import javax.print.attribute.PrintRequestAttributeSet;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
-import net.sf.jasperreports.engine.JasperPrint;
-
 import org.apache.log4j.Logger;
-import org.nuclos.client.datasource.DatasourceDelegate;
 import org.nuclos.client.datasource.admin.ParameterPanel;
 import org.nuclos.client.genericobject.GenericObjectDelegate;
 import org.nuclos.client.main.Main;
 import org.nuclos.client.masterdata.MasterDataDelegate;
 import org.nuclos.client.report.ReportDelegate;
-import org.nuclos.client.report.reportrunner.export.CSVExport;
-import org.nuclos.client.report.reportrunner.export.DOCExport;
-import org.nuclos.client.report.reportrunner.export.FileExport;
-import org.nuclos.client.report.reportrunner.export.PDFExport;
-import org.nuclos.client.report.reportrunner.export.XLSExport;
+import org.nuclos.client.report.reportrunner.source.DefaultReportSource;
+import org.nuclos.client.report.reportrunner.source.ResultVoReportSource;
+import org.nuclos.client.report.reportrunner.source.SearchExpressionReportSource;
+import org.nuclos.client.report.reportrunner.source.WordReportSource;
 import org.nuclos.client.ui.CommonInterruptibleProcess;
 import org.nuclos.client.ui.Errors;
 import org.nuclos.client.ui.UIUtils;
@@ -53,17 +59,29 @@ import org.nuclos.common.NuclosBusinessException;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.NuclosFile;
-import org.nuclos.common2.SpringLocaleDelegate;
+import org.nuclos.common.collect.collectable.CollectableEntityField;
 import org.nuclos.common2.IOUtils;
 import org.nuclos.common2.ServiceLocator;
+import org.nuclos.common2.SpringLocaleDelegate;
+import org.nuclos.common2.SystemUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
+import org.nuclos.server.genericobject.searchcondition.CollectableSearchExpression;
 import org.nuclos.server.genericobject.valueobject.GenericObjectDocumentFile;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 import org.nuclos.server.report.NuclosReportException;
+import org.nuclos.server.report.NuclosReportPrintJob;
+import org.nuclos.server.report.NuclosReportRemotePrintService;
 import org.nuclos.server.report.ejb3.DatasourceFacadeRemote;
+import org.nuclos.server.report.print.CSVPrintJob;
+import org.nuclos.server.report.print.DOCPrintJob;
+import org.nuclos.server.report.print.FilePrintJob;
+import org.nuclos.server.report.print.PDFPrintJob;
+import org.nuclos.server.report.print.XLSPrintJob;
 import org.nuclos.server.report.valueobject.DatasourceParameterVO;
 import org.nuclos.server.report.valueobject.DatasourceVO;
 import org.nuclos.server.report.valueobject.ReportOutputVO;
+import org.nuclos.server.report.valueobject.ReportOutputVO.Destination;
+import org.nuclos.server.report.valueobject.ReportOutputVO.Format;
 import org.nuclos.server.report.valueobject.ReportVO;
 import org.nuclos.server.report.valueobject.ResultVO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -74,9 +92,9 @@ import org.springframework.beans.factory.annotation.Configurable;
  * <br>
  * <br>Created by Novabit Informationssysteme GmbH
  * <br>Please visit <a href="http://www.novabit.de">www.novabit.de</a>
- *
- * @author	<a href="mailto:Boris.Sander@novabit.de">Boris Sander</a>
- * @author	<a href="mailto:rostislav.maksymovskyi@novabit.de">rostislav.maksymovskyi</a>
+ * 
+ * @author <a href="mailto:Boris.Sander@novabit.de">Boris Sander</a>
+ * @author <a href="mailto:rostislav.maksymovskyi@novabit.de">rostislav.maksymovskyi</a>
  * @version 02.00.00
  */
 @Configurable
@@ -84,42 +102,31 @@ public class ReportRunner implements Runnable, BackgroundProcessInfo, CommonInte
 
 	private final static Logger log = Logger.getLogger(ReportRunner.class);
 
-	public static final String KEY_GENERICOBJECTIDENTIFIER = "GenericObjectIdentifier";
+	private final ReportSource source;
 
 	private final Component parent;
-	private final Map<String, Object> mpParams;
 
-	private final String sJobName;
-	private final String sDatasourceName;
+	private final String reportname;
+	private final String directory;
+	private final String filename;
+
+	private final ReportOutputVO.Format format;
+	private final ReportOutputVO.Destination destination;
+
 	private volatile Status status = Status.NOTRUNNING;
 	private volatile Date dateStartTime;
 	private volatile String message;
-
-	private static final int REPORT_JOB = 1;		// Either a report or a form
-	private static final int SHOW_EXPORT_JOB = 2;	// Export of a search result list, task list, timelimit list etc.
-
-	private final int iJobType;
-	private final ReportVO reportvo;
-	private final ReportOutputVO reportoutputvo;
-	private final ReportOutputVO.Format format;
-	private final boolean bExecuteDatasource;
-	private final Integer iMaxRowCount;
-
-	private String reportFilename;
-
-	private JasperPrint jasperPrint = null;
-	private ResultVO resultVO = null;
-
-	private boolean bInitialized = false;
 
 	private Future<?> future = null;
 	private Observable observable = null;
 
 	private final ReportAttachmentInfo attachmentInfo;
-	
+
 	private SpringLocaleDelegate localeDelegate;
-	
+
 	/**
+	 * Called for forms and reports (with real ReportVO and ReportOutputVO)
+	 * 
 	 * @param parent
 	 * @param mpParameter
 	 * @param outputVO
@@ -128,11 +135,17 @@ public class ReportRunner implements Runnable, BackgroundProcessInfo, CommonInte
 	 * @param attachmentInfo
 	 * @return the newly created report job thread
 	 */
-	public static ReportThread createJob(Component parent, Map<String, Object> mpParameter, ReportVO reportVO, ReportOutputVO outputVO, boolean bExecuteDatasource, Integer iMaxRowCount, String sReportFilename, ReportAttachmentInfo attachmentInfo) {
-		ReportThread result = null;
-		final ReportRunner runner = new ReportRunner(parent, mpParameter, reportVO, outputVO, bExecuteDatasource, iMaxRowCount, sReportFilename, attachmentInfo);
-		result = new ReportThread(runner);
+	public static ReportThread createJob(Component parent, Map<String, Object> mpParameter, ReportVO reportVO, ReportOutputVO outputVO, boolean bExecuteDatasource, Integer iMaxRowCount, String sReportFilename,
+			ReportAttachmentInfo attachmentInfo) {
+		final ReportSource source;
+		if (outputVO.getFormat() == Format.DOC) {
+			source = new WordReportSource(outputVO, mpParameter, iMaxRowCount);
+		}
+		else {
+			source = new DefaultReportSource(outputVO, mpParameter, iMaxRowCount);
+		}
 
+		final ReportRunner runner = new ReportRunner(parent, reportVO, outputVO, source, sReportFilename, attachmentInfo);
 		final BackgroundProcessStatusTableModel model = BackgroundProcessStatusController.getStatusDialog(UIUtils.getFrameForComponent(parent)).getStatusPanel().getModel();
 		SwingUtilities.invokeLater(new Runnable() {
 			@Override
@@ -140,124 +153,64 @@ public class ReportRunner implements Runnable, BackgroundProcessInfo, CommonInte
 				model.addEntry(runner);
 			}
 		});
-
-		return result;
+		return new ReportThread(runner);
 	}
 
-	public static ReportThread createJob(Component parent, Map<String, Object> mpParameter, ReportVO reportVO, ReportOutputVO outputVO, boolean bExecuteDatasource, Integer iMaxRowCount) {
-		return createJob(parent, mpParameter, reportVO, outputVO, bExecuteDatasource, iMaxRowCount, null, null);
+	public static ReportThread createExportJob(Component parent, ReportOutputVO.Format format, CollectableSearchExpression expr, List<? extends CollectableEntityField> lstclctefweSelected, Integer iModuleId, boolean bIncludeSubModules) {
+		final ReportSource source = new SearchExpressionReportSource(expr, lstclctefweSelected, iModuleId, bIncludeSubModules, format);
+		final ReportRunner runner = new ReportRunner(parent, source, format, SpringLocaleDelegate.getInstance().getMessage("ReportRunner.2", "Suchergebnis"));
+		return new ReportThread(runner);
 	}
-
-	public static ReportThread createJob(Component parent, Map<String, Object> mpParameter, ReportVO reportVO, ReportOutputVO outputVO, boolean bExecuteDatasource, Integer iMaxRowCount, ReportAttachmentInfo attachmentInfo) {
-		return createJob(parent, mpParameter, reportVO, outputVO, bExecuteDatasource, iMaxRowCount, null, attachmentInfo);
-	}
-
-	/**
-	 * @param parent
-	 * @param printObj
-	 * @param format
-	 * @param iMaxRowCount
-	 */
-	public static ReportThread createExportJob(Component parent, JasperPrint printObj, ReportOutputVO.Format format, Integer iMaxRowCount, String sDatasourceName ) {
-		return new ReportThread(new ReportRunner(parent, new HashMap<String, Object>(), printObj, format, true, iMaxRowCount, sDatasourceName));
-	}
-
+	
 	/**
 	 * used for CSV and XLS export
-	 *
+	 * 
 	 * @param parent
 	 * @param resultVO the reports data
 	 * @param format
 	 * @param iMaxRowCount
 	 */
 	public static ReportThread createExportJob(Component parent, ResultVO resultVO, ReportOutputVO.Format format, Integer iMaxRowCount, String sDatasourceName) {
-		return new ReportThread(new ReportRunner(parent, new HashMap<String, Object>(), resultVO, format, true, iMaxRowCount, sDatasourceName));
+		final ReportSource source = new ResultVoReportSource(resultVO, format);
+		final ReportRunner runner = new ReportRunner(parent, source, format, (sDatasourceName != null) ? sDatasourceName : SpringLocaleDelegate.getInstance().getMessage("ReportRunner.2", "Suchergebnis"));
+		return new ReportThread(runner);
 	}
 
-	/**
-	 * @param parent
-	 * @param mpParams
-	 * @param reportvo
-	 * @param outputvo
-	 * @param bExecuteDatasource
-	 * @param iMaxRowCount
-	 */
-	private ReportRunner(Component parent, Map<String, Object> mpParams, ReportVO reportvo, ReportOutputVO outputvo, boolean bExecuteDatasource, Integer iMaxRowCount, String sReportFilename, ReportAttachmentInfo attachmentInfo) {
+	private ReportRunner(Component parent, ReportVO reportvo, ReportOutputVO reportoutputvo, ReportSource source, String reportFilename, ReportAttachmentInfo attachmentInfo) {
 		this.parent = parent;
-		this.mpParams = mpParams;
-		this.sJobName = reportvo.getName();
-		this.sDatasourceName = (reportvo.getOutputType() == ReportVO.OutputType.SINGLE) ? null : outputvo.getDatasource();
-
-		this.format = null;
-		this.reportvo = reportvo;
-		this.reportoutputvo = outputvo;
-		this.iJobType = REPORT_JOB;
-		this.bExecuteDatasource = bExecuteDatasource;
-		this.iMaxRowCount = iMaxRowCount;
-
-		this.reportFilename = sReportFilename;
-
+		if (reportoutputvo != null && reportoutputvo.getParameter() != null) {
+			directory = reportoutputvo.getParameter();
+		}
+		else {
+			directory = System.getProperty("java.io.tmpdir");
+		}
+		if (reportFilename != null) {
+			filename = reportFilename;
+		}
+		else if (reportoutputvo.getDescription() != null) {
+			filename = reportoutputvo.getDescription();
+		}
+		else {
+			filename = reportvo.getName();
+		}
+		this.source = source;
+		this.reportname = reportvo.getName();
+		this.format = reportoutputvo.getFormat();
+		this.destination = reportoutputvo.getDestination();
 		this.attachmentInfo = attachmentInfo;
-
-		assert this.jasperPrint == null;
-
-		bInitialized = true;
 	}
 
-	/**
-	 * @param parent
-	 * @param printObj
-	 * @param format
-	 * @param bExecuteDatasource
-	 * @param iMaxRowCount
-	 */
-	private ReportRunner(Component parent, Map<String, Object> mpParams, JasperPrint printObj, ReportOutputVO.Format format, boolean bExecuteDatasource, Integer iMaxRowCount, String sDatasourceName) {
+	private ReportRunner(Component parent, ReportSource source, ReportOutputVO.Format format, String filename) {
 		this.parent = parent;
-		this.mpParams = mpParams;
-		this.sJobName = "";
-		this.sDatasourceName = sDatasourceName;
-
+		this.directory = System.getProperty("java.io.tmpdir");
+		this.filename = filename;
+		this.source = source;
+		this.reportname = filename;
 		this.format = format;
-		this.jasperPrint = printObj;
-		this.reportvo = null;
-		this.reportoutputvo = null;
-		this.iJobType = SHOW_EXPORT_JOB;
-		this.bExecuteDatasource = bExecuteDatasource;
-		this.iMaxRowCount = iMaxRowCount;
-
+		this.destination = Destination.SCREEN;
 		this.attachmentInfo = null;
-
-		bInitialized = true;
 	}
 
-	/**
-	 * @param parent
-	 * @param resultvo
-	 * @param format
-	 * @param bExecuteDatasource
-	 * @param iMaxRowCount
-	 */
-	private ReportRunner(Component parent, Map<String, Object> mpParams, ResultVO resultvo, ReportOutputVO.Format format, boolean bExecuteDatasource, Integer iMaxRowCount, String sDatasourceName) {
-		this.parent = parent;
-		this.mpParams = mpParams;
-		this.sJobName = "";
-		this.sDatasourceName = sDatasourceName;
-
-		this.resultVO = resultvo;
-		this.format = format;
-		this.reportvo = null;
-		this.reportoutputvo = null;
-		this.iJobType = SHOW_EXPORT_JOB;
-		this.bExecuteDatasource = bExecuteDatasource;
-		this.iMaxRowCount = iMaxRowCount;
-
-		this.attachmentInfo = null;
-
-		assert this.jasperPrint == null;
-
-		bInitialized = true;
-	}
-	
 	@Autowired
 	void setSpringLocaleDelegate(SpringLocaleDelegate cld) {
 		this.localeDelegate = cld;
@@ -269,15 +222,15 @@ public class ReportRunner implements Runnable, BackgroundProcessInfo, CommonInte
 	}
 
 	@Override
-	public void addObservable(Observable observable){
+	public void addObservable(Observable observable) {
 		this.observable = observable;
 	}
 
 	@Override
-	public void cancelProzess(){
-		if(this.future != null){
+	public void cancelProzess() {
+		if (this.future != null) {
 			boolean cancelled = this.future.cancel(true);
-			log.debug("cancelProzess>>>>>>>>>> cancelled future: "+cancelled);
+			log.debug("cancelProzess>>>>>>>>>> cancelled future: " + cancelled);
 		}
 	}
 
@@ -293,11 +246,6 @@ public class ReportRunner implements Runnable, BackgroundProcessInfo, CommonInte
 	@Override
 	public void run() {
 		try {
-			if (!bInitialized) {
-				// Note that each instance of this class can be run only once:
-				throw new NuclosFatalException("job == null");
-			}
-
 			this.setStatus(Status.RUNNING);
 			this.dateStartTime = new Date(Calendar.getInstance().getTimeInMillis());
 
@@ -306,9 +254,7 @@ public class ReportRunner implements Runnable, BackgroundProcessInfo, CommonInte
 			if (attachmentInfo != null) {
 				String filename = attachDocument();
 				this.setStatus(Status.DONE);
-				this.setMessage(localeDelegate.getMessage(
-						"ReportRunner.fileattached", "Document {0} hast been attached to object {1}.", 
-						filename, attachmentInfo.getGenericObjectIdentifier()));
+				this.setMessage(localeDelegate.getMessage("ReportRunner.fileattached", "Document {0} has been attached to object {1}.", filename, attachmentInfo.getGenericObjectIdentifier()));
 			}
 			else {
 				this.setStatus(Status.DONE);
@@ -329,121 +275,32 @@ public class ReportRunner implements Runnable, BackgroundProcessInfo, CommonInte
 				}
 			});
 		}
-		//only for development
-//		catch (final Throwable ex) {
-//			SwingUtilities.invokeLater(new Runnable() {
-//				public void run() {
-//					Errors.getInstance().showExceptionDialog(UIUtils.getFrameForComponent(parent), ex);
-//				}
-//			});
-//		}
 		finally {
 			// release the job - avoid memory leak:
-//			this.job = null;
+			// this.job = null;
 		}
 	}
 
 	private void execute() throws NuclosReportException, InterruptedException {
 		try {
-			final ReportExporter exporter;
-			switch (iJobType) {
-				case REPORT_JOB:
-					final ReportOutputVO.Format outputFormat = reportoutputvo.getFormat();
-					exporter = getExporter(outputFormat);
-
-					if (mpParams.containsKey(KEY_GENERICOBJECTIDENTIFIER)) {
-						exporter.setGenericObjectIdentifier(mpParams.get(KEY_GENERICOBJECTIDENTIFIER).toString());
-					}
-
-					if(reportFilename != null)
-						exporter.setReportFileName(reportFilename);
-
-					if (outputFormat == ReportOutputVO.Format.PDF) {
-						// "graphical" report (means JasperReport...)
-						if (bExecuteDatasource) {
-							jasperPrint = ReportDelegate.getInstance().prepareReport(reportoutputvo.getId(), mpParams, iMaxRowCount);
-						}
-						else {
-							jasperPrint = ReportDelegate.getInstance().prepareEmptyReport(reportoutputvo.getId());
-						}
-						setBackgroundProcessInterruptionIntervalForCurrentThread();
-						new PDFExport().export((reportoutputvo.getDescription() != null) ? reportoutputvo.getDescription() : reportvo.getName(), jasperPrint, reportoutputvo.getParameter(), reportoutputvo.getDestination());
-					}
-					else if (outputFormat == ReportOutputVO.Format.CSV && reportoutputvo.getSourceFile() != null) {
-						NuclosFile result = ReportDelegate.getInstance().prepareCsvReport(reportoutputvo.getId(), mpParams, iMaxRowCount);
-						setBackgroundProcessInterruptionIntervalForCurrentThread();
-						new FileExport(result).export((reportoutputvo.getDescription() != null) ? reportoutputvo.getDescription() : reportvo.getName(), reportoutputvo.getParameter(), reportoutputvo.getDestination());
-					}
-					else {
-						// report without a layout
-						if (bExecuteDatasource) {
-							resultVO = DatasourceDelegate.getInstance().executeQuery(reportoutputvo.getDatasourceId(), mpParams, null);
-						}
-						else {
-							resultVO = new ResultVO(); // empty ResultSet
-						}
-						setBackgroundProcessInterruptionIntervalForCurrentThread();
-						exporter.export(resultVO, reportvo, reportoutputvo);
-					}
-					break;
-
-				case SHOW_EXPORT_JOB:
-					exporter = getExporter(format);
-
-					if (this.jasperPrint != null) {
-						// is called for printing the search result with PDF format.
-						assert exporter.getClass().equals(PDFExport.class);
-
-						setBackgroundProcessInterruptionIntervalForCurrentThread();
-						new PDFExport().export((sDatasourceName != null) ? sDatasourceName : localeDelegate.getMessage("ReportRunner.2", "Suchergebnis"), 
-								jasperPrint, null, reportoutputvo != null ? reportoutputvo.getDestination() : ReportOutputVO.Destination.SCREEN);
-
-					}
-					else if (this.resultVO != null) {
-						setBackgroundProcessInterruptionIntervalForCurrentThread();
-						exporter.export(resultVO, new ReportVO((sDatasourceName != null) ? sDatasourceName 
-								: localeDelegate.getMessage("ReportRunner.2", "Suchergebnis")), 
-								new ReportOutputVO(format, ReportOutputVO.Destination.SCREEN, null));
-					}
-					else {
-						throw new NuclosReportException(localeDelegate.getMessage("ReportRunner.3", "Report nicht initialisiert."));
-					}
-					break;
-
-				default:
-					throw new NuclosReportException(localeDelegate.getMessage("ReportRunner.3", "Report nicht initialisiert."));
-			}
+			setBackgroundProcessInterruptionIntervalForCurrentThread();
+			String d = createExportDir(directory);
+			String f = getFileName(d, filename);
+			NuclosFile result = source.getReport();
+			open(destination, result, f);
 		}
 		catch (CommonBusinessException ex) {
 			throw new NuclosReportException(ex);
 		}
 	}
 
-	/** @todo refactor: use OutputFormat as parameter */
-	private static ReportExporter getExporter(ReportOutputVO.Format format) throws NuclosReportException {
-		if (format != null) {
-			switch (format) {
-			case PDF:
-				return new PDFExport();
-			case XLS:
-				return new XLSExport();
-			case CSV:
-				return new CSVExport();
-			case TSV:
-				return new CSVExport('\t', 0, ' ', false, ".tsv");
-			case DOC:
-				return new DOCExport();
-			}
-		}
-		throw new NuclosReportException("Unsupported report format: " + format);
-	}
-
 	/**
 	 * get parameter values from user
-	 *
+	 * 
 	 * @param collFormat
 	 * @param mpParams
 	 */
+	@SuppressWarnings("deprecation")
 	public static boolean prepareParameters(Collection<ReportOutputVO> collFormat, Map<String, Object> mpParams) throws NuclosReportException {
 		final SpringLocaleDelegate localeDelegate = SpringLocaleDelegate.getInstance();
 		boolean result = true;
@@ -454,7 +311,7 @@ public class ReportRunner implements Runnable, BackgroundProcessInfo, CommonInte
 		}
 
 		try {
-			//NUCLEUSINT-182 Arraylists instead of Sets
+			// NUCLEUSINT-182 Arraylists instead of Sets
 			final List<String> liParamNamesInThisDatasource = new ArrayList<String>();
 			final List<String> liParamNamesInAllDatasources = new ArrayList<String>();
 			final List<DatasourceParameterVO> liParamsEmpty = new ArrayList<DatasourceParameterVO>();
@@ -476,8 +333,7 @@ public class ReportRunner implements Runnable, BackgroundProcessInfo, CommonInte
 				}
 				if (mpParams.containsKey("intid")) {
 					if (!liParamNamesInThisDatasource.contains("intid")) {
-						throw new NuclosReportException(
-							localeDelegate.getMessage("ReportRunner.5", "Die dem Formular zugrundeliegende Datenquelle \"{0}\" muss den Parameter intid definieren.", datasourcevo.getName()));
+						throw new NuclosReportException(localeDelegate.getMessage("ReportRunner.5", "Die dem Formular zugrundeliegende Datenquelle \"{0}\" muss den Parameter intid definieren.", datasourcevo.getName()));
 					}
 				}
 				liParamNamesInThisDatasource.clear();
@@ -486,9 +342,7 @@ public class ReportRunner implements Runnable, BackgroundProcessInfo, CommonInte
 			if (!liParamsEmpty.isEmpty()) {
 				final ParameterPanel panel = new ParameterPanel(liParamsEmpty);
 
-				result = (JOptionPane.showOptionDialog(Main.getInstance().getMainFrame(), panel, 
-						localeDelegate.getMessage("ReportRunner.8", "Parameter"), 
-						JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE, null, null, null) == JOptionPane.OK_OPTION);
+				result = (JOptionPane.showOptionDialog(Main.getInstance().getMainFrame(), panel, localeDelegate.getMessage("ReportRunner.8", "Parameter"), JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE, null, null, null) == JOptionPane.OK_OPTION);
 				if (result) {
 					panel.fillParameterMap(liParamsEmpty, mpParams);
 				}
@@ -521,7 +375,7 @@ public class ReportRunner implements Runnable, BackgroundProcessInfo, CommonInte
 			mdvo.setField(attachmentInfo.getDocumentFieldNames()[0], localeDelegate.getMessage("ReportController.2", "Automatisch angef\u00fcgtes Dokument"));
 			mdvo.setField(attachmentInfo.getDocumentFieldNames()[1], new Date());
 			mdvo.setField(attachmentInfo.getDocumentFieldNames()[2], Main.getInstance().getMainController().getUserName());
-			if(NuclosEntity.GENERALSEARCHDOCUMENT.getEntityName().equals(attachmentInfo.getDocumentEntityName())) {
+			if (NuclosEntity.GENERALSEARCHDOCUMENT.getEntityName().equals(attachmentInfo.getDocumentEntityName())) {
 				mdvo.setField("file", loFile);
 				mdvo.setField("path", attachmentInfo.getDirectory());
 			}
@@ -533,9 +387,7 @@ public class ReportRunner implements Runnable, BackgroundProcessInfo, CommonInte
 			return file.getName();
 		}
 		catch (Exception ex) {
-			throw new NuclosReportException(localeDelegate.getMessage(
-					"ReportController.1","Anh\u00e4ngen der Datei \"{0}\" an GenericObject \"{1}\" fehlgeschlagen.", 
-					getDocumentName(), attachmentInfo.getGenericObjectIdentifier()), ex);
+			throw new NuclosReportException(localeDelegate.getMessage("ReportController.1", "Anh\u00e4ngen der Datei \"{0}\" an GenericObject \"{1}\" fehlgeschlagen.", getDocumentName(), attachmentInfo.getGenericObjectIdentifier()), ex);
 		}
 	}
 
@@ -557,7 +409,7 @@ public class ReportRunner implements Runnable, BackgroundProcessInfo, CommonInte
 
 	private void setStatus(Status status) {
 		this.status = status;
-		if(this.observable != null){
+		if (this.observable != null) {
 			this.observable.notifyObservers();
 		}
 	}
@@ -567,11 +419,7 @@ public class ReportRunner implements Runnable, BackgroundProcessInfo, CommonInte
 	 */
 	@Override
 	public String getJobName() {
-		String result = localeDelegate.getMessage("ReportRunner.6", "Report: \"{0}\"", this.sJobName);
-		if (sDatasourceName != null) {
-			result = localeDelegate.getMessage("ReportRunner.7", "Report: \"{0}\", Datenquelle: {1}", this.sJobName, sDatasourceName);
-		}
-		return result;
+		return localeDelegate.getMessage("ReportRunner.6", "Report: \"{0}\"", reportname);
 	}
 
 	/**
@@ -592,4 +440,164 @@ public class ReportRunner implements Runnable, BackgroundProcessInfo, CommonInte
 		this.message = message;
 	}
 
-}	// class ReportRunner
+	protected final String getFileName(String sExportPath, String filename) {
+		String result;
+		final String extension = format.getExtension();
+		final File file = new File(sExportPath);
+		final DateFormat dateformat = new SimpleDateFormat("yyyy-MM-dd HH-mm-ss", Locale.getDefault());
+		if (file.isDirectory()) {
+			result = filename + "_" + dateformat.format(Calendar.getInstance(Locale.getDefault()).getTime());
+			result = result.replaceAll("[/+*%?#!.:]", "-");
+			result = sExportPath + ((sExportPath.endsWith(File.separator)) ? "" : File.separator) + result + extension;
+		}
+		else {
+			result = sExportPath.substring(0, sExportPath.lastIndexOf("."));
+			result = result + "_" + dateformat.format(Calendar.getInstance(Locale.getDefault()).getTime()) + extension;
+		}
+		// set the name of the generated report in the thread for further use
+		if (Thread.currentThread().getClass().equals(ReportThread.class)) {
+			/** @todo refactor! */
+			((ReportThread) Thread.currentThread()).setDocumentName(result);
+		}
+
+		return result;
+	}
+
+	/**
+	 * @param sExportPath
+	 *            destination
+	 * @return directory for export or filename (if filename was given)
+	 */
+	protected static String createExportDir(String sExportPath) throws NuclosReportException {
+		final String result;
+
+		if (sExportPath == null) {
+			result = System.getProperty("java.io.tmpdir");
+		}
+		else {
+			result = sExportPath;
+			final int lastDotPos = sExportPath.lastIndexOf(".");
+			final int lastSlashPos = sExportPath.lastIndexOf(File.separator);
+			if (lastSlashPos >= lastDotPos) {
+				final File fileExportDir = new File(sExportPath);
+				if (!fileExportDir.exists()) {
+					if (!fileExportDir.mkdir()) {
+						throw new NuclosReportException(SpringLocaleDelegate.getInstance().getMessage("AbstractReportExporter.1", "Das Verzeichnis {0} konnte nicht angelegt werden.", sExportPath));
+					}
+				}
+			}
+		}
+		return result;
+	}
+
+	protected void open(ReportOutputVO.Destination destination, NuclosFile file, String filename) throws NuclosReportException {
+		switch (destination) {
+		case FILE:
+			openFile(file, filename, false);
+			break;
+		case PRINTER_CLIENT:
+			openPrintDialog(file, filename, true, false);
+			break;
+		case PRINTER_SERVER:
+			openPrintDialog(file, filename, false, false);
+			break;
+		case DEFAULT_PRINTER_CLIENT:
+			openPrintDialog(file, filename, true, true);
+			break;
+		case DEFAULT_PRINTER_SERVER:
+			openPrintDialog(file, filename, false, true);
+			break;
+		default:
+			// TYPE SCREEN
+			openFile(file, filename, true);
+			break;
+		}
+	}
+
+	private void openFile(NuclosFile file, String sFileName, boolean bOpenFile) throws NuclosReportException {
+		try {
+			saveFile(file, sFileName);
+			if (bOpenFile) {
+				SystemUtils.open(sFileName);
+			}
+			else {
+				log.debug("NOT opening " + sFileName);
+			}
+		}
+		catch (IOException ex) {
+			throw new NuclosReportException(SpringLocaleDelegate.getInstance().getMessage("AbstractReportExporter.4", "Die Datei {0} konnte nicht ge\u00f6ffnet werden.", sFileName), ex);
+		}
+	}
+	
+	private void saveFile(NuclosFile file, String filename) throws IOException {
+		IOUtils.writeToBinaryFile(new File(filename), file.getFileContents());
+	}
+
+	private void openPrintDialog(NuclosFile file, String sFileName, boolean bIsClient, boolean bIsDefault) throws NuclosReportException {
+		try {
+			PrintService prservDflt;
+			if (bIsClient) {
+				prservDflt = PrintServiceLookup.lookupDefaultPrintService();
+			}
+			else {
+				prservDflt = ReportDelegate.getInstance().lookupDefaultPrintService();
+			}
+
+			PrintService[] prservices;
+			if (bIsClient) {
+				prservices = PrintServiceLookup.lookupPrintServices(null, null);
+			}
+			else {
+				prservices = ReportDelegate.getInstance().lookupPrintServices(null, null);
+			}
+
+			if (null == prservices || 0 >= prservices.length) {
+				if (null != prservDflt) {
+					prservices = new PrintService[] { prservDflt };
+				}
+				else {
+					throw new NuclosReportException(SpringLocaleDelegate.getInstance().getMessage("AbstractReportExporter.5", "Es ist kein passender Print-Service installiert."));
+				}
+			}
+
+			PrintService prserv = null;
+			PrintRequestAttributeSet aset = new HashPrintRequestAttributeSet();
+			if (prservDflt == null || !bIsDefault) {
+				Rectangle gcBounds = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDefaultConfiguration().getBounds();
+				prserv = ServiceUI.printDialog(null, (gcBounds.width / 2) - 200, (gcBounds.height / 2) - 200, prservices, prservDflt, null, aset);
+			}
+			else
+				prserv = prservDflt;
+
+			if (null != prserv) {
+				if (bIsClient) {
+					saveFile(file, sFileName);
+					getNuclosReportPrintJob().print(prserv, sFileName, aset);
+				}
+				else {
+					ReportDelegate.getInstance().printViaPrintService((NuclosReportRemotePrintService) prserv, getNuclosReportPrintJob(), aset, file.getFileContents());
+				}
+			}
+		}
+		catch (Exception e) {
+			throw new NuclosReportException(e);
+		}
+	}
+	
+	private NuclosReportPrintJob getNuclosReportPrintJob() {
+		switch (format) {
+		case PDF:
+			return new PDFPrintJob();
+		case CSV:
+			return new CSVPrintJob();
+		case XLS:
+		case XLSX:
+			return new XLSPrintJob();
+		case DOC:
+			return new DOCPrintJob();
+		default:
+			return new FilePrintJob();
+		}
+	}
+
+} // class ReportRunner

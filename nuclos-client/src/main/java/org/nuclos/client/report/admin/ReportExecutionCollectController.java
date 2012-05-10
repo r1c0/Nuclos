@@ -205,7 +205,7 @@ public class ReportExecutionCollectController extends MasterDataCollectControlle
 							final Integer iMaxRowCount = (sMaxRowCount == null) ? null : Integer.getInteger(sMaxRowCount);
 							final ReportThread thread;
 							if (NuclosEntity.REPORTEXECUTION.checkEntityName(entity))
-								thread = ReportRunner.createJob(parent, mpParams, entry.getReport(), entry.getOutput(), true, iMaxRowCount);
+								thread = ReportRunner.createJob(parent, mpParams, entry.getReport(), entry.getOutput(), true, iMaxRowCount, null, null);
 							else
 								thread = null;
 							if (thread != null) {
@@ -245,9 +245,9 @@ public class ReportExecutionCollectController extends MasterDataCollectControlle
 										sLastGeneratedFileName = null;
 									final ReportThread thread;
 									if (NuclosEntity.REPORTEXECUTION.checkEntityName(entity))
-										thread = ReportRunner.createJob(parent, mpParams, reportvo, formatVO, true, Integer.getInteger(ClientParameterProvider.getInstance().getValue(ParameterProvider.KEY_REPORT_MAXROWCOUNT)));
+										thread = ReportRunner.createJob(parent, mpParams, reportvo, formatVO, true, Integer.getInteger(ClientParameterProvider.getInstance().getValue(ParameterProvider.KEY_REPORT_MAXROWCOUNT)), null, null);
 									else if (NuclosEntity.REPORT.checkEntityName(entity))
-										thread = ReportRunner.createJob(parent, mpParams, reportvo, formatVO, false, Integer.getInteger(ClientParameterProvider.getInstance().getValue(ParameterProvider.KEY_REPORT_MAXROWCOUNT)));
+										thread = ReportRunner.createJob(parent, mpParams, reportvo, formatVO, false, Integer.getInteger(ClientParameterProvider.getInstance().getValue(ParameterProvider.KEY_REPORT_MAXROWCOUNT)), null, null);
 									else {
 										thread = null;
 										throw new NuclosFatalException(localeDelegate.getMessage(

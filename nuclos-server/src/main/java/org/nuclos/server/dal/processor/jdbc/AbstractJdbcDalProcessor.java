@@ -58,7 +58,9 @@ import org.nuclos.server.dblayer.statements.DbStatement;
 import org.nuclos.server.dblayer.statements.DbTableStatement;
 import org.nuclos.server.dblayer.statements.DbUpdateStatement;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
 
+@Configurable
 public abstract class AbstractJdbcDalProcessor<DalVO extends IDalVO> extends AbstractDalProcessor<DalVO> {
 
 	private static final Logger LOG = Logger.getLogger(AbstractJdbcDalProcessor.class);

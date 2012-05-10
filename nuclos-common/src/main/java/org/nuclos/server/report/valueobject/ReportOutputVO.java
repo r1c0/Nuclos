@@ -72,11 +72,21 @@ public class ReportOutputVO extends NuclosValueObject {
 
 	public static enum Format implements KeyEnum<String> {
 
-		PDF, XLS, CSV, DOC, TSV;
+		PDF(".pdf"), XLS(".xls"), XLSX(".xlsx"), CSV(".csv"), DOC(".doc"), TSV(".tsv");
+		
+		private final String extension;
+		
+		private Format(String extension) {
+			this.extension = extension;
+		}
 
 		@Override
 		public String getValue() {
 			return name();
+		}
+		
+		public String getExtension() {
+			return extension;
 		}
 	}
 

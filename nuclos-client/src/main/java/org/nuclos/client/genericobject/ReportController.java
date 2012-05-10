@@ -22,26 +22,18 @@ import java.awt.event.MouseEvent;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.SwingUtilities;
-import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumnModel;
-import javax.swing.table.TableModel;
-
-import net.sf.jasperreports.engine.JasperPrint;
 
 import org.apache.log4j.Logger;
-import org.nuclos.client.attribute.AttributeCache;
 import org.nuclos.client.common.ClientParameterProvider;
 import org.nuclos.client.datasource.DatasourceDelegate;
 import org.nuclos.client.datasource.admin.DatasourceCollectController;
@@ -57,20 +49,16 @@ import org.nuclos.common.NuclosBusinessException;
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.ParameterProvider;
 import org.nuclos.common.UsageCriteria;
-import org.nuclos.common.attribute.DynamicAttributeVO;
 import org.nuclos.common.collect.collectable.CollectableEntity;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
 import org.nuclos.common.collect.collectable.CollectableField;
 import org.nuclos.common.collection.CollectionUtils;
-import org.nuclos.common.dal.vo.EntityObjectVO;
 import org.nuclos.common.format.FormattingTransformer;
-import org.nuclos.common.genericobject.GenericObjectUtils;
 import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.server.genericobject.searchcondition.CollectableSearchExpression;
-import org.nuclos.server.genericobject.valueobject.GenericObjectWithDependantsVO;
 import org.nuclos.server.report.NuclosReportException;
 import org.nuclos.server.report.ejb3.ReportFacadeRemote;
 import org.nuclos.server.report.valueobject.DatasourceParameterVO;
@@ -289,7 +277,7 @@ public class ReportController extends Controller<JComponent> {
 									params.put("GenericObjectID", sGenericObjectId);
 									params.put("intid", sGenericObjectId);
 									if (!StringUtils.isNullOrEmpty(sGenericObjectIdentifier)) {
-										params.put(ReportRunner.KEY_GENERICOBJECTIDENTIFIER, sGenericObjectIdentifier);
+										params.put("GenericObjectIdentifier", sGenericObjectIdentifier);
 									}
 									iModuleId = clctlo.getGenericObjectCVO().getModuleId();
 
@@ -348,7 +336,7 @@ public class ReportController extends Controller<JComponent> {
 								mpParams.put("GenericObjectID", sGenericObjectId);
 								mpParams.put("intid", sGenericObjectId);
 								if (!StringUtils.isNullOrEmpty(sGenericObjectIdentifier)) {
-									mpParams.put(ReportRunner.KEY_GENERICOBJECTIDENTIFIER, sGenericObjectIdentifier);
+									mpParams.put("GenericObjectIdentifier", sGenericObjectIdentifier);
 								}
 								// if the report is a collective report, execute all contained outputs
 								boolean bIsFirstOfMany = true;
@@ -367,7 +355,7 @@ public class ReportController extends Controller<JComponent> {
 									}
 
 									final ReportThread threadReport = ReportRunner.createJob(getParent(), mpParams, reportvo, outputvo, true,
-											Integer.getInteger(ClientParameterProvider.getInstance().getValue(ParameterProvider.KEY_REPORT_MAXROWCOUNT)), info);
+											Integer.getInteger(ClientParameterProvider.getInstance().getValue(ParameterProvider.KEY_REPORT_MAXROWCOUNT)), null, info);
 									threadReport.start();
 									threadReport.join();
 									final String sFileName = threadReport.getDocumentName();
@@ -529,78 +517,12 @@ public class ReportController extends Controller<JComponent> {
 
 			final String sMainEntityName = clcteMain.getName();
 			final Integer iModuleId = Modules.getInstance().getModuleIdByEntityName(sMainEntityName);
-			final List<Integer> lstAttributeIds = GenericObjectUtils.getAttributeIds(lstclctefweSelected, sMainEntityName, AttributeCache.getInstance());
-			final Set<String> stRequiredSubEntityNames = Collections.emptySet();
 			
-			switch (format) {
-				case PDF:
-					final JasperPrint printObj = delegate.prepareSearchResult(searchexpr, lstclctefweSelected, iModuleId, bIncludeSubModules);
-					ReportRunner.createExportJob(getParent(), printObj, format, null, null).start();
-					break;
-
-				default:
-					/** @todo always include submodules here? */
-					final List<GenericObjectWithDependantsVO> lstlowdcvo = GenericObjectDelegate.getInstance().getPrintableGenericObjectsWithDependants(iModuleId,
-							searchexpr, new HashSet<Integer>(lstAttributeIds), stRequiredSubEntityNames, false, bIncludeSubModules);
-
-					final ResultVO resultVO = convertGenericObjectListToResultVO(clcteMain, lstclctefweSelected, lstlowdcvo);
-					ReportRunner.createExportJob(getParent(), resultVO, format, null, null).start();
-					break;
-			}
+			ReportRunner.createExportJob(getParent(), format, searchexpr, lstclctefweSelected, iModuleId, bIncludeSubModules).start();
 		}
 		finally {
 			getParent().setCursor(Cursor.getDefaultCursor());
 		}
-	}
-
-	/**
-	 * creates a new ResultVO object from a list of selected collectable entities.
-	 *
-	 * @param clcteMain main collectable entity
-	 * @param lstclctefweSelected List<CollectableEntityFieldWithEntity> attributes, subform or parent columns which are part of the content
-	 * @param lstlowdcvo List<GenericObjectWithDependantsVO> the data contained in the selected fields
-	 */
-	private ResultVO convertGenericObjectListToResultVO(CollectableEntity clcteMain,
-			List<? extends CollectableEntityField> lstclctefweSelected,
-			List<GenericObjectWithDependantsVO> lstlowdcvo) {
-
-		final ResultVO result = new ResultVO();
-
-		// fill the columns:
-		for (CollectableEntityField clctefwe : lstclctefweSelected) {
-			final ResultColumnVO resultcolumnvo = new ResultColumnVO();
-			resultcolumnvo.setColumnLabel(clctefwe.getLabel());
-			resultcolumnvo.setColumnClassName(clctefwe.getJavaClass().getName());
-			result.addColumn(resultcolumnvo);
-		}
-
-		// fill the rows:
-		final String sMainEntityName = clcteMain.getName();
-		for (GenericObjectWithDependantsVO lowdcvo : lstlowdcvo) {
-			final Object[] aoData = new Object[lstclctefweSelected.size()];
-
-			int iColumn = 0;
-			for (CollectableEntityField clctefwe : lstclctefweSelected) {
-				final String sFieldName = clctefwe.getName();
-				final String sFieldEntityName = clctefwe.getEntityName();
-
-				if (sFieldEntityName.equals(sMainEntityName)) {
-					// own attribute:
-					final DynamicAttributeVO davo = lowdcvo.getAttribute(sFieldName, AttributeCache.getInstance());
-					aoData[iColumn] = davo != null ? davo.getValue() : null;
-				}
-				else {
-					// subform field:
-					final Collection<EntityObjectVO> collmdvo = lowdcvo.getDependants().getData(sFieldEntityName);
-					aoData[iColumn] = GenericObjectUtils.getConcatenatedValue(collmdvo, sFieldName);
-				}
-
-				iColumn++;
-			}
-			result.addRow(aoData);
-		}
-
-		return result;
 	}
 
 	public void export(JTable table, String sDatasourceName) throws NuclosBusinessException {
@@ -608,43 +530,8 @@ public class ReportController extends Controller<JComponent> {
 			final ReportFormatController formatctl = new ReportFormatController(getParent());
 			if (formatctl.run(getSpringLocaleDelegate().getMessage("ReportController.14","Tabelle exportieren"))) {
 				UIUtils.showWaitCursorForFrame(getParent(), true);
-				switch (formatctl.getFormat()) {
-					case PDF:
-						final int iRowCount = table.getModel().getRowCount();
-						final int iColumnCount = table.getColumnCount();
-						final Object[] aoColumns = new Object[iColumnCount];
-						for (int i = 0; i < iColumnCount; i++) {
-							aoColumns[i] = table.getColumnName(i);
-						}
-
-						final Object[][] aoData = new Object[iRowCount][iColumnCount];
-						for (int iRow = 0; iRow < iRowCount; iRow++) {
-							for (int iColumn = 0; iColumn < iColumnCount; iColumn++) {
-								final Object oValue = table.getValueAt(iRow, iColumn);
-								if (oValue instanceof CollectableField) {
-									aoData[iRow][iColumn] = ((CollectableField) oValue).getValue();
-								}
-								else if (oValue instanceof String) {
-									//@todo: this is a workaround (seems that Jasper can not handle \n in String values) (LR)
-									aoData[iRow][iColumn] = (oValue == null) ? null : ((String) oValue).replace('\n', ' ').trim();
-								}
-								else {
-									aoData[iRow][iColumn] = (oValue == null) ? null : oValue.toString();
-								}
-							}
-						}
-
-						final TableModel tblmodel = new DefaultTableModel(aoData, aoColumns);
-
-						final JasperPrint jrprint = delegate.prepareTableModel(tblmodel);
-						ReportRunner.createExportJob(getParent(), jrprint, formatctl.getFormat(), null, sDatasourceName).start();
-						break;
-
-					default :
-						final ResultVO resultvo = convertJTableToResultVO(table);
-						ReportRunner.createExportJob(getParent(), resultvo, formatctl.getFormat(), null, sDatasourceName).start();
-						break;
-				}
+				final ResultVO resultvo = convertJTableToResultVO(table);
+				ReportRunner.createExportJob(getParent(), resultvo, formatctl.getFormat(), null, sDatasourceName).start();
 			}
 		}
 		finally {

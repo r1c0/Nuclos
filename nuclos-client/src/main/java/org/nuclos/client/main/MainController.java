@@ -129,7 +129,6 @@ import org.nuclos.client.masterdata.MetaDataDelegate;
 import org.nuclos.client.nuclet.NucletComponentRepository;
 import org.nuclos.client.relation.EntityRelationShipCollectController;
 import org.nuclos.client.report.admin.ReportExecutionCollectController;
-import org.nuclos.client.report.reportrunner.AbstractReportExporter;
 import org.nuclos.client.resource.NuclosResourceCache;
 import org.nuclos.client.resource.ResourceCache;
 import org.nuclos.client.searchfilter.EntitySearchFilter;
@@ -186,6 +185,7 @@ import org.nuclos.common2.PreferencesUtils;
 import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.StringUtils;
+import org.nuclos.common2.SystemUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.common2.exception.CommonPermissionException;
@@ -1159,7 +1159,7 @@ public class MainController {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				try {
-					AbstractReportExporter.checkJawin();
+					SystemUtils.checkJawin();
 					JOptionPane.showMessageDialog(Main.getInstance().getMainFrame(), "Jawin ok");
 				} catch (Exception ex) {
 					Errors.getInstance().showDetailedExceptionDialog(Main.getInstance().getMainFrame(), ex);

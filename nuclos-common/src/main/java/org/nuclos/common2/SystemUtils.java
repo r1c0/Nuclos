@@ -26,6 +26,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.nuclos.common.NuclosFatalException;
 
 public class SystemUtils {
 
@@ -60,6 +61,8 @@ public class SystemUtils {
 		LINUX_BROWSER = Collections.unmodifiableList(list);
 	}
 
+	private static volatile boolean jawinLoaded = false;
+	
 	private SystemUtils() {
 		// Never invoked.
 	}
@@ -184,4 +187,18 @@ public class SystemUtils {
 		return result;
 	}
 
+	public static synchronized void checkJawin() throws NuclosFatalException {
+		if (!jawinLoaded) {
+			try {
+				System.loadLibrary("jawin");
+				jawinLoaded = true;
+			} catch (SecurityException e) {
+				LOG.error("Error loading jawin", e);
+				throw new NuclosFatalException("nuclos.jawin.linkerror", e);
+			} catch (UnsatisfiedLinkError e) {
+				LOG.error("Error loading jawin", e);
+				throw new NuclosFatalException("nuclos.jawin.linkerror", e);
+			}
+		}
+	}
 }

@@ -53,10 +53,6 @@ import javax.mail.Store;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
 
-import net.sf.jasperreports.engine.JRException;
-import net.sf.jasperreports.engine.JasperExportManager;
-import net.sf.jasperreports.engine.JasperPrint;
-
 import org.apache.commons.lang.NullArgumentException;
 import org.nuclos.common.NuclosAttributeNotFoundException;
 import org.nuclos.common.NuclosBusinessException;
@@ -2732,13 +2728,10 @@ public class RuleInterface extends CustomCodeInterface {
 				@Override
 				public void run() {
 					try {
-						final JasperPrint jasperPrint = reportFacade.prepareReport(outputVO.getId(), mpParams, null);
-						result.add(new NuclosFile(name + (reportOutputs.size() > 1 ? ("_" + index) : "") + ".pdf", JasperExportManager.exportReportToPdf(jasperPrint)));
+						final NuclosFile file = reportFacade.prepareReport(outputVO.getId(), mpParams, null);
+						result.add(new NuclosFile(name + (reportOutputs.size() > 1 ? ("_" + index) : "") + ".pdf", file.getFileContents()));
 					}
 					catch (CommonBusinessException e) {
-						throw new NuclosFatalRuleException(e);
-					}
-					catch (JRException e) {
 						throw new NuclosFatalRuleException(e);
 					}
 				}

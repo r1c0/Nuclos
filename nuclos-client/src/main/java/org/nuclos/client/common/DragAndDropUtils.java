@@ -27,11 +27,11 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.jawin.DispatchPtr;
 import org.jawin.win32.Ole32;
-import org.nuclos.client.report.reportrunner.AbstractReportExporter;
 import org.nuclos.common.PointerException;
-import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.IOUtils;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.StringUtils;
+import org.nuclos.common2.SystemUtils;
 
 public abstract class DragAndDropUtils {
 
@@ -45,7 +45,7 @@ public abstract class DragAndDropUtils {
 	 */
 	public static List<File> mailHandling() throws PointerException {
 		try {
-			AbstractReportExporter.checkJawin();
+			SystemUtils.checkJawin();
 		}
 		catch(Exception e) {
 			throw new PointerException(

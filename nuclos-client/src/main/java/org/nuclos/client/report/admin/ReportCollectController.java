@@ -18,16 +18,17 @@ package org.nuclos.client.report.admin;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Collection;
+import java.util.Locale;
 
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JFileChooser;
-import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
@@ -35,20 +36,15 @@ import javax.swing.JTable;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 
-import net.sf.jasperreports.engine.JasperPrint;
-import net.sf.jasperreports.view.JRViewer;
-
 import org.nuclos.client.common.DependantCollectableMasterDataMap;
 import org.nuclos.client.common.DetailsSubFormController;
 import org.nuclos.client.common.security.SecurityCache;
 import org.nuclos.client.entityobject.CollectableEntityObject;
-import org.nuclos.client.main.Main;
 import org.nuclos.client.main.mainframe.MainFrameTab;
 import org.nuclos.client.masterdata.CollectableMasterData;
 import org.nuclos.client.masterdata.CollectableMasterDataWithDependants;
 import org.nuclos.client.masterdata.MasterDataCollectController;
 import org.nuclos.client.report.ReportDelegate;
-import org.nuclos.client.report.reportrunner.AbstractReportExporter;
 import org.nuclos.client.ui.Errors;
 import org.nuclos.client.ui.Icons;
 import org.nuclos.client.ui.UIUtils;
@@ -63,6 +59,7 @@ import org.nuclos.client.ui.collect.component.model.CollectableComponentModelEve
 import org.nuclos.client.ui.collect.model.CollectableTableModel;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.NuclosFatalException;
+import org.nuclos.common.NuclosFile;
 import org.nuclos.common.collect.collectable.Collectable;
 import org.nuclos.common.collect.collectable.CollectableField;
 import org.nuclos.common.collect.collectable.CollectableValueField;
@@ -74,6 +71,7 @@ import org.nuclos.common2.IOUtils;
 import org.nuclos.common2.KeyEnum;
 import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.StringUtils;
+import org.nuclos.common2.SystemUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonValidationException;
 import org.nuclos.server.masterdata.valueobject.DependantMasterDataMap;
@@ -776,6 +774,8 @@ public class ReportCollectController extends MasterDataCollectController {
 							outputvoFormat = outputvo;
 						else if ("XLS".equals(outputvo.getFormat().getValue()))
 							outputvoFormat = outputvo;
+						else if ("XLSX".equals(outputvo.getFormat().getValue()))
+							outputvoFormat = outputvo;
 						else if ("DOC".equals(outputvo.getFormat().getValue()))
 							outputvoFormat = outputvo;
 						else if ("CSV".equals(outputvo.getFormat().getValue()))
@@ -797,90 +797,32 @@ public class ReportCollectController extends MasterDataCollectController {
 	/**
 	 * Externalised Preview Body for
 	 * ELISA-6574
-	 * @param outputvoFormat
+	 * @param outputvo
 	 * @throws CommonBusinessException
 	 */
-	private void previewReportOutputVO(ReportOutputVO outputvoFormat) throws CommonBusinessException{
-		if (outputvoFormat.getFormat().getValue().equals("PDF")) {
-			final JasperPrint jrprint = reportdelegate.prepareEmptyReport(outputvoFormat.getId());
-			final JRViewer jrviewer;
-
-			jrviewer = new JRViewer(jrprint);
-
-			final JFrame frame = new JFrame(getSpringLocaleDelegate().getMessage(
-					"ReportCollectController.23", "Vorschau") + " " + jrprint.getName());
-			frame.getContentPane().add(jrviewer);
-
-			frame.addWindowListener(new WindowAdapter() {
-				@Override
-				public void windowClosing(WindowEvent ev) {
-					frame.setVisible(false);
-				}
-
-				@Override
-				public void windowClosed(WindowEvent ev) {}
-			});
-
-			frame.pack();
-			frame.setIconImage(Main.getInstance().getMainFrame().getIconImage());
-			frame.setLocationRelativeTo(getTab());
-			frame.setVisible(true);
-			//FIX ELISA-6498
+	private void previewReportOutputVO(ReportOutputVO outputvo) throws CommonBusinessException{
+		String filename = outputvo.getSourceFile();
+		if (filename == null) {
+			filename = getSpringLocaleDelegate().getMessage("ReportCollectController.23", "Vorschau");
 		}
-		else if (outputvoFormat.getFormat().getValue().equals("CSV") || outputvoFormat.getFormat().getValue().equals("XLS") ||
-			outputvoFormat.getFormat().getValue().equals("DOC"))
-			createCopyOfReportTemplateAndOpen(outputvoFormat);
-	}
-
-	/**
-	 * FIX ELISA-6498
-	 *
-	 * For avoiding Locks and Problems on the Templates they are copied into the java temp Directory for preview use.
-	 *
-	 * @param reportOutputVO
-	 */
-	private void createCopyOfReportTemplateAndOpen(ReportOutputVO reportOutputVO) {
-		String tempDir = System.getProperty("java.io.tmpdir");
-		String pathSeparator = System.getProperty("file.separator");
-		long timemillies = System.currentTimeMillis();
-		File targetFile = null;
-
+		else {
+			filename = filename.substring(0, filename.lastIndexOf('.'));
+		}
+		final String tempDir = System.getProperty("java.io.tmpdir");
+		final DateFormat dateformat = new SimpleDateFormat("yyyy-MM-dd HH-mm-ss", Locale.getDefault());
+		final File targetFile = new File(tempDir, filename + "_" + dateformat.format(Calendar.getInstance(Locale.getDefault()).getTime()).replaceAll("[/+*%?#!.:]", "-") + outputvo.getFormat().getExtension());
+		
 		try {
-			final org.nuclos.server.report.ByteArrayCarrier bacFileContent = reportOutputVO.getSourceFileContent();
-			if (bacFileContent == null) {
-				if (reportOutputVO.getSourceFile() != null) {
-					File originalFile = new File(reportOutputVO.getSourceFile());
-					if (originalFile.exists()) {
-						targetFile = new File(tempDir + pathSeparator + timemillies + originalFile.getName());
-						org.nuclos.common2.File.copyFile(originalFile, targetFile);
-					}
-					else
-						Errors.getInstance().showExceptionDialog(null,
-								getSpringLocaleDelegate().getMessage(
-										"ReportCollectController.24", "Es kann auf die Vorlage nicht zugegriffen werden.\nFolgender Pfad wurde benutzt um auf die Vorlage zuzugreifen") + ":\n" + originalFile.getAbsolutePath(), new CommonBusinessException());
-				}
-				else
-					Errors.getInstance().showExceptionDialog(null, getSpringLocaleDelegate().getMessage(
-							"ReportCollectController.25", "Dieses Formular/ dieser Report hat keine Vorlagedatei die ge\u00f6ffnet werden kann."), new CommonBusinessException());
-			} else {
-				String sFileName = reportOutputVO.getSourceFile();
-				targetFile = new File(tempDir + pathSeparator + timemillies + sFileName);
+			NuclosFile preview = reportdelegate.testReport(outputvo.getId());
 
-				try {
-					IOUtils.writeToBinaryFile(targetFile, bacFileContent.getData());
-				} catch (IOException ex) {
-					throw new NuclosFatalException(StringUtils.getParameterizedExceptionMessage("ReportCollectController.19", targetFile.getPath()), ex);
-				}
-				AbstractReportExporter.openFile(targetFile.getAbsolutePath(), true);
-			}
-		} catch (NuclosReportException e) {
-			Errors.getInstance().showExceptionDialog(null,
-					getSpringLocaleDelegate().getMessage(
-							"ReportCollectController.26", "Fehler beim Erstellen der Vorschau.\nEs konnte nicht auf den Inhalt der Vorlage zugegriffen werden."), e);
-		} catch (IOException e) {
-			Errors.getInstance().showExceptionDialog(null,
-					getSpringLocaleDelegate().getMessage(
-							"ReportCollectController.27", "Die Vorschau konnte nicht gespeichert werden.\nDer Zielpfad zur Datei sollte sein") + ":\n" + targetFile.getAbsolutePath(), e);
+			IOUtils.writeToBinaryFile(targetFile, preview.getFileContents());
+			SystemUtils.open(targetFile);
+		}
+		catch (NuclosReportException e) {
+			Errors.getInstance().showExceptionDialog(getParent(), e);
+		}
+		catch (IOException ex) {
+			throw new NuclosFatalException(StringUtils.getParameterizedExceptionMessage("ReportCollectController.19", targetFile.getPath()), ex);
 		}
 	}
 

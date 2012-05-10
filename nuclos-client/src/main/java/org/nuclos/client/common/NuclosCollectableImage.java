@@ -57,7 +57,6 @@ import javax.swing.border.LineBorder;
 import javax.swing.table.TableCellRenderer;
 
 import org.apache.log4j.Logger;
-import org.nuclos.client.desktop.DesktopUtils;
 import org.nuclos.client.entityobject.CollectableEntityObjectField;
 import org.nuclos.client.genericobject.CollectableGenericObjectAttributeField;
 import org.nuclos.client.image.ImageScaler;
@@ -73,8 +72,9 @@ import org.nuclos.common.collect.collectable.CollectableField;
 import org.nuclos.common.collect.collectable.CollectableValueField;
 import org.nuclos.common.collect.collectable.searchcondition.ComparisonOperator;
 import org.nuclos.common.collect.exception.CollectableFieldFormatException;
-import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.IOUtils;
+import org.nuclos.common2.SpringLocaleDelegate;
+import org.nuclos.common2.SystemUtils;
 
 public class NuclosCollectableImage extends CollectableMediaComponent implements MessageExchangeListener {
 
@@ -276,7 +276,7 @@ public class NuclosCollectableImage extends CollectableMediaComponent implements
 						final java.io.File file = File.createTempFile("nuclos-image", "." + formatname.toLowerCase());
 						IOUtils.writeToBinaryFile(file, ni.getContent());
 						file.deleteOnExit();
-						DesktopUtils.open(file);
+						SystemUtils.open(file);
 					}
 				} catch (IOException ex) {
 					Errors.getInstance().showExceptionDialog(getControlComponent(), ex);
