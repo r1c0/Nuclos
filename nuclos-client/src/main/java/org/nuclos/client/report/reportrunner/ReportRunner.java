@@ -65,6 +65,7 @@ import org.nuclos.server.report.valueobject.DatasourceParameterVO;
 import org.nuclos.server.report.valueobject.DatasourceVO;
 import org.nuclos.server.report.valueobject.ReportOutputVO;
 import org.nuclos.server.report.valueobject.ReportVO;
+import org.nuclos.server.report.valueobject.ReportVO.OutputType;
 import org.nuclos.server.report.valueobject.ResultVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
@@ -303,16 +304,15 @@ public class ReportRunner implements Runnable, BackgroundProcessInfo, CommonInte
 
 			this.execute();
 
-			if (attachmentInfo != null) {
-				String filename = attachDocument();
-				this.setStatus(Status.DONE);
-				this.setMessage(localeDelegate.getMessage(
-						"ReportRunner.fileattached", "Document {0} hast been attached to object {1}.", 
-						filename, attachmentInfo.getGenericObjectIdentifier()));
+			if (attachmentInfo != null && reportvo != null && reportoutputvo != null) {
+				if (reportvo.getOutputType() != OutputType.EXCEL || reportoutputvo.isLastOfMany()) {
+					String filename = attachDocument();
+					this.setMessage(localeDelegate.getMessage(
+							"ReportRunner.fileattached", "Document {0} hast been attached to object {1}.", 
+							filename, attachmentInfo.getGenericObjectIdentifier()));
+				}
 			}
-			else {
-				this.setStatus(Status.DONE);
-			}
+			this.setStatus(Status.DONE);
 		}
 		catch (InterruptedException e) {
 			Thread.currentThread().interrupt();

@@ -27,6 +27,7 @@ import org.jawin.COMException;
 import org.jawin.DispatchPtr;
 import org.jawin.win32.Ole32;
 import org.nuclos.client.report.reportrunner.AbstractReportExporter;
+import org.nuclos.client.report.reportrunner.ReportThread;
 import org.nuclos.common.NuclosBusinessException;
 import org.nuclos.server.report.NuclosReportException;
 import org.nuclos.server.report.NuclosReportPrintJob;
@@ -121,6 +122,10 @@ public class XLSExport extends AbstractReportExporter {
 		}
 		else {
 			sFileName = reportvo.getOutputFileName();
+			if (Thread.currentThread().getClass().equals(ReportThread.class)) {
+				/** @todo refactor! */
+				((ReportThread) Thread.currentThread()).setDocumentName(sFileName);
+			}
 		}
 		return sFileName;
 	}
