@@ -60,6 +60,7 @@ import org.nuclos.client.common.Utils;
 import org.nuclos.client.common.security.SecurityCache;
 import org.nuclos.client.genericobject.GenericObjectClientUtils;
 import org.nuclos.client.genericobject.Modules;
+import org.nuclos.client.masterdata.MasterDataLayoutHelper;
 import org.nuclos.client.scripting.ScriptEvaluator;
 import org.nuclos.client.scripting.context.CollectableScriptContext;
 import org.nuclos.client.synthetica.NuclosThemeSettings;
@@ -1402,7 +1403,11 @@ public abstract class AbstractCollectableComponent
 	}
 
 	private boolean isEntityDisplayable(String sEntityName) {
-		return DefaultCollectableEntityProvider.getInstance().isEntityDisplayable(sEntityName);
+		// DefaultCollectableEntityProvider.getInstance() will return type of CollectableEOEntityProvider.
+		//  CollectableEOEntityProvider throws UnsupportedOperationException for Method isEntityDisplayable(...) 
+		//return DefaultCollectableEntityProvider.getInstance().isEntityDisplayable(sEntityName);
+		return Modules.getInstance().isModuleEntity(sEntityName) ||
+				MasterDataLayoutHelper.isLayoutMLAvailable(sEntityName, false);
 	}
 
 	/**
