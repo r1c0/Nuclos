@@ -87,6 +87,7 @@ import org.nuclos.client.ui.collect.result.NuclosResultController;
 import org.nuclos.client.ui.collect.result.NuclosSearchResultStrategy;
 import org.nuclos.client.ui.collect.result.ResultController;
 import org.nuclos.client.ui.collect.search.ISearchStrategy;
+import org.nuclos.client.ui.collect.search.SearchPanel;
 import org.nuclos.client.ui.layoutml.LayoutMLButtonActionListener;
 import org.nuclos.client.ui.model.ChoiceList;
 import org.nuclos.common.Actions;
@@ -1208,7 +1209,11 @@ public abstract class NuclosCollectController<Clct extends Collectable> extends 
 	}
 
 	public JComboBox getSearchFilterComboBox() {
-		return this.getSearchPanel().cmbbxSearchFilter;
+		final SearchPanel sp = getSearchPanel();
+		if (sp == null) {
+			return null;
+		}
+		return sp.cmbbxSearchFilter;
 	}
 
 	/**

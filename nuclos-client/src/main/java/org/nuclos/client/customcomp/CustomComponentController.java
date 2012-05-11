@@ -75,11 +75,6 @@ public abstract class CustomComponentController extends TopController {
 		return componentName;
 	}
 	
-	@Override
-	public void writePreferencesWhileClosing() {
-		
-	}
-
 	/**
 	 * This method is one of the entry points. The component is initialized for presentation
 	 * and the corresponding internal frame is shown.

@@ -17,6 +17,7 @@
 
 package org.nuclos.client.ui;
 
+import java.io.Closeable;
 import javax.swing.ImageIcon;
 
 import org.nuclos.client.main.mainframe.MainFrameTab;
@@ -25,7 +26,7 @@ import org.nuclos.client.main.mainframe.MainFrameTab;
  * A common super class which is shared by CollectController and other top-level
  * components.
  */
-public abstract class TopController extends MainFrameTabController {
+public abstract class TopController extends MainFrameTabController implements Closeable {
 
 	public TopController(MainFrameTab mainFrameTab) {
 		super(mainFrameTab);
@@ -42,10 +43,5 @@ public abstract class TopController extends MainFrameTabController {
 	 * @return can the action be performed?
 	 */
 	public abstract boolean askAndSaveIfNecessary();
-	
-	/**
-	 * Writes the preferences of the controller
-	 */
-	public abstract void writePreferencesWhileClosing();
 	
 }

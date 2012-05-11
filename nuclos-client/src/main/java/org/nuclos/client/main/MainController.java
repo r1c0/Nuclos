@@ -1704,6 +1704,8 @@ public class MainController {
 
 				LOG.debug("removes unused preferences...");
 				removeUnusedPreferences();
+				
+				closeAllControllers();
 			}
 			catch (Exception ex) {
 				final String sMessage = localeDelegate.getMessage("MainController.20","Die Sitzungsdaten, die Informationen \u00fcber die zuletzt ge\u00f6ffneten Fenster enthalten,\n" +
@@ -1778,12 +1780,18 @@ public class MainController {
 			final TopController ctl = iter.next();
 			result = ctl.askAndSaveIfNecessary();
 		}
-		for(CollectController<Collectable> ctl : getControllerForWritingPreferences()) {
-			ctl.writePreferencesWhileClosing();
-		}
 		return result;
 	}
 
+	private void closeAllControllers() throws IOException {
+		for (TopController c: mpActiveControllers.values()) {
+			c.close();
+		}
+	}
+
+	/**
+	 * @deprecated Not in use.
+	 */
 	private Collection<CollectController<Collectable>> getControllerForWritingPreferences() {
 		Map<String, CollectController<Collectable>> mp = new HashMap<String, CollectController<Collectable>>();
 		for(MainFrameTab tab : mpActiveControllers.keySet()) {
