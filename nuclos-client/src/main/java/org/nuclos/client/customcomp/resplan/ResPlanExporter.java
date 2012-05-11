@@ -37,6 +37,7 @@ import org.nuclos.client.ui.resplan.ResPlanModel;
 import org.nuclos.client.ui.resplan.TimeModel;
 import org.nuclos.common.collect.collectable.Collectable;
 import org.nuclos.common.dblayer.CollectableNameProducer;
+import org.nuclos.common2.DateUtils;
 import org.w3c.dom.Element;
 import org.w3c.dom.svg.SVGElement;
 import org.w3c.dom.svg.SVGRectElement;
@@ -49,8 +50,6 @@ public class ResPlanExporter {
 	private static final String SVG_TEMPLATE = "templates/svg/resplan.svg";
 	
 	//
-	
-	private static final int WEEK_START_DAY = Calendar.MONDAY;
 	
 	private static final int XPIXEL_OFFSET = 200;
 	private static final int XPIXEL_FOR_TIME_CAT = 50;
@@ -131,9 +130,9 @@ public class ResPlanExporter {
 		final TimeGranularity tg = new TimeGranularity(granularity, time);
 		final int quantizer = granularity.getCalendarQuantizer();
 		maxCategory = tg.getCategoryCount() - 1;
-		realHorizon = new Interval<Date>(floorBound(horizon.getStart(), quantizer), 
-				ceilBound(horizon.getEnd(), quantizer));
-		millisForPx = getMillis(realHorizon.getStart(), quantizer) / XPIXEL_FOR_TIME_CAT;
+		realHorizon = new Interval<Date>(DateUtils.floorBound(horizon.getStart(), quantizer), 
+				DateUtils.ceilBound(horizon.getEnd(), quantizer));
+		millisForPx = DateUtils.getMillis(realHorizon.getStart(), quantizer) / XPIXEL_FOR_TIME_CAT;
 		maxX = getX(realHorizon.getEnd());
 		
 		for (int cat = 0; cat <= maxCategory; ++cat) {
@@ -141,11 +140,11 @@ public class ResPlanExporter {
 			// final int width = (int) (gt.getApproxMillis() / millisForPx);
 			final Calendar cal = Calendar.getInstance();
 			final int q = gt.getCalendarQuantizer();	
-			for (cal.setTime(floorBound(realHorizon.getStart(), q)); 
+			for (cal.setTime(DateUtils.floorBound(realHorizon.getStart(), q)); 
 					cal.getTime().before(realHorizon.getEnd()); 
-					montoneAdd(cal, q, 1)) {
+					DateUtils.montoneAdd(cal, q, 1)) {
 				
-				final int width = (int) (getMillis(cal.getTime(), q) / millisForPx);
+				final int width = (int) (DateUtils.getMillis(cal.getTime(), q) / millisForPx);
 				// here x might be negative
 				float x = getX(cal.getTime());
 				float realWidth;
@@ -230,108 +229,4 @@ public class ResPlanExporter {
 		return result;
 	}
 	
-	private long getMillis(Date date, int quantizer) {
-		final Calendar cal = Calendar.getInstance();
-		cal.setTime(date);
-		final int quant = cal.get(quantizer);
-		// side effect: modifies cal
-		dateFromQuant(cal, quant, quantizer);
-		final long low = cal.getTimeInMillis();
-		
-		// cal.set(quantizer, quant + 1);
-		montoneAdd(cal, quantizer, 1);
-		dateFromQuant(cal, cal.get(quantizer), quantizer);
-		return cal.getTimeInMillis() - low;
-	}
-	
-	private static Date floorBound(Date date, int quantizer) {
-		final Calendar cal = Calendar.getInstance();
-		cal.setTime(date);
-		final int quant = cal.get(quantizer);
-		return dateFromQuant(cal, quant, quantizer);
-	}
-	
-	private static Date ceilBound(Date date, int quantizer) {
-		final Calendar cal = Calendar.getInstance();
-		cal.setTime(date);
-		// final int quant = cal.get(quantizer) + 1;
-		// cal.set(quantizer, cal.get(quantizer) + 1);
-		montoneAdd(cal, quantizer, 1);
-		return dateFromQuant(cal, cal.get(quantizer), quantizer);
-	}
-	
-	private static Date dateFromQuant(Calendar cal, int quant, int quantizer) {
-		switch (quantizer) {
-		case Calendar.WEEK_OF_YEAR:
-			cal.set(Calendar.DAY_OF_WEEK, 0);
-			cal.set(Calendar.HOUR_OF_DAY, 0);
-			cal.set(Calendar.MINUTE, 0);
-			cal.set(Calendar.SECOND, 1);
-			cal.set(Calendar.MILLISECOND, 0);
-			
-			cal.set(Calendar.WEEK_OF_YEAR, quant);
-			cal.set(Calendar.DAY_OF_WEEK, WEEK_START_DAY);
-			break;
-		case Calendar.DAY_OF_WEEK:
-			cal.set(Calendar.HOUR_OF_DAY, 0);
-			cal.set(Calendar.MINUTE, 0);
-			cal.set(Calendar.SECOND, 1);
-			cal.set(Calendar.MILLISECOND, 0);
-			
-			cal.set(Calendar.DAY_OF_WEEK, quant);
-			break;
-		case Calendar.DAY_OF_MONTH:
-			cal.set(Calendar.HOUR_OF_DAY, 0);
-			cal.set(Calendar.MINUTE, 0);
-			cal.set(Calendar.SECOND, 1);
-			cal.set(Calendar.MILLISECOND, 0);
-			
-			cal.set(Calendar.DAY_OF_MONTH, quant);
-			break;
-		case Calendar.MONTH:
-			cal.set(Calendar.DAY_OF_MONTH, 1);
-			cal.set(Calendar.HOUR_OF_DAY, 0);
-			cal.set(Calendar.MINUTE, 0);
-			cal.set(Calendar.SECOND, 1);
-			cal.set(Calendar.MILLISECOND, 0);
-			
-			cal.set(Calendar.MONTH, quant);
-			break;
-		default:
-			throw new IllegalArgumentException();
-		}
-		final Date result = cal.getTime();
-		return result;
-	}
-	
-	private static void montoneAdd(Calendar cal, int field, int amount) {
-		final long millis = cal.getTimeInMillis();
-		cal.add(field, amount);
-		while (cal.getTimeInMillis() < millis) {
-			switch (field) {
-			case Calendar.WEEK_OF_YEAR:
-				field = Calendar.YEAR;
-				cal.add(field, 1);
-				break;
-			case Calendar.DAY_OF_WEEK:
-				field = Calendar.WEEK_OF_YEAR;
-				cal.add(field, 1);
-				break;
-			case Calendar.DAY_OF_MONTH:
-				field = Calendar.MONTH;
-				cal.add(field, 1);
-				break;
-			case Calendar.MONTH:
-				field = Calendar.YEAR;
-				cal.add(field, 1);
-				break;
-			case Calendar.YEAR:
-				// do nothing
-				break;
-			default:
-				throw new IllegalArgumentException();
-			}
-		}
-	}
-
 }
