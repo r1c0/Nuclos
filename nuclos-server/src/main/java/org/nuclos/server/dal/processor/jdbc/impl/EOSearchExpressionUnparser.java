@@ -290,6 +290,9 @@ public class EOSearchExpressionUnparser {
 				assert refEntity.getDbEntity().startsWith("V_");
 				dbEntity = refEntity.getDbEntity().replaceFirst("^T_", "V_");
 			}
+			else if(refEntity.getReadDelegate() != null) {
+				dbEntity = refEntity.getReadDelegate();
+			}
 			else {
 				dbEntity = refEntity.getDbEntity();
 			}

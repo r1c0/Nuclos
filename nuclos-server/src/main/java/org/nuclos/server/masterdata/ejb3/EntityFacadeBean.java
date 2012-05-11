@@ -171,7 +171,7 @@ public class EntityFacadeBean extends NuclosFacadeBean implements EntityFacadeRe
 		}
 
 		JdbcEntityObjectProcessor eoProcessor = NucletDalProvider.getInstance().getEntityObjectProcessor(sEntityName);
-		List<EntityObjectVO> eoResult = eoProcessor.getBySearchExpression(clctMaker.getFields(), new CollectableSearchExpression(appendRecordGrants(clctcond, sEntityName)), null, false, true);
+		List<EntityObjectVO> eoResult = eoProcessor.getBySearchExpression(clctMaker.getFields(), new CollectableSearchExpression(appendRecordGrants(clctcond, sEntityName)), null, false, false);
 
 		return CollectionUtils.sorted(CollectionUtils.transform(eoResult, clctMaker), new Comparator<CollectableField>() {
 
