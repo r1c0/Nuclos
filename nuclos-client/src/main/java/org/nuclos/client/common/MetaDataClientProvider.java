@@ -51,6 +51,7 @@ import org.nuclos.server.report.valueobject.DynamicEntityVO;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
+import org.springframework.stereotype.Component;
 
 /**
  * An caching singleton for remotely accessing the meta data information
@@ -60,7 +61,7 @@ import org.springframework.beans.factory.annotation.Configurable;
  * {@link org.nuclos.client.masterdata.MetaDataDelegate}.
  * </p>
  */
-@Configurable
+@Component("metaDataProvider")
 public class MetaDataClientProvider implements MetaDataProvider<EntityMetaDataVO, EntityFieldMetaDataVO>, CommonMetaDataClientProvider<EntityMetaDataVO, EntityFieldMetaDataVO>, InitializingBean {
 
 	private static final Logger LOG = Logger.getLogger(MetaDataClientProvider.class);

@@ -16,6 +16,10 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.common.collect.collectable;
 
+import org.nuclos.common.entityobject.CollectableEOEntityProvider;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 /**
  * The default <code>CollectableEntityProvider</code> used by the framework for a specific application.
  * <br>
@@ -24,40 +28,36 @@ package org.nuclos.common.collect.collectable;
  *
  * @author	<a href="mailto:Christoph.Radig@novabit.de">Christoph.Radig</a>
  * @version	01.00.00
+ * 
+ * @deprecated Use spring injection of CollectableEOEntityProvider directly.
  */
-
+@Component
 public class DefaultCollectableEntityProvider {
 	/**
 	 * Note that this class doesn't implement the original Singleton pattern, rather a variation of it...
 	 */
-	private static CollectableEntityProvider singleton;
+	private static CollectableEntityProvider INSTANCE;
 
 	/**
 	 * this class has no instances.
 	 */
-	private DefaultCollectableEntityProvider() {
-		// do nothing
+	DefaultCollectableEntityProvider() {
 	}
 
 	/**
 	 * sets the global instance of the <code>DefaultCollectableEntityProvider</code> that knows the application specific entities.
 	 * @param provider
 	 */
-	public static void setInstance(CollectableEntityProvider provider) {
-		if(singleton != null) {
-			throw new IllegalStateException("The DefaultCollectableEntityProvider has already been set.");
-		}
-		singleton = provider;
+	@Autowired
+	void setCollectableEOEntityProvider(CollectableEOEntityProvider provider) {
+		INSTANCE = provider;
 	}
 
 	/**
 	 * @return the global instance of the <code>DefaultCollectableEntityProvider</code> that knows the application specific entities.
 	 */
 	public static CollectableEntityProvider getInstance() {
-		if (singleton == null) {
-			throw new IllegalStateException("The DefaultCollectableEntityProvider must be set.");
-		}
-		return singleton;
+		return INSTANCE;
 	}
 
 }  // class DefaultCollectableEntityProvider

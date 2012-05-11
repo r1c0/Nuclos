@@ -203,10 +203,11 @@ public class CollectionUtils {
     * @postcondition result != null
     * @postcondition result.size() == at.length
     */
-   public static <T> List<T> asList(T[] at) {
+   public static <T> List<T> asList(Object[] at) {
       final List<T> result = new ArrayList<T>(at.length);
-      for (T t : at) 
-         result.add(t);
+      for (Object t : at) {
+         result.add((T) t);
+      }
       assert result.size() == at.length;
       return result;
    }

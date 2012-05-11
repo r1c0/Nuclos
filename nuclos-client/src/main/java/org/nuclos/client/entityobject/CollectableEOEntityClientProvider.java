@@ -18,6 +18,8 @@ package org.nuclos.client.entityobject;
 
 import org.nuclos.client.common.MetaDataClientProvider;
 import org.nuclos.common.entityobject.CollectableEOEntityProvider;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 /**
  * A CollectableEntityProvider implementation singleton for use on the client side.
@@ -25,12 +27,15 @@ import org.nuclos.common.entityobject.CollectableEOEntityProvider;
  * @author Thomas Pasch
  * @since Nuclos 3.1.01
  */
+@Component
 public class CollectableEOEntityClientProvider extends CollectableEOEntityProvider {
 	
-	private static final CollectableEOEntityClientProvider INSTANCE = new CollectableEOEntityClientProvider();
+	private static CollectableEOEntityClientProvider INSTANCE;
 	
-	private CollectableEOEntityClientProvider() {
-		super(MetaDataClientProvider.getInstance());
+	@Autowired
+	CollectableEOEntityClientProvider(MetaDataClientProvider prov) {
+		super(prov);
+		INSTANCE = this;
 	}
 	
 	public static CollectableEOEntityProvider getInstance() {

@@ -144,4 +144,14 @@ public class SortedListModel<E> extends AbstractListModel implements MutableList
 		return result;
 	}
 
+	@Override
+	public void replace(Collection<E> newCollection) {
+		final int oldLen = lst.size();
+		lst.clear();
+		fireIntervalRemoved(this, 0, oldLen);
+		
+		lst.addAll(newCollection);
+		sort();
+	}
+
 }  // class SortedListModel

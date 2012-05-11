@@ -357,7 +357,7 @@ public class MainController {
 
 			loginController.increaseLoginProgressBar(StartUp.PROGRESS_READ_ATTRIBUTES);
 
-			DefaultCollectableEntityProvider.setInstance(NuclosCollectableEntityProvider.getInstance());
+			// DefaultCollectableEntityProvider.setInstance(NuclosCollectableEntityProvider.getInstance());
 
 			Thread threadGenericObjectMetaDataCache = new Thread("MainController.readMetaData") {
 

@@ -286,8 +286,6 @@
 
 	<bean id="moduleProvider" class="org.nuclos.server.genericobject.Modules" />
 
-	<bean id="metaDataProvider" class="org.nuclos.server.common.MetaDataServerProvider"/>
-
 	<bean id="serviceLocator" class="org.nuclos.server.common.ServerServiceLocator" depends-on="appContext"/>
 
 	<bean id="ruleCache" class="org.nuclos.server.common.RuleCache" />
