@@ -36,8 +36,6 @@ import org.nuclos.common.collection.Pair;
  */
 public class DateUtils {
 
-	private static final int WEEK_START_DAY = Calendar.MONDAY;
-	
 	/**
 	 * the number of milliseconds per day (where a day has 24 hours).
 	 */
@@ -374,7 +372,14 @@ public class DateUtils {
 		// cal.set(quantizer, quant + 1);
 		montoneAdd(cal, quantizer, 1);
 		dateFromQuant(cal, cal.get(quantizer), quantizer);
-		return cal.getTimeInMillis() - low;
+		
+		long result = cal.getTimeInMillis() - low;
+		if (result < 0) {
+			montoneAdd(cal, Calendar.YEAR, 1);
+			result = cal.getTimeInMillis() - low;
+		}
+		assert result > 0;
+		return result;
 	}
 	
 	/**
@@ -402,14 +407,20 @@ public class DateUtils {
 	private static Date dateFromQuant(Calendar cal, int quant, int quantizer) {
 		switch (quantizer) {
 		case Calendar.WEEK_OF_YEAR:
-			cal.set(Calendar.DAY_OF_WEEK, 0);
+			final Date old = cal.getTime();
+			
+			cal.set(Calendar.DAY_OF_WEEK, cal.getFirstDayOfWeek());
 			cal.set(Calendar.HOUR_OF_DAY, 0);
 			cal.set(Calendar.MINUTE, 0);
 			cal.set(Calendar.SECOND, 1);
 			cal.set(Calendar.MILLISECOND, 0);
 			
 			cal.set(Calendar.WEEK_OF_YEAR, quant);
-			cal.set(Calendar.DAY_OF_WEEK, WEEK_START_DAY);
+			// cal.set(Calendar.DAY_OF_WEEK, WEEK_START_DAY);
+			
+			if (old.before(cal.getTime())) {
+				montoneAdd(cal, Calendar.YEAR, -1);
+			}
 			break;
 		case Calendar.DAY_OF_WEEK:
 			cal.set(Calendar.HOUR_OF_DAY, 0);
@@ -459,28 +470,28 @@ public class DateUtils {
 		if (amount == 0) {
 			return;
 		}
-		if (amount < 0) {
-			throw new IllegalArgumentException();
-		}
+		final int sign = amount > 0 ? 1 : -1;
+		
 		final long millis = cal.getTimeInMillis();
 		cal.add(field, amount);
-		while (cal.getTimeInMillis() < millis) {
+		
+		while ((sign > 0 && cal.getTimeInMillis() < millis) || (sign < 0 && cal.getTimeInMillis() > millis)) {
 			switch (field) {
 			case Calendar.WEEK_OF_YEAR:
 				field = Calendar.YEAR;
-				cal.add(field, 1);
+				cal.add(field, sign);
 				break;
 			case Calendar.DAY_OF_WEEK:
 				field = Calendar.WEEK_OF_YEAR;
-				cal.add(field, 1);
+				cal.add(field, sign);
 				break;
 			case Calendar.DAY_OF_MONTH:
 				field = Calendar.MONTH;
-				cal.add(field, 1);
+				cal.add(field, sign);
 				break;
 			case Calendar.MONTH:
 				field = Calendar.YEAR;
-				cal.add(field, 1);
+				cal.add(field, sign);
 				break;
 			case Calendar.YEAR:
 				// do nothing
@@ -489,6 +500,14 @@ public class DateUtils {
 				throw new IllegalArgumentException();
 			}
 		}
+	}
+	
+	public static void main(String[] args) {
+		Calendar cal = Calendar.getInstance();
+		cal.set(2012, 11, 24, 0, 0, 1);
+		System.out.println("date: " + cal.getTime());
+		long l = getMillis(cal.getTime(), Calendar.WEEK_OF_YEAR);
+		System.out.println("millis: " + l);
 	}
 
 }	// class DateUtils
