@@ -104,6 +104,8 @@ public class ResPlanPanel extends JPanel {
 	public static final String TIME_HORIZON_PROPERTY = "timeHorizon";
 
 	public static final String SEARCH_CONDITION_PROPERTY = "searchCondition";
+	
+	//
 
 	private ResPlanController controller;
 
@@ -495,7 +497,7 @@ public class ResPlanPanel extends JPanel {
 		setCustomSearchFilter(searchCondition);
 
 		try {
-			final NuclosCollectController ctl = NuclosCollectControllerFactory.getInstance().newCollectController(
+			final NuclosCollectController<?> ctl = NuclosCollectControllerFactory.getInstance().newCollectController(
 					Main.getInstance().getMainFrame().getHomePane(), resPlanModel.getResourceEntity().getEntityName(), null);
 			ctl.getSearchPanel().btnSearch.setAction(new CommonAbstractAction(Icons.getInstance().getIconFind16(), 
 					SpringLocaleDelegate.getInstance().getText("CollectController.30")) {
@@ -812,7 +814,7 @@ public class ResPlanPanel extends JPanel {
 		UIUtils.runCommand(Main.getInstance().getMainFrame(), new CommonRunnable() {
 			@Override
 			public void run() throws CommonBusinessException {
-				NuclosCollectController cntrl = NuclosCollectControllerFactory.getInstance().newCollectController(
+				NuclosCollectController<?> cntrl = NuclosCollectControllerFactory.getInstance().newCollectController(
 						controller.getFrame(), entityName, null);
 				cntrl.addCollectableEventListener(new CollectControllerEventHandler(cntrl));
 				cntrl.runViewSingleCollectableWithId(clct.getId());

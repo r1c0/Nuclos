@@ -536,7 +536,7 @@ public class ResPlanController extends CustomComponentController {
 		private final Map<Orientation, Integer> mapCellExtent = new HashMap<Orientation, Integer>();
 		private final String cwLabel;
 
-		TimeGranularity(GranularityType type, TimeModel<Date> timeModel) {
+		public TimeGranularity(GranularityType type, TimeModel<Date> timeModel) {
 			this.type = type;
 			this.timeModel = timeModel;
 			this.cwLabel = SpringLocaleDelegate.getInstance().getText("nuclos.resplan.cw.label");

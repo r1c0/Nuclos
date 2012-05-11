@@ -26,7 +26,7 @@ import org.nuclos.common.collect.collectable.Collectable;
  * @author Thomas Pasch
  * @since Nuclos 3.3.0
  */
-public class CollectableNameProducer {
+public class CollectableNameProducer implements INameProducer<Collectable> {
 	
 	private final List<IFieldRef> refs;
 	
