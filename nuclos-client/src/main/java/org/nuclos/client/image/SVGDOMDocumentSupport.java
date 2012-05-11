@@ -48,6 +48,7 @@ import org.w3c.dom.DOMImplementation;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.svg.SVGDefsElement;
+import org.w3c.dom.svg.SVGDocument;
 import org.w3c.dom.svg.SVGElement;
 import org.w3c.dom.svg.SVGGElement;
 import org.w3c.dom.svg.SVGLineElement;
@@ -102,8 +103,8 @@ public class SVGDOMDocumentSupport extends SVGDOMImplementation {
         return document;
 	}
 	
-	public AbstractDocument getDocument() {
-		return doc;
+	public SVGDocument getDocument() {
+		return (SVGDocument) doc;
 	}
 	
 	public Float getHeight() {
@@ -168,7 +169,7 @@ public class SVGDOMDocumentSupport extends SVGDOMImplementation {
 	
 	public void writeAsEmf(OutputStream out) throws IOException {
 		final SVG2EMF svg2emf = new SVG2EMF();
-		svg2emf.convert(doc, out);
+		svg2emf.convert((SVGDocument) doc, out);
 	}
 
 	public void writeAsPng(File file) throws IOException {

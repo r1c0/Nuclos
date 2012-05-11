@@ -1817,7 +1817,7 @@ public class SubForm extends JPanel
 				// Close is needed for avoiding memory leaks
 				// If you want to change something here, please consult me (tp).  
 				if (!closed) {
-					LOG.info("close() SubformTableColumnModel: " + this);
+					LOG.debug("close() SubformTableColumnModel: " + this);
 					tableColumns.clear();
 					closed = true;
 				}
@@ -1882,7 +1882,7 @@ public class SubForm extends JPanel
 			// Close is needed for avoiding memory leaks
 			// If you want to change something here, please consult me (tp).
 			if (!closed) {
-				LOG.info("close() SubFormTable: " + this);
+				LOG.debug("close() SubFormTable: " + this);
 				if (getModel() instanceof SubformTableColumnModel) {
 					((SubformTableColumnModel) getModel()).close();
 				}

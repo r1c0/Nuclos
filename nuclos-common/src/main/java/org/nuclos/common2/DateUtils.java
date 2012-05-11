@@ -456,6 +456,12 @@ public class DateUtils {
 	 * The returned date is always after given date if amount is positive.
 	 */
 	public static void montoneAdd(Calendar cal, int field, int amount) {
+		if (amount == 0) {
+			return;
+		}
+		if (amount < 0) {
+			throw new IllegalArgumentException();
+		}
 		final long millis = cal.getTimeInMillis();
 		cal.add(field, amount);
 		while (cal.getTimeInMillis() < millis) {

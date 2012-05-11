@@ -4333,6 +4333,10 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 
 	public void enableToolbarButtonsForDetailsMode(final int iDetailsMode) {
 		final CollectPanel<Clct> pnlCollect = this.getCollectPanel();
+		if (pnlCollect == null) {
+			// controller already closed
+			return;
+		}
 		final DetailsPanel pnlDetails = pnlCollect.getDetailsPanel();
 		// enable/disable toolbar buttons:
 

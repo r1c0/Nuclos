@@ -30,6 +30,7 @@ import org.apache.batik.bridge.UserAgentAdapter;
 import org.apache.batik.dom.AbstractDocument;
 import org.apache.batik.gvt.GraphicsNode;
 import org.w3c.dom.Document;
+import org.w3c.dom.svg.SVGDocument;
 
 /**
  * {@link http://svg2emf.googlecode.com/svn/trunk/SVG2EMF/src/main/java/net/hanjava/svg/SVG2EMF.java}
@@ -52,7 +53,7 @@ public class SVG2EMF {
 		final FileOutputStream emfStream = new FileOutputStream(emfFile);
 		try {
 			Document svgDoc = loader.loadDocument(svgUri);
-			convert((AbstractDocument) svgDoc, emfStream);
+			convert((SVGDocument) svgDoc, emfStream);
 		}
 		finally {
 			loader.dispose();
@@ -60,7 +61,7 @@ public class SVG2EMF {
 		}
 	}
 
-	public void convert(AbstractDocument svgDoc, OutputStream out) throws IOException {
+	public void convert(SVGDocument svgDoc, OutputStream out) throws IOException {
 		EmfWriterGraphics eg2d = null;
 		try {
 			// Build a GVTTree
