@@ -158,7 +158,17 @@ public abstract class CollectableFieldFormat {
 				return "";
 			}
 			final String base64 = Base64.encodeBase64String(image.getContent());
-			return "[$" + CollectableFieldFormat.class.getName() + "," + oValue.getClass().getName() + "," + image.getContent().length+ "," + base64 + "$]";
+			StringBuffer buff = new StringBuffer();
+			buff.append("[$");
+			buff.append(CollectableFieldFormat.class.getName());
+			buff.append(",");
+			buff.append(oValue.getClass().getName());
+			buff.append(",");
+			buff.append(image.getContent().length);
+			buff.append(",");
+			buff.append(base64);
+			buff.append("$]");			
+			return buff.toString();
 		}
 
 		@Override

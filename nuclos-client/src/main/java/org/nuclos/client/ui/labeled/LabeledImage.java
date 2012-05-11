@@ -22,13 +22,20 @@ import java.awt.GridBagConstraints;
 import java.awt.Image;
 import java.awt.Insets;
 import java.awt.Toolkit;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
+import javax.swing.JTable;
 import javax.swing.JToolTip;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
+import javax.swing.ToolTipManager;
 
+import org.apache.log4j.Logger;
 import org.nuclos.client.image.ImageScaler;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.common.NuclosImage;
@@ -45,7 +52,11 @@ import org.nuclos.common.NuclosImage;
 
 public class LabeledImage extends LabeledMediaComponent {
 
+	private static final Logger LOG = Logger.getLogger(LabeledImage.class);
+
 	private JLabel lbImage;
+	private MouseListener mlTooltip;
+	private boolean blnTooltipDisplayed = false;
 	private NuclosImage ni;
 	
 	
@@ -57,84 +68,127 @@ public class LabeledImage extends LabeledMediaComponent {
 		super(isNullable, javaClass, inputFormat, bSearchable);
 		
 		lbImage = new JLabel() {
-
 			@Override
 			public String getToolTipText() {
+				if (lbImage.getParent() != null && lbImage.getParent() instanceof JTable)
+					return super.getToolTipText();
 				if(getIcon() == null) {
 					return super.getToolTipText();
 				}
-				StringBuffer sb = new StringBuffer();
-			
-				return sb.toString();				
+				return "";				
 			}
 
 			@Override
 			public JToolTip createToolTip() {
-				MyToolTip tooltip = new MyToolTip();
+				if (lbImage.getParent() != null && lbImage.getParent() instanceof JTable)
+					return super.createToolTip();
+
+				final MyToolTip tooltip = new MyToolTip();
 				tooltip.setComponent(this);
-				if(ni != null && ni.getContent() != null) {
-					ImageIcon ii = new ImageIcon(ni.getContent());
-					int height = ii.getIconHeight();
-					int width = ii.getIconWidth();
-					Dimension dimScreen = Toolkit.getDefaultToolkit().getScreenSize();
-					if(dimScreen.width <= width || dimScreen.height <= height) {
-						// final Image imageScaled = ii.getImage().getScaledInstance(dimScreen.width, dimScreen.height, Image.SCALE_DEFAULT);
-						final Image imageScaled = ImageScaler.scaleImage(ii.getImage(), dimScreen);
-						ii = new ImageIcon(imageScaled);
+
+				try {
+					if(ni != null && ni.getContent() != null) {
+						ImageIcon ii = new ImageIcon(ni.getContent());
+						int height = ii.getIconHeight();
+						int width = ii.getIconWidth();
+						Dimension dimScreen = Toolkit.getDefaultToolkit().getScreenSize();
+						if(dimScreen.width <= width || dimScreen.height <= height) {
+							// final Image imageScaled = ii.getImage().getScaledInstance(dimScreen.width, dimScreen.height, Image.SCALE_DEFAULT);
+							final Image imageScaled = ImageScaler.scaleImage(ii.getImage(), dimScreen);
+							ii = new ImageIcon(imageScaled);
+						}
+						
+						if(dimScreen.width < width)
+							width = dimScreen.width;
+						if(dimScreen.height < height)
+							height = dimScreen.height;					
+						
+						tooltip.setSize(width, height);
+						tooltip.setPreferredSize(new Dimension(width, height));
+						JLabel image = new JLabel(ii);
+						tooltip.setLayout(new BorderLayout());
+						tooltip.add(image, BorderLayout.CENTER);
 					}
-					
-					if(dimScreen.width < width)
-						width = dimScreen.width;
-					if(dimScreen.height < height)
-						height = dimScreen.height;					
-					
-					tooltip.setSize(width, height);
-					tooltip.setPreferredSize(new Dimension(width, height));
-					JLabel image = new JLabel(ii);
-					tooltip.setLayout(new BorderLayout());
-					tooltip.add(image, BorderLayout.CENTER);
-					
-					
+				} catch (OutOfMemoryError e) {
+					LOG.warn(e.getMessage());
+				} catch (Exception e) {
+					LOG.warn(e.getMessage());
 				}
+				ToolTipManager.sharedInstance().setDismissDelay(Integer.MAX_VALUE); // infinite
+				tooltip.addMouseListener(new MouseAdapter() {
+					@Override
+					public void mouseClicked(MouseEvent e) {
+						if (mlTooltip != null)
+					    	mlTooltip.mousePressed(e);
+					}
+				});
+				blnTooltipDisplayed = true;
 				return tooltip;
 			}
-			
-			
-			
 		};
+
+		SwingUtilities.invokeLater(new Runnable() {
+			@Override
+			public void run() {
+				MouseListener[] mlisteners = lbImage.getMouseListeners();
+				for (int i = 0; i < mlisteners.length; i++) {
+					if (mlisteners[i] instanceof ToolTipManager) {
+						mlTooltip = mlisteners[i];
+						lbImage.removeMouseListener(mlisteners[i]);
+						break;
+					}
+				}	
+			}
+		});
 		
+		lbImage.addMouseListener(new MouseAdapter() {
+			private final int defaultDismissTimeout = ToolTipManager.sharedInstance().getDismissDelay();
+			@Override
+			public void mouseEntered(MouseEvent e) {
+				ToolTipManager.sharedInstance().setDismissDelay(Integer.MAX_VALUE); // infinite
+				if (mlTooltip != null)
+					mlTooltip.mouseEntered(e);
+			}
+			@Override
+			public void mouseExited(MouseEvent e) {
+				ToolTipManager.sharedInstance().setDismissDelay(defaultDismissTimeout);
+				if (mlTooltip != null && !blnTooltipDisplayed)
+					mlTooltip.mousePressed(e);
+				if (mlTooltip != null)
+					mlTooltip.mouseExited(e);
+				if (e.getClickCount() == 1 && SwingUtilities.isRightMouseButton(e)) {
+					if (mlTooltip != null)
+						mlTooltip.mousePressed(e);
+				}
+			}
+		});
 		
-		if(this.validationLayer != null){
-			this.addControl(this.validationLayer);
+		if(validationLayer != null){
+			addControl(validationLayer);
 		} else {
-			this.addControl(this.lbImage);
+			addControl(lbImage);
 		}
-		this.getJLabel().setLabelFor(this.lbImage);
-		lbImage.setToolTipText("");
+		getJLabel().setLabelFor(lbImage);
 		lbImage.setHorizontalAlignment(SwingConstants.CENTER);
-		
 	}
 	
 	/**
 	 * @deprecated Why is this needed at all?
 	 */
 	class MyToolTip extends JToolTip {
-
 		@Override
 		public void setTipText(String tipText) {
 			super.setTipText(tipText);
 		}
-		
 	}
 	
-
 	@Override
 	protected JComponent getLayeredComponent(){
 		return this.lbImage;
 	}
 
 	public void setNuclosImage(NuclosImage ni) {
-		this.ni = ni;	
+		this.ni = ni;
 	}
 	
 	public NuclosImage getNuclosImage() {
@@ -172,6 +226,11 @@ public class LabeledImage extends LabeledMediaComponent {
 	@Override
 	protected JLabel getLayeredLabel() {
 		return lbImage;
+	}
+
+	@Override
+	public JComponent getControlComponent() {
+		return super.getControlComponent();
 	}
 
 	@Override

@@ -19,11 +19,8 @@ package org.nuclos.client.genericobject.valuelistprovider;
 import java.lang.reflect.Constructor;
 
 import org.apache.commons.lang.NotImplementedException;
-
-import org.nuclos.common2.SpringLocaleDelegate;
-import org.nuclos.common2.LangUtils;
-import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.client.common.DatasourceBasedCollectableFieldsProvider;
+import org.nuclos.client.common.NuclosCollectableEntityProvider;
 import org.nuclos.client.masterdata.valuelistprovider.DependantMasterDataCollectableFieldsProvider;
 import org.nuclos.client.masterdata.valuelistprovider.GenericCollectableFieldsProvider;
 import org.nuclos.client.masterdata.valuelistprovider.MasterDataCollectableFieldsProviderFactory;
@@ -40,8 +37,9 @@ import org.nuclos.common.collect.collectable.CollectableEntity;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
 import org.nuclos.common.collect.collectable.CollectableFieldsProvider;
 import org.nuclos.common.collect.collectable.CollectableFieldsProviderFactory;
-import org.nuclos.common.collect.collectable.DefaultCollectableEntityProvider;
-import org.nuclos.common.genericobject.CollectableGenericObjectEntityField;
+import org.nuclos.common2.LangUtils;
+import org.nuclos.common2.SpringLocaleDelegate;
+import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.server.report.valueobject.ValuelistProviderVO;
 
 /**
@@ -58,7 +56,7 @@ public class GenericObjectCollectableFieldsProviderFactory implements Collectabl
 	private final CollectableEntity clcte;
 
 	public GenericObjectCollectableFieldsProviderFactory(String sEntityName) {
-		this.clcte = (sEntityName == null) ? null : DefaultCollectableEntityProvider.getInstance().getCollectableEntity(sEntityName);
+		this.clcte = (sEntityName == null) ? null : NuclosCollectableEntityProvider.getInstance().getCollectableEntity(sEntityName);
 	}
 
 	@Override

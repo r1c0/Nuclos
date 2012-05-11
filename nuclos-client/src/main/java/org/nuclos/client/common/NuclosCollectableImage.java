@@ -16,8 +16,8 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.common;
 
-import java.awt.Color;
 import java.awt.Component;
+import java.awt.Cursor;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.datatransfer.DataFlavor;
@@ -53,7 +53,6 @@ import javax.swing.JLabel;
 import javax.swing.JPopupMenu;
 import javax.swing.JTable;
 import javax.swing.SwingConstants;
-import javax.swing.border.LineBorder;
 import javax.swing.table.TableCellRenderer;
 
 import org.apache.log4j.Logger;
@@ -124,8 +123,18 @@ public class NuclosCollectableImage extends CollectableMediaComponent implements
 				clearField();
 			} else {
 				if (ni.getContent() != null) {
-					ImageIcon ii = new ImageIcon(ni.getContent());
-					// this.getMediaComponent().setIcon(ii);
+					ImageIcon ii;
+					if (this.getLabeledComponent().getParent() == null) {
+						if (ni.getThumbnail() == null)
+							ni.produceThumbnail();
+						if (ni.getThumbnail() != null)
+							ii = new ImageIcon(ni.getThumbnail());
+						else
+							ii = new ImageIcon(ni.getContent());
+					} else {
+						ii = new ImageIcon(ni.getContent());
+					}
+
 					int h = this.getLabeledComponent().getHeight();
 					int w = this.getLabeledComponent().getWidth();
 
@@ -144,7 +153,6 @@ public class NuclosCollectableImage extends CollectableMediaComponent implements
 						}
 						// final Image imageScaled = ii.getImage().getScaledInstance(w, h, Image.SCALE_DEFAULT);
 						final Image imageScaled = ImageScaler.scaleImage(ii.getImage(), w, h);
-						
 						ImageIcon icon = new ImageIcon(imageScaled);
 						
 						// set icon for both states, because if the component is disabled it should look the same way.
@@ -166,7 +174,8 @@ public class NuclosCollectableImage extends CollectableMediaComponent implements
 			clearField();
 		}
 
-		getImageLabel().setBorder(new LineBorder(Color.BLACK));
+		// Borders should be set from layout only...
+		//getImageLabel().setBorder(new LineBorder(Color.BLACK));
 
 		// ensure the start of the text is visible (instead of the end) when the
 		// text is too long
@@ -273,7 +282,6 @@ public class NuclosCollectableImage extends CollectableMediaComponent implements
 						LabeledImage li = (LabeledImage) comp;
 						NuclosImage ni = li.getNuclosImage();
 						String formatname = getFormatName(ni, "JPG");
-
 						final java.io.File file = File.createTempFile("nuclos-image", "." + formatname.toLowerCase());
 						IOUtils.writeToBinaryFile(file, ni.getContent());
 						file.deleteOnExit();
@@ -338,6 +346,10 @@ public class NuclosCollectableImage extends CollectableMediaComponent implements
 	}
 
 	public void loadImage(InputStream is) {
+		this.getLabeledComponent().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+		if (this.getLabeledComponent().getParent() != null)
+			this.getLabeledComponent().getParent().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+		
 		try {
 			BufferedInputStream bis = new BufferedInputStream(is);
 			byte b[] = new byte[bis.available()];
@@ -361,8 +373,12 @@ public class NuclosCollectableImage extends CollectableMediaComponent implements
 				LabeledImage li = (LabeledImage) comp;
 				ImageIcon ii = new ImageIcon(b);
 				// final Image scaledImageForLabeled = ii.getImage().getScaledInstance(li.getWidth(), li.getHeight(), Image.SCALE_DEFAULT);
-				final Image scaledImageForLabeled = ImageScaler.scaleImage(ii.getImage(), li.getWidth(), li.getHeight());
-				li.getJMediaComponent().setIcon(new ImageIcon(scaledImageForLabeled));
+				if (li.getWidth() != 0 && li.getHeight() != 0) {
+					final Image scaledImageForLabeled = ImageScaler.scaleImage(ii.getImage(), li.getWidth(), li.getHeight());
+					li.getJMediaComponent().setIcon(new ImageIcon(scaledImageForLabeled));
+				} else {
+					li.getJMediaComponent().setIcon(ii);	
+				}
 				li.setNuclosImage(nuclosImage);
 				nuclosImage.setThmubnail(getScaled(b, 20, 20));
 			}
@@ -376,6 +392,12 @@ public class NuclosCollectableImage extends CollectableMediaComponent implements
 			Errors.getInstance().showExceptionDialog(this.getControlComponent(), e1);
 		} catch (IOException e1) {
 			Errors.getInstance().showExceptionDialog(this.getControlComponent(), e1);
+		} catch (OutOfMemoryError e1) {
+			LOG.warn(e1.getMessage());
+		} finally {
+			this.getLabeledComponent().setCursor(Cursor.getDefaultCursor());
+			if (this.getLabeledComponent().getParent() != null)
+				this.getLabeledComponent().getParent().setCursor(Cursor.getDefaultCursor());
 		}
 	}
 
@@ -478,7 +500,8 @@ public class NuclosCollectableImage extends CollectableMediaComponent implements
 					((JLabel) comp).setSize(lbComp.getSize());
 					((JLabel) comp).setIcon(lbComp.getIcon());
 					((JLabel) comp).setText(lbComp.getText());
-					((JLabel) comp).setHorizontalAlignment(JLabel.CENTER);
+					((JLabel) comp).setHorizontalAlignment(SwingConstants.CENTER);
+					((JLabel) comp).setVerticalAlignment(SwingConstants.CENTER);
 				}
 
 				return comp;
