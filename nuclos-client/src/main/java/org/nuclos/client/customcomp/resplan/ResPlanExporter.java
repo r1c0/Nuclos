@@ -191,8 +191,23 @@ public class ResPlanExporter {
 				}
 
 				final String entryName = entryNameProducer.makeName(e);
-				final float x = getX(i.getStart());
+				
+				// here x might be negative
+				float x = getX(i.getStart());
 				final float width = getX(i.getEnd()) - x;
+				float realWidth;
+				if (x < 0) {
+					realWidth = width + x;
+				}
+				else if (x + width > maxX) {
+					realWidth = maxX - x;
+				}
+				else {
+					realWidth = width;
+				}
+				assert realWidth >= 0 && realWidth <= maxX : "realWidth: " + realWidth;
+				x = Math.max(x, 0);
+				
 				final SVGRectElement rect = sdds.createRect(x + XPIXEL_OFFSET, currentY + YPIXEL_RESOURCE_BORDER, width, 
 						YPIXEL_FOR_RESOURCE - 2 * YPIXEL_RESOURCE_BORDER, "lane-grey");
 				final SVGTextElement text = sdds.createText(x + XPIXEL_OFFSET, currentY + YPIXEL_BIGTXT_OFFSET, entryName, "bigTxt");
@@ -213,20 +228,6 @@ public class ResPlanExporter {
 	private float getX(Date d) {
 		final long millis = d.getTime() - realHorizon.getStart().getTime();
 		return millis / millisForPx;
-	}
-	
-	private float getBoundedX(Date d) {
-		final float result;
-		if (d.before(realHorizon.getStart())) {
-			result = 0.0f;
-		}
-		else if (d.after(realHorizon.getEnd())) {
-			result = getX(realHorizon.getEnd());
-		}
-		else {
-			result = getX(d);
-		}
-		return result;
 	}
 	
 }

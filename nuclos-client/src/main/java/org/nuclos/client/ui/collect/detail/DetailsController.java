@@ -40,6 +40,7 @@ import org.nuclos.client.ui.UIUtils;
 import org.nuclos.client.ui.collect.CollectController;
 import org.nuclos.client.ui.collect.CollectState;
 import org.nuclos.client.ui.collect.CommonController;
+import org.nuclos.client.ui.collect.SubForm;
 import org.nuclos.client.ui.collect.component.CollectableComponent;
 import org.nuclos.client.ui.collect.component.model.CollectableComponentModel;
 import org.nuclos.client.ui.collect.component.model.CollectableComponentModelAdapter;
@@ -310,19 +311,22 @@ public class DetailsController<Clct extends Collectable> extends CommonControlle
 		}
 		
 		process(sourceExpression);
-		if (sf.getSubForm().getParentSubForm() != null) {
+		final SubForm subform = sf.getSubForm();
+		if (subform != null && subform.getParentSubForm() != null) {
 			for (DetailsSubFormController<?> sfc : sfcs) {
-				if (sfc.getEntityAndForeignKeyFieldName().getEntityName().equals(sf.getSubForm().getParentSubForm())) {
+				if (sfc.getEntityAndForeignKeyFieldName().getEntityName().equals(subform.getParentSubForm())) {
 					process(sourceExpression, sfc, sfc.getSubForm().getJTable().getSelectionModel().getMinSelectionIndex());
 				}
 			}
 		}
 		for (int i = 0; i < sf.getCollectableTableModel().getColumnCount(); i++) {
 			CollectableEntityField cef = sf.getCollectableTableModel().getCollectableEntityField(i);
-			EntityFieldMetaDataVO fieldmeta = MetaDataClientProvider.getInstance().getEntityField(sf.getEntityAndForeignKeyFieldName().getEntityName(), cef.getName());
+			EntityFieldMetaDataVO fieldmeta = MetaDataClientProvider.getInstance().getEntityField(
+					sf.getEntityAndForeignKeyFieldName().getEntityName(), cef.getName());
 			if (fieldmeta.getCalculationScript() != null) {
 				if (fieldmeta.getCalculationScript().getSource().contains(sourceExpression)) {
-					Object o = ScriptEvaluator.getInstance().eval(fieldmeta.getCalculationScript(), new SubformControllerScriptContext(sf, sf.getSelectedCollectable()), null);
+					Object o = ScriptEvaluator.getInstance().eval(fieldmeta.getCalculationScript(), 
+							new SubformControllerScriptContext(sf, sf.getSelectedCollectable()), null);
 					sf.getCollectableTableModel().setValueAt(new CollectableValueField(o), row, i);
 				}
 			}
