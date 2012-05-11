@@ -131,6 +131,7 @@ public class GenericObjectImportCollectController extends MasterDataCollectContr
 	
 	@Override
 	public void init() {
+		super.init();
 		getCollectStateModel().addCollectStateListener(new CollectStateAdapter(){
 			@Override
 			public void detailsModeEntered(CollectStateEvent ev) throws CommonBusinessException {
