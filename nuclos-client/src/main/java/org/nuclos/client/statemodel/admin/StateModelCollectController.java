@@ -258,8 +258,10 @@ public class StateModelCollectController extends NuclosCollectController<Collect
 	 */
 	@Override
 	public void removeAdditionalChangeListenersForDetails() {
-		this.pnlEdit.getStateModelEditor().removeChangeListener(this.changelistenerDetailsChanged);
-		this.subformctlUsages.getSubForm().removeChangeListener(this.changelistenerDetailsChanged);
+		if (this.pnlEdit != null && this.pnlEdit.getStateModelEditor() != null)
+			this.pnlEdit.getStateModelEditor().removeChangeListener(this.changelistenerDetailsChanged);
+		if (this.subformctlUsages != null && this.subformctlUsages.getSubForm() != null)
+			this.subformctlUsages.getSubForm().removeChangeListener(this.changelistenerDetailsChanged);
 	}
 
 	@Override

@@ -20,6 +20,7 @@ import java.lang.reflect.Constructor;
 
 import org.apache.commons.lang.NotImplementedException;
 import org.nuclos.client.common.DatasourceBasedCollectableFieldsProvider;
+import org.nuclos.client.common.NuclosCollectableEntityProvider;
 import org.nuclos.client.masterdata.valuelistprovider.DependantMasterDataCollectableFieldsProvider;
 import org.nuclos.client.masterdata.valuelistprovider.GenericCollectableFieldsProvider;
 import org.nuclos.client.masterdata.valuelistprovider.MasterDataCollectableFieldsProviderFactory;
@@ -56,7 +57,7 @@ public class GenericObjectCollectableFieldsProviderFactory implements Collectabl
 	private final CollectableEntity clcte;
 
 	public GenericObjectCollectableFieldsProviderFactory(String sEntityName) {
-		this.clcte = (sEntityName == null) ? null : DefaultCollectableEntityProvider.getInstance().getCollectableEntity(sEntityName);
+		this.clcte = (sEntityName == null) ? null : NuclosCollectableEntityProvider.getInstance().getCollectableEntity(sEntityName);
 	}
 
 	@Override
