@@ -97,6 +97,7 @@ import org.nuclos.client.ui.Icons;
 import org.nuclos.client.ui.SizeKnownListener;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.client.ui.URIMouseAdapter;
+import org.nuclos.client.ui.collect.FixedColumnRowHeader;
 import org.nuclos.client.ui.collect.FixedColumnRowHeader.HeaderTable;
 import org.nuclos.client.ui.collect.component.CollectableComponent;
 import org.nuclos.client.ui.collect.component.CollectableComponentFactory;
@@ -2153,14 +2154,16 @@ public class SubForm extends JPanel
 
 		public void setRowHeaderTable(SubformRowHeader rowheader) {
 			this.rowheader = rowheader;
-			// NUCLEUSINT-299: focus mysteriously remained in the
-			// toolbar or wherever. Force to the table, when the
-			// row header gets a mouse-press.
-			rowheader.getHeaderTable().addMouseListener(new MouseAdapter() {
-                           @Override
-                           public void mousePressed(MouseEvent e) {
-                              requestFocus();
-                           }});
+			if (!(rowheader instanceof FixedColumnRowHeader)) { // NUCLOSINT-491
+				// NUCLEUSINT-299: focus mysteriously remained in the
+				// toolbar or wherever. Force to the table, when the
+				// row header gets a mouse-press.
+				rowheader.getHeaderTable().addMouseListener(new MouseAdapter() {
+	                           @Override
+	                           public void mousePressed(MouseEvent e) {
+	                        	   requestFocusInWindow();
+	                           }});
+			}
 		}
 
 		public final SubFormTableModel getSubFormModel() {
