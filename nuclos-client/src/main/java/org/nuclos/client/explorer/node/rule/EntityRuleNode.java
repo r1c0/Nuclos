@@ -144,6 +144,8 @@ public class EntityRuleNode extends AbstractRuleTreeNode {
 							EntityRuleUsageStatusNode o2) {
 						if (o1.statusId.equals(new Integer(-1)))
 							return -1;
+						else if (o2.statusId.equals(new Integer(-1)))
+							return 1;
 						else
 							return o1.getLabel().compareTo(o2.getLabel());
 					}
@@ -221,6 +223,8 @@ public class EntityRuleNode extends AbstractRuleTreeNode {
 						EntityRuleUsageProcessNode o2) {
 					if (o1.processId.equals(new Integer(-1)))
 						return -1;
+					else if (o2.processId.equals(new Integer(-1)))
+						return 1;
 					else
 						return o1.getLabel().compareTo(o2.getLabel());
 				}

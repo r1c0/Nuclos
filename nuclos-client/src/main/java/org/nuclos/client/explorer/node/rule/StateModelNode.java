@@ -18,6 +18,7 @@ package org.nuclos.client.explorer.node.rule;
 
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Pair;
+import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonFinderException;
@@ -38,6 +39,8 @@ public class StateModelNode extends AbstractRuleTreeNode {
 
 	private StateModelVO stateModelVo;
 	private StateTransitionVO transitionVo;
+	private Integer iNumeralStart;
+	private Integer iNumeralEnd;
 	private final boolean isAllRuleSubnode;
 	private final RuleVO parentRuleVo;
 
@@ -68,6 +71,16 @@ public class StateModelNode extends AbstractRuleTreeNode {
 		this.stateModelVo = stateGraph.getStateModel();
 		this.isAllRuleSubnode = hasRuleSubnodesFlag;
 		this.parentRuleVo = null;
+		
+		for (StateVO curState : stateGraph.getStates()) {
+
+			if (aTransitionVo.getStateSource() != null && aTransitionVo.getStateSource().equals(curState.getId())) {
+				iNumeralStart = curState.getNumeral();
+			}
+			if (aTransitionVo.getStateTarget() != null && aTransitionVo.getStateTarget().equals(curState.getId())) {
+				iNumeralEnd = curState.getNumeral();
+			}
+		}
 	}
 
 	public StateModelNode(StateTransitionVO aTransitionVo, RuleEngineTransitionVO ruleTrans, StateGraphVO stateGraph, boolean hasRuleSubnodesFlag) {
@@ -84,7 +97,7 @@ public class StateModelNode extends AbstractRuleTreeNode {
 		if (!this.isAllRuleSubnode) {
 			try {
 				if (RuleNodeType.TRANSITION.equals(getNodeType())) {
-					StateGraphVO stateGraph = StateDelegate.getInstance().getStateGraph(stateModelVo.getId());
+					final StateGraphVO stateGraph = StateDelegate.getInstance().getStateGraph(stateModelVo.getId());
 
 					List<StateModelNode> transitionSubNodeList = new ArrayList<StateModelNode>();
 					for (StateTransitionVO transitionVo : stateGraph.getTransitions()) {
@@ -93,6 +106,15 @@ public class StateModelNode extends AbstractRuleTreeNode {
 							transitionSubNodeList.add(new StateModelNode(transitionVo, stateGraph, null, false));
 						}
 					}
+					Collections.sort(transitionSubNodeList, new Comparator<StateModelNode>() {
+						@Override
+						public int compare(StateModelNode o1, StateModelNode o2) {
+							int compare = LangUtils.compare(o1.iNumeralStart, o2.iNumeralStart);
+							if (compare == 0)
+								return LangUtils.compare(o1.iNumeralEnd, o2.iNumeralEnd);
+							return compare;
+						}
+					});
 
 					setSubNodes(transitionSubNodeList);
 				}
@@ -172,8 +194,6 @@ public class StateModelNode extends AbstractRuleTreeNode {
 	}
 
 	private static String createNodeLabel(StateTransitionVO aTransitionVo, StateGraphVO stateGraph) {
-		stateGraph.getStates();
-
 		Integer startNumeral = null;
 		Integer endNumeral = null;
 
