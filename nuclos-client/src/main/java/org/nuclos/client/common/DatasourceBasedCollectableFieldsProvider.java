@@ -88,7 +88,7 @@ public class DatasourceBasedCollectableFieldsProvider implements CacheableCollec
 				try {
 					String sValuelistProviderDatasourceName = (String) oValue;
 					dsvo = DatasourceDelegate.getInstance().getValuelistProviderByName(sValuelistProviderDatasourceName);
-					collParameters = DatasourceDelegate.getInstance().getParametersFromXML(dsvo.getSource());
+					setParameters(collParameters = DatasourceDelegate.getInstance().getParametersFromXML(dsvo.getSource()));
 				}
 				catch (Exception e) {
 					throw new CommonFatalException(
@@ -102,7 +102,7 @@ public class DatasourceBasedCollectableFieldsProvider implements CacheableCollec
 				try {
 					String sDatasourceName = (String) oValue;
 					dsvo = DatasourceDelegate.getInstance().getDatasourceByName(sDatasourceName);
-					collParameters = DatasourceDelegate.getInstance().getParametersFromXML(dsvo.getSource());
+					setParameters(collParameters = DatasourceDelegate.getInstance().getParametersFromXML(dsvo.getSource()));
 				}
 				catch (CommonBusinessException e) {
 					throw new CommonFatalException(
@@ -115,7 +115,7 @@ public class DatasourceBasedCollectableFieldsProvider implements CacheableCollec
 				try {
 					String sDatasourceName = (String) oValue;
 					dsvoSearch = DatasourceDelegate.getInstance().getDatasourceByName(sDatasourceName);
-					collParameters = DatasourceDelegate.getInstance().getParametersFromXML(dsvoSearch.getSource());
+					setParameters(DatasourceDelegate.getInstance().getParametersFromXML(dsvoSearch.getSource()));
 				}
 				catch (CommonBusinessException e) {
 					throw new CommonFatalException(
@@ -138,7 +138,13 @@ public class DatasourceBasedCollectableFieldsProvider implements CacheableCollec
 			bSearchmode = (Boolean) oValue;
 		}
 		// NUCLEUSINT-1077
-		else if (collParameters != null) {
+		else {
+			mpParameters.put(sName, parseParameter(sName, oValue));			
+		}
+	}
+	
+	private Object parseParameter(String sName, Object oValue) {
+		if (collParameters != null) {
 			for(DatasourceParameterVO dpvo : collParameters) {
 				if(dpvo.getParameter().equals(sName)) {
 					Object oConvertedValue = oValue;
@@ -165,12 +171,17 @@ public class DatasourceBasedCollectableFieldsProvider implements CacheableCollec
 							}
 						}
 					}
-
-					mpParameters.put(sName, oConvertedValue);
-					break;
+					return oConvertedValue;
 				}
 			}
-			
+		}
+		return oValue;
+	}
+	
+	private void setParameters(List<DatasourceParameterVO> collParameters) {
+		this.collParameters = collParameters;
+		for (String param : mpParameters.keySet()) {
+			mpParameters.put(param, parseParameter(param, mpParameters.get(param)));
 		}
 	}
 
