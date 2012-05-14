@@ -467,7 +467,7 @@ public class NuclosEntityAttributePropertiesStep extends NuclosEntityAttributeAb
 		cbxJavatype.addActionListener(this);
 
 		updateState();
-		tfName.requestFocus();
+		tfName.requestFocusInWindow();
 	}
 
 	@Override

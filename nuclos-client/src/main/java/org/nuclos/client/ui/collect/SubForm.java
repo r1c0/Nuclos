@@ -1743,6 +1743,7 @@ public class SubForm extends JPanel
 		public boolean isRequestFocusEnabled() {
 			return true;
 		}
+		
 		public static class SubFormTableRowSorter extends TableRowSorter<TableModel> {
 			SubFormTableRowSorter(TableModel model) {
 				super(model);
@@ -2085,7 +2086,7 @@ public class SubForm extends JPanel
 			rowheader.getHeaderTable().addMouseListener(new MouseAdapter() {
                            @Override
                            public void mousePressed(MouseEvent e) {
-                              requestFocus();
+                        	   requestFocusInWindow();
                            }});
 		}
 

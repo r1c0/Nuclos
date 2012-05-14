@@ -21,6 +21,7 @@ import java.awt.event.FocusListener;
 
 import javax.swing.text.JTextComponent;
 
+import org.apache.log4j.Logger;
 import org.nuclos.client.ui.collect.component.model.CollectableComponentModelEvent;
 import org.nuclos.client.ui.collect.component.model.SearchComponentModelEvent;
 import org.nuclos.client.ui.labeled.LabeledTextComponent;
@@ -47,6 +48,8 @@ import org.nuclos.common.collect.exception.CollectableFieldFormatException;
  * @version 01.00.00
  */
 public abstract class CollectableTextComponent extends LabeledCollectableComponent {
+	
+	private static final Logger LOG = Logger.getLogger(CollectableTextComponent.class);
 
 	protected CollectableTextComponent(CollectableEntityField clctef, LabeledTextComponent labeledtextcomp, boolean bSearchable) {
 		super(clctef, labeledtextcomp, bSearchable);
@@ -54,11 +57,19 @@ public abstract class CollectableTextComponent extends LabeledCollectableCompone
 		this.getJTextComponent().getDocument().addDocumentListener(newDocumentListenerForTextComponentWithComparisonOperator());
 		if (selectAllOnGainFocus()) {
 			this.getJTextComponent().addFocusListener(new FocusListener() {
+
 				@Override
-				public void focusLost(FocusEvent e) {}
+				public void focusLost(FocusEvent e) {
+					LOG.info("focusLost: event=" + e.isTemporary() + " componenttext=" + getJTextComponent().getText()
+							+ " parent=" + getJTextComponent().getParent());					
+				}
+				
 				@Override
 				public void focusGained(FocusEvent e) {
-					getJTextComponent().selectAll();
+					final JTextComponent tcomp = getJTextComponent();
+					LOG.info("focusGained: event=" + e.isTemporary() + " componenttext=" + tcomp.getText() + " parent=" 
+							+ tcomp.getParent());
+					tcomp.selectAll();
 				}
 			});
 		}

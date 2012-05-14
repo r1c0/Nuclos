@@ -355,7 +355,7 @@ public class LiveSearchController implements LiveSearchSearchPaneListener, LiveS
 						public void run() {
 							try {
 			                	searchComponent.setButtonSelection(false);
-								searchComponent.requestFocus();
+								searchComponent.requestFocusInWindow();
 							}
 							catch (Exception e) {
 								LOG.error("functionAction failed: " + e, e);

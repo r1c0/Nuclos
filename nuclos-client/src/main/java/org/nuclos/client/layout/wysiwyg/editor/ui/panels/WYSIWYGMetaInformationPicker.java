@@ -135,7 +135,7 @@ public class WYSIWYGMetaInformationPicker extends JDialog {
 			
 		});
 		/** request focus in the filter window */
-		filter.requestFocus();
+		filter.requestFocusInWindow();
 		
 		this.add(filter, new TableLayoutConstraints(1, 1, 3, 1));
 		itemList = new JList(listModel);

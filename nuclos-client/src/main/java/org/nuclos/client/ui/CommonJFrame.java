@@ -228,7 +228,7 @@ public class CommonJFrame extends JFrame {
 	      super.setExtendedState(state);
 	      super.setAlwaysOnTop(true);
 	      super.toFront();
-	      super.requestFocus();
+	      super.requestFocusInWindow();
 	      super.setAlwaysOnTop(false);
 	  }
 	}
@@ -244,7 +244,7 @@ public class CommonJFrame extends JFrame {
 	  super.setExtendedState(state);
 	  super.setAlwaysOnTop(true);
 	  super.toFront();
-	  super.requestFocus();
+	  super.requestFocusInWindow();
 	  super.setAlwaysOnTop(false);
 	}
 

@@ -206,7 +206,7 @@ public class AutoCompleterFilter extends DocumentFilter {
 			win.getContentPane().add(sp);
 			lst.setModel(lm);
 			win.setVisible(true);
-			textField.requestFocus();
+			textField.requestFocusInWindow();
 			textField.addFocusListener(fwl);
 		} else {
 			if(win == null)

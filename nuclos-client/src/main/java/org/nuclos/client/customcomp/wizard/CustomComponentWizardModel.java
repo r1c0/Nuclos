@@ -1189,7 +1189,7 @@ public class CustomComponentWizardModel extends StaticModel {
 			spinner.addFocusListener(new FocusListener() {
 				@Override
 				public void focusGained(FocusEvent e) {
-					dateEditor.getTextField().requestFocus();
+					dateEditor.getTextField().requestFocusInWindow();
 				}
 				@Override
 				public void focusLost(FocusEvent e) {

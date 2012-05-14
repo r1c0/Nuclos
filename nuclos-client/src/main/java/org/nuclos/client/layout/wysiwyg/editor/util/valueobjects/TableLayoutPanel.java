@@ -852,7 +852,7 @@ public class TableLayoutPanel extends JPanel implements DropTargetListener, Mous
 	@Override
 	public void mouseClicked(MouseEvent e) {
 		////NUCLEUSINT-999
-		this.requestFocus();
+		this.requestFocusInWindow();
 		
 		if (e.getButton() == MouseEvent.BUTTON1) {
 				performActionsOnLeftClick(e);

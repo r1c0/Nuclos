@@ -369,7 +369,7 @@ public class ListOfValues extends JPanel {
 	class LovFocusListener implements FocusListener {
 		@Override
 		public void focusGained(FocusEvent e) {
-			ListOfValues.this.tf.requestFocus();
+			ListOfValues.this.tf.requestFocusInWindow();
 		}
 		@Override
 		public void focusLost(FocusEvent e) {
