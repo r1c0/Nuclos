@@ -129,7 +129,14 @@ public class NuclosMailSender {
 //			MimeBodyPart html = new MimeBodyPart();
 			text.setText(mail.getMessage());
 			text.setHeader("MIME-Version","1.0");
-			text.setHeader("Content-Type",text.getContentType());
+			
+			// set Content-Type
+			String contentType = mail.getHeader("Content-Type");
+			if (null == contentType) {
+				// default text/plain
+				contentType = "text/plain";
+			}
+			text.setHeader("Content-Type", contentType);
 //			html.setContent("<html>Text als <b>HTML</b></html>", "text/html");
 //			html.setHeader("MIME-Version", "1.0");
 //			html.setHeader("Content-Type", html.getContentType());
