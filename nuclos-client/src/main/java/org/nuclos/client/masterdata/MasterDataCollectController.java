@@ -953,13 +953,16 @@ public class MasterDataCollectController extends EntityCollectController<Collect
 		   if(clct.getId() == null && dependants.getAllData().size() != 0){
 			   final MasterDataSubFormController mdsubformctl = (MasterDataSubFormController) subformctl;
 			   for (String entity: dependants.getEntityNames())
-					if (entity.equals(mdsubformctl.getCollectableEntity().getName()))
+					if (entity.equals(mdsubformctl.getCollectableEntity().getName())) {
 						mdsubformctl.fillSubForm(null, dependants.getData(entity));
+						mdsubformctl.getSubForm().setNewEnabled(new CollectControllerScriptContext(MasterDataCollectController.this, new ArrayList<DetailsSubFormController<?>>(getSubFormControllersInDetails())));
+					}
 			}
 			else if (clct.getId() == null) {
 			   final MasterDataSubFormController mdsubformctl = (MasterDataSubFormController) subformctl;
 			   mdsubformctl.clear();
 			   mdsubformctl.fillSubForm(null, new ArrayList<EntityObjectVO>());
+			   mdsubformctl.getSubForm().setNewEnabled(new CollectControllerScriptContext(MasterDataCollectController.this, new ArrayList<DetailsSubFormController<?>>(getSubFormControllersInDetails())));
 		   }
 		   else {
 			   SubFormsInterruptableClientWorker sfClientWorker = new SubFormsInterruptableClientWorker() {

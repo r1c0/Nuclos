@@ -2313,13 +2313,16 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 						DependantMasterDataMap dependants = clct.getGenericObjectWithDependantsCVO().getDependants();
 						if(clct.getId() == null && dependants.getAllData().size() != 0){
 							for (String entity: dependants.getEntityNames())
-								if (entity.equals(mdsubformctl.getCollectableEntity().getName()))
+								if (entity.equals(mdsubformctl.getCollectableEntity().getName())) {
 									mdsubformctl.fillSubForm(null, dependants.getData(entity));
+									mdsubformctl.getSubForm().setNewEnabled(new CollectControllerScriptContext(GenericObjectCollectController.this, new ArrayList<DetailsSubFormController<?>>(getSubFormControllersInDetails())));
+								}
 						}
 						else if (clct.getId() == null) {
 							mdsubformctl.clear();
 							mdsubformctl.getSubForm().getJTable().setBackground(Color.WHITE);
 							mdsubformctl.fillSubForm(null, new ArrayList<EntityObjectVO>());
+							mdsubformctl.getSubForm().setNewEnabled(new CollectControllerScriptContext(GenericObjectCollectController.this, new ArrayList<DetailsSubFormController<?>>(getSubFormControllersInDetails())));
 						}
 						else {
 							if (mdsubformctl.isChildSubForm())
