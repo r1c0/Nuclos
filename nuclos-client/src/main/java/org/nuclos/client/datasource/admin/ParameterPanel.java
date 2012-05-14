@@ -222,7 +222,11 @@ public class ParameterPanel extends JPanel {
 					}
 					else {
 						if (paramvo.getDatatype().equals("java.lang.String")) {
-							mpParams.put(paramvo.getParameter(), ((JTextField) comp).getText());
+							String text = ((JTextField) comp).getText();
+							if (text != null) {
+								text = text.trim();
+							}
+							mpParams.put(paramvo.getParameter(), "".equals(text) ? null : text);
 						}
 						else if (paramvo.getDatatype().equals("java.lang.Boolean")) {
 							// Physically there are no boolean parameters in the database
@@ -230,10 +234,18 @@ public class ParameterPanel extends JPanel {
 							mpParams.put(paramvo.getParameter(), ((JComboBox) comp).getSelectedItem().equals(Boolean.TRUE) ? 1 : 0);
 						}
 						else if (paramvo.getDatatype().equals("java.lang.Double")) {
-							mpParams.put(paramvo.getParameter(), new Double(((JTextField) comp).getText()));
+							String text = ((JTextField) comp).getText();
+							if (text != null) {
+								text = text.trim();
+							}
+							mpParams.put(paramvo.getParameter(), "".equals(text) ? null : new Double(((JTextField) comp).getText()));
 						}
 						else if (paramvo.getDatatype().equals("java.lang.Integer")) {
-							mpParams.put(paramvo.getParameter(), new Integer(((JTextField) comp).getText()));
+							String text = ((JTextField) comp).getText();
+							if (text != null) {
+								text = text.trim();
+							}
+							mpParams.put(paramvo.getParameter(), "".equals(text) ? null : new Integer(((JTextField) comp).getText()));
 						}
 						else if (paramvo.getDatatype().equals("java.util.Date")) {
 							// todo add validation of date format

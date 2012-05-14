@@ -341,8 +341,13 @@ public class DatasourceServerUtils {
 	private String replaceParameters(String sSql, Map<String, ?> mpParams) {
 		String result = sSql;
 		for(String sParameter : DatasourceUtils.getParametersFromString(sSql)) {
-			result = replaceAll(result, "$" + sParameter,
-			    replaceParam("$" + sParameter, mpParams));
+			String value = replaceParam("$" + sParameter, mpParams);
+			// quoted
+			if (value == null) {
+				result = replaceAll(result, "'$" + sParameter + "'", String.valueOf(value));
+			}
+			// unquoted
+			result = replaceAll(result, "$" + sParameter, String.valueOf(value));
 		}
 
 		return result;
@@ -372,7 +377,7 @@ public class DatasourceServerUtils {
 			return param.toString();
 		}
 		else {
-			return "null";
+			return null;
 		}
 	}
 
