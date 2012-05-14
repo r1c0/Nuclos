@@ -79,9 +79,9 @@ import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
 import org.nuclos.common.dal.vo.EntityObjectVO;
 import org.nuclos.common.entityobject.CollectableEOEntity;
-import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.CommonRunnable;
 import org.nuclos.common2.IdUtils;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonFinderException;
 import org.nuclos.server.genericobject.GeneratorFailedException;
@@ -522,21 +522,10 @@ public class GenerationController {
 	private void showGenerationWithExceptionResult(GeneratorFailedException ex) {
 		final GenerationResult result = ex.getGenerationResult();
 		try {
-			Integer generatedGoId = IdUtils.unsafeToId(result.getGeneratedObject().getId());
 			EntityMetaDataVO meta = MetaDataClientProvider.getInstance().getEntity(IdUtils.toLongId(action.getTargetModuleId()));
-			if ((meta.isStateModel() && SecurityCache.getInstance().isWriteAllowedForModule(
-					Modules.getInstance().getEntityNameByModuleId(action.getTargetModuleId()), generatedGoId))
+			if ((meta.isStateModel() && SecurityCache.getInstance().isNewAllowedForModule(meta.getEntity()))
 					|| (!meta.isStateModel() && SecurityCache.getInstance().isWriteAllowedForMasterData(meta.getEntity())) ) {
-				
-				if (generatedGoId != null) {
-					// dead code
-					assert false;
-					if (action.isShowObject())
-						showGenericObject(result.getGeneratedObject(), action.getTargetModuleId());
-				}
-				else {
-					showIncompleteGenericObject(result.getSourceIds(), result.getGeneratedObject(), action, result.getError(), ex.getCause());
-				}
+				showIncompleteGenericObject(result.getSourceIds(), result.getGeneratedObject(), action, result.getError(), ex.getCause());
 			}
 		}
 		catch (CommonBusinessException e) {

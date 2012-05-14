@@ -417,6 +417,7 @@ public class GeneratorFacadeBean extends NuclosFacadeBean implements GeneratorFa
 			}
 			catch (CommonBusinessException ex) {
 				EntityObjectVO temp = DalSupportForGO.wrapGenericObjectVO(container.getGenericObject());
+				temp.setId(null);
 				temp.setEntity(targetMeta.getEntity());
 				temp.setDependants(container.getDependants());
 				final GenerationResult gr = new GenerationResult(CollectionUtils.transform(
