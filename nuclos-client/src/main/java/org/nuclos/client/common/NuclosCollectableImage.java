@@ -16,7 +16,6 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.common;
 
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Graphics2D;
@@ -54,7 +53,6 @@ import javax.swing.JLabel;
 import javax.swing.JPopupMenu;
 import javax.swing.JTable;
 import javax.swing.SwingConstants;
-import javax.swing.border.LineBorder;
 import javax.swing.table.TableCellRenderer;
 
 import org.apache.log4j.Logger;
@@ -125,6 +123,7 @@ public class NuclosCollectableImage extends CollectableMediaComponent implements
 				clearField();
 			} else {
 				if (ni.getContent() != null) {
+					ImageIcon ii;
 					if (this.getLabeledComponent().getParent() == null) {
 						if (ni.getThumbnail() == null)
 							ni.produceThumbnail();
