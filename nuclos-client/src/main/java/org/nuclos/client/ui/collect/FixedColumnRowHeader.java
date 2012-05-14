@@ -784,7 +784,7 @@ public class FixedColumnRowHeader extends SubformRowHeader {
 					final int rowCol[] = getNextEditableCell(this, rowIndex, columnIndex, bShift);
 					if(!external && (rowCol[1] == 0 || rowCol[1] == colCount || rowIndex != rowCol[0])) {
 						if (externalTable != null) { 
-							externalTable.changeSelection(iSelRow, 0, toggle, extend, true);
+							externalTable.changeSelection(rowCol[0], !bShift ? 0 : externalTable.getColumnCount() - 1 , toggle, extend, true);
 							return;
 						}
 					}
@@ -801,6 +801,11 @@ public class FixedColumnRowHeader extends SubformRowHeader {
 						if((rowCol[1] == 0 || rowCol[1] == colCount - 1)) {
 							if (externalTable != null) { 
 								externalTable.changeSelection(iSelRow, 0, toggle, extend, true);
+								return;
+							}
+						} else if((rowCol[1] == 1)) {
+							if (externalTable != null) { 
+								externalTable.changeSelection(iSelRow == 0 ? getRowCount() - 1 : iSelRow - 1, externalTable.getColumnCount() - 1, toggle, extend, true);
 								return;
 							}
 						}
@@ -834,7 +839,7 @@ public class FixedColumnRowHeader extends SubformRowHeader {
 					}
 				}
 			} else {
-				for(int i = col; i > 0; i--) {
+				for(int i = col; i >= 0; i--) {
 					if(table.isCellEditable(row, i)) {
 						colFound = true;
 						rowCol[1] = i;
@@ -845,7 +850,7 @@ public class FixedColumnRowHeader extends SubformRowHeader {
 					row--;
 					if(row <= 0)
 						return rowCol;
-					for(int i = colCount; i > 0; i--) {
+					for(int i = colCount - 1; i > 0; i--) {
 						if(table.isCellEditable(row, i)) {
 							rowCol[0] = row;
 							rowCol[1] = i;
