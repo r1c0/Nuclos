@@ -45,12 +45,12 @@ public class EntityRuleNode extends AbstractRuleTreeNode {
 
 	public static class EntityRuleUsageStatusNode extends EntityRuleNode {
 		
-		private final List<RuleVO> lstRules;
+		private final Map<RuleVO, Integer> lstRules;
 		private final boolean isLeaf;
 		public EntityRuleUsageStatusNode(String aEventName, String aEntity, String entityName, Integer processId, Integer statusId, String statusLabel, boolean isLeaf) {
 			super(aEventName, aEntity, statusLabel, null, false, processId, statusId);
 			
-			this.lstRules = new ArrayList<RuleVO>();
+			this.lstRules = new HashMap<RuleVO, Integer>();
 			this.isLeaf = isLeaf;
 		}
 		
@@ -58,9 +58,8 @@ public class EntityRuleNode extends AbstractRuleTreeNode {
 			return isLeaf;
 		}
 		
-		public void putRules(RuleVO ruleVO) {
-			if (!lstRules.contains(ruleVO))
-				lstRules.add(ruleVO);
+		public void putRules(RuleVO ruleVO, Integer iOrder) {
+			lstRules.put(ruleVO, iOrder);
 		}
 
 		@Override
@@ -68,12 +67,20 @@ public class EntityRuleNode extends AbstractRuleTreeNode {
 			if (!isAllRuleSubnode) {
 				removeSubNodes();
 				
-				final List<AbstractRuleTreeNode> subNodeList = new ArrayList<AbstractRuleTreeNode>();
+				final List<RuleNode> subNodeList = new ArrayList<RuleNode>();
 
-				for (RuleVO ruleVO : lstRules) {
+				for (RuleVO ruleVO : lstRules.keySet()) {
 					subNodeList.add(new RuleNode(ruleVO, eventName, entity,
 							new Integer(-1).equals(processId) ? null : processId, new Integer(-1).equals(statusId) ? null : statusId));
 				}
+				
+				Collections.sort(subNodeList, new Comparator<RuleNode>() {
+					@Override
+					public int compare(RuleNode o1,
+							RuleNode o2) {
+						return LangUtils.compare(lstRules.get(o1.getRuleVo()), lstRules.get(o2.getRuleVo()));
+					}
+				});
 
 				setSubNodes(subNodeList);
 			}
@@ -122,14 +129,14 @@ public class EntityRuleNode extends AbstractRuleTreeNode {
 										MasterDataVO mdvoStatus = MasterDataCache.getInstance().get(NuclosEntity.STATE.getEntityName(), statusId);
 										statusLabel = mdvoStatus.getField("numeral").toString() + " " + mdvoStatus.getField("name").toString();
 									}
-									
 									entityRuleUsageStatusNode = new EntityRuleUsageStatusNode(eventName, entity, 
-											SpringLocaleDelegate.getInstance().getLabelFromMetaDataVO(MetaDataClientProvider.getInstance().getEntity(entity)), processId, statusId, statusLabel, false);
+											SpringLocaleDelegate.getInstance().getLabelFromMetaDataVO(MetaDataClientProvider.getInstance().getEntity(entity)),
+											processId, statusId, statusLabel, false);
 									
 									ruleUsageStatusMap.put(statusId, entityRuleUsageStatusNode);
 								}
 								
-								entityRuleUsageStatusNode.putRules(ruleVO);
+								entityRuleUsageStatusNode.putRules(ruleVO, ruleEventUsageVO.getOrder());
 							} catch (Exception e) {
 								continue;
 							}
