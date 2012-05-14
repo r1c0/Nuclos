@@ -2111,14 +2111,16 @@ public class SubForm extends JPanel
 
 		public void setRowHeaderTable(SubformRowHeader rowheader) {
 			this.rowheader = rowheader;
-			// NUCLEUSINT-299: focus mysteriously remained in the
-			// toolbar or wherever. Force to the table, when the
-			// row header gets a mouse-press.
-			rowheader.getHeaderTable().addMouseListener(new MouseAdapter() {
-                           @Override
-                           public void mousePressed(MouseEvent e) {
-                        	   requestFocusInWindow();
-                           }});
+			if (!(rowheader instanceof FixedColumnRowHeader)) { // NUCLOSINT-491
+				// NUCLEUSINT-299: focus mysteriously remained in the
+				// toolbar or wherever. Force to the table, when the
+				// row header gets a mouse-press.
+				rowheader.getHeaderTable().addMouseListener(new MouseAdapter() {
+	                           @Override
+	                           public void mousePressed(MouseEvent e) {
+	                        	   requestFocusInWindow();
+	                           }});
+			}
 		}
 
 		public final SubFormTableModel getSubFormModel() {
