@@ -707,8 +707,8 @@ public abstract class SubFormController extends MainFrameTabController
 	            	return;
 	            if(ke.isShiftDown() || ke.isControlDown())
 	            	return;
-	            int rowIndex = tbl.getSelectedRow();
-	            int columnIndex = tbl.getSelectedColumn();
+	            int rowIndex = e.getFirstIndex();//tbl.getSelectedRow();
+	            int columnIndex = tbl.getSelectedColumn() == tbl.getColumnCount() -1 ? 0 : tbl.getSelectedColumn();
 	            if(((rowIndex == 1 && columnIndex == -1) || (rowIndex == 0 && columnIndex == 0)) && e.getLastIndex() > 0) {
 		            ke.consume();
 		            int idxRow = e.getLastIndex(); 
@@ -779,7 +779,7 @@ public abstract class SubFormController extends MainFrameTabController
 
 		tbl.getSelectionModel().addListSelectionListener(listselectionlistener);
 
-		tbl.getSelectionModel().addListSelectionListener(new FocusListSelectionListener(tbl));
+		tbl.setFocusListSelectionListener(new FocusListSelectionListener(tbl));
 	}
 
 	private void removeListSelectionListener(final JTable tbl) {
