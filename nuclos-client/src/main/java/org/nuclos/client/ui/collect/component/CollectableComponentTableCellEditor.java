@@ -35,6 +35,9 @@ import org.nuclos.client.ui.collect.component.model.CollectableComponentModelHel
 import org.nuclos.client.ui.collect.component.model.CollectableComponentModelListener;
 import org.nuclos.client.ui.collect.component.model.DetailsComponentModelEvent;
 import org.nuclos.client.ui.collect.component.model.SearchComponentModelEvent;
+import org.nuclos.client.ui.collect.component.verifier.DateInputVerifier;
+import org.nuclos.client.ui.collect.component.verifier.FloatAndDoubleInputVerifier;
+import org.nuclos.client.ui.collect.component.verifier.TrueInputVerifier;
 import org.nuclos.client.ui.labeled.LabeledComponent;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
 import org.nuclos.common.collect.collectable.CollectableField;
@@ -78,7 +81,10 @@ public class CollectableComponentTableCellEditor extends AbstractCellEditor impl
 		}
 		this.clctef = clctef;
 		this.bSearchable = false;
-
+		this.editorDateInputVerifier = new DateInputVerifier(clctef);
+		this.floatAndDoubleInputVerifier = new FloatAndDoubleInputVerifier(clctef);
+		this.trueInputVerifier = new TrueInputVerifier();
+		
 		assert !this.isSearchable();
 	}
 
@@ -108,6 +114,9 @@ public class CollectableComponentTableCellEditor extends AbstractCellEditor impl
 		this.clctcomp.getModel().addCollectableComponentModelListener(this);
 		this.clctef = clctcomp.getEntityField();
 		this.bSearchable = bSearchable;
+		this.editorDateInputVerifier = new DateInputVerifier(clctef);
+		this.floatAndDoubleInputVerifier = new FloatAndDoubleInputVerifier(clctef);
+		this.trueInputVerifier = new TrueInputVerifier();
 
 		assert this.isSearchable() == bSearchable;
 	}
@@ -243,19 +252,19 @@ public class CollectableComponentTableCellEditor extends AbstractCellEditor impl
 		/** @todo no input verifier for searchable components? */
 		if (!this.isSearchable() && clctcomp instanceof CollectableDateChooser) {
 			final CollectableDateChooser clctdatechooser = (CollectableDateChooser) clctcomp;
-			clctdatechooser.getDateChooser().getJTextField().setInputVerifier(editorInputVerifier);
+			clctdatechooser.getDateChooser().getJTextField().setInputVerifier(editorDateInputVerifier);
 		}
 		if (!this.isSearchable() && clctcomp instanceof CollectableTextField) {
 			final CollectableTextField clcttextfield = (CollectableTextField)clctcomp;
-			clcttextfield.getJTextComponent().setInputVerifier(textInputVerifier);
+			clcttextfield.getJTextComponent().setInputVerifier(floatAndDoubleInputVerifier);
 		}
 		if (!this.isSearchable() && clctcomp instanceof CollectableComboBox) {
 			final CollectableComboBox clctcombobox = (CollectableComboBox)clctcomp;
-			((JTextField)clctcombobox.getJComboBox().getEditor().getEditorComponent()).setInputVerifier(vlpInputVerifier);
+			((JTextField)clctcombobox.getJComboBox().getEditor().getEditorComponent()).setInputVerifier(trueInputVerifier);
 		}
 		if (!this.isSearchable() && clctcomp instanceof CollectableListOfValues) {
 			final CollectableListOfValues clctlov = (CollectableListOfValues)clctcomp;
-			clctlov.getJTextField().setInputVerifier(vlpInputVerifier);
+			clctlov.getJTextField().setInputVerifier(trueInputVerifier);
 		}
 		
 		JComponent result = this.clctcomp.getJComponent();
@@ -284,40 +293,7 @@ public class CollectableComponentTableCellEditor extends AbstractCellEditor impl
 	 * In this way it is possible to show a ExceptionDialog
 	 * (the ExceptionDialog needs the focus to show it self)
 	 */
-	private InputVerifier editorInputVerifier = new InputVerifier() {
-		private CollectableFieldFormatException exception;
-		private boolean bCheckState;
-
-		@Override
-		public boolean verify(JComponent comp) {
-			if (!(comp instanceof JTextField)) {
-				return true;
-			}
-			final JTextField tf = (JTextField) comp;
-			try {
-				CollectableFieldFormat.getInstance(Date.class).parse(null, tf.getText());
-				return true;
-			}
-			catch (CollectableFieldFormatException ex) {
-				// we can't handle the exception here, because we can't show the ExceptionDialog
-				exception = ex;
-				return false;
-			}
-		}
-
-		@Override
-		public boolean shouldYieldFocus(JComponent comp) {
-			final boolean result = verify(comp);
-			if (!result && !bCheckState) {
-				bCheckState = true;
-				final String sMessage = StringUtils.getParameterizedExceptionMessage("field.invalid.value", clctef.getLabel());//"Das Feld \"" + clctef.getLabel() + "\" hat keinen g\u00fcltigen Wert.";
-				Errors.getInstance().showExceptionDialog(null, sMessage, exception);
-				return false;
-			}
-			bCheckState = false;
-			return false;
-		}
-	};
+	private final InputVerifier editorDateInputVerifier;
 
 	/**
 	 * Verifies the input of the text field with integer or double values
@@ -325,47 +301,7 @@ public class CollectableComponentTableCellEditor extends AbstractCellEditor impl
 	 * In this way it is possible to show a ExceptionDialog
 	 * (the ExceptionDialog needs the focus to show it self)
 	 */
-	private InputVerifier textInputVerifier = new InputVerifier() {
-		private CollectableFieldFormatException exception;
-		private boolean bCheckState;
-
-		@Override
-		public boolean verify(JComponent comp) {
-			if (!(comp instanceof JTextField)) {
-				return true;
-			}
-			final JTextField tf = (JTextField) comp;
-			try {
-				Class<?> clazz = CollectableComponentTableCellEditor.this.clctef.getJavaClass();
-				if (clazz.getName().equals("java.lang.Integer")) {
-					CollectableFieldFormat.getInstance(Integer.class).parse(null, tf.getText());
-				}
-				else if (clazz.getName().equals("java.lang.Double")) {
-					CollectableFieldFormat.getInstance(Double.class).parse(null, tf.getText());
-				}
-
-				return true;
-			}
-			catch (CollectableFieldFormatException ex) {
-				// we can't handle the exception here, because we can't show the ExceptionDialog
-				exception = ex;
-				return false;
-			}
-		}
-
-		@Override
-		public boolean shouldYieldFocus(JComponent comp) {
-			final boolean result = verify(comp);
-			if (!result && !bCheckState) {
-				bCheckState = true;
-				final String sMessage = StringUtils.getParameterizedExceptionMessage("field.invalid.value", clctef.getLabel());//"Das Feld \"" + clctef.getLabel() + "\" hat keinen g\u00fcltigen Wert.";
-				Errors.getInstance().showExceptionDialog(null, sMessage, exception);
-				return false;
-			}
-			bCheckState = false;
-			return false;
-		}
-	};
+	private final InputVerifier floatAndDoubleInputVerifier;
 	
 	/**
 	 * Verifies the input of the text field
@@ -373,27 +309,6 @@ public class CollectableComponentTableCellEditor extends AbstractCellEditor impl
 	 * In this way it is possible to show a ExceptionDialog
 	 * (the ExceptionDialog needs the focus to show it self)
 	 */
-	private InputVerifier vlpInputVerifier = new InputVerifier() {
-		private CollectableFieldFormatException exception;
-		private boolean bCheckState;
-
-		@Override
-		public boolean verify(JComponent comp) {
-			return true;
-		}
-
-		@Override
-		public boolean shouldYieldFocus(JComponent comp) {
-			final boolean result = verify(comp);
-			if (!result && !bCheckState) {
-				bCheckState = true;
-				final String sMessage = StringUtils.getParameterizedExceptionMessage("field.invalid.value", clctef.getLabel());//"Das Feld \"" + clctef.getLabel() + "\" hat keinen g\u00fcltigen Wert.";
-				Errors.getInstance().showExceptionDialog(null, sMessage, exception);
-				return false;
-			}
-			bCheckState = false;
-			return false;
-		}
-	};
+	private final InputVerifier trueInputVerifier;
 
 }  // class CollectableComponentTableCellEditor
