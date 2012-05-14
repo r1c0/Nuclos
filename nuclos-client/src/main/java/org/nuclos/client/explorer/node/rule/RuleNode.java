@@ -182,7 +182,8 @@ public class RuleNode extends AbstractRuleTreeNode {
 						MasterDataVO mdvoStatus = MasterDataCache.getInstance().get(NuclosEntity.STATE.getEntityName(), statusId);
 						statusLabel = mdvoStatus.getField("numeral").toString() + " " + mdvoStatus.getField("name").toString();
 					}
-					ruleUsageStatusNodes.add(new EntityRuleUsageStatusNode(sEventName, null, usageVO.getEntity(), usageVO.getProcessId(), usageVO.getStatusId(), statusLabel  + " (" + usageVO.getOrder() + ")", true));
+					ruleUsageStatusNodes.add(new EntityRuleUsageStatusNode(sEventName, null, usageVO.getEntity(),
+							usageVO.getProcessId(), usageVO.getStatusId(), statusLabel  + " (" + usageVO.getOrder() + ")", true));
 					
 					ruleUsageProcessMap.put(processId, ruleUsageStatusNodes);
 					entityRuleNodeMap.put(usageVO.getEntity(), ruleUsageProcessMap);
