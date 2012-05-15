@@ -17,6 +17,7 @@
 package org.nuclos.server.dbtransfer.content;
 
 import java.sql.SQLIntegrityConstraintViolationException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -30,18 +31,41 @@ import org.nuclos.common.dal.vo.EntityObjectVO;
 import org.nuclos.common.dbtransfer.NucletContentUID;
 import org.nuclos.common.dbtransfer.TransferOption;
 import org.nuclos.common2.LangUtils;
+import org.nuclos.common2.StringUtils;
 import org.nuclos.server.common.MetaDataServerProvider;
 import org.nuclos.server.dal.provider.NucletDalProvider;
 import org.nuclos.server.dbtransfer.NucletContentMap;
 import org.nuclos.server.dbtransfer.TransferUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
 
+@Configurable
 public class EntityFieldNucletContent extends DefaultNucletContent implements INucletInterface {
 	
 	public static final String NUCLET_INTERFACE_FOREIGN_ENTITY_UID = "EntityNucletContent.nucletInterfaceForeignEntityUID";
 	public static final String NUCLET_INTERFACE_FOREIGN_ENTITY_UID_IS_ADJUSTED = "adjusted";
+	
+	private NucletDalProvider nucletDalProvider;
+	
+	private Map<Long, String> efGroupNames = new HashMap<Long, String>();
 
 	public EntityFieldNucletContent(List<INucletContent> contentTypes) {
 		super(NuclosEntity.ENTITYFIELD, NuclosEntity.ENTITY, contentTypes);
+	}
+	
+	@Autowired
+	void setNucletDalProvider(NucletDalProvider nucletDalProvider) {
+		this.nucletDalProvider = nucletDalProvider;
+	}
+
+	@Override
+	public String getIdentifier(EntityObjectVO eo) {
+		return String.format("\"%s.%s\"", StringUtils.defaultIfNull(eo.getField("entity", String.class), ""+eo.getFieldId("entity")), eo.getField("field", String.class));
+	}
+
+	@Override
+	public String getIdentifierField() {
+		return "field";
 	}
 
 	@Override
@@ -49,6 +73,19 @@ public class EntityFieldNucletContent extends DefaultNucletContent implements IN
 		List<EntityObjectVO> result = super.getNcObjects(nucletIds, transferOptions);
 		for (EntityObjectVO ncObject : result) {
 			storeLocaleResources(ncObject, "localeresourcel", "localeresourced");
+			
+			Long efGroupId = ncObject.getFieldId("entityfieldgroup");
+			if (efGroupId != null) {
+				if (!efGroupNames.containsKey(efGroupId)) {
+					EntityObjectVO efGroup = nucletDalProvider.getEntityObjectProcessor(NuclosEntity.ENTITYFIELDGROUP).getByPrimaryKey(efGroupId);
+					if (efGroup != null) {
+						efGroupNames.put(efGroupId, efGroup.getField("name", String.class));
+					} else {
+						efGroupNames.put(efGroupId, null);
+					}
+				}
+				ncObject.getFields().put("entityfieldgroup", efGroupNames.get(efGroupId));
+			}
 		}
 		return result;
 	}
@@ -76,12 +113,12 @@ public class EntityFieldNucletContent extends DefaultNucletContent implements IN
 				String nucletInterfaceUID = ncObject.getField(NUCLET_INTERFACE_FOREIGN_ENTITY_UID, String.class);
 				boolean dummy = true;
 				if (nucletInterfaceUID != null) {
-					info("Nuclet interface entity UID " + nucletInterfaceUID + " found. Searching for entity...");
+					debug("Nuclet interface entity UID " + nucletInterfaceUID + " found. Searching for entity...");
 					if (TransferUtils.getNcObjectIdFromNucletContentUID(NuclosEntity.ENTITY, nucletInterfaceUID) != null){
-						info("Found!");
+						debug("Found!");
 						dummy = false;
 					} else {
-						info("NOT found!");
+						debug("NOT found!");
 					}
 				}
 				
@@ -150,7 +187,7 @@ public class EntityFieldNucletContent extends DefaultNucletContent implements IN
 		}
 		if (uidObject != null) {
 			String uid = uidObject.getField("uid");
-			info("Storing UID " + uid + " for nuclet interface entity " + entity);
+			debug("Storing UID " + uid + " for nuclet interface entity " + entity);
 			
 			return uid;
 		} else {

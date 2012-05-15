@@ -53,7 +53,7 @@ public class ServerServiceLocator extends ServiceLocator {
 			assert Proxy.isProxyClass(result.getClass());
 		}
 		else {
-			LOG.warn("Calling service " + c.getName() + " from within server - you should always use the local interface");
+			LOG.debug("Calling service " + c.getName() + " from within server - you should always use the local interface");
 			final T target = super.getFacade(c);
 			final Class<?> targetClass = target.getClass();
 			if (c.getSimpleName().endsWith("Local")) {

@@ -182,21 +182,6 @@ public class TransferUtils {
 
 	/**
 	 *
-	 * @param INucletContent nc
-	 * @param EntityObjectVO eo
-	 * @return
-	 */
-	public static String getIdentifier(INucletContent nc, EntityObjectVO eo) {
-		Object ident = eo.getFields().get(nc.getIdentifierField());
-		if (ident == null) {
-			return "ID="+LangUtils.defaultIfNull(getOriginId(eo), eo.getId());
-		} else {
-			return "\""+ident.toString()+"\"";
-		}
-	}
-
-	/**
-	 *
 	 * @param eo
 	 * @return
 	 */

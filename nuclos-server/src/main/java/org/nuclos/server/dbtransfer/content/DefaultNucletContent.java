@@ -19,6 +19,9 @@ package org.nuclos.server.dbtransfer.content;
 import java.util.List;
 
 import org.nuclos.common.NuclosEntity;
+import org.nuclos.common.dal.vo.EntityObjectVO;
+import org.nuclos.common2.LangUtils;
+import org.nuclos.server.dbtransfer.TransferUtils;
 
 public class DefaultNucletContent extends AbstractNucletContent {
 
@@ -38,6 +41,26 @@ public class DefaultNucletContent extends AbstractNucletContent {
 	@Override
 	public boolean canUpdate() {
 		return true;
+	}
+	
+	@Override
+	public String getIdentifier(EntityObjectVO eo) {
+		Object ident = eo.getFields().get(getIdentifierField());
+		if (ident == null) {
+			return "ID="+LangUtils.defaultIfNull(TransferUtils.getOriginId(eo), eo.getId());
+		} else {
+			return "\""+ident.toString()+"\"";
+		}
+	}
+	
+	@Override
+	public boolean hasNameIdentifier(EntityObjectVO eo) {
+		Object ident = eo.getFields().get(getIdentifierField());
+		if (ident == null) {
+			return false;
+		} else {
+			return true;
+		}
 	}
 
 	@Override

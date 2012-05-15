@@ -935,7 +935,7 @@ public abstract class StandardSqlDBAccess extends AbstractDBAccess {
     public IBatch getSqlForDelete(DbDeleteStatement deleteStmt) {
         String sql = "DELETE FROM " + deleteStmt.getTableName();
         if (deleteStmt.getConditions() != null) {
-            sql = sql + " WHERE " + buildWhereString(deleteStmt.getConditions().keySet());
+            sql = sql + " WHERE " + buildWhereString(deleteStmt.getConditions());
         }
         Object[] params = deleteStmt.getConditions().values().toArray();
         return BatchImpl.simpleBatch(new PreparedString(sql, params));

@@ -3000,6 +3000,7 @@
         "label": "Transition",
         "description": "Transition",
         "foreignentity": "nuclos_statetransition",
+        "ondeletecascade": true
         "datatype": "java.lang.String",
         "datascale": 255,
         "nullable": false,
@@ -7585,13 +7586,13 @@
     "searchable": false,
     "editable": true,
     "cacheable": true,
-    "dbentity": "T_MD_ENTITY_FIELD",
+    "dbentity": "V_MD_ENTITY_FIELD",
     "importexport": true,
     "systementity": true,
     "nuclos_entityfield": [
       {
         "name": "entity",
-        "dbfield": "INTID_T_MD_ENTITY",
+        "dbfield": "STRVALUE_T_MD_ENTITY",
         "foreignentity": "nuclos_entity",
         "foreignentityfield": "entity",
         "datatype": "java.lang.String",

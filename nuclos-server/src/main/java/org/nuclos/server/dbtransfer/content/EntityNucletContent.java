@@ -211,7 +211,7 @@ public class EntityNucletContent extends DefaultNucletContent {
 				try {
 					MasterDataFacadeHelper.remove(IdUtils.unsafeToId(refId), null, NuclosSystemParameters.getDirectory(NuclosSystemParameters.DOCUMENT_PATH));
 				} catch (Exception ex) {
-					error(ex);
+					error(ex.getMessage(), ex);
 				}
 		return NucletDalProvider.getInstance().getEntityObjectProcessor(entity).batchDelete(refIds, true);
 	}

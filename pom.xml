@@ -34,7 +34,7 @@
 	</ciManagement>
 	
 	<properties>
-		<nuclos.version.date>28.02.2012</nuclos.version.date>
+		<nuclos.version.date>15.05.2012</nuclos.version.date>
 		<nuclos.api.version>1.2.0</nuclos.api.version>
 		<spring.version>3.1.1.RELEASE</spring.version>
 		<spring.security.version>3.1.0.RELEASE</spring.security.version>
