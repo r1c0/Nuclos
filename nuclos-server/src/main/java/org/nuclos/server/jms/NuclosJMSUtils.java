@@ -50,7 +50,7 @@ public class NuclosJMSUtils {
 			
 			@Override
 			public void afterCommit() {
-				LOG.info("afterCommit: " + this + " JMS send: topic=" + topic + " receiver=" + sReceiver + ": " + sMessageText);
+				LOG.debug("afterCommit: " + this + " JMS send: topic=" + topic + " receiver=" + sReceiver + ": " + sMessageText);
 				sendMessage(sMessageText, topic, sReceiver);
 			}
 			
@@ -82,7 +82,7 @@ public class NuclosJMSUtils {
 			
 			@Override
 			public void afterCommit() {
-				LOG.info("afterCommit: " + this + " JMS object send: topic=" + topic + " receiver=" + sReceiver + ": " + object);
+				LOG.debug("afterCommit: " + this + " JMS object send: topic=" + topic + " receiver=" + sReceiver + ": " + object);
 				sendObjectMessage(object, topic, sReceiver);
 			}
 			
@@ -99,7 +99,7 @@ public class NuclosJMSUtils {
 		TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
 			@Override
 			public void afterCompletion(int status) {
-				LOG.info("afterCompletion: " + this + " JMS object send: topic=" + topic + " receiver=" + sReceiver + ": " + object);
+				LOG.debug("afterCompletion: " + this + " JMS object send: topic=" + topic + " receiver=" + sReceiver + ": " + object);
 				sendObjectMessage(object, topic, sReceiver);
 			}
 		});		
@@ -154,7 +154,7 @@ public class NuclosJMSUtils {
 	}
 	
 	private static void logSendMessage(String topic, Object body, Message msg) throws JMSException {
-		LOG.info("JMS send to topic '" + topic + "' msg=" + body + " details=" + toString(msg));
+		LOG.debug("JMS send to topic '" + topic + "' msg=" + body + " details=" + toString(msg));
 	}
 	
 	private static String toString(Message msg) throws JMSException {

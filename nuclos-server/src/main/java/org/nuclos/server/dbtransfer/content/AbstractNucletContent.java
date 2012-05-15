@@ -21,20 +21,22 @@ import static org.nuclos.server.dbtransfer.TransferUtils.getEntityObjectVO;
 import static org.nuclos.server.dbtransfer.TransferUtils.getForeignFieldToNuclet;
 import static org.nuclos.server.dbtransfer.TransferUtils.getForeignFields;
 import static org.nuclos.server.dbtransfer.TransferUtils.getForeignFieldsToParent;
-import static org.nuclos.server.dbtransfer.TransferUtils.getIdentifier;
 
 import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentMap;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.Priority;
+import org.jfree.util.Log;
 import org.nuclos.common.NuclosEOField;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.SearchConditionUtils;
@@ -62,6 +64,8 @@ import org.nuclos.server.genericobject.searchcondition.CollectableSearchExpressi
 
 public abstract class AbstractNucletContent implements INucletContent, AbstractNucletContentConstants {
 	private Logger log;
+	
+	private List<EntityObjectVO> dbContent;
 
 	private final NuclosEntity entity;
 	private final NuclosEntity parententity;
@@ -154,6 +158,7 @@ public abstract class AbstractNucletContent implements INucletContent, AbstractN
 	@Override
 	public List<EntityObjectVO> getNcObjects(Set<Long> nucletIds, TransferOption.Map transferOptions) {
 		List<EntityObjectVO> result = new ArrayList<EntityObjectVO>();
+		Set<Long> distinctIds = new HashSet<Long>();
 
 		if (!isEnabled())
 			return result;
@@ -180,17 +185,27 @@ public abstract class AbstractNucletContent implements INucletContent, AbstractN
 				for (String fieldToParent : getForeignFieldsToParent(entity, parententity)) {
 					EntityFieldMetaDataVO efMeta = MetaDataServerProvider.getInstance().getEntityField(entity, fieldToParent);
 					if (efMeta.getForeignEntity() != null) {
-						result.addAll(NucletDalProvider.getInstance().getEntityObjectProcessor(entity).getBySearchExpression(
+						for (EntityObjectVO eo : NucletDalProvider.getInstance().getEntityObjectProcessor(entity).getBySearchExpression(
 							new CollectableSearchExpression(SearchConditionUtils.newEOidComparison(
 								entity.getEntityName(), efMeta.getField(),
 								ComparisonOperator.EQUAL, parent.getId(),
-								MetaDataServerProvider.getInstance()))));
+								MetaDataServerProvider.getInstance())))) {
+							if (!distinctIds.contains(eo.getId())) {
+								distinctIds.add(eo.getId());
+								result.add(eo);
+							}
+						}
 					} else if (efMeta.getUnreferencedForeignEntity() != null) {
-						result.addAll(NucletDalProvider.getInstance().getEntityObjectProcessor(entity).getBySearchExpression(
+						for (EntityObjectVO eo : NucletDalProvider.getInstance().getEntityObjectProcessor(entity).getBySearchExpression(
 							new CollectableSearchExpression(SearchConditionUtils.newEOComparison(
 								entity.getEntityName(), efMeta.getField(),
 								ComparisonOperator.EQUAL, parent.getFields().get(efMeta.getUnreferencedForeignEntityField()),
-								MetaDataServerProvider.getInstance()))));
+								MetaDataServerProvider.getInstance())))) {
+							if (!distinctIds.contains(eo.getId())) {
+								distinctIds.add(eo.getId());
+								result.add(eo);
+							}
+						}
 					} else {
 						throw new IllegalArgumentException();
 					}
@@ -272,7 +287,7 @@ public abstract class AbstractNucletContent implements INucletContent, AbstractN
 					if (!LangUtils.equals(ncObject.getId(), eo.getId()))
 						otherObjects.add(eo);
 				}
-				for (EntityObjectVO eo : NucletDalProvider.getInstance().getEntityObjectProcessor(entity).getAll()) {
+				for (EntityObjectVO eo : getDbContent()) {
 					if (type == ValidationType.INSERT || (type == ValidationType.UPDATE && !LangUtils.equals(ncObject.getId(), eo.getId()))) {
 						if (uidMap.getUID(eo) == null) { // otherwise belongs to nuclet
 							otherObjects.add(eo);
@@ -299,7 +314,11 @@ public abstract class AbstractNucletContent implements INucletContent, AbstractN
 						}
 						if (countUnique == uniqueCombination.size()) {
 							result = false;
-							log.newWarningLine("Ignoring " + entity.getEntityName() + ": " + getIdentifier(this, ncObject) + " --> Unique constraint violated");
+							final String logMessage = "Ignoring " + entity.getEntityName() + ": " + getIdentifier(ncObject) + " --> Unique constraint violated";
+							warn(logMessage);
+							if (hasNameIdentifier(ncObject)) {
+								log.newWarningLine(logMessage);
+							}
 						}
 					}
 				}
@@ -316,12 +335,20 @@ public abstract class AbstractNucletContent implements INucletContent, AbstractN
 							Long validateId = ncObject.getFieldIds().get(efMeta.getField());
 							if (validateId != null && getEntityObjectVO(importContentMap.getValues(NuclosEntity.getByName(efMeta.getForeignEntity())), validateId) == null) {
 								if (efMeta.isNullable() && !isUniquePart) {
+									final String logMessage = "Removing reference from " + entity.getEntityName() + ": " + getIdentifier(ncObject) + " --> Unknown " + efMeta.getForeignEntity() + (ncObject.getField(efMeta.getField())==null? (": ID="+validateId): (" \""+ncObject.getField(efMeta.getField())+"\""));
 									ncObject.getFieldIds().remove(efMeta.getField());
 									ncObject.getFields().remove(efMeta.getField());
-									log.newWarningLine("Removing reference from " + entity.getEntityName() + ": " + getIdentifier(this, ncObject) + " --> Unknown " + efMeta.getForeignEntity() + ": ID=" + validateId);
+									warn(logMessage);
+									if (hasNameIdentifier(ncObject)) {
+										log.newWarningLine(logMessage);
+									}
 								} else {
 									result = false;
-									log.newWarningLine("Ignoring " + entity.getEntityName() + ": " + getIdentifier(this, ncObject) + " --> References to unknown " + efMeta.getForeignEntity() + ": ID=" + validateId);
+									final String logMessage = "Ignoring " + entity.getEntityName() + ": " + getIdentifier(ncObject) + " --> References to unknown " + efMeta.getForeignEntity() + ": ID=" + validateId;
+									warn(logMessage);
+									if (hasNameIdentifier(ncObject)) {
+										log.newWarningLine(logMessage);
+									}
 								}
 							}
 						} else {
@@ -334,10 +361,18 @@ public abstract class AbstractNucletContent implements INucletContent, AbstractN
 								!getAdditionalValuesForUnreferencedForeignCheck(efMeta, importContentMap).contains(validateReference)) {
 								if (efMeta.isNullable() && !isUniquePart) {
 									ncObject.getFields().remove(efMeta.getField());
-									log.newWarningLine("Removing reference from " + entity.getEntityName() + ": " + getIdentifier(this, ncObject) + " --> Unknown " + efMeta.getUnreferencedForeignEntity() + ": \"" + validateReference + "\"");
+									final String logMessage = "Removing reference from " + entity.getEntityName() + ": " + getIdentifier(ncObject) + " --> Unknown " + efMeta.getUnreferencedForeignEntity() + ": \"" + validateReference + "\"";
+									warn(logMessage);
+									if (hasNameIdentifier(ncObject)) {
+										log.newWarningLine(logMessage);
+									}
 								} else {
 									result = false;
-									log.newWarningLine("Ignoring " + entity.getEntityName() + ": " + getIdentifier(this, ncObject) + " --> References to unknown " + efMeta.getUnreferencedForeignEntity() + ": \"" + validateReference + "\"");
+									final String logMessage = "Ignoring " + entity.getEntityName() + ": " + getIdentifier(ncObject) + " --> References to unknown " + efMeta.getUnreferencedForeignEntity() + ": \"" + validateReference + "\""; 
+									warn(logMessage);
+									if (hasNameIdentifier(ncObject)) {
+										log.newWarningLine(logMessage);
+									}
 								}
 							}
 						}
@@ -348,6 +383,45 @@ public abstract class AbstractNucletContent implements INucletContent, AbstractN
 			default:
 				return true;
 		}
+	}
+	
+	@Override
+	public boolean removeReference(EntityObjectVO ncObject, EntityFieldMetaDataVO efMeta) {
+		boolean remove = true;
+		
+		if (!efMeta.isNullable()) {
+				remove = false;
+		}
+		
+		Collection<Set<String>> uniqueFieldCombinations = TransferUtils.getAllUniqueFieldCombinations(entity.getEntityName());
+		for (Set<String> uniqueCombination : uniqueFieldCombinations) {
+			if (uniqueCombination.contains(efMeta.getField())) {
+				remove = false;
+				break;
+			}
+		}
+		
+		if (remove) {
+			Long fieldIdValue = ncObject.getFieldIds().get(efMeta.getField());
+			Object fieldValue = ncObject.getFields().get(efMeta.getField());
+			
+			ncObject.getFieldIds().remove(efMeta.getField());
+			ncObject.getFields().remove(efMeta.getField());
+			final String logMessage = "Removing reference from " + entity.getEntityName() + ": " + getIdentifier(ncObject) + " --> Field " + efMeta.getField() + " is referencing on deleted content";
+			warn(logMessage);
+			
+			try {
+				NucletDalProvider.getInstance().getEntityObjectProcessor(entity).insertOrUpdate(ncObject);
+			}
+			catch (DbException e) {
+				error(e.getMessage(), e);
+				ncObject.getFieldIds().put(efMeta.getField(), fieldIdValue);
+				ncObject.getFields().put(efMeta.getField(), fieldValue);
+				remove = false;
+			}
+		}
+		
+		return remove;
 	}
 	
 	/**
@@ -441,6 +515,19 @@ public abstract class AbstractNucletContent implements INucletContent, AbstractN
 		}
 		}
 	}
+	
+	@Override
+	public List<EntityObjectVO> getDbContent() {
+		if (dbContent == null) {
+			dbContent = NucletDalProvider.getInstance().getEntityObjectProcessor(entity).getAll();
+		}
+		return dbContent;
+	}
+	
+	@Override
+	public void clearDbContent() {
+		dbContent = null;
+	}
 
 	@Override
 	public String toString() {
@@ -467,6 +554,10 @@ public abstract class AbstractNucletContent implements INucletContent, AbstractN
 
 	protected void error(Object o) {
 		this.log(Level.ERROR, o);
+	}
+	
+	protected void error(Object o, Throwable t) {
+		this.log(Level.ERROR, o, t);
 	}
 
 	protected void fatal(Object o) {

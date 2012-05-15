@@ -44,8 +44,6 @@ public interface INucletContent {
 	
 	public void setEnabled(boolean enabled);
 	
-	public String getIdentifierField();
-	
 	public boolean validate(EntityObjectVO ncObject, ValidationType type, NucletContentMap importContentMap, NucletContentUID.Map uidMap, Set<Long> existingNucletIds, ValidityLogEntry log, TransferOption.Map transferOptions);
 	
 	public NucletContentUID.Map getUIDMap(Set<Long> nucletIds, TransferOption.Map transferOptions);
@@ -67,5 +65,17 @@ public interface INucletContent {
 	public Collection<EntityFieldMetaDataVO> getFieldDependencies();
 	
 	public Collection<String> getAdditionalValuesForUnreferencedForeignCheck(String unreferencedForeignEntityField, NucletContentMap importContentMap);
+
+	public String getIdentifier(EntityObjectVO eo);
+
+	public boolean hasNameIdentifier(EntityObjectVO eo);
+
+	public String getIdentifierField();
+
+	public List<EntityObjectVO> getDbContent();
+
+	public void clearDbContent();
+
+	public boolean removeReference(EntityObjectVO ncObject,	EntityFieldMetaDataVO efMeta);
 
 }
