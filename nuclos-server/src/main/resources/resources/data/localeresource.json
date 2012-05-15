@@ -65437,5 +65437,20 @@
     "resourceID": "Email.defaultSystemMailClient.new",
     "locale": "de",
     "text": "Neue Email mit Standard-Mailprogramm"
+  },
+  {
+    "resourceID": "SubForm.ToolbarFunction.DOCUMENTIMPORT",
+    "locale": "i-default",
+    "text": "Insert document(s)"
+  },
+  {
+    "resourceID": "SubForm.ToolbarFunction.DOCUMENTIMPORT",
+    "locale": "en",
+    "text": "Insert document(s)"
+  },
+  {
+    "resourceID": "SubForm.ToolbarFunction.DOCUMENTIMPORT",
+    "locale": "de",
+    "text": "Dokument(e) einfügen"
   }
 ]

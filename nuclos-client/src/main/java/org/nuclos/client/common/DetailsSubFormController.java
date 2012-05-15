@@ -43,6 +43,7 @@ import java.util.prefs.Preferences;
 
 import javax.swing.AbstractAction;
 import javax.swing.JComponent;
+import javax.swing.JFileChooser;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.JSeparator;
@@ -73,14 +74,17 @@ import org.nuclos.client.synthetica.NuclosThemeSettings;
 import org.nuclos.client.ui.Bubble;
 import org.nuclos.client.ui.Errors;
 import org.nuclos.client.ui.Icons;
+import org.nuclos.client.ui.UIUtils;
 import org.nuclos.client.ui.collect.FixedColumnRowHeader;
 import org.nuclos.client.ui.collect.SubForm;
+import org.nuclos.client.ui.collect.SubForm.SubFormToolListener;
 import org.nuclos.client.ui.collect.SubForm.ToolbarFunction;
 import org.nuclos.client.ui.collect.SubForm.ToolbarFunctionState;
 import org.nuclos.client.ui.collect.ToolTipsTableHeader;
 import org.nuclos.client.ui.collect.component.CollectableComponent;
 import org.nuclos.client.ui.collect.component.model.CollectableComponentModelProvider;
 import org.nuclos.client.ui.collect.model.SortableCollectableTableModel;
+import org.nuclos.client.ui.gc.ListenerUtil;
 import org.nuclos.client.ui.table.TableUtils;
 import org.nuclos.common.Actions;
 import org.nuclos.common.NuclosBusinessException;
@@ -230,6 +234,30 @@ public abstract class DetailsSubFormController<Clct extends Collectable>
 		});
 		
 		this.fixedcolumnheader.getHeaderTable().getColumnModel().addColumnModelListener(newSubFormTablePreferencesUpdateListener());
+		
+		List<String> documentFields = new ArrayList<String>();
+		for (String field : getCollectableEntity().getFieldNames()) {
+			CollectableEntityField cef = getCollectableEntity().getEntityField(field);
+			if (DocumentFileBase.class.isAssignableFrom(cef.getJavaClass())) {
+				documentFields.add(field);
+			}
+		}
+		
+		if (documentFields.size() == 1 && isColumnEnabled(documentFields.get(0))) {
+			getSubForm().setToolbarFunctionState(ToolbarFunction.DOCUMENTIMPORT, ToolbarFunctionState.ACTIVE);
+		}
+		else {
+			getSubForm().setToolbarFunctionState(ToolbarFunction.DOCUMENTIMPORT, ToolbarFunctionState.HIDDEN);
+		}
+		
+		ListenerUtil.registerSubFormToolListener(getSubForm(), this, new SubFormToolListener() {
+			@Override
+			public void toolbarAction(String actionCommand) {
+				if(SubForm.ToolbarFunction.fromCommandString(actionCommand) == SubForm.ToolbarFunction.DOCUMENTIMPORT) {
+					cmdImportDocuments();
+				}
+			}
+		});
 	}
 
 	/**
@@ -1028,9 +1056,8 @@ public abstract class DetailsSubFormController<Clct extends Collectable>
 
 	}
 
-	protected void insertNewRowFromDrop(File file) throws IOException {
-		final Clct clctNew = this.newCollectable();
-		this.setParentId(clctNew, this.getParentId());
+	protected void insertNewRowFromDrop(File file) throws IOException, NuclosBusinessException {
+		final Clct clctNew = insertNewRow();
 		FileInputStream fis = new FileInputStream(file);
 		byte[] b = new byte[(int)file.length()];
 		fis.read(b);
@@ -1039,7 +1066,6 @@ public abstract class DetailsSubFormController<Clct extends Collectable>
 
 		final String sFieldDocument = getDocumentField();
 		clctNew.setField(sFieldDocument, new CollectableValueField(docfile));
-		this.getCollectableTableModel().add(clctNew);
 	}
 
 	private String getDocumentField() {
@@ -1295,4 +1321,35 @@ public abstract class DetailsSubFormController<Clct extends Collectable>
 
 	public abstract boolean insertNewRowWithReference(String entity, Collectable collectable, boolean b) throws NuclosBusinessException;
 
+	public void cmdImportDocuments() {
+		UIUtils.runCommandForTabbedPane(this.getMainFrameTabbedPane(), new Runnable() {
+			@Override
+			public void run() {
+				final String sLastDir = (getPrefs() == null) ? null : getPrefs().node(CollectableDocumentFileChooserBase.PREFS_NODE_COLLECTABLEFILECHOOSER).get(CollectableDocumentFileChooserBase.PREFS_KEY_LAST_DIRECTORY, null);
+				final JFileChooser filechooser = new JFileChooser(sLastDir);
+				filechooser.setMultiSelectionEnabled(true);
+				filechooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+				// Customer's wish (B1149) / UA
+				filechooser.setFileHidingEnabled(false);
+				
+				final int iBtn = filechooser.showOpenDialog(getParent());
+				if (iBtn == JFileChooser.APPROVE_OPTION) {
+					final File[] files = filechooser.getSelectedFiles();
+					if (files != null) {
+						for (File file : files) {
+							try {
+								insertNewRowFromDrop(file);
+							}
+							catch (Exception e) {
+								Errors.getInstance().showExceptionDialog(getParent(), e);
+							}
+						}
+					}
+					if (getPrefs() != null) {
+						getPrefs().node(CollectableDocumentFileChooserBase.PREFS_NODE_COLLECTABLEFILECHOOSER).put(CollectableDocumentFileChooserBase.PREFS_KEY_LAST_DIRECTORY, filechooser.getCurrentDirectory().getAbsolutePath());
+					}
+				}
+			}
+		});
+	}
 }	// class DetailsSubFormController

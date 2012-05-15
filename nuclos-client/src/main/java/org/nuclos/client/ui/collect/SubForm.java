@@ -259,6 +259,24 @@ public class SubForm extends JPanel
 				res.setActionCommand(name());
 				return res;
 			}
+        },
+		DOCUMENTIMPORT {
+	        @Override
+	        public AbstractButton createButton() {
+	        	JToggleButton res = new JToggleButton(Icons.getInstance().getIconTextFieldButtonFile());
+	        	res.setSize(16, 16);
+	        	res.setToolTipText(SpringLocaleDelegate.getInstance().getMessage(
+	        			"SubForm.ToolbarFunction.DOCUMENTIMPORT", "Insert document(s)"));
+	        	res.setActionCommand(name());
+		        return res;
+	        }
+			@Override
+			public JMenuItem createMenuItem() {
+				JCheckBoxMenuItem res = new JCheckBoxMenuItem(SpringLocaleDelegate.getInstance().getMessage(
+						"SubForm.ToolbarFunction.DOCUMENTIMPORT", "Insert document(s)"), Icons.getInstance().getIconTextFieldButtonFile());
+				res.setActionCommand(name());
+				return res;
+			}
         };
 
 		public abstract AbstractButton createButton();
@@ -468,6 +486,7 @@ public class SubForm extends JPanel
 
 		setToolbarFunctionState(ToolbarFunction.REMOVE, ToolbarFunctionState.DISABLED);
 		setToolbarFunctionState(ToolbarFunction.MULTIEDIT, ToolbarFunctionState.HIDDEN);
+		setToolbarFunctionState(ToolbarFunction.DOCUMENTIMPORT, ToolbarFunctionState.HIDDEN);
 		setToolbarFunctionState(ToolbarFunction.FILTER, ToolbarFunctionState.HIDDEN);
 
 		this.init();
@@ -881,6 +900,10 @@ public class SubForm extends JPanel
 			toolbarButtons.get(ToolbarFunction.TRANSFER.name()).isVisible()
 			? (enabled ? ToolbarFunctionState.ACTIVE : ToolbarFunctionState.DISABLED)
 			: ToolbarFunctionState.HIDDEN);
+		setToolbarFunctionState(ToolbarFunction.DOCUMENTIMPORT,
+			toolbarButtons.get(ToolbarFunction.DOCUMENTIMPORT.name()).isVisible()
+			? (enabled ? ToolbarFunctionState.ACTIVE : ToolbarFunctionState.DISABLED)
+			: ToolbarFunctionState.HIDDEN);
 	}
 	
 	public void setNewEnabled(ScriptContext sc) {
@@ -892,6 +915,11 @@ public class SubForm extends JPanel
 			}
 		}
 		setToolbarFunctionState(ToolbarFunction.NEW, enabled ? ToolbarFunctionState.ACTIVE : ToolbarFunctionState.DISABLED);
+		
+		boolean documents = getToolbarButton(ToolbarFunction.DOCUMENTIMPORT.name()).isVisible();
+		if (documents) {
+			setToolbarFunctionState(ToolbarFunction.DOCUMENTIMPORT, enabled ? ToolbarFunctionState.ACTIVE : ToolbarFunctionState.DISABLED);
+		}
 	}
 	
 	public void setReadOnly(boolean readonly) {
