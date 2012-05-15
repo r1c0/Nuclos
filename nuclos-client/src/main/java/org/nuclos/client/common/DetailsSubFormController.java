@@ -28,14 +28,12 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -1095,10 +1093,14 @@ public abstract class DetailsSubFormController<Clct extends Collectable>
         	return;
         }
 
+		Transferable trans = dtde.getTransferable();
+		DataFlavor flavors[] = trans.getTransferDataFlavors();
+		
 		// check for File support
 		boolean blnAcceptFileChosser = false;
 		boolean blnAcceptFileList = false;
 		boolean blnAcceptEmail = false;
+		
 		// check if there is an DocumentFileBase in the subform, otherwise don't let the user drop files
 		CollectableEntity entity = DetailsSubFormController.this.getCollectableEntity();
 		Set<String> setEntities = entity.getFieldNames();
@@ -1111,71 +1113,32 @@ public abstract class DetailsSubFormController<Clct extends Collectable>
 			}
 		}
 
-		// check if one or more file want to be dropped
-		Transferable trans = dtde.getTransferable();
-		boolean b = trans.isDataFlavorSupported(DataFlavor.javaFileListFlavor);
-		DataFlavor flavors[] = trans.getTransferDataFlavors();
-
-		flavors = (flavors.length == 0) ? dtde.getCurrentDataFlavors() : flavors;
-
-        // Select best data flavor
-        DataFlavor flavor = DataFlavor.selectBestTextFlavor(flavors);
-
-        // Flavor will be null on Windows
-        // In which case use the 1st available flavor
-        flavor = (flavor == null) ? flavors[0] : flavor;
-
-        // Flavors to check
-        DataFlavor linux = null;
-        try {
-        	linux = new DataFlavor("text/uri-list;class=java.io.Reader");
-        }
-        catch(Exception e) {
-        	LOG.warn("visitDragOver fails on linux: " + e);
-        }
-
-        if(flavor.equals(linux)) {
-        	blnAcceptFileList = true;
-        }
-        else {
-			if(flavors != null && flavors.length > 0) {
+		for (int i = 0; i < flavors.length; i++) {
+			if (flavors[i].isFlavorJavaFileListType()) {
+				blnAcceptFileList = true;
+				break;
+			}
+		}
+		
+		// check if one or more outlook email want to be dropped
+		if(flavors != null && flavors.length > 0) {
+			int count = flavors.length;
+			for(int i = 0; i < count; i++) {
 				try {
-					int index = DragAndDropUtils.getIndexOfFileList(flavors, trans);
-					if(trans.getTransferData(flavors[index]) instanceof List) {
-						List<?> files = (List<?>) trans.getTransferData(flavors[index]);
-						if(files.size() > 0) {
-							if(files.get(0) instanceof File) {
-								blnAcceptFileList = true;
-							}
+					Object obj = trans.getTransferData(flavors[i]);
+					if(obj instanceof String) {
+						String strRow = (String)obj;
+						if(strRow.indexOf("Betreff") != -1) {
+							blnAcceptEmail = true;
 						}
 					}
 				}
-				catch (Exception e) {
+				catch(Exception e) {
 					// do nothing here
-		        	LOG.warn("visitDragOver fails on flavours: " + e);
+		        	LOG.warn("visitDragOver fails on Betreff: " + e);
 				}
 			}
-
-			// check if one or more outlook email want to be dropped
-			if(flavors != null && flavors.length > 0) {
-				int count = flavors.length;
-				for(int i = 0; i < count; i++) {
-					try {
-						Object obj = trans.getTransferData(flavors[i]);
-						if(obj instanceof String) {
-							String strRow = (String)obj;
-							if(strRow.indexOf("Betreff") != -1) {
-								blnAcceptEmail = true;
-							}
-						}
-					}
-					catch(Exception e) {
-						// do nothing here
-			        	LOG.warn("visitDragOver fails on Betreff: " + e);
-					}
-				}
-			}
-        }
+		}
 
 		if(blnAcceptFileChosser && (blnAcceptFileList || blnAcceptEmail)) {
 			dtde.acceptDrag(dtde.getDropAction());
@@ -1185,6 +1148,7 @@ public abstract class DetailsSubFormController<Clct extends Collectable>
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public void visitDrop(DropTargetDropEvent dtde) {
 		try {
@@ -1278,71 +1242,42 @@ public abstract class DetailsSubFormController<Clct extends Collectable>
 	        	return;
 	        }
 
-			DataFlavor flavors[] = trans.getTransferDataFlavors();
-
-			flavors = (flavors.length == 0) ? dtde.getCurrentDataFlavors() : flavors;
-
-	        // Select best data flavor
-	        DataFlavor flavor = DataFlavor.selectBestTextFlavor(flavors);
-
-	        // Flavor will be null on Windows
-	        // In which case use the 1st available flavor
-	        flavor = (flavor == null) ? flavors[0] : flavor;
-
-	        // Flavors to check
-	        DataFlavor Linux = new DataFlavor("text/uri-list;class=java.io.Reader");
-
 			Point here = dtde.getLocation();
 			int hereRow = DetailsSubFormController.this.getSubForm().getJTable().rowAtPoint(here);
-
-			if(flavor.equals(Linux)) {
-
-                BufferedReader read = new BufferedReader(flavor.getReaderForText(trans));
-                // Remove 'file://' from file name
-                String fileName = read.readLine().substring(7).replace("%20"," ");
-                // Remove 'localhost' from OS X file names
-                if(fileName.substring(0,9).equals("localhost")) {
-                        fileName = fileName.substring(9);
-                }
-                read.close();
-
-                if(fileName != null && fileName.length() > 0 && hereRow > 0 && !blnViewPort) {
-                	updateRowFromDrop(hereRow, Collections.singletonList(new File(fileName)));
-                }
-                else if(fileName != null && fileName.length() > 0) {
-                	insertNewRowFromDrop(new File(fileName));
-                }
-
-			}
-			else {
-				for(int i = 0; i < flavors.length; i++) {
-					Object obj = trans.getTransferData(flavors[i]);
-					if(obj instanceof List) {
-						List<File> files = (List<File>) trans.getTransferData(flavors[i]);
-						if(files.size() == 1 && hereRow > 0 && !blnViewPort) {
-							updateRowFromDrop(hereRow, files);
-						}
-						else {
-							for(Iterator<File> it = files.iterator(); it.hasNext(); ) {
-								File file = it.next();
-								insertNewRowFromDrop(file);
-							}
-						}
+			DataFlavor flavors[] = trans.getTransferDataFlavors();
+			
+			for(int i = 0; i < flavors.length; i++) {
+				if (flavors[i].isFlavorJavaFileListType()) {
+					List<File> files = (List<File>) trans.getTransferData(flavors[i]);
+					
+					if (files.size() == 1 && hereRow > 0 && !blnViewPort) {
+						updateRowFromDrop(hereRow, files);
 					}
 					else {
-						List<File> lstFile = DragAndDropUtils.mailHandling();
-						if(lstFile.size() == 1 && hereRow > 0 && !blnViewPort) {
-							updateRowFromDrop(hereRow, lstFile);
+						for(Iterator<File> it = files.iterator(); it.hasNext(); ) {
+							File file = it.next();
+							insertNewRowFromDrop(file);
 						}
-						else {
-							for(File file : lstFile) {
-								insertNewRowFromDrop(file);
-							}
-						}
-						break;
 					}
+					dtde.dropComplete(true);
+					return;
 				}
 			}
+			
+			List<File> lstFile = DragAndDropUtils.mailHandling();
+			if (lstFile.size() > 0) {
+				if (lstFile.size() == 1 && hereRow > 0 && !blnViewPort) {
+					updateRowFromDrop(hereRow, lstFile);
+				}
+				else {
+					for(File file : lstFile) {
+						insertNewRowFromDrop(file);
+					}
+				}
+				dtde.dropComplete(true);
+				return;
+			}			
+			dtde.dropComplete(false);
 		}
 		catch (PointerException e) {
         	LOG.warn("visitDrop fails with PointerException: " + e);

@@ -26,7 +26,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
@@ -297,141 +296,59 @@ public abstract class CollectableDocumentFileChooserBase extends AbstractCollect
 	public void visitDragOver(DropTargetDragEvent dtde) {
 		Transferable trans = dtde.getTransferable();
 		DataFlavor flavors[] = trans.getTransferDataFlavors();
-
-		flavors = (flavors.length == 0) ? dtde.getCurrentDataFlavors() : flavors;
-
-        // Select best data flavor
-        DataFlavor flavor = DataFlavor.selectBestTextFlavor(flavors);
-
-        // Flavor will be null on Windows
-        // In which case use the 1st available flavor
-        flavor = (flavor == null) ? flavors[0] : flavor;
-
-        // Flavors to check
-        DataFlavor linux = null;
-        try {
-        	linux = new DataFlavor("text/uri-list;class=java.io.Reader");
-        }
-        catch (Exception e) {
-        	LOG.warn("visitDragOver fails on linux: " + e);
-        }
-
-        if(flavor.equals(linux)) {
-        	dtde.acceptDrag(dtde.getDropAction());
-        }
-        else {
-			if(flavors != null && flavors.length > 0) {
-				try {
-					int index = DragAndDropUtils.getIndexOfFileList(flavors, trans);
-					if(trans.getTransferData(flavors[index]) instanceof List) {
-						List<?> files = (List<?>) trans.getTransferData(flavors[index]);
-						if(files.size() == 1) {
-							if(files.get(0) instanceof File) {
-								File fileDrag = (File)files.get(0);
-								String filename = fileDrag.getName().toUpperCase();
-								if(true) {
-									dtde.acceptDrag(dtde.getDropAction());
-								}
-							}
-							else {
-								dtde.rejectDrag();
-							}
-						}
-						else {
-							dtde.rejectDrag();
-						}
+		
+		for (int i = 0; i < flavors.length; i++) {
+			if (flavors[i].isFlavorJavaFileListType()) {
+				dtde.acceptDrag(dtde.getDropAction());
+				return;
+			}
+		}
+		
+		for(int i = 0; i < flavors.length; i++) {
+			try {
+				Object obj = trans.getTransferData(flavors[i]);
+				if(obj instanceof String) {
+					String strRow = (String) obj;
+					if(strRow.indexOf("Betreff") != -1) {
+						dtde.acceptDrag(dtde.getDropAction());
+						return;
 					}
-					else {
-						boolean blnAcceptEmail = false;
-						if(flavors != null && flavors.length > 0) {
-							int count = flavors.length;
-							for(int i = 0; i < count; i++) {
-								try {
-									Object obj = trans.getTransferData(flavors[i]);
-									if(obj instanceof String) {
-										String strRow = (String)obj;
-										if(strRow.indexOf("Betreff") != -1) {
-											blnAcceptEmail = true;
-										}
-									}
-								}
-								catch(Exception e) {
-									// do nothing here
-						        	LOG.warn("visitDragOver fails on Betreff: " + e);
-								}
-							}
-						}
-						if(blnAcceptEmail)
-							dtde.acceptDrag(dtde.getDropAction());
-						else
-							dtde.rejectDrag();
-					}
-				}
-				catch(Exception e) {
-					// do nothing here
-		        	LOG.warn("visitDragOver fails on flavours: " + e);
 				}
 			}
-        }
+			catch(Exception e) {
+				// do nothing here
+	        	LOG.warn("visitDragOver fails on Betreff: " + e);
+			}
+		}
+		dtde.rejectDrag();
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public void visitDrop(DropTargetDropEvent dtde) {
 		try {
 			dtde.acceptDrop(dtde.getDropAction());
 			Transferable trans = dtde.getTransferable();
-
 			DataFlavor flavors[] = trans.getTransferDataFlavors();
-
-			flavors = (flavors.length == 0) ? dtde.getCurrentDataFlavors() : flavors;
-
-	        // Select best data flavor
-	        DataFlavor flavor = DataFlavor.selectBestTextFlavor(flavors);
-
-	        // Flavor will be null on Windows
-	        // In which case use the 1st available flavor
-	        flavor = (flavor == null) ? flavors[0] : flavor;
-
-	        // Flavors to check
-	        DataFlavor Linux = new DataFlavor("text/uri-list;class=java.io.Reader");
-
-
-			if(flavor.equals(Linux)) {
-
-                BufferedReader read = new BufferedReader(flavor.getReaderForText(trans));
-                // Remove 'file://' from file name
-                String fileName = read.readLine().substring(7).replace("%20"," ");
-                // Remove 'localhost' from OS X file names
-                if(fileName.substring(0,9).equals("localhost")) {
-                        fileName = fileName.substring(9);
-                }
-                read.close();
-
-                if(fileName != null && fileName.length() > 0) {
-                	loadFile(new File(fileName));
-                }
-
-			}
-			else {
-
-				for(int i = 0; i < flavors.length; i++) {
-					Object obj = trans.getTransferData(flavors[i]);
-					if(obj instanceof List) {
-						List<?> files = (List<?>) trans.getTransferData(flavors[i]);
-						if(files.size() == 1) {
-							if(files.get(0) instanceof File) {
-								File file = (File)files.get(0);
-								loadFile(file);
-							}
-						}
-					}
-					else {
-						List<File> lstFile = DragAndDropUtils.mailHandling();
-						if(lstFile.size() == 1) {
-							loadFile(lstFile.get(0));
+			
+			for(int i = 0; i < flavors.length; i++) {
+				if (flavors[i].isFlavorJavaFileListType()) {
+					dtde.acceptDrop(dtde.getDropAction());
+					List<File> files = (List<File>) trans.getTransferData(flavors[i]);
+					
+					for (File file : files) {
+						if (file != null) {
+							loadFile(file);
+							dtde.dropComplete(true);
+							return;
 						}
 					}
 				}
+			}
+			
+			List<File> lstFile = DragAndDropUtils.mailHandling();
+			if(lstFile.size() == 1) {
+				loadFile(lstFile.get(0));
 			}
 		}
 		catch(PointerException e){
