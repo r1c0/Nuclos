@@ -100,6 +100,7 @@ import org.nuclos.client.ui.collect.component.model.SearchComponentModel;
 import org.nuclos.client.ui.collect.component.model.SearchComponentModelEvent;
 import org.nuclos.client.ui.labeled.LabeledComponent;
 import org.nuclos.client.ui.labeled.LabeledTextArea;
+import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.NuclosScript;
 import org.nuclos.common.caching.GenCache;
 import org.nuclos.common.collect.collectable.Collectable;
