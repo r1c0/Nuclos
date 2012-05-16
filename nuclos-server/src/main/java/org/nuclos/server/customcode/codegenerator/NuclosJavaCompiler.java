@@ -20,8 +20,12 @@ package org.nuclos.server.customcode.codegenerator;
 import static org.nuclos.common.collection.Factories.memoizingFactory;
 import static org.nuclos.common.collection.Factories.synchronizingFactory;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.BufferedWriter;
 import java.io.Closeable;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
@@ -36,7 +40,9 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.jar.Attributes;
+import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
+import java.util.jar.JarInputStream;
 import java.util.jar.JarOutputStream;
 import java.util.jar.Manifest;
 import java.util.zip.ZipEntry;
@@ -80,6 +86,9 @@ public class NuclosJavaCompiler implements Closeable {
 	public static final String ENCODING = "UTF-8";
 
 	public static final File JARFILE = new File(NuclosSystemParameters.getDirectory(NuclosSystemParameters.GENERATOR_OUTPUT_PATH), "Nuclet.jar");
+
+	private static final File JARFILE_OLD = new File(
+			NuclosSystemParameters.getDirectory(NuclosSystemParameters.GENERATOR_OUTPUT_PATH), "Nuclet.jar.old");
 
 	private static Attributes.Name NUCLOS_CODE_NUCLET = new Attributes.Name("Nuclos-Code-Nuclet");
 	private static Attributes.Name NUCLOS_CODE_HASH = new Attributes.Name("Nuclos-Code-Hash");
@@ -152,6 +161,7 @@ public class NuclosJavaCompiler implements Closeable {
 			List<File> classpath = new ArrayList<File>();
 			classpath.addAll(getExpandedSystemParameterClassPath());
 			classpath.addAll(getLibs(NuclosSystemParameters.getDirectory(NuclosSystemParameters.WSDL_GENERATOR_LIB_PATH)));
+			classpath.add(JARFILE);
 			stdFileManager.setLocation(StandardLocation.CLASS_PATH, new ArrayList<File>(classpath));
 			stdFileManager.setLocation(StandardLocation.SOURCE_OUTPUT, Collections.singleton(getSourceOutputPath()));
 			stdFileManager.setLocation(StandardLocation.CLASS_OUTPUT, Collections.singleton(getBuildOutputPath()));
@@ -160,22 +170,24 @@ public class NuclosJavaCompiler implements Closeable {
 		}
 	}
 
-	private synchronized Map<String, byte[]> javac(List<CodeGenerator> generators, boolean save) throws NuclosCompileException {
-		LOG.info("Compiler Classpath: " + stdFileManager.getLocation(StandardLocation.CLASS_PATH));
+	private synchronized Map<String, byte[]> javac(List<CodeGenerator> generators, boolean saveSrc) throws NuclosCompileException {
+		LOG.debug("Compiler Classpath: " + stdFileManager.getLocation(StandardLocation.CLASS_PATH));
 		final Set<JavaFileObject> sources = new HashSet<JavaFileObject>();
 		for (CodeGenerator generator : generators) {
-			for (JavaFileObject jfo : generator.getSourceFiles()) {
-				if (!sources.add(jfo)) {
-					if (jfo instanceof JavaSourceAsString) {
-						LOG.warn("Duplicate class: " + ((JavaSourceAsString) jfo).getFQName());
+			if (generator.isRecompileNecessary()) {
+				for (JavaFileObject jfo : generator.getSourceFiles()) {
+					if (!sources.add(jfo)) {
+						if (jfo instanceof JavaSourceAsString) {
+							LOG.warn("Duplicate class: " + ((JavaSourceAsString) jfo).getFQName());
+						}
+						throw new NuclosCompileException("nuclos.compiler.duplicateclasses");
 					}
-					throw new NuclosCompileException("nuclos.compiler.duplicateclasses");
 				}
 			}
 		}
 		LOG.info("Execute Java compiler for source files: " + sources);
 
-		if (save) {
+		if (saveSrc) {
 			try {
 				saveSrc(generators);
 			}
@@ -218,27 +230,63 @@ public class NuclosJavaCompiler implements Closeable {
 
 	private synchronized void jar(Map<String, byte[]> javacresult, List<CodeGenerator> generators) {
 		try {
+			boolean oldExists = false;
 			if (JARFILE.exists()) {
-				JARFILE.delete();
+				JARFILE_OLD.delete();
+				oldExists = JARFILE.renameTo(JARFILE_OLD);
 			}
 			if (javacresult.size() > 0) {
-				JarOutputStream jos = new JarOutputStream(new FileOutputStream(JARFILE), getManifest());
+				final Set<String> entries = new HashSet<String>();
+				final JarOutputStream jos = new JarOutputStream(
+						new BufferedOutputStream(new FileOutputStream(JARFILE)), getManifest());
 
 				try {
-					for(Map.Entry<String, byte[]> e : javacresult.entrySet()) {
-						byte[] bytecode = e.getValue();
-						for(CodeGenerator generator : generators) {
-							for(JavaSourceAsString src : generator.getSourceFiles()) {
-								String name = src.getFQName();
-
-								if (e.getKey().startsWith(name.replaceAll("\\.", "/"))) {
-									bytecode = generator.postCompile(e.getKey(), e.getValue());
+					for(final String key : javacresult.keySet()) {
+						byte[] bytecode = javacresult.get(key);
+						entries.add(key);
+						
+						// call postCompile() (weaving) on compiled sources
+						for (CodeGenerator generator : generators) {
+							if (!oldExists || generator.isRecompileNecessary()) {
+								for(JavaSourceAsString src : generator.getSourceFiles()) {
+									final String name = src.getFQName();
+									if (key.startsWith(name.replaceAll("\\.", "/"))) {
+										LOG.debug("postCompile (weaving) " + key);
+										bytecode = generator.postCompile(key, bytecode);
+										// Can we break here???
+										// break outer;
+									}
 								}
 							}
 						}
-						jos.putNextEntry(new ZipEntry(e.getKey()));
+						jos.putNextEntry(new ZipEntry(key));
+						LOG.debug("writing to " + key + " to jar " + JARFILE);
 						jos.write(bytecode);
 						jos.closeEntry();
+						
+						if (oldExists) {
+							final JarInputStream in = new JarInputStream(
+									new BufferedInputStream(new FileInputStream(JARFILE_OLD)));
+			                final byte[] buffer = new byte[2048];
+							try {
+				                int size;
+								JarEntry entry;
+								while ((entry = in.getNextJarEntry()) != null) {
+									if (!entries.contains(entry.getName())) {
+										jos.putNextEntry(entry);
+										LOG.debug("copying " + key + " from old jar " + JARFILE_OLD);
+										while ((size = in.read(buffer, 0, buffer.length)) != -1) {
+											jos.write(buffer, 0, size);
+										}
+									}
+								}
+								jos.closeEntry();
+								in.closeEntry();
+							}
+							finally {
+								in.close();
+							}
+						}
 					}
 				}
 				finally {
@@ -261,7 +309,7 @@ public class NuclosJavaCompiler implements Closeable {
 					f.createNewFile();
 				}
 				result.add(f);
-				Writer out = new OutputStreamWriter(new FileOutputStream(f), ENCODING);
+				final Writer out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(f), ENCODING));
 			    try {
 			    	out.write(srcobject.getCharContent(true).toString());
 			    }
