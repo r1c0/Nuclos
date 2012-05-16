@@ -16,12 +16,8 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.common.collect.collectable;
 
-import org.nuclos.common.collect.exception.CollectableFieldValidationException;
-import org.nuclos.common.collect.exception.CollectableValidationException;
-import org.nuclos.common2.SpringLocaleDelegate;
-
-
 import org.nuclos.common2.LangUtils;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
@@ -114,29 +110,6 @@ public abstract class AbstractCollectable implements Collectable {
 	@Override
 	public int hashCode() {
 		return LangUtils.hashCode(this.getId());
-	}
-
-	/**
-	 * validates all fields.
-	 * @throws CollectableValidationException
-	 * @precondition this.isComplete()
-	 */
-	@Override
-	public void validate(CollectableEntity clcte) throws CollectableValidationException {
-		if (!this.isComplete()) {
-			throw new IllegalStateException(
-					getSpringLocaleDelegate().getMessage("AbstractCollectable.1","Das Objekt muss vollst\u00e4ndig geladen sein."));
-		}
-		for (String sFieldName : clcte.getFieldNames()) {
-			final CollectableField clctf = this.getField(sFieldName);
-			final CollectableEntityField clctef = clcte.getEntityField(sFieldName);
-			try {
-				clctf.validate(clctef);
-			}
-			catch (CollectableFieldValidationException ex) {
-				throw new CollectableValidationException(clctef, ex);
-			}
-		}
 	}
 
 	@Override

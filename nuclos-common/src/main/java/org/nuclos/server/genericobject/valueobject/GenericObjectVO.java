@@ -19,7 +19,6 @@ package org.nuclos.server.genericobject.valueobject;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -35,7 +34,6 @@ import org.nuclos.common.UsageCriteria;
 import org.nuclos.common.attribute.DynamicAttributeVO;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common2.StringUtils;
-import org.nuclos.server.attribute.BadAttributeValueException;
 import org.nuclos.server.attribute.BadGenericObjectException;
 import org.nuclos.server.attribute.valueobject.AttributeCVO;
 import org.nuclos.server.common.valueobject.NuclosValueObject;
@@ -321,20 +319,10 @@ public class GenericObjectVO extends NuclosValueObject implements Cloneable {
 	 * generic validity checker for genericobject records; used by the console command -checkattributevalues.
 	 * @param attrprovider Attribute provider.
 	 * @throws BadGenericObjectException
+	 * @deprecated Validation is performed by org.nuclos.server.validation.ValidationSupport.
 	 */
 	public void validate(AttributeProvider attrprovider) throws BadGenericObjectException {
-		final Collection<BadAttributeValueException> collex = new ArrayList<BadAttributeValueException>();
-		for (DynamicAttributeVO attrvo : this.getAttributes()) {
-			try {
-				attrvo.validate(this.getId(), attrprovider.getAttribute(attrvo.getAttributeId()));
-			}
-			catch (BadAttributeValueException ex) {
-				collex.add(ex);
-			}
-		}
-		if (!collex.isEmpty()) {
-			throw new BadGenericObjectException(this.getId(), collex, this.mpattrvo.size());
-		}
+		// does nothing
 	}
 
 	/**

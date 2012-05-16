@@ -19,7 +19,6 @@ package org.nuclos.common.collect.collectable;
 import java.io.Serializable;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
-import org.nuclos.common.collect.exception.CollectableFieldValidationException;
 
 /**
  * Default implementation of a <code>CollectableField</code>: a field that contains a value id,
@@ -60,11 +59,6 @@ public class CollectableValueIdField extends AbstractCollectableField implements
 	@Override
 	public Object getValueId() {
 		return this.oValueId;
-	}
-
-	@Override
-	public void validate(CollectableEntityField clctef) throws CollectableFieldValidationException {
-		CollectableUtils.validate(this, clctef);
 	}
 
 	@Override

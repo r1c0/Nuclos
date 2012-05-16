@@ -19,7 +19,6 @@ package org.nuclos.common.collect.collectable;
 import java.io.Serializable;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
-import org.nuclos.common.collect.exception.CollectableFieldValidationException;
 
 /**
  * Default implementation of a <code>CollectableField</code>: a field that contains a value.
@@ -65,11 +64,6 @@ public class CollectableValueField extends AbstractCollectableField implements S
 	@Override
 	public Object getValueId() throws UnsupportedOperationException {
 		throw new UnsupportedOperationException("Not a reference field: getValueId failed on " + this.toDescription());
-	}
-
-	@Override
-	public void validate(CollectableEntityField clctef) throws CollectableFieldValidationException {
-		CollectableUtils.validate(this, clctef);
 	}
 
 	/**

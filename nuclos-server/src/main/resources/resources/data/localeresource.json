@@ -38172,17 +38172,17 @@
   {
     "resourceID": "common.exception.novabitvalidationexception",
     "locale": "i-default",
-    "text": "A validation error occurred. Probably not all mandatory fields are filled."
+    "text": "Validation errors occurred."
   },
   {
     "resourceID": "common.exception.novabitvalidationexception",
     "locale": "en",
-    "text": "A validation error occurred. Probably not all mandatory fields are filled."
+    "text": "Validation errors occurred."
   },
   {
     "resourceID": "common.exception.novabitvalidationexception",
     "locale": "de",
-    "text": "Es ist ein Validierungsfehler aufgetreten. Wahrscheinlich sind nicht alle Pflichtfelder gefüllt."
+    "text": "Es sind Validierungsfehler aufgetreten."
   },
   {
     "resourceID": "R00023552",
@@ -65452,5 +65452,20 @@
     "resourceID": "SubForm.ToolbarFunction.DOCUMENTIMPORT",
     "locale": "de",
     "text": "Dokument(e) einfügen"
-  }
+  },
+  {
+    "resourceID": "EntityCollectController.Subform",
+    "locale": "i-default",
+    "text": "Subform \"{0}\": "
+  },
+  {
+    "resourceID": "EntityCollectController.Subform",
+    "locale": "en",
+    "text": "Subform \"{0}\": "
+  },
+  {
+    "resourceID": "EntityCollectController.Subform",
+    "locale": "de",
+    "text": "Unterformular \"{0}\": "
+  }  
 ]

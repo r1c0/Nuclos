@@ -2881,7 +2881,6 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 			assert clctCurrent != null;
 			this.readValuesFromEditPanel(clctCurrent, false);
 			this.prepareCollectableForSaving(clctCurrent, this.getCollectableEntityForDetails());
-			this.validate(clctCurrent);
 			final Clct result = this.updateCurrentCollectable(clctCurrent);
 			assert result != null;
 			assert ss.isCollectableComplete(result);
@@ -2951,7 +2950,6 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 			final Clct clctNew = this.newCollectableWithDefaultValues();
 			this.readValuesFromEditPanel(clctNew, false);
 			this.prepareCollectableForSaving(clctNew, this.getCollectableEntityForDetails());
-			this.validate(clctNew);
 			final Clct result = this.insertCollectable(clctNew);
 			assert result != null;
 			assert ss.isCollectableComplete(result);
@@ -2980,7 +2978,6 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	/**
 	 * validates the given <code>Collectable</code>.
 	 * This is called before the <code>clct</code> is stored.
-	 * The default implementation here calls <code>clct.validate(this.getCollectableEntityForDetails())</code>.
 	 * @param clct
 	 * @throws CommonBusinessException
 	 * @precondition clct != null
@@ -2993,7 +2990,6 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 		if (!ss.isCollectableComplete(clct)) {
 			throw new IllegalArgumentException("clct");
 		}
-		clct.validate(this.getCollectableEntityForDetails());
 	}
 
 	/**

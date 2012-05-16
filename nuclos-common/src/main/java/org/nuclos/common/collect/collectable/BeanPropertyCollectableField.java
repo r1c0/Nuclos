@@ -99,11 +99,6 @@ public class BeanPropertyCollectableField extends AbstractCollectableField {
 	}
 
 	@Override
-	public void validate(CollectableEntityField clctef) throws CollectableFieldValidationException {
-		CollectableUtils.validate(this, clctef);
-	}
-
-	@Override
 	public String toDescription() {
 		final ToStringBuilder b = new ToStringBuilder(this).append(iFieldType).append(oValueId).append(oValue);
 		return b.toString();

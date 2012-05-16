@@ -115,6 +115,7 @@ import org.nuclos.server.statemodel.NuclosNoAdequateStatemodelException;
 import org.nuclos.server.statemodel.NuclosSubsequentStateNotLegalException;
 import org.nuclos.server.statemodel.ejb3.StateFacadeLocal;
 import org.nuclos.server.statemodel.valueobject.StateHistoryVO;
+import org.nuclos.server.validation.ValidationSupport;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -137,6 +138,8 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 	
 	private AttributeCache attributeCache;
 	
+	private ValidationSupport validationSupport;
+	
 	/**
 	 * @deprecated
 	 */
@@ -155,6 +158,11 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 		this.helper = genericObjectFacadeHelper;
 	}
 	
+	@Autowired
+	public void setValidationSupport(ValidationSupport validationSupport) {
+		this.validationSupport = validationSupport;
+	}
+
 	private AttributeCache getAttributeCache() {
 		if (attributeCache == null) {
 			attributeCache = AttributeCache.getInstance();
@@ -671,7 +679,6 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 			mpDependants = loccvoResult.getDependants();
 		}
 
-
 		EntityObjectVO dalVO = DalSupportForGO.wrapGenericObjectVO(gowdvo);
 		DalUtils.updateVersionInformation(dalVO, getCurrentUserName());
 		dalVO.setId(DalUtils.getNextId());
@@ -683,6 +690,8 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 		dalVO.getFields().put(NuclosEOField.SYSTEMIDENTIFIER.getMetaData().getField(), sCanonicalValueSystemIdentifier);
 
 		try {
+			validationSupport.validate(dalVO, mpDependants);
+			
 			NucletDalProvider.getInstance().getEntityObjectProcessor(dalVO.getEntity()).insertOrUpdate(dalVO);
 
 			Date sysdate = new Date();
@@ -896,8 +905,7 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 
 		EntityObjectVO eoUpdated = DalSupportForGO.wrapGenericObjectVO(govo);
 
-		StateFacadeLocal statefacade = ServerServiceLocator.getInstance().getFacade(StateFacadeLocal.class);
-		statefacade.checkMandatory(eoUpdated);
+		validationSupport.validate(eoUpdated, mpDependants);
 
 		DalUtils.updateVersionInformation(eoUpdated, getCurrentUserName());
 		eoUpdated.flagUpdate();

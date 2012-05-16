@@ -27,18 +27,12 @@ import java.util.Map;
 
 import org.apache.commons.lang.NullArgumentException;
 import org.apache.commons.lang.ObjectUtils;
-import org.nuclos.common.MasterDataMetaProvider;
-import org.nuclos.common.SpringApplicationContextHolder;
 import org.nuclos.common.TranslationVO;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Transformer;
-import org.nuclos.common2.InternalTimestamp;
 import org.nuclos.common2.LangUtils;
-import org.nuclos.common2.StringUtils;
-import org.nuclos.common2.ValueValidationHelper;
 import org.nuclos.common2.exception.CommonValidationException;
 import org.nuclos.common2.interval.DateIntervalUtils;
-import org.nuclos.server.common.ModuleConstants;
 import org.nuclos.server.common.valueobject.AbstractNuclosValueObject;
 import org.nuclos.server.common.valueobject.NuclosValueObject;
 
@@ -381,75 +375,10 @@ public class MasterDataVO extends AbstractNuclosValueObject<Object> {
 	 * generic validity checker for master data records
 	 * @param mdmetavo meta information to validateField against
 	 * @precondition mdmetavo != null
+	 * @deprecated Validation is performed by org.nuclos.server.validation.ValidationSupport.
 	 */
 	public void validate(MasterDataMetaVO mdmetavo) throws CommonValidationException {
-		for (String sFieldName : mdmetavo.getFieldNames()) {
-			if (!ModuleConstants.DEFAULT_FOREIGNKEYFIELDNAME.equals(sFieldName)) {
-				Object oValueId = null;
-				try {
-					oValueId = this.getField(sFieldName+"Id");
-				}
-				catch (Exception e) {
-					//do nothing
-				}
-				MasterDataVO.validateField(oValueId, this.getField(sFieldName), mdmetavo.getField(sFieldName), mdmetavo.getEntityName());
-			}
-		}
 		this.validateValidityInterval();
-	}
-
-	private static void validateField(final Object oValueId, final Object oValue, MasterDataMetaFieldVO mdmetafield, String sEntity) throws CommonValidationException {
-		MasterDataMetaProvider cache = SpringApplicationContextHolder.getBean(MasterDataMetaProvider.class);
-		if (cache != null) {
-			//NUCLEUSINT-754
-			final Object labelOrResource = mdmetafield.getResourceSIdForLabel() != null ? mdmetafield.getResourceSIdForLabel() : mdmetafield.getLabel();
-			final String msg = "validateField failed, entity=" + sEntity + " field=" + mdmetafield.getFieldName() 
-					+ " ref=" + mdmetafield.getForeignEntity() + " value=" + oValue + ":\n"; 
-			if (mdmetafield.getForeignEntity() != null) {
-				if ((oValueId == null) && !mdmetafield.isNullable()) {
-					throw new CommonValidationException(msg + "valueId is null but not nullable: "
-							+ StringUtils.getParameterizedExceptionMessage("masterdata.error.validation.value",
-						cache.getMetaData(sEntity).getResourceSIdForLabel(), labelOrResource));
-				}
-			} else {
-				if ((oValue == null || "".equals(oValue)) && !mdmetafield.isNullable()) {
-					throw new CommonValidationException(msg + "value is null or empty but not nullable"
-							+ StringUtils.getParameterizedExceptionMessage("masterdata.error.validation.value",
-						cache.getMetaData(sEntity).getResourceSIdForLabel(), labelOrResource));
-				}
-			}
-			if (oValueId == null && oValue != null && !mdmetafield.getJavaClass().isAssignableFrom(oValue.getClass())) {
-				if (InternalTimestamp.class.getName().equals(mdmetafield.getJavaClass().getName()) &&
-					Date.class.isAssignableFrom(oValue.getClass())) {
-					// InternalTimestamp can be mapped to Date
-				} else {
-					throw new CommonValidationException(msg + "type expected" + mdmetafield.getJavaClass() + " given " + oValue.getClass()
-							+ StringUtils.getParameterizedExceptionMessage("masterdata.error.validation.datatype",
-						labelOrResource, cache.getMetaData(sEntity).getResourceSIdForLabel()));
-				}
-			}
-			// check against data scale, for string values at least:
-			if (oValueId == null && oValue != null && oValue instanceof String && mdmetafield.getDataScale() != null && ((String) oValue).length() > mdmetafield.getDataScale())
-			{
-				throw new CommonValidationException(msg
-						+ StringUtils.getParameterizedExceptionMessage("masterdata.error.validation.datascale",
-					labelOrResource, cache.getMetaData(sEntity).getResourceSIdForLabel()));
-			}
-			//check against data precision
-			// TODO: integrate correct check here 
-			//check against input format
-			final String sInputFormat = mdmetafield.getInputFormat();
-			if (!ValueValidationHelper.validateInputFormat(oValue, sInputFormat)) {
-				throw new CommonValidationException(msg
-						+ StringUtils.getParameterizedExceptionMessage("masterdata.error.validation.formatinput",
-					labelOrResource, cache.getMetaData(sEntity).getResourceSIdForLabel(), sInputFormat));
-			}
-			if (!ValueValidationHelper.validateBoundaries(oValue, sInputFormat)) {
-				throw new CommonValidationException(msg
-						+ StringUtils.getParameterizedExceptionMessage("masterdata.error.validation.boundaries",
-					labelOrResource, cache.getMetaData(sEntity).getResourceSIdForLabel()));
-			}
-		}
 	}
 
 	/**

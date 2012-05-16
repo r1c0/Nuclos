@@ -17,7 +17,6 @@
 package org.nuclos.common.collect.collectable;
 
 import org.nuclos.common.HasId;
-import org.nuclos.common.collect.exception.CollectableValidationException;
 import org.nuclos.common.collection.Predicate;
 import org.nuclos.common.collection.Transformer;
 import org.nuclos.common2.exception.CommonFatalException;
@@ -103,14 +102,6 @@ public interface Collectable extends HasId<Object> {
 	 * for performance reasons, that is some fields are missing.
 	 */
 	boolean isComplete();
-
-	/**
-	 * validates this <code>Collectable</code>.
-	 * @param clcte the entity for this <code>Collectable</code>.
-	 * @throws CollectableValidationException
-	 * @precondition isComplete()
-	 */
-	void validate(CollectableEntity clcte) throws CollectableValidationException;
 
 	/**
 	 * <code>Collectable</code>s are equal if they have the same id.

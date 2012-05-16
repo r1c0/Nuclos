@@ -16,7 +16,6 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.common.collect.collectable;
 
-import org.nuclos.common.collect.exception.CollectableFieldValidationException;
 import org.nuclos.common.collection.Transformer;
 
 /**
@@ -86,14 +85,6 @@ public interface CollectableField extends Comparable<CollectableField> {
 	 * @postcondition result <--> (this.getValue() == null) && (this.isIdField() --> this.getValueId() == null)
 	 */
 	boolean isNull();
-
-	/**
-	 * Checks if this field has a valid value.
-	 * @param clctef the meta data of this field
-	 * @throws CollectableFieldValidationException if this field does not have a valid value.
-	 * @todo move to CollectableEntityField
-	 */
-	void validate(CollectableEntityField clctef) throws CollectableFieldValidationException;
 
 	/**
 	 * equality is defined by <ul>

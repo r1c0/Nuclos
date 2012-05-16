@@ -16,7 +16,6 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.common.collect.collectable;
 
-import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Date;
@@ -32,11 +31,11 @@ import org.nuclos.common.NuclosPassword;
 import org.nuclos.common.collect.exception.CollectableFieldValidationException;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Transformer;
-import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.DateUtils;
 import org.nuclos.common2.InternalTimestamp;
 import org.nuclos.common2.PreferencesUtils;
 import org.nuclos.common2.RelativeDate;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.common2.exception.PreferencesException;
@@ -52,52 +51,13 @@ import org.nuclos.common2.exception.PreferencesException;
  * @author	<a href="mailto:Christoph.Radig@novabit.de">Christoph.Radig</a>
  * @version 01.00.00
  */
-public class CollectableUtils {
+public abstract class CollectableUtils {
 
 	private static final Logger log = Logger.getLogger(CollectableUtils.class);
 
 	private static final String PREFS_KEY_FIELDTYPE = "fieldType";
 	private static final String PREFS_KEY_VALUE = "value";
 	private static final String PREFS_KEY_VALUEID = "valueId";
-
-	private CollectableUtils() {
-	}
-
-	public static void validate(CollectableField clctf, CollectableEntityField clctef) throws CollectableFieldValidationException {
-		validateNull(clctf, clctef);
-		validateFieldType(clctf, clctef);
-		validateValueClass(clctf, clctef);
-		validateFieldDimensions(clctf, clctef);
-	}
-
-	/**
-	 * helper method which checks the size of the field content vs the size allowed on database
-	 * @param clctf
-	 * @param clctef
-	 */
-	public static void validateFieldDimensions(CollectableField clctf, CollectableEntityField clctef) throws CollectableFieldValidationException {
-		final Object oValue = clctf.getValue();
-		if (oValue != null && clctef != null && clctef.getMaxLength() != null) {
-			int maxlength = clctef.getMaxLength();
-
-			if (oValue instanceof Integer) {
-				if (((Integer) oValue).toString().length() > maxlength)
-					throw new CollectableFieldValidationException(SpringLocaleDelegate.getInstance().getMessage(
-							"CollectableUtils.6","Der Wert \"{0}\" ist zu gross f\u00fcr das Feld \"{1}\"", oValue, clctef.getLabel()));
-			} else if (oValue instanceof String) {
-				if (((String) oValue).length() > maxlength)
-					throw new CollectableFieldValidationException(SpringLocaleDelegate.getInstance().getMessage(
-							"CollectableUtils.7","Der Wert \"{0}\" ist zu gross f\u00fcr das Feld \"{1}\"", oValue, clctef.getLabel()));
-			} else if (oValue instanceof Double){
-
-				BigDecimal bd = BigDecimal.valueOf((Double) oValue);
-				int digitsBeforeSep = bd.precision() - bd.scale();
-				if (digitsBeforeSep > maxlength - clctef.getPrecision())
-					throw new CollectableFieldValidationException(SpringLocaleDelegate.getInstance().getMessage(
-							"CollectableUtils.8","Der Wert \"{0}\" ist zu gross f\u00fcr das Feld \"{1}\"", oValue, clctef.getLabel()));
-			}
-		}
-	}
 
 	/**
 	 * validates the field type.
@@ -115,22 +75,6 @@ public class CollectableUtils {
 			else
 				msg = SpringLocaleDelegate.getInstance().getMessage(
 						"CollectableUtils.4","Das Feld \"{0}\" muss eine Id enthalten.", clctef.getLabel());
-			throw new CollectableFieldValidationException(msg);
-		}
-	}
-
-	/**
-	 * validates null / nullabiliby.
-	 * @param clctf
-	 * @param clctef
-	 * @throws CollectableFieldValidationException if <code>clctf</code> is null, but <code>clctef</code> is not nullable.
-	 */
-	public static void validateNull(CollectableField clctf, CollectableEntityField clctef)
-			throws CollectableFieldValidationException {
-		// check null/nullable:
-		if (clctf.isNull() && !clctef.isNullable()) {
-			String msg = SpringLocaleDelegate.getInstance().getMessage(
-					"CollectableUtils.3","Das Feld \"{0}\" darf nicht leer sein.", clctef.getLabel());
 			throw new CollectableFieldValidationException(msg);
 		}
 	}

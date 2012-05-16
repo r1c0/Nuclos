@@ -385,11 +385,6 @@ public class MasterDataFacadeHelper {
 		}
 	}
 
-// @todo unify validation mechanisms
-	private void validateCVO(String sEntityName, MasterDataVO mdvo) throws CommonValidationException {
-		mdvo.validate(masterDataMetaCache.getMetaData(sEntityName));
-	}
-
 	/**
 	 * Called after an entity was changed - that is, a row was inserted, updated or deleted.
 	 * @param mdmetavo the entity that was changed.
@@ -557,10 +552,6 @@ public class MasterDataFacadeHelper {
 	Object modifySingleRow(String sEntityName, MasterDataVO mdvo, String sUserName, boolean bValidate)
 			throws CommonCreateException, CommonFinderException, CommonStaleVersionException, CommonValidationException, CommonPermissionException {
 
-		if (bValidate) {
-			validateCVO(sEntityName, mdvo);
-		}
-
 		final MasterDataMetaVO mdmetavo = masterDataMetaCache.getMetaData(sEntityName);
 
 		final MasterDataVO mdvoInDB = checkForStaleVersion(mdmetavo, mdvo);
@@ -579,7 +570,7 @@ public class MasterDataFacadeHelper {
 		EntityObjectVO eoVO = DalSupportForMD.getEntityObjectVO(sEntityName, mdvo);
 		DalUtils.updateVersionInformation(eoVO, sUserName);
 		eoVO.flagUpdate();
-
+		
 		try {
 			eoProcessor.insertOrUpdate(eoVO);
 		} catch (DbException e) {
@@ -621,10 +612,6 @@ public class MasterDataFacadeHelper {
 			throw new IllegalArgumentException("mdvoToCreate.getId()");
 		}
 
-		if (bValidate) {
-			validateCVO(sEntityName, mdvoToCreate);
-		}
-
 		final MasterDataMetaVO mdmetavo = masterDataMetaCache.getMetaData(sEntityName);
 		final EntityMetaDataVO entityMeta = MetaDataServerProvider.getInstance().getEntity(sEntityName);
 
@@ -649,7 +636,7 @@ public class MasterDataFacadeHelper {
 		EntityObjectVO eoVO = DalSupportForMD.getEntityObjectVO(sEntityName, mdvoToCreate);
 		DalUtils.updateVersionInformation(eoVO, sUserName);
 		eoVO.flagNew();
-
+		
 		try {
 			eoProcessor.insertOrUpdate(eoVO);
 		} catch (DbException e) {

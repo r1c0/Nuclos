@@ -87,11 +87,13 @@ import org.nuclos.common.collect.exception.CollectableValidationException;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Transformer;
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
+import org.nuclos.common.validation.FieldValidationError;
 import org.nuclos.common2.CommonRunnable;
 import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonFatalException;
+import org.nuclos.common2.exception.CommonValidationException;
 import org.nuclos.server.genericobject.valueobject.GeneratorActionVO;
 import org.nuclos.server.ruleengine.NuclosBusinessRuleException;
 
@@ -1051,8 +1053,45 @@ public abstract class EntityCollectController<Clct extends Collectable> extends 
 	protected boolean handleSpecialException(Exception ex) {
 		if (handlePointerException(ex)) {
 			return true;
-		} else {
+		} 
+		else if (handleCommonValidationException(ex)) {
+			return true;
+		}
+		else {
 			return super.handleSpecialException(ex);
+		}
+	}
+	
+	protected boolean handleCommonValidationException(Exception ex) {
+		CommonValidationException cve = Errors.getCause(ex, CommonValidationException.class);
+		if (cve != null) {
+			List<String> messages = new ArrayList<String>();
+			messages.add(getSpringLocaleDelegate().getText("common.exception.novabitvalidationexception"));
+			
+			if (cve.getErrors() != null) {
+				for (String error : cve.getErrors()) {
+					messages.add(getSpringLocaleDelegate().getMessageFromResource(error));
+				}
+			}
+			
+			if (cve.getFieldErrors() != null) {
+				for (FieldValidationError error : cve.getFieldErrors()) {
+					if (!getEntityName().equals(error.getEntity())) {
+						messages.add(getSpringLocaleDelegate().getMessage("EntityCollectController.Subform", "Subform \"{0}\": ", error.getEntity())
+								+ getSpringLocaleDelegate().getMessageFromResource(error.getMessage()));
+					}
+					else {
+						messages.add(getSpringLocaleDelegate().getMessageFromResource(error.getMessage()));
+					}
+				}
+			}
+			
+			String message = StringUtils.concatHtml(messages.toArray(new String[messages.size()]));
+			setPointerInformation(new PointerCollection(message), null);
+			return true;
+		}
+		else {
+			return false;
 		}
 	}
 

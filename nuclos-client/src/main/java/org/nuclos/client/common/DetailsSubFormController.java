@@ -88,7 +88,6 @@ import org.nuclos.client.ui.gc.ListenerUtil;
 import org.nuclos.client.ui.table.TableUtils;
 import org.nuclos.common.Actions;
 import org.nuclos.common.NuclosBusinessException;
-import org.nuclos.common.ParameterProvider;
 import org.nuclos.common.PointerException;
 import org.nuclos.common.WorkspaceDescription.EntityPreferences;
 import org.nuclos.common.collect.collectable.Collectable;
@@ -100,7 +99,6 @@ import org.nuclos.common.collect.collectable.CollectableUtils;
 import org.nuclos.common.collect.collectable.CollectableValueField;
 import org.nuclos.common.collect.collectable.CollectableValueIdField;
 import org.nuclos.common.collect.exception.CollectableFieldFormatException;
-import org.nuclos.common.collect.exception.CollectableFieldValidationException;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.PredicateUtils;
 import org.nuclos.common.collection.Transformer;
@@ -814,28 +812,7 @@ public abstract class DetailsSubFormController<Clct extends Collectable>
 	 * @param collclct
 	 */
 	private void validate(Collection<? extends Collectable> collclct) throws CommonValidationException {
-		if(ClientParameterProvider.getInstance().getValue(ParameterProvider.KEY_CLIENT_VALIDATES_MASTERDATAVALUES).equals("1")) {
-			final CollectableEntity clcte = this.getCollectableEntity();
-			final Collection<String> collFieldNames = getNonForeignKeyFieldNames(clcte, this.getForeignKeyFieldName());
-
-			for (Collectable clct : collclct) {
-				if (!containsOnlyNullFields(clct, collFieldNames)) {
-					// We cannot just validate the whole Collectable, as the foreign key field (referring to
-					// the parent entity) might be null here (in case the Collectable in the parent entity is a new one).
-					for (String sFieldName : collFieldNames) {
-						try {
-							final CollectableEntityField clctef = clcte.getEntityField(sFieldName);
-							clct.getField(sFieldName).validate(clctef);
-						}
-						catch (CollectableFieldValidationException ex) {
-							final String sMessage = getSpringLocaleDelegate().getMessage(
-									"details.subform.controller", "Ung\u00fcltige Eingabe im Unterformular ''{0}''", clcte.getLabel()) + ex.getMessage();
-							throw new CommonValidationException(sMessage, ex);
-						}
-					}
-				}
-			}
-		}
+		// no validation against metadata in client.
 	}
 
 	private static Collection<String> getNonForeignKeyFieldNames(CollectableEntity clcte, String sForeignKeyFieldName) {

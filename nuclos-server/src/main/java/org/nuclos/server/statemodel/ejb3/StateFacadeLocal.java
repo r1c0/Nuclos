@@ -21,7 +21,6 @@ import java.util.Set;
 
 import org.nuclos.common.NuclosBusinessException;
 import org.nuclos.common.UsageCriteria;
-import org.nuclos.common.dal.vo.EntityObjectVO;
 import org.nuclos.common2.exception.CommonCreateException;
 import org.nuclos.common2.exception.CommonFinderException;
 import org.nuclos.common2.exception.CommonPermissionException;
@@ -198,19 +197,4 @@ public interface StateFacadeLocal {
 	 * @return
 	 */
 	Set<MandatoryColumnVO> findMandatoryColumnsByStateId(Integer stateId);
-	
-	/**
-	 * 
-	 * @param eoVO
-	 * @throws NuclosBusinessException
-	 */
-	void checkMandatory(EntityObjectVO eoVO) throws NuclosBusinessException;
-	
-	/**
-	 * 
-	 * @param eoVO
-	 * @param state
-	 * @throws NuclosBusinessException
-	 */
-	void checkMandatory(EntityObjectVO eoVO, StateVO state) throws NuclosBusinessException;
 }

@@ -29,13 +29,10 @@ import javax.annotation.security.RolesAllowed;
 
 import org.apache.log4j.Logger;
 import org.nuclos.common.JMSConstants;
-import org.nuclos.common.MetaDataProvider;
 import org.nuclos.common.NuclosBusinessException;
 import org.nuclos.common.NuclosEOField;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.NuclosFatalException;
-import org.nuclos.common.PointerCollection;
-import org.nuclos.common.PointerException;
 import org.nuclos.common.SearchConditionUtils;
 import org.nuclos.common.UsageCriteria;
 import org.nuclos.common.collect.collectable.CollectableEntity;
@@ -48,7 +45,6 @@ import org.nuclos.common.collect.collectable.searchcondition.LogicalOperator;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Pair;
 import org.nuclos.common.dal.DalSupportForMD;
-import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.dal.vo.EntityObjectVO;
 import org.nuclos.common.dal.vo.SystemFields;
 import org.nuclos.common.dblayer.JoinType;
@@ -67,7 +63,6 @@ import org.nuclos.common2.exception.CommonValidationException;
 import org.nuclos.server.common.AttributeCache;
 import org.nuclos.server.common.LocaleUtils;
 import org.nuclos.server.common.MasterDataMetaCache;
-import org.nuclos.server.common.MetaDataServerProvider;
 import org.nuclos.server.common.SecurityCache;
 import org.nuclos.server.common.ServerServiceLocator;
 import org.nuclos.server.common.SessionUtils;
@@ -112,6 +107,7 @@ import org.nuclos.server.statemodel.valueobject.StateTransitionVO;
 import org.nuclos.server.statemodel.valueobject.StateVO;
 import org.nuclos.server.statemodel.valueobject.SubformColumnPermissionVO;
 import org.nuclos.server.statemodel.valueobject.SubformPermissionVO;
+import org.nuclos.server.validation.ValidationSupport;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -142,6 +138,8 @@ public class StateFacadeBean extends NuclosFacadeBean implements StateFacadeRemo
 	private MasterDataFacadeLocal masterDataFacade;
 	
 	private LocaleFacadeLocal localeFacade;
+	
+	private ValidationSupport validationSupport;
 	
 	public StateFacadeBean() {
 	}
@@ -175,6 +173,11 @@ public class StateFacadeBean extends NuclosFacadeBean implements StateFacadeRemo
 	@Autowired
 	final void setLocaleFacade(LocaleFacadeLocal localeFacade) {
 		this.localeFacade = localeFacade;
+	}
+	
+	@Autowired
+	public void setValidationSupport(ValidationSupport validationSupport) {
+		this.validationSupport = validationSupport;
 	}
 
 	/**
@@ -1266,49 +1269,6 @@ public class StateFacadeBean extends NuclosFacadeBean implements StateFacadeRemo
 	}
 
 	/**
-	 *
-	 * @param eoVO
-	 * @throws NuclosBusinessException
-	 */
-	public void checkMandatory(EntityObjectVO eoVO) throws NuclosBusinessException {
-		if (eoVO.getFieldIds().containsKey(NuclosEOField.STATE.getName())) {
-			this.checkMandatory(eoVO, stateCache.getState(eoVO.getFieldId(NuclosEOField.STATE.getName()).intValue()));
-		}
-	}
-
-	/**
-	 *
-	 * @param eoVO
-	 * @param state
-	 * @throws NuclosBusinessException
-	 */
-	public void checkMandatory(EntityObjectVO eoVO, StateVO state) throws NuclosBusinessException {
-		if (!state.getMandatoryFields().isEmpty()) {
-			final MetaDataProvider metaProvider = MetaDataServerProvider.getInstance();
-			final String entity = eoVO.getEntity();
-
-			PointerCollection pc = null;
-
-			for (MandatoryFieldVO mandatoryField : state.getMandatoryFields()) {
-				final EntityFieldMetaDataVO efMeta = metaProvider.getEntityField(entity, mandatoryField.getFieldId().longValue());
-				final String field = efMeta.getField();
-
-				if ((efMeta.getForeignEntity() != null && eoVO.getFieldId(field) == null)
-					|| (efMeta.getForeignEntity() == null && eoVO.getFields().get(field) == null)) {
-
-					if (pc == null) pc = new PointerCollection("state.mandatory.violation");
-
-					pc.addEmptyFieldPointer(field);
-				}
-			}
-
-			if (pc != null) {
-				throw new PointerException(pc);
-			}
-		}
-	}
-
-	/**
 	 * checks if the given target state id is contained in the list of subsequent states for the given leased objects:
 	 * @param iModuleId
 	 * @param iGenericObjectId
@@ -1379,8 +1339,9 @@ public class StateFacadeBean extends NuclosFacadeBean implements StateFacadeRemo
 			RuleObjectContainerCVO loccvoAfter = facade.fireRule(iSourceStateId, iTargetStateId, loccvoBefore, false);
 
 			// check mandatory fields and subform columns
-			checkMandatory(DalSupportForGO.wrapGenericObjectVO(loccvoAfter.getGenericObject()), 
-					stateCache.getState(iTargetStateId));
+			EntityObjectVO validation = DalSupportForGO.wrapGenericObjectVO(loccvoAfter.getGenericObject());
+			validation.getFieldIds().put(NuclosEOField.STATE.getName(), IdUtils.toLongId(iTargetStateId));
+			validationSupport.validate(validation, null);
 
 			// Write back the possibly changed GenericObjectVO along with its dependants.
 			// We deliberately allow changing the GenericObjectVO from the rule in "state change" events

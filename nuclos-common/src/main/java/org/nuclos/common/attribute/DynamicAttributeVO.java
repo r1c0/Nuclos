@@ -20,14 +20,10 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.Serializable;
 
-import org.apache.commons.lang.NullArgumentException;
 import org.nuclos.common.AttributeProvider;
-import org.nuclos.common.NuclosImage;
-import org.nuclos.common.NuclosPassword;
 import org.nuclos.common.SpringApplicationContextHolder;
 import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.StringUtils;
-import org.nuclos.common2.ValueValidationHelper;
 import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.common2.exception.CommonValidationException;
 import org.nuclos.server.attribute.BadAttributeValueException;
@@ -253,55 +249,10 @@ public class DynamicAttributeVO implements Serializable, Cloneable {
 	 * @param attrcvo
 	 * @throws BadAttributeValueException if <code>this</code> cannot be validated.
 	 * @precondition attrcvo != null
+	 * @deprecated Validation is performed by org.nuclos.server.validation.ValidationSupport.
 	 */
 	public void validate(Integer iGenericObjectId, AttributeCVO attrcvo) throws BadAttributeValueException {
-		if (attrcvo == null) {
-			throw new NullArgumentException("attrcvo");
-		}
-		// Never validate claculated attributes, because they are not written to the database, and the user has no direct influence over their content
-		if (attrcvo.isCalculated()) {
-			return;
-		}
-		if (!attrcvo.getId().equals(this.getAttributeId())) {
-			throw new IllegalArgumentException("attrcvo");
-		}
-		if (this.getValue() == null) {
-			if (!attrcvo.isNullable()) {
-				throw new BadAttributeValueException(this.getId(), iGenericObjectId, this.getCanonicalValue(attrcvo), this.getAttributeId(),
-						attrcvo, "dynamicattrvo.invalid.field.value.2");//Das Feld darf nicht leer sein.");
-			}
-		}
-		else {
-			final Class<?> cls = attrcvo.getJavaClass();
-			if (!cls.isAssignableFrom(this.getValue().getClass())) {
-				if(cls.isAssignableFrom(NuclosImage.class)) {
-					// special behavior
-				} else if (cls.isAssignableFrom(NuclosPassword.class)) {
-					//NUCLEUSINT-1142
-				} else {
-					throw new BadAttributeValueException(this.getId(), iGenericObjectId, this.getCanonicalValue(attrcvo), this.getAttributeId(),
-							attrcvo, "dynamicattrvo.invalid.field.value.3");//"Das Feld enth\u00e4lt einen Wert von falschem Typ.");
-				}
-			}
-			// check maximum field length for string values:
-			if (cls.equals(String.class)) {
-				final Integer iMaxLength = attrcvo.getDataScale();
-				if (iMaxLength != null && ((String) this.getValue()).length() > iMaxLength) {
-					throw new BadAttributeValueException(this.getId(), iGenericObjectId, this.getCanonicalValue(attrcvo), this.getAttributeId(),
-							attrcvo, StringUtils.getParameterizedExceptionMessage("dynamicattrvo.invalid.field.value.4", iMaxLength));//"Die L\u00e4nge des Felds \u00fcberschreitet die Maximall\u00e4nge von " + iMaxLength + " Zeichen.");
-				}
-			}
-			//check against input format
-			final String sInputFormat = attrcvo.getInputFormat();
-			if (!ValueValidationHelper.validateInputFormat(this.getValue(), sInputFormat)) {
-				throw new BadAttributeValueException(this.getId(), iGenericObjectId, this.getCanonicalValue(attrcvo), this.getAttributeId(),
-						attrcvo, "dynamicattrvo.invalid.field.value.5");//"Das Feld enth\u00e4lt einen Wert, der nicht dem verlangten Format entspricht.");
-			}
-			if (!ValueValidationHelper.validateBoundaries(this.getValue(), sInputFormat)) {
-				throw new BadAttributeValueException(this.getId(), iGenericObjectId, this.getCanonicalValue(attrcvo), this.getAttributeId(),
-						attrcvo, "dynamicattrvo.invalid.field.value.6");//"Das Feld enth\u00e4lt einen Wert, der nicht innerhalb des erlaubten Wertebereichs liegt.");
-			}
-		}
+		// does nothing
 	}
 
 	/**
@@ -319,6 +270,7 @@ public class DynamicAttributeVO implements Serializable, Cloneable {
 	 * validates <code>this</code>.
 	 * @param attrprovider
 	 * @throws CommonValidationException if <code>this</code> cannot be validated.
+	 * @deprecated Validation is performed by org.nuclos.server.validation.ValidationSupport.
 	 */
 	public void validate(Integer iGenericObjectId, AttributeProvider attrprovider) throws CommonValidationException {
 		this.validate(iGenericObjectId, attrprovider.getAttribute(getAttributeId()));

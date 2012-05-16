@@ -120,6 +120,7 @@ import org.nuclos.server.ruleengine.valueobject.RuleEventUsageVO;
 import org.nuclos.server.ruleengine.valueobject.RuleObjectContainerCVO;
 import org.nuclos.server.ruleengine.valueobject.RuleObjectContainerCVO.Event;
 import org.nuclos.server.ruleengine.valueobject.RuleVO;
+import org.nuclos.server.validation.ValidationSupport;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -146,6 +147,8 @@ public class MasterDataFacadeBean extends NuclosFacadeBean implements MasterData
 	
 	private ServerParameterProvider serverParameterProvider;
 	
+	private ValidationSupport validationSupport;
+	
 	public MasterDataFacadeBean() {
 	}
 	
@@ -157,6 +160,11 @@ public class MasterDataFacadeBean extends NuclosFacadeBean implements MasterData
 	@Autowired
 	final void setServerParameterProvider(ServerParameterProvider serverParameterProvider) {
 		this.serverParameterProvider = serverParameterProvider;
+	}
+	
+	@Autowired
+	public void setValidationSupport(ValidationSupport validationSupport) {
+		this.validationSupport = validationSupport;
 	}
 	
 	protected final MasterDataFacadeHelper getMasterDataFacadeHelper() {
@@ -681,6 +689,9 @@ public class MasterDataFacadeBean extends NuclosFacadeBean implements MasterData
 					localeFacade.setDefaultResource(sResourceId, sText);
 				}
 			}
+			
+			EntityObjectVO validation = DalSupportForMD.getEntityObjectVO(sEntityName, mdvo);
+			validationSupport.validate(validation, mpDependants);
 
 			// create the row:
 			final Integer iId = helper.createSingleRow(sEntityName, mdvo,
@@ -809,6 +820,9 @@ public class MasterDataFacadeBean extends NuclosFacadeBean implements MasterData
 			sResourceId = localeFacade.setResourceForLocale(sResourceId, localeInfo, sText);
 			mdvo.setField("labelres", sResourceId);
 		}
+		
+		EntityObjectVO validation = DalSupportForMD.getEntityObjectVO(sEntityName, mdvo);
+		validationSupport.validate(validation, mpDependants);
 
 		// modify the row itself:
 		final Object result;

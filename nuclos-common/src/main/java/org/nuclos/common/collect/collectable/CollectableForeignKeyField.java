@@ -16,7 +16,6 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.common.collect.collectable;
 
-import org.nuclos.common.collect.exception.CollectableFieldValidationException;
 
 /**
  * A CollectableField representing a foreign key to another entity.
@@ -66,10 +65,5 @@ public abstract class CollectableForeignKeyField extends AbstractCollectableFiel
 	 * @precondition oValueId != null
 	 */
 	protected abstract Object readValue(CollectableEntityField clctef, Object oValueId);
-
-	@Override
-	public void validate(CollectableEntityField clctef) throws CollectableFieldValidationException {
-		CollectableUtils.validate(this, clctef);
-	}
 
 }	// class CollectableForeignKeyField

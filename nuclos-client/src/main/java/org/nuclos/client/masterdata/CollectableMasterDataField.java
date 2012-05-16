@@ -22,17 +22,14 @@ import java.util.Date;
 import org.apache.commons.lang.NullArgumentException;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.log4j.Logger;
-
+import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.collect.collectable.AbstractCollectableField;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
 import org.nuclos.common.collect.collectable.CollectableField;
 import org.nuclos.common.collect.collectable.CollectableFieldFormat;
-import org.nuclos.common.collect.collectable.CollectableUtils;
 import org.nuclos.common.collect.exception.CollectableFieldFormatException;
-import org.nuclos.common.collect.exception.CollectableFieldValidationException;
 import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.exception.CommonFatalException;
-import org.nuclos.common.NuclosFatalException;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 
 
@@ -141,13 +138,6 @@ public class CollectableMasterDataField extends AbstractCollectableField {
 
 	private static Object getValueId(String sFieldName, MasterDataVO mdvo) {
 		return mdvo.getField(sFieldName + "Id");
-	}
-
-	@Override
-	public void validate(CollectableEntityField clctef) throws CollectableFieldValidationException {
-		CollectableUtils.validate(this, clctef);
-
-		/** @todo validate according to input/output format */
 	}
 	
 	@Override

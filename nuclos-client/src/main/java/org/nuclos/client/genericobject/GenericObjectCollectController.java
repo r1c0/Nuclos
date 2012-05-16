@@ -2767,10 +2767,6 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 
 	@Override
 	protected CollectableGenericObjectWithDependants updateCurrentCollectable(CollectableGenericObjectWithDependants clctCurrent) throws CommonBusinessException {
-		clctCurrent.validate(getCollectableEntityForDetails());
-
-		// todo: validate subform data
-
 		assert !isHistoricalView();
 
 		final CollectableGenericObjectWithDependants result = updateCollectable(clctCurrent, getAllSubFormData(clctCurrent));
@@ -2850,7 +2846,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		// @todo eliminate this workaround - this is the wrong place. The right place is the Clone action!
 		final DependantMasterDataMap mpDependants = org.nuclos.common.Utils.clearIds(mpclctDependants.toDependantMasterDataMap());
 
-		clctNew.validate(getCollectableEntityForDetails());
+		//clctNew.validate(getCollectableEntityForDetails());
 
 		final GenericObjectVO govo = clctNew.getGenericObjectCVO();
 		final GenericObjectWithDependantsVO lowdcvoNew = new GenericObjectWithDependantsVO(govo, mpDependants);

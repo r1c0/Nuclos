@@ -443,7 +443,7 @@ public class Errors {
 		return cause.getMessage();
 	}
 
-	private <T> T getCause(Throwable t, Class<T> clazz) {
+	public static <T> T getCause(Throwable t, Class<T> clazz) {
 		if (t == null) {
 			return null;
 		}

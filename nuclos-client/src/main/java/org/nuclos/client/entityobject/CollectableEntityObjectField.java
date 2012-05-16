@@ -3,10 +3,8 @@ package org.nuclos.client.entityobject;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.nuclos.client.common.MetaDataClientProvider;
 import org.nuclos.client.masterdata.MasterDataDelegate;
-import org.nuclos.common.collect.collectable.CollectableEntityField;
 import org.nuclos.common.collect.collectable.CollectableField;
 import org.nuclos.common.collect.collectable.LocalizedCollectableValueField;
-import org.nuclos.common.collect.exception.CollectableFieldValidationException;
 import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.server.masterdata.valueobject.MasterDataMetaVO;
 
@@ -54,12 +52,6 @@ public class CollectableEntityObjectField extends LocalizedCollectableValueField
 	}
 
 	@Override
-	public void validate(CollectableEntityField clctef)	throws CollectableFieldValidationException {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
 	public String toDescription() {
 		final ToStringBuilder b = new ToStringBuilder(this).append(fieldType).append(sFieldName).append(oValueId).append(oValue);
 		return b.toString();
@@ -75,6 +67,4 @@ public class CollectableEntityObjectField extends LocalizedCollectableValueField
 		}
 		throw new IllegalStateException();
 	}
-
-	
 }

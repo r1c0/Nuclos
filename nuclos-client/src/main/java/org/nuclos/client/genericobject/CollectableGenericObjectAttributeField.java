@@ -16,17 +16,9 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.genericobject;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
-
 import org.apache.commons.lang.builder.ToStringBuilder;
-import org.nuclos.common.NuclosEOField;
 import org.nuclos.common.attribute.DynamicAttributeVO;
 import org.nuclos.common.collect.collectable.AbstractCollectableField;
-import org.nuclos.common.collect.collectable.CollectableEntityField;
-import org.nuclos.common.collect.collectable.CollectableUtils;
-import org.nuclos.common.collect.exception.CollectableFieldValidationException;
 
 /**
  * <code>DynamicAttributeVO</code> disguised as a <code>CollectableField</code>.
@@ -39,14 +31,6 @@ import org.nuclos.common.collect.exception.CollectableFieldValidationException;
  * @version 01.00.00
  */
 public class CollectableGenericObjectAttributeField extends AbstractCollectableField {
-
-	private static final Set<String> stNullCreatableFieldNames = new HashSet<String>(Arrays.asList(
-		NuclosEOField.SYSTEMIDENTIFIER.getMetaData().getField(),
-		NuclosEOField.CHANGEDAT.getMetaData().getField(),
-		NuclosEOField.CHANGEDBY.getMetaData().getField(),
-		NuclosEOField.CREATEDAT.getMetaData().getField(),
-		NuclosEOField.CREATEDBY.getMetaData().getField()
-	));
 
 	private final int iFieldType;
 	private final Object oValue;
@@ -74,18 +58,6 @@ public class CollectableGenericObjectAttributeField extends AbstractCollectableF
 			throw new UnsupportedOperationException("getValueId");
 		}
 		return this.iValueId;
-	}
-
-	@Override
-	public void validate(CollectableEntityField clctef) throws CollectableFieldValidationException {
-		if (!mayBeNullOnCreation(clctef.getName())) {
-			CollectableUtils.validateNull(this, clctef);
-		}
-		CollectableUtils.validateValueClass(this, clctef);
-	}
-
-	private boolean mayBeNullOnCreation(String sName) {
-		return stNullCreatableFieldNames.contains(sName);
 	}
 
 	@Override
