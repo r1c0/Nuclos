@@ -550,8 +550,47 @@ public class TransferFacadeBean extends NuclosFacadeBean implements TransferFaca
 
 		return t;
 	}
+	
+	private void prepareContent(Set<Long> existingNucletIds,
+			NucletContentMap importContentMap,
+			List<INucletContent> contentTypes,
+			Transfer t,
+			boolean testMode,
+			TransferOption.Map exportOptions,
+			TransferNotifierHelper notifierHelper) {
 
-	private MetaDataProvider<EntityMetaDataVO, EntityFieldMetaDataVO> getMetaDataProvider(List<EntityObjectVO> entities, List<EntityObjectVO> fields) {
+		if (t.isNuclon()) {
+			LOG.info("is nuclon import. do not prepare anything");
+			return;
+		}
+		
+		notifierHelper.setSteps(1);
+		
+		List<EntityObjectVO> uidObjects = getUIDObjects(existingNucletIds, contentTypes, exportOptions);
+		
+		for (INucletContent nc : contentTypes) {
+			List<EntityObjectVO> ncObjects = nc.getNcObjects(existingNucletIds, exportOptions);
+			/*
+			 * Wir müssen fehlende UIDs erstellen, da einige Konfigurationselemente immer wieder neue IDs vergeben. 
+			 * Wie zum Beispiel der Statusmodelleditor und die Berechtigungsunterformulare.
+			 * 
+			 * Ansonsten wäre die Interpretation von fehlenden UIDs folgende:
+			 *  - Das betroffene Objekt wurde nachträglich erstellt
+			 *  - Dem Nuclet zugewiesen
+			 *  - Kann aber in Ruhe gelassen werden
+			 *  
+			 * Die Erstellung der fehlenden UIDs führt nun dazu, dass diese betroffenen Objekte abgeräumt werden. 
+			 * Im Falle der Berechtigung im Statusmodell ist dies auch nötig, damit Platz für die neuen Inhalte gemacht werden kann: 
+			 * Andernfalls haben wir UniqueConstraintViolations...
+			 */
+			LOG.info("created missing UIDs for " + nc.getEntity() + ": " + createMissingUIDs(ncObjects, uidObjects));
+		}
+		
+		notifierHelper.notifyNextStep();
+		
+	}
+
+	private StaticMetaDataProvider getMetaDataProvider(List<EntityObjectVO> entities, List<EntityObjectVO> fields) {
 		StaticMetaDataProvider result = new StaticMetaDataProvider();
 		for (EntityMetaDataVO eMeta : MetaDataServerProvider.getInstance().getAllEntities()) {
 			// only system entities...
@@ -702,6 +741,39 @@ public class TransferFacadeBean extends NuclosFacadeBean implements TransferFaca
             public int compare(PreviewPart o1, PreviewPart o2) {
 	            return o1.toString().compareToIgnoreCase(o2.toString());
             }});
+	}
+	
+	/*
+	 * Alles, was nicht in diesem Nuclet ist, wird ebenfalls benötigt...
+	 */
+	private void mergeTransferredProviderWithCurrentSchema(
+			StaticMetaDataProvider transferredProvider, 
+			List<EntityObjectVO> transferredEntities, 
+			Set<Long> existingNucletIds) {
+		
+		for (EntityObjectVO existingEntity : nucletDalProvider.getEntityObjectProcessor(NuclosEntity.ENTITY).getAll()) {
+			if (!existingNucletIds.contains(existingEntity.getFieldId(AbstractNucletContent.FOREIGN_FIELD_TO_NUCLET))) {
+				// gehört nicht zu diesem Nuclet
+				EntityMetaDataVO eMetaExisting = new EntityMetaDataVO(existingEntity);
+				
+				boolean found = false;
+				for (EntityObjectVO transferredEntity : transferredEntities) {					
+					if (EntityObjectMetaDbHelper.getTableName(eMetaExisting).equals(
+						EntityObjectMetaDbHelper.getTableName(new EntityMetaDataVO(transferredEntity)))) {
+						found = true;
+					}
+				}
+				
+				if (!found) {
+					List<EntityFieldMetaDataVO> efMetaExisting = nucletDalProvider.getEntityFieldMetaDataProcessor().getByParent(
+							existingEntity.getField("entity", String.class));
+					DalUtils.addNucletEOSystemFields(efMetaExisting, eMetaExisting);
+					
+					transferredProvider.addEntity(eMetaExisting);
+					transferredProvider.addEntityFields(eMetaExisting.getEntity(), efMetaExisting);
+				}
+			}
+		}
 	}
 
 	private void resetUniqueFields(List<EntityObjectVO> transferredFields,
