@@ -65,6 +65,7 @@ public interface WYSIWYGComponent extends LayoutMLConstants, WYSIWYGEditorModes 
 	public static final String PROPERTY_FONT = PROPERTY_LABELS.FONT;
 	public static final String PROPERTY_DESCRIPTION = PROPERTY_LABELS.DESCRIPTION;
 	public static final String PROPERTY_PREFFEREDSIZE = PROPERTY_LABELS.PREFFEREDSIZE;
+	public static final String PROPERTY_STRICTSIZE = PROPERTY_LABELS.SIZE;
 	public static final String PROPERTY_ENABLED = PROPERTY_LABELS.ENABLED;
 	public static final String PROPERTY_VISIBLE = PROPERTY_LABELS.VISIBLE;
 	public static final String PROPERTY_OPAQUE = PROPERTY_LABELS.OPAQUE;

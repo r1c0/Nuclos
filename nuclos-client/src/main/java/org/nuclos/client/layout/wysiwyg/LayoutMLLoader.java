@@ -226,6 +226,7 @@ public class LayoutMLLoader implements LayoutMLConstants {
 			this.mapProcessors.put(ELEMENT_TABLELAYOUT, new TableLayoutElementProcessor());
 			this.mapProcessors.put(ELEMENT_TABLELAYOUTCONSTRAINTS, new TableLayoutConstraintsElementProcessor());
 			this.mapProcessors.put(ELEMENT_COLLECTABLECOMPONENT, new CollectableComponentElementProcessor());
+			this.mapProcessors.put(ELEMENT_STRICTSIZE, new StrictSizeElementProcessor());
 			this.mapProcessors.put(ELEMENT_PREFERREDSIZE, new PreferredSizeElementProcessor());
 			this.mapProcessors.put(ELEMENT_MINIMUMSIZE, new MinimumSizeElementProcessor());
 			this.mapProcessors.put(ELEMENT_TABBEDPANE, new TabbedPaneElementProcessor());
@@ -957,6 +958,30 @@ public class LayoutMLLoader implements LayoutMLConstants {
 					value.setValue(ELEMENT_PREFERREDSIZE, atts);
 
 					peekComponent().setProperty(WYSIWYGCollectableComponent.PROPERTY_PREFFEREDSIZE, value, PropertyUtils.getValueClass(peekComponent(), WYSIWYGCollectableComponent.PROPERTY_PREFFEREDSIZE));
+				} catch (CommonBusinessException e) {
+					log.error(e);
+					Errors.getInstance().showExceptionDialog(null, e);
+				}
+			}
+
+			@Override
+			public void closeElement() {
+			}
+		}
+		
+		/**
+		 * {@link ElementProcessor} for StrictSize
+		 * @see PropertyOptions
+		 */
+		private class StrictSizeElementProcessor implements ElementProcessor {
+
+			@Override
+			public void startElement(Attributes atts) throws SAXException {
+				try {
+					PropertyValue<?> value = PropertyUtils.getPropertyValue(peekComponent(), WYSIWYGCollectableComponent.PROPERTY_STRICTSIZE);
+					value.setValue(ELEMENT_STRICTSIZE, atts);
+
+					peekComponent().setProperty(WYSIWYGCollectableComponent.PROPERTY_STRICTSIZE, value, PropertyUtils.getValueClass(peekComponent(), WYSIWYGCollectableComponent.PROPERTY_STRICTSIZE));
 				} catch (CommonBusinessException e) {
 					log.error(e);
 					Errors.getInstance().showExceptionDialog(null, e);

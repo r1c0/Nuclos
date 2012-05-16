@@ -679,8 +679,12 @@ public class LayoutMLGenerator implements LayoutMLConstants {
 			if (collectableComponentProperties.getAllPropertyEntries().size() > 0)
 				block.append(getLayoutMLCollectableComponentProperty(collectableComponentProperties, blockDeep + 1));
 		block.append(getLayoutMLBordersFromProperty(c.getProperties(), blockDeep + 1));
-		block.append(getLayoutMLMinimumSizeFromComponent(c, blockDeep + 1));
-		block.append(getLayoutMLPreferredSizeFromProperty(c.getProperties(), blockDeep + 1));
+		if (c.getProperties().getProperty(WYSIWYGCollectableComponent.PROPERTY_STRICTSIZE) != null) {
+			block.append(getLayoutMLStrictSizeFromProperty(c.getProperties(), blockDeep + 1));
+		} else {
+			block.append(getLayoutMLMinimumSizeFromComponent(c, blockDeep + 1));
+			block.append(getLayoutMLPreferredSizeFromProperty(c.getProperties(), blockDeep + 1));
+		}
 		block.append(getLayoutMLBackgroundColorFromProperty(c.getProperties(), blockDeep + 1));
 		block.append(getLayoutMLDescription(c.getProperties(), blockDeep + 1));
 		block.append(getLayoutMLFont(c.getProperties(), blockDeep + 1));
@@ -1186,6 +1190,33 @@ public class LayoutMLGenerator implements LayoutMLConstants {
 			LayoutMLBlock block = new LayoutMLBlock(blockDeep);
 			// <preferred-size height="30" width="80" />
 			block.append("<" + ELEMENT_PREFERREDSIZE + " ");
+			block.append(ATTRIBUTE_HEIGHT + "=\"");
+			block.append(dim.height);
+			block.append("\" " + ATTRIBUTE_WIDTH + "=\"");
+			block.append(dim.width);
+			block.append("\" />");
+			return block.getStringBuffer();
+		}
+		return new StringBuffer();
+	}
+	
+	/**
+	 * Method converting StrictSize to LayoutML XML.
+	 * 
+	 * 
+	 * @see LayoutMLBlock
+	 * @param cp
+	 * @param blockDeep
+	 * @return {@link StringBuffer} with the LayoutML
+	 */
+	private synchronized StringBuffer getLayoutMLStrictSizeFromProperty(ComponentProperties cp, int blockDeep) {
+		Dimension dim = null;
+		if (cp.getProperty(WYSIWYGCollectableComponent.PROPERTY_STRICTSIZE) != null)
+			dim = (Dimension) cp.getProperty(WYSIWYGCollectableComponent.PROPERTY_STRICTSIZE).getValue();
+		if (dim != null) {
+			LayoutMLBlock block = new LayoutMLBlock(blockDeep);
+			// <preferred-size height="30" width="80" />
+			block.append("<" + ELEMENT_STRICTSIZE + " ");
 			block.append(ATTRIBUTE_HEIGHT + "=\"");
 			block.append(dim.height);
 			block.append("\" " + ATTRIBUTE_WIDTH + "=\"");

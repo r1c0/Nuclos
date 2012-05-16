@@ -756,6 +756,7 @@ public class WYSIWYGStringsAndLabels {
 	public static class PROPERTY_LABELS {
 		public static final String NAME = "Name der Komponente";
 		public static final String PREFFEREDSIZE = "Bevorzugte Gr\u00f6\u00dfe";
+		public static final String SIZE = "Gr\u00f6\u00dfe";
 		public static final String SHOWONLY = "Komponentendarstellung";
 		public static final String ENABLED = "Aktiv";
 		public static final String VISIBLE = "Sichtbar";

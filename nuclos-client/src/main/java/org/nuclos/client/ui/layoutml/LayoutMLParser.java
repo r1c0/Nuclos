@@ -73,6 +73,7 @@ import org.nuclos.client.ui.Errors;
 import org.nuclos.client.ui.JInfoTabbedPane;
 import org.nuclos.client.ui.LineLayout;
 import org.nuclos.client.ui.SizeKnownListener;
+import org.nuclos.client.ui.StrictSizeComponent;
 import org.nuclos.client.ui.TitledSeparator;
 import org.nuclos.client.ui.collect.CollectableComponentsProvider;
 import org.nuclos.client.ui.collect.DefaultCollectableComponentsProvider;
@@ -99,6 +100,7 @@ import org.nuclos.client.ui.collect.component.model.SearchComponentModel;
 import org.nuclos.client.ui.collect.component.model.SearchComponentModelEvent;
 import org.nuclos.client.ui.labeled.LabeledComponent;
 import org.nuclos.client.ui.labeled.LabeledTextArea;
+import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.caching.GenCache;
 import org.nuclos.common.collect.collectable.Collectable;
 import org.nuclos.common.collect.collectable.CollectableComponentTypes;
@@ -1056,6 +1058,7 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 			this.mpElementProcessors.put(ELEMENT_TABLELAYOUTCONSTRAINTS, new TableLayoutConstraintsElementProcessor());
 			this.mpElementProcessors.put(ELEMENT_MINIMUMSIZE, new MinimumSizeElementProcessor());
 			this.mpElementProcessors.put(ELEMENT_PREFERREDSIZE, new PreferredSizeElementProcessor());
+			this.mpElementProcessors.put(ELEMENT_STRICTSIZE, new StrictSizeElementProcessor());
 			this.mpElementProcessors.put(ELEMENT_CLEARBORDER, new ClearBorderElementProcessor());
 			this.mpElementProcessors.put(ELEMENT_EMPTYBORDER, new EmptyBorderElementProcessor());
 			this.mpElementProcessors.put(ELEMENT_ETCHEDBORDER, new EtchedBorderElementProcessor());
@@ -3208,6 +3211,24 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 				stack.peekComponent().setPreferredSize(new Dimension(iWidth, iHeight));
 			}
 		}	// inner class PreferredSizeElementProcessor
+		
+		/**
+		 * inner class <code>StrictSizeElementProcessor</code>. Processes a strict-size element.
+		 */
+		private class StrictSizeElementProcessor extends AbstractElementProcessor {
+			@Override
+            public void startElement(String sUriNameSpace, String sSimpleName, String sQualifiedName, Attributes attributes)
+					throws SAXException {
+				final int iWidth = BuildFormHandler.getIntValue(attributes, ATTRIBUTE_WIDTH, 0);
+				final int iHeight = BuildFormHandler.getIntValue(attributes, ATTRIBUTE_HEIGHT, 0);
+				
+				if (stack.peekComponent() instanceof StrictSizeComponent) {
+					((StrictSizeComponent)stack.peekComponent()).setStrictSize(new Dimension(iWidth, iHeight));
+				} else {
+					throw new NuclosFatalException("StrictSize not avaiable for class " + stack.peekComponent().getClass().getName());
+				}
+			}
+		}	// inner class StrictSizeElementProcessor
 
 		/**
 		 * inner class <code>ClearBorderElementProcessor</code>. Processes a clear-border element.
