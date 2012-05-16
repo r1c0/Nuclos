@@ -1,7 +1,9 @@
 package org.nuclos.client.image;
 
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.OutputStream;
 
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
@@ -22,7 +24,7 @@ public class SVGTest {
 		final String uri = Thread.currentThread().getContextClassLoader().getResource(SVG_TEMPLATE).toExternalForm();
 		final SVGDOMDocumentSupport sdds = new SVGDOMDocumentSupport(uri);
 		final SVG2EMF converter = new SVG2EMF();
-		final FileOutputStream out = new FileOutputStream(EMF_OUT);
+		final OutputStream out = new BufferedOutputStream(new FileOutputStream(EMF_OUT));
 		try {
 			converter.convert(sdds.getDocument(), out);
 			// converter.convert(uri, OUT);
@@ -46,7 +48,7 @@ public class SVGTest {
 		
 		g.appendChild(sdds.createRect(10, 10, 100, 100, "lane-grey"));
 		
-		final FileOutputStream out = new FileOutputStream(SVG_OUT);
+		final OutputStream out = new BufferedOutputStream(new FileOutputStream(SVG_OUT));
 		try {
 			sdds.writeAsSvg(out);
 		}

@@ -20,6 +20,7 @@ import static org.nuclos.common.collection.CollectionUtils.getFirst;
 import static org.nuclos.common.collection.CollectionUtils.transform;
 import static org.nuclos.common2.StringUtils.join;
 
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.PrintWriter;
@@ -837,8 +838,8 @@ public abstract class StandardSqlDBAccess extends AbstractDBAccess {
     				if (!structureChangeLogDir.exists()) {
     					structureChangeLogDir.mkdirs();
     				}
-    				PrintWriter w = new PrintWriter(
-    					new FileWriter(new File(structureChangeLogDir, String.format("dbchanges-%tF.log", date)), true));
+    				PrintWriter w = new PrintWriter(new BufferedWriter(
+    					new FileWriter(new File(structureChangeLogDir, String.format("dbchanges-%tF.log", date)), true)));
     				try {
     					w.println(String.format("---------- %1$tFT%1$tT ----------------------------", date));
     					w.println("-- " + command.accept(new StatementToStringVisitor()));

@@ -16,6 +16,7 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.server.report.ejb3;
 
+import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -854,10 +855,13 @@ public class ReportFacadeBean extends NuclosFacadeBean implements ReportFacadeRe
 		File file = File.createTempFile("report_", ".tmp");
 		file.deleteOnExit();
 		
-		OutputStream os = new FileOutputStream(file);
-		os.write(data);
-		os.close();
-		
+		OutputStream os = new BufferedOutputStream(new FileOutputStream(file));
+		try {
+			os.write(data);
+		}
+		finally {
+			os.close();
+		}
 		return file;
 	}
 

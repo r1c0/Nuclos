@@ -1,8 +1,10 @@
 package org.nuclos.client.report.reportrunner.export;
 
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 
 import org.nuclos.client.report.reportrunner.AbstractReportExporter;
 import org.nuclos.common.NuclosFile;
@@ -25,10 +27,10 @@ public class FileExport extends AbstractReportExporter {
 		final String sFileName = getFileName(sDir, sReportName, file.getFileName().substring(file.getFileName().lastIndexOf('.')));
 
 		File file = new File(sFileName);
-		FileOutputStream fos = null;
+		OutputStream fos = null;
 
 		try {
-			fos = new FileOutputStream(file);
+			fos = new BufferedOutputStream(new FileOutputStream(file));
 			fos.write(this.file.getFileContents());
 
 			switch (destination) {

@@ -16,6 +16,7 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.report.reportrunner.export;
 
+import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 
@@ -98,8 +99,8 @@ public class CSVExport extends AbstractReportExporter {
 			sFileName = getFileName(createExportDir(parameter), sReportName, sFileSuffix);
 			this.fileName = sFileName;
 
-			final ExcelCSVPrinter excelCSVPrinter = new ExcelCSVPrinter(new FileWriter(sFileName, false), iQuoteLevel, cDelimiter, cQuote, false);
-			//final ExcelCSVPrinter excelCSVPrinter = new ExcelCSVPrinter(new OutputStreamWriter(new FileOutputStream(sFileName), "UTF8"), iQuoteLevel, cDelimiter, cQuote, false);
+			final ExcelCSVPrinter excelCSVPrinter = new ExcelCSVPrinter(new BufferedWriter(new FileWriter(sFileName, false)), 
+					iQuoteLevel, cDelimiter, cQuote, false);
 			excelCSVPrinter.changeDelimiter(cDelimiter);
 
 			if(bWriteHeader) {

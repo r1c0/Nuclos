@@ -18,6 +18,7 @@ package org.nuclos.server.dblayer.util;
 
 import static org.nuclos.common2.StringUtils.defaultIfNull;
 
+import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
@@ -72,6 +73,9 @@ public class DbArtifactXmlReader {
 	
 	public void read(InputStream is) throws IOException {
 		try {
+			if (!(is instanceof BufferedInputStream)) {
+				is = new BufferedInputStream(is);
+			}
 			reader = XMLInputFactory.newInstance().createXMLStreamReader(is);
 			reader.nextTag();
 			checkStartElement(reader, "database");

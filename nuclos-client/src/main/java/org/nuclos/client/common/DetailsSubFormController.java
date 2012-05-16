@@ -28,11 +28,13 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -992,12 +994,18 @@ public abstract class DetailsSubFormController<Clct extends Collectable>
 	protected void insertNewRowFromDrop(File file) throws IOException {
 		final Clct clctNew = this.newCollectable();
 		this.setParentId(clctNew, this.getParentId());
-		FileInputStream fis = new FileInputStream(file);
-		byte[] b = new byte[(int)file.length()];
-		fis.read(b);
-		fis.close();
+		
+		final InputStream fis = new BufferedInputStream(new FileInputStream(file));
+		final byte[] b;
+		try {
+			b = new byte[(int)file.length()];
+			fis.read(b);
+		}
+		finally {
+			fis.close();
+		}
+		
 		GenericObjectDocumentFile docfile = new GenericObjectDocumentFile(file.getName(), b);
-
 		final String sFieldDocument = getDocumentField();
 		clctNew.setField(sFieldDocument, new CollectableValueField(docfile));
 		this.getCollectableTableModel().add(clctNew);
@@ -1018,10 +1026,17 @@ public abstract class DetailsSubFormController<Clct extends Collectable>
 		for(Iterator<File> it = files.iterator(); it.hasNext(); ) {
 			File file = it.next();
 			CollectableMasterData clma = (CollectableMasterData) DetailsSubFormController.this.getCollectables().get(hereRow);
-			FileInputStream fis = new FileInputStream(file);
-			byte[] b = new byte[(int)file.length()];
-			fis.read(b);
-			fis.close();
+			
+			final InputStream fis = new BufferedInputStream(new FileInputStream(file));
+			final byte[] b;
+			try {
+				b = new byte[(int)file.length()];
+				fis.read(b);
+			}
+			finally {
+				fis.close();
+			}
+			
 			GenericObjectDocumentFile docfile = new GenericObjectDocumentFile(file.getName(), b);
 			final String sFieldDocument = getDocumentField();
 			CollectableValueField valueField = new CollectableValueField(docfile);

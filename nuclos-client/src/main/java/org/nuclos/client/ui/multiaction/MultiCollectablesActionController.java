@@ -18,9 +18,11 @@ package org.nuclos.client.ui.multiaction;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.Writer;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -279,21 +281,27 @@ public class MultiCollectablesActionController <T,R> extends Controller {
 									file = new File(filename);
 								}
 								try {
-									FileWriter writer = new FileWriter(file);
-									ExcelCSVPrinter printer = new ExcelCSVPrinter(writer, 2, ';', '\"', true);
-									printer.write(mdl.getColumnName(MultiActionProgressTableModel.COLUMN_STATE));
-									printer.write(mdl.getColumnName(MultiActionProgressTableModel.COLUMN_RESULT));
-									printer.writeln();
-									for(int i = 0; i < mdl.getRowCount(); i++) {
-										printer.write(mdl.getValueAt(i, MultiActionProgressTableModel.COLUMN_STATE).toString());
-										printer.write(mdl.getValueAt(i, MultiActionProgressTableModel.COLUMN_RESULT).toString());
+									final Writer writer = new BufferedWriter(new FileWriter(file));
+									final ExcelCSVPrinter printer = new ExcelCSVPrinter(writer, 2, ';', '\"', true);
+									try {
+										printer.write(mdl.getColumnName(MultiActionProgressTableModel.COLUMN_STATE));
+										printer.write(mdl.getColumnName(MultiActionProgressTableModel.COLUMN_RESULT));
 										printer.writeln();
+										for(int i = 0; i < mdl.getRowCount(); i++) {
+											printer.write(mdl.getValueAt(i, MultiActionProgressTableModel.COLUMN_STATE).toString());
+											printer.write(mdl.getValueAt(i, MultiActionProgressTableModel.COLUMN_RESULT).toString());
+											printer.writeln();
+										}
+										writer.write("");
 									}
-									writer.write("");
-									writer.close();
+									finally {
+										writer.close();
+										printer.close();
+									}
 								}
 								catch (IOException ex) {
-									Errors.getInstance().showExceptionDialog(MultiCollectablesActionController.this.getParent(), "MultiCollectablesActionController.saveresulterror", ex);
+									Errors.getInstance().showExceptionDialog(MultiCollectablesActionController.this.getParent(), 
+											"MultiCollectablesActionController.saveresulterror", ex);
 								}
 							}
 						}

@@ -16,6 +16,8 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -132,19 +134,27 @@ public class LocalUserProperties extends java.util.Properties {
     }
 
     private LocalUserProperties() {
-        try {
-            final InputStream in = new FileInputStream(this.getPropertiesFile());
-            load(in);
-            in.close();
-        }
-        catch (FileNotFoundException ex) {
-            // The properties file doesn't exist.
-            // So we start with empty or default values.
-        }
-        catch (IOException ex) {
+    	try {
+	        final InputStream in = new BufferedInputStream(new FileInputStream(this.getPropertiesFile()));
+	        try {
+	            load(in);
+	        }
+	        catch (FileNotFoundException ex) {
+	            // The properties file doesn't exist.
+	            // So we start with empty or default values.
+	        }
+	        catch (IOException ex) {
+	            final String sMessage = "Lokale Benutzereinstellungen konnten nicht geladen werden.";
+	            throw new NuclosFatalException(sMessage, ex);
+	        }
+	        finally {
+	            in.close();
+	        }
+    	}
+    	catch (IOException e) {
             final String sMessage = "Lokale Benutzereinstellungen konnten nicht geladen werden.";
-            throw new NuclosFatalException(sMessage, ex);
-        }
+            throw new NuclosFatalException(sMessage, e);
+    	}
     }
 
     private File getPropertiesFile() {
@@ -156,9 +166,14 @@ public class LocalUserProperties extends java.util.Properties {
 
     public void store() {
         try {
-            final OutputStream out = new FileOutputStream(this.getPropertiesFile());
-            store(out, ApplicationProperties.getInstance().getAppId() + " Local User Properties");//ApplicationProperties.getInstance().getName() + " Local User Properties"
-            out.close();
+            final OutputStream out = new BufferedOutputStream(new FileOutputStream(this.getPropertiesFile()));
+            try {
+            	store(out, ApplicationProperties.getInstance().getAppId() + " Local User Properties");
+            	//ApplicationProperties.getInstance().getName() + " Local User Properties"
+            }
+            finally {
+            	out.close();
+            }
         }
         catch (IOException ex) {
             final String sMessage = "Lokale Benutzereinstellungen konnten nicht geladen werden.";

@@ -16,6 +16,7 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.server.customcode;
 
+import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -603,7 +604,7 @@ public abstract class CustomCodeInterface {
 		ExcelReader reader = excelReader.get(file);
 		if (reader == null) {
 			try {
-				reader = new ExcelReader(new FileInputStream(file));
+				reader = new ExcelReader(new BufferedInputStream(new FileInputStream(file)));
 			} catch (FileNotFoundException e) {
 				throw new NuclosBusinessRuleException(StringUtils.getParameterizedExceptionMessage("import.exception.2", file.getAbsolutePath()));
 			} catch (IOException e) {
@@ -626,7 +627,7 @@ public abstract class CustomCodeInterface {
 	public Map<String, ?> getDocumentTags(File file) throws NuclosBusinessRuleException {
 		WordXMLReader reader;
 		try {
-			reader = new WordXMLReader(new FileInputStream(file));
+			reader = new WordXMLReader(new BufferedInputStream(new FileInputStream(file)));
 		} catch (FileNotFoundException e) {
 			throw new NuclosBusinessRuleException(StringUtils.getParameterizedExceptionMessage("import.exception.2", file.getAbsolutePath()));
 		} catch (IOException e) {

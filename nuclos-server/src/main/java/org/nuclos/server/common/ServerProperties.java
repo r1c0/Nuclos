@@ -16,6 +16,7 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.server.common;
 
+import java.io.BufferedInputStream;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -62,7 +63,7 @@ public class ServerProperties {
 		if (location != null) {
 			String resolvedLocation = SystemPropertyUtils.resolvePlaceholders(location);
 			try {
-				is = new FileInputStream(ResourceUtils.getFile(resolvedLocation));
+				is = new BufferedInputStream(new FileInputStream(ResourceUtils.getFile(resolvedLocation)));
 			}
 			catch (FileNotFoundException ex) {
 				throw new NuclosFatalException(ex);

@@ -18,6 +18,7 @@ package org.nuclos.client.report.reportrunner.export;
 
 import java.awt.GraphicsEnvironment;
 import java.awt.Rectangle;
+import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -147,17 +148,24 @@ public class PDFExport extends AbstractReportExporter {
 		File file = File.createTempFile("report_", ".tmp");
 		file.deleteOnExit();
 
-		OutputStream os = new FileOutputStream(file);
+		final ByteArrayOutputStream bos = new ByteArrayOutputStream();
+	    final ObjectOutputStream oos = new ObjectOutputStream(bos);
+	    try {
+		    oos.writeObject(data);
+		    oos.flush();
+	    }
+	    finally {
+		    oos.close();
+		    bos.close();
+	    }
 
-		ByteArrayOutputStream bos = new ByteArrayOutputStream();
-	    ObjectOutputStream oos = new ObjectOutputStream(bos);
-	    oos.writeObject(data);
-	    oos.flush();
-	    oos.close();
-	    bos.close();
-
-	    os.write(bos.toByteArray());
-		os.close();
+		final OutputStream os = new BufferedOutputStream(new FileOutputStream(file));
+		try {
+			os.write(bos.toByteArray());
+		}
+		finally {
+			os.close();
+		}
 
 		return file;
 	}

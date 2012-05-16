@@ -17,8 +17,11 @@
 package org.nuclos.common2;
 
 import org.nuclos.common2.exception.CommonFatalException;
+
+import java.io.BufferedInputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.PropertyResourceBundle;
 import java.util.ResourceBundle;
 
@@ -38,12 +41,23 @@ public class PropertyList {
 	private PropertyResourceBundle bundle = null;
 
 	public PropertyList(String sFileName) throws CommonFatalException {
+		InputStream fis = null;
 		try {
-			FileInputStream fis = new FileInputStream(sFileName);
+			fis = new BufferedInputStream(new FileInputStream(sFileName));
 			this.bundle = new PropertyResourceBundle(fis);
 		}
 		catch (IOException e) {
 			throw new CommonFatalException(e);
+		}
+		finally {
+			if (fis != null) {
+				try {
+					fis.close();
+				}
+				catch (IOException e) {
+					throw new CommonFatalException(e);
+				}
+			}
 		}
 	}
 

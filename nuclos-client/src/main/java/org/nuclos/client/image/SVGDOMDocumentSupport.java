@@ -17,6 +17,8 @@
 package org.nuclos.client.image;
 
 import java.awt.Color;
+import java.io.BufferedOutputStream;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -132,7 +134,7 @@ public class SVGDOMDocumentSupport extends SVGDOMImplementation {
 	}
 	
 	public void writeAs(File file, ImageType type) throws IOException {
-		final OutputStream out = new FileOutputStream(file);
+		final OutputStream out = new BufferedOutputStream(new FileOutputStream(file));
 		try {
 			writeAs(out, type);
 		}
@@ -158,7 +160,7 @@ public class SVGDOMDocumentSupport extends SVGDOMImplementation {
 	}
 	
 	public void writeAsEmf(File file) throws IOException {
-		final OutputStream out = new FileOutputStream(file);
+		final OutputStream out = new BufferedOutputStream(new FileOutputStream(file));
 		try {
 			writeAsEmf(out);
 		}
@@ -173,7 +175,7 @@ public class SVGDOMDocumentSupport extends SVGDOMImplementation {
 	}
 
 	public void writeAsPng(File file) throws IOException {
-		final OutputStream out = new FileOutputStream(file);
+		final OutputStream out = new BufferedOutputStream(new FileOutputStream(file));
 		try {
 			writeAsPng(out);
 		}
@@ -198,7 +200,7 @@ public class SVGDOMDocumentSupport extends SVGDOMImplementation {
 	}
 
 	public void writeAsSvg(File file) throws IOException {
-		final OutputStream out = new FileOutputStream(file);
+		final OutputStream out = new BufferedOutputStream(new FileOutputStream(file));
 		try {
 			writeAsSvg(out);
 		}
@@ -208,7 +210,10 @@ public class SVGDOMDocumentSupport extends SVGDOMImplementation {
 	}
 	
 	public void writeAsSvg(OutputStream os) throws IOException {
-		final Writer out = new OutputStreamWriter(os, "UTF-8");
+		Writer out = new OutputStreamWriter(os, "UTF-8");
+		if (!(os instanceof BufferedOutputStream)) {
+			out = new BufferedWriter(out);
+		}
 		writeAsSvg(out);
 	}
 

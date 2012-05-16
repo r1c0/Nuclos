@@ -220,7 +220,7 @@ public class CSVWriter {
 		if (DEBUGGING) {
 			try {
 				// write out a test file
-				CSVWriter csv = new CSVWriter(new FileWriter("temp.txt"), 1, ';', '\'', true);
+				CSVWriter csv = new CSVWriter(new BufferedWriter(new FileWriter("temp.txt")), 1, ';', '\'', true);
 				csv.put("abc");
 				csv.put("def");
 				csv.put("g h i");

@@ -19,6 +19,7 @@ package org.nuclos.server.autosync;
 import static org.nuclos.common.collection.CollectionUtils.transform;
 import static org.nuclos.common.collection.CollectionUtils.transformIntoMap;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -280,7 +281,7 @@ public class XMLEntities {
 		if (is == null) {
 			return null;
 		}
-		return JSONValue.parseWithException(new InputStreamReader(is, "utf-8"));
+		return JSONValue.parseWithException(new BufferedReader(new InputStreamReader(is, "utf-8")));
 	}
 
 	public static List<MasterDataVO> parseJSON(String entity, String file) throws IOException, ParseException {

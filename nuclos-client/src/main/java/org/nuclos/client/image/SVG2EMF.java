@@ -18,6 +18,7 @@ package org.nuclos.client.image;
 
 import java.awt.Dimension;
 import java.awt.geom.Rectangle2D;
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -50,7 +51,7 @@ public class SVG2EMF {
 	public void convert(String svgUri, File emfFile) throws IOException {
 		// build a SVGDocument.
 		// write to EmfWriter
-		final FileOutputStream emfStream = new FileOutputStream(emfFile);
+		final OutputStream emfStream = new BufferedOutputStream(new FileOutputStream(emfFile));
 		try {
 			Document svgDoc = loader.loadDocument(svgUri);
 			convert((SVGDocument) svgDoc, emfStream);
