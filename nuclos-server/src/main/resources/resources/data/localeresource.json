@@ -17405,12 +17405,12 @@
     "text": "The path denoting the webservice libs is not valid\\n{0}"
   },
   {
-    "resourceID": "ruleengine.error.exception.wsdllibpath.",
+    "resourceID": "nuclos.compileexception.wsdllibpath",
     "locale": "en",
     "text": "The path denoting the webservice libs is not valid\\n{0}"
   },
   {
-    "resourceID": "ruleengine.error.exception.wsdllibpath.",
+    "resourceID": "nuclos.compileexception.wsdllibpath",
     "locale": "de",
     "text": "Der Pfad zu den Webservice Libraries ist nicht valide\\n{0}"
   },
