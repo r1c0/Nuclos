@@ -222,7 +222,7 @@ public class PropertyUtils implements LayoutMLConstants {
 	 * @throws CommonBusinessException
 	 */
 	private static void setDefaultValuesForWYSIWYGCollectableComboBox(ComponentProperties properties) throws CommonBusinessException{
-		properties.setProperty(WYSIWYGCollectableComponent.PROPERTY_PREFFEREDSIZE, new PropertyValueDimension(DEFAULTVALUE_COMBOBOX_PREFERREDSIZE), DEFAULTVALUE_COMBOBOX_PREFERREDSIZE.getClass());
+		properties.setProperty(WYSIWYGCollectableComponent.PROPERTY_STRICTSIZE, new PropertyValueDimension(DEFAULTVALUE_COMBOBOX_STRICTSIZE), DEFAULTVALUE_COMBOBOX_STRICTSIZE.getClass());
 		properties.setProperty(WYSIWYGCollectableComponent.PROPERTY_SHOWONLY, new PropertyValueString(ATTRIBUTEVALUE_CONTROL), String.class);
 		properties.setProperty(WYSIWYGCollectableComponent.PROPERTY_FILL_CONTROL_HORIZONTALLY, new PropertyValueBoolean(true), boolean.class);
 		//NUCLEUSINT-492

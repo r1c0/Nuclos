@@ -37,6 +37,7 @@ import org.apache.log4j.Logger;
 import org.nuclos.client.synthetica.NuclosThemeSettings;
 import org.nuclos.client.ui.ColorProvider;
 import org.nuclos.client.ui.Icons;
+import org.nuclos.client.ui.StrictSizeComponent;
 import org.nuclos.client.ui.TextFieldWithButton;
 import org.nuclos.client.ui.ToolTipTextProvider;
 import org.nuclos.client.ui.UIUtils;
@@ -52,11 +53,13 @@ import org.nuclos.client.ui.popupmenu.JPopupMenuListener;
  * @version	01.00.00
  */
 
-public class LabeledComboBox extends LabeledComponent {
+public class LabeledComboBox extends LabeledComponent implements StrictSizeComponent {
 	
 	private static final Logger LOG = Logger.getLogger(LabeledComboBox.class);
 	
 	public static final Dimension DEFAULT_PREFERRED_SIZE = (new JTextField()).getPreferredSize();
+	
+	private Dimension strictSize = null;
 	
 	private final TextFieldWithButton tfDisabled = new TextFieldWithButton(
 			Icons.getInstance().getIconTextFieldButtonCombobox(), support) {
@@ -227,6 +230,50 @@ public class LabeledComboBox extends LabeledComponent {
 	@Override
 	protected void setControlsEditable(boolean bEditable) {
 		this.getJComboBox().setEditable(bEditable);
+	}
+
+	@Override
+	public void setMinimumSize(Dimension minimumSize) {
+		if (strictSize==null)
+			super.setMinimumSize(minimumSize);
+	}
+
+	@Override
+	public void setSize(Dimension d) {
+		if (strictSize==null)
+			super.setSize(d);
+	}
+
+	@Override
+	public void setSize(int width, int height) {
+		if (strictSize==null)
+			super.setSize(width, height);
+	}
+
+	@Override
+	public void setPreferredSize(Dimension size) {
+		if (strictSize==null) {
+			super.setPreferredSize(size);
+		}
+	}
+	
+	@Override
+	public void setStrictSize(Dimension size) {
+		strictSize = size;
+		super.setMinimumSize(size);
+		super.setSize(size);
+		super.setPreferredSize(size);
+		cmbbx.setMinimumSize(size);
+		cmbbx.setSize(size);
+		cmbbx.setPreferredSize(size);
+		tfDisabled.setMinimumSize(size);
+		tfDisabled.setSize(size);
+		tfDisabled.setPreferredSize(size);
+	}
+	
+	@Override
+	public Dimension getStrictSize() {
+		return strictSize;
 	}
 
 	@Override

@@ -53,11 +53,15 @@ public class WYSIWYGCollectableComboBox extends WYSIWYGCollectableComponent {
 	
 	public WYSIWYGCollectableComboBox() {
 		propertyNames.add(PROPERTY_FONT);
+		propertyNames.add(PROPERTY_STRICTSIZE);
+		
+		propertyClasses.put(PROPERTY_STRICTSIZE, new PropertyClass(PROPERTY_STRICTSIZE, Dimension.class));
 		
 		propertySetMethods.put(PROPERTY_NAME, new PropertySetMethod(PROPERTY_NAME, "setName"));
 		propertySetMethods.put(PROPERTY_COLUMNS, new PropertySetMethod(PROPERTY_COLUMNS, "setColumns"));
 		propertySetMethods.put(PROPERTY_FILL_CONTROL_HORIZONTALLY, new PropertySetMethod(PROPERTY_FILL_CONTROL_HORIZONTALLY, "setFillControlHorizontally"));
 		propertySetMethods.put(PROPERTY_INSERTABLE, new PropertySetMethod(PROPERTY_INSERTABLE, "setInsertable"));
+		propertySetMethods.put(PROPERTY_STRICTSIZE, new PropertySetMethod(PROPERTY_STRICTSIZE, "setStrictSize"));
 		
 		propertyFilters.put(PROPERTY_SHOWONLY, new PropertyFilter(PROPERTY_SHOWONLY, DISABLED));
 		propertyFilters.put(PROPERTY_CONTROLTYPECLASS, new PropertyFilter(PROPERTY_CONTROLTYPECLASS, DISABLED));
@@ -66,6 +70,8 @@ public class WYSIWYGCollectableComboBox extends WYSIWYGCollectableComponent {
 		propertyFilters.put(PROPERTY_FILL_CONTROL_HORIZONTALLY, new PropertyFilter(PROPERTY_FILL_CONTROL_HORIZONTALLY, DISABLED));
 		propertyFilters.put(PROPERTY_INSERTABLE, new PropertyFilter(PROPERTY_INSERTABLE, EXPERT_MODE));
 		propertyFilters.put(PROPERTY_OPAQUE, new PropertyFilter(PROPERTY_OPAQUE, DISABLED));
+		propertyFilters.put(PROPERTY_PREFFEREDSIZE, new PropertyFilter(PROPERTY_PREFFEREDSIZE, DISABLED));
+		propertyFilters.put(PROPERTY_STRICTSIZE, new PropertyFilter(PROPERTY_STRICTSIZE, STANDARD_AND_EXPERT_MODE));
 	
 		this.setLayout(new BorderLayout());
 		component.getJLabel().setVisible(false);
@@ -191,6 +197,12 @@ public class WYSIWYGCollectableComboBox extends WYSIWYGCollectableComponent {
 	public void setPreferredSize(Dimension preferredSize) {
 		if (component != null) {
 			component.setPreferredSize(preferredSize);
+		}
+	}
+	
+	public void setStrictSize(Dimension strictSize) {
+		if (component != null) {
+			component.setStrictSize(strictSize);
 		}
 	}
 

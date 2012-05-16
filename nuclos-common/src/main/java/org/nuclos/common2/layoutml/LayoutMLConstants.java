@@ -73,6 +73,7 @@ public interface LayoutMLConstants {
 	public static final String ELEMENT_BACKGROUND = "background";
 	public static final String ELEMENT_MINIMUMSIZE = "minimum-size";
 	public static final String ELEMENT_PREFERREDSIZE = "preferred-size";
+	public static final String ELEMENT_STRICTSIZE = "strict-size";
 	public static final String ELEMENT_CLEARBORDER = "clear-border";
 	public static final String ELEMENT_EMPTYBORDER = "empty-border";
 	public static final String ELEMENT_ETCHEDBORDER = "etched-border";
@@ -277,8 +278,9 @@ public interface LayoutMLConstants {
 	public static final Dimension DEFAULTVALUE_CHECKBOX_PREFERREDSIZE = new Dimension(20, 22);
 	public static final Dimension DEFAULTVALUE_TEXTFIELD_MINIMUMSIZE = new Dimension(35, 22);
 	public static final Dimension DEFAULTVALUE_TEXTFIELD_PREFERREDSIZE = new Dimension(70, 22);
-	public static final Dimension DEFAULTVALUE_COMBOBOX_MINIMUMSIZE = new Dimension(35, 22);
-	public static final Dimension DEFAULTVALUE_COMBOBOX_PREFERREDSIZE = new Dimension(70, 22);
+	public static final Dimension DEFAULTVALUE_COMBOBOX_MINIMUMSIZE = new Dimension(35, 20);
+	public static final Dimension DEFAULTVALUE_COMBOBOX_PREFERREDSIZE = new Dimension(70, 20);
+	public static final Dimension DEFAULTVALUE_COMBOBOX_STRICTSIZE = new Dimension(70, 20);
 	public static final Dimension DEFAULTVALUE_DATECHOOSER_MINIMUMSIZE = new Dimension(35, 22);
 	public static final Dimension DEFAULTVALUE_DATECHOOSER_PREFERREDSIZE = new Dimension(90, 22);
 	public static final Dimension DEFAULTVALUE_OPTIONGROUP_MINIMUMSIZE = new Dimension(35, 22);

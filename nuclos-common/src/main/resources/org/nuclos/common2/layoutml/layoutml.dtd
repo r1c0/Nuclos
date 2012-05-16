@@ -15,7 +15,7 @@
 
 <!ENTITY % border "empty-border|etched-border|bevel-border|line-border|titled-border">
 <!ENTITY % borders "clear-border?,(%border;)*">
-<!ENTITY % sizes "minimum-size?,preferred-size?">
+<!ENTITY % sizes "minimum-size?,preferred-size?,strict-size?">
 <!ENTITY % layoutmanager "tablelayout|borderlayout|flowlayout|gridlayout|gridbaglayout|boxlayout|rowlayout|columnlayout">
 <!ENTITY % layoutconstraints "tablelayout-constraints|borderlayout-constraints|gridbag-constraints|tabbedpane-constraints|splitpane-constraints">
 <!ENTITY % boolean "yes|no">
@@ -393,6 +393,12 @@ height CDATA #IMPLIED
 
 <!ELEMENT preferred-size EMPTY>
 <!ATTLIST preferred-size
+width CDATA #IMPLIED
+height CDATA #IMPLIED
+>
+
+<!ELEMENT strict-size EMPTY>
+<!ATTLIST strict-size
 width CDATA #IMPLIED
 height CDATA #IMPLIED
 >
