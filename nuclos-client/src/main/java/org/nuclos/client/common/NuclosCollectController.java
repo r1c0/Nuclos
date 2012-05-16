@@ -1246,7 +1246,9 @@ public abstract class NuclosCollectController<Clct extends Collectable> extends 
 	 * selects the default filter (the first entry in the combobox).
 	 */
 	public void selectDefaultFilter() {
-		this.getSearchFilterComboBox().setSelectedIndex(0);
+		if (this.getSearchFilterComboBox().getItemCount() > 0) {
+			this.getSearchFilterComboBox().setSelectedIndex(0);
+		}
 	}
 
 	protected void cmdSetCollectableSearchConditionAccordingToFilter() {
