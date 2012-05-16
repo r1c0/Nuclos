@@ -604,11 +604,16 @@ public class WorkspaceUtils {
 						// do not add system fields
 						continue;
 					}
+					boolean alreadySelected = false;
 					for (CollectableEntityField clctef : result) {
 						if (LangUtils.equals(clctef.getName(), efMeta.getField())) {
 							// field already selected
-							continue;
+							alreadySelected = true;
+							break;
 						}
+					}
+					if (alreadySelected) {
+						continue;
 					}
 					if (ep.getResultPreferences().getHiddenColumns().contains(efMeta.getField())) {
 						// field is hidden
@@ -711,8 +716,14 @@ public class WorkspaceUtils {
 					cp.setWidth(fieldWidths.get(i));
 				}
 				
-				LOG.debug(StringUtils.logFormat("setCollectableEntityFieldsForGenericObject",cp.getColumn(),cp.getWidth()));
+				
 				ep.getResultPreferences().addSelectedColumnPreferences(cp);
+				LOG.debug(StringUtils.logFormat("setCollectableEntityFieldsForGenericObject",cp.getColumn(),cp.getWidth()));
+				
+				// remove from hidden
+				if (ep.getResultPreferences().getHiddenColumns().contains(cp.getColumn())) {
+					ep.getResultPreferences().removeHiddenColumn(cp.getColumn());
+				}
 			}
 		}
 	}
