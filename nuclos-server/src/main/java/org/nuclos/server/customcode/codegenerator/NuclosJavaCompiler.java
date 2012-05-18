@@ -228,7 +228,7 @@ public class NuclosJavaCompiler implements Closeable {
 		}
 	}
 
-	private synchronized void jar(Map<String, byte[]> javacresult, List<CodeGenerator> generators) {
+	private static synchronized void jar(Map<String, byte[]> javacresult, List<CodeGenerator> generators) {
 		try {
 			boolean oldExists = false;
 			if (JARFILE.exists()) {
@@ -325,7 +325,7 @@ public class NuclosJavaCompiler implements Closeable {
 		return new File(CollectionUtils.getFirst(stdFileManager.getLocation(StandardLocation.SOURCE_OUTPUT)), srcobject.getPath());
 	}
 
-	public static void compile() throws NuclosCompileException {
+	public synchronized static void compile() throws NuclosCompileException {
 		NuclosJavaCompiler c = new NuclosJavaCompiler();
 		List<CodeGenerator> generators = getAllArtifacts();
 		try {
@@ -341,7 +341,7 @@ public class NuclosJavaCompiler implements Closeable {
 		}
 	}
 
-	public static void check(CodeGenerator generator, boolean remove) throws NuclosCompileException {
+	public synchronized static void check(CodeGenerator generator, boolean remove) throws NuclosCompileException {
 		List<CodeGenerator> artifacts = getAllArtifacts();
 		int index = artifacts.indexOf(generator);
 		if (index > -1) {
@@ -547,7 +547,7 @@ public class NuclosJavaCompiler implements Closeable {
 		return manifest;
 	}
 
-	public static boolean validate() throws NuclosCompileException {
+	public synchronized static boolean validate() throws NuclosCompileException {
 		if (JARFILE.exists()) {
 			try {
 				JarFile jar = new JarFile(JARFILE);
