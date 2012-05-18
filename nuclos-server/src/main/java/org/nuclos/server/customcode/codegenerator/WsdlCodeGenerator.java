@@ -28,6 +28,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -43,6 +44,7 @@ import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.server.common.NuclosSystemParameters;
+import org.nuclos.server.customcode.codegenerator.CodeGenerator.JavaSourceAsString;
 import org.nuclos.server.genericobject.valueobject.GenericObjectDocumentFile;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 
@@ -159,6 +161,26 @@ public class WsdlCodeGenerator implements CodeGenerator {
 			throw new IllegalStateException(e.toString(), e);
 		}
 		return recompileIsNecessary;
+	}
+
+	@Override
+	public void writeSource(Writer writer, JavaSourceAsString src) throws IOException {
+		writer.write("// DO NOT REMOVE THIS COMMENT (UP TO PACKAGE DECLARATION)");
+		writer.write("\n// class=org.nuclos.server.customcode.codegenerator.WsdlCodeGenerator");
+		writer.write("\n// type=org.nuclos.server.masterdata.valueobject.MasterDataVO");
+		writer.write("\n// name=");
+		writer.write(wsdl.getName());
+		writer.write("\n// id=");
+		writer.write(webservice.getId().toString());
+		writer.write("\n// version=");
+		writer.write(Integer.toString(webservice.getVersion()));
+		writer.write("\n// modified=");
+		writer.write(Long.toString(webservice.getChangedAt().getTime()));
+		writer.write("\n// date=");
+		writer.write(webservice.getChangedAt().toString());
+		writer.write("\n// END\n");
+
+		writer.write(src.getCharContent(true).toString());
 	}
 
 	@Override

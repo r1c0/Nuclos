@@ -17,6 +17,7 @@
 package org.nuclos.server.customcode.codegenerator;
 
 import java.io.IOException;
+import java.io.Writer;
 import java.net.URI;
 
 import javax.tools.SimpleJavaFileObject;
@@ -34,6 +35,8 @@ public interface CodeGenerator {
 	Iterable<? extends JavaSourceAsString> getSourceFiles();
 
 	byte[] postCompile(String name, byte[] bytecode);
+	
+	void writeSource(Writer writer, JavaSourceAsString src) throws IOException;
 
 	public static class JavaSourceAsString extends SimpleJavaFileObject {
 
