@@ -81,7 +81,7 @@ public class WsdlCodeGenerator implements CodeGenerator {
 	private void checkWsdl() throws IOException {
 		if (!wsdlChecked) {
 			GenericObjectDocumentFile gofile = webservice.getField("wsdl", GenericObjectDocumentFile.class);
-			wsdl = new File(getWsdlDir(), gofile.getFilename());
+			wsdl = new File(NuclosJavaCompiler.getWsdlDir(), gofile.getFilename());
 			final String newDigest = CryptUtil.digestStringOf(gofile.getContents());
 			
 			final File wsdlDigest = new File(wsdl.getParent(), wsdl.getName() + ".sha1");
@@ -160,7 +160,7 @@ public class WsdlCodeGenerator implements CodeGenerator {
 		catch (IOException e) {
 			throw new IllegalStateException(e.toString(), e);
 		}
-		return recompileIsNecessary;
+		return recompileIsNecessary || !NuclosJavaCompiler.JARFILE.exists();
 	}
 
 	@Override
@@ -223,14 +223,6 @@ public class WsdlCodeGenerator implements CodeGenerator {
 			}
 		}
 		return sourcefiles;
-	}
-
-	private File getWsdlDir() {
-		File dir = new File(NuclosJavaCompiler.getOutputPath(), "wsdl");
-		if (!dir.exists()) {
-			dir.mkdir();
-		}
-		return dir;
 	}
 
 	private String readFile(File f) throws IOException {
