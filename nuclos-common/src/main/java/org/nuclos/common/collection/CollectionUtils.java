@@ -203,11 +203,26 @@ public class CollectionUtils {
     * @postcondition result != null
     * @postcondition result.size() == at.length
     */
-   public static <T> List<T> asList(Object[] at) {
+   public static <T> List<T> asListFromObjectArray(Object[] at) {
       final List<T> result = new ArrayList<T>(at.length);
       for (Object t : at) {
          result.add((T) t);
       }
+      assert result.size() == at.length;
+      return result;
+   }
+   
+   /**
+    * @param at
+    * @return a List containing the elements of the given array.
+    * @precondition at != null
+    * @postcondition result != null
+    * @postcondition result.size() == at.length
+    */
+   public static <T> List<T> asList(T[] at) {
+      final List<T> result = new ArrayList<T>(at.length);
+      for (T t : at) 
+         result.add(t);
       assert result.size() == at.length;
       return result;
    }
