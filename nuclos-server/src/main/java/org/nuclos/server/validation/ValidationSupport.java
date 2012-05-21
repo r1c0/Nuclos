@@ -43,11 +43,11 @@ import org.springframework.stereotype.Component;
 public class ValidationSupport implements BeanPostProcessor {
 
 	private static final Logger LOG = Logger.getLogger(ValidationSupport.class);
-	
+
 	public static final String __GENERIC = "__GENERIC";
-	
+
 	private final MultiListMap<String, Pair<Integer, Validator>> validators = new MultiListHashMap<String, Pair<Integer, Validator>>();
-	
+
 	@Override
 	public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
 		if (bean instanceof AopInfrastructureBean) {
@@ -59,9 +59,9 @@ public class ValidationSupport implements BeanPostProcessor {
 			Validation a = targetClass.getAnnotation(Validation.class);
 			Validator v = (Validator) bean;
 			Integer order = a.order();
-			
+
 			LOG.info("Processing Validator " + bean.getClass() + "[entity=" + a.entity() + ";entities=" + a.entities() + ";order=" + order + "]");
-			
+
 			Pair<Integer, Validator> entry = new Pair<Integer, Validator>(order, v);
 			if (StringUtils.isNullOrEmpty(a.entity()) && (a.entities() == null || a.entities().length == 0)) {
 				validators.addValue(__GENERIC, entry);
@@ -104,7 +104,7 @@ public class ValidationSupport implements BeanPostProcessor {
 			}
 		}).toArray(new Validator[result.size()]);
 	}
-	
+
 	public void validate(EntityObjectVO eo, DependantMasterDataMap dependants) throws CommonValidationException {
 		ValidationContext c = new ValidationContext();
 		validate(eo, dependants, c);
@@ -112,7 +112,7 @@ public class ValidationSupport implements BeanPostProcessor {
 			throw new CommonValidationException(c.getErrors(), c.getFieldErrors());
 		}
 	}
-	
+
 	private void validate(EntityObjectVO eo, DependantMasterDataMap dependants, ValidationContext c) {
 		for (Validator v : getValidators(eo.getEntity())) {
 			LOG.debug("Processing validator " + v.getClass() + " for object [" + eo.getDebugInfo() + "]");
@@ -121,6 +121,9 @@ public class ValidationSupport implements BeanPostProcessor {
 		if (dependants != null) {
 			for (String entity : dependants.getEntityNames()) {
 				for (EntityObjectVO eo2 : dependants.getData(entity)) {
+					// ensure that entity name is set!
+					eo2.setEntity(entity);
+					c.setParent(eo.getEntity());
 					validate(eo2, eo2.getDependants(), c);
 				}
 			}

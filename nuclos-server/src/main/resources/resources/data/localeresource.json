@@ -20758,7 +20758,7 @@
     "resourceID": "RuleNode.10",
     "locale": "de",
     "text": "Speichern"
-  },  
+  },
   {
     "resourceID": "RuleNode.13",
     "locale": "i-default",
@@ -29548,7 +29548,7 @@
     "resourceID": "EntityRuleNode.1",
     "locale": "de",
     "text": "<Jeder Status>"
-  },  
+  },
   {
     "resourceID": "EntityRuleNode.2",
     "locale": "i-default",
@@ -29563,7 +29563,7 @@
     "resourceID": "EntityRuleNode.2",
     "locale": "de",
     "text": "<Alle Aktionen>"
-  },  
+  },
   {
     "resourceID": "CollectableTask.20",
     "locale": "i-default",
@@ -31627,12 +31627,12 @@
   {
     "resourceID": "CollectableUtils.3",
     "locale": "i-default",
-    "text": "The field \"{0}\" may not contain be empty"
+    "text": "The field \"{0}\" must not be empty"
   },
   {
     "resourceID": "CollectableUtils.3",
     "locale": "en",
-    "text": "The field \"{0}\" may not contain be empty"
+    "text": "The field \"{0}\" must not be empty"
   },
   {
     "resourceID": "CollectableUtils.3",
@@ -65467,5 +65467,5 @@
     "resourceID": "EntityCollectController.Subform",
     "locale": "de",
     "text": "Unterformular \"{0}\": "
-  }  
+  }
 ]

@@ -21,6 +21,7 @@ import org.nuclos.common.NuclosEOField;
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
 import org.nuclos.common.dal.vo.EntityObjectVO;
+import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.server.common.StateCache;
 import org.nuclos.server.statemodel.valueobject.MandatoryFieldVO;
@@ -34,12 +35,12 @@ public class MandatoryFieldValidator implements Validator {
 	private MetaDataProvider<EntityMetaDataVO, EntityFieldMetaDataVO> metaDataProvider;
 
 	private StateCache stateCache;
-	
+
 	@Autowired
 	public void setMetaDataProvider(MetaDataProvider<EntityMetaDataVO, EntityFieldMetaDataVO> metaDataProvider) {
 		this.metaDataProvider = metaDataProvider;
 	}
-	
+
 	@Autowired
 	final void setStateCache(StateCache stateCache) {
 		this.stateCache = stateCache;
@@ -52,6 +53,9 @@ public class MandatoryFieldValidator implements Validator {
 			if (!fieldmeta.isNullable()) {
 				final Object value;
 				if (fieldmeta.getForeignEntity() != null) {
+					if (LangUtils.equals(fieldmeta.getForeignEntity(), c.getParent())) {
+						continue;
+					}
 					value = object.getFieldId(fieldmeta.getField());
 				}
 				else {
@@ -63,7 +67,7 @@ public class MandatoryFieldValidator implements Validator {
 				}
 			}
 		}
-		
+
 		if (meta.isStateModel()) {
 			if (object.getFieldIds().containsKey(NuclosEOField.STATE.getName())) {
 				StateVO state = stateCache.getState(object.getFieldId(NuclosEOField.STATE.getName()).intValue());
@@ -73,6 +77,10 @@ public class MandatoryFieldValidator implements Validator {
 					for (MandatoryFieldVO mandatoryField : state.getMandatoryFields()) {
 						final EntityFieldMetaDataVO efMeta = metaDataProvider.getEntityField(entity, mandatoryField.getFieldId().longValue());
 						final String field = efMeta.getField();
+
+						if (efMeta.getForeignEntity() != null && LangUtils.equals(efMeta.getForeignEntity(), c.getParent())) {
+							continue;
+						}
 
 						if ((efMeta.getForeignEntity() != null && object.getFieldId(field) == null)
 							|| (efMeta.getForeignEntity() == null && object.getFields().get(field) == null)) {

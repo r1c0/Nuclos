@@ -23,11 +23,13 @@ import java.util.Set;
 import org.nuclos.common.validation.FieldValidationError;
 
 public class ValidationContext {
-	
+
 	private final Set<String> errors = new HashSet<String>();
-	
+
 	private final Set<FieldValidationError> fielderrors = new HashSet<FieldValidationError>();
-	
+
+	private String parent;
+
 	public void addError(String error) {
 		errors.add(error);
 	}
@@ -35,16 +37,24 @@ public class ValidationContext {
 	public void addFieldError(String entity, String field, String error) {
 		fielderrors.add(new FieldValidationError(entity, field, error));
 	}
-	
+
 	public boolean hasErrors() {
 		return errors.size() > 0 || fielderrors.size() > 0;
 	}
-	
+
 	public Set<String> getErrors() {
 		return Collections.unmodifiableSet(errors);
 	}
-	
+
 	public Set<FieldValidationError> getFieldErrors() {
 		return Collections.unmodifiableSet(fielderrors);
+	}
+
+	public String getParent() {
+		return parent;
+	}
+
+	public void setParent(String parent) {
+		this.parent = parent;
 	}
 }

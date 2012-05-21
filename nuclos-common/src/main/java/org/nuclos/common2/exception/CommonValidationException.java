@@ -33,9 +33,9 @@ import org.nuclos.common.validation.FieldValidationError;
 public class CommonValidationException extends CommonBusinessException {
 
 	private Set<String> errors;
-	
+
 	private Set<FieldValidationError> fielderrors;
-	
+
 	public CommonValidationException() {
 		super(CommonBusinessException.VALIDATION);
 	}
@@ -61,18 +61,23 @@ public class CommonValidationException extends CommonBusinessException {
 	public CommonValidationException(String sMessage, Throwable tCause) {
 		super(sMessage, tCause);
 	}
-	
+
 	public CommonValidationException(Set<String> errors, Set<FieldValidationError> fielderrors) {
 		super(CommonBusinessException.VALIDATION);
 		this.errors = errors;
 		this.fielderrors = fielderrors;
 	}
-	
+
 	public Set<String> getErrors() {
 		return errors;
 	}
 
 	public Set<FieldValidationError> getFieldErrors() {
 		return fielderrors;
+	}
+
+	@Override
+	public String toString() {
+		return "CommonValidationException [getMessage()=" + getMessage() + ", errors=" + errors + ", fielderrors=" + fielderrors + "]";
 	}
 }
