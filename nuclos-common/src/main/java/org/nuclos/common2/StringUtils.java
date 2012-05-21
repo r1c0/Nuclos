@@ -17,6 +17,7 @@
 package org.nuclos.common2;
 
 import java.io.UnsupportedEncodingException;
+import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.Collator;
 import java.util.ArrayList;
@@ -292,9 +293,9 @@ public class StringUtils {
 	}
 
 	public static String encrypt(String x)  {
-	  java.security.MessageDigest digest = null;
+		MessageDigest digest = null;
 		try {
-			digest = java.security.MessageDigest.getInstance("SHA-1");
+			digest = MessageDigest.getInstance("SHA-1");
 			digest.reset();
 			digest.update(x.getBytes());
 			return new String(digest.digest());

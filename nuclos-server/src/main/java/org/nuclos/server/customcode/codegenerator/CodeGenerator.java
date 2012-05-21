@@ -28,12 +28,14 @@ import javax.tools.SimpleJavaFileObject;
  * <br>Please visit <a href="http://www.novabit.de">www.novabit.de</a>
  */
 public interface CodeGenerator {
+	
+	boolean isRecompileNecessary();
 
-	public Iterable<? extends JavaSourceAsString> getSourceFiles();
+	Iterable<? extends JavaSourceAsString> getSourceFiles();
 
-	public byte[] postCompile(String name, byte[] bytecode);
+	byte[] postCompile(String name, byte[] bytecode);
 
-	public class JavaSourceAsString extends SimpleJavaFileObject {
+	public static class JavaSourceAsString extends SimpleJavaFileObject {
 
 		private final String name;
 		private final String source;

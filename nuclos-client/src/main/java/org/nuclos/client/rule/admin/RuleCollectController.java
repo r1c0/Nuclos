@@ -185,10 +185,14 @@ public class RuleCollectController extends EntityCollectController<CollectableRu
 	@Override
 	public void close() {
 		super.close();
-		this.subformctlUsage.close();
+		if (subformctlUsage != null) {
+			subformctlUsage.close();
+		}
 		
 		// close Subform support
-		subform.close();
+		if (subform != null) {
+			subform.close();
+		}
 		subform = null;
 	}
 

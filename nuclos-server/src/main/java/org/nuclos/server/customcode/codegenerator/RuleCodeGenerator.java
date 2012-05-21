@@ -97,6 +97,11 @@ public class RuleCodeGenerator<T> implements CodeGenerator {
 	}
 
 	@Override
+	public boolean isRecompileNecessary() {
+		return true;
+	}
+
+	@Override
 	public Iterable<? extends JavaSourceAsString> getSourceFiles() {
 		return Collections.singletonList(new RuleSourceAsString(getClassName(), getCode(), type.getEntityname(), ruleVO.getId().longValue(), getHeaderLineCount(), getHeaderOffset(), getLabel()));
 	}
@@ -179,7 +184,7 @@ public class RuleCodeGenerator<T> implements CodeGenerator {
 	 * A JavaFileObject used internally to represent generated Java code. Especially, it
 	 * knows the line and position (delta) of the embedded Java fragment.
 	 */
-	public class RuleSourceAsString extends JavaSourceAsString {
+	public static class RuleSourceAsString extends JavaSourceAsString {
 
 		private final String label;
 		private final long lineDelta;

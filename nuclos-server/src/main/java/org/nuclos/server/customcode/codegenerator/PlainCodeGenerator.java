@@ -30,6 +30,11 @@ public class PlainCodeGenerator implements CodeGenerator {
 	public PlainCodeGenerator(CodeVO codevo) {
 		this.valueobject = codevo;
 	}
+	
+	@Override
+	public boolean isRecompileNecessary() {
+		return true;
+	}
 
 	@Override
 	public Iterable<? extends JavaSourceAsString> getSourceFiles() {

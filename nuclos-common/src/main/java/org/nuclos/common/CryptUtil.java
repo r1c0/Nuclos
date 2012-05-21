@@ -16,13 +16,18 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.common;
 
+import java.io.UnsupportedEncodingException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Random;
 
 import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
+import org.apache.commons.codec.binary.Base64;
 import org.apache.log4j.Logger;
+import org.nuclos.common2.exception.CommonFatalException;
 
 public class CryptUtil {
 	
@@ -101,6 +106,21 @@ public class CryptUtil {
 		for(int i = 0, n = s.length(); i < n; i += 2)
 			bytes[i / 2] = (byte) (Integer.parseInt(s.substring(i, i + 2), 16) & 0xff);
 		return bytes;
+	}
+	
+	public static byte[] digestOf(byte[] content) {
+		try {
+			final MessageDigest digest = MessageDigest.getInstance("SHA-1");
+			digest.reset();
+			digest.update(content);
+			return digest.digest();
+		} catch (NoSuchAlgorithmException e) {
+			throw new CommonFatalException(e.getMessage(), e);
+		}
+	}
+	
+	public static String digestStringOf(byte[] content) {
+		return Base64.encodeBase64String(digestOf(content)).trim();
 	}
 
 	/**
