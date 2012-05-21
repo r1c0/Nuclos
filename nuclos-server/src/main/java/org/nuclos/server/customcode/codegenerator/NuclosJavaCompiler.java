@@ -310,13 +310,14 @@ public class NuclosJavaCompiler implements Closeable {
 						f.createNewFile();
 					}
 					result.add(f);
-					final Writer out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(f), ENCODING));
-				    try {
-				    	out.write(srcobject.getCharContent(true).toString());
-				    }
-				    finally {
-				    	out.close();
-				    }
+					final BufferedWriter out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(f),
+							ENCODING));
+					try {
+						generator.writeSource(out, srcobject);
+					}
+					finally {
+						out.close();
+					}
 				}
 			}
 		}

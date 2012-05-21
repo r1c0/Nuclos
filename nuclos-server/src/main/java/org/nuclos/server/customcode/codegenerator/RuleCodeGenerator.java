@@ -17,6 +17,9 @@
 
 package org.nuclos.server.customcode.codegenerator;
 
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.Writer;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -99,6 +102,26 @@ public class RuleCodeGenerator<T> implements CodeGenerator {
 	@Override
 	public boolean isRecompileNecessary() {
 		return true;
+	}
+
+	@Override
+	public void writeSource(Writer writer, JavaSourceAsString src) throws IOException {
+		writer.write("// DO NOT REMOVE THIS COMMENT (UP TO PACKAGE DECLARATION)");
+		writer.write("\n// class=org.nuclos.server.customcode.codegenerator.RuleCodeGenerator");
+		writer.write("\n// type=org.nuclos.server.ruleengine.valueobject.RuleVO");
+		writer.write("\n// name=");
+		writer.write(ruleVO.getRule());
+		writer.write("\n// id=");
+		writer.write(ruleVO.getId().toString());
+		writer.write("\n// version=");
+		writer.write(Integer.toString(ruleVO.getVersion()));
+		writer.write("\n// modified=");
+		writer.write(Long.toString(ruleVO.getChangedAt().getTime()));
+		writer.write("\n// date=");
+		writer.write(ruleVO.getChangedAt().toString());
+		writer.write("\n// END\n");
+
+		writer.write(src.getCharContent(true).toString());
 	}
 
 	@Override
@@ -211,4 +234,5 @@ public class RuleCodeGenerator<T> implements CodeGenerator {
 			return label;
 		}
 	}
+
 }
