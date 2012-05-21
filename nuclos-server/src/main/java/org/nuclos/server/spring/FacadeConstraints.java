@@ -47,6 +47,7 @@ import org.nuclos.server.console.ejb3.ConsoleFacadeBean;
 import org.nuclos.server.console.ejb3.ConsoleFacadeLocal;
 import org.nuclos.server.console.ejb3.ConsoleFacadeRemote;
 import org.nuclos.server.customcode.ejb3.CodeFacadeBean;
+import org.nuclos.server.customcode.ejb3.CodeFacadeLocal;
 import org.nuclos.server.customcode.ejb3.CodeFacadeRemote;
 import org.nuclos.server.customcomp.ejb3.CustomComponentFacadeBean;
 import org.nuclos.server.customcomp.ejb3.CustomComponentFacadeRemote;
@@ -229,7 +230,7 @@ class FacadeConstraints {
 	}
 	
 	@SuppressWarnings("unused")
-	private final class CodeFacadeConstraints extends CodeFacadeBean implements CodeFacadeRemote {
+	private final class CodeFacadeConstraints extends CodeFacadeBean implements CodeFacadeLocal, CodeFacadeRemote {
 	}
 	
 	@SuppressWarnings("unused")

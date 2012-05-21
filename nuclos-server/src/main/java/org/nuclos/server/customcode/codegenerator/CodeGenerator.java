@@ -36,26 +36,39 @@ public interface CodeGenerator {
 
 	byte[] postCompile(String name, byte[] bytecode);
 	
+	String getPrefix();
+	
 	void writeSource(Writer writer, JavaSourceAsString src) throws IOException;
 
 	public static class JavaSourceAsString extends SimpleJavaFileObject {
 
+		
 		private final String name;
+		private final String prefix;
 		private final String source;
 		private final String entityname;
 		private final Long id;
 
-		protected JavaSourceAsString(String name, String source, String entity, Long id) {
+		protected JavaSourceAsString(String name, String prefix, String source, String entity, Long id) {
 			super(URI.create(name.replace('.', '/') + Kind.SOURCE.extension), Kind.SOURCE);
 			this.name = name;
+			this.prefix = prefix;
 			this.source = source;
 			this.entityname = entity;
 			this.id = id;
 		}
+		
+		public String getPrefix() {
+			return prefix;
+		}
+		
+		public String getSource() {
+			return source;
+		}
 
 		@Override
 		public CharSequence getCharContent(boolean ignoreEncodingErrors) throws IOException {
-			return source;
+			return prefix + source;
 		}
 
 		@Override

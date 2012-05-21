@@ -371,7 +371,7 @@ public class NuclosJavaCompiler implements Closeable {
 	}
 
 	public synchronized static void check(CodeGenerator generator, boolean remove) throws NuclosCompileException {
-		List<CodeGenerator> artifacts = getAllArtifacts();
+		final List<CodeGenerator> artifacts = getAllArtifacts();
 		int index = artifacts.indexOf(generator);
 		if (index > -1) {
 			if (remove) {
@@ -384,7 +384,11 @@ public class NuclosJavaCompiler implements Closeable {
 		else {
 			artifacts.add(generator);
 		}
-
+		check();
+	}
+		
+	public synchronized static void check() throws NuclosCompileException {	
+		final List<CodeGenerator> artifacts = getAllArtifacts();
 		if (JARFILE.exists()) {
 			NuclosJavaCompiler c = new NuclosJavaCompiler();
 			try {

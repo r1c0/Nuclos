@@ -19,11 +19,11 @@ package org.nuclos.server.customcode.codegenerator;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.Collections;
+import java.util.Date;
 
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common2.LangUtils;
-import org.nuclos.server.customcode.codegenerator.CodeGenerator.JavaSourceAsString;
 import org.nuclos.server.customcode.valueobject.CodeVO;
 
 public class PlainCodeGenerator implements CodeGenerator {
@@ -38,30 +38,45 @@ public class PlainCodeGenerator implements CodeGenerator {
 	public boolean isRecompileNecessary() {
 		return true;
 	}
+	
+	@Override
+	public String getPrefix() {
+		final StringBuilder writer = new StringBuilder();
+		writer.append("// DO NOT REMOVE THIS COMMENT (UP TO PACKAGE DECLARATION)");
+		writer.append("\n// class=org.nuclos.server.customcode.codegenerator.PlainCodeGenerator");
+		writer.append("\n// type=org.nuclos.server.customcode.valueobject.CodeVO");
+		writer.append("\n// name=");
+		writer.append(codeVO.getName());
+		writer.append("\n// id=");
+		if (codeVO.getId() != null) {
+			writer.append(codeVO.getId().toString());
+		}
+		writer.append("\n// version=");
+		writer.append(Integer.toString(codeVO.getVersion()));
+		writer.append("\n// modified=");
+		final Date changed = codeVO.getChangedAt();
+		if (changed != null) {
+			writer.append(Long.toString(changed.getTime()));
+		}
+		writer.append("\n// date=");
+		if (changed != null) {
+			writer.append(changed.toString());
+		}
+		writer.append("\n// END\n");
+		return writer.toString();
+	}
 
 	@Override
 	public void writeSource(Writer writer, JavaSourceAsString src) throws IOException {
-		writer.write("// DO NOT REMOVE THIS COMMENT (UP TO PACKAGE DECLARATION)");
-		writer.write("\n// class=org.nuclos.server.customcode.codegenerator.PlainCodeGenerator");
-		writer.write("\n// type=org.nuclos.server.customcode.valueobject.CodeVO");
-		writer.write("\n// name=");
-		writer.write(codeVO.getName());
-		writer.write("\n// id=");
-		writer.write(codeVO.getId().toString());
-		writer.write("\n// version=");
-		writer.write(Integer.toString(codeVO.getVersion()));
-		writer.write("\n// modified=");
-		writer.write(Long.toString(codeVO.getChangedAt().getTime()));
-		writer.write("\n// date=");
-		writer.write(codeVO.getChangedAt().toString());
-		writer.write("\n// END\n");
-
-		writer.write(src.getCharContent(true).toString());
+		writer.write(src.getPrefix());
+		writer.write(src.getSource());
 	}
 
 	@Override
 	public Iterable<? extends JavaSourceAsString> getSourceFiles() {
-		return Collections.singletonList(new JavaSourceAsString(this.codeVO.getName(), this.codeVO.getSource(), NuclosEntity.CODE.getEntityName(), codeVO.getId() == null ? null : codeVO.getId().longValue()));
+		return Collections.singletonList(new JavaSourceAsString(
+				codeVO.getName(), getPrefix(), codeVO.getSource(), 
+				NuclosEntity.CODE.getEntityName(), codeVO.getId() == null ? null : codeVO.getId().longValue()));
 	}
 
 	@Override

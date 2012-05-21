@@ -38,6 +38,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
+import org.apache.log4j.Logger;
 import org.nuclos.client.NuclosIcons;
 import org.nuclos.client.main.Main;
 import org.nuclos.client.main.mainframe.MainFrameTab;
@@ -57,6 +58,10 @@ import org.springframework.beans.factory.annotation.Configurable;
 
 @Configurable
 public class DBTransferExport {
+	
+	private static final Logger LOG = Logger.getLogger(DBTransferExport.class);
+	
+	//
 	
 	private final Long nucletId;
 	
@@ -272,6 +277,7 @@ public class DBTransferExport {
 							final OutputStream fout = new BufferedOutputStream(new FileOutputStream(f));
 							try {
 								fout.write(transferFile);
+								LOG.info("written nuclet to " + f);
 							}
 							finally {
 								fout.close();
@@ -279,6 +285,7 @@ public class DBTransferExport {
 							exportException = null;
 						} catch (Exception e) {
 							exportException = e;
+							LOG.warn("nuclet export failed: " + e, e);
 						} finally {
 //							progressBar.setVisible(false);
 							ifrm.unlockLayer();
