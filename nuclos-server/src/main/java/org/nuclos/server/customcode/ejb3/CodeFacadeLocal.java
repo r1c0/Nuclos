@@ -23,7 +23,7 @@ import org.nuclos.common2.exception.CommonPermissionException;
 import org.nuclos.server.customcode.valueobject.CodeVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 
-public interface CodeFacadeRemote {
+public interface CodeFacadeLocal {
 
 	MasterDataVO create(MasterDataVO vo) throws CommonBusinessException;
 

@@ -1244,7 +1244,7 @@ public class RuleEngineFacadeBean extends NuclosFacadeBean implements RuleEngine
 
 		@Override
 		public String getFooter() {
-			return "\n}";
+			return "\n// END RULE\n}\n";
 		}
 
 		@Override

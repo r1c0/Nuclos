@@ -17,12 +17,12 @@
 
 package org.nuclos.server.customcode.codegenerator;
 
-import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.Writer;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -68,6 +68,7 @@ public class RuleCodeGenerator<T> implements CodeGenerator {
 				sb.append("import ").append(s).append(";\n");
 			}
 			sb.append(getHeaderImpl(ruleVO));
+			sb.append("\n// BEGIN RULE\n");
 			return sb.toString();
 		}
 
@@ -105,28 +106,47 @@ public class RuleCodeGenerator<T> implements CodeGenerator {
 	}
 
 	@Override
-	public void writeSource(Writer writer, JavaSourceAsString src) throws IOException {
-		writer.write("// DO NOT REMOVE THIS COMMENT (UP TO PACKAGE DECLARATION)");
-		writer.write("\n// class=org.nuclos.server.customcode.codegenerator.RuleCodeGenerator");
-		writer.write("\n// type=org.nuclos.server.ruleengine.valueobject.RuleVO");
-		writer.write("\n// name=");
-		writer.write(ruleVO.getRule());
-		writer.write("\n// id=");
-		writer.write(ruleVO.getId().toString());
-		writer.write("\n// version=");
-		writer.write(Integer.toString(ruleVO.getVersion()));
-		writer.write("\n// modified=");
-		writer.write(Long.toString(ruleVO.getChangedAt().getTime()));
-		writer.write("\n// date=");
-		writer.write(ruleVO.getChangedAt().toString());
-		writer.write("\n// END\n");
+	public String getPrefix() {
+		final StringBuilder writer = new StringBuilder();
+		writer.append("// DO NOT REMOVE THIS COMMENT (UP TO PACKAGE DECLARATION)");
+		writer.append("\n// class=org.nuclos.server.customcode.codegenerator.RuleCodeGenerator");
+		writer.append("\n// type=org.nuclos.server.ruleengine.valueobject.RuleVO");
+		writer.append("\n// name=");
+		writer.append(ruleVO.getRule());
+		writer.append("\n// id=");
+		if (ruleVO.getId() != null) {
+			writer.append(ruleVO.getId().toString());
+		}
+		writer.append("\n// version=");
+		writer.append(Integer.toString(ruleVO.getVersion()));
+		writer.append("\n// modified=");
+		final Date changed = ruleVO.getChangedAt();
+		if (changed != null) {
+			writer.append(Long.toString(changed.getTime()));
+		}
+		writer.append("\n// date=");
+		if (changed != null) {
+			writer.append(changed.toString());
+		}
+		writer.append("\n// END\n");
+		return writer.toString();
+	}
 
-		writer.write(src.getCharContent(true).toString());
+	@Override
+	public void writeSource(Writer writer, JavaSourceAsString s) throws IOException {
+		final RuleSourceAsString src = (RuleSourceAsString) s;
+		writer.write(src.getPrefix());
+		writer.write(src.getHeader());
+		writer.write(src.getSource());
+		writer.write(src.getFooter());
 	}
 
 	@Override
 	public Iterable<? extends JavaSourceAsString> getSourceFiles() {
-		return Collections.singletonList(new RuleSourceAsString(getClassName(), getCode(), type.getEntityname(), ruleVO.getId().longValue(), getHeaderLineCount(), getHeaderOffset(), getLabel()));
+		return Collections.singletonList(new RuleSourceAsString(getClassName(), 
+				getPrefix(), getHeader(), ruleVO.getSource(), type.getFooter(), 
+				type.getEntityname(), 
+				ruleVO.getId().longValue(), getHeaderLineCount(), getHeaderOffset(), getLabel()));
 	}
 
 	@Override
@@ -168,6 +188,7 @@ public class RuleCodeGenerator<T> implements CodeGenerator {
 		return type.getClassName(ruleVO);
 	}
 
+	/*
 	private String getCode() {
 		final StringBuilder sb = new StringBuilder();
 		sb.append(getHeader());
@@ -175,6 +196,7 @@ public class RuleCodeGenerator<T> implements CodeGenerator {
 		sb.append(type.getFooter());
 		return sb.toString();
 	}
+	 */
 
 	private String getHeader() {
 		if (cachedHeader == null) {
@@ -209,16 +231,38 @@ public class RuleCodeGenerator<T> implements CodeGenerator {
 	 */
 	public static class RuleSourceAsString extends JavaSourceAsString {
 
+		private final String header;
+		
+		private final String footer;
+		
 		private final String label;
+		
 		private final long lineDelta;
+		
 		private final long posDelta;
 
-
-		protected RuleSourceAsString(String name, String source, String entity, long id , long lineDelta, long posDelta, String label) {
-			super(name, source, entity, id);
+		protected RuleSourceAsString(String name, String prefix, 
+				String header, String source, String footer, 
+				String entity, long id , long lineDelta, long posDelta, String label) {
+			super(name, prefix, source, entity, id);
+			this.header = header;
+			this.footer = footer;
 			this.lineDelta = lineDelta;
 			this.posDelta = posDelta;
 			this.label = label;
+		}
+
+		@Override
+		public CharSequence getCharContent(boolean ignoreEncodingErrors) throws IOException {
+			return getPrefix() + header + getSource() + footer;
+		}
+		
+		public String getHeader() {
+			return header;
+		}
+		
+		public String getFooter() {
+			return footer;
 		}
 
 		public long getLineDelta() {

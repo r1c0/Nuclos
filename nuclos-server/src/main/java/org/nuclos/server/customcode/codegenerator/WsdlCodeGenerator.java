@@ -33,6 +33,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Scanner;
 
@@ -44,7 +45,6 @@ import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.server.common.NuclosSystemParameters;
-import org.nuclos.server.customcode.codegenerator.CodeGenerator.JavaSourceAsString;
 import org.nuclos.server.genericobject.valueobject.GenericObjectDocumentFile;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 
@@ -164,23 +164,36 @@ public class WsdlCodeGenerator implements CodeGenerator {
 	}
 
 	@Override
-	public void writeSource(Writer writer, JavaSourceAsString src) throws IOException {
-		writer.write("// DO NOT REMOVE THIS COMMENT (UP TO PACKAGE DECLARATION)");
-		writer.write("\n// class=org.nuclos.server.customcode.codegenerator.WsdlCodeGenerator");
-		writer.write("\n// type=org.nuclos.server.masterdata.valueobject.MasterDataVO");
-		writer.write("\n// name=");
-		writer.write(wsdl.getName());
-		writer.write("\n// id=");
-		writer.write(webservice.getId().toString());
-		writer.write("\n// version=");
-		writer.write(Integer.toString(webservice.getVersion()));
-		writer.write("\n// modified=");
-		writer.write(Long.toString(webservice.getChangedAt().getTime()));
-		writer.write("\n// date=");
-		writer.write(webservice.getChangedAt().toString());
-		writer.write("\n// END\n");
+	public String getPrefix() {
+		final StringBuilder writer = new StringBuilder();
+		writer.append("// DO NOT REMOVE THIS COMMENT (UP TO PACKAGE DECLARATION)");
+		writer.append("\n// class=org.nuclos.server.customcode.codegenerator.WsdlCodeGenerator");
+		writer.append("\n// type=org.nuclos.server.masterdata.valueobject.MasterDataVO");
+		writer.append("\n// name=");
+		writer.append(wsdl.getName());
+		writer.append("\n// id=");
+		if (webservice.getId() != null) {
+			writer.append(webservice.getId().toString());
+		}
+		writer.append("\n// version=");
+		writer.append(Integer.toString(webservice.getVersion()));
+		writer.append("\n// modified=");
+		final Date changed = webservice.getChangedAt();
+		if (changed != null) {
+			writer.append(Long.toString(changed.getTime()));
+		}
+		writer.append("\n// date=");
+		if (changed != null) {
+			writer.append(changed.toString());
+		}
+		writer.append("\n// END\n");
+		return writer.toString();
+	}
 
-		writer.write(src.getCharContent(true).toString());
+	@Override
+	public void writeSource(Writer writer, JavaSourceAsString src) throws IOException {
+		writer.write(src.getPrefix());
+		writer.write(src.getSource());
 	}
 
 	@Override
@@ -213,7 +226,7 @@ public class WsdlCodeGenerator implements CodeGenerator {
 				List<JavaSourceAsString> result = new ArrayList<JavaSourceAsString>();
 				for (File sourcefile : sourceFiles) {
 					String name = packageName + "." + sourcefile.getName().substring(0, sourcefile.getName().lastIndexOf('.'));
-					result.add(new JavaSourceAsString(name, readFile(sourcefile), NuclosEntity.WEBSERVICE.getEntityName(), 
+					result.add(new JavaSourceAsString(name, getPrefix(), readFile(sourcefile), NuclosEntity.WEBSERVICE.getEntityName(), 
 							webservice.getId() == null ? null : ((Integer)webservice.getId()).longValue()));
 				}
 				sourcefiles = result;

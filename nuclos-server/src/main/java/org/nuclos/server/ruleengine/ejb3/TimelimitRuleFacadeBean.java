@@ -559,7 +559,7 @@ public class TimelimitRuleFacadeBean extends NuclosFacadeBean implements Timelim
 
 		@Override
 		public String getFooter() {
-			return "\n}";
+			return "\n// END RULE\n}\n";
 		}
 
 		@Override
