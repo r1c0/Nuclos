@@ -19,6 +19,8 @@ package org.nuclos.common.mail;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.nuclos.common.NuclosFile;
 
@@ -28,6 +30,7 @@ public class NuclosMail implements Serializable {
 	private String to;
 	private String subject;
 	private String message;
+	private Map<String, String> headers = new HashMap<String, String>();
 	
 	private final Collection<NuclosFile> lstAttachment = new ArrayList<NuclosFile>(1);
 	
@@ -74,6 +77,14 @@ public class NuclosMail implements Serializable {
 
 	public void setFrom(String from) {
 		this.from = from;
+	}
+	
+	public String getHeader(final String header) {
+		return headers.get(header);
+	}
+
+	public void setHeader(final String header, final String value) {
+		headers.put(header, value);
 	}
 
 	public String getTo() {
