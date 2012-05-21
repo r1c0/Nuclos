@@ -388,8 +388,14 @@ public class TimelimitRuleFacadeBean extends NuclosFacadeBean implements Timelim
 		try {
 			RuleCodeGenerator<NuclosTimelimitRule> generator = getGenerator(rulevo);
 			ruleInstance = ccm.getInstance(generator);
-		} catch (NuclosCompileException ex) {
-			throw new NuclosFatalException(ex);
+		} 
+		catch (NuclosCompileException e) {
+			LOG.error(e.toString(), e);
+			throw new NuclosFatalException(e);
+		}
+		catch (Exception e) {
+			LOG.error(e.toString(), e);
+			throw new NuclosFatalException(e);
 		}
 		final RuleInterface ri = new RuleInterface(rulevo, null, null, null, null);
 

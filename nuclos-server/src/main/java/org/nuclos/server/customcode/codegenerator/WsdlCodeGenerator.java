@@ -193,7 +193,9 @@ public class WsdlCodeGenerator implements CodeGenerator {
 			super(new URL[]{}, parent);
 			File libfolder = NuclosSystemParameters.getDirectory(NuclosSystemParameters.WSDL_GENERATOR_LIB_PATH);
 			if (!libfolder.exists()) {
-				throw new NuclosFatalException(StringUtils.getParameterizedExceptionMessage("nuclos.compileexception.wsdllibpath", libfolder.getAbsolutePath()));
+				final String msg = StringUtils.getParameterizedExceptionMessage("nuclos.compileexception.wsdllibpath", libfolder.getAbsolutePath());
+				LOG.error("Missing axislibs folder: " + msg);
+				throw new NuclosFatalException(msg);
 			}
 
 			File[] jarFiles = libfolder.listFiles(new FileFilter() {
