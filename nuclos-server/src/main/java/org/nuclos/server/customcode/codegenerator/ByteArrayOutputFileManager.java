@@ -41,17 +41,18 @@ class ByteArrayOutputFileManager extends ForwardingJavaFileManager<StandardJavaF
 		this.outputFiles = new LinkedHashMap<String, ByteArrayOutputJavaFileObject>();
 	}
 
-	public Map<String, byte[]> getOutput() throws IOException {
+	public synchronized Map<String, byte[]> getOutput() throws IOException {
 		this.flush();
 		Map<String, byte[]> output = new LinkedHashMap<String, byte[]>();
-		for (Map.Entry<String, ByteArrayOutputJavaFileObject> e : outputFiles.entrySet()) {
-			output.put(e.getKey(), e.getValue().getBytes());
+		for (final String key: outputFiles.keySet()) {
+			final ByteArrayOutputJavaFileObject value = outputFiles.get(key);
+			output.put(key, value.getBytes());
 		}
 		return output;
 	}
 	
 	@Override
-	public JavaFileObject getJavaFileForOutput(Location location, String className, Kind kind, FileObject sibling) throws IOException {
+	public synchronized JavaFileObject getJavaFileForOutput(Location location, String className, Kind kind, FileObject sibling) throws IOException {
 		if (kind == Kind.CLASS && location == StandardLocation.CLASS_OUTPUT) {
 			String name = className.replace('.', '/') + kind.extension;
 			URI uri;

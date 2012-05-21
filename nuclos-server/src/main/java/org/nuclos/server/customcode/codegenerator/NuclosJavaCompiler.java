@@ -29,7 +29,6 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
-import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -46,6 +45,7 @@ import java.util.jar.JarInputStream;
 import java.util.jar.JarOutputStream;
 import java.util.jar.Manifest;
 import java.util.zip.ZipEntry;
+import java.util.zip.ZipException;
 
 import javax.tools.Diagnostic;
 import javax.tools.DiagnosticListener;
@@ -83,12 +83,14 @@ public class NuclosJavaCompiler implements Closeable {
 
 	private static final String JAVAC_CLASSNAME = "com.sun.tools.javac.api.JavacTool";
 
-	public static final String ENCODING = "UTF-8";
+	static final String ENCODING = "UTF-8";
 
-	public static final File JARFILE = new File(NuclosSystemParameters.getDirectory(NuclosSystemParameters.GENERATOR_OUTPUT_PATH), "Nuclet.jar");
+	static final File JARFILE = new File(NuclosSystemParameters.getDirectory(NuclosSystemParameters.GENERATOR_OUTPUT_PATH), "Nuclet.jar");
 
 	private static final File JARFILE_OLD = new File(
 			NuclosSystemParameters.getDirectory(NuclosSystemParameters.GENERATOR_OUTPUT_PATH), "Nuclet.jar.old");
+	
+	private static long lastSrcWriteTime = System.currentTimeMillis();
 
 	private static Attributes.Name NUCLOS_CODE_NUCLET = new Attributes.Name("Nuclos-Code-Nuclet");
 	private static Attributes.Name NUCLOS_CODE_HASH = new Attributes.Name("Nuclos-Code-Hash");
@@ -112,6 +114,10 @@ public class NuclosJavaCompiler implements Closeable {
 		}
 		return null;
 	}
+	
+	public static long getLastSrcWriteTime() {
+		return lastSrcWriteTime;
+	}
 
 	/** the output path where generated java and class files are stored */
 	public static final File getOutputPath() {
@@ -121,10 +127,18 @@ public class NuclosJavaCompiler implements Closeable {
 		return dir;
 	}
 
-	public static final File getSourceOutputPath() {
+	static final File getSourceOutputPath() {
 		File dir = new File(getOutputPath(), "src");
 		if (!dir.exists())
 			dir.mkdirs();
+		return dir;
+	}
+
+	static final File getWsdlDir() {
+		File dir = new File(getOutputPath(), "wsdl");
+		if (!dir.exists()) {
+			dir.mkdir();
+		}
 		return dir;
 	}
 
@@ -234,6 +248,9 @@ public class NuclosJavaCompiler implements Closeable {
 			if (JARFILE.exists()) {
 				JARFILE_OLD.delete();
 				oldExists = JARFILE.renameTo(JARFILE_OLD);
+				if (JARFILE.exists()) {
+					throw new IllegalStateException();
+				}
 			}
 			if (javacresult.size() > 0) {
 				final Set<String> entries = new HashSet<String>();
@@ -242,8 +259,8 @@ public class NuclosJavaCompiler implements Closeable {
 
 				try {
 					for(final String key : javacresult.keySet()) {
-						byte[] bytecode = javacresult.get(key);
 						entries.add(key);
+						byte[] bytecode = javacresult.get(key);
 						
 						// call postCompile() (weaving) on compiled sources
 						for (CodeGenerator generator : generators) {
@@ -263,29 +280,29 @@ public class NuclosJavaCompiler implements Closeable {
 						LOG.debug("writing to " + key + " to jar " + JARFILE);
 						jos.write(bytecode);
 						jos.closeEntry();
+					}
 						
-						if (oldExists) {
-							final JarInputStream in = new JarInputStream(
-									new BufferedInputStream(new FileInputStream(JARFILE_OLD)));
-			                final byte[] buffer = new byte[2048];
-							try {
-				                int size;
-								JarEntry entry;
-								while ((entry = in.getNextJarEntry()) != null) {
-									if (!entries.contains(entry.getName())) {
-										jos.putNextEntry(entry);
-										LOG.debug("copying " + key + " from old jar " + JARFILE_OLD);
-										while ((size = in.read(buffer, 0, buffer.length)) != -1) {
-											jos.write(buffer, 0, size);
-										}
+					if (oldExists) {
+						final JarInputStream in = new JarInputStream(
+								new BufferedInputStream(new FileInputStream(JARFILE_OLD)));
+		                final byte[] buffer = new byte[2048];
+						try {
+			                int size;
+							JarEntry entry;
+							while ((entry = in.getNextJarEntry()) != null) {
+								if (!entries.contains(entry.getName())) {
+									jos.putNextEntry(entry);
+									LOG.debug("copying " + entry.getName() + " from old jar " + JARFILE_OLD);
+									while ((size = in.read(buffer, 0, buffer.length)) != -1) {
+										jos.write(buffer, 0, size);
 									}
+									jos.closeEntry();
 								}
-								jos.closeEntry();
 								in.closeEntry();
 							}
-							finally {
-								in.close();
-							}
+						}
+						finally {
+							in.close();
 						}
 					}
 				}
@@ -299,8 +316,8 @@ public class NuclosJavaCompiler implements Closeable {
 		}
 	}
 
-	private File[] saveSrc(List<CodeGenerator> generators) throws IOException {
-		List<File> result = new ArrayList<File>();
+	private List<File> saveSrc(List<CodeGenerator> generators) throws IOException {
+		final List<File> result = new ArrayList<File>();
 		for (CodeGenerator generator : generators) {
 			if (generator.isRecompileNecessary()) {
 				for (JavaSourceAsString srcobject : generator.getSourceFiles()) {
@@ -321,7 +338,10 @@ public class NuclosJavaCompiler implements Closeable {
 				}
 			}
 		}
-		return result.toArray(new File[result.size()]);
+		synchronized (NuclosJavaCompiler.class) {
+			lastSrcWriteTime = System.currentTimeMillis();
+		}
+		return result;
 	}
 
 	private File getFile(JavaSourceAsString srcobject) {
