@@ -1,5 +1,7 @@
 package org.nuclos.build;
 
+import java.io.BufferedOutputStream;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -46,7 +48,7 @@ public class SvnkitBuildInfo {
 
 	public void info(File infoFile) throws SVNException, IOException {
 		final SVNInfo info = cm.getWCClient().doInfo(wc, SVNRevision.UNDEFINED);
-		final Writer writer = new OutputStreamWriter(new FileOutputStream(infoFile), "UTF-8");
+		final Writer writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(infoFile), "UTF-8"));
 		try {
 			printInfo(writer, info);
 		}
@@ -224,7 +226,7 @@ public class SvnkitBuildInfo {
 		final MyHandler handler = new MyHandler();
 		final long revision = cm.getStatusClient().doStatus(wc, SVNRevision.HEAD, SVNDepth.INFINITY,
 				true, false, true, false, handler, null);
-		final Writer writer = new OutputStreamWriter(new FileOutputStream(statusFile), "UTF-8");
+		final Writer writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(statusFile), "UTF-8"));
 		try {
 			if (handler.status != null) {
 				printStatus(writer, handler.status);

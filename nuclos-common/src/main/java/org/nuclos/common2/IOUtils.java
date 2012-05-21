@@ -125,7 +125,7 @@ public class IOUtils {
 	 * @param sEncoding the used charecter encoding
 	 */
 	public static void writeToTextFile(File file, String sText, String sEncoding) throws IOException, UnsupportedEncodingException {
-		final OutputStreamWriter osw = new OutputStreamWriter(new FileOutputStream(file), sEncoding);
+		final Writer osw = new OutputStreamWriter(new FileOutputStream(file), sEncoding);
 		try {
 			final Writer bw = new BufferedWriter(osw);
 			try {

@@ -108,8 +108,8 @@ public class XmlExportImportHelper {
 	    InputStream in = null;
 	    OutputStream out = null;
 	    try {
-	        in = new FileInputStream(src);
-	        out = new FileOutputStream(dest);
+	        in = new BufferedInputStream(new FileInputStream(src));
+	        out = new BufferedOutputStream(new FileOutputStream(dest));
 	        while(true) {
 	            read = in.read(buffer);
 	            if (read == -1) {
@@ -136,12 +136,10 @@ public class XmlExportImportHelper {
 		File dest = new File(destDir, filename);
 		if (dest.exists()) dest.delete();
 
-		FileOutputStream outStream = null;
-
+		OutputStream outStream = null;
 		try {
-			outStream = new FileOutputStream(dest); 
+			outStream = new BufferedOutputStream(new FileOutputStream(dest)); 
 			outStream.write((byte[])oObject);
-			outStream.close();
 		}
 		finally {
 			if (outStream != null) {
@@ -169,7 +167,7 @@ public class XmlExportImportHelper {
 		int size = (int)file.length();
 		
 		byte[] bytes = new byte[size]; 
-		DataInputStream dis = new DataInputStream(new FileInputStream(file)); 
+		DataInputStream dis = new DataInputStream(new BufferedInputStream(new FileInputStream(file))); 
 		int read = 0;
 		int numRead = 0;
 		
@@ -190,11 +188,14 @@ public class XmlExportImportHelper {
 	public static void createZipFile(String dir, String zipFileName)
 			throws IOException {
 		String dirFile = dir +"/"+ zipFileName;
-		ZipOutputStream zipOut = new ZipOutputStream(new FileOutputStream(
-				dirFile));
-		zipDir(dir, zipOut, zipFileName);
-		zipOut.flush();
-		zipOut.close();
+		ZipOutputStream zipOut = new ZipOutputStream(new BufferedOutputStream(new FileOutputStream(
+				dirFile)));
+		try {
+			zipDir(dir, zipOut, zipFileName);
+		}
+		finally {
+			zipOut.close();
+		}
 	}
 	
 	/**
@@ -228,16 +229,20 @@ public class XmlExportImportHelper {
 			}
 			// if we reached here, the File object f was not a directory
 			// create a FileInputStream on top of f
-			FileInputStream fis = new FileInputStream(f); 
-			ZipEntry anEntry = new ZipEntry(f.getPath().substring(dir2zip.length()+1)); 
-			// place the zip entry in the ZipOutputStream object
-			zipOut.putNextEntry(anEntry); 
-			// now write the content of the file to the ZipOutputStream
-			while((bytesIn = fis.read(readBuffer)) != -1) { 
-				zipOut.write(readBuffer, 0, bytesIn); 
-			} 
-			// close the Stream
-			fis.close(); 
+			final InputStream fis = new BufferedInputStream(new FileInputStream(f));
+			try {
+				ZipEntry anEntry = new ZipEntry(f.getPath().substring(dir2zip.length()+1)); 
+				// place the zip entry in the ZipOutputStream object
+				zipOut.putNextEntry(anEntry); 
+				// now write the content of the file to the ZipOutputStream
+				while((bytesIn = fis.read(readBuffer)) != -1) { 
+					zipOut.write(readBuffer, 0, bytesIn); 
+				}
+			}
+			finally {
+				// close the Stream
+				fis.close(); 
+			}
 		} 
 	}
 	
@@ -297,19 +302,15 @@ public class XmlExportImportHelper {
 	
 	static public File zipFolder(File srcFolder, String destZipFile)
 	throws Exception {
-	    ZipOutputStream zip = null;
-	    FileOutputStream fileWriter = null;
-	    File file = new File(srcFolder, destZipFile);
-	    
-	    fileWriter = new FileOutputStream(file);
-	    zip = new ZipOutputStream(fileWriter);
-
-	    addFolderToZip("", srcFolder, zip, destZipFile);
-	    zip.flush();
-	    zip.close();
-	    fileWriter.flush();
-	    fileWriter.close();
-	    
+	    final File file = new File(srcFolder, destZipFile);
+	    final ZipOutputStream zip = new ZipOutputStream(
+	    		new BufferedOutputStream(new FileOutputStream(file)));
+	    try {
+	    	addFolderToZip("", srcFolder, zip, destZipFile);
+	    }
+	    finally {
+	    	zip.close();
+	    }
 	    return file;
 	  }
 
@@ -321,17 +322,21 @@ public class XmlExportImportHelper {
 		  else if (!srcFile.getName().equals(destZipFile)){
 			  byte[] buf = new byte[1024];
 			  int len;
-			  FileInputStream in = new FileInputStream(srcFile);
-			  if (path.equals("/")) {
-				  zip.putNextEntry(new ZipEntry(srcFile.getName()));
+			  final InputStream in = new BufferedInputStream(new FileInputStream(srcFile));
+			  try {
+				  if (path.equals("/")) {
+					  zip.putNextEntry(new ZipEntry(srcFile.getName()));
+				  }
+				  else {
+					  zip.putNextEntry(new ZipEntry(path + "/" + srcFile.getName()));
+				  }
+				  while ((len = in.read(buf)) > 0) {
+					  zip.write(buf, 0, len);
+				  }
 			  }
-			  else {
-				  zip.putNextEntry(new ZipEntry(path + "/" + srcFile.getName()));
+			  finally {
+				  in.close();
 			  }
-			  while ((len = in.read(buf)) > 0) {
-				  zip.write(buf, 0, len);
-			  }
-			  in.close();
 		  }
 	  }
 

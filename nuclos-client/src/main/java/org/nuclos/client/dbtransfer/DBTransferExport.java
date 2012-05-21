@@ -20,9 +20,11 @@ import info.clearthought.layout.TableLayout;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
@@ -267,11 +269,13 @@ public class DBTransferExport {
 							
 							byte[] transferFile = utils.getTransferFacade().createTransferFile(((TransferNuclet)comboNuclet.getSelectedItem()).getId(), exportOptions);
 							File f = new File(tfTransferFile.getText());
-							FileOutputStream fout;
-							fout = new FileOutputStream(f);
-							fout.write(transferFile);
-							fout.close();
-
+							final OutputStream fout = new BufferedOutputStream(new FileOutputStream(f));
+							try {
+								fout.write(transferFile);
+							}
+							finally {
+								fout.close();
+							}
 							exportException = null;
 						} catch (Exception e) {
 							exportException = e;

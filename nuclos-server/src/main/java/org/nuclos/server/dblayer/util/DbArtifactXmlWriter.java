@@ -16,6 +16,7 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.server.dblayer.util;
 
+import java.io.BufferedWriter;
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -64,8 +65,8 @@ public class DbArtifactXmlWriter implements Closeable {
 	
 	public DbArtifactXmlWriter(OutputStream os) throws IOException {
 		try {
-			
-			writer = XMLOutputFactory.newInstance().createXMLStreamWriter(new OutputStreamWriter(os, "utf-8"));
+			writer = XMLOutputFactory.newInstance().createXMLStreamWriter(
+					new BufferedWriter(new OutputStreamWriter(os, "utf-8")));
 			writer.writeStartDocument("UTF-8", "1.0");
 			writer.writeStartElement("database");
 			writer.writeAttribute("version", VERSION);

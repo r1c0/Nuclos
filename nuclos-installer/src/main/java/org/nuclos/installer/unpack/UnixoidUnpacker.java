@@ -16,10 +16,12 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.installer.unpack;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -79,7 +81,7 @@ public abstract class UnixoidUnpacker extends AbstractUnpacker {
 				return false;
 			}
 			else {
-				final FileInputStream fio = new FileInputStream(registry);
+				final InputStream fio = new BufferedInputStream(new FileInputStream(registry));
 				try {
 					final Ini ini = new Ini(fio);
 					final boolean registered = ini.containsKey(uninstallname);
@@ -110,7 +112,7 @@ public abstract class UnixoidUnpacker extends AbstractUnpacker {
 				final File postgres_registration = new File(FILENAME_POSTGRES_REGISTRY);
 				if (postgres_registration.exists()) {
 					if (postgres_registration.canRead()) {
-						final FileInputStream fio = new FileInputStream(postgres_registration);
+						final InputStream fio = new BufferedInputStream(new FileInputStream(postgres_registration));
 						try {
 							Ini ini = new Ini(fio);
 							

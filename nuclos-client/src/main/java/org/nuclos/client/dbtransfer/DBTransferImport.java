@@ -26,10 +26,14 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.io.BufferedInputStream;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
+import java.io.InputStream;
 import java.io.Serializable;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -307,8 +311,14 @@ public class DBTransferImport {
 							File f = new File(fileName);
 							long size = f.length();
 	
-							FileInputStream fin = new FileInputStream(f);
-							byte[] transferFile = utils.getBytes(fin, (int) size);
+							final InputStream fin = new BufferedInputStream(new FileInputStream(f));
+							final byte[] transferFile;
+							try {
+								transferFile = utils.getBytes(fin, (int) size);
+							}
+							finally {
+								fin.close();
+							}
 
 							resetStep2();
 							importTransferObject = utils.getTransferFacade().prepareTransfer(isNuclon, transferFile);
@@ -1203,18 +1213,20 @@ public class DBTransferImport {
 							if (!fileName.toLowerCase().endsWith(".import-sql.txt")) {
 								fileName += ".import-sql.txt";
 							}
-							
+
 							File outFile = new File(fileName);
-		               FileWriter out = new FileWriter(outFile);
-		               out.write(sbSql.toString());
-		               out.close();
-		               
-		               if (blnSaveOfScriptRecommend) {
-		               	step.setComplete(true);
-		               }
+							final Writer out = new BufferedWriter(new FileWriter(outFile));
+							try {
+								out.write(sbSql.toString());
+							}
+							finally {
+								out.close();
+							}
+							if (blnSaveOfScriptRecommend) {
+								step.setComplete(true);
+							}
 						}
 					}
-					
 				}
 				catch (Exception e) {
 					Errors.getInstance().showExceptionDialog(ifrm, e);
@@ -1243,18 +1255,20 @@ public class DBTransferImport {
 							if (!fileName.toLowerCase().endsWith(".import-log.html")) {
 								fileName += ".import-log.html";
 							}
-							
+
 							File outFile = new File(fileName);
-		               FileWriter out = new FileWriter(outFile);
-		               out.write(editLog.getText());
-		               out.close();
-		               
-		               if (blnSaveOfLogRecommend) {
-		               	step.setComplete(true);
-		               }
+							final Writer out = new BufferedWriter(new FileWriter(outFile));
+							try {
+								out.write(editLog.getText());
+							}
+							finally {
+								out.close();
+							}
+							if (blnSaveOfLogRecommend) {
+								step.setComplete(true);
+							}
 						}
-					}
-					
+					}					
 				}
 				catch (Exception e) {
 					Errors.getInstance().showExceptionDialog(ifrm, e);

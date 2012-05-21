@@ -16,11 +16,16 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.server.transfer.ejb3;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.Reader;
 import java.text.MessageFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -231,12 +236,14 @@ public class XmlImportFacadeBean extends NuclosFacadeBean implements XmlImportFa
 
 		try {
 			// write zip File to import dir
-			File zipFile = new File(expimpTimestampDir, "import.zip");
-			FileOutputStream fos = new FileOutputStream(zipFile);
-			fos.write(importFile.getContents());
-			fos.flush();
-			fos.close();
-
+			final File zipFile = new File(expimpTimestampDir, "import.zip");
+			final OutputStream fos = new BufferedOutputStream(new FileOutputStream(zipFile));
+			try {
+				fos.write(importFile.getContents());
+			}
+			finally {
+				fos.close();
+			}
 			// extract zip file
 			XmlExportImportHelper.extractZipArchive(zipFile, expimpTimestampDir);
 
@@ -246,8 +253,8 @@ public class XmlImportFacadeBean extends NuclosFacadeBean implements XmlImportFa
 
 			File fImport = new File(expimpTimestampDir, "export.xml");
 
-			FileInputStream is = new FileInputStream(fImport);
-			InputStreamReader isr = new InputStreamReader(is, "UTF-8");
+			final InputStream is = new BufferedInputStream(new FileInputStream(fImport));
+			final Reader isr = new InputStreamReader(is, "UTF-8");
 			Document document = reader.read(isr);
 
 			Element root = document.getRootElement();

@@ -16,6 +16,8 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.installer.util;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -45,42 +47,50 @@ import org.nuclos.installer.mode.Installer;
 public class FileUtils {
 
 	public static List<String> unpack(InputStream resourcefile, File targetDir, Installer i) throws IOException {
-		List<String> result = new ArrayList<String>();
-		ZipInputStream zis = new ZipInputStream(resourcefile);
-		ZipEntry entry = zis.getNextEntry();
-		while (entry != null) {
-			String targetname = entry.getName();
-			File target = new File(targetDir, targetname);
-			result.add(target.getAbsolutePath());
-			if (entry.isDirectory()) {
-				i.info("info.create.dir", target.getAbsolutePath());
-				forceMkdir(target);
+		final List<String> result = new ArrayList<String>();
+		final ZipInputStream zis = new ZipInputStream(new BufferedInputStream(resourcefile));
+		try {
+			ZipEntry entry = zis.getNextEntry();
+			while (entry != null) {
+				String targetname = entry.getName();
+				File target = new File(targetDir, targetname);
+				result.add(target.getAbsolutePath());
+				if (entry.isDirectory()) {
+					i.info("info.create.dir", target.getAbsolutePath());
+					forceMkdir(target);
+				}
+				else {
+					i.info("info.create.file", target.getAbsolutePath());
+					target.getParentFile().mkdirs();
+					final OutputStream fos = new BufferedOutputStream(new FileOutputStream(target));
+					try {
+						int n;
+						byte[] buffer = new byte[1024];
+			            while ((n = zis.read(buffer, 0, 1024)) > -1) {
+			            	fos.write(buffer, 0, n);
+			            }
+					}
+					finally {
+						fos.close();
+					}
+	                zis.closeEntry();
+				}
+				entry = zis.getNextEntry();
 			}
-			else {
-				i.info("info.create.file", target.getAbsolutePath());
-				target.getParentFile().mkdirs();
-				FileOutputStream fos = new FileOutputStream(target);
-				int n;
-				byte[] buffer = new byte[1024];
-	            while ((n = zis.read(buffer, 0, 1024)) > -1) {
-	            	fos.write(buffer, 0, n);
-	            }
-                fos.close();
-                zis.closeEntry();
-			}
-			entry = zis.getNextEntry();
 		}
-		zis.close();
+		finally {
+			zis.close();
+		}
 		return result;
 	}
 
 	public static void unpackFile(InputStream resourcefile, String name, File targetfile, Installer i) throws IOException {
-		ZipInputStream zis = new ZipInputStream(resourcefile);
+		ZipInputStream zis = new ZipInputStream(new BufferedInputStream(resourcefile));
 		ZipEntry entry = zis.getNextEntry();
 		while (entry != null) {
 			if (entry.getName().equals(name) && !entry.isDirectory()) {
 				i.info("info.create.file", targetfile.getAbsolutePath());
-				FileOutputStream fos = new FileOutputStream(targetfile);
+				final OutputStream fos = new BufferedOutputStream(new FileOutputStream(targetfile));
 
 				int n;
 				byte[] buffer = new byte[1024];
@@ -176,7 +186,7 @@ public class FileUtils {
 
 	public static byte[] readAll(File file) throws IOException {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		copy(new FileInputStream(file), baos);
+		copy(new BufferedInputStream(new FileInputStream(file)), baos);
 		return baos.toByteArray();
 	}
 
@@ -186,12 +196,12 @@ public class FileUtils {
 		} else if (!targetFile.getParentFile().exists()) {
 			forceMkdir(targetFile.getParentFile());
 		}
-		copy(is, new FileOutputStream(targetFile));
+		copy(is, new BufferedOutputStream(new FileOutputStream(targetFile)));
 	}
 
 	public static String copyFile(File sourceFile, File targetFile, boolean backup, Installer i) throws IOException {
 		i.info("info.create.file", targetFile.getAbsolutePath());
-		InputStream is = new FileInputStream(sourceFile);
+		InputStream is = new BufferedInputStream(new FileInputStream(sourceFile));
 		try {
 			copyInputStreamToFile(is, targetFile, backup);
 			targetFile.setLastModified(sourceFile.lastModified());
@@ -221,7 +231,7 @@ public class FileUtils {
 				// ignore (no entry in result map)
 			}
 		}
-		InputStream is = new FileInputStream(file);
+		InputStream is = new BufferedInputStream(new FileInputStream(file));
 		try {
 			byte[] buf = new byte[10240];
 			int len;

@@ -31,6 +31,7 @@ import java.awt.event.ActionEvent;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -39,6 +40,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Iterator;
 import java.util.List;
 
@@ -257,14 +259,27 @@ public class NuclosCollectableImage extends CollectableMediaComponent implements
 					}
 
 					File file = chosser.getSelectedFile();
+					OutputStream fos = null;
 					try {
-						FileOutputStream fos = new FileOutputStream(file);
+						fos = new BufferedOutputStream(new FileOutputStream(file));
 						fos.write(ni.getContent());
 						fos.close();
-					} catch (FileNotFoundException ex) {
+					} 
+					catch (FileNotFoundException ex) {
 						Errors.getInstance().showExceptionDialog(getControlComponent(), ex);
-					} catch (IOException ex) {
+					} 
+					catch (IOException ex) {
 						Errors.getInstance().showExceptionDialog(getControlComponent(), ex);
+					}
+					finally {
+						if (fos != null) {
+							try {
+								fos.close();
+							}
+							catch (IOException e1) {
+								// ignore
+							}
+						}
 					}
 				}
 

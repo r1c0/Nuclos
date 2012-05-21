@@ -16,10 +16,13 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.server.transfer.ejb3;
 
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -225,16 +228,19 @@ public class XmlExportFacadeBean extends NuclosFacadeBean implements XmlExportFa
 
 			try {
 				// write XML File
-				File fExport = new File(expimpTimestampDir.getPath() + "/export.xml");
-				FileOutputStream os = new FileOutputStream(fExport);
-				OutputStreamWriter osr = new OutputStreamWriter(os, "UTF-8");
-				OutputFormat format = OutputFormat.createPrettyPrint();
+				final OutputFormat format = OutputFormat.createPrettyPrint();
 				format.setTrimText(false);
 				format.setEncoding("UTF-8");
-				XMLWriter writer = new XMLWriter(osr, format);
-				writer.write(document);
-				writer.close();
-
+				
+				final File fExport = new File(expimpTimestampDir.getPath() + "/export.xml");
+				final Writer osr = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(fExport), "UTF-8"));
+				final XMLWriter writer = new XMLWriter(osr, format);
+				try {
+					writer.write(document);
+				}
+				finally {
+					writer.close();
+				}
 				// activate the following code, if you want to save the exported file in the database
 				// NOTE: it is recommended to compress the stored data
 				//xmlExportImportProtocol.addXmlFile(iProtocolId, IOUtils.readFromTextFile(fExport, "UTF-8"));

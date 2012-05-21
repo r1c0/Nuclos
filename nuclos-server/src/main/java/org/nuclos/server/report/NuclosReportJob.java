@@ -129,7 +129,8 @@ public class NuclosReportJob extends NuclosQuartzJob {
 		private void writeErrorFile(File reportOutputDir, String sMessage) {
 			PrintStream ps = null;
 			try {
-				ps = new PrintStream(new FileOutputStream(new File(reportOutputDir, "ERROR_4pmReport.txt"), true));
+				ps = new PrintStream(new BufferedOutputStream(
+						new FileOutputStream(new File(reportOutputDir, "ERROR_4pmReport.txt"), true)));
 				ps.println(sMessage);
 			}
 			catch (FileNotFoundException e) {

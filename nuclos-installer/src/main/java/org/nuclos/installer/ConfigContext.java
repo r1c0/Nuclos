@@ -16,6 +16,7 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.installer;
 
+import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 
@@ -37,7 +38,7 @@ public class ConfigContext implements Constants {
 
 	public static void update(File nuclosxml) throws InstallException {
 		try {
-			getPreviousConfig().loadFromXML(new FileInputStream(nuclosxml));
+			getPreviousConfig().loadFromXML(new BufferedInputStream(new FileInputStream(nuclosxml)));
 			if (!isTemplate()) {
 				getCurrentConfig().putAll(ConfigContext.getPreviousConfig());
 			}
@@ -93,7 +94,7 @@ public class ConfigContext implements Constants {
 
 	public static void setTemplate(File nuclosxml) {
 		try {
-			getCurrentConfig().loadFromXML(new FileInputStream(nuclosxml));
+			getCurrentConfig().loadFromXML(new BufferedInputStream(new FileInputStream(nuclosxml)));
 			getInstance().template = true;
 		} catch (Exception e) {
 			throw new RuntimeException(e);
