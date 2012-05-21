@@ -128,40 +128,40 @@ import org.springframework.transaction.annotation.Transactional;
 public class GenericObjectFacadeBean extends NuclosFacadeBean implements GenericObjectFacadeRemote {
 
 	private static final Logger LOG = Logger.getLogger(GenericObjectFacadeBean.class);
-	
+
 	//
 
 	private GenericObjectFacadeHelper helper;
-	
+
 	private MasterDataFacadeLocal masterDataFacade;
-	
+
 	private AttributeCache attributeCache;
-	
+
 	/**
 	 * @deprecated
 	 */
 	private MasterDataFacadeHelper masterDataFacadeHelper;
-	
+
 	public GenericObjectFacadeBean() {
 	}
-	
+
 	@Autowired
 	void setMasterDataFacadeHelper(MasterDataFacadeHelper masterDataFacadeHelper) {
 		this.masterDataFacadeHelper = masterDataFacadeHelper;
 	}
-	
+
 	@Autowired
 	void setGenericObjectFacadeHelper(GenericObjectFacadeHelper genericObjectFacadeHelper) {
 		this.helper = genericObjectFacadeHelper;
 	}
-	
+
 	private AttributeCache getAttributeCache() {
 		if (attributeCache == null) {
 			attributeCache = AttributeCache.getInstance();
 		}
 		return attributeCache;
 	}
-	
+
 	private final MasterDataFacadeLocal getMasterDataFacade() {
 		if (masterDataFacade == null) {
 			masterDataFacade = ServerServiceLocator.getInstance().getFacade(MasterDataFacadeLocal.class);
@@ -288,19 +288,19 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 			// care only about dependant data which are on the highest level
 			if (collSubEntities.get(eafn) == null) {
 				final String entity = eafn.getEntityName();
-				final String sForeignKeyFieldName = LangUtils.defaultIfNull(eafn.getFieldName(), 
+				final String sForeignKeyFieldName = LangUtils.defaultIfNull(eafn.getFieldName(),
 						ModuleConstants.DEFAULT_FOREIGNKEYFIELDNAME);
 				Collection<MasterDataVO> collmdVO = getMasterDataFacade().getDependantMasterData(
 						entity, sForeignKeyFieldName, govo.getId());
 
-				mpDependants.setData(entity, CollectionUtils.transform(collmdVO, 
+				mpDependants.setData(entity, CollectionUtils.transform(collmdVO,
 						new MasterDataToEntityObjectTransformer(entity)));
 
 				if (bAll) {
 					for (MasterDataVO mdVO : collmdVO) {
 						// now read all dependant data of the child subforms
 						getMasterDataFacade().readAllDependants(
-								entity, mdVO.getIntId(), mdVO.getDependants(), mdVO.isRemoved(), 
+								entity, mdVO.getIntId(), mdVO.getDependants(), mdVO.isRemoved(),
 								entity, collSubEntities);
 					}
 				}
@@ -1057,20 +1057,15 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 			final UsageCriteria usage = gowdvo.getUsageCriteria(getAttributeCache());
 			DalCallResult dalResult;
 			if (bDeletePhysically) {
+				_fillDependants(gowdvo, usage, new HashSet<String>());
+
 				for (EntityAndFieldName eafn : collSubEntities.keySet()) {
 					// care only about subforms which are on the highest level
 					if (collSubEntities.get(eafn) == null) {
-						// load dependant data, if not already done
-						if (mpDependants.getData(eafn.getEntityName()).isEmpty()) {
-							Set<String> stSubForm = new HashSet<String>();
-							stSubForm.add(eafn.getEntityName());
-							_fillDependants(gowdvo, usage, stSubForm);
-						}
-
 						// mark all dependant data as removed
 						for (EntityObjectVO mdVO : gowdvo.getDependants().getData(eafn.getEntityName())) {
 							mdVO.flagRemove();
-							getMasterDataFacade().readAllDependants(eafn.getEntityName(), 
+							getMasterDataFacade().readAllDependants(eafn.getEntityName(),
 									IdUtils.unsafeToId(mdVO.getId()), mdVO.getDependants(), mdVO.isFlagRemoved(), eafn.getEntityName(), collSubEntities);
 						}
 					}
@@ -1666,9 +1661,9 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 	 * @deprecated This method doesn't respect the foreign key field name. Replace with fillDependants().
 	 */
 	@Deprecated
-	private void _fillDependants(GenericObjectWithDependantsVO lowdcvo, UsageCriteria usage, Set<String> stRequiredSubEntityNames) 
+	private void _fillDependants(GenericObjectWithDependantsVO lowdcvo, UsageCriteria usage, Set<String> stRequiredSubEntityNames)
 			throws CommonFinderException {
-		
+
 		helper._fillDependants(lowdcvo, usage, stRequiredSubEntityNames, null, this.getCurrentUserName());
 	}
 
@@ -1773,7 +1768,7 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 			DalSupportForGO.getEntityObjectProcesserForGenericObject(genericObjectId).insertOrUpdate(eo);
 		}
 		catch (DbException dbe) {
-			badAttributes.add(new BadAttributeValueException(-1, genericObjectId, canonicalValue, attributeId, 
+			badAttributes.add(new BadAttributeValueException(-1, genericObjectId, canonicalValue, attributeId,
 					getAttributeCache().getAttribute(attributeId), dbe.getMessage()));
 		}
 
