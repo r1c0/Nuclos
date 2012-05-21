@@ -221,7 +221,7 @@ public class NuclosEntityTreeValueStep extends NuclosEntityAbstractStep {
 				 strText += NuclosWizardUtils.getStapledString(attr.getInternalName());
 				 tfValue.setText(strText);
 				 tfValue.setCaretPosition(strText.length());
-				 tfValue.requestFocus();
+				 tfValue.requestFocusInWindow();
 			}
 		});
 
@@ -237,7 +237,7 @@ public class NuclosEntityTreeValueStep extends NuclosEntityAbstractStep {
 				 strText += NuclosWizardUtils.getStapledString(attr.getInternalName());
 				 tfDirectory.setText(strText);
 				 tfDirectory.setCaretPosition(strText.length());
-				 tfDirectory.requestFocus();
+				 tfDirectory.requestFocusInWindow();
 			}
 		});
 
@@ -253,7 +253,7 @@ public class NuclosEntityTreeValueStep extends NuclosEntityAbstractStep {
 				 strText += NuclosWizardUtils.getStapledString(attr.getInternalName());
 				 tfReportName.setText(strText);
 				 tfReportName.setCaretPosition(strText.length());
-				 tfReportName.requestFocus();
+				 tfReportName.requestFocusInWindow();
 			}
 		});
 
@@ -349,7 +349,7 @@ public class NuclosEntityTreeValueStep extends NuclosEntityAbstractStep {
 				 strText += NuclosWizardUtils.getStapledString(attr.getInternalName());
 				 tfTooltip.setText(strText);
 				 tfTooltip.setCaretPosition(strText.length());
-				 tfTooltip.requestFocus();
+				 tfTooltip.requestFocusInWindow();
 			}
 		});
 
@@ -396,7 +396,7 @@ public class NuclosEntityTreeValueStep extends NuclosEntityAbstractStep {
 				 }
 				 tfMultiEditEquation.setText(strText);
 				 tfMultiEditEquation.setCaretPosition(strText.length());
-				 tfMultiEditEquation.requestFocus();
+				 tfMultiEditEquation.requestFocusInWindow();
 			}
 		});
 

@@ -538,7 +538,7 @@ public class LoginController extends Controller<Component> {
 		}
 		finally {
 			frame.setEnabled(true);
-			frame.requestFocus();
+			frame.requestFocusInWindow();
 			setSubComponentsEnabled(optpn, acls, true);
 			loginPanel.setProgressVisible(result);
 			loginPanel.getPasswordField().setText("");

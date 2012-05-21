@@ -60,7 +60,7 @@ public class PropertiesDisplayMouseListener implements MouseListener {
 	@Override
 	public void mousePressed(MouseEvent e) {
 		 // NUCLEUSINT-992
-		((JComponent)component).requestFocus();
+		((JComponent)component).requestFocusInWindow();
 	}
 
 	@Override

@@ -901,7 +901,7 @@ public class StateModelEditor extends JPanel implements ShapeModelListener, Focu
 
 	@Override
     public void focusGained(FocusEvent e) {
-		pnlShapeViewer.requestFocus();
+		pnlShapeViewer.requestFocusInWindow();
 	}
 
 	@Override

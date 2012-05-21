@@ -284,7 +284,7 @@ public abstract class ValidatingJOptionPane extends JOptionPane {
 							}
 
 							if (compInvalid != null) {
-								compInvalid.requestFocus();
+								compInvalid.requestFocusInWindow();
 							}
 						}
 					}

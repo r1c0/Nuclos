@@ -89,7 +89,7 @@ public abstract class LabeledComponent extends JPanel {
 	
 	@Override
 	public void requestFocus() {
-		this.getControlComponent().requestFocusInWindow();
+		this.getControlComponent().requestFocus();
 	}
 	
 	public void addMouseListenerToHiddenComponents(MouseListener l) {

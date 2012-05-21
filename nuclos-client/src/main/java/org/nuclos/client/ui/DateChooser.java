@@ -564,7 +564,7 @@ public class DateChooser extends JComponent implements Serializable {
 	class DateChooserFocusListener implements FocusListener {
 		@Override
 		public void focusGained(FocusEvent e) {
-			DateChooser.this.tfDate.requestFocus();
+			DateChooser.this.tfDate.requestFocusInWindow();
 		}
 		@Override
 		public void focusLost(FocusEvent e) {
@@ -656,7 +656,7 @@ public class DateChooser extends JComponent implements Serializable {
 			btnNone.setFocusable(false);
 
 			pnlMain.setFocusable(true);
-			pnlMain.requestFocus();
+			pnlMain.requestFocusInWindow();
 
 			setupKeyboardActions();
 

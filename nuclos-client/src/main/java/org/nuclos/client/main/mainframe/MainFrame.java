@@ -1851,7 +1851,7 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 	private void cmdFocusLiveSearch() {
 		setVisible(true);
 		requestFocusInWindow();
-		liveSearchController.getSearchComponent().requestFocus();
+		liveSearchController.getSearchComponent().requestFocusInWindow();
 	}
 
 	/**

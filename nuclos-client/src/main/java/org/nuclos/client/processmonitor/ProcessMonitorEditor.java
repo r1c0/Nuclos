@@ -1084,7 +1084,7 @@ public class ProcessMonitorEditor extends JPanel implements ShapeModelListener, 
 
 	@Override
     public void focusGained(FocusEvent e) {
-		pnlShapeViewer.requestFocus();
+		pnlShapeViewer.requestFocusInWindow();
 	}
 
 	@Override

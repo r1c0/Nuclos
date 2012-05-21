@@ -181,7 +181,7 @@ public class ParameterPanel extends JPanel {
 					@Override
 					public void run() {
 						try {
-							comp.requestFocus();
+							comp.requestFocusInWindow();
 						}
 						catch (Exception e) {
 							LOG.error("ParameterPanel failed: " + e, e);

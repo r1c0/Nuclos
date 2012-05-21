@@ -1172,7 +1172,7 @@ public class NuclosEntityCommonPropertiesStep extends NuclosEntityAbstractStep i
 			cbxIcon.setSelectedItem(vo);
 		}
 		clct.getTab().dispose();
-		this.requestFocus();
+		this.requestFocusInWindow();
 	}
 
 	private class LimitDocument extends PlainDocument {

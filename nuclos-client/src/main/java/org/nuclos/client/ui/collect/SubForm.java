@@ -1817,6 +1817,7 @@ public class SubForm extends JPanel
 		public boolean isRequestFocusEnabled() {
 			return true;
 		}
+		
 		public static class SubFormTableRowSorter extends TableRowSorter<TableModel> {
 			SubFormTableRowSorter(TableModel model) {
 				super(model);
