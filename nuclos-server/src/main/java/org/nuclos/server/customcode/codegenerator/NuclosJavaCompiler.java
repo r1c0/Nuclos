@@ -302,20 +302,22 @@ public class NuclosJavaCompiler implements Closeable {
 	private File[] saveSrc(List<CodeGenerator> generators) throws IOException {
 		List<File> result = new ArrayList<File>();
 		for (CodeGenerator generator : generators) {
-			for (JavaSourceAsString srcobject : generator.getSourceFiles()) {
-				File f = getFile(srcobject);
-				if (!f.exists()) {
-					f.getParentFile().mkdirs();
-					f.createNewFile();
+			if (generator.isRecompileNecessary()) {
+				for (JavaSourceAsString srcobject : generator.getSourceFiles()) {
+					File f = getFile(srcobject);
+					if (!f.exists()) {
+						f.getParentFile().mkdirs();
+						f.createNewFile();
+					}
+					result.add(f);
+					final Writer out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(f), ENCODING));
+				    try {
+				    	out.write(srcobject.getCharContent(true).toString());
+				    }
+				    finally {
+				    	out.close();
+				    }
 				}
-				result.add(f);
-				final Writer out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(f), ENCODING));
-			    try {
-			    	out.write(srcobject.getCharContent(true).toString());
-			    }
-			    finally {
-			    	out.close();
-			    }
 			}
 		}
 		return result.toArray(new File[result.size()]);
@@ -356,17 +358,22 @@ public class NuclosJavaCompiler implements Closeable {
 			artifacts.add(generator);
 		}
 
-		NuclosJavaCompiler c = new NuclosJavaCompiler();
-		try {
-			c.javac(artifacts, false);
-		}
-		finally {
+		if (JARFILE.exists()) {
+			NuclosJavaCompiler c = new NuclosJavaCompiler();
 			try {
-				c.close();
+				c.javac(artifacts, false);
 			}
-			catch(IOException e) {
-				LOG.warn("check failed: " + e, e);
+			finally {
+				try {
+					c.close();
+				}
+				catch(IOException e) {
+					LOG.warn("check failed: " + e, e);
+				}
 			}
+		}
+		else {
+			compile();
 		}
 	}
 
