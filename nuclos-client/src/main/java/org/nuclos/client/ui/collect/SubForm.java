@@ -158,7 +158,7 @@ import org.nuclos.common2.exception.CommonFatalException;
  * <br>Created by Novabit Informationssysteme GmbH
  * <br>Please visit <a href="http://www.novabit.de">www.novabit.de</a>
  */
-public class SubForm extends JPanel 
+public class SubForm extends JPanel
 	implements TableCellRendererProvider, ActionListener, Closeable {
 
 	private static final Logger LOG = Logger.getLogger(SubForm.class);
@@ -239,7 +239,7 @@ public class SubForm extends JPanel
         };
 
 		public abstract AbstractButton createButton();
-		
+
 		public abstract JMenuItem createMenuItem();
 
 		public static ToolbarFunction fromCommandString(String actionCommand) {
@@ -270,7 +270,7 @@ public class SubForm extends JPanel
 			a.setEnabled(isEnabled);
 			a.setVisible(isVisible);
 		}
-		
+
 		public void set(JMenuItem mi) {
 			mi.setEnabled(isEnabled);
 			mi.setVisible(isVisible);
@@ -282,7 +282,7 @@ public class SubForm extends JPanel
 	private static final Color LAYER_BUSY_COLOR = new Color(128, 128, 128, 128);
 
 	private static final Logger  log = Logger.getLogger(SubForm.class);
-	
+
 	//
 
 	private final CollectableComponentModelAdapter editorChangeListener = new CollectableComponentModelAdapter() {
@@ -339,9 +339,9 @@ public class SubForm extends JPanel
 	 * maps column names to columns
 	 */
 	private final Map<String, Column> mpColumns = new LinkedHashMap<String, Column>();
-	private final Map<CollectableEntityField, TableCellRenderer> mpColumnRenderer 
+	private final Map<CollectableEntityField, TableCellRenderer> mpColumnRenderer
 		= new HashMap<CollectableEntityField, TableCellRenderer>();
-	private final Map<CollectableEntityField, CollectableComponentTableCellEditor> mpStaticColumnEditors 
+	private final Map<CollectableEntityField, CollectableComponentTableCellEditor> mpStaticColumnEditors
 		= new HashMap<CollectableEntityField, CollectableComponentTableCellEditor>();
 
 	private List<ChangeListener> lstchangelistener = new LinkedList<ChangeListener>();
@@ -371,13 +371,13 @@ public class SubForm extends JPanel
 	private List<SubFormToolListener> listeners;
 
 	private PopupMenuMouseAdapter popupMenuAdapter;
-	
+
 	private final List<Pair<JComponent,MouseListener>> myMouseListener = new ArrayList<Pair<JComponent,MouseListener>>();
-	
+
 	private boolean closed = false;
-	
+
 	private boolean readonly = false;
-	
+
 	/**
 	 * @param entityName
 	 * @param iToolBarOrientation @see JToolbar#setOrientation
@@ -446,11 +446,11 @@ public class SubForm extends JPanel
 
 		assert this.getForeignKeyFieldToParent() == foreignKeyFieldToParent;
 	}
-	
+
 	@Override
 	public final void close() {
 		// Close is needed for avoiding memory leaks
-		// If you want to change something here, please consult me (tp).  
+		// If you want to change something here, please consult me (tp).
 		if (!closed) {
 			LOG.debug("close(): " + this);
 			if (rowHeader != null) {
@@ -469,27 +469,27 @@ public class SubForm extends JPanel
 				p.getX().removeMouseListener(p.getY());
 			}
 			myMouseListener.clear();
-			
+
 			// Partial fix for http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=7079260
 			popupMenuAdapter = null;
 			scrollPane = null;
-			
+
 			contentPane = null;
 			toolbar = null;
-			
+
 			mpColumnRenderer.clear();
 			mpColumns.clear();
 			mpStaticColumnEditors.clear();
-			
+
 			lstchangelistener.clear();
 			lstFocusActionListener.clear();
 			listeners.clear();
 			myMouseListener.clear();
-			
+
 			closed = true;
 		}
 	}
-	
+
 	public void addColumnModelListener(TableColumnModelListener tblcolumnlistener) {
 		subformtbl.getColumnModel().addColumnModelListener(tblcolumnlistener);
 	}
@@ -509,7 +509,7 @@ public class SubForm extends JPanel
 	public JScrollPane getSubformScrollPane() {
 		return this.scrollPane;
 	}
-	
+
 	public void actionPerformed(String actionCommand) {
 		if(actionCommand != null)
 			for(SubFormToolListener l : new ArrayList<SubFormToolListener>(listeners))
@@ -543,7 +543,7 @@ public class SubForm extends JPanel
 		button.addActionListener(this);
 		toolbar.add(button, pos);
 		toolbar.validate();
-		
+
 		if (toolbarMenuItems.containsKey(actionCommand))
 			toolbarOrder.remove(actionCommand);
 		toolbarMenuItems.put(actionCommand, mi);
@@ -644,19 +644,19 @@ public class SubForm extends JPanel
 
 		rowHeader = createTableRowHeader(subformtbl, scrollPane);
 		subformtbl.setRowHeaderTable(rowHeader);
-		
+
 		// subformtbl.addMouseListener(newToolbarContextMenuListener(subformtbl, subformtbl));
 		addToolbarMouseListener(subformtbl, subformtbl, subformtbl);
 		// scrollPane.getViewport().addMouseListener(newToolbarContextMenuListener(scrollPane.getViewport(), subformtbl));
-		addToolbarMouseListener(scrollPane.getViewport(), scrollPane.getViewport(), subformtbl);		
+		addToolbarMouseListener(scrollPane.getViewport(), scrollPane.getViewport(), subformtbl);
 	}
-	
+
 	private void addToolbarMouseListener(JComponent src, JComponent parent, JTable table) {
 		final MouseListener ml = newToolbarContextMenuListener(parent, table);
 		src.addMouseListener(ml);
 		myMouseListener.add(new Pair<JComponent,MouseListener>(src, ml));
 	}
-	
+
 	/**
 	 * @Deprecated Never use this directly, instead use {@link #addToolbarMenuItems(List)}.
 	 */
@@ -669,7 +669,7 @@ public class SubForm extends JPanel
 					addToolbarMenuItems(items);
 					if (items.isEmpty())
 						return;
-					
+
 					JPopupMenu popup = new JPopupMenu();
 					for (JComponent c : items)
 						popup.add(c);
@@ -686,7 +686,7 @@ public class SubForm extends JPanel
 					}
 				}
 			}
-			
+
 		};
 		return res;
 	}
@@ -701,8 +701,8 @@ public class SubForm extends JPanel
 		SubFormTable externalTable = getSubformRowHeader().getExternalTable();
 
 		// setup subform filter
-		subformfilter = new SubFormFilter(this, fixedTable, fixedColumnModel, externalTable, externalColumnModel, 
-				(JToggleButton) toolbarButtons.get(ToolbarFunction.FILTER.name()), 
+		subformfilter = new SubFormFilter(this, fixedTable, fixedColumnModel, externalTable, externalColumnModel,
+				(JToggleButton) toolbarButtons.get(ToolbarFunction.FILTER.name()),
 				(JCheckBoxMenuItem) toolbarMenuItems.get(ToolbarFunction.FILTER.name()), collectableFieldsProviderFactory);
 
 		// add subformfilter for fixed columns
@@ -721,7 +721,7 @@ public class SubForm extends JPanel
 		panel1.add(subformfilter.getExternalSubFormFilter(), BorderLayout.NORTH);
 		scrollPane.setColumnHeaderView(panel1);
 	}
-	
+
 	/**
 	 * do not store items permanent!
 	 * @param result
@@ -757,7 +757,7 @@ public class SubForm extends JPanel
 		this.rowHeader = newTableRowHeader;
 		this.subformtbl.setRowHeaderTable(rowHeader);
 		newTableRowHeader.setExternalTable(subformtbl, scrollPane);
-		
+
 		// rowHeader.getHeaderTable().addMouseListener(newToolbarContextMenuListener(rowHeader.getHeaderTable(), rowHeader.getHeaderTable()));
 		addToolbarMouseListener(rowHeader.getHeaderTable(), rowHeader.getHeaderTable(), rowHeader.getHeaderTable());
 		// scrollPane.getRowHeader().addMouseListener(newToolbarContextMenuListener(scrollPane.getRowHeader(), rowHeader.getHeaderTable()));
@@ -850,11 +850,11 @@ public class SubForm extends JPanel
 			? (enabled ? ToolbarFunctionState.ACTIVE : ToolbarFunctionState.DISABLED)
 			: ToolbarFunctionState.HIDDEN);
 	}
-	
+
 	public void setReadOnly(boolean readonly) {
 		this.readonly = readonly;
 	}
-	
+
 	public boolean isReadOnly() {
 		return readonly;
 	}
@@ -1147,7 +1147,7 @@ public class SubForm extends JPanel
 				}
 			}
 			clctcomp.setToolTipText(clctef.getDescription());
-			
+
 			final JComponent c = clctcomp.getJComponent();
 			if (c instanceof LabeledComponent) {
 				((LabeledComponent) c).getLabeledComponentSupport().setColorProvider(null);
@@ -1218,7 +1218,7 @@ public class SubForm extends JPanel
 		useCustomColumnWidths = false;
 		subformtbl.revalidate();
 	}
-	
+
 	private int getDefaultColumnWidth(TableColumn tc, int iColumn) {
 		final Integer preferredCellWidth = getColumnWidth("" + tc.getIdentifier());
 		final int width = (preferredCellWidth != null)
@@ -1240,8 +1240,13 @@ public class SubForm extends JPanel
 							// @todo: The first condition (INSERT) is clear, but what for the second (complete UPDATE)?
 							(ev.getType() == TableModelEvent.UPDATE && ev.getColumn() == TableModelEvent.ALL_COLUMNS && ev.getLastRow() == Integer.MAX_VALUE);
 					if (bRowsInserted) {
-						resetDefaultColumnWidths();
-						LOG.debug("Custom column widths should be used here.");	// Setting them manually.");
+						SwingUtilities.invokeLater(new Runnable() {
+							@Override
+							public void run() {
+								resetDefaultColumnWidths();
+								LOG.debug("Custom column widths should be used here.");	// Setting them manually.");
+							}
+						});
 					}
 				}
 				// TableModelEvents caused by sorting don't change the subform state:
@@ -1374,29 +1379,29 @@ public class SubForm extends JPanel
 		Object oValue = (clctfParent.getFieldType() == CollectableField.TYPE_VALUEIDFIELD) ? clctfParent.getValueId() : clctfParent.getValue();
 		clctWithVLP.getValueListProvider().setParameter(rvlact.getParameterNameForSourceComponent(), oValue);
 	}
-	
+
 	private static class LookupValuesListener implements LookupListener {
-		
+
 		private final SubFormTableModel subformtblmdl;
-		
+
 		private final boolean bSearchable;
-		
+
 		private final SubFormTable subformtbl;
-		
+
 		private final Collection<TransferLookedUpValueAction> collTransferValueActions;
-		
-		private LookupValuesListener(SubFormTableModel subformtblmdl, boolean bSearchable, 
+
+		private LookupValuesListener(SubFormTableModel subformtblmdl, boolean bSearchable,
 				SubFormTable subformtbl, Collection<TransferLookedUpValueAction> collTransferValueActions) {
-			
+
 			this.subformtblmdl = subformtblmdl;
 			this.bSearchable = bSearchable;
 			this.subformtbl = subformtbl;
 			this.collTransferValueActions = collTransferValueActions;
 		}
-		
+
 		@Override
 		public void lookupSuccessful(LookupEvent ev) {
-			transferLookedUpValues(ev.getSelectedCollectable(), subformtblmdl, bSearchable, 
+			transferLookedUpValues(ev.getSelectedCollectable(), subformtblmdl, bSearchable,
 					subformtbl.getEditingRow(), collTransferValueActions);
 		}
 
@@ -1405,23 +1410,23 @@ public class SubForm extends JPanel
             return 1;
         }
 	}
-	
+
 	private static class LookupClearListener implements LookupListener {
-		
+
 		private final SubFormTableModel subformtblmdl;
-		
+
 		private final SubFormTable subformtbl;
-		
+
 		final Collection<ClearAction> collClearActions;
-		
+
 		private LookupClearListener(SubFormTableModel subformtblmdl,
 				SubFormTable subformtbl, Collection<ClearAction> collClearActions) {
-			
+
 			this.subformtblmdl = subformtblmdl;
 			this.subformtbl = subformtbl;
 			this.collClearActions = collClearActions;
 		}
-		
+
 		@Override
 		public void lookupSuccessful(LookupEvent ev) {
 			clearValues(subformtblmdl, subformtbl.getEditingRow(), collClearActions);
@@ -1432,26 +1437,26 @@ public class SubForm extends JPanel
             return 1;
         }
 	}
-	
+
 	private class SubformModelListener implements CollectableComponentModelListener {
-		
+
 		private final SubFormTableModel subformtblmdl;
-		
+
 		private final boolean bSearchable;
-		
+
 		private final Collection<TransferLookedUpValueAction> collTransferValueActions;
-		
+
 		private final CollectableComponent clctcomp;
-		
+
 		private final Collection<ClearAction> collClearActions;
-		
+
 		private final CollectableComponentTableCellEditor result;
-		
-		private SubformModelListener(SubFormTableModel subformtblmdl, boolean bSearchable, 
+
+		private SubformModelListener(SubFormTableModel subformtblmdl, boolean bSearchable,
 				SubFormTable subformtbl, Collection<TransferLookedUpValueAction> collTransferValueActions,
 				CollectableComponent clctcomp, Collection<ClearAction> collClearActions,
 				CollectableComponentTableCellEditor result) {
-			
+
 			this.subformtblmdl = subformtblmdl;
 			this.bSearchable = bSearchable;
 			this.collTransferValueActions = collTransferValueActions;
@@ -1459,7 +1464,7 @@ public class SubForm extends JPanel
 			this.collClearActions = collClearActions;
 			this.result = result;
 		}
-		
+
 		@Override
 		public void valueToBeChanged(DetailsComponentModelEvent ev) {
 		}
@@ -1528,7 +1533,7 @@ public class SubForm extends JPanel
 			final Collection<ClearAction> collClearActions = getClearActions(sColumnName);
 			if (!collClearActions.isEmpty()) {
 				clctlov.addLookupListener(new LookupClearListener(
-						subformtblmdl, subformtbl, collClearActions));						
+						subformtblmdl, subformtbl, collClearActions));
 			}
 		//} else if (clctcomp instanceof CollectableComboBox) {
 		} else {
@@ -1538,7 +1543,7 @@ public class SubForm extends JPanel
 				// Better alternative: result.addCellEditorListener(new CellEditorListener()) with overridden editingStopped(ChangeEvent e)
 				// However, that solution had some issues with the save action and checkbox values which are not resolved...
 				result.addCollectableComponentModelListener(new SubformModelListener(
-						subformtblmdl, bSearchable, subformtbl, collTransferValueActions, clctcomp, 
+						subformtblmdl, bSearchable, subformtbl, collTransferValueActions, clctcomp,
 						collClearActions, result));
 			}
 		}
@@ -1586,7 +1591,7 @@ public class SubForm extends JPanel
 			String sParentEntityName, CollectableEntity clcte) {
 		// setup a table cell editor for each column:
 		// if commented out for NUCLOSINT-1425 (ts, tp):
-		// if (this.isEnabled()) 
+		// if (this.isEnabled())
 		{
 			final String sForeignKeyFieldName = this.getForeignKeyFieldName(sParentEntityName, clcte);
 
@@ -1745,7 +1750,7 @@ public class SubForm extends JPanel
 		public boolean isRequestFocusEnabled() {
 			return true;
 		}
-		
+
 		public static class SubFormTableRowSorter extends TableRowSorter<TableModel> {
 			SubFormTableRowSorter(TableModel model) {
 				super(model);
@@ -1761,12 +1766,12 @@ public class SubForm extends JPanel
 		/**
 		 * TODO: It would be very nice to have a static inner class here. However,
 		 * 		 when I tried this (with a reference to the TableModel in the constructor)
-		 * 		 I trashed the WYSIWYG subform editor (e.g. properties is complex Subform 
+		 * 		 I trashed the WYSIWYG subform editor (e.g. properties is complex Subform
 		 * 		 cases (Accelingua)). (tp)
 		 */
 		private class SubformTableColumnModel extends DefaultTableColumnModel
 				implements Closeable {
-			
+
 			private boolean closed = false;
 
 			private SubformTableColumnModel(TableModel model) {
@@ -1775,7 +1780,7 @@ public class SubForm extends JPanel
 			@Override
 			public void close() {
 				// Close is needed for avoiding memory leaks
-				// If you want to change something here, please consult me (tp).  
+				// If you want to change something here, please consult me (tp).
 				if (!closed) {
 					LOG.debug("close() SubformTableColumnModel: " + this);
 					tableColumns.clear();
@@ -1821,7 +1826,7 @@ public class SubForm extends JPanel
 		private boolean newRowOnNext = false;
 
 		// private SubformTableColumnModel myTableColumnModel;
-		
+
 		private boolean closed = false;
 
 		public SubFormTable() {
@@ -1858,7 +1863,7 @@ public class SubForm extends JPanel
 				closed = true;
 			}
 		}
-		
+
 		private FocusListSelectionListener focusListSelectionListener;
 		public void setFocusListSelectionListener(FocusListSelectionListener focusListSelectionListener) {
 			this.focusListSelectionListener = focusListSelectionListener;
@@ -1889,7 +1894,7 @@ public class SubForm extends JPanel
 		            	newRowOnNext = false;
 				} else
 					newRowOnNext = true;
-			}				
+			}
 		}
 		public void changeSelection(final int rowIndex, final int columnIndex, boolean toggle, boolean extend, final boolean fixed) {
 			boolean bChange = true;
@@ -1900,11 +1905,11 @@ public class SubForm extends JPanel
 			            if (rowIndex == 0 && cIndex == 0 && getSelectedRow() > 0) {
 							focusListSelectionListener.valueChanged(new ListSelectionEvent(this, rowIndex, getSelectedRow(), false));
 							bChange = false;
-		            	}			           
+		            	}
 		            }
 				}
 			}
-			
+
 			if (bChange)
 				super.changeSelection(rowIndex, columnIndex, toggle, extend);
 
@@ -1947,7 +1952,7 @@ public class SubForm extends JPanel
 			            }
 					} else
 						newRowOnNext = true;
-				}	
+				}
 				boolean bShift = false;
 				if (event instanceof KeyEvent) {
 					final KeyEvent ke = (KeyEvent)event;
@@ -1955,10 +1960,10 @@ public class SubForm extends JPanel
 						bShift = true;
 					}
 				}
-				
+
 				SubformRowHeader rowHeader = getSubForm().getSubformRowHeader();
 				boolean blnHasFixedRows = (rowHeader != null && rowHeader.getHeaderTable().getColumnCount() > 1);
-				
+
 				if (!fixed && ((columnIndex == 0 && !bShift) || (columnIndex == 0 && blnHasFixedRows) || (columnIndex == getColumnCount() - 1 && bShift))) {
 					if (blnHasFixedRows) {
 						if (!(rowHeader.getHeaderTable() instanceof HeaderTable))
@@ -1985,7 +1990,7 @@ public class SubForm extends JPanel
 								((HeaderTable)rowHeader.getHeaderTable()).changeSelection(rowIndex, 0, false, false, true);
 						return;
 					}
-				} 
+				}
 
 				if (isCellEditable(rowIndex, columnIndex)) {
 					SwingUtilities.invokeLater(new Runnable() {
@@ -2103,7 +2108,7 @@ public class SubForm extends JPanel
 
 			return rowCol;
 		}
-		
+
 		@Override
 		protected SubformTableColumnModel createDefaultColumnModel() {
 			return new SubformTableColumnModel(getModel());
@@ -2303,7 +2308,7 @@ public class SubForm extends JPanel
 			super.setModel(dataModel);
 			setRowSorter(new SubFormTableRowSorter(dataModel));
 		}
-		
+
 		@Override
 		public void setColumnModel(TableColumnModel columnModel) {
 			final TableColumnModel old = getColumnModel();
