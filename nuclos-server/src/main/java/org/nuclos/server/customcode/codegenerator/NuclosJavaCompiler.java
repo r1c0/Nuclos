@@ -45,7 +45,6 @@ import java.util.jar.JarInputStream;
 import java.util.jar.JarOutputStream;
 import java.util.jar.Manifest;
 import java.util.zip.ZipEntry;
-import java.util.zip.ZipException;
 
 import javax.tools.Diagnostic;
 import javax.tools.DiagnosticListener;
@@ -62,6 +61,7 @@ import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.SpringApplicationContextHolder;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Factory;
+import org.nuclos.common2.IOUtils;
 import org.nuclos.server.common.NuclosSystemParameters;
 import org.nuclos.server.common.RuleCache;
 import org.nuclos.server.customcode.NuclosRule;
@@ -89,7 +89,7 @@ public class NuclosJavaCompiler implements Closeable {
 
 	private static final File JARFILE_OLD = new File(
 			NuclosSystemParameters.getDirectory(NuclosSystemParameters.GENERATOR_OUTPUT_PATH), "Nuclet.jar.old");
-	
+
 	private static long lastSrcWriteTime = System.currentTimeMillis();
 
 	private static Attributes.Name NUCLOS_CODE_NUCLET = new Attributes.Name("Nuclos-Code-Nuclet");
@@ -114,7 +114,7 @@ public class NuclosJavaCompiler implements Closeable {
 		}
 		return null;
 	}
-	
+
 	public static long getLastSrcWriteTime() {
 		return lastSrcWriteTime;
 	}
@@ -249,7 +249,13 @@ public class NuclosJavaCompiler implements Closeable {
 				JARFILE_OLD.delete();
 				oldExists = JARFILE.renameTo(JARFILE_OLD);
 				if (JARFILE.exists()) {
-					throw new IllegalStateException();
+					try {
+						IOUtils.copyFile(JARFILE, JARFILE_OLD);
+						oldExists = true;
+					}
+					catch (IOException ex) {
+						throw new IllegalStateException(ex);
+					}
 				}
 			}
 			if (javacresult.size() > 0) {
@@ -261,7 +267,7 @@ public class NuclosJavaCompiler implements Closeable {
 					for(final String key : javacresult.keySet()) {
 						entries.add(key);
 						byte[] bytecode = javacresult.get(key);
-						
+
 						// call postCompile() (weaving) on compiled sources
 						for (CodeGenerator generator : generators) {
 							if (!oldExists || generator.isRecompileNecessary()) {
@@ -281,7 +287,7 @@ public class NuclosJavaCompiler implements Closeable {
 						jos.write(bytecode);
 						jos.closeEntry();
 					}
-						
+
 					if (oldExists) {
 						final JarInputStream in = new JarInputStream(
 								new BufferedInputStream(new FileInputStream(JARFILE_OLD)));
