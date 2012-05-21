@@ -36,8 +36,8 @@ import java.util.Map;
 import org.nuclos.client.ui.LookAndFeel;
 import org.nuclos.common.ApplicationProperties;
 import org.nuclos.common.NuclosFatalException;
-import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.LocaleInfo;
+import org.nuclos.common2.SpringLocaleDelegate;
 
 /**
  * Local user properties that cannot be stored on the server, because they are needed before
@@ -135,8 +135,9 @@ public class LocalUserProperties extends java.util.Properties {
 
     private LocalUserProperties() {
     	try {
-	        final InputStream in = new BufferedInputStream(new FileInputStream(this.getPropertiesFile()));
+	        InputStream in = null;
 	        try {
+	        	in = new BufferedInputStream(new FileInputStream(this.getPropertiesFile()));
 	            load(in);
 	        }
 	        catch (FileNotFoundException ex) {
@@ -148,7 +149,9 @@ public class LocalUserProperties extends java.util.Properties {
 	            throw new NuclosFatalException(sMessage, ex);
 	        }
 	        finally {
-	            in.close();
+	        	if (in != null) {
+	        		in.close();
+	        	}
 	        }
     	}
     	catch (IOException e) {
