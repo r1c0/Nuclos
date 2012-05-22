@@ -17,7 +17,6 @@
 package org.nuclos.client.ui.model;
 
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 
 import javax.swing.DefaultListModel;

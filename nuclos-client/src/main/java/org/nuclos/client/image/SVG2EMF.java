@@ -28,7 +28,6 @@ import org.apache.batik.bridge.BridgeContext;
 import org.apache.batik.bridge.DocumentLoader;
 import org.apache.batik.bridge.GVTBuilder;
 import org.apache.batik.bridge.UserAgentAdapter;
-import org.apache.batik.dom.AbstractDocument;
 import org.apache.batik.gvt.GraphicsNode;
 import org.w3c.dom.Document;
 import org.w3c.dom.svg.SVGDocument;

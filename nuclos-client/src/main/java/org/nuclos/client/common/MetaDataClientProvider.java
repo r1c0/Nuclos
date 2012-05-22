@@ -50,7 +50,6 @@ import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.server.report.valueobject.DynamicEntityVO;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.stereotype.Component;
 
 /**
