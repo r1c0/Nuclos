@@ -43,7 +43,7 @@ public class NuclosRemoteInvocationExecutor implements RemoteInvocationExecutor 
 	/**
 	 * Minimum delay for calls in order to appear in LOG. 
 	 */
-	private static final long PROFILE_MIN_MS = 150L;
+	private static final long PROFILE_MIN_MS = 250L;
 	
 	/**
 	 * Spring injected.

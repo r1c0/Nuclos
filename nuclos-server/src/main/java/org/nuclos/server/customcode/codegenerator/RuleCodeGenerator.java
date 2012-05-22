@@ -145,14 +145,14 @@ public class RuleCodeGenerator<T> implements CodeGenerator {
 	public Iterable<? extends JavaSourceAsString> getSourceFiles() {
 		return Collections.singletonList(new RuleSourceAsString(getClassName(), 
 				getPrefix(), getHeader(), ruleVO.getSource(), type.getFooter(), 
-				type.getEntityname(), 
-				ruleVO.getId().longValue(), getHeaderLineCount(), getHeaderOffset(), getLabel()));
+				type.getEntityname(), ruleVO.getId().longValue(), 
+				getPrefixAndHeaderLineCount(), getPrefixAndHeaderOffset(), getLabel()));
 	}
 
 	@Override
 	public byte[] postCompile(String name, byte[] bytecode) {
 		if (ruleVO.isDebug()) {
-			return ClassDebugAdapter.weaveDebugInterceptors(bytecode, getHeaderLineCount());
+			return ClassDebugAdapter.weaveDebugInterceptors(bytecode, getPrefixAndHeaderLineCount());
 		}
 		else {
 			return bytecode;
@@ -188,16 +188,6 @@ public class RuleCodeGenerator<T> implements CodeGenerator {
 		return type.getClassName(ruleVO);
 	}
 
-	/*
-	private String getCode() {
-		final StringBuilder sb = new StringBuilder();
-		sb.append(getHeader());
-		sb.append(ruleVO.getSource());
-		sb.append(type.getFooter());
-		return sb.toString();
-	}
-	 */
-
 	private String getHeader() {
 		if (cachedHeader == null) {
 			cachedHeader = type.getHeader(ruleVO);
@@ -205,12 +195,12 @@ public class RuleCodeGenerator<T> implements CodeGenerator {
 		return cachedHeader;
 	}
 
-	public int getHeaderLineCount() {
-		return countLines(getHeader());
+	public int getPrefixAndHeaderLineCount() {
+		return countLines(getPrefix()) + countLines(getHeader());
 	}
 
-	private int getHeaderOffset() {
-		return getHeader().length();
+	private int getPrefixAndHeaderOffset() {
+		return getPrefix().length() + getHeader().length();
 	}
 
 	private String getLabel() {

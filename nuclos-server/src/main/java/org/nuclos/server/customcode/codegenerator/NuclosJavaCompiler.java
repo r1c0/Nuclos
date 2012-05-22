@@ -17,15 +17,9 @@
 
 package org.nuclos.server.customcode.codegenerator;
 
-import static org.nuclos.common.collection.Factories.memoizingFactory;
-import static org.nuclos.common.collection.Factories.synchronizingFactory;
-
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.BufferedWriter;
 import java.io.Closeable;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
@@ -38,14 +32,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
-import java.util.jar.Attributes;
-import java.util.jar.JarEntry;
-import java.util.jar.JarFile;
-import java.util.jar.JarInputStream;
-import java.util.jar.JarOutputStream;
-import java.util.jar.Manifest;
-import java.util.zip.ZipEntry;
 
+import javax.annotation.PostConstruct;
 import javax.tools.Diagnostic;
 import javax.tools.DiagnosticListener;
 import javax.tools.JavaCompiler;
@@ -53,138 +41,76 @@ import javax.tools.JavaCompiler.CompilationTask;
 import javax.tools.JavaFileObject;
 import javax.tools.StandardJavaFileManager;
 import javax.tools.StandardLocation;
-import javax.tools.ToolProvider;
 
-import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.log4j.Logger;
 import org.nuclos.common.NuclosFatalException;
-import org.nuclos.common.SpringApplicationContextHolder;
 import org.nuclos.common.collection.CollectionUtils;
-import org.nuclos.common.collection.Factory;
-import org.nuclos.common2.IOUtils;
 import org.nuclos.server.common.NuclosSystemParameters;
-import org.nuclos.server.common.RuleCache;
-import org.nuclos.server.customcode.NuclosRule;
-import org.nuclos.server.customcode.NuclosTimelimitRule;
 import org.nuclos.server.customcode.codegenerator.CodeGenerator.JavaSourceAsString;
 import org.nuclos.server.customcode.codegenerator.RuleCodeGenerator.RuleSourceAsString;
-import org.nuclos.server.customcode.valueobject.CodeVO;
-import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 import org.nuclos.server.ruleengine.NuclosCompileException;
 import org.nuclos.server.ruleengine.NuclosCompileException.ErrorMessage;
-import org.nuclos.server.ruleengine.ejb3.RuleEngineFacadeBean;
-import org.nuclos.server.ruleengine.ejb3.TimelimitRuleFacadeBean;
-import org.nuclos.server.ruleengine.valueobject.RuleVO;
-import org.springframework.core.io.Resource;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
 
-public class NuclosJavaCompiler implements Closeable {
+@Configurable
+class NuclosJavaCompiler implements Closeable {
 
 	private static final Logger LOG = Logger.getLogger(NuclosJavaCompiler.class);
 
-	private static final String JAVAC_CLASSNAME = "com.sun.tools.javac.api.JavacTool";
+	// Spring injection
+	
+	private NuclosJavaCompilerComponent nuclosJavaCompilerComponent;
+	
+	// End of Spring injection 
 
-	static final String ENCODING = "UTF-8";
-
-	static final File JARFILE = new File(NuclosSystemParameters.getDirectory(NuclosSystemParameters.GENERATOR_OUTPUT_PATH), "Nuclet.jar");
-
-	private static final File JARFILE_OLD = new File(
-			NuclosSystemParameters.getDirectory(NuclosSystemParameters.GENERATOR_OUTPUT_PATH), "Nuclet.jar.old");
-
-	private static long lastSrcWriteTime = System.currentTimeMillis();
-
-	private static Attributes.Name NUCLOS_CODE_NUCLET = new Attributes.Name("Nuclos-Code-Nuclet");
-	private static Attributes.Name NUCLOS_CODE_HASH = new Attributes.Name("Nuclos-Code-Hash");
-
-	public static JavaCompiler getJavaCompilerTool() {
-		JavaCompiler tool = ToolProvider.getSystemJavaCompiler();
-		if (tool != null)
-			return tool;
-
-		// No system Java compiler found, try to locate Javac ourself
-		// (maybe we found a "bundled" Javac class on our classpath).
-		try {
-			Class<?> clazz = Class.forName(JAVAC_CLASSNAME);
-			try {
-				return (JavaCompiler) clazz.newInstance();
-			} catch (Exception ex) {
-				LOG.error(ex);
-			}
-		} catch(ClassNotFoundException e) {
-			LOG.warn("getJavaCompilerTool failed: " + e);
-		}
-		return null;
-	}
-
-	public static long getLastSrcWriteTime() {
-		return lastSrcWriteTime;
-	}
-
-	/** the output path where generated java and class files are stored */
-	public static final File getOutputPath() {
-		File dir = NuclosSystemParameters.getDirectory(NuclosSystemParameters.GENERATOR_OUTPUT_PATH);
-		if (!dir.exists())
-			dir.mkdirs();
-		return dir;
-	}
-
-	static final File getSourceOutputPath() {
-		File dir = new File(getOutputPath(), "src");
-		if (!dir.exists())
-			dir.mkdirs();
-		return dir;
-	}
-
-	static final File getWsdlDir() {
-		File dir = new File(getOutputPath(), "wsdl");
-		if (!dir.exists()) {
-			dir.mkdir();
-		}
-		return dir;
-	}
-
-	public static final File getBuildOutputPath() {
-		File dir = new File(getOutputPath(), "build");
-		if (!dir.exists())
-			dir.mkdirs();
-		return dir;
-	}
-
-	private final JavaCompiler javac;
 	private final Locale locale;
-	private final CodeGeneratorDiagnosticListener diagnosticListener;
-	private final StandardJavaFileManager stdFileManager;
 
-	private NuclosJavaCompiler() {
+	private JavaCompiler javac;
+
+	private CodeGeneratorDiagnosticListener diagnosticListener;
+
+	private StandardJavaFileManager stdFileManager;
+
+	NuclosJavaCompiler() {
 		this(null);
 	}
+	
+	NuclosJavaCompiler(Locale locale) {
+		this.locale = locale;
+	}
 
-	private NuclosJavaCompiler(Locale locale) {
+	@Autowired
+	final void setNuclosJavaCompilerComponent(NuclosJavaCompilerComponent nuclosJavaCompilerComponent) {
+		this.nuclosJavaCompilerComponent = nuclosJavaCompilerComponent;
+	}
+
+	@PostConstruct
+	final void init() {
 		// We use Java 6's compiler API...
-		javac = getJavaCompilerTool();
+		javac = nuclosJavaCompilerComponent.getJavaCompilerTool();
 		if (javac == null) {
 			throw new NuclosFatalException("No registered system Java compiler found");
 		}
-		this.locale = locale;
 		this.diagnosticListener = new CodeGeneratorDiagnosticListener(locale);
 		this.stdFileManager = javac.getStandardFileManager(diagnosticListener, locale, null);
-		init();
-	}
-
-	private void init() {
 		try {
 			List<File> classpath = new ArrayList<File>();
-			classpath.addAll(getExpandedSystemParameterClassPath());
-			classpath.addAll(getLibs(NuclosSystemParameters.getDirectory(NuclosSystemParameters.WSDL_GENERATOR_LIB_PATH)));
-			classpath.add(JARFILE);
+			classpath.addAll(nuclosJavaCompilerComponent.getExpandedSystemParameterClassPath());
+			classpath.addAll(nuclosJavaCompilerComponent.getLibs(
+					NuclosSystemParameters.getDirectory(NuclosSystemParameters.WSDL_GENERATOR_LIB_PATH)));
+			classpath.add(NuclosJavaCompilerComponent.JARFILE);
 			stdFileManager.setLocation(StandardLocation.CLASS_PATH, new ArrayList<File>(classpath));
-			stdFileManager.setLocation(StandardLocation.SOURCE_OUTPUT, Collections.singleton(getSourceOutputPath()));
-			stdFileManager.setLocation(StandardLocation.CLASS_OUTPUT, Collections.singleton(getBuildOutputPath()));
+			stdFileManager.setLocation(StandardLocation.SOURCE_OUTPUT, 
+					Collections.singleton(nuclosJavaCompilerComponent.getSourceOutputPath()));
+			stdFileManager.setLocation(StandardLocation.CLASS_OUTPUT, 
+					Collections.singleton(nuclosJavaCompilerComponent.getBuildOutputPath()));
 		} catch(IOException e) {
 			throw new NuclosFatalException(e);
 		}
 	}
 
-	private synchronized Map<String, byte[]> javac(List<CodeGenerator> generators, boolean saveSrc) throws NuclosCompileException {
+	synchronized Map<String, byte[]> javac(List<CodeGenerator> generators, boolean saveSrc) throws NuclosCompileException {
 		LOG.debug("Compiler Classpath: " + stdFileManager.getLocation(StandardLocation.CLASS_PATH));
 		final Set<JavaFileObject> sources = new HashSet<JavaFileObject>();
 		for (CodeGenerator generator : generators) {
@@ -242,86 +168,6 @@ public class NuclosJavaCompiler implements Closeable {
 		}
 	}
 
-	private static synchronized void jar(Map<String, byte[]> javacresult, List<CodeGenerator> generators) {
-		try {
-			boolean oldExists = false;
-			if (JARFILE.exists()) {
-				JARFILE_OLD.delete();
-				oldExists = JARFILE.renameTo(JARFILE_OLD);
-				if (JARFILE.exists()) {
-					try {
-						IOUtils.copyFile(JARFILE, JARFILE_OLD);
-						oldExists = true;
-					}
-					catch (IOException ex) {
-						throw new IllegalStateException(ex);
-					}
-				}
-			}
-			if (javacresult.size() > 0) {
-				final Set<String> entries = new HashSet<String>();
-				final JarOutputStream jos = new JarOutputStream(
-						new BufferedOutputStream(new FileOutputStream(JARFILE)), getManifest());
-
-				try {
-					for(final String key : javacresult.keySet()) {
-						entries.add(key);
-						byte[] bytecode = javacresult.get(key);
-
-						// call postCompile() (weaving) on compiled sources
-						for (CodeGenerator generator : generators) {
-							if (!oldExists || generator.isRecompileNecessary()) {
-								for(JavaSourceAsString src : generator.getSourceFiles()) {
-									final String name = src.getFQName();
-									if (key.startsWith(name.replaceAll("\\.", "/"))) {
-										LOG.debug("postCompile (weaving) " + key);
-										bytecode = generator.postCompile(key, bytecode);
-										// Can we break here???
-										// break outer;
-									}
-								}
-							}
-						}
-						jos.putNextEntry(new ZipEntry(key));
-						LOG.debug("writing to " + key + " to jar " + JARFILE);
-						jos.write(bytecode);
-						jos.closeEntry();
-					}
-
-					if (oldExists) {
-						final JarInputStream in = new JarInputStream(
-								new BufferedInputStream(new FileInputStream(JARFILE_OLD)));
-		                final byte[] buffer = new byte[2048];
-						try {
-			                int size;
-							JarEntry entry;
-							while ((entry = in.getNextJarEntry()) != null) {
-								if (!entries.contains(entry.getName())) {
-									jos.putNextEntry(entry);
-									LOG.debug("copying " + entry.getName() + " from old jar " + JARFILE_OLD);
-									while ((size = in.read(buffer, 0, buffer.length)) != -1) {
-										jos.write(buffer, 0, size);
-									}
-									jos.closeEntry();
-								}
-								in.closeEntry();
-							}
-						}
-						finally {
-							in.close();
-						}
-					}
-				}
-				finally {
-					jos.close();
-				}
-			}
-		}
-		catch(IOException ex) {
-			throw new NuclosFatalException(ex);
-		}
-	}
-
 	private List<File> saveSrc(List<CodeGenerator> generators) throws IOException {
 		final List<File> result = new ArrayList<File>();
 		for (CodeGenerator generator : generators) {
@@ -334,7 +180,7 @@ public class NuclosJavaCompiler implements Closeable {
 					}
 					result.add(f);
 					final BufferedWriter out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(f),
-							ENCODING));
+							NuclosJavaCompilerComponent.JAVA_SRC_ENCODING));
 					try {
 						generator.writeSource(out, srcobject);
 					}
@@ -344,9 +190,7 @@ public class NuclosJavaCompiler implements Closeable {
 				}
 			}
 		}
-		synchronized (NuclosJavaCompiler.class) {
-			lastSrcWriteTime = System.currentTimeMillis();
-		}
+		nuclosJavaCompilerComponent.setLastSrcWriteTime(System.currentTimeMillis());
 		return result;
 	}
 
@@ -354,57 +198,10 @@ public class NuclosJavaCompiler implements Closeable {
 		return new File(CollectionUtils.getFirst(stdFileManager.getLocation(StandardLocation.SOURCE_OUTPUT)), srcobject.getPath());
 	}
 
-	public synchronized static void compile() throws NuclosCompileException {
-		NuclosJavaCompiler c = new NuclosJavaCompiler();
-		List<CodeGenerator> generators = getAllArtifacts();
-		try {
-			c.jar(c.javac(generators, true), generators);
-		}
-		finally {
-			try {
-				c.close();
-			}
-			catch(IOException e) {
-				LOG.warn("getFile failed: " + e, e);
-			}
-		}
-	}
-
-	public synchronized static void check(CodeGenerator generator, boolean remove) throws NuclosCompileException {
-		final List<CodeGenerator> artifacts = getAllArtifacts();
-		int index = artifacts.indexOf(generator);
-		if (index > -1) {
-			if (remove) {
-				artifacts.remove(index);
-			}
-			else {
-				artifacts.set(index, generator);
-			}
-		}
-		else {
-			artifacts.add(generator);
-		}
-		check();
-	}
-		
-	public synchronized static void check() throws NuclosCompileException {	
-		final List<CodeGenerator> artifacts = getAllArtifacts();
-		if (JARFILE.exists()) {
-			NuclosJavaCompiler c = new NuclosJavaCompiler();
-			try {
-				c.javac(artifacts, false);
-			}
-			finally {
-				try {
-					c.close();
-				}
-				catch(IOException e) {
-					LOG.warn("check failed: " + e, e);
-				}
-			}
-		}
-		else {
-			compile();
+	@Override
+	public void close() throws IOException {
+		if (stdFileManager != null) {
+			stdFileManager.close();
 		}
 	}
 
@@ -495,122 +292,6 @@ public class NuclosJavaCompiler implements Closeable {
 					pos = 0;
 			}
 			return pos;
-		}
-	}
-
-	/**
-	 * Returns the expanded class path for system parameter {@code nuclos.codegenerator.class.path}.
-	 * Note: WSDL libraries are not included.
-	 */
-	public static synchronized List<File> getExpandedSystemParameterClassPath() {
-		return expandedGeneratorClassPathFactory.create();
-	}
-
-	private static final Factory<List<File>> expandedGeneratorClassPathFactory =
-		synchronizingFactory(memoizingFactory(new Factory<List<File>>() {
-			@Override
-			public List<File> create() {
-				List<File> classPath = new ArrayList<File>();
-				Resource r = SpringApplicationContextHolder.getApplicationContext().getResource("WEB-INF/lib/");
-				try {
-					classPath.addAll(getLibs(r.getFile()));
-				} catch (IOException e) {
-					throw new NuclosFatalException(e);
-				}
-				return classPath;
-			}
-		}));
-
-	private static List<File> getLibs(File folder) {
-		List<File> files = new ArrayList<File>();
-		if(!folder.isDirectory()) {
-			// just return empty list, compiler will give notice if classes are missing
-			return files;
-		}
-
-		for(File file : folder.listFiles()) {
-			files.add(file);
-		}
-
-		return files;
-	}
-
-	private static List<CodeGenerator> getAllArtifacts() {
-		List<CodeGenerator> result = new ArrayList<CodeGenerator>();
-
-		if (RuleCache.getInstance().getWebservices().size() > 0) {
-			for (MasterDataVO ws : RuleCache.getInstance().getWebservices()) {
-				result.add(new WsdlCodeGenerator(ws));
-			}
-		}
-
-		if (RuleCache.getInstance().getCommonCode().size() > 0) {
-			for (CodeVO code : RuleCache.getInstance().getCommonCode()) {
-				if (code.isActive()) {
-					result.add(new PlainCodeGenerator(code));
-				}
-			}
-		}
-
-		if (RuleCache.getInstance().getAllRules().size() > 0) {
-			for (RuleVO rule : RuleCache.getInstance().getAllRules()) {
-				if (rule.isActive()) {
-					result.add(new RuleCodeGenerator<NuclosRule>(new RuleEngineFacadeBean.RuleTemplateType(), rule));
-				}
-			}
-		}
-
-		if (RuleCache.getInstance().getTimelimitRules().size() > 0) {
-			for (RuleVO rule : RuleCache.getInstance().getTimelimitRules()) {
-				if (rule.isActive()) {
-					result.add(new RuleCodeGenerator<NuclosTimelimitRule>(new TimelimitRuleFacadeBean.TimelimitRuleCodeTemplate(), rule));
-				}
-			}
-		}
-
-		return result;
-	}
-
-	private static Manifest getManifest() {
-		HashCodeBuilder builder = new HashCodeBuilder(11, 17);
-		for (CodeGenerator gen : getAllArtifacts()) {
-			builder.append(gen.hashCode());
-		}
-
-		Manifest manifest = new Manifest();
-		Attributes mainAttributes = manifest.getMainAttributes();
-		mainAttributes.put(Attributes.Name.MANIFEST_VERSION, "1.0");
-		mainAttributes.put(NUCLOS_CODE_NUCLET, "default");
-		mainAttributes.put(NUCLOS_CODE_HASH, String.valueOf(builder.toHashCode()));
-		return manifest;
-	}
-
-	public synchronized static boolean validate() throws NuclosCompileException {
-		if (JARFILE.exists()) {
-			try {
-				JarFile jar = new JarFile(JARFILE);
-				if (!jar.getManifest().equals(getManifest())) {
-					compile();
-				}
-				else {
-					return false;
-				}
-			}
-			catch(IOException e) {
-				LOG.debug("validate: " + e);
-				compile();
-			}
-		}
-		else {
-			compile();
-		}
-		return true;
-	}
-
-	@Override
-	public void close() throws IOException {
-		if (stdFileManager != null) {
-			stdFileManager.close();
 		}
 	}
 

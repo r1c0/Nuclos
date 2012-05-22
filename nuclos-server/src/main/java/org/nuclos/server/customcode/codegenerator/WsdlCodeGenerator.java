@@ -47,6 +47,8 @@ import org.nuclos.common2.StringUtils;
 import org.nuclos.server.common.NuclosSystemParameters;
 import org.nuclos.server.genericobject.valueobject.GenericObjectDocumentFile;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
 
 /**
  * Generate java code from wsdl files using Apache Axis2.
@@ -54,12 +56,19 @@ import org.nuclos.server.masterdata.valueobject.MasterDataVO;
  * Created by Novabit Informationssysteme GmbH <br>
  * Please visit <a href="http://www.novabit.de">www.novabit.de</a>
  */
+@Configurable
 public class WsdlCodeGenerator implements CodeGenerator {
 
 	private static final Logger LOG = Logger.getLogger(WsdlCodeGenerator.class);
 
 	public static final String DEFAULT_PACKAGE_WEBSERVICES = "org.nuclos.webservices";
+	
+	// Spring injection
 
+	private NuclosJavaCompilerComponent nuclosJavaCompilerComponent;
+	
+	// End of Spring injection
+	
 	private final MasterDataVO webservice;
 
 	private List<JavaSourceAsString> sourcefiles;
@@ -78,10 +87,15 @@ public class WsdlCodeGenerator implements CodeGenerator {
 		this.webservice = webservice;
 	}
 	
+	@Autowired
+	final void setNuclosJavaCompilerComponent(NuclosJavaCompilerComponent nuclosJavaCompilerComponent) {
+		this.nuclosJavaCompilerComponent = nuclosJavaCompilerComponent;
+	}
+	
 	private void checkWsdl() throws IOException {
 		if (!wsdlChecked) {
 			GenericObjectDocumentFile gofile = webservice.getField("wsdl", GenericObjectDocumentFile.class);
-			wsdl = new File(NuclosJavaCompiler.getWsdlDir(), gofile.getFilename());
+			wsdl = new File(nuclosJavaCompilerComponent.getWsdlDir(), gofile.getFilename());
 			final String newDigest = CryptUtil.digestStringOf(gofile.getContents());
 			
 			final File wsdlDigest = new File(wsdl.getParent(), wsdl.getName() + ".sha1");
@@ -104,7 +118,7 @@ public class WsdlCodeGenerator implements CodeGenerator {
 			LOG.info("recompileIsNecessary: " + recompileIsNecessary);
 
 			packageName = DEFAULT_PACKAGE_WEBSERVICES + "." +  WsdlCodeGenerator.getServiceName(webservice.getField("name", String.class));
-			generatedSourceFolder =  new File(NuclosJavaCompiler.getOutputPath(), "src/" + packageName.replaceAll("\\.", "/"));
+			generatedSourceFolder =  new File(nuclosJavaCompilerComponent.getOutputPath(), "src/" + packageName.replaceAll("\\.", "/"));
 			
 			if (recompileIsNecessary) {
 				deleteAndNew(wsdl);
@@ -160,7 +174,7 @@ public class WsdlCodeGenerator implements CodeGenerator {
 		catch (IOException e) {
 			throw new IllegalStateException(e.toString(), e);
 		}
-		return recompileIsNecessary || !NuclosJavaCompiler.JARFILE.exists();
+		return recompileIsNecessary || !NuclosJavaCompilerComponent.JARFILE.exists();
 	}
 
 	@Override
@@ -205,7 +219,7 @@ public class WsdlCodeGenerator implements CodeGenerator {
 				Class<?> clzzOptionParser = classloader.loadClass("org.apache.axis2.util.CommandLineOptionParser");
 				Class<?> clzzEngine = classloader.loadClass("org.apache.axis2.wsdl.codegen.CodeGenerationEngine");
 				String[] args = new String[]{"-uri", wsdl.getAbsolutePath(),
-					"-o", NuclosJavaCompiler.getOutputPath().getAbsolutePath(),
+					"-o", nuclosJavaCompilerComponent.getOutputPath().getAbsolutePath(),
 					"-p", packageName,
 					};
 
@@ -242,7 +256,7 @@ public class WsdlCodeGenerator implements CodeGenerator {
 		final StringBuilder text = new StringBuilder();
 		final String newline = System.getProperty("line.separator");
 		final Scanner scanner = new Scanner(new BufferedInputStream(new FileInputStream(f)),
-				NuclosJavaCompiler.ENCODING);
+				NuclosJavaCompilerComponent.JAVA_SRC_ENCODING);
 		try {
 			while (scanner.hasNextLine()) {
 				text.append(scanner.nextLine() + newline);

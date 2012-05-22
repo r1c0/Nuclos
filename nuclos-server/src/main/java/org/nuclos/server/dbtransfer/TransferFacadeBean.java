@@ -87,7 +87,7 @@ import org.nuclos.server.common.ServerServiceLocator;
 import org.nuclos.server.common.StateCache;
 import org.nuclos.server.common.ejb3.LocaleFacadeLocal;
 import org.nuclos.server.common.ejb3.NuclosFacadeBean;
-import org.nuclos.server.customcode.codegenerator.NuclosJavaCompiler;
+import org.nuclos.server.customcode.codegenerator.NuclosJavaCompilerComponent;
 import org.nuclos.server.dal.DalUtils;
 import org.nuclos.server.dal.provider.NucletDalProvider;
 import org.nuclos.server.database.SpringDataBaseHelper;
@@ -171,6 +171,8 @@ public class TransferFacadeBean extends NuclosFacadeBean implements TransferFaca
 	private DataSource dataSource;
 	
 	private NucletDalProvider nucletDalProvider;
+	
+	private NuclosJavaCompilerComponent nuclosJavaCompilerComponent;
 	
 	private static List<INucletContent> getNucletContentInstances(TransferOption.Map transferOptions, Process p) {
 		List<INucletContent> contents = new ArrayList<INucletContent>();
@@ -314,6 +316,11 @@ public class TransferFacadeBean extends NuclosFacadeBean implements TransferFaca
 		this.nucletDalProvider = nucletDalProvider;
 	}
 
+	@Autowired
+	final void setNuclosJavaCompilerComponent(NuclosJavaCompilerComponent nuclosJavaCompilerComponent) {
+		this.nuclosJavaCompilerComponent = nuclosJavaCompilerComponent;
+	}
+	
 	public List<TransferNuclet> getAvaiableNuclets() {
 		List<TransferNuclet> result = new ArrayList<TransferNuclet>();
 		for (EntityObjectVO nucletObject : nucletDalProvider.getEntityObjectProcessor(NuclosEntity.NUCLET).getAll()) {
@@ -1084,7 +1091,7 @@ public class TransferFacadeBean extends NuclosFacadeBean implements TransferFaca
 			RuleCache.getInstance().invalidate();
 			try {
 				jmsNotifier.notify("compile rules", 80);
-				NuclosJavaCompiler.compile();
+				nuclosJavaCompilerComponent.compile();
 			}
 			catch(NuclosCompileException e) {
 				LOG.info("runTransfer: " + e);

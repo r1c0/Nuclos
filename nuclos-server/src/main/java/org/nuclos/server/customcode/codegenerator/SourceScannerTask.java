@@ -69,6 +69,8 @@ class SourceScannerTask extends TimerTask {
 	
 	private NuclosLocalServerSession nuclosLocalServerSession;
 	
+	private NuclosJavaCompilerComponent nuclosJavaCompilerComponent;
+	
 	SourceScannerTask() {
 		LOG.info("Created scanner");
 	}
@@ -93,6 +95,11 @@ class SourceScannerTask extends TimerTask {
 		this.nuclosLocalServerSession = nuclosLocalServerSession;
 	}
 	
+	@Autowired
+	final void setNuclosJavaCompilerComponent(NuclosJavaCompilerComponent nuclosJavaCompilerComponent) {
+		this.nuclosJavaCompilerComponent = nuclosJavaCompilerComponent;
+	}
+	
 	@Override
 	public void run() {
 		try {
@@ -104,12 +111,12 @@ class SourceScannerTask extends TimerTask {
 	}
 	
 	private void _run() throws NuclosCompileException {
-		final long modified = NuclosJavaCompiler.getLastSrcWriteTime();
-		final File srcDir = NuclosJavaCompiler.getSourceOutputPath();
-		final File wsdlDir = NuclosJavaCompiler.getWsdlDir();
+		final long modified = nuclosJavaCompilerComponent.getLastSrcWriteTime();
+		final File srcDir = nuclosJavaCompilerComponent.getSourceOutputPath();
+		final File wsdlDir = nuclosJavaCompilerComponent.getWsdlDir();
 		
-		if (!NuclosJavaCompiler.JARFILE.exists()) {
-			NuclosJavaCompiler.compile();
+		if (!NuclosJavaCompilerComponent.JARFILE.exists()) {
+			nuclosJavaCompilerComponent.compile();
 		}
 		
 		// Find modified files on disk
@@ -124,7 +131,7 @@ class SourceScannerTask extends TimerTask {
 		}
 		// Try to compile and only proceed if there are no errors
 		try {
-			NuclosJavaCompiler.check();
+			nuclosJavaCompilerComponent.check();
 		}
 		catch (NuclosCompileException e) {
 			LOG.info("Changes on disk but compile errors: " + e.toString());
@@ -183,7 +190,7 @@ class SourceScannerTask extends TimerTask {
 			// This is necessary to get fresh generators.
 			ruleCache.invalidate();
 			// Compile and write (anew) to disk
-			NuclosJavaCompiler.compile();
+			nuclosJavaCompilerComponent.compile();
 		}
 	}
 	
@@ -285,7 +292,7 @@ class SourceScannerTask extends TimerTask {
 		final GeneratedFile result = new GeneratedFile();
 		result.setFile(file);
 		final BufferedReader reader = new BufferedReader(new InputStreamReader(
-				new FileInputStream(file), NuclosJavaCompiler.ENCODING));
+				new FileInputStream(file), NuclosJavaCompilerComponent.JAVA_SRC_ENCODING));
 		try {
 			boolean prefixEnd = false;
 			String line;

@@ -26,7 +26,7 @@ import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.design.JRAbstractMultiClassCompiler;
 
 import org.apache.log4j.Logger;
-import org.nuclos.server.customcode.codegenerator.NuclosJavaCompiler;
+import org.nuclos.server.customcode.codegenerator.NuclosJavaCompilerComponent;
 
 
 /**
@@ -55,7 +55,7 @@ public class JRJavaxToolsCompiler extends JRAbstractMultiClassCompiler
 		
 		String errors = null;
 
-		JavaCompiler javac = NuclosJavaCompiler.getJavaCompilerTool();
+		JavaCompiler javac = NuclosJavaCompilerComponent.getJavaCompilerTool();
 		if (javac == null) {
 			throw new JRException("No registered system Java compiler found");
 		}

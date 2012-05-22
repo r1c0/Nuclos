@@ -69,7 +69,7 @@ import org.nuclos.server.common.ServerServiceLocator;
 import org.nuclos.server.common.ejb3.NuclosFacadeBean;
 import org.nuclos.server.customcode.CustomCodeManager;
 import org.nuclos.server.customcode.NuclosRule;
-import org.nuclos.server.customcode.codegenerator.NuclosJavaCompiler;
+import org.nuclos.server.customcode.codegenerator.NuclosJavaCompilerComponent;
 import org.nuclos.server.customcode.codegenerator.RuleCodeGenerator;
 import org.nuclos.server.customcode.codegenerator.RuleCodeGenerator.AbstractRuleTemplateType;
 import org.nuclos.server.dal.provider.NucletDalProvider;
@@ -120,12 +120,19 @@ public class RuleEngineFacadeBean extends NuclosFacadeBean implements RuleEngine
 
 	private MasterDataFacadeLocal masterDataFacade;
 	
+	private NuclosJavaCompilerComponent nuclosJavaCompilerComponent;
+	
 	public RuleEngineFacadeBean() {
 	}
 
 	@Autowired
 	final void setMasterDataFacade(MasterDataFacadeLocal masterDataFacade) {
 		this.masterDataFacade = masterDataFacade;
+	}
+	
+	@Autowired
+	final void setNuclosJavaCompilerComponent(NuclosJavaCompilerComponent nuclosJavaCompilerComponent) {
+		this.nuclosJavaCompilerComponent = nuclosJavaCompilerComponent;
 	}
 	
 	private final MasterDataFacadeLocal getMasterDataFacade() {
@@ -303,7 +310,7 @@ public class RuleEngineFacadeBean extends NuclosFacadeBean implements RuleEngine
 
 						RuleCodeGenerator<NuclosRule> generator = getGenerator(rulevo);
 						final NuclosRule ruleInstance = ccm.getInstance(generator);
-						iHeaderLinesCount = generator.getHeaderLineCount();
+						iHeaderLinesCount = generator.getPrefixAndHeaderLineCount();
 
 						final RuleInterface ri = new RuleInterface(rulevo, loccvoCurrent, roccvoSourceObjects, loccvoParameterObject, lstActions);
 						ri.setProperties(mpProperties);
@@ -1028,7 +1035,7 @@ public class RuleEngineFacadeBean extends NuclosFacadeBean implements RuleEngine
 		this.checkDeleteAllowed(NuclosEntity.RULE);
 
 		if (rulevo.isActive()) {
-			NuclosJavaCompiler.check(new RuleCodeGenerator<NuclosRule>(new RuleEngineFacadeBean.RuleTemplateType(), rulevo), true);
+			nuclosJavaCompilerComponent.check(new RuleCodeGenerator<NuclosRule>(new RuleEngineFacadeBean.RuleTemplateType(), rulevo), true);
 		}
 
 		MasterDataVO mdVO = getMasterDataFacade().get(NuclosEntity.RULE.getEntityName(), rulevo.getId());
@@ -1103,7 +1110,7 @@ public class RuleEngineFacadeBean extends NuclosFacadeBean implements RuleEngine
 	 */
 	@RolesAllowed("Login")
 	public void check(RuleVO ruleVO) throws NuclosCompileException {
-		NuclosJavaCompiler.check(new RuleCodeGenerator<NuclosRule>(new RuleEngineFacadeBean.RuleTemplateType(), ruleVO), false);
+		nuclosJavaCompilerComponent.check(new RuleCodeGenerator<NuclosRule>(new RuleEngineFacadeBean.RuleTemplateType(), ruleVO), false);
 	}
 
 	/**
@@ -1154,7 +1161,7 @@ public class RuleEngineFacadeBean extends NuclosFacadeBean implements RuleEngine
 	 */
 	@RolesAllowed("UseManagementConsole")
 	public void deleteDirectoryOutputPath() {
-		final File fOutputPath = NuclosJavaCompiler.getOutputPath();
+		final File fOutputPath = nuclosJavaCompilerComponent.getOutputPath();
 		final File[] find = fOutputPath.listFiles(new FilenameFilter() {
 			@Override
 			public boolean accept(File fDir, String sName) {

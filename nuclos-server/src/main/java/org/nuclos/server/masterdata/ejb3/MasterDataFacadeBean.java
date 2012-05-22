@@ -89,7 +89,7 @@ import org.nuclos.server.common.ServerParameterProvider;
 import org.nuclos.server.common.ServerServiceLocator;
 import org.nuclos.server.common.ejb3.LocaleFacadeLocal;
 import org.nuclos.server.common.ejb3.NuclosFacadeBean;
-import org.nuclos.server.customcode.codegenerator.NuclosJavaCompiler;
+import org.nuclos.server.customcode.codegenerator.NuclosJavaCompilerComponent;
 import org.nuclos.server.customcode.codegenerator.WsdlCodeGenerator;
 import org.nuclos.server.dal.processor.nuclet.JdbcEntityObjectProcessor;
 import org.nuclos.server.dal.provider.NucletDalProvider;
@@ -149,6 +149,8 @@ public class MasterDataFacadeBean extends NuclosFacadeBean implements MasterData
 	
 	private ValidationSupport validationSupport;
 	
+	private NuclosJavaCompilerComponent nuclosJavaCompilerComponent;
+	
 	public MasterDataFacadeBean() {
 	}
 	
@@ -162,6 +164,11 @@ public class MasterDataFacadeBean extends NuclosFacadeBean implements MasterData
 		this.serverParameterProvider = serverParameterProvider;
 	}
 	
+	@Autowired
+	final void setNuclosJavaCompilerComponent(NuclosJavaCompilerComponent nuclosJavaCompilerComponent) {
+		this.nuclosJavaCompilerComponent = nuclosJavaCompilerComponent;
+	}
+
 	@Autowired
 	public void setValidationSupport(ValidationSupport validationSupport) {
 		this.validationSupport = validationSupport;
@@ -734,7 +741,7 @@ public class MasterDataFacadeBean extends NuclosFacadeBean implements MasterData
 
 			if (NuclosEntity.WEBSERVICE.getEntityName().equals(sEntityName)) {
 				try {
-					NuclosJavaCompiler.check(new WsdlCodeGenerator(mdvo), false);
+					nuclosJavaCompilerComponent.check(new WsdlCodeGenerator(mdvo), false);
 				}
 				catch(NuclosCompileException e) {
 					throw new CommonCreateException(e);
@@ -848,7 +855,7 @@ public class MasterDataFacadeBean extends NuclosFacadeBean implements MasterData
 
 		if (NuclosEntity.WEBSERVICE.getEntityName().equals(sEntityName)) {
 			try {
-				NuclosJavaCompiler.check(new WsdlCodeGenerator(mdvo), false);
+				nuclosJavaCompilerComponent.check(new WsdlCodeGenerator(mdvo), false);
 				RuleCache.getInstance().invalidate();
 			}
 			catch(NuclosCompileException e) {
@@ -948,7 +955,7 @@ public class MasterDataFacadeBean extends NuclosFacadeBean implements MasterData
 
 		if (NuclosEntity.WEBSERVICE.getEntityName().equals(sEntityName)) {
 			try {
-				NuclosJavaCompiler.check(new WsdlCodeGenerator(mdvo), true);
+				nuclosJavaCompilerComponent.check(new WsdlCodeGenerator(mdvo), true);
 			}
 			catch(NuclosCompileException e) {
 				throw new CommonRemoveException(e);
