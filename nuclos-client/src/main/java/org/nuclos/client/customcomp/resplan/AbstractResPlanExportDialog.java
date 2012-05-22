@@ -23,7 +23,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FileFilter;
-import java.io.IOException;
 import java.util.Collections;
 
 import javax.annotation.PostConstruct;
@@ -37,13 +36,11 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
-import javax.xml.xpath.XPathExpressionException;
 
 import org.apache.commons.io.filefilter.WildcardFileFilter;
 import org.apache.log4j.Logger;
 import org.nuclos.client.image.ImageType;
 import org.nuclos.client.main.Main;
-import org.nuclos.common.collect.collectable.Collectable;
 import org.nuclos.common2.SpringLocaleDelegate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;

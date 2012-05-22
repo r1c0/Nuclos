@@ -17,10 +17,7 @@
 package org.nuclos.client.customcomp.resplan;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.Date;
-
-import javax.xml.xpath.XPathExpressionException;
 
 import org.apache.log4j.Logger;
 import org.nuclos.client.customcomp.resplan.ResPlanController.GranularityType;

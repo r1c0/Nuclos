@@ -17,7 +17,6 @@
 package org.nuclos.client.ui.collect.component;
 
 import java.awt.Component;
-import java.util.Date;
 
 import javax.swing.AbstractCellEditor;
 import javax.swing.InputVerifier;
@@ -41,7 +40,6 @@ import org.nuclos.client.ui.collect.component.verifier.TrueInputVerifier;
 import org.nuclos.client.ui.labeled.LabeledComponent;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
 import org.nuclos.common.collect.collectable.CollectableField;
-import org.nuclos.common.collect.collectable.CollectableFieldFormat;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableSearchCondition;
 import org.nuclos.common.collect.exception.CollectableFieldFormatException;
 import org.nuclos.common2.StringUtils;

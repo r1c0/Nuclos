@@ -26,10 +26,7 @@ import org.nuclos.server.customcode.codegenerator.NuclosJavaCompilerComponent;
 import org.nuclos.server.customcode.codegenerator.RuleClassLoader;
 import org.nuclos.server.customcode.codegenerator.RuleCodeGenerator;
 import org.nuclos.server.ruleengine.NuclosCompileException;
-import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Component;
 
 /**
