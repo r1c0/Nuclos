@@ -55,7 +55,7 @@ import org.nuclos.server.common.ejb3.NuclosFacadeBean;
 import org.nuclos.server.common.valueobject.NuclosValueObject;
 import org.nuclos.server.customcode.CustomCodeManager;
 import org.nuclos.server.customcode.NuclosTimelimitRule;
-import org.nuclos.server.customcode.codegenerator.NuclosJavaCompiler;
+import org.nuclos.server.customcode.codegenerator.NuclosJavaCompilerComponent;
 import org.nuclos.server.customcode.codegenerator.RuleCodeGenerator;
 import org.nuclos.server.customcode.codegenerator.RuleCodeGenerator.AbstractRuleTemplateType;
 import org.nuclos.server.dblayer.DbException;
@@ -92,12 +92,19 @@ public class TimelimitRuleFacadeBean extends NuclosFacadeBean implements Timelim
 	
 	private MasterDataFacadeLocal masterDataFacade;
 	
+	private NuclosJavaCompilerComponent nuclosJavaCompilerComponent;
+	
 	public TimelimitRuleFacadeBean() {
 	}
 
 	@Autowired
 	final void setMasterDataFacade(MasterDataFacadeLocal masterDataFacade) {
 		this.masterDataFacade = masterDataFacade;
+	}
+	
+	@Autowired
+	final void setNuclosJavaCompilerComponent(NuclosJavaCompilerComponent nuclosJavaCompilerComponent) {
+		this.nuclosJavaCompilerComponent = nuclosJavaCompilerComponent;
 	}
 	
 	private final MasterDataFacadeLocal getMasterDataFacade() {
@@ -233,7 +240,7 @@ public class TimelimitRuleFacadeBean extends NuclosFacadeBean implements Timelim
 
 			RuleVO rulevo = makeTimelimitRuleVO(mdcvo);
 			if (rulevo.isActive()) {
-				NuclosJavaCompiler.check(new RuleCodeGenerator<NuclosTimelimitRule>(new TimelimitRuleCodeTemplate(), rulevo), true);
+				nuclosJavaCompilerComponent.check(new RuleCodeGenerator<NuclosTimelimitRule>(new TimelimitRuleCodeTemplate(), rulevo), true);
 			}
 			RuleCache.getInstance().invalidate();
 		}
@@ -254,7 +261,7 @@ public class TimelimitRuleFacadeBean extends NuclosFacadeBean implements Timelim
 	}
 
 	private void check(RuleVO rule) throws NuclosCompileException {
-		NuclosJavaCompiler.check(new RuleCodeGenerator<NuclosTimelimitRule>(new TimelimitRuleCodeTemplate(), rule), false);
+		nuclosJavaCompilerComponent.check(new RuleCodeGenerator<NuclosTimelimitRule>(new TimelimitRuleCodeTemplate(), rule), false);
 	}
 
 	/**

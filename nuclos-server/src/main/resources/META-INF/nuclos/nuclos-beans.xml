@@ -153,11 +153,6 @@
   		<property name="dataSource" ref="nuclosDataSource"/>
 	</bean>
 
-	<!-- Dynamic classloading start -->
-	<bean id="customCodeManager" class="org.nuclos.server.customcode.CustomCodeManager">
-	</bean>
-	<!-- Dynamic classloading end -->
-
 	<!-- Remoting start (Should this be in nuclos-remoting.xml?) -->
 
 	<bean id="remoteInvocationExecutor" class="org.nuclos.server.common.NuclosRemoteInvocationExecutor"

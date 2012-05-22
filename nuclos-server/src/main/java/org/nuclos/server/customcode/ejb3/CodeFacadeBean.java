@@ -34,7 +34,7 @@ import org.nuclos.common2.exception.CommonPermissionException;
 import org.nuclos.common2.exception.CommonValidationException;
 import org.nuclos.server.common.RuleCache;
 import org.nuclos.server.common.ejb3.NuclosFacadeBean;
-import org.nuclos.server.customcode.codegenerator.NuclosJavaCompiler;
+import org.nuclos.server.customcode.codegenerator.NuclosJavaCompilerComponent;
 import org.nuclos.server.customcode.codegenerator.PlainCodeGenerator;
 import org.nuclos.server.customcode.valueobject.CodeVO;
 import org.nuclos.server.masterdata.MasterDataWrapper;
@@ -50,12 +50,19 @@ public class CodeFacadeBean extends NuclosFacadeBean implements CodeFacadeRemote
 	
 	private MasterDataFacadeLocal masterDataFacade;
 	
+	private NuclosJavaCompilerComponent nuclosJavaCompilerComponent;
+	
 	public CodeFacadeBean() {
 	}
 	
 	@Autowired
 	final void setMasterDataFacade(MasterDataFacadeLocal masterDataFacade) {
 		this.masterDataFacade = masterDataFacade;
+	}
+	
+	@Autowired
+	final void setNuclosJavaCompilerComponent(NuclosJavaCompilerComponent nuclosJavaCompilerComponent) {
+		this.nuclosJavaCompilerComponent = nuclosJavaCompilerComponent;
 	}
 	
 	private final MasterDataFacadeLocal getMasterDataFacade() {
@@ -96,7 +103,7 @@ public class CodeFacadeBean extends NuclosFacadeBean implements CodeFacadeRemote
 
 		CodeVO cvo = MasterDataWrapper.getCodeVO(vo);
 		if (cvo.isActive()) {
-			NuclosJavaCompiler.check(new PlainCodeGenerator(cvo), true);
+			nuclosJavaCompilerComponent.check(new PlainCodeGenerator(cvo), true);
 		}
 
 		getMasterDataFacade().remove(NuclosEntity.CODE.getEntityName(), vo, false);
@@ -111,7 +118,7 @@ public class CodeFacadeBean extends NuclosFacadeBean implements CodeFacadeRemote
 	private void check(MasterDataVO vo, boolean active) throws CommonBusinessException {
 		CodeVO codevo = MasterDataWrapper.getCodeVO(vo);
 		getNameFromSource(codevo);
-		NuclosJavaCompiler.check(new PlainCodeGenerator(codevo), !active);
+		nuclosJavaCompilerComponent.check(new PlainCodeGenerator(codevo), !active);
 	}
 
 	private void getNameFromSource(CodeVO vo) throws CommonValidationException, NuclosCompileException {
@@ -139,7 +146,7 @@ public class CodeFacadeBean extends NuclosFacadeBean implements CodeFacadeRemote
 			vo.setName("temp");
 
 			// throw exception from compiler with more details
-			NuclosJavaCompiler.compile();
+			nuclosJavaCompilerComponent.compile();
 
 			// if compiler does not throw an exception:
 			throw new CommonValidationException("CodeFacadeBean.exception.extractname");

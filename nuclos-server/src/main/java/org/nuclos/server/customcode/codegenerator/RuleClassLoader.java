@@ -19,15 +19,11 @@ package org.nuclos.server.customcode.codegenerator;
 
 import java.io.File;
 import java.io.FileFilter;
-import java.io.IOException;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.util.jar.JarFile;
 
 import org.apache.log4j.Logger;
-import org.nuclos.common.NuclosFatalException;
-import org.nuclos.server.common.NuclosSystemParameters;
-import org.nuclos.server.ruleengine.NuclosCompileException;
+import org.springframework.beans.factory.annotation.Configurable;
 
 /**
  * ClassLoader for loading business and timelimit rules.
@@ -37,50 +33,14 @@ import org.nuclos.server.ruleengine.NuclosCompileException;
  * <br>Created by Novabit Informationssysteme GmbH
  * <br>Please visit <a href="http://www.novabit.de">www.novabit.de</a>
  */
+@Configurable
 public class RuleClassLoader extends URLClassLoader {
 
-	private static final Logger log = Logger.getLogger(RuleClassLoader.class);
+	private static final Logger LOG = Logger.getLogger(RuleClassLoader.class);
+	
+	//
 
-
-	public static ClassLoader getInstance() throws NuclosCompileException {
-		return getInstance(RuleClassLoader.class.getClassLoader());
-	}
-
-	/**
-	 * Obtain an instance of the classloader for a given rule artifact.
-	 *
-	 * @param parent the parent classloader for classloader delegation (usually the application classloader)
-	 * @param rulegenerator a generator for the loaded artifact
-	 * @return classloader
-	 * @throws NuclosCompileException
-	 */
-	public static ClassLoader getInstance(ClassLoader parent) throws NuclosCompileException {
-		RuleClassLoader classLoader = new RuleClassLoader(parent);
-
-		JarFile jar = null;
-		try {
-			NuclosJavaCompiler.validate();
-			jar = new JarFile(NuclosJavaCompiler.JARFILE);
-			classLoader.addJarsToClassPath(NuclosSystemParameters.getDirectory(NuclosSystemParameters.WSDL_GENERATOR_LIB_PATH));
-			classLoader.addURL(NuclosJavaCompiler.JARFILE.toURL());
-		}
-		catch (IOException ex) {
-			throw new NuclosFatalException(ex);
-		}
-		finally {
-			try {
-				if (jar != null) {
-					jar.close();
-				}
-			}
-			catch(IOException e) {
-				log.warn("getInstance: " + e);
-			}
-		}
-		return classLoader;
-	}
-
-	private RuleClassLoader(ClassLoader parent) {
+	public RuleClassLoader(ClassLoader parent) {
 		super(new URL[]{}, parent);
 	}
 
@@ -97,13 +57,19 @@ public class RuleClassLoader extends URLClassLoader {
 					}
 				});
 				for(int i = 0; i < jarFiles.length; i++) {
-					log.debug(jarFiles[i].toString());
+					LOG.debug(jarFiles[i].toString());
 					addURL(new URL(jarFiles[i].toURI().toString()));
 				}
 			}
 		}
 		catch(Exception e) {
-			log.warn("addJarsToClassPath" + e, e);
+			LOG.warn("addJarsToClassPath" + e, e);
 		}
 	}
+	
+	@Override
+    public void addURL(URL url) {
+    	super.addURL(url);
+    }
+	
 }
