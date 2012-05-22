@@ -61,11 +61,9 @@ public class FieldRefIterator implements Iterator<IFieldRef> {
 		
 	}
 	
-	private static final Pattern REF_PATTERN = Pattern.compile("\\$\\{(\\p{Alpha}[\\p{Alnum}_]*)\\}", Pattern.MULTILINE);
-	
 	//
 	
-	private final String ffieldName;
+	private final String string;
 	
 	private final Matcher matcher;
 	
@@ -75,10 +73,10 @@ public class FieldRefIterator implements Iterator<IFieldRef> {
 	
 	private IFieldRef next = null;
 	
-	public FieldRefIterator(String ffieldName) {
-		this.ffieldName = ffieldName;
-		this.len = ffieldName.length();
-		this.matcher = REF_PATTERN.matcher(ffieldName);
+	public FieldRefIterator(Pattern pattern, String string) {
+		this.string = string;
+		this.len = string.length();
+		this.matcher = pattern.matcher(string);
 	}
 	
 	@Override
@@ -87,7 +85,7 @@ public class FieldRefIterator implements Iterator<IFieldRef> {
 		if (matcher.find(index)) {
 			final int s = matcher.start();
 			if (s > index) {
-				next = new FieldRef(ffieldName.substring(index, s), true);
+				next = new FieldRef(string.substring(index, s), true);
 				index = s;
 				result = true;
 			}
@@ -97,7 +95,7 @@ public class FieldRefIterator implements Iterator<IFieldRef> {
 				result = true;
 			}
 		} else if (index < len) {
-			next = new FieldRef(ffieldName.substring(index), true);
+			next = new FieldRef(string.substring(index), true);
 			index = len;
 			result = true;
 		} else {

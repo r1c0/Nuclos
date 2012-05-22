@@ -241,27 +241,16 @@ public class DatasourceUtils {
 		test();
 	}
 	
+	/**
+	 * @deprecated It's much better to use {@link #getParameterTokenizer(String)} 
+	 * or {@link org.nuclos.common.querybuilder.DatasourceParameterParser} directly.
+	 */
 	public static Collection<String> getParametersFromString(String sql) {
 		final List<String> result = new ArrayList<String>();
-		final Reader reader = new StringReader(sql);
-		final StreamTokenizer tokenizer = new StreamTokenizer(reader);
-		tokenizer.resetSyntax();
-		// tokenizer.quoteChar('\'');
-		tokenizer.wordChars('0', '9');
-		tokenizer.wordChars('A', 'Z');
-		tokenizer.wordChars('a', 'z');
-		tokenizer.wordChars('.', '.');
-		tokenizer.wordChars('-', '-');
-		// tokenizer.wordChars('%', '%');
-		tokenizer.wordChars('$', '$');
-	
+		final StreamTokenizer tokenizer = getParameterTokenizer(sql);
 		try {
 			while (tokenizer.nextToken() != StreamTokenizer.TT_EOF) {
-				if (tokenizer.ttype == StreamTokenizer.TT_WORD /*
-	                     * ||
-	                     * tokenizer.ttype ==
-	                     * '\''
-	                     */)
+				if (tokenizer.ttype == StreamTokenizer.TT_WORD)
 				{
 					final String sParam = tokenizer.sval;
 					if (sParam != null && sParam.startsWith("$")) {
@@ -273,5 +262,18 @@ public class DatasourceUtils {
 			throw new NuclosFatalException(ex.getMessage(), ex);
 		}
 		return result;
+	}
+	
+	public static StreamTokenizer getParameterTokenizer(String sql) {
+		final Reader reader = new StringReader(sql);
+		final StreamTokenizer tokenizer = new StreamTokenizer(reader);
+		tokenizer.resetSyntax();
+		tokenizer.wordChars('0', '9');
+		tokenizer.wordChars('A', 'Z');
+		tokenizer.wordChars('a', 'z');
+		tokenizer.wordChars('.', '.');
+		tokenizer.wordChars('-', '-');
+		tokenizer.wordChars('$', '$');
+		return tokenizer;
 	}
 }

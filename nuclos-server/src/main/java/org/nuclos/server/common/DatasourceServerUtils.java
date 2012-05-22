@@ -16,6 +16,8 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.server.common;
 
+import java.io.IOException;
+import java.io.StreamTokenizer;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -33,6 +35,8 @@ import org.nuclos.common.database.query.definition.Join;
 import org.nuclos.common.database.query.definition.Join.JoinType;
 import org.nuclos.common.database.query.definition.Schema;
 import org.nuclos.common.database.query.definition.Table;
+import org.nuclos.common.dblayer.IFieldRef;
+import org.nuclos.common.querybuilder.DatasourceParameterParser;
 import org.nuclos.common.querybuilder.DatasourceUtils;
 import org.nuclos.common.querybuilder.DatasourceXMLParser;
 import org.nuclos.common.querybuilder.DatasourceXMLParser.XMLConnector;
@@ -156,8 +160,7 @@ public class DatasourceServerUtils {
 	 * @return string containing sql
 	 */
 	public String createSQL(String sDatasourceXML, Map<String, Object> mpParams) throws NuclosDatasourceException {
-		String result = null;
-		result = sqlCache.getSQL(sDatasourceXML);
+		String result = sqlCache.getSQL(sDatasourceXML);
 		if (SecurityContextHolder.getContext().getAuthentication().getPrincipal() != null) {
 			mpParams.put("username", SecurityContextHolder.getContext().getAuthentication().getPrincipal());
 		}
@@ -339,6 +342,19 @@ public class DatasourceServerUtils {
 	 * @return sql string with parameters replaced.
 	 */
 	private String replaceParameters(String sSql, Map<String, ?> mpParams) {
+		final StringBuilder result = new StringBuilder(sSql.length());
+		final DatasourceParameterParser p = new DatasourceParameterParser(sSql);
+		for (IFieldRef token: p) {
+			final String content = token.getContent();
+			if (token.isConstant()) {
+				result.append(content);
+			}
+			else {
+				result.append(replaceParam("$" + content, mpParams));
+			}
+		}
+		return result.toString();
+		/*
 		String result = sSql;
 		for(String sParameter : DatasourceUtils.getParametersFromString(sSql)) {
 			result = replaceAll(result, "$" + sParameter,
@@ -346,6 +362,7 @@ public class DatasourceServerUtils {
 		}
 
 		return result;
+		*/
 	}
 
 	/**
@@ -374,19 +391,6 @@ public class DatasourceServerUtils {
 		else {
 			return "null";
 		}
-	}
-
-	private String replaceAll(String s, String sSearchExpr,
-	    String sReplacement) {
-		final StringBuffer sb = new StringBuffer(s);
-		int iFromIndex = 0;
-		int iCurrentIndex = 0;
-		while((iCurrentIndex = sb.indexOf(sSearchExpr, iFromIndex)) != -1) {
-			sb.replace(iCurrentIndex, iCurrentIndex + sSearchExpr.length(),
-			    sReplacement);
-			iFromIndex = iCurrentIndex + sReplacement.length();
-		}
-		return sb.toString();
 	}
 
 	/**

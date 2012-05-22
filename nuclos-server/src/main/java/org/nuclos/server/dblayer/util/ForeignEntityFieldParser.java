@@ -39,6 +39,8 @@ public class ForeignEntityFieldParser implements Iterable<IFieldRef> {
 	
 	private static final String DEFAULT_FOREIGN_ENTITY_FIELD = "${name}";
 	
+	private static final Pattern REF_PATTERN = Pattern.compile("\\$\\{(\\p{Alpha}[\\p{Alnum}_]*)\\}", Pattern.MULTILINE);
+	
 	// 
 	
 	private final String ffieldname;
@@ -72,7 +74,7 @@ public class ForeignEntityFieldParser implements Iterable<IFieldRef> {
 
 	@Override
 	public Iterator<IFieldRef> iterator() {
-		return new FieldRefIterator(ffieldname);
+		return new FieldRefIterator(REF_PATTERN, ffieldname);
 	}
 
 	public static void main(String[] args) {

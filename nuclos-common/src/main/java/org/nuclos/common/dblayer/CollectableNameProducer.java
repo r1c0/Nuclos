@@ -19,6 +19,7 @@ package org.nuclos.common.dblayer;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import org.nuclos.common.collect.collectable.Collectable;
 
@@ -28,10 +29,14 @@ import org.nuclos.common.collect.collectable.Collectable;
  */
 public class CollectableNameProducer implements INameProducer<Collectable> {
 	
+	private static final Pattern REF_PATTERN = Pattern.compile("\\$\\{(\\p{Alpha}[\\p{Alnum}_]*)\\}", Pattern.MULTILINE);
+	
+	//
+	
 	private final List<IFieldRef> refs;
 	
 	public CollectableNameProducer(String name) {
-		final FieldRefIterator fri = new FieldRefIterator(name);
+		final FieldRefIterator fri = new FieldRefIterator(REF_PATTERN, name);
 		final List<IFieldRef> r = new ArrayList<IFieldRef>();
 		while (fri.hasNext()) {
 			r.add(fri.next());
