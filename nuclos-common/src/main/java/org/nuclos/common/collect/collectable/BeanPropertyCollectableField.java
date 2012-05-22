@@ -20,8 +20,6 @@ import java.lang.reflect.InvocationTargetException;
 
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.lang.builder.ToStringBuilder;
-
-import org.nuclos.common.collect.exception.CollectableFieldValidationException;
 import org.nuclos.common2.exception.CommonFatalException;
 
 /**

@@ -16,8 +16,6 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.server.common;
 
-import java.io.IOException;
-import java.io.StreamTokenizer;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -37,7 +35,6 @@ import org.nuclos.common.database.query.definition.Schema;
 import org.nuclos.common.database.query.definition.Table;
 import org.nuclos.common.dblayer.IFieldRef;
 import org.nuclos.common.querybuilder.DatasourceParameterParser;
-import org.nuclos.common.querybuilder.DatasourceUtils;
 import org.nuclos.common.querybuilder.DatasourceXMLParser;
 import org.nuclos.common.querybuilder.DatasourceXMLParser.XMLConnector;
 import org.nuclos.common.querybuilder.DatasourceXMLParser.XMLTable;
