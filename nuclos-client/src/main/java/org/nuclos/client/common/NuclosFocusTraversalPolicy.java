@@ -64,8 +64,12 @@ public class NuclosFocusTraversalPolicy extends	LayoutFocusTraversalPolicy {
 						if (!elements.hasMoreElements() && elem.equals(jComponent))
 							obj = ((JComponent)jComponent.getParent()).getClientProperty(LayoutMLConstants.ATTRIBUTE_NEXTFOCUSCOMPONENT);
 					}
-				} else
+				} else {
 					obj = ((JComponent)jComponent.getParent()).getClientProperty(LayoutMLConstants.ATTRIBUTE_NEXTFOCUSCOMPONENT);
+					if (obj == null && jComponent.getParent().getParent() != null && jComponent.getParent().getParent() instanceof JComponent) {// this is for DateChooser
+						obj = ((JComponent)jComponent.getParent().getParent()).getClientProperty(LayoutMLConstants.ATTRIBUTE_NEXTFOCUSCOMPONENT);
+					}
+				}
 			if(obj != null && obj instanceof String) {
 				if(aContainer instanceof JPanel) {
 					JComponent jFound = UIUtils.findJComponentStartsWithName((JPanel)aContainer, (String)obj);
