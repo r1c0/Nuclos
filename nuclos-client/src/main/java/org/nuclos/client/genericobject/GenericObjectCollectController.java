@@ -339,7 +339,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 							});
 						}
 						catch (/* CommonBusiness */ Exception ex) {
-							Errors.getInstance().showExceptionDialog(getTab(), 
+							Errors.getInstance().showExceptionDialog(getTab(),
 									getSpringLocaleDelegate().getMessage("GenericObjectCollectController.15","Beim Nachladen eines Layouts ist ein Fehler aufgetreten."), ex);
 						}
 					}
@@ -359,11 +359,11 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 					public void run() {
 						try {
 							reloadLayoutForSearchTab();
-							
+
 							Utils.setComponentFocus(sFieldName, getSearchPanel().getEditView(), null, false);
 						}
 						catch (/* CommonBusiness */ Exception ex) {
-							Errors.getInstance().showExceptionDialog(getTab(), 
+							Errors.getInstance().showExceptionDialog(getTab(),
 									getSpringLocaleDelegate().getMessage("GenericObjectCollectController.16","Beim Nachladen eines Layouts ist ein Fehler aufgetreten."), ex);
 						}
 					}
@@ -419,8 +419,8 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		new JRadioButtonMenuItem(getSpringLocaleDelegate().getMessage("GenericObjectCollectController.58","Nur gel\u00f6schte suchen")),
 		new JRadioButtonMenuItem(getSpringLocaleDelegate().getMessage("GenericObjectCollectController.49","Gel\u00f6schte und ungel\u00f6schte suchen"))
 	};
-	
-	// The following should be final but can't because they are 
+
+	// The following should be final but can't because they are
 	// reset to null in close() to avoid memory leaks. (tp)
 
 	private JCheckBoxMenuItem chkbxUseInvalidMasterData = new JCheckBoxMenuItem();
@@ -432,9 +432,9 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	protected JButton btnPrintResults = new JButton();
 	private JMenuItem btnExecuteRule = new JMenuItem();
 	protected JMenuItem btnShowResultInExplorer = new JMenuItem();
-	
+
 	// end of Menu Items
-	
+
 	private final JComboBox cmbbxCurrentState = new JComboBox();
 	private final StateViewComponent cmpStateStandardView = new StateViewComponent();
 	private final List<Component> toolbarCustomActionsDetails = new ArrayList<Component>();
@@ -500,7 +500,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	 */
 	final Action actDeleteSelectedCollectablesPhysically = new CommonAbstractAction(
 			getSpringLocaleDelegate().getMessage("GenericObjectCollectController.11","Ausgew\u00e4hlte Datens\u00e4tze endg\u00fcltig l\u00f6schen"),
-			Icons.getInstance().getIconRealDelete16(), 
+			Icons.getInstance().getIconRealDelete16(),
 			getSpringLocaleDelegate().getMessage("GenericObjectCollectController.11","Ausgew\u00e4hlte Datens\u00e4tze endg\u00fcltig l\u00f6schen")) {
 
 		@Override
@@ -511,7 +511,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 
 	final Action actDeleteSelectedCollectables = new CommonAbstractAction(
 			getSpringLocaleDelegate().getMessage("GenericObjectCollectController.52","L\u00f6schen..."),
-			Icons.getInstance().getIconDelete16(), 
+			Icons.getInstance().getIconDelete16(),
 			getSpringLocaleDelegate().getMessage("GenericObjectCollectController.12","Ausgew\u00e4hlte Datens\u00e4tze l\u00f6schen")) {
 
 		@Override
@@ -522,7 +522,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 
 	final Action actDeleteCurrentCollectableInDetails = new CommonAbstractAction(
 			getSpringLocaleDelegate().getMessage("GenericObjectCollectController.53","L\u00f6schen..."),
-			Icons.getInstance().getIconDelete16(), 
+			Icons.getInstance().getIconDelete16(),
 			getSpringLocaleDelegate().getMessage("GenericObjectCollectController.37","Diesen Datensatz l\u00f6schen")) {
 
 		@Override
@@ -533,7 +533,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 
 	final Action actRestoreSelectedCollectables = new CommonAbstractAction(
 			getSpringLocaleDelegate().getMessage("GenericObjectCollectController.98","Wiederherstellen..."),
-			Icons.getInstance().getIconDelete16(), 
+			Icons.getInstance().getIconDelete16(),
 			getSpringLocaleDelegate().getMessage("GenericObjectCollectController.13","Ausgew\u00e4hlte Datens\u00e4tze wiederherstellen")) {
 
 		@Override
@@ -544,7 +544,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 
 	final Action actRestoreCurrentCollectableInDetails = new CommonAbstractAction(
 			getSpringLocaleDelegate().getMessage("GenericObjectCollectController.99","Wiederherstellen"),
-			Icons.getInstance().getIconDelete16(), 
+			Icons.getInstance().getIconDelete16(),
 			getSpringLocaleDelegate().getMessage("GenericObjectCollectController.38","Diesen Datensatz wiederherstellen")) {
 
 		@Override
@@ -571,7 +571,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 			return Boolean.FALSE;
 		}
 	};
-	
+
 	private CollectableField process;
 
 	/**
@@ -621,7 +621,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		if (bAutoInit)
 			init();
 	}
-	
+
 	protected CollectableComboBox getSearchStateBox() {
 		if (clctSearchState == null) {
 			final CollectableEntityField clctefSearchState = new DefaultCollectableEntityField("[status_num_plus_name]", String.class,
@@ -653,7 +653,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	public void init() {
 		_setCollectPanel(newCollectPanel());
 		super.init();
-		
+
 		final CollectPanel<CollectableGenericObjectWithDependants> collectPanel = getCollectPanel();
 		initialize(collectPanel);
 
@@ -674,7 +674,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 
 		setupResultContextMenuGeneration();
 	}
-	
+
 	private void setupToolbars() {
 		if(this.isSearchPanelAvailable())
 			setupSearchToolBar();
@@ -762,7 +762,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		//cpSearchState.setOpaque(false);
 		//toolSearchState.add(cpSearchState);
 		//toolSearchState.add(Box.createHorizontalStrut(5));
-		this.getSearchPanel().addToolBarComponent(new BlackLabel(jComboBox, 
+		this.getSearchPanel().addToolBarComponent(new BlackLabel(jComboBox,
 				getSpringLocaleDelegate().getMessage("nuclos.entityfield.eo.state.label","Status")), 6);
 
 		//pnlCustomToolBarAreaSearch.add(toolSearchState, gbc);
@@ -807,9 +807,9 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		closeSubFormControllersInSearch();
 		closeSubFormControllers(getSubFormControllersInDetails());
 		resetTransferedDetailsData();
-		
+
 		toolbarCustomActionsDetails.clear();
-		
+
 		chkbxUseInvalidMasterData = null;
 		btnMakeTreeRoot = null;
 		btnShowStateHistory = null;
@@ -1348,14 +1348,14 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		if (multipleCollectablesSelected()) {
 			final int iCount = getResultTable().getSelectedRowCount();
 			final String sMessage = getSpringLocaleDelegate().getMessage("GenericObjectCollectController.81","Sollen die ausgew\u00e4hlten {0} Datens\u00e4tze wirklich endg\u00fcltig gel\u00f6scht werden?\nDieser Vorgang kann nicht r\u00fcckg\u00e4ngig gemacht werden!", iCount);
-			final int btn = JOptionPane.showConfirmDialog(getTab(), sMessage, 
+			final int btn = JOptionPane.showConfirmDialog(getTab(), sMessage,
 					getSpringLocaleDelegate().getMessage("GenericObjectCollectController.20","Datens\u00e4tze endg\u00fcltig l\u00f6schen"), JOptionPane.YES_NO_OPTION);
 			if (btn == JOptionPane.YES_OPTION)
 				new DeleteSelectedCollectablesPhysicallyController(this).run(getMultiActionProgressPanel(iCount));
 		}
 		else {
 			final String sMessage = getSpringLocaleDelegate().getMessage("GenericObjectCollectController.76","Soll der ausgew\u00e4hlte Datensatz ({0}) wirklich endg\u00fcltig gel\u00f6scht werden?\nDieser Vorgang kann nicht r\u00fcckg\u00e4ngig gemacht werden!", getSelectedCollectable().getIdentifierLabel());
-			final int btn = JOptionPane.showConfirmDialog(getTab(), sMessage, 
+			final int btn = JOptionPane.showConfirmDialog(getTab(), sMessage,
 					getSpringLocaleDelegate().getMessage("GenericObjectCollectController.23","Datensatz endg\u00fcltig l\u00f6schen"), JOptionPane.YES_NO_OPTION);
 
 			if (btn == JOptionPane.YES_OPTION)
@@ -1370,7 +1370,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 							Errors.getInstance().showExceptionDialog(getTab(), sErrorMsg, ex);
 						}
 						catch (CommonBusinessException ex) {
-							Errors.getInstance().showExceptionDialog(getTab(), 
+							Errors.getInstance().showExceptionDialog(getTab(),
 									getSpringLocaleDelegate().getMessage("GenericObjectCollectController.29","Der Datensatz konnte nicht endg\u00fcltig gel\u00f6scht werden."), ex);
 						}
 					}
@@ -1388,7 +1388,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		if (multipleCollectablesSelected()) {
 			final int iCount = getResultTable().getSelectedRowCount();
 			final String sMessage = getSpringLocaleDelegate().getMessage("GenericObjectCollectController.82","Sollen die ausgew\u00e4hlten {0} Datens\u00e4tze wirklich gel\u00f6scht werden?", iCount);
-			final int btn = JOptionPane.showConfirmDialog(getTab(), sMessage, 
+			final int btn = JOptionPane.showConfirmDialog(getTab(), sMessage,
 					getSpringLocaleDelegate().getMessage("GenericObjectCollectController.21","Datens\u00e4tze l\u00f6schen"), JOptionPane.YES_NO_OPTION);
 			if (btn == JOptionPane.YES_OPTION)
 				new DeleteSelectedCollectablesController<CollectableGenericObjectWithDependants>(this).run(getMultiActionProgressPanel(iCount));
@@ -1398,7 +1398,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		else {
 			final String sMessage = getSpringLocaleDelegate().getMessage("GenericObjectCollectController.77","Soll der ausgew\u00e4hlte Datensatz ({0}) wirklich gel\u00f6scht werden?",
 				getSelectedCollectable().getIdentifierLabel());
-			final int btn = JOptionPane.showConfirmDialog(getTab(), sMessage, 
+			final int btn = JOptionPane.showConfirmDialog(getTab(), sMessage,
 					getSpringLocaleDelegate().getMessage("GenericObjectCollectController.25","Datensatz l\u00f6schen"), JOptionPane.YES_NO_OPTION);
 
 			if (btn == JOptionPane.YES_OPTION)
@@ -1417,7 +1417,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 						catch (CommonBusinessException ex) {
 							getResultPanel().btnDelete.setSelected(false);
 							//Errors.getInstance().showExceptionDialog(getFrame(), SpringLocaleDelegate.getMessage("GenericObjectCollectController.30","Der Datensatz konnte nicht gel\u00f6scht werden."), ex);
-							Errors.getInstance().showExceptionDialog(getTab(), 
+							Errors.getInstance().showExceptionDialog(getTab(),
 									getSpringLocaleDelegate().getMessage("GenericObjectCollectController.30","Der Datensatz konnte nicht gel\u00f6scht werden."), new CommonRemoveException());
 						}
 					}
@@ -1437,7 +1437,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		if (multipleCollectablesSelected()) {
 			final int iCount = getResultTable().getSelectedRowCount();
 			final String sMessage = getSpringLocaleDelegate().getMessage("GenericObjectCollectController.83","Sollen die ausgew\u00e4hlten {0} Datens\u00e4tze wirklich wiederhergestellt werden?", iCount);
-			final int btn = JOptionPane.showConfirmDialog(getTab(), sMessage, 
+			final int btn = JOptionPane.showConfirmDialog(getTab(), sMessage,
 					getSpringLocaleDelegate().getMessage("GenericObjectCollectController.22","Datens\u00e4tze wiederherstellen"), JOptionPane.YES_NO_OPTION);
 			if (btn == JOptionPane.YES_OPTION)
 				new RestoreSelectedCollectablesController(GenericObjectCollectController.this).run(getMultiActionProgressPanel(iCount));
@@ -1447,7 +1447,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		else {
 			final String sMessage = getSpringLocaleDelegate().getMessage("GenericObjectCollectController.78","Soll der ausgew\u00e4hlte Datensatz ({0}) wirklich wiederhergestellt werden?",
 				getSelectedCollectable().getIdentifierLabel());
-			final int btn = JOptionPane.showConfirmDialog(getTab(), sMessage, 
+			final int btn = JOptionPane.showConfirmDialog(getTab(), sMessage,
 					getSpringLocaleDelegate().getMessage("GenericObjectCollectController.27","Datensatz wiederherstellen"), JOptionPane.YES_NO_OPTION);
 
 			if (btn == JOptionPane.YES_OPTION)
@@ -1465,7 +1465,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 						}
 						catch (CommonBusinessException ex) {
 							getResultPanel().btnDelete.setSelected(true);
-							Errors.getInstance().showExceptionDialog(getTab(), 
+							Errors.getInstance().showExceptionDialog(getTab(),
 									getSpringLocaleDelegate().getMessage("GenericObjectCollectController.32","Der Datensatz konnte nicht wiederhergestellt werden."), ex);
 						}
 					}
@@ -1483,7 +1483,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 
 		if (stopEditingInDetails()) {
 			final String sMessage = getSpringLocaleDelegate().getMessage("GenericObjectCollectController.75","Soll der angezeigte Datensatz ({0}) wirklich wiederhergestellt werden?", getSelectedCollectable().getIdentifierLabel());
-			final int iBtn = JOptionPane.showConfirmDialog(getTab(), sMessage, 
+			final int iBtn = JOptionPane.showConfirmDialog(getTab(), sMessage,
 					getSpringLocaleDelegate().getMessage("GenericObjectCollectController.28","Datensatz wiederherstellen"), JOptionPane.YES_NO_OPTION);
 
 			if (iBtn == JOptionPane.OK_OPTION)
@@ -1531,7 +1531,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 							Errors.getInstance().showExceptionDialog(getTab(), sErrorMessage, ex);
 						}
 						catch (CommonBusinessException ex) {
-							Errors.getInstance().showExceptionDialog(getTab(), 
+							Errors.getInstance().showExceptionDialog(getTab(),
 									getSpringLocaleDelegate().getMessage("GenericObjectCollectController.33","Der Datensatz konnte nicht wiederhergestellt werden."), ex);
 						}
 					}
@@ -1550,7 +1550,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 
 		if (stopEditingInDetails()) {
 			final String sMessage = getSpringLocaleDelegate().getMessage("GenericObjectCollectController.74","Soll der angezeigte Datensatz ({0}) wirklich gel\u00f6scht werden?", getSelectedCollectable().getIdentifierLabel());
-			final int iBtn = JOptionPane.showConfirmDialog(getTab(), sMessage, 
+			final int iBtn = JOptionPane.showConfirmDialog(getTab(), sMessage,
 					getSpringLocaleDelegate().getMessage("GenericObjectCollectController.26","Datensatz l\u00f6schen"), JOptionPane.YES_NO_OPTION);
 
 			if (iBtn == JOptionPane.OK_OPTION)
@@ -1690,7 +1690,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 			final DateChooser datechooserHistorical = clctdatechooserHistorical.getDateChooser();
 			datechooserHistorical.setHistoricalState(true);
 
-			this.getDetailsPanel().addPopupExtraComponent(new BlackLabel(datechooserHistorical, 
+			this.getDetailsPanel().addPopupExtraComponent(new BlackLabel(datechooserHistorical,
 					getSpringLocaleDelegate().getMessage("GenericObjectCollectController.7","Aktueller/historischer Zustand")));
 			registerHistoricalDateChooserListener();
 		}
@@ -1727,7 +1727,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 			public void run() throws CommonBusinessException {
 				try {
 					setDetailsChangedIgnored(true);
-					
+
 					// get the edited state
 					CollectableGenericObjectWithDependants clct = getCollectStateModel().getEditedCollectable();
 					if (clct == null) {
@@ -1739,7 +1739,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 							clct.getGenericObjectCVO(), getAllSubFormData(clct).toDependantMasterDataMap());
 					GenericObjectDelegate.getInstance().executeBusinessRules(
 							lstRuleVO, go, bSaveAfterRuleExecution);
-					
+
 					broadcastCollectableEvent(clct, MessageType.EDIT_DONE);
 				}
 				finally {
@@ -1760,7 +1760,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 			}
 		});
 	}
-	
+
 	/** @todo pull down to CollectController */
 	protected WeakReference<CollectPanel<CollectableGenericObjectWithDependants>> newCollectPanel() {
 		boolean bSearch = MetaDataClientProvider.getInstance().getEntity(this.sEntity).isSearchable();
@@ -1811,7 +1811,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		this.layoutrootDetails = layoutrootDetails;
 		// create a controller for each subform (after closing the old ones):
 		closeSubFormControllers(getSubFormControllersInDetails());
-		
+
 		Map<String, SubForm> mpSubForm = layoutrootDetails.getMapOfSubForms();
 		Map<String, DetailsSubFormController<CollectableEntityObject>> mpSubFormController = newDetailsSubFormControllers(mpSubForm);
 		setMapOfSubFormControllersInDetails(mpSubFormController);
@@ -1974,7 +1974,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		if (sParentSubForm != null)
 			sParentEntityName = sParentSubForm;
 
-		MasterDataSubFormController result = newDetailsSubFormController(subform, sParentEntityName, clctcompmodelprovider, getTab(), 
+		MasterDataSubFormController result = newDetailsSubFormController(subform, sParentEntityName, clctcompmodelprovider, getTab(),
 				getDetailsPanel(), getPreferences(), getEntityPreferences());
 
 //		if (bUseInvalidMasterData)
@@ -2241,13 +2241,13 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		final DefaultBoundedRangeModel model = (DefaultBoundedRangeModel) scrlbarVertical.getModel();
 		GenericObjectResultPanel.removePreviousChangeListenersForResultTableVerticalScrollBar(model);
 	}
-	
+
 	@Override
 	protected void unsafeFillDetailsPanel(CollectableGenericObjectWithDependants clct) throws CommonBusinessException {
 		this.unsafeFillDetailsPanel(clct, getCollectState().isDetailsModeNew() && getProcess() != null);
 	}
 
-	
+
 	protected void unsafeFillDetailsPanel(CollectableGenericObjectWithDependants clct, boolean getUsageCriteriaFromClctOnly) throws CommonBusinessException {
 		LOG.debug("GenericObjectCollectController.unsafeFillDetailsPanel start");
 
@@ -2490,12 +2490,12 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 								String entityname = mdsubformctl.getEntityAndForeignKeyFieldName().getEntityName();
 								Permission permission = SecurityCache.getInstance().getSubFormPermission(
 									entityname, iStatusId);
-	
+
 								if(permission == null)
 									mdsubformctl.clear();
 								else
 									mdsubformctl.fillSubForm(iParentId, collmdcvo);
-								
+
 								mdsubformctl.getSubForm().setNewEnabled(new CollectControllerScriptContext(GenericObjectCollectController.this, new ArrayList<DetailsSubFormController<?>>(getSubFormControllersInDetails())));
 							}
 						}
@@ -2613,7 +2613,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 
 		// begin multi-update of dependants:
 		multiupdateofdependants = new MultiUpdateOfDependants(getSubFormControllersInDetails(), collclct);
-		
+
         getLayoutMLButtonsActionListener().setComponentsEnabled(false);
 	}
 
@@ -2680,7 +2680,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 			this.reloadLayout(getUsageCriteriaFromClctOnly?
 					getUsageCriteria(clct) :
 					getUsageCriteriaFromView(false), collectstate, transferContents, false);
-			
+
 		}
 		else
 			this.reloadLayout(getUsageCriteria(clct), collectstate, transferContents, false);
@@ -2914,10 +2914,10 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	protected DependantCollectableMasterDataMap getAllSubFormData(CollectableGenericObjectWithDependants oParent) throws CommonValidationException {
 		final DependantCollectableMasterDataMap result = new DependantCollectableMasterDataMap();
 		final Collection<DetailsSubFormController<CollectableEntityObject>> sfControllers = getSubFormControllersInDetails();
-		
+
 		for (DetailsSubFormController<CollectableEntityObject> subformctl : sfControllers) {
 			final String subEntity = subformctl.getCollectableEntity().getName();
-			
+
 			if ("nuclos_generalsearchdocument".equals(subEntity)) {
 				String sPath = (String)Modules.getInstance().getModuleById(iModuleId).getField("documentPath");
 				sPath = getDirectoryPath(StringUtils.emptyIfNull(sPath), oParent);
@@ -3175,7 +3175,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 
 		if (stopEditingInDetails()) {
 			final String sMessage = getSpringLocaleDelegate().getMessage("GenericObjectCollectController.73","Soll der angezeigte Datensatz ({0}) wirklich endg\u00fcltig aus der Datenbank gel\u00f6scht werden?\nDieser Vorgang kann nicht r\u00fcckg\u00e4ngig gemacht werden! ", getSelectedCollectable().getIdentifierLabel());
-			final int iBtn = JOptionPane.showConfirmDialog(getTab(), sMessage, 
+			final int iBtn = JOptionPane.showConfirmDialog(getTab(), sMessage,
 					getSpringLocaleDelegate().getMessage("GenericObjectCollectController.24","Datensatz endg\u00fcltig l\u00f6schen"), JOptionPane.YES_NO_OPTION);
 
 			if (iBtn == JOptionPane.OK_OPTION)
@@ -3222,7 +3222,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 						}
 						catch (CommonBusinessException ex) {
 							if (!handlePointerException(ex))
-								Errors.getInstance().showExceptionDialog(getTab(), 
+								Errors.getInstance().showExceptionDialog(getTab(),
 										getSpringLocaleDelegate().getMessage("GenericObjectCollectController.18","Das Objekt konnte nicht gel\u00f6scht werden."), ex);
 						}
 					}
@@ -3423,7 +3423,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 				final ActionListener al = new ActionListener() {
 					@Override
 					public void actionPerformed(ActionEvent ev) {
-						UIUtils.runCommandLater(getTab(), new CommonRunnable() {
+						UIUtils.runShortCommandLater(getTab(), new CommonRunnable() {
 							@Override
 							public void run() {
 								final StateWrapper state = (StateWrapper) cmbbxCurrentState.getSelectedItem();
@@ -3549,7 +3549,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 
 		cmpStateStandardView.setEnabled(cmpStateStandardView.getItemCount() != 0);
 	}
-	
+
 	public List<StateVO> getPossibleSubsequentStates() {
 		UsageCriteria uc = getUsageCriteria(getSelectedCollectable());
 		DynamicAttributeVO av = getSelectedCollectable().getGenericObjectCVO().getAttribute(NuclosEOField.STATE.getMetaData().getId().intValue());
@@ -3570,12 +3570,12 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		}
 
 		if (!bViewOrEdit) {
-			toolbarCustomActionsDetails.add(new BlackLabel(cmbbxCurrentState, 
+			toolbarCustomActionsDetails.add(new BlackLabel(cmbbxCurrentState,
 					getSpringLocaleDelegate().getMessage("GenericObjectCollectController.106","Status")));
 		} else {
 			// button: "print details":
 			if (isHistoricalView())
-				toolbarCustomActionsDetails.add(new BlackLabel(cmbbxCurrentState, 
+				toolbarCustomActionsDetails.add(new BlackLabel(cmbbxCurrentState,
 						getSpringLocaleDelegate().getMessage("GenericObjectCollectController.106","Status")));
 			else {
 				if (bSingle) {
@@ -3584,7 +3584,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 					btnPrintDetails.setEnabled(bView && hasFormsAssigned(getSelectedCollectable()));
 				}
 
-				toolbarCustomActionsDetails.add(new BlackLabel(cmbbxCurrentState, 
+				toolbarCustomActionsDetails.add(new BlackLabel(cmbbxCurrentState,
 						getSpringLocaleDelegate().getMessage("GenericObjectCollectController.106","Status")));
 
 				// buttons/actions for "generate leased object":
@@ -3702,7 +3702,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 			};
 		}
 
-		final int btn = JOptionPane.showConfirmDialog(getTab(), argsOptionPane, 
+		final int btn = JOptionPane.showConfirmDialog(getTab(), argsOptionPane,
 				getSpringLocaleDelegate().getMessage("GenericObjectCollectController.85","Statuswechsel durchf\u00fchren"),
 			JOptionPane.OK_CANCEL_OPTION);
 
@@ -3754,7 +3754,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 			};
 		}
 
-		final int btn = JOptionPane.showConfirmDialog(getTab(), argsOptionPane, 
+		final int btn = JOptionPane.showConfirmDialog(getTab(), argsOptionPane,
 				getSpringLocaleDelegate().getMessage("GenericObjectCollectController.85","Statuswechsel durchf\u00fchren"),
 			JOptionPane.OK_CANCEL_OPTION);
 
@@ -3785,10 +3785,10 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		final StateWrapper stateCurrent = new StateWrapper(null, getSelectedGenericObjectStateNumeral(), getSelectedGenericObjectStateName(), getSelectedGenericObjectStateIcon(), "");
 
 		class ChangeStateWorker1 implements CommonRunnable {
-			
+
 			private ChangeStateWorker1() {
 			}
-			
+
 			@Override
 			public void run() throws CommonBusinessException {
 				if (getCollectStateModel().getDetailsMode() == CollectState.DETAILSMODE_EDIT ||
@@ -3823,7 +3823,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 					GenericObjectCollectController.this.changeStateForSingleObjectAndSave(stateNew);
 			}
 		}
-		
+
 		UIUtils.runShortCommand(getTab(), new ChangeStateWorker1());
 	}
 
@@ -3843,10 +3843,10 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		final StateWrapper stateCurrent = new StateWrapper(null, getSelectedGenericObjectStateNumeral(), getSelectedGenericObjectStateName(), getSelectedGenericObjectStateIcon(), "");
 
 		class ChangeStateWorker2 implements CommonRunnable {
-			
+
 			private ChangeStateWorker2() {
 			}
-			
+
 			@Override
 			public void run() throws CommonBusinessException {
 					if (getCollectStateModel().getDetailsMode() == CollectState.DETAILSMODE_EDIT ||
@@ -3881,25 +3881,25 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 						GenericObjectCollectController.this.changeStatesForSingleObjectAndSave(statesNew);
 				}
 		}
-		
+
 		UIUtils.runShortCommand(getTab(), new ChangeStateWorker2());
 	}
 
 	private void changeStateForSingleObjectAndSave(final StateWrapper stateNew) {
 		class ChangeStateWorker3 extends CommonClientWorkerAdapter<CollectableGenericObjectWithDependants> {
-			
+
 			Integer iGenericObjectId;
 			Integer iModuleId;
 			StateWrapper stateCurrent;
 			CollectableGenericObjectWithDependants clct;
 
 			boolean errorOccurred = false;
-			
-			
+
+
 			private ChangeStateWorker3(CollectController<CollectableGenericObjectWithDependants> clt) {
 				super(clt);
 			}
-			
+
 			@Override
 			public void init() throws CommonBusinessException {
 				super.init();
@@ -3971,14 +3971,14 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 				cmpStateStandardView.setSelectedItem(stateCurrent);
 			}
 		}
-		
+
 		CommonMultiThreader.getInstance().execute(new ChangeStateWorker3(
 				GenericObjectCollectController.this));
 	}
 
 	private void changeStatesForSingleObjectAndSave(final List<Integer> statesNew) {
 		class ChangeStatesWorker4 extends CommonClientWorkerAdapter<CollectableGenericObjectWithDependants> {
-			
+
 			Integer iGenericObjectId;
 			Integer iModuleId;
 			StateWrapper stateCurrent;
@@ -3989,7 +3989,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 			private ChangeStatesWorker4(CollectController<CollectableGenericObjectWithDependants> clt) {
 				super(clt);
 			}
-			
+
 			@Override
 			public void init() throws CommonBusinessException {
 				super.init();
@@ -4052,7 +4052,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 				cmpStateStandardView.setSelectedItem(stateCurrent);
 			}
 		}
-		
+
 		CommonMultiThreader.getInstance().execute(new ChangeStatesWorker4(
 				GenericObjectCollectController.this));
 	}
@@ -4184,7 +4184,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 			// 1. makeConsistent:
 			for (CollectableComponent clctcomp : getEditView(bSearchPanel).getCollectableComponentsFor(NuclosEOField.STATE.getMetaData().getField()))
 				clctcomp.makeConsistent();
-	
+
 			// 2. read model:
 			final CollectableComponentModel clctcompmodel = getEditView(bSearchPanel).getModel().getCollectableComponentModelFor(NuclosEOField.STATE.getMetaData().getField());
 			return (clctcompmodel == null) ? null : (Integer) clctcompmodel.getField().getValueId();
@@ -4198,7 +4198,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 				);
 				return getInitialStateId(uc);
 			}
-			
+
 			return getSystemAttributeId(getSelectedCollectable(), NuclosEOField.STATE.getMetaData().getField());
 		}
 	}
@@ -4209,7 +4209,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	 */
 	protected UsageCriteria getUsageCriteria(Collectable clct) {
 		return new UsageCriteria(((CollectableGenericObject)clct).getGenericObjectCVO().getModuleId(),
-				getSystemAttributeId(((CollectableGenericObject)clct), NuclosEOField.PROCESS.getMetaData().getField()), 
+				getSystemAttributeId(((CollectableGenericObject)clct), NuclosEOField.PROCESS.getMetaData().getField()),
 				getSystemAttributeId(((CollectableGenericObject)clct), NuclosEOField.STATE.getMetaData().getField())
 		);
 	}
@@ -4391,7 +4391,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 
 	private UsageCriteria getUsageCriteriaFromFieldsMap(Map<String, CollectableField> mpFields) {
 		return new UsageCriteria(getModuleId(),
-				getProcessIdFromUsageCriteriaField(mpFields), 
+				getProcessIdFromUsageCriteriaField(mpFields),
 				getStatusIdFromUsageCriteriaField(mpFields)
 		);
 	}
@@ -4430,15 +4430,15 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 			}
 		});
 	}
-	
+
 	private static class JTabbedPaneChangeListener implements ChangeListener {
-		
+
 		private final Preferences preferences;
-		
+
 		private JTabbedPaneChangeListener(Preferences preferences) {
 			this.preferences = preferences;
 		}
-		
+
 		@Override
 		public void stateChanged(ChangeEvent e) {
 			JTabbedPane pane = (JTabbedPane)e.getSource();
@@ -4642,8 +4642,8 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 
 			// layoutrootDetails is used for the ordered field names:
 			layoutrootDetails = layoutroot;
-			
-			final Collection<DetailsSubFormController<CollectableEntityObject>> oldDetailsControllers 
+
+			final Collection<DetailsSubFormController<CollectableEntityObject>> oldDetailsControllers
 				= getSubFormControllersInDetails();
 
 			// 2. transfer data in subforms:
@@ -4658,7 +4658,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 			// Note that the old subform controllers must be closed before creating the new ones, so that the
 			// column order and widths are preserved (first stored and then read):
 			closeSubFormControllers(oldDetailsControllers);
-			
+
 			// 3. setup subform controllers
 			setupSubFormController(mpSubForm, mpNewSubFormControllers);
 
@@ -4996,17 +4996,17 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	protected String getTitle(int iTab, int iMode) {
 		final SpringLocaleDelegate localeDelegate = getSpringLocaleDelegate();
 		final String[] asTabs = {
-				localeDelegate.getMessage("GenericObjectCollectController.92","Suche"), 
-				localeDelegate.getMessage("GenericObjectCollectController.42","Ergebnis"), 
+				localeDelegate.getMessage("GenericObjectCollectController.92","Suche"),
+				localeDelegate.getMessage("GenericObjectCollectController.42","Ergebnis"),
 				localeDelegate.getMessage("GenericObjectCollectController.35","Details")};
 		final String[] asDetailsMode = {
-				localeDelegate.getMessage("GenericObjectCollectController.94","Undefiniert"), 
-				localeDelegate.getMessage("GenericObjectCollectController.36","Details"), 
-				localeDelegate.getMessage("GenericObjectCollectController.14","Bearbeiten"), 
-				localeDelegate.getMessage("GenericObjectCollectController.55","Neueingabe"), 
-				localeDelegate.getMessage("GenericObjectCollectController.57","Neueingabe (Ge\u00e4ndert)"), 
+				localeDelegate.getMessage("GenericObjectCollectController.94","Undefiniert"),
+				localeDelegate.getMessage("GenericObjectCollectController.36","Details"),
+				localeDelegate.getMessage("GenericObjectCollectController.14","Bearbeiten"),
+				localeDelegate.getMessage("GenericObjectCollectController.55","Neueingabe"),
+				localeDelegate.getMessage("GenericObjectCollectController.57","Neueingabe (Ge\u00e4ndert)"),
 				localeDelegate.getMessage("GenericObjectCollectController.63","Sammelbearbeitung"),
-				localeDelegate.getMessage("GenericObjectCollectController.64","Sammelbearbeitung (Ge\u00e4ndert)"), 
+				localeDelegate.getMessage("GenericObjectCollectController.64","Sammelbearbeitung (Ge\u00e4ndert)"),
 				localeDelegate.getMessage("GenericObjectCollectController.56","Neueingabe (\u00dcbernahme Suchwerte)")
 		};
 
@@ -5096,7 +5096,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 
 		String searchFilterName;
 		String resultTemplateName;
-		
+
 		Integer processId;
 	}
 
@@ -5123,7 +5123,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		if (getProcess() != null) {
 			rp.processId = (Integer) getProcess().getValueId();
 		}
-		
+
 		inheritControllerPreferences.put(GenericObjectCollectController.class.getName(), toXML(rp));
 		super.storeInstanceStateToPreferences(inheritControllerPreferences);
 	}
@@ -5153,12 +5153,12 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		if (rp.processId != null) {
 			try {
 				process = new CollectableValueIdField(rp.processId.intValue(), MasterDataCache.getInstance().get(NuclosEntity.PROCESS.getEntityName(), rp.processId.intValue()).getField("name"));
-			} 
+			}
 			catch (CommonFinderException e) {
 				LOG.warn("Could not restore process setting because process could not be found.", e);
 			}
 		}
-		
+
 		super.restoreInstanceStateFromPreferences(inheritControllerPreferences);
 	}
 
@@ -5314,7 +5314,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		public void resultModeEntered(CollectStateEvent ev) throws NuclosBusinessException {
 			bGenerated = false;
 			setGenerationSource(null, null);
-			
+
 			if (ev.getOldCollectState().getOuterState() != CollectState.OUTERSTATE_RESULT)
 				setupChangeListenerForResultTableVerticalScrollBar();
 
@@ -5402,7 +5402,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 				bGenerated = false;
 				setGenerationSource(null, null);
 			}
-			
+
 			setDeleteButtonToggleInDetails();
 			// show custom actions only in view mode:
 			showCustomActions(iDetailsMode);
@@ -5554,7 +5554,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	}
 
 	protected static class GenericObjectCollectPanel extends CollectPanel<CollectableGenericObjectWithDependants> {
-		
+
 		private final CollectableComboBox searchStateBox;
 
 		protected GenericObjectCollectPanel(CollectableComboBox searchStateBox, boolean bSearch) {
@@ -5814,7 +5814,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 
 	private static class GenericObjectEditView extends DefaultEditView {
 
-		protected GenericObjectEditView(JComponent compRoot, CollectableComponentsProvider clctcompprovider, 
+		protected GenericObjectEditView(JComponent compRoot, CollectableComponentsProvider clctcompprovider,
 				EditModel model, boolean bForSearch, EntityAndFieldName initialFocusField) {
 			super(compRoot, clctcompprovider, model, initialFocusField);
 		}
@@ -5824,10 +5824,10 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	@Override
 	public GenericObjectEditView newSearchEditView(LayoutRoot layoutroot) {
 		final JComponent compEdit = getSearchPanel().newEditComponent(layoutroot.getRootComponent());
-		final GenericObjectCollectableComponentsProvider prov = 
+		final GenericObjectCollectableComponentsProvider prov =
 				new GenericObjectCollectableComponentsProvider(layoutroot, getSearchStateBox());
 		final boolean forSearch = true;
-		return new GenericObjectEditView(compEdit, 
+		return new GenericObjectEditView(compEdit,
 				prov, newGenericObjectEditModel(prov, forSearch),
 				forSearch, layoutroot.getInitialFocusEntityAndFieldName());
 	}
@@ -6073,7 +6073,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	@Override
 	public Collection<RuleVO> getUserRules() {
 		try {
-			UsageCriteria uc = getUsageCriteriaFromView(false);		
+			UsageCriteria uc = getUsageCriteriaFromView(false);
 			final Collection<RuleVO> collRules = RuleDelegate.getInstance().findRulesByUsageAndEvent(RuleEventUsageVO.USER_EVENT, uc);
 			// remove inactive rules
 			CollectionUtils.removeAll(collRules, new Predicate<RuleVO>() {
@@ -6111,7 +6111,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		super.clearSearchFields();
 		setProcessSearchCondition();
 	}
-	
+
 	private void setProcessSearchCondition() {
 		if (getProcess() != null && isSearchPanelAvailable()) {
 			CollectableComponentModel m = getSearchEditView().getModel().getCollectableComponentModelFor(NuclosEOField.PROCESS.getName());
