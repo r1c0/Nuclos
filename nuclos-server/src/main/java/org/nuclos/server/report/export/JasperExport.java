@@ -106,17 +106,6 @@ public class JasperExport implements Export {
 
 	private DatasourceFacadeLocal datasourceFacade;
 
-	private final JRDataSource jrdatasource;
-
-	public JasperExport() {
-		this(null);
-	}
-
-	public JasperExport(JRDataSource jrdatasource) {
-		super();
-		this.jrdatasource = jrdatasource;
-	}
-
 	@Autowired
 	@Qualifier("nuclos")
 	void setDataSource(DataSource dataSource) {
@@ -163,7 +152,7 @@ public class JasperExport implements Export {
 			throw new NuclosReportException(ex);
 		}
 	}
-	
+
 	private boolean isForPrinting(ReportOutputVO output) {
 		switch (output.getDestination()) {
 			case DEFAULT_PRINTER_CLIENT:
@@ -207,7 +196,7 @@ public class JasperExport implements Export {
 			}
 
 			JasperPrint jprint = null;
-			if (jrdatasource == null && output.getDatasourceId() != null) {
+			if (output.getDatasourceId() != null) {
 				// get existing connection (enlisted in current transaction)
 				Connection conn = DataSourceUtils.getConnection(dataSource);
 				try {
@@ -219,6 +208,11 @@ public class JasperExport implements Export {
 
 					try {
 						jprint = JasperFillManager.fillReport(jr, mpParams2, ds);
+
+						if (ds.getSize() == 0 && (JasperReport.WHEN_NO_DATA_TYPE_ALL_SECTIONS_NO_DETAIL != jr.getWhenNoDataType()
+								&& JasperReport.WHEN_NO_DATA_TYPE_NO_DATA_SECTION != jr.getWhenNoDataType())) {
+							throw new NuclosReportException("report.exception.nodata");
+						}
 					}
 					catch (JRException e) {
 						throw new NuclosReportException(e.getMessage());
@@ -238,12 +232,12 @@ public class JasperExport implements Export {
 				}
 			}
 			else {
-				jprint = JasperFillManager.fillReport(jr, mpParams2, jrdatasource != null ? jrdatasource : new JREmptyDataSource(1));
+				jprint = JasperFillManager.fillReport(jr, mpParams2, new JREmptyDataSource(1));
 			}
 			String name = (output.getDescription() != null ? output.getDescription() : "Report") + output.getFormat().getExtension();
 			if (isForPrinting(output)) {
 				ByteArrayOutputStream baos = new ByteArrayOutputStream();
-				ObjectOutputStream oos = null; 
+				ObjectOutputStream oos = null;
 				try {
 					oos = new ObjectOutputStream(baos);
 					oos.writeObject(jprint);
