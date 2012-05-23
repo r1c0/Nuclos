@@ -8,7 +8,7 @@ import org.nuclos.common.dblayer.IFieldRef;
 
 public class DatasourceParameterParser implements Iterable<IFieldRef> {
 	
-	private static final Pattern PARAM_PATTERN = Pattern.compile("\\$(\\p{Alpha}[\\p{Alnum}_]*)", Pattern.MULTILINE);
+	private static final Pattern PARAM_PATTERN = Pattern.compile("\\$(\\p{Alnum}[\\p{Alnum}_]*)", Pattern.MULTILINE);
 	
 	//
 	
