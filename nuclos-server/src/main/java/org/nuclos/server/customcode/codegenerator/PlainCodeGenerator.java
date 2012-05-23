@@ -16,23 +16,43 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.server.customcode.codegenerator;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.Collections;
 import java.util.Date;
 
-import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.nuclos.common.NuclosEntity;
-import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.StringUtils;
+import org.nuclos.server.customcode.codegenerator.CodeGenerator.JavaSourceAsString;
 import org.nuclos.server.customcode.valueobject.CodeVO;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
 
+@Configurable
 public class PlainCodeGenerator implements CodeGenerator {
+	
+	// Spring injection
 
+	private NuclosJavaCompilerComponent nuclosJavaCompilerComponent;
+	
+	// End of Spring injection
+	
 	private final CodeVO codeVO;
+	
+	private final JavaSourceAsString src;
 
 	public PlainCodeGenerator(CodeVO codevo) {
 		this.codeVO = codevo;
+		this.src = new JavaSourceAsString(
+				codeVO.getName(), getPrefix(), codeVO.getSource(), 
+				NuclosEntity.CODE.getEntityName(), codeVO.getId() == null ? null : codeVO.getId().longValue(),
+				getPrefixAndHeaderLineCount(), getPrefixAndHeaderOffset());
+	}
+	
+	@Autowired
+	final void setNuclosJavaCompilerComponent(NuclosJavaCompilerComponent nuclosJavaCompilerComponent) {
+		this.nuclosJavaCompilerComponent = nuclosJavaCompilerComponent;
 	}
 	
 	@Override
@@ -78,6 +98,11 @@ public class PlainCodeGenerator implements CodeGenerator {
 	}
 
 	@Override
+	public File getJavaSrcFile(JavaSourceAsString srcobject) {
+		return new File(nuclosJavaCompilerComponent.getSourceOutputPath(), srcobject.getPath());
+	}
+
+	@Override
 	public void writeSource(Writer writer, JavaSourceAsString src) throws IOException {
 		writer.write(src.getPrefix());
 		writer.write(src.getSource());
@@ -85,10 +110,7 @@ public class PlainCodeGenerator implements CodeGenerator {
 
 	@Override
 	public Iterable<? extends JavaSourceAsString> getSourceFiles() {
-		return Collections.singletonList(new JavaSourceAsString(
-				codeVO.getName(), getPrefix(), codeVO.getSource(), 
-				NuclosEntity.CODE.getEntityName(), codeVO.getId() == null ? null : codeVO.getId().longValue(),
-				getPrefixAndHeaderLineCount(), getPrefixAndHeaderOffset()));
+		return Collections.singletonList(src);
 	}
 
 	@Override
@@ -103,26 +125,21 @@ public class PlainCodeGenerator implements CodeGenerator {
 
 	@Override
 	public int hashCode() {
-		HashCodeBuilder builder = new HashCodeBuilder(17, 37);
-		builder.append(codeVO.getId());
-		builder.append(codeVO.getVersion());
-		return builder.toHashCode();
+		return src.getName().hashCode();
 	}
 
 	@Override
 	public boolean equals(Object obj) {
-		if (obj == null || !(obj instanceof PlainCodeGenerator)) {
+		if (obj == null || !(obj instanceof CodeGenerator)) {
 			return false;
 		}
-		else {
-			PlainCodeGenerator other = (PlainCodeGenerator) obj;
-			if (LangUtils.compare(this.codeVO.getId(), other.codeVO.getId()) == 0) {
-				return LangUtils.compare(this.codeVO.getVersion(), other.codeVO.getVersion()) == 0;
-			}
-			else {
-				return false;
-			}
+		final CodeGenerator other = (CodeGenerator) obj;
+		final JavaSourceAsString firstOtherSrc;
+		if (!other.isRecompileNecessary()) {
+			return false;
 		}
+		firstOtherSrc = other.getSourceFiles().iterator().next();		
+		return src.getName().equals(firstOtherSrc.getName());
 	}
 	
 	@Override

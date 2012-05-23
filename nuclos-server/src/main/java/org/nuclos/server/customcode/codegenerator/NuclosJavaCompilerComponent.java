@@ -234,11 +234,11 @@ public class NuclosJavaCompilerComponent {
 	}
 
 	public void compile() throws NuclosCompileException {
-		final List<CodeGenerator> generators = getAllArtifacts();
+		final List<CodeGenerator> generators = getAllCurrentGenerators();
 		compile(generators);
 	}
 	
-	private synchronized void compile(List<CodeGenerator> generators) throws NuclosCompileException {
+	private synchronized NuclosJavaCompiler compile(List<CodeGenerator> generators) throws NuclosCompileException {
 		final NuclosJavaCompiler c = new NuclosJavaCompiler();
 		try {
 			jar(c.javac(generators, true), generators);
@@ -251,28 +251,38 @@ public class NuclosJavaCompilerComponent {
 				LOG.warn("getFile failed: " + e, e);
 			}
 		}
+		return c;
 	}
 
-	public synchronized void check(CodeGenerator generator, boolean remove) throws NuclosCompileException {
-		final List<CodeGenerator> artifacts = getAllArtifacts();
-		int index = artifacts.indexOf(generator);
+	public synchronized void check(CodeGenerator modified, boolean remove) throws NuclosCompileException {
+		final List<CodeGenerator> generators = getAllCurrentGenerators();
+		int index = generators.indexOf(modified);
 		if (index > -1) {
 			if (remove) {
-				artifacts.remove(index);
+				generators.remove(index);
 			}
 			else {
-				artifacts.set(index, generator);
+				generators.set(index, modified);
 			}
 		}
 		else {
-			artifacts.add(generator);
+			generators.add(modified);
 		}
-		check(artifacts);
+		final NuclosJavaCompiler c = check(generators);
+		
+		// If check was successful, update source on disk
+		try {
+			c.saveSrc(modified, remove);
+		}
+		catch (IOException e) {
+			LOG.warn("Update source on disk failed: " + e.toString(), e);
+		}
 	}
 		
-	private synchronized void check(List<CodeGenerator> generators) throws NuclosCompileException {
+	private synchronized NuclosJavaCompiler check(List<CodeGenerator> generators) throws NuclosCompileException {
+		final NuclosJavaCompiler c;
 		if (JARFILE.exists()) {
-			final NuclosJavaCompiler c = new NuclosJavaCompiler();
+			c = new NuclosJavaCompiler();
 			try {
 				c.javac(generators, false);
 			}
@@ -286,13 +296,25 @@ public class NuclosJavaCompilerComponent {
 			}
 		}
 		else {
-			compile(generators);
+			c = compile(generators);
 		}
+		return c;
 	}
 
-	synchronized void checkSrcOnDisk() throws NuclosCompileException {	
-		final List<CodeGenerator> artifacts = getAllArtifacts();
-		check(artifacts);
+	synchronized void checkSrcOnDisk(List<OnDiskCodeGenerator> modified) throws NuclosCompileException {	
+		final List<CodeGenerator> generators = getAllCurrentGenerators();
+		for (OnDiskCodeGenerator cg: modified) {
+			int index = generators.indexOf(cg);
+			if (index > -1) {
+				LOG.info("Check/compile java source that changed on disk: " + cg);
+				generators.set(index, cg);
+			}
+			else {
+				LOG.warn("Unknown java source on disk: " + cg);
+				generators.add(cg);
+			}
+		}
+		check(generators);
 	}
 	
 	/**
@@ -332,35 +354,50 @@ public class NuclosJavaCompilerComponent {
 		return files;
 	}
 
-	private List<CodeGenerator> getAllArtifacts() {
-		List<CodeGenerator> result = new ArrayList<CodeGenerator>();
+	private List<CodeGenerator> getAllCurrentGenerators() {
+		final RuleCache ruleCache = RuleCache.getInstance();
+		final List<CodeGenerator> result = new ArrayList<CodeGenerator>();
 
-		if (RuleCache.getInstance().getWebservices().size() > 0) {
-			for (MasterDataVO ws : RuleCache.getInstance().getWebservices()) {
-				result.add(new WsdlCodeGenerator(ws));
+		if (ruleCache.getWebservices().size() > 0) {
+			for (MasterDataVO ws : ruleCache.getWebservices()) {
+				final CodeGenerator cg = new WsdlCodeGenerator(ws);
+				if (cg.isRecompileNecessary()) {
+					result.add(cg);
+				}
 			}
 		}
 
-		if (RuleCache.getInstance().getCommonCode().size() > 0) {
-			for (CodeVO code : RuleCache.getInstance().getCommonCode()) {
+		if (ruleCache.getCommonCode().size() > 0) {
+			for (CodeVO code : ruleCache.getCommonCode()) {
 				if (code.isActive()) {
-					result.add(new PlainCodeGenerator(code));
+					final CodeGenerator cg = new PlainCodeGenerator(code);
+					if (cg.isRecompileNecessary()) {
+						result.add(cg);
+					}
 				}
 			}
 		}
 
-		if (RuleCache.getInstance().getAllRules().size() > 0) {
-			for (RuleVO rule : RuleCache.getInstance().getAllRules()) {
+		if (ruleCache.getAllRules().size() > 0) {
+			for (RuleVO rule : ruleCache.getAllRules()) {
 				if (rule.isActive()) {
-					result.add(new RuleCodeGenerator<NuclosRule>(new RuleEngineFacadeBean.RuleTemplateType(), rule));
+					final CodeGenerator cg = new RuleCodeGenerator<NuclosRule>(
+							new RuleEngineFacadeBean.RuleTemplateType(), rule);
+					if (cg.isRecompileNecessary()) {
+						result.add(cg);
+					}
 				}
 			}
 		}
 
-		if (RuleCache.getInstance().getTimelimitRules().size() > 0) {
-			for (RuleVO rule : RuleCache.getInstance().getTimelimitRules()) {
+		if (ruleCache.getTimelimitRules().size() > 0) {
+			for (RuleVO rule : ruleCache.getTimelimitRules()) {
 				if (rule.isActive()) {
-					result.add(new RuleCodeGenerator<NuclosTimelimitRule>(new TimelimitRuleFacadeBean.TimelimitRuleCodeTemplate(), rule));
+					final CodeGenerator cg = new RuleCodeGenerator<NuclosTimelimitRule>(
+							new TimelimitRuleFacadeBean.TimelimitRuleCodeTemplate(), rule);
+					if (cg.isRecompileNecessary()) {
+						result.add(cg);
+					}
 				}
 			}
 		}
@@ -370,7 +407,7 @@ public class NuclosJavaCompilerComponent {
 
 	private Manifest getManifest() {
 		HashCodeBuilder builder = new HashCodeBuilder(11, 17);
-		for (CodeGenerator gen : getAllArtifacts()) {
+		for (CodeGenerator gen : getAllCurrentGenerators()) {
 			builder.append(gen.hashCode());
 		}
 

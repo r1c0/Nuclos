@@ -44,10 +44,8 @@ import javax.tools.StandardLocation;
 
 import org.apache.log4j.Logger;
 import org.nuclos.common.NuclosFatalException;
-import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.server.common.NuclosSystemParameters;
 import org.nuclos.server.customcode.codegenerator.CodeGenerator.JavaSourceAsString;
-import org.nuclos.server.customcode.codegenerator.RuleCodeGenerator.RuleSourceAsString;
 import org.nuclos.server.ruleengine.NuclosCompileException;
 import org.nuclos.server.ruleengine.NuclosCompileException.ErrorMessage;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -149,7 +147,10 @@ class NuclosJavaCompiler implements Closeable {
 
 			List<ErrorMessage> errors = diagnosticListener.clearErrors();
 			if (!success) {
-				LOG.info(errors);
+				LOG.info("Compile failed with " + errors.size() + " errors:");
+				for (ErrorMessage em: errors) {
+					LOG.info(em);
+				}
 				throw new NuclosCompileException(errors);
 			}
 
@@ -168,17 +169,28 @@ class NuclosJavaCompiler implements Closeable {
 		}
 	}
 
-	private synchronized List<File> saveSrc(List<CodeGenerator> generators) throws IOException {
-		final List<File> result = new ArrayList<File>();
+	private synchronized void saveSrc(List<CodeGenerator> generators) throws IOException {
 		for (CodeGenerator generator : generators) {
-			if (generator.isRecompileNecessary()) {
-				for (JavaSourceAsString srcobject : generator.getSourceFiles()) {
-					File f = getFile(srcobject);
+			saveSrc(generator, false);
+		}
+		nuclosJavaCompilerComponent.setLastSrcWriteTime(System.currentTimeMillis());
+	}
+
+	void saveSrc(CodeGenerator generator, boolean remove) throws IOException {
+		if (generator.isRecompileNecessary()) {
+			for (JavaSourceAsString srcobject : generator.getSourceFiles()) {
+				final File f = generator.getJavaSrcFile(srcobject);
+				if (remove) {
+					final boolean success = f.delete();
+					if (!success) {
+						LOG.warn("Unable to delete " + f);
+					}
+				}
+				else {
 					if (!f.exists()) {
 						f.getParentFile().mkdirs();
 						f.createNewFile();
 					}
-					result.add(f);
 					final BufferedWriter out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(f),
 							NuclosJavaCompilerComponent.JAVA_SRC_ENCODING));
 					try {
@@ -189,15 +201,9 @@ class NuclosJavaCompiler implements Closeable {
 					}
 				}
 			}
-		}
-		nuclosJavaCompilerComponent.setLastSrcWriteTime(System.currentTimeMillis());
-		return result;
+		}		
 	}
-
-	private File getFile(JavaSourceAsString srcobject) {
-		return new File(CollectionUtils.getFirst(stdFileManager.getLocation(StandardLocation.SOURCE_OUTPUT)), srcobject.getPath());
-	}
-
+	
 	@Override
 	public void close() throws IOException {
 		if (stdFileManager != null) {
