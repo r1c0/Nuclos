@@ -168,7 +168,7 @@ class NuclosJavaCompiler implements Closeable {
 		}
 	}
 
-	private List<File> saveSrc(List<CodeGenerator> generators) throws IOException {
+	private synchronized List<File> saveSrc(List<CodeGenerator> generators) throws IOException {
 		final List<File> result = new ArrayList<File>();
 		for (CodeGenerator generator : generators) {
 			if (generator.isRecompileNecessary()) {
