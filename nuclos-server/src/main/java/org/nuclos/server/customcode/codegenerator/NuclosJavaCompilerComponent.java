@@ -147,23 +147,28 @@ public class NuclosJavaCompilerComponent {
 			dir.mkdirs();
 		return dir;
 	}
+	
+	private synchronized boolean moveJarToOld() {
+		boolean oldExists = false;
+		if (JARFILE.exists()) {
+			JARFILE_OLD.delete();
+			oldExists = JARFILE.renameTo(JARFILE_OLD);
+			if (JARFILE.exists()) {
+				try {
+					IOUtils.copyFile(JARFILE, JARFILE_OLD);
+					oldExists = true;
+				}
+				catch (IOException ex) {
+					throw new IllegalStateException(ex);
+				}
+			}
+		}
+		return oldExists;
+	}
 
 	private synchronized void jar(Map<String, byte[]> javacresult, List<CodeGenerator> generators) {
 		try {
-			boolean oldExists = false;
-			if (JARFILE.exists()) {
-				JARFILE_OLD.delete();
-				oldExists = JARFILE.renameTo(JARFILE_OLD);
-				if (JARFILE.exists()) {
-					try {
-						IOUtils.copyFile(JARFILE, JARFILE_OLD);
-						oldExists = true;
-					}
-					catch (IOException ex) {
-						throw new IllegalStateException(ex);
-					}
-				}
-			}
+			final boolean oldExists = moveJarToOld();
 			if (javacresult.size() > 0) {
 				final Set<String> entries = new HashSet<String>();
 				final JarOutputStream jos = new JarOutputStream(
@@ -228,8 +233,12 @@ public class NuclosJavaCompilerComponent {
 		}
 	}
 
-	public synchronized void compile() throws NuclosCompileException {
+	public void compile() throws NuclosCompileException {
 		final List<CodeGenerator> generators = getAllArtifacts();
+		compile(generators);
+	}
+	
+	private synchronized void compile(List<CodeGenerator> generators) throws NuclosCompileException {
 		final NuclosJavaCompiler c = new NuclosJavaCompiler();
 		try {
 			jar(c.javac(generators, true), generators);
@@ -261,11 +270,11 @@ public class NuclosJavaCompilerComponent {
 		check(artifacts);
 	}
 		
-	private synchronized void check(List<CodeGenerator> artifacts) throws NuclosCompileException {
+	private synchronized void check(List<CodeGenerator> generators) throws NuclosCompileException {
 		if (JARFILE.exists()) {
 			final NuclosJavaCompiler c = new NuclosJavaCompiler();
 			try {
-				c.javac(artifacts, false);
+				c.javac(generators, false);
 			}
 			finally {
 				try {
@@ -277,7 +286,7 @@ public class NuclosJavaCompilerComponent {
 			}
 		}
 		else {
-			compile();
+			compile(generators);
 		}
 	}
 
