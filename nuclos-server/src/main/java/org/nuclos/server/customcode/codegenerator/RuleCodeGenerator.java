@@ -17,6 +17,7 @@
 
 package org.nuclos.server.customcode.codegenerator;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.Writer;
 import java.text.MessageFormat;
@@ -25,16 +26,18 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.commons.lang.builder.HashCodeBuilder;
-import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.server.common.RuleCache;
+import org.nuclos.server.customcode.codegenerator.CodeGenerator.JavaSourceAsString;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 import org.nuclos.server.ruleengine.valueobject.RuleVO;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
 
 /**
  * Helper class for dealing with rule code.
  */
+@Configurable
 public class RuleCodeGenerator<T> implements CodeGenerator {
 
 	public static abstract class AbstractRuleTemplateType<T> {
@@ -88,15 +91,34 @@ public class RuleCodeGenerator<T> implements CodeGenerator {
 		public abstract String getEntityname();
 	}
 
+	// Spring injection
+
+	private NuclosJavaCompilerComponent nuclosJavaCompilerComponent;
+	
+	// End of Spring injection
+	
 	private final AbstractRuleTemplateType<T> type;
+	
 	private final RuleVO ruleVO;
+	
+	private final RuleSourceAsString src;
+	
 	private String cachedHeader;
 
 	public RuleCodeGenerator(AbstractRuleTemplateType<T> type, RuleVO ruleVO) {
 		this.type = type;
 		this.ruleVO = ruleVO;
+		this.src = new RuleSourceAsString(getClassName(), 
+				getPrefix(), getHeader(), ruleVO.getSource(), type.getFooter(), 
+				type.getEntityname(), ruleVO.getId().longValue(), 
+				getPrefixAndHeaderLineCount(), getPrefixAndHeaderOffset(), getLabel());
 	}
 
+	@Autowired
+	final void setNuclosJavaCompilerComponent(NuclosJavaCompilerComponent nuclosJavaCompilerComponent) {
+		this.nuclosJavaCompilerComponent = nuclosJavaCompilerComponent;
+	}
+	
 	@Override
 	public boolean isRecompileNecessary() {
 		return true;
@@ -130,6 +152,11 @@ public class RuleCodeGenerator<T> implements CodeGenerator {
 	}
 
 	@Override
+	public File getJavaSrcFile(JavaSourceAsString srcobject) {
+		return new File(nuclosJavaCompilerComponent.getSourceOutputPath(), srcobject.getPath());
+	}
+
+	@Override
 	public void writeSource(Writer writer, JavaSourceAsString s) throws IOException {
 		final RuleSourceAsString src = (RuleSourceAsString) s;
 		writer.write(src.getPrefix());
@@ -140,10 +167,7 @@ public class RuleCodeGenerator<T> implements CodeGenerator {
 
 	@Override
 	public Iterable<? extends JavaSourceAsString> getSourceFiles() {
-		return Collections.singletonList(new RuleSourceAsString(getClassName(), 
-				getPrefix(), getHeader(), ruleVO.getSource(), type.getFooter(), 
-				type.getEntityname(), ruleVO.getId().longValue(), 
-				getPrefixAndHeaderLineCount(), getPrefixAndHeaderOffset(), getLabel()));
+		return Collections.singletonList(src);
 	}
 
 	@Override
@@ -158,29 +182,23 @@ public class RuleCodeGenerator<T> implements CodeGenerator {
 
 	@Override
 	public int hashCode() {
-		HashCodeBuilder builder = new HashCodeBuilder(17, 37);
-		builder.append(type.qualifier);
-		builder.append(ruleVO.getId());
-		builder.append(ruleVO.getVersion());
-		return builder.toHashCode();
+		return src.getName().hashCode();
 	}
 
 	@Override
 	public boolean equals(Object obj) {
-		if (obj == null || !(obj instanceof RuleCodeGenerator<?>)) {
+		if (obj == null || !(obj instanceof CodeGenerator)) {
 			return false;
 		}
-		else {
-			RuleCodeGenerator<?> other = (RuleCodeGenerator<?>) obj;
-			if (LangUtils.compare(this.type.qualifier, other.type.qualifier) == 0) {
-				if (LangUtils.compare(this.ruleVO.getId(), other.ruleVO.getId()) == 0) {
-					return LangUtils.compare(this.ruleVO.getVersion(), other.ruleVO.getVersion()) == 0;
-				}
-			}
+		final CodeGenerator other = (CodeGenerator) obj;
+		final JavaSourceAsString firstOtherSrc;
+		if (!other.isRecompileNecessary()) {
 			return false;
 		}
+		firstOtherSrc = other.getSourceFiles().iterator().next();		
+		return src.getName().equals(firstOtherSrc.getName());
 	}
-
+	
 	@Override
 	public String toString() {
 		final StringBuilder result = new StringBuilder("RuleCG[rule=");

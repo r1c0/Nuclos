@@ -215,6 +215,11 @@ public class WsdlCodeGenerator implements CodeGenerator {
 	}
 
 	@Override
+	public File getJavaSrcFile(JavaSourceAsString srcobject) {
+		return new File(nuclosJavaCompilerComponent.getSourceOutputPath(), srcobject.getPath());
+	}
+
+	@Override
 	public void writeSource(Writer writer, JavaSourceAsString src) throws IOException {
 		writer.write(src.getPrefix());
 		writer.write(src.getSource());
@@ -281,10 +286,7 @@ public class WsdlCodeGenerator implements CodeGenerator {
 
 	@Override
 	public int hashCode() {
-		HashCodeBuilder builder = new HashCodeBuilder(17, 37);
-		builder.append(webservice.getId());
-		builder.append(webservice.getVersion());
-		return builder.toHashCode();
+		return wsdl.hashCode();
 	}
 
 	@Override
@@ -292,15 +294,8 @@ public class WsdlCodeGenerator implements CodeGenerator {
 		if (obj == null || !(obj instanceof WsdlCodeGenerator)) {
 			return false;
 		}
-		else {
-			WsdlCodeGenerator other = (WsdlCodeGenerator) obj;
-			if (LangUtils.compare(this.webservice.getId(), other.webservice.getId()) == 0) {
-				return LangUtils.compare(this.webservice.getVersion(), other.webservice.getVersion()) == 0;
-			}
-			else {
-				return false;
-			}
-		}
+		final WsdlCodeGenerator other = (WsdlCodeGenerator) obj;
+		return wsdl.equals(other.wsdl);
 	}
 
 	@Override

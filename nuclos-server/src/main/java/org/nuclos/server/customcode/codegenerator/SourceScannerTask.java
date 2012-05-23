@@ -156,7 +156,11 @@ class SourceScannerTask extends TimerTask {
 		
 		// Try to compile and only proceed if there are no errors
 		try {
-			nuclosJavaCompilerComponent.checkSrcOnDisk();
+			final List<OnDiskCodeGenerator> modifiedCg = new ArrayList<OnDiskCodeGenerator>(java.size());
+			for (GeneratedFile gf: java) {
+				modifiedCg.add(new OnDiskCodeGenerator(gf));
+			}
+			nuclosJavaCompilerComponent.checkSrcOnDisk(modifiedCg);
 		}
 		catch (NuclosCompileException e) {
 			LOG.info("Changes on disk but compile errors: " + e.toString());

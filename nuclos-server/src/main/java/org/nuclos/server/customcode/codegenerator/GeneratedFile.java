@@ -17,6 +17,7 @@
 package org.nuclos.server.customcode.codegenerator;
 
 import java.io.File;
+import java.util.Date;
 
 /**
  * @author Thomas Pasch
@@ -106,4 +107,18 @@ class GeneratedFile {
 		this.file = file;
 	}
 	
+	String getPrefix() {
+		final StringBuilder writer = new StringBuilder();
+		writer.append("// DO NOT REMOVE THIS COMMENT (UP TO PACKAGE DECLARATION)");
+		writer.append("\n// class=").append(getGeneratorClass());
+		writer.append("\n// type=").append(getType());
+		writer.append("\n// name=").append(getName());
+		writer.append("\n// id=").append(getId());
+		writer.append("\n// version=").append(getVersion());
+		writer.append("\n// modified=").append(getModified());
+		writer.append("\n// date=").append(new Date(getModified()));
+		writer.append("\n// END\n");
+		return writer.toString();
+	}
+
 }

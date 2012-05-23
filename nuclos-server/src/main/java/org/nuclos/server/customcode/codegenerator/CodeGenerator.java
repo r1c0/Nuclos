@@ -16,6 +16,7 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.server.customcode.codegenerator;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.Writer;
 import java.net.URI;
@@ -42,11 +43,12 @@ public interface CodeGenerator {
 	
 	int getPrefixAndHeaderOffset();
 	
+	File getJavaSrcFile(JavaSourceAsString src);
+	
 	void writeSource(Writer writer, JavaSourceAsString src) throws IOException;
 
 	public static class JavaSourceAsString extends SimpleJavaFileObject {
 
-		
 		private final String name;
 		private final String prefix;
 		private final String source;
