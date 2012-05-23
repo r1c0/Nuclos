@@ -59,7 +59,7 @@ import org.springframework.security.core.AuthenticationException;
  * @version 01.00.00
  */
 public class Errors {
-	
+
 	private static final Logger LOG = Logger.getLogger(Errors.class);
 
 	private static Errors singleton;
@@ -144,7 +144,7 @@ public class Errors {
 							}
 							catch (AuthenticationException ex2) {
 								final MainFrame mf = Main.getInstance().getMainFrame();
-								
+
 								LoginController lc = new LoginController(mf);
 
 								if (!lc.run(mf)) {
@@ -206,9 +206,7 @@ public class Errors {
 			sErrorText = (resMessage != null ? resMessage : sErrorMsg) + "\n" + (localizedMessage != null ? localizedMessage : ex.getLocalizedMessage());
 		}
 		LOG.debug("Checked exception occured: ", ex);
-		// Also give the root cause
-		sErrorText += "\n\n" + getRootCause(ex);
-		
+
 		sErrorText = formatErrorMessage(sErrorText);
 		JOptionPane.showMessageDialog(parent, sErrorText, sTitle, iMessageType);
 	}
@@ -237,7 +235,7 @@ public class Errors {
 		}
 		// Also give the root cause
 		sErrorText += "\n\n" + getRootCause(t);
-		
+
 		sErrorText = formatErrorMessage(sErrorText);
 		pnl.taMessage.setText(sErrorText);
 		pnl.taMessage.setFont(pnl.taMessage.getFont().deriveFont(Font.PLAIN));
@@ -269,7 +267,7 @@ public class Errors {
 
 		dlg.setVisible(true);
 	}
-	
+
 	private String getRootCause(Throwable t) {
 		Throwable result = t;
 		while (result.getCause() != null) {

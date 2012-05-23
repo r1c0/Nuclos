@@ -142,9 +142,9 @@ public class ReportFacadeBean extends NuclosFacadeBean implements ReportFacadeRe
    public static final String ALIAS_INTID = "intid";
 
    private static final String CHARENCODING = "UTF-8";
-   
+
    //
-   
+
 	private DataSource dataSource;
 
 	private MasterDataFacadeLocal masterDataFacade;
@@ -193,7 +193,7 @@ public class ReportFacadeBean extends NuclosFacadeBean implements ReportFacadeRe
     */
    public Collection<ReportVO> getReports() throws CommonPermissionException {
       this.checkReadAllowed(NuclosEntity.REPORT);
-	
+
       final Collection<ReportVO> collreport = new ArrayList<ReportVO>();
 
       for (MasterDataVO mdVO : getMasterDataFacade().getMasterData(NuclosEntity.REPORT.getEntityName(), null, true)) {
@@ -258,7 +258,7 @@ public class ReportFacadeBean extends NuclosFacadeBean implements ReportFacadeRe
 	   NuclosEntity entity = NuclosEntity.REPORT;
 	   if (ReportType.FORM.getValue().equals(mdvo.getField("type")))
 		   entity = NuclosEntity.FORM;
-	   
+
       this.checkReadAllowed(entity);
       final MasterDataVO result = getMasterDataFacade().create(entity.getEntityName(), mdvo, mpDependants);
       compileAndSaveAllXML(entity, result);
@@ -277,7 +277,7 @@ public class ReportFacadeBean extends NuclosFacadeBean implements ReportFacadeRe
 	   NuclosEntity entity = NuclosEntity.REPORT;
 	   if (ReportType.FORM.getValue().equals(mdvo.getField("type")))
 		   entity = NuclosEntity.FORM;
-	   
+
       this.checkReadAllowed(entity);
       final Integer result = (Integer) getMasterDataFacade().modify(entity.getEntityName(), mdvo, mpDependants);
       this.compileAndSaveAllXML(entity, mdvo);
@@ -295,7 +295,7 @@ public class ReportFacadeBean extends NuclosFacadeBean implements ReportFacadeRe
 	   NuclosEntity entity = NuclosEntity.REPORT;
 	   if (ReportType.FORM.getValue().equals(mdvo.getField("type")))
 		   entity = NuclosEntity.FORM;
-	   
+
 	  this.checkReadAllowed(entity);
       getMasterDataFacade().remove(entity.getEntityName(), mdvo, true);
       SecurityCache.getInstance().invalidate();
@@ -491,9 +491,9 @@ public class ReportFacadeBean extends NuclosFacadeBean implements ReportFacadeRe
     * @param mpParams parameters
     * @return report/form filled with data
     */
-   public JasperPrint prepareReport(Integer iReportOutputId, Map<String, Object> mpParams, Integer iMaxRowCount) 
+   public JasperPrint prepareReport(Integer iReportOutputId, Map<String, Object> mpParams, Integer iMaxRowCount)
 		   throws CommonFinderException, NuclosReportException, CommonPermissionException {
-	   
+
       try {
          final ReportOutputVO reportoutput = getReportOutput(iReportOutputId);
 
@@ -543,6 +543,11 @@ public class ReportFacadeBean extends NuclosFacadeBean implements ReportFacadeRe
 
                try {
                   jprint = JasperFillManager.fillReport(jr, mpParams2, ds);
+
+                  if (ds.getSize() == 0 && (JasperReport.WHEN_NO_DATA_TYPE_ALL_SECTIONS_NO_DETAIL != jr.getWhenNoDataType()
+							&& JasperReport.WHEN_NO_DATA_TYPE_NO_DATA_SECTION != jr.getWhenNoDataType())) {
+						throw new NuclosReportException("report.exception.nodata");
+					}
                } catch (JRException e) {
                   throw new NuclosReportException(e.getMessage());
                } catch (DbException e) {
@@ -584,9 +589,9 @@ public class ReportFacadeBean extends NuclosFacadeBean implements ReportFacadeRe
 	 * @param mpParams parameters
 	 * @return report/form filled with data
 	 */
-	public NuclosFile prepareCsvReport(Integer iReportOutputId, Map<String, Object> mpParams, Integer iMaxRowCount) 
+	public NuclosFile prepareCsvReport(Integer iReportOutputId, Map<String, Object> mpParams, Integer iMaxRowCount)
 			throws CommonFinderException, NuclosReportException, CommonPermissionException {
-		
+
 		final ReportOutputVO reportoutput = getReportOutput(iReportOutputId);
 
 		final String sSourceFileName = reportoutput.getSourceFile();
@@ -834,7 +839,7 @@ public class ReportFacadeBean extends NuclosFacadeBean implements ReportFacadeRe
         	  throw new NuclosReportException("Es ist kein passender Print-Service installiert."); //@todo
           }
         }
-        
+
         NuclosReportRemotePrintService[] rprservices = new NuclosReportRemotePrintService[prservices.length];
         for (int i = 0; i < prservices.length; i++) {
         	rprservices[i] = new NuclosReportRemotePrintService(prservices[i]);
@@ -850,11 +855,11 @@ public class ReportFacadeBean extends NuclosFacadeBean implements ReportFacadeRe
 			throw new NuclosReportException(e.getMessage());
 		}
 	}
-	
+
 	private static File getFileFromBytes(byte[] data) throws IOException {
 		File file = File.createTempFile("report_", ".tmp");
 		file.deleteOnExit();
-		
+
 		OutputStream os = new BufferedOutputStream(new FileOutputStream(file));
 		try {
 			os.write(data);

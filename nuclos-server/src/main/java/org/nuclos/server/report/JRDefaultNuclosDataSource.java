@@ -54,8 +54,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 public class JRDefaultNuclosDataSource implements JRNuclosDataSource {
 
 	private static final Logger LOG = Logger.getLogger(JRDefaultNuclosDataSource.class);
-	
-	// 
+
+	//
 
 	private DatasourceFacadeLocal datasourcefacade;
 
@@ -71,6 +71,8 @@ public class JRDefaultNuclosDataSource implements JRNuclosDataSource {
 
 	private JRResultSetDataSource datasource;
 
+	private int size = 0;
+
 	public JRDefaultNuclosDataSource(String name, Map<String, Object> params, Connection conn) {
 		this(name, params, null, conn);
 	}
@@ -81,7 +83,7 @@ public class JRDefaultNuclosDataSource implements JRNuclosDataSource {
 		this.parent = parent;
 		this.conn = conn;
 	}
-	
+
 	@Autowired
 	final void setDatasourceFacade(DatasourceFacadeLocal datasourceFacade) {
 		this.datasourcefacade = datasourceFacade;
@@ -177,6 +179,9 @@ public class JRDefaultNuclosDataSource implements JRNuclosDataSource {
 			if (!result) {
 				finalize();
 			}
+			else {
+				size++;
+			}
 		}
 		catch (SQLException ex) {
 			throw new NuclosFatalException(ex);
@@ -251,4 +256,11 @@ public class JRDefaultNuclosDataSource implements JRNuclosDataSource {
 		return new JRDefaultNuclosDataSource(name, params, this, conn);
 	}
 
+	/**
+	 * Get the total size of the main report set (after the datasource has been processed completely)
+	 * @return Number of rows in result set.
+	 */
+	public int getSize() {
+		return size;
+	}
 }

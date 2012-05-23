@@ -64512,5 +64512,20 @@
     "resourceID": "WorkspaceEditor.alwaysreset",
     "locale": "de",
     "text": "Zuletzt geöffnete Tabs immer auf Vorlage zurücksetzen"
+  },
+  {
+    "resourceID": "report.exception.nodata",
+    "locale": "i-default",
+    "text": "The datasource returned no data."
+  },
+  {
+    "resourceID": "report.exception.nodata",
+    "locale": "en",
+    "text": "The datasource returned no data."
+  },
+  {
+    "resourceID": "report.exception.nodata",
+    "locale": "de",
+    "text": "Die Datenquelle hat keine Daten zurückgegeben."
   }
 ]
