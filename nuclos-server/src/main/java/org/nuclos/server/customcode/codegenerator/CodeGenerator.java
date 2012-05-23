@@ -38,6 +38,10 @@ public interface CodeGenerator {
 	
 	String getPrefix();
 	
+	int getPrefixAndHeaderLineCount();
+	
+	int getPrefixAndHeaderOffset();
+	
 	void writeSource(Writer writer, JavaSourceAsString src) throws IOException;
 
 	public static class JavaSourceAsString extends SimpleJavaFileObject {
@@ -49,13 +53,21 @@ public interface CodeGenerator {
 		private final String entityname;
 		private final Long id;
 
-		protected JavaSourceAsString(String name, String prefix, String source, String entity, Long id) {
+		private final long lineDelta;
+		
+		private final long posDelta;
+
+		protected JavaSourceAsString(String name, String prefix, String source, 
+				String entity, Long id, long lineDelta, long posDelta) {
+			
 			super(URI.create(name.replace('.', '/') + Kind.SOURCE.extension), Kind.SOURCE);
 			this.name = name;
 			this.prefix = prefix;
 			this.source = source;
 			this.entityname = entity;
 			this.id = id;
+			this.lineDelta = lineDelta;
+			this.posDelta = posDelta;
 		}
 		
 		public String getPrefix() {
@@ -64,6 +76,14 @@ public interface CodeGenerator {
 		
 		public String getSource() {
 			return source;
+		}
+
+		public long getLineDelta() {
+			return lineDelta;
+		}
+
+		public long getPositionDelta() {
+			return posDelta;
 		}
 
 		@Override

@@ -24,6 +24,7 @@ import java.util.Date;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common2.LangUtils;
+import org.nuclos.common2.StringUtils;
 import org.nuclos.server.customcode.valueobject.CodeVO;
 
 public class PlainCodeGenerator implements CodeGenerator {
@@ -67,6 +68,16 @@ public class PlainCodeGenerator implements CodeGenerator {
 	}
 
 	@Override
+	public int getPrefixAndHeaderLineCount() {
+		return StringUtils.countLines(getPrefix());
+	}
+
+	@Override
+	public int getPrefixAndHeaderOffset() {
+		return getPrefix().length();
+	}
+
+	@Override
 	public void writeSource(Writer writer, JavaSourceAsString src) throws IOException {
 		writer.write(src.getPrefix());
 		writer.write(src.getSource());
@@ -76,7 +87,8 @@ public class PlainCodeGenerator implements CodeGenerator {
 	public Iterable<? extends JavaSourceAsString> getSourceFiles() {
 		return Collections.singletonList(new JavaSourceAsString(
 				codeVO.getName(), getPrefix(), codeVO.getSource(), 
-				NuclosEntity.CODE.getEntityName(), codeVO.getId() == null ? null : codeVO.getId().longValue()));
+				NuclosEntity.CODE.getEntityName(), codeVO.getId() == null ? null : codeVO.getId().longValue(),
+				getPrefixAndHeaderLineCount(), getPrefixAndHeaderOffset()));
 	}
 
 	@Override
