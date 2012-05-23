@@ -113,15 +113,15 @@ import org.nuclos.server.statemodel.valueobject.StateVO;
 
 /**
  * This Class generates the LayoutML.
- * 
+ *
  * Every {@link WYSIWYGLayoutEditorPanel} returns its {@link TableLayout} and
  * {@link WYSIWYGComponent} and the {@link WYSIWYGComponent} returns its
  * {@link ComponentProperties}.
- * 
+ *
  * <br>
  * Created by Novabit Informationssysteme GmbH <br>
  * Please visit <a href="http://www.novabit.de">www.novabit.de</a>
- * 
+ *
  * @author <a href="mailto:hartmut.beckschulze@novabit.de">hartmut.beckschulze</a>
  * @version 01.00.00
  */
@@ -136,7 +136,7 @@ public class LayoutMLGenerator implements LayoutMLConstants {
 	 * Header
 	 * Components
 	 * Rules
-	 * 
+	 *
 	 * @param editorPanel
 	 * @return
 	 * @throws CommonValidationException
@@ -180,12 +180,12 @@ public class LayoutMLGenerator implements LayoutMLConstants {
 
 		return block.toString();
 	}
-	
+
 	/**
 	 * Method returning the Layoutml for the Property {@link WYSIWYGInitialFocusComponent}
 	 * @param c
 	 * @param blockDeep
-	 * @return 
+	 * @return
 	 */
 	private synchronized StringBuffer getLayoutMLForInitialFocusComponent(WYSIWYGLayoutEditorPanel c, int blockDeep) {
 		if (c.getInitialFocusComponent() != null) {
@@ -204,11 +204,11 @@ public class LayoutMLGenerator implements LayoutMLConstants {
 	/**
 	 * Method returning the Layoutml for {@link WYSIWYGComponent}
 	 * Does decide what kind of processor is needed (chooses with "instanceof")
-	 * 
+	 *
 	 * @param c
 	 * @param tableLayout
 	 * @param blockDeep
-	 * @return 
+	 * @return
 	 */
 	private synchronized StringBuffer getLayoutMLForComponent(WYSIWYGComponent c, TableLayout tableLayout, int blockDeep) throws CommonValidationException {
 		StringBuffer sb = new StringBuffer();
@@ -248,7 +248,7 @@ public class LayoutMLGenerator implements LayoutMLConstants {
 
 	/**
 	 * Method converting the {@link WYSIWYGSubForm} to LayoutML XML.
-	 * 
+	 *
 	 * @see LayoutMLBlock
 	 * @param subform
 	 * @param tableLayout
@@ -290,8 +290,8 @@ public class LayoutMLGenerator implements LayoutMLConstants {
 
 	/**
 	 * Method converting the {@link WYSIWYGSubFormColumn} to LayoutML XML.
-	 * 
-	 * 
+	 *
+	 *
 	 * @see LayoutMLBlock
 	 * @param column
 	 * @param tableLayout
@@ -304,20 +304,20 @@ public class LayoutMLGenerator implements LayoutMLConstants {
 		block.append(getLayoutMLAttributesFromProperties(WYSIWYGSubFormColumn.PROPERTIES_TO_LAYOUTML_ATTRIBUTES, column.getProperties()));
 		block.append(">");
 
-		block.append(getLayoutMLTranslations(column.getProperties(), blockDeep + 1));		
-		WYSIWYGValuelistProvider wysiwygStaticValuelistProvider = (WYSIWYGValuelistProvider) column.getProperties().getProperty(WYSIWYGCollectableComponent.PROPERTY_VALUELISTPROVIDER).getValue();		
+		block.append(getLayoutMLTranslations(column.getProperties(), blockDeep + 1));
+		WYSIWYGValuelistProvider wysiwygStaticValuelistProvider = (WYSIWYGValuelistProvider) column.getProperties().getProperty(WYSIWYGCollectableComponent.PROPERTY_VALUELISTPROVIDER).getValue();
 		if (wysiwygStaticValuelistProvider != null && (!wysiwygStaticValuelistProvider.getType().equals(""))) {
 			block.append(getLayoutMLValueListProvider(wysiwygStaticValuelistProvider, blockDeep + 1));
 		}
-		
+
 		block.append("</" + ELEMENT_SUBFORMCOLUMN + ">");
 		return block.getStringBuffer();
 	}
 
 	/**
 	 * Method converting the {@link WYSIWYGSplitPane} to LayoutML XML.
-	 * 
-	 * 
+	 *
+	 *
 	 * @see LayoutMLBlock
 	 * @param splitPane
 	 * @param tableLayout
@@ -361,8 +361,8 @@ public class LayoutMLGenerator implements LayoutMLConstants {
 
 	/**
 	 * Method converting the {@link WYSIWYGSplitPane} Constraints to LayoutML XML.
-	 * 
-	 * 
+	 *
+	 *
 	 * @see LayoutMLBlock
 	 * @param position
 	 * @param blockDeep
@@ -381,8 +381,8 @@ public class LayoutMLGenerator implements LayoutMLConstants {
 
 	/**
 	 * Method converting the {@link WYSIWYGScrollPane} to LayoutML XML.
-	 * 
-	 * 
+	 *
+	 *
 	 * @see LayoutMLBlock
 	 * @param scrollPane
 	 * @param tableLayout
@@ -414,8 +414,8 @@ public class LayoutMLGenerator implements LayoutMLConstants {
 
 	/**
 	 * Method converting the {@link WYSIWYGTabbedPane} to LayoutML XML.
-	 * 
-	 * 
+	 *
+	 *
 	 * @see LayoutMLBlock
 	 * @param tabPane
 	 * @param tableLayout
@@ -455,8 +455,8 @@ public class LayoutMLGenerator implements LayoutMLConstants {
 
 	/**
 	 * Method converting the {@link WYSIWYGLayoutEditorPanel} to LayoutML XML.
-	 * 
-	 * 
+	 *
+	 *
 	 * @see LayoutMLBlock
 	 * @param panel
 	 * @param blockDeep
@@ -493,8 +493,8 @@ public class LayoutMLGenerator implements LayoutMLConstants {
 
 	/**
 	 * Method converting the {@link TableLayoutPanel} to LayoutML XML.
-	 * 
-	 * 
+	 *
+	 *
 	 * @see LayoutMLBlock
 	 * @param tableLayoutPanel
 	 * @param blockDeep
@@ -539,7 +539,7 @@ public class LayoutMLGenerator implements LayoutMLConstants {
 		block.append("</" + ELEMENT_PANEL + ">");
 		return block.getStringBuffer();
 	}
-	
+
 	/**
 	 * NUCLEUSINT-435
 	 * Avoid duplicate Rules
@@ -553,20 +553,20 @@ public class LayoutMLGenerator implements LayoutMLConstants {
 				this.layoutMLRules.addRule(singleRule);
 				continue;
 			}
-			
-			for (LayoutMLRule otherRule : this.layoutMLRules.getRules()){					
+
+			for (LayoutMLRule otherRule : this.layoutMLRules.getRules()){
 				if (flatCompareRules(singleRule, otherRule)){
 					contains = true;
 					break;
 				}
 			}
-			
+
 			if (!contains)
 				this.layoutMLRules.addRule(singleRule);
-			
+
 		}
 	}
-	
+
 	/**
 	 * NUCLEUSINT-435
 	 * A Rule is the same if the Eventtype (and its fields), the Actions and the Rulename are equal
@@ -603,8 +603,8 @@ public class LayoutMLGenerator implements LayoutMLConstants {
 
 	/**
 	 * Method converting the {@link TableLayout} columns and rows to LayoutML XML.
-	 * 
-	 * 
+	 *
+	 *
 	 * @see LayoutMLBlock
 	 * @param tableLayout
 	 * @param blockDeep
@@ -637,8 +637,8 @@ public class LayoutMLGenerator implements LayoutMLConstants {
 
 	/**
 	 * Method converting the {@link WYSIWYGUniversalComponent} to LayoutML XML.
-	 * 
-	 * 
+	 *
+	 *
 	 * @see LayoutMLBlock
 	 * @param c
 	 * @param tableLayout
@@ -653,7 +653,7 @@ public class LayoutMLGenerator implements LayoutMLConstants {
 		//NUCLEUSINT-385
 		/**
 		 * The type WYSIWYGCollectableOptionGroup is a WYSIWYGUniversalComponent.
-		 * There is no need to generate the 
+		 * There is no need to generate the
 		 */
 		if (c instanceof WYSIWYGCollectableTextfield) {
 			block.append(" " + ATTRIBUTE_CONTROLTYPE + "=\"" + CONTROLTYPE_TEXTFIELD + "\" " + ATTRIBUTE_SHOWONLY + "=\"" + ATTRIBUTEVALUE_CONTROL + "\"");
@@ -679,7 +679,7 @@ public class LayoutMLGenerator implements LayoutMLConstants {
 			block.append(" " + ATTRIBUTE_CONTROLTYPE + "=\"" + CONTROLTYPE_HYPERLINK + "\" " + ATTRIBUTE_SHOWONLY + "=\"" + ATTRIBUTEVALUE_CONTROL + "\"");
 		} else if (c instanceof WYSIWYGCollectableEmail) {
 			block.append(" " + ATTRIBUTE_CONTROLTYPE + "=\"" + CONTROLTYPE_EMAIL + "\" " + ATTRIBUTE_SHOWONLY + "=\"" + ATTRIBUTEVALUE_CONTROL + "\"");
-		} 
+		}
 
 		block.append(">");
 
@@ -719,8 +719,8 @@ public class LayoutMLGenerator implements LayoutMLConstants {
 
 	/**
 	 * Method converting the {@link WYSIWYGStaticTitledSeparator} to LayoutML XML.
-	 * 
-	 * 
+	 *
+	 *
 	 * @see LayoutMLBlock
 	 * @param c
 	 * @param tableLayout
@@ -749,8 +749,8 @@ public class LayoutMLGenerator implements LayoutMLConstants {
 
 	/**
 	 * Method converting the {@link WYSIWYGStaticSeparator} to LayoutML XML.
-	 * 
-	 * 
+	 *
+	 *
 	 * @see LayoutMLBlock
 	 * @param c
 	 * @param tableLayout
@@ -782,8 +782,8 @@ public class LayoutMLGenerator implements LayoutMLConstants {
 
 	/**
 	 * Method converting the {@link WYSIWYGStaticButton} to LayoutML XML.
-	 * 
-	 * 
+	 *
+	 *
 	 * @see LayoutMLBlock
 	 * @param c
 	 * @param tableLayout
@@ -821,14 +821,14 @@ public class LayoutMLGenerator implements LayoutMLConstants {
 			try {
 				String sEntity = c.getParentEditor().getMetaInformation().getCollectableEntity().getName();
 				final Integer iModuleId;
-				if (Modules.getInstance().existModule(sEntity)) 
+				if (Modules.getInstance().existModule(sEntity))
 					iModuleId = Modules.getInstance().getModuleByEntityName(sEntity).getIntId();
 				else
 					iModuleId = IdUtils.unsafeToId(MetaDataClientProvider.getInstance().getEntity(sEntity).getId());
-				
+
 				String generator = (String)c.getProperties().getProperty(WYSIWYGStaticButton.PROPERTY_ACTIONCOMMAND_PROPERTIES).getValue();
 				Collection<GeneratorActionVO> collGenerators = GeneratorActions.getGeneratorActions(iModuleId);
-				
+
 				GeneratorActionVO generatorActionVO = null;
 				for (GeneratorActionVO gen: collGenerators) {
 					if (gen.getName().equals(generator)) {
@@ -856,9 +856,9 @@ public class LayoutMLGenerator implements LayoutMLConstants {
 				} else {
 					collStates = Collections.emptyList();
 				}
-				
+
 				String targetState = (String)c.getProperties().getProperty(WYSIWYGStaticButton.PROPERTY_ACTIONCOMMAND_PROPERTIES).getValue();
-				
+
 				StateVO stateVO = null;
 				for (StateVO state: collStates) {
 					if (state.getNumeral().toString().equals(targetState)) {
@@ -866,7 +866,7 @@ public class LayoutMLGenerator implements LayoutMLConstants {
 						break;
 					}
 				}
-				
+
 				if (stateVO != null) {
 					WYSIYWYGProperty temp = new WYSIYWYGProperty();
 					temp.addWYSIYWYGPropertySet(new WYSIYWYGPropertySet("targetState", stateVO.getNumeral() + ""));
@@ -883,18 +883,18 @@ public class LayoutMLGenerator implements LayoutMLConstants {
 				block.append(getLayoutMLCollectableComponentProperty(collectableComponentProperties, blockDeep + 1));
 			}
 		}
-		
+
 		block.append(getLayoutMLTranslations(c.getProperties(), blockDeep + 1));
 		block.linebreak();
 		block.append("</" + ELEMENT_BUTTON + ">");
 
 		return block.getStringBuffer();
 	}
-	
+
 	/**
 	 * Method converting the {@link WYSIWYGStaticTextfield} to LayoutML XML.
-	 * 
-	 * 
+	 *
+	 *
 	 * @see LayoutMLBlock
 	 * @param c
 	 * @param tableLayout
@@ -922,8 +922,8 @@ public class LayoutMLGenerator implements LayoutMLConstants {
 
 	/**
 	 * Method converting the {@link WYSIWYGStaticTextfield} to LayoutML XML.
-	 * 
-	 * 
+	 *
+	 *
 	 * @see LayoutMLBlock
 	 * @param c
 	 * @param tableLayout
@@ -947,11 +947,11 @@ public class LayoutMLGenerator implements LayoutMLConstants {
 
 		return block.getStringBuffer();
 	}
-	
+
 	/**
 	 * Method converting the {@link WYSIWYGStaticTextarea} to LayoutML XML.
-	 * 
-	 * 
+	 *
+	 *
 	 * @see LayoutMLBlock
 	 * @param c
 	 * @param tableLayout
@@ -978,8 +978,8 @@ public class LayoutMLGenerator implements LayoutMLConstants {
 
 	/**
 	 * Method converting the {@link WYSIWYGStaticLabel} to LayoutML XML.
-	 * 
-	 * 
+	 *
+	 *
 	 * @see LayoutMLBlock
 	 * @param c
 	 * @param tableLayout
@@ -1006,8 +1006,8 @@ public class LayoutMLGenerator implements LayoutMLConstants {
 
 	/**
 	 * Method converting the {@link WYSIWYGStaticComboBox} to LayoutML XML.
-	 * 
-	 * 
+	 *
+	 *
 	 * @see LayoutMLBlock
 	 * @param c
 	 * @param tableLayout
@@ -1033,8 +1033,8 @@ public class LayoutMLGenerator implements LayoutMLConstants {
 
 	/**
 	 * Method converting the {@link ComponentProperties} to LayoutML XML.
-	 * 
-	 * 
+	 *
+	 *
 	 * @see LayoutMLBlock
 	 * @param propertyAttributeLink
 	 * @param properties
@@ -1052,8 +1052,8 @@ public class LayoutMLGenerator implements LayoutMLConstants {
 
 	/**
 	 * Method converting the {@link PropertyValue} to LayoutML XML.
-	 * 
-	 * 
+	 *
+	 *
 	 * @see LayoutMLBlock
 	 * @param property
 	 * @param attributeName
@@ -1067,8 +1067,8 @@ public class LayoutMLGenerator implements LayoutMLConstants {
 			if (ATTRIBUTE_SHOWONLY.equals(attributeName))
 				if (WYSIWYGUniversalComponent.ATTRIBUTEVALUE_LABEL_AND_CONTROL.equals(property.getValue().toString()))
 					return sb;
-			
-			
+
+
 			sb.append(" ");
 			sb.append(attributeName);
 			sb.append("=\"");
@@ -1111,8 +1111,8 @@ public class LayoutMLGenerator implements LayoutMLConstants {
 
 	/**
 	 * Method converting the {@link WYSIWYGTabbedPane} Constraints to LayoutML XML.
-	 * 
-	 * 
+	 *
+	 *
 	 * @see LayoutMLBlock
 	 * @param title
 	 * @param enabled
@@ -1131,7 +1131,7 @@ public class LayoutMLGenerator implements LayoutMLConstants {
 			block.append("\" " + ATTRIBUTE_INTERNALNAME + "=\"");
 			block.append(StringUtils.xmlEncode(internalname));
 		}
-		if(mnemonic != null && mnemonic > 0) {			
+		if(mnemonic != null && mnemonic > 0) {
 			block.append("\" " + ATTRIBUTE_MNEMONIC + "=\"");
 			block.append(mnemonic);
 		}
@@ -1150,8 +1150,8 @@ public class LayoutMLGenerator implements LayoutMLConstants {
 
 	/**
 	 * Method converting the {@link TableLayoutConstraints} to LayoutML XML.
-	 * 
-	 * 
+	 *
+	 *
 	 * @see LayoutMLBlock
 	 * @param c
 	 * @param tableLayout
@@ -1185,8 +1185,8 @@ public class LayoutMLGenerator implements LayoutMLConstants {
 
 	/**
 	 * Method converting PreferredSize to LayoutML XML.
-	 * 
-	 * 
+	 *
+	 *
 	 * @see LayoutMLBlock
 	 * @param cp
 	 * @param blockDeep
@@ -1209,11 +1209,11 @@ public class LayoutMLGenerator implements LayoutMLConstants {
 		}
 		return new StringBuffer();
 	}
-	
+
 	/**
 	 * Method converting StrictSize to LayoutML XML.
-	 * 
-	 * 
+	 *
+	 *
 	 * @see LayoutMLBlock
 	 * @param cp
 	 * @param blockDeep
@@ -1236,10 +1236,10 @@ public class LayoutMLGenerator implements LayoutMLConstants {
 		}
 		return new StringBuffer();
 	}
-	
+
 	/**
 	 * Only for WYSIWYGLayoutEditorPanel!
-	 * 
+	 *
 	 * @param cp
 	 * @param blockDeep
 	 * @return {@link StringBuffer} with the LayoutML
@@ -1263,8 +1263,8 @@ public class LayoutMLGenerator implements LayoutMLConstants {
 
 	/**
 	 * Method converting the Description {@link PropertyValueDescription} to LayoutML XML.
-	 * 
-	 * 
+	 *
+	 *
 	 * @see LayoutMLBlock
 	 * @param subform
 	 * @param tableLayout
@@ -1284,8 +1284,8 @@ public class LayoutMLGenerator implements LayoutMLConstants {
 
 	/**
 	 * Method converting the Description {@link PropertyValueFont} to LayoutML XML.
-	 * 
-	 * 
+	 *
+	 *
 	 * @see LayoutMLBlock
 	 * @param subform
 	 * @param tableLayout
@@ -1303,7 +1303,7 @@ public class LayoutMLGenerator implements LayoutMLConstants {
 
 	/**
 	 * Only for WYSIWYGLayoutEditorPanel!
-	 * 
+	 *
 	 * @param cp
 	 * @param blockDeep
 	 * @return {@link StringBuffer} with the LayoutML
@@ -1314,7 +1314,7 @@ public class LayoutMLGenerator implements LayoutMLConstants {
 
 			PropertyValueBorder value = (PropertyValueBorder) cp.getProperty(WYSIWYGComponent.PROPERTY_BORDER);
 
-			
+
 			if (value.getValue() != null) {
 				Border border = value.getValue();
 				/** Borders are nested, there can be one or more border */
@@ -1337,7 +1337,7 @@ public class LayoutMLGenerator implements LayoutMLConstants {
 
 	/**
 	 * Method converting the ClearBorder to LayoutML XML.
-	 * 
+	 *
 	 * @param blockDeep
 	 * @return {@link StringBuffer} with the LayoutML
 	 */
@@ -1349,7 +1349,7 @@ public class LayoutMLGenerator implements LayoutMLConstants {
 
 	/**
 	 * Method converting Border(s) to LayoutML XML.
-	 * 
+	 *
 	 * @param blockDeep
 	 * @param border
 	 * @return {@link StringBuffer} with the LayoutML
@@ -1397,7 +1397,7 @@ public class LayoutMLGenerator implements LayoutMLConstants {
 
 	/**
 	 * Method converting {@link LayoutMLRules}
-	 * 
+	 *
 	 * @param layoutMLRules
 	 * @param blockDeep
 	 * @return {@link StringBuffer} with the LayoutML
@@ -1416,7 +1416,7 @@ public class LayoutMLGenerator implements LayoutMLConstants {
 
 	/**
 	 * Method converting {@link LayoutMLRule}
-	 * 
+	 *
 	 * @param layoutMLRule
 	 * @param blockDeep
 	 * @return {@link StringBuffer} with the LayoutML
@@ -1442,7 +1442,7 @@ public class LayoutMLGenerator implements LayoutMLConstants {
 
 	/**
 	 * Method converting {@link LayoutMLRuleEventType}
-	 * 
+	 *
 	 * @param layoutMLRuleEventType
 	 * @param blockDeep
 	 * @return {@link StringBuffer} with the LayoutML
@@ -1467,9 +1467,9 @@ public class LayoutMLGenerator implements LayoutMLConstants {
 
 	/**
 	 * Method converting {@link LayoutMLRuleCondition}
-	 * 
+	 *
 	 * NOT INTERPRETED BY LAYOUTMLPARSER!
-	 * 
+	 *
 	 * @param layoutMLRuleCondition
 	 * @param blockDeep
 	 * @return {@link StringBuffer} with the LayoutML
@@ -1491,9 +1491,9 @@ public class LayoutMLGenerator implements LayoutMLConstants {
 
 	/**
 	 * Method converting {@link LayoutMLRuleActions}
-	 * 
+	 *
 	 * NOT INTERPRETED BY LAYOUTMLPARSER!
-	 * 
+	 *
 	 * @param layoutMLRuleActions
 	 * @param blockDeep
 	 * @return {@link StringBuffer} with the LayoutML
@@ -1516,7 +1516,7 @@ public class LayoutMLGenerator implements LayoutMLConstants {
 
 	/**
 	 * Method converting {@link LayoutMLRuleAction}
-	 * 
+	 *
 	 * @param layoutMLRuleAction
 	 * @param blockDeep
 	 * @return {@link StringBuffer} with the LayoutML
@@ -1561,10 +1561,10 @@ public class LayoutMLGenerator implements LayoutMLConstants {
 
 		return block.getStringBuffer();
 	}
-	
+
 	/**
 	 * Method for converting {@link WYSIWYGValuelistProvider} to LayoutML XML
-	 * 
+	 *
 	 * @param wysiwygStaticValuelistProvider
 	 * @param blockDeep
 	 * @return {@link StringBuffer} with the LayoutML
@@ -1591,7 +1591,7 @@ public class LayoutMLGenerator implements LayoutMLConstants {
 
 	/**
 	 * Method for converting {@link WYSIWYGOptions} to LayoutML XML
-	 * 
+	 *
 	 * @param options
 	 * @param blockDeep
 	 * @return {@link StringBuffer} with the LayoutML
@@ -1617,7 +1617,7 @@ public class LayoutMLGenerator implements LayoutMLConstants {
 
 	/**
 	 * Method for converting {@link WYSIWYGOption} to LayoutML XML.
-	 * 
+	 *
 	 * @param option
 	 * @param blockDeep
 	 * @return {@link StringBuffer} with the LayoutML
@@ -1642,7 +1642,7 @@ public class LayoutMLGenerator implements LayoutMLConstants {
 
 	/**
 	 * Method for converting {@link WYSIYWYGProperty} to LayoutML XML.
-	 * 
+	 *
 	 * @param wysiwygProperty
 	 * @param blockDeep
 	 * @return {@link StringBuffer} with the LayoutML
@@ -1666,7 +1666,7 @@ public class LayoutMLGenerator implements LayoutMLConstants {
 
 	/**
 	 * Method for converting {@link WYSIYWYGParameter} to LayoutML XML.
-	 * 
+	 *
 	 * @param wysiwygParameter
 	 * @param blockDeep
 	 * @return {@link StringBuffer} with the LayoutML
@@ -1683,10 +1683,10 @@ public class LayoutMLGenerator implements LayoutMLConstants {
 
 		return block.getStringBuffer();
 	}
-	
+
 	/**
 	 * Method for converting {@link Color} to LayoutML XML.
-	 * 
+	 *
 	 * @param color
 	 * @return {@link StringBuffer} with the LayoutML
 	 */
@@ -1704,10 +1704,10 @@ public class LayoutMLGenerator implements LayoutMLConstants {
 		return sb;
 
 	}
-	
+
 	/**
 	 *  Method for converting {@link Dimension} minimumSize to LayoutML XML.
-	 * 
+	 *
 	 * @param c
 	 * @param blockDeep
 	 * @return {@link StringBuffer} with the LayoutML
@@ -1731,7 +1731,7 @@ public class LayoutMLGenerator implements LayoutMLConstants {
 
 	/**
 	 *  Method for converting {@link WYSIWYGInitialSortingOrder} minimumSize to LayoutML XML.
-	 * 
+	 *
 	 * @param value
 	 * @param blockDeep
 	 * @return {@link StringBuffer} with the LayoutML
@@ -1755,7 +1755,7 @@ public class LayoutMLGenerator implements LayoutMLConstants {
 		}
 		return new StringBuffer();
 	}
-			
+
 	private synchronized StringBuffer getLayoutMLTranslations(TranslationMap translations, int blockDeep) {
 		if (translations != null && !translations.isEmpty()) {
 			LayoutMLBlock block = new LayoutMLBlock(blockDeep);
@@ -1776,7 +1776,7 @@ public class LayoutMLGenerator implements LayoutMLConstants {
 		}
 		return new StringBuffer();
 	}
-	
+
 	private synchronized StringBuffer getScriptProperty(String property, String element, ComponentProperties cp, int blockDeep) {
 		LayoutMLBlock block = new LayoutMLBlock(blockDeep);
 
@@ -1792,14 +1792,14 @@ public class LayoutMLGenerator implements LayoutMLConstants {
 		block.linebreak();
 		block.append("<![CDATA[");
 		block.linebreak();
-		block.append(StringUtils.xmlEncode(script.getSource()));
+		block.append(script.getSource());
 		block.linebreak();
 		block.append("]]>");
 		block.linebreak();
 		block.append("</" + element + ">");
 		return block.getStringBuffer();
 	}
-	
+
 	/** LayoutMLDependencies are not supported by the Parser, is therefor commented out */
 	// private synchronized StringBuffer
 	// getLayoutMLLayoutMLDependencies(LayoutMLDependencies
@@ -1836,18 +1836,18 @@ public class LayoutMLGenerator implements LayoutMLConstants {
 
 	/**
 	 * Small Helperclass used for containing the LayoutML XML and making "pretty" XML by Indendation and new lines.
-	 * 
+	 *
 	 * Is using a StringBuffer internal so there is no need to work on Strings in the LayoutML Generationprocess
-	 * 
+	 *
 	 * <br>
 	 * Created by Novabit Informationssysteme GmbH <br>
 	 * Please visit <a href="http://www.novabit.de">www.novabit.de</a>
-	 * 
+	 *
 	 * @author <a href="mailto:maik.stueker@novabit.de">maik.stueker</a>
 	 * @version 01.00.00
 	 */
-	
-	
+
+
 	private class LayoutMLBlock {
 
 		private static final String distanceString = "  ";
