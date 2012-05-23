@@ -304,6 +304,17 @@ public class WsdlCodeGenerator implements CodeGenerator {
 	}
 
 	@Override
+	public String toString() {
+		final StringBuilder result = new StringBuilder("WsdlCG[file=");
+		result.append(wsdl.getPath());
+		if (sourcefiles != null) {
+			result.append(",src=").append(sourcefiles);
+		}
+		result.append("]");
+		return result.toString();
+	}
+	
+	@Override
 	public byte[] postCompile(String name, byte[] bytecode) {
 		return bytecode;
 	}

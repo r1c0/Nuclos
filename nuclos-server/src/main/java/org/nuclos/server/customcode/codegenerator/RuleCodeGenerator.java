@@ -24,8 +24,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.nuclos.common2.LangUtils;
@@ -183,6 +181,15 @@ public class RuleCodeGenerator<T> implements CodeGenerator {
 		}
 	}
 
+	@Override
+	public String toString() {
+		final StringBuilder result = new StringBuilder("RuleCG[rule=");
+		result.append(ruleVO.getRule());
+		result.append(",class=").append(getClassName());
+		result.append("]");
+		return result.toString();
+	}
+	
 	public String getClassName() {
 		return type.getClassName(ruleVO);
 	}

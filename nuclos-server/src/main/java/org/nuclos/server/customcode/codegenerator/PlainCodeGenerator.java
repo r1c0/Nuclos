@@ -124,4 +124,13 @@ public class PlainCodeGenerator implements CodeGenerator {
 			}
 		}
 	}
+	
+	@Override
+	public String toString() {
+		final StringBuilder result = new StringBuilder("PlainCG[code=");
+		result.append(codeVO.getName());
+		result.append("]");
+		return result.toString();
+	}
+	
 }
