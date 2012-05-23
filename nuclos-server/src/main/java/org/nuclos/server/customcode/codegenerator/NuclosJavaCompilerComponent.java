@@ -258,11 +258,10 @@ public class NuclosJavaCompilerComponent {
 		else {
 			artifacts.add(generator);
 		}
-		check();
+		check(artifacts);
 	}
 		
-	public synchronized void check() throws NuclosCompileException {	
-		final List<CodeGenerator> artifacts = getAllArtifacts();
+	private synchronized void check(List<CodeGenerator> artifacts) throws NuclosCompileException {
 		if (JARFILE.exists()) {
 			final NuclosJavaCompiler c = new NuclosJavaCompiler();
 			try {
@@ -282,6 +281,11 @@ public class NuclosJavaCompilerComponent {
 		}
 	}
 
+	synchronized void checkSrcOnDisk() throws NuclosCompileException {	
+		final List<CodeGenerator> artifacts = getAllArtifacts();
+		check(artifacts);
+	}
+	
 	/**
 	 * Returns the expanded class path for system parameter {@code nuclos.codegenerator.class.path}.
 	 * Note: WSDL libraries are not included.

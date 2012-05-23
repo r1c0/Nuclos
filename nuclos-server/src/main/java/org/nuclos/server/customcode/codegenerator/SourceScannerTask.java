@@ -129,14 +129,6 @@ class SourceScannerTask extends TimerTask {
 			LOG.debug("No changes on disk");
 			return;
 		}
-		// Try to compile and only proceed if there are no errors
-		try {
-			nuclosJavaCompilerComponent.check();
-		}
-		catch (NuclosCompileException e) {
-			LOG.info("Changes on disk but compile errors: " + e.toString());
-			return;
-		}
 		
 		// Parse files on disk (to get type and id)
 		final List<GeneratedFile> java = new ArrayList<GeneratedFile>();
@@ -159,6 +151,15 @@ class SourceScannerTask extends TimerTask {
 		}
 		if (java.isEmpty() && wsdl.isEmpty()) {
 			LOG.warn("Changes on disk, but unparsable");
+			return;
+		}
+		
+		// Try to compile and only proceed if there are no errors
+		try {
+			nuclosJavaCompilerComponent.checkSrcOnDisk();
+		}
+		catch (NuclosCompileException e) {
+			LOG.info("Changes on disk but compile errors: " + e.toString());
 			return;
 		}
 		
