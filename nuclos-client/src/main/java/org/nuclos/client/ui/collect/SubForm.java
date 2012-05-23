@@ -1280,14 +1280,16 @@ public class SubForm extends JPanel
 	}
 
 	public final void resetDefaultColumnWidths() {
-		for (int iColumn = 0; iColumn < subformtbl.getColumnCount(); iColumn++) {
-			final TableColumn tableColumn = subformtbl.getColumnModel().getColumn(iColumn);
-			final int width = getDefaultColumnWidth(tableColumn, iColumn);
-			tableColumn.setPreferredWidth(width);
-			tableColumn.setWidth(width);
+		if (subformtbl != null) {
+			for (int iColumn = 0; iColumn < subformtbl.getColumnCount(); iColumn++) {
+				final TableColumn tableColumn = subformtbl.getColumnModel().getColumn(iColumn);
+				final int width = getDefaultColumnWidth(tableColumn, iColumn);
+				tableColumn.setPreferredWidth(width);
+				tableColumn.setWidth(width);
+			}
+			useCustomColumnWidths = false;
+			subformtbl.revalidate();
 		}
-		useCustomColumnWidths = false;
-		subformtbl.revalidate();
 	}
 
 	private int getDefaultColumnWidth(TableColumn tc, int iColumn) {
