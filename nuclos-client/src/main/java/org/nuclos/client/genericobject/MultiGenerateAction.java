@@ -125,8 +125,6 @@ class MultiGenerateAction implements Action<Pair<Collection<EntityObjectVO>, Lon
 					SpringLocaleDelegate.getInstance().getMessageFromResource(rResult.getError()));
 		}
 		else {
-			// dead code
-			assert false;
 			String entity = MetaDataClientProvider.getInstance().getEntity(generatoractionvo.getTargetModuleId().longValue()).getEntity();
 			return SpringLocaleDelegate.getInstance().getMessage("R00022880",
 					"Object \"{0}\" successfully generated.",
