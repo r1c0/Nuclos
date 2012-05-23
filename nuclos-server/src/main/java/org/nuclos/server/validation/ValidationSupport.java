@@ -122,6 +122,9 @@ public class ValidationSupport implements BeanPostProcessor {
 			for (String entity : dependants.getEntityNames()) {
 				for (EntityObjectVO eo2 : dependants.getData(entity)) {
 					// ensure that entity name is set!
+					if (eo2.isFlagRemoved()) {
+						continue;
+					}
 					eo2.setEntity(entity);
 					c.setParent(eo.getEntity());
 					validate(eo2, eo2.getDependants(), c);
