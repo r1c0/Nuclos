@@ -29,6 +29,7 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.nuclos.common2.LangUtils;
+import org.nuclos.common2.StringUtils;
 import org.nuclos.server.common.RuleCache;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 import org.nuclos.server.ruleengine.valueobject.RuleVO;
@@ -37,8 +38,6 @@ import org.nuclos.server.ruleengine.valueobject.RuleVO;
  * Helper class for dealing with rule code.
  */
 public class RuleCodeGenerator<T> implements CodeGenerator {
-
-	private static final Pattern NEW_LINES = Pattern.compile("\\n|\\r\\n?");
 
 	public static abstract class AbstractRuleTemplateType<T> {
 
@@ -195,24 +194,18 @@ public class RuleCodeGenerator<T> implements CodeGenerator {
 		return cachedHeader;
 	}
 
+	@Override
 	public int getPrefixAndHeaderLineCount() {
-		return countLines(getPrefix()) + countLines(getHeader());
+		return StringUtils.countLines(getPrefix()) + StringUtils.countLines(getHeader());
 	}
 
-	private int getPrefixAndHeaderOffset() {
+	@Override
+	public int getPrefixAndHeaderOffset() {
 		return getPrefix().length() + getHeader().length();
 	}
 
 	private String getLabel() {
 		return MessageFormat.format(type.getLabel(), ruleVO.getRule());
-	}
-
-	private static int countLines(CharSequence cs) {
-		int count = 0;
-		Matcher matcher = NEW_LINES.matcher(cs);
-		while (matcher.find())
-			count++;
-		return count;
 	}
 
 	/**
@@ -227,18 +220,12 @@ public class RuleCodeGenerator<T> implements CodeGenerator {
 		
 		private final String label;
 		
-		private final long lineDelta;
-		
-		private final long posDelta;
-
 		protected RuleSourceAsString(String name, String prefix, 
 				String header, String source, String footer, 
 				String entity, long id , long lineDelta, long posDelta, String label) {
-			super(name, prefix, source, entity, id);
+			super(name, prefix, source, entity, id, lineDelta, posDelta);
 			this.header = header;
 			this.footer = footer;
-			this.lineDelta = lineDelta;
-			this.posDelta = posDelta;
 			this.label = label;
 		}
 
@@ -253,14 +240,6 @@ public class RuleCodeGenerator<T> implements CodeGenerator {
 		
 		public String getFooter() {
 			return footer;
-		}
-
-		public long getLineDelta() {
-			return lineDelta;
-		}
-
-		public long getPositionDelta() {
-			return posDelta;
 		}
 
 		@Override

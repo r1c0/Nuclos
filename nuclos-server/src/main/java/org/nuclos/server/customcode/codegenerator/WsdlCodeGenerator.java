@@ -205,6 +205,16 @@ public class WsdlCodeGenerator implements CodeGenerator {
 	}
 
 	@Override
+	public int getPrefixAndHeaderLineCount() {
+		return StringUtils.countLines(getPrefix());
+	}
+
+	@Override
+	public int getPrefixAndHeaderOffset() {
+		return getPrefix().length();
+	}
+
+	@Override
 	public void writeSource(Writer writer, JavaSourceAsString src) throws IOException {
 		writer.write(src.getPrefix());
 		writer.write(src.getSource());
@@ -241,7 +251,8 @@ public class WsdlCodeGenerator implements CodeGenerator {
 				for (File sourcefile : sourceFiles) {
 					String name = packageName + "." + sourcefile.getName().substring(0, sourcefile.getName().lastIndexOf('.'));
 					result.add(new JavaSourceAsString(name, getPrefix(), readFile(sourcefile), NuclosEntity.WEBSERVICE.getEntityName(), 
-							webservice.getId() == null ? null : ((Integer)webservice.getId()).longValue()));
+							webservice.getId() == null ? null : ((Integer)webservice.getId()).longValue(),
+							getPrefixAndHeaderLineCount(), getPrefixAndHeaderOffset()));
 				}
 				sourcefiles = result;
 			}

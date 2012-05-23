@@ -837,4 +837,15 @@ public class StringUtils {
 			return null;
 		}
 	}
+	
+	private static final Pattern NEW_LINES = Pattern.compile("\\n|\\r\\n?");
+
+	public static int countLines(CharSequence cs) {
+		int count = 0;
+		Matcher matcher = NEW_LINES.matcher(cs);
+		while (matcher.find())
+			count++;
+		return count;
+	}
+
 }	// class StringUtils

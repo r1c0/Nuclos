@@ -229,9 +229,8 @@ class NuclosJavaCompiler implements Closeable {
 				long dl = 0, dp = 0; // line and position deltas
 
 
-				if (source instanceof RuleSourceAsString) {
-					RuleSourceAsString t = (RuleSourceAsString) source;
-
+				if (source instanceof JavaSourceAsString) {
+					final JavaSourceAsString t = (JavaSourceAsString) source;
 					long line = diag.getLineNumber();
 					if (line != Diagnostic.NOPOS && source.getKind() == JavaFileObject.Kind.SOURCE) {
 						if (message.startsWith(line + ":"))
