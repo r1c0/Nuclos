@@ -23,6 +23,7 @@ import org.quartz.Job;
 import org.quartz.JobDetail;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
+import org.quartz.StatefulJob;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
@@ -36,21 +37,21 @@ import org.springframework.beans.factory.annotation.Configurable;
  * @version 01.00.00
  */
 @Configurable
-public class NuclosQuartzJob implements Job {
-	
+public class NuclosQuartzJob implements StatefulJob {
+
 	public static final String JOBGROUP_IMPORT = "import";
 
 	//
 
 	private final Job job;
 	private static String sUserName;
-	
+
 	private NuclosLocalServerSession nuclosLocalServerSession;
 
 	public NuclosQuartzJob(Job job) {
 		this.job = job;
 	}
-	
+
 	@Autowired
 	void setNuclosLocalServerSession(NuclosLocalServerSession nuclosLocalServerSession) {
 		this.nuclosLocalServerSession = nuclosLocalServerSession;
