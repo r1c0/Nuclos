@@ -97,7 +97,6 @@ import org.nuclos.client.ui.Icons;
 import org.nuclos.client.ui.SizeKnownListener;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.client.ui.URIMouseAdapter;
-import org.nuclos.client.ui.collect.FixedColumnRowHeader;
 import org.nuclos.client.ui.collect.FixedColumnRowHeader.HeaderTable;
 import org.nuclos.client.ui.collect.component.CollectableComponent;
 import org.nuclos.client.ui.collect.component.CollectableComponentFactory;
@@ -1065,6 +1064,14 @@ public class SubForm extends JPanel
 		final Column column = this.getColumn(cColumnName);
 		return (column != null) ? column.getWidth() : null;
 	}
+	
+	/**
+	 * Returns the column nextfocus component from the layout, or null if unspecified.
+	 */
+	public String getColumnNextFocusComponent(String cColumnName) {
+		final Column column = this.getColumn(cColumnName);
+		return (column != null) ? column.getNextFocusComponent() : null;
+	}
 
 	/**
 	 * @param sColumnName
@@ -1898,7 +1905,7 @@ public class SubForm extends JPanel
 		private SubformRowHeader rowheader;
 
 		private boolean newRowOnNext = false;
-
+		
 		// private SubformTableColumnModel myTableColumnModel;
 
 		private boolean closed = false;
@@ -1943,6 +1950,28 @@ public class SubForm extends JPanel
 			this.focusListSelectionListener = focusListSelectionListener;
 		}
 
+		private String prevComponent = null;
+		private String getComponentBefore(String identifier) {
+			String result = null;			
+			for (Column column : this.getSubForm().getColumns()) {
+				if (column.getNextFocusComponent() != null && column.getNextFocusComponent().equals(identifier)) {
+					result = column.getName();
+					if (prevComponent == null || prevComponent.equals(result))
+						return result;				}
+			}
+			return result;
+		}
+		private void setPrevComponent(String prevComponent) {
+			this.prevComponent = prevComponent;
+        	SubformRowHeader rowHeader = getSubForm().getSubformRowHeader();
+			if ((rowHeader.getHeaderTable() instanceof HeaderTable)) {
+				((HeaderTable)rowHeader.getHeaderTable()).setPreviousComponent(prevComponent);
+			}
+		}
+		public void setPreviousComponent(String prevComponent) {
+			this.prevComponent = prevComponent;
+		}
+		
 		@Override
 		public void changeSelection(int rowIndex, final int columnIndex, boolean toggle, boolean extend) {
 			final AWTEvent event = EventQueue.getCurrentEvent();
@@ -1952,11 +1981,15 @@ public class SubForm extends JPanel
 	            	newRowOnNext = false;
 	            	SubformRowHeader rowHeader = getSubForm().getSubformRowHeader();
 					boolean blnHasFixedRows = (rowHeader != null && rowHeader.getHeaderTable().getColumnCount() > 1);
-					if (blnHasFixedRows && columnIndex  == getColumnCount() - 1)
+					if (blnHasFixedRows && columnIndex == getColumnCount() - 1)
 	            		rowIndex = rowIndex + 1 == getRowCount() ? 0 : rowIndex + 1;
 	            }
 			}
-			changeSelection(rowIndex, columnIndex, toggle, extend, false);
+			if (event instanceof MouseEvent) {
+				super.changeSelection(rowIndex, columnIndex, toggle, extend);
+			}
+			else
+				changeSelection(rowIndex, columnIndex, toggle, extend, false);
 
 			int colCount = getColumnCount();
 			if(columnIndex == colCount-1) {
@@ -1968,17 +2001,81 @@ public class SubForm extends JPanel
 		            	newRowOnNext = false;
 				} else
 					newRowOnNext = true;
-			}
+			} else if (event instanceof MouseEvent)
+            	newRowOnNext = false;
 		}
-		public void changeSelection(final int rowIndex, final int columnIndex, boolean toggle, boolean extend, final boolean fixed) {
+		public void changeSelection(final int rwIndex, final int clIndex, boolean toggle, boolean extend, final boolean fixed) {
 			boolean bChange = true;
+			
+			String sNextColumn = getSelectedColumn() == -1 || fixed ? null : getSubForm().getColumnNextFocusComponent((String)getColumnModel().getColumn(getSelectedColumn()).getIdentifier());
+			
+			final AWTEvent event = EventQueue.getCurrentEvent();
+			
+			final int rowIndex = rwIndex;
+			int colIndex;
+			try {
+				if (event instanceof KeyEvent && !fixed) {
+					final KeyEvent ke = (KeyEvent)event;
+		            if(ke.isShiftDown() || ke.isControlDown()) {
+		            	sNextColumn = getComponentBefore((String)getColumnModel().getColumn(getSelectedColumn()).getIdentifier());
+		            }
+				}
+
+				setPrevComponent(null);
+				colIndex = sNextColumn == null || fixed ? clIndex : getColumnModel().getColumnIndex(sNextColumn);
+				if (sNextColumn != null) {
+					String colIdentifier = (String)getColumnModel().getColumn(getSelectedColumn()).getIdentifier();
+					if (event instanceof KeyEvent) {
+						final KeyEvent ke = (KeyEvent)event;
+			            if(ke.isShiftDown() || ke.isControlDown()) {
+			            	;//sNextColumn = null;
+			            } else
+							setPrevComponent(colIdentifier);
+					} else
+						setPrevComponent(colIdentifier);
+				}
+			} catch (IllegalArgumentException e) {
+				final SubformRowHeader rowHeader = getSubForm().getSubformRowHeader();
+				boolean blnHasFixedRows = (rowHeader != null && rowHeader.getHeaderTable().getColumnCount() > 1);
+				if (blnHasFixedRows) {
+					colIndex = rowHeader.getHeaderTable().getColumnModel().getColumnIndex(sNextColumn);
+					if (newRowOnNext && getSelectedRow() == getRowCount() - 1) {
+						final int col = colIndex;
+						final int row = getRowCount();
+						for(FocusActionListener fal : subform.getFocusActionLister()) {
+							fal.focusAction(new EventObject(this));
+							SwingUtilities.invokeLater(new Runnable() {
+								@Override
+								public void run() {
+									if (!(rowHeader.getHeaderTable() instanceof HeaderTable))
+										rowHeader.getHeaderTable().changeSelection(row, col, false, false);
+									else
+										((HeaderTable)rowHeader.getHeaderTable()).changeSelection(row, col, false, false, true);
+								}
+							});
+						}
+
+					} else 
+						if (!(rowHeader.getHeaderTable() instanceof HeaderTable))
+							rowHeader.getHeaderTable().changeSelection(rowIndex, colIndex, false, false);
+						else
+							((HeaderTable)rowHeader.getHeaderTable()).changeSelection(rowIndex, colIndex, false, false, true);
+					return;
+				} else
+					colIndex = clIndex;
+			}
+			
+			final int columnIndex = colIndex;
+			if (fixed)
+				newRowOnNext = false;
+			
 			if (newRowOnNext) {
 				if (focusListSelectionListener != null) {
 					int cIndex = getSelectedColumn() == getColumnCount() -1 ? 0 : getSelectedColumn();
-		            if(((rowIndex == 1 && cIndex == -1) || (rowIndex == 0 && cIndex == 0)) && getSelectedRow() > 0) {
-			            if (rowIndex == 0 && cIndex == 0 && getSelectedRow() > 0) {
+		            if(sNextColumn != null || (((rowIndex == 1 && cIndex == -1) || (rowIndex == 0 && cIndex == 0)) && getSelectedRow() > 0)) {
+			            if (sNextColumn != null || (rowIndex == 0 && cIndex == 0 && getSelectedRow() > 0)) {
 							focusListSelectionListener.valueChanged(new ListSelectionEvent(this, rowIndex, getSelectedRow(), false));
-							bChange = false;
+							bChange = !(event instanceof KeyEvent || event instanceof InvocationEvent) ? true : false;
 		            	}
 		            }
 				}
@@ -1987,7 +2084,6 @@ public class SubForm extends JPanel
 			if (bChange)
 				super.changeSelection(rowIndex, columnIndex, toggle, extend);
 
-			final AWTEvent event = EventQueue.getCurrentEvent();
 			if(event instanceof KeyEvent || event instanceof InvocationEvent) {
 				if(newRowOnNext) {
 					if(getRowCount() == 1 && !(event instanceof InvocationEvent)) {
@@ -1995,7 +2091,7 @@ public class SubForm extends JPanel
 			            if(!ke.isShiftDown() && !ke.isControlDown()) {
 							for(FocusActionListener fal : subform.getFocusActionLister()) {
 								fal.focusAction(new EventObject(this));
-								final int col[] = getNextEditableCell(this, rowIndex, 0, false);
+								final int col[] = getNextEditableCell(this, rowIndex, columnIndex, false);
 								SwingUtilities.invokeLater(new Runnable() {
 									@Override
 									public void run() {
@@ -2027,6 +2123,7 @@ public class SubForm extends JPanel
 					} else
 						newRowOnNext = true;
 				}
+				
 				boolean bShift = false;
 				if (event instanceof KeyEvent) {
 					final KeyEvent ke = (KeyEvent)event;
@@ -2066,23 +2163,30 @@ public class SubForm extends JPanel
 					}
 				}
 
+				final boolean bHasNextComponent = sNextColumn != null;
 				if (isCellEditable(rowIndex, columnIndex)) {
 					SwingUtilities.invokeLater(new Runnable() {
 						@Override
 						public void run() {
+							int rIndex = rowIndex;
 							if (event instanceof KeyEvent) {
 								final KeyEvent ke = (KeyEvent)event;
 					            if(!ke.isShiftDown() && !ke.isControlDown()) {
 									if (rowIndex == 0 && columnIndex == 0
 											&& !fixed)
 										return;
+					            } else {
+					            	if (getColumnCount() -1 == columnIndex && bHasNextComponent) {
+					            		rIndex = rowIndex - 1 == -1 ? 0 : rowIndex - 1;
+					            	}
 					            }
 							} else {
 								if (rowIndex == 0 && columnIndex == 0
 										&& !fixed)
 									return;
 							}
-							if (editCellAt(rowIndex, columnIndex)) {
+							SubFormTable.super.changeSelection(rIndex, columnIndex, false, false);
+							if (editCellAt(rIndex, columnIndex)) {
 								Component editor = getEditorComponent();
 								if(editor != null)
 									editor.requestFocusInWindow();
@@ -2596,6 +2700,7 @@ public class SubForm extends JPanel
 		private final Integer iColumns;
 		private final Integer width;
 		private final Integer initialPosition;
+		private final String sNextFocusComponent;
 
 		/**
 		 * Collection<TransferLookedUpValueAction>
@@ -2620,11 +2725,11 @@ public class SubForm extends JPanel
 
 		public Column(String sName, String sLabel, CollectableComponentType clctcomptype, boolean bVisible, boolean bEnabled,
 				boolean bInsertable, Integer iRows, Integer iColumns) {
-			this(sName, sLabel, clctcomptype, bVisible, bEnabled, bInsertable, iRows, iColumns, null);
+			this(sName, sLabel, clctcomptype, bVisible, bEnabled, bInsertable, iRows, iColumns, null, null);
 		}
 
 		public Column(String sName, String sLabel, CollectableComponentType clctcomptype, boolean bVisible, boolean bEnabled,
-			boolean bInsertable, Integer iRows, Integer iColumns, Integer width) {
+			boolean bInsertable, Integer iRows, Integer iColumns, Integer width, String sNextFocusComponent) {
 			this.sName = sName;
 			this.sLabel = sLabel;
 			this.clctcomptype = clctcomptype;
@@ -2635,6 +2740,7 @@ public class SubForm extends JPanel
 			this.iColumns = iColumns;
 			this.width = width;
 			this.initialPosition = null;
+			this.sNextFocusComponent = sNextFocusComponent;
 		}
 
 		public String getName() {
@@ -2684,6 +2790,13 @@ public class SubForm extends JPanel
 		 */
 		public Integer getWidth() {
 			return width;
+		}
+
+		/**
+		 * Returns the nextfocuscomponent of this column.
+		 */
+		public String getNextFocusComponent() {
+			return sNextFocusComponent;
 		}
 
 		/**

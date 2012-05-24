@@ -270,8 +270,12 @@ public class WYSIWYGMetaInformation implements LayoutMLConstants {
 		String prop = valueFromMeta[0];
 		String meta = valueFromMeta[1];
 		if (META_FIELD_NAMES.equals(meta)) {
-			if (prop.equals(WYSIWYGComponent.PROPERTY_NEXTFOCUSCOMPONENT))
-				result = getFittingFieldnames();
+			if (prop.equals(WYSIWYGComponent.PROPERTY_NEXTFOCUSCOMPONENT)) {
+				if (c instanceof WYSIWYGSubFormColumn) {
+					result = getFittingFieldnames(((WYSIWYGSubFormColumn)c).getSubForm().getEntityName());
+				} else
+					result = getFittingFieldnames();
+			}
 			else
 				result = getFittingFieldnamesForControlType(c);
 		} else if (META_ENTITY_NAMES.equals(meta)) {
@@ -516,7 +520,6 @@ public class WYSIWYGMetaInformation implements LayoutMLConstants {
 		return sortValues(result);
 	}
 
-
 	/**
 	 * Externalized Method called by public List<String> getListOfMetaValues(WYSIWYGComponent c, String meta, PropertiesDialog dialog)
 	 * Performs a lookup on fitting Fields for a ControlType
@@ -525,10 +528,21 @@ public class WYSIWYGMetaInformation implements LayoutMLConstants {
 	 * @return
 	 */
 	private List<StringResourceIdPair> getFittingFieldnames(){
+		return getFittingFieldnames(entity.getName());
+	}
+
+	/**
+	 * Externalized Method called by public List<String> getListOfMetaValues(WYSIWYGComponent c, String meta, PropertiesDialog dialog)
+	 * Performs a lookup on fitting Fields for a ControlType
+	 *
+	 * @param c
+	 * @return
+	 */
+	private List<StringResourceIdPair> getFittingFieldnames(String entityName){
 		List<StringResourceIdPair> result = new ArrayList<StringResourceIdPair>();
  		Integer iModuleId;
 		try {
-			iModuleId = Modules.getInstance().getModuleIdByEntityName(entity.getName());
+			iModuleId = Modules.getInstance().getModuleIdByEntityName(entityName);
 		}
 		catch (NoSuchElementException ex) {
 			iModuleId = null;
@@ -540,7 +554,7 @@ public class WYSIWYGMetaInformation implements LayoutMLConstants {
 			}
 		}
 		else {
-			for (String s : getEntityFieldNames(entity.getName())) {//entity.getFieldNames()) {
+			for (String s : getEntityFieldNames(entityName)) {//entity.getFieldNames()) {
 				result.add(new StringResourceIdPair(s, null));
 			}
 		}

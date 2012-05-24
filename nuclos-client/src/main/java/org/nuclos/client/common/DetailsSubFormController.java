@@ -187,7 +187,7 @@ public abstract class DetailsSubFormController<Clct extends Collectable>
 				prefsUserParent, entityPrefs, clctfproviderfactory);
 
 		if (this.isColumnSelectionAllowed(sParentEntityName)) {
-			this.fixedcolumnheader = new FixedColumnRowHeader(this.getSubFormPrefs());
+			this.fixedcolumnheader = new FixedColumnRowHeader(this.getSubForm(), this.getSubFormPrefs());
 			this.fixedcolumnheader.initializeFieldsFromPreferences(this.getSubFormPrefs());
 			subform.setTableRowHeader(this.fixedcolumnheader);
 		}

@@ -112,6 +112,7 @@ rows CDATA #IMPLIED
 columns CDATA #IMPLIED
 resourceId CDATA #IMPLIED
 width CDATA #IMPLIED
+nextfocuscomponent CDATA #IMPLIED
 >
 
 <!ELEMENT initial-sorting-order EMPTY>

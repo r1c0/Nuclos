@@ -30,6 +30,7 @@ import org.nuclos.client.layout.wysiwyg.WYSIWYGEditorModes;
 import org.nuclos.client.layout.wysiwyg.WYSIWYGMetaInformation;
 import org.nuclos.client.layout.wysiwyg.WYSIWYGStringsAndLabels;
 import org.nuclos.client.layout.wysiwyg.WYSIWYGStringsAndLabels.PROPERTY_LABELS;
+import org.nuclos.client.layout.wysiwyg.component.WYSIWYGComponent.PropertyClass;
 import org.nuclos.client.layout.wysiwyg.component.properties.ComponentProperties;
 import org.nuclos.client.layout.wysiwyg.component.properties.PropertyUtils;
 import org.nuclos.client.layout.wysiwyg.component.properties.PropertyValue;
@@ -74,6 +75,7 @@ public class WYSIWYGSubFormColumn extends JLabel implements WYSIWYGComponent, Se
 	public static final String PROPERTY_CONTROLTYPECLASS = PROPERTY_LABELS.CONTROLTYPECLASS;
 	public static final String PROPERTY_DEFAULTVALUES = PROPERTY_LABELS.DEFAULTVALUES;
 	public static final String PROPERTY_COLUMNWIDTH = PROPERTY_LABELS.COLUMNWIDTH;
+	public static final String PROPERTY_NEXTFOCUSCOMPONENT = PROPERTY_LABELS.NEXTFOCUSCOMPONENT;
 	
 	private final Map<Integer, String> controlTypes = new HashMap<Integer, String>();
 	{
@@ -100,7 +102,8 @@ public class WYSIWYGSubFormColumn extends JLabel implements WYSIWYGComponent, Se
 	    {PROPERTY_COLUMNS, ATTRIBUTE_COLUMNS},
 	    {PROPERTY_CONTROLTYPE, ATTRIBUTE_CONTROLTYPE},
 	    {PROPERTY_CONTROLTYPECLASS, ATTRIBUTE_CONTROLTYPECLASS},
-	    {PROPERTY_COLUMNWIDTH, ATTRIBUTE_COLUMNWIDTH}
+	    {PROPERTY_COLUMNWIDTH, ATTRIBUTE_COLUMNWIDTH},
+	    {PROPERTY_NEXTFOCUSCOMPONENT, ATTRIBUTE_NEXTFOCUSCOMPONENT}
 	};
 	
 	private static final String[] PROPERTY_NAMES = new String[] {
@@ -116,7 +119,8 @@ public class WYSIWYGSubFormColumn extends JLabel implements WYSIWYGComponent, Se
 		PROPERTY_DEFAULTVALUES,
 		PROPERTY_VALUELISTPROVIDER,
 		PROPERTY_TRANSLATIONS,
-		PROPERTY_COLUMNWIDTH
+		PROPERTY_COLUMNWIDTH,
+		PROPERTY_NEXTFOCUSCOMPONENT
 	};
 	
 	private static final PropertyClass[] PROPERTY_CLASSES = new PropertyClass[] {
@@ -132,7 +136,8 @@ public class WYSIWYGSubFormColumn extends JLabel implements WYSIWYGComponent, Se
 		new PropertyClass(PROPERTY_DEFAULTVALUES, boolean.class),
 		new PropertyClass(PROPERTY_VALUELISTPROVIDER, WYSIWYGValuelistProvider.class),
 		new PropertyClass(PROPERTY_TRANSLATIONS, TranslationMap.class),
-		new PropertyClass(PROPERTY_COLUMNWIDTH, int.class)
+		new PropertyClass(PROPERTY_COLUMNWIDTH, int.class),
+		new PropertyClass(PROPERTY_NEXTFOCUSCOMPONENT, String.class)
 	};
 	
 	private static PropertyFilter[] PROPERTY_FILTERS = new PropertyFilter[] {
@@ -148,7 +153,8 @@ public class WYSIWYGSubFormColumn extends JLabel implements WYSIWYGComponent, Se
 		new PropertyFilter(PROPERTY_COLUMNS, STANDARD_MODE | EXPERT_MODE),
 		new PropertyFilter(PROPERTY_DEFAULTVALUES, 0),
 		new PropertyFilter(PROPERTY_TRANSLATIONS, STANDARD_MODE | EXPERT_MODE),
-		new PropertyFilter(PROPERTY_COLUMNWIDTH, STANDARD_MODE | EXPERT_MODE)
+		new PropertyFilter(PROPERTY_COLUMNWIDTH, STANDARD_MODE | EXPERT_MODE),
+		new PropertyFilter(PROPERTY_NEXTFOCUSCOMPONENT, STANDARD_MODE | EXPERT_MODE)
 	};
 	
 	protected LayoutMLRules componentsRules = new LayoutMLRules();
@@ -158,7 +164,8 @@ public class WYSIWYGSubFormColumn extends JLabel implements WYSIWYGComponent, Se
 	};
 	
 	public static final String[][] PROPERTY_VALUES_FROM_META = new String[][] {
-		{PROPERTY_CONTROLTYPE, WYSIWYGMetaInformation.META_CONTROLTYPE}
+		{PROPERTY_CONTROLTYPE, WYSIWYGMetaInformation.META_CONTROLTYPE},
+		{PROPERTY_NEXTFOCUSCOMPONENT, WYSIWYGMetaInformation.META_FIELD_NAMES}
 	};
 
 	private ComponentProperties properties;

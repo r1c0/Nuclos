@@ -2216,14 +2216,18 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 					// override default:
 					bInsertable = sInsertable.equals(ATTRIBUTEVALUE_YES);
 				}
-
+				
 				// rows & columns
 				final Integer iRows = getIntegerValue(attributes, ATTRIBUTE_ROWS);
 				final Integer iColumns = getIntegerValue(attributes, ATTRIBUTE_COLUMNS);
 
 				// width
 				final Integer width = getIntegerValue(attributes, ATTRIBUTE_WIDTH);
-				final SubForm.Column column = new SubForm.Column(sName, sLabel, clctcomptype, bVisible, bEnabled, bInsertable, iRows, iColumns, width);
+				
+				// next focus component
+				final String sNextFocusComponent = attributes.getValue(ATTRIBUTE_NEXTFOCUSCOMPONENT);
+				
+				final SubForm.Column column = new SubForm.Column(sName, sLabel, clctcomptype, bVisible, bEnabled, bInsertable, iRows, iColumns, width, sNextFocusComponent);
 
 				localizationHandler = new LocalizationHandler() {
 					@Override public void setTranslation(String translation) {

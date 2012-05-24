@@ -711,25 +711,40 @@ public abstract class SubFormController extends MainFrameTabController
 	            int columnIndex = tbl.getSelectedColumn() == tbl.getColumnCount() -1 ? 0 : tbl.getSelectedColumn();
 	            if(((rowIndex == 1 && columnIndex == -1) || (rowIndex == 0 && columnIndex == 0)) && e.getLastIndex() > 0) {
 		            ke.consume();
+		            int colIndex = 0;
+					final String sNextColumn = tbl.getSelectedColumn() == -1 ? null : getSubForm().getColumnNextFocusComponent((String)tbl.getColumnModel().getColumn(tbl.getSelectedColumn()).getIdentifier());
+					if (sNextColumn != null) {
+						colIndex = sNextColumn == null ? colIndex : tbl.getColumnModel().getColumnIndex(sNextColumn);
+					}
 		            int idxRow = e.getLastIndex(); 
 		            if (rowIndex == 0 && columnIndex == 0 && e.getLastIndex() > 0) {
 		            	SubFormController.this.cmdInsert();
 		            	idxRow = idxRow + 1;
 		            }
 		            final int iRow = idxRow;
+					final int cIndex = colIndex;
 		            SwingUtilities.invokeLater(new Runnable() {
 
 						@Override
 						public void run() {
 							SubformRowHeader rowHeader = tbl.getSubForm().getSubformRowHeader();
 							boolean blnHasFixedRows = (rowHeader != null && rowHeader.getHeaderTable().getColumnCount() > 1);
-							if (!blnHasFixedRows) 
-								tbl.changeSelection(iRow, 0, false, false);
-							else
+							
+							boolean bUseHeaderTable = false;
+							try {
+								if (sNextColumn != null)
+									tbl.getColumn(sNextColumn);
+							} catch (IllegalArgumentException e) {
+								bUseHeaderTable = true;
+							}
+							if (!blnHasFixedRows || !bUseHeaderTable) 
+								tbl.changeSelection(iRow, cIndex, false, false);
+							else {
 								if (!(rowHeader.getHeaderTable() instanceof HeaderTable))
-									rowHeader.getHeaderTable().changeSelection(iRow, 0, false, false);
+									rowHeader.getHeaderTable().changeSelection(iRow, cIndex, false, false);
 								else
-									((HeaderTable)rowHeader.getHeaderTable()).changeSelection(iRow, 0, false, false, true);
+									((HeaderTable)rowHeader.getHeaderTable()).changeSelection(iRow, cIndex, false, false, true);
+							}
 						}
 					});
 

@@ -509,7 +509,8 @@ public class WYSIWYGSubForm extends JLayeredPane implements WYSIWYGComponent, Mo
 					final WYSIWYGSubFormColumn wc = e.getValue();
 					String label = (String) wc.getProperties().getProperty(WYSIWYGSubFormColumn.PROPERTY_LABEL).getValue();
 					Integer columnWidth = (Integer) wc.getProperties().getProperty(WYSIWYGSubFormColumn.PROPERTY_COLUMNWIDTH).getValue();
-					Column c = new SubForm.Column(e.getKey(), label, null, true, true, true, 10, 10, columnWidth);
+					String sNextFocusComponent = (String) wc.getProperties().getProperty(WYSIWYGSubFormColumn.PROPERTY_NEXTFOCUSCOMPONENT).getValue();
+					Column c = new SubForm.Column(e.getKey(), label, null, true, true, true, 10, 10, columnWidth, sNextFocusComponent);
 
 					//NUCLEUSINT-556
 					wc.addMouseListener(new PropertiesDisplayMouseListener(wc, layoutUtil));

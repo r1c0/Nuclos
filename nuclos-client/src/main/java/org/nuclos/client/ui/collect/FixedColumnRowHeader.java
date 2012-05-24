@@ -66,6 +66,7 @@ import org.nuclos.client.common.security.SecurityCache;
 import org.nuclos.client.main.mainframe.MainFrame;
 import org.nuclos.client.ui.Icons;
 import org.nuclos.client.ui.UIUtils;
+import org.nuclos.client.ui.collect.SubForm.Column;
 import org.nuclos.client.ui.collect.SubForm.SubFormTable;
 import org.nuclos.client.ui.collect.SubForm.SubFormTableModel;
 import org.nuclos.client.ui.collect.component.model.ChoiceEntityFieldList;
@@ -105,10 +106,12 @@ public class FixedColumnRowHeader extends SubformRowHeader {
 	private TableHeaderMouseListenerForSorting sortingListener;
 	private TableColumnModelListener headerColumnModelListener;
 	
+	private final SubForm subform;
 	private final SubFormPreferences subFormPreferences;
 
-	public FixedColumnRowHeader(SubFormPreferences subFormPreferences) {
+	public FixedColumnRowHeader(SubForm subform, SubFormPreferences subFormPreferences) {
 		super();
+		this.subform = subform;
 		this.subFormPreferences = subFormPreferences;
 		this.lstFixedColumnCollNames = new ArrayList<String>();
 		this.mpFixedColumnCollWidths = new HashMap<Object, Integer>();
@@ -625,6 +628,7 @@ public class FixedColumnRowHeader extends SubformRowHeader {
 					newColumn.setIdentifier(curField.getName());
 					String sLabel = ((SubFormTableModel) getExternalTable().getModel()).getColumnName(index);
 					newColumn.setHeaderValue(sLabel);
+					newColumn.setIdentifier(curField.getName());
 					externalColumnModel.addColumn(newColumn);
 				}
 			}
@@ -712,7 +716,7 @@ public class FixedColumnRowHeader extends SubformRowHeader {
 	/**
 	 * Header table model which provides editors and renderers for the CollectableEntityField
 	 */
-	public static class HeaderTable extends CommonJTable {
+	public class HeaderTable extends CommonJTable {
 
 		private TableCellEditorProvider cellEditorProvider;
 		private TableCellRendererProvider cellRendererProvider;
@@ -720,6 +724,29 @@ public class FixedColumnRowHeader extends SubformRowHeader {
 		private SubFormTable externalTable;
 
 		public HeaderTable() {
+		}
+
+		private String prevComponent = null;
+		private String getComponentBefore(String identifier) {
+			String result = null;			
+			for (Column column : subform.getColumns()) {
+				if (column.getNextFocusComponent() != null && column.getNextFocusComponent().equals(identifier)) {
+					result = column.getName();
+					if (prevComponent == null || prevComponent.equals(result))
+						return result;
+				}
+			}
+			return result;
+		}
+		
+		private void setPrevComponent(String prevComponent) {
+			this.prevComponent = prevComponent;
+			if (externalTable != null) { 
+				externalTable.setPreviousComponent(prevComponent);
+			}
+		}
+		public void setPreviousComponent(String prevComponent) {
+			this.prevComponent = prevComponent;
 		}
 		
 		@Override
@@ -735,15 +762,58 @@ public class FixedColumnRowHeader extends SubformRowHeader {
 			changeSelection(rowIndex, columnIndex, toggle, extend, false);
 		}
 
-		public void changeSelection(final int rowIndex, final int columnIndex, boolean toggle, boolean extend, boolean external) {
+		public void changeSelection(final int rwIndex, final int clIndex, boolean toggle, boolean extend, boolean external) {
 			AWTEvent event = EventQueue.getCurrentEvent();
 			if(event instanceof KeyEvent) {
 				((KeyEvent) event).consume();
 			}
 			int iSelRow = getSelectedRow();
-			super.changeSelection(rowIndex, columnIndex, toggle, extend);
 			if(event instanceof KeyEvent || event instanceof InvocationEvent) {
 				int colCount = getColumnCount();
+				int selColumn = getSelectedColumn();
+				String sNextColumn = selColumn == -1 || external ? null : subform.getColumnNextFocusComponent((String)getColumnModel().getColumn(selColumn).getIdentifier());
+				final int rowIndex = rwIndex;
+				int colIndex;
+				try {
+					if (event instanceof KeyEvent) {
+						final KeyEvent ke = (KeyEvent)event;
+			            if(ke.isShiftDown() || ke.isControlDown()) {
+			            	sNextColumn = getComponentBefore((String)getColumnModel().getColumn(selColumn).getIdentifier());
+			            }
+					}
+					
+					setPrevComponent(null);
+					colIndex = sNextColumn == null || external ? clIndex : getColumnModel().getColumnIndex(sNextColumn);
+					if (sNextColumn != null) {
+						String colIdentifier = (String)getColumnModel().getColumn(selColumn).getIdentifier();
+						if (event instanceof KeyEvent) {
+							final KeyEvent ke = (KeyEvent)event;
+				            if(ke.isShiftDown() || ke.isControlDown()) {
+				            	;//sNextColumn = null;
+				            } else
+				            	setPrevComponent(colIdentifier);
+						} else
+			            	setPrevComponent(colIdentifier);
+					}
+				} catch (IllegalArgumentException e) {
+					if (externalTable != null) { 
+						super.changeSelection(rwIndex, clIndex, toggle, extend);
+						colIndex = externalTable.getColumnModel().getColumnIndex(sNextColumn);
+						if (event instanceof KeyEvent) {
+							final KeyEvent ke = (KeyEvent)event;
+							if(ke.isShiftDown() || ke.isControlDown()) {
+								iSelRow = iSelRow - 1 == -1 ? 0 : iSelRow - 1;
+							}
+						}
+						externalTable.changeSelection(iSelRow, colIndex, toggle, extend, true);
+						return;
+					} else
+						colIndex = clIndex;
+				}
+					
+				final int columnIndex = colIndex;
+				super.changeSelection(rwIndex, clIndex, toggle, extend);
+
 				if(!external && (columnIndex == 0 || columnIndex == colCount)) {
 					if (externalTable != null) { 
 						if (event instanceof KeyEvent) {
@@ -762,6 +832,7 @@ public class FixedColumnRowHeader extends SubformRowHeader {
 						return;
 					}
 				}
+				
 				if(isCellEditable(rowIndex, columnIndex)) {
 					SwingUtilities.invokeLater(new Runnable() {
 						@Override
@@ -812,6 +883,8 @@ public class FixedColumnRowHeader extends SubformRowHeader {
 					}
 				}
 			}
+			else
+				super.changeSelection(rwIndex, clIndex, toggle, extend);
 		}
 		
 		private int[] getNextEditableCell(JTable table, int row, int col, boolean bReverse) {

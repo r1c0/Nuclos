@@ -222,12 +222,13 @@ public class SubformRowHeader implements Closeable {
 	protected void synchronizeModel() {
 		((RowIndicatorTableModel) headerTable.getModel()).setExternalDataModel(externalTable.getModel());
 
-		TableColumn column = headerTable.getColumnModel().getColumn(0);
-		column.setPreferredWidth(COLUMN_SIZE);
-		column.setMinWidth(COLUMN_SIZE);
-		column.setMaxWidth(COLUMN_SIZE);
-		column.setCellRenderer(RENDERER);
-
+		if (headerTable.getColumnModel().getColumnCount() > 0) {
+			TableColumn column = headerTable.getColumnModel().getColumn(0);
+			column.setPreferredWidth(COLUMN_SIZE);
+			column.setMinWidth(COLUMN_SIZE);
+			column.setMaxWidth(COLUMN_SIZE);
+			column.setCellRenderer(RENDERER);
+		}
 		headerTable.setBackground(externalTable.getBackground());
 		scrlpnOriginalTable.getViewport().setBackground(externalTable.getBackground());
 	}
