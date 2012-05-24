@@ -43,7 +43,7 @@ import org.nuclos.client.layout.wysiwyg.component.WYSIWYGComponent;
  * @version 01.00.00
  */
 public interface PropertyValue<T> extends Cloneable, Serializable, LayoutMLConstants {
-
+	
 	/**
 	 * This Method sets a Value.<br>
 	 * @param value the Value to be set

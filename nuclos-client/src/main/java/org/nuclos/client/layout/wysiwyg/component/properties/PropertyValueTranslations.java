@@ -44,6 +44,7 @@ import org.nuclos.client.layout.wysiwyg.component.WYSIWYGStaticTitledSeparator;
 import org.nuclos.client.layout.wysiwyg.component.WYSIWYGSubFormColumn;
 import org.nuclos.client.layout.wysiwyg.editor.ui.panels.TranslationPanel;
 import org.nuclos.client.layout.wysiwyg.editor.util.InterfaceGuidelines;
+import org.nuclos.common.NuclosTranslationMap;
 import org.xml.sax.Attributes;
 
 public class PropertyValueTranslations implements PropertyValue<TranslationMap> {
@@ -75,7 +76,7 @@ public class PropertyValueTranslations implements PropertyValue<TranslationMap> 
 
 	@Override
 	public Object getValue(Class<?> cls, WYSIWYGComponent c) {
-		if (cls == TranslationMap.class) {
+		if (cls != null && (cls.equals(TranslationMap.class) || cls.equals(NuclosTranslationMap.class))) {
 			return value;
 		}
 		return null;

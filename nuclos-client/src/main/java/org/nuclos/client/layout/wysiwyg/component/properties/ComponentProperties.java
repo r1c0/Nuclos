@@ -28,9 +28,8 @@ import java.util.Map;
 
 import org.apache.commons.collections.map.ListOrderedMap;
 import org.apache.log4j.Logger;
-
-import org.nuclos.common2.exception.CommonBusinessException;
-import org.nuclos.common2.exception.CommonFatalException;
+import org.nuclos.api.Property;
+import org.nuclos.api.ui.LayoutComponent;
 import org.nuclos.client.genericobject.valuelistprovider.ProcessCollectableFieldsProvider;
 import org.nuclos.client.layout.wysiwyg.WYSIWYGEditorModes;
 import org.nuclos.client.layout.wysiwyg.WYSIWYGMetaInformation;
@@ -43,6 +42,8 @@ import org.nuclos.client.layout.wysiwyg.editor.util.valueobjects.WYSIWYGValuelis
 import org.nuclos.client.ui.Errors;
 import org.nuclos.common.NuclosBusinessException;
 import org.nuclos.common.NuclosEOField;
+import org.nuclos.common2.exception.CommonBusinessException;
+import org.nuclos.common2.exception.CommonFatalException;
 
 public class ComponentProperties implements Serializable {
 
@@ -220,6 +221,17 @@ public class ComponentProperties implements Serializable {
 		addStaticDependantProperties(property, value);
 		
 		if (valueClass != null) {
+			if (c instanceof LayoutComponent) {
+				LayoutComponent lc = (LayoutComponent) c;
+				if (lc.getComponentProperties() != null) {
+					for (Property pt : lc.getComponentProperties()) {
+						if (pt.name.equals(property)) {
+							lc.setProperty(property, value.getValue(valueClass, c));
+							break;
+						}
+					}
+				}
+			}
 
 			Class<? extends WYSIWYGComponent> componentClass = c.getClass();
 			Collection<String> methodNames = getMethodForProperty(property);
@@ -277,6 +289,17 @@ public class ComponentProperties implements Serializable {
 			
 			if (PropertyUtils.getValueClass(c, e.getKey()) != null) {
 				Class<?> valueClass = PropertyUtils.getValueClass(c, e.getKey());
+				if (c instanceof LayoutComponent) {
+					LayoutComponent lc = (LayoutComponent) c;
+					if (lc.getComponentProperties() != null) {
+						for (Property pt : lc.getComponentProperties()) {
+							if (pt.name.equals(e.getKey())) {
+								lc.setProperty(e.getKey(), e.getValue().getValue(valueClass, c));
+							}
+						}
+					}
+				}
+				
 				Class<? extends WYSIWYGComponent> componentClass = c.getClass();
 				Collection<String> methodNames = getMethodForProperty(e.getKey());
 
@@ -362,8 +385,8 @@ public class ComponentProperties implements Serializable {
 			value instanceof PropertyValueString) {
 			PropertyValueString pvs = (PropertyValueString) value;
 			if (NuclosEOField.PROCESS.getName().equals(pvs.getValue())) {
-				PropertyValueValuelistProvider pvVlp = new PropertyValueValuelistProvider();
-				WYSIWYGValuelistProvider wysiwygVlp = new WYSIWYGValuelistProvider();
+				PropertyValueValuelistProvider pvVlp = new PropertyValueValuelistProvider(false);
+				WYSIWYGValuelistProvider wysiwygVlp = new WYSIWYGValuelistProvider(false);
 				wysiwygVlp.setType(ProcessCollectableFieldsProvider.NAME);
 				pvVlp.setValue(wysiwygVlp);
 				setProperty(WYSIWYGCollectableComponent.PROPERTY_VALUELISTPROVIDER, pvVlp, WYSIWYGCollectableListOfValues.class);

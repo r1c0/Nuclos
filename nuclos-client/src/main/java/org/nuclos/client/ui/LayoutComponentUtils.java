@@ -14,23 +14,25 @@
 //
 //You should have received a copy of the GNU Affero General Public License
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
-package org.nuclos.common.collect.collectable;
+package org.nuclos.client.ui;
 
-import java.util.List;
+import java.awt.Component;
+import java.awt.Container;
 
-import org.nuclos.common.NuclosValueListProvider;
-import org.nuclos.common2.exception.CommonBusinessException;
+import org.nuclos.common.WorkspaceDescription.EntityPreferences;
 
-/**
- * Provides a list of <code>CollectableField</code>s.
- * <br>
- * <br>Created by Novabit Informationssysteme GmbH
- * <br>Please visit <a href="http://www.novabit.de">www.novabit.de</a>
- *
- * @author	<a href="mailto:Christoph.Radig@novabit.de">Christoph.Radig</a>
- * @version	01.00.00
- */
+public class LayoutComponentUtils {
 
-public interface CollectableFieldsProvider extends NuclosValueListProvider {
-
-}  // interface CollectableFieldsProvider
+	public static <C extends Component> C setPreferences(EntityPreferences ep, C c) {
+		if (c instanceof LayoutComponentHolder) {
+			if (c.getName() != null) {
+				((LayoutComponentHolder) c).getLayoutComponent().setPreferences(ep.getLayoutComponentPreferences(c.getName()));
+			}
+		} else if (c instanceof Container) {
+			for (Component child : ((Container)c).getComponents()) {
+				setPreferences(ep, child);
+			}
+		}
+		return c;
+	}
+}

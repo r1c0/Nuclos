@@ -26,8 +26,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 import org.apache.commons.httpclient.util.LangUtils;
+import org.nuclos.api.Preferences;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonFatalException;
 
@@ -585,6 +588,7 @@ public class WorkspaceDescription implements Serializable {
 		private String entity;
 		private TablePreferences resultPreferences;
 		private List<SubFormPreferences> subFormPreferences;
+		private ConcurrentMap<String, Preferences> layoutComponentPreferences;
 
 		public String getEntity() {
 			return entity;
@@ -646,6 +650,40 @@ public class WorkspaceDescription implements Serializable {
 		}
 		public void clearResultPreferences() {
 			this._getResultPreferences().clear();
+		}
+		
+		private ConcurrentMap<String, Preferences> _getLayoutComponentPreferences() {
+			if (this.layoutComponentPreferences == null)
+				this.layoutComponentPreferences = new ConcurrentHashMap<String, Preferences>();
+			return this.layoutComponentPreferences;
+		}
+		
+		public Preferences getLayoutComponentPreferences(String name) {
+			final ConcurrentMap<String, Preferences> prefs = _getLayoutComponentPreferences();
+			if (!prefs.containsKey(name)) {
+				prefs.put(name, new NuclosPreferences());
+			}
+			return prefs.get(name);
+		}
+		
+		public Map<String, Preferences> getAllLayoutComponentPreferences() {
+			return new HashMap<String, Preferences>(_getLayoutComponentPreferences());
+		}
+		
+		public void addLayoutComponentPreferences(String name, Preferences prefs) {
+			_getLayoutComponentPreferences().put(name, prefs);
+		}
+		
+		public void addAllLayoutComponentPreferences(Map<String, Preferences> prefsMap) {
+			_getLayoutComponentPreferences().putAll(prefsMap);
+		}
+		
+		public void removeLayoutComponentPreferences(String name) {
+			_getLayoutComponentPreferences().remove(name);
+		}
+		
+		public void removeAllLayoutComponentPreferences() {
+			_getLayoutComponentPreferences().clear();
 		}
 
 		@Override

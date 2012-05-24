@@ -930,6 +930,7 @@ public class WYSIWYGStringsAndLabels {
 		public static final String DEFAULTVALUES = "defaultvalues";
 		public static final String CONTROLTYPE = "Komponenten Typ";
 		public static final String CONTROLTYPECLASS = "Typklasse";
+		public static final String CLASS = "Klasse der Komponente";
 		//NUCLEUSINT-390
 		public static final String PARENT_SUBFORM = "\u00dcbergeordnetes Unterformular";
 		/** tabbedpane */
@@ -1081,6 +1082,9 @@ public class WYSIWYGStringsAndLabels {
 		public static final String NO_VALUELISTPROVIDER_DEFINED = "Kein ValueListprovider definiert";
 		public static final String LABEL_PARAMETER_NAME = "Anzeigename";
 		public static final String LABEL_PARAMETER_ID = "ID Feld";
+		public static final String LABEL_ENTITY = "Entität";
+		public static final String LABEL_FIELD = "Attribut";
+		public static final String MESSAGE_ENTITYAND_FIELD_NOT_NULL = "Entität und Attribut müssen angegeben werden";
 		public static final String SEPARATOR_DATASOURCES = "--------- Datenquellen ---------";
 		public static final String SEPARATOR_SYSTEM = "--------- System ---------";
 		//NUCLEUSINT-811
@@ -1716,6 +1720,7 @@ public class WYSIWYGStringsAndLabels {
 		public static final String SECTION_COMPONENTS = "Containerelemente";
 		public static final String SECTION_SEPARATOR = "Trennelemente";
 		public static final String SECTION_TEMP = "Ablage";
+		public static final String SECTION_NUCLET = "Nuclet Komponenten";
 	}
 
 	/**
@@ -1939,6 +1944,7 @@ public class WYSIWYGStringsAndLabels {
 	public static class CHANGESTATEACTIONLISTENER {
 		public static final String NO_GENERICOBJECT = "Der Statuswechsel ist nur in Modulen verf\u00fcgbar.";
 	}
+	
 
 	/**
 	 * Small Helperclass as Structure for the Items shown in the Palette

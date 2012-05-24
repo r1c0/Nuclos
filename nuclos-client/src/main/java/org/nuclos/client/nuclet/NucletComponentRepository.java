@@ -19,6 +19,7 @@ package org.nuclos.client.nuclet;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.nuclos.api.ui.LayoutComponentFactory;
 import org.nuclos.api.ui.MenuItem;
 import org.springframework.stereotype.Component;
 
@@ -26,6 +27,7 @@ import org.springframework.stereotype.Component;
 public class NucletComponentRepository {
 
 	private List<MenuItem> menuItems = new ArrayList<MenuItem>();
+	private List<LayoutComponentFactory> layoutComponentFactories = new ArrayList<LayoutComponentFactory>();
 	
 	public NucletComponentRepository() {
 	}
@@ -36,5 +38,13 @@ public class NucletComponentRepository {
 	
 	public List<MenuItem> getMenuItems() {
 		return new ArrayList<MenuItem>(menuItems);
+	}
+	
+	public void addLayoutComponentFactory(LayoutComponentFactory lc) {
+		layoutComponentFactories.add(lc);
+	}
+	
+	public List<LayoutComponentFactory> getLayoutComponentFactories() {
+		return new ArrayList<LayoutComponentFactory>(layoutComponentFactories);
 	}
 }

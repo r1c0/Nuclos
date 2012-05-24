@@ -13,6 +13,10 @@
 */
 -->
 
+<!-- for LayoutComponent -->
+<!ENTITY % property-type "property|property-size|property-color|property-font|property-script|property-translations|property-valuelist-provider">
+<!ENTITY % properties "(%property-type;)*">
+
 <!ENTITY % border "empty-border|etched-border|bevel-border|line-border|titled-border">
 <!ENTITY % borders "clear-border?,(%border;)*">
 <!ENTITY % sizes "minimum-size?,preferred-size?,strict-size?">
@@ -50,7 +54,7 @@ We have to check back when we switch to Xerces 2.5 or higher.
 -->
 
 <!ELEMENT panel ((%layoutconstraints;)?,(%layoutmanager;)?,(%borders;),(%sizes;),font?,background?,
- description?,((%container;)|label|textfield|textarea|combobox|button|collectable-component|separator|titled-separator)*)>
+ description?,((%container;)|label|textfield|textarea|combobox|button|collectable-component|separator|titled-separator|layoutcomponent)*)>
 <!ATTLIST panel
 name CDATA #IMPLIED
 visible (%boolean;) #IMPLIED
@@ -135,6 +139,12 @@ width CDATA #IMPLIED
 <!ATTLIST clone-enabled
  language CDATA #REQUIRED
  >
+ 
+<!ELEMENT property-script (#PCDATA)>
+<!ATTLIST property-script
+name CDATA #REQUIRED
+language CDATA #REQUIRED
+>
 
 <!ELEMENT scrollpane ((%layoutconstraints;)?,(%borders;),(%sizes;),((%container;)|textarea|collectable-component)?)>
 <!ATTLIST scrollpane
@@ -215,6 +225,12 @@ nextfocuscomponent CDATA #IMPLIED
 aspectratio (%boolean;) #IMPLIED
 >
 
+<!ELEMENT layoutcomponent ((%layoutconstraints;)?,(%properties;),(%borders;),(%sizes;))>
+<!ATTLIST layoutcomponent
+class CDATA #REQUIRED
+name CDATA #IMPLIED
+>
+
 <!ELEMENT options (option*)>
 <!ATTLIST options
 name CDATA #IMPLIED
@@ -228,6 +244,14 @@ name CDATA #IMPLIED
 value CDATA #REQUIRED
 label CDATA #REQUIRED
 mnemonic CDATA #IMPLIED
+>
+
+<!ELEMENT property-valuelist-provider (parameter*)>
+<!ATTLIST property-valuelist-provider
+name CDATA #REQUIRED
+type CDATA #REQUIRED
+entity CDATA #IMPLIED
+field CDATA #IMPLIED
 >
 
 <!ELEMENT valuelist-provider (parameter*)>
@@ -403,8 +427,23 @@ width CDATA #IMPLIED
 height CDATA #IMPLIED
 >
 
+<!ELEMENT property-size EMPTY>
+<!ATTLIST property-size
+name CDATA #REQUIRED
+width CDATA #IMPLIED
+height CDATA #IMPLIED
+>
+
 <!ELEMENT background EMPTY>
 <!ATTLIST background
+red CDATA #IMPLIED
+green CDATA #IMPLIED
+blue CDATA #IMPLIED
+>
+
+<!ELEMENT property-color EMPTY>
+<!ATTLIST property-color
+name CDATA #REQUIRED
 red CDATA #IMPLIED
 green CDATA #IMPLIED
 blue CDATA #IMPLIED
@@ -413,6 +452,17 @@ blue CDATA #IMPLIED
 <!ELEMENT font EMPTY>
 <!ATTLIST font
 size CDATA #IMPLIED
+>
+
+<!ELEMENT property-font EMPTY>
+<!ATTLIST property-font
+name CDATA #REQUIRED
+size CDATA #IMPLIED
+>
+
+<!ELEMENT property-translations (translation*)>
+<!ATTLIST property-translations
+name CDATA #REQUIRED
 >
 
 <!ELEMENT translations (translation*)>

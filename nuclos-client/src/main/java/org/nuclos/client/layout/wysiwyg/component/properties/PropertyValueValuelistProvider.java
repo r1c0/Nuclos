@@ -33,16 +33,17 @@ import javax.swing.JTable;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 
-import org.xml.sax.Attributes;
-
-import org.nuclos.common.NuclosEOField;
-import org.nuclos.common2.StringUtils;
-import org.nuclos.common2.layoutml.LayoutMLConstants;
+import org.nuclos.api.ui.LayoutComponent;
 import org.nuclos.client.layout.wysiwyg.WYSIWYGStringsAndLabels.VALUELIST_PROVIDER_EDITOR;
 import org.nuclos.client.layout.wysiwyg.component.WYSIWYGComponent;
 import org.nuclos.client.layout.wysiwyg.editor.ui.panels.valuelistprovidereditor.ValueListProviderEditor;
 import org.nuclos.client.layout.wysiwyg.editor.util.InterfaceGuidelines;
 import org.nuclos.client.layout.wysiwyg.editor.util.valueobjects.WYSIWYGValuelistProvider;
+import org.nuclos.common.NuclosEOField;
+import org.nuclos.common.NuclosValueListProvider;
+import org.nuclos.common2.StringUtils;
+import org.nuclos.common2.layoutml.LayoutMLConstants;
+import org.xml.sax.Attributes;
 
 /**
  * This class is for Editing {@link WYSIWYGValuelistProvider}.<br>
@@ -57,12 +58,15 @@ import org.nuclos.client.layout.wysiwyg.editor.util.valueobjects.WYSIWYGValuelis
  */
 public class PropertyValueValuelistProvider implements PropertyValue<WYSIWYGValuelistProvider>, LayoutMLConstants {
 
+	private boolean entityAndFieldAvaiable;
+	
 	private WYSIWYGValuelistProvider wysiwygStaticValuelistProvider = null;
 	//NUCLEUSINT-811 need to know what component the vp is for
 	private WYSIWYGComponent c = null;
 
-	public PropertyValueValuelistProvider() {
-		this.wysiwygStaticValuelistProvider = new WYSIWYGValuelistProvider();
+	public PropertyValueValuelistProvider(boolean entityAndFieldAvaiable) {
+		this.wysiwygStaticValuelistProvider = new WYSIWYGValuelistProvider(entityAndFieldAvaiable);
+		this.entityAndFieldAvaiable = entityAndFieldAvaiable;
 	}
 
 	@Override
@@ -86,25 +90,29 @@ public class PropertyValueValuelistProvider implements PropertyValue<WYSIWYGValu
 
 	@Override
 	public Object getValue(Class<?> cls, WYSIWYGComponent c) {
+		if (cls != null && cls.equals(NuclosValueListProvider.class)) {
+			return wysiwygStaticValuelistProvider;
+		}
 		return null;
 	}
 
 	@Override
 	public void setValue(WYSIWYGValuelistProvider value) {
 		this.wysiwygStaticValuelistProvider = value;
+		this.entityAndFieldAvaiable = value.isEntityAndFieldAvaiable();
 	}
 
 	@Override
 	public void setValue(String attributeName, Attributes attributes) {
 		String attributeType = attributes.getValue(ATTRIBUTE_TYPE);
-		this.wysiwygStaticValuelistProvider = new WYSIWYGValuelistProvider(attributeType);
+		this.wysiwygStaticValuelistProvider = new WYSIWYGValuelistProvider(attributeType, entityAndFieldAvaiable);
 	}
 
 	@Override
 	public Object clone() throws CloneNotSupportedException {
 		if (wysiwygStaticValuelistProvider == null)
 			return null;
-		PropertyValueValuelistProvider clonedValuelistProviderProperty = new PropertyValueValuelistProvider();
+		PropertyValueValuelistProvider clonedValuelistProviderProperty = new PropertyValueValuelistProvider(entityAndFieldAvaiable);
 		clonedValuelistProviderProperty.setValue((WYSIWYGValuelistProvider) wysiwygStaticValuelistProvider.clone());
 		return clonedValuelistProviderProperty;
 	}
@@ -174,7 +182,7 @@ public class PropertyValueValuelistProvider implements PropertyValue<WYSIWYGValu
 		//NUCLEUSINT-811
 		private final void launchEditor(WYSIWYGComponent component){
 			if (getValue() == null) {
-				setValue(new WYSIWYGValuelistProvider());
+				setValue(new WYSIWYGValuelistProvider(component instanceof LayoutComponent));
 			}
 			//NUCLEUSINT-811
 			WYSIWYGValuelistProvider returnStaticValuelistProvider = ValueListProviderEditor.showEditor(component, wysiwygStaticValuelistProvider);
@@ -197,4 +205,5 @@ public class PropertyValueValuelistProvider implements PropertyValue<WYSIWYGValu
 		}
 
 	}
+
 }

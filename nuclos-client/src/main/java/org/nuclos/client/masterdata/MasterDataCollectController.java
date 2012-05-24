@@ -73,6 +73,7 @@ import org.nuclos.client.scripting.context.CollectControllerScriptContext;
 import org.nuclos.client.searchfilter.EntitySearchFilter;
 import org.nuclos.client.ui.Errors;
 import org.nuclos.client.ui.Icons;
+import org.nuclos.client.ui.LayoutComponentUtils;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.client.ui.collect.CollectPanel;
 import org.nuclos.client.ui.collect.CollectState;
@@ -1440,7 +1441,7 @@ public class MasterDataCollectController extends EntityCollectController<Collect
 
       @Override
       public DetailsPanel newDetailsPanel() {
-         return new MasterDataDetailsPanel(detailsWithScrollbar);
+    	  return LayoutComponentUtils.setPreferences(getEntityPreferences(), new MasterDataDetailsPanel(detailsWithScrollbar));
       }
 
       @Override

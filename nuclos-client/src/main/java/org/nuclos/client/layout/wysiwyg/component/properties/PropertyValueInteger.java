@@ -119,7 +119,7 @@ public class PropertyValueInteger implements PropertyValue<Integer> {
 	 */
 	@Override
 	public Object getValue(Class<?> cls, WYSIWYGComponent c) {
-		if (cls != null && cls.equals(int.class)) {
+		if (cls != null && (cls.equals(int.class) || cls.equals(Integer.class))) {
 			return (value==null)?0:value;
 		}
 		else if (cls !=null && cls.equals(Font.class)) {

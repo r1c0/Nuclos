@@ -208,7 +208,7 @@ public class WYSIWYGSubFormColumn extends JLabel implements WYSIWYGComponent, Se
 		} else if (p.equals(PROPERTY_DEFAULTVALUES)) {
 			return new PropertyValueBoolean(true);
 		}  else if (p.equals(PROPERTY_VALUELISTPROVIDER)) {
-			return new PropertyValueValuelistProvider();
+			return new PropertyValueValuelistProvider(false);
 		}
 		return PropertyUtils.getPropertyValue(this, p);
 	}

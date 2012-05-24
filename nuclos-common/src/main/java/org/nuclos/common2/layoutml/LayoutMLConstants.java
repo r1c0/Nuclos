@@ -101,11 +101,20 @@ public interface LayoutMLConstants {
 	public static final String ELEMENT_DEPENDENCIES = "dependencies";
 	public static final String ELEMENT_VALUELISTPROVIDER = "valuelist-provider";
 	public static final String ELEMENT_PARAMETER = "parameter";
+	
 	public static final String ELEMENT_PROPERTY = "property";
+	public static final String ELEMENT_PROPERTY_SIZE = "property-size";
+	public static final String ELEMENT_PROPERTY_COLOR = "property-color";
+	public static final String ELEMENT_PROPERTY_FONT = "property-font";
+	public static final String ELEMENT_PROPERTY_SCRIPT = "property-script";
+	public static final String ELEMENT_PROPERTY_TRANSLATIONS = "property-translations";
+	public static final String ELEMENT_PROPERTY_VALUELIST_PROVIDER = "property-valuelist-provider";
+	
 	public static final String ELEMENT_INITIALFOCUSCOMPONENT = "initial-focus-component";
 	public static final String ELEMENT_INITIALSORTINGORDER = "initial-sorting-order";
 	public static final String ELEMENT_TRANSLATIONS = "translations";
 	public static final String ELEMENT_TRANSLATION = "translation";
+	public static final String ELEMENT_LAYOUTCOMPONENT = "layoutcomponent";
 	
 	public static final String ELEMENT_NEW_ENABLED = "new-enabled";
 	public static final String ELEMENT_EDIT_ENABLED = "edit-enabled";
@@ -174,6 +183,7 @@ public interface LayoutMLConstants {
 	public static final String ATTRIBUTE_OPAQUE = "opaque";
 	public static final String ATTRIBUTE_CONSTRAINTS = "constraints";
 	public static final String ATTRIBUTE_ENTITY = "entity";
+	public static final String ATTRIBUTE_FIELD = "field";
 	public static final String ATTRIBUTE_ACTIONCOMMAND = "actioncommand";
 	public static final String ATTRIBUTE_VALUE = "value";
 	public static final String ATTRIBUTE_DEFAULT = "default";
@@ -209,6 +219,7 @@ public interface LayoutMLConstants {
 	public static final String ATTRIBUTE_NEXTFOCUSCOMPONENT = "nextfocuscomponent";
 	public static final String ATTRIBUTE_ICON = "icon";
 	public static final String ATTRIBUTE_LANGUAGE = "language";
+	public static final String ATTRIBUTE_CLASS = "class";
 
 
 	// constants for XML attribute values used in the LayoutML:
@@ -289,6 +300,7 @@ public interface LayoutMLConstants {
 	public static final Dimension DEFAULTVALUE_LISTOFVALUES_PREFERREDSIZE = new Dimension(70, 22);
 	public static final Dimension DEFAULTVALUE_TEXTAREA_MINIMUMSIZE = new Dimension(35, 22);
 	public static final Dimension DEFAULTVALUE_TEXTAREA_PREFERREDSIZE = new Dimension(70, 22);
+	public static final Dimension DEFAULTVALUE_LAYOUTCOMPONENT_MINIMUMSIZE = new Dimension(20, 20);
 
 	public static final Dimension DEFAULTVALUE_TABBEDPANE_MINIMUMSIZE = new Dimension(180, 40);
 	public static final Dimension DEFAULTVALUE_TABBEDPANE_PREFERREDSIZE = new Dimension(300, 100);

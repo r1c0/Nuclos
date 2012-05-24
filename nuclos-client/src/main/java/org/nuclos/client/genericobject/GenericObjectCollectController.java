@@ -130,6 +130,7 @@ import org.nuclos.client.ui.CommonMultiThreader;
 import org.nuclos.client.ui.DateChooser;
 import org.nuclos.client.ui.Errors;
 import org.nuclos.client.ui.Icons;
+import org.nuclos.client.ui.LayoutComponentUtils;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.client.ui.collect.CollectController;
 import org.nuclos.client.ui.collect.CollectPanel;
@@ -5553,7 +5554,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 
 	}
 
-	protected static class GenericObjectCollectPanel extends CollectPanel<CollectableGenericObjectWithDependants> {
+	protected class GenericObjectCollectPanel extends CollectPanel<CollectableGenericObjectWithDependants> {
 
 		private final CollectableComboBox searchStateBox;
 
@@ -5578,7 +5579,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 
 		@Override
 		public DetailsPanel newDetailsPanel() {
-			return new GenericObjectDetailsPanel();
+			return LayoutComponentUtils.setPreferences(getEntityPreferences(), new GenericObjectDetailsPanel());
 		}
 	}
 

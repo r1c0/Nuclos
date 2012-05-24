@@ -76,6 +76,9 @@ public class PropertyValueScript implements PropertyValue<NuclosScript> {
 
 	@Override
 	public Object getValue(Class<?> cls, WYSIWYGComponent c) {
+		if (cls != null && cls.equals(NuclosScript.class)) {
+			return value;
+		}
 		return null;
 	}
 

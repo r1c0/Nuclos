@@ -75,6 +75,7 @@ import org.nuclos.client.layout.wysiwyg.editor.util.valueobjects.WYSIWYGValuelis
 import org.nuclos.client.layout.wysiwyg.editor.util.valueobjects.layoutmlrules.LayoutMLRule;
 import org.nuclos.client.layout.wysiwyg.editor.util.valueobjects.layoutmlrules.LayoutMLRules;
 import org.nuclos.common.NuclosBusinessException;
+import org.nuclos.common.NuclosValueListProvider;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Transformer;
 import org.nuclos.common2.StringUtils;
@@ -913,6 +914,15 @@ public class WYSIWYGLayoutEditorPanel extends JPanel implements WYSIWYGComponent
 					if (value.getValue() != null)
 						if (!(StringUtils.isNullOrEmpty(((WYSIWYGValuelistProvider) value.getValue()).getType())))
 							list.add(c);
+				for (PropertyClass pc : ((WYSIWYGComponent) c).getPropertyClasses()) {
+					if (pc instanceof NuclosValueListProvider) {
+						value = ((WYSIWYGComponent) c).getProperties().getProperty(pc.getName());
+						if (value != null)
+							if (value.getValue() != null)
+								if (!(StringUtils.isNullOrEmpty(((WYSIWYGValuelistProvider) value.getValue()).getType())))
+									list.add(c);
+					}
+				}
 			}
 			if (c instanceof WYSIWYGLayoutEditorPanel) {
 				getWYSIWYGComponentsWithValuelistProviders(((WYSIWYGLayoutEditorPanel) c).getTableLayoutPanel(), list);

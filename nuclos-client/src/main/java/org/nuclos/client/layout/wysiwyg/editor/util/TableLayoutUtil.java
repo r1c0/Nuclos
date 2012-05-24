@@ -36,6 +36,8 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import org.apache.log4j.Logger;
+import org.nuclos.api.ui.Alignment;
+import org.nuclos.api.ui.DefaultAlignment;
 import org.nuclos.client.layout.wysiwyg.CollectableWYSIWYGLayoutEditor.WYSIWYGLayoutEditorChangeDescriptor;
 import org.nuclos.client.layout.wysiwyg.WYSIWYGLayoutControllingPanel;
 import org.nuclos.client.layout.wysiwyg.WYSIWYGStringsAndLabels.TABLELAYOUT_UTIL;
@@ -353,18 +355,22 @@ public class TableLayoutUtil {
 	 * @param toInsertTo {@link LayoutCell} to insert Component in
 	 */
 	public void insertComponentTo(WYSIWYGComponent c, LayoutCell toInsertTo) {
-		int[] alignment;
-
-		
-		alignment = new int[]{2, 1};
-		// special behavior for subform's
-		if(c instanceof WYSIWYGSubForm)
-			alignment[1] = 2;
-
 		TableLayoutConstraints constraint = new TableLayoutConstraints();
-		constraint.hAlign = alignment[AlignmentDialog.HORIZONTAL_ALIGN];
-		constraint.vAlign = alignment[AlignmentDialog.VERTICAL_ALIGN];
 
+		if (c instanceof DefaultAlignment) {
+			final Alignment def = ((DefaultAlignment) c).getDefaultAlignment();
+			constraint.hAlign = def.h.getInt();
+			constraint.vAlign = def.v.getInt();
+		} else {
+			int[] alignment = new int[]{2, 1};
+			// special behavior for subform's
+			if(c instanceof WYSIWYGSubForm)
+				alignment[1] = 2;
+			
+			constraint.hAlign = alignment[AlignmentDialog.HORIZONTAL_ALIGN];
+			constraint.vAlign = alignment[AlignmentDialog.VERTICAL_ALIGN];
+		}
+		
 		constraint.col1 = toInsertTo.getCellX();
 		constraint.row1 = toInsertTo.getCellY();
 		constraint.col2 = toInsertTo.getCell2X();

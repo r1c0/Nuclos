@@ -42,6 +42,7 @@ import org.nuclos.client.layout.wysiwyg.component.properties.PropertiesPanel;
 public class PropertiesSorter {
 	
 	/** getting the labels for sorting */
+	public static final String PROPERTY_CLASS = PROPERTY_LABELS.CLASS;
 	public static final String PROPERTY_NAME = PROPERTY_LABELS.NAME;
 	public static final String PROPERTY_MNEMONIC = PROPERTY_LABELS.MNEMONIC;
 	public static final String PROPERTY_COLLECTABLECOMPONENTPROPERTY = PROPERTY_LABELS.COLLECTABLECOMPONENTPROPERTY;
@@ -66,7 +67,7 @@ public class PropertiesSorter {
 
 	/** this is the order every propertiesdialog should be structured. The null Value is the Point where values are put that could not be sorted */
 	private static final String[] comparatorString = {
-		PROPERTY_NAME, PROPERTY_FONT, PROPERTY_BACKGROUNDCOLOR, PROPERTY_BORDER, PROPERTY_ENABLED, PROPERTY_VISIBLE, 
+		PROPERTY_CLASS, PROPERTY_NAME, PROPERTY_FONT, PROPERTY_BACKGROUNDCOLOR, PROPERTY_BORDER, PROPERTY_ENABLED, PROPERTY_VISIBLE, 
 		PROPERTY_OPAQUE, PROPERTY_PREFFEREDSIZE, PROPERTY_SIZE, PROPERTY_MNEMONIC, PROPERTY_DESCRIPTION, PROPERTY_VALUELISTPROVIDER, 
 		PROPERTY_COLLECTABLECOMPONENTPROPERTY, null, 
 		CONSTRAINT_HALIGN, CONSTRAINT_VALIGN, CONSTRAINT_COL1, CONSTRAINT_COL2, CONSTRAINT_ROW1, CONSTRAINT_ROW2};

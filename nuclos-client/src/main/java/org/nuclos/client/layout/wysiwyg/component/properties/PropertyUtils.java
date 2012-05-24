@@ -29,6 +29,7 @@ import javax.swing.UIManager;
 import javax.swing.border.Border;
 
 import org.apache.log4j.Logger;
+import org.nuclos.api.ui.LayoutComponent;
 import org.nuclos.client.layout.wysiwyg.WYSIWYGEditorModes;
 import org.nuclos.client.layout.wysiwyg.WYSIWYGMetaInformation;
 import org.nuclos.client.layout.wysiwyg.WYSIWYGStringsAndLabels;
@@ -48,6 +49,7 @@ import org.nuclos.client.layout.wysiwyg.component.WYSIWYGCollectableTextArea;
 import org.nuclos.client.layout.wysiwyg.component.WYSIWYGCollectableTextfield;
 import org.nuclos.client.layout.wysiwyg.component.WYSIWYGComponent;
 import org.nuclos.client.layout.wysiwyg.component.WYSIWYGComponent.PropertyClass;
+import org.nuclos.client.layout.wysiwyg.component.WYSIWYGLayoutComponent;
 import org.nuclos.client.layout.wysiwyg.component.WYSIWYGScrollPane;
 import org.nuclos.client.layout.wysiwyg.component.WYSIWYGSplitPane;
 import org.nuclos.client.layout.wysiwyg.component.WYSIWYGStaticButton;
@@ -72,6 +74,8 @@ import org.nuclos.client.ui.collect.component.CollectableOptionGroup;
 import org.nuclos.common.NuclosBusinessException;
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.NuclosScript;
+import org.nuclos.common.NuclosTranslationMap;
+import org.nuclos.common.NuclosValueListProvider;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.layoutml.LayoutMLConstants;
 
@@ -169,9 +173,10 @@ public class PropertyUtils implements LayoutMLConstants {
 				setDefaultValuesForWYSIWYGUniversalComponent(properties);
 			} 
 
-			/** setting properties for all components*/
+			if (!(c instanceof WYSIWYGLayoutComponent)) {
+				properties.setProperty(WYSIWYGCollectableComponent.PROPERTY_OPAQUE, new PropertyValueBoolean(true), boolean.class);
+			}
 			properties.setProperty(WYSIWYGCollectableComponent.PROPERTY_ENABLED, new PropertyValueBoolean(true), boolean.class);
-			properties.setProperty(WYSIWYGCollectableComponent.PROPERTY_OPAQUE, new PropertyValueBoolean(true), boolean.class);
 			properties.setProperty(WYSIWYGCollectableComponent.PROPERTY_VISIBLE, new PropertyValueBoolean(true), boolean.class);
 			
 		} catch (CommonBusinessException e) {
@@ -472,7 +477,9 @@ public class PropertyUtils implements LayoutMLConstants {
 	 */
 	public static PropertyValue<?> getPropertyValue(WYSIWYGComponent c, String property) throws NuclosFatalException{
 		Class<?> propertyClass = getValueClass(c, property);
-		
+		if (propertyClass == null) {
+			return null;
+		}
 		if (propertyClass.equals(String.class)) {
 			return new PropertyValueString();
 		} else if (propertyClass.equals(Dimension.class)) {
@@ -487,8 +494,8 @@ public class PropertyUtils implements LayoutMLConstants {
 			return new PropertyValueInteger();
 		} else if (propertyClass.equals(double.class)) {
 			return new PropertyValueDouble();
-		} else if (propertyClass.equals(WYSIWYGValuelistProvider.class)) {
-			return new PropertyValueValuelistProvider();
+		} else if (propertyClass.equals(WYSIWYGValuelistProvider.class) || propertyClass.equals(NuclosValueListProvider.class)) {
+			return new PropertyValueValuelistProvider(c instanceof LayoutComponent);
 		} else if (propertyClass.equals(Font.class)) {
 			return new PropertyValueFont();
 		}  else if (propertyClass.equals(WYSIWYGOptions.class)) {
@@ -499,7 +506,7 @@ public class PropertyUtils implements LayoutMLConstants {
 			return new PropertyCollectableComponentProperty();
 		} else if (propertyClass.equals(PropertyValueFont.class)) {
 			return new PropertyValueFont();
-		} else if (propertyClass.equals(TranslationMap.class)) {
+		} else if (propertyClass.equals(TranslationMap.class) || propertyClass.equals(NuclosTranslationMap.class)) {
 			return new PropertyValueTranslations();
 		} else if (propertyClass.equals(NuclosScript.class)) {
 			return new PropertyValueScript();
@@ -650,7 +657,9 @@ public class PropertyUtils implements LayoutMLConstants {
 			return UIManager.getFont("ScollPane.font");
 		} else if (c instanceof WYSIWYGStaticButton) {
 			return UIManager.getFont("Button.font");
-		} else {
+		} else if (c instanceof WYSIWYGLayoutComponent) {
+			return ((WYSIWYGLayoutComponent)c).getDefaultFont();
+		} else{
 			return null;
 		}
 	}

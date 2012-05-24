@@ -30,6 +30,7 @@ import java.util.NoSuchElementException;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
+import org.nuclos.api.ui.LayoutComponent;
 import org.nuclos.client.attribute.AttributeCache;
 import org.nuclos.client.common.MetaDataClientProvider;
 import org.nuclos.client.common.NuclosCollectableEntityProvider;
@@ -52,6 +53,7 @@ import org.nuclos.client.layout.wysiwyg.component.properties.PropertyValueString
 import org.nuclos.client.layout.wysiwyg.editor.ui.panels.WYSIWYGLayoutEditorPanel;
 import org.nuclos.client.layout.wysiwyg.editor.util.valueobjects.WYSIWYGValuelistProvider;
 import org.nuclos.client.masterdata.MetaDataCache;
+import org.nuclos.client.nuclet.NucletComponentRepository;
 import org.nuclos.client.resource.ResourceDelegate;
 import org.nuclos.client.rule.RuleDelegate;
 import org.nuclos.client.statemodel.StateDelegate;
@@ -83,6 +85,8 @@ import org.nuclos.server.masterdata.valueobject.MasterDataMetaVO;
 import org.nuclos.server.ruleengine.valueobject.RuleEventUsageVO;
 import org.nuclos.server.ruleengine.valueobject.RuleVO;
 import org.nuclos.server.statemodel.valueobject.StateVO;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
 
 /**
  * This class connects the WYSIWYG Editor with the Backbone.
@@ -138,6 +142,10 @@ public class WYSIWYGMetaInformation implements LayoutMLConstants {
 
 	/** used for collecting the informations */
 	private CollectableEntityProvider provider = NuclosCollectableEntityProvider.getInstance();
+	
+	public WYSIWYGMetaInformation() {
+		
+	}
 
 	/**
 	 * Setting the CollectableEntity for this Metainformation.

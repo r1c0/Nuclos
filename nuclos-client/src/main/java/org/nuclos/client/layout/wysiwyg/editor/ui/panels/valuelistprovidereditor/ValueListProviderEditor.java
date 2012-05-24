@@ -100,6 +100,11 @@ public class ValueListProviderEditor extends JDialog implements SaveAndCancelBut
 	private final JComboBox cbxIdField = new JComboBox();
 	private final JLabel lblNameField = new JLabel(VALUELIST_PROVIDER_EDITOR.LABEL_PARAMETER_NAME);
 	private final JComboBox cbxNameField = new JComboBox();
+	
+	private final JLabel lblEntity = new JLabel(VALUELIST_PROVIDER_EDITOR.LABEL_ENTITY);
+	private final JTextField tfEntity = new JTextField();
+	private final JLabel lblField = new JLabel(VALUELIST_PROVIDER_EDITOR.LABEL_FIELD);
+	private final JTextField tfField = new JTextField();
 
 	private final JPanel parameterContainer = new JPanel();;
 	private final JPanel valuecontainer = new JPanel();
@@ -195,12 +200,15 @@ public class ValueListProviderEditor extends JDialog implements SaveAndCancelBut
 		/**
 		 * the valuelist provider type panel
 		 */
-		valuecontainer.setLayout(new TableLayout(new double[][]{{TableLayout.PREFERRED, InterfaceGuidelines.MARGIN_BETWEEN, TableLayout.PREFERRED, TableLayout.FILL, TableLayout.PREFERRED}, {TableLayout.PREFERRED, InterfaceGuidelines.MARGIN_BETWEEN, TableLayout.PREFERRED, InterfaceGuidelines.MARGIN_BETWEEN, TableLayout.PREFERRED}}));
+		valuecontainer.setLayout(new TableLayout(new double[][]{{TableLayout.PREFERRED, InterfaceGuidelines.MARGIN_BETWEEN, TableLayout.PREFERRED, TableLayout.FILL, TableLayout.PREFERRED}, 
+				{TableLayout.PREFERRED, InterfaceGuidelines.MARGIN_BETWEEN, TableLayout.PREFERRED, InterfaceGuidelines.MARGIN_BETWEEN, TableLayout.PREFERRED, InterfaceGuidelines.MARGIN_BETWEEN, TableLayout.PREFERRED, InterfaceGuidelines.MARGIN_BETWEEN, TableLayout.PREFERRED}}));
 		valuecontainer.add(lblType, "0,0");
 		TableLayoutConstraints constraint = new TableLayoutConstraints(2, 0, 2, 0, TableLayout.FULL, TableLayout.CENTER);
 		valuecontainer.add(cbxType, constraint);
 		cbxIdField.setPreferredSize(new Dimension(250, 20));
 		cbxNameField.setPreferredSize(new Dimension(250, 20));
+		tfEntity.setPreferredSize(new Dimension(250, 20));
+		tfField.setPreferredSize(new Dimension(250, 20));
 		
 		btnAddParameter.addActionListener(new ActionListener() {
 			@Override
@@ -315,6 +323,14 @@ public class ValueListProviderEditor extends JDialog implements SaveAndCancelBut
 			cbxIdField.removeAllItems();
 			cbxNameField.removeAllItems();
 			
+			tfEntity.setText("");
+			tfField.setText("");
+			
+			if (wysiwygStaticValuelistProvider.isEntityAndFieldAvaiable()) {
+				tfEntity.setText(wysiwygStaticValuelistProvider.getEntity());
+				tfField.setText(wysiwygStaticValuelistProvider.getField());
+			}
+			
 			ValuelistProviderVO vpVO = (ValuelistProviderVO) cbxType.getEditor().getItem();
 			try {
 				// add empty id field (for valuelist provider that should generate plain value fields)
@@ -399,6 +415,13 @@ public class ValueListProviderEditor extends JDialog implements SaveAndCancelBut
 			valuecontainer.remove(lblNameField);
 			valuecontainer.remove(cbxNameField);
 		}
+		
+		if (wysiwygStaticValuelistProvider.isEntityAndFieldAvaiable()) {
+			valuecontainer.add(lblEntity, "0,6");
+			valuecontainer.add(tfEntity, "2,6,l,c");
+			valuecontainer.add(lblField, "0,8");
+			valuecontainer.add(tfField, "2,8,l,c");
+		}
 
 		parameterContainer.updateUI();
 		valuecontainer.updateUI();
@@ -478,10 +501,11 @@ public class ValueListProviderEditor extends JDialog implements SaveAndCancelBut
 	 * Remove the {@link WYSIWYGValuelistProvider}.
 	 */
 	private final void clearValuelistProviderForComponent() {
+		boolean isEntityAndFieldAvaiable = wysiwygStaticValuelistProvider.isEntityAndFieldAvaiable();
 		wysiwygStaticValuelistProvider = null;
 		backupWYSIWYGStaticValuelistProvider = null;
 		// NUCLEUSINT-669
-		returnValuelistProvider = new WYSIWYGValuelistProvider();
+		returnValuelistProvider = new WYSIWYGValuelistProvider(isEntityAndFieldAvaiable);
 		this.dispose();
 	}
 
@@ -518,7 +542,16 @@ public class ValueListProviderEditor extends JDialog implements SaveAndCancelBut
 	 * @see org.nuclos.client.layout.wysiwyg.editor.ui.panels.elementalcomponents.SaveAndCancelButtonPanel.SaveAndCancelButtonPanelControllable#performSaveAction()
 	 */
 	@Override
-	public void performSaveAction() {		
+	public void performSaveAction() {
+		if (wysiwygStaticValuelistProvider.isEntityAndFieldAvaiable()) {
+			if (StringUtils.looksEmpty(tfEntity.getText()) || StringUtils.looksEmpty(tfField.getText())) {
+				JOptionPane.showMessageDialog(this, VALUELIST_PROVIDER_EDITOR.MESSAGE_ENTITYAND_FIELD_NOT_NULL);
+				return;
+			}
+			wysiwygStaticValuelistProvider.setEntity(tfEntity.getText());
+			wysiwygStaticValuelistProvider.setField(tfField.getText());
+		}
+		
 		if (isSelectedTypeFromDatasource()) {
 			WYSIYWYGParameter paramValuelistProviderDatasource = null;
 			WYSIYWYGParameter parameterIdField = null;

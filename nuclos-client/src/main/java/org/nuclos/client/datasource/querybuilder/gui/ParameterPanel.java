@@ -313,7 +313,7 @@ public class ParameterPanel extends JPanel {
 			if (vo == null) {
 				vo = new DatasourceParameterValuelistproviderVO(null);
 			}
-			WYSIWYGValuelistProvider vlp = new WYSIWYGValuelistProvider(vo.getType());
+			WYSIWYGValuelistProvider vlp = new WYSIWYGValuelistProvider(vo.getType(), false);
 
 			for (Map.Entry<String, String> param : vo.getParameters().entrySet()) {
 				vlp.addWYSIYWYGParameter(new WYSIYWYGParameter(param.getKey(), param.getValue()));

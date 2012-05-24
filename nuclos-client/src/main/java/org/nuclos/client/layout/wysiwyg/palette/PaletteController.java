@@ -27,7 +27,11 @@ import java.awt.dnd.DragSource;
 import java.awt.dnd.DropTargetDragEvent;
 import java.awt.dnd.DropTargetEvent;
 import java.awt.dnd.InvalidDnDOperationException;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 
+import javax.annotation.PostConstruct;
 import javax.swing.BorderFactory;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.DefaultListModel;
@@ -40,6 +44,7 @@ import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.EtchedBorder;
 
+import org.nuclos.api.ui.LayoutComponentFactory;
 import org.nuclos.client.layout.wysiwyg.WYSIWYGEditorModes;
 import org.nuclos.client.layout.wysiwyg.WYSIWYGStringsAndLabels;
 import org.nuclos.client.layout.wysiwyg.WYSIWYGStringsAndLabels.COLLECTABLE_CHECKBOX;
@@ -78,8 +83,12 @@ import org.nuclos.client.layout.wysiwyg.WYSIWYGStringsAndLabels.STATIC_TEXTAREA;
 import org.nuclos.client.layout.wysiwyg.WYSIWYGStringsAndLabels.STATIC_TEXTFIELD;
 import org.nuclos.client.layout.wysiwyg.WYSIWYGStringsAndLabels.STATIC_TITLED_SEPARATOR;
 import org.nuclos.client.layout.wysiwyg.datatransfer.TransferableElement;
+import org.nuclos.client.nuclet.NucletComponentRepository;
 import org.nuclos.client.ui.Errors;
+import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.layoutml.LayoutMLConstants;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
 
 /**
  * PaletteController builds palette view and handles drag&drop
@@ -91,8 +100,11 @@ import org.nuclos.common2.layoutml.LayoutMLConstants;
  * @author <a href="mailto:thomas.schiffmann@novabit.de">thomas.schiffmann</a>
  * @version 01.00.00
  */
+@Configurable
 public class PaletteController implements DragGestureListener, LayoutMLConstants, WYSIWYGEditorModes {
 
+	private NucletComponentRepository nucletComponentRepository;
+	
 	private JPanel palettePanel = new JPanel();
 	private JList paletteList;
 
@@ -112,7 +124,16 @@ public class PaletteController implements DragGestureListener, LayoutMLConstants
 	 * ctor
 	 */
 	public PaletteController(int mode) {
-		super();
+		
+	}
+	
+	@Autowired
+	void setNucletComponentRepository(NucletComponentRepository nucletComponentRepository) {
+		this.nucletComponentRepository = nucletComponentRepository;
+	}
+	
+	@PostConstruct
+	void init() {
 		this.mode = mode;
 
 		palettePanel.setLayout(new GridBagLayout());
@@ -127,6 +148,7 @@ public class PaletteController implements DragGestureListener, LayoutMLConstants
 
 		dragsource.createDefaultDragGestureRecognizer(paletteList, DnDConstants.ACTION_COPY, this);
 		palettePanel.add(new JScrollPane(paletteList), new GridBagConstraints(0, 2, 1, 1, 0, 1, GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 5, 5, 5), 0, 0));
+
 	}
 
 	/**
@@ -213,6 +235,15 @@ public class PaletteController implements DragGestureListener, LayoutMLConstants
 		model.addElement(new PaletteItem(ELEMENT_SEPARATOR, new STATIC_SEPERATOR()));
 		model.addElement(new PaletteItem(ELEMENT_TITLEDSEPARATOR, new STATIC_TITLED_SEPARATOR()));
 
+		List<LayoutComponentFactory> layoutComponentFactories = nucletComponentRepository.getLayoutComponentFactories();
+		if (!layoutComponentFactories.isEmpty()) {
+			model.addElement(PALETTE_CONTROLLER.SECTION_NUCLET);
+			Collections.sort(layoutComponentFactories, new FactoryComparator());
+			for (LayoutComponentFactory lcf : layoutComponentFactories) {
+				model.addElement(new PaletteItem(ELEMENT_LAYOUTCOMPONENT, lcf.getClass().getName(), new LayoutComponentPaletteItem(lcf)));
+			}
+		}
+		
 		return model;
 	}
 
@@ -302,5 +333,19 @@ public class PaletteController implements DragGestureListener, LayoutMLConstants
 			return result;
 		}
 	}
+	
+	public static class FactoryComparator implements Comparator<LayoutComponentFactory> {
+		@Override
+		public int compare(LayoutComponentFactory o1, LayoutComponentFactory o2) {
+			return StringUtils.compareIgnoreCase(getFactoryPresentation(o1), getFactoryPresentation(o2));
+		}
+	}
 
+	private static String getFactoryPresentation(Object o) {
+		if (o instanceof LayoutComponentFactory) {
+			return String.format("%s (%s)", ((LayoutComponentFactory) o).getName(), o.getClass().getName());
+		} else {
+			return o==null? "": o.toString();
+		}
+	}
 }

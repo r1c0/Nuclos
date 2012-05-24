@@ -39,7 +39,9 @@ import javax.swing.border.EtchedBorder;
 import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
 
+import org.apache.commons.lang.NotImplementedException;
 import org.apache.log4j.Logger;
+import org.nuclos.api.Property;
 import org.nuclos.client.common.MetaDataClientProvider;
 import org.nuclos.client.genericobject.GeneratorActions;
 import org.nuclos.client.genericobject.Modules;
@@ -61,6 +63,7 @@ import org.nuclos.client.layout.wysiwyg.component.WYSIWYGCollectablePasswordfiel
 import org.nuclos.client.layout.wysiwyg.component.WYSIWYGCollectableTextArea;
 import org.nuclos.client.layout.wysiwyg.component.WYSIWYGCollectableTextfield;
 import org.nuclos.client.layout.wysiwyg.component.WYSIWYGComponent;
+import org.nuclos.client.layout.wysiwyg.component.WYSIWYGLayoutComponent;
 import org.nuclos.client.layout.wysiwyg.component.WYSIWYGScrollPane;
 import org.nuclos.client.layout.wysiwyg.component.WYSIWYGSplitPane;
 import org.nuclos.client.layout.wysiwyg.component.WYSIWYGStaticButton;
@@ -79,11 +82,16 @@ import org.nuclos.client.layout.wysiwyg.component.properties.ComponentProperties
 import org.nuclos.client.layout.wysiwyg.component.properties.PropertyValue;
 import org.nuclos.client.layout.wysiwyg.component.properties.PropertyValueBoolean;
 import org.nuclos.client.layout.wysiwyg.component.properties.PropertyValueBorder;
+import org.nuclos.client.layout.wysiwyg.component.properties.PropertyValueColor;
+import org.nuclos.client.layout.wysiwyg.component.properties.PropertyValueDimension;
 import org.nuclos.client.layout.wysiwyg.component.properties.PropertyValueDouble;
 import org.nuclos.client.layout.wysiwyg.component.properties.PropertyValueFont;
 import org.nuclos.client.layout.wysiwyg.component.properties.PropertyValueInitialSortingOrder;
 import org.nuclos.client.layout.wysiwyg.component.properties.PropertyValueInteger;
+import org.nuclos.client.layout.wysiwyg.component.properties.PropertyValueScript;
 import org.nuclos.client.layout.wysiwyg.component.properties.PropertyValueString;
+import org.nuclos.client.layout.wysiwyg.component.properties.PropertyValueTranslations;
+import org.nuclos.client.layout.wysiwyg.component.properties.PropertyValueValuelistProvider;
 import org.nuclos.client.layout.wysiwyg.editor.ui.panels.WYSIWYGLayoutEditorPanel;
 import org.nuclos.client.layout.wysiwyg.editor.util.valueobjects.TableLayoutPanel;
 import org.nuclos.client.layout.wysiwyg.editor.util.valueobjects.WYSIWYGInitialFocusComponent;
@@ -241,6 +249,8 @@ public class LayoutMLGenerator implements LayoutMLConstants {
 			sb.append(getLayoutMLForStaticButton((WYSIWYGStaticButton) c, tableLayout, blockDeep));
 		} else if (c instanceof WYSIWYGStaticImage) {
 			sb.append(getLayoutMLForStaticImage((WYSIWYGStaticImage) c, tableLayout, blockDeep));
+		} else if (c instanceof WYSIWYGLayoutComponent) {
+			sb.append(getLayoutMLForLayoutComponent((WYSIWYGLayoutComponent) c, tableLayout, blockDeep));
 		}
 
 		return sb;
@@ -278,10 +288,10 @@ public class LayoutMLGenerator implements LayoutMLConstants {
 			}
 		}
 
-		block.append(getScriptProperty(WYSIWYGSubForm.PROPERTY_NEW_ENABLED, ELEMENT_NEW_ENABLED, subform.getProperties(), blockDeep + 1));
-		block.append(getScriptProperty(WYSIWYGSubForm.PROPERTY_EDIT_ENABLED, ELEMENT_EDIT_ENABLED, subform.getProperties(), blockDeep + 1));
-		block.append(getScriptProperty(WYSIWYGSubForm.PROPERTY_DELETE_ENABLED, ELEMENT_DELETE_ENABLED, subform.getProperties(), blockDeep + 1));
-		block.append(getScriptProperty(WYSIWYGSubForm.PROPERTY_CLONE_ENABLED, ELEMENT_CLONE_ENABLED, subform.getProperties(), blockDeep + 1));
+		block.append(getLayoutMLScriptFromProperty(WYSIWYGSubForm.PROPERTY_NEW_ENABLED, ELEMENT_NEW_ENABLED, subform.getProperties(), blockDeep + 1));
+		block.append(getLayoutMLScriptFromProperty(WYSIWYGSubForm.PROPERTY_EDIT_ENABLED, ELEMENT_EDIT_ENABLED, subform.getProperties(), blockDeep + 1));
+		block.append(getLayoutMLScriptFromProperty(WYSIWYGSubForm.PROPERTY_DELETE_ENABLED, ELEMENT_DELETE_ENABLED, subform.getProperties(), blockDeep + 1));
+		block.append(getLayoutMLScriptFromProperty(WYSIWYGSubForm.PROPERTY_CLONE_ENABLED, ELEMENT_CLONE_ENABLED, subform.getProperties(), blockDeep + 1));
 		block.linebreak();
 		block.append("</" + ELEMENT_SUBFORM + ">");
 
@@ -304,8 +314,8 @@ public class LayoutMLGenerator implements LayoutMLConstants {
 		block.append(getLayoutMLAttributesFromProperties(WYSIWYGSubFormColumn.PROPERTIES_TO_LAYOUTML_ATTRIBUTES, column.getProperties()));
 		block.append(">");
 
-		block.append(getLayoutMLTranslations(column.getProperties(), blockDeep + 1));
-		WYSIWYGValuelistProvider wysiwygStaticValuelistProvider = (WYSIWYGValuelistProvider) column.getProperties().getProperty(WYSIWYGCollectableComponent.PROPERTY_VALUELISTPROVIDER).getValue();
+		block.append(getLayoutMLTranslationsFromProperty(column.getProperties(), blockDeep + 1));
+		WYSIWYGValuelistProvider wysiwygStaticValuelistProvider = (WYSIWYGValuelistProvider) column.getProperties().getProperty(WYSIWYGCollectableComponent.PROPERTY_VALUELISTPROVIDER).getValue();		
 		if (wysiwygStaticValuelistProvider != null && (!wysiwygStaticValuelistProvider.getType().equals(""))) {
 			block.append(getLayoutMLValueListProvider(wysiwygStaticValuelistProvider, blockDeep + 1));
 		}
@@ -697,14 +707,14 @@ public class LayoutMLGenerator implements LayoutMLConstants {
 		}
 		block.append(getLayoutMLBackgroundColorFromProperty(c.getProperties(), blockDeep + 1));
 		block.append(getLayoutMLDescription(c.getProperties(), blockDeep + 1));
-		block.append(getLayoutMLFont(c.getProperties(), blockDeep + 1));
+		block.append(getLayoutMLFontFromProperty(c.getProperties(), blockDeep + 1));
 		if (c.getProperties().getProperty(WYSIWYGCollectableOptionGroup.PROPERTY_OPTIONS) != null) {
 			WYSIWYGOptions options = (WYSIWYGOptions) c.getProperties().getProperty(WYSIWYGCollectableOptionGroup.PROPERTY_OPTIONS).getValue();
 			if (options != null) {
 				block.append(getLayoutMLOptions(options, blockDeep + 1));
 			}
 		}
-		block.append(getLayoutMLTranslations(c.getProperties(), blockDeep + 1));
+		block.append(getLayoutMLTranslationsFromProperty(c.getProperties(), blockDeep + 1));
 		if (c.getProperties().getProperty(WYSIWYGCollectableComponent.PROPERTY_VALUELISTPROVIDER) != null) {
 			WYSIWYGValuelistProvider wysiwygStaticValuelistProvider = (WYSIWYGValuelistProvider) c.getProperties().getProperty(WYSIWYGCollectableComponent.PROPERTY_VALUELISTPROVIDER).getValue();
 			if (wysiwygStaticValuelistProvider != null && !StringUtils.isNullOrEmpty(wysiwygStaticValuelistProvider.getType())) {
@@ -739,8 +749,8 @@ public class LayoutMLGenerator implements LayoutMLConstants {
 		block.append(getLayoutMLTableLayoutConstraints(c, tableLayout, blockDeep + 1));
 		block.append(getLayoutMLMinimumSizeFromComponent(c, blockDeep + 1));
 		block.append(getLayoutMLPreferredSizeFromProperty(c.getProperties(), blockDeep + 1));
-		block.append(getLayoutMLFont(c.getProperties(), blockDeep + 1));
-		block.append(getLayoutMLTranslations(c.getProperties(), blockDeep + 1));
+		block.append(getLayoutMLFontFromProperty(c.getProperties(), blockDeep + 1));
+		block.append(getLayoutMLTranslationsFromProperty(c.getProperties(), blockDeep + 1));
 		block.linebreak();
 		block.append("</" + ELEMENT_TITLEDSEPARATOR + ">");
 
@@ -800,7 +810,7 @@ public class LayoutMLGenerator implements LayoutMLConstants {
 		block.append(getLayoutMLBordersFromProperty(c.getProperties(), blockDeep + 1));
 		block.append(getLayoutMLMinimumSizeFromComponent(c, blockDeep + 1));
 		block.append(getLayoutMLPreferredSizeFromProperty(c.getProperties(), blockDeep + 1));
-		block.append(getLayoutMLFont(c.getProperties(), blockDeep + 1));
+		block.append(getLayoutMLFontFromProperty(c.getProperties(), blockDeep + 1));
 		block.append(getLayoutMLDescription(c.getProperties(), blockDeep + 1));
 		//NUCLOSINT-743 if a rule is set generate a property for it
 		String actionCommand = (String)c.getProperties().getProperty(WYSIWYGStaticButton.PROPERTY_ACTIONCOMMAND).getValue();
@@ -884,7 +894,7 @@ public class LayoutMLGenerator implements LayoutMLConstants {
 			}
 		}
 
-		block.append(getLayoutMLTranslations(c.getProperties(), blockDeep + 1));
+		block.append(getLayoutMLTranslationsFromProperty(c.getProperties(), blockDeep + 1));
 		block.linebreak();
 		block.append("</" + ELEMENT_BUTTON + ">");
 
@@ -911,7 +921,7 @@ public class LayoutMLGenerator implements LayoutMLConstants {
 		block.append(getLayoutMLBordersFromProperty(c.getProperties(), blockDeep + 1));
 		block.append(getLayoutMLMinimumSizeFromComponent(c, blockDeep + 1));
 		block.append(getLayoutMLPreferredSizeFromProperty(c.getProperties(), blockDeep + 1));
-		block.append(getLayoutMLFont(c.getProperties(), blockDeep + 1));
+		block.append(getLayoutMLFontFromProperty(c.getProperties(), blockDeep + 1));
 		block.append(getLayoutMLDescription(c.getProperties(), blockDeep + 1));
 		block.linebreak();
 		block.append("</" + ELEMENT_IMAGE + ">");
@@ -940,10 +950,40 @@ public class LayoutMLGenerator implements LayoutMLConstants {
 		block.append(getLayoutMLBordersFromProperty(c.getProperties(), blockDeep + 1));
 		block.append(getLayoutMLMinimumSizeFromComponent(c, blockDeep + 1));
 		block.append(getLayoutMLPreferredSizeFromProperty(c.getProperties(), blockDeep + 1));
-		block.append(getLayoutMLFont(c.getProperties(), blockDeep + 1));
+		block.append(getLayoutMLFontFromProperty(c.getProperties(), blockDeep + 1));
 		block.append(getLayoutMLDescription(c.getProperties(), blockDeep + 1));
 		block.linebreak();
 		block.append("</" + ELEMENT_TEXTFIELD + ">");
+
+		return block.getStringBuffer();
+	}
+	
+	private synchronized StringBuffer getLayoutMLForLayoutComponent(WYSIWYGLayoutComponent c, TableLayout tableLayout, int blockDeep) {
+		LayoutMLBlock block = new LayoutMLBlock(blockDeep);
+		block.append("<" + ELEMENT_LAYOUTCOMPONENT);
+		block.append(" ");
+		block.append(ATTRIBUTE_CLASS);
+		block.append("=\"");
+		block.append(c.getLayoutComponentFactoryClass());
+		block.append("\"");
+		block.append(getLayoutMLAttributesFromProperties(c.getPropertyAttributeLink(), c.getProperties()));
+		block.append(">");
+
+		block.append(getLayoutMLTableLayoutConstraints(c, tableLayout, blockDeep + 1));
+		if (c.getAdditionalProperties() != null && c.getAdditionalProperties().length > 0) {
+			for (Property pt : c.getAdditionalProperties()) {
+				PropertyValue<?> property = c.getProperties().getProperty(pt.name);
+				if (property != null && property.getValue() != null) {
+					block.append(getLayoutMLForProperty(pt.name, property, blockDeep + 1));
+				}
+			}
+		}
+		block.append(getLayoutMLBordersFromProperty(c.getProperties(), blockDeep + 1));
+		block.append(getLayoutMLMinimumSizeFromComponent(c, blockDeep + 1));
+		block.append(getLayoutMLPreferredSizeFromProperty(c.getProperties(), blockDeep + 1));
+		
+		block.linebreak();
+		block.append("</" + ELEMENT_LAYOUTCOMPONENT + ">");
 
 		return block.getStringBuffer();
 	}
@@ -968,7 +1008,7 @@ public class LayoutMLGenerator implements LayoutMLConstants {
 		block.append(getLayoutMLBordersFromProperty(c.getProperties(), blockDeep + 1));
 		block.append(getLayoutMLMinimumSizeFromComponent(c, blockDeep + 1));
 		block.append(getLayoutMLPreferredSizeFromProperty(c.getProperties(), blockDeep + 1));
-		block.append(getLayoutMLFont(c.getProperties(), blockDeep + 1));
+		block.append(getLayoutMLFontFromProperty(c.getProperties(), blockDeep + 1));
 		block.append(getLayoutMLDescription(c.getProperties(), blockDeep + 1));
 		block.linebreak();
 		block.append("</" + ELEMENT_TEXTAREA + ">");
@@ -996,9 +1036,9 @@ public class LayoutMLGenerator implements LayoutMLConstants {
 		block.append(getLayoutMLBordersFromProperty(c.getProperties(), blockDeep + 1));
 		block.append(getLayoutMLMinimumSizeFromComponent(c, blockDeep + 1));
 		block.append(getLayoutMLPreferredSizeFromProperty(c.getProperties(), blockDeep + 1));
-		block.append(getLayoutMLFont(c.getProperties(), blockDeep + 1));
+		block.append(getLayoutMLFontFromProperty(c.getProperties(), blockDeep + 1));
 		block.append(getLayoutMLDescription(c.getProperties(), blockDeep + 1));
-		block.append(getLayoutMLTranslations(c.getProperties(), blockDeep + 1));
+		block.append(getLayoutMLTranslationsFromProperty(c.getProperties(), blockDeep + 1));
 		block.linebreak();
 		block.append("</" + ELEMENT_LABEL + ">");
 		return block.getStringBuffer();
@@ -1024,7 +1064,7 @@ public class LayoutMLGenerator implements LayoutMLConstants {
 		block.append(getLayoutMLBordersFromProperty(c.getProperties(), blockDeep + 1));
 		block.append(getLayoutMLMinimumSizeFromComponent(c, blockDeep + 1));
 		block.append(getLayoutMLPreferredSizeFromProperty(c.getProperties(), blockDeep + 1));
-		block.append(getLayoutMLFont(c.getProperties(), blockDeep + 1));
+		block.append(getLayoutMLFontFromProperty(c.getProperties(), blockDeep + 1));
 		block.append(getLayoutMLDescription(c.getProperties(), blockDeep + 1));
 		block.linebreak();
 		block.append("</" + ELEMENT_COMBOBOX + ">");
@@ -1182,6 +1222,19 @@ public class LayoutMLGenerator implements LayoutMLConstants {
 
 		return block.getStringBuffer();
 	}
+	
+	/**
+	 * Method converting PreferredSize to LayoutML XML.
+	 * 
+	 * 
+	 * @see LayoutMLBlock
+	 * @param cp
+	 * @param blockDeep
+	 * @return {@link StringBuffer} with the LayoutML
+	 */
+	private synchronized StringBuffer getLayoutMLPreferredSizeFromProperty(ComponentProperties cp, int blockDeep) {
+		return getLayoutMLSize(ELEMENT_PREFERREDSIZE, null, (PropertyValueDimension) cp.getProperty(WYSIWYGCollectableComponent.PROPERTY_PREFFEREDSIZE), blockDeep);
+	}
 
 	/**
 	 * Method converting PreferredSize to LayoutML XML.
@@ -1192,14 +1245,17 @@ public class LayoutMLGenerator implements LayoutMLConstants {
 	 * @param blockDeep
 	 * @return {@link StringBuffer} with the LayoutML
 	 */
-	private synchronized StringBuffer getLayoutMLPreferredSizeFromProperty(ComponentProperties cp, int blockDeep) {
+	private synchronized StringBuffer getLayoutMLSize(String element, String attributeName, PropertyValueDimension propertyValue, int blockDeep) {
 		Dimension dim = null;
-		if (cp.getProperty(WYSIWYGCollectableComponent.PROPERTY_PREFFEREDSIZE) != null)
-			dim = (Dimension) cp.getProperty(WYSIWYGCollectableComponent.PROPERTY_PREFFEREDSIZE).getValue();
+		if (propertyValue != null)
+			dim = (Dimension) propertyValue.getValue();
 		if (dim != null) {
 			LayoutMLBlock block = new LayoutMLBlock(blockDeep);
 			// <preferred-size height="30" width="80" />
-			block.append("<" + ELEMENT_PREFERREDSIZE + " ");
+			block.append("<" + element + " ");
+			if (attributeName != null) {
+				block.append(ATTRIBUTE_NAME + "=\"" + StringUtils.xmlEncode(attributeName) + "\" ");
+			}
 			block.append(ATTRIBUTE_HEIGHT + "=\"");
 			block.append(dim.height);
 			block.append("\" " + ATTRIBUTE_WIDTH + "=\"");
@@ -1239,19 +1295,33 @@ public class LayoutMLGenerator implements LayoutMLConstants {
 
 	/**
 	 * Only for WYSIWYGLayoutEditorPanel!
-	 *
+	 * 
 	 * @param cp
 	 * @param blockDeep
 	 * @return {@link StringBuffer} with the LayoutML
 	 */
 	private synchronized StringBuffer getLayoutMLBackgroundColorFromProperty(ComponentProperties cp, int blockDeep) {
+		return getLayoutMLColor(ELEMENT_BACKGROUND, null, (PropertyValueColor) cp.getProperty(WYSIWYGComponent.PROPERTY_BACKGROUNDCOLOR), blockDeep);
+	}
+	
+	/**
+	 * Only for WYSIWYGLayoutEditorPanel!
+	 *
+	 * @param cp
+	 * @param blockDeep
+	 * @return {@link StringBuffer} with the LayoutML
+	 */
+	private synchronized StringBuffer getLayoutMLColor(String element, String attributeName, PropertyValueColor propertyValue, int blockDeep) {
 
-		if (cp.getProperty(WYSIWYGComponent.PROPERTY_BACKGROUNDCOLOR) != null && cp.getProperty(WYSIWYGComponent.PROPERTY_BACKGROUNDCOLOR).getValue() != null) {
+		if (propertyValue != null && propertyValue.getValue() != null) {
 			LayoutMLBlock block = new LayoutMLBlock(blockDeep);
 
-			if (cp.getProperty(WYSIWYGComponent.PROPERTY_BACKGROUNDCOLOR).getValue() instanceof Color) {
-				block.append("<" + ELEMENT_BACKGROUND);
-				block.append(getLayoutMLColorAttributes((Color) cp.getProperty(WYSIWYGComponent.PROPERTY_BACKGROUNDCOLOR).getValue()));
+			if (propertyValue.getValue() instanceof Color) {
+				block.append("<" + element);
+				if (attributeName != null) {
+					block.append(" " +ATTRIBUTE_NAME + "=\"" + StringUtils.xmlEncode(attributeName) + "\"");
+				}
+				block.append(getLayoutMLColorAttributes((Color) propertyValue.getValue()));
 				block.append(" />");
 			}
 
@@ -1281,6 +1351,20 @@ public class LayoutMLGenerator implements LayoutMLConstants {
 		}
 		return new StringBuffer();
 	}
+	
+	/**
+	 * Method converting the Description {@link PropertyValueFont} to LayoutML XML.
+	 * 
+	 * 
+	 * @see LayoutMLBlock
+	 * @param subform
+	 * @param tableLayout
+	 * @param blockDeep
+	 * @return {@link StringBuffer} with the LayoutML
+	 */
+	private synchronized StringBuffer getLayoutMLFontFromProperty(ComponentProperties cp, int blockDeep) {
+		return getLayoutMLFont(ELEMENT_FONT, null, (PropertyValueFont) cp.getProperty(WYSIWYGCollectableComponent.PROPERTY_FONT), blockDeep);
+	}
 
 	/**
 	 * Method converting the Description {@link PropertyValueFont} to LayoutML XML.
@@ -1292,10 +1376,14 @@ public class LayoutMLGenerator implements LayoutMLConstants {
 	 * @param blockDeep
 	 * @return {@link StringBuffer} with the LayoutML
 	 */
-	private synchronized StringBuffer getLayoutMLFont(ComponentProperties cp, int blockDeep) {
-		if (cp.getProperty(WYSIWYGCollectableComponent.PROPERTY_FONT) != null && cp.getProperty(WYSIWYGCollectableComponent.PROPERTY_FONT).getValue() != null) {
+	private synchronized StringBuffer getLayoutMLFont(String element, String attributeName, PropertyValueFont propertyValue, int blockDeep) {
+		if (propertyValue != null && propertyValue.getValue() != null) {
 			LayoutMLBlock block = new LayoutMLBlock(blockDeep);
-			block.append("<" + ELEMENT_FONT + " " + ATTRIBUTE_SIZE + "=\"" + ((Integer) cp.getProperty(WYSIWYGCollectableComponent.PROPERTY_FONT).getValue()).intValue() + "\"/>");
+			block.append("<" + element + " ");
+			if (attributeName != null) {
+				block.append(ATTRIBUTE_NAME + "=\"" + StringUtils.xmlEncode(attributeName) + "\" ");
+			}
+			block.append(ATTRIBUTE_SIZE + "=\"" + ((Integer) propertyValue.getValue()).intValue() + "\"/>");
 			return block.getStringBuffer();
 		}
 		return new StringBuffer();
@@ -1561,6 +1649,31 @@ public class LayoutMLGenerator implements LayoutMLConstants {
 
 		return block.getStringBuffer();
 	}
+	
+	/**
+	 * Method for converting {@link WYSIWYGValuelistProvider} to LayoutML XML
+	 * 
+	 * @param wysiwygStaticValuelistProvider
+	 * @param blockDeep
+	 * @return {@link StringBuffer} with the LayoutML
+	 */
+	private synchronized StringBuffer getLayoutMLValueListProvider(WYSIWYGValuelistProvider wysiwygStaticValuelistProvider, int blockDeep) {
+		return getLayoutMLValueListProvider(ELEMENT_VALUELISTPROVIDER, null, wysiwygStaticValuelistProvider, blockDeep);
+	}
+	
+	/**
+	 * Method for converting {@link WYSIWYGValuelistProvider} to LayoutML XML
+	 * 
+	 * @param wysiwygStaticValuelistProvider
+	 * @param blockDeep
+	 * @return {@link StringBuffer} with the LayoutML
+	 */
+	private synchronized StringBuffer getLayoutMLValueListProvider(String element, String attributeName, PropertyValueValuelistProvider propertyValue, int blockDeep) {
+		if (propertyValue != null) {
+			return getLayoutMLValueListProvider(element, attributeName, propertyValue.getValue(), blockDeep);
+		}
+		return new StringBuffer();
+	}
 
 	/**
 	 * Method for converting {@link WYSIWYGValuelistProvider} to LayoutML XML
@@ -1569,11 +1682,18 @@ public class LayoutMLGenerator implements LayoutMLConstants {
 	 * @param blockDeep
 	 * @return {@link StringBuffer} with the LayoutML
 	 */
-	private synchronized StringBuffer getLayoutMLValueListProvider(WYSIWYGValuelistProvider wysiwygStaticValuelistProvider, int blockDeep) {
+	private synchronized StringBuffer getLayoutMLValueListProvider(String element, String attributeName, WYSIWYGValuelistProvider wysiwygStaticValuelistProvider, int blockDeep) {
 		LayoutMLBlock block = new LayoutMLBlock(blockDeep);
 
-		block.append("<" + ELEMENT_VALUELISTPROVIDER);
+		block.append("<" + element);
+		if (attributeName != null) {
+			block.append(" " + ATTRIBUTE_NAME + "=\"" + StringUtils.xmlEncode(attributeName) + "\"");
+		}
 		block.append(" type=\"" + StringUtils.xmlEncode(wysiwygStaticValuelistProvider.getType()) + "\"");
+		if (wysiwygStaticValuelistProvider.isEntityAndFieldAvaiable()) {
+			block.append(" " + ATTRIBUTE_ENTITY + "=\"" + StringUtils.xmlEncode(wysiwygStaticValuelistProvider.getEntity()) + "\"");
+			block.append(" " + ATTRIBUTE_FIELD + "=\"" + StringUtils.xmlEncode(wysiwygStaticValuelistProvider.getField()) + "\"");
+		}
 
 		if (wysiwygStaticValuelistProvider.getAllWYSIYWYGParameter().size() == 0) {
 			block.append("/>");
@@ -1583,7 +1703,7 @@ public class LayoutMLGenerator implements LayoutMLConstants {
 				block.append(getLayoutMLParameter(wysiwygParameter, blockDeep + 1));
 			}
 			block.linebreak();
-			block.append("</" + ELEMENT_VALUELISTPROVIDER + ">");
+			block.append("</" + element + ">");
 		}
 
 		return block.getStringBuffer();
@@ -1638,6 +1758,47 @@ public class LayoutMLGenerator implements LayoutMLConstants {
 		block.append("</" + ELEMENT_OPTION + ">");
 
 		return block.getStringBuffer();
+	}
+	
+	/**
+	 * @return {@link StringBuffer} with the LayoutML
+	 */
+	private synchronized StringBuffer getLayoutMLForProperty(String name, PropertyValue<?> property, int blockDeep) {
+		
+		if (property instanceof PropertyValueString || 
+				property instanceof PropertyValueInteger ||
+				property instanceof PropertyValueBoolean) {
+			LayoutMLBlock block = new LayoutMLBlock(blockDeep);
+			block.append("<" + ELEMENT_PROPERTY);
+			block.append(" " + ATTRIBUTE_NAME + "=\"" + StringUtils.xmlEncode(name) + "\"");
+			block.append(" " + ATTRIBUTE_VALUE + "=\"");
+			if (property instanceof PropertyValueString || property instanceof PropertyValueInteger) {
+				block.append(StringUtils.xmlEncode(property.getValue().toString()));
+			} else if (property instanceof PropertyValueBoolean) {
+				if (((Boolean) property.getValue())) {
+					block.append(ATTRIBUTEVALUE_YES);
+				} else {
+					block.append(ATTRIBUTEVALUE_NO);
+				}
+			}
+			block.append("\"/>");	
+			return block.getStringBuffer();
+		} else if (property instanceof PropertyValueDimension) {
+			return getLayoutMLSize(ELEMENT_PROPERTY_SIZE, name, (PropertyValueDimension) property, blockDeep);
+		} else if (property instanceof PropertyValueColor) {
+			return getLayoutMLColor(ELEMENT_PROPERTY_COLOR, name, (PropertyValueColor) property, blockDeep);
+		} else if (property instanceof PropertyValueFont) {
+			return getLayoutMLFont(ELEMENT_PROPERTY_FONT, name, (PropertyValueFont) property, blockDeep);
+		} else if (property instanceof PropertyValueScript) {
+			return getLayoutMLScript(ELEMENT_PROPERTY_SCRIPT, name, (PropertyValueScript) property, blockDeep);
+		} else if (property instanceof PropertyValueTranslations) {
+			return getLayoutMLTranslations(ELEMENT_PROPERTY_TRANSLATIONS, name, (PropertyValueTranslations) property, blockDeep);
+		} else if (property instanceof PropertyValueValuelistProvider) {
+			return getLayoutMLValueListProvider(ELEMENT_PROPERTY_VALUELIST_PROVIDER, name, (PropertyValueValuelistProvider) property, blockDeep);
+		} else  {
+			throw new NotImplementedException("getLayoutMLForProperty with type " + property.getClass().getName());
+		}
+		
 	}
 
 	/**
@@ -1746,20 +1907,31 @@ public class LayoutMLGenerator implements LayoutMLConstants {
 			return new StringBuffer();
 		}
 	}
+	
+	private synchronized StringBuffer getLayoutMLTranslations(TranslationMap translations, int blockDeep) {
+		return getLayoutMLTranslations(ELEMENT_TRANSLATIONS, null, translations, blockDeep);
+	}
 
-	private synchronized StringBuffer getLayoutMLTranslations(ComponentProperties cp, int blockDeep) {
-		PropertyValue<?> p = cp.getProperty(WYSIWYGCollectableComponent.PROPERTY_TRANSLATIONS);
-		if (p != null) {
-			TranslationMap translations = (TranslationMap) p.getValue();
-			return getLayoutMLTranslations(translations, blockDeep);
+	private synchronized StringBuffer getLayoutMLTranslationsFromProperty(ComponentProperties cp, int blockDeep) {
+		return getLayoutMLTranslations(ELEMENT_TRANSLATIONS, null, (PropertyValueTranslations) cp.getProperty(WYSIWYGCollectableComponent.PROPERTY_TRANSLATIONS), blockDeep);
+	}
+	
+	private synchronized StringBuffer getLayoutMLTranslations(String element, String attributeName, PropertyValueTranslations propertyValue, int blockDeep) {
+		if (propertyValue != null) {
+			TranslationMap translations = (TranslationMap) propertyValue.getValue();
+			return getLayoutMLTranslations(element, attributeName, translations, blockDeep);
 		}
 		return new StringBuffer();
 	}
-
-	private synchronized StringBuffer getLayoutMLTranslations(TranslationMap translations, int blockDeep) {
+	
+	private synchronized StringBuffer getLayoutMLTranslations(String element, String attributeName, TranslationMap translations, int blockDeep) {
 		if (translations != null && !translations.isEmpty()) {
 			LayoutMLBlock block = new LayoutMLBlock(blockDeep);
-			block.append("<" + ELEMENT_TRANSLATIONS + ">");
+			block.append("<" + element);
+			if (attributeName != null) {
+				block.append(" " + ATTRIBUTE_NAME + "=\"" + StringUtils.xmlEncode(attributeName) + "\"");
+			}
+			block.append(">");
 			for (Map.Entry<String, String> e : translations.entrySet()) {
 				String lang = e.getKey();
 				String text = e.getValue();
@@ -1771,21 +1943,33 @@ public class LayoutMLGenerator implements LayoutMLConstants {
 				block.append(block2.getStringBuffer());
 			}
 			block.linebreak();
-			block.append("</" + ELEMENT_TRANSLATIONS + ">");
+			block.append("</" + element + ">");
 			return block.getStringBuffer();
 		}
 		return new StringBuffer();
 	}
 
-	private synchronized StringBuffer getScriptProperty(String property, String element, ComponentProperties cp, int blockDeep) {
+
+	private synchronized StringBuffer getLayoutMLScriptFromProperty(String property, String element, ComponentProperties cp, int blockDeep) {
+		PropertyValue<?> propertyValue = cp.getProperty(property);
+		if (propertyValue == null) {
+			return new StringBuffer();
+		}
+		return getLayoutMLScript(element, null, (PropertyValueScript) propertyValue, blockDeep);
+	}
+	
+	private synchronized StringBuffer getLayoutMLScript(String element, String attributeName, PropertyValueScript propertyValue, int blockDeep) {
 		LayoutMLBlock block = new LayoutMLBlock(blockDeep);
 
-		NuclosScript script = (NuclosScript) cp.getProperty(property).getValue();
+		NuclosScript script = (NuclosScript) propertyValue.getValue();
 		if (script == null) {
 			return new StringBuffer();
 		}
 
 		block.append("<" + element + " ");
+		if (attributeName != null) {
+			block.append(ATTRIBUTE_NAME + "=\"" + StringUtils.xmlEncode(attributeName) + "\" ");
+		}
 		block.append(ATTRIBUTE_LANGUAGE + "=\"");
 		block.append(StringUtils.xmlEncode(script.getLanguage()));
 		block.append("\">");

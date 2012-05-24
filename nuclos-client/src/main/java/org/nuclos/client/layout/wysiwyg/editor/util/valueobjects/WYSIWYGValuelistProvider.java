@@ -23,7 +23,10 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Vector;
 
+import org.nuclos.common.NuclosValueListProvider;
+import org.nuclos.common.collect.collectable.CollectableField;
 import org.nuclos.common.collect.collectable.CollectableFieldsProvider;
+import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.layoutml.LayoutMLConstants;
 
 /**
@@ -37,14 +40,22 @@ import org.nuclos.common2.layoutml.LayoutMLConstants;
  * @author <a href="mailto:hartmut.beckschulze@novabit.de">hartmut.beckschulze</a>
  * @version 01.00.00
  */
-public class WYSIWYGValuelistProvider implements Cloneable, Serializable {
+public class WYSIWYGValuelistProvider implements Cloneable, Serializable, NuclosValueListProvider {
 
 	/**
 	 * <!ELEMENT valuelist-provider (parameter*)> <!ATTLIST valuelist-provider
-	 * type CDATA #REQUIRED >
+	 * type CDATA #REQUIRED 
+	 * entity CDATA #IMPLIED
+	 * field CDATA #IMPLIED>
 	 */
 
 	private String type = "";
+	
+	private final boolean entityAndFieldAvaiable;
+	
+	private String entity = null;
+	
+	private String field = null;
 
 	/** this is where the Parameters are stored */
 	private Vector<WYSIYWYGParameter> parameter = null;
@@ -52,7 +63,8 @@ public class WYSIWYGValuelistProvider implements Cloneable, Serializable {
 	/**
 	 * Default Constructor
 	 */
-	public WYSIWYGValuelistProvider(){
+	public WYSIWYGValuelistProvider(boolean editEntityAndField){
+		this.entityAndFieldAvaiable = editEntityAndField;
 		parameter = new Vector<WYSIYWYGParameter>(1);
 	}
 
@@ -60,8 +72,8 @@ public class WYSIWYGValuelistProvider implements Cloneable, Serializable {
 	 * Constructor, setting {@link LayoutMLConstants#ATTRIBUTE_TYPE}
 	 * @param type the Name of the {@link CollectableFieldsProvider}
 	 */
-	public WYSIWYGValuelistProvider(String type){
-		this();
+	public WYSIWYGValuelistProvider(String type, boolean editEntityAndField){
+		this(editEntityAndField);
 		setType(type);
 	}
 
@@ -77,6 +89,26 @@ public class WYSIWYGValuelistProvider implements Cloneable, Serializable {
 	 */
 	public void setType(String type) {
 		this.type = type;
+	}
+
+	public String getEntity() {
+		return entity;
+	}
+
+	public void setEntity(String entity) {
+		this.entity = entity;
+	}
+
+	public String getField() {
+		return field;
+	}
+
+	public void setField(String field) {
+		this.field = field;
+	}
+
+	public boolean isEntityAndFieldAvaiable() {
+		return entityAndFieldAvaiable;
 	}
 
 	/**
@@ -125,10 +157,15 @@ public class WYSIWYGValuelistProvider implements Cloneable, Serializable {
 	 */
 	@Override
 	public Object clone() throws CloneNotSupportedException {
-		WYSIWYGValuelistProvider clonedValuelistProvider = new WYSIWYGValuelistProvider();
+		WYSIWYGValuelistProvider clonedValuelistProvider = new WYSIWYGValuelistProvider(this.isEntityAndFieldAvaiable());
 		if (this.getType() != null) {
 			String clonedType = new String(this.getType());
 			clonedValuelistProvider.setType(clonedType);
+		}
+		
+		if (this.isEntityAndFieldAvaiable()) {
+			clonedValuelistProvider.setEntity(this.getEntity());
+			clonedValuelistProvider.setField(this.getField());
 		}
 
 		for (WYSIYWYGParameter parameter : getAllWYSIYWYGParameter()) {
@@ -136,5 +173,16 @@ public class WYSIWYGValuelistProvider implements Cloneable, Serializable {
 		}
 
 		return clonedValuelistProvider;
+	}
+
+	@Override
+	public void setParameter(String sName, Object oValue) {
+		// ignore here
+	}
+
+	@Override
+	public List<CollectableField> getCollectableFields() throws CommonBusinessException {
+		// ignore here
+		return null;
 	}
 }

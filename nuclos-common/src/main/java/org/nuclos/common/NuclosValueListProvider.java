@@ -14,23 +14,28 @@
 //
 //You should have received a copy of the GNU Affero General Public License
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
-package org.nuclos.common.collect.collectable;
+package org.nuclos.common;
 
 import java.util.List;
 
-import org.nuclos.common.NuclosValueListProvider;
+import org.nuclos.common.collect.collectable.CollectableField;
 import org.nuclos.common2.exception.CommonBusinessException;
 
-/**
- * Provides a list of <code>CollectableField</code>s.
- * <br>
- * <br>Created by Novabit Informationssysteme GmbH
- * <br>Please visit <a href="http://www.novabit.de">www.novabit.de</a>
- *
- * @author	<a href="mailto:Christoph.Radig@novabit.de">Christoph.Radig</a>
- * @version	01.00.00
- */
+public interface NuclosValueListProvider {
 
-public interface CollectableFieldsProvider extends NuclosValueListProvider {
+	/**
+	 * sets the parameter with the given name to the given value. Parameters that are unknown to a specific provider
+	 * are ignored by this method.
+	 * @param sName
+	 * @param oValue
+	 */
+	void setParameter(String sName, Object oValue);
 
-}  // interface CollectableFieldsProvider
+	/**
+	 * @return List<CollectableField>
+	 * @todo A Collection<? extends CollectableField> would be more appropriate here as the provider shouldn't have to
+	 * 		care about a specific ordering. We make no assertions about ordering here anyway.
+	 */
+	List<CollectableField> getCollectableFields() throws CommonBusinessException;
+	
+}

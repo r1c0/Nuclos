@@ -143,6 +143,8 @@ public class ComponentProcessors implements LayoutMLConstants {
 		} else if (ELEMENT_PANEL.equals(sElement)) {
 			//NUCLEUSINT-650
 			return new LayoutPanelElementProcessor();
+		} else if (ELEMENT_LAYOUTCOMPONENT.equals(sElement)) {
+			return new LayoutComponentElementProcessor(controltype);
 		}
 
 		return new DefaultElementProcessor();
@@ -756,31 +758,4 @@ public class ComponentProcessors implements LayoutMLConstants {
 		return iCounter;
 	}
 
-	/**
-	 * This interface must be implemented to create a new empty Component.<br>
-	 * 
-	 * <br>
-	 * Created by Novabit Informationssysteme GmbH <br>
-	 * Please visit <a href="http://www.novabit.de">www.novabit.de</a>
-	 * 
-	 * @author <a href="mailto:maik.stueker@novabit.de">maik.stueker</a>
-	 * @version 01.00.00
-	 */
-	private interface ComponentProcessor {
-
-		/**
-		 * This Method is called to create a new Component with the given Parameters.<br>
-		 * The Component returned is a "default" Component.
-		 * Individual Settings for the Component are set with the {@link ComponentProperties}.<br>
-		 * 
-		 * Creates a new empty Set of {@link ComponentProperties}.<br>
-		 * 
-		 * @param iNumber ongoing Number for enumerating the Components (e.g. Label_1)
-		 * @param metaInf the {@link WYSIWYGMetaInformation} for getting values etc.
-		 * @param name the Name of the Component (the name of the Component)
-		 * @return {@link Component} instance of {@link WYSIWYGComponent}
-		 * @throws CommonBusinessException
-		 */
-		Component createEmptyComponent(Integer iNumber, WYSIWYGMetaInformation metaInf, String name) throws CommonBusinessException;
-	}
 }

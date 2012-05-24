@@ -62,15 +62,20 @@ import javax.swing.border.TitledBorder;
 
 import org.apache.commons.lang.NullArgumentException;
 import org.apache.log4j.Logger;
+import org.nuclos.api.Property;
+import org.nuclos.api.ui.LayoutComponent;
+import org.nuclos.api.ui.LayoutComponentFactory;
 import org.nuclos.client.common.NuclosDropTargetListener;
 import org.nuclos.client.common.NuclosDropTargetVisitor;
 import org.nuclos.client.common.Utils.CollectableLookupProvider;
 import org.nuclos.client.layout.wysiwyg.WYSIWYGStringsAndLabels.STATIC_BUTTON;
+import org.nuclos.client.nuclet.NucletComponentRepository;
 import org.nuclos.client.resource.ResourceCache;
 import org.nuclos.client.ui.CommonJScrollPane;
 import org.nuclos.client.ui.CommonJSeparator;
 import org.nuclos.client.ui.Errors;
 import org.nuclos.client.ui.JInfoTabbedPane;
+import org.nuclos.client.ui.LayoutComponentHolder;
 import org.nuclos.client.ui.LineLayout;
 import org.nuclos.client.ui.SizeKnownListener;
 import org.nuclos.client.ui.StrictSizeComponent;
@@ -102,6 +107,7 @@ import org.nuclos.client.ui.labeled.LabeledComponent;
 import org.nuclos.client.ui.labeled.LabeledTextArea;
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.NuclosScript;
+import org.nuclos.common.TranslationMap;
 import org.nuclos.common.caching.GenCache;
 import org.nuclos.common.collect.collectable.Collectable;
 import org.nuclos.common.collect.collectable.CollectableComponentTypes;
@@ -123,6 +129,8 @@ import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.common2.layoutml.exception.LayoutMLException;
 import org.nuclos.common2.layoutml.exception.LayoutMLParseException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -138,6 +146,7 @@ import org.xml.sax.SAXParseException;
  * @author	<a href="mailto:Christoph.Radig@novabit.de">Christoph.Radig</a>
  * @version 01.00.00
  */
+@Configurable
 public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 
 	private static final Logger log = Logger.getLogger(LayoutMLParser.class.getName());
@@ -1082,11 +1091,20 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 			this.mpElementProcessors.put(ELEMENT_DEPENDENCY, new DependencyElementProcessor());
 			this.mpElementProcessors.put(ELEMENT_VALUELISTPROVIDER, new ValueListProviderElementProcessor());
 			this.mpElementProcessors.put(ELEMENT_PARAMETER, new ParameterElementProcessor());
+			
 			this.mpElementProcessors.put(ELEMENT_PROPERTY, new PropertyElementProcessor());
+			this.mpElementProcessors.put(ELEMENT_PROPERTY_SIZE, new PropertySizeElementProcessor());
+			this.mpElementProcessors.put(ELEMENT_PROPERTY_COLOR, new PropertyColorElementProcessor());
+			this.mpElementProcessors.put(ELEMENT_PROPERTY_FONT, new PropertyFontElementProcessor());
+			this.mpElementProcessors.put(ELEMENT_PROPERTY_SCRIPT, new PropertyScriptElementProcessor());
+			this.mpElementProcessors.put(ELEMENT_PROPERTY_TRANSLATIONS, new PropertyTranslationsElementProcessor());
+			this.mpElementProcessors.put(ELEMENT_PROPERTY_VALUELIST_PROVIDER, new PropertyValuelistProviderElementProcessor());
+			
 			this.mpElementProcessors.put(ELEMENT_INITIALFOCUSCOMPONENT, new InitialFocusComponentProcessor());
 			this.mpElementProcessors.put(ELEMENT_INITIALSORTINGORDER, new InitialSortingOrderProcessor());
 			this.mpElementProcessors.put(ELEMENT_TRANSLATIONS, new TranslationsElementProcessor());
 			this.mpElementProcessors.put(ELEMENT_TRANSLATION, new TranslationElementProcessor());
+			this.mpElementProcessors.put(ELEMENT_LAYOUTCOMPONENT, new LayoutComponentElementProcessor());
 			
 			this.mpElementProcessors.put(ELEMENT_NEW_ENABLED, new ScriptElementProcessor());
 			this.mpElementProcessors.put(ELEMENT_EDIT_ENABLED, new ScriptElementProcessor());
@@ -2321,6 +2339,35 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 				translations = null;
 			}
 		}
+		
+		/**
+		 * LocaleResourceElementProcessor processes the provided set of translations.
+		 */
+		private class PropertyTranslationsElementProcessor extends AbstractElementProcessor {
+			String sProperty;
+			
+			@Override
+			public void startElement(String sUriNameSpace, String sSimpleName, String sQualifiedName, Attributes attributes) throws SAXException {
+				sProperty = attributes.getValue(ATTRIBUTE_NAME);
+				translations = new TranslationMap();
+			}
+
+			@Override
+			public void endElement(String sUriNameSpace, String sSimpleName, String sQualifiedName) {
+				if (stack.peekComponent() instanceof LayoutComponent) {
+					LayoutComponent lc = (LayoutComponent) stack.peekComponent();
+					if (lc.getComponentProperties() != null) {
+						for (Property pt : lc.getComponentProperties()) {
+							if (pt.name.equals(sProperty)) {
+								lc.setProperty(sProperty, translations);
+								break;
+							}
+						}
+					}
+				}
+				translations = null;
+			}
+		}
 
 		/**
 		 * LocaleResourceElementProcessor processes one translation.
@@ -2828,6 +2875,58 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 		}
 
 		/**
+		 * inner class <code>PropertyValuelistProviderElementProcessor</code>. Processes a property-valuelist-provider element.
+		 */
+		private class PropertyValuelistProviderElementProcessor extends AbstractElementProcessor {
+			
+			String sProperty;
+			
+			@Override
+            public void startElement(String sUriNameSpace, String sSimpleName, String sQualifiedName, Attributes attributes)
+					throws SAXException {
+				sProperty = attributes.getValue(ATTRIBUTE_NAME);
+				final String sType = attributes.getValue(ATTRIBUTE_TYPE);
+
+				final String sEntityName = attributes.getValue(ATTRIBUTE_ENTITY);
+				final String sFieldName = attributes.getValue(ATTRIBUTE_FIELD);
+
+				final CollectableFieldsProvider valuelistprovider;
+				if (StringUtils.looksEmpty(sType) || sType.equals(ATTRIBUTEVALUE_DEFAULT)) {
+					// default provider:
+					valuelistprovider = valueListProviderFactory.newDefaultCollectableFieldsProvider(sEntityName, sFieldName);
+				}
+				else if (sType.equals(ATTRIBUTEVALUE_DEPENDANT)) {
+					// "dependant" provider:
+					valuelistprovider = valueListProviderFactory.newDependantCollectableFieldsProvider(sEntityName, sFieldName);
+				}
+				else {
+					// custom provider:
+					valuelistprovider = valueListProviderFactory.newCustomCollectableFieldsProvider(sType, sEntityName, sFieldName);
+				}
+
+				BuildFormHandler.this.valuelistprovider = valuelistprovider;
+			}
+
+			@Override
+			public void endElement(String sUriNameSpace, String sSimpleName, String sQualifiedName) {
+				assert BuildFormHandler.this.valuelistprovider != null;
+
+				if (stack.peekComponent() instanceof LayoutComponent) {
+					LayoutComponent lc = (LayoutComponent) stack.peekComponent();
+					if (lc.getComponentProperties() != null) {
+						for (Property pt : lc.getComponentProperties()) {
+							if (pt.name.equals(sProperty)) {
+								lc.setProperty(sProperty, BuildFormHandler.this.valuelistprovider);
+								break;
+							}
+						}
+					}
+				}
+				BuildFormHandler.this.valuelistprovider = null;
+			}
+		}
+		
+		/**
 		 * inner class <code>ParameterElementProcessor</code>. Processes a parameter element.
 		 */
 		private class ParameterElementProcessor extends AbstractElementProcessor {
@@ -2857,6 +2956,23 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 				//NUCLEUSINT-1159
 				//NUCLOSINT-743
 				ComponentBuilder c = stack.peekComponentBuilder();
+				if (c.getComponent() instanceof LayoutComponent) {
+					LayoutComponent lc = (LayoutComponent) c.getComponent();
+					if (lc.getComponentProperties() != null) {
+						for (Property pt : lc.getComponentProperties()) {
+							if (pt.name.equals(sName)) {
+								if (Boolean.class.equals(pt.type) || boolean.class.equals(pt.type)) {
+									lc.setProperty(sName, ATTRIBUTEVALUE_YES.equals(oValue));
+								} else if (Integer.class.equals(pt.type) || int.class.equals(pt.type)) {
+									lc.setProperty(sName, StringUtils.looksEmpty(oValue)? null : Integer.parseInt(oValue));
+								} else {
+									lc.setProperty(sName, oValue);
+								}
+								break;
+							}
+						}
+					}
+				} else
 				if (c.getComponent() instanceof JButton) {
 					JButton button = ((JButton)c.getComponent());
 					if (STATIC_BUTTON.STATE_CHANGE_ACTION.equals(button.getActionCommand())) {
@@ -2872,7 +2988,7 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 							button.setActionCommand(button.getActionCommand() + "_generatortoexecute=" + oValue);
 						}
 					}
-				} else {
+				} else if (stack.peekComponentBuilder() instanceof CollectableComponentBuilder) {
 					final CollectableComponentBuilder ccb = (CollectableComponentBuilder) stack.peekComponentBuilder();
 					ccb.getCollectableComponent().setProperty(sName, oValue);
 				}
@@ -3237,6 +3353,30 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 				}
 			}
 		}	// inner class StrictSizeElementProcessor
+		
+		/**
+		 * inner class <code>PropertySizeElementProcessor</code>. Processes a property-size element.
+		 */
+		private class PropertySizeElementProcessor extends AbstractElementProcessor {
+			@Override
+            public void startElement(String sUriNameSpace, String sSimpleName, String sQualifiedName, Attributes attributes)
+					throws SAXException {
+				final String sProperty = attributes.getValue(ATTRIBUTE_NAME);
+				final int iWidth = BuildFormHandler.getIntValue(attributes, ATTRIBUTE_WIDTH, 0);
+				final int iHeight = BuildFormHandler.getIntValue(attributes, ATTRIBUTE_HEIGHT, 0);
+				
+				if (stack.peekComponent() instanceof LayoutComponent) {
+					LayoutComponent lc = (LayoutComponent) stack.peekComponent();
+					if (lc.getComponentProperties() != null) {
+						for (Property pt : lc.getComponentProperties()) {
+							if (pt.name.equals(sProperty)) {
+								lc.setProperty(sProperty, new Dimension(iWidth, iHeight));
+							}
+						}
+					}
+				}
+			}
+		}	// inner class PropertySizeElementProcessor
 
 		/**
 		 * inner class <code>ClearBorderElementProcessor</code>. Processes a clear-border element.
@@ -3386,6 +3526,39 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 				}
 			}
 		}	// inner class FontElementProcessor
+		
+		/**
+		 * inner class <code>PropertyFontElementProcessor</code>. Processes a property font element.
+		 */
+		private class PropertyFontElementProcessor extends AbstractElementProcessor {
+			@Override
+            public void startElement(String sUriNameSpace, String sSimpleName, String sQualifiedName, Attributes attributes) throws SAXException {
+				final String sProperty = attributes.getValue(ATTRIBUTE_NAME);
+				final int iRelativeSize = BuildFormHandler.getIntValue(attributes, ATTRIBUTE_SIZE, 0);
+
+				if (stack.peekComponent() instanceof LayoutComponent) {
+					LayoutComponent lc = (LayoutComponent) stack.peekComponent();
+					if (lc.getComponentProperties() != null) {
+						for (Property pt : lc.getComponentProperties()) {
+							if (pt.name.equals(sProperty)) {
+								lc.setProperty(sProperty, getFont(stack.peekComponent(), iRelativeSize));
+								break;
+							}
+						}
+					}
+				}
+			}
+
+			private Font getFont(JComponent comp, int iRelativeSize) {
+				final Font fontOld = comp.getFont();
+				if (fontOld != null) {
+					final float fNewFontSize = fontOld.getSize() + iRelativeSize;
+					final Font fontNew = fontOld.deriveFont(fNewFontSize);
+					return fontNew;
+				}
+				return fontOld;
+			}
+		}	// inner class FontElementProcessor
 
 		/**
 		 * inner class <code>BackgroundElementProcessor</code>. Processes a background element.
@@ -3406,6 +3579,31 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 			}
 		}	// inner class BackgroundElementProcessor
 
+		/**
+		 * inner class <code>PropertyColorElementProcessor</code>. Processes a property color.
+		 */
+		private class PropertyColorElementProcessor extends AbstractElementProcessor {
+			@Override
+            public void startElement(String sUriNameSpace, String sSimpleName, String sQualifiedName, Attributes attributes)
+					throws SAXException {
+				final String sProperty = attributes.getValue(ATTRIBUTE_NAME);
+				final int iRed = BuildFormHandler.getIntValue(attributes, ATTRIBUTE_RED, 0);
+				final int iGreen = BuildFormHandler.getIntValue(attributes, ATTRIBUTE_GREEN, 0);
+				final int iBlue = BuildFormHandler.getIntValue(attributes, ATTRIBUTE_BLUE, 0);
+				
+				if (stack.peekComponent() instanceof LayoutComponent) {
+					LayoutComponent lc = (LayoutComponent) stack.peekComponent();
+					if (lc.getComponentProperties() != null) {
+						for (Property pt : lc.getComponentProperties()) {
+							if (pt.name.equals(sProperty)) {
+								lc.setProperty(sProperty, new Color(iRed, iGreen, iBlue));
+							}
+						}
+					}
+				}
+			}
+		}	// inner class PropertyColorElementProcessor
+		
 		/**
 		 * inner class <code>DependencyElementProcessor</code>. Processes a dependency element.
 		 */
@@ -3522,6 +3720,94 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 			}
 			
 		}
+		
+		private class PropertyScriptElementProcessor implements ElementProcessor {
+
+			private String sProperty;
+			private NuclosScript script;
+
+			@Override
+			public void startElement(String sUriNameSpace, String sSimpleName, String sQualifiedName, Attributes attributes) throws SAXException {
+				sProperty = attributes.getValue(ATTRIBUTE_NAME);
+				sbChars = new StringBuffer();
+				script = new NuclosScript();
+				script.setLanguage(attributes.getValue(ATTRIBUTE_LANGUAGE));
+			}
+
+			@Override
+			public void endElement(String sUriNameSpace, String sSimpleName, String sQualifiedName) throws SAXException {
+				script.setSource(sbChars.toString().trim());
+				
+				if (stack.peekComponent() instanceof LayoutComponent) {
+					LayoutComponent lc = (LayoutComponent) stack.peekComponent();
+					if (lc.getComponentProperties() != null) {
+						for (Property pt : lc.getComponentProperties()) {
+							if (pt.name.equals(sProperty)) {
+								lc.setProperty(sProperty, script);
+								break;
+							}
+						}
+					}
+				}
+				sbChars = null;
+			}
+			
+		}
+		
+		/**
+		 * inner class <code>LayoutComponentElementProcessor</code>. Processes a layout component element.
+		 */
+		@Configurable
+		class LayoutComponentElementProcessor extends ComponentElementProcessor {
+			
+			private NucletComponentRepository nucletComponentRepository;
+			
+			public LayoutComponentElementProcessor() {
+				
+			}
+			
+			@Autowired
+			void setNucletComponentRepository(NucletComponentRepository nucletComponentRepository) {
+				this.nucletComponentRepository = nucletComponentRepository;
+			}
+			
+			/**
+			 * constructs a <code>LayoutComponent</code>, configures it according to the XML attributes
+			 * and pushes it on the stack.
+			 * @param sUriNameSpace
+			 * @param sSimpleName
+			 * @param sQualifiedName
+			 * @param attributes
+			 */
+			@Override
+            public void startElement(String sUriNameSpace, String sSimpleName, String sQualifiedName, Attributes attributes)
+					throws SAXException {
+				
+				// name: (used for preferences)
+				final String sName = attributes.getValue(ATTRIBUTE_NAME);
+				// class:
+				final String sClass = attributes.getValue(ATTRIBUTE_CLASS);
+				LayoutComponentFactory layoutComponentFactory = null;
+				if (sClass != null) {
+					for (LayoutComponentFactory lcf : nucletComponentRepository.getLayoutComponentFactories()) {
+						if (lcf.getClass().getName().equals(sClass)) {
+							layoutComponentFactory = lcf;
+						}
+					}
+					if (layoutComponentFactory == null) {
+						stack.addComponent(new JLabel(String.format("LayoutComponent %s not found", sClass)));
+						return;
+					}
+				} else {
+					stack.addComponent(new JLabel("LayoutComponent class must not be null"));
+					return;
+				}
+				
+				final LayoutComponentHolder holder = new LayoutComponentHolder(layoutComponentFactory.newInstance(), false);
+				holder.setName(sName);
+				stack.addComponent(holder);
+			}
+		}	// inner class LayoutComponentElementProcessor
 
 		/**
 		 * called by the underlying SAX parser when a start element event occurs.

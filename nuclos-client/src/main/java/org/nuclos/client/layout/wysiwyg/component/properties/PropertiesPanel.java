@@ -130,7 +130,7 @@ public class PropertiesPanel extends JPanel implements SaveAndCancelButtonPanelC
 			}
 			
 		} catch (CommonFatalException e) {
-			LOG.error(e);
+			// ignore here. could happen during open
 		}
 		
 		if(compConstraints != null)

@@ -39,6 +39,8 @@ import javax.swing.border.Border;
 import javax.swing.border.CompoundBorder;
 
 import org.apache.log4j.Logger;
+import org.nuclos.api.Property;
+import org.nuclos.api.ui.LayoutComponent;
 import org.nuclos.client.common.LocaleDelegate;
 import org.nuclos.client.common.NuclosCollectableEntityProvider;
 import org.nuclos.client.genericobject.GeneratorActions;
@@ -51,6 +53,7 @@ import org.nuclos.client.layout.wysiwyg.component.TranslationMap;
 import org.nuclos.client.layout.wysiwyg.component.WYSIWYGCollectableComponent;
 import org.nuclos.client.layout.wysiwyg.component.WYSIWYGCollectableOptionGroup;
 import org.nuclos.client.layout.wysiwyg.component.WYSIWYGComponent;
+import org.nuclos.client.layout.wysiwyg.component.WYSIWYGLayoutComponent;
 import org.nuclos.client.layout.wysiwyg.component.WYSIWYGScriptComponent;
 import org.nuclos.client.layout.wysiwyg.component.WYSIWYGScrollPane;
 import org.nuclos.client.layout.wysiwyg.component.WYSIWYGSplitPane;
@@ -258,7 +261,7 @@ public class LayoutMLLoader implements LayoutMLConstants {
 			this.mapProcessors.put(ELEMENT_ENABLE, new LayoutMLRuleActionEnableProcessor());
 			this.mapProcessors.put(ELEMENT_REFRESHVALUELIST, new LayoutMLRuleActionRefreshValueListProcessor());
 
-			this.mapProcessors.put(ELEMENT_VALUELISTPROVIDER, new LayoutMLValueListProviderProcessor());
+			this.mapProcessors.put(ELEMENT_VALUELISTPROVIDER, new ValueListProviderElementProcessor());
 			this.mapProcessors.put(ELEMENT_PARAMETER, new LayoutMLParameterProcessor());
 			this.mapProcessors.put(ELEMENT_INITIALFOCUSCOMPONENT, new InitialFocusComponentElementProcessor());
 
@@ -277,10 +280,18 @@ public class LayoutMLLoader implements LayoutMLConstants {
 			this.mapProcessors.put(ELEMENT_OPTIONS, new OptionsProcessor());
 			this.mapProcessors.put(ELEMENT_OPTION, new OptionProcessor());
 
-			this.mapProcessors.put(ELEMENT_PROPERTY, new CollectableComponentPropertyProcessor());
+			this.mapProcessors.put(ELEMENT_PROPERTY, new PropertyElementProcessor());
+			this.mapProcessors.put(ELEMENT_PROPERTY_SIZE, new PropertySizeElementProcessor());
+			this.mapProcessors.put(ELEMENT_PROPERTY_COLOR, new PropertyColorElementProcessor());
+			this.mapProcessors.put(ELEMENT_PROPERTY_FONT, new PropertyFontElementProcessor());
+			this.mapProcessors.put(ELEMENT_PROPERTY_SCRIPT, new PropertyScriptElementProcessor());
+			this.mapProcessors.put(ELEMENT_PROPERTY_TRANSLATIONS, new PropertyTranslationsElementProcessor());
+			this.mapProcessors.put(ELEMENT_PROPERTY_VALUELIST_PROVIDER, new PropertyValuelistProviderElementProcessor());
 
-			this.mapProcessors.put(ELEMENT_TRANSLATIONS, new TranslationsProcessor());
+			this.mapProcessors.put(ELEMENT_TRANSLATIONS, new TranslationsElementProcessor());
 			this.mapProcessors.put(ELEMENT_TRANSLATION, new TranslationProcessor());
+			
+			this.mapProcessors.put(ELEMENT_LAYOUTCOMPONENT, new LayoutComponentProcessor());
 
 			// this.mapProcessors.put(ELEMENT_DEPENDENCY, new
 			// LayoutMLDependencyProcessor());
@@ -805,6 +816,40 @@ public class LayoutMLLoader implements LayoutMLConstants {
 				sbChars = new StringBuffer();
 			}
 		}
+		
+		/**
+		 * {@link ElementProcessor} for WYSIWYGLayoutComponent
+		 * @see WYSIWYGLayoutComponent
+		 */
+		private class LayoutComponentProcessor implements ElementProcessor {
+
+			boolean pop = false;
+			
+			@Override
+			public void closeElement() throws SAXException {
+				if (pop) {
+					stack.pop();
+				}
+			}
+
+			@Override
+			public void startElement(Attributes atts) throws SAXException {
+				try {
+					String sFactoryClass = atts.getValue(ATTRIBUTE_CLASS);
+					Component component = ComponentProcessors.getInstance().createComponent(ELEMENT_LAYOUTCOMPONENT, sFactoryClass, 0, editorPanel.getMetaInformation(), null);
+					if (component instanceof WYSIWYGLayoutComponent) {
+						WYSIWYGLayoutComponent c = (WYSIWYGLayoutComponent) component;
+						setPropertiesFromAttributes(c, atts);
+						stack.push(c);
+						pop = true;
+					}
+				} catch (CommonBusinessException e) {
+					log.error(e);
+					Errors.getInstance().showExceptionDialog(null, e);
+				}
+			}
+
+		}
 
 		private PropertyOptions propertyOptions = null;
 
@@ -858,7 +903,7 @@ public class LayoutMLLoader implements LayoutMLConstants {
 		 * {@link ElementProcessor} for CollectableComponent Property
 		 * @see PropertyOptions
 		 */
-		private class CollectableComponentPropertyProcessor implements ElementProcessor {
+		private class PropertyElementProcessor implements ElementProcessor {
 
 			@Override
 			public void closeElement() throws SAXException {
@@ -866,6 +911,25 @@ public class LayoutMLLoader implements LayoutMLConstants {
 			//NUCLOSINT-743 if there is a rule set as collectablecomponent-property restore as normal property
 			@Override
 			public void startElement(Attributes atts) throws SAXException {
+				if (peekComponent() instanceof WYSIWYGLayoutComponent) {
+					String sProperty = atts.getValue(ATTRIBUTE_NAME);
+					WYSIWYGLayoutComponent wlc = (WYSIWYGLayoutComponent) peekComponent();
+					if (wlc.getComponentProperties() != null) {
+						for (Property pt : wlc.getAdditionalProperties()) {
+							if (pt.name.equals(sProperty)) {
+								try {
+									PropertyValue<?> value = PropertyUtils.getPropertyValue(peekComponent(), sProperty);
+									value.setValue(ATTRIBUTE_VALUE, atts);
+
+									peekComponent().setProperty(sProperty, value, pt.type);
+								} catch (CommonBusinessException e) {
+									log.error(e);
+									Errors.getInstance().showExceptionDialog(null, e);
+								}
+							}
+						}
+					}
+				} else
 				if (peekComponent() instanceof WYSIWYGStaticButton) {
 						String label = atts.getValue("name");
 						String valueId = atts.getValue("value");
@@ -1021,6 +1085,42 @@ public class LayoutMLLoader implements LayoutMLConstants {
 				} catch (NumberFormatException ex) {
 					log.error(ex);
 					throw new SAXException("Ganze Zahl erwartet f\u00fcr Attribut \"" + ELEMENT_MINIMUMSIZE + "\".");
+				}
+			}
+
+			@Override
+			public void closeElement() {
+			}
+		}
+		
+		/**
+		 * {@link ElementProcessor} for property size
+		 * @see PropertyOptions
+		 */
+		private class PropertySizeElementProcessor implements ElementProcessor {
+
+			@Override
+			public void startElement(Attributes atts) throws SAXException {
+				String sProperty = atts.getValue(ATTRIBUTE_NAME);
+
+				if (peekComponent() instanceof LayoutComponent) {
+					LayoutComponent lc = (LayoutComponent) peekComponent();
+					if (lc.getComponentProperties() != null) {
+						for (Property pt : lc.getComponentProperties()) {
+							if (pt.name.equals(sProperty)) {
+								try {
+									PropertyValue<?> value = PropertyUtils.getPropertyValue(peekComponent(), sProperty);
+									value.setValue(sProperty, atts);
+
+									peekComponent().setProperty(sProperty, value, pt.type);
+								} catch (CommonBusinessException e) {
+									log.error(e);
+									Errors.getInstance().showExceptionDialog(null, e);
+								}
+								break;
+							}
+						}
+					}
 				}
 			}
 
@@ -1298,6 +1398,42 @@ public class LayoutMLLoader implements LayoutMLConstants {
 				} catch (CommonBusinessException e) {
 					log.error(e);
 					Errors.getInstance().showExceptionDialog(null, e);
+				}
+			}
+
+			@Override
+			public void closeElement() {
+			}
+		}
+		
+		/**
+		 * {@link ElementProcessor} for PropertyColor
+		 * @see Color
+		 */
+		private class PropertyColorElementProcessor implements ElementProcessor {
+
+			@Override
+			public void startElement(Attributes atts) throws SAXException {
+				String sProperty = atts.getValue(ATTRIBUTE_NAME);
+				
+				if (peekComponent() instanceof LayoutComponent) {
+					LayoutComponent lc = (LayoutComponent) peekComponent();
+					if (lc.getComponentProperties() != null) {
+						for (Property pt : lc.getComponentProperties()) {
+							if (pt.name.equals(sProperty)) {
+								try {
+									PropertyValue<?> value = PropertyUtils.getPropertyValue(peekComponent(), sProperty);
+									value.setValue(sProperty, atts);
+
+									peekComponent().setProperty(sProperty, value, pt.type);
+								} catch (CommonBusinessException e) {
+									log.error(e);
+									Errors.getInstance().showExceptionDialog(null, e);
+								}
+								break;
+							}
+						}
+					}
 				}
 			}
 
@@ -1616,7 +1752,7 @@ public class LayoutMLLoader implements LayoutMLConstants {
 		 * {@link ElementProcessor} for PropertyValueValuelistProvider
 		 * @see PropertyValueValuelistProvider
 		 */
-		private class LayoutMLValueListProviderProcessor implements ElementProcessor {
+		private class ValueListProviderElementProcessor implements ElementProcessor {
 
 			@Override
 			public void closeElement() throws SAXException {
@@ -1626,7 +1762,7 @@ public class LayoutMLLoader implements LayoutMLConstants {
 			@Override
 			public void startElement(Attributes atts) throws SAXException {
 				if (!subformColumnMissing) {
-					PropertyValueValuelistProvider value = new PropertyValueValuelistProvider();
+					PropertyValueValuelistProvider value = new PropertyValueValuelistProvider(false);
 					value.setValue(ELEMENT_VALUELISTPROVIDER, atts);
 					try {
 						((WYSIWYGComponent) stack.peek()).setProperty(WYSIWYGComponent.PROPERTY_VALUELISTPROVIDER, value, null);
@@ -1636,6 +1772,55 @@ public class LayoutMLLoader implements LayoutMLConstants {
 					}
 					currentValuelistProvider = value.getValue();
 				}
+			}
+		}
+		
+		/**
+		 * {@link ElementProcessor} for PropertyValueValuelistProvider
+		 * @see PropertyValueValuelistProvider
+		 */
+		private class PropertyValuelistProviderElementProcessor implements ElementProcessor {
+			
+			PropertyValueValuelistProvider value;
+			String sProperty;
+			String sEntity;
+			String sField;
+			
+			@Override
+			public void closeElement() throws SAXException {
+				if (peekComponent() instanceof LayoutComponent) {
+					LayoutComponent lc = (LayoutComponent) peekComponent();
+					if (lc.getComponentProperties() != null) {
+						for (Property pt : lc.getComponentProperties()) {
+							if (pt.name.equals(sProperty)) {
+								try {
+									peekComponent().setProperty(sProperty, value, pt.type);
+								} catch (CommonBusinessException ex) {
+									log.error(ex);
+									Errors.getInstance().showExceptionDialog(null, ex);
+								}
+								break;
+							}
+						}
+					}
+				}
+				currentValuelistProvider = null;
+			}
+
+			@Override
+			public void startElement(Attributes atts) throws SAXException {
+				sProperty = atts.getValue(ATTRIBUTE_NAME);
+				sEntity = atts.getValue(ATTRIBUTE_ENTITY);
+				sField = atts.getValue(ATTRIBUTE_FIELD);
+				value = (PropertyValueValuelistProvider) PropertyUtils.getPropertyValue(peekComponent(), sProperty);
+				if (value != null) {
+					value.setValue(sProperty, atts);
+					currentValuelistProvider = value.getValue();
+				} else {
+					currentValuelistProvider = new WYSIWYGValuelistProvider(true);
+				}
+				currentValuelistProvider.setEntity(sEntity);
+				currentValuelistProvider.setField(sField);
 			}
 		}
 
@@ -1745,12 +1930,51 @@ public class LayoutMLLoader implements LayoutMLConstants {
 				}
 			}
 		}
+		
+		
+		/**
+		 * {@link ElementProcessor} for Property font
+		 * @see PropertyValueFont
+		 */
+		private class PropertyFontElementProcessor implements ElementProcessor {
+
+			@Override
+			public void closeElement() throws SAXException {
+
+			}
+
+			@Override
+			public void startElement(Attributes atts) throws SAXException {
+				String sProperty = atts.getValue(ATTRIBUTE_NAME);
+				
+				if (peekComponent() instanceof LayoutComponent) {
+					LayoutComponent lc = (LayoutComponent) peekComponent();
+					if (lc.getComponentProperties() != null) {
+						for (Property pt : lc.getComponentProperties()) {
+							if (pt.name.equals(sProperty)) {
+								try {
+									PropertyValue<?> value = PropertyUtils.getPropertyValue(peekComponent(), sProperty);
+									value.setValue(ATTRIBUTE_SIZE, atts);
+									peekComponent().setProperty(sProperty, value, pt.type);
+								} catch (CommonBusinessException ex) {
+									log.error(ex);
+									Errors.getInstance().showExceptionDialog(null, ex);
+								}
+								break;
+							}
+						}
+					}
+				}
+			}
+		}
+		
+		
 		private TranslationMap translations;
 
 		/**
 		 * {@link ElementProcessor} for Locale Resources.
 		 */
-		private class TranslationsProcessor implements ElementProcessor {
+		private class TranslationsElementProcessor implements ElementProcessor {
 
 			@Override
 			public void startElement(Attributes atts) throws SAXException {
@@ -1769,6 +1993,48 @@ public class LayoutMLLoader implements LayoutMLConstants {
 
 			@Override
 			public void closeElement() throws SAXException {
+				translations = null;
+			}
+		}
+		
+		/**
+		 * {@link PropertyTranslationsElementProcessor} for Locale Resources.
+		 */
+		private class PropertyTranslationsElementProcessor implements ElementProcessor {
+
+			String sProperty;
+			
+			@Override
+			public void startElement(Attributes atts) throws SAXException {
+				sProperty = atts.getValue(ATTRIBUTE_NAME);
+				if (translations == null) {
+					translations = new TranslationMap();
+				}
+			}
+
+			@Override
+			public void closeElement() throws SAXException {
+				if (peekComponent() instanceof LayoutComponent) {
+					LayoutComponent lc = (LayoutComponent) peekComponent();
+					if (lc.getComponentProperties() != null) {
+						for (Property pt : lc.getComponentProperties()) {
+							if (pt.name.equals(sProperty)) {
+								if (translations != null) {
+									try {
+										PropertyValueTranslations value = (PropertyValueTranslations) PropertyUtils.getPropertyValue(peekComponent(), sProperty);
+										value.setValue(translations);
+										peekComponent().setProperty(sProperty, value, pt.type);
+									} catch (CommonBusinessException e) {
+										log.error(e);
+										Errors.getInstance().showExceptionDialog(null, e);
+									}
+								}
+								
+								break;
+							}
+						}
+					}
+				}
 				translations = null;
 			}
 		}
@@ -1826,6 +2092,50 @@ public class LayoutMLLoader implements LayoutMLConstants {
 				} catch (CommonBusinessException ex) {
 					log.error(ex);
 					Errors.getInstance().showExceptionDialog(null, ex);
+				}
+			}
+		}
+		
+		private class PropertyScriptElementProcessor implements ElementProcessor {
+
+			String sProperty;
+			NuclosScript script;
+			
+			public PropertyScriptElementProcessor() {
+				super();
+			}
+
+			@Override
+			public void startElement(Attributes atts) throws SAXException {
+				sProperty = atts.getValue(ATTRIBUTE_NAME);
+				sbChars = new StringBuffer();
+				script = new NuclosScript();
+				script.setLanguage(atts.getValue(ATTRIBUTE_LANGUAGE));
+			}
+
+			@Override
+			public void closeElement() throws SAXException {
+				script.setSource(sbChars.toString().trim());
+				sbChars = null;
+				
+				if (peekComponent() instanceof LayoutComponent) {
+					LayoutComponent lc = (LayoutComponent) peekComponent();
+					if (lc.getComponentProperties() != null) {
+						for (Property pt : lc.getComponentProperties()) {
+							if (pt.name.equals(sProperty)) {
+								try {
+									PropertyValueScript value = (PropertyValueScript) PropertyUtils.getPropertyValue(peekComponent(), sProperty);
+									value.setValue(script);
+									
+									peekComponent().setProperty(sProperty, value, pt.type);
+								} catch (CommonBusinessException ex) {
+									log.error(ex);
+									Errors.getInstance().showExceptionDialog(null, ex);
+								}
+								break;
+							}
+						}
+					}
 				}
 			}
 		}

@@ -14,23 +14,11 @@
 //
 //You should have received a copy of the GNU Affero General Public License
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
-package org.nuclos.common.collect.collectable;
+package org.nuclos.common;
 
-import java.util.List;
+public interface NuclosTranslationMap {
 
-import org.nuclos.common.NuclosValueListProvider;
-import org.nuclos.common2.exception.CommonBusinessException;
-
-/**
- * Provides a list of <code>CollectableField</code>s.
- * <br>
- * <br>Created by Novabit Informationssysteme GmbH
- * <br>Please visit <a href="http://www.novabit.de">www.novabit.de</a>
- *
- * @author	<a href="mailto:Christoph.Radig@novabit.de">Christoph.Radig</a>
- * @version	01.00.00
- */
-
-public interface CollectableFieldsProvider extends NuclosValueListProvider {
-
-}  // interface CollectableFieldsProvider
+	public String getTranslation(String language);
+	
+	public void putTranslation(String language, String translation);
+}

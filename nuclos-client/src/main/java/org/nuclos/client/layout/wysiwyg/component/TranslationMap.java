@@ -19,7 +19,9 @@ package org.nuclos.client.layout.wysiwyg.component;
 import java.util.HashMap;
 import java.util.Map;
 
-public class TranslationMap extends HashMap<String, String> {
+import org.nuclos.common.NuclosTranslationMap;
+
+public class TranslationMap extends HashMap<String, String> implements NuclosTranslationMap {
 
 	public TranslationMap() {
 	}
@@ -43,5 +45,15 @@ public class TranslationMap extends HashMap<String, String> {
 				remove(tag);
 			}
 		}
+	}
+
+	@Override
+	public String getTranslation(String language) {
+		return super.get(language);
+	}
+
+	@Override
+	public void putTranslation(String language, String translation) {
+		super.put(language, translation);
 	}
 }
