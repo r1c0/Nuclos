@@ -28,6 +28,7 @@ import javax.swing.SortOrder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import org.apache.log4j.Logger;
 import org.nuclos.client.ui.table.SortableTableModelEvent;
 import org.nuclos.common.NuclosImage;
 import org.nuclos.common.collect.collectable.Collectable;
@@ -41,13 +42,15 @@ import org.nuclos.common.collection.Predicate;
  * CollectableTableModelImpl that supports sorting.
  */
 public class SortableCollectableTableModelImpl <Clct extends Collectable>
-		extends CollectableTableModelImpl<Clct> 
+		extends CollectableTableModelImpl<Clct>
 		implements SortableCollectableTableModel<Clct> {
+
+	private final static Logger LOG = Logger.getLogger(SortableCollectableTableModelImpl.class);
 
 	private List<SortKey> sortKeys = Collections.emptyList();
 
 	private final transient List<ChangeListener> lstSortingListeners = new LinkedList<ChangeListener>();
-	
+
 	/**
 	 * @deprecated Use {@link #SortableCollectableTableModelImpl(String, List)}.
 	 */
@@ -57,7 +60,7 @@ public class SortableCollectableTableModelImpl <Clct extends Collectable>
 
 	public SortableCollectableTableModelImpl(String entityName, List<Clct> lstclct) {
 		super(entityName, lstclct);
-	}	
+	}
 
 	@Override
 	public void setColumns(List<? extends CollectableEntityField> lstclctefColumns) {
@@ -70,7 +73,7 @@ public class SortableCollectableTableModelImpl <Clct extends Collectable>
 		ensureMaxColumnSortKeys(this.getColumnCount() - 1);
 		super.removeColumn(iColumn);
 	}
-	
+
 	@Override
 	public boolean isSortable(int column) {
 		if (column >= 0 && column < getColumnCount()) {
@@ -87,7 +90,7 @@ public class SortableCollectableTableModelImpl <Clct extends Collectable>
 	public List<? extends SortKey> getSortKeys() {
 		return sortKeys;
 	}
-	
+
 	@Override
 	public void setSortKeys(List<? extends SortKey> sortKeys, boolean sortImmediately) throws IllegalArgumentException {
 		for (SortKey sortKey : new ArrayList<SortKey>(sortKeys)) {
@@ -99,7 +102,7 @@ public class SortableCollectableTableModelImpl <Clct extends Collectable>
 					throw new IllegalArgumentException("Invalid sort column " + sortKey.getColumn());
 			}
 		}
-		
+
 		if (!this.sortKeys.equals(sortKeys)) {
 			this.sortKeys = Collections.unmodifiableList(new ArrayList<SortKey>(sortKeys));
 			fireSortingChanged();
@@ -115,7 +118,7 @@ public class SortableCollectableTableModelImpl <Clct extends Collectable>
 		if (!isSortable(column)) {
 			return;
 		}
-		
+
 		List<SortKey> newSortKeys = new LinkedList<SortKey>(sortKeys);
 		int currentSortIndex = CollectionUtils.indexOfFirst(sortKeys, new Predicate<SortKey>() {
 			@Override public boolean evaluate(SortKey t) { return t.getColumn() == column; }
@@ -134,51 +137,54 @@ public class SortableCollectableTableModelImpl <Clct extends Collectable>
 				case DESCENDING:
 					newSortOrder = SortOrder.UNSORTED;
 					// if descending, nothing will be added. 3-click behavior. asc,desc,unsorted.
-					newSortKeys.add(currentSortIndex, new SortKey(column, newSortOrder));	
+					newSortKeys.add(currentSortIndex, new SortKey(column, newSortOrder));
 					break;
 				case UNSORTED:
-					newSortOrder = SortOrder.ASCENDING;	
-					newSortKeys.add(currentSortIndex, new SortKey(column, newSortOrder));		
+					newSortOrder = SortOrder.ASCENDING;
+					newSortKeys.add(currentSortIndex, new SortKey(column, newSortOrder));
 					break;
 				}
 			} else {
 				newSortOrder = SortOrder.ASCENDING;
-				newSortKeys.add(lastSortIndex == 0 ? 0 : (lastSortIndex > newSortKeys.size() ? lastSortIndex - 1 : lastSortIndex), new SortKey(column, newSortOrder));		
+				newSortKeys.add(lastSortIndex == 0 ? 0 : (lastSortIndex > newSortKeys.size() ? lastSortIndex - 1 : lastSortIndex), new SortKey(column, newSortOrder));
 			}
 		} else {
 			newSortOrder = SortOrder.ASCENDING;
-			newSortKeys.add(lastSortIndex == 0 ? 0 : (lastSortIndex > newSortKeys.size() ? lastSortIndex - 1 : lastSortIndex), new SortKey(column, newSortOrder));		
+			newSortKeys.add(lastSortIndex == 0 ? 0 : (lastSortIndex > newSortKeys.size() ? lastSortIndex - 1 : lastSortIndex), new SortKey(column, newSortOrder));
 		}
 
-		if (newSortKeys.size() > 3) {
-			int i1 = 0;
-			List<SortKey> newSortKeys1 = new LinkedList<SortKey>();
-			List<SortKey> newSortKeys2 = new LinkedList<SortKey>();
-			for (SortKey sortKey : newSortKeys) {
-				if (sortKey.getSortOrder() == SortOrder.UNSORTED && i1 < 3) {
-					newSortKeys1.add(sortKey);
-					i1++;
-				} else {
-					newSortKeys2.add(sortKey);
-				}
+		List<SortKey> newSortKeys1 = new LinkedList<SortKey>();
+		List<SortKey> newSortKeys2 = new LinkedList<SortKey>();
+		for (SortKey sortKey : newSortKeys) {
+			if (sortKey.getSortOrder() == SortOrder.UNSORTED) {
+				newSortKeys1.add(sortKey);
+			} else {
+				newSortKeys2.add(sortKey);
 			}
-			
-			newSortKeys.clear();
-			newSortKeys.addAll(newSortKeys2.subList(newSortKeys2.size() < 3 ? 0 : newSortKeys2.size()-3, newSortKeys2.size()));
-			newSortKeys.addAll(newSortKeys1);
-			//newSortKeys = newSortKeys.subList(0,3);
+		}
+
+		newSortKeys.clear();
+		newSortKeys.addAll(newSortKeys2.subList(newSortKeys2.size() < 3 ? 0 : newSortKeys2.size() - 3, newSortKeys2.size()));
+		newSortKeys.addAll(newSortKeys1);
+
+		if (LOG.isDebugEnabled()) {
+			StringBuilder sb = new StringBuilder("Sort subform by:");
+			for (SortKey sk : newSortKeys) {
+				sb.append("\n\t" + getCollectableEntityField(sk.getColumn()).getName() + " " + sk.getSortOrder());
+			}
+			LOG.debug(sb.toString());
 		}
 		setSortKeys(newSortKeys, sortImmediately);
 	}
-	
+
 	/**
 	 * addititional Method for restoring the sorting order without fireing any changes etc.
 	 * needed for the WYSIWYG Editor.
 	 * @param iSortedColumn
 	 * @param bSortedAscending
-	 * @deprecated refactor to use regular setSortKeys 
+	 * @deprecated refactor to use regular setSortKeys
 	 */
-	@Deprecated 
+	@Deprecated
 	public void restoreSortingOrder(int iSortedColumn, boolean bSortedAscending) {
 		if (!(iSortedColumn >= -1 && iSortedColumn < this.getColumnCount())) {
 			throw new IllegalArgumentException("iSortedColumn");
@@ -217,7 +223,7 @@ public class SortableCollectableTableModelImpl <Clct extends Collectable>
 			}
 			// always add id comparator as compound.
 			comparators.add((Comparator<Clct>) CollectableComparatorFactory.getInstance().newCollectableIdComparator());
-			
+
 			//if (!comparators.isEmpty()) { // will never happen.
 				// This can happen if some sort keys with UNSORTED ordering are provided
 				Comparator<Clct> comparator = ComparatorUtils.compoundComparator(comparators);
@@ -231,7 +237,7 @@ public class SortableCollectableTableModelImpl <Clct extends Collectable>
 	private void ensureMaxColumnSortKeys(final int maxColumn) {
 		List<? extends SortKey> currentSortKeys = getSortKeys();
 		List<SortKey> newSortKeys = CollectionUtils.applyFilter(currentSortKeys, new Predicate<SortKey>() {
-			@Override public boolean evaluate(SortKey x) { return x.getColumn() < maxColumn; } 
+			@Override public boolean evaluate(SortKey x) { return x.getColumn() < maxColumn; }
 		});
 		if (!newSortKeys.equals(currentSortKeys)) {
 			setSortKeys(newSortKeys, false);
@@ -266,5 +272,5 @@ public class SortableCollectableTableModelImpl <Clct extends Collectable>
 			listener.stateChanged(ev);
 		}
 	}
-	
+
 }  //  class CollectableTableModelImpl
