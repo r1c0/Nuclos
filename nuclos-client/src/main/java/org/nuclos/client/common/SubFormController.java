@@ -707,7 +707,7 @@ public abstract class SubFormController extends MainFrameTabController
 	            	return;
 	            if(ke.isShiftDown() || ke.isControlDown())
 	            	return;
-	            int rowIndex = e.getFirstIndex();//tbl.getSelectedRow();
+	            int rowIndex = e.getFirstIndex();
 	            int columnIndex = tbl.getSelectedColumn() == tbl.getColumnCount() -1 ? 0 : tbl.getSelectedColumn();
 	            if(((rowIndex == 1 && columnIndex == -1) || (rowIndex == 0 && columnIndex == 0)) && e.getLastIndex() > 0) {
 		            ke.consume();
