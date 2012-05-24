@@ -71,6 +71,7 @@ import org.nuclos.server.dblayer.query.DbQuery;
 import org.nuclos.server.dblayer.query.DbQueryBuilder;
 import org.nuclos.server.genericobject.ejb3.GeneratorFacadeLocal;
 import org.nuclos.server.genericobject.ejb3.GenericObjectFacadeLocal;
+import org.nuclos.server.genericobject.searchcondition.CollectableGenericObjectSearchExpression;
 import org.nuclos.server.genericobject.searchcondition.CollectableSearchExpression;
 import org.nuclos.server.genericobject.valueobject.GenericObjectRelationVO;
 import org.nuclos.server.genericobject.valueobject.GenericObjectVO;
@@ -105,60 +106,60 @@ import org.springframework.transaction.annotation.Transactional;
 */
 @Transactional(noRollbackFor= {Exception.class})
 public class RuleInterfaceFacadeBean extends NuclosFacadeBean {
-	
+
 	private static final Logger LOG = Logger.getLogger(RuleInterfaceFacadeBean.class);
-	
+
 	private StateFacadeLocal stateFacadeLocal;
-	
+
 	private GeneratorFacadeLocal generatorFacadeLocal;
-	
+
 	private JobControlFacadeLocal jobControlFacadeLocal;
-	
+
 	private ServerParameterProvider serverParameterProvider;
-	
+
 	private AttributeCache attributeCache;
-	
+
 	private MasterDataMetaCache masterDataMetaCache;
-	
+
 	private Scheduler nuclosScheduler;
-	
+
 	private GenericObjectFacadeLocal genericObjectFacade;
-	
+
 	private MasterDataFacadeLocal masterDataFacade;
-	
+
 	public RuleInterfaceFacadeBean() {
 	}
-	
+
 	@Autowired
 	final void setStateFacadeLocal(StateFacadeLocal stateFacadeLocal) {
 		this.stateFacadeLocal = stateFacadeLocal;
 	}
-	
+
 	@Autowired
 	final void setGeneratorFacadeLocal(GeneratorFacadeLocal generatorFacadeLocal) {
 		this.generatorFacadeLocal = generatorFacadeLocal;
 	}
-	
+
 	@Autowired
 	final void setJobControlFacadeLocal(JobControlFacadeLocal jobControlFacadeLocal) {
 		this.jobControlFacadeLocal = jobControlFacadeLocal;
 	}
-	
+
 	@Autowired
 	final void setServerParameterProvider(ServerParameterProvider serverParameterProvider) {
 		this.serverParameterProvider = serverParameterProvider;
 	}
-	
+
 	@Autowired
 	final void setAttributeCache(AttributeCache attributeCache) {
 		this.attributeCache = attributeCache;
 	}
-	
+
 	@Autowired
 	final void setMasterDataMetaCache(MasterDataMetaCache masterDataMetaCache) {
 		this.masterDataMetaCache = masterDataMetaCache;
 	}
-	
+
 	@Autowired
 	final void setNuclosScheduler(Scheduler nuclosScheduler) {
 		this.nuclosScheduler = nuclosScheduler;
@@ -168,7 +169,7 @@ public class RuleInterfaceFacadeBean extends NuclosFacadeBean {
 	final void setGenericObjectFacade(GenericObjectFacadeLocal genericObjectFacade) {
 		this.genericObjectFacade = genericObjectFacade;
 	}
-	
+
 	private final GenericObjectFacadeLocal getGenericObjectFacade() {
 		return genericObjectFacade;
 	}
@@ -177,7 +178,7 @@ public class RuleInterfaceFacadeBean extends NuclosFacadeBean {
 	final void setMasterDataFacade(MasterDataFacadeLocal masterDataFacade) {
 		this.masterDataFacade = masterDataFacade;
 	}
-	
+
 	private final MasterDataFacadeLocal getMasterDataFacade() {
 		return masterDataFacade;
 	}
@@ -246,7 +247,7 @@ public class RuleInterfaceFacadeBean extends NuclosFacadeBean {
 			}
 		}
 		try {
-			mailcommunicator.sendMessage(serverParameterProvider.getValue("SMTP Authentication"), 
+			mailcommunicator.sendMessage(serverParameterProvider.getValue("SMTP Authentication"),
 					serverParameterProvider.getValue("SMTP Sender"), asRecipientAddresses, sSubject, sMessage);
 		}
 		catch (CommonCommunicationException ex) {
@@ -522,7 +523,7 @@ public class RuleInterfaceFacadeBean extends NuclosFacadeBean {
 	}
 
 	public Collection<Integer> getGenericObjectIds(Integer iModuleId, CollectableSearchCondition cond) {
-		return getGenericObjectFacade().getGenericObjectIds(iModuleId, cond);
+		return getGenericObjectFacade().getGenericObjectIds(iModuleId, new CollectableGenericObjectSearchExpression(cond, CollectableGenericObjectSearchExpression.SEARCH_UNDELETED));
 	}
 
 	public Collection<Object> getMasterDataIds(String sEntityName, CollectableSearchExpression cond) {
