@@ -87,7 +87,7 @@ public class SchedulableJob extends NuclosQuartzJob {
 		}
 		catch (Exception e) {
 			try {
-				getJobFacade().setJobExecutionResultError(oId, dFireTime, dNextFireTime, iSessionId, e.getClass().getName() + ": " + e.getMessage());
+				getJobFacade().setJobExecutionResultError(oId, dFireTime, dNextFireTime, iSessionId, e);
 			}
 			catch (Exception ex) {
 				// do not throw exception to quartz, just log it instead and finish the job execution normally
