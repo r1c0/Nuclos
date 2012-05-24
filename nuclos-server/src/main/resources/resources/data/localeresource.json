@@ -64527,5 +64527,20 @@
     "resourceID": "report.exception.nodata",
     "locale": "de",
     "text": "Die Datenquelle hat keine Daten zurückgegeben."
+  },
+  {
+    "resourceID": "job.exception.mail",
+    "locale": "i-default",
+    "text": "Sending email notification failed: {0}"
+  },
+  {
+    "resourceID": "job.exception.mail",
+    "locale": "en",
+    "text": "Sending email notification failed: {0}"
+  },
+  {
+    "resourceID": "job.exception.mail",
+    "locale": "de",
+    "text": "Versand der Email-Benachrichtigung fehlgeschlagen: {0}"
   }
 ]

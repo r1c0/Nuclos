@@ -37,12 +37,12 @@ import org.nuclos.common.dal.vo.SystemFields;
 import org.nuclos.common.job.IntervalUnit;
 import org.nuclos.common.job.JobUtils;
 import org.nuclos.common.job.LogLevel;
+import org.nuclos.common.mail.NuclosMail;
 import org.nuclos.common2.DateUtils;
 import org.nuclos.common2.KeyEnum;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.ValueValidationHelper;
-import org.nuclos.common2.communication.MailCommunicator;
-import org.nuclos.common2.communication.exception.CommonCommunicationException;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonCreateException;
 import org.nuclos.common2.exception.CommonFinderException;
@@ -51,9 +51,9 @@ import org.nuclos.common2.exception.CommonRemoveException;
 import org.nuclos.common2.exception.CommonStaleVersionException;
 import org.nuclos.common2.exception.CommonValidationException;
 import org.nuclos.server.common.MetaDataServerProvider;
-import org.nuclos.server.common.ServerParameterProvider;
 import org.nuclos.server.common.ServerServiceLocator;
 import org.nuclos.server.common.ejb3.LocaleFacadeLocal;
+import org.nuclos.server.common.mail.NuclosMailSender;
 import org.nuclos.server.dblayer.query.DbFrom;
 import org.nuclos.server.dblayer.query.DbQuery;
 import org.nuclos.server.dblayer.query.DbQueryBuilder;
@@ -65,6 +65,7 @@ import org.nuclos.server.report.ejb3.SchedulerControlFacadeLocal;
 import org.nuclos.server.ruleengine.NuclosBusinessRuleException;
 import org.quartz.CronExpression;
 import org.quartz.Trigger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -78,10 +79,21 @@ import org.springframework.transaction.annotation.Transactional;
 public class JobControlFacadeBean extends MasterDataFacadeBean implements JobControlFacadeRemote {
 
 	private static final Logger LOG = Logger.getLogger(JobControlFacadeBean.class);
-	
+
 	private SchedulerControlFacadeLocal scheduler;
-	
+
+	private SpringLocaleDelegate localeDelegate;
+
 	public JobControlFacadeBean() {
+	}
+
+	protected SpringLocaleDelegate getLocaleDelegate() {
+		return localeDelegate;
+	}
+
+	@Autowired
+	protected void setLocaleDelegate(SpringLocaleDelegate localeDelegate) {
+		this.localeDelegate = localeDelegate;
 	}
 
 	private SchedulerControlFacadeLocal getScheduler() {
@@ -392,24 +404,24 @@ public class JobControlFacadeBean extends MasterDataFacadeBean implements JobCon
 	}
 
 	private void sendMessage(String sRecipient, String sSubject, String sMessage) {
-		final MailCommunicator mailcommunicator = new MailCommunicator(ServerParameterProvider.getInstance().getValue("SMTP Server"), ServerParameterProvider.getInstance().getValue("SMTP Username"), ServerParameterProvider.getInstance().getValue("SMTP Password"));
-		final String[] asRecipientAddresses = new String[1];
+		String sEmail = null;
+		if (sRecipient != null) {
+			DbQueryBuilder builder = dataBaseHelper.getDbAccess().getQueryBuilder();
+			DbQuery<String> query = builder.createQuery(String.class);
+			DbFrom t = query.from("T_MD_USER").alias(SystemFields.BASE_ALIAS);
+			query.select(t.baseColumn("STREMAIL", String.class));
+			query.where(builder.equal(builder.upper(t.baseColumn("STRUSER", String.class)), builder.upper(builder.literal(sRecipient))));
 
-		DbQueryBuilder builder = dataBaseHelper.getDbAccess().getQueryBuilder();
-		DbQuery<String> query = builder.createQuery(String.class);
-		DbFrom t = query.from("T_MD_USER").alias(SystemFields.BASE_ALIAS);
-		query.select(t.baseColumn("STREMAIL", String.class));
-		query.where(builder.equal(builder.upper(t.baseColumn("STRUSER", String.class)), builder.upper(builder.literal(sRecipient))));
+			sEmail = CollectionUtils.getFirst(dataBaseHelper.getDbAccess().executeQuery(query));
+		}
 
-		String sEmail = CollectionUtils.getFirst(dataBaseHelper.getDbAccess().executeQuery(query));
-
-		if (sEmail != null) {
-			asRecipientAddresses[0] = sEmail;
+		if (sRecipient != null && sEmail != null) {
+			NuclosMail mail = new NuclosMail(sEmail, sSubject, sMessage);
 			try {
-				mailcommunicator.sendMessage(ServerParameterProvider.getInstance().getValue("SMTP Authentication"), ServerParameterProvider.getInstance().getValue("SMTP Sender"), asRecipientAddresses, sSubject, sMessage);
-			} catch (CommonCommunicationException ex) {
-				throw new NuclosFatalException(StringUtils.getParameterizedExceptionMessage("task.facade.exception", ex.getMessage()), ex);
-					//"Es ist ein Fehler beim Versenden einer Benachrichtigung per E-Mail aufgetreten.\n\n" + ex.getMessage(), ex);
+				NuclosMailSender.sendMail(mail);
+			}
+			catch (CommonBusinessException ex) {
+				throw new NuclosFatalException(StringUtils.getParameterizedExceptionMessage("job.exception.mail", ex.getMessage()), ex);
 			}
 		}
 		else {
@@ -500,12 +512,12 @@ public class JobControlFacadeBean extends MasterDataFacadeBean implements JobCon
 			}
 	    }
 	    catch (Exception ex) {
-	    	throw new RuntimeException(ex);
+	    	throw new RuntimeException(ex.getMessage(), ex);
 	    }
     }
 
 	@Transactional(propagation=Propagation.REQUIRES_NEW, noRollbackFor= {Exception.class})
-    public void setJobExecutionResultError(Object oId, Date dFireTime, Date sNextFireTime, Integer iSessionId, String sErrorMessage) {
+    public void setJobExecutionResultError(Object oId, Date dFireTime, Date sNextFireTime, Integer iSessionId, Exception e) {
 	    try {
 	    	JobVO jobVO = makeJobVO(oId);
 			jobVO.setRunning(false);
@@ -514,23 +526,25 @@ public class JobControlFacadeBean extends MasterDataFacadeBean implements JobCon
 			if (sNextFireTime != null) {
 				jobVO.setNextFireTime(DateUtils.getDateAndTime(sNextFireTime));
 			}
-			jobVO.setResultDetails(sErrorMessage);
+			StringBuilder sb = new StringBuilder(e.getClass().getName() + ": ");
+			sb.append(getLocaleDelegate().getMessageFromResource(e.getMessage()));
+			jobVO.setResultDetails(sb.toString());
 			makeMasterDataVO(jobVO);
 
 			if (iSessionId != null) {
 				MasterDataVO jobRun = get(NuclosEntity.JOBRUN.getEntityName(), iSessionId);
 				jobRun.setField("enddate", DateUtils.getActualDateAndTime());
-				jobRun.setField("state", sErrorMessage);
+				jobRun.setField("state", sb.toString());
 				modifyJobRun(jobRun);
 			}
 			try {
-				sendMessage("ERROR", jobVO, sErrorMessage);
+				sendMessage("ERROR", jobVO, sb.toString());
 			} catch (Exception ex) {
 				error(ex);
 				writeToJobRunMessages(iSessionId, "ERROR", "Error while trying to send email: " + ex.getMessage(), null);
 			}
 	    } catch (Exception ex) {
-	    	throw new RuntimeException(ex);
+	    	throw new RuntimeException(ex.getMessage(), ex);
 	    }
     }
 

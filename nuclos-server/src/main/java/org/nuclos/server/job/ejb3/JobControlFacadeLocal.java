@@ -29,7 +29,7 @@ public interface JobControlFacadeLocal {
 
 	void setJobExecutionResult(Object oResult, Date dFireTime, Date dNextFireTime, JobVO jobVO, MasterDataVO jobRun);
 
-	void setJobExecutionResultError(Object oId, Date dFireTime, Date sNextFireTime, Integer iSessionId, String sErrorMessage);
+	void setJobExecutionResultError(Object oId, Date dFireTime, Date sNextFireTime, Integer iSessionId, Exception e);
 
 	void writeToJobRunMessages(Integer iSessionId, String sLevel, String sMessage, String sRuleName);
 }
