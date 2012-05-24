@@ -73,6 +73,15 @@ public class RuleVO extends NuclosValueObject {
 		this.nucletId = nucletId;
 		this.bActive = bActive;
 	}
+	
+	public RuleVO(Integer id, Integer nucletId, int version, String ruleName, String description, String source, boolean active) {
+		super(id, null, null, null, null, version);
+		this.rule = ruleName;
+		this.sDescription = description;
+		this.source = source;
+		this.nucletId = nucletId;
+		this.bActive = bActive;
+	}
 
 	/**
 	 * get rule name of underlying database record
