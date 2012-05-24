@@ -55,6 +55,8 @@ import org.w3c.dom.svg.SVGElement;
 import org.w3c.dom.svg.SVGGElement;
 import org.w3c.dom.svg.SVGLineElement;
 import org.w3c.dom.svg.SVGPathElement;
+import org.w3c.dom.svg.SVGPolygonElement;
+import org.w3c.dom.svg.SVGPolylineElement;
 import org.w3c.dom.svg.SVGRectElement;
 import org.w3c.dom.svg.SVGTextElement;
 import org.w3c.dom.svg.SVGUseElement;
@@ -300,6 +302,24 @@ public class SVGDOMDocumentSupport extends SVGDOMImplementation {
 		return result;
 	}
 	
+	public SVGPolygonElement createPolygon(String clazz, float... p) {
+		final SVGPolygonElement result = (SVGPolygonElement) createSVGElement("polygon");
+		result.setAttribute("points", createPathString(p));
+		if (clazz != null) {
+			result.setAttribute("class", clazz);
+		}
+		return result;
+	}
+	
+	public SVGPolylineElement createPolyline(String clazz, float... p) {
+		final SVGPolylineElement result = (SVGPolylineElement) createSVGElement("polyline");
+		result.setAttribute("points", createPathString(p));
+		if (clazz != null) {
+			result.setAttribute("class", clazz);
+		}
+		return result;
+	}
+	
 	public SVGPathElement createPath() {
 		final SVGPathElement result = (SVGPathElement) createSVGElement("path");
 		return result;
@@ -323,6 +343,21 @@ public class SVGDOMDocumentSupport extends SVGDOMImplementation {
 	public SVGUseElement createUse() {
 		final SVGUseElement result = (SVGUseElement) createSVGElement("use");
 		return result;
+	}
+	
+	private String createPathString(float... p) {
+		final StringBuilder result = new StringBuilder();
+		int n = 0;
+		for (float f: p) {
+			result.append(Float.toString(f));
+			if (++n % 2 == 0) {
+				result.append(", ");
+			}
+			else {
+				result.append(" ");
+			}
+		}
+		return result.toString();
 	}
 	
 }
