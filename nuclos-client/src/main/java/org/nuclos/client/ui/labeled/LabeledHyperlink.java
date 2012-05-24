@@ -71,7 +71,7 @@ public class LabeledHyperlink extends LabeledTextComponent {
 	}
 
 	@Override
-	void setToolTipTextProviderForControl(final ToolTipTextProvider tooltiptextprovider) {
+	protected void setToolTipTextProviderForControl(final ToolTipTextProvider tooltiptextprovider) {
 		ToolTipTextProvider labeledHyperlinkToolTipTextProvider = new ToolTipTextProvider() {
 			@Override
             public String getDynamicToolTipText() {
