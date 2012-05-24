@@ -343,7 +343,7 @@ public abstract class LayoutCollectController extends MasterDataCollectControlle
 				layoutRoot.getRootComponent().setFocusCycleRoot(true);
 				layoutRoot.getRootComponent().setFocusTraversalPolicyProvider(true);
 				layoutRoot.getRootComponent().setFocusTraversalPolicy(
-								new NuclosFocusTraversalPolicy(layoutRoot.getRootComponent()));
+								new NuclosFocusTraversalPolicy(layoutRoot));
 
 				//NUCLEUSINT-285
 				Dimension preferredSize = getDetailsPanel().getPreferredSize();

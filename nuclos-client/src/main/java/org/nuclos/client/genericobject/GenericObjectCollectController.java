@@ -4767,7 +4767,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 
 		result.getRootComponent().setFocusCycleRoot(true);
 		result.getRootComponent().setFocusTraversalPolicyProvider(true);
-		result.getRootComponent().setFocusTraversalPolicy(new NuclosFocusTraversalPolicy(result.getRootComponent()));
+		result.getRootComponent().setFocusTraversalPolicy(new NuclosFocusTraversalPolicy(result));
 
 
 		customizeLayout(result, usagecriteria, collectstate);

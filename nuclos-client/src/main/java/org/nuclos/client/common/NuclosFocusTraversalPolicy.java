@@ -18,6 +18,7 @@ package org.nuclos.client.common;
 
 import java.awt.Component;
 import java.awt.Container;
+import java.util.Collection;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
@@ -29,26 +30,56 @@ import javax.swing.JToolBar;
 import javax.swing.LayoutFocusTraversalPolicy;
 
 import org.apache.log4j.Logger;
+import org.nuclos.client.ui.DateChooser;
 import org.nuclos.client.ui.JInfoTabbedPane;
 import org.nuclos.client.ui.OptionGroup;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.client.ui.collect.SubForm;
+import org.nuclos.client.ui.collect.component.CollectableComponent;
 import org.nuclos.client.ui.labeled.LabeledComponent;
+import org.nuclos.client.ui.layoutml.LayoutRoot;
+import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.layoutml.LayoutMLConstants;
 
 public class NuclosFocusTraversalPolicy extends	LayoutFocusTraversalPolicy {
 	
 	private static final Logger LOG = Logger.getLogger(NuclosFocusTraversalPolicy.class);
 	
-	private JComponent compRoot;
+	private final JComponent compRoot;
+	private final Collection<CollectableComponent> collectableComponents;
 	
-	private Map<String, JComponent> mpComponentsBackwards;
-
+	private final Map<String, JComponent> mpComponentsBackwards;
+	
 	private static final long serialVersionUID = -5062809400980161409L;
 
-	public NuclosFocusTraversalPolicy(JComponent compRoot) {
-		this.compRoot = compRoot;
+	public NuclosFocusTraversalPolicy(LayoutRoot layoutRoot) {
+		this.compRoot = layoutRoot.getRootComponent();
+		this.collectableComponents = layoutRoot.getCollectableComponents();
 		mpComponentsBackwards = new HashMap<String, JComponent>();
+	}
+	
+	private JComponent getComponentBefore(Component aComponent) {
+		String nextComp = null;
+		
+		for (CollectableComponent colComp : collectableComponents) {
+			JComponent jComp = colComp.getControlComponent();
+			if (jComp instanceof DateChooser)
+				jComp = ((DateChooser)colComp.getControlComponent()).getJTextField();
+			if (aComponent.equals(jComp)) {
+					nextComp = colComp.getFieldName();
+					break;
+			}
+		}	
+		
+		if (nextComp != null) {
+			for (CollectableComponent colComp : collectableComponents) {
+				String curNextComp = (String)colComp.getControlComponent().getClientProperty(LayoutMLConstants.ATTRIBUTE_NEXTFOCUSCOMPONENT);
+				if (curNextComp != null && curNextComp.equals(nextComp))
+					return colComp.getControlComponent();
+			}		
+		}
+		
+		return null;
 	}
 	
 	@Override
@@ -76,6 +107,11 @@ public class NuclosFocusTraversalPolicy extends	LayoutFocusTraversalPolicy {
 					mpComponentsBackwards.put((String)obj, (JComponent)aComponent);
 					if(jFound instanceof LabeledComponent){
 						return ((LabeledComponent)jFound).getControlComponent();
+					}
+					if (jFound instanceof OptionGroup) {
+						Enumeration elements = ((OptionGroup)jFound).getButtonGroup().getElements();
+						if (elements.hasMoreElements())
+							jFound = (JComponent)elements.nextElement();
 					}
 					return jFound;
 				}
@@ -123,11 +159,31 @@ public class NuclosFocusTraversalPolicy extends	LayoutFocusTraversalPolicy {
 
 	@Override
 	public Component getComponentBefore(Container aContainer, Component aComponent) {
-		if(aComponent instanceof JComponent) {
+		boolean bOption = false;
+		if (aComponent.getParent() instanceof OptionGroup) {
+			Enumeration elements = ((OptionGroup)aComponent.getParent()).getButtonGroup().getElements();
+			while (elements.hasMoreElements()) {
+				Object elem = elements.nextElement();
+				if (elem.equals(aComponent)) {// first option
+					break;
+				}
+				bOption = true;
+				break;
+			}
+		}
+			
+		if(!bOption && aComponent instanceof JComponent) {
+			JComponent jFound = getComponentBefore(aComponent);
+			if (jFound == null) {
+				jFound = getComponentBefore(aComponent.getParent());
+				if (jFound != null)
+					return jFound;
+			} else
+				return jFound;
 			if(mpComponentsBackwards.containsValue((JComponent)aComponent)) {
 				for(String sNext : mpComponentsBackwards.keySet()) {
 					if(mpComponentsBackwards.get(sNext).equals(aComponent)) {
-						JComponent jFound = UIUtils.findJComponentStartsWithName((JPanel)aContainer, sNext);
+						jFound = UIUtils.findJComponentStartsWithName((JPanel)aContainer, sNext);
 						if(jFound instanceof LabeledComponent){
 							return ((LabeledComponent)jFound).getControlComponent();
 						}

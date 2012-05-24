@@ -368,7 +368,7 @@ public class MasterDataCollectController extends EntityCollectController<Collect
 		getDetailsPanel().getLayoutRoot().getRootComponent().setFocusCycleRoot(true);
 		getDetailsPanel().getLayoutRoot().getRootComponent().setFocusTraversalPolicyProvider(true);
 		getDetailsPanel().getLayoutRoot().getRootComponent().setFocusTraversalPolicy(
-						new NuclosFocusTraversalPolicy(getDetailsPanel().getLayoutRoot().getRootComponent()));
+						new NuclosFocusTraversalPolicy(getDetailsPanel().getLayoutRoot()));
 
 		setupResultContextMenuGeneration();
 		
