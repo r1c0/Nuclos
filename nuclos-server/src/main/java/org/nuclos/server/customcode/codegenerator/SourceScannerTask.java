@@ -314,6 +314,9 @@ class SourceScannerTask extends TimerTask {
 					if ("name".equals(key)) {
 						result.setName(value);
 					}
+					else if ("classname".equals(key)) {
+						result.setTargetClassName(value);
+					}
 					else if ("type".equals(key)) {
 						result.setType(value);
 					}

@@ -132,6 +132,8 @@ public class RuleCodeGenerator<T> implements CodeGenerator {
 		writer.append("\n// type=org.nuclos.server.ruleengine.valueobject.RuleVO");
 		writer.append("\n// name=");
 		writer.append(ruleVO.getRule());
+		writer.append("\n// classname=");
+		writer.append(getClassName());
 		writer.append("\n// id=");
 		if (ruleVO.getId() != null) {
 			writer.append(ruleVO.getId().toString());

@@ -28,6 +28,8 @@ class GeneratedFile {
 	
 	private String name;
 	
+	private String targetClassName;
+	
 	private String type;
 	
 	private String generatorClass;
@@ -107,12 +109,23 @@ class GeneratedFile {
 		this.file = file;
 	}
 	
+	String getTargetClassName() {
+		return targetClassName;
+	}
+
+	void setTargetClassName(String targetClassName) {
+		this.targetClassName = targetClassName;
+	}
+
 	String getPrefix() {
 		final StringBuilder writer = new StringBuilder();
 		writer.append("// DO NOT REMOVE THIS COMMENT (UP TO PACKAGE DECLARATION)");
 		writer.append("\n// class=").append(getGeneratorClass());
 		writer.append("\n// type=").append(getType());
 		writer.append("\n// name=").append(getName());
+		if (getTargetClassName() != null) {
+			writer.append("\n// classname=").append(getTargetClassName());
+		}
 		writer.append("\n// id=").append(getId());
 		writer.append("\n// version=").append(getVersion());
 		writer.append("\n// modified=").append(getModified());

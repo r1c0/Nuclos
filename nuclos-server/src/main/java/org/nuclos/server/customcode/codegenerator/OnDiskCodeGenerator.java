@@ -19,8 +19,16 @@ package org.nuclos.server.customcode.codegenerator;
 import java.io.File;
 import java.io.IOException;
 import java.io.Writer;
+import java.text.MessageFormat;
 import java.util.Collections;
 
+import javax.annotation.PostConstruct;
+
+import org.nuclos.server.customcode.codegenerator.RuleCodeGenerator.AbstractRuleTemplateType;
+import org.nuclos.server.customcode.codegenerator.RuleCodeGenerator.RuleSourceAsString;
+import org.nuclos.server.ruleengine.ejb3.RuleEngineFacadeBean;
+import org.nuclos.server.ruleengine.ejb3.TimelimitRuleFacadeBean;
+import org.nuclos.server.ruleengine.valueobject.RuleVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
@@ -38,19 +46,46 @@ public class OnDiskCodeGenerator implements CodeGenerator {
 	
 	private final GeneratedFile gf;
 	
-	private final JavaSourceAsString src;
+	private JavaSourceAsString src;
 	
 	public OnDiskCodeGenerator(GeneratedFile gf) {
 		this.gf = gf;
-		this.src = new JavaSourceAsString(
-				gf.getName(), getPrefix(), new String(gf.getContent()), 
-				"OnDiskCodeGenerator", gf.getId(),
-				getPrefixAndHeaderLineCount(), getPrefixAndHeaderOffset());		
 	}
 
 	@Autowired
 	final void setNuclosJavaCompilerComponent(NuclosJavaCompilerComponent nuclosJavaCompilerComponent) {
 		this.nuclosJavaCompilerComponent = nuclosJavaCompilerComponent;
+	}
+	
+	@PostConstruct
+	final void init() {
+		if ("org.nuclos.server.ruleengine.valueobject.RuleVO".equals(gf.getType())) {
+			final String source = new String(gf.getContent());
+			final Integer id = Integer.valueOf((int) gf.getId());
+			final RuleVO dummy = new RuleVO(id, null, gf.getVersion(), gf.getName(), "", source, true);
+			
+			final AbstractRuleTemplateType<?> type;
+			if (gf.getFile().getName().startsWith("Rule_")) {
+				type = new RuleEngineFacadeBean.RuleTemplateType();
+			}
+			else {
+				type = new TimelimitRuleFacadeBean.TimelimitRuleCodeTemplate();
+			}
+			
+			src = new RuleSourceAsString(
+					gf.getTargetClassName(), 
+					getPrefix(), type.getHeader(dummy), source, type.getFooter(), 
+					"OnDiskCodeGenerator", gf.getId(),
+					getPrefixAndHeaderLineCount(), getPrefixAndHeaderOffset(),
+					MessageFormat.format(type.getLabel(), dummy.getRule()));
+		}
+		else {
+			src = new JavaSourceAsString(
+				gf.getName(), 
+				getPrefix(), new String(gf.getContent()), 
+				"OnDiskCodeGenerator", gf.getId(),
+				getPrefixAndHeaderLineCount(), getPrefixAndHeaderOffset());
+		}
 	}
 	
 	@Override
