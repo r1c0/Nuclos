@@ -109,12 +109,16 @@ public abstract class CollectableTextComponent extends LabeledCollectableCompone
 		final String sText = clctfformat.format(this.getEntityField().getFormatOutput(), clctfValue.getValue());
 
 		final JTextComponent textcomp = this.getJTextComponent();
-		textcomp.setText(sText);
+		setText(sText);
 		// ensure the start of the text is visible (instead of the end) when the text is too long
 		// to be fully displayed:
 		textcomp.setCaretPosition(0);
 
 		this.adjustAppearance();
+	}
+	
+	protected void setText(String sText) {
+		this.getJTextComponent().setText(sText);
 	}
 
 	@Override

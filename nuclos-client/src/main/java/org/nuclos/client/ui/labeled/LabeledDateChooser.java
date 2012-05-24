@@ -88,7 +88,7 @@ public class LabeledDateChooser extends LabeledTextComponent {
 	}
 
 	@Override
-	void setToolTipTextProviderForControl(final ToolTipTextProvider tooltiptextprovider) {
+	protected void setToolTipTextProviderForControl(final ToolTipTextProvider tooltiptextprovider) {
 		ToolTipTextProvider labeledDateChooserToolTipTextProvider = new ToolTipTextProvider() {
 			@Override
             public String getDynamicToolTipText() {

@@ -96,9 +96,9 @@ public class WYSIWYGUniversalComponent extends WYSIWYGCollectableComponent {
 		propertySetMethods.put(PROPERTY_LABEL, new PropertySetMethod(PROPERTY_LABEL, "setLabelText"));
 		propertySetMethods.put(PROPERTY_COLUMNS, new PropertySetMethod(PROPERTY_COLUMNS, "setColumns"));
 		
-		propertyFilters.put(PROPERTY_NAME, new PropertyFilter(PROPERTY_NAME, EXPERT_MODE));
+		propertyFilters.put(PROPERTY_NAME, new PropertyFilter(PROPERTY_NAME, STANDARD_MODE | EXPERT_MODE));
 		propertyFilters.put(PROPERTY_VALUELISTPROVIDER, new PropertyFilter(PROPERTY_VALUELISTPROVIDER, EXPERT_MODE));
-		propertyFilters.put(PROPERTY_CONTROLTYPECLASS, new PropertyFilter(PROPERTY_CONTROLTYPECLASS, EXPERT_MODE));
+		propertyFilters.put(PROPERTY_CONTROLTYPECLASS, new PropertyFilter(PROPERTY_CONTROLTYPECLASS, STANDARD_MODE | EXPERT_MODE));
 		//NUCLEUSINT-460 disable setting causing problems
 		propertyFilters.put(PROPERTY_CONTROLTYPE, new PropertyFilter(PROPERTY_CONTROLTYPE, DISABLED));
 		propertyFilters.put(PROPERTY_SHOWONLY, new PropertyFilter(PROPERTY_SHOWONLY, DISABLED));
