@@ -219,7 +219,7 @@ public class LabeledEditorPane extends LabeledTextComponent {
 	}
 
 	@Override
-	void setToolTipTextProviderForControl(ToolTipTextProvider tooltiptextprovider) {
+	protected void setToolTipTextProviderForControl(ToolTipTextProvider tooltiptextprovider) {
 		super.setToolTipTextProviderForControl(tooltiptextprovider);
 		if (tooltiptextprovider != null) {
 			// This is necessary to enable dynamic tooltips for the text area:

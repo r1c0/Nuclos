@@ -200,7 +200,7 @@ public abstract class LabeledComponent extends JPanel {
 	 * tooltip manager to enable tooltips.
 	 * @param tooltiptextprovider May be <code>null</code> to enable the static tooltip text.
 	 */
-	void setToolTipTextProviderForControl(ToolTipTextProvider tooltiptextprovider) {
+	protected void setToolTipTextProviderForControl(ToolTipTextProvider tooltiptextprovider) {
 		support.setToolTipTextProvider(tooltiptextprovider);
 		if (tooltiptextprovider != null) {
 			ToolTipManager.sharedInstance().registerComponent(this.getControlComponent());

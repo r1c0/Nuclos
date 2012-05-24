@@ -49,7 +49,7 @@ public class LabeledComponentSupport implements ILabeledComponentSupport {
 		this.ttProvider = ttProvider;
 	}
 
-	void initValidators(JTextComponent layeredTextComponent, boolean isNullable,
+	public void initValidators(JTextComponent layeredTextComponent, boolean isNullable,
 			Class<?> javaClass, String inputFormat) {
 		this.inputValidators = new ArrayList<InputValidator<JTextComponent>>();
 		if (!isNullable) {
@@ -71,7 +71,7 @@ public class LabeledComponentSupport implements ILabeledComponentSupport {
 		}
 	}
 
-	String getValidationToolTip() {
+	public String getValidationToolTip() {
 		StringBuffer validationToolTip = new StringBuffer("");
 		validationToolTip.append("<html><body>");
 		int i = 0;

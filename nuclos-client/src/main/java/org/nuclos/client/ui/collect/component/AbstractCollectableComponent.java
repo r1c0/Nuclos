@@ -1526,7 +1526,7 @@ public abstract class AbstractCollectableComponent
 				getComparisonOperator().getOperandCount() == 2;
 	}
 
-	DocumentListener newDocumentListenerForTextComponentWithComparisonOperator() {
+	protected DocumentListener newDocumentListenerForTextComponentWithComparisonOperator() {
 		return new MyDocumentListener(this);
 	}
 
