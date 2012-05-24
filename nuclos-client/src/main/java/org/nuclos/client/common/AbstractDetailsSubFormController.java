@@ -344,7 +344,7 @@ public abstract class AbstractDetailsSubFormController<Clct extends Collectable>
 			final String sColumnName = this.getCollectableEntityField(iColumn).getName();
 			if (isColumnEnabled(sColumnName) && isRowEditable(iRow)) {
 				Collectable c = getRow(iRow);
-				if (c.getId() != null && getSubForm().getEditEnabledScript() != null) {
+				if (getSubForm().getEditEnabledScript() != null) {
 					Object o = ScriptEvaluator.getInstance().eval(getSubForm().getEditEnabledScript(), new SubFormFieldScriptContext(AbstractDetailsSubFormController.this, getRow(iRow), this.getCollectableEntityField(iColumn)), true);
 					if (o instanceof Boolean) {
 						return (Boolean)o;
