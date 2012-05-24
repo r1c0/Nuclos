@@ -65497,5 +65497,20 @@
     "resourceID": "job.exception.mail",
     "locale": "de",
     "text": "Versand der Email-Benachrichtigung fehlgeschlagen: {0}"
+  },
+  {
+    "resourceID": "job.validation.user.and.level",
+    "locale": "i-default",
+    "text": "You have to enter a user name and a priority level to enable email notifications. Leave both empty to disable notifications."
+  },
+  {
+    "resourceID": "job.validation.user.and.level",
+    "locale": "en",
+    "text": "You have to enter a user name and a priority level to enable email notifications. Leave both empty to disable notifications."
+  },
+  {
+    "resourceID": "job.validation.user.and.level",
+    "locale": "de",
+    "text": "Für Email-Benachrichtigungen muss ein Benutzer und eine Priorität ausgewählt werden. Lassen Sie beides leer um die Benchrichtigungen zu deaktivieren."
   }
 ]
