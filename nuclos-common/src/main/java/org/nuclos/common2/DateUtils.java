@@ -376,7 +376,9 @@ public class DateUtils {
 		long result = cal.getTimeInMillis() - low;
 		if (result < 0) {
 			montoneAdd(cal, Calendar.YEAR, 1);
+			dateFromQuant(cal, cal.get(quantizer), quantizer);
 			result = cal.getTimeInMillis() - low;
+			assert result > 0;
 		}
 		assert result > 0;
 		return result;
@@ -420,6 +422,9 @@ public class DateUtils {
 			
 			if (old.before(cal.getTime())) {
 				montoneAdd(cal, Calendar.YEAR, -1);
+				montoneAdd(cal, Calendar.WEEK_OF_YEAR, 1);
+				cal.set(Calendar.DAY_OF_WEEK, cal.getFirstDayOfWeek());
+				assert cal.getTime().before(old);
 			}
 			break;
 		case Calendar.DAY_OF_WEEK:
