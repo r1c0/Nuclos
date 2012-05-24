@@ -24,6 +24,7 @@ import javax.xml.xpath.XPathExpressionException;
 
 import org.apache.log4j.Logger;
 import org.nuclos.client.image.ImageType;
+import org.nuclos.client.ui.Errors;
 import org.nuclos.client.ui.resplan.JResPlanComponent;
 import org.nuclos.common.collect.collectable.Collectable;
 import org.springframework.beans.factory.annotation.Configurable;
@@ -60,9 +61,11 @@ public class ResPlanExportDialog extends AbstractResPlanExportDialog {
 		}
 		catch (IOException ex) {
 			LOG.warn("ResPlan export failed: " + ex.toString(), ex);
+			Errors.getInstance().showExceptionDialog(this, "Can' save " + save, ex);
 		}
 		catch (XPathExpressionException ex) {
 			LOG.warn("ResPlan export failed: " + ex.toString(), ex);
+			Errors.getInstance().showExceptionDialog(this, "Can' save " + save, ex);
 		}
 	}
 	

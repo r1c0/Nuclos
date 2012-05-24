@@ -39,6 +39,7 @@ import org.nuclos.common.dblayer.INameProducer;
 import org.nuclos.common2.DateUtils;
 import org.w3c.dom.Element;
 import org.w3c.dom.svg.SVGElement;
+import org.w3c.dom.svg.SVGPolygonElement;
 import org.w3c.dom.svg.SVGRectElement;
 import org.w3c.dom.svg.SVGTextElement;
 
@@ -48,13 +49,15 @@ public abstract class AbstractResPlanExporter<R,E> {
 	
 	//
 	
-	private static final int XPIXEL_OFFSET = 200;
-	private static final int XPIXEL_FOR_TIME_CAT = 50;
-	private static final int YPIXEL_FOR_HEADER_CAT = 20;
-	private static final int YPIXEL_HEADER_TXT_OFFSET = 15;
-	private static final int YPIXEL_FOR_RESOURCE = 40;
-	private static final int YPIXEL_RESOURCE_BORDER = 4;
-	private static final int YPIXEL_BIGTXT_OFFSET = 28;
+	private static final Date LOW = new Date(-99999999L);
+	
+	protected static final int XPIXEL_OFFSET = 200;
+	protected static final int XPIXEL_FOR_TIME_CAT = 50;
+	protected static final int YPIXEL_FOR_HEADER_CAT = 20;
+	protected static final int YPIXEL_HEADER_TXT_OFFSET = 15;
+	protected static final int YPIXEL_FOR_RESOURCE = 40;
+	protected static final int YPIXEL_RESOURCE_BORDER = 4;
+	protected static final int YPIXEL_BIGTXT_OFFSET = 28;
 	
 	//
 	
@@ -113,6 +116,23 @@ public abstract class AbstractResPlanExporter<R,E> {
 		return sdds;
 	}
 	
+	protected float getCurrentY() {
+		return currentY;
+	}
+	
+	protected void setCurrentY(float currentY) {
+		this.currentY = currentY;
+	}
+	
+	protected float addToCurrentY(float add) {
+		this.currentY += add;
+		return currentY;
+	}
+	
+	protected SVGDOMDocumentSupport getDocumentSupport() {
+		return sdds;
+	}
+	
 	public void run(String template) throws IOException, XPathExpressionException {
 		final String uri = Thread.currentThread().getContextClassLoader().getResource(template).toExternalForm();
 		sdds = new SVGDOMDocumentSupport(uri);
@@ -125,6 +145,7 @@ public abstract class AbstractResPlanExporter<R,E> {
 		}
 		makeTimeHeader(g);
 		makeResPlanModel(g);
+		makeFooter(g);
 		
 		svg.setAttribute("width", Float.toString(maxX + XPIXEL_OFFSET + 10));
 		svg.setAttribute("height", Float.toString(currentY + 10));
@@ -153,26 +174,14 @@ public abstract class AbstractResPlanExporter<R,E> {
 					DateUtils.montoneAdd(cal, q, 1)) {
 				
 				final int width = (int) (DateUtils.getMillis(cal.getTime(), q) / millisForPx);
-				// here x might be negative
 				float x = getX(cal.getTime());
-				float realWidth;
-				if (x < 0) {
-					realWidth = width + x;
-				}
-				else if (x + width > maxX) {
-					realWidth = maxX - x;
-				}
-				else {
-					realWidth = width;
-				}
-				assert realWidth >= 0 && realWidth <= maxX : "realWidth: " + realWidth;
-				x = Math.max(x, 0);
-				g.appendChild(sdds.createRect(x + XPIXEL_OFFSET, currentY, 
-						realWidth, YPIXEL_FOR_HEADER_CAT, 
+				final XCoord xc = clip(x, width);
+				g.appendChild(sdds.createRect(xc.x + XPIXEL_OFFSET, currentY, 
+						xc.width, YPIXEL_FOR_HEADER_CAT, 
 						"header"));
-				if (realWidth + 3 > XPIXEL_FOR_TIME_CAT) {
+				if (xc.width + 3 > XPIXEL_FOR_TIME_CAT) {
 					final String text = tg.getCategoryValue(cat, cal.getTime());
-					g.appendChild(sdds.createText(x + XPIXEL_OFFSET + realWidth/2, currentY + YPIXEL_HEADER_TXT_OFFSET, 
+					g.appendChild(sdds.createText(xc.x + XPIXEL_OFFSET + xc.width/2, currentY + YPIXEL_HEADER_TXT_OFFSET, 
 						text, "headerTxt"));
 				}
 			}
@@ -180,62 +189,96 @@ public abstract class AbstractResPlanExporter<R,E> {
 		}
 	}
 	
-	private void makeResPlanModel(SVGElement g) {
+	protected void makeResPlanModel(SVGElement g) {
 		int nor = 0;
 		for (R r: model.getResources()) {
 			final float resourceStartY = currentY;
-			Interval<Date> lastInterval = null;
+			Interval<Date> lastInterval = new Interval<Date>(LOW, LOW);
 			
-			final String resourceName = resourceNameProducer.makeName(r);
-			final SVGTextElement resourceText = sdds.createText(0, currentY + YPIXEL_BIGTXT_OFFSET, 
-					resourceName, "bigTxt"); 
-			g.appendChild(resourceText);
-			
-			final List<? extends E> entries = model.getEntries(r);
-			for (E e: entries) {
-				final Interval<Date> i = model.getInterval(e);
-				if (lastInterval != null && i.intersects(lastInterval)) {
-					currentY += YPIXEL_FOR_RESOURCE;
-				}
-
-				final String entryName = entryNameProducer.makeName(e);
-				
-				// here x might be negative
-				float x = getX(i.getStart());
-				final float width = getX(i.getEnd()) - x;
-				float realWidth;
-				if (x < 0) {
-					realWidth = width + x;
-				}
-				else if (x + width > maxX) {
-					realWidth = maxX - x;
-				}
-				else {
-					realWidth = width;
-				}
-				assert realWidth >= 0 && realWidth <= maxX : "realWidth: " + realWidth;
-				x = Math.max(x, 0);
-				
-				final SVGRectElement rect = sdds.createRect(x + XPIXEL_OFFSET, currentY + YPIXEL_RESOURCE_BORDER, width, 
-						YPIXEL_FOR_RESOURCE - 2 * YPIXEL_RESOURCE_BORDER, "lane-grey");
-				final SVGTextElement text = sdds.createText(x + XPIXEL_OFFSET, currentY + YPIXEL_BIGTXT_OFFSET, entryName, "bigTxt");
-				g.appendChild(rect);
-				g.appendChild(text);
-				lastInterval = i;
-			}
+			SVGElement resourceText = mkResPlanResource(g, r, lastInterval);
 			currentY += YPIXEL_FOR_RESOURCE;
 			if (nor % 2 == 0) {
 				final SVGRectElement oddLane = sdds.createRect(0, resourceStartY, maxX + XPIXEL_OFFSET, currentY - resourceStartY, "oddRow"); 
 				g.insertBefore(oddLane, resourceText.getNextSibling());
 			}
-			lastInterval = null;
+			lastInterval = new Interval<Date>(LOW, LOW);
 			++nor;
 		}
+	}
+	
+	protected SVGTextElement mkResPlanResource(SVGElement g, R r, Interval<Date> lastInterval) {
+		final String resourceName = resourceNameProducer.makeName(r);
+		final SVGTextElement resourceText = sdds.createText(0, currentY + YPIXEL_BIGTXT_OFFSET, 
+				resourceName, "bigTxt"); 
+		g.appendChild(resourceText);
+		
+		final List<? extends E> entries = model.getEntries(r);
+		for (E e: entries) {
+			mkResPlanEntry(g, e, lastInterval);
+		}
+		return resourceText;
+	}
+	
+	protected void mkResPlanEntry(SVGElement g, E e, Interval<Date> lastInterval) {
+		final Interval<Date> i = model.getInterval(e);
+		if (lastInterval != null && i.intersects(lastInterval)) {
+			currentY += YPIXEL_FOR_RESOURCE;
+		}
+
+		final String entryName = entryNameProducer.makeName(e);
+		final XCoord xc = clip(i);
+		final SVGRectElement rect = sdds.createRect(xc.x + XPIXEL_OFFSET, currentY + YPIXEL_RESOURCE_BORDER, xc.width, 
+				YPIXEL_FOR_RESOURCE - 2 * YPIXEL_RESOURCE_BORDER, "lane-grey");
+		final SVGTextElement text = sdds.createText(xc.x + XPIXEL_OFFSET, currentY + YPIXEL_BIGTXT_OFFSET, entryName, "bigTxt");
+		g.appendChild(rect);
+		g.appendChild(text);
+		lastInterval.set(i);		
+	}
+	
+	protected void makeFooter(SVGElement g) {
+	}
+	
+	protected void mkRhomb(SVGElement g, float x, float y, float size, String clazz) {
+		x += XPIXEL_OFFSET;
+		final SVGPolygonElement result = sdds.createPolygon(clazz, x - size, y, x, y - size, x + size, y, x, y + size);
+		g.appendChild(result);
 	}
 	
 	protected float getX(Date d) {
 		final long millis = d.getTime() - realHorizon.getStart().getTime();
 		return millis / millisForPx;
+	}
+	
+	protected XCoord clip(Interval<Date> i) {
+		// here x might be negative
+		float x = getX(i.getStart());
+		final float width = getX(i.getEnd()) - x;
+		return clip(x, width);
+	}
+	
+	protected XCoord clip(float x, float width) {
+		float realWidth;
+		if (x < 0) {
+			realWidth = width + x;
+		}
+		else if (x + width > maxX) {
+			realWidth = maxX - x;
+		}
+		else {
+			realWidth = width;
+		}
+		assert realWidth >= 0 && realWidth <= maxX : "realWidth: " + realWidth;
+		x = Math.max(x, 0);
+		
+		final XCoord result = new XCoord();
+		result.x = x;
+		result.width = realWidth;
+		return result;
+	}
+	
+	protected static class XCoord {
+		protected float x;
+		protected float width;
 	}
 	
 }

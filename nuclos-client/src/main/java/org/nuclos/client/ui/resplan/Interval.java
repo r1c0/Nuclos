@@ -24,8 +24,8 @@ public final class Interval<T extends Comparable<? super T>> implements Serializ
 	public static final int START = 0;
 	public static final int END = 1;
 
-	private final T start;
-	private final T end;
+	private T start;
+	private T end;
 
 	public Interval(T start, T end) {
 		this(start, end, false);
@@ -41,6 +41,11 @@ public final class Interval<T extends Comparable<? super T>> implements Serializ
 		} else {
 			throw new IllegalArgumentException("interval with start > end");
 		}
+	}
+	
+	public void set(Interval<T> value) {
+		this.start = value.start;
+		this.end = value.end;
 	}
 
 	public T getStart() {
