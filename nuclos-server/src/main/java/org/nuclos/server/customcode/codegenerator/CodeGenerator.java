@@ -63,7 +63,7 @@ public interface CodeGenerator {
 	 * equals() *must* return true for same (fully-qualified) class name to ensure
 	 * that generator is changed when doing on disk source scanning. (tp)
 	 */
-	boolean equals();
+	boolean equals(Object other);
 
 	public static class JavaSourceAsString extends SimpleJavaFileObject {
 
