@@ -183,6 +183,11 @@ public class RuleCodeGenerator<T> implements CodeGenerator {
 	}
 
 	@Override
+	public int hashForManifest() {
+		return ruleVO.getId().intValue() + ruleVO.getVersion();
+	}
+
+	@Override
 	public int hashCode() {
 		return src.getName().hashCode();
 	}

@@ -46,6 +46,24 @@ public interface CodeGenerator {
 	File getJavaSrcFile(JavaSourceAsString src);
 	
 	void writeSource(Writer writer, JavaSourceAsString src) throws IOException;
+	
+	/**
+	 * hashForManifest() *must* return the same value for the same content of 
+	 * source file(s) only. This is in contrast to hashCode()!!! (tp)
+	 */
+	int hashForManifest();
+	
+	/**
+	 * hashCode() *must* return the same value for same (fully-qualified) class name to ensure
+	 * that generator is changed when doing on disk source scanning. (tp)
+	 */
+	int hashCode();
+	
+	/**
+	 * equals() *must* return true for same (fully-qualified) class name to ensure
+	 * that generator is changed when doing on disk source scanning. (tp)
+	 */
+	boolean equals();
 
 	public static class JavaSourceAsString extends SimpleJavaFileObject {
 
