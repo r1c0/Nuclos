@@ -43,7 +43,7 @@ import org.w3c.dom.svg.SVGPolygonElement;
 import org.w3c.dom.svg.SVGRectElement;
 import org.w3c.dom.svg.SVGTextElement;
 
-public abstract class AbstractResPlanExporter<R,E> {
+public abstract class AbstractResPlanExporter<R,E> implements IResPlanExporter<R, E> {
 	
 	private static final Logger LOG = Logger.getLogger(AbstractResPlanExporter.class);
 	
@@ -104,14 +104,27 @@ public abstract class AbstractResPlanExporter<R,E> {
 		this.time = time;
 	}
 	
+	@Override
 	public void setResourceNameProducer(INameProducer<R> rnp) {
 		this.resourceNameProducer = rnp;
 	}
 	
+	@Override
+	public INameProducer<R> getResourceNameProducer() {
+		return resourceNameProducer;
+	}
+	
+	@Override
 	public void setEntryNameProducer(INameProducer<E> enp) {
 		this.entryNameProducer = enp;
 	}
 	
+	@Override
+	public INameProducer<E> getEntryNameProducer() {
+		return entryNameProducer;
+	}
+	
+	@Override
 	public SVGDOMDocumentSupport getSVGDOMDocumentSupport() {
 		return sdds;
 	}
@@ -133,6 +146,7 @@ public abstract class AbstractResPlanExporter<R,E> {
 		return sdds;
 	}
 	
+	@Override
 	public void run(String template) throws IOException, XPathExpressionException {
 		final String uri = Thread.currentThread().getContextClassLoader().getResource(template).toExternalForm();
 		sdds = new SVGDOMDocumentSupport(uri);
@@ -151,6 +165,7 @@ public abstract class AbstractResPlanExporter<R,E> {
 		svg.setAttribute("height", Float.toString(currentY + 10));
 	}
 	
+	@Override
 	public void save(ImageType imageType, File save) throws IOException {
 		sdds.writeAs(save, imageType);
 	}
@@ -239,7 +254,6 @@ public abstract class AbstractResPlanExporter<R,E> {
 	}
 	
 	protected void mkRhomb(SVGElement g, float x, float y, float size, String clazz) {
-		x += XPIXEL_OFFSET;
 		final SVGPolygonElement result = sdds.createPolygon(clazz, x - size, y, x, y - size, x + size, y, x, y + size);
 		g.appendChild(result);
 	}
