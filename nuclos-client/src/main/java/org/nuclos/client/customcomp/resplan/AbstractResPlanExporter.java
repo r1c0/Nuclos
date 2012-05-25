@@ -191,13 +191,15 @@ public abstract class AbstractResPlanExporter<R,E> implements IResPlanExporter<R
 				final int width = (int) (DateUtils.getMillis(cal.getTime(), q) / millisForPx);
 				float x = getX(cal.getTime());
 				final XCoord xc = clip(x, width);
-				g.appendChild(sdds.createRect(xc.x + XPIXEL_OFFSET, currentY, 
-						xc.width, YPIXEL_FOR_HEADER_CAT, 
-						"header"));
-				if (xc.width + 3 > XPIXEL_FOR_TIME_CAT) {
-					final String text = tg.getCategoryValue(cat, cal.getTime());
-					g.appendChild(sdds.createText(xc.x + XPIXEL_OFFSET + xc.width/2, currentY + YPIXEL_HEADER_TXT_OFFSET, 
-						text, "headerTxt"));
+				if (xc != null) {
+					g.appendChild(sdds.createRect(xc.x + XPIXEL_OFFSET, currentY, 
+							xc.width, YPIXEL_FOR_HEADER_CAT, 
+							"header"));
+					if (xc.width + 3 > XPIXEL_FOR_TIME_CAT) {
+						final String text = tg.getCategoryValue(cat, cal.getTime());
+						g.appendChild(sdds.createText(xc.x + XPIXEL_OFFSET + xc.width/2, currentY + YPIXEL_HEADER_TXT_OFFSET, 
+							text, "headerTxt"));
+					}
 				}
 			}
 			currentY += YPIXEL_FOR_HEADER_CAT;
@@ -237,17 +239,23 @@ public abstract class AbstractResPlanExporter<R,E> implements IResPlanExporter<R
 	protected void mkResPlanEntry(SVGElement g, E e, Interval<Date> lastInterval) {
 		final Interval<Date> i = model.getInterval(e);
 		if (lastInterval != null && i.intersects(lastInterval)) {
+			beforeNextLineInSameResource(g, lastInterval);
 			currentY += YPIXEL_FOR_RESOURCE;
 		}
 
 		final String entryName = entryNameProducer.makeName(e);
 		final XCoord xc = clip(i);
-		final SVGRectElement rect = sdds.createRect(xc.x + XPIXEL_OFFSET, currentY + YPIXEL_RESOURCE_BORDER, xc.width, 
-				YPIXEL_FOR_RESOURCE - 2 * YPIXEL_RESOURCE_BORDER, "lane-grey");
-		final SVGTextElement text = sdds.createText(xc.x + XPIXEL_OFFSET, currentY + YPIXEL_BIGTXT_OFFSET, entryName, "bigTxt");
-		g.appendChild(rect);
-		g.appendChild(text);
-		lastInterval.set(i);		
+		if (xc != null) {
+			final SVGRectElement rect = sdds.createRect(xc.x + XPIXEL_OFFSET, currentY + YPIXEL_RESOURCE_BORDER, xc.width, 
+					YPIXEL_FOR_RESOURCE - 2 * YPIXEL_RESOURCE_BORDER, "lane-grey");
+			final SVGTextElement text = sdds.createText(xc.x + XPIXEL_OFFSET, currentY + YPIXEL_BIGTXT_OFFSET, entryName, "bigTxt");
+			g.appendChild(rect);
+			g.appendChild(text);
+		}
+		lastInterval.set(i);
+	}
+	
+	protected void beforeNextLineInSameResource(SVGElement g, Interval<Date> lastInterval) {
 	}
 	
 	protected void makeFooter(SVGElement g) {
@@ -281,7 +289,10 @@ public abstract class AbstractResPlanExporter<R,E> implements IResPlanExporter<R
 		else {
 			realWidth = width;
 		}
-		assert realWidth >= 0 && realWidth <= maxX : "realWidth: " + realWidth;
+		// assert realWidth >= 0 && realWidth <= maxX : "realWidth: " + realWidth;
+		if (realWidth < 0 && realWidth > maxX) {
+			return null;
+		}
 		x = Math.max(x, 0);
 		
 		final XCoord result = new XCoord();
