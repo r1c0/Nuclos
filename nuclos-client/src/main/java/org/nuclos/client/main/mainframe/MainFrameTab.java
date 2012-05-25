@@ -75,7 +75,6 @@ import org.nuclos.client.common.security.SecurityCache;
 import org.nuclos.client.jms.TopicNotificationReceiver;
 import org.nuclos.client.main.Main;
 import org.nuclos.client.main.mainframe.workspace.ITabStoreController;
-import org.nuclos.client.main.mainframe.workspace.TabRestoreController;
 import org.nuclos.client.synthetica.NuclosThemeSettings;
 import org.nuclos.client.ui.Errors;
 import org.nuclos.client.ui.IMainFrameTabClosableController;
@@ -88,10 +87,8 @@ import org.nuclos.common.Actions;
 import org.nuclos.common.JMSConstants;
 import org.nuclos.common.LockedTabProgressNotification;
 import org.nuclos.common.MutableBoolean;
-import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.SpringLocaleDelegate;
-import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
@@ -117,10 +114,6 @@ public class MainFrameTab extends JPanel implements IOverlayComponent, NuclosDro
 	private final List<MainFrameTabListener> mainFrameTabListeners = new ArrayList<MainFrameTabListener>();
 
 	private ITabStoreController storeController;
-	
-	private boolean notifyRestore = false;
-	private String restorePreferencesXML;
-	private TabRestoreController restoreController;
 
 	private boolean neverClose;
 	private boolean fromAssigned;
@@ -281,72 +274,6 @@ public class MainFrameTab extends JPanel implements IOverlayComponent, NuclosDro
 	 */
 	public void setTabStoreController(ITabStoreController storeController) {
 		this.storeController = storeController;
-	}
-	
-	/**
-	 * 
-	 * @return
-	 */
-	public boolean hasTabRestoreController() {
-		return this.restoreController != null;
-	}
-	
-	/**
-	 * 
-	 * @return
-	 */
-	public TabRestoreController getTabRestoreController() {
-		return this.restoreController;
-	}
-	
-	/**
-	 * 
-	 * @param restoreController
-	 */
-	public void setTabRestoreController(TabRestoreController restoreController) {
-		this.restoreController = restoreController;
-	}
-	
-	/**
-	 * 
-	 * @param xml
-	 */
-	public void setTabRestorePreferencesXML(String xml) {
-		this.restorePreferencesXML = xml;
-	}
-	
-	/**
-	 * 
-	 * @param notifyRestore
-	 */
-	public void setNotifyRestore(boolean notifyRestore) {
-		this.notifyRestore = notifyRestore;
-	}
-	
-	/**
-	 * 
-	 * @return
-	 */
-	public String getTabRestorePreferencesXML() {
-		if (restorePreferencesXML != null) {
-			return restorePreferencesXML;
-		} else {
-			return storeController.getPreferencesXML();
-		}
-	}
-	
-	/**
-	 * 
-	 * @return
-	 */
-	public String getTabRestoreControllerClassName() {
-		if (storeController != null) {
-			return storeController.getTabRestoreControllerClass().getName();
-		} else if (restoreController != null) {
-			return restoreController.getClass().getName();
-		} else {
-			throw new IllegalStateException("No restore controller present");
-		}
 	}
 
 	/**
@@ -891,31 +818,6 @@ public class MainFrameTab extends JPanel implements IOverlayComponent, NuclosDro
 	 *
 	 */
 	public void notifySelected() {
-		if (restoreController != null) {
-			UIUtils.runCommandForTabbedPane(getTabbedPane(), new Runnable() {
-				@Override
-				public void run() {
-					try {
-						final String xml = restorePreferencesXML;
-						final TabRestoreController ctrl = restoreController;
-						restorePreferencesXML = null;
-						restoreController = null;
-						ctrl.restoreFromPreferences(xml, MainFrameTab.this);
-						postAdd();
-					} catch (Exception e) {
-						LOG.warn("Tab not restored", e);
-						
-						setTabIcon(Icons.getInstance().getIconTabNotRestored());
-						Errors.getInstance().showExceptionDialog(MainFrameTab.this, e);
-					} finally {
-						if (notifyRestore) {
-							Main.getInstance().getMainFrame().continueProgress();
-							notifyRestore = false;
-						}
-					}
-				}
-			});
-		}
 		for (MainFrameTabListener listener : new ArrayList<MainFrameTabListener>(mainFrameTabListeners)) {
 			listener.tabSelected(this);
 		}
@@ -1205,19 +1107,6 @@ public class MainFrameTab extends JPanel implements IOverlayComponent, NuclosDro
 				repaint();
 			}
 		}
-		
-		/**
-		 *
-		 * @param position
-		 * @return boolean true if mouse over close
-		 */
-		public boolean isMouseOverClose(Point position) {
-			if (getCloseBoundsAbsolute().contains(position) && isClosable()) {
-				return true;
-			} else {
-				return false;
-			}
-		}
 
 		/**
 		 *
@@ -1225,7 +1114,7 @@ public class MainFrameTab extends JPanel implements IOverlayComponent, NuclosDro
 		 * @return boolean true if click is consumed
 		 */
 		public boolean mouseClicked(Point position, boolean left) {
-			if (isMouseOverClose(position) && left) {
+			if (left && getCloseBoundsAbsolute().contains(position) && isClosable()) {
 				try {
 					MainFrame.closeTab(MainFrameTab.this, position);
 				} catch(CommonBusinessException e) {
