@@ -124,6 +124,11 @@ public class PlainCodeGenerator implements CodeGenerator {
 	}
 
 	@Override
+	public int hashForManifest() {
+		return codeVO.getId().intValue() + codeVO.getVersion();
+	}
+
+	@Override
 	public int hashCode() {
 		return src.getName().hashCode();
 	}

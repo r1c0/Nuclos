@@ -128,6 +128,11 @@ public class OnDiskCodeGenerator implements CodeGenerator {
 		writer.write(src.getPrefix());
 		writer.write(src.getSource());
 	}
+	
+	@Override
+	public int hashForManifest() {
+		return ((int) gf.getId()) + gf.getVersion() + 1;
+	}
 
 	@Override
 	public int hashCode() {

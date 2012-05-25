@@ -408,7 +408,7 @@ public class NuclosJavaCompilerComponent {
 	private Manifest getManifest() {
 		HashCodeBuilder builder = new HashCodeBuilder(11, 17);
 		for (CodeGenerator gen : getAllCurrentGenerators()) {
-			builder.append(gen.hashCode());
+			builder.append(gen.hashForManifest());
 		}
 
 		Manifest manifest = new Manifest();

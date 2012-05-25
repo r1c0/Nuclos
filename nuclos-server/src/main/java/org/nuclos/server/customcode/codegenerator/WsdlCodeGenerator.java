@@ -77,6 +77,8 @@ public class WsdlCodeGenerator implements CodeGenerator {
 	
 	private boolean recompileIsNecessary = true;
 	
+	private String realDigest;
+	
 	private File wsdl;
 
 	private String packageName;
@@ -96,7 +98,7 @@ public class WsdlCodeGenerator implements CodeGenerator {
 		if (!wsdlChecked) {
 			GenericObjectDocumentFile gofile = webservice.getField("wsdl", GenericObjectDocumentFile.class);
 			wsdl = new File(nuclosJavaCompilerComponent.getWsdlDir(), gofile.getFilename());
-			final String newDigest = CryptUtil.digestStringOf(gofile.getContents());
+			realDigest = CryptUtil.digestStringOf(gofile.getContents());
 			
 			final File wsdlDigest = new File(wsdl.getParent(), wsdl.getName() + ".sha1");
 			if (wsdlDigest.canRead()) {
@@ -105,8 +107,8 @@ public class WsdlCodeGenerator implements CodeGenerator {
 				try {
 					final String oldDigest = reader.readLine();
 					if (oldDigest != null) {
-						LOG.debug("WSDL digest: old: " + oldDigest + " new: " + newDigest);
-						recompileIsNecessary = !oldDigest.equals(newDigest);
+						LOG.debug("WSDL digest: old: " + oldDigest + " new: " + realDigest);
+						recompileIsNecessary = !oldDigest.equals(realDigest);
 						// force recompile for testing
 						// recompileIsNecessary = true;
 					}
@@ -129,7 +131,7 @@ public class WsdlCodeGenerator implements CodeGenerator {
 						new FileOutputStream(wsdlDigest), "UTF-8"));
 				try {
 					wsdlOut.write(gofile.getContents());
-					wsdlDigestOut.write(newDigest);
+					wsdlDigestOut.write(realDigest);
 				}
 				finally {
 					wsdlOut.close();
@@ -282,6 +284,17 @@ public class WsdlCodeGenerator implements CodeGenerator {
 			scanner.close();
 		}
 		return text.toString();
+	}
+
+	@Override
+	public int hashForManifest() {
+		try {
+			checkWsdl();
+		}
+		catch (IOException e) {
+			throw new IllegalStateException();
+		}
+		return realDigest.hashCode();
 	}
 
 	@Override
