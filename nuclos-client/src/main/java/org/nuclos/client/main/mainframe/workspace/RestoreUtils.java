@@ -82,12 +82,18 @@ public class RestoreUtils {
 	 * @param tab
 	 * @return
 	 */
-	private synchronized static boolean restoreTab(WorkspaceDescription.Tab wdTab, MainFrameTab tab) {
+	private synchronized static boolean restoreTab(WorkspaceDescription.Tab wdTab, MainFrameTab tab, boolean onDemand) {
 		try {
 			TabRestoreController restoreController = (TabRestoreController) Class.forName(wdTab.getRestoreController()).getConstructor().newInstance();
-			restoreController.restoreFromPreferences(wdTab.getPreferencesXML(), tab);
+			if (onDemand) {
+				tab.setTitle(wdTab.getLabel());
+				tab.setTabRestoreController(restoreController);
+				tab.setTabRestorePreferencesXML(wdTab.getPreferencesXML());
+			} else {
+				restoreController.restoreFromPreferences(wdTab.getPreferencesXML(), tab);
+			}
 		} catch(Exception e) {
-			LOG.warn("TabRestoreController could not be created or restore failed:", e);
+			LOG.warn("TabRestoreController could not be created or restored", e);
 			return false;
 		}
 		return true;
@@ -383,13 +389,13 @@ public class RestoreUtils {
 	 * @return
 	 */
 	private synchronized static boolean storeTab(WorkspaceDescription.Tabbed wdTabbed, MainFrameTab tab) {
-		if (tab.hasTabStoreController()) {
+		if (tab.hasTabStoreController() || tab.hasTabRestoreController()) {
 			final WorkspaceDescription.Tab wdTab = new WorkspaceDescription.Tab();
 			wdTab.setLabel(tab.getTitle());
 			wdTab.setNeverClose(tab.isNeverClose());
 			wdTab.setFromAssigned(tab.isFromAssigned());
-			wdTab.setPreferencesXML(tab.getTabStoreController().getPreferencesXML());
-			wdTab.setRestoreController(tab.getTabStoreController().getTabRestoreControllerClass().getName());
+			wdTab.setPreferencesXML(tab.getTabRestorePreferencesXML());
+			wdTab.setRestoreController(tab.getTabRestoreControllerClassName());
 			wdTabbed.addTab(wdTab);
 			return true;
 		} else {
@@ -689,65 +695,76 @@ public class RestoreUtils {
 				tab.setFromAssigned(wdTab.isFromAssigned());
 				result.addTab(tab, false);
 
-				final Thread t = new Thread(new Runnable() {
-					@Override
-					public void run() {
-						try {
-							threadList.remove(0);
-
-							UIUtils.runCommand(tab, new Runnable() {
-								@Override
-								public void run() {
-									UIUtils.invokeOnDispatchThread(new Runnable() {
-										@Override
-										public void run() {
-											try {
-												if (restoreTab(wdTab, tab)) {
-													tab.postAdd();
-												} else {
-													tab.setTabIcon(Icons.getInstance().getIconTabNotRestored());
-													tab.setTitle(wdTab.getLabel());
-													// TODO TABS Show nice message in content "Tab konnte nicht wiederhergestellt werden. Möglicherweise existiert der Datensatz oder die Funktion nicht länger, oder Ihnen wurde die Berechtigung entzogen."
-												}
-											}
-											catch (Exception e) {
-												LOG.error("restoreContent failed: " + e, e);
-											}
-										}
-									});
-								}
-							});
-
-							Main.getInstance().getMainFrame().continueProgress();
-
-							if (threadList.size() > 0) {
-								threadList.get(0).start();
-							}
-						}
-						catch (Exception e) {
-							LOG.error("restoreContent failed: " + e, e);
-						}
-					}
-				}, THREAD_NAME + "restoreContent");
-				t.setDaemon(true);
-				tab.addMainFrameTabListener(new MainFrameTabAdapter() {
-					@Override
-					public boolean tabClosing(MainFrameTab tab) {
-						if (!t.isAlive()) {
-							threadList.remove(t);
-							Main.getInstance().getMainFrame().continueProgress();
-						}
-						tab.removeMainFrameTabListener(this);
-						return true;
-					}
-				});
-
 				if (selected == i) {
 					toSelect = tab;
-					threadList.add(0, t);
+					tab.setNotifyRestore(true);
+					
+					final Thread t = new Thread(new Runnable() {
+						@Override
+						public void run() {
+							try {
+								threadList.remove(0);
+	
+								UIUtils.runCommand(tab, new Runnable() {
+									@Override
+									public void run() {
+										UIUtils.invokeOnDispatchThread(new Runnable() {
+											@Override
+											public void run() {
+												try {
+													if (restoreTab(wdTab, tab, false)) {
+														tab.postAdd();
+													} else {
+														tab.setTabIcon(Icons.getInstance().getIconTabNotRestored());
+														tab.setTitle(wdTab.getLabel());
+														// TODO TABS Show nice message in content "Tab konnte nicht wiederhergestellt werden. Möglicherweise existiert der Datensatz oder die Funktion nicht länger, oder Ihnen wurde die Berechtigung entzogen."
+													}
+												}
+												catch (Exception e) {
+													LOG.error("restoreContent failed: " + e, e);
+												}
+											}
+										});
+									}
+								});
+	
+								Main.getInstance().getMainFrame().continueProgress();
+	
+								if (threadList.size() > 0) {
+									threadList.get(0).start();
+								}
+							}
+							catch (Exception e) {
+								LOG.error("restoreContent failed: " + e, e);
+							}
+						}
+					}, THREAD_NAME + "restoreContent");
+					t.setDaemon(true);
+					tab.addMainFrameTabListener(new MainFrameTabAdapter() {
+						@Override
+						public boolean tabClosing(MainFrameTab tab) {
+							if (!t.isAlive()) {
+								threadList.remove(t);
+								Main.getInstance().getMainFrame().continueProgress();
+							}
+							tab.removeMainFrameTabListener(this);
+							return true;
+						}
+					});
+	
+//					if (selected == i) {
+//						toSelect = tab;
+						threadList.add(0, t);
+//					} else {
+//						threadList.add(t);
+//					}
+
 				} else {
-					threadList.add(t);
+					// restores on demand...
+					restoreTab(wdTab, tab, true);
+					Main.getInstance().getMainFrame().continueProgress();
 				}
+				
 			}
 			
 			final MainFrameTab selectLater = toSelect;

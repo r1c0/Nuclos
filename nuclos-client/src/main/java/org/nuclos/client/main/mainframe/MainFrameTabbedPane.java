@@ -121,6 +121,8 @@ public class MainFrameTabbedPane {
 	private final ImageIcon maximizedFirstTabIcon = MainFrame.resizeAndCacheTabIcon(Icons.getInstance().getIconTabbedPaneMaximized());
 	private final ImageIcon maximizedFirstTabHomeIcon = MainFrame.resizeAndCacheTabIcon(Icons.getInstance().getIconTabbedPaneMaximized_Home());
 	private final ImageIcon maximizedFirstTabHomeTreeIcon = MainFrame.resizeAndCacheTabIcon(Icons.getInstance().getIconTabbedPaneMaximized_HomeTree());
+	
+	private int tabClosing = -1;
 
 	private static class FirstTabLabel extends JLabel {
 		
@@ -1092,7 +1094,7 @@ public class MainFrameTabbedPane {
 		adjustTabs(false);
 
 		if (mfTabbed.getTabCount() > index) {
-			mfTabbed.setSelectedIndex(index);
+//			mfTabbed.setSelectedIndex(index);
 			// setMouseOver on tab at same index
 			 if (mousePosition != null) {
 				final Component tabComponent = mfTabbed.getTabComponentAt(index);
@@ -1382,9 +1384,14 @@ public class MainFrameTabbedPane {
 						if (tabComponent instanceof MainFrameTab.TabTitle) {
 							final MainFrameTab.TabTitle tabTitle = (MainFrameTab.TabTitle) tabComponent;
 							if (i == tabNumber) {
-								tabTitle.setMouseOverPosition(new Point(
-									e.getX(),
-									e.getY()));
+								
+								final Point pos = new Point(e.getX(), e.getY());
+								if (tabTitle.isMouseOverClose(pos)) {
+									tabClosing = tabNumber;
+								} else {
+									tabClosing = -1;
+								}
+								tabTitle.setMouseOverPosition(pos);
 							} else {
 								tabTitle.setMouseOverPosition(null);
 							}
@@ -1612,9 +1619,10 @@ public class MainFrameTabbedPane {
 						final Component tabComponent = getTabComponentAt(tabNumber);
 						if (tabComponent instanceof MainFrameTab.TabTitle) {
 							final MainFrameTab.TabTitle tabTitle = (MainFrameTab.TabTitle) tabComponent;
-							consumed = tabTitle.mouseClicked(new Point(
-								e.getX(),
-								e.getY()), SwingUtilities.isLeftMouseButton(e));
+							final Point pos = new Point(e.getX(), e.getY());
+							final boolean left = SwingUtilities.isLeftMouseButton(e);
+							
+							consumed = tabTitle.mouseClicked(pos, left);
 						}
 
 						if (!consumed && SwingUtilities.isLeftMouseButton(e)
@@ -1843,14 +1851,16 @@ public class MainFrameTabbedPane {
 		 */
 		@Override
 		public void setSelectedIndex(int index) {
-			int oldSelectedIndex = this.getSelectedIndex();
-			super.setSelectedIndex(index);
-			MainFrame.setActiveTabNavigation(MainFrameTabbedPane.this);
-
-			Component component = getComponentAt(index);
-			if (component instanceof MainFrameTab) {
-				if(oldSelectedIndex != index)
-					((MainFrameTab) component).notifySelected();
+			if (index != tabClosing) {
+				int oldSelectedIndex = this.getSelectedIndex();
+				super.setSelectedIndex(index);
+				MainFrame.setActiveTabNavigation(MainFrameTabbedPane.this);
+	
+				Component component = getComponentAt(index);
+				if (component instanceof MainFrameTab) {
+					if(oldSelectedIndex != index)
+						((MainFrameTab) component).notifySelected();
+				}
 			}
 		}
 		
