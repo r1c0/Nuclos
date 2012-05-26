@@ -468,7 +468,7 @@ public class TaskController extends Controller<MainFrameTabbedPane> {
 				}
 			});
 
-			tab.setTabIcon(Icons.getInstance().getIconFilter16());
+			tab.setTabIconFromSystem("getIconFilter16");
 			tab.setTitle(sLabel);
 			tab.setLayeredComponent(newView);
 			tab.setTabStoreController(new TaskTabStoreController(RestorePreferences.DYNAMIC, newView));
@@ -515,7 +515,7 @@ public class TaskController extends Controller<MainFrameTabbedPane> {
 				}
 			});
 
-			tab.setTabIcon(Icons.getInstance().getIconFilter16());
+			tab.setTabIconFromSystem("getIconFilter16");
 			tab.setTitle(sLabel);
 			tab.setLayeredComponent(newView);
 			tab.setTabStoreController(new TaskTabStoreController(RestorePreferences.GENERIC, newView));

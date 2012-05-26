@@ -28,6 +28,8 @@ import javax.swing.JDesktopPane;
 import org.apache.log4j.Logger;
 import org.nuclos.client.customcomp.resplan.ResPlanController;
 import org.nuclos.client.main.Main;
+import org.nuclos.client.main.mainframe.IconResolver;
+import org.nuclos.client.main.mainframe.IconResolverConstants;
 import org.nuclos.client.main.mainframe.MainFrame;
 import org.nuclos.client.main.mainframe.MainFrameTab;
 import org.nuclos.client.main.mainframe.workspace.ITabStoreController;
@@ -41,6 +43,7 @@ import org.nuclos.client.ui.TopController;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.client.ui.UIUtils.CommandHandler;
 import org.nuclos.common.NuclosFatalException;
+import org.nuclos.common.collection.Pair;
 import org.nuclos.common2.ClientPreferences;
 import org.nuclos.common2.CommonRunnable;
 import org.nuclos.common2.SpringLocaleDelegate;
@@ -330,8 +333,8 @@ public abstract class CustomComponentController extends TopController {
 	}
 
 	@Override
-	public ImageIcon getIcon() {
-		return MainFrame.resizeAndCacheTabIcon(NuclosResourceCache.getNuclosResourceIcon("org.nuclos.client.resource.icon.glyphish.83-calendar.png"));
+	public Pair<IconResolver, String> getIconAndResolver() {
+		return new Pair<IconResolver, String>(IconResolverConstants.NUCLOS_RESOURCE_ICON_RESOLVER, "org.nuclos.client.resource.icon.glyphish.83-calendar.png");
 	}
 
 }

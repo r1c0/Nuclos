@@ -169,7 +169,7 @@ public class ShowNuclosWizard  {
 
 		model.setWizard(wizard);
 
-		ifrm.setTabIcon(MainFrame.resizeAndCacheTabIcon(NuclosResourceCache.getNuclosResourceIcon("org.nuclos.client.resource.icon.glyphish-blue.81-dashboard.png")));
+		ifrm.setTabIconFromNuclosResource("org.nuclos.client.resource.icon.glyphish-blue.81-dashboard.png");
 
 		model.setParentFrame(ifrm);
 

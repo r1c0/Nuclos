@@ -178,7 +178,7 @@ public class ExplorerController extends Controller<MainFrameTabbedPane> {
 			}
 		});
 
-		tab.setTabIcon(Icons.getInstance().getIconTree16());
+		tab.setTabIconFromSystem("getIconTree16");
 		tab.setTitle(sLabel);
 		tab.setLayeredComponent(view.getViewComponent());
 		tab.setTabStoreController(new ExplorerTabStoreController(treenodeRoot, view));

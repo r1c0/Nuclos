@@ -451,7 +451,7 @@ public class TimelimitTaskController extends RefreshableTaskController {
 		});
 		
 		tab.setTitle(getSpringLocaleDelegate().getMessage("tabTimelimits", "Fristen"));
-		tab.setTabIcon(Icons.getInstance().getIconTabTimtlimit());
+		tab.setTabIconFromSystem("getIconTabTimtlimit");
 		tab.setLayeredComponent(TimelimitTaskController.this.timelimittaskview);
 		tab.setTabStoreController(new TaskController.TaskTabStoreController(TaskController.RestorePreferences.TIMELIMIT, TimelimitTaskController.this.timelimittaskview));
 		TimelimitTaskController.this.tab = tab;

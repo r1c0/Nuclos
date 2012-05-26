@@ -5786,20 +5786,6 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		return iGenericObjectIdSources;
 	}
 
-	@Override
-	public ImageIcon getIcon() {
-		String resourceName = GenericObjectDelegate.getInstance().getResourceMap().get(getModuleId());
-		String nuclosResource = MetaDataClientProvider.getInstance().getEntity(Modules.getInstance().getEntityNameByModuleId(getModuleId())).getNuclosResource();
-		if(resourceName != null)
-			return ResourceCache.getInstance().getIconResource(resourceName);
-		else if (nuclosResource != null){
-			ImageIcon nuclosIcon = NuclosResourceCache.getNuclosResourceIcon(nuclosResource);
-			if (nuclosIcon != null) return MainFrame.resizeAndCacheTabIcon(nuclosIcon);
-		}
-		return null;
-	}
-
-
 	/**
 	 * @deprecated Move to SearchController and make protected again.
 	 */

@@ -135,7 +135,7 @@ public class DBTransferImport {
 				null, localeDelegate.getMessage("dbtransfer.import.title", "Konfiguration importieren"));
 		I18n.setBundle(DBTransferWizard.getResourceBundle());
 
-		ifrm.setTabIcon(NuclosIcons.getInstance().getDefaultFrameIcon());
+		ifrm.setTabIconFromNuclos("getDefaultFrameIcon");
 
 		step1 = newStep1(ifrm);
 		step2 = newStep2(ifrm);

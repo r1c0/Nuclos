@@ -22,6 +22,7 @@ import java.awt.AlphaComposite;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Frame;
@@ -121,6 +122,8 @@ public class MainFrameTabbedPane {
 	private final ImageIcon maximizedFirstTabIcon = MainFrame.resizeAndCacheTabIcon(Icons.getInstance().getIconTabbedPaneMaximized());
 	private final ImageIcon maximizedFirstTabHomeIcon = MainFrame.resizeAndCacheTabIcon(Icons.getInstance().getIconTabbedPaneMaximized_Home());
 	private final ImageIcon maximizedFirstTabHomeTreeIcon = MainFrame.resizeAndCacheTabIcon(Icons.getInstance().getIconTabbedPaneMaximized_HomeTree());
+	
+	private int tabClosing = -1;
 
 	private static class FirstTabLabel extends JLabel {
 		
@@ -1074,6 +1077,7 @@ public class MainFrameTabbedPane {
 		}
 
 		final int index = mfTabbed.indexOfComponent(tab);
+		final int selected = mfTabbed.getSelectedIndex();
 
 		if (mousePosition == null) {
 			// try to get MousePosition from current tab
@@ -1091,8 +1095,18 @@ public class MainFrameTabbedPane {
 		tab.notifyClosed();
 		adjustTabs(false);
 
+		if (index == selected) {
+			tabClosing = -1;
+			if (mfTabbed.getTabCount() > 0) {
+				if (mfTabbed.getTabCount() == index) {
+					mfTabbed.setSelectedIndex(index-1, true);
+				} else {
+					mfTabbed.setSelectedIndex(index, true);
+				}
+			}
+		}
+		
 		if (mfTabbed.getTabCount() > index) {
-			mfTabbed.setSelectedIndex(index);
 			// setMouseOver on tab at same index
 			 if (mousePosition != null) {
 				final Component tabComponent = mfTabbed.getTabComponentAt(index);
@@ -1382,9 +1396,14 @@ public class MainFrameTabbedPane {
 						if (tabComponent instanceof MainFrameTab.TabTitle) {
 							final MainFrameTab.TabTitle tabTitle = (MainFrameTab.TabTitle) tabComponent;
 							if (i == tabNumber) {
-								tabTitle.setMouseOverPosition(new Point(
-									e.getX(),
-									e.getY()));
+								
+								final Point pos = new Point(e.getX(), e.getY());
+								if (tabTitle.isMouseOverClose(pos)) {
+									tabClosing = tabNumber;
+								} else {
+									tabClosing = -1;
+								}
+								tabTitle.setMouseOverPosition(pos);
 							} else {
 								tabTitle.setMouseOverPosition(null);
 							}
@@ -1612,9 +1631,10 @@ public class MainFrameTabbedPane {
 						final Component tabComponent = getTabComponentAt(tabNumber);
 						if (tabComponent instanceof MainFrameTab.TabTitle) {
 							final MainFrameTab.TabTitle tabTitle = (MainFrameTab.TabTitle) tabComponent;
-							consumed = tabTitle.mouseClicked(new Point(
-								e.getX(),
-								e.getY()), SwingUtilities.isLeftMouseButton(e));
+							final Point pos = new Point(e.getX(), e.getY());
+							final boolean left = SwingUtilities.isLeftMouseButton(e);
+							
+							consumed = tabTitle.mouseClicked(pos, left);
 						}
 
 						if (!consumed && SwingUtilities.isLeftMouseButton(e)
@@ -1791,13 +1811,18 @@ public class MainFrameTabbedPane {
 				}
 			}
 			if (component instanceof MainFrameTab) {
-				MainFrameTab tab = (MainFrameTab) component;
+				final MainFrameTab tab = (MainFrameTab) component;
 				try {
 					setTabComponentAt(index, tab.getTabTitle());
 					setToolTipTextAt(index, tab.getTabTitle().getToolTipText());
 					adjustTabs(tab);
-					tab.postAdd();
-					tab.notifyAdded();
+					SwingUtilities.invokeLater(new Runnable() {
+						@Override
+						public void run() {
+							tab.postAdd();
+							tab.notifyAdded();
+						}
+					});
 
 				} catch (ArrayIndexOutOfBoundsException ex) {
 					LOG.error(ex.getMessage(), ex);
@@ -1843,15 +1868,29 @@ public class MainFrameTabbedPane {
 		 */
 		@Override
 		public void setSelectedIndex(int index) {
-			int oldSelectedIndex = this.getSelectedIndex();
-			super.setSelectedIndex(index);
-			MainFrame.setActiveTabNavigation(MainFrameTabbedPane.this);
-
-			Component component = getComponentAt(index);
-			if (component instanceof MainFrameTab) {
-				if(oldSelectedIndex != index)
-					((MainFrameTab) component).notifySelected();
+			setSelectedIndex(index, false);
+		}
+		
+		/**
+		 *
+		 */
+		public void setSelectedIndex(int index, boolean forceNotify) {
+			if (index != tabClosing) {
+				int oldSelectedIndex = this.getSelectedIndex();
+				super.setSelectedIndex(index);
+				MainFrame.setActiveTabNavigation(MainFrameTabbedPane.this);
+	
+				Component component = getComponentAt(index);
+				if (component instanceof MainFrameTab) {
+					if(forceNotify || oldSelectedIndex != index)
+						((MainFrameTab) component).notifySelected();
+				}
 			}
+		}
+		
+		@Override
+		public void invalidate() {
+			super.invalidate();
 		}
 		
 		@Override

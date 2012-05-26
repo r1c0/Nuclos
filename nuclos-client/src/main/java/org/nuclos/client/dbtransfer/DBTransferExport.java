@@ -87,7 +87,7 @@ public class DBTransferExport {
 		
 		ifrm = Main.getInstance().getMainController().newMainFrameTab(
 				null, localeDelegate.getMessage("dbtransfer.export.title", "Konfiguration exportieren"));
-		ifrm.setTabIcon(NuclosIcons.getInstance().getDefaultFrameIcon());
+		ifrm.setTabIconFromNuclos("getDefaultFrameIcon");
 		
 		step1 = newStep1(ifrm);
 		step2 = newStep2(ifrm);

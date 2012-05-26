@@ -280,6 +280,8 @@ public class WorkspaceDescription implements Serializable {
 		private static final long serialVersionUID = 6637996725938917463L;
 
 		private String label;
+		private String iconResolver;
+		private String icon;
 		private boolean neverClose = false;
 		private boolean fromAssigned = false;;
 		private String preferencesXML;
@@ -289,6 +291,18 @@ public class WorkspaceDescription implements Serializable {
 		}
 		public void setLabel(String label) {
 			this.label = label;
+		}
+		public String getIconResolver() {
+			return iconResolver;
+		}
+		public void setIconResolver(String iconResolver) {
+			this.iconResolver = iconResolver;
+		}
+		public String getIcon() {
+			return icon;
+		}
+		public void setIcon(String icon) {
+			this.icon = icon;
 		}
 		public boolean isNeverClose() {
 			return neverClose;

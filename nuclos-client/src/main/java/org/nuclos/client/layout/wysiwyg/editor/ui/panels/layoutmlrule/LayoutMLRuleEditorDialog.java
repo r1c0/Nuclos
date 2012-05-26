@@ -116,7 +116,7 @@ public class LayoutMLRuleEditorDialog extends JPanel implements SaveAndCancelBut
 		
 		ImageIcon controllerIcon = getController(editorPanel).getLayoutCollectController().getTab().getTabIcon();
     	if(controllerIcon != null){
-    		tab.setTabIcon(controllerIcon);
+    		tab.setTabIconUnsafe(controllerIcon);
     	}
 	   	
 		new LayoutMLRuleValidationLayer();

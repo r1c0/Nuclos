@@ -84,7 +84,7 @@ public class CustomComponentWizard extends Wizard {
 		});
 
 		tab.setLayeredComponent(WizardFrame.createFrameInScrollPane(wizard));
-		tab.setTabIcon(NuclosResourceCache.getNuclosResourceIcon("org.nuclos.client.resource.icon.glyphish-blue.83-calendar.png"));
+		tab.setTabIconFromNuclosResource("org.nuclos.client.resource.icon.glyphish-blue.83-calendar.png");
 		
 		MainFrame.addTab(tab);
 		tab.setVisible(true);

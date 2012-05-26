@@ -59,6 +59,7 @@ import org.nuclos.client.genericobject.Modules;
 import org.nuclos.client.layout.wysiwyg.WYSIWYGStringsAndLabels.STATIC_BUTTON;
 import org.nuclos.client.main.Main;
 import org.nuclos.client.main.MainController;
+import org.nuclos.client.main.mainframe.IconResolver;
 import org.nuclos.client.main.mainframe.MainFrame;
 import org.nuclos.client.main.mainframe.MainFrameTab;
 import org.nuclos.client.main.mainframe.workspace.ITabStoreController;
@@ -101,6 +102,7 @@ import org.nuclos.common.collect.collectable.searchcondition.SearchConditionUtil
 import org.nuclos.common.collect.exception.CollectableFieldFormatException;
 import org.nuclos.common.collect.exception.CollectableValidationException;
 import org.nuclos.common.collection.CollectionUtils;
+import org.nuclos.common.collection.Pair;
 import org.nuclos.common2.CommonRunnable;
 import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.PreferencesUtils;
@@ -1477,7 +1479,7 @@ public abstract class NuclosCollectController<Clct extends Collectable> extends 
 	}
 
 	@Override
-	public ImageIcon getIcon() {
-		return Main.getInstance().getMainFrame().getEntityIcon(getEntityName());
+	public Pair<IconResolver, String> getIconAndResolver() {
+		return Main.getInstance().getMainFrame().getEntityIconAndResolver(getEntityName());
 	}
 }	// class NuclosCollectController

@@ -29,6 +29,8 @@ import javax.swing.JDialog;
 import org.nuclos.client.common.NuclosCollectController;
 import org.nuclos.client.common.NuclosResultPanel;
 import org.nuclos.client.main.Main;
+import org.nuclos.client.main.mainframe.IconResolver;
+import org.nuclos.client.main.mainframe.IconResolverConstants;
 import org.nuclos.client.main.mainframe.MainFrame;
 import org.nuclos.client.main.mainframe.MainFrameTab;
 import org.nuclos.client.masterdata.CollectableMasterData;
@@ -41,6 +43,7 @@ import org.nuclos.client.ui.collect.component.CollectableTextField;
 import org.nuclos.client.ui.collect.result.ResultPanel;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.collect.collectable.CollectableValueField;
+import org.nuclos.common.collection.Pair;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
 import org.nuclos.common.masterdata.CollectableMasterDataEntity;
 import org.nuclos.common2.exception.CommonBusinessException;
@@ -303,10 +306,10 @@ public class EntityRelationShipCollectController extends NuclosCollectController
 	protected boolean isNewAllowed() {
 		return true;
 	}
-
+	
 	@Override
-	public ImageIcon getIcon() {
-		return NuclosResourceCache.getNuclosResourceIcon("org.nuclos.client.resource.icon.glyphish-blue.55-network.png");
+	public Pair<IconResolver, String> getIconAndResolver() {
+		return new Pair<IconResolver, String>(IconResolverConstants.NUCLOS_RESOURCE_ICON_RESOLVER, "org.nuclos.client.resource.icon.glyphish-blue.55-network.png");
 	}
 	
 }	// class StateModelCollectController

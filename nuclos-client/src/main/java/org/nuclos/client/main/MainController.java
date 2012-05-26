@@ -115,6 +115,7 @@ import org.nuclos.client.help.internalinfo.InternalInfoController;
 import org.nuclos.client.help.releasenotes.ReleaseNotesController;
 import org.nuclos.client.jms.TopicNotificationReceiver;
 import org.nuclos.client.login.LoginController;
+import org.nuclos.client.main.mainframe.IconResolver;
 import org.nuclos.client.main.mainframe.MainFrame;
 import org.nuclos.client.main.mainframe.MainFrameTab;
 import org.nuclos.client.main.mainframe.MainFrameTabbedPane;
@@ -1254,8 +1255,16 @@ public class MainController {
 	public void initMainFrameTab(TopController ctl, MainFrameTab tab) {
 		Object lock = new Object();
 		synchronized(lock) {
-			ImageIcon icon = ctl != null ? ctl.getIcon() : null;
-			tab.setTabIcon(icon != null ? icon : Icons.getInstance().getIconTabGeneric());
+			Pair<IconResolver, String> iconAndResolver = ctl.getIconAndResolver();
+			if (iconAndResolver != null) {
+				tab.setTabIcon(iconAndResolver.x, iconAndResolver.y);
+			} else {
+				if (ctl.getIconUnsafe() != null) {
+					tab.setTabIconUnsafe(ctl.getIconUnsafe());
+				} else {
+					tab.setTabIconUnsafe(Icons.getInstance().getIconTabGeneric());
+				}
+			}
 			addMainFrameTabListener(tab, ctl);
 		}
 	}

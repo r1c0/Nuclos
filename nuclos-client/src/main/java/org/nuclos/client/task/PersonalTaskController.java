@@ -654,7 +654,7 @@ public class PersonalTaskController extends RefreshableTaskController implements
 		});
 
 		tab.setTitle(getSpringLocaleDelegate().getMessage("tabMyTasks", "Meine Aufgaben"));
-		tab.setTabIcon(Icons.getInstance().getIconTabTask());
+		tab.setTabIconFromSystem("getIconTabTask");
 		tab.setLayeredComponent(PersonalTaskController.this.personaltaskview);
 		tab.setTabStoreController(new TaskController.TaskTabStoreController(TaskController.RestorePreferences.PERSONAL, PersonalTaskController.this.personaltaskview));
 		PersonalTaskController.this.tab = tab;

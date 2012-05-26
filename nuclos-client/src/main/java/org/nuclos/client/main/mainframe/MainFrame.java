@@ -143,7 +143,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @version 01.00.00
  */
 @org.springframework.stereotype.Component
-public class MainFrame extends CommonJFrame implements WorkspaceFrame, ComponentNameSetter {
+public class MainFrame extends CommonJFrame implements WorkspaceFrame, ComponentNameSetter, IconResolverConstants {
 
 	private static final Logger LOG = Logger.getLogger(MainFrame.class);
 
@@ -2253,6 +2253,22 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 			} else {
 				result = Icons.getInstance().getIconTabGeneric();
 			}
+		}
+
+		return result;
+	}
+	
+	public Pair<IconResolver, String> getEntityIconAndResolver(String entity) {
+		Pair<IconResolver, String> result = new Pair<IconResolver, String>();
+
+		Integer resourceId = MetaDataClientProvider.getInstance().getEntity(entity).getResourceId();
+		String nuclosResource = MetaDataClientProvider.getInstance().getEntity(entity).getNuclosResource();
+		if (resourceId != null) {
+			result.x = RESOURCE_ICON_RESOLVER;
+			result.y = ResourceIconResolver.RESOURCEID_PREFIX + resourceId;
+		} else if (nuclosResource != null) {
+			result.x = NUCLOS_RESOURCE_ICON_RESOLVER;
+			result.y = nuclosResource;
 		}
 
 		return result;

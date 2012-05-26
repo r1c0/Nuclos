@@ -18,9 +18,12 @@
 package org.nuclos.client.ui;
 
 import java.io.Closeable;
+
 import javax.swing.ImageIcon;
 
+import org.nuclos.client.main.mainframe.IconResolver;
 import org.nuclos.client.main.mainframe.MainFrameTab;
+import org.nuclos.common.collection.Pair;
 
 /**
  * A common super class which is shared by CollectController and other top-level
@@ -36,7 +39,11 @@ public abstract class TopController extends MainFrameTabController implements Cl
 		super(null);
 	}
 
-	public abstract ImageIcon getIcon();
+	public ImageIcon getIconUnsafe() {
+		return null;
+	}
+	
+	public abstract Pair<IconResolver, String> getIconAndResolver();
 	
 	/**
 	 * asks the user to save the current record if necessary, so that it can be abandoned afterwards.

@@ -172,7 +172,7 @@ public class MultiCollectablesActionController <T,R> extends MainFrameTabControl
 
 		//ifrm.setContentPane(pnl);
 		overlayTab.setLayeredComponent(pnl);
-		overlayTab.setTabIcon(this.iconFrame);
+		overlayTab.setTabIconUnsafe(this.iconFrame);
 		pnl.setStatus(getSpringLocaleDelegate().getMessage("MultiCollectablesActionController.1","Vorgang l\u00e4uft..."));
 
 		final MultiObjectsActionRunnable runnable = new MultiObjectsActionRunnable(this.coll.size(), overlayTab, pnl);

@@ -69,12 +69,14 @@ import org.jdesktop.jxlayer.plaf.LayerUI;
 import org.jdesktop.jxlayer.plaf.ext.LockableUI;
 import org.jdesktop.swingx.painter.BusyPainter;
 import org.jdesktop.swingx.painter.TextPainter;
+import org.nuclos.client.NuclosIcons;
 import org.nuclos.client.common.NuclosDropTargetListener;
 import org.nuclos.client.common.NuclosDropTargetVisitor;
 import org.nuclos.client.common.security.SecurityCache;
 import org.nuclos.client.jms.TopicNotificationReceiver;
 import org.nuclos.client.main.Main;
 import org.nuclos.client.main.mainframe.workspace.ITabStoreController;
+import org.nuclos.client.main.mainframe.workspace.TabRestoreController;
 import org.nuclos.client.synthetica.NuclosThemeSettings;
 import org.nuclos.client.ui.Errors;
 import org.nuclos.client.ui.IMainFrameTabClosableController;
@@ -87,8 +89,10 @@ import org.nuclos.common.Actions;
 import org.nuclos.common.JMSConstants;
 import org.nuclos.common.LockedTabProgressNotification;
 import org.nuclos.common.MutableBoolean;
+import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.SpringLocaleDelegate;
+import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
@@ -105,7 +109,7 @@ import org.springframework.beans.factory.annotation.Configurable;
  * @version	01.00.00
  */
 @Configurable(preConstruction=true)
-public class MainFrameTab extends JPanel implements IOverlayComponent, NuclosDropTargetVisitor {
+public class MainFrameTab extends JPanel implements IOverlayComponent, NuclosDropTargetVisitor, IconResolverConstants {
 
 	public static final String IMAGE_ICON_PROPERTY = "NOVABIT_DESKTOP_ICON";
 
@@ -114,11 +118,17 @@ public class MainFrameTab extends JPanel implements IOverlayComponent, NuclosDro
 	private final List<MainFrameTabListener> mainFrameTabListeners = new ArrayList<MainFrameTabListener>();
 
 	private ITabStoreController storeController;
+	
+	private boolean notifyRestore = false;
+	private String restorePreferencesXML;
+	private TabRestoreController restoreController;
 
 	private boolean neverClose;
 	private boolean fromAssigned;
 
 	private String title;
+	private String iconResolver;
+	private String iconName;
 
 	private ImageIcon icon;
 
@@ -274,6 +284,72 @@ public class MainFrameTab extends JPanel implements IOverlayComponent, NuclosDro
 	 */
 	public void setTabStoreController(ITabStoreController storeController) {
 		this.storeController = storeController;
+	}
+	
+	/**
+	 * 
+	 * @return
+	 */
+	public boolean hasTabRestoreController() {
+		return this.restoreController != null;
+	}
+	
+	/**
+	 * 
+	 * @return
+	 */
+	public TabRestoreController getTabRestoreController() {
+		return this.restoreController;
+	}
+	
+	/**
+	 * 
+	 * @param restoreController
+	 */
+	public void setTabRestoreController(TabRestoreController restoreController) {
+		this.restoreController = restoreController;
+	}
+	
+	/**
+	 * 
+	 * @param xml
+	 */
+	public void setTabRestorePreferencesXML(String xml) {
+		this.restorePreferencesXML = xml;
+	}
+	
+	/**
+	 * 
+	 * @param notifyRestore
+	 */
+	public void setNotifyRestore(boolean notifyRestore) {
+		this.notifyRestore = notifyRestore;
+	}
+	
+	/**
+	 * 
+	 * @return
+	 */
+	public String getTabRestorePreferencesXML() {
+		if (restorePreferencesXML != null) {
+			return restorePreferencesXML;
+		} else {
+			return storeController.getPreferencesXML();
+		}
+	}
+	
+	/**
+	 * 
+	 * @return
+	 */
+	public String getTabRestoreControllerClassName() {
+		if (storeController != null) {
+			return storeController.getTabRestoreControllerClass().getName();
+		} else if (restoreController != null) {
+			return restoreController.getClass().getName();
+		} else {
+			throw new IllegalStateException("No restore controller present");
+		}
 	}
 
 	/**
@@ -818,6 +894,29 @@ public class MainFrameTab extends JPanel implements IOverlayComponent, NuclosDro
 	 *
 	 */
 	public void notifySelected() {
+		if (restoreController != null) {
+			UIUtils.runCommandForTabbedPane(getTabbedPane(), new Runnable() {
+				@Override
+				public void run() {
+					try {
+						final String xml = restorePreferencesXML;
+						final TabRestoreController ctrl = restoreController;
+						restorePreferencesXML = null;
+						restoreController = null;
+						ctrl.restoreFromPreferences(xml, MainFrameTab.this);
+						postAdd();
+					} catch (Exception e) {
+						LOG.warn("Tab not restored", e);
+						setTabIconFromSystem("getIconTabNotRestored");
+					} finally {
+						if (notifyRestore) {
+							Main.getInstance().getMainFrame().continueProgress();
+							notifyRestore = false;
+						}
+					}
+				}
+			});
+		}
 		for (MainFrameTabListener listener : new ArrayList<MainFrameTabListener>(mainFrameTabListeners)) {
 			listener.tabSelected(this);
 		}
@@ -873,16 +972,84 @@ public class MainFrameTab extends JPanel implements IOverlayComponent, NuclosDro
 			listener.tabRestoredFromHidden(this);
 		}
 	}
+	
+	/**
+	 * Icons from singleton class org.nuclos.clinet.ui.Icons
+	 * @param method
+	 */
+	public void setTabIconFromSystem(String method) {
+		setTabIcon(SYSTEM_ICON_RESOLVER, method);
+	}
+	
+	/**
+	 * Icons from singleton class org.nuclos.clinet.NuclosIcons
+	 * @param method
+	 */
+	public void setTabIconFromNuclos(String method) {
+		setTabIcon(NUCLOS_ICON_RESOLVER, method);
+	}
+	
+	/**
+	 * Icons from singleton class org.nuclos.client.resource.NuclosResourceCache
+	 * @param icon
+	 */
+	public void setTabIconFromNuclosResource(String icon) {
+		setTabIcon(NUCLOS_RESOURCE_ICON_RESOLVER, icon);
+	}
+	
+	/**
+	 * Icons from singleton class org.nuclos.client.resource.ResourceCache
+	 * @param icon
+	 */
+	public void setTabIconFromResource(String icon) {
+		setTabIcon(RESOURCE_ICON_RESOLVER, icon);
+	}
 
 	/**
 	 *
 	 * @param icon
 	 */
-	public void setTabIcon(Icon icon) {
+	public void setTabIcon(String resolver, String icon) {
+		try {
+			if (resolver != null) {
+				Class<?> resolverClass = Class.forName(resolver);
+				Object resolverObject = resolverClass.getConstructor().newInstance();
+				
+				setTabIcon((IconResolver) resolverObject, icon);
+			}
+		} catch (Exception ex) {
+			LOG.warn(String.format("Icon could not be set (Resolver=%s, Icon=%s)", resolver, icon), ex);
+		}
+	}
+	
+	/**
+	 * 
+	 * @param resolver
+	 * @param icon
+	 */
+	public void setTabIcon(IconResolver resolver, String icon) {
+		try {
+			if (resolver != null) {
+				final ImageIcon ico = resolver.getIcon(icon);
+				if (ico != null) {
+					this.icon = MainFrame.resizeAndCacheTabIcon(ico);
+					this.iconName = icon;
+					this.iconResolver = resolver.getClass().getName();
+					tabTitle.updateIcon(this.icon);
+					notifyTitleChanged();
+				}
+			}
+		} catch (Exception ex) {
+			LOG.warn(String.format("Icon could not be set (Resolver=%s, Icon=%s)", resolver, icon), ex);
+		}
+	}
+	
+	public void setTabIconUnsafe(Icon icon) {
+		this.iconName = null;
+		this.iconResolver = null;
 		if (icon instanceof ImageIcon) {
-			ImageIcon imageIcon = MainFrame.resizeAndCacheTabIcon((ImageIcon) icon);
-			this.icon = imageIcon;
-			tabTitle.updateIcon(imageIcon);
+			this.icon = MainFrame.resizeAndCacheTabIcon((ImageIcon) icon);
+			tabTitle.updateIcon(this.icon);
 			notifyTitleChanged();
 		}
 	}
@@ -893,6 +1060,14 @@ public class MainFrameTab extends JPanel implements IOverlayComponent, NuclosDro
 	 */
 	public String getTitle() {
 		return this.title;
+	}
+	
+	public String getTabIconResolver() {
+		return iconResolver;
+	}
+	
+	public String getTabIconName() {
+		return iconName;
 	}
 
 	/**
@@ -999,6 +1174,7 @@ public class MainFrameTab extends JPanel implements IOverlayComponent, NuclosDro
 			@Override
 			public void run() {
 				revalidate();
+				repaint();
 			}
 		});
 	}
@@ -1107,6 +1283,19 @@ public class MainFrameTab extends JPanel implements IOverlayComponent, NuclosDro
 				repaint();
 			}
 		}
+		
+		/**
+		 *
+		 * @param position
+		 * @return boolean true if mouse over close
+		 */
+		public boolean isMouseOverClose(Point position) {
+			if (getCloseBoundsAbsolute().contains(position) && isClosable()) {
+				return true;
+			} else {
+				return false;
+			}
+		}
 
 		/**
 		 *
@@ -1114,7 +1303,7 @@ public class MainFrameTab extends JPanel implements IOverlayComponent, NuclosDro
 		 * @return boolean true if click is consumed
 		 */
 		public boolean mouseClicked(Point position, boolean left) {
-			if (left && getCloseBoundsAbsolute().contains(position) && isClosable()) {
+			if (isMouseOverClose(position) && left) {
 				try {
 					MainFrame.closeTab(MainFrameTab.this, position);
 				} catch(CommonBusinessException e) {

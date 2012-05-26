@@ -3716,11 +3716,6 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 		}
 	}
 
-	@Override
-	public ImageIcon getIcon() {
-		return null;
-	}
-
 	/**
 	 * @return the CollectPanel, containing the Search-, Result- and DetailsPanels.
 	 */
