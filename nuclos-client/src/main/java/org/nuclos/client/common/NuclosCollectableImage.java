@@ -552,7 +552,7 @@ public class NuclosCollectableImage extends CollectableMediaComponent implements
 
 		@Override
 		public String getDescription() {
-			return "Bildformate";
+			return "Bildformate"; // @todo i18n
 		}
 	}
 

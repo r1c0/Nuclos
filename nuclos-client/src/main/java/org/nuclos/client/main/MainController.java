@@ -1255,11 +1255,11 @@ public class MainController {
 	public void initMainFrameTab(TopController ctl, MainFrameTab tab) {
 		Object lock = new Object();
 		synchronized(lock) {
-			Pair<IconResolver, String> iconAndResolver = ctl.getIconAndResolver();
+			Pair<IconResolver, String> iconAndResolver = ctl == null ? null : ctl.getIconAndResolver();
 			if (iconAndResolver != null) {
 				tab.setTabIcon(iconAndResolver.x, iconAndResolver.y);
 			} else {
-				if (ctl.getIconUnsafe() != null) {
+				if (ctl != null && ctl.getIconUnsafe() != null) {
 					tab.setTabIconUnsafe(ctl.getIconUnsafe());
 				} else {
 					tab.setTabIconUnsafe(Icons.getInstance().getIconTabGeneric());

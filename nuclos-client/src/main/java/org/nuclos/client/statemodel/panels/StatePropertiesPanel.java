@@ -192,7 +192,7 @@ public class StatePropertiesPanel extends JPanel {
 					btn.setBorderPainted(false);
 					btn.setContentAreaFilled(true);
 					
-					if (isSelected && index > 0) {
+					if (isSelected && index >= 0) {
 						btn.setOpaque(true);
 						btn.setBackground(NuclosThemeSettings.BACKGROUND_COLOR4);
 						btnPanel.setBorder(BorderFactory.createLineBorder(NuclosThemeSettings.BACKGROUND_ROOTPANE, 1));
