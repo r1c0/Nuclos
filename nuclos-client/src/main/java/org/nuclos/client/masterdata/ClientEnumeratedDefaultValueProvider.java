@@ -78,29 +78,61 @@ public class ClientEnumeratedDefaultValueProvider implements EnumeratedDefaultVa
 		try {
 			final String sDefault = fieldmeta.getDefaultValue();
 			
-			String dataType = fieldmeta.getDataType();
-			if(dataType.equals("java.lang.Double")) {
-				return new CollectableValueField(Double.parseDouble(sDefault.replace(',', '.')));
-			}
-			else if(dataType.equals("java.lang.Integer")) {
-				return new CollectableValueField(Integer.parseInt(sDefault));
-			}
-			else if(dataType.equals("java.lang.Boolean")) {
-				if("ja".equals(sDefault))
-					return new CollectableValueField(Boolean.TRUE);
-				else
-					return new CollectableValueField(Boolean.FALSE);
-			}
-			else if(dataType.equals("java.util.Date")) {
-				if(RelativeDate.today().toString().equals(sDefault)) {
-					return new CollectableValueField(DateUtils.today());
+			final String sForeignEntity = fieldmeta.getForeignEntity() == null ? null : fieldmeta.getForeignEntity();
+			final String sForeignEntityField = fieldmeta.getForeignEntityField() == null ? null : fieldmeta.getForeignEntityField();
+			
+			if (sForeignEntity != null) {
+				Set<String> setFields = StringUtils.getFieldsFromTreeViewPattern(sForeignEntityField);
+
+				if(setFields.size() == 1) {
+					String sField = setFields.iterator().next();
+					CollectableComparison cond = SearchConditionUtils.newComparison(sForeignEntity, sField, ComparisonOperator.EQUAL, sDefault);
+					
+					Collection<MasterDataVO> colVo = MasterDataDelegate.getInstance().getMasterData(sForeignEntity, cond);
+					if(colVo.size() > 0) {
+						Integer iId = colVo.iterator().next().getIntId();
+						CollectableValueIdField idField = new CollectableValueIdField(iId, sDefault);
+						if(idField.getValue() != null) {
+							return idField;
+						}
+					}
+				}
+				else if(setFields.size() > 1) {
+					Collection<MasterDataVO> colVo = MasterDataCache.getInstance().get(sForeignEntity);
+					for(MasterDataVO mdvo : colVo) {
+						MakeMasterDataValueIdField util = new MakeMasterDataValueIdField(sForeignEntityField);
+						CollectableField field = util.transform(mdvo);
+						if(field.getValue().equals(sDefault)) {
+							return field;
+						}
+					}
+				}
+				throw new NuclosFatalException(StringUtils.getParameterizedExceptionMessage("error.enumerated.default.value.notfound", fieldmeta.getLocaleResourceIdForLabel()));
+			} else {
+				String dataType = fieldmeta.getDataType();
+				if(dataType.equals("java.lang.Double")) {
+					return new CollectableValueField(Double.parseDouble(sDefault.replace(',', '.')));
+				}
+				else if(dataType.equals("java.lang.Integer")) {
+					return new CollectableValueField(Integer.parseInt(sDefault));
+				}
+				else if(dataType.equals("java.lang.Boolean")) {
+					if("ja".equals(sDefault))
+						return new CollectableValueField(Boolean.TRUE);
+					else
+						return new CollectableValueField(Boolean.FALSE);
+				}
+				else if(dataType.equals("java.util.Date")) {
+					if(RelativeDate.today().toString().equals(sDefault)) {
+						return new CollectableValueField(DateUtils.today());
+					}
+					else {
+						return new CollectableValueField(sDefault);
+					}
 				}
 				else {
 					return new CollectableValueField(sDefault);
 				}
-			}
-			else {
-				return new CollectableValueField(sDefault);
 			}
 		}
 		catch (Exception ex) {
