@@ -47,6 +47,7 @@ import org.nuclos.client.common.KeyBinding;
 import org.nuclos.client.common.KeyBindingProvider;
 import org.nuclos.client.common.MetaDataClientProvider;
 import org.nuclos.client.common.NuclosCollectControllerFactory;
+import org.nuclos.client.common.NuclosCollectableEntityProvider;
 import org.nuclos.client.common.Utils;
 import org.nuclos.client.common.security.SecurityCache;
 import org.nuclos.client.genericobject.CollectableGenericObject;
@@ -84,7 +85,6 @@ import org.nuclos.common.ParameterProvider;
 import org.nuclos.common.attribute.DynamicAttributeVO;
 import org.nuclos.common.collect.collectable.Collectable;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
-import org.nuclos.common.collect.collectable.DefaultCollectableEntityProvider;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableSearchCondition;
 import org.nuclos.common.collect.collectable.searchcondition.SearchConditionUtils;
 import org.nuclos.common.collection.CollectionUtils;
@@ -449,7 +449,7 @@ public class GenericObjectTaskController extends RefreshableTaskController {
 		this.mpTaskViews.get(filter.getId()).tfStatusBar.setText(sLabel);
 		
 		final List<CollectableMasterDataWithDependants> lstclct = CollectionUtils.transform(lst, 
-				new CollectableMasterDataWithDependants.MakeCollectable((CollectableMasterDataEntity)DefaultCollectableEntityProvider.getInstance().getCollectableEntity(filter.getEntityName())));
+				new CollectableMasterDataWithDependants.MakeCollectable((CollectableMasterDataEntity)NuclosCollectableEntityProvider.getInstance().getCollectableEntity(filter.getEntityName())));
 		
 		// remove listener from old model, if any:
 		final TableModel modelOld = this.mpTaskViews.get(filter.getId()).getJTable().getModel();
