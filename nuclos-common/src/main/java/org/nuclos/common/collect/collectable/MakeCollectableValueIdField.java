@@ -37,14 +37,24 @@ import org.nuclos.common2.StringUtils;
  */
 public class MakeCollectableValueIdField implements Transformer<EntityObjectVO, CollectableField> {
 
+	private final boolean bFormat;
 	private final String sFieldNameForValue;
 
 	public MakeCollectableValueIdField() {
 		this("name");
 	}
+	
+	public MakeCollectableValueIdField(boolean bFormat) {
+		this("name", bFormat);
+	}
 
 	public MakeCollectableValueIdField(String sFieldNameForValue) {
+		this(sFieldNameForValue, true);
+	}
+
+	public MakeCollectableValueIdField(String sFieldNameForValue, boolean bFormat) {
 		this.sFieldNameForValue = sFieldNameForValue;
+		this.bFormat = bFormat;
 	}
 
 	@Override
@@ -52,7 +62,7 @@ public class MakeCollectableValueIdField implements Transformer<EntityObjectVO, 
 		/** @todo take care for "isShowMnemonic" */
 		final String entity = eovo.getEntity();
 		if (sFieldNameForValue.contains("${")){
-			String value = StringUtils.replaceParameters(sFieldNameForValue, new FormattingTransformer() {
+			String value = StringUtils.replaceParameters(sFieldNameForValue, new FormattingTransformer(bFormat) {
 				@Override
 				protected Object getValue(String field) {
 					return eovo.getFields().get(field);

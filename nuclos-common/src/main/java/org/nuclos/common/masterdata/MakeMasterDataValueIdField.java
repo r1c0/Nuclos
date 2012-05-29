@@ -35,6 +35,7 @@ import org.nuclos.server.masterdata.valueobject.MasterDataVO;
  */
 public class MakeMasterDataValueIdField implements Transformer<MasterDataVO, CollectableField> {
 
+	private final boolean bFormat;
 	private final String entity;
 	private final String sFieldNameForValue;
 
@@ -42,16 +43,26 @@ public class MakeMasterDataValueIdField implements Transformer<MasterDataVO, Col
 		this(entity, "name");
 	}
 
+	public MakeMasterDataValueIdField(String entity, boolean bFormat) {
+		this(entity, "name", bFormat);
+	}
+
 	public MakeMasterDataValueIdField(String entity, String sFieldNameForValue) {
+		this(entity, sFieldNameForValue, true);
+	}
+
+	public MakeMasterDataValueIdField(String entity, String sFieldNameForValue, boolean bFormat) {
 		this.entity = entity;
 		this.sFieldNameForValue = sFieldNameForValue;
+		this.bFormat = bFormat;
 	}
+
 
 	@Override
 	public CollectableField transform(final MasterDataVO mdvo) {
 		/** @todo take care for "isShowMnemonic" */
 		if (sFieldNameForValue.contains("${")){
-			String value = StringUtils.replaceParameters(sFieldNameForValue, new FormattingTransformer() {
+			String value = StringUtils.replaceParameters(sFieldNameForValue, new FormattingTransformer(bFormat) {
 				@Override
 				protected Object getValue(String field) {
 					return mdvo.getField(field);

@@ -26,21 +26,31 @@ import org.nuclos.common2.StringUtils;
 
 public class MakeEntityObjectValueIdField implements Transformer<EntityObjectVO, CollectableField> {
 
+	private final boolean bFormat;
 	private final String sFieldNameForValue;
 
 	public MakeEntityObjectValueIdField() {
 		this("name");
 	}
+	
+	public MakeEntityObjectValueIdField(boolean bFormat) {
+		this("name", bFormat);
+	}
 
 	public MakeEntityObjectValueIdField(String sFieldNameForValue) {
+		this(sFieldNameForValue, true);
+	}
+
+	public MakeEntityObjectValueIdField(String sFieldNameForValue, boolean bFormat) {
 		this.sFieldNameForValue = sFieldNameForValue;
+		this.bFormat = bFormat;
 	}
 
 	@Override
 	public CollectableField transform(final EntityObjectVO eo) {
 		final String entity = eo.getEntity();
 		if (sFieldNameForValue.contains("${")){
-			String value = StringUtils.replaceParameters(sFieldNameForValue, new FormattingTransformer() {
+			String value = StringUtils.replaceParameters(sFieldNameForValue, new FormattingTransformer(bFormat) {
 				@Override
 				protected Object getValue(String field) {
 					return eo.getFields().get(field);

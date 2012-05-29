@@ -41,16 +41,25 @@ import org.nuclos.server.genericobject.valueobject.GenericObjectVO;
 public class MakeGenericObjectValueIdField implements
 		Transformer<GenericObjectVO, CollectableField> {
 
+	private final boolean bFormat;
 	private final AttributeProvider attributeProvider;
 	private final String sAttributeNameForValue;
 
 	public MakeGenericObjectValueIdField(AttributeProvider attributeProvider) {
 		this(attributeProvider, "name");
 	}
+	public MakeGenericObjectValueIdField(AttributeProvider attributeProvider, boolean bFormat) {
+		this(attributeProvider, "name", bFormat);
+	}
 
 	public MakeGenericObjectValueIdField(AttributeProvider attributeProvider, String sFieldNameForValue) {
+		this(attributeProvider, sFieldNameForValue, true);
+	}
+
+	public MakeGenericObjectValueIdField(AttributeProvider attributeProvider, String sFieldNameForValue, boolean bFormat) {
 		this.attributeProvider = attributeProvider;
 		this.sAttributeNameForValue = sFieldNameForValue;
+		this.bFormat = bFormat;
 	}
 
 	@Override
@@ -59,7 +68,7 @@ public class MakeGenericObjectValueIdField implements
 		ModuleProvider modules = SpringApplicationContextHolder.getBean(ModuleProvider.class);
 		final String entity = modules.getEntityNameByModuleId(govo.getModuleId());
 		if (sAttributeNameForValue.contains("${")) {
-			String value = StringUtils.replaceParameters(sAttributeNameForValue, new FormattingTransformer() {
+			String value = StringUtils.replaceParameters(sAttributeNameForValue, new FormattingTransformer(bFormat) {
 				@Override
 				protected Object getValue(String field) {
 					DynamicAttributeVO att = govo.getAttribute(field, attributeProvider);

@@ -23,6 +23,14 @@ import org.nuclos.common.collection.Transformer;
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 
 public abstract class FormattingTransformer implements Transformer<String, String> {
+	private final boolean bFormat;
+	
+	public FormattingTransformer() {
+		this(true);
+	}
+	public FormattingTransformer(boolean bFormat) {
+		this.bFormat = bFormat;
+	}
 
 	private final MetaDataProvider metaprovider = SpringApplicationContextHolder.getBean(MetaDataProvider.class);
 
@@ -34,6 +42,8 @@ public abstract class FormattingTransformer implements Transformer<String, Strin
 		}
 		EntityFieldMetaDataVO meta = metaprovider.getEntityField(getEntity(), i);
 		try {
+			if (!bFormat)
+				return "" + val;
 			return CollectableFieldFormat.getInstance(Class.forName(meta.getDataType())).format(meta.getFormatOutput(), val);
 		} catch (ClassNotFoundException e) {
 			return val != null ? val.toString() : "";

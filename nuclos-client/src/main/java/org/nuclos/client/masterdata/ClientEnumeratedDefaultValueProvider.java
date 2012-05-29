@@ -58,8 +58,12 @@ public class ClientEnumeratedDefaultValueProvider implements EnumeratedDefaultVa
 			}
 			else if(setFields.size() > 1) {
 				Collection<MasterDataVO> colVo = MasterDataCache.getInstance().get(fieldmeta.getForeignEntity());
+				final MakeMasterDataValueIdField util;
+				if (fieldmeta.getForeignEntityField() == null)
+					util = new MakeMasterDataValueIdField(fieldmeta.getForeignEntity(), false);
+				else
+					util = new MakeMasterDataValueIdField(fieldmeta.getForeignEntity(), fieldmeta.getForeignEntityField(), false);
 				for(MasterDataVO mdvo : colVo) {
-					MakeMasterDataValueIdField util = new MakeMasterDataValueIdField(fieldmeta.getForeignEntityField());
 					CollectableField field = util.transform(mdvo);
 					if(field.getValue().equals(sDefault)) {
 						return field;
@@ -99,8 +103,12 @@ public class ClientEnumeratedDefaultValueProvider implements EnumeratedDefaultVa
 				}
 				else if(setFields.size() > 1) {
 					Collection<MasterDataVO> colVo = MasterDataCache.getInstance().get(sForeignEntity);
+					final MakeMasterDataValueIdField util;
+					if (sForeignEntityField == null)
+						util = new MakeMasterDataValueIdField(sForeignEntity, false);
+					else
+						util = new MakeMasterDataValueIdField(sForeignEntity, sForeignEntityField, false);
 					for(MasterDataVO mdvo : colVo) {
-						MakeMasterDataValueIdField util = new MakeMasterDataValueIdField(sForeignEntityField);
 						CollectableField field = util.transform(mdvo);
 						if(field.getValue().equals(sDefault)) {
 							return field;
