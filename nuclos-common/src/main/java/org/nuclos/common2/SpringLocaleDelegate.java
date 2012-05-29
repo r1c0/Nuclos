@@ -109,22 +109,22 @@ public class SpringLocaleDelegate {
 		public Date getLastChange();
 
 	};
-	
+
 	private static SpringLocaleDelegate INSTANCE;
-	
+
 	//
 
 	private LookupService keyLookup;
-	
+
 	SpringLocaleDelegate() {
 		INSTANCE = this;
 	}
-	
+
 	@Autowired
 	void setLookupService(LookupService lookupService) {
 		this.keyLookup = lookupService;
 	}
-	
+
 	public static SpringLocaleDelegate getInstance() {
 		return INSTANCE;
 	}
@@ -239,7 +239,7 @@ public class SpringLocaleDelegate {
 			return ResourceBundleResolverUtils.getMessageInternal(keyLookup, resolver, rid, params);
 		}
 		catch(RuntimeException e) {
-			LOG.info("getMessageInternal failed: rid=" + rid + " params=" + Arrays.asList(params) + " otext=" + otext + ": " + e);
+			LOG.info("getMessageInternal failed: rid=" + rid + " params=" + (params == null ? "null" : Arrays.asList(params)) + " otext=" + otext + ": " + e);
 			return getTextFallback(rid, otext);
 		}
 	}

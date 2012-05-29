@@ -16,45 +16,12 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.scripting.context;
 
-import java.util.List;
-
 import org.nuclos.api.context.ScriptContext;
-import org.nuclos.common.collect.collectable.Collectable;
-import org.nuclos.common.expressions.EntityExpression;
+import org.nuclos.client.customcode.CodeDelegate;
 import org.nuclos.common.expressions.ExpressionEvaluator;
 import org.nuclos.common.expressions.ExpressionParser;
-import org.nuclos.common.expressions.FieldIdExpression;
-import org.nuclos.common.expressions.FieldRefObjectExpression;
-import org.nuclos.common.expressions.FieldValueExpression;
-import org.nuclos.common2.IdUtils;
 
-public class CollectableScriptContext extends AbstractScriptContext implements ExpressionEvaluator {
-
-	private final Collectable c;
-
-	public CollectableScriptContext(Collectable c) {
-		this.c = c;
-	}
-
-	@Override
-	public Object evaluate(FieldValueExpression exp) {
-		return c.getValue(exp.getField());
-	}
-
-	@Override
-	public Long evaluate(FieldIdExpression exp) {
-		return IdUtils.toLongId(c.getValueId(exp.getField()));
-	}
-
-	@Override
-	public ScriptContext evaluate(FieldRefObjectExpression exp) {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public List<ScriptContext> evaluate(EntityExpression exp) {
-		throw new UnsupportedOperationException();
-	}
+public abstract class AbstractScriptContext implements ScriptContext, ExpressionEvaluator {
 
 	@Override
 	public Object propertyMissing(String name) {
@@ -64,5 +31,11 @@ public class CollectableScriptContext extends AbstractScriptContext implements E
 	@Override
 	public void propertyMissing(String name, Object value) {
 		throw new UnsupportedOperationException("expressions are read only");
+	}
+
+	@Override
+	public Object methodMissing(String name, Object args) {
+		String function = ExpressionParser.parse(name);
+		return CodeDelegate.getInstance().invokeFunction(function, (Object[])args);
 	}
 }

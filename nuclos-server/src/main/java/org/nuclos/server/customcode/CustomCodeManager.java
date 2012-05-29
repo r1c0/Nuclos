@@ -17,47 +17,73 @@
 package org.nuclos.server.customcode;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.jar.JarFile;
 
+import javax.jms.JMSException;
+import javax.jms.Message;
+import javax.jms.MessageListener;
+import javax.jms.TextMessage;
+
 import org.apache.log4j.Logger;
+import org.nuclos.api.annotation.Function;
+import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.NuclosFatalException;
+import org.nuclos.common.dal.vo.EntityObjectVO;
+import org.nuclos.common2.StringUtils;
 import org.nuclos.server.common.NuclosSystemParameters;
 import org.nuclos.server.customcode.codegenerator.NuclosJavaCompilerComponent;
 import org.nuclos.server.customcode.codegenerator.RuleClassLoader;
 import org.nuclos.server.customcode.codegenerator.RuleCodeGenerator;
+import org.nuclos.server.dal.provider.NucletDalProvider;
 import org.nuclos.server.ruleengine.NuclosCompileException;
+import org.springframework.aop.framework.AopInfrastructureBean;
+import org.springframework.aop.support.AopUtils;
+import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.BeanPostProcessor;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.stereotype.Component;
 
 /**
  * Provides the classloader for dynamically loaded code (Rules, Wsdl).
  */
 @Component
-public class CustomCodeManager {
+public class CustomCodeManager implements ApplicationContextAware, MessageListener {
 
 	private static final Logger log = Logger.getLogger(CustomCodeManager.class);
-	
+
 	// Spring injection
-	
+
 	private NuclosJavaCompilerComponent nuclosJavaCompilerComponent;
-	
+
+	private ApplicationContext parent;
+
 	// End of Spring injection
 
-	private ClassLoader cl;
+	private RuleClassLoader cl;
+
+	private AnnotationConfigApplicationContext context;
+
+	private Map<String, BeanFunction> functions = new HashMap<String, BeanFunction>();
 
 	CustomCodeManager() {
 	}
-	
+
 	@Autowired
 	final void setNuclosJavaCompilerComponent(NuclosJavaCompilerComponent nuclosJavaCompilerComponent) {
 		this.nuclosJavaCompilerComponent = nuclosJavaCompilerComponent;
 	}
-	
+
 	public <T> T getInstance(RuleCodeGenerator<T> generator) throws NuclosCompileException {
 		try {
-			if (nuclosJavaCompilerComponent.validate()) {
-				this.cl = null;
-			}
 			return (T) getClassLoader().loadClass(generator.getClassName()).newInstance();
 		}
 		catch(InstantiationException e) {
@@ -71,18 +97,22 @@ public class CustomCodeManager {
 		}
 	}
 
-	private synchronized ClassLoader getClassLoader() {
-		if (cl == null) {
+	@Override
+	public void onMessage(Message message) {
+		if(message instanceof TextMessage) {
 			try {
-				this.cl = getInstance(CustomCodeManager.class.getClassLoader());
+				String text = ((TextMessage) message).getText();
+				if (StringUtils.isNullOrEmpty(text) || text.equals(NuclosEntity.NUCLET.getEntityName())) {
+					log.info("Reload nuclet classloader and application context.");
+					this.cl = null;
+				}
 			}
-			catch(NuclosCompileException ex) {
-				log.error("Compilation failed.", ex);
+			catch(JMSException e) {
+				log.error(getClass().getName() + ".onMessage() failed: " + e, e);
 			}
 		}
-		return cl;
 	}
-	
+
 	/**
 	 * Obtain an instance of the classloader for a given rule artifact.
 	 *
@@ -91,34 +121,140 @@ public class CustomCodeManager {
 	 * @return classloader
 	 * @throws NuclosCompileException
 	 */
-	public ClassLoader getInstance(ClassLoader parent) throws NuclosCompileException {
-		RuleClassLoader classLoader = new RuleClassLoader(parent);
+	public ClassLoader getClassLoader() throws NuclosCompileException {
+		if (this.cl == null || nuclosJavaCompilerComponent.validate()) {
+			if (this.context != null) {
+				this.context = null;
+				this.functions.clear();
+			}
 
-		JarFile jar = null;
-		try {
-			nuclosJavaCompilerComponent.validate();
-			jar = new JarFile(NuclosJavaCompilerComponent.JARFILE);
-			classLoader.addJarsToClassPath(NuclosSystemParameters.getDirectory(NuclosSystemParameters.WSDL_GENERATOR_LIB_PATH));
-			classLoader.addURL(NuclosJavaCompilerComponent.JARFILE.toURL());
-		}
-		catch (IOException ex) {
-			throw new NuclosFatalException(ex);
-		}
-		finally {
+			this.cl = new RuleClassLoader(CustomCodeManager.class.getClassLoader());
+
+			JarFile jar = null;
 			try {
-				if (jar != null) {
-					jar.close();
+				nuclosJavaCompilerComponent.validate();
+				jar = new JarFile(NuclosJavaCompilerComponent.JARFILE);
+				this.cl.addJarsToClassPath(NuclosSystemParameters.getDirectory(NuclosSystemParameters.WSDL_GENERATOR_LIB_PATH));
+				this.cl.addURL(NuclosJavaCompilerComponent.JARFILE.toURL());
+
+				// see http://static.springsource.org/spring/docs/3.0.x/spring-framework-reference/html/beans.html#beans-java-instantiating-container
+				this.context = new AnnotationConfigApplicationContext();
+				this.context.setParent(this.parent);
+				this.context.setClassLoader(this.cl);
+				this.context.getBeanFactory().addBeanPostProcessor(new BeanFunctionPostProcessor());
+
+				// add all nuclet packages to scan:
+				List<String> packages = new ArrayList<String>();
+				for (EntityObjectVO nuclet : NucletDalProvider.getInstance().getEntityObjectProcessor(NuclosEntity.NUCLET).getAll()) {
+					String p = nuclet.getField("package", String.class);
+					if (!StringUtils.isNullOrEmpty(p)) {
+						packages.add(p);
+					}
+				}
+				if (packages.size() > 0) {
+					this.context.scan(packages.toArray(new String[packages.size()]));
+				}
+
+				this.context.refresh();
+				this.context.start();
+			}
+			catch (IOException ex) {
+				throw new NuclosFatalException(ex);
+			}
+			finally {
+				try {
+					if (jar != null) {
+						jar.close();
+					}
+				}
+				catch(IOException e) {
+					log.warn("getInstance: " + e);
 				}
 			}
-			catch(IOException e) {
-				log.warn("getInstance: " + e);
-			}
 		}
-		return classLoader;
-	}
-	
-	public ClassLoader getInstance() throws NuclosCompileException {
-		return getInstance(RuleClassLoader.class.getClassLoader());
+		return this.cl;
 	}
 
+	@Override
+	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+		this.parent = applicationContext;
+	}
+
+	public Object invokeFunction(String functionname, Object[] args) {
+		try {
+			getClassLoader();
+		}
+		catch (NuclosCompileException e) {
+			throw new NuclosFatalException(e);
+		}
+
+		BeanFunction bf = functions.get(functionname);
+		if (bf != null) {
+			try {
+				return bf.getMethod().invoke(bf.getBean(), args);
+			}
+			catch (IllegalArgumentException e) {
+				log.warn("Function invoked with illegal arguments.", e);
+				throw new NuclosFatalException(e);
+			}
+			catch (IllegalAccessException e) {
+				log.warn("Function invoked with illegal access.", e);
+				throw new NuclosFatalException(e);
+			}
+			catch (InvocationTargetException e) {
+				log.warn("Invoked function threw an exception:", e.getTargetException());
+				throw new NuclosFatalException(e.getTargetException());
+			}
+		}
+		else {
+			throw new NuclosFatalException("Unknown function:" + functionname);
+		}
+	}
+
+	private class BeanFunctionPostProcessor implements BeanPostProcessor {
+
+		@Override
+		public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
+			return bean;
+		}
+
+		@Override
+		public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
+			if (bean instanceof AopInfrastructureBean) {
+				// Ignore AOP infrastructure such as scoped proxies.
+				return bean;
+			}
+			Class<?> targetClass = AopUtils.getTargetClass(bean);
+			for (Method m : targetClass.getMethods()) {
+				if (m.isAnnotationPresent(Function.class)) {
+					Function f = m.getAnnotation(Function.class);
+					log.info("Processing Function " + bean.getClass() + "." + m.getName() + "[name=" + f.value()+ "]");
+					functions.put(f.value(), new BeanFunction(bean, m));
+				}
+			}
+			return bean;
+		}
+
+	}
+
+	public static class BeanFunction {
+
+		private final Object bean;
+
+		private final Method method;
+
+		public BeanFunction(Object bean, Method method) {
+			super();
+			this.bean = bean;
+			this.method = method;
+		}
+
+		public Object getBean() {
+			return bean;
+		}
+
+		public Method getMethod() {
+			return method;
+		}
+	}
 }

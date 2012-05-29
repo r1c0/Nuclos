@@ -27,6 +27,7 @@ import org.nuclos.common.dal.vo.EntityMetaDataVO;
 public abstract class ExpressionParser {
 
 	private static final Pattern EXPRESSION_PATTERN = Pattern.compile("\\#\\{([^}]*)\\}");
+	private static final Pattern FUNCTION_PATTERN = Pattern.compile("\\#F\\{([^}]*)\\}");
 
 	public static Object parse(String expression, ExpressionEvaluator eval) {
 		String[] parts = parseExpression(expression);
@@ -67,5 +68,15 @@ public abstract class ExpressionParser {
 
 	public static String getExpression(EntityMetaDataVO meta, EntityFieldMetaDataVO field) {
 		return MessageFormat.format("#'{'{0}.{1}.{2}\'}'", meta.getNuclet(), meta.getEntity(), field.getField());
+	}
+
+	public static String parse(String expression) {
+		Matcher m = FUNCTION_PATTERN.matcher(expression);
+		if (m.matches()) {
+			return expression.substring(3, expression.length() - 1);
+		}
+		else {
+			throw new InvalidExpressionException(expression);
+		}
 	}
 }

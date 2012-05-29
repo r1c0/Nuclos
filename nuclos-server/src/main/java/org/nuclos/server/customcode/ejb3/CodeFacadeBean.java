@@ -34,6 +34,7 @@ import org.nuclos.common2.exception.CommonPermissionException;
 import org.nuclos.common2.exception.CommonValidationException;
 import org.nuclos.server.common.RuleCache;
 import org.nuclos.server.common.ejb3.NuclosFacadeBean;
+import org.nuclos.server.customcode.CustomCodeManager;
 import org.nuclos.server.customcode.codegenerator.NuclosJavaCompilerComponent;
 import org.nuclos.server.customcode.codegenerator.PlainCodeGenerator;
 import org.nuclos.server.customcode.valueobject.CodeVO;
@@ -47,24 +48,31 @@ import org.springframework.transaction.annotation.Transactional;
 @RolesAllowed("Login")
 @Transactional(noRollbackFor= {Exception.class})
 public class CodeFacadeBean extends NuclosFacadeBean implements CodeFacadeRemote {
-	
+
 	private MasterDataFacadeLocal masterDataFacade;
-	
+
 	private NuclosJavaCompilerComponent nuclosJavaCompilerComponent;
-	
+
+	private CustomCodeManager customCodeManager;
+
 	public CodeFacadeBean() {
 	}
-	
+
 	@Autowired
 	final void setMasterDataFacade(MasterDataFacadeLocal masterDataFacade) {
 		this.masterDataFacade = masterDataFacade;
 	}
-	
+
 	@Autowired
 	final void setNuclosJavaCompilerComponent(NuclosJavaCompilerComponent nuclosJavaCompilerComponent) {
 		this.nuclosJavaCompilerComponent = nuclosJavaCompilerComponent;
 	}
-	
+
+	@Autowired
+	final void setCustomCodeManager(CustomCodeManager customCodeManager) {
+		this.customCodeManager = customCodeManager;
+	}
+
 	private final MasterDataFacadeLocal getMasterDataFacade() {
 		return masterDataFacade;
 	}
@@ -161,5 +169,9 @@ public class CodeFacadeBean extends NuclosFacadeBean implements CodeFacadeRemote
 				return MasterDataWrapper.getCodeVO(i);
 			}
 		});
+	}
+
+	public Object invokeFunction(String functionname, Object[] args) {
+		return customCodeManager.invokeFunction(functionname, args);
 	}
 }

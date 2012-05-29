@@ -22,14 +22,14 @@
      					   http://www.springframework.org/schema/aop/spring-aop-3.1.xsd">
 
 	<!-- JMS start -->
-	
+
 	<!--
 		Configuration basics:
 		http://activemq.apache.org/xml-configuration.html
 		http://activemq.apache.org/spring-support.html
 		http://activemq.apache.org/vm-transport-reference.html
 		http://activemq.apache.org/slow-networks-drop-large-messages.html
-		
+
 		ActiveMQ URI stuff:
 		http://activemq.apache.org/broker-configuration-uri.html
 		http://activemq.apache.org/broker-uri.html
@@ -37,8 +37,8 @@
 
 		Misc ActiveMQ stuff:
 		http://activemq.apache.org/broker-xbean-uri.html
-		http://activemq.apache.org/xbean-xml-reference-50.html	
-	 
+		http://activemq.apache.org/xbean-xml-reference-50.html
+
 	 	JmsTemplate Gotchas:
 	 	http://activemq.apache.org/jmstemplate-gotchas.html
 	 -->
@@ -47,8 +47,8 @@
 	<amq:broker id="broker" brokerName="nuclosBroker" useJmx="false" persistent="false">
 		<amq:transportConnectors>
 			<!-- Advanced Broker Configuration Syntax: http://activemq.apache.org/vm-transport-reference.html -->
-			<amq:transportConnector name="vmtransport" 
-				uri="vm://localhost?wireformat.maxInactivityDuration=100000))" />	
+			<amq:transportConnector name="vmtransport"
+				uri="vm://localhost?wireformat.maxInactivityDuration=100000))" />
 		</amq:transportConnectors>
 	</amq:broker>
 
@@ -113,7 +113,7 @@
           <property name="pubSubDomain" value="true"></property>
     </bean>
 
-    <bean id="topic.masterdataCache" class="org.springframework.jms.core.JmsTemplate" 
+    <bean id="topic.masterdataCache" class="org.springframework.jms.core.JmsTemplate"
           p:connectionFactory-ref="jmsProducerConnectionFactory"
           p:defaultDestination-ref="destinationMasterdataCache" >
           <property name="pubSubDomain" value="true"></property>
@@ -185,6 +185,15 @@
 		<property name="destinationName" value="topic/masterdataCache"></property>
 		<property name="pubSubDomain" value="true"></property>
 		<property name="messageListener" ref="nuclosAuthenticationProvider"></property>
+		<property name="errorHandler" ref="jmsErrorHandler" />
+	</bean>
+
+	<bean id="listener.customCodeManager"
+		class="org.springframework.jms.listener.SimpleMessageListenerContainer">
+		<property name="connectionFactory" ref="jmsFactory"></property>
+		<property name="destinationName" value="topic/masterdataCache"></property>
+		<property name="pubSubDomain" value="true"></property>
+		<property name="messageListener" ref="customCodeManager"></property>
 		<property name="errorHandler" ref="jmsErrorHandler" />
 	</bean>
 

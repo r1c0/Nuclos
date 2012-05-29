@@ -3994,7 +3994,7 @@
     "entity": "nuclos_nuclet",
     "searchable": false,
     "editable": true,
-    "cacheable": false,
+    "cacheable": true,
     "labelplural": "Nuclet",
     "dbentity": "V_AD_APPLICATION",
     "importexport": true,
@@ -4047,6 +4047,21 @@
         "unique": false,
         "labelres": "nuclos.entityfield.Nuclet.namespace.label",
         "descriptionres": "nuclos.entityfield.Nuclet.namespace.description"
+      },
+      {
+        "name": "package",
+        "dbfield": "STRPACKAGE",
+        "label": "Package",
+        "description": "Package",
+        "datatype": "java.lang.String",
+        "datascale": 255,
+        "formatinput": "^([a-z_]{1}[a-z0-9_]*(\.[a-z_]{1}[a-z0-9_]*)*)$",
+        "nullable": true,
+        "searchable": false,
+        "logbook": false,
+        "unique": false,
+        "labelres": "nuclos.entityfield.Nuclet.package.label",
+        "descriptionres": "nuclos.entityfield.Nuclet.package.description"
       }
     ]
   },

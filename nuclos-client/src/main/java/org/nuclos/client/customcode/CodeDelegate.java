@@ -71,4 +71,8 @@ public class CodeDelegate {
 			return Collections.emptyList();
 		}
 	}
+
+	public Object invokeFunction(String functionname, Object[] args) {
+		return facade.invokeFunction(functionname, args);
+	}
 }

@@ -65512,5 +65512,50 @@
     "resourceID": "job.validation.user.and.level",
     "locale": "de",
     "text": "Für Email-Benachrichtigungen muss ein Benutzer und eine Priorität ausgewählt werden. Lassen Sie beides leer um die Benchrichtigungen zu deaktivieren."
+  },
+  {
+    "resourceID": "nuclos.entityfield.Nuclet.package.label",
+    "locale": "i-default",
+    "text": "Package"
+  },
+  {
+    "resourceID": "nuclos.entityfield.Nuclet.package.label",
+    "locale": "en",
+    "text": "Package"
+  },
+  {
+    "resourceID": "nuclos.entityfield.Nuclet.package.label",
+    "locale": "de",
+    "text": "Package"
+  },
+  {
+    "resourceID": "nuclos.entityfield.Nuclet.package.description",
+    "locale": "i-default",
+    "text": "Base package for java classes."
+  },
+  {
+    "resourceID": "nuclos.entityfield.Nuclet.package.description",
+    "locale": "en",
+    "text": "Base package for java classes."
+  },
+  {
+    "resourceID": "nuclos.entityfield.Nuclet.package.description",
+    "locale": "de",
+    "text": "Base package for java classes."
+  },
+  {
+    "resourceID": "nuclet.validation.package.org.nuclos",
+    "locale": "i-default",
+    "text": "The package name must not begijn with \"org.nuclos\"."
+  },
+  {
+    "resourceID": "nuclet.validation.package.org.nuclos",
+    "locale": "en",
+    "text": "The package name must not begijn with \"org.nuclos\"."
+  },
+  {
+    "resourceID": "nuclet.validation.package.org.nuclos",
+    "locale": "de",
+    "text": "Der Package-Name darf nicht mit \"org.nuclos\" beginnen."
   }
 ]

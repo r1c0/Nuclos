@@ -33,7 +33,7 @@ import org.nuclos.common.expressions.FieldValueExpression;
 import org.nuclos.common2.IdUtils;
 import org.nuclos.common2.exception.CommonValidationException;
 
-public class SubformControllerScriptContext implements ScriptContext, ExpressionEvaluator {
+public class SubformControllerScriptContext extends AbstractScriptContext implements ExpressionEvaluator {
 
 	private final AbstractDetailsSubFormController<?> sfc;
 	private final Collectable c;

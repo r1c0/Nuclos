@@ -66,7 +66,7 @@ import org.springframework.stereotype.Component;
 public class NuclosJavaCompilerComponent {
 
 	private static final Logger LOG = Logger.getLogger(NuclosJavaCompilerComponent.class);
-	
+
 	//
 
 	private static final String JAVAC_CLASSNAME = "com.sun.tools.javac.api.JavacTool";
@@ -83,11 +83,11 @@ public class NuclosJavaCompilerComponent {
 
 	private static Attributes.Name NUCLOS_CODE_NUCLET = new Attributes.Name("Nuclos-Code-Nuclet");
 	private static Attributes.Name NUCLOS_CODE_HASH = new Attributes.Name("Nuclos-Code-Hash");
-	
+
 	//
-	
+
 	NuclosJavaCompilerComponent() {
-		
+
 	}
 
 	public static JavaCompiler getJavaCompilerTool() {
@@ -113,7 +113,7 @@ public class NuclosJavaCompilerComponent {
 	public long getLastSrcWriteTime() {
 		return lastSrcWriteTime;
 	}
-	
+
 	synchronized final void setLastSrcWriteTime(long time) {
 		lastSrcWriteTime = time;
 	}
@@ -147,7 +147,7 @@ public class NuclosJavaCompilerComponent {
 			dir.mkdirs();
 		return dir;
 	}
-	
+
 	private synchronized boolean moveJarToOld() {
 		boolean oldExists = false;
 		if (JARFILE.exists()) {
@@ -178,6 +178,16 @@ public class NuclosJavaCompilerComponent {
 					for(final String key : javacresult.keySet()) {
 						entries.add(key);
 						byte[] bytecode = javacresult.get(key);
+
+						// create entry for directory (required for classpath scanning)
+						if (key.contains("/")) {
+							String dir = key.substring(0, key.lastIndexOf('/') + 1);
+							if (!entries.contains(dir)) {
+								entries.add(dir);
+								jos.putNextEntry(new JarEntry(dir));
+								jos.closeEntry();
+							}
+						}
 
 						// call postCompile() (weaving) on compiled sources
 						for (CodeGenerator generator : generators) {
@@ -237,7 +247,7 @@ public class NuclosJavaCompilerComponent {
 		final List<CodeGenerator> generators = getAllCurrentGenerators();
 		compile(generators);
 	}
-	
+
 	private synchronized NuclosJavaCompiler compile(List<CodeGenerator> generators) throws NuclosCompileException {
 		final NuclosJavaCompiler c = new NuclosJavaCompiler();
 		try {
@@ -269,7 +279,7 @@ public class NuclosJavaCompilerComponent {
 			generators.add(modified);
 		}
 		final NuclosJavaCompiler c = check(generators);
-		
+
 		// If check was successful, update source on disk
 		try {
 			c.saveSrc(modified, remove);
@@ -278,7 +288,7 @@ public class NuclosJavaCompilerComponent {
 			LOG.warn("Update source on disk failed: " + e.toString(), e);
 		}
 	}
-		
+
 	private synchronized NuclosJavaCompiler check(List<CodeGenerator> generators) throws NuclosCompileException {
 		final NuclosJavaCompiler c;
 		if (JARFILE.exists()) {
@@ -301,7 +311,7 @@ public class NuclosJavaCompilerComponent {
 		return c;
 	}
 
-	synchronized void checkSrcOnDisk(List<OnDiskCodeGenerator> modified) throws NuclosCompileException {	
+	synchronized void checkSrcOnDisk(List<OnDiskCodeGenerator> modified) throws NuclosCompileException {
 		final List<CodeGenerator> generators = getAllCurrentGenerators();
 		for (OnDiskCodeGenerator cg: modified) {
 			int index = generators.indexOf(cg);
@@ -316,7 +326,7 @@ public class NuclosJavaCompilerComponent {
 		}
 		check(generators);
 	}
-	
+
 	/**
 	 * Returns the expanded class path for system parameter {@code nuclos.codegenerator.class.path}.
 	 * Note: WSDL libraries are not included.

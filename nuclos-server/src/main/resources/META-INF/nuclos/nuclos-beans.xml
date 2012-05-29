@@ -27,7 +27,7 @@
      					   http://www.springframework.org/schema/jee
        					   http://www.springframework.org/schema/jee/spring-jee-3.1.xsd">
 
-	<!-- 
+	<!--
 		Enable load-time weaving
 		http://static.springsource.org/spring/docs/3.1.x/spring-framework-reference/html/aop.html#aop-aj-ltw
 	 -->
@@ -36,14 +36,14 @@
 
 	<!--
 		Enable Annotation with @Configurable
-		http://forum.springsource.org/archive/index.php/t-39571.html 
+		http://forum.springsource.org/archive/index.php/t-39571.html
 	 -->
 	<context:annotation-config/>
 
 	<!--
 		Enable @AspectJ Support of Sprint AOP
 		http://static.springsource.org/spring/docs/3.1.x/spring-framework-reference/html/aop.html#aop-aspectj-support
-		
+
 		This is unneeded, as we use direct AspectJ support.
 	 -->
 	<!-- aop:aspectj-autoproxy/ -->
@@ -96,10 +96,10 @@
     	<context:exclude-filter expression=".*_Roo_.*" type="regex"/>
     	<context:exclude-filter expression="org.springframework.stereotype.Controller" type="annotation"/>
     </context:component-scan>
-    
-    <!-- 
+
+    <!--
     	Inject beans into the servlet context
-    	see http://andykayley.blogspot.com/2007/11/how-to-inject-spring-beans-into.html    	
+    	see http://andykayley.blogspot.com/2007/11/how-to-inject-spring-beans-into.html
 	-->
 
 	<!-- for transaction manager annotation based -->
@@ -117,7 +117,7 @@
 			</list>
 		</property>
 	</bean>
-	
+
 	<!-- Global server timer -->
 	<bean id="timer" class="java.util.Timer" destroy-method="cancel">
 		<constructor-arg><value>NuclosServerTimer</value></constructor-arg>
@@ -127,7 +127,7 @@
 	<!-- Server Startup: Logging version (and svn) information -->
 
 	<bean id="startup" class="org.nuclos.common.startup.Startup"/>
-	
+
 	<!-- Single JMS sending queue -->
 	<bean id="jmsSendOnce" class="org.nuclos.common.JMSOnceSyncDelayed">
 		<constructor-arg>
@@ -162,10 +162,10 @@
 		<property name="nuclosUserDetailsContextHolder" ref="nuclosUserDetailsContextHolder"/>
 		<property name="platformTransactionManager" ref="transactionManager"/>
 	</bean>
-	
+
 	<bean id="inputContext" class="org.nuclos.api.context.SpringInputContext" destroy-method="destroy" factory-method="getInstance">
 	</bean>
-	
+
 	<!-- Transaction and Rollback -->
 
 	<!-- bean id="attrSource" class="org.nuclos.server.common.NuclosAnnotationTransactionAttributeSource"/>
@@ -174,7 +174,7 @@
 		<property name="transactionManager" ref="transactionManager"></property>
 		<property name="transactionAttributeSource" ref="attrSource"></property>
 	</bean -->
-	
+
 	<!-- Services/Beans -->
 
 	<bean id="masterDataService" class="org.nuclos.server.masterdata.ejb3.MasterDataFacadeBean">
@@ -270,7 +270,7 @@
 	<bean id="lookupService" class="org.nuclos.server.common.ServerLocaleDelegate" />
 
 	<bean id="userService" class="org.nuclos.server.security.UserFacadeBean"/>
-	
+
 	<bean id="tasklistService" class="org.nuclos.server.tasklist.TasklistFacadeBean"/>
 
 	<bean id="parameterProvider" class="org.nuclos.server.common.ServerParameterProvider" depends-on="appContext"/>
@@ -361,7 +361,7 @@
 
   <!-- bean id="datasourceCache" class="org.nuclos.server.common.DatasourceCache">
   </bean -->
-  
+
   <bean id="nuclosDalProvider" class="org.nuclos.server.dal.provider.NuclosDalProvider"
   	init-method="buildEOProcessors">
   	<property name="entityMetaDataProcessor"><ref bean="jsonEntityMetaDataProcessor"/></property>

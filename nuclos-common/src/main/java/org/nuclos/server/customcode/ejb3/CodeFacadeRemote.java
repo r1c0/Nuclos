@@ -34,4 +34,6 @@ public interface CodeFacadeRemote {
 	void check(MasterDataVO vo) throws CommonBusinessException;
 
 	List<CodeVO> getAll() throws CommonPermissionException;
+
+	Object invokeFunction(String functionname, Object[] args);
 }
