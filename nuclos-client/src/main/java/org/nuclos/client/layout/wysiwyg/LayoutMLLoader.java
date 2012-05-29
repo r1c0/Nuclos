@@ -139,8 +139,6 @@ public class LayoutMLLoader implements LayoutMLConstants {
 
 	private boolean subformColumnMissing = false;
 
-	private Collection<MasterDataMetaVO> entities = MetaDataCache.getInstance().getMetaData();
-
 	/**
 	 * this vector collects all the WYSIWYGComponents. This is needed to attach
 	 * the LayoutMLRules to the component
@@ -1264,7 +1262,7 @@ public class LayoutMLLoader implements LayoutMLConstants {
 						// does this entity still exist?
 
 						boolean found = false;
-						for (MasterDataMetaVO subformEntity : entities) {
+						for (MasterDataMetaVO subformEntity : MetaDataCache.getInstance().getMetaData()) {
 							if (entity.equals(subformEntity.getEntityName())) {
 								found = true;
 								break;
