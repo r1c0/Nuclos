@@ -164,7 +164,7 @@ public class CollectableDateChooser extends CollectableTextComponent {
 	@Override
 	protected void updateView(CollectableField clctfValue) {
 		final Date date;
-		if (clctfValue.getValue() != null && clctfValue.getValue().equals(RelativeDate.today().toString())) {
+		if (clctfValue.getValue() != null && clctfValue.getValue().toString().equals(RelativeDate.today().toString())) {
 			date = RelativeDate.today();
 		}
 		else {

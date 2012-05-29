@@ -32,6 +32,7 @@ import org.nuclos.common.collect.collectable.CollectableValueField;
 import org.nuclos.common.collect.collectable.CollectableValueIdField;
 import org.nuclos.common.collect.collectable.searchcondition.visit.AtomicVisitor;
 import org.nuclos.common.collection.CollectionUtils;
+import org.nuclos.common2.RelativeDate;
 import org.nuclos.common2.SpringLocaleDelegate;
 
 /**
@@ -119,6 +120,8 @@ public final class CollectableComparison extends AtomicCollectableSearchConditio
 		String format = field.getFormatOutput();
 		if (format == null) {
 			if (Date.class.isAssignableFrom(field.getJavaClass())) {
+				if (comparand.getValue() != null && comparand.getValue().toString().equals(RelativeDate.today().toString()))
+					return SpringLocaleDelegate.getInstance().getMessage("datechooser.today.label", "Heute");
 				return SpringLocaleDelegate.getInstance().getDateFormat().format(comparand.getValue());
 			}
 		}
