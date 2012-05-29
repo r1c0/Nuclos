@@ -70,22 +70,25 @@ public class MandatoryFieldValidator implements Validator {
 
 		if (meta.isStateModel()) {
 			if (object.getFieldIds().containsKey(NuclosEOField.STATE.getName())) {
-				StateVO state = stateCache.getState(object.getFieldId(NuclosEOField.STATE.getName()).intValue());
-				if (!state.getMandatoryFields().isEmpty()) {
-					final String entity = meta.getEntity();
-
-					for (MandatoryFieldVO mandatoryField : state.getMandatoryFields()) {
-						final EntityFieldMetaDataVO efMeta = metaDataProvider.getEntityField(entity, mandatoryField.getFieldId().longValue());
-						final String field = efMeta.getField();
-
-						if (efMeta.getForeignEntity() != null && LangUtils.equals(efMeta.getForeignEntity(), c.getParent())) {
-							continue;
-						}
-
-						if ((efMeta.getForeignEntity() != null && object.getFieldId(field) == null)
-							|| (efMeta.getForeignEntity() == null && object.getFields().get(field) == null)) {
-							String error = StringUtils.getParameterizedExceptionMessage("CollectableUtils.3", efMeta.getLocaleResourceIdForLabel());
-							c.addFieldError(meta.getEntity(), efMeta.getField(), error);
+				Long stateId = object.getFieldId(NuclosEOField.STATE.getName());
+				if (stateId != null) {
+					StateVO state = stateCache.getState(stateId.intValue());
+					if (!state.getMandatoryFields().isEmpty()) {
+						final String entity = meta.getEntity();
+	
+						for (MandatoryFieldVO mandatoryField : state.getMandatoryFields()) {
+							final EntityFieldMetaDataVO efMeta = metaDataProvider.getEntityField(entity, mandatoryField.getFieldId().longValue());
+							final String field = efMeta.getField();
+	
+							if (efMeta.getForeignEntity() != null && LangUtils.equals(efMeta.getForeignEntity(), c.getParent())) {
+								continue;
+							}
+	
+							if ((efMeta.getForeignEntity() != null && object.getFieldId(field) == null)
+								|| (efMeta.getForeignEntity() == null && object.getFields().get(field) == null)) {
+								String error = StringUtils.getParameterizedExceptionMessage("CollectableUtils.3", efMeta.getLocaleResourceIdForLabel());
+								c.addFieldError(meta.getEntity(), efMeta.getField(), error);
+							}
 						}
 					}
 				}

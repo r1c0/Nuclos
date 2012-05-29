@@ -222,9 +222,11 @@ public abstract class DbQueryBuilder implements Serializable {
 		PreparedStringBuilder ps = new PreparedStringBuilder();
 		int index = 0;
 		for (T value : values) {
-			if (index++ > 0)
-				ps.append(", ");
-			ps.append(literalImpl(value));
+			if (value != null) {
+				if (index++ > 0)
+					ps.append(", ");
+				ps.append(literalImpl(value));
+			}
 		}
 		if (index == 0)
 			ps.append("NULL");

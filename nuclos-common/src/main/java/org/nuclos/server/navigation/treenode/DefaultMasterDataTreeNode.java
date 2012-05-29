@@ -40,6 +40,10 @@ import org.springframework.beans.factory.annotation.Configurable;
  */
 @Configurable
 public class DefaultMasterDataTreeNode extends MasterDataTreeNode<Integer> {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	
 	/**
 	 * Attention:
