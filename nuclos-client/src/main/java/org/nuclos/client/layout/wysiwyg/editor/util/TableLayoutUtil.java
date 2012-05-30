@@ -2050,8 +2050,9 @@ public class TableLayoutUtil {
 		if (tableLayout.getNumRow() > 1 && tableLayout.getNumColumn() > 1) {
 			
 			if (container.getParentEditorPanel().getParent() instanceof JPanel) {
-				//TODO peformanceleck! rekursives endloszeichnen bei panel im panel
-				((JPanel) container.getParentEditorPanel().getParent()).updateUI();
+				//TODO peformanceleck! rekursives endloszeichnen bei panel im panel 
+				// commented out since @see	NUCLOS-404.
+				//((JPanel) container.getParentEditorPanel().getParent()).updateUI();
 			}
 			if (container.getCurrentLayoutCell() != null && (container.getCurrentLayoutCell().getCellX() != 0 && container.getCurrentLayoutCell().getCellY() != 0)) {
 				g2d.setColor(Color.GREEN);
