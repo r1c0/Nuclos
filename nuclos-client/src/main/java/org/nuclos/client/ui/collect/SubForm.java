@@ -47,6 +47,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.prefs.Preferences;
 
@@ -1222,6 +1223,9 @@ public class SubForm extends JPanel
 				final Integer iColumns = subformcolumn.getColumns();
 				if (iColumns != null) {
 					clctcomp.setColumns(iColumns);
+				}
+				for (String property : subformcolumn.getProperties().keySet()) {
+					clctcomp.setProperty(property, subformcolumn.getProperty(property));
 				}
 			}
 			clctcomp.setToolTipText(clctef.getDescription());
@@ -2701,6 +2705,7 @@ public class SubForm extends JPanel
 		private final Integer width;
 		private final Integer initialPosition;
 		private final String sNextFocusComponent;
+		private Map<String, Object> mpProperties;
 
 		/**
 		 * Collection<TransferLookedUpValueAction>
@@ -2862,6 +2867,28 @@ public class SubForm extends JPanel
 		public CollectableFieldsProvider getValueListProvider() {
 			return this.valuelistprovider;
 		}
+		
+	    public Object getProperty(String sName) {
+			return getProperties().get(sName);
+		}
+
+	    public void setProperty(String sName, Object oValue) {
+			synchronized (this) {
+				if (mpProperties == null) {
+					mpProperties = new TreeMap<String, Object>();
+				}
+			}
+			mpProperties.put(sName, oValue);
+
+			assert LangUtils.equals(getProperty(sName), oValue);
+		}
+
+	    public synchronized Map<String, Object> getProperties() {
+			final Map<String, Object> result = (mpProperties == null) ? Collections.<String, Object>emptyMap() : Collections.unmodifiableMap(mpProperties);
+			assert result != null;
+			return result;
+		}
+	    
 	}	// inner class Column
 
 	private class SubFormPopupMenuMouseAdapter extends PopupMenuMouseAdapter {

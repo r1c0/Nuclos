@@ -2957,44 +2957,48 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 				final String sName = attributes.getValue(ATTRIBUTE_NAME);
 				final String oValue = attributes.getValue(ATTRIBUTE_VALUE);
 
-				//NUCLEUSINT-1159
-				//NUCLOSINT-743
-				ComponentBuilder c = stack.peekComponentBuilder();
-				if (c.getComponent() instanceof LayoutComponent) {
-					LayoutComponent lc = (LayoutComponent) c.getComponent();
-					if (lc.getComponentProperties() != null) {
-						for (Property pt : lc.getComponentProperties()) {
-							if (pt.name.equals(sName)) {
-								if (Boolean.class.equals(pt.type) || boolean.class.equals(pt.type)) {
-									lc.setProperty(sName, ATTRIBUTEVALUE_YES.equals(oValue));
-								} else if (Integer.class.equals(pt.type) || int.class.equals(pt.type)) {
-									lc.setProperty(sName, StringUtils.looksEmpty(oValue)? null : Integer.parseInt(oValue));
-								} else {
-									lc.setProperty(sName, oValue);
+				if (BuildFormHandler.this.subformcolumn != null) {
+					BuildFormHandler.this.subformcolumn.setProperty(sName, oValue);
+				} else {
+					//NUCLEUSINT-1159
+					//NUCLOSINT-743
+					ComponentBuilder c = stack.peekComponentBuilder();
+					if (c.getComponent() instanceof LayoutComponent) {
+						LayoutComponent lc = (LayoutComponent) c.getComponent();
+						if (lc.getComponentProperties() != null) {
+							for (Property pt : lc.getComponentProperties()) {
+								if (pt.name.equals(sName)) {
+									if (Boolean.class.equals(pt.type) || boolean.class.equals(pt.type)) {
+										lc.setProperty(sName, ATTRIBUTEVALUE_YES.equals(oValue));
+									} else if (Integer.class.equals(pt.type) || int.class.equals(pt.type)) {
+										lc.setProperty(sName, StringUtils.looksEmpty(oValue)? null : Integer.parseInt(oValue));
+									} else {
+										lc.setProperty(sName, oValue);
+									}
+									break;
 								}
-								break;
 							}
 						}
+					} else
+					if (c.getComponent() instanceof JButton) {
+						JButton button = ((JButton)c.getComponent());
+						if (STATIC_BUTTON.STATE_CHANGE_ACTION.equals(button.getActionCommand())) {
+							if ("targetState".equals(sName)) {
+								button.setActionCommand(button.getActionCommand() + "_targetState=" + oValue);
+							}
+						} else if (STATIC_BUTTON.EXECUTE_RULE_ACTION.equals(button.getActionCommand())) {
+							if ("ruletoexecute".equals(sName)) {
+								button.setActionCommand(button.getActionCommand() + "_ruletoexecute=" + oValue);
+							}
+						} else if (STATIC_BUTTON.GENERATOR_ACTION.equals(button.getActionCommand())) {
+							if ("generatortoexecute".equals(sName)) {
+								button.setActionCommand(button.getActionCommand() + "_generatortoexecute=" + oValue);
+							}
+						}
+					} else if (stack.peekComponentBuilder() instanceof CollectableComponentBuilder) {
+						final CollectableComponentBuilder ccb = (CollectableComponentBuilder) stack.peekComponentBuilder();
+						ccb.getCollectableComponent().setProperty(sName, oValue);
 					}
-				} else
-				if (c.getComponent() instanceof JButton) {
-					JButton button = ((JButton)c.getComponent());
-					if (STATIC_BUTTON.STATE_CHANGE_ACTION.equals(button.getActionCommand())) {
-						if ("targetState".equals(sName)) {
-							button.setActionCommand(button.getActionCommand() + "_targetState=" + oValue);
-						}
-					} else if (STATIC_BUTTON.EXECUTE_RULE_ACTION.equals(button.getActionCommand())) {
-						if ("ruletoexecute".equals(sName)) {
-							button.setActionCommand(button.getActionCommand() + "_ruletoexecute=" + oValue);
-						}
-					} else if (STATIC_BUTTON.GENERATOR_ACTION.equals(button.getActionCommand())) {
-						if ("generatortoexecute".equals(sName)) {
-							button.setActionCommand(button.getActionCommand() + "_generatortoexecute=" + oValue);
-						}
-					}
-				} else if (stack.peekComponentBuilder() instanceof CollectableComponentBuilder) {
-					final CollectableComponentBuilder ccb = (CollectableComponentBuilder) stack.peekComponentBuilder();
-					ccb.getCollectableComponent().setProperty(sName, oValue);
 				}
 			}
 		}

@@ -22,8 +22,11 @@ import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.awt.font.FontRenderContext;
+import java.awt.font.TextAttribute;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -185,6 +188,17 @@ public class NuclosCollectableTextArea extends CollectableTextArea {
 		}
 
 		return result;
+	}
+
+	@Override
+	public void setProperty(String sName, Object oValue) {
+		super.setProperty(sName, oValue);
+		if ("font-family".equals(sName)) {
+			Map<TextAttribute, Object> fontAttributes = new HashMap<TextAttribute, Object>(getJTextArea().getFont().getAttributes());
+			fontAttributes.put(TextAttribute.FAMILY, oValue);
+			final Font newFont = new Font(fontAttributes);
+			getJTextArea().setFont(newFont);
+		}
 	}
 
 }	// class NuclosCollectableTextArea

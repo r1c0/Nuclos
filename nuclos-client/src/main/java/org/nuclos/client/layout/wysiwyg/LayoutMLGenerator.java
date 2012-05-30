@@ -315,11 +315,21 @@ public class LayoutMLGenerator implements LayoutMLConstants {
 		block.append(">");
 
 		block.append(getLayoutMLTranslationsFromProperty(column.getProperties(), blockDeep + 1));
+		
+		boolean lb = false;
 		WYSIWYGValuelistProvider wysiwygStaticValuelistProvider = (WYSIWYGValuelistProvider) column.getProperties().getProperty(WYSIWYGCollectableComponent.PROPERTY_VALUELISTPROVIDER).getValue();		
 		if (wysiwygStaticValuelistProvider != null && (!wysiwygStaticValuelistProvider.getType().equals(""))) {
 			block.append(getLayoutMLValueListProvider(wysiwygStaticValuelistProvider, blockDeep + 1));
+			lb = true;
 		}
+		WYSIYWYGProperty collectableComponentProperties = (WYSIYWYGProperty) column.getProperties().getProperty(WYSIWYGCollectableComponent.PROPERTY_COLLECTABLECOMPONENTPROPERTY).getValue();
+		if (collectableComponentProperties != null)
+			if (collectableComponentProperties.getAllPropertyEntries().size() > 0) {
+				block.append(getLayoutMLCollectableComponentProperty(collectableComponentProperties, blockDeep + 1));
+				lb = true;
+			}
 
+		if (lb) block.linebreak();
 		block.append("</" + ELEMENT_SUBFORMCOLUMN + ">");
 		return block.getStringBuffer();
 	}
@@ -1813,12 +1823,13 @@ public class LayoutMLGenerator implements LayoutMLConstants {
 
 		Vector<WYSIYWYGPropertySet> vector = wysiwygProperty.getAllPropertyEntries();
 
-		for (WYSIYWYGPropertySet propertySet : vector) {
+		for (Iterator<WYSIYWYGPropertySet> it = vector.iterator(); it.hasNext(); ) {
+			WYSIYWYGPropertySet propertySet = it.next();
 			block.append("<" + ELEMENT_PROPERTY);
 			block.append(" " + ATTRIBUTE_NAME + "=\"" + StringUtils.xmlEncode(propertySet.getPropertyName()) + "\"");
 			block.append(" " + ATTRIBUTE_VALUE + "=\"" + StringUtils.xmlEncode(propertySet.getPropertyValue()) + "\"");
 			block.append("/>");
-			if (vector.iterator().hasNext())
+			if (it.hasNext())
 				block.linebreak();
 		}
 

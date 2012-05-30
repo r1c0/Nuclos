@@ -20,7 +20,9 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.font.TextAttribute;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -28,11 +30,15 @@ import javax.annotation.PostConstruct;
 import javax.swing.JMenuItem;
 import javax.swing.border.Border;
 
+import org.nuclos.client.layout.wysiwyg.component.properties.ComponentProperties;
+import org.nuclos.client.layout.wysiwyg.component.properties.PropertyCollectableComponentProperty;
 import org.nuclos.client.layout.wysiwyg.component.properties.PropertyValue;
+import org.nuclos.client.layout.wysiwyg.editor.util.valueobjects.WYSIYWYGPropertySet;
 import org.nuclos.client.synthetica.NuclosThemeSettings;
 import org.nuclos.client.ui.ColorProvider;
 import org.nuclos.client.ui.labeled.LabeledTextArea;
 import org.nuclos.common.NuclosBusinessException;
+import org.nuclos.common2.exception.CommonBusinessException;
 import org.springframework.beans.factory.annotation.Configurable;
 
 /**
@@ -158,6 +164,7 @@ public class WYSIWYGCollectableTextArea extends WYSIWYGCollectableComponent {
 			// NUCLEUSINT-276 NUCLEUSINT-192
 			(component).getJLabel().setFont(font);
 			(component).getJTextArea().setFont(font);
+			transferPropertiesToComponent();
 		}
 	}
 
@@ -219,6 +226,36 @@ public class WYSIWYGCollectableTextArea extends WYSIWYGCollectableComponent {
 	public void validateProperties(Map<String, PropertyValue<Object>> values) throws NuclosBusinessException {
 	}
 	
+	@Override
+	public void setProperties(ComponentProperties properties) {
+		super.setProperties(properties);
+		transferPropertiesToComponent();
+	}
+
+	@Override
+	public void setProperty(String property, PropertyValue<?> value,
+			Class<?> valueClass) throws CommonBusinessException {
+		super.setProperty(property, value, valueClass);
+		transferPropertiesToComponent();
+	}
+
+	private void transferPropertiesToComponent() {
+		if (component != null) {
+			PropertyCollectableComponentProperty clctProperties = 
+					(PropertyCollectableComponentProperty) super.getProperties().getProperty(WYSIWYGCollectableComponent.PROPERTY_COLLECTABLECOMPONENTPROPERTY);
+			if (clctProperties != null) {
+				for (WYSIYWYGPropertySet propSet : clctProperties.getValue().getAllPropertyEntries()) {
+					if ("font-family".equals(propSet.getPropertyName())) {
+						final Map<TextAttribute, Object> fontAttributes = new HashMap<TextAttribute, Object>(component.getJTextArea().getFont().getAttributes());
+						fontAttributes.put(TextAttribute.FAMILY, propSet.getPropertyValue());
+						final Font newFont = new Font(fontAttributes);
+						component.getJTextArea().setFont(newFont);
+					}
+				}
+			}
+		}
+	}
+
 	@Configurable
 	private class WYSIWYGLabeledTextArea extends LabeledTextArea {
 

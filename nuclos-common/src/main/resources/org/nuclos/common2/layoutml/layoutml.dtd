@@ -99,7 +99,7 @@ foreignkeyfield-to-parent CDATA #IMPLIED
 parent-subform CDATA #IMPLIED
 >
 
-<!ELEMENT subform-column (translations?,valuelist-provider?)>
+<!ELEMENT subform-column (translations?,valuelist-provider?,property*)>
 <!ATTLIST subform-column
 name CDATA #REQUIRED
 label CDATA #IMPLIED
