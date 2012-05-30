@@ -77,4 +77,5 @@ public interface CollectableComponentTypes {
 	public static final int TYPE_HYPERLINK = 12;
 	
 	public static final int TYPE_EMAIL = 13;
+
 }  // class CollectableComponentTypes

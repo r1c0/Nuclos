@@ -16,7 +16,9 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.common.dal.vo;
 
+import org.nuclos.common.DefaultComponentTypes;
 import org.nuclos.common.NuclosScript;
+import org.nuclos.common.attribute.ComponentType;
 import org.nuclos.common2.LangUtils;
 
 
@@ -177,6 +179,12 @@ public class EntityFieldMetaDataVO extends AbstractDalVOWithVersion implements C
 	}
 
 	public String getDefaultComponentType() {
+		if (defaultComponentType == null) {
+			if (getForeignEntity() != null)
+				return !isSearchable() ? DefaultComponentTypes.COMBOBOX : DefaultComponentTypes.LISTOFVALUES;
+			if (getLookupEntity() != null)
+				return !isSearchable() ? DefaultComponentTypes.COMBOBOX : DefaultComponentTypes.LISTOFVALUES;
+		}
 		return defaultComponentType;
 	}
 

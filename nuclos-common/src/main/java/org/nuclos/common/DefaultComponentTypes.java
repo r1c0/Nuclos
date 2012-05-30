@@ -17,8 +17,59 @@
 package org.nuclos.common;
 
 public interface DefaultComponentTypes {
+	/**
+	 * Component type: textfield
+	 */
+	public static final String TEXTFIELD = "Text";
+	/**
+	 * Component type: combobox
+	 */
+	public static final String COMBOBOX = "Combobox";
+	/**
+	 * Component type: textarea
+	 */
+	public static final String TEXTAREA = "Textarea";
+	/**
+	 * Component type: checkbox
+	 */
+	public static final String CHECKBOX = "Checkbox";
+	/**
+	 * Component type: datechooser
+	 */
+	public static final String DATECHOOSER = "DateChooser";
+	/**
+	 * Component type: radiogroup
+	 */
+	public static final String OPTIONGROUP = "OptionGroup";
+	/**
+	 * Component type: list of values (lov)
+	 */
+	public static final String LISTOFVALUES = "ListOfValues";
+	/**
+	 * Component type: textfield
+	 */
+	public static final String IDTEXTFIELD = "IDText";
+	/**
+	 * Component type: date chooser
+	 */
+	public static final String FILECHOOSER = "FileChooser";
+	/**
+	 * Component type: image
+	 */
+	public static final String IMAGE = "Image";
+	
+	/**
+	 * Component type: password
+	 */
+	public static final String PASSWORDFIELD = "Password";
 
+	/**
+	 * Component type: hyperlink
+	 */
 	public static final String HYPERLINK = "Hyperlink";
 	
+	/**
+	 * Component type: email
+	 */
 	public static final String EMAIL = "Email";
 }

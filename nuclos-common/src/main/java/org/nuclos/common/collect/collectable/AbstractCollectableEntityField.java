@@ -89,7 +89,15 @@ public abstract class AbstractCollectableEntityField implements CollectableEntit
 		final int result;
 		if (this.isIdField() && this.getJavaClass() != NuclosImage.class) {
 			// default is combobox. listofvalues must be specified as controltype explicitly.
-			result = CollectableComponentTypes.TYPE_COMBOBOX;
+			if (getDefaultComponentType() != null) {
+				if (StringUtils.equalsIgnoreCase(getDefaultComponentType(), DefaultComponentTypes.COMBOBOX))
+					result = CollectableComponentTypes.TYPE_COMBOBOX;
+				else if (StringUtils.equalsIgnoreCase(getDefaultComponentType(), DefaultComponentTypes.LISTOFVALUES))
+					result = CollectableComponentTypes.TYPE_LISTOFVALUES;
+				else 
+					result = CollectableComponentTypes.TYPE_COMBOBOX;
+			} else
+				result = CollectableComponentTypes.TYPE_COMBOBOX;
 		}
 		else {
 			result = CollectableUtils.getCollectableComponentTypeForClass(this.getJavaClass());

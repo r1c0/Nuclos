@@ -147,7 +147,7 @@ public class CollectableEOEntityField extends AbstractCollectableEntityField {
 
 	@Override
 	public boolean isReferencing() {
-		return efMeta.getForeignEntity() != null;
+		return efMeta.getForeignEntity() != null || efMeta.getLookupEntity() != null;
 	}
 
 	@Override
