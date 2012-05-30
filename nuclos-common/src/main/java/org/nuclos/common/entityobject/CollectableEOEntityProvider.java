@@ -33,30 +33,23 @@ import org.nuclos.common.dal.vo.EntityMetaDataVO;
 public abstract class CollectableEOEntityProvider implements CollectableEntityProvider {
 
 	private final MetaDataProvider metaDataProvider;
-	private final Map<String, CollectableEOEntity> collectableEntities;
 
 	protected CollectableEOEntityProvider(MetaDataProvider metaDataProvider) {
 		this.metaDataProvider = metaDataProvider;
-		this.collectableEntities = new HashMap<String, CollectableEOEntity>();
 	}
-	
+
 	/**
 	 * This implementation is guaranteed to return a CollectableEOEntity.
 	 */
 	@Override
 	public CollectableEntity getCollectableEntity(String entityName) throws NoSuchElementException {
-		CollectableEOEntity clctEntity = collectableEntities.get(entityName);
-		if (clctEntity == null) {
-			try {
-				EntityMetaDataVO entity = metaDataProvider.getEntity(entityName);
-				Map<String, EntityFieldMetaDataVO> fields = new HashMap<String, EntityFieldMetaDataVO>(metaDataProvider.getAllEntityFieldsByEntity(entityName));
-				clctEntity = new CollectableEOEntity(entity, fields);
-				collectableEntities.put(entityName, clctEntity);
-			} catch (Exception ex) {
-				throw new NoSuchElementException(ex.getMessage());
-			}
+		try {
+			EntityMetaDataVO entity = metaDataProvider.getEntity(entityName);
+			Map<String, EntityFieldMetaDataVO> fields = new HashMap<String, EntityFieldMetaDataVO>(metaDataProvider.getAllEntityFieldsByEntity(entityName));
+			return new CollectableEOEntity(entity, fields);
+		} catch (Exception ex) {
+			throw new NoSuchElementException(ex.getMessage());
 		}
-		return clctEntity;
 	}
 
 	@Override
