@@ -65557,5 +65557,20 @@
     "resourceID": "nuclet.validation.package.org.nuclos",
     "locale": "de",
     "text": "Der Package-Name darf nicht mit \"org.nuclos\" beginnen."
+  },
+  {
+    "resourceID": "miScriptOutput",
+    "locale": "i-default",
+    "text": "Output (Scripting)"
+  },
+  {
+    "resourceID": "miScriptOutput",
+    "locale": "en",
+    "text": "Output (Scripting)"
+  },
+  {
+    "resourceID": "miScriptOutput",
+    "locale": "de",
+    "text": "Ausgabe (Scripting)"
   }
 ]

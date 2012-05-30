@@ -22,7 +22,6 @@ import org.nuclos.api.context.ScriptContext;
 import org.nuclos.common.collect.collectable.Collectable;
 import org.nuclos.common.expressions.EntityExpression;
 import org.nuclos.common.expressions.ExpressionEvaluator;
-import org.nuclos.common.expressions.ExpressionParser;
 import org.nuclos.common.expressions.FieldIdExpression;
 import org.nuclos.common.expressions.FieldRefObjectExpression;
 import org.nuclos.common.expressions.FieldValueExpression;
@@ -54,15 +53,5 @@ public class CollectableScriptContext extends AbstractScriptContext implements E
 	@Override
 	public List<ScriptContext> evaluate(EntityExpression exp) {
 		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public Object propertyMissing(String name) {
-		return ExpressionParser.parse(name, this);
-	}
-
-	@Override
-	public void propertyMissing(String name, Object value) {
-		throw new UnsupportedOperationException("expressions are read only");
 	}
 }

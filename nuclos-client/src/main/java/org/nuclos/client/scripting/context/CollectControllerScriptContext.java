@@ -27,7 +27,6 @@ import org.nuclos.common.collect.collectable.Collectable;
 import org.nuclos.common.collect.exception.CollectableFieldFormatException;
 import org.nuclos.common.expressions.EntityExpression;
 import org.nuclos.common.expressions.ExpressionEvaluator;
-import org.nuclos.common.expressions.ExpressionParser;
 import org.nuclos.common.expressions.FieldIdExpression;
 import org.nuclos.common.expressions.FieldRefObjectExpression;
 import org.nuclos.common.expressions.FieldValueExpression;
@@ -83,7 +82,7 @@ public class CollectControllerScriptContext extends AbstractScriptContext implem
 
 				try {
 					for (Collectable clct : ctl.getCollectables(false, false, false)) {
-						contexts.add(new SubformControllerScriptContext(ctl, clct));
+						contexts.add(new SubformControllerScriptContext(controller, ctl, clct));
 					}
 				} catch (CommonValidationException e) {
 					// TODO Auto-generated catch block
@@ -93,15 +92,5 @@ public class CollectControllerScriptContext extends AbstractScriptContext implem
 			}
 		}
 		return null;
-	}
-
-	@Override
-	public Object propertyMissing(String name) {
-		return ExpressionParser.parse(name, this);
-	}
-
-	@Override
-	public void propertyMissing(String name, Object value) {
-		throw new UnsupportedOperationException("expressions are read only");
 	}
 }

@@ -131,7 +131,7 @@ public abstract class DetailsSubFormController<Clct extends Collectable>
 		extends AbstractDetailsSubFormController<Clct> implements NuclosDropTargetVisitor {
 
 	private static final Logger LOG = Logger.getLogger(DetailsSubFormController.class);
-	
+
 	/**
 	 * the id of the (current) parent object.
 	 */
@@ -157,7 +157,7 @@ public abstract class DetailsSubFormController<Clct extends Collectable>
 			}
 		}
 	};
-	
+
 	private final ListSelectionListener multieditSelectionListener = new ListSelectionListener() {
 		@Override
 		public void valueChanged(ListSelectionEvent e) {
@@ -169,7 +169,7 @@ public abstract class DetailsSubFormController<Clct extends Collectable>
 			}
 		}
 	};
-	
+
 	/**
 	 * @param parent
 	 * @param parentMdi
@@ -180,7 +180,7 @@ public abstract class DetailsSubFormController<Clct extends Collectable>
 	 * @param subform
 	 * @param prefsUserParent the preferences of the parent controller
 	 */
-	public DetailsSubFormController(CollectableEntity clcte, MainFrameTab tab, 
+	public DetailsSubFormController(CollectableEntity clcte, MainFrameTab tab,
 			CollectableComponentModelProvider clctcompmodelproviderParent, String sParentEntityName, final SubForm subform,
 			Preferences prefsUserParent, EntityPreferences entityPrefs, CollectableFieldsProviderFactory clctfproviderfactory) {
 		super(clcte, tab, clctcompmodelproviderParent, sParentEntityName, subform,
@@ -232,9 +232,9 @@ public abstract class DetailsSubFormController<Clct extends Collectable>
 			}
 
 		});
-		
+
 		this.fixedcolumnheader.getHeaderTable().getColumnModel().addColumnModelListener(newSubFormTablePreferencesUpdateListener());
-		
+
 		List<String> documentFields = new ArrayList<String>();
 		for (String field : getCollectableEntity().getFieldNames()) {
 			CollectableEntityField cef = getCollectableEntity().getEntityField(field);
@@ -242,14 +242,14 @@ public abstract class DetailsSubFormController<Clct extends Collectable>
 				documentFields.add(field);
 			}
 		}
-		
+
 		if (documentFields.size() == 1 && isColumnEnabled(documentFields.get(0))) {
 			getSubForm().setToolbarFunctionState(ToolbarFunction.DOCUMENTIMPORT, ToolbarFunctionState.ACTIVE);
 		}
 		else {
 			getSubForm().setToolbarFunctionState(ToolbarFunction.DOCUMENTIMPORT, ToolbarFunctionState.HIDDEN);
 		}
-		
+
 		ListenerUtil.registerSubFormToolListener(getSubForm(), this, new SubFormToolListener() {
 			@Override
 			public void toolbarAction(String actionCommand) {
@@ -265,7 +265,7 @@ public abstract class DetailsSubFormController<Clct extends Collectable>
 	 */
 	List<JComponent> getRowIndicatorActions() {
 		List<JComponent> result = new LinkedList<JComponent>();
-		
+
 		getSubForm().addToolbarMenuItems(result);
 		result.add(new JSeparator());
 
@@ -354,7 +354,7 @@ public abstract class DetailsSubFormController<Clct extends Collectable>
 		{
 			return result;
 		}
-		
+
 		final JMenuItem miPopupSortThisColumnAsc = new JMenuItem(
 				SpringLocaleDelegate.getInstance().getMessage("DetailsSubFormController.6","Aufsteigen sortieren"));
 		miPopupSortThisColumnAsc.setIcon(Icons.getInstance().getIconUp16());
@@ -408,13 +408,13 @@ public abstract class DetailsSubFormController<Clct extends Collectable>
 		});
 		result.add(miPopupSortThisColumnNone);
 		result.add(new JSeparator());
-		
+
 		final CollectableEntityField clctef = getCollectableTableModel().getCollectableEntityField(iColumn);
 		if (clctef.getJavaClass() == Boolean.class && getSubForm().isColumnVisible(clctef.getName())) {
 
 			JMenuItem mi1 = new JMenuItem(getSpringLocaleDelegate().getMessage("DetailsSubFormController.1", "Alle setzen"));
 			mi1.addActionListener(new ActionListener() {
-	
+
 				@Override
 				public void actionPerformed(ActionEvent e) {
 					List<Clct> clcts = DetailsSubFormController.this.getCollectables();
@@ -436,7 +436,7 @@ public abstract class DetailsSubFormController<Clct extends Collectable>
 			mi1.setEnabled(!getSubForm().getSubFormFilter().isFilteringActive());
 			JMenuItem mi2 = new JMenuItem(getSpringLocaleDelegate().getMessage("DetailsSubFormController.2", "Alle zurücksetzen"));
 			mi2.addActionListener(new ActionListener() {
-	
+
 				@Override
 				public void actionPerformed(ActionEvent e) {
 					boolean blnChanged = false;
@@ -456,11 +456,11 @@ public abstract class DetailsSubFormController<Clct extends Collectable>
 				}
 			});
 			mi2.setEnabled(!getSubForm().getSubFormFilter().isFilteringActive());
-	
+
 			result.add(mi1);
 			result.add(mi2);
 			result.add(new JSeparator());
-	
+
 			JMenuItem mi3 = new JMenuItem(getSpringLocaleDelegate().getMessage(
 					"DetailsSubFormController.setselected", "Selektierte Zeilen setzen"));
 			mi3.addActionListener(new ActionListener() {
@@ -495,14 +495,14 @@ public abstract class DetailsSubFormController<Clct extends Collectable>
 				}
 			});
 			mi4.setEnabled(!getSubForm().getSubFormFilter().isFilteringActive() && getSelectedCollectables().size() > 0);
-	
+
 			result.add(mi3);
 			result.add(mi4);
 		}
-		
+
 		if (!result.isEmpty())
 			result.add(new JSeparator());
-		
+
 		if (SecurityCache.getInstance().isActionAllowed(Actions.ACTION_WORKSPACE_CUSTOMIZE_ENTITY_AND_SUBFORM_COLUMNS) ||
 					!MainFrame.getWorkspace().isAssigned()) {
 				final JMenuItem miPopupHideThisColumn = new JMenuItem(
@@ -511,7 +511,7 @@ public abstract class DetailsSubFormController<Clct extends Collectable>
 				miPopupHideThisColumn.addActionListener(new ActionListener() {
 					@Override
 	                public void actionPerformed(ActionEvent ev) {
-						fixedcolumnheader.hideCollectableEntityFieldColumn(clctef, 
+						fixedcolumnheader.hideCollectableEntityFieldColumn(clctef,
 								new AbstractAction() {
 							@Override
 							public void actionPerformed(ActionEvent e) {
@@ -528,18 +528,18 @@ public abstract class DetailsSubFormController<Clct extends Collectable>
 				result.add(miPopupHideThisColumn);
 				result.add(new JSeparator());
 			}
-		
+
 		if (SecurityCache.getInstance().isActionAllowed(Actions.ACTION_WORKSPACE_ASSIGN) &&
 				MainFrame.getWorkspace().isAssigned()) {
 			final JMenuItem miPublishColumns = new JMenuItem(new AbstractAction(getSpringLocaleDelegate().getMessage(
-					"DetailsSubFormController.4", "Spalten in Vorlage publizieren"), 
+					"DetailsSubFormController.4", "Spalten in Vorlage publizieren"),
 					Icons.getInstance().getIconRedo16()) {
 				@Override
 				public void actionPerformed(ActionEvent e) {
 					try {
 						ServiceLocator.getInstance().getFacade(PreferencesFacadeRemote.class).publishSubFormPreferences(
-								MainFrame.getWorkspace(), 
-								getCollectController().getEntity(), 
+								MainFrame.getWorkspace(),
+								getCollectController().getEntity(),
 								getSubFormPrefs());
 					} catch (CommonBusinessException e1) {
 						Errors.getInstance().showExceptionDialog(getTab(), e1);
@@ -548,26 +548,26 @@ public abstract class DetailsSubFormController<Clct extends Collectable>
 			});
 			result.add(miPublishColumns);
 		}
-		
+
 		JMenuItem miRestoreColumns = new JMenuItem(new AbstractAction(
-				getSpringLocaleDelegate().getMessage("DetailsSubFormController.3", "Alle Spalten auf Vorlage zurücksetzen"), 
+				getSpringLocaleDelegate().getMessage("DetailsSubFormController.3", "Alle Spalten auf Vorlage zurücksetzen"),
 				Icons.getInstance().getIconUndo16()) {
 			private static final long serialVersionUID = 1L;
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				try {
 					WorkspaceUtils.restoreSubFormPreferences(getSubFormPrefs(), getCollectController().getEntity());
-					
+
 					final List<Integer> widths = WorkspaceUtils.getColumnWidths(getSubFormPrefs());
 					final List<CollectableEntityField> allFields = fixedcolumnheader.getAllAvailableFields();
 					final List<CollectableEntityField> selected = WorkspaceUtils.getSelectedFields(getSubFormPrefs(), allFields);
 					final Set<CollectableEntityField> fixed = WorkspaceUtils.getFixedFields(getSubFormPrefs(), selected);
-					
+
 					makeSureSelectedFieldsAreNonEmpty(getCollectableEntity(), selected);
-					
+
 					fixedcolumnheader.changeSelectedColumns(
-							selected, 
-							fixed, 
+							selected,
+							fixed,
 							widths,
 							null,
 							new AbstractAction() {
@@ -609,7 +609,7 @@ public abstract class DetailsSubFormController<Clct extends Collectable>
 	/**
 	 * @return the responsible CollectController of this SubForm
 	 */
-
+	@Override
 	public EntityCollectController<?> getCollectController() {
 		return this.cltctl;
 	}
@@ -631,7 +631,7 @@ public abstract class DetailsSubFormController<Clct extends Collectable>
 
 		if(getSubForm() != null)
 			getSubForm().storeTableFilter(getParentEntityName());
-		
+
 		fixedcolumnheader = null;
 
 		super.close();
@@ -666,27 +666,27 @@ public abstract class DetailsSubFormController<Clct extends Collectable>
 	}
 
 	/**
-	 * validates the Collectables in this subform and the childsubforms if any, 
+	 * validates the Collectables in this subform and the childsubforms if any,
 	 * sets the given parent id in the foreign key field of each Collectable
 	 * and returns them.
-	 * 
+	 *
 	 * @return All collectables, even the removed ones.
 	 * @postcondition result != null
 	 */
-	public List<Clct> getAllCollectables(Object oParentId, Collection<DetailsSubFormController<Clct>> collSubForms, 
+	public List<Clct> getAllCollectables(Object oParentId, Collection<DetailsSubFormController<Clct>> collSubForms,
 			boolean bSetParent, Clct clct) throws CommonValidationException {
 		final String entity = getEntityAndForeignKeyFieldName().getEntityName();
 		final List<Clct> result;
-		
+
 		if (bSetParent) {
 			result= getCollectables(oParentId, true, true, true);
 		}
 		else {
 			if (clct != null && clct instanceof CollectableMasterData) {
 				// don't get collectables from table model for dependant data of subform childs
-				final DependantCollectableMasterDataMap dcmdm = 
+				final DependantCollectableMasterDataMap dcmdm =
 						((CollectableMasterData)clct).getDependantCollectableMasterDataMap();
-				result = prepareAndValidateCollectables((List<Clct>)dcmdm.getValues(entity), 
+				result = prepareAndValidateCollectables((List<Clct>)dcmdm.getValues(entity),
 						true, false, true);
 			}
 			else {
@@ -994,8 +994,8 @@ public abstract class DetailsSubFormController<Clct extends Collectable>
 		boolean result = true;
 		if (result && getSubForm().getDeleteEnabledScript() != null) {
 			Collectable c = getCollectables().get(row);
-			
-			Object o = ScriptEvaluator.getInstance().eval(getSubForm().getDeleteEnabledScript(), new SubformControllerScriptContext(DetailsSubFormController.this, c), result);
+
+			Object o = ScriptEvaluator.getInstance().eval(getSubForm().getDeleteEnabledScript(), new SubformControllerScriptContext(getCollectController(), DetailsSubFormController.this, c), result);
 			if (o instanceof Boolean) {
 				result = (Boolean) o;
 			}
@@ -1037,7 +1037,7 @@ public abstract class DetailsSubFormController<Clct extends Collectable>
 
 	protected void insertNewRowFromDrop(File file) throws IOException, NuclosBusinessException {
 		final Clct clctNew = insertNewRow();
-		
+
 		final InputStream fis = new BufferedInputStream(new FileInputStream(file));
 		final byte[] b;
 		try {
@@ -1047,7 +1047,7 @@ public abstract class DetailsSubFormController<Clct extends Collectable>
 		finally {
 			fis.close();
 		}
-		
+
 		GenericObjectDocumentFile docfile = new GenericObjectDocumentFile(file.getName(), b);
 		final String sFieldDocument = getDocumentField();
 		clctNew.setField(sFieldDocument, new CollectableValueField(docfile));
@@ -1068,7 +1068,7 @@ public abstract class DetailsSubFormController<Clct extends Collectable>
 		for(Iterator<File> it = files.iterator(); it.hasNext(); ) {
 			File file = it.next();
 			CollectableMasterData clma = (CollectableMasterData) DetailsSubFormController.this.getCollectables().get(hereRow);
-			
+
 			final InputStream fis = new BufferedInputStream(new FileInputStream(file));
 			final byte[] b;
 			try {
@@ -1078,7 +1078,7 @@ public abstract class DetailsSubFormController<Clct extends Collectable>
 			finally {
 				fis.close();
 			}
-			
+
 			GenericObjectDocumentFile docfile = new GenericObjectDocumentFile(file.getName(), b);
 			final String sFieldDocument = getDocumentField();
 			CollectableValueField valueField = new CollectableValueField(docfile);
@@ -1113,12 +1113,12 @@ public abstract class DetailsSubFormController<Clct extends Collectable>
 
 		Transferable trans = dtde.getTransferable();
 		DataFlavor flavors[] = trans.getTransferDataFlavors();
-		
+
 		// check for File support
 		boolean blnAcceptFileChosser = false;
 		boolean blnAcceptFileList = false;
 		boolean blnAcceptEmail = false;
-		
+
 		// check if there is an DocumentFileBase in the subform, otherwise don't let the user drop files
 		CollectableEntity entity = DetailsSubFormController.this.getCollectableEntity();
 		Set<String> setEntities = entity.getFieldNames();
@@ -1137,7 +1137,7 @@ public abstract class DetailsSubFormController<Clct extends Collectable>
 				break;
 			}
 		}
-		
+
 		// check if one or more outlook email want to be dropped
 		if(flavors != null && flavors.length > 0) {
 			int count = flavors.length;
@@ -1263,11 +1263,11 @@ public abstract class DetailsSubFormController<Clct extends Collectable>
 			Point here = dtde.getLocation();
 			int hereRow = DetailsSubFormController.this.getSubForm().getJTable().rowAtPoint(here);
 			DataFlavor flavors[] = trans.getTransferDataFlavors();
-			
+
 			for(int i = 0; i < flavors.length; i++) {
 				if (flavors[i].isFlavorJavaFileListType()) {
 					List<File> files = (List<File>) trans.getTransferData(flavors[i]);
-					
+
 					if (files.size() == 1 && hereRow > 0 && !blnViewPort) {
 						updateRowFromDrop(hereRow, files);
 					}
@@ -1281,7 +1281,7 @@ public abstract class DetailsSubFormController<Clct extends Collectable>
 					return;
 				}
 			}
-			
+
 			List<File> lstFile = DragAndDropUtils.mailHandling();
 			if (lstFile.size() > 0) {
 				if (lstFile.size() == 1 && hereRow > 0 && !blnViewPort) {
@@ -1294,7 +1294,7 @@ public abstract class DetailsSubFormController<Clct extends Collectable>
 				}
 				dtde.dropComplete(true);
 				return;
-			}			
+			}
 			dtde.dropComplete(false);
 		}
 		catch (PointerException e) {
@@ -1307,7 +1307,7 @@ public abstract class DetailsSubFormController<Clct extends Collectable>
         	LOG.warn("visitDrop fails: " + e);
 		}
 	}
-	
+
 	@Override
 	public void visitDropActionChanged(DropTargetDragEvent dtde) {}
 
@@ -1323,7 +1323,7 @@ public abstract class DetailsSubFormController<Clct extends Collectable>
 				filechooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
 				// Customer's wish (B1149) / UA
 				filechooser.setFileHidingEnabled(false);
-				
+
 				final int iBtn = filechooser.showOpenDialog(getParent());
 				if (iBtn == JFileChooser.APPROVE_OPTION) {
 					final File[] files = filechooser.getSelectedFiles();

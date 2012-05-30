@@ -52,7 +52,6 @@ import java.util.prefs.Preferences;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
-import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JInternalFrame;
@@ -275,9 +274,9 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	private final Map<String, Serializable> context = new HashMap<String, Serializable>();
 
 	private InvokeWithInputRequiredSupport invokeWithInputRequiredSupport;
-	
+
 	private boolean newTabCreated = false;
-	
+
 	private boolean closed = false;
 
 	/**
@@ -1045,7 +1044,7 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	public void init() {
 		if (newTabCreated) {
 			SwingUtilities.invokeLater(new Runnable() {
-				
+
 				@Override
 				public void run() {
 					Main.getInstance().getMainController().initMainFrameTab(CollectController.this, getTab());
@@ -1059,7 +1058,7 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 		if (CollectController.this.getSearchPanel().getRootPane() != null)
 			CollectController.this.getSearchPanel().getRootPane().setDefaultButton(CollectController.this.getSearchPanel().btnSearch);
 	}
-	
+
 	public boolean isClosed() {
 		return closed;
 	}
@@ -1072,23 +1071,23 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	public void close() {
 		if (!closed) {
 			LOG.debug("close(): " + this);
-			
+
 			// Search panel:
 			if (this.isSearchPanelAvailable()) {
 				this.ctlSearch.close();
 			}
-	
+
 			// Result panel:
 			this.ctlResult.close();
-	
+
 			// Details panel:
 			this.ctlDetails.close();
-			
+
 			ss = null;
 			pnlCollect = null;
 			// Partial fix for http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=7079260
 			collectableComponentSearchFocusListener = null;
-			
+
 			closed = true;
 		}
 	}
@@ -1585,7 +1584,7 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 
 	protected void selectTab() {
 		SwingUtilities.invokeLater(new Runnable() {
-			
+
 			@Override
 			public void run() {
 				getTab().setVisible(true);
@@ -3727,12 +3726,12 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 		assert result != null || isClosed();
 		return result;
 	}
-	
+
 	protected final void _setCollectPanel(WeakReference<CollectPanel<Clct>> pnlCollect) {
 		if (pnlCollect == null) {
 			throw new NullPointerException();
 		}
-		this.pnlCollect = pnlCollect; 
+		this.pnlCollect = pnlCollect;
 	}
 
 	/**
@@ -4209,6 +4208,9 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 
 			ctlDetails.displayCurrentRecordNumberInDetailsPanelStatusBar();
 
+			if (getCollectState().isDetailsModeNew()) {
+				getDetailsConroller().evaluateNewCollectable();
+			}
 		}
 
 		public void setToolbarButtonsForDetailsMode(final int iDetailsMode) {
@@ -4450,7 +4452,9 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 		invokeWithInputRequiredSupport.invoke(runnable, getContext(), getTab());
 	}
 
-	protected DetailsController<Clct> getDetailsConroller() {
+	public DetailsController<Clct> getDetailsConroller() {
 		return ctlDetails;
 	}
+
+
 }	// class CollectController

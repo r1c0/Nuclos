@@ -101,6 +101,7 @@ import org.nuclos.client.main.mainframe.workspace.WorkspaceFrame;
 import org.nuclos.client.report.reportrunner.BackgroundProcessStatusController;
 import org.nuclos.client.resource.NuclosResourceCache;
 import org.nuclos.client.resource.ResourceCache;
+import org.nuclos.client.scripting.ScriptLoggerController;
 import org.nuclos.client.synthetica.NuclosThemeSettings;
 import org.nuclos.client.ui.Bubble;
 import org.nuclos.client.ui.CommonJFrame;
@@ -204,11 +205,11 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 	private static Long lastWorkspaceId;
 	private static String lastAlwaysOpenWorkspace;
 	private static Long lastAlwaysOpenWorkspaceId;
-	
+
 	private static JWindow winSwitchingWorkspace;
 
 	//
-	
+
 	private final AbstractAction actDeactivateSplitting = new AbstractAction() {
 
 		@Override
@@ -218,64 +219,64 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 	};
 
 	private JCheckBoxMenuItem miDeactivateSplitting;
-	
+
 	private JMenu menuWindow;
 
 	private NuclosMessagePanel msgPanel;
-	
+
 	private LiveSearchController liveSearchController;
 	private WorkspaceChooserController workspaceChooserController;
-	
+
 	private SpringLocaleDelegate localeDelegate;
-	
+
 	private ClientParameterProvider clientParameterProvider;
-	
+
 	private NuclosIcons nuclosIcons;
-	
+
 	private ResourceCache resourceCache;
-	
+
 	/**
 	 * creates the main frame. Note that here we don't follow the general rule that the view shouldn't
 	 * contain a reference to its controller. We hide that fact in this package though.
 	 */
 	MainFrame() {
 	}	// ctor
-	
+
 	@Autowired
 	void setResourceCache(ResourceCache resourceCache) {
 		this.resourceCache = resourceCache;
 	}
-	
+
 	@Autowired
 	void setSpringLocaleDelegate(SpringLocaleDelegate cld) {
 		this.localeDelegate = cld;
 	}
-	
+
 	@Autowired
 	void setClientParameterProvider(ClientParameterProvider clientParameterProvider) {
 		this.clientParameterProvider = clientParameterProvider;
 	}
-	
+
 	@Autowired
 	void setNuclosIcons(NuclosIcons nuclosIcons) {
 		this.nuclosIcons = nuclosIcons;
 	}
-	
+
 	/*
 	@Autowired
-	void prepare(@Value("#{mainController.userName}") String sUserName, 
-			@Value("#{mainController.nuclosServerName}") String sNucleusServerName) 
+	void prepare(@Value("#{mainController.userName}") String sUserName,
+			@Value("#{mainController.nuclosServerName}") String sNucleusServerName)
 	{
 		init(sUserName, sNucleusServerName);
 	}
 	 */
-	
-	public final void postConstruct() 
+
+	public final void postConstruct()
 	{
 		ValidationLayerFactory.setCurrentPainter(clientParameterProvider.getValue(
 				ParameterProvider.KEY_CLIENT_VALIDATION_LAYER_PAINTER_NAME));
 		msgPanel = new NuclosMessagePanel();
-		
+
 		// init(sUserName, sNucleusServerName);
 
 		setName("mainframe");
@@ -287,12 +288,12 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 		// workspaceChooserController = new WorkspaceChooserController();
 		setupLiveSearchKey(this);
 	}
-	
+
 	@Autowired
 	void setWorkspaceChooserController(WorkspaceChooserController wcc) {
 		this.workspaceChooserController = wcc;
 	}
-	
+
 	@Autowired
 	void setLiveSearchController(LiveSearchController lsc) {
 		this.liveSearchController = lsc;
@@ -546,11 +547,11 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 		res.put("liveSearch", liveSearchController.getSearchComponent());
 		return res;
 	}
-	
+
 	private static class ToFrontAction extends AbstractAction {
-		
+
 		private final JFrame frame;
-		
+
 		private ToFrontAction(String title, JFrame frame) {
 			super(title);
 			this.frame = frame;
@@ -560,21 +561,21 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 		public void actionPerformed(ActionEvent e) {
 			frame.setVisible(true);
 		}
-		
+
 	}
-	
+
 	//init WindowListener to set correct state of notificationButton and menuItem
 	private static class NotificationDialogListener extends WindowAdapter {
-		
+
 		private final JToggleButton btnNotify;
-		
+
 		private final JCheckBoxMenuItem miWindowNotificationDialog;
-		
+
 		private NotificationDialogListener(JToggleButton btnNotify, JCheckBoxMenuItem miWindowNotificationDialog) {
 			this.btnNotify = btnNotify;
 			this.miWindowNotificationDialog = miWindowNotificationDialog;
 		}
-		
+
 		@Override
 		public void windowClosed(WindowEvent ev) {
 			btnNotify.setSelected(false);
@@ -587,12 +588,12 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 			miWindowNotificationDialog.setSelected(true);
 		}
 	}
-	
+
 	//init WindowListener to set correct state of menuItem
 	private static class WindowBackgroundTasksListener extends WindowAdapter {
-		
+
 		private final JCheckBoxMenuItem miWindowBackgroundTasks;
-		
+
 		private WindowBackgroundTasksListener(JCheckBoxMenuItem miWindowBackgroundTasks) {
 			this.miWindowBackgroundTasks = miWindowBackgroundTasks;
 		}
@@ -610,31 +611,32 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 	}
 
 	private static class MyCheckBoxMenuItem extends JCheckBoxMenuItem implements IReferenceHolder {
-		
+
 		private final List<Object> ref = new LinkedList<Object>();
-		
+
 		public MyCheckBoxMenuItem() {
 		}
-		
+
 		@Override
 		public void addRef(EventListener o) {
 			ref.add(o);
 		}
-					
+
 	}
-	
+
 	private void initWindowMenu(Map<String, Map<String, Action>> commandMap, NuclosNotificationDialog notificationDialog) {
 		menuWindow = new JMenu();
 		miDeactivateSplitting = new JCheckBoxMenuItem(actDeactivateSplitting);
 		miDeactivateSplitting.setSelected(splittingDeactivated);
 		miDeactivateSplitting.setEnabled(splittingEnabled);
 		miDeactivateSplitting.setVisible(splittingEnabled);
-		
+
 		// Windows menu:
 		menuWindow.removeAll();
-		
+
 		final MyCheckBoxMenuItem miWindowNotificationDialog = new MyCheckBoxMenuItem();
 		final MyCheckBoxMenuItem miWindowBackgroundTasks = new MyCheckBoxMenuItem();
+		final JMenuItem miScriptOutput = new JMenuItem();
 		JMenuItem miNextTab = new JMenuItem();
 		JMenuItem miPreviousTab = new JMenuItem();
 		JMenuItem miCloseAllTabs = new JMenuItem();
@@ -645,6 +647,7 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 
 		MenuGenerator.initMenuItem(miWindowBackgroundTasks, localeDelegate.getMessage("miBGTasks", "^Background Tasks"), null, null);
 		MenuGenerator.initMenuItem(miWindowNotificationDialog, localeDelegate.getMessage("miMessages", "^Messages"), null, null);
+		MenuGenerator.initMenuItem(miScriptOutput, localeDelegate.getMessage("miScriptOutput", "Ausgabe (Scripting)"), null, null);
 		MenuGenerator.initMenuItem(miCloseAllTabs, localeDelegate.getMessage("miWCloseAll", "^Close All Tabs"), null, null);
 		MenuGenerator.initMenuItem(miNextTab, localeDelegate.getMessage("miWNext", "^Next Tab"), null, KeyBindingProvider.NEXT_TAB.getKeystroke());
 		MenuGenerator.initMenuItem(miPreviousTab, localeDelegate.getMessage("miWPrev", "^Previous Tab"), null, KeyBindingProvider.PREVIOUS_TAB.getKeystroke());
@@ -653,6 +656,9 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 		menuWindow.add(miWindowBackgroundTasks);
 		menuWindow.add(miWindowNotificationDialog);
 		miWindowNotificationDialog.setSelected(false);
+		if (SecurityCache.getInstance().isSuperUser()) {
+			menuWindow.add(miScriptOutput);
+		}
 		menuWindow.addSeparator();
 
 		for (final JFrame frame : CollectionUtils.sorted(frameContent.keySet(), new Comparator<JFrame>() {
@@ -732,10 +738,32 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 			}
 		});
 
+		miScriptOutput.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				cmdShowScriptOutput();
+			}
+		});
+
 		ListenerUtil.registerWindowListener(notificationDialog, miWindowNotificationDialog,
 				new NotificationDialogListener(getMessagePanel().btnNotify, miWindowNotificationDialog));
 		ListenerUtil.registerWindowListener(BackgroundProcessStatusController.getStatusDialog(this),
 				miWindowBackgroundTasks, new WindowBackgroundTasksListener(miWindowBackgroundTasks));
+	}
+
+	private void cmdShowScriptOutput() {
+		UIUtils.runCommand(MainFrame.this, new Runnable() {
+			@Override
+			public void run() {
+				MainFrameTab tab = new MainFrameTab();
+				ScriptLoggerController c = new ScriptLoggerController(tab);
+				tab.setTabIconFromSystem("getIconShowList");
+				tab.setTitle(SpringLocaleDelegate.getInstance().getText("miScriptOutput"));
+				tab.setLayeredComponent(c.getView());
+				addTab(tab);
+				setSelectedTab(tab);
+			}
+		});
 	}
 
 	/**
@@ -813,7 +841,7 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 		NuclosNotificationDialog notificationDialog) {
 		initWindowMenu(commandMap, notificationDialog);
 		final boolean macosx = Main.getInstance().isMacOSX();
-		
+
 		try {
 			List<Component> exportNotJMenuComponents = macosx ? new ArrayList<Component>() : null;
 			MenuGenerator menuGen = new MenuGenerator(commandMap, componentMap, exportNotJMenuComponents);
@@ -1053,7 +1081,7 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 	private void addEntitiesToMenu() {
 		List<Pair<String[], Action>> menuAdditions = new ArrayList<Pair<String[], Action>>();
 		final MainController mc = Main.getInstance().getMainController();
-		
+
 		menuAdditions.addAll(mc.getEntityMenuActions());
 		menuAdditions.addAll(mc.getCustomComponentMenuActions());
 		menuAdditions.addAll(mc.getNucletComponentMenuActions());
@@ -2257,7 +2285,7 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 
 		return result;
 	}
-	
+
 	public Pair<IconResolver, String> getEntityIconAndResolver(String entity) {
 		Pair<IconResolver, String> result = new Pair<IconResolver, String>();
 
@@ -2273,46 +2301,46 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 
 		return result;
 	}
-	
+
 	private void newSwitchingWorkspaceSplash() {
 		if (winSwitchingWorkspace != null) {
 			return;
 		}
-		
+
 		winSwitchingWorkspace = new JWindow(this);
 		winSwitchingWorkspace.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-		
+
 		JLabel lab = new JLabel(localeDelegate.getMessage("MainFrame.4", "Arbeitsumgebung wird gewechselt") + "...");
 		lab.setForeground(Color.WHITE);
 		lab.setFont(new Font(Font.DIALOG, Font.PLAIN, 12));
 		lab.setBorder(BorderFactory.createEmptyBorder(0, 0, 10, 0));
-		
+
 		JPanel jpnSwitchingWorkspace = new JPanel();
 		jpnSwitchingWorkspace.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
 		jpnSwitchingWorkspace.setOpaque(true);
 		jpnSwitchingWorkspace.setBackground(NuclosThemeSettings.BACKGROUND_COLOR3);
-		
+
 		TableLayoutBuilder tlbSwitchingWorkspace = new TableLayoutBuilder(jpnSwitchingWorkspace);
 		tlbSwitchingWorkspace.columns(TableLayout.FILL)
 		.newRow(TableLayout.FILL).add(new JLabel(Icons.getInstance().getIconSwitchWorkspace()), 1, TableLayout.CENTER, TableLayout.CENTER)
 		.newRow().add(lab, 1, TableLayout.CENTER, TableLayout.CENTER);
-		
+
 		winSwitchingWorkspace.getContentPane().add(jpnSwitchingWorkspace, BorderLayout.CENTER);
 		winSwitchingWorkspace.setSize(250, 250);
 		winSwitchingWorkspace.setAlwaysOnTop(true);
-		
+
 		repositionSwitchingWorkspace();
 		winSwitchingWorkspace.setVisible(true);
-		
+
 		jpnSwitchingWorkspace.paintImmediately(0, 0, jpnSwitchingWorkspace.getSize().width, jpnSwitchingWorkspace.getSize().height);
 	}
-	
+
 	public void repositionSwitchingWorkspace() {
 		if (winSwitchingWorkspace != null) {
 			winSwitchingWorkspace.setLocationRelativeTo(this);
 		}
 	}
-	
+
 	public void showSwitchingWorkspace(boolean show) {
 		if (show) {
 			MainFrameTabbedPane.RESIZE_AND_ADJUST_IMMEDIATE = true;
@@ -2323,13 +2351,13 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 			JPanel contentpane = (JPanel) getContentPane();
 			contentpane.revalidate();
 			contentpane.paintImmediately(0,0,contentpane.getSize().width,contentpane.getSize().height);
-			
-		} else {			
+
+		} else {
 			final JPanel contentpane = (JPanel) getContentPane();
 			componentMacPanel.setVisible(true);
 			pnlDesktop.setVisible(true);
 			setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-			
+
 			Thread t = new Thread(new Runnable() {
 				@Override
 				public void run() {
@@ -2343,7 +2371,7 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 						public void run() {
 							contentpane.revalidate();
 							contentpane.repaint();
-							
+
 							MainFrameTabbedPane.RESIZE_AND_ADJUST_IMMEDIATE = false;
 							if (winSwitchingWorkspace != null) {
 								winSwitchingWorkspace.dispose();
@@ -2356,7 +2384,7 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 			t.start();
 		}
 	}
-	
+
 	public static void setApplicationIconBadge(String text) {
 		if (Main.getInstance().isMacOSX() && Main.isMacOSXSnowLeopardOrBetter()) {
 			try {

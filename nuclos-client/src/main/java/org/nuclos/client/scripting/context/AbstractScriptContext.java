@@ -25,6 +25,10 @@ public abstract class AbstractScriptContext implements ScriptContext, Expression
 
 	@Override
 	public Object propertyMissing(String name) {
+		if (name.startsWith("#F")) {
+			// function call without parameters
+			return methodMissing(name, new Object[]{});
+		}
 		return ExpressionParser.parse(name, this);
 	}
 

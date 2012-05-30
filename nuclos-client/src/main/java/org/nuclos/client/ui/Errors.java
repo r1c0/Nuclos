@@ -452,4 +452,13 @@ public class Errors {
 			return getCause(t.getCause(), clazz);
 		}
 	}
+
+	public static Throwable getCause(Throwable t) {
+		if (t.getCause() == null) {
+			return t;
+		}
+		else {
+			return getCause(t.getCause());
+		}
+	}
 }	// class Errors

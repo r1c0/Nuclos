@@ -18,6 +18,7 @@ package org.nuclos.client.scripting.context;
 
 import org.nuclos.client.common.AbstractDetailsSubFormController;
 import org.nuclos.client.common.MetaDataClientProvider;
+import org.nuclos.client.ui.collect.CollectController;
 import org.nuclos.common.collect.collectable.Collectable;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
@@ -26,8 +27,8 @@ public class SubFormFieldScriptContext extends SubformControllerScriptContext {
 
 	private final CollectableEntityField field;
 
-	public SubFormFieldScriptContext(AbstractDetailsSubFormController<?> sfc, Collectable c, CollectableEntityField field) {
-		super(sfc, c);
+	public SubFormFieldScriptContext(CollectController<?> parent, AbstractDetailsSubFormController<?> sfc, Collectable c, CollectableEntityField field) {
+		super(parent, sfc, c);
 		this.field = field;
 	}
 

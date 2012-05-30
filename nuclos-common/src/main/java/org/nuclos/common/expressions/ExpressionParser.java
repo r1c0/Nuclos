@@ -21,6 +21,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.nuclos.api.expressions.InvalidExpressionException;
+import org.nuclos.common.NuclosScript;
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
 
@@ -44,7 +45,7 @@ public abstract class ExpressionParser {
 			else if ("id".equals(parts[3])) {
 				return eval.evaluate(new FieldIdExpression(parts[0], parts[1], parts[2]));
 			}
-			else if ("object".equals(parts[3])) {
+			else if ("context".equals(parts[3])) {
 				return eval.evaluate(new FieldRefObjectExpression(parts[0], parts[1], parts[2]));
 			}
 		}
@@ -78,5 +79,9 @@ public abstract class ExpressionParser {
 		else {
 			throw new InvalidExpressionException(expression);
 		}
+	}
+
+	public static boolean contains(NuclosScript ns, String prefix) {
+		return Pattern.compile("\\#\\{" + prefix + "(\\.([a-z]*))?\\}").matcher(ns.getSource()).find();
 	}
 }

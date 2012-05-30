@@ -144,7 +144,7 @@ public class MasterDataSubFormController extends DetailsSubFormController<Collec
 	 * @param prefsUserParent
 	 * @param valueListProviderCache
 	 */
-	public MasterDataSubFormController(CollectableEntity clcte, MainFrameTab tab, 
+	public MasterDataSubFormController(CollectableEntity clcte, MainFrameTab tab,
 			CollectableComponentModelProvider clctcompmodelproviderParent, String sParentEntityName, final SubForm subform,
 			Preferences prefsUserParent, EntityPreferences entityPrefs, CollectableFieldsProviderCache valueListProviderCache) {
 		super(clcte, tab, clctcompmodelproviderParent, sParentEntityName, subform,
@@ -158,15 +158,15 @@ public class MasterDataSubFormController extends DetailsSubFormController<Collec
 				if (enabled && getSubForm().getCloneEnabledScript() != null) {
 					for (int i : getSubForm().getJTable().getSelectedRows()) {
 						Collectable c = getCollectables().get(getSubForm().getSubformTable().convertRowIndexToModel(i));
-						
-						Object o = ScriptEvaluator.getInstance().eval(getSubForm().getCloneEnabledScript(), new SubformControllerScriptContext(MasterDataSubFormController.this, c), enabled);
+
+						Object o = ScriptEvaluator.getInstance().eval(getSubForm().getCloneEnabledScript(), new SubformControllerScriptContext(getCollectController(), MasterDataSubFormController.this, c), enabled);
 						if (o instanceof Boolean) {
 							enabled = (Boolean) o;
 						}
 					}
 				}
 				final boolean bEnabled = enabled;
-				
+
 				UIUtils.invokeOnDispatchThread(new Runnable() {
 					@Override
 					public void run() {
@@ -193,7 +193,7 @@ public class MasterDataSubFormController extends DetailsSubFormController<Collec
 				getSubForm().setToolbarFunctionState(TB_CLONE, SubForm.ToolbarFunctionState.DISABLED);
 			}
 		});
-		
+
 		ListenerUtil.registerSubFormToolListener(getSubForm(), null, cloneListener);
 		setupSubFormTableContextMenue();
 	}
@@ -328,29 +328,29 @@ public class MasterDataSubFormController extends DetailsSubFormController<Collec
 					"DynamicEntitySubFormController.2", "Der Datensatz kann nicht angezeigt werden. Bitte tragen Sie in der Datenquelle für die dynamische Entität, die Entität ein, die angezeigt werden soll!"));
 		}
 	}
-	
+
 	private static class LookupValuesListener implements LookupListener {
-		
+
 		private final SubForm.SubFormTableModel model;
-		
+
 		private final boolean searchable;
-		
+
 		private final int row;
-		
+
 		private final Collection<TransferLookedUpValueAction> valueActions;
-		
+
 		private LookupValuesListener(SubForm.SubFormTableModel model, boolean searchable, int row,
 				Collection<TransferLookedUpValueAction> valueActions) {
-			
+
 			this.model = model;
 			this.searchable = searchable;
 			this.row = row;
 			this.valueActions = valueActions;
 		}
-		
+
 		@Override
 		public void lookupSuccessful(LookupEvent ev) {
-			SubForm.transferLookedUpValues(ev.getSelectedCollectable(), model, searchable, 
+			SubForm.transferLookedUpValues(ev.getSelectedCollectable(), model, searchable,
 					row, valueActions);
 		}
 
@@ -425,7 +425,7 @@ public class MasterDataSubFormController extends DetailsSubFormController<Collec
                 	// set field
                     if (insert) {
                 		final Collection<TransferLookedUpValueAction> valueActions =
-                				getSubForm().getTransferLookedUpValueActions(field);                		
+                				getSubForm().getTransferLookedUpValueActions(field);
                         clctlov.addLookupListener(new LookupValuesListener(
                         		getSubFormTableModel(), isSearchable(), row, valueActions));
                         try {
@@ -480,7 +480,7 @@ public class MasterDataSubFormController extends DetailsSubFormController<Collec
 					if (hasDependantData) {
 						String sMessage = getSpringLocaleDelegate().getMessage(
 								"MasterDataSubFormController.2", "Der zu klonende Datensatz besitzt abh\u00e4ngige Unterformulardaten. Sollen diese auch geklont werden?");
-						result = JOptionPane.showConfirmDialog(getTab(), sMessage, 
+						result = JOptionPane.showConfirmDialog(getTab(), sMessage,
 								getSpringLocaleDelegate().getMessage("MasterDataSubFormController.1", "Datensatz klonen"), JOptionPane.YES_NO_OPTION);
 					}
 
@@ -611,7 +611,7 @@ public class MasterDataSubFormController extends DetailsSubFormController<Collec
 	 */
 	public void fillSubForm(Integer iParentId, final Collection<EntityObjectVO> collmdvo) throws NuclosBusinessException {
 		this.setParentId(iParentId);
-		
+
 		UIUtils.invokeOnDispatchThread(new Runnable() {
 			@Override
 			public void run() {
@@ -699,7 +699,7 @@ public class MasterDataSubFormController extends DetailsSubFormController<Collec
 				getCollectController().setDetailsChangedIgnored(true);
 				try {
 					MasterDataSubFormController.this.updateTableModel(lstclctmd);
-					getSubForm().setNewEnabled(new SubformControllerScriptContext(sfc, clct));
+					getSubForm().setNewEnabled(new SubformControllerScriptContext(getCollectController(), sfc, clct));
 				}
 				finally {
 					getCollectController().setDetailsChangedIgnored(bWasDetailsChangedIgnored);

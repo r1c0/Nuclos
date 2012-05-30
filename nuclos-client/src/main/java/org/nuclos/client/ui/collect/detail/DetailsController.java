@@ -54,15 +54,16 @@ import org.nuclos.common.collect.collectable.CollectableEntityField;
 import org.nuclos.common.collect.collectable.CollectableValueField;
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
+import org.nuclos.common.expressions.ExpressionParser;
 import org.nuclos.common2.StringUtils;
 
 /**
  * Controller for the Details panel.
  */
 public class DetailsController<Clct extends Collectable> extends CommonController<Clct> {
-	
+
 	private static final Logger LOG = Logger.getLogger(DetailsController.class);
-	
+
 	//
 
 	/**
@@ -103,7 +104,7 @@ public class DetailsController<Clct extends Collectable> extends CommonControlle
 			final EntityMetaDataVO meta = MetaDataClientProvider.getInstance().getEntity(getCollectController().getEntityName());
 			CollectableComponentModel model = ev.getCollectableComponentModel();
 			if (!model.isInitializing()) {
-				final String key = MessageFormat.format("#'{'{0}.{1}.{2}\'}'", meta.getNuclet(), meta.getEntity(), model.getFieldName());
+				final String key = MessageFormat.format("{0}.{1}.{2}", meta.getNuclet(), meta.getEntity(), model.getFieldName());
 				SwingUtilities.invokeLater(new Runnable() {
 					@Override
 					public void run() {
@@ -163,6 +164,9 @@ public class DetailsController<Clct extends Collectable> extends CommonControlle
 	@Override
 	protected void removeAdditionalChangeListeners() {
 		getCollectController().removeAdditionalChangeListenersForDetails();
+		for (CollectableComponentModel m : getCollectableComponentModels()) {
+			m.removeCollectableComponentModelListener(mdlListener);
+		}
 	}
 
 	private DetailsPanel getDetailsPanel() {
@@ -217,16 +221,16 @@ public class DetailsController<Clct extends Collectable> extends CommonControlle
 			pnlDetails.btnClone.setAction(null);
 			pnlDetails.btnOpenInNewTab.setAction(null);
 			pnlDetails.btnBookmark.setAction(null);
-	
+
 			pnlDetails.btnFirst.setAction(null);
 			pnlDetails.btnLast.setAction(null);
 			pnlDetails.btnPrevious.setAction(null);
 			pnlDetails.btnNext.setAction(null);
-	
+
 			UIUtils.writeSplitPaneStateToPrefs(getCollectController().getPreferences(), getDetailsPanel());
-			
+
 			ccmlistener = null;
-			
+
 			super.close();
 		}
 	}
@@ -252,7 +256,7 @@ public class DetailsController<Clct extends Collectable> extends CommonControlle
 
 		final String sChange = cc.getMultiEditChangeString();
 		final String sStatus = getSpringLocaleDelegate().getMessage(
-				"CollectController.5","\u00c4nderung")+ ": " + (StringUtils.looksEmpty(sChange) ? "<" 
+				"CollectController.5","\u00c4nderung")+ ": " + (StringUtils.looksEmpty(sChange) ? "<"
 				+ getSpringLocaleDelegate().getMessage("CollectController.21","keine") + ">" : sChange);
 		this.getDetailsPanel().setStatusBarText(sStatus);
 	}
@@ -266,16 +270,45 @@ public class DetailsController<Clct extends Collectable> extends CommonControlle
 				public void tableChanged(final TableModelEvent e) {
 					switch (e.getType()) {
 						case TableModelEvent.INSERT:
+							SwingUtilities.invokeLater(new Runnable() {
+								@Override
+								public void run() {
+									SwingUtilities.invokeLater(new Runnable() {
+										@Override
+										public void run() {
+											if (sfc.getSubForm().getParentSubForm() != null) {
+												for (DetailsSubFormController<?> psfc : DetailsController.this.sfcs) {
+													if (psfc.getEntityAndForeignKeyFieldName().getEntityName().equals(sfc.getSubForm().getParentSubForm())) {
+														evaluateNewRow(psfc, sfc, e.getFirstRow());
+													}
+												}
+											}
+											else {
+												evaluateNewRow(null, sfc, e.getFirstRow());
+											}
+										}
+									});
+								}
+							});
 							break;
 						case TableModelEvent.UPDATE:
 							if (e.getColumn() >= 0) {
 								CollectableEntityField column = sfc.getCollectableTableModel().getCollectableEntityField(e.getColumn());
 								EntityMetaDataVO meta = MetaDataClientProvider.getInstance().getEntity(column.getEntityName());
-								final String key = MessageFormat.format("#'{'{0}.{1}.{2}\'}'", meta.getNuclet(), meta.getEntity(), column.getName());
+								final String key = MessageFormat.format("{0}.{1}.{2}", meta.getNuclet(), meta.getEntity(), column.getName());
 								SwingUtilities.invokeLater(new Runnable() {
 									@Override
 									public void run() {
-										process(key, sfc, e.getFirstRow());
+										if (sfc.getSubForm().getParentSubForm() != null) {
+											for (DetailsSubFormController<?> psfc : DetailsController.this.sfcs) {
+												if (psfc.getEntityAndForeignKeyFieldName().getEntityName().equals(sfc.getSubForm().getParentSubForm())) {
+													process(key, psfc, sfc, sfc.getSubForm().getJTable().getSelectionModel().getMinSelectionIndex());
+												}
+											}
+										}
+										else {
+											process(key, null, sfc, e.getFirstRow());
+										}
 									}
 								});
 							}
@@ -292,11 +325,11 @@ public class DetailsController<Clct extends Collectable> extends CommonControlle
 		if (getCollectController().isDetailsChangedIgnored()) {
 			return;
 		}
-		
+
 		for (CollectableComponent c : getDetailsPanel().getEditView().getCollectableComponents()) {
 			EntityFieldMetaDataVO fieldmeta = MetaDataClientProvider.getInstance().getEntityField(getCollectController().getEntityName(), c.getEntityField().getName());
 			if (fieldmeta.getCalculationScript() != null) {
-				if (fieldmeta.getCalculationScript().getSource().contains(sourceExpression)) {
+				if (ExpressionParser.contains(fieldmeta.getCalculationScript(), sourceExpression)) {
 					CollectableComponentModel m = getDetailsPanel().getEditModel().getCollectableComponentModelFor(fieldmeta.getField());
 					Object o = ScriptEvaluator.getInstance().eval(fieldmeta.getCalculationScript(), new CollectControllerScriptContext(getCollectController(), sfcs), m.getField().getValue());
 					m.setField(new CollectableValueField(o));
@@ -304,18 +337,18 @@ public class DetailsController<Clct extends Collectable> extends CommonControlle
 			}
 		}
 	}
-	
-	private void process(final String sourceExpression, final DetailsSubFormController<?> sf, final Integer row) {
+
+	private void process(final String sourceExpression, final DetailsSubFormController<?> psf, final DetailsSubFormController<?> sf, final Integer row) {
 		if (getCollectController().isDetailsChangedIgnored()) {
 			return;
 		}
-		
+
 		process(sourceExpression);
 		final SubForm subform = sf.getSubForm();
 		if (subform != null && subform.getParentSubForm() != null) {
 			for (DetailsSubFormController<?> sfc : sfcs) {
 				if (sfc.getEntityAndForeignKeyFieldName().getEntityName().equals(subform.getParentSubForm())) {
-					process(sourceExpression, sfc, sfc.getSubForm().getJTable().getSelectionModel().getMinSelectionIndex());
+					process(sourceExpression, null, sfc, sfc.getSubForm().getJTable().getSelectionModel().getMinSelectionIndex());
 				}
 			}
 		}
@@ -324,12 +357,40 @@ public class DetailsController<Clct extends Collectable> extends CommonControlle
 			EntityFieldMetaDataVO fieldmeta = MetaDataClientProvider.getInstance().getEntityField(
 					sf.getEntityAndForeignKeyFieldName().getEntityName(), cef.getName());
 			if (fieldmeta.getCalculationScript() != null) {
-				if (fieldmeta.getCalculationScript().getSource().contains(sourceExpression)) {
-					Object o = ScriptEvaluator.getInstance().eval(fieldmeta.getCalculationScript(), 
-							new SubformControllerScriptContext(sf, sf.getSelectedCollectable()), null);
+				if (ExpressionParser.contains(fieldmeta.getCalculationScript(), sourceExpression)) {
+					Object o = ScriptEvaluator.getInstance().eval(fieldmeta.getCalculationScript(),
+							new SubformControllerScriptContext(getCollectController(), psf, sf, sf.getSelectedCollectable()), null);
 					sf.getCollectableTableModel().setValueAt(new CollectableValueField(o), row, i);
 				}
 			}
 		}
+	}
+
+	public void evaluateNewCollectable() {
+		for (CollectableComponent c : getDetailsPanel().getEditView().getCollectableComponents()) {
+			EntityFieldMetaDataVO fieldmeta = MetaDataClientProvider.getInstance().getEntityField(getCollectController().getEntityName(), c.getEntityField().getName());
+			if (fieldmeta.getCalculationScript() != null) {
+				CollectableComponentModel m = getDetailsPanel().getEditModel().getCollectableComponentModelFor(fieldmeta.getField());
+				Object o = ScriptEvaluator.getInstance().eval(fieldmeta.getCalculationScript(), new CollectControllerScriptContext(getCollectController(), sfcs), m.getField().getValue());
+				m.setField(new CollectableValueField(o));
+			}
+		}
+	}
+
+	public void evaluateNewRow(final DetailsSubFormController<?> psf, final DetailsSubFormController<?> sf, final Integer row) {
+		for (int i = 0; i < sf.getCollectableTableModel().getColumnCount(); i++) {
+			CollectableEntityField cef = sf.getCollectableTableModel().getCollectableEntityField(i);
+			EntityFieldMetaDataVO fieldmeta = MetaDataClientProvider.getInstance().getEntityField(
+					sf.getEntityAndForeignKeyFieldName().getEntityName(), cef.getName());
+			if (fieldmeta.getCalculationScript() != null) {
+				Object o = ScriptEvaluator.getInstance().eval(fieldmeta.getCalculationScript(),
+						new SubformControllerScriptContext(getCollectController(), psf, sf, sf.getSelectedCollectable()), null);
+				sf.getCollectableTableModel().setValueAt(new CollectableValueField(o), row, i);
+			}
+		}
+	}
+
+	public List<DetailsSubFormController<?>> getSubFormControllers() {
+		return new ArrayList<DetailsSubFormController<?>>(this.sfcs);
 	}
 }	// class DetailsController

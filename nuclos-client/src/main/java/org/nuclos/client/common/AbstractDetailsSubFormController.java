@@ -61,7 +61,7 @@ import org.nuclos.common2.exception.CommonBusinessException;
 public abstract class AbstractDetailsSubFormController<Clct extends Collectable>
 		extends SubFormController
 		implements CollectableFactory<Clct> {
-	
+
 	private static final Logger LOG = Logger.getLogger(AbstractDetailsSubFormController.class);
 
 	/**
@@ -249,12 +249,12 @@ public abstract class AbstractDetailsSubFormController<Clct extends Collectable>
 
 		TableUtils.addMouseListenerForSortingToTableHeader(tbl, this.getCollectableTableModel());
 	}
-	
+
 	@Override
 	protected final PreferencesUpdateListener newSubFormTablePreferencesUpdateListener() {
 		return new PreferencesUpdateListener();
 	}
-	
+
 	protected class PreferencesUpdateListener extends SubFormController.PreferencesUpdateListener implements ChangeListener {
 		@Override
 		public void stateChanged(ChangeEvent ev) {
@@ -266,7 +266,7 @@ public abstract class AbstractDetailsSubFormController<Clct extends Collectable>
 	}
 
 	protected void storeColumnOrderToPreferences(){
-		WorkspaceUtils.setSortKeys(getSubFormPrefs(), getCollectableTableModel().getSortKeys(), new WorkspaceUtils.IColumnNameResolver() {	
+		WorkspaceUtils.setSortKeys(getSubFormPrefs(), getCollectableTableModel().getSortKeys(), new WorkspaceUtils.IColumnNameResolver() {
 			@Override
 			public String getColumnName(int iColumn) {
 				return getSubFormTableModel().getColumnFieldName(iColumn);
@@ -291,7 +291,7 @@ public abstract class AbstractDetailsSubFormController<Clct extends Collectable>
 	 */
 	protected void setColumnOrder() {
 		LOG.debug("setColumnOrder");
-		
+
 		isIgnorePreferencesUpdate = true;
 		List<SortKey> sortKeys = readColumnOrderFromPreferences();
 		if (this.getCollectableTableModel().getColumnCount() > 0) {
@@ -304,6 +304,8 @@ public abstract class AbstractDetailsSubFormController<Clct extends Collectable>
 		}
 		isIgnorePreferencesUpdate = false;
 	}
+
+	abstract EntityCollectController<?> getCollectController();
 
 	/**
 	 * <code>TableModel</code> that can be used in a Details subform.
@@ -345,7 +347,7 @@ public abstract class AbstractDetailsSubFormController<Clct extends Collectable>
 			if (isColumnEnabled(sColumnName) && isRowEditable(iRow)) {
 				Collectable c = getRow(iRow);
 				if (getSubForm().getEditEnabledScript() != null) {
-					Object o = ScriptEvaluator.getInstance().eval(getSubForm().getEditEnabledScript(), new SubFormFieldScriptContext(AbstractDetailsSubFormController.this, getRow(iRow), this.getCollectableEntityField(iColumn)), true);
+					Object o = ScriptEvaluator.getInstance().eval(getSubForm().getEditEnabledScript(), new SubFormFieldScriptContext(getCollectController(), AbstractDetailsSubFormController.this, getRow(iRow), this.getCollectableEntityField(iColumn)), true);
 					if (o instanceof Boolean) {
 						return (Boolean)o;
 					}

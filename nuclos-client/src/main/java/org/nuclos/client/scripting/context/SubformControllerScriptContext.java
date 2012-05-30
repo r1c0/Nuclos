@@ -22,11 +22,13 @@ import java.util.List;
 import org.nuclos.api.context.ScriptContext;
 import org.nuclos.client.common.AbstractDetailsSubFormController;
 import org.nuclos.client.common.DetailsSubFormController;
+import org.nuclos.client.common.MetaDataClientProvider;
 import org.nuclos.client.masterdata.MasterDataSubFormController;
+import org.nuclos.client.ui.collect.CollectController;
 import org.nuclos.common.collect.collectable.Collectable;
+import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.expressions.EntityExpression;
 import org.nuclos.common.expressions.ExpressionEvaluator;
-import org.nuclos.common.expressions.ExpressionParser;
 import org.nuclos.common.expressions.FieldIdExpression;
 import org.nuclos.common.expressions.FieldRefObjectExpression;
 import org.nuclos.common.expressions.FieldValueExpression;
@@ -35,12 +37,20 @@ import org.nuclos.common2.exception.CommonValidationException;
 
 public class SubformControllerScriptContext extends AbstractScriptContext implements ExpressionEvaluator {
 
+	private final CollectController<?> parent;
+	private final AbstractDetailsSubFormController<?> parentSfc;
 	private final AbstractDetailsSubFormController<?> sfc;
 	private final Collectable c;
 
-	public SubformControllerScriptContext(AbstractDetailsSubFormController<?> sfc, Collectable c) {
+	public SubformControllerScriptContext(CollectController<?> parent, AbstractDetailsSubFormController<?> parentSfc, AbstractDetailsSubFormController<?> sfc, Collectable c) {
+		this.parent = parent;
+		this.parentSfc = parentSfc;
 		this.sfc = sfc;
 		this.c = c;
+	}
+
+	public SubformControllerScriptContext(CollectController<?> parent, AbstractDetailsSubFormController<?> sfc, Collectable c) {
+		this(parent, null, sfc, c);
 	}
 
 	@Override
@@ -55,7 +65,22 @@ public class SubformControllerScriptContext extends AbstractScriptContext implem
 
 	@Override
 	public ScriptContext evaluate(FieldRefObjectExpression exp) {
-		throw new UnsupportedOperationException();
+		if (!sfc.getEntityAndForeignKeyFieldName().getEntityName().equals(exp.getEntity())) {
+			throw new UnsupportedOperationException("Context reference expressions require current entity as source entity.");
+		}
+
+		EntityFieldMetaDataVO fieldmeta = MetaDataClientProvider.getInstance().getEntityField(exp.getEntity(), exp.getField());
+		if (fieldmeta.getForeignEntity() == null) {
+			throw new UnsupportedOperationException("Context reference expressions require a reference field.");
+		}
+
+		if (this.parent != null && this.parent.getEntityName().equals(fieldmeta.getForeignEntity()) && sfc.getEntityAndForeignKeyFieldName().getFieldName().equals(exp.getField())) {
+			return new CollectControllerScriptContext(parent, this.parent.getDetailsConroller().getSubFormControllers());
+		}
+		else if (this.parentSfc != null && this.parentSfc.getEntityAndForeignKeyFieldName().getEntityName().equals(fieldmeta.getForeignEntity()) && sfc.getEntityAndForeignKeyFieldName().getFieldName().equals(exp.getField())) {
+			return new SubformControllerScriptContext(this.parent, this.parentSfc, this.parentSfc.getCollectableTableModel().getRow(this.parentSfc.getSubForm().getJTable().getSelectionModel().getLeadSelectionIndex()));
+		}
+		throw new UnsupportedOperationException("Context reference expressions are only allowed for parent or parent subform references.");
 	}
 
 	@Override
@@ -67,7 +92,7 @@ public class SubformControllerScriptContext extends AbstractScriptContext implem
 					List<ScriptContext> contexts = new ArrayList<ScriptContext>();
 					try {
 						for (Collectable clct : ctl.getCollectables(false, false, false)) {
-							contexts.add(new SubformControllerScriptContext(ctl, clct));
+							contexts.add(new SubformControllerScriptContext(this.parent, sfc, ctl, clct));
 						}
 					} catch (CommonValidationException e) {
 						// TODO Auto-generated catch block
@@ -78,15 +103,5 @@ public class SubformControllerScriptContext extends AbstractScriptContext implem
 			}
 		}
 		return null;
-	}
-
-	@Override
-	public Object propertyMissing(String name) {
-		return ExpressionParser.parse(name, this);
-	}
-
-	@Override
-	public void propertyMissing(String name, Object value) {
-		throw new UnsupportedOperationException("expressions are read only");
 	}
 }

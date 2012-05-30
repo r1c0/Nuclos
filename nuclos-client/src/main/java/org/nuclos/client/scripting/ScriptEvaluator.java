@@ -23,6 +23,7 @@ import javax.script.ScriptException;
 
 import org.apache.log4j.Logger;
 import org.nuclos.api.context.ScriptContext;
+import org.nuclos.client.ui.Errors;
 import org.nuclos.common.NuclosScript;
 
 public class ScriptEvaluator {
@@ -53,7 +54,7 @@ public class ScriptEvaluator {
 			return engine.eval(script.getSource(), b);
 		}
         catch (ScriptException e) {
-			LOG.warn(e);
+        	LOG.error(e.getMessage(), Errors.getCause(e));
 			return defaultValue;
 		}
 	}
