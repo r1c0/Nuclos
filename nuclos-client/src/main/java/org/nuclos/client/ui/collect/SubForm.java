@@ -1224,8 +1224,9 @@ public class SubForm extends JPanel
 				if (iColumns != null) {
 					clctcomp.setColumns(iColumns);
 				}
-				for (String property : subformcolumn.getProperties().keySet()) {
-					clctcomp.setProperty(property, subformcolumn.getProperty(property));
+				final Map<String, Object> properties = subformcolumn.getProperties();
+				for (String property : properties.keySet()) {
+					clctcomp.setProperty(property, properties.get(property));
 				}
 			}
 			clctcomp.setToolTipText(clctef.getDescription());
@@ -1660,6 +1661,12 @@ public class SubForm extends JPanel
 	 * @return the newly created table cell editor
 	 */
 	private CollectableComponentTableCellEditor createTableCellEditor(final CollectableComponent clctcomp) {
+		if (getColumn(clctcomp.getFieldName()) != null) {
+			final Map<String, Object> properties = getColumn(clctcomp.getFieldName()).getProperties();
+			for (String property : properties.keySet()) {
+				clctcomp.setProperty(property, properties.get(property));
+			}
+		}
 		final CollectableComponentTableCellEditor result = new CollectableComponentTableCellEditor(clctcomp, clctcomp.isSearchComponent());
 
 		result.addCollectableComponentModelListener(getCollectableTableCellEditorChangeListener());
