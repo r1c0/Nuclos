@@ -26,10 +26,12 @@ import javax.swing.Action;
 import javax.swing.SwingUtilities;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
+import javax.swing.table.TableCellEditor;
 
 import org.apache.log4j.Logger;
 import org.nuclos.client.common.DetailsSubFormController;
 import org.nuclos.client.common.MetaDataClientProvider;
+import org.nuclos.client.common.Utils;
 import org.nuclos.client.entityobject.CollectableEntityObject;
 import org.nuclos.client.scripting.ScriptEvaluator;
 import org.nuclos.client.scripting.context.CollectControllerScriptContext;
@@ -41,7 +43,10 @@ import org.nuclos.client.ui.collect.CollectController;
 import org.nuclos.client.ui.collect.CollectState;
 import org.nuclos.client.ui.collect.CommonController;
 import org.nuclos.client.ui.collect.SubForm;
+import org.nuclos.client.ui.collect.component.CollectableComboBox;
 import org.nuclos.client.ui.collect.component.CollectableComponent;
+import org.nuclos.client.ui.collect.component.CollectableComponentTableCellEditor;
+import org.nuclos.client.ui.collect.component.CollectableListOfValues;
 import org.nuclos.client.ui.collect.component.model.CollectableComponentModel;
 import org.nuclos.client.ui.collect.component.model.CollectableComponentModelAdapter;
 import org.nuclos.client.ui.collect.component.model.CollectableComponentModelEvent;
@@ -52,10 +57,13 @@ import org.nuclos.client.ui.gc.ListenerUtil;
 import org.nuclos.common.collect.collectable.Collectable;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
 import org.nuclos.common.collect.collectable.CollectableValueField;
+import org.nuclos.common.collect.collectable.CollectableValueIdField;
+import org.nuclos.common.collect.exception.CollectableFieldFormatException;
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
 import org.nuclos.common.expressions.ExpressionParser;
 import org.nuclos.common2.StringUtils;
+import org.nuclos.common2.exception.CommonBusinessException;
 
 /**
  * Controller for the Details panel.
@@ -302,7 +310,7 @@ public class DetailsController<Clct extends Collectable> extends CommonControlle
 										if (sfc.getSubForm().getParentSubForm() != null) {
 											for (DetailsSubFormController<?> psfc : DetailsController.this.sfcs) {
 												if (psfc.getEntityAndForeignKeyFieldName().getEntityName().equals(sfc.getSubForm().getParentSubForm())) {
-													process(key, psfc, sfc, sfc.getSubForm().getJTable().getSelectionModel().getMinSelectionIndex());
+													process(key, psfc, sfc, e.getFirstRow());
 												}
 											}
 										}
@@ -332,7 +340,7 @@ public class DetailsController<Clct extends Collectable> extends CommonControlle
 				if (ExpressionParser.contains(fieldmeta.getCalculationScript(), sourceExpression)) {
 					CollectableComponentModel m = getDetailsPanel().getEditModel().getCollectableComponentModelFor(fieldmeta.getField());
 					Object o = ScriptEvaluator.getInstance().eval(fieldmeta.getCalculationScript(), new CollectControllerScriptContext(getCollectController(), sfcs), m.getField().getValue());
-					m.setField(new CollectableValueField(o));
+					setCollectableComponentValue(c, o);
 				}
 			}
 		}
@@ -360,7 +368,7 @@ public class DetailsController<Clct extends Collectable> extends CommonControlle
 				if (ExpressionParser.contains(fieldmeta.getCalculationScript(), sourceExpression)) {
 					Object o = ScriptEvaluator.getInstance().eval(fieldmeta.getCalculationScript(),
 							new SubformControllerScriptContext(getCollectController(), psf, sf, sf.getSelectedCollectable()), null);
-					sf.getCollectableTableModel().setValueAt(new CollectableValueField(o), row, i);
+					setSubFormValue(sf, row, i, cef, o);
 				}
 			}
 		}
@@ -372,7 +380,7 @@ public class DetailsController<Clct extends Collectable> extends CommonControlle
 			if (fieldmeta.getCalculationScript() != null) {
 				CollectableComponentModel m = getDetailsPanel().getEditModel().getCollectableComponentModelFor(fieldmeta.getField());
 				Object o = ScriptEvaluator.getInstance().eval(fieldmeta.getCalculationScript(), new CollectControllerScriptContext(getCollectController(), sfcs), m.getField().getValue());
-				m.setField(new CollectableValueField(o));
+				setCollectableComponentValue(c, o);
 			}
 		}
 	}
@@ -385,8 +393,79 @@ public class DetailsController<Clct extends Collectable> extends CommonControlle
 			if (fieldmeta.getCalculationScript() != null) {
 				Object o = ScriptEvaluator.getInstance().eval(fieldmeta.getCalculationScript(),
 						new SubformControllerScriptContext(getCollectController(), psf, sf, sf.getSelectedCollectable()), null);
-				sf.getCollectableTableModel().setValueAt(new CollectableValueField(o), row, i);
+				setSubFormValue(sf, row, i, cef, o);
 			}
+		}
+	}
+
+	private void setCollectableComponentValue(CollectableComponent c, Object value) {
+		if (c instanceof CollectableListOfValues) {
+			setValueByListOfValues((CollectableListOfValues)c, value);
+		}
+		else if (c instanceof CollectableComboBox) {
+			setValueByComboBox((CollectableComboBox)c, value);
+		}
+		else {
+			c.getModel().setField(new CollectableValueField(value));
+		}
+	}
+
+	private void setSubFormValue(DetailsSubFormController<?> ctl, int row, int column, CollectableEntityField cef, Object value) {
+		TableCellEditor editor = ctl.getTableCellEditor(ctl.getSubForm().getJTable(), row, cef);
+		if (editor instanceof CollectableComponentTableCellEditor) {
+			CollectableComponent c = ((CollectableComponentTableCellEditor) editor).getCollectableComponent();
+			if (c instanceof CollectableListOfValues) {
+				setValueByListOfValues((CollectableListOfValues)c, value);
+			}
+			else if (c instanceof CollectableComboBox) {
+				setValueByComboBox((CollectableComboBox)c, value);
+			}
+			else {
+				c.setField(new CollectableValueField(value));
+			}
+			editor.stopCellEditing();
+			try {
+				ctl.getCollectableTableModel().setValueAt(c.getField(), row, column);
+			}
+			catch (CollectableFieldFormatException e) {
+				LOG.warn("Failed to set script calculated value.", e);
+			}
+		}
+		else {
+			ctl.getCollectableTableModel().setValueAt(new CollectableValueField(value), row, column);
+		}
+	}
+
+	private void setValueByListOfValues(CollectableListOfValues c, Object value) {
+		if (value != null) {
+			Collectable clct;
+			try {
+				clct = Utils.getReferencedCollectable(c.getEntityField().getEntityName(), c.getEntityField().getName(), value);
+				c.acceptLookedUpCollectable(clct);
+			}
+			catch (CommonBusinessException e) {
+				LOG.warn("Failed to set script calculated value.", e);
+			}
+		}
+		else {
+			c.setField(CollectableValueIdField.NULL);
+		}
+	}
+
+	private void setValueByComboBox(CollectableComboBox c, Object value) {
+		if (value != null) {
+			Collectable clct;
+			try {
+				clct = Utils.getReferencedCollectable(c.getEntityField().getEntityName(), c.getEntityField().getName(), value);
+				Object oForeignValue = Utils.getRepresentation(c.getEntityField().getReferencedEntityName(), c.getEntityField().getReferencedEntityFieldName(), clct);
+				c.setField(new CollectableValueIdField(value, oForeignValue));
+			}
+			catch (CommonBusinessException e) {
+				LOG.warn("Failed to set script calculated value.", e);
+			}
+		}
+		else {
+			c.setField(CollectableValueIdField.NULL);
 		}
 	}
 

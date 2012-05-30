@@ -61,11 +61,13 @@ import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
 import org.nuclos.common.dal.vo.EntityObjectVO;
 import org.nuclos.common.entityobject.CollectableEOEntity;
+import org.nuclos.common.format.FormattingTransformer;
 import org.nuclos.common.masterdata.CollectableMasterDataEntity;
 import org.nuclos.common.masterdata.MakeMasterDataValueIdField;
 import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.EntityAndFieldName;
 import org.nuclos.common2.IdUtils;
+import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonFinderException;
 import org.nuclos.server.genericobject.valueobject.GenericObjectVO;
@@ -288,7 +290,7 @@ public class Utils {
 								if (bShowWarnings) {
 									final String sMessage = SpringLocaleDelegate.getInstance().getMessage(
 											"ClientUtils.1", "Das angegebene Feld f\u00fcr den initialen Fokus existiert nicht.");
-									JOptionPane.showMessageDialog(frame, sMessage, SpringLocaleDelegate.getInstance().getMessage("ClientUtils.2", "Hinweis"), 
+									JOptionPane.showMessageDialog(frame, sMessage, SpringLocaleDelegate.getInstance().getMessage("ClientUtils.2", "Hinweis"),
 											JOptionPane.WARNING_MESSAGE);
 								}
 							}
@@ -323,8 +325,8 @@ public class Utils {
 								if (bShowWarnings) {
 									final String sMessage = SpringLocaleDelegate.getInstance().getMessage(
 											"ClientUtils.3", "Das angegebene Feld in der Entit\u00e4t f\u00fcr den initialen Fokus existiert nicht.");
-									JOptionPane.showMessageDialog(frame, sMessage, 
-											SpringLocaleDelegate.getInstance().getMessage("ClientUtils.2", "Hinweis"), 
+									JOptionPane.showMessageDialog(frame, sMessage,
+											SpringLocaleDelegate.getInstance().getMessage("ClientUtils.2", "Hinweis"),
 											JOptionPane.WARNING_MESSAGE);
 								}
 							}
@@ -333,8 +335,8 @@ public class Utils {
 							if (bShowWarnings) {
 								final String sMessage = SpringLocaleDelegate.getInstance().getMessage(
 										"ClientUtils.4", "Die angegebene Entit\u00e4t f\u00fcr den initialen Fokus existiert nicht.");
-								JOptionPane.showMessageDialog(frame, sMessage, 
-										SpringLocaleDelegate.getInstance().getMessage("ClientUtils.2", "Hinweis"), 
+								JOptionPane.showMessageDialog(frame, sMessage,
+										SpringLocaleDelegate.getInstance().getMessage("ClientUtils.2", "Hinweis"),
 										JOptionPane.WARNING_MESSAGE);
 							}
 						}
@@ -357,7 +359,7 @@ public class Utils {
 	 * @precondition eafnInitialFocus != null
 	 */
 	public static void setComponentFocus(final String sFocusFieldName,
-			final CollectableComponentsProvider clctcompprovider, 
+			final CollectableComponentsProvider clctcompprovider,
 			final MainFrameTab frame, final boolean bShowWarnings) {
 		// Must be invoked later, else focus is not set with compound components like LOVs
 		EventQueue.invokeLater(new Runnable() {
@@ -370,14 +372,14 @@ public class Utils {
 							if (bShowWarnings) {
 								final String sMessage = SpringLocaleDelegate.getInstance().getMessage(
 										"ClientUtils.1", "Das angegebene Feld f\u00fcr den initialen Fokus existiert nicht.");
-								JOptionPane.showMessageDialog(frame, sMessage, SpringLocaleDelegate.getInstance().getMessage("ClientUtils.2", "Hinweis"), 
+								JOptionPane.showMessageDialog(frame, sMessage, SpringLocaleDelegate.getInstance().getMessage("ClientUtils.2", "Hinweis"),
 										JOptionPane.WARNING_MESSAGE);
 							}
 						}
 						else {
 							final CollectableComponent clctcomp = collclctcomp.iterator().next();
 							final JComponent compFocus = clctcomp.getFocusableComponent();
-							compFocus.requestFocusInWindow();									
+							compFocus.requestFocusInWindow();
 						}
 					}
 				}
@@ -440,6 +442,34 @@ public class Utils {
 			}
 		}
 		return clct;
+	}
+
+	public static Object getRepresentation(final String referencedEntity, final String referencedEntityField, final Collectable c) {
+		Object oForeignValue;
+		try {
+			if (referencedEntityField.contains("${")) {
+				oForeignValue = StringUtils.replaceParameters(referencedEntityField, new FormattingTransformer() {
+					@Override
+					protected Object getValue(String field) {
+						return c.getValue(field);
+					}
+
+					@Override
+					protected String getEntity() {
+						return referencedEntity;
+					}
+				});
+			}
+			else {
+				oForeignValue = c.getValue(referencedEntityField);
+			}
+
+		}
+		catch (Exception ex) {
+			LOG.warn("acceptLookedUpCollectable: foreign value could not be found.");
+			oForeignValue = null;
+		}
+		return oForeignValue;
 	}
 
 	public static class CollectableLookupProvider implements NBCache.LookupProvider<Object, Collectable> {

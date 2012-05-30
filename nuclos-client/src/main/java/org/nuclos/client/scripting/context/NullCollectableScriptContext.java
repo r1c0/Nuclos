@@ -16,30 +16,34 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.scripting.context;
 
+import java.util.List;
+
 import org.nuclos.api.context.ScriptContext;
-import org.nuclos.client.customcode.CodeDelegate;
+import org.nuclos.common.expressions.EntityExpression;
 import org.nuclos.common.expressions.ExpressionEvaluator;
-import org.nuclos.common.expressions.ExpressionParser;
+import org.nuclos.common.expressions.FieldIdExpression;
+import org.nuclos.common.expressions.FieldRefObjectExpression;
+import org.nuclos.common.expressions.FieldValueExpression;
 
-public abstract class AbstractScriptContext implements ScriptContext, ExpressionEvaluator {
+public class NullCollectableScriptContext extends AbstractScriptContext implements ExpressionEvaluator {
 
 	@Override
-	public Object propertyMissing(String name) {
-		if (name.startsWith("#FUNCTION")) {
-			// function call without parameters
-			return methodMissing(name, new Object[]{});
-		}
-		return ExpressionParser.parse(name, this);
+	public Object evaluate(FieldValueExpression exp) {
+		return null;
 	}
 
 	@Override
-	public void propertyMissing(String name, Object value) {
-		throw new UnsupportedOperationException("expressions are read only");
+	public Long evaluate(FieldIdExpression exp) {
+		return null;
 	}
 
 	@Override
-	public Object methodMissing(String name, Object args) {
-		String function = ExpressionParser.parse(name);
-		return CodeDelegate.getInstance().invokeFunction(function, (Object[])args);
+	public ScriptContext evaluate(FieldRefObjectExpression exp) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public List<ScriptContext> evaluate(EntityExpression exp) {
+		throw new UnsupportedOperationException();
 	}
 }

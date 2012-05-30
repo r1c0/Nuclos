@@ -19,10 +19,12 @@ package org.nuclos.client.scripting.context;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.nuclos.api.context.ScriptContext;
 import org.nuclos.client.common.AbstractDetailsSubFormController;
 import org.nuclos.client.common.DetailsSubFormController;
 import org.nuclos.client.common.MetaDataClientProvider;
+import org.nuclos.client.common.Utils;
 import org.nuclos.client.masterdata.MasterDataSubFormController;
 import org.nuclos.client.ui.collect.CollectController;
 import org.nuclos.common.collect.collectable.Collectable;
@@ -33,9 +35,12 @@ import org.nuclos.common.expressions.FieldIdExpression;
 import org.nuclos.common.expressions.FieldRefObjectExpression;
 import org.nuclos.common.expressions.FieldValueExpression;
 import org.nuclos.common2.IdUtils;
+import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonValidationException;
 
 public class SubformControllerScriptContext extends AbstractScriptContext implements ExpressionEvaluator {
+
+	private static final Logger LOG = Logger.getLogger(SubformControllerScriptContext.class);
 
 	private final CollectController<?> parent;
 	private final AbstractDetailsSubFormController<?> parentSfc;
@@ -80,7 +85,23 @@ public class SubformControllerScriptContext extends AbstractScriptContext implem
 		else if (this.parentSfc != null && this.parentSfc.getEntityAndForeignKeyFieldName().getEntityName().equals(fieldmeta.getForeignEntity()) && sfc.getEntityAndForeignKeyFieldName().getFieldName().equals(exp.getField())) {
 			return new SubformControllerScriptContext(this.parent, this.parentSfc, this.parentSfc.getCollectableTableModel().getRow(this.parentSfc.getSubForm().getJTable().getSelectionModel().getLeadSelectionIndex()));
 		}
-		throw new UnsupportedOperationException("Context reference expressions are only allowed for parent or parent subform references.");
+		else {
+			Long refId = evaluate(new FieldIdExpression(exp.getNuclet(), exp.getEntity(), exp.getField()));
+			if (refId != null) {
+				Collectable clct;
+				try {
+					clct = Utils.getReferencedCollectable(exp.getEntity(), exp.getField(), refId);
+				}
+				catch (CommonBusinessException e) {
+					LOG.warn("Failed to retrieve reference context.", e);
+					return new NullCollectableScriptContext();
+				}
+				return new CollectableScriptContext(clct);
+			}
+			else {
+				return new NullCollectableScriptContext();
+			}
+		}
 	}
 
 	@Override

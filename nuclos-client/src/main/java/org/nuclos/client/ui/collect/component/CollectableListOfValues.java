@@ -60,11 +60,10 @@ import org.nuclos.common.collect.collectable.searchcondition.ComparisonOperator;
 import org.nuclos.common.collect.exception.CollectableFieldFormatException;
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
-import org.nuclos.common.format.FormattingTransformer;
-import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.IdUtils;
 import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.ServiceLocator;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.server.masterdata.ejb3.EntityFacadeRemote;
 
@@ -162,7 +161,7 @@ public class CollectableListOfValues extends LabeledCollectableComponentWithVLP 
 			throw new IllegalArgumentException(StringUtils.getParameterizedExceptionMessage("collectable.listofvalues.exception.1", clctef.getName()));
 				//"Das Feld \"" + clctef.getName() + "\" ist kein Id-Feld und kann daher nicht in einem LOV (Suchfeld) dargestellt werden.");
 		}
-		
+
 		EntityFieldMetaDataVO efMeta = MetaDataClientProvider.getInstance().getEntityField(clctef.getEntityName(), clctef.getName());
 
 		if (!clctef.isReferencing()) {
@@ -225,7 +224,7 @@ public class CollectableListOfValues extends LabeledCollectableComponentWithVLP 
 		if (this.isSearchComponent()) {
 			this.getListOfValues().setSearchOnLostFocus(false);
 		}
-		
+
 		blnIsLookupEntity = efMeta.getLookupEntity() != null;
 
 		this.getListOfValues().setQuickSearchOnly(!SecurityCache.getInstance().isReadAllowedForEntity(efMeta.getForeignEntity() != null ? efMeta.getForeignEntity() : efMeta.getLookupEntity()));
@@ -431,7 +430,7 @@ public class CollectableListOfValues extends LabeledCollectableComponentWithVLP 
 
 	@Override
 	public CollectableField getFieldFromView() throws CollectableFieldFormatException {
-		
+
 		if (this.oValueId == null && !blnIsLookupEntity) {
 			return new CollectableValueIdField(this.oValueId, null);
 		} else {
@@ -546,30 +545,7 @@ public class CollectableListOfValues extends LabeledCollectableComponentWithVLP 
 			throw new NullArgumentException("clctLookedUp");
 		}
 
-		Object oForeignValue;
-		try {
-			if (sReferencedEntityFieldName.contains("${")) {
-				oForeignValue = StringUtils.replaceParameters(sReferencedEntityFieldName, new FormattingTransformer() {
-					@Override
-					protected Object getValue(String field) {
-						return clctLookedUp.getValue(field);
-					}
-
-					@Override
-					protected String getEntity() {
-						return getEntityField().getReferencedEntityName();
-					}
-				});
-			}
-			else {
-				oForeignValue = clctLookedUp.getValue(sReferencedEntityFieldName);
-			}
-
-		}
-		catch (Exception ex) {
-			LOG.warn("acceptLookedUpCollectable: foreign value could not be found.");
-			oForeignValue = null;
-		}
+		Object oForeignValue = Utils.getRepresentation(getEntityField().getReferencedEntityName(), sReferencedEntityFieldName, clctLookedUp);
 		this.setField(new CollectableValueIdField(clctLookedUp.getId(), oForeignValue));
 		this.fireLookupSuccessful(new LookupEvent(this, clctLookedUp, additionalCollectables));
 	}

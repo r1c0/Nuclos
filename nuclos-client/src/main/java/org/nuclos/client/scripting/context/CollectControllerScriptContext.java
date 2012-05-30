@@ -17,23 +17,31 @@
 package org.nuclos.client.scripting.context;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.nuclos.api.context.ScriptContext;
 import org.nuclos.client.common.DetailsSubFormController;
+import org.nuclos.client.common.MetaDataClientProvider;
+import org.nuclos.client.common.Utils;
 import org.nuclos.client.ui.collect.CollectController;
 import org.nuclos.client.ui.collect.component.CollectableComponent;
 import org.nuclos.common.collect.collectable.Collectable;
 import org.nuclos.common.collect.exception.CollectableFieldFormatException;
+import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.expressions.EntityExpression;
 import org.nuclos.common.expressions.ExpressionEvaluator;
 import org.nuclos.common.expressions.FieldIdExpression;
 import org.nuclos.common.expressions.FieldRefObjectExpression;
 import org.nuclos.common.expressions.FieldValueExpression;
 import org.nuclos.common2.IdUtils;
+import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonValidationException;
 
 public class CollectControllerScriptContext extends AbstractScriptContext implements ExpressionEvaluator {
+
+	private static final Logger LOG = Logger.getLogger(CollectControllerScriptContext.class);
 
 	private final CollectController<?> controller;
 	private final List<DetailsSubFormController<?>> sfcs;
@@ -49,8 +57,8 @@ public class CollectControllerScriptContext extends AbstractScriptContext implem
 			try {
 				return comp.getField().getValue();
 			} catch (CollectableFieldFormatException e) {
-				// TODO Auto-generated catch block
-				throw new RuntimeException(e);
+				LOG.warn("Failed to retrieve context value.", e);
+				return null;
 			}
 		}
 		return null;
@@ -62,8 +70,8 @@ public class CollectControllerScriptContext extends AbstractScriptContext implem
 			try {
 				return IdUtils.toLongId(comp.getField().getValueId());
 			} catch (CollectableFieldFormatException e) {
-				// TODO Auto-generated catch block
-				throw new RuntimeException(e);
+				LOG.warn("Failed to retrieve context value.", e);
+				return null;
 			}
 		}
 		return null;
@@ -71,7 +79,30 @@ public class CollectControllerScriptContext extends AbstractScriptContext implem
 
 	@Override
 	public ScriptContext evaluate(FieldRefObjectExpression exp) {
-		throw new UnsupportedOperationException();
+		if (!controller.getEntityName().equals(exp.getEntity())) {
+			throw new UnsupportedOperationException("Context reference expressions require current entity as source entity.");
+		}
+
+		EntityFieldMetaDataVO fieldmeta = MetaDataClientProvider.getInstance().getEntityField(exp.getEntity(), exp.getField());
+		if (fieldmeta.getForeignEntity() == null) {
+			throw new UnsupportedOperationException("Context reference expressions require a reference field.");
+		}
+
+		Long refId = evaluate(new FieldIdExpression(exp.getNuclet(), exp.getEntity(), exp.getField()));
+		if (refId != null) {
+			Collectable clct;
+			try {
+				clct = Utils.getReferencedCollectable(exp.getEntity(), exp.getField(), refId);
+			}
+			catch (CommonBusinessException e) {
+				LOG.warn("Failed to retrieve reference context.", e);
+				return new NullCollectableScriptContext();
+			}
+			return new CollectableScriptContext(clct);
+		}
+		else {
+			return new NullCollectableScriptContext();
+		}
 	}
 
 	@Override
@@ -85,8 +116,8 @@ public class CollectControllerScriptContext extends AbstractScriptContext implem
 						contexts.add(new SubformControllerScriptContext(controller, ctl, clct));
 					}
 				} catch (CommonValidationException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					LOG.warn("Failed to retrieve child contexts.", e);
+					return Collections.emptyList();
 				}
 				return contexts;
 			}
