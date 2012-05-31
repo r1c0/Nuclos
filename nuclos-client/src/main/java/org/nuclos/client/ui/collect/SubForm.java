@@ -164,7 +164,7 @@ import org.nuclos.common2.exception.CommonFatalException;
  */
 @SuppressWarnings("serial")
 public class SubForm extends JPanel
-	implements TableCellRendererProvider, ActionListener, Closeable {
+	implements TableCellRendererProvider, ActionListener, Closeable, DynamicRowHeightChangeListener {
 
 	private static final Logger LOG = Logger.getLogger(SubForm.class);
 
@@ -320,6 +320,12 @@ public class SubForm extends JPanel
 
 	/* the minimum row height for the table(s). */
 	public static final int MIN_ROWHEIGHT = 20;
+	public static final int MAX_DYNAMIC_ROWHEIGHT = 200;
+	public static final int DYNAMIC_ROW_HEIGHTS = -1;
+	
+	private boolean dynamicRowHeights = false; 
+	private boolean dynamicRowHeightsDefault = false; 
+	
 	private static final Color LAYER_BUSY_COLOR = new Color(128, 128, 128, 128);
 
 	private static final Logger  log = Logger.getLogger(SubForm.class);
@@ -424,6 +430,8 @@ public class SubForm extends JPanel
 	private NuclosScript deleteEnabledScript;
 	private NuclosScript cloneEnabledScript;
 	
+	private RowHeightController rowHeightCtrl;
+	
 	/**
 	 * @param entityName
 	 * @param iToolBarOrientation @see JToolbar#setOrientation
@@ -445,6 +453,7 @@ public class SubForm extends JPanel
 	 */
 	public SubForm(String entityName, int toolBarOrientation, String foreignKeyFieldToParent) {
 		super(new GridLayout(1, 1));
+		this.rowHeightCtrl = new RowHeightController(this);
 		this.toolbar = UIUtils.createNonFloatableToolBar(toolBarOrientation);
 
 		this.listeners = new ArrayList<SubFormToolListener>();
@@ -820,7 +829,14 @@ public class SubForm extends JPanel
 	}
 
 	public void setRowHeight(int iHeight) {
-		this.subformtbl.setRowHeight(iHeight);
+		if (DYNAMIC_ROW_HEIGHTS == iHeight) {
+			this.dynamicRowHeights = true;
+			this.rowHeightCtrl.clear();
+			this.subformtbl.updateRowHeights();
+		} else {
+			this.dynamicRowHeights = false;
+			this.subformtbl.setRowHeight(iHeight);
+		}
 	}
 
 	@Override
@@ -879,6 +895,7 @@ public class SubForm extends JPanel
 			subformtbl.getCellEditor().stopCellEditing();
 		}
 		this.rowHeader.endEditing();
+		this.rowHeightCtrl.clearEditorHeight();
 	}
 
 	@Override
@@ -1670,6 +1687,10 @@ public class SubForm extends JPanel
 		final CollectableComponentTableCellEditor result = new CollectableComponentTableCellEditor(clctcomp, clctcomp.isSearchComponent());
 
 		result.addCollectableComponentModelListener(getCollectableTableCellEditorChangeListener());
+		
+		if (clctcomp instanceof DynamicRowHeightChangeProvider) {
+			((DynamicRowHeightChangeProvider) clctcomp).addDynamicRowHeightChangeListener(this);
+		}
 
 		return result;
 	}
@@ -1831,6 +1852,34 @@ public class SubForm extends JPanel
 	}
 
 
+	public static class DynamicRowHeightCellRenderer implements TableCellRenderer {
+				
+		private final TableCellRenderer mainRenderer;
+		
+		DynamicRowHeightSupport support;
+		
+		private final int col;
+		
+		private final RowHeightController cache;
+		
+		public DynamicRowHeightCellRenderer(TableCellRenderer mainRenderer, DynamicRowHeightSupport support, int col, RowHeightController cache) {
+			super();
+			this.mainRenderer = mainRenderer;
+			this.support = support;
+			this.col = col;
+			this.cache = cache;
+		}
+
+		@Override
+		public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+			Component c = mainRenderer.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+
+			cache.setHeight(col, row, support.getHeight(c));
+			return c;
+		}
+		
+	}
+	
 
 	/**
 	 * inner class SubForm.Table.
@@ -1911,7 +1960,6 @@ public class SubForm extends JPanel
 		private TableCellEditorProvider celleditorprovider;
 		private TableCellRendererProvider cellrendererprovider;
 		private SubForm subform;
-		private boolean calculateRowHeight;
 
 		private SubformRowHeader rowheader;
 
@@ -1928,10 +1976,28 @@ public class SubForm extends JPanel
 		private SubFormTable(SubForm sub){
 			this();
 			this.subform = sub;
+			getColumnModel().addColumnModelListener(new TableColumnModelAdapter() {
+
+				@Override
+				public void columnMarginChanged(ChangeEvent e) {
+					super.columnMarginChanged(e);
+//					updateRowHeights();
+				}
+				
+			});
 		}
 
 		public SubForm getSubForm() {
 			return subform;
+		}
+		
+		private void updateRowHeights() {
+			for (int iRow = 0; iRow < getRowCount(); iRow++) {
+				final int iHeight = subform.rowHeightCtrl.getMaxRowHeight(iRow);
+				if (iHeight > 0) {
+					setRowHeightStrict(iRow, getValidRowHeight(iHeight));
+				}
+			}
 		}
 
 		@Override
@@ -2384,7 +2450,7 @@ public class SubForm extends JPanel
 									subform.entityName,
 									clctefTarget.getDefaultComponentType());
 
-							return getCellRendererFromClassField(newEntityField, "datatype", iRow);
+							result = getCellRendererFromClassField(newEntityField, "datatype", iRow);
 						}
 						catch(ClassNotFoundException e) {
 							throw new CommonFatalException(e);
@@ -2397,7 +2463,16 @@ public class SubForm extends JPanel
 			if (result == null) {
 				result = super.getCellRenderer(iRow, iColumn);
 			}
-			return result;
+			
+			if (subform != null && result instanceof DynamicRowHeightSupport) {
+				return new DynamicRowHeightCellRenderer(
+						result, 
+						(DynamicRowHeightSupport) result, 
+						iColumn, 
+						subform.rowHeightCtrl);
+			} else {
+				return result;
+			}
 		}
 
 		private TableCellRenderer getCellRendererFromClassField(CollectableEntityField entityField, String classFieldname, int iRow) {
@@ -2508,12 +2583,67 @@ public class SubForm extends JPanel
 			super.setColumnModel(columnModel);
 		}
 
-		public boolean isCalculateRowHeight() {
-			return calculateRowHeight;
+		public void setRowHeightStrict(int iRow, int iHeight) {
+			setRowHeight(iRow, iHeight+getRowMargin());
 		}
 
-		public void setCalculateRowHeight(boolean calculateRowHeight) {
-			this.calculateRowHeight = calculateRowHeight;
+		@Override
+		public void setRowHeight(int row, int rowHeight) {
+			super.setRowHeight(row, rowHeight);
+			rowheader.setRowHeightInRow(row, rowHeight);
+		}
+
+		@Override
+		public void columnAdded(TableColumnModelEvent e) {
+			super.columnAdded(e);
+			if (subform != null) {
+				subform.rowHeightCtrl.clear();
+				invalidateRowHeights();
+			}
+		}
+
+		@Override
+		public void columnRemoved(TableColumnModelEvent e) {
+			super.columnRemoved(e);
+			if (subform != null) {
+				subform.rowHeightCtrl.clear();
+				invalidateRowHeights();
+			}
+		}
+
+		@Override
+		public void tableChanged(TableModelEvent e) {
+			super.tableChanged(e);
+			
+			if (subform != null && e.getFirstRow() != TableModelEvent.HEADER_ROW) {
+				if (e.getFirstRow() == 0 && e.getLastRow() == Integer.MAX_VALUE) {
+					subform.rowHeightCtrl.clear();
+					invalidateRowHeights();
+				} else {
+					for (int iRow = e.getFirstRow(); iRow <= e.getLastRow(); iRow++) {
+						if (e.getColumn() == TableModelEvent.ALL_COLUMNS) {
+							subform.rowHeightCtrl.clear(iRow);
+						} else {
+							subform.rowHeightCtrl.clear(e.getColumn(), iRow);
+						}
+					}
+				}
+			}
+		}
+		
+		boolean invalidateRowHeights = false;
+		
+		private void invalidateRowHeights() {
+			if (!invalidateRowHeights) {
+				invalidateRowHeights = true;
+				SwingUtilities.invokeLater(new Runnable() {
+					@Override
+					public void run() {
+						updateRowHeights();
+						invalidateRowHeights = false;
+					}
+				});
+			}
 		}
 
 	}
@@ -2954,6 +3084,148 @@ public class SubForm extends JPanel
 		    	}
 		    }
 		}
+	}
+	
+	private static class RowHeightController {
+		
+		private Map<Integer, Map<Integer, Integer>> cache = new HashMap<Integer, Map<Integer, Integer>>();
+		
+		private int iEditorCol = -1;
+		private int iEditorRow = -1;
+		private int iEditorHeight = -1;
+		
+		private final SubForm subform;
+		
+		public RowHeightController(SubForm subform) {
+			this.subform = subform;
+		}
+		
+		public void clear(int iCol, int iRow) {
+			final Map<Integer, Integer> colCache = cache.get(iRow);
+			if (colCache != null) {
+				colCache.remove(iCol);
+//				System.out.println("clearing row=" +iRow + " col=" + iCol);
+			}
+		}
+
+		public void clear(int iRow) {
+			cache.remove(iRow);
+//			System.out.println("clearing row " +iRow);
+		}
+
+		public void clear() {
+			cache.clear();
+		}
+		
+		public void clearEditorHeight() {
+			if (iEditorRow != -1) {
+				subform.getSubformTable().setRowHeightStrict(iEditorRow, getValidRowHeight(getMaxRowHeightCacheOnly(iEditorRow)));
+			}
+			iEditorCol = -1;
+			iEditorRow = -1;
+			iEditorHeight = -1;
+		}
+		
+		public void setEditorHeight(int iCol, int iRow, int iHeight) {
+			if (!subform.isDynamicRowHeights()) 
+				return;
+			
+			final int iOldEditorCol = iEditorCol;
+			final int iOldEditorRow = iEditorRow;
+			final int iOldEditorHeight = iEditorHeight;
+			iEditorCol = iCol;
+			iEditorRow = iRow;
+			iEditorHeight = iHeight;
+			
+			if (iOldEditorRow != iEditorRow || iOldEditorCol != iEditorCol) {
+				if (iOldEditorRow != -1) {
+					subform.getSubformTable().setRowHeightStrict(iOldEditorRow, getValidRowHeight(getMaxRowHeightCacheOnly(iOldEditorRow)));
+				}
+			}
+			if (iOldEditorRow != iEditorRow || iOldEditorCol != iEditorCol || iOldEditorHeight != iEditorHeight) {
+				subform.getSubformTable().setRowHeightStrict(iEditorRow, getValidRowHeight(Math.max(iEditorHeight, getMaxRowHeightCacheOnly(iEditorRow))));
+				final Rectangle r = subform.getSubformTable().getCellRect(iEditorRow, iEditorCol, false);
+				r.y = r.y + r.height - 1;
+				r.height = 1;
+				
+				if (!subform.getSubformScrollPane().getViewport().getViewRect().contains(r)) {
+					SwingUtilities.invokeLater(new Runnable() {
+						@Override
+						public void run() {
+							subform.getSubformScrollPane().getViewport().scrollRectToVisible(r);
+						}
+					});
+				}
+			}
+		}
+
+		public void setHeight(int iCol, int iRow, int iHeight) {
+			if (!subform.isDynamicRowHeights()) 
+				return;
+			
+			Map<Integer, Integer> colCache = cache.get(iRow);
+			if (colCache == null) {
+				colCache = new HashMap<Integer, Integer>();
+				cache.put(iRow, colCache);
+			}
+			
+			final Integer iOldHeight = colCache.put(iCol, iHeight);
+			if (iOldHeight == null || iOldHeight.intValue() != iHeight) {
+				final int iNewHeight = getValidRowHeight(getMaxRowHeight(colCache));
+				if (subform.getSubformTable().getRowHeight(iRow) != iNewHeight) {
+					subform.getSubformTable().setRowHeightStrict(iRow, iNewHeight);
+//					System.out.println("row=" + iRow + " col=" + iCol + " height=" + iHeight + " oldHeight=" + iOldHeight + " newHeight=" + iNewHeight + " heights=" + colCache);
+				}
+			}
+		}
+		
+		public int getMaxRowHeight(int iRow) {
+			if (iRow == iEditorRow) {
+				return Math.max(iEditorHeight, getMaxRowHeightCacheOnly(iRow));
+			} else {
+				return getMaxRowHeightCacheOnly(iRow);
+			}
+		}
+		
+		private int getMaxRowHeightCacheOnly(int iRow) {
+			return getMaxRowHeight(cache.get(iRow));
+		}
+		
+		private static int getMaxRowHeight(final Map<Integer, Integer> columnHeights) {
+			if (columnHeights != null) {
+				int result = 0;
+				for (Integer iHeight : columnHeights.values()) {
+					result = Math.max(result, iHeight);
+				}
+				return result;
+			} else {
+				return -1;
+			}
+		}
+		
+	}
+
+	@Override
+	public void heightChanged(int height) {
+		final int iCol = subformtbl.getSelectedColumn();
+		final int iRow = subformtbl.getSelectedRow();
+		rowHeightCtrl.setEditorHeight(iCol, iRow, height);
+	}
+	
+	private static int getValidRowHeight(int iHeight) {
+		return Math.max(MIN_ROWHEIGHT, Math.min(MAX_DYNAMIC_ROWHEIGHT, iHeight));
+	}
+
+	public boolean isDynamicRowHeights() {
+		return dynamicRowHeights;
+	}
+	
+	public void setDynamicRowHeightsDefault() {
+		dynamicRowHeightsDefault = true;
+	}
+	
+	public boolean isDynamicRowHeightsDefault() {
+		return dynamicRowHeightsDefault;
 	}
 
 }	// class SubForm

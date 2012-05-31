@@ -17,19 +17,24 @@
 package org.nuclos.client.common;
 
 import java.awt.Component;
-import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
 import java.awt.event.KeyEvent;
 import java.awt.font.FontRenderContext;
+import java.awt.font.LineBreakMeasurer;
 import java.awt.font.TextAttribute;
 import java.awt.geom.AffineTransform;
-import java.awt.geom.Rectangle2D;
+import java.text.AttributedString;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
+import javax.swing.BorderFactory;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
@@ -37,8 +42,13 @@ import javax.swing.KeyStroke;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.TableCellRenderer;
 
+import org.nuclos.client.ui.collect.DynamicRowHeightChangeListener;
+import org.nuclos.client.ui.collect.DynamicRowHeightChangeProvider;
+import org.nuclos.client.ui.collect.DynamicRowHeightSupport;
+import org.nuclos.client.ui.collect.SubForm;
 import org.nuclos.client.ui.collect.component.CollectableTextArea;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
+import org.nuclos.common2.StringUtils;
 
 /**
  * A <code>CollectableComponent</code> that presents a value in a <code>JTextArea</code>.
@@ -49,7 +59,7 @@ import org.nuclos.common.collect.collectable.CollectableEntityField;
  * @author	<a href="mailto:uwe.allner@novabit.de">uwe.allner</a>
  * @version 01.00.00
  */
-public class NuclosCollectableTextArea extends CollectableTextArea {
+public class NuclosCollectableTextArea extends CollectableTextArea implements DynamicRowHeightChangeProvider {
 	
 	private static class FocusForward extends AbstractAction {
 		
@@ -82,6 +92,25 @@ public class NuclosCollectableTextArea extends CollectableTextArea {
 	public NuclosCollectableTextArea(CollectableEntityField clctef, Boolean bSearchable) {
 		super(clctef, bSearchable);
 		overrideActionMap();
+		getJTextArea().addComponentListener(new ComponentListener() {
+			
+			@Override
+			public void componentShown(ComponentEvent e) {
+			}
+			
+			@Override
+			public void componentResized(ComponentEvent e) {
+				fireHeightChanged(getJTextArea().getPreferredSize().height);
+			}
+			
+			@Override
+			public void componentMoved(ComponentEvent e) {
+			}
+			
+			@Override
+			public void componentHidden(ComponentEvent e) {
+			}
+		});
 	}
 
 	// For behaviour as table cell renderer
@@ -104,38 +133,51 @@ public class NuclosCollectableTextArea extends CollectableTextArea {
 	 */
 	@Override
 	public TableCellRenderer getTableCellRenderer(boolean subform) {
-		return new TableCellRenderer() {
-			@Override
-            public Component getTableCellRendererComponent(JTable tbl, Object oValue, boolean bSelected, boolean bHasFocus, int iRow, int iColumn) {
+		return new TextAreaCellRenderer(subform);
+	}
+	
+	/**
+	 * 
+	 *
+	 */
+	private class TextAreaCellRenderer implements TableCellRenderer, DynamicRowHeightSupport {
+		
+		final boolean subform;
+		
+		public TextAreaCellRenderer(boolean subform) {
+			super();
+			this.subform = subform;
+		}
 
-				NuclosCollectableTextArea.this.setObjectValue(oValue);
+		@Override
+        public Component getTableCellRendererComponent(JTable tbl, Object oValue, boolean bSelected, boolean bHasFocus, int iRow, int iColumn) {
 
-				final JTextArea ta = NuclosCollectableTextArea.this.getJTextArea();
-				ta.setBackground(bSelected ? tbl.getSelectionBackground() : tbl.getBackground());
-				ta.setForeground(bSelected ? tbl.getSelectionForeground() : tbl.getForeground());
-				ta.setCaretPosition(0);
+			NuclosCollectableTextArea.this.setObjectValue(oValue);
 
-				JScrollPane sp = (JScrollPane) NuclosCollectableTextArea.this.getControlComponent();
-				sp.setBorder(new EmptyBorder(0, 0, 0, 0));
+			final JTextArea ta = NuclosCollectableTextArea.this.getJTextArea();
+			ta.setBackground(bSelected ? tbl.getSelectionBackground() : tbl.getBackground());
+			ta.setForeground(bSelected ? tbl.getSelectionForeground() : tbl.getForeground());
+			ta.setCaretPosition(0);
 
-				// Calculate the correct line count (as JTextArea only counts \n characters)
-				int lineCount = NuclosCollectableTextArea.this.getLineCount();
-				if (lineCount > 3) {
-					if (tbl.getModel().isCellEditable(iRow, iColumn)) {
-						// Limit lines to 3
-						lineCount = 3;
-						sp.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-					}
-				}
-				else {
-					sp.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_NEVER);
-				}
-				ta.setRows(lineCount);
-				
+			final JScrollPane sp = (JScrollPane) NuclosCollectableTextArea.this.getControlComponent();
+			sp.setBorder(BorderFactory.createEmptyBorder());
+			sp.setViewportBorder(BorderFactory.createEmptyBorder());
 
-				return NuclosCollectableTextArea.this.getControlComponent();
-			}
-		};
+			// Calculate the correct line count (as JTextArea only counts \n characters)
+			final int columnWidth = tbl.getColumnModel().getColumn(iColumn).getWidth()-tbl.getColumnModel().getColumnMargin();
+			final int scrollBarWidth = sp.getVerticalScrollBar().getWidth();
+			final boolean scrollBarVisible = sp.getVerticalScrollBar().isVisible();
+			final int lineCount = NuclosCollectableTextArea.this.getLineCount(columnWidth-(scrollBarVisible?scrollBarWidth:0));
+			
+			ta.setRows(lineCount);
+
+			return NuclosCollectableTextArea.this.getControlComponent();
+		}
+
+		@Override
+		public int getHeight(Component cellRendererComponent) {
+			return ((JScrollPane) cellRendererComponent).getViewport().getComponent(0).getPreferredSize().height+2;
+		}
 	}
 
 	/**
@@ -145,49 +187,58 @@ public class NuclosCollectableTextArea extends CollectableTextArea {
 	 *
 	 * @return the line count
 	 */
-	private int getLineCount() {
-		int result = 1;
+	private int getLineCount(int iWidth) {
+		int result = 0;
 
 		final JTextArea ta = this.getJTextArea();
 		final String text = ta.getText();
-		final Dimension d = ta.getPreferredSize();
-
-		final Font font = ta.getFont();
-		final FontRenderContext frc = new FontRenderContext(new AffineTransform(), false, false);
-		Rectangle2D rect;
-
-		// Scan the text for blanks and newlines.
-		int iStart = 0;
-		int iLastBlankPos = 0;
-		int iTotal = 1;
-		for (; iTotal < text.length(); iTotal++) {
-			char ch = text.charAt(iTotal);
-			switch (ch) {
-				case ' ':
-					// Check for each blank if the line still fits. If not, begin the next line at the last blank position and continue
-					rect = font.getStringBounds(text, iStart, iTotal, frc);
-					if (rect.getWidth() > d.getWidth()) {
-						result++;
-						iStart = iLastBlankPos;
-					}
-					iLastBlankPos = iTotal;
-					break;
-				case '\n':
-					result++;
-					iStart = iTotal + 1;
-					break;
-			}
+		
+		if (!StringUtils.looksEmpty(text)) {
+			final Font font = ta.getFont();
+			final FontRenderContext frc = new FontRenderContext(new AffineTransform(), true, false);
+			
+			final LineBreakMeasurer measurer = new LineBreakMeasurer(new AttributedString(text, font.getAttributes()).getIterator(), frc);
+			
+			while (measurer.getPosition() < text.length()) {
+		         measurer.nextLayout(iWidth);
+		         result++;
+		    }
 		}
+		
+//		Rectangle2D rect;
+//
+//		// Scan the text for blanks and newlines.
+//		int iStart = 0;
+//		int iLastBlankPos = 0;
+//		int iTotal = 1;
+//		for (; iTotal < text.length(); iTotal++) {
+//			char ch = text.charAt(iTotal);
+//			switch (ch) {
+//				case ' ':
+//					// Check for each blank if the line still fits. If not, begin the next line at the last blank position and continue
+//					rect = font.getStringBounds(text, iStart, iTotal, frc);
+//					if (rect.getWidth() > iWidth) {
+//						result++;
+//						iStart = iLastBlankPos;
+//					}
+//					iLastBlankPos = iTotal;
+//					break;
+//				case '\n':
+//					result++;
+//					iStart = iTotal + 1;
+//					break;
+//			}
+//		}
+//
+//		// Examine the (possible) rest after the last blank
+//		if (iLastBlankPos > 0 && iLastBlankPos < text.length()) {
+//			rect = font.getStringBounds(text, iStart, text.length(), frc);
+//			if (rect.getWidth() > iWidth) {
+//				result++;
+//			}
+//		}
 
-		// Examine the (possible) rest after the last blank
-		if (iLastBlankPos > 0 && iLastBlankPos < text.length()) {
-			rect = font.getStringBounds(text, iStart, text.length(), frc);
-			if (rect.getWidth() > d.getWidth()) {
-				result++;
-			}
-		}
-
-		return result;
+		return Math.max(1, result);
 	}
 
 	@Override
@@ -200,5 +251,23 @@ public class NuclosCollectableTextArea extends CollectableTextArea {
 			getJTextArea().setFont(newFont);
 		}
 	}
+
+	public void fireHeightChanged(int height) {
+		for (DynamicRowHeightChangeListener drhcl : dynamicRowHeightChangeListener) {
+			drhcl.heightChanged(height);
+		}
+	}
+
+	@Override
+	public void addDynamicRowHeightChangeListener(DynamicRowHeightChangeListener drhcl) {
+		dynamicRowHeightChangeListener.add(drhcl);
+	}
+
+	@Override
+	public void removeDynamicRowHeightChangeListener(DynamicRowHeightChangeListener drhcl) {
+		dynamicRowHeightChangeListener.remove(drhcl);
+	}
+	
+	private final Collection<DynamicRowHeightChangeListener> dynamicRowHeightChangeListener = new ArrayList<DynamicRowHeightChangeListener>();
 
 }	// class NuclosCollectableTextArea

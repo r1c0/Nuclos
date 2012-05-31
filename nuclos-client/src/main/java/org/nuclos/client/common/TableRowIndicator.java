@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.prefs.Preferences;
 
+import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JComponent;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
@@ -36,6 +37,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.MouseInputAdapter;
 
+import org.nuclos.client.ui.collect.SubForm;
 import org.nuclos.common2.SpringLocaleDelegate;
 
 public class TableRowIndicator extends MouseInputAdapter { 
@@ -111,13 +113,16 @@ public class TableRowIndicator extends MouseInputAdapter {
     
     @Override
     public void mouseMoved(MouseEvent e) {
-        if((getResizingRow(e.getPoint())>=0) != (table.getCursor() == resizeCursor)){
+        if(!clctcontroller.getSubForm().isDynamicRowHeights() && (getResizingRow(e.getPoint())>=0) != (table.getCursor() == resizeCursor)){
             swapCursor();
         }
     }
 
     @Override
-    public void mouseDragged(MouseEvent e) {    	
+    public void mouseDragged(MouseEvent e) {    
+    	if(clctcontroller.getSubForm().isDynamicRowHeights())
+    		return;
+    	
         int mouseY = e.getY();
         
         if(resizingRow >= 0) {
@@ -167,16 +172,38 @@ public class TableRowIndicator extends MouseInputAdapter {
 				}
 			}
 			
+			JCheckBoxMenuItem cbmi = new JCheckBoxMenuItem(SpringLocaleDelegate.getInstance().getMessage(
+					"TableRowIndicator.2", "Automatische Zeilenhöhen"));
+			cbmi.addActionListener(new ActionListener() {
+				
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					if (clctcontroller.getSubForm().isDynamicRowHeights()) {
+						clctcontroller.getSubForm().setRowHeight(SubForm.MIN_ROWHEIGHT);
+						setHighForAllRows(SubForm.MIN_ROWHEIGHT);	
+					} else {
+						clctcontroller.getSubForm().setRowHeight(SubForm.DYNAMIC_ROW_HEIGHTS);
+						setRowHeightInPreferences(SubForm.DYNAMIC_ROW_HEIGHTS);
+					}
+				}
+				
+			});
+			cbmi.setSelected(clctcontroller.getSubForm().isDynamicRowHeights());
+			pop.add(cbmi);
+			
 			JMenuItem mi = new JMenuItem(SpringLocaleDelegate.getInstance().getMessage(
-					"TableRowIndicator.1", "Zeilenh√∂he zur√ºcksetzen"));
+					"TableRowIndicator.1", "Zeilenhöhe zurücksetzen"));
 			mi.addActionListener(new ActionListener() {
 				
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					setHighForAllRows(20);				
+					clctcontroller.getSubForm().setRowHeight(SubForm.MIN_ROWHEIGHT);
+					setHighForAllRows(SubForm.MIN_ROWHEIGHT);	
 				}
 			});
+			mi.setEnabled(!clctcontroller.getSubForm().isDynamicRowHeights());
 			pop.add(mi);
+			
 			pop.setLocation(e.getLocationOnScreen());
 			pop.show(table, e.getX(), e.getY());
 		}

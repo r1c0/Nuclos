@@ -964,6 +964,8 @@ public class WYSIWYGStringsAndLabels {
 		public static final String DELETE_ENABLED = "L\u00f6schen aktiv (dynamisch)";
 		public static final String CLONE_ENABLED = "Klonen aktiv (dynamisch)";
 		
+		public static final String DYNAMIC_CELL_HEIGHTS_DEFAULT = "Automatische Zeilenhöhen als Standard";
+		
 	}
 
 	/**

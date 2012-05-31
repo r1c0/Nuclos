@@ -71,6 +71,10 @@ public class CollectableTextArea extends CollectableTextComponent {
 			}
 		});*/
 	}
+	
+	public LabeledTextArea getLabeledTextArea() {
+		return (LabeledTextArea) this.getJComponent();
+	}
 
 	public JTextArea getJTextArea() {
 		return (JTextArea) this.getJTextComponent();
@@ -135,7 +139,7 @@ public class CollectableTextArea extends CollectableTextComponent {
 				ta.setForeground(bSelected ? tbl.getSelectionForeground() : tbl.getForeground());
 				ta.setCaretPosition(0);
 
-				return CollectableTextArea.this.getControlComponent();
+				return CollectableTextArea.this.getJTextArea();
 			}
 		};
 	}

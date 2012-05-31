@@ -2148,8 +2148,8 @@ public class LayoutMLLoader implements LayoutMLConstants {
 		for (int i = 0; i < c.getPropertyAttributeLink().length; i++) {
 			try {
 				String propertyName = c.getPropertyAttributeLink()[i][0];
-
-				PropertyValue<?> value = PropertyUtils.getPropertyValue(c, propertyName);
+				PropertyValue<?> valueDefault = c.getProperties().getProperty(propertyName);
+				PropertyValue<?> value = valueDefault==null? PropertyUtils.getPropertyValue(c, propertyName) : valueDefault;
 				value.setValue(c.getPropertyAttributeLink()[i][1], atts);
 
 				c.setProperty(propertyName, value, PropertyUtils.getValueClass(c, propertyName));

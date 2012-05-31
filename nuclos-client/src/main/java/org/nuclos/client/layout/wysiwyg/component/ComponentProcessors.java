@@ -27,6 +27,7 @@ import org.nuclos.client.layout.wysiwyg.WYSIWYGStringsAndLabels;
 import org.nuclos.client.layout.wysiwyg.WYSIWYGStringsAndLabels.COMPONENT_PROCESSOR;
 import org.nuclos.client.layout.wysiwyg.component.properties.ComponentProperties;
 import org.nuclos.client.layout.wysiwyg.component.properties.PropertyUtils;
+import org.nuclos.client.layout.wysiwyg.component.properties.PropertyValueBoolean;
 import org.nuclos.client.layout.wysiwyg.component.properties.PropertyValueString;
 import org.nuclos.client.layout.wysiwyg.editor.ui.panels.WYSIWYGLayoutEditorPanel;
 import org.nuclos.common2.StringUtils;
@@ -480,6 +481,7 @@ public class ComponentProcessors implements LayoutMLConstants {
 			properties.setProperty(WYSIWYGSubForm.PROPERTY_NAME, new PropertyValueString(COMPONENT_PROCESSOR.LABEL_DEFAULTNAME_SUBFORM + iNumber), String.class);
 			//NUCLEUSINT-803
 			properties.setProperty(WYSIWYGSubForm.PROPERTY_TOOLBARORIENTATION, new PropertyValueString(ATTRIBUTEVALUE_VERTICAL), String.class);
+			properties.setProperty(WYSIWYGSubForm.PROPERTY_DYNAMIC_CELL_HEIGHTS_DEFAULT, new PropertyValueBoolean(Boolean.FALSE), Boolean.class);
 			subform.setProperties(properties);
 			
 			subform.setMinimumSize(DEFAULTVALUE_SUBFORM_MINIMUMSIZE);

@@ -60,15 +60,15 @@ public abstract class CollectableTextComponent extends LabeledCollectableCompone
 
 				@Override
 				public void focusLost(FocusEvent e) {
-					LOG.info("focusLost: event=" + e.isTemporary() + " componenttext=" + getJTextComponent().getText()
-							+ " parent=" + getJTextComponent().getParent());					
+//					LOG.info("focusLost: event=" + e.isTemporary() + " componenttext=" + getJTextComponent().getText()
+//							+ " parent=" + getJTextComponent().getParent());					
 				}
 				
 				@Override
 				public void focusGained(FocusEvent e) {
 					final JTextComponent tcomp = getJTextComponent();
-					LOG.info("focusGained: event=" + e.isTemporary() + " componenttext=" + tcomp.getText() + " parent=" 
-							+ tcomp.getParent());
+//					LOG.info("focusGained: event=" + e.isTemporary() + " componenttext=" + tcomp.getText() + " parent=" 
+//							+ tcomp.getParent());
 					tcomp.selectAll();
 				}
 			});

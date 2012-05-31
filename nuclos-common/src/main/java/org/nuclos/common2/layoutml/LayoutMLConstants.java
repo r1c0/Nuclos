@@ -220,6 +220,7 @@ public interface LayoutMLConstants {
 	public static final String ATTRIBUTE_ICON = "icon";
 	public static final String ATTRIBUTE_LANGUAGE = "language";
 	public static final String ATTRIBUTE_CLASS = "class";
+	public static final String ATTRIBUTE_DYNAMIC_CELL_HEIGHTS_DEFAULT = "dynamic-cell-heights-default";
 
 
 	// constants for XML attribute values used in the LayoutML:

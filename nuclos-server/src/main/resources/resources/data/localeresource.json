@@ -59594,6 +59594,21 @@
     "text": "Zeilenhöhe zurücksetzen"
   },
   {
+    "resourceID": "TableRowIndicator.2",
+    "locale": "i-default",
+    "text": "Automatic row heights"
+  },
+  {
+    "resourceID": "TableRowIndicator.2",
+    "locale": "en",
+    "text": "Automatic row heights"
+  },
+  {
+    "resourceID": "TableRowIndicator.2",
+    "locale": "de",
+    "text": "Automatische Zeilenhöhen"
+  },
+  {
     "resourceID": "ldap.exception.search",
     "locale": "i-default",
     "text": "An error occurred on searching users by LDAP. Please check the filter configuration."

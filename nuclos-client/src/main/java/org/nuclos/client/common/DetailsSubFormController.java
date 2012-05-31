@@ -210,7 +210,10 @@ public abstract class DetailsSubFormController<Clct extends Collectable>
 		row2.addJTableToSynch(getJTable());
 
 		super.postCreate();
-		this.getSubForm().getJTable().setRowHeight(this.getPrefs().getInt(TableRowIndicator.SUBFORM_ROW_HEIGHT, 20));
+		this.getSubForm().setRowHeight(this.getPrefs().getInt(TableRowIndicator.SUBFORM_ROW_HEIGHT, 
+				this.getSubForm().isDynamicRowHeightsDefault() ? 
+						SubForm.DYNAMIC_ROW_HEIGHTS : 
+						SubForm.MIN_ROWHEIGHT));
 
 		this.getSubForm().getJTable().getTableHeader().addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent e) {

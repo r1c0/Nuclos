@@ -2160,6 +2160,15 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 				// referenced parent subform
 				final String sParentSubForm = attributes.getValue(ATTRIBUTE_PARENTSUBFORM);
 				subform.setParentSubForm(sParentSubForm);
+				
+				// dynamic cell heights default:
+				final String sDynamicCellHeightsDefault = attributes.getValue(ATTRIBUTE_DYNAMIC_CELL_HEIGHTS_DEFAULT);
+				if (sDynamicCellHeightsDefault != null && !bCreateSearchableComponents) {
+					// override default:
+					if (sDynamicCellHeightsDefault.equals(ATTRIBUTEVALUE_YES)) {
+						subform.setDynamicRowHeightsDefault();
+					}
+				}
 
 				stack.addSubForm(sEntityName, subform);
 			}

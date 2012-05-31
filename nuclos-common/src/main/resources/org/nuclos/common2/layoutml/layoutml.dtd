@@ -97,6 +97,7 @@ controllertype CDATA #IMPLIED
 unique-mastercolumn CDATA #IMPLIED
 foreignkeyfield-to-parent CDATA #IMPLIED
 parent-subform CDATA #IMPLIED
+dynamic-cell-heights-default (%boolean;) #IMPLIED
 >
 
 <!ELEMENT subform-column (translations?,valuelist-provider?,property*)>

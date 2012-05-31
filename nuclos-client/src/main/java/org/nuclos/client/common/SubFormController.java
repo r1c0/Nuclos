@@ -607,7 +607,13 @@ public abstract class SubFormController extends MainFrameTabController
 	}
 
 	protected final void setupRowHeight(SubForm.SubFormTableModel subformtablemodel) {
-		this.getSubForm().setRowHeight(this.getPreferredRowHeight(subformtablemodel));
+		if (this.getPrefs().getInt(TableRowIndicator.SUBFORM_ROW_HEIGHT, -20) == -20) {
+			if (this.getSubForm().isDynamicRowHeightsDefault()) {
+				this.getSubForm().setRowHeight(SubForm.DYNAMIC_ROW_HEIGHTS);
+			} else {
+				this.getSubForm().setRowHeight(this.getPreferredRowHeight(subformtablemodel));
+			}
+		}
 	}
 
 	private int getPreferredRowHeight(SubForm.SubFormTableModel subformtablemodel) {
