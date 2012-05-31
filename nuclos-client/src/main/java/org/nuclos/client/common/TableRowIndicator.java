@@ -184,6 +184,9 @@ public class TableRowIndicator extends MouseInputAdapter {
 					} else {
 						clctcontroller.getSubForm().setRowHeight(SubForm.DYNAMIC_ROW_HEIGHTS);
 						setRowHeightInPreferences(SubForm.DYNAMIC_ROW_HEIGHTS);
+						if (table.getCursor() == resizeCursor) {
+							swapCursor();
+						}
 					}
 				}
 				
