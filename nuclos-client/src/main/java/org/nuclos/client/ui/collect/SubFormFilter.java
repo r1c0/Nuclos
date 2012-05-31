@@ -204,7 +204,8 @@ public class SubFormFilter implements Closeable, IReferenceHolder {
                valuelistprovider = collectableFieldsProviderFactory.newDefaultCollectableFieldsProvider(subform.getEntityName(), clctWithVLP.getFieldName());
             }
             clctWithVLP.setValueListProvider(valuelistprovider);
-            clctWithVLP.refreshValueList(true);
+            if (!subform.isLayout())
+            	clctWithVLP.refreshValueList(true);
 
             // handle listener
             if (clctcomp instanceof CollectableComboBox) {

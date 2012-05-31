@@ -406,7 +406,7 @@ public class WYSIWYGSubForm extends JLayeredPane implements WYSIWYGComponent, Mo
 						(sorientation.equals(ATTRIBUTEVALUE_VERTICAL) ? JToolBar.VERTICAL : JToolBar.HORIZONTAL);
 				}
 
-				this.subform = new SubForm(entityname, orientation, foreignkey);
+				this.subform = new SubForm(entityname, orientation, foreignkey, true);
 
 				boolean bEnabled = (Boolean) getProperties().getProperty(PROPERTY_ENABLED).getValue(boolean.class, this);
 				this.subform.setEnabled(bEnabled);

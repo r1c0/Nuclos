@@ -430,7 +430,9 @@ public class SubForm extends JPanel
 	private NuclosScript deleteEnabledScript;
 	private NuclosScript cloneEnabledScript;
 	
-	private RowHeightController rowHeightCtrl;
+	private final boolean bLayout;
+	
+	private final RowHeightController rowHeightCtrl;
 	
 	/**
 	 * @param entityName
@@ -452,8 +454,21 @@ public class SubForm extends JPanel
 	 * @postcondition this.getForeignKeyFieldToParent() == foreignKeyFieldToParent
 	 */
 	public SubForm(String entityName, int toolBarOrientation, String foreignKeyFieldToParent) {
+		this(entityName, toolBarOrientation, foreignKeyFieldToParent, false);
+	}
+
+	/**
+	 * @param entityName
+	 * @param toolBarOrientation @see JToolbar#setOrientation
+	 * @param foreignKeyFieldToParent Needs only be specified if not unique. @see #getForeignKeyFieldToParent()
+	 * @precondition entityName != null
+	 * @postcondition this.getForeignKeyFieldToParent() == foreignKeyFieldToParent
+	 */
+	public SubForm(String entityName, int toolBarOrientation, String foreignKeyFieldToParent, boolean bLayout) {
 		super(new GridLayout(1, 1));
 		this.rowHeightCtrl = new RowHeightController(this);
+		
+		this.bLayout = bLayout;
 		this.toolbar = UIUtils.createNonFloatableToolBar(toolBarOrientation);
 
 		this.listeners = new ArrayList<SubFormToolListener>();
@@ -786,6 +801,10 @@ public class SubForm extends JPanel
 		for (String actionCommand : toolbarOrder) {
 			result.add(toolbarMenuItems.get(actionCommand));
 		}
+	}
+	
+	boolean isLayout() {
+		return bLayout;
 	}
 
 	public SubFormFilter getSubFormFilter() {
@@ -1229,7 +1248,8 @@ public class SubForm extends JPanel
 					valuelistprovider = clctfproviderfactory.newDefaultCollectableFieldsProvider(clcte.getName(), clctWithVLP.getFieldName());
 				}
 				clctWithVLP.setValueListProvider(valuelistprovider);
-				clctWithVLP.refreshValueList(true);
+				if (!bLayout)
+					clctWithVLP.refreshValueList(true);
 			}
 			final Column subformcolumn = this.getColumn(sColumnName);
 			if (subformcolumn != null) {
@@ -1467,7 +1487,8 @@ public class SubForm extends JPanel
 				}
 
 				// refresh value list:
-				clctWithVLP.refreshValueList(false);
+				if (!bLayout)
+					clctWithVLP.refreshValueList(false);
 			}
 		}
 
@@ -1737,7 +1758,8 @@ public class SubForm extends JPanel
 							valuelistprovider = clctfproviderfactory.newDefaultCollectableFieldsProvider(clcte.getName(), clctWithVLP.getFieldName());
 						}
 						clctWithVLP.setValueListProvider(valuelistprovider);
-						clctWithVLP.refreshValueList(true);
+						if (!bLayout)
+							clctWithVLP.refreshValueList(true);
 					}
 					mpStaticColumnEditors.put(clctef, clctcompcelleditor);
 				}
