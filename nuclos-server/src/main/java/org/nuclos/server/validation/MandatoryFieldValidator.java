@@ -56,6 +56,9 @@ public class MandatoryFieldValidator implements Validator {
 					if (LangUtils.equals(fieldmeta.getForeignEntity(), c.getParent())) {
 						continue;
 					}
+					else if ("genericObject".equalsIgnoreCase(fieldmeta.getField())) {
+						continue;
+					}
 					value = object.getFieldId(fieldmeta.getField());
 				}
 				else {
@@ -75,15 +78,15 @@ public class MandatoryFieldValidator implements Validator {
 					StateVO state = stateCache.getState(stateId.intValue());
 					if (!state.getMandatoryFields().isEmpty()) {
 						final String entity = meta.getEntity();
-	
+
 						for (MandatoryFieldVO mandatoryField : state.getMandatoryFields()) {
 							final EntityFieldMetaDataVO efMeta = metaDataProvider.getEntityField(entity, mandatoryField.getFieldId().longValue());
 							final String field = efMeta.getField();
-	
+
 							if (efMeta.getForeignEntity() != null && LangUtils.equals(efMeta.getForeignEntity(), c.getParent())) {
 								continue;
 							}
-	
+
 							if ((efMeta.getForeignEntity() != null && object.getFieldId(field) == null)
 								|| (efMeta.getForeignEntity() == null && object.getFields().get(field) == null)) {
 								String error = StringUtils.getParameterizedExceptionMessage("CollectableUtils.3", efMeta.getLocaleResourceIdForLabel());
