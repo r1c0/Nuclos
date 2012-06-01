@@ -68,6 +68,12 @@ public class LabeledTextArea extends LabeledTextComponent {
 		public boolean hasFocus() {
 			return ta.hasFocus();
 		}
+
+		@Override
+		public boolean requestFocusInWindow() {
+			return ta.requestFocusInWindow();
+		}
+		
 	};
 
 	public LabeledTextArea() {
