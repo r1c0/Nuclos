@@ -50,8 +50,8 @@ import org.nuclos.client.ui.collect.result.NuclosResultController;
 import org.nuclos.client.ui.collect.result.ResultPanel;
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
-import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.CommonRunnable;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonValidationException;
 import org.nuclos.common2.exception.PreferencesException;
@@ -66,11 +66,11 @@ import org.nuclos.common2.exception.PreferencesException;
  * @version 01.00.00
  */
 public class SearchResultTemplateController {
-	
+
 	private static final Logger LOG = Logger.getLogger(SearchResultTemplateController.class);
-	
+
 	private final Action actSaveTemplate = new CommonAbstractAction(SpringLocaleDelegate.getInstance().getMessage(
-			"SearchResultTemplateController.1", "Suchergebnisvorlage speichern"), 
+			"SearchResultTemplateController.1", "Suchergebnisvorlage speichern"),
 			Icons.getInstance().getIconSave16(),
 			SpringLocaleDelegate.getInstance().getMessage(
 					"SearchResultTemplateController.2", "Eingestelltes Ergebnisformat als Suchergebnisvorlage speichern")) {
@@ -82,7 +82,7 @@ public class SearchResultTemplateController {
 	};
 
 	private final Action actRemoveTemplate = new CommonAbstractAction(SpringLocaleDelegate.getInstance().getMessage(
-			"SearchResultTemplateController.3", "Suchergebnisvorlage l\u00f6schen"), 
+			"SearchResultTemplateController.3", "Suchergebnisvorlage l\u00f6schen"),
 			Icons.getInstance().getIconDelete16(),
 			SpringLocaleDelegate.getInstance().getMessage(
 					"SearchResultTemplateController.4", "Ausgew\u00e4hlte Suchergebnisvorlage l\u00f6schen")) {
@@ -99,18 +99,19 @@ public class SearchResultTemplateController {
 			cmdSetSearchResultFormatAccordingToTemplate();
 		}
 	};
-	
+
 	//private final JButton btnSaveTemplate;
 	//private final JButton btnRemoveTemplate;
 	private final JComboBox cmbbxSearchResultTemplate = new JComboBox();
 	private final GenericObjectCollectController ctl;
-	
+
 	SearchResultTemplateController(ResultPanel<?> resultPanel, GenericObjectCollectController ctl){
 		this.ctl = ctl;
+		cmbbxSearchResultTemplate.setVisible(false);
 		//toolbar.add(getSearchResultTemplateComboBox());
 		///*btnSaveTemplate =*/ toolbar.add(actSaveTemplate);
 		///*btnRemoveTemplate =*/ toolbar.add(actRemoveTemplate);
-		resultPanel.addToolBarComponent(new BlackLabel(getSearchResultTemplateComboBox(), 
+		resultPanel.addToolBarComponent(new BlackLabel(getSearchResultTemplateComboBox(),
 				SpringLocaleDelegate.getInstance().getMessage("R00016434","Suchergebnisvorlage")));
 		resultPanel.addPopupExtraSeparator();
 		resultPanel.addPopupExtraMenuItem(new JMenuItem(actSaveTemplate));
@@ -125,7 +126,7 @@ public class SearchResultTemplateController {
 	private JComboBox getSearchResultTemplateComboBox() {
 		return this.cmbbxSearchResultTemplate;
 	}
-			
+
 	/**
 	 * initializes tooltips and some listeners for search result templates ComboBox.
 	 */
@@ -174,9 +175,9 @@ public class SearchResultTemplateController {
 				// enable/disable remove template action - the empty filter cannot be removed:
 				actRemoveTemplate.setEnabled(bRegularTemplateSelected);
 			}
-		});			
+		});
 	}
-	
+
 	/**
 	 * refreshes the combobox containing the result search templates
 	 */
@@ -202,6 +203,8 @@ public class SearchResultTemplateController {
 				model.addElement(template);
 			}
 
+			this.cmbbxSearchResultTemplate.setVisible(model.getSize() > 1);
+
 			UIUtils.setMaximumWidth(this.getSearchResultTemplateComboBox(), UIUtils.getPreferredWidth(this.getSearchResultTemplateComboBox()));
 
 			// try to restore the previously selected filter, if any:
@@ -215,7 +218,7 @@ public class SearchResultTemplateController {
 
 		// perform alSearchResultTemplates's action manually:
 		this.alSearchResultTemplates.actionPerformed(null);
-	}	
+	}
 
 	/**
 	 * @return the search result templates that can be edited in this collect controller. By default, it's the search result templates for this
@@ -227,7 +230,7 @@ public class SearchResultTemplateController {
 
 	/**
 	 * selects the given search result template in the search result templates combo box.
-	 * 
+	 *
 	 * @param template
 	 * @postcondition LangUtils.equals(this.getSelectedSearchResultTemplate(), template)
 	 */
@@ -237,7 +240,7 @@ public class SearchResultTemplateController {
 
 	/**
 	 * selects the search result template by name in the search result templates combo box.
-	 * 
+	 *
 	 * @param template
 	 * @postcondition LangUtils.equals(this.getSelectedSearchResultTemplate(), template)
 	 */
@@ -249,7 +252,7 @@ public class SearchResultTemplateController {
 			}
 		}
 	}
-	
+
 	/**
 	 * @return empty search result template to be used as default
 	 */
@@ -264,7 +267,7 @@ public class SearchResultTemplateController {
 	public final SearchResultTemplate getSelectedSearchResultTemplate() {
 		return (SearchResultTemplate) cmbbxSearchResultTemplate.getSelectedItem();
 	}
-	
+
 	/**
 	 * @return true if selected template is default template
 	 */
@@ -278,7 +281,7 @@ public class SearchResultTemplateController {
 	public void selectDefaultTemplate() {
 		this.getSearchResultTemplateComboBox().setSelectedIndex(0);
 	}
-	
+
 	/**
 	 * sets the search result format according to selected template.
 	 */
@@ -301,7 +304,7 @@ public class SearchResultTemplateController {
 					}
 					// historic code:
 					// ctl.getResultController().initializeFields(ctl.getFields(), ctl, lstSelectedNew);
-					
+
 					final NuclosResultController<CollectableGenericObjectWithDependants> resultController = (NuclosResultController)
 							ctl.getResultController();
 					/*
@@ -312,7 +315,7 @@ public class SearchResultTemplateController {
 					resultController.initializeFields(ctl.getFields(), lstSelectedNew, fixedColumns, clefListColumnsWidths);
 				}
 			}
-		});	
+		});
 	}
 
 	/**
@@ -321,7 +324,7 @@ public class SearchResultTemplateController {
 	private MainFrameTab getFrame() {
 		return ctl.getTab();
 	}
-	
+
 	/**
 	 * Command: save template
 	 */
@@ -354,12 +357,13 @@ public class SearchResultTemplateController {
 					default:
 						assert false;
 					}
+					cmbbxSearchResultTemplate.setVisible(model.getSize() > 1);
 				}
 				catch (CommonBusinessException ex) {
 					Errors.getInstance().showExceptionDialog(getFrame(), ex);
 				}
 			}
-		});				
+		});
 	}
 
 	/**
@@ -384,11 +388,11 @@ public class SearchResultTemplateController {
 						}
 						catch (Exception e) {
 							LOG.error("cmdRemoveTemplate failed: " + e, e);
-						}							
+						}
 					}
 				});
 			}
 		}
-	}	
-	
+	}
+
 }	// class SearchResultTemplateController

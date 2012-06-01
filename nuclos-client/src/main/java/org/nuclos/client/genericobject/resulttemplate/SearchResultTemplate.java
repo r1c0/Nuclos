@@ -33,10 +33,10 @@ import org.nuclos.common.collection.Pair;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
 import org.nuclos.common.dal.vo.SystemFields;
 import org.nuclos.common.entityobject.CollectableEOEntity;
-import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.IdUtils;
 import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.PreferencesUtils;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.PreferencesException;
 
@@ -346,7 +346,7 @@ public class SearchResultTemplate {
 		}
 
 		if (PreferencesUtils.nodeExists(prefs, PREFS_NODE_COLLECTABLESORTING)) {
-			final List<CollectableSorting> sorting = 
+			final List<CollectableSorting> sorting =
 				(List<CollectableSorting>) PreferencesUtils.getSerializableListXML(prefs, PREFS_NODE_COLLECTABLESORTING, true);
 			CollectionUtils.removeDublicates(sorting);
 			result.setSortingOrder(sorting);
@@ -393,7 +393,7 @@ public class SearchResultTemplate {
 		assert result != null;
 		return result;
 	}
-	
+
 	/**
 	 * creates the default search result template with a specific name.
 	 * @return new default search result template
@@ -406,10 +406,8 @@ public class SearchResultTemplate {
 				return true;
 			}
 		};
-		result.setName(SpringLocaleDelegate.getInstance().getMessage(
-				"SearchResultTemplate.1","<Alle>"));
-		result.setDescription(SpringLocaleDelegate.getInstance().getMessage(
-				"SearchResultTemplate.5","Standard Suchergebnisvorlage"));
+		result.setName(" ");
+		result.setDescription(" ");
 		assert result.isDefaultTemplate();
 		return result;
 	}
