@@ -113,9 +113,6 @@ public class CollectablePasswordField extends CollectableTextComponent {
 		public Component getTableCellRendererComponent(JTable tbl, Object oValue, boolean bSelected, boolean bHasFocus, int iRow, int iColumn) {
 			super.getTableCellRendererComponent(tbl, oValue, bSelected, bHasFocus, iRow, iColumn);
 			
-			setBackground(bSelected ? tbl.getSelectionBackground() : tbl.getBackground());
-			setForeground(bSelected ? tbl.getSelectionForeground() : tbl.getForeground());
-			
 			final Object o;
 			if (oValue instanceof CollectableField) {
 				CollectableField clctf = (CollectableField) oValue;
@@ -137,6 +134,8 @@ public class CollectablePasswordField extends CollectableTextComponent {
 				}
 				setText(sbStars.toString());
 			}
+			
+			setBackgroundColor(this, tbl, oValue, bSelected, bHasFocus, iRow, iColumn);
 			
 			return this;
 		}

@@ -180,7 +180,7 @@ public abstract class TextFieldWithButton extends CommonJTextField {
 		
 		final ImageIcon ico = ButtonState.NORMAL.getImageIcon();
 		r.x = dimTextField.width - ico.getIconWidth() - 2;
-		r.y = 3; //(dimTextField.height - ico.getIconHeight()) / 2;
+		r.y = (dimTextField.height - ico.getIconHeight()) / 2;
 		r.width = ico.getIconWidth();
 		r.height = ico.getIconHeight();
 		

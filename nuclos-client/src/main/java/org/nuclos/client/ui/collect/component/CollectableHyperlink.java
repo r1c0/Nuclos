@@ -231,6 +231,7 @@ public class CollectableHyperlink extends CollectableTextComponent {
 			Graphics2D g2d = (Graphics2D) g;
 			
 			final Rectangle r = HyperlinkTextFieldWithButton.getIconRectangle(this.getSize());
+			r.y = 0;
 			
 			int w = iconButton.getIconWidth();
 			int h = iconButton.getIconHeight();

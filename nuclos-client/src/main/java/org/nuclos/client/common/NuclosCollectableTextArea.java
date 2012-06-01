@@ -155,8 +155,6 @@ public class NuclosCollectableTextArea extends CollectableTextArea implements Dy
 			NuclosCollectableTextArea.this.setObjectValue(oValue);
 
 			final JTextArea ta = NuclosCollectableTextArea.this.getJTextArea();
-			ta.setBackground(bSelected ? tbl.getSelectionBackground() : tbl.getBackground());
-			ta.setForeground(bSelected ? tbl.getSelectionForeground() : tbl.getForeground());
 			ta.setCaretPosition(0);
 
 			final JScrollPane sp = (JScrollPane) NuclosCollectableTextArea.this.getControlComponent();
@@ -170,7 +168,8 @@ public class NuclosCollectableTextArea extends CollectableTextArea implements Dy
 			final int lineCount = NuclosCollectableTextArea.this.getLineCount(columnWidth-(scrollBarVisible?scrollBarWidth:0));
 			
 			ta.setRows(lineCount);
-
+			
+			setBackgroundColor(ta, tbl, oValue, bSelected, bHasFocus, iRow, iColumn);
 			return NuclosCollectableTextArea.this.getControlComponent();
 		}
 

@@ -191,49 +191,9 @@ public class CollectableCheckBox extends AbstractCollectableComponent {
 				check.setOpaque(true);
 				check.setVerticalAlignment(SwingConstants.TOP);
 				check.setHorizontalAlignment(JCheckBox.CENTER);
-				check.setBackground(bSelected ? tbl.getSelectionBackground() : tbl.getBackground());
-				check.setForeground(bSelected ? tbl.getSelectionForeground() : tbl.getForeground());
 			}
 
-			// check whether the data of the component is readable for current user, by asking the security agent of the actual field
-			if (tbl.getModel() instanceof SortableCollectableTableModel<?>) {
-				final SortableCollectableTableModel<Collectable> tblModel = (SortableCollectableTableModel<Collectable>)tbl.getModel();
-				if (tblModel.getRowCount() >= iRow+1) {
-					final Collectable clct = tblModel.getCollectable(iRow);
-					final Integer iTColumn = tbl.getColumnModel().getColumn(iColumn).getModelIndex();
-					final CollectableEntityField clctef = tblModel.getCollectableEntityField(iTColumn);
-					if (clctef == null) {
-						throw new NullPointerException("getTableCellRendererComponent failed to find field: " + clct + " tm index " + iTColumn);
-					}
-
-					try {
-						EntityMetaDataVO meta = MetaDataClientProvider.getInstance().getEntity(clctef.getEntityName());
-						if (meta.getRowColorScript() != null && !bSelected) {
-							CollectableTableModel<? extends Collectable> mdl = (CollectableTableModel<? extends Collectable>) tbl.getModel();
-							if (mdl.getRowCount() > iRow) {
-								Collectable c = mdl.getRow(iRow);
-								AbstractCollectableComponent.setBackground(comp, meta.getRowColorScript(), c, meta);
-							}
-						}
-					}
-					catch (CommonFatalException ex) {
-						LOG.warn(ex);
-					}
-
-					if (tbl instanceof SubForm.SubFormTable) {
-						SubFormTable subformtable = (SubForm.SubFormTable) tbl;
-						Column subformcolumn = subformtable.getSubForm().getColumn(clctef.getName());
-						if (subformcolumn != null && !subformcolumn.isEnabled()) {
-							if (bSelected) {
-								comp.setBackground(NuclosThemeSettings.BACKGROUND_INACTIVESELECTEDCOLUMN);
-							} else {
-								comp.setBackground(NuclosThemeSettings.BACKGROUND_INACTIVECOLUMN);
-							}
-						}
-					}
-				}
-
-			}
+			setBackgroundColor(comp, tbl, oValue, bSelected, bHasFocus, iRow, iColumn);
 			return comp;
 		}
 	}

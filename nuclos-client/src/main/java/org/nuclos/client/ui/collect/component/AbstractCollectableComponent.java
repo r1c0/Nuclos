@@ -1457,7 +1457,7 @@ public abstract class AbstractCollectableComponent
 			if (isDetailsComponent() && getDetailsModel().isMandatoryAdded()) {
 				result = hasValue || hasFocus() ? null : ClientParameterProvider.getInstance().getColorValue(ParameterProvider.KEY_MANDATORY_ADDED_ITEM_BACKGROUND_COLOR, new Color(255,255,200));
 			} else if (isDetailsComponent() && getDetailsModel().isMandatory()) {
-				result = hasValue || hasFocus() ? null : ClientParameterProvider.getInstance().getColorValue(ParameterProvider.KEY_MANDATORY_ITEM_BACKGROUND_COLOR, new Color(255,255,200));
+				result = hasValue || hasFocus() ? null : getMandatoryColor();
 			} else {
 				result = hasFocus() ? null : Color.WHITE;
 			}
@@ -1469,6 +1469,10 @@ public abstract class AbstractCollectableComponent
 
 		//Logger.getLogger(AbstractCollectableComponent.class).debug("getBackgroundColor: result = " + result);
 		return result;
+	}
+	
+	public static Color getMandatoryColor() {
+		return ClientParameterProvider.getInstance().getColorValue(ParameterProvider.KEY_MANDATORY_ITEM_BACKGROUND_COLOR, new Color(255,255,200));
 	}
 
 	private boolean hasFocus() {
@@ -1759,44 +1763,16 @@ public abstract class AbstractCollectableComponent
 			super.getTableCellRendererComponent(tbl, oValue, bSelected, bHasFocus, iRow, iColumn);
 
 			setAlignmentX(JLabel.CENTER_ALIGNMENT);
-			setBackground(bSelected ? tbl.getSelectionBackground() : tbl.getBackground());
-			setForeground(bSelected ? tbl.getSelectionForeground() : tbl.getForeground());
 
 			// check whether the data of the component is readable for current user, by asking the security agent of the actual field
 			if (tbl.getModel() instanceof SortableCollectableTableModel<?>) {
 				final SortableCollectableTableModel<Collectable> tblModel = (SortableCollectableTableModel<Collectable>)tbl.getModel();
-				if (tblModel.getRowCount() >= iRow+1) {
+				if (tblModel.getRowCount() > iRow) {
 					final Collectable clct = tblModel.getCollectable(iRow);
 					final Integer iTColumn = tbl.getColumnModel().getColumn(iColumn).getModelIndex();
 					final CollectableEntityField clctef = tblModel.getCollectableEntityField(iTColumn);
 					if (clctef == null) {
 						throw new NullPointerException("getTableCellRendererComponent failed to find field: " + clct + " tm index " + iTColumn);
-					}
-
-					try {
-						EntityMetaDataVO meta = MetaDataClientProvider.getInstance().getEntity(clctef.getEntityName());
-						if (meta.getRowColorScript() != null && !bSelected) {
-							CollectableTableModel<? extends Collectable> mdl = (CollectableTableModel<? extends Collectable>) tbl.getModel();
-							if (mdl.getRowCount() > iRow) {
-								Collectable c = mdl.getRow(iRow);
-								AbstractCollectableComponent.setBackground(this, meta.getRowColorScript(), c, meta);
-							}
-						}
-					}
-					catch (CommonFatalException ex) {
-						LOG.warn(ex);
-					}
-
-					if (tbl instanceof SubForm.SubFormTable) {
-						SubFormTable subformtable = (SubForm.SubFormTable) tbl;
-						Column subformcolumn = subformtable.getSubForm().getColumn(clctef.getName());
-						if (subformcolumn != null && !subformcolumn.isEnabled()) {
-							if (bSelected) {
-								setBackground(NuclosThemeSettings.BACKGROUND_INACTIVESELECTEDCOLUMN);
-							} else {
-								setBackground(NuclosThemeSettings.BACKGROUND_INACTIVECOLUMN);
-							}
-						}
 					}
 
 					final CefSecurityAgent sa = clctef.getSecurityAgent();
@@ -1812,12 +1788,74 @@ public abstract class AbstractCollectableComponent
 						layerUI.setLayerEffects(blurEffect);
 						return layer;
 					}
-
 				}
-
+				
+				setBackgroundColor(this, tbl, oValue, bSelected, bHasFocus, iRow, iColumn);
 			}
 			return this;
 		}
+	}
+	
+	public static void setBackgroundColor(Component cellRendererComponent, JTable tbl, Object oValue, boolean bSelected, boolean bHasFocus, int iRow, int iColumn) {
+		cellRendererComponent.setBackground(bSelected ? tbl.getSelectionBackground() : tbl.getBackground());
+		cellRendererComponent.setForeground(bSelected ? tbl.getSelectionForeground() : tbl.getForeground());
+
+		// check whether the data of the component is readable for current user, by asking the security agent of the actual field
+		if (tbl.getModel() instanceof SortableCollectableTableModel<?>) {
+			final SortableCollectableTableModel<Collectable> tblModel = (SortableCollectableTableModel<Collectable>)tbl.getModel();
+			if (tblModel.getRowCount() > iRow) {
+				final Collectable clct = tblModel.getCollectable(iRow);
+				final Integer iTColumn = tbl.getColumnModel().getColumn(iColumn).getModelIndex();
+				final CollectableEntityField clctef = tblModel.getCollectableEntityField(iTColumn);
+				if (clctef == null) {
+					throw new NullPointerException("getTableCellRendererComponent failed to find field: " + clct + " tm index " + iTColumn);
+				}
+
+				try {
+					EntityMetaDataVO meta = MetaDataClientProvider.getInstance().getEntity(clctef.getEntityName());
+					if (meta.getRowColorScript() != null && !bSelected) {
+						AbstractCollectableComponent.setBackground(cellRendererComponent, meta.getRowColorScript(), clct, meta);
+					}
+				}
+				catch (CommonFatalException ex) {
+					LOG.warn(ex);
+				}
+				
+				if (!clctef.isNullable() && isNull(oValue)) {
+					cellRendererComponent.setBackground(getMandatoryColor());
+				} else {
+					if (clct.getId() == null) {
+						cellRendererComponent.setBackground(tbl.getBackground());
+					} else {
+						if (tbl instanceof SubForm.SubFormTable) {
+							SubFormTable subformtable = (SubForm.SubFormTable) tbl;
+							Column subformcolumn = subformtable.getSubForm().getColumn(clctef.getName());
+							if (subformcolumn != null && !subformcolumn.isEnabled()) {
+								if (bSelected) {
+									cellRendererComponent.setBackground(NuclosThemeSettings.BACKGROUND_INACTIVESELECTEDCOLUMN);
+								} else {
+									cellRendererComponent.setBackground(NuclosThemeSettings.BACKGROUND_INACTIVECOLUMN);
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	
+	private static boolean isNull(Object oValue) {
+		if (oValue == null) {
+			return true;
+		}
+		if (oValue instanceof CollectableField) {
+			if (((CollectableField) oValue).getFieldType() == CollectableField.TYPE_VALUEIDFIELD) {
+				return ((CollectableField) oValue).getValueId() == null;
+			} else {
+				return ((CollectableField) oValue).getValue() == null;
+			}
+		}
+		return false;
 	}
 
 }	// class AbstractCollectableComponent

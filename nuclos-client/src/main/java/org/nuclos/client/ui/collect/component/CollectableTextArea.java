@@ -135,10 +135,9 @@ public class CollectableTextArea extends CollectableTextComponent {
 				CollectableTextArea.this.setObjectValue(oValue);
 
 				final JTextArea ta = CollectableTextArea.this.getJTextArea();
-				ta.setBackground(bSelected ? tbl.getSelectionBackground() : tbl.getBackground());
-				ta.setForeground(bSelected ? tbl.getSelectionForeground() : tbl.getForeground());
 				ta.setCaretPosition(0);
-
+				
+				setBackgroundColor(ta, tbl, oValue, bSelected, bHasFocus, iRow, iColumn);
 				return CollectableTextArea.this.getJTextArea();
 			}
 		};
