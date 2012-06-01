@@ -355,6 +355,15 @@ public class TableLayoutUtil {
 	 * @param toInsertTo {@link LayoutCell} to insert Component in
 	 */
 	public void insertComponentTo(WYSIWYGComponent c, LayoutCell toInsertTo) {
+		insertComponentTo(c, toInsertTo, false);
+	}
+	/**
+	 * This Method inserts a Component to the Layout.
+	 * 
+	 * @param c {@link WYSIWYGComponent} to Insert
+	 * @param toInsertTo {@link LayoutCell} to insert Component in
+	 */
+	public void insertComponentTo(WYSIWYGComponent c, LayoutCell toInsertTo, boolean bAdjustAlignment) {
 		TableLayoutConstraints constraint = new TableLayoutConstraints();
 
 		if (c instanceof DefaultAlignment) {
@@ -364,8 +373,14 @@ public class TableLayoutUtil {
 		} else {
 			int[] alignment = new int[]{2, 1};
 			// special behavior for subform's
-			if(c instanceof WYSIWYGSubForm)
-				alignment[1] = 2;
+			if(c instanceof WYSIWYGSubForm) {
+				alignment[AlignmentDialog.VERTICAL_ALIGN] = TableLayoutConstraints.FULL;
+			}
+			// special behavior for panels's
+			if(c instanceof WYSIWYGLayoutEditorPanel) {
+				alignment[AlignmentDialog.VERTICAL_ALIGN] = TableLayoutConstraints.TOP;
+				alignment[AlignmentDialog.HORIZONTAL_ALIGN] = TableLayoutConstraints.LEFT;
+			}
 			
 			constraint.hAlign = alignment[AlignmentDialog.HORIZONTAL_ALIGN];
 			constraint.vAlign = alignment[AlignmentDialog.VERTICAL_ALIGN];
@@ -376,7 +391,7 @@ public class TableLayoutUtil {
 		constraint.col2 = toInsertTo.getCell2X();
 		constraint.row2 = toInsertTo.getCell2Y();
 
-		insertComponentTo(c, constraint);
+		insertComponentTo(c, constraint, bAdjustAlignment);
 	}
 
 	/**
@@ -385,6 +400,14 @@ public class TableLayoutUtil {
 	 * @param constraints
 	 */
 	public void insertComponentTo(WYSIWYGComponent c, TableLayoutConstraints constraints) {
+		insertComponentTo(c, constraints, false);
+	}
+	/**
+	 * @see #insertComponentTo(WYSIWYGComponent, LayoutCell)
+	 * @param c
+	 * @param constraints
+	 */
+	public void insertComponentTo(WYSIWYGComponent c, TableLayoutConstraints constraints, boolean bAdjustAlignment) {
 		((Component) c).addMouseListener(container.getPropertiesMouseListener());
 		//NUCLEUSINT-556
 		((Component) c).addMouseListener(new PropertiesDisplayMouseListener( c, this));
@@ -399,8 +422,10 @@ public class TableLayoutUtil {
 			/** enable some extra features that dont make sense for the main panel (like visible etc) */
 			if (((WYSIWYGLayoutEditorPanel) c).getParentEditor() != null)
 				((WYSIWYGLayoutEditorPanel) c).enablePropertiesForInlinePanels();
-			constraints.hAlign = TableLayout.FULL;
-			constraints.vAlign = TableLayout.FULL;
+			if (!bAdjustAlignment) { // override
+				constraints.hAlign = TableLayout.FULL;
+				constraints.vAlign = TableLayout.FULL;
+			}
 		} else if (c instanceof WYSIWYGTabbedPane) {
 			((WYSIWYGTabbedPane) c).setWYSIWYGLayoutEditorChangeDescriptor(getWYSIWYGLayoutEditorChangeDescriptor());
 			constraints.hAlign = TableLayout.FULL;
@@ -1172,14 +1197,14 @@ public class TableLayoutUtil {
 						value = InterfaceGuidelines.MARGIN_LEFT;
 				}
 				cellToChange.setCellWidth(newCols[i]);
-				if(undoredo)
+				if(undoredo && getUndoRedoFunction() != null)
 					getUndoRedoFunction().loggingChangeWidthOfColumn(cellToChange, this, automatic);
 				newCols[i] = value;
 				cellToChange.setCellWidth(value);
 			}
 		}
 		tableLayout.setColumn(newCols);
-		if(undoredo)
+		if(undoredo && getUndoRedoFunction() != null)
 			getUndoRedoFunction().loggingChangeWidthOfColumn(cellToChange, this, automatic);
 	}
 	
@@ -1204,14 +1229,14 @@ public class TableLayoutUtil {
 						value = InterfaceGuidelines.MARGIN_TOP;
 				}
 				cellToChange.setCellHeight(newRows[i]);
-				if(undoredo)
+				if(undoredo && getUndoRedoFunction() != null)
 					getUndoRedoFunction().loggingChangeHeightOfRow(cellToChange, this, automatic);
 				newRows[i] = value;
 				cellToChange.setCellHeight(value);
 			}
 		}
 		tableLayout.setRow(newRows);
-		if(undoredo)
+		if(undoredo && getUndoRedoFunction() != null)
 			getUndoRedoFunction().loggingChangeHeightOfRow(cellToChange, this, automatic);
 	}
 

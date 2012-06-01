@@ -985,6 +985,7 @@ public class WYSIWYGStringsAndLabels {
 		public static final String NAME_TITLEDBORDER = "Rahmen mit Titel";
 
 		public static final String DEFAULT_TITLE_FOR_NEW_TITLED_BORDER = "Titel";
+		public static final String DEFAULT_TITLE_FOR_NEW_TITLED_BORDER_LAYOUTPANEL = "(ohne Titel)";
 
 		public static final String LABEL_BORDERTYPE = "Typ";
 		public static final String LABEL_BORDERPROPERTIES = "Eigenschaften";

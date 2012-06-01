@@ -16,10 +16,14 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.layout.wysiwyg.component;
 
+import info.clearthought.layout.TableLayoutConstraints;
+
 import java.awt.Component;
 import java.util.HashMap;
 
+import javax.swing.BorderFactory;
 import javax.swing.JLabel;
+import javax.swing.border.Border;
 
 import org.apache.log4j.Logger;
 import org.nuclos.client.layout.wysiwyg.WYSIWYGMetaInformation;
@@ -28,8 +32,12 @@ import org.nuclos.client.layout.wysiwyg.WYSIWYGStringsAndLabels.COMPONENT_PROCES
 import org.nuclos.client.layout.wysiwyg.component.properties.ComponentProperties;
 import org.nuclos.client.layout.wysiwyg.component.properties.PropertyUtils;
 import org.nuclos.client.layout.wysiwyg.component.properties.PropertyValueBoolean;
+import org.nuclos.client.layout.wysiwyg.component.properties.PropertyValueBorder;
 import org.nuclos.client.layout.wysiwyg.component.properties.PropertyValueString;
 import org.nuclos.client.layout.wysiwyg.editor.ui.panels.WYSIWYGLayoutEditorPanel;
+import org.nuclos.client.layout.wysiwyg.editor.util.InterfaceGuidelines;
+import org.nuclos.client.layout.wysiwyg.editor.util.TableLayoutUtil;
+import org.nuclos.client.layout.wysiwyg.editor.util.valueobjects.LayoutCell;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.layoutml.LayoutMLConstants;
@@ -411,9 +419,89 @@ public class ComponentProcessors implements LayoutMLConstants {
 		public Component createEmptyComponent(Integer iNumber, WYSIWYGMetaInformation metaInf, String name) throws CommonBusinessException {
 			WYSIWYGLayoutEditorPanel newTableLayoutPanel = new WYSIWYGLayoutEditorPanel(metaInf);
 			newTableLayoutPanel.getTableLayoutUtil().createStandardLayout();
+			
+			createDefault(newTableLayoutPanel);
+			
 			return newTableLayoutPanel;
 		}
 		
+		private void createDefault(WYSIWYGLayoutEditorPanel newTableLayoutPanel) {
+			TableLayoutUtil tableLayoutUtil = newTableLayoutPanel.getTableLayoutUtil();
+			
+			// create row and columns
+			LayoutCell col0 = new LayoutCell();
+			col0.setCellX(1);
+			col0.setCellY(1);
+			col0.setCellHeight(InterfaceGuidelines.MINIMUM_SIZE);
+			col0.setCellWidth(InterfaceGuidelines.MINIMUM_SIZE);
+			tableLayoutUtil.addCol(col0);
+			
+			LayoutCell row0 = new LayoutCell();
+			row0.setCellX(1);
+			row0.setCellY(1);
+			row0.setCellHeight(InterfaceGuidelines.MINIMUM_SIZE);
+			row0.setCellWidth(InterfaceGuidelines.MINIMUM_SIZE);
+			tableLayoutUtil.addRow(row0);
+
+			LayoutCell col1 = new LayoutCell();
+			col1.setCellX(2);
+			col1.setCellY(2);
+			col1.setCellHeight(InterfaceGuidelines.DEFAULT_ROW_HEIGHT);
+			col1.setCellWidth(InterfaceGuidelines.DEFAULT_COLUMN1_WIDTH_FOR_LAYOUTPANEL);
+			tableLayoutUtil.addCol(col1);
+
+			LayoutCell col2 = new LayoutCell();
+			col2.setCellX(3);
+			col2.setCellY(3);
+			col2.setCellHeight(InterfaceGuidelines.DEFAULT_ROW_HEIGHT);
+			col2.setCellWidth(InterfaceGuidelines.DEFAULT_COLUMN2_WIDTH_FOR_LAYOUTPANEL);
+			tableLayoutUtil.addCol(col2);
+
+			LayoutCell col3 = new LayoutCell();
+			col3.setCellX(4);
+			col3.setCellY(4);
+			col3.setCellHeight(InterfaceGuidelines.MINIMUM_SIZE);
+			col3.setCellWidth(InterfaceGuidelines.MINIMUM_SIZE);
+			tableLayoutUtil.addCol(col3);
+
+			for (int i = 2; i < 7; i++) {
+				LayoutCell rowX = new LayoutCell();
+				rowX.setCellX(i);
+				rowX.setCellY(i);
+				rowX.setCellHeight(i == 6 ? InterfaceGuidelines.MINIMUM_SIZE : InterfaceGuidelines.DEFAULT_ROW_HEIGHT);
+				tableLayoutUtil.addRow(rowX);
+			}
+			
+			toggleStandardBorderVisible(tableLayoutUtil);
+			
+			try {
+				PropertyValueBorder propertyValueBorder = new PropertyValueBorder();
+				propertyValueBorder.setClearBorder(true);
+				propertyValueBorder.setValue(new TitledBorderWithTranslations(WYSIWYGStringsAndLabels.BORDER_EDITOR.DEFAULT_TITLE_FOR_NEW_TITLED_BORDER_LAYOUTPANEL));
+				newTableLayoutPanel.getProperties().setProperty(WYSIWYGLayoutEditorPanel.PROPERTY_BORDER, propertyValueBorder, Border.class);
+			} catch (Exception e) {
+				// do nothing.
+			}
+			
+//			newTableLayoutPanel.getParentEditor().getContainer().((Component) newTableLayoutPanel, new TableLayoutConstraints("0, 0, L, T"));
+		}
+		
+		private void toggleStandardBorderVisible(TableLayoutUtil tableLayoutUtil){
+			LayoutCell upperLeftCorner = tableLayoutUtil.getLayoutCellByPosition(0, 0);
+			
+			boolean borderIsShown = true;
+			if (upperLeftCorner.getCellHeight() == 0 && upperLeftCorner.getCellWidth() == 0){
+				borderIsShown = false;
+			}
+			
+			if (borderIsShown){
+				tableLayoutUtil.modifyTableLayoutSizes(TableLayoutUtil.ACTION_TOGGLE_STANDARDBORDER, true, upperLeftCorner, false);
+				tableLayoutUtil.modifyTableLayoutSizes(TableLayoutUtil.ACTION_TOGGLE_STANDARDBORDER, false, upperLeftCorner, false);
+			} else {
+				tableLayoutUtil.modifyTableLayoutSizes(InterfaceGuidelines.MARGIN_TOP, false, upperLeftCorner, false);
+				tableLayoutUtil.modifyTableLayoutSizes(InterfaceGuidelines.MARGIN_LEFT, true, upperLeftCorner, false);
+			}
+		}		
 	}
 
 	/**

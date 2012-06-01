@@ -785,7 +785,7 @@ public class TableLayoutPanel extends JPanel implements DropTargetListener, Mous
 			current = tableLayoutUtil.getLayoutCell(mouseLocation);
 	
 			/** adding the component to the layout */
-			tableLayoutUtil.insertComponentTo((WYSIWYGComponent) component, current);
+			tableLayoutUtil.insertComponentTo((WYSIWYGComponent) component, current, true);
 			
 			if (usePreferredSizeInsteadofAbsoluteSizes) {
 				tableLayoutUtil.modifyTableLayoutSizes(TableLayout.PREFERRED, false, current, true);

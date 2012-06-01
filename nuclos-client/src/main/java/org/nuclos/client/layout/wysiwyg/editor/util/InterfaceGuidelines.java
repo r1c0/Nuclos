@@ -65,6 +65,9 @@ public class InterfaceGuidelines {
    //NUCLEUSINT-966
     public static final int DEFAULT_COLUMN_WIDTH = 50;
     public static final int DEFAULT_ROW_HEIGHT = 22;
+  
+    public static final int DEFAULT_COLUMN1_WIDTH_FOR_LAYOUTPANEL = 100;
+    public static final int DEFAULT_COLUMN2_WIDTH_FOR_LAYOUTPANEL = 200;
     
     public static final int FONT_MAXIMUM_SIZE = 50;
     public static final int FONT_MINIMUM_SIZE = -5;

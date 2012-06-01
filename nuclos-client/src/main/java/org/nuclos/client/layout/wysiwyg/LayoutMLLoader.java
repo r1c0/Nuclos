@@ -501,7 +501,7 @@ public class LayoutMLLoader implements LayoutMLConstants {
 						contraints.hAlign = Integer.parseInt(atts.getValue(ATTRIBUTE_HALIGN));
 						contraints.vAlign = Integer.parseInt(atts.getValue(ATTRIBUTE_VALIGN));
 
-						((WYSIWYGLayoutEditorPanel) peekParentComponent()).getTableLayoutUtil().insertComponentTo(peekComponent(), contraints);
+						((WYSIWYGLayoutEditorPanel) peekParentComponent()).getTableLayoutUtil().insertComponentTo(peekComponent(), contraints, true);
 
 					} catch (NumberFormatException ex) {
 						log.error(ex);
