@@ -1823,9 +1823,11 @@ public abstract class AbstractCollectableComponent
 				
 				if (!clctef.isNullable() && isNull(oValue)) {
 					cellRendererComponent.setBackground(getMandatoryColor());
+					cellRendererComponent.setForeground(tbl.getForeground());
 				} else {
 					if (clct.getId() == null) {
 						cellRendererComponent.setBackground(tbl.getBackground());
+						cellRendererComponent.setForeground(tbl.getForeground());
 					} else {
 						if (tbl instanceof SubForm.SubFormTable) {
 							SubFormTable subformtable = (SubForm.SubFormTable) tbl;
