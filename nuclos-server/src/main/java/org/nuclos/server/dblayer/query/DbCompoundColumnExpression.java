@@ -58,6 +58,7 @@ public class DbCompoundColumnExpression<T> extends DbExpression<T> {
 		}
 		final MetaDataProvider mdProv = MetaDataServerProvider.getInstance();
 		final String tableAlias = TableAliasSingleton.getInstance().getAlias(field);
+		final List<String> qualifiedNames = new ArrayList<String>();
 		final List<String> toConcat = new ArrayList<String>();
 		final StandardSqlDBAccess dbAccess = from.getQuery().getBuilder().getDBAccess();
 		for (IFieldRef ref: new ForeignEntityFieldParser(field)) {
@@ -68,13 +69,16 @@ public class DbCompoundColumnExpression<T> extends DbExpression<T> {
 				final EntityFieldMetaDataVO mdField = mdProv.getEntityField(field.getForeignEntity() != null ? field.getForeignEntity() : field.getLookupEntity(), ref.getContent());
 				final DbColumnType type = DalUtils.getDbColumnType(mdField).getGenericType() != DbGenericType.VARCHAR ? new DbColumnType(DbGenericType.VARCHAR, 255) : DalUtils.getDbColumnType(mdField);
 				final String qualifiedName = DbColumnExpression.mkQualifiedColumnName(tableAlias, mdField.getDbColumn(), false).toString();
+				qualifiedNames.add(qualifiedName);
 				toConcat.add(dbAccess.getSqlForSubstituteNull(dbAccess.getSqlForCast(qualifiedName, type), "''"));
 			}
 		}
 		if (toConcat.size() == 1) {
-			return new PreparedStringBuilder(toConcat.get(0));
+			return new PreparedStringBuilder(qualifiedNames.get(0));
 		}
-		return new PreparedStringBuilder(dbAccess.getSqlForConcat(toConcat));
+		else {
+			return new PreparedStringBuilder(dbAccess.getSqlForConcat(toConcat));
+		}
 	}
 
 
