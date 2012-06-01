@@ -281,21 +281,18 @@ public class DetailsController<Clct extends Collectable> extends CommonControlle
 							SwingUtilities.invokeLater(new Runnable() {
 								@Override
 								public void run() {
-									SwingUtilities.invokeLater(new Runnable() {
-										@Override
-										public void run() {
-											if (sfc.getSubForm().getParentSubForm() != null) {
-												for (DetailsSubFormController<?> psfc : DetailsController.this.sfcs) {
-													if (psfc.getEntityAndForeignKeyFieldName().getEntityName().equals(sfc.getSubForm().getParentSubForm())) {
-														evaluateNewRow(psfc, sfc, e.getFirstRow());
-													}
+									if (sfc != null && !sfc.isClosed()) {
+										if (sfc.getSubForm().getParentSubForm() != null) {
+											for (DetailsSubFormController<?> psfc : DetailsController.this.sfcs) {
+												if (psfc.getEntityAndForeignKeyFieldName().getEntityName().equals(sfc.getSubForm().getParentSubForm())) {
+													evaluateNewRow(psfc, sfc, e.getFirstRow());
 												}
 											}
-											else {
-												evaluateNewRow(null, sfc, e.getFirstRow());
-											}
 										}
-									});
+										else {
+											evaluateNewRow(null, sfc, e.getFirstRow());
+										}
+									}
 								}
 							});
 							break;
@@ -307,15 +304,17 @@ public class DetailsController<Clct extends Collectable> extends CommonControlle
 								SwingUtilities.invokeLater(new Runnable() {
 									@Override
 									public void run() {
-										if (sfc.getSubForm().getParentSubForm() != null) {
-											for (DetailsSubFormController<?> psfc : DetailsController.this.sfcs) {
-												if (psfc.getEntityAndForeignKeyFieldName().getEntityName().equals(sfc.getSubForm().getParentSubForm())) {
-													process(key, psfc, sfc, e.getFirstRow());
+										if (sfc != null && !sfc.isClosed()) {
+											if (sfc.getSubForm().getParentSubForm() != null) {
+												for (DetailsSubFormController<?> psfc : DetailsController.this.sfcs) {
+													if (psfc.getEntityAndForeignKeyFieldName().getEntityName().equals(sfc.getSubForm().getParentSubForm())) {
+														process(key, psfc, sfc, e.getFirstRow());
+													}
 												}
 											}
-										}
-										else {
-											process(key, null, sfc, e.getFirstRow());
+											else {
+												process(key, null, sfc, e.getFirstRow());
+											}
 										}
 									}
 								});
