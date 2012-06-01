@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -337,18 +338,38 @@ public class RecordGrantUtils {
 			return null;
 
 		DbQueryBuilder builder = dataBaseHelper.getDbAccess().getQueryBuilder();
-		DbQuery<DbTuple> query = builder.createTupleQuery();
-		DbFrom table = query.from("T_UD_SEARCHFILTER").alias(SystemFields.BASE_ALIAS);
-		DbColumnExpression<Integer> intId = table.baseColumn("INTID", Integer.class);
-		DbColumnExpression<String> strName = table.baseColumn("STRNAME", String.class);
-		DbColumnExpression<String> strEntity = table.baseColumn("STRENTITY", String.class);
-		DbColumnExpression<String> xmlFilter = table.baseColumn("CLBSEARCHFILTER", String.class);
-		query.multiselect(intId, strName, strEntity, xmlFilter);
-		query.where(intId.in(filterIds));
-		query.distinct(true);
+
+		// splitted in 2 different queries as Oracle 10.2 can not handle distinct on clobs. @see NUCLOS-354
+		// we have to use something like ...
+		// SELECT t.INTID, t.STRNAME, t.STRENTITY, t.CLBSEARCHFILTER FROM T_UD_SEARCHFILTER t
+		// WHERE t.INTID IN (
+		// 		SELECT DISTINCT t.INTID FROM T_UD_SEARCHFILTER t
+		// 		WHERE t.INTID IN (42232519)
+		// 		)
+		// @todo remove this if we run out of support for Oracle 10.2 as this is an performance issue if we do two queries or one.
+		DbQuery<DbTuple> query1 = builder.createTupleQuery();
+		DbFrom table1 = query1.from("T_UD_SEARCHFILTER").alias(SystemFields.BASE_ALIAS);
+		DbColumnExpression<Integer> fltIntId = table1.baseColumn("INTID", Integer.class);
+		query1.multiselect(fltIntId);
+		query1.where(fltIntId.in(filterIds));
+		query1.distinct(true);
+
+		Set<Integer> queryIds = new HashSet<Integer>();
+		for (DbTuple t : dataBaseHelper.getDbAccess().executeQuery(query1)) {
+			queryIds.add(t.get(0, Integer.class));
+		}
+
+		DbQuery<DbTuple> query2 = builder.createTupleQuery();
+		DbFrom table2 = query2.from("T_UD_SEARCHFILTER").alias(SystemFields.BASE_ALIAS);
+		DbColumnExpression<Integer> intId = table2.baseColumn("INTID", Integer.class);
+		DbColumnExpression<String> strName = table2.baseColumn("STRNAME", String.class);
+		DbColumnExpression<String> strEntity = table2.baseColumn("STRENTITY", String.class);
+		DbColumnExpression<String> xmlFilter = table2.baseColumn("CLBSEARCHFILTER", String.class);
+		query2.multiselect(intId, strName, strEntity, xmlFilter);
+		query2.where(intId.in(queryIds));
 
 		List<CollectableSearchCondition> cscs = new ArrayList<CollectableSearchCondition>();
-		for (DbTuple t : dataBaseHelper.getDbAccess().executeQuery(query)) {
+		for (DbTuple t : dataBaseHelper.getDbAccess().executeQuery(query2)) {
 			String filterName = t.get(1, String.class);
 			String entityName = t.get(2, String.class);
 			String xml = t.get(3, String.class);
