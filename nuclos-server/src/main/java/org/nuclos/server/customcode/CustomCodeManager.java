@@ -96,6 +96,24 @@ public class CustomCodeManager implements ApplicationContextAware, MessageListen
 			throw new NuclosCompileException(e);
 		}
 	}
+	
+	public <T> T getInstance(String sClazz) throws NuclosCompileException {
+		try {
+			if (nuclosJavaCompilerComponent.validate()) {
+				this.cl = null;
+			}
+			return (T) getClassLoader().loadClass(sClazz).newInstance();
+		}
+		catch(InstantiationException e) {
+			throw new NuclosCompileException(e);
+		}
+		catch(IllegalAccessException e) {
+			throw new NuclosCompileException(e);
+		}
+		catch(ClassNotFoundException e) {
+			throw new NuclosCompileException(e);
+		}
+	}
 
 	@Override
 	public void onMessage(Message message) {

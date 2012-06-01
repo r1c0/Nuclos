@@ -93,7 +93,13 @@ class NuclosJavaCompiler implements Closeable {
 		this.diagnosticListener = new CodeGeneratorDiagnosticListener(locale);
 		this.stdFileManager = javac.getStandardFileManager(diagnosticListener, locale, null);
 		try {
+			// add libs from tomcat
+			String catalinaHome = (String) System.getProperties().get("catalina.home");			
 			List<File> classpath = new ArrayList<File>();
+			if(catalinaHome != null) {
+				catalinaHome = catalinaHome + File.separator + "lib";
+				classpath.addAll(nuclosJavaCompilerComponent.getLibs(new File(catalinaHome)));
+			}
 			classpath.addAll(nuclosJavaCompilerComponent.getExpandedSystemParameterClassPath());
 			classpath.addAll(nuclosJavaCompilerComponent.getLibs(
 					NuclosSystemParameters.getDirectory(NuclosSystemParameters.WSDL_GENERATOR_LIB_PATH)));

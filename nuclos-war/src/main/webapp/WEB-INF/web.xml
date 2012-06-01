@@ -74,6 +74,21 @@
 		</init-param>
         <load-on-startup>5</load-on-startup>
     </servlet>
+    
+    <servlet>
+        <servlet-name>restservice</servlet-name>
+        <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+        <init-param>
+			<param-name>contextConfigLocation</param-name>
+			<param-value>classpath*:META-INF/nuclos/*-restservice.xml</param-value>
+		</init-param>
+        <load-on-startup>6</load-on-startup>
+    </servlet>
+    
+    <servlet-mapping>
+        <servlet-name>restservice</servlet-name>
+        <url-pattern>/restservice/*</url-pattern>
+    </servlet-mapping>
 
     <servlet-mapping>
         <servlet-name>reports</servlet-name>
