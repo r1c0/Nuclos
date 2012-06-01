@@ -849,6 +849,7 @@ public class SubForm extends JPanel
 
 	public void setRowHeight(int iHeight) {
 		if (DYNAMIC_ROW_HEIGHTS == iHeight) {
+			this.subformtbl.setRowHeight(MIN_ROWHEIGHT);
 			this.dynamicRowHeights = true;
 			this.rowHeightCtrl.clear();
 			this.subformtbl.updateRowHeights();
