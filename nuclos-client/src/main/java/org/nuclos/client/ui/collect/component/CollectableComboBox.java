@@ -295,6 +295,9 @@ public class CollectableComboBox extends LabeledCollectableComponentWithVLP impl
 
 		UIUtils.setWaitCursor(getJComboBox());
 
+		LOG.debug("Refresh valuelist: " + getEntityField().getEntityName() + "." + getEntityField().getName() +
+				" " + getValueListProvider().toString() + " " + (async ? "(multithreaded)" : "") );
+
 		if (async) {
 			rvlr.execute();
 		} else {
@@ -307,27 +310,42 @@ public class CollectableComboBox extends LabeledCollectableComponentWithVLP impl
 	private void releasePreviousRefreshs() {
 		synchronized(runningRefreshs) {
 			for (RefreshValueListWorker refresh : runningRefreshs) {
-				refresh.cancel(true);
+				refresh.ignoreResult();
+				if (!refresh.cancel(true)) {
+					LOG.debug("Failed to cancel refresh for " + getEntityField().getEntityName() + "." + getEntityField().getName());
+				}
 			}
 		}
 	}
 
 	private class RefreshValueListWorker extends SwingWorker<List<CollectableField>, Object> {
 
+		private Boolean ignoreResult = false;
+
 		private RefreshValueListWorker() {
+		}
+
+		public void ignoreResult() {
+			this.ignoreResult = true;
 		}
 
 		@Override
 		protected List<CollectableField> doInBackground() throws Exception {
-			return getValueListProvider() == null ? Collections.<CollectableField>emptyList() : getValueListProvider().getCollectableFields();
+			if (getValueListProvider() == null) {
+				return Collections.<CollectableField>emptyList();
+			}
+			return getValueListProvider().getCollectableFields();
 		}
 
 		@Override
 		protected void done() {
 			try {
-				if (!isCancelled()) {
+				if (!isCancelled() && !ignoreResult) {
 					setComboBoxModel(get(), false);
 					getJComboBox().setCursor(null);
+				}
+				else {
+					LOG.debug("Ignoring refresh for " + getEntityField().getEntityName() + "." + getEntityField().getName());
 				}
 			} catch(Exception e) {
 				Errors.getInstance().showExceptionDialog(CollectableComboBox.this.getJComponent(), e);
@@ -710,12 +728,12 @@ public class CollectableComboBox extends LabeledCollectableComponentWithVLP impl
 	protected Integer getColumns() {
 		return null;
 	}
-	
+
 	private static class My2CollectableComponentDetailTableCellRenderer extends CollectableComponentDetailTableCellRenderer {
 
 		private My2CollectableComponentDetailTableCellRenderer() {
 		}
-		
+
 		@Override
 		protected void setValue(Object value) {
 			if (value instanceof AbstractCollectableSearchCondition)
@@ -728,9 +746,9 @@ public class CollectableComboBox extends LabeledCollectableComponentWithVLP impl
 
 			super.setValue(value);
 		}
-		
+
 	}
-	
+
 	@Override
 	public TableCellRenderer getTableCellRenderer(boolean subform) {
 		if (!isSearchComponent() && getValueListProvider() != null) {
