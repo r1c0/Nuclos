@@ -263,12 +263,12 @@ public abstract class StandardSqlDBAccess extends AbstractDBAccess {
         }
         return false;
     }
-    
+
     @Override
     public DalCallResult executeBatch(final IBatch batch, EBatchType type) {
     	return batch.process(getPreparedStringExecutor(), type);
     }
-    
+
     @Override
     public List<String> getStatementsForLogging(final IBatch batch) {
     	final LogOnlyPreparedStringExecutor ex = new LogOnlyPreparedStringExecutor();
@@ -318,7 +318,7 @@ public abstract class StandardSqlDBAccess extends AbstractDBAccess {
     		throw wrapSQLException(null, "executeCallable failed", e);
 		}
     }
-    
+
 	protected List<String> getColumns(final String tableOrView) {
 		try {
 			return executor.execute(new ConnectionRunner<List<String>>() {
@@ -347,7 +347,7 @@ public abstract class StandardSqlDBAccess extends AbstractDBAccess {
     	final int size = columns.size();
     	final List<DbSimpleViewColumn> result = new ArrayList<DbSimpleView.DbSimpleViewColumn>(size);
     	final List<String> natural = getColumns(view.getViewName());
-    	
+
     	COLUMNS:
     	for (String n: natural) {
     		final Iterator<DbSimpleViewColumn> it = columns.iterator();
@@ -596,7 +596,7 @@ public abstract class StandardSqlDBAccess extends AbstractDBAccess {
     protected DbStatementVisitor<Integer> createCommandVisitor() {
         return new StatementVisitor();
     }
-    
+
     protected IPreparedStringExecutor getPreparedStringExecutor() {
     	return new StandardPreparedStringExecutor(executor);
     }
@@ -628,16 +628,16 @@ public abstract class StandardSqlDBAccess extends AbstractDBAccess {
     }
 
     public static abstract class StandardQueryBuilder extends DbQueryBuilder {
-    	
+
     	private final StandardSqlDBAccess dbAccess;
-    	
+
     	protected StandardQueryBuilder(StandardSqlDBAccess dbAccess) {
     		if (dbAccess == null) {
     			throw new NullPointerException();
     		}
     		this.dbAccess = dbAccess;
     	}
-    	
+
     	@Override
     	public StandardSqlDBAccess getDBAccess() {
     		return dbAccess;
@@ -705,7 +705,7 @@ public abstract class StandardSqlDBAccess extends AbstractDBAccess {
             prepareOrderBy(ps, query);
             return ps;
         }
-        
+
         protected void prepareOrderBy(PreparedStringBuilder ps, DbQuery<?> query) {
         	if (!query.getOrderList().isEmpty()) {
                 String sep = " ORDER BY ";
@@ -723,9 +723,9 @@ public abstract class StandardSqlDBAccess extends AbstractDBAccess {
             if (query.isDistinct())
                 ps.append("DISTINCT ");
         }
-        
+
         protected void postprocessSelect(PreparedStringBuilder ps, DbQuery<?> query) {
-        	
+
         }
 
         private void appendSelection(PreparedStringBuilder ps, List<? extends DbSelection<?>> selections) {
@@ -792,13 +792,13 @@ public abstract class StandardSqlDBAccess extends AbstractDBAccess {
 	 * @deprecated Use an IBatch for executing structural DB changes.
 	 */
     public class StatementVisitor implements DbStatementVisitor<Integer> {
-    	
+
     	private final EBatchType type;
-    	
+
     	public StatementVisitor() {
     		type = EBatchType.FAIL_LATE;
     	}
-    	
+
         @Override
         public Integer visitInsert(final DbInsertStatement insertStmt) throws SQLException {
             return executeBatch(getBatchFor(insertStmt), type).getNumberOfDbChanges();
@@ -872,7 +872,7 @@ public abstract class StandardSqlDBAccess extends AbstractDBAccess {
     			LOG.error("Exception during structure change logging: " + e);
     		}
     	}
-    	
+
         @Override
         public Integer visitPlain(DbPlainStatement command) {
             try {
@@ -1015,7 +1015,7 @@ public abstract class StandardSqlDBAccess extends AbstractDBAccess {
 						public String transform(DbColumn column) {
 							return getColumnSpec(column, true);
 						}
-					})), 
+					})),
 					getTablespaceSuffix(table)));
 		}
 		final IBatch result = BatchImpl.simpleBatch(list);
@@ -1040,7 +1040,7 @@ public abstract class StandardSqlDBAccess extends AbstractDBAccess {
     		PreparedString ps2 = PreparedString.format("ALTER TABLE %s ADD %s",
                 getQualifiedName(column.getTableName()),
                 getColumnSpecNullable(column));
-    		
+
     		result = BatchImpl.simpleBatch(ps2);
     		result.append(getSqlForUpdateNotNullColumn(column));
     		result.append(getSqlForAlterTableNotNullColumn(column));
@@ -1103,24 +1103,6 @@ public abstract class StandardSqlDBAccess extends AbstractDBAccess {
     @Override
     protected abstract IBatch getSqlForCreateIndex(DbIndex index);
 
-    @Override
-    public String getSelectSqlForColumn(String table, DbColumnType columnType, List<?> viewPattern) {
-    	String sql = null;
-        for (Object obj : viewPattern) {
-            String sql2;
-            if (obj instanceof DbIdent) {
-                sql2 = table + "." + ((DbIdent) obj).getName();
-            } else {
-                String s = (String) obj;
-                if (s.isEmpty())
-                    continue;
-                sql2 = "'" + SQLUtils2.escape(s) +"'";
-            }
-            sql = (sql != null) ? getSqlForConcat(sql, sql2) : sql2;
-        }
-        return getSqlForCast(sql, columnType);
-    }
-
     /**
      * @deprecated Views has always been problematic (especially with PostgreSQL).
      * 	Avoid whenever possible.
@@ -1129,7 +1111,7 @@ public abstract class StandardSqlDBAccess extends AbstractDBAccess {
     protected IBatch getSqlForCreateSimpleView(DbSimpleView view) throws DbException {
     	return BatchImpl.simpleBatch(_getSqlForCreateSimpleView("CREATE VIEW", view, ""));
     }
-    
+
     protected PreparedString _getSqlForCreateSimpleView(String prefix, DbSimpleView view, String suffix) throws DbException {
     	final TableAliasForSimpleView aliasFactory = new TableAliasForSimpleView();
         final StringBuilder fromClause = new StringBuilder();
@@ -1219,12 +1201,16 @@ public abstract class StandardSqlDBAccess extends AbstractDBAccess {
 		return result;
 	}
 
-    protected String getSqlForCast(String x, DbColumnType columnType) {
+    public String getSqlForCast(String x, DbColumnType columnType) {
         return String.format("CAST(%s AS %s)", x, getDataType(columnType));
     }
 
-    protected String getSqlForNullCheck(String x, String y) {
+    public String getSqlForNullCheck(String x, String y) {
         return String.format("CASE WHEN %s IS NOT NULL THEN %s END", x, y);
+    }
+
+    public String getSqlForSubstituteNull(String expression, String substitute) {
+        return String.format("CASE WHEN %s IS NOT NULL THEN %s ELSE %s END", expression, expression, substitute);
     }
 
     @Override

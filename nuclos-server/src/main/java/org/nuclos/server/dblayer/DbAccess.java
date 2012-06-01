@@ -70,10 +70,10 @@ public abstract class DbAccess {
 	protected DbExecutor executor;
 	protected Map<String, String> config;
 	protected File structureChangeLogDir;
-	
-	protected DbAccess() {	
+
+	protected DbAccess() {
 	}
-	
+
 	@Override
 	public String toString() {
 		final StringBuilder result = new StringBuilder();
@@ -90,13 +90,13 @@ public abstract class DbAccess {
 	public void init(DbType type, DataSource dataSource, Map<String, String> config) {
 		this.type = type;
 		this.config = new HashMap<String, String>(config);
-		// this.executor = new DataSourceExecutor(dataSource, config.get(USERNAME), config.get(PASSWORD)); 
+		// this.executor = new DataSourceExecutor(dataSource, config.get(USERNAME), config.get(PASSWORD));
 		if (config.containsKey(STRUCTURE_CHANGELOG_DIR)) {
 			structureChangeLogDir = new File(config.get(STRUCTURE_CHANGELOG_DIR));
 		}
 		this.schema = resolveSchema(config);
 	}
-	
+
 	public final DbExecutor getDbExecutor() {
 		return executor;
 	}
@@ -155,7 +155,7 @@ public abstract class DbAccess {
 	}
 
 	/**
-	 * Returns the configuration in use with username and password erased. 
+	 * Returns the configuration in use with username and password erased.
 	 * @return
 	 */
 	public Map<String, String> getConfig() {
@@ -200,7 +200,7 @@ public abstract class DbAccess {
 	public abstract <T, R> List<R> executeQuery(DbQuery<T> query, Transformer<? super T, R> transformer) throws DbException;
 
 	/**
-	 * Executes a query which returns exactly one row. 
+	 * Executes a query which returns exactly one row.
 	 * @throws DbInvalidResultSizeException if no or more than one result rows are returned
 	 */
 	public abstract <T> T executeQuerySingleResult(DbQuery<? extends T> query) throws DbException;
@@ -224,13 +224,13 @@ public abstract class DbAccess {
 	 * @since Nuclos 3.2.0
 	 */
     public abstract List<String> getStatementsForLogging(final IBatch batch);
-	
+
 	public abstract <T> T executeFunction(String functionName, Class<T> result, Object...args) throws DbException;
 
 	public abstract void executeProcedure(String procedureName, Object...args) throws DbException;
 
 	//
-	// Useful informational functions (e.g. for debugging) 
+	// Useful informational functions (e.g. for debugging)
 	//
 
 	public abstract IBatch getBatchFor(DbStatement stmt) throws SQLException;
@@ -258,17 +258,17 @@ public abstract class DbAccess {
 	public abstract boolean checkSyntax(String sql);
 
 	/**
-	 * Invalidates all assumptions about the database made by the access layer. 
+	 * Invalidates all assumptions about the database made by the access layer.
 	 * Should be called after the database has been (structurally) modified
 	 * by another process or thread.
-	 */ 
+	 */
 	public void invalidate() throws DbException {
 		// Currently, we do nothing...
 	}
 
 	/**
 	 * Tries to disable all constraints and triggers in the database temporarily,
-	 * then executes the given {@link Runnable}'s run method, and finally tries 
+	 * then executes the given {@link Runnable}'s run method, and finally tries
 	 * to re-enable the all disabled constraints and triggers again.
 	 */
 	public abstract void runWithDisabledChecksAndTriggers(Runnable runnable) throws SQLException;
@@ -285,22 +285,22 @@ public abstract class DbAccess {
 	private static final Charset UTF_8 = Charset.forName("UTF-8");
 
 	/**
-	 * Generate a name from a given base name and, optionally, from some additional 
-	 * affixes.  This generated name must obey name limitations of the database. 
+	 * Generate a name from a given base name and, optionally, from some additional
+	 * affixes.  This generated name must obey name limitations of the database.
 	 */
 	public abstract String generateName(String base, String...affixes);
 
 	/**
-	 * Generate a name from a given base name and, optionally, from some additional 
+	 * Generate a name from a given base name and, optionally, from some additional
 	 * affixes with at most {@code max} characters.
-	 * 
+	 *
 	 * The generated name consists of the base name + '{@code _}' + a Base32-encoded
-	 * hash of the base name and the affixes.  If this generated string exceeds 
+	 * hash of the base name and the affixes.  If this generated string exceeds
 	 * {@code max} characters, the base name part is truncated.
-	 *  
+	 *
 	 * The hash itself is the first 30 bits of the SHA-1 digest generated from
 	 * the UTF-8 encoded base name and affixes separated by a NUL byte (30 bits
-	 * corresponds to 6 characters in Base32).  
+	 * corresponds to 6 characters in Base32).
 	 */
 	public static String generateName(int max, String base, String...affixes) {
 		if (affixes.length == 0 && base.length() <= max)
@@ -330,8 +330,6 @@ public abstract class DbAccess {
 		return Base32.encode(b);
 	}
 
-	public abstract String getSelectSqlForColumn(String table, DbColumnType columnType, List<?> viewPattern);
-	
 	public String getWildcardLikeSearchChar() {
 		return "%";
 	}

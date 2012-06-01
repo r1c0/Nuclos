@@ -63,18 +63,18 @@ public abstract class TransactSqlDbAccess extends StandardSqlDBAccess {
 	 * Hint used {@link DbSequence} object for associating the tablename.
 	 */
 	public static final String HINT_SEQUENCE_TABLE = "sequenceTable";
-	
+
 	//
-	
+
 	public TransactSqlDbAccess() {
 	}
-	
+
 	@Override
 	public void init(DbType type, DataSource dataSource, Map<String, String> config) {
-		this.executor = new TransactSqlExecutor(dataSource, config.get(USERNAME), config.get(PASSWORD)); 
+		this.executor = new TransactSqlExecutor(dataSource, config.get(USERNAME), config.get(PASSWORD));
 		super.init(type, dataSource, config);
 	}
-	
+
 	@Override
 	public String generateName(String base, String...affixes) {
 		return generateName(30, base, affixes);
@@ -111,7 +111,7 @@ public abstract class TransactSqlDbAccess extends StandardSqlDBAccess {
 			// ...but throw the original SQLException
 		}
 		return super.wrapSQLException(id, message, ex);
-	}	
+	}
 
 	@Override
 	public boolean validateObjects() throws SQLException {
@@ -175,18 +175,18 @@ public abstract class TransactSqlDbAccess extends StandardSqlDBAccess {
 
 	@Override
 	public String getSqlForConcat(String x, String y) {
-		return String.format("convert(varchar, %s)+convert(varchar, %s)", x, y);
-	}   
+		return String.format("%s + %s", x, y);
+	}
 
 	protected Pair<String, String> getObjectNamesForSequence(DbSequence sequence) {
 		String tableName = sequence.getHint(HINT_SEQUENCE_TABLE);
 		if (tableName == null) {
-			tableName = generateName("T_AD_SEQUENCE", sequence.getSequenceName());   		
+			tableName = generateName("T_AD_SEQUENCE", sequence.getSequenceName());
 		} else {
 			tableName = generateName(tableName);
 		}
 		return Pair.makePair(sequence.getSequenceName(), tableName);
-	}	
+	}
 
 	@Override
 	protected String getTablespaceSuffix(DbArtifact artifact) {
@@ -218,7 +218,7 @@ public abstract class TransactSqlDbAccess extends StandardSqlDBAccess {
 	}
 
 	static class TransactSqlQueryBuilder extends StandardQueryBuilder {
-		
+
 		public TransactSqlQueryBuilder(StandardSqlDBAccess dbAccess) {
 			super(dbAccess);
 		}
@@ -255,7 +255,7 @@ public abstract class TransactSqlDbAccess extends StandardSqlDBAccess {
 				ps = ps.append(String.format("TOP %d ", query.getMaxResults()));
 			}
 		}
-		
+
 		@Override
 		protected PreparedStringBuilder buildPreparedString(DbQuery<?> query) {
 			PreparedStringBuilder ps = super.buildPreparedString(query);

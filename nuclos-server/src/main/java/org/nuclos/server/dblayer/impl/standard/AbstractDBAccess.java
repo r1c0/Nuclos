@@ -50,7 +50,7 @@ import org.nuclos.server.dblayer.structure.DbTable;
  * Abstract base class for {@link DbAccess} which should simplify an implementation.
  */
 public abstract class AbstractDBAccess extends DbAccess {
-	
+
 	protected static final IBatch[] EMPTY_IBATCH_ARRAY = new IBatch[0];
 
 	@Override
@@ -67,7 +67,7 @@ public abstract class AbstractDBAccess extends DbAccess {
 	}
 
     public abstract String getSqlForConcat(String x, String y);
-    
+
     public abstract String getSqlForConcat(List<String> l);
 
 	protected abstract IBatch getSqlForInsert(DbInsertStatement insertStmt);
@@ -92,10 +92,10 @@ public abstract class AbstractDBAccess extends DbAccess {
 
 	protected abstract IBatch getSqlForCreateSequence(DbSequence callable);
 
-	protected abstract IBatch getSqlForCreateCallable(DbCallable sequence);	
+	protected abstract IBatch getSqlForCreateCallable(DbCallable sequence);
 
 	protected abstract IBatch getSqlForAlterTableColumn(DbColumn column1, DbColumn column2) throws SQLException;
-	
+
 	protected abstract IBatch getSqlForAlterTableNotNullColumn(DbColumn column);
 
 	protected abstract IBatch getSqlForAlterSequence(DbSequence sequence1, DbSequence sequence2);
@@ -115,10 +115,10 @@ public abstract class AbstractDBAccess extends DbAccess {
 	protected abstract IBatch getSqlForDropSimpleView(DbSimpleView view);
 
 	protected abstract IBatch getSqlForAlterSimpleView(DbSimpleView oldView, DbSimpleView newView);
-	
+
 	protected abstract IBatch getSqlForDropSequence(DbSequence sequence);
 
-	protected abstract IBatch getSqlForDropCallable(DbCallable callable);	
+	protected abstract IBatch getSqlForDropCallable(DbCallable callable);
 
 	private final DbStatementVisitor<IBatch> sqlForStatementVisitor = new DbStatementVisitor<IBatch>() {
 
@@ -161,7 +161,7 @@ public abstract class AbstractDBAccess extends DbAccess {
 		@Override
 		public IBatch visitUpdate(DbUpdateStatement update) {
 			return getSqlForUpdate(update);
-		}		
+		}
 
 		@Override
 		public IBatch visitDelete(DbDeleteStatement delete) {
@@ -179,7 +179,7 @@ public abstract class AbstractDBAccess extends DbAccess {
 			for (DbStatement stmt : batch.getStatements()) {
 				list.add(stmt.accept(this));
 			}
-			return BatchImpl.concat(list.toArray(EMPTY_IBATCH_ARRAY)); 			
+			return BatchImpl.concat(list.toArray(EMPTY_IBATCH_ARRAY));
 		}
 	};
 
@@ -234,8 +234,8 @@ public abstract class AbstractDBAccess extends DbAccess {
 		}
 	};
 
-	private final DbArtifactVisitor<IBatch> sqlForDropVisitor = new DbArtifactVisitor<IBatch>() {  
-		
+	private final DbArtifactVisitor<IBatch> sqlForDropVisitor = new DbArtifactVisitor<IBatch>() {
+
 		@Override
 		public IBatch visitTable(DbTable table) throws DbException {
 			return getSqlForDropTable(table);
@@ -280,5 +280,5 @@ public abstract class AbstractDBAccess extends DbAccess {
 		public IBatch visitCallable(DbCallable callable) throws DbException {
 			return getSqlForDropCallable(callable);
 		}
-	};	
+	};
 }

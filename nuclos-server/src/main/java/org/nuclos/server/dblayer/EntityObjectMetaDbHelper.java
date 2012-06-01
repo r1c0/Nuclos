@@ -23,7 +23,6 @@ import static org.nuclos.server.dblayer.structure.DbColumnType.DbGenericType.VAR
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -34,24 +33,18 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.regex.Pattern;
 
-import org.nuclos.common.CryptUtil;
 import org.nuclos.common.MetaDataProvider;
-import org.nuclos.common.NuclosDateTime;
 import org.nuclos.common.NuclosFatalException;
-import org.nuclos.common.NuclosPassword;
-import org.nuclos.common.NuclosScript;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Transformer;
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
-import org.nuclos.common2.InternalTimestamp;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.server.dal.DalUtils;
 import org.nuclos.server.database.SpringDataBaseHelper;
 import org.nuclos.server.dblayer.structure.DbColumn;
 import org.nuclos.server.dblayer.structure.DbColumnType;
-import org.nuclos.server.dblayer.structure.DbColumnType.DbGenericType;
 import org.nuclos.server.dblayer.structure.DbConstraint.DbForeignKeyConstraint;
 import org.nuclos.server.dblayer.structure.DbConstraint.DbPrimaryKeyConstraint;
 import org.nuclos.server.dblayer.structure.DbConstraint.DbUniqueConstraint;
@@ -259,7 +252,7 @@ public class EntityObjectMetaDbHelper {
 		DbTable dbTable = new DbTable(dbTableName, tableArtifacts, entityMeta.isVirtual());
 		return dbTable;
 	}
-	
+
 	public static String getDbRefColumn(EntityFieldMetaDataVO field) {
 		if (field.getForeignEntity() == null) {
 			throw new IllegalArgumentException();
@@ -276,7 +269,7 @@ public class EntityObjectMetaDbHelper {
 	}
 
 	/**
-	 * @deprecated Stringified refs are now dereferenced by table joins. Hence the whole method is 
+	 * @deprecated Stringified refs are now dereferenced by table joins. Hence the whole method is
 	 * 		obsolete. (tp)
 	 */
 	private static List<?> getViewPatternForField(EntityFieldMetaDataVO fieldMeta, MetaDataProvider provider) {
@@ -288,13 +281,13 @@ public class EntityObjectMetaDbHelper {
 			if (isJoin) {
 
 				EntityMetaDataVO foreignEntity = provider.getEntity(fieldMeta.getForeignEntity() != null ? fieldMeta.getForeignEntity() : fieldMeta.getLookupEntity());
-				
+
 				String foreignFieldName = null;
 				if (fieldMeta.getForeignEntity() != null)
 					foreignFieldName = fieldMeta.getForeignEntityField();
 				else if (fieldMeta.getLookupEntity() != null)
 					foreignFieldName = fieldMeta.getLookupEntityField();
-				
+
 				if (foreignFieldName == null || foreignFieldName.isEmpty())
 					foreignFieldName = "name";
 
@@ -383,7 +376,7 @@ public class EntityObjectMetaDbHelper {
 		}
 		return null;
 	}
-	
+
 	public static String getTableOrViewForSelect(EntityMetaDataVO eMeta) {
 		// dbSourceForDML = eMeta.isVirtual() ? eMeta.getVirtualentity() : "T_" + eMeta.getDbEntity().substring(2);
 		final String result;
@@ -408,46 +401,10 @@ public class EntityObjectMetaDbHelper {
 
 	private static DbColumnType createDbColumnType(String javaClass, Integer oldScale, Integer oldPrecision) {
 		try {
-			return createDbColumnType(Class.forName(javaClass), oldScale, oldPrecision);
+			return DalUtils.getDbColumnType(Class.forName(javaClass), oldScale, oldPrecision);
 		} catch(ClassNotFoundException e) {
 			throw new NuclosFatalException(e);
 		}
-	}
-
-	private static DbColumnType createDbColumnType(Class<?> javaClass, Integer oldScale, Integer oldPrecision) {
-		javaClass = DalUtils.getDbType(javaClass);
-		DbGenericType genericType;
-		Integer length = null, scale = null, precision = null;
-		if (javaClass == String.class && oldScale == null) {
-			genericType = DbGenericType.CLOB;
-		} else if (javaClass == String.class) {
-			genericType = DbGenericType.VARCHAR;
-			length = oldScale;
-		} else if (javaClass == Integer.class || javaClass == Long.class) {
-			genericType = DbGenericType.NUMERIC;
-			precision = oldScale;
-			scale = 0;
-		} else if (javaClass == Double.class) {
-			genericType = DbGenericType.NUMERIC;
-			precision = oldScale;
-			scale = oldPrecision;
-		} else if (javaClass == Boolean.class) {
-			genericType = DbGenericType.BOOLEAN;
-		} else if (javaClass == Date.class) {
-			genericType = DbGenericType.DATE;
-		} else if (javaClass == InternalTimestamp.class || javaClass == NuclosDateTime.class) {
-			genericType = DbGenericType.DATETIME;
-		} else if (javaClass == byte[].class) {
-			genericType = DbGenericType.BLOB;
-		} else if (javaClass == NuclosPassword.class) {
-			genericType = DbGenericType.VARCHAR;
-			length = CryptUtil.calcSizeForAESHexInputLength(oldScale);
-		} else if (javaClass == NuclosScript.class) {
-			genericType = DbGenericType.CLOB;
-		} else {
-			throw new IllegalArgumentException("Unsupported DB column type mapping for " + javaClass);
-		}
-		return new DbColumnType(genericType, null, length, precision, scale);
 	}
 
 	/**

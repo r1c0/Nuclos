@@ -20,9 +20,13 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.nuclos.common.CryptUtil;
+import org.nuclos.common.NuclosDateTime;
 import org.nuclos.common.NuclosEOField;
+import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.NuclosImage;
 import org.nuclos.common.NuclosPassword;
+import org.nuclos.common.NuclosScript;
 import org.nuclos.common.dal.vo.AbstractDalVOWithVersion;
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
@@ -36,6 +40,7 @@ import org.nuclos.server.dal.specification.IDalVersionSpecification;
 import org.nuclos.server.database.SpringDataBaseHelper;
 import org.nuclos.server.dblayer.structure.DbColumn;
 import org.nuclos.server.dblayer.structure.DbColumnType;
+import org.nuclos.server.dblayer.structure.DbColumnType.DbGenericType;
 import org.nuclos.server.genericobject.valueobject.GenericObjectDocumentFile;
 import org.nuclos.server.report.ByteArrayCarrier;
 import org.nuclos.server.resource.valueobject.ResourceFile;
@@ -171,7 +176,7 @@ public class DalUtils {
 		}
 		return javaType;
 	}
-	
+
 	public static Class<?> getDbType(String javaType) {
 		try {
 			return getDbType(Class.forName(javaType));
@@ -179,7 +184,7 @@ public class DalUtils {
 		catch (ClassNotFoundException e) {
 			throw new IllegalArgumentException(javaType);
 		}
-	}	
+	}
 
 	public static EntityFieldMetaDataVO getFieldMeta(DbColumn column) {
 		Class<?> cls = String.class;
@@ -246,4 +251,48 @@ public class DalUtils {
 		return field;
 	}
 
+	public static DbColumnType getDbColumnType(Class<?> javaClass, Integer oldScale, Integer oldPrecision) {
+		javaClass = DalUtils.getDbType(javaClass);
+		DbGenericType genericType;
+		Integer length = null, scale = null, precision = null;
+		if (javaClass == String.class && oldScale == null) {
+			genericType = DbGenericType.CLOB;
+		} else if (javaClass == String.class) {
+			genericType = DbGenericType.VARCHAR;
+			length = oldScale;
+		} else if (javaClass == Integer.class || javaClass == Long.class) {
+			genericType = DbGenericType.NUMERIC;
+			precision = oldScale;
+			scale = 0;
+		} else if (javaClass == Double.class) {
+			genericType = DbGenericType.NUMERIC;
+			precision = oldScale;
+			scale = oldPrecision;
+		} else if (javaClass == Boolean.class) {
+			genericType = DbGenericType.BOOLEAN;
+		} else if (javaClass == Date.class) {
+			genericType = DbGenericType.DATE;
+		} else if (javaClass == InternalTimestamp.class || javaClass == NuclosDateTime.class) {
+			genericType = DbGenericType.DATETIME;
+		} else if (javaClass == byte[].class) {
+			genericType = DbGenericType.BLOB;
+		} else if (javaClass == NuclosPassword.class) {
+			genericType = DbGenericType.VARCHAR;
+			length = CryptUtil.calcSizeForAESHexInputLength(oldScale);
+		} else if (javaClass == NuclosScript.class) {
+			genericType = DbGenericType.CLOB;
+		} else {
+			throw new IllegalArgumentException("Unsupported DB column type mapping for " + javaClass);
+		}
+		return new DbColumnType(genericType, null, length, precision, scale);
+	}
+
+	public static DbColumnType getDbColumnType(EntityFieldMetaDataVO meta) {
+		try {
+			return getDbColumnType(Class.forName(meta.getDataType()), meta.getScale(), meta.getPrecision());
+		}
+		catch (ClassNotFoundException e) {
+			throw new NuclosFatalException(e);
+		}
+	}
 }

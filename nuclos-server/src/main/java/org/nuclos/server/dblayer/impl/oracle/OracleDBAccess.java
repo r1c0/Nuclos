@@ -84,10 +84,10 @@ public class OracleDBAccess extends StandardSqlDBAccess {
 
 	@Override
 	public void init(DbType type, DataSource dataSource, Map<String, String> config) {
-		this.executor = new OracleDBExecutor(dataSource, config.get(USERNAME), config.get(PASSWORD)); 
+		this.executor = new OracleDBExecutor(dataSource, config.get(USERNAME), config.get(PASSWORD));
 		super.init(type, dataSource, config);
 	}
-	
+
 	@Override
 	public String generateName(String base, String...affixes) {
 		return generateName(30, base, affixes);
@@ -222,7 +222,7 @@ public class OracleDBAccess extends StandardSqlDBAccess {
 		}
 		return BatchImpl.simpleBatch(_getSqlForCreateSimpleView("CREATE OR REPLACE VIEW", newView, ""));
 	}
-	
+
 	@Override
 	protected IBatch getSqlForDropPrimaryKey(DbPrimaryKeyConstraint constraint) {
 		return BatchImpl.simpleBatch(PreparedString.format("ALTER TABLE %s DROP CONSTRAINT %s CASCADE DROP INDEX",
@@ -261,7 +261,7 @@ public class OracleDBAccess extends StandardSqlDBAccess {
 	}
 
 	static class OracleQueryBuilder extends StandardQueryBuilder {
-		
+
 		public OracleQueryBuilder(StandardSqlDBAccess dbAccess) {
 			super(dbAccess);
 		}
@@ -275,7 +275,7 @@ public class OracleDBAccess extends StandardSqlDBAccess {
 		public DbExpression<Date> convertInternalTimestampToDate(DbExpression<InternalTimestamp> x) {
 			return buildExpressionSql(Date.class, "TRUNC(", x, ")");
 		}
-		
+
 		@Override
 		protected void prepareSelect(PreparedStringBuilder ps, DbQuery<?> query) {
 			if (query.getOffset() == null) {
@@ -287,7 +287,7 @@ public class OracleDBAccess extends StandardSqlDBAccess {
 				ps = ps.append("* FROM (SELECT ");
 			}
 		}
-		
+
 		@Override
 		protected void postprocessSelect(PreparedStringBuilder ps, DbQuery<?> query) {
 			if (query.getOffset() == null) {
@@ -303,7 +303,7 @@ public class OracleDBAccess extends StandardSqlDBAccess {
 		protected void prepareOrderBy(PreparedStringBuilder ps, DbQuery<?> query) {
 			if (query.getOffset() == null) {
 				super.prepareOrderBy(ps, query);
-			} 
+			}
 			// else, do nothing here
 			// order by in <code>prepareSelect</code>
 		}
@@ -633,7 +633,7 @@ public class OracleDBAccess extends StandardSqlDBAccess {
 	}
 
 	@Override
-	protected String getSqlForCast(String x, DbColumnType columnType) {
+	public String getSqlForCast(String x, DbColumnType columnType) {
 		// Oracle's CAST does not support LOB's, but this should not be necessary
 		if (DbGenericType.BLOB.equals(columnType.getGenericType()) || DbGenericType.CLOB.equals(columnType.getGenericType())) {
 			return x;
