@@ -4602,6 +4602,8 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 					highlightMandatoryByState(getInitialStateId(usagecriteria));
 				}
 			}
+
+			getLayoutMLButtonsActionListener().fireComponentEnabledStateUpdate();
 		}
 	}
 
