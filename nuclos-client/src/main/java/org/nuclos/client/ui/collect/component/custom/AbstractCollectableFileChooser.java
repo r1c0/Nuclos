@@ -20,6 +20,7 @@ import java.awt.Component;
 import java.util.prefs.Preferences;
 
 import javax.swing.JComponent;
+import javax.swing.JLabel;
 import javax.swing.JTable;
 import javax.swing.table.TableCellRenderer;
 
@@ -118,10 +119,25 @@ public abstract class AbstractCollectableFileChooser extends AbstractCollectable
 	/** 
 	 * TODO: This REALLY should be static - but how to archive this? (tp)
 	 */
-	protected class AttachmentTableCellRenderer extends CollectableComponentDefaultTableCellRenderer {
+	protected class AttachmentTableCellRenderer extends CollectableComponentDetailTableCellRenderer {
 		@Override
         public Component getTableCellRendererComponent(JTable tbl, Object oValue, boolean bSelected, boolean bHasFocus, int iRow, int iColumn) {
-			Component comp = super.getTableCellRendererComponent(tbl, oValue, bSelected, bHasFocus, iRow, iColumn);
+			final Component comp = super.getTableCellRendererComponent(tbl, oValue, bSelected, bHasFocus, iRow, iColumn);
+			
+			if (comp instanceof JLabel) {
+				final JLabel label = (JLabel) comp;
+				if (oValue instanceof CollectableField) {
+					final CollectableField clctf = (CollectableField) oValue;
+					if (clctf.getValue() != null && clctf.getValue() instanceof File) {
+						label.setIcon(FileIcons.getIcon(((File)clctf.getValue()).getFiletype()));
+					} else {
+						label.setIcon(null);
+					}	
+				} else {
+					label.setIcon(null);
+				}				
+			}
+			
 			return comp;
 		}
 	}

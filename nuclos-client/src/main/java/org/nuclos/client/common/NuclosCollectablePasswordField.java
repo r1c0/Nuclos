@@ -43,28 +43,4 @@ public class NuclosCollectablePasswordField extends CollectablePasswordField {
 	}
 
 
-	/**
-	 * This cell renderer is limited to 3 lines of text, when it is enabled.
-	 * @return special cell renderer
-	 */
-	@Override
-	public TableCellRenderer getTableCellRenderer(boolean subform) {
-		return new TableCellRenderer() {
-			@Override
-            public Component getTableCellRendererComponent(JTable tbl, Object oValue, boolean bSelected, boolean bHasFocus, int iRow, int iColumn) {
-
-				NuclosCollectablePasswordField.this.setObjectValue(oValue);
-
-				final CommonJPasswordField ta = NuclosCollectablePasswordField.this.getJTextField();
-				ta.setBackground(bSelected ? tbl.getSelectionBackground() : tbl.getBackground());
-				ta.setForeground(bSelected ? tbl.getSelectionForeground() : tbl.getForeground());
-				ta.setCaretPosition(0);
-
-				return NuclosCollectablePasswordField.this.getControlComponent();
-			}
-		};
-	}
-
-
-
 }	// class NuclosCollectablePasswordField

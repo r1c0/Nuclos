@@ -16,6 +16,9 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.ui.collect.component.custom;
 
+import info.clearthought.layout.TableLayout;
+import info.clearthought.layout.TableLayoutConstraints;
+
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Insets;
@@ -80,16 +83,21 @@ public class FileChooserComponent extends JPanel {
 	private final JButton btnBrowse = new JButton("...");
 
 	private ToolTipTextProvider tooltiptextprovider;
+	
+	private static final double[] COLS = new double[] {TableLayout.PREFERRED, TableLayout.FILL};
+	private static final double[] ROWS = new double[] {TableLayout.PREFERRED};
+	private static final TableLayoutConstraints TLC_ICON = new TableLayoutConstraints(0, 0);
+	private static final TableLayoutConstraints TLC_NAME = new TableLayoutConstraints(1, 0);
 
 	public FileChooserComponent() {
-		super(new BorderLayout(2, 0));
+		super(new TableLayout(COLS, ROWS));
 		this.setOpaque(true);
 		this.init();
 	}
 
 	private void init() {
-		this.add(labIcon, BorderLayout.WEST);
-		this.add(cmpFileName, BorderLayout.CENTER);
+		this.add(labIcon, TLC_ICON);
+		this.add(cmpFileName, TLC_NAME);
 		//this.add(btnBrowse, BorderLayout.EAST);
 		this.btnBrowse.setToolTipText(SpringLocaleDelegate.getInstance().getMessage(
 				"file.chooser.component.tooltip", "Datei ausw\u00e4hlen"));
@@ -101,9 +109,6 @@ public class FileChooserComponent extends JPanel {
 		//cmpFileName.setBackground(colorBack);
 		this.cmpFileName.setEditable(false);
 //		this.cmpFileName.setOpaque(false);
-
-		this.btnBrowse.setMargin(new Insets(0, 2, 0, 2));
-		this.btnBrowse.setOpaque(false);
 	}
 
 	public String getFileName() {
@@ -136,6 +141,11 @@ public class FileChooserComponent extends JPanel {
 
 	public JButton getBrowseButton() {
 		return this.btnBrowse;
+	}
+
+	@Override
+	public boolean requestFocusInWindow() {
+		return cmpFileName.requestFocusInWindow();
 	}
 
 	@Override

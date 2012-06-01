@@ -18,13 +18,18 @@ package org.nuclos.client.ui.collect.component;
 
 import java.awt.Component;
 
+import javax.swing.JLabel;
 import javax.swing.JTable;
+import javax.swing.SwingConstants;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellRenderer;
 
 import org.apache.log4j.Logger;
 import org.nuclos.client.ui.CommonJPasswordField;
 import org.nuclos.client.ui.labeled.LabeledPasswordField;
+import org.nuclos.common.NuclosPassword;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
+import org.nuclos.common.collect.collectable.CollectableField;
 import org.nuclos.common.collect.collectable.searchcondition.ComparisonOperator;
 
 /**
@@ -90,14 +95,51 @@ public class CollectablePasswordField extends CollectableTextComponent {
 
 	@Override
 	public TableCellRenderer getTableCellRenderer(boolean subform) {
-		final TableCellRenderer parentRenderer = CollectablePasswordField.super.getTableCellRenderer(subform);
-		return new TableCellRenderer() {
-			@Override
-			public Component getTableCellRendererComponent(JTable tbl, Object oValue, boolean bSelected, boolean bHasFocus, int iRow, int iColumn) {
-				Component comp = parentRenderer.getTableCellRendererComponent(tbl, oValue, bSelected, bHasFocus, iRow, iColumn);
-				return comp;
-			}
-		};
+		return new PasswordCellRenderer();
 	}
+	
+	/**
+	 * 
+	 * 
+	 *
+	 */
+	protected static class PasswordCellRenderer extends DefaultTableCellRenderer {
+		
+		public PasswordCellRenderer() {
+			setVerticalAlignment(SwingConstants.TOP);
+		}
+		
+		@Override
+		public Component getTableCellRendererComponent(JTable tbl, Object oValue, boolean bSelected, boolean bHasFocus, int iRow, int iColumn) {
+			super.getTableCellRendererComponent(tbl, oValue, bSelected, bHasFocus, iRow, iColumn);
+			
+			setBackground(bSelected ? tbl.getSelectionBackground() : tbl.getBackground());
+			setForeground(bSelected ? tbl.getSelectionForeground() : tbl.getForeground());
+			
+			final Object o;
+			if (oValue instanceof CollectableField) {
+				CollectableField clctf = (CollectableField) oValue;
+				if (clctf.getValue() instanceof NuclosPassword) {
+					o = ((NuclosPassword)clctf.getValue()).getValue();
+				} else {
+					o = clctf.getValue();
+				}
+			} else {
+				o = null;
+			}
+			
+			if (o == null) {
+				setText("");
+			} else {
+				final StringBuffer sbStars = new StringBuffer(o.toString().length());
+				for (int i = 0; i < o.toString().length(); i++) {
+					sbStars.append('*');
+				}
+				setText(sbStars.toString());
+			}
+			
+			return this;
+		}
+	};
 
 }	// class CollectableTextField

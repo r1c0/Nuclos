@@ -34,6 +34,7 @@ import java.awt.image.RescaleOp;
 
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
+import javax.swing.SwingConstants;
 
 import org.nuclos.client.synthetica.NuclosThemeSettings;
 import org.nuclos.client.ui.labeled.ILabeledComponentSupport;
@@ -179,7 +180,7 @@ public abstract class TextFieldWithButton extends CommonJTextField {
 		
 		final ImageIcon ico = ButtonState.NORMAL.getImageIcon();
 		r.x = dimTextField.width - ico.getIconWidth() - 2;
-		r.y = (dimTextField.height - ico.getIconHeight()) / 2;
+		r.y = 3; //(dimTextField.height - ico.getIconHeight()) / 2;
 		r.width = ico.getIconWidth();
 		r.height = ico.getIconHeight();
 		

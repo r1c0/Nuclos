@@ -16,12 +16,18 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.ui.collect.component;
 
+import info.clearthought.layout.TableLayout;
+
+import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.Dimension;
 
 import javax.swing.AbstractCellEditor;
 import javax.swing.InputVerifier;
 import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
 import javax.swing.JComponent;
+import javax.swing.JPanel;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.table.TableCellEditor;
@@ -29,6 +35,8 @@ import javax.swing.table.TableCellEditor;
 import org.apache.commons.lang.NullArgumentException;
 import org.apache.log4j.Logger;
 import org.nuclos.client.ui.Errors;
+import org.nuclos.client.ui.collect.DynamicRowHeightChangeProvider;
+import org.nuclos.client.ui.collect.SubForm;
 import org.nuclos.client.ui.collect.component.model.CollectableComponentModelEvent;
 import org.nuclos.client.ui.collect.component.model.CollectableComponentModelHelper;
 import org.nuclos.client.ui.collect.component.model.CollectableComponentModelListener;
@@ -244,6 +252,8 @@ public class CollectableComponentTableCellEditor extends AbstractCellEditor impl
 		}
 
 		clctcomp.getModel().addCollectableComponentModelListener(this);
+		
+		boolean subformMinRowHeight = false;
 
 		// a datefield gets a inputverifier
 		/** @todo this needs to be called only once for the component - move to getCollectableComponent/ctor! */
@@ -259,6 +269,7 @@ public class CollectableComponentTableCellEditor extends AbstractCellEditor impl
 		if (!this.isSearchable() && clctcomp instanceof CollectableComboBox) {
 			final CollectableComboBox clctcombobox = (CollectableComboBox)clctcomp;
 			((JTextField)clctcombobox.getJComboBox().getEditor().getEditorComponent()).setInputVerifier(trueInputVerifier);
+			subformMinRowHeight = true;
 		}
 		if (!this.isSearchable() && clctcomp instanceof CollectableListOfValues) {
 			final CollectableListOfValues clctlov = (CollectableListOfValues)clctcomp;
@@ -278,7 +289,33 @@ public class CollectableComponentTableCellEditor extends AbstractCellEditor impl
 //			result.setForeground(bSelected ? tbl.getSelectionForeground() : tbl.getForeground());
 		}
 		
-		return result;
+		if (clctcomp instanceof DynamicRowHeightChangeProvider) {
+			return result;
+		} else {
+			return new AlignTop(result, subformMinRowHeight);
+		}
+	}
+	
+	protected class AlignTop extends JPanel {
+		
+		final JComponent editor;
+		
+		public AlignTop(JComponent editor, boolean subformMinRowHeight) {
+			super(subformMinRowHeight? new TableLayout(new double[] {TableLayout.FILL}, new double[] {SubForm.MIN_ROWHEIGHT}): new BorderLayout());
+			this.editor = editor;
+			setOpaque(false);
+			if (subformMinRowHeight) {
+				add(editor, "0,0");
+			} else {
+				add(editor, BorderLayout.NORTH);
+			}
+		}
+
+		@Override
+		public boolean requestFocusInWindow() {
+			return editor.requestFocusInWindow();
+		}
+		
 	}
 
 	public int getLastEditingRow() {

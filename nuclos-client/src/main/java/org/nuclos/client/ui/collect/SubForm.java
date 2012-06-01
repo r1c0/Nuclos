@@ -53,6 +53,7 @@ import java.util.prefs.Preferences;
 
 import javax.swing.AbstractButton;
 import javax.swing.BorderFactory;
+import javax.swing.CellRendererPane;
 import javax.swing.JButton;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JComponent;
@@ -2286,11 +2287,7 @@ public class SubForm extends JPanel
 									return;
 							}
 							SubFormTable.super.changeSelection(rIndex, columnIndex, false, false);
-							if (editCellAt(rIndex, columnIndex)) {
-								Component editor = getEditorComponent();
-								if(editor != null)
-									editor.requestFocusInWindow();
-							}
+							editCellAt(rIndex, columnIndex, null);
 						}
 					});
 				}
@@ -2668,6 +2665,17 @@ public class SubForm extends JPanel
 				});
 			}
 		}
+
+		@Override
+		public boolean editCellAt(int row, int column, EventObject e) {
+			final boolean result = super.editCellAt(row, column, e);
+			if (result) {
+				Component editor = getEditorComponent();
+				if(editor != null)
+					editor.requestFocusInWindow();
+			}
+			return result;
+		}	
 
 	}
 

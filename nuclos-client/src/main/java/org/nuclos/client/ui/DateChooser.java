@@ -328,9 +328,9 @@ public class DateChooser extends JComponent implements Serializable {
 		};
 		this.tfDate.setColumns(iColumns);
 
-		final JPanel pnlHolder = new JPanel(new BorderLayout(2, 0));
+//		final JPanel pnlHolder = new JPanel(new BorderLayout(2, 0));
 		this.tfDate.setColumnWidthChar('0');
-		pnlHolder.add(this.tfDate, BorderLayout.CENTER);
+//		pnlHolder.add(this.tfDate, BorderLayout.CENTER);
 		this.btnDropDown = newArrowButton();
 		final AbstractAction actOpenCalendar = new AbstractAction() {
 
@@ -353,7 +353,7 @@ public class DateChooser extends JComponent implements Serializable {
 		this.btnDropDown.setFocusPainted(false);
 		//pnlHolder.add(btnDropDown, BorderLayout.EAST);
 
-		this.add(pnlHolder, BorderLayout.NORTH);
+		this.add(tfDate, BorderLayout.CENTER);
 
 		final String sKeyAltDown = "AltDown";
 		this.tfDate.getInputMap(JComponent.WHEN_FOCUSED).put(KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, KeyEvent.ALT_MASK), sKeyAltDown);
