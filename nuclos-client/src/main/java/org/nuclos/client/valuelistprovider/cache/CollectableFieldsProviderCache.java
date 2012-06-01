@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.nuclos.client.valuelistprovider.DefaultValueProvider;
 import org.nuclos.common.collect.collectable.CollectableField;
 import org.nuclos.common.collect.collectable.CollectableFieldsProvider;
 import org.nuclos.common.collect.collectable.CollectableFieldsProviderFactory;
@@ -35,11 +36,11 @@ import org.nuclos.common2.exception.CommonBusinessException;
  */
 public class CollectableFieldsProviderCache {
 
-	private final Map<Pair<Class<? extends CacheableCollectableFieldsProvider>, Object>, List<CollectableField>> cache;
+	private final Map<Pair<Class<? extends CacheableCollectableFieldsProvider>, Object>, Pair<List<CollectableField>, CollectableField>> cache;
 
 	public CollectableFieldsProviderCache() {
 		// Was a LinkedHashMap before
-		cache = new ConcurrentHashMap<Pair<Class<? extends CacheableCollectableFieldsProvider>, Object>, List<CollectableField>>();
+		cache = new ConcurrentHashMap<Pair<Class<? extends CacheableCollectableFieldsProvider>, Object>, Pair<List<CollectableField>, CollectableField>>();
 	}
 
 	/**
@@ -94,7 +95,7 @@ public class CollectableFieldsProviderCache {
 		}
 	}
 
-	public class CachingCollectableFieldsProvider extends ManagedCollectableFieldsProvider implements CollectableFieldsProvider {
+	public class CachingCollectableFieldsProvider extends ManagedCollectableFieldsProvider implements CollectableFieldsProvider, DefaultValueProvider {
 
 		private final CacheableCollectableFieldsProvider delegate;
 
@@ -114,24 +115,33 @@ public class CollectableFieldsProviderCache {
 				// No caching
 				return delegate.getCollectableFields();
 			}
+			return getCollectableFieldsAndDefaultValue(cacheKey).getX();
+		}
 
+		private Pair<List<CollectableField>, CollectableField> getCollectableFieldsAndDefaultValue(Object cacheKey) throws CommonBusinessException {
 			Pair<Class<? extends CacheableCollectableFieldsProvider>, Object> qualifiedCacheKey =
 				new Pair<Class<? extends CacheableCollectableFieldsProvider>, Object>(
 					delegate.getClass(), cacheKey);
 
+			Pair<List<CollectableField>, CollectableField> result;
 			List<CollectableField> values;
-			values = cache.get(qualifiedCacheKey);
-			if (values == null) {
+			CollectableField cfDefault = null;
+			result = cache.get(qualifiedCacheKey);
+			if (result == null) {
 				synchronized (delegate) {
 					values = delegate.getCollectableFields();
+					if (delegate instanceof DefaultValueProvider) {
+						cfDefault = ((DefaultValueProvider)delegate).getDefaultValue();
+					}
 				}
 				if (values == null) {
 					//make sure empty result can be differentiated from not yet loaded
 					values = new ArrayList<CollectableField>();
 				}
-				cache.put(qualifiedCacheKey, values);
+				result = new Pair<List<CollectableField>, CollectableField>(values, cfDefault);
+				cache.put(qualifiedCacheKey, result);
 			}
-			return values;
+			return result;
 		}
 
 		/**
@@ -167,5 +177,18 @@ public class CollectableFieldsProviderCache {
 
 			cache.remove(qualifiedCacheKey);
     	}
+
+		@Override
+		public CollectableField getDefaultValue() throws CommonBusinessException {
+			Object cacheKey = delegate.getCacheKey();
+			if (cacheKey == null) {
+				// No caching
+				if (delegate instanceof DefaultValueProvider) {
+					return ((DefaultValueProvider) delegate).getDefaultValue();
+				}
+				return null;
+			}
+			return getCollectableFieldsAndDefaultValue(cacheKey).getY();
+		}
 	}
 }

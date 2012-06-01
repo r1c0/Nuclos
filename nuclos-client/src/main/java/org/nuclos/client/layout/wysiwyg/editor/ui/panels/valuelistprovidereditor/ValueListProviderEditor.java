@@ -77,13 +77,13 @@ import org.nuclos.server.report.valueobject.DatasourceParameterVO;
 import org.nuclos.server.report.valueobject.ValuelistProviderVO;
 
 /**
- * 
- * 
- * 
+ *
+ *
+ *
  * <br>
  * Created by Novabit Informationssysteme GmbH <br>
  * Please visit <a href="http://www.novabit.de">www.novabit.de</a>
- * 
+ *
  * @author <a href="mailto:hartmut.beckschulze@novabit.de">hartmut.beckschulze</a>
  * @version 01.00.00
  */
@@ -100,7 +100,9 @@ public class ValueListProviderEditor extends JDialog implements SaveAndCancelBut
 	private final JComboBox cbxIdField = new JComboBox();
 	private final JLabel lblNameField = new JLabel(VALUELIST_PROVIDER_EDITOR.LABEL_PARAMETER_NAME);
 	private final JComboBox cbxNameField = new JComboBox();
-	
+	private final JLabel lblDefaultMarkerField = new JLabel(VALUELIST_PROVIDER_EDITOR.LABEL_PARAMETER_DEFAULTMARKER);
+	private final JComboBox cbxDefaultMarkerField = new JComboBox();
+
 	private final JLabel lblEntity = new JLabel(VALUELIST_PROVIDER_EDITOR.LABEL_ENTITY);
 	private final JTextField tfEntity = new JTextField();
 	private final JLabel lblField = new JLabel(VALUELIST_PROVIDER_EDITOR.LABEL_FIELD);
@@ -114,22 +116,23 @@ public class ValueListProviderEditor extends JDialog implements SaveAndCancelBut
 	private WYSIWYGValuelistProvider backupWYSIWYGStaticValuelistProvider;
 
 	public static WYSIWYGValuelistProvider returnValuelistProvider;
-	
+
 	private static final Logger log = Logger.getLogger(ValueListProviderEditor.class);
 
 	private JButton btnAddParameter = new JButton(VALUELIST_PROVIDER_EDITOR.BUTTON_ADD_PARAMETER);;
-	
+
 	public static final String DATASOURCE_IDFIELD = "id-fieldname";
 	public static final String DATASOURCE_NAMEFIELD = "fieldname";
+	public static final String DATASOURCE_DEFAULTMARKERFIELD = "default-fieldname";
 	public static final String DATASOURCE_VALUELISTPROVIDER = "valuelistProvider";
-	
+
 	/**
-	 * 
+	 *
 	 * @param wysiwygStaticValuelistProvider
 	 */
 	private ValueListProviderEditor(WYSIWYGComponent c, WYSIWYGValuelistProvider wysiwygStaticValuelistProvider) {
 		parameterContainer.setLayout(new TableLayout(new double[][]{{TableLayout.FILL}, {}}));
-		
+
 		//NUCLEUSINT-312
 		setTitle(VALUELIST_PROVIDER_EDITOR.TITLE_VALUELIST_PROVIDER_EDITOR);
 		//TODO align relative to parent Component
@@ -169,7 +172,7 @@ public class ValueListProviderEditor extends JDialog implements SaveAndCancelBut
 				super.setSelectedItem(anObject);
 			}
 		});
-		
+
 		initTypes();
 		if (!StringUtils.looksEmpty(this.wysiwygStaticValuelistProvider.getType())) {
 			// Find input in list and select it...
@@ -196,20 +199,21 @@ public class ValueListProviderEditor extends JDialog implements SaveAndCancelBut
 			@Override
 			public void itemStateChanged(ItemEvent e) {changeValueForType();}
 		});
-		
+
 		/**
 		 * the valuelist provider type panel
 		 */
-		valuecontainer.setLayout(new TableLayout(new double[][]{{TableLayout.PREFERRED, InterfaceGuidelines.MARGIN_BETWEEN, TableLayout.PREFERRED, TableLayout.FILL, TableLayout.PREFERRED}, 
-				{TableLayout.PREFERRED, InterfaceGuidelines.MARGIN_BETWEEN, TableLayout.PREFERRED, InterfaceGuidelines.MARGIN_BETWEEN, TableLayout.PREFERRED, InterfaceGuidelines.MARGIN_BETWEEN, TableLayout.PREFERRED, InterfaceGuidelines.MARGIN_BETWEEN, TableLayout.PREFERRED}}));
+		valuecontainer.setLayout(new TableLayout(new double[][]{{TableLayout.PREFERRED, InterfaceGuidelines.MARGIN_BETWEEN, TableLayout.PREFERRED, TableLayout.FILL, TableLayout.PREFERRED},
+				{TableLayout.PREFERRED, InterfaceGuidelines.MARGIN_BETWEEN, TableLayout.PREFERRED, InterfaceGuidelines.MARGIN_BETWEEN, TableLayout.PREFERRED, InterfaceGuidelines.MARGIN_BETWEEN, TableLayout.PREFERRED, InterfaceGuidelines.MARGIN_BETWEEN, TableLayout.PREFERRED, InterfaceGuidelines.MARGIN_BETWEEN, TableLayout.PREFERRED}}));
 		valuecontainer.add(lblType, "0,0");
 		TableLayoutConstraints constraint = new TableLayoutConstraints(2, 0, 2, 0, TableLayout.FULL, TableLayout.CENTER);
 		valuecontainer.add(cbxType, constraint);
 		cbxIdField.setPreferredSize(new Dimension(250, 20));
 		cbxNameField.setPreferredSize(new Dimension(250, 20));
+		cbxDefaultMarkerField.setPreferredSize(new Dimension(250, 20));
 		tfEntity.setPreferredSize(new Dimension(250, 20));
 		tfField.setPreferredSize(new Dimension(250, 20));
-		
+
 		btnAddParameter.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -261,7 +265,7 @@ public class ValueListProviderEditor extends JDialog implements SaveAndCancelBut
 //				addParameterPanelIntoPanel(wysiwygParameter, true, true);
 //			}
 //		}
-		
+
 		Dimension screenSize = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
 		int x = (screenSize.width - width) / 2;
 		int y = (screenSize.height - height) / 2;
@@ -273,7 +277,7 @@ public class ValueListProviderEditor extends JDialog implements SaveAndCancelBut
 		this.setModal(true);
 		this.setVisible(true);
 	}
-	
+
 	private void initTypes() {
 		//NUCLEUSINT-1043
 		cbxType.addItem(this.wysiwygStaticValuelistProvider.getType());
@@ -300,37 +304,41 @@ public class ValueListProviderEditor extends JDialog implements SaveAndCancelBut
 			Errors.getInstance().showExceptionDialog(this, e);
 		}
 	}
-	
+
 	private boolean isSelectedTypeFromDatasource() {
-		return cbxType.getEditor().getItem() != null && 
+		return cbxType.getEditor().getItem() != null &&
 			cbxType.getEditor().getItem() instanceof ValuelistProviderVO;
 	}
-	
+
 	private void initFields() {
 		boolean showNameField = false;
 		boolean showIdField = false;
-		
+		boolean showDefaultMarkerField = false;
+
 		//remove parameter
 		parameterContainer.removeAll();
-		
+
 		if (isSelectedTypeFromDatasource()) {
 			showIdField = true;
 			showNameField = true;
-			
+			showDefaultMarkerField = true;
+
 			btnAddParameter.setEnabled(false);
-			
+
 			//remove id fields and name fields
 			cbxIdField.removeAllItems();
 			cbxNameField.removeAllItems();
-			
+			cbxDefaultMarkerField.removeAllItems();
+			cbxDefaultMarkerField.addItem("");
+
 			tfEntity.setText("");
 			tfField.setText("");
-			
+
 			if (wysiwygStaticValuelistProvider.isEntityAndFieldAvaiable()) {
 				tfEntity.setText(wysiwygStaticValuelistProvider.getEntity());
 				tfField.setText(wysiwygStaticValuelistProvider.getField());
 			}
-			
+
 			ValuelistProviderVO vpVO = (ValuelistProviderVO) cbxType.getEditor().getItem();
 			try {
 				// add empty id field (for valuelist provider that should generate plain value fields)
@@ -340,8 +348,9 @@ public class ValueListProviderEditor extends JDialog implements SaveAndCancelBut
 					DatasourceDelegate.getInstance().createSQL(vpVO.getSource()))) {
 					cbxIdField.addItem(sColumn);
 					cbxNameField.addItem(sColumn);
+					cbxDefaultMarkerField.addItem(sColumn);
 				}
-				
+
 				// sync parameters
 				List<DatasourceParameterVO> lstParameterVOs = DatasourceDelegate.getInstance().getParametersFromXML(vpVO.getSource());
 				Collections.sort(lstParameterVOs, new Comparator<DatasourceParameterVO>() {
@@ -357,6 +366,8 @@ public class ValueListProviderEditor extends JDialog implements SaveAndCancelBut
 						cbxIdField.setSelectedItem(wysiwygParameter.getParameterValue());
 					} else if (DATASOURCE_NAMEFIELD.equals(wysiwygParameter.getParameterName())) {
 						cbxNameField.setSelectedItem(wysiwygParameter.getParameterValue());
+					} else if (DATASOURCE_DEFAULTMARKERFIELD.equals(wysiwygParameter.getParameterName())) {
+						cbxDefaultMarkerField.setSelectedItem(wysiwygParameter.getParameterValue());
 					} else if (DATASOURCE_VALUELISTPROVIDER.equals(wysiwygParameter.getParameterName())) {
 						/* do not show in editor */
 					} else {
@@ -388,7 +399,7 @@ public class ValueListProviderEditor extends JDialog implements SaveAndCancelBut
 					}
 					addParameterPanelIntoPanel(wysiwygParameter, false, false);
 				}
-				
+
 			} catch(CommonBusinessException e) {
 				Errors.getInstance().showExceptionDialog(this, e);
 			}
@@ -399,7 +410,7 @@ public class ValueListProviderEditor extends JDialog implements SaveAndCancelBut
 				addParameterPanelIntoPanel(wysiwygParameter, true, true);
 			}
 		}
-		
+
 		if (showIdField) {
 			valuecontainer.add(lblIdField, "0,2");
 			valuecontainer.add(cbxIdField, "2,2,l,c");
@@ -407,7 +418,7 @@ public class ValueListProviderEditor extends JDialog implements SaveAndCancelBut
 			valuecontainer.remove(lblIdField);
 			valuecontainer.remove(cbxIdField);
 		}
-		
+
 		if (showNameField) {
 			valuecontainer.add(lblNameField, "0,4");
 			valuecontainer.add(cbxNameField, "2,4,l,c");
@@ -415,12 +426,20 @@ public class ValueListProviderEditor extends JDialog implements SaveAndCancelBut
 			valuecontainer.remove(lblNameField);
 			valuecontainer.remove(cbxNameField);
 		}
-		
+
+		if (showDefaultMarkerField) {
+			valuecontainer.add(lblDefaultMarkerField, "0,6");
+			valuecontainer.add(cbxDefaultMarkerField, "2,6,l,c");
+		} else {
+			valuecontainer.remove(lblDefaultMarkerField);
+			valuecontainer.remove(cbxDefaultMarkerField);
+		}
+
 		if (wysiwygStaticValuelistProvider.isEntityAndFieldAvaiable()) {
-			valuecontainer.add(lblEntity, "0,6");
-			valuecontainer.add(tfEntity, "2,6,l,c");
-			valuecontainer.add(lblField, "0,8");
-			valuecontainer.add(tfField, "2,8,l,c");
+			valuecontainer.add(lblEntity, "0,8");
+			valuecontainer.add(tfEntity, "2,8,l,c");
+			valuecontainer.add(lblField, "0,10");
+			valuecontainer.add(tfField, "2,10,l,c");
 		}
 
 		parameterContainer.updateUI();
@@ -437,7 +456,7 @@ public class ValueListProviderEditor extends JDialog implements SaveAndCancelBut
 	public static WYSIWYGValuelistProvider showEditor(WYSIWYGValuelistProvider wysiwygStaticValuelistProvider) {
 		return showEditor(null, wysiwygStaticValuelistProvider);
 	}
-	
+
 	public static WYSIWYGValuelistProvider showEditor(WYSIWYGComponent component, WYSIWYGValuelistProvider wysiwygStaticValuelistProvider) {
 		new ValueListProviderEditor(component, wysiwygStaticValuelistProvider);
 		//NUCLEUSINT-811
@@ -456,7 +475,7 @@ public class ValueListProviderEditor extends JDialog implements SaveAndCancelBut
 
 	/**
 	 * This Method validates the {@link AttributeCVO} against the Values set for the Valuelistprovider.
-	 * 
+	 *
 	 * @param component the {@link WYSIWYGComponent} for comparison
 	 * @param valuelistProvider the {@link WYSIWYGValuelistProvider} to check
 	 * @throws CommonBusinessException if validation is not successful
@@ -551,12 +570,13 @@ public class ValueListProviderEditor extends JDialog implements SaveAndCancelBut
 			wysiwygStaticValuelistProvider.setEntity(tfEntity.getText());
 			wysiwygStaticValuelistProvider.setField(tfField.getText());
 		}
-		
+
 		if (isSelectedTypeFromDatasource()) {
 			WYSIYWYGParameter paramValuelistProviderDatasource = null;
 			WYSIYWYGParameter parameterIdField = null;
 			WYSIYWYGParameter parameterNameField = null;
-			
+			WYSIYWYGParameter parameterDefaultMarkerField = null;
+
 			for (WYSIYWYGParameter wysiywygParameter : wysiwygStaticValuelistProvider.getAllWYSIYWYGParameter()) {
 				if (DATASOURCE_VALUELISTPROVIDER.equals(wysiywygParameter.getParameterName())) {
 					paramValuelistProviderDatasource = wysiywygParameter;
@@ -564,9 +584,11 @@ public class ValueListProviderEditor extends JDialog implements SaveAndCancelBut
 					parameterIdField = wysiywygParameter;
 				} else if (DATASOURCE_NAMEFIELD.equals(wysiywygParameter.getParameterName())) {
 					parameterNameField = wysiywygParameter;
+				} else if (DATASOURCE_DEFAULTMARKERFIELD.equals(wysiywygParameter.getParameterName())) {
+					parameterDefaultMarkerField = wysiywygParameter;
 				}
 			}
-			
+
 			if (parameterIdField != null) {
 				parameterIdField.setParameterValue(cbxIdField.getSelectedItem().toString());
 			} else {
@@ -575,7 +597,7 @@ public class ValueListProviderEditor extends JDialog implements SaveAndCancelBut
 				parameterIdField.setParameterValue(cbxIdField.getSelectedItem().toString());
 				wysiwygStaticValuelistProvider.addWYSIYWYGParameter(parameterIdField);
 			}
-			
+
 			if (parameterNameField != null) {
 				parameterNameField.setParameterValue(cbxNameField.getSelectedItem().toString());
 			} else {
@@ -584,7 +606,21 @@ public class ValueListProviderEditor extends JDialog implements SaveAndCancelBut
 				parameterNameField.setParameterValue(cbxNameField.getSelectedItem().toString());
 				wysiwygStaticValuelistProvider.addWYSIYWYGParameter(parameterNameField);
 			}
-			
+
+			if (!"".equals(cbxDefaultMarkerField.getSelectedItem())) {
+				if (parameterDefaultMarkerField != null) {
+					parameterDefaultMarkerField.setParameterValue(cbxDefaultMarkerField.getSelectedItem().toString());
+				} else {
+					parameterDefaultMarkerField = new WYSIYWYGParameter();
+					parameterDefaultMarkerField.setParameterName(DATASOURCE_DEFAULTMARKERFIELD);
+					parameterDefaultMarkerField.setParameterValue(cbxDefaultMarkerField.getSelectedItem().toString());
+					wysiwygStaticValuelistProvider.addWYSIYWYGParameter(parameterDefaultMarkerField);
+				}
+			}
+			else if (parameterDefaultMarkerField != null) {
+				wysiwygStaticValuelistProvider.removeWYSIYWYGParameter(parameterDefaultMarkerField);
+			}
+
 			String sDatasource = wysiwygStaticValuelistProvider.getType();
 			sDatasource = sDatasource.substring(0, sDatasource.lastIndexOf(ValuelistProviderVO.SUFFIX));
 			if (paramValuelistProviderDatasource != null) {
@@ -595,7 +631,7 @@ public class ValueListProviderEditor extends JDialog implements SaveAndCancelBut
 				paramValuelistProviderDatasource.setParameterValue(sDatasource);
 				wysiwygStaticValuelistProvider.addWYSIYWYGParameter(paramValuelistProviderDatasource);
 			}
-		} 
+		}
 		returnValuelistProvider = wysiwygStaticValuelistProvider;
 		if (returnValuelistProvider.getType().equals(""))
 			performCancelAction();
@@ -662,11 +698,11 @@ public class ValueListProviderEditor extends JDialog implements SaveAndCancelBut
 
 	/**
 	 * This Class wraps a {@link WYSIYWYGParameter}.
-	 * 
+	 *
 	 * <br>
 	 * Created by Novabit Informationssysteme GmbH <br>
 	 * Please visit <a href="http://www.novabit.de">www.novabit.de</a>
-	 * 
+	 *
 	 * @author <a href="mailto:hartmut.beckschulze@novabit.de">hartmut.beckschulze</a>
 	 * @version 01.00.00
 	 */

@@ -65587,5 +65587,20 @@
     "resourceID": "miScriptOutput",
     "locale": "de",
     "text": "Ausgabe (Scripting)"
+  },
+  {
+    "resourceID": "error.vlp.defaultvalue",
+    "locale": "i-default",
+    "text": "Failed to determine default value."
+  },
+  {
+    "resourceID": "error.vlp.defaultvalue",
+    "locale": "en",
+    "text": "Failed to determine default value."
+  },
+  {
+    "resourceID": "error.vlp.defaultvalue",
+    "locale": "de",
+    "text": "Standardwert konnte nicht ermittelt werden."
   }
 ]

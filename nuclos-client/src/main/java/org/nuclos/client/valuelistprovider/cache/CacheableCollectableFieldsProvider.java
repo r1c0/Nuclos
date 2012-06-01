@@ -23,7 +23,7 @@ import org.nuclos.common.collect.collectable.CollectableFieldsProvider;
  * A {@link CollectableFieldsProvider} (CFP) that supports caching.
  * <p>
  * A CacheableCollectableFieldsProvider has an additioanl {@link #getCacheKey()} method.
- * This method should return an which is suitable for as a key for a cache. Usually the key 
+ * This method should return an which is suitable for as a key for a cache. Usually the key
  * will represent the current configuration (parameter set) of the CFP in some way.
  * <p>
  * Note that the cache may be shared between different {@code CacheableCollectableFieldsProvider}
@@ -33,11 +33,11 @@ public interface CacheableCollectableFieldsProvider extends CollectableFieldsPro
 
 	/**
 	 * Returns a key which can be used for caching.
-	 *  
+	 *
 	 * Since the key will be used a key for the cache, a key must be immutable (or at least
 	 * should not change its state with respect to {@link Object#hashCode()} and {@link Object#equals(Object)}.
 	 * If the key is {@code null}, no caching should be performed.
-	 * 
+	 *
 	 * @see CacheableCollectableFieldsProvider class description
 	 */
 	Object getCacheKey();

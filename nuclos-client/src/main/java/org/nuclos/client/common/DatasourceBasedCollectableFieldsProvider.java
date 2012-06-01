@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.nuclos.client.datasource.DatasourceDelegate;
+import org.nuclos.client.valuelistprovider.DefaultValueProvider;
 import org.nuclos.client.valuelistprovider.cache.CacheableCollectableFieldsProvider;
 import org.nuclos.common.collect.collectable.CollectableField;
 import org.nuclos.common.collect.collectable.CollectableValueField;
@@ -36,51 +37,54 @@ import org.nuclos.server.report.valueobject.ResultColumnVO;
 import org.nuclos.server.report.valueobject.ResultVO;
 
 /**
- * Collectable fields provider retrieving its values from a given datasource with 
+ * Collectable fields provider retrieving its values from a given datasource with
  * a specified set of datasource parameters.
- * 
+ *
  * Valid parameters for this collectable field provider are:
  * datasource - name of this datasource for use in detail mode
  * datasource-search - name of the datasource for use in search mode; if not specified, "datasource" is used there, too
  * fieldname - name of the result column of the datasource to use as the source of values
  * id-fieldname - name of the result column of the datasource to use as the source of ids
  * _searchmode - automatically set by the component, depending on the use of the component as search or details component
- * 
- * Every other parameter is given to the datasource as parameter for it. 
+ *
+ * Every other parameter is given to the datasource as parameter for it.
  * These parameters must be specified in the datasource to take effect.
- *  
+ *
  * <br>
  * <br>Created by Novabit Informationssysteme GmbH
  * <br>Please visit <a href="http://www.novabit.de">www.novabit.de</a>
  * @author	<a href="mailto:uwe.allner@novabit.de">uwe.allner</a>
  * @version 01.00.00
- * 
+ *
  * TODO: validating given parameters and return fields - depends on better interface for datasources
  * (e.g. information about contained result fields, parameters etc. without the need to parse XML)
  */
-public class DatasourceBasedCollectableFieldsProvider implements CacheableCollectableFieldsProvider {
+public class DatasourceBasedCollectableFieldsProvider implements CacheableCollectableFieldsProvider, DefaultValueProvider {
 
 	private boolean bSearchmode = false;
 	private String sValueFieldName = null;
 	private String sIdFieldName = null;
+	private String sDefaultMarkerFieldName = null;
 	private DatasourceVO dsvo = null;
 	private DatasourceVO dsvoSearch = null;
 	private final Map<String, Object> mpParameters = new HashMap<String, Object>();
 	private List<DatasourceParameterVO> collParameters;
-	
+
+	private CollectableField defaultValue;
+
 	private final boolean isValuelistProviderDatasource;
-	
+
 	public DatasourceBasedCollectableFieldsProvider(boolean isValuelistProviderDatasource) {
 		this.isValuelistProviderDatasource = isValuelistProviderDatasource;
 	}
-	
+
 	public boolean isValuelistProviderDatasource() {
 		return isValuelistProviderDatasource;
 	}
 
 	/**
 	 * Every parameter except datasource and _searchmode will be transferred to the specified datasource.
-	 */ 
+	 */
 	@Override
 	public void setParameter(String sName, Object oValue) {
 		if (isValuelistProviderDatasource) {
@@ -125,7 +129,7 @@ public class DatasourceBasedCollectableFieldsProvider implements CacheableCollec
 				}
 			}
 		}
-		
+
 		if(sName.equals("fieldname")) {
 			// TODO: validate existence
 			sValueFieldName = (String) oValue;
@@ -134,21 +138,25 @@ public class DatasourceBasedCollectableFieldsProvider implements CacheableCollec
 			// TODO: validate existence
 			sIdFieldName = (String) oValue;
 		}
+		else if(sName.equals("default-fieldname")) {
+			// TODO: validate existence
+			sDefaultMarkerFieldName = (String) oValue;
+		}
 		else if(sName.equals("_searchmode")) {
 			bSearchmode = (Boolean) oValue;
 		}
 		// NUCLEUSINT-1077
 		else {
-			mpParameters.put(sName, parseParameter(sName, oValue));			
+			mpParameters.put(sName, parseParameter(sName, oValue));
 		}
 	}
-	
+
 	private Object parseParameter(String sName, Object oValue) {
 		if (collParameters != null) {
 			for(DatasourceParameterVO dpvo : collParameters) {
 				if(dpvo.getParameter().equals(sName)) {
 					Object oConvertedValue = oValue;
-					
+
 					// convert non-String parameters to correct datatype
 					// TODO: this must be possible to perform nicer or at least somewhere central...!
 					if (oValue == null) {
@@ -157,7 +165,7 @@ public class DatasourceBasedCollectableFieldsProvider implements CacheableCollec
 						}
 						else if(Integer.class.getName().equals(dpvo.getDatatype())) {
 							oConvertedValue = 0;
-						}					
+						}
 					}
 					else if (!oValue.getClass().getName().equals(dpvo.getDatatype())) {
 						if(String.class.getName().equals(dpvo.getDatatype())) {
@@ -177,7 +185,7 @@ public class DatasourceBasedCollectableFieldsProvider implements CacheableCollec
 		}
 		return oValue;
 	}
-	
+
 	private void setParameters(List<DatasourceParameterVO> collParameters) {
 		this.collParameters = collParameters;
 		for (String param : mpParameters.keySet()) {
@@ -193,26 +201,27 @@ public class DatasourceBasedCollectableFieldsProvider implements CacheableCollec
 				dsvo.getName(),
 				sValueFieldName,
 				sIdFieldName,
+				sDefaultMarkerFieldName,
 				new HashMap<String, Object>(mpParameters));
 		}
 		return null;
 	}
-	
+
 	public DatasourceVO getDatasourceVO() {
 		return (bSearchmode && dsvoSearch != null)? dsvoSearch : dsvo;
 	}
-	
+
 	/**
 	 * This provider caches its entries as long as datasource and parameters stay the same.
-	 * Perhaps this may not be correct in some cases. 
+	 * Perhaps this may not be correct in some cases.
 	 */
 	@Override
 	public List<CollectableField> getCollectableFields() throws CommonBusinessException {
 		final List<CollectableField> lstFields = new ArrayList<CollectableField>();
-		
+
 		final DatasourceVO dsvoUsed = getDatasourceVO();
 		if (dsvoUsed != null) {
-			
+
 			// Create copy and set all parameters not specified so far with null value to complete SQL statement in datasource
 			Map<String, Object> queryParams = new HashMap<String, Object>(mpParameters);
 			for(DatasourceParameterVO dpvo : collParameters) {
@@ -220,11 +229,12 @@ public class DatasourceBasedCollectableFieldsProvider implements CacheableCollec
 					queryParams.put(dpvo.getParameter(), null);
 				}
 			}
-			
+
 			// refresh list from datasource
 			final ResultVO result = DatasourceDelegate.getInstance().executeQuery(dsvoUsed.getSource(), queryParams, null);
 			int iIndexValue = -1;
 			int iIndexId = -1;
+			int iIndexDefaultMarker = -1;
 			final List<ResultColumnVO> columns = result.getColumns();
 			final int len = columns.size();
 			for (int iIndex = 0; iIndex < len; ++iIndex) {
@@ -238,20 +248,40 @@ public class DatasourceBasedCollectableFieldsProvider implements CacheableCollec
 				else if(label.equalsIgnoreCase(sIdFieldName)) {
 					iIndexId = iIndex;
 				}
+				else if(label.equalsIgnoreCase(sDefaultMarkerFieldName)) {
+					iIndexDefaultMarker = iIndex;
+				}
 			}
 			if (iIndexValue < 0) {
 				throw new IllegalArgumentException("In data source '" + dsvo + "', there is no field '" + sValueFieldName + "'.");
 			}
-			
+
 			for(Object[] oValue : result.getRows()) {
 				if (oValue[iIndexValue] != null) {
+					CollectableField cf;
 					if (iIndexId == -1) {
-						lstFields.add(new CollectableValueField(oValue[iIndexValue]));
+						cf = new CollectableValueField(oValue[iIndexValue]);
 					}
 					else if (oValue[iIndexId] != null) {
 						final Integer iId = ((Number) (oValue[iIndexId])).intValue();
-						lstFields.add(new CollectableValueIdField(iId, oValue[iIndexValue]));
+						cf = new CollectableValueIdField(iId, oValue[iIndexValue]);
 					}
+					else {
+						cf = CollectableValueIdField.NULL;
+					}
+					if (iIndexDefaultMarker != -1) {
+						if (oValue[iIndexDefaultMarker] != null) {
+							try {
+								if ((Boolean)oValue[iIndexDefaultMarker]) {
+									defaultValue = cf;
+								}
+							}
+							catch (Exception ex) {
+								throw new CommonFatalException("error.vlp.defaultvalue");
+							}
+						}
+					}
+					lstFields.add(cf);
 				}
 			}
 			// The result can be sorted by a SQL 'ORDER BY'.
@@ -272,4 +302,9 @@ public class DatasourceBasedCollectableFieldsProvider implements CacheableCollec
     public Map<String, Object> getValueListParameter() {
 	    return mpParameters;
     }
+
+	@Override
+	public CollectableField getDefaultValue() {
+		return defaultValue;
+	}
 }

@@ -55,6 +55,7 @@ import org.nuclos.client.ui.collect.component.model.CollectableComponentModelEve
 import org.nuclos.client.ui.collect.component.model.SearchComponentModelEvent;
 import org.nuclos.client.ui.labeled.LabeledComboBox;
 import org.nuclos.client.ui.popupmenu.JPopupMenuListener;
+import org.nuclos.client.valuelistprovider.DefaultValueProvider;
 import org.nuclos.client.valuelistprovider.cache.CollectableFieldsProviderCache.CachingCollectableFieldsProvider;
 import org.nuclos.common.collect.collectable.Collectable;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
@@ -343,6 +344,12 @@ public class CollectableComboBox extends LabeledCollectableComponentWithVLP impl
 				if (!isCancelled() && !ignoreResult) {
 					setComboBoxModel(get(), false);
 					getJComboBox().setCursor(null);
+					if (getValueListProvider() instanceof DefaultValueProvider) {
+						final CollectableField cf = ((DefaultValueProvider) getValueListProvider()).getDefaultValue();
+						if (cf != null && getField() != null && getField().isNull()) {
+							setField(cf);
+						}
+					}
 				}
 				else {
 					LOG.debug("Ignoring refresh for " + getEntityField().getEntityName() + "." + getEntityField().getName());

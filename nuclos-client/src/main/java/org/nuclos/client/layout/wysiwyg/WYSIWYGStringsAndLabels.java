@@ -438,7 +438,7 @@ public class WYSIWYGStringsAndLabels {
 		}
 	}
 
-	
+
 	/**
 	 * @deprecated Should be done with the help of SpringLocaleDelegate and localeresource.json.
 	 */
@@ -958,14 +958,14 @@ public class WYSIWYGStringsAndLabels {
 		public static final String COLUMNWIDTH = "Spaltenbreite";
 
 		public static final String ICON = "Icon";
-		
+
 		public static final String NEW_ENABLED = "Neu aktiv (dynamisch)";
 		public static final String EDIT_ENABLED = "Bearbeiten aktiv (dynamisch)";
 		public static final String DELETE_ENABLED = "L\u00f6schen aktiv (dynamisch)";
 		public static final String CLONE_ENABLED = "Klonen aktiv (dynamisch)";
-		
+
 		public static final String DYNAMIC_CELL_HEIGHTS_DEFAULT = "Automatische Zeilenhöhen als Standard";
-		
+
 	}
 
 	/**
@@ -1084,6 +1084,7 @@ public class WYSIWYGStringsAndLabels {
 		public static final String NO_VALUELISTPROVIDER_DEFINED = "Kein ValueListprovider definiert";
 		public static final String LABEL_PARAMETER_NAME = "Anzeigename";
 		public static final String LABEL_PARAMETER_ID = "ID Feld";
+		public static final String LABEL_PARAMETER_DEFAULTMARKER = "Default-Flag";
 		public static final String LABEL_ENTITY = "Entität";
 		public static final String LABEL_FIELD = "Attribut";
 		public static final String MESSAGE_ENTITYAND_FIELD_NOT_NULL = "Entität und Attribut müssen angegeben werden";
@@ -1946,7 +1947,7 @@ public class WYSIWYGStringsAndLabels {
 	public static class CHANGESTATEACTIONLISTENER {
 		public static final String NO_GENERICOBJECT = "Der Statuswechsel ist nur in Modulen verf\u00fcgbar.";
 	}
-	
+
 
 	/**
 	 * Small Helperclass as Structure for the Items shown in the Palette
