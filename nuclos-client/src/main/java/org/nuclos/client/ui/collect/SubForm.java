@@ -1884,21 +1884,21 @@ public class SubForm extends JPanel
 		
 		private final int col;
 		
-		private final RowHeightController cache;
+		private final RowHeightController ctrl;
 		
-		public DynamicRowHeightCellRenderer(TableCellRenderer mainRenderer, DynamicRowHeightSupport support, int col, RowHeightController cache) {
+		public DynamicRowHeightCellRenderer(TableCellRenderer mainRenderer, DynamicRowHeightSupport support, int col, RowHeightController ctrl) {
 			super();
 			this.mainRenderer = mainRenderer;
 			this.support = support;
 			this.col = col;
-			this.cache = cache;
+			this.ctrl = ctrl;
 		}
 
 		@Override
 		public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
 			Component c = mainRenderer.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
 
-			cache.setHeight(col, row, support.getHeight(c));
+			ctrl.setHeight(col, row, support.getHeight(c));
 			return c;
 		}
 		
@@ -2019,7 +2019,9 @@ public class SubForm extends JPanel
 			for (int iRow = 0; iRow < getRowCount(); iRow++) {
 				final int iHeight = subform.rowHeightCtrl.getMaxRowHeight(iRow);
 				if (iHeight > 0) {
-					setRowHeightStrict(iRow, getValidRowHeight(iHeight));
+					setRowHeightStrict(iRow, subform.getValidRowHeight(iHeight));
+				} else {
+					setRowHeight(iRow, MIN_ROWHEIGHT);
 				}
 			}
 		}
@@ -2571,23 +2573,6 @@ public class SubForm extends JPanel
 			return false;
 		}
 
-		/**
-		 * set the row height in one row (used by the ElisaCollectableTextArea)
-		 * @param iRow
-		 * @param iRowHeight
-		 */
-		public void setRowHeightFromTextArea(int iRow, int iRowHeight) {
-
-			if (this.getRowHeight(iRow) != iRowHeight) {
-				if (this.getRowCount() > iRow) {
-					this.setRowHeight(iRow, iRowHeight);
-				}
-			}
-			if (this.rowheader != null) {
-				this.rowheader.setRowHeightInRow(iRow, iRowHeight);
-			}
-		}
-
 		@Override
 		public void setModel(TableModel dataModel) {
 			super.setModel(dataModel);
@@ -2610,7 +2595,15 @@ public class SubForm extends JPanel
 		@Override
 		public void setRowHeight(int row, int rowHeight) {
 			super.setRowHeight(row, rowHeight);
-			rowheader.setRowHeightInRow(row, rowHeight);
+			if (rowheader != null)
+				rowheader.setRowHeightInRow(row, rowHeight);
+		}
+		
+		@Override
+		public void setRowHeight(int rowHeight) {
+			super.setRowHeight(rowHeight);
+			if (rowheader != null)
+				rowheader.setRowHeight(rowHeight);
 		}
 
 		@Override
@@ -2677,6 +2670,9 @@ public class SubForm extends JPanel
 			return result;
 		}	
 
+		public int getRowHeightWithMargin(int row) {
+			return getRowHeight(row)+getRowMargin();
+		}
 	}
 
 	public boolean isUseCustomColumnWidths() {
@@ -3150,7 +3146,7 @@ public class SubForm extends JPanel
 		
 		public void clearEditorHeight() {
 			if (iEditorRow != -1) {
-				subform.getSubformTable().setRowHeightStrict(iEditorRow, getValidRowHeight(getMaxRowHeightCacheOnly(iEditorRow)));
+				subform.getSubformTable().setRowHeightStrict(iEditorRow, subform.getValidRowHeight(getMaxRowHeightCacheOnly(iEditorRow)));
 			}
 			iEditorCol = -1;
 			iEditorRow = -1;
@@ -3170,11 +3166,11 @@ public class SubForm extends JPanel
 			
 			if (iOldEditorRow != iEditorRow || iOldEditorCol != iEditorCol) {
 				if (iOldEditorRow != -1) {
-					subform.getSubformTable().setRowHeightStrict(iOldEditorRow, getValidRowHeight(getMaxRowHeightCacheOnly(iOldEditorRow)));
+					subform.getSubformTable().setRowHeightStrict(iOldEditorRow, subform.getValidRowHeight(getMaxRowHeightCacheOnly(iOldEditorRow)));
 				}
 			}
 			if (iOldEditorRow != iEditorRow || iOldEditorCol != iEditorCol || iOldEditorHeight != iEditorHeight) {
-				subform.getSubformTable().setRowHeightStrict(iEditorRow, getValidRowHeight(Math.max(iEditorHeight, getMaxRowHeightCacheOnly(iEditorRow))));
+				subform.getSubformTable().setRowHeightStrict(iEditorRow, subform.getValidRowHeight(Math.max(iEditorHeight, getMaxRowHeightCacheOnly(iEditorRow))));
 				final Rectangle r = subform.getSubformTable().getCellRect(iEditorRow, iEditorCol, false);
 				r.y = r.y + r.height - 1;
 				r.height = 1;
@@ -3202,11 +3198,9 @@ public class SubForm extends JPanel
 			
 			final Integer iOldHeight = colCache.put(iCol, iHeight);
 			if (iOldHeight == null || iOldHeight.intValue() != iHeight) {
-				final int iNewHeight = getValidRowHeight(getMaxRowHeight(colCache));
-				if (subform.getSubformTable().getRowHeight(iRow) != iNewHeight) {
-					subform.getSubformTable().setRowHeightStrict(iRow, iNewHeight);
-//					System.out.println("row=" + iRow + " col=" + iCol + " height=" + iHeight + " oldHeight=" + iOldHeight + " newHeight=" + iNewHeight + " heights=" + colCache);
-				}
+				final int iNewHeight = subform.getValidRowHeight(getMaxRowHeight(colCache));
+				subform.getSubformTable().setRowHeightStrict(iRow, iNewHeight);
+//				System.out.println("row=" + iRow + " col=" + iCol + " height=" + iHeight + " oldHeight=" + iOldHeight + " newHeight=" + iNewHeight + " heights=" + colCache);
 			}
 		}
 		
@@ -3243,8 +3237,8 @@ public class SubForm extends JPanel
 		rowHeightCtrl.setEditorHeight(iCol, iRow, height);
 	}
 	
-	private static int getValidRowHeight(int iHeight) {
-		return Math.max(MIN_ROWHEIGHT, Math.min(MAX_DYNAMIC_ROWHEIGHT, iHeight));
+	public int getValidRowHeight(int iHeight) {
+		return Math.max(MIN_ROWHEIGHT-subformtbl.getRowMargin(), Math.min(MAX_DYNAMIC_ROWHEIGHT, iHeight));
 	}
 
 	public boolean isDynamicRowHeights() {

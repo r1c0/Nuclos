@@ -82,6 +82,7 @@ import org.nuclos.common.collect.collectable.CollectableEntityField;
 import org.nuclos.common.collect.collectable.CollectableUtils;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common2.CommonRunnable;
+import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
@@ -576,7 +577,15 @@ public class FixedColumnRowHeader extends SubformRowHeader {
 	public void invalidateHeaderTable() {
 
 		getScrlpnOriginalTable().getRowHeader().setPreferredSize(getHeaderTable().getPreferredSize());
-		getHeaderTable().setRowHeight(getExternalTable().getRowHeight());
+		if (subform.isDynamicRowHeights()) {
+			for (int i = 0; i < getExternalTable().getRowCount(); i++) {
+				if (i < getHeaderTable().getRowCount()) {
+					getHeaderTable().setRowHeight(i, Math.max(SubForm.MIN_ROWHEIGHT, getExternalTable().getRowHeight(i)));
+				}
+			}
+		} else {
+			getHeaderTable().setRowHeight(getExternalTable().getRowHeight());
+		}
 		getHeaderTable().revalidate();
 		getHeaderTable().invalidate();
 		getHeaderTable().repaint();
@@ -589,26 +598,33 @@ public class FixedColumnRowHeader extends SubformRowHeader {
 
 	/**
 	 * removed/add the columns from the external table, according to the given list
-	 * @param lstFixedNew	List of CollectableEntityField
+	 * @param lstSelection	List of CollectableEntityField
 	 *
 	 */
-	private void synchronizeColumnsInExternalTable(List<CollectableEntityField> lstFixedNew) {
+	private void synchronizeColumnsInExternalTable(List<CollectableEntityField> lstSelection) {
 
 		TableColumnModel externalColumnModel = getExternalTable().getColumnModel();
 		Set<TableColumn> columnsToRemove = new HashSet<TableColumn>();
-		// remove all columns
+		// remove columns if not selected any more
 		for (Enumeration<TableColumn> columnEnum = externalColumnModel.getColumns(); columnEnum.hasMoreElements();) {
-
+			
 			TableColumn varColumn = columnEnum.nextElement();
-			columnsToRemove.add(varColumn);
+			boolean remove = true;
+			for (CollectableEntityField clctef : lstSelection) {
+				if (LangUtils.equals(clctef.getLabel(), varColumn.getIdentifier())) {
+					remove = false;
+				}
+			}
+			if (remove) {
+				columnsToRemove.add(varColumn);
+			}
 		}
 		for (Iterator<TableColumn> colIter = columnsToRemove.iterator(); colIter.hasNext();) {
-
 			externalColumnModel.removeColumn(colIter.next());
 		}
 
 		// add inserted columns
-		for (Iterator<CollectableEntityField> fieldIter = lstFixedNew.iterator(); fieldIter.hasNext();) {
+		for (Iterator<CollectableEntityField> fieldIter = lstSelection.iterator(); fieldIter.hasNext();) {
 
 			try {
 				boolean doInsert = true;
@@ -724,6 +740,16 @@ public class FixedColumnRowHeader extends SubformRowHeader {
 		private SubFormTable externalTable;
 
 		public HeaderTable() {
+		}
+
+		@Override
+		public void setRowHeight(int rowHeight) {
+			super.setRowHeight(rowHeight);
+		}
+
+		@Override
+		public void setRowHeight(int row, int rowHeight) {
+			super.setRowHeight(row, rowHeight);
 		}
 
 		private String prevComponent = null;
@@ -987,6 +1013,10 @@ public class FixedColumnRowHeader extends SubformRowHeader {
 
 		public void setExternalTable(SubFormTable aExternalTable) {
 			this.externalTable = aExternalTable;
+		}
+		
+		public SubFormTable getExternalTable() {
+			return this.externalTable;
 		}
 
 		@Override

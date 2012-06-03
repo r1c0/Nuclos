@@ -45,6 +45,7 @@ import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableModel;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.JTextComponent;
 
@@ -69,7 +70,10 @@ import org.nuclos.client.ui.DateChooser;
 import org.nuclos.client.ui.ListOfValues;
 import org.nuclos.client.ui.ResourceIdMapper;
 import org.nuclos.client.ui.ToolTipTextProvider;
+import org.nuclos.client.ui.collect.FixedColumnRowHeader;
+import org.nuclos.client.ui.collect.FixedColumnRowHeader.FixedRowIndicatorTableModel;
 import org.nuclos.client.ui.collect.SubForm;
+import org.nuclos.client.ui.collect.ToolTipsTableHeader;
 import org.nuclos.client.ui.collect.SubForm.Column;
 import org.nuclos.client.ui.collect.SubForm.SubFormTable;
 import org.nuclos.client.ui.collect.component.custom.FileChooserComponent;
@@ -80,7 +84,6 @@ import org.nuclos.client.ui.collect.component.model.DetailsComponentModel;
 import org.nuclos.client.ui.collect.component.model.DetailsComponentModelEvent;
 import org.nuclos.client.ui.collect.component.model.SearchComponentModel;
 import org.nuclos.client.ui.collect.component.model.SearchComponentModelEvent;
-import org.nuclos.client.ui.collect.model.CollectableTableModel;
 import org.nuclos.client.ui.collect.model.SortableCollectableTableModel;
 import org.nuclos.client.ui.gc.ListenerUtil;
 import org.nuclos.client.ui.labeled.LabeledComboBox;
@@ -1763,13 +1766,24 @@ public abstract class AbstractCollectableComponent
 			super.getTableCellRendererComponent(tbl, oValue, bSelected, bHasFocus, iRow, iColumn);
 
 			setAlignmentX(JLabel.CENTER_ALIGNMENT);
+			
+			final TableModel tm;
+			final int adjustColIndex;
+			if (tbl instanceof FixedColumnRowHeader.HeaderTable &&
+					((FixedColumnRowHeader.HeaderTable) tbl).getExternalTable() != null) {
+				tm = ((FixedColumnRowHeader.HeaderTable) tbl).getExternalTable().getModel();
+				adjustColIndex = FixedRowIndicatorTableModel.ROWMARKERCOLUMN_COUNT;
+			} else {
+				tm = tbl.getModel();
+				adjustColIndex = 0;
+			}
 
 			// check whether the data of the component is readable for current user, by asking the security agent of the actual field
-			if (tbl.getModel() instanceof SortableCollectableTableModel<?>) {
-				final SortableCollectableTableModel<Collectable> tblModel = (SortableCollectableTableModel<Collectable>)tbl.getModel();
+			if (tm instanceof SortableCollectableTableModel<?>) {
+				final SortableCollectableTableModel<Collectable> tblModel = (SortableCollectableTableModel<Collectable>) tm;
 				if (tblModel.getRowCount() > iRow) {
 					final Collectable clct = tblModel.getCollectable(iRow);
-					final Integer iTColumn = tbl.getColumnModel().getColumn(iColumn).getModelIndex();
+					final Integer iTColumn = tbl.getColumnModel().getColumn(iColumn).getModelIndex() - adjustColIndex;
 					final CollectableEntityField clctef = tblModel.getCollectableEntityField(iTColumn);
 					if (clctef == null) {
 						throw new NullPointerException("getTableCellRendererComponent failed to find field: " + clct + " tm index " + iTColumn);
@@ -1800,12 +1814,23 @@ public abstract class AbstractCollectableComponent
 		cellRendererComponent.setBackground(bSelected ? tbl.getSelectionBackground() : tbl.getBackground());
 		cellRendererComponent.setForeground(bSelected ? tbl.getSelectionForeground() : tbl.getForeground());
 
+		final TableModel tm;
+		final int adjustColIndex;
+		if (tbl instanceof FixedColumnRowHeader.HeaderTable &&
+				((FixedColumnRowHeader.HeaderTable) tbl).getExternalTable() != null) {
+			tm = ((FixedColumnRowHeader.HeaderTable) tbl).getExternalTable().getModel();
+			adjustColIndex = FixedRowIndicatorTableModel.ROWMARKERCOLUMN_COUNT;
+		} else {
+			tm = tbl.getModel();
+			adjustColIndex = 0;
+		}
+
 		// check whether the data of the component is readable for current user, by asking the security agent of the actual field
-		if (tbl.getModel() instanceof SortableCollectableTableModel<?>) {
-			final SortableCollectableTableModel<Collectable> tblModel = (SortableCollectableTableModel<Collectable>)tbl.getModel();
+		if (tm instanceof SortableCollectableTableModel<?>) {
+			final SortableCollectableTableModel<Collectable> tblModel = (SortableCollectableTableModel<Collectable>) tm;
 			if (tblModel.getRowCount() > iRow) {
 				final Collectable clct = tblModel.getCollectable(iRow);
-				final Integer iTColumn = tbl.getColumnModel().getColumn(iColumn).getModelIndex();
+				final Integer iTColumn = tbl.getColumnModel().getColumn(iColumn).getModelIndex() - adjustColIndex;
 				final CollectableEntityField clctef = tblModel.getCollectableEntityField(iTColumn);
 				if (clctef == null) {
 					throw new NullPointerException("getTableCellRendererComponent failed to find field: " + clct + " tm index " + iTColumn);
