@@ -366,7 +366,7 @@ public class DetailsController<Clct extends Collectable> extends CommonControlle
 			if (fieldmeta.getCalculationScript() != null) {
 				if (ExpressionParser.contains(fieldmeta.getCalculationScript(), sourceExpression)) {
 					Object o = ScriptEvaluator.getInstance().eval(fieldmeta.getCalculationScript(),
-							new SubformControllerScriptContext(getCollectController(), psf, sf, sf.getSelectedCollectable()), null);
+							new SubformControllerScriptContext(getCollectController(), psf, sf, sf.getCollectableTableModel().getRow(row)), null);
 					setSubFormValue(sf, row, i, cef, o);
 				}
 			}
