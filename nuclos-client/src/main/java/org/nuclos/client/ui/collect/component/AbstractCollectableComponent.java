@@ -1792,7 +1792,7 @@ public abstract class AbstractCollectableComponent
 					final CefSecurityAgent sa = clctef.getSecurityAgent();
 					if (sa == null) {
 						// lazy set the security agent
-						GenericObjectClientUtils.setSecurityAgent(clct, clctef, !tblModel.getBaseEntityName().equals(clctef.getEntityName()));
+						GenericObjectClientUtils.setSecurityAgent(clct, clctef, tblModel.getBaseEntityName() != null ? !tblModel.getBaseEntityName().equals(clctef.getEntityName()) : false);
 						// throw new NullPointerException("No security agent set on " + clctef + " (" + clctef.getClass().getName() + ")");
 					}
 					// sa.setCollectable(clct);
