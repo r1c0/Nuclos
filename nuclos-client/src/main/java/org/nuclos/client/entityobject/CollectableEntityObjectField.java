@@ -5,6 +5,7 @@ import org.nuclos.client.common.MetaDataClientProvider;
 import org.nuclos.client.masterdata.MasterDataDelegate;
 import org.nuclos.common.collect.collectable.CollectableField;
 import org.nuclos.common.collect.collectable.LocalizedCollectableValueField;
+import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.server.masterdata.valueobject.MasterDataMetaVO;
 
@@ -17,14 +18,17 @@ public class CollectableEntityObjectField extends LocalizedCollectableValueField
 
 	private int fieldType;
 
+	private Class<?> javaType;
+
 	public CollectableEntityObjectField(String sFieldName, CollectableEntityObject ceo) {
 		super();
-		
+
 		this.sFieldName = sFieldName;
 		this.oValue = ceo.getValue(sFieldName);
 		this.oValueId = ceo.getValueId(sFieldName);
 		this.fieldType = ceo.getCollectableEntity().getEntityField(sFieldName).getFieldType();
-		
+		this.javaType = ceo.getCollectableEntity().getEntityField(sFieldName).getJavaClass();
+
 		if (this.oValue == null) {
 			setLabel("");
 		} else if (!MetaDataClientProvider.getInstance().isEntity(this.oValue.toString())) {
@@ -32,7 +36,7 @@ public class CollectableEntityObjectField extends LocalizedCollectableValueField
 		} else {
 			MasterDataMetaVO mdmVO = MasterDataDelegate.getInstance().getMetaData(this.oValue.toString());
 			setLabel(SpringLocaleDelegate.getInstance().getLabelFromMetaDataVO(mdmVO));
-		}		
+		}
 	}
 
 	@Override
@@ -66,5 +70,15 @@ public class CollectableEntityObjectField extends LocalizedCollectableValueField
 			return getValueId() == null;
 		}
 		throw new IllegalStateException();
+	}
+
+	@Override
+	public int compareTo(CollectableField that) {
+		if (String.class.isAssignableFrom(javaType)) {
+			return super.compareTo(that);
+		}
+		else {
+			return LangUtils.compare(this.getValue(), that.getValue());
+		}
 	}
 }
