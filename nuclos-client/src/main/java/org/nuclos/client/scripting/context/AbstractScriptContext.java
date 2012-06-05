@@ -20,8 +20,19 @@ import org.nuclos.api.context.ScriptContext;
 import org.nuclos.client.customcode.CodeDelegate;
 import org.nuclos.common.expressions.ExpressionEvaluator;
 import org.nuclos.common.expressions.ExpressionParser;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 public abstract class AbstractScriptContext implements ScriptContext, ExpressionEvaluator {
+
+	@Override
+	public String getUsername() {
+		Authentication token = SecurityContextHolder.getContext().getAuthentication();
+		if (token != null) {
+			return (String) token.getPrincipal();
+		}
+		return "[unknown]";
+	}
 
 	@Override
 	public Object propertyMissing(String name) {

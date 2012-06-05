@@ -237,7 +237,7 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 		}
 
 		private static class TargetComponentAction implements Action {
-			
+
 			private final String sTargetComponentName;
 
 			private TargetComponentAction(String sTargetComponentName) {
@@ -247,7 +247,7 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 			public String getTargetComponentName() {
 				return sTargetComponentName;
 			}
-			
+
 			@Override
 			public String toString() {
 				final StringBuilder result = new StringBuilder();
@@ -260,11 +260,11 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 		}
 
 		private static class ClearAction extends TargetComponentAction {
-			
+
 			private ClearAction(String sTargetComponentName) {
 				super(sTargetComponentName);
 			}
-						
+
 			@Override
 			public String toString() {
 				final StringBuilder result = new StringBuilder();
@@ -277,7 +277,7 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 		}
 
 		private static class TransferLookedUpValueAction extends TargetComponentAction {
-			
+
 			private final String sSourceFieldName;
 
 			private TransferLookedUpValueAction(String sTargetComponentName, String sSourceFieldName) {
@@ -288,7 +288,7 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 			public String getSourceFieldName() {
 				return sSourceFieldName;
 			}
-			
+
 			@Override
 			public String toString() {
 				final StringBuilder result = new StringBuilder();
@@ -303,7 +303,7 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 		}
 
 		private static class RefreshValueListAction extends TargetComponentAction {
-			
+
 			private final String sTargetComponentEntityName;
 			private final String sParameterNameForSourceComponent;
 
@@ -324,7 +324,7 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 			public String getParameterNameForSourceComponent() {
 				return sParameterNameForSourceComponent;
 			}
-			
+
 			@Override
 			public String toString() {
 				final StringBuilder result = new StringBuilder();
@@ -341,17 +341,17 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 		}
 
 		private static class LookupCollectableComponentModelListener implements CollectableComponentModelListener {
-			
+
 			private final GenCache<Object, Collectable> cache;
-			
+
 			private final CollectableComponentsProvider provider;
-			
+
 			private final List<Pair<String, CollectableComponentModel>> transfers;
-			
+
 			private final JComponent rootComponent;
-			
+
 			//
-			
+
 			private LookupCollectableComponentModelListener(GenCache<Object, Collectable> cache,
 					CollectableComponentsProvider provider,
 					List<Pair<String, CollectableComponentModel>> transfers,
@@ -361,15 +361,15 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 				this.transfers = transfers;
 				this.rootComponent = rootComponent;
 			}
-			
+
 			@Override
 			public void valueToBeChanged(DetailsComponentModelEvent ev) {
 			}
-			
+
 			@Override
 			public void searchConditionChangedInModel(SearchComponentModelEvent ev) {
 			}
-			
+
 			@Override
 			public void collectableFieldChangedInModel(CollectableComponentModelEvent ev) {
 				if (ev.collectableFieldHasChanged() && !ev.getCollectableComponentModel().isInitializing()) {
@@ -388,15 +388,15 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 		}
 
 		private static class RuleLookupListener implements LookupListener {
-			
+
 			private final CollectableComponentsProvider provider;
-			
+
 			private final String sourceFieldName;
-			
+
 			private final CollectableComponentModel clctcompmodelSource;
-			
+
 			private final CollectableComponentModel clctcompmodelTarget;
-			
+
 			private RuleLookupListener(CollectableComponentsProvider provider, String sourceFieldName,
 					CollectableComponentModel clctcompmodelSource, CollectableComponentModel clctcompmodelTarget) {
 				this.provider = provider;
@@ -404,7 +404,7 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 				this.clctcompmodelSource = clctcompmodelSource;
 				this.clctcompmodelTarget = clctcompmodelTarget;
 			}
-			
+
 			@Override
 			public void lookupSuccessful(LookupEvent ev) {
 				if (!clctcompmodelSource.isInitializing()) {
@@ -417,19 +417,19 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
                 return 1;
             }
 		}
-		
+
 		private static class HandleClearLookupListener implements LookupListener {
-			
+
 			private final CollectableComponentModel clctcompmodelSource;
-			
+
 			private final CollectableComponentModel clctcompmodelTarget;
-			
+
 			private HandleClearLookupListener(
 					CollectableComponentModel clctcompmodelSource, CollectableComponentModel clctcompmodelTarget) {
 				this.clctcompmodelSource = clctcompmodelSource;
 				this.clctcompmodelTarget = clctcompmodelTarget;
 			}
-			
+
 			@Override
             public void lookupSuccessful(LookupEvent ev) {
 				if (!clctcompmodelSource.isInitializing()) {
@@ -546,7 +546,7 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 					}
 				}	// for
 			}
-			
+
 			private void handleLookupEvent() throws SAXException {
 				// get the event's source components:
 				final Collection<CollectableComponent> collclctcompSource = BuildFormHandler.this.getCollectableComponentsProvider().getCollectableComponentsFor(event.sSourceComponentName);
@@ -587,9 +587,9 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 							String referencedEntityName = clctcompSource.getEntityField().getReferencedEntityName();
 							if (referencedEntityName != null) {
 								final GenCache<Object, Collectable> cache = new GenCache<Object, Collectable>(
-										new CollectableLookupProvider(clctcompSource.getEntityField().getEntityName(), 
+										new CollectableLookupProvider(clctcompSource.getEntityField().getEntityName(),
 												clctcompSource.getEntityField().getName()));
-								
+
 								clctcompSource.getModel().addCollectableComponentModelListener(new LookupCollectableComponentModelListener(
 										cache, getCollectableComponentsProvider(), transfers, getRootComponent()));
 							}
@@ -611,7 +611,7 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 					handleClearAction(clearaction, clctlovSource);
 				}
 			}
-			
+
 			private void handleTransferLookedUpValueAction(final TransferLookedUpValueAction transferaction, final CollectableListOfValues clctlovSource) throws SAXException {
 				if (bCreateSearchableComponents) {
 					return; //NUCLOSINT-1160
@@ -626,7 +626,7 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 				}
 				/** @todo removeLookupListener - but where/when? */
 				clctlovSource.addLookupListener(new RuleLookupListener(
-						getCollectableComponentsProvider(), transferaction.getSourceFieldName(), 
+						getCollectableComponentsProvider(), transferaction.getSourceFieldName(),
 						clctcompmodelSource, clctcompmodelTarget));
 			}
 
@@ -781,9 +781,9 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 		/**
 		 * Transfers looked-up values.
 		 */
-		private static void transferValue(CollectableComponentsProvider provider, 
+		private static void transferValue(CollectableComponentsProvider provider,
 				Collectable clctSelected, String sourceFieldName, CollectableComponentModel clctcompmodelTarget) {
-			
+
 			if (clctcompmodelTarget instanceof SearchComponentModel) {
 				return; //NUCLOSINT-1160
 			}
@@ -1091,7 +1091,7 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 			this.mpElementProcessors.put(ELEMENT_DEPENDENCY, new DependencyElementProcessor());
 			this.mpElementProcessors.put(ELEMENT_VALUELISTPROVIDER, new ValueListProviderElementProcessor());
 			this.mpElementProcessors.put(ELEMENT_PARAMETER, new ParameterElementProcessor());
-			
+
 			this.mpElementProcessors.put(ELEMENT_PROPERTY, new PropertyElementProcessor());
 			this.mpElementProcessors.put(ELEMENT_PROPERTY_SIZE, new PropertySizeElementProcessor());
 			this.mpElementProcessors.put(ELEMENT_PROPERTY_COLOR, new PropertyColorElementProcessor());
@@ -1099,13 +1099,14 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 			this.mpElementProcessors.put(ELEMENT_PROPERTY_SCRIPT, new PropertyScriptElementProcessor());
 			this.mpElementProcessors.put(ELEMENT_PROPERTY_TRANSLATIONS, new PropertyTranslationsElementProcessor());
 			this.mpElementProcessors.put(ELEMENT_PROPERTY_VALUELIST_PROVIDER, new PropertyValuelistProviderElementProcessor());
-			
+
 			this.mpElementProcessors.put(ELEMENT_INITIALFOCUSCOMPONENT, new InitialFocusComponentProcessor());
 			this.mpElementProcessors.put(ELEMENT_INITIALSORTINGORDER, new InitialSortingOrderProcessor());
 			this.mpElementProcessors.put(ELEMENT_TRANSLATIONS, new TranslationsElementProcessor());
 			this.mpElementProcessors.put(ELEMENT_TRANSLATION, new TranslationElementProcessor());
 			this.mpElementProcessors.put(ELEMENT_LAYOUTCOMPONENT, new LayoutComponentElementProcessor());
-			
+
+			this.mpElementProcessors.put(ELEMENT_ENABLED, new ScriptElementProcessor());
 			this.mpElementProcessors.put(ELEMENT_NEW_ENABLED, new ScriptElementProcessor());
 			this.mpElementProcessors.put(ELEMENT_EDIT_ENABLED, new ScriptElementProcessor());
 			this.mpElementProcessors.put(ELEMENT_DELETE_ENABLED, new ScriptElementProcessor());
@@ -1767,13 +1768,11 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 					// override default:
 					final boolean bEnabled = sEnabled.equals(ATTRIBUTEVALUE_YES);
 					clctcomp.setEnabled(bEnabled);
-					clctcomp.setEnabledByInitial(bEnabled);
 				}
 
 				// Id text fields may never be enabled except in search mode!
 				if (clctcomp instanceof CollectableIdTextField && !BuildFormHandler.this.bCreateSearchableComponents) {
 					clctcomp.setEnabled(false);
-					clctcomp.setEnabledByInitial(false);
 				}
 
 				// insertable:
@@ -2148,8 +2147,7 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 				subform = new SubForm(sEntityName, LangUtils.defaultIfNull(iOrientation, JToolBar.HORIZONTAL),
 						sForeignKeyFieldToParent);
 
-				subform.setReadOnly(!bEnabled && !bCreateSearchableComponents);
-				subform.setEnabled(bEnabled);
+				subform.setEnabled(bEnabled || bCreateSearchableComponents);
 
 				final String sControllerType = attributes.getValue(ATTRIBUTE_CONTROLLERTYPE);
 				subform.setControllerType(sControllerType);
@@ -2160,7 +2158,7 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 				// referenced parent subform
 				final String sParentSubForm = attributes.getValue(ATTRIBUTE_PARENTSUBFORM);
 				subform.setParentSubForm(sParentSubForm);
-				
+
 				// dynamic cell heights default:
 				final String sDynamicCellHeightsDefault = attributes.getValue(ATTRIBUTE_DYNAMIC_CELL_HEIGHTS_DEFAULT);
 				if (sDynamicCellHeightsDefault != null && !bCreateSearchableComponents) {
@@ -2225,17 +2223,17 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 					// override default:
 					bInsertable = sInsertable.equals(ATTRIBUTEVALUE_YES);
 				}
-				
+
 				// rows & columns
 				final Integer iRows = getIntegerValue(attributes, ATTRIBUTE_ROWS);
 				final Integer iColumns = getIntegerValue(attributes, ATTRIBUTE_COLUMNS);
 
 				// width
 				final Integer width = getIntegerValue(attributes, ATTRIBUTE_WIDTH);
-				
+
 				// next focus component
 				final String sNextFocusComponent = attributes.getValue(ATTRIBUTE_NEXTFOCUSCOMPONENT);
-				
+
 				final SubForm.Column column = new SubForm.Column(sName, sLabel, clctcomptype, bVisible, bEnabled, bInsertable, iRows, iColumns, width, sNextFocusComponent);
 
 				localizationHandler = new LocalizationHandler() {
@@ -2352,13 +2350,13 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 				translations = null;
 			}
 		}
-		
+
 		/**
 		 * LocaleResourceElementProcessor processes the provided set of translations.
 		 */
 		private class PropertyTranslationsElementProcessor extends AbstractElementProcessor {
 			String sProperty;
-			
+
 			@Override
 			public void startElement(String sUriNameSpace, String sSimpleName, String sQualifiedName, Attributes attributes) throws SAXException {
 				sProperty = attributes.getValue(ATTRIBUTE_NAME);
@@ -2613,14 +2611,14 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 		}	// inner class ComboBoxElementProcessor
 
 		public static class LayoutMLButton extends JButton {
-			
+
 			private LayoutMLButton() {
 			}
-			
+
 			@Override
 			public void setActionCommand(String actionCommand) {
 				super.setActionCommand(actionCommand);
-				
+
 				ActionListener[] als = getActionListeners();
 				for (int i = 0; i < als.length; i++) {
 					ActionListener al = als[i];
@@ -2628,28 +2626,28 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 						((LayoutMLButtonActionListener)al).setParentComponent(this, actionCommand);
 				}
 			}
-			
+
 		}
-		
+
 		public static class LayoutMLButtonLocalizationHandler implements LocalizationHandler {
-			
+
 			private final JButton btn;
-			
+
 			private LayoutMLButtonLocalizationHandler(JButton btn) {
 				this.btn = btn;
 			}
-			
+
 			@Override
 			public void setTranslation(String translation) {
 				btn.setText(translation);
 			}
 		}
-		
+
 		/**
 		 * inner class <code>ButtonElementProcessor</code>. Processes a button element.
 		 */
 		private class ButtonElementProcessor extends ComponentElementProcessor {
-			
+
 			/**
 			 * constructs a <code>JButton</code>, configures it according to the XML attributes
 			 * and pushes it on the stack.
@@ -2891,9 +2889,9 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 		 * inner class <code>PropertyValuelistProviderElementProcessor</code>. Processes a property-valuelist-provider element.
 		 */
 		private class PropertyValuelistProviderElementProcessor extends AbstractElementProcessor {
-			
+
 			String sProperty;
-			
+
 			@Override
             public void startElement(String sUriNameSpace, String sSimpleName, String sQualifiedName, Attributes attributes)
 					throws SAXException {
@@ -2938,7 +2936,7 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 				BuildFormHandler.this.valuelistprovider = null;
 			}
 		}
-		
+
 		/**
 		 * inner class <code>ParameterElementProcessor</code>. Processes a parameter element.
 		 */
@@ -3352,7 +3350,7 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 				stack.peekComponent().setPreferredSize(new Dimension(iWidth, iHeight));
 			}
 		}	// inner class PreferredSizeElementProcessor
-		
+
 		/**
 		 * inner class <code>StrictSizeElementProcessor</code>. Processes a strict-size element.
 		 */
@@ -3362,7 +3360,7 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 					throws SAXException {
 				final int iWidth = BuildFormHandler.getIntValue(attributes, ATTRIBUTE_WIDTH, 0);
 				final int iHeight = BuildFormHandler.getIntValue(attributes, ATTRIBUTE_HEIGHT, 0);
-				
+
 				if (stack.peekComponent() instanceof StrictSizeComponent) {
 					((StrictSizeComponent)stack.peekComponent()).setStrictSize(new Dimension(iWidth, iHeight));
 				} else {
@@ -3370,7 +3368,7 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 				}
 			}
 		}	// inner class StrictSizeElementProcessor
-		
+
 		/**
 		 * inner class <code>PropertySizeElementProcessor</code>. Processes a property-size element.
 		 */
@@ -3381,7 +3379,7 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 				final String sProperty = attributes.getValue(ATTRIBUTE_NAME);
 				final int iWidth = BuildFormHandler.getIntValue(attributes, ATTRIBUTE_WIDTH, 0);
 				final int iHeight = BuildFormHandler.getIntValue(attributes, ATTRIBUTE_HEIGHT, 0);
-				
+
 				if (stack.peekComponent() instanceof LayoutComponent) {
 					LayoutComponent lc = (LayoutComponent) stack.peekComponent();
 					if (lc.getComponentProperties() != null) {
@@ -3543,7 +3541,7 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 				}
 			}
 		}	// inner class FontElementProcessor
-		
+
 		/**
 		 * inner class <code>PropertyFontElementProcessor</code>. Processes a property font element.
 		 */
@@ -3607,7 +3605,7 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 				final int iRed = BuildFormHandler.getIntValue(attributes, ATTRIBUTE_RED, 0);
 				final int iGreen = BuildFormHandler.getIntValue(attributes, ATTRIBUTE_GREEN, 0);
 				final int iBlue = BuildFormHandler.getIntValue(attributes, ATTRIBUTE_BLUE, 0);
-				
+
 				if (stack.peekComponent() instanceof LayoutComponent) {
 					LayoutComponent lc = (LayoutComponent) stack.peekComponent();
 					if (lc.getComponentProperties() != null) {
@@ -3620,7 +3618,7 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 				}
 			}
 		}	// inner class PropertyColorElementProcessor
-		
+
 		/**
 		 * inner class <code>DependencyElementProcessor</code>. Processes a dependency element.
 		 */
@@ -3703,7 +3701,7 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 				BuildFormHandler.this.rule.collActions.add(act);
 			}
 		}
-		
+
 		private class ScriptElementProcessor implements ElementProcessor {
 
 			private NuclosScript script;
@@ -3727,17 +3725,24 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 						subform.setEditEnabledScript(script);
 					}
 					else if (ELEMENT_DELETE_ENABLED.equals(sQualifiedName)) {
-						subform.setDeleteEnabledScript(script);				
+						subform.setDeleteEnabledScript(script);
 					}
 					else if (ELEMENT_CLONE_ENABLED.equals(sQualifiedName)) {
 						subform.setCloneEnabledScript(script);
 					}
 				}
+				else {
+					final CollectableComponentBuilder ccb = (CollectableComponentBuilder) stack.peekComponentBuilder();
+					assert ccb != null;
+					if (ELEMENT_ENABLED.equals(sQualifiedName)) {
+						ccb.clctcomp.setEnabledScript(script);
+					}
+				}
 				sbChars = null;
 			}
-			
+
 		}
-		
+
 		private class PropertyScriptElementProcessor implements ElementProcessor {
 
 			private String sProperty;
@@ -3754,7 +3759,7 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 			@Override
 			public void endElement(String sUriNameSpace, String sSimpleName, String sQualifiedName) throws SAXException {
 				script.setSource(sbChars.toString().trim());
-				
+
 				if (stack.peekComponent() instanceof LayoutComponent) {
 					LayoutComponent lc = (LayoutComponent) stack.peekComponent();
 					if (lc.getComponentProperties() != null) {
@@ -3768,26 +3773,26 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 				}
 				sbChars = null;
 			}
-			
+
 		}
-		
+
 		/**
 		 * inner class <code>LayoutComponentElementProcessor</code>. Processes a layout component element.
 		 */
 		@Configurable
 		class LayoutComponentElementProcessor extends ComponentElementProcessor {
-			
+
 			private NucletComponentRepository nucletComponentRepository;
-			
+
 			public LayoutComponentElementProcessor() {
-				
+
 			}
-			
+
 			@Autowired
 			void setNucletComponentRepository(NucletComponentRepository nucletComponentRepository) {
 				this.nucletComponentRepository = nucletComponentRepository;
 			}
-			
+
 			/**
 			 * constructs a <code>LayoutComponent</code>, configures it according to the XML attributes
 			 * and pushes it on the stack.
@@ -3799,7 +3804,7 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 			@Override
             public void startElement(String sUriNameSpace, String sSimpleName, String sQualifiedName, Attributes attributes)
 					throws SAXException {
-				
+
 				// name: (used for preferences)
 				final String sName = attributes.getValue(ATTRIBUTE_NAME);
 				// class:
@@ -3819,7 +3824,7 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 					stack.addComponent(new JLabel("LayoutComponent class must not be null"));
 					return;
 				}
-				
+
 				final LayoutComponentHolder holder = new LayoutComponentHolder(layoutComponentFactory.newInstance(), false);
 				holder.setName(sName);
 				stack.addComponent(holder);

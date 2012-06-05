@@ -16,12 +16,6 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.common;
 
-import java.awt.Component;
-
-import javax.swing.JTable;
-import javax.swing.table.TableCellRenderer;
-
-import org.nuclos.client.ui.CommonJPasswordField;
 import org.nuclos.client.ui.collect.component.CollectablePasswordField;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
 
@@ -38,9 +32,7 @@ public class NuclosCollectablePasswordField extends CollectablePasswordField {
 
 	// For behaviour as table cell renderer
 	@Override
-	public void setEnabled(boolean bEnabled) {
+	protected void setEnabledState(boolean bEnabled) {
 		this.getJTextComponent().setEditable(bEnabled);
 	}
-
-
 }	// class NuclosCollectablePasswordField

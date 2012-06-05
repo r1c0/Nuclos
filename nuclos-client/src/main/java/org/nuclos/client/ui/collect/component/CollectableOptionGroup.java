@@ -139,7 +139,7 @@ public class CollectableOptionGroup extends AbstractCollectableComponent {
 	}
 
 	@Override
-	public void setEnabled(boolean bValue) {
+	protected void setEnabledState(boolean bValue) {
 		getOptionGroup().setEnabled(bValue);
 	}
 

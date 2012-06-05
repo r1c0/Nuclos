@@ -32,11 +32,11 @@ import org.nuclos.common.collect.collectable.Collectable;
  */
 
 public class RelationTypeCollectController extends MasterDataCollectController {
-	
+
 	/**
-	 * You should use {@link org.nuclos.client.ui.collect.CollectControllerFactorySingleton} 
+	 * You should use {@link org.nuclos.client.ui.collect.CollectControllerFactorySingleton}
 	 * to get an instance.
-	 * 
+	 *
 	 * @deprecated You should normally do sth. like this:<code><pre>
 	 * ResultController<~> rc = new ResultController<~>();
 	 * *CollectController<~> cc = new *CollectController<~>(.., rc);
@@ -91,7 +91,7 @@ public class RelationTypeCollectController extends MasterDataCollectController {
 
 	private void respectRights(boolean bWriteAllowed) {
 		for (CollectableComponent clctcomp : this.getDetailsPanel().getEditView().getCollectableComponents()) {
-			clctcomp.setEnabled(bWriteAllowed && clctcomp.isEnabledByInitial());
+			clctcomp.setReadOnly(!bWriteAllowed || !clctcomp.isEnabled());
 		}
 	}
 

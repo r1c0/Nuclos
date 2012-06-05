@@ -55,6 +55,7 @@ import org.jdesktop.jxlayer.JXLayer;
 import org.jdesktop.jxlayer.plaf.BufferedLayerUI;
 import org.jdesktop.jxlayer.plaf.effect.BufferedImageOpEffect;
 import org.jdesktop.swingx.renderer.DefaultListRenderer;
+import org.nuclos.api.context.ScriptContext;
 import org.nuclos.client.common.ClientParameterProvider;
 import org.nuclos.client.common.MetaDataClientProvider;
 import org.nuclos.client.common.Utils;
@@ -73,7 +74,6 @@ import org.nuclos.client.ui.ToolTipTextProvider;
 import org.nuclos.client.ui.collect.FixedColumnRowHeader;
 import org.nuclos.client.ui.collect.FixedColumnRowHeader.FixedRowIndicatorTableModel;
 import org.nuclos.client.ui.collect.SubForm;
-import org.nuclos.client.ui.collect.ToolTipsTableHeader;
 import org.nuclos.client.ui.collect.SubForm.Column;
 import org.nuclos.client.ui.collect.SubForm.SubFormTable;
 import org.nuclos.client.ui.collect.component.custom.FileChooserComponent;
@@ -111,6 +111,7 @@ import org.nuclos.common.collect.exception.CollectableFieldFormatException;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Predicate;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
+import org.nuclos.common.expressions.ExpressionParser;
 import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.StringUtils;
@@ -154,7 +155,7 @@ public abstract class AbstractCollectableComponent
 	public static Color colorCommonValues = Utils.translateColorFromParameter(ParameterProvider.KEY_HISTORICAL_STATE_CHANGED_COLOR);//new Color(246,229,255);
 
 	//
-	
+
 	private final JComponent comp;
 	private final CollectableEntityField clctef;
 	private CollectableComponentModel clctcompmodel;
@@ -166,8 +167,6 @@ public abstract class AbstractCollectableComponent
 	private ReferencingListener reflistener;
 
 	private Map<String, Object> mpProperties;
-
-	private boolean bEnabledByInitial = true;
 
 	/**
 	 * the comparison operator, if any, that can be set by the user.
@@ -188,8 +187,16 @@ public abstract class AbstractCollectableComponent
 	 * used to display the possible entity fields for comparison with other field.
 	 */
 	private CollectableEntity clcte;
-	
+
 	private SpringLocaleDelegate localeDelegate;
+
+	private boolean enabled = true;
+
+	private boolean readOnly = false;
+
+	protected boolean dynamicallyEnabled = true;
+
+	private NuclosScript enabledScript;
 
 //	/**
 //	 * @param clctef
@@ -230,12 +237,12 @@ public abstract class AbstractCollectableComponent
 
 		assert isSearchComponent() == bSearchable;
 	}
-	
+
 	@Autowired
 	void setSpringLocaleDelegate(SpringLocaleDelegate cld) {
 		this.localeDelegate = cld;
 	}
-	
+
 	protected SpringLocaleDelegate getSpringLocaleDelegate() {
 		return localeDelegate;
 	}
@@ -271,7 +278,7 @@ public abstract class AbstractCollectableComponent
 	}
 
 	/**
-	 * @deprecated Use constructor to initialize the model. 
+	 * @deprecated Use constructor to initialize the model.
 	 * 		The model itself shouldn't be changed after construction of the view.
 	 */
 	@Override
@@ -307,11 +314,6 @@ public abstract class AbstractCollectableComponent
 	@Override
     public void setVisible(boolean bVisible) {
 		getJComponent().setVisible(bVisible);
-	}
-
-	@Override
-    public boolean isEnabledByInitial() {
-		return bEnabledByInitial;
 	}
 
 	@Override
@@ -710,8 +712,30 @@ public abstract class AbstractCollectableComponent
 	 * @param bEnabled
 	 */
 	@Override
-    public void setEnabled(boolean bEnabled) {
-		getJComponent().setEnabled(bEnabled);
+    public final void setEnabled(boolean bEnabled) {
+		this.enabled = bEnabled;
+		setEnabledState(enabled && !readOnly && dynamicallyEnabled);
+	}
+
+	@Override
+	public void setReadOnly(boolean readOnly) {
+		this.readOnly = readOnly;
+		setEnabledState(enabled && !readOnly && dynamicallyEnabled);
+	}
+
+	@Override
+	public boolean isReadOnly() {
+		return this.readOnly;
+	}
+
+	@Override
+	public boolean isEnabled() {
+		return getJComponent().isEnabled();
+	}
+
+	@Override
+	public void setEnabledScript(NuclosScript script) {
+		this.enabledScript = script;
 	}
 
 	/**
@@ -732,14 +756,6 @@ public abstract class AbstractCollectableComponent
 	@Override
 	public void setNextFocusComponent(String sNextFocusComponent) {
 		this.sNextFocusComponent = sNextFocusComponent;
-	}
-
-	/**
-	 * @param bEnabled
-	 */
-	@Override
-    public void setEnabledByInitial(boolean bEnabled) {
-		bEnabledByInitial = bEnabled;
 	}
 
 	@Override
@@ -955,8 +971,8 @@ public abstract class AbstractCollectableComponent
 		try {
 			if (getDetailsModel().isValueToBeChanged()) {
 				final CollectableField clctf = getFieldFromView();
-				final String sValue = clctf.isNull() ? 
-						getSpringLocaleDelegate().getMessage("AbstractCollectableComponent.2","<gel\u00f6scht>") : 
+				final String sValue = clctf.isNull() ?
+						getSpringLocaleDelegate().getMessage("AbstractCollectableComponent.2","<gel\u00f6scht>") :
 							getSpringLocaleDelegate().getMessage("AbstractCollectableComponent.1","<ge\u00e4ndert>");
 				result = sLabel + " = " + sValue;
 			}
@@ -1167,7 +1183,7 @@ public abstract class AbstractCollectableComponent
 		result.addSeparator();
 		final ButtonGroup btngrpCompareWith = new ButtonGroup();
 		final SpringLocaleDelegate localeDelegate = SpringLocaleDelegate.getInstance();
-		
+
 		final JRadioButtonMenuItem miValue = new JRadioButtonMenuItem(
 				localeDelegate.getMessage("AbstractCollectableComponent.17","Wertvergleich"));
 		miValue.setToolTipText(localeDelegate.getMessage(
@@ -1406,7 +1422,7 @@ public abstract class AbstractCollectableComponent
 
 	private boolean isEntityDisplayable(String sEntityName) {
 		// DefaultCollectableEntityProvider.getInstance() will return type of CollectableEOEntityProvider.
-		//  CollectableEOEntityProvider throws UnsupportedOperationException for Method isEntityDisplayable(...) 
+		//  CollectableEOEntityProvider throws UnsupportedOperationException for Method isEntityDisplayable(...)
 		//return DefaultCollectableEntityProvider.getInstance().isEntityDisplayable(sEntityName);
 		return Modules.getInstance().isModuleEntity(sEntityName) ||
 				MasterDataLayoutHelper.isLayoutMLAvailable(sEntityName, false);
@@ -1438,7 +1454,7 @@ public abstract class AbstractCollectableComponent
 		else {
 			boolean hasValue = !getModel().getField().isNull();
 			boolean active = true;
-			
+
 			// not editable
 			if (isDetailsComponent() && (getControlComponent() instanceof JTextComponent) && !((JTextComponent) getControlComponent()).isEditable()) {
 				result = NuclosThemeSettings.BACKGROUND_INACTIVEFIELD;
@@ -1464,16 +1480,16 @@ public abstract class AbstractCollectableComponent
 			} else {
 				result = hasFocus() ? null : Color.WHITE;
 			}
-			
+
 			if (!NuclosThemeSettings.BACKGROUND_PANEL.equals(comp.getBackground())) {
 				result = hasFocus() && active ? null : comp.getBackground();
-			} 
+			}
 		}
 
 		//Logger.getLogger(AbstractCollectableComponent.class).debug("getBackgroundColor: result = " + result);
 		return result;
 	}
-	
+
 	public static Color getMandatoryColor() {
 		return ClientParameterProvider.getInstance().getColorValue(ParameterProvider.KEY_MANDATORY_ITEM_BACKGROUND_COLOR, new Color(255,255,200));
 	}
@@ -1728,7 +1744,7 @@ public abstract class AbstractCollectableComponent
 
 	/**
 	 * default table cell renderer for (search) CollectableComponents.
-	 * 
+	 *
 	 * TODO: This REALLY should be static - but how to archive this? (tp)
 	 */
 	protected class CollectableComponentDefaultTableCellRenderer implements TableCellRenderer {
@@ -1766,7 +1782,7 @@ public abstract class AbstractCollectableComponent
 			super.getTableCellRendererComponent(tbl, oValue, bSelected, bHasFocus, iRow, iColumn);
 
 			setAlignmentX(JLabel.CENTER_ALIGNMENT);
-			
+
 			final TableModel tm;
 			final int adjustColIndex;
 			if (tbl instanceof FixedColumnRowHeader.HeaderTable &&
@@ -1803,13 +1819,13 @@ public abstract class AbstractCollectableComponent
 						return layer;
 					}
 				}
-				
+
 				setBackgroundColor(this, tbl, oValue, bSelected, bHasFocus, iRow, iColumn);
 			}
 			return this;
 		}
 	}
-	
+
 	public static void setBackgroundColor(Component cellRendererComponent, JTable tbl, Object oValue, boolean bSelected, boolean bHasFocus, int iRow, int iColumn) {
 		cellRendererComponent.setBackground(bSelected ? tbl.getSelectionBackground() : tbl.getBackground());
 		cellRendererComponent.setForeground(bSelected ? tbl.getSelectionForeground() : tbl.getForeground());
@@ -1845,7 +1861,7 @@ public abstract class AbstractCollectableComponent
 				catch (CommonFatalException ex) {
 					LOG.warn(ex);
 				}
-				
+
 				if (!clctef.isNullable() && isNull(oValue)) {
 					cellRendererComponent.setBackground(getMandatoryColor());
 					cellRendererComponent.setForeground(tbl.getForeground());
@@ -1870,7 +1886,7 @@ public abstract class AbstractCollectableComponent
 			}
 		}
 	}
-	
+
 	private static boolean isNull(Object oValue) {
 		if (oValue == null) {
 			return true;
@@ -1885,4 +1901,24 @@ public abstract class AbstractCollectableComponent
 		return false;
 	}
 
+	@Override
+	public void setComponentState(ScriptContext ctx, String expression) {
+		dynamicallyEnabled = true;
+		if (enabledScript != null && !isSearchComponent()) {
+			if (expression == null || ExpressionParser.contains(enabledScript, expression)) {
+				Object o = ScriptEvaluator.getInstance().eval(enabledScript, ctx, true);
+				try {
+					dynamicallyEnabled = LangUtils.defaultIfNull((Boolean) o, Boolean.TRUE);
+				}
+				catch (ClassCastException ex) {
+					LOG.warn("Failed to evaluate script expression.", ex);
+				}
+			}
+		}
+		setEnabledState(enabled && !readOnly && dynamicallyEnabled);
+	}
+
+	protected void setEnabledState(boolean enabled) {
+		getJComponent().setEnabled(enabled);
+	}
 }	// class AbstractCollectableComponent

@@ -101,7 +101,7 @@ public interface LayoutMLConstants {
 	public static final String ELEMENT_DEPENDENCIES = "dependencies";
 	public static final String ELEMENT_VALUELISTPROVIDER = "valuelist-provider";
 	public static final String ELEMENT_PARAMETER = "parameter";
-	
+
 	public static final String ELEMENT_PROPERTY = "property";
 	public static final String ELEMENT_PROPERTY_SIZE = "property-size";
 	public static final String ELEMENT_PROPERTY_COLOR = "property-color";
@@ -109,13 +109,14 @@ public interface LayoutMLConstants {
 	public static final String ELEMENT_PROPERTY_SCRIPT = "property-script";
 	public static final String ELEMENT_PROPERTY_TRANSLATIONS = "property-translations";
 	public static final String ELEMENT_PROPERTY_VALUELIST_PROVIDER = "property-valuelist-provider";
-	
+
 	public static final String ELEMENT_INITIALFOCUSCOMPONENT = "initial-focus-component";
 	public static final String ELEMENT_INITIALSORTINGORDER = "initial-sorting-order";
 	public static final String ELEMENT_TRANSLATIONS = "translations";
 	public static final String ELEMENT_TRANSLATION = "translation";
 	public static final String ELEMENT_LAYOUTCOMPONENT = "layoutcomponent";
-	
+
+	public static final String ELEMENT_ENABLED = "enabled";
 	public static final String ELEMENT_NEW_ENABLED = "new-enabled";
 	public static final String ELEMENT_EDIT_ENABLED = "edit-enabled";
 	public static final String ELEMENT_DELETE_ENABLED = "delete-enabled";

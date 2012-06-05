@@ -29,6 +29,7 @@ import javax.swing.event.TableModelListener;
 import javax.swing.table.TableCellEditor;
 
 import org.apache.log4j.Logger;
+import org.nuclos.api.context.ScriptContext;
 import org.nuclos.client.common.DetailsSubFormController;
 import org.nuclos.client.common.MetaDataClientProvider;
 import org.nuclos.client.common.Utils;
@@ -333,15 +334,18 @@ public class DetailsController<Clct extends Collectable> extends CommonControlle
 			return;
 		}
 
+		ScriptContext ctx = new CollectControllerScriptContext(getCollectController(), sfcs);
 		for (CollectableComponent c : getDetailsPanel().getEditView().getCollectableComponents()) {
 			EntityFieldMetaDataVO fieldmeta = MetaDataClientProvider.getInstance().getEntityField(getCollectController().getEntityName(), c.getEntityField().getName());
 			if (fieldmeta.getCalculationScript() != null) {
 				if (ExpressionParser.contains(fieldmeta.getCalculationScript(), sourceExpression)) {
 					CollectableComponentModel m = getDetailsPanel().getEditModel().getCollectableComponentModelFor(fieldmeta.getField());
-					Object o = ScriptEvaluator.getInstance().eval(fieldmeta.getCalculationScript(), new CollectControllerScriptContext(getCollectController(), sfcs), m.getField().getValue());
+					Object o = ScriptEvaluator.getInstance().eval(fieldmeta.getCalculationScript(), ctx, m.getField().getValue());
 					setCollectableComponentValue(c, o);
 				}
 			}
+
+			c.setComponentState(ctx, sourceExpression);
 		}
 	}
 

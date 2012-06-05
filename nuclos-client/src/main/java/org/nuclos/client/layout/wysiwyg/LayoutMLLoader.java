@@ -129,9 +129,9 @@ import org.xml.sax.XMLReader;
  * @version 01.00.00
  */
 public class LayoutMLLoader implements LayoutMLConstants {
-	
+
 	private static final Logger LOG = Logger.getLogger(LayoutMLLoader.class);
-	
+
 	private static final String SYSTEMID = "http://www.novabit.de/technologies/layoutml/layoutml.dtd";
 	private static final String RESOURCE_PATH = "org/nuclos/common2/layoutml/layoutml.dtd";
 	//NUCLEUSINT-1137
@@ -288,15 +288,16 @@ public class LayoutMLLoader implements LayoutMLConstants {
 
 			this.mapProcessors.put(ELEMENT_TRANSLATIONS, new TranslationsElementProcessor());
 			this.mapProcessors.put(ELEMENT_TRANSLATION, new TranslationProcessor());
-			
+
 			this.mapProcessors.put(ELEMENT_LAYOUTCOMPONENT, new LayoutComponentProcessor());
 
 			// this.mapProcessors.put(ELEMENT_DEPENDENCY, new
 			// LayoutMLDependencyProcessor());
 			// this.mapProcessors.put(ELEMENT_DEPENDENCIES, new
 			// LayoutMLDependenciesProcessor());
-			
+
 			// Script processors
+			this.mapProcessors.put(ELEMENT_ENABLED, new ScriptElementProcessor(ELEMENT_ENABLED));
 			this.mapProcessors.put(ELEMENT_NEW_ENABLED, new ScriptElementProcessor(ELEMENT_NEW_ENABLED));
 			this.mapProcessors.put(ELEMENT_EDIT_ENABLED, new ScriptElementProcessor(ELEMENT_EDIT_ENABLED));
 			this.mapProcessors.put(ELEMENT_DELETE_ENABLED, new ScriptElementProcessor(ELEMENT_DELETE_ENABLED));
@@ -814,7 +815,7 @@ public class LayoutMLLoader implements LayoutMLConstants {
 				sbChars = new StringBuffer();
 			}
 		}
-		
+
 		/**
 		 * {@link ElementProcessor} for WYSIWYGLayoutComponent
 		 * @see WYSIWYGLayoutComponent
@@ -822,7 +823,7 @@ public class LayoutMLLoader implements LayoutMLConstants {
 		private class LayoutComponentProcessor implements ElementProcessor {
 
 			boolean pop = false;
-			
+
 			@Override
 			public void closeElement() throws SAXException {
 				if (pop) {
@@ -938,15 +939,15 @@ public class LayoutMLLoader implements LayoutMLConstants {
 								ruleToExecute = RuleDelegate.getInstance().get(valueId);
 							} catch (Exception e) {
 								// do nothing.
-							}	
+							}
 							if (ruleToExecute == null) {
 								try {
 									ruleToExecute = RuleDelegate.getInstance().get(Integer.parseInt(valueId));
 								} catch (Exception e) {
 									// do nothing.
-								}	
+								}
 							}
-							final PropertyValue<String> pv = (PropertyValue<String>) 
+							final PropertyValue<String> pv = (PropertyValue<String>)
 									peekComponent().getProperties().getProperty(WYSIWYGStaticButton.PROPERTY_ACTIONCOMMAND_PROPERTIES);
 							if (ruleToExecute != null) {
 								pv.setValue(ruleToExecute.getRule());
@@ -961,15 +962,15 @@ public class LayoutMLLoader implements LayoutMLConstants {
 								generatorToExecute = GeneratorActions.getGeneratorAction(valueId);
 							} catch (Exception e) {
 								// do nothing.
-							}	
+							}
 							if (generatorToExecute == null) {
 								try {
 									generatorToExecute = GeneratorActions.getGeneratorAction(Integer.parseInt(valueId));
 								} catch (Exception e) {
 									// do nothing.
-								}	
+								}
 							}
-							final PropertyValue<String> pv = (PropertyValue<String>) 
+							final PropertyValue<String> pv = (PropertyValue<String>)
 									peekComponent().getProperties().getProperty(WYSIWYGStaticButton.PROPERTY_ACTIONCOMMAND_PROPERTIES);
 							if (generatorToExecute != null) {
 								pv.setValue(generatorToExecute.getName());
@@ -999,9 +1000,9 @@ public class LayoutMLLoader implements LayoutMLConstants {
 									break;
 								}
 							}
-							
+
 							if (targetState != null) {
-								final PropertyValue<String> pv = (PropertyValue<String>) 
+								final PropertyValue<String> pv = (PropertyValue<String>)
 										peekComponent().getProperties().getProperty(WYSIWYGStaticButton.PROPERTY_ACTIONCOMMAND_PROPERTIES);
 								pv.setValue(targetState.getNumeral().toString());
 							}
@@ -1039,7 +1040,7 @@ public class LayoutMLLoader implements LayoutMLConstants {
 			public void closeElement() {
 			}
 		}
-		
+
 		/**
 		 * {@link ElementProcessor} for StrictSize
 		 * @see PropertyOptions
@@ -1090,7 +1091,7 @@ public class LayoutMLLoader implements LayoutMLConstants {
 			public void closeElement() {
 			}
 		}
-		
+
 		/**
 		 * {@link ElementProcessor} for property size
 		 * @see PropertyOptions
@@ -1403,7 +1404,7 @@ public class LayoutMLLoader implements LayoutMLConstants {
 			public void closeElement() {
 			}
 		}
-		
+
 		/**
 		 * {@link ElementProcessor} for PropertyColor
 		 * @see Color
@@ -1413,7 +1414,7 @@ public class LayoutMLLoader implements LayoutMLConstants {
 			@Override
 			public void startElement(Attributes atts) throws SAXException {
 				String sProperty = atts.getValue(ATTRIBUTE_NAME);
-				
+
 				if (peekComponent() instanceof LayoutComponent) {
 					LayoutComponent lc = (LayoutComponent) peekComponent();
 					if (lc.getComponentProperties() != null) {
@@ -1772,18 +1773,18 @@ public class LayoutMLLoader implements LayoutMLConstants {
 				}
 			}
 		}
-		
+
 		/**
 		 * {@link ElementProcessor} for PropertyValueValuelistProvider
 		 * @see PropertyValueValuelistProvider
 		 */
 		private class PropertyValuelistProviderElementProcessor implements ElementProcessor {
-			
+
 			PropertyValueValuelistProvider value;
 			String sProperty;
 			String sEntity;
 			String sField;
-			
+
 			@Override
 			public void closeElement() throws SAXException {
 				if (peekComponent() instanceof LayoutComponent) {
@@ -1928,8 +1929,8 @@ public class LayoutMLLoader implements LayoutMLConstants {
 				}
 			}
 		}
-		
-		
+
+
 		/**
 		 * {@link ElementProcessor} for Property font
 		 * @see PropertyValueFont
@@ -1944,7 +1945,7 @@ public class LayoutMLLoader implements LayoutMLConstants {
 			@Override
 			public void startElement(Attributes atts) throws SAXException {
 				String sProperty = atts.getValue(ATTRIBUTE_NAME);
-				
+
 				if (peekComponent() instanceof LayoutComponent) {
 					LayoutComponent lc = (LayoutComponent) peekComponent();
 					if (lc.getComponentProperties() != null) {
@@ -1965,8 +1966,8 @@ public class LayoutMLLoader implements LayoutMLConstants {
 				}
 			}
 		}
-		
-		
+
+
 		private TranslationMap translations;
 
 		/**
@@ -1994,14 +1995,14 @@ public class LayoutMLLoader implements LayoutMLConstants {
 				translations = null;
 			}
 		}
-		
+
 		/**
 		 * {@link PropertyTranslationsElementProcessor} for Locale Resources.
 		 */
 		private class PropertyTranslationsElementProcessor implements ElementProcessor {
 
 			String sProperty;
-			
+
 			@Override
 			public void startElement(Attributes atts) throws SAXException {
 				sProperty = atts.getValue(ATTRIBUTE_NAME);
@@ -2027,7 +2028,7 @@ public class LayoutMLLoader implements LayoutMLConstants {
 										Errors.getInstance().showExceptionDialog(null, e);
 									}
 								}
-								
+
 								break;
 							}
 						}
@@ -2055,12 +2056,12 @@ public class LayoutMLLoader implements LayoutMLConstants {
 			public void closeElement() throws SAXException {
 			}
 		}
-		
+
 		private class ScriptElementProcessor implements ElementProcessor {
 
 			private final String element;
 			NuclosScript script;
-			
+
 			public ScriptElementProcessor(String element) {
 				super();
 				this.element = element;
@@ -2093,12 +2094,12 @@ public class LayoutMLLoader implements LayoutMLConstants {
 				}
 			}
 		}
-		
+
 		private class PropertyScriptElementProcessor implements ElementProcessor {
 
 			String sProperty;
 			NuclosScript script;
-			
+
 			public PropertyScriptElementProcessor() {
 				super();
 			}
@@ -2115,7 +2116,7 @@ public class LayoutMLLoader implements LayoutMLConstants {
 			public void closeElement() throws SAXException {
 				script.setSource(sbChars.toString().trim());
 				sbChars = null;
-				
+
 				if (peekComponent() instanceof LayoutComponent) {
 					LayoutComponent lc = (LayoutComponent) peekComponent();
 					if (lc.getComponentProperties() != null) {
@@ -2124,7 +2125,7 @@ public class LayoutMLLoader implements LayoutMLConstants {
 								try {
 									PropertyValueScript value = (PropertyValueScript) PropertyUtils.getPropertyValue(peekComponent(), sProperty);
 									value.setValue(script);
-									
+
 									peekComponent().setProperty(sProperty, value, pt.type);
 								} catch (CommonBusinessException ex) {
 									log.error(ex);

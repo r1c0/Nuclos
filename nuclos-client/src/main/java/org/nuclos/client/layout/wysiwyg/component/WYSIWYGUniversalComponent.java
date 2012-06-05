@@ -29,11 +29,6 @@ import javax.swing.JLabel;
 import javax.swing.SwingConstants;
 import javax.swing.border.Border;
 
-import org.nuclos.common.collect.collectable.CollectableComponentTypes;
-import org.nuclos.common.collect.collectable.CollectableEntity;
-import org.nuclos.common.collect.collectable.CollectableEntityField;
-import org.nuclos.common2.StringUtils;
-import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.client.common.NuclosCollectableComponentFactory;
 import org.nuclos.client.layout.wysiwyg.WYSIWYGMetaInformation;
 import org.nuclos.client.layout.wysiwyg.WYSIWYGStringsAndLabels;
@@ -51,6 +46,11 @@ import org.nuclos.client.ui.collect.component.DelegatingCollectablePanel;
 import org.nuclos.client.ui.collect.component.LabeledCollectableComponent;
 import org.nuclos.client.ui.labeled.LabeledComponent;
 import org.nuclos.common.NuclosBusinessException;
+import org.nuclos.common.collect.collectable.CollectableComponentTypes;
+import org.nuclos.common.collect.collectable.CollectableEntity;
+import org.nuclos.common.collect.collectable.CollectableEntityField;
+import org.nuclos.common2.StringUtils;
+import org.nuclos.common2.exception.CommonFatalException;
 
 /**
  * WYSIWYG-Component for all Collectable Component types.
@@ -61,33 +61,33 @@ import org.nuclos.common.NuclosBusinessException;
  * @author	<a href="mailto:thomas.schiffmann@novabit.de">thomas.schiffmann</a>
  */
 public class WYSIWYGUniversalComponent extends WYSIWYGCollectableComponent {
-	
+
 	//NUCLEUSINT-288
 	public static final String ATTRIBUTEVALUE_LABEL_AND_CONTROL = "label and control";
-	
+
 	private JLabel messageLabel = new JLabel(COLLECTABLE_COMPONENT.STRING_WAITINGFORMETA);
-	
+
 	public static final String[][] PROPERTY_VALUES_STATIC = new String[][] {
-		{PROPERTY_CONTROLTYPE, 
-			ATTRIBUTEVALUE_CHECKBOX, ATTRIBUTEVALUE_COMBOBOX, ATTRIBUTEVALUE_DATECHOOSER, ATTRIBUTEVALUE_FILECHOOSER, 
+		{PROPERTY_CONTROLTYPE,
+			ATTRIBUTEVALUE_CHECKBOX, ATTRIBUTEVALUE_COMBOBOX, ATTRIBUTEVALUE_DATECHOOSER, ATTRIBUTEVALUE_FILECHOOSER,
 			ATTRIBUTEVALUE_IDTEXTFIELD, ATTRIBUTEVALUE_LISTOFVALUES,ATTRIBUTEVALUE_OPTIONGROUP, ATTRIBUTEVALUE_TEXTAREA},
 			//NUCLEUSINT-404 null value for show-only for defaulting component
 			//NUCLEUSINT-288 added ATTRIBUTEVALUE_LABEL_AND_CONTROL
 			{PROPERTY_SHOWONLY, ATTRIBUTEVALUE_LABEL_AND_CONTROL, ATTRIBUTEVALUE_CONTROL, ATTRIBUTEVALUE_BROWSEBUTTON, ATTRIBUTEVALUE_LABEL}
 	};
-	
+
 	private org.nuclos.client.ui.collect.component.CollectableComponent collectableComponent;
-	
+
 	private WYSIWYGMetaInformation meta;
-	
+
 	public WYSIWYGUniversalComponent(WYSIWYGMetaInformation meta) {
 		this.meta = meta;
-		
+
 		propertyNames.add(PROPERTY_CONTROLTYPE);
-		
+
 		propertiesToAttributes.put(PROPERTY_SHOWONLY, ATTRIBUTE_SHOWONLY);
 		propertiesToAttributes.put(PROPERTY_CONTROLTYPE, ATTRIBUTE_CONTROLTYPE);
-		
+
 		propertySetMethods.put(PROPERTY_NAME, new PropertySetMethod(PROPERTY_NAME, "refresh"));
 		propertySetMethods.put(PROPERTY_ROWS, new PropertySetMethod(PROPERTY_ROWS, "setRows"));
 		propertySetMethods.put(PROPERTY_CONTROLTYPECLASS, new PropertySetMethod(PROPERTY_CONTROLTYPECLASS, "refresh"));
@@ -95,7 +95,7 @@ public class WYSIWYGUniversalComponent extends WYSIWYGCollectableComponent {
 		propertySetMethods.put(PROPERTY_FILL_CONTROL_HORIZONTALLY, new PropertySetMethod(PROPERTY_FILL_CONTROL_HORIZONTALLY, "setFillControlHorizontally"));
 		propertySetMethods.put(PROPERTY_LABEL, new PropertySetMethod(PROPERTY_LABEL, "setLabelText"));
 		propertySetMethods.put(PROPERTY_COLUMNS, new PropertySetMethod(PROPERTY_COLUMNS, "setColumns"));
-		
+
 		propertyFilters.put(PROPERTY_NAME, new PropertyFilter(PROPERTY_NAME, STANDARD_MODE | EXPERT_MODE));
 		propertyFilters.put(PROPERTY_VALUELISTPROVIDER, new PropertyFilter(PROPERTY_VALUELISTPROVIDER, EXPERT_MODE));
 		propertyFilters.put(PROPERTY_CONTROLTYPECLASS, new PropertyFilter(PROPERTY_CONTROLTYPECLASS, STANDARD_MODE | EXPERT_MODE));
@@ -103,7 +103,7 @@ public class WYSIWYGUniversalComponent extends WYSIWYGCollectableComponent {
 		propertyFilters.put(PROPERTY_CONTROLTYPE, new PropertyFilter(PROPERTY_CONTROLTYPE, DISABLED));
 		propertyFilters.put(PROPERTY_SHOWONLY, new PropertyFilter(PROPERTY_SHOWONLY, DISABLED));
 		propertyFilters.put(PROPERTY_COLLECTABLECOMPONENTPROPERTY, new PropertyFilter(PROPERTY_COLLECTABLECOMPONENTPROPERTY, EXPERT_MODE));
-		
+
 		this.setLayout(new BorderLayout());
 		this.messageLabel.setHorizontalAlignment(SwingConstants.CENTER);
 		this.messageLabel.addMouseListener(this);
@@ -114,7 +114,7 @@ public class WYSIWYGUniversalComponent extends WYSIWYGCollectableComponent {
 	 * @see org.nuclos.client.layout.wysiwyg.component.WYSIWYGCollectableComponent#render()
 	 */
 	@Override
-	protected void render() {		
+	protected void render() {
 		this.removeMouseListener();
 		this.collectableComponent = null;
 		this.removeAll();
@@ -123,10 +123,10 @@ public class WYSIWYGUniversalComponent extends WYSIWYGCollectableComponent {
 			// parser logic
 			final String sFieldName = (String)properties.getProperty(PROPERTY_NAME).getValue();
 			final String sControlTypeClass = (String)properties.getProperty(PROPERTY_CONTROLTYPECLASS).getValue();
-			
+
 			final CollectableEntity clcte = meta.getCollectableEntity();
 			final CollectableEntityField clctef = meta.getEntityField(clcte.getName(), sFieldName);
-			
+
 			Integer iEnumeratedControlType = (getControlType()==-1)?clctef.getDefaultCollectableComponentType():getControlType();
 			Class<org.nuclos.client.ui.collect.component.CollectableComponent> clsclctcomp = null;
 			if (sControlTypeClass != null) {
@@ -144,16 +144,14 @@ public class WYSIWYGUniversalComponent extends WYSIWYGCollectableComponent {
 			final CollectableComponentType clctcomptype = new CollectableComponentType(iEnumeratedControlType, clsclctcomp);
 
 			final org.nuclos.client.ui.collect.component.CollectableComponent clctcomp = NuclosCollectableComponentFactory.getInstance().newCollectableComponent(clcte, sFieldName, clctcomptype, false);
-			
+
 			// enabled:
 			final boolean bEnabled = (Boolean)properties.getProperty(PROPERTY_ENABLED).getValue(boolean.class, this);
 			clctcomp.setEnabled(bEnabled);
-			clctcomp.setEnabledByInitial(bEnabled);
 
 			// Id text fields may never be enabled except in search mode!
 			if (clctcomp instanceof CollectableIdTextField) {
 				clctcomp.setEnabled(false);
-				clctcomp.setEnabledByInitial(false);
 			}
 
 			// insertable:
@@ -197,13 +195,13 @@ public class WYSIWYGUniversalComponent extends WYSIWYGCollectableComponent {
 						clctlov.setBrowseButtonVisibleOnly(true);
 					}
 				}
-				
+
 				if (clctcomp instanceof DelegatingCollectablePanel) {
 					final DelegatingCollectablePanel delpnl = (DelegatingCollectablePanel) clctcomp;
 					delpnl.setVisibleLabel(!bHideLabel);
 					delpnl.setVisibleControl(!bHideControl);
 				}
-				
+
 				// label:
 				if (!bHideLabel) {
 					String sLabel = (String)properties.getProperty(PROPERTY_LABEL).getValue();
@@ -253,17 +251,17 @@ public class WYSIWYGUniversalComponent extends WYSIWYGCollectableComponent {
 					clctcomp.setToolTipText(desc);
 				}
 			}
-				
+
 
 			// opaqueness / transparency:
 			clctcomp.setOpaque((Boolean)properties.getProperty(PROPERTY_OPAQUE).getValue(boolean.class, this));
-			
+
 			// options
 			if (properties.getProperty(PROPERTY_OPTIONS) != null) {
 				WYSIWYGOptions options = (WYSIWYGOptions)properties.getProperty(PROPERTY_OPTIONS).getValue();
 				if (options != null) {
 					List<String[]> lstOptions = new ArrayList<String[]>();
-					
+
 					for (WYSIWYGOption option : options.getAllOptionValues()) {
 						final String[] asOptions = new String[3];
 						asOptions[0] = option.getValue();
@@ -271,7 +269,7 @@ public class WYSIWYGUniversalComponent extends WYSIWYGCollectableComponent {
 						asOptions[2] = StringUtils.emptyIfNull(option.getMnemonic());
 						lstOptions.add(asOptions);
 					}
-					
+
 					if (clctcomp instanceof CollectableOptionGroup) {
 						final CollectableOptionGroup group = (CollectableOptionGroup) clctcomp;
 						if (lstOptions != null) {
@@ -287,11 +285,11 @@ public class WYSIWYGUniversalComponent extends WYSIWYGCollectableComponent {
 					}
 				}
 			}
-			
+
 			clctcomp.getJComponent().setBorder((Border)properties.getProperty(PROPERTY_BORDER).getValue(Border.class, this));
 			clctcomp.getJComponent().setBackground((Color)properties.getProperty(PROPERTY_BACKGROUNDCOLOR).getValue(Color.class, this));
 			clctcomp.getJComponent().setPreferredSize((Dimension)properties.getProperty(PROPERTY_PREFFEREDSIZE).getValue(Dimension.class, this));
-			
+
 			this.add(clctcomp.getJComponent(), BorderLayout.CENTER);
 			this.collectableComponent = clctcomp;
 		}
@@ -315,8 +313,8 @@ public class WYSIWYGUniversalComponent extends WYSIWYGCollectableComponent {
 	public int getControlType() {
 		return getControlType(this.properties.getProperty(PROPERTY_CONTROLTYPE));
 	}
-	
-	private int getControlType(PropertyValue<?> property) {	
+
+	private int getControlType(PropertyValue<?> property) {
 		String sControlType = null;
 		if (properties.getProperty(PROPERTY_CONTROLTYPE) != null){
 			//NUCLEUSINT-460
@@ -324,10 +322,10 @@ public class WYSIWYGUniversalComponent extends WYSIWYGCollectableComponent {
 				sControlType = (String)property.getValue();
 			}
 		}
-		
+
 		if (sControlType == null)
 			return -1;
-		
+
 		if (sControlType.equals(ATTRIBUTEVALUE_CHECKBOX))
 			return CollectableComponentTypes.TYPE_CHECKBOX;
 		if (sControlType.equals(ATTRIBUTEVALUE_COMBOBOX))
@@ -352,7 +350,7 @@ public class WYSIWYGUniversalComponent extends WYSIWYGCollectableComponent {
 		return -1;
 
 	}
-	
+
 	/*
 	 * (non-Javadoc)
 	 * @see org.nuclos.client.layout.wysiwyg.component.WYSIWYGCollectableComponent#validateProperties(java.util.Map)
@@ -361,7 +359,7 @@ public class WYSIWYGUniversalComponent extends WYSIWYGCollectableComponent {
 	public void validateProperties(Map<String, PropertyValue<Object>> values) throws NuclosBusinessException {
 		PropertyUtils.validatePreferredSize((Dimension) values.get(PROPERTY_PREFFEREDSIZE).getValue(), 10, 10);
 
-		/** checking controltype and controltypeclass 
+		/** checking controltype and controltypeclass
 		 * NUCLEUSINT-269
 		 * */
 		String sFieldName = (String) values.get(PROPERTY_NAME).getValue();
@@ -395,7 +393,7 @@ public class WYSIWYGUniversalComponent extends WYSIWYGCollectableComponent {
 	public void refresh(String s) {
 		this.render();
 	}
-	
+
 	public void setColumns(int columns) {
 		if (collectableComponent != null) {
 			collectableComponent.setColumns(columns);
@@ -442,7 +440,7 @@ public class WYSIWYGUniversalComponent extends WYSIWYGCollectableComponent {
 			collectableComponent.setRows(rows);
 		}
 	}
-	
+
 	/*
 	 * (non-Javadoc)
 	 * @see javax.swing.JComponent#setOpaque(boolean)

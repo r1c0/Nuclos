@@ -108,9 +108,9 @@ public class CollectableDateChooser extends CollectableTextComponent {
 	 * @see DateChooser#isTodayRelative()
 	 */
 	public CollectableDateChooser(CollectableEntityField clctef, boolean bSearchable, boolean bTodayIsRelative) {
-		super(clctef, 
+		super(clctef,
 				new LabeledDateChooser(new LabeledComponentSupport(),
-						bTodayIsRelative, clctef.isNullable(), clctef.getFormatInput(), 
+						bTodayIsRelative, clctef.isNullable(), clctef.getFormatInput(),
 						clctef.getFormatOutput(), bSearchable), bSearchable);
 		if (clctef.getJavaClass() != Date.class && clctef.getJavaClass() != InternalTimestamp.class && clctef.getJavaClass() != NuclosDateTime.class) {
 			throw new CommonFatalException("collectable.date.chooser.exception");//"Datum erwartet.");
@@ -181,7 +181,7 @@ public class CollectableDateChooser extends CollectableTextComponent {
 	}
 
 	@Override
-	public void setEnabled(boolean flag) {
+	protected void setEnabledState(boolean flag) {
 		this.getDateChooser().getJTextField().setEditable(flag);
 		this.getDateChooser().getBrowseButton().setEnabled(flag);
 	}

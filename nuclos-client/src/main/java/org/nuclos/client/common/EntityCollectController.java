@@ -53,6 +53,7 @@ import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
 
 import org.apache.log4j.Logger;
+import org.nuclos.api.context.ScriptContext;
 import org.nuclos.client.common.AbstractDetailsSubFormController.DetailsSubFormTableModel;
 import org.nuclos.client.entityobject.CollectableEntityObject;
 import org.nuclos.client.genericobject.GenerationController;
@@ -60,6 +61,7 @@ import org.nuclos.client.main.mainframe.MainFrameTab;
 import org.nuclos.client.masterdata.MasterDataSubFormController;
 import org.nuclos.client.masterdata.MetaDataCache;
 import org.nuclos.client.masterdata.valuelistprovider.MasterDataCollectableFieldsProviderFactory;
+import org.nuclos.client.scripting.context.CollectControllerScriptContext;
 import org.nuclos.client.ui.Bubble;
 import org.nuclos.client.ui.CommonClientWorker;
 import org.nuclos.client.ui.CommonMultiThreader;
@@ -190,7 +192,7 @@ public abstract class EntityCollectController<Clct extends Collectable> extends 
 		btnPointer.setName("btnPointer");
 		btnPointer.addMouseListener(getPointerContextListener());
 	}
-	
+
 	@Override
 	public void close() {
 		super.close();
@@ -553,6 +555,15 @@ public abstract class EntityCollectController<Clct extends Collectable> extends 
 							EntityCollectController.this.enableToolbarButtonsForDetailsMode(CollectState.DETAILSMODE_VIEW);
 						}
 					});
+					UIUtils.invokeOnDispatchThread(new Runnable() {
+						@Override
+						public void run() {
+							ScriptContext ctx = new CollectControllerScriptContext(EntityCollectController.this, new ArrayList<DetailsSubFormController<?>>(getSubFormControllersInDetails()));
+							for (CollectableComponent c : getDetailsPanel().getEditView().getCollectableComponents()) {
+								c.setComponentState(ctx, null);
+							}
+						}
+					});
 					if(this.afterLoadingRunnable != null){
 						try {
 							this.afterLoadingRunnable.run();
@@ -732,7 +743,7 @@ public abstract class EntityCollectController<Clct extends Collectable> extends 
 						if (isClosed()) {
 							return;
 						}
-						
+
 						if(iDetailsMode == CollectState.DETAILSMODE_EDIT || iDetailsMode == CollectState.DETAILSMODE_VIEW) {
 							if(getResultTable().getSelectedRow() >= 0) {
 								getResultController().replaceCollectableInTableModel(readSelectedCollectable());
@@ -831,7 +842,7 @@ public abstract class EntityCollectController<Clct extends Collectable> extends 
 						efMeta = null;
 					}
 					final boolean fieldNotFound = efMeta == null;
-					final String fieldLabel = fieldNotFound ? (field + " (" + fieldNotFoundLabel + ")") 
+					final String fieldLabel = fieldNotFound ? (field + " (" + fieldNotFoundLabel + ")")
 							: getSpringLocaleDelegate().getLabelFromMetaFieldDataVO(efMeta);
 					final JMenuItem fieldItem = new JMenuItem(fieldLabel);
 
@@ -1053,7 +1064,7 @@ public abstract class EntityCollectController<Clct extends Collectable> extends 
 	protected boolean handleSpecialException(Exception ex) {
 		if (handlePointerException(ex)) {
 			return true;
-		} 
+		}
 		else if (handleCommonValidationException(ex)) {
 			return true;
 		}
@@ -1061,19 +1072,19 @@ public abstract class EntityCollectController<Clct extends Collectable> extends 
 			return super.handleSpecialException(ex);
 		}
 	}
-	
+
 	protected boolean handleCommonValidationException(Exception ex) {
 		CommonValidationException cve = Errors.getCause(ex, CommonValidationException.class);
 		if (cve != null) {
 			List<String> messages = new ArrayList<String>();
 			messages.add(getSpringLocaleDelegate().getText("common.exception.novabitvalidationexception"));
-			
+
 			if (cve.getErrors() != null) {
 				for (String error : cve.getErrors()) {
 					messages.add(getSpringLocaleDelegate().getMessageFromResource(error));
 				}
 			}
-			
+
 			if (cve.getFieldErrors() != null) {
 				for (FieldValidationError error : cve.getFieldErrors()) {
 					if (!getEntityName().equals(error.getEntity())) {
@@ -1085,7 +1096,7 @@ public abstract class EntityCollectController<Clct extends Collectable> extends 
 					}
 				}
 			}
-			
+
 			String message = StringUtils.concatHtml(messages.toArray(new String[messages.size()]));
 			setPointerInformation(new PointerCollection(message), null);
 			return true;

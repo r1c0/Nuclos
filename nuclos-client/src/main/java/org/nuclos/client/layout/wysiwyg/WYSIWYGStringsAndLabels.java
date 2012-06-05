@@ -892,6 +892,7 @@ public class WYSIWYGStringsAndLabels {
 		public static final String SIZE = "Gr\u00f6\u00dfe";
 		public static final String SHOWONLY = "Komponentendarstellung";
 		public static final String ENABLED = "Aktiv";
+		public static final String ENABLED_DYNAMIC = "Aktiv (dynamisch)";
 		public static final String VISIBLE = "Sichtbar";
 		public static final String OPAQUE = "Deckend";
 		public static final String INSERTABLE = "Werteliste editierbar";

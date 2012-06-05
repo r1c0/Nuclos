@@ -41,7 +41,7 @@ import org.nuclos.common2.exception.CommonFatalException;
  * @version	01.00.00
  */
 public class CollectableIdTextField extends CollectableTextComponent {
-	
+
 	private static final Logger LOG = Logger.getLogger(CollectableIdTextField.class);
 
 	/**
@@ -80,13 +80,13 @@ public class CollectableIdTextField extends CollectableTextComponent {
 	}
 
 	@Override
-	public void setEnabled(boolean bEnabled) {
+	protected void setEnabledState(boolean bEnabled) {
 		if (bEnabled && !isSearchComponent()) {
 			final String sMessage = StringUtils.getParameterizedExceptionMessage("collectable.idtextfield.exception.2", getEntityField().getName());
 				//"CollectableIdTextField " + getEntityField().getName() + " darf nicht aktiviert (enabled) werden.";
 			throw new CommonFatalException(sMessage);
 		}
-		super.setEnabled(bEnabled);
+		super.setEnabledState(bEnabled);
 	}
 
 	@Override

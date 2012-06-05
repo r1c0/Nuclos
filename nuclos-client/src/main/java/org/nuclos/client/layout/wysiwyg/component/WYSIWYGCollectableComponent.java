@@ -50,25 +50,27 @@ import org.nuclos.client.layout.wysiwyg.editor.util.valueobjects.WYSIYWYGPropert
 import org.nuclos.client.layout.wysiwyg.editor.util.valueobjects.layoutmlrules.LayoutMLRules;
 import org.nuclos.client.ui.labeled.LabeledComponent;
 import org.nuclos.common.NuclosBusinessException;
+import org.nuclos.common.NuclosScript;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonFatalException;
 
 /**
- * 
- * 
- * 
+ *
+ *
+ *
  * <br>
  * Created by Novabit Informationssysteme GmbH <br>
  * Please visit <a href="http://www.novabit.de">www.novabit.de</a>
- * 
+ *
  * @author <a href="mailto:hartmut.beckschulze@novabit.de">hartmut.beckschulze</a>
  * @version 01.00.00
  */
-public abstract class WYSIWYGCollectableComponent extends JPanel implements WYSIWYGComponent, MouseListener {
+public abstract class WYSIWYGCollectableComponent extends JPanel implements WYSIWYGComponent, MouseListener, WYSIWYGScriptComponent {
 
 	public static final String PROPERTY_NAME = PROPERTY_LABELS.NAME;
 	public static final String PROPERTY_SHOWONLY = PROPERTY_LABELS.SHOWONLY;
 	public static final String PROPERTY_ENABLED = PROPERTY_LABELS.ENABLED;
+	public static final String PROPERTY_ENABLED_DYNAMIC = PROPERTY_LABELS.ENABLED_DYNAMIC;
 	public static final String PROPERTY_VISIBLE = PROPERTY_LABELS.VISIBLE;
 	public static final String PROPERTY_OPAQUE = PROPERTY_LABELS.OPAQUE;
 	public static final String PROPERTY_INSERTABLE = PROPERTY_LABELS.INSERTABLE;
@@ -80,20 +82,22 @@ public abstract class WYSIWYGCollectableComponent extends JPanel implements WYSI
 	public static final String PROPERTY_COLLECTABLECOMPONENTPROPERTY = PROPERTY_LABELS.COLLECTABLECOMPONENTPROPERTY;
 	public static final String PROPERTY_OPTIONS = "options";
 	public static final String PROPERTY_NEXTFOCUSCOMPONENT = PROPERTY_LABELS.NEXTFOCUSCOMPONENT;
-	
+
 	protected ComponentProperties properties;
 	protected LayoutMLRules componentsRules = new LayoutMLRules();
-	
+
 	protected List<String> propertyNames = new ArrayList<String>();
 	protected Map<String, String> propertiesToAttributes = new HashMap<String, String>();
 	protected Map<String, PropertyClass> propertyClasses = new HashMap<String, PropertyClass>();
 	protected Map<String, PropertySetMethod> propertySetMethods = new HashMap<String, PropertySetMethod>();
 	protected Map<String, PropertyFilter> propertyFilters = new HashMap<String, PropertyFilter>();
-	
+	public static final String[][] propertiesToScriptElements = new String[][]{{PROPERTY_ENABLED_DYNAMIC, ELEMENT_ENABLED}};
+
 	{
 		propertyNames.add(PROPERTY_NAME);
 		propertyNames.add(PROPERTY_PREFFEREDSIZE);
 		propertyNames.add(PROPERTY_ENABLED);
+		propertyNames.add(PROPERTY_ENABLED_DYNAMIC);
 		propertyNames.add(PROPERTY_VISIBLE);
 		propertyNames.add(PROPERTY_OPAQUE);
 		propertyNames.add(PROPERTY_INSERTABLE);
@@ -106,12 +110,12 @@ public abstract class WYSIWYGCollectableComponent extends JPanel implements WYSI
 		propertyNames.add(PROPERTY_CONTROLTYPECLASS);
 		propertyNames.add(PROPERTY_LABEL);
 		propertyNames.add(PROPERTY_ROWS);
-		propertyNames.add(PROPERTY_FILL_CONTROL_HORIZONTALLY);		
+		propertyNames.add(PROPERTY_FILL_CONTROL_HORIZONTALLY);
 		propertyNames.add(PROPERTY_VALUELISTPROVIDER);
 		propertyNames.add(PROPERTY_DESCRIPTION);
 		propertyNames.add(PROPERTY_TRANSLATIONS);
 		propertyNames.add(PROPERTY_NEXTFOCUSCOMPONENT);
-		
+
 		propertiesToAttributes.put(PROPERTY_NAME, ATTRIBUTE_NAME);
 		propertiesToAttributes.put(PROPERTY_ENABLED, ATTRIBUTE_ENABLED);
 		propertiesToAttributes.put(PROPERTY_VISIBLE, ATTRIBUTE_VISIBLE);
@@ -124,11 +128,12 @@ public abstract class WYSIWYGCollectableComponent extends JPanel implements WYSI
 		propertiesToAttributes.put(PROPERTY_ROWS, ATTRIBUTE_ROWS);
 		propertiesToAttributes.put(PROPERTY_FILL_CONTROL_HORIZONTALLY, ATTRIBUTE_FILLCONTROLHORIZONTALLY);
 		propertiesToAttributes.put(PROPERTY_NEXTFOCUSCOMPONENT, ATTRIBUTE_NEXTFOCUSCOMPONENT);
-		
+
 		propertyClasses.put(PROPERTY_NAME, new PropertyClass(PROPERTY_NAME, String.class));
 		propertyClasses.put(PROPERTY_SHOWONLY, new PropertyClass(PROPERTY_SHOWONLY, String.class));
 		propertyClasses.put(PROPERTY_PREFFEREDSIZE, new PropertyClass(PROPERTY_PREFFEREDSIZE, Dimension.class));
 		propertyClasses.put(PROPERTY_ENABLED, new PropertyClass(PROPERTY_ENABLED, boolean.class));
+		propertyClasses.put(PROPERTY_ENABLED_DYNAMIC, new PropertyClass(PROPERTY_ENABLED_DYNAMIC, NuclosScript.class));
 		propertyClasses.put(PROPERTY_VISIBLE, new PropertyClass(PROPERTY_VISIBLE, boolean.class));
 		propertyClasses.put(PROPERTY_OPAQUE, new PropertyClass(PROPERTY_OPAQUE, boolean.class));
 		propertyClasses.put(PROPERTY_INSERTABLE, new PropertyClass(PROPERTY_INSERTABLE, boolean.class));
@@ -148,7 +153,7 @@ public abstract class WYSIWYGCollectableComponent extends JPanel implements WYSI
 		propertyClasses.put(PROPERTY_VALUELISTPROVIDER, new PropertyClass(PROPERTY_VALUELISTPROVIDER, WYSIWYGValuelistProvider.class));
 		propertyClasses.put(PROPERTY_DESCRIPTION, new PropertyClass(PROPERTY_DESCRIPTION, String.class));
 		propertyClasses.put(PROPERTY_TRANSLATIONS, new PropertyClass(PROPERTY_TRANSLATIONS, TranslationMap.class));
-		
+
 		propertySetMethods.put(PROPERTY_PREFFEREDSIZE, new PropertySetMethod(PROPERTY_PREFFEREDSIZE, "setPreferredSize"));
 		propertySetMethods.put(PROPERTY_ENABLED, new PropertySetMethod(PROPERTY_ENABLED, "setEnabled"));
 		propertySetMethods.put(PROPERTY_OPAQUE, new PropertySetMethod(PROPERTY_OPAQUE, "setOpaque"));
@@ -156,11 +161,12 @@ public abstract class WYSIWYGCollectableComponent extends JPanel implements WYSI
 		propertySetMethods.put(PROPERTY_BORDER, new PropertySetMethod(PROPERTY_BORDER, "setBorder"));
 		propertySetMethods.put(PROPERTY_FONT, new PropertySetMethod(PROPERTY_FONT, "setFont"));
 		propertySetMethods.put(PROPERTY_DESCRIPTION, new PropertySetMethod(PROPERTY_DESCRIPTION, "setToolTipText"));
-		
+
 		propertyFilters.put(PROPERTY_NAME, new PropertyFilter(PROPERTY_NAME, STANDARD_AND_EXPERT_MODE));
 		propertyFilters.put(PROPERTY_SHOWONLY, new PropertyFilter(PROPERTY_SHOWONLY, STANDARD_AND_EXPERT_MODE));
 		propertyFilters.put(PROPERTY_PREFFEREDSIZE, new PropertyFilter(PROPERTY_PREFFEREDSIZE, STANDARD_AND_EXPERT_MODE));
 		propertyFilters.put(PROPERTY_ENABLED, new PropertyFilter(PROPERTY_ENABLED, STANDARD_AND_EXPERT_MODE));
+		propertyFilters.put(PROPERTY_ENABLED_DYNAMIC, new PropertyFilter(PROPERTY_ENABLED_DYNAMIC, EXPERT_MODE));
 		propertyFilters.put(PROPERTY_VISIBLE, new PropertyFilter(PROPERTY_VISIBLE, STANDARD_AND_EXPERT_MODE));
 		propertyFilters.put(PROPERTY_OPAQUE, new PropertyFilter(PROPERTY_OPAQUE, STANDARD_AND_EXPERT_MODE));
 		propertyFilters.put(PROPERTY_INSERTABLE, new PropertyFilter(PROPERTY_INSERTABLE, STANDARD_AND_EXPERT_MODE));
@@ -178,21 +184,21 @@ public abstract class WYSIWYGCollectableComponent extends JPanel implements WYSI
 		propertyFilters.put(PROPERTY_DESCRIPTION, new PropertyFilter(PROPERTY_DESCRIPTION, STANDARD_AND_EXPERT_MODE));
 		propertyFilters.put(PROPERTY_NEXTFOCUSCOMPONENT, new PropertyFilter(PROPERTY_NEXTFOCUSCOMPONENT, STANDARD_AND_EXPERT_MODE));
 	}
-	
+
 	private EventListenerList listenerList = new EventListenerList();
-	
+
 	public static final String[][] PROPERTY_VALUES_FROM_METAINFORMATION = new String[][] {
 		{PROPERTY_NAME, WYSIWYGMetaInformation.META_FIELD_NAMES},
 		{PROPERTY_SHOWONLY, WYSIWYGMetaInformation.META_SHOWONLY},
-		{PROPERTY_NEXTFOCUSCOMPONENT, WYSIWYGMetaInformation.META_FIELD_NAMES} 
+		{PROPERTY_NEXTFOCUSCOMPONENT, WYSIWYGMetaInformation.META_FIELD_NAMES}
 	};
-	
+
 	/**
 	 * This Method is called to recreate the Component for the View.<br>
 	 * Its needed for refreshing the Subform and some other complex Components.<br>
 	 */
 	protected abstract void render();
-	
+
 	/*
 	 * (non-Javadoc)
 	 * @see org.nuclos.client.layout.wysiwyg.component.WYSIWYGComponent#getAdditionalContextMenuItems(int)
@@ -294,7 +300,7 @@ public abstract class WYSIWYGCollectableComponent extends JPanel implements WYSI
     public String[][] getPropertyValuesStatic() {
 		return null;
 	}
-	
+
 	/*
 	 * (non-Javadoc)
 	 * @see org.nuclos.client.layout.wysiwyg.component.WYSIWYGComponent#getPropertyFilters()
@@ -322,7 +328,7 @@ public abstract class WYSIWYGCollectableComponent extends JPanel implements WYSI
 	public void setProperty(String property, PropertyValue<?> value, Class<?> valueClass) throws CommonBusinessException {
 		this.properties.setProperty(property, value, valueClass);
 	}
-	
+
 	/*
 	 * (non-Javadoc)
 	 * @see org.nuclos.client.layout.wysiwyg.component.WYSIWYGComponent#validateProperties(java.util.Map)
@@ -330,7 +336,7 @@ public abstract class WYSIWYGCollectableComponent extends JPanel implements WYSI
 	@Override
     public void validateProperties(Map<String, PropertyValue<Object>> values) throws NuclosBusinessException {
 	}
-	
+
 	@Override
 	public synchronized void addMouseListener(MouseListener l) {
 		super.addMouseListener(l);
@@ -342,17 +348,17 @@ public abstract class WYSIWYGCollectableComponent extends JPanel implements WYSI
 		super.removeMouseListener(l);
 		listenerList.remove(MouseListener.class, l);
 	}
-	
+
 	protected final void addDragGestureListener() {
 		DnDUtil.addDragGestureListener(this);
 	}
-	
+
 	protected void addMouseListener() {
 		if (getComponents() != null && getComponents().length > 0) {
 			addMouseListenerDeep((JComponent)getComponents()[0]);
 		}
 	}
-	
+
 	protected void removeMouseListener() {
 		if (getComponents() != null && getComponents().length > 0) {
 			removeMouseListenerDeep((JComponent)getComponents()[0]);
@@ -365,35 +371,35 @@ public abstract class WYSIWYGCollectableComponent extends JPanel implements WYSI
 			l.mouseClicked(e);
 		}
 	}
-	
+
 	@Override
     public void mouseEntered(MouseEvent e) {
 		for (MouseListener l : listenerList.getListeners(MouseListener.class)) {
 			l.mouseEntered(e);
 		}
 	}
-	
+
 	@Override
     public void mouseExited(MouseEvent e) {
 		for (MouseListener l : listenerList.getListeners(MouseListener.class)) {
 			l.mouseExited(e);
 		}
 	}
-	
+
 	@Override
     public void mousePressed(MouseEvent e) {
 		for (MouseListener l : listenerList.getListeners(MouseListener.class)) {
 			l.mousePressed(e);
 		}
 	}
-	
+
 	@Override
     public void mouseReleased(MouseEvent e) {
 		for (MouseListener l : listenerList.getListeners(MouseListener.class)) {
 			l.mouseReleased(e);
 		}
 	}
-	
+
 	private void addMouseListenerDeep(Container component) {
 		MouseListener[] oldListeners = component.getMouseListeners();
 		for (MouseListener l : oldListeners) {
@@ -406,7 +412,7 @@ public abstract class WYSIWYGCollectableComponent extends JPanel implements WYSI
 		if (component instanceof LabeledComponent) {
 			((LabeledComponent) component).addMouseListenerToHiddenComponents(this);
 		}
-		
+
 		for (Component c : component.getComponents()) {
 			c.addMouseListener(this);
 			if (c instanceof Container) {
@@ -414,7 +420,7 @@ public abstract class WYSIWYGCollectableComponent extends JPanel implements WYSI
 			}
 		}
 	}
-	
+
 	private void removeMouseListenerDeep(Container component) {
 		component.removeMouseListener(this);
 		for (Component c : component.getComponents()) {
@@ -424,14 +430,14 @@ public abstract class WYSIWYGCollectableComponent extends JPanel implements WYSI
 			}
 		}
 	}
-	
+
 	/**
 	 * This Method draws a small red box on the {@link WYSIWYGComponent} to indicate existing {@link LayoutMLRules}
 	 */
 	@Override
 	public void paint(Graphics g) {
 		super.paint(g);
-		
+
 		if (this.componentsRules.getSize() > 0) {
 			Graphics2D g2d = (Graphics2D) g;
 
@@ -447,6 +453,9 @@ public abstract class WYSIWYGCollectableComponent extends JPanel implements WYSI
 		}
 		return super.getName();
 	}
-	
-	
+
+	@Override
+	public String[][] getPropertyScriptElementLink() {
+		return propertiesToScriptElements;
+	}
 }

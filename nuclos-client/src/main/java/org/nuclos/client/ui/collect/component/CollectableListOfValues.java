@@ -374,10 +374,10 @@ public class CollectableListOfValues extends LabeledCollectableComponentWithVLP 
 	}
 
 	@Override
-	public void setEnabled(boolean bEnabled) {
+	protected void setEnabledState(boolean bEnabled) {
 		if (this.isSearchComponent()) {
 			/** @todo respect "insertable" property */
-			super.setEnabled(bEnabled);
+			super.setEnabledState(bEnabled);
 		}
 		else {
 			getListOfValues().setEnabled(bEnabled);

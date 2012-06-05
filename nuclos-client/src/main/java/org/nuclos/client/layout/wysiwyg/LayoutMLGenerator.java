@@ -315,9 +315,9 @@ public class LayoutMLGenerator implements LayoutMLConstants {
 		block.append(">");
 
 		block.append(getLayoutMLTranslationsFromProperty(column.getProperties(), blockDeep + 1));
-		
+
 		boolean lb = false;
-		WYSIWYGValuelistProvider wysiwygStaticValuelistProvider = (WYSIWYGValuelistProvider) column.getProperties().getProperty(WYSIWYGCollectableComponent.PROPERTY_VALUELISTPROVIDER).getValue();		
+		WYSIWYGValuelistProvider wysiwygStaticValuelistProvider = (WYSIWYGValuelistProvider) column.getProperties().getProperty(WYSIWYGCollectableComponent.PROPERTY_VALUELISTPROVIDER).getValue();
 		if (wysiwygStaticValuelistProvider != null && (!wysiwygStaticValuelistProvider.getType().equals(""))) {
 			block.append(getLayoutMLValueListProvider(wysiwygStaticValuelistProvider, blockDeep + 1));
 			lb = true;
@@ -731,6 +731,7 @@ public class LayoutMLGenerator implements LayoutMLConstants {
 				block.append(getLayoutMLValueListProvider(wysiwygStaticValuelistProvider, blockDeep + 1));
 			}
 		}
+		block.append(getLayoutMLScriptFromProperty(WYSIWYGCollectableComponent.PROPERTY_ENABLED_DYNAMIC, ELEMENT_ENABLED, c.getProperties(), blockDeep + 1));
 		block.linebreak();
 		block.append("</" + ELEMENT_COLLECTABLECOMPONENT + ">");
 
@@ -967,7 +968,7 @@ public class LayoutMLGenerator implements LayoutMLConstants {
 
 		return block.getStringBuffer();
 	}
-	
+
 	private synchronized StringBuffer getLayoutMLForLayoutComponent(WYSIWYGLayoutComponent c, TableLayout tableLayout, int blockDeep) {
 		LayoutMLBlock block = new LayoutMLBlock(blockDeep);
 		block.append("<" + ELEMENT_LAYOUTCOMPONENT);
@@ -991,7 +992,7 @@ public class LayoutMLGenerator implements LayoutMLConstants {
 		block.append(getLayoutMLBordersFromProperty(c.getProperties(), blockDeep + 1));
 		block.append(getLayoutMLMinimumSizeFromComponent(c, blockDeep + 1));
 		block.append(getLayoutMLPreferredSizeFromProperty(c.getProperties(), blockDeep + 1));
-		
+
 		block.linebreak();
 		block.append("</" + ELEMENT_LAYOUTCOMPONENT + ">");
 
@@ -1232,11 +1233,11 @@ public class LayoutMLGenerator implements LayoutMLConstants {
 
 		return block.getStringBuffer();
 	}
-	
+
 	/**
 	 * Method converting PreferredSize to LayoutML XML.
-	 * 
-	 * 
+	 *
+	 *
 	 * @see LayoutMLBlock
 	 * @param cp
 	 * @param blockDeep
@@ -1305,7 +1306,7 @@ public class LayoutMLGenerator implements LayoutMLConstants {
 
 	/**
 	 * Only for WYSIWYGLayoutEditorPanel!
-	 * 
+	 *
 	 * @param cp
 	 * @param blockDeep
 	 * @return {@link StringBuffer} with the LayoutML
@@ -1313,7 +1314,7 @@ public class LayoutMLGenerator implements LayoutMLConstants {
 	private synchronized StringBuffer getLayoutMLBackgroundColorFromProperty(ComponentProperties cp, int blockDeep) {
 		return getLayoutMLColor(ELEMENT_BACKGROUND, null, (PropertyValueColor) cp.getProperty(WYSIWYGComponent.PROPERTY_BACKGROUNDCOLOR), blockDeep);
 	}
-	
+
 	/**
 	 * Only for WYSIWYGLayoutEditorPanel!
 	 *
@@ -1361,11 +1362,11 @@ public class LayoutMLGenerator implements LayoutMLConstants {
 		}
 		return new StringBuffer();
 	}
-	
+
 	/**
 	 * Method converting the Description {@link PropertyValueFont} to LayoutML XML.
-	 * 
-	 * 
+	 *
+	 *
 	 * @see LayoutMLBlock
 	 * @param subform
 	 * @param tableLayout
@@ -1659,10 +1660,10 @@ public class LayoutMLGenerator implements LayoutMLConstants {
 
 		return block.getStringBuffer();
 	}
-	
+
 	/**
 	 * Method for converting {@link WYSIWYGValuelistProvider} to LayoutML XML
-	 * 
+	 *
 	 * @param wysiwygStaticValuelistProvider
 	 * @param blockDeep
 	 * @return {@link StringBuffer} with the LayoutML
@@ -1670,10 +1671,10 @@ public class LayoutMLGenerator implements LayoutMLConstants {
 	private synchronized StringBuffer getLayoutMLValueListProvider(WYSIWYGValuelistProvider wysiwygStaticValuelistProvider, int blockDeep) {
 		return getLayoutMLValueListProvider(ELEMENT_VALUELISTPROVIDER, null, wysiwygStaticValuelistProvider, blockDeep);
 	}
-	
+
 	/**
 	 * Method for converting {@link WYSIWYGValuelistProvider} to LayoutML XML
-	 * 
+	 *
 	 * @param wysiwygStaticValuelistProvider
 	 * @param blockDeep
 	 * @return {@link StringBuffer} with the LayoutML
@@ -1769,13 +1770,13 @@ public class LayoutMLGenerator implements LayoutMLConstants {
 
 		return block.getStringBuffer();
 	}
-	
+
 	/**
 	 * @return {@link StringBuffer} with the LayoutML
 	 */
 	private synchronized StringBuffer getLayoutMLForProperty(String name, PropertyValue<?> property, int blockDeep) {
-		
-		if (property instanceof PropertyValueString || 
+
+		if (property instanceof PropertyValueString ||
 				property instanceof PropertyValueInteger ||
 				property instanceof PropertyValueBoolean) {
 			LayoutMLBlock block = new LayoutMLBlock(blockDeep);
@@ -1791,7 +1792,7 @@ public class LayoutMLGenerator implements LayoutMLConstants {
 					block.append(ATTRIBUTEVALUE_NO);
 				}
 			}
-			block.append("\"/>");	
+			block.append("\"/>");
 			return block.getStringBuffer();
 		} else if (property instanceof PropertyValueDimension) {
 			return getLayoutMLSize(ELEMENT_PROPERTY_SIZE, name, (PropertyValueDimension) property, blockDeep);
@@ -1808,7 +1809,7 @@ public class LayoutMLGenerator implements LayoutMLConstants {
 		} else  {
 			throw new NotImplementedException("getLayoutMLForProperty with type " + property.getClass().getName());
 		}
-		
+
 	}
 
 	/**
@@ -1918,7 +1919,7 @@ public class LayoutMLGenerator implements LayoutMLConstants {
 			return new StringBuffer();
 		}
 	}
-	
+
 	private synchronized StringBuffer getLayoutMLTranslations(TranslationMap translations, int blockDeep) {
 		return getLayoutMLTranslations(ELEMENT_TRANSLATIONS, null, translations, blockDeep);
 	}
@@ -1926,7 +1927,7 @@ public class LayoutMLGenerator implements LayoutMLConstants {
 	private synchronized StringBuffer getLayoutMLTranslationsFromProperty(ComponentProperties cp, int blockDeep) {
 		return getLayoutMLTranslations(ELEMENT_TRANSLATIONS, null, (PropertyValueTranslations) cp.getProperty(WYSIWYGCollectableComponent.PROPERTY_TRANSLATIONS), blockDeep);
 	}
-	
+
 	private synchronized StringBuffer getLayoutMLTranslations(String element, String attributeName, PropertyValueTranslations propertyValue, int blockDeep) {
 		if (propertyValue != null) {
 			TranslationMap translations = (TranslationMap) propertyValue.getValue();
@@ -1934,7 +1935,7 @@ public class LayoutMLGenerator implements LayoutMLConstants {
 		}
 		return new StringBuffer();
 	}
-	
+
 	private synchronized StringBuffer getLayoutMLTranslations(String element, String attributeName, TranslationMap translations, int blockDeep) {
 		if (translations != null && !translations.isEmpty()) {
 			LayoutMLBlock block = new LayoutMLBlock(blockDeep);
@@ -1968,7 +1969,7 @@ public class LayoutMLGenerator implements LayoutMLConstants {
 		}
 		return getLayoutMLScript(element, null, (PropertyValueScript) propertyValue, blockDeep);
 	}
-	
+
 	private synchronized StringBuffer getLayoutMLScript(String element, String attributeName, PropertyValueScript propertyValue, int blockDeep) {
 		LayoutMLBlock block = new LayoutMLBlock(blockDeep);
 

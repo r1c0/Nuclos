@@ -121,27 +121,27 @@ nextfocuscomponent CDATA #IMPLIED
  name CDATA #REQUIRED
  sorting-order (ascending|descending) #REQUIRED
  >
- 
+
 <!ELEMENT new-enabled (#PCDATA)>
 <!ATTLIST new-enabled
  language CDATA #REQUIRED
  >
- 
+
 <!ELEMENT edit-enabled (#PCDATA)>
 <!ATTLIST edit-enabled
  language CDATA #REQUIRED
  >
- 
+
 <!ELEMENT delete-enabled (#PCDATA)>
 <!ATTLIST delete-enabled
  language CDATA #REQUIRED
  >
- 
+
 <!ELEMENT clone-enabled (#PCDATA)>
 <!ATTLIST clone-enabled
  language CDATA #REQUIRED
  >
- 
+
 <!ELEMENT property-script (#PCDATA)>
 <!ATTLIST property-script
 name CDATA #REQUIRED
@@ -206,7 +206,7 @@ resourceId CDATA #IMPLIED
 icon CDATA #IMPLIED
 >
 
-<!ELEMENT collectable-component ((%layoutconstraints;)?,property*,(%borders;),(%sizes;),background?,font?,description?,options?,translations?,valuelist-provider?)>
+<!ELEMENT collectable-component ((%layoutconstraints;)?,property*,(%borders;),(%sizes;),background?,font?,description?,options?,translations?,valuelist-provider?,enabled?)>
 <!ATTLIST collectable-component
 name CDATA #REQUIRED
 controltype (%controltype;) #IMPLIED
@@ -226,6 +226,11 @@ resourceId CDATA #IMPLIED
 nextfocuscomponent CDATA #IMPLIED
 aspectratio (%boolean;) #IMPLIED
 >
+
+<!ELEMENT enabled (#PCDATA)>
+<!ATTLIST enabled
+ language CDATA #REQUIRED
+ >
 
 <!ELEMENT layoutcomponent ((%layoutconstraints;)?,(%properties;),(%borders;),(%sizes;))>
 <!ATTLIST layoutcomponent

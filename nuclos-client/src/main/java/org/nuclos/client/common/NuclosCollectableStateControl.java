@@ -57,19 +57,6 @@ public class NuclosCollectableStateControl extends DelegatingCollectableComponen
 		return this.getWrappedCollectableComponent().getJComponent();
 	}
 
-// Just for compatibility with CollectableComponent...
-
-	@Override
-	public boolean isEnabledByInitial() {
-		/** @todo check if this is correct */
-		return false;
-	}
-
-	@Override
-	public void setEnabledByInitial(boolean bEnabled) {
-		/** @todo check if this is correct */
-	}
-
 	@Override
 	public String getDynamicToolTipText() {
 		return this.getWrappedCollectableComponent().getDynamicToolTipText();
@@ -92,7 +79,4 @@ public class NuclosCollectableStateControl extends DelegatingCollectableComponen
 	public void setNextFocusComponent(String sNextFocusComponent) {
 		// don't set here
 	}
-
-
-
 }	// class NuclosCollectableStateControl

@@ -59,12 +59,12 @@ import org.nuclos.server.attribute.valueobject.AttributeValueVO;
  * The ComboBox will be filled with attributes mnemonics, the TextArea is editable
  * and shows a value for in ComboBox selected attribute.
  * Attribute values schould be configured under "Attribute...".
- * Please configure for this component: 
+ * Please configure for this component:
  * 		- Werte: "Werteliste (explizit)"
  * 		- Anzeigen in: "ComboBox (editierbar)"
  * 		- Feldbreite: 2000 --- this depends on DB structure
- *		please enter values under "Werteliste". "K\u00fcrzel" are values for ComboBox and 
- *		"Wert" are values for TextArea.  
+ *		please enter values under "Werteliste". "K\u00fcrzel" are values for ComboBox and
+ *		"Wert" are values for TextArea.
  * <br>
  * <br>Created by Novabit Informationssysteme GmbH
  * <br>Please visit <a href="http://www.novabit.de">www.novabit.de</a>
@@ -77,7 +77,7 @@ public class MnemonicCollectablePanel extends DelegatingCollectablePanel {
 	private static final Logger log = Logger.getLogger(MnemonicCollectablePanel.class);
 
 	private static class MnemonicValuePanel extends LabeledComponent {
-		
+
 		protected LabeledComboBox mnemonicBox;
 		protected JTextArea valueArea;
 		JScrollPane scrlTxtArea;
@@ -88,17 +88,17 @@ public class MnemonicCollectablePanel extends DelegatingCollectablePanel {
 		private boolean cEnabled = true;
 		private boolean visibleControl = true;
 		private boolean visibleLabel = true;
-		
+
 		public MnemonicValuePanel(){
 			super();
 			this.setLayout(new BorderLayout());
-			
+
 			this.mnemonicBox = new LabeledComboBox();
-			mnemonicBox.setEditable(false);		
-			mnemonicBox.getControlComponent().setVisible(visibleControl);	
-			mnemonicBox.getJLabel().setVisible(visibleLabel);	
+			mnemonicBox.setEditable(false);
+			mnemonicBox.getControlComponent().setVisible(visibleControl);
+			mnemonicBox.getJLabel().setVisible(visibleLabel);
 			this.add(mnemonicBox, BorderLayout.CENTER);
-			
+
 			addValueArea(this.txtarealayout);
 		}
 
@@ -109,27 +109,27 @@ public class MnemonicCollectablePanel extends DelegatingCollectablePanel {
 			int txtAreaColumnsCount = iColumns;
 			//}
 			valueArea = new JTextArea(txtAreaRowsCount,txtAreaColumnsCount);
-			
+
 			valueArea.setLineWrap(true);
 			valueArea.setWrapStyleWord(true);
-			
+
 			UIUtils.setMaximumSizeToPreferredSize(valueArea);
 			UIUtils.setMinimumSizeToPreferredSize(mnemonicBox);
-			
+
 			valueArea.setMargin(new Insets(2, 2, 2, 2));
-			
+
 			this.valueArea.setEnabled(cEnabled);
 			this.valueArea.setEditable(cEnabled);
 			this.mnemonicBox.setEnabled(cEnabled);
-			this.mnemonicBox.getControlComponent().setVisible(visibleControl);	
-			this.mnemonicBox.getJLabel().setVisible(visibleLabel);	
-			
+			this.mnemonicBox.getControlComponent().setVisible(visibleControl);
+			this.mnemonicBox.getJLabel().setVisible(visibleLabel);
+
 			final Font font = new JLabel().getFont();
 			valueArea.setFont(font);
 			scrlTxtArea = new JScrollPane(valueArea, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 			scrlTxtArea.setMinimumSize(valueArea.getPreferredSize());
-			this.valueArea.setVisible(visibleControl);	
-			this.scrlTxtArea.setVisible(visibleControl);	
+			this.valueArea.setVisible(visibleControl);
+			this.scrlTxtArea.setVisible(visibleControl);
 			this.add(scrlTxtArea, txtarealayout);
 		}
 
@@ -137,7 +137,7 @@ public class MnemonicCollectablePanel extends DelegatingCollectablePanel {
 			this.remove(this.scrlTxtArea);
 			this.addValueArea(txtarealayout);
 		}
-		
+
 		public JComboBox getMnemonicBox(){
 			return mnemonicBox.getJComboBox();
 		}
@@ -145,12 +145,12 @@ public class MnemonicCollectablePanel extends DelegatingCollectablePanel {
 		public JTextArea getValueArea(){
 			return valueArea;
 		}
-		
+
 		public void setSelected(Object item, String itemValue){
 			mnemonicBox.getJComboBox().setSelectedItem(item);
 			valueArea.setText(itemValue);
 		}
-		
+
 		public void setUndefined(){
 			setSelected(null, "");
 		}
@@ -169,7 +169,7 @@ public class MnemonicCollectablePanel extends DelegatingCollectablePanel {
 		public void setRows(int piRows){
 			this.iRows = piRows;
 		}
-		
+
 		@Override
 		public void setEnabled(boolean pEnabled){
 			this.cEnabled = pEnabled;
@@ -208,17 +208,17 @@ public class MnemonicCollectablePanel extends DelegatingCollectablePanel {
 				}
 			}
 		}
-		
+
 		private boolean hasValidValue(Object selectedItem){
 			return (selectedItem != null) && ((CollectableValueIdField)selectedItem).getValue() != null
 					&& vIds.containsKey((((CollectableValueIdField)selectedItem).getValue()));
 		}
 	};
-	
-	private final DocumentListener alTxtAreaChanged = new DocumentListener() {		    
+
+	private final DocumentListener alTxtAreaChanged = new DocumentListener() {
 	    @Override
 		public void changedUpdate(DocumentEvent e) {
-			//MnemonicCollectablePanel.this.getModel().setField(newField);	
+			//MnemonicCollectablePanel.this.getModel().setField(newField);
 			try{
 				MnemonicCollectablePanel.this.viewToModel();
 			}catch (CollectableFieldFormatException ex) {
@@ -237,10 +237,10 @@ public class MnemonicCollectablePanel extends DelegatingCollectablePanel {
 	    	changedUpdate(e);
 	    }
 	};
-		
+
 	// private CollectableComponentModel clctcompmodel;
 	private Map<String, AttributeValueVO> vIds;
-	
+
 	/**
 	 * @param clctef
 	 * @postcondition this.isDetailsComponent()
@@ -252,7 +252,7 @@ public class MnemonicCollectablePanel extends DelegatingCollectablePanel {
 
 	public MnemonicCollectablePanel(CollectableEntityField clctef, boolean bSearchable) {
 		super(clctef, new MnemonicValuePanel(), bSearchable);
-		
+
 		this.setInsertable(this.isSearchComponent());
 		this.getJComboBox().addActionListener(this.alComboBoxChanged);
 		this.getJTextArea().getDocument().addDocumentListener(this.alTxtAreaChanged);
@@ -267,7 +267,7 @@ public class MnemonicCollectablePanel extends DelegatingCollectablePanel {
 	public MnemonicCollectablePanel(CollectableEntityField clctef, Boolean bSearchable) {
 		this(clctef, bSearchable.booleanValue());
 	}
-	
+
 	@Override
 	public void setProperty(String sName, Object oValue) {
 		if("txtarealayout".equals(sName) && oValue != null && ((String)oValue).trim().length() > 0) {
@@ -275,7 +275,7 @@ public class MnemonicCollectablePanel extends DelegatingCollectablePanel {
 		}
 	}
 	// ------------------------------------------------------------------
-	
+
 	@Override
 	public JComponent getFocusableComponent() {
 		return getMnemonicValuePanel().getValueArea();
@@ -288,12 +288,12 @@ public class MnemonicCollectablePanel extends DelegatingCollectablePanel {
 	public JTextArea getJTextArea() {
 		return getMnemonicValuePanel().getValueArea();
 	}
-	
+
 	@Override
 	public JComponent getControlComponent() {
 		return getMnemonicValuePanel().getValueArea();
 	}
-	
+
 	public MnemonicValuePanel getMnemonicValuePanel(){
 		return (MnemonicValuePanel) getJComponent();
 	}
@@ -319,10 +319,10 @@ public class MnemonicCollectablePanel extends DelegatingCollectablePanel {
 	}
 
 	@Override
-	public void setEnabled(boolean bEnabled){
+	protected void setEnabledState(boolean bEnabled){
 		this.getMnemonicValuePanel().setEnabled(bEnabled);
 	}
-	
+
 	@Override
 	public void setMnemonic(char c) {
 		this.getMnemonicValuePanel().setMnemonic(c);
@@ -342,12 +342,12 @@ public class MnemonicCollectablePanel extends DelegatingCollectablePanel {
 	public void setVisibleLabel(boolean visible){
 		this.getMnemonicValuePanel().setVisibleLabel(visible);
 	}
-	
+
 	@Override
 	public void setToolTipText(String sToolTipText) {
 		this.getMnemonicValuePanel().setToolTipText(sToolTipText);
 	}
-	
+
 	// ----------------------------------------------------------
 
 	@Override
@@ -361,7 +361,7 @@ public class MnemonicCollectablePanel extends DelegatingCollectablePanel {
 			field = new CollectableValueIdField(null, vo.getMnemonic());
 			collectableFields.add(field);
 			vIds.put(vo.getMnemonic(),vo);
-			
+
 		}
 		setComboBoxModel(collectableFields);
 		int width = this.getJComboBox().getWidth();
@@ -383,7 +383,7 @@ public class MnemonicCollectablePanel extends DelegatingCollectablePanel {
 		//return this.getModel().getField();
 		return getNewField();
 	}
-	
+
 	@Override
 	protected void updateView(CollectableField clctfValue) {
 		final String bValue = (String) clctfValue.getValue();
@@ -446,14 +446,14 @@ public class MnemonicCollectablePanel extends DelegatingCollectablePanel {
 			}
 		});
 
-	}	
+	}
 
 	private DefaultComboBoxModel getDefaultComboBoxModel() {
 		return (DefaultComboBoxModel) this.getJComboBox().getModel();
 	}
 
 	/**
-	 * @deprecated Use constructor to initialize the model. 
+	 * @deprecated Use constructor to initialize the model.
 	 * 		The model itself shouldn't be changed after construction of the view.
 	 */
 	/*
@@ -475,7 +475,7 @@ public class MnemonicCollectablePanel extends DelegatingCollectablePanel {
 	protected void setupJPopupMenuListener(JPopupMenuListener popupmenulistener) {
 		// ...
 	}
-	
+
 	@Override
 	protected void viewToModel() throws CollectableFieldFormatException {
 		super.viewToModel();
@@ -485,5 +485,5 @@ public class MnemonicCollectablePanel extends DelegatingCollectablePanel {
 	public boolean needValueListProvider(){
 		return true;
 	}
-	
+
 }

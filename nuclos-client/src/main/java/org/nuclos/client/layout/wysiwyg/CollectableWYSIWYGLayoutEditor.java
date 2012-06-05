@@ -176,9 +176,9 @@ public class CollectableWYSIWYGLayoutEditor extends AbstractCollectableComponent
 					} else {
 						// old xerlin layout
 
-						JOptionPane.showMessageDialog(jpnWYSIWYGController, 
-								getSpringLocaleDelegate().getText("layoutml.editor.unsupported.wysiwyg.layout.2", null), 
-								getSpringLocaleDelegate().getText("layoutml.editor.unsupported.wysiwyg.layout.1", null), 
+						JOptionPane.showMessageDialog(jpnWYSIWYGController,
+								getSpringLocaleDelegate().getText("layoutml.editor.unsupported.wysiwyg.layout.2", null),
+								getSpringLocaleDelegate().getText("layoutml.editor.unsupported.wysiwyg.layout.1", null),
 								JOptionPane.INFORMATION_MESSAGE);
 						jpnWYSIWYGController.showPaletteAndEditorPanel();
 						jpnWYSIWYGController.createStandartLayout();
@@ -226,7 +226,7 @@ public class CollectableWYSIWYGLayoutEditor extends AbstractCollectableComponent
 	}
 
 	@Override
-	public void setEnabled(boolean bEnabled) {
+	protected void setEnabledState(boolean bEnabled) {
 		this.getWYSIWYGEditorPanel().setEnabled(bEnabled);
 	}
 

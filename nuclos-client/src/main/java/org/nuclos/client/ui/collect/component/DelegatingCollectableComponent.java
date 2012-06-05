@@ -22,9 +22,11 @@ import java.util.prefs.Preferences;
 import javax.swing.JComponent;
 import javax.swing.table.TableCellRenderer;
 
+import org.nuclos.api.context.ScriptContext;
 import org.nuclos.client.ui.collect.component.model.CollectableComponentModel;
 import org.nuclos.client.ui.collect.component.model.DetailsComponentModel;
 import org.nuclos.client.ui.collect.component.model.SearchComponentModel;
+import org.nuclos.common.NuclosScript;
 import org.nuclos.common.collect.collectable.CollectableEntity;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
 import org.nuclos.common.collect.collectable.CollectableField;
@@ -102,7 +104,7 @@ public abstract class DelegatingCollectableComponent implements CollectableCompo
 	}
 
 	/**
-	 * @deprecated Use constructor to initialize the model. 
+	 * @deprecated Use constructor to initialize the model.
 	 * 		The model itself shouldn't be changed after construction of the view.
 	 */
 	@Override
@@ -182,16 +184,6 @@ public abstract class DelegatingCollectableComponent implements CollectableCompo
 	}
 
 	@Override
-	public boolean isEnabledByInitial() {
-		return this.getWrappedCollectableComponent().isEnabledByInitial();
-	}
-
-	@Override
-	public void setEnabledByInitial(boolean bEnabled) {
-		this.getWrappedCollectableComponent().setEnabledByInitial(bEnabled);
-	}
-
-	@Override
 	public void setOpaque(boolean bOpaque) {
 		this.getJComponent().setOpaque(bOpaque);
 		this.getWrappedCollectableComponent().setOpaque(bOpaque);
@@ -259,8 +251,33 @@ public abstract class DelegatingCollectableComponent implements CollectableCompo
 		return this.getWrappedCollectableComponent().getProperties();
 	}
 
+	@Override
+	public void setReadOnly(boolean readOnly) {
+		this.getWrappedCollectableComponent().setReadOnly(readOnly);
+	}
+
+	@Override
+	public boolean isReadOnly() {
+		return this.getWrappedCollectableComponent().isReadOnly();
+	}
+
+	@Override
+	public boolean isEnabled() {
+		return this.getWrappedCollectableComponent().isEnabled();
+	}
+
+	@Override
+	public void setEnabledScript(NuclosScript script) {
+		this.getWrappedCollectableComponent().setEnabledScript(script);
+	}
+
+	@Override
+	public void setComponentState(ScriptContext ctx, String expression) {
+		this.getWrappedCollectableComponent().setComponentState(ctx, expression);
+	}
+
 	/**
-	 * CollectableComponents are equal iff they are identical. This behavior may not be changed by subclasses.
+	 * CollectableComponents are equal if they are identical. This behavior may not be changed by subclasses.
 	 * @param o
 	 * @postcondition result == (this == o)
 	 */

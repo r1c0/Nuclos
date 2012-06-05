@@ -51,7 +51,6 @@ import javax.swing.AbstractButton;
 import javax.swing.Action;
 import javax.swing.ButtonGroup;
 import javax.swing.DefaultBoundedRangeModel;
-import javax.swing.ImageIcon;
 import javax.swing.InputMap;
 import javax.swing.JButton;
 import javax.swing.JCheckBoxMenuItem;
@@ -106,15 +105,12 @@ import org.nuclos.client.genericobject.resulttemplate.SearchResultTemplate;
 import org.nuclos.client.genericobject.statehistory.StateHistoryController;
 import org.nuclos.client.genericobject.valuelistprovider.GenericObjectCollectableFieldsProviderFactory;
 import org.nuclos.client.main.Main;
-import org.nuclos.client.main.mainframe.MainFrame;
 import org.nuclos.client.main.mainframe.MainFrameTab;
 import org.nuclos.client.masterdata.CollectableMasterData;
 import org.nuclos.client.masterdata.MasterDataCache;
 import org.nuclos.client.masterdata.MasterDataDelegate;
 import org.nuclos.client.masterdata.MasterDataSubFormController;
 import org.nuclos.client.masterdata.valuelistprovider.MasterDataCollectableFieldsProviderFactory;
-import org.nuclos.client.resource.NuclosResourceCache;
-import org.nuclos.client.resource.ResourceCache;
 import org.nuclos.client.rule.RuleDelegate;
 import org.nuclos.client.scripting.context.CollectControllerScriptContext;
 import org.nuclos.client.searchfilter.EntitySearchFilter;
@@ -4840,9 +4836,9 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 			if (!permission.includesReading())
 				clctcomp.setVisible(false);
 			if (permission.includesWriting())
-				clctcomp.setEnabled(clctcomp.isEnabledByInitial());
+				clctcomp.setReadOnly(false);
 			else
-				clctcomp.setEnabled(false);
+				clctcomp.setReadOnly(true);
 		}	// for
 
 		// adjust subforms:
@@ -4854,11 +4850,15 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 					if(subform != null && subform.getParent() != null)
 						subform.getParent().remove(subform);
 
-				if (SecurityCache.getInstance().isWriteAllowedForModule(getEntity(), getSelectedGenericObjectId()) && permission.includesWriting()
-					&& MetaDataClientProvider.getInstance().getEntity(subform.getEntityName()).isEditable())
-					subform.setEnabled(MetaDataClientProvider.getInstance().getEntity(getEntity()).isEditable());
-				else
-					subform.setEnabled(collectstate.isSearchMode());
+				boolean isEditable = SecurityCache.getInstance().isWriteAllowedForModule(getEntity(), getSelectedGenericObjectId()) && permission.includesWriting()
+						&& MetaDataClientProvider.getInstance().getEntity(subform.getEntityName()).isEditable();
+
+				if (isEditable) {
+					subform.setReadOnly(!MetaDataClientProvider.getInstance().getEntity(getEntity()).isEditable());
+				}
+				else {
+					subform.setReadOnly(!collectstate.isSearchMode());
+				}
 			}
 	}
 

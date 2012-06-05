@@ -79,15 +79,15 @@ public class CollectableHyperlink extends CollectableTextComponent {
 	 * @param bSearchable
 	 */
 	public CollectableHyperlink(CollectableEntityField clctef, boolean bSearchable) {
-		this(clctef, bSearchable, 
+		this(clctef, bSearchable,
 				new LabeledHyperlink(new LabeledComponentSupport(),
 						clctef.isNullable(), bSearchable));
 	}
-	
+
 	protected CollectableHyperlink(CollectableEntityField clctef, boolean bSearchable, LabeledHyperlink labHyperlink) {
 		super(clctef, labHyperlink, bSearchable);
 	}
-	
+
 
 	// Override the tab key
 		protected void overrideActionMap() {
@@ -150,7 +150,7 @@ public class CollectableHyperlink extends CollectableTextComponent {
 	}
 
 	@Override
-	public void setEnabled(boolean flag) {
+	protected void setEnabledState(boolean flag) {
 		this.getHyperlink().setEditable(flag);
 		this.getHyperlink().setButtonEnabled(flag);
 	}
@@ -164,15 +164,15 @@ public class CollectableHyperlink extends CollectableTextComponent {
 			return parentRenderer;
 		}
 	}
-	
+
 	private class HyperlinkCellRenderer implements TableCellRenderer, TableCellCursor {
-		
+
 		private final Cursor curHand = new Cursor(Cursor.HAND_CURSOR);
-		
+
 		private final TableCellRenderer parentRenderer;
-		
+
 		private final TableCellRendererPanel cellPanel = new TableCellRendererPanel();
-		
+
 		public HyperlinkCellRenderer(TableCellRenderer parentRenderer) {
 			this.parentRenderer = parentRenderer;
 		}
@@ -212,40 +212,40 @@ public class CollectableHyperlink extends CollectableTextComponent {
 			}
 			return null;
 		}
-		
+
 	}
-	
+
 	private class TableCellRendererPanel extends JPanel {
-		
+
 		private Icon iconButton;
-		
+
 		public TableCellRendererPanel() {
 			super(new BorderLayout());
 			iconButton = getHyperlink().getButtonIcon();
 		}
-		
+
 		@Override
 		public void paint(Graphics g) {
 			super.paint(g);
-			
+
 			Graphics2D g2d = (Graphics2D) g;
-			
+
 			final Rectangle r = HyperlinkTextFieldWithButton.getIconRectangle(this.getSize());
 			r.y = 0;
-			
+
 			int w = iconButton.getIconWidth();
 			int h = iconButton.getIconHeight();
 			BufferedImage bi = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
 			Graphics imgg = bi.getGraphics();
 			iconButton.paintIcon(this, imgg, 0, 0);
 			imgg.dispose();
-			
+
 			float[] scales = { 1f, 1f, 1f, 0.5f };
 			float[] offsets = new float[4];
 			RescaleOp rop = new RescaleOp(scales, offsets, null);
 			g2d.drawImage(bi, rop, r.x, r.y);
 		}
-		
+
 	}
 
 }  // class CollectableHyperlink

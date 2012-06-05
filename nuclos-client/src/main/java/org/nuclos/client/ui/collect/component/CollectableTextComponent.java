@@ -48,7 +48,7 @@ import org.nuclos.common.collect.exception.CollectableFieldFormatException;
  * @version 01.00.00
  */
 public abstract class CollectableTextComponent extends LabeledCollectableComponent {
-	
+
 	private static final Logger LOG = Logger.getLogger(CollectableTextComponent.class);
 
 	protected CollectableTextComponent(CollectableEntityField clctef, LabeledTextComponent labeledtextcomp, boolean bSearchable) {
@@ -61,13 +61,13 @@ public abstract class CollectableTextComponent extends LabeledCollectableCompone
 				@Override
 				public void focusLost(FocusEvent e) {
 //					LOG.info("focusLost: event=" + e.isTemporary() + " componenttext=" + getJTextComponent().getText()
-//							+ " parent=" + getJTextComponent().getParent());					
+//							+ " parent=" + getJTextComponent().getParent());
 				}
-				
+
 				@Override
 				public void focusGained(FocusEvent e) {
 					final JTextComponent tcomp = getJTextComponent();
-//					LOG.info("focusGained: event=" + e.isTemporary() + " componenttext=" + tcomp.getText() + " parent=" 
+//					LOG.info("focusGained: event=" + e.isTemporary() + " componenttext=" + tcomp.getText() + " parent="
 //							+ tcomp.getParent());
 					tcomp.selectAll();
 				}
@@ -116,7 +116,7 @@ public abstract class CollectableTextComponent extends LabeledCollectableCompone
 
 		this.adjustAppearance();
 	}
-	
+
 	protected void setText(String sText) {
 		this.getJTextComponent().setText(sText);
 	}
@@ -171,7 +171,7 @@ public abstract class CollectableTextComponent extends LabeledCollectableCompone
 	 * @param bEnabled
 	 */
 	@Override
-	public void setEnabled(boolean bEnabled) {
+	protected void setEnabledState(boolean bEnabled) {
 		this.getLabeledTextComponent().setEditable(bEnabled);
 	}
 

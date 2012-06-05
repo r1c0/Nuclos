@@ -39,13 +39,11 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.KeyStroke;
-import javax.swing.border.EmptyBorder;
 import javax.swing.table.TableCellRenderer;
 
 import org.nuclos.client.ui.collect.DynamicRowHeightChangeListener;
 import org.nuclos.client.ui.collect.DynamicRowHeightChangeProvider;
 import org.nuclos.client.ui.collect.DynamicRowHeightSupport;
-import org.nuclos.client.ui.collect.SubForm;
 import org.nuclos.client.ui.collect.component.CollectableTextArea;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
 import org.nuclos.common2.StringUtils;
@@ -60,53 +58,53 @@ import org.nuclos.common2.StringUtils;
  * @version 01.00.00
  */
 public class NuclosCollectableTextArea extends CollectableTextArea implements DynamicRowHeightChangeProvider {
-	
+
 	private static class FocusForward extends AbstractAction {
-		
+
 		private FocusForward() {
 			super("insert-tab");
 		}
-		
+
 		@Override
         public void actionPerformed(ActionEvent evt) {
 			((Component) evt.getSource()).transferFocus();
-		}		
+		}
 	}
-	
+
 	public static class FocusBackward extends AbstractAction {
-		
+
 		private FocusBackward() {
 			super("Move Focus Backwards");
 		}
-		
+
 		@Override
         public void actionPerformed(ActionEvent evt) {
 			((Component) evt.getSource()).transferFocusBackward();
-		}		
+		}
 	}
-	
+
 	private static final FocusForward FOCUS_FORWARD = new FocusForward();
-	
+
 	private static final FocusBackward FOCUS_BACKWORD = new FocusBackward();
 
 	public NuclosCollectableTextArea(CollectableEntityField clctef, Boolean bSearchable) {
 		super(clctef, bSearchable);
 		overrideActionMap();
 		getJTextArea().addComponentListener(new ComponentListener() {
-			
+
 			@Override
 			public void componentShown(ComponentEvent e) {
 			}
-			
+
 			@Override
 			public void componentResized(ComponentEvent e) {
 				fireHeightChanged(getJTextArea().getPreferredSize().height);
 			}
-			
+
 			@Override
 			public void componentMoved(ComponentEvent e) {
 			}
-			
+
 			@Override
 			public void componentHidden(ComponentEvent e) {
 			}
@@ -115,7 +113,7 @@ public class NuclosCollectableTextArea extends CollectableTextArea implements Dy
 
 	// For behaviour as table cell renderer
 	@Override
-	public void setEnabled(boolean bEnabled) {
+	protected void setEnabledState(boolean bEnabled) {
 		this.getJTextArea().setEditable(bEnabled);
 	}
 
@@ -135,15 +133,15 @@ public class NuclosCollectableTextArea extends CollectableTextArea implements Dy
 	public TableCellRenderer getTableCellRenderer(boolean subform) {
 		return new TextAreaCellRenderer(subform);
 	}
-	
+
 	/**
-	 * 
+	 *
 	 *
 	 */
 	private class TextAreaCellRenderer implements TableCellRenderer, DynamicRowHeightSupport {
-		
+
 		final boolean subform;
-		
+
 		public TextAreaCellRenderer(boolean subform) {
 			super();
 			this.subform = subform;
@@ -166,9 +164,9 @@ public class NuclosCollectableTextArea extends CollectableTextArea implements Dy
 			final int scrollBarWidth = sp.getVerticalScrollBar().getWidth();
 			final boolean scrollBarVisible = sp.getVerticalScrollBar().isVisible();
 			final int lineCount = NuclosCollectableTextArea.this.getLineCount(columnWidth-(scrollBarVisible?scrollBarWidth:0));
-			
+
 			ta.setRows(lineCount);
-			
+
 			setBackgroundColor(ta, tbl, oValue, bSelected, bHasFocus, iRow, iColumn);
 			return NuclosCollectableTextArea.this.getControlComponent();
 		}
@@ -191,19 +189,19 @@ public class NuclosCollectableTextArea extends CollectableTextArea implements Dy
 
 		final JTextArea ta = this.getJTextArea();
 		final String text = ta.getText();
-		
+
 		if (!StringUtils.looksEmpty(text)) {
 			final Font font = ta.getFont();
 			final FontRenderContext frc = new FontRenderContext(new AffineTransform(), true, false);
-			
+
 			final LineBreakMeasurer measurer = new LineBreakMeasurer(new AttributedString(text, font.getAttributes()).getIterator(), frc);
-			
+
 			while (measurer.getPosition() < text.length()) {
 		         measurer.nextLayout(iWidth);
 		         result++;
 		    }
 		}
-		
+
 //		Rectangle2D rect;
 //
 //		// Scan the text for blanks and newlines.
@@ -266,7 +264,7 @@ public class NuclosCollectableTextArea extends CollectableTextArea implements Dy
 	public void removeDynamicRowHeightChangeListener(DynamicRowHeightChangeListener drhcl) {
 		dynamicRowHeightChangeListener.remove(drhcl);
 	}
-	
+
 	private final Collection<DynamicRowHeightChangeListener> dynamicRowHeightChangeListener = new ArrayList<DynamicRowHeightChangeListener>();
 
 }	// class NuclosCollectableTextArea

@@ -22,9 +22,11 @@ import java.util.prefs.Preferences;
 import javax.swing.JComponent;
 import javax.swing.table.TableCellRenderer;
 
+import org.nuclos.api.context.ScriptContext;
 import org.nuclos.client.ui.collect.component.model.CollectableComponentModel;
 import org.nuclos.client.ui.collect.component.model.DetailsComponentModel;
 import org.nuclos.client.ui.collect.component.model.SearchComponentModel;
+import org.nuclos.common.NuclosScript;
 import org.nuclos.common.collect.collectable.CollectableEntity;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
 import org.nuclos.common.collect.collectable.CollectableField;
@@ -83,12 +85,6 @@ public interface CollectableComponent {
 	 * in "multi edit" mode?
 	 */
 	boolean isMultiEditable();
-
-	/**
-	 * @return Is this component enabled by initial? That is:
-	 * Is this component enabled or disabled e.g. by layoutml.
-	 */
-	boolean isEnabledByInitial();
 
 	/**
 	 * @return the model of this component
@@ -170,10 +166,40 @@ public interface CollectableComponent {
 	void setVisible(boolean bVisible);
 
 	/**
+	 * Set this component readonly (according to field-dependant rights).
+	 * @param bEnabled
+	 */
+	void setReadOnly(boolean readOnly);
+
+	/**
+	 * Is this component readonly?
+	 * @return
+	 */
+	boolean isReadOnly();
+
+	/**
 	 * enables this component, that is makes it accessible (or not).
 	 * @param bEnabled
 	 */
 	void setEnabled(boolean bEnabled);
+
+	/**
+	 * Is this component enabled?
+	 * @return
+	 */
+	boolean isEnabled();
+
+	/**
+	 * Set a script that determines dynamically if the component is enabled.
+	 * @param script
+	 */
+	void setEnabledScript(NuclosScript script);
+
+	/**
+	 * Set control state (like enabled/disabled) according to current context.
+	 * @return
+	 */
+	void setComponentState(ScriptContext ctx, String expression);
 
 	/**
 	 * enables this component, that is makes it accessible (or not).
@@ -188,12 +214,6 @@ public interface CollectableComponent {
 	 * @param sNextFocusComponent
 	 */
 	void setNextFocusComponent(String sNextFocusComponent);
-
-	/**
-	 * enables this component by initial, that is makes it accessible (or not).
-	 * @param bEnabled
-	 */
-	void setEnabledByInitial(boolean bEnabled);
 
 	/**
 	 * makes the component insertable (or not). At the moment, this applies for comboboxes only.
