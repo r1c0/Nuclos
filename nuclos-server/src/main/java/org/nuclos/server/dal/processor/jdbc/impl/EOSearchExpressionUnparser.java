@@ -77,7 +77,9 @@ import org.nuclos.server.dblayer.query.DbQueryBuilder;
 import org.nuclos.server.dblayer.query.DbReferencedCompoundColumnExpression;
 import org.nuclos.server.dblayer.query.DbSelection;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
 
+@Configurable
 public class EOSearchExpressionUnparser {
 
 	private static final Logger LOG = Logger.getLogger(EOSearchExpressionUnparser.class);
