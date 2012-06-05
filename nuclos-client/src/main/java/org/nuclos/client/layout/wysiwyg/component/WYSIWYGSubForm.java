@@ -486,6 +486,9 @@ public class WYSIWYGSubForm extends JLayeredPane implements WYSIWYGComponent, Mo
 							case ORIGIN :
 							case SYSTEMIDENTIFIER : 
 							case PROCESS : 
+							case STATE : 
+							case STATEICON :
+							case STATENUMBER : 
 								ignore = true;
 							}
 						}
