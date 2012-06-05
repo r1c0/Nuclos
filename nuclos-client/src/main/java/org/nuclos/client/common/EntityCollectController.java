@@ -59,7 +59,6 @@ import org.nuclos.client.entityobject.CollectableEntityObject;
 import org.nuclos.client.genericobject.GenerationController;
 import org.nuclos.client.main.mainframe.MainFrameTab;
 import org.nuclos.client.masterdata.MasterDataSubFormController;
-import org.nuclos.client.masterdata.MetaDataCache;
 import org.nuclos.client.masterdata.valuelistprovider.MasterDataCollectableFieldsProviderFactory;
 import org.nuclos.client.scripting.context.CollectControllerScriptContext;
 import org.nuclos.client.ui.Bubble;
@@ -89,6 +88,7 @@ import org.nuclos.common.collect.exception.CollectableValidationException;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Transformer;
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
+import org.nuclos.common.dal.vo.EntityMetaDataVO;
 import org.nuclos.common.validation.FieldValidationError;
 import org.nuclos.common2.CommonRunnable;
 import org.nuclos.common2.SpringLocaleDelegate;
@@ -385,7 +385,8 @@ public abstract class EntityCollectController<Clct extends Collectable> extends 
 				for (DetailsSubFormController<CollectableEntityObject> subforms : getSubFormControllersInDetails()) {
 					if (subforms instanceof MasterDataSubFormController) {
 						final String sEntityName = subforms.getEntityAndForeignKeyFieldName().getEntityName();
-						if(MetaDataCache.getInstance().getMetaData(sEntityName).isDynamic()) {
+						EntityMetaDataVO meta = MetaDataClientProvider.getInstance().getEntity(sEntityName);
+						if (meta.isDynamic() || meta.isVirtual() || meta.isStateModel()) {
 							((MasterDataSubFormController)subforms).clear();
 						}
 						else {
