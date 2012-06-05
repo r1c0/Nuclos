@@ -62,44 +62,44 @@ public class WsdlCodeGenerator implements CodeGenerator {
 	private static final Logger LOG = Logger.getLogger(WsdlCodeGenerator.class);
 
 	public static final String DEFAULT_PACKAGE_WEBSERVICES = "org.nuclos.webservices";
-	
+
 	// Spring injection
 
 	private NuclosJavaCompilerComponent nuclosJavaCompilerComponent;
-	
+
 	// End of Spring injection
-	
+
 	private final MasterDataVO webservice;
 
 	private List<JavaSourceAsString> sourcefiles;
-	
+
 	private boolean wsdlChecked = false;
-	
+
 	private boolean recompileIsNecessary = true;
-	
+
 	private String realDigest;
-	
+
 	private File wsdl;
 
 	private String packageName;
-	
+
 	private File generatedSourceFolder;
-	
+
 	public WsdlCodeGenerator(MasterDataVO webservice) {
 		this.webservice = webservice;
 	}
-	
+
 	@Autowired
 	final void setNuclosJavaCompilerComponent(NuclosJavaCompilerComponent nuclosJavaCompilerComponent) {
 		this.nuclosJavaCompilerComponent = nuclosJavaCompilerComponent;
 	}
-	
+
 	private void checkWsdl() throws IOException {
 		if (!wsdlChecked) {
 			GenericObjectDocumentFile gofile = webservice.getField("wsdl", GenericObjectDocumentFile.class);
 			wsdl = new File(nuclosJavaCompilerComponent.getWsdlDir(), gofile.getFilename());
 			realDigest = CryptUtil.digestStringOf(gofile.getContents());
-			
+
 			final File wsdlDigest = new File(wsdl.getParent(), wsdl.getName() + ".sha1");
 			if (wsdlDigest.canRead()) {
 				final BufferedReader reader = new BufferedReader(new InputStreamReader(
@@ -121,11 +121,11 @@ public class WsdlCodeGenerator implements CodeGenerator {
 
 			packageName = DEFAULT_PACKAGE_WEBSERVICES + "." +  WsdlCodeGenerator.getServiceName(webservice.getField("name", String.class));
 			generatedSourceFolder =  new File(nuclosJavaCompilerComponent.getOutputPath(), "src/" + packageName.replaceAll("\\.", "/"));
-			
+
 			if (recompileIsNecessary) {
 				deleteAndNew(wsdl);
 				deleteAndNew(wsdlDigest);
-				
+
 				final OutputStream wsdlOut = new BufferedOutputStream(new FileOutputStream(wsdl));
 				final BufferedWriter wsdlDigestOut = new BufferedWriter(new OutputStreamWriter(
 						new FileOutputStream(wsdlDigest), "UTF-8"));
@@ -137,7 +137,7 @@ public class WsdlCodeGenerator implements CodeGenerator {
 					wsdlOut.close();
 					wsdlDigestOut.close();
 				}
-				
+
 				// cleanup
 				if (generatedSourceFolder.exists()) {
 					File[] generatedSourcefiles = generatedSourceFolder.listFiles(new FileFilter() {
@@ -153,11 +153,11 @@ public class WsdlCodeGenerator implements CodeGenerator {
 						generatedSourcefile.delete();
 				}
 			}
-			
+
 			wsdlChecked = true;
 		}
 	}
-	
+
 	private void deleteAndNew(File file) throws IOException {
 		if (file.exists()) {
 			file.delete();
@@ -257,7 +257,7 @@ public class WsdlCodeGenerator implements CodeGenerator {
 				List<JavaSourceAsString> result = new ArrayList<JavaSourceAsString>();
 				for (File sourcefile : sourceFiles) {
 					String name = packageName + "." + sourcefile.getName().substring(0, sourcefile.getName().lastIndexOf('.'));
-					result.add(new JavaSourceAsString(name, getPrefix(), readFile(sourcefile), NuclosEntity.WEBSERVICE.getEntityName(), 
+					result.add(new JavaSourceAsString(name, getPrefix(), readFile(sourcefile), NuclosEntity.WEBSERVICE.getEntityName(),
 							webservice.getId() == null ? null : ((Integer)webservice.getId()).longValue(),
 							getPrefixAndHeaderLineCount(), getPrefixAndHeaderOffset()));
 				}
@@ -308,6 +308,12 @@ public class WsdlCodeGenerator implements CodeGenerator {
 			return false;
 		}
 		final WsdlCodeGenerator other = (WsdlCodeGenerator) obj;
+		try {
+			checkWsdl();
+		}
+		catch (IOException e) {
+			throw new IllegalStateException(e.toString(), e);
+		}
 		return wsdl.equals(other.wsdl);
 	}
 
@@ -321,7 +327,7 @@ public class WsdlCodeGenerator implements CodeGenerator {
 		result.append("]");
 		return result.toString();
 	}
-	
+
 	@Override
 	public byte[] postCompile(String name, byte[] bytecode) {
 		return bytecode;
