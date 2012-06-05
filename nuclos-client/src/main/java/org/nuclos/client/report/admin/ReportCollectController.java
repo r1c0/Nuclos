@@ -109,6 +109,7 @@ public class ReportCollectController extends MasterDataCollectController {
 	private ReportVO.OutputType outputtype = ReportVO.OutputType.SINGLE;
 	// Controls which are shown or hidden, depending on the output type of the report
 	private CollectableComboBox clctcmbbxDataSource = null;
+	private JComponent clctlabelDataSource = null;
 	private JPanel pnlFileChoosers = null;
 
 	// Backups from table columns, which are shown or hidden, depending on the output type of the report
@@ -143,6 +144,7 @@ public class ReportCollectController extends MasterDataCollectController {
 		setupDetailsToolBar();
 
 		clctcmbbxDataSource = (CollectableComboBox) getFirstComponent("datasource");
+		clctlabelDataSource = (JPanel) UIUtils.findJComponent(getDetailsPanel(), "datasource");
 		// todo: search panel?!
 		pnlFileChoosers = (JPanel) UIUtils.findJComponent(getDetailsPanel(), "filechoosers");
 
@@ -238,6 +240,7 @@ public class ReportCollectController extends MasterDataCollectController {
 			}
 
 			clctcmbbxDataSource.setVisible(true);
+			clctlabelDataSource.setVisible(true);
 			pnlFileChoosers.setVisible(false);
 			break;
 
@@ -260,6 +263,7 @@ public class ReportCollectController extends MasterDataCollectController {
 			}
 
 			clctcmbbxDataSource.setVisible(false);
+			clctlabelDataSource.setVisible(false);
 			pnlFileChoosers.setVisible(false);
 			break;
 
@@ -282,6 +286,7 @@ public class ReportCollectController extends MasterDataCollectController {
 			}
 
 			clctcmbbxDataSource.setVisible(false);
+			clctlabelDataSource.setVisible(false);
 			pnlFileChoosers.setVisible(true);
 			break;
 
