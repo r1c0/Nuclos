@@ -6,7 +6,7 @@
     <tablelayout columns="-1.0" rows="-1.0" />
     <panel>
       <tablelayout-constraints col1="0" col2="0" row1="0" row2="0" hAlign="2" vAlign="2" />
-      <tablelayout columns="12.0|71.0|-1.0|10.0" rows="12.0|31.0|5.0|22.0|5.0|23.0|5.0|72.0|12.0|-1.0|11.0" />
+      <tablelayout columns="12.0|71.0|-1.0|10.0" rows="12.0|31.0|5.0|23.0|5.0|23.0|20.0|72.0|12.0|-1.0|11.0" />
       <collectable-component fill-control-horizontally="yes" name="name" insertable="yes" opaque="yes" visible="yes" enabled="yes" controltype="textfield" show-only="label">
         <tablelayout-constraints col1="1" col2="1" row1="1" row2="1" hAlign="2" vAlign="1" />
         <minimum-size height="22" width="15" />
@@ -35,19 +35,22 @@
           <panel>
             <tablelayout-constraints col1="0" col2="0" row1="0" row2="0" hAlign="2" vAlign="2" />
             <tablelayout columns="12.0|-1.0" rows="12.0|-1.0" />
-            <subform name="SubForm_3" entity="nuclos_formUsage" toolbarorientation="vertical" enabled="yes" >
+            <subform name="SubForm_3" entity="nuclos_formUsage" toolbarorientation="vertical" enabled="yes" dynamic-cell-heights-default="no" >
               <tablelayout-constraints col1="1" col2="1" row1="1" row2="1" hAlign="2" vAlign="2" />
               <minimum-size height="40" width="180" />
               <preferred-size height="100" width="300" />
               <initial-sorting-order name="module" sorting-order="ascending" />
               <subform-column name="process" enabled="yes" visible="yes" insertable="no" controltype="combobox">
-                <valuelist-provider type="process"/></subform-column>
+                <valuelist-provider type="process"/>
+              </subform-column>
               <subform-column name="module" enabled="yes" visible="yes" insertable="no" controltype="combobox">
-                <valuelist-provider type="entityId"/></subform-column>
+                <valuelist-provider type="entityId"/>
+              </subform-column>
               <subform-column name="state" enabled="yes" visible="yes" insertable="no" controltype="combobox">
                 <valuelist-provider type="statusNumeral">
                   <parameter name="provideIdFields" value="true" />
-                </valuelist-provider></subform-column>
+                </valuelist-provider>
+              </subform-column>
             </subform>
           </panel>
         </panel>
@@ -62,7 +65,7 @@
           <panel>
             <tablelayout-constraints col1="0" col2="0" row1="0" row2="0" hAlign="2" vAlign="2" />
             <tablelayout columns="12.0|-1.0" rows="12.0|130.0|13.0|-1.0" />
-            <subform name="SubForm_1" entity="nuclos_formoutput" toolbarorientation="vertical" enabled="yes" >
+            <subform name="SubForm_1" entity="nuclos_formoutput" toolbarorientation="vertical" enabled="yes" dynamic-cell-heights-default="no" >
               <tablelayout-constraints col1="1" col2="1" row1="1" row2="1" hAlign="2" vAlign="2" />
               <titled-border title="Ausgabeformate">
               </titled-border>
@@ -71,21 +74,24 @@
               <initial-sorting-order name="locale" sorting-order="ascending" />
               <subform-column name="sourceFileContent" enabled="yes" visible="no" insertable="yes"></subform-column>
               <subform-column name="locale" enabled="yes" visible="yes" insertable="yes" controltype="combobox">
-                <valuelist-provider type="locales"/></subform-column>
+                <valuelist-provider type="locales"/>
+              </subform-column>
               <subform-column name="format" enabled="yes" visible="yes" insertable="no" controltype="combobox">
                 <valuelist-provider type="enum">
                   <parameter name="showEnum" value="org.nuclos.server.report.valueobject.ReportOutputVO$Format" />
-                </valuelist-provider></subform-column>
+                </valuelist-provider>
+              </subform-column>
               <subform-column name="destination" enabled="yes" visible="yes" insertable="no" controltype="combobox">
                 <valuelist-provider type="enum">
                   <parameter name="showEnum" value="org.nuclos.server.report.valueobject.ReportOutputVO$Destination" />
-                </valuelist-provider></subform-column>
+                </valuelist-provider>
+              </subform-column>
               <subform-column name="reportCLS" enabled="yes" visible="no" insertable="yes"></subform-column>
               <subform-column name="parameter" enabled="yes" visible="yes" insertable="yes" controltypeclass="org.nuclos.client.masterdata.ui.CollectableFileNameChooserFilesAndDirectories"></subform-column>
               <subform-column name="sourceFile" enabled="yes" visible="yes" insertable="yes" controltypeclass="org.nuclos.client.masterdata.ui.CollectableFileNameChooserFilesOnly"></subform-column>
               <subform-column name="datasource" enabled="yes" visible="yes" insertable="no"></subform-column>
             </subform>
-            <subform name="SubForm_2" entity="nuclos_subform" foreignkeyfield-to-parent="formoutput" toolbarorientation="vertical" enabled="yes" parent-subform="nuclos_formoutput" >
+            <subform name="SubForm_2" entity="nuclos_subform" foreignkeyfield-to-parent="formoutput" toolbarorientation="vertical" enabled="yes" parent-subform="nuclos_formoutput" dynamic-cell-heights-default="no" >
               <tablelayout-constraints col1="1" col2="1" row1="3" row2="3" hAlign="2" vAlign="2" />
               <titled-border title="Subreports">
               </titled-border>
@@ -103,7 +109,7 @@
         <tablelayout columns="-1.0" rows="-1.0" />
         <panel>
           <tablelayout-constraints col1="0" col2="0" row1="0" row2="0" hAlign="2" vAlign="2" />
-          <tablelayout columns="0.0|139.0|-1.0" rows="0.0|22.0|5.0|26.0|5.0|8.0" />
+          <tablelayout columns="0.0|139.0|-1.0" rows="0.0|24.0|5.0|26.0|5.0|8.0" />
           <label name="Label_1" enabled="yes" text="Vorlage">
             <tablelayout-constraints col1="1" col2="1" row1="1" row2="1" hAlign="2" vAlign="1" />
             <minimum-size height="14" width="36" />
@@ -115,44 +121,46 @@
             <preferred-size height="22" width="50" />
           </label>
           <collectable-component insertable="yes" controltypeclass="org.nuclos.client.masterdata.ui.CollectableFileNameChooserFilesOnly" enabled="yes" show-only="control" fill-control-horizontally="yes" name="sourceFile" opaque="yes" visible="yes">
-            <tablelayout-constraints col1="2" col2="2" row1="1" row2="1" hAlign="3" vAlign="1" />
+            <tablelayout-constraints col1="2" col2="2" row1="1" row2="1" hAlign="0" vAlign="1" />
+            <etched-border type="lowered" />
             <minimum-size height="22" width="35" />
-            <preferred-size height="22" width="300" />
+            <preferred-size height="24" width="340" />
+            <background red="255" green="255" blue="255" />
           </collectable-component>
           <collectable-component insertable="yes" controltypeclass="org.nuclos.client.masterdata.ui.CollectableFileNameChooserFilesAndDirectories" enabled="yes" show-only="control" fill-control-horizontally="yes" name="parameter" opaque="yes" visible="yes">
-            <tablelayout-constraints col1="2" col2="2" row1="3" row2="3" hAlign="3" vAlign="1" />
+            <tablelayout-constraints col1="2" col2="2" row1="3" row2="3" hAlign="0" vAlign="1" />
+            <etched-border type="lowered" />
             <minimum-size height="22" width="35" />
-            <preferred-size height="22" width="150" />
+            <preferred-size height="24" width="340" />
+            <background red="255" green="255" blue="255" />
           </collectable-component>
         </panel>
       </panel>
-      <collectable-component fill-control-horizontally="yes" name="name" columns="30" insertable="yes" opaque="yes" visible="yes" enabled="yes" controltype="textfield" show-only="control">
-        <tablelayout-constraints col1="2" col2="2" row1="1" row2="1" hAlign="2" vAlign="1" />
-        <minimum-size height="22" width="35" />
-        <preferred-size height="22" width="70" />
-      </collectable-component>
       <label name="Label_2" enabled="yes" text="Ausgabetyp">
-        <tablelayout-constraints col1="1" col2="1" row1="3" row2="3" hAlign="2" vAlign="1" />
+        <tablelayout-constraints col1="1" col2="1" row1="5" row2="5" hAlign="2" vAlign="1" />
         <minimum-size height="14" width="58" />
         <preferred-size height="22" width="50" />
       </label>
       <collectable-component fill-control-horizontally="yes" name="datasource" insertable="yes" opaque="yes" visible="yes" enabled="yes" controltype="textfield" show-only="label">
-        <tablelayout-constraints col1="1" col2="1" row1="5" row2="5" hAlign="2" vAlign="1" />
+        <tablelayout-constraints col1="1" col2="1" row1="3" row2="3" hAlign="2" vAlign="1" />
         <minimum-size height="22" width="15" />
         <preferred-size height="22" width="50" />
       </collectable-component>
+      <collectable-component fill-control-horizontally="yes" name="datasource" insertable="no" opaque="yes" visible="yes" enabled="yes" controltype="combobox" show-only="control">
+        <tablelayout-constraints col1="2" col2="2" row1="3" row2="3" hAlign="0" vAlign="1" />
+        <strict-size height="22" width="270" />
+      </collectable-component>
       <collectable-component fill-control-horizontally="yes" name="outputtype" insertable="yes" opaque="yes" visible="yes" enabled="yes" controltype="combobox" show-only="control">
-        <tablelayout-constraints col1="2" col2="2" row1="3" row2="3" hAlign="3" vAlign="1" />
-        <minimum-size height="22" width="35" />
-        <preferred-size height="22" width="150" />
+        <tablelayout-constraints col1="2" col2="2" row1="5" row2="5" hAlign="0" vAlign="1" />
+        <strict-size height="22" width="270" />
         <valuelist-provider type="enum">
           <parameter name="showEnum" value="org.nuclos.server.report.valueobject.ReportVO$OutputType" />
         </valuelist-provider>
       </collectable-component>
-      <collectable-component fill-control-horizontally="yes" name="datasource" insertable="no" opaque="yes" visible="yes" enabled="yes" controltype="combobox" show-only="control">
-        <tablelayout-constraints col1="2" col2="2" row1="5" row2="5" hAlign="3" vAlign="1" />
-        <minimum-size height="23" width="35" />
-        <preferred-size height="23" width="150" />
+      <collectable-component fill-control-horizontally="yes" name="name" columns="30" insertable="yes" opaque="yes" visible="yes" enabled="yes" controltype="textfield" show-only="control">
+        <tablelayout-constraints col1="2" col2="2" row1="1" row2="1" hAlign="0" vAlign="1" />
+        <minimum-size height="22" width="230" />
+        <preferred-size height="22" width="270" />
       </collectable-component>
     </panel>
   </panel>
