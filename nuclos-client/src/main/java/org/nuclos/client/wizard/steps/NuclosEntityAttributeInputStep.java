@@ -533,7 +533,7 @@ public class NuclosEntityAttributeInputStep extends NuclosEntityAbstractStep {
 		tblAttributes.repaint();
 	}
 
-	protected void showNuclosEntityAttributeWizard(Attribute attr, final boolean editMode, final int row) {
+	protected void showNuclosEntityAttributeWizard(final Attribute attr, final boolean editMode, final int row) {
 
 		final MainFrameTab tabAttribute = new MainFrameTab(localeDelegate.getMessage(
 				"wizard.step.inputattribute.8", "Attribut Wizard f\u00fcr Entit\u00e4t"+" " 
@@ -616,6 +616,7 @@ public class NuclosEntityAttributeInputStep extends NuclosEntityAbstractStep {
 				
 				@Override
 				public void wizardCancelled(WizardEvent e) {
+					model.setAttribute(attr);
 					tabAttribute.dispose();
 					parent.remove(tabAttribute);
 				}
