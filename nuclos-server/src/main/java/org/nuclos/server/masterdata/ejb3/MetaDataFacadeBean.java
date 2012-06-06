@@ -238,14 +238,22 @@ public class MetaDataFacadeBean extends NuclosFacadeBean implements MetaDataFaca
 	}
 
 	@Override
-    public Object modifyEntityMetaData(EntityMetaDataVO metaVO, List<EntityFieldMetaDataTO> lstFields) {
+    public Object modifyEntityMetaData(EntityMetaDataVO metaVO, List<EntityFieldMetaDataTO> toFields) {
 
 		metaVO = MetaDataServerProvider.getInstance().getEntity(metaVO.getEntity());
 
+		List<EntityFieldMetaDataVO> lstFields = new ArrayList<EntityFieldMetaDataVO>();
+
+		for(EntityFieldMetaDataTO to : toFields) {
+			if(!to.getEntityFieldMeta().isFlagRemoved()) {
+				lstFields.add(to.getEntityFieldMeta());
+			}
+		}
+		
 		EntityMetaDataVO voIst = MetaDataServerProvider.getInstance().getEntity(metaVO.getEntity());
 
 		EntityObjectMetaDbHelper dbHelperIst = new EntityObjectMetaDbHelper(dataBaseHelper.getDbAccess(), MetaDataServerProvider.getInstance());
-		DbTable tableIst = dbHelperIst.getDbTable(metaVO);
+		DbTable tableIst = dbHelperIst.getDbTable(metaVO, lstFields);
 
 		StaticMetaDataProvider staticMetaData = new StaticMetaDataProvider();
 		staticMetaData.addEntity(MetaDataServerProvider.getInstance().getEntity(metaVO.getEntity()));
@@ -253,7 +261,7 @@ public class MetaDataFacadeBean extends NuclosFacadeBean implements MetaDataFaca
 		Collection<EntityFieldMetaDataVO> colFields = MetaDataServerProvider.getInstance().getAllEntityFieldsByEntity(metaVO.getEntity()).values();
 		for(EntityFieldMetaDataVO vo : colFields) {
 			boolean addField = true;
-			for(EntityFieldMetaDataTO to : lstFields) {
+			for(EntityFieldMetaDataTO to : toFields) {
 				if(to.getEntityFieldMeta().getField().equals(vo.getField())) {
 					if(to.getEntityFieldMeta().isFlagRemoved()){
 						addField = false;
@@ -277,7 +285,7 @@ public class MetaDataFacadeBean extends NuclosFacadeBean implements MetaDataFaca
 				}
 			}
 		}
-		for(EntityFieldMetaDataTO to : lstFields) {
+		for(EntityFieldMetaDataTO to : toFields) {
 			EntityFieldMetaDataVO vo = to.getEntityFieldMeta();
 			if(vo.getForeignEntity() != null) {
 				if(!vo.isFlagRemoved()) {
@@ -309,7 +317,7 @@ public class MetaDataFacadeBean extends NuclosFacadeBean implements MetaDataFaca
 			dataBaseHelper.getDbAccess().execute(ds);
 		}
 
-		for(EntityFieldMetaDataTO metaFieldTO : lstFields) {
+		for(EntityFieldMetaDataTO metaFieldTO : toFields) {
 			EntityFieldMetaDataVO metaFieldVO = metaFieldTO.getEntityFieldMeta();
 			if(metaFieldVO.getId() == null) {
 				metaFieldVO.setId(DalUtils.getNextId());
@@ -715,9 +723,9 @@ public class MetaDataFacadeBean extends NuclosFacadeBean implements MetaDataFaca
 				}
 			}
 		}
-
+		
 		EntityObjectMetaDbHelper dbHelperIst = new EntityObjectMetaDbHelper(dataBaseHelper.getDbAccess(), MetaDataServerProvider.getInstance());
-		DbTable tableIst = dbHelperIst.getDbTable(updatedMDEntity);
+		DbTable tableIst = dbHelperIst.getDbTable(updatedMDEntity, lstFields);
 
 		EntityObjectMetaDbHelper dbHelperSoll = new EntityObjectMetaDbHelper(dataBaseHelper.getDbAccess(), staticMetaData);
 		DbTable tableSoll = dbHelperSoll.getDbTable(updatedMDEntity);
