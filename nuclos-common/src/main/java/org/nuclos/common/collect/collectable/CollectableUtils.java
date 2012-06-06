@@ -28,6 +28,7 @@ import org.nuclos.common.NuclosDateTime;
 import org.nuclos.common.NuclosEOField;
 import org.nuclos.common.NuclosImage;
 import org.nuclos.common.NuclosPassword;
+import org.nuclos.common.NuclosScript;
 import org.nuclos.common.collect.exception.CollectableFieldValidationException;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Transformer;
@@ -364,6 +365,8 @@ public abstract class CollectableUtils {
 		} else if(clazz.equals(NuclosPassword.class)) {
 			//NUCLEUSINT-1142
 			return CollectableComponentTypes.TYPE_PASSWORDFIELD;
+		} else if(clazz.equals(NuclosScript.class)) {
+			return CollectableComponentTypes.TYPE_SCRIPT;
 		} else {
 			return CollectableComponentTypes.TYPE_TEXTFIELD;
 		}

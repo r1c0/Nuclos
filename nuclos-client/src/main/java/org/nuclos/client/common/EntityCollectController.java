@@ -1098,6 +1098,10 @@ public abstract class EntityCollectController<Clct extends Collectable> extends 
 				}
 			}
 
+			if (messages.size() == 1) {
+				messages.add(getSpringLocaleDelegate().getText(cve.getMessage()));
+			}
+
 			String message = StringUtils.concatHtml(messages.toArray(new String[messages.size()]));
 			setPointerInformation(new PointerCollection(message), null);
 			return true;

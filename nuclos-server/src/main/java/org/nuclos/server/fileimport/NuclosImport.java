@@ -340,6 +340,9 @@ public class NuclosImport extends AbstractImport {
 									EntityFieldMetaDataVO fieldmeta = MetaDataServerProvider.getInstance().getEntityField(definition.getEntityName(), item.getFieldName());
 									value = ImportUtils.getReferenceValue(fieldmeta.getForeignEntityField(), referenced.getValueObject());
 								}
+								else if (io.getAttributes().containsKey(item.getFieldName())) {
+									valueId = IdUtils.toLongId(io.getAttributes().get(item.getFieldName()));
+								}
 								io.getValueObject().getFields().put(item.getFieldName(), value);
 								io.getValueObject().getFieldIds().put(item.getFieldName(), valueId);
 							}

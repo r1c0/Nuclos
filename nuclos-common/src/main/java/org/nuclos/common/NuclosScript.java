@@ -18,6 +18,7 @@ package org.nuclos.common;
 
 import java.io.Serializable;
 
+@SuppressWarnings("serial")
 public class NuclosScript implements Serializable {
 
 	private String language;
@@ -47,5 +48,43 @@ public class NuclosScript implements Serializable {
 
 	public void setSource(String source) {
 		this.source = source;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((language == null) ? 0 : language.hashCode());
+		result = prime * result + ((source == null) ? 0 : source.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		NuclosScript other = (NuclosScript) obj;
+		if (language == null) {
+			if (other.language != null)
+				return false;
+		}
+		else if (!language.equals(other.language))
+			return false;
+		if (source == null) {
+			if (other.source != null)
+				return false;
+		}
+		else if (!source.equals(other.source))
+			return false;
+		return true;
+	}
+
+	@Override
+	public String toString() {
+		return "NuclosScript [language=" + language + ", source=" + source + "]";
 	}
 }

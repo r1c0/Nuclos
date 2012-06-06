@@ -67,15 +67,17 @@ public interface CollectableComponentTypes {
 	 * Component type: image
 	 */
 	public static final int TYPE_IMAGE = 10;
-	
+
 	/**
 	 * Component type: password
 	 * NUCLEUSINT-1142
 	 */
 	public static final int TYPE_PASSWORDFIELD = 11;
-	
+
 	public static final int TYPE_HYPERLINK = 12;
-	
+
 	public static final int TYPE_EMAIL = 13;
+
+	public static final int TYPE_SCRIPT = 14;
 
 }  // class CollectableComponentTypes

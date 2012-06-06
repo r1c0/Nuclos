@@ -94,9 +94,15 @@ public class ScriptEditor extends JPanel {
     }
 
     public void setScript(NuclosScript script) {
-        this.script = script;
-        editPanel.getJavaEditorPanel().setText(this.script.getSource());
-        compile();
+    	if (script != null) {
+	        this.script = script;
+	        editPanel.getJavaEditorPanel().setText(this.script.getSource());
+	        compile();
+    	}
+    	else {
+    		this.script = null;
+    		editPanel.getJavaEditorPanel().setText("");
+    	}
     }
 
     public void compile() {

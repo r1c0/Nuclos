@@ -20,7 +20,6 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
 import org.apache.commons.lang.NullArgumentException;
-
 import org.nuclos.client.common.NuclosCollectableImage;
 import org.nuclos.common.collect.collectable.CollectableComponentTypes;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
@@ -168,13 +167,16 @@ public class DefaultCollectableComponentFactory extends CollectableComponentFact
 				break;
 			case CollectableComponentTypes.TYPE_IDTEXTFIELD:
 				result = new CollectableIdTextField(clctef, bSearchable);
-				break;	
+				break;
 			case CollectableComponentTypes.TYPE_IMAGE:
 				result = new NuclosCollectableImage(clctef);
 				break;
 			case CollectableComponentTypes.TYPE_PASSWORDFIELD:
 				//NUCLEUSINT-1142
 				result = new CollectablePasswordField(clctef, bSearchable);
+				break;
+			case CollectableComponentTypes.TYPE_SCRIPT:
+				result = new CollectableScriptComponent(clctef, bSearchable);
 				break;
 			default:
 				throw new IllegalArgumentException("iEnumeratedControlType");

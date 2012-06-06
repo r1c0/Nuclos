@@ -25,6 +25,7 @@ import java.util.Set;
 import org.nuclos.common.NuclosEOField;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.NuclosFatalException;
+import org.nuclos.common.NuclosScript;
 import org.nuclos.common.ParameterProvider;
 import org.nuclos.common.genericobject.GenericObjectImportUtils;
 import org.nuclos.common2.IdUtils;
@@ -102,6 +103,7 @@ public class ImportStructure {
 				final String attribute = (String) mdcvo.getField("attribute");
 				final String format = (String) mdcvo.getField("parsestring");
 				final boolean preserve = (Boolean) mdcvo.getField("preserve");
+				final NuclosScript script = (NuclosScript) mdcvo.getField("script");
 				final Class<?> clazz;
 
 				String foreignentity = null;
@@ -147,7 +149,7 @@ public class ImportStructure {
 					foreignentity = null;
 				}
 
-				this.items.put(attribute, new ImportStructure.Item(iIndex, entityname, attribute, clazz, format, preserve, foreignentity, foreignentityattributes));
+				this.items.put(attribute, new ImportStructure.Item(iIndex, entityname, attribute, clazz, format, preserve, foreignentity, foreignentityattributes, script));
 			}
 
 			final Collection<MasterDataVO> collIdentifiers = mdfacade.getDependantMasterData(NuclosEntity.IMPORTIDENTIFIER.getEntityName(), "import", iImportStructureId);
@@ -224,8 +226,9 @@ public class ImportStructure {
 		private final boolean bPreserve;
 		private final String foreignentity;
 		private final Set<ForeignEntityIdentifier> feIdentifier;
+		private final NuclosScript script;
 
-		public Item(Integer iColumn, String sEntityName, String sFieldName, Class<?> cls, String sFormat, boolean bPreserve, String foreignentity, Set<ForeignEntityIdentifier> feIdentifier) {
+		public Item(Integer iColumn, String sEntityName, String sFieldName, Class<?> cls, String sFormat, boolean bPreserve, String foreignentity, Set<ForeignEntityIdentifier> feIdentifier, NuclosScript script) {
 			this.iColumn = iColumn;
 			this.sFieldName = sFieldName;
 			this.sEntityName = sEntityName;
@@ -234,6 +237,7 @@ public class ImportStructure {
 			this.bPreserve = bPreserve;
 			this.foreignentity = foreignentity;
 			this.feIdentifier = feIdentifier;
+			this.script = script;
 		}
 
 		public Integer getColumn() {
@@ -262,6 +266,10 @@ public class ImportStructure {
 
 		public Set<ForeignEntityIdentifier> getForeignEntityIdentifiers() {
 			return this.feIdentifier;
+		}
+
+		public NuclosScript getScript() {
+			return script;
 		}
 
 		public Object parse(String sValue) throws NuclosFileImportException {

@@ -65602,5 +65602,50 @@
     "resourceID": "error.vlp.defaultvalue",
     "locale": "de",
     "text": "Standardwert konnte nicht ermittelt werden."
+  },
+  {
+    "resourceID": "nuclos.entityfield.importattribute.script.label",
+    "locale": "i-default",
+    "text": "Calculation expression"
+  },
+  {
+    "resourceID": "nuclos.entityfield.importattribute.script.label",
+    "locale": "en",
+    "text": "Calculation expression"
+  },
+  {
+    "resourceID": "nuclos.entityfield.importattribute.script.label",
+    "locale": "de",
+    "text": "Berechnungsausdruck"
+  },
+  {
+    "resourceID": "nuclos.entityfield.importattribute.script.description",
+    "locale": "i-default",
+    "text": "Script with variable \"values\" as String[]. Return valid value (id-value for reference fields) or null."
+  },
+  {
+    "resourceID": "nuclos.entityfield.importattribute.script.description",
+    "locale": "en",
+    "text": "Script with variable \"values\" as String[]. Return valid value (id-value for reference fields) or null."
+  },
+  {
+    "resourceID": "nuclos.entityfield.importattribute.script.description",
+    "locale": "de",
+    "text": "Script mit Variable \"values\" als String[]. Geben Sie einen gültigen Wert (Id-Wert für Referenzfelder) oder null zurück."
+  },
+  {
+    "resourceID": "import.validation.structure.column.or.script",
+    "locale": "i-default",
+    "text": "An attribute definition requires either a column number or a calculation expression."
+  },
+  {
+    "resourceID": "import.validation.structure.column.or.script",
+    "locale": "en",
+    "text": "An attribute definition requires either a column number or a calculation expression."
+  },
+  {
+    "resourceID": "import.validation.structure.column.or.script",
+    "locale": "de",
+    "text": "Eine Attributdefinition benötigt entweder eine Spaltennummer oder einen Berechnungsausdruck."
   }
 ]

@@ -100,6 +100,13 @@ public class ImportUtils {
 				throw new CommonValidationException("import.validation.structure.statenotallowed");
 			}
 
+			boolean hasScript = attribute.getField("script") != null;
+			boolean hasColumn = attribute.getField("fieldcolumn") != null;
+
+			if (hasScript == hasColumn) {
+				throw new CommonValidationException("import.validation.structure.column.or.script");
+			}
+
 			String foreignentity = MetaDataServerProvider.getInstance().getEntityField(entity, attributename).getForeignEntity();
 			if (foreignentity != null) {
 				int count = 0;
@@ -304,7 +311,10 @@ public class ImportUtils {
 						if (io.getReferences().get(attribute).getValueObject() != null && io.getReferences().get(attribute).getValueObject().getId() != null) {
 							Object referencedId = io.getReferences().get(attribute).getValueObject().getId();
 
-							cond = new CollectableComparison(cef, ComparisonOperator.EQUAL, new CollectableValueIdField(referencedId, io.getAttributes().get(attribute)));
+							cond = new CollectableComparison(cef, ComparisonOperator.EQUAL, new CollectableValueIdField(referencedId, null));
+						}
+						else if (io.getAttributes().get(attribute) != null) {
+							cond = new CollectableComparison(cef, ComparisonOperator.EQUAL, new CollectableValueIdField(IdUtils.unsafeToId(io.getAttributes().get(attribute)), ""));
 						}
 						else {
 							cond = new CollectableIdCondition(0);

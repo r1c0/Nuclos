@@ -26,7 +26,7 @@
 				<executions>
 					<execution>
 						<id>retrieve.svn.version</id>
-						<!-- 
+						<!--
 							phases see:
 							http://maven.apache.org/guides/introduction/introduction-to-the-lifecycle.html
 						 -->
@@ -203,8 +203,8 @@
 			<groupId>org.aspectj</groupId>
 			<artifactId>aspectjweaver</artifactId>
 		</dependency>
-		<!-- 
-			This is only needed because of 
+		<!--
+			This is only needed because of
 			https://jira.springsource.org/browse/SPR-6819
 		 -->
 		<dependency>
@@ -326,6 +326,11 @@
 			<artifactId>spring-instrument-tomcat</artifactId>
 			<scope>provided</scope>
 		</dependency>
+		<dependency>
+			<groupId>org.codehaus.groovy</groupId>
+			<artifactId>groovy-all</artifactId>
+			<version>1.7.6</version>
+		</dependency>
 	</dependencies>
-	
+
 </project>

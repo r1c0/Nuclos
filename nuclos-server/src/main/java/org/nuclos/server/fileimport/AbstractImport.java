@@ -26,10 +26,16 @@ import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.UUID;
 
+import javax.script.Bindings;
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
+import javax.script.ScriptException;
+
 import org.nuclos.common.NuclosEOField;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.fileimport.ImportMode;
+import org.nuclos.common2.IdUtils;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.fileimport.FileImportResult;
 import org.nuclos.common2.fileimport.NuclosFileImportException;
@@ -51,7 +57,7 @@ import org.nuclos.server.masterdata.valueobject.MasterDataVO;
  * <br>Please visit <a href="http://www.novabit.de">www.novabit.de</a>
  */
 public abstract class AbstractImport {
-	
+
 	private final GenericObjectDocumentFile file;
 
 	private final ImportContext context;
@@ -76,6 +82,8 @@ public abstract class AbstractImport {
 
 	protected final String ATTRIBUTENAME_STATE = NuclosEOField.STATE.getMetaData().getField();
 	protected final String ATTRIBUTENAME_PROCESS = NuclosEOField.PROCESS.getMetaData().getField();
+
+	private final ScriptEngine engine = new ScriptEngineManager().getEngineByName("groovy");
 
 	protected AbstractImport(GenericObjectDocumentFile file, ImportContext context, List<ImportStructure> structures, ImportLogger logger, boolean atomic) {
 		this.file = file;
@@ -270,26 +278,47 @@ public abstract class AbstractImport {
 		for (org.nuclos.server.fileimport.ImportStructure.Item item : importDefinition.getItems().values()) {
 			final String sKey = item.getFieldName();
 
-			if (item.isReferencing()) {
-				final ImportObject reference = getReferencedObject(importDefinition, asLineValues, sKey, lineNumber);
-				if (!reference.isEmpty()) {
-					// check if reference is already in context data
-					ImportObject contextReferenced = getData().get(item.getForeignEntityName()).get(reference.getKey());
-					if (contextReferenced != null) {
-						references.put(sKey, contextReferenced);
+			if (item.getScript() != null) {
+				final Bindings b = engine.createBindings();
+				b.put("values", asLineValues);
+				b.put("line", lineNumber);
+				b.put("log", logger);
+
+		        try {
+					Object o = engine.eval(item.getScript().getSource(), b);
+					if (item.isReferencing()) {
+						attributes.put(sKey, IdUtils.unsafeToId(o));
 					}
 					else {
-						references.put(sKey, reference);
+						attributes.put(sKey, o);
 					}
+				}
+		        catch (ScriptException e) {
+		        	throw new NuclosFileImportException(e);
 				}
 			}
 			else {
-				if (item.getColumn() <= asLineValues.length) {
-					final Object oValue = item.parse(asLineValues[item.getColumn() - 1]);
-					attributes.put(item.getFieldName(), oValue);
+				if (item.isReferencing()) {
+					final ImportObject reference = getReferencedObject(importDefinition, asLineValues, sKey, lineNumber);
+					if (!reference.isEmpty()) {
+						// check if reference is already in context data
+						ImportObject contextReferenced = getData().get(item.getForeignEntityName()).get(reference.getKey());
+						if (contextReferenced != null) {
+							references.put(sKey, contextReferenced);
+						}
+						else {
+							references.put(sKey, reference);
+						}
+					}
 				}
 				else {
-					throw new NuclosFileImportException(StringUtils.getParameterizedExceptionMessage("import.exception.indexoutofbounds", item.getColumn(), asLineValues.length));
+					if (item.getColumn() <= asLineValues.length) {
+						final Object oValue = item.parse(asLineValues[item.getColumn() - 1]);
+						attributes.put(item.getFieldName(), oValue);
+					}
+					else {
+						throw new NuclosFileImportException(StringUtils.getParameterizedExceptionMessage("import.exception.indexoutofbounds", item.getColumn(), asLineValues.length));
+					}
 				}
 			}
 		}
