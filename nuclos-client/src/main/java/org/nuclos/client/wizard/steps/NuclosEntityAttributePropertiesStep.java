@@ -523,7 +523,7 @@ public class NuclosEntityAttributePropertiesStep extends NuclosEntityAttributeAb
 					if (!DataTyp.getDefaultStringTyp().equals(selectedType) || selectedType.isRefenceTyp()) {
 						cbxValueList.setSelected(false);
 					}
-					setInputValidation(selectedType.getJavaType(), selectedType.getInputFormat());
+					setInputValidation(selectedType.getJavaType(), model.getAttribute().getInputValidation());
 				}
 				else {
 					String clazz = (String) cbxJavatype.getSelectedItem();
@@ -566,7 +566,13 @@ public class NuclosEntityAttributePropertiesStep extends NuclosEntityAttributeAb
 						tfOutputFormat.setEnabled(false);
 					}
 				}
+				
 				enableMinMaxValue((String) cbxJavatype.getSelectedItem());
+				if (!isCustomType) {
+					setInputValidation(selectedType.getJavaType(), model.getAttribute().getInputValidation());
+				} else {
+					setInputValidation(model.getAttribute().getDatatyp().getJavaType(), model.getAttribute().getInputValidation());					
+				}
 
 				if (parentWizardModel.isVirtual()) {
 					cbxJavatype.setEnabled(false);
@@ -791,7 +797,11 @@ public class NuclosEntityAttributePropertiesStep extends NuclosEntityAttributeAb
 				}
 				model.getAttribute().setInputValidation(s1 + " " + s2);
 			}
+			else
+				model.getAttribute().setInputValidation(null);
 		}
+		else
+			model.getAttribute().setInputValidation(null);
 
 	}
 
@@ -845,6 +855,8 @@ public class NuclosEntityAttributePropertiesStep extends NuclosEntityAttributeAb
 			tfMaxValue.setEnabled(true);
 			tfMinValue.setVisible(true);
 			tfMaxValue.setVisible(true);
+			datMinValue.setDate(null);
+			datMaxValue.setDate(null);
 			datMinValue.setVisible(false);
 			datMaxValue.setVisible(false);
 
@@ -858,6 +870,8 @@ public class NuclosEntityAttributePropertiesStep extends NuclosEntityAttributeAb
 			}
 		}
 		else if(Date.class.getName().equals(dataTyp)) {
+			tfMinValue.setText("");
+			tfMaxValue.setText("");
 			tfMinValue.setVisible(false);
 			tfMaxValue.setVisible(false);
 			datMinValue.setVisible(true);
@@ -866,16 +880,15 @@ public class NuclosEntityAttributePropertiesStep extends NuclosEntityAttributeAb
 		else {
 			tfMinValue.setEnabled(false);
 			tfMaxValue.setEnabled(false);
+			tfMinValue.setText("");
+			tfMaxValue.setText("");
 			tfMinValue.setVisible(true);
 			tfMaxValue.setVisible(true);
+			datMinValue.setDate(null);
+			datMaxValue.setDate(null);
 			datMinValue.setVisible(false);
 			datMaxValue.setVisible(false);
 		}
-
-		tfMinValue.setText("");
-		tfMaxValue.setText("");
-		datMinValue.setDate(null);
-		datMaxValue.setDate(null);
 	}
 
 	public void setColumnTypeChangeAllowed(boolean blnAllowed)  {
