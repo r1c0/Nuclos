@@ -31,6 +31,11 @@ import java.util.List;
  * @version 00.01.000
  */
 public class GroupSearchResultTreeNode extends AbstractSearchResultTreeNode {
+	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 
 	/**
 	 * @param cond

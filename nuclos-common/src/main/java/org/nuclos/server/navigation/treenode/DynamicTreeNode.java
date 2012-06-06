@@ -40,6 +40,11 @@ import org.nuclos.server.masterdata.valueobject.MasterDataVO;
  */
 
 public class DynamicTreeNode<Id> extends AbstractTreeNode<Id>{
+	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 
 	private TreeNode node;
 	private MasterDataVO mdVO;

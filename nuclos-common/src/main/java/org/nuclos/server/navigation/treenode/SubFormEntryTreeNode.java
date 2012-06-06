@@ -38,6 +38,11 @@ import org.springframework.beans.factory.annotation.Configurable;
 @Configurable
 public class SubFormEntryTreeNode extends DefaultMasterDataTreeNode {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	private EntityFacadeRemote entityFacadeRemote;
 
 	public SubFormEntryTreeNode(String sEntity, MasterDataVO mdvo) {

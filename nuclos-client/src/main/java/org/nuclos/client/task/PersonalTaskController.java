@@ -90,6 +90,7 @@ import org.nuclos.client.ui.Icons;
 import org.nuclos.client.ui.MainFrameTabAdapter;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.client.ui.collect.CollectController;
+import org.nuclos.client.ui.collect.ToolTipsTableHeader;
 import org.nuclos.client.ui.collect.CollectController.CollectableEventListener;
 import org.nuclos.client.ui.collect.CollectController.MessageType;
 import org.nuclos.client.ui.collect.CollectableTableHelper;
@@ -244,8 +245,11 @@ public class PersonalTaskController extends RefreshableTaskController implements
 		this.popupPersonal = new PersonalTasksPopupMenu(personaltaskview);
 		this.prefs = prefsParent.node(PREFS_NODE_PERSONALTASKS);
 		this.personaltaskview.setPersonalTaskTableModel(newPersonalTaskTableModel());
+		
 		final JTable tblPersonal = personaltaskview.getTable();
-
+		tblPersonal.setTableHeader(new ToolTipsTableHeader(this.personaltaskview.getPersonalTaskTableModel(), tblPersonal.getColumnModel()));
+		TableUtils.addMouseListenerForSortingToTableHeader(tblPersonal, this.personaltaskview.getPersonalTaskTableModel());
+		
 		tblPersonal.setRowHeight(20);
 		setupRenderers(tblPersonal);
 		setupColumnModelListener(tblPersonal);

@@ -36,6 +36,11 @@ import org.nuclos.server.masterdata.valueobject.MasterDataVO;
  * @version 01.00.00
  */
 public class SubFormTreeNode<Id> extends DynamicTreeNode<Id>{
+	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 
 	/**
 	 * @deprecated See class javadoc for details. (Thomas Pasch)

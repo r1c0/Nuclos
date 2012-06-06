@@ -34,6 +34,11 @@ import org.nuclos.common.Utils;
  * @version 00.01.000
  */
 public class GroupTreeNode extends MasterDataTreeNode<Integer> {
+	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 
 	private final String sGroupName;
 	private final String sGroupTypeName;

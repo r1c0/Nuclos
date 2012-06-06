@@ -31,6 +31,11 @@ import java.util.List;
  * @version 01.00.00
  */
 public class StaticTreeNode<Id> extends AbstractStaticTreeNode<Id> {
+	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 
 	private final boolean bNeedsParent;
 

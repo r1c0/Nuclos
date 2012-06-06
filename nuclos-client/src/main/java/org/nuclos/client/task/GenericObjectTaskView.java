@@ -178,7 +178,7 @@ public class GenericObjectTaskView extends TaskView implements IMainFrameTabClos
 		}
 
 		// enable sorting by clicking the header:
-		TableUtils.addMouseListenerForSortingToTableHeader(tbl, result, new CommonRunnable() {
+		/*TableUtils.addMouseListenerForSortingToTableHeader(tbl, result, new CommonRunnable() {
 			@Override
 			public void run() throws CommonBusinessException {
 				List<? extends SortKey> sortKeys = result.getSortKeys();
@@ -198,7 +198,7 @@ public class GenericObjectTaskView extends TaskView implements IMainFrameTabClos
 									"GenericObjectTaskView.1", "Das Suchergebnis kann nicht nach Unterformularspalten sortiert werden."));
 				}
 			}
-		});
+		});*/
 
 		return result;
 	}

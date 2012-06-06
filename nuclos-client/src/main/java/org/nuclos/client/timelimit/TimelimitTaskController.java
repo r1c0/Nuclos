@@ -72,9 +72,11 @@ import org.nuclos.client.ui.Icons;
 import org.nuclos.client.ui.MainFrameTabAdapter;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.client.ui.collect.CollectableTableHelper;
+import org.nuclos.client.ui.collect.ToolTipsTableHeader;
 import org.nuclos.client.ui.collect.component.CollectableComponent;
 import org.nuclos.client.ui.collect.component.CollectableComponentFactory;
 import org.nuclos.client.ui.popupmenu.DefaultJPopupMenuListener;
+import org.nuclos.client.ui.table.TableUtils;
 import org.nuclos.common.NuclosBusinessException;
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
@@ -173,7 +175,10 @@ public class TimelimitTaskController extends RefreshableTaskController {
 		this.prefs = prefsParent.node(PREFS_NODE_TIMELIMITTASKS);
 
 		this.timelimittaskview.setTimelimitTaskTableModel(newTimelimitTaskTableModel());
+		
 		final JTable tblTimelimit = timelimittaskview.getTable();
+		tblTimelimit.setTableHeader(new ToolTipsTableHeader(this.timelimittaskview.getTimelimitTaskTableModel(), tblTimelimit.getColumnModel()));
+		TableUtils.addMouseListenerForSortingToTableHeader(tblTimelimit, this.timelimittaskview.getTimelimitTaskTableModel());
 
 		/** todo calculate row height */
 		tblTimelimit.setRowHeight(20);

@@ -70,8 +70,10 @@ import org.nuclos.client.searchfilter.SearchFilterDelegate;
 import org.nuclos.client.ui.Errors;
 import org.nuclos.client.ui.Icons;
 import org.nuclos.client.ui.UIUtils;
+import org.nuclos.client.ui.collect.ToolTipsTableHeader;
 import org.nuclos.client.ui.collect.component.CollectableComponent;
 import org.nuclos.client.ui.collect.component.CollectableComponentFactory;
+import org.nuclos.client.ui.collect.model.CollectableTableModel;
 import org.nuclos.client.ui.collect.model.SortableCollectableTableModel;
 import org.nuclos.client.ui.popupmenu.DefaultJPopupMenuListener;
 import org.nuclos.client.ui.popupmenu.JPopupMenuFactory;
@@ -421,19 +423,25 @@ public class GenericObjectTaskController extends RefreshableTaskController {
 			}
 		}
 		
+		GenericObjectTaskView genericObjectTaskView = this.mpTaskViews.get(filter.getId());
+
 		// remove listener from old model, if any:
-		final TableModel modelOld = this.mpTaskViews.get(filter.getId()).getJTable().getModel();
+		final TableModel modelOld = genericObjectTaskView.getJTable().getModel();
 		if (modelOld != null && modelOld instanceof SortableCollectableTableModel<?>) {
-			TableUtils.removeMouseListenersForSortingFromTableHeader(this.mpTaskViews.get(filter.getId()).getJTable());
+			TableUtils.removeMouseListenersForSortingFromTableHeader(genericObjectTaskView.getJTable());
 		}
 
 		// create a new table model:
-		this.mpTaskViews.get(filter.getId()).getJTable().setModel(this.mpTaskViews.get(filter.getId()).newResultTableModel(filter, lstclct));
+		SortableCollectableTableModel<Collectable> tblmdl = genericObjectTaskView.newResultTableModel(filter, lstclct);
+		genericObjectTaskView.getJTable().setModel(tblmdl);
+		genericObjectTaskView.getTable().setTableHeader(new ToolTipsTableHeader(tblmdl, genericObjectTaskView.getTable().getColumnModel()));
+		TableUtils.addMouseListenerForSortingToTableHeader(genericObjectTaskView.getTable(), tblmdl);
+		
 		//TableUtils.setOptimalColumnWidths(this.mpTaskViews.get(filter.getId()).getJTable());
-		TaskController.setColumnWidths(this.mpTaskViews.get(filter.getId()).readColumnWidthsFromPreferences(), this.mpTaskViews.get(filter.getId()).getJTable());
+		TaskController.setColumnWidths(genericObjectTaskView.readColumnWidthsFromPreferences(), genericObjectTaskView.getJTable());
 		
 		// setup renderer
-		setupRenderers(this.mpTaskViews.get(filter.getId()));
+		setupRenderers(genericObjectTaskView);
 	}
 	
 	private void refreshMasterDataTaskView(EntitySearchFilter filter) {
