@@ -594,17 +594,19 @@ public class NuclosEntityAttributeInputStep extends NuclosEntityAbstractStep {
 				@Override
 				public void wizardClosed(WizardEvent e) {
 					Attribute attribute = model.getAttribute();
-					if(!editMode || attribute.getInternalId() == null) {
-						attribute.setInternalId(getHighestInternalId());
+					if (attribute != null) {
+						if(!editMode || attribute.getInternalId() == null) {
+							attribute.setInternalId(getHighestInternalId());
+						}
+
+						if(row >= 0 && editMode) {
+							entityModel.removeRow(row, false);
+						}
+	
+						entityModel.addAttribute(attribute);
+						entityModel.addTranslation(attribute, model.getTranslation());
 					}
-
-					if(row >= 0 && editMode) {
-						entityModel.removeRow(row, false);
-					}
-
-					entityModel.addAttribute(attribute);
-					entityModel.addTranslation(attribute, model.getTranslation());
-
+					
 					NuclosEntityAttributeInputStep.this.setComplete(true);
 					NuclosEntityAttributeInputStep.this.model.setAttributeModel(entityModel);
 
