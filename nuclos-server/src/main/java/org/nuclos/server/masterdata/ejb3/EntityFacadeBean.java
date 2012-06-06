@@ -170,6 +170,12 @@ public class EntityFacadeBean extends NuclosFacadeBean implements EntityFacadeRe
 			}
 		}
 
+		final EntityFieldMetaDataVO efDeleted = MetaDataServerProvider.getInstance().getAllEntityFieldsByEntity(sEntityName).get(clctEOEFdeleted.getName());
+		if (efDeleted != null) {
+			CollectableSearchCondition condSearchDeleted = new CollectableComparison(clctEOEFdeleted, ComparisonOperator.EQUAL, new CollectableValueField(false));
+			clctcond = clctcond == null ? condSearchDeleted : SearchConditionUtils.and(clctcond, condSearchDeleted);
+		}
+
 		JdbcEntityObjectProcessor eoProcessor = NucletDalProvider.getInstance().getEntityObjectProcessor(sEntityName);
 		List<EntityObjectVO> eoResult = eoProcessor.getBySearchExpression(clctMaker.getFields(), new CollectableSearchExpression(appendRecordGrants(clctcond, sEntityName)), null, false, false);
 
@@ -215,7 +221,7 @@ public class EntityFacadeBean extends NuclosFacadeBean implements EntityFacadeRe
 			final DbCondition condLike = builder.like(builder.upper(stringifiedRef), search);
 			final DatasourceVO dsvo = DatasourceCache.getInstance().getValuelistProvider(vlpId);
 
-			final EntityFieldMetaDataVO efDeleted = provider.getAllEntityFieldsByEntity(eForeignMeta.getEntity()).get(clctEOEFdeleted.getEntityName());
+			final EntityFieldMetaDataVO efDeleted = provider.getAllEntityFieldsByEntity(eForeignMeta.getEntity()).get(clctEOEFdeleted.getName());
 			if (efDeleted != null) {
 				EOSearchExpressionUnparser unparser = new EOSearchExpressionUnparser(query, eForeignMeta);
 				CollectableSearchCondition condSearchDeleted = new CollectableComparison(clctEOEFdeleted, ComparisonOperator.EQUAL, new CollectableValueField(false));
