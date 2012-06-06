@@ -604,6 +604,9 @@ public class NuclosEntityAttributeInputStep extends NuclosEntityAbstractStep {
 						}
 	
 						entityModel.addAttribute(attribute);
+						if(row >= 0 && editMode) {
+							entityModel.reorder(entityModel.getRowCount()-1, row);
+						}
 						entityModel.addTranslation(attribute, model.getTranslation());
 					}
 					
