@@ -402,6 +402,10 @@ public class DetailsController<Clct extends Collectable> extends CommonControlle
 	}
 
 	private void setCollectableComponentValue(CollectableComponent c, Object value) {
+		if (value == ScriptContext.CANCEL) {
+			return;
+		}
+
 		if (c instanceof CollectableListOfValues) {
 			setValueByListOfValues((CollectableListOfValues)c, value);
 		}
@@ -414,6 +418,10 @@ public class DetailsController<Clct extends Collectable> extends CommonControlle
 	}
 
 	private void setSubFormValue(DetailsSubFormController<?> ctl, int row, int column, CollectableEntityField cef, Object value) {
+		if (value == ScriptContext.CANCEL) {
+			return;
+		}
+
 		TableCellEditor editor = ctl.getTableCellEditor(ctl.getSubForm().getJTable(), row, cef);
 		if (editor instanceof CollectableComponentTableCellEditor) {
 			CollectableComponent c = ((CollectableComponentTableCellEditor) editor).getCollectableComponent();
