@@ -276,7 +276,7 @@ public class SelectObjectsController<T> extends Controller<Component> {
 		// final List<T> _lstAvailableFields = new ArrayList<T>(ro.getAvailableFields());
 		// final List<T> _lstSelectedFields = new ArrayList<T>(ro.getSelectedFields());
 
-		final MutableListModel<T> listmodelAvailableFields = new SortedListModel<T>(model.getAvailableFields(), model.getComparatorForAvaible());
+		final MutableListModel<T> listmodelAvailableFields = new SortedListModel<T>(model.getAvailableFields(), model.getComparatorForAvaible(), true);
 		final MutableListModel<T> listmodelSelectedFields = new CommonDefaultListModel<T>(model.getSelectedFields());
 
 		this.getPanel().getJListAvailableObjects().setModel(listmodelAvailableFields);

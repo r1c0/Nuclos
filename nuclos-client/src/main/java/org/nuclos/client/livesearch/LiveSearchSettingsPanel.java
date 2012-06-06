@@ -111,7 +111,7 @@ public class LiveSearchSettingsPanel extends JPanel {
 			else
 				selected.add(s);
 
-		MutableListModel<String> availModel = new SortedListModel<String>(unselected);
+		MutableListModel<String> availModel = new SortedListModel<String>(unselected, true);
 		MutableListModel<String> selectModel = new CommonDefaultListModel<String>(selected);
 
 		selPanel.getJListAvailableObjects().setModel(availModel);

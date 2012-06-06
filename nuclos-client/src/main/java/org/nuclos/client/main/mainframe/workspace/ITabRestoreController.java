@@ -1,4 +1,4 @@
-//Copyright (C) 2010  Novabit Informationssysteme GmbH
+//Copyright (C) 2012  Novabit Informationssysteme GmbH
 //
 //This file is part of Nuclos.
 //
@@ -14,14 +14,15 @@
 //
 //You should have received a copy of the GNU Affero General Public License
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
-
 package org.nuclos.client.main.mainframe.workspace;
 
-public abstract class TabRestoreController implements ITabRestoreController {
+import org.nuclos.client.main.mainframe.MainFrameTab;
+
+/**
+ * @author Thomas Pasch
+ */
+public interface ITabRestoreController {
+
+	void restoreFromPreferences(String preferencesXML, MainFrameTab tab) throws Exception;
 	
-	/**
-	 * Constructor of implementing classes is called via reflection!
-	 */
-	public TabRestoreController() {}
-		
 }

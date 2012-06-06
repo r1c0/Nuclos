@@ -26,7 +26,6 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
-import javax.swing.Icon;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JSplitPane;
@@ -42,11 +41,8 @@ import org.nuclos.client.main.mainframe.MainFrame;
 import org.nuclos.client.main.mainframe.MainFrameSplitPane;
 import org.nuclos.client.main.mainframe.MainFrameTab;
 import org.nuclos.client.main.mainframe.MainFrameTabbedPane;
-import org.nuclos.client.resource.NuclosResourceCache;
-import org.nuclos.client.resource.ResourceCache;
 import org.nuclos.client.ui.CommonJFrame;
 import org.nuclos.client.ui.Errors;
-import org.nuclos.client.ui.Icons;
 import org.nuclos.client.ui.MainFrameTabAdapter;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.common.Actions;
@@ -86,7 +82,7 @@ public class RestoreUtils {
 	 */
 	private synchronized static boolean restoreTab(WorkspaceDescription.Tab wdTab, MainFrameTab tab, boolean onDemand) {
 		try {
-			TabRestoreController restoreController = (TabRestoreController) Class.forName(wdTab.getRestoreController()).getConstructor().newInstance();
+			ITabRestoreController restoreController = (ITabRestoreController) Class.forName(wdTab.getRestoreController()).getConstructor().newInstance();
 			if (onDemand) {
 				tab.setTabRestoreController(restoreController);
 				tab.setTabRestorePreferencesXML(wdTab.getPreferencesXML());

@@ -69,14 +69,13 @@ import org.jdesktop.jxlayer.plaf.LayerUI;
 import org.jdesktop.jxlayer.plaf.ext.LockableUI;
 import org.jdesktop.swingx.painter.BusyPainter;
 import org.jdesktop.swingx.painter.TextPainter;
-import org.nuclos.client.NuclosIcons;
 import org.nuclos.client.common.NuclosDropTargetListener;
 import org.nuclos.client.common.NuclosDropTargetVisitor;
 import org.nuclos.client.common.security.SecurityCache;
 import org.nuclos.client.jms.TopicNotificationReceiver;
 import org.nuclos.client.main.Main;
+import org.nuclos.client.main.mainframe.workspace.ITabRestoreController;
 import org.nuclos.client.main.mainframe.workspace.ITabStoreController;
-import org.nuclos.client.main.mainframe.workspace.TabRestoreController;
 import org.nuclos.client.synthetica.NuclosThemeSettings;
 import org.nuclos.client.ui.Errors;
 import org.nuclos.client.ui.IMainFrameTabClosableController;
@@ -89,10 +88,8 @@ import org.nuclos.common.Actions;
 import org.nuclos.common.JMSConstants;
 import org.nuclos.common.LockedTabProgressNotification;
 import org.nuclos.common.MutableBoolean;
-import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.SpringLocaleDelegate;
-import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
@@ -121,7 +118,7 @@ public class MainFrameTab extends JPanel implements IOverlayComponent, NuclosDro
 	
 	private boolean notifyRestore = false;
 	private String restorePreferencesXML;
-	private TabRestoreController restoreController;
+	private ITabRestoreController restoreController;
 
 	private boolean neverClose;
 	private boolean fromAssigned;
@@ -298,7 +295,7 @@ public class MainFrameTab extends JPanel implements IOverlayComponent, NuclosDro
 	 * 
 	 * @return
 	 */
-	public TabRestoreController getTabRestoreController() {
+	public ITabRestoreController getTabRestoreController() {
 		return this.restoreController;
 	}
 	
@@ -306,7 +303,7 @@ public class MainFrameTab extends JPanel implements IOverlayComponent, NuclosDro
 	 * 
 	 * @param restoreController
 	 */
-	public void setTabRestoreController(TabRestoreController restoreController) {
+	public void setTabRestoreController(ITabRestoreController restoreController) {
 		this.restoreController = restoreController;
 	}
 	
@@ -900,7 +897,7 @@ public class MainFrameTab extends JPanel implements IOverlayComponent, NuclosDro
 				public void run() {
 					try {
 						final String xml = restorePreferencesXML;
-						final TabRestoreController ctrl = restoreController;
+						final ITabRestoreController ctrl = restoreController;
 						restorePreferencesXML = null;
 						restoreController = null;
 						ctrl.restoreFromPreferences(xml, MainFrameTab.this);

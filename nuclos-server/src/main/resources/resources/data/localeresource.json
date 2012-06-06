@@ -75,6 +75,51 @@
     "text": "Abbrechen"
   },
   {
+    "resourceID": "general.refresh",
+    "locale": "i-default",
+    "text": "Refresh"
+  },
+  {
+    "resourceID": "general.refresh",
+    "locale": "en",
+    "text": "Refresh"
+  },
+  {
+    "resourceID": "general.refresh",
+    "locale": "de",
+    "text": "Aktualisieren"
+  },
+  {
+    "resourceID": "general.export",
+    "locale": "i-default",
+    "text": "Export"
+  },
+  {
+    "resourceID": "general.export",
+    "locale": "en",
+    "text": "Export"
+  },
+  {
+    "resourceID": "general.export",
+    "locale": "de",
+    "text": "Exportieren"
+  },
+  {
+    "resourceID": "general.filter",
+    "locale": "i-default",
+    "text": "Filter"
+  },
+  {
+    "resourceID": "general.filter",
+    "locale": "en",
+    "text": "Filter"
+  },
+  {
+    "resourceID": "general.filter",
+    "locale": "de",
+    "text": "Filtern"
+  },
+  {
     "resourceID": "miFile",
     "locale": "i-default",
     "text": "^File"

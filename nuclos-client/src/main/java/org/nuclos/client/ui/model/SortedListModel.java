@@ -23,6 +23,7 @@ import java.util.Comparator;
 import java.util.List;
 
 import javax.swing.AbstractListModel;
+import javax.swing.ComboBoxModel;
 
 import org.apache.commons.lang.NullArgumentException;
 
@@ -35,18 +36,22 @@ import org.apache.commons.lang.NullArgumentException;
  * @author	<a href="mailto:Christoph.Radig@novabit.de">Christoph.Radig</a>
  * @version	01.00.00
  */
-public class SortedListModel<E> extends AbstractListModel implements MutableListModel<E> {
+public class SortedListModel<E> extends AbstractListModel implements MutableListModel<E>, ComboBoxModel {
 
 	private final List<E> lst;
 
 	private final Comparator<? super E> comparator;
+	
+	private E selected;
+	
+	private int selectedIndex = -1;
 
 	/**
 	 * creates an empty <code>SortedListModel</code>. The elements to be inserted must be <code>Comparable</code>.
 	 * @postcondition this.getSize() == 0
 	 */
 	public SortedListModel() {
-		this(Collections.<E>emptyList());
+		this(Collections.<E>emptyList(), true);
 
 		assert this.getSize() == 0;
 	}
@@ -55,8 +60,8 @@ public class SortedListModel<E> extends AbstractListModel implements MutableList
 	 * creates a <code>SortedListModel</code> containing the given list. The elements to be inserted must be <code>Comparable</code>.
 	 * @param coll the elements to be inserted initially.
 	 */
-	public SortedListModel(Collection<? extends E> coll) {
-		this(coll, null);
+	public SortedListModel(Collection<? extends E> coll, boolean copy) {
+		this(coll, null, copy);
 	}
 
 	/**
@@ -64,7 +69,7 @@ public class SortedListModel<E> extends AbstractListModel implements MutableList
 	 * @postcondition this.getSize() == 0
 	 */
 	public SortedListModel(Comparator<? super E> comparator) {
-		this(Collections.<E>emptyList(), comparator);
+		this(Collections.<E>emptyList(), comparator, true);
 
 		assert this.getSize() == 0;
 	}
@@ -75,11 +80,16 @@ public class SortedListModel<E> extends AbstractListModel implements MutableList
 	 * @param comparator used for comparing the elements. If <code>null</code>, the elements must be <code>Comparable</code>.
 	 * @precondition lst != null
 	 */
-	public SortedListModel(Collection<? extends E> coll, Comparator<? super E> comparator) {
+	public SortedListModel(Collection<? extends E> coll, Comparator<? super E> comparator, boolean copy) {
 		if (coll == null) {
 			throw new NullArgumentException("coll");
 		}
-		this.lst = new ArrayList<E>(coll);
+		if (copy) {
+			this.lst = new ArrayList<E>(coll);
+		}
+		else {
+			this.lst = (List<E>) coll;
+		}
 		this.comparator = comparator;
 		this.sort();
 	}
@@ -129,6 +139,10 @@ public class SortedListModel<E> extends AbstractListModel implements MutableList
 	@Override
 	public void add(int index, Object o) {
 		this.lst.add(index, (E) o);
+		if (selectedIndex >= 0 && index <= selectedIndex) {
+			selected = null;
+			selectedIndex = -1;
+		}
 		super.fireIntervalAdded(this, index, index);
 		this.sort();
 	}
@@ -140,6 +154,10 @@ public class SortedListModel<E> extends AbstractListModel implements MutableList
 	@Override
 	public E remove(int iIndex) {
 		final E result = this.lst.remove(iIndex);
+		if (iIndex == selectedIndex) {
+			selected = null;
+			selectedIndex = -1;
+		}
 		super.fireIntervalRemoved(this, iIndex, iIndex);
 		return result;
 	}
@@ -148,10 +166,40 @@ public class SortedListModel<E> extends AbstractListModel implements MutableList
 	public void replace(Collection<E> newCollection) {
 		final int oldLen = lst.size();
 		lst.clear();
+		selected = null;
+		selectedIndex = -1;
 		fireIntervalRemoved(this, 0, oldLen);
 		
 		lst.addAll(newCollection);
 		sort();
+	}
+	
+	// methods from ComboBoxModel
+
+	@Override
+	public void setSelectedItem(Object anItem) {
+		final E item = (E) anItem;
+		selectedIndex = lst.indexOf(item);
+		if (selectedIndex < 0) {
+			throw new IllegalStateException();
+		}
+		selected = item;
+		final int len = lst.size();
+		super.fireIntervalRemoved(this, 0, len);
+		super.fireIntervalAdded(this, selectedIndex, selectedIndex);
+	}
+
+	@Override
+	public Object getSelectedItem() {
+		return selected;
+	}
+	
+	public E getSelectedTypedItem() {
+		return selected;
+	}
+	
+	public int getSelectedIndex() {
+		return selectedIndex;
 	}
 
 }  // class SortedListModel
