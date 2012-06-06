@@ -115,33 +115,30 @@ public class CollectableFieldsProviderCache {
 				// No caching
 				return delegate.getCollectableFields();
 			}
-			return getCollectableFieldsAndDefaultValue(cacheKey).getX();
-		}
 
-		private Pair<List<CollectableField>, CollectableField> getCollectableFieldsAndDefaultValue(Object cacheKey) throws CommonBusinessException {
 			Pair<Class<? extends CacheableCollectableFieldsProvider>, Object> qualifiedCacheKey =
-				new Pair<Class<? extends CacheableCollectableFieldsProvider>, Object>(
-					delegate.getClass(), cacheKey);
+					new Pair<Class<? extends CacheableCollectableFieldsProvider>, Object>(
+						delegate.getClass(), cacheKey);
 
-			Pair<List<CollectableField>, CollectableField> result;
+			Pair<List<CollectableField>, CollectableField> result = cache.get(qualifiedCacheKey);
 			List<CollectableField> values;
-			CollectableField cfDefault = null;
-			result = cache.get(qualifiedCacheKey);
-			if (result == null) {
+			if (result == null || result.getX() == null) {
 				synchronized (delegate) {
 					values = delegate.getCollectableFields();
-					if (delegate instanceof DefaultValueProvider) {
-						cfDefault = ((DefaultValueProvider)delegate).getDefaultValue();
-					}
 				}
 				if (values == null) {
 					//make sure empty result can be differentiated from not yet loaded
 					values = new ArrayList<CollectableField>();
 				}
-				result = new Pair<List<CollectableField>, CollectableField>(values, cfDefault);
-				cache.put(qualifiedCacheKey, result);
+				if (result == null) {
+					cache.put(qualifiedCacheKey, new Pair<List<CollectableField>, CollectableField>(values, null));
+				}
+				else {
+					result.setX(values);
+				}
 			}
-			return result;
+
+			return cache.get(qualifiedCacheKey).getX();
 		}
 
 		/**
@@ -181,14 +178,42 @@ public class CollectableFieldsProviderCache {
 		@Override
 		public CollectableField getDefaultValue() throws CommonBusinessException {
 			Object cacheKey = delegate.getCacheKey();
-			if (cacheKey == null) {
-				// No caching
-				if (delegate instanceof DefaultValueProvider) {
-					return ((DefaultValueProvider) delegate).getDefaultValue();
+			if (delegate instanceof DefaultValueProvider) {
+				DefaultValueProvider dvp = (DefaultValueProvider) delegate;
+				if (cacheKey == null) {
+					// No caching
+					return dvp.getDefaultValue();
 				}
-				return null;
+
+				Pair<Class<? extends CacheableCollectableFieldsProvider>, Object> qualifiedCacheKey =
+						new Pair<Class<? extends CacheableCollectableFieldsProvider>, Object>(
+							delegate.getClass(), cacheKey);
+
+				Pair<List<CollectableField>, CollectableField> result = cache.get(qualifiedCacheKey);
+				CollectableField defaultvalue;
+				if (result == null || result.getY() == null) {
+					synchronized (delegate) {
+						defaultvalue = dvp.getDefaultValue();
+					}
+					if (result == null) {
+						cache.put(qualifiedCacheKey, new Pair<List<CollectableField>, CollectableField>(null, defaultvalue));
+					}
+					else {
+						result.setY(defaultvalue);
+					}
+				}
+
+				return cache.get(qualifiedCacheKey).getY();
 			}
-			return getCollectableFieldsAndDefaultValue(cacheKey).getY();
+			return null;
+		}
+
+		@Override
+		public boolean isSupported() {
+			if (delegate instanceof DefaultValueProvider) {
+				return ((DefaultValueProvider) delegate).isSupported();
+			}
+			return false;
 		}
 	}
 }

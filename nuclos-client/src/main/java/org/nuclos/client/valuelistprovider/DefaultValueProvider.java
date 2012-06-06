@@ -17,14 +17,14 @@
 package org.nuclos.client.valuelistprovider;
 
 import org.nuclos.common.collect.collectable.CollectableField;
-import org.nuclos.common.collect.collectable.CollectableFieldsProvider;
 import org.nuclos.common2.exception.CommonBusinessException;
-
 
 /**
  * A DefaultValueProvider has a {@link #getDefaultValue()} method to return default value.
  */
 public interface DefaultValueProvider {
+
+	boolean isSupported();
 
 	/**
 	 * Returns a default value if applicable.

@@ -23,6 +23,7 @@ import java.util.Set;
 
 import org.nuclos.common.NuclosBusinessException;
 import org.nuclos.common.NuclosFatalException;
+import org.nuclos.common.collect.collectable.CollectableField;
 import org.nuclos.common.database.query.definition.Schema;
 import org.nuclos.common.database.query.definition.Table;
 import org.nuclos.common.querybuilder.NuclosDatasourceException;
@@ -49,7 +50,7 @@ import org.nuclos.server.ruleengine.NuclosBusinessRuleException;
  * <br>
  * Created by Novabit Informationssysteme GmbH <br>
  * Please visit <a href="http://www.novabit.de">www.novabit.de</a>
- * 
+ *
  * @author <a href="mailto:Lars.Rueckemann@novabit.de">Lars Rueckemann</a>
  * @version 01.00.00
  */
@@ -92,7 +93,7 @@ public class DatasourceDelegate {
 
 	/**
 	 * get a list of DatasourceVO which uses the datasource
-	 * 
+	 *
 	 * @param datasourceVO
 	 *            could also be an instance of <code>DynamicEntityVO</code> or
 	 *            <code>ValuelistProviderVO</code>
@@ -133,7 +134,7 @@ public class DatasourceDelegate {
 
 	/**
 	 * Get datasource with the specified name.
-	 * 
+	 *
 	 * @param sName
 	 * @return DatasourceVO
 	 */
@@ -148,7 +149,7 @@ public class DatasourceDelegate {
 
 	/**
 	 * Get dynamic entity with the specified name.
-	 * 
+	 *
 	 * @param sDynamicEntity
 	 * @return DynamicEntityVO
 	 */
@@ -163,7 +164,7 @@ public class DatasourceDelegate {
 
 	/**
 	 * Get valuelist provider with the specified name.
-	 * 
+	 *
 	 * @param sValuelistProvider
 	 * @return ValuelistProviderVO
 	 */
@@ -200,7 +201,7 @@ public class DatasourceDelegate {
 
 	/**
 	 * get dynamic entity value object
-	 * 
+	 *
 	 * @param iDynamicEntityId
 	 *            primary key of dynamic entity
 	 * @return DynamicEntityVO
@@ -228,7 +229,7 @@ public class DatasourceDelegate {
 
 	/**
 	 * get valuelist provider value object
-	 * 
+	 *
 	 * @param iValuelistProviderId
 	 *            primary key of valuelist provider
 	 * @return ValuelistProviderVO
@@ -295,7 +296,7 @@ public class DatasourceDelegate {
 
 	/**
 	 * execute a datasource by datasource id
-	 * 
+	 *
 	 * @param iDatasourceId
 	 * @param mpParams
 	 * @return
@@ -312,7 +313,7 @@ public class DatasourceDelegate {
 
 	/**
 	 * execute a datasource by datasource xml
-	 * 
+	 *
 	 * @param sDatasourceXML
 	 * @param mpParams
 	 * @param iMaxRowCount
@@ -376,7 +377,7 @@ public class DatasourceDelegate {
 
 	/**
 	 * Get datasource with the specified id.
-	 * 
+	 *
 	 * @param iId
 	 * @return the datasource with the specified id.
 	 */
@@ -390,7 +391,7 @@ public class DatasourceDelegate {
 	}
 
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	public Schema getSchemaTables() {
@@ -405,7 +406,7 @@ public class DatasourceDelegate {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param table
 	 * @return
 	 */
@@ -432,7 +433,7 @@ public class DatasourceDelegate {
 
 	/**
 	 * get RecordGrant value object
-	 * 
+	 *
 	 * @param iRecordGrantId
 	 *            primary key of RecordGrant
 	 * @return RecordGrantVO
@@ -448,7 +449,7 @@ public class DatasourceDelegate {
 
 	/**
 	 * Get RecordGrant with the specified name.
-	 * 
+	 *
 	 * @param sRecordGrant
 	 * @return RecordGrantVO
 	 */
@@ -469,7 +470,7 @@ public class DatasourceDelegate {
 			throw new CommonFatalException(ex);
 		}
 	}
-	
+
 	public DynamicTasklistVO getDynamicTasklist(Integer id) throws CommonPermissionException {
 		try {
 			return getDatasourceFacade().getDynamicTasklist(id);
@@ -478,7 +479,7 @@ public class DatasourceDelegate {
 			throw new CommonFatalException(ex);
 		}
 	}
-	
+
 	public Set<String> getDynamicTasklistAttributes(Integer dtlId) throws CommonPermissionException, NuclosDatasourceException {
 		return getDatasourceFacade().getDynamicTasklistAttributes(dtlId);
 	}
@@ -486,5 +487,8 @@ public class DatasourceDelegate {
 	public ResultVO getDynamicTasklistData(Integer dtlId) throws CommonPermissionException, NuclosDatasourceException {
 		return getDatasourceFacade().getDynamicTasklistData(dtlId);
 	}
-	
+
+	public CollectableField getDefaultValue(String datasource, String valuefield, String idfield, String defaultfield, Map<String, Object> params) throws CommonBusinessException {
+		return getDatasourceFacade().getDefaultValue(datasource, valuefield, idfield, defaultfield, params);
+	}
 } // class DatasourceDelegate

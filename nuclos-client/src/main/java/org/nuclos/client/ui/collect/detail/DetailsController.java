@@ -44,10 +44,12 @@ import org.nuclos.client.ui.collect.CollectController;
 import org.nuclos.client.ui.collect.CollectState;
 import org.nuclos.client.ui.collect.CommonController;
 import org.nuclos.client.ui.collect.SubForm;
+import org.nuclos.client.ui.collect.SubForm.RefreshValueListAction;
 import org.nuclos.client.ui.collect.component.CollectableComboBox;
 import org.nuclos.client.ui.collect.component.CollectableComponent;
 import org.nuclos.client.ui.collect.component.CollectableComponentTableCellEditor;
 import org.nuclos.client.ui.collect.component.CollectableListOfValues;
+import org.nuclos.client.ui.collect.component.LabeledCollectableComponentWithVLP;
 import org.nuclos.client.ui.collect.component.model.CollectableComponentModel;
 import org.nuclos.client.ui.collect.component.model.CollectableComponentModelAdapter;
 import org.nuclos.client.ui.collect.component.model.CollectableComponentModelEvent;
@@ -55,14 +57,18 @@ import org.nuclos.client.ui.collect.component.model.CollectableComponentModelLis
 import org.nuclos.client.ui.collect.component.model.DetailsComponentModel;
 import org.nuclos.client.ui.collect.component.model.DetailsComponentModelEvent;
 import org.nuclos.client.ui.gc.ListenerUtil;
+import org.nuclos.client.valuelistprovider.DefaultValueProvider;
+import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.collect.collectable.Collectable;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
+import org.nuclos.common.collect.collectable.CollectableField;
 import org.nuclos.common.collect.collectable.CollectableValueField;
 import org.nuclos.common.collect.collectable.CollectableValueIdField;
 import org.nuclos.common.collect.exception.CollectableFieldFormatException;
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
 import org.nuclos.common.expressions.ExpressionParser;
+import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
 
@@ -109,10 +115,18 @@ public class DetailsController<Clct extends Collectable> extends CommonControlle
 
 	private final CollectableComponentModelListener mdlListener = new CollectableComponentModelAdapter() {
 		@Override
-		public void collectableFieldChangedInModel(CollectableComponentModelEvent ev) {
+		public void collectableFieldChangedInModel(final CollectableComponentModelEvent ev) {
 			final EntityMetaDataVO meta = MetaDataClientProvider.getInstance().getEntity(getCollectController().getEntityName());
 			CollectableComponentModel model = ev.getCollectableComponentModel();
 			if (!model.isInitializing()) {
+				SwingUtilities.invokeLater(new Runnable() {
+					@Override
+					public void run() {
+						String source = ev.getCollectableComponentModel().getFieldName();
+						setSubformDefaultValues(null, source);
+					}
+				});
+
 				final String key = MessageFormat.format("{0}.{1}.{2}", meta.getNuclet(), meta.getEntity(), model.getFieldName());
 				SwingUtilities.invokeLater(new Runnable() {
 					@Override
@@ -282,6 +296,8 @@ public class DetailsController<Clct extends Collectable> extends CommonControlle
 							SwingUtilities.invokeLater(new Runnable() {
 								@Override
 								public void run() {
+									setSubformDefaultValues(null, null);
+
 									if (sfc != null && !sfc.isClosed()) {
 										if (sfc.getSubForm().getParentSubForm() != null) {
 											for (DetailsSubFormController<?> psfc : DetailsController.this.sfcs) {
@@ -299,12 +315,14 @@ public class DetailsController<Clct extends Collectable> extends CommonControlle
 							break;
 						case TableModelEvent.UPDATE:
 							if (e.getColumn() >= 0) {
-								CollectableEntityField column = sfc.getCollectableTableModel().getCollectableEntityField(e.getColumn());
-								EntityMetaDataVO meta = MetaDataClientProvider.getInstance().getEntity(column.getEntityName());
+								final CollectableEntityField column = sfc.getCollectableTableModel().getCollectableEntityField(e.getColumn());
+								final EntityMetaDataVO meta = MetaDataClientProvider.getInstance().getEntity(column.getEntityName());
 								final String key = MessageFormat.format("{0}.{1}.{2}", meta.getNuclet(), meta.getEntity(), column.getName());
 								SwingUtilities.invokeLater(new Runnable() {
 									@Override
 									public void run() {
+										setSubformDefaultValues(meta.getEntity(), column.getName());
+
 										if (sfc != null && !sfc.isClosed()) {
 											if (sfc.getSubForm().getParentSubForm() != null) {
 												for (DetailsSubFormController<?> psfc : DetailsController.this.sfcs) {
@@ -482,5 +500,97 @@ public class DetailsController<Clct extends Collectable> extends CommonControlle
 
 	public List<DetailsSubFormController<?>> getSubFormControllers() {
 		return new ArrayList<DetailsSubFormController<?>>(this.sfcs);
+	}
+
+	private void setSubformDefaultValues(String sourceEntity, String sourceField) {
+		for (DetailsSubFormController<?> sfc : sfcs) {
+			if (sfc.isClosed()) {
+				continue;
+			}
+
+			for (CollectableEntityField cef : getFieldsWithDefaultValueProvider(sfc, sourceEntity, sourceField)) {
+				for (int j = 0; j < sfc.getCollectableTableModel().getRowCount(); j++) {
+					CollectableField cfOld = sfc.getCollectableTableModel().getValueAt(j, sfc.getCollectableTableModel().getColumn(cef));
+					if (cfOld != null && !cfOld.isNull()) {
+						continue;
+					}
+
+					TableCellEditor editor = sfc.getTableCellEditor(sfc.getSubForm().getJTable(), j, cef);
+					if (editor instanceof CollectableComponentTableCellEditor) {
+						CollectableComponent c = ((CollectableComponentTableCellEditor) editor).getCollectableComponent();
+						if (c instanceof LabeledCollectableComponentWithVLP) {
+							LabeledCollectableComponentWithVLP vlp = (LabeledCollectableComponentWithVLP) c;
+
+							if (vlp.getValueListProvider() != null && vlp.getValueListProvider() instanceof DefaultValueProvider) {
+								DefaultValueProvider dvp = (DefaultValueProvider) vlp.getValueListProvider();
+
+								if (dvp.isSupported()) {
+									CollectableField cf;
+									try {
+										cf = dvp.getDefaultValue();
+									}
+									catch (CommonBusinessException e1) {
+										throw new NuclosFatalException(e1);
+									}
+
+									if (c instanceof CollectableListOfValues && cf.getValueId() != null) {
+										setValueByListOfValues((CollectableListOfValues) c, cf.getValueId());
+									}
+									else if (c instanceof CollectableComboBox && cf.getValueId() != null) {
+										setValueByComboBox((CollectableComboBox)c, cf.getValueId());
+									}
+									else {
+										c.setField(cf);
+									}
+									editor.stopCellEditing();
+									try {
+										sfc.getCollectableTableModel().setValueAt(c.getField(), j, sfc.getCollectableTableModel().getColumn(cef));
+									}
+									catch (CollectableFieldFormatException e) {
+										LOG.warn("Failed to set default value.", e);
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+	private List<CollectableEntityField> getFieldsWithDefaultValueProvider(DetailsSubFormController<?> sfc, String sourceEntity, String sourceField) {
+		final List<CollectableEntityField> result = new ArrayList<CollectableEntityField>();
+		for (SubForm.Column col : sfc.getSubForm().getColumns()) {
+			if (sourceField != null) {
+				if (col.getRefreshValueListActions() != null && col.getValueListProvider() != null) {
+					if (col.getValueListProvider() instanceof DefaultValueProvider && ((DefaultValueProvider)col.getValueListProvider()).isSupported()) {
+						for (RefreshValueListAction act : col.getRefreshValueListActions()) {
+							String target = act.getTargetComponentName();
+							if (LangUtils.equals(sourceEntity, act.getParentComponentEntityName()) && LangUtils.equals(sourceField, act.getParentComponentName())) {
+								for (int i = 0; i < sfc.getCollectableTableModel().getColumnCount(); i++) {
+									CollectableEntityField cef = sfc.getCollectableTableModel().getCollectableEntityField(i);
+									if (LangUtils.equals(target, cef.getName())) {
+										result.add(cef);
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+			else {
+				if (col.getValueListProvider() != null) {
+					if (col.getValueListProvider() instanceof DefaultValueProvider && ((DefaultValueProvider)col.getValueListProvider()).isSupported()) {
+						for (int i = 0; i < sfc.getCollectableTableModel().getColumnCount(); i++) {
+							CollectableEntityField cef = sfc.getCollectableTableModel().getCollectableEntityField(i);
+							if (LangUtils.equals(col.getName(), cef.getName())) {
+								result.add(cef);
+							}
+						}
+					}
+				}
+			}
+		}
+		return result;
 	}
 }	// class DetailsController

@@ -47,6 +47,7 @@ import org.nuclos.client.ui.collect.component.model.SearchComponentModelEvent;
 import org.nuclos.client.ui.labeled.LabeledComponentSupport;
 import org.nuclos.client.ui.labeled.LabeledListOfValues;
 import org.nuclos.client.ui.popupmenu.JPopupMenuListener;
+import org.nuclos.client.valuelistprovider.DefaultValueProvider;
 import org.nuclos.client.valuelistprovider.cache.CollectableFieldsProviderCache.CachingCollectableFieldsProvider;
 import org.nuclos.common.collect.collectable.Collectable;
 import org.nuclos.common.collect.collectable.CollectableEntity;
@@ -598,7 +599,19 @@ public class CollectableListOfValues extends LabeledCollectableComponentWithVLP 
 
 	@Override
 	public void refreshValueList(boolean async) {
-		// do nothing
+		try {
+			if (getField() == null || getField().isNull()) {
+				if (getValueListProvider() instanceof DefaultValueProvider) {
+					final CollectableField cf = ((DefaultValueProvider) getValueListProvider()).getDefaultValue();
+					if (cf != null && getField() != null && getField().isNull()) {
+						setField(cf);
+					}
+				}
+			}
+		}
+		catch(Exception e) {
+			Errors.getInstance().showExceptionDialog(CollectableListOfValues.this.getJComponent(), e);
+		}
 	}
 
 	@Override

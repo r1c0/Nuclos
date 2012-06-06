@@ -344,10 +344,12 @@ public class CollectableComboBox extends LabeledCollectableComponentWithVLP impl
 				if (!isCancelled() && !ignoreResult) {
 					setComboBoxModel(get(), false);
 					getJComboBox().setCursor(null);
-					if (getValueListProvider() instanceof DefaultValueProvider) {
-						final CollectableField cf = ((DefaultValueProvider) getValueListProvider()).getDefaultValue();
-						if (cf != null && getField() != null && getField().isNull()) {
-							setField(cf);
+					if (getField() == null || getField().isNull()) {
+						if (getValueListProvider() instanceof DefaultValueProvider) {
+							final CollectableField cf = ((DefaultValueProvider) getValueListProvider()).getDefaultValue();
+							if (cf != null && getField() != null && getField().isNull()) {
+								setField(cf);
+							}
 						}
 					}
 				}

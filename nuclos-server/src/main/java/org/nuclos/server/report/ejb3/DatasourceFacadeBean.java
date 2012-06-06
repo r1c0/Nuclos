@@ -31,6 +31,9 @@ import org.apache.log4j.Logger;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.SearchConditionUtils;
+import org.nuclos.common.collect.collectable.CollectableField;
+import org.nuclos.common.collect.collectable.CollectableValueField;
+import org.nuclos.common.collect.collectable.CollectableValueIdField;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableComparison;
 import org.nuclos.common.dal.vo.SystemFields;
 import org.nuclos.common.database.query.definition.Schema;
@@ -38,6 +41,7 @@ import org.nuclos.common.database.query.definition.Table;
 import org.nuclos.common.querybuilder.DatasourceUtils;
 import org.nuclos.common.querybuilder.NuclosDatasourceException;
 import org.nuclos.common2.StringUtils;
+import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonCreateException;
 import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.common2.exception.CommonFinderException;
@@ -85,17 +89,15 @@ import org.springframework.transaction.annotation.Transactional;
  * Created by Novabit Informationssysteme GmbH <br>
  * Please visit <a href="http://www.novabit.de">www.novabit.de</a>
  */
-@Transactional(noRollbackFor= {Exception.class})
+@Transactional(noRollbackFor = { Exception.class })
 public class DatasourceFacadeBean extends NuclosFacadeBean implements DatasourceFacadeRemote {
 
 	private static final Logger LOG = Logger.getLogger(DatasourceFacadeBean.class);
 
 	private static enum DataSourceType {
-		DYNAMICENTITY(NuclosEntity.DYNAMICENTITY, NuclosEntity.DYNAMICENTITYUSAGE, "dynamicEntity"), 
-		VALUELISTPROVIDER(NuclosEntity.VALUELISTPROVIDER, NuclosEntity.VALUELISTPROVIDERUSAGE, "valuelistProvider"), 
-		RECORDGRANT(NuclosEntity.RECORDGRANT, NuclosEntity.RECORDGRANTUSAGE, "recordGrant"), 
-		DATASOURCE(NuclosEntity.DATASOURCE, NuclosEntity.DATASOURCEUSAGE, "datasource"), 
-		DYNAMICTASKLIST(NuclosEntity.DYNAMICTASKLIST, NuclosEntity.DYNAMICTASKLISTUSAGE, "dynamictasklist");
+		DYNAMICENTITY(NuclosEntity.DYNAMICENTITY, NuclosEntity.DYNAMICENTITYUSAGE, "dynamicEntity"), VALUELISTPROVIDER(NuclosEntity.VALUELISTPROVIDER, NuclosEntity.VALUELISTPROVIDERUSAGE, "valuelistProvider"), RECORDGRANT(
+				NuclosEntity.RECORDGRANT, NuclosEntity.RECORDGRANTUSAGE, "recordGrant"), DATASOURCE(NuclosEntity.DATASOURCE, NuclosEntity.DATASOURCEUSAGE, "datasource"), DYNAMICTASKLIST(NuclosEntity.DYNAMICTASKLIST,
+				NuclosEntity.DYNAMICTASKLISTUSAGE, "dynamictasklist");
 
 		final NuclosEntity entity;
 		final NuclosEntity entityUsage;
@@ -123,7 +125,7 @@ public class DatasourceFacadeBean extends NuclosFacadeBean implements Datasource
 				return MasterDataWrapper.getDatasourceVO(deVO, userName);
 			}
 		}
-		
+
 		public MasterDataVO unwrap(DatasourceVO dsVO) {
 			return MasterDataWrapper.wrapDatasourceVO(dsVO);
 		}
@@ -170,7 +172,7 @@ public class DatasourceFacadeBean extends NuclosFacadeBean implements Datasource
 
 	/**
 	 * get all datasources
-	 * 
+	 *
 	 * @return set of datasources
 	 * @throws CommonPermissionException
 	 */
@@ -181,7 +183,7 @@ public class DatasourceFacadeBean extends NuclosFacadeBean implements Datasource
 
 	/**
 	 * get all datasources
-	 * 
+	 *
 	 * @return set of datasources
 	 */
 	public Collection<DatasourceVO> getDatasourcesForCurrentUser() {
@@ -190,7 +192,7 @@ public class DatasourceFacadeBean extends NuclosFacadeBean implements Datasource
 
 	/**
 	 * get datasource value object
-	 * 
+	 *
 	 * @param iId
 	 *            primary key of datasource
 	 * @return datasource value object
@@ -209,7 +211,7 @@ public class DatasourceFacadeBean extends NuclosFacadeBean implements Datasource
 
 	/**
 	 * get datasource value object
-	 * 
+	 *
 	 * @param sDatasourceName
 	 *            name of datasource
 	 * @return datasource value object
@@ -221,7 +223,7 @@ public class DatasourceFacadeBean extends NuclosFacadeBean implements Datasource
 
 	/**
 	 * get valuelist provider value object
-	 * 
+	 *
 	 * @param sValuelistProvider
 	 *            name of valuelist provider
 	 * @return valuelist provider value object
@@ -233,7 +235,7 @@ public class DatasourceFacadeBean extends NuclosFacadeBean implements Datasource
 
 	/**
 	 * get dynamic entity value object
-	 * 
+	 *
 	 * @param sDynamicEntity
 	 *            name of valuelist provider
 	 * @return dynamic entity value object
@@ -245,7 +247,7 @@ public class DatasourceFacadeBean extends NuclosFacadeBean implements Datasource
 
 	/**
 	 * get a Datasource by id regardless of permisssions
-	 * 
+	 *
 	 * @param iDatasourceId
 	 * @return
 	 * @throws CommonPermissionException
@@ -257,17 +259,16 @@ public class DatasourceFacadeBean extends NuclosFacadeBean implements Datasource
 
 	/**
 	 * create new datasource
-	 * 
+	 *
 	 * @param datasourcevo
 	 *            value object
 	 * @return new datasource
 	 */
-	public DatasourceVO create(DatasourceVO datasourcevo, DependantMasterDataMap dependants, List<String> lstUsedDatasources) throws CommonCreateException, CommonValidationException, NuclosBusinessRuleException,
-			CommonPermissionException {
+	public DatasourceVO create(DatasourceVO datasourcevo, DependantMasterDataMap dependants, List<String> lstUsedDatasources) throws CommonCreateException, CommonValidationException, NuclosBusinessRuleException, CommonPermissionException {
 		DataSourceType type = DataSourceType.getFromDatasourceVO(datasourcevo);
 		String entity = type.entity.getEntityName();
 		this.checkWriteAllowed(entity);
-		
+
 		datasourcevo.validate();
 		updateValidFlag(datasourcevo);
 
@@ -282,16 +283,16 @@ public class DatasourceFacadeBean extends NuclosFacadeBean implements Datasource
 				throw new CommonFatalException(e1);
 			}
 		}
-		
+
 		if (NuclosEntity.DYNAMICENTITY.getEntityName().equals(entity)) {
 			processChangingDynamicEntity((DynamicEntityVO) datasourcevo, null, true);
 		}
-		
+
 		MasterDataVO mdVO = getMasterDataFacade().create(entity, type.unwrap(datasourcevo), null);
 		getMasterDataFacade().notifyClients(entity);
-		
+
 		DatasourceVO dbDataSourceVO = MasterDataWrapper.getDatasourceVO(mdVO, getCurrentUserName());
-		
+
 		try {
 			replaceUsedDatasourceList(dbDataSourceVO, lstUsedDatasources);
 		}
@@ -304,7 +305,7 @@ public class DatasourceFacadeBean extends NuclosFacadeBean implements Datasource
 		catch (CommonStaleVersionException e) {
 			throw new CommonFatalException(e);
 		}
-		
+
 		invalidateCaches(type);
 
 		return type.wrap(mdVO, getCurrentUserName());
@@ -312,7 +313,7 @@ public class DatasourceFacadeBean extends NuclosFacadeBean implements Datasource
 
 	/**
 	 * modify an existing datasource without usages
-	 * 
+	 *
 	 * @param datasourcevo
 	 * @throws CommonFinderException
 	 * @throws CommonPermissionException
@@ -325,13 +326,13 @@ public class DatasourceFacadeBean extends NuclosFacadeBean implements Datasource
 
 	/**
 	 * modify an existing datasource
-	 * 
+	 *
 	 * @param datasourcevo
 	 *            value object
 	 * @return modified datasource
 	 */
-	public DatasourceVO modify(DatasourceVO datasourcevo, DependantMasterDataMap dependants, List<String> lstUsedDatasources) throws CommonFinderException, CommonPermissionException, CommonStaleVersionException,
-			CommonValidationException, NuclosBusinessRuleException, CommonRemoteException {
+	public DatasourceVO modify(DatasourceVO datasourcevo, DependantMasterDataMap dependants, List<String> lstUsedDatasources) throws CommonFinderException, CommonPermissionException, CommonStaleVersionException, CommonValidationException,
+			NuclosBusinessRuleException, CommonRemoteException {
 
 		return modify(datasourcevo, dependants, lstUsedDatasources, true);
 	}
@@ -341,7 +342,7 @@ public class DatasourceFacadeBean extends NuclosFacadeBean implements Datasource
 		DataSourceType type = DataSourceType.getFromDatasourceVO(datasourcevo);
 		String entity = type.entity.getEntityName();
 		this.checkWriteAllowed(entity);
-		
+
 		datasourcevo.validate();
 		updateValidFlag(datasourcevo);
 
@@ -349,17 +350,17 @@ public class DatasourceFacadeBean extends NuclosFacadeBean implements Datasource
 			validateUniqueConstraint(datasourcevo);
 
 			MasterDataVO dsAsMd = getMasterDataFacade().get(entity, datasourcevo.getId());
-			
+
 			if (NuclosEntity.DATASOURCE.getEntityName().equals(entity)) {
 				if (DatasourceCache.getInstance().getPermission(dsAsMd.getIntId(), getCurrentUserName()) != DatasourceVO.PERMISSION_READWRITE) {
 					throw new CommonPermissionException();
 				}
 			}
-			
+
 			if (NuclosEntity.DYNAMICENTITY.getEntityName().equals(entity)) {
 				processChangingDynamicEntity((DynamicEntityVO) datasourcevo, (DynamicEntityVO) type.wrap(dsAsMd, getCurrentUserName()), true);
 			}
-			
+
 			if (dsAsMd.getVersion() != datasourcevo.getVersion()) {
 				throw new CommonStaleVersionException(entity, datasourcevo.toString(), dsAsMd.toString());
 			}
@@ -371,7 +372,7 @@ public class DatasourceFacadeBean extends NuclosFacadeBean implements Datasource
 			}
 
 			invalidateCaches(type);
-			
+
 			dsAsMd = getMasterDataFacade().get(entity, datasourcevo.getId());
 			return type.wrap(dsAsMd, getCurrentUserName());
 		}
@@ -387,7 +388,7 @@ public class DatasourceFacadeBean extends NuclosFacadeBean implements Datasource
 	}
 
 	/**
-	 * 
+	 *
 	 * @param newDEs
 	 *            (dynamic entities of this list would be created)
 	 * @param oldDEs
@@ -416,7 +417,7 @@ public class DatasourceFacadeBean extends NuclosFacadeBean implements Datasource
 
 	/**
 	 * revalidates MasterDataMetaCache after process
-	 * 
+	 *
 	 * @param newDEVO
 	 * @param oldDEVO
 	 * @param validate
@@ -428,7 +429,7 @@ public class DatasourceFacadeBean extends NuclosFacadeBean implements Datasource
 	}
 
 	/**
-	 * 
+	 *
 	 * @param newDEVO
 	 * @param oldDEVO
 	 * @param validate
@@ -436,8 +437,7 @@ public class DatasourceFacadeBean extends NuclosFacadeBean implements Datasource
 	 * @throws CommonValidationException
 	 *             (only if validate is true)
 	 */
-	private void processChangingDynamicEntity(DynamicEntityVO newDEVO, DynamicEntityVO oldDEVO, boolean validate, boolean revalidateMasterDataMetaCache, boolean bExecute, List<String> script)
-			throws CommonValidationException {
+	private void processChangingDynamicEntity(DynamicEntityVO newDEVO, DynamicEntityVO oldDEVO, boolean validate, boolean revalidateMasterDataMetaCache, boolean bExecute, List<String> script) throws CommonValidationException {
 		String sqlSelect = null;
 		if (newDEVO != null) {
 			if (validate) {
@@ -515,8 +515,8 @@ public class DatasourceFacadeBean extends NuclosFacadeBean implements Datasource
 	 * @throws NuclosBusinessRuleException
 	 * @throws CommonCreateException
 	 */
-	private void replaceUsedDatasourceList(DatasourceVO datasourceVO, List<String> referencedDatasources) throws CommonFinderException, CommonPermissionException, NuclosBusinessRuleException,
-			CommonRemoveException, CommonStaleVersionException, CommonCreateException {
+	private void replaceUsedDatasourceList(DatasourceVO datasourceVO, List<String> referencedDatasources) throws CommonFinderException, CommonPermissionException, NuclosBusinessRuleException, CommonRemoveException,
+			CommonStaleVersionException, CommonCreateException {
 		DataSourceType datasourceType = DataSourceType.getFromDatasourceVO(datasourceVO);
 		MasterDataMetaCache metaCache = MasterDataMetaCache.getInstance();
 		MasterDataMetaVO usageMeta = metaCache.getMetaData(datasourceType.entityUsage);
@@ -529,8 +529,8 @@ public class DatasourceFacadeBean extends NuclosFacadeBean implements Datasource
 
 		// 2. insert the new entries:
 		for (String dataSourceName : referencedDatasources) {
-			CollectableComparison condDatasource = SearchConditionUtils.newMDComparison(metaCache.getMetaData(datasourceType.entity.getEntityName()), "name",
-					org.nuclos.common.collect.collectable.searchcondition.ComparisonOperator.EQUAL, dataSourceName);
+			CollectableComparison condDatasource = SearchConditionUtils.newMDComparison(metaCache.getMetaData(datasourceType.entity.getEntityName()), "name", org.nuclos.common.collect.collectable.searchcondition.ComparisonOperator.EQUAL,
+					dataSourceName);
 			Collection<MasterDataVO> usedDatasources = getMasterDataFacade().getMasterData(datasourceType.entity.getEntityName(), condDatasource, true);
 
 			for (MasterDataVO usedDatasource : usedDatasources) {
@@ -545,11 +545,11 @@ public class DatasourceFacadeBean extends NuclosFacadeBean implements Datasource
 
 	/**
 	 * get a list of DatasourceVO which uses the datasource with the given id
-	 * 
+	 *
 	 * ONLY for datasources, NOT for dynamic entities and valuelist provider
-	 * 
+	 *
 	 * @see also <code>getUsagesForDatasource(DatasourceVO datasourceVO)</code>
-	 * 
+	 *
 	 * @param iDatasourceId
 	 * @return
 	 * @throws CommonFinderException
@@ -562,7 +562,7 @@ public class DatasourceFacadeBean extends NuclosFacadeBean implements Datasource
 
 	/**
 	 * get a list of DatasourceVO which uses the datasource
-	 * 
+	 *
 	 * @param datasourceVO
 	 *            could also be an instance of <code>DynamicEntityVO</code> or
 	 *            <code>ValuelistProviderVO</code>
@@ -576,8 +576,7 @@ public class DatasourceFacadeBean extends NuclosFacadeBean implements Datasource
 
 		List<DatasourceVO> result = new ArrayList<DatasourceVO>();
 
-		CollectableComparison cond = SearchConditionUtils.newMDReferenceComparison(MasterDataMetaCache.getInstance().getMetaData(datasourceType.entityUsage), datasourceType.fieldEntityUsed,
-				datasourceVO.getId());
+		CollectableComparison cond = SearchConditionUtils.newMDReferenceComparison(MasterDataMetaCache.getInstance().getMetaData(datasourceType.entityUsage), datasourceType.fieldEntityUsed, datasourceVO.getId());
 
 		for (MasterDataVO usageVO : getMasterDataFacade().getMasterData(datasourceType.entityUsage.getEntityName(), cond, true)) {
 			MasterDataVO deVO = getMasterDataFacade().get(datasourceType.entity.getEntityName(), usageVO.getField(datasourceType.fieldEntityUsed + "Id"));
@@ -592,7 +591,7 @@ public class DatasourceFacadeBean extends NuclosFacadeBean implements Datasource
 	/**
 	 * get a list of DatasourceCVO which are used by the datasource with the
 	 * given id
-	 * 
+	 *
 	 * @param iDatasourceId
 	 * @return
 	 * @throws CommonFinderException
@@ -625,7 +624,7 @@ public class DatasourceFacadeBean extends NuclosFacadeBean implements Datasource
 
 	/**
 	 * delete an existing datasource
-	 * 
+	 *
 	 * @param datasourcevo
 	 *            value object
 	 */
@@ -633,15 +632,15 @@ public class DatasourceFacadeBean extends NuclosFacadeBean implements Datasource
 		DataSourceType type = DataSourceType.getFromDatasourceVO(datasourcevo);
 		String entity = type.entity.getEntityName();
 		this.checkDeleteAllowed(entity);
-		
+
 		MasterDataVO dsAsMd = getMasterDataFacade().get(entity, datasourcevo.getId());
-		
+
 		if (NuclosEntity.DATASOURCE.getEntityName().equals(entity)) {
 			if (DatasourceCache.getInstance().getPermission(dsAsMd.getIntId(), getCurrentUserName()) != DatasourceVO.PERMISSION_READWRITE) {
 				throw new CommonPermissionException();
 			}
 		}
-		
+
 		if (NuclosEntity.DYNAMICENTITY.getEntityName().equals(entity)) {
 			try {
 				processChangingDynamicEntity(null, (DynamicEntityVO) datasourcevo, false);
@@ -651,21 +650,21 @@ public class DatasourceFacadeBean extends NuclosFacadeBean implements Datasource
 				LOG.info("removeDynamicEntity: " + e);
 			}
 		}
-		
+
 		if (dsAsMd.getVersion() != datasourcevo.getVersion()) {
 			throw new CommonStaleVersionException(entity, dsAsMd.toString(), datasourcevo.toString());
 		}
 
 		getMasterDataFacade().remove(entity, type.unwrap(datasourcevo), false);
 		getMasterDataFacade().notifyClients(entity);
-		
+
 		try {
 			replaceUsedDatasourceList(datasourcevo, Collections.<String> emptyList());
 		}
 		catch (CommonCreateException e) {
 			throw new CommonFatalException(e);
 		}
-		
+
 		invalidateCaches(type);
 	}
 
@@ -689,7 +688,7 @@ public class DatasourceFacadeBean extends NuclosFacadeBean implements Datasource
 
 	/**
 	 * Retrieve the parameters a datasource accepts.
-	 * 
+	 *
 	 * @param sDatasourceXML
 	 * @return
 	 * @throws NuclosFatalException
@@ -702,7 +701,7 @@ public class DatasourceFacadeBean extends NuclosFacadeBean implements Datasource
 
 	/**
 	 * Retrieve the parameters a datasource accepts.
-	 * 
+	 *
 	 * @param iDatasourceId
 	 * @return
 	 * @throws NuclosFatalException
@@ -715,7 +714,7 @@ public class DatasourceFacadeBean extends NuclosFacadeBean implements Datasource
 
 	/**
 	 * validate the given DatasourceXML
-	 * 
+	 *
 	 * @param sDatasourceXML
 	 * @throws CommonValidationException
 	 * @throws NuclosReportException
@@ -729,7 +728,7 @@ public class DatasourceFacadeBean extends NuclosFacadeBean implements Datasource
 
 	/**
 	 * validate the given SQL
-	 * 
+	 *
 	 * @param sql
 	 * @throws CommonValidationException
 	 * @throws NuclosReportException
@@ -749,7 +748,7 @@ public class DatasourceFacadeBean extends NuclosFacadeBean implements Datasource
 
 	/**
 	 * get sql string for datasource definition
-	 * 
+	 *
 	 * @param iDatasourceId
 	 *            id of datasource
 	 * @return string containing sql
@@ -760,7 +759,7 @@ public class DatasourceFacadeBean extends NuclosFacadeBean implements Datasource
 
 	/**
 	 * get sql string for datasource definition without parameter definition
-	 * 
+	 *
 	 * @param sDatasourceXML
 	 *            xml of datasource
 	 * @return string containing sql
@@ -772,7 +771,7 @@ public class DatasourceFacadeBean extends NuclosFacadeBean implements Datasource
 
 	/**
 	 * get sql string for datasource definition
-	 * 
+	 *
 	 * @param sDatasourceXML
 	 *            xml of datasource
 	 * @return string containing sql
@@ -785,7 +784,7 @@ public class DatasourceFacadeBean extends NuclosFacadeBean implements Datasource
 	/**
 	 * get sql string for report execution. check that this method is only
 	 * called by the local interface as there is no authorization applied.
-	 * 
+	 *
 	 * @param iDatasourceId
 	 *            id of datasource
 	 * @return string containing sql
@@ -801,7 +800,7 @@ public class DatasourceFacadeBean extends NuclosFacadeBean implements Datasource
 
 	/**
 	 * set test values for every parameter for sysntax check
-	 * 
+	 *
 	 * @param sDatasourceXML
 	 * @return Map<String sName, String sValue>
 	 */
@@ -850,7 +849,7 @@ public class DatasourceFacadeBean extends NuclosFacadeBean implements Datasource
 
 	/**
 	 * get all DynamicEntities
-	 * 
+	 *
 	 * @return set of DynamicEntityVO
 	 * @throws CommonPermissionException
 	 */
@@ -862,7 +861,7 @@ public class DatasourceFacadeBean extends NuclosFacadeBean implements Datasource
 
 	/**
 	 * get dynamic entity value object
-	 * 
+	 *
 	 * @param iDynamicEntityId
 	 *            primary key of dynamic entity
 	 * @return DynamicEntityVO
@@ -875,7 +874,7 @@ public class DatasourceFacadeBean extends NuclosFacadeBean implements Datasource
 
 	/**
 	 * get all ValuelistProvider
-	 * 
+	 *
 	 * @return set of ValuelistProviderVO
 	 * @throws CommonPermissionException
 	 */
@@ -887,7 +886,7 @@ public class DatasourceFacadeBean extends NuclosFacadeBean implements Datasource
 
 	/**
 	 * get valuelist provider value object
-	 * 
+	 *
 	 * @param iValuelistProviderId
 	 *            primary key of valuelist provider
 	 * @return ValuelistProviderVO
@@ -900,7 +899,7 @@ public class DatasourceFacadeBean extends NuclosFacadeBean implements Datasource
 
 	/**
 	 * get all RecordGrant
-	 * 
+	 *
 	 * @return set of RecordGrantVO
 	 * @throws CommonPermissionException
 	 */
@@ -912,7 +911,7 @@ public class DatasourceFacadeBean extends NuclosFacadeBean implements Datasource
 
 	/**
 	 * get RecordGrant value object
-	 * 
+	 *
 	 * @param iRecordGrantId
 	 *            primary key of RecordGrant
 	 * @return RecordGrantVO
@@ -925,7 +924,7 @@ public class DatasourceFacadeBean extends NuclosFacadeBean implements Datasource
 
 	/**
 	 * get RecordGrant value object
-	 * 
+	 *
 	 * @param sRecordGrant
 	 *            name of RecordGrant
 	 * @return RecordGrant value object
@@ -937,7 +936,7 @@ public class DatasourceFacadeBean extends NuclosFacadeBean implements Datasource
 
 	/**
 	 * get a datasource result by datasource id
-	 * 
+	 *
 	 * @param iDatasourceId
 	 * @param mpParams
 	 * @param iMaxRowCount
@@ -955,7 +954,7 @@ public class DatasourceFacadeBean extends NuclosFacadeBean implements Datasource
 
 	/**
 	 * gets a datasource result by datasource xml
-	 * 
+	 *
 	 * @param sDatasourceXML
 	 *            datasource id
 	 * @param mpParams
@@ -996,17 +995,17 @@ public class DatasourceFacadeBean extends NuclosFacadeBean implements Datasource
 	public DynamicTasklistVO getDynamicTasklist(Integer id) throws CommonPermissionException {
 		return DatasourceCache.getInstance().getDynamicTasklist(id);
 	}
-	
+
 	private void invalidateCaches(DataSourceType type) {
 		DatasourceCache.getInstance().invalidate();
 		SchemaCache.getInstance().invalidate();
 		switch (type) {
-			case DATASOURCE:
-				SecurityCache.getInstance().invalidate();
-				break;
-			case DYNAMICENTITY: 
-				MetaDataServerProvider.getInstance().revalidate(true);
-				break;
+		case DATASOURCE:
+			SecurityCache.getInstance().invalidate();
+			break;
+		case DYNAMICENTITY:
+			MetaDataServerProvider.getInstance().revalidate(true);
+			break;
 		}
 	}
 
@@ -1019,11 +1018,11 @@ public class DatasourceFacadeBean extends NuclosFacadeBean implements Datasource
 	public Set<String> getDynamicTasklistAttributes(Integer dtlId) throws CommonPermissionException, NuclosDatasourceException {
 		checkReadAllowed(NuclosEntity.TASKLIST);
 		DynamicTasklistVO dtl = DatasourceCache.getInstance().getDynamicTasklist(dtlId);
-		
+
 		String sQuery = createSQL(dtl.getSource(), new HashMap<String, Object>());
 
 		ResultVO result = dataBaseHelper.getDbAccess().executePlainQueryAsResultVO(sQuery, 1);
-		
+
 		Set<String> attributes = new HashSet<String>();
 		for (ResultColumnVO col : result.getColumns()) {
 			attributes.add(col.getColumnLabel());
@@ -1036,9 +1035,73 @@ public class DatasourceFacadeBean extends NuclosFacadeBean implements Datasource
 		if (!SecurityCache.getInstance().isSuperUser(getCurrentUserName()) && !SecurityCache.getInstance().getDynamicTasklists(getCurrentUserName()).contains(dtlId)) {
 			throw new CommonPermissionException("Permission denied for dynamic task list with id " + dtlId);
 		}
-		
+
 		DynamicTasklistVO dtl = DatasourceCache.getInstance().getDynamicTasklist(dtlId);
 		String sQuery = createSQL(dtl.getSource(), new HashMap<String, Object>());
 		return dataBaseHelper.getDbAccess().executePlainQueryAsResultVO(sQuery, -1);
+	}
+
+	@Override
+	public CollectableField getDefaultValue(String datasource, String valuefield, String idfield, String defaultfield, Map<String, Object> params) throws CommonBusinessException {
+		DatasourceVO dsvo = getValuelistProvider(datasource);
+		List<DatasourceParameterVO> collParameters = getParameters(dsvo.getSource());
+		Map<String, Object> queryParams = new HashMap<String, Object>(params);
+		for (DatasourceParameterVO dpvo : collParameters) {
+			if (queryParams.get(dpvo.getParameter()) == null) {
+				queryParams.put(dpvo.getParameter(), null);
+			}
+		}
+
+		final ResultVO result = executeQuery(dsvo.getSource(), queryParams, null);
+		int iIndexValue = -1;
+		int iIndexId = -1;
+		int iIndexDefaultMarker = -1;
+		final List<ResultColumnVO> columns = result.getColumns();
+		final int len = columns.size();
+		for (int iIndex = 0; iIndex < len; ++iIndex) {
+			final ResultColumnVO rcvo = columns.get(iIndex);
+			final String label = rcvo.getColumnLabel();
+			if (label.equalsIgnoreCase(valuefield)) {
+				iIndexValue = iIndex;
+			}
+			else if (label.equalsIgnoreCase(idfield)) {
+				iIndexId = iIndex;
+			}
+			else if (label.equalsIgnoreCase(defaultfield)) {
+				iIndexDefaultMarker = iIndex;
+			}
+		}
+		if (iIndexValue < 0) {
+			throw new IllegalArgumentException("In data source '" + dsvo + "', there is no field '" + valuefield + "'.");
+		}
+
+		for (Object[] oValue : result.getRows()) {
+			if (oValue[iIndexValue] != null) {
+				CollectableField cf;
+				if (iIndexId == -1) {
+					cf = new CollectableValueField(oValue[iIndexValue]);
+				}
+				else if (oValue[iIndexId] != null) {
+					final Integer iId = ((Number) (oValue[iIndexId])).intValue();
+					cf = new CollectableValueIdField(iId, oValue[iIndexValue]);
+				}
+				else {
+					cf = CollectableValueIdField.NULL;
+				}
+				if (iIndexDefaultMarker != -1) {
+					if (oValue[iIndexDefaultMarker] != null) {
+						try {
+							if ((Boolean) oValue[iIndexDefaultMarker]) {
+								return cf;
+							}
+						}
+						catch (Exception ex) {
+							throw new CommonFatalException("error.vlp.defaultvalue");
+						}
+					}
+				}
+			}
+		}
+		return iIndexId != -1 ? CollectableValueIdField.NULL : CollectableValueField.NULL;
 	}
 }

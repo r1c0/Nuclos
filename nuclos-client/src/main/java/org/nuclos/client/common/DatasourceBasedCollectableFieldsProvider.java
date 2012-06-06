@@ -25,10 +25,12 @@ import java.util.Map;
 import org.nuclos.client.datasource.DatasourceDelegate;
 import org.nuclos.client.valuelistprovider.DefaultValueProvider;
 import org.nuclos.client.valuelistprovider.cache.CacheableCollectableFieldsProvider;
+import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.collect.collectable.CollectableField;
 import org.nuclos.common.collect.collectable.CollectableValueField;
 import org.nuclos.common.collect.collectable.CollectableValueIdField;
 import org.nuclos.common2.SpringLocaleDelegate;
+import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.server.report.valueobject.DatasourceParameterVO;
@@ -69,8 +71,6 @@ public class DatasourceBasedCollectableFieldsProvider implements CacheableCollec
 	private DatasourceVO dsvoSearch = null;
 	private final Map<String, Object> mpParameters = new HashMap<String, Object>();
 	private List<DatasourceParameterVO> collParameters;
-
-	private CollectableField defaultValue;
 
 	private final boolean isValuelistProviderDatasource;
 
@@ -234,7 +234,6 @@ public class DatasourceBasedCollectableFieldsProvider implements CacheableCollec
 			final ResultVO result = DatasourceDelegate.getInstance().executeQuery(dsvoUsed.getSource(), queryParams, null);
 			int iIndexValue = -1;
 			int iIndexId = -1;
-			int iIndexDefaultMarker = -1;
 			final List<ResultColumnVO> columns = result.getColumns();
 			final int len = columns.size();
 			for (int iIndex = 0; iIndex < len; ++iIndex) {
@@ -247,9 +246,6 @@ public class DatasourceBasedCollectableFieldsProvider implements CacheableCollec
 				// it's equal to sValueFieldName => no id index which (=> plain-vanilla value fields)
 				else if(label.equalsIgnoreCase(sIdFieldName)) {
 					iIndexId = iIndex;
-				}
-				else if(label.equalsIgnoreCase(sDefaultMarkerFieldName)) {
-					iIndexDefaultMarker = iIndex;
 				}
 			}
 			if (iIndexValue < 0) {
@@ -268,18 +264,6 @@ public class DatasourceBasedCollectableFieldsProvider implements CacheableCollec
 					}
 					else {
 						cf = CollectableValueIdField.NULL;
-					}
-					if (iIndexDefaultMarker != -1) {
-						if (oValue[iIndexDefaultMarker] != null) {
-							try {
-								if ((Boolean)oValue[iIndexDefaultMarker]) {
-									defaultValue = cf;
-								}
-							}
-							catch (Exception ex) {
-								throw new CommonFatalException("error.vlp.defaultvalue");
-							}
-						}
 					}
 					lstFields.add(cf);
 				}
@@ -305,6 +289,19 @@ public class DatasourceBasedCollectableFieldsProvider implements CacheableCollec
 
 	@Override
 	public CollectableField getDefaultValue() {
-		return defaultValue;
+		if (isSupported()) {
+			try {
+				return DatasourceDelegate.getInstance().getDefaultValue(dsvo.getName(), sValueFieldName, sIdFieldName, sDefaultMarkerFieldName, mpParameters);
+			}
+			catch (CommonBusinessException e) {
+				throw new NuclosFatalException(e);
+			}
+		}
+		return null;
+	}
+
+	@Override
+	public boolean isSupported() {
+		return !StringUtils.isNullOrEmpty(sDefaultMarkerFieldName);
 	}
 }

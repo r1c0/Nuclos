@@ -24,9 +24,11 @@ import java.util.Set;
 import javax.annotation.security.RolesAllowed;
 
 import org.nuclos.common.NuclosFatalException;
+import org.nuclos.common.collect.collectable.CollectableField;
 import org.nuclos.common.database.query.definition.Schema;
 import org.nuclos.common.database.query.definition.Table;
 import org.nuclos.common.querybuilder.NuclosDatasourceException;
+import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonCreateException;
 import org.nuclos.common2.exception.CommonFinderException;
 import org.nuclos.common2.exception.CommonPermissionException;
@@ -50,7 +52,7 @@ public interface DatasourceFacadeRemote {
 
 	/**
 	 * get all datasources
-	 * 
+	 *
 	 * @return set of datasources
 	 * @throws CommonPermissionException
 	 */
@@ -58,14 +60,14 @@ public interface DatasourceFacadeRemote {
 
 	/**
 	 * get all datasources
-	 * 
+	 *
 	 * @return set of datasources
 	 */
 	Collection<DatasourceVO> getDatasourcesForCurrentUser();
 
 	/**
 	 * get datasource value object
-	 * 
+	 *
 	 * @param iId
 	 *            primary key of datasource
 	 * @return datasource value object
@@ -75,7 +77,7 @@ public interface DatasourceFacadeRemote {
 
 	/**
 	 * get datasource value object
-	 * 
+	 *
 	 * @param sDatasourceName
 	 *            name of datasource
 	 * @return datasource value object
@@ -85,7 +87,7 @@ public interface DatasourceFacadeRemote {
 
 	/**
 	 * get a Datasource by id regardless of permisssions
-	 * 
+	 *
 	 * @param iDatasourceId
 	 * @return
 	 * @throws CommonPermissionException
@@ -95,7 +97,7 @@ public interface DatasourceFacadeRemote {
 
 	/**
 	 * create new datasource
-	 * 
+	 *
 	 * @param datasourcevo
 	 *            value object
 	 * @return new datasource
@@ -104,7 +106,7 @@ public interface DatasourceFacadeRemote {
 
 	/**
 	 * modify an existing datasource without usages
-	 * 
+	 *
 	 * @param datasourcevo
 	 * @throws CommonFinderException
 	 * @throws CommonPermissionException
@@ -115,7 +117,7 @@ public interface DatasourceFacadeRemote {
 
 	/**
 	 * modify an existing datasource
-	 * 
+	 *
 	 * @param datasourcevo
 	 *            value object
 	 * @return modified datasource
@@ -125,7 +127,7 @@ public interface DatasourceFacadeRemote {
 
 	/**
 	 * get a list of DatasourceCVO which uses the datasource with the given id
-	 * 
+	 *
 	 * @param iDatasourceId
 	 * @return
 	 * @throws CommonFinderException
@@ -136,7 +138,7 @@ public interface DatasourceFacadeRemote {
 
 	/**
 	 * get a list of DatasourceVO which uses the datasource
-	 * 
+	 *
 	 * @param datasourceVO
 	 *            could also be an instance of <code>DynamicEntityVO</code> or
 	 *            <code>ValuelistProviderVO</code>
@@ -150,7 +152,7 @@ public interface DatasourceFacadeRemote {
 	/**
 	 * get a list of DatasourceCVO which are used by the datasource with the
 	 * given id
-	 * 
+	 *
 	 * @param iDatasourceId
 	 * @return
 	 * @throws CommonFinderException
@@ -160,7 +162,7 @@ public interface DatasourceFacadeRemote {
 
 	/**
 	 * delete an existing datasource
-	 * 
+	 *
 	 * @param datasourcevo
 	 *            value object
 	 */
@@ -168,7 +170,7 @@ public interface DatasourceFacadeRemote {
 
 	/**
 	 * Retrieve the parameters a datasource accepts.
-	 * 
+	 *
 	 * @param sDatasourceXML
 	 * @return
 	 * @throws NuclosFatalException
@@ -179,7 +181,7 @@ public interface DatasourceFacadeRemote {
 
 	/**
 	 * Retrieve the parameters a datasource accepts.
-	 * 
+	 *
 	 * @param iDatasourceId
 	 * @return
 	 * @throws NuclosFatalException
@@ -190,7 +192,7 @@ public interface DatasourceFacadeRemote {
 
 	/**
 	 * validate the given DatasourceXML
-	 * 
+	 *
 	 * @param sDatasourceXML
 	 * @throws CommonValidationException
 	 * @throws NuclosReportException
@@ -200,7 +202,7 @@ public interface DatasourceFacadeRemote {
 
 	/**
 	 * validate the given SQL
-	 * 
+	 *
 	 * @param sql
 	 * @throws CommonValidationException
 	 * @throws NuclosReportException
@@ -210,7 +212,7 @@ public interface DatasourceFacadeRemote {
 
 	/**
 	 * get sql string for datasource definition
-	 * 
+	 *
 	 * @param iDatasourceId
 	 *            id of datasource
 	 * @return string containing sql
@@ -219,7 +221,7 @@ public interface DatasourceFacadeRemote {
 
 	/**
 	 * get sql string for datasource definition without parameter definition
-	 * 
+	 *
 	 * @param sDatasourceXML
 	 *            xml of datasource
 	 * @return string containing sql
@@ -229,7 +231,7 @@ public interface DatasourceFacadeRemote {
 
 	/**
 	 * get sql string for datasource definition
-	 * 
+	 *
 	 * @param sDatasourceXML
 	 *            xml of datasource
 	 * @return string containing sql
@@ -239,7 +241,7 @@ public interface DatasourceFacadeRemote {
 
 	/**
 	 * get sql string for datasource definition
-	 * 
+	 *
 	 * @param sDatasourceXML
 	 *            xml of datasource
 	 * @return string containing sql
@@ -255,7 +257,7 @@ public interface DatasourceFacadeRemote {
 
 	/**
 	 * get all DynamicEntities
-	 * 
+	 *
 	 * @return set of DynamicEntityVO
 	 * @throws CommonPermissionException
 	 */
@@ -264,7 +266,7 @@ public interface DatasourceFacadeRemote {
 
 	/**
 	 * get dynamic entity value object
-	 * 
+	 *
 	 * @param iDynamicEntityId
 	 *            primary key of dynamic entity
 	 * @return DynamicEntityVO
@@ -274,7 +276,7 @@ public interface DatasourceFacadeRemote {
 
 	/**
 	 * get all ValuelistProvider
-	 * 
+	 *
 	 * @return set of ValuelistProviderVO
 	 * @throws CommonPermissionException
 	 */
@@ -283,7 +285,7 @@ public interface DatasourceFacadeRemote {
 
 	/**
 	 * get valuelist provider value object
-	 * 
+	 *
 	 * @param iValuelistProviderId
 	 *            primary key of valuelist provider
 	 * @return ValuelistProviderVO
@@ -293,7 +295,7 @@ public interface DatasourceFacadeRemote {
 
 	/**
 	 * get a datasource result by datasource id
-	 * 
+	 *
 	 * @param iDatasourceId
 	 * @param mpParams
 	 * @param iMaxRowCount
@@ -306,7 +308,7 @@ public interface DatasourceFacadeRemote {
 
 	/**
 	 * gets a datasource result by datasource xml
-	 * 
+	 *
 	 * @param sDatasourceXML
 	 *            datasource id
 	 * @param mpParams
@@ -318,7 +320,7 @@ public interface DatasourceFacadeRemote {
 	ResultVO executeQuery(String sDatasourceXML, Map<String, Object> mpParams, Integer iMaxRowCount) throws CommonFinderException, NuclosDatasourceException;
 
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	Schema getSchemaTables();
@@ -330,7 +332,7 @@ public interface DatasourceFacadeRemote {
 
 	/**
 	 * get valuelist provider value object
-	 * 
+	 *
 	 * @param sValuelistProvider
 	 *            name of valuelist provider
 	 * @return valuelist provider value object
@@ -340,7 +342,7 @@ public interface DatasourceFacadeRemote {
 
 	/**
 	 * get dynamic entity value object
-	 * 
+	 *
 	 * @param sDynamicEntity
 	 *            name of valuelist provider
 	 * @return dynamic entity value object
@@ -350,7 +352,7 @@ public interface DatasourceFacadeRemote {
 
 	/**
 	 * get all RecordGrant
-	 * 
+	 *
 	 * @return set of RecordGrantVO
 	 * @throws CommonPermissionException
 	 */
@@ -359,7 +361,7 @@ public interface DatasourceFacadeRemote {
 
 	/**
 	 * get RecordGrant value object
-	 * 
+	 *
 	 * @param iRecordGrantId
 	 *            primary key of RecordGrant
 	 * @return RecordGrantVO
@@ -369,7 +371,7 @@ public interface DatasourceFacadeRemote {
 
 	/**
 	 * get RecordGrant value object
-	 * 
+	 *
 	 * @param sRecordGrant
 	 *            name of RecordGrant
 	 * @return RecordGrant value object
@@ -379,14 +381,15 @@ public interface DatasourceFacadeRemote {
 
 	@RolesAllowed("Login")
 	Collection<DynamicTasklistVO> getDynamicTasklists() throws CommonPermissionException;
-	
+
 	@RolesAllowed("Login")
 	DynamicTasklistVO getDynamicTasklist(Integer id) throws CommonPermissionException;
-	
+
 	@RolesAllowed("Login")
 	Set<String> getDynamicTasklistAttributes(Integer dtlId) throws CommonPermissionException, NuclosDatasourceException;
-	
+
 	@RolesAllowed("Login")
 	ResultVO getDynamicTasklistData(Integer dtlId) throws CommonPermissionException, NuclosDatasourceException;
-	
+
+	CollectableField getDefaultValue(String datasource, String valuefield, String idfield, String defaultfield, Map<String, Object> params) throws CommonBusinessException;
 }
