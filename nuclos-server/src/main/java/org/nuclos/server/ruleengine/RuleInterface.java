@@ -580,7 +580,16 @@ public class RuleInterface extends CustomCodeInterface {
 			throw new NuclosFatalRuleException(ex);
 		}
 	}
-
+	
+	/**
+	 * gets the system parameter value of the given parameter name
+	 * @param sParam name of the system parameter
+	 * @return String
+	 */
+	public String getSystemParameterValue(String sParam) throws NuclosBusinessRuleException {
+		return ServerParameterProvider.getInstance().getValue(sParam);		
+	}
+	
 	/**
 	 * set the generic objects dependants of the given entity.
 	 * @param sEntityName name of the dependant entity
@@ -2828,6 +2837,9 @@ public class RuleInterface extends CustomCodeInterface {
 		this.getRuleInterface().logError(getSessionId(), sMessage, this.getCurrentRule().getRule());
 		logger.error(getSessionId() + " - " + sMessage + " - " + this.getCurrentRule().getRule());
 	}
+	
+
+	
 	
 	@Override
 	public String toString() {
