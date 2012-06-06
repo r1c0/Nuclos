@@ -24,13 +24,13 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
-import org.nuclos.api.ui.LayoutComponent;
 import org.nuclos.client.attribute.AttributeCache;
 import org.nuclos.client.common.MetaDataClientProvider;
 import org.nuclos.client.common.NuclosCollectableEntityProvider;
@@ -38,6 +38,7 @@ import org.nuclos.client.genericobject.GeneratorActions;
 import org.nuclos.client.genericobject.Modules;
 import org.nuclos.client.layout.wysiwyg.WYSIWYGStringsAndLabels.COMMON_LABELS;
 import org.nuclos.client.layout.wysiwyg.WYSIWYGStringsAndLabels.STATIC_BUTTON;
+import org.nuclos.client.layout.wysiwyg.component.WYSIWYGChart;
 import org.nuclos.client.layout.wysiwyg.component.WYSIWYGCollectableCheckBox;
 import org.nuclos.client.layout.wysiwyg.component.WYSIWYGCollectableComboBox;
 import org.nuclos.client.layout.wysiwyg.component.WYSIWYGCollectableDateChooser;
@@ -53,7 +54,6 @@ import org.nuclos.client.layout.wysiwyg.component.properties.PropertyValueString
 import org.nuclos.client.layout.wysiwyg.editor.ui.panels.WYSIWYGLayoutEditorPanel;
 import org.nuclos.client.layout.wysiwyg.editor.util.valueobjects.WYSIWYGValuelistProvider;
 import org.nuclos.client.masterdata.MetaDataCache;
-import org.nuclos.client.nuclet.NucletComponentRepository;
 import org.nuclos.client.resource.ResourceDelegate;
 import org.nuclos.client.rule.RuleDelegate;
 import org.nuclos.client.statemodel.StateDelegate;
@@ -71,9 +71,9 @@ import org.nuclos.common.collection.Predicate;
 import org.nuclos.common.collection.Transformer;
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.genericobject.CollectableGenericObjectEntityField;
-import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.IdUtils;
 import org.nuclos.common2.Localizable;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.common2.exception.CommonFinderException;
@@ -85,8 +85,6 @@ import org.nuclos.server.masterdata.valueobject.MasterDataMetaVO;
 import org.nuclos.server.ruleengine.valueobject.RuleEventUsageVO;
 import org.nuclos.server.ruleengine.valueobject.RuleVO;
 import org.nuclos.server.statemodel.valueobject.StateVO;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Configurable;
 
 /**
  * This class connects the WYSIWYG Editor with the Backbone.
@@ -284,13 +282,25 @@ public class WYSIWYGMetaInformation implements LayoutMLConstants {
 			if (c instanceof WYSIWYGSubForm) {
 				String currentUsedEntity = ((WYSIWYGSubForm)c).getEntityName();
 				allUsedEntities.remove(currentUsedEntity); // null is ok for a HashSet
+			} else if (c instanceof WYSIWYGChart) {
+				String currentUsedEntity = ((WYSIWYGChart)c).getEntityName();
+				allUsedEntities.remove(currentUsedEntity); // null is ok for a HashSet
 			}
 			for (MasterDataMetaVO entity : entities) {
-				if (!allUsedEntities.contains(entity.getEntityName()))
-					result.add(new StringResourceIdPair(entity.getEntityName(), entity.getResourceId()));
+				if (!allUsedEntities.contains(entity.getEntityName())) {
+					if (c instanceof WYSIWYGChart) {
+						// only allow chart entities
+						if (entity.getEntityName().startsWith(MasterDataMetaVO.CHART_ENTITY_PREFIX))
+							result.add(new StringResourceIdPair(entity.getEntityName(), entity.getResourceId()));
+					} else {
+						// remove all chart entities
+						if (!entity.getEntityName().startsWith(MasterDataMetaVO.CHART_ENTITY_PREFIX))
+							result.add(new StringResourceIdPair(entity.getEntityName(), entity.getResourceId()));
+					}					
+				}
 			}
 		} else if (META_ENTITY_FIELD_NAMES.equals(meta)) {
-			if (c instanceof WYSIWYGSubForm) {
+			if (c instanceof WYSIWYGSubForm || c instanceof WYSIWYGChart) {
 				String e = ((PropertyValueString)dialog.getModel().getValueAt(getDialogTableModelPropertyRowIndex(dialog, WYSIWYGSubForm.PROPERTY_ENTITY), 1)).getValue();
 				if (!StringUtils.isNullOrEmpty(e)) {
 					for (String s : provider.getCollectableEntity(e).getFieldNames()) {
@@ -299,7 +309,7 @@ public class WYSIWYGMetaInformation implements LayoutMLConstants {
 				}
 			}
 		} else if (META_ENTITY_FIELD_NAMES_REFERENCING.equals(meta)) {
-			if (c instanceof WYSIWYGSubForm) {
+			if (c instanceof WYSIWYGSubForm || c instanceof WYSIWYGChart) {
 				String e = ((PropertyValueString)dialog.getModel().getValueAt(getDialogTableModelPropertyRowIndex(dialog, WYSIWYGSubForm.PROPERTY_ENTITY), 1)).getValue();
 				if (!StringUtils.isNullOrEmpty(e)) {
 					for (String s : provider.getCollectableEntity(e).getFieldNames()) {

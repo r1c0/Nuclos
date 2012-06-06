@@ -49,6 +49,7 @@ import org.nuclos.client.layout.wysiwyg.WYSIWYGStringsAndLabels.JSCROLLPANE;
 import org.nuclos.client.layout.wysiwyg.WYSIWYGStringsAndLabels.JSPLITPANE;
 import org.nuclos.client.layout.wysiwyg.WYSIWYGStringsAndLabels.PROPERTY_LABELS;
 import org.nuclos.client.layout.wysiwyg.WYSIWYGStringsAndLabels.WYSIWYGLAYOUT_EDITOR_PANEL;
+import org.nuclos.client.layout.wysiwyg.component.WYSIWYGChart;
 import org.nuclos.client.layout.wysiwyg.component.WYSIWYGCollectableComponent;
 import org.nuclos.client.layout.wysiwyg.component.WYSIWYGCollectableLabel;
 import org.nuclos.client.layout.wysiwyg.component.WYSIWYGComponent;
@@ -695,11 +696,15 @@ public class WYSIWYGLayoutEditorPanel extends JPanel implements WYSIWYGComponent
 		else
 			mainPanel = this.getParentEditor();
 		
+		getWYSIWYGComponents(WYSIWYGChart.class, mainPanel, result);
 		getWYSIWYGComponents(WYSIWYGSubForm.class, mainPanel, result);
 
 		List<String> sorted = CollectionUtils.transform(result, new Transformer<Object, String>() {
 			@Override
 			public String transform(Object i) {
+				if (i instanceof WYSIWYGChart) {
+					return (String) ((WYSIWYGChart) i).getProperties().getProperty(WYSIWYGChart.PROPERTY_ENTITY).getValue();
+				}
 				if (i instanceof WYSIWYGSubForm) {
 					return (String) ((WYSIWYGSubForm) i).getProperties().getProperty(WYSIWYGSubForm.PROPERTY_ENTITY).getValue();
 				}

@@ -26,6 +26,7 @@ import javax.swing.JScrollPane;
 
 import org.apache.log4j.Logger;
 import org.nuclos.client.ui.JInfoTabbedPane;
+import org.nuclos.client.ui.collect.Chart;
 import org.nuclos.client.ui.collect.SubForm;
 import org.nuclos.client.ui.collect.component.CollectableComponent;
 import org.nuclos.client.ui.layoutml.LayoutMLParser.BuildFormHandler.CollectableComponentBuilder;
@@ -186,6 +187,17 @@ class ComponentBuilderStack {
 			final TabbedPaneBuilder builder = tabbedStack.peek();
 			builder.addSubForm(subform);
 		}
+	}
+
+	public void addChart(String sEntityName, Chart chart)
+		throws SAXException {
+		if(mpSubForms.containsKey(sEntityName)) {
+			throw new SAXException(
+				StringUtils.getParameterizedExceptionMessage(
+					"LayoutMLParser.16", sEntityName));
+		}
+		mpSubForms.put(sEntityName, chart.getSubForm());
+		addComponent(chart);
 	}
 
 	public SubForm getSubFormForEntity(String sEntityName) {

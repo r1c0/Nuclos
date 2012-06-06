@@ -22,6 +22,7 @@ import java.io.StreamTokenizer;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Vector;
 
@@ -85,7 +86,65 @@ public class DatasourceUtils {
 		} catch (Exception e) {
 			throw new CommonValidationException("datasource.validation.dynamic.entity.sql.5");
 		}
+	}
+	
+	public static void validateChartEntityName(String sName) throws CommonValidationException {
+		final int iMaxNameLength = 30; //if you change this value, change the exception text <datasource.validation.dynamic.entity.name.1> too.
+		if ((sName.length() + MasterDataMetaVO.CHART_ENTITY_VIEW_PREFIX.length()) > iMaxNameLength) {
+			throw new CommonValidationException("datasource.validation.chart.entity.name.1");
+		}
 		
+		if (sName.contains(" ")) {
+			throw new CommonValidationException("datasource.validation.chart.entity.name.2");
+		}
+		
+		if (!sName.matches("[0-9a-zA-Z_]*")) {
+			throw new CommonValidationException("datasource.validation.chart.entity.name.3");
+		}
+	}
+
+	public static void validateChartEntitySQL(String sql) throws CommonValidationException {
+		if (StringUtils.looksEmpty(sql)) {
+			throw new CommonValidationException("datasource.validation.chart.entity.sql.1");
+		}
+		
+		boolean foundIntid1 = false;
+		boolean foundIntid2 = false;
+		
+		for (String column : getColumns(sql)) {
+			if (column.toUpperCase().equals("INTID"))
+				foundIntid1 = true;
+			if (column.toUpperCase().equals("INTID_T_UD_GENERICOBJECT"))
+				foundIntid2 = true;
+		}
+		
+		boolean foundParam1 = false;
+
+		for (String param : getParametersFromString(sql)) {
+			if (param.equals("genericObject"))
+				foundParam1 = true;
+		}
+		
+		if (!foundIntid1) {
+			throw new CommonValidationException("datasource.validation.chart.entity.sql.2");
+		}
+		if (!foundIntid2) {
+			throw new CommonValidationException("datasource.validation.chart.entity.sql.3");
+		}
+		if (!foundParam1) {
+			throw new CommonValidationException("datasource.validation.chart.entity.sql.4");
+		}
+	}
+	public static void validateChartEntitySQLWithParameters(String sql) throws CommonValidationException {
+		if (StringUtils.looksEmpty(sql)) {
+			throw new CommonValidationException("datasource.validation.chart.entity.sql.1");
+		}
+		
+		try {
+			ServiceLocator.getInstance().getFacade(DatasourceFacadeRemote.class).validateSql(sql);
+		} catch (Exception e) {
+			throw new CommonValidationException("datasource.validation.chart.entity.sql.5");
+		}
 	}
 	
 	public static void validateRecordGrantSQL(String entity, String sql) throws CommonValidationException {

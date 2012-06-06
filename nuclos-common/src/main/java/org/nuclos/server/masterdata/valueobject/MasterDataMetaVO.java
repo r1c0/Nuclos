@@ -71,6 +71,8 @@ public class MasterDataMetaVO extends NuclosValueObject implements Localizable {
 	private String sResourceIdForTreeView;
 	private String sResourceIdForTreeViewDescription;
 	
+	public static final String CHART_ENTITY_VIEW_PREFIX = "V_CE_";//if you change this value, change the exception text <datasource.validation.dynamic.entity.name.1> too.
+	public static final String CHART_ENTITY_PREFIX = "crt_";
 	public static final String DYNAMIC_ENTITY_VIEW_PREFIX = "V_DE_";//if you change this value, change the exception text <datasource.validation.dynamic.entity.name.1> too.
 	public static final String DYNAMIC_ENTITY_PREFIX = "dyn_";
 
@@ -157,7 +159,12 @@ public class MasterDataMetaVO extends NuclosValueObject implements Localizable {
 	}
 
 	public static String getEntityNameFromViewName(String sView) {
-		return DYNAMIC_ENTITY_PREFIX + sView.substring(DYNAMIC_ENTITY_VIEW_PREFIX.length()).toLowerCase();
+		if (sView.toUpperCase().startsWith(CHART_ENTITY_VIEW_PREFIX))
+			return CHART_ENTITY_PREFIX + sView.substring(CHART_ENTITY_VIEW_PREFIX.length()).toLowerCase();
+		else if (sView.toUpperCase().startsWith(DYNAMIC_ENTITY_VIEW_PREFIX))
+			return DYNAMIC_ENTITY_PREFIX + sView.substring(DYNAMIC_ENTITY_VIEW_PREFIX.length()).toLowerCase();
+		
+		throw new IllegalArgumentException("View does not start with dynamic entity or chart entity prefix");
 	}
 
 	/**

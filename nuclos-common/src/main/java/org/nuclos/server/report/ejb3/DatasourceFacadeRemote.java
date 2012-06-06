@@ -38,6 +38,7 @@ import org.nuclos.common2.exception.CommonStaleVersionException;
 import org.nuclos.common2.exception.CommonValidationException;
 import org.nuclos.server.masterdata.valueobject.DependantMasterDataMap;
 import org.nuclos.server.report.NuclosReportException;
+import org.nuclos.server.report.valueobject.ChartVO;
 import org.nuclos.server.report.valueobject.DatasourceParameterVO;
 import org.nuclos.server.report.valueobject.DatasourceVO;
 import org.nuclos.server.report.valueobject.DynamicEntityVO;
@@ -274,6 +275,35 @@ public interface DatasourceFacadeRemote {
 	@RolesAllowed("Login")
 	DynamicEntityVO getDynamicEntity(Integer iDynamicEntityId) throws CommonPermissionException;
 
+	/**
+	 * get all charts
+	 * 
+	 * @return set of ChartVO
+	 * @throws CommonPermissionException
+	 */
+	@RolesAllowed("Login")
+	Collection<ChartVO> getCharts();
+
+	/**
+	 * get chart value object
+	 * 
+	 * @param iChartId
+	 *            primary key of chart
+	 * @return ChartVO
+	 */
+	@RolesAllowed("Login")
+	ChartVO getChart(Integer iChartId) throws CommonPermissionException;
+
+	/**
+	 * get chart value object
+	 * 
+	 * @param sChart
+	 *            name of chart
+	 * @return chart value object
+	 */
+	@RolesAllowed("Login")
+	public ChartVO getChart(String sChart) throws CommonFinderException, CommonPermissionException;
+	
 	/**
 	 * get all ValuelistProvider
 	 *

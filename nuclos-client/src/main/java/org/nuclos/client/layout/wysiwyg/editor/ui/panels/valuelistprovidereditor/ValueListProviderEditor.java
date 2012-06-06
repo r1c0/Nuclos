@@ -54,6 +54,7 @@ import org.apache.log4j.Logger;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonPermissionException;
+import org.nuclos.client.NuclosIcons;
 import org.nuclos.client.datasource.DatasourceDelegate;
 import org.nuclos.client.layout.wysiwyg.WYSIWYGMetaInformation;
 import org.nuclos.client.layout.wysiwyg.WYSIWYGStringsAndLabels;
@@ -133,6 +134,7 @@ public class ValueListProviderEditor extends JDialog implements SaveAndCancelBut
 	private ValueListProviderEditor(WYSIWYGComponent c, WYSIWYGValuelistProvider wysiwygStaticValuelistProvider) {
 		parameterContainer.setLayout(new TableLayout(new double[][]{{TableLayout.FILL}, {}}));
 
+		this.setIconImage(NuclosIcons.getInstance().getScaledDialogIcon(48).getImage());
 		//NUCLEUSINT-312
 		setTitle(VALUELIST_PROVIDER_EDITOR.TITLE_VALUELIST_PROVIDER_EDITOR);
 		//TODO align relative to parent Component
@@ -482,7 +484,7 @@ public class ValueListProviderEditor extends JDialog implements SaveAndCancelBut
 	 * NUCLEUSINT-811
 	 */
 	private static void validateValuelistProvider(WYSIWYGComponent component, WYSIWYGValuelistProvider valuelistProvider) throws CommonBusinessException {
-		if("parameters".equals(valuelistProvider.getType())) {
+		if(valuelistProvider != null && "parameters".equals(valuelistProvider.getType())) {
 			Vector<WYSIYWYGParameter> parameters = valuelistProvider.getAllWYSIYWYGParameter();
 			boolean showClassFound = false;
 			WYSIWYGMetaInformation metainf = component.getParentEditor().getMetaInformation();

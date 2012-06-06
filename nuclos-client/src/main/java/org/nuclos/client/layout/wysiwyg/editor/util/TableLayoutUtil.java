@@ -41,6 +41,7 @@ import org.nuclos.api.ui.DefaultAlignment;
 import org.nuclos.client.layout.wysiwyg.CollectableWYSIWYGLayoutEditor.WYSIWYGLayoutEditorChangeDescriptor;
 import org.nuclos.client.layout.wysiwyg.WYSIWYGLayoutControllingPanel;
 import org.nuclos.client.layout.wysiwyg.WYSIWYGStringsAndLabels.TABLELAYOUT_UTIL;
+import org.nuclos.client.layout.wysiwyg.component.WYSIWYGChart;
 import org.nuclos.client.layout.wysiwyg.component.WYSIWYGCollectableComponent;
 import org.nuclos.client.layout.wysiwyg.component.WYSIWYGCollectableLabel;
 import org.nuclos.client.layout.wysiwyg.component.WYSIWYGCollectableTextArea;
@@ -440,6 +441,9 @@ public class TableLayoutUtil {
 			constraints.vAlign = TableLayout.FULL;
 		} else if (c instanceof WYSIWYGCollectableTextArea) {
 			// textarea set to fill direct on insert
+			constraints.hAlign = TableLayout.FULL;
+			constraints.vAlign = TableLayout.FULL;
+		} else if (c instanceof WYSIWYGChart) {
 			constraints.hAlign = TableLayout.FULL;
 			constraints.vAlign = TableLayout.FULL;
 		}

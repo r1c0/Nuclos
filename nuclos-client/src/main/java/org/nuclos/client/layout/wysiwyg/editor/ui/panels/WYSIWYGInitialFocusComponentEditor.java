@@ -35,6 +35,7 @@ import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 
+import org.nuclos.client.NuclosIcons;
 import org.nuclos.client.layout.wysiwyg.WYSIWYGStringsAndLabels.INITIAL_FOCUS_EDITOR;
 import org.nuclos.client.layout.wysiwyg.editor.ui.panels.WYSIWYGEditorsToolbar.WYSIWYGToolbarAttachable;
 import org.nuclos.client.layout.wysiwyg.editor.ui.panels.elementalcomponents.SaveAndCancelButtonPanel;
@@ -134,6 +135,8 @@ public class WYSIWYGInitialFocusComponentEditor implements WYSIWYGToolbarAttacha
 		 * Constructor
 		 */
 		private WYSIWYGInitialFocusComponentDialog() {
+			this.setIconImage(NuclosIcons.getInstance().getScaledDialogIcon(48).getImage());
+		
 			this.setTitle(INITIAL_FOCUS_EDITOR.TITLE_INITIAL_FOCUS_EDITOR);
 			
 			this.setLayout(new TableLayout(layout));

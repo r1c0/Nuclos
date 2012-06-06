@@ -42,6 +42,8 @@ public enum NuclosEntity {
 	DYNAMICENTITYUSAGE("dynamicEntityUsage"),
 	DYNAMICTASKLIST("dynamictasklist"),
 	DYNAMICTASKLISTUSAGE("dynamictasklistUsage"),
+	CHART("chart"),
+	CHARTUSAGE("chartUsage"),
 	ENTITY("entity"),
 	ENTITYFIELD("entityfield"),
 	ENTITYFIELDGROUP("entityfieldgroup"),

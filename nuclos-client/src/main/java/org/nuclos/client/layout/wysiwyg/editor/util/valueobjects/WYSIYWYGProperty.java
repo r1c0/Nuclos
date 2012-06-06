@@ -43,6 +43,10 @@ public class WYSIYWYGProperty implements Cloneable, Serializable{
 	 * @param wysiwygPropertySet to add
 	 */
 	public void addWYSIYWYGPropertySet(WYSIYWYGPropertySet wysiwygPropertySet){
+		for (WYSIYWYGPropertySet propertySet : new Vector<WYSIYWYGPropertySet>(properties)) {
+			if (propertySet.getPropertyName().equals(wysiwygPropertySet.getPropertyName()))
+				removeWYSIYWYGPropertySet(propertySet);
+		}
 		properties.add(wysiwygPropertySet);
 	}
 	

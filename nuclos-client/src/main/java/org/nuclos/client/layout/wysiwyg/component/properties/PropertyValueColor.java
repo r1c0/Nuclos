@@ -40,6 +40,7 @@ import javax.swing.table.TableCellRenderer;
 
 import org.xml.sax.Attributes;
 
+import org.nuclos.client.NuclosIcons;
 import org.nuclos.client.layout.wysiwyg.WYSIWYGStringsAndLabels.PROPERTY_VALUE_COLOR;
 import org.nuclos.client.layout.wysiwyg.component.WYSIWYGComponent;
 import org.nuclos.client.layout.wysiwyg.editor.ui.panels.elementalcomponents.SaveAndCancelButtonPanel;
@@ -290,6 +291,8 @@ public class PropertyValueColor implements PropertyValue<Color> {
 		private JButton remove;
 		
 		private ColorDialog(Color color) {
+			this.setIconImage(NuclosIcons.getInstance().getScaledDialogIcon(48).getImage());
+			
 			this.setLayout(new TableLayout(new double[][]{
 					{
 						InterfaceGuidelines.MARGIN_LEFT,

@@ -90,6 +90,7 @@ import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.NuclosScript;
 import org.nuclos.common.SearchConditionUtils;
 import org.nuclos.common.TranslationVO;
+import org.nuclos.common.attribute.ComponentType;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableComparison;
 import org.nuclos.common.collect.collectable.searchcondition.ComparisonOperator;
@@ -1077,6 +1078,13 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 						setParents.add((String)voUsage.getField("entity"));
 					}
 	            }
+	            Set<String> setCharts = parser.getChartEntityNames(new InputSource(new StringReader(sLayout)));
+	            if(setCharts.contains(sEntity)) {
+					CollectableComparison compare = SearchConditionUtils.newComparison(NuclosEntity.LAYOUTUSAGE.getEntityName(), "layout", ComparisonOperator.EQUAL, vo.getField("name"));
+					for(MasterDataVO voUsage : MasterDataDelegate.getInstance().getMasterData(NuclosEntity.LAYOUTUSAGE.getEntityName(), compare)) {
+						setParents.add((String)voUsage.getField("entity"));
+					}
+	            }
             }
             catch(LayoutMLException e) {
 	            // do nothing here
@@ -1229,7 +1237,6 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 		metaFieldVO.setInsertable(false);
 
 		metaFieldVO.setSearchable(attr.isValueListProvider());
-
 
 		metaFieldVO.setShowMnemonic(false);
 

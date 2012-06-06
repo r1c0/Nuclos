@@ -21,6 +21,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.annotation.security.RolesAllowed;
+
 import org.nuclos.common.NuclosBusinessException;
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.collect.collectable.CollectableField;
@@ -36,6 +38,7 @@ import org.nuclos.common2.exception.CommonStaleVersionException;
 import org.nuclos.common2.exception.CommonValidationException;
 import org.nuclos.server.masterdata.valueobject.DependantMasterDataMap;
 import org.nuclos.server.report.ejb3.DatasourceFacadeRemote;
+import org.nuclos.server.report.valueobject.ChartVO;
 import org.nuclos.server.report.valueobject.DatasourceParameterVO;
 import org.nuclos.server.report.valueobject.DatasourceVO;
 import org.nuclos.server.report.valueobject.DynamicEntityVO;
@@ -198,7 +201,7 @@ public class DatasourceDelegate {
 			throw new CommonFatalException(ex);
 		}
 	}
-
+	
 	/**
 	 * get dynamic entity value object
 	 *
@@ -209,6 +212,50 @@ public class DatasourceDelegate {
 	public DynamicEntityVO getDynamicEntity(Integer iDynamicEntityId) throws CommonPermissionException {
 		try {
 			return getDatasourceFacade().getDynamicEntity(iDynamicEntityId);
+		}
+		catch (RuntimeException ex) {
+			throw new CommonFatalException(ex);
+		}
+	}
+
+	/**
+	 * @return collection of all ChartVOs
+	 */
+	public Collection<ChartVO> getAllCharts() {
+		try {
+			return getDatasourceFacade().getCharts();
+		}
+		catch (RuntimeException ex) {
+			throw new CommonFatalException(ex);
+		}
+	}
+	
+	/**
+	 * get chart value object
+	 * 
+	 * @param iChartId
+	 *            primary key of chart
+	 * @return ChartVO
+	 */
+	public ChartVO getChart(Integer iChartId) throws CommonPermissionException {
+		try {
+			return getDatasourceFacade().getChart(iChartId);
+		}
+		catch (RuntimeException ex) {
+			throw new CommonFatalException(ex);
+		}
+	}
+
+	/**
+	 * get chart value object
+	 * 
+	 * @param sChart
+	 *            name of chart
+	 * @return chart value object
+	 */
+	public ChartVO getChartByName(String sChart) throws CommonBusinessException {
+		try {
+			return getDatasourceFacade().getChart(sChart);
 		}
 		catch (RuntimeException ex) {
 			throw new CommonFatalException(ex);

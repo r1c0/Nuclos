@@ -812,6 +812,26 @@ public class Icons {
 	public ImageIcon getIconListOrdered() {
 		return this.getIconByName("list-ordered");
 	}
+
+	public ImageIcon getBarChartIcon() {
+		return getCachedImageIcon("org/nuclos/client/layout/wysiwyg/editor/ui/charts/barchart.png");
+	}
+	
+	public ImageIcon getLineChartIcon() {
+		return getCachedImageIcon("org/nuclos/client/layout/wysiwyg/editor/ui/charts/linechart.png");
+	}
+	
+	public ImageIcon getPieChartIcon() {
+		return getCachedImageIcon("org/nuclos/client/layout/wysiwyg/editor/ui/charts/piechart.png");
+	}
+	
+	public ImageIcon getTimeSeriesChartIcon() {
+		return getCachedImageIcon("org/nuclos/client/layout/wysiwyg/editor/ui/charts/timeseries.png");
+	}
+	
+	public ImageIcon getXYSeriesChartIcon() {
+		return getCachedImageIcon("org/nuclos/client/layout/wysiwyg/editor/ui/charts/xyseries.png");
+	}
 	
 	public Icon getStateViewStateNormal(String type) {
 		if (type.equals("first"))

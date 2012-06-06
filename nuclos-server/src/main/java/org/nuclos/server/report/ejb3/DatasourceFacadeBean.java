@@ -71,6 +71,7 @@ import org.nuclos.server.masterdata.valueobject.MasterDataMetaVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 import org.nuclos.server.report.NuclosReportException;
 import org.nuclos.server.report.SchemaCache;
+import org.nuclos.server.report.valueobject.ChartVO;
 import org.nuclos.server.report.valueobject.DatasourceParameterVO;
 import org.nuclos.server.report.valueobject.DatasourceVO;
 import org.nuclos.server.report.valueobject.DynamicEntityVO;
@@ -95,9 +96,12 @@ public class DatasourceFacadeBean extends NuclosFacadeBean implements Datasource
 	private static final Logger LOG = Logger.getLogger(DatasourceFacadeBean.class);
 
 	private static enum DataSourceType {
-		DYNAMICENTITY(NuclosEntity.DYNAMICENTITY, NuclosEntity.DYNAMICENTITYUSAGE, "dynamicEntity"), VALUELISTPROVIDER(NuclosEntity.VALUELISTPROVIDER, NuclosEntity.VALUELISTPROVIDERUSAGE, "valuelistProvider"), RECORDGRANT(
-				NuclosEntity.RECORDGRANT, NuclosEntity.RECORDGRANTUSAGE, "recordGrant"), DATASOURCE(NuclosEntity.DATASOURCE, NuclosEntity.DATASOURCEUSAGE, "datasource"), DYNAMICTASKLIST(NuclosEntity.DYNAMICTASKLIST,
-				NuclosEntity.DYNAMICTASKLISTUSAGE, "dynamictasklist");
+		DYNAMICENTITY(NuclosEntity.DYNAMICENTITY, NuclosEntity.DYNAMICENTITYUSAGE, "dynamicEntity"), 
+		VALUELISTPROVIDER(NuclosEntity.VALUELISTPROVIDER, NuclosEntity.VALUELISTPROVIDERUSAGE, "valuelistProvider"), 
+		RECORDGRANT(NuclosEntity.RECORDGRANT, NuclosEntity.RECORDGRANTUSAGE, "recordGrant"), 
+		DATASOURCE(NuclosEntity.DATASOURCE, NuclosEntity.DATASOURCEUSAGE, "datasource"), 
+		CHART(NuclosEntity.CHART, NuclosEntity.CHARTUSAGE, "chart"), 
+		DYNAMICTASKLIST(NuclosEntity.DYNAMICTASKLIST, NuclosEntity.DYNAMICTASKLISTUSAGE, "dynamictasklist");
 
 		final NuclosEntity entity;
 		final NuclosEntity entityUsage;
@@ -121,6 +125,8 @@ public class DatasourceFacadeBean extends NuclosFacadeBean implements Datasource
 				return MasterDataWrapper.getRecordGrantVO(deVO);
 			case DYNAMICTASKLIST:
 				return MasterDataWrapper.getDynamicTasklistVO(deVO);
+			case CHART:
+					return MasterDataWrapper.getChartVO(deVO);
 			default:
 				return MasterDataWrapper.getDatasourceVO(deVO, userName);
 			}
@@ -142,6 +148,9 @@ public class DatasourceFacadeBean extends NuclosFacadeBean implements Datasource
 			}
 			else if (datasourceVO instanceof DynamicTasklistVO) {
 				return DataSourceType.DYNAMICTASKLIST;
+			}
+			else if (datasourceVO instanceof ChartVO) {
+				return DataSourceType.CHART;
 			}
 			else {
 				return DataSourceType.DATASOURCE;
@@ -237,12 +246,49 @@ public class DatasourceFacadeBean extends NuclosFacadeBean implements Datasource
 	 * get dynamic entity value object
 	 *
 	 * @param sDynamicEntity
-	 *            name of valuelist provider
+	 *            name of dynamic entity 
 	 * @return dynamic entity value object
 	 */
 	@RolesAllowed("Login")
 	public DynamicEntityVO getDynamicEntity(String sDynamicEntity) throws CommonFinderException, CommonPermissionException {
 		return DatasourceCache.getInstance().getDynamicEntityByName(sDynamicEntity);
+	}
+
+	/**
+	 * get chart value object
+	 * 
+	 * @param sChart
+	 *            name of chart
+	 * @return chart value object
+	 */
+	@RolesAllowed("Login")
+	public ChartVO getChart(String sChart) throws CommonFinderException, CommonPermissionException {
+		return DatasourceCache.getInstance().getChartByName(sChart);
+	}
+
+	/**
+	 * get all charts
+	 * 
+	 * @return set of ChartVO
+	 * @throws CommonPermissionException
+	 */
+	@RolesAllowed("Login")
+	public Collection<ChartVO> getCharts() {
+		// this.checkReadAllowed(ENTITY_NAME_CHARTENTITY);
+		return DatasourceCache.getInstance().getAllCharts();
+	}
+
+	/**
+	 * get chart value object
+	 * 
+	 * @param iChartId
+	 *            primary key of chart
+	 * @return ChartVO
+	 */
+	@RolesAllowed("Login")
+	public ChartVO getChart(Integer iChartId) throws CommonPermissionException {
+		// this.checkReadAllowed(ENTITY_NAME_CHARTENTITY);
+		return DatasourceCache.getInstance().getChart(iChartId);
 	}
 
 	/**
@@ -288,6 +334,10 @@ public class DatasourceFacadeBean extends NuclosFacadeBean implements Datasource
 			processChangingDynamicEntity((DynamicEntityVO) datasourcevo, null, true);
 		}
 
+		if (NuclosEntity.CHART.getEntityName().equals(entity)) {
+			processChangingChartEntity((ChartVO) datasourcevo, null, true);
+		}
+		
 		MasterDataVO mdVO = getMasterDataFacade().create(entity, type.unwrap(datasourcevo), null);
 		getMasterDataFacade().notifyClients(entity);
 
@@ -361,6 +411,10 @@ public class DatasourceFacadeBean extends NuclosFacadeBean implements Datasource
 				processChangingDynamicEntity((DynamicEntityVO) datasourcevo, (DynamicEntityVO) type.wrap(dsAsMd, getCurrentUserName()), true);
 			}
 
+			if (NuclosEntity.CHART.getEntityName().equals(entity)) {
+				processChangingChartEntity((ChartVO) datasourcevo, (ChartVO) type.wrap(dsAsMd, getCurrentUserName()), true);
+			}
+			
 			if (dsAsMd.getVersion() != datasourcevo.getVersion()) {
 				throw new CommonStaleVersionException(entity, datasourcevo.toString(), dsAsMd.toString());
 			}
@@ -480,6 +534,106 @@ public class DatasourceFacadeBean extends NuclosFacadeBean implements Datasource
 			}
 			catch (Exception e) {
 				LOG.error("could not create dynamic entity <SQL>" + sqlToExecute + "</SQL> ERROR: " + e.getMessage());
+			}
+		}
+		if (revalidateMasterDataMetaCache)
+			MasterDataMetaCache.getInstance().revalidate();
+	}
+	/**
+	 * 
+	 * @param newDEs
+	 *            (chart entities of this list would be created)
+	 * @param oldDEs
+	 *            (chart entities of this list would be deleted)
+	 */
+	public void processChangingChartEntities(Collection<ChartVO> newDEs, Collection<ChartVO> oldDEs, boolean bExecute, List<String> script) {
+		for (ChartVO oldDEVO : oldDEs) {
+			try {
+				this.processChangingChartEntity(null, oldDEVO, false, false, bExecute, script);
+			}
+			catch (CommonValidationException e) {
+				// no validation here
+			}
+		}
+		for (ChartVO newDEVO : newDEs) {
+			try {
+				this.processChangingChartEntity(newDEVO, null, false, false, bExecute, script);
+			}
+			catch (CommonValidationException e) {
+				// no validation here
+			}
+		}
+		// revalidate meta cache
+		MasterDataMetaCache.getInstance().revalidate();
+	}
+
+	/**
+	 * revalidates MasterDataMetaCache after process
+	 * 
+	 * @param newDEVO
+	 * @param oldDEVO
+	 * @param validate
+	 * @throws CommonValidationException
+	 *             (only if validate is true)
+	 */
+	private void processChangingChartEntity(ChartVO newDEVO, ChartVO oldDEVO, boolean validate) throws CommonValidationException {
+		this.processChangingChartEntity(newDEVO, oldDEVO, validate, true, true, new ArrayList<String>());
+	}
+
+	/**
+	 * 
+	 * @param newDEVO
+	 * @param oldDEVO
+	 * @param validate
+	 * @param revalidateMasterDataMetaCache
+	 * @throws CommonValidationException
+	 *             (only if validate is true)
+	 */
+	private void processChangingChartEntity(ChartVO newDEVO, ChartVO oldDEVO, boolean validate, boolean revalidateMasterDataMetaCache, boolean bExecute, List<String> script)
+			throws CommonValidationException {
+		String sqlSelect = null;
+		if (newDEVO != null) {
+			if (validate) {
+				try {
+					LOG.debug("validate chart entity name \"" + newDEVO.getName() + "\"");
+					DatasourceUtils.validateChartEntityName(newDEVO.getName());
+					sqlSelect = createSQL(newDEVO.getSource());
+					LOG.debug("validate chart entity sql <SQL>" + sqlSelect + "</SQL>");
+					DatasourceUtils.validateChartEntitySQL(sqlSelect);
+					DatasourceUtils.validateChartEntitySQLWithParameters(createSQL(newDEVO.getSource(), getTestParameters(newDEVO.getSource())));
+				}
+				catch (NuclosDatasourceException e) {
+					throw new CommonFatalException(e);
+				}
+			}
+		}
+
+		DbAccess dbAccess = dataBaseHelper.getDbAccess();
+		if (oldDEVO != null) {
+			String sqlToExecute = null;
+			try {
+				sqlToExecute = "drop view " + MasterDataMetaVO.CHART_ENTITY_VIEW_PREFIX + oldDEVO.getName();
+				script.add(sqlToExecute);
+				if (bExecute)
+					dbAccess.execute(new DbPlainStatement(sqlToExecute));
+				LOG.info("deleted chart entity <SQL>" + sqlToExecute + "</SQL>");
+			}
+			catch (DbException e) {
+				LOG.error("could not deleted chart entity <SQL>" + sqlToExecute + "</SQL> ERROR: " + e.getMessage());
+			}
+		}
+		if (newDEVO != null) {
+			String sqlToExecute = null;
+			try {
+				LOG.info("creating chart entity " + newDEVO.getName() + "...");
+				sqlToExecute = "create view " + MasterDataMetaVO.CHART_ENTITY_VIEW_PREFIX + newDEVO.getName() + " as " + createSQL(newDEVO.getSource(), getTestParameters(newDEVO.getSource()));
+				script.add(sqlToExecute);
+				if (bExecute)
+					dbAccess.execute(new DbPlainStatement(sqlToExecute));
+				LOG.info("created dynamic entity <SQL>" + sqlToExecute + "</SQL>");
+			}
+			catch (Exception e) {
+				LOG.error("could not create chart entity <SQL>" + sqlToExecute + "</SQL> ERROR: " + e.getMessage());
 			}
 		}
 		if (revalidateMasterDataMetaCache)
@@ -651,6 +805,16 @@ public class DatasourceFacadeBean extends NuclosFacadeBean implements Datasource
 			}
 		}
 
+		if (NuclosEntity.CHART.getEntityName().equals(entity)) {
+			try {
+				processChangingChartEntity(null, (ChartVO) datasourcevo, false);
+			}
+			catch (CommonValidationException e) {
+				// no validation here
+				LOG.info("removeDynamicEntity: " + e);
+			}
+		}
+
 		if (dsAsMd.getVersion() != datasourcevo.getVersion()) {
 			throw new CommonStaleVersionException(entity, dsAsMd.toString(), datasourcevo.toString());
 		}
@@ -740,9 +904,6 @@ public class DatasourceFacadeBean extends NuclosFacadeBean implements Datasource
 		}
 		catch (DbException e) {
 			throw new CommonValidationException(StringUtils.getParameterizedExceptionMessage("datasource.error.invalid.statement", e.getMessage()), e);// "Die Abfrage ist ung\u00ef\u00bf\u00bdltig.\n"
-																																						// +
-																																						// e.getMessage(),
-																																						// e);
 		}
 	}
 
@@ -963,12 +1124,11 @@ public class DatasourceFacadeBean extends NuclosFacadeBean implements Datasource
 	 * @return report/form filled with data
 	 */
 	public ResultVO executeQuery(String sDatasourceXML, Map<String, Object> mpParams, Integer iMaxRowCount) throws CommonFinderException, NuclosDatasourceException {
-		final ResultVO result = new ResultVO();
 		final String sQuery = createSQL(sDatasourceXML, mpParams);
 
 		return dataBaseHelper.getDbAccess().executePlainQueryAsResultVO(sQuery, iMaxRowCount == null ? -1 : iMaxRowCount);
 	}
-
+	
 	public Schema getSchemaTables() {
 		// return
 		// SchemaCache.getSchema(ServerParameterProvider.getInstance().getValue(ParameterProvider.KEY_NUCLOS_SCHEMA));

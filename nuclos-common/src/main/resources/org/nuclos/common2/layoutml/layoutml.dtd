@@ -25,7 +25,7 @@
 <!ENTITY % boolean "yes|no">
 <!-- NUCLEUSINT-1142 -->
 <!ENTITY % controltype "textfield|id-textfield|textarea|combobox|checkbox|optiongroup|listofvalues|datechooser|filechooser|image|password|hyperlink|email">
-<!ENTITY % container "panel|empty-panel|subform|tabbedpane|scrollpane|splitpane">
+<!ENTITY % container "panel|empty-panel|chart|subform|tabbedpane|scrollpane|splitpane">
 
 <!ELEMENT layoutml (definitions?, layout, dependencies?, rules?)>
 
@@ -100,7 +100,7 @@ parent-subform CDATA #IMPLIED
 dynamic-cell-heights-default (%boolean;) #IMPLIED
 >
 
-<!ELEMENT subform-column (translations?,valuelist-provider?,property*)>
+<!ELEMENT subform-column (translations?,valuelist-provider?)>
 <!ATTLIST subform-column
 name CDATA #REQUIRED
 label CDATA #IMPLIED
@@ -121,31 +121,41 @@ nextfocuscomponent CDATA #IMPLIED
  name CDATA #REQUIRED
  sorting-order (ascending|descending) #REQUIRED
  >
-
+ 
 <!ELEMENT new-enabled (#PCDATA)>
 <!ATTLIST new-enabled
  language CDATA #REQUIRED
  >
-
+ 
 <!ELEMENT edit-enabled (#PCDATA)>
 <!ATTLIST edit-enabled
  language CDATA #REQUIRED
  >
-
+ 
 <!ELEMENT delete-enabled (#PCDATA)>
 <!ATTLIST delete-enabled
  language CDATA #REQUIRED
  >
-
+ 
 <!ELEMENT clone-enabled (#PCDATA)>
 <!ATTLIST clone-enabled
  language CDATA #REQUIRED
  >
-
+ 
 <!ELEMENT property-script (#PCDATA)>
 <!ATTLIST property-script
 name CDATA #REQUIRED
 language CDATA #REQUIRED
+>
+
+<!ELEMENT chart ((%layoutconstraints;)?,(%borders;),(%sizes;),property*,description?)>
+<!ATTLIST chart
+name CDATA #IMPLIED
+entity CDATA #REQUIRED
+enabled (%boolean;) #IMPLIED
+toolbarorientation (horizontal|vertical|hide) #IMPLIED
+opaque (%boolean;) #IMPLIED
+foreignkeyfield-to-parent CDATA #IMPLIED
 >
 
 <!ELEMENT scrollpane ((%layoutconstraints;)?,(%borders;),(%sizes;),((%container;)|textarea|collectable-component)?)>
@@ -206,7 +216,7 @@ resourceId CDATA #IMPLIED
 icon CDATA #IMPLIED
 >
 
-<!ELEMENT collectable-component ((%layoutconstraints;)?,property*,(%borders;),(%sizes;),background?,font?,description?,options?,translations?,valuelist-provider?,enabled?)>
+<!ELEMENT collectable-component ((%layoutconstraints;)?,property*,(%borders;),(%sizes;),background?,font?,description?,options?,translations?,valuelist-provider?)>
 <!ATTLIST collectable-component
 name CDATA #REQUIRED
 controltype (%controltype;) #IMPLIED
@@ -226,11 +236,6 @@ resourceId CDATA #IMPLIED
 nextfocuscomponent CDATA #IMPLIED
 aspectratio (%boolean;) #IMPLIED
 >
-
-<!ELEMENT enabled (#PCDATA)>
-<!ATTLIST enabled
- language CDATA #REQUIRED
- >
 
 <!ELEMENT layoutcomponent ((%layoutconstraints;)?,(%properties;),(%borders;),(%sizes;))>
 <!ATTLIST layoutcomponent

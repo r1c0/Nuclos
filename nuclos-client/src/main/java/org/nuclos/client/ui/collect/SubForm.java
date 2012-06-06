@@ -401,6 +401,15 @@ public class SubForm extends JPanel
 
 	private String sInitialSortingColumn;
 	private String sInitialSortingOrder;
+	
+	private Map<String, Object> mpParams = new HashMap<String, Object>();
+	
+	public static interface ParameterChangeListener extends ChangeListener {
+		@Override
+		public void stateChanged(ChangeEvent e);
+	}
+
+	private final List<ParameterChangeListener>		parameterListener = new ArrayList<ParameterChangeListener>();
 
 	/**
 	 * Use custom column widths? This will always be true as soon as the user changed one or more column width
@@ -554,10 +563,13 @@ public class SubForm extends JPanel
 			mpColumns.clear();
 			mpStaticColumnEditors.clear();
 
+			parameterListener.clear();
 			lstchangelistener.clear();
 			lstFocusActionListener.clear();
 			listeners.clear();
 			myMouseListener.clear();
+			
+			mpParams.clear();
 
 			closed = true;
 		}
@@ -1352,7 +1364,7 @@ public class SubForm extends JPanel
 		return width;
 	}
 
-	public final void setupTableModelListener() {
+	public void setupTableModelListener() {
 		this.tblmdllistener = new TableModelListener() {
 			@Override
             public void tableChanged(TableModelEvent ev) {
@@ -1640,7 +1652,6 @@ public class SubForm extends JPanel
 	 */
 	protected final CollectableComponentTableCellEditor newTableCellEditor(CollectableEntity clcte,
 			String sColumnName, final boolean bSearchable, Preferences prefs, final SubFormTableModel subformtblmdl) {
-
 		final CollectableComponent clctcomp = newCollectableComponent(clcte, sColumnName, bSearchable, prefs);
 		final CollectableComponentTableCellEditor result = createTableCellEditor(clctcomp);
 
@@ -2706,7 +2717,27 @@ public class SubForm extends JPanel
     	return lstFocusActionListener;
     }
 
-	public NuclosScript getNewEnabledScript() {
+    public void addParameterListener(ParameterChangeListener pl) {
+    	parameterListener.add(pl);
+    }
+
+    public void removeParameterListener(ParameterChangeListener pl) {
+    	parameterListener.remove(pl);
+    }
+
+	/**
+	 * fires a <code>ChangeEvent</code> whenever the model of this <code>SubForm</code> changes.
+	 */
+	private synchronized void fireParameterChanged() {
+		if(layer == null || (layer != null && !((LockableUI) layer.getUI()).isLocked())){
+			final ChangeEvent ev = new ChangeEvent(this);
+			for (ChangeListener changelistener : parameterListener) {
+				changelistener.stateChanged(ev);
+			}
+		}
+	}
+
+    public NuclosScript getNewEnabledScript() {
 		return newEnabledScript;
 	}
 
@@ -3252,6 +3283,24 @@ public class SubForm extends JPanel
 
 	public boolean isDynamicRowHeightsDefault() {
 		return dynamicRowHeightsDefault;
+	}
+	
+	/**
+	 * @return param map to the subform's parent entity. May be <code>null</code>.
+	 */
+	public Map<String, Object> getMapParams() {
+		return Collections.unmodifiableMap(this.mpParams);
+	}
+	
+	public void setMapParams(Map<String, Object> mpParams) {
+		this.mpParams.clear();
+		this.mpParams.putAll(mpParams);
+		fireParameterChanged();
+	}
+	
+	public void addToMapParams(String param, Object value) {
+		this.mpParams.put(param, value);
+		fireParameterChanged();
 	}
 
 }	// class SubForm

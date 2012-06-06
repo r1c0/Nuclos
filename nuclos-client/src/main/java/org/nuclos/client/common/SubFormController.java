@@ -302,7 +302,9 @@ public abstract class SubFormController extends MainFrameTabController
 	 * 		identify this subform in its <code>CollectController</code>.
 	 */
 	public final EntityAndFieldName getEntityAndForeignKeyFieldName() {
-		return new EntityAndFieldName(this.getCollectableEntity().getName(), this.getForeignKeyFieldName());
+		EntityAndFieldName entityAndFieldName = new EntityAndFieldName(this.getCollectableEntity().getName(), this.getForeignKeyFieldName());
+		entityAndFieldName.setMapParams(subform.getMapParams());
+		return entityAndFieldName;
 	}
 
 	/**

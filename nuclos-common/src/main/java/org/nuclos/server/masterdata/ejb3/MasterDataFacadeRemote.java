@@ -157,7 +157,28 @@ public interface MasterDataFacadeRemote {
 	Collection<MasterDataVO> getDependantMasterData(
 		String sEntityName, String sForeignKeyField, Object oRelatedId);
 
+	/**
+	 * gets the dependant master data records for the given entity, using the given foreign key field and the given id as foreign key.
+	 * @param sEntityName name of the entity to get all dependant master data records for
+	 * @param sForeignKeyField name of the field relating to the foreign entity
+	 * @param oRelatedId id by which sEntityName and sParentEntity are related
+	 * @return
+	 * @precondition oRelatedId != null
+	 * @todo restrict permissions by entity name
+	 */
+	@RolesAllowed("Login")
+	Collection<MasterDataVO> getDependantMasterData(
+		String sEntityName, String sForeignKeyField, Object oRelatedId, Map<String, Object> mpParams);
 
+	/**
+	 * gets the dependant master data records for the given entity, using the given foreign key field and the given id as foreign key.
+	 * @param sEntityName name of the entity to get all dependant master data records for
+	 * @param sForeignKeyField name of the field relating to the foreign entity
+	 * @param oRelatedId id by which sEntityName and sParentEntity are related
+	 * @return
+	 * @precondition oRelatedId != null
+	 * @todo restrict permissions by entity name
+	 */
 	@RolesAllowed("Login")
 	Collection<EntityTreeViewVO> getDependantSubnodes(
 		String sEntityName, String sForeignKeyField, Object oRelatedId);

@@ -886,6 +886,41 @@ public class WYSIWYGStringsAndLabels {
 	/**
 	 * @deprecated Should be done with the help of SpringLocaleDelegate and localeresource.json.
 	 */
+	public static class COLLECTABLE_CHART implements PaletteItemElement {
+		public static final String LABEL_NO_ENTITY_ASSIGNED = "Bitte geben Sie eine Entit\u00e4t an.";
+		public static final String PROPERTY_LABEL = "Eigenschaften";
+
+		public static final String PALETTE_ELEMENTNAME = "Chart";
+		public static final String PALETTE_ELEMENTICON = "org/nuclos/client/layout/wysiwyg/palette/images/JListColor16.gif";
+		public static final String PALETTE_ELEMENTTOOLTIP = "Chart";
+
+		@Override
+		public Icon getIcon() {
+			if ("".equals(PALETTE_ELEMENTICON))
+				return null;
+			return new ImageIcon(this.getClass().getClassLoader().getResource(PALETTE_ELEMENTICON));
+		}
+		@Override
+		public String getLabel() {
+			return PALETTE_ELEMENTNAME;
+		}
+		@Override
+		public String getToolTip() {
+			return PALETTE_ELEMENTTOOLTIP;
+		}
+		@Override
+		public boolean displayLabelAndIcon() {
+			return false;
+		}
+		@Override
+		public boolean isLabeledComponent() {
+			return false;
+		}
+	}
+
+	/**
+	 * @deprecated Should be done with the help of SpringLocaleDelegate and localeresource.json.
+	 */
 	public static class PROPERTY_LABELS {
 		public static final String NAME = "Name der Komponente";
 		public static final String PREFFEREDSIZE = "Bevorzugte Gr\u00f6\u00dfe";
@@ -1912,11 +1947,12 @@ public class WYSIWYGStringsAndLabels {
 		public static final String LABEL_DEFAULTNAME_TAB1 = "Reiter_1";
 		public static final String LABEL_DEFAULTNAME_TAB2 = "Reiter_2";
 		public static final String LABEL_DEFAULTNAME_SUBFORM = "SubForm_";
+		public static final String LABEL_DEFAULTNAME_CHART = "Chart_";
 		public static final String LABEL_DEFAULTNAME_STATIC_LABEL = "Label_";
 		public static final String LABEL_DEFAULTNAME_STATIC_TEXTFIELD = "TextField_";
 		public static final String LABEL_DEFAULTNAME_STATIC_TEXTAREA = "TextArea_";
 		public static final String LABEL_DEFAULTNAME_STATIC_COMBOBOX = "Combobox_";
-		public static final String LABEL_DEFAULTNAME_STATIC_IMAGE = "IMAGE_";
+		public static final String LABEL_DEFAULTNAME_STATIC_IMAGE = "Image_";
 		public static final String LABEL_DEFAULTNAME_BUTTON = "Button_";
 		//NUCLEUSINT-1159
 		public static final String LABEL_DEFAULTACTIONCOMMAND_BUTTON = STATIC_BUTTON.DUMMY_BUTTON_ACTION_LABEL;

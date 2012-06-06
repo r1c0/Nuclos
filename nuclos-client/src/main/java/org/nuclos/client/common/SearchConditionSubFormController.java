@@ -121,7 +121,7 @@ public class SearchConditionSubFormController extends SubFormController {
 	/**
 	 * implementation of <code>SearchConditionTableModel</code>.
 	 */
-	private class SearchConditionTableModelImpl extends DefaultTableModel implements SearchConditionTableModel {
+	public class SearchConditionTableModelImpl extends DefaultTableModel implements SearchConditionTableModel {
 
 		private final String subformName;
 

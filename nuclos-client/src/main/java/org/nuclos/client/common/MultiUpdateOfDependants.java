@@ -197,7 +197,7 @@ public class MultiUpdateOfDependants implements TableCellRendererProvider {
 		// data like it was made before
 		for (CollectableWithDependants clctWithDependants : collclct) {
 			final Collection<EntityObjectVO> collmdcvo = (clctWithDependants.getId() == null) ? new ArrayList<EntityObjectVO>() : MasterDataDelegate.getInstance().getDependantMasterData(sSubEntityName, sParentFieldName,
-					clctWithDependants.getId());
+					clctWithDependants.getId(), subformctl.getSubForm().getMapParams());
 			CollectableEOEntityProvider provider = CollectableEOEntityClientProvider.getInstance();
 			CollectableEOEntity eo = (CollectableEOEntity) provider.getCollectableEntity(sSubEntityName);
 			List<CollectableEntityObject> list = CollectionUtils.transform(collmdcvo, new CollectableEntityObject.MakeCollectable(eo));

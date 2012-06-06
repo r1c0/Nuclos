@@ -42,6 +42,7 @@ import javax.swing.JScrollBar;
 import javax.swing.JSplitPane;
 import javax.swing.JTable;
 import javax.swing.TransferHandler;
+import javax.swing.event.ChangeEvent;
 
 import org.apache.log4j.Logger;
 import org.nuclos.client.common.DependantCollectableMasterDataMap;
@@ -81,6 +82,7 @@ import org.nuclos.client.ui.collect.CollectStateEvent;
 import org.nuclos.client.ui.collect.DefaultEditView;
 import org.nuclos.client.ui.collect.EditView;
 import org.nuclos.client.ui.collect.SubForm;
+import org.nuclos.client.ui.collect.SubForm.ParameterChangeListener;
 import org.nuclos.client.ui.collect.component.CollectableComboBox;
 import org.nuclos.client.ui.collect.component.CollectableComponent;
 import org.nuclos.client.ui.collect.component.CollectableComponentFactory;
@@ -732,20 +734,34 @@ public class MasterDataCollectController extends EntityCollectController<Collect
 		// create a controller for each subform:
 		Map<String, SubForm> mpSubForm = this.getDetailsPanel().getLayoutRoot().getMapOfSubForms();
 		mpsubformctlDetails = newDetailsSubFormControllers(mpSubForm);
-
+      
 		Map<SubForm, MasterDataSubFormController> mpSubFormController = new HashMap<SubForm, MasterDataSubFormController>();
 
 		// create a map of subforms and their controllers that exists in the
 		// layout
-
-		for (String sSubFormEntityName : mpsubformctlDetails.keySet()) {
-			DetailsSubFormController<CollectableEntityObject> subformcontroller = mpsubformctlDetails.get(sSubFormEntityName);
-			SubForm subform = subformcontroller.getSubForm();
-			if (subformcontroller instanceof MasterDataSubFormController) {
-				subformcontroller.setCollectController(MasterDataCollectController.this);
-				mpSubFormController.put(subform, (MasterDataSubFormController) subformcontroller);
+      final ParameterChangeListener changeListener = new ParameterChangeListener() {
+		@Override
+		public void stateChanged(final ChangeEvent e) {
+			if (e != null && e.getSource() instanceof SubForm) {
+			   	UIUtils.invokeOnDispatchThread(new Runnable() {
+						@Override
+						public void run() {
+							SubForm subform = (SubForm)e.getSource();
+							MasterDataCollectController.this.getSubFormsLoader().startLoading(subform.getEntityName());
+						}
+					});
 			}
 		}
+  	  };
+      for (String sSubFormEntityName : mpsubformctlDetails.keySet()) {
+         DetailsSubFormController<CollectableEntityObject> subformcontroller = mpsubformctlDetails.get(sSubFormEntityName);
+         SubForm subform = subformcontroller.getSubForm();
+         if (subformcontroller instanceof MasterDataSubFormController) {
+        	subform.addParameterListener(changeListener);
+            subformcontroller.setCollectController(MasterDataCollectController.this);
+            mpSubFormController.put(subform, (MasterDataSubFormController)subformcontroller);
+         }
+      }
 
 		// add child subforms to their parents
 		for (SubForm subform : mpSubFormController.keySet()) {
@@ -985,17 +1001,16 @@ public class MasterDataCollectController extends EntityCollectController<Collect
 							mdsubformctl.getSubForm().setLockedLayer();
 						}
 					}
-
-					@Override
-					public void work() throws NuclosBusinessException {
-						if (interrupted || isClosed()) {
-							return;
-						}
-						iParentId = (Integer) clct.getId();
-						collmdvo = (clct.getId() == null) ? new ArrayList<EntityObjectVO>() : MasterDataDelegate.getInstance().getDependantMasterData(mdsubformctl.getCollectableEntity().getName(), mdsubformctl.getForeignKeyFieldName(),
-								clct.getId());
-					}
-
+				    @Override
+				    public void work() throws NuclosBusinessException {
+					   if (interrupted || isClosed()) {
+						   return;
+					   }
+					   iParentId = (Integer) clct.getId();
+					   collmdvo = (clct.getId() == null) ?
+							   new ArrayList<EntityObjectVO>() :
+								   MasterDataDelegate.getInstance().getDependantMasterData(mdsubformctl.getCollectableEntity().getName(), mdsubformctl.getForeignKeyFieldName(), clct.getId(), mdsubformctl.getSubForm().getMapParams());
+				    }
 					@Override
 					public void handleError(Exception ex) {
 						if (!interrupted) {

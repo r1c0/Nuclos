@@ -17,6 +17,9 @@
 package org.nuclos.server.masterdata.ejb3;
 
 import java.io.File;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -24,6 +27,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -54,6 +58,7 @@ import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
 import org.nuclos.common.dal.vo.EntityObjectVO;
 import org.nuclos.common.dal.vo.SystemFields;
+import org.nuclos.common.querybuilder.NuclosDatasourceException;
 import org.nuclos.common.transport.GzipList;
 import org.nuclos.common2.EntityAndFieldName;
 import org.nuclos.common2.IOUtils;
@@ -92,6 +97,7 @@ import org.nuclos.server.dblayer.DbObjectHelper.DbObjectType;
 import org.nuclos.server.dblayer.DbStatementUtils;
 import org.nuclos.server.dblayer.DbTuple;
 import org.nuclos.server.dblayer.DbType;
+import org.nuclos.server.dblayer.incubator.DbExecutor.ResultSetRunner;
 import org.nuclos.server.dblayer.query.DbColumnExpression;
 import org.nuclos.server.dblayer.query.DbFrom;
 import org.nuclos.server.dblayer.query.DbQuery;
@@ -112,6 +118,8 @@ import org.nuclos.server.masterdata.valueobject.DependantMasterDataMap;
 import org.nuclos.server.masterdata.valueobject.MasterDataMetaFieldVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataMetaVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
+import org.nuclos.server.report.ejb3.DatasourceFacadeLocal;
+import org.nuclos.server.report.valueobject.DatasourceVO;
 import org.nuclos.server.resource.ResourceCache;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -193,7 +201,15 @@ public class MasterDataFacadeHelper {
 	
 	private NucletDalProvider nucletDalProvider;
 	
+	private DatasourceFacadeLocal datasourceFacade;
+	
 	public MasterDataFacadeHelper() {
+	}
+	
+	private DatasourceFacadeLocal getDatasourceFacade() {
+		if (this.datasourceFacade == null)
+			this.datasourceFacade = ServerServiceLocator.getInstance().getFacade(DatasourceFacadeLocal.class);
+		return this.datasourceFacade;
 	}
 	
 	@Autowired
@@ -259,6 +275,19 @@ public class MasterDataFacadeHelper {
 	 * @todo restrict permissions by entity name
 	 */
 	public Collection<EntityObjectVO> getDependantMasterData(String sEntityName, String sForeignKeyField, Object oRelatedId, String username) {
+		return this.getDependantMasterData(sEntityName, sForeignKeyField, oRelatedId, username, new HashMap<String, Object>());
+	}
+	
+	/**
+	 * gets the dependant master data records for the given entity, using the given foreign key field and the given id as foreign key.
+	 * @param sEntityName name of the entity to get all dependant master data records for
+	 * @param sForeignKeyField name of the field relating to the foreign entity
+	 * @param oRelatedId id by which sEntityName and sParentEntity are related
+	 * @return
+	 * @precondition oRelatedId != null
+	 * @todo restrict permissions by entity name
+	 */
+	public Collection<EntityObjectVO> getDependantMasterData(String sEntityName, String sForeignKeyField, Object oRelatedId, String username, Map<String, Object> mpParams) {
 		if (oRelatedId == null) {
 			throw new NullArgumentException("oRelatedId");
 		}
@@ -268,9 +297,25 @@ public class MasterDataFacadeHelper {
 		final MasterDataMetaVO mdmetavo = masterDataMetaCache.getMetaData(sEntityName);
 		Date startDate = new Date();
 
-		Collection<MasterDataVO> result = mdmetavo.isDynamic() ?
-				getDependantMasterDataBySQL(oRelatedId, mdmetavo) :
-					getDependantMasterDataByBean(sEntityName, sForeignKeyField, oRelatedId);
+		Collection<MasterDataVO> result = new ArrayList<MasterDataVO>();
+		if (mdmetavo.isDynamic()) {
+			if (sEntityName.startsWith(MasterDataMetaVO.DYNAMIC_ENTITY_PREFIX))
+				result = getDependantMasterDataForDatasource(oRelatedId, mdmetavo);
+			else if (sEntityName.startsWith(MasterDataMetaVO.CHART_ENTITY_PREFIX)) {
+				String sDataSource = mdmetavo.getDBEntity().substring(MasterDataMetaVO.CHART_ENTITY_VIEW_PREFIX.length()).toLowerCase();
+				
+				try {
+					DatasourceVO datasourceVO = getDatasourceFacade().getChart(sDataSource);
+					Map<String, Object> mpTempParams = new HashMap<String, Object>(mpParams);
+					mpTempParams.put("genericObject", oRelatedId);
+					result = getDependantMasterDataForDatasource(oRelatedId, mdmetavo,datasourceVO, mpTempParams);
+				} catch (Exception e) {
+					LOG.warn("getDependantMasterDataForDatasource failed for datasource " + sDataSource, e);
+				}
+			}
+		} else {
+			result = getDependantMasterDataByBean(sEntityName, sForeignKeyField, oRelatedId);
+		}
 
 		Collection<EntityObjectVO> colEntityObject = CollectionUtils.transform(result, 
 				new MasterDataToEntityObjectTransformer(sEntityName));
@@ -297,7 +342,7 @@ public class MasterDataFacadeHelper {
 		return getGenericMasterData(sEntityName, cond, true);
 	}
 
-	Collection<MasterDataVO> getDependantMasterDataBySQL(Object oRelatedId, final MasterDataMetaVO mdmetavo) {
+	Collection<MasterDataVO> getDependantMasterDataForDatasource(Object oRelatedId, final MasterDataMetaVO mdmetavo) {
 		final List<MasterDataMetaFieldVO> collFields = mdmetavo.getFields();
 		final int fieldCount = collFields.size();
 
@@ -338,7 +383,41 @@ public class MasterDataFacadeHelper {
 			};
 		});
 	}
-
+	
+	Collection<MasterDataVO> getDependantMasterDataForDatasource(Object oRelatedId, final MasterDataMetaVO mdmetavo, final DatasourceVO datasourceVO, final Map<String, Object> mpParams) throws NuclosDatasourceException {
+		String sql = getDatasourceFacade().createSQL(datasourceVO.getSource(), mpParams);
+		return dataBaseHelper.getDbAccess().executePlainQuery(sql, -1, new ResultSetRunner<Collection<MasterDataVO>>() {
+			@Override
+			public java.util.Collection<MasterDataVO> perform(ResultSet result) throws SQLException {
+		            Collection<MasterDataVO> values = new ArrayList<MasterDataVO>();
+		
+		            MasterDataVO mdvo = null;
+		            HashMap<String, Object> mpFields = null;
+		            HashMap<Integer, String> columnames = new HashMap<Integer, String>();
+		            ResultSetMetaData metadata = result.getMetaData();
+		
+		            for (int i = 1; i <= metadata.getColumnCount(); i++) {
+		            	String columName = metadata.getColumnName(i);
+		            	columnames.put(i, columName);
+		            }
+		            
+		            while (result.next()) {
+		                mpFields = new HashMap<String, Object>();
+		                for (Integer columnNumber : columnames.keySet()) {
+		               	Object value = result.getObject(columnNumber);
+		               	mpFields.put(columnames.get(columnNumber), value);
+		             }
+		
+		             mdvo = new MasterDataVO(mdmetavo, false);
+		             mdvo.setFields(mpFields);
+		             values.add(mdvo);
+		          }
+		
+            	return values;
+			}
+		});
+	}
+ 
 	static String getProtocolValue(Object oValue) {
 		String result = "";
 		if (oValue != null) {
@@ -378,6 +457,12 @@ public class MasterDataFacadeHelper {
 				break;
 			case PARAMETER:
 				ServerParameterProvider.getInstance().revalidate();
+				break;
+			case DYNAMICENTITY:
+			case DYNAMICENTITYUSAGE:
+			case CHART:
+			case CHARTUSAGE:
+				MetaDataServerProvider.getInstance().revalidate(true);
 				break;
 			default:
 				LOG.info("invalidateCaches: Nothing to do for " + sEntityName);

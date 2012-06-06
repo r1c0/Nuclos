@@ -194,7 +194,7 @@ public class DynamicTasklistCollectController extends AbstractDatasourceCollectC
 	@Override
 	public Set<String> getQueryTypes() {
 		HashSet<String> result = new HashSet<String>();
-		result.add(QueryTable.QUERY_TYPE_RECORDGRANT);
+		result.add(QueryTable.QUERY_TYPE_DYNAMIC_TASK);
 		return result;
 	}
 

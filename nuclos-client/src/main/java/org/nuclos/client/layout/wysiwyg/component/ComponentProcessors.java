@@ -127,6 +127,8 @@ public class ComponentProcessors implements LayoutMLConstants {
 			return new CollectableComponentElementProcessor(controltype);
 		} else if (ELEMENT_SUBFORM.equals(sElement)) {
 			return new SubformElementProcessor();
+		} else if (ELEMENT_CHART.equals(sElement)) {
+			return new ChartElementProcessor();
 		} else if (ELEMENT_TABBEDPANE.equals(sElement)) {
 			return new TabbedPaneElementProcessor();
 		} else if (ELEMENT_SCROLLPANE.equals(sElement)) {
@@ -578,6 +580,39 @@ public class ComponentProcessors implements LayoutMLConstants {
 		}
 	}
 	
+	/**
+	 * This Class creates a {@link WYSIWYGChart}
+	 * 
+	 * 
+	 * <br>
+	 * Created by Novabit Informationssysteme GmbH <br>
+	 * Please visit <a href="http://www.novabit.de">www.novabit.de</a>
+	 * 
+	 * @author <a href="mailto:stefan.geiling@novabit.de">stefan.geiling</a>
+	 * @version 01.00.00
+	 */
+	private class ChartElementProcessor implements ComponentProcessor {
+		/*
+		 * (non-Javadoc)
+		 * @see org.nuclos.client.layout.wysiwyg.component.ComponentProcessors.ComponentProcessor#createEmptyComponent(java.lang.Integer, org.nuclos.client.layout.wysiwyg.WYSIWYGMetaInformation, java.lang.String)
+		 */
+		@Override
+		public Component createEmptyComponent(Integer iNumber, WYSIWYGMetaInformation metaInf, String name) throws CommonBusinessException {
+			WYSIWYGChart chart = new WYSIWYGChart(metaInf);
+			
+			ComponentProperties properties = PropertyUtils.getEmptyProperties(chart, metaInf);
+			properties.setProperty(WYSIWYGChart.PROPERTY_NAME, new PropertyValueString(COMPONENT_PROCESSOR.LABEL_DEFAULTNAME_CHART + iNumber), String.class);
+			//NUCLEUSINT-803
+			properties.setProperty(WYSIWYGChart.PROPERTY_TOOLBARORIENTATION, new PropertyValueString(ATTRIBUTEVALUE_VERTICAL), String.class);
+			
+			chart.setProperties(properties);
+			
+			chart.setMinimumSize(DEFAULTVALUE_CHART_MINIMUMSIZE);
+
+			return chart;
+		}
+	}
+
 	/**
 	 * This Element shows up if something went wrong...<br>
 	 * If shown there was not found a fitting {@link ComponentProcessor} for  the incoming Parameters

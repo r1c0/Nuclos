@@ -70,6 +70,7 @@ import org.nuclos.client.layout.wysiwyg.WYSIWYGStringsAndLabels;
 import org.nuclos.client.layout.wysiwyg.WYSIWYGStringsAndLabels.COMPONENT_POPUP;
 import org.nuclos.client.layout.wysiwyg.WYSIWYGStringsAndLabels.TABLELAYOUT_PANEL;
 import org.nuclos.client.layout.wysiwyg.component.ComponentProcessors;
+import org.nuclos.client.layout.wysiwyg.component.WYSIWYGChart;
 import org.nuclos.client.layout.wysiwyg.component.WYSIWYGComponent;
 import org.nuclos.client.layout.wysiwyg.component.WYSIWYGSplitPane;
 import org.nuclos.client.layout.wysiwyg.component.WYSIWYGSubForm;
@@ -817,6 +818,12 @@ public class TableLayoutPanel extends JPanel implements DropTargetListener, Mous
 			//NUCLEUSINT-909
 			PropertiesPanel.showPropertiesForComponent((WYSIWYGSubForm)component, tableLayoutUtil);
 			((WYSIWYGSubForm)component).finalizeInitialLoading();
+		}
+		
+		if (component instanceof WYSIWYGChart) {
+			//NUCLEUSINT-909
+			PropertiesPanel.showPropertiesForComponent((WYSIWYGChart)component, tableLayoutUtil);
+			((WYSIWYGChart)component).finalizeInitialLoading();
 		}
 		
 		updateUI();

@@ -133,6 +133,15 @@ public class NucletDalProvider extends AbstractDalProvider {
 					
 					mapEntityObject.put(eMeta.getEntity(), processorFac.newDynamicEntityObjectProcessor(eMeta, entityFields));
 				}
+				
+				/**
+				 * 
+				 */
+				for(EntityMetaDataVO eMeta : NuclosDalProvider.getInstance().getChartEntityMetaProcessor().getAll()) {
+					List<EntityFieldMetaDataVO> entityFields = NuclosDalProvider.getInstance().getChartFieldMetaDataProcessor(eMeta).getAll();
+					
+					mapEntityObject.put(eMeta.getEntity(), processorFac.newChartEntityObjectProcessor(eMeta, entityFields));
+				}
 	
 			} catch (Exception ex) {
 				throw new CommonFatalException(ex);

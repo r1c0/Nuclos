@@ -43,13 +43,16 @@ import org.nuclos.api.Property;
 import org.nuclos.api.ui.LayoutComponent;
 import org.nuclos.client.common.LocaleDelegate;
 import org.nuclos.client.common.NuclosCollectableEntityProvider;
+import org.nuclos.client.datasource.DatasourceDelegate;
 import org.nuclos.client.genericobject.GeneratorActions;
 import org.nuclos.client.genericobject.Modules;
+import org.nuclos.client.layout.wysiwyg.WYSIWYGMetaInformation.StringResourceIdPair;
 import org.nuclos.client.layout.wysiwyg.WYSIWYGStringsAndLabels.ERROR_MESSAGES;
 import org.nuclos.client.layout.wysiwyg.WYSIWYGStringsAndLabels.PROPERTY_LABELS;
 import org.nuclos.client.layout.wysiwyg.component.ComponentProcessors;
 import org.nuclos.client.layout.wysiwyg.component.TitledBorderWithTranslations;
 import org.nuclos.client.layout.wysiwyg.component.TranslationMap;
+import org.nuclos.client.layout.wysiwyg.component.WYSIWYGChart;
 import org.nuclos.client.layout.wysiwyg.component.WYSIWYGCollectableComponent;
 import org.nuclos.client.layout.wysiwyg.component.WYSIWYGCollectableOptionGroup;
 import org.nuclos.client.layout.wysiwyg.component.WYSIWYGComponent;
@@ -107,6 +110,7 @@ import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.common2.layoutml.LayoutMLConstants;
 import org.nuclos.server.genericobject.valueobject.GeneratorActionVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataMetaVO;
+import org.nuclos.server.report.valueobject.ChartVO;
 import org.nuclos.server.ruleengine.valueobject.RuleVO;
 import org.nuclos.server.statemodel.valueobject.StateVO;
 import org.xml.sax.Attributes;
@@ -237,6 +241,7 @@ public class LayoutMLLoader implements LayoutMLConstants {
 			this.mapProcessors.put(ELEMENT_TABBEDPANECONSTRAINTS, new TabbedPaneConstraintsElementProcessor());
 			this.mapProcessors.put(ELEMENT_SUBFORM, new SubFormElementProcessor());
 			this.mapProcessors.put(ELEMENT_SUBFORMCOLUMN, new SubFormColumnElementProcessor());
+			this.mapProcessors.put(ELEMENT_CHART, new ChartElementProcessor());
 			this.mapProcessors.put(ELEMENT_SCROLLPANE, new ScrollPaneElementProcessor());
 			this.mapProcessors.put(ELEMENT_BACKGROUND, new BackgroundElementProcessor());
 			this.mapProcessors.put(ELEMENT_CLEARBORDER, new ClearBorderElementProcessor());
@@ -1010,10 +1015,15 @@ public class LayoutMLLoader implements LayoutMLConstants {
 							LOG.warn("startElement failed: " + e, e);
 						}
 					} else {
-						peekComponent().getProperties().getProperty(WYSIWYGCollectableComponent.PROPERTY_COLLECTABLECOMPONENTPROPERTY).setValue(ELEMENT_PROPERTY, atts);
+						PropertyValue prop = peekComponent().getProperties().getProperty(WYSIWYGCollectableComponent.PROPERTY_COLLECTABLECOMPONENTPROPERTY);
+						if (prop != null)
+							prop.setValue(ELEMENT_PROPERTY, atts);
 					}
-				} else
-					peekComponent().getProperties().getProperty(WYSIWYGCollectableComponent.PROPERTY_COLLECTABLECOMPONENTPROPERTY).setValue(ELEMENT_PROPERTY, atts);
+				} else {
+					PropertyValue prop = peekComponent().getProperties().getProperty(WYSIWYGCollectableComponent.PROPERTY_COLLECTABLECOMPONENTPROPERTY);
+					if (prop != null)
+						prop.setValue(ELEMENT_PROPERTY, atts);
+				}
 			}
 		}
 
@@ -1353,6 +1363,62 @@ public class LayoutMLLoader implements LayoutMLConstants {
 				}
 
 				subformColumnMissing = false;
+			}
+		}
+
+		/**
+		 * {@link ElementProcessor} for WYSIWYGChart
+		 * @see WYSIWYGChart
+		 */
+		private class ChartElementProcessor implements ElementProcessor {
+
+			private boolean chartEntityMissing = false;
+			
+			@Override
+			public void startElement(Attributes atts) throws SAXException {
+				try {
+					WYSIWYGChart chart = (WYSIWYGChart) ComponentProcessors.getInstance().createComponent(ELEMENT_CHART, null, 0, editorPanel.getMetaInformation(), null);
+					String entity = atts.getValue(LayoutMLConstants.ATTRIBUTE_ENTITY);
+						//NUCLEUSINT-1137
+						// does this entity still exist?
+
+					boolean found = false;
+					for (MasterDataMetaVO chartEntity : MetaDataCache.getInstance().getMetaData()) {
+						if (entity.equals(chartEntity.getEntityName())) {
+							found = true;
+							break;
+						}
+					}
+					if (found) {
+						setPropertiesFromAttributes(chart, atts);
+						stack.push(chart);
+						allWYSIWYGComponents.add(chart);
+						chartEntityMissing = false;
+					} else {
+						// fallback handling for a entity that does not exist anymore. instead of the chart a label with information is shown
+						chartEntityMissing = true;
+						Component component = ComponentProcessors.getInstance().createComponent(ELEMENT_LABEL, "", 0, editorPanel.getMetaInformation(), null);
+						((WYSIWYGStaticLabel)component).setText(WYSIWYGStringsAndLabels.partedString(ERROR_MESSAGES.ENTITY_USED_IN_LAYOUT_MISSING, entity));
+						((WYSIWYGStaticLabel)component).setHorizontalAlignment(javax.swing.JLabel.CENTER);
+						((WYSIWYGStaticLabel)component).setForeground(Color.RED);
+						stack.push(component);
+					}					
+				} catch (CommonBusinessException e) {
+					log.error(e);
+					Errors.getInstance().showExceptionDialog(null, e);
+				}
+			}
+
+			@Override
+			public void closeElement() {
+				if (!chartEntityMissing){
+					//NUCLEUSINT-1137
+					// refresh chart afterwards, otherwise there are display related problems like error messages occoured during loading
+					WYSIWYGChart chart = (WYSIWYGChart)stack.pop();
+					chart.finalizeInitialLoading();
+				} else {
+					stack.pop();
+				}
 			}
 		}
 
@@ -2155,6 +2221,9 @@ public class LayoutMLLoader implements LayoutMLConstants {
 
 				c.setProperty(propertyName, value, PropertyUtils.getValueClass(c, propertyName));
 			} catch (CommonBusinessException ex) {
+				log.error(ex);
+				Errors.getInstance().showExceptionDialog(null, ex);
+			} catch (Exception ex) {
 				log.error(ex);
 				Errors.getInstance().showExceptionDialog(null, ex);
 			}

@@ -46,6 +46,7 @@ import javax.swing.event.ListDataListener;
 
 import org.apache.log4j.Logger;
 import org.jdesktop.swingx.JXPanel;
+import org.nuclos.client.NuclosIcons;
 import org.nuclos.client.layout.wysiwyg.WYSIWYGStringsAndLabels;
 import org.nuclos.client.layout.wysiwyg.WYSIWYGStringsAndLabels.BORDER_EDITOR;
 import org.nuclos.client.layout.wysiwyg.WYSIWYGStringsAndLabels.COMMON_LABELS;
@@ -103,6 +104,8 @@ public class BorderEditor extends JDialog implements SaveAndCancelButtonPanelCon
 	 * @param clearBorder the {@link LayoutMLConstants#ELEMENT_CLEARBORDER} Element
 	 */
 	public BorderEditor(WYSIWYGComponent wysiwygComponent, Border border, boolean clearBorder) {
+		this.setIconImage(NuclosIcons.getInstance().getScaledDialogIcon(48).getImage());
+		
 		this.border = border;
 		if (border != null) {
 			this.setBorder(border);

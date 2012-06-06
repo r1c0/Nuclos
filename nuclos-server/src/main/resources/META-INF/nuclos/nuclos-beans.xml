@@ -359,6 +359,9 @@
   <bean id="dynamicMetaDataProcessor" class="org.nuclos.server.dal.processor.jdbc.impl.DynamicMetaDataProcessor">
   </bean>
 
+  <bean id="chartMetaDataProcessor" class="org.nuclos.server.dal.processor.jdbc.impl.ChartMetaDataProcessor">
+  </bean>
+
   <!-- bean id="datasourceCache" class="org.nuclos.server.common.DatasourceCache">
   </bean -->
 
@@ -367,6 +370,7 @@
   	<property name="entityMetaDataProcessor"><ref bean="jsonEntityMetaDataProcessor"/></property>
   	<property name="entityFieldMetaDataProcessor"><ref bean="jsonEntityFieldMetaDataProcessor"/></property>
   	<property name="dynamicMetaDataProcessor"><ref bean="dynamicMetaDataProcessor"/></property>
+  	<property name="chartMetaDataProcessor"><ref bean="chartMetaDataProcessor"/></property>
   </bean>
 
   <bean id="nucletDalProvider" class="org.nuclos.server.dal.provider.NucletDalProvider"

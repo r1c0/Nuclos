@@ -101,6 +101,18 @@ public class LayoutMLParser implements LayoutMLConstants {
 	}
 
 	/**
+	 * retrieves the names of the chart entities used in the LayoutML document in <code>inputsource</code>.
+	 * @param inputsource
+	 * @return Set<String> the names of the chart entities used in the LayoutML document in <code>inputsource</code>.
+	 * @throws org.nuclos.common2.layoutml.exception.LayoutMLParseException when a parse exception occurs.
+	 * @throws org.nuclos.common2.layoutml.exception.LayoutMLException when a general exception occurs.
+	 * @throws org.nuclos.common2.exception.CommonFatalException when an I/O error occurs.
+	 */
+	public Set<String> getChartEntityNames(InputSource inputsource) throws LayoutMLException {
+		return this.getElementNames(inputsource, ELEMENT_CHART, ATTRIBUTE_ENTITY);
+	}
+	
+	/**
 	 * retrieves the names of the subform entities along with their foreign key fields used in the LayoutML document in <code>inputsource</code>.
 	 * @param inputsource
 	 * @return Collection<EntityAndFieldName> the names of the collectable fields used in the LayoutML document in <code>inputsource</code>.
@@ -344,6 +356,11 @@ public class LayoutMLParser implements LayoutMLConstants {
 		public void startElement(String sUriNameSpace, String sSimpleName, String sQualifiedName, Attributes attributes)
 				throws SAXException {
 			if (sQualifiedName.equals(ELEMENT_SUBFORM)) {
+				final String sEntityName = attributes.getValue(ATTRIBUTE_ENTITY);
+				final String sForeignKeyFieldName = attributes.getValue(ATTRIBUTE_FOREIGNKEYFIELDTOPARENT);
+				this.stValues.add(new EntityAndFieldName(sEntityName, sForeignKeyFieldName));
+			}
+			if (sQualifiedName.equals(ELEMENT_CHART)) {
 				final String sEntityName = attributes.getValue(ATTRIBUTE_ENTITY);
 				final String sForeignKeyFieldName = attributes.getValue(ATTRIBUTE_FOREIGNKEYFIELDTOPARENT);
 				this.stValues.add(new EntityAndFieldName(sEntityName, sForeignKeyFieldName));

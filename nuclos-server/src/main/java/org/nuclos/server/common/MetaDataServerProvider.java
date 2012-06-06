@@ -40,6 +40,7 @@ import org.nuclos.common.transport.GzipMap;
 import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.server.dal.DalUtils;
+import org.nuclos.server.dal.processor.jdbc.impl.ChartMetaDataProcessor;
 import org.nuclos.server.dal.processor.jdbc.impl.DynamicMetaDataProcessor;
 import org.nuclos.server.dal.provider.NucletDalProvider;
 import org.nuclos.server.dal.provider.NuclosDalProvider;
@@ -73,6 +74,8 @@ public class MetaDataServerProvider implements MetaDataProvider<EntityMetaDataVO
 	
 	private DynamicMetaDataProcessor dynamicMetaDataProcessor;
 	
+	private ChartMetaDataProcessor chartMetaDataProcessor;
+	
 	private DataCache dataCache;
 	
 	private SpringDataBaseHelper dataBaseHelper;
@@ -105,6 +108,11 @@ public class MetaDataServerProvider implements MetaDataProvider<EntityMetaDataVO
 	@Autowired
 	final void setDynamicMetaDataProcessor(DynamicMetaDataProcessor dynamicMetaDataProcessor) {
 		this.dynamicMetaDataProcessor = dynamicMetaDataProcessor;
+	}
+	
+	@Autowired
+	final void setChartMetaDataProcessor(ChartMetaDataProcessor chartMetaDataProcessor) {
+		this.chartMetaDataProcessor = chartMetaDataProcessor;
 	}
 
 	public static MetaDataServerProvider getInstance() {
@@ -352,6 +360,12 @@ public class MetaDataServerProvider implements MetaDataProvider<EntityMetaDataVO
 			for(EntityMetaDataVO meta : dynamicMetaDataProcessor.getDynamicEntities())
 				result.put(meta.getEntity(), meta);
 
+			/*
+			 * Chart Entities
+			 */
+			for(EntityMetaDataVO meta : chartMetaDataProcessor.getChartEntities())
+				result.put(meta.getEntity(), meta);
+
 			return result;
 		}
 
@@ -418,6 +432,12 @@ public class MetaDataServerProvider implements MetaDataProvider<EntityMetaDataVO
 			 * Dynamic Entities
 			 */
 			DynamicMetaDataProcessor.getInstance().addDynamicEntities(result, mapMetaDataByEntity);
+
+			
+			/*
+			 * Chart Entities
+			 */
+			ChartMetaDataProcessor.getInstance().addChartEntities(result, mapMetaDataByEntity);
 
 			return result;
 		}

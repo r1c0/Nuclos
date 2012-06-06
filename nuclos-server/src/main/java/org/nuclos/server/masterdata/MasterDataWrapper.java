@@ -57,6 +57,7 @@ import org.nuclos.server.processmonitor.valueobject.ProcessMonitorVO;
 import org.nuclos.server.processmonitor.valueobject.ProcessTransitionVO;
 import org.nuclos.server.processmonitor.valueobject.SubProcessVO;
 import org.nuclos.server.report.ByteArrayCarrier;
+import org.nuclos.server.report.valueobject.ChartVO;
 import org.nuclos.server.report.valueobject.DatasourceVO;
 import org.nuclos.server.report.valueobject.DynamicEntityVO;
 import org.nuclos.server.report.valueobject.DynamicTasklistVO;
@@ -659,6 +660,19 @@ public class MasterDataWrapper {
 
 	public static RecordGrantVO getRecordGrantVO(MasterDataVO mdVO) {
 		RecordGrantVO vo = new RecordGrantVO(
+			getBaseVO(mdVO),
+			(String)mdVO.getField("name"),
+			(String)mdVO.getField("description"),
+			mdVO.getField("entity", String.class),
+			(Boolean)mdVO.getField("valid"),
+			(String)mdVO.getField("source"),
+			mdVO.getField("nucletId", Integer.class));
+
+		return vo;
+	}
+
+	public static ChartVO getChartVO(MasterDataVO mdVO) {
+		ChartVO vo = new ChartVO(
 			getBaseVO(mdVO),
 			(String)mdVO.getField("name"),
 			(String)mdVO.getField("description"),

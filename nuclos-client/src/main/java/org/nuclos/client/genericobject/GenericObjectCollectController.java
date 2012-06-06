@@ -108,6 +108,7 @@ import org.nuclos.client.main.Main;
 import org.nuclos.client.main.mainframe.MainFrameTab;
 import org.nuclos.client.masterdata.CollectableMasterData;
 import org.nuclos.client.masterdata.MasterDataCache;
+import org.nuclos.client.masterdata.MasterDataCollectController;
 import org.nuclos.client.masterdata.MasterDataDelegate;
 import org.nuclos.client.masterdata.MasterDataSubFormController;
 import org.nuclos.client.masterdata.valuelistprovider.MasterDataCollectableFieldsProviderFactory;
@@ -138,6 +139,7 @@ import org.nuclos.client.ui.collect.CollectableComponentsProvider;
 import org.nuclos.client.ui.collect.DefaultEditView;
 import org.nuclos.client.ui.collect.DeleteSelectedCollectablesController;
 import org.nuclos.client.ui.collect.SubForm;
+import org.nuclos.client.ui.collect.SubForm.ParameterChangeListener;
 import org.nuclos.client.ui.collect.UpdateSelectedCollectablesController.UpdateAction;
 import org.nuclos.client.ui.collect.UserCancelledException;
 import org.nuclos.client.ui.collect.component.CollectableComboBox;
@@ -1818,12 +1820,27 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	@Override
 	protected void setupSubFormController(Map<String, SubForm> mpSubForm, Map<String, ? extends SubFormController> mpSubFormController) {
 		Map<SubForm, MasterDataSubFormController> mpSubFormController_tmp = new HashMap<SubForm, MasterDataSubFormController>();
+	      final ParameterChangeListener changeListener = new ParameterChangeListener() {
+	  		@Override
+	  		public void stateChanged(final ChangeEvent e) {
+	  			if (e != null && e.getSource() instanceof SubForm) {
+	  			   	UIUtils.invokeOnDispatchThread(new Runnable() {
+	  						@Override
+	  						public void run() {
+	  							SubForm subform = (SubForm)e.getSource();
+								GenericObjectCollectController.this.getSubFormsLoader().startLoading(subform.getEntityName());
+	  						}
+	  					});
+	  			}
+	  		}
+    	  };
 
 		// create a map of subforms and their controllers
 		for (String sSubFormEntityName : mpSubFormController.keySet()) {
 			SubFormController subformcontroller = mpSubFormController.get(sSubFormEntityName);
 			SubForm subform = subformcontroller.getSubForm();
 			if (subformcontroller instanceof DetailsSubFormController<?>) {
+				subform.addParameterListener(changeListener);
 				((DetailsSubFormController<CollectableGenericObjectWithDependants>)subformcontroller).setCollectController(this);
 				mpSubFormController_tmp.put(subform, (MasterDataSubFormController)subformcontroller);
 			}
@@ -2452,7 +2469,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 					? new ArrayList<EntityObjectVO>()
 						: MasterDataDelegate.getInstance().getDependantMasterData(
 							mdsubformctl.getCollectableEntity().getName(),
-							mdsubformctl.getForeignKeyFieldName(), clct.getId());
+							mdsubformctl.getForeignKeyFieldName(), clct.getId(), mdsubformctl.getSubForm().getMapParams());
 				}
 			}
 

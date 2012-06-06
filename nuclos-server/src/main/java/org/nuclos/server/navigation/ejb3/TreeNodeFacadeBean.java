@@ -819,7 +819,8 @@ public class TreeNodeFacadeBean extends NuclosFacadeBean implements TreeNodeFaca
 			if (node.getEntity() == NuclosEntity.DATASOURCE ||
 				node.getEntity() == NuclosEntity.DYNAMICENTITY ||
 				node.getEntity() == NuclosEntity.VALUELISTPROVIDER ||
-				node.getEntity() == NuclosEntity.RECORDGRANT) {
+				node.getEntity() == NuclosEntity.RECORDGRANT ||
+				node.getEntity() == NuclosEntity.CHART) {
 				invalidateDatasourceCache = true;
 			}
 		}

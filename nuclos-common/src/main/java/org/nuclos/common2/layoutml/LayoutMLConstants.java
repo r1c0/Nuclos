@@ -56,6 +56,7 @@ public interface LayoutMLConstants {
 	public static final String ELEMENT_SPLITPANE = "splitpane";
 	public static final String ELEMENT_SUBFORM = "subform";
 	public static final String ELEMENT_SUBFORMCOLUMN = "subform-column";
+	public static final String ELEMENT_CHART = "chart";
 	public static final String ELEMENT_DESCRIPTION = "description";
 	public static final String ELEMENT_BORDERLAYOUT = "borderlayout";
 	public static final String ELEMENT_FLOWLAYOUT = "flowlayout";
@@ -308,6 +309,8 @@ public interface LayoutMLConstants {
 	public static final Dimension DEFAULTVALUE_TABBEDPANE_PREFERREDSIZE = new Dimension(300, 100);
 	public static final Dimension DEFAULTVALUE_SUBFORM_MINIMUMSIZE = new Dimension(180, 40);
 	public static final Dimension DEFAULTVALUE_SUBFORM_PREFERREDSIZE = new Dimension(300, 100);
+	public static final Dimension DEFAULTVALUE_CHART_MINIMUMSIZE = new Dimension(180, 40);
+	public static final Dimension DEFAULTVALUE_CHART_PREFERREDSIZE = new Dimension(300, 100);
 	public static final Dimension DEFAULTVALUE_SCROLLPANE_MINIMUMSIZE = new Dimension(180, 40);
 	public static final Dimension DEFAULTVALUE_SCROLLPANE_PREFERREDSIZE = new Dimension(300, 100);
 	public static final Dimension DEFAULTVALUE_SPLITPANE_MINIMUMSIZE = new Dimension(180, 40);

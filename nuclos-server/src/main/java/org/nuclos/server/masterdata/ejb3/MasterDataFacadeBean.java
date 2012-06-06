@@ -589,7 +589,27 @@ public class MasterDataFacadeBean extends NuclosFacadeBean implements MasterData
 	public Collection<MasterDataVO> getDependantMasterData(String sEntityName,
 		String sForeignKeyField, Object oRelatedId) {
 		Collection<MasterDataVO> result = CollectionUtils.transform(helper.getDependantMasterData(sEntityName,
-			sForeignKeyField, oRelatedId, this.getCurrentUserName()), new EntityObjectToMasterDataTransformer());
+				sForeignKeyField, oRelatedId, this.getCurrentUserName()), new EntityObjectToMasterDataTransformer());
+			return result;
+    }
+
+    /**
+	 * gets the dependant master data records for the given entity, using the
+	 * given foreign key field and the given id as foreign key.
+	 *
+	 * @param sEntityName name of the entity to get all dependant master data
+	 *           records for
+	 * @param sForeignKeyField name of the field relating to the foreign entity
+	 * @param oRelatedId id by which sEntityName and sParentEntity are related
+	 * @return
+	 * @precondition oRelatedId != null
+	 * @todo restrict permissions by entity name
+	 */
+    @RolesAllowed("Login")
+	public Collection<MasterDataVO> getDependantMasterData(String sEntityName,
+		String sForeignKeyField, Object oRelatedId, Map<String, Object> mpParams) {
+		Collection<MasterDataVO> result = CollectionUtils.transform(helper.getDependantMasterData(sEntityName,
+			sForeignKeyField, oRelatedId, this.getCurrentUserName(), mpParams), new EntityObjectToMasterDataTransformer());
 		return result;
 	}
 

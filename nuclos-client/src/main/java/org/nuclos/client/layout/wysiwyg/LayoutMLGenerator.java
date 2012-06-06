@@ -49,6 +49,7 @@ import org.nuclos.client.layout.wysiwyg.WYSIWYGStringsAndLabels.JTABBEDPANE;
 import org.nuclos.client.layout.wysiwyg.WYSIWYGStringsAndLabels.STATIC_BUTTON;
 import org.nuclos.client.layout.wysiwyg.component.TitledBorderWithTranslations;
 import org.nuclos.client.layout.wysiwyg.component.TranslationMap;
+import org.nuclos.client.layout.wysiwyg.component.WYSIWYGChart;
 import org.nuclos.client.layout.wysiwyg.component.WYSIWYGCollectableCheckBox;
 import org.nuclos.client.layout.wysiwyg.component.WYSIWYGCollectableComboBox;
 import org.nuclos.client.layout.wysiwyg.component.WYSIWYGCollectableComponent;
@@ -229,6 +230,8 @@ public class LayoutMLGenerator implements LayoutMLConstants {
 			sb.append(getLayoutMLForTabbedPane((WYSIWYGTabbedPane) c, tableLayout, blockDeep));
 		} else if (c instanceof WYSIWYGSubForm) {
 			sb.append(getLayoutMLForSubForm((WYSIWYGSubForm) c, tableLayout, blockDeep));
+		} else if (c instanceof WYSIWYGChart) {
+			sb.append(getLayoutMLForChart((WYSIWYGChart) c, tableLayout, blockDeep));
 		} else if (c instanceof WYSIWYGScrollPane) {
 			sb.append(getLayoutMLForScrollPane((WYSIWYGScrollPane) c, tableLayout, blockDeep));
 		} else if (c instanceof WYSIWYGSplitPane) {
@@ -331,6 +334,38 @@ public class LayoutMLGenerator implements LayoutMLConstants {
 
 		if (lb) block.linebreak();
 		block.append("</" + ELEMENT_SUBFORMCOLUMN + ">");
+		return block.getStringBuffer();
+	}
+
+	/**
+	 * Method converting the {@link WYSIWYGChart} to LayoutML XML.
+	 * 
+	 * @see LayoutMLBlock
+	 * @param chart
+	 * @param tableLayout
+	 * @param blockDeep
+	 * @return {@link StringBuffer} with the LayoutML
+	 */
+	private synchronized StringBuffer getLayoutMLForChart(WYSIWYGChart chart, TableLayout tableLayout, int blockDeep) {
+		LayoutMLBlock block = new LayoutMLBlock(blockDeep);
+		block.append("<" + ELEMENT_CHART);
+		block.append(getLayoutMLAttributesFromProperties(WYSIWYGChart.PROPERTIES_TO_LAYOUTML_ATTRIBUTES, chart.getProperties()));
+		block.append(" >");
+		block.append(getLayoutMLTableLayoutConstraints(chart, tableLayout, blockDeep + 1));
+		block.append(getLayoutMLBordersFromProperty(chart.getProperties(), blockDeep + 1));
+		block.append(getLayoutMLMinimumSizeFromComponent(chart, blockDeep + 1));
+		block.append(getLayoutMLPreferredSizeFromProperty(chart.getProperties(), blockDeep + 1));
+		if (chart.getProperties().getProperty(WYSIWYGChart.PROPERTY_PROPERTIES) != null) {
+			WYSIYWYGProperty collectableComponentProperties = (WYSIYWYGProperty) chart.getProperties().getProperty(WYSIWYGChart.PROPERTY_PROPERTIES).getValue();
+			if (collectableComponentProperties != null) {
+				if (collectableComponentProperties.getAllPropertyEntries().size() > 0) {
+					block.append(getLayoutMLCollectableComponentProperty(collectableComponentProperties, blockDeep + 1));
+				}
+			}
+		}
+		block.linebreak();
+		block.append("</" + ELEMENT_CHART + ">");
+
 		return block.getStringBuffer();
 	}
 

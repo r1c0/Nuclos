@@ -39,6 +39,7 @@ import org.nuclos.server.database.SpringDataBaseHelper;
 import org.nuclos.server.dblayer.structure.DbColumn;
 import org.nuclos.server.dblayer.structure.DbTable;
 import org.nuclos.server.dblayer.structure.DbTableType;
+import org.nuclos.server.masterdata.valueobject.MasterDataMetaVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
@@ -47,8 +48,8 @@ import org.springframework.stereotype.Component;
 @Lazy
 public class DynamicMetaDataProcessor implements IDalReadSpecification<EntityMetaDataVO> {
 
-	public static final String DYNAMIC_ENTITY_VIEW_PREFIX = "V_DE_";//if you change this value, change the exception text <datasource.validation.dynamic.entity.name.1> too.
-	public static final String DYNAMIC_ENTITY_PREFIX = "dyn_";
+	public static final String DYNAMIC_ENTITY_VIEW_PREFIX = MasterDataMetaVO.DYNAMIC_ENTITY_VIEW_PREFIX;//if you change this value, change the exception text <datasource.validation.dynamic.entity.name.1> too.
+	public static final String DYNAMIC_ENTITY_PREFIX = MasterDataMetaVO.DYNAMIC_ENTITY_PREFIX;
 
 	private static final Logger LOG = Logger.getLogger(DynamicMetaDataProcessor.class);
 	

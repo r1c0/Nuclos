@@ -19,6 +19,7 @@ package org.nuclos.client.ui.collect;
 import java.util.Collection;
 
 import org.nuclos.client.customcode.CodeCollectController;
+import org.nuclos.client.datasource.admin.ChartCollectController;
 import org.nuclos.client.datasource.admin.CollectableDataSource;
 import org.nuclos.client.datasource.admin.DatasourceCollectController;
 import org.nuclos.client.datasource.admin.DynamicEntityCollectController;
@@ -64,6 +65,7 @@ import org.nuclos.client.statemodel.admin.CollectableStateModel;
 import org.nuclos.client.statemodel.admin.StateModelCollectController;
 import org.nuclos.client.task.PersonalTaskCollectController;
 import org.nuclos.client.transfer.ExportImportCollectController;
+import org.nuclos.client.ui.collect.search.ChartSearchStrategy;
 import org.nuclos.client.ui.collect.search.DatasourceSearchStrategy;
 import org.nuclos.client.ui.collect.search.DynamicEntitySearchStrategy;
 import org.nuclos.client.ui.collect.search.DynamicTasklistSearchStrategy;
@@ -90,6 +92,7 @@ import org.nuclos.common.collect.collectable.CollectableEntityProvider;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
 import org.nuclos.common.entityobject.CollectableEOEntity;
 import org.nuclos.common2.IdUtils;
+import org.nuclos.server.report.valueobject.ChartVO;
 import org.nuclos.server.report.valueobject.DatasourceVO;
 import org.nuclos.server.report.valueobject.DynamicEntityVO;
 import org.nuclos.server.report.valueobject.DynamicTasklistVO;
@@ -495,6 +498,15 @@ public class CollectControllerFactorySingleton {
 	public DynamicTasklistCollectController newDynamicTasklistCollectController(MainFrameTab tabIfAny) {
 		final ISearchStrategy<CollectableDataSource<DynamicTasklistVO>> ss = new DynamicTasklistSearchStrategy();
 		final DynamicTasklistCollectController result = new DynamicTasklistCollectController(tabIfAny);
+		ss.setCollectController(result);
+		result.setSearchStrategy(ss);
+		result.init();
+		return result;
+	}
+	
+	public ChartCollectController newChartCollectController(MainFrameTab tabIfAny) {
+		final ISearchStrategy<CollectableDataSource<ChartVO>> ss = new ChartSearchStrategy();
+		final ChartCollectController result = new ChartCollectController(tabIfAny);
 		ss.setCollectController(result);
 		result.setSearchStrategy(ss);
 		result.init();

@@ -47,6 +47,7 @@ import org.nuclos.server.common.DatasourceServerUtils;
 import org.nuclos.server.common.MetaDataServerProvider;
 import org.nuclos.server.dal.DalUtils;
 import org.nuclos.server.dal.processor.jdbc.TableAliasSingleton;
+import org.nuclos.server.dal.processor.jdbc.impl.ChartEntityObjectProcessor;
 import org.nuclos.server.dal.processor.jdbc.impl.DynamicEntityObjectProcessor;
 import org.nuclos.server.dal.processor.jdbc.impl.EOGenericObjectProcessor;
 import org.nuclos.server.dal.processor.jdbc.impl.EntityFieldMetaDataProcessor;
@@ -447,6 +448,20 @@ public class ProcessorFactorySingleton {
 		final ProcessorConfiguration config = newProcessorConfiguration(type, eMeta, colEfMeta, false);
 		
 		final DynamicEntityObjectProcessor result = new DynamicEntityObjectProcessor(config);
+		
+		// HACK: force spring, as @Autowired on EntityObjectProcessor does not work (tp)
+		result.setDataBaseHelper(dataBaseHelper);
+		result.setTableAliasSingleton(tableAliasSingleton);
+		result.setDatasourceServerUtils(datasourceServerUtils);
+		
+		return result;
+	}
+
+	public ChartEntityObjectProcessor newChartEntityObjectProcessor(EntityMetaDataVO eMeta, Collection<EntityFieldMetaDataVO> colEfMeta) {
+		final Class<? extends IDalVO> type = EntityObjectVO.class;
+		final ProcessorConfiguration config = newProcessorConfiguration(type, eMeta, colEfMeta, false);
+		
+		final ChartEntityObjectProcessor result = new ChartEntityObjectProcessor(config);
 		
 		// HACK: force spring, as @Autowired on EntityObjectProcessor does not work (tp)
 		result.setDataBaseHelper(dataBaseHelper);

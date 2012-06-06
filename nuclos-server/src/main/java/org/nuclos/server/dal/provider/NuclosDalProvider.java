@@ -24,6 +24,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
 import org.nuclos.common2.exception.CommonFatalException;
+import org.nuclos.server.dal.processor.jdbc.impl.ChartFieldMetaDataProcessor;
+import org.nuclos.server.dal.processor.jdbc.impl.ChartMetaDataProcessor;
 import org.nuclos.server.dal.processor.jdbc.impl.DynamicFieldMetaDataProcessor;
 import org.nuclos.server.dal.processor.jdbc.impl.DynamicMetaDataProcessor;
 import org.nuclos.server.dal.processor.json.impl.EntityObjectProcessor;
@@ -45,6 +47,7 @@ public class NuclosDalProvider extends AbstractDalProvider {
 	protected JsonEntityMetaDataProcessor entityMetaDataProcessor;
 	protected JsonEntityFieldMetaDataProcessor entityFieldMetaDataProcessor;
 	private DynamicMetaDataProcessor dynMetaDataProcessor;
+	private ChartMetaDataProcessor crtMetaDataProcessor;
 	
 	public static NuclosDalProvider getInstance() {
 		if (INSTANCE == null || INSTANCE.mapEntityObject.isEmpty()) {
@@ -76,6 +79,13 @@ public class NuclosDalProvider extends AbstractDalProvider {
 	 */
 	public void setDynamicMetaDataProcessor(DynamicMetaDataProcessor processor) {
 		this.dynMetaDataProcessor = processor;
+	}
+	
+	/**
+	 * Spring property.
+	 */
+	public void setChartMetaDataProcessor(ChartMetaDataProcessor processor) {
+		this.crtMetaDataProcessor = processor;
 	}	
 	
 	public void buildEOProcessors() {
@@ -121,5 +131,17 @@ public class NuclosDalProvider extends AbstractDalProvider {
 	
 	public DynamicFieldMetaDataProcessor getDynamicFieldMetaDataProcessor(EntityMetaDataVO entity) {
 		return new DynamicFieldMetaDataProcessor(entity);
+	}
+
+	public ChartMetaDataProcessor getChartEntityMetaProcessor() {
+		if (crtMetaDataProcessor == null) {
+			// crtMetaDataProcessor = new ChartMetaDataProcessor();
+			throw new IllegalStateException("too early");
+		}
+	    return crtMetaDataProcessor;
+    }
+	
+	public ChartFieldMetaDataProcessor getChartFieldMetaDataProcessor(EntityMetaDataVO entity) {
+		return new ChartFieldMetaDataProcessor(entity);
 	}
 }

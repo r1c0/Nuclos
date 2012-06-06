@@ -285,12 +285,12 @@ public class NuclosEntityAttributeInputStep extends NuclosEntityAbstractStep {
 				}
 
 				if(attr.getMetaVO() != null) {
-					if(isSubformEntity(attr)){
+					if(isSubformOrChartEntity(attr)){
 						if(NuclosEntityAttributeInputStep.this.getModel().hasRows()) {
 							String sText = localeDelegate.getMessage("wizard.step.inputattribute.14",
 								"Die Entität enthält bereits Daten. Wenn Sie dieses Attribut löschen,\n" +
 									"verliert die Hauptentität, die Datensätze dieser Entität.\n" +
-									"Das Unterformular wird ebenfalls aus der Maske herausgenommen.");
+									"Das Unterformular oder der Chart wird ebenfalls aus der Maske herausgenommen.");
 							final JOptionPane pane = new JOptionPane(sText, JOptionPane.WARNING_MESSAGE, JOptionPane.YES_NO_OPTION);
 							final JDialog dia = new JDialog(Main.getInstance().getMainFrame(), true);
 							pane.addPropertyChangeListener(
@@ -379,7 +379,7 @@ public class NuclosEntityAttributeInputStep extends NuclosEntityAbstractStep {
 		return model != null ? model.isVirtual() : false;
 	}
 
-	private boolean isSubformEntity(Attribute attribute) {
+	private boolean isSubformOrChartEntity(Attribute attribute) {
 		final Set<String> set = NuclosWizardUtils.searchParentEntity(model.getEntityName());
 		if(set.size() > 0) {
 			if(set.contains(attribute.getMetaVO().getEntity()))

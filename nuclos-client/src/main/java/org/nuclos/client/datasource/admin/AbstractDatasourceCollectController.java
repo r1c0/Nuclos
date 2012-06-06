@@ -468,6 +468,10 @@ public abstract class AbstractDatasourceCollectController<T extends DatasourceVO
 		return Collections.emptyList();
 	}
 
+	protected List<DatasourceParameterVO> getDefaultParameters() {
+		return Collections.emptyList();
+	}
+
 	/**
 	 * @param clct
 	 * @throws NuclosBusinessException
@@ -481,6 +485,7 @@ public abstract class AbstractDatasourceCollectController<T extends DatasourceVO
 
 		if (datasourceVO.getId() == null) {
 			pnlEdit.getQueryEditor().newDatasource(getDefaultColumns());
+			pnlEdit.getQueryEditor().setParameter(getDefaultParameters());
 		}
 		else {
 			if (datasourceVO.getSource() != null) {

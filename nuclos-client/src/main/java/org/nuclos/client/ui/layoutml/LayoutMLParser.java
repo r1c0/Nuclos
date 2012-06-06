@@ -80,6 +80,7 @@ import org.nuclos.client.ui.LineLayout;
 import org.nuclos.client.ui.SizeKnownListener;
 import org.nuclos.client.ui.StrictSizeComponent;
 import org.nuclos.client.ui.TitledSeparator;
+import org.nuclos.client.ui.collect.Chart;
 import org.nuclos.client.ui.collect.CollectableComponentsProvider;
 import org.nuclos.client.ui.collect.DefaultCollectableComponentsProvider;
 import org.nuclos.client.ui.collect.SubForm;
@@ -1047,6 +1048,7 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 			this.mpElementProcessors.put(ELEMENT_SPLITPANE, new SplitPaneElementProcessor());
 			this.mpElementProcessors.put(ELEMENT_SUBFORM, new SubFormElementProcessor());
 			this.mpElementProcessors.put(ELEMENT_SUBFORMCOLUMN, new SubFormColumnElementProcessor());
+			this.mpElementProcessors.put(ELEMENT_CHART, new ChartElementProcessor());
 			this.mpElementProcessors.put(ELEMENT_LABEL, new LabelElementProcessor());
 			this.mpElementProcessors.put(ELEMENT_IMAGE, new ImageElementProcessor());
 			this.mpElementProcessors.put(ELEMENT_TEXTFIELD, new TextFieldElementProcessor());
@@ -2258,6 +2260,62 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 		}	// inner class SubFormColumnElementProcessor
 
 		/**
+		 * inner class <code>ChartElementProcessor</code>. Processes a chart element.
+		 */
+		private class ChartElementProcessor extends ComponentElementProcessor {
+
+			private Chart chart;
+
+			/**
+			 * constructs a <code>Chart</code>, configures it according to the XML attributes
+			 * and pushes it on the stack.
+			 * @param sUriNameSpace
+			 * @param sSimpleName
+			 * @param sQualifiedName
+			 * @param attributes
+			 */
+			@Override
+            public void startElement(String sUriNameSpace, String sSimpleName, String sQualifiedName, Attributes attributes)
+					throws SAXException {
+
+				final String sEntityName = attributes.getValue(ATTRIBUTE_ENTITY);
+				// entity is a required attribute:
+				assert sEntityName != null;
+
+				// An attribute "visible" is not a good idea as inserting the component in a tab
+				// implicitly sets visible to false. This is true for all components, not only subforms.
+
+				// enabled:
+				boolean bEnabled = true;
+				final String sEnabled = attributes.getValue(ATTRIBUTE_ENABLED);
+				if (sEnabled != null && !bCreateSearchableComponents) {
+					// override default:
+					bEnabled = sEnabled.equals(ATTRIBUTEVALUE_YES);
+				}
+
+				// toolbar orientation:
+				Integer iOrientation = null;
+				final String sOrientation = attributes.getValue(ATTRIBUTE_TOOLBARORIENTATION);
+				if (sOrientation != null) {
+					iOrientation = BuildFormHandler.this.mpToolBarOrientation.get(sOrientation);
+				}
+
+				// field referencing parent entity:
+				final String sForeignKeyFieldToParent = attributes.getValue(ATTRIBUTE_FOREIGNKEYFIELDTOPARENT);
+				
+				chart = new Chart(sEntityName, 
+						LangUtils.defaultIfNull(iOrientation, JToolBar.HORIZONTAL),
+							sForeignKeyFieldToParent, false, bCreateSearchableComponents);
+
+				chart.setEnabled(bEnabled);
+				chart.setReadOnly(!bEnabled && !bCreateSearchableComponents);
+				
+				stack.addChart(sEntityName, chart);
+			}
+			
+		}	// inner class ChartElementProcessor
+
+		/**
 		 * inner class <code>ScrollPaneElementProcessor</code>. Processes a scrollpane element.
 		 */
 		private class ScrollPaneElementProcessor extends ComponentElementProcessor {
@@ -3002,7 +3060,12 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 								button.setActionCommand(button.getActionCommand() + "_generatortoexecute=" + oValue);
 							}
 						}
-					} else if (stack.peekComponentBuilder() instanceof CollectableComponentBuilder) {
+					} else
+					if (c.getComponent() instanceof Chart) {
+						Chart chart = ((Chart)c.getComponent());
+						chart.setProperty(sName, oValue);
+					} else
+					if (stack.peekComponentBuilder() instanceof CollectableComponentBuilder) {
 						final CollectableComponentBuilder ccb = (CollectableComponentBuilder) stack.peekComponentBuilder();
 						ccb.getCollectableComponent().setProperty(sName, oValue);
 					}

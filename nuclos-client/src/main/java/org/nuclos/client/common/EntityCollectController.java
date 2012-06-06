@@ -544,6 +544,28 @@ public abstract class EntityCollectController<Clct extends Collectable> extends 
 				}
 			}
 		}
+		public void startLoading(String subFormName){
+			if(!getCollectState().isDetailsModeMultiViewOrEdit()){
+				synchronized (this) {
+					//if(!this.suspended){
+					//	this.suspendedForms.clear();
+					//}
+					setSubFormLoaded(subFormName, false);
+					
+					if(!this.subFormsLoadState.isEmpty()){
+						this.loading = true;
+						EntityCollectController.this.disableToolbarButtons();
+						EntityCollectController.this.showLoading(true);
+						LOG.debug("loading started");
+					}
+					
+					SubFormsInterruptableClientWorker clientWorker = this.subFormsClientWorker.get(subFormName);
+					if (clientWorker != null) {
+						addSubFormClientWorker(subFormName, clientWorker);
+					}
+				}
+			}
+		}
 
 		public void finishLoading() {
 			if(!getCollectState().isDetailsModeMultiViewOrEdit()){
@@ -598,9 +620,9 @@ public abstract class EntityCollectController<Clct extends Collectable> extends 
 		public void setSubFormLoaded(String subFormName, boolean loaded){
 			synchronized (this) {
 				this.subFormsLoadState.put(subFormName, loaded);
-				if(loaded){
+				/*if(loaded){ // we want to reuse the clientworkers.
 					this.subFormsClientWorker.remove(subFormName);
-				}
+				}*/
 				if(!this.haveUnloadedSubforms()){
 					this.finishLoading();
 				}

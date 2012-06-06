@@ -157,11 +157,16 @@ public abstract class StandardSqlDBAccess extends AbstractDBAccess {
     }
 
     @Override
-    public ResultVO executePlainQueryAsResultVO(String sql, int maxRows) throws DbException {
+    public <T> T executePlainQuery(String sql, int maxRows, ResultSetRunner<T> runner) throws DbException {
         Map<String, Object> hints = null;
         if (maxRows != -1)
             hints = Collections.<String, Object>singletonMap(MAX_ROWS_HINT, maxRows);
-        return executeQuery(sql, hints, new ResultSetRunner<ResultVO>() {
+        return executeQuery(sql, hints, runner);
+    }
+
+    @Override
+    public ResultVO executePlainQueryAsResultVO(String sql, int maxRows) throws DbException {
+        return executePlainQuery(sql, maxRows, new ResultSetRunner<ResultVO>() {
             @Override
             public ResultVO perform(ResultSet rs) throws SQLException {
                 ResultVO result = new ResultVO();

@@ -16,8 +16,11 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.server.report.valueobject;
 
+import java.util.Date;
+
 import org.nuclos.common.ModuleProvider;
 import org.nuclos.common.SpringApplicationContextHolder;
+import org.nuclos.common2.InternalTimestamp;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonValidationException;
 import org.nuclos.server.common.valueobject.NuclosValueObject;
@@ -224,6 +227,19 @@ public class DatasourceVO extends NuclosValueObject {
 	@Override
 	public String toString(){
 		return sName;
+	}
+	
+	// dummy fields.
+	public void setCreatedAt(Date createdAt) {
+	}
+
+	public void setCreatedBy(String createdBy) {
+	}
+
+	public void setChangedAt(Date changedAt) {
+	}
+
+	public void setChangedBy(String changedBy) {
 	}
 
 }	// class DatasourceVO

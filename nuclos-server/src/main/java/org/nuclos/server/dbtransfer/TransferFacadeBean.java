@@ -146,6 +146,7 @@ import org.nuclos.server.jms.NuclosJMSUtils;
 import org.nuclos.server.masterdata.ejb3.MasterDataFacadeRemote;
 import org.nuclos.server.report.SchemaCache;
 import org.nuclos.server.report.ejb3.DatasourceFacadeLocal;
+import org.nuclos.server.report.valueobject.ChartVO;
 import org.nuclos.server.report.valueobject.DynamicEntityVO;
 import org.nuclos.server.resource.ResourceCache;
 import org.nuclos.server.ruleengine.NuclosCompileException;
@@ -268,6 +269,8 @@ public class TransferFacadeBean extends NuclosFacadeBean implements TransferFaca
 		contents.add(new DefaultNucletContent(NuclosEntity.DYNAMICENTITYUSAGE, NuclosEntity.DYNAMICENTITY, contents));
 		contents.add(new DefaultNucletContent(NuclosEntity.RECORDGRANT, null, contents));
 		contents.add(new DefaultNucletContent(NuclosEntity.RECORDGRANTUSAGE, NuclosEntity.RECORDGRANT, contents));
+		contents.add(new DefaultNucletContent(NuclosEntity.CHART, null, contents));
+		contents.add(new DefaultNucletContent(NuclosEntity.CHARTUSAGE, NuclosEntity.CHART, contents));
 
 		contents.add(new DefaultNucletContent(NuclosEntity.DYNAMICTASKLIST ,null, contents));
 		contents.add(new DefaultNucletContent(NuclosEntity.DYNAMICTASKLISTUSAGE, NuclosEntity.DYNAMICTASKLIST, contents));
@@ -995,6 +998,9 @@ public class TransferFacadeBean extends NuclosFacadeBean implements TransferFaca
 		LOG.info("get all dynamic entities");
 		Collection<DynamicEntityVO> oldDynamicEntities = DatasourceCache.getInstance().getAllDynamicEntities();
 
+		LOG.info("get all chart entities");
+		Collection<ChartVO> oldChartEntities = DatasourceCache.getInstance().getAllCharts();
+
 		Map<String, String> config = dataBaseHelper.getDbAccess().getConfig();
 		if (t.getTransferOptions().containsKey(TransferOption.DBADMIN)) {
 			config.put(DbAccess.USERNAME, (String) t.getTransferOptions().get(TransferOption.DBADMIN));
@@ -1085,6 +1091,9 @@ public class TransferFacadeBean extends NuclosFacadeBean implements TransferFaca
 			//** update dynamic entities
 			ServerServiceLocator.getInstance().getFacade(DatasourceFacadeLocal.class).processChangingDynamicEntities(
 			DatasourceCache.getInstance().getAllDynamicEntities(), oldDynamicEntities, true, t.result.script);
+			//** update chart entities
+			ServerServiceLocator.getInstance().getFacade(DatasourceFacadeLocal.class).processChangingChartEntities(
+			DatasourceCache.getInstance().getAllCharts(), oldChartEntities, true, t.result.script);
 
 			/** compile all custom code artifacts
 			 */

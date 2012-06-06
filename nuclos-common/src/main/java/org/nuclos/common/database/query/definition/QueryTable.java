@@ -59,6 +59,8 @@ public class QueryTable {
 	public static final String QUERY_TYPE_DYNAMIC_ENTITY = 		"DS_DYNENTITY";
 	public static final String QUERY_TYPE_VALUELIST_PROVIDER = 	"DS_VLPROVIDER";
 	public static final String QUERY_TYPE_RECORDGRANT = 	"DS_VRECGRANT";
+	public static final String QUERY_TYPE_CHART = 					"DS_CHART";
+	public static final String QUERY_TYPE_DYNAMIC_TASK = 		"DS_DYNTASK";
 
 	final class XMLTable {
 		String sId;

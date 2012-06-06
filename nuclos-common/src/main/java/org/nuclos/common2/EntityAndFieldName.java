@@ -16,10 +16,11 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.common2;
 
-import org.nuclos.common.collection.Transformer;
-import org.nuclos.common.NuclosEntity;
-
 import java.io.Serializable;
+import java.util.Map;
+
+import org.nuclos.common.NuclosEntity;
+import org.nuclos.common.collection.Transformer;
 
 /**
  * Holds an entity name and a field name.
@@ -36,6 +37,7 @@ public class EntityAndFieldName implements Serializable {
 
 	private final String sEntityName;
 	private final String sFieldName;
+	private Map<String, Object> mpParams;
 
 	public EntityAndFieldName(NuclosEntity entity, String fieldName) {
 		this(entity.getEntityName(), fieldName);
@@ -58,6 +60,20 @@ public class EntityAndFieldName implements Serializable {
 	 */
 	public String getFieldName() {
 		return this.sFieldName;
+	}
+
+	/**
+	 * @return param map to the subform's parent entity. May be <code>null</code>.
+	 */
+	public Map<String, Object> getMapParams() {
+		return this.mpParams;
+	}
+
+	/**
+	 * @param param map to the subform's parent entity. May be <code>null</code>.
+	 */
+	public void setMapParams(Map<String, Object> mpParams) {
+		this.mpParams = mpParams;
 	}
 	
 	@Override

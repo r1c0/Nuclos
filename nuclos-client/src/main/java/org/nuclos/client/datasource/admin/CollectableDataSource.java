@@ -26,6 +26,7 @@ import org.nuclos.common.collect.collectable.AbstractCollectableBean;
 import org.nuclos.common.collect.collectable.CollectableEntity;
 import org.nuclos.common.collection.Transformer;
 import org.nuclos.common.masterdata.CollectableMasterDataEntity;
+import org.nuclos.server.report.valueobject.ChartVO;
 import org.nuclos.server.report.valueobject.DatasourceVO;
 import org.nuclos.server.report.valueobject.DynamicEntityVO;
 import org.nuclos.server.report.valueobject.DynamicTasklistVO;
@@ -66,6 +67,8 @@ public class CollectableDataSource<T extends DatasourceVO> extends AbstractColle
 			clcte = new CollectableMasterDataEntity(MetaDataCache.getInstance().getMetaData(NuclosEntity.RECORDGRANT));
 		} else if (datasourcevo instanceof DynamicTasklistVO) {
 			clcte = new CollectableMasterDataEntity(MetaDataCache.getInstance().getMetaData(NuclosEntity.DYNAMICTASKLIST));
+		} else if (datasourcevo instanceof ChartVO) {
+			clcte = new CollectableMasterDataEntity(MetaDataCache.getInstance().getMetaData(NuclosEntity.CHART));
 		} else {
 			clcte = new CollectableMasterDataEntity(MetaDataCache.getInstance().getMetaData(NuclosEntity.DATASOURCE));
 		}

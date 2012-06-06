@@ -27,6 +27,7 @@ import org.jdesktop.swingx.autocomplete.ObjectToStringConverter;
 import org.jdesktop.swingx.renderer.StringValue;
 import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.Localizable;
+import org.nuclos.common2.StringUtils;
 
 /**
  * A helper class for use with SwingX renderers and/or auto-completion.
@@ -77,6 +78,6 @@ public class ResourceIdMapper<V> extends ObjectToStringConverter implements Stri
 
 	@Override
 	public int compare(V o1, V o2) {
-		return getString(o1).compareTo(getString(o2));
+		return StringUtils.compare(getString(o1), getString(o2));
 	}
 }

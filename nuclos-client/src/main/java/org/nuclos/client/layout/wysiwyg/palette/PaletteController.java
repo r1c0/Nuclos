@@ -47,6 +47,7 @@ import javax.swing.border.EtchedBorder;
 import org.nuclos.api.ui.LayoutComponentFactory;
 import org.nuclos.client.layout.wysiwyg.WYSIWYGEditorModes;
 import org.nuclos.client.layout.wysiwyg.WYSIWYGStringsAndLabels;
+import org.nuclos.client.layout.wysiwyg.WYSIWYGStringsAndLabels.COLLECTABLE_CHART;
 import org.nuclos.client.layout.wysiwyg.WYSIWYGStringsAndLabels.COLLECTABLE_CHECKBOX;
 import org.nuclos.client.layout.wysiwyg.WYSIWYGStringsAndLabels.COLLECTABLE_COMBOBOX;
 import org.nuclos.client.layout.wysiwyg.WYSIWYGStringsAndLabels.COLLECTABLE_DATECHOOSER;
@@ -214,6 +215,7 @@ public class PaletteController implements DragGestureListener, LayoutMLConstants
 		model.addElement(new PaletteItem(ELEMENT_COLLECTABLECOMPONENT, ELEMENT_OPTIONGROUP, new COLLECTABLE_OPTIONGROUP()));
 		model.addElement(new PaletteItem(ELEMENT_COLLECTABLECOMPONENT, CONTROLTYPE_IMAGE, new COLLECTABLE_LABELED_IMAGE()));
 		model.addElement(new PaletteItem(ELEMENT_SUBFORM, new COLLECTABLE_SUBFORM()));
+		model.addElement(new PaletteItem(ELEMENT_CHART, new COLLECTABLE_CHART()));
 		if (mode == EXPERT_MODE) {
 			model.addElement(new PaletteItem(ELEMENT_COLLECTABLECOMPONENT, new WYSIWYGStringsAndLabels.COLLECTABLE_COMPONENT()));
 		}

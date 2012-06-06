@@ -544,7 +544,8 @@ public class NuclosCollectableImage extends CollectableMediaComponent implements
 		@Override
 		public boolean accept(File f) {
 			final String sName = f.getName().toUpperCase();
-			if (f.isDirectory() || sName.endsWith("JPG") || sName.endsWith("JPEG") || sName.endsWith("BMP") || sName.endsWith("PNG") || sName.endsWith("GIF")) {
+			if (f.isDirectory() || sName.endsWith("JPG") || sName.endsWith("JPEG")
+					|| sName.endsWith("BMP") || sName.endsWith("PNG") || sName.endsWith("GIF")) {
 				return true;
 			}
 			return false;
@@ -552,7 +553,8 @@ public class NuclosCollectableImage extends CollectableMediaComponent implements
 
 		@Override
 		public String getDescription() {
-			return "Bildformate"; // @todo i18n
+			return SpringLocaleDelegate.getInstance().getMessage("filenameextensionfilter.1",
+	    			"Bildformate") + " (*.bmp, *.gif, *.png, *.jpg, *.jpeg)";
 		}
 	}
 

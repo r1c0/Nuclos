@@ -2613,6 +2613,49 @@
     ]
   },
   {
+    "name": "Verwendung von Datenquellen in Datenquellen",
+    "entity": "nuclos_chartUsage",
+    "searchable": true,
+    "editable": true,
+    "cacheable": false,
+    "dbentity": "T_UD_CHARTUSAGE",
+    "importexport": true,
+    "systementity": true,
+    "labelres": "nuclos.entity.chartUsage.label",
+    "nuclos_entityfield": [
+      {
+        "name": "chart",
+        "dbfield": "INTID_T_UD_CHART",
+        "label": "Datenquelle",
+        "description": "Datenquelle",
+        "foreignentity": "nuclos_chart",
+        "datatype": "java.lang.String",
+        "datascale": 255,
+        "nullable": false,
+        "searchable": true,
+        "logbook": false,
+        "unique": true,
+        "labelres": "nuclos.entityfield.chartUsage.datasource.label",
+        "descriptionres": "nuclos.entityfield.chartUsage.datasource.description"
+      },
+      {
+        "name": "chartUsed",
+        "dbfield": "INTID_T_UD_CHART_USED",
+        "label": "Datenquelle",
+        "description": "Datenquelle",
+        "foreignentity": "nuclos_chart",
+        "datatype": "java.lang.String",
+        "datascale": 255,
+        "nullable": false,
+        "searchable": true,
+        "logbook": false,
+        "unique": true,
+        "labelres": "nuclos.entityfield.chartUsage.datasourceUsed.label",
+        "descriptionres": "nuclos.entityfield.chartUsage.datasourceUsed.description"
+      }
+    ]
+  },
+  {
     "name": "Verknüpfung von auszuführenden Regeln mit Objektgenerierungen",
     "entity": "nuclos_rulegeneration",
     "searchable": true,
@@ -8573,6 +8616,89 @@
         "unique": false,
         "labelres": "nuclos.entityfield.datasource.source.label",
         "descriptionres": "nuclos.entityfield.datasource.source.description"
+      },
+      {
+        "name": "nuclet",
+        "dbfield": "STRVALUE_T_MD_NUCLET",
+        "foreignentity": "nuclos_nuclet",
+        "datatype": "java.lang.String",
+        "datascale": 255,
+        "nullable": true,
+        "searchable": false,
+        "logbook": false,
+        "foreignentityfield": "name",
+        "unique": false,
+        "labelres": "nuclet.foreign.label"
+      }
+    ]
+  },
+  {
+    "name": "Chart",
+    "entity": "nuclos_chart",
+    "searchable": false,
+    "editable": true,
+    "cacheable": true,
+    "dbentity": "V_UD_CHART",
+    "importexport": true,
+    "systementity": true,
+    "labelres": "nuclos.entity.chart.label",
+    "menupathres": "nuclos.entity.chart.menupath",
+    "nuclosresource": "org.nuclos.client.resource.icon.glyphish-blue.12-eye.png",
+    "uniquefields": [ [ "name" ] ],
+    "nuclos_entityfield": [
+      {
+        "name": "valid",
+        "dbfield": "BLNVALID",
+        "label": "Gültig?",
+        "description": "SQL Abfrage gültig?",
+        "datatype": "java.lang.Boolean",
+        "nullable": false,
+        "searchable": false,
+        "logbook": false,
+        "unique": false,
+        "labelres": "nuclos.entityfield.chart.valid.label",
+        "descriptionres": "nuclos.entityfield.chart.valid.description"
+      },
+      {
+        "name": "name",
+        "dbfield": "STRDATASOURCE",
+        "label": "Name",
+        "description": "Name der Datenquelle",
+        "datatype": "java.lang.String",
+        "datascale": 255,
+        "nullable": false,
+        "searchable": false,
+        "logbook": false,
+        "unique": true,
+        "labelres": "nuclos.entityfield.chart.name.label",
+        "descriptionres": "nuclos.entityfield.chart.name.description"
+      },
+      {
+        "name": "description",
+        "dbfield": "STRDESCRIPTION",
+        "label": "Bemerkung",
+        "description": "Bemerkung zur Datenquelle",
+        "datatype": "java.lang.String",
+        "datascale": 4000,
+        "nullable": true,
+        "searchable": false,
+        "logbook": false,
+        "unique": false,
+        "labelres": "nuclos.entityfield.chart.description.label",
+        "descriptionres": "nuclos.entityfield.chart.description.description"
+      },
+      {
+        "name": "source",
+        "dbfield": "CLBDATASOURCEXML",
+        "label": "Source XML",
+        "description": "Source XML",
+        "datatype": "java.lang.String",
+        "nullable": false,
+        "searchable": true,
+        "logbook": false,
+        "unique": false,
+        "labelres": "nuclos.entityfield.chart.source.label",
+        "descriptionres": "nuclos.entityfield.chart.source.description"
       },
       {
         "name": "nuclet",

@@ -50,8 +50,10 @@ import org.nuclos.server.dblayer.structure.DbTable;
 import org.nuclos.server.dblayer.structure.DbTableType;
 import org.nuclos.server.mbean.MBeanAgent;
 import org.nuclos.server.mbean.SchemaCacheMBean;
+import org.nuclos.server.report.valueobject.ChartVO;
 import org.nuclos.server.report.valueobject.DatasourceVO;
 import org.nuclos.server.report.valueobject.DynamicEntityVO;
+import org.nuclos.server.report.valueobject.DynamicTasklistVO;
 import org.nuclos.server.report.valueobject.RecordGrantVO;
 import org.nuclos.server.report.valueobject.ValuelistProviderVO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -334,5 +336,31 @@ public synchronized void invalidate() {
 				table.setComment(sComment);
 				schema.addTable(table);
 			}
+
+			for (DynamicTasklistVO dynamicTasklistVO : datasourceCache.getAllDynamicTasklists()) {
+				String sName = dynamicTasklistVO.getName();
+				String sViewName = null;
+				String sComment = dynamicTasklistVO.getDescription();
+				Table table = new Table(schema, sName, sViewName);
+				table.setQuery(true);
+				table.setType(QueryTable.QUERY_TYPE_DYNAMIC_TASK);
+				table.setDatasourceXML(dynamicTasklistVO.getSource());
+				table.setComment(sComment);
+				schema.addTable(table);
+			}
+
+
+			for (ChartVO chartVO : datasourceCache.getAllCharts()) {
+				String sName = chartVO.getName();
+				String sViewName = null;
+				String sComment = chartVO.getDescription();
+				Table table = new Table(schema, sName, sViewName);
+				table.setQuery(true);
+				table.setType(QueryTable.QUERY_TYPE_CHART);
+				table.setDatasourceXML(chartVO.getSource());
+				table.setComment(sComment);
+				schema.addTable(table);
+			}
+
 	}
 }	// class SchemaCache

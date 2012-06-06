@@ -36,6 +36,10 @@ import java.awt.dnd.DragSourceListener;
 import java.awt.dnd.InvalidDnDOperationException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
+import java.awt.event.HierarchyEvent;
+import java.awt.event.HierarchyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.beans.PropertyChangeEvent;
@@ -230,19 +234,14 @@ public class WYSIWYGSubForm extends JLayeredPane implements WYSIWYGComponent, Mo
 
 	private SubForm subform;
 
-	// @SuppressWarnings("unused")
-	private SubFormController controller;
 	private SortableCollectableTableModel<Collectable> model;
 
 	private JLabel message = new JLabel();
 
-	// @SuppressWarnings("unused")
-	private JPanel glassPane = new JPanel();
-
 	private HashMap<String, WYSIWYGSubFormColumn> columns = new HashMap<String, WYSIWYGSubFormColumn>();
 
 	private EventListenerList listenerList = new EventListenerList();
-
+	
 	/**
 	 * 
 	 * @param meta the metainformation to be set
@@ -428,7 +427,7 @@ public class WYSIWYGSubForm extends JLayeredPane implements WYSIWYGComponent, Mo
 					subform.setInitialSortingOrder(sortingOrder.getName(), sortingOrder.getSortingOrder());
 				}
 
-				this.controller = NuclosCollectControllerFactory.getInstance().newDetailsSubFormController(subform, meta.getCollectableEntity().getName(), clctmodelprovider, new MainFrameTab(), this, Preferences.userRoot().node("tmp"), new EntityPreferences(), null);
+				NuclosCollectControllerFactory.getInstance().newDetailsSubFormController(subform, meta.getCollectableEntity().getName(), clctmodelprovider, new MainFrameTab(), this, Preferences.userRoot().node("tmp"), new EntityPreferences(), null);
 
 				if (subform.getJTable().getModel() instanceof SortableCollectableTableModel) {
 					this.model = (SortableCollectableTableModel<Collectable>) subform.getJTable().getModel();
@@ -529,6 +528,9 @@ public class WYSIWYGSubForm extends JLayeredPane implements WYSIWYGComponent, Mo
 						TableModelEvent.HEADER_ROW));
 
 				this.add(this.subform, BorderLayout.CENTER);
+
+				subform.getToolbar().addMouseListener(this);
+
 
 				for (MouseListener ml : table.getTableHeader().getMouseListeners()) {
 					table.getTableHeader().removeMouseListener(ml);

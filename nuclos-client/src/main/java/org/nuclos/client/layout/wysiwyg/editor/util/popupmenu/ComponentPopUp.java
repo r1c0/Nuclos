@@ -30,6 +30,7 @@ import javax.swing.JPopupMenu;
 
 import org.apache.log4j.Logger;
 import org.nuclos.client.layout.wysiwyg.WYSIWYGStringsAndLabels.COMPONENT_POPUP;
+import org.nuclos.client.layout.wysiwyg.component.WYSIWYGChart;
 import org.nuclos.client.layout.wysiwyg.component.WYSIWYGComponent;
 import org.nuclos.client.layout.wysiwyg.component.WYSIWYGSubForm;
 import org.nuclos.client.layout.wysiwyg.editor.ui.panels.WYSIWYGLayoutEditorPanel;
@@ -154,7 +155,7 @@ public class ComponentPopUp {
 		/**
 		 * Add Rules if Component can be Target of LayoutMLRules 
 		 */
-		if (wysiwygcomponent.getLayoutMLRulesIfCapable() != null && (!(wysiwygcomponent instanceof WYSIWYGSubForm))) {
+		if (wysiwygcomponent.getLayoutMLRulesIfCapable() != null && (!(wysiwygcomponent instanceof WYSIWYGSubForm)) && (!(wysiwygcomponent instanceof WYSIWYGChart))) {
 			/** if the component can be target of layoutml rules this item is added */
 			JMenuItem addLayoutMLRule = new JMenuItem(COMPONENT_POPUP.LABEL_EDIT_RULES_FOR_COMPONENT);
 			addLayoutMLRule.addActionListener(new ActionListener() {

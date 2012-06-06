@@ -2025,6 +2025,21 @@
     "text": "Source XML"
   },
   {
+    "resourceID": "nuclos.entityfield.chart.source.label",
+    "locale": "i-default",
+    "text": "Source xml"
+  },
+  {
+    "resourceID": "nuclos.entityfield.chart.source.label",
+    "locale": "en",
+    "text": "Source xml"
+  },
+  {
+    "resourceID": "nuclos.entityfield.chart.source.label",
+    "locale": "de",
+    "text": "Source XML"
+  },
+  {
     "resourceID": "nuclos.entityfield.wikimapping.wiki.label",
     "locale": "i-default",
     "text": "Wiki"
@@ -5610,6 +5625,21 @@
     "text": "Bemerkung"
   },
   {
+    "resourceID": "nuclos.entityfield.chart.description.label",
+    "locale": "i-default",
+    "text": "Remark"
+  },
+  {
+    "resourceID": "nuclos.entityfield.chart.description.label",
+    "locale": "en",
+    "text": "Remark"
+  },
+  {
+    "resourceID": "nuclos.entityfield.chart.description.label",
+    "locale": "de",
+    "text": "Bemerkung"
+  },
+  {
     "resourceID": "R00011654",
     "locale": "i-default",
     "text": "Remark"
@@ -6180,6 +6210,21 @@
     "text": "Datenquelle"
   },
   {
+    "resourceID": "nuclos.entityfield.chartUsage.datasourceUsed.label",
+    "locale": "i-default",
+    "text": "Data source"
+  },
+  {
+    "resourceID": "nuclos.entityfield.chartUsage.datasourceUsed.label",
+    "locale": "en",
+    "text": "Data source"
+  },
+  {
+    "resourceID": "nuclos.entityfield.chartUsage.datasourceUsed.label",
+    "locale": "de",
+    "text": "Datenquelle"
+  },
+  {
     "resourceID": "nuclos.entityfield.roleattributegroup.attributegroup.label",
     "locale": "i-default",
     "text": "Attribute group"
@@ -6491,6 +6536,21 @@
   },
   {
     "resourceID": "nuclos.entityfield.datasource.name.label",
+    "locale": "de",
+    "text": "Name"
+  },
+  {
+    "resourceID": "nuclos.entityfield.chart.name.label",
+    "locale": "i-default",
+    "text": "Name"
+  },
+  {
+    "resourceID": "nuclos.entityfield.chart.name.label",
+    "locale": "en",
+    "text": "Name"
+  },
+  {
+    "resourceID": "nuclos.entityfield.chart.name.label",
     "locale": "de",
     "text": "Name"
   },
@@ -7046,6 +7106,21 @@
   },
   {
     "resourceID": "nuclos.entityfield.datasourceUsage.datasource.label",
+    "locale": "de",
+    "text": "Datenquelle"
+  },
+  {
+    "resourceID": "nuclos.entityfield.chartUsage.datasource.label",
+    "locale": "i-default",
+    "text": "Data source"
+  },
+  {
+    "resourceID": "nuclos.entityfield.chartUsage.datasource.label",
+    "locale": "en",
+    "text": "Data source"
+  },
+  {
+    "resourceID": "nuclos.entityfield.chartUsage.datasource.label",
     "locale": "de",
     "text": "Datenquelle"
   },
@@ -8295,6 +8370,21 @@
     "text": "Name der Datenquelle"
   },
   {
+    "resourceID": "nuclos.entityfield.chart.name.description",
+    "locale": "i-default",
+    "text": "Data source name"
+  },
+  {
+    "resourceID": "nuclos.entityfield.chart.name.description",
+    "locale": "en",
+    "text": "Data source name"
+  },
+  {
+    "resourceID": "nuclos.entityfield.chart.name.description",
+    "locale": "de",
+    "text": "Name der Datenquelle"
+  },
+  {
     "resourceID": "nuclos.entityfield.report.changedUser.description",
     "locale": "i-default",
     "text": "Last changed by"
@@ -8546,6 +8636,21 @@
   },
   {
     "resourceID": "nuclos.entityfield.datasource.source.description",
+    "locale": "de",
+    "text": "Source XML"
+  },
+  {
+    "resourceID": "nuclos.entityfield.chart.source.description",
+    "locale": "i-default",
+    "text": "Source xml"
+  },
+  {
+    "resourceID": "nuclos.entityfield.chart.source.description",
+    "locale": "en",
+    "text": "Source xml"
+  },
+  {
+    "resourceID": "nuclos.entityfield.chart.source.description",
     "locale": "de",
     "text": "Source XML"
   },
@@ -9131,6 +9236,21 @@
   },
   {
     "resourceID": "nuclos.entityfield.datasource.valid.label",
+    "locale": "de",
+    "text": "Gültig?"
+  },
+  {
+    "resourceID": "nuclos.entityfield.chart.valid.label",
+    "locale": "i-default",
+    "text": "Valid?"
+  },
+  {
+    "resourceID": "nuclos.entityfield.chart.valid.label",
+    "locale": "en",
+    "text": "Valid?"
+  },
+  {
+    "resourceID": "nuclos.entityfield.chart.valid.label",
     "locale": "de",
     "text": "Gültig?"
   },
@@ -9780,6 +9900,21 @@
     "text": "SQL Abfrage gültig?"
   },
   {
+    "resourceID": "nuclos.entityfield.chart.valid.description",
+    "locale": "i-default",
+    "text": "SQL valid?"
+  },
+  {
+    "resourceID": "nuclos.entityfield.chart.valid.description",
+    "locale": "en",
+    "text": "SQL valid?"
+  },
+  {
+    "resourceID": "nuclos.entityfield.chart.valid.description",
+    "locale": "de",
+    "text": "SQL Abfrage gültig?"
+  },
+  {
     "resourceID": "R00015163",
     "locale": "i-default",
     "text": "Only for DOC and XLS"
@@ -9956,6 +10091,21 @@
   },
   {
     "resourceID": "nuclos.entityfield.datasourceUsage.datasourceUsed.description",
+    "locale": "de",
+    "text": "Datenquelle"
+  },
+  {
+    "resourceID": "nuclos.entityfield.chartUsage.datasourceUsed.description",
+    "locale": "i-default",
+    "text": "Data source"
+  },
+  {
+    "resourceID": "nuclos.entityfield.chartUsage.datasourceUsed.description",
+    "locale": "en",
+    "text": "Data source"
+  },
+  {
+    "resourceID": "nuclos.entityfield.chartUsage.datasourceUsed.description",
     "locale": "de",
     "text": "Datenquelle"
   },
@@ -12491,6 +12641,21 @@
   },
   {
     "resourceID": "nuclos.entityfield.datasourceUsage.datasource.description",
+    "locale": "de",
+    "text": "Datenquelle"
+  },
+  {
+    "resourceID": "nuclos.entityfield.chartUsage.datasource.description",
+    "locale": "i-default",
+    "text": "Data source"
+  },
+  {
+    "resourceID": "nuclos.entityfield.chartUsage.datasource.description",
+    "locale": "en",
+    "text": "Data source"
+  },
+  {
+    "resourceID": "nuclos.entityfield.chartUsage.datasource.description",
     "locale": "de",
     "text": "Datenquelle"
   },
@@ -15705,6 +15870,21 @@
     "text": "Konfiguration\\Datenquellen"
   },
   {
+    "resourceID": "nuclos.entity.chart.menupath",
+    "locale": "i-default",
+    "text": "Configuration\\Data sources"
+  },
+  {
+    "resourceID": "nuclos.entity.chart.menupath",
+    "locale": "en",
+    "text": "Configuration\\Data sources"
+  },
+  {
+    "resourceID": "nuclos.entity.chart.menupath",
+    "locale": "de",
+    "text": "Konfiguration\\Datenquellen"
+  },
+  {
     "resourceID": "nuclos.entity.rule.label",
     "locale": "i-default",
     "text": "Business rule"
@@ -16271,6 +16451,21 @@
   },
   {
     "resourceID": "nuclos.entityfield.datasource.description.description",
+    "locale": "de",
+    "text": "Bemerkung zur Datenquelle"
+  },
+  {
+    "resourceID": "nuclos.entityfield.chart.description.description",
+    "locale": "i-default",
+    "text": "Remark for data source"
+  },
+  {
+    "resourceID": "nuclos.entityfield.chart.description.description",
+    "locale": "en",
+    "text": "Remark for data source"
+  },
+  {
+    "resourceID": "nuclos.entityfield.chart.description.description",
     "locale": "de",
     "text": "Bemerkung zur Datenquelle"
   },
@@ -18765,6 +18960,21 @@
     "text": "Verwendung von Datenquellen in Datenquellen"
   },
   {
+    "resourceID": "nuclos.entity.chartUsage.label",
+    "locale": "i-default",
+    "text": "Use of data sources in charts"
+  },
+  {
+    "resourceID": "nuclos.entity.chartUsage.label",
+    "locale": "en",
+    "text": "Use of data sources in charts"
+  },
+  {
+    "resourceID": "nuclos.entity.chartUsage.label",
+    "locale": "de",
+    "text": "Verwendung von Datenquellen in Diagramme"
+  },
+  {
     "resourceID": "nuclos.entity.roleattributegroup.label",
     "locale": "i-default",
     "text": "State dependent attribute group permissions"
@@ -18883,6 +19093,21 @@
     "resourceID": "nuclos.entity.datasource.label",
     "locale": "de",
     "text": "Report & Formular"
+  },
+  {
+    "resourceID": "nuclos.entity.chart.label",
+    "locale": "i-default",
+    "text": "Chart"
+  },
+  {
+    "resourceID": "nuclos.entity.chart.label",
+    "locale": "en",
+    "text": "Chart"
+  },
+  {
+    "resourceID": "nuclos.entity.chart.label",
+    "locale": "de",
+    "text": "Diagramm"
   },
   {
     "resourceID": "nuclos.entity.generationAttribute.label",
@@ -32690,6 +32915,81 @@
     "text": "Ausgewählten Datensatz löschen"
   },
   {
+    "resourceID": "Chart.1",
+    "locale": "i-default",
+    "text": "Print chart"
+  },
+  {
+    "resourceID": "Chart.1",
+    "locale": "en",
+    "text": "Print chart"
+  },
+  {
+    "resourceID": "Chart.1",
+    "locale": "de",
+    "text": "Diagramm drucken"
+  },
+  {
+    "resourceID": "Chart.1",
+    "locale": "i-default",
+    "text": "Show chart data"
+  },
+  {
+    "resourceID": "Chart.2",
+    "locale": "en",
+    "text": "Show chart data"
+  },
+  {
+    "resourceID": "Chart.2",
+    "locale": "de",
+    "text": "Diagrammdaten anzeigen"
+  },
+  {
+    "resourceID": "Chart.3",
+    "locale": "i-default",
+    "text": "The chart for the entity {0} does not contain a foreign key reference field to the entity {1}.\\nPlease select the referencing field explicitly in the layout."
+  },
+  {
+    "resourceID": "Chart.3",
+    "locale": "en",
+    "text": "The chart for the entity {0} does not contain a foreign key reference field to the entity {1}.\\nPlease select the referencing field explicitly in the layout."
+  },
+  {
+    "resourceID": "Chart.3",
+    "locale": "de",
+    "text": "Das Diagramm für die Entität \"{0}\" enthält kein Fremdschlüsselfeld, das die übergeordnete Entität \"{1}\" referenziert.\\nBitte geben Sie das Feld im Layout explizit an."
+  },
+  {
+    "resourceID": "Chart.4",
+    "locale": "i-default",
+    "text": "The chart for the entity {0} contains more than one foreign key reference to the entity {1}: \\t{2}\\t{3}.\\nPlease select the referencing field explicitly in the layout."
+  },
+  {
+    "resourceID": "Chart.4",
+    "locale": "en",
+    "text": "The chart for the entity {0} contains more than one foreign key reference to the entity {1}: \\t{2}\\t{3}.\\nPlease select the referencing field explicitly in the layout."
+  },
+  {
+    "resourceID": "Chart.4",
+    "locale": "de",
+    "text": "Das Diagramm für die Entität \"{0}\" enthält mehr als ein Fremdschlüsselfeld, das die übergeordnete Entität \"{1}\" referenziert:\\n\\t{2}\\n\\t{3}\\nBitte geben Sie das Feld im Layout explizit an."
+  },
+  {
+    "resourceID": "Chart.7",
+    "locale": "i-default",
+    "text": "Save chart"
+  },
+  {
+    "resourceID": "Chart.7",
+    "locale": "en",
+    "text": "Save chart"
+  },
+  {
+    "resourceID": "Chart.7",
+    "locale": "de",
+    "text": "Diagramm speichern"
+  },
+  {
     "resourceID": "MetaDataCollectController.9",
     "locale": "i-default",
     "text": "The field ''DB-column'' of the subform may not be empty"
@@ -34732,82 +35032,162 @@
   {
     "resourceID": "datasource.validation.dynamic.entity.name.1",
     "locale": "i-default",
-    "text": "The maximum lentgh of the name should be 25, if you want to provide this datasource as dynamic entity."
+    "text": "The maximum lentgh of the name should be 25, if you want to provide this datasource as chart entity."
   },
   {
     "resourceID": "datasource.validation.dynamic.entity.name.1",
     "locale": "de",
-    "text": "Wenn eine Datenquelle als dynamische Entität zur Verfügung gestellt werden soll, so darf der Name der Datenquelle nicht länger als 25 Zeichen sein."
+    "text": "Wenn eine Datenquelle als Diagramm-Entität zur Verfügung gestellt werden soll, so darf der Name der Datenquelle nicht länger als 25 Zeichen sein."
   },
   {
     "resourceID": "datasource.validation.dynamic.entity.name.2",
     "locale": "i-default",
-    "text": "Blanks in the name are not allowed, if you want to provide this datasource as dynamic entity."
+    "text": "Blanks in the name are not allowed, if you want to provide this datasource as chart entity."
   },
   {
     "resourceID": "datasource.validation.dynamic.entity.name.2",
     "locale": "de",
-    "text": "Wenn eine Datenquelle als dynamische Entität zur Verfügung gestellt werden soll, so darf der Name keine Leerzeichen enthalten."
+    "text": "Wenn eine Datenquelle als Diagramm-Entität zur Verfügung gestellt werden soll, so darf der Name keine Leerzeichen enthalten."
   },
   {
     "resourceID": "datasource.validation.dynamic.entity.name.3",
     "locale": "i-default",
-    "text": "Use only letters(a-Z), numerals and underscore (_) for the name, if you want to provide this datasource as dynamic entity."
+    "text": "Use only letters(a-Z), numerals and underscore (_) for the name, if you want to provide this datasource as chart entity."
   },
   {
     "resourceID": "datasource.validation.dynamic.entity.name.3",
     "locale": "de",
-    "text": "Wenn eine Datenquelle als dynamische Entität zur Verfügung gestellt werden soll, so darf der Name nur aus Buchstaben(a-Z), Zahlen und Unterstrichen(_) bestehen."
+    "text": "Wenn eine Datenquelle als Diagramm-Entität zur Verfügung gestellt werden soll, so darf der Name nur aus Buchstaben(a-Z), Zahlen und Unterstrichen(_) bestehen."
   },
   {
     "resourceID": "datasource.validation.dynamic.entity.sql.1",
     "locale": "i-default",
-    "text": "Contents of this datasource should not be empty, if you want to provide it as dynamic entity."
+    "text": "Contents of this datasource should not be empty, if you want to provide it as chart entity."
   },
   {
     "resourceID": "datasource.validation.dynamic.entity.sql.1",
     "locale": "de",
-    "text": "Wenn eine Datenquelle als dynamische Entität zur Verfügung gestellt werden soll, so darf der Inhalt nicht leer sein."
+    "text": "Wenn eine Datenquelle als Diagramm-Entität zur Verfügung gestellt werden soll, so darf der Inhalt nicht leer sein."
   },
   {
     "resourceID": "datasource.validation.dynamic.entity.sql.2",
     "locale": "i-default",
-    "text": "This datasource has to contain a column INTID, if you want to provide it as dynamic entity."
+    "text": "This datasource has to contain a column INTID, if you want to provide it as chart entity."
   },
   {
     "resourceID": "datasource.validation.dynamic.entity.sql.2",
     "locale": "de",
-    "text": "Wenn eine Datenquelle als dynamische Entität zur Verfügung gestellt werden soll, so muss sie eine Spalte INTID enthalten. (Objektreferenz für das Öffnen mittels \"Details anzeigen...\", auch NULL möglich -> kein Öffnen)"
+    "text": "Wenn eine Datenquelle als Diagramm-Entität zur Verfügung gestellt werden soll, so muss sie eine Spalte INTID enthalten. (Objektreferenz für das Öffnen mittels \"Details anzeigen...\", auch NULL möglich -> kein Öffnen)"
   },
   {
     "resourceID": "datasource.validation.dynamic.entity.sql.3",
     "locale": "i-default",
-    "text": "This datasource has to contain a column INTID_T_UD_GENERICOBJECT, if you want to provide it as dynamic entity."
+    "text": "This datasource has to contain a column INTID_T_UD_GENERICOBJECT, if you want to provide it as chart entity."
   },
   {
     "resourceID": "datasource.validation.dynamic.entity.sql.3",
     "locale": "de",
-    "text": "Wenn eine Datenquelle als dynamische Entität zur Verfügung gestellt werden soll, so muss sie eine Spalte INTID_T_UD_GENERICOBJECT enthalten. (Zuordnung 1:n \/ Objekt:Datensätze der dynamischen Entität)"
+    "text": "Wenn eine Datenquelle als Diagramm-Entität zur Verfügung gestellt werden soll, so muss sie eine Spalte INTID_T_UD_GENERICOBJECT enthalten. (Zuordnung 1:n \/ Objekt:Datensätze der dynamischen Entität)"
   },
   {
     "resourceID": "datasource.validation.dynamic.entity.sql.4",
     "locale": "i-default",
-    "text": "Do not use Parameters, if you want to provide this datasource as dynamic entity."
+    "text": "Do not use Parameters, if you want to provide this datasource as chart entity."
   },
   {
     "resourceID": "datasource.validation.dynamic.entity.sql.4",
     "locale": "de",
-    "text": "Wenn eine Datenquelle als dynamische Entität zur Verfügung gestellt werden soll, so darf diese keine Parameter enthalten."
+    "text": "Wenn eine Datenquelle als Diagramm-Entität zur Verfügung gestellt werden soll, so darf diese keine Parameter enthalten."
   },
   {
     "resourceID": "datasource.validation.dynamic.entity.sql.5",
     "locale": "i-default",
-    "text": "The syntax of this datasource has to be valid, if you want to provide it as dynamic entity."
+    "text": "The syntax of this datasource has to be valid, if you want to provide it as chart entity."
   },
   {
     "resourceID": "datasource.validation.dynamic.entity.sql.5",
     "locale": "de",
-    "text": "Wenn eine Datenquelle als dynamische Entität zur Verfügung gestellt werden soll, so muss diese valide sein. Bitte prüfen Sie die Syntax der SQL Abfrage."
+    "text": "Wenn eine Datenquelle als Diagramm-Entität zur Verfügung gestellt werden soll, so muss diese valide sein. Bitte prüfen Sie die Syntax der SQL Abfrage."
+  },
+  {
+    "resourceID": "datasource.validation.chart.entity.name.1",
+    "locale": "i-default",
+    "text": "The maximum lentgh of the name should be 25, if you want to provide this datasource as chart entity."
+  },
+  {
+    "resourceID": "datasource.validation.chart.entity.name.1",
+    "locale": "de",
+    "text": "Wenn eine Datenquelle als Diagramm-Entität zur Verfügung gestellt werden soll, so darf der Name der Datenquelle nicht länger als 25 Zeichen sein."
+  },
+  {
+    "resourceID": "datasource.validation.chart.entity.name.2",
+    "locale": "i-default",
+    "text": "Blanks in the name are not allowed, if you want to provide this datasource as chart entity."
+  },
+  {
+    "resourceID": "datasource.validation.chart.entity.name.2",
+    "locale": "de",
+    "text": "Wenn eine Datenquelle als Diagramm-Entität zur Verfügung gestellt werden soll, so darf der Name keine Leerzeichen enthalten."
+  },
+  {
+    "resourceID": "datasource.validation.chart.entity.name.3",
+    "locale": "i-default",
+    "text": "Use only letters(a-Z), numerals and underscore (_) for the name, if you want to provide this datasource as chart entity."
+  },
+  {
+    "resourceID": "datasource.validation.chart.entity.name.3",
+    "locale": "de",
+    "text": "Wenn eine Datenquelle als Diagramm-Entität zur Verfügung gestellt werden soll, so darf der Name nur aus Buchstaben(a-Z), Zahlen und Unterstrichen(_) bestehen."
+  },
+  {
+    "resourceID": "datasource.validation.chart.entity.sql.1",
+    "locale": "i-default",
+    "text": "Contents of this datasource should not be empty, if you want to provide it as chart entity."
+  },
+  {
+    "resourceID": "datasource.validation.chart.entity.sql.1",
+    "locale": "de",
+    "text": "Wenn eine Datenquelle als Diagramm-Entität zur Verfügung gestellt werden soll, so darf der Inhalt nicht leer sein."
+  },
+  {
+    "resourceID": "datasource.validation.chart.entity.sql.2",
+    "locale": "i-default",
+    "text": "This datasource has to contain a column INTID, if you want to provide it as chart entity."
+  },
+  {
+    "resourceID": "datasource.validation.chart.entity.sql.2",
+    "locale": "de",
+    "text": "Wenn eine Datenquelle als Diagramm-Entität zur Verfügung gestellt werden soll, so muss sie eine Spalte INTID enthalten. (Objektreferenz für das Öffnen mittels \"Details anzeigen...\", auch NULL möglich -> kein Öffnen)"
+  },
+  {
+    "resourceID": "datasource.validation.chart.entity.sql.3",
+    "locale": "i-default",
+    "text": "This datasource has to contain a column INTID_T_UD_GENERICOBJECT, if you want to provide it as chart entity."
+  },
+  {
+    "resourceID": "datasource.validation.chart.entity.sql.3",
+    "locale": "de",
+    "text": "Wenn eine Datenquelle als Diagramm-Entität zur Verfügung gestellt werden soll, so muss sie eine Spalte INTID_T_UD_GENERICOBJECT enthalten. (Zuordnung 1:n \/ Objekt:Datensätze der dynamischen Entität)"
+  },
+  {
+    "resourceID": "datasource.validation.chart.entity.sql.4",
+    "locale": "i-default",
+    "text": "This datasource has to contain a parameter genericObject, if you want to provide it as chart entity."
+  },
+  {
+    "resourceID": "datasource.validation.chart.entity.sql.4",
+    "locale": "de",
+    "text": "Wenn eine Datenquelle als Diagramm-Entität zur Verfügung gestellt werden soll, so muss sie einen Parameter genericObject enthalten. (Zuordnung 1:n \/ Objekt:Datensätze der dynamischen Entität)."
+  },
+  {
+    "resourceID": "datasource.validation.chart.entity.sql.5",
+    "locale": "i-default",
+    "text": "The syntax of this datasource has to be valid, if you want to provide it as chart entity."
+  },
+  {
+    "resourceID": "datasource.validation.chart.entity.sql.5",
+    "locale": "de",
+    "text": "Wenn eine Datenquelle als Diagramm-Entität zur Verfügung gestellt werden soll, so muss diese valide sein. Bitte prüfen Sie die Syntax der SQL Abfrage."
   },
   {
     "resourceID": "PersonalTaskView.9",
@@ -52904,6 +53284,36 @@
     "text": "Layout kann nicht angezeigt werden."
   },
   {
+    "resourceID": "wysiwyg.chart.wizard.overview",
+    "locale": "i-default",
+    "text": "Overview"
+  },
+  {
+    "resourceID": "wysiwyg.chart.wizard.overview",
+    "locale": "de",
+    "text": "Übersicht"
+  },
+  {
+    "resourceID": "wysiwyg.chart.wizard.domain.value",
+    "locale": "i-default",
+    "text": "Select the column, that contains the chart values:"
+  },
+  {
+    "resourceID": "wysiwyg.chart.wizard.domain.value",
+    "locale": "de",
+    "text": "Bestimmen Sie die Spalte, die die Werte enthält:"
+  },
+  {
+    "resourceID": "wysiwyg.chart.wizard.domain.compare",
+    "locale": "i-default",
+    "text": "Select the column(s), that contains the comparable values of the chart:"
+  },
+  {
+    "resourceID": "wysiwyg.chart.wizard.domain.compare",
+    "locale": "de",
+    "text": "Geben Sie hier die Spalte(n) für die vergleichenden Werte an:"
+  },
+  {
     "resourceID": "action.RelationEditor",
     "locale": "i-default",
     "text": "Run relation editor"
@@ -65692,5 +66102,20 @@
     "resourceID": "import.validation.structure.column.or.script",
     "locale": "de",
     "text": "Eine Attributdefinition benötigt entweder eine Spaltennummer oder einen Berechnungsausdruck."
+  }
+  {
+    "resourceID": "filenameextensionfilter.1",
+    "locale": "i-default",
+    "text": "image formats"
+  },
+  {
+    "resourceID": "filenameextensionfilter.1",
+    "locale": "en",
+    "text": "image formats"
+  },
+  {
+    "resourceID": "filenameextensionfilter.1",
+    "locale": "de",
+    "text": "Bildformate"
   }
 ]

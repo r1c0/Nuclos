@@ -26,11 +26,14 @@ import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.querybuilder.NuclosDatasourceException;
 import org.nuclos.common2.exception.CommonFinderException;
 import org.nuclos.common2.exception.CommonPermissionException;
+import org.nuclos.server.common.DatasourceCache;
 import org.nuclos.server.report.NuclosReportException;
+import org.nuclos.server.report.valueobject.ChartVO;
 import org.nuclos.server.report.valueobject.DatasourceParameterVO;
 import org.nuclos.server.report.valueobject.DatasourceVO;
 import org.nuclos.server.report.valueobject.DynamicEntityVO;
 import org.nuclos.server.report.valueobject.ResultVO;
+import org.nuclos.server.report.valueobject.ValuelistProviderVO;
 
 // @Local
 public interface DatasourceFacadeLocal {
@@ -65,6 +68,33 @@ public interface DatasourceFacadeLocal {
 	 */
 	@RolesAllowed("Login")
 	DatasourceVO getDatasourceById(Integer iDatasourceId);
+
+	/**
+	 * get valuelist provider value object
+	 * 
+	 * @param sValuelistProvider
+	 *            name of valuelist provider
+	 * @return valuelist provider value object
+	 */
+	public ValuelistProviderVO getValuelistProvider(String sValuelistProvider) throws CommonFinderException, CommonPermissionException;
+	
+	/**
+	 * get dynamic entity value object
+	 * 
+	 * @param sDynamicEntity
+	 *            name of dynamic entity 
+	 * @return dynamic entity value object
+	 */
+	public DynamicEntityVO getDynamicEntity(String sDynamicEntity) throws CommonFinderException, CommonPermissionException;
+	
+	/**
+	 * get chart value object
+	 * 
+	 * @param sChart
+	 *            name of chart
+	 * @return chart value object
+	 */
+	public ChartVO getChart(String sChart) throws CommonFinderException, CommonPermissionException;
 
 	/**
 	 * get sql string for datasource definition
@@ -103,6 +133,16 @@ public interface DatasourceFacadeLocal {
     */
 	@RolesAllowed("Login")
 	void processChangingDynamicEntities(Collection<DynamicEntityVO> newDEs, Collection<DynamicEntityVO> oldDEs, boolean bExecute, List<String> script);
+
+    /**
+     *
+     * @param newDEs (chart entities of this list would be created)
+     * @param oldDEs (chart entities of this list would be deleted)
+     * @param bExecute
+     * @param script
+     */
+ 	@RolesAllowed("Login")
+ 	void processChangingChartEntities(Collection<ChartVO> newDEs, Collection<ChartVO> oldDEs, boolean bExecute, List<String> script);
 
 	/**
 	 * get a datasource result by datasource id

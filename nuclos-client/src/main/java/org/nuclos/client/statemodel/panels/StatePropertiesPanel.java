@@ -118,6 +118,7 @@ import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.PreferencesUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.PreferencesException;
+import org.nuclos.server.masterdata.valueobject.MasterDataMetaVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 import org.nuclos.server.statemodel.valueobject.AttributegroupPermissionVO;
 import org.nuclos.server.statemodel.valueobject.EntityFieldPermissionVO;
@@ -1315,7 +1316,7 @@ public class StatePropertiesPanel extends JPanel {
 					if (!result.containsKey(sf)) {
 						result.put(sf, new TreeSet<Attribute>());
 					}
-					if (!eafn.getEntityName().startsWith("dyn_")) { // no dynamic entity columns here
+					if (!eafn.getEntityName().startsWith(MasterDataMetaVO.DYNAMIC_ENTITY_PREFIX) && !eafn.getEntityName().startsWith(MasterDataMetaVO.CHART_ENTITY_PREFIX)) { // no dynamic entity columns here
 						for (EntityFieldMetaDataVO efMeta : MetaDataClientProvider.getInstance().getAllEntityFieldsByEntity(eafn.getEntityName()).values()) {
 							if (efMeta.isDynamic()) 
 								continue; // no dynamic entity columns here

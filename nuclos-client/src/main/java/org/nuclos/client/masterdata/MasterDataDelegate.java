@@ -357,6 +357,25 @@ public class MasterDataDelegate {
 	 }
 
 	 /**
+	  * gets the dependent masterdata for an entity.
+	  * @param sEntityName
+	  * @param sForeignKeyFieldName
+	  * @param oRelatedId the foreign key of the parent entity
+	  * @return Collection<MasterDataVO>. A (possibly empty) collection of masterdata objects
+	  */
+	 public Collection<EntityObjectVO> getDependantMasterData(final String sEntityName, String sForeignKeyFieldName, Object oRelatedId, Map<String, Object> mpParams) {
+		 try {
+			 Collection<EntityObjectVO> col = CollectionUtils.transform(
+					 getMasterDataFacade().getDependantMasterData(sEntityName, sForeignKeyFieldName, oRelatedId, mpParams), 
+                     new MasterDataToEntityObjectTransformer(sEntityName));
+			 return col;
+		 }
+		 catch (RuntimeException ex) {
+			 throw new CommonFatalException(ex);
+		 }
+	 }
+
+	 /**
 	  * @param sEntityName
 	  * @param oId the object's id (primary key)
 	  * @return the masterdata object with the given entity and id.
@@ -429,7 +448,7 @@ public class MasterDataDelegate {
 	 public DependantMasterDataMap getDependants(Object oId, List<EntityAndFieldName> lsteafn) {
 		 final DependantMasterDataMap result = new DependantMasterDataMap();
 		 for (EntityAndFieldName eafn : lsteafn) {
-			 result.addAllData(eafn.getEntityName(), this.getDependantMasterData(eafn.getEntityName(), eafn.getFieldName(), oId));
+			 result.addAllData(eafn.getEntityName(), this.getDependantMasterData(eafn.getEntityName(), eafn.getFieldName(), oId, eafn.getMapParams()));
 		 }
 		 return result;
 	 }

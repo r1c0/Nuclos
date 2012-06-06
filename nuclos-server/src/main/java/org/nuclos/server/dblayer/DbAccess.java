@@ -41,6 +41,7 @@ import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.server.dblayer.impl.Base32;
 import org.nuclos.server.dblayer.incubator.DbExecutor;
 import org.nuclos.server.dblayer.incubator.DbExecutor.ConnectionRunner;
+import org.nuclos.server.dblayer.incubator.DbExecutor.ResultSetRunner;
 import org.nuclos.server.dblayer.query.DbQuery;
 import org.nuclos.server.dblayer.query.DbQueryBuilder;
 import org.nuclos.server.dblayer.statements.DbBuildableStatement;
@@ -209,7 +210,7 @@ public abstract class DbAccess {
 		return transformer.transform(executeQuerySingleResult(query));
 	}
 
-	//   public abstract List<DbTuple> executePlainQuery(String sql, int maxRows) throws DbException;
+	public abstract <T> T executePlainQuery(String sql, int maxRows, ResultSetRunner<T> runner) throws DbException;
 
 	public abstract ResultVO executePlainQueryAsResultVO(String sql, int maxRows) throws DbException;
 

@@ -44,6 +44,7 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import org.apache.commons.lang.StringUtils;
+import org.nuclos.client.NuclosIcons;
 import org.nuclos.client.layout.wysiwyg.WYSIWYGStringsAndLabels.BUTTON_LABELS;
 import org.nuclos.client.layout.wysiwyg.WYSIWYGStringsAndLabels.TABLELAYOUT_PANEL;
 import org.nuclos.client.layout.wysiwyg.editor.util.InterfaceGuidelines;
@@ -87,6 +88,9 @@ public class WYSIWYGMetaInformationPicker extends JDialog {
 	 */
 	private WYSIWYGMetaInformationPicker(Window owner, List<String> values, TableLayoutPanel parent){
 		super(owner);
+		
+		this.setIconImage(NuclosIcons.getInstance().getScaledDialogIcon(48).getImage());
+		
 		Container contentPane = this.getContentPane();
 		contentPane.setLayout(new TableLayout(layoutDefinition));
 		

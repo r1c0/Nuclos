@@ -20,6 +20,12 @@ import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -37,6 +43,8 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.text.NumberFormatter;
 
 import org.apache.log4j.Logger;
@@ -72,14 +80,26 @@ public class ParameterPanel extends JPanel {
 	private static final int iComponentWidth = 200;
 
 	private final Map<String, JComponent> mpFields = CollectionUtils.newHashMap();
+	
+	private final ChangeListener changeListener;
 
 	/**
 	 *
 	 * @param lstParams
 	 */
 	public ParameterPanel(List<DatasourceParameterVO> lstParams) {
+		this(lstParams, null);
+	}
+	/**
+	 *
+	 * @param lstParams
+	 * @param chgListener
+	 */
+	public ParameterPanel(List<DatasourceParameterVO> lstParams, ChangeListener chgListener) {
 		super(new GridBagLayout());
 
+		this.changeListener = chgListener;
+		
 		//NUCLEUSINT-182/NUCLEUSiNT-577
 		Collections.sort(lstParams, new Comparator<DatasourceParameterVO>() {
 			@Override
@@ -171,7 +191,31 @@ public class ParameterPanel extends JPanel {
 					comp = null;
 				}
 			}
+			
 			if (comp != null) {
+				comp.addFocusListener(new FocusAdapter() {
+					@Override
+					public void focusLost(FocusEvent e) {
+						if (changeListener != null)
+							changeListener.stateChanged(new ChangeEvent(ParameterPanel.this));
+					}
+				});
+				comp.addKeyListener(new KeyAdapter() {
+					@Override
+					public void keyTyped(KeyEvent e) {
+						if (e.getKeyChar() == '\n' && changeListener != null)
+							changeListener.stateChanged(new ChangeEvent(ParameterPanel.this));
+					}
+				});
+				if (comp instanceof JComboBox) {
+					((JComboBox)comp).addItemListener(new ItemListener() {
+						@Override
+						public void itemStateChanged(ItemEvent e) {
+							if (changeListener != null)
+								changeListener.stateChanged(new ChangeEvent(ParameterPanel.this));
+						}
+					});
+				}
 				comp.setPreferredSize(new Dimension(iComponentWidth, comp.getPreferredSize().height));
 			}
 			add(comp, new GridBagConstraints(1, iRow, 1, 1, 1.0, 0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,

@@ -43,6 +43,7 @@ import org.nuclos.server.dblayer.query.DbQueryBuilder;
 import org.nuclos.server.masterdata.MasterDataWrapper;
 import org.nuclos.server.masterdata.ejb3.MasterDataFacadeLocal;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
+import org.nuclos.server.report.valueobject.ChartVO;
 import org.nuclos.server.report.valueobject.DatasourceVO;
 import org.nuclos.server.report.valueobject.DynamicEntityVO;
 import org.nuclos.server.report.valueobject.DynamicTasklistVO;
@@ -95,6 +96,9 @@ public class DatasourceCache {
 
 	private final Map<Integer, DynamicTasklistVO> mpDynamicTasklistById
 		= new ConcurrentHashMap<Integer, DynamicTasklistVO>();
+	
+	private final Map<Integer, ChartVO> mpChartById
+	= new ConcurrentHashMap<Integer, ChartVO>();
 
 	private DatasourceServerUtils datasourceServerUtils;
 
@@ -172,6 +176,11 @@ public class DatasourceCache {
 			mpDynamicTasklistById.put(eoVO.getId().intValue(),
 					MasterDataWrapper.getDynamicTasklistVO(DalSupportForMD.wrapEntityObjectVO(eoVO)));
 		}
+		for (EntityObjectVO eoVO :
+			nucletDalProvider.getEntityObjectProcessor(NuclosEntity.CHART).getAll()) {
+			mpChartById.put(eoVO.getId().intValue(),
+					MasterDataWrapper.getChartVO(DalSupportForMD.wrapEntityObjectVO(eoVO)));
+		}
 		LOG.info("Finished initializing DatasourceCache.");
 	}
 
@@ -218,6 +227,7 @@ public class DatasourceCache {
 		mpRecordGrantById.clear();
 		mpDynamicEntitiesById.clear();
 		mpDynamicTasklistById.clear();
+		mpChartById.clear();
 
 		datasourceServerUtils.invalidateCache();
 		findDatasourcesById();
@@ -383,6 +393,33 @@ public class DatasourceCache {
 	}
 
 	/**
+	 * get all charts
+	 * @return
+	 */
+	public Collection<ChartVO> getAllCharts() {
+		List<ChartVO>result = new ArrayList<ChartVO>();
+
+		if (mpChartById.isEmpty())
+			findDatasourcesById();
+
+		result.addAll(mpChartById.values());
+
+		return result;
+	}
+
+	/**
+	 * get a chart
+	 * @param iChartId
+	 * @return
+	 */
+	public ChartVO getChart(Integer iChartId) {
+		if (mpChartById.isEmpty())
+			findDatasourcesById();
+
+		return mpChartById.get(iChartId);
+	}
+
+	/**
 	 * get a Datasource by id regardless of permisssions
 	 * @param iDatasourceId
 	 * @return
@@ -497,6 +534,26 @@ public class DatasourceCache {
 		for(DynamicEntityVO devo : mpDynamicEntitiesById.values()) {
 			if(devo.getName().equalsIgnoreCase(sDynamicEntityName)) {
 				result = devo;
+				break;
+			}
+		}
+
+		return result;
+	}
+
+	/**
+	 * get a chart by name.
+	 * @param schartName
+	 * @return ChartVO (may be null)
+	 */
+	public ChartVO getChartByName(String sChartName) {
+		if (mpChartById.isEmpty())
+			findDatasourcesById();
+
+		ChartVO result = null;
+		for(ChartVO cvo : mpChartById.values()) {
+			if(cvo.getName().equalsIgnoreCase(sChartName)) {
+				result = cvo;
 				break;
 			}
 		}

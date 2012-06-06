@@ -25,6 +25,7 @@ import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -50,6 +51,7 @@ import org.nuclos.client.layout.wysiwyg.WYSIWYGStringsAndLabels;
 import org.nuclos.client.layout.wysiwyg.WYSIWYGStringsAndLabels.ERROR_MESSAGES;
 import org.nuclos.client.layout.wysiwyg.WYSIWYGStringsAndLabels.PROPERTIES_DIALOG;
 import org.nuclos.client.layout.wysiwyg.WYSIWYGStringsAndLabels.PROPERTY_LABELS;
+import org.nuclos.client.layout.wysiwyg.component.WYSIWYGChart;
 import org.nuclos.client.layout.wysiwyg.component.WYSIWYGComponent;
 import org.nuclos.client.layout.wysiwyg.component.WYSIWYGStaticButton;
 import org.nuclos.client.layout.wysiwyg.component.WYSIWYGStaticLabel;
@@ -120,6 +122,7 @@ public class PropertiesPanel extends JPanel implements SaveAndCancelButtonPanelC
 
 		setLayout(new TableLayout(layout));
 		values = new ListOrderedMap();
+		
 		componentProperties = c.getProperties();
 		this.c = c;
 
@@ -187,6 +190,10 @@ public class PropertiesPanel extends JPanel implements SaveAndCancelButtonPanelC
 //		saveAndCancel.setSaveButtonEnable(false);
 		add(saveAndCancel, constraint);
 
+	}
+	
+	public Map getTemporaryValuesMap() {
+		return Collections.unmodifiableMap(values);
 	}
 	
 	/*
@@ -715,6 +722,9 @@ public class PropertiesPanel extends JPanel implements SaveAndCancelButtonPanelC
 			} else if (c instanceof WYSIWYGStaticButton){
 				properties.setProperty(PROPERTY_LABELS.LABEL, c.getProperties().getProperty(PROPERTY_LABELS.LABEL), String.class);
 			}  else if (c instanceof WYSIWYGSubForm){
+				properties.setProperty(PROPERTY_LABELS.ENTITY, c.getProperties().getProperty(PROPERTY_LABELS.ENTITY), String.class);
+				properties.setProperty(PROPERTY_LABELS.FOREIGNKEY, c.getProperties().getProperty(PROPERTY_LABELS.FOREIGNKEY), String.class);
+			}  else if (c instanceof WYSIWYGChart){
 				properties.setProperty(PROPERTY_LABELS.ENTITY, c.getProperties().getProperty(PROPERTY_LABELS.ENTITY), String.class);
 				properties.setProperty(PROPERTY_LABELS.FOREIGNKEY, c.getProperties().getProperty(PROPERTY_LABELS.FOREIGNKEY), String.class);
 			} 

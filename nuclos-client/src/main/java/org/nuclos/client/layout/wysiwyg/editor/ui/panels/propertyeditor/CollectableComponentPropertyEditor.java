@@ -27,6 +27,7 @@ import java.awt.event.FocusListener;
 import java.util.ArrayList;
 
 import javax.swing.AbstractButton;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
@@ -35,16 +36,17 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 
-import org.nuclos.common2.layoutml.LayoutMLConstants;
+import org.nuclos.client.NuclosIcons;
 import org.nuclos.client.layout.wysiwyg.WYSIWYGStringsAndLabels.COLLECTABLE_COMPONENT_PROPERTY_EDITOR;
 import org.nuclos.client.layout.wysiwyg.component.WYSIWYGComponent;
 import org.nuclos.client.layout.wysiwyg.editor.ui.panels.elementalcomponents.AddRemoveRowsFromPanel;
-import org.nuclos.client.layout.wysiwyg.editor.ui.panels.elementalcomponents.SaveAndCancelButtonPanel;
 import org.nuclos.client.layout.wysiwyg.editor.ui.panels.elementalcomponents.AddRemoveRowsFromPanel.AddRemoveButtonControllable;
+import org.nuclos.client.layout.wysiwyg.editor.ui.panels.elementalcomponents.SaveAndCancelButtonPanel;
 import org.nuclos.client.layout.wysiwyg.editor.ui.panels.elementalcomponents.SaveAndCancelButtonPanel.SaveAndCancelButtonPanelControllable;
 import org.nuclos.client.layout.wysiwyg.editor.util.InterfaceGuidelines;
 import org.nuclos.client.layout.wysiwyg.editor.util.valueobjects.WYSIYWYGProperty;
 import org.nuclos.client.layout.wysiwyg.editor.util.valueobjects.WYSIYWYGPropertySet;
+import org.nuclos.common2.layoutml.LayoutMLConstants;
 
 /**
  * This Class opens a small Editor for adding {@link LayoutMLConstants#ELEMENT_PROPERTY} to a {@link WYSIWYGComponent}.<br>
@@ -75,6 +77,7 @@ public class CollectableComponentPropertyEditor extends JDialog implements SaveA
 	 * @param wysiwygProperty the {@link WYSIYWYGProperty} to be edited by this Editor
 	 */
 	private CollectableComponentPropertyEditor(WYSIYWYGProperty wysiwygProperty) {
+		this.setIconImage(NuclosIcons.getInstance().getScaledDialogIcon(48).getImage());
 		//NUCLEUSINT-283
 		this.setTitle(COLLECTABLE_COMPONENT_PROPERTY_EDITOR.TITLE_PROPERTY_EDITOR);
 		//TODO align relative to parent Component

@@ -37,6 +37,7 @@ import org.nuclos.client.layout.wysiwyg.WYSIWYGStringsAndLabels.COMPONENT_PROCES
 import org.nuclos.client.layout.wysiwyg.WYSIWYGStringsAndLabels.PROPERTYUTILS;
 import org.nuclos.client.layout.wysiwyg.WYSIWYGStringsAndLabels.VALIDATION_MESSAGES;
 import org.nuclos.client.layout.wysiwyg.component.TranslationMap;
+import org.nuclos.client.layout.wysiwyg.component.WYSIWYGChart;
 import org.nuclos.client.layout.wysiwyg.component.WYSIWYGCollectableCheckBox;
 import org.nuclos.client.layout.wysiwyg.component.WYSIWYGCollectableComboBox;
 import org.nuclos.client.layout.wysiwyg.component.WYSIWYGCollectableComponent;
@@ -167,6 +168,8 @@ public class PropertyUtils implements LayoutMLConstants {
 				setDefaultValuesForWYSIWYGStaticTitledSeparator(properties);
 			} else if (c instanceof WYSIWYGSubForm) {
 				setDefaultValuesForWYSIWYGSubForm(properties);
+			} else if (c instanceof WYSIWYGChart) {
+				setDefaultValuesForWYSIWYGChart(properties);
 			} else if (c instanceof WYSIWYGTabbedPane) {
 				setDefaultValuesForWYSIWYGTabbedPane(properties);
 			} else if (c instanceof WYSIWYGUniversalComponent) {
@@ -404,6 +407,15 @@ public class PropertyUtils implements LayoutMLConstants {
 	 * @param properties
 	 * @throws CommonBusinessException
 	 */
+	private static void setDefaultValuesForWYSIWYGChart(ComponentProperties properties) throws CommonBusinessException{
+		properties.setProperty(WYSIWYGChart.PROPERTY_PREFFEREDSIZE, new PropertyValueDimension(DEFAULTVALUE_CHART_PREFERREDSIZE), DEFAULTVALUE_CHART_PREFERREDSIZE.getClass());
+	}
+
+	/**
+	 * 
+	 * @param properties
+	 * @throws CommonBusinessException
+	 */
 	private static void setDefaultValuesForWYSIWYGTabbedPane(ComponentProperties properties) throws CommonBusinessException{
 		properties.setProperty(WYSIWYGTabbedPane.PROPERTY_PREFFEREDSIZE, new PropertyValueDimension(DEFAULTVALUE_TABBEDPANE_PREFERREDSIZE), DEFAULTVALUE_TABBEDPANE_PREFERREDSIZE.getClass());
 	}
@@ -510,6 +522,8 @@ public class PropertyUtils implements LayoutMLConstants {
 			return new PropertyValueTranslations();
 		} else if (propertyClass.equals(NuclosScript.class)) {
 			return new PropertyValueScript();
+		} else if (propertyClass.equals(PropertyChartProperty.class)) {
+			return new PropertyChartProperty(c);
 		}
 		throw new NuclosFatalException(WYSIWYGStringsAndLabels.partedString(PROPERTYUTILS.ERRORMESSAGE_NO_PROPERTYVALUE_FOR_PROPERTY, property,c.getClass().toString()));
 	}

@@ -37,7 +37,7 @@ import org.nuclos.common.NuclosEntity;
 public class MasterDataLayoutHelper {
 
 	private static Set<NuclosEntity> simpleLayoutEntities = EnumSet.of(
-		NuclosEntity.DATASOURCE,		
+		NuclosEntity.CHART,		
 		NuclosEntity.DATASOURCE,
 		NuclosEntity.DYNAMICENTITY,
 		NuclosEntity.VALUELISTPROVIDER,

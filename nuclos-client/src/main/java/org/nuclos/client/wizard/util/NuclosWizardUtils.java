@@ -145,6 +145,13 @@ public class NuclosWizardUtils {
 						setParents.add((String)voUsage.getField("entity"));
 					}
 	            }
+	            Set<String> setCharts = parser.getChartEntityNames(new InputSource(new StringReader(sLayout)));
+	            if(setSubforms.contains(sEntity)) {
+					CollectableComparison compare = SearchConditionUtils.newComparison(NuclosEntity.LAYOUTUSAGE.getEntityName(), "layout", ComparisonOperator.EQUAL, vo.getField("name"));
+					for(MasterDataVO voUsage : MasterDataDelegate.getInstance().getMasterData(NuclosEntity.LAYOUTUSAGE.getEntityName(), compare)) {
+						setParents.add((String)voUsage.getField("entity"));
+					}
+	            }
             }
             catch(LayoutMLException e) {
 	            // do nothing here

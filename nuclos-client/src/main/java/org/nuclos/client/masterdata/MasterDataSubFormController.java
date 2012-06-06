@@ -599,7 +599,7 @@ public class MasterDataSubFormController extends DetailsSubFormController<Collec
 
 		final Collection<EntityObjectVO> collmdvo = (iParentId == null) ?
 				new ArrayList<EntityObjectVO>() :
-				MasterDataDelegate.getInstance().getDependantMasterData(this.getCollectableEntity().getName(), this.getForeignKeyFieldName(), iParentId);
+				MasterDataDelegate.getInstance().getDependantMasterData(this.getCollectableEntity().getName(), this.getForeignKeyFieldName(), iParentId, getSubForm().getMapParams());
 
 		this.fillSubForm(iParentId, collmdvo);
 	}
@@ -743,7 +743,7 @@ public class MasterDataSubFormController extends DetailsSubFormController<Collec
 		if (lstclctmd.isEmpty() && clct.getId() != null) {
 			final Collection<EntityObjectVO> collmdvo = (clct == null) ?
 					new ArrayList<EntityObjectVO>() :
-						MasterDataDelegate.getInstance().getDependantMasterData(this.getCollectableEntity().getName(), this.getForeignKeyFieldName(), clct.getId());
+						MasterDataDelegate.getInstance().getDependantMasterData(this.getCollectableEntity().getName(), this.getForeignKeyFieldName(), clct.getId(), getSubForm().getMapParams());
 
 					lstclctmd = CollectionUtils.transform(collmdvo, new CollectableEntityObject.MakeCollectable(this.getCollectableEntity()));
 					clct.getDependantCollectableMasterDataMap().addValues(this.getEntityAndForeignKeyFieldName().getEntityName(), lstclctmd);

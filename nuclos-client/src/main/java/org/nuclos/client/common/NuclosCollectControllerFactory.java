@@ -144,6 +144,8 @@ public class NuclosCollectControllerFactory {
 						return factory.newRecordGrantCollectController(tabIfAny);
 					case DYNAMICTASKLIST:
 						return factory.newDynamicTasklistCollectController(tabIfAny);
+					case CHART:
+						return factory.newChartCollectController(tabIfAny);
 					case STATEMODEL:
 						return factory.newStateModelCollectController(tabIfAny);
 					case PROCESSMONITOR:

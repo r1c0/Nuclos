@@ -35,6 +35,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 
+import org.nuclos.client.NuclosIcons;
 import org.nuclos.client.layout.wysiwyg.WYSIWYGStringsAndLabels.BORDER_EDITOR;
 import org.nuclos.client.layout.wysiwyg.WYSIWYGStringsAndLabels.BUTTON_LABELS;
 import org.nuclos.client.layout.wysiwyg.WYSIWYGStringsAndLabels.OPTIONS_EDITOR;
@@ -94,6 +95,8 @@ public class OptionsEditor extends JDialog implements SaveAndCancelButtonPanelCo
 	 * @param options the {@link WYSIWYGOptions} to be edited by this Editor
 	 */
 	private OptionsEditor(WYSIWYGOptions options) {
+		this.setIconImage(NuclosIcons.getInstance().getScaledDialogIcon(48).getImage());
+	
 		//TODO align relative to parent Component
 		this.options = options;
 		double[][] layout = {{InterfaceGuidelines.MARGIN_LEFT, TableLayout.FILL, InterfaceGuidelines.MARGIN_RIGHT}, {InterfaceGuidelines.MARGIN_TOP, TableLayout.PREFERRED, InterfaceGuidelines.MARGIN_BETWEEN, TableLayout.FILL, TableLayout.PREFERRED}};

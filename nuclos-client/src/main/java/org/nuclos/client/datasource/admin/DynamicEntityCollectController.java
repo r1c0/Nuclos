@@ -205,8 +205,6 @@ public class DynamicEntityCollectController extends AbstractDatasourceCollectCon
 		}
 	}
 	
-	
-
 	@Override
 	protected List<ColumnEntry> getDefaultColumns() {
 		List<ColumnEntry> result = new ArrayList<ColumnEntry>();
