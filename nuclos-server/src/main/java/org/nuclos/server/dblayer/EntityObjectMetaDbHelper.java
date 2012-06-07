@@ -102,12 +102,8 @@ public class EntityObjectMetaDbHelper {
 		}
 		return tables;
 	}
-	
-	public DbTable getDbTable(EntityMetaDataVO entityMeta) {
-		return getDbTable(entityMeta, (Collection<EntityFieldMetaDataVO>)provider.getAllEntityFieldsByEntity(entityMeta.getEntity()).values());
-	}
 
-	public DbTable getDbTable(EntityMetaDataVO entityMeta, Collection<EntityFieldMetaDataVO> lstFields) {
+	public DbTable getDbTable(EntityMetaDataVO entityMeta) {
 		String tableName = getTableName(entityMeta);
 		String dbTableName = generateDbName(tableName);
 
@@ -120,8 +116,8 @@ public class EntityObjectMetaDbHelper {
 
 		// Dummy placeholder (LinkedHashMap guarantees that the order)
 		dbColumns.put("INTID", null);
-
-		for (EntityFieldMetaDataVO fieldMeta : lstFields) {
+ 
+		for (EntityFieldMetaDataVO fieldMeta : provider.getAllEntityFieldsByEntity(entityMeta.getEntity()).values()) {
 			DbColumnType columnType = createDbColumnType(fieldMeta.getDataType(), fieldMeta.getScale(), fieldMeta.getPrecision());
 			boolean isCalculated = (fieldMeta.getCalcFunction() != null);
 			boolean isForeignReference = (fieldMeta.getForeignEntity() != null);
