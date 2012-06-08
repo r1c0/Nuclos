@@ -38,7 +38,7 @@
 		<nuclos.api.version>1.2-SNAPSHOT</nuclos.api.version>
 		<spring.version>3.1.1.RELEASE</spring.version>
 		<spring.security.version>3.1.0.RELEASE</spring.security.version>
-		<aspectj.version>1.6.12</aspectj.version>
+		<aspectj.version>1.7.0.RC1</aspectj.version>
 		<java.version>1.6</java.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<aspectj.phase.1>compile</aspectj.phase.1>
@@ -61,7 +61,7 @@
 			<dependency>
 				<groupId>postgresql</groupId>
 				<artifactId>postgresql</artifactId>
-				<version>9.1-901.jdbc4</version>
+				<version>9.1-901-1.jdbc4</version>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.activemq</groupId>
@@ -122,7 +122,7 @@
 			<dependency>
 				<groupId>asm</groupId>
 				<artifactId>asm</artifactId>
-				<version>3.3</version>
+				<version>3.3.1</version>
 			</dependency>
 			<dependency>
 				<!-- groupId>javax.annotation</groupId> <artifactId>com.springsource.javax.annotation</artifactId> 
@@ -148,12 +148,12 @@
 			<dependency>
 				<groupId>commons-beanutils</groupId>
 				<artifactId>commons-beanutils</artifactId>
-				<version>1.8.1</version>
+				<version>1.8.3</version>
 			</dependency>
 			<dependency>
 				<groupId>commons-codec</groupId>
 				<artifactId>commons-codec</artifactId>
-				<version>1.4</version>
+				<version>1.6</version>
 			</dependency>
 			<dependency>
 				<groupId>commons-collections</groupId>
@@ -163,7 +163,7 @@
 			<dependency>
 				<groupId>commons-digester</groupId>
 				<artifactId>commons-digester</artifactId>
-				<version>1.7</version>
+				<version>1.8.1</version>
 				<exclusions>
 					<exclusion>
 						<artifactId>xml-apis</artifactId>
@@ -180,7 +180,7 @@
 			<dependency>
 				<groupId>commons-lang</groupId>
 				<artifactId>commons-lang</artifactId>
-				<version>2.5</version>
+				<version>2.6</version>
 			</dependency>
 			<dependency>
 				<groupId>commons-logging</groupId>
@@ -190,12 +190,12 @@
 			<dependency>
 				<groupId>commons-pool</groupId>
 				<artifactId>commons-pool</artifactId>
-				<version>1.5.5</version>
+				<version>1.6</version>
 			</dependency>
 			<dependency>
 				<groupId>commons-io</groupId>
 				<artifactId>commons-io</artifactId>
-				<version>2.1</version>
+				<version>2.3</version>
 			</dependency>
 			<dependency>
 				<groupId>dom4j</groupId>
@@ -237,17 +237,17 @@
 			<dependency>
 				<groupId>com.googlecode.json-simple</groupId>
 				<artifactId>json-simple</artifactId>
-				<version>1.1</version>
+				<version>1.1.1</version>
 			</dependency>
 			<dependency>
 				<groupId>net.sourceforge.jexcelapi</groupId>
 				<artifactId>jxl</artifactId>
-				<version>2.6.10</version>
+				<version>2.6.12</version>
 			</dependency>
 			<dependency>
 				<groupId>log4j</groupId>
 				<artifactId>log4j</artifactId>
-				<version>1.2.16</version>
+				<version>1.2.17</version>
 			</dependency>
 			<dependency>
 				<groupId>com.googlecode.sli4j</groupId>
@@ -322,17 +322,17 @@
 			<dependency>
 				<groupId>org.apache.poi</groupId>
 				<artifactId>poi</artifactId>
-				<version>3.7</version>
+				<version>3.8</version>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.poi</groupId>
 				<artifactId>poi-ooxml</artifactId>
-				<version>3.7</version>
+				<version>3.8</version>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.poi</groupId>
 				<artifactId>poi-ooxml-schemas</artifactId>
-				<version>3.7</version>
+				<version>3.8</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.security</groupId>
@@ -372,7 +372,7 @@
 			<dependency>
 				<groupId>org.apache.santuario</groupId>
 				<artifactId>xmlsec</artifactId>
-				<version>1.4.4</version>
+				<version>1.5.2</version>
 			</dependency>
 			<dependency>
 				<groupId>com.thoughtworks.xstream</groupId>
@@ -459,17 +459,17 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-release-plugin</artifactId>
-					<version>2.2.1</version>
+					<version>2.3.1</version>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-scm-plugin</artifactId>
-					<version>1.5</version>
+					<version>1.7</version>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-compiler-plugin</artifactId>
-					<version>2.3.2</version>
+					<version>2.5.1</version>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
@@ -522,7 +522,7 @@
 					<artifactId>maven-jar-plugin</artifactId>
 					<!-- version must be updated from time-to-time, use http://search.maven.org 
 						for finding the newest (tp) -->
-					<version>2.3.2</version>
+					<version>2.4</version>
 				</plugin>
 				<!-- AspectJ compile-time support -->
 				<plugin>
@@ -696,12 +696,20 @@
 				<enabled>false</enabled>
 			</snapshots>
 		</repository>
-		<repository>
+		<!-- repository>
 			<id>snapshots.maven.tmatesoft.com</id>
 			<name>SVNKit Repository SNAPSHOTS</name>
 			<url>http://maven.tmatesoft.com/content/repositories/snapshots/</url>
 			<snapshots>
 				<enabled>true</enabled>
+			</snapshots>
+		</repository -->
+		<repository>
+			<id>milestone.maven.springframework.org</id>
+			<name>Spring External Milestone Repository</name>
+			<url>http://maven.springframework.org/milestone</url>
+			<snapshots>
+				<enabled>false</enabled>
 			</snapshots>
 		</repository>
 	</repositories>

@@ -291,7 +291,7 @@
 		<dependency>
 			<groupId>org.tmatesoft.svnkit</groupId>
 			<artifactId>svnkit-cli</artifactId>
-			<version>1.7.4</version>
+			<version>1.7.4-v1</version>
 			<type>jar</type>
 			<scope>provided</scope>
 			<exclusions>
@@ -329,7 +329,7 @@
 		<dependency>
 			<groupId>org.codehaus.groovy</groupId>
 			<artifactId>groovy-all</artifactId>
-			<version>1.7.6</version>
+			<version>1.8.6</version>
 		</dependency>
 	</dependencies>
 

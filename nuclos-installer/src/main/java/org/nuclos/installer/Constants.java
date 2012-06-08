@@ -112,9 +112,9 @@ public interface Constants {
 	
 	public static final String POSTGRESQL_MAIN_VERSION = "9.1";
 	
-	public static final String POSTGRESQL_FULL_VERSION = "9.1.3-1";
+	public static final String POSTGRESQL_FULL_VERSION = "9.1.4-1";
 	
-	public static final String TOMCAT_FULL_VERSION = "7.0.26";
+	public static final String TOMCAT_FULL_VERSION = "7.0.27";
 	
 	public static final String TOMCAT_VERSION = "apache-tomcat-" + TOMCAT_FULL_VERSION;
 
