@@ -24,6 +24,7 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FileFilter;
 import java.util.Collections;
+import java.util.prefs.Preferences;
 
 import javax.annotation.PostConstruct;
 import javax.swing.JButton;
@@ -53,11 +54,17 @@ public abstract class AbstractResPlanExportDialog extends JDialog {
 	
 	private static final Logger LOG = Logger.getLogger(AbstractResPlanExportDialog.class);
 	
+	private static final String FILETYPE_KEY = "fileType";
+	
+	private static final String DIRECTORY_KEY = "directory";
+	
 	// Spring injection
 	
 	private SpringLocaleDelegate sld;
 	
 	// end of Spring injection
+	
+	private final Preferences node;
 	
 	private final JComponent parent;
 	
@@ -67,16 +74,28 @@ public abstract class AbstractResPlanExportDialog extends JDialog {
 	
 	private JTextField file;
 	
+	private String defaultFileType = ImageType.SVG.getFileExtension();
+	
 	protected JComboBox fileTypes;
 	
-	protected AbstractResPlanExportDialog(String title, JComponent parent) {
+	protected AbstractResPlanExportDialog(Preferences node, String title, JComponent parent) {
 		super(Main.getInstance().getMainFrame().getFrame(), true);
+		this.node = node;
 		this.parent = parent;
 		
 		setResizable(false);
 		setTitle(title);
-		save = new File(System.getProperty("user.home") + File.separator + 
-				title.toLowerCase().replaceAll("[ \\t\\.\\!\\?\\,\\;]", "_") + ".svg");
+		
+		loadPreferences();
+		
+		final String fileName = title.toLowerCase().replaceAll("[ \\t\\.\\!\\?\\,\\;]", "_");
+		if (save == null) {
+			save = new File(System.getProperty("user.home"), fileName + ".svg");
+		}
+		else {
+			final String ext = (defaultFileType == null) ? "svg" : defaultFileType; 
+			save = new File(save, fileName + "." + ext);
+		}
 	}
 	
 	@Autowired
@@ -110,7 +129,7 @@ public abstract class AbstractResPlanExportDialog extends JDialog {
 				ImageType.EMF.getFileExtension(),
 				ImageType.PNG.getFileExtension()
 				});
-		fileTypes.setSelectedIndex(0);
+		fileTypes.setSelectedItem(defaultFileType);
 		fileTypes.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -122,7 +141,7 @@ public abstract class AbstractResPlanExportDialog extends JDialog {
 		browse.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				final JFileChooser chooser = new JFileChooser();
+				final JFileChooser chooser = new JFileChooser(save.getParent());
 				chooser.setAcceptAllFileFilterUsed(false);
 				chooser.addChoosableFileFilter(new MyFileFilter((String) fileTypes.getSelectedItem()));
 				// chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
@@ -167,6 +186,7 @@ public abstract class AbstractResPlanExportDialog extends JDialog {
 					}
 				}
 				export();
+				storePreferences();
 				dispose();
 			}
 		});
@@ -185,6 +205,9 @@ public abstract class AbstractResPlanExportDialog extends JDialog {
 		setVisible(true);
 	}
 	
+	/**
+	 * Returns the exported file (or null). 
+	 */
 	protected abstract void export();
 	
 	private static class MyFileFilter extends javax.swing.filechooser.FileFilter implements FileFilter {
@@ -224,8 +247,39 @@ public abstract class AbstractResPlanExportDialog extends JDialog {
 			else {
 				save = new File(save.getParentFile(), filename + ext);
 			}
-			file.setText(save.getAbsolutePath());
-		}		
+		}
+		file.setText(save.getAbsolutePath());
+	}
+	
+	private void storePreferences() {
+		node.put(FILETYPE_KEY, (String) fileTypes.getSelectedItem());
+		if (save != null) {
+			node.put(DIRECTORY_KEY, save.getParent());
+		}
+	}
+	
+	private void loadPreferences() {
+		try {
+			defaultFileType = node.get(FILETYPE_KEY, ImageType.SVG.getFileExtension());
+		}
+		catch (IllegalStateException e) {
+			// ignore
+		}
+		catch (NullPointerException e) {
+			// ignore
+		}
+		try {
+			final File dir = new File(node.get(DIRECTORY_KEY, System.getProperty("user.home")));
+			if (dir.isDirectory()) {
+				save = dir;
+			}
+		}
+		catch (IllegalStateException e) {
+			// ignore
+		}
+		catch (NullPointerException e) {
+			// ignore
+		}
 	}
 
 }

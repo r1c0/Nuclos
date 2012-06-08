@@ -16,6 +16,7 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.customcomp.resplan;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Date;
 
@@ -27,6 +28,7 @@ import org.nuclos.client.image.ImageType;
 import org.nuclos.client.ui.Errors;
 import org.nuclos.client.ui.resplan.JResPlanComponent;
 import org.nuclos.common.collect.collectable.Collectable;
+import org.nuclos.common2.ClientPreferences;
 import org.springframework.beans.factory.annotation.Configurable;
 
 /**
@@ -44,7 +46,7 @@ public class ResPlanExportDialog extends AbstractResPlanExportDialog {
 	private final ResPlanPanel panel;
 	
 	public ResPlanExportDialog(ResPlanPanel panel, JComponent parent) {
-		super(panel.getController().getTitle(), parent);
+		super(ClientPreferences.getUserPreferences().node("resPlan"), panel.getController().getTitle(), parent);
 		this.panel = panel;
 	}
 	
@@ -52,7 +54,7 @@ public class ResPlanExportDialog extends AbstractResPlanExportDialog {
 	protected void export() {
 		final JResPlanComponent<Collectable, Date, Collectable> resPlan = panel.getResPlan();
 		final ImageType imageType = ImageType.getFromFileExtension((String) fileTypes.getSelectedItem());
-		final ResPlanExporter exporter = new ResPlanExporter(imageType, save, 
+		final ResPlanExporter exporter = new ResPlanExporter(
 				panel.getController().getResourceVO(), panel.getTimeGranularity(), 
 				panel.getTimeHorizon(), resPlan.getModel(), resPlan.getTimeModel());
 		try {

@@ -16,12 +16,10 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.customcomp.resplan;
 
-import java.io.File;
 import java.util.Date;
 
 import org.apache.log4j.Logger;
 import org.nuclos.client.customcomp.resplan.ResPlanController.GranularityType;
-import org.nuclos.client.image.ImageType;
 import org.nuclos.client.ui.resplan.Interval;
 import org.nuclos.client.ui.resplan.ResPlanModel;
 import org.nuclos.client.ui.resplan.TimeModel;
@@ -34,16 +32,11 @@ public class ResPlanExporter extends AbstractResPlanExporter<Collectable,Collect
 	
 	// 
 	
-	private final ImageType imageType;
-	private final File save;
-	
-	public ResPlanExporter(ImageType imageType, File save, ResPlanResourceVO vo, GranularityType granularity, 
+	public ResPlanExporter(ResPlanResourceVO vo, GranularityType granularity, 
 			Interval<Date> horizon, ResPlanModel<Collectable, Date, Collectable> model, TimeModel<Date> time) {
 		super(granularity, horizon, model, time);
 		setResourceNameProducer(new CollectableNameProducer(vo.getResourceLabel()));
 		setEntryNameProducer(new CollectableNameProducer(vo.getBookingLabel()));
-		this.imageType = imageType;
-		this.save = save;
 	}
 	
 }
