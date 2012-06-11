@@ -152,7 +152,13 @@ public abstract class LayoutCollectController extends MasterDataCollectControlle
 	public void init() {
 		super.init();
 		this.setupDetailsToolBar();
+	}	
+	
+	@Override
+	protected boolean isMultiEditAllowed() {
+		return false;
 	}
+
 
 	/**
 	 * @deprecated Move to LayoutResultController.
