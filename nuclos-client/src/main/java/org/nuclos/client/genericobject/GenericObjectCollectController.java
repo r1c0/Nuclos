@@ -108,7 +108,6 @@ import org.nuclos.client.main.Main;
 import org.nuclos.client.main.mainframe.MainFrameTab;
 import org.nuclos.client.masterdata.CollectableMasterData;
 import org.nuclos.client.masterdata.MasterDataCache;
-import org.nuclos.client.masterdata.MasterDataCollectController;
 import org.nuclos.client.masterdata.MasterDataDelegate;
 import org.nuclos.client.masterdata.MasterDataSubFormController;
 import org.nuclos.client.masterdata.valuelistprovider.MasterDataCollectableFieldsProviderFactory;
@@ -2992,7 +2991,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		assert result != null;
 		assert getSearchStrategy().isCollectableComplete(result);
 		setSubsequentStatesVisible(false, false);
-		setStatesDefaultPathVisible(false, false);
+		setStatesDefaultPathVisible(true, false);
 		return result;
 	}
 
@@ -3422,10 +3421,11 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 					else if (!lstComboEntries.contains(new StateWrapper(statevo.getId(), statevo.getNumeral(), statevo.getStatename(), statevo.getIcon(), statevo.getDescription())))
 						lstComboEntries.add(new StateWrapper(statevo.getId(), statevo.getNumeral(),
 								getSpringLocaleDelegate().getResource(/*StateDelegate.getInstance().getResourceSIdForName(statevo.getId()*/
-								StateDelegate.getInstance().getStatemodelClosure(getModuleId()).getResourceSIdForLabel(statevo.getId()
-								),
+								StateDelegate.getInstance().getStatemodelClosure(getModuleId()).getResourceSIdForLabel(statevo.getId()),
 								statevo.getStatename()), statevo.getIcon(), statevo.getDescription(), statevo.isFromAutomatic(),
-								StateDelegate.getInstance().getStatemodel(uc).isStateReachableInDefaultPath(stateCurrent.getNumeral(), statevo)));
+								getSelectedCollectable() != null ? 
+										StateDelegate.getInstance().getStatemodel(uc).isStateReachableInDefaultPath(stateCurrent.getId(), statevo)
+											: StateDelegate.getInstance().getStatemodel(uc).isStateReachableInDefaultPathByNumeral(stateCurrent.getNumeral(), statevo)));
 
 				// Sort and finally enter the items into the combo box:
 				Collections.sort(lstComboEntries);
@@ -3476,92 +3476,103 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		else {
 			cmpStateStandardView.setVisible(true);
 			cmpStateStandardView.setEnabled(bEnableButtons);
-			final Integer iGenericObjectId = getSelectedGenericObjectId();
-			if (iGenericObjectId != null) {
-				// Create a temporary list for sorting the entries before entering into combo box
-				final List<StateWrapper> lstDefaultPathEntries = new ArrayList<StateWrapper>();
+			
+			// Create a temporary list for sorting the entries before entering into combo box
+			final List<StateWrapper> lstDefaultPathEntries = new ArrayList<StateWrapper>();
 
-				final StateWrapper stateCurrent = new StateWrapper(null, getSelectedGenericObjectStateNumeral(),
-					getSelectedGenericObjectStateName(), getSelectedGenericObjectStateIcon(), "");
-
-				UsageCriteria uc = getUsageCriteria(getSelectedCollectable());
+			final StateWrapper stateCurrent;
+			if (getSelectedCollectable() == null) {
+				stateCurrent = new StateWrapper(null, getSelectedGenericObjectStateNumeral(),
+						getSelectedGenericObjectStateName(), getSelectedGenericObjectStateIcon(), "");
+			} else {
 				DynamicAttributeVO av = getSelectedCollectable().getGenericObjectCVO().getAttribute(NuclosEOField.STATE.getMetaData().getId().intValue());
-				List<StateVO> lstDefaultPathStates = StateDelegate.getInstance().getStatemodel(uc).getDefaultStatePath();
+				stateCurrent = new StateWrapper(av.getValueId(), getSelectedGenericObjectStateNumeral(),
+						getSelectedGenericObjectStateName(), getSelectedGenericObjectStateIcon(), "");
+			}
+			
+			UsageCriteria uc = null;
+			List<StateVO> lstDefaultPathStates = new ArrayList<StateVO>();
+			
+			try {
+				uc = getSelectedCollectable() == null ? getUsageCriteriaFromView(false) : getUsageCriteria(getSelectedCollectable());
+				lstDefaultPathStates.addAll(StateDelegate.getInstance().getStatemodel(uc).getDefaultStatePath());
+			} catch (Exception e) {
+				// ignore
+			}
 
-				// Copy all subsequent states to the sorting list:
-				for (StateVO statevo : lstDefaultPathStates)
-					if (statevo == null)
-						// we don't want to throw an exception here, so we just log the error:
-						LOG.error("Die Liste der Folgestati enth\u00e4lt ein null-Objekt.");
-					else if (!lstDefaultPathEntries.contains(new StateWrapper(statevo.getId(), statevo.getNumeral(), statevo.getStatename(), statevo.getIcon(), statevo.getDescription())))
-						lstDefaultPathEntries.add(new StateWrapper(statevo.getId(), statevo.getNumeral(),
-								getSpringLocaleDelegate().getResource(/*StateDelegate.getInstance().getResourceSIdForName(statevo.getId()*/
-								StateDelegate.getInstance().getStatemodelClosure(getModuleId()).getResourceSIdForLabel(statevo.getId()
-								),
-								statevo.getStatename()), statevo.getIcon(), statevo.getDescription(), statevo.isFromAutomatic(),
-								StateDelegate.getInstance().getStatemodel(uc).isStateReachableInDefaultPath(stateCurrent.getNumeral(), statevo)));
+			// Copy all subsequent states to the sorting list:
+			for (StateVO statevo : lstDefaultPathStates)
+				if (statevo == null)
+					// we don't want to throw an exception here, so we just log the error:
+					LOG.error("Die Liste der Folgestati enth\u00e4lt ein null-Objekt.");
+				else if (!lstDefaultPathEntries.contains(new StateWrapper(statevo.getId(), statevo.getNumeral(), statevo.getStatename(), statevo.getIcon(), statevo.getDescription())))
+					lstDefaultPathEntries.add(new StateWrapper(statevo.getId(), statevo.getNumeral(),
+							getSpringLocaleDelegate().getResource(/*StateDelegate.getInstance().getResourceSIdForName(statevo.getId()*/
+							StateDelegate.getInstance().getStatemodelClosure(getModuleId()).getResourceSIdForLabel(statevo.getId()),
+							statevo.getStatename()), statevo.getIcon(), statevo.getDescription(), statevo.isFromAutomatic(),
+							getSelectedCollectable() != null ?
+									StateDelegate.getInstance().getStatemodel(uc).isStateReachableInDefaultPath(stateCurrent.getId(), statevo)
+										: StateDelegate.getInstance().getStatemodel(uc).isStateReachableInDefaultPathByNumeral(stateCurrent.getNumeral(), statevo)));
 
-				cmpStateStandardView.setSelectedItem(stateCurrent);
-				cmpStateStandardView.addItems(lstDefaultPathEntries);
+			cmpStateStandardView.setSelectedItem(stateCurrent);
+			cmpStateStandardView.addItems(lstDefaultPathEntries);
 
-				for (Iterator<StateWrapper> iterator = lstDefaultPathEntries.iterator(); iterator.hasNext();) {
-					final StateWrapper item = iterator.next();
-					final ActionListener al = new ActionListener() {
-						@Override
-						public void actionPerformed(ActionEvent ev) {
-							UIUtils.runCommandLater(getTab(), new CommonRunnable() {
-								@Override
-								public void run() {
-									if (item != stateCurrent && item != null && item.getId() != null) {
-										final boolean bUserPressedOk = cmdChangeStates(item, item.getStatesBefore());
-										if (!bUserPressedOk)
-											cmpStateStandardView.setSelectedItem(stateCurrent);
-									}
+			for (Iterator<StateWrapper> iterator = lstDefaultPathEntries.iterator(); iterator.hasNext();) {
+				final StateWrapper item = iterator.next();
+				final ActionListener al = new ActionListener() {
+					@Override
+					public void actionPerformed(ActionEvent ev) {
+						UIUtils.runShortCommand(getTab(), new CommonRunnable() {
+							@Override
+							public void run() {
+								if (item != stateCurrent && item != null && item.getId() != null) {
+									final boolean bUserPressedOk = cmdChangeStates(item, item.getStatesBefore());
+									if (!bUserPressedOk)
+										cmpStateStandardView.setSelectedItem(stateCurrent);
 								}
-							});
-						}
-					};
-					cmpStateStandardView.addActionListener(al, item);
-
-					if (LangUtils.equals(stateCurrent.getNumeral(), item.getNumeral())) {
-						final List<StateWrapper> lstSubsequentEntries = new ArrayList<StateWrapper>();
-						List<StateVO> lstSubsequentStates = StateDelegate.getInstance().getStatemodel(uc).getSubsequentStates(item.getId(), false);
-
-						// Copy all subsequent states to the sorting list:
-						for (StateVO statevo : lstSubsequentStates)
-							if (statevo == null)
-								// we don't want to throw an exception here, so we just log the error:
-								LOG.error("Die Liste der Folgestati enth\u00e4lt ein null-Objekt.");
-							else if (!lstSubsequentEntries.contains(new StateWrapper(statevo.getId(), statevo.getNumeral(), statevo.getStatename(), statevo.getIcon(), statevo.getDescription())))
-								lstSubsequentEntries.add(new StateWrapper(statevo.getId(), statevo.getNumeral(),
-										getSpringLocaleDelegate().getResource(/*StateDelegate.getInstance().getResourceSIdForName(statevo.getId()*/
-										StateDelegate.getInstance().getStatemodelClosure(getModuleId()).getResourceSIdForLabel(statevo.getId()
-										),
-										statevo.getStatename()), statevo.getIcon(), statevo.getDescription()));
-
-						Map<StateWrapper, Action> mpSubsequentStatesAction = new HashMap<StateWrapper, Action>();
-						for (Iterator<StateWrapper> iterator2 = lstSubsequentEntries.iterator(); iterator2.hasNext();) {
-							final StateWrapper subsequentState = iterator2.next();
-							if (!subsequentState.getNumeral().equals(item.getNumeral())) {
-								Action act = new AbstractAction() {
-
-									@Override
-									public void actionPerformed(ActionEvent e) {
-										final boolean bUserPressedOk = cmdChangeState(subsequentState);
-										if (!bUserPressedOk)
-											cmpStateStandardView.setSelectedItem(stateCurrent);
-									}
-								};
-								mpSubsequentStatesAction.put(subsequentState, act);
 							}
-						}
-						cmpStateStandardView.addSubsequentStatesActionListener(item, mpSubsequentStatesAction);
+						});
 					}
+				};
+				cmpStateStandardView.addActionListener(al, item);
+
+				if (LangUtils.equals(stateCurrent.getNumeral(), item.getNumeral())) {
+					final List<StateWrapper> lstSubsequentEntries = new ArrayList<StateWrapper>();
+					List<StateVO> lstSubsequentStates = StateDelegate.getInstance().getStatemodel(uc).getSubsequentStates(item.getId(), false);
+
+					// Copy all subsequent states to the sorting list:
+					for (StateVO statevo : lstSubsequentStates)
+						if (statevo == null)
+							// we don't want to throw an exception here, so we just log the error:
+							LOG.error("Die Liste der Folgestati enth\u00e4lt ein null-Objekt.");
+						else if (!lstSubsequentEntries.contains(new StateWrapper(statevo.getId(), statevo.getNumeral(), statevo.getStatename(), statevo.getIcon(), statevo.getDescription())))
+							lstSubsequentEntries.add(new StateWrapper(statevo.getId(), statevo.getNumeral(),
+									getSpringLocaleDelegate().getResource(/*StateDelegate.getInstance().getResourceSIdForName(statevo.getId()*/
+									StateDelegate.getInstance().getStatemodelClosure(getModuleId()).getResourceSIdForLabel(statevo.getId()),
+									statevo.getStatename()), statevo.getIcon(), statevo.getDescription()));
+
+					Map<StateWrapper, Action> mpSubsequentStatesAction = new HashMap<StateWrapper, Action>();
+					for (Iterator<StateWrapper> iterator2 = lstSubsequentEntries.iterator(); iterator2.hasNext();) {
+						final StateWrapper subsequentState = iterator2.next();
+						if (!subsequentState.getNumeral().equals(item.getNumeral())) {
+							Action act = new AbstractAction() {
+
+								@Override
+								public void actionPerformed(ActionEvent e) {
+									final boolean bUserPressedOk = cmdChangeState(subsequentState);
+									if (!bUserPressedOk)
+										cmpStateStandardView.setSelectedItem(stateCurrent);
+								}
+							};
+							mpSubsequentStatesAction.put(subsequentState, act);
+						}
+					}
+					cmpStateStandardView.addSubsequentStatesActionListener(item, mpSubsequentStatesAction);
 				}
 			}
 		}
 
-		cmpStateStandardView.setEnabled(cmpStateStandardView.getItemCount() != 0);
+		cmpStateStandardView.setEnabled(getSelectedCollectable() == null ? false : cmpStateStandardView.getItemCount() != 0);
 	}
 
 	public List<StateVO> getPossibleSubsequentStates() {
@@ -4019,16 +4030,28 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 			public void work() throws CommonBusinessException {
 				try {
 					isProcessingStateChange.set(true);
-					for (Integer stateNew : statesNew) {
+					for (final Integer stateNew : statesNew) {
 						if (GenericObjectCollectController.this.changesArePending()) {
 							// NUCLOSINT-1114:
 							// Value must be 'true' to save the changed SubForm data to DB. (Thomas Pasch)
-							CollectableGenericObjectWithDependants updated = GenericObjectCollectController.this.updateCurrentCollectable();
-
-							StateDelegate.getInstance().changeStateAndModify(iModuleId, updated.getGenericObjectWithDependantsCVO(), stateNew);
+							// tsc: the implementation with dbUpdate-parameter skipped a lot of data collection logic, which was the reason for the NUCLOSINT-1114.
+							//      Final servercall for database update is now skipped by setting a ThreadLocal variable.
+							//      TODO Best solution would be to refactor and call all data collection logic in prepareCollectableForSaving(), but this would take some time.
+							final CollectableGenericObjectWithDependants updated = GenericObjectCollectController.this.updateCurrentCollectable();
+							invoke(new CommonRunnable() {
+								@Override
+								public void run() throws CommonBusinessException {
+									StateDelegate.getInstance().changeStateAndModify(iModuleId, updated.getGenericObjectWithDependantsCVO(), stateNew);
+								}
+							});
 						} else {
-							StateDelegate.getInstance().changeState(iModuleId, iGenericObjectId, stateNew);
-						}
+							invoke(new CommonRunnable() {
+								@Override
+								public void run() throws CommonBusinessException {
+									StateDelegate.getInstance().changeState(iModuleId, iGenericObjectId, stateNew);
+								}
+							});
+						}		
 					}
 					broadcastCollectableEvent(clct, MessageType.STATECHANGE_DONE);
 
@@ -5414,7 +5437,10 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 			default:
 				// hide the buttons for subsequent states:
 				setSubsequentStatesVisible(false, false);
-				setStatesDefaultPathVisible(false, false);
+				if (iDetailsMode != CollectState.DETAILSMODE_NEW_CHANGED)
+					setStatesDefaultPathVisible(false, false);
+				else
+					setStatesDefaultPathVisible(true, false);
 			}	// switch
 
 			if (iDetailsMode != CollectState.DETAILSMODE_NEW_CHANGED

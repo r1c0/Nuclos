@@ -226,7 +226,9 @@ public class Statemodel implements Serializable {
 		}
     	return null;
     }
-    
+    public List<Integer> isStateReachableInDefaultPathByNumeral(final Integer stateCurrent, StateVO stateToReach) {
+    	return isStateReachableInDefaultPath(getStateIdFromNumeral(stateCurrent), stateToReach);
+    }    
     public List<Integer> isStateReachableInDefaultPath(final Integer stateCurrent, StateVO stateToReach) {
     	List<Integer> result = new LinkedList<Integer>();
     	
@@ -242,7 +244,7 @@ public class Statemodel implements Serializable {
 		}
 
     	// we are not at defaultpath, but we can reach default path within one step.
-		for (StateVO stateVO : getSubsequentStates(getStateIdFromNumeral(stateCurrent), false)) {
+		for (StateVO stateVO : getSubsequentStates(stateCurrent, false)) {
 			if (stateVO.getId().equals(stateToReach.getId())) {
 				result.add(stateToReach.getId());
     			return result;
@@ -252,7 +254,7 @@ public class Statemodel implements Serializable {
 		// find start transition
 		StateTransitionVO startTransition = CollectionUtils.findFirst(transitionVOs, new Predicate<StateTransitionVO>() {
 			@Override public boolean evaluate(StateTransitionVO t) {
-				return t.isDefault() && !t.isAutomatic() && t.getStateSource().equals(getStateIdFromNumeral(stateCurrent));
+				return t.isDefault() && !t.isAutomatic() && t.getStateSource().equals(stateCurrent);
 			}
 		});
 		

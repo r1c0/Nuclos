@@ -1308,32 +1308,36 @@ public class StatePropertiesPanel extends JPanel {
 			Map<String, SubForm> entitySubForm = new HashMap<String, SubForm>();
 			
 			for (Integer module : modules) {
-				for (EntityAndFieldName eafn : GenericObjectLayoutCache.getInstance().getSubFormEntities(module)) {
-					if (!entitySubForm.containsKey(eafn.getEntityName())) {
-						entitySubForm.put(eafn.getEntityName(), new SubForm(MetaDataClientProvider.getInstance().getEntity(eafn.getEntityName())));
-					}
-					SubForm sf = entitySubForm.get(eafn.getEntityName());
-					if (!result.containsKey(sf)) {
-						result.put(sf, new TreeSet<Attribute>());
-					}
-					if (!eafn.getEntityName().startsWith(MasterDataMetaVO.DYNAMIC_ENTITY_PREFIX) && !eafn.getEntityName().startsWith(MasterDataMetaVO.CHART_ENTITY_PREFIX)) { // no dynamic entity columns here
-						for (EntityFieldMetaDataVO efMeta : MetaDataClientProvider.getInstance().getAllEntityFieldsByEntity(eafn.getEntityName()).values()) {
-							if (efMeta.isDynamic()) 
-								continue; // no dynamic entity columns here
-							
-							if (efMeta.getFieldGroupId() != null && 
-								(NuclosEOField.GROUP_ID_READ.equals(efMeta.getFieldGroupId()) || NuclosEOField.GROUP_ID_WRITE.equals(efMeta.getFieldGroupId())))
-								continue;
-							
-							if (!efMeta.getField().equals(eafn.getFieldName())) {
-								result.get(sf).add(new Attribute(efMeta));
-							}
-							
-							if (!efMeta.isNullable()) {
-								metaMandatory.add(efMeta.getId());
+				try {
+					for (EntityAndFieldName eafn : GenericObjectLayoutCache.getInstance().getSubFormEntities(module)) {
+						if (!entitySubForm.containsKey(eafn.getEntityName())) {
+							entitySubForm.put(eafn.getEntityName(), new SubForm(MetaDataClientProvider.getInstance().getEntity(eafn.getEntityName())));
+						}
+						SubForm sf = entitySubForm.get(eafn.getEntityName());
+						if (!result.containsKey(sf)) {
+							result.put(sf, new TreeSet<Attribute>());
+						}
+						if (!eafn.getEntityName().startsWith(MasterDataMetaVO.DYNAMIC_ENTITY_PREFIX) && !eafn.getEntityName().startsWith(MasterDataMetaVO.CHART_ENTITY_PREFIX)) { // no dynamic entity columns here
+							for (EntityFieldMetaDataVO efMeta : MetaDataClientProvider.getInstance().getAllEntityFieldsByEntity(eafn.getEntityName()).values()) {
+								if (efMeta.isDynamic()) 
+									continue; // no dynamic entity columns here
+								
+								if (efMeta.getFieldGroupId() != null && 
+									(NuclosEOField.GROUP_ID_READ.equals(efMeta.getFieldGroupId()) || NuclosEOField.GROUP_ID_WRITE.equals(efMeta.getFieldGroupId())))
+									continue;
+								
+								if (!efMeta.getField().equals(eafn.getFieldName())) {
+									result.get(sf).add(new Attribute(efMeta));
+								}
+								
+								if (!efMeta.isNullable()) {
+									metaMandatory.add(efMeta.getId());
+								}
 							}
 						}
 					}
+				} catch (Exception e) {
+					LOG.warn("Error occured in getting subforms.", e);
 				}
 			}
 			

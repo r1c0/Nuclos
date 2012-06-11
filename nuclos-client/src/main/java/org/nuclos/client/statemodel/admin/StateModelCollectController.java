@@ -408,7 +408,8 @@ public class StateModelCollectController extends NuclosCollectController<Collect
 		final StateGraphVO stategraphvo = statemodeleditor.prepareForSaving(statemodelvo);
 
 		final DependantMasterDataMap mpDependants = new DependantCollectableMasterDataMap(NuclosEntity.STATEMODELUSAGE.getEntityName(),
-				subformctlUsages.getAllCollectables(statemodelvo.getId(), null, true, null)).toDependantMasterDataMap();
+				statemodelvo.getId() == null ? subformctlUsages.getCollectables(true, true, true)
+						: subformctlUsages.getAllCollectables(statemodelvo.getId(), null, true, null)).toDependantMasterDataMap();
 
 		Integer intid = StateDelegate.getInstance().setStateGraph(stategraphvo, mpDependants);
 

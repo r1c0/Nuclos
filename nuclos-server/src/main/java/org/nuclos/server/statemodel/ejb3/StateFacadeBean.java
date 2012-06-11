@@ -260,6 +260,7 @@ public class StateFacadeBean extends NuclosFacadeBean implements StateFacadeRemo
 				for (EntityObjectVO mdvoDependant : mpDependants.getAllData()) {
 					mdvoDependant.getFieldIds().put("statemodel", IdUtils.toLongId(result));
 				}
+				getMasterDataFacade().modifyDependants(NuclosEntity.STATEMODEL.getEntityName(),result,stategraphcvo.getStateModel().isRemoved(),mpDependants);
 			}
 		}
 		else {
