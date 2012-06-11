@@ -297,6 +297,9 @@ public class LayoutFacadeBean extends MasterDataFacadeBean implements LayoutFaca
 					result.put(new EntityAndFieldName(NuclosEntity.ROLETRANSITION, "transition"), null);
 					result.put(new EntityAndFieldName(NuclosEntity.RULETRANSITION, "transition"), null);
 					break;
+				case CHART:
+					result.put(new EntityAndFieldName(NuclosEntity.CHARTUSAGE, "chart"), null);
+					break;
 				case DATASOURCE:
 					result.put(new EntityAndFieldName(NuclosEntity.DATASOURCEUSAGE, "datasource"), null);
 					break;
@@ -318,12 +321,13 @@ public class LayoutFacadeBean extends MasterDataFacadeBean implements LayoutFaca
 //			}
 /* tentativer Fix (10/2009)- TODO: ueberpruefen!!! */
 			else {
-				MasterDataMetaVO metaVO =
+				//@see NUCLOSINT-1524. there are entities that are not system entities and do not have an layout defined.!
+				/*MasterDataMetaVO metaVO =
 					MasterDataMetaCache.getInstance().getMetaData(entityName);
 				if (!metaVO.isSystemEntity()) {
 					throw new NuclosFatalException(
 						StringUtils.getParameterizedExceptionMessage("layout.facade.exception.2", entityName));
-				}
+				}*/
 				result = Collections.emptyMap();
 			}
 		}
