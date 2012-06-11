@@ -40,6 +40,8 @@ public class DateUtils {
 	 * the number of milliseconds per day (where a day has 24 hours).
 	 */
 	public static final int MILLISECONDS_PER_DAY = 24 * 60 * 60 * 1000;
+	
+	public static final int QUARTER = 9211;
 
 	private DateUtils() {
 		// Never invoked.
@@ -364,14 +366,14 @@ public class DateUtils {
 	public static long getMillis(Date date, int quantizer) {
 		final Calendar cal = Calendar.getInstance();
 		cal.setTime(date);
-		final int quant = cal.get(quantizer);
+		final int quant = getQuant(cal, quantizer);
 		// side effect: modifies cal
 		dateFromQuant(cal, quant, quantizer);
 		final long low = cal.getTimeInMillis();
 		
 		// cal.set(quantizer, quant + 1);
 		montoneAdd(cal, quantizer, 1);
-		dateFromQuant(cal, cal.get(quantizer), quantizer);
+		dateFromQuant(cal, getQuant(cal, quantizer), quantizer);
 		
 		long result = cal.getTimeInMillis() - low;
 		if (result < 0) {
@@ -390,8 +392,19 @@ public class DateUtils {
 	public static Date floorBound(Date date, int quantizer) {
 		final Calendar cal = Calendar.getInstance();
 		cal.setTime(date);
-		final int quant = cal.get(quantizer);
+		final int quant = getQuant(cal, quantizer);
 		return dateFromQuant(cal, quant, quantizer);
+	}
+	
+	public static int getQuant(Calendar cal, int quantizer) {
+		final int quant;
+		if (quantizer == QUARTER) {
+			quant = cal.get(Calendar.MONTH) / 3;
+		}
+		else {
+			quant = cal.get(quantizer);
+		}
+		return quant;
 	}
 	
 	/**
@@ -403,7 +416,7 @@ public class DateUtils {
 		// final int quant = cal.get(quantizer) + 1;
 		// cal.set(quantizer, cal.get(quantizer) + 1);
 		montoneAdd(cal, quantizer, 1);
-		return dateFromQuant(cal, cal.get(quantizer), quantizer);
+		return dateFromQuant(cal, getQuant(cal, quantizer), quantizer);
 	}
 	
 	private static Date dateFromQuant(Calendar cal, int quant, int quantizer) {
@@ -452,6 +465,15 @@ public class DateUtils {
 			
 			cal.set(Calendar.MONTH, quant);
 			break;
+		case QUARTER:
+			cal.set(Calendar.DAY_OF_MONTH, 1);
+			cal.set(Calendar.HOUR_OF_DAY, 0);
+			cal.set(Calendar.MINUTE, 0);
+			cal.set(Calendar.SECOND, 1);
+			cal.set(Calendar.MILLISECOND, 0);
+			
+			cal.set(Calendar.MONTH, quant * 3);
+			break;
 		case Calendar.YEAR:
 			cal.set(Calendar.DAY_OF_MONTH, 1);
 			cal.set(Calendar.HOUR_OF_DAY, 0);
@@ -478,7 +500,12 @@ public class DateUtils {
 		final int sign = amount > 0 ? 1 : -1;
 		
 		final long millis = cal.getTimeInMillis();
-		cal.add(field, amount);
+		if (field == QUARTER) {
+			cal.add(Calendar.MONTH, amount * 3);
+		}
+		else {
+			cal.add(field, amount);
+		}
 		
 		while ((sign > 0 && cal.getTimeInMillis() < millis) || (sign < 0 && cal.getTimeInMillis() > millis)) {
 			switch (field) {
@@ -495,6 +522,10 @@ public class DateUtils {
 				cal.add(field, sign);
 				break;
 			case Calendar.MONTH:
+				field = Calendar.YEAR;
+				cal.add(field, sign);
+				break;
+			case QUARTER:
 				field = Calendar.YEAR;
 				cal.add(field, sign);
 				break;

@@ -58,7 +58,7 @@ public class ResPlanExportDialog extends AbstractResPlanExportDialog {
 				panel.getController().getResourceVO(), panel.getTimeGranularity(), 
 				panel.getTimeHorizon(), resPlan.getModel(), resPlan.getTimeModel());
 		try {
-			exporter.run(SVG_TEMPLATE);
+			exporter.run(SVG_TEMPLATE, 0);
 			exporter.save(imageType, save);
 		}
 		catch (IOException ex) {

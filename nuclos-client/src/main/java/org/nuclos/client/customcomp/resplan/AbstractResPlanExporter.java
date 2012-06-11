@@ -147,7 +147,7 @@ public abstract class AbstractResPlanExporter<R,E> implements IResPlanExporter<R
 	}
 	
 	@Override
-	public void run(String template) throws IOException, XPathExpressionException {
+	public void run(String template, int startCategory) throws IOException, XPathExpressionException {
 		final String uri = Thread.currentThread().getContextClassLoader().getResource(template).toExternalForm();
 		sdds = new SVGDOMDocumentSupport(uri);
 		
@@ -157,7 +157,7 @@ public abstract class AbstractResPlanExporter<R,E> implements IResPlanExporter<R
 		if (g == null) {
 			throw new XPathExpressionException("template include element not found");
 		}
-		makeTimeHeader(g);
+		makeTimeHeader(g, startCategory);
 		makeResPlanModel(g);
 		makeFooter(g);
 		
@@ -170,7 +170,7 @@ public abstract class AbstractResPlanExporter<R,E> implements IResPlanExporter<R
 		sdds.writeAs(save, imageType);
 	}
 	
-	protected void makeTimeHeader(SVGElement g) {
+	protected void makeTimeHeader(SVGElement g, int startCategory) {
 		final TimeGranularity tg = new TimeGranularity(granularity, time);
 		final int quantizer = granularity.getCalendarQuantizer();
 		maxCategory = tg.getCategoryCount() - 1;
@@ -179,7 +179,7 @@ public abstract class AbstractResPlanExporter<R,E> implements IResPlanExporter<R
 		millisForPx = DateUtils.getMillis(realHorizon.getStart(), quantizer) / XPIXEL_FOR_TIME_CAT;
 		maxX = getX(realHorizon.getEnd());
 		
-		for (int cat = 0; cat <= maxCategory; ++cat) {
+		for (int cat = startCategory; cat <= maxCategory; ++cat) {
 			final GranularityType gt = GranularityType.getGranularityForLevel(cat);
 			// final int width = (int) (gt.getApproxMillis() / millisForPx);
 			final Calendar cal = Calendar.getInstance();

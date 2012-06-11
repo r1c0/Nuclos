@@ -59659,6 +59659,36 @@
     "text": "Zeit"
   },
   {
+    "resourceID": "nuclos.resplan.granularity.year",
+    "locale": "i-default",
+    "text": "Year"
+  },
+  {
+    "resourceID": "nuclos.resplan.granularity.year",
+    "locale": "en",
+    "text": "Year"
+  },
+  {
+    "resourceID": "nuclos.resplan.granularity.year",
+    "locale": "de",
+    "text": "Jahr"
+  },
+  {
+    "resourceID": "nuclos.resplan.granularity.quarter",
+    "locale": "i-default",
+    "text": "Quarter"
+  },
+  {
+    "resourceID": "nuclos.resplan.granularity.quarter",
+    "locale": "en",
+    "text": "Quarter"
+  },
+  {
+    "resourceID": "nuclos.resplan.granularity.quarter",
+    "locale": "de",
+    "text": "Quartal"
+  },
+  {
     "resourceID": "nuclos.resplan.granularity.month",
     "locale": "i-default",
     "text": "Month"

@@ -72,6 +72,7 @@ import org.nuclos.common.collect.collectable.searchcondition.LogicalOperator;
 import org.nuclos.common.collection.Pair;
 import org.nuclos.common.dal.vo.SystemFields;
 import org.nuclos.common.time.LocalTime;
+import org.nuclos.common2.DateUtils;
 import org.nuclos.common2.KeyEnum;
 import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.SpringLocaleDelegate;
@@ -489,6 +490,8 @@ public class ResPlanController extends CustomComponentController {
 
 	public static enum GranularityType implements KeyEnum<String> {
 		
+		YEAR("year", -2, Calendar.YEAR),
+		QUARTER("quarter", -1, DateUtils.QUARTER),
 		MONTH("month", 0, Calendar.MONTH),
 		WEEK("week", 1, Calendar.WEEK_OF_YEAR),
 		@Deprecated
@@ -565,17 +568,28 @@ public class ResPlanController extends CustomComponentController {
 		public String getCategoryName(int category) {
 			final SpringLocaleDelegate localeDelegate = SpringLocaleDelegate.getInstance();
 			switch (category) {
+			case -2: return localeDelegate.getText("nuclos.resplan.granularity.year", null);
+			case -1: return localeDelegate.getText("nuclos.resplan.granularity.quarter", null);
 			case 0: return localeDelegate.getText("nuclos.resplan.granularity.month", null);
 			case 1: return localeDelegate.getText("nuclos.resplan.granularity.calendarWeek", null);
 			case 2: return localeDelegate.getText("nuclos.resplan.granularity.day", null);
 			case 3: return localeDelegate.getText("nuclos.resplan.granularity.time", null);
+			default:
+				throw new IllegalArgumentException();
 			}
-			return null;
+			// return null;
 		}
 
 		@Override
 		public Object getCategoryValue(int category, Interval<Date> interval) {
 			switch (category) {
+			case -2:
+				calendar.setTime(interval.getStart());
+				return String.format("%1$TY", calendar);
+			case -1:
+				calendar.setTime(interval.getStart());
+				final int quarter = DateUtils.getQuant(calendar, DateUtils.QUARTER);
+				return String.format("Q%1$d", quarter + 1);
 			case 0:
 				calendar.setTime(interval.getStart());
 				return String.format("%1$Tb %1$Ty", calendar);
@@ -593,6 +607,13 @@ public class ResPlanController extends CustomComponentController {
 
 		public String getCategoryValue(int category, Date start) {
 			switch (category) {
+			case -2:
+				calendar.setTime(start);
+				return String.format("%1$TY", calendar);
+			case -1:
+				calendar.setTime(start);
+				final int quarter = DateUtils.getQuant(calendar, DateUtils.QUARTER);
+				return String.format("Q%1$d", quarter + 1);
 			case 0:
 				calendar.setTime(start);
 				return String.format("%1$Tb %1$Ty", calendar);

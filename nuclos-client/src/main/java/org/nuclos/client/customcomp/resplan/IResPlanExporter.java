@@ -21,7 +21,7 @@ public interface IResPlanExporter<R, E> {
 
 	SVGDOMDocumentSupport getSVGDOMDocumentSupport();
 
-	void run(String template) throws IOException, XPathExpressionException;
+	void run(String template, int startCategory) throws IOException, XPathExpressionException;
 
 	void save(ImageType imageType, File save) throws IOException;
 
