@@ -100,7 +100,7 @@ parent-subform CDATA #IMPLIED
 dynamic-cell-heights-default (%boolean;) #IMPLIED
 >
 
-<!ELEMENT subform-column (translations?,valuelist-provider?)>
+<!ELEMENT subform-column (translations?,valuelist-provider?,property*)>
 <!ATTLIST subform-column
 name CDATA #REQUIRED
 label CDATA #IMPLIED
