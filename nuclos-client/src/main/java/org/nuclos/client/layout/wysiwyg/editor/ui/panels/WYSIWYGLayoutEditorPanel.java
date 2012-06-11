@@ -729,11 +729,14 @@ public class WYSIWYGLayoutEditorPanel extends JPanel implements WYSIWYGComponent
 	public List<String> getCollectableComponents() {
 		ArrayList<Object> result = new ArrayList<Object>();
 		//NUCLEUSINT-419 get the main panel and then get all components... 
-		WYSIWYGLayoutEditorPanel mainPanel = null;
-		if (this.getParentEditor() == null)
-			mainPanel = this;
-		else
-			mainPanel = this.getParentEditor();
+		WYSIWYGLayoutEditorPanel mainPanel = getMainEditorPanel();
+		if (mainPanel == null) { // old fashioned way @see NUCLOS-398
+			if (this.getParentEditor() == null)
+				mainPanel = this;
+			else {
+				mainPanel = this.getParentEditor();
+			}
+		}
 		
 		getWYSIWYGComponents(WYSIWYGCollectableComponent.class,(mainPanel), result);
 
