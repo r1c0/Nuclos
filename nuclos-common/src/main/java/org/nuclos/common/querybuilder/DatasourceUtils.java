@@ -65,9 +65,9 @@ public class DatasourceUtils {
 		boolean foundIntid2 = false;
 		
 		for (String column : getColumns(sql)) {
-			if (column.toUpperCase().equals("INTID"))
+			if (column.toUpperCase().equals("INTID") || column.toUpperCase().equals("\"INTID\""))
 				foundIntid1 = true;
-			if (column.toUpperCase().equals("INTID_T_UD_GENERICOBJECT"))
+			if (column.toUpperCase().equals("INTID_T_UD_GENERICOBJECT") || column.toUpperCase().equals("\"INTID_T_UD_GENERICOBJECT\""))
 				foundIntid2 = true;
 		}
 		
@@ -112,9 +112,9 @@ public class DatasourceUtils {
 		boolean foundIntid2 = false;
 		
 		for (String column : getColumns(sql)) {
-			if (column.toUpperCase().equals("INTID"))
+			if (column.toUpperCase().equals("INTID") || column.toUpperCase().equals("\"INTID\""))
 				foundIntid1 = true;
-			if (column.toUpperCase().equals("INTID_T_UD_GENERICOBJECT"))
+			if (column.toUpperCase().equals("INTID_T_UD_GENERICOBJECT") || column.toUpperCase().equals("\"INTID_T_UD_GENERICOBJECT\""))
 				foundIntid2 = true;
 		}
 		
