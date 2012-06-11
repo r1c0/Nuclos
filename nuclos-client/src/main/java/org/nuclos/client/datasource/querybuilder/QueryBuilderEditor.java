@@ -393,6 +393,9 @@ public class QueryBuilderEditor extends JPanel {
 		final ParameterModel model = pnlTableSelection.getParameterPanel().getParameterModel();
 
 		for (DatasourceParameterVO paramvo : (model.getParameters())) {
+			if (paramvo.getParameter() == null)
+				continue;
+			
 			final Element entry = el.addElement(QueryBuilderConstants.TAG_PARAMETER);
 			entry.addAttribute("name", paramvo.getParameter());
 			entry.addAttribute("type", paramvo.getDatatype());

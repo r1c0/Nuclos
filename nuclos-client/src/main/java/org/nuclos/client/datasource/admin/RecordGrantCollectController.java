@@ -125,7 +125,7 @@ public class RecordGrantCollectController extends AbstractDatasourceCollectContr
 	 */
 	@Override
 	protected boolean stopEditingInDetails() {
-		return pnlEdit.getQueryEditor().stopEditing();
+		return pnlEdit.stopEditing();
 	}
 
 	/**

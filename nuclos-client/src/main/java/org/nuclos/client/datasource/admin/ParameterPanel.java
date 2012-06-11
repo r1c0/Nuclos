@@ -158,7 +158,9 @@ public class ParameterPanel extends JPanel {
 				comp = cmbbx;
 			}
 			else {
-				if (paramvo.getDatatype().equals("java.lang.String")) {
+				if (paramvo.getDatatype() == null)
+					comp = null;
+				else if (paramvo.getDatatype().equals("java.lang.String")) {
 					final JTextField tf = new JTextField();
 					tf.setName(paramvo.getParameter());
 					comp = tf;
@@ -218,23 +220,25 @@ public class ParameterPanel extends JPanel {
 				}
 				comp.setPreferredSize(new Dimension(iComponentWidth, comp.getPreferredSize().height));
 			}
-			add(comp, new GridBagConstraints(1, iRow, 1, 1, 1.0, 0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
-					new Insets(4, 4, 4, 4), 0, 0));
-			if (iRow == 0) {
-				SwingUtilities.invokeLater(new Runnable() {
-					@Override
-					public void run() {
-						try {
-							comp.requestFocusInWindow();
+			if (comp != null) {
+				add(comp, new GridBagConstraints(1, iRow, 1, 1, 1.0, 0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
+						new Insets(4, 4, 4, 4), 0, 0));
+				if (iRow == 0) {
+					SwingUtilities.invokeLater(new Runnable() {
+						@Override
+						public void run() {
+							try {
+								comp.requestFocusInWindow();
+							}
+							catch (Exception e) {
+								LOG.error("ParameterPanel failed: " + e, e);
+							}
 						}
-						catch (Exception e) {
-							LOG.error("ParameterPanel failed: " + e, e);
-						}
-					}
-				});
+					});
+				}
+				mpFields.put(paramvo.getParameter(), comp);
+				iRow++;
 			}
-			mpFields.put(paramvo.getParameter(), comp);
-			iRow++;
 		}
 	}
 

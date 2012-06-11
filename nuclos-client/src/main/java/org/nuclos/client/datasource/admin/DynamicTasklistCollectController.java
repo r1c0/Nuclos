@@ -120,7 +120,7 @@ public class DynamicTasklistCollectController extends AbstractDatasourceCollectC
 	 */
 	@Override
 	protected boolean stopEditingInDetails() {
-		return pnlEdit.getQueryEditor().stopEditing();
+		return pnlEdit.stopEditing();
 	}
 
 	/**

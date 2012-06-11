@@ -147,6 +147,15 @@ public class DatasourceEditPanel extends JPanel {
 	QueryBuilderEditor getQueryEditor() {
 		return pnlQueryEditor;
 	}
+	
+	/**
+	 *
+	 * @return true if editing could be stopped
+	 */
+	public boolean stopEditing() {
+		return pnlQueryEditor.stopEditing() & sqlPanel.getParameterPanel().stopEditing();
+	}
+
 
 	public String getDatasourceName() {
 		return this.pnlHeader.getNameField().getJTextField().getText();
@@ -274,6 +283,7 @@ public class DatasourceEditPanel extends JPanel {
 	}
 
 	class SqlPanel extends JPanel {
+		private ParameterPanel parameterpanel;
 		private final boolean blnWithParameterPanel;
 		private final boolean blnWithValuelistProviderColumn;
 		private final boolean blnWithParameterLabelColumn;
@@ -351,14 +361,19 @@ public class DatasourceEditPanel extends JPanel {
 				
 				splitpn.setRightComponent(sqlEditor);
 	
-				final ParameterPanel parameterpanel = new ParameterPanel(blnWithValuelistProviderColumn, blnWithParameterLabelColumn);
+				parameterpanel = new ParameterPanel(blnWithValuelistProviderColumn, blnWithParameterLabelColumn);
 				parameterpanel.setParameterModel(pnlQueryEditor.getTableSelectionPanel().getParameterPanel().getParameterModel());
+				
 				splitpn.setLeftComponent(parameterpanel);
 				splitpn.setDividerLocation(250);
 				this.add(splitpn, BorderLayout.CENTER);
 			} else {
 				this.add(sqlEditor, BorderLayout.CENTER);
 			}
+		}
+
+		public ParameterPanel getParameterPanel() {
+			return parameterpanel;
 		}
 
 		public JButton getBtnGenerateSql(){

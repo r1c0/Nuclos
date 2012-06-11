@@ -166,7 +166,7 @@ public class DatasourceCollectController extends AbstractDatasourceCollectContro
 	 */
 	@Override
 	protected boolean stopEditingInDetails() {
-		return pnlEdit.getQueryEditor().stopEditing();
+		return pnlEdit.stopEditing();
 	}
 
 	/**

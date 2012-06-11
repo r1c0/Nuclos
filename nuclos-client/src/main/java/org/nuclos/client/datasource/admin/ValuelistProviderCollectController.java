@@ -113,7 +113,7 @@ public class ValuelistProviderCollectController extends AbstractDatasourceCollec
 	 */
 	@Override
 	protected boolean stopEditingInDetails() {
-		return pnlEdit.getQueryEditor().stopEditing();
+		return pnlEdit.stopEditing();
 	}
 
 	/**
