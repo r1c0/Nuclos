@@ -21,6 +21,7 @@ import java.util.Map;
 
 import javax.annotation.security.RolesAllowed;
 
+import org.nuclos.api.UserPreferences;
 import org.nuclos.common.NuclosBusinessException;
 import org.nuclos.common.WorkspaceVO;
 import org.nuclos.common.WorkspaceDescription.EntityPreferences;
@@ -189,4 +190,12 @@ public interface PreferencesFacadeRemote {
 
 	
 	public void publishTaskListPreferences(WorkspaceVO customizedWovo, TasklistPreferences tp) throws CommonBusinessException;
+
+	public Collection<UserPreferences> getApiUserPreferences();
+
+	public void setApiUserPreferences(Collection<UserPreferences> userPreferences);
+
+	public <UP extends UserPreferences> UP getApiUserPreferences(Class<UP> upClass);
+
+	public void setApiUserPreferences(UserPreferences userPreferences);
 }

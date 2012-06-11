@@ -105,12 +105,6 @@
 			<groupId>asm</groupId>
 			<artifactId>asm</artifactId>
 		</dependency>
-		<dependency>
-			<!-- groupId>javax.annotation</groupId> <artifactId>com.springsource.javax.annotation</artifactId>
-				<version>1.0.0</version -->
-			<groupId>javax.annotation</groupId>
-			<artifactId>jsr250-api</artifactId>
-		</dependency>
 		<!-- dependency>
 			<groupId>javax.ejb</groupId>
 			<artifactId>ejb-api</artifactId>

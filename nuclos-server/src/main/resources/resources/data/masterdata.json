@@ -10709,5 +10709,40 @@
         "descriptionres": "nuclos.entityfield.tasklistrole.role.description"
       }
     ]
+  },
+  {
+    "name": "User Preferences",
+    "entity": "nuclos_userPreferences",
+    "searchable": false,
+    "editable": true,
+    "cacheable": false,
+    "dbentity": "T_MD_USER_PREFERENCES",
+    "importexport": false,
+    "systementity": true,
+    "nuclos_entityfield": [
+      {
+        "name": "user",
+        "dbfield": "INTID_T_MD_USER",
+        "foreignentity": "nuclos_user",
+        "datatype": "java.lang.String",
+        "datascale": 255,
+        "nullable": false,
+        "unique": true
+      },
+      {
+        "name": "preferencesClass",
+        "dbfield": "STRPREFERENCESCLASS",
+        "datatype": "java.lang.String",
+        "datascale": 4000,
+        "nullable": false,
+        "unique": true
+      },
+      {
+        "name": "preferences",
+        "dbfield": "STRPREFERENCES",
+        "datatype": "java.lang.String",
+        "nullable": false,
+      }
+    ]
   }
 ]

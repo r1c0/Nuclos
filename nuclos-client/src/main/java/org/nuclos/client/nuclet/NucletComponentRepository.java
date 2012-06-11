@@ -19,8 +19,10 @@ package org.nuclos.client.nuclet;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.nuclos.api.UserPreferences;
 import org.nuclos.api.ui.LayoutComponentFactory;
 import org.nuclos.api.ui.MenuItem;
+import org.nuclos.api.ui.UserPreferencesEditor;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -28,6 +30,7 @@ public class NucletComponentRepository {
 
 	private List<MenuItem> menuItems = new ArrayList<MenuItem>();
 	private List<LayoutComponentFactory> layoutComponentFactories = new ArrayList<LayoutComponentFactory>();
+	private List<UserPreferencesEditor<? extends UserPreferences>> userPreferencesEditors = new ArrayList<UserPreferencesEditor<? extends UserPreferences>>();
 	
 	public NucletComponentRepository() {
 	}
@@ -46,5 +49,13 @@ public class NucletComponentRepository {
 	
 	public List<LayoutComponentFactory> getLayoutComponentFactories() {
 		return new ArrayList<LayoutComponentFactory>(layoutComponentFactories);
+	}
+	
+	public void addUserPreferencesEditor(UserPreferencesEditor<? extends UserPreferences> upe) {
+		userPreferencesEditors.add(upe);
+	}
+	
+	public List<UserPreferencesEditor<? extends UserPreferences>> getUserPreferencesEditors() {
+		return new ArrayList<UserPreferencesEditor<? extends UserPreferences>>(userPreferencesEditors);
 	}
 }
