@@ -620,6 +620,10 @@ public class Icons {
 	public ImageIcon getIconTabbedPaneMaximized() {
 		return this.getIconByName("tabbedPaneMaximized");
 	}
+	
+	public ImageIcon getIconStartTab() {
+		return this.getIconByName("startTab");
+	}
 
 	public ImageIcon getIconTabbedPaneMaximized_Home() {
 		return this.getIconByName("tabbedPaneMaximizedHome");

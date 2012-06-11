@@ -118,7 +118,7 @@ public class MainFrameTabbedPane {
 	private boolean showDesktopOnly = false;
 	private final StartTabPanel startTab;
 
-	private final ImageIcon defaultFirstTabIcon = MainFrame.resizeAndCacheTabIcon(NuclosIcons.getInstance().getFrameIcon());
+	private final ImageIcon defaultFirstTabIcon = MainFrame.resizeAndCacheTabIcon(Icons.getInstance().getIconStartTab());
 	private final ImageIcon maximizedFirstTabIcon = MainFrame.resizeAndCacheTabIcon(Icons.getInstance().getIconTabbedPaneMaximized());
 	private final ImageIcon maximizedFirstTabHomeIcon = MainFrame.resizeAndCacheTabIcon(Icons.getInstance().getIconTabbedPaneMaximized_Home());
 	private final ImageIcon maximizedFirstTabHomeTreeIcon = MainFrame.resizeAndCacheTabIcon(Icons.getInstance().getIconTabbedPaneMaximized_HomeTree());
