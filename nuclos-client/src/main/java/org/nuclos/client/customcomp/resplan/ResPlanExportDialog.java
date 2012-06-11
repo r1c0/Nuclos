@@ -16,16 +16,17 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.customcomp.resplan;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.Date;
 
 import javax.swing.JComponent;
+import javax.swing.SwingWorker;
 import javax.xml.xpath.XPathExpressionException;
 
 import org.apache.log4j.Logger;
 import org.nuclos.client.image.ImageType;
 import org.nuclos.client.ui.Errors;
+import org.nuclos.client.ui.UIUtils;
 import org.nuclos.client.ui.resplan.JResPlanComponent;
 import org.nuclos.common.collect.collectable.Collectable;
 import org.nuclos.common2.ClientPreferences;
@@ -52,23 +53,38 @@ public class ResPlanExportDialog extends AbstractResPlanExportDialog {
 	
 	@Override
 	protected void export() {
-		final JResPlanComponent<Collectable, Date, Collectable> resPlan = panel.getResPlan();
-		final ImageType imageType = ImageType.getFromFileExtension((String) fileTypes.getSelectedItem());
-		final ResPlanExporter exporter = new ResPlanExporter(
-				panel.getController().getResourceVO(), panel.getTimeGranularity(), 
-				panel.getTimeHorizon(), resPlan.getModel(), resPlan.getTimeModel());
-		try {
-			exporter.run(SVG_TEMPLATE, 0);
-			exporter.save(imageType, save);
-		}
-		catch (IOException ex) {
-			LOG.warn("ResPlan export failed: " + ex.toString(), ex);
-			Errors.getInstance().showExceptionDialog(this, "Can' save " + save, ex);
-		}
-		catch (XPathExpressionException ex) {
-			LOG.warn("ResPlan export failed: " + ex.toString(), ex);
-			Errors.getInstance().showExceptionDialog(this, "Can' save " + save, ex);
-		}
+		UIUtils.showWaitCursorForFrame(this, true);
+		final SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() {
+
+			@Override
+			protected Void doInBackground() throws Exception {
+				final JResPlanComponent<Collectable, Date, Collectable> resPlan = panel.getResPlan();
+				final ImageType imageType = ImageType.getFromFileExtension((String) fileTypes.getSelectedItem());
+				final ResPlanExporter exporter = new ResPlanExporter(
+						panel.getController().getResourceVO(), panel.getTimeGranularity(), 
+						panel.getTimeHorizon(), resPlan.getModel(), resPlan.getTimeModel());
+				try {
+					exporter.run(SVG_TEMPLATE, 0);
+					exporter.save(imageType, save);
+				}
+				catch (IOException ex) {
+					LOG.warn("ResPlan export failed: " + ex.toString(), ex);
+					Errors.getInstance().showExceptionDialog(ResPlanExportDialog.this, "Can' save " + save, ex);
+				}
+				catch (XPathExpressionException ex) {
+					LOG.warn("ResPlan export failed: " + ex.toString(), ex);
+					Errors.getInstance().showExceptionDialog(ResPlanExportDialog.this, "Can' save " + save, ex);
+				}
+				return null;
+			}
+			
+			@Override
+			protected void done() {
+				UIUtils.showWaitCursorForFrame(ResPlanExportDialog.this, false);
+			}
+			
+		};
+		worker.execute();
 	}
 	
 }
