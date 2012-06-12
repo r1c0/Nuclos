@@ -28,6 +28,7 @@ import org.nuclos.client.ui.collect.strategy.CompleteCollectablesStrategy;
 import org.nuclos.common.collect.collectable.Collectable;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableIdListCondition;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableSearchCondition;
+import org.nuclos.common.collect.collectable.searchcondition.SearchConditionUtils;
 import org.nuclos.common.collect.exception.CollectableFieldFormatException;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.server.genericobject.ProxyList;
@@ -129,7 +130,7 @@ public class CollectSearchStrategy<Clct extends Collectable> implements ISearchS
 	 */
 	@Override
 	public CollectableSearchCondition getCollectableSearchCondition() throws CollectableFieldFormatException {
-		return cc.getCollectableSearchConditionFromSearchPanel(false);
+		return addMainFilter(cc.getCollectableSearchConditionFromSearchPanel(false));
 	}
 
 	/**
@@ -212,5 +213,21 @@ public class CollectSearchStrategy<Clct extends Collectable> implements ISearchS
 	@Override
 	public void setCollectableIdListCondition(CollectableIdListCondition condition) {
 		this.idListCondition = condition;
+	}
+	
+	public CollectableSearchCondition addMainFilter(CollectableSearchCondition cond) {
+		if (cond == null) {
+			if (cc.getMainFilter() != null) {
+				return cc.getMainFilter().getSearchCondition();
+			} else {
+				return null;
+			}
+		} else {
+			if (cc.getMainFilter() == null || cc.getMainFilter().getSearchCondition() == null) {
+				return cond;
+			} else {
+				return SearchConditionUtils.and(cond, cc.getMainFilter().getSearchCondition());
+			}
+		}
 	}
 }

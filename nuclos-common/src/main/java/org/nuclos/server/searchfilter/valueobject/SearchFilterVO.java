@@ -43,6 +43,10 @@ public class SearchFilterVO extends NuclosValueObject {
 	private Integer iSearchDeleted;
 	private String labelResourceId;
 	private String descriptionResourceId;
+	private Integer iOrder;
+	private Boolean bFastSelectInResult;
+	private Integer iFastSelectIconId;
+	private String sFastSelectNuclosIcon;
 
 	private SearchFilterUserVO searchFilterUserVO;
 
@@ -53,7 +57,9 @@ public class SearchFilterVO extends NuclosValueObject {
 	}
 
 	public SearchFilterVO(Integer iId, String sFilterName, String sDescription, String sFilterPrefs, String sOwner, String sEntity,
-			Integer iSearchDeleted, String labelResourceId, String descriptionResourceId, SearchFilterUserVO searchFilterUserVO,
+			Integer iSearchDeleted, String labelResourceId, String descriptionResourceId, 
+			Integer iOrder, Boolean bFastSelectInResult, Integer iFastSelectIconId, String sFastSelectNuclosIcon,
+			SearchFilterUserVO searchFilterUserVO,
 			java.util.Date dCreated, String sCreated, java.util.Date dChanged, String sChanged, Integer iVersion) {
 		super(iId, dCreated, sCreated, dChanged, sChanged, iVersion);
 
@@ -65,12 +71,17 @@ public class SearchFilterVO extends NuclosValueObject {
 		setSearchDeleted(iSearchDeleted);
 		setLabelResourceId(labelResourceId);
 		setDescriptionResourceId(descriptionResourceId);
+		setOrder(iOrder);
+		setFastSelectInResult(bFastSelectInResult);
+		setFastSelectIconId(iFastSelectIconId);
+		setFastSelectNuclosIcon(sFastSelectNuclosIcon);
 		setSearchFilterUser(searchFilterUserVO);
 	}
 
 	public SearchFilterVO (SearchFilterVO searchFilterVO) {
 		this(searchFilterVO.getId(), searchFilterVO.getFilterName(), searchFilterVO.getDescription(), searchFilterVO.getFilterPrefs(),
 				searchFilterVO.getOwner(), searchFilterVO.getEntity(), searchFilterVO.getSearchDeleted(), searchFilterVO.getLabelResourceId(), searchFilterVO.getDescriptionResourceId(),
+				searchFilterVO.getOrder(), searchFilterVO.getFastSelectInResult(), searchFilterVO.getFastSelectIconId(), searchFilterVO.getFastSelectNuclosIcon(), 
 				searchFilterVO.getSearchFilterUser(), searchFilterVO.getChangedAt(), searchFilterVO.getCreatedBy(), searchFilterVO.getChangedAt(),
 				searchFilterVO.getCreatedBy(), searchFilterVO.getVersion());
 	}
@@ -175,6 +186,38 @@ public class SearchFilterVO extends NuclosValueObject {
 		this.descriptionResourceId = descriptionResourceId;
 	}
 
+	public Integer getOrder() {
+		return iOrder;
+	}
+
+	public void setOrder(Integer iOrder) {
+		this.iOrder = iOrder;
+	}
+
+	public Boolean getFastSelectInResult() {
+		return bFastSelectInResult;
+	}
+
+	public void setFastSelectInResult(Boolean bFastSelectInResult) {
+		this.bFastSelectInResult = bFastSelectInResult;
+	}
+
+	public Integer getFastSelectIconId() {
+		return iFastSelectIconId;
+	}
+
+	public void setFastSelectIconId(Integer iFastSelectIconId) {
+		this.iFastSelectIconId = iFastSelectIconId;
+	}
+
+	public String getFastSelectNuclosIcon() {
+		return sFastSelectNuclosIcon;
+	}
+
+	public void setFastSelectNuclosIcon(String sFastSelectNuclosIcon) {
+		this.sFastSelectNuclosIcon = sFastSelectNuclosIcon;
+	}
+
 	/**
 	 * transforms a MasterDataVO into a SearchFilterVO
 	 * @param mdVO_searchfilter
@@ -194,6 +237,10 @@ public class SearchFilterVO extends NuclosValueObject {
 		(Integer)mdVO_searchfilter.getField("searchDeleted"),
 		(String)mdVO_searchfilter.getField("labelres"),
 		(String)mdVO_searchfilter.getField("descriptionres"),
+		(Integer)mdVO_searchfilter.getField("order"),
+		(Boolean)mdVO_searchfilter.getField("fastSelectInResult"),
+		(Integer)mdVO_searchfilter.getField("fastSelectIconId"),
+		(String)mdVO_searchfilter.getField("fastSelectNuclosIcon"),
 		searchFilerUserVO,
 		mdVO_searchfilter.getCreatedAt(),
 		mdVO_searchfilter.getCreatedBy(),
@@ -216,6 +263,10 @@ public class SearchFilterVO extends NuclosValueObject {
 		mpField.put("clbsearchfilter", searchFilter.getFilterPrefs());
 		mpField.put("entity", searchFilter.getEntity());
 		mpField.put("searchDeleted", searchFilter.getSearchDeleted());
+		mpField.put("order", searchFilter.getOrder());
+		mpField.put("FastSelectInResult", searchFilter.getFastSelectInResult());
+		mpField.put("FastSelectIconId", searchFilter.getFastSelectIconId());
+		mpField.put("FastSelectNuclosIcon", searchFilter.getFastSelectNuclosIcon());
 
 		MasterDataVO mdVO = new MasterDataVO(
 				searchFilter.getId(),

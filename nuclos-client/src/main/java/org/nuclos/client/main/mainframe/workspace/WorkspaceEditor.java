@@ -47,6 +47,7 @@ import javax.swing.table.DefaultTableModel;
 import org.apache.commons.lang.ArrayUtils;
 import org.nuclos.client.common.security.SecurityCache;
 import org.nuclos.client.main.Main;
+import org.nuclos.client.resource.NuclosResourceCategory;
 import org.nuclos.client.ui.Icons;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.client.ui.resource.ResourceIconChooser;
@@ -135,7 +136,7 @@ public class WorkspaceEditor  {
         }
         
         JTabbedPane tbbdPane = new JTabbedPane();
-        nuclosIconChooser = new ResourceIconChooser(WorkspaceChooserController.ICON_SIZE);
+        nuclosIconChooser = new ResourceIconChooser(WorkspaceChooserController.ICON_SIZE, NuclosResourceCategory.ENTITY_ICON);
         nuclosIconChooser.removeBorder();
         tbbdPane.addTab(localeDelegate.getMessage("WorkspaceEditor.4","Icon"), nuclosIconChooser);
         JPanel parameterPanel = new JPanel(new BorderLayout());

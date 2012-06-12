@@ -2086,6 +2086,55 @@
         "descriptionres": "nuclos.entityfield.searchfilter.searchDeleted.description"
       },
       {
+        "name": "fastSelectInResult",
+        "dbfield": "BLNFASTSELECTINRESULT",
+        "datatype": "java.lang.Boolean",
+        "nullable": true,
+        "searchable": false,
+        "logbook": false,
+        "unique": false,
+        "labelres": "nuclos.entityfield.searchfilter.fastSelectInResult.label",
+        "descriptionres": "nuclos.entityfield.searchfilter.fastSelectInResult.description"
+      },
+      {
+        "name": "fastSelectIcon",
+        "dbfield": "STRVALUE_FASTSELECTICON",
+        "foreignentity": "nuclos_resource",
+        "foreignentityfield": "name",
+        "datatype": "java.lang.String",
+        "datascale": 255,
+        "nullable": true,
+        "searchable": true,
+        "logbook": false,
+        "unique": false,
+        "labelres": "nuclos.entityfield.searchfilter.fastSelectIcon.label",
+        "descriptionres": "nuclos.entityfield.searchfilter.fastSelectIcon.description"
+      },
+      {
+        "name": "fastSelectNuclosIcon",
+        "dbfield": "STRFASTSELECTNUCLOSICON",
+        "datatype": "java.lang.String",
+        "datascale": 1000,
+        "nullable": true,
+        "searchable": true,
+        "logbook": false,
+        "unique": false,
+        "labelres": "nuclos.entityfield.searchfilter.fastSelectNuclosIcon.label",
+        "descriptionres": "nuclos.entityfield.searchfilter.fastSelectNuclosIcon.description"
+      },
+      {
+        "name": "order",
+        "dbfield": "INTORDER",
+        "datatype": "java.lang.Integer",
+        "datascale": 9,
+        "nullable": true,
+        "searchable": false,
+        "logbook": false,
+        "unique": false,
+        "labelres": "nuclos.entityfield.searchfilter.order.label",
+        "descriptionres": "nuclos.entityfield.searchfilter.order.description"
+      },
+      {
         "name": "nuclet",
         "dbfield": "STRVALUE_T_MD_NUCLET",
         "foreignentity": "nuclos_nuclet",

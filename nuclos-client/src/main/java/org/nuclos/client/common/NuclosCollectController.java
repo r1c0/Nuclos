@@ -1140,6 +1140,7 @@ public abstract class NuclosCollectController<Clct extends Collectable> extends 
                     public void run() throws NuclosBusinessException{
 						getSearchFilters().remove(filter);
 						refreshFilterView();
+						refreshFastFilter();
 					}
 				});
 			}
@@ -1155,6 +1156,10 @@ public abstract class NuclosCollectController<Clct extends Collectable> extends 
 		final SearchFilter result = getSearchFilters().newDefaultFilter();
 
 		return result;
+	}
+	
+	protected void refreshFastFilter() {
+		getResultPanel().getSearchFilterBar().setSearchFilters(getSearchFilters());
 	}
 
 	/**
@@ -1244,7 +1249,9 @@ public abstract class NuclosCollectController<Clct extends Collectable> extends 
 	}
 
 	protected void cmdSetCollectableSearchConditionAccordingToFilter() {
-		assert this.isSearchPanelAvailable();
+		if (!this.isSearchPanelAvailable()) {
+			return;
+		}
 
 		UIUtils.runShortCommand(this.getTab(), new CommonRunnable() {
 			@Override

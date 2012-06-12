@@ -56,6 +56,7 @@ import org.nuclos.client.main.Main;
 import org.nuclos.client.main.mainframe.MainFrame;
 import org.nuclos.client.main.mainframe.MenuActionChooser;
 import org.nuclos.client.resource.NuclosResourceCache;
+import org.nuclos.client.resource.NuclosResourceCategory;
 import org.nuclos.client.resource.ResourceCache;
 import org.nuclos.client.synthetica.NuclosThemeSettings;
 import org.nuclos.client.ui.Icons;
@@ -477,7 +478,7 @@ abstract class MenuButton extends DesktopItem implements DragGestureListener {
 						"Standard Icon auswählen"), Icons.getInstance().getIconEmpty16()) {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				ResourceIconChooser iconChooser = new ResourceIconChooser(true);
+				ResourceIconChooser iconChooser = new ResourceIconChooser(null);
 				iconChooser.showDialog(prefs.getResourceIcon());
 				if (iconChooser.isSaved()) {
 					setResourceIcon(iconChooser.getSelectedResourceIconName(), null);
@@ -490,7 +491,7 @@ abstract class MenuButton extends DesktopItem implements DragGestureListener {
 						"Mouseover Icon auswählen"), Icons.getInstance().getIconEmpty16()) {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				ResourceIconChooser iconChooser = new ResourceIconChooser(true);
+				ResourceIconChooser iconChooser = new ResourceIconChooser(null);
 				iconChooser.showDialog(prefs.getResourceIconHover());
 				if (iconChooser.isSaved()) {
 					setResourceIconHover(iconChooser.getSelectedResourceIconName(), null);
@@ -506,7 +507,7 @@ abstract class MenuButton extends DesktopItem implements DragGestureListener {
 						"Standard Icon auswählen"), Icons.getInstance().getIconEmpty16()) {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				ResourceIconChooser iconChooser = new ResourceIconChooser(false);
+				ResourceIconChooser iconChooser = new ResourceIconChooser(NuclosResourceCategory.ENTITY_ICON);
 				iconChooser.showDialog(prefs.getNuclosResource());
 				if (iconChooser.isSaved()) {
 					setResourceIcon(null, iconChooser.getSelectedResourceIconName());

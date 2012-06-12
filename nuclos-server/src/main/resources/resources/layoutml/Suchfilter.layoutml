@@ -6,14 +6,14 @@
     <tablelayout columns="-1.0" rows="-1.0" />
     <panel>
       <tablelayout-constraints col1="0" col2="0" row1="0" row2="0" hAlign="2" vAlign="2" />
-      <tablelayout columns="12.0|5.0|300.0|92.0|5.0|62.0|96.0|5.0|12.0|73.0|107.0|5.0|71.0|100.0|-1.0|12.0" rows="12.0|20.0|5.0|16.0|44.0|5.0|20.0|5.0|22.0|5.0|-1.0|20.0|12.0" />
+      <tablelayout columns="12.0|5.0|96.0|96.0|5.0|96.0|96.0|5.0|12.0|96.0|96.0|5.0|96.0|96.0|-1.0|12.0" rows="12.0|20.0|5.0|20.0|5.0|20.0|5.0|20.0|5.0|20.0|5.0|20.0|5.0|-1.0|20.0|5.0" />
       <collectable-component fill-control-horizontally="yes" name="name" insertable="yes" opaque="yes" visible="yes" enabled="yes" controltype="textfield" show-only="label">
         <tablelayout-constraints col1="2" col2="2" row1="1" row2="1" hAlign="2" vAlign="1" />
         <minimum-size height="16" width="15" />
         <preferred-size height="16" width="50" />
       </collectable-component>
       <collectable-component fill-control-horizontally="yes" name="description" rows="3" columns="30" insertable="yes" opaque="yes" visible="yes" enabled="no" controltype="textarea" show-only="control">
-        <tablelayout-constraints col1="3" col2="7" row1="3" row2="4" hAlign="2" vAlign="2" />
+        <tablelayout-constraints col1="3" col2="7" row1="3" row2="7" hAlign="2" vAlign="2" />
         <minimum-size height="20" width="35" />
         <preferred-size height="20" width="70" />
       </collectable-component>
@@ -23,52 +23,52 @@
         <preferred-size height="20" width="70" />
       </collectable-component>
       <collectable-component fill-control-horizontally="yes" name="createdBy" insertable="yes" opaque="yes" visible="yes" enabled="yes" controltype="textfield" show-only="label">
-        <tablelayout-constraints col1="2" col2="2" row1="11" row2="11" hAlign="2" vAlign="1" />
+        <tablelayout-constraints col1="2" col2="2" row1="14" row2="14" hAlign="2" vAlign="1" />
         <minimum-size height="16" width="15" />
         <preferred-size height="16" width="50" />
       </collectable-component>
       <collectable-component fill-control-horizontally="yes" name="createdBy" columns="30" insertable="yes" opaque="yes" visible="yes" enabled="no" controltype="textfield" show-only="control">
-        <tablelayout-constraints col1="3" col2="3" row1="11" row2="11" hAlign="2" vAlign="1" />
+        <tablelayout-constraints col1="3" col2="3" row1="14" row2="14" hAlign="2" vAlign="1" />
         <minimum-size height="20" width="35" />
         <preferred-size height="20" width="70" />
       </collectable-component>
       <collectable-component fill-control-horizontally="yes" name="createdAt" insertable="yes" opaque="yes" visible="yes" enabled="yes" controltype="textfield" show-only="label">
-        <tablelayout-constraints col1="5" col2="5" row1="11" row2="11" hAlign="2" vAlign="1" />
+        <tablelayout-constraints col1="5" col2="5" row1="14" row2="14" hAlign="2" vAlign="1" />
         <minimum-size height="16" width="15" />
         <preferred-size height="16" width="50" />
       </collectable-component>
       <collectable-component fill-control-horizontally="yes" name="createdAt" columns="30" insertable="yes" opaque="yes" visible="yes" enabled="no" controltype="textfield" show-only="control">
-        <tablelayout-constraints col1="6" col2="6" row1="11" row2="11" hAlign="2" vAlign="1" />
+        <tablelayout-constraints col1="6" col2="6" row1="14" row2="14" hAlign="2" vAlign="1" />
         <minimum-size height="20" width="35" />
         <preferred-size height="20" width="70" />
       </collectable-component>
       <collectable-component fill-control-horizontally="yes" name="changedBy" insertable="yes" opaque="yes" visible="yes" enabled="yes" controltype="textfield" show-only="label">
-        <tablelayout-constraints col1="9" col2="9" row1="11" row2="11" hAlign="2" vAlign="1" />
+        <tablelayout-constraints col1="9" col2="9" row1="14" row2="14" hAlign="2" vAlign="1" />
         <minimum-size height="16" width="15" />
         <preferred-size height="16" width="50" />
       </collectable-component>
       <collectable-component fill-control-horizontally="yes" name="changedBy" columns="30" insertable="yes" opaque="yes" visible="yes" enabled="no" controltype="textfield" show-only="control">
-        <tablelayout-constraints col1="10" col2="10" row1="11" row2="11" hAlign="2" vAlign="1" />
+        <tablelayout-constraints col1="10" col2="10" row1="14" row2="14" hAlign="2" vAlign="1" />
         <minimum-size height="20" width="35" />
         <preferred-size height="20" width="70" />
       </collectable-component>
       <collectable-component fill-control-horizontally="yes" name="changedAt" insertable="yes" opaque="yes" visible="yes" enabled="yes" controltype="textfield" show-only="label">
-        <tablelayout-constraints col1="12" col2="12" row1="11" row2="11" hAlign="2" vAlign="1" />
+        <tablelayout-constraints col1="12" col2="12" row1="14" row2="14" hAlign="2" vAlign="1" />
         <minimum-size height="16" width="15" />
         <preferred-size height="16" width="50" />
       </collectable-component>
       <collectable-component fill-control-horizontally="yes" name="changedAt" columns="30" insertable="yes" opaque="yes" visible="yes" enabled="no" controltype="textfield" show-only="control">
-        <tablelayout-constraints col1="13" col2="13" row1="11" row2="11" hAlign="2" vAlign="1" />
+        <tablelayout-constraints col1="13" col2="13" row1="14" row2="14" hAlign="2" vAlign="1" />
         <minimum-size height="20" width="35" />
         <preferred-size height="20" width="70" />
       </collectable-component>
       <collectable-component fill-control-horizontally="yes" name="searchDeleted" insertable="yes" opaque="yes" visible="yes" enabled="yes" controltype="textfield" show-only="label">
-        <tablelayout-constraints col1="2" col2="2" row1="8" row2="8" hAlign="2" vAlign="1" />
+        <tablelayout-constraints col1="2" col2="2" row1="11" row2="11" hAlign="2" vAlign="1" />
         <minimum-size height="16" width="15" />
         <preferred-size height="16" width="50" />
       </collectable-component>
       <collectable-component fill-control-horizontally="yes" name="entity" insertable="yes" opaque="yes" visible="yes" enabled="yes" controltype="textfield" show-only="label">
-        <tablelayout-constraints col1="2" col2="2" row1="6" row2="6" hAlign="2" vAlign="1" />
+        <tablelayout-constraints col1="2" col2="2" row1="9" row2="9" hAlign="2" vAlign="1" />
         <minimum-size height="16" width="15" />
         <preferred-size height="16" width="50" />
       </collectable-component>
@@ -78,7 +78,7 @@
         <preferred-size height="16" width="50" />
       </collectable-component>
       <tabbedpane  name="Tabbedpane_1">
-        <tablelayout-constraints col1="2" col2="14" row1="10" row2="10" hAlign="2" vAlign="2" />
+        <tablelayout-constraints col1="2" col2="14" row1="13" row2="13" hAlign="2" vAlign="2" />
         <minimum-size height="40" width="180" />
         <preferred-size height="100" width="300" />
         <panel visible="yes" opaque="yes">
@@ -92,7 +92,7 @@
           <panel>
             <tablelayout-constraints col1="0" col2="0" row1="0" row2="0" hAlign="2" vAlign="2" />
             <tablelayout columns="0.0|-1.0" rows="0.0|-1.0" />
-            <subform name="SubForm_1" entity="nuclos_searchfilteruser" foreignkeyfield-to-parent="searchfilter" toolbarorientation="vertical" enabled="yes" >
+            <subform name="SubForm_1" entity="nuclos_searchfilteruser" foreignkeyfield-to-parent="searchfilter" toolbarorientation="vertical" enabled="yes" dynamic-cell-heights-default="no" >
               <tablelayout-constraints col1="1" col2="1" row1="1" row2="1" hAlign="2" vAlign="2" />
               <minimum-size height="40" width="180" />
               <preferred-size height="250" width="300" />
@@ -110,7 +110,7 @@
           <panel>
             <tablelayout-constraints col1="0" col2="0" row1="0" row2="0" hAlign="2" vAlign="2" />
             <tablelayout columns="0.0|-1.0" rows="0.0|-1.0" />
-            <subform name="SubForm_1" entity="nuclos_searchfilterrole" foreignkeyfield-to-parent="searchfilter" toolbarorientation="vertical" enabled="yes" >
+            <subform name="SubForm_1" entity="nuclos_searchfilterrole" foreignkeyfield-to-parent="searchfilter" toolbarorientation="vertical" enabled="yes" dynamic-cell-heights-default="no" >
               <tablelayout-constraints col1="1" col2="1" row1="1" row2="1" hAlign="2" vAlign="2" />
               <minimum-size height="40" width="180" />
               <preferred-size height="100" width="300" />
@@ -132,18 +132,74 @@
         </panel>
       </tabbedpane>
       <collectable-component fill-control-horizontally="yes" name="entity" insertable="yes" opaque="yes" visible="yes" enabled="no" controltype="combobox" show-only="control">
-        <tablelayout-constraints col1="3" col2="6" row1="6" row2="6" hAlign="2" vAlign="1" />
-        <minimum-size height="20" width="35" />
-        <preferred-size height="20" width="70" />
+        <tablelayout-constraints col1="3" col2="6" row1="9" row2="9" hAlign="2" vAlign="1" />
+        <strict-size height="20" width="70" />
         <valuelist-provider type="entity"/>
       </collectable-component>
-      <collectable-component insertable="yes" enabled="no" show-only="control" fill-control-horizontally="yes" name="searchDeleted" opaque="yes" visible="yes" controltype="combobox">
-        <tablelayout-constraints col1="3" col2="6" row1="8" row2="8" hAlign="2" vAlign="1" />
-        <minimum-size height="22" width="35" />
-        <preferred-size height="22" width="70" />
+      <collectable-component fill-control-horizontally="yes" name="searchDeleted" insertable="yes" opaque="yes" visible="yes" enabled="no" controltype="combobox" show-only="control">
+        <tablelayout-constraints col1="3" col2="6" row1="11" row2="11" hAlign="2" vAlign="1" />
+        <strict-size height="20" width="70" />
         <valuelist-provider type="enum">
           <parameter name="showEnum" value="org.nuclos.client.searchfilter.SearchFilterMode" />
         </valuelist-provider>
+      </collectable-component>
+      <panel visible="yes" opaque="yes">
+        <tablelayout-constraints col1="9" col2="13" row1="3" row2="11" hAlign="2" vAlign="2" />
+        <tablelayout columns="-1.0" rows="-1.0" />
+        <clear-border />
+        <titled-border title="Schnellwahl">
+          <translations>
+            <translation lang="en" text="Fast select"/>
+            <translation lang="de" text="Schnellwahl"/>
+          </translations>
+        </titled-border>
+        <panel>
+          <tablelayout-constraints col1="0" col2="0" row1="0" row2="0" hAlign="2" vAlign="2" />
+          <tablelayout columns="0.0|5.0|182.0|-1.0|5.0" rows="0.0|5.0|22.0|22.0|5.0|22.0|5.0|-1.0" />
+          <collectable-component fill-control-horizontally="yes" name="fastSelectInResult" insertable="yes" opaque="yes" visible="yes" enabled="yes" controltype="textfield" show-only="label">
+            <tablelayout-constraints col1="2" col2="2" row1="2" row2="2" hAlign="2" vAlign="1" />
+            <minimum-size height="22" width="15" />
+            <preferred-size height="22" width="50" />
+          </collectable-component>
+          <collectable-component fill-control-horizontally="yes" name="fastSelectInResult" insertable="yes" opaque="yes" visible="yes" enabled="yes" controltype="checkbox" show-only="control">
+            <tablelayout-constraints col1="3" col2="3" row1="2" row2="2" hAlign="2" vAlign="1" />
+            <minimum-size height="22" width="19" />
+            <preferred-size height="22" width="20" />
+          </collectable-component>
+          <collectable-component insertable="yes" controltypeclass="org.nuclos.client.ui.collect.component.CollectableResourceIconChooserButton" enabled="yes" show-only="control" fill-control-horizontally="yes" name="fastSelectIcon" opaque="yes" visible="yes">
+            <tablelayout-constraints col1="2" col2="3" row1="3" row2="3" hAlign="2" vAlign="1" />
+            <minimum-size height="22" width="35" />
+            <preferred-size height="22" width="70" />
+            <enabled language="groovy">
+            <![CDATA[
+            log.info("Benutzerdef-Skript : fastSelectNuclosIcon=" + context."#{NUC.nuclos_searchfilter.fastSelectNuclosIcon}")
+return context."#{NUC.nuclos_searchfilter.fastSelectNuclosIcon}" == null
+            ]]>
+            </enabled>
+          </collectable-component>
+          <collectable-component insertable="yes" controltypeclass="org.nuclos.client.ui.collect.component.CollectableResourceIconChooserButton" enabled="yes" show-only="control" fill-control-horizontally="yes" name="fastSelectNuclosIcon" opaque="yes" visible="yes">
+            <tablelayout-constraints col1="2" col2="3" row1="5" row2="5" hAlign="2" vAlign="1" />
+            <property name="NuclosResourceCategory" value="SEARCH_FILTER_ICON"/>
+            <minimum-size height="22" width="35" />
+            <preferred-size height="22" width="70" />
+            <enabled language="groovy">
+            <![CDATA[
+            log.info("Nuclos-Skript : fastSelectIcon=" + context."#{NUC.nuclos_searchfilter.fastSelectIcon}")
+return context."#{NUC.nuclos_searchfilter.fastSelectIcon}" == null
+            ]]>
+            </enabled>
+          </collectable-component>
+        </panel>
+      </panel>
+      <collectable-component fill-control-horizontally="yes" name="order" insertable="yes" opaque="yes" visible="yes" enabled="yes" controltype="textfield" show-only="label">
+        <tablelayout-constraints col1="9" col2="9" row1="1" row2="1" hAlign="2" vAlign="1" />
+        <minimum-size height="22" width="15" />
+        <preferred-size height="22" width="50" />
+      </collectable-component>
+      <collectable-component fill-control-horizontally="yes" name="order" columns="30" insertable="yes" opaque="yes" visible="yes" enabled="yes" controltype="textfield" show-only="control">
+        <tablelayout-constraints col1="10" col2="10" row1="1" row2="1" hAlign="2" vAlign="1" />
+        <minimum-size height="22" width="35" />
+        <preferred-size height="22" width="70" />
       </collectable-component>
     </panel>
   </panel>

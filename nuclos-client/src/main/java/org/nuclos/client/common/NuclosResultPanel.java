@@ -70,6 +70,7 @@ import org.nuclos.client.ui.Errors;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.client.ui.collect.CollectController;
 import org.nuclos.client.ui.collect.CollectableTableHelper;
+import org.nuclos.client.ui.collect.SearchFilterBar;
 import org.nuclos.client.ui.collect.ToolTipsTableHeader;
 import org.nuclos.client.ui.collect.component.model.ChoiceEntityFieldList;
 import org.nuclos.client.ui.collect.model.SortableCollectableTableModel;
@@ -127,6 +128,8 @@ public class NuclosResultPanel<Clct extends Collectable> extends ResultPanel<Clc
 		final JPanel result = new JPanel(new BorderLayout());
 		result.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 		result.add(getResultTableScrollPane(), BorderLayout.CENTER);
+		
+		result.add(searchFilterBar.getJComponent(), BorderLayout.NORTH);
 
 		tblFixedResult.getColumnModel().addColumnModelListener(new TableColumnModelListener() {
 			@Override

@@ -50,12 +50,14 @@ import javax.swing.table.TableColumn;
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.lang.NullArgumentException;
 import org.apache.log4j.Logger;
+import org.nuclos.client.common.EnabledListener;
 import org.nuclos.client.common.NuclosCollectableEntityProvider;
 import org.nuclos.client.common.Utils;
 import org.nuclos.client.common.WorkspaceUtils;
 import org.nuclos.client.common.security.SecurityCache;
 import org.nuclos.client.genericobject.GenericObjectCollectController;
 import org.nuclos.client.main.mainframe.MainFrame;
+import org.nuclos.client.searchfilter.SearchFilter;
 import org.nuclos.client.ui.CommonAbstractAction;
 import org.nuclos.client.ui.Errors;
 import org.nuclos.client.ui.Icons;
@@ -85,8 +87,8 @@ import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.dal.vo.PivotInfo;
 import org.nuclos.common.dal.vo.SystemFields;
 import org.nuclos.common.entityobject.CollectableEOEntityField;
-import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.CommonRunnable;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.common2.exception.CommonPermissionException;
@@ -306,6 +308,7 @@ public class ResultController<Clct extends Collectable> {
 		getResultPanel().addColumnModelListener(pul);
 		
 		getResultPanel().addPopupMenuListener();
+		getResultPanel().getSearchFilterBar().addEnabledListener(new ResetMainFilterEnabledListener());
 	}
 
 	private void setupActions() {
@@ -333,6 +336,10 @@ public class ResultController<Clct extends Collectable> {
 		// action: Delete
 		pnlResult.btnDelete.setAction(this.actDeleteSelectedCollectables);
 		this.actDeleteSelectedCollectables.setEnabled(false);
+		
+		pnlResult.btnResetMainFilter.setAction(this.clctctl.getResetMainFilterAction());
+		this.clctctl.getResetMainFilterAction().setEnabled(false);
+		pnlResult.btnResetMainFilter.setVisible(false);
 
 		// action: View
 		this.actEditSelectedCollectables = new CommonAbstractAction(pnlResult.btnEdit) {
@@ -1050,6 +1057,13 @@ public class ResultController<Clct extends Collectable> {
 	 * @deprecated Does nothing (but will be overridden by extending classes).
 	 */
 	private void cmdDefineSelectedCollectablesAsNewSearchResult() {
+	}
+	
+	private class ResetMainFilterEnabledListener implements EnabledListener {
+		@Override
+		public void enabledChanged(boolean enabled) {
+			getResultPanel().btnResetMainFilter.setVisible(enabled);
+		}
 	}
 	
 }	// class ResultController

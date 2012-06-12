@@ -60,6 +60,7 @@ import org.nuclos.client.ui.UIUtils;
 import org.nuclos.client.ui.collect.CollectController;
 import org.nuclos.client.ui.collect.CollectPanel;
 import org.nuclos.client.ui.collect.CollectableTableHelper;
+import org.nuclos.client.ui.collect.SearchFilterBar;
 import org.nuclos.client.ui.collect.SubForm;
 import org.nuclos.client.ui.collect.ToolTipsTableHeader;
 import org.nuclos.client.ui.collect.component.CollectableComponent;
@@ -155,12 +156,15 @@ public class ResultPanel<Clct extends Collectable> extends JPanel {
 	 * TODO: make private.
 	 */
 	public final JMenuItem btnBookmark = new JMenuItem();
+	
+	public final JButton btnResetMainFilter = new JButton();
 
 	protected static final String EXPORT_IMPORT_EXTENSION = ".zip";
 
 	private JComponent compCenter = new JPanel(new BorderLayout());
 
 	private final JPanel pnlResultTable;
+	protected final SearchFilterBar searchFilterBar;
 	private final JScrollPane scrlpnResult = new JScrollPane();
 	private final JTable tblResult;
 
@@ -187,6 +191,7 @@ public class ResultPanel<Clct extends Collectable> extends JPanel {
 		this.btnDelete = getDeleteButton();
 
 		this.tblResult = newResultTable();
+		this.searchFilterBar = new SearchFilterBar();
 		this.pnlResultTable = newResultTablePanel();
 
 		//this.add(compCenter, BorderLayout.CENTER);
@@ -281,6 +286,7 @@ public class ResultPanel<Clct extends Collectable> extends JPanel {
 		toolBar.add(btnRefresh, null);
 		toolBar.add(btnNew, null);
 		toolBar.add(btnDelete, null);
+		toolBar.add(btnResetMainFilter, null);
 
 		addPopupExtraMenuItem(btnBookmark);
 
@@ -462,6 +468,8 @@ public class ResultPanel<Clct extends Collectable> extends JPanel {
 		result.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 		result.add(scrlpnResult, BorderLayout.CENTER);
 
+		result.add(searchFilterBar.getJComponent(), BorderLayout.NORTH);
+		
 		return result;
 	}
 
@@ -747,5 +755,9 @@ public class ResultPanel<Clct extends Collectable> extends JPanel {
 
 	public JToolBar getToolBar() {
 		return toolBar;
+	}
+	
+	public SearchFilterBar getSearchFilterBar() {
+		return searchFilterBar;
 	}
 }  // class ResultPanel

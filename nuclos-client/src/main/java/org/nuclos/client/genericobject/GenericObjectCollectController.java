@@ -678,6 +678,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 			setupSearchToolBar();
 		setupResultToolBar();
 		setupDetailsToolBar();
+		refreshFastFilter();
 	}
 
 	@Override
@@ -731,7 +732,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 			miSearchDeleted[1].addItemListener(il);
 			miSearchDeleted[2].addItemListener(il);
 		}
-
+		
 		refreshFilterView();
 
 		// glue:

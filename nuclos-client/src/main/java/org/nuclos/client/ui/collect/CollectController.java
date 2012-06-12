@@ -90,6 +90,7 @@ import org.nuclos.client.main.mainframe.MainFrame;
 import org.nuclos.client.main.mainframe.MainFrameTab;
 import org.nuclos.client.main.mainframe.MainFrameTabbedPane;
 import org.nuclos.client.masterdata.CollectableMasterDataWithDependants;
+import org.nuclos.client.searchfilter.SearchFilter;
 import org.nuclos.client.ui.CommonAbstractAction;
 import org.nuclos.client.ui.CommonClientWorkerAdapter;
 import org.nuclos.client.ui.CommonClientWorkerSelfExecutable;
@@ -274,6 +275,8 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	private final Map<String, Serializable> context = new HashMap<String, Serializable>();
 
 	private InvokeWithInputRequiredSupport invokeWithInputRequiredSupport;
+	
+	private SearchFilter mainFilter;
 
 	private boolean newTabCreated = false;
 
@@ -498,6 +501,19 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 		@Override
         public void actionPerformed(ActionEvent ev) {
 			cmdNext();
+		}
+	};
+	
+	/**
+	 * action: Next
+	 */
+	private final Action actResetMainFilter = new CommonAbstractAction(null,
+			Icons.getInstance().getIconFilterActive16(),
+			getSpringLocaleDelegate().getMessage("CollectController.43","Filter entfernen")) {
+		
+		@Override
+        public void actionPerformed(ActionEvent ev) {
+			cmdResetMainFilter();
 		}
 	};
 
@@ -809,6 +825,15 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	public final Action getNextAction() {
 		return this.actNext;
 	}
+	
+	/**
+	 * @return the "Reset Main Filter" action
+	 *
+	 * TODO: Make protected again.
+	 */
+	public final Action getResetMainFilterAction() {
+		return this.actResetMainFilter;
+	}
 
 	/**
 	 *
@@ -1052,6 +1077,7 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 				}
 			});
 		}
+		getResultPanel().getSearchFilterBar().addItemListener(new MainFilterChangeListener());
 	}
 
 	protected void setDefaultButton() {
@@ -4456,5 +4482,34 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 		return ctlDetails;
 	}
 
+	public SearchFilter getMainFilter() {
+		return mainFilter;
+	}
+
+	public void setMainFilter(SearchFilter mainFilter) {
+		this.mainFilter = mainFilter;
+		getResultController().getSearchResultStrategy().cmdSearch();
+	}
+	
+	private class MainFilterChangeListener implements ItemListener {
+			
+		public MainFilterChangeListener() {
+			super();
+		}
+
+		@Override
+		public void itemStateChanged(ItemEvent e) {
+			if (e.getItem() != null && !(e.getItem() instanceof SearchFilter)) {
+				throw new IllegalArgumentException(e.getItem().getClass().getName());
+			}
+			setMainFilter((SearchFilter) e.getItem());
+			actResetMainFilter.setEnabled(e.getItem() != null);
+		}
+	}
+	
+	private void cmdResetMainFilter() {
+		getResultPanel().getSearchFilterBar().setSelected(null);
+	}
+	
 
 }	// class CollectController

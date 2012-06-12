@@ -41,8 +41,8 @@ public class NuclosResourceCache {
 	
 	private static final Logger LOG = Logger.getLogger(NuclosResourceCache.class);
 
-	public static SortedSet<String> getNuclosResourceIcons() {
-		return _getInstance()._getNuclosResourceIcons();
+	public static SortedSet<String> getNuclosResourceIcons(NuclosResourceCategory cat) {
+		return _getInstance()._getNuclosResourceIcons(cat);
 	}
 	
 	public static ImageIcon getNuclosResourceIcon(String resourceIcon) {
@@ -51,12 +51,10 @@ public class NuclosResourceCache {
 
 	private static NuclosResourceCache     instance;
 	
-	private Map<String, ImageIcon>    nuclosResourceIconsAll;
-	private Map<String, ImageIcon>    nuclosResourceIconsVisible;
+	private Map<NuclosResourceCategory, Map<String, ImageIcon>> nuclosResourceIcons;
 	
 	private NuclosResourceCache() {
-		nuclosResourceIconsAll = CollectionUtils.newHashMap();
-		nuclosResourceIconsVisible = CollectionUtils.newHashMap();
+		nuclosResourceIcons = CollectionUtils.newHashMap();
 		initNuclosResourceIcons();
 	}
 	
@@ -66,31 +64,42 @@ public class NuclosResourceCache {
 		return instance;
 	}
 	
-	private SortedSet<String> _getNuclosResourceIcons() {
-		return new TreeSet<String>(nuclosResourceIconsVisible.keySet());
+	private SortedSet<String> _getNuclosResourceIcons(NuclosResourceCategory cat) {
+		SortedSet<String> result = new TreeSet<String>();
+		result.addAll(nuclosResourceIcons.get(cat).keySet());
+		return result;
 	}
 
 	private ImageIcon _getNuclosResourceIcon(String resourceIcon) {
-		return nuclosResourceIconsAll.get(resourceIcon);
+		ImageIcon result = nuclosResourceIcons.get(NuclosResourceCategory.ENTITY_ICON).get(resourceIcon);
+		if (result != null) return result;
+		result = nuclosResourceIcons.get(NuclosResourceCategory.ENTITY_ICON_HIDDEN).get(resourceIcon);
+		if (result != null) return result;
+		result = nuclosResourceIcons.get(NuclosResourceCategory.SEARCH_FILTER_ICON).get(resourceIcon);
+		return result;
 	}
 		
 	private void initNuclosResourceIcons() {
+		initNuclosResourceIcons(NuclosResourceCategory.ENTITY_ICON);
+		initNuclosResourceIcons(NuclosResourceCategory.ENTITY_ICON_HIDDEN);
+		initNuclosResourceIcons(NuclosResourceCategory.SEARCH_FILTER_ICON);
+	}
+	
+	private void initNuclosResourceIcons(NuclosResourceCategory cat) {
 		try {
-			Properties prop = new Properties();
-			prop.load(this.getClass().getClassLoader().getResourceAsStream("org/nuclos/client/resource/nuclos-resource-icon.properties"));
-			for (Object key : prop.keySet()) {
-				String sKey = ((String) key).trim();
-				ImageIcon icon = getImageIcon(prop.getProperty(sKey).trim());
-				nuclosResourceIconsAll.put(sKey, icon);
-				nuclosResourceIconsVisible.put(sKey, icon);
-			}
+			Map<String, ImageIcon> catMap = CollectionUtils.newHashMap();
+			nuclosResourceIcons.put(cat, catMap);
 			
-			prop = new Properties();
-			prop.load(this.getClass().getClassLoader().getResourceAsStream("org/nuclos/client/resource/nuclos-resource-icon-hidden.properties"));
+			Properties prop = new Properties();
+			prop.load(this.getClass().getClassLoader().getResourceAsStream("org/nuclos/client/resource/nuclos-resources.properties"));
 			for (Object key : prop.keySet()) {
 				String sKey = ((String) key).trim();
-				ImageIcon icon = getImageIcon(prop.getProperty(sKey).trim());
-				nuclosResourceIconsAll.put(sKey, icon);
+				
+				String[] keyParts = sKey.split(";");
+				if (cat.name().equals(keyParts[0])) {
+					ImageIcon icon = getImageIcon(prop.getProperty(sKey).trim());
+					catMap.put(keyParts[1], icon);
+				}
 			}
 		} catch(IOException e) {
 			throw new NuclosFatalException(e);

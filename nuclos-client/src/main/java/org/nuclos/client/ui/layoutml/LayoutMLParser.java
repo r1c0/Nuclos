@@ -3059,7 +3059,11 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 							if ("generatortoexecute".equals(sName)) {
 								button.setActionCommand(button.getActionCommand() + "_generatortoexecute=" + oValue);
 							}
-						}
+						} else
+							if (stack.peekComponentBuilder() instanceof CollectableComponentBuilder) {
+								final CollectableComponentBuilder ccb = (CollectableComponentBuilder) stack.peekComponentBuilder();
+								ccb.getCollectableComponent().setProperty(sName, oValue);
+							}
 					} else
 					if (c.getComponent() instanceof Chart) {
 						Chart chart = ((Chart)c.getComponent());

@@ -55,6 +55,7 @@ import org.nuclos.client.common.MetaDataClientProvider;
 import org.nuclos.client.masterdata.CollectableMasterDataWithDependants;
 import org.nuclos.client.masterdata.MasterDataDelegate;
 import org.nuclos.client.masterdata.MetaDataDelegate;
+import org.nuclos.client.resource.NuclosResourceCategory;
 import org.nuclos.client.resource.ResourceCache;
 import org.nuclos.client.resource.admin.CollectableResouceSaveListener;
 import org.nuclos.client.resource.admin.ResourceCollectController;
@@ -438,7 +439,7 @@ public class NuclosEntityCommonPropertiesStep extends NuclosEntityAbstractStep i
 
 		lbIcon = new JLabel(localeDelegate.getMessage(
 				"wizard.step.entitycommonproperties.3", "Icon")+": ");
-		nuclosIconChooser = new ResourceIconChooser();
+		nuclosIconChooser = new ResourceIconChooser(NuclosResourceCategory.ENTITY_ICON);
 
 		this.add(lbLabelSingular, "0,0");
 		this.add(tfLabelSingular, "1,0");

@@ -9330,6 +9330,126 @@
     "text": "Entität"
   },
   {
+    "resourceID": "nuclos.entityfield.searchfilter.fastSelectInResult.label",
+    "locale": "i-default",
+    "text": "Fast select in search result"
+  },
+  {
+    "resourceID": "nuclos.entityfield.searchfilter.fastSelectInResult.label",
+    "locale": "en",
+    "text": "Fast select in search result"
+  },
+  {
+    "resourceID": "nuclos.entityfield.searchfilter.fastSelectInResult.label",
+    "locale": "de",
+    "text": "Schnellwahl in Suchergebnisliste"
+  },
+  {
+    "resourceID": "nuclos.entityfield.searchfilter.fastSelectInResult.description",
+    "locale": "i-default",
+    "text": "Fast select in search result"
+  },
+  {
+    "resourceID": "nuclos.entityfield.searchfilter.fastSelectInResult.description",
+    "locale": "en",
+    "text": "Fast select in search result"
+  },
+  {
+    "resourceID": "nuclos.entityfield.searchfilter.fastSelectInResult.description",
+    "locale": "de",
+    "text": "Schnellwahl in Suchergebnisliste"
+  },
+  {
+    "resourceID": "nuclos.entityfield.searchfilter.fastSelectIcon.label",
+    "locale": "i-default",
+    "text": "Custom Icon"
+  },
+  {
+    "resourceID": "nuclos.entityfield.searchfilter.fastSelectIcon.label",
+    "locale": "en",
+    "text": "Custom Icon"
+  },
+  {
+    "resourceID": "nuclos.entityfield.searchfilter.fastSelectIcon.label",
+    "locale": "de",
+    "text": "Benutzerdefiniertes Icon"
+  },
+  {
+    "resourceID": "nuclos.entityfield.searchfilter.fastSelectIcon.description",
+    "locale": "i-default",
+    "text": "Custom Icon"
+  },
+  {
+    "resourceID": "nuclos.entityfield.searchfilter.fastSelectIcon.description",
+    "locale": "en",
+    "text": "Custom Icon"
+  },
+  {
+    "resourceID": "nuclos.entityfield.searchfilter.fastSelectIcon.description",
+    "locale": "de",
+    "text": "Benutzerdefiniertes Icon"
+  },
+  {
+    "resourceID": "nuclos.entityfield.searchfilter.fastSelectNuclosIcon.label",
+    "locale": "i-default",
+    "text": "Nuclos Icon"
+  },
+  {
+    "resourceID": "nuclos.entityfield.searchfilter.fastSelectNuclosIcon.label",
+    "locale": "en",
+    "text": "Nuclos Icon"
+  },
+  {
+    "resourceID": "nuclos.entityfield.searchfilter.fastSelectNuclosIcon.label",
+    "locale": "de",
+    "text": "Nuclos Icon"
+  },
+  {
+    "resourceID": "nuclos.entityfield.searchfilter.fastSelectNuclosIcon.description",
+    "locale": "i-default",
+    "text": "Nuclos Icon"
+  },
+  {
+    "resourceID": "nuclos.entityfield.searchfilter.fastSelectNuclosIcon.description",
+    "locale": "en",
+    "text": "Nuclos Icon"
+  },
+  {
+    "resourceID": "nuclos.entityfield.searchfilter.fastSelectNuclosIcon.description",
+    "locale": "de",
+    "text": "Nuclos Icon"
+  },
+  {
+    "resourceID": "nuclos.entityfield.searchfilter.order.label",
+    "locale": "i-default",
+    "text": "Order"
+  },
+  {
+    "resourceID": "nuclos.entityfield.searchfilter.order.label",
+    "locale": "en",
+    "text": "Order"
+  },
+  {
+    "resourceID": "nuclos.entityfield.searchfilter.order.label",
+    "locale": "de",
+    "text": "Reihenfolge"
+  },
+  {
+    "resourceID": "nuclos.entityfield.searchfilter.order.description",
+    "locale": "i-default",
+    "text": "Order"
+  },
+  {
+    "resourceID": "nuclos.entityfield.searchfilter.order.description",
+    "locale": "en",
+    "text": "Order"
+  },
+  {
+    "resourceID": "nuclos.entityfield.searchfilter.order.description",
+    "locale": "de",
+    "text": "Reihenfolge"
+  },
+  {
     "resourceID": "nuclos.entityfield.searchfilteruser.validUntil.label",
     "locale": "i-default",
     "text": "Valid until"
@@ -56152,6 +56272,21 @@
     "resourceID": "CollectController.42",
     "locale": "de",
     "text": "Findet die Übernahme in einem Unterformular statt werden mittels Mehrfachauswahl zusätzliche Datensätze im Unterformular erzeugt."
+  },
+  {
+    "resourceID": "CollectController.43",
+    "locale": "i-default",
+    "text": "Remove Filter"
+  },
+  {
+    "resourceID": "CollectController.43",
+    "locale": "en",
+    "text": "Remove Filter"
+  },
+  {
+    "resourceID": "CollectController.43",
+    "locale": "de",
+    "text": "Filter entfernen"
   },
   {
     "resourceID": "MasterDataSubFormController.4",

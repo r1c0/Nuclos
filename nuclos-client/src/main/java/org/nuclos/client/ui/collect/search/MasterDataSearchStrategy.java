@@ -34,6 +34,7 @@ import org.nuclos.common.collect.collectable.searchcondition.CollectableSearchCo
 import org.nuclos.common.collect.collectable.searchcondition.ComparisonOperator;
 import org.nuclos.common.collect.collectable.searchcondition.CompositeCollectableSearchCondition;
 import org.nuclos.common.collect.collectable.searchcondition.LogicalOperator;
+import org.nuclos.common.collect.collectable.searchcondition.SearchConditionUtils;
 import org.nuclos.common.collect.exception.CollectableFieldFormatException;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.server.genericobject.ProxyList;
@@ -110,7 +111,7 @@ public class MasterDataSearchStrategy extends CollectSearchStrategy<CollectableM
 	@Override
 	public CollectableSearchCondition getCollectableSearchCondition() throws CollectableFieldFormatException {
 		final CollectableSearchCondition result;
-		final CollectableSearchCondition cond = (getCollectableIdListCondition() != null) ? getCollectableIdListCondition() : super.getCollectableSearchCondition();
+		final CollectableSearchCondition cond = (getCollectableIdListCondition() != null) ? addMainFilter(getCollectableIdListCondition()) : super.getCollectableSearchCondition();
 		if (getMasterCollectDataController().isFilteringDesired()) {
 			if (cond == null) {
 				// If no other search conditions specified, the validity

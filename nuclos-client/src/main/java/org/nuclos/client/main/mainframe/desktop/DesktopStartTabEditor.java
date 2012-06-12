@@ -127,7 +127,7 @@ public class DesktopStartTabEditor {
         
         JPanel backgroundPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         btResourceBackground = new ResourceIconChooser.Button(localeDelegate.getMessage(
-        		"DesktopStartTabEditor.21","Hintergrundbild"), sResourceBackground);
+        		"DesktopStartTabEditor.21","Hintergrundbild"), sResourceBackground, null);
         backgroundPanel.add(btResourceBackground);
         contentPanel.add(backgroundPanel, "2, 1");
         
@@ -213,12 +213,12 @@ public class DesktopStartTabEditor {
         TableLayoutBuilder mi2 = new TableLayoutBuilder(menuItem2).columns(TableLayout.PREFERRED);
         
         btResourceMenuBackground = new ResourceIconChooser.Button(localeDelegate.getMessage(
-        		"DesktopStartTabEditor.12","Bild"), sResourceMenuBackground);
+        		"DesktopStartTabEditor.12","Bild"), sResourceMenuBackground, null);
         JPanel menuButtonPanel2 = new JPanel(new FlowLayout(FlowLayout.LEFT));
         menuButtonPanel2.add(btResourceMenuBackground);
         mi2.newRow().add(menuButtonPanel2);
         btResourceMenuBackgroundHover = new ResourceIconChooser.Button(localeDelegate.getMessage(
-        		"DesktopStartTabEditor.13","Bild Mouseover"), sResourceMenuBackgroundHover);
+        		"DesktopStartTabEditor.13","Bild Mouseover"), sResourceMenuBackgroundHover, null);
         JPanel menuButtonPanel3 = new JPanel(new FlowLayout(FlowLayout.LEFT));
         menuButtonPanel3.add(btResourceMenuBackgroundHover);
         mi2.newRow().add(menuButtonPanel3);

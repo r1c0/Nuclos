@@ -371,6 +371,7 @@ public class MasterDataCollectController extends EntityCollectController<Collect
 		}
 		this.setupResultToolBar();
 		this.setupDetailsToolBar();
+		refreshFastFilter();
 
 		initSubFormsLoader();
 		setupDataTransfer();
@@ -390,8 +391,7 @@ public class MasterDataCollectController extends EntityCollectController<Collect
 	protected void setupSearchToolBar() {
 		// final JToolBar result = newCustomSearchToolBar();
 		super.setupSearchToolBar();
-		super.refreshFilterView();
-
+		refreshFilterView();
 		// result.add(Box.createGlue());
 
 		// this.getSearchPanel().setCustomToolBarArea(result);

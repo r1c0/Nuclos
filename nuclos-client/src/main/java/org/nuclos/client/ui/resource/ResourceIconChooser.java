@@ -27,10 +27,13 @@ import java.awt.Toolkit;
 import java.awt.datatransfer.StringSelection;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import javax.swing.AbstractListModel;
@@ -57,6 +60,7 @@ import org.jdesktop.swingx.JXBusyLabel;
 import org.nuclos.client.main.Main;
 import org.nuclos.client.main.mainframe.MainFrame;
 import org.nuclos.client.resource.NuclosResourceCache;
+import org.nuclos.client.resource.NuclosResourceCategory;
 import org.nuclos.client.resource.ResourceCache;
 import org.nuclos.client.resource.ResourceDelegate;
 import org.nuclos.client.synthetica.NuclosThemeSettings;
@@ -69,7 +73,7 @@ public class ResourceIconChooser extends JPanel {
 	
 	private static final Logger LOG = Logger.getLogger(ResourceIconChooser.class);
 	
-	private final boolean customResources;
+	private final NuclosResourceCategory cat;
 	
 	private final JList list;
 	private final JScrollPane listScroller;
@@ -92,20 +96,21 @@ public class ResourceIconChooser extends JPanel {
 		}
 	};
 	
-	public ResourceIconChooser() {
-		this(0);
+	/**
+	 * 
+	 * @param cat (<code>null</code> for custom resource icons)
+	 */
+	public ResourceIconChooser(NuclosResourceCategory cat) {
+		this(0, cat);
 	}
 	
-	public ResourceIconChooser(final int iconMaxSize) {
-		this(iconMaxSize, false);
-	}
-	
-	public ResourceIconChooser(boolean customResources) {
-		this(0, customResources);
-	}
-	
-	public ResourceIconChooser(final int iconMaxSize, boolean customResources) {
-		this.customResources = customResources;
+	/**
+	 * 
+	 * @param iconMaxSize
+	 * @param cat (<code>null</code> for custom resource icons)
+	 */
+	public ResourceIconChooser(final int iconMaxSize, NuclosResourceCategory cat) {
+		this.cat = cat;
 		setLayout(new BorderLayout());
 		
 		list = new JList() {
@@ -208,7 +213,7 @@ public class ResourceIconChooser extends JPanel {
 			List<ImageIcon> icons = new ArrayList<ImageIcon>();
 			iconNames.add(null);
 			icons.add(Icons.getInstance().getIconEmpty16());
-			if (customResources) {
+			if (cat == null) {
 				for (String sResource : CollectionUtils.sorted(ResourceDelegate.getInstance().getResourceNames())) {
 					try {
 						ImageIcon iconResource = ResourceCache.getInstance().getIconResource(sResource);
@@ -219,7 +224,7 @@ public class ResourceIconChooser extends JPanel {
 					}
 				}
 			} else {
-				for (String iconName : NuclosResourceCache.getNuclosResourceIcons()) {
+				for (String iconName : NuclosResourceCache.getNuclosResourceIcons(cat)) {
 					iconNames.add(iconName);
 					icons.add(NuclosResourceCache.getNuclosResourceIcon(iconName));
 				}
@@ -377,22 +382,51 @@ public class ResourceIconChooser extends JPanel {
 		
 		private String sResource;
 		
-		private final String sLabel;
+		private String sLabel;
 		
-		public Button(String sLabel, String sResource) {
-			super(sLabel + (sResource==null?"":(": " + sResource)));
+		private NuclosResourceCategory cat;
+		
+		private Collection<ItemListener> itemListener = new ArrayList<ItemListener>();
+		
+		public Button() {
+			this(null, null, null);
+		}
+		
+		/**
+		 * 
+		 * @param sLabel
+		 * @param sResource (selected icon)
+		 * @param cat (<code>null</code> for custom resource icons)
+		 */
+		public Button(String sLabel, String sResource, NuclosResourceCategory cat) {
+			super();
 			this.sLabel = sLabel;
 			this.sResource = sResource;
+			this.cat = cat;
+			updateButtonText();
 			addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					ResourceIconChooser iconChooser = new ResourceIconChooser(true);
+					ResourceIconChooser iconChooser = new ResourceIconChooser(getCategory());
 					iconChooser.showDialog(getResource());
 					if (iconChooser.isSaved()) {
 						setResource(iconChooser.getSelectedResourceIconName());
+						fireItemStateChanged();
 					}
 				}
 			});
+		}
+		
+		public NuclosResourceCategory getCategory() {
+			return cat;
+		}
+		
+		public void setCategory(NuclosResourceCategory cat) {
+			this.cat = cat;
+		}
+		
+		public void setLabel(String sLabel) {
+			this.sLabel = sLabel;
 		}
 		
 		public String getResource() {
@@ -401,8 +435,28 @@ public class ResourceIconChooser extends JPanel {
 		
 		public void setResource(String sResource) {
 			this.sResource = sResource;
+			updateButtonText();
+		}
+		
+		private void updateButtonText() {
 			setText(sLabel + (sResource==null?"":(": " + sResource)));
 		}
+		
+		public void addItemListener(ItemListener il) {
+			itemListener.add(il);
+		}
+		
+		public void removeItemListener(ItemListener il) {
+			itemListener.remove(il);
+		}
+		
+		private void fireItemStateChanged() {
+			ItemEvent ie = new ItemEvent(this, ItemEvent.ITEM_STATE_CHANGED, this, ItemEvent.ITEM_STATE_CHANGED);
+			for (ItemListener il : itemListener) {
+				il.itemStateChanged(ie);
+			}
+		}
+		
 	}
 	
 	public static void main(String[] args) {
@@ -410,7 +464,7 @@ public class ResourceIconChooser extends JPanel {
 		frm.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frm.setBounds(100, 100, 300, 600);
 		
-		ResourceIconChooser ric = new ResourceIconChooser();
+		ResourceIconChooser ric = new ResourceIconChooser(NuclosResourceCategory.ENTITY_ICON);
 		ric.setSelected("org.nuclos.common.resource.icon.glyphish.88-beer-mug.png");
 		frm.getContentPane().add(ric, BorderLayout.CENTER);
 		
