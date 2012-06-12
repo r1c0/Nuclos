@@ -51,8 +51,6 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 
-import org.nuclos.common2.SpringLocaleDelegate;
-import org.nuclos.common2.StringUtils;
 import org.nuclos.client.layout.wysiwyg.editor.ui.panels.valuelistprovidereditor.ValueListProviderEditor;
 import org.nuclos.client.layout.wysiwyg.editor.util.InterfaceGuidelines;
 import org.nuclos.client.layout.wysiwyg.editor.util.valueobjects.WYSIWYGValuelistProvider;
@@ -61,6 +59,8 @@ import org.nuclos.client.ui.Icons;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.client.ui.table.CommonJTable;
 import org.nuclos.client.ui.table.RowIndicatorTable;
+import org.nuclos.common2.SpringLocaleDelegate;
+import org.nuclos.common2.StringUtils;
 import org.nuclos.server.report.valueobject.DatasourceParameterVO;
 import org.nuclos.server.report.valueobject.DatasourceParameterValuelistproviderVO;
 
@@ -161,9 +161,8 @@ public class ParameterPanel extends JPanel {
 		tblParams.getColumnModel().getColumn(ParameterModel.COLUMN_TYPE).setCellEditor(cellEditor);
 
 		if (blnWithValuelistProviderColumn) {
-			ValuelistproviderEditor editor = new ValuelistproviderEditor();
-			tblParams.getColumnModel().getColumn(ParameterModel.COLUMN_VLP).setCellEditor(editor);
-			tblParams.getColumnModel().getColumn(ParameterModel.COLUMN_VLP).setCellRenderer(editor);
+			tblParams.getColumnModel().getColumn(ParameterModel.COLUMN_VLP).setCellEditor(new ValuelistproviderEditor());
+			tblParams.getColumnModel().getColumn(ParameterModel.COLUMN_VLP).setCellRenderer(new ValuelistproviderEditor());
 		}
 
 		actDelete.setEnabled(false);
@@ -250,9 +249,8 @@ public class ParameterPanel extends JPanel {
 
 	private class ValuelistproviderEditor extends AbstractCellEditor implements TableCellEditor, TableCellRenderer {
 
-		private JLabel valuelistprovider = null;
-		private DatasourceParameterValuelistproviderVO vo;
-
+		DatasourceParameterValuelistproviderVO vo;
+		
 		@Override
 		public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
 			vo = (DatasourceParameterValuelistproviderVO) value;
@@ -283,7 +281,7 @@ public class ParameterPanel extends JPanel {
 					}
 			}));
 
-			valuelistprovider = new JLabel();
+			final JLabel valuelistprovider = new JLabel();
 
 			if (vo != null && !StringUtils.isNullOrEmpty(vo.getType())) {
 				valuelistprovider.setText(vo.getType());
@@ -301,7 +299,7 @@ public class ParameterPanel extends JPanel {
 			launchEditor.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					launchEditor();
+					launchEditor(valuelistprovider);
  				}
 			});
 			constraint = new TableLayoutConstraints(2, 1);
@@ -309,7 +307,7 @@ public class ParameterPanel extends JPanel {
 			return panel;
 		}
 
-		private final void launchEditor(){
+		private final void launchEditor(JLabel valuelistprovider) {
 			if (vo == null) {
 				vo = new DatasourceParameterValuelistproviderVO(null);
 			}
