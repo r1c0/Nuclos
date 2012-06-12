@@ -1913,9 +1913,9 @@ public abstract class AbstractCollectableComponent
 				catch (ClassCastException ex) {
 					LOG.warn("Failed to evaluate script expression.", ex);
 				}
+				setEnabledState(enabled && !readOnly && dynamicallyEnabled);
 			}
 		}
-		setEnabledState(enabled && !readOnly && dynamicallyEnabled);
 	}
 
 	protected void setEnabledState(boolean enabled) {

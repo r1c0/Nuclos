@@ -216,7 +216,7 @@ resourceId CDATA #IMPLIED
 icon CDATA #IMPLIED
 >
 
-<!ELEMENT collectable-component ((%layoutconstraints;)?,property*,(%borders;),(%sizes;),background?,font?,description?,options?,translations?,valuelist-provider?)>
+<!ELEMENT collectable-component ((%layoutconstraints;)?,property*,(%borders;),(%sizes;),background?,font?,description?,options?,translations?,valuelist-provider?,enabled?)>
 <!ATTLIST collectable-component
 name CDATA #REQUIRED
 controltype (%controltype;) #IMPLIED
@@ -236,6 +236,11 @@ resourceId CDATA #IMPLIED
 nextfocuscomponent CDATA #IMPLIED
 aspectratio (%boolean;) #IMPLIED
 >
+
+<!ELEMENT enabled (#PCDATA)>
+<!ATTLIST enabled
+ language CDATA #REQUIRED
+ >
 
 <!ELEMENT layoutcomponent ((%layoutconstraints;)?,(%properties;),(%borders;),(%sizes;))>
 <!ATTLIST layoutcomponent
