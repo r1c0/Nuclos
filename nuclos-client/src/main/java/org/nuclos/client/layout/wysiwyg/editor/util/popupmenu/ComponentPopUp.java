@@ -18,6 +18,7 @@ package org.nuclos.client.layout.wysiwyg.editor.util.popupmenu;
 
 import java.awt.Component;
 import java.awt.Cursor;
+import java.awt.IllegalComponentStateException;
 import java.awt.MenuItem;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
@@ -33,6 +34,7 @@ import org.nuclos.client.layout.wysiwyg.WYSIWYGStringsAndLabels.COMPONENT_POPUP;
 import org.nuclos.client.layout.wysiwyg.component.WYSIWYGChart;
 import org.nuclos.client.layout.wysiwyg.component.WYSIWYGComponent;
 import org.nuclos.client.layout.wysiwyg.component.WYSIWYGSubForm;
+import org.nuclos.client.layout.wysiwyg.component.WYSIWYGTabbedPane;
 import org.nuclos.client.layout.wysiwyg.editor.ui.panels.WYSIWYGLayoutEditorPanel;
 import org.nuclos.client.layout.wysiwyg.editor.ui.panels.layoutmlrule.LayoutMLRuleEditorDialog;
 import org.nuclos.client.layout.wysiwyg.editor.util.InterfaceGuidelines;
@@ -86,9 +88,15 @@ public class ComponentPopUp {
 	 * @param x
 	 */
 	public ComponentPopUp(final TableLayoutUtil tableLayoutUtil, Component component, int x) {
-		this.contentPane = tableLayoutUtil.getContainer();
 		this.tableLayoutUtil = tableLayoutUtil;
-
+		if (component instanceof WYSIWYGTabbedPane) {
+			Component comp = ((WYSIWYGTabbedPane) component).getSelectedComponent();
+			if (comp instanceof WYSIWYGLayoutEditorPanel) {
+				this.tableLayoutUtil = ((WYSIWYGLayoutEditorPanel)comp).getTableLayoutUtil();
+			}
+		}
+		this.contentPane = this.tableLayoutUtil.getContainer();
+		
 		/** find the fitting component */
 		if (component instanceof WYSIWYGLayoutEditorPanel) {
 			if (((WYSIWYGLayoutEditorPanel) component).getParentWrappingComponent() == null)
@@ -126,7 +134,7 @@ public class ComponentPopUp {
 		/**
 		 * If the Component is a WYSIWYGLayoutEditorPanel the Standardborder can be hidden
 		 */
-		if (component instanceof WYSIWYGLayoutEditorPanel) {
+		if (component instanceof WYSIWYGLayoutEditorPanel || component instanceof WYSIWYGTabbedPane) {
 			LayoutCell layoutCell = tableLayoutUtil.getLayoutCellByPosition(0, 0);
 			
 			boolean borderIsShown = true;
@@ -261,7 +269,11 @@ public class ComponentPopUp {
 	 * 
 	 */
 	public void showComponentPropertiesPopup(Point mouseLoc) {
-		contextMenu.show(contentPane, mouseLoc.x, mouseLoc.y);
+		try {
+			contextMenu.show(contentPane, mouseLoc.x, mouseLoc.y);			
+		} catch (IllegalComponentStateException e) {
+			LOG.warn("showComponentPropertiesPopup", e);
+		}
 	}
 
 	/**
