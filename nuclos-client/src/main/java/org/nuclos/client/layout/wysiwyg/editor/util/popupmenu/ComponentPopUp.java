@@ -135,7 +135,7 @@ public class ComponentPopUp {
 		 * If the Component is a WYSIWYGLayoutEditorPanel the Standardborder can be hidden
 		 */
 		if (component instanceof WYSIWYGLayoutEditorPanel || component instanceof WYSIWYGTabbedPane) {
-			LayoutCell layoutCell = tableLayoutUtil.getLayoutCellByPosition(0, 0);
+			LayoutCell layoutCell = this.tableLayoutUtil.getLayoutCellByPosition(0, 0);
 			
 			boolean borderIsShown = true;
 			if (layoutCell.getCellHeight() == 0 && layoutCell.getCellWidth() == 0){
