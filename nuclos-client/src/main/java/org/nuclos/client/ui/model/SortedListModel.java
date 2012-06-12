@@ -181,7 +181,8 @@ public class SortedListModel<E> extends AbstractListModel implements MutableList
 		final E item = (E) anItem;
 		selectedIndex = lst.indexOf(item);
 		if (selectedIndex < 0) {
-			throw new IllegalStateException();
+			// throw new IllegalStateException();
+			return;
 		}
 		selected = item;
 		final int len = lst.size();

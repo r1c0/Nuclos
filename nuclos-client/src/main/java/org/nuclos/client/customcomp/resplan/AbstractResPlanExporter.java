@@ -116,6 +116,8 @@ public abstract class AbstractResPlanExporter<R,E> implements IResPlanExporter<R
 	
 	protected abstract String entryTxtClass();
 	
+	protected abstract boolean entryTxtCenter();
+	
 	@Override
 	public void setResourceNameProducer(INameProducer<R> rnp) {
 		this.resourceNameProducer = rnp;
@@ -275,7 +277,13 @@ public abstract class AbstractResPlanExporter<R,E> implements IResPlanExporter<R
 			
 			final SVGRectElement rect = sdds.createRect(xc.x + XPIXEL_OFFSET, currentY + YPIXEL_RESOURCE_BORDER, xc.width, 
 					YPIXEL_FOR_RESOURCE - 2 * YPIXEL_RESOURCE_BORDER, entryRectClass());
-			final SVGTextElement text = sdds.createText(xc.x + XPIXEL_OFFSET, currentY + YPIXEL_BIGTXT_OFFSET, entryName, entryTxtClass());
+			final SVGTextElement text;
+			if (entryTxtCenter()) {
+				text = sdds.createText(xc.x + XPIXEL_OFFSET + xc.width/2, currentY + YPIXEL_BIGTXT_OFFSET, entryName, entryTxtClass());				
+			}
+			else {
+				text = sdds.createText(xc.x + XPIXEL_OFFSET, currentY + YPIXEL_BIGTXT_OFFSET, entryName, entryTxtClass());
+			}
 			group.appendChild(rect);
 			group.appendChild(text);
 		}
@@ -290,8 +298,11 @@ public abstract class AbstractResPlanExporter<R,E> implements IResPlanExporter<R
 	}
 	
 	protected void mkRhomb(SVGElement g, float x, float y, float size, String clazz) {
-		final SVGPolygonElement result = sdds.createPolygon(clazz, x - size, y, x, y - size, x + size, y, x, y + size);
-		g.appendChild(result);
+		final XCoord xc = clip(x, 1);
+		if (xc != null) {
+			final SVGPolygonElement result = sdds.createPolygon(clazz, x - size, y, x, y - size, x + size, y, x, y + size);
+			g.appendChild(result);
+		}
 	}
 	
 	protected float getX(Date d) {

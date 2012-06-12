@@ -54,4 +54,9 @@ public class ResPlanExporter extends AbstractResPlanExporter<Collectable,Collect
 		return "bigTxt";
 	}
 	
+	@Override
+	protected boolean entryTxtCenter() {
+		return false;
+	}
+	
 }
