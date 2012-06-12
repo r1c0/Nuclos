@@ -25,6 +25,7 @@
 				<artifactId>maven-jar-plugin</artifactId>
 				<configuration>
 					<archive>
+						<index/>
 						<manifest>
 							<addClasspath>true</addClasspath>
 							<mainClass>org.nuclos.client.main.Main</mainClass>

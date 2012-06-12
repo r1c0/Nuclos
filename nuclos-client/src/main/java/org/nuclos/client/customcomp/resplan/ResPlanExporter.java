@@ -38,5 +38,10 @@ public class ResPlanExporter extends AbstractResPlanExporter<Collectable,Collect
 		setResourceNameProducer(new CollectableNameProducer(vo.getResourceLabel()));
 		setEntryNameProducer(new CollectableNameProducer(vo.getBookingLabel()));
 	}
+
+	@Override
+	protected int getXPixelForTimeCat() {
+		return 50;
+	}
 	
 }

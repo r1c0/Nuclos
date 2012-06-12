@@ -82,7 +82,9 @@ public class RestoreUtils {
 	 */
 	private synchronized static boolean restoreTab(WorkspaceDescription.Tab wdTab, MainFrameTab tab, boolean onDemand) {
 		try {
-			ITabRestoreController restoreController = (ITabRestoreController) Class.forName(wdTab.getRestoreController()).getConstructor().newInstance();
+			final ClassLoader cl = Thread.currentThread().getContextClassLoader();
+			final ITabRestoreController restoreController = (ITabRestoreController) cl.loadClass(
+					wdTab.getRestoreController()).getConstructor().newInstance();
 			if (onDemand) {
 				tab.setTabRestoreController(restoreController);
 				tab.setTabRestorePreferencesXML(wdTab.getPreferencesXML());

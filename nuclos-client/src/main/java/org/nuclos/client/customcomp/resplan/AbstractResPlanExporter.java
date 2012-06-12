@@ -39,6 +39,7 @@ import org.nuclos.common.dblayer.INameProducer;
 import org.nuclos.common2.DateUtils;
 import org.w3c.dom.Element;
 import org.w3c.dom.svg.SVGElement;
+import org.w3c.dom.svg.SVGGElement;
 import org.w3c.dom.svg.SVGPolygonElement;
 import org.w3c.dom.svg.SVGRectElement;
 import org.w3c.dom.svg.SVGTextElement;
@@ -52,7 +53,7 @@ public abstract class AbstractResPlanExporter<R,E> implements IResPlanExporter<R
 	private static final Date LOW = new Date(-99999999L);
 	
 	protected static final int XPIXEL_OFFSET = 200;
-	protected static final int XPIXEL_FOR_TIME_CAT = 50;
+	// protected static final int XPIXEL_FOR_TIME_CAT = 50;
 	protected static final int YPIXEL_FOR_HEADER_CAT = 20;
 	protected static final int YPIXEL_HEADER_TXT_OFFSET = 15;
 	protected static final int YPIXEL_FOR_RESOURCE = 40;
@@ -104,6 +105,8 @@ public abstract class AbstractResPlanExporter<R,E> implements IResPlanExporter<R
 		this.time = time;
 	}
 	
+	protected abstract int getXPixelForTimeCat();
+	
 	@Override
 	public void setResourceNameProducer(INameProducer<R> rnp) {
 		this.resourceNameProducer = rnp;
@@ -129,21 +132,25 @@ public abstract class AbstractResPlanExporter<R,E> implements IResPlanExporter<R
 		return sdds;
 	}
 	
-	protected float getCurrentY() {
+	protected final float getCurrentY() {
 		return currentY;
 	}
 	
-	protected void setCurrentY(float currentY) {
+	protected final void setCurrentY(float currentY) {
 		this.currentY = currentY;
 	}
 	
-	protected float addToCurrentY(float add) {
+	protected final float addToCurrentY(float add) {
 		this.currentY += add;
 		return currentY;
 	}
 	
-	protected SVGDOMDocumentSupport getDocumentSupport() {
+	protected final SVGDOMDocumentSupport getDocumentSupport() {
 		return sdds;
+	}
+	
+	protected final ResPlanModel<R, Date, E> getModel() {
+		return model;
 	}
 	
 	@Override
@@ -176,7 +183,7 @@ public abstract class AbstractResPlanExporter<R,E> implements IResPlanExporter<R
 		maxCategory = tg.getCategoryCount() - 1;
 		realHorizon = new Interval<Date>(DateUtils.floorBound(horizon.getStart(), quantizer), 
 				DateUtils.ceilBound(horizon.getEnd(), quantizer));
-		millisForPx = DateUtils.getMillis(realHorizon.getStart(), quantizer) / XPIXEL_FOR_TIME_CAT;
+		millisForPx = DateUtils.getMillis(realHorizon.getStart(), quantizer) / getXPixelForTimeCat();
 		maxX = getX(realHorizon.getEnd());
 		
 		for (int cat = startCategory; cat <= maxCategory; ++cat) {
@@ -192,12 +199,15 @@ public abstract class AbstractResPlanExporter<R,E> implements IResPlanExporter<R
 				float x = getX(cal.getTime());
 				final XCoord xc = clip(x, width);
 				if (xc != null) {
-					g.appendChild(sdds.createRect(xc.x + XPIXEL_OFFSET, currentY, 
+					final SVGGElement group = sdds.createGroup();
+					g.appendChild(group);
+					
+					group.appendChild(sdds.createRect(xc.x + XPIXEL_OFFSET, currentY, 
 							xc.width, YPIXEL_FOR_HEADER_CAT, 
 							"header"));
-					if (xc.width + 3 > XPIXEL_FOR_TIME_CAT) {
+					if (xc.width + 3 > getXPixelForTimeCat()) {
 						final String text = tg.getCategoryValue(cat, cal.getTime());
-						g.appendChild(sdds.createText(xc.x + XPIXEL_OFFSET + xc.width/2, currentY + YPIXEL_HEADER_TXT_OFFSET, 
+						group.appendChild(sdds.createText(xc.x + XPIXEL_OFFSET + xc.width/2, currentY + YPIXEL_HEADER_TXT_OFFSET, 
 							text, "headerTxt"));
 					}
 				}
@@ -246,11 +256,14 @@ public abstract class AbstractResPlanExporter<R,E> implements IResPlanExporter<R
 		final String entryName = entryNameProducer.makeName(e);
 		final XCoord xc = clip(i);
 		if (xc != null) {
+			final SVGGElement group = sdds.createGroup();
+			g.appendChild(group);
+			
 			final SVGRectElement rect = sdds.createRect(xc.x + XPIXEL_OFFSET, currentY + YPIXEL_RESOURCE_BORDER, xc.width, 
 					YPIXEL_FOR_RESOURCE - 2 * YPIXEL_RESOURCE_BORDER, "lane-grey");
 			final SVGTextElement text = sdds.createText(xc.x + XPIXEL_OFFSET, currentY + YPIXEL_BIGTXT_OFFSET, entryName, "bigTxt");
-			g.appendChild(rect);
-			g.appendChild(text);
+			group.appendChild(rect);
+			group.appendChild(text);
 		}
 		lastInterval.set(i);
 	}

@@ -28,6 +28,7 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+import java.util.Arrays;
 import java.util.Locale;
 import java.util.Properties;
 
@@ -39,6 +40,7 @@ import javax.swing.UIManager;
 
 import org.apache.log4j.Logger;
 import org.apache.log4j.helpers.LogLog;
+import org.nuclos.api.ui.annotation.NucletComponent;
 import org.nuclos.client.NuclosIcons;
 import org.nuclos.client.common.MetaDataClientProvider;
 import org.nuclos.client.common.NuclosCollectableComponentFactory;
@@ -114,11 +116,18 @@ public class StartUp  {
 	public final void init() {
 		// setup client side logging:
 		setupClientLogging();
-
-		ClassPathXmlApplicationContext ctx = new ClassPathXmlApplicationContext("classpath*:META-INF/nuclos/**/*-beans.xml");
+		
+		final String xmlBeanDefs = "classpath*:META-INF/nuclos/**/*-beans.xml";
+		final ClassPathXmlApplicationContext ctx = new ClassPathXmlApplicationContext(xmlBeanDefs);
 		
 		try {
-            Resource[] themes = ctx.getResources("classpath*:META-INF/nuclos/**/*-theme.properties");
+			final Resource[] xmlBeanRes = ctx.getResources(xmlBeanDefs);
+			log.info("loading bean definitions from the following files: " + Arrays.asList(xmlBeanRes));
+			log.info("@NucletComponents within spring context: " + ctx.getBeansWithAnnotation(NucletComponent.class));
+			
+			final Resource[] themes = ctx.getResources("classpath*:META-INF/nuclos/**/*-theme.properties");
+			log.info("loading themes properties from the following files: " + Arrays.asList(themes));
+			
             for (Resource r : themes) {
             	Properties p = new Properties();
                 p.load(r.getInputStream());

@@ -20,6 +20,7 @@ import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -996,7 +997,11 @@ public class Icons {
 	}
 
 	private ImageIcon getImageIcon(String sFileName) {
-		return new ImageIcon(this.getClass().getClassLoader().getResource(sFileName));
+		final URL url = getClass().getClassLoader().getResource(sFileName);
+		if (url == null) {
+			throw new IllegalArgumentException("Can't find icon resource " + sFileName);
+		}
+		return new ImageIcon(url);
 	}
 
 	public static class ResizedIcon implements Icon {
