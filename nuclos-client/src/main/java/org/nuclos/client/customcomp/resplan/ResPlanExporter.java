@@ -41,7 +41,17 @@ public class ResPlanExporter extends AbstractResPlanExporter<Collectable,Collect
 
 	@Override
 	protected int getXPixelForTimeCat() {
-		return 50;
+		return 60;
+	}
+	
+	@Override
+	protected String entryRectClass() {
+		return "lane-grey";
+	}
+	
+	@Override
+	protected String entryTxtClass() {
+		return "bigTxt";
 	}
 	
 }

@@ -97,6 +97,11 @@ public abstract class AbstractResPlanExporter<R,E> implements IResPlanExporter<R
 	 */
 	private float currentY = 0.0f;
 	
+	/**
+	 * current number of entries drawn.
+	 */
+	private int entryNumber = 0;
+	
 	protected AbstractResPlanExporter(GranularityType granularity, 
 			Interval<Date> horizon, ResPlanModel<R, Date, E> model, TimeModel<Date> time) {
 		this.granularity = granularity;
@@ -106,6 +111,10 @@ public abstract class AbstractResPlanExporter<R,E> implements IResPlanExporter<R
 	}
 	
 	protected abstract int getXPixelForTimeCat();
+	
+	protected abstract String entryRectClass();
+	
+	protected abstract String entryTxtClass();
 	
 	@Override
 	public void setResourceNameProducer(INameProducer<R> rnp) {
@@ -143,6 +152,10 @@ public abstract class AbstractResPlanExporter<R,E> implements IResPlanExporter<R
 	protected final float addToCurrentY(float add) {
 		this.currentY += add;
 		return currentY;
+	}
+	
+	protected final int getEntryNumber() {
+		return entryNumber;
 	}
 	
 	protected final SVGDOMDocumentSupport getDocumentSupport() {
@@ -205,7 +218,8 @@ public abstract class AbstractResPlanExporter<R,E> implements IResPlanExporter<R
 					group.appendChild(sdds.createRect(xc.x + XPIXEL_OFFSET, currentY, 
 							xc.width, YPIXEL_FOR_HEADER_CAT, 
 							"header"));
-					if (xc.width + 3 > getXPixelForTimeCat()) {
+					// + 7: Test case: Granularity month -> Feb YY must be shown.
+					if (xc.width + 7 > getXPixelForTimeCat()) {
 						final String text = tg.getCategoryValue(cat, cal.getTime());
 						group.appendChild(sdds.createText(xc.x + XPIXEL_OFFSET + xc.width/2, currentY + YPIXEL_HEADER_TXT_OFFSET, 
 							text, "headerTxt"));
@@ -260,12 +274,13 @@ public abstract class AbstractResPlanExporter<R,E> implements IResPlanExporter<R
 			g.appendChild(group);
 			
 			final SVGRectElement rect = sdds.createRect(xc.x + XPIXEL_OFFSET, currentY + YPIXEL_RESOURCE_BORDER, xc.width, 
-					YPIXEL_FOR_RESOURCE - 2 * YPIXEL_RESOURCE_BORDER, "lane-grey");
-			final SVGTextElement text = sdds.createText(xc.x + XPIXEL_OFFSET, currentY + YPIXEL_BIGTXT_OFFSET, entryName, "bigTxt");
+					YPIXEL_FOR_RESOURCE - 2 * YPIXEL_RESOURCE_BORDER, entryRectClass());
+			final SVGTextElement text = sdds.createText(xc.x + XPIXEL_OFFSET, currentY + YPIXEL_BIGTXT_OFFSET, entryName, entryTxtClass());
 			group.appendChild(rect);
 			group.appendChild(text);
 		}
 		lastInterval.set(i);
+		++entryNumber;
 	}
 	
 	protected void beforeNextLineInSameResource(SVGElement g, Interval<Date> lastInterval) {

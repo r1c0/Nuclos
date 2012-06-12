@@ -26,8 +26,14 @@
 	.bigTxt 
 		{font-size:20px;font-style:normal;font-weight:normal;text-align:start;line-height:125%;letter-spacing:0px;word-spacing:0px;
 		text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans}
+	.bigTxtCentered
+		{font-size:20px;font-style:normal;font-weight:normal;text-align:center;line-height:125%;letter-spacing:0px;word-spacing:0px;
+		text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans}
 	.bigTxtWhite 
 		{font-size:20px;font-style:normal;font-weight:normal;text-align:start;line-height:125%;letter-spacing:0px;word-spacing:0px;
+		text-anchor:start;fill:#ffffff;fill-opacity:1;stroke:none;font-family:Sans}
+	.bigTxtWhiteCentered 
+		{font-size:20px;font-style:normal;font-weight:normal;text-align:center;line-height:125%;letter-spacing:0px;word-spacing:0px;
 		text-anchor:start;fill:#ffffff;fill-opacity:1;stroke:none;font-family:Sans}
 	.txt 
 		{font-size:12px;font-style:normal;font-weight:normal;text-align:start;line-height:125%;letter-spacing:0px;word-spacing:0px;
@@ -42,6 +48,50 @@
 		{fill:#c8c8c8;fill-opacity:0.78431373;stroke:#0f5934;stroke-width:1.83711731;stroke-miterlimit:4;stroke-opacity:1;
 		stroke-dasharray:none}
 			
+	.lane-green0 
+		{fill:#124147;fill-opacity:1;stroke:none}
+	.lane-green1 
+		{fill:#0f5934;fill-opacity:1;stroke:none}
+	.lane-green2 
+		{fill:#1ca23f;fill-opacity:1;stroke:none}
+	.lane-green3 
+		{fill:#b9d12d;fill-opacity:1;stroke:none}
+	.lane-green4 
+		{fill:#faea3b;fill-opacity:1;stroke:none}
+		
+	.lane-blue0 
+		{fill:#123995;fill-opacity:1;stroke:none}
+	.lane-blue1 
+		{fill:#1d63f8;fill-opacity:1;stroke:none}
+	.lane-blue2 
+		{fill:#32a3f9;fill-opacity:1;stroke:none}
+	.lane-blue3 
+		{fill:#35c8db;fill-opacity:1;stroke:none}
+	.lane-blue4 
+		{fill:#34fffe;fill-opacity:1;stroke:none}
+		
+	.lane-red0 
+		{fill:#771e6;fill-opacity:1;stroke:none}
+	.lane-red1 
+		{fill:#d41d29;fill-opacity:1;stroke:none}
+	.lane-red2 
+		{fill:#fa7032;fill-opacity:1;stroke:none}
+	.lane-red3 
+		{fill:#fa7a63d;fill-opacity:1;stroke:none}
+	.lane-red4 
+		{fill:#f8d343;fill-opacity:1;stroke:none}
+		
+	.lane-violet0 
+		{fill:#58247f;fill-opacity:1;stroke:none}
+	.lane-violet1 
+		{fill:#ba21bc;fill-opacity:1;stroke:none}
+	.lane-violet2 
+		{fill:#d13bf8;fill-opacity:1;stroke:none}
+	.lane-violet3 
+		{fill:#fa11f8;fill-opacity:1;stroke:none}
+	.lane-violet4 
+		{fill:#fca9fb;fill-opacity:1;stroke:none}
+		
 	.rhomb-light-yellow 
 		{fill:#ebe0c0;fill-opacity:1;stroke:#ba9d02;stroke-width:3;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none}
 	.rhomb-light-green 
