@@ -98,14 +98,19 @@ public class TargetComponentAwareItemListener implements ItemListener {
 				if(!StringUtils.isNullOrEmpty(layoutMLRuleAction.getEntity())) {
 					// its a subform... do it the other way
 					WYSIWYGSubFormColumn column = editorPanel.getWYSIWYGSubformColumnUsingEntity(targetComponent);
-					vp = (PropertyValueValuelistProvider) column.getProperties().getProperty(WYSIWYGComponent.PROPERTY_VALUELISTPROVIDER);
+					if (column != null)
+						vp = (PropertyValueValuelistProvider) column.getProperties().getProperty(WYSIWYGComponent.PROPERTY_VALUELISTPROVIDER);
 				}
 				else {
 					// its a collectable component
 					WYSIWYGCollectableComponent component = editorPanel.getWYSIWYGComponentUsingEntity(targetComponent);
-					vp = (PropertyValueValuelistProvider) component.getProperties().getProperty(WYSIWYGComponent.PROPERTY_VALUELISTPROVIDER);
+					if (component != null)
+						vp = (PropertyValueValuelistProvider) component.getProperties().getProperty(WYSIWYGComponent.PROPERTY_VALUELISTPROVIDER);
 				}
-				if(vp.getValue() != null) {
+				if(vp == null) {
+					parameterForSourceComponent.addItem("");
+					parameterForSourceComponent.setSelectedItem("");
+				} else if(vp.getValue() != null) {
 					if(vp.getValue().getType() != null) {
 						String vpType = vp.getValue().getType();
 						if(vpType.contains(".ds")) {

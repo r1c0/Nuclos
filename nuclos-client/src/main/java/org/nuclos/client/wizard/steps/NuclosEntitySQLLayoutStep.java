@@ -56,6 +56,7 @@ import javax.swing.tree.TreePath;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.nuclos.client.common.MetaDataClientProvider;
+import org.nuclos.client.common.NuclosCollectableEntityProvider;
 import org.nuclos.client.layout.DefaultLayoutMLFactory;
 import org.nuclos.client.layout.wysiwyg.WYSIWYGLayoutControllingPanel;
 import org.nuclos.client.layout.wysiwyg.WYSIWYGMetaInformation;
@@ -91,6 +92,7 @@ import org.nuclos.common.NuclosScript;
 import org.nuclos.common.SearchConditionUtils;
 import org.nuclos.common.TranslationVO;
 import org.nuclos.common.attribute.ComponentType;
+import org.nuclos.common.collect.collectable.CollectableEntity;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableComparison;
 import org.nuclos.common.collect.collectable.searchcondition.ComparisonOperator;
@@ -981,32 +983,61 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 	private List<MasterDataVO> searchParentLayouts() {
 		List<MasterDataVO> layoutToChange = new ArrayList<MasterDataVO>();
 		for(Attribute attr : model.getAttributeModel().getRemoveAttributes()) {
-			if(attr.getMetaVO() != null) {
-				for(String sParentEntity : searchParentEntity(model.getEntityName())) {
-					Set<Integer> lstLayouts = new HashSet<Integer>();
-					CollectableComparison compare = SearchConditionUtils.newComparison(NuclosEntity.LAYOUTUSAGE.getEntityName(), "entity", ComparisonOperator.EQUAL, sParentEntity);
-					for(MasterDataVO layout : MasterDataDelegate.getInstance().getMasterData(NuclosEntity.LAYOUTUSAGE.getEntityName(), compare)) {
-						lstLayouts.add((Integer)layout.getField("layoutId"));
-					}
-					for(Integer iLayoutId : lstLayouts) {
-						try {
-							MasterDataVO voLayout = MasterDataDelegate.getInstance().get(NuclosEntity.LAYOUT.getEntityName(), iLayoutId);
+			for(String sParentEntity : searchParentEntity(model.getEntityName())) {
+				Set<Integer> lstLayouts = new HashSet<Integer>();
+				CollectableComparison compare = SearchConditionUtils.newComparison(NuclosEntity.LAYOUTUSAGE.getEntityName(), "entity", ComparisonOperator.EQUAL, sParentEntity);
+				for(MasterDataVO layout : MasterDataDelegate.getInstance().getMasterData(NuclosEntity.LAYOUTUSAGE.getEntityName(), compare)) {
+					lstLayouts.add((Integer)layout.getField("layoutId"));
+				}
+				for(Integer iLayoutId : lstLayouts) {
+					try {
+						MasterDataVO voLayout = MasterDataDelegate.getInstance().get(NuclosEntity.LAYOUT.getEntityName(), iLayoutId);
 
-							String sLayout = (String)voLayout.getField("layoutML");
+						String sLayout = (String)voLayout.getField("layoutML");
 
-							WYSIWYGLayoutControllingPanel ctrlPanel = new WYSIWYGLayoutControllingPanel(new WYSIWYGMetaInformation());
+						WYSIWYGLayoutControllingPanel ctrlPanel = new WYSIWYGLayoutControllingPanel(new WYSIWYGMetaInformation());
+						CollectableEntity entity = NuclosCollectableEntityProvider.getInstance().getCollectableEntity(sParentEntity);
+						ctrlPanel.getMetaInformation().setCollectableEntity(entity);
+						ctrlPanel.setLayoutML(sLayout);
 
-							ctrlPanel.setLayoutML(sLayout);
+						if(attr.getField() != null && NuclosWizardUtils.searchParentEntity(getModel().getEntityName()).size() < 1) {
+							List<WYSIWYGComponent> allCollectables = new ArrayList<WYSIWYGComponent>();
+							ctrlPanel.getEditorPanel().getWYSIWYGComponents(WYSIWYGComponent.class, ctrlPanel.getEditorPanel().getMainEditorPanel(), allCollectables);
+							for(WYSIWYGComponent collectable : allCollectables) {
+								if(collectable.getLayoutMLRulesIfCapable() == null)
+									continue;
+								Collection<LayoutMLRule> copyOfRules = new ArrayList<LayoutMLRule>();
+								copyOfRules.addAll(collectable.getLayoutMLRulesIfCapable().getRules());
+								for(LayoutMLRule rule : collectable.getLayoutMLRulesIfCapable().getRules()) {
+									for(LayoutMLRuleAction action : rule.getLayoutMLRuleActions().getSingleActions()) {
+										if(action.getEntity() != null && action.getEntity().equals(model.getEntityName())) {
+											if(action.getTargetComponent().equals(attr.getInternalName())) {
+												copyOfRules.remove(rule);
+											}
+										}
+									}
+								}
+								collectable.getLayoutMLRulesIfCapable().clearRulesForComponent();
+								for(LayoutMLRule rule : copyOfRules) {
+									collectable.getLayoutMLRulesIfCapable().addRule(rule);
+								}
+							}
 
-							if(attr.getField() != null && NuclosWizardUtils.searchParentEntity(getModel().getEntityName()).size() < 1) {
-								List<WYSIWYGComponent> allCollectables = new ArrayList<WYSIWYGComponent>();
-								ctrlPanel.getEditorPanel().getWYSIWYGComponents(WYSIWYGComponent.class, ctrlPanel.getEditorPanel().getMainEditorPanel(), allCollectables);
-								for(WYSIWYGComponent collectable : allCollectables) {
-									if(collectable.getLayoutMLRulesIfCapable() == null)
+							List<WYSIWYGSubForm> allSubForms = new ArrayList<WYSIWYGSubForm>();
+							ctrlPanel.getEditorPanel().getWYSIWYGComponents(WYSIWYGSubForm.class, ctrlPanel.getEditorPanel().getMainEditorPanel(), allSubForms);
+							for(WYSIWYGSubForm collectable : allSubForms) {
+								Collection<WYSIWYGSubFormColumn> copyOfColumns = new ArrayList<WYSIWYGSubFormColumn>(collectable.getColumns());
+								for(WYSIWYGSubFormColumn col : copyOfColumns) {
+									CollectableEntityField field = col.getEntityField();
+									if(field.getName().equals(attr.getInternalName())) {
+										collectable.removeColumn(col.getName());
+									}
+									
+									if(col.getLayoutMLRulesIfCapable() == null)
 										continue;
 									Collection<LayoutMLRule> copyOfRules = new ArrayList<LayoutMLRule>();
-									copyOfRules.addAll(collectable.getLayoutMLRulesIfCapable().getRules());
-									for(LayoutMLRule rule : collectable.getLayoutMLRulesIfCapable().getRules()) {
+									copyOfRules.addAll(col.getLayoutMLRulesIfCapable().getRules());
+									for(LayoutMLRule rule : col.getLayoutMLRulesIfCapable().getRules()) {
 										for(LayoutMLRuleAction action : rule.getLayoutMLRuleActions().getSingleActions()) {
 											if(action.getEntity() != null && action.getEntity().equals(model.getEntityName())) {
 												if(action.getTargetComponent().equals(attr.getInternalName())) {
@@ -1015,45 +1046,60 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 											}
 										}
 									}
-									collectable.getLayoutMLRulesIfCapable().clearRulesForComponent();
+									col.getLayoutMLRulesIfCapable().clearRulesForComponent();
 									for(LayoutMLRule rule : copyOfRules) {
-										collectable.getLayoutMLRulesIfCapable().addRule(rule);
+										col.getLayoutMLRulesIfCapable().addRule(rule);
 									}
 								}
+							}
+						}
+						else if(NuclosWizardUtils.searchParentEntity(getModel().getEntityName()).size() > 0) {
+							List<WYSIWYGSubForm> allSubForms = new ArrayList<WYSIWYGSubForm>();
+							ctrlPanel.getEditorPanel().getWYSIWYGComponents(WYSIWYGSubForm.class, ctrlPanel.getEditorPanel().getMainEditorPanel(), allSubForms);
+							for(WYSIWYGSubForm collectable : allSubForms) {
+								String sSubFormEntity = collectable.getEntityName();
+								if(getModel().getEntityName().equals(sSubFormEntity) && 
+										((attr.getMetaVO() != null && attr.getMetaVO().getEntity().equals(sParentEntity))
+												|| (attr.getLookupMetaVO() != null && attr.getLookupMetaVO().getEntity().equals(sParentEntity)))) {
+									ctrlPanel.getEditorPanel().getTableLayoutUtil().removeComponentFromLayout(collectable);
+								}
 
-								List<WYSIWYGSubForm> allSubForms = new ArrayList<WYSIWYGSubForm>();
-								ctrlPanel.getEditorPanel().getWYSIWYGComponents(WYSIWYGSubForm.class, ctrlPanel.getEditorPanel().getMainEditorPanel(), allSubForms);
-								for(WYSIWYGSubForm collectable : allSubForms) {
-									Collection<WYSIWYGSubFormColumn> copyOfColumns = new ArrayList<WYSIWYGSubFormColumn>(collectable.getColumns());
-									for(WYSIWYGSubFormColumn col : copyOfColumns) {
-										CollectableEntityField field = col.getEntityField();
-										if(field.getName().equals(attr.getInternalName())) {
-											collectable.removeColumn(col.getName());
+								Collection<WYSIWYGSubFormColumn> copyOfColumns = new ArrayList<WYSIWYGSubFormColumn>(collectable.getColumns());
+								for(WYSIWYGSubFormColumn col : copyOfColumns) {
+									CollectableEntityField field = col.getEntityField();
+									if(field.getName().equals(attr.getInternalName())) {
+										collectable.removeColumn(col.getName());
+									}
+									
+									if(col.getLayoutMLRulesIfCapable() == null)
+										continue;
+									Collection<LayoutMLRule> copyOfRules = new ArrayList<LayoutMLRule>();
+									copyOfRules.addAll(col.getLayoutMLRulesIfCapable().getRules());
+									for(LayoutMLRule rule : col.getLayoutMLRulesIfCapable().getRules()) {
+										for(LayoutMLRuleAction action : rule.getLayoutMLRuleActions().getSingleActions()) {
+											if(action.getEntity() != null && action.getEntity().equals(model.getEntityName())) {
+												if(action.getTargetComponent().equals(attr.getInternalName())) {
+													copyOfRules.remove(rule);
+												}
+											}
 										}
 									}
-
-								}
-							}
-							else if(NuclosWizardUtils.searchParentEntity(getModel().getEntityName()).size() > 0) {
-								List<WYSIWYGSubForm> allSubForms = new ArrayList<WYSIWYGSubForm>();
-								ctrlPanel.getEditorPanel().getWYSIWYGComponents(WYSIWYGSubForm.class, ctrlPanel.getEditorPanel().getMainEditorPanel(), allSubForms);
-								for(WYSIWYGSubForm collectable : allSubForms) {
-									String sSubFormEntity = collectable.getEntityName();
-									if(getModel().getEntityName().equals(sSubFormEntity) && attr.getMetaVO().getEntity().equals(sParentEntity)) {
-										ctrlPanel.getEditorPanel().getTableLayoutUtil().removeComponentFromLayout(collectable);
+									col.getLayoutMLRulesIfCapable().clearRulesForComponent();
+									for(LayoutMLRule rule : copyOfRules) {
+										col.getLayoutMLRulesIfCapable().addRule(rule);
 									}
 								}
 							}
-
-							sLayout = ctrlPanel.getLayoutML();
-
-							voLayout.setField("layoutML", sLayout);
-							layoutToChange.add(voLayout);
 						}
-						catch(Exception e) {
-							// don't modify layout
-							LOG.info("searchParentLayouts failed: " + e);
-						}
+
+						sLayout = ctrlPanel.getLayoutML();
+
+						voLayout.setField("layoutML", sLayout);
+						layoutToChange.add(voLayout);
+					}
+					catch(Exception e) {
+						// don't modify layout
+						LOG.info("searchParentLayouts failed: " + e);
 					}
 				}
 			}
