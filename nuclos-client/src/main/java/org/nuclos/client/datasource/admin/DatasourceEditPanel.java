@@ -153,7 +153,8 @@ public class DatasourceEditPanel extends JPanel {
 	 * @return true if editing could be stopped
 	 */
 	public boolean stopEditing() {
-		return pnlQueryEditor.stopEditing() & sqlPanel.getParameterPanel().stopEditing();
+		return pnlQueryEditor.stopEditing() &
+				(sqlPanel.getParameterPanel() == null ? true : sqlPanel.getParameterPanel().stopEditing());
 	}
 
 
