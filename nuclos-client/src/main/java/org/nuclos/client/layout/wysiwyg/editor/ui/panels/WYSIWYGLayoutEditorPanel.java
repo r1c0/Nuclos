@@ -479,7 +479,7 @@ public class WYSIWYGLayoutEditorPanel extends JPanel implements WYSIWYGComponent
 			if ((e.getX() <= InterfaceGuidelines.MARGIN_LEFT && e.getY() < InterfaceGuidelines.MARGIN_TOP)) {
 				ComponentPopUp popup = new ComponentPopUp(getTableLayoutUtil(), this);
 
-				Point loc = tableLayoutPanel.getMousePosition().getLocation();
+				Point loc = tableLayoutPanel.getMousePosition() == null ? null : tableLayoutPanel.getMousePosition().getLocation();
 				if (loc == null) {
 					loc = (Point)e.getLocationOnScreen().clone();
 					SwingUtilities.convertPointFromScreen(loc, e.getComponent());
