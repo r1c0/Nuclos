@@ -553,7 +553,7 @@
 				<artifactId>maven-jar-plugin</artifactId>
 				<configuration>
 					<archive>
-						<index>true</index>
+						<index>false</index>
 					</archive>
 				</configuration>
 			</plugin>
