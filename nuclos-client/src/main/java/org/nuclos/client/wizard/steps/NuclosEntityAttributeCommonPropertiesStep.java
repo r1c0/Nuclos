@@ -1282,7 +1282,7 @@ public class NuclosEntityAttributeCommonPropertiesStep extends NuclosEntityAttri
 
 		Attribute attr = NuclosEntityAttributeCommonPropertiesStep.this.getModel().getAttribute();
 		if(NuclosEntityAttributeCommonPropertiesStep.this.parentWizardModel.hasRows() && attr.getId() != null ) {
-			boolean blnAllowed = MetaDataDelegate.getInstance().isChangeDatabaseColumnToUniqueAllowed(
+			boolean blnAllowed = StringUtils.isEmpty(attr.getInternalName()) ? false : MetaDataDelegate.getInstance().isChangeDatabaseColumnToUniqueAllowed(
 				NuclosEntityAttributeCommonPropertiesStep.this.parentWizardModel.getEntityName(), attr.getInternalName());
 
 			if(!blnAllowed && !attr.isDistinct()) {
