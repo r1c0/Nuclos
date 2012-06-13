@@ -3,6 +3,7 @@ package org.nuclos.client.ui.model;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 import javax.swing.JList;
@@ -14,13 +15,21 @@ public class ListModelUtils {
 		// Never invoked.
 	}
 	
-	public static int[] findIndices(ListModel model, Collection<?> objects) {
+	public static int[] findIndices(ListModel model, Iterable<?> objects) {
 		final int len = model.getSize();
 		final int[] r = new int[len];
 		int j = 0;
+		
 		for (int i = 0; i < len; ++i) {
 			final Object item = model.getElementAt(i);
-			if (objects.contains(item)) {
+			boolean contains = false;
+			for (Object o: objects) {
+				if (o.equals(item)) {
+					contains = true;
+					break;
+				}
+			}
+			if (contains) {
 				r[j++] = i;
 			}
 		}
@@ -29,7 +38,7 @@ public class ListModelUtils {
 		return result;
 	}
 	
-	public static <T> int[] findIndices(ListModel model, Collection<? extends T> objects, Comparator<T> comp) {
+	public static <T> int[] findIndices(ListModel model, Iterable<? extends T> objects, Comparator<T> comp) {
 		final int len = model.getSize();
 		final int[] r = new int[len];
 		int j = 0;
@@ -51,12 +60,12 @@ public class ListModelUtils {
 		return result;
 	}
 	
-	public static void setSelected(JList jlist, Collection<?> objects) {
+	public static void setSelected(JList jlist, Iterable<?> objects) {
 		final int[] indices = findIndices(jlist.getModel(), objects);
 		jlist.setSelectedIndices(indices);
 	}
 	
-	public static <T> void setSelected(JList jlist, Collection<? extends T> objects, Comparator<T> comp) {
+	public static <T> void setSelected(JList jlist, Iterable<? extends T> objects, Comparator<T> comp) {
 		final int[] indices = findIndices(jlist.getModel(), objects, comp);
 		jlist.setSelectedIndices(indices);
 	}

@@ -553,7 +553,7 @@
 				<artifactId>maven-jar-plugin</artifactId>
 				<configuration>
 					<archive>
-						<index/>
+						<index>true</index>
 					</archive>
 				</configuration>
 			</plugin>
@@ -741,7 +741,7 @@
 		</pluginRepository>
 	</pluginRepositories>
   
-  <distributionManagement>
+	<distributionManagement>
 		<site>
 			<id>www.nuclos.de</id>
 			<url>scp://www.nuclos.de/www/docs/project/</url>
