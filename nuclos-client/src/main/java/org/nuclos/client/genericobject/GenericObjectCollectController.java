@@ -56,6 +56,7 @@ import javax.swing.JButton;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
+import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -73,6 +74,8 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.event.PopupMenuEvent;
+import javax.swing.event.PopupMenuListener;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
@@ -212,6 +215,7 @@ import org.nuclos.common.collect.collectable.searchcondition.CompositeCollectabl
 import org.nuclos.common.collect.collectable.searchcondition.LogicalOperator;
 import org.nuclos.common.collect.collectable.searchcondition.SearchConditionUtils;
 import org.nuclos.common.collect.exception.CollectableFieldFormatException;
+import org.nuclos.common.collection.BinaryPredicate;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Predicate;
 import org.nuclos.common.collection.PredicateUtils;
@@ -671,6 +675,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		addCollectableEventListener(collectableEventListener);
 
 		setupResultContextMenuGeneration();
+		setupResultContextMenuStates();
 	}
 
 	private void setupToolbars() {
@@ -3756,15 +3761,28 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	 */
 	private boolean cmdChangeStates(final StateWrapper stateFinal, final List<Integer> statesNew) {
 		if (isHistoricalView())
-			throw new IllegalStateException(getSpringLocaleDelegate().getMessage("GenericObjectCollectController.90","Statuswechsel ist in historischer Ansicht nicht m\u00f6glich."));
-		if (!getCollectState().isDetailsMode())
-			throw new IllegalStateException(getSpringLocaleDelegate().getMessage("GenericObjectCollectController.91","Statuswechsel ist nur in Detailmodus m\u00f6glich."));
+			throw new IllegalStateException(getSpringLocaleDelegate().getMessage("GenericObjectCollectController.90","Statuswechsel ist in historischer Ansicht nicht m\u00f6glich."));			
+		
+		final boolean bMultiEdit;
+		if (getCollectState().isDetailsMode()) {
+			bMultiEdit = getCollectState().isDetailsModeMultiViewOrEdit();
+		} else if (getCollectState().isResultMode()) {
+			bMultiEdit = getSelectedCollectables().size() > 1;
+		} else {
+			throw new IllegalStateException(getSpringLocaleDelegate().getMessage("GenericObjectCollectController.91","Statuswechsel ist nur in Detail- order Ergebnisansicht m\u00f6glich."));
+		}
 
-		final boolean bMultiEdit = getCollectState().isDetailsModeMultiViewOrEdit();
-
-		String sQuestion = bMultiEdit
-		? getSpringLocaleDelegate().getMessage("GenericObjectCollectController.79","Soll der Wechsel in den Status \"{0}\" f\u00fcr die ausgew\u00e4hlten Objekte wirklich durchgef\u00fchrt werden?\nDie vorgenommenen \u00c4nderungen an dem Objekt werden gespeichert.", stateFinal.getStatusText())
-			: getSpringLocaleDelegate().getMessage("GenericObjectCollectController.80","Soll der Wechsel in den Status \"{0}\" wirklich durchgef\u00fchrt werden?", stateFinal.getStatusText());
+		String sQuestion;
+		if (bMultiEdit) {
+			if (getCollectState().isDetailsMode()) {
+				sQuestion = getSpringLocaleDelegate().getMessage("GenericObjectCollectController.79","Soll der Wechsel in den Status \"{0}\" f\u00fcr die ausgew\u00e4hlten Objekte wirklich durchgef\u00fchrt werden?", stateFinal.getStatusText()) 
+						+ getSpringLocaleDelegate().getMessage("GenericObjectCollectController.79b","\nDie vorgenommenen \u00c4nderungen an dem Objekt werden gespeichert.", stateFinal.getStatusText());
+			} else {
+				sQuestion = getSpringLocaleDelegate().getMessage("GenericObjectCollectController.79","Soll der Wechsel in den Status \"{0}\" f\u00fcr die ausgew\u00e4hlten Objekte wirklich durchgef\u00fchrt werden?", stateFinal.getStatusText());
+			}
+		} else {
+			sQuestion = getSpringLocaleDelegate().getMessage("GenericObjectCollectController.80","Soll der Wechsel in den Status \"{0}\" wirklich durchgef\u00fchrt werden?", stateFinal.getStatusText());
+		}
 
 		Object[] argsOptionPane = new Object[] {sQuestion};
 		if (stateFinal.getDescription() != null && !stateFinal.getDescription().isEmpty()) {
@@ -3862,7 +3880,14 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	 * NUCLEUSINT-1159 needed for accessing the statechange for status button
 	 */
 	private void changeStates(final StateWrapper stateFinal, final List<Integer> statesNew) {
-		final boolean bMultiEdit = getCollectState().isDetailsModeMultiViewOrEdit();
+		final boolean bMultiEdit;
+		if (getCollectState().isDetailsMode()) {
+			bMultiEdit = getCollectState().isDetailsModeMultiViewOrEdit();
+		} else if (getCollectState().isResultMode()) {
+			bMultiEdit = getSelectedCollectables().size() > 1;
+		} else {
+			throw new IllegalArgumentException("Illegal collect state");
+		}
 
 		stopEditingInDetails();
 
@@ -3875,7 +3900,13 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 
 			@Override
 			public void run() throws CommonBusinessException {
-					if (getCollectStateModel().getDetailsMode() == CollectState.DETAILSMODE_EDIT ||
+					if (getCollectState().isResultMode()) {
+						if (bMultiEdit)
+							GenericObjectCollectController.this.changeStatesForMultipleObjects(stateFinal, statesNew);
+						else
+							GenericObjectCollectController.this.changeStatesForSingleObjectAndSave(statesNew);
+					} 
+					else if (getCollectStateModel().getDetailsMode() == CollectState.DETAILSMODE_EDIT ||
 						getCollectStateModel().getDetailsMode() == CollectState.DETAILSMODE_NEW_CHANGED) {
 						if (bMultiEdit) {
 							getSubFormsLoader().setAfterLoadingRunnable(new CommonRunnable() {
@@ -4059,8 +4090,14 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 					// We have to reload the current leased object, as some fields might have changed:
 					// . nuclosState because of the status change
 					// . other fields because of business rules
-					if (!errorOccurred)
-						GenericObjectCollectController.this.refreshCurrentCollectable(false);
+					if (!errorOccurred) {
+						if (getCollectState().isResultMode()) {
+							getResultController().getSearchResultStrategy().refreshResult();
+							setCollectState(CollectState.OUTERSTATE_RESULT, CollectState.RESULTMODE_NOSELECTION);
+						} else {
+							GenericObjectCollectController.this.refreshCurrentCollectable(false);
+						}
+					}
 				}
 				finally {
 					isProcessingStateChange.set(false);
@@ -4097,11 +4134,11 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 
 
 	private void changeStateForMultipleObjects(final StateWrapper stateNew) throws CommonBusinessException {
-		new ChangeStateForSelectedCollectablesController(this, stateNew, new LinkedList<Integer>(Collections.singleton(stateNew.getId()))).run(getMultiActionProgressPanel(getSelectedCollectables().size()));
+		new ChangeStateForSelectedCollectablesController(this, stateNew, new LinkedList<Integer>(Collections.singleton(stateNew.getId())), !getCollectState().isResultMode()).run(getMultiActionProgressPanel(getSelectedCollectables().size()));
 	}
 
 	private void changeStatesForMultipleObjects(final StateWrapper stateFinal, final List<Integer> statesNew) throws CommonBusinessException {
-		new ChangeStateForSelectedCollectablesController(this, stateFinal, statesNew).run(getMultiActionProgressPanel(getSelectedCollectables().size()));
+		new ChangeStateForSelectedCollectablesController(this, stateFinal, statesNew, !getCollectState().isResultMode()).run(getMultiActionProgressPanel(getSelectedCollectables().size()));
 	}
 
 	protected boolean showObjectGenerationWarningIfNewObjectIsNotSaveable() {
@@ -5269,17 +5306,21 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 			private final GenericObjectCollectController ctl;
 			private final StateWrapper stateFinal;
 			private final List<Integer> statesNew;
+			private final boolean triggerUpdateBeforeStateChange;
 
-			ChangeStateAction(GenericObjectCollectController ctl, StateWrapper stateFinal, List<Integer> statesNew) throws CommonBusinessException {
+			ChangeStateAction(GenericObjectCollectController ctl, StateWrapper stateFinal, List<Integer> statesNew, boolean triggerUpdateBeforeStateChange) throws CommonBusinessException {
 				super(ctl);
 				this.ctl = ctl;
 				this.stateFinal = stateFinal;
 				this.statesNew = statesNew;
+				this.triggerUpdateBeforeStateChange = triggerUpdateBeforeStateChange;
 			}
 
 			@Override
 			public Object perform(CollectableGenericObjectWithDependants clctlo) throws CommonBusinessException {
-				super.perform(clctlo);
+				if (triggerUpdateBeforeStateChange) {
+					super.perform(clctlo);
+				}
 
 				final GenericObjectVO govo = clctlo.getGenericObjectCVO();
 				for (final Integer stateNew : statesNew) {
@@ -5337,8 +5378,8 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 			}
 		}
 
-		ChangeStateForSelectedCollectablesController(GenericObjectCollectController ctl, StateWrapper stateNew,  final List<Integer> statesNew) throws CommonBusinessException {
-			super(ctl, SpringLocaleDelegate.getInstance().getMessage("GenericObjectCollectController.88","Statuswechsel in Status \"{0}\"", stateNew.getStatusText()), new ChangeStateAction(ctl, stateNew, statesNew), ctl.getCompleteSelectedCollectables());
+		ChangeStateForSelectedCollectablesController(GenericObjectCollectController ctl, StateWrapper stateNew,  final List<Integer> statesNew, boolean triggerUpdateBeforeStateChange) throws CommonBusinessException {
+			super(ctl, SpringLocaleDelegate.getInstance().getMessage("GenericObjectCollectController.88","Statuswechsel in Status \"{0}\"", stateNew.getStatusText()), new ChangeStateAction(ctl, stateNew, statesNew, triggerUpdateBeforeStateChange), ctl.getCompleteSelectedCollectables());
 		}
 
 	}	// class ChangeStateForSelectedCollectablesController
@@ -6152,5 +6193,91 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 				m.setField(new CollectableValueIdField(getProcess().getValueId(), getProcess().getValue()));
 			}
 		}
+	}
+	
+	protected List<StateVO> getSubsequentStates() {
+		List<StateVO> result = null;
+		
+		final List<CollectableGenericObjectWithDependants> selectedGOs = getSelectedCollectables();
+		for (CollectableGenericObjectWithDependants go : selectedGOs) {
+			UsageCriteria uc = getUsageCriteria(go);
+			DynamicAttributeVO av = go.getGenericObjectCVO().getAttribute(NuclosEOField.STATE.getMetaData().getId().intValue());
+			List<StateVO> lstSubsequentStates = StateDelegate.getInstance().getStatemodel(uc).getSubsequentStates(av.getValueId(), false);
+			if (result == null) {
+				result = lstSubsequentStates;
+			} else {
+				result = new ArrayList<StateVO>(CollectionUtils.intersection(result, lstSubsequentStates, new BinaryPredicate<StateVO, StateVO>() {
+					@Override
+					public boolean evaluate(StateVO t1, StateVO t2) {
+						return LangUtils.equals(t1.getId(), t2.getId());
+					}}));
+			}
+		}
+		
+		if (result == null) {
+			return new ArrayList<StateVO>();
+		} else {
+			return result;
+		}
+	}
+	
+	protected void setupResultContextMenuStates() {		
+		this.getResultPanel().popupmenuRow.addPopupMenuListener(new PopupMenuListener() {
+
+			@Override
+			public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
+
+				try {
+					final List<StateVO> lstSubsequenteStates = getSubsequentStates();
+
+					JMenu mi = getResultPanel().miStates;
+					mi.setVisible(lstSubsequenteStates.size() != 0);
+					for(final StateVO stateVO : lstSubsequenteStates) {
+						mi.add(new JMenuItem(new StateChangeAction(stateVO)));
+					}
+				}
+				catch (Exception e1) {
+					getResultPanel().miStates.setVisible(false);
+					LOG.warn("popupMenuWillBecomeVisible failed: " + e1 + ", setting it invisible");
+				}
+			}
+
+			@Override
+			public void popupMenuWillBecomeInvisible(PopupMenuEvent e) {
+				clearStatesMenu();
+			}
+
+			@Override
+			public void popupMenuCanceled(PopupMenuEvent e) {
+				clearStatesMenu();
+			}
+
+			private void clearStatesMenu() {
+				 getResultPanel().miStates.removeAll();
+			}
+		});
+	}
+	
+	protected class StateChangeAction extends AbstractAction {
+		
+		private final StateVO statevo;
+
+		public StateChangeAction(StateVO statevo) {
+			super(statevo.getNumeral() + " " + statevo.getStatename());
+			this.statevo = statevo;
+		}
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			List<Integer> newStates = new ArrayList<Integer>(1);
+			newStates.add(statevo.getId());
+			StateWrapper sw = new StateWrapper(statevo.getId(), statevo.getNumeral(),
+					getSpringLocaleDelegate().getResource(/*StateDelegate.getInstance().getResourceSIdForName(statevo.getId()*/
+					StateDelegate.getInstance().getStatemodelClosure(getModuleId()).getResourceSIdForLabel(statevo.getId()),
+					statevo.getStatename()), statevo.getIcon(), statevo.getDescription(), statevo.isFromAutomatic(),
+					newStates);
+			cmdChangeStates(sw, sw.getStatesBefore());
+		}
+		
 	}
 }	// class GenericObjectCollectController

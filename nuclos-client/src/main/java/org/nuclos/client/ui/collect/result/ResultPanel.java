@@ -184,6 +184,7 @@ public class ResultPanel<Clct extends Collectable> extends JPanel {
 	public final JMenuItem miPopupCopyCells = new JMenuItem(localeDelegate.getMessage("ResultPanel.13","Kopiere markierte Zellen"));
 	public final JMenuItem miPopupCopyRows = new JMenuItem(localeDelegate.getMessage("ResultPanel.14","Kopiere markierte Zeilen"));
 	public final JMenu miGenerations = new JMenu(localeDelegate.getMessage("ResultPanel.12","Arbeitsschritte"));
+	public final JMenu miStates = new JMenu(localeDelegate.getMessage("ResultPanel.15","Nachfolge Stati"));
 
 	public ResultPanel() {
 		super(new BorderLayout());
@@ -208,6 +209,8 @@ public class ResultPanel<Clct extends Collectable> extends JPanel {
 		this.popupmenuRow.add(this.miPopupBookmark);
 		this.miGenerations.setVisible(false);
 		this.popupmenuRow.add(this.miGenerations);
+		this.miStates.setVisible(false);
+		this.popupmenuRow.add(this.miStates);
 		this.popupmenuRow.add(this.miPopupCopyCells);
 		this.popupmenuRow.add(this.miPopupCopyRows);
 

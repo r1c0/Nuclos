@@ -822,6 +822,15 @@ public class CollectionUtils {
       tmp.add(a); tmp.add(b);
       return intersectionAll(tmp);
    }
+   
+   /**
+    * @return the intersection of all Collections contained in iterable.
+    */
+   public static <E> Set<E> intersection(Collection<? extends E> a, Collection<? extends E> b, BinaryPredicate<E, E> predicateEquals) {
+      ArrayList<Collection<? extends E>> tmp = new ArrayList<Collection<? extends E>>(2);
+      tmp.add(a); tmp.add(b);
+      return intersectionAll(tmp, predicateEquals);
+   }
 
    /**
     * @param iterable

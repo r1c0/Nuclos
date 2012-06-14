@@ -21647,12 +21647,22 @@
   {
     "resourceID": "GenericObjectCollectController.79",
     "locale": "i-default",
-    "text": "Really change the state to {0} for the selected objects?\\nThe made changes at the object will be saved."
+    "text": "Really change the state to {0} for the selected objects?"
   },
   {
     "resourceID": "GenericObjectCollectController.79",
     "locale": "de",
-    "text": "Soll der Wechsel in den Status {0} für die ausgewählten Objekte wirklich durchgeführt werden?\\nDie vorgenommenen Änderungen an dem Objekt werden gespeichert."
+    "text": "Soll der Wechsel in den Status {0} für die ausgewählten Objekte wirklich durchgeführt werden?"
+  },
+  {
+    "resourceID": "GenericObjectCollectController.79b",
+    "locale": "i-default",
+    "text": "\\nThe made changes at the object will be saved."
+  },
+  {
+    "resourceID": "GenericObjectCollectController.79b",
+    "locale": "de",
+    "text": "\\nDie vorgenommenen Änderungen an dem Objekt werden gespeichert."
   },
   {
     "resourceID": "PersonalTaskController.10",
@@ -28892,17 +28902,17 @@
   {
     "resourceID": "GenericObjectCollectController.91",
     "locale": "i-default",
-    "text": "State transition only possible in details view"
+    "text": "State transition only possible in details or result view"
   },
   {
     "resourceID": "GenericObjectCollectController.91",
     "locale": "en",
-    "text": "State transition only possible in details view"
+    "text": "State transition only possible in details or result view"
   },
   {
     "resourceID": "GenericObjectCollectController.91",
     "locale": "de",
-    "text": "Statuswechsel ist nur in Detailmodus möglich."
+    "text": "Statuswechsel ist nur in Detail- order Ergebnisansicht möglich."
   },
   {
     "resourceID": "GenericObjectCollectController.92",
@@ -31728,6 +31738,16 @@
     "resourceID": "ResultPanel.14",
     "locale": "de",
     "text": "Kopiere markierte Zeilen"
+  },
+  {
+    "resourceID": "ResultPanel.15",
+    "locale": "en",
+    "text": "Change state"
+  },
+  {
+    "resourceID": "ResultPanel.15",
+    "locale": "de",
+    "text": "Statuswechsel"
   },
   {
     "resourceID": "ResultPanel.11",
