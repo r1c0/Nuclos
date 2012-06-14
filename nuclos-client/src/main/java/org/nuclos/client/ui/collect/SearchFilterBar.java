@@ -122,11 +122,11 @@ public class SearchFilterBar implements ItemSelectable {
 					}
 				} else {
 					
-					Collections.sort(fastSelect, new Comparator<SearchFilter>() {
-						@Override
-						public int compare(SearchFilter o1, SearchFilter o2) {
-							return LangUtils.compare(o1.getSearchFilterVO().getOrder(), o2.getSearchFilterVO().getOrder());
-						}});
+//					Collections.sort(fastSelect, new Comparator<SearchFilter>() {
+//						@Override
+//						public int compare(SearchFilter o1, SearchFilter o2) {
+//							return LangUtils.compare(o1.getSearchFilterVO().getOrder(), o2.getSearchFilterVO().getOrder());
+//						}});
 					
 					for (SearchFilter sf : fastSelect) {
 						pnl.add(new SearchFilterButton(sf));

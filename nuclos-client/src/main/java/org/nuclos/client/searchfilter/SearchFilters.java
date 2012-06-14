@@ -78,8 +78,18 @@ public abstract class SearchFilters {
 				new Comparator<EntitySearchFilter>() {
 
 					@Override
-					public int compare(EntitySearchFilter o1,
-						EntitySearchFilter o2) {
+					public int compare(EntitySearchFilter o1, EntitySearchFilter o2) {
+						final Integer order1 = o1.getSearchFilterVO().getOrder();
+						final Integer order2 = o2.getSearchFilterVO().getOrder();
+						if (order1 != null && order2 == null) {
+							return -1;
+						}
+						if (order1 == null && order2 != null) {
+							return 1;
+						}
+						if (order1 != null && order2 != null) {
+							return LangUtils.compare(order1, order2);
+						}
 						return LangUtils.compare(o1.getName(), o2.getName());
 					}});
 			

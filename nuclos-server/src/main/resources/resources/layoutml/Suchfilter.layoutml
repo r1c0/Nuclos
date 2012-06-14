@@ -147,10 +147,10 @@
         <tablelayout-constraints col1="9" col2="13" row1="3" row2="11" hAlign="2" vAlign="2" />
         <tablelayout columns="-1.0" rows="-1.0" />
         <clear-border />
-        <titled-border title="Schnellwahl">
+        <titled-border title="Einstellungen f&#x00fc;r Schaltfl&#x00e4;chen">
           <translations>
-            <translation lang="en" text="Fast select"/>
-            <translation lang="de" text="Schnellwahl"/>
+            <translation lang="de" text="Einstellungen f&#x00fc;r Schaltfl&#x00e4;chen"/>
+            <translation lang="en" text="Button Settings"/>
           </translations>
         </titled-border>
         <panel>

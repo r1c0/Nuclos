@@ -9332,32 +9332,32 @@
   {
     "resourceID": "nuclos.entityfield.searchfilter.fastSelectInResult.label",
     "locale": "i-default",
-    "text": "Fast select in search result"
+    "text": "Show in search result"
   },
   {
     "resourceID": "nuclos.entityfield.searchfilter.fastSelectInResult.label",
     "locale": "en",
-    "text": "Fast select in search result"
+    "text": "Show in search result"
   },
   {
     "resourceID": "nuclos.entityfield.searchfilter.fastSelectInResult.label",
     "locale": "de",
-    "text": "Schnellwahl in Suchergebnisliste"
+    "text": "In Suchergebnisliste anzeigen"
   },
   {
     "resourceID": "nuclos.entityfield.searchfilter.fastSelectInResult.description",
     "locale": "i-default",
-    "text": "Fast select in search result"
+    "text": "Show in search result"
   },
   {
     "resourceID": "nuclos.entityfield.searchfilter.fastSelectInResult.description",
     "locale": "en",
-    "text": "Fast select in search result"
+    "text": "Show in search result"
   },
   {
     "resourceID": "nuclos.entityfield.searchfilter.fastSelectInResult.description",
     "locale": "de",
-    "text": "Schnellwahl in Suchergebnisliste"
+    "text": "In Suchergebnisliste anzeigen"
   },
   {
     "resourceID": "nuclos.entityfield.searchfilter.fastSelectIcon.label",
