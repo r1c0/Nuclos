@@ -4,6 +4,7 @@
 	<xsl:output method="xml" encoding="UTF-8" indent="yes" />
 
 	<xsl:param name="codebase" />
+	<xsl:param name="jnlp.packEnabled" />
 
 	<xsl:template match="/">
 		<jnlp spec="1.0+" codebase="{$codebase}">
@@ -17,8 +18,9 @@
 			<resources>
 				<j2se version="1.6+" />
 				<xsl:for-each select="jar">
-					<jar href="{text()}" />
+					<jar href="{text()}" download="{@download}" />
 				</xsl:for-each>
+				<property name="jnlp.packEnabled" value="{$jnlp.packEnabled}" />
 			</resources>
 			<component-desc/>
 		</jnlp>

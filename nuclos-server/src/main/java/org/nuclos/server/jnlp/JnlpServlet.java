@@ -16,16 +16,21 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.server.jnlp;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.regex.Pattern;
 
 import javax.servlet.ServletConfig;
@@ -45,6 +50,7 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
+import org.apache.axis.configuration.FileProvider;
 import org.apache.log4j.Logger;
 import org.nuclos.common.ApplicationProperties;
 import org.nuclos.server.common.ServerProperties;
@@ -64,6 +70,47 @@ import org.w3c.dom.Node;
 public class JnlpServlet extends HttpServlet {
 
 	private static final Logger LOG = Logger.getLogger(JnlpServlet.class);
+	
+	private static final SortedSet<String> LAZY_LIBS;
+	
+	static {
+		final SortedSet<String> l = new TreeSet<String>();
+		// should be lazy.txt - but is temporary disabled (tp)
+		final InputStream ins = JnlpServlet.class.getClassLoader().getResourceAsStream("jnlp/lazy2.txt");
+		BufferedReader in = null;
+		try {
+			if (ins != null) {
+				in = new BufferedReader(new InputStreamReader(ins, "UTF8"));
+				String line;
+				do {
+					line = in.readLine();
+					if (line != null)  {
+						line = line.trim();
+						if (!"".equals(line) && !line.startsWith("#")) {
+							l.add(line);
+						}
+					}
+				} while(line != null);
+			}
+		}
+		catch (IOException e) {
+			// ignore
+			LOG.warn("Loading of lazy.properties failed: " + e.toString());
+		}
+		finally {
+			if (in != null) {
+				try {
+					in.close();
+				}
+				catch (IOException e) {
+					// ignore
+				}
+			}
+		}
+		LAZY_LIBS = Collections.unmodifiableSortedSet(l);
+	}
+	
+	//
 
 	private boolean singleinstance = false;
 	private File appDir = null;
@@ -71,7 +118,7 @@ public class JnlpServlet extends HttpServlet {
 	private boolean hasExtensions = false;
 	private File extensionDir = null;
 	private String extensionlastmodified;
-	
+
 	private File themesDir = null;
 	private Map<String, String> themes;
 
@@ -89,7 +136,7 @@ public class JnlpServlet extends HttpServlet {
 				String[] files = extensionDir.list(new FilenameFilter() {
 					@Override
 					public boolean accept(File dir, String name) {
-						if (name.endsWith(".jar")) {
+						if (name.endsWith(".jar") || name.endsWith("jar.pack.gz")) {
 							return true;
 						}
 						return false;
@@ -102,7 +149,8 @@ public class JnlpServlet extends HttpServlet {
 					for (String filename : files) {
 						File f = new File(extensionDir, filename);
 						if (f.isFile()) {
-							LOG.info("Found client extension jar: " + filename + "; LastModified: " + df.format(new Date(f.lastModified())));
+							LOG.info("Found client extension jar: " + filename + "; LastModified: "
+									+ df.format(new Date(f.lastModified())));
 							if (l < f.lastModified()) {
 								l = f.lastModified();
 							}
@@ -111,13 +159,13 @@ public class JnlpServlet extends HttpServlet {
 					extensionlastmodified = df.format(new Date(l));
 				}
 			}
-			
+
 			themesDir = new File(appDir, "extensions/themes");
 			if (themesDir.isDirectory()) {
 				String[] files = themesDir.list(new FilenameFilter() {
 					@Override
 					public boolean accept(File dir, String name) {
-						if (name.endsWith(".jar")) {
+						if (name.endsWith(".jar") || name.endsWith("jar.pack.gz")) {
 							return true;
 						}
 						return false;
@@ -130,7 +178,8 @@ public class JnlpServlet extends HttpServlet {
 					for (String filename : files) {
 						File f = new File(themesDir, filename);
 						if (f.isFile()) {
-							LOG.info("Found theme jar: " + filename + "; LastModified: " + df.format(new Date(f.lastModified())));
+							LOG.info("Found theme jar: " + filename + "; LastModified: "
+									+ df.format(new Date(f.lastModified())));
 							if (l < f.lastModified()) {
 								l = f.lastModified();
 							}
@@ -140,7 +189,7 @@ public class JnlpServlet extends HttpServlet {
 				}
 			}
 		}
-		catch(Exception e) {
+		catch (Exception e) {
 			LOG.error("Failed to initialize JnlpServlet.", e);
 		}
 	}
@@ -150,7 +199,8 @@ public class JnlpServlet extends HttpServlet {
 		boolean isExtensionRequest = Pattern.matches(".*extension[^/]*\\.jnlp", request.getRequestURI());
 		boolean isThemeRequest = Pattern.matches(".*theme[^/]*\\.jnlp", request.getRequestURI());
 
-		String urlPrefix = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath();
+		String urlPrefix = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort()
+				+ request.getContextPath();
 
 		Properties props = new Properties();
 		if (isExtensionRequest) {
@@ -162,6 +212,9 @@ public class JnlpServlet extends HttpServlet {
 		else {
 			props.put("codebase", urlPrefix + "/app");
 		}
+		// enable pack200 - see http://docs.oracle.com/javase/6/docs/technotes/guides/jweb/tools/pack200.html
+		props.put("jnlp.packEnabled", "true");
+
 		props.put("url.remoting", urlPrefix + "/remoting");
 		props.put("url.jms", urlPrefix + "/jmsbroker");
 		props.put("singleinstance", Boolean.toString(singleinstance));
@@ -203,7 +256,7 @@ public class JnlpServlet extends HttpServlet {
 			transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
 
 			for (Map.Entry<Object, Object> e : props.entrySet()) {
-				transformer.setParameter((String)e.getKey(), e.getValue());
+				transformer.setParameter((String) e.getKey(), e.getValue());
 			}
 
 			Result output = new StreamResult(response.getOutputStream());
@@ -248,100 +301,139 @@ public class JnlpServlet extends HttpServlet {
 
 	private Document getTransformationSource(Map<?, ?> parameters) throws ParserConfigurationException {
 		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        DocumentBuilder builder = factory.newDocumentBuilder();
-        Document document = builder.newDocument();
+		DocumentBuilder builder = factory.newDocumentBuilder();
+		Document document = builder.newDocument();
 
-        Node jnlp = document.appendChild(document.createElement("jnlp"));
-        Node jars = jnlp.appendChild(document.createElement("jars"));
+		Node jnlp = document.appendChild(document.createElement("jnlp"));
+		Node jars = jnlp.appendChild(document.createElement("jars"));
 
-        if(appDir.isDirectory()) {
-        	String sFiles [] = appDir.list(new FilenameFilter() {
+		if (appDir.isDirectory()) {
+			String sFiles[] = appDir.list(new FilenameFilter() {
 
 				@Override
 				public boolean accept(File dir, String name) {
-					if(name.endsWith(".jar") && !(name.equals("nuclos-client-" + ApplicationProperties.getInstance().getNuclosVersion().getVersionNumber() + ".jar") || name.equals("nuclos-native-1.0.jar")))
+					if ((name.endsWith(".jar") || name.endsWith("jar.pack.gz"))
+							&& !(name.startsWith("nuclos-client-"
+									+ ApplicationProperties.getInstance().getNuclosVersion().getVersionNumber()
+									+ ".jar")
+									|| name.startsWith("nuclos-native-1.0.jar")))
+					{
 						return true;
-					else
+					}
+					else {
 						return false;
+					}
 				}
 			});
 
-        	for(String sFile : sFiles) {
-        		Node jar = jars.appendChild(document.createElement("jar"));
-    			jar.setTextContent(sFile);
-        	}
-        }
+			for (String sFile : sFiles) {
+				Element jar = (Element) jars.appendChild(document.createElement("jar"));
+				jar.setTextContent(getJarName(sFile));
+				jar.setAttribute("download", getDownloadAttrValue(sFile));
+			}
+		}
 
-        Node arguments = jnlp.appendChild(document.createElement("arguments"));
+		Node arguments = jnlp.appendChild(document.createElement("arguments"));
 
-        // convert map-like request parameters to program-arguments
-        for (Map.Entry<?, ?> e : parameters.entrySet()) {
-        	Node argument = document.createElement("argument");
-        	argument.setTextContent(e.getKey() + (e.getValue() != null ? "=" + ((String[]) e.getValue())[0] : ""));
-        	arguments.appendChild(argument);
-        }
-        
-        Node themes = jnlp.appendChild(document.createElement("themes"));
-        if (this.themes != null) {
-        	for (String theme : this.themes.keySet()) {
-        		Element themeNode = document.createElement("theme");
-    			themeNode.setAttribute("name", theme);
-    			themeNode.setAttribute("lastmodified", this.themes.get(theme));
-    			themes.appendChild(themeNode);
-        	}
-        }
-        return document;
+		// convert map-like request parameters to program-arguments
+		for (Map.Entry<?, ?> e : parameters.entrySet()) {
+			Node argument = document.createElement("argument");
+			argument.setTextContent(e.getKey() + (e.getValue() != null ? "=" + ((String[]) e.getValue())[0] : ""));
+			arguments.appendChild(argument);
+		}
+
+		Node themes = jnlp.appendChild(document.createElement("themes"));
+		if (this.themes != null) {
+			for (String theme : this.themes.keySet()) {
+				Element themeNode = document.createElement("theme");
+				themeNode.setAttribute("name", theme);
+				themeNode.setAttribute("lastmodified", this.themes.get(theme));
+				themes.appendChild(themeNode);
+			}
+		}
+		return document;
 	}
 
 	private Document getExtTransformationSource() throws ParserConfigurationException {
 		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        DocumentBuilder builder = factory.newDocumentBuilder();
-        Document document = builder.newDocument();
+		DocumentBuilder builder = factory.newDocumentBuilder();
+		Document document = builder.newDocument();
 
-        Node jnlp = document.appendChild(document.createElement("jnlp"));
-        Node jars = jnlp.appendChild(document.createElement("jars"));
+		Node jnlp = document.appendChild(document.createElement("jnlp"));
+		Node jars = jnlp.appendChild(document.createElement("jars"));
 
-        if(extensionDir.isDirectory()) {
-        	String sFiles [] = extensionDir.list(new JarFileFilter());
+		if (extensionDir.isDirectory()) {
+			String sFiles[] = extensionDir.list(new JarFileFilter());
 
-        	for(String sFile : sFiles) {
-        		Node jar = jars.appendChild(document.createElement("jar"));
-    			jar.setTextContent(sFile);
-        	}
-        }
+			for (String sFile : sFiles) {
+				Element jar = (Element) jars.appendChild(document.createElement("jar"));
+				jar.setTextContent(getJarName(sFile));
+				jar.setAttribute("download", getDownloadAttrValue(sFile));
+			}
+		}
 
-        Node natives = jnlp.appendChild(document.createElement("native"));
+		Node natives = jnlp.appendChild(document.createElement("native"));
 
-        File nativeExtensions = new File(extensionDir, "native");
-    	if (nativeExtensions.isDirectory()) {
-    		String files[] = nativeExtensions.list(new JarFileFilter());
-    		for(String file : files) {
-        		Node jar = natives.appendChild(document.createElement("jar"));
-    			jar.setTextContent(file);
-        	}
-    	}
+		File nativeExtensions = new File(extensionDir, "native");
+		if (nativeExtensions.isDirectory()) {
+			String files[] = nativeExtensions.list(new JarFileFilter());
+			for (String file : files) {
+				Element jar = (Element) natives.appendChild(document.createElement("jar"));
+				jar.setTextContent(getJarName(file));
+				jar.setAttribute("download", getDownloadAttrValue(file));
+			}
+		}
 
-        return document;
+		return document;
 	}
-	
+
 	private Document getThemeTransformationSource(String theme) throws ParserConfigurationException {
 		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        DocumentBuilder builder = factory.newDocumentBuilder();
-        Document document = builder.newDocument();
+		DocumentBuilder builder = factory.newDocumentBuilder();
+		Document document = builder.newDocument();
 
-        Node jar = document.appendChild(document.createElement("jar"));
-        jar.setTextContent(theme + ".jar");
+		Element jar = (Element) document.appendChild(document.createElement("jar"));
+		final String sJar = theme + ".jar";
+		jar.setTextContent(getJarName(sJar));
+		jar.setAttribute("download", getDownloadAttrValue(sJar));
 
-        return document;
+		return document;
 	}
 
-	public class JarFileFilter implements FilenameFilter {
+	public static class JarFileFilter implements FilenameFilter {
 		@Override
 		public boolean accept(File dir, String name) {
-			if(name.endsWith(".jar")) {
+			if (name.endsWith(".jar") || name.endsWith("jar.pack.gz")) {
 				return true;
 			}
 			return false;
 		}
+	}
+	
+	private String getDownloadAttrValue(String lib) {
+		String result = "eager";
+		for (String s: LAZY_LIBS) {
+			if (lib.startsWith(s)) {
+				result = "lazy";
+				break;
+			}
+			/*
+			if (lib.compareTo(s) > 0) {
+				break;
+			}
+			 */
+		}
+		return result;
+	}
+	
+	private String getJarName(String lib) {
+		String result = lib;
+		if (lib.endsWith(".pack.gz")) {
+			result = result.substring(0, result.length() - 8);
+		}
+		if (lib.endsWith(".pack")) {
+			result = result.substring(0, result.length() - 5);
+		}
+		return result;
 	}
 }

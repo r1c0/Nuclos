@@ -76,6 +76,7 @@ public class ApplicationProperties implements Serializable {
 	private String sCollectableFieldComparatorFactoryClassName;
 	private String sConsoleClassName;
 	private boolean bFunctionBlockDev;
+	private boolean bWebstart;
 	private long    loginPanelBgColor;
 	private long    loginPanelLogoBgColor;
 	private long    loginPanelTextColor;
@@ -146,6 +147,7 @@ public class ApplicationProperties implements Serializable {
 		this.sCollectableFieldComparatorFactoryClassName = getOptional(props, "collectablefieldcomparatorfactory");
 		this.sConsoleClassName = getOptional(props, "console");
 		this.bFunctionBlockDev = Boolean.getBoolean("functionblock.dev");
+		this.bWebstart = Boolean.getBoolean("nuclos.client.webstart");
 
 		this.loginPanelBgColor = parseColorHex(getOptional(props, "login.panel.color.background"));
 		this.loginPanelLogoBgColor = parseColorHex(getOptional(props, "login.panel.logo.background"));
@@ -383,8 +385,12 @@ public class ApplicationProperties implements Serializable {
 		return desktopPaneBgImageFileName;
 	}
 
-	public Boolean isFunctionBlockDev() {
+	public boolean isFunctionBlockDev() {
 		return bFunctionBlockDev;
+	}
+
+	public boolean isThisClientWebstart() {
+		return bWebstart;
 	}
 
 	/**

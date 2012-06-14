@@ -4,6 +4,7 @@
 	<xsl:output method="xml" encoding="UTF-8" indent="yes" />
 
 	<xsl:param name="codebase" />
+	<xsl:param name="jnlp.packEnabled" />
 	<xsl:param name="url.remoting" />
 	<xsl:param name="url.jms" />
 	<xsl:param name="singleinstance" />
@@ -36,14 +37,16 @@
 				<j2se version="1.6+" initial-heap-size="256m" max-heap-size="512m" java-vm-args="-XX:+HeapDumpOnOutOfMemoryError -verbose:gc -ea"/>
 				<jar href="nuclos-client-{$nuclos.version}.jar" main="true" />
 				<xsl:for-each select="jnlp/jars/jar">
-					<jar href="{text()}" />
+					<jar href="{text()}" download="{@download}" />
 				</xsl:for-each>
-				<nativelib href="nuclos-native-1.0.jar" />
+				<nativelib href="nuclos-native-1.0.jar" download="lazy" />
+				<property name="jnlp.packEnabled" value="{$jnlp.packEnabled}" />
 				<property name="url.remoting" value="{$url.remoting}" />
 				<property name="url.jms" value="{$url.jms}" />
 				<property name="log4j.url" value="{$codebase}/log4j.xml" />
 				<property name="nuclos.server.name" value="Webstart" />
 				<property name="nuclos.client.singleinstance" value="{$singleinstance}" />
+				<property name="nuclos.client.webstart" value="true" />
 				<xsl:if test="$extensions='true'">
 					<extension name="extension" href="extensions/extension-{$extension-lastmodified}.jnlp" />
 				</xsl:if>

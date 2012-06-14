@@ -43,10 +43,17 @@ reindex() {
 	rm -r "$TMPDIR"
 }
 
-pack() {
+repack() {
 	local JAR="$1"
 	shift
 	pack200 --repack "$JAR"
+}
+
+pack() {
+	local JAR="$1"
+	shift
+	pack200 "$JAR.pack.gz" "$JAR"
+	rm "$JAR"
 }
 
 modjar() {
@@ -57,24 +64,41 @@ modjar() {
 	echo "Processing $TARGET"
 	unsign "$TARGET"
 	(index "$TARGET" && \
-		pack "$TARGET" && \
+		repack "$TARGET" && \
 		sign "$TARGET" && \
+		pack "$TARGET" ) || \
+#		verify "$TARGET") || \
+		exit -1
+}
+
+modjar2() {
+	local DIR="$1"
+	shift
+	local TARGET="$1"
+	shift
+	echo "Processing2 $TARGET"
+	unsign "$TARGET"
+	(index "$TARGET" && \
+		repack "$TARGET" && \
+		sign "$TARGET" && \
+#		pack "$TARGET" ) || \
 		verify "$TARGET") || \
 		exit -1
 }
 
 DIR="$1"
-#REGEX="(fop|nuclos-client)-.*jar"
+REGEX="(xalan)-.*jar"
 shift
 
 cp $KEYSTORE $DIR/.keystore
 pushd $DIR
 	for i in $*; do
-		#if [[ $i =~ $REGEX ]]; then
-		#	echo "No processing of $i"
-		#else 
+		if [[ $i =~ $REGEX ]]; then
+			echo "No packing of $i"
+			modjar2 "$DIR" "$i"
+		else 
 			modjar "$DIR" "$i"
-		#fi	
+		fi	
 	done
 	rm .keystore
 popd

@@ -118,7 +118,11 @@ public class StartUp  {
 		setupClientLogging();
 		
 		final String xmlBeanDefs = "classpath*:META-INF/nuclos/**/*-beans.xml";
-		final ClassPathXmlApplicationContext ctx = new ClassPathXmlApplicationContext(xmlBeanDefs);
+		final ClassPathXmlApplicationContext ctx = new ClassPathXmlApplicationContext(new String[] { xmlBeanDefs }, false);
+		// see http://fitw.wordpress.com/2009/03/14/web-start-and-spring/ why this is needed (tp)
+		final ClassLoader cl = this.getClass().getClassLoader();
+		ctx.setClassLoader(cl);
+		ctx.refresh();
 		
 		try {
 			final Resource[] xmlBeanRes = ctx.getResources(xmlBeanDefs);

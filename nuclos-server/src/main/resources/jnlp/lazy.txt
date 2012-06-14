@@ -1,0 +1,35 @@
+# start of name of libs that should be loaded lazy
+
+avalon-
+batik-
+axis-
+bcmail-
+bcprov-
+bctsp-
+# filters-
+fop-
+gentlyweb-utils-
+# don't (tp)
+# geronimo-
+groovy-all-
+guice-
+itext-
+jasperreports-
+jawin-
+jcommon-
+jdom-
+jdtcore-
+jetty-
+jfreechart-
+jgraphx-
+kahadb-
+metadata-extractor-
+org.osgi.core-
+nuclos-native-
+oro-
+poi-
+# servlet-api-
+# spring-osgi-
+# spring-web-
+svg2emf-
+xmlgraphics-commons-
