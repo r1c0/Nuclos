@@ -6226,20 +6226,24 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 
 			@Override
 			public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
-
-				try {
-					final List<StateVO> lstSubsequenteStates = getSubsequentStates();
-
-					JMenu mi = getResultPanel().miStates;
-					mi.setVisible(lstSubsequenteStates.size() != 0);
-					for(final StateVO stateVO : lstSubsequenteStates) {
-						mi.add(new JMenuItem(new StateChangeAction(stateVO)));
+				UIUtils.runCommand(getTab(), new Runnable() {
+					
+					@Override
+					public void run() {
+						try {
+							final List<StateVO> lstSubsequenteStates = getSubsequentStates();
+							JMenu mi = getResultPanel().miStates;
+							mi.setVisible(lstSubsequenteStates.size() != 0);
+							for(final StateVO stateVO : lstSubsequenteStates) {
+								mi.add(new JMenuItem(new StateChangeAction(stateVO)));
+							}
+						}
+						catch (Exception e1) {
+							getResultPanel().miStates.setVisible(false);
+							LOG.warn("popupMenuWillBecomeVisible failed: " + e1 + ", setting it invisible");
+						}
 					}
-				}
-				catch (Exception e1) {
-					getResultPanel().miStates.setVisible(false);
-					LOG.warn("popupMenuWillBecomeVisible failed: " + e1 + ", setting it invisible");
-				}
+				});
 			}
 
 			@Override

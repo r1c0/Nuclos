@@ -1230,28 +1230,32 @@ public abstract class EntityCollectController<Clct extends Collectable> extends 
 
 			@Override
 			public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
-
-				try {
-					final List<GeneratorActionVO> lstActions = getGeneratorActions();
-
-					JMenu mi = getResultPanel().miGenerations;
-					mi.setVisible(lstActions.size() != 0);
-					for(final GeneratorActionVO actionVO : lstActions) {
-						JMenuItem action = new JMenuItem(new AbstractAction(actionVO.toString()) {
-
-							@Override
-							public void actionPerformed(ActionEvent e) {
-								cmdGenerateObject(actionVO);
+				UIUtils.runCommand(getTab(), new Runnable() {
+					
+					@Override
+					public void run() {
+						try {
+							final List<GeneratorActionVO> lstActions = getGeneratorActions();
+							JMenu mi = getResultPanel().miGenerations;
+							mi.setVisible(lstActions.size() != 0);
+							for(final GeneratorActionVO actionVO : lstActions) {
+								JMenuItem action = new JMenuItem(new AbstractAction(actionVO.toString()) {
+		
+									@Override
+									public void actionPerformed(ActionEvent e) {
+										cmdGenerateObject(actionVO);
+									}
+		
+								});
+								mi.add(action);
 							}
-
-						});
-						mi.add(action);
+						}
+						catch (Exception e1) {
+							getResultPanel().miGenerations.setVisible(false);
+							LOG.warn("popupMenuWillBecomeVisible failed: " + e1 + ", setting it invisible");
+						}
 					}
-				}
-				catch (Exception e1) {
-					getResultPanel().miGenerations.setVisible(false);
-					LOG.warn("popupMenuWillBecomeVisible failed: " + e1 + ", setting it invisible");
-				}
+				});
 			}
 
 			@Override
