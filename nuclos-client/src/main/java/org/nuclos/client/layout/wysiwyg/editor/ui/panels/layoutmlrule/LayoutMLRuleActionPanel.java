@@ -25,7 +25,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
 
-import javax.swing.DefaultComboBoxModel;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
@@ -604,13 +603,8 @@ public class LayoutMLRuleActionPanel extends JPanel implements AddRemoveButtonCo
 	private boolean restoreValue(JComboBox target, String value) {
 		if (!StringUtils.isNullOrEmpty(value)) {
 			// something to restore
-			if (((DefaultComboBoxModel)target.getModel()).getIndexOf(value) != -1) {
-				target.setSelectedItem(value);
-				log.debug("Restored " + target.getName() + " " + value);
-			} else {
-				target.setSelectedItem("");
-				log.debug("Defaulting " + target.getName() + " " + value);
-			}
+			target.setSelectedItem(value);
+			log.debug("Restored " + target.getName() + " " + value);
 			return false;
 		} else {
 			// nothing to restore, defaulting to ""
