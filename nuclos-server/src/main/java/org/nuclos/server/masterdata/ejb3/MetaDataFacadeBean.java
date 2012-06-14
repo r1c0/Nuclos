@@ -725,10 +725,7 @@ public class MetaDataFacadeBean extends NuclosFacadeBean implements MetaDataFaca
 		}
 		
 		EntityObjectMetaDbHelper dbHelperIst = new EntityObjectMetaDbHelper(dataBaseHelper.getDbAccess(), MetaDataServerProvider.getInstance());
-		final List<EntityFieldMetaDataVO> fields = new ArrayList<EntityFieldMetaDataVO>();
-		fields.addAll(lstFields);
-		fields.addAll(lstSystemFields);
-		DbTable tableIst = dbHelperIst.getDbTable(updatedMDEntity, fields);
+		DbTable tableIst = dbHelperIst.getDbTable(updatedMDEntity);
 
 		EntityObjectMetaDbHelper dbHelperSoll = new EntityObjectMetaDbHelper(dataBaseHelper.getDbAccess(), staticMetaData);
 		DbTable tableSoll = dbHelperSoll.getDbTable(updatedMDEntity);
