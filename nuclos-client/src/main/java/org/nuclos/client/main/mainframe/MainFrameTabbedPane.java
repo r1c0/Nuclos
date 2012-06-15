@@ -1391,6 +1391,7 @@ public class MainFrameTabbedPane {
 					// Gets the tab index based on the mouse position
 					final int tabNumber = mfTabbed.getUI().tabForCoordinate(mfTabbed, e.getX(), e.getY());
 
+					tabClosing = -1;
 					for (int i = (startTabVisible?1:0); i < getTabCount(); i++) {
 						final Component tabComponent = getTabComponentAt(i);
 						if (tabComponent instanceof MainFrameTab.TabTitle) {
@@ -1400,8 +1401,6 @@ public class MainFrameTabbedPane {
 								final Point pos = new Point(e.getX(), e.getY());
 								if (tabTitle.isMouseOverClose(pos)) {
 									tabClosing = tabNumber;
-								} else {
-									tabClosing = -1;
 								}
 								tabTitle.setMouseOverPosition(pos);
 							} else {
@@ -1885,6 +1884,8 @@ public class MainFrameTabbedPane {
 					if(forceNotify || oldSelectedIndex != index)
 						((MainFrameTab) component).notifySelected();
 				}
+			} else {
+				LOG.debug(String.format("Set selected index to %s refused. Tab is closing.", index));
 			}
 		}
 		
