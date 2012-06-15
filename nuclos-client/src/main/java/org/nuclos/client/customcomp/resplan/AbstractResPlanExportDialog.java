@@ -18,6 +18,8 @@ package org.nuclos.client.customcomp.resplan;
 
 import info.clearthought.layout.TableLayout;
 
+import java.awt.Component;
+import java.awt.Container;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -42,6 +44,7 @@ import org.apache.commons.io.filefilter.WildcardFileFilter;
 import org.apache.log4j.Logger;
 import org.nuclos.client.image.ImageType;
 import org.nuclos.client.main.Main;
+import org.nuclos.client.ui.UIUtils;
 import org.nuclos.common2.SpringLocaleDelegate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
@@ -79,7 +82,8 @@ public abstract class AbstractResPlanExportDialog extends JDialog {
 	protected JComboBox fileTypes;
 	
 	protected AbstractResPlanExportDialog(Preferences node, String title, JComponent parent) {
-		super(Main.getInstance().getMainFrame().getFrame(), true);
+		// super(Main.getInstance().getMainFrame().getFrame(), true);
+		super(UIUtils.getFrameForComponent(parent), true);
 		this.node = node;
 		this.parent = parent;
 		
@@ -203,6 +207,11 @@ public abstract class AbstractResPlanExportDialog extends JDialog {
 		pack();
 		setLocationRelativeTo(parent);
 		setVisible(true);
+	}
+	
+	@Override
+	public Container getParent() {
+		return parent;
 	}
 	
 	/**

@@ -53,7 +53,7 @@ public class ResPlanExportDialog extends AbstractResPlanExportDialog {
 	
 	@Override
 	protected void export() {
-		UIUtils.showWaitCursorForFrame(this, true);
+		UIUtils.showWaitCursorForFrame(getParent(), true);
 		final SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() {
 
 			@Override
@@ -80,7 +80,7 @@ public class ResPlanExportDialog extends AbstractResPlanExportDialog {
 			
 			@Override
 			protected void done() {
-				UIUtils.showWaitCursorForFrame(ResPlanExportDialog.this, false);
+				UIUtils.showWaitCursorForFrame(getParent(), false);
 			}
 			
 		};

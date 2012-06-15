@@ -49,6 +49,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JToolBar;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
+import javax.swing.SwingWorker;
 import javax.swing.event.AncestorEvent;
 import javax.swing.event.AncestorListener;
 
@@ -741,7 +742,22 @@ public class ResPlanPanel extends JPanel {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			// controller.getFrame().add(new ResPlanExportPanel());
-			final ResPlanExportDialog d = new ResPlanExportDialog(ResPlanPanel.this, controller.getTab());
+			UIUtils.showWaitCursorForFrame(getController().getTab(), true);
+			final SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() {
+
+				@Override
+				protected Void doInBackground() throws Exception {
+					final ResPlanExportDialog d = new ResPlanExportDialog(ResPlanPanel.this, controller.getTab());
+					return null;
+				}
+				
+				@Override
+				protected void done() {
+					UIUtils.showWaitCursorForFrame(getController().getTab(), false);
+				}
+				
+			};
+			worker.execute();
 		}
 	}
 
