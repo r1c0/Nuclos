@@ -23,7 +23,7 @@ import java.util.TreeSet;
 import org.nuclos.client.masterdata.CollectableMasterDataWithDependants;
 import org.nuclos.client.masterdata.SearchFilterCollectController;
 import org.nuclos.client.ui.collect.result.ISearchResultStrategy;
-import org.nuclos.client.ui.collect.result.ResultController;
+import org.nuclos.client.ui.collect.result.NuclosResultController;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
 
 /**
@@ -32,7 +32,7 @@ import org.nuclos.common.collect.collectable.CollectableEntityField;
  * <br>Created by Novabit Informationssysteme GmbH
  * <br>Please visit <a href="http://www.novabit.de">www.novabit.de</a>
  */
-public class SearchFilterResultController<Clct extends CollectableMasterDataWithDependants> extends ResultController<Clct> {
+public class SearchFilterResultController<Clct extends CollectableMasterDataWithDependants> extends NuclosResultController<Clct> {
 
 	public SearchFilterResultController(String entityName, ISearchResultStrategy<Clct> srs) {
 		super(entityName, srs);
