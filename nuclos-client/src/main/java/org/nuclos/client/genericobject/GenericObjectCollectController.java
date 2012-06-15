@@ -4014,14 +4014,18 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 			@Override
 			public void handleError(Exception ex) {
 				errorOccurred = true;
-				if (GenericObjectCollectController.this.handlePointerException(ex)) {
-					final PointerException pex = PointerException.extractPointerExceptionIfAny(ex);
-					if (pex != null) {
-						GenericObjectCollectController.this.setCollectableComponentModelsInDetailsMandatoryAdded(pex.getPointerCollection().getFields());
+				if (!handleCommonValidationException(ex)) {
+					if (GenericObjectCollectController.this.handlePointerException(ex)) {
+						final PointerException pex = PointerException.extractPointerExceptionIfAny(ex);
+						if (pex != null) {
+							GenericObjectCollectController.this.setCollectableComponentModelsInDetailsMandatoryAdded(pex.getPointerCollection().getFields());
+						}
+					} else if (!(ex instanceof UserCancelledException)) {
+						if (!handleSpecialException(ex)) {
+							final String sErrorMsg = getSpringLocaleDelegate().getMessage("GenericObjectCollectController.34","Der Statuswechsel konnte nicht vollzogen werden.");
+							Errors.getInstance().showExceptionDialog(getTab(), sErrorMsg, ex);
+						}
 					}
-				} else if (!(ex instanceof UserCancelledException)) {
-					final String sErrorMsg = getSpringLocaleDelegate().getMessage("GenericObjectCollectController.34","Der Statuswechsel konnte nicht vollzogen werden.");
-					Errors.getInstance().showExceptionDialog(getTab(), sErrorMsg, ex);
 				}
 
 				// redisplay the old status
@@ -4113,16 +4117,19 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 			@Override
 			public void handleError(Exception ex) {
 				errorOccurred = true;
-				if (GenericObjectCollectController.this.handlePointerException(ex)) {
-					final PointerException pex = PointerException.extractPointerExceptionIfAny(ex);
-					if (pex != null) {
-						GenericObjectCollectController.this.setCollectableComponentModelsInDetailsMandatoryAdded(pex.getPointerCollection().getFields());
+				if (!handleCommonValidationException(ex)) {
+					if (GenericObjectCollectController.this.handlePointerException(ex)) {
+						final PointerException pex = PointerException.extractPointerExceptionIfAny(ex);
+						if (pex != null) {
+							GenericObjectCollectController.this.setCollectableComponentModelsInDetailsMandatoryAdded(pex.getPointerCollection().getFields());
+						}
+					} else if (!(ex instanceof UserCancelledException)) {
+						if (!handleSpecialException(ex)) {
+							final String sErrorMsg = getSpringLocaleDelegate().getMessage("GenericObjectCollectController.34","Der Statuswechsel konnte nicht vollzogen werden.");
+							Errors.getInstance().showExceptionDialog(getTab(), sErrorMsg, ex);
+						}
 					}
-				} else {
-					final String sErrorMsg = getSpringLocaleDelegate().getMessage("GenericObjectCollectController.34","Der Statuswechsel konnte nicht vollzogen werden.");
-					Errors.getInstance().showExceptionDialog(getTab(), sErrorMsg, ex);
 				}
-
 				// redisplay the old status
 				cmbbxCurrentState.setSelectedItem(stateCurrent);
 				cmpStateStandardView.setSelectedItem(stateCurrent);
