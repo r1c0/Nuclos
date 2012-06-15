@@ -22,6 +22,7 @@ import java.awt.geom.NoninvertibleTransformException;
 
 import javax.swing.JComponent;
 
+import org.w3c.dom.svg.SVGDocument;
 import org.w3c.dom.svg.SVGSVGElement;
 
 /**
@@ -46,6 +47,12 @@ public class JSVGCanvas extends org.apache.batik.swing.JSVGCanvas {
 	
 	public JComponent getOuter() {
 		return outer;
+	}
+	
+	@Override
+	public void setSVGDocument(SVGDocument doc) {
+		viewMode = ViewMode.ORIGINAL_SIZE;
+		super.setSVGDocument(doc);
 	}
 	
 	public void setViewMode(ViewMode viewMode) {

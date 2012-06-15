@@ -212,7 +212,7 @@ public abstract class AbstractResPlanExporter<R,E> implements IResPlanExporter<R
 				
 				final int width = (int) (DateUtils.getMillis(cal.getTime(), q) / millisForPx);
 				float x = getX(cal.getTime());
-				final XCoord xc = clip(x, width);
+				final XCoord xc = clipX(x, width);
 				if (xc != null) {
 					final SVGGElement group = sdds.createGroup();
 					g.appendChild(group);
@@ -270,7 +270,7 @@ public abstract class AbstractResPlanExporter<R,E> implements IResPlanExporter<R
 		}
 
 		final String entryName = entryNameProducer.makeName(e);
-		final XCoord xc = clip(i);
+		final XCoord xc = clipX(i);
 		if (xc != null) {
 			final SVGGElement group = sdds.createGroup();
 			g.appendChild(group);
@@ -298,7 +298,7 @@ public abstract class AbstractResPlanExporter<R,E> implements IResPlanExporter<R
 	}
 	
 	protected void mkRhomb(SVGElement g, float x, float y, float size, String clazz) {
-		final XCoord xc = clip(x, 1);
+		final XCoord xc = clipX(x - size, 2 + size);
 		if (xc != null) {
 			final SVGPolygonElement result = sdds.createPolygon(clazz, x - size, y, x, y - size, x + size, y, x, y + size);
 			g.appendChild(result);
@@ -310,14 +310,21 @@ public abstract class AbstractResPlanExporter<R,E> implements IResPlanExporter<R
 		return millis / millisForPx;
 	}
 	
-	protected XCoord clip(Interval<Date> i) {
+	protected XCoord clipX(Interval<Date> i) {
 		// here x might be negative
 		float x = getX(i.getStart());
 		final float width = getX(i.getEnd()) - x;
-		return clip(x, width);
+		return clipX(x, width);
 	}
 	
-	protected XCoord clip(float x, float width) {
+	protected XCoord clipX(Date start, Date end) {
+		// here x might be negative
+		float x = getX(start);
+		final float width = getX(end) - x;
+		return clipX(x, width);
+	}
+	
+	protected XCoord clipX(float x, float width) {
 		float realWidth;
 		if (x < 0) {
 			realWidth = width + x;
@@ -329,7 +336,7 @@ public abstract class AbstractResPlanExporter<R,E> implements IResPlanExporter<R
 			realWidth = width;
 		}
 		// assert realWidth >= 0 && realWidth <= maxX : "realWidth: " + realWidth;
-		if (realWidth < 0 && realWidth > maxX) {
+		if (realWidth < 0 || realWidth > maxX) {
 			return null;
 		}
 		x = Math.max(x, 0);
@@ -338,6 +345,17 @@ public abstract class AbstractResPlanExporter<R,E> implements IResPlanExporter<R
 		result.x = x;
 		result.width = realWidth;
 		return result;
+	}
+	
+	protected Float clipX(Date date) {
+		return clipX(getX(date));
+	}
+	
+	protected Float clipX(float x) {
+		if (x < 0 || x > maxX) {
+			return null;
+		}
+		return x;
 	}
 	
 	protected static class XCoord {
