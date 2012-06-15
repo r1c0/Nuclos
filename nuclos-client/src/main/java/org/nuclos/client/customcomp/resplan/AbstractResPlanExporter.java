@@ -59,6 +59,7 @@ public abstract class AbstractResPlanExporter<R,E> implements IResPlanExporter<R
 	protected static final int YPIXEL_FOR_RESOURCE = 40;
 	protected static final int YPIXEL_RESOURCE_BORDER = 4;
 	protected static final int YPIXEL_BIGTXT_OFFSET = 28;
+	protected static final int YPIXEL_TXT_OFFSET = 6;
 	
 	//
 	
