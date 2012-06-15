@@ -17,6 +17,7 @@
 package org.nuclos.client.ui.collect;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -27,17 +28,15 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
 import java.awt.image.BufferedImage;
 import java.awt.image.RescaleOp;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
 import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -195,6 +194,10 @@ public class SearchFilterBar implements ItemSelectable {
 		
 		private final SearchFilter sf;
 		
+		private ImageIcon icon;
+		
+		private int iconWidth;
+		
 		private boolean mouseOver = false;
 
 		public SearchFilterButton(SearchFilter sf) {
@@ -214,23 +217,34 @@ public class SearchFilterBar implements ItemSelectable {
 			Integer iResourceIconId = sf.getSearchFilterVO().getFastSelectIconId();
 			String sNuclosResourceIcon = sf.getSearchFilterVO().getFastSelectNuclosIcon();
 			
-			boolean iconSet = false;
 			if (iResourceIconId != null) {
 				try {
-					setIcon(ResourceCache.getInstance().getIconResource(iResourceIconId));
-					iconSet = true;
+					icon = ResourceCache.getInstance().getIconResource(iResourceIconId);
 				} catch (Exception ex) {
 					LOG.error(String.format("ResourceIcon not found (ID=%s)", iResourceIconId), ex);
 				}
 			}
-			if (!iconSet && sNuclosResourceIcon != null) {
+			if (icon == null && sNuclosResourceIcon != null) {
 				try {
-					setIcon(NuclosResourceCache.getNuclosResourceIcon(sNuclosResourceIcon));
-					iconSet = true;
+					icon = NuclosResourceCache.getNuclosResourceIcon(sNuclosResourceIcon);
 				} catch (Exception ex) {
 					LOG.error(String.format("NuclosResourceIcon not found (ID=%s)", sNuclosResourceIcon), ex);
 				}
 			}
+			
+			if (icon != null) {
+				setIcon(icon);
+				iconWidth = icon.getIconWidth();
+			}
+		}
+
+		@Override
+		public Dimension getPreferredSize() {
+			final Dimension result = super.getPreferredSize();
+			if (icon != null) {
+				result.width = iconWidth;
+			}
+			return result;
 		}
 
 		@Override
