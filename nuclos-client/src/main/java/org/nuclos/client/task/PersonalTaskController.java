@@ -306,7 +306,7 @@ public class PersonalTaskController extends RefreshableTaskController implements
 
 			if(iColumn == tblmdl.findColumnByFieldName(CollectableTask.FIELDNAME_VISIBILITY)){
 				String vNum  = CollectableTask.DEFAULT_VISIBILITY.toString();
-				if(oValue.toString() != null && !oValue.toString().trim().equals("")){
+				if(oValue != null && oValue.toString() != null && !oValue.toString().trim().equals("")){
 					vNum = oValue.toString();
 				}
 				this.setText(getSpringLocaleDelegate().getTextFallback(

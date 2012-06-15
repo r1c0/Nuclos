@@ -18,6 +18,8 @@ package org.nuclos.client.ui.collect.result;
 
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -33,8 +35,10 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import javax.swing.Action;
+import javax.swing.JComponent;
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
+import javax.swing.KeyStroke;
 import javax.swing.ListSelectionModel;
 import javax.swing.RowSorter.SortKey;
 import javax.swing.SortOrder;
@@ -120,6 +124,12 @@ import org.springframework.beans.factory.annotation.Configurable;
 public class ResultController<Clct extends Collectable> {
 
 	private static final Logger LOG = Logger.getLogger(ResultController.class);
+	
+	private static final int ESC = KeyEvent.VK_ESCAPE;
+	
+	private static final int UP = KeyEvent.VK_UP;
+	
+	private static final int DOWN = KeyEvent.VK_DOWN;
 
 	/**
 	 * The entity for which the results are displayed.
@@ -283,14 +293,69 @@ public class ResultController<Clct extends Collectable> {
 
 		tblResult.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 		tblResult.getSelectionModel().addListSelectionListener(newListSelectionListener(tblResult));
+		
+		this.getResultPanel().btnSelectAllRows.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if (tblResult.getRowCount() > 0) {
+					tblResult.getSelectionModel().setSelectionInterval(0, tblResult.getRowCount()-1);
+				}
+			}
+		});
+		this.getResultPanel().btnDeSelectAllRows.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				tblResult.getSelectionModel().clearSelection();
+			}
+		});
+		this.getResultPanel().addResultKeyListener(new ResultKeyListener() {
+			@Override
+			public boolean processKeyBinding(KeyStroke ks, KeyEvent e, int condition, boolean pressed) {
+				if (e.getKeyCode() == ESC) {
+					if (!pressed) {
+						tblResult.getSelectionModel().clearSelection();
+						return true;
+					}
+				} else if (e.getKeyCode() == UP || e.getKeyCode() == DOWN) {
+					if (pressed) {
+						/* Warum wird dies benötigt?
+						 * BasicTableUI.actionPerformed(...) sendet ein ungewolltes changeSelection mit toggle=false bei PFEIL-NACH-OBEN/-UNTEN (siehe unten).
+						 * Der Standard in der Ergebnisansicht soll aber ein umgedrehtes Verhalten für Mausklicks sein. (siehe Implementierung 
+						 * 		ResultPanel: super.changeSelection(rowIndex, columnIndex, alternateSelectionToggle? !toggle: toggle, extend);)  
+						 * 
+						 * else if (!inSelection) {
+                    	 * 		moveWithinTableRange(table, dx, dy);
+                    	 * 		table.changeSelection(leadRow, leadColumn, false, extend);
+                		 * }
+						 */
+						getResultPanel().setAlternateSelectionToggle(false);
+						SwingUtilities.invokeLater(new Runnable() {
+							public void run() {
+								getResultPanel().setAlternateSelectionToggle(true);
+							}
+						});
+					}
+				}
+				return false;
+			}
+		});
 
 		// add mouse listener for double click in table:
 		this.mouselistenerTableDblClick = new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent ev) {
 				if (SwingUtilities.isLeftMouseButton(ev) && ev.getClickCount() == 2) {
-					if (getSelectedCollectableFromTableModel() != null) {
-						clctctl.cmdViewSelectedCollectables();
+					int iRow = tblResult.rowAtPoint(ev.getPoint());
+					if (iRow >= 0 && iRow < tblResult.getRowCount()) {
+						tblResult.getSelectionModel().setSelectionInterval(iRow, iRow);
+						SwingUtilities.invokeLater(new Runnable() {
+							@Override
+							public void run() {
+								if (getSelectedCollectableFromTableModel() != null) {
+									clctctl.cmdViewSelectedCollectables();
+								}
+							}
+						});
 					}
 				}
 			}

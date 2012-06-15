@@ -20,9 +20,11 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -32,6 +34,7 @@ import java.util.Map;
 import javax.swing.AbstractButton;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JMenu;
@@ -41,6 +44,7 @@ import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JToolBar;
+import javax.swing.KeyStroke;
 import javax.swing.ListSelectionModel;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
@@ -158,15 +162,25 @@ public class ResultPanel<Clct extends Collectable> extends JPanel {
 	public final JMenuItem btnBookmark = new JMenuItem();
 	
 	public final JButton btnResetMainFilter = new JButton();
+	
+	public final JButton btnSelectAllRows = new StatusBarButton(Icons.getInstance().getIconSelectAll12(), Icons.getInstance().getIconSelectAllHover12(),
+			localeDelegate.getMessage("ResultPanel.16","Alles auswählen"));
+	
+	public final JButton btnDeSelectAllRows = new StatusBarButton(Icons.getInstance().getIconDeSelectAll12(), Icons.getInstance().getIconDeSelectAllHover12(),
+			localeDelegate.getMessage("ResultPanel.17","Auswahl aufheben"));
 
 	protected static final String EXPORT_IMPORT_EXTENSION = ".zip";
 
 	private JComponent compCenter = new JPanel(new BorderLayout());
+	
+	private final Collection<ResultKeyListener> keyListener = new ArrayList<ResultKeyListener>();
 
 	private final JPanel pnlResultTable;
 	protected final SearchFilterBar searchFilterBar;
 	private final JScrollPane scrlpnResult = new JScrollPane();
 	private final JTable tblResult;
+	
+	private boolean alternateSelectionToggle = true;
 
 	public final StatusBarTextField tfStatusBar = new StatusBarTextField(" ");
 
@@ -198,7 +212,7 @@ public class ResultPanel<Clct extends Collectable> extends JPanel {
 		//this.add(compCenter, BorderLayout.CENTER);
 		//this.add(UIUtils.newStatusBar(tfStatusBar), BorderLayout.SOUTH);
 		this.setCenterComponent(compCenter);
-		this.setSouthComponent(UIUtils.newStatusBar(tfStatusBar));
+		this.setSouthComponent(UIUtils.newStatusBar(btnSelectAllRows, btnDeSelectAllRows, Box.createHorizontalStrut(10), tfStatusBar));
 
 		this.popupmenuRow.setName("popupmenuRow");
 		this.popupmenuRow.add(this.miPopupEdit);
@@ -436,12 +450,38 @@ public class ResultPanel<Clct extends Collectable> extends JPanel {
 	public void cleanUpToolBar() {
 		UIUtils.cleanUpToolBar(this.toolBar);
 	}
+	
+	public void setAlternateSelectionToggle(boolean toggle) {
+		this.alternateSelectionToggle = toggle;
+	}
 
 	/**
 	 * @return the table used in this result panel to display data
 	 */
 	protected CommonJTable newResultTable() {
-		CommonJTable result = new CommonJTable();
+		CommonJTable result = new CommonJTable() {
+			
+			@Override
+			public void changeSelection(int rowIndex, int columnIndex, boolean toggle, boolean extend) {
+//				System.out.println("row="+rowIndex+" ,col="+columnIndex+" ,toggle="+toggle+" ,extend="+extend);
+				super.changeSelection(rowIndex, columnIndex, alternateSelectionToggle? !toggle: toggle, extend);
+			}
+			
+			@Override
+			protected boolean processKeyBinding(KeyStroke ks, KeyEvent e, int condition, boolean pressed) {
+				boolean processed = false;
+				for (ResultKeyListener rkl : keyListener) {
+					if (rkl.processKeyBinding(ks, e, condition, pressed)) {
+						processed = true;
+					}
+				}
+				if (processed) {
+					return true;
+				} else {
+					return super.processKeyBinding(ks, e, condition, pressed);
+				}
+			}
+		};
 
 		ToolTipsTableHeader tblHeader = new ToolTipsTableHeader(null, result.getColumnModel());
 
@@ -763,4 +803,48 @@ public class ResultPanel<Clct extends Collectable> extends JPanel {
 	public SearchFilterBar getSearchFilterBar() {
 		return searchFilterBar;
 	}
+	
+	private static class StatusBarButton extends JButton implements MouseListener {
+		
+		private final ImageIcon icon;
+		private final ImageIcon iconHover;
+		
+		public StatusBarButton(ImageIcon icon, ImageIcon iconHover, String tooltip) {
+			super(icon);
+			this.icon = icon;
+			this.iconHover = iconHover;
+			this.setToolTipText(tooltip);
+			this.addMouseListener(this);
+			this.setBorderPainted(false);
+			this.setBorder(BorderFactory.createEmptyBorder(4, 2, 2, 2));
+		}
+
+		@Override
+		public void mouseClicked(MouseEvent e) {
+		}
+
+		@Override
+		public void mousePressed(MouseEvent e) {
+		}
+
+		@Override
+		public void mouseReleased(MouseEvent e) {
+		}
+
+		@Override
+		public void mouseEntered(MouseEvent e) {
+			this.setIcon(iconHover);
+		}
+
+		@Override
+		public void mouseExited(MouseEvent e) {
+			this.setIcon(icon);
+		}
+		
+	}
+
+	public void addResultKeyListener(ResultKeyListener resultKeyListener) {
+		keyListener.add(resultKeyListener);
+	}
+	
 }  // class ResultPanel

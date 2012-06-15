@@ -35,6 +35,7 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -4134,11 +4135,11 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 
 
 	private void changeStateForMultipleObjects(final StateWrapper stateNew) throws CommonBusinessException {
-		new ChangeStateForSelectedCollectablesController(this, stateNew, new LinkedList<Integer>(Collections.singleton(stateNew.getId())), !getCollectState().isResultMode()).run(getMultiActionProgressPanel(getSelectedCollectables().size()));
+		new ChangeStateForSelectedCollectablesController(this, stateNew, new LinkedList<Integer>(Collections.singleton(stateNew.getId()))).run(getMultiActionProgressPanel(getSelectedCollectables().size()));
 	}
 
 	private void changeStatesForMultipleObjects(final StateWrapper stateFinal, final List<Integer> statesNew) throws CommonBusinessException {
-		new ChangeStateForSelectedCollectablesController(this, stateFinal, statesNew, !getCollectState().isResultMode()).run(getMultiActionProgressPanel(getSelectedCollectables().size()));
+		new ChangeStateForSelectedCollectablesController(this, stateFinal, statesNew).run(getMultiActionProgressPanel(getSelectedCollectables().size()));
 	}
 
 	protected boolean showObjectGenerationWarningIfNewObjectIsNotSaveable() {
@@ -5306,21 +5307,17 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 			private final GenericObjectCollectController ctl;
 			private final StateWrapper stateFinal;
 			private final List<Integer> statesNew;
-			private final boolean triggerUpdateBeforeStateChange;
 
-			ChangeStateAction(GenericObjectCollectController ctl, StateWrapper stateFinal, List<Integer> statesNew, boolean triggerUpdateBeforeStateChange) throws CommonBusinessException {
+			ChangeStateAction(GenericObjectCollectController ctl, StateWrapper stateFinal, List<Integer> statesNew) throws CommonBusinessException {
 				super(ctl);
 				this.ctl = ctl;
 				this.stateFinal = stateFinal;
 				this.statesNew = statesNew;
-				this.triggerUpdateBeforeStateChange = triggerUpdateBeforeStateChange;
 			}
 
 			@Override
 			public Object perform(CollectableGenericObjectWithDependants clctlo) throws CommonBusinessException {
-				if (triggerUpdateBeforeStateChange) {
-					super.perform(clctlo);
-				}
+				super.perform(clctlo);
 
 				final GenericObjectVO govo = clctlo.getGenericObjectCVO();
 				for (final Integer stateNew : statesNew) {
@@ -5378,8 +5375,8 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 			}
 		}
 
-		ChangeStateForSelectedCollectablesController(GenericObjectCollectController ctl, StateWrapper stateNew,  final List<Integer> statesNew, boolean triggerUpdateBeforeStateChange) throws CommonBusinessException {
-			super(ctl, SpringLocaleDelegate.getInstance().getMessage("GenericObjectCollectController.88","Statuswechsel in Status \"{0}\"", stateNew.getStatusText()), new ChangeStateAction(ctl, stateNew, statesNew, triggerUpdateBeforeStateChange), ctl.getCompleteSelectedCollectables());
+		ChangeStateForSelectedCollectablesController(GenericObjectCollectController ctl, StateWrapper stateNew,  final List<Integer> statesNew) throws CommonBusinessException {
+			super(ctl, SpringLocaleDelegate.getInstance().getMessage("GenericObjectCollectController.88","Statuswechsel in Status \"{0}\"", stateNew.getStatusText()), new ChangeStateAction(ctl, stateNew, statesNew), ctl.getCompleteSelectedCollectables());
 		}
 
 	}	// class ChangeStateForSelectedCollectablesController
@@ -6217,7 +6214,11 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		if (result == null) {
 			return new ArrayList<StateVO>();
 		} else {
-			return result;
+			return CollectionUtils.sorted(result, new Comparator<StateVO>() {
+				@Override
+				public int compare(StateVO o1, StateVO o2) {
+					return LangUtils.compare(o1.getNumeral(), o2.getNumeral());
+				}});
 		}
 	}
 	

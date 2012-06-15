@@ -49,9 +49,11 @@ public class UpdateSelectedCollectablesController <Clct extends Collectable> ext
 		protected UpdateAction(CollectController<Clct> ctl) throws CommonBusinessException {
 			this.ctl = ctl;
 			this.changedFields = new HashMap<String, CollectableField>();
-			for (CollectableComponent clctcomp : ctl.getEditView(false).getCollectableComponents()) {
-				if (clctcomp.getDetailsModel().isValueToBeChanged()) {
-					changedFields.put(clctcomp.getFieldName(), clctcomp.getField());
+			if (!ctl.getCollectState().isResultMode()) {
+				for (CollectableComponent clctcomp : ctl.getEditView(false).getCollectableComponents()) {
+					if (clctcomp.getDetailsModel().isValueToBeChanged()) {
+						changedFields.put(clctcomp.getFieldName(), clctcomp.getField());
+					}
 				}
 			}
 		}
@@ -65,7 +67,9 @@ public class UpdateSelectedCollectablesController <Clct extends Collectable> ext
 				}
 			}
 
-			ctl.getResultController().replaceCollectableInTableModel(ctl.updateCollectable(clct, ctl.getAdditionalDataForMultiUpdate(clct)));
+			if (!ctl.getCollectState().isResultMode()) {
+				ctl.getResultController().replaceCollectableInTableModel(ctl.updateCollectable(clct, ctl.getAdditionalDataForMultiUpdate(clct)));
+			}
 			return null;
 		}
 

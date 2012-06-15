@@ -313,6 +313,22 @@ public class Icons {
 	public ImageIcon getIconLastWhiteHover16() {
 		return this.getIconByName("last-white-hover");
 	}
+	
+	public ImageIcon getIconSelectAll12() {
+		return this.getIconByName("selectAll");
+	}
+
+	public ImageIcon getIconDeSelectAll12() {
+		return this.getIconByName("deSelectAll");
+	}
+	
+	public ImageIcon getIconSelectAllHover12() {
+		return this.getIconByName("selectAll-hover");
+	}
+
+	public ImageIcon getIconDeSelectAllHover12() {
+		return this.getIconByName("deSelectAll-hover");
+	}
 
 	public Icon getIconGoTop16() {
 		return this.getIconByName("gotop");

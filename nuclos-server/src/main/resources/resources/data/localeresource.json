@@ -31750,6 +31750,26 @@
     "text": "Statuswechsel"
   },
   {
+    "resourceID": "ResultPanel.16",
+    "locale": "en",
+    "text": "Select all"
+  },
+  {
+    "resourceID": "ResultPanel.16",
+    "locale": "de",
+    "text": "Alles auswählen"
+  },
+  {
+    "resourceID": "ResultPanel.17",
+    "locale": "en",
+    "text": "Remove selection"
+  },
+  {
+    "resourceID": "ResultPanel.17",
+    "locale": "de",
+    "text": "Auswahl aufheben"
+  },
+  {
     "resourceID": "ResultPanel.11",
     "locale": "i-default",
     "text": "Show\/hide columns"
