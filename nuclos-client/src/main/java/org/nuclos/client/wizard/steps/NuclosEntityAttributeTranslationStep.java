@@ -177,7 +177,11 @@ public class NuclosEntityAttributeTranslationStep extends NuclosEntityAttributeA
 							String sResourceIdForLabel = voMetaField.getLocaleResourceIdForLabel();
 							String sResourceIdForDesc = voMetaField.getLocaleResourceIdForDescription();
 							String sLabel = LocaleDelegate.getInstance().getResourceByStringId(voLocale, sResourceIdForLabel);				
+							if (sLabel == null)
+								sLabel = model.getName();
 							String sDesc = LocaleDelegate.getInstance().getResourceByStringId(voLocale, sResourceIdForDesc);
+							if (sDesc == null)
+								sDesc = model.getDesc();
 							if(tablemodel.getTranslationByName(sLocaleLabel) != null) {
 								tablemodel.getTranslationByName(sLocaleLabel).getLabels().put(labels[0], sLabel);
 								tablemodel.getTranslationByName(sLocaleLabel).getLabels().put(labels[1], sDesc);
