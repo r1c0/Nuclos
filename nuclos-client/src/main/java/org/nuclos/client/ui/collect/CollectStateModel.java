@@ -84,6 +84,9 @@ public final class CollectStateModel <Clct extends Collectable> implements Colle
 	 */
 	private Clct clctEdited;
 
+	//@see 	NUCLOSINT-1550
+	private boolean optStaleVersionShowing = false;
+	
 	/**
 	 * the tab change listener that is used to sync the outer state with the selected tab.
 	 */
@@ -455,13 +458,26 @@ public final class CollectStateModel <Clct extends Collectable> implements Colle
 							"CollectStateModel.9","Neuere Version erwartet."));
 				}
 				assert iNewVersion > iOldVersion;
-
+				
 				String sMessage = localeDelegate.getMessage(
 						"CollectStateModel.6","Der Datensatz wurde zwischenzeitlich ge\u00e4ndert. Soll der Datensatz neu geladen werden?");
-				int result = withPrompt ? JOptionPane.showConfirmDialog(this.ctlCollect.getTab(), sMessage,
-						localeDelegate.getMessage("CollectStateModel.5","Datensatz ge\u00e4ndert"),
-						JOptionPane.YES_NO_OPTION) : JOptionPane.YES_OPTION;
-
+				
+				final int result;
+				if (!withPrompt) {
+					result = JOptionPane.YES_OPTION;
+				} else {
+					if (optStaleVersionShowing)
+						result = JOptionPane.NO_OPTION;
+					else {
+						//@see 	NUCLOSINT-1550
+						optStaleVersionShowing = true;
+						result = JOptionPane.showConfirmDialog(this.ctlCollect.getTab(), sMessage,
+							localeDelegate.getMessage("CollectStateModel.5","Datensatz ge\u00e4ndert"),
+							JOptionPane.YES_NO_OPTION);
+						optStaleVersionShowing = false;
+					}
+				}
+				
 				if (result == JOptionPane.YES_OPTION) {
 					final Clct clctNew;
 
