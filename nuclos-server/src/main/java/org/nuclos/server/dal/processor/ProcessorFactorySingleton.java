@@ -45,6 +45,7 @@ import org.nuclos.common.dblayer.JoinType;
 import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.server.common.DatasourceServerUtils;
 import org.nuclos.server.common.MetaDataServerProvider;
+import org.nuclos.server.common.SessionUtils;
 import org.nuclos.server.dal.DalUtils;
 import org.nuclos.server.dal.processor.jdbc.TableAliasSingleton;
 import org.nuclos.server.dal.processor.jdbc.impl.ChartEntityObjectProcessor;
@@ -80,6 +81,8 @@ public class ProcessorFactorySingleton {
 	
 	private SpringDataBaseHelper dataBaseHelper;
 	
+	private SessionUtils utils;
+	
 	private DatasourceServerUtils datasourceServerUtils;
 
 	private ProcessorFactorySingleton() {
@@ -98,6 +101,11 @@ public class ProcessorFactorySingleton {
 	@Autowired
 	void setSpringDataBaseHelper(SpringDataBaseHelper dataBaseHelper) {
 		this.dataBaseHelper = dataBaseHelper;
+	}
+	
+	@Autowired
+	void setSessionUtils(SessionUtils utils) {
+		this.utils = utils;
 	}
 	
 	@Autowired
@@ -208,6 +216,7 @@ public class ProcessorFactorySingleton {
 		// HACK: force spring, as @Autowired on EntityObjectProcessor does not work (tp)
 		result.setDataBaseHelper(dataBaseHelper);
 		result.setTableAliasSingleton(tableAliasSingleton);
+		result.setSessionUtils(utils);
 		result.setDatasourceServerUtils(datasourceServerUtils);
 		
 		return result;
@@ -452,6 +461,7 @@ public class ProcessorFactorySingleton {
 		// HACK: force spring, as @Autowired on EntityObjectProcessor does not work (tp)
 		result.setDataBaseHelper(dataBaseHelper);
 		result.setTableAliasSingleton(tableAliasSingleton);
+		result.setSessionUtils(utils);
 		result.setDatasourceServerUtils(datasourceServerUtils);
 		
 		return result;
@@ -466,6 +476,7 @@ public class ProcessorFactorySingleton {
 		// HACK: force spring, as @Autowired on EntityObjectProcessor does not work (tp)
 		result.setDataBaseHelper(dataBaseHelper);
 		result.setTableAliasSingleton(tableAliasSingleton);
+		result.setSessionUtils(utils);
 		result.setDatasourceServerUtils(datasourceServerUtils);
 		
 		return result;

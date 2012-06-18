@@ -55,6 +55,7 @@ import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.server.common.DatasourceServerUtils;
 import org.nuclos.server.common.MetaDataServerProvider;
 import org.nuclos.server.common.SecurityCache;
+import org.nuclos.server.common.SessionUtils;
 import org.nuclos.server.dal.processor.IColumnToVOMapping;
 import org.nuclos.server.dal.processor.IColumnWithMdToVOMapping;
 import org.nuclos.server.dal.processor.ProcessorConfiguration;
@@ -115,9 +116,11 @@ public class EntityObjectProcessor extends AbstractJdbcWithFieldsDalProcessor<En
 	 * </p>
 	 */
 	private final String dbSourceForDML;
-
+	
 	private final IColumnToVOMapping<Long> idColumn;
 	private final IColumnToVOMapping<Integer> versionColumn;
+
+	private SessionUtils utils;
 	
 	private DatasourceServerUtils datasourceServerUtils;
 	
@@ -157,6 +160,11 @@ public class EntityObjectProcessor extends AbstractJdbcWithFieldsDalProcessor<En
 				logicalUniqueConstraintCombinations.add(ctovMappings);
 			}
 		}
+	}
+	
+	@Autowired
+	public void setSessionUtils(SessionUtils utils) {
+		this.utils = utils;
 	}
 	
 	@Autowired
@@ -363,7 +371,8 @@ public class EntityObjectProcessor extends AbstractJdbcWithFieldsDalProcessor<En
 	@Override
 	public List<Long> getIdsBySearchExprUserGroups(CollectableSearchExpression searchExpression, Long moduleId, String user) {
 		// if user is super-user or has a module permission that is not restricted to a user group, object groups can be ignored
-		if(SecurityCache.getInstance().isSuperUser(user) || SecurityCache.getInstance().getModulePermissions(user).getMaxPermissionForObjectGroup(eMeta.getEntity(), null) != null) {
+		if(!utils.isCalledRemotely() || SecurityCache.getInstance().isSuperUser(user)
+				|| SecurityCache.getInstance().getModulePermissions(user).getMaxPermissionForObjectGroup(eMeta.getEntity(), null) != null) {
 			return getIdsBySearchExpression(searchExpression);
 		}
         DbQuery<Long> query = dataBaseHelper.getDbAccess().getQueryBuilder().<Long>createQuery(getPrimaryKeyColumn().getDataType());
