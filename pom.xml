@@ -5,7 +5,7 @@
 
 	<groupId>org.nuclos</groupId>
 	<artifactId>nuclos</artifactId>
-	<version>3.4-SNAPSHOT</version>
+	<version>3.5-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<name>Nuclos</name>
@@ -34,7 +34,7 @@
 	</ciManagement>
 	
 	<properties>
-		<nuclos.version.date>15.05.2012</nuclos.version.date>
+		<nuclos.version.date>18.06.2012</nuclos.version.date>
 		<nuclos.api.version>1.2-SNAPSHOT</nuclos.api.version>
 		<spring.version>3.1.1.RELEASE</spring.version>
 		<spring.security.version>3.1.0.RELEASE</spring.security.version>
