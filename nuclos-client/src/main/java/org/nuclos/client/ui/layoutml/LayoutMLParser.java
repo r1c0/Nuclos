@@ -523,15 +523,22 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 							}
 						}
 						final String sTargetComponentName = rpvact.getTargetComponentName();
-						SubForm.Column subformcolumn = event.subform.getColumn(sTargetComponentName);
-
-						if (subformcolumn == null) {
-							subformcolumn = stack.getSubFormForEntity(rpvact.sTargetComponentEntityName).getColumn(sTargetComponentName);
-							if (subformcolumn == null) {
-								subformcolumn = new SubForm.Column(sTargetComponentName);
-								event.subform.addColumn(subformcolumn);
+						SubForm targetSubform;
+						if (rpvact.sTargetComponentEntityName == null) {
+							targetSubform = event.subform;
+						} else {
+							targetSubform = stack.getSubFormForEntity(rpvact.sTargetComponentEntityName);
+							if (targetSubform == null) {
+								throw new SAXException(String.format("RefreshValueListAction Error: Entity %s not found!",	rpvact.sTargetComponentEntityName));
 							}
 						}
+
+						SubForm.Column subformcolumn = targetSubform.getColumn(sTargetComponentName);
+						if (subformcolumn == null) {
+							subformcolumn = new SubForm.Column(sTargetComponentName);
+							targetSubform.addColumn(subformcolumn);
+						}
+                        
 						subformcolumn.addRefreshValueListAction(new SubForm.RefreshValueListAction(sTargetComponentName,
 								event.subform.getEntityName(), event.sSourceComponentName, rpvact.getParameterNameForSourceComponent()));
 					} else if (action instanceof ClearAction) {
