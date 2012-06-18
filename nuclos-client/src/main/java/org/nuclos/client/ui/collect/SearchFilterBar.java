@@ -73,7 +73,14 @@ public class SearchFilterBar implements ItemSelectable {
 	@PostConstruct
 	void init() {
 		pnl = new Panel();
-		scroll = new JScrollPane(pnl, JScrollPane.VERTICAL_SCROLLBAR_NEVER, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		scroll = new JScrollPane(pnl, JScrollPane.VERTICAL_SCROLLBAR_NEVER, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED) {
+			@Override
+			public Dimension getPreferredSize() {
+				final Dimension result = pnl.getPreferredSize();
+				result.height = result.height + 16; //ScrollBar.thumbHeight
+				return result;
+			}
+		};
 		scroll.setBorder(BorderFactory.createEmptyBorder());
 		scroll.setVisible(false);
 		itemListener = new ArrayList<ItemListener>();
@@ -298,7 +305,7 @@ public class SearchFilterBar implements ItemSelectable {
 				super.paintComponent(gbi);
 				gbi.dispose();
 				
-				// 50% opaque
+				// 20% opaque
 				float[] scales = { 1f, 1f, 1f, 0.2f };
 				float[] offsets = new float[4];
 				RescaleOp rop = new RescaleOp(scales, offsets, null);
