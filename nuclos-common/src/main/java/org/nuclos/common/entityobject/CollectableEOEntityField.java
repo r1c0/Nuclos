@@ -107,8 +107,9 @@ public class CollectableEOEntityField extends AbstractCollectableEntityField {
 
 	@Override
 	public String getLabel() {
-		return SpringLocaleDelegate.getInstance().getTextFallback(
+		String label = SpringLocaleDelegate.getInstance().getTextFallback(
 				efMeta.getLocaleResourceIdForLabel(), efMeta.getFallbacklabel());
+		return label != null ? label : getName(); 
 	}
 
 	@Override
