@@ -822,6 +822,7 @@ public class MasterDataSubFormController extends DetailsSubFormController<Collec
 	public void clearChildSubFormController() {
 		for (MasterDataSubFormController subformcontroller : lstChildSubController) {
 			subformcontroller.clearChildSubFormController();
+			subformcontroller.fillAsSubFormChild(MasterDataSubFormController.this, null);
 			if (subformcontroller.getCollectableParent() != null) {
 				subformcontroller.getCollectableParent().getDependantCollectableMasterDataMap().clear();
 				subformcontroller.setCollectableParent(null);
