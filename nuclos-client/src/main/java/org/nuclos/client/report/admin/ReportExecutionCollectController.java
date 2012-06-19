@@ -144,8 +144,20 @@ public class ReportExecutionCollectController extends MasterDataCollectControlle
 		final MouseListener listener = new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent ev) {
-				if (ev.getClickCount() == 2)
-					execReport();
+				if (ev.getClickCount() == 2) {
+					int iRow = tbl.rowAtPoint(ev.getPoint());
+					if (iRow >= 0 && iRow < tbl.getRowCount()) {
+						tbl.getSelectionModel().setSelectionInterval(iRow, iRow);
+					}
+					SwingUtilities.invokeLater(new Runnable() {
+						@Override
+						public void run() {
+							if (getResultController().getSelectedCollectableFromTableModel() != null) {
+								execReport();
+							}
+						}
+					});
+				}
 			}
 		};
 
