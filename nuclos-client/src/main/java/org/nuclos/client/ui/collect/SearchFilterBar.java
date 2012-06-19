@@ -189,11 +189,7 @@ public class SearchFilterBar implements ItemSelectable {
 	
 	private class SearchFilterButton extends JLabel implements MouseListener {
 		
-		private final Color mouseOverBackground = new Color(
-				NuclosThemeSettings.BACKGROUND_ROOTPANE.getRed(),
-				NuclosThemeSettings.BACKGROUND_ROOTPANE.getGreen(),
-				NuclosThemeSettings.BACKGROUND_ROOTPANE.getBlue(),
-				150);
+		private final Color mouseOverBackground = NuclosThemeSettings.BACKGROUND_COLOR3;
 		
 		private final Color mouseOverForeground = Color.WHITE;
 		

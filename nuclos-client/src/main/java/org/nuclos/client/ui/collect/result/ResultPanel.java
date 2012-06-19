@@ -16,10 +16,21 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.ui.collect.result;
 
+import info.clearthought.layout.TableLayout;
+
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Polygon;
+import java.awt.Rectangle;
+import java.awt.RenderingHints;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -32,11 +43,13 @@ import java.util.List;
 import java.util.Map;
 
 import javax.swing.AbstractButton;
+import javax.swing.Action;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComponent;
+import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
@@ -46,6 +59,7 @@ import javax.swing.JTable;
 import javax.swing.JToolBar;
 import javax.swing.KeyStroke;
 import javax.swing.ListSelectionModel;
+import javax.swing.SwingUtilities;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
 import javax.swing.event.TableColumnModelListener;
@@ -53,14 +67,18 @@ import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 
 import org.apache.log4j.Logger;
+import org.jdesktop.swingx.JXBusyLabel;
 import org.jfree.util.Log;
+import org.nuclos.client.common.EnabledListener;
 import org.nuclos.client.common.WorkspaceUtils;
 import org.nuclos.client.common.security.SecurityCache;
 import org.nuclos.client.main.mainframe.MainFrame;
+import org.nuclos.client.synthetica.NuclosThemeSettings;
 import org.nuclos.client.ui.Icons;
 import org.nuclos.client.ui.PopupButton;
 import org.nuclos.client.ui.StatusBarTextField;
 import org.nuclos.client.ui.UIUtils;
+import org.nuclos.client.ui.WrapLayout;
 import org.nuclos.client.ui.collect.CollectController;
 import org.nuclos.client.ui.collect.CollectPanel;
 import org.nuclos.client.ui.collect.CollectableTableHelper;
@@ -75,6 +93,7 @@ import org.nuclos.client.ui.collect.model.CollectableEntityFieldBasedTableModel;
 import org.nuclos.client.ui.popupmenu.DefaultJPopupMenuListener;
 import org.nuclos.client.ui.table.CommonJTable;
 import org.nuclos.client.ui.table.TableUtils;
+import org.nuclos.client.ui.util.TableLayoutBuilder;
 import org.nuclos.common.Actions;
 import org.nuclos.common.WorkspaceDescription.EntityPreferences;
 import org.nuclos.common.collect.collectable.Collectable;
@@ -170,7 +189,7 @@ public class ResultPanel<Clct extends Collectable> extends JPanel {
 			localeDelegate.getMessage("ResultPanel.17","Auswahl aufheben"));
 
 	protected static final String EXPORT_IMPORT_EXTENSION = ".zip";
-
+	
 	private JComponent compCenter = new JPanel(new BorderLayout());
 	
 	private final Collection<ResultKeyListener> keyListener = new ArrayList<ResultKeyListener>();
@@ -180,7 +199,22 @@ public class ResultPanel<Clct extends Collectable> extends JPanel {
 	private final JScrollPane scrlpnResult = new JScrollPane();
 	private final JTable tblResult;
 	
+	protected final JPanel pnlSouth;
+	private final JPanel pnlActions;
+	private final JPanel pnlShowActions;
+	private final JPanel pnlHideActions;
+	private final AbstractButton btnShowActions;
+	private final AbstractButton btnHideActions;
+	
+	private final static int MIN_ACTIONS_HEIGHT = 30;
+	
+	private final JXBusyLabel busyActions = new JXBusyLabel(new Dimension(16, 16));
+	
 	private boolean alternateSelectionToggle = true;
+	private boolean isActionsVisible = true;
+	private boolean isActionsEnabled = true;
+	
+	private Collection<EnabledListener> actionsVisibleListener = new ArrayList<EnabledListener>();
 
 	public final StatusBarTextField tfStatusBar = new StatusBarTextField(" ");
 
@@ -198,16 +232,35 @@ public class ResultPanel<Clct extends Collectable> extends JPanel {
 	public final JMenuItem miPopupCopyCells = new JMenuItem(localeDelegate.getMessage("ResultPanel.13","Kopiere markierte Zellen"));
 	public final JMenuItem miPopupCopyRows = new JMenuItem(localeDelegate.getMessage("ResultPanel.14","Kopiere markierte Zeilen"));
 	public final JMenu miGenerations = new JMenu(localeDelegate.getMessage("ResultPanel.12","Arbeitsschritte"));
-	public final JMenu miStates = new JMenu(localeDelegate.getMessage("ResultPanel.15","Nachfolge Stati"));
+	public final JMenu miStates = new JMenu(localeDelegate.getMessage("ResultPanel.15","Statuswechsel"));
 
 	public ResultPanel() {
 		super(new BorderLayout());
 
 		this.btnDelete = getDeleteButton();
 
+		this.pnlShowActions = new JPanel(new BorderLayout());
+		this.btnShowActions = new UpDownButton(true);
+		this.pnlShowActions.add(btnShowActions, BorderLayout.CENTER);
+		
+		this.pnlHideActions = new JPanel(new BorderLayout());
+		this.btnHideActions = new UpDownButton(false);
+		this.pnlHideActions.add(btnHideActions, BorderLayout.CENTER);
+		
+		this.pnlActions = new JPanel(new FlowLayout());
+		
+		this.pnlSouth = new JPanel(new BorderLayout());
+		this.pnlSouth.add(pnlHideActions, BorderLayout.NORTH);
+		this.pnlSouth.add(pnlActions, BorderLayout.CENTER);
+		this.pnlSouth.add(pnlShowActions, BorderLayout.SOUTH);
+		
+
 		this.tblResult = newResultTable();
 		this.searchFilterBar = new SearchFilterBar();
 		this.pnlResultTable = newResultTablePanel();
+		
+		setActionsPanelEmpty(MIN_ACTIONS_HEIGHT);
+		setActionsVisible(isActionsVisible);
 
 		//this.add(compCenter, BorderLayout.CENTER);
 		//this.add(UIUtils.newStatusBar(tfStatusBar), BorderLayout.SOUTH);
@@ -245,7 +298,10 @@ public class ResultPanel<Clct extends Collectable> extends JPanel {
 
 		// Edit is default action:
 		this.miPopupEdit.setFont(this.miPopupEdit.getFont().deriveFont(Font.BOLD));
-
+		
+		this.busyActions.getBusyPainter().setBaseColor(NuclosThemeSettings.BACKGROUND_COLOR3);
+		this.busyActions.getBusyPainter().setHighlightColor(Color.WHITE);
+		
 		init();
 	}
 
@@ -279,6 +335,58 @@ public class ResultPanel<Clct extends Collectable> extends JPanel {
 			@Override
 			public void popupMenuCanceled(PopupMenuEvent e) {}
 		});
+		
+		this.btnShowActions.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				setActionsVisible(true);
+			}
+		});
+		this.btnHideActions.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				setActionsVisible(false);
+			}
+		});
+	}
+	
+	public void setActionsEnabled(boolean enabled) {
+		this.isActionsEnabled = enabled;
+		if (enabled) {
+			setActionsVisible(isActionsVisible);
+		} else {
+			this.pnlHideActions.setVisible(false);
+			this.pnlActions.setVisible(false);
+			this.pnlShowActions.setVisible(false);
+		}
+	}
+	
+	public boolean isActionsVisible() {
+		return this.isActionsVisible;
+	}
+	
+	public void setActionsVisible(boolean visible) {
+		if (isActionsEnabled) {
+			this.isActionsVisible = visible;
+			this.pnlHideActions.setVisible(visible);
+			this.pnlActions.setVisible(visible);
+			this.pnlShowActions.setVisible(!visible);
+			notifyActionsVisibleListener();
+		}
+	}
+	
+	public void addActionsVisibleListener(EnabledListener visibleListener) {
+		this.actionsVisibleListener.add(visibleListener);
+	}
+	
+	public void removeActionsVisibleListener(EnabledListener visibleListener) {
+		this.actionsVisibleListener.remove(visibleListener);
+	}
+	
+	private void notifyActionsVisibleListener() {
+		for (EnabledListener visibleListener : actionsVisibleListener) {
+			visibleListener.enabledChanged(isActionsVisible);
+		}
 	}
 
 	public void updatePopupExtraVisibility() {
@@ -512,6 +620,7 @@ public class ResultPanel<Clct extends Collectable> extends JPanel {
 		result.add(scrlpnResult, BorderLayout.CENTER);
 
 		result.add(searchFilterBar.getJComponent(), BorderLayout.NORTH);
+		result.add(pnlSouth, BorderLayout.SOUTH);
 		
 		return result;
 	}
@@ -845,6 +954,225 @@ public class ResultPanel<Clct extends Collectable> extends JPanel {
 
 	public void addResultKeyListener(ResultKeyListener resultKeyListener) {
 		keyListener.add(resultKeyListener);
+	}
+	
+	public void loadingResultActions() {
+		int height = Math.max(MIN_ACTIONS_HEIGHT, this.pnlActions.getPreferredSize().height);
+		this.pnlActions.removeAll();
+		setActionsPanelEmpty(height).add(busyActions);
+		busyActions.setBusy(true);
+		this.pnlActions.invalidate();
+		this.pnlActions.revalidate();
+		this.pnlActions.repaint();
+	}
+
+	public void setResultActions(List<ResultActionCollection> actions) {
+		this.busyActions.setBusy(false);
+		this.pnlActions.removeAll();
+		if (actions != null && !actions.isEmpty()) {
+			double[] cols = new double[actions.size()];
+			for (int i = 0; i < actions.size(); i++) {
+				cols[i] = TableLayout.FILL;
+			}
+			TableLayoutBuilder tbllay = new TableLayoutBuilder(this.pnlActions).columns(cols);
+			tbllay.newRow();
+			for (int i = 0; i < actions.size(); i++) {
+				ResultActionCollection rac = actions.get(i);
+				JPanel pnlCol = new JPanel(new WrapLayout(WrapLayout.LEFT));
+				pnlCol.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEmptyBorder(5, 0, 0, 0), rac.getLabel()));
+				
+				for (Action act : rac.getActions()) {
+					pnlCol.add(new ActionButton(act));
+				}
+				tbllay.add(pnlCol);
+			}
+		} else {
+			setActionsPanelEmpty(MIN_ACTIONS_HEIGHT).addLabel("");
+		}
+		this.pnlActions.invalidate();
+		this.pnlActions.revalidate();
+		this.pnlActions.repaint();
+	}
+
+	public void removeResultActions() {
+		this.busyActions.setBusy(false);
+		this.pnlActions.removeAll();
+		setActionsPanelEmpty(MIN_ACTIONS_HEIGHT).addLabel("Dummy");
+		this.pnlActions.invalidate();
+		this.pnlActions.revalidate();
+		this.pnlActions.repaint();
+	}
+	
+	private TableLayoutBuilder setActionsPanelEmpty(int height) {
+		TableLayoutBuilder tbllay = new TableLayoutBuilder(pnlActions).columns(TableLayout.FILL, TableLayout.PREFERRED, TableLayout.FILL);
+		return tbllay.newRow(height).skip();
+	}
+	
+	private class UpDownButton extends JButton implements MouseListener {
+
+		private final boolean up;
+		
+		private final int width = 16;
+		private final int height = 8;
+		private final int border = 4;
+		
+		private boolean hover;
+		
+		public UpDownButton(boolean up) {
+			this.up = up;
+			this.setSize(width, border+height+border);
+			this.setPreferredSize(new Dimension(width, border+height+border));
+			this.addMouseListener(this);
+		}
+		
+		@Override
+		protected void paintComponent(Graphics g) {
+			Graphics2D g2 = (Graphics2D) g;
+			Object renderingHint = g2
+					.getRenderingHint(RenderingHints.KEY_ANTIALIASING);
+			g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+					RenderingHints.VALUE_ANTIALIAS_ON);
+			
+			final Rectangle bounds = getBounds();
+			
+			final int w = width;
+			final int h = height;
+			final int thickness = h/2;
+			
+			final int x = bounds.width/2-w/2;
+			final int y = border;
+			
+			if (hover) {
+				g2.setColor(NuclosThemeSettings.BACKGROUND_COLOR3);
+				g2.fillRect(0, 0, bounds.width, bounds.height);
+			}
+			
+			final Polygon p = new Polygon();
+			
+			if (up) {
+				p.addPoint(x+ 0, 	y+ h-thickness);
+				p.addPoint(x+ w/2, 	y+ 0);
+				p.addPoint(x+ w, 	y+ h-thickness);
+				p.addPoint(x+ w, 	y+ h);
+				p.addPoint(x+ w/2, 	y+ thickness);
+				p.addPoint(x+ 0, 	y+ h);
+			} else {
+				p.addPoint(x+ 0, 	y+ 0);
+				p.addPoint(x+ w/2, 	y+ h-thickness);
+				p.addPoint(x+ w, 	y+ 0);
+				p.addPoint(x+ w, 	y+ thickness);
+				p.addPoint(x+ w/2, 	y+ h);
+				p.addPoint(x+ 0, 	y+ h-thickness);
+			}
+			
+			if (hover) {
+				g2.setColor(NuclosThemeSettings.BACKGROUND_PANEL);
+			} else {
+				g2.setColor(NuclosThemeSettings.BACKGROUND_COLOR3);
+			}
+			g2.fillPolygon(p);
+			
+			g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+					renderingHint);
+		}
+
+		@Override
+		public void mouseClicked(MouseEvent e) {
+			hover=false;
+			repaint();
+		}
+
+		@Override
+		public void mousePressed(MouseEvent e) {
+		}
+
+		@Override
+		public void mouseReleased(MouseEvent e) {
+		}
+
+		@Override
+		public void mouseEntered(MouseEvent e) {
+			hover=true;
+			repaint();
+		}
+
+		@Override
+		public void mouseExited(MouseEvent e) {
+			hover=false;
+			repaint();
+		}
+		
+	}
+	
+	private class ActionButton extends JLabel implements MouseListener {
+		
+		private final Action action;
+		
+//		private final Color defaultForeground;
+		
+//		private final Color hoverForeground = Color.WHITE;
+		
+		private boolean hover = false;
+
+		public ActionButton(Action action) {
+			super((String) action.getValue(Action.NAME));
+			this.addMouseListener(this);
+			this.action = action;
+			this.setOpaque(false);
+			this.setBorder(BorderFactory.createEmptyBorder(2, 10, 2, 10));
+//			this.defaultForeground = getForeground();
+			setForeground(Color.WHITE);
+		}
+
+		@Override
+		public void paint(Graphics g) {
+			Graphics2D g2 = (Graphics2D) g;
+			Object renderingHint = g2
+					.getRenderingHint(RenderingHints.KEY_ANTIALIASING);
+			g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+					RenderingHints.VALUE_ANTIALIAS_ON);
+			
+			final Rectangle bounds = getBounds();
+			g2.setColor(hover?NuclosThemeSettings.BACKGROUND_COLOR3:NuclosThemeSettings.BACKGROUND_COLOR4);
+			g2.fillRoundRect(0, 0, bounds.width, bounds.height, bounds.height*2/3, bounds.height*2/3);
+			
+			super.paint(g);
+			
+			g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+					renderingHint);
+		}
+
+
+
+		@Override
+		public void mouseClicked(MouseEvent e) {
+			if (SwingUtilities.isLeftMouseButton(e)) {
+				action.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "ActionButton"));
+			}
+		}
+
+		@Override
+		public void mousePressed(MouseEvent e) {
+		}
+
+		@Override
+		public void mouseReleased(MouseEvent e) {
+		}
+
+		@Override
+		public void mouseEntered(MouseEvent e) {
+			hover = true;
+//			setForeground(hoverForeground);
+			repaint();
+		}
+
+		@Override
+		public void mouseExited(MouseEvent e) {
+			hover = false;
+//			setForeground(defaultForeground);
+			repaint();
+		}
+		
 	}
 	
 }  // class ResultPanel

@@ -667,4 +667,9 @@ public class RuleCollectController extends EntityCollectController<CollectableRu
 	public List<GeneratorActionVO> getGeneratorActions() {
 		return Collections.emptyList();
 	}
+
+	@Override
+	public List<GeneratorActionVO> getGeneratorActions(Collection<CollectableRule> selectedCollectablesFromResult) {
+		return Collections.emptyList();
+	}
 }	// class RuleCollectController

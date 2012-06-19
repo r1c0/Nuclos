@@ -129,6 +129,7 @@ public class NuclosResultPanel<Clct extends Collectable> extends ResultPanel<Clc
 		result.add(getResultTableScrollPane(), BorderLayout.CENTER);
 		
 		result.add(searchFilterBar.getJComponent(), BorderLayout.NORTH);
+		result.add(pnlSouth, BorderLayout.SOUTH);
 
 		tblFixedResult.getColumnModel().addColumnModelListener(new TableColumnModelListener() {
 			@Override

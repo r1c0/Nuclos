@@ -126,6 +126,10 @@ public class Statemodel implements Serializable {
     public void setUserTransitionIDs(Collection<Integer> userTransitionIDs) {
         this.userTransitionIDs = new HashSet<Integer>(userTransitionIDs);
     }
+    
+    public StateVO getState(Integer iStateId) {
+    	return getStateLookup().get(iStateId);
+    }
 
     private Map<Integer, StateVO> getStateLookup() {
         if(_stateLookup == null)

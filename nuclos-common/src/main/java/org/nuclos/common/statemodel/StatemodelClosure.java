@@ -72,6 +72,17 @@ public class StatemodelClosure implements Serializable {
 			res.addAll(s.getAllStates());
 		return res;
 	}
+	
+	public StateVO getState(Integer iStateId) {
+		StateVO result = null;
+		for(Statemodel s : statemodels.values()) {
+			result = s.getState(iStateId);
+			if (result != null) {
+				break;
+			}
+		}
+		return result;
+	}
 
 	private void ensureResMaps() {
 		if(labelResourceSIDs == null) {

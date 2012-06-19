@@ -1780,6 +1780,11 @@ public class MasterDataCollectController extends EntityCollectController<Collect
 		Integer entityId = IdUtils.unsafeToId(MetaDataClientProvider.getInstance().getEntity(getEntity()).getId());
 		return GeneratorActions.getActions(entityId, null, null);
 	}
+	
+	@Override
+	public List<GeneratorActionVO> getGeneratorActions(Collection<CollectableMasterDataWithDependants> selectedCollectablesFromResult) {
+		return getGeneratorActions();
+	}
 
 	@Override
 	public Collection<RuleVO> getUserRules() {

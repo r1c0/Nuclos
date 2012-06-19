@@ -16,6 +16,7 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.genericobject;
 
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 
@@ -71,7 +72,15 @@ public class GeneratorActions {
 	public static List<GeneratorActionVO> getActions(Integer iModuleId, Integer iStateNumeral, Integer iProcessId) {
 		/** @todo replace sStateMnemonic with iStateMnemonic in GeneratorVO */
 		List<GeneratorActionVO> result = getInstance().generatorcvo.getGeneratorActions(iModuleId, iStateNumeral, iProcessId);
-		result = CollectionUtils.sorted(result, new Comparator<GeneratorActionVO>() {
+		assert result != null;
+		return sort(result);
+	}
+	
+	public static List<GeneratorActionVO> sort(Collection<GeneratorActionVO> lst) {
+		if (lst == null)
+			return null;
+		
+		return CollectionUtils.sorted(lst, new Comparator<GeneratorActionVO>() {
 
 			@Override
 			public int compare(GeneratorActionVO o1, GeneratorActionVO o2) {
@@ -79,8 +88,6 @@ public class GeneratorActions {
 			}			
 			
 		});
-		assert result != null;
-		return result;
 	}
 
 	/**

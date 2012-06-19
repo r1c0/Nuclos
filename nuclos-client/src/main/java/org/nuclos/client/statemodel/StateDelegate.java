@@ -122,6 +122,16 @@ public class StateDelegate {
 	public Collection<StateVO> getStatesByModule(Integer iModuleId) {
 		return getStatemodelClosure(iModuleId).getAllStates();
 	}
+	
+	/**
+	 * 
+	 * @param iModuleId
+	 * @param iStateId
+	 * @return
+	 */
+	public StateVO getState(Integer iModuleId, Integer iStateId) {
+		return getStatemodelClosure(iModuleId).getState(iStateId);
+	}
 
 	/**
 	 *

@@ -61,6 +61,7 @@ import org.nuclos.client.common.WorkspaceUtils;
 import org.nuclos.client.common.security.SecurityCache;
 import org.nuclos.client.genericobject.GenericObjectCollectController;
 import org.nuclos.client.main.mainframe.MainFrame;
+import org.nuclos.client.main.mainframe.MainFrameTabbedPane;
 import org.nuclos.client.searchfilter.SearchFilter;
 import org.nuclos.client.ui.CommonAbstractAction;
 import org.nuclos.client.ui.Errors;
@@ -79,6 +80,7 @@ import org.nuclos.client.ui.collect.model.SortableCollectableTableModel;
 import org.nuclos.client.ui.table.SortableTableModel;
 import org.nuclos.client.ui.table.TableUtils;
 import org.nuclos.common.Actions;
+import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.WorkspaceDescription.EntityPreferences;
 import org.nuclos.common.collect.collectable.Collectable;
 import org.nuclos.common.collect.collectable.CollectableEntity;
@@ -92,6 +94,7 @@ import org.nuclos.common.dal.vo.PivotInfo;
 import org.nuclos.common.dal.vo.SystemFields;
 import org.nuclos.common.entityobject.CollectableEOEntityField;
 import org.nuclos.common2.CommonRunnable;
+import org.nuclos.common2.PreferencesUtils;
 import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonFatalException;
@@ -124,6 +127,8 @@ import org.springframework.beans.factory.annotation.Configurable;
 public class ResultController<Clct extends Collectable> {
 
 	private static final Logger LOG = Logger.getLogger(ResultController.class);
+	
+	private static final String RESULT_ACTIONS_VISIBLE = "resultactionsvisible";
 	
 	private static final int ESC = KeyEvent.VK_ESCAPE;
 	
@@ -193,6 +198,13 @@ public class ResultController<Clct extends Collectable> {
 	};
 	
 	protected boolean isIgnorePreferencesUpdate = true;
+	
+	private EnabledListener actionsVisibleListener = new EnabledListener() {
+		@Override
+		public void enabledChanged(boolean visible) {
+			getCollectController().getPreferences().putBoolean(RESULT_ACTIONS_VISIBLE, visible);
+		}
+	};
 
 	/**
 	 * Don't make this public!
@@ -286,6 +298,11 @@ public class ResultController<Clct extends Collectable> {
 	 * TODO: Make this package visible again.
 	 */
 	public void setupResultPanel() {
+		if (NuclosEntity.isNuclosEntity(getEntity().getName())) {
+			this.getResultPanel().setActionsEnabled(false);
+		}
+		this.getResultPanel().addActionsVisibleListener(actionsVisibleListener);
+		
 		setupActions();
 
 		// add selection listener for Result table:
@@ -342,21 +359,28 @@ public class ResultController<Clct extends Collectable> {
 
 		// add mouse listener for double click in table:
 		this.mouselistenerTableDblClick = new MouseAdapter() {
+			
+			private long lastClick = 0l;
+			
 			@Override
 			public void mouseClicked(MouseEvent ev) {
-				if (SwingUtilities.isLeftMouseButton(ev) && ev.getClickCount() == 2) {
-					int iRow = tblResult.rowAtPoint(ev.getPoint());
-					if (iRow >= 0 && iRow < tblResult.getRowCount()) {
-						tblResult.getSelectionModel().setSelectionInterval(iRow, iRow);
-						SwingUtilities.invokeLater(new Runnable() {
-							@Override
-							public void run() {
-								if (getSelectedCollectableFromTableModel() != null) {
-									clctctl.cmdViewSelectedCollectables();
+				if (SwingUtilities.isLeftMouseButton(ev)) {
+					if (lastClick + MainFrameTabbedPane.DOUBLE_CLICK_SPEED > System.currentTimeMillis()) {
+						int iRow = tblResult.rowAtPoint(ev.getPoint());
+						if (iRow >= 0 && iRow < tblResult.getRowCount()) {
+							tblResult.getSelectionModel().setSelectionInterval(iRow, iRow);
+							SwingUtilities.invokeLater(new Runnable() {
+								@Override
+								public void run() {
+									if (getSelectedCollectableFromTableModel() != null) {
+										clctctl.cmdViewSelectedCollectables();
+									}
 								}
-							}
-						});
+							});
+						}
 					}
+					
+					lastClick = System.currentTimeMillis();
 				}
 			}
 		};
@@ -374,6 +398,8 @@ public class ResultController<Clct extends Collectable> {
 		
 		getResultPanel().addPopupMenuListener();
 		getResultPanel().getSearchFilterBar().addEnabledListener(new ResetMainFilterEnabledListener());
+		
+		getResultPanel().setActionsVisible(getCollectController().getPreferences().getBoolean(RESULT_ACTIONS_VISIBLE, true));
 	}
 
 	private void setupActions() {
@@ -654,6 +680,7 @@ public class ResultController<Clct extends Collectable> {
 			pnlResult.miPopupOpenInNewTab.setAction(null);
 			pnlResult.miPopupBookmark.setAction(null);
 			pnlResult.miPopupDefineAsNewSearchResult.setAction(null);
+			pnlResult.removeActionsVisibleListener(actionsVisibleListener);
 			UIUtils.removeAllMouseListeners(pnlResult.getResultTable().getTableHeader());
 		}
 	}
@@ -874,6 +901,22 @@ public class ResultController<Clct extends Collectable> {
 	public Clct getSelectedCollectableFromTableModel() {
 		final int iSelectedRow = clctctl.getResultTable().getSelectedRow();
 		return (iSelectedRow == -1) ? null : clctctl.getResultTableModel().getCollectable(iSelectedRow);
+	}
+	
+	/**
+	 * @return the selected <code>Collectable</code>'s, if any, from the table model.
+	 * Note that there is no selected <code>Collectable</code> in New mode.
+	 * Note that the result might be incomplete, that means, some fields might be missing.
+	 */
+	public Collection<Clct> getSelectedCollectablesFromTableModel() {
+		int[] iSelectedRows = clctctl.getResultTable().getSelectedRows();
+		Collection<Clct> result = new ArrayList<Clct>(iSelectedRows.length);
+		if (iSelectedRows.length > 0) {
+			for (int i = 0; i < iSelectedRows.length; i++) {
+				result.add(clctctl.getResultTableModel().getCollectable(iSelectedRows[i]));
+			}
+		}
+		return result;
 	}
 
 	/**

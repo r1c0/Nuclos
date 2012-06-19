@@ -169,6 +169,7 @@ import org.nuclos.client.ui.collect.model.GenericObjectsResultTableModel;
 import org.nuclos.client.ui.collect.model.SortableCollectableTableModel;
 import org.nuclos.client.ui.collect.result.GenericObjectResultController;
 import org.nuclos.client.ui.collect.result.NuclosSearchResultStrategy;
+import org.nuclos.client.ui.collect.result.ResultActionCollection;
 import org.nuclos.client.ui.collect.result.ResultController;
 import org.nuclos.client.ui.collect.result.ResultPanel;
 import org.nuclos.client.ui.collect.search.ISearchStrategy;
@@ -6116,6 +6117,9 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	@Override
 	public List<GeneratorActionVO> getGeneratorActions() {
 		try {
+			if (getCollectState().isResultMode()) {
+				return getGeneratorActions(getResultController().getSelectedCollectablesFromTableModel());
+			} else
 			if (CollectState.isDetailsModeViewOrEdit(getCollectStateModel().getDetailsMode())) {
 				final UsageCriteria usagecriteria = getUsageCriteriaFromView(false);
 				final Integer iStateNumeral = getSelectedGenericObjectStateNumeral();
@@ -6135,6 +6139,42 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 			throw new NuclosFatalException(
 					getSpringLocaleDelegate().getMessage("GenericObjectCollectController.61","Prozess-Id ist ung\u00fcltig."), ex);
 		}
+	}
+	
+	@Override
+	public List<GeneratorActionVO> getGeneratorActions(Collection<CollectableGenericObjectWithDependants> selectedCollectablesFromResult) {
+		List<GeneratorActionVO> result = null;
+		
+		for (CollectableGenericObjectWithDependants go : selectedCollectablesFromResult) {
+			DynamicAttributeVO dynState = go.getGenericObjectCVO().getAttribute(NuclosEOField.STATE.getMetaData().getId().intValue());
+			DynamicAttributeVO dynProcess = go.getGenericObjectCVO().getAttribute(NuclosEOField.PROCESS.getMetaData().getId().intValue());
+			
+			Integer iStateNumeral = null;
+			Integer iProcessId = null;
+			if (dynState != null) {
+				StateVO statevo = StateDelegate.getInstance().getState(getModuleId(), dynState.getValueId());
+				if (statevo != null) {
+					iStateNumeral = statevo.getNumeral();
+				}
+			}
+			if (dynProcess != null) {
+				iProcessId = dynProcess.getValueId();
+			}
+			
+			List<GeneratorActionVO> goActions = GeneratorActions.getActions(getModuleId(), iStateNumeral, iProcessId);
+			if (result == null) {
+				result = goActions;
+			} else {
+				result = new ArrayList<GeneratorActionVO>(CollectionUtils.intersection(result, goActions));
+//						, new BinaryPredicate<GeneratorActionVO, GeneratorActionVO>() {
+//					@Override
+//					public boolean evaluate(GeneratorActionVO t1, GeneratorActionVO t2) {
+//						return LangUtils.equals(t1.getId(), t2.getId());
+//				}}));
+			}
+		}
+		
+		return result==null?new ArrayList<GeneratorActionVO>():GeneratorActions.sort(result);
 	}
 
 	@Override
@@ -6199,11 +6239,10 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		}
 	}
 	
-	protected List<StateVO> getSubsequentStates() {
+	protected List<StateVO> getSubsequentStates(Collection<CollectableGenericObjectWithDependants> selectedCollectablesFromResult) {
 		List<StateVO> result = null;
 		
-		final List<CollectableGenericObjectWithDependants> selectedGOs = getSelectedCollectables();
-		for (CollectableGenericObjectWithDependants go : selectedGOs) {
+		for (CollectableGenericObjectWithDependants go : selectedCollectablesFromResult) {
 			UsageCriteria uc = getUsageCriteria(go);
 			DynamicAttributeVO av = go.getGenericObjectCVO().getAttribute(NuclosEOField.STATE.getMetaData().getId().intValue());
 			List<StateVO> lstSubsequentStates = StateDelegate.getInstance().getStatemodel(uc).getSubsequentStates(av.getValueId(), false);
@@ -6239,7 +6278,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 					@Override
 					public void run() {
 						try {
-							final List<StateVO> lstSubsequenteStates = getSubsequentStates();
+							final List<StateVO> lstSubsequenteStates = getSubsequentStates(getSelectedCollectables());
 							JMenu mi = getResultPanel().miStates;
 							mi.setVisible(lstSubsequenteStates.size() != 0);
 							for(final StateVO stateVO : lstSubsequenteStates) {
@@ -6275,7 +6314,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		private final StateVO statevo;
 
 		public StateChangeAction(StateVO statevo) {
-			super(statevo.getNumeral() + " " + statevo.getStatename());
+			super(statevo.getStatename());
 			this.statevo = statevo;
 		}
 
@@ -6292,4 +6331,20 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		}
 		
 	}
+
+	@Override
+	protected List<ResultActionCollection> getResultActionsMultiThreaded(Collection<CollectableGenericObjectWithDependants> selectedCollectablesFromResult) {
+		List<ResultActionCollection> result = super.getResultActionsMultiThreaded(selectedCollectablesFromResult);
+		if (result == null) {
+			result = new ArrayList<ResultActionCollection>();
+		}
+		ResultActionCollection rac = new ResultActionCollection(SpringLocaleDelegate.getInstance().getMessage("ResultPanel.15","Statuswechsel"));
+		for (StateVO statevo : getSubsequentStates(selectedCollectablesFromResult)) {
+			rac.addAction(new StateChangeAction(statevo));
+		}
+		result.add(0, rac);
+		return result;
+	}
+	
+	
 }	// class GenericObjectCollectController

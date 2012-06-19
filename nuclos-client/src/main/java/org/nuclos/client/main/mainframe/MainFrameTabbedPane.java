@@ -150,7 +150,7 @@ public class MainFrameTabbedPane {
 	private final JLabel lbMax = new JLabel(Icons.getInstance().getIconTabbedPaneMax());
 	private boolean maximizedTabs = false;
 
-	private static final long doubleClickSpeed = 400l;
+	public static final long DOUBLE_CLICK_SPEED = 400l;
 	private long lastClickOnTab = 0l;
 	private Point lastClickOnTabPosition;
 
@@ -1637,7 +1637,7 @@ public class MainFrameTabbedPane {
 						}
 
 						if (!consumed && SwingUtilities.isLeftMouseButton(e)
-							&& lastClickOnTab + doubleClickSpeed > System.currentTimeMillis()
+							&& lastClickOnTab + DOUBLE_CLICK_SPEED > System.currentTimeMillis()
 							&& lastClickOnTabPosition != null) {
 
 							final Rectangle doubleClickArea = new Rectangle(lastClickOnTabPosition.x-10, lastClickOnTabPosition.y-10, 20, 20);

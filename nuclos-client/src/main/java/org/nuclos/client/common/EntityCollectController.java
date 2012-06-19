@@ -32,6 +32,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 import java.util.prefs.Preferences;
 
 import javax.swing.AbstractAction;
@@ -48,7 +49,10 @@ import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.ListCellRenderer;
 import javax.swing.SwingUtilities;
+import javax.swing.SwingWorker;
 import javax.swing.event.ChangeListener;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
 
@@ -76,6 +80,7 @@ import org.nuclos.client.ui.collect.SubForm;
 import org.nuclos.client.ui.collect.component.CollectableComponent;
 import org.nuclos.client.ui.collect.component.model.CollectableComponentModelProvider;
 import org.nuclos.client.ui.collect.component.model.SearchEditModel;
+import org.nuclos.client.ui.collect.result.ResultActionCollection;
 import org.nuclos.client.ui.collect.result.ResultController;
 import org.nuclos.client.ui.layoutml.LayoutRoot;
 import org.nuclos.common.PointerCollection;
@@ -115,6 +120,8 @@ public abstract class EntityCollectController<Clct extends Collectable> extends 
 	private List<ActionListener> lstPointerChangeListener = new ArrayList<ActionListener>();
 
 	protected Map<String, SearchConditionSubFormController> mpsubformctlSearch;
+	
+	private ResultActionsWorker runningResultActionsWorker;
 
 	/**
 	 * Don't make this public!
@@ -274,6 +281,37 @@ public abstract class EntityCollectController<Clct extends Collectable> extends 
 		super.initialize(pnlCollect);
 		this.getCollectStateModel().addCollectStateListener(new EntityCollectStateListener());
 		this.addCollectableEventListener(new PointerResetChangeEventListener());
+		this.getResultPanel().getResultTable().getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+			@Override
+			public void valueChanged(ListSelectionEvent e) {
+				if (!e.getValueIsAdjusting()) {
+					getResultPanel().loadingResultActions();
+					Collection<Clct> selectedCollectablesFromResult = getResultController().getSelectedCollectablesFromTableModel();
+					ResultActionsWorker worker = new ResultActionsWorker(selectedCollectablesFromResult);
+					worker.execute();
+				}
+			}
+		});
+	}
+	
+	protected List<ResultActionCollection> getResultActionsMultiThreaded(Collection<Clct> selectedCollectablesFromResult) {
+		List<ResultActionCollection> result = new ArrayList<ResultActionCollection>();
+		ResultActionCollection rac = new ResultActionCollection(SpringLocaleDelegate.getInstance().getMessage("ResultPanel.12","Arbeitsschritte"));
+		result.add(rac);
+		
+		List<GeneratorActionVO> actions = getGeneratorActions(selectedCollectablesFromResult);
+		if (actions!=null && !actions.isEmpty()) {
+			for(final GeneratorActionVO actionVO : getGeneratorActions(selectedCollectablesFromResult)) {
+				rac.addAction(new AbstractAction(actionVO.toString()) {
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						cmdGenerateObject(actionVO);
+					}
+
+				});
+			}
+		}
+		return result;
 	}
 
 	protected void initSearchSubforms() {
@@ -1224,6 +1262,8 @@ public abstract class EntityCollectController<Clct extends Collectable> extends 
 	public abstract void cmdGenerateObject(GeneratorActionVO generatoractionvo);
 
 	public abstract List<GeneratorActionVO> getGeneratorActions();
+	
+	public abstract List<GeneratorActionVO> getGeneratorActions(Collection<Clct> selectedCollectablesFromResult);
 
 	protected void setupResultContextMenuGeneration() {
 		this.getResultPanel().popupmenuRow.addPopupMenuListener(new PopupMenuListener() {
@@ -1272,5 +1312,50 @@ public abstract class EntityCollectController<Clct extends Collectable> extends 
 				 getResultPanel().miGenerations.removeAll();
 			}
 		});
+	}
+	
+	private class ResultActionsWorker extends SwingWorker<List<ResultActionCollection>, Object> {
+
+		final Collection<Clct> selectedCollectablesFromResult;
+		
+		boolean cancelWorker = false;
+		
+		public ResultActionsWorker(Collection<Clct> selectedCollectablesFromResult) {
+			try {
+				runningResultActionsWorker.cancelWorker();
+			} catch (Exception ex) {
+				//ipgnore
+			}
+			runningResultActionsWorker = this;
+			this.selectedCollectablesFromResult = selectedCollectablesFromResult;
+		}
+		
+		@Override
+		protected List<ResultActionCollection> doInBackground() throws Exception {
+			// looks better ;-)
+			Thread.sleep(500);
+			return getResultActionsMultiThreaded(selectedCollectablesFromResult);
+		}
+		
+		public void cancelWorker() {
+			cancelWorker = true;
+			cancel(true);
+		}
+		
+		@Override
+		protected void done() {
+			try {
+				List<ResultActionCollection> result = get();
+				if (!cancelWorker) {
+					runningResultActionsWorker = null;
+					getResultPanel().setResultActions(result);
+				}
+			} catch (Exception e) {
+				if (!cancelWorker) {
+					getResultPanel().setResultActions(null);
+				}
+			} 
+		}	
+		
 	}
 }
