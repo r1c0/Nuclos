@@ -33497,17 +33497,17 @@
   {
     "resourceID": "AbstractCollectableComponent.7",
     "locale": "i-default",
-    "text": "Show table details..."
+    "text": "Show details..."
   },
   {
     "resourceID": "AbstractCollectableComponent.7",
     "locale": "en",
-    "text": "Show table details..."
+    "text": "Show details..."
   },
   {
     "resourceID": "AbstractCollectableComponent.7",
     "locale": "de",
-    "text": "Tabellendetails anzeigen..."
+    "text": "Details anzeigen..."
   },
   {
     "resourceID": "AbstractCollectableComponent.22",
