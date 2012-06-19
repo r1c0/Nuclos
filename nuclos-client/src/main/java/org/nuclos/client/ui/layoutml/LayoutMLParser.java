@@ -40,6 +40,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -822,9 +823,22 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 							 * CollectableComboBox to CollectableComponentModel - but this can't be done at this time. 09.09.2004 CR */
 							try {
 								final Collection<CollectableComponent> collclctcompTarget = provider.getCollectableComponentsFor(clctefTarget.getName());
-								final CollectableComboBox clctcmbbx = (CollectableComboBox) collclctcompTarget.iterator().next();
 								assert !clctfSource.isNull();
-								clctcompmodelTarget.setField(CollectableUtils.findCollectableFieldByValue(clctcmbbx.getValueList(), clctfSource));
+								
+								final CollectableComponent clctcomp = collclctcompTarget.iterator().next();
+								if (clctcomp instanceof CollectableComboBox) {
+									final CollectableComboBox clctcmbbx = (CollectableComboBox) clctcomp;
+									try {
+										clctcompmodelTarget.setField(CollectableUtils.findCollectableFieldByValue(clctcmbbx.getValueList(), clctfSource));
+									} catch (NoSuchElementException e) {
+										if (clctcmbbx.isInsertable())
+											clctcompmodelTarget.setField(new CollectableValueIdField(null, clctfSource.getValue()));
+									}
+								} else if (clctcomp instanceof CollectableListOfValues) {
+									final CollectableListOfValues clctlov = (CollectableListOfValues) clctcomp;
+									if (clctlov.isInsertable())
+										clctcompmodelTarget.setField(new CollectableValueIdField(null, clctfSource.getValue()));
+								}
 							}
 							catch (Exception ex2) {
 								throw new CommonFatalException(StringUtils.getParameterizedExceptionMessage("LayoutMLParser.6", clctefTarget.getName()), ex2);
