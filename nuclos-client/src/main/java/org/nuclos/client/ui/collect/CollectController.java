@@ -1487,8 +1487,17 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 			@Override
 			public void mouseClicked(MouseEvent ev) {
 				if (SwingUtilities.isLeftMouseButton(ev) && ev.getClickCount() == 2) {
-					acceptLookedUpCollectable(clctlovSource);
-					getTab().dispose();
+					int iRow = getResultTable().rowAtPoint(ev.getPoint());
+					if (iRow >= 0 && iRow < getResultTable().getRowCount()) {
+						getResultTable().getSelectionModel().setSelectionInterval(iRow, iRow);
+						SwingUtilities.invokeLater(new Runnable() {
+							@Override
+							public void run() {
+								acceptLookedUpCollectable(clctlovSource);
+								getTab().dispose();
+							}
+						});
+					}
 				}
 			}
 		};
