@@ -35,7 +35,6 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import javax.swing.Action;
-import javax.swing.JComponent;
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.KeyStroke;
@@ -61,7 +60,7 @@ import org.nuclos.client.common.WorkspaceUtils;
 import org.nuclos.client.common.security.SecurityCache;
 import org.nuclos.client.genericobject.GenericObjectCollectController;
 import org.nuclos.client.main.mainframe.MainFrame;
-import org.nuclos.client.searchfilter.SearchFilter;
+import org.nuclos.client.main.mainframe.MainFrameTabbedPane;
 import org.nuclos.client.ui.CommonAbstractAction;
 import org.nuclos.client.ui.Errors;
 import org.nuclos.client.ui.Icons;
@@ -342,21 +341,28 @@ public class ResultController<Clct extends Collectable> {
 
 		// add mouse listener for double click in table:
 		this.mouselistenerTableDblClick = new MouseAdapter() {
+			
+			private long lastClick = 0l;
+			
 			@Override
 			public void mouseClicked(MouseEvent ev) {
-				if (SwingUtilities.isLeftMouseButton(ev) && ev.getClickCount() == 2) {
-					int iRow = tblResult.rowAtPoint(ev.getPoint());
-					if (iRow >= 0 && iRow < tblResult.getRowCount()) {
-						tblResult.getSelectionModel().setSelectionInterval(iRow, iRow);
-						SwingUtilities.invokeLater(new Runnable() {
-							@Override
-							public void run() {
-								if (getSelectedCollectableFromTableModel() != null) {
-									clctctl.cmdViewSelectedCollectables();
+				if (SwingUtilities.isLeftMouseButton(ev)) {
+					if (lastClick + MainFrameTabbedPane.DOUBLE_CLICK_SPEED > System.currentTimeMillis()) {
+						int iRow = tblResult.rowAtPoint(ev.getPoint());
+						if (iRow >= 0 && iRow < tblResult.getRowCount()) {
+							tblResult.getSelectionModel().setSelectionInterval(iRow, iRow);
+							SwingUtilities.invokeLater(new Runnable() {
+								@Override
+								public void run() {
+									if (getSelectedCollectableFromTableModel() != null) {
+										clctctl.cmdViewSelectedCollectables();
+									}
 								}
-							}
-						});
+							});
+						}
 					}
+					
+					lastClick = System.currentTimeMillis();
 				}
 			}
 		};
