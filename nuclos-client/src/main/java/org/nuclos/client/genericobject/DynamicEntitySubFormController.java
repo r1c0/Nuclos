@@ -81,7 +81,7 @@ public class DynamicEntitySubFormController extends MasterDataSubFormController 
 	private static final Logger LOG = Logger.getLogger(DynamicEntitySubFormController.class);
 	
 	private JMenuItem miDetails = new JMenuItem(getSpringLocaleDelegate().getMessage(
-			"AbstractCollectableComponent.7","Tabellendetails anzeigen..."));
+			"AbstractCollectableComponent.7","Details anzeigen..."));
 	private JMenuItem miDefineAsNewSearchResult = new JMenuItem(getSpringLocaleDelegate().getMessage(
 			"DynamicEntitySubFormController.1", "In Liste anzeigen"));
 
@@ -253,15 +253,11 @@ public class DynamicEntitySubFormController extends MasterDataSubFormController 
 	private String getEntityNameForDyamicLookup(String entityName)
 		throws CommonBusinessException {
 		CollectableEntity colEntity = DynamicEntitySubFormController.this.getCollectableEntity();
-		if(colEntity instanceof CollectableMasterDataEntity) {
-			CollectableMasterDataEntity masterDataEntity = (CollectableMasterDataEntity)colEntity;
-			MasterDataMetaVO voMeta = masterDataEntity.getMasterDataMetaCVO();
-			String entity = voMeta.getEntityName();
-			if(entity != null) {
-				entity = entity.substring(4, entity.length());
-				DynamicEntityVO voDyn = DatasourceDelegate.getInstance().getDynamicEntityByName(entity);
-				entityName = voDyn.getEntity();
-			}
+		String entity = colEntity.getName();
+		if(entity != null) {
+			entity = entity.substring(4, entity.length());
+			DynamicEntityVO voDyn = DatasourceDelegate.getInstance().getDynamicEntityByName(entity);
+			entityName = voDyn.getEntity();
 		}
 		return entityName;
 	}
