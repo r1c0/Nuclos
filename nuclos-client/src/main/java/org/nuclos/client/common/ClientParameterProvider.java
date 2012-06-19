@@ -20,6 +20,7 @@ package org.nuclos.client.common;
 import java.awt.Color;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import javax.annotation.PostConstruct;
 
 import javax.jms.JMSException;
 import javax.jms.Message;
@@ -49,7 +50,7 @@ import org.springframework.stereotype.Component;
  * @version 01.00.00
  */
 @Component("parameterProvider")
-public class ClientParameterProvider extends AbstractParameterProvider implements MessageListener, InitializingBean {
+public class ClientParameterProvider extends AbstractParameterProvider implements MessageListener {
 	
 	private static final Logger LOG = Logger.getLogger(ClientParameterProvider.class);
 	
@@ -106,12 +107,18 @@ public class ClientParameterProvider extends AbstractParameterProvider implement
 		this.parameterFacadeRemote = parameterFacadeRemote;
 	}
 
-	@Override
-	public void afterPropertiesSet() throws Exception {
-		tnr.subscribe(JMSConstants.TOPICNAME_PARAMETERPROVIDER, serverListener);
-		revalidate();
+	@PostConstruct
+	final void init() throws Exception {
+		final Runnable run = new Runnable() {
+			@Override
+			public void run() {
+				revalidate();
+				tnr.subscribe(JMSConstants.TOPICNAME_PARAMETERPROVIDER, serverListener);
+			}
+		};
+		new Thread(run, "ClientParameterProvider.init").start();
 	}
-	
+
 	private void revalidate() {
 		synchronized (mpParams) {
 			mpParams.clear();

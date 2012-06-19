@@ -162,7 +162,8 @@ public class LoginController extends Controller<Component> {
 	        	JOptionPane.ERROR_MESSAGE);
 	        System.exit(1);
         }
-		loginPanel = new LoginPanel(passwordSaveAllowed);
+		loginPanel = LoginPanel.getInstance();
+		loginPanel.enableRememberCheckbox(passwordSaveAllowed);
 
 		// fill language combo with language information
 		List<LocaleInfo> localeInfo = LocalUserProperties.getInstance().getLoginLocaleSelection();
@@ -319,7 +320,7 @@ public class LoginController extends Controller<Component> {
 	public boolean run(JFrame frame) {
 		final LocalUserProperties props = LocalUserProperties.getInstance();
 
-		loginPanel = new LoginPanel(false);
+		loginPanel = LoginPanel.getInstance();
 		loginPanel.hideLanguageSelection();
 
 		final JOptionPane optpn = new JOptionPane(loginPanel, JOptionPane.PLAIN_MESSAGE, JOptionPane.OK_CANCEL_OPTION);

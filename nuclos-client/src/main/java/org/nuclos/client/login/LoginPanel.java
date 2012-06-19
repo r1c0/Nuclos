@@ -71,6 +71,8 @@ import org.nuclos.common.ApplicationProperties;
  * @version 01.00.00
  */
 public class LoginPanel extends BackgroundPanel {
+	
+	private static LoginPanel INSTANCE = null;
 
 	private final JPanel	   pnlLogin	     = new JPanel();
 	private final JPanel	   pnlLogo	     = new JPanel();
@@ -89,7 +91,7 @@ public class LoginPanel extends BackgroundPanel {
 
 	private final JProgressBar	progressbar	 = new JProgressBar();
 
-	public LoginPanel(boolean withRememberCheckbox) {
+	private LoginPanel() {
 		Icon iconCustomer = NuclosIcons.getInstance().getIconCustomer();
 		JLabel labLogo = new JLabel(iconCustomer);
 		labLogo.setBorder(null);
@@ -110,6 +112,8 @@ public class LoginPanel extends BackgroundPanel {
 		    props.getLoginResource(LocalUserProperties.KEY_LANG_REGION));
 		rememberPass.setText(props.getLoginResource(LocalUserProperties.KEY_LANG_AUTOLOGIN));
 		rememberPass.setOpaque(false);
+		rememberPass.setEnabled(false);
+		rememberPass.setVisible(false);
 		//rememberPass.addFocusListener(new BackgroundListener());
 
 		Color tx = ApplicationProperties.getInstance().getLoginPanelTextColor(
@@ -161,12 +165,10 @@ public class LoginPanel extends BackgroundPanel {
 		pnlLogin.add(tfPassword, new GridBagConstraints(1, y, 1, 1, 0.0, 0.0,
 		    GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, new Insets(
 		        0, 0, iInsetBottom, 0), 0, 0));
-		if(withRememberCheckbox) {
-			y++;
-			pnlLogin.add(rememberPass, new GridBagConstraints(1, y, 1, 1, 0.0,
-			    0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
-			    new Insets(0, 0, iInsetBottom, 0), 0, 0));
-		}
+		y++;
+		pnlLogin.add(rememberPass, new GridBagConstraints(1, y, 1, 1, 0.0,
+			0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
+			new Insets(0, 0, iInsetBottom, 0), 0, 0));
 		y++;
 		pnlLogin.add(labLanguage, new GridBagConstraints(0, y, 1, 1, 0.0, 0.0,
 		    GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 0,
@@ -213,6 +215,18 @@ public class LoginPanel extends BackgroundPanel {
 		    null);
 		if(pbfg != null)
 			progressbar.setForeground(pbfg);
+	}
+	
+	public static final synchronized LoginPanel getInstance() {
+		if (INSTANCE == null) {
+			INSTANCE = new LoginPanel();
+		}
+		return INSTANCE;
+	}
+	
+	void enableRememberCheckbox(boolean withRememberCheckbox) {
+		rememberPass.setEnabled(withRememberCheckbox);
+		rememberPass.setVisible(withRememberCheckbox);
 	}
 	
 	JComboBox getLanguageComboBox() {

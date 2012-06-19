@@ -158,13 +158,24 @@ public class TopicNotificationReceiver {
 	}
 	
 	public synchronized final void realSubscribe() {
-		deferredSubscribe = false;
-		for (TopicInfo i: infos) {
-			WeakReferenceMessageListener weakrefmsglistener = new WeakReferenceMessageListener(i);
-			weakrefmsglistener.subscribe();
-			weakmessagelistener.add(weakrefmsglistener);
-		}
+		final List<TopicInfo> copy = new ArrayList<TopicInfo>(infos);
 		infos.clear();
+		assert deferredSubscribe || infos.isEmpty();
+		final Runnable run = new Runnable() {
+
+			@Override
+			public void run() {
+				for (TopicInfo i : copy) {
+					WeakReferenceMessageListener weakrefmsglistener = new WeakReferenceMessageListener(i);
+					weakrefmsglistener.subscribe();
+					weakmessagelistener.add(weakrefmsglistener);
+				}
+				// infos.clear();
+				deferredSubscribe = false;
+			}
+		};
+		new Thread(run, "TopicNotificationReceiver.realSubscribe").start();
+		assert deferredSubscribe || infos.isEmpty();
 	}
 
 	/**

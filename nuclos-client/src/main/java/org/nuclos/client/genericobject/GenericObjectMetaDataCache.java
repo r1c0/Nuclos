@@ -75,10 +75,16 @@ public class GenericObjectMetaDataCache implements GenericObjectMetaDataProvider
 	
 	@PostConstruct
 	final void init() {
-		this.setup();
-		tnr.subscribe(JMSConstants.TOPICNAME_METADATACACHE, messagelistener);
+		final Runnable run = new Runnable() {
+			@Override
+			public void run() {
+				setup();
+				tnr.subscribe(JMSConstants.TOPICNAME_METADATACACHE, messagelistener);
+			}
+		};
+		new Thread(run, "GenericObjectMetaDataCache.init").start();
 	}
-	
+
 	@Autowired
 	final void setTopicNotificationReceiver(TopicNotificationReceiver tnr) {
 		this.tnr = tnr;

@@ -53,6 +53,7 @@ import org.nuclos.client.livesearch.LiveSearchController;
 import org.nuclos.client.login.LoginController;
 import org.nuclos.client.login.LoginEvent;
 import org.nuclos.client.login.LoginListener;
+import org.nuclos.client.login.LoginPanel;
 import org.nuclos.client.synthetica.NuclosSyntheticaUtils;
 import org.nuclos.client.ui.Errors;
 import org.nuclos.client.ui.UIUtils;
@@ -124,40 +125,48 @@ public class StartUp  {
 		ctx.setClassLoader(cl);
 		ctx.refresh();
 		
-		try {
-			final Resource[] xmlBeanRes = ctx.getResources(xmlBeanDefs);
-			log.info("loading bean definitions from the following files: " + Arrays.asList(xmlBeanRes));
-			log.info("@NucletComponents within spring context: " + ctx.getBeansWithAnnotation(NucletComponent.class));
-			
-			final Resource[] themes = ctx.getResources("classpath*:META-INF/nuclos/**/*-theme.properties");
-			log.info("loading themes properties from the following files: " + Arrays.asList(themes));
-			
-            for (Resource r : themes) {
-            	Properties p = new Properties();
-                p.load(r.getInputStream());
-                
-                for (Object key : p.keySet()) {
-                	if (key instanceof String && p.get(key) != null && p.get(key) instanceof String) {
-                		
-                		String sKey = (String)key;
-                		if (sKey.startsWith("name")) {
-                			String xmlKey = "xml";
-                			if (sKey.length() > 4) {
-                				String sNumber = sKey.substring(4);
-                				xmlKey = xmlKey + sNumber;
-                			} 
-                			Object xml = p.get(xmlKey);
-            				if (xml != null && xml instanceof String) {
-            					NuclosSyntheticaUtils.registerNuclosTheme((String) p.get(key), (String) xml);
-            				}
-                		}
-                	}
-                }
-            }
-      } catch (IOException e1) {
-            log.error(e1.getMessage(), e1);
-      }
+		final Runnable run = new Runnable() {
 
+			@Override
+			public void run() {
+				try {
+					final Resource[] xmlBeanRes = ctx.getResources(xmlBeanDefs);
+					log.info("loading bean definitions from the following files: " + Arrays.asList(xmlBeanRes));
+					log.info("@NucletComponents within spring context: " + ctx.getBeansWithAnnotation(NucletComponent.class));
+
+					final Resource[] themes = ctx.getResources("classpath*:META-INF/nuclos/**/*-theme.properties");
+					log.info("loading themes properties from the following files: " + Arrays.asList(themes));
+
+					for (Resource r : themes) {
+						Properties p = new Properties();
+						p.load(r.getInputStream());
+
+						for (Object key : p.keySet()) {
+							if (key instanceof String && p.get(key) != null && p.get(key) instanceof String) {
+
+								String sKey = (String) key;
+								if (sKey.startsWith("name")) {
+									String xmlKey = "xml";
+									if (sKey.length() > 4) {
+										String sNumber = sKey.substring(4);
+										xmlKey = xmlKey + sNumber;
+									}
+									Object xml = p.get(xmlKey);
+									if (xml != null && xml instanceof String) {
+										NuclosSyntheticaUtils.registerNuclosTheme((String) p.get(key), (String) xml);
+									}
+								}
+							}
+						}
+					}
+				}
+				catch (IOException e1) {
+					log.error(e1.getMessage(), e1);
+				}
+			}
+		};
+		new Thread().start();
+		
 		// set the default locale:
 		// this makes sure the client is independent of the host's locale.
 		/** @todo i18n */
@@ -287,6 +296,8 @@ public class StartUp  {
 
 	private void createGUI() {
 		this.setupLookAndFeel();
+		// show LoginPanal as soon as possible
+		LoginPanel.getInstance();
 
 		try {
 			// perform login:

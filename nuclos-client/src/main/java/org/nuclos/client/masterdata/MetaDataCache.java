@@ -100,13 +100,19 @@ public class MetaDataCache {
 	
 	@PostConstruct
 	void init() {
-		tnr.subscribe(JMSConstants.TOPICNAME_METADATACACHE, messagelistener);
-		LOG.debug("Initializing metadata cache");
-		final Collection<MasterDataMetaVO> coll = masterDataDelegate.getMetaData();
-		this.mp = new ConcurrentHashMap<String, MasterDataMetaVO>(coll.size());
-		for (MasterDataMetaVO mdmetavo : coll) {
-			this.mp.put(mdmetavo.getEntityName(), mdmetavo);
-		}
+		final Runnable run = new Runnable() {
+			@Override
+			public void run() {
+				LOG.debug("Initializing metadata cache");
+				final Collection<MasterDataMetaVO> coll = masterDataDelegate.getMetaData();
+				mp = new ConcurrentHashMap<String, MasterDataMetaVO>(coll.size());
+				for (MasterDataMetaVO mdmetavo : coll) {
+					mp.put(mdmetavo.getEntityName(), mdmetavo);
+				}
+				tnr.subscribe(JMSConstants.TOPICNAME_METADATACACHE, messagelistener);
+			}
+		};
+		new Thread(run, "MetaDataCache.init").start();
 	}
 	
 	@Autowired

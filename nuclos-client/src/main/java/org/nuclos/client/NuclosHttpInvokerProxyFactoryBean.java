@@ -39,7 +39,7 @@ public class NuclosHttpInvokerProxyFactoryBean extends HttpInvokerProxyFactoryBe
 	/**
 	 * Minimum delay for calls in order to appear in LOG. 
 	 */
-	private static final long PROFILE_MIN_MS = 150L;
+	private static final long PROFILE_MIN_MS = 300L;
 	
 	//
 	
