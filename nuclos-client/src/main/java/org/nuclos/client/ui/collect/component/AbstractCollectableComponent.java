@@ -1800,7 +1800,6 @@ public abstract class AbstractCollectableComponent
 				final SortableCollectableTableModel<Collectable> tblModel = (SortableCollectableTableModel<Collectable>) tm;
 				if (tblModel.getRowCount() > iRow) {
 					final Collectable clct = tblModel.getCollectable(iRow);
-					clct.getField(NuclosEOField.STATE.getMetaData().getField());
 					final Integer iTColumn = tbl.getColumnModel().getColumn(iColumn).getModelIndex() - adjustColIndex;
 					final CollectableEntityField clctef = tblModel.getCollectableEntityField(iTColumn);
 					if (clctef == null) {
