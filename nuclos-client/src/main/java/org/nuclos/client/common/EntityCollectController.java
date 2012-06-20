@@ -1352,7 +1352,8 @@ public abstract class EntityCollectController<Clct extends Collectable> extends 
 				}
 			} catch (Exception e) {
 				if (!cancelWorker) {
-					getResultPanel().setResultActions(null);
+					if (getResultPanel() != null)
+						getResultPanel().setResultActions(null);
 				}
 			} 
 		}	
