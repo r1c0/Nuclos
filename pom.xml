@@ -36,7 +36,7 @@
 	<properties>
 		<nuclos.version.date>18.06.2012</nuclos.version.date>
 		<nuclos.api.version>1.2-SNAPSHOT</nuclos.api.version>
-		<spring.version>3.1.1.RELEASE</spring.version>
+		<spring.version>3.2.0.M1</spring.version>
 		<spring.security.version>3.1.0.RELEASE</spring.security.version>
 		<aspectj.version>1.7.0.RC1</aspectj.version>
 		<java.version>1.6</java.version>
@@ -689,6 +689,11 @@
 				<!-- updatePolicy>always</updatePolicy -->
 				<updatePolicy>interval:10</updatePolicy>
 			</snapshots>
+		</repository>
+		<repository>
+			<id>repository.springsource.milestone</id>
+			<name>SpringSource Milestone Repository</name>
+			<url>http://repo.springsource.org/milestone</url>
 		</repository>
 		<repository>
 			<id>public.maven.tmatesoft.com</id>
