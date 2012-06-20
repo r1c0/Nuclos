@@ -90,6 +90,7 @@ import org.nuclos.client.ui.labeled.LabeledComboBox;
 import org.nuclos.client.ui.popupmenu.DefaultJPopupMenuListener;
 import org.nuclos.client.ui.popupmenu.JPopupMenuFactory;
 import org.nuclos.client.ui.popupmenu.JPopupMenuListener;
+import org.nuclos.common.NuclosEOField;
 import org.nuclos.common.NuclosScript;
 import org.nuclos.common.ParameterProvider;
 import org.nuclos.common.collect.collectable.Collectable;
@@ -1799,19 +1800,20 @@ public abstract class AbstractCollectableComponent
 				final SortableCollectableTableModel<Collectable> tblModel = (SortableCollectableTableModel<Collectable>) tm;
 				if (tblModel.getRowCount() > iRow) {
 					final Collectable clct = tblModel.getCollectable(iRow);
+					clct.getField(NuclosEOField.STATE.getMetaData().getField());
 					final Integer iTColumn = tbl.getColumnModel().getColumn(iColumn).getModelIndex() - adjustColIndex;
 					final CollectableEntityField clctef = tblModel.getCollectableEntityField(iTColumn);
 					if (clctef == null) {
 						throw new NullPointerException("getTableCellRendererComponent failed to find field: " + clct + " tm index " + iTColumn);
 					}
 
-					final CefSecurityAgent sa = clctef.getSecurityAgent();
+					CefSecurityAgent sa = clctef.getSecurityAgent();
 					if (sa == null) {
 						// lazy set the security agent
 						GenericObjectClientUtils.setSecurityAgent(clct, clctef, tblModel.getBaseEntityName() != null ? !tblModel.getBaseEntityName().equals(clctef.getEntityName()) : false);
-						// throw new NullPointerException("No security agent set on " + clctef + " (" + clctef.getClass().getName() + ")");
+						sa = clctef.getSecurityAgent();
 					}
-					// sa.setCollectable(clct);
+					sa.setCollectable(clct);
 					if (!clctef.isReadable()) {
 						final BufferedLayerUI<JComponent> layerUI = new BufferedLayerUI<JComponent>();
 						final JXLayer<JComponent> layer = new JXLayer<JComponent>(this, layerUI);
