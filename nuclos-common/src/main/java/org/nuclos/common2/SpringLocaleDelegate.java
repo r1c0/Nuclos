@@ -64,7 +64,7 @@ import org.springframework.stereotype.Component;
  *
  * @author marc.jackisch
  */
-@Component
+// @Component
 public class SpringLocaleDelegate {
 
 	private static final Logger LOG = Logger.getLogger(SpringLocaleDelegate.class);

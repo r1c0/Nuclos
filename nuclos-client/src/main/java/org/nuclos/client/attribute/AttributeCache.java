@@ -47,7 +47,7 @@ import org.springframework.stereotype.Component;
  * @author	<a href="mailto:Christoph.Radig@novabit.de">Christoph.Radig</a>
  * @version 01.00.00
  */
-@Component
+// @Component
 public class AttributeCache implements AttributeProvider {
 	
 	private static final Logger LOG = Logger.getLogger(AttributeCache.class);

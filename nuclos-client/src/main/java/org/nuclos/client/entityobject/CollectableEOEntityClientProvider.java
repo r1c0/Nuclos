@@ -27,7 +27,7 @@ import org.springframework.stereotype.Component;
  * @author Thomas Pasch
  * @since Nuclos 3.1.01
  */
-@Component
+// @Component
 public class CollectableEOEntityClientProvider extends CollectableEOEntityProvider {
 	
 	private static CollectableEOEntityClientProvider INSTANCE;

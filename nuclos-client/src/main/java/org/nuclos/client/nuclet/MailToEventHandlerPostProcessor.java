@@ -24,7 +24,7 @@ import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.core.Ordered;
 import org.springframework.stereotype.Component;
 
-@Component
+// @Component
 public class MailToEventHandlerPostProcessor implements BeanPostProcessor, Ordered {
 	
 	private MailToEventHandlerRepository repository;

@@ -44,6 +44,7 @@ import org.nuclos.server.common.ModulePermission;
 import org.nuclos.server.common.ModulePermissions;
 import org.nuclos.server.common.ejb3.SecurityFacadeRemote;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
@@ -57,8 +58,8 @@ import org.springframework.stereotype.Component;
  * @author	<a href="mailto:Christoph.Radig@novabit.de">Christoph.Radig</a>
  * @version 01.00.00
  */
-@Component
-@Lazy
+// @Component
+// @Lazy
 public class SecurityCache {
 	
 	private static final Logger LOG = Logger.getLogger(SecurityCache.class);
@@ -146,6 +147,7 @@ public class SecurityCache {
 	}
 	
 	@Autowired
+	@Qualifier("attributeCache")
 	void setAttributeCache(AttributeCache attributeCache) {
 		this.attributeCache = attributeCache;
 	}

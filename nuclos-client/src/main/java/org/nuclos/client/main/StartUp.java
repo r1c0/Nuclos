@@ -117,24 +117,30 @@ public class StartUp  {
 	public final void init() {
 		// setup client side logging:
 		setupClientLogging();
-		
-		final String xmlBeanDefs = "classpath*:META-INF/nuclos/**/*-beans.xml";
-		final ClassPathXmlApplicationContext ctx = new ClassPathXmlApplicationContext(new String[] { xmlBeanDefs }, false);
-		// see http://fitw.wordpress.com/2009/03/14/web-start-and-spring/ why this is needed (tp)
 		final ClassLoader cl = this.getClass().getClassLoader();
+
+		final ClassPathXmlApplicationContext ctx = new ClassPathXmlApplicationContext(
+				new String[] { "classpath:META-INF/nuclos/client-beans-startup.xml" }, false);
+		// see http://fitw.wordpress.com/2009/03/14/web-start-and-spring/ why this is needed (tp)
 		ctx.setClassLoader(cl);
-		ctx.refresh();
+		ctx.refresh();		
 		
-		final Runnable run = new Runnable() {
+		final Runnable run1 = new Runnable() {
 
 			@Override
 			public void run() {
 				try {
-					final Resource[] xmlBeanRes = ctx.getResources(xmlBeanDefs);
+					final String xmlBeanDefs = "classpath*:META-INF/nuclos/**/*-beans.xml";
+					final ClassPathXmlApplicationContext ctx1 = new ClassPathXmlApplicationContext(new String[] { xmlBeanDefs }, false, ctx);
+					// see http://fitw.wordpress.com/2009/03/14/web-start-and-spring/ why this is needed (tp)
+					ctx1.setClassLoader(cl);
+					ctx1.refresh();
+					
+					final Resource[] xmlBeanRes = ctx1.getResources(xmlBeanDefs);
 					log.info("loading bean definitions from the following files: " + Arrays.asList(xmlBeanRes));
-					log.info("@NucletComponents within spring context: " + ctx.getBeansWithAnnotation(NucletComponent.class));
+					log.info("@NucletComponents within spring context: " + ctx1.getBeansWithAnnotation(NucletComponent.class));
 
-					final Resource[] themes = ctx.getResources("classpath*:META-INF/nuclos/**/*-theme.properties");
+					final Resource[] themes = ctx1.getResources("classpath*:META-INF/nuclos/**/*-theme.properties");
 					log.info("loading themes properties from the following files: " + Arrays.asList(themes));
 
 					for (Resource r : themes) {
@@ -165,7 +171,7 @@ public class StartUp  {
 				}
 			}
 		};
-		new Thread().start();
+		new Thread(run1, "Startup.init.run1").start();
 		
 		// set the default locale:
 		// this makes sure the client is independent of the host's locale.

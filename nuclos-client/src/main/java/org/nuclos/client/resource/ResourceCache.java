@@ -41,7 +41,7 @@ import org.springframework.stereotype.Component;
  * @author	<a href="mailto:corina.mandoki@novabit.de">Corina Mandoki</a>
  * @version 00.01.000
  */
-@Component
+// @Component
 public class ResourceCache {
 	
 	private static final Logger LOG = Logger.getLogger(ResourceCache.class);

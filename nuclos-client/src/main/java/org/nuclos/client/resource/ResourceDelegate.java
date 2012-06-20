@@ -45,7 +45,7 @@ import org.springframework.stereotype.Component;
  * @author	<a href="mailto:corina.mandoki@novabit.de">Corina Mandoki</a>
  * @version 01.00.00
  */
-@Component
+// @Component
 public class ResourceDelegate {
 
 	private static final Logger LOG = Logger.getLogger(ResourceDelegate.class);

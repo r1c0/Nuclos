@@ -31,7 +31,7 @@ import org.springframework.stereotype.Component;
  * 
  * @deprecated Use spring injection of CollectableEOEntityProvider directly.
  */
-@Component
+// @Component
 public class DefaultCollectableEntityProvider {
 	/**
 	 * Note that this class doesn't implement the original Singleton pattern, rather a variation of it...

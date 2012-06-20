@@ -47,7 +47,7 @@ import org.springframework.stereotype.Component;
  * @version 01.00.00
  *
  */
-@Component
+// @Component
 public class MetaDataCache {
 
 	private static final Logger LOG = Logger.getLogger(MetaDataCache.class);

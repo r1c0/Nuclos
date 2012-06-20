@@ -77,6 +77,7 @@ import org.nuclos.server.ruleengine.valueobject.RuleVO;
 import org.nuclos.server.ruleengine.valueobject.RuleWithUsagesVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
+import org.springframework.beans.factory.annotation.Qualifier;
 
 /**
  * Management console for Nucleus.
@@ -139,6 +140,7 @@ public class NuclosConsole extends ConsoleConstants {
 	}
 	
 	@Autowired
+	@Qualifier("attributeCache")
 	void setAttributeCache(AttributeCache attributeCache) {
 		this.attributeCache = attributeCache;
 	}

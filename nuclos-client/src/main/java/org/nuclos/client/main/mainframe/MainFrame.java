@@ -143,7 +143,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @author	<a href="mailto:Christoph.Radig@novabit.de">Christoph.Radig</a>
  * @version 01.00.00
  */
-@org.springframework.stereotype.Component
+// @org.springframework.stereotype.Component
 public class MainFrame extends CommonJFrame implements WorkspaceFrame, ComponentNameSetter, IconResolverConstants {
 
 	private static final Logger LOG = Logger.getLogger(MainFrame.class);

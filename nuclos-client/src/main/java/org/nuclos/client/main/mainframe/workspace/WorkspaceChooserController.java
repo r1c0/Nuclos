@@ -92,7 +92,7 @@ import org.nuclos.server.common.ejb3.PreferencesFacadeRemote;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-@Component
+// @Component
 public class WorkspaceChooserController {
 	
 	public static final int ICON_SIZE = 16;

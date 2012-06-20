@@ -25,7 +25,7 @@ import org.nuclos.api.ui.MenuItem;
 import org.nuclos.api.ui.UserPreferencesEditor;
 import org.springframework.stereotype.Component;
 
-@Component
+// @Component
 public class NucletComponentRepository {
 
 	private List<MenuItem> menuItems = new ArrayList<MenuItem>();

@@ -60,7 +60,7 @@ import org.springframework.stereotype.Component;
  * {@link org.nuclos.client.masterdata.MetaDataDelegate}.
  * </p>
  */
-@Component("metaDataProvider")
+// @Component("metaDataProvider")
 public class MetaDataClientProvider implements MetaDataProvider<EntityMetaDataVO, EntityFieldMetaDataVO>, CommonMetaDataClientProvider<EntityMetaDataVO, EntityFieldMetaDataVO>, InitializingBean {
 
 	private static final Logger LOG = Logger.getLogger(MetaDataClientProvider.class);

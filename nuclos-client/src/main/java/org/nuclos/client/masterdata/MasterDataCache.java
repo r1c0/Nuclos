@@ -54,7 +54,7 @@ import org.springframework.stereotype.Component;
  * @version 01.00.00
  * @todo the caller has to decide whether an entity is cacheable or not. This is bad.
  */
-@Component
+// @Component
 public class MasterDataCache {
 	
 	private static final Logger LOG = Logger.getLogger(MasterDataCache.class);

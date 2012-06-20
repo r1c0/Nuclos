@@ -24,7 +24,7 @@ import javax.annotation.PreDestroy;
 
 import org.springframework.stereotype.Component;
 
-@Component
+// @Component
 public class NuclosHttpInvokerAttributeContext {
 
 	private ThreadLocal<Boolean> supported = new ThreadLocal<Boolean>() {

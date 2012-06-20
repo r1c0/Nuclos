@@ -56,7 +56,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Component;
 
-@Component
+// @Component
 public class LocaleDelegate implements SpringLocaleDelegate.LookupService, MessageListener, InitializingBean, DisposableBean {
 
 	private static final Logger LOG = Logger.getLogger(LocaleDelegate.class);

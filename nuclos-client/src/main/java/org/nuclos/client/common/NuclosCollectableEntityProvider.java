@@ -38,6 +38,7 @@ import org.nuclos.common.collect.collectable.CollectableEntityProvider;
 import org.nuclos.common.masterdata.CollectableMasterDataEntity;
 import org.nuclos.server.masterdata.valueobject.MasterDataMetaVO;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 /**
@@ -52,7 +53,7 @@ import org.springframework.stereotype.Component;
  * @todo move this class to nucleus.common so it's accessible from the server -
  * or implement a separate server version.
  */
-@Component
+// @Component
 public class NuclosCollectableEntityProvider implements CollectableEntityProvider {
 
 	private static NuclosCollectableEntityProvider INSTANCE;
@@ -85,6 +86,7 @@ public class NuclosCollectableEntityProvider implements CollectableEntityProvide
 	}
 	
 	@Autowired
+	@Qualifier("attributeCache")
 	void setAttributeCache(AttributeCache attributeCache) {
 		this.attributeCache = attributeCache;
 	}

@@ -49,7 +49,7 @@ import org.springframework.stereotype.Component;
  * @author	<a href="mailto:Christoph.Radig@novabit.de">Christoph.Radig</a>
  * @version 01.00.00
  */
-@Component("parameterProvider")
+// @Component("parameterProvider")
 public class ClientParameterProvider extends AbstractParameterProvider implements MessageListener {
 	
 	private static final Logger LOG = Logger.getLogger(ClientParameterProvider.class);

@@ -96,7 +96,7 @@ import org.nuclos.server.livesearch.ejb3.LiveSearchFacadeRemote;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-@Component
+// @Component
 public class LiveSearchController implements LiveSearchSearchPaneListener, LiveSearchResultPaneListener {
 	
 	private static final Logger LOG = Logger.getLogger(LiveSearchController.class);

@@ -29,7 +29,7 @@ import org.nuclos.server.masterdata.ejb3.EntityFacadeRemote;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-@Component
+// @Component
 public class EntityFacadeDelegate implements EntityFacadeRemote {
 
 	private static final Logger LOG = Logger.getLogger(EntityFacadeDelegate.class);

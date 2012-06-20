@@ -22,7 +22,7 @@ import java.util.List;
 import org.nuclos.api.ui.MailToEventHandler;
 import org.springframework.stereotype.Component;
 
-@Component
+// @Component
 public class MailToEventHandlerRepository {
 
 	private List<MailToEventHandler> handler = new ArrayList<MailToEventHandler>();
