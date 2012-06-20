@@ -16,6 +16,8 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.common.collect.collectable.access;
 
+import org.nuclos.common.collect.collectable.Collectable;
+
 public interface CefSecurityAgent {
 
 	boolean isReadable();
@@ -23,4 +25,6 @@ public interface CefSecurityAgent {
 	boolean isWritable();
 	
 	boolean isRemovable();
+	
+	void setCollectable(Collectable clct);
 }
