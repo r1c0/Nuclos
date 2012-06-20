@@ -68,6 +68,8 @@ import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.common2.exception.CommonPermissionException;
 import org.nuclos.server.servermeta.ejb3.ServerMetaFacadeRemote;
+import org.springframework.context.ApplicationListener;
+import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.core.io.Resource;
 import org.springframework.util.Log4jConfigurer;
@@ -104,8 +106,21 @@ public class StartUp  {
 	 * @todo this shouldn't be a member probably
 	 */
 	private static Logger log;
+	
+	//
 
 	private final String[] args;
+	
+	private volatile boolean refreshed = false;
+	
+	private final ApplicationListener<ContextRefreshedEvent> refreshListener = new ApplicationListener<ContextRefreshedEvent>() {
+		
+		@Override
+		public void onApplicationEvent(ContextRefreshedEvent event) {
+			refreshed = true;
+		}
+		
+	};
 	
 	//
 	
@@ -123,7 +138,7 @@ public class StartUp  {
 				new String[] { "classpath:META-INF/nuclos/client-beans-startup.xml" }, false);
 		// see http://fitw.wordpress.com/2009/03/14/web-start-and-spring/ why this is needed (tp)
 		ctx.setClassLoader(cl);
-		ctx.refresh();		
+		ctx.refresh();
 		
 		final Runnable run1 = new Runnable() {
 
@@ -133,6 +148,7 @@ public class StartUp  {
 					final String xmlBeanDefs = "classpath*:META-INF/nuclos/**/*-beans.xml";
 					final ClassPathXmlApplicationContext ctx1 = new ClassPathXmlApplicationContext(new String[] { xmlBeanDefs }, false, ctx);
 					// see http://fitw.wordpress.com/2009/03/14/web-start-and-spring/ why this is needed (tp)
+					ctx1.addApplicationListener(refreshListener);
 					ctx1.setClassLoader(cl);
 					ctx1.refresh();
 					
@@ -495,7 +511,17 @@ public class StartUp  {
 
 	private void createMainController(String sUserName, String sNucleusServerName, LoginController lc)
 			throws CommonPermissionException {
-
+		try {
+			for(int i = 0; !refreshed && i < 100; ++i) {
+				Thread.currentThread().sleep(50);
+			}
+		}
+		catch (InterruptedException e) {
+			// ignore
+		}
+		if (!refreshed) {
+			throw new IllegalStateException("Can't create MainController: Spring context not initialized!");
+		}
 		try {
 			final String sClassName = LangUtils.defaultIfNull(
 					ApplicationProperties.getInstance().getMainControllerClassName(),
