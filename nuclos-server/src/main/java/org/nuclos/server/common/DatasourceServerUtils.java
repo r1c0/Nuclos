@@ -159,7 +159,8 @@ public class DatasourceServerUtils {
 	public String createSQL(String sDatasourceXML, Map<String, Object> mpParams) throws NuclosDatasourceException {
 		String result = sqlCache.getSQL(sDatasourceXML);
 		if (SecurityContextHolder.getContext().getAuthentication().getPrincipal() != null) {
-			mpParams.put("username", SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+			if (mpParams.get("username") == null) // username is already set. seems to be from preview of the datasource. @see NUCLOSINT-1560
+				mpParams.put("username", SecurityContextHolder.getContext().getAuthentication().getPrincipal());
 		}
 		result = replaceParameters(result, mpParams==null?(new HashMap<String, Object>()):mpParams);
 		LOG.debug(result);
