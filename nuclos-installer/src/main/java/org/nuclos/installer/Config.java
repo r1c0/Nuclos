@@ -163,6 +163,7 @@ public class Config extends Properties implements Constants {
         File nuclosHome = new File(getProperty(NUCLOS_HOME)).getAbsoluteFile();
         File nuclosWeb = new File(nuclosHome, "webapp");
         File nuclosClient = new File(nuclosHome, "client");
+        File nuclosConf = new File(nuclosHome, "conf");
         File nuclosData = new File(nuclosHome, "data");
         File nuclosTomcat = new File(nuclosHome, "tomcat");
         File nuclosCatalina = new File(nuclosTomcat, TOMCAT_VERSION);
@@ -171,6 +172,7 @@ public class Config extends Properties implements Constants {
         put("server.home", nuclosHome.getAbsolutePath());
         put("server.webapp.dir", nuclosWeb.getAbsolutePath());
         put("server.client.dir", nuclosClient.getAbsolutePath());
+        put("server.conf.dir", nuclosConf.getAbsolutePath());
         put("server.data.dir", nuclosData.getAbsolutePath());
         put("server.tomcat.dir", nuclosCatalina.getAbsolutePath());
     }
