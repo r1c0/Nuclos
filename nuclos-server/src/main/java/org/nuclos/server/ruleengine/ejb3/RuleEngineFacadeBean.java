@@ -964,6 +964,7 @@ public class RuleEngineFacadeBean extends NuclosFacadeBean implements RuleEngine
 			final RuleVO result = MasterDataWrapper.getRuleVO(mdVO);
 			if (result.isActive()) {
 				check(result);
+				nuclosJavaCompilerComponent.forceCompile();
 			}
 			RuleCache.getInstance().invalidate();
 			return result;
@@ -990,6 +991,7 @@ public class RuleEngineFacadeBean extends NuclosFacadeBean implements RuleEngine
 		rulevo.validate();	//throws CommonValidationException
 		if (rulevo.isActive()) {
 			check(rulevo);
+			nuclosJavaCompilerComponent.forceCompile();
 		}
 		try {
 			validateUniqueConstraint(rulevo);

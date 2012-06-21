@@ -85,6 +85,8 @@ public class NuclosJavaCompilerComponent {
 	private static Attributes.Name NUCLOS_CODE_HASH = new Attributes.Name("Nuclos-Code-Hash");
 
 	//
+	
+	private volatile boolean forceCompile = false;
 
 	NuclosJavaCompilerComponent() {
 
@@ -108,6 +110,10 @@ public class NuclosJavaCompilerComponent {
 			LOG.warn("getJavaCompilerTool failed: " + e);
 		}
 		return null;
+	}
+	
+	public void forceCompile() {
+		forceCompile = true;
 	}
 
 	public long getLastSrcWriteTime() {
@@ -430,7 +436,15 @@ public class NuclosJavaCompilerComponent {
 	}
 
 	public synchronized boolean validate() throws NuclosCompileException {
-		if (JARFILE.exists()) {
+		if (forceCompile) {
+			try {
+				compile();
+			}
+			finally {
+				forceCompile = false;
+			}
+		}
+		else if (JARFILE.exists()) {
 			try {
 				JarFile jar = new JarFile(JARFILE);
 				if (!jar.getManifest().equals(getManifest())) {
