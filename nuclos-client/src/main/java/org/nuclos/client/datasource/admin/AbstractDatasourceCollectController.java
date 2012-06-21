@@ -167,7 +167,7 @@ public abstract class AbstractDatasourceCollectController<T extends DatasourceVO
 
 		CollectableDataSource<? extends DatasourceVO> db = findCollectableById(getEntityName(), clctEdited.getId());
 		if (db != null && !db.getDatasourceVO().getName().equals(datasourceVO.getName())) {
-			final List<DatasourceVO> lstUsages = DatasourceDelegate.getInstance().getUsagesForDatasource(clctEdited.getId());
+			final List<DatasourceVO> lstUsages = DatasourceDelegate.getInstance().getUsagesForDatasource(clctEdited.getDatasourceVO());
 			if (!lstUsages.isEmpty()) {
 				final int iBtn = JOptionPane.showConfirmDialog(this.getTab(), getSpringLocaleDelegate().getMessage(
 						"DatasourceCollectController.9","Diese Datenquelle wird in anderen Datenquellen verwendet.") + "\n" +
