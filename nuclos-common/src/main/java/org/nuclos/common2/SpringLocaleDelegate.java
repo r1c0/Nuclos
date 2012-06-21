@@ -120,8 +120,8 @@ public class SpringLocaleDelegate {
 		INSTANCE = this;
 	}
 
-	@Autowired
-	void setLookupService(LookupService lookupService) {
+	// @Autowired
+	public void setLookupService(LookupService lookupService) {
 		this.keyLookup = lookupService;
 	}
 

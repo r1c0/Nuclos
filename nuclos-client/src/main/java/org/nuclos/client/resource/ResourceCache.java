@@ -86,13 +86,13 @@ public class ResourceCache {
 		tnr.subscribe(JMSConstants.TOPICNAME_RESOURCECACHE, messagelistener);
 	}
 	
-	@Autowired
-	void setResourceDelegate(ResourceDelegate delegate) {
+	// @Autowired
+	public final void setResourceDelegate(ResourceDelegate delegate) {
 		this.delegate = delegate;
 	}
 	
-	@Autowired
-	void setTopicNotificationReceiver(TopicNotificationReceiver tnr) {
+	// @Autowired
+	public final void setTopicNotificationReceiver(TopicNotificationReceiver tnr) {
 		this.tnr = tnr;
 	}
 	

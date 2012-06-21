@@ -69,13 +69,13 @@ public class ResourceDelegate {
 		return INSTANCE;
 	}
 	
-	@Autowired
-	void setResourceCache(ResourceCache resourceCache) {
+	// @Autowired
+	public final void setResourceCache(ResourceCache resourceCache) {
 		this.resourceCache = resourceCache;
 	}
 
-	@Autowired
-	void setResourceFacadeRemote(ResourceFacadeRemote facade) {
+	// @Autowired
+	public final void setResourceFacadeRemote(ResourceFacadeRemote facade) {
 		this.facade = facade;
 	}
 

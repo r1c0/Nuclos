@@ -120,13 +120,13 @@ public class TopicNotificationReceiver {
 		}
 	}
 	
-	@Autowired
-	void setConnectionFactory(ConnectionFactory jmsFactory) {
+	// @Autowired
+	public final void setConnectionFactory(ConnectionFactory jmsFactory) {
 		this.jmsFactory = jmsFactory;
 	}
 	
 	// @Autowired
-	void setSpringLocaleDelegate(SpringLocaleDelegate cld) {
+	public final void setSpringLocaleDelegate(SpringLocaleDelegate cld) {
 		// this.cld = cld;
 	}
 	

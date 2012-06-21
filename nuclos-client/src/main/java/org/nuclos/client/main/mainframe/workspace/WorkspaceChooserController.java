@@ -131,8 +131,8 @@ public class WorkspaceChooserController {
 		workspacePanel.setVisible(false);
 	}
 	
-	@Autowired
-	void setSpringLocaleDelegate(SpringLocaleDelegate cld) {
+	// @Autowired
+	public final void setSpringLocaleDelegate(SpringLocaleDelegate cld) {
 		this.localeDelegate = cld;
 	}
 	

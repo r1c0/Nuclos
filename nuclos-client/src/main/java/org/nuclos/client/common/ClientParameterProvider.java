@@ -97,13 +97,13 @@ public class ClientParameterProvider extends AbstractParameterProvider implement
 		INSTANCE = this;
 	}
 	
-	@Autowired
-	void setTopicNotificationReceiver(TopicNotificationReceiver tnr) {
+	// @Autowired
+	public final void setTopicNotificationReceiver(TopicNotificationReceiver tnr) {
 		this.tnr = tnr;
 	}
 	
-	@Autowired
-	void setParameterService(ParameterFacadeRemote parameterFacadeRemote) {
+	// @Autowired
+	public final void setParameterService(ParameterFacadeRemote parameterFacadeRemote) {
 		this.parameterFacadeRemote = parameterFacadeRemote;
 	}
 

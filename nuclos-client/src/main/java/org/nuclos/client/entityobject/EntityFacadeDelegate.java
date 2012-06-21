@@ -48,8 +48,8 @@ public class EntityFacadeDelegate implements EntityFacadeRemote {
 		return INSTANCE;
 	}
 	
-	@Autowired
-	void setEntityFacadeRemote(EntityFacadeRemote entityFacadeRemote) {
+	// @Autowired
+	public final void setEntityFacadeRemote(EntityFacadeRemote entityFacadeRemote) {
 		this.facade = entityFacadeRemote;
 	}
 

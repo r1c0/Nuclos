@@ -242,23 +242,23 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 	MainFrame() {
 	}	// ctor
 
-	@Autowired
-	void setResourceCache(ResourceCache resourceCache) {
+	// @Autowired
+	public final void setResourceCache(ResourceCache resourceCache) {
 		this.resourceCache = resourceCache;
 	}
 
-	@Autowired
-	void setSpringLocaleDelegate(SpringLocaleDelegate cld) {
+	// @Autowired
+	public final void setSpringLocaleDelegate(SpringLocaleDelegate cld) {
 		this.localeDelegate = cld;
 	}
 
-	@Autowired
-	void setClientParameterProvider(ClientParameterProvider clientParameterProvider) {
+	// @Autowired
+	public final void setClientParameterProvider(ClientParameterProvider clientParameterProvider) {
 		this.clientParameterProvider = clientParameterProvider;
 	}
 
 	@Autowired
-	void setNuclosIcons(NuclosIcons nuclosIcons) {
+	public final void setNuclosIcons(NuclosIcons nuclosIcons) {
 		this.nuclosIcons = nuclosIcons;
 	}
 

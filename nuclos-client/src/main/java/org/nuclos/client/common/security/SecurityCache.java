@@ -136,19 +136,19 @@ public class SecurityCache {
 		this.securityDelegate = SecurityDelegate.getInstance();
 	}
 	
-	@Autowired
-	void setTopicNotificationReceiver(TopicNotificationReceiver tnr) {
+	// @Autowired
+	public final void setTopicNotificationReceiver(TopicNotificationReceiver tnr) {
 		this.tnr = tnr;
 	}
 	
-	@Autowired
-	void setSecurityDelegate(SecurityDelegate securityDelegate) {
+	// @Autowired
+	public final void setSecurityDelegate(SecurityDelegate securityDelegate) {
 		this.securityDelegate = securityDelegate;
 	}
 	
-	@Autowired
-	@Qualifier("attributeCache")
-	void setAttributeCache(AttributeCache attributeCache) {
+	// @Autowired
+	// @Qualifier("attributeCache")
+	public final void setAttributeCache(AttributeCache attributeCache) {
 		this.attributeCache = attributeCache;
 	}
 	

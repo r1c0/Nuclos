@@ -61,8 +61,8 @@ public class NuclosIcons {
 		INSTANCE = this;
 	}
 	
-	@Autowired
-	void setResourceCache(ResourceCache resourceCache) {
+	// @Autowired
+	public final void setResourceCache(ResourceCache resourceCache) {
 		this.resourceCache = resourceCache;
 	}
 	

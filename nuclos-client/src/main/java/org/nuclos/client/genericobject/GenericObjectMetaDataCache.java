@@ -85,13 +85,13 @@ public class GenericObjectMetaDataCache implements GenericObjectMetaDataProvider
 		new Thread(run, "GenericObjectMetaDataCache.init").start();
 	}
 
-	@Autowired
-	final void setTopicNotificationReceiver(TopicNotificationReceiver tnr) {
+	// @Autowired
+	public final void setTopicNotificationReceiver(TopicNotificationReceiver tnr) {
 		this.tnr = tnr;
 	}
 	
-	@Autowired
-	final void setGenericObjectDelegate(GenericObjectDelegate genericObjectDelegate) {
+	// @Autowired
+	public final void setGenericObjectDelegate(GenericObjectDelegate genericObjectDelegate) {
 		this.genericObjectDelegate = genericObjectDelegate;
 	}
 

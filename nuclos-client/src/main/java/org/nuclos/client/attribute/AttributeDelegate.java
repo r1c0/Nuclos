@@ -54,8 +54,8 @@ public class AttributeDelegate {
 		INSTANCE = this;
 	}
 	
-	@Autowired
-	void setAttributeFacadeRemote(AttributeFacadeRemote facade) {
+	// @Autowired
+	public final void setAttributeFacadeRemote(AttributeFacadeRemote facade) {
 		this.facade = facade;
 	}
 

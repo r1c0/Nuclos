@@ -115,13 +115,13 @@ public class MetaDataCache {
 		new Thread(run, "MetaDataCache.init").start();
 	}
 	
-	@Autowired
-	void setTopicNotificationReceiver(TopicNotificationReceiver tnr) {
+	// @Autowired
+	public final void setTopicNotificationReceiver(TopicNotificationReceiver tnr) {
 		this.tnr = tnr;
 	}
 	
-	@Autowired
-	void setMasterDataDelegate(MasterDataDelegate masterDataDelegate) {
+	// @Autowired
+	public final void setMasterDataDelegate(MasterDataDelegate masterDataDelegate) {
 		this.masterDataDelegate = masterDataDelegate;
 	}
 	

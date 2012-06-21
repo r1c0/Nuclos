@@ -48,8 +48,8 @@ public class DefaultCollectableEntityProvider {
 	 * sets the global instance of the <code>DefaultCollectableEntityProvider</code> that knows the application specific entities.
 	 * @param provider
 	 */
-	@Autowired
-	void setCollectableEOEntityProvider(CollectableEOEntityProvider provider) {
+	// @Autowired
+	public final void setCollectableEOEntityProvider(CollectableEOEntityProvider provider) {
 		INSTANCE = provider;
 	}
 

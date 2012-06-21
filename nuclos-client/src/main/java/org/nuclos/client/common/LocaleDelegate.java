@@ -86,13 +86,13 @@ public class LocaleDelegate implements SpringLocaleDelegate.LookupService, Messa
 		INSTANCE = this;
 	}
 	
-	@Autowired
-	void setTopicNotificationReceiver(TopicNotificationReceiver tnr) {
+	// @Autowired
+	public final void setTopicNotificationReceiver(TopicNotificationReceiver tnr) {
 		this.tnr = tnr;
 	}
 
-	@Autowired
-	void setLocaleService(LocaleFacadeRemote service) {
+	// @Autowired
+	public final void setLocaleService(LocaleFacadeRemote service) {
 		this.remoteInterface = service;
 	}
 

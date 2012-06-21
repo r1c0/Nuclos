@@ -54,8 +54,8 @@ public class QueueSingleton {
 		INSTANCE = this;
 	}
 	
-	@Autowired
-	final void setTimer(Timer timer) {
+	// @Autowired
+	public final void setTimer(Timer timer) {
 		this.timer = timer;
 	}
 	

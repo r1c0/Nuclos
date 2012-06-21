@@ -117,18 +117,18 @@ public class MasterDataCache {
 		tnr.subscribe(JMSConstants.TOPICNAME_MASTERDATACACHE, messagelistener);
 	}
 	
-	@Autowired
-	void setTopicNotificationReceiver(TopicNotificationReceiver tnr) {
+	// @Autowired
+	public final void setTopicNotificationReceiver(TopicNotificationReceiver tnr) {
 		this.tnr = tnr;
 	}
 	
-	@Autowired
-	void setMasterDataDelegate(MasterDataDelegate masterDataDelegate) {
+	// @Autowired
+	public final void setMasterDataDelegate(MasterDataDelegate masterDataDelegate) {
 		this.masterDataDelegate = masterDataDelegate;
 	}
 	
-	@Autowired
-	void setEntityFacadeDelegate(EntityFacadeDelegate entityFacadeDelegate) {
+	// @Autowired
+	public final void setEntityFacadeDelegate(EntityFacadeDelegate entityFacadeDelegate) {
 		this.entityFacadeDelegate = entityFacadeDelegate;
 	}
 

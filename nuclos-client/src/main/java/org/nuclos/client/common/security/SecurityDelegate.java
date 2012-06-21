@@ -58,8 +58,8 @@ public class SecurityDelegate {
 		return INSTANCE;
 	}
 	
-	@Autowired
-	void setSecurityFacadeRemote(SecurityFacadeRemote facade) {
+	// @Autowired
+	public final void setSecurityFacadeRemote(SecurityFacadeRemote facade) {
 		this.facade = facade;
 	}
 

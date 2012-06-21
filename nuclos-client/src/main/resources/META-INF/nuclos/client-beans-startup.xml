@@ -97,38 +97,109 @@
     </context:component-scan -->
 	
 	<!-- Avoid scanning for the base component in nuclos-client -->
-	<bean class="org.nuclos.client.NuclosHttpInvokerAttributeContext" />
-	<bean class="org.nuclos.client.attribute.AttributeCache">
-		<qualifier value="attributeCache" />
+	<!-- must be lazy -->
+	<bean id="securityCache" class="org.nuclos.client.common.security.SecurityCache" lazy-init="true">
+		<property name="topicNotificationReceiver" ref="topicNotificationReceiver"/>
+		<property name="securityDelegate" ref="securityDelegate"/>
+		<property name="attributeCache" ref="attributeProvider"/>
 	</bean>
-	<bean class="org.nuclos.client.attribute.AttributeDelegate" lazy-init="true"/>
-	<bean id="parameterProvider" class="org.nuclos.client.common.ClientParameterProvider" />
-	<bean class="org.nuclos.client.entityobject.CollectableEOEntityClientProvider" />
-	<bean class="org.nuclos.client.entityobject.EntityFacadeDelegate" />
-	<bean class="org.nuclos.client.genericobject.GenericObjectDelegate" />
-	<bean class="org.nuclos.client.genericobject.GenericObjectMetaDataCache" />
-	<bean class="org.nuclos.client.ui.collect.InvokeWithInputRequiredSupport" />
-	<bean class="org.nuclos.client.livesearch.LiveSearchController" />
-	<bean class="org.nuclos.client.common.LocaleDelegate" />
-	<bean class="org.nuclos.client.main.mainframe.MainFrame" />
-	<bean class="org.nuclos.client.masterdata.MasterDataCache" />
-	<bean class="org.nuclos.client.masterdata.MasterDataDelegate" />
-	<bean class="org.nuclos.client.masterdata.MetaDataCache" />
-	<bean id="metaDataProvider" class="org.nuclos.client.common.MetaDataClientProvider" />
-	<bean class="org.nuclos.client.common.NuclosCollectableEntityProvider" />
-	<bean class="org.nuclos.client.NuclosIcons" />
-	<bean class="org.nuclos.client.ui.gc.QueueSingleton" />
-	<bean class="org.nuclos.client.resource.ResourceCache" />
-	<bean class="org.nuclos.client.resource.ResourceDelegate" />
-	<bean class="org.nuclos.client.common.security.SecurityCache" lazy-init="true" />
-	<bean class="org.nuclos.client.common.security.SecurityDelegate" />
-	<bean id="topicNotificationReceiver" class="org.nuclos.client.jms.TopicNotificationReceiver" />
-	<bean class="org.nuclos.client.main.mainframe.workspace.WorkspaceChooserController" />
+	<bean id="attributeDelegate" class="org.nuclos.client.attribute.AttributeDelegate" lazy-init="true">
+		<property name="attributeFacadeRemote" ref="attributeService"/>
+	</bean>
+	<!-- other -->
+	<bean id="nuclosHttpInvokerAttributeContext" class="org.nuclos.client.NuclosHttpInvokerAttributeContext">
+	</bean>
+	<bean id="attributeProvider" class="org.nuclos.client.attribute.AttributeCache">
+		<qualifier value="attributeCache" />
+		<property name="attributeDelegate" ref="attributeDelegate"/>
+	</bean>
+	<bean id="parameterProvider" class="org.nuclos.client.common.ClientParameterProvider">
+		<property name="topicNotificationReceiver" ref="topicNotificationReceiver"/>
+		<property name="parameterService" ref="parameterService"/>
+	</bean>
+	<bean id="metaDataProvider" class="org.nuclos.client.common.MetaDataClientProvider">
+		<property name="topicNotificationReceiver" ref="topicNotificationReceiver"/>
+	</bean>
+	<bean id="topicNotificationReceiver" class="org.nuclos.client.jms.TopicNotificationReceiver">
+		<property name="connectionFactory" ref="jmsFactory"/>
+	</bean>
+	<bean id="collectableEOEntityProvider" class="org.nuclos.client.entityobject.CollectableEOEntityClientProvider">
+		<constructor-arg><ref bean="metaDataProvider"/></constructor-arg>
+	</bean>
+	<bean id="entityFacadeDelegate" class="org.nuclos.client.entityobject.EntityFacadeDelegate">
+		<property name="entityFacadeRemote" ref="entityService"/>
+	</bean>
+	<bean id="genericObjectDelegate" class="org.nuclos.client.genericobject.GenericObjectDelegate">
+		<property name="genericObjectFacadeRemote" ref="genericObjectService"/>
+	</bean>
+	<bean id="genericObjectMetaDataCache" class="org.nuclos.client.genericobject.GenericObjectMetaDataCache">
+		<property name="topicNotificationReceiver" ref="topicNotificationReceiver"/>
+		<property name="genericObjectDelegate" ref="genericObjectDelegate"/>
+	</bean>
+	<bean id="invokeWithInputRequiredSupport" class="org.nuclos.client.ui.collect.InvokeWithInputRequiredSupport">
+		<property name="nuclosHttpInvokerAttributeContext" ref="nuclosHttpInvokerAttributeContext"/>
+	</bean>
+	<bean id="liveSearchController" class="org.nuclos.client.livesearch.LiveSearchController">
+		<property name="resourceCache" ref="resourceCache"/>
+		<property name="parentFrame" ref="mainFrame"/>
+	</bean>
+	<bean id="localeDelegate" class="org.nuclos.client.common.LocaleDelegate">
+		<property name="topicNotificationReceiver" ref="topicNotificationReceiver"/>
+		<property name="localeService" ref="localeService"/>
+	</bean>
+	<bean id="mainFrame" class="org.nuclos.client.main.mainframe.MainFrame">
+		<property name="resourceCache" ref="resourceCache"/>
+		<property name="springLocaleDelegate" ref="springLocaleDelegate"/>
+		<property name="clientParameterProvider" ref="parameterProvider"/>
+		<property name="nuclosIcons" ref="nuclosIcons"/>
+	</bean>
+	<bean id="masterDataCache" class="org.nuclos.client.masterdata.MasterDataCache">
+		<property name="topicNotificationReceiver" ref="topicNotificationReceiver"/>
+		<property name="masterDataDelegate" ref="masterDataDelegate"/>
+		<property name="entityFacadeDelegate" ref="entityFacadeDelegate"/>
+	</bean>
+	<bean id="masterDataDelegate" class="org.nuclos.client.masterdata.MasterDataDelegate">
+		<property name="masterDataFacadeRemote" ref="masterDataService"/>
+		<property name="springLocaleDelegate" ref="springLocaleDelegate"/>
+		<property name="masterDataCache" ref="masterDataCache"/>
+	</bean>
+	<bean id="metaDataCache" class="org.nuclos.client.masterdata.MetaDataCache">
+		<property name="topicNotificationReceiver" ref="topicNotificationReceiver"/>
+		<property name="masterDataDelegate" ref="masterDataDelegate"/>
+	</bean>
+	<bean id="nuclosCollectableEntityProvider" class="org.nuclos.client.common.NuclosCollectableEntityProvider">
+		<property name="attributeCache" ref="attributeProvider"/>
+	</bean>
+	<bean id="nuclosIcons" class="org.nuclos.client.NuclosIcons">
+		<property name="resourceCache" ref="resourceCache"/>
+	</bean>
+	<bean id="queueSingleton" class="org.nuclos.client.ui.gc.QueueSingleton">
+		<property name="timer" ref="timer"/>
+	</bean>
+	<bean id="resourceCache" class="org.nuclos.client.resource.ResourceCache">
+		<property name="topicNotificationReceiver" ref="topicNotificationReceiver"/>
+		<property name="resourceDelegate" ref="resourceDelegate"/>
+	</bean>
+	<bean id="resourceDelegate" class="org.nuclos.client.resource.ResourceDelegate">
+		<property name="resourceCache" ref="resourceCache"/>
+		<property name="resourceFacadeRemote" ref="resourceService"/>
+	</bean>
+	<bean id="securityDelegate" class="org.nuclos.client.common.security.SecurityDelegate">
+		<property name="securityFacadeRemote" ref="securityService"/>
+	</bean>
+	<bean id="workspaceChooserController" class="org.nuclos.client.main.mainframe.workspace.WorkspaceChooserController">
+		<property name="springLocaleDelegate" ref="springLocaleDelegate"/>
+	</bean>
 	
 	<!-- Avoid scanning for nuclos-common -->
-	<bean class="org.nuclos.common.ApplicationProperties" />
-	<bean class="org.nuclos.common.collect.collectable.DefaultCollectableEntityProvider" />
-	<bean class="org.nuclos.common2.SpringLocaleDelegate" />
+	<bean id="applicationProperties" class="org.nuclos.common.ApplicationProperties">
+	</bean>
+	<bean id="defaultCollectableEntityProvider" class="org.nuclos.common.collect.collectable.DefaultCollectableEntityProvider">
+		<property name="collectableEOEntityProvider" ref="collectableEOEntityProvider"/>
+	</bean>
+	<bean id="springLocaleDelegate" class="org.nuclos.common2.SpringLocaleDelegate">
+		<property name="lookupService" ref="localeDelegate"/>
+	</bean>
     
 	<bean id="appContext" class="org.nuclos.common.SpringApplicationContextHolder"/>
 	
@@ -584,8 +655,6 @@
 	</bean -->
 
 	<bean id="enumeratedDefaultValueProvider" class="org.nuclos.client.masterdata.ClientEnumeratedDefaultValueProvider" />
-
-	<bean id="attributeProvider" class="org.nuclos.client.attribute.AttributeCache" />
 
 	<bean id="moduleProvider" class="org.nuclos.client.genericobject.Modules" />
 

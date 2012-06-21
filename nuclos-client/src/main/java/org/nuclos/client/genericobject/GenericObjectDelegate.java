@@ -87,8 +87,8 @@ public class GenericObjectDelegate {
 		return INSTANCE;
 	}
 	
-	@Autowired
-	final void setGenericObjectFacadeRemote(GenericObjectFacadeRemote genericObjectFacadeRemote) {
+	// @Autowired
+	public final void setGenericObjectFacadeRemote(GenericObjectFacadeRemote genericObjectFacadeRemote) {
 		this.gofacade = genericObjectFacadeRemote;
 	}
 

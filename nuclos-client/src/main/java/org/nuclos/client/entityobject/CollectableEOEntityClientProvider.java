@@ -32,8 +32,8 @@ public class CollectableEOEntityClientProvider extends CollectableEOEntityProvid
 	
 	private static CollectableEOEntityClientProvider INSTANCE;
 	
-	@Autowired
-	CollectableEOEntityClientProvider(MetaDataClientProvider prov) {
+	// @Autowired
+	public CollectableEOEntityClientProvider(MetaDataClientProvider prov) {
 		super(prov);
 		INSTANCE = this;
 	}

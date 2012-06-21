@@ -85,9 +85,9 @@ public class NuclosCollectableEntityProvider implements CollectableEntityProvide
 		this.mpSpecialEntities.put(CollectableTaskOwner.clcte.getName(), CollectableTaskOwner.clcte);
 	}
 	
-	@Autowired
-	@Qualifier("attributeCache")
-	void setAttributeCache(AttributeCache attributeCache) {
+	// @Autowired
+	// @Qualifier("attributeCache")
+	public final void setAttributeCache(AttributeCache attributeCache) {
 		this.attributeCache = attributeCache;
 	}
 

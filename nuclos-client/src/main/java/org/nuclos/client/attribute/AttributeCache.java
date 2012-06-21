@@ -81,8 +81,8 @@ public class AttributeCache implements AttributeProvider {
 		INSTANCE = this;
 	}
 	
-	@Autowired
-	void setAttributeDelegate(AttributeDelegate attributeDelegate) {
+	// @Autowired
+	public final void setAttributeDelegate(AttributeDelegate attributeDelegate) {
 		this.attributeDelegate = attributeDelegate;
 	}
 

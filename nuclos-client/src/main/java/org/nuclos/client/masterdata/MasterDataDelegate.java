@@ -97,18 +97,18 @@ public class MasterDataDelegate {
 		return INSTANCE;
 	}
 	
-	@Autowired
-	void setMasterDataFacadeRemote(MasterDataFacadeRemote masterDataFacadeRemote) {
+	// @Autowired
+	public final void setMasterDataFacadeRemote(MasterDataFacadeRemote masterDataFacadeRemote) {
 		this.facade = masterDataFacadeRemote;
 	}
 	
-	@Autowired
-	void setSpringLocaleDelegate(SpringLocaleDelegate cld) {
+	// @Autowired
+	public final void setSpringLocaleDelegate(SpringLocaleDelegate cld) {
 		this.localeDelegate = cld;
 	}
 	
-	@Autowired
-	void setMasterDataCache(MasterDataCache masterDataCache) {
+	// @Autowired
+	public final void setMasterDataCache(MasterDataCache masterDataCache) {
 		this.masterDataCache = masterDataCache;
 	}
 

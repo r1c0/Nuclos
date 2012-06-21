@@ -42,8 +42,8 @@ public class InvokeWithInputRequiredSupport {
 	public InvokeWithInputRequiredSupport() {
 	}
 
-	@Autowired
-	void setNuclosHttpInvokerAttributeContext(NuclosHttpInvokerAttributeContext ctx) {
+	// @Autowired
+	public final void setNuclosHttpInvokerAttributeContext(NuclosHttpInvokerAttributeContext ctx) {
 		this.ctx = ctx;
 	}
 

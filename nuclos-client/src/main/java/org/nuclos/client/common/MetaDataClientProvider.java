@@ -79,8 +79,8 @@ public class MetaDataClientProvider implements MetaDataProvider<EntityMetaDataVO
 		getInstance().dataCache.buildMaps();
 	}
 	
-	@Autowired
-	void setTopicNotificationReceiver(TopicNotificationReceiver tnr) {
+	// @Autowired
+	public final void setTopicNotificationReceiver(TopicNotificationReceiver tnr) {
 		this.tnr = tnr;
 	}
 

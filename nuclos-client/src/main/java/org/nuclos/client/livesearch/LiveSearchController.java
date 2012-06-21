@@ -132,13 +132,13 @@ public class LiveSearchController implements LiveSearchSearchPaneListener, LiveS
     	INSTANCE = this;
 	}
     
-    @Autowired
-    void setResourceCache(ResourceCache resourceCache) {
+    // @Autowired
+    public final void setResourceCache(ResourceCache resourceCache) {
     	this.resourceCache = resourceCache;
     }
     
-    @Autowired
-    void setParentFrame(MainFrame parentFrame) {
+    // @Autowired
+    public final void setParentFrame(MainFrame parentFrame) {
     	this.parentFrame = parentFrame;
     }
     
