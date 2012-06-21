@@ -26,7 +26,7 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.text.NumberFormat;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -38,16 +38,15 @@ import java.util.Vector;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
-import javax.swing.JFormattedTextField;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-import javax.swing.text.NumberFormatter;
 
 import org.apache.log4j.Logger;
+import org.nuclos.client.common.LocaleDelegate;
 import org.nuclos.client.genericobject.valuelistprovider.GenericObjectCollectableFieldsProviderFactory;
 import org.nuclos.client.masterdata.valuelistprovider.MasterDataCollectableFieldsProviderFactory;
 import org.nuclos.client.ui.DateChooser;
@@ -55,10 +54,12 @@ import org.nuclos.client.ui.Errors;
 import org.nuclos.client.ui.labeled.LabeledComponentSupport;
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.collect.collectable.CollectableField;
+import org.nuclos.common.collect.collectable.CollectableFieldFormat;
 import org.nuclos.common.collect.collectable.CollectableFieldsProvider;
+import org.nuclos.common.collect.exception.CollectableFieldFormatException;
 import org.nuclos.common.collection.CollectionUtils;
-import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.LangUtils;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonValidationException;
@@ -173,7 +174,8 @@ public class ParameterPanel extends JPanel {
 					comp = cmbbx;
 				}
 				else if (paramvo.getDatatype().equals("java.lang.Double")) {
-					final JTextField tf = new JFormattedTextField(new NumberFormatter(NumberFormat.getNumberInstance()));
+					//final JTextField tf = new JFormattedTextField(new NumberFormatter(NumberFormat.getNumberInstance()));
+					final JTextField tf = new JTextField();
 					tf.setName(paramvo.getParameter());
 					comp = tf;
 				}
@@ -259,52 +261,63 @@ public class ParameterPanel extends JPanel {
 	public void fillParameterMap(Collection<DatasourceParameterVO> lstParams, Map<String, Object> mpParams) throws CommonValidationException {
 		for (DatasourceParameterVO paramvo : lstParams) {
 			final JComponent comp = this.getComponentForParameter(paramvo.getParameter());
-			try {
-				if (comp != null) {
-					if (paramvo.getValueListProvider() != null) {
-						CollectableField selectedCollectableField = (CollectableField)((JComboBox) comp).getSelectedItem();
-						mpParams.put(paramvo.getParameter(), selectedCollectableField.getValue());
-						if (selectedCollectableField.getFieldType() == CollectableField.TYPE_VALUEIDFIELD) {
-							mpParams.put(paramvo.getParameter() + "Id", selectedCollectableField.getValueId());
+			if (comp != null) {
+				if (paramvo.getValueListProvider() != null) {
+					CollectableField selectedCollectableField = (CollectableField)((JComboBox) comp).getSelectedItem();
+					mpParams.put(paramvo.getParameter(), selectedCollectableField.getValue());
+					if (selectedCollectableField.getFieldType() == CollectableField.TYPE_VALUEIDFIELD) {
+						mpParams.put(paramvo.getParameter() + "Id", selectedCollectableField.getValueId());
+					}
+				}
+				else {
+					if (paramvo.getDatatype().equals("java.lang.String")) {
+						String text = ((JTextField) comp).getText();
+						if (text != null) {
+							text = text.trim();
+						}
+						mpParams.put(paramvo.getParameter(), "".equals(text) ? null : text);
+					}
+					else if (paramvo.getDatatype().equals("java.lang.Boolean")) {
+						// Physically there are no boolean parameters in the database
+						// So convert them to numbers instead
+						mpParams.put(paramvo.getParameter(), ((JComboBox) comp).getSelectedItem().equals(Boolean.TRUE) ? 1 : 0);
+					}
+					else if (paramvo.getDatatype().equals("java.lang.Double")) {
+						try {
+							String text = ((JTextField) comp).getText();
+							if (text != null) {
+								text = text.trim();
+							}
+							Double value = LocaleDelegate.getInstance().getNumberFormat().parse(((JTextField) comp).getText()).doubleValue();
+							mpParams.put(paramvo.getParameter(), "".equals(text) ? null : value);
+						} catch (ParseException ex) {
+							throw new CommonValidationException(SpringLocaleDelegate.getInstance().getMessage(
+									"ParameterPanel.3", "{0}: \"{1}\" ist keine g\u00fcltige Zahl.", paramvo.getParameter(), ((JTextField) comp).getText()), ex);
 						}
 					}
-					else {
-						if (paramvo.getDatatype().equals("java.lang.String")) {
+					else if (paramvo.getDatatype().equals("java.lang.Integer")) {
+						try {
 							String text = ((JTextField) comp).getText();
 							if (text != null) {
 								text = text.trim();
 							}
-							mpParams.put(paramvo.getParameter(), "".equals(text) ? null : text);
+							Integer value = LocaleDelegate.getInstance().getNumberFormat().parse(((JTextField) comp).getText()).intValue();
+							mpParams.put(paramvo.getParameter(), "".equals(text) ? null : value);
+						} catch (ParseException ex) {
+							throw new CommonValidationException(SpringLocaleDelegate.getInstance().getMessage(
+									"ParameterPanel.3", "{0}: \"{1}\" ist keine g\u00fcltige Zahl.", paramvo.getParameter(), ((JTextField) comp).getText()), ex);
 						}
-						else if (paramvo.getDatatype().equals("java.lang.Boolean")) {
-							// Physically there are no boolean parameters in the database
-							// So convert them to numbers instead
-							mpParams.put(paramvo.getParameter(), ((JComboBox) comp).getSelectedItem().equals(Boolean.TRUE) ? 1 : 0);
-						}
-						else if (paramvo.getDatatype().equals("java.lang.Double")) {
-							String text = ((JTextField) comp).getText();
-							if (text != null) {
-								text = text.trim();
-							}
-							mpParams.put(paramvo.getParameter(), "".equals(text) ? null : new Double(((JTextField) comp).getText()));
-						}
-						else if (paramvo.getDatatype().equals("java.lang.Integer")) {
-							String text = ((JTextField) comp).getText();
-							if (text != null) {
-								text = text.trim();
-							}
-							mpParams.put(paramvo.getParameter(), "".equals(text) ? null : new Integer(((JTextField) comp).getText()));
-						}
-						else if (paramvo.getDatatype().equals("java.util.Date")) {
-							// todo add validation of date format
+					}
+					else if (paramvo.getDatatype().equals("java.util.Date")) {
+						try {
 							mpParams.put(paramvo.getParameter(), ((DateChooser) comp).getDate());
+						} 
+						catch (CommonValidationException ex) {
+							throw new CommonValidationException(SpringLocaleDelegate.getInstance().getMessage(
+									"ParameterPanel.5", "{0}: \"{1}\" ist kein g\u00fcltiges Datum.", paramvo.getParameter(), ((JTextField) comp).getText()), ex);
 						}
 					}
 				}
-			}
-			catch (NumberFormatException ex) {
-				throw new CommonValidationException(SpringLocaleDelegate.getInstance().getMessage(
-						"ParameterPanel.1", "''{0}'' ist keine g\u00fcltige Zahl.", ((JTextField) comp).getText()), ex);
 			}
 		}
 	}

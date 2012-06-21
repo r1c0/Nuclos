@@ -38562,17 +38562,32 @@
   {
     "resourceID": "ParameterPanel.3",
     "locale": "i-default",
-    "text": "\"{0}\" is an invalid number."
+    "text": "{0}: \"{1}\" is an invalid number."
   },
   {
     "resourceID": "ParameterPanel.3",
     "locale": "en",
-    "text": "\"{0}\" is an invalid number."
+    "text": "{0}: \"{1}\" is an invalid number."
   },
   {
     "resourceID": "ParameterPanel.3",
     "locale": "de",
-    "text": "\"{0}\" ist keine gültige Zahl."
+    "text": "{0}: \"{1}\" ist keine gültige Zahl."
+  },
+  {
+    "resourceID": "ParameterPanel.5",
+    "locale": "i-default",
+    "text": "{0}: \"{1}\" is an invalid date."
+  },
+  {
+    "resourceID": "ParameterPanel.5",
+    "locale": "en",
+    "text": "{0}: \"{1}\" is an invalid date."
+  },
+  {
+    "resourceID": "ParameterPanel.5",
+    "locale": "de",
+    "text": "{0}: \"{1}\" ist kein gültiges Datum."
   },
   {
     "resourceID": "QueryBuilderController.1",
