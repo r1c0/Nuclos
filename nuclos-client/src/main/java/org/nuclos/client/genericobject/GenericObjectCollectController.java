@@ -4867,11 +4867,14 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	protected void customizeLayout(LayoutRoot layoutroot, UsageCriteria usagecriteria, CollectState collectstate) {
 		// respect rights in view mode is handled in the GenericObjectCollectStateListener.detailsModeEntered()
 		if (collectstate.isSearchMode()) {
+			/* uncommented. @see NUCLOSINT-1558
 			respectRights(layoutroot.getCollectableComponents(), layoutroot.getMapOfSubForms().values(), usagecriteria, collectstate);
 			//NUCLEUSINT-442
 			respectRights(layoutroot.getCollectableLabels(), layoutroot.getMapOfSubForms().values(), usagecriteria, collectstate);
-
+			
+			// why didn´t we use this workaround in other than collectstate.isSearchMode()????
 			fixUsageCriteriaSearchFields(layoutroot);
+			*/
 		}
 		// iterate through the component tree and clear the keymaps of all JSplitPanes
 		UIUtils.clearJComponentKeymap(layoutroot.getRootComponent(), JSplitPane.class);
