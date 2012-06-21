@@ -134,7 +134,6 @@ public class TableList extends JList implements DragGestureListener, Serializabl
 			
 			return label;
 		}
-
 	}
 
 	protected TableShape embeddingShape;
@@ -157,9 +156,10 @@ public class TableList extends JList implements DragGestureListener, Serializabl
 
 	protected void init() {
 		setModel(model);
+		setCellRenderer(new TableListCellRenderer());
 		dragSource = DragSource.getDefaultDragSource();
 		dragSource.createDefaultDragGestureRecognizer(this, DnDConstants.ACTION_LINK, this);
-		setCellRenderer(new TableListCellRenderer());
+		putClientProperty("List.isFileList", Boolean.TRUE); // Dragging should not select it. so we misuse this property here. @see BasicListUI.mouseDragged()
 	}
 
 	public TableShape getEmbeddingShape() {

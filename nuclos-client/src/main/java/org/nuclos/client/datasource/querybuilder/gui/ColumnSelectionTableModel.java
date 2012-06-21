@@ -234,6 +234,8 @@ public class ColumnSelectionTableModel extends DefaultTableModel {
 		final ColumnEntry entry = lstColumns.get(iSelectedColumn);
 		if (entry != null) {
 			entry.reset();
+			lstColumns.remove(iSelectedColumn);
+			lstColumns.add(entry);
 			fireTableDataChanged();
 		}
 	}
