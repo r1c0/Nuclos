@@ -53,6 +53,7 @@ import org.nuclos.client.genericobject.Modules;
 import org.nuclos.client.main.mainframe.MainFrame;
 import org.nuclos.client.main.mainframe.MainFrameTab;
 import org.nuclos.client.main.mainframe.MainFrameTabbedPane;
+import org.nuclos.client.masterdata.MasterDataCache;
 import org.nuclos.client.ui.Errors;
 import org.nuclos.client.ui.MainFrameTabController;
 import org.nuclos.client.ui.SizeKnownEvent;
@@ -889,6 +890,10 @@ public abstract class SubFormController extends MainFrameTabController
 				result = clctcompmodel.getField();
 		}
 		else if (Modules.getInstance().isModuleEntity(sParentComponentEntityName)) {
+			final CollectableComponentModel clctcompmodel = clctcompmodelproviderParent.getCollectableComponentModelFor(sParentComponentName);
+			result = clctcompmodel.getField();
+		}
+		else if(MetaDataClientProvider.getInstance().isEntity(sParentComponentEntityName)) {
 			final CollectableComponentModel clctcompmodel = clctcompmodelproviderParent.getCollectableComponentModelFor(sParentComponentName);
 			result = clctcompmodel.getField();
 		}
