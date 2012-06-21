@@ -892,6 +892,10 @@ public abstract class SubFormController extends MainFrameTabController
 			final CollectableComponentModel clctcompmodel = clctcompmodelproviderParent.getCollectableComponentModelFor(sParentComponentName);
 			result = clctcompmodel.getField();
 		}
+		else if(MetaDataClientProvider.getInstance().isEntity(sParentComponentEntityName)) {
+			final CollectableComponentModel clctcompmodel = clctcompmodelproviderParent.getCollectableComponentModelFor(sParentComponentName);
+			result = clctcompmodel.getField();
+		}
 		else {
 			throw new CommonFatalException(getSpringLocaleDelegate().getMessage("SubFormController.1",
 				"Die Entit\u00e4t der Vaterkomponente ({0}) muss der Entit\u00e4t des Unterformulars ({1}) oder der Entit\u00e4t des \u00fcbergeordneten Formulars ({2}) entsprechen.",
