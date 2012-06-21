@@ -62,12 +62,12 @@ import org.nuclos.common.ApplicationProperties;
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.collection.Pair;
 import org.nuclos.common2.LangUtils;
-import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.common2.exception.CommonPermissionException;
 import org.nuclos.server.servermeta.ejb3.ServerMetaFacadeRemote;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -111,13 +111,20 @@ public class StartUp  {
 
 	private final String[] args;
 	
-	private volatile boolean refreshed = false;
+	private ClassPathXmlApplicationContext startupContext;
+	
+	private ClassPathXmlApplicationContext clientContext;
+	
+	private boolean refreshed = false;
 	
 	private final ApplicationListener<ContextRefreshedEvent> refreshListener = new ApplicationListener<ContextRefreshedEvent>() {
 		
 		@Override
 		public void onApplicationEvent(ContextRefreshedEvent event) {
-			refreshed = true;
+			synchronized (StartUp.this) {
+				refreshed = true;
+				StartUp.this.notify();
+			}
 		}
 		
 	};
@@ -134,11 +141,11 @@ public class StartUp  {
 		setupClientLogging();
 		final ClassLoader cl = this.getClass().getClassLoader();
 
-		final ClassPathXmlApplicationContext ctx = new ClassPathXmlApplicationContext(
+		startupContext = new ClassPathXmlApplicationContext(
 				new String[] { "classpath:META-INF/nuclos/client-beans-startup.xml" }, false);
 		// see http://fitw.wordpress.com/2009/03/14/web-start-and-spring/ why this is needed (tp)
-		ctx.setClassLoader(cl);
-		ctx.refresh();
+		startupContext.setClassLoader(cl);
+		startupContext.refresh();
 		
 		final Runnable run1 = new Runnable() {
 
@@ -146,17 +153,17 @@ public class StartUp  {
 			public void run() {
 				try {
 					final String xmlBeanDefs = "classpath*:META-INF/nuclos/**/*-beans.xml";
-					final ClassPathXmlApplicationContext ctx1 = new ClassPathXmlApplicationContext(new String[] { xmlBeanDefs }, false, ctx);
+					clientContext = new ClassPathXmlApplicationContext(new String[] { xmlBeanDefs }, false, startupContext);
 					// see http://fitw.wordpress.com/2009/03/14/web-start-and-spring/ why this is needed (tp)
-					ctx1.addApplicationListener(refreshListener);
-					ctx1.setClassLoader(cl);
-					ctx1.refresh();
+					clientContext.addApplicationListener(refreshListener);
+					clientContext.setClassLoader(cl);
+					clientContext.refresh();
 					
-					final Resource[] xmlBeanRes = ctx1.getResources(xmlBeanDefs);
+					final Resource[] xmlBeanRes = clientContext.getResources(xmlBeanDefs);
 					log.info("loading bean definitions from the following files: " + Arrays.asList(xmlBeanRes));
-					log.info("@NucletComponents within spring context: " + ctx1.getBeansWithAnnotation(NucletComponent.class));
+					log.info("@NucletComponents within spring context: " + clientContext.getBeansWithAnnotation(NucletComponent.class));
 
-					final Resource[] themes = ctx1.getResources("classpath*:META-INF/nuclos/**/*-theme.properties");
+					final Resource[] themes = clientContext.getResources("classpath*:META-INF/nuclos/**/*-theme.properties");
 					log.info("loading themes properties from the following files: " + Arrays.asList(themes));
 
 					for (Resource r : themes) {
@@ -231,7 +238,6 @@ public class StartUp  {
 				}
 			}
 		});
-
 	}	// ctor
 
 	private static CollectableComponentFactory newCollectableComponentFactory() {
@@ -264,8 +270,7 @@ public class StartUp  {
 				System.out.println("Failed to configure logging from " + sLog4jUrl + ": " + e.getMessage());
 			}
 		}
-
-		
+	
 		// final String configurationfile = ApplicationProperties.getInstance().isFunctionBlockDev() 
 		// 		? "log4j-dev.properties" : "log4j.properties";
 		final String configurationfile = getLog4jConfigurationFile();
@@ -308,14 +313,6 @@ public class StartUp  {
 		return result;
 	}
 
-	private void setInitialLocaleBundle() {
-		// is set in login screen
-//		Preferences prefs = ClientPreferences.getUserPreferences();
-//		Preferences localeNode = prefs.node("locale");
-//		LocaleInfo localeInfo = LocaleDelegate.getInstance().getBestLocale(LocaleInfo.parseTag(localeNode.get("locale", null)));
-//		SpringLocaleDelegate.setLocaleInfo(localeInfo);
-	}
-
 	private void createGUI() {
 		this.setupLookAndFeel();
 		// show LoginPanal as soon as possible
@@ -330,6 +327,13 @@ public class StartUp  {
 				@Override
                 public void loginSuccessful(final LoginEvent ev) {
 					log.debug("login start");
+					try {
+						registerOSXHandler();
+					}
+					catch (Exception ex) {
+						Errors.getInstance().showExceptionDialog(null, ex);
+						Main.exit(Main.ExitResult.ABNORMAL);
+					}
 
 					UIUtils.runCommandForTabbedPane(null, new Runnable() {
 						@Override
@@ -346,7 +350,6 @@ public class StartUp  {
 								
 								Modules.initialize();
 								MetaDataClientProvider.initialize();
-								setInitialLocaleBundle();
 								compareClientAndServerVersions();
 								ctlLogin.increaseLoginProgressBar(PROGRESS_COMPARE_VERSIONS);
 								createMainController(ev.getAuthenticatedUserName(), ev.getConnectedServerName(), ctlLogin);
@@ -369,80 +372,6 @@ public class StartUp  {
 										log.info("login done");
 									}
 								});
-
-								if (Main.getInstance().isMacOSX()) {
-									Class<?> macAppClass = Class.forName("com.apple.eawt.Application");
-									Object macAppObject = macAppClass.getConstructor().newInstance();
-
-									// register about handler
-									Class<?> macAboutHandlerClass = Class.forName("com.apple.eawt.AboutHandler");
-									Method macAppSetAboutHandlerMethod = macAppClass.getDeclaredMethod("setAboutHandler", new Class[] { macAboutHandlerClass });
-
-									Object macAboutHandler = Proxy.newProxyInstance(Main.class.getClassLoader(), new Class[] { macAboutHandlerClass }, new InvocationHandler() {
-										@Override
-										public Object invoke(Object proxy, Method method, Object[] args)	throws Throwable {
-											if (method != null && "handleAbout".equals(method.getName()) && args.length == 1) {
-												Main.getInstance().getMainController().cmdShowAboutDialog();
-											}
-
-											return null;
-										}
-									});
-									macAppSetAboutHandlerMethod.invoke(macAppObject, new Object[] { macAboutHandler });
-
-									// register preferences handler
-									Class<?> macPreferencesHandlerClass = Class.forName("com.apple.eawt.PreferencesHandler");
-									Method macAppSetPreferencesHandlerMethod = macAppClass.getDeclaredMethod("setPreferencesHandler", new Class[] { macPreferencesHandlerClass });
-
-									Object macPreferencesHandler = Proxy.newProxyInstance(Main.class.getClassLoader(), new Class[] { macPreferencesHandlerClass }, new InvocationHandler() {
-										@Override
-										public Object invoke(Object proxy, Method method, Object[] args)	throws Throwable {
-											if (method != null && "handlePreferences".equals(method.getName()) && args.length == 1) {
-												Main.getInstance().getMainController().cmdOpenSettings();
-											}
-
-											return null;
-										}
-									});
-									macAppSetPreferencesHandlerMethod.invoke(macAppObject, new Object[] { macPreferencesHandler });
-
-									// register quit handler
-						            Class<?> macQuitHandlerClass = Class.forName("com.apple.eawt.QuitHandler");
-						            Method macAppSetQuitHandlerMethod = macAppClass.getDeclaredMethod("setQuitHandler", new Class[] { macQuitHandlerClass });
-
-						            Object macQuitHandler = Proxy.newProxyInstance(Main.class.getClassLoader(), new Class[] { macQuitHandlerClass }, new InvocationHandler() {
-										@Override
-										public Object invoke(Object proxy, Method method, Object[] args)	throws Throwable {
-											if (method != null && "handleQuitRequestWith".equals(method.getName()) && args.length == 2) {
-												Class<?> macQuitResponseClass = Class.forName("com.apple.eawt.QuitResponse");
-												Method macQuitResponsePerformQuitMethod = macQuitResponseClass.getDeclaredMethod("performQuit");
-												Method macQuitResponseCancelQuitMethod = macQuitResponseClass.getDeclaredMethod("cancelQuit");
-
-												if (Main.getInstance().getMainController().cmdWindowClosing()) {
-													macQuitResponsePerformQuitMethod.invoke(args[1]);
-												} else {
-													macQuitResponseCancelQuitMethod.invoke(args[1]);
-												}
-											}
-											return null;
-										}
-									});
-						            macAppSetQuitHandlerMethod.invoke(macAppObject, new Object[] { macQuitHandler });
-
-						            //register dock menu
-						            PopupMenu macDockMenu = new PopupMenu();
-						            MenuItem miDockLogoutExit = new MenuItem(SpringLocaleDelegate.getInstance().getResource("miLogoutExit", "Abmelden und Beenden"));
-						            miDockLogoutExit.addActionListener(new ActionListener() {
-										@Override
-										public void actionPerformed(ActionEvent e) {
-											Main.getInstance().getMainController().cmdLogoutExit();
-										}
-									});
-						            macDockMenu.add(miDockLogoutExit);
-
-						            Method macAppSetDockMenuMethod = macAppClass.getDeclaredMethod("setDockMenu", PopupMenu.class);
-						            macAppSetDockMenuMethod.invoke(macAppObject, macDockMenu);
-								}
 							}
 							catch (Exception ex) {
 								Errors.getInstance().showExceptionDialog(null, ex);
@@ -473,7 +402,6 @@ public class StartUp  {
 			});
 
 			ctlLogin.run();
-
 			/** @todo move exception handling to LoginController.run() */
 		}
 		catch (CommonFatalException ex) {
@@ -491,11 +419,11 @@ public class StartUp  {
 			}
 			catch (NamingException exCause) {
 				final String sMessage = "No connection could be establish to the server.\nPlease contact the system administrator.";
-					//"Es konnte keine Verbindung zum Server hergestellt werden.\n" + "Bitte wenden Sie sich an den Systemadministrator.";
 				Errors.getInstance().showExceptionDialog(null, sMessage, ex);
 			}
-			catch (Exception exCause) {	// everything else
-				final String sMessage = "A fatal error occurred.";//"Es ist ein fataler Fehler aufgetreten.";
+			catch (Exception exCause) {	
+				// everything else
+				final String sMessage = "A fatal error occurred.";
 				Errors.getInstance().showExceptionDialog(null, sMessage, ex);
 			}
 			finally {
@@ -506,21 +434,101 @@ public class StartUp  {
 			Errors.getInstance().showExceptionDialog(null, null, ex);
 			Main.exit(Main.ExitResult.ABNORMAL);
 		}
+	}
+	
+	private static void registerOSXHandler() 
+			throws ClassNotFoundException, IllegalArgumentException, SecurityException, InstantiationException, IllegalAccessException, 
+			InvocationTargetException, NoSuchMethodException 
+	{
+		if (Main.getInstance().isMacOSX()) {
+			Class<?> macAppClass = Class.forName("com.apple.eawt.Application");
+			Object macAppObject = macAppClass.getConstructor().newInstance();
 
+			// register about handler
+			Class<?> macAboutHandlerClass = Class.forName("com.apple.eawt.AboutHandler");
+			Method macAppSetAboutHandlerMethod = macAppClass.getDeclaredMethod("setAboutHandler", new Class[] { macAboutHandlerClass });
+
+			Object macAboutHandler = Proxy.newProxyInstance(Main.class.getClassLoader(), new Class[] { macAboutHandlerClass }, new InvocationHandler() {
+				@Override
+				public Object invoke(Object proxy, Method method, Object[] args)	throws Throwable {
+					if (method != null && "handleAbout".equals(method.getName()) && args.length == 1) {
+						Main.getInstance().getMainController().cmdShowAboutDialog();
+					}
+
+					return null;
+				}
+			});
+			macAppSetAboutHandlerMethod.invoke(macAppObject, new Object[] { macAboutHandler });
+
+			// register preferences handler
+			Class<?> macPreferencesHandlerClass = Class.forName("com.apple.eawt.PreferencesHandler");
+			Method macAppSetPreferencesHandlerMethod = macAppClass.getDeclaredMethod("setPreferencesHandler", new Class[] { macPreferencesHandlerClass });
+
+			Object macPreferencesHandler = Proxy.newProxyInstance(Main.class.getClassLoader(), new Class[] { macPreferencesHandlerClass }, new InvocationHandler() {
+				@Override
+				public Object invoke(Object proxy, Method method, Object[] args)	throws Throwable {
+					if (method != null && "handlePreferences".equals(method.getName()) && args.length == 1) {
+						Main.getInstance().getMainController().cmdOpenSettings();
+					}
+
+					return null;
+				}
+			});
+			macAppSetPreferencesHandlerMethod.invoke(macAppObject, new Object[] { macPreferencesHandler });
+
+			// register quit handler
+            Class<?> macQuitHandlerClass = Class.forName("com.apple.eawt.QuitHandler");
+            Method macAppSetQuitHandlerMethod = macAppClass.getDeclaredMethod("setQuitHandler", new Class[] { macQuitHandlerClass });
+
+            Object macQuitHandler = Proxy.newProxyInstance(Main.class.getClassLoader(), new Class[] { macQuitHandlerClass }, new InvocationHandler() {
+				@Override
+				public Object invoke(Object proxy, Method method, Object[] args)	throws Throwable {
+					if (method != null && "handleQuitRequestWith".equals(method.getName()) && args.length == 2) {
+						Class<?> macQuitResponseClass = Class.forName("com.apple.eawt.QuitResponse");
+						Method macQuitResponsePerformQuitMethod = macQuitResponseClass.getDeclaredMethod("performQuit");
+						Method macQuitResponseCancelQuitMethod = macQuitResponseClass.getDeclaredMethod("cancelQuit");
+
+						if (Main.getInstance().getMainController().cmdWindowClosing()) {
+							macQuitResponsePerformQuitMethod.invoke(args[1]);
+						} else {
+							macQuitResponseCancelQuitMethod.invoke(args[1]);
+						}
+					}
+					return null;
+				}
+			});
+            macAppSetQuitHandlerMethod.invoke(macAppObject, new Object[] { macQuitHandler });
+
+            //register dock menu
+            PopupMenu macDockMenu = new PopupMenu();
+            MenuItem miDockLogoutExit = new MenuItem(SpringLocaleDelegate.getInstance().getResource("miLogoutExit", "Abmelden und Beenden"));
+            miDockLogoutExit.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					Main.getInstance().getMainController().cmdLogoutExit();
+				}
+			});
+            macDockMenu.add(miDockLogoutExit);
+
+            Method macAppSetDockMenuMethod = macAppClass.getDeclaredMethod("setDockMenu", PopupMenu.class);
+            macAppSetDockMenuMethod.invoke(macAppObject, macDockMenu);
+		}
 	}
 
 	private void createMainController(String sUserName, String sNucleusServerName, LoginController lc)
 			throws CommonPermissionException {
-		try {
-			for(int i = 0; !refreshed && i < 100; ++i) {
-				Thread.currentThread().sleep(50);
+		synchronized (this) {
+			try {
+				for(int i = 0; !refreshed && i < 1000; ++i) {
+					wait(100);
+				}
 			}
-		}
-		catch (InterruptedException e) {
-			// ignore
-		}
-		if (!refreshed) {
-			throw new IllegalStateException("Can't create MainController: Spring context not initialized!");
+			catch (InterruptedException e) {
+				// ignore
+			}
+			if (!refreshed) {
+				throw new IllegalStateException("Can't create MainController: Spring context not initialized!");
+			}
 		}
 		try {
 			final String sClassName = LangUtils.defaultIfNull(
@@ -543,13 +551,12 @@ public class StartUp  {
 		catch (Exception ex) {
 			throw new CommonFatalException("MainController cannot be created.", ex);
 		}
-
-
 	}
 
 	private void setupLookAndFeel() {
 		try {
-			ServerMetaFacadeRemote sm = ServiceLocator.getInstance().getFacade(ServerMetaFacadeRemote.class);
+			// ServerMetaFacadeRemote sm = ServiceLocator.getInstance().getFacade(ServerMetaFacadeRemote.class);
+			ServerMetaFacadeRemote sm = (ServerMetaFacadeRemote) startupContext.getBean("serverMetaService");
 			String defaultNuclosTheme = sm.getDefaultNuclosTheme();
 			NuclosSyntheticaUtils.setLookAndFeel(defaultNuclosTheme);
 
@@ -565,7 +572,5 @@ public class StartUp  {
 			log.warn("Look&Feel cannot be set", ex);
 		}
 	}
-
-
 
 }	// class StartUp

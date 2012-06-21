@@ -62,7 +62,7 @@ public class TopicNotificationReceiver {
 	
 	//
 	
-	private volatile boolean deferredSubscribe = true;
+	private boolean deferredSubscribe = true;
 
 	private TopicConnection topicconn;
 	
@@ -151,13 +151,17 @@ public class TopicNotificationReceiver {
 		if (messagelistener == null) {
 			throw new NullPointerException("No MessageListener");
 		}
-		infos.add(new TopicInfo(sTopicName, correlationId, messagelistener));
-		if (!deferredSubscribe) {
-			realSubscribe();
+		synchronized (this) {
+			infos.add(new TopicInfo(sTopicName, correlationId, messagelistener));
+			if (!deferredSubscribe) {
+				realSubscribe();
+			}
 		}
 	}
 	
 	public synchronized final void realSubscribe() {
+		if (infos.isEmpty()) return;
+		
 		final List<TopicInfo> copy = new ArrayList<TopicInfo>(infos);
 		infos.clear();
 		assert deferredSubscribe || infos.isEmpty();
@@ -170,8 +174,9 @@ public class TopicNotificationReceiver {
 					weakrefmsglistener.subscribe();
 					weakmessagelistener.add(weakrefmsglistener);
 				}
-				// infos.clear();
-				deferredSubscribe = false;
+				synchronized (TopicNotificationReceiver.this) {
+					deferredSubscribe = false;
+				}
 			}
 		};
 		new Thread(run, "TopicNotificationReceiver.realSubscribe").start();
