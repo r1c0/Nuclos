@@ -28,6 +28,7 @@ import java.util.Iterator;
 import javax.swing.JComponent;
 import javax.swing.JLayeredPane;
 
+import org.nuclos.client.datasource.querybuilder.shapes.TableShape;
 import org.nuclos.client.gef.layout.XYLayout;
 
 /**
@@ -86,8 +87,9 @@ public abstract class AbstractComponentViewer extends AbstractViewer {
 		for (Iterator<AbstractShapeModel.Layer> layers = model.getVisibleLayers().iterator(); layers.hasNext();) {
 			AbstractShapeModel.Layer layer = layers.next();
 			for (Iterator<Shape> shapes = layer.getShapes().iterator(); shapes.hasNext();) {
-				Shape shape = shapes.next();				
-				shape.paint(gfx2D);
+				Shape shape = shapes.next();
+				if (!(shape instanceof TableShape))
+					shape.paint(gfx2D);
 			}
 		}
 	}

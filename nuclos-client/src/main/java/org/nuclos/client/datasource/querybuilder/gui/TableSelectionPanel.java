@@ -20,6 +20,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.Rectangle;
 import java.awt.dnd.DnDConstants;
 import java.awt.dnd.DragGestureEvent;
 import java.awt.dnd.DragGestureListener;
@@ -39,9 +40,9 @@ import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableCellRenderer;
 
-import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.client.datasource.querybuilder.QueryBuilderIcons;
 import org.nuclos.common.database.query.definition.Table;
+import org.nuclos.common2.SpringLocaleDelegate;
 
 /**
  * @todo enter class description.
@@ -84,10 +85,18 @@ public class TableSelectionPanel extends JPanel implements DragGestureListener {
 	private final ParameterPanel parameterpanel;
 
 	private final TableSelectionModel selectionmodelSystemObjects = new TableSelectionModel();
-	private final JTable tblSystemObjects = new JTable();
+	private final JTable tblSystemObjects = new JTable() {
+		public void scrollRectToVisible(Rectangle aRect) {
+			// prevent autoscrolling.
+		}
+	};
 
 	private final TableSelectionModel selectionmodelQueries = new TableSelectionModel();
-	private final JTable tblQueries = new JTable();
+	private final JTable tblQueries = new JTable() {
+		public void scrollRectToVisible(Rectangle aRect) {
+			// prevent autoscrolling.
+		}
+	};
 
 	private final DragSource dragsource = DragSource.getDefaultDragSource();
 

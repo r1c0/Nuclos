@@ -265,7 +265,7 @@ public class QueryBuilderController extends AbstractController implements ShapeM
 	}
 
 	private static final String TABLE_PREFIX = "T";
-	private static long lAliasIndex = 1L;
+	private long lAliasIndex = 1L;
 
 	private final List<Table> lstTables = new ArrayList<Table>();
 	private final List<PropertyChangeListener> lstPropertyChangeListener = new Vector<PropertyChangeListener>();
@@ -292,7 +292,7 @@ public class QueryBuilderController extends AbstractController implements ShapeM
 		lAliasIndex = 1L;
 	}
 
-	public static long getAliasIndex() {
+	public long getAliasIndex() {
 		return lAliasIndex++;
 	}
 
