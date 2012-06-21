@@ -71,6 +71,10 @@ class SourceScannerTask extends TimerTask {
 	
 	private NuclosJavaCompilerComponent nuclosJavaCompilerComponent;
 	
+	private String currentField;
+	
+	private String currentValue;
+	
 	SourceScannerTask() {
 		LOG.info("Created scanner");
 	}
@@ -139,6 +143,10 @@ class SourceScannerTask extends TimerTask {
 			catch (IOException e) {
 				LOG.warn("Can't parse file " + f + ": " + e.toString(), e);
 			}
+			catch (NumberFormatException e) {
+				LOG.warn("Can't parse file " + f + ": " + currentField + "=" + currentValue
+						+ " is invalid: " + e);
+			}
 		}
 		final List<GeneratedFile> wsdl = new ArrayList<GeneratedFile>();
 		for (File f: wsdlSrc) {
@@ -147,6 +155,10 @@ class SourceScannerTask extends TimerTask {
 			}
 			catch (IOException e) {
 				LOG.warn("Can't parse file " + f + ": " + e.toString(), e);
+			}
+			catch (NumberFormatException e) {
+				LOG.warn("Can't parse file " + f + ": " + currentField + "=" + currentValue
+						+ " is invalid: " + e);
 			}
 		}
 		if (java.isEmpty() && wsdl.isEmpty()) {
@@ -294,6 +306,9 @@ class SourceScannerTask extends TimerTask {
 	}
 	
 	private GeneratedFile parseFile(File file) throws IOException {
+		currentField = null;
+		currentValue = null;
+		
 		final GeneratedFile result = new GeneratedFile();
 		result.setFile(file);
 		final BufferedReader reader = new BufferedReader(new InputStreamReader(
@@ -302,6 +317,8 @@ class SourceScannerTask extends TimerTask {
 			boolean prefixEnd = false;
 			String line;
 			while ((line = reader.readLine()) != null) {
+				currentField = null;
+				currentValue = null;
 				line = line.trim();
 				if (line.equals("// END")) {
 					prefixEnd = true;
@@ -309,29 +326,35 @@ class SourceScannerTask extends TimerTask {
 				}
 				final Matcher m = PROP_PAT.matcher(line);
 				if (m.matches()) {
-					final String key = m.group(1);
-					final String value = m.group(2);
-					if ("name".equals(key)) {
-						result.setName(value);
+					currentField = m.group(1);
+					currentValue = m.group(2);
+					if ("name".equals(currentField)) {
+						result.setName(currentValue);
 					}
-					else if ("classname".equals(key)) {
-						result.setTargetClassName(value);
+					else if ("classname".equals(currentField)) {
+						result.setTargetClassName(currentValue);
 					}
-					else if ("type".equals(key)) {
-						result.setType(value);
+					else if ("type".equals(currentField)) {
+						result.setType(currentValue);
 					}
-					else if ("class".equals(key)) {
-						result.setGeneratorClass(value);
+					else if ("class".equals(currentField)) {
+						result.setGeneratorClass(currentValue);
 					}
-					else if ("id".equals(key)) {
-						result.setId(Long.parseLong(value));
+					else if ("id".equals(currentField)) {
+						result.setId(Long.parseLong(currentValue));
 					}
-					else if ("version".equals(key)) {
-						result.setVersion(Integer.parseInt(value));
+					else if ("version".equals(currentField)) {
+						result.setVersion(Integer.parseInt(currentValue));
 					}
-					else if ("modified".equals(key)) {
-						result.setModified(Long.parseLong(value));
+					else if ("modified".equals(currentField)) {
+						result.setModified(Long.parseLong(currentValue));
 					}
+					else {
+						LOG.info("Unknown field '" + currentField + "' with value '" + currentValue + "' in " + file);
+					}
+				}
+				else {
+					LOG.info("In " + file + ": unable to parse line " + line);
 				}
 			}
 			if (!prefixEnd) {
