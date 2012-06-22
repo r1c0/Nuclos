@@ -36,7 +36,7 @@ public class NucletComponentPostProcessor implements BeanPostProcessor, Ordered 
 	public NucletComponentPostProcessor() {
 	}
 	
-	@Autowired
+	// @Autowired
 	public void setNucletComponentRepository(NucletComponentRepository ncr) {
 		this.ncr = ncr;
 	}

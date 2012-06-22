@@ -28,9 +28,12 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Arrays;
 import java.util.Locale;
 import java.util.Properties;
+import java.util.TimeZone;
 
 import javax.jnlp.ServiceManager;
 import javax.jnlp.UnavailableServiceException;
@@ -61,7 +64,9 @@ import org.nuclos.client.ui.collect.component.CollectableComponentFactory;
 import org.nuclos.common.ApplicationProperties;
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.collection.Pair;
+import org.nuclos.common.startup.Startup;
 import org.nuclos.common2.LangUtils;
+import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonFatalException;
@@ -152,6 +157,20 @@ public class StartUp  {
 			@Override
 			public void run() {
 				try {
+					// Time zone stuff
+			        final ServerMetaFacadeRemote sm = ServiceLocator.getInstance().getFacade(ServerMetaFacadeRemote.class);
+			        final TimeZone serverDefaultTimeZone = sm.getServerDefaultTimeZone();
+			        final StringBuilder msg = new StringBuilder(); 
+			        msg.append("Default local  time zone is: ").append(TimeZone.getDefault().getID()).append("\n");
+			        msg.append("Default server time zone is: ").append(serverDefaultTimeZone.getID()).append("\n");
+					if (!LangUtils.equals(TimeZone.getDefault(), serverDefaultTimeZone)) {
+						TimeZone.setDefault(serverDefaultTimeZone);
+						msg.append("Local default time zone is set to server default!\n");
+					}
+					msg.append("Initial local  time zone is: " + Main.getInitialTimeZone().getID());
+					LOG.info(msg);
+					
+					// Scanning context
 					final String xmlBeanDefs = "classpath*:META-INF/nuclos/**/*-beans.xml";
 					clientContext = new ClassPathXmlApplicationContext(new String[] { xmlBeanDefs }, false, startupContext);
 					// see http://fitw.wordpress.com/2009/03/14/web-start-and-spring/ why this is needed (tp)
@@ -271,14 +290,12 @@ public class StartUp  {
 			}
 		}
 	
-		// final String configurationfile = ApplicationProperties.getInstance().isFunctionBlockDev() 
-		// 		? "log4j-dev.properties" : "log4j.properties";
-		final String configurationfile = getLog4jConfigurationFile();
+		final URL configurationfile = getLog4jConfigurationFile();
 		try {
-			LogLog.debug("Try to configure loggging from default configuration file: " + configurationfile);
-			Log4jConfigurer.initLogging("classpath:" + configurationfile);
+			LogLog.debug("Try to configure loggging from configuration file: " + configurationfile);
+			Log4jConfigurer.initLogging(configurationfile.toExternalForm());
 			log = Logger.getLogger(StartUp.class);
-			log.info("Logging configured from default log4j configuration.");
+			log.info("Logging configured from log4j configuration: " + configurationfile);
 		}
 		catch (Throwable t) {
 			throw new NuclosFatalException("The client-side logging could not be initialized, because the configuration file " 
@@ -289,9 +306,23 @@ public class StartUp  {
 		}
 	}
 	
-	public static String getLog4jConfigurationFile() {
-		return Boolean.getBoolean("functionblock.dev")
-				? "log4j-dev.properties" : "log4j.properties";
+	private static URL getLog4jConfigurationFile() {
+		String conf = System.getProperty("log4j.configuration");
+		if (conf == null) {
+			conf = Boolean.getBoolean("functionblock.dev")
+					? "log4j-dev.properties" : "log4j.properties";
+		}
+		URL url;
+		try {
+			url = new URL(conf);
+		}
+		catch (MalformedURLException e) {
+			url = null;
+		}
+		if (url == null) {
+			url = Startup.class.getClassLoader().getResource(conf);
+		}
+		return url;
 	}
 	
 	/**
@@ -304,7 +335,7 @@ public class StartUp  {
 		Pair<String, String> result = new Pair("<not avaiable>", "");
 		try {
 			java.util.Properties clientLog4jProperties = new Properties();
-			clientLog4jProperties.load(StartUp.class.getClassLoader().getResourceAsStream(StartUp.getLog4jConfigurationFile()));
+			clientLog4jProperties.load(StartUp.getLog4jConfigurationFile().openStream());
 			result.x = SystemPropertyUtils.resolvePlaceholders(clientLog4jProperties.getProperty("log4j.appender.logfile.File"));
 			result.y = clientLog4jProperties.getProperty("log4j.appender.logfile.DatePattern");
 		} catch (Exception ex) {
@@ -317,7 +348,8 @@ public class StartUp  {
 		this.setupLookAndFeel();
 		// show LoginPanal as soon as possible
 		LoginPanel.getInstance();
-
+		// LOG.info("SHOW LOGIN PANEL");
+		
 		try {
 			// perform login:
 			final LoginController ctlLogin = new LoginController(null, this.args);

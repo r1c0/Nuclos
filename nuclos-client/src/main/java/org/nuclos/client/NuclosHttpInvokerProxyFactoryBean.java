@@ -48,8 +48,8 @@ public class NuclosHttpInvokerProxyFactoryBean extends HttpInvokerProxyFactoryBe
 	public NuclosHttpInvokerProxyFactoryBean() {
 	}
 	
-	@Autowired
-	void setNuclosHttpInvokerAttributeContext(NuclosHttpInvokerAttributeContext ctx) {
+	// @Autowired
+	public void setNuclosHttpInvokerAttributeContext(NuclosHttpInvokerAttributeContext ctx) {
 		this.ctx = ctx;
 	}
 

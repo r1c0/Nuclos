@@ -51,8 +51,8 @@ public class SecuredBasicAuthHttpInvokerRequestExecutor extends CommonsHttpInvok
 	public SecuredBasicAuthHttpInvokerRequestExecutor() {
 	}
 	
-	@Autowired
-	void setApplicationProperties(ApplicationProperties applicationProperties) {
+	// @Autowired
+	public final void setApplicationProperties(ApplicationProperties applicationProperties) {
 		this.applicationProperties = applicationProperties;
 	}
 	

@@ -107,9 +107,32 @@
 	</bean>
 
 	<!-- Avoid scanning for the base component in nuclos-client -->
-	<bean class="org.nuclos.client.nuclet.MailToEventHandlerPostProcessor" />
-	<bean class="org.nuclos.client.nuclet.MailToEventHandlerRepository" />
-	<bean class="org.nuclos.client.nuclet.NucletComponentPostProcessor" />
-	<bean class="org.nuclos.client.nuclet.NucletComponentRepository" />
-	
+	<bean class="org.nuclos.client.nuclet.MailToEventHandlerPostProcessor">
+		<property name="mailToEventHandlerRepository" ref="mailToEventHandlerRepository"/>
+	</bean>
+	<bean id="mailToEventHandlerRepository" class="org.nuclos.client.nuclet.MailToEventHandlerRepository" />
+	<bean class="org.nuclos.client.nuclet.NucletComponentPostProcessor">
+		<property name="nucletComponentRepository" ref="nucletComponentRepository"/>
+	</bean>
+	<bean id="nucletComponentRepository" class="org.nuclos.client.nuclet.NucletComponentRepository">
+	</bean>
+	<bean id="mainFrame" class="org.nuclos.client.main.mainframe.MainFrame">
+		<property name="resourceCache" ref="resourceCache"/>
+		<property name="springLocaleDelegate" ref="springLocaleDelegate"/>
+		<property name="clientParameterProvider" ref="parameterProvider"/>
+		<property name="nuclosIcons" ref="nuclosIcons"/>
+		<property name="workspaceChooserController" ref="workspaceChooserController"/>
+		<property name="liveSearchController" ref="liveSearchController"/>
+	</bean>
+	<bean id="liveSearchController" class="org.nuclos.client.livesearch.LiveSearchController">
+		<property name="resourceCache" ref="resourceCache"/>
+		<property name="parentFrame" ref="mainFrame"/>
+	</bean>
+	<bean id="workspaceChooserController" class="org.nuclos.client.main.mainframe.workspace.WorkspaceChooserController">
+		<property name="springLocaleDelegate" ref="springLocaleDelegate"/>
+	</bean>
+	<bean id="queueSingleton" class="org.nuclos.client.ui.gc.QueueSingleton">
+		<property name="timer" ref="timer"/>
+	</bean>
+		
 </beans>

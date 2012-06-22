@@ -33,6 +33,8 @@ import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.HierarchyEvent;
+import java.awt.event.HierarchyListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowFocusListener;
@@ -240,6 +242,21 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 	 * contain a reference to its controller. We hide that fact in this package though.
 	 */
 	MainFrame() {
+		addHierarchyListener(new HierarchyListener() {
+			
+			private int count = 0;
+			
+			@Override
+			public void hierarchyChanged(HierarchyEvent e) {
+				++count;
+				if ((e.getChangeFlags() & HierarchyEvent.SHOWING_CHANGED) != 0) {
+					LOG.info("SHOW MAIN FRAME: hierarchy changed " + count + ": " + e);
+				}
+				if (count > 20) {
+					removeHierarchyListener(this);
+				}
+			}
+		});	
 	}	// ctor
 
 	// @Autowired
@@ -257,7 +274,7 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 		this.clientParameterProvider = clientParameterProvider;
 	}
 
-	@Autowired
+	// @Autowired
 	public final void setNuclosIcons(NuclosIcons nuclosIcons) {
 		this.nuclosIcons = nuclosIcons;
 	}
@@ -270,6 +287,16 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 		init(sUserName, sNucleusServerName);
 	}
 	 */
+
+	// @Autowired
+	public final void setWorkspaceChooserController(WorkspaceChooserController wcc) {
+		this.workspaceChooserController = wcc;
+	}
+
+	// @Autowired
+	public final void setLiveSearchController(LiveSearchController lsc) {
+		this.liveSearchController = lsc;
+	}
 
 	public final void postConstruct()
 	{
@@ -287,16 +314,6 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 		// liveSearchController = new LiveSearchController(this);
 		// workspaceChooserController = new WorkspaceChooserController();
 		setupLiveSearchKey(this);
-	}
-
-	@Autowired
-	void setWorkspaceChooserController(WorkspaceChooserController wcc) {
-		this.workspaceChooserController = wcc;
-	}
-
-	@Autowired
-	void setLiveSearchController(LiveSearchController lsc) {
-		this.liveSearchController = lsc;
 	}
 
 	private void setProgressBounds() {

@@ -39,8 +39,12 @@ import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
+import java.awt.event.HierarchyEvent;
+import java.awt.event.HierarchyListener;
 
 import javax.swing.BorderFactory;
 import javax.swing.Icon;
@@ -54,6 +58,7 @@ import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
+import org.apache.log4j.Logger;
 import org.nuclos.client.LocalUserProperties;
 import org.nuclos.client.NuclosIcons;
 import org.nuclos.client.ui.BackgroundPanel;
@@ -72,8 +77,12 @@ import org.nuclos.common.ApplicationProperties;
  */
 public class LoginPanel extends BackgroundPanel {
 	
+	private static final Logger LOG = Logger.getLogger(LoginPanel.class);
+	
 	private static LoginPanel INSTANCE = null;
 
+	//
+	
 	private final JPanel	   pnlLogin	     = new JPanel();
 	private final JPanel	   pnlLogo	     = new JPanel();
 
@@ -84,7 +93,7 @@ public class LoginPanel extends BackgroundPanel {
 
 	private Bubble bubble;
 
-	private final JTextField	       tfUserName	 = new JTextField();
+	private final JTextField tfUserName;
 	private final JPasswordField	   tfPassword	 = new JPasswordField();
 	private final JComboBox	           cmbbxLanguage = new JComboBox();
 	private final JCheckBox	           rememberPass	 = new JCheckBox();
@@ -92,6 +101,24 @@ public class LoginPanel extends BackgroundPanel {
 	private final JProgressBar	progressbar	 = new JProgressBar();
 
 	private LoginPanel() {
+		tfUserName	 = new JTextField();
+		
+		addHierarchyListener(new HierarchyListener() {
+			
+			private int count = 0;
+			
+			@Override
+			public void hierarchyChanged(HierarchyEvent e) {
+				++count;
+				if ((e.getChangeFlags() & HierarchyEvent.SHOWING_CHANGED) != 0) {
+					LOG.info("SHOW LOGIN PANEL: hierarchy changed " + count + ": " + e);
+				}
+				if (count > 20) {
+					removeHierarchyListener(this);
+				}
+			}
+		});	
+		
 		Icon iconCustomer = NuclosIcons.getInstance().getIconCustomer();
 		JLabel labLogo = new JLabel(iconCustomer);
 		labLogo.setBorder(null);
@@ -184,7 +211,7 @@ public class LoginPanel extends BackgroundPanel {
 		pnlLogin.add(labMsgSpacer, new GridBagConstraints(0, y, 2, 1, 0.0, 0.0,
 		    GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, new Insets(
 		        0, 0, iInsetBottom, 0), 0, 0));
-
+	
 		tfUserName.setName("tfUserName");
 		tfUserName.setText("");
 		tfUserName.setColumns(10);
@@ -214,7 +241,7 @@ public class LoginPanel extends BackgroundPanel {
 		Color pbfg = ApplicationProperties.getInstance().getSplashProgressColor(
 		    null);
 		if(pbfg != null)
-			progressbar.setForeground(pbfg);
+			progressbar.setForeground(pbfg);		
 	}
 	
 	public static final synchronized LoginPanel getInstance() {

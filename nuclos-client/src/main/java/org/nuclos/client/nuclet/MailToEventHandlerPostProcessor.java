@@ -32,8 +32,8 @@ public class MailToEventHandlerPostProcessor implements BeanPostProcessor, Order
 	public MailToEventHandlerPostProcessor() {
 	}
 	
-	@Autowired
-	public void setMailToEventHandlerRepository(MailToEventHandlerRepository repository) {
+	// @Autowired
+	public final void setMailToEventHandlerRepository(MailToEventHandlerRepository repository) {
 		this.repository = repository;
 	}
 

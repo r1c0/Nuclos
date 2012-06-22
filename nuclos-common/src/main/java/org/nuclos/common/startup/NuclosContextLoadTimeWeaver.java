@@ -29,22 +29,27 @@ public class NuclosContextLoadTimeWeaver extends DefaultContextLoadTimeWeaver {
 	
 	private boolean isLtw(ClassLoader classLoader) {
 		boolean result = false;
-		final String name = classLoader.getClass().getName();
-		if (name.indexOf("InstrumentableClassLoader") >= 0) {
-            LOG.info("Found instrumentable class loader: " + name);
-			result = true;
+		final Boolean ws = Boolean.getBoolean("nuclos.client.webstart");
+		// Only check for load-time weaving if this is not a web start client 
+		// (web start doesn't allow that) (tp)
+		if (ws == null || !ws.booleanValue()) {
+			final String name = classLoader.getClass().getName();
+			if (name.indexOf("InstrumentableClassLoader") >= 0) {
+	            LOG.info("Found instrumentable class loader: " + name);
+				result = true;
+			}
+	        else {
+	            RuntimeMXBean RuntimemxBean = ManagementFactory.getRuntimeMXBean();
+	            List<String> arguments = RuntimemxBean.getInputArguments();
+	            for (String s: arguments) {
+	                    if (s != null && s.indexOf("-javaagent:") >= 0) {
+	                            LOG.info("Found javaagent vm arg: " + s);
+	                            result = true;
+	                            break;
+	                    }
+	            }
+	        }
 		}
-        else {
-            RuntimeMXBean RuntimemxBean = ManagementFactory.getRuntimeMXBean();
-            List<String> arguments = RuntimemxBean.getInputArguments();
-            for (String s: arguments) {
-                    if (s != null && s.indexOf("-javaagent:") >= 0) {
-                            LOG.info("Found javaagent vm arg: " + s);
-                            result = true;
-                            break;
-                    }
-            }
-        }
 		LOG.info("enable LTW: " + result);
 		return result;
 	}

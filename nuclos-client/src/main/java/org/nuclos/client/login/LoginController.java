@@ -131,19 +131,7 @@ public class LoginController extends Controller<Component> {
 		super(parent);
 		this.args = args;
 		try {
-	        ServerMetaFacadeRemote sm = ServiceLocator.getInstance().getFacade(ServerMetaFacadeRemote.class);
-	        final TimeZone serverDefaultTimeZone = sm.getServerDefaultTimeZone();
-	        String msg = "Default local  time zone is: " + TimeZone.getDefault().getID() + "\n";
-	        msg += "Default server time zone is: " + serverDefaultTimeZone.getID() + "\n";
-			if (!LangUtils.equals(TimeZone.getDefault(), serverDefaultTimeZone)) {
-				TimeZone.setDefault(serverDefaultTimeZone);
-				msg += "Local default time zone is set to server default!\n";
-			}
-			msg += "Initial local  time zone is: " + Main.getInitialTimeZone().getID();
-	        // Ok! (tp)
-			System.out.println(msg);
-			LOG.info(msg);
-
+	        final ServerMetaFacadeRemote sm = ServiceLocator.getInstance().getFacade(ServerMetaFacadeRemote.class);
 	        passwordSaveAllowed = Boolean.valueOf(
 	        	StringUtils.defaultIfNull(
 	        		StringUtils.nullIfEmpty(
