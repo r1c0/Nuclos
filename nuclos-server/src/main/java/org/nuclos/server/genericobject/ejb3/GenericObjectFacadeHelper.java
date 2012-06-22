@@ -277,11 +277,11 @@ public class GenericObjectFacadeHelper {
 		return result;
 	}
 
-	public void createDependants(String entityname, int iGenericObjectId, DependantMasterDataMap mpDependants) throws CommonCreateException {
+	public void createDependants(String entityname, int iGenericObjectId, DependantMasterDataMap mpDependants, Map<EntityAndFieldName, String> collSubEntities) throws CommonCreateException {
 		if (!mpDependants.areAllDependantsNew()) {
 			throw new IllegalArgumentException("Dependants must be new (must have empty ids).");
 		}
-		mpDependants.setParent(entityname, iGenericObjectId);
+		mpDependants.setParent(entityname, iGenericObjectId, collSubEntities);
 
 		try {
 			// @todo: genericObjectId makes no sense as an entityName

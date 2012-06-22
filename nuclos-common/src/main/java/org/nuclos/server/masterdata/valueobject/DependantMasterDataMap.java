@@ -18,7 +18,9 @@ package org.nuclos.server.masterdata.valueobject;
 
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -34,8 +36,11 @@ import org.nuclos.common.collection.multimap.MultiListHashMap;
 import org.nuclos.common.collection.multimap.MultiListMap;
 import org.nuclos.common.dal.DalSupportForMD;
 import org.nuclos.common.dal.vo.EntityObjectVO;
+import org.nuclos.common2.EntityAndFieldName;
 import org.nuclos.common2.IdUtils;
 import org.nuclos.server.common.ModuleConstants;
+
+import com.google.inject.util.Modules;
 
 /**
  * Map containing the dependent masterdata rows by entity.
@@ -226,10 +231,11 @@ public final class DependantMasterDataMap implements Serializable {
 	 * sets the parent id of masterdata records.
 	 * @param iGenericObjectId
 	 */
-	public void setParent(String moduleEntityName, Integer iGenericObjectId) {
+	public void setParent(String moduleEntityName, Integer iGenericObjectId, Map<EntityAndFieldName, String> collSubEntities) {
 		if (iGenericObjectId == null) {
 			throw new NullArgumentException("iGenericObjectId");
 		}
+
 		Long longId = IdUtils.toLongId(iGenericObjectId);
 		/** @todo eliminate this workaround: */
 		final MasterDataMetaProvider cache = SpringApplicationContextHolder.getBean(MasterDataMetaProvider.class);
@@ -238,7 +244,15 @@ public final class DependantMasterDataMap implements Serializable {
 				final MasterDataMetaVO mdmetavo = cache.getMetaData(sEntityName);
 				if (mdmetavo.isEditable()) {
 					for (EntityObjectVO mdvo : this.getData(sEntityName)) {
-						String foreignKeyIdField = getForeignKeyField(mdmetavo, moduleEntityName, false);
+						String foreignKeyIdField = null;
+						for (EntityAndFieldName entityAndFieldName : collSubEntities.keySet()) {
+							if (entityAndFieldName.getEntityName().equals(sEntityName)) {
+								foreignKeyIdField = entityAndFieldName.getFieldName();
+								break;
+							}
+						}
+						if (foreignKeyIdField == null)
+							foreignKeyIdField = getForeignKeyField(mdmetavo, moduleEntityName, false);
 						final Long iOldGenericObjectId = mdvo.getFieldId(foreignKeyIdField);
 						if (iOldGenericObjectId != null && !longId.equals(iOldGenericObjectId)) {
 							log.warn("Bad parent id in dependant masterdata record; old id: " + iOldGenericObjectId + ", new id: " + longId + ".");
