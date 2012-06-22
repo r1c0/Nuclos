@@ -746,7 +746,13 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 
 		// create dependant records from subforms:
 		if (mpDependants != null) {
-			helper.createDependants(Modules.getInstance().getEntityNameByModuleId(iModuleId), id, mpDependants);
+			String entityNameByModuleId = Modules.getInstance().getEntityNameByModuleId(gowdvo.getModuleId());
+
+			LayoutFacadeLocal layoutFacade = ServerServiceLocator.getInstance().getFacade(LayoutFacadeLocal.class);
+			final Map<EntityAndFieldName, String> collSubEntities = layoutFacade.getSubFormEntityAndParentSubFormEntityNames(
+				entityNameByModuleId,id,false);
+
+			helper.createDependants(Modules.getInstance().getEntityNameByModuleId(iModuleId), id, mpDependants, collSubEntities);
 		}
 
 		// Write a possible origin object into the logbook:
@@ -924,15 +930,15 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 
 			String entityNameByModuleId = Modules.getInstance().getEntityNameByModuleId(govo.getModuleId());
 
-			mpDependants.setParent(entityNameByModuleId, govo.getId());
+			LayoutFacadeLocal layoutFacade = ServerServiceLocator.getInstance().getFacade(LayoutFacadeLocal.class);
+			final Map<EntityAndFieldName, String> collSubEntities = layoutFacade.getSubFormEntityAndParentSubFormEntityNames(
+				entityNameByModuleId,govo.getId(),false);
+
+			mpDependants.setParent(entityNameByModuleId, govo.getId(), collSubEntities);
 
 			// First protocol all the modified records
 			final Set<Integer> stExcluded = new HashSet<Integer>();
 			getMasterDataFacade().protocolDependantChanges(govo.getId(), mpDependants, stExcluded, false);
-
-			LayoutFacadeLocal layoutFacade = ServerServiceLocator.getInstance().getFacade(LayoutFacadeLocal.class);
-			final Map<EntityAndFieldName, String> collSubEntities = layoutFacade.getSubFormEntityAndParentSubFormEntityNames(
-				entityNameByModuleId,govo.getId(),false);
 
 			for (String sEntityName : mpDependants.getEntityNames()) {
 				for (EntityObjectVO mdVO : mpDependants.getData(sEntityName)) {
@@ -1692,7 +1698,7 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 			map.addData(entity, DalSupportForMD.getEntityObjectVO(entity, mdvoDocument));
 			int genericObjectId = ((Integer)mdvoDocument.getField("genericObject")).intValue();
 			int moduleId = getModuleContainingGenericObject(genericObjectId);
-			helper.createDependants(Modules.getInstance().getEntityNameByModuleId(moduleId), genericObjectId, map);
+			helper.createDependants(Modules.getInstance().getEntityNameByModuleId(moduleId), genericObjectId, map, Collections.EMPTY_MAP);
 		}
 		catch (CommonFinderException ex) {
 			throw new NuclosFatalException(ex);
