@@ -22,10 +22,11 @@ import java.util.Map;
 
 import javax.annotation.PreDestroy;
 
+import org.springframework.beans.factory.DisposableBean;
 import org.springframework.stereotype.Component;
 
 // @Component
-public class NuclosHttpInvokerAttributeContext {
+public class NuclosHttpInvokerAttributeContext implements DisposableBean {
 
 	private ThreadLocal<Boolean> supported = new ThreadLocal<Boolean>() {
 		@Override
@@ -72,7 +73,7 @@ public class NuclosHttpInvokerAttributeContext {
 		return supported.get() != null ? (boolean) supported.get() : false;
 	}
 	
-	@PreDestroy
+	// @PreDestroy
 	public synchronized void destroy() {
 		if (supported != null) {
 			supported.remove();

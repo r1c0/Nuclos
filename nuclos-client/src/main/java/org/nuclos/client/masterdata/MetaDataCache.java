@@ -32,6 +32,7 @@ import org.nuclos.client.main.Main;
 import org.nuclos.common.JMSConstants;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.server.masterdata.valueobject.MasterDataMetaVO;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -48,7 +49,7 @@ import org.springframework.stereotype.Component;
  *
  */
 // @Component
-public class MetaDataCache {
+public class MetaDataCache implements InitializingBean {
 
 	private static final Logger LOG = Logger.getLogger(MetaDataCache.class);
 
@@ -98,8 +99,8 @@ public class MetaDataCache {
 		INSTANCE = this;
 	}
 	
-	@PostConstruct
-	void init() {
+	// @PostConstruct
+	public final void afterPropertiesSet() {
 		final Runnable run = new Runnable() {
 			@Override
 			public void run() {

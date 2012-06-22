@@ -40,6 +40,7 @@ import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonFinderException;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -55,7 +56,7 @@ import org.springframework.stereotype.Component;
  * @todo the caller has to decide whether an entity is cacheable or not. This is bad.
  */
 // @Component
-public class MasterDataCache {
+public class MasterDataCache implements InitializingBean {
 	
 	private static final Logger LOG = Logger.getLogger(MasterDataCache.class);
 
@@ -112,8 +113,8 @@ public class MasterDataCache {
 		INSTANCE = this;
 	}
 	
-	@PostConstruct
-	void init() {
+	// @PostConstruct
+	public final void afterPropertiesSet() {
 		tnr.subscribe(JMSConstants.TOPICNAME_MASTERDATACACHE, messagelistener);
 	}
 	

@@ -341,6 +341,9 @@ public class MainController {
 	void init() throws CommonPermissionException, BackingStoreException {
 		debugFrame = new SwingDebugFrame(this);
 		try {
+			// force to load real permission (tp)
+			SecurityCache.getInstance().revalidate();
+			
 			cmdExecuteRport = createEntityAction(NuclosEntity.REPORTEXECUTION);
 
 			/** @todo this is a workaround - because Main.getMainController() is called to get the user name */

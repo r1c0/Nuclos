@@ -123,7 +123,7 @@ public class LoginController extends Controller<Component> {
 	
 	private LocaleDelegate localeDelegate;
 	
-	public LoginController() {
+	private LoginController() {
 		this(null, new String[] {});
 	}
 
@@ -173,8 +173,8 @@ public class LoginController extends Controller<Component> {
 		this.args = new String[]{};
 	}
 	
-	@Autowired
-	void setLocaleDelegate(LocaleDelegate localeDelegate) {
+	// @Autowired
+	public final void setLocaleDelegate(LocaleDelegate localeDelegate) {
 		this.localeDelegate = localeDelegate;
 	}
 

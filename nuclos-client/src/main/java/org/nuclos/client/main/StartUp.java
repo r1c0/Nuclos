@@ -45,6 +45,7 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.helpers.LogLog;
 import org.nuclos.api.ui.annotation.NucletComponent;
 import org.nuclos.client.NuclosIcons;
+import org.nuclos.client.common.LocaleDelegate;
 import org.nuclos.client.common.MetaDataClientProvider;
 import org.nuclos.client.common.NuclosCollectableComponentFactory;
 import org.nuclos.client.common.NuclosCollectableEntityProvider;
@@ -353,6 +354,7 @@ public class StartUp  {
 		try {
 			// perform login:
 			final LoginController ctlLogin = new LoginController(null, this.args);
+			ctlLogin.setLocaleDelegate(startupContext.getBean(LocaleDelegate.class));
 			final Main main = new Main();
 
 			ctlLogin.addLoginListener(new LoginListener() {

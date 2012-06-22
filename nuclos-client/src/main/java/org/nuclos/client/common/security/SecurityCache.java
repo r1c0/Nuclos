@@ -43,6 +43,7 @@ import org.nuclos.server.common.MasterDataPermissions;
 import org.nuclos.server.common.ModulePermission;
 import org.nuclos.server.common.ModulePermissions;
 import org.nuclos.server.common.ejb3.SecurityFacadeRemote;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Lazy;
@@ -60,7 +61,7 @@ import org.springframework.stereotype.Component;
  */
 // @Component
 // @Lazy
-public class SecurityCache {
+public class SecurityCache implements InitializingBean {
 	
 	private static final Logger LOG = Logger.getLogger(SecurityCache.class);
 	
@@ -129,11 +130,10 @@ public class SecurityCache {
 		INSTANCE = this;
 	}
 	
-	@PostConstruct
-	void init() {
+	// @PostConstruct
+	public final void afterPropertiesSet() {
 		tnr.subscribe(JMSConstants.TOPICNAME_SECURITYCACHE, listener);
 		validate();
-		this.securityDelegate = SecurityDelegate.getInstance();
 	}
 	
 	// @Autowired

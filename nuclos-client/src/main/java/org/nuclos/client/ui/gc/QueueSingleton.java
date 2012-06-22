@@ -28,11 +28,12 @@ import java.util.concurrent.ConcurrentHashMap;
 import javax.annotation.PostConstruct;
 
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 // @Component
-public class QueueSingleton {
+public class QueueSingleton implements InitializingBean {
 	
 	private static final Logger LOG = Logger.getLogger(QueueSingleton.class);
 
@@ -59,8 +60,8 @@ public class QueueSingleton {
 		this.timer = timer;
 	}
 	
-	@PostConstruct
-	final void init() {
+	// @PostConstruct
+	public final void afterPropertiesSet() {
 		timer.schedule(new QueueTask(), INTERVAL, INTERVAL);
 	}
 	

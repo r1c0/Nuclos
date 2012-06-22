@@ -29,13 +29,14 @@ import org.apache.commons.httpclient.protocol.Protocol;
 import org.apache.log4j.Logger;
 import org.nuclos.common.ApplicationProperties;
 import org.nuclos.common2.LangUtils;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.remoting.httpinvoker.CommonsHttpInvokerRequestExecutor;
 import org.springframework.remoting.httpinvoker.HttpInvokerClientConfiguration;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
-public class SecuredBasicAuthHttpInvokerRequestExecutor extends CommonsHttpInvokerRequestExecutor {
+public class SecuredBasicAuthHttpInvokerRequestExecutor extends CommonsHttpInvokerRequestExecutor implements InitializingBean {
 
 	private static final Logger LOG = Logger.getLogger(SecuredBasicAuthHttpInvokerRequestExecutor.class);
 
@@ -56,8 +57,8 @@ public class SecuredBasicAuthHttpInvokerRequestExecutor extends CommonsHttpInvok
 		this.applicationProperties = applicationProperties;
 	}
 	
-	@PostConstruct
-	final void init() {
+	// @PostConstruct
+	public final void afterPropertiesSet() {
 		// timeout 30 minutes (requested for entity transfer)
 		super.setReadTimeout(applicationProperties.isFunctionBlockDev() ? 0 : 1000 * 60 * 30);
 	}

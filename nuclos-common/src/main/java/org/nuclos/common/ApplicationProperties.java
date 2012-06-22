@@ -30,6 +30,7 @@ import javax.annotation.PostConstruct;
 
 import org.apache.log4j.Logger;
 import org.nuclos.common2.StringUtils;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.stereotype.Component;
 
 /**
@@ -42,7 +43,7 @@ import org.springframework.stereotype.Component;
  * @version 01.00.00
  */
 // @Component
-public class ApplicationProperties implements Serializable {
+public class ApplicationProperties implements Serializable, InitializingBean {
 
 	private static final Logger LOG = Logger.getLogger(ApplicationProperties.class);
 
@@ -102,8 +103,8 @@ public class ApplicationProperties implements Serializable {
 		return INSTANCE;
 	}
 
-	@PostConstruct
-	final void init() {
+	// @PostConstruct
+	public final void afterPropertiesSet() {
 		Properties props = new Properties();
 		props.put("application.icon.frame", "icons/nuclos-icon.png");
 		props.put("application.icon.big.transparent", "icons/nuclos-icon.png");

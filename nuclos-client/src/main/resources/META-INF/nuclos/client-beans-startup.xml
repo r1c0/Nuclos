@@ -37,7 +37,7 @@
 		Enable Annotation with @Configurable
 		http://forum.springsource.org/archive/index.php/t-39571.html 
 	 -->
-	<context:annotation-config/>
+	<!-- context:annotation-config/ -->
 
 	<!--
 		Enable @AspectJ Support of Sprint AOP
@@ -117,7 +117,7 @@
 		<property name="topicNotificationReceiver" ref="topicNotificationReceiver"/>
 		<property name="parameterService" ref="parameterService"/>
 	</bean>
-	<bean id="metaDataProvider" class="org.nuclos.client.common.MetaDataClientProvider" lazy-init="true">
+	<bean id="metaDataProvider" class="org.nuclos.client.common.MetaDataClientProvider">
 		<property name="topicNotificationReceiver" ref="topicNotificationReceiver"/>
 	</bean>
 	<bean id="topicNotificationReceiver" class="org.nuclos.client.jms.TopicNotificationReceiver">
@@ -157,7 +157,7 @@
 		<property name="topicNotificationReceiver" ref="topicNotificationReceiver"/>
 		<property name="masterDataDelegate" ref="masterDataDelegate"/>
 	</bean>
-	<bean id="nuclosCollectableEntityProvider" class="org.nuclos.client.common.NuclosCollectableEntityProvider" lazy-init="true">
+	<bean id="nuclosCollectableEntityProvider" class="org.nuclos.client.common.NuclosCollectableEntityProvider">
 		<property name="attributeCache" ref="attributeProvider"/>
 	</bean>
 	<bean id="nuclosIcons" class="org.nuclos.client.NuclosIcons">
@@ -644,7 +644,9 @@
 
 	<bean id="enumeratedDefaultValueProvider" class="org.nuclos.client.masterdata.ClientEnumeratedDefaultValueProvider" />
 
-	<bean id="moduleProvider" class="org.nuclos.client.genericobject.Modules" />
+	<bean id="moduleProvider" class="org.nuclos.client.genericobject.Modules">
+		<property name="masterDataDelegate" ref="masterDataDelegate"/>
+	</bean>
 
 	<bean id="serviceLocator" class="org.nuclos.common2.ServiceLocator"/>
 	

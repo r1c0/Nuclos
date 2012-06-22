@@ -29,6 +29,7 @@ import org.nuclos.common.JMSConstants;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Pair;
 import org.nuclos.server.resource.valueobject.ResourceVO;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -42,7 +43,7 @@ import org.springframework.stereotype.Component;
  * @version 00.01.000
  */
 // @Component
-public class ResourceCache {
+public class ResourceCache implements InitializingBean {
 	
 	private static final Logger LOG = Logger.getLogger(ResourceCache.class);
 	
@@ -81,8 +82,8 @@ public class ResourceCache {
 		INSTANCE = this;
 	}
 	
-	@PostConstruct
-	void init() {
+	// @PostConstruct
+	public final void afterPropertiesSet() {
 		tnr.subscribe(JMSConstants.TOPICNAME_RESOURCECACHE, messagelistener);
 	}
 	

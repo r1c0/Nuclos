@@ -32,6 +32,7 @@ import org.nuclos.client.common.ShutdownActions;
 import org.nuclos.common.JMSConstants;
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common2.SpringLocaleDelegate;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -45,7 +46,7 @@ import org.springframework.stereotype.Component;
  * @version 01.00.00
  */
 // @Component
-public class TopicNotificationReceiver {
+public class TopicNotificationReceiver implements InitializingBean {
 
 	private static final Logger LOG = Logger.getLogger(TopicNotificationReceiver.class);
 	
@@ -81,8 +82,8 @@ public class TopicNotificationReceiver {
 		INSTANCE = this;
 	}
 	
-	@PostConstruct
-	void init() {
+	// @PostConstruct
+	public final void afterPropertiesSet() {
 		try {
 			// final ConnectionFactory connectionFactory = (ConnectionFactory) SpringApplicationContextHolder.getBean("jmsFactory");
 			topicconn = (TopicConnection) jmsFactory.createConnection();

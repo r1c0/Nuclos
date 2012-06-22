@@ -36,11 +36,13 @@ import javax.swing.JOptionPane;
 
 import org.apache.log4j.Logger;
 import org.nuclos.client.LocalUserProperties;
+import org.nuclos.client.common.LocaleDelegate;
 import org.nuclos.client.login.LoginController;
 import org.nuclos.client.main.Main;
 import org.nuclos.client.main.mainframe.MainFrame;
 import org.nuclos.client.security.NuclosRemoteServerSession;
 import org.nuclos.common.ApplicationProperties;
+import org.nuclos.common.SpringApplicationContextHolder;
 import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonFatalException;
@@ -146,7 +148,7 @@ public class Errors {
 								final MainFrame mf = Main.getInstance().getMainFrame();
 
 								LoginController lc = new LoginController(mf);
-
+								lc.setLocaleDelegate(SpringApplicationContextHolder.getBean(LocaleDelegate.class));
 								if (!lc.run(mf)) {
 									String message = LocalUserProperties.getInstance().getLoginResource(LocalUserProperties.KEY_ERR_EXIT);
 									JOptionPane.showMessageDialog(mf, message, ApplicationProperties.getInstance().getName(), JOptionPane.ERROR_MESSAGE);

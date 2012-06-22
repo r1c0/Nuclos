@@ -50,7 +50,7 @@ import org.springframework.stereotype.Component;
  * @version 01.00.00
  */
 // @Component("parameterProvider")
-public class ClientParameterProvider extends AbstractParameterProvider implements MessageListener {
+public class ClientParameterProvider extends AbstractParameterProvider implements MessageListener, InitializingBean {
 	
 	private static final Logger LOG = Logger.getLogger(ClientParameterProvider.class);
 	
@@ -107,8 +107,8 @@ public class ClientParameterProvider extends AbstractParameterProvider implement
 		this.parameterFacadeRemote = parameterFacadeRemote;
 	}
 
-	@PostConstruct
-	final void init() throws Exception {
+	// @PostConstruct
+	public final void afterPropertiesSet() throws Exception {
 		final Runnable run = new Runnable() {
 			@Override
 			public void run() {

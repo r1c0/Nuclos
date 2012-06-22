@@ -47,6 +47,8 @@ public class Modules extends ModuleProvider {
 	private static Modules INSTANCE;
 
 	//
+	
+	private MasterDataDelegate masterDataDelegate;
 
 	public static Modules getInstance() {
 		return INSTANCE;
@@ -59,10 +61,14 @@ public class Modules extends ModuleProvider {
 	Modules() {
 		INSTANCE = this;
 	}
+	
+	public final void setMasterDataDelegate(MasterDataDelegate masterDataDelegate) {
+		this.masterDataDelegate = masterDataDelegate;
+	}
 
 	@Override
 	public Collection<MasterDataVO> getModules() {
-		return fillLocales(MasterDataDelegate.getInstance().getMasterData(NuclosEntity.MODULE.getEntityName()));
+		return fillLocales(masterDataDelegate.getMasterData(NuclosEntity.MODULE.getEntityName()));
 	}
 
 	public static void initialize() throws Exception {
