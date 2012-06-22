@@ -454,8 +454,7 @@ public class LocaleFacadeBean implements LocaleFacadeRemote {
 
 	public String setResourceForLocale(String sResourceId, LocaleInfo localeInfo, String sText) {
 		internalFlush();
-		if (sText != null) {
-
+		if (!StringUtils.isNullOrEmpty(sText)) {
 			if(getResourceById(localeInfo, sResourceId) != null) {
 				update(sResourceId, localeInfo, sText);
 				return sResourceId;

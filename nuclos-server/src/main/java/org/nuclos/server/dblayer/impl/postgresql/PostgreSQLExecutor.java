@@ -21,6 +21,7 @@ import java.sql.SQLException;
 
 import javax.sql.DataSource;
 
+import org.nuclos.server.database.SpringDataBaseHelper;
 import org.nuclos.server.dblayer.impl.DataSourceExecutor;
 import org.nuclos.server.dblayer.impl.SQLUtils2;
 
@@ -43,6 +44,11 @@ public class PostgreSQLExecutor extends DataSourceExecutor {
 						return rs.next() ? rs.getLong(1) : null;
 					}
 				});
+	}
+	
+	@Override
+	public Long getNextSequentialNumber(int iModuleId) throws SQLException {
+		return SpringDataBaseHelper.getInstance().getDbAccess().executeFunction("GETNEXTSEQUENTIALNUMBER", Long.class, iModuleId);
 	}
 
 }

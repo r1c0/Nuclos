@@ -14,50 +14,51 @@
 //
 //You should have received a copy of the GNU Affero General Public License
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
-package org.nuclos.server.dblayer.impl.oracle;
+package org.nuclos.server.dblayer.impl.db2;
 
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import javax.sql.DataSource;
 
+import org.nuclos.common2.StringUtils;
+import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.server.database.SpringDataBaseHelper;
+import org.nuclos.server.dblayer.DbException;
 import org.nuclos.server.dblayer.impl.DataSourceExecutor;
+import org.nuclos.server.dblayer.impl.SQLUtils2;
+import org.nuclos.server.genericobject.Modules;
 
 /**
  * @author Thomas Pasch
  * @since Nuclos 3.2.0
  */
-public class OracleDBExecutor extends DataSourceExecutor {
+public class DB2Executor extends DataSourceExecutor {
 	
-	public OracleDBExecutor(DataSource dataSource, String username, String password) {
+	public DB2Executor(DataSource dataSource, String username, String password) {
 		super(dataSource, username, password);
 	}
 
 	@Override
 	public Long getNextId(String sequenceName) throws SQLException {
-		return executeQuery("SELECT " + sequenceName + ".NEXTVAL FROM DUAL", new ResultSetRunner<Long>() {
-			@Override
-			public Long perform(ResultSet rs) throws SQLException {
-				return rs.next() ? rs.getLong(1) : null;
-			}
-		});
+		return executeQuery("SELECT NEXT VALUE FOR " + SQLUtils2.escape(sequenceName) + " FROM DUAL",
+				new ResultSetRunner<Long>() {
+					@Override
+					public Long perform(ResultSet rs) throws SQLException {
+						return rs.next() ? rs.getLong(1) : null;
+					}
+				});
 	}
 	
 	@Override
 	public Long getNextSequentialNumber(int iModuleId) throws SQLException {
-		return SpringDataBaseHelper.getInstance().getDbAccess().executeFunction("GETNEXTSEQUENTIALNUMBER", Long.class, iModuleId);
-	}
-
-	@Override
-	public void setStatementParameter(PreparedStatement stmt, int index, Object value, Class<?> javaType) throws SQLException {
-		if (javaType == Boolean.class) {
-			javaType = Integer.class;
-			if (value != null)
-				value = ((Boolean) value).booleanValue() ? 1 : 0;
+		return executeQuery("SELECT IRESULT FROM table(NUCLOS.GETNEXTSEQUENTIALNUMBER(" + iModuleId + "))",
+				new ResultSetRunner<Long>() {
+					@Override
+					public Long perform(ResultSet rs) throws SQLException {
+						return rs.next() ? rs.getLong(1) : null;
+					}
+				});
 		}
-		super.setStatementParameter(stmt, index, value, javaType);
-	}
 
 }

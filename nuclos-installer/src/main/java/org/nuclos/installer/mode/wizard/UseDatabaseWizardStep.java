@@ -82,6 +82,7 @@ public class UseDatabaseWizardStep extends AbstractWizardStep implements ActionL
         cmbAdapter.addItem(new ComboBoxItem("oracle", "Oracle (10+)"));
         cmbAdapter.addItem(new ComboBoxItem("mssql", "Microsft SQL Server (2005+)"));
         cmbAdapter.addItem(new ComboBoxItem("sybase", "Sybase SQL Anywhere (10+)"));
+        cmbAdapter.addItem(new ComboBoxItem("db2", "IBM DB2 (10+)"));
         cmbAdapter.addActionListener(this);
         this.add(cmbAdapter, "1,0");
 

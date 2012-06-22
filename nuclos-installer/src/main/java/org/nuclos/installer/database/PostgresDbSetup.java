@@ -346,7 +346,7 @@ public class PostgresDbSetup extends DbSetup implements Constants {
 		Properties props = new Properties();
 		props.put("user", username);
 		props.put("password", password);
-		String jdbcUrl = DbType.POSTGRESQL.buildJdbcConnectionString(server, port, database);
+		String jdbcUrl = DbType.POSTGRESQL.buildJdbcConnectionString(server, port, database, schemaName);
 		return DriverManager.getConnection(jdbcUrl, props);
 	}
 

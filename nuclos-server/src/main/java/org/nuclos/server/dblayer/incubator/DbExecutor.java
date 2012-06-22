@@ -64,6 +64,8 @@ public interface DbExecutor {
 
     Long getNextId(String sequenceName) throws SQLException;
     
+    Long getNextSequentialNumber(int iModuleId) throws SQLException;
+    
     int getPreferredSqlTypeFor(Class<?> javaType) throws DbException;
     
     /**

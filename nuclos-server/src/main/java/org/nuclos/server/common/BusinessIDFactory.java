@@ -68,11 +68,11 @@ public class BusinessIDFactory {
 
 	private static Integer getNextSequentialNumber(int iModuleId) {
 		try {
-			return SpringDataBaseHelper.getInstance().getDbAccess().executeFunction("GETNEXTSEQUENTIALNUMBER", Integer.class, iModuleId);
+			return SpringDataBaseHelper.getInstance().getNextSequentialNumber(iModuleId);
 		}
 		catch (DbException ex) {
 			final String sModuleLabel = Modules.getInstance().getEntityLabelByModuleId(iModuleId);
-			throw new CommonFatalException(StringUtils.getParameterizedExceptionMessage("idfacotry.exception", sModuleLabel));
+			throw new CommonFatalException(StringUtils.getParameterizedExceptionMessage("idfactory.exception", sModuleLabel));
 				//"F\u00fcr das Modul \"" + sModuleLabel + "\" konnte die laufende Nummer nicht ermittelt werden.");
 		}
 	}

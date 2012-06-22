@@ -26,7 +26,8 @@ public enum DbType {
 	ORACLE("oracle", "Oracle"),
 	MSSQL("mssql", "Microsoft SQL Server"),
 	POSTGRESQL("postgresql", "PostgreSQL"),
-	SYBASE("sybase", "SQL Anywhere");
+	SYBASE("sybase", "SQL Anywhere"),
+	DB2("db2", "IBM DB2");
 
 	private final String adapter;
 
@@ -49,6 +50,8 @@ public enum DbType {
 			return "org.postgresql.Driver";
 		case SYBASE:
 			return "com.sybase.jdbc3.jdbc.SybDriver";
+		case DB2:
+			return "com.ibm.db2.jcc.DB2Driver";
 		}
 		throw new IllegalStateException();
 	}
@@ -59,6 +62,7 @@ public enum DbType {
 		case MSSQL:      return 1433;
 		case POSTGRESQL: return 5432;
 		case SYBASE:     return 2638;
+		case DB2:    	 return 50000;
 		}
 		throw new IllegalStateException();
 	}
@@ -67,13 +71,14 @@ public enum DbType {
 		String server = props.getProperty("database.server");
 		String port = props.getProperty("database.port", "" + getDefaultPort());
 		String database = props.getProperty("database.name");
+		String schema = props.getProperty("database.schema");
 		if (server == null || database == null)
 			return null;
-		return buildJdbcConnectionString(server, port, database);
+		return buildJdbcConnectionString(server, port, database, schema);
 	}
 
-	public String buildJdbcConnectionString(String server, String port, String database) {
-		Object[] srvPrtDb = { server, port, database };
+	public String buildJdbcConnectionString(String server, String port, String database, String schema) {
+		Object[] srvPrtDb = { server, port, database, schema };
 		switch (this) {
 		case ORACLE:
 			// jdbc:oracle:thin:@<server>:<port>:<instance-name>
@@ -87,6 +92,9 @@ public enum DbType {
 		case SYBASE:
 			// jdbc:sybase:Tds:<server>:<port>/<instance-name>
 			return String.format("jdbc:sybase:Tds:%s:%s/%s", srvPrtDb);
+		case DB2:
+			// jdbc:db2://<server>:<port>/<database>:currentSchema=<schema>;
+			return String.format("jdbc:db2://%s:%s/%s:currentSchema=%s;", srvPrtDb);
 		}
 		throw new IllegalStateException();
 	}
@@ -108,6 +116,9 @@ public enum DbType {
 		case SYBASE:
 			pattern = Pattern.compile("jdbc:sybase:Tds:([^:]+):(\\d+)/(.*)");
 			break;
+		case DB2:
+			pattern = Pattern.compile("jdbc:db2://([^:]+):(\\d+)/(.+):currentSchema=(.+);");
+			break;
 		}
 		Matcher matcher = pattern.matcher(jdbcUrl);
 		if (!matcher.matches()) {
@@ -116,6 +127,7 @@ public enum DbType {
 		props.put("database.server", matcher.group(1));
 		props.put("database.port", matcher.group(2) != null ? matcher.group(2) : getDefaultPort());
 		props.put("database.name", matcher.group(3) != null ? matcher.group(3) : "");
+		props.put("database.schema", matcher.group(4) != null ? matcher.group(4) : "");
 		return true;
 	}
 

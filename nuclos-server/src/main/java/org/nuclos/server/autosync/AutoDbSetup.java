@@ -245,7 +245,7 @@ public class AutoDbSetup {
 		return statements;
 	}
 
-	public static DbStatement getReleaseStatement(ReleaseInfo releaseInfo) {
+	public DbStatement getReleaseStatement(ReleaseInfo releaseInfo) {
 		String releaseString = releaseInfo.getReleaseString();
 		Date releaseDate = releaseInfo.getReleaseDate();
 		if (releaseString == null) {

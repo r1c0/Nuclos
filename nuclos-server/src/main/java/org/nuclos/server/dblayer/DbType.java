@@ -27,13 +27,15 @@ import org.nuclos.server.dblayer.impl.mssql.MSSQLDBAccess;
 import org.nuclos.server.dblayer.impl.oracle.OracleDBAccess;
 import org.nuclos.server.dblayer.impl.postgresql.PostgreSQLDBAccess;
 import org.nuclos.server.dblayer.impl.sybase.SybaseDbAccess;
+import org.nuclos.server.dblayer.impl.db2.DB2DBAccess;
 
 
 public enum DbType {
 	ORACLE("Oracle"),
 	MSSQL("Microsoft SQL Server"),
 	POSTGRESQL("PostgreSQL"),
-	SYBASE("SQL Anywhere");
+	SYBASE("SQL Anywhere"),
+	DB2("IBM DB2");
 	
 	private String productName;
 	
@@ -55,6 +57,9 @@ public enum DbType {
 			break;
 		case SYBASE:
 			dbAccess = new SybaseDbAccess();
+			break;
+		case DB2:
+			dbAccess = new DB2DBAccess();
 			break;
 		default:
 			throw new UnsupportedOperationException("Unsupported database " + this);

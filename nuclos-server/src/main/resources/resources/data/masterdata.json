@@ -7070,7 +7070,6 @@
         "searchable": false,
         "logbook": false,
         "foreignentityfield": "rule",
-        "unique": true,
         "labelres": "nuclos.entityfield.ruleUsage.rule.label",
         "descriptionres": "nuclos.entityfield.ruleUsage.rule.description"
       },
@@ -7084,7 +7083,6 @@
         "nullable": false,
         "searchable": false,
         "logbook": false,
-        "unique": true,
         "labelres": "nuclos.entityfield.ruleUsage.entity.label",
         "descriptionres": "nuclos.entityfield.ruleUsage.entity.description"
       },
@@ -7098,7 +7096,6 @@
         "nullable": false,
         "searchable": false,
         "logbook": false,
-        "unique": true,
         "labelres": "nuclos.entityfield.ruleUsage.event.label",
         "descriptionres": "nuclos.entityfield.ruleUsage.event.description"
       },
@@ -7127,7 +7124,6 @@
         "nullable": true,
         "searchable": false,
         "logbook": false,
-        "unique": true,
         "labelres": "nuclos.entityfield.ruleUsage.process.label",
         "descriptionres": "nuclos.entityfield.ruleUsage.process.description"
       },
@@ -7142,7 +7138,6 @@
         "nullable": true,
         "searchable": false,
         "logbook": false,
-        "unique": true,
 		"foreignentityfield": "${numeral} ${name}",
         "labelres": "nuclos.entityfield.ruleUsage.state.label",
         "descriptionres": "nuclos.entityfield.ruleUsage.state.description"

@@ -5,13 +5,13 @@ import java.util.Map;
 
 import org.nuclos.server.dblayer.structure.DbSimpleView.DbSimpleViewColumn;
 
-class TableAliasForSimpleView {
+public final class TableAliasForSimpleView {
 	
 	private final Map<DbSimpleViewColumn, String> ref2Alias = new HashMap<DbSimpleViewColumn, String>();
 	
 	private int index = 0;
 	
-	TableAliasForSimpleView() {
+	public TableAliasForSimpleView() {
 	}
 	
 	public String getTableAlias(DbSimpleViewColumn ref) {

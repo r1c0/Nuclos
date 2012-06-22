@@ -249,7 +249,17 @@ public class SpringDataBaseHelper {
 			throw new IllegalStateException(e);
 		}
 	}
-
+	
+	public Integer getNextSequentialNumber(int iModuleId) {
+		try {
+			return getDbAccess().getDbExecutor().getNextSequentialNumber(iModuleId).intValue();
+		}
+		catch (SQLException e) {
+			// Wrap in non-check exception for convenience.
+			throw new IllegalStateException(e);
+		}
+	}
+	
 	public boolean isTableAvailable(String sTable) {
 		if (getDbAccess().getTableNames(DbTableType.TABLE).contains(sTable))
 			return true;

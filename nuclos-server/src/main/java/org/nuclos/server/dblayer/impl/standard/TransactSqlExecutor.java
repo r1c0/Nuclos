@@ -22,6 +22,7 @@ import java.sql.SQLException;
 
 import javax.sql.DataSource;
 
+import org.nuclos.server.database.SpringDataBaseHelper;
 import org.nuclos.server.dblayer.impl.DataSourceExecutor;
 
 /**
@@ -43,7 +44,12 @@ public class TransactSqlExecutor extends DataSourceExecutor {
 			}
 		});
 	}
-
+	
+	@Override
+	public Long getNextSequentialNumber(int iModuleId) throws SQLException {
+		return SpringDataBaseHelper.getInstance().getDbAccess().executeFunction("GETNEXTSEQUENTIALNUMBER", Long.class, iModuleId);
+	}
+	
 	@Override
 	public void setStatementParameter(PreparedStatement stmt, int index, Object value, Class<?> javaType) throws SQLException {
 		if (javaType == Boolean.class) {
