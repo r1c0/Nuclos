@@ -27,6 +27,7 @@ public interface IWorkspaceProcessor extends
 	IDalReadSpecification<WorkspaceVO>{
 
 	public List<WorkspaceVO> getByUser(String user);
+	public List<WorkspaceVO> getByAssignedByRole(String user);
 	public List<WorkspaceVO> getNewAssigned(String user);
 	public void deleteByAssigned(Long assignedId);
 }
