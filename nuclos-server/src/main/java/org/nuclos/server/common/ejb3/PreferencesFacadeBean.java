@@ -189,8 +189,7 @@ public class PreferencesFacadeBean extends NuclosFacadeBean implements Preferenc
 		for (WorkspaceVO wsvo : getWorkspaceProcessor().getByUser(getCurrentUserName())) {
 			if (!SecurityCache.getInstance().getAllowedActions(getCurrentUserName()).contains(Actions.ACTION_WORKSPACE_ASSIGN)) {
 				for (WorkspaceVO wsvoAssigned : lstAssignedByRole) {
-					if (wsvo.getId().equals(wsvoAssigned.getId()) ||
-							(wsvo.getAssignedWorkspace() != null && wsvo.getAssignedWorkspace().equals(wsvoAssigned.getId())))
+					if (wsvo.getAssignedWorkspace() == null || wsvo.getAssignedWorkspace().equals(wsvoAssigned.getId()))
 						result.add(wsvo);
 				}
 			} else
