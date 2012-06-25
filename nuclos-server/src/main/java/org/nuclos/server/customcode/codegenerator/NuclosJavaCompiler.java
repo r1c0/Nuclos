@@ -116,13 +116,19 @@ class NuclosJavaCompiler implements Closeable {
 
 	synchronized Map<String, byte[]> javac(List<CodeGenerator> generators, boolean saveSrc) throws NuclosCompileException {
 		LOG.debug("Compiler Classpath: " + stdFileManager.getLocation(StandardLocation.CLASS_PATH));
-		final Set<JavaFileObject> sources = new HashSet<JavaFileObject>();
+		final Map<JavaFileObject,CodeGenerator> sources = new HashMap<JavaFileObject,CodeGenerator>();
 		for (CodeGenerator generator : generators) {
 			if (generator.isRecompileNecessary()) {
 				for (JavaFileObject jfo : generator.getSourceFiles()) {
-					if (!sources.add(jfo)) {
+					final CodeGenerator old = sources.put(jfo, generator);
+					if (old != null) {
 						if (jfo instanceof JavaSourceAsString) {
-							LOG.warn("Duplicate class: " + ((JavaSourceAsString) jfo).getFQName());
+							LOG.warn("Duplicate class: " + ((JavaSourceAsString) jfo).getFQName() 
+									+ " from 2 CodeGenerators: old=" + old + " and new=" + generator + ", saveSrc=" + saveSrc);
+						}
+						else {
+							LOG.warn("Duplicate class: " + jfo.getName()
+									+ " from 2 CodeGenerators: old=" + old + " and new=" + generator + ", saveSrc=" + saveSrc);
 						}
 						throw new NuclosCompileException("nuclos.compiler.duplicateclasses");
 					}
@@ -145,7 +151,7 @@ class NuclosJavaCompiler implements Closeable {
 			List<String> options = Arrays.asList("-g");
 
 			ByteArrayOutputFileManager byteFileManager = new ByteArrayOutputFileManager(stdFileManager);
-			CompilationTask task = javac.getTask(null, byteFileManager, diagnosticListener, options, null, sources);
+			CompilationTask task = javac.getTask(null, byteFileManager, diagnosticListener, options, null, sources.keySet());
 
 			task.setLocale(locale);
 
