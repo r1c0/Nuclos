@@ -363,7 +363,7 @@ public abstract class AbstractUnpacker implements Unpacker, Constants {
 
 			// update check (remove files that were not unpacked within the current installation
 			for (String file : FileUtils.getFiles(nuclosHome,
-					new File(ConfigContext.getFileProperty("server.conf.dir"), "nuclet"),
+					new File(ConfigContext.getFileProperty("server.conf.dir"), "package-properties"),
 					new File(nuclosHome, "data"),
 					new File(nuclosHome, "logs"),
 					new File(ConfigContext.getFileProperty("server.tomcat.dir"), "logs"))) {
