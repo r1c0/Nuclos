@@ -166,21 +166,31 @@ public class TopicNotificationReceiver implements InitializingBean {
 		final List<TopicInfo> copy = new ArrayList<TopicInfo>(infos);
 		infos.clear();
 		assert deferredSubscribe || infos.isEmpty();
-		final Runnable run = new Runnable() {
-
-			@Override
-			public void run() {
-				for (TopicInfo i : copy) {
-					WeakReferenceMessageListener weakrefmsglistener = new WeakReferenceMessageListener(i);
-					weakrefmsglistener.subscribe();
-					weakmessagelistener.add(weakrefmsglistener);
-				}
-				synchronized (TopicNotificationReceiver.this) {
-					deferredSubscribe = false;
-				}
+		if (copy.size() < 3) {
+			for (TopicInfo i : copy) {
+				WeakReferenceMessageListener weakrefmsglistener = new WeakReferenceMessageListener(i);
+				weakrefmsglistener.subscribe();
+				weakmessagelistener.add(weakrefmsglistener);
 			}
-		};
-		new Thread(run, "TopicNotificationReceiver.realSubscribe").start();
+			deferredSubscribe = false;
+		}
+		else {
+			final Runnable run = new Runnable() {
+
+				@Override
+				public void run() {
+					for (TopicInfo i : copy) {
+						WeakReferenceMessageListener weakrefmsglistener = new WeakReferenceMessageListener(i);
+						weakrefmsglistener.subscribe();
+						weakmessagelistener.add(weakrefmsglistener);
+					}
+					synchronized (TopicNotificationReceiver.this) {
+						deferredSubscribe = false;
+					}
+				}
+			};
+			new Thread(run, "TopicNotificationReceiver.realSubscribe").start();
+		}
 		assert deferredSubscribe || infos.isEmpty();
 	}
 

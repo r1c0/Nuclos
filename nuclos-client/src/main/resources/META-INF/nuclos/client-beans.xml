@@ -134,5 +134,14 @@
 	<bean id="queueSingleton" class="org.nuclos.client.ui.gc.QueueSingleton">
 		<property name="timer" ref="timer"/>
 	</bean>
+	<bean id="nuclosCollectableEntityProvider" class="org.nuclos.client.common.NuclosCollectableEntityProvider">
+		<property name="attributeCache" ref="attributeProvider"/>
+	</bean>
 		
+	<bean id="moduleProvider" class="org.nuclos.client.genericobject.Modules">
+		<property name="masterDataDelegate" ref="masterDataDelegate"/>
+	</bean>
+	<bean id="metaDataProvider" class="org.nuclos.client.common.MetaDataClientProvider">
+		<property name="topicNotificationReceiver" ref="topicNotificationReceiver"/>
+	</bean>
 </beans>

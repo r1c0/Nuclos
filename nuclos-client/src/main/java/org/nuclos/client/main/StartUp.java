@@ -113,6 +113,37 @@ public class StartUp  {
 	 */
 	private static Logger log;
 	
+	public static class ClientContextCondition {
+		
+		private boolean refreshed = false;
+		
+		private ClientContextCondition() {
+		}
+		
+		public boolean isRefreshed() {
+			return refreshed;
+		}
+		
+		public void waitFor() {
+			try {
+				for(int i = 0; !refreshed && i < 1000; ++i) {
+					wait(100);
+				}
+			}
+			catch (InterruptedException e) {
+				// ignore
+			}
+			if (!refreshed) {
+				throw new IllegalStateException("Can't create MainController: Spring context not initialized!");
+			}			
+		}
+		
+		private void refreshed() {
+			refreshed = true;
+		}
+		
+	}
+	
 	//
 
 	private final String[] args;
@@ -121,15 +152,15 @@ public class StartUp  {
 	
 	private ClassPathXmlApplicationContext clientContext;
 	
-	private boolean refreshed = false;
+	private ClientContextCondition clientContextCondition = new ClientContextCondition();
 	
 	private final ApplicationListener<ContextRefreshedEvent> refreshListener = new ApplicationListener<ContextRefreshedEvent>() {
 		
 		@Override
 		public void onApplicationEvent(ContextRefreshedEvent event) {
-			synchronized (StartUp.this) {
-				refreshed = true;
-				StartUp.this.notify();
+			synchronized (clientContextCondition) {
+				clientContextCondition.refreshed();
+				clientContextCondition.notify();
 			}
 		}
 		
@@ -177,12 +208,15 @@ public class StartUp  {
 					// see http://fitw.wordpress.com/2009/03/14/web-start-and-spring/ why this is needed (tp)
 					clientContext.addApplicationListener(refreshListener);
 					clientContext.setClassLoader(cl);
+					Thread.yield();					
 					clientContext.refresh();
 					
+					Thread.yield();
 					final Resource[] xmlBeanRes = clientContext.getResources(xmlBeanDefs);
 					log.info("loading bean definitions from the following files: " + Arrays.asList(xmlBeanRes));
 					log.info("@NucletComponents within spring context: " + clientContext.getBeansWithAnnotation(NucletComponent.class));
 
+					Thread.yield();
 					final Resource[] themes = clientContext.getResources("classpath*:META-INF/nuclos/**/*-theme.properties");
 					log.info("loading themes properties from the following files: " + Arrays.asList(themes));
 
@@ -208,13 +242,16 @@ public class StartUp  {
 							}
 						}
 					}
+					MetaDataClientProvider.initialize();
 				}
 				catch (IOException e1) {
 					log.error(e1.getMessage(), e1);
 				}
 			}
 		};
-		new Thread(run1, "Startup.init.run1").start();
+		final Thread thread1 = new Thread(run1, "Startup.init.run1");
+		thread1.setPriority(Thread.NORM_PRIORITY - 1);
+		thread1.start();
 		
 		// set the default locale:
 		// this makes sure the client is independent of the host's locale.
@@ -353,14 +390,15 @@ public class StartUp  {
 		
 		try {
 			// perform login:
-			final LoginController ctlLogin = new LoginController(null, this.args);
+			final LoginController ctlLogin = new LoginController(null, this.args, clientContextCondition);
 			ctlLogin.setLocaleDelegate(startupContext.getBean(LocaleDelegate.class));
 			final Main main = new Main();
 
 			ctlLogin.addLoginListener(new LoginListener() {
 				@Override
                 public void loginSuccessful(final LoginEvent ev) {
-					log.debug("login start");
+					log.info("login of " + ev.getAuthenticatedUserName() + " to server " 
+							+ ev.getConnectedServerName() + " triggered");
 					try {
 						registerOSXHandler();
 					}
@@ -373,17 +411,10 @@ public class StartUp  {
 						@Override
                         public void run() {
 							try {
-								// LiveSearchController, NuclosCollectableEntityProvider and MainFrame
-								// need access to (locale) resources. This is the first place
-								// where we know the locale.
-								LiveSearchController.getInstance().init();
-								NuclosCollectableEntityProvider.getInstance().init();								
 								Main.getInstance().getMainFrame().postConstruct();
 								// ???
 								Main.getInstance().getMainFrame().init("", "");
 								
-								Modules.initialize();
-								MetaDataClientProvider.initialize();
 								compareClientAndServerVersions();
 								ctlLogin.increaseLoginProgressBar(PROGRESS_COMPARE_VERSIONS);
 								createMainController(ev.getAuthenticatedUserName(), ev.getConnectedServerName(), ctlLogin);
@@ -551,18 +582,8 @@ public class StartUp  {
 
 	private void createMainController(String sUserName, String sNucleusServerName, LoginController lc)
 			throws CommonPermissionException {
-		synchronized (this) {
-			try {
-				for(int i = 0; !refreshed && i < 1000; ++i) {
-					wait(100);
-				}
-			}
-			catch (InterruptedException e) {
-				// ignore
-			}
-			if (!refreshed) {
-				throw new IllegalStateException("Can't create MainController: Spring context not initialized!");
-			}
+		synchronized (clientContextCondition) {
+			clientContextCondition.waitFor();
 		}
 		try {
 			final String sClassName = LangUtils.defaultIfNull(

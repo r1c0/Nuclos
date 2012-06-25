@@ -71,7 +71,7 @@ public class Modules extends ModuleProvider {
 		return fillLocales(masterDataDelegate.getMasterData(NuclosEntity.MODULE.getEntityName()));
 	}
 
-	public static void initialize() throws Exception {
+	public static void initialize() {
 		getInstance().setModules(getInstance().getModules());
 	}
 

@@ -58,10 +58,14 @@ import org.apache.log4j.Logger;
 import org.nuclos.client.LocalUserProperties;
 import org.nuclos.client.NuclosIcons;
 import org.nuclos.client.common.LocaleDelegate;
+import org.nuclos.client.common.NuclosCollectableEntityProvider;
 import org.nuclos.client.common.ShutdownActions;
 import org.nuclos.client.common.security.SecurityDelegate;
+import org.nuclos.client.genericobject.Modules;
+import org.nuclos.client.livesearch.LiveSearchController;
 import org.nuclos.client.main.ChangePasswordPanel;
 import org.nuclos.client.main.Main;
+import org.nuclos.client.main.StartUp;
 import org.nuclos.client.main.SwingLocaleSwitcher;
 import org.nuclos.client.security.NuclosRemoteServerSession;
 import org.nuclos.client.ui.Controller;
@@ -123,13 +127,16 @@ public class LoginController extends Controller<Component> {
 	
 	private LocaleDelegate localeDelegate;
 	
+	private StartUp.ClientContextCondition clientContextCondition;
+	
 	private LoginController() {
-		this(null, new String[] {});
+		this(null, new String[] {}, null);
 	}
 
-	public LoginController(Component parent, String[] args) {
+	public LoginController(Component parent, String[] args, StartUp.ClientContextCondition clientContextCondition) {
 		super(parent);
 		this.args = args;
+		this.clientContextCondition = clientContextCondition;
 		try {
 	        final ServerMetaFacadeRemote sm = ServiceLocator.getInstance().getFacade(ServerMetaFacadeRemote.class);
 	        passwordSaveAllowed = Boolean.valueOf(
@@ -396,6 +403,18 @@ public class LoginController extends Controller<Component> {
 			selLocale = (LocaleInfo) loginPanel.getLanguageComboBox().getSelectedItem();
 		}
 		localeDelegate.selectLocale(localeInfo, selLocale);
+		
+		if (clientContextCondition != null) {
+			synchronized(clientContextCondition) {
+				clientContextCondition.waitFor();
+			}
+		}
+		// LiveSearchController, NuclosCollectableEntityProvider and MainFrame
+		// need access to (locale) resources. This is the first place
+		// where we know the locale.
+		LiveSearchController.getInstance().init();
+		NuclosCollectableEntityProvider.getInstance().init();
+		Modules.initialize();
 	}
 
 	private boolean cmdPerformLogin(final JFrame frame, final JOptionPane optpn, final int selectedOption, final LocalUserProperties props) {

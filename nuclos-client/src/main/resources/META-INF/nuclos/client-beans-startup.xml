@@ -117,9 +117,6 @@
 		<property name="topicNotificationReceiver" ref="topicNotificationReceiver"/>
 		<property name="parameterService" ref="parameterService"/>
 	</bean>
-	<bean id="metaDataProvider" class="org.nuclos.client.common.MetaDataClientProvider">
-		<property name="topicNotificationReceiver" ref="topicNotificationReceiver"/>
-	</bean>
 	<bean id="topicNotificationReceiver" class="org.nuclos.client.jms.TopicNotificationReceiver">
 		<property name="connectionFactory" ref="jmsFactory"/>
 	</bean>
@@ -156,9 +153,6 @@
 	<bean id="metaDataCache" class="org.nuclos.client.masterdata.MetaDataCache" lazy-init="true">
 		<property name="topicNotificationReceiver" ref="topicNotificationReceiver"/>
 		<property name="masterDataDelegate" ref="masterDataDelegate"/>
-	</bean>
-	<bean id="nuclosCollectableEntityProvider" class="org.nuclos.client.common.NuclosCollectableEntityProvider">
-		<property name="attributeCache" ref="attributeProvider"/>
 	</bean>
 	<bean id="nuclosIcons" class="org.nuclos.client.NuclosIcons">
 		<property name="resourceCache" ref="resourceCache"/>
@@ -643,10 +637,6 @@
 	</bean -->
 
 	<bean id="enumeratedDefaultValueProvider" class="org.nuclos.client.masterdata.ClientEnumeratedDefaultValueProvider" />
-
-	<bean id="moduleProvider" class="org.nuclos.client.genericobject.Modules">
-		<property name="masterDataDelegate" ref="masterDataDelegate"/>
-	</bean>
 
 	<bean id="serviceLocator" class="org.nuclos.common2.ServiceLocator"/>
 	
