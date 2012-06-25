@@ -185,7 +185,18 @@ public class PreferencesFacadeBean extends NuclosFacadeBean implements Preferenc
 
 	public Collection<WorkspaceVO> getWorkspaceHeaderOnly() {
 		List<WorkspaceVO> result = new ArrayList<WorkspaceVO>();
-		result.addAll(getWorkspaceProcessor().getByUser(getCurrentUserName()));
+		List<WorkspaceVO> lstAssignedByRole = getWorkspaceProcessor().getByAssignedByRole(getCurrentUserName());
+		for (WorkspaceVO wsvo : getWorkspaceProcessor().getByUser(getCurrentUserName())) {
+			if (!SecurityCache.getInstance().getAllowedActions(getCurrentUserName()).contains(Actions.ACTION_WORKSPACE_ASSIGN)) {
+				for (WorkspaceVO wsvoAssigned : lstAssignedByRole) {
+					if (wsvo.getId().equals(wsvoAssigned.getId()) ||
+							(wsvo.getAssignedWorkspace() != null && wsvo.getAssignedWorkspace().equals(wsvoAssigned.getId())))
+						result.add(wsvo);
+				}
+			} else
+				result.add(wsvo);
+		}
+		
 		List<WorkspaceVO> newAssigned = getWorkspaceProcessor().getNewAssigned(getCurrentUserName());
 
 		// remove first user workspace if:
@@ -374,7 +385,7 @@ public class PreferencesFacadeBean extends NuclosFacadeBean implements Preferenc
 			}
 		}
 	}
-
+	
 	private void modifyWorkspaceAssignments(Collection<Long> roleIds, Long assignedWorkspace) {
 		JdbcEntityObjectProcessor rowoProc = NucletDalProvider.getInstance().getEntityObjectProcessor(NuclosEntity.ROLEWORKSPACE);
 

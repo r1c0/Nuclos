@@ -192,6 +192,37 @@ public class WorkspaceProcessor extends AbstractJdbcDalProcessor<WorkspaceVO> im
 	}
 	
 	@Override
+	public List<WorkspaceVO> getByAssignedByRole(String user) {
+		final Long userId = SecurityCache.getInstance().getUserId(user).longValue();
+		
+		final DbQuery<Object[]> query = createQuery(allColumns);
+		final DbFrom from = CollectionUtils.getSingleIfExist(query.getRoots());
+		final DbQueryBuilder builder = query.getBuilder();
+		
+		final DbQuery<Long> rousQuery = builder.createQuery(Long.class);
+		final DbFrom rousFrom = rousQuery.from("T_MD_ROLE_USER").alias("ROUS");
+		rousQuery.select(rousFrom.baseColumn("INTID_T_MD_ROLE", Long.class));
+		rousQuery.where(builder.equal(rousFrom.baseColumn("INTID_T_MD_USER", Long.class), userId));
+		
+		final DbQuery<Long> rowoQuery = builder.createQuery(Long.class);
+		final DbFrom rowoFrom = rowoQuery.from("T_MD_ROLE_WORKSPACE").alias("ROWO");
+		rowoQuery.select(rowoFrom.baseColumn("INTID_T_MD_WORKSPACE", Long.class));
+		rowoQuery.where(rowoFrom.baseColumn("INTID_T_MD_ROLE", Long.class).in(rousQuery));
+		
+		final DbQuery<Long> aswoQuery = builder.createQuery(Long.class);
+		final DbFrom aswoFrom = aswoQuery.from("T_MD_WORKSPACE").alias("ASWO");
+		aswoQuery.select(aswoFrom.baseColumn("INTID_T_MD_WORKSPACE", Long.class));
+		aswoQuery.where(builder.equal(aswoFrom.baseColumn("INTID_T_MD_USER", Long.class), userId));
+		aswoQuery.addToWhereAsAnd(builder.isNotNull(aswoFrom.baseColumn("INTID_T_MD_WORKSPACE", Long.class)));
+		
+		query.where(builder.or(builder.alwaysFalse(),
+				               from.baseColumn(idColumn.getColumn(), idColumn.getDataType()).in(rowoQuery)));
+		query.addToWhereAsAnd(builder.isNull(from.baseColumn(userColumn.getColumn(), userColumn.getDataType())));
+		
+		return dataBaseHelper.getDbAccess().executeQuery(query, createResultTransformer(allColumns));
+	}
+	
+	@Override
 	public List<WorkspaceVO> getNewAssigned(String user) {
 		final Long userId = SecurityCache.getInstance().getUserId(user).longValue();
 		final boolean assigner = SecurityCache.getInstance().getAllowedActions(user).contains(Actions.ACTION_WORKSPACE_ASSIGN);
