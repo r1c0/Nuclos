@@ -183,6 +183,7 @@ public class StartUp  {
 		// see http://fitw.wordpress.com/2009/03/14/web-start-and-spring/ why this is needed (tp)
 		startupContext.setClassLoader(cl);
 		startupContext.refresh();
+		startupContext.registerShutdownHook();
 		
 		final Runnable run1 = new Runnable() {
 
@@ -210,6 +211,7 @@ public class StartUp  {
 					clientContext.setClassLoader(cl);
 					Thread.yield();					
 					clientContext.refresh();
+					clientContext.registerShutdownHook();
 					
 					Thread.yield();
 					final Resource[] xmlBeanRes = clientContext.getResources(xmlBeanDefs);

@@ -19,10 +19,15 @@ package org.nuclos.installer;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import org.apache.log4j.Logger;
 
 public class ConfigContext implements Constants {
+	
+	private static final Logger LOG = Logger.getLogger(ConfigContext.class);
 
 	private static final ConfigContext singleton = new ConfigContext();
+	
+	//
 
 	private Config previousconfig = new Config();
 	private Config currentconfig = new Config();
@@ -45,6 +50,7 @@ public class ConfigContext implements Constants {
 			getInstance().update = true;
 		}
 		catch (Exception ex) {
+			LOG.error("update(" + nuclosxml + ") failed: " + ex, ex);
 			throw new InstallException("error.load.settings", nuclosxml.getAbsolutePath());
 		}
 	}

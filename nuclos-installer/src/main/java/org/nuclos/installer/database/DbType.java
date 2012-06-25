@@ -125,10 +125,24 @@ public enum DbType {
 			return false;
 		}
 		props.put("database.server", matcher.group(1));
-		props.put("database.port", matcher.group(2) != null ? matcher.group(2) : getDefaultPort());
-		props.put("database.name", matcher.group(3) != null ? matcher.group(3) : "");
-		props.put("database.schema", matcher.group(4) != null ? matcher.group(4) : "");
+		props.put("database.port", group(matcher, 2, getDefaultPort().toString()));
+		props.put("database.name", group(matcher, 3, ""));
+		props.put("database.schema", group(matcher, 4, ""));
 		return true;
+	}
+	
+	private static String group(Matcher m, int i, String default0) {
+		String result = null;
+		try {
+			result = m.group(i);
+			if (result == null) {
+				result = default0;
+			}
+		}
+		catch (IndexOutOfBoundsException e) {
+			result = default0;
+		}
+		return result;
 	}
 
 	public static DbType findType(String adapterName) {
