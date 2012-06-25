@@ -297,7 +297,8 @@ public class SearchFilterDelegate {
 			prefsSearchfilter.removeNode();
 		}
 		catch (Exception e) {
-			LOG.error(localeDelegate.getMessage("SearchFilterDelegate.11", "Fehler beim Transformieren des Filters"));
+			LOG.error(localeDelegate.getMessage("SearchFilterDelegate.11", "Fehler beim Transformieren des Filters")
+					+ ": " + e, e);
 			if (result != null) {
 				result.setValid(false);
 				result.setName((result.getName() != null ? (result.getName()+" - ") : "") 

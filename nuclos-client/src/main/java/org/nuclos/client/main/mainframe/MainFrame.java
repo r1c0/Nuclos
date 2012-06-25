@@ -260,22 +260,22 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 	}	// ctor
 
 	// @Autowired
-	public final void setResourceCache(ResourceCache resourceCache) {
+	final void setResourceCache(ResourceCache resourceCache) {
 		this.resourceCache = resourceCache;
 	}
 
 	// @Autowired
-	public final void setSpringLocaleDelegate(SpringLocaleDelegate cld) {
+	final void setSpringLocaleDelegate(SpringLocaleDelegate cld) {
 		this.localeDelegate = cld;
 	}
 
 	// @Autowired
-	public final void setClientParameterProvider(ClientParameterProvider clientParameterProvider) {
+	final void setClientParameterProvider(ClientParameterProvider clientParameterProvider) {
 		this.clientParameterProvider = clientParameterProvider;
 	}
 
 	// @Autowired
-	public final void setNuclosIcons(NuclosIcons nuclosIcons) {
+	final void setNuclosIcons(NuclosIcons nuclosIcons) {
 		this.nuclosIcons = nuclosIcons;
 	}
 
@@ -289,12 +289,12 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 	 */
 
 	// @Autowired
-	public final void setWorkspaceChooserController(WorkspaceChooserController wcc) {
+	final void setWorkspaceChooserController(WorkspaceChooserController wcc) {
 		this.workspaceChooserController = wcc;
 	}
 
 	// @Autowired
-	public final void setLiveSearchController(LiveSearchController lsc) {
+	final void setLiveSearchController(LiveSearchController lsc) {
 		this.liveSearchController = lsc;
 	}
 

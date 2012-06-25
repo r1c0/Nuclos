@@ -194,6 +194,7 @@ import org.nuclos.server.customcomp.valueobject.CustomComponentVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
+import org.springframework.beans.factory.annotation.Value;
 
 
 /**
@@ -328,7 +329,7 @@ public class MainController {
 	}
 
 	@Autowired
-	public void setMainFrame(MainFrame mainFrame) {
+	public void setMainFrame(@Value("#{mainFrameSpringComponent.mainFrame}") MainFrame mainFrame) {
 		this.frm = mainFrame;
 	}
 

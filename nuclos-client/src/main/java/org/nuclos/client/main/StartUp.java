@@ -244,7 +244,7 @@ public class StartUp  {
 							}
 						}
 					}
-					MetaDataClientProvider.initialize();
+					// MetaDataClientProvider.initialize();
 				}
 				catch (IOException e1) {
 					log.error(e1.getMessage(), e1);

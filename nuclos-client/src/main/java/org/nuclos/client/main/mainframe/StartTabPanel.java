@@ -93,6 +93,7 @@ import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
+import org.springframework.beans.factory.annotation.Value;
 
 @Configurable
 public class StartTabPanel extends JPanel implements NuclosDropTargetVisitor {
@@ -241,7 +242,7 @@ public class StartTabPanel extends JPanel implements NuclosDropTargetVisitor {
 	}
 	
 	@Autowired
-	void setMainFrame(MainFrame mainFrame) {
+	void setMainFrame(@Value("#{mainFrameSpringComponent.mainFrame}") MainFrame mainFrame) {
 		this.mainFrame = mainFrame;
 	}
 	

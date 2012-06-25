@@ -116,7 +116,7 @@
 	</bean>
 	<bean id="nucletComponentRepository" class="org.nuclos.client.nuclet.NucletComponentRepository">
 	</bean>
-	<bean id="mainFrame" class="org.nuclos.client.main.mainframe.MainFrame">
+	<bean id="mainFrameSpringComponent" class="org.nuclos.client.main.mainframe.MainFrameSpringComponent">
 		<property name="resourceCache" ref="resourceCache"/>
 		<property name="springLocaleDelegate" ref="springLocaleDelegate"/>
 		<property name="clientParameterProvider" ref="parameterProvider"/>
@@ -126,7 +126,7 @@
 	</bean>
 	<bean id="liveSearchController" class="org.nuclos.client.livesearch.LiveSearchController">
 		<property name="resourceCache" ref="resourceCache"/>
-		<property name="parentFrame" ref="mainFrame"/>
+		<property name="parentFrame" value="#{mainFrameSpringComponent.mainFrame}"/>
 	</bean>
 	<bean id="workspaceChooserController" class="org.nuclos.client.main.mainframe.workspace.WorkspaceChooserController">
 		<property name="springLocaleDelegate" ref="springLocaleDelegate"/>
@@ -140,8 +140,5 @@
 		
 	<bean id="moduleProvider" class="org.nuclos.client.genericobject.Modules">
 		<property name="masterDataDelegate" ref="masterDataDelegate"/>
-	</bean>
-	<bean id="metaDataProvider" class="org.nuclos.client.common.MetaDataClientProvider">
-		<property name="topicNotificationReceiver" ref="topicNotificationReceiver"/>
 	</bean>
 </beans>

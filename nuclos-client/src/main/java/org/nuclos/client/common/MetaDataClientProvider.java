@@ -75,9 +75,11 @@ public class MetaDataClientProvider implements MetaDataProvider<EntityMetaDataVO
 		INSTANCE = this;
 	}
 
+	/*
 	public static void initialize() {
 		getInstance().dataCache.buildMaps();
 	}
+	 */
 	
 	// @Autowired
 	public final void setTopicNotificationReceiver(TopicNotificationReceiver tnr) {
@@ -85,11 +87,15 @@ public class MetaDataClientProvider implements MetaDataProvider<EntityMetaDataVO
 	}
 
 	public static MetaDataClientProvider getInstance() {
+		if (INSTANCE == null) {
+			throw new IllegalStateException("too early");
+		}
 		return INSTANCE;
 	}
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
+		dataCache.buildMaps();
 		tnr.subscribe(JMSConstants.TOPICNAME_METADATACACHE, messagelistener);
 	}
 

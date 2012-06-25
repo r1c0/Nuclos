@@ -38,6 +38,8 @@ import org.nuclos.server.masterdata.ejb3.MetaDataFacadeRemote;
 import org.nuclos.server.masterdata.valueobject.DependantMasterDataMap;
 import org.nuclos.server.masterdata.valueobject.MasterDataMetaVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.stereotype.Component;
 
 /**
  * An singleton for remotely accessing the meta data information
@@ -48,32 +50,37 @@ import org.nuclos.server.masterdata.valueobject.MasterDataVO;
  * want to use {@link org.nuclos.client.common.MetaDataClientProvider}.
  * </p>
  */
+// @Component
 public class MetaDataDelegate implements CommonMetaDataServerProvider {
 
  	private static MetaDataDelegate INSTANCE;
 
 	public static final String ENTITYNAME_ENTITY = "entity";
 
-	private final MetaDataFacadeRemote facade;
+	private MetaDataFacadeRemote facade;
 
-	private final MasterDataFacadeRemote mdfacade;
+	private MasterDataFacadeRemote mdfacade;
 
 	/**
 	 * Use getInstance() to create an (the) instance of this class
 	 */
-	private MetaDataDelegate() {
-		this.facade = ServiceLocator.getInstance().getFacade(MetaDataFacadeRemote.class);
-		this.mdfacade = ServiceLocator.getInstance().getFacade(MasterDataFacadeRemote.class);
+	MetaDataDelegate() {
+		INSTANCE = this;
+		// this.facade = ServiceLocator.getInstance().getFacade(MetaDataFacadeRemote.class);
+		// this.mdfacade = ServiceLocator.getInstance().getFacade(MasterDataFacadeRemote.class);
+	}
+	
+	public final void setMetaDataFacadeRemote(MetaDataFacadeRemote metaDataFacadeRemote) {
+		this.facade = metaDataFacadeRemote;
+	}
+	
+	public final void setMasterDataFacadeRemote(MasterDataFacadeRemote masterDataFacadeRemote) {
+		this.mdfacade = masterDataFacadeRemote;
 	}
 
-	public static synchronized MetaDataDelegate getInstance() {
+	public static MetaDataDelegate getInstance() {
 		if (INSTANCE == null) {
-			try {
-				INSTANCE = new MetaDataDelegate();
-			}
-			catch (RuntimeException ex) {
-				throw new CommonFatalException(ex);
-			}
+			throw new IllegalStateException("too early");
 		}
 		return INSTANCE;
 	}
@@ -301,4 +308,5 @@ public class MetaDataDelegate implements CommonMetaDataServerProvider {
 	public Collection<SystemEntityMetaDataVO> getSystemMetaData() {
 		return getMetaDataFacade().getSystemMetaData();
 	}
+
 }

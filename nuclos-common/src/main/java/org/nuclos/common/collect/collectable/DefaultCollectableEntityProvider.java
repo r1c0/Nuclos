@@ -57,6 +57,9 @@ public class DefaultCollectableEntityProvider {
 	 * @return the global instance of the <code>DefaultCollectableEntityProvider</code> that knows the application specific entities.
 	 */
 	public static CollectableEntityProvider getInstance() {
+		if (INSTANCE == null) {
+			throw new IllegalStateException("too early");
+		}
 		return INSTANCE;
 	}
 

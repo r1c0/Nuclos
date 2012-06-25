@@ -47,6 +47,7 @@ import org.nuclos.server.report.valueobject.RecordGrantVO;
 import org.nuclos.server.report.valueobject.ResultVO;
 import org.nuclos.server.report.valueobject.ValuelistProviderVO;
 import org.nuclos.server.ruleengine.NuclosBusinessRuleException;
+import org.springframework.stereotype.Component;
 
 /**
  * The Delegate for DatasourceFacadeBean. <br>
@@ -57,30 +58,33 @@ import org.nuclos.server.ruleengine.NuclosBusinessRuleException;
  * @author <a href="mailto:Lars.Rueckemann@novabit.de">Lars Rueckemann</a>
  * @version 01.00.00
  */
+// @Component
 public class DatasourceDelegate {
-	private static DatasourceDelegate instance;
+	
+	private static DatasourceDelegate INSTANCE;
+	
+	//
 
 	private DatasourceFacadeRemote dataSourceFacade;
 
-	public static synchronized DatasourceDelegate getInstance() {
-		if (instance == null) {
-			instance = new DatasourceDelegate();
-		}
-		return instance;
+	DatasourceDelegate() {
+		INSTANCE = this;
 	}
 
-	private DatasourceDelegate() {
-		super();
+	public static DatasourceDelegate getInstance() {
+		if (INSTANCE == null) {
+			throw new IllegalStateException("too early");
+		}
+		return INSTANCE;
+	}
+	
+	public final void setDatasourceFacadeRemote(DatasourceFacadeRemote datasourceFacadeRemote) {
+		this.dataSourceFacade = datasourceFacadeRemote;
 	}
 
 	private DatasourceFacadeRemote getDatasourceFacade() throws NuclosFatalException {
 		if (dataSourceFacade == null) {
-			try {
-				dataSourceFacade = ServiceLocator.getInstance().getFacade(DatasourceFacadeRemote.class);
-			}
-			catch (RuntimeException ex) {
-				throw new CommonFatalException(ex);
-			}
+			throw new IllegalStateException("too early");
 		}
 		return dataSourceFacade;
 	}
@@ -98,7 +102,7 @@ public class DatasourceDelegate {
 	 * get a list of DatasourceVO which uses the datasource
 	 *
 	 * @param datasourceVO
-	 *            could also be an instance of <code>DynamicEntityVO</code> or
+	 *            could also be an INSTANCE of <code>DynamicEntityVO</code> or
 	 *            <code>ValuelistProviderVO</code>
 	 * @return
 	 * @throws CommonPermissionException
