@@ -119,21 +119,13 @@ public class DetailsController<Clct extends Collectable> extends CommonControlle
 			final EntityMetaDataVO meta = MetaDataClientProvider.getInstance().getEntity(getCollectController().getEntityName());
 			CollectableComponentModel model = ev.getCollectableComponentModel();
 			if (!model.isInitializing()) {
-				SwingUtilities.invokeLater(new Runnable() {
-					@Override
-					public void run() {
-						String source = ev.getCollectableComponentModel().getFieldName();
-						setSubformDefaultValues(null, source);
-					}
-				});
+				//@see NUCLOSINT-1572. we removed using invokeLater here.
+				String source = ev.getCollectableComponentModel().getFieldName();
+				setSubformDefaultValues(null, source);
 
+				//@see NUCLOSINT-1572. we removed using invokeLater here.
 				final String key = MessageFormat.format("{0}.{1}.{2}", meta.getNuclet(), meta.getEntity(), model.getFieldName());
-				SwingUtilities.invokeLater(new Runnable() {
-					@Override
-					public void run() {
-						process(key);
-					}
-				});
+				process(key);
 			}
 		}
 	};
@@ -311,35 +303,53 @@ public class DetailsController<Clct extends Collectable> extends CommonControlle
 										}
 									}
 								}
-							});
+							});	
 							break;
 						case TableModelEvent.UPDATE:
 							if (e.getColumn() >= 0) {
 								final CollectableEntityField column = sfc.getCollectableTableModel().getCollectableEntityField(e.getColumn());
 								final EntityMetaDataVO meta = MetaDataClientProvider.getInstance().getEntity(column.getEntityName());
 								final String key = MessageFormat.format("{0}.{1}.{2}", meta.getNuclet(), meta.getEntity(), column.getName());
-								SwingUtilities.invokeLater(new Runnable() {
-									@Override
-									public void run() {
-										setSubformDefaultValues(meta.getEntity(), column.getName());
 
-										if (sfc != null && !sfc.isClosed()) {
-											if (sfc.getSubForm().getParentSubForm() != null) {
-												for (DetailsSubFormController<?> psfc : DetailsController.this.sfcs) {
-													if (psfc.getEntityAndForeignKeyFieldName().getEntityName().equals(sfc.getSubForm().getParentSubForm())) {
-														process(key, psfc, sfc, e.getFirstRow());
-													}
-												}
-											}
-											else {
-												process(key, null, sfc, e.getFirstRow());
+								//@see NUCLOSINT-1572. we removed using invokeLater here.
+								setSubformDefaultValues(meta.getEntity(), column.getName());
+
+								if (sfc != null && !sfc.isClosed()) {
+									if (sfc.getSubForm().getParentSubForm() != null) {
+										for (DetailsSubFormController<?> psfc : DetailsController.this.sfcs) {
+											if (psfc.getEntityAndForeignKeyFieldName().getEntityName().equals(sfc.getSubForm().getParentSubForm())) {
+												process(key, psfc, sfc, e.getFirstRow());
 											}
 										}
 									}
-								});
+									else {
+										process(key, null, sfc, e.getFirstRow());
+									}
+								}
 							}
 							break;
 						case TableModelEvent.DELETE:
+							for (int i = 0; i < sfc.getCollectableTableModel().getColumnCount(); i++) {
+								final CollectableEntityField column = sfc.getCollectableTableModel().getCollectableEntityField(i);
+								final EntityMetaDataVO meta = MetaDataClientProvider.getInstance().getEntity(column.getEntityName());
+								final String key = MessageFormat.format("{0}.{1}.{2}", meta.getNuclet(), meta.getEntity(), column.getName());
+
+								//@see NUCLOSINT-1572. we removed using invokeLater here.
+									setSubformDefaultValues(meta.getEntity(), column.getName());
+
+									if (sfc != null && !sfc.isClosed()) {
+										if (sfc.getSubForm().getParentSubForm() != null) {
+											for (DetailsSubFormController<?> psfc : DetailsController.this.sfcs) {
+												if (psfc.getEntityAndForeignKeyFieldName().getEntityName().equals(sfc.getSubForm().getParentSubForm())) {
+													process(key, psfc, sfc, e.getFirstRow());
+												}
+											}
+										}
+										else {
+											process(key, null, sfc, e.getFirstRow());
+										}
+									}
+							}
 							break;
 					}
 				}
@@ -349,7 +359,7 @@ public class DetailsController<Clct extends Collectable> extends CommonControlle
 
 	private void process(final String sourceExpression) {
 		if (getCollectController().isDetailsChangedIgnored()) {
-			return;
+			//return; //@see NUCLOSINT-1572. stopEditing will cause no update of groovy script changes on save.
 		}
 
 		ScriptContext ctx = new CollectControllerScriptContext(getCollectController(), sfcs);
@@ -369,7 +379,7 @@ public class DetailsController<Clct extends Collectable> extends CommonControlle
 
 	private void process(final String sourceExpression, final DetailsSubFormController<?> psf, final DetailsSubFormController<?> sf, final Integer row) {
 		if (getCollectController().isDetailsChangedIgnored()) {
-			return;
+			//return; //@see NUCLOSINT-1572. stopEditing will cause no update of groovy script changes on save.
 		}
 
 		process(sourceExpression);
@@ -387,9 +397,11 @@ public class DetailsController<Clct extends Collectable> extends CommonControlle
 					sf.getEntityAndForeignKeyFieldName().getEntityName(), cef.getName());
 			if (fieldmeta.getCalculationScript() != null) {
 				if (ExpressionParser.contains(fieldmeta.getCalculationScript(), sourceExpression)) {
-					Object o = ScriptEvaluator.getInstance().eval(fieldmeta.getCalculationScript(),
-							new SubformControllerScriptContext(getCollectController(), psf, sf, sf.getCollectableTableModel().getRow(row)), null);
-					setSubFormValue(sf, row, i, cef, o);
+					if (sf.getCollectableTableModel().getRowCount() > row) {
+						Object o = ScriptEvaluator.getInstance().eval(fieldmeta.getCalculationScript(),
+								new SubformControllerScriptContext(getCollectController(), psf, sf, sf.getCollectableTableModel().getRow(row)), null);
+						setSubFormValue(sf, row, i, cef, o);
+					}
 				}
 			}
 		}
