@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
+import org.nuclos.client.common.EntityCollectController;
 import org.nuclos.client.genericobject.GenericObjectCollectController;
 import org.nuclos.client.masterdata.MasterDataCollectController;
 import org.nuclos.client.rule.RuleDelegate;
@@ -105,7 +106,14 @@ public class ExecuteRuleButtonAction<Clct extends Collectable> implements Collec
 					Errors.getInstance().showExceptionDialog(controller.getCollectPanel(), e);
 				}
 				catch (CommonBusinessException e) {
-					Errors.getInstance().showExceptionDialog(controller.getCollectPanel(), e);
+					if (controller instanceof EntityCollectController<?>) {
+						EntityCollectController<?> eController = (EntityCollectController<?>) controller;
+						if (!eController.handlePointerException(e)) {
+							Errors.getInstance().showExceptionDialog(controller.getCollectPanel(), e);
+						}
+					} else {
+						Errors.getInstance().showExceptionDialog(controller.getCollectPanel(), e);
+					}
 				}
 			}
 		});

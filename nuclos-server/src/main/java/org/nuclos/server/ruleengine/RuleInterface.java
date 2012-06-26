@@ -1439,8 +1439,8 @@ public class RuleInterface extends CustomCodeInterface {
 		}
 		else {
 			final GenericObjectVO govo = this.getRuleInterface().changeState(this.getGenericObject(), iGenericObjectId, iNumeral);
-			this.getRuleObjectContainerCVO().setGenericObject(govo);
-			if (LangUtils.equals(iGenericObjectId, this.getGenericObject().getId())) {
+			if (govo != null && this.getGenericObject() != null && LangUtils.equals(iGenericObjectId, this.getGenericObject().getId())) {
+				this.getRuleObjectContainerCVO().setGenericObject(govo);
 				/*
 				 * reload the dependant data - this is necessary, because the version id
 				 * of the dependant data was changed while changing the status
