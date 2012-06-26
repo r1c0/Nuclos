@@ -97,6 +97,11 @@ public class ToolTipsTableHeader extends JTableHeader {
 				final Component comp = tcrDefault.getTableCellRendererComponent(
 						table, value, isSelected, hasFocus, row, column);
 				
+				if (table == null) {
+					// not showing any more?...
+					return comp;
+				}
+				
 				if(comp instanceof JLabel) {
 					final JLabel jlabel = (JLabel) comp;
 					List<? extends SortKey> sortKeys = null;
