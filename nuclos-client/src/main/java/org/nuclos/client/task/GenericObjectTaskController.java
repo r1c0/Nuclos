@@ -429,6 +429,7 @@ public class GenericObjectTaskController extends RefreshableTaskController {
 		final TableModel modelOld = genericObjectTaskView.getJTable().getModel();
 		if (modelOld != null && modelOld instanceof SortableCollectableTableModel<?>) {
 			TableUtils.removeMouseListenersForSortingFromTableHeader(genericObjectTaskView.getJTable());
+			genericObjectTaskView.storeOrderBySelectedColumnToPreferences();
 		}
 
 		// create a new table model:
@@ -463,6 +464,7 @@ public class GenericObjectTaskController extends RefreshableTaskController {
 		final TableModel modelOld = this.mpTaskViews.get(filter.getId()).getJTable().getModel();
 		if (modelOld != null && modelOld instanceof SortableCollectableTableModel<?>) {
 			TableUtils.removeMouseListenersForSortingFromTableHeader(this.mpTaskViews.get(filter.getId()).getJTable());
+			this.mpTaskViews.get(filter.getId()).storeOrderBySelectedColumnToPreferences();
 		}
 
 		// create a new table model:
