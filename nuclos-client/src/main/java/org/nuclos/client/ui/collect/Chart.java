@@ -863,10 +863,10 @@ public class Chart extends JPanel
 	/**
 	 * Can't be final because it must be set to null in close() to avoid memeory leaks. (tp)
 	 */
-	private JPanel contentPane = new JPanel(new BorderLayout());
+	private final JPanel contentPane = new JPanel(new BorderLayout());
 
-	private JScrollPane    scrollPane = new JScrollPane();
-
+	private final JComponent scrollPane;
+	
 	private ChartPanel panel;
 
 	private final String         entityName;
@@ -902,8 +902,8 @@ public class Chart extends JPanel
 	 * @precondition entityName != null
 	 * @postcondition this.getForeignKeyFieldToParent() == null
 	 */
-	public Chart(String sEntityName, int iToolBarOrientation) {
-		this(sEntityName, iToolBarOrientation, null);
+	public Chart(String sEntityName, boolean useScrollPane, int iToolBarOrientation) {
+		this(sEntityName, useScrollPane, iToolBarOrientation, null);
 		
 		assert this.getForeignKeyFieldToParent() == null;
 	}
@@ -914,8 +914,8 @@ public class Chart extends JPanel
 	 * @precondition entityName != null
 	 * @postcondition this.getForeignKeyFieldToParent() == foreignKeyFieldToParent
 	 */
-	public Chart(String entityName, int toolBarOrientation, String foreignKeyFieldToParent) {
-		this(entityName, toolBarOrientation, foreignKeyFieldToParent, false, false);
+	public Chart(String entityName, boolean useScrollPane, int toolBarOrientation, String foreignKeyFieldToParent) {
+		this(entityName, useScrollPane, toolBarOrientation, foreignKeyFieldToParent, false, false);
 	}
 
 	/**
@@ -925,7 +925,7 @@ public class Chart extends JPanel
 	 * @precondition entityName != null
 	 * @postcondition this.getForeignKeyFieldToParent() == foreignKeyFieldToParent
 	 */
-	public Chart(String entityName, int toolBarOrientation, String foreignKeyFieldToParent, boolean bFromProperties, boolean bSearchable) {
+	public Chart(String entityName, boolean useScrollPane, int toolBarOrientation, String foreignKeyFieldToParent, boolean bFromProperties, boolean bSearchable) {
 		super(new GridLayout(1, 1));
 
 		this.bFromProperties = bFromProperties;
@@ -969,6 +969,11 @@ public class Chart extends JPanel
 				this.tblmdllistener = null;
 			}
 		};
+		
+		if (useScrollPane)
+			this.scrollPane = new JScrollPane();
+		else
+			this.scrollPane = new JPanel(new BorderLayout());
 		
 		this.toolbar = UIUtils.createNonFloatableToolBar(toolBarOrientation);
 
@@ -1032,7 +1037,7 @@ public class Chart extends JPanel
 		layer.setName("JXLayerGlasspane");
 		add(layer);
 
-		this.init();
+		this.init(useScrollPane);
 
 		toolbarButtons = new HashMap<String, AbstractButton>();
 		toolbarMenuItems = new HashMap<String, JMenuItem>();
@@ -1142,9 +1147,7 @@ public class Chart extends JPanel
 			
 			// Partial fix for http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=7079260
 			popupMenuAdapter = null;
-			scrollPane = null;
-			
-			contentPane = null;
+
 			toolbar = null;
 			
 			lstchangelistener.clear();
@@ -1165,10 +1168,6 @@ public class Chart extends JPanel
 
 	public void removeAllChartToolListeners() {
 		listeners.clear();
-	}
-
-	public JScrollPane getChartScrollPane() {
-		return this.scrollPane;
 	}
 	
 	public void actionPerformed(String actionCommand) {
@@ -1280,7 +1279,7 @@ public class Chart extends JPanel
 		((LockableUI) layer.getUI()).setLocked(false);
 	}
 
-	private void init() {
+	private void init(boolean useScrollPane) {
 		contentPane.add(toolbar,
 			toolbar.getOrientation() == JToolBar.HORIZONTAL
 			? BorderLayout.NORTH
@@ -1305,14 +1304,18 @@ public class Chart extends JPanel
 			panel.setPopupMenu(null);
 		}
 		
-		scrollPane.getViewport().setBackground(panel.getBackground());
-		scrollPane.getViewport().setView(panel);
+		if (!useScrollPane)
+			scrollPane.add(panel, BorderLayout.CENTER); 
+		else {
+			((JScrollPane)scrollPane).getViewport().setBackground(panel.getBackground());
+			((JScrollPane)scrollPane).getViewport().setView(panel);
 
-		JLabel labCorner = new JLabel();
-		labCorner.setEnabled(false);
-		labCorner.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 1, Color.GRAY));
-		labCorner.setBackground(Color.LIGHT_GRAY);
-		scrollPane.setCorner(ScrollPaneConstants.UPPER_LEFT_CORNER, labCorner);	
+			JLabel labCorner = new JLabel();
+			labCorner.setEnabled(false);
+			labCorner.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 1, Color.GRAY));
+			labCorner.setBackground(Color.LIGHT_GRAY);
+			((JScrollPane)scrollPane).setCorner(ScrollPaneConstants.UPPER_LEFT_CORNER, labCorner);	
+		}
 	}
 	
 	/**

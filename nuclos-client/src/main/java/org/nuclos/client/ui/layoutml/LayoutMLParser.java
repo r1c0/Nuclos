@@ -2321,10 +2321,17 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 					iOrientation = BuildFormHandler.this.mpToolBarOrientation.get(sOrientation);
 				}
 
+				// scrollpane:
+				boolean bScrollpane = true;
+				final String sScrollpane = attributes.getValue(ATTRIBUTE_SCROLLPANE);
+				if (sScrollpane != null) {
+					bScrollpane = sScrollpane.equals(ATTRIBUTEVALUE_YES);
+				}
+
 				// field referencing parent entity:
 				final String sForeignKeyFieldToParent = attributes.getValue(ATTRIBUTE_FOREIGNKEYFIELDTOPARENT);
 				
-				chart = new Chart(sEntityName, 
+				chart = new Chart(sEntityName, bScrollpane,
 						LangUtils.defaultIfNull(iOrientation, JToolBar.HORIZONTAL),
 							sForeignKeyFieldToParent, false, bCreateSearchableComponents);
 

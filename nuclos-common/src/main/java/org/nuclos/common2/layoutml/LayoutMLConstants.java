@@ -191,6 +191,7 @@ public interface LayoutMLConstants {
 	public static final String ATTRIBUTE_DEFAULT = "default";
 	public static final String ATTRIBUTE_SHOWONLY = "show-only";
 	public static final String ATTRIBUTE_TOOLBARORIENTATION = "toolbarorientation";
+	public static final String ATTRIBUTE_SCROLLPANE = "scrollpane";
 	public static final String ATTRIBUTE_THICKNESS = "thickness";
 	public static final String ATTRIBUTE_SOURCEFIELD = "sourcefield";
 	public static final String ATTRIBUTE_SOURCECOMPONENT = "sourcecomponent";

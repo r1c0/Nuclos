@@ -107,15 +107,16 @@ public class WYSIWYGChart extends JLayeredPane implements WYSIWYGComponent, Mous
 	public static final String PROPERTY_ENTITY = PROPERTY_LABELS.ENTITY;
 	public static final String PROPERTY_FOREIGNKEY = PROPERTY_LABELS.FOREIGNKEY;
 	public static final String PROPERTY_TOOLBARORIENTATION = PROPERTY_LABELS.TOOLBARORIENTATION;
+	public static final String PROPERTY_SCROLLPANE = PROPERTY_LABELS.PROPERTY_SCROLLPANE;
 	public static final String PROPERTY_ENABLED = PROPERTY_LABELS.ENABLED;
 	public static final String PROPERTY_OPAQUE = PROPERTY_LABELS.OPAQUE;
 	public static final String PROPERTY_PROPERTIES = PROPERTY_LABELS.COLLECTABLECOMPONENTPROPERTY;
 
-	public static final String[][] PROPERTIES_TO_LAYOUTML_ATTRIBUTES = new String[][]{{PROPERTY_NAME, ATTRIBUTE_NAME}, {PROPERTY_ENTITY, ATTRIBUTE_ENTITY}, {PROPERTY_ENABLED, ATTRIBUTE_ENABLED}, {PROPERTY_FOREIGNKEY, ATTRIBUTE_FOREIGNKEYFIELDTOPARENT}, {PROPERTY_TOOLBARORIENTATION, ATTRIBUTE_TOOLBARORIENTATION}};
+	public static final String[][] PROPERTIES_TO_LAYOUTML_ATTRIBUTES = new String[][]{{PROPERTY_NAME, ATTRIBUTE_NAME}, {PROPERTY_ENTITY, ATTRIBUTE_ENTITY}, {PROPERTY_ENABLED, ATTRIBUTE_ENABLED}, {PROPERTY_FOREIGNKEY, ATTRIBUTE_FOREIGNKEYFIELDTOPARENT}, {PROPERTY_SCROLLPANE, ATTRIBUTE_SCROLLPANE}, {PROPERTY_TOOLBARORIENTATION, ATTRIBUTE_TOOLBARORIENTATION}};
 
-	public static final String[][] PROPERTY_VALUES_STATIC = new String[][]{{PROPERTY_TOOLBARORIENTATION, ATTRIBUTEVALUE_HORIZONTAL, ATTRIBUTEVALUE_VERTICAL, ATTRIBUTEVALUE_HIDE}};
+	public static final String[][] PROPERTY_VALUES_STATIC = new String[][]{{PROPERTY_SCROLLPANE, PROPERTY_TOOLBARORIENTATION, ATTRIBUTEVALUE_HORIZONTAL, ATTRIBUTEVALUE_VERTICAL, ATTRIBUTEVALUE_HIDE}};
 
-	private static final String[] PROPERTY_NAMES = new String[]{PROPERTY_NAME, PROPERTY_ENTITY, PROPERTY_FOREIGNKEY, PROPERTY_TOOLBARORIENTATION, PROPERTY_PREFFEREDSIZE, PROPERTY_ENABLED, PROPERTY_BORDER, PROPERTY_PROPERTIES};
+	private static final String[] PROPERTY_NAMES = new String[]{PROPERTY_NAME, PROPERTY_ENTITY, PROPERTY_FOREIGNKEY, PROPERTY_SCROLLPANE, PROPERTY_TOOLBARORIENTATION, PROPERTY_PREFFEREDSIZE, PROPERTY_ENABLED, PROPERTY_BORDER, PROPERTY_PROPERTIES};
 
 	private static final PropertyClass[] PROPERTY_CLASSES = new PropertyClass[]{
 			new PropertyClass(PROPERTY_NAME, String.class),
@@ -123,6 +124,7 @@ public class WYSIWYGChart extends JLayeredPane implements WYSIWYGComponent, Mous
 			new PropertyClass(PROPERTY_FOREIGNKEY, String.class),
 			new PropertyClass(PROPERTY_ENABLED, boolean.class),
 			new PropertyClass(PROPERTY_TOOLBARORIENTATION, String.class),
+			new PropertyClass(PROPERTY_SCROLLPANE, boolean.class),
 			new PropertyClass(PROPERTY_PREFFEREDSIZE, Dimension.class),
 			new PropertyClass(PROPERTY_BORDER, Border.class),
 			new PropertyClass(PROPERTY_PROPERTIES, PropertyChartProperty.class)};
@@ -136,6 +138,7 @@ public class WYSIWYGChart extends JLayeredPane implements WYSIWYGComponent, Mous
 			new PropertySetMethod(PROPERTY_BORDER, "setBorder"),
 			new PropertySetMethod(PROPERTY_DESCRIPTION, "setToolTipText"),
 			new PropertySetMethod(PROPERTY_TOOLBARORIENTATION, "setToolbarOrientation"),
+			new PropertySetMethod(PROPERTY_SCROLLPANE, "setScrollpane"),
 			new PropertySetMethod(PROPERTY_PROPERTIES, "setProperties"),
 			};
 
@@ -145,6 +148,7 @@ public class WYSIWYGChart extends JLayeredPane implements WYSIWYGComponent, Mous
 			new PropertyFilter(PROPERTY_ENABLED, STANDARD_MODE | EXPERT_MODE),
 			new PropertyFilter(PROPERTY_FOREIGNKEY, STANDARD_MODE | EXPERT_MODE),
 			new PropertyFilter(PROPERTY_TOOLBARORIENTATION, STANDARD_MODE | EXPERT_MODE),
+			new PropertyFilter(PROPERTY_SCROLLPANE, STANDARD_MODE | EXPERT_MODE),
 			new PropertyFilter(PROPERTY_PREFFEREDSIZE, STANDARD_MODE | EXPERT_MODE),
 			new PropertyFilter(PROPERTY_BORDER, STANDARD_MODE | EXPERT_MODE),
 			new PropertyFilter(PROPERTY_PROPERTIES, STANDARD_MODE | EXPERT_MODE)
@@ -276,7 +280,9 @@ public class WYSIWYGChart extends JLayeredPane implements WYSIWYGComponent, Mous
 						(sorientation.equals(ATTRIBUTEVALUE_VERTICAL) ? JToolBar.VERTICAL : JToolBar.HORIZONTAL);
 				}
 
-				this.chart = new Chart(entityname, orientation, foreignkey, true, false);
+				boolean useScrollpane = (Boolean) getProperties().getProperty(PROPERTY_SCROLLPANE).getValue(boolean.class, this);
+				
+				this.chart = new Chart(entityname, useScrollpane, orientation, foreignkey, true, false);
 
 				boolean bEnabled = (Boolean) getProperties().getProperty(PROPERTY_ENABLED).getValue(boolean.class, this);
 				this.chart.setEnabled(bEnabled);
@@ -665,6 +671,13 @@ public class WYSIWYGChart extends JLayeredPane implements WYSIWYGComponent, Mous
 	 * @param orientation
 	 */
 	public void setToolbarOrientation(String orientation) {
+		setChartFromProperties();
+	}
+
+	/**
+	 * 
+	 */
+	public void setScrollpane(boolean scrollpane) {
 		setChartFromProperties();
 	}
 

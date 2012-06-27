@@ -959,6 +959,7 @@ public class WYSIWYGStringsAndLabels {
 		public static final String ENTITY = "Entit\u00e4t";
 		public static final String FOREIGNKEY = "Fremdschl\u00fcssel";
 		public static final String TOOLBARORIENTATION = "Toolbar";
+		public static final String PROPERTY_SCROLLPANE = "Scrollpane";
 		public static final String UNIQUEMASTERCOLUMN = "Unique Mastercolumn";
 		public static final String CONTROLLERTYPE = "Controllertyp";
 		public static final String INITIALSORTINGORDER = "Standardsortierung";
