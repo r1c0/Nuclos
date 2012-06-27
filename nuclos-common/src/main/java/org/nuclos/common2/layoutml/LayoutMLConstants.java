@@ -268,6 +268,8 @@ public interface LayoutMLConstants {
 	public static final String ATTRIBUTEVALUE_ALWAYS = "always";
 	public static final String aTTRIBUTEVALUE_NEVER = "never";
 	public static final String ATTRIBUTEVALUE_HIDE = "hide";
+	public static final String ATTRIBUTEVALUE_NONE = "none";
+	public static final String ATTRIBUTEVALUE_BOTH = "both";
 
 	// controltypes
 	public static final String CONTROLTYPE_COMBOBOX = "combobox";

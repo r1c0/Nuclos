@@ -154,6 +154,7 @@ name CDATA #IMPLIED
 entity CDATA #REQUIRED
 enabled (%boolean;) #IMPLIED
 toolbarorientation (horizontal|vertical|hide) #IMPLIED
+scrollpane (horizontal|vertical|both|none) #IMPLIED
 opaque (%boolean;) #IMPLIED
 foreignkeyfield-to-parent CDATA #IMPLIED
 >

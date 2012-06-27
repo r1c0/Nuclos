@@ -19,9 +19,11 @@ package org.nuclos.client.ui.collect;
 import java.awt.BasicStroke;
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.GridLayout;
+import java.awt.LayoutManager;
 import java.awt.Rectangle;
 import java.awt.Stroke;
 import java.awt.event.ActionEvent;
@@ -63,6 +65,7 @@ import javax.swing.JSplitPane;
 import javax.swing.JTable;
 import javax.swing.JToolBar;
 import javax.swing.ScrollPaneConstants;
+import javax.swing.Scrollable;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.TableModelEvent;
@@ -108,7 +111,6 @@ import org.nuclos.client.ui.UIUtils;
 import org.nuclos.client.ui.collect.component.LookupListener;
 import org.nuclos.client.ui.collect.model.CollectableTableModel;
 import org.nuclos.client.ui.event.PopupMenuMouseAdapter;
-import org.nuclos.common.NuclosBusinessException;
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.collect.collectable.CollectableEntity;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
@@ -747,6 +749,63 @@ public class Chart extends JPanel
 	        plot.setBackgroundPaint(chart.getProperty(PROPERTY_PLOT_BACKGROUND, Color.class));
 		}
 	}
+	
+
+	public class ScrollPaneWidthTrackingPanel extends JPanel implements Scrollable {
+	    private static final long serialVersionUID = 1L;
+
+	    public ScrollPaneWidthTrackingPanel(LayoutManager layoutManager) {
+	        super(layoutManager);
+	    }
+
+	    public Dimension getPreferredScrollableViewportSize() {
+	        return getPreferredSize();
+	    }
+
+	    public int getScrollableBlockIncrement(Rectangle visibleRect, int orientation, int direction) {
+	        return Math.max(visibleRect.height * 9 / 10, 1);
+	    }
+
+	    public boolean getScrollableTracksViewportHeight() {
+	        return false;
+	    }
+
+	    public boolean getScrollableTracksViewportWidth() {
+	        return true;
+	    }
+
+	    public int getScrollableUnitIncrement(Rectangle visibleRect, int orientation, int direction) {
+	        return Math.max(visibleRect.height / 10, 1);
+	    }
+	}
+
+	public class ScrollPaneHeightTrackingPanel extends JPanel implements Scrollable {
+	    private static final long serialVersionUID = 1L;
+
+	    public ScrollPaneHeightTrackingPanel(LayoutManager layoutManager) {
+	        super(layoutManager);
+	    }
+
+	    public Dimension getPreferredScrollableViewportSize() {
+	        return getPreferredSize();
+	    }
+
+	    public int getScrollableBlockIncrement(Rectangle visibleRect, int orientation, int direction) {
+	        return Math.max(visibleRect.width * 9 / 10, 1);
+	    }
+
+	    public boolean getScrollableTracksViewportHeight() {
+	        return true;
+	    }
+
+	    public boolean getScrollableTracksViewportWidth() {
+	        return false;
+	    }
+
+	    public int getScrollableUnitIncrement(Rectangle visibleRect, int orientation, int direction) {
+	        return Math.max(visibleRect.width / 10, 1);
+	    }
+	}
 
 	public static interface ChartToolListener extends EventListener {
 		void toolbarAction(String actionCommand);
@@ -902,8 +961,8 @@ public class Chart extends JPanel
 	 * @precondition entityName != null
 	 * @postcondition this.getForeignKeyFieldToParent() == null
 	 */
-	public Chart(String sEntityName, boolean useScrollPane, int iToolBarOrientation) {
-		this(sEntityName, useScrollPane, iToolBarOrientation, null);
+	public Chart(String sEntityName, int iScrollPane, int iToolBarOrientation) {
+		this(sEntityName, iScrollPane, iToolBarOrientation, null);
 		
 		assert this.getForeignKeyFieldToParent() == null;
 	}
@@ -914,8 +973,8 @@ public class Chart extends JPanel
 	 * @precondition entityName != null
 	 * @postcondition this.getForeignKeyFieldToParent() == foreignKeyFieldToParent
 	 */
-	public Chart(String entityName, boolean useScrollPane, int toolBarOrientation, String foreignKeyFieldToParent) {
-		this(entityName, useScrollPane, toolBarOrientation, foreignKeyFieldToParent, false, false);
+	public Chart(String entityName, int iScrollPane, int toolBarOrientation, String foreignKeyFieldToParent) {
+		this(entityName, iScrollPane, toolBarOrientation, foreignKeyFieldToParent, false, false);
 	}
 
 	/**
@@ -925,7 +984,7 @@ public class Chart extends JPanel
 	 * @precondition entityName != null
 	 * @postcondition this.getForeignKeyFieldToParent() == foreignKeyFieldToParent
 	 */
-	public Chart(String entityName, boolean useScrollPane, int toolBarOrientation, String foreignKeyFieldToParent, boolean bFromProperties, boolean bSearchable) {
+	public Chart(String entityName, int iScrollPane, int toolBarOrientation, String foreignKeyFieldToParent, boolean bFromProperties, boolean bSearchable) {
 		super(new GridLayout(1, 1));
 
 		this.bFromProperties = bFromProperties;
@@ -970,10 +1029,12 @@ public class Chart extends JPanel
 			}
 		};
 		
-		if (useScrollPane)
+		if (iScrollPane != -1) {
 			this.scrollPane = new JScrollPane();
+		}
 		else
 			this.scrollPane = new JPanel(new BorderLayout());
+		
 		
 		this.toolbar = UIUtils.createNonFloatableToolBar(toolBarOrientation);
 
@@ -1037,7 +1098,7 @@ public class Chart extends JPanel
 		layer.setName("JXLayerGlasspane");
 		add(layer);
 
-		this.init(useScrollPane);
+		this.init(iScrollPane);
 
 		toolbarButtons = new HashMap<String, AbstractButton>();
 		toolbarMenuItems = new HashMap<String, JMenuItem>();
@@ -1279,7 +1340,7 @@ public class Chart extends JPanel
 		((LockableUI) layer.getUI()).setLocked(false);
 	}
 
-	private void init(boolean useScrollPane) {
+	private void init(int iScrollPane) {
 		contentPane.add(toolbar,
 			toolbar.getOrientation() == JToolBar.HORIZONTAL
 			? BorderLayout.NORTH
@@ -1304,17 +1365,37 @@ public class Chart extends JPanel
 			panel.setPopupMenu(null);
 		}
 		
-		if (!useScrollPane)
+		if (iScrollPane == -1)
 			scrollPane.add(panel, BorderLayout.CENTER); 
 		else {
 			((JScrollPane)scrollPane).getViewport().setBackground(panel.getBackground());
-			((JScrollPane)scrollPane).getViewport().setView(panel);
 
 			JLabel labCorner = new JLabel();
 			labCorner.setEnabled(false);
 			labCorner.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 1, Color.GRAY));
 			labCorner.setBackground(Color.LIGHT_GRAY);
-			((JScrollPane)scrollPane).setCorner(ScrollPaneConstants.UPPER_LEFT_CORNER, labCorner);	
+			((JScrollPane)scrollPane).setCorner(ScrollPaneConstants.UPPER_LEFT_CORNER, labCorner);
+			
+			if (iScrollPane != 2) { //both
+				if (iScrollPane == 0) { // horizontal
+					JPanel pnl = new ScrollPaneHeightTrackingPanel(new BorderLayout());
+					pnl.add(panel, BorderLayout.CENTER);
+					((JScrollPane)scrollPane).getViewport().setView(pnl);
+					((JScrollPane)scrollPane).setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_NEVER);
+					((JScrollPane)scrollPane).setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+				} else if (iScrollPane == 1) { // vertical
+					JPanel pnl = new ScrollPaneWidthTrackingPanel(new BorderLayout());
+					pnl.add(panel, BorderLayout.CENTER);
+					((JScrollPane)scrollPane).getViewport().setView(pnl);
+					((JScrollPane)scrollPane).setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+					((JScrollPane)scrollPane).setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+				} else if (iScrollPane == -1) { // none
+					((JScrollPane)scrollPane).setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_NEVER);
+					((JScrollPane)scrollPane).setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+				} 
+			} else {
+				((JScrollPane)scrollPane).getViewport().setView(panel);
+			}
 		}
 	}
 	

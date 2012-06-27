@@ -114,7 +114,8 @@ public class WYSIWYGChart extends JLayeredPane implements WYSIWYGComponent, Mous
 
 	public static final String[][] PROPERTIES_TO_LAYOUTML_ATTRIBUTES = new String[][]{{PROPERTY_NAME, ATTRIBUTE_NAME}, {PROPERTY_ENTITY, ATTRIBUTE_ENTITY}, {PROPERTY_ENABLED, ATTRIBUTE_ENABLED}, {PROPERTY_FOREIGNKEY, ATTRIBUTE_FOREIGNKEYFIELDTOPARENT}, {PROPERTY_SCROLLPANE, ATTRIBUTE_SCROLLPANE}, {PROPERTY_TOOLBARORIENTATION, ATTRIBUTE_TOOLBARORIENTATION}};
 
-	public static final String[][] PROPERTY_VALUES_STATIC = new String[][]{{PROPERTY_SCROLLPANE, PROPERTY_TOOLBARORIENTATION, ATTRIBUTEVALUE_HORIZONTAL, ATTRIBUTEVALUE_VERTICAL, ATTRIBUTEVALUE_HIDE}};
+	public static final String[][] PROPERTY_VALUES_STATIC = new String[][]{{PROPERTY_TOOLBARORIENTATION, ATTRIBUTEVALUE_HORIZONTAL, ATTRIBUTEVALUE_VERTICAL, ATTRIBUTEVALUE_HIDE},
+		{PROPERTY_SCROLLPANE, ATTRIBUTEVALUE_NONE , ATTRIBUTEVALUE_BOTH, ATTRIBUTEVALUE_HORIZONTAL, ATTRIBUTEVALUE_VERTICAL}};
 
 	private static final String[] PROPERTY_NAMES = new String[]{PROPERTY_NAME, PROPERTY_ENTITY, PROPERTY_FOREIGNKEY, PROPERTY_SCROLLPANE, PROPERTY_TOOLBARORIENTATION, PROPERTY_PREFFEREDSIZE, PROPERTY_ENABLED, PROPERTY_BORDER, PROPERTY_PROPERTIES};
 
@@ -124,7 +125,7 @@ public class WYSIWYGChart extends JLayeredPane implements WYSIWYGComponent, Mous
 			new PropertyClass(PROPERTY_FOREIGNKEY, String.class),
 			new PropertyClass(PROPERTY_ENABLED, boolean.class),
 			new PropertyClass(PROPERTY_TOOLBARORIENTATION, String.class),
-			new PropertyClass(PROPERTY_SCROLLPANE, boolean.class),
+			new PropertyClass(PROPERTY_SCROLLPANE, String.class),
 			new PropertyClass(PROPERTY_PREFFEREDSIZE, Dimension.class),
 			new PropertyClass(PROPERTY_BORDER, Border.class),
 			new PropertyClass(PROPERTY_PROPERTIES, PropertyChartProperty.class)};
@@ -280,9 +281,14 @@ public class WYSIWYGChart extends JLayeredPane implements WYSIWYGComponent, Mous
 						(sorientation.equals(ATTRIBUTEVALUE_VERTICAL) ? JToolBar.VERTICAL : JToolBar.HORIZONTAL);
 				}
 
-				boolean useScrollpane = (Boolean) getProperties().getProperty(PROPERTY_SCROLLPANE).getValue(boolean.class, this);
+				int scrollPane = -1;
+				String sscrollPane = (String) getProperties().getProperty(PROPERTY_SCROLLPANE).getValue();
+				if (!StringUtils.isNullOrEmpty(sscrollPane)) {
+					scrollPane = sscrollPane.equals(ATTRIBUTEVALUE_NONE) ? -1 : 
+						(sscrollPane.equals(ATTRIBUTEVALUE_VERTICAL) ? 1 : (sscrollPane.equals(ATTRIBUTEVALUE_HORIZONTAL) ? 0 : 2));
+				}
 				
-				this.chart = new Chart(entityname, useScrollpane, orientation, foreignkey, true, false);
+				this.chart = new Chart(entityname, scrollPane, orientation, foreignkey, true, false);
 
 				boolean bEnabled = (Boolean) getProperties().getProperty(PROPERTY_ENABLED).getValue(boolean.class, this);
 				this.chart.setEnabled(bEnabled);
@@ -677,7 +683,7 @@ public class WYSIWYGChart extends JLayeredPane implements WYSIWYGComponent, Mous
 	/**
 	 * 
 	 */
-	public void setScrollpane(boolean scrollpane) {
+	public void setScrollpane(String scrollpane) {
 		setChartFromProperties();
 	}
 

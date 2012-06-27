@@ -947,6 +947,8 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 		private final Map<String, Integer> mpSwingConstantsOrientation = new HashMap<String, Integer>(2);
 		private final Map<String, Integer> mpSeparatorOrientation;
 		private final Map<String, Integer> mpToolBarOrientation = new HashMap<String, Integer>(3);
+		private final Map<String, Integer> mpScrollPane = new HashMap<String, Integer>(4);
+		private final Map<String, Integer> mpSwingConstantsScrollpane = new HashMap<String, Integer>(3);
 
 		private EntityAndFieldName eafnInitialFocus;
 
@@ -1058,6 +1060,14 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 			this.mpSeparatorOrientation = this.mpSwingConstantsOrientation;
 			this.mpToolBarOrientation.putAll(mpSwingConstantsOrientation);
 			this.mpToolBarOrientation.put("hide", -1);
+
+			// constants for Separator "scrollpane" parameter:
+			this.mpSwingConstantsScrollpane.put("horizontal", 0);
+			this.mpSwingConstantsScrollpane.put("vertical", 1);
+			this.mpSwingConstantsScrollpane.put("both", 2);
+
+			this.mpScrollPane.putAll(mpSwingConstantsScrollpane);
+			this.mpScrollPane.put("none", -1);
 		}
 
 		private void setupElementProcessors() {
@@ -2322,16 +2332,17 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 				}
 
 				// scrollpane:
-				boolean bScrollpane = true;
+				Integer iScrollPane = null;
 				final String sScrollpane = attributes.getValue(ATTRIBUTE_SCROLLPANE);
 				if (sScrollpane != null) {
-					bScrollpane = sScrollpane.equals(ATTRIBUTEVALUE_YES);
+					iScrollPane = BuildFormHandler.this.mpScrollPane.get(sScrollpane);
 				}
 
 				// field referencing parent entity:
 				final String sForeignKeyFieldToParent = attributes.getValue(ATTRIBUTE_FOREIGNKEYFIELDTOPARENT);
 				
-				chart = new Chart(sEntityName, bScrollpane,
+				chart = new Chart(sEntityName, 
+						LangUtils.defaultIfNull(iScrollPane, -1),
 						LangUtils.defaultIfNull(iOrientation, JToolBar.HORIZONTAL),
 							sForeignKeyFieldToParent, false, bCreateSearchableComponents);
 

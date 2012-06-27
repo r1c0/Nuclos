@@ -604,7 +604,8 @@ public class ComponentProcessors implements LayoutMLConstants {
 			properties.setProperty(WYSIWYGChart.PROPERTY_NAME, new PropertyValueString(COMPONENT_PROCESSOR.LABEL_DEFAULTNAME_CHART + iNumber), String.class);
 			//NUCLEUSINT-803
 			properties.setProperty(WYSIWYGChart.PROPERTY_TOOLBARORIENTATION, new PropertyValueString(ATTRIBUTEVALUE_VERTICAL), String.class);
-			
+			properties.setProperty(WYSIWYGChart.PROPERTY_SCROLLPANE, new PropertyValueString(ATTRIBUTEVALUE_NONE), String.class);
+		
 			chart.setProperties(properties);
 			
 			chart.setMinimumSize(DEFAULTVALUE_CHART_MINIMUMSIZE);
