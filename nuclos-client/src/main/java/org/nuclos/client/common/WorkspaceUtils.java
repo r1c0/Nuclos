@@ -68,7 +68,6 @@ import org.nuclos.common.entityobject.CollectableEOEntityProvider;
 import org.nuclos.common.genericobject.CollectableGenericObjectEntityField;
 import org.nuclos.common.masterdata.CollectableMasterDataEntity;
 import org.nuclos.common.masterdata.CollectableMasterDataForeignKeyEntityField;
-import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
@@ -78,14 +77,53 @@ public class WorkspaceUtils {
 	
 	private static final Logger LOG = Logger.getLogger(WorkspaceUtils.class);
 	
+	private static WorkspaceUtils INSTANCE;
 	
+	// Spring injection
+	
+	private PreferencesFacadeRemote preferencesFacadeRemote;
+	
+	private MainFrame mainFrame;
+	
+	private RestoreUtils restoreUtils;
+	
+	// end of Spring injection
+
+	WorkspaceUtils() {
+		INSTANCE = this;
+	}
+	
+	public static WorkspaceUtils getInstance() {
+		return INSTANCE;
+	}
+	
+	public final void setPreferencesFacadeRemote(PreferencesFacadeRemote preferencesFacadeRemote) {
+		this.preferencesFacadeRemote = preferencesFacadeRemote;
+	}
+	
+	public final void setMainFrame(MainFrame mainFrame) {
+		this.mainFrame = mainFrame;
+	}
+	
+	public final void setRestoreUtils(RestoreUtils restoreUtils) {
+		this.restoreUtils = restoreUtils;
+	}
+	
+	public WorkspaceVO getWorkspace() {
+		return mainFrame.getWorkspace();
+	}
+	
+	public MainFrame getMainFrame() {
+		return mainFrame;
+	}
+		
 	/**
 	 * New Fields are added
 	 * 
 	 * @param ep
 	 * @return selected columns with fixed
 	 */
-	public static List<String> getSelectedColumns(EntityPreferences ep) {
+	public List<String> getSelectedColumns(EntityPreferences ep) {
 		return addNewColumns(getSelectedColumns(ep.getResultPreferences()), ep, false);
 	}
 	/**
@@ -94,14 +132,14 @@ public class WorkspaceUtils {
 	 * @param sfp
 	 * @return selected columns with fixed
 	 */
-	public static List<String> getSelectedColumns(SubFormPreferences sfp) {
+	public List<String> getSelectedColumns(SubFormPreferences sfp) {
 		return addNewColumns(getSelectedColumns(sfp.getTablePreferences()), sfp, false);
 	}
 	/**
 	 * @param tp
 	 * @return selected columns with fixed
 	 */
-	public static List<String> getSelectedColumns(TablePreferences tp) {
+	public List<String> getSelectedColumns(TablePreferences tp) {
 		return CollectionUtils.transform(tp.getSelectedColumnPreferences(), 
 				new Transformer<ColumnPreferences, String>() {
 					@Override
@@ -117,7 +155,7 @@ public class WorkspaceUtils {
 	 * @param ep
 	 * @return
 	 */
-	public static List<String> getSelectedEntities(EntityPreferences ep) {
+	public List<String> getSelectedEntities(EntityPreferences ep) {
 		return getSelectedEntities(ep.getResultPreferences());
 	}
 	/**
@@ -125,7 +163,7 @@ public class WorkspaceUtils {
 	 * @param sfp
 	 * @return
 	 */
-	public static List<String> getSelectedEntities(SubFormPreferences sfp) {
+	public List<String> getSelectedEntities(SubFormPreferences sfp) {
 		return getSelectedEntities(sfp.getTablePreferences());
 	}
 	/**
@@ -133,7 +171,7 @@ public class WorkspaceUtils {
 	 * @param tp
 	 * @return
 	 */
-	private static List<String> getSelectedEntities(TablePreferences tp) {
+	private List<String> getSelectedEntities(TablePreferences tp) {
 		return CollectionUtils.transform(tp.getSelectedColumnPreferences(), 
 				new Transformer<ColumnPreferences, String>() {
 					@Override
@@ -149,7 +187,7 @@ public class WorkspaceUtils {
 	 * @param ep
 	 * @return
 	 */
-	public static List<Integer> getFixedWidths(EntityPreferences ep) {
+	public List<Integer> getFixedWidths(EntityPreferences ep) {
 		return getFixedWidths(ep.getResultPreferences());
 	}
 	/**
@@ -157,7 +195,7 @@ public class WorkspaceUtils {
 	 * @param sfp
 	 * @return
 	 */
-	public static List<Integer> getFixedWidths(SubFormPreferences sfp) {
+	public List<Integer> getFixedWidths(SubFormPreferences sfp) {
 		return getFixedWidths(sfp.getTablePreferences());
 	}
 	/**
@@ -165,7 +203,7 @@ public class WorkspaceUtils {
 	 * @param tp
 	 * @return
 	 */
-	private static List<Integer> getFixedWidths(TablePreferences tp) {
+	private List<Integer> getFixedWidths(TablePreferences tp) {
 		return CollectionUtils.transform(
 				CollectionUtils.select(tp.getSelectedColumnPreferences(),
 						new Predicate<ColumnPreferences>() {
@@ -190,7 +228,7 @@ public class WorkspaceUtils {
 	 * @param ep
 	 * @return selected columns WITHOUT fixed
 	 */
-	public static List<String> getSelectedWithoutFixedColumns(EntityPreferences ep) {
+	public List<String> getSelectedWithoutFixedColumns(EntityPreferences ep) {
 		return addNewColumns(getSelectedWithoutFixedColumns(ep.getResultPreferences()), ep, true);
 	}
 	/**
@@ -199,14 +237,14 @@ public class WorkspaceUtils {
 	 * @param sfp
 	 * @return selected columns WITHOUT fixed
 	 */
-	public static List<String> getSelectedWithoutFixedColumns(SubFormPreferences sfp) {
+	public List<String> getSelectedWithoutFixedColumns(SubFormPreferences sfp) {
 		return addNewColumns(getSelectedWithoutFixedColumns(sfp.getTablePreferences()), sfp, true);
 	}
 	/**
 	 * @param tp
 	 * @return selected columns WITHOUT fixed
 	 */
-	private static List<String> getSelectedWithoutFixedColumns(TablePreferences tp) {
+	private List<String> getSelectedWithoutFixedColumns(TablePreferences tp) {
 		return CollectionUtils.transform(
 				CollectionUtils.select(tp.getSelectedColumnPreferences(),
 						new Predicate<ColumnPreferences>() {
@@ -230,7 +268,7 @@ public class WorkspaceUtils {
 	 * @param ep
 	 * @return
 	 */
-	public static List<String> getFixedColumns(EntityPreferences ep) {
+	public List<String> getFixedColumns(EntityPreferences ep) {
 		return getFixedColumns(ep.getResultPreferences());
 	}
 	/**
@@ -238,7 +276,7 @@ public class WorkspaceUtils {
 	 * @param sfp
 	 * @return
 	 */
-	public static List<String> getFixedColumns(SubFormPreferences sfp) {
+	public List<String> getFixedColumns(SubFormPreferences sfp) {
 		return getFixedColumns(sfp.getTablePreferences());
 	}
 	/**
@@ -246,7 +284,7 @@ public class WorkspaceUtils {
 	 * @param tp
 	 * @return
 	 */
-	private static List<String> getFixedColumns(TablePreferences tp) {
+	private List<String> getFixedColumns(TablePreferences tp) {
 		return CollectionUtils.transform(
 				CollectionUtils.select(tp.getSelectedColumnPreferences(),
 						new Predicate<ColumnPreferences>() {
@@ -270,7 +308,7 @@ public class WorkspaceUtils {
 	 * @param ep
 	 * @return selected columns widths (incl. fixed)
 	 */
-	public static List<Integer> getColumnWidths(EntityPreferences ep) {
+	public List<Integer> getColumnWidths(EntityPreferences ep) {
 		return getColumnWidths(ep.getResultPreferences());
 	}
 	/**
@@ -278,7 +316,7 @@ public class WorkspaceUtils {
 	 * @param sfp
 	 * @return selected column widths (incl. fixed)
 	 */
-	public static List<Integer> getColumnWidths(SubFormPreferences sfp) {
+	public List<Integer> getColumnWidths(SubFormPreferences sfp) {
 		return getColumnWidths(sfp.getTablePreferences());
 	}
 	/**
@@ -286,7 +324,7 @@ public class WorkspaceUtils {
 	 * @param tp
 	 * @return selected column widths (incl. fixed)
 	 */
-	public static List<Integer> getColumnWidths(TablePreferences tp) {
+	public List<Integer> getColumnWidths(TablePreferences tp) {
 		return CollectionUtils.transform(tp.getSelectedColumnPreferences(), 
 				new Transformer<ColumnPreferences, Integer>() {
 					@Override
@@ -302,7 +340,7 @@ public class WorkspaceUtils {
 	 * @param ep
 	 * @return
 	 */
-	public static List<Integer> getColumnWidthsWithoutFixed(EntityPreferences ep) {
+	public List<Integer> getColumnWidthsWithoutFixed(EntityPreferences ep) {
 		return getColumnWidthsWithoutFixed(ep.getResultPreferences());
 	}
 	/**
@@ -310,7 +348,7 @@ public class WorkspaceUtils {
 	 * @param sfp
 	 * @return
 	 */
-	public static List<Integer> getColumnWidthsWithoutFixed(SubFormPreferences sfp) {
+	public List<Integer> getColumnWidthsWithoutFixed(SubFormPreferences sfp) {
 		return getColumnWidthsWithoutFixed(sfp.getTablePreferences());
 	}
 	/**
@@ -318,7 +356,7 @@ public class WorkspaceUtils {
 	 * @param tp
 	 * @return
 	 */
-	private static List<Integer> getColumnWidthsWithoutFixed(TablePreferences tp) {
+	private List<Integer> getColumnWidthsWithoutFixed(TablePreferences tp) {
 		return CollectionUtils.transform(CollectionUtils.select(tp.getSelectedColumnPreferences(), 
 				new Predicate<ColumnPreferences>() {
 					@Override
@@ -340,7 +378,7 @@ public class WorkspaceUtils {
 	 * @param ep
 	 * @return
 	 */
-	public static Map<String, Integer> getColumnWidthsMap(EntityPreferences ep) {
+	public Map<String, Integer> getColumnWidthsMap(EntityPreferences ep) {
 		return getColumnWidthsMap(ep.getResultPreferences());
 	}
 	/**
@@ -348,7 +386,7 @@ public class WorkspaceUtils {
 	 * @param sfp
 	 * @return
 	 */
-	public static Map<String, Integer> getColumnWidthsMap(SubFormPreferences sfp) {
+	public Map<String, Integer> getColumnWidthsMap(SubFormPreferences sfp) {
 		return getColumnWidthsMap(sfp.getTablePreferences());
 	}
 	/**
@@ -356,7 +394,7 @@ public class WorkspaceUtils {
 	 * @param tp
 	 * @return
 	 */
-	public static Map<String, Integer> getColumnWidthsMap(TablePreferences tp) {
+	public Map<String, Integer> getColumnWidthsMap(TablePreferences tp) {
 		Map<String, Integer> result = new HashMap<String, Integer>();
 		for (ColumnPreferences cp : tp.getSelectedColumnPreferences()) {
 			result.put(cp.getColumn(), cp.getWidth());
@@ -371,7 +409,7 @@ public class WorkspaceUtils {
 	 * @param ciResolver
 	 * @return
 	 */
-	public static List<SortKey> getSortKeys(EntityPreferences ep, final IColumnIndexRecolver ciResolver) {
+	public List<SortKey> getSortKeys(EntityPreferences ep, final IColumnIndexRecolver ciResolver) {
 		return getSortKeys(ep.getResultPreferences(), ciResolver);
 	}
 	/**
@@ -380,7 +418,7 @@ public class WorkspaceUtils {
 	 * @param ciResolver
 	 * @return
 	 */
-	public static List<SortKey> getSortKeys(SubFormPreferences sfp, final IColumnIndexRecolver ciResolver) {
+	public List<SortKey> getSortKeys(SubFormPreferences sfp, final IColumnIndexRecolver ciResolver) {
 		return getSortKeys(sfp.getTablePreferences(), ciResolver);
 	}
 	/**
@@ -389,7 +427,7 @@ public class WorkspaceUtils {
 	 * @param ciResolver
 	 * @return
 	 */
-	public static List<SortKey> getSortKeys(TablePreferences tp, final IColumnIndexRecolver ciResolver) {
+	public List<SortKey> getSortKeys(TablePreferences tp, final IColumnIndexRecolver ciResolver) {
 		return CollectionUtils.transform(tp.getColumnSortings(), 
 				new Transformer<ColumnSorting, SortKey>(){
 					@Override
@@ -407,7 +445,7 @@ public class WorkspaceUtils {
 	 * @param fields
 	 * @return
 	 */
-	public static List<CollectableEntityField> getSelectedFields(EntityPreferences ep, List<CollectableEntityField> fields) {
+	public List<CollectableEntityField> getSelectedFields(EntityPreferences ep, List<CollectableEntityField> fields) {
 		return getSelectedFields(ep.getResultPreferences(), fields);
 	}
 	/**
@@ -416,7 +454,7 @@ public class WorkspaceUtils {
 	 * @param fields
 	 * @return
 	 */
-	public static List<CollectableEntityField> getSelectedFields(SubFormPreferences sfp, List<CollectableEntityField> fields) {
+	public List<CollectableEntityField> getSelectedFields(SubFormPreferences sfp, List<CollectableEntityField> fields) {
 		return getSelectedFields(sfp.getTablePreferences(), fields);
 	}
 	/**
@@ -425,7 +463,7 @@ public class WorkspaceUtils {
 	 * @param fields
 	 * @return
 	 */
-	private static List<CollectableEntityField> getSelectedFields(TablePreferences tp, List<CollectableEntityField> fields) {
+	private List<CollectableEntityField> getSelectedFields(TablePreferences tp, List<CollectableEntityField> fields) {
 		List<CollectableEntityField> result = new ArrayList<CollectableEntityField>();
 		for (ColumnPreferences cp : tp.getSelectedColumnPreferences()) {
 			for (CollectableEntityField clctef : fields) {
@@ -446,7 +484,7 @@ public class WorkspaceUtils {
 	 * @param fields
 	 * @return
 	 */
-	public static List<CollectableEntityField> getSelectedWithoutFixedFields(EntityPreferences ep, List<CollectableEntityField> fields) {
+	public List<CollectableEntityField> getSelectedWithoutFixedFields(EntityPreferences ep, List<CollectableEntityField> fields) {
 		return getSelectedWithoutFixedFields(ep.getResultPreferences(), fields);
 	}
 	/**
@@ -455,7 +493,7 @@ public class WorkspaceUtils {
 	 * @param fields
 	 * @return
 	 */
-	public static List<CollectableEntityField> getSelectedWithoutFixedFields(SubFormPreferences sfp, List<CollectableEntityField> fields) {
+	public List<CollectableEntityField> getSelectedWithoutFixedFields(SubFormPreferences sfp, List<CollectableEntityField> fields) {
 		return getSelectedWithoutFixedFields(sfp.getTablePreferences(), fields);
 	}
 	/**
@@ -464,7 +502,7 @@ public class WorkspaceUtils {
 	 * @param fields
 	 * @return
 	 */
-	private static List<CollectableEntityField> getSelectedWithoutFixedFields(TablePreferences tp, List<CollectableEntityField> fields) {
+	private List<CollectableEntityField> getSelectedWithoutFixedFields(TablePreferences tp, List<CollectableEntityField> fields) {
 		List<CollectableEntityField> result = new ArrayList<CollectableEntityField>();
 		for (ColumnPreferences cp : CollectionUtils.select(tp.getSelectedColumnPreferences(),
 				new Predicate<ColumnPreferences>() {
@@ -489,7 +527,7 @@ public class WorkspaceUtils {
 	 * @param selectedFields
 	 * @return
 	 */
-	public static Set<CollectableEntityField> getFixedFields(EntityPreferences ep, List<CollectableEntityField> selectedFields) {
+	public Set<CollectableEntityField> getFixedFields(EntityPreferences ep, List<CollectableEntityField> selectedFields) {
 		return getFixedFields(ep.getResultPreferences(), selectedFields);
 	}
 	/**
@@ -498,7 +536,7 @@ public class WorkspaceUtils {
 	 * @param selectedFields
 	 * @return
 	 */
-	public static Set<CollectableEntityField> getFixedFields(SubFormPreferences sfp, List<CollectableEntityField> selectedFields) {
+	public Set<CollectableEntityField> getFixedFields(SubFormPreferences sfp, List<CollectableEntityField> selectedFields) {
 		return getFixedFields(sfp.getTablePreferences(), selectedFields);
 	}
 	/**
@@ -507,7 +545,7 @@ public class WorkspaceUtils {
 	 * @param selectedFields
 	 * @return
 	 */
-	private static Set<CollectableEntityField> getFixedFields(TablePreferences tp, List<CollectableEntityField> selectedFields) {
+	private Set<CollectableEntityField> getFixedFields(TablePreferences tp, List<CollectableEntityField> selectedFields) {
 		Set<CollectableEntityField> result = new HashSet<CollectableEntityField>();
 		for (ColumnPreferences cp : tp.getSelectedColumnPreferences()) {
 			for (CollectableEntityField clctef : selectedFields) {
@@ -526,7 +564,7 @@ public class WorkspaceUtils {
 	 * @param ep
 	 * @return
 	 */
-	public static List<? extends CollectableEntityField> getCollectableEntityFieldsForGenericObject(EntityPreferences ep) {
+	public List<? extends CollectableEntityField> getCollectableEntityFieldsForGenericObject(EntityPreferences ep) {
 		final List<CollectableEntityField> result = new ArrayList<CollectableEntityField>();
 		
 		final MetaDataClientProvider mdProv = MetaDataClientProvider.getInstance();
@@ -585,7 +623,7 @@ public class WorkspaceUtils {
 		}
 		
 		if (SecurityCache.getInstance().isActionAllowed(Actions.ACTION_WORKSPACE_CUSTOMIZE_ENTITY_AND_SUBFORM_COLUMNS)
-				|| !MainFrame.getWorkspace().isAssigned()) {
+				|| !mainFrame.getWorkspace().isAssigned()) {
 		
 			// do not add columns first time...
 			if (result.isEmpty() && ep.getResultPreferences().getHiddenColumns().isEmpty()) {
@@ -642,7 +680,7 @@ public class WorkspaceUtils {
 	 * @return
 	 * @throws Exception
 	 */
-	private static CollectableEOEntityField getPivotField(ColumnPreferences cp) throws Exception {
+	private CollectableEOEntityField getPivotField(ColumnPreferences cp) throws Exception {
 		final MetaDataClientProvider mdProv = MetaDataClientProvider.getInstance();
 		final PivotInfo pi = new PivotInfo(cp.getPivotSubForm(), cp.getPivotKeyField(), cp.getPivotValueField(), Class.forName(cp.getPivotValueType()));
 		EntityFieldMetaDataVO rightField = null;
@@ -665,9 +703,9 @@ public class WorkspaceUtils {
 	 * @param selectedFields
 	 * @param fieldWidths 
 	 */
-	public static void setCollectableEntityFieldsForGenericObject(EntityPreferences ep, List<? extends CollectableEntityField> selectedFields, List<Integer> fieldWidths, List<String> fixedFields) {
+	public void setCollectableEntityFieldsForGenericObject(EntityPreferences ep, List<? extends CollectableEntityField> selectedFields, List<Integer> fieldWidths, List<String> fixedFields) {
 		if (SecurityCache.getInstance().isActionAllowed(Actions.ACTION_WORKSPACE_CUSTOMIZE_ENTITY_AND_SUBFORM_COLUMNS)
-				|| !MainFrame.getWorkspace().isAssigned()) {
+				|| !mainFrame.getWorkspace().isAssigned()) {
 		
 			ep.getResultPreferences().removeAllSelectedColumnPreferences();
 			LOG.debug("setCollectableEntityFieldsForGenericObject for entity "+ep.getEntity());
@@ -736,10 +774,10 @@ public class WorkspaceUtils {
 	 * @param fields
 	 * @param fieldWidths
 	 */
-	public static void addFixedColumns(SubFormPreferences sfp, List<String> fields, List<Integer> fieldWidths) {
+	public void addFixedColumns(SubFormPreferences sfp, List<String> fields, List<Integer> fieldWidths) {
 		LOG.debug("addFixedColumns for subform " + sfp.getEntity());
 		if (SecurityCache.getInstance().isActionAllowed(Actions.ACTION_WORKSPACE_CUSTOMIZE_ENTITY_AND_SUBFORM_COLUMNS)
-				|| !MainFrame.getWorkspace().isAssigned()) {
+				|| !mainFrame.getWorkspace().isAssigned()) {
 			
 				for (int i = 0; i < fields.size(); i++) {
 				if (fieldWidths.size() > i) {
@@ -761,7 +799,7 @@ public class WorkspaceUtils {
 	 * @param fields
 	 * @param fieldWidths
 	 */
-	public static void setColumnPreferences(EntityPreferences ep, List<String> fields, List<Integer> fieldWidths) {
+	public void setColumnPreferences(EntityPreferences ep, List<String> fields, List<Integer> fieldWidths) {
 		LOG.debug("setColumnPreferences for entity"+ep.getEntity());
 		setColumnPreferences(ep.getResultPreferences(), fields, fieldWidths);
 	}
@@ -771,7 +809,7 @@ public class WorkspaceUtils {
 	 * @param fields
 	 * @param fieldWidths
 	 */
-	public static void setColumnPreferences(SubFormPreferences sfp, List<String> fields, List<Integer> fieldWidths) {
+	public void setColumnPreferences(SubFormPreferences sfp, List<String> fields, List<Integer> fieldWidths) {
 		LOG.debug("setColumnPreferences for subform"+sfp.getEntity());
 		setColumnPreferences(sfp.getTablePreferences(), fields, fieldWidths);
 	}
@@ -780,9 +818,9 @@ public class WorkspaceUtils {
 	 * @param tp
 	 * @param fields
 	 */
-	public static void setColumnPreferences(TablePreferences tp, List<String> fields, List<Integer> fieldWidths) {
+	public void setColumnPreferences(TablePreferences tp, List<String> fields, List<Integer> fieldWidths) {
 		if (SecurityCache.getInstance().isActionAllowed(Actions.ACTION_WORKSPACE_CUSTOMIZE_ENTITY_AND_SUBFORM_COLUMNS)
-				|| !MainFrame.getWorkspace().isAssigned()) {
+				|| !mainFrame.getWorkspace().isAssigned()) {
 			
 			tp.removeAllSelectedColumnPreferences();
 			for (int i = 0; i < fields.size(); i++) {
@@ -811,7 +849,7 @@ public class WorkspaceUtils {
 	 * @param ep
 	 * @param fields
 	 */
-	public static void updateFixedColumns(EntityPreferences ep, List<String> fields) {
+	public void updateFixedColumns(EntityPreferences ep, List<String> fields) {
 		updateFixedColumns(ep.getResultPreferences(), fields);
 	}
 	/**
@@ -819,7 +857,7 @@ public class WorkspaceUtils {
 	 * @param sfp
 	 * @param fields
 	 */
-	public static void updateFixedColumns(SubFormPreferences sfp, List<String> fields) {
+	public void updateFixedColumns(SubFormPreferences sfp, List<String> fields) {
 		updateFixedColumns(sfp.getTablePreferences(), fields);
 	}
 	/**
@@ -827,9 +865,9 @@ public class WorkspaceUtils {
 	 * @param tp
 	 * @param fields
 	 */
-	private static void updateFixedColumns(TablePreferences tp, List<String> fields) {
+	private void updateFixedColumns(TablePreferences tp, List<String> fields) {
 		if (SecurityCache.getInstance().isActionAllowed(Actions.ACTION_WORKSPACE_CUSTOMIZE_ENTITY_AND_SUBFORM_COLUMNS)
-				|| !MainFrame.getWorkspace().isAssigned()) {
+				|| !mainFrame.getWorkspace().isAssigned()) {
 			
 			for (ColumnPreferences cp : tp.getSelectedColumnPreferences()) {
 				if (fields.contains(cp.getColumn())) {
@@ -846,7 +884,7 @@ public class WorkspaceUtils {
 	 * @param sortKeys
 	 * @param cnResolver
 	 */
-	public static void setSortKeys(EntityPreferences ep, List<? extends SortKey> sortKeys, IColumnNameResolver cnResolver) {
+	public void setSortKeys(EntityPreferences ep, List<? extends SortKey> sortKeys, IColumnNameResolver cnResolver) {
 		LOG.debug("setSortKeys for entity " + ep.getEntity());
 		setSortKeys(ep.getResultPreferences(), sortKeys, cnResolver);
 	}
@@ -856,7 +894,7 @@ public class WorkspaceUtils {
 	 * @param sortKeys
 	 * @param cnResolver
 	 */
-	public static void setSortKeys(SubFormPreferences sfp, List<? extends SortKey> sortKeys, IColumnNameResolver cnResolver) {
+	public void setSortKeys(SubFormPreferences sfp, List<? extends SortKey> sortKeys, IColumnNameResolver cnResolver) {
 		LOG.debug("setSortKeys for subform " + sfp.getEntity());
 		setSortKeys(sfp.getTablePreferences(), sortKeys, cnResolver);
 	}
@@ -866,9 +904,9 @@ public class WorkspaceUtils {
 	 * @param sortKeys
 	 * @param cnResolver
 	 */
-	public static void setSortKeys(TablePreferences tp, List<? extends SortKey> sortKeys, IColumnNameResolver cnResolver) {
+	public void setSortKeys(TablePreferences tp, List<? extends SortKey> sortKeys, IColumnNameResolver cnResolver) {
 		if (SecurityCache.getInstance().isActionAllowed(Actions.ACTION_WORKSPACE_CUSTOMIZE_ENTITY_AND_SUBFORM_COLUMNS)
-				|| !MainFrame.getWorkspace().isAssigned()) {
+				|| !mainFrame.getWorkspace().isAssigned()) {
 			
 			tp.removeAllColumnSortings();
 			for (SortKey sortKey : sortKeys) {
@@ -886,9 +924,9 @@ public class WorkspaceUtils {
 	}
 	
 	
-	public static void removeColumnSorting(TablePreferences tp, String column) {
+	public void removeColumnSorting(TablePreferences tp, String column) {
 		if (SecurityCache.getInstance().isActionAllowed(Actions.ACTION_WORKSPACE_CUSTOMIZE_ENTITY_AND_SUBFORM_COLUMNS)
-				|| !MainFrame.getWorkspace().isAssigned()) {
+				|| !mainFrame.getWorkspace().isAssigned()) {
 			
 			for (ColumnSorting cs : tp.getColumnSortings()) {
 				if (LangUtils.equals(cs.getColumn(), column)) {
@@ -904,7 +942,7 @@ public class WorkspaceUtils {
 	 * @param ep
 	 * @param entity
 	 */
-	public static void validatePreferences(EntityPreferences ep) {
+	public void validatePreferences(EntityPreferences ep) {
 		validatePreferences(ep.getResultPreferences(), ep.getEntity());
 	}
 	/**
@@ -912,7 +950,7 @@ public class WorkspaceUtils {
 	 * @param sfp
 	 * @param entity
 	 */
-	public static void validatePreferences(SubFormPreferences sfp) {
+	public void validatePreferences(SubFormPreferences sfp) {
 		validatePreferences(sfp.getTablePreferences(), sfp.getEntity());
 	}
 	/**
@@ -920,7 +958,7 @@ public class WorkspaceUtils {
 	 * @param tp
 	 * @param entity
 	 */
-	private static void validatePreferences(TablePreferences tp, String entity) {
+	private void validatePreferences(TablePreferences tp, String entity) {
 		// special entities with custom collect controller
 		if (NuclosEntity.getByName(entity) != null) {
 			switch (NuclosEntity.getByName(entity)) {
@@ -964,7 +1002,7 @@ public class WorkspaceUtils {
 	 * @param ep
 	 * @return
 	 */
-	private static List<String> addNewColumns(final List<String> selectedFields, final EntityPreferences ep, final boolean ignoreFixed) {
+	private List<String> addNewColumns(final List<String> selectedFields, final EntityPreferences ep, final boolean ignoreFixed) {
 		return addNewColumns(selectedFields, ep.getResultPreferences(), ep.getEntity(), ignoreFixed);
 	}
 	/**
@@ -973,7 +1011,7 @@ public class WorkspaceUtils {
 	 * @param sfp
 	 * @return
 	 */
-	private static List<String> addNewColumns(final List<String> selectedFields, final SubFormPreferences sfp, final boolean ignoreFixed) {
+	private List<String> addNewColumns(final List<String> selectedFields, final SubFormPreferences sfp, final boolean ignoreFixed) {
 		return addNewColumns(selectedFields, sfp.getTablePreferences(), sfp.getEntity(), ignoreFixed);
 	}
 	/**
@@ -983,9 +1021,9 @@ public class WorkspaceUtils {
 	 * @param entity
 	 * @return
 	 */
-	private static List<String> addNewColumns(final List<String> selectedFields, final TablePreferences tp, final String entity, final boolean ignoreFixed) {
+	private List<String> addNewColumns(final List<String> selectedFields, final TablePreferences tp, final String entity, final boolean ignoreFixed) {
 		if (SecurityCache.getInstance().isActionAllowed(Actions.ACTION_WORKSPACE_CUSTOMIZE_ENTITY_AND_SUBFORM_COLUMNS)
-				|| !MainFrame.getWorkspace().isAssigned()) {
+				|| !mainFrame.getWorkspace().isAssigned()) {
 		
 			// do not add columns first time...
 			if (selectedFields.isEmpty() && tp.getHiddenColumns().isEmpty()) {
@@ -1044,7 +1082,7 @@ public class WorkspaceUtils {
 	 * @param ep
 	 * @param column
 	 */
-	public static void addHiddenColumn(EntityPreferences ep, String column) {
+	public void addHiddenColumn(EntityPreferences ep, String column) {
 		addHiddenColumn(ep.getResultPreferences(), column);
 	}
 	/**
@@ -1052,7 +1090,7 @@ public class WorkspaceUtils {
 	 * @param sfp
 	 * @param column
 	 */
-	public static void addHiddenColumn(SubFormPreferences sfp, String column) {
+	public void addHiddenColumn(SubFormPreferences sfp, String column) {
 		addHiddenColumn(sfp.getTablePreferences(), column);
 	}
 	/**
@@ -1060,9 +1098,9 @@ public class WorkspaceUtils {
 	 * @param tp
 	 * @param column
 	 */
-	private static void addHiddenColumn(TablePreferences tp, String column) {
+	private void addHiddenColumn(TablePreferences tp, String column) {
 		if (SecurityCache.getInstance().isActionAllowed(Actions.ACTION_WORKSPACE_CUSTOMIZE_ENTITY_AND_SUBFORM_COLUMNS)
-				|| !MainFrame.getWorkspace().isAssigned()) {
+				|| !mainFrame.getWorkspace().isAssigned()) {
 			
 			tp.addHiddenColumn(column);
 		}
@@ -1074,7 +1112,7 @@ public class WorkspaceUtils {
 	 * @param ep
 	 * @param fields
 	 */
-	public static void addMissingPivotFields(EntityPreferences ep, List<CollectableEntityField> fields) {
+	public void addMissingPivotFields(EntityPreferences ep, List<CollectableEntityField> fields) {
 		for (ColumnPreferences cp : ep.getResultPreferences().getSelectedColumnPreferences()) {
 			try {
 				if (cp.getPivotSubForm() != null) {
@@ -1089,18 +1127,18 @@ public class WorkspaceUtils {
 	}
 	
 	
-	public static Desktop restoreDesktop(Desktop dsktp) throws CommonBusinessException {
-		final WorkspaceVO currentWovo = MainFrame.getWorkspace();
-		RestoreUtils.storeWorkspace(currentWovo);
-		final Long assignedWorkspaceId = MainFrame.getWorkspace().getAssignedWorkspace();
+	public Desktop restoreDesktop(Desktop dsktp) throws CommonBusinessException {
+		final WorkspaceVO currentWovo = mainFrame.getWorkspace();
+		restoreUtils.storeWorkspace(currentWovo);
+		final Long assignedWorkspaceId = mainFrame.getWorkspace().getAssignedWorkspace();
 		boolean restoreToSystemDefault = false;
 		
 		if (assignedWorkspaceId == null) {
 			// restore to first time
 			restoreToSystemDefault = true;
 		} else {
-			final WorkspaceDescription assignedWd = getPrefsFacade().getWorkspace(assignedWorkspaceId).getWoDesc();
-			if (getPrefsFacade().isWorkspaceStructureChanged(assignedWorkspaceId, MainFrame.getWorkspace().getId())) {
+			final WorkspaceDescription assignedWd = preferencesFacadeRemote.getWorkspace(assignedWorkspaceId).getWoDesc();
+			if (preferencesFacadeRemote.isWorkspaceStructureChanged(assignedWorkspaceId, mainFrame.getWorkspace().getId())) {
 				throw new CommonBusinessException(SpringLocaleDelegate.getInstance().getMessage(
 						"Desktop.not.restoreable", "Desktop kann nicht zurückgesetzt werden. Die Struktur der Vorlage entspricht nicht der aktuellen Arbeitsumgebung."));
 			} else {
@@ -1125,7 +1163,7 @@ public class WorkspaceUtils {
 	}
 	
 	
-	private static Desktop getDesktopFromTargetWorkspace(NestedContent ncSource, Desktop dsktpSource, NestedContent ncTarget) {
+	private Desktop getDesktopFromTargetWorkspace(NestedContent ncSource, Desktop dsktpSource, NestedContent ncTarget) {
 		try {
 			if (ncSource instanceof MutableContent) {
 				return getDesktopFromTargetWorkspace(((MutableContent) ncSource).getContent(), dsktpSource, ((MutableContent) ncTarget).getContent());
@@ -1154,15 +1192,15 @@ public class WorkspaceUtils {
 	 * @param ep
 	 * @throws CommonBusinessException 
 	 */
-	public static void restoreEntityPreferences(EntityPreferences ep) throws CommonBusinessException {
-		final Long assignedWorkspaceId = MainFrame.getWorkspace().getAssignedWorkspace();
+	public void restoreEntityPreferences(EntityPreferences ep) throws CommonBusinessException {
+		final Long assignedWorkspaceId = mainFrame.getWorkspace().getAssignedWorkspace();
 		boolean restoreToSystemDefault = false;
 		
 		if (assignedWorkspaceId == null) {
 			// restore to first time
 			restoreToSystemDefault = true;
 		} else {
-			final WorkspaceDescription assignedWd = getPrefsFacade().getWorkspace(assignedWorkspaceId).getWoDesc();
+			final WorkspaceDescription assignedWd = preferencesFacadeRemote.getWorkspace(assignedWorkspaceId).getWoDesc();
 			if (assignedWd.containsEntityPreferences(ep.getEntity())) {
 				final TablePreferences assignedTp = assignedWd.getEntityPreferences(ep.getEntity()).getResultPreferences();
 				if (assignedTp.getSelectedColumnPreferences().isEmpty()) {
@@ -1187,15 +1225,15 @@ public class WorkspaceUtils {
 	 * @param mainEntity
 	 * @throws CommonBusinessException 
 	 */
-	public static void restoreSubFormPreferences(SubFormPreferences sfp, String mainEntity) throws CommonBusinessException {
-		final Long assignedWorkspaceId = MainFrame.getWorkspace().getAssignedWorkspace();
+	public void restoreSubFormPreferences(SubFormPreferences sfp, String mainEntity) throws CommonBusinessException {
+		final Long assignedWorkspaceId = mainFrame.getWorkspace().getAssignedWorkspace();
 		boolean restoreToSystemDefault = false;
 		
 		if (assignedWorkspaceId == null) {
 			// restore to first time
 			restoreToSystemDefault = true;
 		} else {
-			final WorkspaceDescription assignedWd = getPrefsFacade().getWorkspace(assignedWorkspaceId).getWoDesc();
+			final WorkspaceDescription assignedWd = preferencesFacadeRemote.getWorkspace(assignedWorkspaceId).getWoDesc();
 			if (assignedWd.containsEntityPreferences(mainEntity)) {
 				final TablePreferences assignedTp = assignedWd.getEntityPreferences(mainEntity).getSubFormPreferences(sfp.getEntity()).getTablePreferences();
 				if (assignedTp.getSelectedColumnPreferences().isEmpty()) {
@@ -1214,15 +1252,15 @@ public class WorkspaceUtils {
 		}
 	}
 	
-	public static void restoreTasklistPreferences(TasklistPreferences tp) throws CommonBusinessException {
-		final Long assignedWorkspaceId = MainFrame.getWorkspace().getAssignedWorkspace();
+	public void restoreTasklistPreferences(TasklistPreferences tp) throws CommonBusinessException {
+		final Long assignedWorkspaceId = mainFrame.getWorkspace().getAssignedWorkspace();
 		boolean restoreToSystemDefault = false;
 		
 		if (assignedWorkspaceId == null) {
 			// restore to first time
 			restoreToSystemDefault = true;
 		} else {
-			final WorkspaceDescription assignedWd = getPrefsFacade().getWorkspace(assignedWorkspaceId).getWoDesc();
+			final WorkspaceDescription assignedWd = preferencesFacadeRemote.getWorkspace(assignedWorkspaceId).getWoDesc();
 			if (assignedWd.containsTasklistPreferences(tp.getType(), tp.getName())) {
 				final TablePreferences assignedTp = assignedWd.getTasklistPreferences(tp.getType(), tp.getName()).getTablePreferences();
 				if (assignedTp.getSelectedColumnPreferences().isEmpty()) {
@@ -1238,10 +1276,6 @@ public class WorkspaceUtils {
 		if (restoreToSystemDefault) {
 			tp.clearTablePreferences();
 		}
-	}
-	
-	private static PreferencesFacadeRemote getPrefsFacade() {
-		return ServiceLocator.getInstance().getFacade(PreferencesFacadeRemote.class);
 	}
 	
 	public interface IColumnNameResolver {

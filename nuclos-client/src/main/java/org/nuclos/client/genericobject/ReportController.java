@@ -45,16 +45,12 @@ import org.nuclos.client.report.reportrunner.ReportThread;
 import org.nuclos.client.ui.Controller;
 import org.nuclos.client.ui.Errors;
 import org.nuclos.client.ui.UIUtils;
-import org.nuclos.common.NuclosBusinessException;
-import org.nuclos.common.NuclosFatalException;
-import org.nuclos.common.ParameterProvider;
-import org.nuclos.common.UsageCriteria;
+import org.nuclos.common.*;
 import org.nuclos.common.collect.collectable.CollectableEntity;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
 import org.nuclos.common.collect.collectable.CollectableField;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.format.FormattingTransformer;
-import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonFatalException;
@@ -67,6 +63,7 @@ import org.nuclos.server.report.valueobject.ReportVO;
 import org.nuclos.server.report.valueobject.ReportVO.OutputType;
 import org.nuclos.server.report.valueobject.ResultColumnVO;
 import org.nuclos.server.report.valueobject.ResultVO;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * ReportController for exporting leased object forms.
@@ -81,8 +78,6 @@ public class ReportController extends Controller<JComponent> {
 
 	private static final Logger LOG = Logger.getLogger(ReportController.class);
 	
-	private final ReportDelegate delegate;
-
 	private String sLastGeneratedFileName;
 
 	private final Map<Integer, List<String>> mpGeneratedFileNames = CollectionUtils.newHashMap();
@@ -90,13 +85,30 @@ public class ReportController extends Controller<JComponent> {
 	private boolean bFilesBeAttached = false;
 
 	Integer iModuleId;
+	
+	// Spring injection
+	
+	private ReportFacadeRemote reportFacadeRemote;
+	
+	private ReportDelegate reportDelegate;
+
+	// end of Spring injection
 
 	/**
 	 * @param parent
 	 */
 	public ReportController(JComponent parent) throws NuclosFatalException {
 		super(parent);
-		this.delegate = new ReportDelegate();
+	}
+	
+	@Autowired
+	final void setReportFacadeRemote(ReportFacadeRemote reportFacadeRemote) {
+		this.reportFacadeRemote = reportFacadeRemote;
+	}
+	
+	@Autowired
+	final void setReportDelegate(ReportDelegate reportDelegate) {
+		this.reportDelegate = reportDelegate;
 	}
 
 	private String getDirectory(CollectableGenericObject clctlo) {
@@ -172,8 +184,8 @@ public class ReportController extends Controller<JComponent> {
 	public static ReportSelectionPanel prepareReportSelectionPanel(UsageCriteria quadruple,
 			int iObjectCount) throws NuclosReportException {
 
-		ReportFacadeRemote facade = ServiceLocator.getInstance().getFacade(ReportFacadeRemote.class);
-		final Collection<ReportVO> collReports = facade.findReportsByUsage(quadruple);
+		final ReportFacadeRemote reportFacadeRemote = SpringApplicationContextHolder.getBean(ReportFacadeRemote.class);
+		final Collection<ReportVO> collReports = reportFacadeRemote.findReportsByUsage(quadruple);
 		final boolean bSingleSelection = (iObjectCount == 1);
 		if (collReports.size() <= 0) {
 			final String sExceptionText = (bSingleSelection ?
@@ -191,8 +203,7 @@ public class ReportController extends Controller<JComponent> {
 	 */
 	public boolean hasFormsAssigned(UsageCriteria quadruple){
 		try {
-			ReportFacadeRemote facade = ServiceLocator.getInstance().getFacade(ReportFacadeRemote.class);
-			return (facade.findReportsByUsage(quadruple).size() > 0);
+			return (reportFacadeRemote.findReportsByUsage(quadruple).size() > 0);
 		}
 		catch (RuntimeException e) {
 			throw new CommonFatalException(e);
@@ -313,7 +324,7 @@ public class ReportController extends Controller<JComponent> {
 					private Collection<ReportOutputVO> collFormat;
 					{
 						try {
-							collFormat = ServiceLocator.getInstance().getFacade(ReportFacadeRemote.class).getReportOutputs(reportvo.getId());
+							collFormat = reportFacadeRemote.getReportOutputs(reportvo.getId());
 						}
 						catch (RuntimeException ex) {
 							throw new CommonFatalException(ex);
@@ -425,13 +436,12 @@ public class ReportController extends Controller<JComponent> {
 	 */
 	private static ReportSelectionPanel newReportSelectionPanel(Collection<ReportVO> collreportvo, boolean bShowAttachReport) {
 
-		final ReportFacadeRemote facade = ServiceLocator.getInstance().getFacade(ReportFacadeRemote.class);
+		final ReportFacadeRemote reportFacadeRemote = SpringApplicationContextHolder.getBean(ReportFacadeRemote.class);
 		final ReportSelectionPanel result = new ReportSelectionPanel(bShowAttachReport);
-
 		try {
 			for (ReportVO reportvo : collreportvo) {
 				if (reportvo.getOutputType() == ReportVO.OutputType.SINGLE) {
-					for (ReportOutputVO outputvo : facade.getReportOutputs(reportvo.getId())) {
+					for (ReportOutputVO outputvo : reportFacadeRemote.getReportOutputs(reportvo.getId())) {
 						result.addReport(reportvo, outputvo);
 					}
 				}

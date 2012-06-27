@@ -63,12 +63,16 @@ import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.XMLUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
+import org.springframework.beans.factory.annotation.Value;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 
-
+@Configurable
 public class MenuGenerator {
+	
 	private static final Logger log = Logger.getLogger(MenuGenerator.class);
 
 	private static final char MNEMONICS_CHAR = '^';
@@ -79,6 +83,12 @@ public class MenuGenerator {
 	private final JMenu topMenu;
 	private final Map<String, JMenu> menuIds;
 	private final List<Component> exportNotJMenuComponents;
+	
+	// Spring injection
+	
+	private MainFrame mainFrame;
+	
+	// end of Spring injection
 
 	public MenuGenerator(Map<String, Map<String, Action>> commandMap, Map<String, Map<String, JComponent>> componentMap, List<Component> exportNotJMenuComponents) {
 		this.commandMap = commandMap;
@@ -86,6 +96,11 @@ public class MenuGenerator {
 		this.topMenu = new JMenu();
 		this.menuIds = new HashMap<String, JMenu>();
 		this.exportNotJMenuComponents = exportNotJMenuComponents;
+	}
+	
+	@Autowired
+	final void setMainFrame(@Value("#{mainFrameSpringComponent.mainFrame}") MainFrame mainFrame) {
+		this.mainFrame = mainFrame;
 	}
 
 	public JMenuBar getJMenuBar() {
@@ -212,15 +227,15 @@ public class MenuGenerator {
 			controlable.add("MainController.cmdShowPersonalTasks");
 			controlable.add("MainController.cmdShowTimelimitTasks");
 			final String menuItem = menuElement.getAttribute("commandreference");
-			if (MainFrame.getWorkspace() == null) {
+			if (mainFrame.getWorkspace() == null) {
 				if (controlable.contains(menuItem)) {
 					return insertIndex;
 				}
 			} else {
-				final String hideMenuItemsParameter = MainFrame.getWorkspace().getWoDesc().getParameter(WorkspaceParameter.HIDE_MENU_ITEMS);
+				final String hideMenuItemsParameter = mainFrame.getWorkspace().getWoDesc().getParameter(WorkspaceParameter.HIDE_MENU_ITEMS);
 				if (!StringUtils.looksEmpty(hideMenuItemsParameter)) {
 					final Set<String> hideMenuItems = CollectionUtils.asSet(
-							MainFrame.getWorkspace().getWoDesc().getParameter(WorkspaceParameter.HIDE_MENU_ITEMS).split(";"));
+							mainFrame.getWorkspace().getWoDesc().getParameter(WorkspaceParameter.HIDE_MENU_ITEMS).split(";"));
 					if (controlable.contains(menuItem) && hideMenuItems.contains(menuItem)) {
 						return insertIndex;
 					}

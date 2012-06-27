@@ -137,7 +137,8 @@ public class NuclosEntityProcessStep extends NuclosEntityAbstractStep {
 
 		Preferences prefs = java.util.prefs.Preferences.userRoot().node("org/nuclos/client/entitywizard/steps/process");
 
-		subFormController = new ProcessSubformController(tab, provider,ENTITYNAME_PROCESS, subform, prefs, NuclosEntityWizard.getEntityPreferences(), null);
+		subFormController = new ProcessSubformController(tab, provider,ENTITYNAME_PROCESS, subform, prefs, 
+				getEntityPreferences(), null);
 		Collection<EntityObjectVO> data = model.getProcesses();
 
 		if (data != null) {

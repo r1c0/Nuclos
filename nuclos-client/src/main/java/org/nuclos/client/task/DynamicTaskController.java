@@ -59,11 +59,12 @@ import org.nuclos.common.WorkspaceDescription.TasklistPreferences;
 import org.nuclos.common.tasklist.TasklistDefinition;
 import org.nuclos.common2.CommonRunnable;
 import org.nuclos.common2.IdUtils;
-import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.server.common.ejb3.PreferencesFacadeRemote;
 import org.nuclos.server.report.valueobject.DynamicTasklistVO;
 import org.nuclos.server.report.valueobject.ResultVO;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 
 /**
  * Controller for <code>DynamicTaskView</code>.
@@ -77,12 +78,39 @@ import org.nuclos.server.report.valueobject.ResultVO;
 public class DynamicTaskController extends RefreshableTaskController {
 
 	private static final Logger LOG = Logger.getLogger(DynamicTaskController.class);
+	
+	//
+	
+	// Spring injection
+	
+	private PreferencesFacadeRemote preferencesFacadeRemote;
+	
+	private WorkspaceUtils workspaceUtils;
+	
+	private MainFrame mainFrame;
+	
+	// end of Spring injection
 
 	private Map<Integer, DynamicTaskView> views;
 
 	DynamicTaskController() {
 		super();
 		views= new HashMap<Integer, DynamicTaskView>();
+	}
+	
+	@Autowired
+	final void setPreferencesFacadeRemote(PreferencesFacadeRemote preferencesFacadeRemote) {
+		this.preferencesFacadeRemote = preferencesFacadeRemote;
+	}
+	
+	@Autowired
+	final void setWorkspaceUtils(WorkspaceUtils workspaceUtils) {
+		this.workspaceUtils = workspaceUtils;
+	}
+	
+	@Autowired
+	final void setMainFrame(@Value("#{mainFrameSpringComponent.mainFrame}") MainFrame mainFrame) {
+		this.mainFrame = mainFrame;
 	}
 
 	public DynamicTaskView newDynamicTaskView(TasklistDefinition def, DynamicTasklistVO dtl) {
@@ -141,15 +169,15 @@ public class DynamicTaskController extends RefreshableTaskController {
 				if(SwingUtilities.isRightMouseButton(e)) {
 					JPopupMenu pop = new JPopupMenu();
 
-					if (SecurityCache.getInstance().isActionAllowed(Actions.ACTION_WORKSPACE_ASSIGN) && MainFrame.getWorkspace().isAssigned()) {
+					if (SecurityCache.getInstance().isActionAllowed(Actions.ACTION_WORKSPACE_ASSIGN) && mainFrame.getWorkspace().isAssigned()) {
 						final JMenuItem miPublishColumns = new JMenuItem(new AbstractAction(getSpringLocaleDelegate().getMessage(
 								"DetailsSubFormController.4", "Spalten in Vorlage publizieren"), 
 								Icons.getInstance().getIconRedo16()) {
 							@Override
 							public void actionPerformed(ActionEvent e) {
 								try {
-									ServiceLocator.getInstance().getFacade(PreferencesFacadeRemote.class).publishTaskListPreferences(
-											MainFrame.getWorkspace(), 
+									preferencesFacadeRemote.publishTaskListPreferences(
+											mainFrame.getWorkspace(), 
 											getTasklistPreferences(taskview));
 								} catch (CommonBusinessException e1) {
 									Errors.getInstance().showExceptionDialog(Main.getInstance().getMainController().getTaskController().getTabFor(taskview), e1);
@@ -165,8 +193,7 @@ public class DynamicTaskController extends RefreshableTaskController {
 						@Override
 						public void actionPerformed(ActionEvent e) {
 							try {
-								WorkspaceUtils.restoreTasklistPreferences(getTasklistPreferences(taskview));
-								
+								workspaceUtils.restoreTasklistPreferences(getTasklistPreferences(taskview));
 								refresh(taskview, true);
 							} 
 							catch (CommonBusinessException e1) {
@@ -342,32 +369,33 @@ public class DynamicTaskController extends RefreshableTaskController {
 			TableColumn tc = view.getTable().getColumnModel().getColumn(i);
 			widths.add(tc.getWidth());
 		}
-		WorkspaceUtils.setColumnPreferences(prefs.getTablePreferences(), fields, widths);
+		workspaceUtils.setColumnPreferences(prefs.getTablePreferences(), fields, widths);
 	}
 	
 	private void storeSortOrder(final DynamicTaskView view) {
 		TasklistPreferences prefs = getTasklistPreferences(view);
-		WorkspaceUtils.setSortKeys(prefs.getTablePreferences(), view.getTable().getRowSorter().getSortKeys(), new WorkspaceUtils.IColumnNameResolver() {
-			@Override
-			public String getColumnName(int iColumn) {
-				return view.getTable().getColumnName(iColumn);
-			}
+		workspaceUtils.setSortKeys(prefs.getTablePreferences(), view.getTable().getRowSorter().getSortKeys(), 
+				new WorkspaceUtils.IColumnNameResolver() {
+					@Override
+					public String getColumnName(int iColumn) {
+						return view.getTable().getColumnName(iColumn);
+					}
 		});
 	}
 	
 	private List<String> getColumnOrderFromPreferences(DynamicTaskView view) {
 		TasklistPreferences prefs = getTasklistPreferences(view);
-		return WorkspaceUtils.getSelectedColumns(prefs.getTablePreferences());
+		return workspaceUtils.getSelectedColumns(prefs.getTablePreferences());
 	}
 	
 	private Map<String, Integer> getColumnWidthsFromPreferences(DynamicTaskView view) {
 		TasklistPreferences prefs = getTasklistPreferences(view);
-		return WorkspaceUtils.getColumnWidthsMap(prefs.getTablePreferences());
+		return workspaceUtils.getColumnWidthsMap(prefs.getTablePreferences());
 	}
 	
 	private List<SortKey> getSortKeys(final DynamicTaskView view) {
 		TasklistPreferences prefs = getTasklistPreferences(view);
-		return WorkspaceUtils.getSortKeys(prefs.getTablePreferences(), new WorkspaceUtils.IColumnIndexRecolver() {
+		return workspaceUtils.getSortKeys(prefs.getTablePreferences(), new WorkspaceUtils.IColumnIndexRecolver() {
 			@Override
 			public int getColumnIndex(String columnIdentifier) {
 				return view.getTable().getColumnModel().getColumnIndex(columnIdentifier);
@@ -376,7 +404,7 @@ public class DynamicTaskController extends RefreshableTaskController {
 	}
 	
 	private TasklistPreferences getTasklistPreferences(DynamicTaskView view) {
-		return MainFrame.getWorkspaceDescription().getTasklistPreferences(TasklistPreferences.DYNAMIC, view.getDef().getName());
+		return mainFrame.getWorkspaceDescription().getTasklistPreferences(TasklistPreferences.DYNAMIC, view.getDef().getName());
 	}
 }
 

@@ -20,12 +20,12 @@ import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.Map;
 
-import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.exception.CommonFinderException;
 import org.nuclos.common2.exception.CommonPermissionException;
 import org.nuclos.common2.exception.CommonRemoteException;
 import org.nuclos.common.NuclosBusinessException;
 import org.nuclos.common.NuclosFatalException;
+import org.nuclos.common2.File;
 import org.nuclos.server.transfer.ejb3.XmlExportFacadeRemote;
 
 /**
@@ -39,50 +39,55 @@ import org.nuclos.server.transfer.ejb3.XmlExportFacadeRemote;
  */
 public class XmlExportDelegate {
 
-	private static XmlExportDelegate singleton;
+	private static XmlExportDelegate INSTANCE;
 
-	//private final Logger log = Logger.getLogger(this.getClass());
-
-	private final XmlExportFacadeRemote facade;
+	// Spring injection
+	
+	private XmlExportFacadeRemote xmlExportFacadeRemote;
+	
+	// end of Spring injection
 
 	/**
 	 * Use getInstance() to create an (the) instance of this class
 	 */
-	private XmlExportDelegate() throws RemoteException {
-		this.facade = ServiceLocator.getInstance().getFacade(XmlExportFacadeRemote.class);
+	XmlExportDelegate() throws RemoteException {
+		INSTANCE = this;
 	}
 
-	public static synchronized XmlExportDelegate getInstance() {
-		if (singleton == null) {
-			try {
-				singleton = new XmlExportDelegate();
-			}
-			catch (RemoteException ex) {
-				throw new CommonRemoteException(ex);
-			}
+	public static XmlExportDelegate getInstance() {
+		if (INSTANCE == null) {
+			throw new IllegalStateException("too early");
 		}
-		return singleton;
+		return INSTANCE;
+	}
+	
+	public final void setXmlExportFacadeRemote(XmlExportFacadeRemote xmlExportFacadeRemote) {
+		this.xmlExportFacadeRemote = xmlExportFacadeRemote;
 	}
 
-	public XmlExportFacadeRemote getXmlExportFacade() {
-		return this.facade;
+	private XmlExportFacadeRemote getXmlExportFacade() {
+		return this.xmlExportFacadeRemote;
 	}
 
-	public org.nuclos.common2.File xmlExport(Map<Integer,String> exportEntities,boolean deepexport, String sFileName) throws NuclosBusinessException, NuclosFatalException{
+	public File xmlExport(Map<Integer, String> exportEntities, boolean deepexport, String sFileName) throws NuclosBusinessException, NuclosFatalException {
 		try {
 			return getXmlExportFacade().xmlExport(exportEntities, deepexport, sFileName);
-		} catch (CommonFinderException e) {
+		}
+		catch (CommonFinderException e) {
 			throw new NuclosBusinessException(e.getMessage(), e);
-		} catch (CommonPermissionException e) {
+		}
+		catch (CommonPermissionException e) {
 			throw new NuclosBusinessException(e.getMessage(), e);
-		} catch (RemoteException e) {
+		}
+		catch (RemoteException e) {
 			throw new NuclosFatalException(e.getMessage(), e);
-		}catch (IOException e) {
+		}
+		catch (IOException e) {
 			throw new NuclosFatalException(e.getMessage(), e);
-		}catch (Exception e) {
+		}
+		catch (Exception e) {
 			throw new NuclosFatalException(e.getMessage(), e);
-
-	}
+		}
 	}
 
 }

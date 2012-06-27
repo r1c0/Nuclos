@@ -16,7 +16,6 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.explorer;
 
-import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.common2.exception.CommonFinderException;
 import org.nuclos.common2.exception.CommonPermissionException;
@@ -25,6 +24,7 @@ import org.nuclos.server.navigation.treenode.GenericObjectTreeNode;
 import org.nuclos.server.navigation.treenode.GroupTreeNode;
 import org.nuclos.server.navigation.treenode.MasterDataTreeNode;
 import org.nuclos.server.navigation.treenode.nuclet.NucletTreeNode;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * Business Delegate for <code>TreeNodeFacadeBean</code>.
@@ -37,27 +37,32 @@ import org.nuclos.server.navigation.treenode.nuclet.NucletTreeNode;
  */
 public class ExplorerDelegate {
 
-	private static ExplorerDelegate singleton;
+	private static ExplorerDelegate INSTANCE;
+	
+	//
 
-	private final TreeNodeFacadeRemote facade;
+	// Spring injection
+	
+	private TreeNodeFacadeRemote treeNodeFacadeRemote;
+	
+	// end of Spring injection
 
 	/**
 	 * Use getInstance() to get the one and only instance of this class.
 	 */
-	private ExplorerDelegate() {
-		try {
-			this.facade = ServiceLocator.getInstance().getFacade(TreeNodeFacadeRemote.class);
-		}
-		catch (RuntimeException ex) {
-			throw new CommonFatalException(ex);
-		}
+	ExplorerDelegate() {
+		INSTANCE = this;
 	}
 
-	public static synchronized ExplorerDelegate getInstance() {
-		if (singleton == null) {
-			singleton = new ExplorerDelegate();
+	public static ExplorerDelegate getInstance() {
+		if (INSTANCE == null) {
+			throw new IllegalStateException("too early");
 		}
-		return singleton;
+		return INSTANCE;
+	}
+	
+	public final void setTreeNodeFacadeRemote(TreeNodeFacadeRemote treeNodeFacadeRemote) {
+		this.treeNodeFacadeRemote = treeNodeFacadeRemote;
 	}
 
 	/**
@@ -113,10 +118,10 @@ public class ExplorerDelegate {
 	}
 
 	/**
-	 * @return the facade
+	 * @return the treeNodeFacadeRemote
 	 */
 	private TreeNodeFacadeRemote getFacade() {
-		return this.facade;
+		return this.treeNodeFacadeRemote;
 	}
 
 }	// class ExplorerDelegate

@@ -64,7 +64,11 @@ import org.nuclos.client.ui.resource.ResourceIconChooser;
 import org.nuclos.common.WorkspaceDescription;
 import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.SpringLocaleDelegate;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
+import org.springframework.beans.factory.annotation.Value;
 
+@Configurable(preConstruction=true)
 abstract class MenuButton extends DesktopItem implements DragGestureListener {
 	
 //	private static final Logger LOG = Logger.getLogger(MenuButton.class);
@@ -104,6 +108,12 @@ abstract class MenuButton extends DesktopItem implements DragGestureListener {
 	private final String itemResourceBackgroundHover;
 	
 	private final List<DefaultMenuItem> menuItems = new ArrayList<DefaultMenuItem>();
+	
+	// Spring injection
+	
+	private MainFrame mainFrame;
+	
+	// end of Spring injection
 	
 	public MenuButton(final WorkspaceDescription.MenuButton prefs, List<GenericAction> actions, Color defaultBackroundColor,
 			final boolean staticMenu,
@@ -221,7 +231,7 @@ abstract class MenuButton extends DesktopItem implements DragGestureListener {
 					menuItemAction = genAction.y.y;
 				}
 			}
-			if (menuItemAction != null || MainFrame.isStarttabEditable()) {
+			if (menuItemAction != null || mainFrame.isStarttabEditable()) {
 				addMenuItem(getDefaultMenuItem(miPrefs, menuItemAction));
 			}
 		}
@@ -268,6 +278,11 @@ abstract class MenuButton extends DesktopItem implements DragGestureListener {
 		
 		DragSource dragSource = DragSource.getDefaultDragSource();
 		dragSource.createDefaultDragGestureRecognizer(jlbButton, DnDConstants.ACTION_COPY_OR_MOVE, MenuButton.this);
+	}
+	
+	@Autowired
+	final void setMainFrame(@Value("#{mainFrameSpringComponent.mainFrame}") MainFrame mainFrame) {
+		this.mainFrame = mainFrame;
 	}
 	
 	abstract void remove();
@@ -462,7 +477,7 @@ abstract class MenuButton extends DesktopItem implements DragGestureListener {
 	}
 
 	private void showContextMenu(MouseEvent mev) {
-		if (!MainFrame.isStarttabEditable()) {
+		if (!mainFrame.isStarttabEditable()) {
 			return;
 		}
 		hideMenu();
@@ -695,7 +710,7 @@ abstract class MenuButton extends DesktopItem implements DragGestureListener {
 			}
 			@Override
 			public void dragGestureRecognized(DragGestureEvent dge) {
-				if (MainFrame.isStarttabEditable()) {
+				if (mainFrame.isStarttabEditable()) {
 //					Transferable transferable = new MenuItemTransferable(getPreferences());
 //					this.setHover(false);
 //					dge.startDrag(null, transferable, null);

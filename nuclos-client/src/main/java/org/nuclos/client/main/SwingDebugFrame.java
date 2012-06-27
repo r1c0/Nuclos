@@ -43,7 +43,6 @@ import javax.swing.tree.TreePath;
 
 import org.nuclos.common.collect.collectable.CollectableEntityField;
 import org.nuclos.common.collect.collectable.CollectableField;
-import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.client.common.ClientParameterProvider;
 import org.nuclos.client.explorer.ExplorerNode;
@@ -73,7 +72,13 @@ public class SwingDebugFrame extends JFrame {
 	private JEditorPane text;
 	private MainController ctrl;
 	
+	// Spring injection
+	
 	private ClientParameterProvider clientParameterProvider;
+	
+	private ConsoleFacadeRemote consoleFacadeRemote;
+	
+	// end of Spring injection
 
 	SwingDebugFrame(MainController ctrl) {
 		super();
@@ -155,13 +160,18 @@ public class SwingDebugFrame extends JFrame {
 	}
 	
 	@Autowired
-	void setClientParameterProvider(ClientParameterProvider clientParameterProvider) {
+	final void setClientParameterProvider(ClientParameterProvider clientParameterProvider) {
 		this.clientParameterProvider = clientParameterProvider;
+	}
+	
+	@Autowired
+	final void setConsoleFacadeRemote(ConsoleFacadeRemote consoleFacadeRemote) {
+		this.consoleFacadeRemote = consoleFacadeRemote;
 	}
 
 	private String cmdDbInfo() {
 		try {
-			return ServiceLocator.getInstance().getFacade(ConsoleFacadeRemote.class).getDatabaseInformationAsHtml();
+			return consoleFacadeRemote.getDatabaseInformationAsHtml();
 		}
 		catch (RuntimeException ex) {
 			throw new CommonFatalException(ex);
@@ -170,7 +180,7 @@ public class SwingDebugFrame extends JFrame {
 
 	private String cmdGetServerProps() {
 		try {
-			return ServiceLocator.getInstance().getFacade(ConsoleFacadeRemote.class).getSystemPropertiesAsHtml();
+			return consoleFacadeRemote.getSystemPropertiesAsHtml();
 		}
 		catch (RuntimeException ex) {
 			throw new CommonFatalException(ex);

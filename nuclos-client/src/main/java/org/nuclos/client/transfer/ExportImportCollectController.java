@@ -35,9 +35,9 @@ import org.nuclos.client.ui.collect.CollectController;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common2.IOUtils;
-import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.server.transfer.ejb3.XmlExportImportProtocolFacadeRemote;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * Controller for export/import protocol.
@@ -59,8 +59,12 @@ public class ExportImportCollectController extends MasterDataCollectController {
 	private final JButton btnCopyFile = new JButton();
 
 	private final String ZIP_EXTENSION = ".zip";
+	
+	// Spring injection
 
-	private final XmlExportImportProtocolFacadeRemote xmlExportImportFacade = ServiceLocator.getInstance().getFacade(XmlExportImportProtocolFacadeRemote.class);
+	private XmlExportImportProtocolFacadeRemote xmlExportImportFacade;
+	
+	// end of Spring injection
 
 	/**
 	 * You should use {@link org.nuclos.client.ui.collect.CollectControllerFactorySingleton} 
@@ -74,6 +78,11 @@ public class ExportImportCollectController extends MasterDataCollectController {
 	public ExportImportCollectController(MainFrameTab tabIfAny) {
 		super(NuclosEntity.IMPORTEXPORT, tabIfAny);
 		this.setupDetailsToolBar();
+	}
+	
+	@Autowired
+	final void setXmlExportImportFacade(XmlExportImportProtocolFacadeRemote xmlExportImportFacade) {
+		this.xmlExportImportFacade = xmlExportImportFacade;
 	}
 
 	private void setupDetailsToolBar(){

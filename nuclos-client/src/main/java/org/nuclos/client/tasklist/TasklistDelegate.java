@@ -5,36 +5,31 @@ import java.util.Collection;
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.tasklist.TasklistDefinition;
 import org.nuclos.common.tasklist.TasklistFacadeRemote;
-import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.exception.CommonFatalException;
 
 public class TasklistDelegate {
 
-	private static TasklistDelegate INSTANCE = new TasklistDelegate();
+	private static TasklistDelegate INSTANCE;
+	
+	// Spring injection
 
-	private TasklistFacadeRemote facade;
+	private TasklistFacadeRemote tasklistFacadeRemote;
+	
+	// end of Spring injection
+
+	TasklistDelegate() {
+		INSTANCE = this;
+	}
 
 	public static TasklistDelegate getInstance() {
 		return INSTANCE;
 	}
 	
-	private TasklistFacadeRemote getTasklistFacade() throws NuclosFatalException {
-		if (facade == null) {
-			try {
-				facade = ServiceLocator.getInstance().getFacade(TasklistFacadeRemote.class);
-			}
-			catch (RuntimeException ex) {
-				throw new CommonFatalException(ex);
-			}
-		}
-		return facade;
+	public final void setTasklistFacadeRemote(TasklistFacadeRemote tasklistFacadeRemote) {
+		this.tasklistFacadeRemote = tasklistFacadeRemote;
 	}
-
-	private TasklistDelegate() {
-		super();
-	}
-
+	
 	public Collection<TasklistDefinition> getUsersTasklists() {
-		return getTasklistFacade().getUsersTasklists();
+		return tasklistFacadeRemote.getUsersTasklists();
 	}
 }

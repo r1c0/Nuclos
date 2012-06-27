@@ -22,7 +22,6 @@ import java.util.List;
 import org.nuclos.common.NuclosBusinessException;
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.UsageCriteria;
-import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.common2.exception.CommonFinderException;
@@ -53,27 +52,27 @@ import org.nuclos.server.statemodel.valueobject.StateModelVO;
  */
 public class RuleDelegate {
 
-	private static RuleDelegate singleton;
+	private static RuleDelegate INSTANCE;
+	
+	// Spring injection
 
-	private RuleEngineFacadeRemote facade;
+	private RuleEngineFacadeRemote ruleEngineFacadeRemote;
+	
+	// end of Spring injection
 
-	public static synchronized RuleDelegate getInstance() {
-		if (singleton == null) {
-			singleton = new RuleDelegate();
+	public static RuleDelegate getInstance() {
+		if (INSTANCE == null) {
+			throw new IllegalStateException("too early");
 		}
-		return singleton;
+		return INSTANCE;
 	}
 
-	private RuleDelegate() {
+	RuleDelegate() {
+		INSTANCE = this;
 	}
-
-	/**
-	 * gets the facade once for this object and stores it in a member variable.
-	 */
-	private RuleEngineFacadeRemote getRuleEngineFacade() throws NuclosFatalException {
-		if (this.facade == null)
-			this.facade = ServiceLocator.getInstance().getFacade(RuleEngineFacadeRemote.class);
-		return this.facade;
+	
+	public final void setRuleEngineFacadeRemote(RuleEngineFacadeRemote ruleEngineFacadeRemote) {
+		this.ruleEngineFacadeRemote = ruleEngineFacadeRemote;
 	}
 
 	/**
@@ -82,7 +81,7 @@ public class RuleDelegate {
 	 */
 	public Collection<RuleVO> getAllRules() throws NuclosFatalException {
 		try {
-			return this.getRuleEngineFacade().getAllRules();
+			return ruleEngineFacadeRemote.getAllRules();
 		}	catch (RuntimeException ex) {
 			throw new CommonFatalException(ex);
 		} catch (CommonPermissionException e) {
@@ -96,7 +95,7 @@ public class RuleDelegate {
 	 */
 	public Collection<GeneratorActionVO> getAllAdGenerations() throws NuclosFatalException {
 		try {
-			return this.getRuleEngineFacade().getAllGenerations();
+			return ruleEngineFacadeRemote.getAllGenerations();
 		}
 		catch (RuntimeException ex) {
 			throw new CommonFatalException(ex);
@@ -110,7 +109,7 @@ public class RuleDelegate {
 	 */
 	public Collection<GeneratorActionVO> getAllAdGenerationsWithRule() throws NuclosFatalException {
 		try {
-			return this.getRuleEngineFacade().getAllGenerationsWithRule();
+			return ruleEngineFacadeRemote.getAllGenerationsWithRule();
 		}
 		catch (RuntimeException ex) {
 			throw new CommonFatalException(ex);
@@ -124,7 +123,7 @@ public class RuleDelegate {
 	 */
 	public Collection<GeneratorActionVO> getAllAdGenerationsForRuleId(Integer aRuleId) {
 		try {
-			return this.getRuleEngineFacade().getAllGenerationsForRuleId(aRuleId);
+			return ruleEngineFacadeRemote.getAllGenerationsForRuleId(aRuleId);
 		}
 		catch (RuntimeException ex) {
 			throw new CommonFatalException(ex);
@@ -138,7 +137,7 @@ public class RuleDelegate {
 	 */
 	public Collection<RuleEngineGenerationVO> getAllRuleGenerationsForRuleId(Integer aRuleId)  {
 		try {
-			return this.getRuleEngineFacade().getAllRuleGenerationsForRuleId(aRuleId);
+			return ruleEngineFacadeRemote.getAllRuleGenerationsForRuleId(aRuleId);
 		}
 		catch (RuntimeException ex) {
 			throw new CommonFatalException(ex);
@@ -153,7 +152,7 @@ public class RuleDelegate {
 	 */
 	public Collection<RuleEngineTransitionVO> getAllRuleTransitionsForRuleId(Integer aRuleId)  {
 		try {
-			return this.getRuleEngineFacade().getAllRuleTransitionsForRuleId(aRuleId);
+			return ruleEngineFacadeRemote.getAllRuleTransitionsForRuleId(aRuleId);
 		}
 		catch (RuntimeException ex) {
 			throw new CommonFatalException(ex);
@@ -167,7 +166,7 @@ public class RuleDelegate {
 	 */
 	public Collection<RuleEngineTransitionVO> getAllRuleTransitionsForTransitionId(Integer aTransitionId) {
 		try {
-			return this.getRuleEngineFacade().getAllRuleTransitionsForTransitionId(aTransitionId);
+			return ruleEngineFacadeRemote.getAllRuleTransitionsForTransitionId(aTransitionId);
 		}
 		catch (RuntimeException ex) {
 			throw new CommonFatalException(ex);
@@ -181,7 +180,7 @@ public class RuleDelegate {
 	 */
 	public Collection<RuleEngineGenerationVO> getAllRuleGenerationsForGenerationId(Integer aRuleId)  {
 		try {
-			return this.getRuleEngineFacade().getAllRuleGenerationsForGenerationId(aRuleId);
+			return ruleEngineFacadeRemote.getAllRuleGenerationsForGenerationId(aRuleId);
 		}
 		catch (RuntimeException ex) {
 			throw new CommonFatalException(ex);
@@ -195,7 +194,7 @@ public class RuleDelegate {
 	 */
 	public Collection<StateModelVO> getAllStateModelsForRuleId(Integer aRuleId)  {
 		try {
-			return this.getRuleEngineFacade().getAllStateModelsForRuleId(aRuleId);
+			return ruleEngineFacadeRemote.getAllStateModelsForRuleId(aRuleId);
 		}
 		catch (RuntimeException ex) {
 			throw new CommonFatalException(ex);
@@ -210,7 +209,7 @@ public class RuleDelegate {
 	 */
 	public List<RuleVO> getByEventOrdered(String sEventName) {
 		try {
-			return this.getRuleEngineFacade().getByEventOrdered(sEventName);
+			return ruleEngineFacadeRemote.getByEventOrdered(sEventName);
 		}
 		catch (RuntimeException ex) {
 			throw new CommonFatalException(ex);
@@ -225,7 +224,7 @@ public class RuleDelegate {
 	 */
 	public List<RuleVO> getByEventAndEntityOrdered(String sEventName, String sEntity) {
 		try {
-			return this.getRuleEngineFacade().getByEventAndEntityOrdered(sEventName, sEntity);
+			return ruleEngineFacadeRemote.getByEventAndEntityOrdered(sEventName, sEntity);
 		}
 		catch (RuntimeException ex) {
 			throw new CommonFatalException(ex);
@@ -240,7 +239,7 @@ public class RuleDelegate {
 	 */
 	public Collection<RuleEventUsageVO> getByEventAndRule(String sEventName, Integer iRuleId) {
 		try {
-			return this.getRuleEngineFacade().getByEventAndRule(sEventName, iRuleId);
+			return ruleEngineFacadeRemote.getByEventAndRule(sEventName, iRuleId);
 		}
 		catch (RuntimeException ex) {
 			throw new CommonFatalException(ex);
@@ -257,7 +256,7 @@ public class RuleDelegate {
     */
    public Collection<RuleVO> findRulesByUsageAndEvent(String sEventName, UsageCriteria usagecriteria) {
 	   try {
-			return this.getRuleEngineFacade().findRulesByUsageAndEvent(sEventName, usagecriteria);
+			return ruleEngineFacadeRemote.findRulesByUsageAndEvent(sEventName, usagecriteria);
 		}
 		catch (RuntimeException ex) {
 			throw new CommonFatalException(ex);
@@ -271,7 +270,7 @@ public class RuleDelegate {
     */
 	public Collection<String> getRuleUsageEntityNamesByEvent(String sEventName) {
 		try {
-			return this.getRuleEngineFacade().getRuleUsageEntityNamesByEvent(sEventName);
+			return ruleEngineFacadeRemote.getRuleUsageEntityNamesByEvent(sEventName);
 		}
 		catch (RuntimeException ex) {
 			throw new CommonFatalException(ex);
@@ -286,7 +285,7 @@ public class RuleDelegate {
 	 */
 	public Collection<RuleEngineGenerationVO> getAllRuleEngineGenerations() {
 		try {
-			return this.getRuleEngineFacade().getAllRuleEngineGenerations();
+			return ruleEngineFacadeRemote.getAllRuleEngineGenerations();
 		}
 		catch (RuntimeException ex) {
 			throw new CommonFatalException(ex);
@@ -298,7 +297,7 @@ public class RuleDelegate {
 	public RuleVO get(Integer iRuleId) throws CommonFinderException {
 		RuleVO rulevo = null;
 		try {
-			rulevo = getRuleEngineFacade().get(iRuleId);
+			rulevo = ruleEngineFacadeRemote.get(iRuleId);
 		}
 		catch (RuntimeException e) {
 			/** @todo If the server is down, we get a FinderException! */
@@ -313,7 +312,7 @@ public class RuleDelegate {
 	public RuleVO get(String ruleName) throws CommonFinderException {
 		RuleVO rulevo = null;
 		try {
-			rulevo = getRuleEngineFacade().get(ruleName);
+			rulevo = ruleEngineFacadeRemote.get(ruleName);
 		}
 		catch (RuntimeException e) {
 			/** @todo If the server is down, we get a FinderException! */
@@ -326,7 +325,7 @@ public class RuleDelegate {
 
 	public void remove(RuleVO rulevo) throws CommonStaleVersionException, CommonRemoveException, CommonFinderException, NuclosBusinessRuleException, NuclosCompileException {
 		try {
-			getRuleEngineFacade().remove(rulevo);
+			ruleEngineFacadeRemote.remove(rulevo);
 		}
 		catch (RuntimeException ex) {
 			throw new CommonFatalException(ex);
@@ -343,7 +342,7 @@ public class RuleDelegate {
 	 */
 	public RuleVO update(RuleVO rulevo, DependantMasterDataMap mpmdvoDependants) throws CommonBusinessException {
 		try {
-			return getRuleEngineFacade().modify(rulevo, mpmdvoDependants);
+			return ruleEngineFacadeRemote.modify(rulevo, mpmdvoDependants);
 		}
 		catch (RuntimeException ex) {
 			throw new NuclosUpdateException(ex.getMessage(), ex);
@@ -352,37 +351,40 @@ public class RuleDelegate {
 
 	public RuleVO create(RuleVO rulevo, DependantMasterDataMap mpmdvoDependants) throws CommonBusinessException {
 		try {
-			return getRuleEngineFacade().create(rulevo, mpmdvoDependants);
+			return ruleEngineFacadeRemote.create(rulevo, mpmdvoDependants);
 		}
 		catch (RuntimeException ex) {
 			throw new NuclosBusinessException(ex.getMessage(), ex);
 		}
 	}
 
-	public void createRuleUsageForId(String eventName, String entity, Integer processId, Integer statusId, Integer ruleToInsertId, Integer ruleBeforeId) throws CommonBusinessException {
-
+	public void createRuleUsageForId(String eventName, String entity, Integer processId, Integer statusId, 
+			Integer ruleToInsertId, Integer ruleBeforeId) throws CommonBusinessException {
+		
 		try {
-			getRuleEngineFacade().createRuleUsageInEntity(eventName, entity, processId, statusId, ruleToInsertId, ruleBeforeId);
+			ruleEngineFacadeRemote.createRuleUsageInEntity(eventName, entity, processId, statusId, ruleToInsertId, ruleBeforeId);
 		}
 		catch (RuntimeException ex) {
 			throw new CommonBusinessException(ex);
 		}
 	}
 
-	public void moveRuleUsageForId(String eventName, String entity, Integer processId, Integer statusId, Integer ruleToInsertId, Integer ruleBeforeId) throws CommonBusinessException {
+	public void moveRuleUsageForId(String eventName, String entity, Integer processId, Integer statusId, 
+			Integer ruleToInsertId, Integer ruleBeforeId) throws CommonBusinessException {
 
 		try {
-			getRuleEngineFacade().moveRuleUsageInEntity(eventName, entity, processId, statusId, ruleToInsertId, ruleBeforeId);
+			ruleEngineFacadeRemote.moveRuleUsageInEntity(eventName, entity, processId, statusId, ruleToInsertId, ruleBeforeId);
 		}
 		catch (RuntimeException ex) {
 			throw new CommonBusinessException(ex);
 		}
 	}
 
-	public void removeRuleUsage(String eventName, String entity, Integer processId, Integer statusId, Integer ruleToRemove) throws CommonBusinessException {
+	public void removeRuleUsage(String eventName, String entity, Integer processId, Integer statusId, 
+			Integer ruleToRemove) throws CommonBusinessException {
 
 		try {
-			getRuleEngineFacade().removeRuleUsage(eventName, entity, processId, statusId, ruleToRemove);
+			ruleEngineFacadeRemote.removeRuleUsage(eventName, entity, processId, statusId, ruleToRemove);
 		}
 		catch (RuntimeException ex) {
 			throw new CommonBusinessException(ex);
@@ -396,7 +398,7 @@ public class RuleDelegate {
 	 */
 	public void importRules(Collection<RuleWithUsagesVO> collRuleWithUsages) throws CommonBusinessException {
 		try {
-			getRuleEngineFacade().importRules(collRuleWithUsages);
+			ruleEngineFacadeRemote.importRules(collRuleWithUsages);
 		}
 		catch (RuntimeException ex) {
 			throw new NuclosFatalException(ex);
@@ -410,7 +412,7 @@ public class RuleDelegate {
 	 */
 	public void compile(RuleVO ruleVO) throws NuclosCompileException {
 		try {
-			this.getRuleEngineFacade().check(ruleVO);
+			ruleEngineFacadeRemote.check(ruleVO);
 		}
 		catch (RuntimeException e) {
 			throw new NuclosFatalException(e);
@@ -422,7 +424,7 @@ public class RuleDelegate {
 	 */
 	public String getClassTemplate() throws CommonBusinessException {
 		try {
-			return this.getRuleEngineFacade().getClassTemplate();
+			return ruleEngineFacadeRemote.getClassTemplate();
 		}
 		catch (RuntimeException e) {
 			throw new CommonBusinessException(e);
@@ -431,7 +433,7 @@ public class RuleDelegate {
 
 	public void invalidateCache() {
 		try {
-			this.getRuleEngineFacade().invalidateCache();
+			ruleEngineFacadeRemote.invalidateCache();
 		}
 		catch (RuntimeException e) {
 			throw new NuclosFatalException(e);

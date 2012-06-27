@@ -23,7 +23,6 @@ import java.util.Map;
 import org.nuclos.common.NuclosBusinessException;
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.dal.vo.EntityObjectVO;
-import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.exception.CommonCreateException;
 import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.common2.exception.CommonFinderException;
@@ -49,23 +48,29 @@ import org.nuclos.server.ruleengine.NuclosBusinessRuleException;
  */
 public class GeneratorDelegate {
 
-	private static GeneratorDelegate singleton;
+	private static GeneratorDelegate INSTANCE;
+	
+	//
+	
+	// Spring injection
 
-	private final GeneratorFacadeRemote generatorFacade;
+	private GeneratorFacadeRemote generatorFacadeRemote;
+	
+	// end of Spring injection
 
-	private GeneratorDelegate() {
-		try {
-			this.generatorFacade = ServiceLocator.getInstance().getFacade(GeneratorFacadeRemote.class);
-		} catch (RuntimeException ex) {
-			throw new CommonFatalException(ex);
-		}
+	GeneratorDelegate() {
+		INSTANCE = this;
 	}
 
-	public static synchronized GeneratorDelegate getInstance() {
-		if (singleton == null) {
-			singleton = new GeneratorDelegate();
+	public static GeneratorDelegate getInstance() {
+		if (INSTANCE == null) {
+			throw new IllegalStateException("too early");
 		}
-		return singleton;
+		return INSTANCE;
+	}
+	
+	public final void setGeneratorFacadeRemote(GeneratorFacadeRemote generatorFacadeRemote) {
+		this.generatorFacadeRemote = generatorFacadeRemote;
 	}
 
 	/**
@@ -75,7 +80,7 @@ public class GeneratorDelegate {
 	 */
 	public GeneratorVO getGeneratorActions() throws CommonPermissionException {
 		try {
-			return generatorFacade.getGeneratorActions();
+			return generatorFacadeRemote.getGeneratorActions();
 		} catch (RuntimeException ex) {
 			throw new NuclosFatalException(ex);
 		}
@@ -94,7 +99,7 @@ public class GeneratorDelegate {
 	 */
 	public GenerationResult generateGenericObject(Long iSourceGenericObjectId, Long parameterObjectId, GeneratorActionVO generatoractionvo) throws CommonFinderException, CommonPermissionException, NuclosBusinessRuleException, NuclosBusinessException, CommonStaleVersionException, CommonValidationException {
 		try {
-			return generatorFacade.generateGenericObject(iSourceGenericObjectId, parameterObjectId, generatoractionvo);
+			return generatorFacadeRemote.generateGenericObject(iSourceGenericObjectId, parameterObjectId, generatoractionvo);
 		} catch (RuntimeException ex) {
 			throw new NuclosFatalException(ex);
 		}
@@ -102,7 +107,7 @@ public class GeneratorDelegate {
 
 	public Map<String, Collection<EntityObjectVO>> groupObjects(Collection<Long> sources, GeneratorActionVO generatoractionvo) throws CommonFinderException, CommonPermissionException, NuclosBusinessRuleException, NuclosBusinessException, CommonStaleVersionException, CommonValidationException {
 		try {
-			return generatorFacade.groupObjects(new ArrayList<Long>(sources), generatoractionvo);
+			return generatorFacadeRemote.groupObjects(new ArrayList<Long>(sources), generatoractionvo);
 		} catch (RuntimeException ex) {
 			throw new NuclosFatalException(ex);
 		}
@@ -110,7 +115,7 @@ public class GeneratorDelegate {
 
 	public GenerationResult generateGenericObject(Collection<EntityObjectVO> sources, Long parameterObjectId, GeneratorActionVO generatoractionvo) throws CommonFinderException, CommonPermissionException, NuclosBusinessRuleException, NuclosBusinessException, CommonStaleVersionException, CommonValidationException {
 		try {
-			return generatorFacade.generateGenericObject(sources, parameterObjectId, generatoractionvo);
+			return generatorFacadeRemote.generateGenericObject(sources, parameterObjectId, generatoractionvo);
 		} catch (RuntimeException ex) {
 			throw new NuclosFatalException(ex);
 		}
@@ -119,7 +124,7 @@ public class GeneratorDelegate {
 
 	public void updateRuleUsages(Integer iGeneratorId, Collection<GeneratorRuleVO> colUsages) throws NuclosBusinessRuleException, CommonCreateException, CommonPermissionException, CommonStaleVersionException, CommonRemoveException, CommonFinderException {
 		try {
-			generatorFacade.updateRuleUsages(iGeneratorId, colUsages);
+			generatorFacadeRemote.updateRuleUsages(iGeneratorId, colUsages);
 		} catch (RuntimeException ex) {
 			throw new NuclosFatalException(ex);
 		}
@@ -127,7 +132,7 @@ public class GeneratorDelegate {
 
 	public Collection<GeneratorRuleVO> getRuleUsages(Integer iGeneratorId) throws CommonPermissionException {
 		try {
-			return generatorFacade.getRuleUsages(iGeneratorId);
+			return generatorFacadeRemote.getRuleUsages(iGeneratorId);
 		} catch (RuntimeException ex) {
 			throw new NuclosFatalException(ex);
 		}

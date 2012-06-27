@@ -37,7 +37,7 @@
 		Enable Annotation with @Configurable
 		http://forum.springsource.org/archive/index.php/t-39571.html 
 	 -->
-	<!-- context:annotation-config/ -->
+	<context:annotation-config/>
 
 	<!--
 		Enable @AspectJ Support of Sprint AOP
@@ -69,6 +69,7 @@
         method). Roo applications use this useful feature in a number of
         areas, such as @PersistenceContext injection into entities.
     -->
+	<!-- We need that at startup - at least for LoginController. (tp) -->
     <context:spring-configured/>
     <!--
         This declaration will cause Spring to locate every @Component,
@@ -177,6 +178,12 @@
 	</bean>
 	<bean id="securityDelegate" class="org.nuclos.client.common.security.SecurityDelegate">
 		<property name="securityFacadeRemote" ref="securityService"/>
+	</bean>
+	<bean id="nuclosRemoteServerSession" class="org.nuclos.client.security.NuclosRemoteServerSession">
+		<property name="securityFacadeRemote" ref="securityService"/>
+	</bean>
+	<bean id="errors" class="org.nuclos.client.ui.Errors">
+		<property name="nuclosRemoteServerSession" ref="nuclosRemoteServerSession"/>
 	</bean>
 
 	<!-- Avoid scanning for nuclos-common -->

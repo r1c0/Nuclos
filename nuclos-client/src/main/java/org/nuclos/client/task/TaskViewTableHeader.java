@@ -42,21 +42,35 @@ import org.nuclos.client.ui.table.SortableTableModel;
 import org.nuclos.common.Actions;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Predicate;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
+import org.springframework.beans.factory.annotation.Value;
 
-@SuppressWarnings("serial")
+@Configurable(preConstruction=true)
 public class TaskViewTableHeader extends JTableHeader {
 
 	private final Icon ascendingSortIcon;
 	private final Icon descendingSortIcon;
+	
+	// Spring injection
+	
+	private MainFrame mainFrame;
+	
+	// end of Spring injection
 
 	public TaskViewTableHeader(TableColumnModel cm) {
 		super(cm);
 		this.ascendingSortIcon = UIManager.getIcon("Table.ascendingSortIcon");
 		this.descendingSortIcon = UIManager.getIcon("Table.descendingSortIcon");
 		if (!SecurityCache.getInstance().isActionAllowed(Actions.ACTION_WORKSPACE_CUSTOMIZE_ENTITY_AND_SUBFORM_COLUMNS) &&
-				MainFrame.getWorkspace() != null && MainFrame.getWorkspace().isAssigned()) {
+				mainFrame.getWorkspace() != null && mainFrame.getWorkspace().isAssigned()) {
 			setReorderingAllowed(false);
 		}
+	}
+	
+	@Autowired
+	final void setMainFrame(@Value("#{mainFrameSpringComponent.mainFrame}") MainFrame mainFrame) {
+		this.mainFrame = mainFrame;
 	}
 	
 	@Override

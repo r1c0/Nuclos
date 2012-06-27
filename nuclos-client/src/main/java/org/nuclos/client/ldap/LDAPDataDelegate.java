@@ -19,7 +19,6 @@ package org.nuclos.client.ldap;
 import java.rmi.RemoteException;
 import java.util.Collection;
 
-import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonRemoteException;
 import org.nuclos.server.ldap.ejb3.LDAPDataFacadeRemote;
@@ -37,30 +36,32 @@ import org.nuclos.server.masterdata.valueobject.MasterDataWithDependantsVOWrappe
  * @version 01.00.00
  */
 public class LDAPDataDelegate {
-	private static LDAPDataDelegate singleton;
+	
+	private static LDAPDataDelegate INSTANCE;
+	
+	// Spring injection
 
-	private final LDAPDataFacadeRemote facade;
+	private LDAPDataFacadeRemote ldapDataFacadeRemote;
+	
+	// end of Spring injection
 
 	/**
 	 * Use getInstance() to create an (the) instance of this class
 	 */
-	private LDAPDataDelegate() throws RemoteException {
-		this.facade = ServiceLocator.getInstance().getFacade(LDAPDataFacadeRemote.class);
+	LDAPDataDelegate() throws RemoteException {
+		INSTANCE = this;
 	}
-
-	public static synchronized LDAPDataDelegate getInstance() {
-		if (singleton == null) {
-			try {
-				singleton = new LDAPDataDelegate();
-			}
-			catch (RemoteException ex) {
-				throw new CommonRemoteException(ex);
-			}
+	
+	public static LDAPDataDelegate getInstance() {
+		if (INSTANCE == null) {
+			throw new IllegalStateException("too early");
 		}
-		return singleton;
+		return INSTANCE;
 	}
 
-
+	public final void setLDAPDataFacadeRemote(LDAPDataFacadeRemote ldapDataFacadeRemote) {
+		this.ldapDataFacadeRemote = ldapDataFacadeRemote;
+	}
 
 	public MasterDataVO create(MasterDataVO vo, DependantMasterDataMap mpDependants) throws CommonBusinessException {
 		return this.getLDAPDataFacade().create(vo, mpDependants);
@@ -79,7 +80,7 @@ public class LDAPDataDelegate {
 	}
 
 	public LDAPDataFacadeRemote getLDAPDataFacade() {
-		return this.facade;
+		return this.ldapDataFacadeRemote;
 	}
 
 }

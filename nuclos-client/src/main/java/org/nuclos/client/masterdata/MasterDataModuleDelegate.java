@@ -16,7 +16,6 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.masterdata;
 
-import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.common.NuclosBusinessException;
@@ -26,39 +25,48 @@ import org.nuclos.server.masterdata.valueobject.DependantMasterDataMap;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 
 public class MasterDataModuleDelegate {
-	private static MasterDataModuleDelegate singleton;
+	
+	private static MasterDataModuleDelegate INSTANCE;
 
 	public static final String ENTITYNAME_ENTITY = "entity";
+	
+	//
+	
+	// Spring injection
 
-	private final MasterDataModuleFacadeRemote facade;
+	private MasterDataModuleFacadeRemote facade;
 
-	private final MasterDataFacadeRemote mdfacade;
+	private MasterDataFacadeRemote mdfacade;
+	
+	// end of Spring injection
 
 	/**
 	 * Use getInstance() to create an (the) instance of this class
 	 */
-	private MasterDataModuleDelegate() {
-		this.facade = ServiceLocator.getInstance().getFacade(MasterDataModuleFacadeRemote.class);
-		this.mdfacade = ServiceLocator.getInstance().getFacade(MasterDataFacadeRemote.class);
+	MasterDataModuleDelegate() {
+		INSTANCE = this;
 	}
 
-	public static synchronized MasterDataModuleDelegate getInstance() {
-		if (singleton == null) {
-			try {
-				singleton = new MasterDataModuleDelegate();
-			}
-			catch (RuntimeException ex) {
-				throw new CommonFatalException(ex);
-			}
+	public static MasterDataModuleDelegate getInstance() {
+		if (INSTANCE == null) {
+			throw new IllegalStateException("too early");
 		}
-		return singleton;
+		return INSTANCE;
+	}
+	
+	public final void setMasterDataModuleFacadeRemote(MasterDataModuleFacadeRemote masterDataModuleFacadeRemote) {
+		this.facade = masterDataModuleFacadeRemote;
+	}
+	
+	public final void setMasterDataFacadeRemote(MasterDataFacadeRemote masterDataFacadeRemote) {
+		this.mdfacade = masterDataFacadeRemote;
 	}
 
-	public MasterDataModuleFacadeRemote getFacade() {
+	private MasterDataModuleFacadeRemote getFacade() {
 		return this.facade;
 	}
 
-	public MasterDataFacadeRemote getMasterDataFacade() {
+	private MasterDataFacadeRemote getMasterDataFacade() {
 		return this.mdfacade;
 	}
 

@@ -35,7 +35,6 @@ import org.nuclos.common.collect.collectable.searchcondition.CompositeCollectabl
 import org.nuclos.common.collect.collectable.searchcondition.LogicalOperator;
 import org.nuclos.common.dal.DalSupportForMD;
 import org.nuclos.common2.SpringLocaleDelegate;
-import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.TruncatableCollection;
 import org.nuclos.common2.exception.CommonFatalException;
@@ -64,11 +63,45 @@ public class MigrateSearchFilterPreferences {
 
 	private static final String PREFS_NODE_TASKPANEL = "taskPanel";
 	private static final String PREFS_NODE_TASKPANELFILTERS = "filters";
+	
+	private static MigrateSearchFilterPreferences INSTANCE;
+	
+	//
+	
+	// Spring injection
+	
+	private MasterDataFacadeRemote masterDataFacadeRemote;
+	
+	private PreferencesFacadeRemote preferencesFacadeRemote;
+	
+	private SearchFilterFacadeRemote searchFilterFacadeRemote;
+	
+	// end of Spring injection 
 
-	private static Integer iUserId;
-	private static String sUserName;
+	private Integer iUserId;
+	private String sUserName;
+	
+	MigrateSearchFilterPreferences() {
+		INSTANCE = this;
+	}
+	
+	public static MigrateSearchFilterPreferences getInstance() {
+		return INSTANCE;
+	}
+	
+	public final void setMasterDataFacadeRemote(MasterDataFacadeRemote masterDataFacadeRemote) {
+		this.masterDataFacadeRemote = masterDataFacadeRemote;
+	}
+	
+	public final void setPreferencesFacadeRemote(PreferencesFacadeRemote preferencesFacadeRemote) {
+		this.preferencesFacadeRemote = preferencesFacadeRemote;
+	}
+	
+	public final void setSearchFilterFacadeRemote(SearchFilterFacadeRemote searchFilterFacadeRemote) {
+		this.searchFilterFacadeRemote = searchFilterFacadeRemote;
+	}
 
-	public static void migrate(String sMigrationUser) throws RemoteException {
+	public void migrate(String sMigrationUser) throws RemoteException {
 		if(StringUtils.isNullOrEmpty(sMigrationUser)) {
 			throw new NuclosFatalException(SpringLocaleDelegate.getInstance().getMessage(
 					"MigrateSearchFilterPreferences.1", "Der Benutzer, der f\u00fcr die Migration der Suchfilter verwendet wird ist nicht gesetzt!"));
@@ -78,13 +111,13 @@ public class MigrateSearchFilterPreferences {
 		PreferencesVO preferencesOfMigrationUser = null;
 		MasterDataVO mdVOOfMigrationUser = null;
 		try {
-			preferencesOfMigrationUser = getPreferencesFacade().getPreferencesForUser(sMigrationUser);
+			preferencesOfMigrationUser = preferencesFacadeRemote.getPreferencesForUser(sMigrationUser);
 		}
 		catch (CommonFinderException e) {
 			// no prefs found for user
 		}
 
-		for (MasterDataVO mdVO_user : getMasterDataFacade().getMasterData(NuclosEntity.USER.getEntityName(), null, true)) {
+		for (MasterDataVO mdVO_user : masterDataFacadeRemote.getMasterData(NuclosEntity.USER.getEntityName(), null, true)) {
 			try {
 				iUserId = mdVO_user.getIntId();
 				sUserName = (String)mdVO_user.getField("name");
@@ -98,7 +131,7 @@ public class MigrateSearchFilterPreferences {
 
 				PreferencesVO prefsVO = null;
 				try {
-					prefsVO = getPreferencesFacade().getPreferencesForUser((String)mdVO_user.getField("name"));
+					prefsVO = preferencesFacadeRemote.getPreferencesForUser((String)mdVO_user.getField("name"));
 				}
 				catch (CommonFinderException e) {
 					// no prefs found for user
@@ -120,7 +153,7 @@ public class MigrateSearchFilterPreferences {
 		}
 	}
 
-	private static void migrate(MasterDataVO mdVO_user, PreferencesVO prefsVO) {
+	private void migrate(MasterDataVO mdVO_user, PreferencesVO prefsVO) {
 		try {
 			final ByteArrayInputStream is = new ByteArrayInputStream(prefsVO.getPreferencesBytes());
 			Preferences prefs = Preferences.userRoot().node("org/nuclos/client");
@@ -138,7 +171,7 @@ public class MigrateSearchFilterPreferences {
 			prefs.exportSubtree(os);
 			byte[] bytes = os.toByteArray();
 
-			getPreferencesFacade().setPreferencesForUser((String)mdVO_user.getField("name"), new PreferencesVO(bytes));
+			preferencesFacadeRemote.setPreferencesForUser((String)mdVO_user.getField("name"), new PreferencesVO(bytes));
 
 			prefs.removeNode();
 		}
@@ -148,7 +181,7 @@ public class MigrateSearchFilterPreferences {
 		}
 	}
 
-	private static void migrateSearchFilters(Preferences prefs, String sPrefsFilter) {
+	private void migrateSearchFilters(Preferences prefs, String sPrefsFilter) {
 		try {
 			if (!prefs.nodeExists(sPrefsFilter)) {
 				return;
@@ -230,7 +263,7 @@ public class MigrateSearchFilterPreferences {
 
 				Integer iId = MasterDataDelegate.getInstance().create(NuclosEntity.SEARCHFILTER.getEntityName(), mdVO_searchfilter, dmdm).getIntId();
 
-				getSearchFilterFacade().changeCreatedUser(iId, sUserName);
+				searchFilterFacadeRemote.changeCreatedUser(iId, sUserName);
 
 				prefsSearchFilter.removeNode();
 
@@ -248,7 +281,7 @@ public class MigrateSearchFilterPreferences {
 		}
 	}
 
-	private static void migrateGlobalSearchFilter(Preferences prefs) {
+	private void migrateGlobalSearchFilter(Preferences prefs) {
 		try {
 			if (!prefs.nodeExists(PREFS_NODE_MAINFRAME)) {
 				return;
@@ -274,7 +307,7 @@ public class MigrateSearchFilterPreferences {
 		}
 	}
 
-	private static void migrateTaskPanelFilters(Preferences prefs) {
+	private void migrateTaskPanelFilters(Preferences prefs) {
 		try {
 			if (!prefs.nodeExists(PREFS_NODE_TASKPANEL)) {
 				return;
@@ -345,7 +378,7 @@ public class MigrateSearchFilterPreferences {
 		}
 	}
 
-	private static Integer getSearchFilterId(String sFilter, String sUserName) throws RemoteException {
+	private Integer getSearchFilterId(String sFilter, String sUserName) throws RemoteException {
 		if (StringUtils.isNullOrEmpty(sFilter) || StringUtils.isNullOrEmpty(sUserName)) {
 			LOG.info("search filter " + sFilter + " for user " + sUserName + " is null or empty");
 		}
@@ -354,7 +387,7 @@ public class MigrateSearchFilterPreferences {
 		conditions.add(SearchConditionUtils.newMDComparison(MetaDataCache.getInstance().getMetaData(NuclosEntity.SEARCHFILTER), "name", ComparisonOperator.EQUAL, sFilter));
 		conditions.add(SearchConditionUtils.newMDComparison(MetaDataCache.getInstance().getMetaData(NuclosEntity.SEARCHFILTER), "createdUser", ComparisonOperator.EQUAL, sUserName));
 
-		TruncatableCollection<MasterDataVO> collmdvo = getMasterDataFacade().getMasterData(NuclosEntity.SEARCHFILTER.getEntityName(), new CompositeCollectableSearchCondition(LogicalOperator.AND, conditions), true);
+		TruncatableCollection<MasterDataVO> collmdvo = masterDataFacadeRemote.getMasterData(NuclosEntity.SEARCHFILTER.getEntityName(), new CompositeCollectableSearchCondition(LogicalOperator.AND, conditions), true);
 
 		assert collmdvo.size() <= 1;
 
@@ -366,30 +399,4 @@ public class MigrateSearchFilterPreferences {
 
 	}
 
-	private static MasterDataFacadeRemote getMasterDataFacade() {
-		try {
-			return ServiceLocator.getInstance().getFacade(MasterDataFacadeRemote.class);
-		}
-		catch (RuntimeException e) {
-			throw new CommonFatalException(e);
-		}
-	}
-
-	private static PreferencesFacadeRemote getPreferencesFacade() throws RemoteException {
-		try {
-			return ServiceLocator.getInstance().getFacade(PreferencesFacadeRemote.class);
-		}
-		catch(RuntimeException e) {
-			throw new CommonFatalException(e);
-		}
-	}
-
-	private static SearchFilterFacadeRemote getSearchFilterFacade() throws RemoteException {
-		try {
-			return ServiceLocator.getInstance().getFacade(SearchFilterFacadeRemote.class);
-		}
-		catch(RuntimeException e) {
-			throw new CommonFatalException(e);
-		}
-	}
 }

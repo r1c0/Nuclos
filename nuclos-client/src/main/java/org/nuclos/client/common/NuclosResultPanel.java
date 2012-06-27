@@ -613,7 +613,7 @@ public class NuclosResultPanel<Clct extends Collectable> extends ResultPanel<Clc
 	public void setColumnWidths(JTable tblResult, EntityPreferences entityPreferences) {
 		super.setColumnWidths(tblResult, entityPreferences);
 
-		setColumnWiths(WorkspaceUtils.getFixedWidths(entityPreferences));
+		setColumnWiths(workspaceUtils.getFixedWidths(entityPreferences));
 	}
 
 	private void setColumnWiths(final List<Integer> lstWidths) {

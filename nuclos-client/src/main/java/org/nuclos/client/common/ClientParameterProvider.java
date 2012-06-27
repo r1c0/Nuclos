@@ -129,8 +129,6 @@ public class ClientParameterProvider extends AbstractParameterProvider implement
 
 	private Map<String, String> getParameterFromServer() {
 		try {
-			// ParameterFacadeRemote remote = serviceLocator.getFacade(ParameterFacadeRemote.class);
-			// return remote.getParameters();
 			return parameterFacadeRemote.getParameters();
 		}
 		catch (RuntimeException ex) {

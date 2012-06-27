@@ -119,6 +119,8 @@ public class Main {
 	/**
 	 * @todo this shouldn't be a singleton. Use child window as parameter!
 	 * @return the <code>MainFrame</code> of this application, if any.
+	 * 
+	 * @deprecated Use MainFrame Spring injection via MainFrameSpringComponent. (tp)
 	 */
 	public MainFrame getMainFrame() {
 		for (Frame frm : JFrame.getFrames()) {

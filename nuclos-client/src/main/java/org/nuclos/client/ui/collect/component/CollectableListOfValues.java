@@ -23,6 +23,7 @@ import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import javax.annotation.PostConstruct;
 
 import javax.swing.JButton;
 import javax.swing.JComponent;
@@ -63,10 +64,12 @@ import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
 import org.nuclos.common2.IdUtils;
 import org.nuclos.common2.LangUtils;
-import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.server.masterdata.ejb3.EntityFacadeRemote;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
+import org.springframework.beans.factory.annotation.Qualifier;
 
 /**
  * A <code>CollectableComponent</code> that presents a value in a <code>ListOfValues</code>.
@@ -77,6 +80,7 @@ import org.nuclos.server.masterdata.ejb3.EntityFacadeRemote;
  * @author	<a href="mailto:Christoph.Radig@novabit.de">Christoph.Radig</a>
  * @version 01.00.00
  */
+@Configurable
 public class CollectableListOfValues extends LabeledCollectableComponentWithVLP implements ICollectableListOfValues, CollectableEventListener {
 
 	private static final Logger LOG = Logger.getLogger(CollectableListOfValues.class);
@@ -91,6 +95,12 @@ public class CollectableListOfValues extends LabeledCollectableComponentWithVLP 
 	private final List<LookupListener> lstLookupListeners = new LinkedList<LookupListener>();
 
 	private DocumentListener documentlistener;
+	
+	// Spring injection
+	
+	private EntityFacadeRemote entityFacadeRemote;
+	
+	// end of Spring injection
 
 	/**
 	 * inner class <code>CollectableListOfValues.Event</code>.
@@ -154,7 +164,11 @@ public class CollectableListOfValues extends LabeledCollectableComponentWithVLP 
 	 */
 	public CollectableListOfValues(final CollectableEntityField clctef, boolean bSearchable) {
 		super(clctef, new LabeledListOfValues(new LabeledComponentSupport()), bSearchable);
-
+	}
+	
+	@PostConstruct
+	final void init() {
+		final CollectableEntityField clctef = getEntityField();
 		if (clctef == null) {
 			throw new NullArgumentException("clctef");
 		}
@@ -189,7 +203,7 @@ public class CollectableListOfValues extends LabeledCollectableComponentWithVLP 
 					}
 				}
 
-				return CollectableListOfValues.getQuickSearchResult(clctef, inputString, vlpId, vlpParameter);
+				return CollectableListOfValues.this.getQuickSearchResult(clctef, inputString, vlpId, vlpParameter);
 			}
 		});
 
@@ -203,7 +217,7 @@ public class CollectableListOfValues extends LabeledCollectableComponentWithVLP 
 			@Override
 			public void actionPerformed(CollectableValueIdField itemSelected) {
 				if (itemSelected == null) {
-					CollectableListOfValues.this.clearListOfValues();
+					clearListOfValues();
 				} else {
 					try {
 						Collectable c = Utils.getReferencedCollectable(clctef.getEntityName(), clctef.getName(), itemSelected.getValueId());
@@ -232,6 +246,12 @@ public class CollectableListOfValues extends LabeledCollectableComponentWithVLP 
 
 		assert this.isInsertable() == this.isSearchComponent();
 	}
+	
+	@Autowired
+	@Qualifier("entityService")
+	final void setEntityFacadeRemote(EntityFacadeRemote entityFacadeRemote) {
+		this.entityFacadeRemote = entityFacadeRemote;
+	}
 
 	/**
 	 *
@@ -250,13 +270,13 @@ public class CollectableListOfValues extends LabeledCollectableComponentWithVLP 
 	 * @param collectableFieldsProvider
 	 * @return
 	 */
-	private static List<CollectableValueIdField> getQuickSearchResult(final CollectableEntityField clctef, final String inputString, Integer vlpId, Map<String, Object> vlpParameter) {
+	private List<CollectableValueIdField> getQuickSearchResult(final CollectableEntityField clctef, final String inputString, Integer vlpId, Map<String, Object> vlpParameter) {
 
 		CollectableEntity clcte = clctef.getCollectableEntity();
 		if (clcte == null)
 			return Collections.emptyList();
 
-		return ServiceLocator.getInstance().getFacade(EntityFacadeRemote.class).getQuickSearchResult(clcte.getName(), clctef.getName(), inputString, vlpId, vlpParameter, QUICKSEARCH_MAX);
+		return entityFacadeRemote.getQuickSearchResult(clcte.getName(), clctef.getName(), inputString, vlpId, vlpParameter, QUICKSEARCH_MAX);
 	}
 
 	/**

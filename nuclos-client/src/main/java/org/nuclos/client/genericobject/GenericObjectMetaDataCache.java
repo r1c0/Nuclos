@@ -29,13 +29,7 @@ import org.apache.log4j.Logger;
 import org.nuclos.client.attribute.AttributeCache;
 import org.nuclos.client.common.MetaDataClientProvider;
 import org.nuclos.client.jms.TopicNotificationReceiver;
-import org.nuclos.common.AttributeProvider;
-import org.nuclos.common.CacheableListener;
-import org.nuclos.common.GenericObjectMetaDataProvider;
-import org.nuclos.common.GenericObjectMetaDataVO;
-import org.nuclos.common.JMSConstants;
-import org.nuclos.common.NuclosAttributeNotFoundException;
-import org.nuclos.common.UsageCriteria;
+import org.nuclos.common.*;
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common2.EntityAndFieldName;
 import org.nuclos.common2.exception.CommonFinderException;
@@ -96,6 +90,11 @@ public class GenericObjectMetaDataCache implements GenericObjectMetaDataProvider
 	}
 
 	public static GenericObjectMetaDataCache getInstance() {
+		if (INSTANCE == null) {
+			// throw new IllegalStateException("too early");
+			// lazy support
+			SpringApplicationContextHolder.getBean(GenericObjectMetaDataCache.class);
+		}
 		return INSTANCE;
 	}
 

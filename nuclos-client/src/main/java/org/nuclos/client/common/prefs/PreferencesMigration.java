@@ -28,6 +28,7 @@ import org.apache.commons.httpclient.util.LangUtils;
 import org.apache.log4j.Logger;
 import org.nuclos.client.common.MetaDataClientProvider;
 import org.nuclos.client.main.mainframe.MainFrame;
+import org.nuclos.client.main.mainframe.MainFrameSpringComponent;
 import org.nuclos.common.CollectableEntityFieldWithEntity;
 import org.nuclos.common.CollectableEntityFieldWithEntityForExternal;
 import org.nuclos.common.WorkspaceDescription.ColumnPreferences;
@@ -41,6 +42,7 @@ import org.nuclos.common.genericobject.CollectableGenericObjectEntityField;
 import org.nuclos.common.masterdata.CollectableMasterDataForeignKeyEntityField;
 import org.nuclos.common2.PreferencesUtils;
 import org.nuclos.common2.exception.PreferencesException;
+import org.springframework.beans.factory.annotation.Autowired;
 
 public class PreferencesMigration {
 	
@@ -78,8 +80,33 @@ public class PreferencesMigration {
 	private static final String PREFS_NODE_FIXEDFIELDS = "fixedFields";
 	private static final String PREFS_NODE_FIXEDFIELDS_WIDTHS = "fixedFieldWidths";
 	
-	public static void migrateEntityAndSubFormColumnPreferences() {
-		if (!MainFrame.getWorkspace().getWoDesc().getEntityPreferences().isEmpty()) {
+	private static PreferencesMigration INSTANCE;
+	
+	//
+	
+	// Spring injection
+	
+	private MainFrameSpringComponent mainFrameSpringComponent;
+	
+	// end of Spring injection
+	
+	PreferencesMigration() {
+		INSTANCE = this;
+	}
+	
+	public static PreferencesMigration getInstance() {
+		if (INSTANCE == null) {
+			throw new IllegalStateException("too early");
+		}
+		return INSTANCE;
+	}
+	
+	public final void setMainFrameSpringComponent(MainFrameSpringComponent mainFrameSpringComponent) {
+		this.mainFrameSpringComponent = mainFrameSpringComponent;
+	}
+	
+	public void migrateEntityAndSubFormColumnPreferences() {
+		if (!mainFrameSpringComponent.getMainFrame().getWorkspace().getWoDesc().getEntityPreferences().isEmpty()) {
 			return; // only migrate if new preferences are empty
 		}
 		
@@ -307,7 +334,7 @@ public class PreferencesMigration {
 		}
 	}
 	
-	private static List<SortKey> readSortKeysFromPrefs(Preferences prefs) throws PreferencesException {
+	private List<SortKey> readSortKeysFromPrefs(Preferences prefs) throws PreferencesException {
 		List<Integer> sortColumns = PreferencesUtils.getIntegerList(prefs, PREFS_NODE_ORDERBYSELECTEDFIELD);
 		List<Integer> sortOrders = PreferencesUtils.getIntegerList(prefs, PREFS_NODE_ORDERASCENDING);
 

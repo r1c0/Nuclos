@@ -20,7 +20,6 @@ import java.util.Collection;
 import java.util.List;
 
 import org.nuclos.common2.DateTime;
-import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.common2.exception.CommonFinderException;
@@ -44,30 +43,36 @@ import org.nuclos.server.statemodel.valueobject.StateVO;
  */
 public class ProcessMonitorDelegate {
 
-	private static ProcessMonitorDelegate singleton;
+	private static ProcessMonitorDelegate INSTANCE;
+	
+	//
 
-	private ProcessMonitorFacadeRemote facade = null; 
+	private ProcessMonitorFacadeRemote processMonitorFacadeRemote; 
 
-	private ProcessMonitorDelegate() {
-		facade = ServiceLocator.getInstance().getFacade(ProcessMonitorFacadeRemote.class);
+	ProcessMonitorDelegate() {
+		INSTANCE = this;
 	}
 
-	public static synchronized ProcessMonitorDelegate getInstance() {
-		if (singleton == null) {
-			singleton = new ProcessMonitorDelegate();
+	public static ProcessMonitorDelegate getInstance() {
+		if (INSTANCE == null) {
+			throw new IllegalStateException("too early");
 		}
-		return singleton;
+		return INSTANCE;
+	}
+	
+	public final void setProcessMonitorFacadeRemote(ProcessMonitorFacadeRemote processMonitorFacadeRemote) {
+		this.processMonitorFacadeRemote = processMonitorFacadeRemote;
 	}
 	
 	public Collection<StateVO> getStateByModelId(Integer stateModelId) {		
-		return facade.getStateByModelId(stateModelId);
+		return processMonitorFacadeRemote.getStateByModelId(stateModelId);
 	}
 	
 	/*
 	 * retrieve all process models
 	 */
 	public Collection<ProcessMonitorVO> getProcessModels() {
-		return facade.getProcessModels();
+		return processMonitorFacadeRemote.getProcessModels();
 	}
 	
 	/*
@@ -75,7 +80,7 @@ public class ProcessMonitorDelegate {
 	 */
 	public ProcessMonitorVO create(ProcessMonitorGraphVO vo) {
 		try {
-			return facade.create(vo);		
+			return processMonitorFacadeRemote.create(vo);		
 		} catch (Exception ex) {
 			throw new CommonFatalException(ex);
 		} 
@@ -85,7 +90,7 @@ public class ProcessMonitorDelegate {
 	 * unused at the moment
 	 */
 	public ProcessMonitorVO modify(ProcessMonitorVO vo) {
-		return facade.modify(vo);		
+		return processMonitorFacadeRemote.modify(vo);		
 
 	}
 	
@@ -94,7 +99,7 @@ public class ProcessMonitorDelegate {
 	 */
 	public Integer setStateGraph(ProcessMonitorGraphVO stategraphvo) throws CommonBusinessException {
 		try {
-			return this.facade.setStateGraph(stategraphvo);
+			return this.processMonitorFacadeRemote.setStateGraph(stategraphvo);
 		}
 		catch (Exception ex) {
 			throw new CommonRemoteException(ex);
@@ -105,7 +110,7 @@ public class ProcessMonitorDelegate {
 	 * retrieve processmodel from database
 	 */
 	public ProcessMonitorGraphVO getStateGraph(int iModelId) throws CommonFinderException {
-		return this.facade.getStateGraph(iModelId);
+		return this.processMonitorFacadeRemote.getStateGraph(iModelId);
 			
 		
 	}
@@ -121,7 +126,7 @@ public class ProcessMonitorDelegate {
 	 * months = 5
 	 */
 	public List<ProcessStateRuntimeFormatVO> getPossibleRuntimeFormats() {
-		return this.facade.getPossibleRuntimeFormats();
+		return this.processMonitorFacadeRemote.getPossibleRuntimeFormats();
 
 	}
 	
@@ -131,7 +136,7 @@ public class ProcessMonitorDelegate {
 	 * @return
 	 */
 	public List<SubProcessUsageCriteriaVO>  getSubProcessUsageCriterias(Integer stateModelId){
-		return this.facade.getSubProcessUsageCriterias(stateModelId);
+		return this.processMonitorFacadeRemote.getSubProcessUsageCriterias(stateModelId);
 
 	}
 
@@ -142,7 +147,7 @@ public class ProcessMonitorDelegate {
 	 * @throws CommonBusinessException
 	 */
 	public SubProcessVO findStartingSubProcess(java.lang.Integer iProcessMonitorId) throws CommonBusinessException{
-		return this.facade.findStartingSubProcess(iProcessMonitorId);
+		return this.processMonitorFacadeRemote.findStartingSubProcess(iProcessMonitorId);
 		
 	}
 	
@@ -154,7 +159,7 @@ public class ProcessMonitorDelegate {
 	 * @throws CommonBusinessException 
 	 */
 	public DateTime getProcessPlanEnd(Integer iProcessMonitorId, DateTime datePlanStart) throws CommonBusinessException{
-		return this.facade.getProcessPlanEnd(iProcessMonitorId, datePlanStart);
+		return this.processMonitorFacadeRemote.getProcessPlanEnd(iProcessMonitorId, datePlanStart);
 		
 	}
 	
@@ -164,7 +169,7 @@ public class ProcessMonitorDelegate {
 	 * @return id or null
 	 */
 	public Integer getGenerationIdFromSubProcessTransition(Integer iSubProcessTransitionId){
-		return this.facade.getGenerationIdFromSubProcessTransition(iSubProcessTransitionId);
+		return this.processMonitorFacadeRemote.getGenerationIdFromSubProcessTransition(iSubProcessTransitionId);
 		
 	}
 

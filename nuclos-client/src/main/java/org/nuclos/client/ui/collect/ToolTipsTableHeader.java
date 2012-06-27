@@ -45,12 +45,22 @@ import org.nuclos.common.Actions;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Predicate;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
+import org.springframework.beans.factory.annotation.Value;
 
+@Configurable(preConstruction=true)
 public class ToolTipsTableHeader extends JTableHeader {
 
 	private CollectableEntityFieldBasedTableModel entityTableModel;
 	private final Icon ascendingSortIcon;
 	private final Icon descendingSortIcon;
+	
+	// Spring injection
+	
+	private MainFrame mainFrame;
+	
+	// end of Spring injection
 
 	public ToolTipsTableHeader(CollectableEntityFieldBasedTableModel aTableModel, TableColumnModel cm) {
 		super(cm);
@@ -58,9 +68,14 @@ public class ToolTipsTableHeader extends JTableHeader {
 		this.ascendingSortIcon = UIManager.getIcon("Table.ascendingSortIcon");
 		this.descendingSortIcon = UIManager.getIcon("Table.descendingSortIcon");
 		if (!SecurityCache.getInstance().isActionAllowed(Actions.ACTION_WORKSPACE_CUSTOMIZE_ENTITY_AND_SUBFORM_COLUMNS) &&
-				MainFrame.getWorkspace() != null && MainFrame.getWorkspace().isAssigned()) {
+				mainFrame.getWorkspace() != null && mainFrame.getWorkspace().isAssigned()) {
 			setReorderingAllowed(false);
 		}
+	}
+	
+	@Autowired
+	final void setMainFrame(@Value("#{mainFrameSpringComponent.mainFrame}") MainFrame mainFrame) {
+		this.mainFrame = mainFrame;
 	}
 
 	/**

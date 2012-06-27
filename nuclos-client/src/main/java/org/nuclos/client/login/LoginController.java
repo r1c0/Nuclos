@@ -77,7 +77,6 @@ import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.SpringApplicationContextHolder;
 import org.nuclos.common.security.RemoteAuthenticationManager;
 import org.nuclos.common2.LocaleInfo;
-import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonFatalException;
@@ -100,7 +99,7 @@ import org.springframework.security.core.AuthenticationException;
  * @author	<a href="mailto:Christoph.Radig@novabit.de">Christoph.Radig</a>
  * @version 01.00.00
  */
-@Configurable
+@Configurable(preConstruction=true)
 public class LoginController extends Controller<Component> {
 
 	private static final Logger LOG = Logger.getLogger(LoginController.class);
@@ -125,9 +124,17 @@ public class LoginController extends Controller<Component> {
 	private double                    shakeStepSize	    = 0;
 	private final String[] args;
 	
+	private StartUp.ClientContextCondition clientContextCondition;
+	
+	// Spring injection
+	
 	private LocaleDelegate localeDelegate;
 	
-	private StartUp.ClientContextCondition clientContextCondition;
+	private ServerMetaFacadeRemote serverMetaFacadeRemote;
+	
+	private NuclosRemoteServerSession nuclosRemoteServerSession;
+	
+	// end of Spring injection
 	
 	private LoginController() {
 		this(null, new String[] {}, null);
@@ -138,11 +145,10 @@ public class LoginController extends Controller<Component> {
 		this.args = args;
 		this.clientContextCondition = clientContextCondition;
 		try {
-	        final ServerMetaFacadeRemote sm = ServiceLocator.getInstance().getFacade(ServerMetaFacadeRemote.class);
 	        passwordSaveAllowed = Boolean.valueOf(
 	        	StringUtils.defaultIfNull(
 	        		StringUtils.nullIfEmpty(
-	        			sm.getServerProperty("application.settings.client.autologin.allowed")),
+	        			serverMetaFacadeRemote.getServerProperty("application.settings.client.autologin.allowed")),
 	        	"false"));
         }
         catch(CommonFatalException e) {
@@ -180,9 +186,19 @@ public class LoginController extends Controller<Component> {
 		this.args = new String[]{};
 	}
 	
-	// @Autowired
-	public final void setLocaleDelegate(LocaleDelegate localeDelegate) {
+	@Autowired
+	final void setLocaleDelegate(LocaleDelegate localeDelegate) {
 		this.localeDelegate = localeDelegate;
+	}
+	
+	@Autowired
+	final void setServerMetaFacadeRemote(ServerMetaFacadeRemote serverMetaFacadeRemote) {
+		this.serverMetaFacadeRemote = serverMetaFacadeRemote;
+	}
+	
+	@Autowired
+	final void setNuclosRemoteServerSession(NuclosRemoteServerSession nuclosRemoteServerSession) {
+		this.nuclosRemoteServerSession = nuclosRemoteServerSession;
 	}
 
 	public void run() {
@@ -473,7 +489,7 @@ public class LoginController extends Controller<Component> {
 									public void changePassword(String oldPw, String newPw) throws CommonBusinessException {
 										RemoteAuthenticationManager ram = SpringApplicationContextHolder.getBean(RemoteAuthenticationManager.class);
 										ram.changePassword(sUserName, new String(acPassword), newPw);
-										NuclosRemoteServerSession.relogin(sUserName, newPw);
+										nuclosRemoteServerSession.relogin(sUserName, newPw);
 									}
 								});
 							}
@@ -580,7 +596,7 @@ public class LoginController extends Controller<Component> {
 	}
 
 	private void performLogin(String sUserName, char[] acPassword) {
-		NuclosRemoteServerSession.login(sUserName, new String(acPassword));
+		nuclosRemoteServerSession.login(sUserName, new String(acPassword));
 		if (!ShutdownActions.getInstance().isRegistered(ShutdownActions.SHUTDOWNORDER_LOGOUT)) {
 			ShutdownActions.getInstance().registerShutdownAction(ShutdownActions.SHUTDOWNORDER_LOGOUT, new Logout());
 		}
@@ -616,10 +632,10 @@ public class LoginController extends Controller<Component> {
 		}
 	}
 
-	private static class Logout implements Runnable {
+	private class Logout implements Runnable {
 		@Override
 		public void run() {
-			NuclosRemoteServerSession.logout();
+			nuclosRemoteServerSession.logout();
 		}
 	}
 

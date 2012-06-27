@@ -25,9 +25,11 @@ import java.util.Set;
 import org.apache.commons.lang.NullArgumentException;
 import org.apache.log4j.Logger;
 import org.nuclos.client.attribute.AttributeCache;
+import org.nuclos.client.common.MetaDataClientProvider;
 import org.nuclos.client.masterdata.MasterDataDelegate;
 import org.nuclos.common.GenericObjectMetaDataVO;
 import org.nuclos.common.NuclosFatalException;
+import org.nuclos.common.SpringApplicationContextHolder;
 import org.nuclos.common.attribute.DynamicAttributeVO;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableSearchCondition;
 import org.nuclos.common2.SpringLocaleDelegate;
@@ -84,6 +86,10 @@ public class GenericObjectDelegate {
 	}
 	
 	public static GenericObjectDelegate getInstance() {
+		if (INSTANCE == null) {
+			// lazy support
+			SpringApplicationContextHolder.getBean(GenericObjectDelegate.class);			
+		}
 		return INSTANCE;
 	}
 	

@@ -195,7 +195,7 @@ public class GenericObjectResultController<Clct extends CollectableGenericObject
 	 */
 	@Override
 	protected List<? extends CollectableEntityField> readSelectedFieldsFromPreferences() {
-		final List<? extends CollectableEntityField> result = WorkspaceUtils.getCollectableEntityFieldsForGenericObject(
+		final List<? extends CollectableEntityField> result = getWorkspaceUtils().getCollectableEntityFieldsForGenericObject(
 				getGenericObjectCollectController().getEntityPreferences());
 		CollectionUtils.removeDublicates(result);
 		
@@ -224,7 +224,7 @@ public class GenericObjectResultController<Clct extends CollectableGenericObject
 	protected void writeSelectedFieldsAndWidthsToPreferences(
 			EntityPreferences entityPreferences, 
 			List<? extends CollectableEntityField> lstclctefSelected, Map<String, Integer> mpWidths) {
-		WorkspaceUtils.setCollectableEntityFieldsForGenericObject(entityPreferences, lstclctefSelected, getFieldWidthsForPreferences(),
+		getWorkspaceUtils().setCollectableEntityFieldsForGenericObject(entityPreferences, lstclctefSelected, getFieldWidthsForPreferences(),
 				CollectableUtils.getFieldNamesFromCollectableEntityFields(getNuclosResultPanel().getFixedColumns()));
 	}
 

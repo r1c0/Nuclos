@@ -31,7 +31,6 @@ import org.nuclos.common.UsageCriteria;
 import org.nuclos.common.caching.GenCache;
 import org.nuclos.common.statemodel.Statemodel;
 import org.nuclos.common.statemodel.StatemodelClosure;
-import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonCreateException;
 import org.nuclos.common2.exception.CommonFatalException;
@@ -64,24 +63,28 @@ import org.nuclos.server.statemodel.valueobject.TransitionLayout;
  * @version 01.00.00
  */
 public class StateDelegate {
-	private static StateDelegate singleton;
-	private final StateFacadeRemote facade;
+	
+	private static StateDelegate INSTANCE;
+	
+	// Spring injection
+	
+	private StateFacadeRemote stateFacadeRemote;
+	
+	// end of Spring injection
 
-	private StateDelegate() {
-		try {
-			this.facade = ServiceLocator.getInstance().getFacade(StateFacadeRemote.class);
-				//ServiceLocator.getInstance().getFacade(StateFacadeRemote.class);
-		}
-		catch (RuntimeException ex) {
-			throw new CommonFatalException(ex);
-		}
+	StateDelegate() {
+		INSTANCE = this;
+	}
+	
+	public final void setStateFacadeRemote(StateFacadeRemote stateFacadeRemote) {
+		this.stateFacadeRemote = stateFacadeRemote;
 	}
 
-	public static synchronized StateDelegate getInstance() {
-		if (singleton == null) {
-			singleton = new StateDelegate();
+	public static StateDelegate getInstance() {
+		if (INSTANCE == null) {
+			throw new IllegalStateException("too early");
 		}
-		return singleton;
+		return INSTANCE;
 	}
 
 
@@ -96,7 +99,7 @@ public class StateDelegate {
 			throws CommonPermissionException, CommonFinderException {
 		try {
 			final List<StateHistoryVO> result = new ArrayList<StateHistoryVO>(
-					this.getStateFacade().getStateHistory(iModuleId, iGenericObjectId));
+					stateFacadeRemote.getStateHistory(iModuleId, iGenericObjectId));
 
 			// sort by date, ascending:
 			Collections.sort(result, new Comparator<StateHistoryVO>() {
@@ -140,7 +143,7 @@ public class StateDelegate {
 	 */
 	public Collection<StateVO> getStatesByModel(Integer iStateModelId) {
 		try {
-			return this.getStateFacade().getStatesByModel(iStateModelId);
+			return stateFacadeRemote.getStatesByModel(iStateModelId);
 		}
 		catch (RuntimeException ex) {
 			throw new CommonFatalException(ex);
@@ -158,7 +161,7 @@ public class StateDelegate {
 			throws CommonPermissionException, NuclosSubsequentStateNotLegalException, NuclosNoAdequateStatemodelException,
 			CommonFinderException, NuclosBusinessException {
 		try {
-			this.getStateFacade().changeStateByUser(iModuleId, iGenericObjectId, iNewStateId);
+			stateFacadeRemote.changeStateByUser(iModuleId, iGenericObjectId, iNewStateId);
 		}
 		catch (RuntimeException ex) {
 			throw new CommonFatalException(ex);
@@ -179,7 +182,7 @@ public class StateDelegate {
 	throws NuclosNoAdequateStatemodelException, NuclosSubsequentStateNotLegalException, NuclosBusinessException,
 	CommonPermissionException, CommonFinderException, CommonRemoveException, CommonStaleVersionException, CommonValidationException {
 		try {
-			this.getStateFacade().changeStateAndModifyByUser(iModuleId, gowdvo, iNewStateId);
+			stateFacadeRemote.changeStateAndModifyByUser(iModuleId, gowdvo, iNewStateId);
 		}
 		catch (RuntimeException ex) {
 			throw new CommonFatalException(ex);
@@ -194,7 +197,7 @@ public class StateDelegate {
 	 */
 	public Collection<StateModelVO> getAllStateModels() {
 		try {
-			return this.getStateFacade().getStateModels();
+			return stateFacadeRemote.getStateModels();
 		}
 		catch (RuntimeException ex) {
 			throw new CommonFatalException(ex);
@@ -203,7 +206,7 @@ public class StateDelegate {
 
 	public StateGraphVO getStateGraph(int iModelId) throws CommonFinderException, CommonBusinessException {
 		try {
-			final StateGraphVO result = this.getStateFacade().getStateGraph(iModelId);
+			final StateGraphVO result = stateFacadeRemote.getStateGraph(iModelId);
 
 			// moved from StateGraphVO: NUCLOSINT-844 (b) correct the wrong StateModel-Layouts (after migration due MigrationVm2m5.java)
 			final StateModelLayout layoutinfo = result.getStateModel().getLayout();
@@ -226,7 +229,7 @@ public class StateDelegate {
 
 	public Integer setStateGraph(StateGraphVO stategraphvo, DependantMasterDataMap mpDependants) throws CommonBusinessException {
 		try {
-			return this.getStateFacade().setStateGraph(stategraphvo, mpDependants);
+			return stateFacadeRemote.setStateGraph(stategraphvo, mpDependants);
 		}
 		catch (RuntimeException ex) {
 			throw new CommonFatalException(ex);
@@ -239,7 +242,7 @@ public class StateDelegate {
 	 */
 	public Integer getStateModelId(UsageCriteria usagecriteria) {
 		try {
-			return this.getStateFacade().getStateModelId(usagecriteria);
+			return stateFacadeRemote.getStateModelId(usagecriteria);
 		}
 		catch (RuntimeException ex) {
 			throw new CommonFatalException(ex);
@@ -249,7 +252,7 @@ public class StateDelegate {
 	public void removeStateModel(StateModelVO smvo) throws CommonRemoveException, CommonStaleVersionException,
 			CommonFinderException, NuclosBusinessRuleException, CommonBusinessException {
 		try {
-			this.getStateFacade().removeStateGraph(smvo);
+			stateFacadeRemote.removeStateGraph(smvo);
 		}
 		catch (RuntimeException ex) {
 			throw new CommonFatalException(ex);
@@ -258,14 +261,9 @@ public class StateDelegate {
 		}
 	}
 
-	private StateFacadeRemote getStateFacade() {
-		return ServiceLocator.getInstance().getFacade(StateFacadeRemote.class);
-		//return this.facade;
-	}
-
 	public void invalidateCache(){
 		try {
-			facade.invalidateCache();
+			stateFacadeRemote.invalidateCache();
 		} catch (RuntimeException e) {
 			throw new CommonFatalException(e);
 		}
@@ -273,7 +271,7 @@ public class StateDelegate {
 
 	public String getResourceSIdForName(Integer iStateId) {
 		try {
-			return facade.getResourceSIdForName(iStateId);
+			return stateFacadeRemote.getResourceSIdForName(iStateId);
 		}
 		catch (RuntimeException ex) {
 			throw new CommonFatalException(ex);
@@ -282,7 +280,7 @@ public class StateDelegate {
 
 	public String getResourceSIdForDescription(Integer iStateId) {
 		try {
-			return facade.getResourceSIdForDescription(iStateId);
+			return stateFacadeRemote.getResourceSIdForDescription(iStateId);
 		}
 		catch (RuntimeException ex) {
 			throw new CommonFatalException(ex);
@@ -295,7 +293,7 @@ public class StateDelegate {
 			new GenCache.LookupProvider<Integer, StatemodelClosure>() {
 				@Override
 	            public StatemodelClosure lookup(Integer moduleId) {
-					return facade.getStatemodelClosureForModule(moduleId);
+					return stateFacadeRemote.getStatemodelClosureForModule(moduleId);
 	            }
 			});
 

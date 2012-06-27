@@ -25,7 +25,6 @@ import org.apache.log4j.Logger;
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.TranslationVO;
 import org.nuclos.common2.PreferencesUtils;
-import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.common2.exception.PreferencesException;
@@ -36,44 +35,49 @@ public class CustomComponentDelegate {
 
 	private static final Logger LOG = Logger.getLogger(CustomComponentDelegate.class);
 
-	private static CustomComponentDelegate singleton;
+	private static CustomComponentDelegate INSTANCE;
+	
+	//
+	
+	// Spring injection
 
-	public static synchronized CustomComponentDelegate getInstance() {
-		if (singleton == null) {
-			try {
-				singleton = new CustomComponentDelegate();
-			}
-			catch (RuntimeException ex) {
-				throw new CommonFatalException(ex);
-			}
-		}
-		return singleton;
-	}
-
-	private final CustomComponentFacadeRemote facade;
+	private CustomComponentFacadeRemote customComponentFacadeRemote;
+	
+	// end of Spring injection
 
 	private CustomComponentDelegate() {
-		this.facade = ServiceLocator.getInstance().getFacade(CustomComponentFacadeRemote.class);
+		INSTANCE = this;
+	}
+
+	public static CustomComponentDelegate getInstance() {
+		if (INSTANCE == null) {
+			throw new IllegalStateException("too early");
+		}
+		return INSTANCE;
+	}
+	
+	public final void setCustomComponentFacadeRemote(CustomComponentFacadeRemote customComponentFacadeRemote) {
+		this.customComponentFacadeRemote = customComponentFacadeRemote;
 	}
 
 	public List<CustomComponentVO> getAll() {
-		return facade.getAll();
+		return customComponentFacadeRemote.getAll();
 	}
 
 	public void remove(CustomComponentVO vo) throws CommonBusinessException {
-		facade.remove(vo);
+		customComponentFacadeRemote.remove(vo);
 	}
 
 	public void create(CustomComponentVO vo, List<TranslationVO> translations) throws CommonBusinessException {
-		facade.create(vo, translations);
+		customComponentFacadeRemote.create(vo, translations);
 	}
 
 	public void modify(CustomComponentVO vo, List<TranslationVO> translations) throws CommonBusinessException {
-		facade.modify(vo, translations);
+		customComponentFacadeRemote.modify(vo, translations);
 	}
 
 	public List<TranslationVO> getTranslations(Integer ccid) throws CommonBusinessException {
-		return facade.getTranslations(ccid);
+		return customComponentFacadeRemote.getTranslations(ccid);
 	}
 
 	private static void storeAll(List<CustomComponentVO> all) {

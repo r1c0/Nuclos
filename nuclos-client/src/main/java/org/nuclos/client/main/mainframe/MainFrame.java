@@ -225,8 +225,11 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 	private JMenu menuWindow;
 
 	private NuclosMessagePanel msgPanel;
+	
+	// Spring injection
 
 	private LiveSearchController liveSearchController;
+	
 	private WorkspaceChooserController workspaceChooserController;
 
 	private SpringLocaleDelegate localeDelegate;
@@ -236,6 +239,8 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 	private NuclosIcons nuclosIcons;
 
 	private ResourceCache resourceCache;
+	
+	// end of Spring injection
 
 	/**
 	 * creates the main frame. Note that here we don't follow the general rule that the view shouldn't
@@ -749,7 +754,7 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 				UIUtils.runCommand(MainFrame.this, new Runnable() {
 					@Override
 					public void run() {
-						WorkspaceChooserController.restoreSelectedWorkspace();
+						workspaceChooserController.restoreSelectedWorkspace();
 					}
 				});
 			}
@@ -1905,7 +1910,7 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 	 * @throws BackingStoreException
 	 * @throws PreferencesException
 	 */
-	public static void writeMainFramePreferences(Preferences mainFramePrefs) throws BackingStoreException, PreferencesException {
+	public void writeMainFramePreferences(Preferences mainFramePrefs) throws BackingStoreException, PreferencesException {
 		mainFramePrefs.putBoolean(PREFS_NODE_SPLITTING_DEACTIVATED, splittingDeactivated);
 		mainFramePrefs.putInt(PREFS_NODE_HISTORY_SIZE_INDEX, selectedHistorySize);
 		mainFramePrefs.put(PREFS_NODE_DEFAULT_WORKSPACE, defaultWorkspace);
@@ -1916,7 +1921,7 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 		if (lastAlwaysOpenWorkspaceId != null)
 			mainFramePrefs.putLong(PREFS_NODE_LAST_ALWAYS_OPEN_WORKSPACE_ID, lastAlwaysOpenWorkspaceId);
 		PreferencesUtils.putStringList(mainFramePrefs, PREFS_NODE_WORKSPACE_ORDER,
-				CollectionUtils.transform(WorkspaceChooserController.getWorkspaceHeaders(),
+				CollectionUtils.transform(workspaceChooserController.getWorkspaceHeaders(),
 						new Transformer<WorkspaceVO, String>() {
 							@Override
 							public String transform(WorkspaceVO i) {
@@ -1924,7 +1929,7 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 							}
 						}));
 		PreferencesUtils.putLongList(mainFramePrefs, PREFS_NODE_WORKSPACE_ORDER_IDS,
-				CollectionUtils.transform(WorkspaceChooserController.getWorkspaceHeaders(),
+				CollectionUtils.transform(workspaceChooserController.getWorkspaceHeaders(),
 						new Transformer<WorkspaceVO, Long>() {
 							@Override
 							public Long transform(WorkspaceVO i) {
@@ -1962,7 +1967,7 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 		lastWorkspaceId = mainFramePrefs.getLong(PREFS_NODE_LAST_WORKSPACE_ID, 0l);
 		lastAlwaysOpenWorkspace = mainFramePrefs.get(PREFS_NODE_LAST_ALWAYS_OPEN_WORKSPACE, null);
 		lastAlwaysOpenWorkspaceId = mainFramePrefs.getLong(PREFS_NODE_LAST_ALWAYS_OPEN_WORKSPACE_ID, 0l);
-		WorkspaceChooserController.setupWorkspaces(
+		workspaceChooserController.setupWorkspaces(
 				PreferencesUtils.getLongList(mainFramePrefs, PREFS_NODE_WORKSPACE_ORDER_IDS),
 				PreferencesUtils.getStringList(mainFramePrefs, PREFS_NODE_WORKSPACE_ORDER));
 
@@ -2117,7 +2122,7 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 	 *
 	 * @return
 	 */
-	public static boolean isStarttabEditable() {
+	public boolean isStarttabEditable() {
 		if (getWorkspace().getAssignedWorkspace() == null) {
 			return true;
 		} else {
@@ -2149,138 +2154,70 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 		MainFrame.activeTabNavigation = activeTabNavigation;
 	}
 
-	/**
-	 *
-	 * @return
-	 */
-	public static WorkspaceVO getWorkspace() {
-		return WorkspaceChooserController.getSelectedWorkspace();
+	public WorkspaceVO getWorkspace() {
+		return workspaceChooserController.getSelectedWorkspace();
 	}
 
-	/**
-	 *
-	 * @return
-	 */
-	public static WorkspaceDescription getWorkspaceDescription() {
+	public WorkspaceDescription getWorkspaceDescription() {
 		return getWorkspace().getWoDesc();
 	}
 
-	/**
-	 *
-	 * @return
-	 */
-	public static List<WorkspaceVO> getWorkspaceHeaders() {
-		return WorkspaceChooserController.getWorkspaceHeaders();
+	public List<WorkspaceVO> getWorkspaceHeaders() {
+		return workspaceChooserController.getWorkspaceHeaders();
 	}
 
-	/**
-	 *
-	 */
-	public static void refreshWorkspacesHeaders() {
-		WorkspaceChooserController.setupWorkspaces();
+	public void refreshWorkspacesHeaders() {
+		workspaceChooserController.setupWorkspaces();
 	}
 
-	/**
-	 *
-	 * @param name
-	 */
-	public static void setWorkspace(WorkspaceVO wovo) {
-		WorkspaceChooserController.setSelectedWorkspace(wovo);
+	public void setWorkspace(WorkspaceVO wovo) {
+		workspaceChooserController.setSelectedWorkspace(wovo);
 	}
 
-	/**
-	 *
-	 */
 	public static void resetExternalFrameNumber() {
 		nextExternalFrameNumber = 1;
 	}
 
-	/**
-	 *
-	 * @return
-	 */
 	public static boolean isWorkspaceManagementAvaiable() {
 		return true; //ApplicationProperties.getInstance().isFunctionBlockDev();
 	}
 
-	/**
-	 *
-	 * @return
-	 */
-	public static boolean isWorkspaceManagementEnabled() {
-		return WorkspaceChooserController.isEnabled();
+	public boolean isWorkspaceManagementEnabled() {
+		return workspaceChooserController.isEnabled();
 	}
 
-	/**
-	 *
-	 * @param b
-	 * @return
-	 */
-	public static void setWorkspaceManagementEnabled(boolean b) {
-		WorkspaceChooserController.setEnabled(b);
+	public void setWorkspaceManagementEnabled(boolean b) {
+		workspaceChooserController.setEnabled(b);
 	}
 
-	/**
-	 *
-	 * @return
-	 */
 	public static String getDefaultWorkspace() {
 		return defaultWorkspace;
 	}
 
-	/**
-	 *
-	 * @return
-	 */
 	public static String getLastWorkspaceFromPreferences() {
 		return lastWorkspace;
 	}
 
-	/**
-	 *
-	 * @return
-	 */
 	public static Long getLastWorkspaceIdFromPreferences() {
 		return lastWorkspaceId;
 	}
 
-	/**
-	 *
-	 * @return
-	 */
 	public static String getLastAlwaysOpenWorkspaceFromPreferences() {
 		return lastAlwaysOpenWorkspace;
 	}
 
-	/**
-	 *
-	 * @param lastAlwaysOpenWorkspace
-	 */
 	public static void setLastAlwaysOpenWorkspace(String lastAlwaysOpenWorkspace) {
 		MainFrame.lastAlwaysOpenWorkspace = lastAlwaysOpenWorkspace;
 	}
 
-	/**
-	 *
-	 * @param lastAlwaysOpenWorkspaceId
-	 */
 	public static void setLastAlwaysOpenWorkspaceId(Long lastAlwaysOpenWorkspaceId) {
 		MainFrame.lastAlwaysOpenWorkspaceId = lastAlwaysOpenWorkspaceId;
 	}
 
-	/**
-	 *
-	 * @return
-	 */
 	public static Long getLastAlwaysOpenWorkspaceIdFromPreferences() {
 		return lastAlwaysOpenWorkspaceId;
 	}
 
-	/**
-	 *
-	 * @param entity
-	 * @return
-	 */
 	public ImageIcon getEntityIcon(String entity) {
 		ImageIcon result = null;
 

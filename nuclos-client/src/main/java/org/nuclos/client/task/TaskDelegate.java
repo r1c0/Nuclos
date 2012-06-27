@@ -23,7 +23,6 @@ import java.util.Set;
 
 import org.nuclos.common.NuclosBusinessException;
 import org.nuclos.common.NuclosFatalException;
-import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.common2.exception.CommonFinderException;
@@ -31,6 +30,8 @@ import org.nuclos.server.common.NuclosUpdateException;
 import org.nuclos.server.common.ejb3.TaskFacadeRemote;
 import org.nuclos.server.common.valueobject.TaskVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataWithDependantsVO;
+
+import org.springframework.util.Assert;
 
 /**
  * Business Delegate for <code>TaskFacadeBean</code>.
@@ -41,19 +42,30 @@ import org.nuclos.server.masterdata.valueobject.MasterDataWithDependantsVO;
  * @author	<a href="mailto:Christoph.Radig@novabit.de">Christoph.Radig</a>
  * @version 01.00.00
  */
-
 public class TaskDelegate {
-	private TaskFacadeRemote facade;
+	
+	private static TaskDelegate INSTANCE;
+	
+	// Spring injection
+	
+	private TaskFacadeRemote taskFacadeRemote;
+	
+	// end of Spring injection
 
-	private TaskFacadeRemote getTaskFacade() throws NuclosFatalException {
-		if (this.facade == null) {
-			try {
-				facade = ServiceLocator.getInstance().getFacade(TaskFacadeRemote.class);
-			} catch (RuntimeException ex) {
-				throw new CommonFatalException(ex);
-			}
+	TaskDelegate() {
+		INSTANCE = this;
+	}
+	
+	public static TaskDelegate getInstance() {
+		if (INSTANCE == null) {
+			throw new IllegalStateException("too early");
 		}
-		return this.facade;
+		return INSTANCE;
+	}
+	
+	public final void setTaskFacadeRemote(TaskFacadeRemote taskFacadeRemote) {
+		Assert.notNull(taskFacadeRemote);
+		this.taskFacadeRemote = taskFacadeRemote;
 	}
 
 	/**
@@ -63,7 +75,7 @@ public class TaskDelegate {
 	 */
 	public Collection<TaskVO> getOwnTasks(String sOwner, boolean bUnfinishedOnly, Integer iPriority) throws NuclosBusinessException {
 		try {
-			return this.getTaskFacade().getTasksByOwner(sOwner, bUnfinishedOnly, iPriority);
+			return taskFacadeRemote.getTasksByOwner(sOwner, bUnfinishedOnly, iPriority);
 		} catch (RuntimeException ex) {
 			throw new CommonFatalException(ex);
 		}
@@ -76,7 +88,7 @@ public class TaskDelegate {
 	 */
 	public Collection<TaskVO> getDelegatedTasks(String sDelegator, boolean bUnfinishedOnly, Integer iPriority) throws NuclosBusinessException {
 		try {
-			return this.getTaskFacade().getTasksByDelegator(sDelegator, bUnfinishedOnly, iPriority);
+			return taskFacadeRemote.getTasksByDelegator(sDelegator, bUnfinishedOnly, iPriority);
 		} catch (RuntimeException ex) {
 			throw new CommonFatalException(ex);
 		}
@@ -89,7 +101,7 @@ public class TaskDelegate {
 	 */
 	public Collection<TaskVO> getAllTasks(String sOwner, boolean bUnfinishedOnly, Integer iPriority) throws NuclosBusinessException {
 		try {
-			return this.getTaskFacade().getTasks(sOwner, bUnfinishedOnly, iPriority);
+			return taskFacadeRemote.getTasks(sOwner, bUnfinishedOnly, iPriority);
 		} catch (RuntimeException ex) {
 			throw new CommonFatalException(ex);
 		}
@@ -103,7 +115,7 @@ public class TaskDelegate {
 	 */
 	public TaskVO create(TaskVO taskvo, Set<Long> stOwners) throws CommonBusinessException {
 		try {
-			return this.getTaskFacade().create(taskvo, stOwners);
+			return taskFacadeRemote.create(taskvo, stOwners);
 		} catch (RuntimeException ex) {
 			throw new CommonFatalException(ex);
 		}
@@ -118,7 +130,7 @@ public class TaskDelegate {
 	 */
 	public Collection<TaskVO> create(TaskVO taskvo, Set<Long> stOwners, boolean splitforowners) throws CommonBusinessException {
 		try {
-			return this.getTaskFacade().create(taskvo, stOwners, splitforowners);
+			return taskFacadeRemote.create(taskvo, stOwners, splitforowners);
 		} catch (RuntimeException ex) {
 			throw new CommonFatalException(ex);
 		}
@@ -133,7 +145,7 @@ public class TaskDelegate {
 	 */
 	public Collection<TaskVO> create(MasterDataWithDependantsVO mdvo, Set<Long> stOwners, boolean splitforowners) throws CommonBusinessException {
 		try {
-			return this.getTaskFacade().create(mdvo, stOwners, splitforowners);
+			return taskFacadeRemote.create(mdvo, stOwners, splitforowners);
 		} catch (RuntimeException ex) {
 			throw new CommonFatalException(ex);
 		}
@@ -146,7 +158,7 @@ public class TaskDelegate {
 	 */
 	public TaskVO update(TaskVO taskvo, Set<Long> stOwners) throws CommonBusinessException {
 		try {
-			return this.getTaskFacade().modify(taskvo, stOwners);
+			return taskFacadeRemote.modify(taskvo, stOwners);
 		} catch (RuntimeException ex) {
 			throw new NuclosUpdateException(ex);
 		}
@@ -160,7 +172,7 @@ public class TaskDelegate {
 	 */
 	public Collection<TaskVO> update(TaskVO taskvo, Set<Long> stOwners, boolean splitforowners) throws CommonBusinessException {
 		try {
-			return this.getTaskFacade().modify(taskvo, stOwners, splitforowners);
+			return taskFacadeRemote.modify(taskvo, stOwners, splitforowners);
 		} catch (RuntimeException ex) {
 			throw new NuclosUpdateException(ex);
 		}
@@ -174,7 +186,7 @@ public class TaskDelegate {
 	 */
 	public Collection<TaskVO> update(MasterDataWithDependantsVO mdvo, Set<Long> stOwners, boolean splitforowners) throws CommonBusinessException {
 		try {
-			return this.getTaskFacade().modify(mdvo, stOwners, splitforowners);
+			return taskFacadeRemote.modify(mdvo, stOwners, splitforowners);
 		} catch (RuntimeException ex) {
 			throw new NuclosUpdateException(ex);
 		}
@@ -186,7 +198,7 @@ public class TaskDelegate {
 	 */
 	public void remove(TaskVO taskvo) throws CommonBusinessException {
 		try {
-			this.getTaskFacade().remove(taskvo);
+			taskFacadeRemote.remove(taskvo);
 		} catch (RuntimeException ex) {
 			throw new CommonFatalException(ex);
 		}
@@ -213,7 +225,7 @@ public class TaskDelegate {
 
 	public List<String> getOwnerNamesByTask(TaskVO taskvo) {
 		try {
-			return this.getTaskFacade().getOwnerNamesByTask(taskvo);
+			return taskFacadeRemote.getOwnerNamesByTask(taskvo);
 		} catch (RuntimeException ex) {
 			throw new CommonFatalException(ex);
 		}
@@ -221,7 +233,7 @@ public class TaskDelegate {
 
 	public Set<Long> getOwnerIdsByTask(Long iTaskId) {
 		try {
-			return this.getTaskFacade().getOwnerIdsByTask(iTaskId);
+			return taskFacadeRemote.getOwnerIdsByTask(iTaskId);
 		} catch (RuntimeException ex) {
 			throw new CommonFatalException(ex);
 		}
@@ -229,7 +241,7 @@ public class TaskDelegate {
 
 	public Long getUserId(String sUserName) throws CommonFinderException{
 		try {
-			return this.getTaskFacade().getUserId(sUserName);
+			return taskFacadeRemote.getUserId(sUserName);
 		} catch (RuntimeException ex) {
 			throw new CommonFatalException(ex);
 		}

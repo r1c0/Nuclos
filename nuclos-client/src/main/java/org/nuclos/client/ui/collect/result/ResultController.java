@@ -101,6 +101,7 @@ import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.common2.exception.CommonPermissionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
+import org.springframework.beans.factory.annotation.Value;
 
 /**
  * Controller for the Result panel.
@@ -179,8 +180,16 @@ public class ResultController<Clct extends Collectable> {
 
 	private MouseListener mouselistenerTableDblClick;
 	
+	// Spring injection
+	
 	private SpringLocaleDelegate localeDelegate;
+	
+	private MainFrame mainFrame;
+	
+	private WorkspaceUtils workspaceUtils;
 
+	// end of Spring injection
+	
 	/**
 	 * action: Define as new Search result
 	 *
@@ -245,12 +254,30 @@ public class ResultController<Clct extends Collectable> {
 	}
 	
 	@Autowired
-	void setSpringLocaleDelegate(SpringLocaleDelegate cld) {
+	final void setSpringLocaleDelegate(SpringLocaleDelegate cld) {
 		this.localeDelegate = cld;
 	}
 	
 	protected SpringLocaleDelegate getSpringLocaleDelegate() {
 		return localeDelegate;
+	}
+	
+	@Autowired
+	final void setMainFrame(@Value("#{mainFrameSpringComponent.mainFrame}") MainFrame mainFrame) {
+		this.mainFrame = mainFrame;
+	}
+	
+	protected MainFrame getMainFrame() {
+		return mainFrame;
+	}
+	
+	@Autowired
+	final void setWorkspaceUtils(WorkspaceUtils workspaceUtils) {
+		this.workspaceUtils = workspaceUtils;
+	}
+	
+	protected WorkspaceUtils getWorkspaceUtils() {
+		return workspaceUtils;
 	}
 
 	/**
@@ -387,7 +414,7 @@ public class ResultController<Clct extends Collectable> {
 		getResultPanel().addDoubleClickMouseListener(this.mouselistenerTableDblClick);
 
 		if (!SecurityCache.getInstance().isActionAllowed(Actions.ACTION_WORKSPACE_CUSTOMIZE_ENTITY_AND_SUBFORM_COLUMNS) &&
-				MainFrame.getWorkspace().isAssigned()) {
+				getMainFrame().getWorkspace().isAssigned()) {
 			getResultPanel().getResultTable().getTableHeader().setReorderingAllowed(false);
 		}
 		
@@ -776,7 +803,7 @@ public class ResultController<Clct extends Collectable> {
 	 * TODO: make private?
 	 */
 	protected List<? extends CollectableEntityField> readSelectedFieldsFromPreferences() {
-		List<String> lstSelectedFieldNames = WorkspaceUtils.getSelectedColumns(clctctl.getEntityPreferences());
+		List<String> lstSelectedFieldNames = workspaceUtils.getSelectedColumns(clctctl.getEntityPreferences());
 		
 		final List<CollectableEntityField> result = Utils.createCollectableEntityFieldListFromFieldNames(this, clcte, lstSelectedFieldNames);
 		return result;
@@ -1063,7 +1090,7 @@ public class ResultController<Clct extends Collectable> {
 	 */
 	protected void cmdRemoveColumn(final ChoiceEntityFieldList fields, CollectableEntityField entityField) {
 		fields.moveToAvailableFields(entityField);
-		WorkspaceUtils.addHiddenColumn(getCollectController().getEntityPreferences(), entityField.getName());
+		workspaceUtils.addHiddenColumn(getCollectController().getEntityPreferences(), entityField.getName());
 
 		// Note that it is not enough to remove the column from the result table model.
 		// We must rebuild the table model's columns in order to sync it with the table column model:
@@ -1148,7 +1175,7 @@ public class ResultController<Clct extends Collectable> {
 			}
 		}
 		
-		WorkspaceUtils.setColumnPreferences(entityPreferences, lstFields, lstFieldWidths);
+		workspaceUtils.setColumnPreferences(entityPreferences, lstFields, lstFieldWidths);
 	}
 	
 	protected List<String> getFieldsForPreferences(List<? extends CollectableEntityField> lstclctefSelected) {

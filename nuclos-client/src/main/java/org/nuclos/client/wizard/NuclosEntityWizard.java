@@ -91,8 +91,4 @@ public class NuclosEntityWizard extends Wizard {
 		}
 	}
 	
-	public static EntityPreferences getEntityPreferences() {
-		return MainFrame.getWorkspaceDescription().getEntityPreferences("NuclosEntityWizard");
-	}
-
 }

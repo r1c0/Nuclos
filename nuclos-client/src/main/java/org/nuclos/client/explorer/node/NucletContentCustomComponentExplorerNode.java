@@ -34,12 +34,12 @@ import org.nuclos.client.ui.UIUtils;
 import org.nuclos.client.ui.tree.TreeNodeAction;
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common2.CommonRunnable;
-import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.server.navigation.ejb3.TreeNodeFacadeRemote;
 import org.nuclos.server.navigation.treenode.TreeNode;
 import org.nuclos.server.navigation.treenode.nuclet.content.AbstractNucletContentEntryTreeNode;
 import org.nuclos.server.navigation.treenode.nuclet.content.NucletContentEntityTreeNode;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * <code>ExplorerNode</code> presenting a <code>NucletContentEntityTreeNode</code>.
@@ -52,10 +52,21 @@ import org.nuclos.server.navigation.treenode.nuclet.content.NucletContentEntityT
  */
 public class NucletContentCustomComponentExplorerNode extends ExplorerNode<NucletContentEntityTreeNode> {
 
-	private static final Logger log = Logger.getLogger(NucletContentCustomComponentExplorerNode.class);
+	private static final Logger LOG = Logger.getLogger(NucletContentCustomComponentExplorerNode.class);
+	
+	// Spring injection
+	
+	private TreeNodeFacadeRemote treeNodeFacadeRemote;
+	
+	// end of Spring injection
 
 	public NucletContentCustomComponentExplorerNode(TreeNode treenode) {
 		super(treenode);
+	}
+	
+	@Autowired
+	final void setTreeNodeFacadeRemote(TreeNodeFacadeRemote treeNodeFacadeRemote) {
+		this.treeNodeFacadeRemote = treeNodeFacadeRemote;
 	}
 
 	@Override
@@ -129,7 +140,7 @@ public class NucletContentCustomComponentExplorerNode extends ExplorerNode<Nucle
 					
 					Set<AbstractNucletContentEntryTreeNode> remove = new HashSet<AbstractNucletContentEntryTreeNode>();
 					remove.add(explorernode.getTreeNode());
-					getTreeNodeFacade().removeNucletContents(remove);
+					treeNodeFacadeRemote.removeNucletContents(remove);
 					explorernodeParent.refresh(getJTree());
 				}
 			});
@@ -141,7 +152,4 @@ public class NucletContentCustomComponentExplorerNode extends ExplorerNode<Nucle
 		return MainFrame.resizeAndCacheIcon(Icons.getInstance().getIconTabGeneric(), 10);
 	}
 	
-	private TreeNodeFacadeRemote getTreeNodeFacade() throws NuclosFatalException {
-		return ServiceLocator.getInstance().getFacade(TreeNodeFacadeRemote.class);
-	}
 }	// class MasterDataExplorerNode

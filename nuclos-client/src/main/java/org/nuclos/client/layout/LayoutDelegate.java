@@ -18,7 +18,6 @@ package org.nuclos.client.layout;
 
 import java.util.Collection;
 
-import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.common.NuclosFatalException;
@@ -36,24 +35,27 @@ import org.nuclos.server.attribute.valueobject.LayoutVO;
  */
 public class LayoutDelegate {
 
-	private static LayoutDelegate singleton;
+	private static LayoutDelegate INSTANCE;
+	
+	// Spring injection
 
-	private final LayoutFacadeRemote facade;
+	private LayoutFacadeRemote layoutFacadeRemote;
+	
+	// end of Spring injection
 
-	public static synchronized LayoutDelegate getInstance() {
-		if (singleton == null) {
-			singleton = new LayoutDelegate();
+	public static LayoutDelegate getInstance() {
+		if (INSTANCE == null) {
+			throw new IllegalStateException("too early");
 		}
-		return singleton;
+		return INSTANCE;
 	}
 
-	private LayoutDelegate() {
-		try {
-			this.facade = ServiceLocator.getInstance().getFacade(LayoutFacadeRemote.class);
-		}
-		catch (RuntimeException ex) {
-			throw new CommonFatalException(ex);
-		}
+	LayoutDelegate() {
+		INSTANCE = this;
+	}
+	
+	public final void setLayoutFacadeRemote(LayoutFacadeRemote layoutFacadeRemote) {
+		this.layoutFacadeRemote = layoutFacadeRemote;
 	}
 
 	/**
@@ -82,10 +84,10 @@ public class LayoutDelegate {
 	}
 
 	/**
-	 * gets the facade once for this object and stores it in a member variable.
+	 * gets the layoutFacadeRemote once for this object and stores it in a member variable.
 	 */
 	private LayoutFacadeRemote getLayoutFacade() throws NuclosFatalException {
-		return this.facade;
+		return this.layoutFacadeRemote;
 	}
 
 }	// class LayoutDelegate

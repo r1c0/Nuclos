@@ -39,6 +39,7 @@ import org.nuclos.client.main.Main;
 import org.nuclos.client.main.mainframe.ExternalFrame;
 import org.nuclos.client.main.mainframe.MainFrame;
 import org.nuclos.client.main.mainframe.MainFrameSplitPane;
+import org.nuclos.client.main.mainframe.MainFrameSpringComponent;
 import org.nuclos.client.main.mainframe.MainFrameTab;
 import org.nuclos.client.main.mainframe.MainFrameTabbedPane;
 import org.nuclos.client.ui.CommonJFrame;
@@ -57,7 +58,6 @@ import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Predicate;
 import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.PreferencesUtils;
-import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.server.common.ejb3.PreferencesFacadeRemote;
 
@@ -71,8 +71,50 @@ public class RestoreUtils {
 
 	private static final String THREAD_NAME = "RestoreUtils.workspaceRestore.";
 	private static final List<Thread> threadList = new ArrayList<Thread>();
+	
+	private static RestoreUtils INSTANCE;
+	
+	//
 
 	private static List<GenericAction> cachedActions;
+	
+	// Spring injection
+	
+	private PreferencesFacadeRemote preferencesFacadeRemote;
+	
+	private PreferencesMigration preferencesMigration;
+	
+	private MainFrameSpringComponent mainFrameSpringComponent;
+	
+	// end of Spring injection
+
+	RestoreUtils() {
+		INSTANCE = this;
+	}
+	
+	public final void setPreferencesFacadeRemote(PreferencesFacadeRemote preferencesFacadeRemote) {
+		this.preferencesFacadeRemote = preferencesFacadeRemote;
+	}
+	
+	public final void setMainFrameSpringComponent(MainFrameSpringComponent mainFrameSpringComponent) {
+		this.mainFrameSpringComponent = mainFrameSpringComponent;
+	}
+	
+	public final void setPreferencesMigration(PreferencesMigration preferencesMigration) {
+		this.preferencesMigration = preferencesMigration;
+	}
+	
+	public MainFrame getMainFrame() {
+		return mainFrameSpringComponent.getMainFrame();
+	}
+	
+	public WorkspaceVO getWorkspace() {
+		final WorkspaceVO result = mainFrameSpringComponent.getMainFrame().getWorkspace();
+		if (result == null) {
+			throw new NullPointerException();
+		}
+		return result;
+	}
 
 	/**
 	 *
@@ -80,7 +122,7 @@ public class RestoreUtils {
 	 * @param tab
 	 * @return
 	 */
-	private synchronized static boolean restoreTab(WorkspaceDescription.Tab wdTab, MainFrameTab tab, boolean onDemand) {
+	private synchronized boolean restoreTab(WorkspaceDescription.Tab wdTab, MainFrameTab tab, boolean onDemand) {
 		try {
 			final ClassLoader cl = Thread.currentThread().getContextClassLoader();
 			final ITabRestoreController restoreController = (ITabRestoreController) cl.loadClass(
@@ -104,7 +146,7 @@ public class RestoreUtils {
 	 * @param frame
 	 * @return
 	 */
-	private synchronized static ContentRestorer createContentRestorer(WorkspaceDescription.MutableContent content, JFrame frame) {
+	private synchronized ContentRestorer createContentRestorer(WorkspaceDescription.MutableContent content, JFrame frame) {
 		if (content.getContent() instanceof WorkspaceDescription.Split) {
 			return new SplitRestorer((Split) content.getContent(), frame);
 		} else if (content.getContent() instanceof WorkspaceDescription.Tabbed) {
@@ -118,7 +160,7 @@ public class RestoreUtils {
 	 *
 	 * @param wdFrame
 	 */
-	private synchronized static void restoreFrame(final WorkspaceDescription wd, final WorkspaceDescription.Frame wdFrame) {
+	private synchronized void restoreFrame(final WorkspaceDescription wd, final WorkspaceDescription.Frame wdFrame) {
 		WorkspaceFrame wsFrame;
 		if (wdFrame.isMainFrame()) {
 			wsFrame = Main.getInstance().getMainFrame();
@@ -202,12 +244,14 @@ public class RestoreUtils {
 	 * @param lastAlwaysOpenWorkspaceFromPreferences
 	 * @throws CommonBusinessException
 	 */
-	public static void restoreWorkspaceThreaded(Long lastWorkspaceIdFromPreferences, String lastWorkspaceFromPreferences,
+	public void restoreWorkspaceThreaded(Long lastWorkspaceIdFromPreferences, String lastWorkspaceFromPreferences,
 			Long lastAlwaysOpenWorkspaceIdFromPreferences, String lastAlwaysOpenWorkspaceFromPreferences) throws CommonBusinessException {
 
 		WorkspaceVO wovoToRestore = null;
+		final MainFrame mainFrame = mainFrameSpringComponent.getMainFrame();
 
-		List<WorkspaceVO> alwaysOpenWorkspaces = CollectionUtils.select(MainFrame.getWorkspaceHeaders(), new Predicate<WorkspaceVO>() {
+		List<WorkspaceVO> alwaysOpenWorkspaces = CollectionUtils.select(
+				mainFrame.getWorkspaceHeaders(), new Predicate<WorkspaceVO>() {
 			@Override
 			public boolean evaluate(WorkspaceVO t) {
 				return t.getWoDesc().isAlwaysOpenAtLogin();
@@ -235,7 +279,7 @@ public class RestoreUtils {
 				}
 			}
 		} else {
-			for (WorkspaceVO wovo : MainFrame.getWorkspaceHeaders()) {
+			for (WorkspaceVO wovo : mainFrame.getWorkspaceHeaders()) {
 				if (lastWorkspaceIdFromPreferences.equals(wovo.getId())) {
 					wovoToRestore = wovo;
 					break; // priority of id is higher
@@ -248,13 +292,13 @@ public class RestoreUtils {
 		}
 
 
-		if (wovoToRestore == null && !MainFrame.getWorkspaceHeaders().isEmpty()) {
-			wovoToRestore = MainFrame.getWorkspaceHeaders().get(0);
+		if (wovoToRestore == null && !mainFrame.getWorkspaceHeaders().isEmpty()) {
+			wovoToRestore = mainFrame.getWorkspaceHeaders().get(0);
 		}
 
 		if (wovoToRestore == null) {
 			wovoToRestore = createDefaultWorkspace(createDefaultWorkspace());
-			MainFrame.refreshWorkspacesHeaders();
+			mainFrame.refreshWorkspacesHeaders();
 		}
 		restoreWorkspaceThreaded(wovoToRestore);
 	}
@@ -265,17 +309,18 @@ public class RestoreUtils {
 	 * @param restoreToDefault
 	 * @throws CommonBusinessException
 	 */
-	private synchronized static void restoreWorkspaceThreaded(WorkspaceVO wovo) throws CommonBusinessException {
+	private synchronized void restoreWorkspaceThreaded(WorkspaceVO wovo) throws CommonBusinessException {
 		checkRestoreRunning();
-
-		MainFrame.setWorkspaceManagementEnabled(false);
+		
+		final MainFrame mainFrame = mainFrameSpringComponent.getMainFrame();
+		mainFrame.setWorkspaceManagementEnabled(false);
 		cachedActions = Main.getInstance().getMainController().getGenericActions();
 
 		//load from db. wovo contains header only
 		WorkspaceDescription wd;
 		if (wovo.getWoDesc().getFrames().isEmpty()) {
 			try {
-				wd = getPrefsFacade().getWorkspace(wovo.getId()).getWoDesc();
+				wd = preferencesFacadeRemote.getWorkspace(wovo.getId()).getWoDesc();
 			} catch (Exception e) {
 				try {
 					wovo = createDefaultWorkspace(wovo.getWoDesc());
@@ -308,12 +353,12 @@ public class RestoreUtils {
 			wovo.getWoDesc().setAllParameters(wd.getParameters());
 		}
 
-		MainFrame.setWorkspace(wovo);
+		mainFrame.setWorkspace(wovo);
 		if (wd.isAlwaysOpenAtLogin()) {
 			MainFrame.setLastAlwaysOpenWorkspace(wovo.getName());
 			MainFrame.setLastAlwaysOpenWorkspaceId(wovo.getId());
 		}
-		PreferencesMigration.migrateEntityAndSubFormColumnPreferences();
+		preferencesMigration.migrateEntityAndSubFormColumnPreferences();
 
 		threadList.clear();
 
@@ -335,7 +380,7 @@ public class RestoreUtils {
 			public void run() {
 				try {
 					Main.getInstance().getMainFrame().hideProgress();
-					MainFrame.setWorkspaceManagementEnabled(true);
+					mainFrame.setWorkspaceManagementEnabled(true);
 					MainFrame.setActiveTabNavigation(MainFrame.getHomePane());
 					threadList.clear();
 				}
@@ -358,7 +403,7 @@ public class RestoreUtils {
 	 * @return
 	 * @throws CommonBusinessException
 	 */
-	public static WorkspaceDescription createDefaultWorkspace() throws CommonBusinessException {
+	public WorkspaceDescription createDefaultWorkspace() throws CommonBusinessException {
 		WorkspaceDescription wd = new WorkspaceDescription();
 		wd.setName(MainFrame.getDefaultWorkspace());
 		wd.setHideName(true);
@@ -374,10 +419,10 @@ public class RestoreUtils {
 	 * @return
 	 * @throws CommonBusinessException
 	 */
-	public static WorkspaceVO createDefaultWorkspace(WorkspaceDescription wdOrigin) throws CommonBusinessException {
+	public WorkspaceVO createDefaultWorkspace(WorkspaceDescription wdOrigin) throws CommonBusinessException {
 		WorkspaceVO wovo = new WorkspaceVO(WorkspaceDescriptionDefaultsFactory.createOldMdiStyle());
 		wovo.importHeader(wdOrigin);
-		wovo = getPrefsFacade().storeWorkspace(wovo);
+		wovo = preferencesFacadeRemote.storeWorkspace(wovo);
 		return wovo;
 	}
 
@@ -387,7 +432,7 @@ public class RestoreUtils {
 	 * @param tab
 	 * @return
 	 */
-	private synchronized static boolean storeTab(WorkspaceDescription.Tabbed wdTabbed, MainFrameTab tab) {
+	private synchronized boolean storeTab(WorkspaceDescription.Tabbed wdTabbed, MainFrameTab tab) {
 		if (tab.hasTabStoreController() || tab.hasTabRestoreController()) {
 			final WorkspaceDescription.Tab wdTab = new WorkspaceDescription.Tab();
 			wdTab.setLabel(tab.getTitle());
@@ -409,7 +454,7 @@ public class RestoreUtils {
 	 * @param content
 	 * @param tabbedPane
 	 */
-	private synchronized static void storeTabbedPane(MutableContent content, MainFrameTabbedPane tabbedPane) {
+	private synchronized void storeTabbedPane(MutableContent content, MainFrameTabbedPane tabbedPane) {
 		final WorkspaceDescription.Tabbed wdTabbed = new WorkspaceDescription.Tabbed();
 		content.setContent(wdTabbed);
 
@@ -457,7 +502,7 @@ public class RestoreUtils {
 	 * @param content
 	 * @param splitPane
 	 */
-	private synchronized static void storeSplitPane(MutableContent content, MainFrameSplitPane splitPane) {
+	private synchronized void storeSplitPane(MutableContent content, MainFrameSplitPane splitPane) {
 		final WorkspaceDescription.Split wdSplit = new WorkspaceDescription.Split();
 		content.setContent(wdSplit);
 		wdSplit.setHorizontal(splitPane.getOrientation()==JSplitPane.HORIZONTAL_SPLIT);
@@ -472,7 +517,7 @@ public class RestoreUtils {
 	 * @param content
 	 * @param comp
 	 */
-	private synchronized static void storeContent(MutableContent content, Component comp) {
+	private synchronized void storeContent(MutableContent content, Component comp) {
 		if (comp instanceof MainFrameSplitPane) {
 			storeSplitPane(content, (MainFrameSplitPane) comp);
 		} else if (comp instanceof MainFrameTabbedPane.ComponentPanel) {
@@ -487,7 +532,7 @@ public class RestoreUtils {
 	 * @param wd
 	 * @param frame
 	 */
-	private synchronized static void storeFrame(WorkspaceDescription wd, CommonJFrame frame) {
+	private synchronized void storeFrame(WorkspaceDescription wd, CommonJFrame frame) {
 		if (frame instanceof WorkspaceFrame) {
 
 			final WorkspaceDescription.Frame wdFrame = new WorkspaceDescription.Frame();
@@ -511,7 +556,7 @@ public class RestoreUtils {
 	 * @param name
 	 * @throws CommonBusinessException
 	 */
-	public synchronized static WorkspaceVO storeWorkspace(WorkspaceVO wovo) throws CommonBusinessException {
+	public synchronized WorkspaceVO storeWorkspace(WorkspaceVO wovo) throws CommonBusinessException {
 		if (wovo == null) {
 			return null;
 		}
@@ -529,7 +574,7 @@ public class RestoreUtils {
 			storeFrame(wd, frame);
 		}
 
-		return getPrefsFacade().storeWorkspace(wovo);
+		return preferencesFacadeRemote.storeWorkspace(wovo);
 	}
 
 	/**
@@ -537,7 +582,7 @@ public class RestoreUtils {
 	 * @param name
 	 * @throws CommonBusinessException
 	 */
-	public synchronized static boolean clearAndRestoreWorkspace(WorkspaceVO wovo) throws CommonBusinessException {
+	public synchronized boolean clearAndRestoreWorkspace(WorkspaceVO wovo) throws CommonBusinessException {
 		if (clearWorkspace()) {
 			restoreWorkspaceThreaded(wovo);
 			return true;
@@ -550,7 +595,7 @@ public class RestoreUtils {
 	 * @param name
 	 * @throws CommonBusinessException
 	 */
-	public synchronized static WorkspaceVO clearAndRestoreToDefaultWorkspace() throws CommonBusinessException {
+	public synchronized WorkspaceVO clearAndRestoreToDefaultWorkspace() throws CommonBusinessException {
 		return clearAndRestoreToDefaultWorkspace(createDefaultWorkspace());
 	}
 
@@ -559,7 +604,7 @@ public class RestoreUtils {
 	 * @param wd
 	 * @throws CommonBusinessException
 	 */
-	public synchronized static WorkspaceVO clearAndRestoreToDefaultWorkspace(WorkspaceDescription wd) throws CommonBusinessException {
+	public synchronized WorkspaceVO clearAndRestoreToDefaultWorkspace(WorkspaceDescription wd) throws CommonBusinessException {
 		WorkspaceVO wovo = createDefaultWorkspace(wd);
 		if (clearWorkspace()) {
 			restoreWorkspaceThreaded(wovo);
@@ -580,7 +625,7 @@ public class RestoreUtils {
 			}
 			return wovo;
 		} else {
-			getPrefsFacade().removeWorkspace(wovo.getId());
+			preferencesFacadeRemote.removeWorkspace(wovo.getId());
 		}
 		return null;
 	}
@@ -589,7 +634,7 @@ public class RestoreUtils {
 	 *
 	 * @return
 	 */
-	public synchronized static boolean closeTabs(boolean notifyOnly) {
+	public synchronized boolean closeTabs(boolean notifyOnly) {
 		List<MainFrameTab> allTabs = MainFrame.getAllTabs();
 
 		for (MainFrameTab tab : allTabs) {
@@ -614,7 +659,7 @@ public class RestoreUtils {
 	 *
 	 * @return
 	 */
-	public synchronized static boolean clearWorkspace() {
+	public synchronized boolean clearWorkspace() {
 		checkRestoreRunning();
 
 		if (!closeTabs(false)) {
@@ -637,7 +682,7 @@ public class RestoreUtils {
 		return true;
 	}
 
-	private static class TabbedRestorer implements ContentRestorer {
+	private class TabbedRestorer implements ContentRestorer {
 
 		WorkspaceDescription.Tabbed wdTabbed;
 
@@ -786,7 +831,7 @@ public class RestoreUtils {
 		}
 	}
 
-	private static class SplitRestorer implements ContentRestorer {
+	private class SplitRestorer implements ContentRestorer {
 
 		WorkspaceDescription.Split wdSplit;
 		ContentRestorer crA;
@@ -825,16 +870,12 @@ public class RestoreUtils {
 		public void restoreContent();
 	}
 
-	private static PreferencesFacadeRemote getPrefsFacade() {
-		return ServiceLocator.getInstance().getFacade(PreferencesFacadeRemote.class);
-	}
-
-	private synchronized static void checkRestoreRunning() {
+	private synchronized void checkRestoreRunning() {
 		if (isRestoreRunning())
 			throw new IllegalArgumentException("Workspace Restore is running");
 	}
 
-	public synchronized static boolean isRestoreRunning() {
+	public synchronized boolean isRestoreRunning() {
 		return !threadList.isEmpty();
 	}
 

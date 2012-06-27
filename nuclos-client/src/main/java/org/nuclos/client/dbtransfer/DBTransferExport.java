@@ -48,6 +48,7 @@ import org.nuclos.common.dbtransfer.Transfer;
 import org.nuclos.common.dbtransfer.TransferNuclet;
 import org.nuclos.common.dbtransfer.TransferOption;
 import org.nuclos.common2.SpringLocaleDelegate;
+import org.nuclos.server.dbtransfer.TransferFacadeRemote;
 import org.pietschy.wizard.I18n;
 import org.pietschy.wizard.PanelWizardStep;
 import org.pietschy.wizard.WizardEvent;
@@ -73,9 +74,15 @@ public class DBTransferExport {
 	
 	private Exception exportException;
 	
+	private MainFrameTab ifrm;
+	
+	// Spring injection
+	
 	private SpringLocaleDelegate localeDelegate;
 	
-	private MainFrameTab ifrm;
+	private TransferFacadeRemote transferFacadeRemote;
+	
+	// end of Spring injection
 	
 	public DBTransferExport(Long nucletId) {
 		this.nucletId = nucletId;
@@ -125,8 +132,13 @@ public class DBTransferExport {
 	}
 	
 	@Autowired
-	void setSpringLocaleDelegate(SpringLocaleDelegate cld) {
+	final void setSpringLocaleDelegate(SpringLocaleDelegate cld) {
 		this.localeDelegate = cld;
+	}
+	
+	@Autowired
+	final void setTransferFacadeRemote(TransferFacadeRemote transferFacadeRemote) {
+		this.transferFacadeRemote = transferFacadeRemote;
 	}
 	
 	public void showWizard(MainFrameTabbedPane homePane) {
@@ -272,7 +284,8 @@ public class DBTransferExport {
 //								exportOptions.put(TransferOption.FREEZE_CONFIGURATION, null);
 //							}
 							
-							byte[] transferFile = utils.getTransferFacade().createTransferFile(((TransferNuclet)comboNuclet.getSelectedItem()).getId(), exportOptions);
+							byte[] transferFile = transferFacadeRemote.createTransferFile(
+									((TransferNuclet)comboNuclet.getSelectedItem()).getId(), exportOptions);
 							File f = new File(tfTransferFile.getText());
 							final OutputStream fout = new BufferedOutputStream(new FileOutputStream(f));
 							try {

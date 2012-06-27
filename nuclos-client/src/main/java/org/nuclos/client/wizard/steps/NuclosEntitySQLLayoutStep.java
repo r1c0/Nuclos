@@ -102,7 +102,6 @@ import org.nuclos.common.dal.vo.EntityMetaDataVO;
 import org.nuclos.common.masterdata.CollectableMasterDataEntity;
 import org.nuclos.common.transport.vo.EntityFieldMetaDataTO;
 import org.nuclos.common.transport.vo.EntityMetaDataTO;
-import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonFatalException;
@@ -186,8 +185,14 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 	private Map<String, String> mpFieldNameChanged;
 
 	private MyTreeModel treeModel;
+	
+	// Spring injection
 
 	private MasterDataFacadeRemote masterDataFacadeRemote;
+	
+	private ConsoleFacadeRemote consoleFacadeRemote;
+	
+	// end of Spring injection
 
 	public NuclosEntitySQLLayoutStep() {
 		// initComponents();
@@ -205,8 +210,13 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 	}
 	
 	@Autowired
-	void setMasterDataFacadeRemote(MasterDataFacadeRemote masterDataFacadeRemote) {
+	final void setMasterDataFacadeRemote(MasterDataFacadeRemote masterDataFacadeRemote) {
 		this.masterDataFacadeRemote = masterDataFacadeRemote;
+	}
+	
+	@Autowired
+	final void setConsoleFacadeRemote(ConsoleFacadeRemote consoleFacadeRemote) {
+		this.consoleFacadeRemote = consoleFacadeRemote;
 	}
 
 	@PostConstruct
@@ -975,7 +985,7 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 		MasterDataDelegate.getInstance().invalidateLayoutCache();
 		MetaDataClientProvider.getInstance().revalidate();
 
-		ServiceLocator.getInstance().getFacade(ConsoleFacadeRemote.class).invalidateAllCaches();
+		consoleFacadeRemote.invalidateAllCaches();
 
 		return true;
 	}

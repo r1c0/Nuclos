@@ -52,12 +52,14 @@ import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common2.ClientPreferences;
 import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.PreferencesUtils;
-import org.nuclos.common2.ServiceLocator;
 import org.nuclos.server.navigation.ejb3.TreeNodeFacadeRemote;
 import org.nuclos.server.navigation.treenode.nuclet.NucletTreeNode;
 import org.nuclos.server.navigation.treenode.nuclet.content.AbstractNucletContentEntryTreeNode;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
 
-public class NucletExplorerView extends DefaultExplorerView implements ExplorerView {
+@Configurable
+public class NucletExplorerView extends DefaultExplorerView {
 
 	private static final long serialVersionUID = 5014512105916869563L;
 
@@ -70,10 +72,21 @@ public class NucletExplorerView extends DefaultExplorerView implements ExplorerV
 	private final Preferences prefs = ClientPreferences.getUserPreferences().node(PREFS_NODE_NUCLET_EXPLORER);
 
 	private final NucletTreeNode nucletnode;
+	
+	// Spring injection
+	
+	private TreeNodeFacadeRemote treeNodeFacadeRemote;
+	
+	// end of Spring injection
 
 	public NucletExplorerView(NucletTreeNode treenode) {
 		super(treenode);
 		this.nucletnode = treenode;
+	}
+	
+	@Autowired
+	final void setTreeNodeFacadeRemote(TreeNodeFacadeRemote treeNodeFacadeRemote) {
+		this.treeNodeFacadeRemote = treeNodeFacadeRemote;
 	}
 
 	@Override
@@ -102,8 +115,8 @@ public class NucletExplorerView extends DefaultExplorerView implements ExplorerV
 		SelectObjectsController<AbstractNucletContentEntryTreeNode> selectCtrl =
 			new SelectObjectsController<AbstractNucletContentEntryTreeNode>(jTree, new NucletContentSelectObjectPanel());
 
-		List<AbstractNucletContentEntryTreeNode> curAvailable = getTreeNodeFacade().getAvailableNucletContents();
-		List<AbstractNucletContentEntryTreeNode> curSelected = getTreeNodeFacade().getNucletContent(nucletnode);
+		List<AbstractNucletContentEntryTreeNode> curAvailable = treeNodeFacadeRemote.getAvailableNucletContents();
+		List<AbstractNucletContentEntryTreeNode> curSelected = treeNodeFacadeRemote.getNucletContent(nucletnode);
 
 		ChoiceList<AbstractNucletContentEntryTreeNode> ro = new ChoiceList<AbstractNucletContentEntryTreeNode>();
 		ro.set(new ArrayList<AbstractNucletContentEntryTreeNode>(curAvailable),	new AbstractNucletContentEntryTreeNode.Comparator());
@@ -121,8 +134,8 @@ public class NucletExplorerView extends DefaultExplorerView implements ExplorerV
 				Collection<AbstractNucletContentEntryTreeNode> removed = CollectionUtils.subtract(curSelected, selectCtrl.getSelectedObjects());
 				Collection<AbstractNucletContentEntryTreeNode> added = CollectionUtils.subtract(selectCtrl.getSelectedObjects(), curSelected);
 
-				getTreeNodeFacade().removeNucletContents(new HashSet<AbstractNucletContentEntryTreeNode>(removed));
-				getTreeNodeFacade().addNucletContents(nucletnode.getId().longValue(), new HashSet<AbstractNucletContentEntryTreeNode>(added));
+				treeNodeFacadeRemote.removeNucletContents(new HashSet<AbstractNucletContentEntryTreeNode>(removed));
+				treeNodeFacadeRemote.addNucletContents(nucletnode.getId().longValue(), new HashSet<AbstractNucletContentEntryTreeNode>(added));
 
 				getExplorerController().refreshTab(NucletExplorerView.this);
 			} catch(Exception e) {
@@ -175,10 +188,6 @@ public class NucletExplorerView extends DefaultExplorerView implements ExplorerV
 			if (nuclosIcon != null) return MainFrame.resizeAndCacheTabIcon(nuclosIcon);
 		}
 		return Icons.getInstance().getIconGenericObject16();
-	}
-
-	private TreeNodeFacadeRemote getTreeNodeFacade() throws NuclosFatalException {
-		return ServiceLocator.getInstance().getFacade(TreeNodeFacadeRemote.class);
 	}
 
 	private ExplorerController getExplorerController() {

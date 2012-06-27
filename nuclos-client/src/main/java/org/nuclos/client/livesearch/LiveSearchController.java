@@ -86,7 +86,6 @@ import org.nuclos.common2.EntityAndFieldName;
 import org.nuclos.common2.IdUtils;
 import org.nuclos.common2.InternalTimestamp;
 import org.nuclos.common2.PreferencesUtils;
-import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
@@ -107,7 +106,6 @@ public class LiveSearchController implements LiveSearchSearchPaneListener, LiveS
 	
 	//
 
-	private JFrame                              parentFrame;
     private SearchComponent                     searchComponent;
     private LiveSearchPane                      resultPane;
 
@@ -126,7 +124,15 @@ public class LiveSearchController implements LiveSearchSearchPaneListener, LiveS
     private Bubble                              overflowMessage;
     private String                              bubbleMessage;
     
-    private ResourceCache resourceCache;
+	// Spring injection
+	
+	private JFrame parentFrame;
+
+	private ResourceCache resourceCache;
+	
+	private LiveSearchFacadeRemote liveSearchFacadeRemote;
+	
+	// end of Spring injection
 
     LiveSearchController() {
     	INSTANCE = this;
@@ -141,6 +147,11 @@ public class LiveSearchController implements LiveSearchSearchPaneListener, LiveS
     public final void setParentFrame(MainFrame parentFrame) {
     	this.parentFrame = parentFrame;
     }
+	
+	// @Autowired
+	public final void setLiveSearchFacadeRemote(LiveSearchFacadeRemote liveSearchFacadeRemote) {
+		this.liveSearchFacadeRemote = liveSearchFacadeRemote;
+	}
     
     public static LiveSearchController getInstance() {
     	return INSTANCE;
@@ -718,9 +729,6 @@ public class LiveSearchController implements LiveSearchSearchPaneListener, LiveS
 					continue;
 				}
 
-                LiveSearchFacadeRemote searchService
-                    = ServiceLocator.getInstance().getFacade(LiveSearchFacadeRemote.class);
-
                 try {
                 	if(nowSearching.search.equals(currentSearchText)) {
                 		// Overflow breaker: if the result display is already
@@ -741,7 +749,7 @@ public class LiveSearchController implements LiveSearchSearchPaneListener, LiveS
                 		}
 
 	                    List<Pair<EntityObjectVO, Set<String>>> res
-	                        = searchService.search(nowSearching.entity.getEntity(), nowSearching.search);
+	                        = liveSearchFacadeRemote.search(nowSearching.entity.getEntity(), nowSearching.search);
 
 	                    if(!nowSearching.search.equals(currentSearchText))
 	                        continue;

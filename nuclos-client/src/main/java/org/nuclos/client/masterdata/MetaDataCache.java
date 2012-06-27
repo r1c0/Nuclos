@@ -31,6 +31,7 @@ import org.nuclos.client.jms.TopicNotificationReceiver;
 import org.nuclos.client.main.Main;
 import org.nuclos.common.JMSConstants;
 import org.nuclos.common.NuclosEntity;
+import org.nuclos.common.SpringApplicationContextHolder;
 import org.nuclos.server.masterdata.valueobject.MasterDataMetaVO;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -91,12 +92,17 @@ public class MetaDataCache implements InitializingBean {
 	};
 	
 
-	public static MetaDataCache getInstance() {
-		return INSTANCE;
-	}
-	
 	public MetaDataCache() {
 		INSTANCE = this;
+	}
+	
+	public static MetaDataCache getInstance() {
+		if (INSTANCE == null) {
+			// throw new IllegalStateException("too early");
+			// lazy support
+			SpringApplicationContextHolder.getBean(MetaDataCache.class);
+		}
+		return INSTANCE;
 	}
 	
 	// @PostConstruct
@@ -113,7 +119,8 @@ public class MetaDataCache implements InitializingBean {
 				tnr.subscribe(JMSConstants.TOPICNAME_METADATACACHE, messagelistener);
 			}
 		};
-		new Thread(run, "MetaDataCache.init").start();
+		// new Thread(run, "MetaDataCache.init").start();
+		run.run();
 	}
 	
 	// @Autowired

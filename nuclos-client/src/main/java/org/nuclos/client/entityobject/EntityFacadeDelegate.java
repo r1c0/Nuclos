@@ -21,6 +21,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
+import org.nuclos.client.common.MetaDataClientProvider;
+import org.nuclos.common.SpringApplicationContextHolder;
 import org.nuclos.common.collect.collectable.CollectableField;
 import org.nuclos.common.collect.collectable.CollectableValueIdField;
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
@@ -45,6 +47,10 @@ public class EntityFacadeDelegate implements EntityFacadeRemote {
 	}
 
 	public static EntityFacadeDelegate getInstance() {
+		if (INSTANCE == null) {
+			// lazy support
+			SpringApplicationContextHolder.getBean(EntityFacadeDelegate.class);			
+		}
 		return INSTANCE;
 	}
 	

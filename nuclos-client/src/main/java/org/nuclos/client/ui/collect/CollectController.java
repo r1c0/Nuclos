@@ -172,6 +172,7 @@ import org.nuclos.common2.exception.CommonFinderException;
 import org.nuclos.common2.exception.CommonPermissionException;
 import org.nuclos.common2.exception.CommonStaleVersionException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.util.Assert;
 
 
@@ -275,13 +276,21 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 
 	private final Map<String, Serializable> context = new HashMap<String, Serializable>();
 
-	private InvokeWithInputRequiredSupport invokeWithInputRequiredSupport;
-	
 	private SearchFilter mainFilter;
 
 	private boolean newTabCreated = false;
 
 	private boolean closed = false;
+	
+	// Spring injection
+	
+	private InvokeWithInputRequiredSupport invokeWithInputRequiredSupport;
+	
+	private WorkspaceUtils workspaceUtils;
+	
+	private MainFrame mainFrame;
+	
+	// end of Spring injection
 
 	/**
 	 * Messages for Collectable events
@@ -584,9 +593,27 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	}
 
 	@Autowired
-	void setInvokeWithInputRequiredSupport(InvokeWithInputRequiredSupport invokeWithInputRequiredSupport) {
+	final void setInvokeWithInputRequiredSupport(InvokeWithInputRequiredSupport invokeWithInputRequiredSupport) {
 		Assert.notNull(invokeWithInputRequiredSupport);
 		this.invokeWithInputRequiredSupport = invokeWithInputRequiredSupport;
+	}
+	
+	@Autowired
+	final void setWorkspaceUtils(WorkspaceUtils workspaceUtils) {
+		this.workspaceUtils = workspaceUtils;
+	}
+	
+	protected WorkspaceUtils getWorkspaceUtils() {
+		return workspaceUtils;
+	}
+	
+	@Autowired
+	final void setMainFrame(@Value("#{mainFrameSpringComponent.mainFrame}") MainFrame mainFrame) {
+		this.mainFrame = mainFrame;
+	}
+	
+	protected MainFrame getMainFrame() {
+		return mainFrame;
 	}
 
 	public final ISearchStrategy<Clct> getSearchStrategy() {
@@ -695,7 +722,7 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	 * @return
 	 */
 	public EntityPreferences getEntityPreferences() {
-		return MainFrame.getWorkspaceDescription().getEntityPreferences(this.getEntityName());
+		return mainFrame.getWorkspaceDescription().getEntityPreferences(this.getEntityName());
 	}
 
 	/**
@@ -855,7 +882,7 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	 * Reads the user-preferences for the sorting order.
 	 */
 	protected List<SortKey> readColumnOrderFromPreferences(final SortableCollectableTableModel<Clct> tblmdl) {
-		return WorkspaceUtils.getSortKeys(getEntityPreferences(),
+		return workspaceUtils.getSortKeys(getEntityPreferences(),
 				new WorkspaceUtils.IColumnIndexRecolver() {
 					@Override
 					public int getColumnIndex(String columnIdentifier) {
@@ -3478,11 +3505,12 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 		TableModel resultTableModel = this.getResultTable().getModel();
 		// NUCLEUSINT-1045
 		if (resultTableModel instanceof SortableTableModel) {
-			WorkspaceUtils.setSortKeys(getEntityPreferences(), ((SortableTableModel) resultTableModel).getSortKeys(), new WorkspaceUtils.IColumnNameResolver() {
-				@Override
-				public String getColumnName(int iColumn) {
-					return getResultTableModel().getCollectableEntityField(iColumn).getName();
-				}
+			workspaceUtils.setSortKeys(getEntityPreferences(), ((SortableTableModel) resultTableModel).getSortKeys(), 
+					new WorkspaceUtils.IColumnNameResolver() {
+						@Override
+						public String getColumnName(int iColumn) {
+							return getResultTableModel().getCollectableEntityField(iColumn).getName();
+						}
 			});
 		}
 	}

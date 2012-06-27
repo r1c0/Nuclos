@@ -85,37 +85,60 @@ import org.nuclos.common.collection.Transformer;
 import org.nuclos.common.dal.vo.EntityObjectVO;
 import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.LangUtils;
-import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.server.common.ejb3.PreferencesFacadeRemote;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 // @Component
-public class WorkspaceChooserController {
+public class WorkspaceChooserController implements InitializingBean {
 	
 	public static final int ICON_SIZE = 16;
-	private static WorkspaceVO selectedWorkspace = null;
 	private static final List<WorkspaceVO> workspaces = new ArrayList<WorkspaceVO>();
 	private static final WorkspacePanel workspacePanel = new WorkspacePanel();
 	private static final ContentPanel contentPanel = new ContentPanel();
-	private static JLabel jlbLeft;
-	private static JLabel jlbRight;
-
-	private static boolean enabled;
 	
-	private static List<Long> workspaceOrderIds;
-	private static List<String> workspaceOrder;
+	//
+	
+	private static WorkspaceChooserController INSTANCE;
+	
+	// 
+	
+	private WorkspaceVO selectedWorkspace = null;
+	private JLabel jlbLeft;
+	private JLabel jlbRight;
+
+	private boolean enabled;
+	
+	private List<Long> workspaceOrderIds;
+	private List<String> workspaceOrder;
+	
+	// Spring injection
 	
 	private SpringLocaleDelegate localeDelegate;
 	
+	private PreferencesFacadeRemote preferencesFacadeRemote;
+	
+	private RestoreUtils restoreUtils;
+	
+	// end of Spring injection
+	
 	WorkspaceChooserController() {
+		INSTANCE = this;
 		// initWorkspaceChooser();
 	}
 	
-	@PostConstruct
-	void initWorkspaceChooser() {
+	public static WorkspaceChooserController getInstance() {
+		if (INSTANCE == null) {
+			throw new IllegalStateException("too early");
+		}
+		return INSTANCE;
+	}
+	
+	@Override
+	public final void afterPropertiesSet() {
 		contentPanel.setOpaque(false);
 		contentPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 1, 5));
 		
@@ -136,14 +159,24 @@ public class WorkspaceChooserController {
 		this.localeDelegate = cld;
 	}
 	
+	// @Autowired
+	public final void setPreferencesFacadeRemote(PreferencesFacadeRemote preferencesFacadeRemote) {
+		this.preferencesFacadeRemote = preferencesFacadeRemote;
+	}
+	
+	// @Autowired
+	public final void setRestoreUtils(RestoreUtils restoreUtils) {
+		this.restoreUtils = restoreUtils;
+	}
+	
 	/**
 	 * 
 	 * @param workspaceOrderIds
 	 * @param workspaceOrder
 	 */
-	public static void setupWorkspaces(List<Long> workspaceOrderIds, List<String> workspaceOrder) {
-		WorkspaceChooserController.workspaceOrderIds = workspaceOrderIds;
-		WorkspaceChooserController.workspaceOrder = workspaceOrder;
+	public void setupWorkspaces(List<Long> workspaceOrderIds, List<String> workspaceOrder) {
+		this.workspaceOrderIds = workspaceOrderIds;
+		this.workspaceOrder = workspaceOrder;
 		
 		setupWorkspaces();
 	}
@@ -151,8 +184,8 @@ public class WorkspaceChooserController {
 	/**
 	 * 
 	 */
-	public static void setupWorkspaces() {
-		Collection<WorkspaceVO> allWorkspaces = getPrefsFacade().getWorkspaceHeaderOnly(); 
+	public void setupWorkspaces() {
+		Collection<WorkspaceVO> allWorkspaces = preferencesFacadeRemote.getWorkspaceHeaderOnly(); 
 			
 		Set<Long> addedIds = new HashSet<Long>();
 		Set<String> addedNames = new HashSet<String>();
@@ -201,7 +234,7 @@ public class WorkspaceChooserController {
 	/**
 	 * 
 	 */
-	private static void refreshWorkspaces() {
+	private void refreshWorkspaces() {
 		workspacePanel.removeAll();
 		
 		final List<WorkspaceVO> hidden = new ArrayList<WorkspaceVO>();
@@ -286,7 +319,7 @@ public class WorkspaceChooserController {
 		contentPanel.repaint();
 	}
 	
-	private static void addWorkspace(WorkspaceVO wovo, boolean select) {
+	private void addWorkspace(WorkspaceVO wovo, boolean select) {
 		if (wovo != null) {
 			// add header only
 			wovo.getWoDesc().removeAllEntityPreferences();
@@ -300,11 +333,11 @@ public class WorkspaceChooserController {
 		}
 	}
 	
-	public static List<WorkspaceVO> getWorkspaceHeaders() {
+	public List<WorkspaceVO> getWorkspaceHeaders() {
 		return new ArrayList<WorkspaceVO>(workspaces);
 	}
 	
-	public static void addGenericActions(List<GenericAction> genericActions) {
+	public void addGenericActions(List<GenericAction> genericActions) {
 		if (genericActions != null) {
 			for (final WorkspaceVO wovo : workspaces) {
 				final Action action = new AbstractAction(wovo.getName(), getWorkspaceIcon(wovo, MainFrame.TAB_CONTENT_ICON_MAX)) {
@@ -325,11 +358,11 @@ public class WorkspaceChooserController {
 		}
 	}
 	
-	private static void restoreWorkspace(final WorkspaceVO wovo) {
+	private void restoreWorkspace(final WorkspaceVO wovo) {
 		if (wovo != null && !wovo.equals(getSelectedWorkspace())) {
 			final MainFrame mf = Main.getInstance().getMainFrame();
 			try {
-				RestoreUtils.storeWorkspace(getSelectedWorkspace());
+				restoreUtils.storeWorkspace(getSelectedWorkspace());
 			} catch (CommonBusinessException e1) {
 				if ("Workspace.not.found".equals(e1.getMessage())) {
 					workspaces.remove(getSelectedWorkspace());
@@ -339,7 +372,7 @@ public class WorkspaceChooserController {
 				}
 			}
 			try {
-				RestoreUtils.clearAndRestoreWorkspace(getPrefsFacade().getWorkspace(wovo.getId()));
+				restoreUtils.clearAndRestoreWorkspace(preferencesFacadeRemote.getWorkspace(wovo.getId()));
 			} catch (CommonBusinessException e1) {
 				if ("Workspace.not.found".equals(e1.getMessage())) {
 					workspaces.remove(wovo);
@@ -350,11 +383,11 @@ public class WorkspaceChooserController {
 		}
 	}
 	
-	public static WorkspaceVO getSelectedWorkspace() {
+	public WorkspaceVO getSelectedWorkspace() {
 		return selectedWorkspace;
 	}
 	
-	public static void setSelectedWorkspace(WorkspaceVO wovo) {
+	public void setSelectedWorkspace(WorkspaceVO wovo) {
 		for (WorkspaceVO wovoI : workspaces) {
 			if (wovoI.equals(wovo)) {
 				selectedWorkspace = wovoI;
@@ -383,15 +416,15 @@ public class WorkspaceChooserController {
 		return contentPanel;
 	}
 	
-	public static void setEnabled(boolean b) {
+	public void setEnabled(boolean b) {
 		enabled = b;
 	}
 	
-	public static boolean isEnabled() {
+	public boolean isEnabled() {
 		return enabled;
 	}
 	
-	private static void setupContextMenu(final WorkspaceLabel wl) {
+	private void setupContextMenu(final WorkspaceLabel wl) {
 		wl.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(final MouseEvent e) {
@@ -429,12 +462,12 @@ public class WorkspaceChooserController {
 		void addSeparator();
 	}
 	
-	private static void addMenuItems(final MenuItemContainer menu, final WorkspaceVO wovo, final Label lb) {		
+	private void addMenuItems(final MenuItemContainer menu, final WorkspaceVO wovo, final Label lb) {		
 		/**
 		 * CHECK 
 		 */
 		try {
-			getPrefsFacade().getWorkspace(wovo.getId());
+			preferencesFacadeRemote.getWorkspace(wovo.getId());
 		} catch (Exception ex) {
 			if ("Workspace.not.found".equals(ex.getMessage())) {
 				workspaces.remove(wovo);
@@ -523,7 +556,7 @@ public class WorkspaceChooserController {
 		}				
 	}
 	
-	private static Action newRefreshAction() {
+	private Action newRefreshAction() {
 		return new AbstractAction(
 				SpringLocaleDelegate.getInstance().getMessage(
 						"WorkspaceChooserController.13","Leiste aktualisieren"), 
@@ -549,14 +582,14 @@ public class WorkspaceChooserController {
 			};
 	}
 	
-	private static Action newNewWorkspaceAction() {
+	private Action newNewWorkspaceAction() {
 		return new AbstractAction(
 				SpringLocaleDelegate.getInstance().getMessage("WorkspaceChooserController.1","Neu"), 
 				MainFrame.resizeAndCacheIcon(Icons.getInstance().getIconNew16(), ICON_SIZE)) {
 
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					if (!RestoreUtils.closeTabs(true)) {
+					if (!restoreUtils.closeTabs(true)) {
 						return;
 					}
 					final MainFrame mf = Main.getInstance().getMainFrame();
@@ -565,11 +598,11 @@ public class WorkspaceChooserController {
 						WorkspaceEditor we = new WorkspaceEditor(wovo);
 						if (we.isSaved()) {
 							try {
-								RestoreUtils.storeWorkspace(getSelectedWorkspace());
+								restoreUtils.storeWorkspace(getSelectedWorkspace());
 							} catch (Exception e2) {
 								Errors.getInstance().showExceptionDialog(mf, e2);
 							}
-							addWorkspace(RestoreUtils.clearAndRestoreToDefaultWorkspace(wovo.getWoDesc()), true);
+							addWorkspace(restoreUtils.clearAndRestoreToDefaultWorkspace(wovo.getWoDesc()), true);
 						}
 					} catch (Exception e1) {
 						Errors.getInstance().showExceptionDialog(mf, e1);
@@ -578,7 +611,7 @@ public class WorkspaceChooserController {
 			};
 	}
 	
-	private static Action newEditAction(final WorkspaceVO wovo) {
+	private Action newEditAction(final WorkspaceVO wovo) {
 		return new AbstractAction(
 				SpringLocaleDelegate.getInstance().getMessage("WorkspaceChooserController.3","Eigenschaften"), 
 				MainFrame.resizeAndCacheIcon(Icons.getInstance().getIconEdit16(), ICON_SIZE)) {
@@ -590,9 +623,9 @@ public class WorkspaceChooserController {
 					WorkspaceEditor we = new WorkspaceEditor(wovo);
 					try {
 						if (we.isSaved()) {
-							getPrefsFacade().storeWorkspaceHeaderOnly(wovo);
+							preferencesFacadeRemote.storeWorkspaceHeaderOnly(wovo);
 							refreshWorkspaces();
-							if (wovo == MainFrame.getWorkspace()) {
+							if (wovo == restoreUtils.getMainFrame().getWorkspace()) {
 								if (hideMenuBar != wovo.getWoDesc().isHideMenuBar() || 
 										!LangUtils.equals(hideMenuItems, wovo.getWoDesc().getParameter(WorkspaceParameter.HIDE_MENU_ITEMS))) {
 									Main.getInstance().getMainController().setupMenuBar();
@@ -608,7 +641,7 @@ public class WorkspaceChooserController {
 			};
 	}
 	
-	private static Action newCloneAction(final WorkspaceVO wovo) {
+	private Action newCloneAction(final WorkspaceVO wovo) {
 		return new AbstractAction(
 				SpringLocaleDelegate.getInstance().getMessage("WorkspaceChooserController.4","Klonen"), 
 				MainFrame.resizeAndCacheIcon(Icons.getInstance().getIconClone16(), ICON_SIZE)) {
@@ -632,17 +665,16 @@ public class WorkspaceChooserController {
 							wovo.getWoDesc().setAllParameters(wovo.getWoDesc().getParameters());
 
 							try {
-								addWorkspace(RestoreUtils.storeWorkspace(wovo), false);
+								addWorkspace(restoreUtils.storeWorkspace(wovo), false);
 							} catch (CommonBusinessException e1) {
 								Errors.getInstance().showExceptionDialog(mf, e1);									
 							}
 						} else {
 							try {
-								PreferencesFacadeRemote prefsFac = getPrefsFacade();
-								WorkspaceVO wovo2 = prefsFac.getWorkspace(wovo.getId());
+								WorkspaceVO wovo2 = preferencesFacadeRemote.getWorkspace(wovo.getId());
 								wovo2.setId(null);
 								wovo2.setName(newName);
-								wovo2 = prefsFac.storeWorkspace(wovo2);
+								wovo2 = preferencesFacadeRemote.storeWorkspace(wovo2);
 								addWorkspace(wovo2, false);
 							} catch (Exception e1) {
 								Errors.getInstance().showExceptionDialog(mf, e1);
@@ -653,7 +685,7 @@ public class WorkspaceChooserController {
 			};
 	}
 	
-	private static Action newRemoveAction(final WorkspaceVO wovo) {
+	private Action newRemoveAction(final WorkspaceVO wovo) {
 		return new AbstractAction(
 				SpringLocaleDelegate.getInstance().getMessage("WorkspaceChooserController.7","Löschen"), 
 				MainFrame.resizeAndCacheIcon(Icons.getInstance().getIconRealDelete16(), ICON_SIZE)) {
@@ -662,7 +694,7 @@ public class WorkspaceChooserController {
 
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					if (wovo.equals(getSelectedWorkspace()) && !RestoreUtils.closeTabs(true)) {
+					if (wovo.equals(getSelectedWorkspace()) && !restoreUtils.closeTabs(true)) {
 						return;
 					}
 					final MainFrame mf = Main.getInstance().getMainFrame();
@@ -674,11 +706,11 @@ public class WorkspaceChooserController {
 							SpringLocaleDelegate.getInstance().getMessage("WorkspaceChooserController.9","Sind Sie sicher?"), 
 							JOptionPane.YES_NO_OPTION)) {
 						
-						if (wovo.equals(getSelectedWorkspace()) && !RestoreUtils.clearWorkspace()) {
+						if (wovo.equals(getSelectedWorkspace()) && !restoreUtils.clearWorkspace()) {
 							return;
 						}
 						
-						getPrefsFacade().removeWorkspace(wovo.getAssignedWorkspace()==null?
+						preferencesFacadeRemote.removeWorkspace(wovo.getAssignedWorkspace()==null?
 								wovo.getId():
 									wovo.getAssignedWorkspace());
 						workspaces.remove(wovo);
@@ -686,7 +718,7 @@ public class WorkspaceChooserController {
 						if (wovo.equals(getSelectedWorkspace())) {
 							for (WorkspaceVO wovo : workspaces) {
 								try {
-									RestoreUtils.clearAndRestoreWorkspace(getPrefsFacade().getWorkspace(wovo.getId()));
+									restoreUtils.clearAndRestoreWorkspace(preferencesFacadeRemote.getWorkspace(wovo.getId()));
 									setSelectedWorkspace(wovo);
 									refreshWorkspaces();
 									return;
@@ -697,7 +729,7 @@ public class WorkspaceChooserController {
 							
 							if (workspaces.isEmpty()) {
 								try {
-									addWorkspace(RestoreUtils.clearAndRestoreToDefaultWorkspace(), true);
+									addWorkspace(restoreUtils.clearAndRestoreToDefaultWorkspace(), true);
 								} catch (CommonBusinessException e1) {
 									Errors.getInstance().showExceptionDialog(mf, e1);
 								}
@@ -710,7 +742,7 @@ public class WorkspaceChooserController {
 			};
 	}
 	
-	private static Action newAssignAction(final WorkspaceVO wovo, final Label lb) {
+	private Action newAssignAction(final WorkspaceVO wovo, final Label lb) {
 		return new AbstractAction(
 				SpringLocaleDelegate.getInstance().getMessage(
 						"WorkspaceChooserController.10","Benutzergruppen zuweisen"), 
@@ -722,8 +754,8 @@ public class WorkspaceChooserController {
 				public void actionPerformed(ActionEvent e) {
 					final MainFrame mf = Main.getInstance().getMainFrame();
 					// assigned and assignable roles
-					final Collection<Long> assignedRoleIds = getPrefsFacade().getAssignedRoleIds(wovo.getAssignedWorkspace());
-					final Collection<RoleAssignment> assignableRoles = CollectionUtils.transform(getPrefsFacade().getAssignableRoles(), 
+					final Collection<Long> assignedRoleIds = preferencesFacadeRemote.getAssignedRoleIds(wovo.getAssignedWorkspace());
+					final Collection<RoleAssignment> assignableRoles = CollectionUtils.transform(preferencesFacadeRemote.getAssignableRoles(), 
 							new Transformer<EntityObjectVO, RoleAssignment>() {
 						@Override
 						public RoleAssignment transform(EntityObjectVO eovo) {
@@ -761,15 +793,15 @@ public class WorkspaceChooserController {
 						lb.setToolTipText(SpringLocaleDelegate.getInstance().getResource(
 								"WorkspaceChooserController.12","Zuweisung wird gespeichert") + "...");
 						
-						WorkspaceChooserController.setEnabled(false);
+						WorkspaceChooserController.this.setEnabled(false);
 						
 						SwingWorker<WorkspaceVO, WorkspaceVO> worker = new SwingWorker<WorkspaceVO, WorkspaceVO>() {
 							@Override
 							protected WorkspaceVO doInBackground() throws Exception {
 								Thread.sleep(500); // otherwise eyesore flash of save icon
 								if (getSelectedWorkspace().equals(wovo))
-									RestoreUtils.storeWorkspace(wovo);
-								return getPrefsFacade().assignWorkspace(wovo, CollectionUtils.transform(selectCtrl.getSelectedObjects(), new Transformer<RoleAssignment, Long>() {
+									restoreUtils.storeWorkspace(wovo);
+								return preferencesFacadeRemote.assignWorkspace(wovo, CollectionUtils.transform(selectCtrl.getSelectedObjects(), new Transformer<RoleAssignment, Long>() {
 									@Override
 									public Long transform(RoleAssignment ra) {
 										return ra.id;
@@ -799,7 +831,7 @@ public class WorkspaceChooserController {
 								} finally {
 									lb.setIcon(icoBackup);
 									lb.setToolTipText(toolTipBackup);
-									WorkspaceChooserController.setEnabled(true);
+									WorkspaceChooserController.this.setEnabled(true);
 								} 
 							}
 						};
@@ -811,7 +843,7 @@ public class WorkspaceChooserController {
 			};
 	}
 	
-	private static Action newPublishAction(final WorkspaceVO wovo, final Label lb) {
+	private Action newPublishAction(final WorkspaceVO wovo, final Label lb) {
 		final MainFrame mf = Main.getInstance().getMainFrame();
 		return new AbstractAction(
 				SpringLocaleDelegate.getInstance().getMessage("WorkspaceChooserController.14","Änderungen in Vorlage publizieren"), 
@@ -823,12 +855,12 @@ public class WorkspaceChooserController {
 					public void actionPerformed(ActionEvent e) {
 						try {
 							if (getSelectedWorkspace().equals(wovo)) {
-								RestoreUtils.storeWorkspace(wovo);
+								restoreUtils.storeWorkspace(wovo);
 							}
-							boolean structureChanged = getPrefsFacade().isWorkspaceStructureChanged(wovo.getAssignedWorkspace(), wovo.getId());
+							boolean structureChanged = preferencesFacadeRemote.isWorkspaceStructureChanged(wovo.getAssignedWorkspace(), wovo.getId());
 							WorkspacePublisher wp = new WorkspacePublisher(structureChanged);
 							if (wp.isSaved()) {
-								getPrefsFacade().publishWorkspaceChanges(wovo, 
+								preferencesFacadeRemote.publishWorkspaceChanges(wovo, 
 										wp.isPublishStructureChange(),
 										wp.isPublishStructureUpdate(),
 										wp.isPublishStarttabConfiguration(),
@@ -855,7 +887,7 @@ public class WorkspaceChooserController {
 		};
 	}
 	
-	public static Action newRestoreAction(final WorkspaceVO wovo) {
+	public Action newRestoreAction(final WorkspaceVO wovo) {
 		return new AbstractAction(
 				SpringLocaleDelegate.getInstance().getMessage("WorkspaceChooserController.15","Auf Vorlage zurücksetzen"), 
 				MainFrame.resizeAndCacheIcon(Icons.getInstance().getIconUndo16(), ICON_SIZE)) {
@@ -872,10 +904,10 @@ public class WorkspaceChooserController {
 	/**
 	 * restore selected workspace
 	 */
-	public static void restoreSelectedWorkspace() {
-		if (!RestoreUtils.isRestoreRunning()) {
+	public void restoreSelectedWorkspace() {
+		if (!restoreUtils.isRestoreRunning()) {
 			if (getSelectedWorkspace().getAssignedWorkspace() == null) {
-				if (!RestoreUtils.closeTabs(true)) {
+				if (!restoreUtils.closeTabs(true)) {
 					return;
 				}
 				final MainFrame mf = Main.getInstance().getMainFrame();
@@ -890,8 +922,8 @@ public class WorkspaceChooserController {
 						getSelectedWorkspace().setWoDesc(WorkspaceDescriptionDefaultsFactory.createOldMdiStyle());
 						getSelectedWorkspace().getWoDesc().importHeader(wdBackup);
 						
-						RestoreUtils.clearAndRestoreWorkspace(getSelectedWorkspace());
-						RestoreUtils.storeWorkspace(getSelectedWorkspace());
+						restoreUtils.clearAndRestoreWorkspace(getSelectedWorkspace());
+						restoreUtils.storeWorkspace(getSelectedWorkspace());
 						
 						getSelectedWorkspace().getWoDesc().getFrames().clear();
 					} catch (CommonBusinessException e) {
@@ -908,9 +940,9 @@ public class WorkspaceChooserController {
 	 * 
 	 * @param wovo
 	 */
-	private static void restoreToAssigned(WorkspaceVO wovo) {
+	private void restoreToAssigned(WorkspaceVO wovo) {
 		if (getSelectedWorkspace().equals(wovo)) {
-			if (!RestoreUtils.closeTabs(true)) {
+			if (!restoreUtils.closeTabs(true)) {
 				return;
 			}
 		}
@@ -922,11 +954,11 @@ public class WorkspaceChooserController {
 						"MainFrame.restoreDefaultWorkspace.1","Arbeitsumgebung zurücksetzen"),
 				JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE)) {
 			try {
-				WorkspaceVO restoredWovo = getPrefsFacade().restoreWorkspace(wovo);
+				WorkspaceVO restoredWovo = preferencesFacadeRemote.restoreWorkspace(wovo);
 				wovo.importHeader(restoredWovo.getWoDesc());
 				refreshWorkspaces();
 				if (getSelectedWorkspace().equals(wovo)) {
-					RestoreUtils.clearAndRestoreWorkspace(restoredWovo);
+					restoreUtils.clearAndRestoreWorkspace(restoredWovo);
 				}
 			} catch (Exception e1) {
 				Errors.getInstance().showExceptionDialog(mf, e1);
@@ -977,16 +1009,16 @@ public class WorkspaceChooserController {
 		}
 	}
 	
-	private abstract static class Label extends JLabel {
-		
-		protected final static ImageIcon imgBG = Icons.getInstance().getWorkspaceChooser_buttonBG();
-		protected final static ImageIcon imgBG_left = Icons.getInstance().getWorkspaceChooser_buttonLeft();
-		protected final static ImageIcon imgBG_right = Icons.getInstance().getWorkspaceChooser_buttonRight();
-		
-		public  final static int imgBG_h = imgBG.getIconHeight();
-		protected final static int imgBG_w = imgBG.getIconWidth();
-		protected final static int imgBG_left_w = imgBG_left.getIconWidth();
-		protected final static int imgBG_right_w = imgBG_right.getIconWidth();
+	protected final static ImageIcon imgBG = Icons.getInstance().getWorkspaceChooser_buttonBG();
+	protected final static ImageIcon imgBG_left = Icons.getInstance().getWorkspaceChooser_buttonLeft();
+	protected final static ImageIcon imgBG_right = Icons.getInstance().getWorkspaceChooser_buttonRight();
+
+	public  final static int imgBG_h = imgBG.getIconHeight();
+	protected final static int imgBG_w = imgBG.getIconWidth();
+	protected final static int imgBG_left_w = imgBG_left.getIconWidth();
+	protected final static int imgBG_right_w = imgBG_right.getIconWidth();
+
+	private abstract class Label extends JLabel {
 		
 		protected boolean mouseOver = false;
 		
@@ -1073,14 +1105,14 @@ public class WorkspaceChooserController {
 		abstract boolean drawDogEar();
 	}
 	
-	private static Icon getWorkspaceIcon(final WorkspaceVO wovo, int size) {
+	private Icon getWorkspaceIcon(final WorkspaceVO wovo, int size) {
 		final Icon ico = wovo.getWoDesc().getNuclosResource()==null?
 				Icons.getInstance().getIconTabGeneric():
 				NuclosResourceCache.getNuclosResourceIcon(wovo.getWoDesc().getNuclosResource());
 		return MainFrame.resizeAndCacheIcon(ico, size);
 	}
 	
-	private static class WorkspaceLabel extends Label implements DragGestureListener {
+	private class WorkspaceLabel extends Label implements DragGestureListener {
 		
 		private final WorkspaceVO wovo;		
 		
@@ -1120,7 +1152,7 @@ public class WorkspaceChooserController {
 							if (wovoToRemove != null) workspaces.remove(wovoToRemove);
 							workspaces.add(indexToAdd, other);
 							
-							WorkspaceChooserController.refreshWorkspaces();
+							WorkspaceChooserController.this.refreshWorkspaces();
 							return true;
 						}
 					} catch (Exception e) {} 
@@ -1218,7 +1250,4 @@ public class WorkspaceChooserController {
 	public static final DataFlavor workspaceFlavor = new DataFlavor(WorkspaceVO.class, "WorkspaceVO");
 	private static final DataFlavor[] flavors = new DataFlavor[] {workspaceFlavor};
 	
-	private static PreferencesFacadeRemote getPrefsFacade() {
-		return ServiceLocator.getInstance().getFacade(PreferencesFacadeRemote.class);
-	}
 }

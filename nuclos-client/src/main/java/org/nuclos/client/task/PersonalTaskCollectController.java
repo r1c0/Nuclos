@@ -56,6 +56,7 @@ import org.nuclos.common2.IdUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.server.common.valueobject.TaskVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataWithDependantsVO;
+import org.springframework.beans.factory.annotation.Autowired;
 
 public class PersonalTaskCollectController extends MasterDataCollectController {
 
@@ -75,7 +76,14 @@ public class PersonalTaskCollectController extends MasterDataCollectController {
 		}
 	}
 
-	private final TaskDelegate delegate;
+	// 
+	
+	// Spring injection
+	
+	private TaskDelegate taskDelegate;
+	
+	// end of Spring injection
+	
 	private JButton sSingletaskButton;
 
 	/**
@@ -89,7 +97,6 @@ public class PersonalTaskCollectController extends MasterDataCollectController {
 	 */
 	public PersonalTaskCollectController(MainFrameTab tabIfAny) {
 		super(NuclosEntity.TODOLIST, tabIfAny);
-		delegate = new TaskDelegate();
 		setupDetailsToolBar();
 		if(SecurityCache.getInstance().isSuperUser()){
 			List<CollectableComponent> delegatorCollectableComponents = getDetailCollectableComponentsFor("taskdelegator");
@@ -121,7 +128,7 @@ public class PersonalTaskCollectController extends MasterDataCollectController {
 							if (sf.getCollectableEntity().getName().equals(NuclosEntity.TASKOWNER.getEntityName())) {
 								CollectableMasterData md = sf.insertNewRow();
 								String sUser = Main.getInstance().getMainController().getUserName();
-								Long iUser = delegate.getUserId(sUser);
+								Long iUser = taskDelegate.getUserId(sUser);
 								md.setField("user", new CollectableValueIdField(iUser, sUser));
 							}
 						}
@@ -130,6 +137,11 @@ public class PersonalTaskCollectController extends MasterDataCollectController {
 				}
 			}
 		});
+	}
+	
+	@Autowired
+	final void setTaskDelegate(TaskDelegate taskDelegate) {
+		this.taskDelegate = taskDelegate;
 	}
 
 	private void setupDetailsToolBar() {
@@ -179,9 +191,9 @@ public class PersonalTaskCollectController extends MasterDataCollectController {
 			case JOptionPane.YES_OPTION:
 				Collection<TaskVO> taskvos = null;
 				if(createMode){
-					taskvos = this.delegate.create(mdvo, getUserIds(), true);
+					taskvos = this.taskDelegate.create(mdvo, getUserIds(), true);
 				} else {
-					taskvos = this.delegate.update(mdvo, getUserIds(), true);
+					taskvos = this.taskDelegate.update(mdvo, getUserIds(), true);
 				}
 				result = (taskvos != null && !taskvos.isEmpty());
 				break;

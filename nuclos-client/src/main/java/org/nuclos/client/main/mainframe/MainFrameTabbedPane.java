@@ -54,6 +54,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
+import javax.annotation.PostConstruct;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -91,7 +92,11 @@ import org.nuclos.client.ui.UIUtils;
 import org.nuclos.common.WorkspaceDescription.Desktop;
 import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.exception.CommonBusinessException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
+import org.springframework.beans.factory.annotation.Value;
 
+@Configurable
 public class MainFrameTabbedPane {
 
 	private static final Logger LOG = Logger.getLogger(MainFrameTabbedPane.class);
@@ -124,6 +129,12 @@ public class MainFrameTabbedPane {
 	private final ImageIcon maximizedFirstTabHomeTreeIcon = MainFrame.resizeAndCacheTabIcon(Icons.getInstance().getIconTabbedPaneMaximized_HomeTree());
 	
 	private int tabClosing = -1;
+	
+	// Spring injection
+	
+	private MainFrameSpringComponent mainFrameSpringComponent;
+	
+	// end of Spring injection
 
 	private static class FirstTabLabel extends JLabel {
 		
@@ -225,9 +236,18 @@ public class MainFrameTabbedPane {
 		
 		actionHome = createHomeAction();
 		actionHomeTree = createHomeTreeAction();
+	}
+	
+	@PostConstruct
+	final void init() {
 		setupStartTab();
 		setCloseEnabled(false);
 		setMaximizeEnabled(false);
+	}
+	
+	@Autowired
+	void setMainFrame(MainFrameSpringComponent mainFrameSpringComponent) {
+		this.mainFrameSpringComponent = mainFrameSpringComponent;
 	}
 	
 	public ComponentPanel getComponentPanel() {
@@ -847,12 +867,13 @@ public class MainFrameTabbedPane {
 		 */
 		final JToggleButton btnHome = new JToggleButton(actionHome);
 		btnHome.setFocusable(false);
-		if (MainFrame.isStarttabEditable()) {
+		final MainFrame mainFrame = mainFrameSpringComponent.getMainFrame();
+		if (mainFrame.isStarttabEditable()) {
 			startTabToolBar.add(btnHome);
 		}
 		final JToggleButton btnHomeTree = new JToggleButton(actionHomeTree);
 		btnHomeTree.setFocusable(false);
-		if (MainFrame.isStarttabEditable()) {
+		if (mainFrame.isStarttabEditable()) {
 			startTabToolBar.add(btnHomeTree);
 		}
 
@@ -862,7 +883,7 @@ public class MainFrameTabbedPane {
 		final PopupButton extraButton = new PopupButton(localeDelegate.getMessage(
 				"PopupButton.Extras","Extras"));
 
-		if (MainFrame.isStarttabEditable()) {
+		if (mainFrame.isStarttabEditable()) {
 			extraButton.add(startTab.createHeadline(localeDelegate.getMessage(
 					"StartTabPanel.11","Startmenu"), null));
 			extraButton.add(new ShowHideJCheckBoxMenuItem(startTab.getShowStartmenuAction()));
@@ -881,7 +902,7 @@ public class MainFrameTabbedPane {
 
 		extraButton.add(startTab.createHeadline(localeDelegate.getMessage("StartTabPanel.12","Zuletzt angesehen"), null));
 		
-		if (MainFrame.isStarttabEditable()) {
+		if (mainFrame.isStarttabEditable()) {
 			extraButton.add(new ShowHideJCheckBoxMenuItem(startTab.getShowHistoryAction()));
 			extraButton.add(new ShowHideJCheckBoxMenuItem(startTab.getAlwaysHideHistoryAction()));
 		}	
@@ -902,13 +923,13 @@ public class MainFrameTabbedPane {
 		extraButton.addSeparator();
 		extraButton.add(startTab.createHeadline(localeDelegate.getMessage("StartTabPanel.13","Lesezeichen"), null));
 		
-		if (MainFrame.isStarttabEditable()) {
+		if (mainFrame.isStarttabEditable()) {
 			extraButton.add(new ShowHideJCheckBoxMenuItem(startTab.getShowBookmarkAction()));
 			extraButton.add(new ShowHideJCheckBoxMenuItem(startTab.getAlwaysHideBookmarkAction()));
 		}
 		
 		extraButton.add(new JMenuItem(startTab.getClearBookmarkAction()));
-		if (MainFrame.isStarttabEditable()) {
+		if (mainFrame.isStarttabEditable()) {
 			extraButton.addSeparator();
 			extraButton.add(new JMenuItem(startTab.getActivateDesktopAction()));
 		}
@@ -1656,7 +1677,7 @@ public class MainFrameTabbedPane {
 					}
 					
 					if (!consumed && SwingUtilities.isRightMouseButton(e)) {
-						if (MainFrame.isStarttabEditable()) {
+						if (mainFrameSpringComponent.getMainFrame().isStarttabEditable()) {
 							final JMenuItem miHideStartTab = new JMenuItem(new AbstractAction(SpringLocaleDelegate.getInstance().getMessage("MainFrameTabbedPane.4", "Starttab ausblenden")) {
 								@Override
 								public void actionPerformed(ActionEvent e) {

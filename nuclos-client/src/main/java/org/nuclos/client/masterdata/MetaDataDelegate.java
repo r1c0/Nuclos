@@ -29,7 +29,6 @@ import org.nuclos.common.dal.vo.PivotInfo;
 import org.nuclos.common.transport.vo.EntityFieldMetaDataTO;
 import org.nuclos.common.transport.vo.EntityMetaDataTO;
 import org.nuclos.common.valueobject.EntityRelationshipModelVO;
-import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.server.dal.provider.SystemEntityMetaDataVO;
@@ -66,8 +65,6 @@ public class MetaDataDelegate implements CommonMetaDataServerProvider {
 	 */
 	MetaDataDelegate() {
 		INSTANCE = this;
-		// this.facade = ServiceLocator.getInstance().getFacade(MetaDataFacadeRemote.class);
-		// this.mdfacade = ServiceLocator.getInstance().getFacade(MasterDataFacadeRemote.class);
 	}
 	
 	public final void setMetaDataFacadeRemote(MetaDataFacadeRemote metaDataFacadeRemote) {

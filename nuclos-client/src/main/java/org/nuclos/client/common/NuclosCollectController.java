@@ -1425,7 +1425,7 @@ public abstract class NuclosCollectController<Clct extends Collectable> extends 
 
 	@Override
 	public EntityPreferences getEntityPreferences() {
-		WorkspaceUtils.validatePreferences(super.getEntityPreferences());
+		getWorkspaceUtils().validatePreferences(super.getEntityPreferences());
 		return super.getEntityPreferences();
 	}
 

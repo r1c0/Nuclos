@@ -30,6 +30,7 @@ import java.util.NavigableMap;
 import java.util.SortedMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import javax.annotation.PostConstruct;
 
 import javax.swing.Box;
 import javax.swing.DefaultCellEditor;
@@ -61,21 +62,33 @@ import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Transformer;
 import org.nuclos.common.preferences.PreferencesConverter;
 import org.nuclos.common2.SpringLocaleDelegate;
-import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonFinderException;
 import org.nuclos.server.common.ejb3.PreferencesFacadeRemote;
 import org.nuclos.server.common.valueobject.PreferencesVO;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
 
+@Configurable
 public class CopyPreferencesPanel extends JPanel {
 
 	private static final Logger LOG = Logger.getLogger(CopyPreferencesPanel.class);
+	
+	//
+	
+	// Spring injection
+	
+	private PreferencesFacadeRemote preferencesFacadeRemote;
+	
+	// end of Spring injection
 
+	private final String defaultUser;
 	private final JComboBox userCollectableCbx;
 	private final JXTree tree;
 
 	public CopyPreferencesPanel(String defaultUser) {
+		this.defaultUser = defaultUser;
 		userCollectableCbx = new JComboBox(getUserNames().toArray());
 		AutoCompleteDecorator.decorate(userCollectableCbx);
 
@@ -97,7 +110,13 @@ public class CopyPreferencesPanel extends JPanel {
 		tree.setEditable(true);
 
 		prefsPanel.add(new JScrollPane(tree));
-
+		setLayout(new BorderLayout());
+		add(sourceUserBox, BorderLayout.NORTH);
+		add(prefsPanel, BorderLayout.CENTER);
+	}
+	
+	@PostConstruct
+	final void init() {
 		userCollectableCbx.setSelectedItem(defaultUser);
 		initPreferencesTree(defaultUser);
 		userCollectableCbx.addItemListener(new ItemListener() {
@@ -107,10 +126,12 @@ public class CopyPreferencesPanel extends JPanel {
 					initPreferencesTree((String) e.getItem());
 				}
 			}
-		});		
-		setLayout(new BorderLayout());
-		add(sourceUserBox, BorderLayout.NORTH);
-		add(prefsPanel, BorderLayout.CENTER);
+		});
+	}
+	
+	@Autowired
+	final void setPreferencesFacadeRemote(PreferencesFacadeRemote preferencesFacadeRemote) {
+		this.preferencesFacadeRemote = preferencesFacadeRemote;
 	}
 
 	private static List<String> getUserNames() {
@@ -127,9 +148,8 @@ public class CopyPreferencesPanel extends JPanel {
 	private void initPreferencesTree(String userName) {
 		PreferencesTreeModel model = new PreferencesTreeModel();
 		if (userName != null) {
-			PreferencesFacadeRemote facade = ServiceLocator.getInstance().getFacade(PreferencesFacadeRemote.class);
 			try {
-				PreferencesVO prefs = facade.getPreferencesForUser(userName);
+				PreferencesVO prefs = preferencesFacadeRemote.getPreferencesForUser(userName);
 				NavigableMap<String, Map<String, String>> prefsMap;
 				try {
 					prefsMap = PreferencesConverter.loadPreferences(new ByteArrayInputStream(prefs.getPreferencesBytes()));

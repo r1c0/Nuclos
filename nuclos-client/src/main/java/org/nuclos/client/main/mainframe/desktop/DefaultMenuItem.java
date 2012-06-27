@@ -49,7 +49,11 @@ import org.nuclos.client.synthetica.NuclosThemeSettings;
 import org.nuclos.client.ui.Icons;
 import org.nuclos.common.WorkspaceDescription;
 import org.nuclos.common2.SpringLocaleDelegate;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
+import org.springframework.beans.factory.annotation.Value;
 
+@Configurable
 abstract class DefaultMenuItem extends JLabel implements DragGestureListener {
 	
 	private static final Logger LOG = Logger.getLogger(DefaultMenuItem.class);
@@ -70,6 +74,12 @@ abstract class DefaultMenuItem extends JLabel implements DragGestureListener {
 	private final Color itemTextColorHover;
 	private final ImageIcon itemBackground;
 	private final ImageIcon itemBackgroundHover;
+	
+	// Spring injection
+	
+	private MainFrame mainFrame;
+	
+	// end of Spring injection
 	
 	public DefaultMenuItem(WorkspaceDescription.MenuItem prefs, Action action, 
 			int itemFontSize, int itemTextHorizontalAlignment, int itemTextHorizontalPadding, 
@@ -129,6 +139,11 @@ abstract class DefaultMenuItem extends JLabel implements DragGestureListener {
 		initListener();
 		DragSource dragSource = DragSource.getDefaultDragSource();
 		dragSource.createDefaultDragGestureRecognizer(this, DnDConstants.ACTION_COPY_OR_MOVE, this);
+	}
+	
+	@Autowired
+	final void setMainFrame(@Value("#{mainFrameSpringComponent.mainFrame}") MainFrame mainFrame) {
+		this.mainFrame = mainFrame;
 	}
 	
 	@Override
@@ -191,7 +206,7 @@ abstract class DefaultMenuItem extends JLabel implements DragGestureListener {
 	abstract void move();
 	
 	private void showContextMenu(MouseEvent mev) {	
-		if (!MainFrame.isStarttabEditable()) {
+		if (!mainFrame.isStarttabEditable()) {
 			return;
 		}
 		

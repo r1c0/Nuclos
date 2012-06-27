@@ -55,7 +55,6 @@ import org.nuclos.common.dal.vo.EntityObjectVO;
 import org.nuclos.common2.DateUtils;
 import org.nuclos.common2.IOUtils;
 import org.nuclos.common2.LangUtils;
-import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.common2.exception.CommonFinderException;
@@ -114,7 +113,25 @@ public class NuclosConsole extends ConsoleConstants {
 	
 	// 
 	
+	// Spring injection
+	
 	private AttributeCache attributeCache;
+	
+	private SchedulerControlFacadeRemote schedulerControlFacadeRemote;
+	
+	private TimelimitRuleFacadeRemote timelimitRuleFacadeRemote;
+	
+	private PreferencesFacadeRemote preferencesFacadeRemote;
+	
+	private MasterDataFacadeRemote masterDataFacadeRemote;
+	
+	private DatasourceFacadeRemote datasourceFacadeRemote;
+	
+	private ConsoleFacadeRemote consoleFacadeRemote;
+	
+	private NuclosRemoteServerSession nuclosRemoteServerSession;
+	
+	// end of Spring injection
 
 	public static synchronized NuclosConsole getInstance() {
 		if (INSTANCE == null) {
@@ -141,23 +158,58 @@ public class NuclosConsole extends ConsoleConstants {
 	
 	@Autowired
 	@Qualifier("attributeCache")
-	void setAttributeCache(AttributeCache attributeCache) {
+	final void setAttributeCache(AttributeCache attributeCache) {
 		this.attributeCache = attributeCache;
 	}
-
-	private static void login(String sUser, String sPassword) throws LoginException {
-		sUserName = sUser;
-		NuclosRemoteServerSession.login(sUser, sPassword);
+	
+	@Autowired
+	final void setSchedulerControlFacadeRemote(SchedulerControlFacadeRemote schedulerControlFacadeRemote) {
+		this.schedulerControlFacadeRemote = schedulerControlFacadeRemote;
+	}
+	
+	@Autowired
+	final void setTimelimitRuleFacadeRemote(TimelimitRuleFacadeRemote timelimitRuleFacadeRemote) {
+		this.timelimitRuleFacadeRemote = timelimitRuleFacadeRemote;
+	}
+	
+	@Autowired
+	final void setPreferencesFacadeRemote(PreferencesFacadeRemote preferencesFacadeRemote) {
+		this.preferencesFacadeRemote = preferencesFacadeRemote;
+	}
+	
+	@Autowired
+	final void setMasterDataFacadeRemote(MasterDataFacadeRemote masterDataFacadeRemote) {
+		this.masterDataFacadeRemote = masterDataFacadeRemote;
+	}
+	
+	@Autowired
+	final void setDatasourceFacadeRemote(DatasourceFacadeRemote datasourceFacadeRemote) {
+		this.datasourceFacadeRemote = datasourceFacadeRemote;
+	}
+	
+	@Autowired
+	final void setConsoleFacadeRemote(ConsoleFacadeRemote consoleFacadeRemote) {
+		this.consoleFacadeRemote = consoleFacadeRemote;
+	}
+	
+	@Autowired
+	final void setNuclosRemoteServerSession(NuclosRemoteServerSession NuclosRemoteServerSession) {
+		this.nuclosRemoteServerSession = nuclosRemoteServerSession;
 	}
 
-	private static void logout() throws LoginException {
-		NuclosRemoteServerSession.logout();
+	private void login(String sUser, String sPassword) throws LoginException {
+		sUserName = sUser;
+		nuclosRemoteServerSession.login(sUser, sPassword);
+	}
+
+	private void logout() throws LoginException {
+		nuclosRemoteServerSession.logout();
 	}
 
 	/**
 	 * Invalidates the attribute cache
 	 */
-	private static void invalidateAttributeCache() {
+	private void invalidateAttributeCache() {
 		System.out.println("Invalidating attribute cache...");
 		AttributeDelegate.getInstance().invalidateCache();
 		System.out.println("done");
@@ -166,7 +218,7 @@ public class NuclosConsole extends ConsoleConstants {
 	/**
 	 * Invalidates the rule cache
 	 */
-	private static void invalidateRuleCache() {
+	private void invalidateRuleCache() {
 		System.out.println("Invalidating rule cache...");
 		RuleDelegate.getInstance().invalidateCache();
 		System.out.println("done");
@@ -175,7 +227,7 @@ public class NuclosConsole extends ConsoleConstants {
 	/**
 	 * Refreshes the dynamic generic object views
 	 */
-	private static void refreshViews() {
+	private void refreshViews() {
 		System.out.println("Refreshing generic object views...");
 		LayoutDelegate.getInstance().refreshAll();
 		System.out.println("done");
@@ -185,17 +237,15 @@ public class NuclosConsole extends ConsoleConstants {
 	 * delete a scheduled job
 	 * @param sJobName
 	 */
-	private static void unscheduleJob(String sJobName) throws CommonBusinessException, RemoteException {
-		final SchedulerControlFacadeRemote schedulercontrol = ServiceLocator.getInstance().getFacade(SchedulerControlFacadeRemote.class);
-		schedulercontrol.deleteJob(sJobName);
+	private void unscheduleJob(String sJobName) throws CommonBusinessException, RemoteException {
+		schedulerControlFacadeRemote.deleteJob(sJobName);
 		System.out.println("Successfully deleted job: " + sJobName);
-		System.out.println(schedulercontrol.getSchedulerSummary());
+		System.out.println(schedulerControlFacadeRemote.getSchedulerSummary());
 	}
 
-	private static void executeTimelimitJobNow(String sRuleName) throws RemoteException, CommonBusinessException {
-		final TimelimitRuleFacadeRemote timelimitrulefacade = ServiceLocator.getInstance().getFacade(TimelimitRuleFacadeRemote.class);
+	private void executeTimelimitJobNow(String sRuleName) throws RemoteException, CommonBusinessException {
 		try {
-			timelimitrulefacade.executeTimelimitRule(sRuleName);
+			timelimitRuleFacadeRemote.executeTimelimitRule(sRuleName);
 		}
 		catch (RuntimeException ex) {
 			throw new CommonBusinessException(ex.getMessage());
@@ -205,16 +255,15 @@ public class NuclosConsole extends ConsoleConstants {
 	/**
 	 * get a list of all scheduled jobs
 	 */
-	private static void showJobs() throws RemoteException {
-		final SchedulerControlFacadeRemote schedulercontrol = ServiceLocator.getInstance().getFacade(SchedulerControlFacadeRemote.class);
-		System.out.println(schedulercontrol.getSchedulerSummary());
+	private void showJobs() throws RemoteException {
+		System.out.println(schedulerControlFacadeRemote.getSchedulerSummary());
 	}
 
 	/**
 	 * List of all reports defined in the application
 	 * @throws CommonPermissionException
 	 */
-	private static void showReports() throws CommonPermissionException {
+	private void showReports() throws CommonPermissionException {
 		for (final ReportVO report : getReports()) {
 			if (report.getType() == ReportType.REPORT) {
 				System.out.println(report.getName());
@@ -227,7 +276,7 @@ public class NuclosConsole extends ConsoleConstants {
 	 * @return Does a report with the given name exist?
 	 * @throws CommonPermissionException
 	 */
-	private static boolean reportExists(String sReportName) throws CommonPermissionException {
+	private boolean reportExists(String sReportName) throws CommonPermissionException {
 		boolean result = false;
 		for (ReportVO report : getReports()) {
 			if (report.getName().compareTo(sReportName) == 0) {
@@ -242,11 +291,11 @@ public class NuclosConsole extends ConsoleConstants {
 	 * @return all reports from the server
 	 * @throws CommonPermissionException
 	 */
-	private static Collection<ReportVO> getReports() throws CommonPermissionException {
+	private Collection<ReportVO> getReports() throws CommonPermissionException {
 		return ReportDelegate.getInstance().getReports();
 	}
 
-	private static void importLayouts(String sInputDir) throws CommonBusinessException {
+	private void importLayouts(String sInputDir) throws CommonBusinessException {
 		final File fileInputDir = testForNonEmptyDirectory(sInputDir);
 
 		try {
@@ -262,7 +311,7 @@ public class NuclosConsole extends ConsoleConstants {
 	 * @return Collection<LayoutVO>
 	 * @throws IOException
 	 */
-	private static Collection<LayoutVO> readLayouts(File fileInputDir) throws IOException {
+	private Collection<LayoutVO> readLayouts(File fileInputDir) throws IOException {
 		final Collection<LayoutVO> result = new ArrayList<LayoutVO>();
 
 		final FileFilter filter = new SuffixFileFilter(".layoutml");
@@ -274,7 +323,7 @@ public class NuclosConsole extends ConsoleConstants {
 		return result;
 	}
 
-	private static String getNameWithoutSuffix(File file) {
+	private String getNameWithoutSuffix(File file) {
 		final int iDotPosition = file.getName().lastIndexOf('.');
 		assert iDotPosition >= 0;
 		return file.getName().substring(0, iDotPosition);
@@ -284,11 +333,11 @@ public class NuclosConsole extends ConsoleConstants {
 	 * Export all Layouts
 	 * @throws CommonBusinessException
 	 */
-	public static void exportLayouts(String sOutputDir) throws CommonBusinessException {
+	public void exportLayouts(String sOutputDir) throws CommonBusinessException {
 		exportLayouts(sOutputDir, NuclosEntity.LAYOUT);
 	}
 
-	private static void exportLayouts(String sOutputDir, final NuclosEntity entity) throws CommonBusinessException {
+	private void exportLayouts(String sOutputDir, final NuclosEntity entity) throws CommonBusinessException {
 		final File fileOutputDir = testForEmptyDirectory(sOutputDir);
 
 		System.out.println("Exporting Layouts to " + sOutputDir + "...");
@@ -312,7 +361,7 @@ public class NuclosConsole extends ConsoleConstants {
 		System.out.println("Layouts successfully exported.");
 	}
 
-	private static void exportRules(String sOutputDir) throws CommonBusinessException {
+	private void exportRules(String sOutputDir) throws CommonBusinessException {
 		final File fileOutputDir = testForEmptyDirectory(sOutputDir);
 
 		try {
@@ -328,7 +377,7 @@ public class NuclosConsole extends ConsoleConstants {
 		/** @todo	*/
 	}
 
-	private static void exportTimelimitRules(String sOutputDir) throws CommonBusinessException {
+	private void exportTimelimitRules(String sOutputDir) throws CommonBusinessException {
 		final File fileOutputDir = testForEmptyDirectory(sOutputDir);
 
 		try {
@@ -343,7 +392,7 @@ public class NuclosConsole extends ConsoleConstants {
 	}
 
 	// Only used for exports, so target directory will be created if necessary
-	private static File testForEmptyDirectory(String sOutputDir) throws CommonBusinessException {
+	private File testForEmptyDirectory(String sOutputDir) throws CommonBusinessException {
 		final File fileOutputDir = testForDirectory(sOutputDir, true);
 
 		for(File file : fileOutputDir.listFiles())
@@ -354,7 +403,7 @@ public class NuclosConsole extends ConsoleConstants {
 	}
 
 	// Only used for imports, so target directory must exist and will not be created
-	private static File testForNonEmptyDirectory(String sOutputDir) throws CommonBusinessException {
+	private File testForNonEmptyDirectory(String sOutputDir) throws CommonBusinessException {
 		final File fileOutputDir = testForDirectory(sOutputDir, false);
 
 		if (fileOutputDir.listFiles().length == 0) {
@@ -370,7 +419,7 @@ public class NuclosConsole extends ConsoleConstants {
 	 * @return directory as file
 	 * @throws CommonBusinessException
 	 */
-	private static File testForDirectory(String sOutputDir, boolean bCreate) throws CommonBusinessException {
+	private File testForDirectory(String sOutputDir, boolean bCreate) throws CommonBusinessException {
 		final File fileOutputDir = new File(sOutputDir);
 		if (!fileOutputDir.exists() && bCreate) {
 			fileOutputDir.mkdir();
@@ -382,7 +431,7 @@ public class NuclosConsole extends ConsoleConstants {
 		return fileOutputDir;
 	}
 
-	private static void importRules(String sInputDir) throws CommonBusinessException {
+	private void importRules(String sInputDir) throws CommonBusinessException {
 		final File fileInputDir = testForNonEmptyDirectory(sInputDir);
 
 		try {
@@ -395,7 +444,7 @@ public class NuclosConsole extends ConsoleConstants {
 		}
 	}
 
-	private static void importTimelimitRules(String sInputDir) throws CommonBusinessException {
+	private void importTimelimitRules(String sInputDir) throws CommonBusinessException {
 		final File fileInputDir = testForNonEmptyDirectory(sInputDir);
 
 		try {
@@ -408,7 +457,7 @@ public class NuclosConsole extends ConsoleConstants {
 		}
 	}
 
-	private static Collection<RuleVO> readTimelimitRules(File fileInputDir) throws IOException {
+	private Collection<RuleVO> readTimelimitRules(File fileInputDir) throws IOException {
 		final Collection<RuleVO> result = new ArrayList<RuleVO>();
 
 		for (File file : fileInputDir.listFiles(new SuffixFileFilter(".txt"))) {
@@ -421,7 +470,7 @@ public class NuclosConsole extends ConsoleConstants {
 		return result;
 	}
 
-	private static Collection<RuleWithUsagesVO> readRules(File fileInputDir) throws IOException {
+	private Collection<RuleWithUsagesVO> readRules(File fileInputDir) throws IOException {
 		final Collection<RuleWithUsagesVO> result = new ArrayList<RuleWithUsagesVO>();
 
 		for (File file : fileInputDir.listFiles(new SuffixFileFilter(".txt"))) {
@@ -433,7 +482,7 @@ public class NuclosConsole extends ConsoleConstants {
 		return result;
 	}
 
-	private static void setUserPreferences(String sUserName, String sFileName) {
+	private void setUserPreferences(String sUserName, String sFileName) {
 		final File filePreferencesXml = new File(sFileName);
 		try {
 			final byte[] bytes = IOUtils.readFromBinaryFile(filePreferencesXml);
@@ -444,13 +493,13 @@ public class NuclosConsole extends ConsoleConstants {
 		}
 	}
 
-	private static void resetUserPreferences(String sUserName) {
+	private void resetUserPreferences(String sUserName) {
 		internalSetUserPreferences(sUserName, null);
 	}
 
-	private static void internalSetUserPreferences(String sUserName, PreferencesVO prefsvo) {
+	private void internalSetUserPreferences(String sUserName, PreferencesVO prefsvo) {
 		try {
-			ServiceLocator.getInstance().getFacade(PreferencesFacadeRemote.class).setPreferencesForUser(sUserName, prefsvo);
+			preferencesFacadeRemote.setPreferencesForUser(sUserName, prefsvo);
 		}
 		catch (CommonFinderException ex) {
 			throw new NuclosFatalException(ex);
@@ -469,7 +518,7 @@ public class NuclosConsole extends ConsoleConstants {
 	 * @todo move to IOUtils
 	 * @todo Is it really true that it's not possible with BufferedReader.readLine()?
 	 */
-	public static String readFromTextFile(File file) throws IOException {
+	public String readFromTextFile(File file) throws IOException {
 		final StringBuilder sb = new StringBuilder();
 		final Reader br = new BufferedReader(new FileReader(file));
 
@@ -488,7 +537,7 @@ public class NuclosConsole extends ConsoleConstants {
 	 * @throws IOException
 	 * @see #readFromTextFile(File)
 	 */
-	private static void appendText(Reader reader, StringBuilder sb) throws IOException {
+	private void appendText(Reader reader, StringBuilder sb) throws IOException {
 		int i;
 		boolean bLastCharWasCR = false;
 		while ((i = reader.read()) != -1) {
@@ -510,7 +559,7 @@ public class NuclosConsole extends ConsoleConstants {
 		}
 	}
 
-	private static String getUsage() {
+	private String getUsage() {
 		final StringBuilder sb = new StringBuilder();
 
 		sb.append("Usage: NuclosConsole <username> <password> <serverconfig> <command>\n");
@@ -702,14 +751,12 @@ public class NuclosConsole extends ConsoleConstants {
 		}
 		else if (sCommandLowerCase.equals(CMD_INVALIDATE_METADATACACHE)) {
 			System.out.println("Invalidating metadata cache...");
-			final MasterDataFacadeRemote mdfacade = ServiceLocator.getInstance().getFacade(MasterDataFacadeRemote.class);
-			mdfacade.revalidateMasterDataMetaCache();
+			masterDataFacadeRemote.revalidateMasterDataMetaCache();
 			System.out.println("done");
 		}
 		else if (sCommandLowerCase.equals(CMD_INVALIDATE_DATASOURCECACHE)) {
 			System.out.println("Invalidating datasource cache...");
-			final DatasourceFacadeRemote datasourcefacade = ServiceLocator.getInstance().getFacade(DatasourceFacadeRemote.class);
-			datasourcefacade.invalidateCache();
+			datasourceFacadeRemote.invalidateCache();
 			System.out.println("done");
 		}
 		else if (sCommandLowerCase.equals(CMD_VALIDATEOBJECTGENERATIONS)) {
@@ -787,7 +834,7 @@ public class NuclosConsole extends ConsoleConstants {
 			invalidatAllCaches();
 		}
 		else if (sCommandLowerCase.equals(CMD_MIGRATESEARCHFILTER)) {
-			MigrateSearchFilterPreferences.migrate(sUserName);
+			MigrateSearchFilterPreferences.getInstance().migrate(sUserName);
 		}
 		else if (sCommandLowerCase.equals(CMD_NUCLET_GENERATION_CREATE_EMPTY_XLSX_FILE.toLowerCase())) {
 			NucletGenerator generator = new NucletGenerator();
@@ -811,16 +858,16 @@ public class NuclosConsole extends ConsoleConstants {
 	}
 
 
-	private static void invalidatAllCaches() throws CommonRemoteException, RemoteException, CommonFatalException {
-		System.out.println(getConsoleFacade().invalidateAllCaches());
+	private void invalidatAllCaches() throws CommonRemoteException, RemoteException, CommonFatalException {
+		System.out.println(consoleFacadeRemote.invalidateAllCaches());
 	}
 
-	private static void killSession(String user) throws RemoteException {
-		getConsoleFacade().killSession(user);
+	private void killSession(String user) throws RemoteException {
+		consoleFacadeRemote.killSession(user);
 	}
 
-	private static void sendMessage(String sMessage, String sUser, Priority priority, String sAuthor) throws RemoteException {
-		getConsoleFacade().sendClientNotification(sMessage, sUser, priority, sAuthor);
+	private void sendMessage(String sMessage, String sUser, Priority priority, String sAuthor) throws RemoteException {
+		consoleFacadeRemote.sendClientNotification(sMessage, sUser, priority, sAuthor);
 	}
 
 	/**
@@ -829,7 +876,7 @@ public class NuclosConsole extends ConsoleConstants {
 	 * @param bDirectoryMayBeEmpty
 	 * @throws CommonBusinessException
 	 */
-	private static void checkForImportExportParameters(String[] args, boolean bDirectoryMayBeEmpty) throws CommonBusinessException {
+	private void checkForImportExportParameters(String[] args, boolean bDirectoryMayBeEmpty) throws CommonBusinessException {
 		if (args.length < 2) {
 			throw new CommonBusinessException("Name of " + (bDirectoryMayBeEmpty ? "empty " : "") + "directory must be given.");
 		}
@@ -838,24 +885,15 @@ public class NuclosConsole extends ConsoleConstants {
 		}
 	}
 
-	private static void compileDBObjects() throws RemoteException, SQLException {
-		getConsoleFacade().compileInvalidDbObjects();
-	}
-
-	private static ConsoleFacadeRemote getConsoleFacade() {
-		try {
-			return ServiceLocator.getInstance().getFacade(ConsoleFacadeRemote.class);
-		}
-		catch (RuntimeException ex) {
-			throw new CommonRemoteException(ex);
-		}
+	private void compileDBObjects() throws RemoteException, SQLException {
+		consoleFacadeRemote.compileInvalidDbObjects();
 	}
 
 	/**
 	 * Validate all masterdata entries against their meta information (length, format, min, max etc.).
 	 * @param filename the name of the csv file to which the results are written.
 	 */
-	private static void checkMasterDataValues(String filename) {
+	private void checkMasterDataValues(String filename) {
 		// iterate over masterdata meta cache; masterdatafacade.get(entity) to get all; validate each cvo
 		MasterDataDelegate.getInstance().checkMasterDataValues(filename);
 	}
@@ -889,7 +927,7 @@ public class NuclosConsole extends ConsoleConstants {
 		System.out.println("validateObjectGenerations finished");
 	}
 
-	private static void printDeveloperCommands() {
+	private void printDeveloperCommands() {
 		System.out.println("Developer commands:\n");
 		System.out.println("\t-invalidatemasterdatametacache");
 		System.out.println("\t\t\tFills the masterdata cache of the server newly with values, so it is not necessary to restart the server (but the client still)");
@@ -900,7 +938,7 @@ public class NuclosConsole extends ConsoleConstants {
 	 * @param asArgs
 	 * @todo create a server-side pendant doSomethingUseful(asArgs) in your favorite FacadeBean.
 	 */
-	private static void doSomethingUseful(String[] asArgs) {
+	private void doSomethingUseful(String[] asArgs) {
 		// today, we're generating stupid sql inserts out of metadata information:
 	}
 
@@ -909,14 +947,15 @@ public class NuclosConsole extends ConsoleConstants {
 	 * @param asArgs
 	 */
 	public static void main(String[] asArgs) {
+		final NuclosConsole dut = NuclosConsole.getInstance();
 		try {
 			if (asArgs.length < 4) {
 				System.out.println("Missing command.\n\n");
-				System.out.println(getUsage());
+				System.out.println(dut.getUsage());
 				System.exit(-1);
 			}
 
-			login(asArgs[0], asArgs[1]);
+			dut.login(asArgs[0], asArgs[1]);
 			try {
 				final String[] asParamsWithoutLoginInfo = new String[asArgs.length - 3];
 				for (int i = 3; i < asArgs.length; i++) {
@@ -925,7 +964,7 @@ public class NuclosConsole extends ConsoleConstants {
 				NuclosConsole.getInstance().parseAndInvoke(asParamsWithoutLoginInfo, true);
 			}
 			finally {
-				logout();
+				dut.logout();
 			}
 			System.exit(0);
 		}

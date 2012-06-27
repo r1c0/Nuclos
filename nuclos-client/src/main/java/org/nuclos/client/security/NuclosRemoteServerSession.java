@@ -19,7 +19,6 @@ package org.nuclos.client.security;
 import org.apache.log4j.Logger;
 import org.nuclos.client.common.security.SecurityCache;
 import org.nuclos.common.SpringApplicationContextHolder;
-import org.nuclos.common2.ServiceLocator;
 import org.nuclos.server.common.ejb3.SecurityFacadeRemote;
 import org.springframework.remoting.RemoteAccessException;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -28,20 +27,45 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 
-public abstract class NuclosRemoteServerSession {
+public class NuclosRemoteServerSession {
 
 	private static final Logger LOG = Logger.getLogger(NuclosRemoteServerSession.class);
+	
+	private static NuclosRemoteServerSession INSTANCE;
+	
+	//
+	
+	// Spring injection
+	
+	private SecurityFacadeRemote securityFacadeRemote;
+	
+	// end of Spring injection
 
-	private static Integer sessionId;
+	private Integer sessionId;
 
-	public static void login(String username, String password) throws AuthenticationException {
+	NuclosRemoteServerSession() {
+		INSTANCE = this;
+	}
+	
+	public static NuclosRemoteServerSession getInstance() {
+		if (INSTANCE == null) {
+			throw new IllegalStateException("too early");
+		}
+		return INSTANCE;
+	}
+	
+	public final void setSecurityFacadeRemote(SecurityFacadeRemote securityFacadeRemote) {
+		this.securityFacadeRemote = securityFacadeRemote;
+	}
+
+	public void login(String username, String password) throws AuthenticationException {
 		SecurityContextHolder.setStrategyName(SecurityContextHolder.MODE_GLOBAL);
 		try {
 			AuthenticationManager am = (AuthenticationManager)SpringApplicationContextHolder.getBean("authenticationManager");
 			UsernamePasswordAuthenticationToken auth = (UsernamePasswordAuthenticationToken) am.authenticate(new UsernamePasswordAuthenticationToken(username, new String(password)));
 			auth = new UsernamePasswordAuthenticationToken(auth.getPrincipal(), password, auth.getAuthorities());
 			SecurityContextHolder.getContext().setAuthentication(auth);
-			sessionId = ServiceLocator.getInstance().getFacade(SecurityFacadeRemote.class).login();
+			sessionId = securityFacadeRemote.login();
 			LOG.info("User " + username + " logged in, session=" + sessionId);
 		}
 		catch (AuthenticationException ex) {
@@ -50,7 +74,7 @@ public abstract class NuclosRemoteServerSession {
 		}
 	}
 
-	public static void relogin(String username, String password) throws AuthenticationException {
+	public void relogin(String username, String password) throws AuthenticationException {
 		try {
 			AuthenticationManager am = (AuthenticationManager)SpringApplicationContextHolder.getBean("authenticationManager");
 			UsernamePasswordAuthenticationToken auth = (UsernamePasswordAuthenticationToken) am.authenticate(new UsernamePasswordAuthenticationToken(username, new String(password)));
@@ -65,7 +89,7 @@ public abstract class NuclosRemoteServerSession {
 		}
 	}
 
-	public static Authentication authenticate() throws AuthenticationException, RemoteAccessException {
+	public Authentication authenticate() throws AuthenticationException, RemoteAccessException {
 		AuthenticationManager am = (AuthenticationManager)SpringApplicationContextHolder.getBean("authenticationManager");
 		Object c = SecurityContextHolder.getContext().getAuthentication().getCredentials();
 		Authentication auth = am.authenticate(SecurityContextHolder.getContext().getAuthentication());
@@ -73,9 +97,9 @@ public abstract class NuclosRemoteServerSession {
 		return auth;
 	}
 
-	public static void logout() {
+	public void logout() {
 		try {
-			ServiceLocator.getInstance().getFacade(SecurityFacadeRemote.class).logout(sessionId);
+			securityFacadeRemote.logout(sessionId);
 			SecurityContextHolder.getContext().setAuthentication(null);
 			LOG.info("Logged out.");
 		}

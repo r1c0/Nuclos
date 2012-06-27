@@ -49,7 +49,6 @@ import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
-import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.common2.exception.CommonFinderException;
@@ -67,10 +66,34 @@ public class WebAccessPrefs {
 	
 	private static final Logger LOG = Logger.getLogger(WebAccessPrefs.class);
 	
-   private static final String	PREFS_BASE	= "org/nuclos/client";
+	private static final String PREFS_BASE = "org/nuclos/client";
+	
+	private static WebAccessPrefs INSTANCE;
+	
+	// Spring injection
+	
+	private PreferencesFacadeRemote preferencesFacadeRemote;
+	
+	// end of Spring injection
+	
+	private Document _d;
+	private List<String> idList = makeList();
 
-   private Document _d;
-   private List<String> idList = makeList();
+	WebAccessPrefs() {
+		INSTANCE = this;
+	}
+	
+	public static WebAccessPrefs getInstance() {
+		if (INSTANCE == null) {
+			throw new IllegalStateException("too early");
+		}
+		return INSTANCE;
+	}
+	
+	public final void setPreferencesFacadeRemote(PreferencesFacadeRemote preferencesFacadeRemote) {
+		this.preferencesFacadeRemote = preferencesFacadeRemote;
+	}
+
    private Document getDoc(){
       if(_d == null) {
       	SAXBuilder sxbuild = new SAXBuilder(false);
@@ -78,7 +101,7 @@ public class WebAccessPrefs {
       	sxbuild.setFeature("http://apache.org/xml/features/nonvalidating/load-dtd-grammar",	false);
       	sxbuild.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd",false);
          try {
-            PreferencesVO vo = ServiceLocator.getInstance().getFacade(PreferencesFacadeRemote.class).getUserPreferences();
+            PreferencesVO vo = preferencesFacadeRemote.getUserPreferences();
             byte[] xml = vo.getPreferencesBytes();
             DocumentBuilder db = DocumentBuilderFactory.newInstance().newDocumentBuilder();
 

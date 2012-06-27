@@ -26,13 +26,16 @@ import javax.swing.Icon;
 import javax.swing.JComponent;
 
 import org.apache.log4j.Logger;
+import org.nuclos.client.main.mainframe.MainFrame;
 import org.nuclos.client.ui.gc.IReferenceHolder;
 import org.nuclos.client.wizard.NuclosEntityWizardStaticModel;
+import org.nuclos.common.WorkspaceDescription;
 import org.nuclos.common2.SpringLocaleDelegate;
 import org.pietschy.wizard.PanelWizardStep;
 import org.pietschy.wizard.WizardModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
+import org.springframework.beans.factory.annotation.Value;
 
 /**
 * <br>
@@ -51,10 +54,16 @@ public abstract class NuclosEntityAbstractStep extends PanelWizardStep implement
 	
 	JComponent parent;
 	
-	SpringLocaleDelegate localeDelegate;
-	
 	private final List<Object> ref = new LinkedList<Object>();
 
+	// Spring injection
+	
+	SpringLocaleDelegate localeDelegate;
+	
+	MainFrame mainFrame;
+	
+	// end of Spring injection
+	
 	public NuclosEntityAbstractStep() {
 	}
 
@@ -70,14 +79,23 @@ public abstract class NuclosEntityAbstractStep extends PanelWizardStep implement
 	protected abstract void initComponents();
 	
 	@Autowired
-	void setSpringLocaleDelegate(SpringLocaleDelegate cld) {
+	final void setSpringLocaleDelegate(SpringLocaleDelegate cld) {
 		this.localeDelegate = cld;
 	}
 	
+	@Autowired
+	final void setMainFrame(@Value("#{mainFrameSpringComponent.mainFrame}") MainFrame mainFrame) {
+		this.mainFrame = mainFrame;
+	}
+	
+	WorkspaceDescription.EntityPreferences getEntityPreferences() {
+		return mainFrame.getWorkspaceDescription().getEntityPreferences("NuclosEntityWizard");
+	}
+
 	public void setParentComponent(JComponent compParent) {
 		parent = compParent;
 	}
-	
+
 	public NuclosEntityWizardStaticModel getModel() {
 		return model;
 	}

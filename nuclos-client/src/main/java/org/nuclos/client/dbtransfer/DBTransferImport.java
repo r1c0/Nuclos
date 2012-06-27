@@ -92,6 +92,7 @@ import org.nuclos.common2.CommonRunnable;
 import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
+import org.nuclos.server.dbtransfer.TransferFacadeRemote;
 import org.pietschy.wizard.I18n;
 import org.pietschy.wizard.InvalidStateException;
 import org.pietschy.wizard.PanelWizardStep;
@@ -106,7 +107,15 @@ public class DBTransferImport {
 
 	public static final String IMPORT_EXECUTED = "import_executed";
 
+	//
+	
+	// Spring injection
+	
 	private SpringLocaleDelegate localeDelegate;
+	
+	private TransferFacadeRemote transferFacadeRemote;
+	
+	// end of Spring injection
 
 	private boolean isNuclon;
 	private final ActionListener notifyParent;
@@ -178,8 +187,13 @@ public class DBTransferImport {
 	}
 	
 	@Autowired
-	void setSpringLocaleDelegate(SpringLocaleDelegate cld) {
+	final void setSpringLocaleDelegate(SpringLocaleDelegate cld) {
 		this.localeDelegate = cld;
+	}
+	
+	@Autowired
+	final void setTransferFacadeRemote(TransferFacadeRemote transferFacadeRemote) {
+		this.transferFacadeRemote = transferFacadeRemote;
 	}
 
 	private void closeWizard(){
@@ -321,7 +335,7 @@ public class DBTransferImport {
 							}
 
 							resetStep2();
-							importTransferObject = utils.getTransferFacade().prepareTransfer(isNuclon, transferFile);
+							importTransferObject = transferFacadeRemote.prepareTransfer(isNuclon, transferFile);
 							chbxImportAsNuclon.setEnabled(importTransferObject.getTransferOptions().containsKey(TransferOption.IS_NUCLON_IMPORT_ALLOWED));
 
 							step.setComplete(!importTransferObject.result.hasCriticals());
@@ -1084,7 +1098,7 @@ public class DBTransferImport {
 							Transfer transfer = new Transfer(importTransferObject);
 							transfer.setParameter(parameterSelection);
 							
-							importTransferResult = utils.getTransferFacade().runTransfer(transfer);
+							importTransferResult = transferFacadeRemote.runTransfer(transfer);
 							
 							// Nicht invalidateAllClientCaches() aufrufen! Nach einem Aufruf sind die Menus solange deaktiviert, 
 							// bis alle NovabitInternalFrames geschlossen wurden... BUG?

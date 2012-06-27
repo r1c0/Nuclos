@@ -64,24 +64,40 @@ public class Errors {
 
 	private static final Logger LOG = Logger.getLogger(Errors.class);
 
-	private static Errors singleton;
-
-	private String sAppName;
-
 	private static final String NEW_LINE = "\n";
 
 	public static final int BUBBLE_ERROR_LINE_LENGTH = 200;
+
+	private static Errors INSTANCE;
+	
+	//
+
+	private String sAppName;
+	
+	// Spring injection
+	
+	private NuclosRemoteServerSession nuclosRemoteServerSession;
+	
+	// end of Spring injection
 
 	/**
 	 * @invariant criticalerrorhandler != null
 	 */
 	private CriticalErrorHandler criticalerrorhandler = new DefaultCriticalErrorHandler();
+	
+	Errors() {
+		INSTANCE = this;
+	}
 
-	public static synchronized Errors getInstance() {
-		if (singleton == null) {
-			singleton = new Errors();
+	public static Errors getInstance() {
+		if (INSTANCE == null) {
+			throw new IllegalStateException("too early");
 		}
-		return singleton;
+		return INSTANCE;
+	}
+	
+	public final void setNuclosRemoteServerSession(NuclosRemoteServerSession nuclosRemoteServerSession) {
+		this.nuclosRemoteServerSession = nuclosRemoteServerSession;
 	}
 
 	/**
@@ -140,15 +156,15 @@ public class Errors {
 					// if the reason is a RemoteAccessException, check if user needs to re-authenticate
 					Throwable authexception = getCause(t, RemoteAccessException.class);
 					if (authexception != null) {
-						synchronized (singleton) {
+						synchronized (INSTANCE) {
 							try {
-								NuclosRemoteServerSession.authenticate();
+								nuclosRemoteServerSession.authenticate();
 							}
 							catch (AuthenticationException ex2) {
 								final MainFrame mf = Main.getInstance().getMainFrame();
 
 								LoginController lc = new LoginController(mf);
-								lc.setLocaleDelegate(SpringApplicationContextHolder.getBean(LocaleDelegate.class));
+								// lc.setLocaleDelegate(SpringApplicationContextHolder.getBean(LocaleDelegate.class));
 								if (!lc.run(mf)) {
 									String message = LocalUserProperties.getInstance().getLoginResource(LocalUserProperties.KEY_ERR_EXIT);
 									JOptionPane.showMessageDialog(mf, message, ApplicationProperties.getInstance().getName(), JOptionPane.ERROR_MESSAGE);

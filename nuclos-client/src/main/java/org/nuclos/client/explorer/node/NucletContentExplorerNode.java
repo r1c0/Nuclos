@@ -41,11 +41,11 @@ import org.nuclos.client.resource.ResourceCache;
 import org.nuclos.client.ui.Errors;
 import org.nuclos.client.ui.Icons;
 import org.nuclos.common.NuclosFatalException;
-import org.nuclos.common2.ServiceLocator;
 import org.nuclos.server.navigation.ejb3.TreeNodeFacadeRemote;
 import org.nuclos.server.navigation.treenode.TreeNode;
 import org.nuclos.server.navigation.treenode.nuclet.content.AbstractNucletContentEntryTreeNode;
 import org.nuclos.server.navigation.treenode.nuclet.content.NucletContentTreeNode;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * <code>ExplorerNode</code> presenting a <code>NucletContentTreeNode</code>.
@@ -59,9 +59,20 @@ import org.nuclos.server.navigation.treenode.nuclet.content.NucletContentTreeNod
 public class NucletContentExplorerNode extends ExplorerNode<NucletContentTreeNode> {
 
 	private static final Logger LOG = Logger.getLogger(NucletContentExplorerNode.class);
+	
+	// Spring injection
+	
+	private TreeNodeFacadeRemote treeNodeFacadeRemote;
+	
+	// end of Spring injection
 
 	public NucletContentExplorerNode(TreeNode treenode) {
 		super(treenode);
+	}
+	
+	@Autowired
+	final void setTreeNodeFacadeRemote(TreeNodeFacadeRemote treeNodeFacadeRemote) {
+		this.treeNodeFacadeRemote = treeNodeFacadeRemote;
 	}
 
 	@Override
@@ -87,7 +98,7 @@ public class NucletContentExplorerNode extends ExplorerNode<NucletContentTreeNod
 				if (getTreeNode().getEntity().getEntityName().equals(mdiden.getEntity())) {
 					Long eoid = (mdiden.getId() instanceof Long) ? (Long) mdiden.getId() : ((Integer)mdiden.getId()).longValue();
 					if (eoid >= 0) {
-						contents.put(getTreeNodeFacade().getNucletContentEntryNode(getTreeNode().getEntity(), eoid),
+						contents.put(treeNodeFacadeRemote.getNucletContentEntryNode(getTreeNode().getEntity(), eoid),
 							mdiden);
 					}
 				}
@@ -95,11 +106,12 @@ public class NucletContentExplorerNode extends ExplorerNode<NucletContentTreeNod
 			if (!contents.isEmpty()) {
 				try {
 					for (AbstractNucletContentEntryTreeNode node : contents.keySet()) {
-						if(getTreeNodeFacade().removeNucletContents(Collections.singleton(node))) {
+						if(treeNodeFacadeRemote.removeNucletContents(Collections.singleton(node))) {
 							contents.get(node).removeFromSourceTree();
 						}
 					}
-					getTreeNodeFacade().addNucletContents(getTreeNode().getNucletId(), new HashSet<AbstractNucletContentEntryTreeNode>(contents.keySet()));
+					treeNodeFacadeRemote.addNucletContents(getTreeNode().getNucletId(), 
+							new HashSet<AbstractNucletContentEntryTreeNode>(contents.keySet()));
 					refresh(tree);
 				} catch(Exception e) {
 					Errors.getInstance().showExceptionDialog(getExplorerController().getTabbedPane().getComponentPanel(), e);
@@ -126,7 +138,4 @@ public class NucletContentExplorerNode extends ExplorerNode<NucletContentTreeNod
 		return Icons.getInstance().getIconGenericObject16();
 	}
 
-	private TreeNodeFacadeRemote getTreeNodeFacade() throws NuclosFatalException {
-		return ServiceLocator.getInstance().getFacade(TreeNodeFacadeRemote.class);
-	}
 }

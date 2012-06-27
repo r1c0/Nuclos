@@ -69,7 +69,6 @@ import org.nuclos.common.dal.vo.EntityObjectVO;
 import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.IdUtils;
 import org.nuclos.common2.LocaleInfo;
-import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.common2.exception.CommonFinderException;
@@ -77,6 +76,7 @@ import org.nuclos.common2.exception.CommonPermissionException;
 import org.nuclos.server.console.ejb3.ConsoleFacadeRemote;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 import org.pietschy.wizard.InvalidStateException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
 /**
@@ -106,7 +106,12 @@ public class NuclosEntityNameStep extends NuclosEntityAbstractStep {
 
 	private Collection<EntityMetaDataVO> colMasterdata;
 	private EntityMetaDataVO toEdit;
-
+	
+	// Spring injection
+	
+	private ConsoleFacadeRemote consoleFacadeRemote;
+	
+	// end of Spring injection
 
 	public NuclosEntityNameStep() {
 		// initComponents();
@@ -124,6 +129,11 @@ public class NuclosEntityNameStep extends NuclosEntityAbstractStep {
 
 	public void setEntityToEdit(EntityMetaDataVO vo) {
 		this.toEdit = vo;
+	}
+	
+	@Autowired
+	final void setConsoleFacadeRemote(ConsoleFacadeRemote consoleFacadeRemote) {
+		this.consoleFacadeRemote = consoleFacadeRemote;
 	}
 
 	@PostConstruct
@@ -407,7 +417,7 @@ public class NuclosEntityNameStep extends NuclosEntityAbstractStep {
 
 						MetaDataDelegate.getInstance().removeEntity(((EntityWrapper)cmbEntity.getSelectedItem()).getWrappedEntity(), bDropLayout);
 						NuclosWizardUtils.flushCaches();
-						ServiceLocator.getInstance().getFacade(ConsoleFacadeRemote.class).invalidateAllCaches();
+						consoleFacadeRemote.invalidateAllCaches();
 						NuclosEntityNameStep.this.model.cancelWizard();
 						break;
 					case JOptionPane.NO_OPTION:

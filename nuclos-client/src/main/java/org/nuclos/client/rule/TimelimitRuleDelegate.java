@@ -20,7 +20,6 @@ import java.util.Collection;
 
 import org.nuclos.common.NuclosBusinessException;
 import org.nuclos.common.NuclosFatalException;
-import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonCreateException;
 import org.nuclos.common2.exception.CommonFatalException;
@@ -46,33 +45,27 @@ import org.nuclos.server.ruleengine.valueobject.RuleVO;
  */
 public class TimelimitRuleDelegate {
 
-	private static TimelimitRuleDelegate singleton;
+	private static TimelimitRuleDelegate INSTANCE;
+	
+	// Spring injection
 
-	private TimelimitRuleFacadeRemote facade;
+	private TimelimitRuleFacadeRemote timelimitRuleFacadeRemote;
+	
+	// end of Spring injection
 
-	public static synchronized TimelimitRuleDelegate getInstance() {
-		if (singleton == null) {
-			singleton = new TimelimitRuleDelegate();
+	public static TimelimitRuleDelegate getInstance() {
+		if (INSTANCE == null) {
+			throw new IllegalStateException("too early");
 		}
-		return singleton;
+		return INSTANCE;
 	}
 
-	private TimelimitRuleDelegate() {
+	TimelimitRuleDelegate() {
+		INSTANCE = this;
 	}
-
-	/**
-	 * gets the facade once for this object and stores it in a member variable.
-	 */
-	private TimelimitRuleFacadeRemote getTimelimitRuleFacade() throws NuclosFatalException {
-		if (this.facade == null) {
-			try {
-				this.facade = ServiceLocator.getInstance().getFacade(TimelimitRuleFacadeRemote.class);
-			}
-			catch (RuntimeException ex) {
-				throw new CommonFatalException(ex);
-			}
-		}
-		return this.facade;
+	
+	public final void setTimelimitRuleFacadeRemote(TimelimitRuleFacadeRemote timelimitRuleFacadeRemote) {
+		this.timelimitRuleFacadeRemote = timelimitRuleFacadeRemote;
 	}
 
 	/**
@@ -80,7 +73,7 @@ public class TimelimitRuleDelegate {
 	 */
 	public Collection<RuleVO> getAllTimelimitRules() {
 		try {
-			return this.getTimelimitRuleFacade().getAllTimelimitRules();
+			return timelimitRuleFacadeRemote.getAllTimelimitRules();
 		}
 		catch (RuntimeException ex) {
 			throw new CommonFatalException(ex);
@@ -89,7 +82,7 @@ public class TimelimitRuleDelegate {
 
 	public void remove(MasterDataVO rulevo) throws CommonStaleVersionException, CommonRemoveException, CommonFinderException, NuclosFatalException, CommonCreateException, CommonPermissionException, NuclosBusinessRuleException, NuclosCompileException {
 		try {
-			getTimelimitRuleFacade().remove(rulevo);
+			timelimitRuleFacadeRemote.remove(rulevo);
 		}
 		catch (RuntimeException ex) {
 			throw new CommonFatalException(ex);
@@ -103,7 +96,7 @@ public class TimelimitRuleDelegate {
 	 */
 	public MasterDataVO update(MasterDataVO mdcvo) throws CommonBusinessException {
 		try {
-			return getTimelimitRuleFacade().modify(mdcvo);
+			return timelimitRuleFacadeRemote.modify(mdcvo);
 		}
 		catch (RuntimeException ex) {
 			throw new NuclosUpdateException(ex);
@@ -112,7 +105,7 @@ public class TimelimitRuleDelegate {
 
 	public MasterDataVO create(MasterDataVO mdcvo) throws CommonBusinessException {
 		try {
-			return getTimelimitRuleFacade().create(mdcvo);
+			return timelimitRuleFacadeRemote.create(mdcvo);
 		}
 		catch (RuntimeException ex) {
 			throw new NuclosBusinessException(ex);
@@ -124,7 +117,7 @@ public class TimelimitRuleDelegate {
 	 */
 	public String getClassTemplate() throws NuclosBusinessException {
 		try {
-			return this.getTimelimitRuleFacade().getClassTemplate();
+			return timelimitRuleFacadeRemote.getClassTemplate();
 		}
 		catch (RuntimeException e) {
 			throw new NuclosBusinessException(e);
@@ -138,7 +131,7 @@ public class TimelimitRuleDelegate {
 	 */
 	public void importTimelimitRules(Collection<RuleVO> collRuleVO) throws CommonBusinessException {
 		try {
-			this.getTimelimitRuleFacade().importTimelimitRules(collRuleVO);
+			timelimitRuleFacadeRemote.importTimelimitRules(collRuleVO);
 		}
 		catch (RuntimeException ex) {
 			throw new NuclosFatalException(ex);
@@ -152,7 +145,7 @@ public class TimelimitRuleDelegate {
 	 */
 	public void check(MasterDataVO mdVO) throws NuclosCompileException {
 		try {
-			this.getTimelimitRuleFacade().check(mdVO);
+			timelimitRuleFacadeRemote.check(mdVO);
 		}
 		catch (RuntimeException e) {
 			throw new NuclosFatalException(e);

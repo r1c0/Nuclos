@@ -1248,7 +1248,7 @@ public class StartTabPanel extends JPanel implements NuclosDropTargetVisitor {
 				
 				List<JMenuItem>result = new ArrayList<JMenuItem>();
 
-				if (MainFrame.isStarttabEditable()) {
+				if (mainFrame.isStarttabEditable()) {
 					JCheckBoxMenuItem cbmiOpenHere = new JCheckBoxMenuItem(new AbstractAction(localeDelegate.getMessage(
 							"StartTabPanel.10","Immer hier oeffnen")) {
 
@@ -1529,7 +1529,7 @@ public class StartTabPanel extends JPanel implements NuclosDropTargetVisitor {
 
 		@Override
 		public boolean isEnabled() {
-			return MainFrame.isStarttabEditable();
+			return mainFrame.isStarttabEditable();
 		}
 	}
 	

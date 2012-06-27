@@ -69,7 +69,6 @@ import org.nuclos.common.collect.exception.CollectableFieldValidationException;
 import org.nuclos.common2.CommonRunnable;
 import org.nuclos.common2.IOUtils;
 import org.nuclos.common2.KeyEnum;
-import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.SystemUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
@@ -83,6 +82,7 @@ import org.nuclos.server.report.valueobject.ReportOutputVO;
 import org.nuclos.server.report.valueobject.ReportVO;
 import org.nuclos.server.report.valueobject.ReportVO.OutputType;
 import org.nuclos.server.report.valueobject.ReportVO.ReportType;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * <code>MasterDataCollectController</code> for reports.
@@ -96,6 +96,12 @@ import org.nuclos.server.report.valueobject.ReportVO.ReportType;
  * @version 01.00.00
  */
 public class ReportCollectController extends MasterDataCollectController {
+	
+	// Spring injection
+	
+	private ReportFacadeRemote reportFacadeRemote;
+	
+	// end of Spring injection
 
 	//private final JButton btnShowResultInExplorer = new JButton();
 	private final JButton btnPreview = new JButton();
@@ -104,8 +110,6 @@ public class ReportCollectController extends MasterDataCollectController {
 
 	private final NuclosEntity outputEntity;
 	private final NuclosEntity subreportEntity;
-	private final ReportDelegate reportdelegate = new ReportDelegate();
-
 	private ReportVO.OutputType outputtype = ReportVO.OutputType.SINGLE;
 	// Controls which are shown or hidden, depending on the output type of the report
 	private CollectableComboBox clctcmbbxDataSource = null;
@@ -117,6 +121,12 @@ public class ReportCollectController extends MasterDataCollectController {
 	private TableColumn tablecolumnSourceFile = null;
 	private TableColumn tablecolumnParameter = null;
 	private TableColumn tablecolumnFormat = null;
+	
+	// Spring injection
+	
+	private ReportDelegate reportDelegate;
+	
+	// end of Spring injection
 
 	/**
 	 * You should use {@link org.nuclos.client.ui.collect.CollectControllerFactorySingleton} 
@@ -180,6 +190,16 @@ public class ReportCollectController extends MasterDataCollectController {
 				btnPreview.setEnabled(bViewingExistingRecord);
 			}
 		});
+	}
+	
+	@Autowired
+	final void setReportFacadeRemote(ReportFacadeRemote reportFacadeRemote) {
+		this.reportFacadeRemote = reportFacadeRemote;
+	}
+	
+	@Autowired
+	final void setReportDelegate(ReportDelegate reportDelegate) {
+		this.reportDelegate = reportDelegate;
 	}
 
 	private ReportVO.OutputType getOutputType() {
@@ -371,7 +391,7 @@ public class ReportCollectController extends MasterDataCollectController {
 	 */
 	@Override
 	protected void deleteCollectable(CollectableMasterDataWithDependants clct) throws CommonBusinessException {
-		reportdelegate.removeReport(clct.getMasterDataCVO());
+		reportDelegate.removeReport(clct.getMasterDataCVO());
 	}
 
 	/**
@@ -402,7 +422,7 @@ public class ReportCollectController extends MasterDataCollectController {
 	protected CollectableMasterDataWithDependants updateCollectable(CollectableMasterDataWithDependants clct, Object oDependantData) throws CommonBusinessException {
 		final DependantCollectableMasterDataMap mpclctDependants = (DependantCollectableMasterDataMap) oDependantData;
 
-		final Object oId = reportdelegate.modify(clct.getMasterDataCVO(), mpclctDependants.toDependantMasterDataMap());
+		final Object oId = reportDelegate.modify(clct.getMasterDataCVO(), mpclctDependants.toDependantMasterDataMap());
 
 		final MasterDataVO mdvoUpdated = mddelegate.get(getEntityName(), oId);
 
@@ -444,7 +464,7 @@ public class ReportCollectController extends MasterDataCollectController {
 		//		@todo eliminate this workaround
 		final DependantMasterDataMap mpmdvoDependants = org.nuclos.common.Utils.clearIds(getAllSubFormData(null).toDependantMasterDataMap());
 		
-		final MasterDataVO mdvoInserted = reportdelegate.create(clctNew.getMasterDataCVO(), mpmdvoDependants);
+		final MasterDataVO mdvoInserted = reportDelegate.create(clctNew.getMasterDataCVO(), mpmdvoDependants);
 
 		//return CollectableMasterDataWithDependants.newInstance(mdclctNew.getCollectableEntity(), mdvoInserted);
 		return new CollectableMasterDataWithDependants(getCollectableEntity(), new MasterDataWithDependantsVO(mdvoInserted, readDependants(mdvoInserted.getId())));
@@ -747,9 +767,7 @@ public class ReportCollectController extends MasterDataCollectController {
 				final CollectableMasterData clctSelected = ReportCollectController.this.getSelectedCollectable();
 				if (clctSelected != null)
 					try {
-						final ReportFacadeRemote facade = ServiceLocator.getInstance().getFacade(ReportFacadeRemote.class);
-
-						final Collection<ReportOutputVO> collReportOutputVO = facade.getReportOutputs((Integer) clctSelected.getId());
+						final Collection<ReportOutputVO> collReportOutputVO = reportFacadeRemote.getReportOutputs((Integer) clctSelected.getId());
 						ReportOutputVO outputvo = null;
 
 						if (collReportOutputVO.size() == 0) {
@@ -766,7 +784,7 @@ public class ReportCollectController extends MasterDataCollectController {
 										getSpringLocaleDelegate().getMessage("ReportCollectController.21", "Bitte w\u00e4hlen Sie die Vorlage aus, dessen Layout als Vorschau angezeigt werden soll."));
 								return;
 							}
-							outputvo = facade.getReportOutput((Integer)clctReportOutput.getId());
+							outputvo = reportFacadeRemote.getReportOutput((Integer)clctReportOutput.getId());
 						}
 
 						if (outputvo == null || outputvo.getSourceFile() == null) {
@@ -818,7 +836,7 @@ public class ReportCollectController extends MasterDataCollectController {
 		final File targetFile = new File(tempDir, filename + "_" + dateformat.format(Calendar.getInstance(Locale.getDefault()).getTime()).replaceAll("[/+*%?#!.:]", "-") + outputvo.getFormat().getExtension());
 		
 		try {
-			NuclosFile preview = reportdelegate.testReport(outputvo.getId());
+			NuclosFile preview = reportDelegate.testReport(outputvo.getId());
 
 			IOUtils.writeToBinaryFile(targetFile, preview.getFileContents());
 			SystemUtils.open(targetFile);
@@ -837,7 +855,7 @@ public class ReportCollectController extends MasterDataCollectController {
 			return false;
 
 		if (getSelectedCollectableId() != null)
-			return reportdelegate.isSaveAllowed((Integer) getSelectedCollectableId());
+			return reportDelegate.isSaveAllowed((Integer) getSelectedCollectableId());
 		else
 			// new reports/forms may always be saved:
 			return true;
@@ -856,7 +874,7 @@ public class ReportCollectController extends MasterDataCollectController {
 		if (!SecurityCache.getInstance().isDeleteAllowedForMasterData(getEntityName()))
 			return false;
 
-		return reportdelegate.isSaveAllowed((Integer) clct.getId());
+		return reportDelegate.isSaveAllowed((Integer) clct.getId());
 	}
 
 	/**

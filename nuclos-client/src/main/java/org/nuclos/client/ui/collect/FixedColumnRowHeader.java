@@ -87,14 +87,16 @@ import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.PreferencesException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
 
 /**
  *
  * @author <a href="mailto:rainer.schneider@novabit.de">rainer.schneider</a>
  *
  */
+@Configurable
 public class FixedColumnRowHeader extends SubformRowHeader {
-
 
 	private static final Logger LOG = Logger.getLogger(FixedColumnRowHeader.class);
 	
@@ -109,6 +111,12 @@ public class FixedColumnRowHeader extends SubformRowHeader {
 	
 	private final SubForm subform;
 	private final SubFormPreferences subFormPreferences;
+	
+	// Spring injection
+	
+	private WorkspaceUtils workspaceUtils; 	
+
+	// end of Spring injection
 
 	public FixedColumnRowHeader(SubForm subform, SubFormPreferences subFormPreferences) {
 		super();
@@ -118,6 +126,11 @@ public class FixedColumnRowHeader extends SubformRowHeader {
 		this.mpFixedColumnCollWidths = new HashMap<Object, Integer>();
 		this.initColumnModelListener();
 		getHeaderTable().getColumnModel().addColumnModelListener(headerColumnModelListener);
+	}
+	
+	@Autowired
+	final void setWorkspaceUtils(WorkspaceUtils workspaceUtils) {
+		this.workspaceUtils = workspaceUtils;
 	}
 
 	private void initColumnModelListener() {
@@ -215,7 +228,7 @@ public class FixedColumnRowHeader extends SubformRowHeader {
 	 */
 	private void cmdSelectColumns(final SortableTableModel tblmodel) {
 		if (!SecurityCache.getInstance().isActionAllowed(Actions.ACTION_WORKSPACE_CUSTOMIZE_ENTITY_AND_SUBFORM_COLUMNS) &&
-				MainFrame.getWorkspace().isAssigned()) {
+				workspaceUtils.getWorkspace().isAssigned()) {
 			return;
 		}
 		
@@ -266,7 +279,7 @@ public class FixedColumnRowHeader extends SubformRowHeader {
 			
 			// add DEselected to hidden in preferences
 			for (CollectableEntityField clctef : collDeselected) {
-				WorkspaceUtils.addHiddenColumn(subFormPreferences, clctef.getName());
+				workspaceUtils.addHiddenColumn(subFormPreferences, clctef.getName());
 			}
 		}
 	}
@@ -284,7 +297,7 @@ public class FixedColumnRowHeader extends SubformRowHeader {
 		// add DEselected to hidden in preferences
 		final Collection<? extends CollectableEntityField> collDeselected = CollectionUtils.subtract(lstSelected, lstSelectedNew);
 		for (CollectableEntityField clctef : collDeselected) {
-			WorkspaceUtils.addHiddenColumn(subFormPreferences, clctef.getName());
+			workspaceUtils.addHiddenColumn(subFormPreferences, clctef.getName());
 		}
 	}
 	
@@ -721,12 +734,12 @@ public class FixedColumnRowHeader extends SubformRowHeader {
 				lstWidths.add(column.getWidth());
 			}
 		}
-		WorkspaceUtils.addFixedColumns(subFormPreferences, lstFixedColumnCollNames, lstWidths);
+		workspaceUtils.addFixedColumns(subFormPreferences, lstFixedColumnCollNames, lstWidths);
 	}
 
 	public void initializeFieldsFromPreferences(SubFormPreferences subFormPreferences) {
-		this.lstFixedColumnCollNames = WorkspaceUtils.getFixedColumns(subFormPreferences);
-		this.lstHeaderColumnWidthsFromPref = WorkspaceUtils.getColumnWidths(subFormPreferences);
+		this.lstFixedColumnCollNames = workspaceUtils.getFixedColumns(subFormPreferences);
+		this.lstHeaderColumnWidthsFromPref = workspaceUtils.getColumnWidths(subFormPreferences);
 	}
 
 	/**
@@ -1104,7 +1117,7 @@ public class FixedColumnRowHeader extends SubformRowHeader {
 	/**
 	 * displays the column select icon in the first column of the table
 	 */
-	public static class ColumnSelectionTableCellRenderer implements TableCellRenderer {
+	public class ColumnSelectionTableCellRenderer implements TableCellRenderer {
 		private JTable rendererTable;
 
 		public ColumnSelectionTableCellRenderer(JTable headerTable) {
@@ -1120,7 +1133,7 @@ public class FixedColumnRowHeader extends SubformRowHeader {
 			if (renderer instanceof JLabel) {
 				if (column == 0) {
 					if (SecurityCache.getInstance().isActionAllowed(Actions.ACTION_WORKSPACE_CUSTOMIZE_ENTITY_AND_SUBFORM_COLUMNS) ||
-							!MainFrame.getWorkspace().isAssigned()) {
+							!workspaceUtils.getWorkspace().isAssigned()) {
 						((JLabel) renderer).setIcon(MainFrame.resizeAndCacheIcon(Icons.getInstance().getIconSelectVisibleColumns16(), 12));
 						((JLabel) renderer).setBorder(BorderFactory.createEmptyBorder(2, 2, 1, 1));
 					}

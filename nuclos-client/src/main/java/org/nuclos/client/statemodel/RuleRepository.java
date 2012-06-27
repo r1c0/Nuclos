@@ -23,14 +23,15 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import org.nuclos.common.SpringApplicationContextHolder;
 
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Pair;
-import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.common2.exception.CommonPermissionException;
 import org.nuclos.server.ruleengine.ejb3.RuleEngineFacadeRemote;
 import org.nuclos.server.ruleengine.valueobject.RuleVO;
+import org.springframework.beans.factory.InitializingBean;
 
 /**
  * Repository for rules.
@@ -41,29 +42,46 @@ import org.nuclos.server.ruleengine.valueobject.RuleVO;
  * @author	<a href="mailto:Boris.Sander@novabit.de">Boris Sander</a>
  * @version 01.00.00
  */
-public class RuleRepository {
+public class RuleRepository implements InitializingBean {
 
-	private static RuleRepository singleton;
+	private static RuleRepository INSTANCE;
+	
+	//
 
 	private final Map<Integer, StateModelRuleVO> mpRules = CollectionUtils.newHashMap();
+	
+	// Spring injection
+	
+	private RuleEngineFacadeRemote ruleEngineFacadeRemote;
+	
+	// end of Spring injection
 
 	public static synchronized RuleRepository getInstance() throws RemoteException {
-		if (singleton == null) {
-			singleton = new RuleRepository();
+		if (INSTANCE == null) {
+			// INSTANCE = new RuleRepository();
+			// lazy support
+			SpringApplicationContextHolder.getBean(RuleRepository.class);
 		}
-		return singleton;
+		return INSTANCE;
 	}
 
-	private RuleRepository() throws RemoteException {
+	RuleRepository() {
+	}
+	
+	@Override
+	public void afterPropertiesSet() {
 		updateRules();
 	}
+	
+	public final void setRuleEngineFacadeRemote(RuleEngineFacadeRemote ruleEngineFacadeRemote) {
+		this.ruleEngineFacadeRemote = ruleEngineFacadeRemote;
+	}
 
-	public void updateRules() throws RemoteException {
+	public void updateRules() {
 		mpRules.clear();
 
-		final RuleEngineFacadeRemote ruleFacade = ServiceLocator.getInstance().getFacade(RuleEngineFacadeRemote.class);
 		try {
-		  for (RuleVO rulevo : ruleFacade.getAllRules()) {
+		  for (RuleVO rulevo : ruleEngineFacadeRemote.getAllRules()) {
 		  	mpRules.put(rulevo.getId(), new StateModelRuleVO(rulevo));
 		  }
 		} catch (CommonPermissionException e) {

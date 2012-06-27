@@ -19,7 +19,6 @@ package org.nuclos.client.timelimit;
 import java.util.Collection;
 import java.util.Date;
 
-import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.common.NuclosFatalException;
@@ -38,12 +37,25 @@ import org.nuclos.server.common.valueobject.TimelimitTaskVO;
  */
 
 public class TimelimitTaskDelegate {
-	private TimelimitTaskFacadeRemote facade = null;
+	
+	private static TimelimitTaskDelegate INSTANCE;
+	
+	// Spring injection
+	
+	private TimelimitTaskFacadeRemote timelimitTaskFacadeRemote;
+	
+	// end of Spring injection
 
-	private TimelimitTaskFacadeRemote getTimelimitTaskFacade() throws NuclosFatalException {
-		if (this.facade == null)
-			facade = ServiceLocator.getInstance().getFacade(TimelimitTaskFacadeRemote.class);
-		return this.facade;
+	TimelimitTaskDelegate() {
+		INSTANCE = this;
+	}
+	
+	public static TimelimitTaskDelegate getInstance() {
+		return INSTANCE;
+	}
+	
+	public final void setTimelimitTaskFacadeRemote(TimelimitTaskFacadeRemote timelimitTaskFacadeRemote) {
+		this.timelimitTaskFacadeRemote = timelimitTaskFacadeRemote;
 	}
 
 	/**
@@ -52,7 +64,7 @@ public class TimelimitTaskDelegate {
 	 */
 	public Collection<TimelimitTaskVO> getTimelimitTasks(boolean bUnfinishedOnly) {
 		try {
-			return this.getTimelimitTaskFacade().getTimelimitTasks(bUnfinishedOnly);
+			return timelimitTaskFacadeRemote.getTimelimitTasks(bUnfinishedOnly);
 		}
 		catch (RuntimeException ex) {
 			throw new CommonFatalException(ex);
@@ -67,7 +79,7 @@ public class TimelimitTaskDelegate {
 	 */
 	public TimelimitTaskVO create(TimelimitTaskVO taskvo) throws CommonBusinessException {
 		try {
-			return this.getTimelimitTaskFacade().create(taskvo);
+			return timelimitTaskFacadeRemote.create(taskvo);
 		}
 		catch (RuntimeException ex) {
 			throw new CommonFatalException(ex);
@@ -81,7 +93,7 @@ public class TimelimitTaskDelegate {
 	 */
 	public TimelimitTaskVO update(TimelimitTaskVO taskvo) throws CommonBusinessException {
 		try {
-			return this.getTimelimitTaskFacade().modify(taskvo);
+			return timelimitTaskFacadeRemote.modify(taskvo);
 		}
 		catch (RuntimeException ex) {
 			throw new NuclosUpdateException(ex);
@@ -94,7 +106,7 @@ public class TimelimitTaskDelegate {
 	 */
 	public void remove(TimelimitTaskVO taskvo) throws CommonBusinessException {
 		try {
-			this.getTimelimitTaskFacade().remove(taskvo);
+			timelimitTaskFacadeRemote.remove(taskvo);
 		}
 		catch (RuntimeException ex) {
 			throw new CommonFatalException(ex);

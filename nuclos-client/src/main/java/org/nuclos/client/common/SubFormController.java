@@ -93,6 +93,8 @@ import org.nuclos.common2.EntityAndFieldName;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonFatalException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 
 /**
  * Controller for collecting or searching for dependant data (in a one-to-many relationship) in a subform.
@@ -138,6 +140,14 @@ public abstract class SubFormController extends MainFrameTabController
 	private boolean closed = false;
 	
 	private final List<Object> ref = new LinkedList<Object>();
+	
+	// Spring injection
+	
+	protected WorkspaceUtils workspaceUtils;
+	
+	protected MainFrame mainFrame;
+	
+	// end of Spring injection
 
 	/**
 	 * @param parent
@@ -170,7 +180,7 @@ public abstract class SubFormController extends MainFrameTabController
 		final String sEntityName = subform.getEntityName();
 		this.prefs = prefsUserParent.node("subentity").node(sEntityName);
 		this.subFormPrefs = entityPrefs.getSubFormPreferences(sEntityName);
-		WorkspaceUtils.validatePreferences(subFormPrefs);
+		workspaceUtils.validatePreferences(subFormPrefs);
 		this.clctfproviderfactory = clctfproviderfactory;
 
 		assert this.getCollectableEntity() != null;
@@ -196,6 +206,16 @@ public abstract class SubFormController extends MainFrameTabController
 		subform.addFocusActionListener(this);
 		
 		subform.addColumnModelListener(newSubFormTablePreferencesUpdateListener());
+	}
+	
+	@Autowired
+	final void setWorkspaceUtils(WorkspaceUtils workspaceUtils) {
+		this.workspaceUtils = workspaceUtils;
+	}
+	
+	@Autowired
+	final void setMainFrame(@Value("#{mainFrameSpringComponent.mainFrame}") MainFrame mainFrame) {
+		this.mainFrame = mainFrame;
 	}
 		
 	public boolean isClosed() {
@@ -345,7 +365,7 @@ public abstract class SubFormController extends MainFrameTabController
 	 * Size and order of list entries is determined by number and order of visible columns
 	 */
 	protected List<Integer> getTableColumnWidthsFromPreferences() {
-		List<Integer> result = WorkspaceUtils.getColumnWidthsWithoutFixed(getSubFormPrefs());
+		List<Integer> result = workspaceUtils.getColumnWidthsWithoutFixed(getSubFormPrefs());
 
 		if (LOG.isDebugEnabled()) {
 			LOG.debug("getTableColumnWidthsFromPreferences for entity " + this.getSubForm().getEntityName());
@@ -364,7 +384,7 @@ public abstract class SubFormController extends MainFrameTabController
 		if (!isSearchable()) {
 			final List<String> lstFields = CollectableTableHelper.getFieldNamesFromColumns(tbl);
 			final List<Integer> lstFieldWidths = CollectableTableHelper.getColumnWidths(tbl);
-			WorkspaceUtils.setColumnPreferences(getSubFormPrefs(), lstFields, lstFieldWidths);
+			workspaceUtils.setColumnPreferences(getSubFormPrefs(), lstFields, lstFieldWidths);
 		}
 	}
 
@@ -383,7 +403,7 @@ public abstract class SubFormController extends MainFrameTabController
 		}
 		
 		final List<String> definitionOrder = new ArrayList<String>(getSubForm().getColumnNames());
-		final List<String> storedFieldNames = WorkspaceUtils.getSelectedWithoutFixedColumns(getSubFormPrefs());		
+		final List<String> storedFieldNames = workspaceUtils.getSelectedWithoutFixedColumns(getSubFormPrefs());		
 		
 		final List<CollectableEntityField> availableFields = new ArrayList<CollectableEntityField>(allFields); 
 		final List<CollectableEntityField> result = new ArrayList<CollectableEntityField>();

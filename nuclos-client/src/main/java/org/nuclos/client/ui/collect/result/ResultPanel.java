@@ -100,6 +100,8 @@ import org.nuclos.common.collect.collectable.Collectable;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
 import org.nuclos.common.collect.collectable.CollectableUtils;
 import org.nuclos.common2.SpringLocaleDelegate;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
 
 /**
  * <br>Result panel for collecting data
@@ -110,6 +112,7 @@ import org.nuclos.common2.SpringLocaleDelegate;
  * @author	<a href="mailto:Christoph.Radig@novabit.de">Christoph.Radig</a>
  * @version	01.00.00
  */
+@Configurable
 public class ResultPanel<Clct extends Collectable> extends JPanel {
 
 	private final CollectPanelIndicator cpi = new CollectPanelIndicator(CollectPanel.TAB_RESULT);
@@ -233,6 +236,12 @@ public class ResultPanel<Clct extends Collectable> extends JPanel {
 	public final JMenuItem miPopupCopyRows = new JMenuItem(localeDelegate.getMessage("ResultPanel.14","Kopiere markierte Zeilen"));
 	public final JMenu miGenerations = new JMenu(localeDelegate.getMessage("ResultPanel.12","Arbeitsschritte"));
 	public final JMenu miStates = new JMenu(localeDelegate.getMessage("ResultPanel.15","Statuswechsel"));
+	
+	// Spring injection
+	
+	protected WorkspaceUtils workspaceUtils;
+	
+	// end of Spring injection
 
 	public ResultPanel() {
 		super(new BorderLayout());
@@ -303,6 +312,11 @@ public class ResultPanel<Clct extends Collectable> extends JPanel {
 		this.busyActions.getBusyPainter().setHighlightColor(Color.WHITE);
 		
 		init();
+	}
+	
+	@Autowired
+	final void setWorkspaceUtils(WorkspaceUtils workspaceUtils) {
+		this.workspaceUtils = workspaceUtils;
 	}
 
 	public final CollectPanelIndicator getCollectPanelIndicator() {
@@ -419,7 +433,7 @@ public class ResultPanel<Clct extends Collectable> extends JPanel {
 		//result.add(btnSelectColumns, null);
 		addPopupExtraMenuItem(btnClone);
 		if (SecurityCache.getInstance().isActionAllowed(Actions.ACTION_WORKSPACE_CUSTOMIZE_ENTITY_AND_SUBFORM_COLUMNS) ||
-				!MainFrame.getWorkspace().isAssigned()) {
+				!workspaceUtils.getWorkspace().isAssigned()) {
 			addPopupExtraMenuItem(btnSelectColumns);
 		}
 
@@ -773,7 +787,7 @@ public class ResultPanel<Clct extends Collectable> extends JPanel {
 	 * TODO: Make this protected again.
 	 */
 	public void setColumnWidths(JTable tblResult, EntityPreferences entityPreferences) {
-		final List<Integer> lstWidthsFromPreferences = WorkspaceUtils.getColumnWidthsWithoutFixed(entityPreferences);
+		final List<Integer> lstWidthsFromPreferences = workspaceUtils.getColumnWidthsWithoutFixed(entityPreferences);
 
 		boolean bUseCustomColumnWidths = !lstWidthsFromPreferences.isEmpty();
 		if (bUseCustomColumnWidths) {

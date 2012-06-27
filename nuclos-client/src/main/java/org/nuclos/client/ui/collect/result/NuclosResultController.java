@@ -78,9 +78,9 @@ import org.nuclos.common.collect.collectable.CollectableUtils;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.CommonRunnable;
-import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.server.common.ejb3.PreferencesFacadeRemote;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * A specialization of ResultController for use with an {@link NuclosCollectController}.
@@ -94,6 +94,14 @@ public class NuclosResultController<Clct extends Collectable> extends ResultCont
 	
 	private static final Logger LOG = Logger.getLogger(NuclosResultController.class);
 	
+	// 
+	
+	// Spring injection
+	
+	private PreferencesFacadeRemote preferencesFacadeRemote;
+	
+	// end of Spring injection
+	
 	public NuclosResultController(CollectableEntity clcte, ISearchResultStrategy<Clct> srs) {
 		super(clcte, srs);
 	}
@@ -103,6 +111,11 @@ public class NuclosResultController<Clct extends Collectable> extends ResultCont
 	 */
 	public NuclosResultController(String entityName, ISearchResultStrategy<Clct> srs) {
 		super(entityName, srs);
+	}
+	
+	@Autowired
+	final void setPreferencesFacadeRemote(PreferencesFacadeRemote preferencesFacadeRemote) {
+		this.preferencesFacadeRemote = preferencesFacadeRemote;
 	}
 	
 	/**
@@ -131,7 +144,7 @@ public class NuclosResultController<Clct extends Collectable> extends ResultCont
 		super.initializeFields();
 
 		final CollectController<Clct> clctctl = getCollectController();
-		List<String> lstSelectedFieldNames = WorkspaceUtils.getFixedColumns(clctctl.getEntityPreferences());
+		List<String> lstSelectedFieldNames = getWorkspaceUtils().getFixedColumns(clctctl.getEntityPreferences());
 
 		ChoiceEntityFieldList fields = clctctl.getFields();
 		for (CollectableEntityField clctef : fields.getSelectedFields()) {
@@ -295,7 +308,7 @@ public class NuclosResultController<Clct extends Collectable> extends ResultCont
 					// add DEselected to hidden in preferences
 					final Collection<? extends CollectableEntityField> collDeselected = CollectionUtils.subtract(lstSelectedOld, lstSelectedNew);
 					for (CollectableEntityField clctef : collDeselected) {
-						WorkspaceUtils.addHiddenColumn(getCollectController().getEntityPreferences(), clctef.getName());
+						getWorkspaceUtils().addHiddenColumn(getCollectController().getEntityPreferences(), clctef.getName());
 					}
 
 					// reselect the previously selected row (which gets lost be refreshing the model)
@@ -534,7 +547,7 @@ public class NuclosResultController<Clct extends Collectable> extends ResultCont
 			List<? extends CollectableEntityField> lstclctefSelected, Map<String, Integer> mpWidths) {
 		super.writeSelectedFieldsAndWidthsToPreferences(entityPreferences,
 				lstclctefSelected, mpWidths);
-		WorkspaceUtils.updateFixedColumns(entityPreferences, 
+		getWorkspaceUtils().updateFixedColumns(entityPreferences, 
 				CollectableUtils.getFieldNamesFromCollectableEntityFields(getNuclosResultPanel().getFixedColumns()));
 	}
 	
@@ -629,13 +642,13 @@ public class NuclosResultController<Clct extends Collectable> extends ResultCont
 			popupmenuColumn.add(miPopupSortThisColumnNone);
 
 			if (SecurityCache.getInstance().isActionAllowed(Actions.ACTION_WORKSPACE_CUSTOMIZE_ENTITY_AND_SUBFORM_COLUMNS) ||
-					!MainFrame.getWorkspace().isAssigned()) {
+					!getMainFrame().getWorkspace().isAssigned()) {
 				this.popupmenuColumn.addSeparator();
 				this.popupmenuColumn.add(createHideColumnItem());
 			}
 			
 			if (SecurityCache.getInstance().isActionAllowed(Actions.ACTION_WORKSPACE_ASSIGN) &&
-					MainFrame.getWorkspace().isAssigned()) {
+					getMainFrame().getWorkspace().isAssigned()) {
 				this.popupmenuColumn.addSeparator();
 				this.popupmenuColumn.add(createPublishColumnsItem());
 			}
@@ -665,16 +678,16 @@ public class NuclosResultController<Clct extends Collectable> extends ResultCont
 				@Override
 				public void actionPerformed(ActionEvent e) {
 					try {
-						WorkspaceUtils.restoreEntityPreferences(getCollectController().getEntityPreferences());
+						getWorkspaceUtils().restoreEntityPreferences(getCollectController().getEntityPreferences());
 						
 						final List<CollectableEntityField> allFields = CollectionUtils.concat(
 								getFields().getAvailableFields(), 
 								getFields().getSelectedFields());
 						
 						// add missing pivot fields. (why they are not avaiable?)
-						WorkspaceUtils.addMissingPivotFields(getCollectController().getEntityPreferences(), allFields);
+						getWorkspaceUtils().addMissingPivotFields(getCollectController().getEntityPreferences(), allFields);
 						
-						final List<CollectableEntityField> selected = WorkspaceUtils.getSelectedFields(getCollectController().getEntityPreferences(), allFields);
+						final List<CollectableEntityField> selected = getWorkspaceUtils().getSelectedFields(getCollectController().getEntityPreferences(), allFields);
 						getCollectController().makeSureSelectedFieldsAreNonEmpty(getEntity(), selected);
 						
 						final SortedSet<CollectableEntityField> avaiable = new TreeSet<CollectableEntityField>(new CollectableEntityField.LabelComparator());
@@ -684,7 +697,7 @@ public class NuclosResultController<Clct extends Collectable> extends ResultCont
 								getFields(), 
 								avaiable, 
 								selected, 
-								WorkspaceUtils.getFixedFields(getCollectController().getEntityPreferences(), selected),
+								getWorkspaceUtils().getFixedFields(getCollectController().getEntityPreferences(), selected),
 								true, null, 
 								true);
 				
@@ -705,7 +718,8 @@ public class NuclosResultController<Clct extends Collectable> extends ResultCont
 				@Override
 				public void actionPerformed(ActionEvent e) {
 					try {
-						ServiceLocator.getInstance().getFacade(PreferencesFacadeRemote.class).publishEntityPreferences(MainFrame.getWorkspace(), getCollectController().getEntityPreferences());
+						preferencesFacadeRemote.publishEntityPreferences(
+								getMainFrame().getWorkspace(), getCollectController().getEntityPreferences());
 					} catch (CommonBusinessException e1) {
 						Errors.getInstance().showExceptionDialog(getNuclosResultPanel(), e1);
 					}

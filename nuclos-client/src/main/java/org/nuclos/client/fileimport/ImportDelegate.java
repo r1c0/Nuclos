@@ -17,7 +17,6 @@
 package org.nuclos.client.fileimport;
 
 import org.nuclos.common.NuclosFatalException;
-import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.common2.fileimport.NuclosFileImportException;
@@ -34,53 +33,56 @@ import org.nuclos.server.masterdata.valueobject.MasterDataWithDependantsVO;
  */
 public class ImportDelegate {
 
-	private static ImportDelegate singleton;
+	private static ImportDelegate INSTANCE;
 
-	private final ImportFacadeRemote importExecutionFacade;
+	// Spring injection
+	
+	private ImportFacadeRemote importFacadeRemote;
+	
+	// end of Spring injection
 
-	private ImportDelegate() {
-		try {
-			this.importExecutionFacade = ServiceLocator.getInstance().getFacade(ImportFacadeRemote.class);
-		}
-		catch (RuntimeException ex) {
-			throw new CommonFatalException(ex);
-		}
+	ImportDelegate() {
+		INSTANCE = this;
 	}
 
-	public static synchronized ImportDelegate getInstance() {
-		if (singleton == null) {
-			singleton = new ImportDelegate();
+	public static ImportDelegate getInstance() {
+		if (INSTANCE == null) {
+			throw new IllegalStateException("too early");
 		}
-		return singleton;
+		return INSTANCE;
+	}
+	
+	public final void setImportFacadeRemote(ImportFacadeRemote importFacadeRemote) {
+		this.importFacadeRemote = importFacadeRemote;
 	}
 
 	public MasterDataVO createImportStructure(MasterDataWithDependantsVO importStructure) throws CommonBusinessException {
-		return importExecutionFacade.createImportStructure(importStructure);
+		return importFacadeRemote.createImportStructure(importStructure);
 	}
 
 	public Object modifyImportStructure(MasterDataWithDependantsVO importStructure) throws CommonBusinessException {
-		return importExecutionFacade.modifyImportStructure(importStructure);
+		return importFacadeRemote.modifyImportStructure(importStructure);
 	}
 
 	public void removeImportStructure(MasterDataVO importStructure) throws CommonBusinessException {
-		importExecutionFacade.removeImportStructure(importStructure);
+		importFacadeRemote.removeImportStructure(importStructure);
 	}
 
 	public MasterDataVO createFileImport(MasterDataWithDependantsVO fileImport) throws CommonBusinessException {
-		return importExecutionFacade.createFileImport(fileImport);
+		return importFacadeRemote.createFileImport(fileImport);
 	}
 
 	public Object modifyFileImport(MasterDataWithDependantsVO fileImport) throws CommonBusinessException {
-		return importExecutionFacade.modifyFileImport(fileImport);
+		return importFacadeRemote.modifyFileImport(fileImport);
 	}
 
 	public void removeFileImport(MasterDataVO fileImport) throws CommonBusinessException {
-		importExecutionFacade.removeFileImport(fileImport);
+		importFacadeRemote.removeFileImport(fileImport);
 	}
 
 	public String doImport(Integer importfileId) throws NuclosFileImportException {
 		try {
-			return importExecutionFacade.doImport(importfileId);
+			return importFacadeRemote.doImport(importfileId);
 		}
 		catch (RuntimeException ex) {
 			throw new NuclosFatalException(ex);
@@ -89,7 +91,7 @@ public class ImportDelegate {
 
 	public String getImportCorrelationId(Integer importfileId) throws NuclosFileImportException {
 		try {
-			return importExecutionFacade.getImportCorrelationId(importfileId);
+			return importFacadeRemote.getImportCorrelationId(importfileId);
 		}
 		catch (RuntimeException ex) {
 			throw new NuclosFatalException(ex);
@@ -98,7 +100,7 @@ public class ImportDelegate {
 
 	public void stopImport(Integer importfileId) throws NuclosFileImportException {
 		try {
-			importExecutionFacade.stopImport(importfileId);
+			importFacadeRemote.stopImport(importfileId);
 		}
 		catch (RuntimeException ex) {
 			throw new NuclosFatalException(ex);

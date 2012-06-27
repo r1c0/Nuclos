@@ -150,7 +150,8 @@ public class NuclosEntityMenuStep extends NuclosEntityAbstractStep {
 
 		Preferences prefs = java.util.prefs.Preferences.userRoot().node("org/nuclos/client/entitywizard/steps/menu");
 
-		subFormController = new MasterDataSubFormController(clcte, tab, provider, ENTITYNAME_MENU, subform, prefs, NuclosEntityWizard.getEntityPreferences(), null);
+		subFormController = new MasterDataSubFormController(clcte, tab, provider, ENTITYNAME_MENU, subform, prefs, 
+				getEntityPreferences(), null);
 		Collection<EntityObjectVO> data = model.getEntityMenus();
 
 		if (data != null) {

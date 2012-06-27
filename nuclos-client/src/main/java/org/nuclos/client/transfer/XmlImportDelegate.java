@@ -21,7 +21,6 @@ import java.rmi.RemoteException;
 
 import org.dom4j.DocumentException;
 
-import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.exception.CommonCreateException;
 import org.nuclos.common2.exception.CommonFinderException;
 import org.nuclos.common2.exception.CommonPermissionException;
@@ -43,32 +42,34 @@ import org.nuclos.server.transfer.ejb3.XmlImportFacadeRemote;
 
 public class XmlImportDelegate {
 
-	private static XmlImportDelegate singleton;
+	private static XmlImportDelegate INSTANCE;
 
-	//private final Logger log = Logger.getLogger(this.getClass());
-
-	private final XmlImportFacadeRemote facade;
+	// Spring injection
+	
+	private XmlImportFacadeRemote xmlImportFacadeRemote;
+	
+	// end of Spring injection
 
 	/**
 	 * Use getInstance() to create an (the) instance of this class
 	 */
 	private XmlImportDelegate() throws RemoteException {
-		this.facade = ServiceLocator.getInstance().getFacade(XmlImportFacadeRemote.class);
+		INSTANCE = this;
 	}
 
-	public static synchronized XmlImportDelegate getInstance() {
-		if (singleton == null) {
-			try {
-				singleton = new XmlImportDelegate();
-			} catch (RemoteException ex) {
-				throw new CommonRemoteException(ex);
-			}
+	public static XmlImportDelegate getInstance() {
+		if (INSTANCE == null) {
+			throw new IllegalStateException("too early");
 		}
-		return singleton;
+		return INSTANCE;
+	}
+	
+	public final void setXmlImportFacadeRemote(XmlImportFacadeRemote xmlImportFacadeRemote) {
+		this.xmlImportFacadeRemote = xmlImportFacadeRemote;
 	}
 
-	public XmlImportFacadeRemote getXmlImportFacade() {
-		return this.facade;
+	private XmlImportFacadeRemote getXmlImportFacade() {
+		return this.xmlImportFacadeRemote;
 	}
 
 	public void xmlImport(String sEntityName, org.nuclos.common2.File importFile) 

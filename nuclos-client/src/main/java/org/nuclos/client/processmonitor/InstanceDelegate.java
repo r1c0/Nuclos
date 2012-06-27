@@ -16,7 +16,6 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.processmonitor;
 
-import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.server.processmonitor.ejb3.InstanceFacadeRemote;
 
@@ -31,20 +30,27 @@ import org.nuclos.server.processmonitor.ejb3.InstanceFacadeRemote;
  */
 public class InstanceDelegate {
 
-	private static InstanceDelegate singleton;
+	private static InstanceDelegate INSTANCE;
+	
+	// Spring injection
 
-	private InstanceFacadeRemote facade = null; 
+	private InstanceFacadeRemote instanceFacadeRemote;
+	
+	// end of Spring injection
 
-	private InstanceDelegate() {
-		facade = ServiceLocator.getInstance().getFacade(InstanceFacadeRemote.class);
-		
+	InstanceDelegate() {
+		INSTANCE = this;
 	}
 
-	public static synchronized InstanceDelegate getInstance() {
-		if (singleton == null) {
-			singleton = new InstanceDelegate();
+	public static InstanceDelegate getInstance() {
+		if (INSTANCE == null) {
+			throw new IllegalStateException("too early");
 		}
-		return singleton;
+		return INSTANCE;
+	}
+	
+	public final void setInstanceFacadeRemote(InstanceFacadeRemote instanceFacadeRemote) {
+		this.instanceFacadeRemote = instanceFacadeRemote;
 	}
 	
 	/**
@@ -54,7 +60,7 @@ public class InstanceDelegate {
 	 * @throws CommonBusinessException 
 	 */
 	public void createProcessInstance(Integer iProcessMonitorId, Integer iInstanceId) throws CommonBusinessException{
-		facade.createProcessInstance(iProcessMonitorId, iInstanceId);
+		instanceFacadeRemote.createProcessInstance(iProcessMonitorId, iInstanceId);
 	}
 	
 	/**
@@ -64,7 +70,7 @@ public class InstanceDelegate {
 	 * @return
 	 */
 	public int getInstanceStatus(Integer iInstanceId, Integer iStateModelUsageId){
-		return facade.getInstanceStatus(iInstanceId, iStateModelUsageId);
+		return instanceFacadeRemote.getInstanceStatus(iInstanceId, iStateModelUsageId);
 	}
 	
 	/**
@@ -74,7 +80,7 @@ public class InstanceDelegate {
 	 * @return object id (could be null)
 	 */
 	public Integer getObjectId(Integer iInstanceId, Integer iStateModelUsageId){
-		return facade.getObjectId(iInstanceId, iStateModelUsageId);
+		return instanceFacadeRemote.getObjectId(iInstanceId, iStateModelUsageId);
 	}
 	
 	/**
@@ -83,7 +89,7 @@ public class InstanceDelegate {
 	 * @return
 	 */
 	public Boolean isProcessInstanceStarted(Integer iInstanceId){
-		return facade.isProcessInstanceStarted(iInstanceId);
+		return instanceFacadeRemote.isProcessInstanceStarted(iInstanceId);
 	}
 	
 	

@@ -143,7 +143,8 @@ public class ImageScaler {
 		final float sx = dim.width / (float) width;
 		final float sy = dim.height / (float) height;
 		if (sx <= 0 || sy <= 0) {
-			throw new IllegalArgumentException();
+			throw new IllegalArgumentException("width=" + width + " height=" + height + " dim=" + dim 
+					+ " sx=" + sx + " sy=" + sy);
 		}
 		final float result = Math.min(sx, sy);
 		return result;

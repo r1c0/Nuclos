@@ -16,10 +16,8 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.job;
 
-import java.rmi.RemoteException;
 import java.util.Collection;
 
-import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.common2.exception.CommonRemoteException;
@@ -36,43 +34,45 @@ import org.nuclos.server.masterdata.valueobject.MasterDataVO;
  * @author	<a href="mailto:corina.mandoki@novabit.de">Corina Mandoki</a>
  * @version 01.00.00
  */
-
 public class JobControlDelegate {
 
-	private static JobControlDelegate singleton;
+	private static JobControlDelegate INSTANCE;
+	
+	// Spring injection
 
-	JobControlFacadeRemote facade;
+	private JobControlFacadeRemote jobControlFacadeRemote;
+	
+	// end of Spring injection
 
-	public JobControlDelegate() throws RemoteException {
-		this.facade = ServiceLocator.getInstance().getFacade(JobControlFacadeRemote.class);
+	JobControlDelegate() {
+		INSTANCE = this;
 	}
 
-	public static synchronized JobControlDelegate getInstance() {
-		if (singleton == null) {
-			try {
-				singleton = new JobControlDelegate();
-			}
-			catch (RemoteException ex) {
-				throw new CommonRemoteException(ex);
-			}
+	public static JobControlDelegate getInstance() {
+		if (INSTANCE == null) {
+			throw new IllegalStateException("too early");
 		}
-		return singleton;
+		return INSTANCE;
+	}
+	
+	public final void setJobControlFacadeRemote(JobControlFacadeRemote jobControlFacadeRemote) {
+		this.jobControlFacadeRemote = jobControlFacadeRemote;
 	}
 
-	public JobControlFacadeRemote getFacade() {
-		return this.facade;
+	private JobControlFacadeRemote getFacade() {
+		return this.jobControlFacadeRemote;
 	}
 
 	public MasterDataVO create(JobVO job) throws CommonBusinessException {
-	    return facade.create(job);
+	    return jobControlFacadeRemote.create(job);
     }
 
 	public Object modify(JobVO job) throws CommonBusinessException {
-	    return facade.modify(job);
+	    return jobControlFacadeRemote.modify(job);
     }
 
 	public void remove(JobVO job) throws CommonBusinessException {
-		facade.remove(job);
+		jobControlFacadeRemote.remove(job);
 	}
 
 	public void scheduleJob(Object oId) throws CommonBusinessException {

@@ -32,11 +32,11 @@ import org.nuclos.client.masterdata.datatransfer.MasterDataIdAndEntity;
 import org.nuclos.client.ui.Errors;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.NuclosFatalException;
-import org.nuclos.common2.ServiceLocator;
 import org.nuclos.server.navigation.ejb3.TreeNodeFacadeRemote;
 import org.nuclos.server.navigation.treenode.TreeNode;
 import org.nuclos.server.navigation.treenode.nuclet.NucletTreeNode;
 import org.nuclos.server.navigation.treenode.nuclet.content.AbstractNucletContentEntryTreeNode;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * <code>ExplorerNode</code> presenting a <code>NucletTreeNode</code>.
@@ -51,8 +51,19 @@ public class NucletExplorerNode extends ExplorerNode<NucletTreeNode> {
 
 	private static final Logger LOG = Logger.getLogger(NucletExplorerNode.class);
 	
+	// Spring injection
+	
+	private TreeNodeFacadeRemote treeNodeFacadeRemote;
+	
+	// end of Spring injection
+	
 	public NucletExplorerNode(TreeNode treenode) {
 		super(treenode);
+	}
+	
+	@Autowired
+	final void setTreeNodeFacadeRemote(TreeNodeFacadeRemote treeNodeFacadeRemote) {
+		this.treeNodeFacadeRemote = treeNodeFacadeRemote;
 	}
 
 	@Override
@@ -75,12 +86,12 @@ public class NucletExplorerNode extends ExplorerNode<NucletTreeNode> {
 				}
 				Long eoid = ((Integer)mdiden.getId()).longValue();
 				if (eoid >= 0) {
-					contents.add(getTreeNodeFacade().getNucletContentEntryNode(entity, eoid));
+					contents.add(treeNodeFacadeRemote.getNucletContentEntryNode(entity, eoid));
 				}
 			}
 			if (!contents.isEmpty()) {
 				try {
-					getTreeNodeFacade().addNucletContents(getTreeNode().getId().longValue(), contents);
+					treeNodeFacadeRemote.addNucletContents(getTreeNode().getId().longValue(), contents);
 					refresh(tree, true);
 				} catch(Exception e) {
 					Errors.getInstance().showExceptionDialog(getExplorerController().getTabbedPane().getComponentPanel(), e);
@@ -99,7 +110,4 @@ public class NucletExplorerNode extends ExplorerNode<NucletTreeNode> {
 		getExplorerController().cmdShowInOwnTab(new NucletTreeNode(node.getId(), node.getLabel(), node.getDescription(), false));
 	}
 
-	private TreeNodeFacadeRemote getTreeNodeFacade() throws NuclosFatalException {
-		return ServiceLocator.getInstance().getFacade(TreeNodeFacadeRemote.class);
-	}
 }

@@ -33,12 +33,20 @@ import org.nuclos.common.collect.collectable.searchcondition.LogicalOperator;
 import org.nuclos.common.collect.exception.CollectableFieldFormatException;
 import org.nuclos.common.masterdata.CollectableMasterDataEntity;
 import org.nuclos.server.report.valueobject.ReportVO.ReportType;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
 
+@Configurable
 public class ReportSearchStrategy extends MasterDataSearchStrategy {
 
 	private final NuclosEntity entity;
 	private final CollectableEntityField clctefReportType;
-	private final ReportDelegate reportdelegate = new ReportDelegate();
+	
+	// Spring injection 
+	
+	private ReportDelegate reportDelegate;
+	
+	// end of Spring injection
 
 	public ReportSearchStrategy(NuclosEntity entity) {
 		this.entity = entity;
@@ -46,10 +54,15 @@ public class ReportSearchStrategy extends MasterDataSearchStrategy {
 		this.clctefReportType = new CollectableEntityFieldWithEntity(
 				new CollectableMasterDataEntity(MetaDataCache.getInstance().getMetaData(entity)), "type");
 	}
+	
+	@Autowired
+	final void setReportDelegate(ReportDelegate reportDelegate) {
+		this.reportDelegate = reportDelegate;
+	}
 
 	@Override
 	public CollectableSearchCondition getCollectableSearchCondition() throws CollectableFieldFormatException {
-		CollectableSearchCondition searchCondition = reportdelegate.getCollectableSearchCondition(
+		CollectableSearchCondition searchCondition = reportDelegate.getCollectableSearchCondition(
 				getMasterCollectDataController().getCollectableEntity(), super.getCollectableSearchCondition());
 		
 		ReportType reportType = entity.equals(NuclosEntity.REPORT) ? ReportType.REPORT : ReportType.FORM;

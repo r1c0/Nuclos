@@ -28,6 +28,7 @@ import java.awt.dnd.DragGestureEvent;
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 import java.util.List;
+import javax.annotation.PostConstruct;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -64,6 +65,7 @@ import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
+import org.springframework.beans.factory.annotation.Value;
 
 @Configurable(preConstruction=true)
 public abstract class DesktopStartTab {
@@ -73,7 +75,11 @@ public abstract class DesktopStartTab {
 	private Desktop desktopPrefs;
 
 	private JScrollPane scrollPane;
-	private final JPanel jpnMain;
+
+	private JPanel jpnMain;
+	
+	private JPopupMenu contextMenu;
+
 	private JPanel jpnContent;
 	
 	private boolean isSetup = false;
@@ -81,9 +87,17 @@ public abstract class DesktopStartTab {
 	private DesktopBackgroundPainter desktopBackgroundPainter;
 	private final List<DesktopItem> desktopItems = new ArrayList<DesktopItem>();
 	
+	// Spring injection
+	
 	private SpringLocaleDelegate localeDelegate;
 	
 	private ResourceCache resourceCache;
+	
+	private MainFrame mainFrame;
+	
+	private WorkspaceUtils workspaceUtils;
+	
+	// end of Spring injection
 	
 	private final Action actAddMenubutton = new AbstractAction(
 			localeDelegate.getMessage("DesktopStartTab.1", "Menu Button hinzufügen"), 
@@ -171,9 +185,11 @@ public abstract class DesktopStartTab {
 		}
 	};
 	
-	private final JPopupMenu contextMenu;
-
 	public DesktopStartTab() {
+	}
+	
+	@PostConstruct
+	final void init() {
 		this.jpnMain = new JPanel(new BorderLayout(0, 0)){
 			@Override
 			public void paint(Graphics g) {
@@ -189,7 +205,7 @@ public abstract class DesktopStartTab {
 
 			@Override
 			public void show(Component invoker, int x, int y) {
-				if (MainFrame.isStarttabEditable()) {
+				if (mainFrame.isStarttabEditable()) {
 					super.show(invoker, x, y);
 				}
 			}
@@ -214,13 +230,23 @@ public abstract class DesktopStartTab {
 	}
 	
 	@Autowired
-	void setResourceCache(ResourceCache resourceCache) {
+	final void setResourceCache(ResourceCache resourceCache) {
 		this.resourceCache = resourceCache;
 	}
 	
 	@Autowired
-	void setSpringLocaleDelegate(SpringLocaleDelegate cld) {
+	final void setSpringLocaleDelegate(SpringLocaleDelegate cld) {
 		this.localeDelegate = cld;
+	}
+	
+	@Autowired
+	final void setMainFrame(@Value("#{mainFrameSpringComponent.mainFrame}") MainFrame mainFrame) {
+		this.mainFrame = mainFrame;
+	}
+	
+	@Autowired
+	final void setWorkspaceUtils(WorkspaceUtils workspaceUtils) {
+		this.workspaceUtils = workspaceUtils;
 	}
 	
 	public void setDesktopBackgroundPainter(DesktopBackgroundPainter desktopBackgroundPainter) {
@@ -238,7 +264,7 @@ public abstract class DesktopStartTab {
 	
 	public void restoreDesktop() {
 		try {
-			WorkspaceDescription.Desktop restoredPrefs = WorkspaceUtils.restoreDesktop(desktopPrefs);
+			WorkspaceDescription.Desktop restoredPrefs = workspaceUtils.restoreDesktop(desktopPrefs);
 			setDesktopPreferences(restoredPrefs, null);
 		} catch (CommonBusinessException e) {
 			Errors.getInstance().showExceptionDialog(getJComponent(), e);
@@ -423,7 +449,7 @@ public abstract class DesktopStartTab {
 			}
 			@Override
 			public void dragGestureRecognized(DragGestureEvent dge) {
-				if (MainFrame.isStarttabEditable()) {
+				if (mainFrame.isStarttabEditable()) {
 					Transferable transferable = new DesktopItemTransferable(getPreferences(), desktopPrefs);
 					this.setHover(false);
 					dge.startDrag(null, transferable, null);
@@ -439,7 +465,7 @@ public abstract class DesktopStartTab {
 		mb.setTransferHandler(new TransferHandler() {
 			@Override
 			public boolean importData(JComponent comp, Transferable t) {
-				if (MainFrame.isStarttabEditable()) {
+				if (mainFrame.isStarttabEditable()) {
 					try {
 						DesktopItemTransferable.TransferData transferData = (DesktopItemTransferable.TransferData) t.getTransferData(DesktopItemTransferable.DESKTOP_ITEM_FLAVOR);
 						if (transferData != null &&
@@ -472,7 +498,7 @@ public abstract class DesktopStartTab {
 			}
 			@Override
 			public boolean canImport(JComponent comp, DataFlavor[] transferFlavors) {
-				if (MainFrame.isStarttabEditable()) {
+				if (mainFrame.isStarttabEditable()) {
 					for (DataFlavor dataFlavor : transferFlavors) {
 						if (DesktopItemTransferable.DESKTOP_ITEM_FLAVOR.equals(dataFlavor)) {
 							mb.flashLight();

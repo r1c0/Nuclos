@@ -25,10 +25,10 @@ import java.util.List;
 import java.util.Map;
 
 import org.nuclos.common.collection.CollectionUtils;
-import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.server.masterdata.ejb3.MasterDataFacadeRemote;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
+import org.springframework.beans.factory.InitializingBean;
 
 /**
  * Repository for roles.
@@ -39,27 +39,44 @@ import org.nuclos.server.masterdata.valueobject.MasterDataVO;
  * @author	<a href="mailto:Boris.Sander@novabit.de">Boris Sander</a>
  * @version 01.00.00
  */
-public class RoleRepository {
-	private static RoleRepository singleton;
+public class RoleRepository implements InitializingBean {
+	
+	private static RoleRepository INSTANCE;
+	
+	//
+	
+	// Spring injection
+	
+	private MasterDataFacadeRemote masterDataFacadeRemote;
+	
+	// end of Spring injection
 
 	private final Map<Object, MasterDataVO> mpRoles = CollectionUtils.newHashMap();
 
-	public static synchronized RoleRepository getInstance() throws RemoteException {
-		if (singleton == null) {
-			singleton = new RoleRepository();
+	public static RoleRepository getInstance() throws RemoteException {
+		if (INSTANCE == null) {
+			throw new IllegalStateException("too early");
 		}
-		return singleton;
+		return INSTANCE;
 	}
 
 	protected RoleRepository() throws RemoteException {
+		INSTANCE = this;
+	}
+	
+	public final void setMasterDataFacadeRemote(MasterDataFacadeRemote masterDataFacadeRemote) {
+		this.masterDataFacadeRemote = masterDataFacadeRemote;
+	}
+	
+	@Override
+	public void afterPropertiesSet() {
 		updateRoles();
 	}
 
-	public void updateRoles() throws RemoteException {
+	public void updateRoles() {
 		mpRoles.clear();
 
-		final MasterDataFacadeRemote facade = ServiceLocator.getInstance().getFacade(MasterDataFacadeRemote.class);
-		for (MasterDataVO mdvo : facade.getMasterData(NuclosEntity.ROLE.getEntityName(), null, true)) {
+		for (MasterDataVO mdvo : masterDataFacadeRemote.getMasterData(NuclosEntity.ROLE.getEntityName(), null, true)) {
 			mpRoles.put(mdvo.getId(), mdvo);
 		}
 	}

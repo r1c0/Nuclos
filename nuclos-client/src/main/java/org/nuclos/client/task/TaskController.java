@@ -68,6 +68,7 @@ import org.nuclos.server.report.valueobject.DynamicTasklistVO;
 
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * Controller for the whole task panel. The control of the personal tasks is
@@ -95,8 +96,6 @@ public class TaskController extends Controller<MainFrameTabbedPane> {
 	private static final String PREFS_NODE_REFRESH_INTERVAL = "refreshInterval";
 
 	private final Preferences prefs = ClientPreferences.getUserPreferences().node(PREFS_NODE_TASKPANEL);
-	private final TaskDelegate taskdelegate = new TaskDelegate();
-	private final TimelimitTaskDelegate timelimittaskdelegate = new TimelimitTaskDelegate();
 	private ExplorerController ctlExplorer;
 	private final PersonalTaskController ctlPersonalTasks;
 	private final TimelimitTaskController ctlTimelimitTasks;
@@ -106,6 +105,14 @@ public class TaskController extends Controller<MainFrameTabbedPane> {
 	private final Map<GenericObjectTaskView, MainFrameTab> taskTabs = new HashMap<GenericObjectTaskView, MainFrameTab>();
 
 	private final Map<DynamicTaskView, MainFrameTab> dynamictasklistTabs = new HashMap<DynamicTaskView, MainFrameTab>();
+	
+	// Spring injection
+	
+	private TimelimitTaskDelegate timelimittaskdelegate;
+
+	private TaskDelegate taskDelegate;
+	
+	// end of Spring injection
 
 	/**
 	 *
@@ -117,10 +124,20 @@ public class TaskController extends Controller<MainFrameTabbedPane> {
 	public TaskController(String sCurrentUser) {
 		super(null);
 
-		ctlPersonalTasks = new PersonalTaskController(prefs, taskdelegate, sCurrentUser);
+		ctlPersonalTasks = new PersonalTaskController(prefs, taskDelegate, sCurrentUser);
 		ctlTimelimitTasks = new TimelimitTaskController(prefs, timelimittaskdelegate);
 		ctlGenericObjectTasks = new GenericObjectTaskController();
 		ctlDynamicTasks = new DynamicTaskController();
+	}
+	
+	@Autowired
+	final void setTimelimitTaskDelegate(TimelimitTaskDelegate timelimitTaskDelegate) {
+		this.timelimittaskdelegate = timelimitTaskDelegate;
+	}
+	
+	@Autowired
+	final void setTaskDelegate(TaskDelegate taskDelegate) {
+		this.taskDelegate = taskDelegate;
 	}
 
 	@Override

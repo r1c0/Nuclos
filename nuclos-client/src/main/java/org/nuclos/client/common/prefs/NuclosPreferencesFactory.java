@@ -28,11 +28,12 @@ import org.apache.log4j.Logger;
 import org.nuclos.client.common.ShutdownActions;
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common2.SpringLocaleDelegate;
-import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.common2.exception.CommonFinderException;
 import org.nuclos.server.common.ejb3.PreferencesFacadeRemote;
 import org.nuclos.server.common.valueobject.PreferencesVO;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
 
 /**
  * <code>PreferencesFactory</code> for <code>NuclosPreferences</code>.
@@ -48,28 +49,29 @@ import org.nuclos.server.common.valueobject.PreferencesVO;
  * @author	<a href="mailto:Christoph.Radig@novabit.de">Christoph.Radig</a>
  * @version 01.00.00
  */
+@Configurable
 public class NuclosPreferencesFactory implements PreferencesFactory {
 	
 	private static final Logger LOG = Logger.getLogger(NuclosPreferencesFactory.class);
+	
+	//
+	
+	// Spring injection
 
-	private PreferencesFacadeRemote facade;
+	private PreferencesFacadeRemote preferencesFacadeRemote;
+	
+	// end of Spring injection
+	
 	private Preferences prefsUser;
 	private Preferences prefsSystem;
 
 	public NuclosPreferencesFactory() {
 		// do nothing here
 	}
-
-	private synchronized PreferencesFacadeRemote getFacade() throws RemoteException {
-		if (this.facade == null) {
-			try {
-				facade = ServiceLocator.getInstance().getFacade(PreferencesFacadeRemote.class);
-			}
-			catch (RuntimeException e) {
-				throw new CommonFatalException(e);
-			}
-		}
-		return this.facade;
+	
+	@Autowired
+	final void setPreferencesFacadeRemote(PreferencesFacadeRemote preferencesFacadeRemote) {
+		this.preferencesFacadeRemote = preferencesFacadeRemote;
 	}
 
 	/**
@@ -101,22 +103,17 @@ public class NuclosPreferencesFactory implements PreferencesFactory {
 //			try {
 			PreferencesVO prefsvo;
 			try {
-				prefsvo = this.getFacade().getUserPreferences();
+				prefsvo = preferencesFacadeRemote.getUserPreferences();
 			}
 			catch (CommonFinderException ex) {
 				// ignore: this happens when the user logs in the first time - there are no preferences yet.
 				prefsvo = null;
 			}
-			catch (RemoteException ex) {
-				// This might happen if somebody tries to access the userRoot() before a login
-				// was successfully performed.
-				throw new NuclosFatalException(sErrorMsg, ex);
-			}
 			catch (Exception e) {
 				LOG.warn("userRoot failed: " + e, e);
 				prefsvo = null;
 			}
-			this.prefsUser = new NuclosPreferencesRoot(this.facade);
+			this.prefsUser = new NuclosPreferencesRoot(preferencesFacadeRemote);
 
 			if (prefsvo != null) {
 				// import the read preferences:
@@ -133,21 +130,6 @@ public class NuclosPreferencesFactory implements PreferencesFactory {
 					throw new NuclosFatalException(sErrorMsg, ex);
 				}
 			}
-//			}
-//			catch (RuntimeException ex) {
-//				Errors.getInstance().showExceptionDialog(null, ex);
-//				final String sMessage = "Sollen Ihre pers\u00f6nlichen Benutzereinstellungen zur\u00fcckgesetzt werden?\n" +
-//				    "(Achtung: Ihre bisherigen Einstellungen (Suchfilter etc.) gehen dadurch verloren.)";
-//				int iBtn = JOptionPane.showConfirmDialog(null, sMessage, "Fehler beim Laden der Benutzereinstellungen",
-//				    JOptionPane.YES_NO_OPTION);
-//				if (iBtn == JOptionPane.YES_OPTION) {
-//					// do nothing. prefsUser is initialized already.
-//				}
-//				else {
-//					throw ex;
-//				}
-//			}
-
 			// register shutdown action: sync at system exit:
 			ShutdownActions.getInstance().registerShutdownAction(ShutdownActions.SHUTDOWNORDER_SAVEPREFERENCES, new Flush(this.prefsUser));
 		}	// if

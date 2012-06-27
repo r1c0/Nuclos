@@ -43,6 +43,7 @@ import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
 import org.apache.log4j.Logger;
+import org.apache.xbean.spring.context.SpringApplicationContext;
 import org.nuclos.client.datasource.admin.ParameterPanel;
 import org.nuclos.client.genericobject.GenericObjectDelegate;
 import org.nuclos.client.main.Main;
@@ -55,13 +56,9 @@ import org.nuclos.client.report.reportrunner.source.WordReportSource;
 import org.nuclos.client.ui.CommonInterruptibleProcess;
 import org.nuclos.client.ui.Errors;
 import org.nuclos.client.ui.UIUtils;
-import org.nuclos.common.NuclosBusinessException;
-import org.nuclos.common.NuclosEntity;
-import org.nuclos.common.NuclosFatalException;
-import org.nuclos.common.NuclosFile;
+import org.nuclos.common.*;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
 import org.nuclos.common2.IOUtils;
-import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.SystemUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
@@ -121,8 +118,14 @@ public class ReportRunner implements Runnable, BackgroundProcessInfo, CommonInte
 	private Observable observable = null;
 
 	private final ReportAttachmentInfo attachmentInfo;
+	
+	// Spring injection
 
 	private SpringLocaleDelegate localeDelegate;
+	
+	private DatasourceFacadeRemote datasourceFacadeRemote;
+	
+	// end of Spring injection
 
 	/**
 	 * Called for forms and reports (with real ReportVO and ReportOutputVO)
@@ -212,8 +215,13 @@ public class ReportRunner implements Runnable, BackgroundProcessInfo, CommonInte
 	}
 
 	@Autowired
-	void setSpringLocaleDelegate(SpringLocaleDelegate cld) {
+	final void setSpringLocaleDelegate(SpringLocaleDelegate cld) {
 		this.localeDelegate = cld;
+	}
+	
+	@Autowired
+	final void setDatasourceFacadeRemote(DatasourceFacadeRemote datasourceFacadeRemote) {
+		this.datasourceFacadeRemote = datasourceFacadeRemote;
 	}
 
 	@Override
@@ -300,7 +308,6 @@ public class ReportRunner implements Runnable, BackgroundProcessInfo, CommonInte
 	 * @param collFormat
 	 * @param mpParams
 	 */
-	@SuppressWarnings("deprecation")
 	public static boolean prepareParameters(Collection<ReportOutputVO> collFormat, Map<String, Object> mpParams) throws NuclosReportException {
 		final SpringLocaleDelegate localeDelegate = SpringLocaleDelegate.getInstance();
 		boolean result = true;
@@ -316,14 +323,13 @@ public class ReportRunner implements Runnable, BackgroundProcessInfo, CommonInte
 			final List<String> liParamNamesInAllDatasources = new ArrayList<String>();
 			final List<DatasourceParameterVO> liParamsEmpty = new ArrayList<DatasourceParameterVO>();
 
-			final DatasourceFacadeRemote datasourcefacade = ServiceLocator.getInstance().getFacade(DatasourceFacadeRemote.class);
 			for (Integer iDatasourceId : collDatasourceId) {
 				if (iDatasourceId == null)
 					throw new NuclosReportException(localeDelegate.getMessage("ReportRunner.4", "Keine Datenquelle angegeben"));
 
-				final DatasourceVO datasourcevo = datasourcefacade.get(iDatasourceId);
-
-				for (DatasourceParameterVO paramvo : datasourcefacade.getParameters(datasourcevo.getSource())) {
+				final DatasourceFacadeRemote datasourceFacadeRemote = SpringApplicationContextHolder.getBean(DatasourceFacadeRemote.class);
+				final DatasourceVO datasourcevo = datasourceFacadeRemote.get(iDatasourceId);
+				for (DatasourceParameterVO paramvo : datasourceFacadeRemote.getParameters(datasourcevo.getSource())) {
 					final String sParamName = paramvo.getParameter();
 					liParamNamesInThisDatasource.add(sParamName);
 					if (!liParamNamesInAllDatasources.contains(sParamName)) {

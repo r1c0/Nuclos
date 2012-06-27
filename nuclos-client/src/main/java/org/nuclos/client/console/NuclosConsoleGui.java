@@ -55,6 +55,8 @@ import org.nuclos.client.security.NuclosRemoteServerSession;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.exception.CommonBusinessException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
 
 /**
  * Simple GUI for the managment console.
@@ -64,6 +66,7 @@ import org.nuclos.common2.exception.CommonBusinessException;
  *
  * @author	<a href="mailto:florian.speidel@novabit.de">florian.speidel</a>
  */
+@Configurable
 public class NuclosConsoleGui extends JPanel {
 	
 	private static final Logger LOG = Logger.getLogger(NuclosConsoleGui.class);
@@ -82,6 +85,14 @@ public class NuclosConsoleGui extends JPanel {
 
 	private final JTextField txfArgument;
 
+	private Thread thread = null;
+	
+	// Spring injection
+	
+	NuclosRemoteServerSession nuclosRemoteServerSession;
+	
+	// end of Spring injection
+
 	private final JButton btnStart = new JButton(new AbstractAction(SpringLocaleDelegate.getInstance().getMessage(
 			"NuclosConsoleGui.3","Aktion starten...")) {
 		@Override
@@ -90,8 +101,6 @@ public class NuclosConsoleGui extends JPanel {
 
 		}
 	});
-
-	Thread thread = null;
 
 	private final JButton btnCancel = new JButton(new AbstractAction(SpringLocaleDelegate.getInstance().getMessage(
 			"NuclosConsoleGui.2","Aktion abbrechen...")) {
@@ -131,6 +140,11 @@ public class NuclosConsoleGui extends JPanel {
 		this.add(createCmdPanel(), BorderLayout.NORTH);
 		this.add(new JScrollPane(textArea), BorderLayout.CENTER);
 		this.add(createButtonPnl(), BorderLayout.SOUTH);
+	}
+	
+	@Autowired
+	final void setNuclosRemoteServerSession(NuclosRemoteServerSession nuclosRemoteServerSession) {
+		this.nuclosRemoteServerSession = nuclosRemoteServerSession;
 	}
 
 	private JPanel createButtonPnl() {
@@ -350,16 +364,17 @@ public class NuclosConsoleGui extends JPanel {
 		}
 	}
 
-	private static void login(String sUsername, String sPassword) throws LoginException {
-		NuclosRemoteServerSession.login(sUsername, sPassword);
+	void login(String sUsername, String sPassword) throws LoginException {
+		nuclosRemoteServerSession.login(sUsername, sPassword);
 	}
 
 	public static void main(String[] args) {
+		final NuclosConsoleGui dut = new NuclosConsoleGui();
 		Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
 			@Override
 			public void run() {
 				try {
-					NuclosRemoteServerSession.logout();
+					dut.nuclosRemoteServerSession.logout();
 				}
 				catch (Exception e) {
 					LOG.error("main failed: " + e, e);
@@ -370,7 +385,7 @@ public class NuclosConsoleGui extends JPanel {
 		if (JOptionPane.showConfirmDialog(pnlLogin, pnlLogin, "NucleusConsoleGUI Login", JOptionPane.OK_CANCEL_OPTION) == JOptionPane.YES_OPTION)
 		{
 			try {
-				login(pnlLogin.loginField.getText(), new String(pnlLogin.passwordField.getPassword()));
+				dut.login(pnlLogin.loginField.getText(), new String(pnlLogin.passwordField.getPassword()));
 				final JFrame frame = showInFrame(null);
 				frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 			}

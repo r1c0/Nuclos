@@ -16,7 +16,6 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.masterdata.wiki;
 
-import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.server.wiki.ejb3.WikiFacadeRemote;
 
@@ -31,33 +30,37 @@ import org.nuclos.server.wiki.ejb3.WikiFacadeRemote;
  */
 
 public class WikiDelegate {
-	private static WikiDelegate singleton;
+	
+	private static WikiDelegate INSTANCE;
 
-	private final WikiFacadeRemote facade;
+	// Spring injection
+	
+	private WikiFacadeRemote wikiFacadeRemote;
+	
+	// end of Spring injection
 
 
 	/**
 	 * Use getInstance() to create an (the) instance of this class
 	 */
 	private WikiDelegate() {
-		this.facade = ServiceLocator.getInstance().getFacade(WikiFacadeRemote.class);
+		INSTANCE = this;
 	}
 
-	public static synchronized WikiDelegate getInstance() {
-		if (singleton == null) {
-			try {
-				singleton = new WikiDelegate();
-			}
-			catch (RuntimeException ex) {
-				throw new NuclosFatalException(ex);
-			}
+	public static WikiDelegate getInstance() {
+		if (INSTANCE == null) {
+			throw new IllegalStateException("too early");
 		}
-		return singleton;
+		return INSTANCE;
+	}
+	
+	public final void setWikiFacadeRemote(WikiFacadeRemote wikiFacadeRemote) {
+		this.wikiFacadeRemote = wikiFacadeRemote;
 	}
 
 	public String getWikiPageFor(String sEntityName, String sAttributeName) {
 		try {
-			return this.facade.getWikiPageFor(sEntityName, sAttributeName);
+			return this.wikiFacadeRemote.getWikiPageFor(sEntityName, sAttributeName);
 		}
 		catch (RuntimeException ex) {
 			throw new NuclosFatalException(ex);
@@ -66,7 +69,7 @@ public class WikiDelegate {
 
 	public String getWikiPageFor(String sComponentName) {
 		try {
-			return this.facade.getWikiPageFor(sComponentName);
+			return this.wikiFacadeRemote.getWikiPageFor(sComponentName);
 		}
 		catch (RuntimeException ex) {
 			throw new NuclosFatalException(ex);

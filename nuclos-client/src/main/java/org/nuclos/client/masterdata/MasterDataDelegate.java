@@ -27,6 +27,7 @@ import org.apache.log4j.Logger;
 import org.nuclos.common.NuclosBusinessException;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.NuclosFatalException;
+import org.nuclos.common.SpringApplicationContextHolder;
 import org.nuclos.common.collect.collectable.CollectableField;
 import org.nuclos.common.collect.collectable.CollectableValueIdField;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableSearchCondition;
@@ -37,7 +38,6 @@ import org.nuclos.common.collection.PredicateUtils;
 import org.nuclos.common.dal.vo.EntityObjectVO;
 import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.EntityAndFieldName;
-import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.TruncatableCollection;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonCreateException;
@@ -94,6 +94,10 @@ public class MasterDataDelegate {
 	}
 
 	public static MasterDataDelegate getInstance() {
+		if (INSTANCE == null) {
+			// lazy support
+			SpringApplicationContextHolder.getBean(MasterDataDelegate.class);
+		}
 		return INSTANCE;
 	}
 	
@@ -677,47 +681,47 @@ public class MasterDataDelegate {
 		  metaDataCache = null;
 	  }
 
+	private static class Key {
+
+		private final String sEntityName;
+		private final boolean bSearch;
+
+		private Key(String sEntityName, boolean bSearch) {
+			this.sEntityName = sEntityName;
+			this.bSearch = bSearch;
+		}
+
+		@Override
+		public boolean equals(Object o) {
+			if (this == o) {
+				return true;
+			}
+			if (o == null || getClass() != o.getClass()) {
+				return false;
+			}
+
+			final Key key = (Key) o;
+
+			if (bSearch != key.bSearch) {
+				return false;
+			}
+			if (!sEntityName.equals(key.sEntityName)) {
+				return false;
+			}
+
+			return true;
+		}
+
+		@Override
+		public int hashCode() {
+			return 29 * sEntityName.hashCode() + (bSearch ? 1 : 0);
+		}
+	}
+
 	  /**
 	   * inner class MasterDataLayoutCache
 	   */
-	  private static class MasterDataLayoutCache {
-
-		  private static class Key {
-			  
-			  private final String sEntityName;
-			  private final boolean bSearch;
-
-			  private Key(String sEntityName, boolean bSearch) {
-				  this.sEntityName = sEntityName;
-				  this.bSearch = bSearch;
-			  }
-
-			  @Override
-			  public boolean equals(Object o) {
-				  if (this == o) {
-					  return true;
-				  }
-				  if (o == null || getClass() != o.getClass()) {
-					  return false;
-				  }
-
-				  final Key key = (Key) o;
-
-				  if (bSearch != key.bSearch) {
-					  return false;
-				  }
-				  if (!sEntityName.equals(key.sEntityName)) {
-					  return false;
-				  }
-
-				  return true;
-			  }
-
-			  @Override
-			  public int hashCode() {
-				  return 29 * sEntityName.hashCode() + (bSearch ? 1 : 0);
-			  }
-		  }
+	  private class MasterDataLayoutCache {
 
 		  private Map<Key, Pair<Integer, String>> mpUsages;
 		  
@@ -729,7 +733,7 @@ public class MasterDataDelegate {
 			  final Map<Key, Pair<Integer, String>> result = new HashMap<Key, Pair<Integer, String>>();
 			  final Map<Integer, String> mpLayouts = getLayoutsMap();
 	
-			  for (MasterDataVO mdvoUsage : ServiceLocator.getInstance().getFacade(MasterDataFacadeRemote.class).getMasterData(NuclosEntity.LAYOUTUSAGE.getEntityName(), null, true)) {
+			  for (MasterDataVO mdvoUsage : facade.getMasterData(NuclosEntity.LAYOUTUSAGE.getEntityName(), null, true)) {
 				  final String sEntityName = mdvoUsage.getField("entity", String.class);
 				  final boolean bSearch = mdvoUsage.getField("searchScreen", Boolean.class);
 				  final Integer iLayoutId = mdvoUsage.getField("layoutId", Integer.class);
@@ -743,7 +747,7 @@ public class MasterDataDelegate {
 		  private Map<Integer, String> getLayoutsMap() {
 			  final Map<Integer, String> result = new HashMap<Integer, String>();
 
-			  for (MasterDataVO mdvoLayout : ServiceLocator.getInstance().getFacade(MasterDataFacadeRemote.class).getMasterData(NuclosEntity.LAYOUT.getEntityName(), null, true)) {
+			  for (MasterDataVO mdvoLayout : facade.getMasterData(NuclosEntity.LAYOUT.getEntityName(), null, true)) {
 				  final Integer iLayoutId = (Integer) mdvoLayout.getId();
 				  final String sLayoutML = mdvoLayout.getField("layoutML", String.class);
 				  result.put(iLayoutId, sLayoutML);

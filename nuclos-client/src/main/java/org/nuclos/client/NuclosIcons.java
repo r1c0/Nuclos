@@ -169,6 +169,7 @@ public class NuclosIcons {
 			return new ImageIcon(this.getClass().getClassLoader().getResource(sFileName));
 		}
 		catch(NullPointerException e) {
+			LOG.error("Can't find resource '" + sFileName + "' for icon");
 			return new ImageIcon(Toolkit.getDefaultToolkit().createImage(sFileName));
 		}
 	}

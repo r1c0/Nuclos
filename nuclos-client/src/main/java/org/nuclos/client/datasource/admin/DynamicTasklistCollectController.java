@@ -42,11 +42,11 @@ import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.database.query.definition.QueryTable;
 import org.nuclos.common.masterdata.CollectableMasterDataEntity;
 import org.nuclos.common2.IOUtils;
-import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.server.report.ejb3.DatasourceFacadeRemote;
 import org.nuclos.server.report.valueobject.DynamicTasklistVO;
 import org.nuclos.server.report.valueobject.ResultVO;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * <code>CollectController</code> for dynamic task lists.
@@ -55,6 +55,12 @@ import org.nuclos.server.report.valueobject.ResultVO;
  * <br>Please visit <a href="http://www.novabit.de">www.novabit.de</a>
  */
 public class DynamicTasklistCollectController extends AbstractDatasourceCollectController<DynamicTasklistVO> implements DatasourceEditController {
+	
+	// Spring injection
+	
+	private DatasourceFacadeRemote datasourceFacadeRemote;
+	
+	// end of Spring injection
 
 	/**
 	 * You should use {@link org.nuclos.client.ui.collect.CollectControllerFactorySingleton} 
@@ -76,6 +82,11 @@ public class DynamicTasklistCollectController extends AbstractDatasourceCollectC
 				new CollectableEntityFieldWithEntity(clctEntity, CollectableDataSource.FIELDNAME_NAME),
 				null,
 				new CollectableEntityFieldWithEntity(clctEntity, CollectableDataSource.FIELDNAME_DESCRIPTION)));
+	}
+	
+	@Autowired
+	final void setDatasourceFacadeRemote(DatasourceFacadeRemote datasourceFacadeRemote) {
+		this.datasourceFacadeRemote = datasourceFacadeRemote;
 	}
 
 	@Override
@@ -181,8 +192,7 @@ public class DynamicTasklistCollectController extends AbstractDatasourceCollectC
 	@Override
 	protected void validateSQL() {
 		try {
-			final DatasourceFacadeRemote dataSourceFacade = ServiceLocator.getInstance().getFacade(DatasourceFacadeRemote.class);
-			dataSourceFacade.validateSqlFromXML(pnlEdit.getQueryEditor().getXML(new DatasourceEntityOptions(false)));
+			datasourceFacadeRemote.validateSqlFromXML(pnlEdit.getQueryEditor().getXML(new DatasourceEntityOptions(false)));
 			JOptionPane.showMessageDialog(getTab(), getSpringLocaleDelegate().getMessage(
 					"DatasourceCollectController.10","Die SQL Abfrage ist syntaktisch korrekt."));
 		}

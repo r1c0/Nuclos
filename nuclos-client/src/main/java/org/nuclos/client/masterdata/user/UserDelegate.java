@@ -18,33 +18,41 @@ package org.nuclos.client.masterdata.user;
 
 import org.nuclos.common.security.UserFacadeRemote;
 import org.nuclos.common.security.UserVO;
-import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.server.masterdata.valueobject.DependantMasterDataMap;
 
 public class UserDelegate {
 
-	private static UserDelegate singleton = new UserDelegate();
+	private static UserDelegate INSTANCE;
+	
+	// Spring injectin
+	
+	private UserFacadeRemote userFacadeRemote;
+	
+	// end of Spring injection
 
-	public static UserDelegate getInstance() {
-		return singleton;
+	UserDelegate() {
+		INSTANCE = this;
 	}
 
-	private UserDelegate() { }
+	public static UserDelegate getInstance() {
+		return INSTANCE;
+	}
+	
+	public final void setUserFacadeRemote(UserFacadeRemote userFacadeRemote) {
+		this.userFacadeRemote = userFacadeRemote;
+	}
 
 	public UserVO create(UserVO vo, DependantMasterDataMap mpDependants) throws CommonBusinessException {
-		return getUserFacade().create(vo, mpDependants);
+		return userFacadeRemote.create(vo, mpDependants);
 	}
 
 	public UserVO modify(UserVO vo, DependantMasterDataMap mpDependants) throws CommonBusinessException {
-		return getUserFacade().modify(vo, mpDependants);
+		return userFacadeRemote.modify(vo, mpDependants);
 	}
 
 	public void remove(UserVO vo) throws CommonBusinessException {
-		getUserFacade().remove(vo);
+		userFacadeRemote.remove(vo);
 	}
 
-	private UserFacadeRemote getUserFacade() {
-		return ServiceLocator.getInstance().getFacade(UserFacadeRemote.class);
-	}
 }

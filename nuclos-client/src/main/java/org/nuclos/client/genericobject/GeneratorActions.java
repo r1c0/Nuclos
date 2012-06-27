@@ -19,14 +19,15 @@ package org.nuclos.client.genericobject;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.apache.log4j.Logger;
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.collection.CollectionUtils;
-import org.nuclos.common2.ServiceLocator;
 import org.nuclos.server.genericobject.ejb3.GeneratorFacadeRemote;
 import org.nuclos.server.genericobject.valueobject.GeneratorActionVO;
 import org.nuclos.server.genericobject.valueobject.GeneratorVO;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * Singleton for the GeneratorActions.
@@ -37,31 +38,46 @@ import org.nuclos.server.genericobject.valueobject.GeneratorVO;
  * @author	<a href="mailto:Christoph.Radig@novabit.de">Christoph.Radig</a>
  * @version 01.00.00
  */
-
 public class GeneratorActions {
+	
 	private static final Logger log = Logger.getLogger(GeneratorActions.class);
 
-	private static GeneratorActions singleton;
+	private static GeneratorActions INSTANCE;
+	
+	//
+	
+	// Spring injection
+	
+	private GeneratorFacadeRemote generatorFacadeRemote;
+	
+	// end of Spring injection
 
-	private final GeneratorVO generatorcvo;
+	private final AtomicReference<GeneratorVO> generatorcvo = new AtomicReference<GeneratorVO>();
 
-	private static synchronized GeneratorActions getInstance() {
-		if (singleton == null) {
-			singleton = new GeneratorActions();
-		}
-		return singleton;
+	GeneratorActions() {
+		INSTANCE = this;
 	}
 
-	private GeneratorActions() {
-		try {
-			this.generatorcvo = ServiceLocator.getInstance().getFacade(GeneratorFacadeRemote.class).getGeneratorActions();
+	private static GeneratorActions getInstance() {
+		if (INSTANCE == null) {
+			throw new IllegalStateException("too early");
 		}
-		catch (Exception ex) {
-			final String sMessage = "Error reading the GeneratorActions";//"Fehler beim Lesen der GeneratorActions.";
-			throw new NuclosFatalException(sMessage, ex);
+		if (INSTANCE.generatorcvo.get() == null) {
+			try {
+				INSTANCE.generatorcvo.set(INSTANCE.generatorFacadeRemote.getGeneratorActions());
+			}
+			catch (Exception ex) {
+				final String sMessage = "Error reading the GeneratorActions";//"Fehler beim Lesen der GeneratorActions.";
+				throw new NuclosFatalException(sMessage, ex);
+			}
 		}
+		return INSTANCE;
 	}
 
+	public final void setGeneratorFacadeRemote(GeneratorFacadeRemote generatorFacadeRemote) {
+		this.generatorFacadeRemote = generatorFacadeRemote;
+	}
+	
 	/**
 	 * @param iModuleId
 	 * @param iStateNumeral
@@ -71,7 +87,8 @@ public class GeneratorActions {
 	 */
 	public static List<GeneratorActionVO> getActions(Integer iModuleId, Integer iStateNumeral, Integer iProcessId) {
 		/** @todo replace sStateMnemonic with iStateMnemonic in GeneratorVO */
-		List<GeneratorActionVO> result = getInstance().generatorcvo.getGeneratorActions(iModuleId, iStateNumeral, iProcessId);
+		final List<GeneratorActionVO> result = getInstance().generatorcvo.get().getGeneratorActions(
+				iModuleId, iStateNumeral, iProcessId);
 		assert result != null;
 		return sort(result);
 	}
@@ -97,7 +114,7 @@ public class GeneratorActions {
 	 * @postcondition result != null
 	 */
 	public static List<GeneratorActionVO> getGeneratorActions(Integer iModuleId) {
-		List<GeneratorActionVO> result = getInstance().generatorcvo.getGeneratorActions(iModuleId);
+		List<GeneratorActionVO> result = getInstance().generatorcvo.get().getGeneratorActions(iModuleId);
 		result = CollectionUtils.sorted(result, new Comparator<GeneratorActionVO>() {
 
 			@Override
@@ -118,7 +135,7 @@ public class GeneratorActions {
 	 * @postcondition result != null
 	 */
 	public static GeneratorActionVO getGeneratorAction(Integer iGeneratorActionId) {
-		GeneratorActionVO result = getInstance().generatorcvo.getGeneratorAction(iGeneratorActionId);
+		GeneratorActionVO result = getInstance().generatorcvo.get().getGeneratorAction(iGeneratorActionId);
 		
 		//assert result != null;
 		return result;
@@ -131,7 +148,7 @@ public class GeneratorActions {
 	 * @postcondition result != null
 	 */
 	public static GeneratorActionVO getGeneratorAction(String sGeneratorName) {
-		GeneratorActionVO result = getInstance().generatorcvo.getGeneratorAction(sGeneratorName);
+		GeneratorActionVO result = getInstance().generatorcvo.get().getGeneratorAction(sGeneratorName);
 		
 		//assert result != null;
 		return result;
@@ -142,7 +159,7 @@ public class GeneratorActions {
 	 */
 	public static void invalidateCache() {
 		log.debug("invalidateCache");
-		singleton = null;
+		getInstance().generatorcvo.set(null);
 	}
 
 }	// class GeneratorActions

@@ -82,7 +82,6 @@ import org.nuclos.common.dal.vo.EntityObjectVO;
 import org.nuclos.common.security.UserVO;
 import org.nuclos.common2.CommonRunnable;
 import org.nuclos.common2.LangUtils;
-import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.TruncatableCollection;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonFinderException;
@@ -92,6 +91,7 @@ import org.nuclos.server.masterdata.valueobject.DependantMasterDataMap;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataWithDependantsVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataWithDependantsVOWrapper;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * <code>CollectController</code> for entity "user".
@@ -129,6 +129,12 @@ public class UserCollectController extends MasterDataCollectController {
 
 	protected LDAPDataDelegate ldapdelegate = null;
 	private List<MasterDataWithDependantsVO> ldapRegisteredUsers = null;
+	
+	// Spring injection
+	
+	private PreferencesFacadeRemote preferencesFacadeRemote;
+	
+	// end of Spring injection
 
 	CollectableComponentModelListener ccml_superuser = new CollectableComponentModelAdapter() {
 		@Override
@@ -170,6 +176,11 @@ public class UserCollectController extends MasterDataCollectController {
 		if(this.ldapSynchronization){
 			this.ldapdelegate = LDAPDataDelegate.getInstance();
 		}
+	}
+	
+	@Autowired
+	final void setPreferencesFacadeRemote(PreferencesFacadeRemote preferencesFacadeRemote) {
+		this.preferencesFacadeRemote = preferencesFacadeRemote;
 	}
 
 	@Override
@@ -504,9 +515,8 @@ public class UserCollectController extends MasterDataCollectController {
 				Map<String, Map<String, String>> selectedPreferences = panel.getSelectedPreferences();
 				for (Collectable c : selectedUsers) {
 					String userName = (String) c.getField("name").getValue();
-					PreferencesFacadeRemote facade = ServiceLocator.getInstance().getFacade(PreferencesFacadeRemote.class);
 					try {
-						facade.mergePreferencesForUser(userName, selectedPreferences);
+						preferencesFacadeRemote.mergePreferencesForUser(userName, selectedPreferences);
 					} catch(CommonFinderException ex) {
 						Errors.getInstance().showExceptionDialog(getTab(),
 								getSpringLocaleDelegate().getMessage("nuclos.preferences.transfer.error", userName), ex);

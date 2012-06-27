@@ -36,7 +36,6 @@ import org.nuclos.common.collect.collectable.searchcondition.CompositeCollectabl
 import org.nuclos.common.collect.collectable.searchcondition.LogicalOperator;
 import org.nuclos.common.collect.collectable.searchcondition.SearchConditionUtils;
 import org.nuclos.common.masterdata.CollectableMasterDataEntity;
-import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonCreateException;
 import org.nuclos.common2.exception.CommonFatalException;
@@ -63,33 +62,32 @@ import org.nuclos.server.report.valueobject.ResultVO;
  */
 public class ReportDelegate {
 
-	private static ReportDelegate singleton;
+	private static ReportDelegate INSTANCE;
+	
+	// Spring injection
 
-	private ReportFacadeRemote reportfacade;
+	private ReportFacadeRemote reportFacadeRemote;
+	
+	// end of Spring injection
 
-	public static synchronized ReportDelegate getInstance() {
-		if (singleton == null)
-			singleton = new ReportDelegate();
-		return singleton;
+	ReportDelegate() {
+		INSTANCE = this;
 	}
 
-	/**
-	 * gets the report facade once for this object and stores it in a member variable.
-	 */
-	private ReportFacadeRemote getReportFacade() throws NuclosFatalException {
-		if (reportfacade == null)
-			try {
-				reportfacade = ServiceLocator.getInstance().getFacade(ReportFacadeRemote.class);
-			}
-		catch (RuntimeException ex) {
-			throw new CommonFatalException(ex);
+	public static ReportDelegate getInstance() {
+		if (INSTANCE == null) {
+			throw new IllegalStateException("too early");
 		}
-		return reportfacade;
+		return INSTANCE;
+	}
+	
+	public final void setReportFacadeRemote(ReportFacadeRemote reportFacadeRemote) {
+		this.reportFacadeRemote = reportFacadeRemote;
 	}
 
 	public Collection<Integer> getReadableReportIdsForCurrentUser() throws NuclosFatalException {
 		try {
-			return getReportFacade().getReadableReportIdsForCurrentUser();
+			return reportFacadeRemote.getReadableReportIdsForCurrentUser();
 		}
 		catch (RuntimeException ex) {
 			throw new CommonFatalException(ex);
@@ -127,7 +125,7 @@ public class ReportDelegate {
 	 */
 	public MasterDataVO create(MasterDataVO mdvoInserted, DependantMasterDataMap mpDependants) throws CommonBusinessException {
 		try {
-			return getReportFacade().create(mdvoInserted, mpDependants);
+			return reportFacadeRemote.create(mdvoInserted, mpDependants);
 		}
 		catch (RuntimeException ex) {
 			throw new CommonFatalException(ex);
@@ -143,7 +141,7 @@ public class ReportDelegate {
 	 */
 	public Collection<ReportVO> getReports() throws CommonPermissionException {
 		try {
-			return getReportFacade().getReports();
+			return reportFacadeRemote.getReports();
 		}
 		catch (RuntimeException ex) {
 			throw new CommonFatalException(ex);
@@ -156,7 +154,7 @@ public class ReportDelegate {
 	 */
 	public Collection<ReportVO> getReportsForDatasourceId(Integer aDatasourceId) throws CommonPermissionException {
 		try {
-			return getReportFacade().getReportsForDatasourceId(aDatasourceId, ReportType.REPORT);
+			return reportFacadeRemote.getReportsForDatasourceId(aDatasourceId, ReportType.REPORT);
 		}
 		catch (RuntimeException ex) {
 			throw new CommonFatalException(ex);
@@ -168,7 +166,7 @@ public class ReportDelegate {
 	 */
 	public Collection<ReportVO> getFormularsForDatasourceId(Integer aDatasourceId) throws CommonPermissionException {
 		try {
-			return getReportFacade().getReportsForDatasourceId(aDatasourceId, ReportType.FORM);
+			return reportFacadeRemote.getReportsForDatasourceId(aDatasourceId, ReportType.FORM);
 		}
 		catch (RuntimeException ex) {
 			throw new CommonFatalException(ex);
@@ -177,7 +175,7 @@ public class ReportDelegate {
 
 	public Integer modify(MasterDataVO mdvo, DependantMasterDataMap mpDependants) throws CommonBusinessException {
 		try {
-			return getReportFacade().modify(mdvo, mpDependants);
+			return reportFacadeRemote.modify(mdvo, mpDependants);
 		}
 		catch (RuntimeException ex) {
 			throw new CommonFatalException(ex);
@@ -186,7 +184,7 @@ public class ReportDelegate {
 
 	public void removeReport(MasterDataVO mdvo) throws CommonBusinessException {
 		try {
-			getReportFacade().remove(mdvo);
+			reportFacadeRemote.remove(mdvo);
 		}
 		catch (RuntimeException ex) {
 			throw new CommonFatalException(ex);
@@ -195,7 +193,7 @@ public class ReportDelegate {
 
 	public NuclosFile testReport(Integer iReportOutputId) throws NuclosReportException {
 		try {
-			return getReportFacade().testReport(iReportOutputId);
+			return reportFacadeRemote.testReport(iReportOutputId);
 		}
 		catch (RuntimeException ex) {
 			throw new CommonFatalException(ex);
@@ -212,7 +210,7 @@ public class ReportDelegate {
 	 */
 	public NuclosFile prepareReport(Integer id, Map<String, Object> params, Integer iMaxRowCount) throws CommonBusinessException {
 		try {
-			return getReportFacade().prepareReport(id, params, iMaxRowCount);
+			return reportFacadeRemote.prepareReport(id, params, iMaxRowCount);
 		}
 		catch (RuntimeException ex) {
 			throw new CommonFatalException(ex);
@@ -226,7 +224,7 @@ public class ReportDelegate {
 	public NuclosFile prepareSearchResult(CollectableSearchExpression clctexpr,
 		List<? extends CollectableEntityField> lstclctefweSelected, Integer iModuleId, boolean bIncludeSubModules, ReportOutputVO.Format format) throws NuclosReportException {
 		try {
-			return getReportFacade().prepareSearchResult(clctexpr, lstclctefweSelected, iModuleId, bIncludeSubModules, format);
+			return reportFacadeRemote.prepareSearchResult(clctexpr, lstclctefweSelected, iModuleId, bIncludeSubModules, format);
 		}
 		catch (RuntimeException ex) {
 			throw new CommonFatalException(ex);
@@ -235,7 +233,7 @@ public class ReportDelegate {
 
 	public NuclosFile prepareExport(ResultVO resultvo, ReportOutputVO.Format format) throws NuclosReportException {
 		try {
-			return getReportFacade().prepareExport(resultvo, format);
+			return reportFacadeRemote.prepareExport(resultvo, format);
 		}
 		catch (RuntimeException ex) {
 			throw new CommonFatalException(ex);
@@ -248,7 +246,7 @@ public class ReportDelegate {
 	 */
 	public boolean isSaveAllowed(Integer iReportId) {
 		try {
-			return getReportFacade().isSaveAllowed(iReportId);
+			return reportFacadeRemote.isSaveAllowed(iReportId);
 		}
 		catch (RuntimeException ex) {
 			throw new CommonFatalException(ex);
@@ -256,15 +254,15 @@ public class ReportDelegate {
 	}
 	
 	public PrintService lookupDefaultPrintService() {
-	 	return getReportFacade().lookupDefaultPrintService();
+	 	return reportFacadeRemote.lookupDefaultPrintService();
 	}
 	
 	public PrintService[] lookupPrintServices(DocFlavor flavor, AttributeSet as) throws NuclosReportException {
-		return getReportFacade().lookupPrintServices(flavor, as);
+		return reportFacadeRemote.lookupPrintServices(flavor, as);
 	}
 	
 	public void printViaPrintService(NuclosReportRemotePrintService ps, NuclosReportPrintJob pj, PrintRequestAttributeSet aset, byte[] data) throws NuclosReportException {
-		getReportFacade().printViaPrintService(ps, pj, aset, data);
+		reportFacadeRemote.printViaPrintService(ps, pj, aset, data);
 	}
 
 }	// class ReportDelegate

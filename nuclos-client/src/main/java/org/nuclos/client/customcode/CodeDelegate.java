@@ -19,12 +19,12 @@ package org.nuclos.client.customcode;
 import java.util.Collections;
 import java.util.List;
 
-import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonPermissionException;
 import org.nuclos.server.customcode.ejb3.CodeFacadeRemote;
 import org.nuclos.server.customcode.valueobject.CodeVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
+import org.springframework.beans.factory.InitializingBean;
 
 /**
  * Business delegate for code administration.
@@ -35,37 +35,44 @@ import org.nuclos.server.masterdata.valueobject.MasterDataVO;
  */
 public class CodeDelegate {
 
-	private static final CodeDelegate singleton = new CodeDelegate();
+	private static CodeDelegate INSTANCE;
 
-	private CodeFacadeRemote facade;
+	private CodeFacadeRemote codeFacadeRemote;
 
-	private CodeDelegate() {
-		facade = ServiceLocator.getInstance().getFacade(CodeFacadeRemote.class);
+	CodeDelegate() {
+		INSTANCE = this;
 	}
-
+	
+	public final void setCodeFacadeRemote(CodeFacadeRemote codeFacadeRemote) {
+		this.codeFacadeRemote = codeFacadeRemote;
+	}
+	
 	public static CodeDelegate getInstance() {
-		return singleton;
+		if (INSTANCE == null) {
+			throw new IllegalStateException("too early");
+		}
+		return INSTANCE;
 	}
 
 	public MasterDataVO create(MasterDataVO vo) throws CommonBusinessException {
-		return facade.create(vo);
+		return codeFacadeRemote.create(vo);
 	}
 
 	public MasterDataVO modify(MasterDataVO vo) throws CommonBusinessException {
-		return facade.modify(vo);
+		return codeFacadeRemote.modify(vo);
 	}
 
 	public void remove(MasterDataVO vo) throws CommonBusinessException {
-		facade.remove(vo);
+		codeFacadeRemote.remove(vo);
 	}
 
 	public void compile(MasterDataVO vo) throws CommonBusinessException {
-		facade.check(vo);
+		codeFacadeRemote.check(vo);
 	}
 
 	public List<CodeVO> getAll() {
 		try {
-			return facade.getAll();
+			return codeFacadeRemote.getAll();
 		}
 		catch (CommonPermissionException ex) {
 			return Collections.emptyList();
@@ -73,6 +80,7 @@ public class CodeDelegate {
 	}
 
 	public Object invokeFunction(String functionname, Object[] args) {
-		return facade.invokeFunction(functionname, args);
+		return codeFacadeRemote.invokeFunction(functionname, args);
 	}
+
 }

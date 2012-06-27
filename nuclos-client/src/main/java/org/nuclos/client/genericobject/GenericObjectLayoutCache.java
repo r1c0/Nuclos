@@ -46,6 +46,7 @@ import org.nuclos.common2.EntityAndFieldName;
 import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.exception.CommonFinderException;
 import org.nuclos.common2.layoutml.exception.LayoutMLException;
+import org.springframework.stereotype.Component;
 import org.xml.sax.InputSource;
 
 /**
@@ -58,6 +59,7 @@ import org.xml.sax.InputSource;
  * @version 01.00.00
  * @todo check if this cache is still needed
  */
+// @Component
 public class GenericObjectLayoutCache {
 	
 	private static final Logger LOG = Logger.getLogger(GenericObjectLayoutCache.class);
@@ -65,8 +67,13 @@ public class GenericObjectLayoutCache {
 	private static GenericObjectLayoutCache INSTANCE;
 	
 	// 
+	
+	// Spring injection
 
-	private final GenericObjectMetaDataProvider gometa = GenericObjectMetaDataCache.getInstance();
+	// private GenericObjectMetaDataProvider gometa = GenericObjectMetaDataCache.getInstance();
+	private GenericObjectMetaDataCache gometa;
+	
+	// end of Spring injection
 
 	private static class Key {
 		private final UsageCriteria usagecriteria;
@@ -112,13 +119,18 @@ public class GenericObjectLayoutCache {
 
 	private GenericObjectLayoutCache() {
 		 mpLayoutIds = new LRUMap(100);
+		 INSTANCE = this;
 	}
 
-	public static synchronized GenericObjectLayoutCache getInstance() {
+	public static GenericObjectLayoutCache getInstance() {
 		if (INSTANCE == null) {
-			INSTANCE = new GenericObjectLayoutCache();
+			throw new IllegalStateException("too early");
 		}
 		return INSTANCE;
+	}
+	
+	public final void setGenericObjectMetaDataCache(GenericObjectMetaDataCache genericObjectMetaDataCache) {
+		gometa = genericObjectMetaDataCache;
 	}
 	
 	/**

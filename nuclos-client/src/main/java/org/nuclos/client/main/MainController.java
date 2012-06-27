@@ -181,7 +181,6 @@ import org.nuclos.common2.IOUtils;
 import org.nuclos.common2.IdUtils;
 import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.PreferencesUtils;
-import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.SystemUtils;
@@ -189,7 +188,6 @@ import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.common2.exception.CommonPermissionException;
 import org.nuclos.common2.exception.PreferencesException;
-import org.nuclos.server.common.ejb3.TestFacadeRemote;
 import org.nuclos.server.customcomp.valueobject.CustomComponentVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -277,6 +275,8 @@ public class MainController {
 	};
 
 	private DirectHelpActionListener dha;
+	
+	// Spring injection
 
 	private NucletComponentRepository nucletComponentRepository;
 
@@ -289,8 +289,16 @@ public class MainController {
 	private ResourceCache resourceCache;
 
 	private SecurityCache securityCache;
-
-	// private Main main;
+	
+	private RestoreUtils restoreUtils;
+	
+	private NuclosRemoteServerSession nuclosRemoteServerSession;
+	
+	private WebAccessPrefs webAccessPrefs;
+	
+	private WorkspaceChooserController workspaceChooserController;
+	
+	// end of Spring injection
 
 	/**
 	 * @param sUserName name of the logged in user
@@ -304,40 +312,60 @@ public class MainController {
 	}
 
 	@Autowired
-	void setSecurityCache(SecurityCache securityCache) {
+	final void setSecurityCache(SecurityCache securityCache) {
 		this.securityCache = securityCache;
 	}
 
 	@Autowired
-	void setResourceCache(ResourceCache resourceCache) {
+	final void setResourceCache(ResourceCache resourceCache) {
 		this.resourceCache = resourceCache;
 	}
 
 	@Autowired
-	void setTopicNotificationReceiver(TopicNotificationReceiver tnr) {
+	final void setTopicNotificationReceiver(TopicNotificationReceiver tnr) {
 		this.tnr = tnr;
 	}
 
 	@Autowired
-	void setMetaDataClientProvider(MetaDataClientProvider mdProv) {
+	final void setMetaDataClientProvider(MetaDataClientProvider mdProv) {
 		this.mdProv = mdProv;
 	}
 
 	@Autowired
-	public void setNucletComponentRepository(NucletComponentRepository ncr) {
+	final void setNucletComponentRepository(NucletComponentRepository ncr) {
 		this.nucletComponentRepository = ncr;
 	}
 
 	@Autowired
-	public void setMainFrame(@Value("#{mainFrameSpringComponent.mainFrame}") MainFrame mainFrame) {
+	final void setMainFrame(@Value("#{mainFrameSpringComponent.mainFrame}") MainFrame mainFrame) {
 		this.frm = mainFrame;
 	}
 
 	@Autowired
-	public void setSpringLocaleDelegate(SpringLocaleDelegate cld) {
+	final void setSpringLocaleDelegate(SpringLocaleDelegate cld) {
 		this.localeDelegate = cld;
 	}
-
+	
+	@Autowired
+	final void setRestoreUtils(RestoreUtils restoreUtils) {
+		this.restoreUtils = restoreUtils;
+	}
+	
+	@Autowired
+	final void setNuclosRemoteServerSession(NuclosRemoteServerSession nuclosRemoteServerSession) {
+		this.nuclosRemoteServerSession = nuclosRemoteServerSession;
+	}
+	
+	@Autowired
+	final void setWebAccessPrefs(WebAccessPrefs webAccessPrefs) {
+		this.webAccessPrefs = webAccessPrefs;
+	}
+	
+	@Autowired
+	final void setWorkspaceChooserController(WorkspaceChooserController workspaceChooserController) {
+		this.workspaceChooserController = workspaceChooserController;
+	}
+	
 	@PostConstruct
 	void init() throws CommonPermissionException, BackingStoreException {
 		debugFrame = new SwingDebugFrame(this);
@@ -436,7 +464,7 @@ public class MainController {
 			LOG.debug(">>> restore last workspace...");
 			try {
 				Main.getInstance().getMainFrame().readMainFramePreferences(prefs);
-				RestoreUtils.restoreWorkspaceThreaded(
+				restoreUtils.restoreWorkspaceThreaded(
 						MainFrame.getLastWorkspaceIdFromPreferences(),
 						MainFrame.getLastWorkspaceFromPreferences(),
 						MainFrame.getLastAlwaysOpenWorkspaceIdFromPreferences(),
@@ -591,7 +619,7 @@ public class MainController {
 						public void changePassword(String oldPw, String newPw) throws CommonBusinessException {
 							RemoteAuthenticationManager ram = SpringApplicationContextHolder.getBean(RemoteAuthenticationManager.class);
 							ram.changePassword(sUserName, oldPw, newPw);
-							NuclosRemoteServerSession.relogin(sUserName, newPw);
+							nuclosRemoteServerSession.relogin(sUserName, newPw);
 							try {
 								MainController.this.prefs.flush();
 							} catch (BackingStoreException e) {
@@ -1099,7 +1127,8 @@ public class MainController {
 						return;
 					String[] a = s.split(": *");
 					if(a.length == 2) {
-						ServiceLocator.getInstance().getFacade(TestFacadeRemote.class).testClientNotification(a[0], a[1]);
+						// testFacadeRemote.testClientNotification(a[0], a[1]);
+						throw new UnsupportedOperationException("TestFacade removed");
 					}
 					else {
 						JOptionPane.showMessageDialog(frm, "Wrong input format");
@@ -1114,9 +1143,8 @@ public class MainController {
 				String s = JOptionPane.showInputDialog(frm, "Access-Path");
 				if(s == null)
 					return;
-				WebAccessPrefs p = new WebAccessPrefs();
 				try {
-					Map<String, String> m = p.getPrefsMap(s);
+					Map<String, String> m = webAccessPrefs.getPrefsMap(s);
 					StringBuilder sb = new StringBuilder();
 					for(String k : m.keySet())
 						sb.append(k).append(": ").append(m.get(k)).append("\n");
@@ -1349,7 +1377,7 @@ public class MainController {
 
 		addSearchFilterActions(result);
 		addReportActions(result);
-		WorkspaceChooserController.addGenericActions(result);
+		workspaceChooserController.addGenericActions(result);
 
 		return result;
 	}
@@ -1704,8 +1732,8 @@ public class MainController {
 		if (allControllersMayBeClosed()) {
 			try {
 
-				MainFrame.writeMainFramePreferences(prefs);
-				RestoreUtils.storeWorkspace(MainFrame.getWorkspace());
+				frm.writeMainFramePreferences(prefs);
+				restoreUtils.storeWorkspace(frm.getWorkspace());
 
 				if (this.ctlTasks != null)	{
 					this.ctlTasks.close();

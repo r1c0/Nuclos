@@ -127,9 +127,12 @@
 	<bean id="liveSearchController" class="org.nuclos.client.livesearch.LiveSearchController">
 		<property name="resourceCache" ref="resourceCache"/>
 		<property name="parentFrame" value="#{mainFrameSpringComponent.mainFrame}"/>
+		<property name="liveSearchFacadeRemote" ref="liveSearchService"/>
 	</bean>
 	<bean id="workspaceChooserController" class="org.nuclos.client.main.mainframe.workspace.WorkspaceChooserController">
 		<property name="springLocaleDelegate" ref="springLocaleDelegate"/>
+		<property name="preferencesFacadeRemote" ref="preferencesService"/>
+		<property name="restoreUtils" ref="restoreUtils"/>
 	</bean>
 	<bean id="queueSingleton" class="org.nuclos.client.ui.gc.QueueSingleton">
 		<property name="timer" ref="timer"/>
@@ -141,4 +144,113 @@
 	<bean id="moduleProvider" class="org.nuclos.client.genericobject.Modules">
 		<property name="masterDataDelegate" ref="masterDataDelegate"/>
 	</bean>
+	
+	<bean id="codeDelegate" class="org.nuclos.client.customcode.CodeDelegate">
+		<property name="codeFacadeRemote" ref="codeService"/>
+	</bean>
+	<bean id="CustomComponentDelegate" class="org.nuclos.client.customcomp.CustomComponentDelegate">
+		<property name="customComponentFacadeRemote" ref="customComponentService"/>
+	</bean>
+	<bean id="entityObjectDelegate" class="org.nuclos.client.entityobject.EntityObjectDelegate">
+		<property name="entityObjectFacadeRemote" ref="entityObjectService"/>
+	</bean>
+	<bean id="explorerDelegate" class="org.nuclos.client.explorer.ExplorerDelegate">
+		<property name="treeNodeFacadeRemote" ref="treeNodeService"/>
+	</bean>
+	<bean id="generatorActions" class="org.nuclos.client.genericobject.GeneratorActions">
+		<property name="generatorFacadeRemote" ref="generatorService"/>
+	</bean>
+	<bean id="generatorDelegate" class="org.nuclos.client.genericobject.GeneratorDelegate">
+		<property name="generatorFacadeRemote" ref="generatorService"/>
+	</bean>
+	<bean id="importDelegate" class="org.nuclos.client.fileimport.ImportDelegate">
+		<property name="importFacadeRemote" ref="importService"/>
+	</bean>
+	<bean id="instanceDelegate" class="org.nuclos.client.processmonitor.InstanceDelegate">
+		<property name="instanceFacadeRemote" ref="instanceService"/>
+	</bean>
+	<bean id="jobControlDelegate" class="org.nuclos.client.job.JobControlDelegate">
+		<property name="jobControlFacadeRemote" ref="jobControlService"/>
+	</bean>
+	<bean id="layoutDelegate" class="org.nuclos.client.layout.LayoutDelegate">
+		<property name="layoutFacadeRemote" ref="layoutService"/>
+	</bean>
+	<bean id="ldapDataDelegate" class="org.nuclos.client.ldap.LDAPDataDelegate">
+		<property name="lDAPDataFacadeRemote" ref="ldapDataService"/>
+	</bean>
+	<bean id="masterDataModuleDelegate" class="org.nuclos.client.masterdata.MasterDataModuleDelegate">
+		<property name="masterDataModuleFacadeRemote" ref="masterDataModuleService"/>
+		<property name="masterDataFacadeRemote" ref="masterDataService"/>
+	</bean>
+	<bean id="migrateSearchFilterPreferences" class="org.nuclos.client.updatejobs.MigrateSearchFilterPreferences">
+		<property name="masterDataFacadeRemote" ref="masterDataService"/>
+		<property name="preferencesFacadeRemote" ref="preferencesService"/>
+		<property name="searchFilterFacadeRemote" ref="searchFilterService"/>
+	</bean>
+	<bean id="processMonitorDelegate" class="org.nuclos.client.processmonitor.ProcessMonitorDelegate">
+		<property name="processMonitorFacadeRemote" ref="processMonitorService"/>
+	</bean>
+	<bean id="reportDelegate" class="org.nuclos.client.report.ReportDelegate">
+		<property name="reportFacadeRemote" ref="reportService"/>
+	</bean>
+	<bean id="roleRepository" class="org.nuclos.client.statemodel.RoleRepository">
+		<property name="masterDataFacadeRemote" ref="masterDataService"/>
+	</bean>
+	<bean id="ruleDelegate" class="org.nuclos.client.rule.RuleDelegate">
+		<property name="ruleEngineFacadeRemote" ref="ruleEngineService"/>
+	</bean>
+	<bean id="ruleRepository" class="org.nuclos.client.statemodel.RuleRepository" lazy-init="true">
+		<property name="ruleEngineFacadeRemote" ref="ruleEngineService"/>
+	</bean>
+	<bean id="searchFilterDelegate" class="org.nuclos.client.searchfilter.SearchFilterDelegate">
+		<property name="searchFilterFacadeRemote" ref="searchFilterService"/>
+		<property name="springLocaleDelegate" ref="springLocaleDelegate"/>
+	</bean>
+	<bean id="stateDelegate" class="org.nuclos.client.statemodel.StateDelegate">
+		<property name="stateFacadeRemote" ref="stateService"/>
+	</bean>
+	<bean id="taskDelegate" class="org.nuclos.client.task.TaskDelegate">
+		<property name="taskFacadeRemote" ref="taskService"/>
+	</bean>
+	<bean id="tasklistDelegate" class="org.nuclos.client.tasklist.TasklistDelegate">
+		<property name="tasklistFacadeRemote" ref="tasklistService"/>
+	</bean>
+	<bean id="timelimitRuleDelegate" class="org.nuclos.client.rule.TimelimitRuleDelegate">
+		<property name="timelimitRuleFacadeRemote" ref="timelimitRuleService"/>
+	</bean>
+	<bean id="timelimitTaskDelegate" class="org.nuclos.client.timelimit.TimelimitTaskDelegate">
+		<property name="timelimitTaskFacadeRemote" ref="timelimitTaskService"/>
+	</bean>
+	<bean id="userDelegate" class="org.nuclos.client.masterdata.user.UserDelegate">
+		<property name="userFacadeRemote" ref="userService"/>
+	</bean>	
+	<bean id="webAccessPrefs" class="org.nuclos.client.common.prefs.WebAccessPrefs">
+		<property name="preferencesFacadeRemote" ref="preferencesService"/>
+	</bean>
+	<bean id="wikiDelegate" class="org.nuclos.client.masterdata.wiki.WikiDelegate">
+		<property name="WikiFacadeRemote" ref="wikiService"/>
+	</bean>
+	<bean id="workspaceUtils" class="org.nuclos.client.common.WorkspaceUtils">
+		<property name="preferencesFacadeRemote" ref="preferencesService"/>
+		<property name="mainFrame" value="#{mainFrameSpringComponent.mainFrame}"/>
+		<property name="restoreUtils" ref="restoreUtils"/>
+	</bean>
+	<bean id="restoreUtils" class="org.nuclos.client.main.mainframe.workspace.RestoreUtils">
+		<property name="preferencesFacadeRemote" ref="preferencesService"/>
+		<property name="preferencesMigration" ref="preferencesMigration"/>
+		<property name="mainFrameSpringComponent" ref="mainFrameSpringComponent"/>
+	</bean>
+	<bean id="xmlExportDelegate" class="org.nuclos.client.transfer.XmlExportDelegate">
+		<property name="xmlExportFacadeRemote" ref="xmlExportService"/>
+	</bean>
+	<bean id="xmlImportDelegate" class="org.nuclos.client.transfer.XmlImportDelegate">
+		<property name="xmlImportFacadeRemote" ref="xmlImportService"/>
+	</bean>
+	<bean id="preferencesMigration" class="org.nuclos.client.common.prefs.PreferencesMigration">
+		<property name="mainFrameSpringComponent" ref="mainFrameSpringComponent"/>
+	</bean>
+	<bean id="genericObjectLayoutCache" class="org.nuclos.client.genericobject.GenericObjectLayoutCache">
+		<property name="genericObjectMetaDataCache" ref="genericObjectMetaDataCache"/>
+	</bean>
+	
 </beans>

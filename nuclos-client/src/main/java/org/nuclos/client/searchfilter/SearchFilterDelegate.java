@@ -34,7 +34,6 @@ import org.nuclos.common.collect.collectable.searchcondition.visit.PutSearchCond
 import org.nuclos.common.dal.vo.SystemFields;
 import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.PreferencesUtils;
-import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.common2.exception.CommonStaleVersionException;
@@ -73,34 +72,43 @@ public class SearchFilterDelegate {
 	 */
 	private static final String PREFS_NODE_SORTINGCOLUMNS = "sortingColumns";
 	
-	private SpringLocaleDelegate localeDelegate = SpringLocaleDelegate.getInstance();
+	private static SearchFilterDelegate INSTANCE;
+	
+	//
+	
+	// Spring injection
 
-	private static SearchFilterDelegate singleton;
+	private SpringLocaleDelegate localeDelegate;
 
-	private final SearchFilterFacadeRemote facade;
+	private SearchFilterFacadeRemote searchFilterFacadeRemote;
+	
+	// end of Spring injection
 
-	private SearchFilterDelegate() {
-		try {
-			this.facade = ServiceLocator.getInstance().getFacade(SearchFilterFacadeRemote.class);
-		}
-		catch (RuntimeException e) {
-			throw new NuclosFatalException(e);
-		}
+	SearchFilterDelegate() {
+		INSTANCE = this;
+	}
+	
+	public final void setSearchFilterFacadeRemote(SearchFilterFacadeRemote searchFilterFacadeRemote) {
+		this.searchFilterFacadeRemote = searchFilterFacadeRemote;
+	}
+	
+	public final void setSpringLocaleDelegate(SpringLocaleDelegate springLocaleDelegate) {
+		this.localeDelegate = springLocaleDelegate;
 	}
 
 	/**
 	 * @return the one (and only) instance of SearchFilterDelegate
 	 */
-	public static synchronized SearchFilterDelegate getInstance() {
-		if (singleton == null) {
-			singleton = new SearchFilterDelegate();
+	public static SearchFilterDelegate getInstance() {
+		if (INSTANCE == null) {
+			throw new IllegalStateException("too early");
 		}
-		return singleton;
+		return INSTANCE;
 	}
 
 	public Object update(String sEntityName, MasterDataVO mdvo, DependantMasterDataMap mpDependants, List<TranslationVO> resources) throws CommonBusinessException {
 		try {
-			return this.facade.modify(sEntityName, mdvo, mpDependants, resources);
+			return this.searchFilterFacadeRemote.modify(sEntityName, mdvo, mpDependants, resources);
 		}
 		catch (RuntimeException ex) {
 			throw new CommonFatalException(ex);
@@ -113,7 +121,7 @@ public class SearchFilterDelegate {
 	 */
 	public void insertSearchFilter(SearchFilter filter) {
 		try {
-			SearchFilter searchFilter = makeSearchFilter(facade.createSearchFilter(insertOrUpdateFilter(filter).getSearchFilterVO()));
+			SearchFilter searchFilter = makeSearchFilter(searchFilterFacadeRemote.createSearchFilter(insertOrUpdateFilter(filter).getSearchFilterVO()));
 			SearchFilterCache.getInstance().addFilter(searchFilter);
 		}
 		catch (Exception e) {
@@ -139,7 +147,7 @@ public class SearchFilterDelegate {
 		assert newFilter.getSearchFilterVO().getFilterPrefs() != null;
 
 		try {
-			SearchFilter searchFilter = makeSearchFilter(facade.modifySearchFilter(insertOrUpdateFilter(newFilter).getSearchFilterVO()));
+			SearchFilter searchFilter = makeSearchFilter(searchFilterFacadeRemote.modifySearchFilter(insertOrUpdateFilter(newFilter).getSearchFilterVO()));
 			SearchFilterCache.getInstance().removeFilter(sOldFilterName, sOwner);
 			SearchFilterCache.getInstance().addFilter(searchFilter);
 		}
@@ -201,7 +209,7 @@ public class SearchFilterDelegate {
 		}
 
 		try {
-			facade.removeSearchFilter(filter.getSearchFilterVO());
+			searchFilterFacadeRemote.removeSearchFilter(filter.getSearchFilterVO());
 			SearchFilterCache.getInstance().removeFilter(filter);
 		}
 		catch (CommonStaleVersionException e) {
@@ -224,7 +232,7 @@ public class SearchFilterDelegate {
 		Collection<SearchFilter> collSearchFilter = new ArrayList<SearchFilter>();
 
 		try {
-			for (SearchFilterVO filterVO : facade.getAllSearchFilterByUser(sUser)) {
+			for (SearchFilterVO filterVO : searchFilterFacadeRemote.getAllSearchFilterByUser(sUser)) {
 				try {
 					SearchFilter sf = makeSearchFilter(filterVO);
 					if (sf != null)
@@ -310,7 +318,7 @@ public class SearchFilterDelegate {
 	}
 
 	public List<TranslationVO> getResources(Integer id) throws CommonBusinessException {
-		return facade.getResources(id);
+		return searchFilterFacadeRemote.getResources(id);
 	}
 	
 }

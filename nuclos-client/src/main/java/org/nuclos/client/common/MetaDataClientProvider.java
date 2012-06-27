@@ -33,11 +33,7 @@ import org.apache.log4j.Logger;
 import org.nuclos.client.datasource.DatasourceDelegate;
 import org.nuclos.client.jms.TopicNotificationReceiver;
 import org.nuclos.client.masterdata.MetaDataDelegate;
-import org.nuclos.common.CommonMetaDataClientProvider;
-import org.nuclos.common.JMSConstants;
-import org.nuclos.common.MetaDataProvider;
-import org.nuclos.common.NuclosEntity;
-import org.nuclos.common.NuclosFatalException;
+import org.nuclos.common.*;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.dal.util.DalTransformations;
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
@@ -71,7 +67,7 @@ public class MetaDataClientProvider implements MetaDataProvider<EntityMetaDataVO
 	
 	private TopicNotificationReceiver tnr;
 
-	MetaDataClientProvider(){
+	MetaDataClientProvider() {
 		INSTANCE = this;
 	}
 
@@ -88,7 +84,9 @@ public class MetaDataClientProvider implements MetaDataProvider<EntityMetaDataVO
 
 	public static MetaDataClientProvider getInstance() {
 		if (INSTANCE == null) {
-			throw new IllegalStateException("too early");
+			// throw new IllegalStateException("too early");
+			// lazy support
+			SpringApplicationContextHolder.getBean(MetaDataClientProvider.class);
 		}
 		return INSTANCE;
 	}

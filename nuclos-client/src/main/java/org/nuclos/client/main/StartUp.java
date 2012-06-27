@@ -67,7 +67,6 @@ import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.collection.Pair;
 import org.nuclos.common.startup.Startup;
 import org.nuclos.common2.LangUtils;
-import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonFatalException;
@@ -191,7 +190,7 @@ public class StartUp  {
 			public void run() {
 				try {
 					// Time zone stuff
-			        final ServerMetaFacadeRemote sm = ServiceLocator.getInstance().getFacade(ServerMetaFacadeRemote.class);
+			        final ServerMetaFacadeRemote sm = startupContext.getBean(ServerMetaFacadeRemote.class);
 			        final TimeZone serverDefaultTimeZone = sm.getServerDefaultTimeZone();
 			        final StringBuilder msg = new StringBuilder(); 
 			        msg.append("Default local  time zone is: ").append(TimeZone.getDefault().getID()).append("\n");
@@ -393,7 +392,7 @@ public class StartUp  {
 		try {
 			// perform login:
 			final LoginController ctlLogin = new LoginController(null, this.args, clientContextCondition);
-			ctlLogin.setLocaleDelegate(startupContext.getBean(LocaleDelegate.class));
+			// ctlLogin.setLocaleDelegate(startupContext.getBean(LocaleDelegate.class));
 			final Main main = new Main();
 
 			ctlLogin.addLoginListener(new LoginListener() {
@@ -612,7 +611,6 @@ public class StartUp  {
 
 	private void setupLookAndFeel() {
 		try {
-			// ServerMetaFacadeRemote sm = ServiceLocator.getInstance().getFacade(ServerMetaFacadeRemote.class);
 			ServerMetaFacadeRemote sm = (ServerMetaFacadeRemote) startupContext.getBean("serverMetaService");
 			String defaultNuclosTheme = sm.getDefaultNuclosTheme();
 			NuclosSyntheticaUtils.setLookAndFeel(defaultNuclosTheme);

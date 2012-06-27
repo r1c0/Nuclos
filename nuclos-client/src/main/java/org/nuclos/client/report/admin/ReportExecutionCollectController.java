@@ -50,8 +50,8 @@ import org.nuclos.client.ui.collect.CollectStateConstants;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.ParameterProvider;
+import org.nuclos.common.SpringApplicationContextHolder;
 import org.nuclos.common2.KeyEnum;
-import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
@@ -60,6 +60,7 @@ import org.nuclos.server.report.ejb3.ReportFacadeRemote;
 import org.nuclos.server.report.valueobject.ReportOutputVO;
 import org.nuclos.server.report.valueobject.ReportVO;
 import org.nuclos.server.report.valueobject.ReportVO.OutputType;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * <code>MasterDataCollectController</code> for entity "reportExecution".
@@ -88,6 +89,11 @@ public class ReportExecutionCollectController extends MasterDataCollectControlle
 
 	private static String sLastGeneratedFileName = null;
 
+	// Spring injection
+	
+	private ReportFacadeRemote reportFacadeRemote;
+	
+	// end of Spring injection
 
 	/**
 	 * You should use {@link org.nuclos.client.ui.collect.CollectControllerFactorySingleton} 
@@ -102,6 +108,11 @@ public class ReportExecutionCollectController extends MasterDataCollectControlle
 		super(NuclosEntity.REPORTEXECUTION, tabIfAny);
 		setupResultToolBar();
 		setExecuteState();
+	}
+	
+	@Autowired
+	final void setReportFacadeRemote(ReportFacadeRemote reportFacadeRemote) {
+		this.reportFacadeRemote = reportFacadeRemote;
 	}
 
 	@Override
@@ -192,10 +203,9 @@ public class ReportExecutionCollectController extends MasterDataCollectControlle
 		
 		UIUtils.showWaitCursorForFrame(parent, true);
 		try {
-			final ReportFacadeRemote facade =ServiceLocator.getInstance().getFacade(ReportFacadeRemote.class);
-			
 			if (mdReport != null) {
-				final Collection<ReportOutputVO> collFormats = facade.getReportOutputs((Integer) mdReport.getId());
+				final ReportFacadeRemote reportFacadeRemote = SpringApplicationContextHolder.getBean(ReportFacadeRemote.class);
+				final Collection<ReportOutputVO> collFormats = reportFacadeRemote.getReportOutputs((Integer) mdReport.getId());
 				OutputType outputType = KeyEnum.Utils.findEnum(OutputType.class, mdReport.getField("outputtype", String.class));
 				
 				if (outputType == ReportVO.OutputType.SINGLE) {
