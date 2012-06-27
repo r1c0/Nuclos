@@ -186,14 +186,33 @@ public class PreferencesFacadeBean extends NuclosFacadeBean implements Preferenc
 	public Collection<WorkspaceVO> getWorkspaceHeaderOnly() {
 		List<WorkspaceVO> result = new ArrayList<WorkspaceVO>();
 		List<WorkspaceVO> lstAssignedByRole = getWorkspaceProcessor().getByAssignedByRole(getCurrentUserName());
+		List<WorkspaceVO> lstToRemove = new ArrayList<WorkspaceVO>();
+		boolean isAssigner = SecurityCache.getInstance().getAllowedActions(getCurrentUserName()).contains(Actions.ACTION_WORKSPACE_ASSIGN);
 		for (WorkspaceVO wsvo : getWorkspaceProcessor().getByUser(getCurrentUserName())) {
-			if (!SecurityCache.getInstance().getAllowedActions(getCurrentUserName()).contains(Actions.ACTION_WORKSPACE_ASSIGN)) {
-				for (WorkspaceVO wsvoAssigned : lstAssignedByRole) {
-					if (wsvo.getAssignedWorkspace() == null || wsvo.getAssignedWorkspace().equals(wsvoAssigned.getId()))
+			if (isAssigner) {
+				result.add(wsvo); 
+			} else {
+				if (wsvo.getAssignedWorkspace() == null) {
+					result.add(wsvo);
+				} else {
+					boolean assigned = false;
+					for (WorkspaceVO wsvoAssigned : lstAssignedByRole) {
+						if (wsvo.getAssignedWorkspace().equals(wsvoAssigned.getId())) {
+							assigned = true;
+							break;
+						}
+					}
+					if (assigned) {
 						result.add(wsvo);
+					} else {
+						lstToRemove.add(wsvo);
+					}
 				}
-			} else
-				result.add(wsvo);
+			} 				
+		}
+		
+		for (WorkspaceVO wovo : lstToRemove) {
+			getWorkspaceProcessor().delete(wovo.getId());
 		}
 		
 		List<WorkspaceVO> newAssigned = getWorkspaceProcessor().getNewAssigned(getCurrentUserName());
