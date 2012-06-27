@@ -38,6 +38,7 @@ import javax.swing.table.TableColumnModel;
 
 import org.nuclos.client.common.security.SecurityCache;
 import org.nuclos.client.main.mainframe.MainFrame;
+import org.nuclos.client.ui.table.SortableTableModel;
 import org.nuclos.common.Actions;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Predicate;
@@ -66,10 +67,17 @@ public class TaskViewTableHeader extends JTableHeader {
 			public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
 				final Component comp = tcrDefault.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
 				
+				if (table == null) {
+					// may be during close?
+					return comp;
+				}
+				
 				if(comp instanceof JLabel) {
 					final JLabel jlabel = (JLabel) comp;
 					List<? extends SortKey> sortKeys = null;
-					if (table.getRowSorter() != null) {
+					if (table.getModel() instanceof SortableTableModel) {
+						sortKeys = ((SortableTableModel) table.getModel()).getSortKeys();
+					} else if (table.getRowSorter() != null) {
 						sortKeys = table.getRowSorter().getSortKeys();
 					}
 					sortKeys = CollectionUtils.applyFilter(sortKeys, new Predicate<SortKey>() {
