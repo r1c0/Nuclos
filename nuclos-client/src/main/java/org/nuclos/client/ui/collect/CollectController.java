@@ -59,6 +59,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.KeyStroke;
+import javax.swing.ListSelectionModel;
 import javax.swing.RowSorter.SortKey;
 import javax.swing.SwingUtilities;
 import javax.swing.event.ChangeEvent;
@@ -1503,7 +1504,8 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 		};
 
 		getResultPanel().addDoubleClickMouseListener(foreignKeyMouseListenerForTableDoubleClick);
-
+		getResultTable().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		
 		getResultTable().getActionMap().put(KeyBindingProvider.EDIT_2.getKey(), new AbstractAction() {
 
 			@Override
