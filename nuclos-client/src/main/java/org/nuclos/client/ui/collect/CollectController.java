@@ -1504,7 +1504,8 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 		};
 
 		getResultPanel().addDoubleClickMouseListener(foreignKeyMouseListenerForTableDoubleClick);
-		getResultTable().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		// @see NUCLOS-432
+		//getResultTable().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		
 		getResultTable().getActionMap().put(KeyBindingProvider.EDIT_2.getKey(), new AbstractAction() {
 
