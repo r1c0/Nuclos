@@ -38,8 +38,6 @@ import org.nuclos.server.common.ejb3.SecurityFacadeRemote;
 import org.nuclos.server.common.ejb3.TaskFacadeBean;
 import org.nuclos.server.common.ejb3.TaskFacadeLocal;
 import org.nuclos.server.common.ejb3.TaskFacadeRemote;
-import org.nuclos.server.common.ejb3.TestFacadeBean;
-import org.nuclos.server.common.ejb3.TestFacadeRemote;
 import org.nuclos.server.common.ejb3.TimelimitTaskFacadeBean;
 import org.nuclos.server.common.ejb3.TimelimitTaskFacadeLocal;
 import org.nuclos.server.common.ejb3.TimelimitTaskFacadeRemote;
@@ -187,10 +185,6 @@ class FacadeConstraints {
 	
 	@SuppressWarnings("unused")
 	private final class SecurityFacadeConstraints extends SecurityFacadeBean implements SecurityFacadeLocal, SecurityFacadeRemote {
-	}
-	
-	@SuppressWarnings("unused")
-	private final class TestFacadeConstraints extends TestFacadeBean implements TestFacadeRemote {
 	}
 	
 	@SuppressWarnings("unused")
