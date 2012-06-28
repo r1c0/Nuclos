@@ -104,8 +104,8 @@ public class NuclosRemoteServerSession {
 			if (sessionId != null) {
 				securityFacadeRemote.logout(sessionId);
 				SecurityContextHolder.getContext().setAuthentication(null);
-				sessionId = null;
 				LOG.info("Logged out, session terminated " + sessionId);
+				sessionId = null;
 			}
 		}
 		catch(Exception e) {

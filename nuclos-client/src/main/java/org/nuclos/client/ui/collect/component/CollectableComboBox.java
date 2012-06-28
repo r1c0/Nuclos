@@ -514,83 +514,46 @@ public class CollectableComboBox extends LabeledCollectableComponentWithVLP impl
 			removeAdditionalEntry();
 		}
 
-		final Color colorOldForeground = getJComboBox().getForeground();
+		final Long vid = IdUtils.toLongId(clctfValue.getValueId());
+		final JComboBox cb = getJComboBox();
+		final DefaultComboBoxModel cbm = getDefaultComboBoxModel();
+		final Color colorOldForeground = cb.getForeground();
 		Color colorNewForeground = null;
 
-		int iIndex = getDefaultComboBoxModel().getIndexOf(clctfValue);
+		int iIndex = cbm.getIndexOf(clctfValue);
 		// If the value could not be found, it might be the mnemonic, so look for the value id
 		if(iIndex < 0 && clctfValue.isIdField() && clctfValue.getValueId() != null) {
-			for(int i=0; i < getDefaultComboBoxModel().getSize(); i++) {
-				CollectableField cf = (CollectableField) getDefaultComboBoxModel().getElementAt(i);
-				Long valueId = null;
-				if(cf.getValueId() instanceof Integer) {
-					valueId =  new Long((Integer)cf.getValueId());
-				}
-				else {
-					valueId = (Long) cf.getValueId();
-				}
-				if (clctfValue.getValueId() instanceof Integer && clctfValue.getValueId() != null) {
-					if(LangUtils.equals(((Integer)clctfValue.getValueId()).longValue(), valueId)) {
-						iIndex = i;
-						break;
-					}
-				} else {
-					if(clctfValue.getValueId().equals(valueId)) {
-						iIndex = i;
-						break;
-					}
+			for(int i=0; i < cbm.getSize(); i++) {
+				final CollectableField cf = (CollectableField) cbm.getElementAt(i);
+				final Long valueId = IdUtils.toLongId(cf.getValueId());
+				if(LangUtils.equals(vid, valueId)) {
+					iIndex = i;
+					break;
 				}
 			}
 		}
 		if (iIndex >= 0) {
-			getJComboBox().setSelectedIndex(iIndex);
+			cb.setSelectedIndex(iIndex);
 			// Note that setSelectedItem doesn't work here, as clctf might have no label.
 		}
 		else {
 			assert iIndex == -1;
 
-			// Do not warn here! Values are lazy loaded and in some special cases a combobox for non referencing fields is used.
-			// issue warning:
-//			final StringBuilder sbWarning = new StringBuilder("Wert in Dropdownliste nicht gefunden: " + clctfValue);
-			Object oValueId = null;
+			Long oValueId = null;
 			if (clctfValue.isIdField()) {
-				oValueId = clctfValue.getValueId();
+				oValueId = vid;
 				// sbWarning.append(" (Id: ").append(oValueId).append(")");
-//				sbWarning.append(" (Id: ");
-//				sbWarning.append(oValueId);
-//				sbWarning.append(", ");
-//				sbWarning.append(clctfValue.toDescription());
-//				sbWarning.append(")");
 			}
-//			LOG.warn(sbWarning.toString());
 
-			if (isInsertable() && (oValueId == null) && (clctfValue.getValue() != null)) {
+			if (isInsertable() && (oValueId == null) && (vid != null)) {
 				final String sText = clctfValue.toString();
-				getJComboBox().setSelectedItem(sText);
-				// getJComboBox().getEditor().setItem(sText);
+				cb.setSelectedItem(sText);
 			}
 			else {
 				addAdditionalEntry(clctfValue);
-// NUCLOS-82	colorNewForeground = Color.RED;
-				getJComboBox().setSelectedIndex(getDefaultComboBoxModel().getIndexOf(clctfValue));
+				cb.setSelectedIndex(cbm.getIndexOf(clctfValue));
 			}
 		}
-
-// NUCLOS-82
-//		if (!LangUtils.equals(colorNewForeground, colorOldForeground)) {
-//			getJComboBox().setForeground(colorNewForeground);
-//			adjustAppearance();
-//		}
-
-		/** @todo maybe we can introduce this postcondition now? That would be very nice. :) */
-		// Note: That postcondition worked until we allowed searchable comboboxes.
-//		assert isConsistent();
-
-		// Old comment:
-		// Note that <code>isConsistent()</code> is not a postcondition here, because this
-		// cannot be guaranteed in general. For example, one may set the <code>collectableField</code> for
-		// a <code>CollectableComboBox</code> that doesn't contain this value in its list of possible values.
-		// In those cases, the view is not consistent with the model.
 	}
 
 	private boolean hasAdditionalEntry() {

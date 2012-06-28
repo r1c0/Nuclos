@@ -143,6 +143,10 @@ public class StartUp  {
 		
 	}
 	
+	private static final String[] CLIENT_SPRING_BEANS = new String[] {
+		"META-INF/nuclos/client-beans.xml"
+	};
+	
 	//
 
 	private final String[] args;
@@ -178,7 +182,7 @@ public class StartUp  {
 		final ClassLoader cl = this.getClass().getClassLoader();
 
 		startupContext = new ClassPathXmlApplicationContext(
-				new String[] { "classpath:META-INF/nuclos/client-beans-startup.xml" }, false);
+				new String[] { "META-INF/nuclos/client-beans-startup.xml" }, false);
 		// see http://fitw.wordpress.com/2009/03/14/web-start-and-spring/ why this is needed (tp)
 		startupContext.setClassLoader(cl);
 		startupContext.refresh();
@@ -203,8 +207,7 @@ public class StartUp  {
 					LOG.info(msg);
 					
 					// Scanning context
-					final String xmlBeanDefs = "classpath*:META-INF/nuclos/**/*-beans.xml";
-					clientContext = new ClassPathXmlApplicationContext(new String[] { xmlBeanDefs }, false, startupContext);
+					clientContext = new ClassPathXmlApplicationContext(CLIENT_SPRING_BEANS, false, startupContext);
 					// see http://fitw.wordpress.com/2009/03/14/web-start-and-spring/ why this is needed (tp)
 					clientContext.addApplicationListener(refreshListener);
 					clientContext.setClassLoader(cl);
@@ -213,15 +216,16 @@ public class StartUp  {
 					clientContext.registerShutdownHook();
 					
 					Thread.yield();
-					final Resource[] xmlBeanRes = clientContext.getResources(xmlBeanDefs);
-					log.info("loading bean definitions from the following files: " + Arrays.asList(xmlBeanRes));
 					log.info("@NucletComponents within spring context: " + clientContext.getBeansWithAnnotation(NucletComponent.class));
 
 					Thread.yield();
-					final Resource[] themes = clientContext.getResources("classpath*:META-INF/nuclos/**/*-theme.properties");
+					final Resource[] themes = clientContext.getResources("classpath:META-INF/nuclos/nuclos-theme.properties");
 					log.info("loading themes properties from the following files: " + Arrays.asList(themes));
 
 					for (Resource r : themes) {
+						if (!r.exists()) {
+							continue;
+						}
 						Properties p = new Properties();
 						p.load(r.getInputStream());
 
