@@ -433,11 +433,12 @@ public class GenericObjectTaskController extends RefreshableTaskController {
 		}
 
 		// create a new table model:
-		SortableCollectableTableModel<Collectable> tblmdl = genericObjectTaskView.newResultTableModel(filter, lstclct);
+		this.mpTaskViews.get(filter.getId()).getJTable().setModel(this.mpTaskViews.get(filter.getId()).newResultTableModel(filter, lstclct));
+		/*SortableCollectableTableModel<Collectable> tblmdl = genericObjectTaskView.newResultTableModel(filter, lstclct);
 		genericObjectTaskView.getJTable().setModel(tblmdl);
 //		genericObjectTaskView.getTable().setTableHeader(new ToolTipsTableHeader(genericObjectTaskView.getTable().getColumnModel()));
 		TableUtils.addMouseListenerForSortingToTableHeader(genericObjectTaskView.getTable(), tblmdl);
-		
+		*/
 		//TableUtils.setOptimalColumnWidths(this.mpTaskViews.get(filter.getId()).getJTable());
 		TaskController.setColumnWidths(genericObjectTaskView.readColumnWidthsFromPreferences(), genericObjectTaskView.getJTable());
 		
