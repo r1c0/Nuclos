@@ -16,6 +16,7 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.security;
 
+import javax.annotation.PreDestroy;
 import org.apache.log4j.Logger;
 import org.nuclos.client.common.security.SecurityCache;
 import org.nuclos.common.SpringApplicationContextHolder;
@@ -41,7 +42,7 @@ public class NuclosRemoteServerSession {
 	
 	// end of Spring injection
 
-	private Integer sessionId;
+	private volatile Integer sessionId;
 
 	NuclosRemoteServerSession() {
 		INSTANCE = this;
@@ -80,7 +81,7 @@ public class NuclosRemoteServerSession {
 			UsernamePasswordAuthenticationToken auth = (UsernamePasswordAuthenticationToken) am.authenticate(new UsernamePasswordAuthenticationToken(username, new String(password)));
 			auth = new UsernamePasswordAuthenticationToken(auth.getPrincipal(), password, auth.getAuthorities());
 			SecurityContextHolder.getContext().setAuthentication(auth);
-			LOG.info("Validated login.");
+			LOG.info("Validated login of " + username + " session=" + sessionId);
 			SecurityCache.getInstance().revalidate();
 		}
 		catch (AuthenticationException ex) {
@@ -97,11 +98,15 @@ public class NuclosRemoteServerSession {
 		return auth;
 	}
 
+	@PreDestroy
 	public void logout() {
 		try {
-			securityFacadeRemote.logout(sessionId);
-			SecurityContextHolder.getContext().setAuthentication(null);
-			LOG.info("Logged out.");
+			if (sessionId != null) {
+				securityFacadeRemote.logout(sessionId);
+				SecurityContextHolder.getContext().setAuthentication(null);
+				sessionId = null;
+				LOG.info("Logged out, session terminated " + sessionId);
+			}
 		}
 		catch(Exception e) {
 			LOG.error("logout failed: " + e, e);

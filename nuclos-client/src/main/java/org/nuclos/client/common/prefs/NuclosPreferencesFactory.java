@@ -63,7 +63,10 @@ public class NuclosPreferencesFactory implements PreferencesFactory {
 	// end of Spring injection
 	
 	private Preferences prefsUser;
+	
 	private Preferences prefsSystem;
+	
+	private Flush flush;
 
 	public NuclosPreferencesFactory() {
 		// do nothing here
@@ -98,7 +101,8 @@ public class NuclosPreferencesFactory implements PreferencesFactory {
 	public synchronized Preferences userRoot() {
 		if (this.prefsUser == null) {
 
-			final String sErrorMsg = SpringLocaleDelegate.getInstance().getMessage("NuclosPreferencesFactory.1", "Die Benutzereinstellungen konnten nicht geladen werden.");
+			final String sErrorMsg = SpringLocaleDelegate.getInstance().getMessage(
+					"NuclosPreferencesFactory.1", "Die Benutzereinstellungen konnten nicht geladen werden.");
 
 //			try {
 			PreferencesVO prefsvo;
@@ -131,7 +135,8 @@ public class NuclosPreferencesFactory implements PreferencesFactory {
 				}
 			}
 			// register shutdown action: sync at system exit:
-			ShutdownActions.getInstance().registerShutdownAction(ShutdownActions.SHUTDOWNORDER_SAVEPREFERENCES, new Flush(this.prefsUser));
+			flush = new Flush(this.prefsUser);
+			ShutdownActions.getInstance().registerShutdownAction(ShutdownActions.SHUTDOWNORDER_SAVEPREFERENCES, flush);
 		}	// if
 
 		assert this.prefsUser != null;
@@ -150,6 +155,7 @@ public class NuclosPreferencesFactory implements PreferencesFactory {
 		public void run() {
 			try {
 				prefsUser.flush();
+				LOG.info("saved user prerferences");
 			}
 			catch (BackingStoreException ex) {
 				throw new NuclosFatalException(SpringLocaleDelegate.getInstance().getMessage(

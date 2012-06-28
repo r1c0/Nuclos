@@ -70,7 +70,21 @@ public class NuclosHttpInvokerAttributeContext implements DisposableBean {
 	}
 
 	public boolean isSupported() {
-		return supported.get() != null ? (boolean) supported.get() : false;
+		final boolean result;
+		// bean has already been destroyed.
+		if (supported == null) {
+			result = false;
+		}
+		else {
+			final Boolean b = supported.get();
+			if (b == null) {
+				result = false;
+			}
+			else {
+				result = b.booleanValue();
+			}
+		}
+		return result;
 	}
 	
 	// @PreDestroy

@@ -120,6 +120,7 @@
 	</bean>
 	<bean id="topicNotificationReceiver" class="org.nuclos.client.jms.TopicNotificationReceiver">
 		<property name="connectionFactory" ref="jmsFactory"/>
+		<property name="shutdownActions" ref="shutdownActions"/>
 	</bean>
 	<bean id="metaDataDelegate" class="org.nuclos.client.masterdata.MetaDataDelegate">
 		<property name="masterDataFacadeRemote" ref="masterDataService"/>
@@ -184,6 +185,8 @@
 	</bean>
 	<bean id="errors" class="org.nuclos.client.ui.Errors">
 		<property name="nuclosRemoteServerSession" ref="nuclosRemoteServerSession"/>
+	</bean>
+	<bean id="shutdownActions" class="org.nuclos.client.common.ShutdownActions" depends-on="preferencesService">
 	</bean>
 
 	<!-- Avoid scanning for nuclos-common -->

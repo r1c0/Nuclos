@@ -255,7 +255,12 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 			public void hierarchyChanged(HierarchyEvent e) {
 				++count;
 				if ((e.getChangeFlags() & HierarchyEvent.SHOWING_CHANGED) != 0) {
-					LOG.info("SHOW MAIN FRAME: hierarchy changed " + count + ": " + e);
+					if (e.getChanged().isShowing()) {
+						LOG.info("SHOW MAIN FRAME: hierarchy changed " + count + ": " + e);
+					}
+					else {
+						LOG.info("HIDE MAIN FRAME: hierarchy changed " + count + ": " + e);						
+					}
 				}
 				if (count > 20) {
 					removeHierarchyListener(this);

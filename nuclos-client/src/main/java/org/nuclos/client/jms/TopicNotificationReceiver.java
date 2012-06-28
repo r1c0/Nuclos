@@ -21,6 +21,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.jms.ConnectionFactory;
 import javax.jms.JMSException;
 import javax.jms.Message;
@@ -69,9 +70,15 @@ public class TopicNotificationReceiver implements InitializingBean {
 	
 	private List<TopicInfo> infos = new ArrayList<TopicInfo>();
 	
+	// Spring injection
+	
 	// private SpringLocaleDelegate cld;
 	
 	private ConnectionFactory jmsFactory;
+	
+	private ShutdownActions shutdownActions;
+	
+	// end of Spring injection
 
 	/**
 	 * list that holds all registered listeners for this topic receiver
@@ -89,7 +96,7 @@ public class TopicNotificationReceiver implements InitializingBean {
 			topicconn = (TopicConnection) jmsFactory.createConnection();
 
 
-			ShutdownActions.getInstance().registerShutdownAction(ShutdownActions.SHUTDOWNORDER_JMS_TOPICS,
+			shutdownActions.registerShutdownAction(ShutdownActions.SHUTDOWNORDER_JMS_TOPICS,
 				new Thread() {
 				@Override
 				public void run() {
@@ -129,6 +136,11 @@ public class TopicNotificationReceiver implements InitializingBean {
 	// @Autowired
 	public final void setSpringLocaleDelegate(SpringLocaleDelegate cld) {
 		// this.cld = cld;
+	}
+	
+	// @Autowired
+	public final void setShutdownActions(ShutdownActions shutdownActions) {
+		this.shutdownActions = shutdownActions;
 	}
 	
 	public static TopicNotificationReceiver getInstance() {
@@ -179,12 +191,12 @@ public class TopicNotificationReceiver implements InitializingBean {
 
 				@Override
 				public void run() {
-					for (TopicInfo i : copy) {
-						WeakReferenceMessageListener weakrefmsglistener = new WeakReferenceMessageListener(i);
-						weakrefmsglistener.subscribe();
-						weakmessagelistener.add(weakrefmsglistener);
-					}
 					synchronized (TopicNotificationReceiver.this) {
+						for (TopicInfo i : copy) {
+							WeakReferenceMessageListener weakrefmsglistener = new WeakReferenceMessageListener(i);
+							weakrefmsglistener.subscribe();
+							weakmessagelistener.add(weakrefmsglistener);
+						}
 						deferredSubscribe = false;
 					}
 				}
@@ -206,18 +218,20 @@ public class TopicNotificationReceiver implements InitializingBean {
 	/**
 	 * unsubscribes all registered JMS topics
 	 */
-	private void unsubscribeAll() {
+	@PreDestroy
+	synchronized void unsubscribeAll() {
 		List<WeakReferenceMessageListener> tmp = new LinkedList<WeakReferenceMessageListener>(weakmessagelistener);
 		for (WeakReferenceMessageListener ref : tmp) {
 			unsubscribe(ref.getReference().get());
 		}
+		weakmessagelistener.clear();
 	}
 
 	/**
 	 * unsubscribes the given <code>MessageListener<code> from the topic receiver
 	 * @param messagelistener
 	 */
-	public void unsubscribe(MessageListener messagelistener) {
+	public synchronized void unsubscribe(MessageListener messagelistener) {
 		List<WeakReferenceMessageListener> tmp = new LinkedList<WeakReferenceMessageListener>(weakmessagelistener);
 		for (WeakReferenceMessageListener ref : tmp) {
 			if (ref.getReference().get() == messagelistener) {

@@ -20,6 +20,8 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.DisposableBean;
+import org.springframework.stereotype.Component;
 
 /**
  * Handler for shutdown actions.
@@ -31,12 +33,15 @@ import org.apache.log4j.Logger;
  *
  * @author	<a href="mailto:Christoph.Radig@novabit.de">Christoph.Radig</a>
  * @version 01.00.00
+ * 
+ * @deprecated Consider using Spring lifecycle (@PreDestroy) as an alternative for this. (tp)
  */
-public class ShutdownActions {
+// @Component
+public class ShutdownActions implements DisposableBean {
 	
 	private static final Logger LOG = Logger.getLogger(ShutdownActions.class);
 
-	private static ShutdownActions singleton;
+	private static ShutdownActions INSTANCE;
 
 	/**
 	 * shutdown order: unsubscribe jms queues
@@ -55,21 +60,26 @@ public class ShutdownActions {
 	 * shutdown order: logout - this should be the last action
 	 */
 	public static final int SHUTDOWNORDER_LOGOUT = 100;
+	
+	//
 
 	/**
 	 * SortedMap<Integer, Runnable>: contains <code>Runnable</code>s to be executed on system shutdown in the given order.
 	 */
 	private final SortedMap<Integer, Runnable> mpShutdownActions = new TreeMap<Integer, Runnable>();
+	
+	private final Runnable runnableHook;
 
-	private ShutdownActions() {
-		this.registerShutdownHook();
+	ShutdownActions() {
+		runnableHook = registerShutdownHook();
+		INSTANCE = this;
 	}
 
-	public static synchronized ShutdownActions getInstance() {
-		if (singleton == null) {
-			singleton = new ShutdownActions();
+	public static ShutdownActions getInstance() {
+		if (INSTANCE == null) {
+			throw new IllegalStateException("too early");
 		}
-		return singleton;
+		return INSTANCE;
 	}
 
 	/**
@@ -89,30 +99,36 @@ public class ShutdownActions {
 	 * registers the shutdown hook that executes the shutdown actions registered with <code>registerShutdownAction</code>
 	 * in the order given there.
 	 */
-	private void registerShutdownHook() {
-		final Runnable runnableHook = new Runnable() {
+	private final Runnable registerShutdownHook() {
+		return new Runnable() {
 			@Override
 			public void run() {
-				for (Integer iOrder : mpShutdownActions.keySet()) {
-					final Runnable runnable = mpShutdownActions.get(iOrder);
-					try {
-						runnable.run();
-					}
-					catch (Exception ex) {
-						// Ok! (tp)
-						// Note that we don't use log4j here because we're somewhat paranoid:
-						System.err.print("Exception occured in shutdown hook: ");
-						ex.printStackTrace();
-						LOG.debug("Runnable " + runnable + " failed in shutdown hook", ex);
+				synchronized (ShutdownActions.this) {
+					for (Integer iOrder : mpShutdownActions.keySet()) {
+						final Runnable runnable = mpShutdownActions.get(iOrder);
+						try {
+							runnable.run();
+						}
+						catch (Exception ex) {
+							// Ok! (tp)
+							// Note that we don't use log4j here because we're somewhat paranoid:
+							System.err.print("Exception occured in shutdown hook: ");
+							ex.printStackTrace();
+							LOG.debug("Runnable " + runnable + " failed in shutdown hook", ex);
+						}
 					}
 				}
 			}
 		};
-		Runtime.getRuntime().addShutdownHook(new Thread(runnableHook, "ShutdownActions.registerShutdown"));
+		// Runtime.getRuntime().addShutdownHook(new Thread(runnableHook, "ShutdownActions.registerShutdown"));
 	}
 
 	public synchronized boolean isRegistered(int iOrder) {
 		return this.mpShutdownActions.containsKey(iOrder);
+	}
+
+	public void destroy() throws Exception {
+		runnableHook.run();
 	}
 
 }	// class ShutdownActions

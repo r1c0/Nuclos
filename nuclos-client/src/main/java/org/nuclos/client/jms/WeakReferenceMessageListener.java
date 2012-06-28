@@ -18,6 +18,9 @@ package org.nuclos.client.jms;
 
 import java.lang.ref.WeakReference;
 import java.text.MessageFormat;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 import javax.jms.Message;
 import javax.jms.MessageListener;
@@ -45,15 +48,21 @@ class WeakReferenceMessageListener implements MessageListener {
 	
 	private static final Logger LOG = Logger.getLogger(WeakReferenceMessageListener.class);
 	
+	private final Map<String,Object> topic2Bean = new ConcurrentHashMap<String, Object>();
+	
 	private String topicname;
 	private String correlationId;
 	private WeakReference<MessageListener> reference;
 	private TopicSession topicsession;
 	private TopicSubscriber topicsubscriber;
 	
+	// Spring injection
+	
 	private TopicConnection topicConnection;
 	
 	// private SpringLocaleDelegate cld;
+	
+	// end of Spring injection
 
 	public WeakReferenceMessageListener(TopicInfo info) {
 		this.topicname = info.getTopic();
@@ -80,7 +89,8 @@ class WeakReferenceMessageListener implements MessageListener {
 	 */
 	public void subscribe() {
 		try {
-			Object bean = SpringApplicationContextHolder.getBean(topicname);
+			final Object bean = SpringApplicationContextHolder.getBean(topicname);
+			topic2Bean.put(topicname, bean);
 			if (bean instanceof SimpleMessageListenerContainer) {
 				SimpleMessageListenerContainer container = (SimpleMessageListenerContainer)bean;
 				if (!container.isActive()) {
@@ -138,7 +148,8 @@ class WeakReferenceMessageListener implements MessageListener {
 				LOG.info("Unsubscribe " + this + " from Topic");
 			}
 			else {
-				SimpleMessageListenerContainer container = (SimpleMessageListenerContainer) SpringApplicationContextHolder.getBean(topicname);
+				// SimpleMessageListenerContainer container = (SimpleMessageListenerContainer) SpringApplicationContextHolder.getBean(topicname);
+				final SimpleMessageListenerContainer container = (SimpleMessageListenerContainer) topic2Bean.get(topicname);
 				// container.shutdown();
 				if (container instanceof MultiMessageListenerContainer) {
 					/*
