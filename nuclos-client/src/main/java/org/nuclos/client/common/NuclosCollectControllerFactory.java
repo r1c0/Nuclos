@@ -27,6 +27,7 @@ import org.nuclos.client.common.security.SecurityCache;
 import org.nuclos.client.genericobject.DynamicEntitySubFormController;
 import org.nuclos.client.genericobject.GenericObjectCollectController;
 import org.nuclos.client.genericobject.Modules;
+import org.nuclos.client.job.JobRunSubFormController;
 import org.nuclos.client.main.Main;
 import org.nuclos.client.main.mainframe.MainFrameTab;
 import org.nuclos.client.masterdata.ImportAttributeSubFormController;
@@ -282,6 +283,9 @@ public class NuclosCollectControllerFactory {
 		}
 		else if (sControllerType.equals("importattribute")) {
 			result = new ImportAttributeSubFormController(tab, clctcompmodelprovider, sParentEntityName, subform, prefs, entityPrefs, valueListProviderCache);
+		}
+		else if (sControllerType.equals("jobrun")) {
+			result = new JobRunSubFormController(tab, clctcompmodelprovider, sParentEntityName, subform, prefs, entityPrefs, valueListProviderCache);
 		}
 		else {
 			throw new NuclosFatalException("Unknown Controllertype for subform:" + sControllerType);//Unbekannter Controllertyp f\u00fcr Unterformular:
