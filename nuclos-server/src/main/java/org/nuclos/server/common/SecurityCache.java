@@ -510,7 +510,7 @@ public class SecurityCache implements SecurityCacheMBean {
 				DbQueryBuilder builder = dataBaseHelper.getDbAccess().getQueryBuilder();
 				DbQuery<String> query = builder.createQuery(String.class);
 				DbFrom t = query.from("T_AD_ACTION").alias(SystemFields.BASE_ALIAS);
-				query.select(t.baseColumn("STRACTION", String.class));
+				query.select(t.baseColumn("STRNAME", String.class));
 				Set<String> actions = new HashSet<String>(dataBaseHelper.getDbAccess().executeQuery(query));
 
 				for(MasterDataVO mdvo : XMLEntities.getData(NuclosEntity.ACTION).getAll()) {
