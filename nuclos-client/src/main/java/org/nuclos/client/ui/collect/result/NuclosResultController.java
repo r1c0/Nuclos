@@ -36,6 +36,7 @@ import java.util.prefs.Preferences;
 
 import javax.swing.AbstractAction;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -526,19 +527,28 @@ public class NuclosResultController<Clct extends Collectable> extends ResultCont
 
 	@Override
 	protected final void cmdRemoveColumn(ChoiceEntityFieldList fields, CollectableEntityField clctef) {
-		final NuclosResultPanel<Clct> panel = getNuclosResultPanel();
-		// remember the widths of the currently visible columns
-		final Map<String, Integer> mpWidths = panel.getVisibleColumnWidth(fields.getSelectedFields());
-		
-		super.cmdRemoveColumn(fields, clctef);
-		
-		panel.getFixedColumns().remove(clctef);
-		// TODO: Is the copy really needed? (Thomas Pasch)
-		SortedSet<CollectableEntityField> lstAvailableFields = new TreeSet<CollectableEntityField>(fields.getComparatorForAvaible());
-		lstAvailableFields.addAll(fields.getAvailableFields());
-		// TODO: Is the copy really needed? (Thomas Pasch)
-		List<CollectableEntityField> lstSelectedFields = new ArrayList<CollectableEntityField>(fields.getSelectedFields());
-		setSelectColumns(fields, lstAvailableFields, lstSelectedFields, panel.getFixedColumns(), false, mpWidths, false);
+		List<CollectableEntityField> lstSelectedNew = new ArrayList<CollectableEntityField>(fields.getSelectedFields());
+		lstSelectedNew.remove(clctef);
+		if (lstSelectedNew.size() == 0) {
+			JOptionPane.showMessageDialog(null, 
+					SpringLocaleDelegate.getInstance().getMessage(
+							"SelectFixedColumnsController.3","Es d\u00fcrfen nicht alle Spalten ausgeblendet oder fixiert werden."));
+		}
+		else {
+			final NuclosResultPanel<Clct> panel = getNuclosResultPanel();
+			// remember the widths of the currently visible columns
+			final Map<String, Integer> mpWidths = panel.getVisibleColumnWidth(fields.getSelectedFields());
+			
+			super.cmdRemoveColumn(fields, clctef);
+			
+			panel.getFixedColumns().remove(clctef);
+			// TODO: Is the copy really needed? (Thomas Pasch)
+			SortedSet<CollectableEntityField> lstAvailableFields = new TreeSet<CollectableEntityField>(fields.getComparatorForAvaible());
+			lstAvailableFields.addAll(fields.getAvailableFields());
+			// TODO: Is the copy really needed? (Thomas Pasch)
+			List<CollectableEntityField> lstSelectedFields = new ArrayList<CollectableEntityField>(fields.getSelectedFields());
+			setSelectColumns(fields, lstAvailableFields, lstSelectedFields, panel.getFixedColumns(), false, mpWidths, false);
+		}
 	}
 	
 	@Override

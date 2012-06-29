@@ -42,6 +42,7 @@ import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.RowSorter;
@@ -292,12 +293,18 @@ public class FixedColumnRowHeader extends SubformRowHeader {
 		final List<CollectableEntityField> lstSelectedNew = new ArrayList<CollectableEntityField>(lstSelected);
 		lstSelectedNew.remove(clctefToHide);
 		
-		changeSelectedColumns(lstSelectedNew, lstFixed, null, getVisibleColumnWidth(), null, actAfterSelection);
-		
-		// add DEselected to hidden in preferences
-		final Collection<? extends CollectableEntityField> collDeselected = CollectionUtils.subtract(lstSelected, lstSelectedNew);
-		for (CollectableEntityField clctef : collDeselected) {
-			workspaceUtils.addHiddenColumn(subFormPreferences, clctef.getName());
+		if (lstSelectedNew.size() == 0) {
+			JOptionPane.showMessageDialog(null, 
+					SpringLocaleDelegate.getInstance().getMessage(
+							"SelectFixedColumnsController.3","Es d\u00fcrfen nicht alle Spalten ausgeblendet oder fixiert werden."));
+		} else {
+			changeSelectedColumns(lstSelectedNew, lstFixed, null, getVisibleColumnWidth(), null, actAfterSelection);
+			
+			// add DEselected to hidden in preferences
+			final Collection<? extends CollectableEntityField> collDeselected = CollectionUtils.subtract(lstSelected, lstSelectedNew);
+			for (CollectableEntityField clctef : collDeselected) {
+				workspaceUtils.addHiddenColumn(subFormPreferences, clctef.getName());
+			}
 		}
 	}
 	
