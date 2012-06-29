@@ -62,6 +62,7 @@ import org.nuclos.common.collect.collectable.CollectableEntityField;
 import org.nuclos.common.collect.collectable.CollectableField;
 import org.nuclos.common.collect.collectable.CollectableFieldComparatorFactory;
 import org.nuclos.common.collect.collectable.CollectableUtils;
+import org.nuclos.common.collect.collectable.CollectableValueField;
 import org.nuclos.common.collect.collectable.CollectableValueIdField;
 import org.nuclos.common.collect.collectable.searchcondition.AbstractCollectableSearchCondition;
 import org.nuclos.common.collect.collectable.searchcondition.AtomicCollectableSearchCondition;
@@ -510,6 +511,9 @@ public class CollectableComboBox extends LabeledCollectableComponentWithVLP impl
 
 	@Override
 	protected void updateView(CollectableField clctfValue) {
+		if (clctfValue instanceof CollectableValueField)
+			return;
+		
 		if (hasAdditionalEntry()) {
 			removeAdditionalEntry();
 		}
