@@ -63,6 +63,8 @@ import org.nuclos.client.genericobject.ReportController;
 import org.nuclos.client.genericobject.datatransfer.GenericObjectIdModuleProcess;
 import org.nuclos.client.main.mainframe.MainFrame;
 import org.nuclos.client.main.mainframe.MainFrameTab;
+import org.nuclos.client.task.CollectableTask;
+import org.nuclos.client.task.PersonalTaskTableModel;
 import org.nuclos.client.task.RefreshableTaskController;
 import org.nuclos.client.task.ScheduledRefreshable;
 import org.nuclos.client.task.TaskController;
@@ -178,7 +180,13 @@ public class TimelimitTaskController extends RefreshableTaskController {
 		
 		final JTable tblTimelimit = timelimittaskview.getTable();
 		tblTimelimit.setTableHeader(new ToolTipsTableHeader(this.timelimittaskview.getTimelimitTaskTableModel(), tblTimelimit.getColumnModel()));
-		TableUtils.addMouseListenerForSortingToTableHeader(tblTimelimit, this.timelimittaskview.getTimelimitTaskTableModel());
+		TableUtils.addMouseListenerForSortingToTableHeader(tblTimelimit, this.timelimittaskview.getTimelimitTaskTableModel(), new CommonRunnable() {
+			@Override
+            public void run() {
+				timelimittaskview.getTimelimitTaskTableModel().sort();
+				storeOrderBySelectedColumnToPreferences();
+			}
+		});
 
 		/** todo calculate row height */
 		tblTimelimit.setRowHeight(20);
@@ -187,6 +195,7 @@ public class TimelimitTaskController extends RefreshableTaskController {
 		setupColumnModelListener(tblTimelimit);
 		setupActions(tblTimelimit);
 		setupDataTransfer(tblTimelimit);
+		setupTableModelSorting();
 		
 		KeyBinding keybinding = KeyBindingProvider.REFRESH;
 		this.timelimittaskview.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(keybinding.getKeystroke(), keybinding.getKey());
@@ -253,13 +262,24 @@ public class TimelimitTaskController extends RefreshableTaskController {
 				// do nothing
 			}
 		});
-	}	public void storeIntervalTasksToPreferences(){
+	}	
+	
+	public void storeIntervalTasksToPreferences(){
 		final Integer[] refreshInterval = { new Integer((getSingleScheduledRefreshableView().getRefreshInterval()))};
 		try {
 			PreferencesUtils.putIntegerArray(prefs, PREFS_NODE_TIMELIMITTASKS_REFRESH_INTERVAL_SELECTED, refreshInterval);
 		} catch (PreferencesException e1) {
 			Errors.getInstance().showExceptionDialog(this.getTabbedPane().getComponentPanel(), getSpringLocaleDelegate().getMessage(
 					"PersonalTaskController.18","Fehler beim Abspeichern der Einstellungen"), e1);
+		}
+	}
+
+	public void storeOrderBySelectedColumnToPreferences(){
+		try {
+			PreferencesUtils.writeSortKeysToPrefs(this.prefs, this.timelimittaskview.getTimelimitTaskTableModel().getSortKeys());
+		} catch (PreferencesException e1) {
+			Errors.getInstance().showExceptionDialog(this.getTabbedPane().getComponentPanel(), getSpringLocaleDelegate().getMessage(
+					"PersonalTaskController.19","Fehler beim Abspeichern der Einstellungen"), e1);
 		}
 	}
 
@@ -363,6 +383,20 @@ public class TimelimitTaskController extends RefreshableTaskController {
 
 	private void setupDataTransfer(JTable table) {
 		table.setTransferHandler(new TransferHandler(null));
+	}
+
+	private void setupTableModelSorting() {
+		final TimelimitTaskTableModel tblmdl = this.timelimittaskview.getTimelimitTaskTableModel();
+		if (tblmdl.getColumnCount() > 0) {
+			List<SortKey> sortKeys = readColumnOrderFromPreferences();
+			if (sortKeys.isEmpty()) {
+				sortKeys = Collections.singletonList(new SortKey(tblmdl.findColumnByFieldName(CollectableTask.FIELDNAME_SCHEDULED), SortOrder.ASCENDING));
+			}
+			try {
+				tblmdl.setSortKeys(sortKeys, false);
+			} catch (Exception e) {
+			}
+		}
 	}
 
 	private TimelimitTaskTableModel newTimelimitTaskTableModel() {
@@ -632,6 +666,14 @@ public class TimelimitTaskController extends RefreshableTaskController {
 		return lstColumnWidths;
 	}
 
+	private List<SortKey> readColumnOrderFromPreferences() {
+		try {
+			return PreferencesUtils.readSortKeysFromPrefs(this.prefs);
+		} catch (PreferencesException ex) {
+			LOG.error("The column order could not be loaded from preferences.", ex);
+			return Collections.emptyList();
+		}
+	}
 
 	void printTimelimitTaskView() {
 		try {

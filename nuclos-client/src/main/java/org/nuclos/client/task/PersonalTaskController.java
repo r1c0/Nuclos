@@ -90,10 +90,10 @@ import org.nuclos.client.ui.Icons;
 import org.nuclos.client.ui.MainFrameTabAdapter;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.client.ui.collect.CollectController;
-import org.nuclos.client.ui.collect.ToolTipsTableHeader;
 import org.nuclos.client.ui.collect.CollectController.CollectableEventListener;
 import org.nuclos.client.ui.collect.CollectController.MessageType;
 import org.nuclos.client.ui.collect.CollectableTableHelper;
+import org.nuclos.client.ui.collect.ToolTipsTableHeader;
 import org.nuclos.client.ui.collect.component.CollectableComponent;
 import org.nuclos.client.ui.collect.component.CollectableComponentFactory;
 import org.nuclos.client.ui.popupmenu.DefaultJPopupMenuListener;
@@ -248,7 +248,13 @@ public class PersonalTaskController extends RefreshableTaskController implements
 		
 		final JTable tblPersonal = personaltaskview.getTable();
 		tblPersonal.setTableHeader(new ToolTipsTableHeader(this.personaltaskview.getPersonalTaskTableModel(), tblPersonal.getColumnModel()));
-		TableUtils.addMouseListenerForSortingToTableHeader(tblPersonal, this.personaltaskview.getPersonalTaskTableModel());
+		TableUtils.addMouseListenerForSortingToTableHeader(tblPersonal, this.personaltaskview.getPersonalTaskTableModel(), new CommonRunnable() {
+			@Override
+            public void run() {
+				personaltaskview.getPersonalTaskTableModel().sort();
+				storeOrderBySelectedColumnToPreferences();
+			}
+		});
 		
 		tblPersonal.setRowHeight(20);
 		setupRenderers(tblPersonal);
@@ -521,7 +527,7 @@ public class PersonalTaskController extends RefreshableTaskController implements
 			}
 			try {
 				tblmdl.setSortKeys(sortKeys, false);
-			} catch (IllegalArgumentException e) {
+			} catch (Exception e) {
 			}
 		}
 	}

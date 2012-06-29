@@ -423,7 +423,7 @@ public class GenericObjectTaskController extends RefreshableTaskController {
 			}
 		}
 		
-		GenericObjectTaskView genericObjectTaskView = this.mpTaskViews.get(filter.getId());
+		final GenericObjectTaskView genericObjectTaskView = this.mpTaskViews.get(filter.getId());
 
 		// remove listener from old model, if any:
 		final TableModel modelOld = genericObjectTaskView.getJTable().getModel();
@@ -433,10 +433,16 @@ public class GenericObjectTaskController extends RefreshableTaskController {
 		}
 
 		// create a new table model:
-		SortableCollectableTableModel<Collectable> tblmdl = genericObjectTaskView.newResultTableModel(filter, lstclct);
+		final SortableCollectableTableModel<Collectable> tblmdl = genericObjectTaskView.newResultTableModel(filter, lstclct);
 		genericObjectTaskView.getJTable().setModel(tblmdl);
 //		genericObjectTaskView.getTable().setTableHeader(new ToolTipsTableHeader(genericObjectTaskView.getTable().getColumnModel()));
-		TableUtils.addMouseListenerForSortingToTableHeader(genericObjectTaskView.getTable(), tblmdl);
+		TableUtils.addMouseListenerForSortingToTableHeader(genericObjectTaskView.getTable(), tblmdl, new CommonRunnable() {
+			@Override
+            public void run() {
+				tblmdl.sort();
+				genericObjectTaskView.storeOrderBySelectedColumnToPreferences();
+			}
+		});
 		
 		//TableUtils.setOptimalColumnWidths(this.mpTaskViews.get(filter.getId()).getJTable());
 		TaskController.setColumnWidths(genericObjectTaskView.readColumnWidthsFromPreferences(), genericObjectTaskView.getJTable());
@@ -460,20 +466,32 @@ public class GenericObjectTaskController extends RefreshableTaskController {
 		final List<CollectableMasterDataWithDependants> lstclct = CollectionUtils.transform(lst, 
 				new CollectableMasterDataWithDependants.MakeCollectable((CollectableMasterDataEntity)NuclosCollectableEntityProvider.getInstance().getCollectableEntity(filter.getEntityName())));
 		
+		final GenericObjectTaskView genericObjectTaskView = this.mpTaskViews.get(filter.getId());
+
 		// remove listener from old model, if any:
 		final TableModel modelOld = this.mpTaskViews.get(filter.getId()).getJTable().getModel();
 		if (modelOld != null && modelOld instanceof SortableCollectableTableModel<?>) {
-			TableUtils.removeMouseListenersForSortingFromTableHeader(this.mpTaskViews.get(filter.getId()).getJTable());
-			this.mpTaskViews.get(filter.getId()).storeOrderBySelectedColumnToPreferences();
+			TableUtils.removeMouseListenersForSortingFromTableHeader(genericObjectTaskView.getJTable());
+			genericObjectTaskView.storeOrderBySelectedColumnToPreferences();
 		}
 
 		// create a new table model:
-		this.mpTaskViews.get(filter.getId()).getJTable().setModel(this.mpTaskViews.get(filter.getId()).newResultTableModel(filter, lstclct));
+		final SortableCollectableTableModel<Collectable> tblmdl = genericObjectTaskView.newResultTableModel(filter, lstclct);
+		genericObjectTaskView.getJTable().setModel(tblmdl);
+//		genericObjectTaskView.getTable().setTableHeader(new ToolTipsTableHeader(genericObjectTaskView.getTable().getColumnModel()));
+		TableUtils.addMouseListenerForSortingToTableHeader(genericObjectTaskView.getTable(), tblmdl, new CommonRunnable() {
+			@Override
+            public void run() {
+				tblmdl.sort();
+				genericObjectTaskView.storeOrderBySelectedColumnToPreferences();
+			}
+		});
+		
 		//TableUtils.setOptimalColumnWidths(this.mpTaskViews.get(filter.getId()).getJTable());
-		TaskController.setColumnWidths(this.mpTaskViews.get(filter.getId()).readColumnWidthsFromPreferences(), this.mpTaskViews.get(filter.getId()).getJTable());
+		TaskController.setColumnWidths(genericObjectTaskView.readColumnWidthsFromPreferences(), genericObjectTaskView.getJTable());
 		
 		// setup renderer
-		setupRenderers(this.mpTaskViews.get(filter.getId()));
+		setupRenderers(genericObjectTaskView);
 	}
 	
 	void print(GenericObjectTaskView gotaskview) {

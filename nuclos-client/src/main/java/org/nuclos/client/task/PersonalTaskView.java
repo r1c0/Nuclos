@@ -36,7 +36,6 @@ import javax.swing.ListSelectionModel;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.client.ui.collect.SubForm;
 import org.nuclos.client.ui.table.CommonJTable;
-import org.nuclos.client.ui.table.TableUtils;
 
 /**
  * View on a personal task list.
@@ -129,7 +128,6 @@ public class PersonalTaskView extends TaskView {
 
 	public void setPersonalTaskTableModel(PersonalTaskTableModel model) {
 		this.tblTasks.setModel(model);
-		TableUtils.addMouseListenerForSortingToTableHeader(this.tblTasks, model);
 	}
 
 	public PersonalTaskTableModel getPersonalTaskTableModel() {
