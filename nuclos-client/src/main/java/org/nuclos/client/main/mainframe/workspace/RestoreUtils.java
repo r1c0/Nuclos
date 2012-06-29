@@ -74,12 +74,6 @@ public class RestoreUtils {
 
 	private static List<GenericAction> cachedActions;
 
-	/**
-	 *
-	 * @param wdTab
-	 * @param tab
-	 * @return
-	 */
 	private synchronized static boolean restoreTab(WorkspaceDescription.Tab wdTab, MainFrameTab tab, boolean onDemand) {
 		try {
 			final ClassLoader cl = Thread.currentThread().getContextClassLoader();
@@ -88,10 +82,16 @@ public class RestoreUtils {
 			if (onDemand) {
 				tab.setTabRestoreController(restoreController);
 				tab.setTabRestorePreferencesXML(wdTab.getPreferencesXML());
-			} else {
+			}
+			else {
 				restoreController.restoreFromPreferences(wdTab.getPreferencesXML(), tab);
 			}
-		} catch(Exception e) {
+		}
+		catch (RuntimeException e) {
+			LOG.warn("TabRestoreController failed, disposing " + tab + ": " + e, e);
+			tab.dispose();
+		}
+		catch (Exception e) {
 			LOG.warn("TabRestoreController could not be created or restored", e);
 			return false;
 		}

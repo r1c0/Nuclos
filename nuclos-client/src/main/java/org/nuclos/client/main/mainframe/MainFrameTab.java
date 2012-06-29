@@ -887,9 +887,6 @@ public class MainFrameTab extends JPanel implements IOverlayComponent, NuclosDro
 		mainFrameTabListeners.remove(listener);
 	}
 
-	/**
-	 *
-	 */
 	public void notifySelected() {
 		if (restoreController != null) {
 			UIUtils.runCommandForTabbedPane(getTabbedPane(), new Runnable() {
@@ -902,10 +899,16 @@ public class MainFrameTab extends JPanel implements IOverlayComponent, NuclosDro
 						restoreController = null;
 						ctrl.restoreFromPreferences(xml, MainFrameTab.this);
 						postAdd();
-					} catch (Exception e) {
+					}
+					catch (RuntimeException e) {
+						LOG.warn("Tab not restored, disposing MainFrameTab " + this + ": " + e, e);
+						dispose();
+					}
+					catch (Exception e) {
 						LOG.warn("Tab not restored", e);
 						setTabIconFromSystem("getIconTabNotRestored");
-					} finally {
+					}
+					finally {
 						if (notifyRestore) {
 							Main.getInstance().getMainFrame().continueProgress();
 							notifyRestore = false;

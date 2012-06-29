@@ -45,7 +45,7 @@ public abstract class AbstractXStreamTabStoreAndRestoreController<T> implements 
 		return xstream.toXML(state);
 	}
 	
-	protected abstract void restoreFromState(T state, MainFrameTab tab);
+	protected abstract void restoreFromState(T state, MainFrameTab tab) throws Exception;
 	
 	protected abstract T getState();
 }
