@@ -239,6 +239,8 @@ public class WYSIWYGLayoutControllingPanel extends JPanel implements WYSIWYGTool
 
 		wysiwygEditorsToolbar.addComponentToToolbar(this);
 
+		setMode(EXPERT_MODE);
+		
 		this.add(jpnWaitingForMeta);
 	}
 
@@ -360,7 +362,7 @@ public class WYSIWYGLayoutControllingPanel extends JPanel implements WYSIWYGTool
 	 */
 	public void setPreferences(Preferences preferences) {
 		this.preferences = preferences;
-		setMode(preferences.getInt(PREFERENCES_MODE, STANDARD_MODE));
+		setMode(preferences.getInt(PREFERENCES_MODE, EXPERT_MODE));
 		//jpnEditor.setJustAddEnabled(preferences.getBoolean(PREFERENCES_SLICING, false));
 	}
 	
@@ -378,7 +380,8 @@ public class WYSIWYGLayoutControllingPanel extends JPanel implements WYSIWYGTool
 	 */
 	@Override
 	public JComponent[] getToolbarItems() {
-		JComboBox comboBox = new JComboBox();
+		//NUCLOSINT-1586
+		/*JComboBox comboBox = new JComboBox();
 		comboBox.setSize(200, 23);
 		for (Map.Entry<String, Integer> e : modes.entrySet()) {
 			comboBox.addItem(e.getKey());
@@ -396,7 +399,8 @@ public class WYSIWYGLayoutControllingPanel extends JPanel implements WYSIWYGTool
 			}
 		});
 
-		return new JComponent[]{comboBox};
+		return new JComponent[]{comboBox};*/
+		return new JComponent[]{};
 	}
 
 	/**
@@ -415,7 +419,8 @@ public class WYSIWYGLayoutControllingPanel extends JPanel implements WYSIWYGTool
 	public void setMode(int mode) {
 		this.mode = mode;
 		this.paletteCtrl.setMode(mode);
-		this.preferences.putInt(PREFERENCES_MODE, mode);
+		if (this.preferences != null)
+			this.preferences.putInt(PREFERENCES_MODE, mode);
 		
 		if (this.container != null) {
 			// preferences are shown and must be refreshed
