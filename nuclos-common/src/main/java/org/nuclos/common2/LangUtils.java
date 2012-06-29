@@ -111,10 +111,10 @@ public class LangUtils {
 		final int result;
 
 		if (t1 == null) {
-			result = (t2 == null) ? 0 : -1;
+			result = (t2 == null) ? 0 : 1;
 		}
 		else if (t2 == null) {
-			result = 1;
+			result = -1;
 		}
 		else {
 			result = comparator.compare(t1, t2);
@@ -294,14 +294,20 @@ public class LangUtils {
 	public static String getJavaObjectIdAsString(Object o) {
 		return Integer.toString(getJavaObjectId(o));
 	}
-
+	
+	private static Collator collator = null;
+	
 	/**
 	 * @return the default <code>Collator</code> for this platform, that is the default <code>Collator</code>
 	 * for the default <code>Locale</code>. For international applications, this is the collation of choice.
 	 * Note that this is locale dependent.
 	 */
 	public static Collator getDefaultCollator() {
-		return Collator.getInstance();
+		if (collator == null) {
+			collator = Collator.getInstance(SpringLocaleDelegate.getInstance().getLocale());
+			collator.setStrength(Collator.SECONDARY);// a == A, a < Ä
+		}
+		return collator;
 	}
 
 	/**

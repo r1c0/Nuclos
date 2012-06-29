@@ -36,6 +36,9 @@ public class CollectableStringFieldComparator implements Comparator<CollectableF
 	 * use default ("modern" German, DIN 5007) collation
 	 */
 	private final Collator collator = LangUtils.getDefaultCollator();
+	{
+		
+	}
 
 	@Override
 	public int compare(CollectableField clctf1, CollectableField clctf2) {

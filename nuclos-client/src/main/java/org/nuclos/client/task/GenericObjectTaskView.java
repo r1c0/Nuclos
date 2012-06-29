@@ -177,29 +177,6 @@ public class GenericObjectTaskView extends TaskView implements IMainFrameTabClos
 			}
 		}
 
-		// enable sorting by clicking the header:
-		TableUtils.addMouseListenerForSortingToTableHeader(tbl, result, new CommonRunnable() {
-			@Override
-			public void run() throws CommonBusinessException {
-				List<? extends SortKey> sortKeys = result.getSortKeys();
-				List<SortKey> filteredSortKeys = CollectionUtils.applyFilter(sortKeys, new Predicate<SortKey>() {
-					@Override
-					public boolean evaluate(SortKey k) {
-						final CollectableEntityFieldWithEntity clctefSorted = (CollectableEntityFieldWithEntity) result.getCollectableEntityField(k.getColumn());
-						return clctefSorted.getCollectableEntityName().equals(clcteMain.getName());
-					}
-				});
-				if (filteredSortKeys.size() == sortKeys.size()) {
-					result.sort();
-				} else {
-					result.setSortKeys(Collections.<SortKey>emptyList(), false);
-					throw new CommonBusinessException(
-							getSpringLocaleDelegate().getMessage(
-									"GenericObjectTaskView.1", "Das Suchergebnis kann nicht nach Unterformularspalten sortiert werden."));
-				}
-			}
-		});
-
 		return result;
 	}
 
