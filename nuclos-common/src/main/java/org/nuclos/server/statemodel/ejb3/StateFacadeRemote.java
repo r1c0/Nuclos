@@ -129,6 +129,16 @@ public interface StateFacadeRemote {
 	Collection<StateVO> getSubsequentStates(Integer iModuleId,
 		Integer iGenericObjectId, boolean bGetAutomaticStatesAlso)
 		throws NuclosNoAdequateStatemodelException, CommonFinderException;
+	/**
+	 * checks if the given target state id is contained in the list of subsequent states for the given leased objects:
+	 * @param iModuleId
+	 * @param iGenericObjectId
+	 * @param iTargetStateId
+	 * @throws NuclosNoAdequateStatemodelException
+	 * @return true/false if state change is allowed
+	 */
+	public boolean checkTargetState(Integer iModuleId, Integer iGenericObjectId, Integer iTargetStateId)
+			throws NuclosNoAdequateStatemodelException, CommonFinderException, CommonPermissionException;
 
 	/**
 	 * method to change the status of a given leased object

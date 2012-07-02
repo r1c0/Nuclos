@@ -3518,9 +3518,11 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 							getSpringLocaleDelegate().getResource(/*StateDelegate.getInstance().getResourceSIdForName(statevo.getId()*/
 							StateDelegate.getInstance().getStatemodelClosure(getModuleId()).getResourceSIdForLabel(statevo.getId()),
 							statevo.getStatename()), statevo.getIcon(), statevo.getDescription(), statevo.isFromAutomatic(),
-							getSelectedCollectable() != null ?
-									StateDelegate.getInstance().getStatemodel(uc).isStateReachableInDefaultPath(stateCurrent.getId(), statevo)
-										: StateDelegate.getInstance().getStatemodel(uc).isStateReachableInDefaultPathByNumeral(stateCurrent.getNumeral(), statevo)));
+							getSelectedCollectable() == null ? Collections.EMPTY_LIST : 
+								!StateDelegate.getInstance().checkTargetState(getModuleId(), getSelectedCollectable().getId(), statevo.getId()) ? Collections.EMPTY_LIST :
+									getSelectedCollectable() != null ?
+											StateDelegate.getInstance().getStatemodel(uc).isStateReachableInDefaultPath(stateCurrent.getId(), statevo)
+											: StateDelegate.getInstance().getStatemodel(uc).isStateReachableInDefaultPathByNumeral(stateCurrent.getNumeral(), statevo)));
 
 			cmpStateStandardView.setSelectedItem(stateCurrent);
 			cmpStateStandardView.addItems(lstDefaultPathEntries);

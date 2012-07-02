@@ -169,6 +169,31 @@ public class StateDelegate {
 		catch (CommonCreateException ex) {
 			throw new CommonFatalException(ex);
 		}
+	}	
+	
+	/**
+	 * checks if the given target state id is contained in the list of subsequent states for the given leased objects:
+	 * @param iModuleId
+	 * @param iGenericObjectId
+	 * @param iTargetStateId
+	 * @return true/false if state change is allowed
+	 */
+	public boolean checkTargetState(Integer iModuleId, Integer iGenericObjectId, Integer iTargetStateId) {
+		try {
+			return stateFacadeRemote.checkTargetState(iModuleId, iGenericObjectId, iTargetStateId);
+		}
+		catch (RuntimeException ex) {
+			throw new CommonFatalException(ex);
+		}
+		catch (CommonFinderException e) {
+			throw new CommonFatalException(e.getMessage(), e);
+		} 
+		catch (CommonPermissionException e) {
+			throw new CommonFatalException(e.getMessage(), e);
+		}
+		catch (NuclosNoAdequateStatemodelException e) {
+			throw new CommonFatalException(e.getMessage(), e);
+		}
 	}
 
 	/**

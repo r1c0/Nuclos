@@ -1273,6 +1273,26 @@ public class StateFacadeBean extends NuclosFacadeBean implements StateFacadeRemo
 	 * checks if the given target state id is contained in the list of subsequent states for the given leased objects:
 	 * @param iModuleId
 	 * @param iGenericObjectId
+	 * @param iTargetStateId
+	 * @throws NuclosNoAdequateStatemodelException
+	 * @throws NuclosSubsequentStateNotLegalException
+	 */
+	public boolean checkTargetState(Integer iModuleId, Integer iGenericObjectId, Integer iTargetStateId)
+			throws NuclosNoAdequateStatemodelException, CommonFinderException, CommonPermissionException {
+		try {
+			checkTargetState(iModuleId, iGenericObjectId, false, iTargetStateId);
+		} catch (NuclosSubsequentStateNotLegalException e) {
+			return false;
+		}
+		return true;
+	}
+
+
+
+	/**
+	 * checks if the given target state id is contained in the list of subsequent states for the given leased objects:
+	 * @param iModuleId
+	 * @param iGenericObjectId
 	 * @param bGetAutomaticStatesAlso
 	 * @param iTargetStateId
 	 * @throws NuclosNoAdequateStatemodelException

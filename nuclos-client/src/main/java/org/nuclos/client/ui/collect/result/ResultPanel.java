@@ -432,7 +432,7 @@ public class ResultPanel<Clct extends Collectable> extends JPanel {
 		//result.add(btnSelectColumns, null);
 		addPopupExtraMenuItem(btnClone);
 		if (SecurityCache.getInstance().isActionAllowed(Actions.ACTION_WORKSPACE_CUSTOMIZE_ENTITY_AND_SUBFORM_COLUMNS) ||
-				!workspaceUtils.getWorkspace().isAssigned()) {
+				(workspaceUtils != null && !workspaceUtils.getWorkspace().isAssigned())) {
 			addPopupExtraMenuItem(btnSelectColumns);
 		}
 
