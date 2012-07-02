@@ -22,7 +22,7 @@
 		{fill:blue; stroke:black; opacity:.4;}
 	
 	.oddRow 
-		{opacity:0.74125875;fill:#808080;fill-opacity:0.50196078;fill-rule:evenodd;stroke:none}
+		{fill:#e4e3e3;stroke:none}
 	.columnSep 
 		{fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1}
 	
@@ -72,13 +72,24 @@
 	.lane-green0 
 		{fill:#124147;fill-opacity:1;stroke:none}
 	.lane-green1 
-		{fill:#0f5934;fill-opacity:1;stroke:none}
+		{fill:#18843d;fill-opacity:1;stroke:none}
 	.lane-green2 
-		{fill:#1ca23f;fill-opacity:1;stroke:none}
+		{fill:#22b535;fill-opacity:1;stroke:none}
 	.lane-green3 
-		{fill:#b9d12d;fill-opacity:1;stroke:none}
+		{fill:#9bd32d;fill-opacity:1;stroke:none}
 	.lane-green4 
-		{fill:#faea3b;fill-opacity:1;stroke:none}
+		{fill:#c3d836;fill-opacity:1;stroke:none}
+		
+	.lane-light-green0 
+		{stroke:#124147;fill-opacity:1;fill:none;stroke-width:3;stroke-miterlimit:4}
+	.lane-light-green1 
+		{stroke:#18843d;fill-opacity:1;fill:none;stroke-width:3;stroke-miterlimit:4}
+	.lane-light-green2 
+		{stroke:#22b535;fill-opacity:1;fill:none;stroke-width:3;stroke-miterlimit:4}
+	.lane-light-green3 
+		{stroke:#9bd32d;fill-opacity:1;fill:none;stroke-width:3;stroke-miterlimit:4}
+	.lane-light-green4 
+		{stroke:#c3d836;fill-opacity:1;fill:none;stroke-width:3;stroke-miterlimit:4}
 		
 	.lane-blue0 
 		{fill:#123995;fill-opacity:1;stroke:none}
@@ -87,9 +98,20 @@
 	.lane-blue2 
 		{fill:#32a3f9;fill-opacity:1;stroke:none}
 	.lane-blue3 
-		{fill:#35c8db;fill-opacity:1;stroke:none}
+		{fill:#38cffb;fill-opacity:1;stroke:none}
 	.lane-blue4 
-		{fill:#34fffe;fill-opacity:1;stroke:none}
+		{fill:#31eefd;fill-opacity:1;stroke:none}
+		
+	.lane-light-blue0 
+		{stroke:#123995;fill-opacity:1;fill:none;stroke-width:3;stroke-miterlimit:4}
+	.lane-light-blue1 
+		{stroke:#1d63f8;fill-opacity:1;fill:none;stroke-width:3;stroke-miterlimit:4}
+	.lane-light-blue2 
+		{stroke:#32a3f9;fill-opacity:1;fill:none;stroke-width:3;stroke-miterlimit:4}
+	.lane-light-blue3 
+		{stroke:#38cffb;fill-opacity:1;fill:none;stroke-width:3;stroke-miterlimit:4}
+	.lane-light-blue4 
+		{stroke:#31eefd;fill-opacity:1;fill:none;stroke-width:3;stroke-miterlimit:4}
 		
 	.lane-red0 
 		{fill:#771e6;fill-opacity:1;stroke:none}
@@ -98,20 +120,42 @@
 	.lane-red2 
 		{fill:#fa7032;fill-opacity:1;stroke:none}
 	.lane-red3 
-		{fill:#fa7a63d;fill-opacity:1;stroke:none}
+		{fill:#f7a63d;fill-opacity:1;stroke:none}
 	.lane-red4 
-		{fill:#f8d343;fill-opacity:1;stroke:none}
+		{fill:#ecbf3e;fill-opacity:1;stroke:none}
+		
+	.lane-light-red0 
+		{stroke:#771e6;fill-opacity:1;fill:none;stroke-width:3;stroke-miterlimit:4}
+	.lane-light-red1 
+		{stroke:#d41d29;fill-opacity:1;fill:none;stroke-width:3;stroke-miterlimit:4}
+	.lane-light-red2 
+		{stroke:#fa7032;fill-opacity:1;fill:none;stroke-width:3;stroke-miterlimit:4}
+	.lane-light-red3 
+		{stroke:#f7a63d;fill-opacity:1;fill:none;stroke-width:3;stroke-miterlimit:4}
+	.lane-light-red4 
+		{stroke:#ecbf3e;fill-opacity:1;fill:none;stroke-width:3;stroke-miterlimit:4}
 		
 	.lane-violet0 
 		{fill:#58247f;fill-opacity:1;stroke:none}
 	.lane-violet1 
 		{fill:#ba21bc;fill-opacity:1;stroke:none}
 	.lane-violet2 
-		{fill:#d13bf8;fill-opacity:1;stroke:none}
+		{fill:#d33bf8;fill-opacity:1;stroke:none}
 	.lane-violet3 
-		{fill:#fa11f8;fill-opacity:1;stroke:none}
+		{fill:#e995fa;fill-opacity:1;stroke:none}
 	.lane-violet4 
-		{fill:#fca9fb;fill-opacity:1;stroke:none}
+		{fill:#fed4fd;fill-opacity:1;stroke:none}
+		
+	.lane-light-violet0 
+		{stroke:#58247f;fill-opacity:1;fill:none;stroke-width:3;stroke-miterlimit:4}
+	.lane-light-violet1 
+		{stroke:#ba21bc;fill-opacity:1;fill:none;stroke-width:3;stroke-miterlimit:4}
+	.lane-light-violet2 
+		{stroke:#d33bf8;fill-opacity:1;fill:none;stroke-width:3;stroke-miterlimit:4}
+	.lane-light-violet3 
+		{stroke:#e995fa;fill-opacity:1;fill:none;stroke-width:3;stroke-miterlimit:4}
+	.lane-light-violet4 
+		{stroke:#fed4fd;fill-opacity:1;fill:none;stroke-width:3;stroke-miterlimit:4}
 		
 	.rhomb-light-yellow 
 		{fill:#ebe0c0;fill-opacity:1;stroke:#ba9d02;stroke-width:3;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none}

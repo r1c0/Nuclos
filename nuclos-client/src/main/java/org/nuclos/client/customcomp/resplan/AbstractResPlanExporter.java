@@ -321,6 +321,17 @@ public abstract class AbstractResPlanExporter<R,E> implements IResPlanExporter<R
 		}
 	}
 	
+	protected void mkRhomb(SVGElement g, float x, float y, float size, String clazz, String style) {
+		final XCoord xc = clipX(x - size, 2 + size);
+		if (xc != null) {
+			final SVGPolygonElement result = sdds.createPolygon(clazz, x - size, y, x, y - size, x + size, y, x, y + size);
+			if (style != null) {
+				result.setAttribute("style", style);
+			}
+			g.appendChild(result);
+		}
+	}
+	
 	protected float getX(Date d) {
 		final long millis = d.getTime() - realHorizon.getStart().getTime();
 		return millis / millisForPx + XPIXEL_OFFSET;
