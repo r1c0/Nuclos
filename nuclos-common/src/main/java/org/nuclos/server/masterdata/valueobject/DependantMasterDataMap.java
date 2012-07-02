@@ -18,7 +18,6 @@ package org.nuclos.server.masterdata.valueobject;
 
 import java.io.Serializable;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -39,8 +38,6 @@ import org.nuclos.common.dal.vo.EntityObjectVO;
 import org.nuclos.common2.EntityAndFieldName;
 import org.nuclos.common2.IdUtils;
 import org.nuclos.server.common.ModuleConstants;
-
-import com.google.inject.util.Modules;
 
 /**
  * Map containing the dependent masterdata rows by entity.

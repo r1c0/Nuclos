@@ -92,7 +92,7 @@ public class LocalUserProperties extends java.util.Properties {
     static {
     	HashMap<String, String> t = new HashMap<String, String>();
     	t.put(KEY_PLOGIN_LOCALE_ID, "1");
-    	t.put(KEY_LOGIN_TITLE, "{0} Login");
+    	t.put(KEY_LOGIN_TITLE, "{0}");
     	t.put(KEY_LAB_USERNAME, "Username");
     	t.put(KEY_LAB_PASSWORD, "Password");
     	t.put(KEY_LAB_SERVER, "Server");

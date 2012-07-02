@@ -735,10 +735,12 @@ public class StringUtils {
 	}
 	
 	public static int compare(String s1, String s2) {
-		if (s1 == null)
+		if (s1 == null) {
 			return (s2 == null) ? 0 : 1;
-		else
-			return getCollator().compare(s1, s2);
+		}
+		else {
+			return (s2 == null) ? -1 : getCollator().compare(s1, s2);
+		}
 	}
 
 	private static final int MAX_SQL_ID_LENGTH = 21;

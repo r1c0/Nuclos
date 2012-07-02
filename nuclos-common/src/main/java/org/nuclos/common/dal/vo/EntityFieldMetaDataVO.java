@@ -18,7 +18,6 @@ package org.nuclos.common.dal.vo;
 
 import org.nuclos.common.DefaultComponentTypes;
 import org.nuclos.common.NuclosScript;
-import org.nuclos.common.attribute.ComponentType;
 import org.nuclos.common2.LangUtils;
 
 
