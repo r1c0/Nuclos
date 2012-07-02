@@ -17,8 +17,6 @@
 package org.nuclos.common.collect.collectable;
 
 import org.nuclos.common.entityobject.CollectableEOEntityProvider;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 /**
  * The default <code>CollectableEntityProvider</code> used by the framework for a specific application.

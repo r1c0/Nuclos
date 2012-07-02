@@ -24,7 +24,6 @@ import java.util.Date;
 
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common2.StringUtils;
-import org.nuclos.server.customcode.codegenerator.CodeGenerator.JavaSourceAsString;
 import org.nuclos.server.customcode.valueobject.CodeVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;

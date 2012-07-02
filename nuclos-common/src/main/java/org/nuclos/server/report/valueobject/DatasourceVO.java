@@ -20,7 +20,6 @@ import java.util.Date;
 
 import org.nuclos.common.ModuleProvider;
 import org.nuclos.common.SpringApplicationContextHolder;
-import org.nuclos.common2.InternalTimestamp;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonValidationException;
 import org.nuclos.server.common.valueobject.NuclosValueObject;

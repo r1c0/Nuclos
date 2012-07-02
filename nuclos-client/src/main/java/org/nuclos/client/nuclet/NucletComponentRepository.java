@@ -22,7 +22,6 @@ import java.util.List;
 import org.nuclos.api.ui.LayoutComponentFactory;
 import org.nuclos.api.ui.MenuItem;
 import org.nuclos.api.ui.UserSettingsEditor;
-import org.springframework.stereotype.Component;
 
 // @Component
 public class NucletComponentRepository {

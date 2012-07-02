@@ -36,8 +36,8 @@ import org.nuclos.common.collection.MasterDataToEntityObjectTransformer;
 import org.nuclos.common.collection.Pair;
 import org.nuclos.common.collection.PredicateUtils;
 import org.nuclos.common.dal.vo.EntityObjectVO;
-import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.EntityAndFieldName;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.TruncatableCollection;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonCreateException;
@@ -53,8 +53,6 @@ import org.nuclos.server.masterdata.valueobject.MasterDataMetaVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataWithDependantsVO;
 import org.nuclos.server.ruleengine.valueobject.RuleVO;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 /**
  * Business Delegate for <code>MasterDataFacadeBean</code>.

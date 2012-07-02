@@ -20,13 +20,11 @@ import java.io.IOException;
 import java.rmi.RemoteException;
 
 import org.dom4j.DocumentException;
-
+import org.nuclos.common.NuclosBusinessException;
+import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common2.exception.CommonCreateException;
 import org.nuclos.common2.exception.CommonFinderException;
 import org.nuclos.common2.exception.CommonPermissionException;
-import org.nuclos.common2.exception.CommonRemoteException;
-import org.nuclos.common.NuclosBusinessException;
-import org.nuclos.common.NuclosFatalException;
 import org.nuclos.server.ruleengine.NuclosBusinessRuleException;
 import org.nuclos.server.transfer.ejb3.XmlImportFacadeRemote;
 

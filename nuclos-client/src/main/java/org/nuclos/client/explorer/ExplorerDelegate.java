@@ -24,7 +24,6 @@ import org.nuclos.server.navigation.treenode.GenericObjectTreeNode;
 import org.nuclos.server.navigation.treenode.GroupTreeNode;
 import org.nuclos.server.navigation.treenode.MasterDataTreeNode;
 import org.nuclos.server.navigation.treenode.nuclet.NucletTreeNode;
-import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * Business Delegate for <code>TreeNodeFacadeBean</code>.

@@ -28,7 +28,6 @@ import java.util.List;
 
 import org.nuclos.common2.StringUtils;
 import org.nuclos.server.common.RuleCache;
-import org.nuclos.server.customcode.codegenerator.CodeGenerator.JavaSourceAsString;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 import org.nuclos.server.ruleengine.valueobject.RuleVO;
 import org.springframework.beans.factory.annotation.Autowired;

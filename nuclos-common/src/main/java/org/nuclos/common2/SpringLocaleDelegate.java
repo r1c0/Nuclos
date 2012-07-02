@@ -51,8 +51,6 @@ import org.nuclos.server.attribute.valueobject.AttributeCVO;
 import org.nuclos.server.genericobject.valueobject.GenericObjectVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataMetaVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 /**
  * Static utility class in the "common" hierarchy, which holds the selected

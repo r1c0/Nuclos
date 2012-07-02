@@ -20,7 +20,6 @@ import java.util.Collection;
 
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonFatalException;
-import org.nuclos.common2.exception.CommonRemoteException;
 import org.nuclos.server.job.ejb3.JobControlFacadeRemote;
 import org.nuclos.server.job.valueobject.JobVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;

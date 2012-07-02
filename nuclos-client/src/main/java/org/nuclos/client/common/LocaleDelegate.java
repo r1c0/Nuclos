@@ -42,8 +42,8 @@ import org.nuclos.common.ApplicationProperties;
 import org.nuclos.common.JMSConstants;
 import org.nuclos.common.TranslationVO;
 import org.nuclos.common2.ClientPreferences;
-import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.LocaleInfo;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.server.common.NuclosUpdateException;
@@ -52,9 +52,7 @@ import org.nuclos.server.masterdata.valueobject.DependantMasterDataMap;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.stereotype.Component;
 
 // @Component
 public class LocaleDelegate implements SpringLocaleDelegate.LookupService, MessageListener, InitializingBean, DisposableBean {

@@ -19,10 +19,8 @@ package org.nuclos.client.nuclet;
 import org.nuclos.api.ui.MailToEventHandler;
 import org.springframework.aop.framework.AopInfrastructureBean;
 import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.core.Ordered;
-import org.springframework.stereotype.Component;
 
 // @Component
 public class MailToEventHandlerPostProcessor implements BeanPostProcessor, Ordered {

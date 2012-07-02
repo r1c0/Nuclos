@@ -23,10 +23,8 @@ import org.nuclos.api.ui.annotation.NucletComponent;
 import org.springframework.aop.framework.AopInfrastructureBean;
 import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.core.Ordered;
-import org.springframework.stereotype.Component;
 
 // @Component
 public class NucletComponentPostProcessor implements BeanPostProcessor, Ordered {

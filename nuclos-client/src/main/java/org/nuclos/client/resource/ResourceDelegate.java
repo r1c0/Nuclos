@@ -33,8 +33,6 @@ import org.nuclos.server.masterdata.valueobject.DependantMasterDataMap;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 import org.nuclos.server.resource.ejb3.ResourceFacadeRemote;
 import org.nuclos.server.resource.valueobject.ResourceVO;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 /**
  * Business Delegate for <code>ResourceFacade</code>

@@ -22,9 +22,6 @@ import java.util.Set;
 import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.server.attribute.ejb3.AttributeFacadeRemote;
 import org.nuclos.server.attribute.valueobject.AttributeCVO;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
-import org.springframework.stereotype.Component;
 
 /**
  * Business Delegate for <code>AttributeFacadeBean</code>.

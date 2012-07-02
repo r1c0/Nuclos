@@ -17,7 +17,6 @@
 package org.nuclos.client;
 
 import org.nuclos.api.service.ClientPropertyService;
-import org.springframework.stereotype.Component;
 
 //@Component
 public class ApiClientPropertyService implements ClientPropertyService {

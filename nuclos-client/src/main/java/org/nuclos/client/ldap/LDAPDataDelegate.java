@@ -20,7 +20,6 @@ import java.rmi.RemoteException;
 import java.util.Collection;
 
 import org.nuclos.common2.exception.CommonBusinessException;
-import org.nuclos.common2.exception.CommonRemoteException;
 import org.nuclos.server.ldap.ejb3.LDAPDataFacadeRemote;
 import org.nuclos.server.masterdata.valueobject.DependantMasterDataMap;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;

@@ -133,7 +133,6 @@ import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.PreferencesException;
-import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * The "main frame" of the application. Contains as little control logic as possible.

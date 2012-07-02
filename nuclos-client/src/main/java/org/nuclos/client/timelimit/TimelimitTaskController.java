@@ -64,7 +64,6 @@ import org.nuclos.client.genericobject.datatransfer.GenericObjectIdModuleProcess
 import org.nuclos.client.main.mainframe.MainFrame;
 import org.nuclos.client.main.mainframe.MainFrameTab;
 import org.nuclos.client.task.CollectableTask;
-import org.nuclos.client.task.PersonalTaskTableModel;
 import org.nuclos.client.task.RefreshableTaskController;
 import org.nuclos.client.task.ScheduledRefreshable;
 import org.nuclos.client.task.TaskController;

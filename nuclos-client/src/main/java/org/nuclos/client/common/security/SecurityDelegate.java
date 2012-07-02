@@ -29,8 +29,6 @@ import org.nuclos.common2.exception.CommonPermissionException;
 import org.nuclos.server.common.MasterDataPermissions;
 import org.nuclos.server.common.ModulePermissions;
 import org.nuclos.server.common.ejb3.SecurityFacadeRemote;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 /**
  * Business Delegate for <code>SecurityFacadeBean</code>.

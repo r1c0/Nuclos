@@ -33,7 +33,12 @@ import org.apache.log4j.Logger;
 import org.nuclos.client.datasource.DatasourceDelegate;
 import org.nuclos.client.jms.TopicNotificationReceiver;
 import org.nuclos.client.masterdata.MetaDataDelegate;
-import org.nuclos.common.*;
+import org.nuclos.common.CommonMetaDataClientProvider;
+import org.nuclos.common.JMSConstants;
+import org.nuclos.common.MetaDataProvider;
+import org.nuclos.common.NuclosEntity;
+import org.nuclos.common.NuclosFatalException;
+import org.nuclos.common.SpringApplicationContextHolder;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.dal.util.DalTransformations;
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
@@ -45,8 +50,6 @@ import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.server.report.valueobject.DynamicEntityVO;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 /**
  * An caching singleton for remotely accessing the meta data information

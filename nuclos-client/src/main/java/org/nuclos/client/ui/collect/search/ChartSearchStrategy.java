@@ -26,7 +26,6 @@ import org.nuclos.client.main.mainframe.MainFrameTab;
 import org.nuclos.client.ui.Errors;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.server.report.valueobject.ChartVO;
-import org.nuclos.server.report.valueobject.DynamicTasklistVO;
 
 public class ChartSearchStrategy extends CollectSearchStrategy<CollectableDataSource<ChartVO>> {
 

@@ -4,7 +4,6 @@ import javax.swing.Icon;
 
 import org.nuclos.api.ui.LayoutComponentFactory;
 import org.nuclos.client.layout.wysiwyg.WYSIWYGStringsAndLabels.PaletteItemElement;
-import org.nuclos.common2.layoutml.LayoutMLConstants;
 
 public class LayoutComponentPaletteItem implements PaletteItemElement {
 	

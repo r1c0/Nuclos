@@ -27,7 +27,6 @@ import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.server.genericobject.ejb3.GeneratorFacadeRemote;
 import org.nuclos.server.genericobject.valueobject.GeneratorActionVO;
 import org.nuclos.server.genericobject.valueobject.GeneratorVO;
-import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * Singleton for the GeneratorActions.

@@ -21,13 +21,8 @@ import java.sql.SQLException;
 
 import javax.sql.DataSource;
 
-import org.nuclos.common2.StringUtils;
-import org.nuclos.common2.exception.CommonFatalException;
-import org.nuclos.server.database.SpringDataBaseHelper;
-import org.nuclos.server.dblayer.DbException;
 import org.nuclos.server.dblayer.impl.DataSourceExecutor;
 import org.nuclos.server.dblayer.impl.SQLUtils2;
-import org.nuclos.server.genericobject.Modules;
 
 /**
  * @author Thomas Pasch

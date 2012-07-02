@@ -8,12 +8,10 @@ import org.nuclos.common.EntityObjectCommon;
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.dal.vo.EntityObjectVO;
 import org.nuclos.common2.exception.CommonBusinessException;
-import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.common2.exception.CommonPermissionException;
 import org.nuclos.server.common.ejb3.EntityObjectFacadeRemote;
 import org.nuclos.server.genericobject.ProxyList;
 import org.nuclos.server.genericobject.searchcondition.CollectableSearchExpression;
-import org.springframework.beans.factory.annotation.Autowired;
 
 public class EntityObjectDelegate implements EntityObjectCommon {
 

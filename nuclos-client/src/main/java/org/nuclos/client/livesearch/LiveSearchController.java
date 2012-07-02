@@ -92,8 +92,6 @@ import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.PreferencesException;
 import org.nuclos.server.genericobject.valueobject.GenericObjectVO;
 import org.nuclos.server.livesearch.ejb3.LiveSearchFacadeRemote;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 // @Component
 public class LiveSearchController implements LiveSearchSearchPaneListener, LiveSearchResultPaneListener {

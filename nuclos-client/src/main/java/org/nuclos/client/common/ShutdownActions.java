@@ -21,7 +21,6 @@ import java.util.TreeMap;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.DisposableBean;
-import org.springframework.stereotype.Component;
 
 /**
  * Handler for shutdown actions.

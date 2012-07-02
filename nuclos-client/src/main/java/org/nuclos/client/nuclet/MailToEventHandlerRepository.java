@@ -20,7 +20,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.nuclos.api.ui.MailToEventHandler;
-import org.springframework.stereotype.Component;
 
 // @Component
 public class MailToEventHandlerRepository {

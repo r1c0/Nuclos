@@ -30,8 +30,6 @@ import org.nuclos.client.resource.ResourceCache;
 import org.nuclos.client.ui.Icons;
 import org.nuclos.common.ApplicationProperties;
 import org.nuclos.common2.LangUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 /**
  * Singleton containing Nucleus specific icons.

@@ -248,6 +248,7 @@ public class StartUp  {
 						}
 					}
 					
+					boolean hasSubContext = false;
 					final SpringApplicationSubContextsHolder holder = SpringApplicationSubContextsHolder.getInstance();
 					final Resource[] extensions = clientContext.getResources(EXTENSION_SPRING_BEANS);
 					log.info("loading extensions spring sub contexts from the following xml files: " + Arrays.asList(extensions));
@@ -270,7 +271,11 @@ public class StartUp  {
 						log.info("before refreshing spring context " + r);
 						ctx.refresh();
 						holder.registerSubContext(ctx);
+						hasSubContext = true;
 						log.info("after refreshing spring context " + r);
+					}
+					if (!hasSubContext) {
+						holder.registerSubContext(clientContext);
 					}
 					// MetaDataClientProvider.initialize();
 				}

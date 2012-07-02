@@ -26,7 +26,6 @@ import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.TranslationVO;
 import org.nuclos.common2.PreferencesUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
-import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.common2.exception.PreferencesException;
 import org.nuclos.server.customcomp.ejb3.CustomComponentFacadeRemote;
 import org.nuclos.server.customcomp.valueobject.CustomComponentVO;

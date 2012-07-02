@@ -34,19 +34,17 @@ import org.nuclos.client.ui.collect.component.CollectableComponentWithValueListP
 import org.nuclos.client.ui.layoutml.LayoutMLParser;
 import org.nuclos.client.ui.layoutml.LayoutRoot;
 import org.nuclos.client.valuelistprovider.cache.CollectableFieldsProviderCache;
-import org.nuclos.common.GenericObjectMetaDataProvider;
 import org.nuclos.common.NuclosEOField;
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.UsageCriteria;
 import org.nuclos.common.collect.collectable.CollectableEntity;
 import org.nuclos.common.collection.BinaryPredicate;
 import org.nuclos.common.collection.CollectionUtils;
-import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.EntityAndFieldName;
 import org.nuclos.common2.LangUtils;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.exception.CommonFinderException;
 import org.nuclos.common2.layoutml.exception.LayoutMLException;
-import org.springframework.stereotype.Component;
 import org.xml.sax.InputSource;
 
 /**

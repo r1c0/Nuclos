@@ -24,7 +24,6 @@ import org.nuclos.common2.exception.CommonPermissionException;
 import org.nuclos.server.customcode.ejb3.CodeFacadeRemote;
 import org.nuclos.server.customcode.valueobject.CodeVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
-import org.springframework.beans.factory.InitializingBean;
 
 /**
  * Business delegate for code administration.

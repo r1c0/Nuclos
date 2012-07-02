@@ -18,7 +18,6 @@ package org.nuclos.client.fileimport;
 
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common2.exception.CommonBusinessException;
-import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.common2.fileimport.NuclosFileImportException;
 import org.nuclos.server.fileimport.ejb3.ImportFacadeRemote;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;

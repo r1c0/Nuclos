@@ -31,8 +31,6 @@ import org.nuclos.client.main.Main;
 import org.nuclos.common2.CommonRunnable;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonFatalException;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 // @Component
 public class InvokeWithInputRequiredSupport {
