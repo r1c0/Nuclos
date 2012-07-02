@@ -34,14 +34,17 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.sql.DataSource;
 
 import org.apache.log4j.Logger;
+import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common2.InternalTimestamp;
 import org.nuclos.common2.LangUtils;
+import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.server.dblayer.DbException;
 import org.nuclos.server.dblayer.DbNotNullableException;
@@ -62,6 +65,7 @@ import org.nuclos.server.dblayer.query.DbExpression;
 import org.nuclos.server.dblayer.query.DbQuery;
 import org.nuclos.server.dblayer.query.DbQueryBuilder;
 import org.nuclos.server.dblayer.statements.AbstractDbStatementVisitor;
+import org.nuclos.server.dblayer.statements.DbInsertStatement;
 import org.nuclos.server.dblayer.statements.DbUpdateStatement;
 import org.nuclos.server.dblayer.structure.DbArtifact;
 import org.nuclos.server.dblayer.structure.DbColumn;
@@ -196,6 +200,25 @@ public class OracleDBAccess extends StandardSqlDBAccess {
 			join(",", index.getColumnNames()),
 			getTablespaceSuffix(index)));
 	}
+	
+	@Override
+    protected IBatch getSqlForInsert(DbInsertStatement insertStmt) {
+    	if (insertStmt.getTableName().equals("T_MD_LOCALERESOURCE")) // just a hack. but preventing strtext of t_md_localeresource being not empty does not change already stored values.
+    	{
+    		Map<String, Object> values = new HashMap<String, Object>(insertStmt.getColumnValues());
+    		for (Entry<String, Object> entry : values.entrySet()) {
+				if (entry.getValue().equals("")) {
+					insertStmt.getColumnValues().put(entry.getKey(), " ");
+				}
+			}
+    	}
+    	String sql = String.format("INSERT INTO %s (%s) VALUES (%s)",
+            insertStmt.getTableName(),
+            StringUtils.join(", ", insertStmt.getColumnValues().keySet()),
+            StringUtils.join(", ", CollectionUtils.replicate("?", insertStmt.getColumnValues().size())));
+        Object[] params = insertStmt.getColumnValues().values().toArray();
+        return BatchImpl.simpleBatch(new PreparedString(sql, params));
+    }
 
 	@Override
 	protected IBatch getSqlForCreateSequence(DbSequence sequence) {

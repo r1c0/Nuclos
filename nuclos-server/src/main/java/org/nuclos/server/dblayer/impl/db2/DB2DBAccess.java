@@ -26,11 +26,13 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -58,6 +60,7 @@ import org.nuclos.server.dblayer.incubator.DbExecutor.ResultSetRunner;
 import org.nuclos.server.dblayer.query.DbExpression;
 import org.nuclos.server.dblayer.query.DbQuery;
 import org.nuclos.server.dblayer.query.DbQueryBuilder;
+import org.nuclos.server.dblayer.statements.DbInsertStatement;
 import org.nuclos.server.dblayer.structure.DbArtifact;
 import org.nuclos.server.dblayer.structure.DbCallable;
 import org.nuclos.server.dblayer.structure.DbColumn;
@@ -166,7 +169,27 @@ public class DB2DBAccess extends StandardSqlDBAccess {
 			getName(index.getIndexName()),
 			getQualifiedName(index.getTableName()),
 			join(",", index.getColumnNames())));
-	}
+	}   
+	
+	@Override
+    protected IBatch getSqlForInsert(DbInsertStatement insertStmt) {
+    	if (insertStmt.getTableName().equals("T_MD_LOCALERESOURCE")) // just a hack. but preventing strtext of t_md_localeresource being not empty does not change already stored values.
+    	{
+    		Map<String, Object> values = new HashMap<String, Object>(insertStmt.getColumnValues());
+    		for (Entry<String, Object> entry : values.entrySet()) {
+				if (entry.getValue().equals("")) {
+					insertStmt.getColumnValues().put(entry.getKey(), " ");
+				}
+			}
+    	}
+    	String sql = String.format("INSERT INTO %s (%s) VALUES (%s)",
+            insertStmt.getTableName(),
+            StringUtils.join(", ", insertStmt.getColumnValues().keySet()),
+            StringUtils.join(", ", CollectionUtils.replicate("?", insertStmt.getColumnValues().size())));
+        Object[] params = insertStmt.getColumnValues().values().toArray();
+        return BatchImpl.simpleBatch(new PreparedString(sql, params));
+    }
+
 
 	@Override
 	protected IBatch getSqlForAlterTableColumn(DbColumn column1, DbColumn column2) throws SQLException {
