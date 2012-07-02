@@ -83,6 +83,10 @@
 				<include name="*.jar"/>
 			</fileset>
 		</apply>
+		<copy todir="${dist.resources.dir}/webapp/app">
+			<fileset> filename="conf/splash-screen.gif">
+			</fileset>
+		</copy>
 
 		<copy todir="${dist.resources.dir}/webapp/WEB-INF">
 			<fileset dir="${lib.dir}" includes="axislibs/" />
