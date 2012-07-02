@@ -59,6 +59,7 @@ import org.nuclos.client.ui.UIUtils;
 import org.nuclos.client.ui.collect.component.CollectableComponentFactory;
 import org.nuclos.common.ApplicationProperties;
 import org.nuclos.common.NuclosFatalException;
+import org.nuclos.common.SpringApplicationSubContextsHolder;
 import org.nuclos.common.collection.Pair;
 import org.nuclos.common.startup.Startup;
 import org.nuclos.common2.LangUtils;
@@ -247,7 +248,7 @@ public class StartUp  {
 						}
 					}
 					
-					
+					final SpringApplicationSubContextsHolder holder = SpringApplicationSubContextsHolder.getInstance();
 					final Resource[] extensions = clientContext.getResources(EXTENSION_SPRING_BEANS);
 					log.info("loading extensions spring sub contexts from the following xml files: " + Arrays.asList(extensions));
 
@@ -268,6 +269,7 @@ public class StartUp  {
 						// clientContext.addApplicationListener(refreshListener);
 						log.info("before refreshing spring context " + r);
 						ctx.refresh();
+						holder.registerSubContext(ctx);
 						log.info("after refreshing spring context " + r);
 					}
 					// MetaDataClientProvider.initialize();

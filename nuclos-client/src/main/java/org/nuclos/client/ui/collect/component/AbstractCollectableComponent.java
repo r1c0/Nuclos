@@ -90,7 +90,6 @@ import org.nuclos.client.ui.labeled.LabeledComboBox;
 import org.nuclos.client.ui.popupmenu.DefaultJPopupMenuListener;
 import org.nuclos.client.ui.popupmenu.JPopupMenuFactory;
 import org.nuclos.client.ui.popupmenu.JPopupMenuListener;
-import org.nuclos.common.NuclosEOField;
 import org.nuclos.common.NuclosScript;
 import org.nuclos.common.ParameterProvider;
 import org.nuclos.common.collect.collectable.Collectable;

@@ -254,4 +254,7 @@
 		<property name="genericObjectMetaDataCache" ref="genericObjectMetaDataCache"/>
 	</bean>
 	
+	<bean id="appContext" class="org.nuclos.common.SpringApplicationContextHolder"/>
+	<bean id="appSubContext" class="org.nuclos.common.SpringApplicationSubContextsHolder"/>
+		
 </beans>

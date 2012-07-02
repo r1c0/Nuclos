@@ -31,7 +31,6 @@ import javax.swing.JTable;
 
 import org.apache.log4j.Logger;
 import org.nuclos.client.common.MetaDataClientProvider;
-import org.nuclos.client.common.WorkspaceUtils;
 import org.nuclos.client.genericobject.CollectableGenericObjectWithDependants;
 import org.nuclos.client.genericobject.GenericObjectClientUtils;
 import org.nuclos.client.genericobject.GenericObjectCollectController;

@@ -39,7 +39,6 @@ import javax.swing.JComponent;
 import javax.swing.JPanel;
 
 import org.nuclos.client.layout.wysiwyg.component.WYSIWYGComponent;
-import org.nuclos.client.layout.wysiwyg.component.WYSIWYGLayoutComponent;
 import org.nuclos.client.layout.wysiwyg.datatransfer.TransferableComponent;
 import org.nuclos.client.layout.wysiwyg.editor.ui.panels.WYSIWYGLayoutEditorPanel;
 

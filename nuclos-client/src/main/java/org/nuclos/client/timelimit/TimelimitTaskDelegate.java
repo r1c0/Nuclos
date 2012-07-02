@@ -21,7 +21,6 @@ import java.util.Date;
 
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonFatalException;
-import org.nuclos.common.NuclosFatalException;
 import org.nuclos.server.common.NuclosUpdateException;
 import org.nuclos.server.common.ejb3.TimelimitTaskFacadeRemote;
 import org.nuclos.server.common.valueobject.TimelimitTaskVO;

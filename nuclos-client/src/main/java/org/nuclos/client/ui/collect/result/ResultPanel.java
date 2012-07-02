@@ -72,7 +72,6 @@ import org.jfree.util.Log;
 import org.nuclos.client.common.EnabledListener;
 import org.nuclos.client.common.WorkspaceUtils;
 import org.nuclos.client.common.security.SecurityCache;
-import org.nuclos.client.main.mainframe.MainFrame;
 import org.nuclos.client.synthetica.NuclosThemeSettings;
 import org.nuclos.client.ui.Icons;
 import org.nuclos.client.ui.PopupButton;

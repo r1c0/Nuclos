@@ -16,10 +16,7 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.common.collect.collectable;
 
-import java.util.List;
-
 import org.nuclos.common.NuclosValueListProvider;
-import org.nuclos.common2.exception.CommonBusinessException;
 
 /**
  * Provides a list of <code>CollectableField</code>s.

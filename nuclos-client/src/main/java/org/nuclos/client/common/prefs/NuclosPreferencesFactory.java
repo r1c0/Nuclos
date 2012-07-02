@@ -18,7 +18,6 @@ package org.nuclos.client.common.prefs;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.rmi.RemoteException;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.InvalidPreferencesFormatException;
 import java.util.prefs.Preferences;
@@ -28,7 +27,6 @@ import org.apache.log4j.Logger;
 import org.nuclos.client.common.ShutdownActions;
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common2.SpringLocaleDelegate;
-import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.common2.exception.CommonFinderException;
 import org.nuclos.server.common.ejb3.PreferencesFacadeRemote;
 import org.nuclos.server.common.valueobject.PreferencesVO;

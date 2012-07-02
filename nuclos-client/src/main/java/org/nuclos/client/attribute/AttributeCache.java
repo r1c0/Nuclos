@@ -25,12 +25,12 @@ import org.apache.commons.lang.NullArgumentException;
 import org.apache.log4j.Logger;
 import org.nuclos.client.common.MetaDataClientProvider;
 import org.nuclos.client.genericobject.Modules;
-import org.nuclos.client.statemodel.RuleRepository;
-import org.nuclos.common.*;
+import org.nuclos.common.AttributeProvider;
+import org.nuclos.common.CacheableListener;
+import org.nuclos.common.NuclosAttributeNotFoundException;
+import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.server.attribute.valueobject.AttributeCVO;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 /**
  * Client cache for all attributes (Singleton pattern).

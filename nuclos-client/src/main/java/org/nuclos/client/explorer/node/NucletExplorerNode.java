@@ -31,7 +31,6 @@ import org.nuclos.client.explorer.ExplorerNode;
 import org.nuclos.client.masterdata.datatransfer.MasterDataIdAndEntity;
 import org.nuclos.client.ui.Errors;
 import org.nuclos.common.NuclosEntity;
-import org.nuclos.common.NuclosFatalException;
 import org.nuclos.server.navigation.ejb3.TreeNodeFacadeRemote;
 import org.nuclos.server.navigation.treenode.TreeNode;
 import org.nuclos.server.navigation.treenode.nuclet.NucletTreeNode;

@@ -25,7 +25,6 @@ import java.util.Set;
 import org.apache.commons.lang.NullArgumentException;
 import org.apache.log4j.Logger;
 import org.nuclos.client.attribute.AttributeCache;
-import org.nuclos.client.common.MetaDataClientProvider;
 import org.nuclos.client.masterdata.MasterDataDelegate;
 import org.nuclos.common.GenericObjectMetaDataVO;
 import org.nuclos.common.NuclosFatalException;
@@ -53,8 +52,6 @@ import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 import org.nuclos.server.navigation.treenode.GenericObjectTreeNode;
 import org.nuclos.server.ruleengine.NuclosBusinessRuleException;
 import org.nuclos.server.ruleengine.valueobject.RuleVO;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 /**
  * Business Delegate for <code>GenericObjectFacadeBean</code> and <code>GeneratorFacadeBean</code>.

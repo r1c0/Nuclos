@@ -20,7 +20,6 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import javax.annotation.PostConstruct;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageListener;
@@ -34,8 +33,6 @@ import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.SpringApplicationContextHolder;
 import org.nuclos.server.masterdata.valueobject.MasterDataMetaVO;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 
 /**

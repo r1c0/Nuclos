@@ -21,7 +21,6 @@ import java.io.Serializable;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
-import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JDesktopPane;
 
@@ -34,7 +33,6 @@ import org.nuclos.client.main.mainframe.MainFrame;
 import org.nuclos.client.main.mainframe.MainFrameTab;
 import org.nuclos.client.main.mainframe.workspace.ITabStoreController;
 import org.nuclos.client.main.mainframe.workspace.TabRestoreController;
-import org.nuclos.client.resource.NuclosResourceCache;
 import org.nuclos.client.ui.CommonClientWorker;
 import org.nuclos.client.ui.CommonMultiThreader;
 import org.nuclos.client.ui.Errors;

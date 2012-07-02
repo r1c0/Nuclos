@@ -19,14 +19,11 @@ package org.nuclos.client.layout.wysiwyg;
 import info.clearthought.layout.TableLayout;
 
 import java.awt.BorderLayout;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 import java.util.prefs.Preferences;
 
-import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -37,20 +34,19 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import org.apache.commons.collections.map.ListOrderedMap;
-import org.xml.sax.SAXException;
-
-import org.nuclos.common2.exception.CommonBusinessException;
-import org.nuclos.common2.exception.CommonValidationException;
 import org.nuclos.client.layout.admin.LayoutCollectController;
 import org.nuclos.client.layout.wysiwyg.CollectableWYSIWYGLayoutEditor.WYSIWYGLayoutEditorChangeDescriptor;
 import org.nuclos.client.layout.wysiwyg.WYSIWYGStringsAndLabels.WYSIWYGLAYOUT_EDITOR_PANEL;
 import org.nuclos.client.layout.wysiwyg.component.WYSIWYGComponent;
 import org.nuclos.client.layout.wysiwyg.component.properties.PropertiesPanel;
 import org.nuclos.client.layout.wysiwyg.editor.ui.panels.WYSIWYGEditorsToolbar;
+import org.nuclos.client.layout.wysiwyg.editor.ui.panels.WYSIWYGEditorsToolbar.WYSIWYGToolbarAttachable;
 import org.nuclos.client.layout.wysiwyg.editor.ui.panels.WYSIWYGInitialFocusComponentEditor;
 import org.nuclos.client.layout.wysiwyg.editor.ui.panels.WYSIWYGLayoutEditorPanel;
-import org.nuclos.client.layout.wysiwyg.editor.ui.panels.WYSIWYGEditorsToolbar.WYSIWYGToolbarAttachable;
 import org.nuclos.client.layout.wysiwyg.palette.PaletteController;
+import org.nuclos.common2.exception.CommonBusinessException;
+import org.nuclos.common2.exception.CommonValidationException;
+import org.xml.sax.SAXException;
 
 /**
  * This Class controls the WYSIWYG Editor. It does setup the Panels, shows the

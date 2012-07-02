@@ -22,15 +22,14 @@ import java.io.StreamTokenizer;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Vector;
 
 import org.apache.log4j.Logger;
+import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common2.ServiceLocator;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonValidationException;
-import org.nuclos.common.NuclosFatalException;
 import org.nuclos.server.masterdata.valueobject.MasterDataMetaVO;
 import org.nuclos.server.report.ejb3.DatasourceFacadeRemote;
 

@@ -16,12 +16,9 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.entityobject;
 
-import org.nuclos.client.attribute.AttributeCache;
 import org.nuclos.client.common.MetaDataClientProvider;
 import org.nuclos.common.SpringApplicationContextHolder;
 import org.nuclos.common.entityobject.CollectableEOEntityProvider;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 /**
  * A CollectableEntityProvider implementation singleton for use on the client side.

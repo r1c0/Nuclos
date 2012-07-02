@@ -91,7 +91,6 @@ import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.NuclosScript;
 import org.nuclos.common.SearchConditionUtils;
 import org.nuclos.common.TranslationVO;
-import org.nuclos.common.attribute.ComponentType;
 import org.nuclos.common.collect.collectable.CollectableEntity;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableComparison;

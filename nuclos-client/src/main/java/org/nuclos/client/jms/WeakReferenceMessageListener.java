@@ -20,7 +20,6 @@ import java.lang.ref.WeakReference;
 import java.text.MessageFormat;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 
 import javax.jms.Message;
 import javax.jms.MessageListener;
@@ -31,7 +30,7 @@ import javax.jms.TopicSubscriber;
 
 import org.apache.log4j.Logger;
 import org.nuclos.common.NuclosFatalException;
-import org.nuclos.common.SpringApplicationContextHolder;
+import org.nuclos.common.SpringApplicationSubContextsHolder;
 import org.nuclos.common2.SpringLocaleDelegate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
@@ -89,7 +88,7 @@ class WeakReferenceMessageListener implements MessageListener {
 	 */
 	public void subscribe() {
 		try {
-			final Object bean = SpringApplicationContextHolder.getBean(topicname);
+			final Object bean = SpringApplicationSubContextsHolder.getInstance().searchBean(topicname);
 			topic2Bean.put(topicname, bean);
 			if (bean instanceof SimpleMessageListenerContainer) {
 				SimpleMessageListenerContainer container = (SimpleMessageListenerContainer)bean;

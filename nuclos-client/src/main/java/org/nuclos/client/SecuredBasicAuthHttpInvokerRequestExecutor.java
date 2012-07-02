@@ -18,8 +18,6 @@ package org.nuclos.client;
 
 import java.io.IOException;
 
-import javax.annotation.PostConstruct;
-
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethodRetryHandler;
@@ -30,7 +28,6 @@ import org.apache.log4j.Logger;
 import org.nuclos.common.ApplicationProperties;
 import org.nuclos.common2.LangUtils;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.remoting.httpinvoker.CommonsHttpInvokerRequestExecutor;
 import org.springframework.remoting.httpinvoker.HttpInvokerClientConfiguration;
 import org.springframework.security.core.Authentication;

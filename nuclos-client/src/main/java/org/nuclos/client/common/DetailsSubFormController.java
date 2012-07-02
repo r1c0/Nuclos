@@ -65,7 +65,6 @@ import org.nuclos.client.genericobject.CollectableGenericObjectWithDependants;
 import org.nuclos.client.genericobject.GenericObjectDelegate;
 import org.nuclos.client.genericobject.datatransfer.GenericObjectIdModuleProcess;
 import org.nuclos.client.genericobject.datatransfer.TransferableGenericObjects;
-import org.nuclos.client.main.mainframe.MainFrame;
 import org.nuclos.client.main.mainframe.MainFrameTab;
 import org.nuclos.client.masterdata.CollectableMasterData;
 import org.nuclos.client.masterdata.MasterDataDelegate;

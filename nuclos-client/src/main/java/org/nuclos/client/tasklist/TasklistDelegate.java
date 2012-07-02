@@ -2,10 +2,8 @@ package org.nuclos.client.tasklist;
 
 import java.util.Collection;
 
-import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.tasklist.TasklistDefinition;
 import org.nuclos.common.tasklist.TasklistFacadeRemote;
-import org.nuclos.common2.exception.CommonFatalException;
 
 public class TasklistDelegate {
 

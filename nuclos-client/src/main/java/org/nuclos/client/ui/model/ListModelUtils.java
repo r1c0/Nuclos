@@ -1,9 +1,7 @@
 package org.nuclos.client.ui.model;
 
-import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 import javax.swing.JList;

@@ -21,7 +21,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import javax.annotation.PostConstruct;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageListener;
@@ -29,7 +28,6 @@ import javax.jms.TextMessage;
 
 import org.apache.log4j.Logger;
 import org.nuclos.client.entityobject.EntityFacadeDelegate;
-import org.nuclos.client.genericobject.GenericObjectMetaDataCache;
 import org.nuclos.client.jms.TopicNotificationReceiver;
 import org.nuclos.common.JMSConstants;
 import org.nuclos.common.NuclosEntity;
@@ -43,8 +41,6 @@ import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonFinderException;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 /**
  * Caches whole contents from master data entities. It is not used for data dependant on a foreign key.

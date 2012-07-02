@@ -32,7 +32,6 @@ import java.util.TreeMap;
 import javax.annotation.security.RolesAllowed;
 
 import org.apache.log4j.Logger;
-import org.nuclos.api.Preferences;
 import org.nuclos.api.Settings;
 import org.nuclos.api.SettingsImpl;
 import org.nuclos.common.Actions;

@@ -26,12 +26,9 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Properties;
 
-import javax.annotation.PostConstruct;
-
 import org.apache.log4j.Logger;
 import org.nuclos.common2.StringUtils;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.stereotype.Component;
 
 /**
  * Application global properties.

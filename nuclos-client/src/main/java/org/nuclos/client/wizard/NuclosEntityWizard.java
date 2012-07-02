@@ -21,9 +21,7 @@ import java.util.Iterator;
 
 import javax.swing.Action;
 
-import org.nuclos.client.main.mainframe.MainFrame;
 import org.nuclos.client.wizard.steps.NuclosEntityAbstractStep;
-import org.nuclos.common.WorkspaceDescription.EntityPreferences;
 import org.pietschy.wizard.ButtonBar;
 import org.pietschy.wizard.InvalidStateException;
 import org.pietschy.wizard.Wizard;

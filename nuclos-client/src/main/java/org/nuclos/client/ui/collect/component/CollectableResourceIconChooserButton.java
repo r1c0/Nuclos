@@ -16,23 +16,13 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.ui.collect.component;
 
-import java.awt.Component;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 
-import javax.swing.JCheckBox;
-import javax.swing.JMenuItem;
-import javax.swing.JPopupMenu;
-import javax.swing.JTable;
-import javax.swing.SwingConstants;
-import javax.swing.table.TableCellRenderer;
-
 import org.apache.log4j.Logger;
-import org.jdesktop.jxlayer.JXLayer;
 import org.nuclos.client.common.NuclosLOVListener;
 import org.nuclos.client.resource.NuclosResourceCategory;
 import org.nuclos.client.resource.ResourceCache;
-import org.nuclos.client.ui.TriStateCheckBox;
 import org.nuclos.client.ui.collect.CollectController.CollectableEventListener;
 import org.nuclos.client.ui.collect.CollectController.MessageType;
 import org.nuclos.client.ui.resource.ResourceIconChooser;
@@ -43,8 +33,6 @@ import org.nuclos.common.collect.collectable.CollectableField;
 import org.nuclos.common.collect.collectable.CollectableValueField;
 import org.nuclos.common.collect.collectable.CollectableValueIdField;
 import org.nuclos.common.collect.exception.CollectableFieldFormatException;
-import org.nuclos.common2.IdUtils;
-import org.nuclos.common2.LangUtils;
 import org.nuclos.server.resource.valueobject.ResourceVO;
 
 /**

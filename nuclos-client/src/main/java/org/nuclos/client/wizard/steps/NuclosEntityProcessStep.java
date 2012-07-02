@@ -40,7 +40,6 @@ import org.nuclos.client.ui.collect.component.model.CollectableComponentModel;
 import org.nuclos.client.ui.collect.component.model.CollectableComponentModelProvider;
 import org.nuclos.client.ui.collect.component.model.DetailsComponentModel;
 import org.nuclos.client.valuelistprovider.cache.CollectableFieldsProviderCache;
-import org.nuclos.client.wizard.NuclosEntityWizard;
 import org.nuclos.common.NuclosBusinessException;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.NuclosFatalException;

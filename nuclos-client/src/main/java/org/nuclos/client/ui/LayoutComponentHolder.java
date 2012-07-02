@@ -17,7 +17,6 @@
 package org.nuclos.client.ui;
 
 import java.awt.BorderLayout;
-import java.awt.Component;
 
 import javax.swing.JComponent;
 import javax.swing.JPanel;

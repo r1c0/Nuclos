@@ -21,15 +21,12 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
-import org.nuclos.client.common.MetaDataClientProvider;
 import org.nuclos.common.SpringApplicationContextHolder;
 import org.nuclos.common.collect.collectable.CollectableField;
 import org.nuclos.common.collect.collectable.CollectableValueIdField;
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common2.EntityAndFieldName;
 import org.nuclos.server.masterdata.ejb3.EntityFacadeRemote;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 // @Component
 public class EntityFacadeDelegate implements EntityFacadeRemote {

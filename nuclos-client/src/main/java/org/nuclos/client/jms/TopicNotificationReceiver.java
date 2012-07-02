@@ -20,7 +20,6 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.jms.ConnectionFactory;
 import javax.jms.JMSException;
@@ -34,8 +33,6 @@ import org.nuclos.common.JMSConstants;
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common2.SpringLocaleDelegate;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 /**
  * Receives topic based JMS messages in the client.

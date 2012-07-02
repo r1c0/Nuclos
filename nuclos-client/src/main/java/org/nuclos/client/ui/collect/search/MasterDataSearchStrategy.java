@@ -34,7 +34,6 @@ import org.nuclos.common.collect.collectable.searchcondition.CollectableSearchCo
 import org.nuclos.common.collect.collectable.searchcondition.ComparisonOperator;
 import org.nuclos.common.collect.collectable.searchcondition.CompositeCollectableSearchCondition;
 import org.nuclos.common.collect.collectable.searchcondition.LogicalOperator;
-import org.nuclos.common.collect.collectable.searchcondition.SearchConditionUtils;
 import org.nuclos.common.collect.exception.CollectableFieldFormatException;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.server.genericobject.ProxyList;

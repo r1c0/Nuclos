@@ -56,8 +56,6 @@ import org.nuclos.client.ui.collect.model.GenericObjectsResultTableModel;
 import org.nuclos.client.ui.collect.model.MasterDataResultTableModel;
 import org.nuclos.client.ui.collect.model.SortableCollectableTableModel;
 import org.nuclos.client.ui.table.CommonJTable;
-import org.nuclos.client.ui.table.TableUtils;
-import org.nuclos.common.CollectableEntityFieldWithEntity;
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.ParameterProvider;
 import org.nuclos.common.collect.collectable.Collectable;
@@ -65,11 +63,7 @@ import org.nuclos.common.collect.collectable.CollectableEntity;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
 import org.nuclos.common.collect.collectable.CollectableUtils;
 import org.nuclos.common.collect.collectable.DefaultCollectableEntityProvider;
-import org.nuclos.common.collection.CollectionUtils;
-import org.nuclos.common.collection.Predicate;
-import org.nuclos.common2.CommonRunnable;
 import org.nuclos.common2.PreferencesUtils;
-import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.PreferencesException;
 
 /**

@@ -32,7 +32,6 @@ import org.nuclos.client.main.mainframe.MainFrame;
 import org.nuclos.client.ui.Icons;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.client.ui.tree.TreeNodeAction;
-import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common2.CommonRunnable;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.server.navigation.ejb3.TreeNodeFacadeRemote;

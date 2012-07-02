@@ -199,8 +199,6 @@
 		<property name="lookupService" ref="localeDelegate"/>
 	</bean>
     
-	<bean id="appContext" class="org.nuclos.common.SpringApplicationContextHolder"/>
-	
 	<bean id="startup" class="org.nuclos.common.startup.Startup"/>
 
 	<bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">

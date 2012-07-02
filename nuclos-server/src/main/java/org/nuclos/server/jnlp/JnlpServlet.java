@@ -50,7 +50,6 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
-import org.apache.axis.configuration.FileProvider;
 import org.apache.log4j.Logger;
 import org.nuclos.common.ApplicationProperties;
 import org.nuclos.server.common.ServerProperties;

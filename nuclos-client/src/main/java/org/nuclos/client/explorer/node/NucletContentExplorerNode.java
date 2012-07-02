@@ -40,7 +40,6 @@ import org.nuclos.client.resource.NuclosResourceCache;
 import org.nuclos.client.resource.ResourceCache;
 import org.nuclos.client.ui.Errors;
 import org.nuclos.client.ui.Icons;
-import org.nuclos.common.NuclosFatalException;
 import org.nuclos.server.navigation.ejb3.TreeNodeFacadeRemote;
 import org.nuclos.server.navigation.treenode.TreeNode;
 import org.nuclos.server.navigation.treenode.nuclet.content.AbstractNucletContentEntryTreeNode;

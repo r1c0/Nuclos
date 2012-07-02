@@ -51,7 +51,6 @@ import org.nuclos.client.timelimit.TimelimitTaskController;
 import org.nuclos.client.timelimit.TimelimitTaskDelegate;
 import org.nuclos.client.ui.Controller;
 import org.nuclos.client.ui.Errors;
-import org.nuclos.client.ui.Icons;
 import org.nuclos.client.ui.MainFrameTabAdapter;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.client.ui.collect.CollectableTableHelper;
@@ -65,10 +64,10 @@ import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.PreferencesException;
 import org.nuclos.server.report.valueobject.DynamicTasklistVO;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
-import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * Controller for the whole task panel. The control of the personal tasks is

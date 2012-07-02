@@ -19,7 +19,6 @@ package org.nuclos.common2;
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.text.Collator;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;

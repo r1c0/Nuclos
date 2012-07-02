@@ -18,7 +18,6 @@ package org.nuclos.client.resource;
 
 import java.util.Map;
 
-import javax.annotation.PostConstruct;
 import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.swing.ImageIcon;
@@ -30,8 +29,6 @@ import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Pair;
 import org.nuclos.server.resource.valueobject.ResourceVO;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 /**
  * A (client) cache for resources.

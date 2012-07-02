@@ -20,7 +20,6 @@ package org.nuclos.client.common;
 import java.awt.Color;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import javax.annotation.PostConstruct;
 
 import javax.jms.JMSException;
 import javax.jms.Message;
@@ -36,8 +35,6 @@ import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.common2.exception.CommonRemoteException;
 import org.nuclos.server.common.ejb3.ParameterFacadeRemote;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 
 /**

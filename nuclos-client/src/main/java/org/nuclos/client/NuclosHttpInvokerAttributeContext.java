@@ -20,10 +20,7 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.annotation.PreDestroy;
-
 import org.springframework.beans.factory.DisposableBean;
-import org.springframework.stereotype.Component;
 
 // @Component
 public class NuclosHttpInvokerAttributeContext implements DisposableBean {

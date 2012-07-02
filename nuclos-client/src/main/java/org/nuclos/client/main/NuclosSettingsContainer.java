@@ -32,7 +32,6 @@ import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 
 import org.apache.log4j.Logger;
-import org.nuclos.api.Preferences;
 import org.nuclos.api.Settings;
 import org.nuclos.api.ui.UserSettingsEditor;
 import org.nuclos.client.livesearch.LiveSearchSettingsPanel;

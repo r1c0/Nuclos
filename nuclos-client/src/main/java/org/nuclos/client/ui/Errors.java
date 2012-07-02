@@ -36,13 +36,11 @@ import javax.swing.JOptionPane;
 
 import org.apache.log4j.Logger;
 import org.nuclos.client.LocalUserProperties;
-import org.nuclos.client.common.LocaleDelegate;
 import org.nuclos.client.login.LoginController;
 import org.nuclos.client.main.Main;
 import org.nuclos.client.main.mainframe.MainFrame;
 import org.nuclos.client.security.NuclosRemoteServerSession;
 import org.nuclos.common.ApplicationProperties;
-import org.nuclos.common.SpringApplicationContextHolder;
 import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonFatalException;

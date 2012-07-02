@@ -35,7 +35,6 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.TimeZone;
 
 import javax.naming.NamingException;
 import javax.swing.BorderFactory;
@@ -53,7 +52,6 @@ import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.text.JTextComponent;
 
-import org.apache.commons.httpclient.util.LangUtils;
 import org.apache.log4j.Logger;
 import org.nuclos.client.LocalUserProperties;
 import org.nuclos.client.NuclosIcons;
@@ -64,7 +62,6 @@ import org.nuclos.client.common.security.SecurityDelegate;
 import org.nuclos.client.genericobject.Modules;
 import org.nuclos.client.livesearch.LiveSearchController;
 import org.nuclos.client.main.ChangePasswordPanel;
-import org.nuclos.client.main.Main;
 import org.nuclos.client.main.StartUp;
 import org.nuclos.client.main.SwingLocaleSwitcher;
 import org.nuclos.client.security.NuclosRemoteServerSession;

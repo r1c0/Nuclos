@@ -70,7 +70,6 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
 import org.apache.commons.collections.Closure;
-import org.nuclos.client.NuclosIcons;
 import org.nuclos.client.common.MetaDataClientProvider;
 import org.nuclos.client.main.Main;
 import org.nuclos.client.main.mainframe.MainFrameTab;

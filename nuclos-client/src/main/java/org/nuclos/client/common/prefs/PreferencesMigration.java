@@ -27,7 +27,6 @@ import javax.swing.SortOrder;
 import org.apache.commons.httpclient.util.LangUtils;
 import org.apache.log4j.Logger;
 import org.nuclos.client.common.MetaDataClientProvider;
-import org.nuclos.client.main.mainframe.MainFrame;
 import org.nuclos.client.main.mainframe.MainFrameSpringComponent;
 import org.nuclos.common.CollectableEntityFieldWithEntity;
 import org.nuclos.common.CollectableEntityFieldWithEntityForExternal;
@@ -42,7 +41,6 @@ import org.nuclos.common.genericobject.CollectableGenericObjectEntityField;
 import org.nuclos.common.masterdata.CollectableMasterDataForeignKeyEntityField;
 import org.nuclos.common2.PreferencesUtils;
 import org.nuclos.common2.exception.PreferencesException;
-import org.springframework.beans.factory.annotation.Autowired;
 
 public class PreferencesMigration {
 	

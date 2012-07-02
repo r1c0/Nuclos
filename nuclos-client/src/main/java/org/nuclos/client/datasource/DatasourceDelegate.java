@@ -21,8 +21,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.annotation.security.RolesAllowed;
-
 import org.nuclos.common.NuclosBusinessException;
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.collect.collectable.CollectableField;
@@ -46,7 +44,6 @@ import org.nuclos.server.report.valueobject.RecordGrantVO;
 import org.nuclos.server.report.valueobject.ResultVO;
 import org.nuclos.server.report.valueobject.ValuelistProviderVO;
 import org.nuclos.server.ruleengine.NuclosBusinessRuleException;
-import org.springframework.stereotype.Component;
 
 /**
  * The Delegate for DatasourceFacadeBean. <br>
