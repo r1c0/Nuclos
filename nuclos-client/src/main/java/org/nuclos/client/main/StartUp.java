@@ -22,7 +22,9 @@ import java.awt.PopupMenu;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
@@ -147,6 +149,8 @@ public class StartUp  {
 		"META-INF/nuclos/client-beans.xml"
 	};
 	
+	private static final String EXTENSION_SPRING_BEANS = "classpath:META-INF/nuclos/nuclos-extension-client-beans.xml";
+	
 	//
 
 	private final String[] args;
@@ -246,6 +250,24 @@ public class StartUp  {
 								}
 							}
 						}
+					}
+					
+					
+					final Resource[] extensions = clientContext.getResources(EXTENSION_SPRING_BEANS);
+					log.info("loading extensions spring sub contexts from the following xml files: " + Arrays.asList(extensions));
+
+					for (Resource r : extensions) {
+						if (!r.exists()) {
+							log.info("spring sub context xml not found: " + r);
+							continue;
+						}
+						final ClassPathXmlApplicationContext ctx = new ClassPathXmlApplicationContext(new String[] { r.getFilename() }, false, clientContext);
+						// see http://fitw.wordpress.com/2009/03/14/web-start-and-spring/ why this is needed (tp)
+						ctx.setClassLoader(cl);
+						// clientContext.addApplicationListener(refreshListener);
+						log.info("before refreshing spring context " + r);
+						ctx.refresh();
+						log.info("after refreshing spring context " + r);
 					}
 					// MetaDataClientProvider.initialize();
 				}
