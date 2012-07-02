@@ -22,9 +22,7 @@ import java.awt.PopupMenu;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
@@ -47,15 +45,10 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.helpers.LogLog;
 import org.nuclos.api.ui.annotation.NucletComponent;
 import org.nuclos.client.NuclosIcons;
-import org.nuclos.client.common.LocaleDelegate;
-import org.nuclos.client.common.MetaDataClientProvider;
 import org.nuclos.client.common.NuclosCollectableComponentFactory;
-import org.nuclos.client.common.NuclosCollectableEntityProvider;
 import org.nuclos.client.common.prefs.NuclosPreferencesFactory;
 import org.nuclos.client.common.security.SecurityDelegate;
-import org.nuclos.client.genericobject.Modules;
 import org.nuclos.client.jms.TopicNotificationReceiver;
-import org.nuclos.client.livesearch.LiveSearchController;
 import org.nuclos.client.login.LoginController;
 import org.nuclos.client.login.LoginEvent;
 import org.nuclos.client.login.LoginListener;
@@ -74,10 +67,12 @@ import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.common2.exception.CommonPermissionException;
 import org.nuclos.server.servermeta.ejb3.ServerMetaFacadeRemote;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
+import org.springframework.context.support.AbstractXmlApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.context.support.FileSystemXmlApplicationContext;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.util.Log4jConfigurer;
 import org.springframework.util.SystemPropertyUtils;
@@ -261,7 +256,13 @@ public class StartUp  {
 							log.info("spring sub context xml not found: " + r);
 							continue;
 						}
-						final ClassPathXmlApplicationContext ctx = new ClassPathXmlApplicationContext(new String[] { r.getFilename() }, false, clientContext);
+						final AbstractXmlApplicationContext ctx;
+						if (r instanceof ClassPathResource) {
+							ctx = new ClassPathXmlApplicationContext(new String[] { ((ClassPathResource)r).getPath() }, false, clientContext);
+						}
+						else {
+							ctx = new FileSystemXmlApplicationContext(new String[] { r.getFile().getPath() }, false, clientContext);
+						}
 						// see http://fitw.wordpress.com/2009/03/14/web-start-and-spring/ why this is needed (tp)
 						ctx.setClassLoader(cl);
 						// clientContext.addApplicationListener(refreshListener);

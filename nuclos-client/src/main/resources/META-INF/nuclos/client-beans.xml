@@ -107,6 +107,7 @@
 	</bean>
 
 	<!-- Avoid scanning for the base component in nuclos-client -->
+	<bean class="org.nuclos.client.ApiClientPropertyService" />
 	<bean class="org.nuclos.client.nuclet.MailToEventHandlerPostProcessor">
 		<property name="mailToEventHandlerRepository" ref="mailToEventHandlerRepository"/>
 	</bean>
