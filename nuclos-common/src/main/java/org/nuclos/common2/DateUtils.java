@@ -387,7 +387,7 @@ public class DateUtils {
 	}
 	
 	/**
-	 * Return the next quantized date before than given date.
+	 * Return the next quantized date before the given date.
 	 */
 	public static Date floorBound(Date date, int quantizer) {
 		final Calendar cal = Calendar.getInstance();
@@ -408,7 +408,20 @@ public class DateUtils {
 	}
 	
 	/**
-	 * Return the next quantized date after than given date.
+	 * Return last Date within the next quantized date before the given date.
+	 */
+	public static Date topBound(Date date, int quantizer) {
+		final Calendar cal = Calendar.getInstance();
+		cal.setTime(date);
+		montoneAdd(cal, quantizer, 1);
+		// side effect on cal
+		dateFromQuant(cal, getQuant(cal, quantizer), quantizer);
+		montoneAdd(cal, Calendar.SECOND, -2);
+		return cal.getTime();
+	}
+	
+	/**
+	 * Return the next quantized date after the given date.
 	 */
 	public static Date ceilBound(Date date, int quantizer) {
 		final Calendar cal = Calendar.getInstance();

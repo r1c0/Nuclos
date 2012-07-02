@@ -84,9 +84,12 @@ public abstract class AbstractResPlanExporter<R,E> implements IResPlanExporter<R
 	private Interval<Date> realHorizon;
 	
 	/**
-	 * Maximum x-Position. (Minimal x-Position is 0).
+	 * Maximum x-Position (on Date scale). 
+	 * <p>
+	 * Minimum x-Position (on Date scale) is XPIXEL_OFFSET;
+	 * </p> 
 	 */
-	private float maxX;
+	protected float maxX;
 	
 	/**
 	 * How many timeMillis are one pixel (1px).
@@ -97,6 +100,11 @@ public abstract class AbstractResPlanExporter<R,E> implements IResPlanExporter<R
 	 * Current y-Position.
 	 */
 	private float currentY = 0.0f;
+	
+	/**
+	 * Current x clipping.
+	 */
+	private XCoord currentClipX;
 	
 	/**
 	 * current number of entries drawn.
@@ -184,7 +192,7 @@ public abstract class AbstractResPlanExporter<R,E> implements IResPlanExporter<R
 		makeResPlanModel(g);
 		makeFooter(g);
 		
-		svg.setAttribute("width", Float.toString(maxX + XPIXEL_OFFSET + 10));
+		svg.setAttribute("width", Float.toString(maxX + 10));
 		svg.setAttribute("height", Float.toString(currentY + 10));
 	}
 	
@@ -218,13 +226,13 @@ public abstract class AbstractResPlanExporter<R,E> implements IResPlanExporter<R
 					final SVGGElement group = sdds.createGroup();
 					g.appendChild(group);
 					
-					group.appendChild(sdds.createRect(xc.x + XPIXEL_OFFSET, currentY, 
+					group.appendChild(sdds.createRect(xc.x, currentY, 
 							xc.width, YPIXEL_FOR_HEADER_CAT, 
 							"header"));
 					// + 7: Test case: Granularity month -> Feb YY must be shown.
 					if (xc.width + 7 > getXPixelForTimeCat()) {
 						final String text = tg.getCategoryValue(cat, cal.getTime());
-						group.appendChild(sdds.createText(xc.x + XPIXEL_OFFSET + xc.width/2, currentY + YPIXEL_HEADER_TXT_OFFSET, 
+						group.appendChild(sdds.createText(xc.x + xc.width/2, currentY + YPIXEL_HEADER_TXT_OFFSET, 
 							text, "headerTxt"));
 					}
 				}
@@ -234,6 +242,10 @@ public abstract class AbstractResPlanExporter<R,E> implements IResPlanExporter<R
 	}
 	
 	protected void makeResPlanModel(SVGElement g) {
+		currentClipX = new XCoord();
+		currentClipX.x = XPIXEL_OFFSET;
+		currentClipX.width = maxX;
+		
 		int nor = 0;
 		for (R r: model.getResources()) {
 			final float resourceStartY = currentY;
@@ -242,7 +254,7 @@ public abstract class AbstractResPlanExporter<R,E> implements IResPlanExporter<R
 			SVGElement resourceText = mkResPlanResource(g, r, lastInterval);
 			currentY += YPIXEL_FOR_RESOURCE;
 			if (nor % 2 == 0) {
-				final SVGRectElement oddLane = sdds.createRect(0, resourceStartY, maxX + XPIXEL_OFFSET, currentY - resourceStartY, "oddRow"); 
+				final SVGRectElement oddLane = sdds.createRect(0, resourceStartY, maxX, currentY - resourceStartY, "oddRow"); 
 				g.insertBefore(oddLane, resourceText.getNextSibling());
 			}
 			lastInterval = new Interval<Date>(LOW, LOW);
@@ -276,14 +288,14 @@ public abstract class AbstractResPlanExporter<R,E> implements IResPlanExporter<R
 			final SVGGElement group = sdds.createGroup();
 			g.appendChild(group);
 			
-			final SVGRectElement rect = sdds.createRect(xc.x + XPIXEL_OFFSET, currentY + YPIXEL_RESOURCE_BORDER, xc.width, 
+			final SVGRectElement rect = sdds.createRect(xc.x, currentY + YPIXEL_RESOURCE_BORDER, xc.width, 
 					YPIXEL_FOR_RESOURCE - 2 * YPIXEL_RESOURCE_BORDER, entryRectClass());
 			final SVGTextElement text;
 			if (entryTxtCenter()) {
-				text = sdds.createText(xc.x + XPIXEL_OFFSET + xc.width/2, currentY + YPIXEL_BIGTXT_OFFSET, entryName, entryTxtClass());				
+				text = sdds.createText(xc.x + xc.width/2, currentY + YPIXEL_BIGTXT_OFFSET, entryName, entryTxtClass());				
 			}
 			else {
-				text = sdds.createText(xc.x + XPIXEL_OFFSET, currentY + YPIXEL_BIGTXT_OFFSET, entryName, entryTxtClass());
+				text = sdds.createText(xc.x, currentY + YPIXEL_BIGTXT_OFFSET, entryName, entryTxtClass());
 			}
 			group.appendChild(rect);
 			group.appendChild(text);
@@ -296,6 +308,9 @@ public abstract class AbstractResPlanExporter<R,E> implements IResPlanExporter<R
 	}
 	
 	protected void makeFooter(SVGElement g) {
+		currentClipX = new XCoord();
+		currentClipX.x = 0;
+		currentClipX.width = 2 * maxX;
 	}
 	
 	protected void mkRhomb(SVGElement g, float x, float y, float size, String clazz) {
@@ -308,7 +323,7 @@ public abstract class AbstractResPlanExporter<R,E> implements IResPlanExporter<R
 	
 	protected float getX(Date d) {
 		final long millis = d.getTime() - realHorizon.getStart().getTime();
-		return millis / millisForPx;
+		return millis / millisForPx + XPIXEL_OFFSET;
 	}
 	
 	protected XCoord clipX(Interval<Date> i) {
@@ -326,21 +341,27 @@ public abstract class AbstractResPlanExporter<R,E> implements IResPlanExporter<R
 	}
 	
 	protected XCoord clipX(float x, float width) {
-		float realWidth;
-		if (x < 0) {
-			realWidth = width + x;
+		if (currentClipX == null) {
+			currentClipX = new XCoord();
+			currentClipX.x = 0;
+			currentClipX.width = XPIXEL_OFFSET + maxX;
 		}
-		else if (x + width > maxX) {
-			realWidth = maxX - x;
+		
+		float realWidth;
+		if (x < currentClipX.x) {
+			realWidth = width + x - currentClipX.x;
+		}
+		else if (x + width > currentClipX.x + currentClipX.width) {
+			realWidth = currentClipX.x + currentClipX.width - x;
 		}
 		else {
 			realWidth = width;
 		}
 		// assert realWidth >= 0 && realWidth <= maxX : "realWidth: " + realWidth;
-		if (realWidth < 0 || realWidth > maxX) {
+		if (realWidth < 0 || realWidth > currentClipX.width) {
 			return null;
 		}
-		x = Math.max(x, 0);
+		x = Math.max(x, currentClipX.x);
 		
 		final XCoord result = new XCoord();
 		result.x = x;
@@ -353,15 +374,21 @@ public abstract class AbstractResPlanExporter<R,E> implements IResPlanExporter<R
 	}
 	
 	protected Float clipX(float x) {
-		if (x < 0 || x > maxX) {
+		if (currentClipX == null) {
+			currentClipX = new XCoord();
+			currentClipX.x = 0;
+			currentClipX.width = XPIXEL_OFFSET + maxX;
+		}
+		
+		if (x < currentClipX.x || x > currentClipX.x + currentClipX.width) {
 			return null;
 		}
 		return x;
 	}
 	
 	protected static class XCoord {
-		protected float x;
-		protected float width;
+		public float x;
+		public float width;
 	}
 	
 }
