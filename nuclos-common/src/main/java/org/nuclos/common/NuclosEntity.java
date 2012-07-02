@@ -148,7 +148,7 @@ public enum NuclosEntity {
 	TIMELIMITTASK("timelimittask"),
 	TRADE("trade"),
 	USER("user"),
-	USERPREFERENCES("userPreferences"),
+	USERSETTING("userSetting"),
 	VALUELISTPROVIDER("valuelistProvider"),
 	VALUELISTPROVIDERUSAGE("valuelistProviderUsage"),
 	WIKI("wiki"),

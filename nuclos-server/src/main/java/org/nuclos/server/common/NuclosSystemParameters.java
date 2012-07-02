@@ -45,6 +45,8 @@ public class NuclosSystemParameters {
 	public static final String RESOURCE_PATH = "nuclos.data.resource.path";
 	public static final String REPORT_PATH = "nuclos.data.reports.path";
 	public static final String DATABASE_STRUCTURE_CHANGE_LOG_PATH = "nuclos.data.database-structure-changes.path";
+	
+	public static final String PACAKGE_PROPERTIES_CONF_PATH = "package-properties.conf.path";
 
 	private static final Properties systemParameters;
 	static {

@@ -19,7 +19,6 @@ package org.nuclos.server.common.ejb3;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -33,8 +32,9 @@ import java.util.TreeMap;
 import javax.annotation.security.RolesAllowed;
 
 import org.apache.log4j.Logger;
-import org.nuclos.api.UserPreferences;
-import org.nuclos.api.service.UserPreferencesService;
+import org.nuclos.api.Preferences;
+import org.nuclos.api.Settings;
+import org.nuclos.api.SettingsImpl;
 import org.nuclos.common.Actions;
 import org.nuclos.common.NuclosBusinessException;
 import org.nuclos.common.NuclosEntity;
@@ -83,6 +83,9 @@ import org.nuclos.server.dblayer.statements.DbInsertStatement;
 import org.nuclos.server.dblayer.statements.DbTableStatement;
 import org.nuclos.server.genericobject.searchcondition.CollectableSearchExpression;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.thoughtworks.xstream.XStream;
+import com.thoughtworks.xstream.io.xml.DomDriver;
 
 /**
  * Facade bean for storing user preferences.
@@ -927,74 +930,73 @@ public class PreferencesFacadeBean extends NuclosFacadeBean implements Preferenc
 	}
 	
 	@Override
-	public Collection<UserPreferences> getApiUserPreferences() {
+	public Map<String, Settings> getApiUserSettings() {
 		final Long nuclosUserId = SecurityCache.getInstance().getUserId(getCurrentUserName()).longValue();
 		
 		final DbQueryBuilder builder = dataBaseHelper.getDbAccess().getQueryBuilder();
 		final DbQuery<DbTuple> query = builder.createTupleQuery();
-		final DbFrom t = query.from("T_MD_USER_PREFERENCES").alias(SystemFields.BASE_ALIAS);
+		final DbFrom t = query.from("T_MD_USER_SETTING").alias(SystemFields.BASE_ALIAS);
 		query.multiselect(
-				t.baseColumn("STRPREFERENCESCLASS", String.class),
-				t.baseColumn("STRPREFERENCES", String.class));
+				t.baseColumn("STRSETTINGKEY", String.class),
+				t.baseColumn("CLBSETTING", String.class));
 		query.where(builder.equal(t.baseColumn("INTID_T_MD_USER", Long.class), nuclosUserId));
 
 		
-		final Collection<UserPreferences> result = new ArrayList<UserPreferences>();
+		final Map<String, Settings> result = new HashMap<String, Settings>();
 		for (DbTuple tuple : dataBaseHelper.getDbAccess().executeQuery(query)) {
-			final String sClassName = tuple.get(0, String.class);
-			final String sPreferences = tuple.get(1, String.class);
+			final String sKey = tuple.get(0, String.class);
+			final String sSettings = tuple.get(1, String.class);
 			try {
-				final Class<?> userPreferenceClass = Class.forName(sClassName);
-				final UserPreferences userPreferences = (UserPreferences) userPreferenceClass.getConstructor().newInstance();
-				userPreferences.initFromString(sPreferences);
-				result.add(userPreferences);
+				XStream xstream = new XStream(new DomDriver("UTF-8"));
+				Settings userSettings = (Settings) xstream.fromXML(sSettings);
+				result.put(sKey, userSettings);
 			} catch (Exception ex) {
-				LOG.error(String.format("UserPreferences (Class=%s) not created! Error=%s", sClassName, ex.getMessage()), ex);
+				LOG.error(String.format("UserSettings (Key=%s) not restored! Error=%s", sKey, ex.getMessage()), ex);
 			}
 		}
 		return result;
 	}
 	
 	@Override
-	public <UP extends UserPreferences> UP getApiUserPreferences(final Class<UP> upClass) {
+	public Settings getApiUserSettings(final String key) {
 		final Long nuclosUserId = SecurityCache.getInstance().getUserId(getCurrentUserName()).longValue();
 		
 		final DbQueryBuilder builder = dataBaseHelper.getDbAccess().getQueryBuilder();
 		final DbQuery<String> query = builder.createQuery(String.class);
-		final DbFrom t = query.from("T_MD_USER_PREFERENCES").alias(SystemFields.BASE_ALIAS);
-		query.select(t.baseColumn("STRPREFERENCES", String.class));
+		final DbFrom t = query.from("T_MD_USER_SETTING").alias(SystemFields.BASE_ALIAS);
+		query.select(t.baseColumn("CLBSETTING", String.class));
 		query.where(builder.and(
 				builder.equal(t.baseColumn("INTID_T_MD_USER", Long.class), nuclosUserId),
-				builder.equal(t.baseColumn("STRPREFERENCESCLASS", Long.class), upClass.getName())));
+				builder.equal(t.baseColumn("STRSETTINGKEY", Long.class), key)));
 
 		try {
-			final UP result = (UP) upClass.getConstructor().newInstance();
 			try {
-				result.initFromString(dataBaseHelper.getDbAccess().executeQuerySingleResult(query));
-				return result;
+				XStream xstream = new XStream(new DomDriver("UTF-8"));
+				Settings userSettings = (Settings) xstream.fromXML(dataBaseHelper.getDbAccess().executeQuerySingleResult(query));
+				return userSettings;
 			} catch (DbInvalidResultSizeException ex) {
-				return result;
+				return new SettingsImpl();
 			} 
 		} catch (Exception e1) {
-			LOG.error(String.format("UserPreferences (Class=%s) not created! Error=%s", upClass.getName(), e1.getMessage()), e1);
+			LOG.error(String.format("UserSettings (Key=%s) not restored! Error=%s", key, e1.getMessage()), e1);
 			throw new NuclosFatalException(e1);
 		} 
 	}
 	
 	@Override
-	public void setApiUserPreferences(Collection<UserPreferences> userPreferences) {
-		if (userPreferences == null) {
+	public void setApiUserSettings(Map<String, Settings> userSettings) {
+		if (userSettings == null) {
 			return;
 		}
 		
-		for (UserPreferences up : userPreferences) {
-			setApiUserPreferences(up);
+		for (String key : userSettings.keySet()) {
+			setApiUserSettings(key, userSettings.get(key));
 		}
 	}
 	
 	@Override
-	public void setApiUserPreferences(UserPreferences userPreferences) {
-		if (userPreferences == null) {
+	public void setApiUserSettings(String key, Settings userSettings) {
+		if (userSettings == null) {
 			return;
 		}
 		
@@ -1002,25 +1004,28 @@ public class PreferencesFacadeBean extends NuclosFacadeBean implements Preferenc
 		
 		final Map<String, Object> conditions = new HashMap<String, Object>(1);
 		conditions.put("INTID_T_MD_USER", nuclosUserId);
-		conditions.put("STRPREFERENCESCLASS", userPreferences.getClass().getName());
-		DbTableStatement stmt = new DbDeleteStatement("T_MD_USER_PREFERENCES", conditions);
+		conditions.put("STRSETTINGKEY", key);
+		DbTableStatement stmt = new DbDeleteStatement("T_MD_USER_SETTING", conditions);
 		try {
 			dataBaseHelper.getDbAccess().execute(stmt);
 		} catch (Exception e) {
 			throw new NuclosFatalException(e);
 		}
 		
+		XStream xstream = new XStream(new DomDriver("UTF-8"));
+		String sSettings = xstream.toXML(userSettings);
+		
 		final Map<String, Object> values = new HashMap<String, Object>();
 		values.put("INTID_T_MD_USER", nuclosUserId);
-		values.put("STRPREFERENCESCLASS", userPreferences.getClass().getName());
-		values.put("STRPREFERENCES", userPreferences.transformToString());
+		values.put("STRSETTINGKEY", key);
+		values.put("CLBSETTING", sSettings);
 		values.put("INTID", IdUtils.toLongId(dataBaseHelper.getNextIdAsInteger(SpringDataBaseHelper.DEFAULT_SEQUENCE)));
 		values.put("STRCREATED", getCurrentUserName());
 		values.put("STRCHANGED", getCurrentUserName());
 		values.put("DATCREATED", new Date());
 		values.put("DATCHANGED", new Date());
 		values.put("INTVERSION", 1);
-		stmt = new DbInsertStatement("T_MD_USER_PREFERENCES", values);
+		stmt = new DbInsertStatement("T_MD_USER_SETTING", values);
 		try {
 			dataBaseHelper.getDbAccess().execute(stmt);
 		} catch (Exception e) {

@@ -31,6 +31,7 @@ import java.util.concurrent.ConcurrentMap;
 
 import org.apache.commons.httpclient.util.LangUtils;
 import org.nuclos.api.Preferences;
+import org.nuclos.api.PreferencesImpl;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonFatalException;
 
@@ -675,7 +676,7 @@ public class WorkspaceDescription implements Serializable {
 		public Preferences getLayoutComponentPreferences(String name) {
 			final ConcurrentMap<String, Preferences> prefs = _getLayoutComponentPreferences();
 			if (!prefs.containsKey(name)) {
-				prefs.put(name, new NuclosPreferences());
+				prefs.put(name, new PreferencesImpl());
 			}
 			return prefs.get(name);
 		}

@@ -10755,12 +10755,12 @@
     ]
   },
   {
-    "name": "User Preferences",
-    "entity": "nuclos_userPreferences",
+    "name": "User Setting",
+    "entity": "nuclos_userSetting",
     "searchable": false,
     "editable": true,
     "cacheable": false,
-    "dbentity": "T_MD_USER_PREFERENCES",
+    "dbentity": "T_MD_USER_SETTING",
     "importexport": false,
     "systementity": true,
     "nuclos_entityfield": [
@@ -10774,16 +10774,16 @@
         "unique": true
       },
       {
-        "name": "preferencesClass",
-        "dbfield": "STRPREFERENCESCLASS",
+        "name": "settingKey",
+        "dbfield": "STRSETTINGKEY",
         "datatype": "java.lang.String",
         "datascale": 4000,
         "nullable": false,
         "unique": true
       },
       {
-        "name": "preferences",
-        "dbfield": "STRPREFERENCES",
+        "name": "setting",
+        "dbfield": "CLBSETTING",
         "datatype": "java.lang.String",
         "nullable": false,
       }

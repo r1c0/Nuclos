@@ -21,12 +21,12 @@ import java.util.Map;
 
 import javax.annotation.security.RolesAllowed;
 
-import org.nuclos.api.UserPreferences;
+import org.nuclos.api.Settings;
 import org.nuclos.common.NuclosBusinessException;
-import org.nuclos.common.WorkspaceVO;
 import org.nuclos.common.WorkspaceDescription.EntityPreferences;
 import org.nuclos.common.WorkspaceDescription.SubFormPreferences;
 import org.nuclos.common.WorkspaceDescription.TasklistPreferences;
+import org.nuclos.common.WorkspaceVO;
 import org.nuclos.common.dal.vo.EntityObjectVO;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonFinderException;
@@ -191,11 +191,11 @@ public interface PreferencesFacadeRemote {
 	
 	public void publishTaskListPreferences(WorkspaceVO customizedWovo, TasklistPreferences tp) throws CommonBusinessException;
 
-	public Collection<UserPreferences> getApiUserPreferences();
+	public Map<String, Settings> getApiUserSettings();
 
-	public void setApiUserPreferences(Collection<UserPreferences> userPreferences);
+	public void setApiUserSettings(Map<String, Settings> userSettings);
 
-	public <UP extends UserPreferences> UP getApiUserPreferences(Class<UP> upClass);
+	public Settings getApiUserSettings(String key);
 
-	public void setApiUserPreferences(UserPreferences userPreferences);
+	public void setApiUserSettings(String key, Settings userSettings);
 }

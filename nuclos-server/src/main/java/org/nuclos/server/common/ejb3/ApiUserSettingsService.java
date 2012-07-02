@@ -16,13 +16,16 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.server.common.ejb3;
 
-import org.nuclos.api.UserPreferences;
-import org.nuclos.api.service.UserPreferencesService;
+import javax.annotation.security.RolesAllowed;
+
+import org.nuclos.api.Settings;
+import org.nuclos.api.service.UserSettingsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 @Transactional(noRollbackFor= {Exception.class})
-public class ApiUserPreferencesService implements UserPreferencesService {
+@RolesAllowed("Login")
+public class ApiUserSettingsService implements UserSettingsService {
 	
 	private PreferencesFacadeRemote prefsFacade;
 	
@@ -32,13 +35,13 @@ public class ApiUserPreferencesService implements UserPreferencesService {
 	}
 
 	@Override
-	public <UP extends UserPreferences> UP getUserPreferences(Class<UP> upClass) {
-		return prefsFacade.getApiUserPreferences(upClass);
+	public Settings getUserSettings(String key) {
+		return prefsFacade.getApiUserSettings(key);
 	}
 
 	@Override
-	public void setUserPreferences(UserPreferences userPreferences) {
-		prefsFacade.setApiUserPreferences(userPreferences);
+	public void setUserSettings(String key, Settings userSettings) {
+		prefsFacade.setApiUserSettings(key, userSettings);
 	}	
 	
 }

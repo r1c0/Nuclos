@@ -47,9 +47,14 @@
 
 
 	<!-- Spring's HTTP invoker uses Java serialization via HTTP  -->
-	<bean name="/apiUserPreferencesService" parent="httpInvokerServiceExporter">
-	    <property name="service" ref="apiUserPreferencesService"/>
-	    <property name="serviceInterface" value="org.nuclos.api.service.UserPreferencesService"/>
+	<bean name="/apiUserSettingsService" parent="httpInvokerServiceExporter">
+	    <property name="service" ref="apiUserSettingsService"/>
+	    <property name="serviceInterface" value="org.nuclos.api.service.UserSettingsService"/>
+	</bean>
+	
+	<bean name="/apiServerPropertyService" parent="httpInvokerServiceExporter">
+	    <property name="service" ref="apiServerPropertyService"/>
+	    <property name="serviceInterface" value="org.nuclos.api.service.ServerPropertyService"/>
 	</bean>
 	
 	<bean name="/ParameterService" parent="httpInvokerServiceExporter">

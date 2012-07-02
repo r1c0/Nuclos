@@ -19,10 +19,9 @@ package org.nuclos.client.nuclet;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.nuclos.api.UserPreferences;
 import org.nuclos.api.ui.LayoutComponentFactory;
 import org.nuclos.api.ui.MenuItem;
-import org.nuclos.api.ui.UserPreferencesEditor;
+import org.nuclos.api.ui.UserSettingsEditor;
 import org.springframework.stereotype.Component;
 
 // @Component
@@ -30,7 +29,7 @@ public class NucletComponentRepository {
 
 	private List<MenuItem> menuItems = new ArrayList<MenuItem>();
 	private List<LayoutComponentFactory> layoutComponentFactories = new ArrayList<LayoutComponentFactory>();
-	private List<UserPreferencesEditor<? extends UserPreferences>> userPreferencesEditors = new ArrayList<UserPreferencesEditor<? extends UserPreferences>>();
+	private List<UserSettingsEditor> userSettingsEditors = new ArrayList<UserSettingsEditor>();
 	
 	public NucletComponentRepository() {
 	}
@@ -51,11 +50,11 @@ public class NucletComponentRepository {
 		return new ArrayList<LayoutComponentFactory>(layoutComponentFactories);
 	}
 	
-	public void addUserPreferencesEditor(UserPreferencesEditor<? extends UserPreferences> upe) {
-		userPreferencesEditors.add(upe);
+	public void addUserSettingsEditor(UserSettingsEditor use) {
+		userSettingsEditors.add(use);
 	}
 	
-	public List<UserPreferencesEditor<? extends UserPreferences>> getUserPreferencesEditors() {
-		return new ArrayList<UserPreferencesEditor<? extends UserPreferences>>(userPreferencesEditors);
+	public List<UserSettingsEditor> getUserSettingsEditors() {
+		return new ArrayList<UserSettingsEditor>(userSettingsEditors);
 	}
 }

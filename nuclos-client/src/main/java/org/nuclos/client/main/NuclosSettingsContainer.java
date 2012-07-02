@@ -20,22 +20,25 @@
 package org.nuclos.client.main;
 
 import java.awt.GridLayout;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.PostConstruct;
+import javax.swing.BorderFactory;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 
 import org.apache.log4j.Logger;
-import org.nuclos.api.UserPreferences;
-import org.nuclos.api.ui.UserPreferencesEditor;
+import org.nuclos.api.Preferences;
+import org.nuclos.api.Settings;
+import org.nuclos.api.ui.UserSettingsEditor;
 import org.nuclos.client.livesearch.LiveSearchSettingsPanel;
 import org.nuclos.client.main.mainframe.MainFrame;
 import org.nuclos.client.nuclet.NucletComponentRepository;
+import org.nuclos.client.ui.Errors;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.StringUtils;
@@ -57,8 +60,8 @@ public class NuclosSettingsContainer extends JPanel {
 	private NuclosSettingsPanel      settingsPanel;
 	private LiveSearchSettingsPanel  livesearchPanel;
 	
-	private List<UserPreferencesEditor<? extends UserPreferences>> nucletUserPreferencesEditors;
-	private Collection<UserPreferences> nucletUserPreferences;
+	private List<UserSettingsEditor> apiUserSettingsEditors;
+	private Map<String, Settings> apiUserSettings;
 
 	public NuclosSettingsContainer(MainFrame frm) {
 		super(new GridLayout(1, 1));
@@ -90,31 +93,34 @@ public class NuclosSettingsContainer extends JPanel {
 			SpringLocaleDelegate.getInstance().getResource("nuclos.settings.container.tab1", "Ansichtsoptionen"),
 			settingsPanel);
 		
-		nucletUserPreferencesEditors = ncr.getUserPreferencesEditors();
-		nucletUserPreferences = preferencesFacade.getApiUserPreferences();
+		apiUserSettingsEditors = ncr.getUserSettingsEditors();
+		apiUserSettings = preferencesFacade.getApiUserSettings();
 		
-		for (UserPreferencesEditor<? extends UserPreferences> upe : CollectionUtils.sorted(nucletUserPreferencesEditors, new Comparator<UserPreferencesEditor<? extends UserPreferences>>() {
+		for (UserSettingsEditor use : CollectionUtils.sorted(apiUserSettingsEditors, new Comparator<UserSettingsEditor>() {
 			@Override
-			public int compare(UserPreferencesEditor<? extends UserPreferences> o1, UserPreferencesEditor<? extends UserPreferences> o2) {
+			public int compare(UserSettingsEditor o1, UserSettingsEditor o2) {
 				return StringUtils.compareIgnoreCase(o1.getName(), o2.getName());
 			}
 		})) {
-			UserPreferences userPreferences = null;
-			for (UserPreferences up : nucletUserPreferences) {
-				if (upe.getPreferencesClass().equals(up.getClass())) {
-					userPreferences = up;
+			Settings userSettings = null;
+			for (String key : apiUserSettings.keySet()) {
+				if (key.equals(use.getSettingsKey())) {
+					userSettings = apiUserSettings.get(key);
 					break;
 				}
 			}
+			
 			try {
-				final JComponent comp = (JComponent) upe.getClass().getMethod("getPreferencesComponent", upe.getPreferencesClass()).invoke(upe, userPreferences);
+				final JComponent comp = use.getSettingsComponent(userSettings);
+				comp.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 				tabPane.addTab(
-						upe.getName(), 
-						upe.getIcon(), 
+						use.getName(), 
+						use.getIcon(), 
 						comp);
 			} catch (Exception ex) {
-				LOG.error(String.format("UserPreferencesComponent (EditorClass=%s) not created! Error=%s", upe.getClass(), ex.getMessage()), ex);
-			}
+				apiUserSettingsEditors.remove(use);
+				Errors.getInstance().showExceptionDialog(this, ex);
+			} 
 		}
 
 		validate();
@@ -126,16 +132,16 @@ public class NuclosSettingsContainer extends JPanel {
 			settingsPanel.save();
 			livesearchPanel.save();
 			
-			Collection<UserPreferences> newPreferences = new ArrayList<UserPreferences>();
-			for (UserPreferencesEditor<? extends UserPreferences> upe : nucletUserPreferencesEditors) {
-				newPreferences.add(upe.getPreferences());
+			Map<String, Settings> newSettings = new HashMap<String, Settings>();
+			for (UserSettingsEditor use : apiUserSettingsEditors) {
+				newSettings.put(use.getSettingsKey(), use.getSettings());
 			}
-			preferencesFacade.setApiUserPreferences(newPreferences);
+			preferencesFacade.setApiUserSettings(newSettings);
 			saved = true;
 		} catch (Exception ex) {
 			throw new PreferencesException(ex);
 		} finally {
-			for (UserPreferencesEditor<? extends UserPreferences> upe : nucletUserPreferencesEditors) {
+			for (UserSettingsEditor upe : apiUserSettingsEditors) {
 				try {
 					upe.close(saved);
 				} catch (Exception e1) {

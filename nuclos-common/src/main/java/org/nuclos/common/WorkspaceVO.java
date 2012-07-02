@@ -59,7 +59,7 @@ public class WorkspaceVO extends AbstractDalVOWithVersion {
 	}
 
 	public void setClbworkspace(String clbworkspace) {
-		this.workspaceDescription = (WorkspaceDescription) (new XStream(new DomDriver("UTF-8"))).fromXML(clbworkspace);;
+		this.workspaceDescription = (WorkspaceDescription) (new XStream(new DomDriver("UTF-8"))).fromXML(clbworkspace);
 	}
 
 	public String getName() {
