@@ -77,16 +77,14 @@
 			<fileset dir="../nuclos-war/target/nuclos-war/">
 			</fileset>
 		</copy>
+		<copy file="conf/splash-screen.gif" todir="${dist.resources.dir}/webapp/app">
+		</copy>
 		<apply executable="./modjar.sh" relative="true" failifexecutionfails="true" failonerror="true">
 			<arg value="${dist.resources.dir}/webapp/app"/>
 			<fileset dir="${dist.resources.dir}/webapp/app">
 				<include name="*.jar"/>
 			</fileset>
 		</apply>
-		<copy todir="${dist.resources.dir}/webapp/app">
-			<fileset> filename="conf/splash-screen.gif">
-			</fileset>
-		</copy>
 
 		<copy todir="${dist.resources.dir}/webapp/WEB-INF">
 			<fileset dir="${lib.dir}" includes="axislibs/" />

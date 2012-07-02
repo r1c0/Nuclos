@@ -21,6 +21,7 @@
 				<homepage href="http://www.nuclos.de" />
 				<description>Nuclos Webstart Client</description>
 				<icon href="customer-icon.gif" />
+				<icon href="splash-screen.gif" kind="splash" />
 			</information>
 			<security>
 				<all-permissions />
