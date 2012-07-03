@@ -31,6 +31,7 @@ import javax.swing.JTable;
 
 import org.apache.log4j.Logger;
 import org.nuclos.client.common.MetaDataClientProvider;
+import org.nuclos.client.common.NuclosCollectableEntityProvider;
 import org.nuclos.client.genericobject.CollectableGenericObjectWithDependants;
 import org.nuclos.client.genericobject.GenericObjectClientUtils;
 import org.nuclos.client.genericobject.GenericObjectCollectController;
@@ -163,7 +164,7 @@ public class GenericObjectResultController<Clct extends CollectableGenericObject
 	}
 	
 	private void getFieldsAvaibleInSubform(SortedSet<CollectableEntityField> result, Set<String> stSubEntityLabels, String sSubEntityName) {
-		final CollectableEntity clcteSub = DefaultCollectableEntityProvider.getInstance().getCollectableEntity(sSubEntityName);
+		final CollectableEntity clcteSub = NuclosCollectableEntityProvider.getInstance().getCollectableEntity(sSubEntityName);
 		// WORKAROUND for general search: We don't want duplicate entities (assetcomment, ordercomment etc.), so we
 		// ignore entities with duplicate labels:
 		// TODO: eliminate this workaround 
