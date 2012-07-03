@@ -67,6 +67,7 @@ import org.nuclos.client.transfer.XmlImportDelegate;
 import org.nuclos.client.ui.CommonBackgroundProcessClientWorkerAdapter;
 import org.nuclos.client.ui.CommonMultiThreader;
 import org.nuclos.client.ui.Errors;
+import org.nuclos.client.ui.TableRowMouseOverAdapter;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.client.ui.collect.CollectController;
 import org.nuclos.client.ui.collect.CollectableTableHelper;
@@ -159,6 +160,7 @@ public class NuclosResultPanel<Clct extends Collectable> extends ResultPanel<Clc
 
 		tblHeader.setName("tblHeader");
 		tblFixedResult.setTableHeader(tblHeader);
+		TableRowMouseOverAdapter.add(tblFixedResult);
 
 		return result;
 	}

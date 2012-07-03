@@ -76,6 +76,7 @@ import org.nuclos.client.synthetica.NuclosThemeSettings;
 import org.nuclos.client.ui.Icons;
 import org.nuclos.client.ui.PopupButton;
 import org.nuclos.client.ui.StatusBarTextField;
+import org.nuclos.client.ui.TableRowMouseOverAdapter;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.client.ui.WrapLayout;
 import org.nuclos.client.ui.collect.CollectController;
@@ -608,6 +609,7 @@ public class ResultPanel<Clct extends Collectable> extends JPanel {
 
 		tblHeader.setName("tblHeader");
 		result.setTableHeader(tblHeader);
+		TableRowMouseOverAdapter.add(result);
 
 		return result;
 	}

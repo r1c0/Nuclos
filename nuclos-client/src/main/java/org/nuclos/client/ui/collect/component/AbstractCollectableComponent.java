@@ -39,6 +39,7 @@ import javax.swing.JPopupMenu;
 import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JTable;
 import javax.swing.SwingConstants;
+import javax.swing.UIManager;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.event.PopupMenuEvent;
@@ -70,6 +71,7 @@ import org.nuclos.client.ui.ColorProvider;
 import org.nuclos.client.ui.DateChooser;
 import org.nuclos.client.ui.ListOfValues;
 import org.nuclos.client.ui.ResourceIdMapper;
+import org.nuclos.client.ui.TableRowMouseOverSupport;
 import org.nuclos.client.ui.ToolTipTextProvider;
 import org.nuclos.client.ui.collect.FixedColumnRowHeader;
 import org.nuclos.client.ui.collect.FixedColumnRowHeader.FixedRowIndicatorTableModel;
@@ -1610,7 +1612,7 @@ public abstract class AbstractCollectableComponent
 		// do nothing here
 	}
 
-	protected final static void setBackground(Component c, NuclosScript ns, final Collectable clct, EntityMetaDataVO meta) {
+	protected final static void setBackground(Component c, NuclosScript ns, final Collectable clct, EntityMetaDataVO meta, boolean isEnabled) {
 		try {
 			String rgb = Integer.toHexString(c.getBackground().getRGB());
 			rgb = rgb.substring(2, rgb.length());
@@ -1618,7 +1620,14 @@ public abstract class AbstractCollectableComponent
 
 			if (o instanceof String) {
 				Color color = Color.decode((String)o);
-				c.setBackground(color);
+				if (isEnabled) {
+					c.setBackground(color);
+				} else {
+					c.setBackground(new Color(
+							Math.max(0, color.getRed() - (color.getRed()*15/100)),
+							Math.max(0, color.getGreen() - (color.getGreen()*15/100)),
+							Math.max(0, color.getBlue() - (color.getBlue()*15/100))));
+				}
 			}
 		}
 		catch (Exception ex) {
@@ -1827,7 +1836,7 @@ public abstract class AbstractCollectableComponent
 	}
 
 	public static void setBackgroundColor(Component cellRendererComponent, JTable tbl, Object oValue, boolean bSelected, boolean bHasFocus, int iRow, int iColumn) {
-		cellRendererComponent.setBackground(bSelected ? tbl.getSelectionBackground() : tbl.getBackground());
+		cellRendererComponent.setBackground(bSelected ? tbl.getSelectionBackground() : iRow%2==0? tbl.getBackground() : NuclosThemeSettings.BACKGROUND_PANEL);
 		cellRendererComponent.setForeground(bSelected ? tbl.getSelectionForeground() : tbl.getForeground());
 
 		final TableModel tm;
@@ -1851,17 +1860,8 @@ public abstract class AbstractCollectableComponent
 				if (clctef == null) {
 					throw new NullPointerException("getTableCellRendererComponent failed to find field: " + clct + " tm index " + iTColumn);
 				}
-
-				try {
-					EntityMetaDataVO meta = MetaDataClientProvider.getInstance().getEntity(clctef.getEntityName());
-					if (meta.getRowColorScript() != null && !bSelected) {
-						AbstractCollectableComponent.setBackground(cellRendererComponent, meta.getRowColorScript(), clct, meta);
-					}
-				}
-				catch (CommonFatalException ex) {
-					LOG.warn(ex);
-				}
-
+				
+				boolean isEnabled = true;
 				if (!clctef.isNullable() && isNull(oValue)) {
 					cellRendererComponent.setBackground(getMandatoryColor());
 					cellRendererComponent.setForeground(tbl.getForeground());
@@ -1874,6 +1874,7 @@ public abstract class AbstractCollectableComponent
 							SubFormTable subformtable = (SubForm.SubFormTable) tbl;
 							Column subformcolumn = subformtable.getSubForm().getColumn(clctef.getName());
 							if (subformcolumn != null && !subformcolumn.isEnabled()) {
+								isEnabled = false;
 								if (bSelected) {
 									cellRendererComponent.setBackground(NuclosThemeSettings.BACKGROUND_INACTIVESELECTEDCOLUMN);
 								} else {
@@ -1883,6 +1884,28 @@ public abstract class AbstractCollectableComponent
 						}
 					}
 				}
+
+				try {
+					EntityMetaDataVO meta = MetaDataClientProvider.getInstance().getEntity(clctef.getEntityName());
+					if (meta.getRowColorScript() != null && !bSelected) {
+						AbstractCollectableComponent.setBackground(cellRendererComponent, meta.getRowColorScript(), clct, meta, isEnabled);
+					}
+				}
+				catch (CommonFatalException ex) {
+					LOG.warn(ex);
+				}
+			}
+		}
+		
+		if (tbl instanceof TableRowMouseOverSupport) {
+			TableRowMouseOverSupport trmos = (TableRowMouseOverSupport) tbl;
+			if (trmos.isMouseOverRow(iRow)) {
+				final Color bgColor = LangUtils.defaultIfNull(cellRendererComponent.getBackground(), Color.WHITE);
+				cellRendererComponent.setBackground(new Color(
+						Math.max(0, bgColor.getRed() - (bgColor.getRed()*8/100)),
+						Math.max(0, bgColor.getGreen() - (bgColor.getGreen()*8/100)),
+						Math.max(0, bgColor.getBlue() - (bgColor.getBlue()*8/100))));
+//				cellRendererComponent.setBackground(UIManager.getColor("Table.selectionBackground"));
 			}
 		}
 	}

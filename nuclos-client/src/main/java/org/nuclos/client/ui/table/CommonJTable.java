@@ -27,6 +27,8 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 
+import org.nuclos.client.ui.TableRowMouseOverSupport;
+
 /**
  * Workaround for JTable flaws. Nothing more than that, just a fixed implementation for the regular JTable.
  * <i>Don't provide custom functionality in this class. Don't use this class in interfaces.</i>
@@ -38,7 +40,9 @@ import javax.swing.table.TableCellRenderer;
  * @version	01.00.00
  */
 
-public class CommonJTable extends JTable {
+public class CommonJTable extends JTable implements TableRowMouseOverSupport {
+	
+	int iMouseOverRow = -1;
 
 	/**
 	 * The <code>JTable.getDefaultRenderer</code> returns <code>null</code>
@@ -132,4 +136,26 @@ public class CommonJTable extends JTable {
 
 		return result;
 	}
+
+
+	@Override
+	public boolean isMouseOverRow(int iRow) {
+		return iRow == iMouseOverRow;
+	}
+
+	@Override
+	public void setMouseOverRow(int iRow) {
+		if (iMouseOverRow != iRow) {
+			iMouseOverRow = iRow;
+			repaint();
+		} else {
+			iMouseOverRow = iRow;
+		}
+	}
+
+	@Override
+	public int getMouseOverRow() {
+		return iMouseOverRow;
+	}
+	
 }  // class CommonJTable

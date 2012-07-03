@@ -35,7 +35,7 @@ import org.nuclos.client.ui.collect.component.TableCellCursor;
 import org.nuclos.common.collect.collectable.AbstractCollectableField;
 import org.nuclos.common2.LangUtils;
 
-public class URIMouseAdapter extends MouseAdapter{
+public class URIMouseAdapter extends TableRowMouseOverAdapter {
 	
 	
 	public URIMouseAdapter() {
@@ -56,15 +56,15 @@ public class URIMouseAdapter extends MouseAdapter{
 			}
 		}
 	}
-	
-	
-	
+
 	@Override
 	public void mouseMoved(MouseEvent e) {
+		super.mouseMoved(e);
 		if(e.getSource() instanceof JTable) {
 			JTable table = (JTable)e.getSource();
 			int col = table.columnAtPoint(e.getPoint());
-			int row = table.rowAtPoint(e.getPoint());			
+			int row = ((TableRowMouseOverSupport) e.getSource()).getMouseOverRow();	
+			
 			if(col < 0 || row < 0)
 				return;			
 			

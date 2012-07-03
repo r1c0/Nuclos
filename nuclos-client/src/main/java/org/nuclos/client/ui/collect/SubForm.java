@@ -96,6 +96,7 @@ import org.nuclos.client.common.Utils;
 import org.nuclos.client.scripting.ScriptEvaluator;
 import org.nuclos.client.ui.Icons;
 import org.nuclos.client.ui.SizeKnownListener;
+import org.nuclos.client.ui.TableRowMouseOverSupport;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.client.ui.URIMouseAdapter;
 import org.nuclos.client.ui.collect.FixedColumnRowHeader.HeaderTable;
@@ -1922,7 +1923,7 @@ public class SubForm extends JPanel
 	 */
 	public static class SubFormTable extends CommonJTable
 			implements Closeable {
-
+		
 		@Override
 		public boolean isRequestFocusEnabled() {
 			return true;
@@ -2685,6 +2686,7 @@ public class SubForm extends JPanel
 		public int getRowHeightWithMargin(int row) {
 			return getRowHeight(row)+getRowMargin();
 		}
+		
 	}
 
 	public boolean isUseCustomColumnWidths() {
