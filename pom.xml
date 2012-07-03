@@ -578,9 +578,9 @@
 					<source>${java.version}</source>
 					<target>${java.version}</target>
 					<encoding>UTF-8</encoding>
-					<fork>true</fork>
-					<meminitial>128m</meminitial>
-					<maxmem>512m</maxmem>
+					<fork>false</fork>
+					<!-- meminitial>128m</meminitial>
+					<maxmem>512m</maxmem -->
 				</configuration>
 			</plugin>
 			<plugin>
