@@ -127,7 +127,7 @@ public enum DbType {
 		props.put("database.server", matcher.group(1));
 		props.put("database.port", group(matcher, 2, getDefaultPort().toString()));
 		props.put("database.name", group(matcher, 3, ""));
-		props.put("database.schema", group(matcher, 4, ""));
+		//props.put("database.schema", group(matcher, 4, ""));
 		return true;
 	}
 	
