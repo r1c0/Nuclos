@@ -28,6 +28,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JToolBar;
 
+import org.nuclos.client.main.mainframe.MainFrameTab;
 import org.nuclos.client.ui.CenteringPanel;
 import org.nuclos.client.ui.PopupButton;
 import org.nuclos.client.ui.StatusBarTextField;
@@ -47,8 +48,10 @@ import org.nuclos.common2.StringUtils;
  * @version 01.00.00
  * @todo extends CollectPanel.TabComponent?
  */
-public abstract class SearchOrDetailsPanel extends JPanel {
+public abstract class SearchOrDetailsPanel extends MainFrameTab {
 
+	private final JPanel main;
+	
 	/**
 	 * the toolbar.
 	 */
@@ -77,7 +80,8 @@ public abstract class SearchOrDetailsPanel extends JPanel {
 	public final StatusBarTextField tfStatusBar = new StatusBarTextField(" ");
 
 	protected SearchOrDetailsPanel(boolean bForSearch) {
-		super(new BorderLayout());
+		main = new JPanel(new BorderLayout());
+		setLayeredComponent(main);
 
 		this.editview = new DefaultEditView(null, new DefaultCollectableComponentsProvider(), bForSearch, null);
 
@@ -107,15 +111,15 @@ public abstract class SearchOrDetailsPanel extends JPanel {
 	}
 
 	private void setNorthComponent(JComponent comp) {
-		add(comp, BorderLayout.NORTH);
+		main.add(comp, BorderLayout.NORTH);
 	}
 
 	protected void setCenterComponent(JComponent comp) {
-		add(comp, BorderLayout.CENTER);
+		main.add(comp, BorderLayout.CENTER);
 	}
 
 	protected void setSouthComponent(JComponent comp) {
-		add(comp, BorderLayout.SOUTH);
+		main.add(comp, BorderLayout.SOUTH);
 	}
 
 	protected abstract void setupDefaultToolBarActions( JToolBar toolBar);

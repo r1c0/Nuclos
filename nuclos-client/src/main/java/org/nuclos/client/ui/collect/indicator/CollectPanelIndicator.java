@@ -88,6 +88,16 @@ public class CollectPanelIndicator {
 	
 	public void hideSearchOption() {
 		lbSearch.setVisible(false);
+		if (!lbDetails.isVisible()) {
+			getJPanel().setVisible(false);
+		}
+	}
+	
+	public void hideDetailsOption() {
+		lbDetails.setVisible(false);
+		if (!lbSearch.isVisible()) {
+			getJPanel().setVisible(false);
+		}
 	}
 	
 	public void setToolTip(int tab, String toolTip) {
@@ -276,7 +286,10 @@ public class CollectPanelIndicator {
 					rightImage = getRightArrowImage(lbSearch, lbResult);
 					break;
 				case (CollectPanel.TAB_RESULT) :
-					rightImage = getRightArrowImage(lbResult, lbDetails);
+					if (lbDetails.isVisible())
+						rightImage = getRightArrowImage(lbResult, lbDetails);
+					else
+						rightImage = getRightImage(lbResult);
 					break;
 				case (CollectPanel.TAB_DETAILS) :
 					rightImage = getRightImage(lbDetails);

@@ -55,7 +55,7 @@ import org.nuclos.server.processmonitor.valueobject.SubProcessVO;
  */
 public class InstanceCollectController extends NuclosCollectController<CollectableInstanceModel> {
 	
-	private final CollectPanel<CollectableInstanceModel> pnlCollect = new CollectPanel<CollectableInstanceModel>(false);
+	private final CollectPanel<CollectableInstanceModel> pnlCollect = new CollectPanel<CollectableInstanceModel>(false, false);
 	private final InstanceViewPanel pnlView;
 
 	private JButton btnStart;

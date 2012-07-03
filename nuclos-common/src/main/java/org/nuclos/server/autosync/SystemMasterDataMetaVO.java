@@ -53,8 +53,8 @@ public class SystemMasterDataMetaVO extends MasterDataMetaVO {
 		super(iId, sEntityName, sDBEntityName, sMenuPath, bSearchable, bEditable,
 			sLabel, collFieldsForEquality, bCacheable, CREATED_DATE, CREATED_USER,
 			CHANGED_DATE, CHANGED_USER, VERSION, mpFields, sTreeView, sDescription,
-			bSystemEntity, sResourceName, sNuclosResource, bImportExport, sLabelPlural, iAccModifier,
-			accelerator, sResourceIdForLabel, sResourceIdForMenuPath,
+			bSystemEntity, sResourceName, sNuclosResource, bImportExport, false, 
+			sLabelPlural, iAccModifier,	accelerator, sResourceIdForLabel, sResourceIdForMenuPath,
 			sResourceIdForLabelPlural, sResourceIdForTreeView,
 			sResourceIdForTreeViewDescription);
 		this.uniqueFieldCombinations = uniqueFieldCombinations;

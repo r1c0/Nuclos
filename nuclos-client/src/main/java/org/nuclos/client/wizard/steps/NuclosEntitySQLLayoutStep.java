@@ -715,6 +715,7 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 		}
 
 		metaVO.setSearchable(wizardModel.isSearchable());
+		metaVO.setOverlayDetails(wizardModel.isOverlayDetails());
 		metaVO.setCacheable(wizardModel.isCachable());
 		metaVO.setResourceId(wizardModel.getResourceId());
 		metaVO.setNuclosResource(wizardModel.getNuclosResourceName());

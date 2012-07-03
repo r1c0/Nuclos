@@ -44,7 +44,7 @@ public class ProcessMonitorCollectController extends NuclosCollectController<Col
 	
 	private static final Logger LOG = Logger.getLogger(ProcessMonitorCollectController.class);
 
-	private final CollectPanel<CollectableProcessMonitorModel> pnlCollect = new CollectPanel<CollectableProcessMonitorModel>(false);
+	private final CollectPanel<CollectableProcessMonitorModel> pnlCollect = new CollectPanel<CollectableProcessMonitorModel>(false, false);
 	// @SuppressWarnings("unused")
 	private final MasterDataSubFormController subformctlUsages;	
 	private final ProcessMonitorEditPanel pnlEdit;

@@ -592,7 +592,7 @@ public class RuleCollectController extends EntityCollectController<CollectableRu
 	private class RuleCollectPanel extends CollectPanel<CollectableRule> {
 
 		RuleCollectPanel(boolean bSearchPanelAvailable) {
-			super(bSearchPanelAvailable);
+			super(bSearchPanelAvailable, false);
 		}
 
 		@Override

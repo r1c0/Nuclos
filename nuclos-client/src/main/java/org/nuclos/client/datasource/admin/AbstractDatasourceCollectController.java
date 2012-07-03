@@ -623,7 +623,7 @@ public abstract class AbstractDatasourceCollectController<T extends DatasourceVO
 	private class DatasourceCollectPanel<T> extends CollectPanel {
 
 		DatasourceCollectPanel(boolean bSearchPanelAvailable) {
-			super(bSearchPanelAvailable);
+			super(bSearchPanelAvailable, false);
 		}
 
 		@Override

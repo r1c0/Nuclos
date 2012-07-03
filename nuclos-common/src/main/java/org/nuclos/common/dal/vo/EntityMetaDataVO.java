@@ -54,6 +54,7 @@ public class EntityMetaDataVO extends AbstractDalVOWithVersion {
 	private Boolean treeGroup;
 	private Boolean importExport;
 	private Boolean fieldValueEntity;
+	private Boolean overlayDetails;
 	private boolean dynamic;
 
 	private String accelerator;
@@ -209,6 +210,10 @@ public class EntityMetaDataVO extends AbstractDalVOWithVersion {
 	public void setImportExport(Boolean importExport) {
 		this.importExport = importExport;
 	}
+	
+	public void setOverlayDetails(Boolean overlayDetails) {
+		this.overlayDetails = overlayDetails;
+	}
 
 	public void setFieldValueEntity(Boolean fieldValueEntity) {
 		this.fieldValueEntity = fieldValueEntity;
@@ -309,6 +314,10 @@ public class EntityMetaDataVO extends AbstractDalVOWithVersion {
 
 	public Boolean isFieldValueEntity() {
 		return fieldValueEntity;
+	}
+	
+	public Boolean isOverlayDetails() {
+		return overlayDetails;
 	}
 
 	public String getAccelerator() {

@@ -276,7 +276,7 @@ public class EntityRelationShipCollectController extends NuclosCollectController
 	private class EntityRelationshipCollectPanel extends CollectPanel<EntityRelationshipModel> {
 
 		EntityRelationshipCollectPanel(boolean bSearchPanelAvailable) {
-			super(bSearchPanelAvailable);
+			super(bSearchPanelAvailable, false);
 		}
 
 		@Override

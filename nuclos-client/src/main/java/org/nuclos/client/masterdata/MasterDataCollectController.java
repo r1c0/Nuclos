@@ -279,8 +279,9 @@ public class MasterDataCollectController extends EntityCollectController<Collect
 		// getSearchStrategy().setCompleteCollectablesStrategy(new
 		// CompleteCollectableMasterDataStrategy(this));
 		final boolean bSearchPanelAvailable = this.mddelegate.getMetaData(sEntityName).isSearchable();
+		final boolean bDetailsInOverlay = this.mddelegate.getMetaData(sEntityName).isOverlayDetails();
 		this.detailsWithScrollbar = detailsWithScrollbar;
-		final CollectPanel<CollectableMasterDataWithDependants> pnlCollect = new MasterDataCollectPanel(bSearchPanelAvailable);
+		final CollectPanel<CollectableMasterDataWithDependants> pnlCollect = new MasterDataCollectPanel(bSearchPanelAvailable, bDetailsInOverlay);
 		getTab().setLayeredComponent(pnlCollect);
 		this.initialize(pnlCollect);
 		this.setupEditPanelForDetailsTab();
@@ -1464,8 +1465,8 @@ public class MasterDataCollectController extends EntityCollectController<Collect
 
 	class MasterDataCollectPanel extends CollectPanel<CollectableMasterDataWithDependants> {
 
-		MasterDataCollectPanel(boolean bSearchPanelAvailable) {
-			super(bSearchPanelAvailable);
+		MasterDataCollectPanel(boolean bSearchPanelAvailable, boolean bDetailsInOverlay) {
+			super(bSearchPanelAvailable, bDetailsInOverlay);
 		}
 
 		@Override

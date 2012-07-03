@@ -517,7 +517,7 @@ public class StateModelCollectController extends NuclosCollectController<Collect
 	private class StateModelCollectPanel extends CollectPanel<CollectableStateModel> {
 
 		StateModelCollectPanel(boolean bSearchPanelAvailable) {
-			super(bSearchPanelAvailable);
+			super(bSearchPanelAvailable, false);
 		}
 
 		@Override

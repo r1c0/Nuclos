@@ -1770,8 +1770,9 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	/** @todo pull down to CollectController */
 	protected WeakReference<CollectPanel<CollectableGenericObjectWithDependants>> newCollectPanel() {
 		boolean bSearch = MetaDataClientProvider.getInstance().getEntity(this.sEntity).isSearchable();
+		boolean bDetailsInOverlay = Boolean.TRUE.equals(MetaDataClientProvider.getInstance().getEntity(this.sEntity).isOverlayDetails());
 		return new WeakReference<CollectPanel<CollectableGenericObjectWithDependants>>(
-				new GenericObjectCollectPanel(getSearchStateBox(), bSearch));
+				new GenericObjectCollectPanel(getSearchStateBox(), bSearch, bDetailsInOverlay));
 	}
 
 	@Override
@@ -5655,8 +5656,8 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 
 		private final CollectableComboBox searchStateBox;
 
-		protected GenericObjectCollectPanel(CollectableComboBox searchStateBox, boolean bSearch) {
-			super(bSearch);
+		protected GenericObjectCollectPanel(CollectableComboBox searchStateBox, boolean bSearch, boolean bDetailsInOverlay) {
+			super(bSearch, bDetailsInOverlay);
 			this.searchStateBox = searchStateBox;
 		}
 

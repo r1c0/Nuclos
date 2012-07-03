@@ -119,6 +119,8 @@ public class NuclosEntityCommonPropertiesStep extends NuclosEntityAbstractStep i
 	private JCheckBox cbSearchable;
 	private JLabel lbEditable;
 	private JCheckBox cbEditable;
+	private JLabel lbOverlayDetails;
+	private JCheckBox cbOverlayDetails;
 
 	private JLabel lbShowRelation;
 	private JCheckBox cbShowRelation;
@@ -200,6 +202,7 @@ public class NuclosEntityCommonPropertiesStep extends NuclosEntityAbstractStep i
 			cbCache.setSelected(model.isCachable());
 			cbSearchable.setSelected(model.isSearchable());
 			cbEditable.setSelected(model.isEditable());
+			cbOverlayDetails.setSelected(model.isOverlayDetails());
 			cbShowRelation.setSelected(model.isShowRelation());
 			cbShowGroups.setSelected(model.isShowGroups());
 			cbLogbook.setSelected(model.isLogbook());
@@ -264,6 +267,7 @@ public class NuclosEntityCommonPropertiesStep extends NuclosEntityAbstractStep i
 		model.setShowGroups(cbShowGroups.isSelected());
 		model.setShowRelation(cbShowRelation.isSelected());
 		model.setLogbook(cbLogbook.isSelected());
+		model.setOverlayDetails(cbOverlayDetails.isSelected());
 
 		lbSystemIdPrefix.setEnabled(model.isStateModel());
 		tfSystemIdPrefix.setEnabled(model.isStateModel());
@@ -302,7 +306,7 @@ public class NuclosEntityCommonPropertiesStep extends NuclosEntityAbstractStep i
 	@Override
 	protected void initComponents() {
 
-		double size [][] = {{170,200,20, TableLayout.FILL, 20}, {20,20,20,20,20,20,20,20,20,20,20,20,141,20,20, TableLayout.FILL}};
+		double size [][] = {{170,200,20, TableLayout.FILL, 20}, {20,20,20,20,20,20,20,20,20,20,20,20,20,141,20,20, TableLayout.FILL}};
 
 		TableLayout layout = new TableLayout(size);
 		layout.setVGap(3);
@@ -372,6 +376,13 @@ public class NuclosEntityCommonPropertiesStep extends NuclosEntityAbstractStep i
 		cbEditable.setSelected(true);
 		cbEditable.setToolTipText(localeDelegate.getMessage(
 				"wizard.step.entitycommonproperties.tooltip.7", "Ist die Entit\u00e4t modifizierbar"));
+		
+		lbOverlayDetails = new JLabel(localeDelegate.getMessage(
+				"wizard.step.entitycommonproperties.21", "Details im Popup")+":");
+		cbOverlayDetails = new JCheckBox();
+		cbOverlayDetails.setSelected(false);
+		cbOverlayDetails.setToolTipText(localeDelegate.getMessage(
+				"wizard.step.entitycommonproperties.21", "Details im Popup"));
 
 		lbShowRelation = new JLabel(localeDelegate.getMessage(
 				"wizard.step.entitycommonproperties.15", "Zeige Relationen:"));
@@ -458,27 +469,30 @@ public class NuclosEntityCommonPropertiesStep extends NuclosEntityAbstractStep i
 
 		this.add(lbSearchable, "0,4");
 		this.add(cbSearchable, "1,4");
+		
+		this.add(lbOverlayDetails, "0,5");
+		this.add(cbOverlayDetails, "1,5");
 
-		this.add(lbEditable, "0,5");
-		this.add(cbEditable, "1,5");
+		this.add(lbEditable, "0,6");
+		this.add(cbEditable, "1,6");
 
-		this.add(lbLogbook, "0,6");
-		this.add(cbLogbook, "1,6");
+		this.add(lbLogbook, "0,7");
+		this.add(cbLogbook, "1,7");
 
-		this.add(lbStateModel, "0,7");
-		this.add(cbStateModel, "1,7");
+		this.add(lbStateModel, "0,8");
+		this.add(cbStateModel, "1,8");
 
-		this.add(lbSystemIdPrefix, "0,8");
-		this.add(tfSystemIdPrefix, "1,8");
+		this.add(lbSystemIdPrefix, "0,9");
+		this.add(tfSystemIdPrefix, "1,9");
 
-		this.add(lbShowRelation, "0,9");
-		this.add(cbShowRelation, "1,9");
+		this.add(lbShowRelation, "0,10");
+		this.add(cbShowRelation, "1,10");
 
-		this.add(lbShowGroups, "0,10");
-		this.add(cbShowGroups, "1,10");
+		this.add(lbShowGroups, "0,11");
+		this.add(cbShowGroups, "1,11");
 
 		this.add(lbIcon, "3,1");
-		this.add(nuclosIconChooser, "3,2 , 3,15");
+		this.add(nuclosIconChooser, "3,2 , 3,16");
 
 		double sizeMoreOptions [][] = {{170, 200, 20}, {20,20,20,20,20, TableLayout.FILL}};
 
@@ -501,7 +515,7 @@ public class NuclosEntityCommonPropertiesStep extends NuclosEntityAbstractStep i
 
 		MoreOptionPanel optionPanel = new MoreOptionPanel(pnlMoreOptions);
 
-		this.add(optionPanel, "0,12,2,12");
+		this.add(optionPanel, "0,13,2,13");
 
 		fillIconCombobox();
 
@@ -520,6 +534,15 @@ public class NuclosEntityCommonPropertiesStep extends NuclosEntityAbstractStep i
 			public void itemStateChanged(ItemEvent e) {
 				JCheckBox cb = (JCheckBox)e.getItem();
 				NuclosEntityCommonPropertiesStep.this.model.setSearchable(cb.isSelected());
+			}
+		});
+		
+		cbOverlayDetails.addItemListener(new ItemListener() {
+
+			@Override
+			public void itemStateChanged(ItemEvent e) {
+				JCheckBox cb = (JCheckBox)e.getItem();
+				NuclosEntityCommonPropertiesStep.this.model.setOverlayDetails(cb.isSelected());
 			}
 		});
 

@@ -82,7 +82,7 @@ public class ProzessWizardCollectController extends NuclosCollectController<Enti
 	private class EntityRelationshipCollectPanel extends CollectPanel<EntityRelationshipModel> {
 
 		EntityRelationshipCollectPanel(boolean bSearchPanelAvailable) {
-			super(bSearchPanelAvailable);
+			super(bSearchPanelAvailable, false);
 		}
 
 		@Override

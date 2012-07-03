@@ -31,10 +31,14 @@ import javax.swing.JPanel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import org.nuclos.client.main.mainframe.MainFrameTab;
+import org.nuclos.client.ui.MainFrameTabAdapter;
+import org.nuclos.client.ui.UIUtils;
 import org.nuclos.client.ui.collect.detail.DetailsPanel;
 import org.nuclos.client.ui.collect.indicator.CollectPanelIndicator;
 import org.nuclos.client.ui.collect.result.ResultPanel;
 import org.nuclos.client.ui.collect.search.SearchPanel;
+import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.collect.collectable.Collectable;
 import org.nuclos.common2.SpringLocaleDelegate;
 
@@ -90,6 +94,8 @@ public class CollectPanel<Clct extends Collectable> extends JPanel {
 
 	private final boolean bContainsSearchPanel;
 	
+	private final boolean bDetailsInOverlay;
+	
 	private final CollectPanelIndicator.SelectionListener selectionListener = new CollectPanelIndicator.SelectionListener() {
 		@Override
 		public void selectionPerformed(int currentTab, int selectedTab) {
@@ -110,16 +116,26 @@ public class CollectPanel<Clct extends Collectable> extends JPanel {
 	 * @see #newResultPanel()
 	 * @see #newDetailsPanel()
 	 */
-	public CollectPanel(boolean bSearchPanelAvailable) {
+	public CollectPanel(boolean bSearchPanelAvailable, boolean bDetailsInOverlay) {
 		super(new BorderLayout(0,0));
 
 		this.bContainsSearchPanel = bSearchPanelAvailable;
+		this.bDetailsInOverlay = bDetailsInOverlay;
 
 		// Note that the search panel is always created, even if it isn't visible.
 		// @todo That is for compatibility reasons, but shouldn't be.
 		pnlSearch = newSearchPanel();
 		pnlResult = newResultPanel();
 		pnlDetails = newDetailsPanel();
+		pnlDetails.addMainFrameTabListener(new MainFrameTabAdapter() {
+			@Override
+			public void tabClosed(MainFrameTab tab) {
+				CollectPanel.this.setTabbedPaneSelectedIndex(TAB_RESULT);
+				for (ChangeListener chgListener : chgListeners) {
+					chgListener.stateChanged(new ChangeEvent(layer));
+				}
+			}
+		});
 		
 		optionsEnabled.put(0, true);
 		optionsEnabled.put(1, true);
@@ -132,6 +148,12 @@ public class CollectPanel<Clct extends Collectable> extends JPanel {
 			cpi1.hideSearchOption();
 			cpi2.hideSearchOption();
 			cpi3.hideSearchOption();
+		}
+		if (bDetailsInOverlay) {
+			cpi1.hideDetailsOption();
+			cpi2.hideDetailsOption();
+			cpi3.hideSearchOption();
+			cpi3.hideDetailsOption();
 		}
 		
 		cpi1.addSelectionListener(selectionListener);
@@ -318,10 +340,12 @@ public class CollectPanel<Clct extends Collectable> extends JPanel {
 		}*/
 		
 		optionsEnabled.put(iExternalIndex, bEnabled);
-		final CollectPanelIndicator cpi = pnlSearch.getCollectPanelIndicator();
-		cpi.updateOption(iExternalIndex, bEnabled);
-		cpi.updateOption(iExternalIndex, bEnabled);
-		cpi.updateOption(iExternalIndex, bEnabled);
+		final CollectPanelIndicator cpi1 = pnlSearch.getCollectPanelIndicator();
+		final CollectPanelIndicator cpi2 = pnlResult.getCollectPanelIndicator();
+		final CollectPanelIndicator cpi3 = pnlDetails.getCollectPanelIndicator();
+		cpi1.updateOption(iExternalIndex, bEnabled);
+		cpi2.updateOption(iExternalIndex, bEnabled);
+		cpi3.updateOption(iExternalIndex, bEnabled);
 	}
 
 	/**
@@ -335,10 +359,12 @@ public class CollectPanel<Clct extends Collectable> extends JPanel {
 			this.tabpn.setToolTipTextAt(iIndex, sToolTipText);
 		}*/
 		
-		final CollectPanelIndicator cpi = pnlSearch.getCollectPanelIndicator();
-		cpi.setToolTip(iExternalIndex, sToolTipText);
-		cpi.setToolTip(iExternalIndex, sToolTipText);
-		cpi.setToolTip(iExternalIndex, sToolTipText);
+		final CollectPanelIndicator cpi1 = pnlSearch.getCollectPanelIndicator();
+		final CollectPanelIndicator cpi2 = pnlResult.getCollectPanelIndicator();
+		final CollectPanelIndicator cpi3 = pnlDetails.getCollectPanelIndicator();
+		cpi1.setToolTip(iExternalIndex, sToolTipText);
+		cpi2.setToolTip(iExternalIndex, sToolTipText);
+		cpi3.setToolTip(iExternalIndex, sToolTipText);
 	}
 
 	/**
@@ -370,8 +396,27 @@ public class CollectPanel<Clct extends Collectable> extends JPanel {
 		}*/
 		
 		pnlSearch.setVisible(TAB_SEARCH == iExternalIndex);
-		pnlResult.setVisible(TAB_RESULT == iExternalIndex);
-		pnlDetails.setVisible(TAB_DETAILS == iExternalIndex);
+		
+		if (bDetailsInOverlay && TAB_RESULT == iExternalIndex) {
+			MainFrameTab tab1 = UIUtils.getTabForComponent(layer);
+			MainFrameTab tab2 = UIUtils.getTabForComponent(pnlDetails);
+			if (tab1 != null && tab2 != null && tab1 != tab2) {
+				// details showing in overlay tab
+				tab2.dispose();
+			}
+			pnlResult.setVisible(true);
+		} else {
+			pnlDetails.setVisible(TAB_DETAILS == iExternalIndex);
+		}
+		if (bDetailsInOverlay && TAB_DETAILS == iExternalIndex) {
+			MainFrameTab tab = UIUtils.getTabForComponent(layer);
+			if (tab == null) {
+				throw new NuclosFatalException("tab not found");
+			}
+			tab.add(pnlDetails);
+		} else {
+			pnlResult.setVisible(TAB_RESULT == iExternalIndex);
+		}
 	}
 
 	/**
@@ -382,8 +427,27 @@ public class CollectPanel<Clct extends Collectable> extends JPanel {
 		//this.tabpn.setSelectedComponent(comp);
 		
 		pnlSearch.setVisible(pnlSearch == comp);
-		pnlResult.setVisible(pnlResult == comp);
-		pnlDetails.setVisible(pnlDetails == comp);
+		
+		if (bDetailsInOverlay && pnlResult == comp) {
+			MainFrameTab tab1 = UIUtils.getTabForComponent(layer);
+			MainFrameTab tab2 = UIUtils.getTabForComponent(pnlDetails);
+			if (tab1 != null && tab2 != null && tab1 != tab2) {
+				// details showing in overlay tab
+				tab2.dispose();
+			}
+			pnlResult.setVisible(true);
+		} else {
+			pnlDetails.setVisible(pnlDetails == comp);
+		}
+		if (bDetailsInOverlay && pnlDetails == comp) {
+			MainFrameTab tab = UIUtils.getTabForComponent(layer);
+			if (tab == null) {
+				throw new NuclosFatalException("tab not found");
+			}
+			tab.add(pnlDetails);
+		} else {
+			pnlResult.setVisible(pnlResult == comp);
+		}
 	}
 
 	/**
