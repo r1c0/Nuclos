@@ -25,6 +25,8 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Properties;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
 import org.nuclos.common2.StringUtils;
@@ -45,6 +47,8 @@ public class ApplicationProperties implements Serializable, InitializingBean {
 	private static final Logger LOG = Logger.getLogger(ApplicationProperties.class);
 
 	private static final long serialVersionUID = 16362018323707955L;
+	
+	private static final Pattern SIMPLE_VERSION_PAT = Pattern.compile("(\\d+\\.\\d(?:\\.\\d+)?)(.*)");
 
 	/**
 	 * the color of the application logo
@@ -421,6 +425,18 @@ public class ApplicationProperties implements Serializable, InitializingBean {
 		public String getVersionNumber() {
 			return this.sVersionNumber;
 		}
+		
+		public String getSimpleVersionNumber() {
+			final Matcher m = SIMPLE_VERSION_PAT.matcher(sVersionNumber);
+			if (!m.matches()) {
+				throw new IllegalArgumentException(sVersionNumber);
+			}
+			final StringBuilder result = new StringBuilder(m.group(1));
+			if (m.group(2).indexOf("SNAPSHOT") >= 0) {
+				result.append(" BETA");
+			}
+			return result.toString();
+		}
 
 		public Date getVersionDate() {
 			try {
@@ -455,14 +471,14 @@ public class ApplicationProperties implements Serializable, InitializingBean {
 		 * @return application name and version.
 		 */
 		public String getShortName() {
-			return getAppName() + " V" + getVersionNumber();
+			return getAppName() + " V" + getSimpleVersionNumber();
 		}
 
 		/**
 		 * @return application name and version, including version date.
 		 */
 		public String getLongName() {
-			return this.getShortName() + " (" + getVersionDateString() + ")";
+			return getAppName() + " V" + getVersionNumber() + " (" + getVersionDateString() + ")";
 		}
 
 		@Override

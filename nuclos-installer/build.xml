@@ -6,7 +6,7 @@
 	<property file="../build.properties" />
 	
 	<property name="postgresql.version" value="9.1.4-1" />
-	<property name="tomcat.version" value="7.0.27" />
+	<property name="tomcat.version" value="7.0.28" />
 
 	<!-- Set default value for build.compiler (modern means javac) -->
 	<property name="build.compiler" value="modern" />
@@ -42,7 +42,7 @@
 		<get src="http://get.enterprisedb.com/postgresql/postgresql-${postgresql.version}-linux-x64.run" dest="${3rdparty.dir}" skipexisting="true" />
 		<get src="http://get.enterprisedb.com/postgresql/postgresql-${postgresql.version}-osx.dmg" dest="${3rdparty.dir}" skipexisting="true" />
 
-		<checksum todir="${conf.3rdparty.dir}" algorithm="MD5" verifyproperty="3rdparty.checksum.valid">
+		<checksum todir="${conf.3rdparty.dir}" algorithm="SHA1" verifyproperty="3rdparty.checksum.valid">
 			<fileset dir="${3rdparty.dir}" includes="apache-tomcat-${tomcat.version}.zip, postgresql-${postgresql.version}*" />
 		</checksum>
 		<echo message="Checksums valid: ${3rdparty.checksum.valid}" />
