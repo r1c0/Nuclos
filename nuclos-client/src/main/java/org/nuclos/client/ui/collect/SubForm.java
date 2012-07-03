@@ -51,6 +51,7 @@ import java.util.TreeMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.prefs.Preferences;
 
+import javax.swing.AbstractAction;
 import javax.swing.AbstractButton;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -65,6 +66,7 @@ import javax.swing.JTable;
 import javax.swing.JToggleButton;
 import javax.swing.JToolBar;
 import javax.swing.JViewport;
+import javax.swing.KeyStroke;
 import javax.swing.ListSelectionModel;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingUtilities;
@@ -91,6 +93,7 @@ import org.jdesktop.jxlayer.plaf.ext.LockableUI;
 import org.jdesktop.swingx.event.TableColumnModelExtListener;
 import org.nuclos.api.context.ScriptContext;
 import org.nuclos.client.common.FocusActionListener;
+import org.nuclos.client.common.NuclosCollectableTextArea;
 import org.nuclos.client.common.SubFormController.FocusListSelectionListener;
 import org.nuclos.client.common.Utils;
 import org.nuclos.client.scripting.ScriptEvaluator;
@@ -1723,6 +1726,21 @@ public class SubForm extends JPanel
 
 		result.addCollectableComponentModelListener(getCollectableTableCellEditorChangeListener());
 
+		if (clctcomp instanceof NuclosCollectableTextArea) {
+			((NuclosCollectableTextArea) clctcomp).overrideActionMap(new AbstractAction() {
+				@Override
+				public void actionPerformed(ActionEvent evt) {
+					Component c = (Component)((NuclosCollectableTextArea) clctcomp).getJTextArea().getParent();
+					c.dispatchEvent(new KeyEvent(c, KeyEvent.KEY_PRESSED, System.currentTimeMillis(), 0, KeyEvent.VK_TAB));
+				}
+			}, new AbstractAction() {
+				@Override
+		        public void actionPerformed(ActionEvent evt) {
+					Component c = (Component)((NuclosCollectableTextArea) clctcomp).getJTextArea().getParent();
+					c.dispatchEvent(new KeyEvent(c, KeyEvent.KEY_PRESSED, System.currentTimeMillis(), KeyEvent.SHIFT_MASK, KeyEvent.VK_TAB));
+				}
+			});
+		}
 		if (clctcomp instanceof DynamicRowHeightChangeProvider) {
 			((DynamicRowHeightChangeProvider) clctcomp).addDynamicRowHeightChangeListener(this);
 		}
@@ -2441,17 +2459,21 @@ public class SubForm extends JPanel
 
 		@Override
 		public boolean isCellEditable(int row, int column) {
-			if (getModel() instanceof SubFormTableModel) {
-				final int iModelColumn = getColumnModel().getColumn(column).getModelIndex();
-				final CollectableEntityField clctefTarget = ((SubFormTableModel) getModel()).getCollectableEntityField(iModelColumn);
-
-				if (clctefTarget.getName().equals("entityfieldDefault")) {
-					String datatype = getSubFormModel().getValueAt(row, getSubFormModel().findColumnByFieldName("datatype")).toString();
-					return !StringUtils.isNullOrEmpty(datatype) && datatype.startsWith("java");
+			if ((row > -1 && row < getRowCount()) &&
+					(column > -1 && column < getColumnCount())) {
+				if (getModel() instanceof SubFormTableModel) {
+					final int iModelColumn = getColumnModel().getColumn(column).getModelIndex();
+					final CollectableEntityField clctefTarget = ((SubFormTableModel) getModel()).getCollectableEntityField(iModelColumn);
+	
+					if (clctefTarget.getName().equals("entityfieldDefault")) {
+						String datatype = getSubFormModel().getValueAt(row, getSubFormModel().findColumnByFieldName("datatype")).toString();
+						return !StringUtils.isNullOrEmpty(datatype) && datatype.startsWith("java");
+					}
 				}
+	
+				return super.isCellEditable(row, column);
 			}
-
-			return super.isCellEditable(row, column);
+			return false;
 		}
 
 		@Override

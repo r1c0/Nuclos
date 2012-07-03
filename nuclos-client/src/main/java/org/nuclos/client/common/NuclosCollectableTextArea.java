@@ -41,6 +41,7 @@ import javax.swing.JTextArea;
 import javax.swing.KeyStroke;
 import javax.swing.table.TableCellRenderer;
 
+import org.apache.bcel.generic.FCONST;
 import org.nuclos.client.ui.collect.DynamicRowHeightChangeListener;
 import org.nuclos.client.ui.collect.DynamicRowHeightChangeProvider;
 import org.nuclos.client.ui.collect.DynamicRowHeightSupport;
@@ -84,7 +85,6 @@ public class NuclosCollectableTextArea extends CollectableTextArea implements Dy
 	}
 
 	private static final FocusForward FOCUS_FORWARD = new FocusForward();
-
 	private static final FocusBackward FOCUS_BACKWORD = new FocusBackward();
 
 	public NuclosCollectableTextArea(CollectableEntityField clctef, Boolean bSearchable) {
@@ -119,11 +119,16 @@ public class NuclosCollectableTextArea extends CollectableTextArea implements Dy
 
 	// Override the tab key
 	private void overrideActionMap() {
+		overrideActionMap(FOCUS_FORWARD, FOCUS_BACKWORD);
+	}
+	// Override the tab key from Subforms
+	public final void overrideActionMap(Action forwardAction, Action backwardAction) {
 		JTextArea component = getJTextArea();
 		// Add actions
-		component.getActionMap().put(FOCUS_FORWARD.getValue(Action.NAME), FOCUS_FORWARD);
-		component.getKeymap().addActionForKeyStroke(KeyStroke.getKeyStroke(KeyEvent.VK_TAB, KeyEvent.SHIFT_MASK), FOCUS_BACKWORD);
+		component.getActionMap().put(FOCUS_FORWARD.getValue(Action.NAME), forwardAction);
+		component.getKeymap().addActionForKeyStroke(KeyStroke.getKeyStroke(KeyEvent.VK_TAB, KeyEvent.SHIFT_MASK), backwardAction);
 	}
+
 
 	/**
 	 * This cell renderer is limited to 3 lines of text, when it is enabled.
