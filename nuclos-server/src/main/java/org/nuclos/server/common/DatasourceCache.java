@@ -232,6 +232,23 @@ public class DatasourceCache {
 		datasourceServerUtils.invalidateCache();
 		findDatasourcesById();
 	}
+	
+
+	/**
+	 * get a collection of all Datasources where the given user has at least read permission
+	 * @return Collection<DatasourceVO>
+	 */
+	public Collection<DatasourceVO> getAll() {
+		List<DatasourceVO> result = new ArrayList<DatasourceVO>();
+		result.addAll(getAllCharts());
+		result.addAll(getAllDatasources());
+		result.addAll(getAllDynamicEntities());
+		result.addAll(getAllDynamicTasklists());
+		result.addAll(getAllRecordGrant());
+		result.addAll(getAllValuelistProvider());
+		return result;
+	}
+
 
 	/**
 	 * get a collection of all Datasources where the given user has at least read permission

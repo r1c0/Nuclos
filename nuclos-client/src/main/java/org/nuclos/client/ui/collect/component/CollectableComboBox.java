@@ -511,8 +511,9 @@ public class CollectableComboBox extends LabeledCollectableComponentWithVLP impl
 
 	@Override
 	protected void updateView(CollectableField clctfValue) {
-		if (clctfValue instanceof CollectableValueField)
+		if (clctfValue instanceof CollectableValueField || !clctfValue.isIdField())
 			return;
+		
 		
 		if (hasAdditionalEntry()) {
 			removeAdditionalEntry();

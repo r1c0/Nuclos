@@ -166,7 +166,7 @@ public class Column implements Serializable {
 
 	@Override
 	public int hashCode() {
-		return name.hashCode();
+		return name != null ? name.hashCode() : super.hashCode();
 	}
 
 	public void show() {

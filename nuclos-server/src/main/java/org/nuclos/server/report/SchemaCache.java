@@ -16,6 +16,13 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.server.report;
 
+import java.io.BufferedInputStream;
+import java.io.IOException;
+import java.io.StringReader;
+import java.net.URL;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
 import javax.annotation.PostConstruct;
 
 import org.apache.log4j.Logger;
@@ -32,6 +39,7 @@ import org.nuclos.common.database.query.definition.QueryTable;
 import org.nuclos.common.database.query.definition.ReferentialContraint;
 import org.nuclos.common.database.query.definition.Schema;
 import org.nuclos.common.database.query.definition.Table;
+import org.nuclos.common2.XMLUtils;
 import org.nuclos.server.common.DatasourceCache;
 import org.nuclos.server.common.MetaDataServerProvider;
 import org.nuclos.server.common.ServerParameterProvider;
@@ -58,6 +66,14 @@ import org.nuclos.server.report.valueobject.RecordGrantVO;
 import org.nuclos.server.report.valueobject.ValuelistProviderVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.xml.sax.Attributes;
+import org.xml.sax.ContentHandler;
+import org.xml.sax.EntityResolver;
+import org.xml.sax.InputSource;
+import org.xml.sax.Locator;
+import org.xml.sax.SAXException;
+import org.xml.sax.XMLReader;
+import org.xml.sax.ext.LexicalHandler;
 
 /**
  * Caches the database schema used for reports and forms.<br>
@@ -87,6 +103,8 @@ public class SchemaCache implements SchemaCacheMBean {
    private SpringDataBaseHelper dataBaseHelper;
    
    private DatasourceCache datasourceCache;
+   
+   private static final Map<String, Table> mpTableColumns = new ConcurrentHashMap<String, Table>();
 
    SchemaCache() {
 	   INSTANCE = this;
@@ -97,6 +115,8 @@ public class SchemaCache implements SchemaCacheMBean {
    @PostConstruct
    final void init() {
 	   this.currentSchema = getSchemaFromDB();
+
+	   MBeanAgent.invokeCacheMethodAsMBean(INSTANCE.getClass(), "initTableColumnsMap", null, null);
    }
    
    @Autowired
@@ -181,20 +201,152 @@ public class SchemaCache implements SchemaCacheMBean {
 	}
 
    @Override
-public synchronized void invalidate() {
+   public synchronized void invalidate() {
+	   invalidate(false);
+   }
+   public synchronized void invalidate(boolean schemaOnly) {
       LOG.debug("Invalidating SchemaCache");
       this.currentSchema = null;
       this.currentSchema = getSchemaFromDB();
+      if (schemaOnly) {
+	      mpTableColumns.clear();
+		  MBeanAgent.invokeCacheMethodAsMBean(
+				   INSTANCE.getClass(), "initTableColumnsMap", null, null);
+      }
+   }
+   
+   protected static final String SYSTEMID = "http://www.novabit.de/technologies/querybuilder/querybuildermodel.dtd";
+   protected static final String RESOURCE_PATH = "org/nuclos/common/querybuilder/querybuildermodel.dtd";
+	class XMLContentHandler implements ContentHandler, LexicalHandler {
+		@Override
+        public void characters(char[] ac, int start, int length) {
+		}
+		@Override
+        public void endDocument() {
+		}
+		@Override
+        public void endElement(String namespaceURI, String localName, String qName) {
+		}
+		@Override
+        public void endPrefixMapping(String prefix) {
+		}
+		@Override
+        public void ignorableWhitespace(char[] ac, int start, int length) {
+		}
+		@Override
+        public void processingInstruction(String target, String data) {
+		}
+		@Override
+        public void skippedEntity(String name) {
+		}
+		@Override
+        public void startDocument() {
+		}
+		@Override
+        public void startPrefixMapping(String prefix, String uri) {
+		}
+		@Override
+        public void setDocumentLocator(Locator loc) {
+		}
+		@Override
+        public void startElement(String namespaceURI, String localName, String qName, Attributes atts) {
+			// only process tables
+			if (qName.equals("table")) {
+				final String sEntity = atts.getValue("entity");
+				final Table tableSchema = currentSchema.getTable(sEntity);
+				if (tableSchema != null) {
+					final Table table = (Table)tableSchema.clone();
+					fillTableColumnsAndConstraints(table);
+				}
+			}
+		}
+		@Override
+        public void endCDATA() throws SAXException {
+		}
+		@Override
+        public void endDTD() throws SAXException {
+		}
+		@Override
+        public void startCDATA() throws SAXException {
+		}
+		@Override
+        public void comment(char[] ch, int start, int length) throws SAXException {
+		}
+		@Override
+        public void endEntity(String name) throws SAXException {
+		}
+		@Override
+        public void startEntity(String name) throws SAXException {
+		}
+		@Override
+        public void startDTD(String name, String publicId, String systemId) throws SAXException {
+		}
+	}
+
+   @Override
+   public void initTableColumnsMap() {
+	   // invoke this method only via MBean Server. As we do this, running a new Thread is allowed here.
+	   final Thread t = new Thread(new Runnable() {
+			@Override
+			public void run() {
+				buildTableColumnsMap();
+			}
+		});
+	   t.setDaemon(true);
+	   t.setPriority(Thread.MIN_PRIORITY);
+	   
+	   t.start();
+   }
+   
+   private Map<String, Table> buildTableColumnsMap() {
+		try {
+			for (DatasourceVO dsvo : datasourceCache.getAll()) {
+				final XMLReader parser = XMLUtils.newSAXParser();
+				final XMLContentHandler xmlContentHandler = new XMLContentHandler();
+				parser.setProperty("http://xml.org/sax/properties/lexical-handler", xmlContentHandler);
+				parser.setContentHandler(xmlContentHandler);
+				parser.setEntityResolver(new EntityResolver() {
+					@Override
+	                public InputSource resolveEntity(String publicId, String systemId) throws IOException {
+						InputSource result = null;
+						if (systemId.equals(SYSTEMID)) {
+							final URL url = this.getClass().getClassLoader().getResource(RESOURCE_PATH);
+							if (url == null) {
+								throw new NuclosFatalException("DTD f\u00fcr SystemID " + SYSTEMID + "kann nicht gefunden werden");
+							}
+							result = new InputSource(new BufferedInputStream(url.openStream()));
+						}
+						return result;
+					}
+				});
+				parser.parse(new InputSource(new StringReader(dsvo.getSource())));
+				
+			}
+		}
+		catch (IOException e) {
+			throw new NuclosFatalException(e);
+		}
+		catch (SAXException e) {
+			throw new NuclosFatalException(e);
+		}
+
+	   return mpTableColumns;
    }
 
    // ***** static **********************************************************************
 
-   public synchronized void fillTableColumnsAndConstraints(final Table table){
-      getColumns(table);
-      getConstraints(table);
-
-      //Table x = (Table)table.clone();
-      //SchemaCache.getInstance().addTable((Table)table.clone());
+   public synchronized void fillTableColumnsAndConstraints(final Table table) {
+	   final Table t;
+	   if (mpTableColumns.containsKey(table.getName())) {
+		   t = mpTableColumns.get(table.getName());
+	   } else {
+		   t = (Table)table.clone();
+		   getColumns(t);
+		   getConstraints(t);
+		   mpTableColumns.put(t.getName(), t);
+	   }
+	   table.getColumns().addAll(t.getColumns());
+	   table.getConstraints().addAll(t.getConstraints());
    }
 
    public synchronized void getColumns(final Table table) {
@@ -206,7 +358,7 @@ public synchronized void invalidate() {
       }
    }
 
-   private synchronized void getConstraints(final Table table) {
+   synchronized void getConstraints(final Table table) {
    	DbTable tableMetaData = dataBaseHelper.getDbAccess().getTableMetaData(table.getName());
    	if (tableMetaData != null) {
    		DbArtifact.acceptAll(tableMetaData.getTableArtifacts(DbConstraint.class), new AbstractDbArtifactVisitor<Void>() {

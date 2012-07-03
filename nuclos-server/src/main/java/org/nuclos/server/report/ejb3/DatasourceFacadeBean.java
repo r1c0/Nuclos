@@ -1158,11 +1158,12 @@ public class DatasourceFacadeBean extends NuclosFacadeBean implements Datasource
 
 	private void invalidateCaches(DataSourceType type) {
 		DatasourceCache.getInstance().invalidate();
-		SchemaCache.getInstance().invalidate();
+		SchemaCache.getInstance().invalidate(true);
 		switch (type) {
 		case DATASOURCE:
 			SecurityCache.getInstance().invalidate();
 			break;
+		case CHART:
 		case DYNAMICENTITY:
 			MetaDataServerProvider.getInstance().revalidate(true);
 			break;

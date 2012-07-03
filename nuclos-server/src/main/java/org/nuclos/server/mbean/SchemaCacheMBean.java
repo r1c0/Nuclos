@@ -16,6 +16,10 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.server.mbean;
 
+import java.util.Map;
+
+import org.nuclos.common.database.query.definition.Table;
+
 
 /**
  * MBean interface for the SchemaCache.
@@ -28,5 +32,6 @@ package org.nuclos.server.mbean;
  */
 
 public interface SchemaCacheMBean {
-	public void invalidate();
+	public void invalidate(); 
+	public void initTableColumnsMap();
 }

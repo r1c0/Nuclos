@@ -25,6 +25,7 @@ import javax.management.ObjectName;
 import javax.management.StandardMBean;
 
 import org.apache.log4j.Logger;
+import org.nuclos.common.NuclosFatalException;
 
 
 /**
@@ -69,7 +70,7 @@ public abstract class MBeanAgent  {
 	private static <T> void registerMBean(String domain, T implementation, Class<T> beanClass) {
 		try {
 			final MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
-			final ObjectName objectName = getObjectName(domain, implementation);
+			final ObjectName objectName = getObjectName(domain, implementation.getClass());
 
 			if (!mbs.isRegistered(objectName)) {
 				mbs.registerMBean(new StandardMBean(implementation, beanClass), objectName);
@@ -86,7 +87,6 @@ public abstract class MBeanAgent  {
 		}
 	}
 	
-	
 	/**
 	 * helper method to get a unique ObjectName for a MBean
 	 * @param domain
@@ -95,10 +95,53 @@ public abstract class MBeanAgent  {
 	 * @throws MalformedObjectNameException
 	 * @throws NullPointerException
 	 */
-	private static ObjectName getObjectName(String domain, Object implementation) throws MalformedObjectNameException, NullPointerException {
-		final String[] arr = implementation.getClass().getName().split("\\.");
-		final String implementationClassName = arr.length > 0 ? arr[arr.length - 1] : implementation.getClass().getName();
+	private static ObjectName getObjectName(String domain, Class clazz) throws MalformedObjectNameException, NullPointerException {
+		final String[] arr = clazz.getName().split("\\.");
+		final String implementationClassName = arr.length > 0 ? arr[arr.length - 1] : clazz.getName();
 		return new ObjectName(domain + ":name=" + implementationClassName);
+	}
+
+	/**
+	 * invoke a mbean in the PlatformMBeanServer
+	 * @param domain
+	 * @param implementation
+	 * @param beanClass
+	 */
+	public static <T> Object invokeCacheMethodAsMBean(Class clazz, String operationName, Object[] params, String[] signature) {
+		try {
+			final ObjectName objectName = getObjectName(CACHE_DOMAIN, clazz);
+
+			final MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
+
+			if (!mbs.isRegistered(objectName)) {
+				throw new NuclosFatalException("MBean " + objectName.getCanonicalName() + " is not registered.");
+			}
+			return mbs.invoke(objectName, operationName, params, signature);
+		} catch (Exception e) {
+			log.error("Invokation of MBean for " + clazz.toString() + " failed", e);
+		}
+		return null;
+	}
+	/**
+	 * invoke a mbean in the PlatformMBeanServer
+	 * @param domain
+	 * @param implementation
+	 * @param beanClass
+	 */
+	public static <T> Object invokeConfigurationMethodAsMBean(Class clazz, String operationName, Object[] params, String[] signature) {
+		try {
+			final ObjectName objectName = getObjectName(CONFIG_DOMAIN, clazz);
+
+			final MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
+
+			if (!mbs.isRegistered(objectName)) {
+				throw new NuclosFatalException("MBean " + objectName.getCanonicalName() + " is not registered.");
+			}
+			return mbs.invoke(objectName, operationName, params, signature);
+		} catch (Exception e) {
+			log.error("Invokation of MBean for " + clazz.toString() + " failed", e);
+		}
+		return null;
 	}
 	
 }
