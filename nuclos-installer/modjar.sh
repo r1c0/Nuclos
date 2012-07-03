@@ -95,10 +95,13 @@ pushd $DIR
 	for i in $*; do
 		if [[ $i =~ $REGEX ]]; then
 			echo "No packing of $i"
-			modjar2 "$DIR" "$i"
+			modjar2 "$DIR" "$i" &
 		else 
-			modjar "$DIR" "$i"
+			modjar "$DIR" "$i" &
 		fi	
+		while [ `jobs | wc -l` -ge 4 ]; do
+				sleep 2
+		done
 	done
 	rm .keystore
 popd
