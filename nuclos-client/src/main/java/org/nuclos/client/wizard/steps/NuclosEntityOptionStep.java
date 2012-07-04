@@ -662,7 +662,10 @@ public class NuclosEntityOptionStep extends NuclosEntityAbstractStep {
 				if(!existAttribute(attr)) {
 					if(attr.getInternalId() == null)
 						attr.setInternalId(getHighestInternalId());
-					attr.setMandatory(false);
+					if (this.model.isEditMode()) {
+						//attr.setDistinct(false); // @todo uncomment this. some databases can not handle unique and nullable fields
+						attr.setMandatory(false);
+					}
 					this.model.getAttributeModel().addAttribute(attr);
 					setTranslationForAttribute(attr, this.model.getAttributeModel());
 				}
