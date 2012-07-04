@@ -60,7 +60,7 @@ public class RuleRepository implements InitializingBean {
 		if (INSTANCE == null) {
 			// INSTANCE = new RuleRepository();
 			// lazy support
-			SpringApplicationContextHolder.getBean(RuleRepository.class);
+			INSTANCE = SpringApplicationContextHolder.getBean(RuleRepository.class);
 		}
 		return INSTANCE;
 	}

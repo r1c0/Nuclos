@@ -3463,7 +3463,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 			}
 		}
 
-		cmbbxCurrentState.setEnabled(cmbbxCurrentState.getItemCount() != 0);
+		cmbbxCurrentState.setEnabled(bEnableButtons && cmbbxCurrentState.getItemCount() != 0);
 	}
 
 
@@ -3583,7 +3583,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 			}
 		}
 
-		cmpStateStandardView.setEnabled(getSelectedCollectable() == null ? false : cmpStateStandardView.getItemCount() != 0);
+		cmpStateStandardView.setEnabled(getSelectedCollectable() == null ? false : (bEnableButtons && cmpStateStandardView.getItemCount() != 0));
 	}
 
 	public List<StateVO> getPossibleSubsequentStates() {
@@ -5469,8 +5469,8 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 			case CollectState.DETAILSMODE_EDIT:
 				final boolean bWritable = ctl.isCurrentRecordWritable();
 				// show subsequent state buttons only in current (non-historical) view and only if the current record is writable:
-				setSubsequentStatesVisible(bWritable, bViewingExistingRecord);
-				setStatesDefaultPathVisible(bWritable, bViewingExistingRecord);
+				setSubsequentStatesVisible(true, bWritable && bViewingExistingRecord);
+				setStatesDefaultPathVisible(true, bWritable && bViewingExistingRecord);
 				getLayoutMLButtonsActionListener().fireComponentEnabledStateUpdate();
 				break;
 
