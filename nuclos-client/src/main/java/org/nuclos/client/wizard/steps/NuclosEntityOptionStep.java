@@ -662,6 +662,7 @@ public class NuclosEntityOptionStep extends NuclosEntityAbstractStep {
 				if(!existAttribute(attr)) {
 					if(attr.getInternalId() == null)
 						attr.setInternalId(getHighestInternalId());
+					attr.setMandatory(false);
 					this.model.getAttributeModel().addAttribute(attr);
 					setTranslationForAttribute(attr, this.model.getAttributeModel());
 				}
