@@ -61,7 +61,6 @@ public class MasterDataMetaVO extends NuclosValueObject implements Localizable {
 	private final String sResourceName;
 	private final String sNuclosResource;
 	private final boolean bImportExport;
-	private final boolean bOverlayDetails;
 	private final String sLabelPlural;
 	private final Integer iAcceleratorModifier;
 	private final String sAccelerator;
@@ -96,7 +95,7 @@ public class MasterDataMetaVO extends NuclosValueObject implements Localizable {
 			boolean bEditable, String sLabel, Collection<String> collFieldsForEquality, boolean bCacheable,
 			java.util.Date dateCreatedAt, String sCreatedBy, java.util.Date dateChangedAt, String sChangedBy, Integer iVersion,
 			Map<String, ? extends MasterDataMetaFieldVO> mpFields, String sTreeView, String sDescription, 
-			boolean bSystemEntity, String sResourceName, String sNuclosResource, boolean bImportExport, boolean bOverlayDetails, String sLabelPlural,
+			boolean bSystemEntity, String sResourceName, String sNuclosResource, boolean bImportExport, String sLabelPlural,
 			Integer iAccModifier, String accelerator, String sResourceIdForLabel, String sResourceIdForMenuPath, 
 			String sResourceIdForLabelPlural, String sResourceIdForTreeView, String sResourceIdForTreeViewDescription) {
 		super(iId, dateCreatedAt, sCreatedBy, dateChangedAt, sChangedBy, iVersion);
@@ -122,7 +121,6 @@ public class MasterDataMetaVO extends NuclosValueObject implements Localizable {
 		this.sLabelPlural = sLabelPlural;
 		this.iAcceleratorModifier = iAccModifier;
 		this.sAccelerator = accelerator;
-		this.bOverlayDetails = bOverlayDetails;
 		
 		this.sResourceIdForLabel = sResourceIdForLabel;
 		this.sResourceIdForLabelPlural = sResourceIdForLabelPlural;
@@ -158,7 +156,6 @@ public class MasterDataMetaVO extends NuclosValueObject implements Localizable {
 		this.sLabelPlural = null;
 		this.iAcceleratorModifier = 0;
 		this.sAccelerator = null;
-		this.bOverlayDetails = false;
 	}
 
 	public static String getEntityNameFromViewName(String sView) {
@@ -397,10 +394,6 @@ public class MasterDataMetaVO extends NuclosValueObject implements Localizable {
 	 */
 	public boolean isCacheable() {
 		return this.bCacheable;
-	}
-	
-	public boolean isOverlayDetails() {
-		return this.bOverlayDetails;
 	}
 	
 	public String getResourceSIdForLabel() {

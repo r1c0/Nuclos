@@ -25,6 +25,7 @@ import java.util.List;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 
+import org.nuclos.client.common.ClientParameterProvider;
 import org.nuclos.client.common.NuclosCollectController;
 import org.nuclos.client.common.NuclosResultPanel;
 import org.nuclos.client.main.Main;
@@ -276,7 +277,7 @@ public class EntityRelationShipCollectController extends NuclosCollectController
 	private class EntityRelationshipCollectPanel extends CollectPanel<EntityRelationshipModel> {
 
 		EntityRelationshipCollectPanel(boolean bSearchPanelAvailable) {
-			super(bSearchPanelAvailable, false);
+			super(bSearchPanelAvailable, ClientParameterProvider.getInstance().isNuclosUIDetailsOverlay(getEntity()));
 		}
 
 		@Override

@@ -22,6 +22,7 @@ package org.nuclos.client.processmonitor;
 import javax.swing.JToolBar;
 
 import org.apache.log4j.Logger;
+import org.nuclos.client.common.ClientParameterProvider;
 import org.nuclos.client.common.NuclosCollectController;
 import org.nuclos.client.console.NuclosConsole;
 import org.nuclos.client.main.mainframe.MainFrameTab;
@@ -44,7 +45,7 @@ public class ProcessMonitorCollectController extends NuclosCollectController<Col
 	
 	private static final Logger LOG = Logger.getLogger(ProcessMonitorCollectController.class);
 
-	private final CollectPanel<CollectableProcessMonitorModel> pnlCollect = new CollectPanel<CollectableProcessMonitorModel>(false, false);
+	private final CollectPanel<CollectableProcessMonitorModel> pnlCollect = new CollectPanel<CollectableProcessMonitorModel>(false, ClientParameterProvider.getInstance().isNuclosUIDetailsOverlay(getEntity()));
 	// @SuppressWarnings("unused")
 	private final MasterDataSubFormController subformctlUsages;	
 	private final ProcessMonitorEditPanel pnlEdit;

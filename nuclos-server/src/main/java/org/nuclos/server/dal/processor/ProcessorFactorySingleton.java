@@ -387,7 +387,6 @@ public class ProcessorFactorySingleton {
 		allColumns.add(createBeanMapping(SystemFields.BASE_ALIAS, type, "BLNTREEGROUP", "treeGroup", DT_BOOLEAN));
 		allColumns.add(createBeanMapping(SystemFields.BASE_ALIAS, type, "BLNIMPORTEXPORT", "importExport", DT_BOOLEAN));
 		allColumns.add(createBeanMapping(SystemFields.BASE_ALIAS, type, "BLNFIELDVALUEENTITY", "fieldValueEntity", DT_BOOLEAN));
-		allColumns.add(createBeanMapping(SystemFields.BASE_ALIAS, type, "BLNOVERLAYDETAILS", "overlayDetails", DT_BOOLEAN));
 
 		allColumns.add(createBeanMapping(SystemFields.BASE_ALIAS, type, "STRACCELERATOR", "accelerator", DT_STRING));
 		allColumns.add(createBeanMapping(SystemFields.BASE_ALIAS, type, "INTACCELERATORMODIFIER", "acceleratorModifier", DT_INTEGER));

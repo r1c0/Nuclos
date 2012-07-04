@@ -199,7 +199,6 @@ public class DalSupportForMD {
 				/*String sResourceName,*/ null,
 				/*String sNuclosResource,*/ null,
 				/*Boolean bImportExport,*/ eMeta.isImportExport(),
-				/*Boolean bOverlayDetails,*/ Boolean.TRUE.equals(eMeta.isOverlayDetails()),
 				/*String sLabelPlural,*/ null,
 				/*Integer iAccModifier,*/ eMeta.getAcceleratorModifier(),
 				/*String accelerator,*/ eMeta.getAccelerator(),

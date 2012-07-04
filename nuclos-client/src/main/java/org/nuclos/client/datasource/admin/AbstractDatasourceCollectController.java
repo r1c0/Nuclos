@@ -34,6 +34,7 @@ import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileFilter;
 
 import org.apache.log4j.Logger;
+import org.nuclos.client.common.ClientParameterProvider;
 import org.nuclos.client.common.NuclosCollectController;
 import org.nuclos.client.common.NuclosResultPanel;
 import org.nuclos.client.common.security.SecurityCache;
@@ -623,7 +624,7 @@ public abstract class AbstractDatasourceCollectController<T extends DatasourceVO
 	private class DatasourceCollectPanel<T> extends CollectPanel {
 
 		DatasourceCollectPanel(boolean bSearchPanelAvailable) {
-			super(bSearchPanelAvailable, false);
+			super(bSearchPanelAvailable, ClientParameterProvider.getInstance().isNuclosUIDetailsOverlay(getEntity()));
 		}
 
 		@Override

@@ -44,4 +44,46 @@ public abstract class AbstractParameterProvider implements ParameterProvider {
 		return result;
 	}
 
+	@Override
+	public boolean isEnabled(String sParameterName) {
+		String sValue = getValue(sParameterName);
+		if (sValue != null) {
+			sValue = sValue.trim();
+			if ("1".equals(sValue) ||
+					"true".equalsIgnoreCase(sValue) ||
+					"enable".equals(sValue) ||
+					"enabled".equals(sValue)) {
+				return true;
+			}
+		}
+		
+		return false;
+	}
+	
+	@Override
+	public String[] getList(String sParameterName) {
+		String sValue = getValue(sParameterName);
+		if (sValue != null) {
+			String[] result = sValue.split(";");
+			for (int i = 0; i < result.length; i++) {
+				result[i] = result[i].trim();
+			}
+			return result;
+		}
+		return new String[0];
+	}
+
+	public boolean isNuclosUIDetailsOverlay(String sEntityName) {
+		if (isEnabled(NUCLOS_UI_DETAILS_OVERLAY)) {
+			for (String sIgnore : getList(NUCLOS_UI_DETAILS_OVERLAY_IGNORE_LIST)) {
+				if (sIgnore.equals(sEntityName)) {
+					return false;
+				}
+			}
+			return true;
+		}
+		
+		return false;
+	}
+
 }	// class AbstractParameterProvider

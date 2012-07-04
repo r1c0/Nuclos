@@ -40,6 +40,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import org.apache.log4j.Logger;
+import org.nuclos.client.common.ClientParameterProvider;
 import org.nuclos.client.common.DependantCollectableMasterDataMap;
 import org.nuclos.client.common.LocaleDelegate;
 import org.nuclos.client.common.NuclosCollectController;
@@ -517,7 +518,7 @@ public class StateModelCollectController extends NuclosCollectController<Collect
 	private class StateModelCollectPanel extends CollectPanel<CollectableStateModel> {
 
 		StateModelCollectPanel(boolean bSearchPanelAvailable) {
-			super(bSearchPanelAvailable, false);
+			super(bSearchPanelAvailable, ClientParameterProvider.getInstance().isNuclosUIDetailsOverlay(getEntity()));
 		}
 
 		@Override

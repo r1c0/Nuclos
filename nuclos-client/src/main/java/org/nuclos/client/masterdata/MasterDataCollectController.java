@@ -45,6 +45,7 @@ import javax.swing.TransferHandler;
 import javax.swing.event.ChangeEvent;
 
 import org.apache.log4j.Logger;
+import org.nuclos.client.common.ClientParameterProvider;
 import org.nuclos.client.common.DependantCollectableMasterDataMap;
 import org.nuclos.client.common.DetailsSubFormController;
 import org.nuclos.client.common.EntityCollectController;
@@ -279,9 +280,8 @@ public class MasterDataCollectController extends EntityCollectController<Collect
 		// getSearchStrategy().setCompleteCollectablesStrategy(new
 		// CompleteCollectableMasterDataStrategy(this));
 		final boolean bSearchPanelAvailable = this.mddelegate.getMetaData(sEntityName).isSearchable();
-		final boolean bDetailsInOverlay = this.mddelegate.getMetaData(sEntityName).isOverlayDetails();
 		this.detailsWithScrollbar = detailsWithScrollbar;
-		final CollectPanel<CollectableMasterDataWithDependants> pnlCollect = new MasterDataCollectPanel(bSearchPanelAvailable, bDetailsInOverlay);
+		final CollectPanel<CollectableMasterDataWithDependants> pnlCollect = new MasterDataCollectPanel(bSearchPanelAvailable, ClientParameterProvider.getInstance().isNuclosUIDetailsOverlay(getEntity()));
 		getTab().setLayeredComponent(pnlCollect);
 		this.initialize(pnlCollect);
 		this.setupEditPanelForDetailsTab();

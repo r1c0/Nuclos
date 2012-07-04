@@ -26,6 +26,7 @@ import javax.swing.JButton;
 import javax.swing.JOptionPane;
 import javax.swing.JToolBar;
 
+import org.nuclos.client.common.ClientParameterProvider;
 import org.nuclos.client.common.NuclosCollectController;
 import org.nuclos.client.main.mainframe.MainFrameTab;
 import org.nuclos.client.masterdata.MasterDataDelegate;
@@ -55,7 +56,7 @@ import org.nuclos.server.processmonitor.valueobject.SubProcessVO;
  */
 public class InstanceCollectController extends NuclosCollectController<CollectableInstanceModel> {
 	
-	private final CollectPanel<CollectableInstanceModel> pnlCollect = new CollectPanel<CollectableInstanceModel>(false, false);
+	private final CollectPanel<CollectableInstanceModel> pnlCollect = new CollectPanel<CollectableInstanceModel>(false, ClientParameterProvider.getInstance().isNuclosUIDetailsOverlay(getEntity()));
 	private final InstanceViewPanel pnlView;
 
 	private JButton btnStart;

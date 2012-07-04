@@ -8064,12 +8064,6 @@
         "nullable": false
       },
       {
-        "name": "overlaydetails",
-        "dbfield": "BLNOVERLAYDETAILS",
-        "datatype": "java.lang.Boolean",
-        "nullable": true
-      },
-      {
         "name": "accelerator",
         "dbfield": "STRACCELERATOR",
         "datatype": "java.lang.String",

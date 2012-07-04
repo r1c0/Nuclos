@@ -49299,16 +49299,6 @@
     "text": "Benutzerdefiniertes Icon"
   },
   {
-    "resourceID": "wizard.step.entitycommonproperties.21",
-    "locale": "en",
-    "text": "Popup Details ?"
-  },
-  {
-    "resourceID": "wizard.step.entitycommonproperties.21",
-    "locale": "de",
-    "text": "Details im Popup ?"
-  },
-  {
     "resourceID": "wizard.step.inputattribute.1",
     "locale": "i-default",
     "text": "Add attribute"

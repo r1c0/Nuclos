@@ -88,7 +88,6 @@ public class NuclosEntityWizardStaticModel extends StaticModel {
 	private boolean blnCreateLayout;
 	private Integer iModifier;
 	private String sAccelerator;
-	private boolean blnOverlayDetails;
 
 	private String labelSingularRes;
 	private String menuPathRes;
@@ -295,14 +294,6 @@ public class NuclosEntityWizardStaticModel extends StaticModel {
 
 	public void setCachable(boolean blnCachable) {
 		this.blnCachable = blnCachable;
-	}
-	
-	public boolean isOverlayDetails() {
-		return this.blnOverlayDetails;
-	}
-	
-	public void setOverlayDetails(boolean blnOverLayDetails) {
-		this.blnOverlayDetails = blnOverLayDetails;
 	}
 
 	public String getNodeLabel() {

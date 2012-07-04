@@ -130,6 +130,10 @@ public interface ParameterProvider {
 	public static final String KEY_DEFAULT_NUCLOS_THEME = "DEFAULT_NUCLOS_THEME";
 	
 	public static final String KEY_NUCLOS_INSTANCE_NAME = "NUCLOS_INSTANCE_NAME";
+	
+	public static final String NUCLOS_UI_DETAILS_OVERLAY = "Nuclos UI Details Overlay";
+	
+	public static final String NUCLOS_UI_DETAILS_OVERLAY_IGNORE_LIST = "Nuclos UI Details Overlay Ignore List";
 
 	/**
 	 * @param sParameterName
@@ -144,5 +148,19 @@ public interface ParameterProvider {
 	 * @return the int value from the parameters or the default value.
 	 */
 	int getIntValue(String sParameterName, int iDefaultValue);
+	
+	/**
+	 * 
+	 * @param sParameterName
+	 * @return
+	 */
+	boolean isEnabled(String sParameterName);
+	
+	/**
+	 * 
+	 * @param sParameterName
+	 * @return
+	 */
+	String[] getList(String sParameterName);
 
 }	// interface ParameterProvider

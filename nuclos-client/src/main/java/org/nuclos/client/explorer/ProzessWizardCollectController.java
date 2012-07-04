@@ -16,6 +16,7 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.explorer;
 
+import org.nuclos.client.common.ClientParameterProvider;
 import org.nuclos.client.common.NuclosCollectController;
 import org.nuclos.client.common.NuclosResultPanel;
 import org.nuclos.client.main.mainframe.MainFrame;
@@ -82,7 +83,7 @@ public class ProzessWizardCollectController extends NuclosCollectController<Enti
 	private class EntityRelationshipCollectPanel extends CollectPanel<EntityRelationshipModel> {
 
 		EntityRelationshipCollectPanel(boolean bSearchPanelAvailable) {
-			super(bSearchPanelAvailable, false);
+			super(bSearchPanelAvailable, ClientParameterProvider.getInstance().isNuclosUIDetailsOverlay(getEntity()));
 		}
 
 		@Override
