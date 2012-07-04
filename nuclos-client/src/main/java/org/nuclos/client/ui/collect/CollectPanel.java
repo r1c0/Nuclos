@@ -41,6 +41,7 @@ import org.nuclos.client.ui.collect.search.SearchPanel;
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.collect.collectable.Collectable;
 import org.nuclos.common2.SpringLocaleDelegate;
+import org.nuclos.common2.exception.CommonBusinessException;
 
 
 /**
@@ -128,6 +129,7 @@ public class CollectPanel<Clct extends Collectable> extends JPanel {
 		pnlResult = newResultPanel();
 		pnlDetails = newDetailsPanel();
 		pnlDetails.addMainFrameTabListener(new MainFrameTabAdapter() {
+			
 			@Override
 			public void tabClosed(MainFrameTab tab) {
 				CollectPanel.this.setTabbedPaneSelectedIndex(TAB_RESULT);
@@ -135,6 +137,7 @@ public class CollectPanel<Clct extends Collectable> extends JPanel {
 					chgListener.stateChanged(new ChangeEvent(layer));
 				}
 			}
+			
 		});
 		
 		optionsEnabled.put(0, true);
@@ -413,7 +416,7 @@ public class CollectPanel<Clct extends Collectable> extends JPanel {
 			if (tab == null) {
 				throw new NuclosFatalException("tab not found");
 			}
-			tab.add(pnlDetails);
+			tab.setOverlayComponent(pnlDetails, false);
 		} else {
 			pnlResult.setVisible(TAB_RESULT == iExternalIndex);
 		}

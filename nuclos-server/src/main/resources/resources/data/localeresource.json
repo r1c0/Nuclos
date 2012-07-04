@@ -20430,6 +20430,21 @@
     "text": "Es ist ein nicht näher spezifizierbarer (unkritischer) Fehler aufgetreten."
   },
   {
+    "resourceID": "common.error.exception.nucloscancelexception",
+    "locale": "i-default",
+    "text": "The action was canceled."
+  },
+  {
+    "resourceID": "common.error.exception.nucloscancelexception",
+    "locale": "en",
+    "text": "The action was canceled."
+  },
+  {
+    "resourceID": "common.error.exception.nucloscancelexception",
+    "locale": "de",
+    "text": "Die Aktion wurde abgebrochen."
+  },
+  {
     "resourceID": "common.error.exception.nucleusupdateexception",
     "locale": "i-default",
     "text": "The entry cannot be saved, (Probably another entry with the same key already exists)"

@@ -1866,10 +1866,10 @@ public abstract class AbstractCollectableComponent
 					cellRendererComponent.setBackground(getMandatoryColor());
 					cellRendererComponent.setForeground(tbl.getForeground());
 				} else {
-					if (clct.getId() == null) {
-						cellRendererComponent.setBackground(tbl.getBackground());
-						cellRendererComponent.setForeground(tbl.getForeground());
-					} else {
+//					if (clct.getId() == null) {
+//						cellRendererComponent.setBackground(tbl.getBackground());
+//						cellRendererComponent.setForeground(tbl.getForeground());
+//					} else {
 						if (tbl instanceof SubForm.SubFormTable) {
 							SubFormTable subformtable = (SubForm.SubFormTable) tbl;
 							Column subformcolumn = subformtable.getSubForm().getColumn(clctef.getName());
@@ -1882,17 +1882,17 @@ public abstract class AbstractCollectableComponent
 								}
 							}
 						}
+//					}
+					
+					try {
+						EntityMetaDataVO meta = MetaDataClientProvider.getInstance().getEntity(clctef.getEntityName());
+						if (meta.getRowColorScript() != null && !bSelected) {
+							AbstractCollectableComponent.setBackground(cellRendererComponent, meta.getRowColorScript(), clct, meta, isEnabled);
+						}
 					}
-				}
-
-				try {
-					EntityMetaDataVO meta = MetaDataClientProvider.getInstance().getEntity(clctef.getEntityName());
-					if (meta.getRowColorScript() != null && !bSelected) {
-						AbstractCollectableComponent.setBackground(cellRendererComponent, meta.getRowColorScript(), clct, meta, isEnabled);
+					catch (CommonFatalException ex) {
+						LOG.warn(ex);
 					}
-				}
-				catch (CommonFatalException ex) {
-					LOG.warn(ex);
 				}
 			}
 		}

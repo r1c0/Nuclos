@@ -131,6 +131,7 @@ import org.nuclos.client.ui.multiaction.MultiActionProgressPanel;
 import org.nuclos.client.ui.table.SortableTableModel;
 import org.nuclos.client.ui.table.TableUtils;
 import org.nuclos.client.valuelistprovider.cache.CollectableFieldsProviderCache;
+import org.nuclos.common.NuclosCancelException;
 import org.nuclos.common.NuclosEOField;
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.ParameterProvider;
@@ -701,6 +702,19 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 		// TODO all actions that are specific to the Details tab must be disabled here and in detailsModeLeft()
 		this.getSaveAction().setEnabled(false);
 		setupDragDrop();
+		
+		getCollectPanel().getDetailsPanel().addMainFrameTabListener(new MainFrameTabAdapter() {
+
+			@Override
+			public boolean tabClosing(MainFrameTab tab)	throws CommonBusinessException {
+				try {
+					return askAndSaveIfNecessary(true);
+				} catch (NuclosCancelException nce) {
+					return false;
+				}
+			}
+			
+		});
 	}
 
 	protected void setupDragDrop() {
@@ -995,7 +1009,7 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	 * @param pnlCollect
 	 */
 	final void setCollectPanel(CollectPanel<Clct> pnlCollect) {
-		this.pnlCollect = new WeakReference<CollectPanel<Clct>>(pnlCollect);
+		_setCollectPanel(new WeakReference<CollectPanel<Clct>>(pnlCollect));
 
 		this.statemodel = new CollectStateModel<Clct>(this.getCollectPanel(), this);
 
@@ -3545,13 +3559,26 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 			this.cmdEnterViewMode();
 		}
 	}
+	
+	/**
+	 * asks the user to save the current record if necessary, so that it can be abandoned afterwards.
+	 * @return can the action be performed?
+	 */
+	public boolean askAndSaveIfNecessary() {
+		try {
+			return askAndSaveIfNecessary(false);
+		} catch (NuclosCancelException e) {
+			// not possible
+			throw new NuclosFatalException(e);
+		}
+	}
 
 	/**
 	 * asks the user to save the current record if necessary, so that it can be abandoned afterwards.
 	 * @return can the action be performed?
 	 */
 	@Override
-	public boolean askAndSaveIfNecessary() {
+	public boolean askAndSaveIfNecessary(boolean throwCancelException) throws NuclosCancelException {
 		boolean result = true;
 
 		if (this.changesArePending()) {
@@ -3570,6 +3597,9 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 					"CollectController.10","Datensatz ge\u00e4ndert"),
 					JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
 
+			if (throwCancelException && iBtn == JOptionPane.CANCEL_OPTION) {
+				throw new NuclosCancelException();
+			}
 			result = (iBtn != JOptionPane.CANCEL_OPTION);
 
 			if (iBtn == JOptionPane.YES_OPTION) {

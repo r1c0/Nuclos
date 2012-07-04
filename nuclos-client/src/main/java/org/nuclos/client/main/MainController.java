@@ -157,6 +157,7 @@ import org.nuclos.common.ApplicationProperties;
 import org.nuclos.common.CommandInformationMessage;
 import org.nuclos.common.CommandMessage;
 import org.nuclos.common.JMSConstants;
+import org.nuclos.common.NuclosCancelException;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.Priority;
 import org.nuclos.common.RuleNotification;
@@ -1816,7 +1817,11 @@ public class MainController {
 		final Iterator<TopController> iter = mpActiveControllers.values().iterator();
 		while (result && iter.hasNext()) {
 			final TopController ctl = iter.next();
-			result = ctl.askAndSaveIfNecessary();
+			try {
+				result = ctl.askAndSaveIfNecessary(true);
+			} catch (NuclosCancelException e) {
+				result = false;
+			}
 		}
 		return result;
 	}

@@ -109,7 +109,7 @@ public class ResPlanController extends CustomComponentController {
 	}
 	
 	@Override
-	public boolean askAndSaveIfNecessary() {
+	public boolean askAndSaveIfNecessary(boolean throwCancelException) {
 		return true;
 	}
 

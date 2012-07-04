@@ -479,17 +479,28 @@ public class MainFrameTab extends JPanel implements IOverlayComponent, NuclosDro
 			super.addImpl(comp, constraints, index);
 		}
 	}
-
+	
 	/**
 	 *
 	 * @param oc
 	 */
 	public void setOverlayComponent(IOverlayComponent oc) {
-		try {
-			removeOverlayComponent(oc);
-		} catch(CommonBusinessException e) {
-			Errors.getInstance().showExceptionDialog(this, e);
-			return;
+		setOverlayComponent(oc, true);
+	}
+
+	/**
+	 *
+	 * @param oc
+	 * @param removeBeforeAdd
+	 */
+	public void setOverlayComponent(IOverlayComponent oc, boolean removeBeforeAdd) {
+		if (removeBeforeAdd) {
+			try {
+				removeOverlayComponent(oc, false);
+			} catch(CommonBusinessException e) {
+				Errors.getInstance().showExceptionDialog(this, e);
+				return;
+			}
 		}
 
 		final Component c = (Component) oc;
@@ -502,15 +513,28 @@ public class MainFrameTab extends JPanel implements IOverlayComponent, NuclosDro
 		layered.add(overlay.getLockPanel(), new Integer(2));
 		layered.add(overlay, new Integer(3));
 	}
+	
+	/**
+	 *
+	 * @param oc
+	 * @throws CommonBusinessException
+	 */
+	public boolean removeOverlayComponent(final IOverlayComponent oc) throws CommonBusinessException {
+		return removeOverlayComponent(oc, true);
+	}
 
 	/**
 	 *
 	 * @param oc
 	 * @throws CommonBusinessException
 	 */
-	public void removeOverlayComponent(final IOverlayComponent oc) throws CommonBusinessException {
+	public boolean removeOverlayComponent(final IOverlayComponent oc, boolean notifyCanCancel) throws CommonBusinessException {
 		if (oc instanceof MainFrameTab) {
-			((MainFrameTab)oc).notifyClosing();
+			if (!((MainFrameTab)oc).notifyClosing()) {
+				if (notifyCanCancel) {
+					return false;
+				}
+			}
 		}
 
 		if (overlay != null) {
@@ -531,6 +555,8 @@ public class MainFrameTab extends JPanel implements IOverlayComponent, NuclosDro
 				}
 			});
 		}
+		
+		return true;
 	}
 
 	/**
