@@ -68,10 +68,10 @@ public class WYSIWYGCollectableComboBox extends WYSIWYGCollectableComponent {
 		propertyFilters.put(PROPERTY_LABEL, new PropertyFilter(PROPERTY_LABEL, DISABLED));
 		propertyFilters.put(PROPERTY_ROWS, new PropertyFilter(PROPERTY_ROWS, DISABLED));
 		propertyFilters.put(PROPERTY_FILL_CONTROL_HORIZONTALLY, new PropertyFilter(PROPERTY_FILL_CONTROL_HORIZONTALLY, DISABLED));
-		propertyFilters.put(PROPERTY_INSERTABLE, new PropertyFilter(PROPERTY_INSERTABLE, EXPERT_MODE));
+		propertyFilters.put(PROPERTY_INSERTABLE, new PropertyFilter(PROPERTY_INSERTABLE, ENABLED));
 		propertyFilters.put(PROPERTY_OPAQUE, new PropertyFilter(PROPERTY_OPAQUE, DISABLED));
 		propertyFilters.put(PROPERTY_PREFFEREDSIZE, new PropertyFilter(PROPERTY_PREFFEREDSIZE, DISABLED));
-		propertyFilters.put(PROPERTY_STRICTSIZE, new PropertyFilter(PROPERTY_STRICTSIZE, STANDARD_AND_EXPERT_MODE));
+		propertyFilters.put(PROPERTY_STRICTSIZE, new PropertyFilter(PROPERTY_STRICTSIZE, ENABLED));
 	
 		this.setLayout(new BorderLayout());
 		component.getJLabel().setVisible(false);

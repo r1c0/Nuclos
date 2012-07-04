@@ -112,16 +112,12 @@ public class ComponentProperties implements Serializable {
 	public Map<String, PropertyValue<?>> getFilteredProperties() {
 		Map<String, PropertyValue<?>> result = getClonedProperties();
 		
-		try {
-			WYSIWYGLayoutEditorPanel editor = (c instanceof WYSIWYGLayoutEditorPanel)?(WYSIWYGLayoutEditorPanel)c:c.getParentEditor();
-			int mode = editor.getController().getMode();
-			for (Map.Entry<String, PropertyValue<?>> entry : properties.entrySet()) {
-				if ((PropertyUtils.getPropertyMode(c, entry.getKey()) & mode) != mode) {
-					result.remove(entry.getKey());
-				}
+		WYSIWYGLayoutEditorPanel editor = (c instanceof WYSIWYGLayoutEditorPanel)?(WYSIWYGLayoutEditorPanel)c:c.getParentEditor();
+		int mode = WYSIWYGEditorModes.ENABLED;
+		for (Map.Entry<String, PropertyValue<?>> entry : properties.entrySet()) {
+			if ((PropertyUtils.getPropertyMode(c, entry.getKey()) & mode) != mode) {
+				result.remove(entry.getKey());
 			}
-		} catch (NuclosBusinessException e) {
-			log.error(e);
 		}
 		return result;
 	}

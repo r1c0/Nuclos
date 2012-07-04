@@ -138,14 +138,14 @@ public class WYSIWYGLayoutEditorPanel extends JPanel implements WYSIWYGComponent
 
 	/** {@link #getPropertyFilters()} */
 	private PropertyFilter[] PROPERTY_FILTERS = new PropertyFilter[]{
-			new PropertyFilter(PROPERTY_NAME, STANDARD_MODE | EXPERT_MODE),
+			new PropertyFilter(PROPERTY_NAME, ENABLED),
 			new PropertyFilter(PROPERTY_PREFFEREDSIZE, DISABLED),
-			new PropertyFilter(PROPERTY_BORDER, STANDARD_MODE | EXPERT_MODE),
-			new PropertyFilter(PROPERTY_BACKGROUNDCOLOR, STANDARD_MODE | EXPERT_MODE),
-			new PropertyFilter(PROPERTY_OPAQUE, STANDARD_MODE | EXPERT_MODE),
+			new PropertyFilter(PROPERTY_BORDER, ENABLED),
+			new PropertyFilter(PROPERTY_BACKGROUNDCOLOR, ENABLED),
+			new PropertyFilter(PROPERTY_OPAQUE, ENABLED),
 			new PropertyFilter(PROPERTY_VISIBLE, DISABLED),
-			new PropertyFilter(PROPERTY_BORDER, STANDARD_MODE | EXPERT_MODE),
-			new PropertyFilter(PROPERTY_FONT, STANDARD_MODE | EXPERT_MODE)};
+			new PropertyFilter(PROPERTY_BORDER, ENABLED),
+			new PropertyFilter(PROPERTY_FONT, ENABLED)};
 
 	private ComponentProperties properties;
 
@@ -1014,9 +1014,9 @@ public class WYSIWYGLayoutEditorPanel extends JPanel implements WYSIWYGComponent
 		// FIX NUCLEUSINT-254
 		for (PropertyFilter filter : PROPERTY_FILTERS) {
 			if (filter.getName() == PROPERTY_VISIBLE) {
-				filter.setMode(EXPERT_MODE);
+				filter.setMode(ENABLED);
 			} else if (filter.getName() == PROPERTY_PREFFEREDSIZE) {
-				filter.setMode(STANDARD_MODE | EXPERT_MODE);
+				filter.setMode(ENABLED);
 			}
 
 		}

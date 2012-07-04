@@ -30,9 +30,5 @@ public interface WYSIWYGEditorModes {
 
 	public static int DISABLED = 0;
 	
-	public static int STANDARD_MODE = 1;
-	
-	public static int EXPERT_MODE = 2;
-	
-	public static int STANDARD_AND_EXPERT_MODE = STANDARD_MODE | EXPERT_MODE;
+	public static int ENABLED = 1;
 }

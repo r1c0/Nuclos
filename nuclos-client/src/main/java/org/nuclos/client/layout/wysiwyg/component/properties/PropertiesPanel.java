@@ -326,13 +326,8 @@ public class PropertiesPanel extends JPanel implements SaveAndCancelButtonPanelC
 					}
 					
 					for (String s : c.getPropertyNames()) {
-						try {
-							if ((PropertyUtils.getPropertyMode(c, s) & c.getParentEditor().getController().getMode()) == c.getParentEditor().getController().getMode()) {
-								dialog.getModel().setValueAt(c.getDefaultPropertyValue(s), dialog.values.indexOf(s), 1);
-							}
-						} catch (NuclosBusinessException e1) {
-							Errors.getInstance().showExceptionDialog(null, e1);
-							LOG.error(e1);
+						if ((PropertyUtils.getPropertyMode(c, s) & WYSIWYGEditorModes.ENABLED) == WYSIWYGEditorModes.ENABLED) {
+							dialog.getModel().setValueAt(c.getDefaultPropertyValue(s), dialog.values.indexOf(s), 1);
 						}
 					}
 					dialog.properties.setEnabled(false);
@@ -459,15 +454,10 @@ public class PropertiesPanel extends JPanel implements SaveAndCancelButtonPanelC
 					constraints = tableLayoutUtil.checkIfConstraintContainesIllegalValues(this.c, constraints);
 
 					// FIX NUCLEUSINT-284
-					if((c.getParentEditor().getController().getMode() & WYSIWYGEditorModes.EXPERT_MODE) == WYSIWYGEditorModes.EXPERT_MODE) {
+					if(tableLayoutUtil.isCellEmpty(c, new LayoutCell(constraints)))
 						tableLayoutUtil.changeComponentsAlignment(c, constraints);
-					}
-					else {
-						if(tableLayoutUtil.isCellEmpty(c, new LayoutCell(constraints)))
-							tableLayoutUtil.changeComponentsAlignment(c, constraints);
-						else
-							throw new CommonBusinessException(WYSIWYGStringsAndLabels.WYSIWYGLAYOUT_EDITOR_PANEL.ERRORMESSAGE_INTERNAL_PANEL_CELL_NOT_EMPTY);
-					}
+					else
+						throw new CommonBusinessException(WYSIWYGStringsAndLabels.WYSIWYGLAYOUT_EDITOR_PANEL.ERRORMESSAGE_INTERNAL_PANEL_CELL_NOT_EMPTY);
 				}
 			} catch(CommonBusinessException e) {
 				Errors.getInstance().showExceptionDialog(this, e);

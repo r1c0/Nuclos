@@ -306,13 +306,13 @@ public class WYSIWYGLayoutComponent extends LayoutComponentHolder implements WYS
 	@Override
 	public PropertyFilter[] getPropertyFilters() {
 		List<PropertyFilter> result = new ArrayList<WYSIWYGComponent.PropertyFilter>();
-		result.add(new PropertyFilter(PROPERTY_NAME, STANDARD_MODE | EXPERT_MODE));
-		result.add(new PropertyFilter(PROPERTY_BORDER, STANDARD_MODE | EXPERT_MODE));
-		result.add(new PropertyFilter(PROPERTY_PREFFEREDSIZE, STANDARD_MODE | EXPERT_MODE));
+		result.add(new PropertyFilter(PROPERTY_NAME, ENABLED));
+		result.add(new PropertyFilter(PROPERTY_BORDER, ENABLED));
+		result.add(new PropertyFilter(PROPERTY_PREFFEREDSIZE, ENABLED));
 		
 		if (lc.getComponentProperties() != null) {
 			for (Property pt : lc.getComponentProperties()) {
-				result.add(new PropertyFilter(pt.name, STANDARD_MODE | EXPERT_MODE));
+				result.add(new PropertyFilter(pt.name, ENABLED));
 			}
 		}
 		

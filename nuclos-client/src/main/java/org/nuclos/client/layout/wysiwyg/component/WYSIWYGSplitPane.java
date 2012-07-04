@@ -110,14 +110,14 @@ public class WYSIWYGSplitPane extends JPanel implements WYSIWYGComponent{
 	};
 	
 	private static PropertyFilter[] PROPERTY_FILTERS = new PropertyFilter[] {
-		new PropertyFilter(PROPERTY_NAME, STANDARD_MODE | EXPERT_MODE),
-		new PropertyFilter(PROPERTY_PREFFEREDSIZE, STANDARD_MODE | EXPERT_MODE),
-		new PropertyFilter(PROPERTY_ORIENTATION, STANDARD_MODE | EXPERT_MODE),
-		new PropertyFilter(PROPERTY_EXPANDABLE, STANDARD_MODE | EXPERT_MODE),
-		new PropertyFilter(PROPERTY_DIVIDERSIZE, STANDARD_MODE | EXPERT_MODE),
-		new PropertyFilter(PROPERTY_RESIZEWEIGHT, STANDARD_MODE | EXPERT_MODE),
-		new PropertyFilter(PROPERTY_CONTINUOUSLAYOUT, STANDARD_MODE | EXPERT_MODE),
-		new PropertyFilter(PROPERTY_BORDER, STANDARD_MODE | EXPERT_MODE)
+		new PropertyFilter(PROPERTY_NAME, ENABLED),
+		new PropertyFilter(PROPERTY_PREFFEREDSIZE, ENABLED),
+		new PropertyFilter(PROPERTY_ORIENTATION, ENABLED),
+		new PropertyFilter(PROPERTY_EXPANDABLE, ENABLED),
+		new PropertyFilter(PROPERTY_DIVIDERSIZE, ENABLED),
+		new PropertyFilter(PROPERTY_RESIZEWEIGHT, ENABLED),
+		new PropertyFilter(PROPERTY_CONTINUOUSLAYOUT, ENABLED),
+		new PropertyFilter(PROPERTY_BORDER, ENABLED)
 	};
 	
 	private ComponentProperties properties;

@@ -104,11 +104,11 @@ public class WYSIWYGScrollPane extends JScrollPane implements WYSIWYGComponent {
 	};
 	
 	private static PropertyFilter[] PROPERTY_FILTERS = new PropertyFilter[] {
-		new PropertyFilter(PROPERTY_NAME, STANDARD_MODE | EXPERT_MODE), 
-		new PropertyFilter(PROPERTY_HORIZONTALSCROLLBAR, STANDARD_MODE | EXPERT_MODE),
-		new PropertyFilter(PROPERTY_VERTICALSCROLLBAR, STANDARD_MODE | EXPERT_MODE),
-		new PropertyFilter(PROPERTY_PREFFEREDSIZE, STANDARD_MODE | EXPERT_MODE),
-		new PropertyFilter(PROPERTY_BORDER, STANDARD_MODE | EXPERT_MODE)
+		new PropertyFilter(PROPERTY_NAME, ENABLED), 
+		new PropertyFilter(PROPERTY_HORIZONTALSCROLLBAR, ENABLED),
+		new PropertyFilter(PROPERTY_VERTICALSCROLLBAR, ENABLED),
+		new PropertyFilter(PROPERTY_PREFFEREDSIZE, ENABLED),
+		new PropertyFilter(PROPERTY_BORDER, ENABLED)
 	};
 	
 	public static final String[][] PROPERTY_VALUES_STATIC = new String[][] {

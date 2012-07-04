@@ -65,7 +65,6 @@ import javax.swing.SwingUtilities;
 
 import org.apache.log4j.Logger;
 import org.nuclos.client.layout.wysiwyg.CollectableWYSIWYGLayoutEditor.WYSIWYGLayoutEditorChangeDescriptor;
-import org.nuclos.client.layout.wysiwyg.WYSIWYGEditorModes;
 import org.nuclos.client.layout.wysiwyg.WYSIWYGStringsAndLabels;
 import org.nuclos.client.layout.wysiwyg.WYSIWYGStringsAndLabels.COMPONENT_POPUP;
 import org.nuclos.client.layout.wysiwyg.WYSIWYGStringsAndLabels.TABLELAYOUT_PANEL;
@@ -463,22 +462,9 @@ public class TableLayoutPanel extends JPanel implements DropTargetListener, Mous
 			}
 		}
 		
-		/** in which mode is the editor running?*/
-		int wysiwygEditorMode = -1;
-		try {
-			wysiwygEditorMode = getParentEditorPanel().getController().getMode();
-		} catch (NuclosBusinessException e) {
-			log.error(e);
-		}
-
 		if (dataFlavorSupported) {
 			LayoutCell cell = tableLayoutUtil.getCurrentLayoutCell();
 		
-			if (wysiwygEditorMode == WYSIWYGEditorModes.EXPERT_MODE){
-				//NUCLEUSINT-365
-				/** dropping of a component to a not empty cell is allowed if expertmode is enabled */
-				return true;
-			}
 			// NUCLEUSINT-496
 			Point mouse = tableLayoutUtil.getContainer().getMousePosition();
 			if (mouse == null) {
@@ -658,15 +644,8 @@ public class TableLayoutPanel extends JPanel implements DropTargetListener, Mous
 							WYSIWYGComponent wysiwygComponent = getComponentToMove();
 							Boolean enabledValue = (Boolean) wysiwygComponent.getProperties().getProperty(WYSIWYGComponent.PROPERTY_ENABLED).getValue();
 
-							if ((getParentEditorPanel().getController().getMode() & WYSIWYGEditorModes.STANDARD_MODE) == WYSIWYGEditorModes.STANDARD_MODE) {
-								if (tableLayoutUtil.isCellEmpty(tableLayoutUtil.getCurrentLayoutCell())) {
-									tableLayoutUtil.moveComponentTo(getComponentToMove(), getCurrentLayoutCell());
-									((Component) getComponentToMove()).setEnabled(enabledValue);
-									setComponentToMove(null);
-								}
-							} else if ((getParentEditorPanel().getController().getMode() & WYSIWYGEditorModes.EXPERT_MODE) == WYSIWYGEditorModes.EXPERT_MODE) {
+							if (tableLayoutUtil.isCellEmpty(tableLayoutUtil.getCurrentLayoutCell())) {
 								tableLayoutUtil.moveComponentTo(getComponentToMove(), getCurrentLayoutCell());
-								
 								((Component) getComponentToMove()).setEnabled(enabledValue);
 								setComponentToMove(null);
 							}
@@ -885,20 +864,12 @@ public class TableLayoutPanel extends JPanel implements DropTargetListener, Mous
 					WYSIWYGComponent component = getComponentToMove();
 					Boolean enabledValue = (Boolean) component.getProperties().getProperty(WYSIWYGComponent.PROPERTY_ENABLED).getValue();
 
-					if ((getParentEditorPanel().getController().getMode() & WYSIWYGEditorModes.STANDARD_MODE) == WYSIWYGEditorModes.STANDARD_MODE) {
-						if (tableLayoutUtil.isCellEmpty(tableLayoutUtil.getCurrentLayoutCell())) {
-							tableLayoutUtil.moveComponentTo(getComponentToMove(), getCurrentLayoutCell());
-							((Component) getComponentToMove()).setEnabled(enabledValue);
-							setComponentToMove(null);
-						}
-					} else if ((getParentEditorPanel().getController().getMode() & WYSIWYGEditorModes.EXPERT_MODE) == WYSIWYGEditorModes.EXPERT_MODE) {
+					if (tableLayoutUtil.isCellEmpty(tableLayoutUtil.getCurrentLayoutCell())) {
 						tableLayoutUtil.moveComponentTo(getComponentToMove(), getCurrentLayoutCell());
-						
 						((Component) getComponentToMove()).setEnabled(enabledValue);
 						setComponentToMove(null);
 					}
 				} catch (HeadlessException e1) {
-				} catch (NuclosBusinessException e1) {
 				}
 			}
 			//NUCLEUSINT-273 //NUCLEUSINT-999

@@ -144,11 +144,11 @@ public class WYSIWYGTabbedPane extends DnDTabbedPane implements WYSIWYGComponent
    };
 
    private static PropertyFilter[] PROPERTY_FILTERS = new PropertyFilter[] {
-      new PropertyFilter(PROPERTY_NAME, STANDARD_MODE | EXPERT_MODE),
-      new PropertyFilter(PROPERTY_PREFFEREDSIZE, STANDARD_MODE | EXPERT_MODE),
-      new PropertyFilter(PROPERTY_TABPLACEMENT, STANDARD_MODE | EXPERT_MODE),
-      new PropertyFilter(PROPERTY_TABLAYOUTPOLICY, STANDARD_MODE | EXPERT_MODE),
-      new PropertyFilter(PROPERTY_BORDER, STANDARD_MODE | EXPERT_MODE)
+      new PropertyFilter(PROPERTY_NAME, ENABLED),
+      new PropertyFilter(PROPERTY_PREFFEREDSIZE, ENABLED),
+      new PropertyFilter(PROPERTY_TABPLACEMENT, ENABLED),
+      new PropertyFilter(PROPERTY_TABLAYOUTPOLICY, ENABLED),
+      new PropertyFilter(PROPERTY_BORDER, ENABLED)
    };
 
    public static final String[][] PROTERTY_VALUES_STATIC = new String[][] {

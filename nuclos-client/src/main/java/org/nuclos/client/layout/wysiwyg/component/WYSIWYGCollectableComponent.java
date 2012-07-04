@@ -162,27 +162,27 @@ public abstract class WYSIWYGCollectableComponent extends JPanel implements WYSI
 		propertySetMethods.put(PROPERTY_FONT, new PropertySetMethod(PROPERTY_FONT, "setFont"));
 		propertySetMethods.put(PROPERTY_DESCRIPTION, new PropertySetMethod(PROPERTY_DESCRIPTION, "setToolTipText"));
 
-		propertyFilters.put(PROPERTY_NAME, new PropertyFilter(PROPERTY_NAME, STANDARD_AND_EXPERT_MODE));
-		propertyFilters.put(PROPERTY_SHOWONLY, new PropertyFilter(PROPERTY_SHOWONLY, STANDARD_AND_EXPERT_MODE));
-		propertyFilters.put(PROPERTY_PREFFEREDSIZE, new PropertyFilter(PROPERTY_PREFFEREDSIZE, STANDARD_AND_EXPERT_MODE));
-		propertyFilters.put(PROPERTY_ENABLED, new PropertyFilter(PROPERTY_ENABLED, STANDARD_AND_EXPERT_MODE));
-		propertyFilters.put(PROPERTY_ENABLED_DYNAMIC, new PropertyFilter(PROPERTY_ENABLED_DYNAMIC, EXPERT_MODE));
-		propertyFilters.put(PROPERTY_VISIBLE, new PropertyFilter(PROPERTY_VISIBLE, STANDARD_AND_EXPERT_MODE));
-		propertyFilters.put(PROPERTY_OPAQUE, new PropertyFilter(PROPERTY_OPAQUE, STANDARD_AND_EXPERT_MODE));
-		propertyFilters.put(PROPERTY_INSERTABLE, new PropertyFilter(PROPERTY_INSERTABLE, STANDARD_AND_EXPERT_MODE));
-		propertyFilters.put(PROPERTY_BACKGROUNDCOLOR, new PropertyFilter(PROPERTY_BACKGROUNDCOLOR, STANDARD_AND_EXPERT_MODE));
-		propertyFilters.put(PROPERTY_BORDER, new PropertyFilter(PROPERTY_BORDER, STANDARD_AND_EXPERT_MODE));
-		propertyFilters.put(PROPERTY_FONT, new PropertyFilter(PROPERTY_FONT, STANDARD_AND_EXPERT_MODE));
-		propertyFilters.put(PROPERTY_COLUMNS, new PropertyFilter(PROPERTY_COLUMNS, STANDARD_AND_EXPERT_MODE));
-		propertyFilters.put(PROPERTY_MNEMONIC, new PropertyFilter(PROPERTY_MNEMONIC, STANDARD_AND_EXPERT_MODE));
-		propertyFilters.put(PROPERTY_COLLECTABLECOMPONENTPROPERTY, new PropertyFilter(PROPERTY_COLLECTABLECOMPONENTPROPERTY, EXPERT_MODE));
-		propertyFilters.put(PROPERTY_CONTROLTYPECLASS, new PropertyFilter(PROPERTY_CONTROLTYPECLASS, EXPERT_MODE));
-		propertyFilters.put(PROPERTY_LABEL, new PropertyFilter(PROPERTY_LABEL, STANDARD_AND_EXPERT_MODE));
-		propertyFilters.put(PROPERTY_ROWS, new PropertyFilter(PROPERTY_ROWS, STANDARD_AND_EXPERT_MODE));
-		propertyFilters.put(PROPERTY_FILL_CONTROL_HORIZONTALLY, new PropertyFilter(PROPERTY_FILL_CONTROL_HORIZONTALLY, STANDARD_AND_EXPERT_MODE));
-		propertyFilters.put(PROPERTY_VALUELISTPROVIDER, new PropertyFilter(PROPERTY_VALUELISTPROVIDER, EXPERT_MODE));
-		propertyFilters.put(PROPERTY_DESCRIPTION, new PropertyFilter(PROPERTY_DESCRIPTION, STANDARD_AND_EXPERT_MODE));
-		propertyFilters.put(PROPERTY_NEXTFOCUSCOMPONENT, new PropertyFilter(PROPERTY_NEXTFOCUSCOMPONENT, STANDARD_AND_EXPERT_MODE));
+		propertyFilters.put(PROPERTY_NAME, new PropertyFilter(PROPERTY_NAME, ENABLED));
+		propertyFilters.put(PROPERTY_SHOWONLY, new PropertyFilter(PROPERTY_SHOWONLY, ENABLED));
+		propertyFilters.put(PROPERTY_PREFFEREDSIZE, new PropertyFilter(PROPERTY_PREFFEREDSIZE, ENABLED));
+		propertyFilters.put(PROPERTY_ENABLED, new PropertyFilter(PROPERTY_ENABLED, ENABLED));
+		propertyFilters.put(PROPERTY_ENABLED_DYNAMIC, new PropertyFilter(PROPERTY_ENABLED_DYNAMIC, ENABLED));
+		propertyFilters.put(PROPERTY_VISIBLE, new PropertyFilter(PROPERTY_VISIBLE, ENABLED));
+		propertyFilters.put(PROPERTY_OPAQUE, new PropertyFilter(PROPERTY_OPAQUE, ENABLED));
+		propertyFilters.put(PROPERTY_INSERTABLE, new PropertyFilter(PROPERTY_INSERTABLE, ENABLED));
+		propertyFilters.put(PROPERTY_BACKGROUNDCOLOR, new PropertyFilter(PROPERTY_BACKGROUNDCOLOR, ENABLED));
+		propertyFilters.put(PROPERTY_BORDER, new PropertyFilter(PROPERTY_BORDER, ENABLED));
+		propertyFilters.put(PROPERTY_FONT, new PropertyFilter(PROPERTY_FONT, ENABLED));
+		propertyFilters.put(PROPERTY_COLUMNS, new PropertyFilter(PROPERTY_COLUMNS, ENABLED));
+		propertyFilters.put(PROPERTY_MNEMONIC, new PropertyFilter(PROPERTY_MNEMONIC, ENABLED));
+		propertyFilters.put(PROPERTY_COLLECTABLECOMPONENTPROPERTY, new PropertyFilter(PROPERTY_COLLECTABLECOMPONENTPROPERTY, ENABLED));
+		propertyFilters.put(PROPERTY_CONTROLTYPECLASS, new PropertyFilter(PROPERTY_CONTROLTYPECLASS, ENABLED));
+		propertyFilters.put(PROPERTY_LABEL, new PropertyFilter(PROPERTY_LABEL, ENABLED));
+		propertyFilters.put(PROPERTY_ROWS, new PropertyFilter(PROPERTY_ROWS, ENABLED));
+		propertyFilters.put(PROPERTY_FILL_CONTROL_HORIZONTALLY, new PropertyFilter(PROPERTY_FILL_CONTROL_HORIZONTALLY, ENABLED));
+		propertyFilters.put(PROPERTY_VALUELISTPROVIDER, new PropertyFilter(PROPERTY_VALUELISTPROVIDER, ENABLED));
+		propertyFilters.put(PROPERTY_DESCRIPTION, new PropertyFilter(PROPERTY_DESCRIPTION, ENABLED));
+		propertyFilters.put(PROPERTY_NEXTFOCUSCOMPONENT, new PropertyFilter(PROPERTY_NEXTFOCUSCOMPONENT, ENABLED));
 	}
 
 	private EventListenerList listenerList = new EventListenerList();

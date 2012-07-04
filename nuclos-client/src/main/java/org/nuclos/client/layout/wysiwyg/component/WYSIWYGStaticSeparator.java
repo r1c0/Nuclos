@@ -80,8 +80,8 @@ public class WYSIWYGStaticSeparator extends JSeparator implements WYSIWYGCompone
 	};
 	
 	private static PropertyFilter[] PROPERTY_FILTERS = new PropertyFilter[] {
-		new PropertyFilter(PROPERTY_ORIENTATION, STANDARD_MODE | EXPERT_MODE), 
-		new PropertyFilter(PROPERTY_PREFFEREDSIZE, STANDARD_MODE | EXPERT_MODE)
+		new PropertyFilter(PROPERTY_ORIENTATION, ENABLED), 
+		new PropertyFilter(PROPERTY_PREFFEREDSIZE, ENABLED)
 	};
 	
 	public WYSIWYGStaticSeparator() {

@@ -77,10 +77,10 @@ public class WYSIWYGStaticTitledSeparator extends TitledSeparator implements WYS
 	};
 	
 	private static PropertyFilter[] PROPERTY_FILTERS = new PropertyFilter[] {
-		new PropertyFilter(PROPERTY_TITLE, STANDARD_MODE | EXPERT_MODE),
+		new PropertyFilter(PROPERTY_TITLE, ENABLED),
 		new PropertyFilter(PROPERTY_PREFFEREDSIZE, DISABLED),
-		new PropertyFilter(PROPERTY_FONT, STANDARD_MODE | EXPERT_MODE),
-		new PropertyFilter(PROPERTY_TRANSLATIONS, STANDARD_MODE | EXPERT_MODE)
+		new PropertyFilter(PROPERTY_FONT, ENABLED),
+		new PropertyFilter(PROPERTY_TRANSLATIONS, ENABLED)
 	};
 
 	private ComponentProperties properties;

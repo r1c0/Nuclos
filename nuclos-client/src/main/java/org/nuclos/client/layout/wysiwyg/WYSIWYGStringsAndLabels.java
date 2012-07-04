@@ -39,10 +39,6 @@ public class WYSIWYGStringsAndLabels {
 	/** this marker is used by partedString(String message, String... additionalInfo) for concating Strings in Messages/ Dialogs. */
 	private static final String MARKER = "@EXTRATEXT@";
 
-	/** the Modes the WYSIWYG Editor can be run in */
-	public static final String STANDARD_MODE = "Standardmodus";
-	public static final String EXPERT_MODE = "Expertenmodus";
-
 	/**
 	 * @deprecated Should be done with the help of SpringLocaleDelegate and localeresource.json.
 	 */

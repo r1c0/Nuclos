@@ -20,7 +20,6 @@ import info.clearthought.layout.TableLayout;
 
 import java.awt.BorderLayout;
 import java.util.List;
-import java.util.Map;
 import java.util.Vector;
 import java.util.prefs.Preferences;
 
@@ -33,7 +32,6 @@ import javax.swing.JTabbedPane;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import org.apache.commons.collections.map.ListOrderedMap;
 import org.nuclos.client.layout.admin.LayoutCollectController;
 import org.nuclos.client.layout.wysiwyg.CollectableWYSIWYGLayoutEditor.WYSIWYGLayoutEditorChangeDescriptor;
 import org.nuclos.client.layout.wysiwyg.WYSIWYGStringsAndLabels.WYSIWYGLAYOUT_EDITOR_PANEL;
@@ -92,27 +90,13 @@ public class WYSIWYGLayoutControllingPanel extends JPanel implements WYSIWYGTool
 	
 	private PropertiesPanel container;
 
-	private int mode = STANDARD_MODE;
-
 	private Preferences preferences;
 
-	/** the property node for the mode the WYSIWYG Editor did work in */
-	public static final String PREFERENCES_MODE = "mode";
 	// NUCLEUSINT-362
 	public static final String PREFERENCES_SPLITPANE_DIVIDERLOCATION = "divider-location";
 
 	/** the wyiswyg propertynode used to store the state of slicing */
 	public static final String PREFERENCES_SLICING = "slicing";
-	
-	/**
-	 * setting the modes that are choosable for the editor, used to filter
-	 * Properties and Components
-	 */
-	private Map<String, Integer> modes = new ListOrderedMap();
-	{
-		modes.put(WYSIWYGStringsAndLabels.STANDARD_MODE, STANDARD_MODE);
-		modes.put(WYSIWYGStringsAndLabels.EXPERT_MODE, EXPERT_MODE);
-	}
 
 	public WYSIWYGLayoutControllingPanel(WYSIWYGMetaInformation metaInf) {
 		this.metaInf = metaInf;
@@ -166,7 +150,7 @@ public class WYSIWYGLayoutControllingPanel extends JPanel implements WYSIWYGTool
 		 */
 		jpnPaletteAndEditor = new JPanel(new BorderLayout());
 
-		paletteCtrl = new PaletteController(mode);
+		paletteCtrl = new PaletteController();
 		mlGenerator = new LayoutMLGenerator();
 		mlLoader = new LayoutMLLoader();
 
@@ -235,7 +219,11 @@ public class WYSIWYGLayoutControllingPanel extends JPanel implements WYSIWYGTool
 
 		wysiwygEditorsToolbar.addComponentToToolbar(this);
 
-		setMode(EXPERT_MODE);
+		this.paletteCtrl.initialize();
+		if (this.container != null) {
+			// preferences are shown and must be refreshed
+			PropertiesPanel.showPropertiesForComponent(container.getWYSIWYGComponent(), container.getTableLayoutUtil());	
+		}
 		
 		this.add(jpnWaitingForMeta);
 	}
@@ -324,7 +312,6 @@ public class WYSIWYGLayoutControllingPanel extends JPanel implements WYSIWYGTool
 	 */
 	// NUCLEUSINT-314 refractored to be able to pass over the xerlin editor
 	public void showComponent(JComponent componentToShow) {
-		this.removeAll();
 		this.add(componentToShow, BorderLayout.CENTER);
 	}
 
@@ -358,7 +345,6 @@ public class WYSIWYGLayoutControllingPanel extends JPanel implements WYSIWYGTool
 	 */
 	public void setPreferences(Preferences preferences) {
 		this.preferences = preferences;
-		setMode(preferences.getInt(PREFERENCES_MODE, EXPERT_MODE));
 		//jpnEditor.setJustAddEnabled(preferences.getBoolean(PREFERENCES_SLICING, false));
 	}
 	
@@ -397,31 +383,6 @@ public class WYSIWYGLayoutControllingPanel extends JPanel implements WYSIWYGTool
 
 		return new JComponent[]{comboBox};*/
 		return new JComponent[]{};
-	}
-
-	/**
-	 * @return the Mode the Editor is currently running in
-	 */
-	public int getMode() {
-		return mode;
-	}
-
-	/**
-	 * Setting the Mode the Editor is running in Called from
-	 * 
-	 * @see #getToolbarItems()
-	 * @param mode
-	 */
-	public void setMode(int mode) {
-		this.mode = mode;
-		this.paletteCtrl.setMode(mode);
-		if (this.preferences != null)
-			this.preferences.putInt(PREFERENCES_MODE, mode);
-		
-		if (this.container != null) {
-			// preferences are shown and must be refreshed
-			PropertiesPanel.showPropertiesForComponent(container.getWYSIWYGComponent(), container.getTableLayoutUtil());	
-		}
 	}
 	
 	/**

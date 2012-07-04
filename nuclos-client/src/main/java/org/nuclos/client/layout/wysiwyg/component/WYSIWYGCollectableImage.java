@@ -78,8 +78,8 @@ public class WYSIWYGCollectableImage extends WYSIWYGCollectableComponent {
 		propertyFilters.put(PROPERTY_ROWS, new PropertyFilter(PROPERTY_ROWS, DISABLED));
 		propertyFilters.put(PROPERTY_INSERTABLE, new PropertyFilter(PROPERTY_INSERTABLE, DISABLED));
 		propertyFilters.put(PROPERTY_FILL_CONTROL_HORIZONTALLY, new PropertyFilter(PROPERTY_FILL_CONTROL_HORIZONTALLY, DISABLED));
-		propertyFilters.put(PROPERTY_SCALABLE, new PropertyFilter(PROPERTY_SCALABLE, STANDARD_AND_EXPERT_MODE));
-		propertyFilters.put(PROPERTY_ASPECTRATIO, new PropertyFilter(PROPERTY_ASPECTRATIO, STANDARD_AND_EXPERT_MODE));
+		propertyFilters.put(PROPERTY_SCALABLE, new PropertyFilter(PROPERTY_SCALABLE, ENABLED));
+		propertyFilters.put(PROPERTY_ASPECTRATIO, new PropertyFilter(PROPERTY_ASPECTRATIO, ENABLED));
 
 		this.setLayout(new BorderLayout());
 		this.add(component, BorderLayout.CENTER);

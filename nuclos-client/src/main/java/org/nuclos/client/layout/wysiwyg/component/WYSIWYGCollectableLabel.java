@@ -64,7 +64,7 @@ public class WYSIWYGCollectableLabel extends WYSIWYGCollectableComponent {
 		propertyFilters.put(PROPERTY_VALUELISTPROVIDER, new PropertyFilter(PROPERTY_VALUELISTPROVIDER, DISABLED));
 		propertyFilters.put(PROPERTY_CONTROLTYPECLASS, new PropertyFilter(PROPERTY_CONTROLTYPECLASS, DISABLED));
 		//NUCLEUSINT-303
-		propertyFilters.put(PROPERTY_LABEL, new PropertyFilter(PROPERTY_LABEL, EXPERT_MODE));
+		propertyFilters.put(PROPERTY_LABEL, new PropertyFilter(PROPERTY_LABEL, ENABLED));
 		propertyFilters.put(PROPERTY_ROWS, new PropertyFilter(PROPERTY_ROWS, DISABLED));
 		propertyFilters.put(PROPERTY_COLUMNS, new PropertyFilter(PROPERTY_COLUMNS, DISABLED));
 		propertyFilters.put(PROPERTY_INSERTABLE, new PropertyFilter(PROPERTY_INSERTABLE, DISABLED));

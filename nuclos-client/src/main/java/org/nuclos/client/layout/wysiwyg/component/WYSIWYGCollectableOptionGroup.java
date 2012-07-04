@@ -51,8 +51,8 @@ public class WYSIWYGCollectableOptionGroup extends WYSIWYGUniversalComponent {
 		
 		propertyClasses.put(PROPERTY_OPTIONS, new PropertyClass(PROPERTY_OPTIONS, WYSIWYGOptions.class));
 		propertySetMethods.put(PROPERTY_OPTIONS, new PropertySetMethod(PROPERTY_OPTIONS, "setOptions"));
-		propertyFilters.put(PROPERTY_OPTIONS, new PropertyFilter(PROPERTY_OPTIONS, STANDARD_MODE | EXPERT_MODE));
-		propertyFilters.put(PROPERTY_NAME, new PropertyFilter(PROPERTY_NAME, STANDARD_AND_EXPERT_MODE));
+		propertyFilters.put(PROPERTY_OPTIONS, new PropertyFilter(PROPERTY_OPTIONS, ENABLED));
+		propertyFilters.put(PROPERTY_NAME, new PropertyFilter(PROPERTY_NAME, ENABLED));
 		
 		propertyFilters.put(PROPERTY_VALUELISTPROVIDER, new PropertyFilter(PROPERTY_VALUELISTPROVIDER, DISABLED));
 		propertyFilters.put(PROPERTY_CONTROLTYPECLASS, new PropertyFilter(PROPERTY_CONTROLTYPECLASS, DISABLED));

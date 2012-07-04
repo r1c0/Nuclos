@@ -100,15 +100,15 @@ public class WYSIWYGStaticImage extends JLabel implements WYSIWYGComponent {
 	};
 	
 	private static PropertyFilter[] PROPERTY_FILTERS = new PropertyFilter[] {
-		new PropertyFilter(PROPERTY_BORDER, STANDARD_MODE | EXPERT_MODE),
-		new PropertyFilter(PROPERTY_NAME, STANDARD_MODE | EXPERT_MODE),
-		new PropertyFilter(PROPERTY_ENABLED, STANDARD_MODE | EXPERT_MODE),
-		new PropertyFilter(PROPERTY_EDITABLE, STANDARD_MODE | EXPERT_MODE),
-		new PropertyFilter(PROPERTY_COLUMNS, STANDARD_MODE | EXPERT_MODE), 
-		new PropertyFilter(PROPERTY_FONT, STANDARD_MODE | EXPERT_MODE),
-		new PropertyFilter(PROPERTY_DESCRIPTION, STANDARD_MODE | EXPERT_MODE), 
-		new PropertyFilter(PROPERTY_PREFFEREDSIZE, STANDARD_MODE | EXPERT_MODE),
-		new PropertyFilter(PROPERTY_COLUMNS, STANDARD_MODE | EXPERT_MODE)
+		new PropertyFilter(PROPERTY_BORDER, ENABLED),
+		new PropertyFilter(PROPERTY_NAME, ENABLED),
+		new PropertyFilter(PROPERTY_ENABLED, ENABLED),
+		new PropertyFilter(PROPERTY_EDITABLE, ENABLED),
+		new PropertyFilter(PROPERTY_COLUMNS, ENABLED), 
+		new PropertyFilter(PROPERTY_FONT, ENABLED),
+		new PropertyFilter(PROPERTY_DESCRIPTION, ENABLED), 
+		new PropertyFilter(PROPERTY_PREFFEREDSIZE, ENABLED),
+		new PropertyFilter(PROPERTY_COLUMNS, ENABLED)
 	};
 	/**
 	 * <!ELEMENT textfield

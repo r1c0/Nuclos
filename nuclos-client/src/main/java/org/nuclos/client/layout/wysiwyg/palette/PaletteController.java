@@ -119,13 +119,10 @@ public class PaletteController implements DragGestureListener, LayoutMLConstants
 	 */
 	private final DragSource dragsource = DragSource.getDefaultDragSource();
 
-	private int mode;
-
 	/**
 	 * ctor
 	 */
-	public PaletteController(int mode) {
-		
+	public PaletteController() {
 	}
 	
 	@Autowired
@@ -135,8 +132,6 @@ public class PaletteController implements DragGestureListener, LayoutMLConstants
 	
 	@PostConstruct
 	void init() {
-		this.mode = mode;
-
 		palettePanel.setLayout(new GridBagLayout());
 
 		JLabel paletteLabel = new JLabel(PALETTE_CONTROLLER.TITLE_PALETTE);
@@ -216,17 +211,13 @@ public class PaletteController implements DragGestureListener, LayoutMLConstants
 		model.addElement(new PaletteItem(ELEMENT_COLLECTABLECOMPONENT, CONTROLTYPE_IMAGE, new COLLECTABLE_LABELED_IMAGE()));
 		model.addElement(new PaletteItem(ELEMENT_SUBFORM, new COLLECTABLE_SUBFORM()));
 		model.addElement(new PaletteItem(ELEMENT_CHART, new COLLECTABLE_CHART()));
-		if (mode == EXPERT_MODE) {
-			model.addElement(new PaletteItem(ELEMENT_COLLECTABLECOMPONENT, new WYSIWYGStringsAndLabels.COLLECTABLE_COMPONENT()));
-		}
+		model.addElement(new PaletteItem(ELEMENT_COLLECTABLECOMPONENT, new WYSIWYGStringsAndLabels.COLLECTABLE_COMPONENT()));
 		model.addElement(PALETTE_CONTROLLER.SECTION_STATIC_FIELDS);
 		model.addElement(new PaletteItem(ELEMENT_LABEL, new STATIC_LABEL()));
-		if (mode == EXPERT_MODE) {
-			model.addElement(new PaletteItem(ELEMENT_BUTTON, new STATIC_BUTTON()));
-			model.addElement(new PaletteItem(ELEMENT_TEXTFIELD, new STATIC_TEXTFIELD()));
-			model.addElement(new PaletteItem(ELEMENT_TEXTAREA, new STATIC_TEXTAREA()));
-			model.addElement(new PaletteItem(ELEMENT_COMBOBOX, new STATIC_COMBOBOX()));
-		}
+		model.addElement(new PaletteItem(ELEMENT_BUTTON, new STATIC_BUTTON()));
+		model.addElement(new PaletteItem(ELEMENT_TEXTFIELD, new STATIC_TEXTFIELD()));
+		model.addElement(new PaletteItem(ELEMENT_TEXTAREA, new STATIC_TEXTAREA()));
+		model.addElement(new PaletteItem(ELEMENT_COMBOBOX, new STATIC_COMBOBOX()));
 		model.addElement(PALETTE_CONTROLLER.SECTION_COMPONENTS);
 		//NUCLEUSINT-650
 		model.addElement(new PaletteItem(ELEMENT_PANEL, new EDITORPANEL()));
@@ -250,21 +241,8 @@ public class PaletteController implements DragGestureListener, LayoutMLConstants
 	}
 
 	/**
-	 * Returns the Mode the Editor is running in
-	 * @see WYSIWYGEditorModes
-	 * @return
 	 */
-	public int getMode() {
-		return mode;
-	}
-
-	/**
-	 * Sets the Mode the Editor is running in
-	 * @see WYSIWYGEditorModes
-	 * @param mode
-	 */
-	public void setMode(int mode) {
-		this.mode = mode;
+	public void initialize() {
 		setupModel();
 		paletteList.setModel(model);
 	}

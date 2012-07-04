@@ -86,12 +86,12 @@ public class WYSIWYGChartColumn extends JLabel implements WYSIWYGComponent, Seri
 	};
 	
 	private static PropertyFilter[] PROPERTY_FILTERS = new PropertyFilter[] {
-		new PropertyFilter(PROPERTY_NAME, 0),
-		new PropertyFilter(PROPERTY_LABEL, STANDARD_MODE | EXPERT_MODE),
-		new PropertyFilter(PROPERTY_ENABLED, STANDARD_MODE | EXPERT_MODE),
-		new PropertyFilter(PROPERTY_VALUELISTPROVIDER, EXPERT_MODE),
-		new PropertyFilter(PROPERTY_DEFAULTVALUES, 0),
-		new PropertyFilter(PROPERTY_TRANSLATIONS, STANDARD_MODE | EXPERT_MODE)
+		new PropertyFilter(PROPERTY_NAME, DISABLED),
+		new PropertyFilter(PROPERTY_LABEL, ENABLED),
+		new PropertyFilter(PROPERTY_ENABLED, ENABLED),
+		new PropertyFilter(PROPERTY_VALUELISTPROVIDER, ENABLED),
+		new PropertyFilter(PROPERTY_DEFAULTVALUES, DISABLED),
+		new PropertyFilter(PROPERTY_TRANSLATIONS, ENABLED)
 	};
 	
 	private static final PropertySetMethod[] PROPERTY_SETMETHODS = new PropertySetMethod[]{
