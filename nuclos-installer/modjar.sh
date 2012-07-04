@@ -98,10 +98,15 @@ pushd $DIR
 			modjar2 "$DIR" "$i" &
 		else 
 			modjar "$DIR" "$i" &
-		fi	
+		fi
+		# only start 4 concurrent jobs
 		while [ `jobs | wc -l` -ge 4 ]; do
 				sleep 2
 		done
+	done
+	# wait for all jobs (last job is this shell script)
+	while [ `jobs | wc -l` -gt 1 ]; do
+			sleep 2
 	done
 	rm .keystore
 popd
