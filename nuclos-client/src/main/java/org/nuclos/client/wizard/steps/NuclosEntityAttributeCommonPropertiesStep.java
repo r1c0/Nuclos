@@ -1373,7 +1373,7 @@ public class NuclosEntityAttributeCommonPropertiesStep extends NuclosEntityAttri
 			for(Attribute attribute : this.parentWizardModel.getAttributeModel().getAttributes()) {
 				if(attribute.getDbName().equals(sDBName)) {
 					String sMessage = localeDelegate.getMessage(
-							"wizard.step.attributeproperties.15", "<html>Der Spaltenname existiert schon in der Tabelle.<p> " +
+							"wizard.step.attributeproperties.14", "<html>Der Spaltenname existiert schon in der Tabelle.<p> " +
 						"Bitte \u00e4ndern Sie den Namen oder vergeben einen im Expertenmodus selbst.</html>");
 
 					JLabel lb = new JLabel(sMessage);

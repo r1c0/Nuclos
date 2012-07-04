@@ -55064,6 +55064,36 @@
     "text": "Geben Sie den Namen der Datenbankspalte ein."
   },
   {
+    "resourceID": "wizard.step.attributeproperties.14",
+    "locale": "en",
+    "text": "<html>The column name already exists in the table.<p> Please change the name or assign a name in the expert mode.</html>"
+  },
+  {
+    "resourceID": "wizard.step.attributeproperties.14",
+    "locale": "de",
+    "text": "<html>Der Spaltenname existiert schon in der Tabelle.<p> Bitte \u00e4ndern Sie den Namen oder vergeben einen im Expertenmodus selbst."
+  },
+  {
+    "resourceID": "wizard.step.attributeproperties.15",
+    "locale": "en",
+    "text": "<html>The field name is too long.<p> Please change the name.</html>"
+  },
+  {
+    "resourceID": "wizard.step.attributeproperties.15",
+    "locale": "de",
+    "text": "<html>Der Feldname ist zu lang.<p> Bitte \u00e4ndern Sie den Namen.</html>"
+  },
+  {
+    "resourceID": "wizard.step.attributeproperties.16",
+    "locale": "en",
+    "text": "<html>The column name is used by system.<p> Please change the name or assign a name in the expert mode.</html>"
+  },
+  {
+    "resourceID": "wizard.step.attributeproperties.16",
+    "locale": "de",
+    "text": "<html>Der Spaltenname wird vom System vergeben.<p> Bitte \u00e4ndern Sie den Namen oder vergeben einen im Expertenmodus selbst.</html>"
+  },
+  {
     "resourceID": "wizard.step.attributeproperties.17",
     "locale": "en",
     "text": "<html>The column name is too long.<br/>Please shorten the name or assign a name in the expert mode.</html>"
