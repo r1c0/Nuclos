@@ -555,9 +555,16 @@ public class EntityObjectProcessor extends AbstractJdbcWithFieldsDalProcessor<En
 			if (clctexpr != null && clctexpr.getSearchCondition() != null) {
 				joins.add(clctexpr.getSearchCondition());
 			}
-			result = new CollectableSearchExpression(
+			if (result instanceof CollectableGenericObjectSearchExpression) {
+				// we need this. because others will check instance and add SEARCH_DELETED vlp or something like that.
+				result = new CollectableGenericObjectSearchExpression(
+						new CompositeCollectableSearchCondition(LogicalOperator.AND, joins), 
+							clctexpr.getSortingOrder(), ((CollectableGenericObjectSearchExpression)clctexpr).getSearchDeleted());
+			} else {
+				result = new CollectableSearchExpression(
 					new CompositeCollectableSearchCondition(LogicalOperator.AND, joins), 
-					clctexpr.getSortingOrder());
+						clctexpr.getSortingOrder());
+			}
 		}
 		return result;
 	}

@@ -62,7 +62,6 @@ import org.nuclos.common.collect.collectable.CollectableEntityField;
 import org.nuclos.common.collect.collectable.CollectableField;
 import org.nuclos.common.collect.collectable.CollectableFieldComparatorFactory;
 import org.nuclos.common.collect.collectable.CollectableUtils;
-import org.nuclos.common.collect.collectable.CollectableValueField;
 import org.nuclos.common.collect.collectable.CollectableValueIdField;
 import org.nuclos.common.collect.collectable.searchcondition.AbstractCollectableSearchCondition;
 import org.nuclos.common.collect.collectable.searchcondition.AtomicCollectableSearchCondition;
@@ -511,19 +510,12 @@ public class CollectableComboBox extends LabeledCollectableComponentWithVLP impl
 
 	@Override
 	protected void updateView(CollectableField clctfValue) {
-		if (clctfValue instanceof CollectableValueField || !clctfValue.isIdField())
-			return;
-		
-		
 		if (hasAdditionalEntry()) {
 			removeAdditionalEntry();
 		}
 
-		final Long vid = IdUtils.toLongId(clctfValue.getValueId());
 		final JComboBox cb = getJComboBox();
 		final DefaultComboBoxModel cbm = getDefaultComboBoxModel();
-		final Color colorOldForeground = cb.getForeground();
-		Color colorNewForeground = null;
 
 		int iIndex = cbm.getIndexOf(clctfValue);
 		// If the value could not be found, it might be the mnemonic, so look for the value id
@@ -531,6 +523,7 @@ public class CollectableComboBox extends LabeledCollectableComponentWithVLP impl
 			for(int i=0; i < cbm.getSize(); i++) {
 				final CollectableField cf = (CollectableField) cbm.getElementAt(i);
 				final Long valueId = IdUtils.toLongId(cf.getValueId());
+				final Long vid = IdUtils.toLongId(clctfValue.getValueId());
 				if(LangUtils.equals(vid, valueId)) {
 					iIndex = i;
 					break;
@@ -544,6 +537,7 @@ public class CollectableComboBox extends LabeledCollectableComponentWithVLP impl
 		else {
 			assert iIndex == -1;
 
+			final Long vid = IdUtils.toLongId(clctfValue.getValueId());
 			Long oValueId = null;
 			if (clctfValue.isIdField()) {
 				oValueId = vid;
