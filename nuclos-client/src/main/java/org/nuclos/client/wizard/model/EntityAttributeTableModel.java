@@ -206,7 +206,7 @@ public class EntityAttributeTableModel extends AbstractTableModel {
 		case 8:
 			return localeDelegate.getMessage("wizard.step.attributeproperties.10", "Feldname");
 		case 9:
-			return "Attributegruppe"; //getMessage("wizard.step.attributeproperties.10", "Attributegruppe");
+			return localeDelegate.getMessage("wizard.step.attributeproperties.13", "Attributegruppe");
 
 		default:			
 			return "";

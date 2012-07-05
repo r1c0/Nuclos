@@ -49789,6 +49789,16 @@
     "text": "Standardwert"
   },
   {
+    "resourceID": "wizard.step.attributeproperties.13",
+    "locale": "i-default",
+    "text": "Attribute group"
+  },
+  {
+    "resourceID": "wizard.step.attributeproperties.13",
+    "locale": "de",
+    "text": "Attributgruppe"
+  },
+  {
     "resourceID": "wizard.step.attributeproperties.12",
     "locale": "i-default",
     "text": "DB column name"
@@ -51376,7 +51386,7 @@
   {
     "resourceID": "nuclos.entity.entityfieldgroup.label",
     "locale": "en",
-    "text": "Entity field group"
+    "text": "Attribute group"
   },
   {
     "resourceID": "nuclos.entity.entityfieldgroup.label",
