@@ -75,7 +75,8 @@ public abstract class CollectableDocumentFileChooserBase extends AbstractCollect
 		this.setupPopupMenu();
 		//NUCLEUSINT-512
 		getFileChooser().addMouseListener(this);
-
+		getFileChooser().getFileNameComponent().addMouseListener(this);
+		
 		getFileChooser().getBrowseButton().addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent ev) {
