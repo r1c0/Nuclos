@@ -91,7 +91,7 @@ public class LayoutComponentElementProcessor implements ComponentProcessor, Layo
 	 * @see org.nuclos.client.layout.wysiwyg.component.ComponentProcessors.ComponentProcessor#createEmptyComponent(java.lang.Integer, org.nuclos.client.layout.wysiwyg.WYSIWYGMetaInformation, java.lang.String)
 	 */
 	@Override
-	public Component createEmptyComponent(Integer iNumber, WYSIWYGMetaInformation metaInf, String name) throws CommonBusinessException {
+	public Component createEmptyComponent(Integer iNumber, WYSIWYGMetaInformation metaInf, String name, boolean bDefault) throws CommonBusinessException {
 		if (lcf == null) {
 			lcf = new DummyLayoutComponentFactory(sLayoutComponentFactoryClass);
 			SwingUtilities.invokeLater(new Runnable() {

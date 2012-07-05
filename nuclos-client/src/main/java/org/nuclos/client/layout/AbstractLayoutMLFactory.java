@@ -304,7 +304,7 @@ public abstract class AbstractLayoutMLFactory {
 		 int rowcounter = 1;
 		 List<EntityFieldMetaDataVO> lstEditFields = sortEditFields(setEditFields);
 
-		 WYSIWYGLayoutEditorPanel panelEdit = (WYSIWYGLayoutEditorPanel)ComponentProcessors.getInstance().createComponent(LayoutMLConstants.ELEMENT_PANEL, LayoutMLConstants.ELEMENT_LABEL, new WYSIWYGMetaInformation(), "Editierung");
+		 WYSIWYGLayoutEditorPanel panelEdit = (WYSIWYGLayoutEditorPanel)ComponentProcessors.getInstance().createComponent(LayoutMLConstants.ELEMENT_PANEL, LayoutMLConstants.ELEMENT_LABEL, new WYSIWYGMetaInformation(), "Editierung", false);
 		 LayoutCell upperLeftCorner = panelEdit.getTableLayoutUtil().getLayoutCellByPosition(0, 0);
 		 panelEdit.getTableLayoutUtil().modifyTableLayoutSizes(TableLayoutUtil.ACTION_TOGGLE_STANDARDBORDER, true, upperLeftCorner, false, false);
 		 panelEdit.getTableLayoutUtil().modifyTableLayoutSizes(TableLayoutUtil.ACTION_TOGGLE_STANDARDBORDER, false, upperLeftCorner, false, false);

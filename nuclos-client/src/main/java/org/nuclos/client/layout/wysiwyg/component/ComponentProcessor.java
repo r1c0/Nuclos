@@ -47,5 +47,5 @@ public interface ComponentProcessor {
 	 * @return {@link Component} instance of {@link WYSIWYGComponent}
 	 * @throws CommonBusinessException
 	 */
-	Component createEmptyComponent(Integer iNumber, WYSIWYGMetaInformation metaInf, String name) throws CommonBusinessException;
+	Component createEmptyComponent(Integer iNumber, WYSIWYGMetaInformation metaInf, String name, boolean bDefault) throws CommonBusinessException;
 }

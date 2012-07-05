@@ -88,6 +88,17 @@ public class ComponentProcessors implements LayoutMLConstants {
 	 * @return
 	 */
 	public Component createComponent(String sElement, String sControltype, Integer iNumber, WYSIWYGMetaInformation metaInf, String name) throws CommonBusinessException {
+		return createComponent(sElement, sControltype, metaInf, name, true);
+	}
+	/**
+	 * 
+	 * @param sElement
+	 * @param sControltype
+	 * @param iNumber
+	 * @param attributes
+	 * @return
+	 */
+	public Component createComponent(String sElement, String sControltype, Integer iNumber, WYSIWYGMetaInformation metaInf, String name, boolean bDefault) throws CommonBusinessException {
 		if (sControltype == null) {
 			sControltype = "";
 		}
@@ -96,9 +107,9 @@ public class ComponentProcessors implements LayoutMLConstants {
 			mapComponentProcessors.put(sElement + sControltype, createComponentElementProcessor(sElement, sControltype));
 		}
 
-		return mapComponentProcessors.get(sElement + sControltype).createEmptyComponent(iNumber, metaInf, name);
+		return mapComponentProcessors.get(sElement + sControltype).createEmptyComponent(iNumber, metaInf, name, bDefault);
 	}
-	
+
 	/**
 	 * 
 	 * @param sElement
@@ -109,8 +120,20 @@ public class ComponentProcessors implements LayoutMLConstants {
 	 * @throws CommonBusinessException
 	 */
 	public Component createComponent(String sElement, String sControltype, WYSIWYGMetaInformation metaInf, String name) throws CommonBusinessException {
+		return createComponent(sElement, sControltype, metaInf, name, true);
+	}
+	/**
+	 * 
+	 * @param sElement
+	 * @param sControltype
+	 * @param metaInf
+	 * @param name
+	 * @return
+	 * @throws CommonBusinessException
+	 */
+	public Component createComponent(String sElement, String sControltype, WYSIWYGMetaInformation metaInf, String name, boolean bDefault) throws CommonBusinessException {
 		Integer iNumber = getCounterForElement(sElement);
-		return createComponent(sElement, sControltype, iNumber, metaInf, name);
+		return createComponent(sElement, sControltype, iNumber, metaInf, name, bDefault);
 	}
 
 	/**
@@ -195,7 +218,7 @@ public class ComponentProcessors implements LayoutMLConstants {
 		 * @see org.nuclos.client.layout.wysiwyg.component.ComponentProcessors.ComponentProcessor#createEmptyComponent(java.lang.Integer, org.nuclos.client.layout.wysiwyg.WYSIWYGMetaInformation, java.lang.String)
 		 */
 		@Override
-		public Component createEmptyComponent(Integer iNumber, WYSIWYGMetaInformation metaInf, String name) throws CommonBusinessException {
+		public Component createEmptyComponent(Integer iNumber, WYSIWYGMetaInformation metaInf, String name, boolean bDefault) throws CommonBusinessException {
 			Component result;
 			ComponentProperties properties = null;
 			
@@ -342,7 +365,7 @@ public class ComponentProcessors implements LayoutMLConstants {
 		 * @see org.nuclos.client.layout.wysiwyg.component.ComponentProcessors.ComponentProcessor#createEmptyComponent(java.lang.Integer, org.nuclos.client.layout.wysiwyg.WYSIWYGMetaInformation, java.lang.String)
 		 */
 		@Override
-		public Component createEmptyComponent(Integer iNumber, WYSIWYGMetaInformation metaInf, String name) throws CommonBusinessException {
+		public Component createEmptyComponent(Integer iNumber, WYSIWYGMetaInformation metaInf, String name, boolean bDefault) throws CommonBusinessException {
 			WYSIWYGSplitPane splitPane = new WYSIWYGSplitPane();
 
 			ComponentProperties properties = PropertyUtils.getEmptyProperties(splitPane, metaInf);
@@ -381,7 +404,7 @@ public class ComponentProcessors implements LayoutMLConstants {
 		 * @see org.nuclos.client.layout.wysiwyg.component.ComponentProcessors.ComponentProcessor#createEmptyComponent(java.lang.Integer, org.nuclos.client.layout.wysiwyg.WYSIWYGMetaInformation, java.lang.String)
 		 */
 		@Override
-		public Component createEmptyComponent(Integer iNumber, WYSIWYGMetaInformation metaInf, String name) throws CommonBusinessException {
+		public Component createEmptyComponent(Integer iNumber, WYSIWYGMetaInformation metaInf, String name, boolean bDefault) throws CommonBusinessException {
 			WYSIWYGScrollPane scrollPane = new WYSIWYGScrollPane();
 
 			if (iNumber > 0) { // 0 = loading from saved layoutML
@@ -415,11 +438,12 @@ public class ComponentProcessors implements LayoutMLConstants {
 	private class LayoutPanelElementProcessor implements ComponentProcessor {
 
 		@Override
-		public Component createEmptyComponent(Integer iNumber, WYSIWYGMetaInformation metaInf, String name) throws CommonBusinessException {
+		public Component createEmptyComponent(Integer iNumber, WYSIWYGMetaInformation metaInf, String name, boolean bDefault) throws CommonBusinessException {
 			WYSIWYGLayoutEditorPanel newTableLayoutPanel = new WYSIWYGLayoutEditorPanel(metaInf);
 			newTableLayoutPanel.getTableLayoutUtil().createStandardLayout();
 			
-			createDefault(newTableLayoutPanel);
+			if (bDefault)
+				createDefault(newTableLayoutPanel);
 			
 			return newTableLayoutPanel;
 		}
@@ -520,7 +544,7 @@ public class ComponentProcessors implements LayoutMLConstants {
 		 * @see org.nuclos.client.layout.wysiwyg.component.ComponentProcessors.ComponentProcessor#createEmptyComponent(java.lang.Integer, org.nuclos.client.layout.wysiwyg.WYSIWYGMetaInformation, java.lang.String)
 		 */
 		@Override
-		public Component createEmptyComponent(Integer iNumber, WYSIWYGMetaInformation metaInf, String name) throws CommonBusinessException {
+		public Component createEmptyComponent(Integer iNumber, WYSIWYGMetaInformation metaInf, String name, boolean bDefault) throws CommonBusinessException {
 			WYSIWYGTabbedPane tabbedPane = new WYSIWYGTabbedPane();
 
 			if (iNumber > 0) { // 0 = loading from saved layoutML
@@ -561,7 +585,7 @@ public class ComponentProcessors implements LayoutMLConstants {
 		 * @see org.nuclos.client.layout.wysiwyg.component.ComponentProcessors.ComponentProcessor#createEmptyComponent(java.lang.Integer, org.nuclos.client.layout.wysiwyg.WYSIWYGMetaInformation, java.lang.String)
 		 */
 		@Override
-		public Component createEmptyComponent(Integer iNumber, WYSIWYGMetaInformation metaInf, String name) throws CommonBusinessException {
+		public Component createEmptyComponent(Integer iNumber, WYSIWYGMetaInformation metaInf, String name, boolean bDefault) throws CommonBusinessException {
 			WYSIWYGSubForm subform = new WYSIWYGSubForm(metaInf);
 			
 			ComponentProperties properties = PropertyUtils.getEmptyProperties(subform, metaInf);
@@ -594,7 +618,7 @@ public class ComponentProcessors implements LayoutMLConstants {
 		 * @see org.nuclos.client.layout.wysiwyg.component.ComponentProcessors.ComponentProcessor#createEmptyComponent(java.lang.Integer, org.nuclos.client.layout.wysiwyg.WYSIWYGMetaInformation, java.lang.String)
 		 */
 		@Override
-		public Component createEmptyComponent(Integer iNumber, WYSIWYGMetaInformation metaInf, String name) throws CommonBusinessException {
+		public Component createEmptyComponent(Integer iNumber, WYSIWYGMetaInformation metaInf, String name, boolean bDefault) throws CommonBusinessException {
 			WYSIWYGChart chart = new WYSIWYGChart(metaInf);
 			
 			ComponentProperties properties = PropertyUtils.getEmptyProperties(chart, metaInf);
@@ -628,7 +652,7 @@ public class ComponentProcessors implements LayoutMLConstants {
 		 * @see org.nuclos.client.layout.wysiwyg.component.ComponentProcessors.ComponentProcessor#createEmptyComponent(java.lang.Integer, org.nuclos.client.layout.wysiwyg.WYSIWYGMetaInformation, java.lang.String)
 		 */
 		@Override
-		public Component createEmptyComponent(Integer iNumber, WYSIWYGMetaInformation metaInf, String name) throws CommonBusinessException {
+		public Component createEmptyComponent(Integer iNumber, WYSIWYGMetaInformation metaInf, String name, boolean bDefault) throws CommonBusinessException {
 			return new JLabel(COMPONENT_PROCESSOR.ERRORMESSAGE_UNSUPPORTED_ELEMENT);
 		}
 	}
@@ -650,7 +674,7 @@ public class ComponentProcessors implements LayoutMLConstants {
 		 * @see org.nuclos.client.layout.wysiwyg.component.ComponentProcessors.ComponentProcessor#createEmptyComponent(java.lang.Integer, org.nuclos.client.layout.wysiwyg.WYSIWYGMetaInformation, java.lang.String)
 		 */
 		@Override
-		public Component createEmptyComponent(Integer iNumber, WYSIWYGMetaInformation metaInf, String name) throws CommonBusinessException {
+		public Component createEmptyComponent(Integer iNumber, WYSIWYGMetaInformation metaInf, String name, boolean bDefault) throws CommonBusinessException {
 			WYSIWYGComponent element = new WYSIWYGStaticLabel();
 			
 			ComponentProperties properties = PropertyUtils.getEmptyProperties(element, metaInf);
@@ -679,7 +703,7 @@ public class ComponentProcessors implements LayoutMLConstants {
 		 * @see org.nuclos.client.layout.wysiwyg.component.ComponentProcessors.ComponentProcessor#createEmptyComponent(java.lang.Integer, org.nuclos.client.layout.wysiwyg.WYSIWYGMetaInformation, java.lang.String)
 		 */
 		@Override
-		public Component createEmptyComponent(Integer iNumber, WYSIWYGMetaInformation metaInf, String name) throws CommonBusinessException {
+		public Component createEmptyComponent(Integer iNumber, WYSIWYGMetaInformation metaInf, String name, boolean bDefault) throws CommonBusinessException {
 			WYSIWYGComponent element = new WYSIWYGStaticTextfield();
 		
 			ComponentProperties properties = PropertyUtils.getEmptyProperties(element, metaInf);
@@ -708,7 +732,7 @@ public class ComponentProcessors implements LayoutMLConstants {
 		 * @see org.nuclos.client.layout.wysiwyg.component.ComponentProcessors.ComponentProcessor#createEmptyComponent(java.lang.Integer, org.nuclos.client.layout.wysiwyg.WYSIWYGMetaInformation, java.lang.String)
 		 */
 		@Override
-		public Component createEmptyComponent(Integer iNumber, WYSIWYGMetaInformation metaInf, String name) throws CommonBusinessException {
+		public Component createEmptyComponent(Integer iNumber, WYSIWYGMetaInformation metaInf, String name, boolean bDefault) throws CommonBusinessException {
 			WYSIWYGComponent element = new WYSIWYGStaticImage();			
 		
 			ComponentProperties properties = PropertyUtils.getEmptyProperties(element, metaInf);
@@ -737,7 +761,7 @@ public class ComponentProcessors implements LayoutMLConstants {
 		 * @see org.nuclos.client.layout.wysiwyg.component.ComponentProcessors.ComponentProcessor#createEmptyComponent(java.lang.Integer, org.nuclos.client.layout.wysiwyg.WYSIWYGMetaInformation, java.lang.String)
 		 */
 		@Override
-		public Component createEmptyComponent(Integer iNumber, WYSIWYGMetaInformation metaInf, String name) throws CommonBusinessException {
+		public Component createEmptyComponent(Integer iNumber, WYSIWYGMetaInformation metaInf, String name, boolean bDefault) throws CommonBusinessException {
 			WYSIWYGComponent element = new WYSIWYGStaticTextarea();
 			
 			ComponentProperties properties = PropertyUtils.getEmptyProperties(element, metaInf);
@@ -766,7 +790,7 @@ public class ComponentProcessors implements LayoutMLConstants {
 		 * @see org.nuclos.client.layout.wysiwyg.component.ComponentProcessors.ComponentProcessor#createEmptyComponent(java.lang.Integer, org.nuclos.client.layout.wysiwyg.WYSIWYGMetaInformation, java.lang.String)
 		 */
 		@Override
-		public Component createEmptyComponent(Integer iNumber, WYSIWYGMetaInformation metaInf, String name) throws CommonBusinessException {
+		public Component createEmptyComponent(Integer iNumber, WYSIWYGMetaInformation metaInf, String name, boolean bDefault) throws CommonBusinessException {
 			WYSIWYGComponent element = new WYSIWYGStaticComboBox();
 		
 			ComponentProperties properties = PropertyUtils.getEmptyProperties(element, metaInf);
@@ -795,7 +819,7 @@ public class ComponentProcessors implements LayoutMLConstants {
 		 * @see org.nuclos.client.layout.wysiwyg.component.ComponentProcessors.ComponentProcessor#createEmptyComponent(java.lang.Integer, org.nuclos.client.layout.wysiwyg.WYSIWYGMetaInformation, java.lang.String)
 		 */
 		@Override
-		public Component createEmptyComponent(Integer iNumber, WYSIWYGMetaInformation metaInf, String name) throws CommonBusinessException {	
+		public Component createEmptyComponent(Integer iNumber, WYSIWYGMetaInformation metaInf, String name, boolean bDefault) throws CommonBusinessException {	
 			WYSIWYGComponent element = new WYSIWYGStaticButton();
 			
 			ComponentProperties properties = PropertyUtils.getEmptyProperties(element, metaInf);
@@ -825,7 +849,7 @@ public class ComponentProcessors implements LayoutMLConstants {
 		 * @see org.nuclos.client.layout.wysiwyg.component.ComponentProcessors.ComponentProcessor#createEmptyComponent(java.lang.Integer, org.nuclos.client.layout.wysiwyg.WYSIWYGMetaInformation, java.lang.String)
 		 */
 		@Override
-		public Component createEmptyComponent(Integer iNumber, WYSIWYGMetaInformation metaInf, String name) throws CommonBusinessException {
+		public Component createEmptyComponent(Integer iNumber, WYSIWYGMetaInformation metaInf, String name, boolean bDefault) throws CommonBusinessException {
 			WYSIWYGComponent element = new WYSIWYGStaticSeparator();
 			
 			ComponentProperties properties = PropertyUtils.getEmptyProperties(element, metaInf);
@@ -852,7 +876,7 @@ public class ComponentProcessors implements LayoutMLConstants {
 		 * @see org.nuclos.client.layout.wysiwyg.component.ComponentProcessors.ComponentProcessor#createEmptyComponent(java.lang.Integer, org.nuclos.client.layout.wysiwyg.WYSIWYGMetaInformation, java.lang.String)
 		 */
 		@Override
-		public Component createEmptyComponent(Integer iNumber, WYSIWYGMetaInformation metaInf, String name) throws CommonBusinessException {
+		public Component createEmptyComponent(Integer iNumber, WYSIWYGMetaInformation metaInf, String name, boolean bDefault) throws CommonBusinessException {
 			WYSIWYGStaticTitledSeparator element = new WYSIWYGStaticTitledSeparator(COMPONENT_PROCESSOR.LABEL_DEFAULTNAME_TITLED_SEPERATOR + iNumber);
 			
 			ComponentProperties properties = PropertyUtils.getEmptyProperties(element, metaInf);
