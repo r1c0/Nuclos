@@ -199,7 +199,9 @@ public class QueryBuilderEditor extends JPanel {
 
 			@Override
             public void columnMoved(TableColumnModelEvent e) {
-				fireChange();
+				if (e.getFromIndex() != e.getToIndex()) {
+					fireChange();
+				}
 			}
 
 			@Override

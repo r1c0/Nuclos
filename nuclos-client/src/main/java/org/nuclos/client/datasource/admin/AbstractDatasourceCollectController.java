@@ -81,7 +81,6 @@ public abstract class AbstractDatasourceCollectController<T extends DatasourceVO
 
 	protected final DatasourceDelegate datasourcedelegate = DatasourceDelegate.getInstance();
 
-	private boolean addTabToParent;
 	protected DatasourceEditPanel pnlEdit;
 	protected CollectPanel<CollectableDataSource<T>> pnlCollect = new DatasourceCollectPanel(false);
 
@@ -102,7 +101,6 @@ public abstract class AbstractDatasourceCollectController<T extends DatasourceVO
 	 */
 	protected AbstractDatasourceCollectController(CollectableEntity clcte, MainFrameTab tabIfAny) {
 		super(clcte, tabIfAny);
-		addTabToParent = tabIfAny==null;
 	}
 
 	protected void initializeDatasourceCollectController(DatasourceEditPanel pnlEdit) {
@@ -216,8 +214,6 @@ public abstract class AbstractDatasourceCollectController<T extends DatasourceVO
 
 		return new CollectableDataSource(datasourceVO);
 	}
-
-
 	@Override
 	protected String getEntityLabel() {
 		return getSpringLocaleDelegate().getLabelFromMetaDataVO(MetaDataCache.getInstance().getMetaData(sEntity));
