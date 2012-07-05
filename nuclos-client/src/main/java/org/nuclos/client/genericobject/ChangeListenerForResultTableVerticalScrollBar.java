@@ -26,7 +26,6 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import org.apache.log4j.Logger;
-
 import org.nuclos.client.main.mainframe.MainFrameTab;
 import org.nuclos.client.ui.Errors;
 import org.nuclos.client.ui.UIUtils;
@@ -104,12 +103,18 @@ public class ChangeListenerForResultTableVerticalScrollBar implements ChangeList
 					class FetchSearchResultSwingWorker extends SwingWorker<Integer, Integer> {
 						@Override
 						public Integer doInBackground() {
-							LOG.debug("START FetchSearchResultSwingWorker");
-							// since fetchDataIfNecessary never publishes intermediate results (progress)
-							// to its ChangeListener, there is no need to install one
-							proxylst.fetchDataIfNecessary(iLastRow, null);
-							LOG.debug("FINISHED FetchSearchResultSwingWorker");
-							return proxylst.getLastIndexRead();
+							try {
+								LOG.debug("START FetchSearchResultSwingWorker");
+								// since fetchDataIfNecessary never publishes intermediate results (progress)
+								// to its ChangeListener, there is no need to install one
+								proxylst.fetchDataIfNecessary(iLastRow, null);
+								LOG.debug("FINISHED FetchSearchResultSwingWorker");
+								return proxylst.getLastIndexRead();
+							}
+							catch (Exception ex) {
+								LOG.error("FetchSearchResultSwingWorker failed: " + ex, ex);
+							}
+							return null;
 						}
 						
 						@Override

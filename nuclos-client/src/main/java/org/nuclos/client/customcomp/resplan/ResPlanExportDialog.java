@@ -67,11 +67,7 @@ public class ResPlanExportDialog extends AbstractResPlanExportDialog {
 					exporter.run(SVG_TEMPLATE, 0);
 					exporter.save(imageType, save);
 				}
-				catch (IOException ex) {
-					LOG.warn("ResPlan export failed: " + ex.toString(), ex);
-					Errors.getInstance().showExceptionDialog(ResPlanExportDialog.this, "Can' save " + save, ex);
-				}
-				catch (XPathExpressionException ex) {
+				catch (Exception ex) {
 					LOG.warn("ResPlan export failed: " + ex.toString(), ex);
 					Errors.getInstance().showExceptionDialog(ResPlanExportDialog.this, "Can' save " + save, ex);
 				}

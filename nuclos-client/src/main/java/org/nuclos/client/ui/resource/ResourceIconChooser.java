@@ -210,26 +210,32 @@ public class ResourceIconChooser extends JPanel {
 
 		@Override
 		protected List<ImageIcon> doInBackground() throws Exception {
-			List<ImageIcon> icons = new ArrayList<ImageIcon>();
-			iconNames.add(null);
-			icons.add(Icons.getInstance().getIconEmpty16());
-			if (cat == null) {
-				for (String sResource : CollectionUtils.sorted(ResourceDelegate.getInstance().getResourceNames())) {
-					try {
-						ImageIcon iconResource = ResourceCache.getInstance().getIconResource(sResource);
-						iconNames.add(sResource);
-						icons.add(iconResource);
-					} catch (Exception ex) {
-						// ignore. not an image icon.
+			try {
+				List<ImageIcon> icons = new ArrayList<ImageIcon>();
+				iconNames.add(null);
+				icons.add(Icons.getInstance().getIconEmpty16());
+				if (cat == null) {
+					for (String sResource : CollectionUtils.sorted(ResourceDelegate.getInstance().getResourceNames())) {
+						try {
+							ImageIcon iconResource = ResourceCache.getInstance().getIconResource(sResource);
+							iconNames.add(sResource);
+							icons.add(iconResource);
+						} catch (Exception ex) {
+							// ignore. not an image icon.
+						}
+					}
+				} else {
+					for (String iconName : NuclosResourceCache.getNuclosResourceIcons(cat)) {
+						iconNames.add(iconName);
+						icons.add(NuclosResourceCache.getNuclosResourceIcon(iconName));
 					}
 				}
-			} else {
-				for (String iconName : NuclosResourceCache.getNuclosResourceIcons(cat)) {
-					iconNames.add(iconName);
-					icons.add(NuclosResourceCache.getNuclosResourceIcon(iconName));
-				}
+				return icons;
 			}
-			return icons;
+			catch (Exception ex) {
+				Errors.getInstance().showExceptionDialog(ResourceIconChooser.this, ex);
+			}
+			return null;
 		}
 
 		@Override

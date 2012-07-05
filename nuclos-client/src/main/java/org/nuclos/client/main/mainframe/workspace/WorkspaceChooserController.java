@@ -59,6 +59,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 import javax.swing.TransferHandler;
 
+import org.apache.log4j.Logger;
 import org.nuclos.client.common.security.SecurityCache;
 import org.nuclos.client.main.ActionWithMenuPath;
 import org.nuclos.client.main.GenericAction;
@@ -91,6 +92,8 @@ import org.springframework.beans.factory.InitializingBean;
 
 // @Component
 public class WorkspaceChooserController implements InitializingBean {
+	
+	private static final Logger LOG = Logger.getLogger(WorkspaceChooserController.class); 
 	
 	public static final int ICON_SIZE = 16;
 	private static final List<WorkspaceVO> workspaces = new ArrayList<WorkspaceVO>();
@@ -795,15 +798,21 @@ public class WorkspaceChooserController implements InitializingBean {
 						SwingWorker<WorkspaceVO, WorkspaceVO> worker = new SwingWorker<WorkspaceVO, WorkspaceVO>() {
 							@Override
 							protected WorkspaceVO doInBackground() throws Exception {
-								Thread.sleep(500); // otherwise eyesore flash of save icon
-								if (getSelectedWorkspace().equals(wovo))
+								try {
+									Thread.sleep(500); // otherwise eyesore flash of save icon
+									if (getSelectedWorkspace().equals(wovo))
 									restoreUtils.storeWorkspace(wovo);
 								return preferencesFacadeRemote.assignWorkspace(wovo, CollectionUtils.transform(selectCtrl.getSelectedObjects(), new Transformer<RoleAssignment, Long>() {
-									@Override
-									public Long transform(RoleAssignment ra) {
-										return ra.id;
-									}
-								}));
+										@Override
+										public Long transform(RoleAssignment ra) {
+											return ra.id;
+										}
+									}));
+								}
+								catch (Exception ex) {
+									LOG.error("newAssignAction failed: " + ex, ex);
+								}
+								return null;
 							}
 							@Override
 							protected void done() {

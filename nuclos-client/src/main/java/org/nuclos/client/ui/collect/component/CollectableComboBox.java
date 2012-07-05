@@ -332,10 +332,16 @@ public class CollectableComboBox extends LabeledCollectableComponentWithVLP impl
 
 		@Override
 		protected List<CollectableField> doInBackground() throws Exception {
-			if (getValueListProvider() == null) {
-				return Collections.<CollectableField>emptyList();
+			try {
+				if (getValueListProvider() == null) {
+					return Collections.<CollectableField>emptyList();
+				}
+				return getValueListProvider().getCollectableFields();
 			}
-			return getValueListProvider().getCollectableFields();
+			catch (Exception ex) {
+				LOG.error("RefreshValueListWorker failed: " + ex, ex);
+			}
+			return null;
 		}
 
 		@Override
