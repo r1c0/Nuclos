@@ -31,6 +31,7 @@ import org.apache.log4j.Logger;
 import org.jdesktop.swingx.JXErrorPane;
 import org.jdesktop.swingx.error.ErrorInfo;
 import org.nuclos.client.LaunchListener;
+import org.nuclos.client.common.prefs.NuclosPreferencesFactory;
 import org.nuclos.client.main.mainframe.MainFrame;
 import org.nuclos.common.SpringApplicationContextHolder;
 import org.nuclos.common2.StringUtils;
@@ -135,6 +136,9 @@ public class Main {
 	 * @param asArgs
 	 */
 	public static void main(String[] asArgs) throws Exception {
+		// set the PreferencesFactory:
+		System.setProperty("java.util.prefs.PreferencesFactory", NuclosPreferencesFactory.class.getName());
+
 		// for Mac OS X ...
 		System.setProperty("com.apple.mrj.application.apple.menu.about.name", "Nuclos");
 		String osName = System.getProperty("os.name").toLowerCase();

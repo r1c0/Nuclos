@@ -295,9 +295,6 @@ public class StartUp  {
 
 		log.info("Java-Version " + System.getProperty("java.version"));
 
-		// set the PreferencesFactory:
-		System.setProperty("java.util.prefs.PreferencesFactory", NuclosPreferencesFactory.class.getName());
-
 		// initialize the Errors instance:
 		Errors.getInstance().setAppName(ApplicationProperties.getInstance().getName());
 		// first, set the non-strict version of the critical error handler to avoid locking-out on initialization errors.

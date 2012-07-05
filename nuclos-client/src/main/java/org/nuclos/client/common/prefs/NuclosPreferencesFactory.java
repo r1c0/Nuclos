@@ -26,6 +26,7 @@ import java.util.prefs.PreferencesFactory;
 import org.apache.log4j.Logger;
 import org.nuclos.client.common.ShutdownActions;
 import org.nuclos.common.NuclosFatalException;
+import org.nuclos.common.SpringApplicationContextHolder;
 import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.exception.CommonFinderException;
 import org.nuclos.server.common.ejb3.PreferencesFacadeRemote;
@@ -47,18 +48,13 @@ import org.springframework.beans.factory.annotation.Configurable;
  * @author	<a href="mailto:Christoph.Radig@novabit.de">Christoph.Radig</a>
  * @version 01.00.00
  */
-@Configurable
 public class NuclosPreferencesFactory implements PreferencesFactory {
 	
 	private static final Logger LOG = Logger.getLogger(NuclosPreferencesFactory.class);
 	
 	//
 	
-	// Spring injection
-
 	private PreferencesFacadeRemote preferencesFacadeRemote;
-	
-	// end of Spring injection
 	
 	private Preferences prefsUser;
 	
@@ -70,9 +66,11 @@ public class NuclosPreferencesFactory implements PreferencesFactory {
 		// do nothing here
 	}
 	
-	@Autowired
-	final void setPreferencesFacadeRemote(PreferencesFacadeRemote preferencesFacadeRemote) {
-		this.preferencesFacadeRemote = preferencesFacadeRemote;
+	private PreferencesFacadeRemote getPreferencesFacadeRemote() {
+		if (preferencesFacadeRemote == null) {
+			preferencesFacadeRemote = SpringApplicationContextHolder.getInstance().getBean(PreferencesFacadeRemote.class);
+		}
+		return preferencesFacadeRemote;
 	}
 
 	/**
@@ -103,9 +101,10 @@ public class NuclosPreferencesFactory implements PreferencesFactory {
 					"NuclosPreferencesFactory.1", "Die Benutzereinstellungen konnten nicht geladen werden.");
 
 //			try {
+			final PreferencesFacadeRemote pfr = getPreferencesFacadeRemote();
 			PreferencesVO prefsvo;
 			try {
-				prefsvo = preferencesFacadeRemote.getUserPreferences();
+				prefsvo = pfr.getUserPreferences();
 			}
 			catch (CommonFinderException ex) {
 				// ignore: this happens when the user logs in the first time - there are no preferences yet.
@@ -115,7 +114,7 @@ public class NuclosPreferencesFactory implements PreferencesFactory {
 				LOG.warn("userRoot failed: " + e, e);
 				prefsvo = null;
 			}
-			this.prefsUser = new NuclosPreferencesRoot(preferencesFacadeRemote);
+			this.prefsUser = new NuclosPreferencesRoot(pfr);
 
 			if (prefsvo != null) {
 				// import the read preferences:

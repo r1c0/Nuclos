@@ -48,6 +48,7 @@
 				<property name="nuclos.server.name" value="Webstart" />
 				<property name="nuclos.client.singleinstance" value="{$singleinstance}" />
 				<property name="nuclos.client.webstart" value="true" />
+				<property name="java.util.prefs.PreferencesFactory" value="org.nuclos.client.common.prefs.NuclosPreferencesFactory" />
 				<xsl:if test="$extensions='true'">
 					<extension name="extension" href="extensions/extension-{$extension-lastmodified}.jnlp" />
 				</xsl:if>

@@ -1331,10 +1331,16 @@ public abstract class EntityCollectController<Clct extends Collectable> extends 
 		
 		@Override
 		protected List<ResultActionCollection> doInBackground() throws Exception {
-			// looks better ;-)
-			Thread.sleep(500);
-			return getResultActionsMultiThreaded(selectedCollectablesFromResult);
-		}
+			try {
+				// looks better ;-)
+				Thread.sleep(500);
+				return getResultActionsMultiThreaded(selectedCollectablesFromResult);
+			}
+			catch (Exception ex) {
+				LOG.error("ResultActionsWorker failed: " + ex, ex);
+			}
+			return null;
+ 		}
 		
 		public void cancelWorker() {
 			cancelWorker = true;
