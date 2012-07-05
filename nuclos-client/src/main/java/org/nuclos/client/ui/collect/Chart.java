@@ -108,7 +108,6 @@ import org.nuclos.client.ui.UIUtils;
 import org.nuclos.client.ui.collect.component.LookupListener;
 import org.nuclos.client.ui.collect.model.CollectableTableModel;
 import org.nuclos.client.ui.event.PopupMenuMouseAdapter;
-import org.nuclos.common.NuclosBusinessException;
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.collect.collectable.CollectableEntity;
 import org.nuclos.common.collect.collectable.CollectableEntityField;

@@ -37,12 +37,10 @@ import java.util.Date;
 import java.util.List;
 import java.util.Scanner;
 
-import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.log4j.Logger;
 import org.nuclos.common.CryptUtil;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.NuclosFatalException;
-import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.server.common.NuclosSystemParameters;
 import org.nuclos.server.genericobject.valueobject.GenericObjectDocumentFile;

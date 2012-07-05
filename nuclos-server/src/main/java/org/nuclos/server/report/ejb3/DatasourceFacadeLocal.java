@@ -26,7 +26,6 @@ import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.querybuilder.NuclosDatasourceException;
 import org.nuclos.common2.exception.CommonFinderException;
 import org.nuclos.common2.exception.CommonPermissionException;
-import org.nuclos.server.common.DatasourceCache;
 import org.nuclos.server.report.NuclosReportException;
 import org.nuclos.server.report.valueobject.ChartVO;
 import org.nuclos.server.report.valueobject.DatasourceParameterVO;

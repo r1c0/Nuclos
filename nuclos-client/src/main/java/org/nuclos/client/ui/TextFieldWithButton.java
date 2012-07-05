@@ -34,7 +34,6 @@ import java.awt.image.RescaleOp;
 
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
-import javax.swing.SwingConstants;
 
 import org.nuclos.client.synthetica.NuclosThemeSettings;
 import org.nuclos.client.ui.labeled.ILabeledComponentSupport;

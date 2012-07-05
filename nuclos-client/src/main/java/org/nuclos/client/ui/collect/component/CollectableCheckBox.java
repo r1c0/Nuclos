@@ -31,22 +31,12 @@ import javax.swing.table.TableCellRenderer;
 
 import org.apache.log4j.Logger;
 import org.jdesktop.jxlayer.JXLayer;
-import org.nuclos.client.common.MetaDataClientProvider;
-import org.nuclos.client.synthetica.NuclosThemeSettings;
 import org.nuclos.client.ui.ToolTipTextProvider;
 import org.nuclos.client.ui.TriStateCheckBox;
-import org.nuclos.client.ui.collect.SubForm;
-import org.nuclos.client.ui.collect.SubForm.Column;
-import org.nuclos.client.ui.collect.SubForm.SubFormTable;
-import org.nuclos.client.ui.collect.model.CollectableTableModel;
-import org.nuclos.client.ui.collect.model.SortableCollectableTableModel;
-import org.nuclos.common.collect.collectable.Collectable;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
 import org.nuclos.common.collect.collectable.CollectableField;
 import org.nuclos.common.collect.collectable.CollectableValueField;
 import org.nuclos.common.collect.exception.CollectableFieldFormatException;
-import org.nuclos.common.dal.vo.EntityMetaDataVO;
-import org.nuclos.common2.exception.CommonFatalException;
 
 /**
  * A <code>CollectableComponent</code> that presents a value in a <code>JCheckBox</code>.

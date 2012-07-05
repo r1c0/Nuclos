@@ -19,9 +19,7 @@ package org.nuclos.client.ui.collect.component.custom;
 import info.clearthought.layout.TableLayout;
 import info.clearthought.layout.TableLayoutConstraints;
 
-import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Insets;
 import java.awt.event.MouseEvent;
 
 import javax.swing.Icon;

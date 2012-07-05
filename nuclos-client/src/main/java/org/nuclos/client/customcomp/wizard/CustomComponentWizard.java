@@ -23,7 +23,6 @@ import javax.swing.JButton;
 
 import org.nuclos.client.main.mainframe.MainFrame;
 import org.nuclos.client.main.mainframe.MainFrameTab;
-import org.nuclos.client.resource.NuclosResourceCache;
 import org.nuclos.client.wizard.WizardFrame;
 import org.nuclos.common2.SpringLocaleDelegate;
 import org.pietschy.wizard.ButtonBar;

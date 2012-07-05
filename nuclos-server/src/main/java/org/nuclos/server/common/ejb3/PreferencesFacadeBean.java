@@ -19,7 +19,6 @@ package org.nuclos.server.common.ejb3;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -34,7 +33,6 @@ import javax.annotation.security.RolesAllowed;
 
 import org.apache.log4j.Logger;
 import org.nuclos.api.UserPreferences;
-import org.nuclos.api.service.UserPreferencesService;
 import org.nuclos.common.Actions;
 import org.nuclos.common.NuclosBusinessException;
 import org.nuclos.common.NuclosEntity;

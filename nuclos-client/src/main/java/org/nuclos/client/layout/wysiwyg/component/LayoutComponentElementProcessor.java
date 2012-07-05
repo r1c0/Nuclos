@@ -22,16 +22,9 @@ import java.awt.Dimension;
 import java.awt.Font;
 
 import javax.annotation.PostConstruct;
-import javax.swing.Icon;
-import javax.swing.JComponent;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
-import javax.swing.border.Border;
 
-import org.nuclos.api.Preferences;
-import org.nuclos.api.Property;
-import org.nuclos.api.ui.Alignment;
-import org.nuclos.api.ui.LayoutComponent;
 import org.nuclos.api.ui.LayoutComponentFactory;
 import org.nuclos.client.layout.wysiwyg.WYSIWYGMetaInformation;
 import org.nuclos.client.layout.wysiwyg.component.properties.ComponentProperties;

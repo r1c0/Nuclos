@@ -18,7 +18,6 @@ package org.nuclos.client.customcomp.resplan;
 
 import info.clearthought.layout.TableLayout;
 
-import java.awt.Component;
 import java.awt.Container;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
@@ -43,7 +42,6 @@ import javax.swing.SwingConstants;
 import org.apache.commons.io.filefilter.WildcardFileFilter;
 import org.apache.log4j.Logger;
 import org.nuclos.client.image.ImageType;
-import org.nuclos.client.main.Main;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.common2.SpringLocaleDelegate;
 import org.springframework.beans.factory.annotation.Autowired;

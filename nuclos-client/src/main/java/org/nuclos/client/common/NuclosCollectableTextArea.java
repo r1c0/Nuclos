@@ -41,7 +41,6 @@ import javax.swing.JTextArea;
 import javax.swing.KeyStroke;
 import javax.swing.table.TableCellRenderer;
 
-import org.apache.bcel.generic.FCONST;
 import org.nuclos.client.ui.collect.DynamicRowHeightChangeListener;
 import org.nuclos.client.ui.collect.DynamicRowHeightChangeProvider;
 import org.nuclos.client.ui.collect.DynamicRowHeightSupport;

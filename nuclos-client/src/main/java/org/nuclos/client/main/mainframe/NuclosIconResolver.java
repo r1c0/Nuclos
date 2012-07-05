@@ -21,7 +21,6 @@ import javax.swing.ImageIcon;
 
 import org.apache.log4j.Logger;
 import org.nuclos.client.NuclosIcons;
-import org.nuclos.client.ui.Icons;
 
 public class NuclosIconResolver implements IconResolver {
 	

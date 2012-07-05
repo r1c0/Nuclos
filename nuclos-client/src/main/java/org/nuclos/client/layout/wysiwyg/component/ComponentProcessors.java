@@ -16,12 +16,9 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.layout.wysiwyg.component;
 
-import info.clearthought.layout.TableLayoutConstraints;
-
 import java.awt.Component;
 import java.util.HashMap;
 
-import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.border.Border;
 

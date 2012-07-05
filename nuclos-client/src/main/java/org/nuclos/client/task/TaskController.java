@@ -51,7 +51,6 @@ import org.nuclos.client.timelimit.TimelimitTaskController;
 import org.nuclos.client.timelimit.TimelimitTaskDelegate;
 import org.nuclos.client.ui.Controller;
 import org.nuclos.client.ui.Errors;
-import org.nuclos.client.ui.Icons;
 import org.nuclos.client.ui.MainFrameTabAdapter;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.client.ui.collect.CollectableTableHelper;

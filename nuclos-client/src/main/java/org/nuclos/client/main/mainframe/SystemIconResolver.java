@@ -20,7 +20,6 @@ package org.nuclos.client.main.mainframe;
 import javax.swing.ImageIcon;
 
 import org.apache.log4j.Logger;
-import org.nuclos.client.resource.ResourceCache;
 import org.nuclos.client.ui.Icons;
 
 public class SystemIconResolver implements IconResolver {

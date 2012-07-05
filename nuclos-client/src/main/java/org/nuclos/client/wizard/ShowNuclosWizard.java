@@ -19,10 +19,8 @@ package org.nuclos.client.wizard;
 
 import org.apache.log4j.Logger;
 import org.nuclos.client.main.Main;
-import org.nuclos.client.main.mainframe.MainFrame;
 import org.nuclos.client.main.mainframe.MainFrameTab;
 import org.nuclos.client.main.mainframe.MainFrameTabbedPane;
-import org.nuclos.client.resource.NuclosResourceCache;
 import org.nuclos.client.wizard.steps.NuclosEntityAttributeInputStep;
 import org.nuclos.client.wizard.steps.NuclosEntityCommonPropertiesStep;
 import org.nuclos.client.wizard.steps.NuclosEntityMenuStep;
