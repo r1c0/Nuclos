@@ -255,7 +255,7 @@ public abstract class AbstractResPlanExporter<R,E> implements IResPlanExporter<R
 			currentY += YPIXEL_FOR_RESOURCE;
 			if (nor % 2 == 0) {
 				final SVGRectElement oddLane = sdds.createRect(0, resourceStartY, maxX, currentY - resourceStartY, "oddRow"); 
-				g.insertBefore(oddLane, resourceText.getNextSibling());
+				g.insertBefore(oddLane, resourceText);
 			}
 			lastInterval = new Interval<Date>(LOW, LOW);
 			++nor;

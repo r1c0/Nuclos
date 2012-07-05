@@ -348,10 +348,14 @@ public class SVGDOMDocumentSupport extends SVGDOMImplementation {
 	private String createPathString(float... p) {
 		final StringBuilder result = new StringBuilder();
 		int n = 0;
-		for (float f: p) {
+		final int size = p.length;
+		for (int i = 0; i < size;) {
+			float f = p[i++];
 			result.append(Float.toString(f));
 			if (++n % 2 == 0) {
-				result.append(", ");
+				if (i != size) {
+					result.append(", ");
+				}
 			}
 			else {
 				result.append(" ");
