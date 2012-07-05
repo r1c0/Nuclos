@@ -27,10 +27,10 @@
 		{fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1}
 	
 	.header 
-		{fill:#1d7fc6;fill-opacity:0.50196078;stroke:#000000;stroke-width:1;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none}
+		{fill:#4c5966;fill-opacity:0.50196078;stroke:#000000;stroke-width:1;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none}
 	.headerTxt 
 		{font-size:13px;font-style:normal;font-weight:normal;text-align:center;line-height:125%;letter-spacing:0px;word-spacing:0px;
-		text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans}
+		text-anchor:middle;fill:#ffffff;fill-opacity:1;stroke:none;font-family:Sans}
 			
 	.bigTxt 
 		{font-size:20px;font-style:normal;font-weight:normal;text-align:start;line-height:125%;letter-spacing:0px;word-spacing:0px;
@@ -81,7 +81,7 @@
 		{fill:#c3d836;fill-opacity:1;stroke:none}
 		
 	.lane-light-green0 
-		{stroke:#124147;fill-opacity:1;fill:none;stroke-width:3;stroke-miterlimit:4}
+		{stroke:#92bfc0;fill-opacity:1;fill:none;stroke-width:3;stroke-miterlimit:4}
 	.lane-light-green1 
 		{stroke:#18843d;fill-opacity:1;fill:none;stroke-width:3;stroke-miterlimit:4}
 	.lane-light-green2 
@@ -92,7 +92,7 @@
 		{stroke:#c3d836;fill-opacity:1;fill:none;stroke-width:3;stroke-miterlimit:4}
 		
 	.lane-blue0 
-		{fill:#123995;fill-opacity:1;stroke:none}
+		{fill:#92bacc;fill-opacity:1;stroke:none}
 	.lane-blue1 
 		{fill:#1d63f8;fill-opacity:1;stroke:none}
 	.lane-blue2 
@@ -103,7 +103,7 @@
 		{fill:#31eefd;fill-opacity:1;stroke:none}
 		
 	.lane-light-blue0 
-		{stroke:#123995;fill-opacity:1;fill:none;stroke-width:3;stroke-miterlimit:4}
+		{stroke:#e0dfbc;fill-opacity:1;fill:none;stroke-width:3;stroke-miterlimit:4}
 	.lane-light-blue1 
 		{stroke:#1d63f8;fill-opacity:1;fill:none;stroke-width:3;stroke-miterlimit:4}
 	.lane-light-blue2 
@@ -114,7 +114,7 @@
 		{stroke:#31eefd;fill-opacity:1;fill:none;stroke-width:3;stroke-miterlimit:4}
 		
 	.lane-red0 
-		{fill:#771e6;fill-opacity:1;stroke:none}
+		{fill:#d0daeb;fill-opacity:1;stroke:none}
 	.lane-red1 
 		{fill:#d41d29;fill-opacity:1;stroke:none}
 	.lane-red2 

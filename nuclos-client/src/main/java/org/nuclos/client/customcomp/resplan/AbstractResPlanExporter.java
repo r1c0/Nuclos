@@ -192,8 +192,8 @@ public abstract class AbstractResPlanExporter<R,E> implements IResPlanExporter<R
 		makeResPlanModel(g);
 		makeFooter(g);
 		
-		svg.setAttribute("width", Float.toString(maxX + 10));
-		svg.setAttribute("height", Float.toString(currentY + 10));
+		svg.setAttribute("width", Float.toString(maxX + 20));
+		svg.setAttribute("height", Float.toString(currentY + 20));
 	}
 	
 	@Override
@@ -239,12 +239,13 @@ public abstract class AbstractResPlanExporter<R,E> implements IResPlanExporter<R
 			}
 			currentY += YPIXEL_FOR_HEADER_CAT;
 		}
+		++currentY;
 	}
 	
 	protected void makeResPlanModel(SVGElement g) {
 		currentClipX = new XCoord();
 		currentClipX.x = XPIXEL_OFFSET;
-		currentClipX.width = maxX;
+		currentClipX.width = maxX - XPIXEL_OFFSET;
 		
 		int nor = 0;
 		for (R r: model.getResources()) {
