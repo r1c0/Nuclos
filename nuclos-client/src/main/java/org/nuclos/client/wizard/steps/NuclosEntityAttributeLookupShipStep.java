@@ -187,7 +187,11 @@ public class NuclosEntityAttributeLookupShipStep extends NuclosEntityAttributeAb
 
 						});
 						for(EntityFieldMetaDataVO voField : lstFields) {
-							if(voField.getForeignEntity() == null)
+							//@see NUCLOSINT-1232
+							if(voField.getForeignEntity() == null
+									//&& voField.getLookupEntity() == null
+									&& voField.getCalcFunction() == null
+									&& voField.getCalculationScript() == null)
 								setFieldNames.add(voField.getField());
 						}
 						if(!NuclosEntityAttributeLookupShipStep.this.model.isEditMode())
