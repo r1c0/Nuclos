@@ -18,7 +18,6 @@ package org.nuclos.client.ui;
 
 import java.awt.Cursor;
 import java.awt.Desktop;
-import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.net.URI;
@@ -30,7 +29,6 @@ import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.table.TableCellRenderer;
 
-import org.nuclos.client.ui.Errors;
 import org.nuclos.client.ui.collect.component.TableCellCursor;
 import org.nuclos.common.collect.collectable.AbstractCollectableField;
 import org.nuclos.common2.LangUtils;

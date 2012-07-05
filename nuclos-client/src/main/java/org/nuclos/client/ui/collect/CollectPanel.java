@@ -41,7 +41,6 @@ import org.nuclos.client.ui.collect.search.SearchPanel;
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.collect.collectable.Collectable;
 import org.nuclos.common2.SpringLocaleDelegate;
-import org.nuclos.common2.exception.CommonBusinessException;
 
 
 /**

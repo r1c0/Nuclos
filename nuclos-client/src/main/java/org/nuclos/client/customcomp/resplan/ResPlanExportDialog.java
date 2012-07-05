@@ -16,12 +16,10 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.customcomp.resplan;
 
-import java.io.IOException;
 import java.util.Date;
 
 import javax.swing.JComponent;
 import javax.swing.SwingWorker;
-import javax.xml.xpath.XPathExpressionException;
 
 import org.apache.log4j.Logger;
 import org.nuclos.client.image.ImageType;

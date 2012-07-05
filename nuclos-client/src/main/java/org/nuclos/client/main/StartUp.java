@@ -46,7 +46,6 @@ import org.apache.log4j.helpers.LogLog;
 import org.nuclos.api.ui.annotation.NucletComponent;
 import org.nuclos.client.NuclosIcons;
 import org.nuclos.client.common.NuclosCollectableComponentFactory;
-import org.nuclos.client.common.prefs.NuclosPreferencesFactory;
 import org.nuclos.client.common.security.SecurityDelegate;
 import org.nuclos.client.jms.TopicNotificationReceiver;
 import org.nuclos.client.login.LoginController;

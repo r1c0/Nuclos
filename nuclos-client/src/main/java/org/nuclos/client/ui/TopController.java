@@ -20,13 +20,11 @@ package org.nuclos.client.ui;
 import java.io.Closeable;
 
 import javax.swing.ImageIcon;
-import javax.swing.JOptionPane;
 
 import org.nuclos.client.main.mainframe.IconResolver;
 import org.nuclos.client.main.mainframe.MainFrameTab;
 import org.nuclos.common.NuclosCancelException;
 import org.nuclos.common.collection.Pair;
-import org.nuclos.common2.exception.CommonBusinessException;
 
 /**
  * A common super class which is shared by CollectController and other top-level

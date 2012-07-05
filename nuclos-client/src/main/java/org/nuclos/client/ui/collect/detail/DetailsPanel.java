@@ -55,7 +55,6 @@ import javax.swing.plaf.basic.BasicButtonUI;
 import org.apache.log4j.Logger;
 import org.nuclos.client.main.mainframe.MainFrame;
 import org.nuclos.client.ui.IOverlayChangeListener;
-import org.nuclos.client.ui.IOverlayComponent;
 import org.nuclos.client.ui.Icons;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.client.ui.collect.CollectPanel;
