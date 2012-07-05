@@ -44,8 +44,6 @@ public interface ParameterProvider {
 	public static final String KEY_EXCEL_SHEET_NAME = "Excel Sheet Name 4pm Report";
 	public static final String KEY_DEFAULT_GENERATION_COUNT_ATTRIBUTE = "Default generation count attribute";
 
-	public static final String KEY_INTERNAL_INFORMATION_FILE_PATH = "Internal information file path";
-
 	public static final String KEY_REPORT_MAXROWCOUNT = "Report Max Row Count";
 
 	public static final String KEY_FOCUSSED_ITEM_BACKGROUND_COLOR = "Focussed item background color";

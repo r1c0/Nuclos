@@ -110,7 +110,6 @@ import org.nuclos.client.genericobject.GenericObjectLayoutCache;
 import org.nuclos.client.genericobject.GenericObjectMetaDataCache;
 import org.nuclos.client.genericobject.Modules;
 import org.nuclos.client.help.HtmlPanel;
-import org.nuclos.client.help.internalinfo.InternalInfoController;
 import org.nuclos.client.help.releasenotes.ReleaseNotesController;
 import org.nuclos.client.jms.TopicNotificationReceiver;
 import org.nuclos.client.login.LoginController;
@@ -526,9 +525,6 @@ public class MainController {
 			// Show the release notes for this version, if the user hasn't seen it yet.
 			showReleaseNotesIfNewVersion();
 
-			// Show the internal informations if they have changed since the last start of the client
-			showInternalInfoIfChanged();
-
 			// Debug purposes
 			final String sKeyWindowShow = "CtlShiftF11";
 			frm.getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_F11, (KeyEvent.SHIFT_DOWN_MASK | KeyEvent.CTRL_DOWN_MASK)), sKeyWindowShow);
@@ -827,13 +823,6 @@ public class MainController {
 					cmdLogoutExit();
 				}
 			};
-			cmdShowInternalInfo = new AbstractAction() {
-
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					cmdShowInternalInfo();
-				}
-			};
 			cmdExecuteRport = createEntityAction(NuclosEntity.REPORTEXECUTION);
 		}
 		catch (Throwable e) {
@@ -877,8 +866,6 @@ public class MainController {
 	private Action cmdWindowClosing;
 
 	private Action cmdLogoutExit;
-
-	private Action cmdShowInternalInfo;
 
 	private Action cmdExecuteRport;
 
@@ -1087,7 +1074,6 @@ public class MainController {
 		mainController.put("cmdShowNuclosReleaseNotes", cmdShowNuclosReleaseNotes);
 		mainController.put("cmdLogoutExit", cmdLogoutExit);
 		mainController.put("cmdWindowClosing", cmdWindowClosing);
-		mainController.put("cmdShowInternalInfo", cmdShowInternalInfo);
 		mainController.put("cmdExecuteRport", cmdExecuteRport);
 
 		for(Method m : getClass().getDeclaredMethods()) {
@@ -2111,15 +2097,6 @@ public class MainController {
 	private void showReleaseNotesIfNewVersion() {
 		new ReleaseNotesController().showReleaseNotesIfNewVersion();
 	}
-
-	protected void cmdShowInternalInfo() {
-		new InternalInfoController().showInternalInfo();
-	}
-
-	private void showInternalInfoIfChanged() {
-		new InternalInfoController().showInternalInfoIfChanged();
-	}
-
 
 	private void cmdCollectMasterData(final ActionEvent ev, final boolean isNew, final Long processId) {
 		UIUtils.runCommand(frm, new Runnable() {
