@@ -73,7 +73,8 @@ public class ResourceIdMapper<V> extends ObjectToStringConverter implements Stri
 	public String getString(Object /* should be V */ value) {
 		String text = getPreferredStringForItem(value);
 		// According to the SwingX documentation, this method must not return null
-		return (text != null) ? text : "";
+		// empty String will be wrapped to " ". aOtherwise it is not displayed in a comboboxlist.
+		return (text != null) ? (text != "") ? text : " " : "";
 	}
 
 	@Override

@@ -272,6 +272,8 @@ public class WYSIWYGMetaInformation implements LayoutMLConstants {
 					result = getFittingFieldnames(((WYSIWYGSubFormColumn)c).getSubForm().getEntityName());
 				} else
 					result = getFittingFieldnames();
+				//should be possible to unset the next focus component
+				result.add(new StringResourceIdPair("", null));
 			}
 			else
 				result = getFittingFieldnamesForControlType(c);
