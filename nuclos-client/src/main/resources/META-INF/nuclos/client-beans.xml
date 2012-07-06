@@ -243,11 +243,6 @@
 		<!-- property name="serviceUrl" value="${url.remoting}/DummyForAbstract"/ -->
 		<property name="httpInvokerRequestExecutor" ref="authHttpInvokerRequestExecutor" />
 	</bean>
-	
-	<bean id="apiUserPreferencesService" parent="httpInvokerProxyFactoryBean">
-	    <property name="serviceUrl" value="${url.remoting}/apiUserPreferencesService"/>
-	    <property name="serviceInterface" value="org.nuclos.api.service.UserPreferencesService"/>
-	</bean>
 
 	<bean id="parameterService" parent="httpInvokerProxyFactoryBean">
 	    <property name="serviceUrl" value="${url.remoting}/ParameterService"/>

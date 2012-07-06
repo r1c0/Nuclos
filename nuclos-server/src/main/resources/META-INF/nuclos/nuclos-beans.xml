@@ -176,8 +176,6 @@
 	</bean -->
 
 	<!-- Services/Beans -->
-	
-	<bean id="apiUserPreferencesService" class="org.nuclos.server.common.ejb3.ApiUserPreferencesService"/>
 
 	<bean id="masterDataService" class="org.nuclos.server.masterdata.ejb3.MasterDataFacadeBean">
 		<qualifier value="masterDataService"/>

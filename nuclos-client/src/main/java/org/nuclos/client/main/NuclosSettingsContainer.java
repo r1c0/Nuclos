@@ -20,25 +20,16 @@
 package org.nuclos.client.main;
 
 import java.awt.GridLayout;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.List;
 
 import javax.annotation.PostConstruct;
-import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 
 import org.apache.log4j.Logger;
-import org.nuclos.api.UserPreferences;
-import org.nuclos.api.ui.UserPreferencesEditor;
 import org.nuclos.client.livesearch.LiveSearchSettingsPanel;
 import org.nuclos.client.main.mainframe.MainFrame;
 import org.nuclos.client.nuclet.NucletComponentRepository;
-import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common2.SpringLocaleDelegate;
-import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.PreferencesException;
 import org.nuclos.server.common.ejb3.PreferencesFacadeRemote;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,9 +47,6 @@ public class NuclosSettingsContainer extends JPanel {
 	
 	private NuclosSettingsPanel      settingsPanel;
 	private LiveSearchSettingsPanel  livesearchPanel;
-	
-	private List<UserPreferencesEditor<? extends UserPreferences>> nucletUserPreferencesEditors;
-	private Collection<UserPreferences> nucletUserPreferences;
 
 	public NuclosSettingsContainer(MainFrame frm) {
 		super(new GridLayout(1, 1));
@@ -89,33 +77,6 @@ public class NuclosSettingsContainer extends JPanel {
 		tabPane.addTab(
 			SpringLocaleDelegate.getInstance().getResource("nuclos.settings.container.tab1", "Ansichtsoptionen"),
 			settingsPanel);
-		
-		nucletUserPreferencesEditors = ncr.getUserPreferencesEditors();
-		nucletUserPreferences = preferencesFacade.getApiUserPreferences();
-		
-		for (UserPreferencesEditor<? extends UserPreferences> upe : CollectionUtils.sorted(nucletUserPreferencesEditors, new Comparator<UserPreferencesEditor<? extends UserPreferences>>() {
-			@Override
-			public int compare(UserPreferencesEditor<? extends UserPreferences> o1, UserPreferencesEditor<? extends UserPreferences> o2) {
-				return StringUtils.compareIgnoreCase(o1.getName(), o2.getName());
-			}
-		})) {
-			UserPreferences userPreferences = null;
-			for (UserPreferences up : nucletUserPreferences) {
-				if (upe.getPreferencesClass().equals(up.getClass())) {
-					userPreferences = up;
-					break;
-				}
-			}
-			try {
-				final JComponent comp = (JComponent) upe.getClass().getMethod("getPreferencesComponent", upe.getPreferencesClass()).invoke(upe, userPreferences);
-				tabPane.addTab(
-						upe.getName(), 
-						upe.getIcon(), 
-						comp);
-			} catch (Exception ex) {
-				LOG.error(String.format("UserPreferencesComponent (EditorClass=%s) not created! Error=%s", upe.getClass(), ex.getMessage()), ex);
-			}
-		}
 
 		validate();
 	}
@@ -126,22 +87,9 @@ public class NuclosSettingsContainer extends JPanel {
 			settingsPanel.save();
 			livesearchPanel.save();
 			
-			Collection<UserPreferences> newPreferences = new ArrayList<UserPreferences>();
-			for (UserPreferencesEditor<? extends UserPreferences> upe : nucletUserPreferencesEditors) {
-				newPreferences.add(upe.getPreferences());
-			}
-			preferencesFacade.setApiUserPreferences(newPreferences);
 			saved = true;
 		} catch (Exception ex) {
 			throw new PreferencesException(ex);
-		} finally {
-			for (UserPreferencesEditor<? extends UserPreferences> upe : nucletUserPreferencesEditors) {
-				try {
-					upe.close(saved);
-				} catch (Exception e1) {
-					LOG.error(String.format("Exception during close of %s: %s", upe.getClass().getName(), e1.getMessage()), e1);
-				}
-			}
 		}
 	}
 }

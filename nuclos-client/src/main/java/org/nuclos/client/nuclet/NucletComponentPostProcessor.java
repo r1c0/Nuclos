@@ -18,7 +18,6 @@ package org.nuclos.client.nuclet;
 
 import org.nuclos.api.ui.LayoutComponentFactory;
 import org.nuclos.api.ui.MenuItem;
-import org.nuclos.api.ui.UserPreferencesEditor;
 import org.nuclos.api.ui.annotation.NucletComponent;
 import org.springframework.aop.framework.AopInfrastructureBean;
 import org.springframework.aop.support.AopUtils;
@@ -59,9 +58,6 @@ public class NucletComponentPostProcessor implements BeanPostProcessor, Ordered 
 			}
 			if (bean instanceof LayoutComponentFactory) {
 				ncr.addLayoutComponentFactory((LayoutComponentFactory) bean);
-			}
-			if (bean instanceof UserPreferencesEditor) {
-				ncr.addUserPreferencesEditor((UserPreferencesEditor<?>) bean);
 			}
 		}
 		return bean;

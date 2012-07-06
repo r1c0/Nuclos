@@ -22,8 +22,6 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.NavigableMap;
@@ -32,7 +30,6 @@ import java.util.TreeMap;
 import javax.annotation.security.RolesAllowed;
 
 import org.apache.log4j.Logger;
-import org.nuclos.api.UserPreferences;
 import org.nuclos.common.Actions;
 import org.nuclos.common.NuclosBusinessException;
 import org.nuclos.common.NuclosEntity;
@@ -56,7 +53,6 @@ import org.nuclos.common.collection.Transformer;
 import org.nuclos.common.dal.vo.EntityObjectVO;
 import org.nuclos.common.dal.vo.SystemFields;
 import org.nuclos.common.preferences.PreferencesConverter;
-import org.nuclos.common2.IdUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.common2.exception.CommonFinderException;
@@ -68,17 +64,12 @@ import org.nuclos.server.dal.DalUtils;
 import org.nuclos.server.dal.processor.nuclet.IWorkspaceProcessor;
 import org.nuclos.server.dal.processor.nuclet.JdbcEntityObjectProcessor;
 import org.nuclos.server.dal.provider.NucletDalProvider;
-import org.nuclos.server.database.SpringDataBaseHelper;
 import org.nuclos.server.dblayer.DbException;
 import org.nuclos.server.dblayer.DbInvalidResultSizeException;
 import org.nuclos.server.dblayer.DbStatementUtils;
-import org.nuclos.server.dblayer.DbTuple;
 import org.nuclos.server.dblayer.query.DbFrom;
 import org.nuclos.server.dblayer.query.DbQuery;
 import org.nuclos.server.dblayer.query.DbQueryBuilder;
-import org.nuclos.server.dblayer.statements.DbDeleteStatement;
-import org.nuclos.server.dblayer.statements.DbInsertStatement;
-import org.nuclos.server.dblayer.statements.DbTableStatement;
 import org.nuclos.server.genericobject.searchcondition.CollectableSearchExpression;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -347,6 +338,7 @@ public class PreferencesFacadeBean extends NuclosFacadeBean implements Preferenc
 		getWorkspaceProcessor().delete(id);
 	}
 
+	@Override
 	public WorkspaceVO assignWorkspace(WorkspaceVO wovo, Collection<Long> roleIds) throws CommonBusinessException {
 		if (!isAssignWorkspaceAllowed()) {
 			throw new CommonFatalException("Edit of assignable workspaces is not allowed!");
@@ -923,108 +915,5 @@ public class PreferencesFacadeBean extends NuclosFacadeBean implements Preferenc
 	private IWorkspaceProcessor getWorkspaceProcessor() {
 		return NucletDalProvider.getInstance().getWorkspaceProcessor();
 	}
-	
-	@Override
-	public Collection<UserPreferences> getApiUserPreferences() {
-		final Long nuclosUserId = SecurityCache.getInstance().getUserId(getCurrentUserName()).longValue();
-		
-		final DbQueryBuilder builder = dataBaseHelper.getDbAccess().getQueryBuilder();
-		final DbQuery<DbTuple> query = builder.createTupleQuery();
-		final DbFrom t = query.from("T_MD_USER_PREFERENCES").alias(SystemFields.BASE_ALIAS);
-		query.multiselect(
-				t.baseColumn("STRPREFERENCESCLASS", String.class),
-				t.baseColumn("STRPREFERENCES", String.class));
-		query.where(builder.equal(t.baseColumn("INTID_T_MD_USER", Long.class), nuclosUserId));
-
-		
-		final Collection<UserPreferences> result = new ArrayList<UserPreferences>();
-		for (DbTuple tuple : dataBaseHelper.getDbAccess().executeQuery(query)) {
-			final String sClassName = tuple.get(0, String.class);
-			final String sPreferences = tuple.get(1, String.class);
-			try {
-				final Class<?> userPreferenceClass = Class.forName(sClassName);
-				final UserPreferences userPreferences = (UserPreferences) userPreferenceClass.getConstructor().newInstance();
-				userPreferences.initFromString(sPreferences);
-				result.add(userPreferences);
-			} catch (Exception ex) {
-				LOG.error(String.format("UserPreferences (Class=%s) not created! Error=%s", sClassName, ex.getMessage()), ex);
-			}
-		}
-		return result;
-	}
-	
-	@Override
-	public <UP extends UserPreferences> UP getApiUserPreferences(final Class<UP> upClass) {
-		final Long nuclosUserId = SecurityCache.getInstance().getUserId(getCurrentUserName()).longValue();
-		
-		final DbQueryBuilder builder = dataBaseHelper.getDbAccess().getQueryBuilder();
-		final DbQuery<String> query = builder.createQuery(String.class);
-		final DbFrom t = query.from("T_MD_USER_PREFERENCES").alias(SystemFields.BASE_ALIAS);
-		query.select(t.baseColumn("STRPREFERENCES", String.class));
-		query.where(builder.and(
-				builder.equal(t.baseColumn("INTID_T_MD_USER", Long.class), nuclosUserId),
-				builder.equal(t.baseColumn("STRPREFERENCESCLASS", Long.class), upClass.getName())));
-
-		try {
-			final UP result = (UP) upClass.getConstructor().newInstance();
-			try {
-				result.initFromString(dataBaseHelper.getDbAccess().executeQuerySingleResult(query));
-				return result;
-			} catch (DbInvalidResultSizeException ex) {
-				return result;
-			} 
-		} catch (Exception e1) {
-			LOG.error(String.format("UserPreferences (Class=%s) not created! Error=%s", upClass.getName(), e1.getMessage()), e1);
-			throw new NuclosFatalException(e1);
-		} 
-	}
-	
-	@Override
-	public void setApiUserPreferences(Collection<UserPreferences> userPreferences) {
-		if (userPreferences == null) {
-			return;
-		}
-		
-		for (UserPreferences up : userPreferences) {
-			setApiUserPreferences(up);
-		}
-	}
-	
-	@Override
-	public void setApiUserPreferences(UserPreferences userPreferences) {
-		if (userPreferences == null) {
-			return;
-		}
-		
-		final Long nuclosUserId = SecurityCache.getInstance().getUserId(getCurrentUserName()).longValue();
-		
-		final Map<String, Object> conditions = new HashMap<String, Object>(1);
-		conditions.put("INTID_T_MD_USER", nuclosUserId);
-		conditions.put("STRPREFERENCESCLASS", userPreferences.getClass().getName());
-		DbTableStatement stmt = new DbDeleteStatement("T_MD_USER_PREFERENCES", conditions);
-		try {
-			dataBaseHelper.getDbAccess().execute(stmt);
-		} catch (Exception e) {
-			throw new NuclosFatalException(e);
-		}
-		
-		final Map<String, Object> values = new HashMap<String, Object>();
-		values.put("INTID_T_MD_USER", nuclosUserId);
-		values.put("STRPREFERENCESCLASS", userPreferences.getClass().getName());
-		values.put("STRPREFERENCES", userPreferences.transformToString());
-		values.put("INTID", IdUtils.toLongId(dataBaseHelper.getNextIdAsInteger(SpringDataBaseHelper.DEFAULT_SEQUENCE)));
-		values.put("STRCREATED", getCurrentUserName());
-		values.put("STRCHANGED", getCurrentUserName());
-		values.put("DATCREATED", new Date());
-		values.put("DATCHANGED", new Date());
-		values.put("INTVERSION", 1);
-		stmt = new DbInsertStatement("T_MD_USER_PREFERENCES", values);
-		try {
-			dataBaseHelper.getDbAccess().execute(stmt);
-		} catch (Exception e) {
-			throw new NuclosFatalException(e);
-		}
-	}
-	
 	
 }
