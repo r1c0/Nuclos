@@ -92,9 +92,9 @@ public class PropertyValueString implements PropertyValue<String> {
 		}
 		//NUCLEUSINT-1159
 		if (PROPERTY_LABELS.ACTIONCOMMAND.equals(property))
-			return new PropertyEditorString(values,true);
+			return new PropertyEditorString(c, values, true);
 		
-		return new PropertyEditorString(values,false);	
+		return new PropertyEditorString(c, values,false);	
 	}
 
 	/*
@@ -124,9 +124,9 @@ public class PropertyValueString implements PropertyValue<String> {
 		}
 		//NUCLEUSINT-1159
 		if (PROPERTY_LABELS.ACTIONCOMMAND.equals(property))
-			return new PropertyEditorString(values,true);
+			return new PropertyEditorString(c, values,true);
 		
-		return new PropertyEditorString(values,false);	
+		return new PropertyEditorString(c, values,false);	
 	}
 
 	/*
@@ -226,13 +226,22 @@ public class PropertyValueString implements PropertyValue<String> {
 		 * The Constructor
 		 * @param pairList
 		 */
-		public PropertyEditorString(List<StringResourceIdPair> pairList, boolean insertable) {
+		public PropertyEditorString(final WYSIWYGComponent c, List<StringResourceIdPair> pairList, boolean insertable) {
 			//NUCLEUSINT-1159
 			this.insertable = insertable;
 			
 			if (pairList != null) {
 				Map<String, String> map = CollectionUtils.transformPairsIntoMap(pairList);
-				this.resourceIdMapper = new ResourceIdMapper<String>(map);
+				this.resourceIdMapper = new ResourceIdMapper<String>(map) {
+					@Override
+					public String getPreferredStringForItem(Object item) {
+					String text = c.getProperties().getMetaInformation().resolveSubformColumMetaValues(c, (String)value);
+					if (text != null) 
+						return text;
+					else
+						return super.getPreferredStringForItem(item);
+					}
+				};
 				this.list = new ArrayList<String>(map.keySet());
 				// Sort collections by translation
 				Collections.sort(this.list, resourceIdMapper);
@@ -295,8 +304,9 @@ public class PropertyValueString implements PropertyValue<String> {
 				for (String item : list) {
 					comboBox.addItem(item);
 				}
-				comboBox.setSelectedItem(PropertyValueString.this.value);
 				
+				comboBox.setSelectedItem(PropertyValueString.this.value);
+
 				comboBox.setRenderer(new DefaultListRenderer(resourceIdMapper));
 				AutoCompleteDecorator.decorate(comboBox, resourceIdMapper);
 				

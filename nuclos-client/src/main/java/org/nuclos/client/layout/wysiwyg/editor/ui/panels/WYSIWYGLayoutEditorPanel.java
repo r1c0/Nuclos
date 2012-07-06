@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
@@ -687,6 +688,33 @@ public class WYSIWYGLayoutEditorPanel extends JPanel implements WYSIWYGComponent
 	/**
 	 * This Method collects all the Subform Entity Names
 	 */
+	public Map<String, WYSIWYGComponent> getMapSubForms() {
+		ArrayList<WYSIWYGComponent> result = new ArrayList<WYSIWYGComponent>();
+		//NUCLEUSINT-419 get the main panel and then get all components... 
+		WYSIWYGLayoutEditorPanel mainPanel = null;
+		if (this.getParentEditor() == null)
+			mainPanel = this;
+		else
+			mainPanel = this.getParentEditor();
+		
+		//getWYSIWYGComponents(WYSIWYGChart.class, mainPanel, result);
+		getWYSIWYGComponents(WYSIWYGSubForm.class, mainPanel, result);
+		
+		Map<String, WYSIWYGComponent> mpResult = new HashMap<String, WYSIWYGComponent>();
+		for (WYSIWYGComponent c : result) {
+			if (c instanceof WYSIWYGChart) {
+				mpResult.put(((WYSIWYGChart) c).getEntityName(), c);
+			}
+			if (c instanceof WYSIWYGSubForm) {
+				mpResult.put(((WYSIWYGSubForm) c).getEntityName(), c);
+			}
+		}
+		return mpResult;
+	}
+
+	/**
+	 * This Method collects all the Subform Entity Names
+	 */
 	public List<String> getSubFormEntityNames() {
 		ArrayList<Object> result = new ArrayList<Object>();
 		//NUCLEUSINT-419 get the main panel and then get all components... 
@@ -696,7 +724,7 @@ public class WYSIWYGLayoutEditorPanel extends JPanel implements WYSIWYGComponent
 		else
 			mainPanel = this.getParentEditor();
 		
-		getWYSIWYGComponents(WYSIWYGChart.class, mainPanel, result);
+		//getWYSIWYGComponents(WYSIWYGChart.class, mainPanel, result);
 		getWYSIWYGComponents(WYSIWYGSubForm.class, mainPanel, result);
 
 		List<String> sorted = CollectionUtils.transform(result, new Transformer<Object, String>() {

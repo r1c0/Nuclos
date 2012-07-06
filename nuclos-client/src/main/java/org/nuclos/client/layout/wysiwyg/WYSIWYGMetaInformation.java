@@ -26,6 +26,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.NoSuchElementException;
 import java.util.Set;
 
@@ -56,6 +57,7 @@ import org.nuclos.client.masterdata.MetaDataCache;
 import org.nuclos.client.resource.ResourceDelegate;
 import org.nuclos.client.rule.RuleDelegate;
 import org.nuclos.client.statemodel.StateDelegate;
+import org.nuclos.client.ui.ResourceIdMapper;
 import org.nuclos.client.ui.collect.component.CollectableComponentType;
 import org.nuclos.common.NuclosAttributeNotFoundException;
 import org.nuclos.common.NuclosImage;
@@ -270,8 +272,31 @@ public class WYSIWYGMetaInformation implements LayoutMLConstants {
 			if (prop.equals(WYSIWYGComponent.PROPERTY_NEXTFOCUSCOMPONENT)) {
 				if (c instanceof WYSIWYGSubFormColumn) {
 					result = getFittingFieldnames(((WYSIWYGSubFormColumn)c).getSubForm().getEntityName());
-				} else
+				} else {
 					result = getFittingFieldnames();
+					// get all entity
+					Map<String, StringResourceIdPair> entityResourceIdPairs = new HashMap<String, StringResourceIdPair>();
+					
+					Collection<MasterDataMetaVO> entities = MetaDataCache.getInstance().getMetaData();
+					for (MasterDataMetaVO entity : entities) {
+						entityResourceIdPairs.put(entity.getEntityName(),
+								new StringResourceIdPair(entity.getEntityName(), entity.getResourceId()));
+					}
+					ResourceIdMapper<StringResourceIdPair> resourceIdEntityMapper
+						= new ResourceIdMapper<StringResourceIdPair>(entityResourceIdPairs.values());
+					
+					// Iterate through Subforms.
+					Map<String, WYSIWYGComponent> subformEntitys = c.getParentEditor().getMapSubForms();
+					for (Entry<String, WYSIWYGComponent> subformEntry : subformEntitys.entrySet()) {
+						WYSIWYGComponent subform = subformEntry.getValue();
+						if (subform instanceof WYSIWYGSubForm && subformEntry.getKey() != null) {
+							List<StringResourceIdPair> entityFieldnames = getFittingFieldnames(subformEntry.getKey());
+							for (StringResourceIdPair pair : entityFieldnames) {
+								result.add(new StringResourceIdPair(subformEntry.getKey() + "." + pair.getX(), null));
+							}
+						}
+					}
+				}
 				//should be possible to unset the next focus component
 				result.add(new StringResourceIdPair("", null));
 			}
@@ -378,6 +403,32 @@ public class WYSIWYGMetaInformation implements LayoutMLConstants {
 		}
 
 		return result;
+	}
+	
+	public String resolveSubformColumMetaValues(WYSIWYGComponent c, String value) {
+		if (value == null || value.indexOf(".") == -1)
+			return null;
+		
+		String[] splitVal = value.split("\\.");
+		
+		Map<String, StringResourceIdPair> entityResourceIdPairs = new HashMap<String, StringResourceIdPair>();
+		
+		Collection<MasterDataMetaVO> entities = MetaDataCache.getInstance().getMetaData();
+		for (MasterDataMetaVO entity : entities) {
+			entityResourceIdPairs.put(entity.getEntityName(),
+					new StringResourceIdPair(entity.getEntityName(), entity.getResourceId()));
+		}
+		ResourceIdMapper<StringResourceIdPair> resourceIdEntityMapper
+			= new ResourceIdMapper<StringResourceIdPair>(entityResourceIdPairs.values());
+		
+		// Iterate through Subforms.
+		WYSIWYGComponent subform = c.getParentEditor().getMapSubForms().get(splitVal[0]);
+		if (subform instanceof WYSIWYGSubForm) {
+			String column = ((WYSIWYGSubForm)subform).getColumnLabel(splitVal[1]);
+			return resourceIdEntityMapper.getString(entityResourceIdPairs.get(splitVal[0]))
+					+ "." + ((column != null) ? column : splitVal[1]);
+		}
+		return null;
 	}
 	
 	private Collection<RuleVO> getRules() {
@@ -864,6 +915,11 @@ public class WYSIWYGMetaInformation implements LayoutMLConstants {
 		@Override
 		public String getResourceId() {
 			return this.y;
+		}
+		@Override
+		public String getX() {
+			// TODO Auto-generated method stub
+			return super.getX();
 		}
 	}
 }

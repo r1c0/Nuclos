@@ -66,6 +66,7 @@ import javax.swing.event.EventListenerList;
 import javax.swing.event.TableColumnModelEvent;
 import javax.swing.event.TableModelEvent;
 import javax.swing.table.TableColumn;
+import javax.swing.table.TableModel;
 
 import org.jdesktop.swingx.event.TableColumnModelExtListener;
 import org.nuclos.client.common.NuclosCollectControllerFactory;
@@ -101,6 +102,7 @@ import org.nuclos.client.ui.collect.ToolTipsTableHeader;
 import org.nuclos.client.ui.collect.component.model.CollectableComponentModel;
 import org.nuclos.client.ui.collect.component.model.CollectableComponentModelProvider;
 import org.nuclos.client.ui.collect.component.model.DefaultCollectableComponentModelProvider;
+import org.nuclos.client.ui.collect.model.CollectableTableModel;
 import org.nuclos.client.ui.collect.model.SortableCollectableTableModel;
 import org.nuclos.client.ui.collect.model.SortableCollectableTableModelImpl;
 import org.nuclos.client.ui.event.TableColumnModelAdapter;
@@ -228,7 +230,7 @@ public class WYSIWYGSubForm extends JLayeredPane implements WYSIWYGComponent, Mo
 	private Rectangle lastViewPosition = null;
 
 	private SubForm subform;
-
+	
 	private SortableCollectableTableModel<Collectable> model;
 
 	private JLabel message = new JLabel();
@@ -969,6 +971,18 @@ public class WYSIWYGSubForm extends JLayeredPane implements WYSIWYGComponent, Mo
 		if (subform != null) {
 			subform.setEnabled(enabled);
 		}
+	}
+
+	public String getColumnLabel(String sColumnName) {
+		if (this.subform != null) {
+			TableModel mdl = this.subform.getSubformTable().getModel();
+			if (mdl instanceof CollectableTableModel) {
+				int idx = ((CollectableTableModel)mdl).findColumnByFieldName(sColumnName);
+				if (idx != -1)
+					return ((CollectableTableModel)mdl).getColumnName(idx);
+			}
+		}
+		return null;
 	}
 
 	/*

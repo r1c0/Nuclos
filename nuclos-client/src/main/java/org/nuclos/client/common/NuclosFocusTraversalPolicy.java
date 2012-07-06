@@ -23,11 +23,16 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.swing.AbstractButton;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTabbedPane;
+import javax.swing.JTable;
 import javax.swing.JToolBar;
 import javax.swing.LayoutFocusTraversalPolicy;
+import javax.swing.table.TableModel;
 
 import org.apache.log4j.Logger;
 import org.nuclos.client.ui.DateChooser;
@@ -36,6 +41,7 @@ import org.nuclos.client.ui.OptionGroup;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.client.ui.collect.SubForm;
 import org.nuclos.client.ui.collect.component.CollectableComponent;
+import org.nuclos.client.ui.collect.model.CollectableTableModel;
 import org.nuclos.client.ui.labeled.LabeledComponent;
 import org.nuclos.client.ui.layoutml.LayoutRoot;
 import org.nuclos.common2.layoutml.LayoutMLConstants;
@@ -45,6 +51,7 @@ public class NuclosFocusTraversalPolicy extends	LayoutFocusTraversalPolicy {
 	private static final Logger LOG = Logger.getLogger(NuclosFocusTraversalPolicy.class);
 	
 	private final JComponent compRoot;
+	private final Map<String, SubForm> mpSubforms;
 	private final Collection<CollectableComponent> collectableComponents;
 	
 	private final Map<String, JComponent> mpComponentsBackwards;
@@ -53,6 +60,7 @@ public class NuclosFocusTraversalPolicy extends	LayoutFocusTraversalPolicy {
 
 	public NuclosFocusTraversalPolicy(LayoutRoot layoutRoot) {
 		this.compRoot = layoutRoot.getRootComponent();
+		this.mpSubforms = layoutRoot.getMapOfSubForms();
 		this.collectableComponents = layoutRoot.getCollectableComponents();
 		mpComponentsBackwards = new HashMap<String, JComponent>();
 	}
@@ -103,6 +111,9 @@ public class NuclosFocusTraversalPolicy extends	LayoutFocusTraversalPolicy {
 			if(obj != null && obj instanceof String) {
 				if(aContainer instanceof JPanel) {
 					JComponent jFound = UIUtils.findJComponentStartsWithName((JPanel)aContainer, (String)obj);
+					if (jFound == null && ((String)obj).indexOf(".") != -1) {
+						getFocusableSubFormComponent(((String)obj));
+					}
 					mpComponentsBackwards.put((String)obj, (JComponent)aComponent);
 					if(jFound instanceof LabeledComponent){
 						return ((LabeledComponent)jFound).getControlComponent();
@@ -143,6 +154,48 @@ public class NuclosFocusTraversalPolicy extends	LayoutFocusTraversalPolicy {
 			return comp;
 		else
 			return getComponentAfter(aContainer, comp);
+	}
+	
+	private void getFocusableSubFormComponent(String value) {
+		// component is not part of panel. must be a subform.
+		int idxDot = value.indexOf(".");
+		String subformName = value.substring(0, idxDot);
+		SubForm subform = mpSubforms.get(subformName);
+		if (subform != null) {
+			JTabbedPane tabbedPane = (JTabbedPane)UIUtils.findFirstParentJComponent(subform.getSubformTable(), JTabbedPane.class);
+			if (tabbedPane != null) {
+				boolean bSelected = false;
+				for (int i = 0; i < tabbedPane.getTabCount(); i++) {
+					// find contained subform.
+					//JTable subform_tmp = (JTable)UIUtils.findFirstJComponent((JComponent)tabbedPane.getComponentAt(i), JScrollPane.class); {
+					for (JTable subform_tmp : UIUtils.findAllInstancesOf(tabbedPane.getComponentAt(i), JTable.class)) {
+						if (subform_tmp == subform.getSubformTable()) {
+							tabbedPane.setSelectedIndex(i);
+							bSelected = true;
+							break;
+						}
+					}
+					if (bSelected)
+						break;
+				}
+			}
+				
+			String sColumnName = value.substring(idxDot + 1);
+			TableModel mdl = subform.getSubformTable().getModel();
+			if (mdl instanceof CollectableTableModel) {
+				int idxCol = ((CollectableTableModel)mdl).findColumnByFieldName(sColumnName);
+				if (idxCol != -1) {
+					if (subform.getSubformTable().getRowCount() == 0) {
+						AbstractButton button = subform.getToolbarButton(SubForm.ToolbarFunction.NEW.name());
+						button.doClick();
+					}
+					if (subform.getSubformTable().getRowCount() != 0) {
+						subform.getSubformTable().changeSelection(0, idxCol, false, false);
+					}
+					return;
+				}
+			}
+		}
 	}
 	
 	private Component getSubFormIfAny(JButton bt) {

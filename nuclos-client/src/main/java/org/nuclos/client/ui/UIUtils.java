@@ -551,6 +551,36 @@ public class UIUtils {
 	}
 
 	/**
+	 * finds the first <code>JComponent</code> with the given class as direct or indirect successor of the given parent component.
+	 * Performs a depth first search.
+	 * @param parent
+	 * @param clazz
+	 * @return the component if found; else null
+	 * @precondition parent != null
+	 */
+	public static JComponent findFirstParentJComponent(JComponent parent, Class<? extends JComponent> clazz) {
+		JComponent result = null;
+
+		for (Iterator<Component> iter = Arrays.asList(parent.getComponents()).iterator(); iter.hasNext() && result == null;)
+		{
+			final Component compChild = iter.next();
+			if (JComponent.class.isAssignableFrom(compChild.getClass())) {
+				final JComponent jcompChild = (JComponent) compChild;
+//				if (jcompChild.getClass().isAssignableFrom(clazz)) {
+				if (clazz.isAssignableFrom(jcompChild.getClass())) {
+					result = jcompChild;
+					return result;
+				}
+			}
+		}
+		
+		if (parent.getParent() != null && parent.getParent() instanceof JComponent)
+			result = findFirstParentJComponent((JComponent)parent.getParent(), clazz);
+
+		return result;
+	}
+
+	/**
 	 * recursively search a component tree for instances of a specified class and return them as a collection.
 	 * @param <T>
 	 * @param comp
