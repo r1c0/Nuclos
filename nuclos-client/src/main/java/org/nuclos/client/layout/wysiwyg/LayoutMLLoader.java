@@ -535,7 +535,7 @@ public class LayoutMLLoader implements LayoutMLConstants {
 				}
 				Component component = null;
 				try {
-					component = ComponentProcessors.getInstance().createComponent(ELEMENT_COLLECTABLECOMPONENT, controlType, 0, editorPanel.getMetaInformation(), name);
+					component = ComponentProcessors.getInstance().createComponent(ELEMENT_COLLECTABLECOMPONENT, controlType, 0, editorPanel.getMetaInformation(), name, false);
 				} catch (CommonBusinessException e) {
 					log.error(e);
 					Errors.getInstance().showExceptionDialog(null, e);
@@ -578,7 +578,7 @@ public class LayoutMLLoader implements LayoutMLConstants {
 			@Override
 			public void startElement(Attributes atts) throws SAXException {
 				try {
-					Component component = ComponentProcessors.getInstance().createComponent(ELEMENT_TITLEDSEPARATOR, "", 0, editorPanel.getMetaInformation(), null);
+					Component component = ComponentProcessors.getInstance().createComponent(ELEMENT_TITLEDSEPARATOR, "", 0, editorPanel.getMetaInformation(), null, false);
 					if (component instanceof WYSIWYGComponent) {
 						WYSIWYGComponent c = (WYSIWYGComponent) component;
 						setPropertiesFromAttributes(c, atts);
@@ -607,7 +607,7 @@ public class LayoutMLLoader implements LayoutMLConstants {
 			@Override
 			public void startElement(Attributes atts) throws SAXException {
 				try {
-					Component component = ComponentProcessors.getInstance().createComponent(ELEMENT_SEPARATOR, "", 0, editorPanel.getMetaInformation(), null);
+					Component component = ComponentProcessors.getInstance().createComponent(ELEMENT_SEPARATOR, "", 0, editorPanel.getMetaInformation(), null, false);
 					if (component instanceof WYSIWYGComponent) {
 						WYSIWYGComponent c = (WYSIWYGComponent) component;
 						setPropertiesFromAttributes(c, atts);
@@ -635,7 +635,7 @@ public class LayoutMLLoader implements LayoutMLConstants {
 			@Override
 			public void startElement(Attributes atts) throws SAXException {
 				try {
-					Component component = ComponentProcessors.getInstance().createComponent(ELEMENT_BUTTON, "", 0, editorPanel.getMetaInformation(), null);
+					Component component = ComponentProcessors.getInstance().createComponent(ELEMENT_BUTTON, "", 0, editorPanel.getMetaInformation(), null, false);
 					if (component instanceof WYSIWYGComponent) {
 						WYSIWYGComponent c = (WYSIWYGComponent) component;
 						setPropertiesFromAttributes(c, atts);
@@ -664,7 +664,7 @@ public class LayoutMLLoader implements LayoutMLConstants {
 			@Override
 			public void startElement(Attributes atts) throws SAXException {
 				try {
-					Component component = ComponentProcessors.getInstance().createComponent(ELEMENT_TEXTFIELD, "", 0, editorPanel.getMetaInformation(), null);
+					Component component = ComponentProcessors.getInstance().createComponent(ELEMENT_TEXTFIELD, "", 0, editorPanel.getMetaInformation(), null, false);
 					if (component instanceof WYSIWYGComponent) {
 						WYSIWYGComponent c = (WYSIWYGComponent) component;
 						setPropertiesFromAttributes(c, atts);
@@ -692,7 +692,7 @@ public class LayoutMLLoader implements LayoutMLConstants {
 			@Override
 			public void startElement(Attributes atts) throws SAXException {
 				try {
-					Component component = ComponentProcessors.getInstance().createComponent(ELEMENT_IMAGE, "", 0, editorPanel.getMetaInformation(), null);
+					Component component = ComponentProcessors.getInstance().createComponent(ELEMENT_IMAGE, "", 0, editorPanel.getMetaInformation(), null, false);
 					if (component instanceof WYSIWYGComponent) {
 						WYSIWYGComponent c = (WYSIWYGComponent) component;
 						setPropertiesFromAttributes(c, atts);
@@ -720,7 +720,7 @@ public class LayoutMLLoader implements LayoutMLConstants {
 			@Override
 			public void startElement(Attributes atts) throws SAXException {
 				try {
-					Component component = ComponentProcessors.getInstance().createComponent(ELEMENT_TEXTAREA, "", 0, editorPanel.getMetaInformation(), null);
+					Component component = ComponentProcessors.getInstance().createComponent(ELEMENT_TEXTAREA, "", 0, editorPanel.getMetaInformation(), null, false);
 					if (component instanceof WYSIWYGComponent) {
 						WYSIWYGComponent c = (WYSIWYGComponent) component;
 						setPropertiesFromAttributes(c, atts);
@@ -748,7 +748,7 @@ public class LayoutMLLoader implements LayoutMLConstants {
 			@Override
 			public void startElement(Attributes atts) throws SAXException {
 				try {
-					Component component = ComponentProcessors.getInstance().createComponent(ELEMENT_LABEL, "", 0, editorPanel.getMetaInformation(), null);
+					Component component = ComponentProcessors.getInstance().createComponent(ELEMENT_LABEL, "", 0, editorPanel.getMetaInformation(), null, false);
 					if (component instanceof WYSIWYGComponent) {
 						WYSIWYGComponent c = (WYSIWYGComponent) component;
 						setPropertiesFromAttributes(c, atts);
@@ -777,7 +777,7 @@ public class LayoutMLLoader implements LayoutMLConstants {
 			@Override
 			public void startElement(Attributes atts) throws SAXException {
 				try {
-					Component component = ComponentProcessors.getInstance().createComponent(ELEMENT_COMBOBOX, "", 0, editorPanel.getMetaInformation(), null);
+					Component component = ComponentProcessors.getInstance().createComponent(ELEMENT_COMBOBOX, "", 0, editorPanel.getMetaInformation(), null, false);
 					if (component instanceof WYSIWYGComponent) {
 						WYSIWYGComponent c = (WYSIWYGComponent) component;
 						setPropertiesFromAttributes(c, atts);
@@ -837,7 +837,7 @@ public class LayoutMLLoader implements LayoutMLConstants {
 			public void startElement(Attributes atts) throws SAXException {
 				try {
 					String sFactoryClass = atts.getValue(ATTRIBUTE_CLASS);
-					Component component = ComponentProcessors.getInstance().createComponent(ELEMENT_LAYOUTCOMPONENT, sFactoryClass, 0, editorPanel.getMetaInformation(), null);
+					Component component = ComponentProcessors.getInstance().createComponent(ELEMENT_LAYOUTCOMPONENT, sFactoryClass, 0, editorPanel.getMetaInformation(), null, false);
 					if (component instanceof WYSIWYGLayoutComponent) {
 						WYSIWYGLayoutComponent c = (WYSIWYGLayoutComponent) component;
 						setPropertiesFromAttributes(c, atts);
@@ -1144,7 +1144,7 @@ public class LayoutMLLoader implements LayoutMLConstants {
 			@Override
 			public void startElement(Attributes atts) throws SAXException {
 				try {
-					Component component = ComponentProcessors.getInstance().createComponent(ELEMENT_SPLITPANE, null, 0, editorPanel.getMetaInformation(), null);
+					Component component = ComponentProcessors.getInstance().createComponent(ELEMENT_SPLITPANE, null, 0, editorPanel.getMetaInformation(), null, false);
 					if (component instanceof WYSIWYGComponent) {
 						WYSIWYGComponent c = (WYSIWYGComponent) component;
 						setPropertiesFromAttributes(c, atts);
@@ -1195,7 +1195,7 @@ public class LayoutMLLoader implements LayoutMLConstants {
 			@Override
 			public void startElement(Attributes atts) throws SAXException {
 				try {
-					WYSIWYGTabbedPane tabbedPane = (WYSIWYGTabbedPane) ComponentProcessors.getInstance().createComponent(ELEMENT_TABBEDPANE, null, 0, editorPanel.getMetaInformation(), null);
+					WYSIWYGTabbedPane tabbedPane = (WYSIWYGTabbedPane) ComponentProcessors.getInstance().createComponent(ELEMENT_TABBEDPANE, null, 0, editorPanel.getMetaInformation(), null, false);
 					setPropertiesFromAttributes(tabbedPane, atts);
 					stack.push(tabbedPane);
 				} catch (CommonBusinessException e) {
@@ -1264,7 +1264,7 @@ public class LayoutMLLoader implements LayoutMLConstants {
 			@Override
 			public void startElement(Attributes atts) throws SAXException {
 				try {
-					WYSIWYGSubForm subform = (WYSIWYGSubForm) ComponentProcessors.getInstance().createComponent(ELEMENT_SUBFORM, null, 0, editorPanel.getMetaInformation(), null);
+					WYSIWYGSubForm subform = (WYSIWYGSubForm) ComponentProcessors.getInstance().createComponent(ELEMENT_SUBFORM, null, 0, editorPanel.getMetaInformation(), null, false);
 					String entity = atts.getValue(LayoutMLConstants.ATTRIBUTE_ENTITY);
 						//NUCLEUSINT-1137
 						// does this entity still exist?
@@ -1374,7 +1374,7 @@ public class LayoutMLLoader implements LayoutMLConstants {
 			@Override
 			public void startElement(Attributes atts) throws SAXException {
 				try {
-					WYSIWYGChart chart = (WYSIWYGChart) ComponentProcessors.getInstance().createComponent(ELEMENT_CHART, null, 0, editorPanel.getMetaInformation(), null);
+					WYSIWYGChart chart = (WYSIWYGChart) ComponentProcessors.getInstance().createComponent(ELEMENT_CHART, null, 0, editorPanel.getMetaInformation(), null, false);
 					String entity = atts.getValue(LayoutMLConstants.ATTRIBUTE_ENTITY);
 						//NUCLEUSINT-1137
 						// does this entity still exist?
@@ -1428,7 +1428,7 @@ public class LayoutMLLoader implements LayoutMLConstants {
 			@Override
 			public void startElement(Attributes atts) throws SAXException {
 				try {
-					Component component = ComponentProcessors.getInstance().createComponent(ELEMENT_SCROLLPANE, null, 0, editorPanel.getMetaInformation(), null);
+					Component component = ComponentProcessors.getInstance().createComponent(ELEMENT_SCROLLPANE, null, 0, editorPanel.getMetaInformation(), null, false);
 					setPropertiesFromAttributes((WYSIWYGScrollPane) component, atts);
 					stack.push(component);
 				} catch (CommonBusinessException e) {

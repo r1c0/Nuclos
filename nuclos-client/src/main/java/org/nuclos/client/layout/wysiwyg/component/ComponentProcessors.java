@@ -547,8 +547,7 @@ public class ComponentProcessors implements LayoutMLConstants {
 		public Component createEmptyComponent(Integer iNumber, WYSIWYGMetaInformation metaInf, String name, boolean bDefault) throws CommonBusinessException {
 			WYSIWYGTabbedPane tabbedPane = new WYSIWYGTabbedPane();
 
-			if (iNumber > 0) { // 0 = loading from saved layoutML
-
+			if (bDefault) {
 				WYSIWYGLayoutEditorPanel oneTab = new WYSIWYGLayoutEditorPanel(metaInf);
 				WYSIWYGLayoutEditorPanel secondTab = new WYSIWYGLayoutEditorPanel(metaInf);
 
