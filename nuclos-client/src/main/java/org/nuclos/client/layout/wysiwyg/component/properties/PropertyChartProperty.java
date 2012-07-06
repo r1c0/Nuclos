@@ -47,7 +47,7 @@ import org.nuclos.client.layout.wysiwyg.WYSIWYGStringsAndLabels.COLLECTABLE_COMP
 import org.nuclos.client.layout.wysiwyg.component.WYSIWYGChart;
 import org.nuclos.client.layout.wysiwyg.component.WYSIWYGComponent;
 import org.nuclos.client.layout.wysiwyg.component.WYSIWYGUniversalComponent;
-import org.nuclos.client.layout.wysiwyg.editor.ui.panels.propertyeditor.CollectableComponentPropertyEditor;
+import org.nuclos.client.layout.wysiwyg.editor.ui.panels.editor.PropertyEditor;
 import org.nuclos.client.layout.wysiwyg.editor.util.InterfaceGuidelines;
 import org.nuclos.client.layout.wysiwyg.editor.util.valueobjects.WYSIYWYGProperty;
 import org.nuclos.client.layout.wysiwyg.editor.util.valueobjects.WYSIYWYGPropertySet;
@@ -165,7 +165,7 @@ public class PropertyChartProperty implements PropertyValue<WYSIYWYGProperty>, L
 	}
 	
 	/**
-	 * This class launches the {@link CollectableComponentPropertyEditor} to edit the {@link WYSIYWYGProperty}
+	 * This class launches the {@link PropertyEditor} to edit the {@link WYSIYWYGProperty}
 	 * 
 	 * 
 	 * <br>
@@ -350,7 +350,7 @@ public class PropertyChartProperty implements PropertyValue<WYSIYWYGProperty>, L
 		}
 		
 		/**
-		 * This Method launches the {@link CollectableComponentPropertyEditor}
+		 * This Method launches the {@link PropertyEditor}
 		 * @param label
 		 */
 		public final void launchEditor(JLabel label){

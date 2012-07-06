@@ -14,7 +14,7 @@
 //
 //You should have received a copy of the GNU Affero General Public License
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
-package org.nuclos.client.layout.wysiwyg.editor.ui.panels.optionseditor;
+package org.nuclos.client.layout.wysiwyg.editor.ui.panels.editor;
 
 import java.awt.Component;
 import java.awt.Dimension;
@@ -41,7 +41,6 @@ import org.nuclos.client.layout.wysiwyg.WYSIWYGStringsAndLabels.BUTTON_LABELS;
 import org.nuclos.client.layout.wysiwyg.WYSIWYGStringsAndLabels.OPTIONS_EDITOR;
 import org.nuclos.client.layout.wysiwyg.component.TranslationMap;
 import org.nuclos.client.layout.wysiwyg.component.WYSIWYGCollectableOptionGroup;
-import org.nuclos.client.layout.wysiwyg.editor.ui.panels.TranslationPanel;
 import org.nuclos.client.layout.wysiwyg.editor.ui.panels.elementalcomponents.AddRemoveRowsFromPanel;
 import org.nuclos.client.layout.wysiwyg.editor.ui.panels.elementalcomponents.AddRemoveRowsFromPanel.AddRemoveButtonControllable;
 import org.nuclos.client.layout.wysiwyg.editor.ui.panels.elementalcomponents.SaveAndCancelButtonPanel;
@@ -473,7 +472,7 @@ public class OptionsEditor extends JDialog implements SaveAndCancelButtonPanelCo
 					if (translations == null) {
 						translations = new TranslationMap();
 					}
-					Map<String, String> res = TranslationPanel.showDialog(OptionPanel.this, translations, option.getLabel());
+					Map<String, String> res = TranslationEditor.showDialog(OptionPanel.this, translations, option.getLabel());
 					if (res != null) {
 						translations.merge(res);
 						option.setTranslations(translations);

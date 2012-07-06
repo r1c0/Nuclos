@@ -37,7 +37,7 @@ import org.xml.sax.Attributes;
 import org.nuclos.common2.layoutml.LayoutMLConstants;
 import org.nuclos.client.layout.wysiwyg.WYSIWYGStringsAndLabels.BUTTON_LABELS;
 import org.nuclos.client.layout.wysiwyg.component.WYSIWYGComponent;
-import org.nuclos.client.layout.wysiwyg.editor.ui.panels.optionseditor.OptionsEditor;
+import org.nuclos.client.layout.wysiwyg.editor.ui.panels.editor.OptionsEditor;
 import org.nuclos.client.layout.wysiwyg.editor.util.InterfaceGuidelines;
 import org.nuclos.client.layout.wysiwyg.editor.util.valueobjects.WYSIWYGOption;
 import org.nuclos.client.layout.wysiwyg.editor.util.valueobjects.WYSIWYGOptions;

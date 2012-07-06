@@ -187,6 +187,7 @@ public interface LayoutMLConstants {
 	public static final String ATTRIBUTE_ENTITY = "entity";
 	public static final String ATTRIBUTE_FIELD = "field";
 	public static final String ATTRIBUTE_ACTIONCOMMAND = "actioncommand";
+	public static final String ATTRIBUTE_ACTIONKEYSTROKE = "actionkeystroke";
 	public static final String ATTRIBUTE_VALUE = "value";
 	public static final String ATTRIBUTE_DEFAULT = "default";
 	public static final String ATTRIBUTE_SHOWONLY = "show-only";

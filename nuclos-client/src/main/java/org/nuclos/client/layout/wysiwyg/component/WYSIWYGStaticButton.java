@@ -33,6 +33,7 @@ import org.nuclos.client.layout.wysiwyg.WYSIWYGStringsAndLabels.ERROR_MESSAGES;
 import org.nuclos.client.layout.wysiwyg.WYSIWYGStringsAndLabels.PROPERTY_LABELS;
 import org.nuclos.client.layout.wysiwyg.WYSIWYGStringsAndLabels.STATIC_BUTTON;
 import org.nuclos.client.layout.wysiwyg.component.properties.ComponentProperties;
+import org.nuclos.client.layout.wysiwyg.component.properties.PropertyValueKeyStroke;
 import org.nuclos.client.layout.wysiwyg.component.properties.PropertyValue;
 import org.nuclos.client.layout.wysiwyg.editor.ui.panels.WYSIWYGLayoutEditorPanel;
 import org.nuclos.client.layout.wysiwyg.editor.util.DnDUtil;
@@ -69,12 +70,14 @@ public class WYSIWYGStaticButton extends JButton implements WYSIWYGComponent, WY
 	public static final String PROPERTY_PROPERTIES = PROPERTY_LABELS.COLLECTABLECOMPONENTPROPERTY;
 	public static final String PROPERTY_LABEL= PROPERTY_LABELS.LABEL;
 	public static final String PROPERTY_TOOLTIP = PROPERTY_LABELS.TOOLTIP;
-	public static String PROPERTY_ENABLED = PROPERTY_LABELS.ENABLED;
+	public static final String PROPERTY_ENABLED = PROPERTY_LABELS.ENABLED;
 	public static final String PROPERTY_ICON = PROPERTY_LABELS.ICON;
+	public static final String PROPERTY_ACTIONKEYSTROKE = PROPERTY_LABELS.ACTIONKEYSTROKE;
 
 	public static final String[][] PROPERTIES_TO_LAYOUTML_ATTRIBUTES = new String[][]{
 		{PROPERTY_NAME, ATTRIBUTE_NAME},
 		{PROPERTY_ACTIONCOMMAND, ATTRIBUTE_ACTIONCOMMAND},
+		{PROPERTY_ACTIONKEYSTROKE, ATTRIBUTE_ACTIONKEYSTROKE},
 		{PROPERTY_LABEL, ATTRIBUTE_LABEL},
 		{PROPERTY_TOOLTIP, ATTRIBUTE_TOOLTIP},
 		{PROPERTY_ENABLED, ATTRIBUTE_ENABLED},
@@ -84,6 +87,7 @@ public class WYSIWYGStaticButton extends JButton implements WYSIWYGComponent, WY
 	private static String[] PROPERTY_NAMES = new String[]{
 		PROPERTY_NAME,
 		PROPERTY_ACTIONCOMMAND,
+		PROPERTY_ACTIONKEYSTROKE,
 		PROPERTY_LABEL,
 		PROPERTY_TOOLTIP,
 		PROPERTY_ENABLED,
@@ -105,6 +109,7 @@ public class WYSIWYGStaticButton extends JButton implements WYSIWYGComponent, WY
 		new PropertyClass(PROPERTY_TOOLTIP, String.class),
 		new PropertyClass(PROPERTY_LABEL, String.class),
 		new PropertyClass(PROPERTY_ACTIONCOMMAND, String.class),
+		new PropertyClass(PROPERTY_ACTIONKEYSTROKE, PropertyValueKeyStroke.class),
 		new PropertyClass(PROPERTY_DESCRIPTION, String.class),
 		new PropertyClass(PROPERTY_FONT, Font.class),
 		new PropertyClass(PROPERTY_PREFFEREDSIZE, Dimension.class),
@@ -134,6 +139,7 @@ public class WYSIWYGStaticButton extends JButton implements WYSIWYGComponent, WY
 		new PropertyFilter(PROPERTY_TOOLTIP, ENABLED),
 		new PropertyFilter(PROPERTY_LABEL, ENABLED),
 		new PropertyFilter(PROPERTY_ACTIONCOMMAND, ENABLED),
+		new PropertyFilter(PROPERTY_ACTIONKEYSTROKE, ENABLED),
 		new PropertyFilter(PROPERTY_DESCRIPTION, ENABLED),
 		new PropertyFilter(PROPERTY_FONT, ENABLED),
 		new PropertyFilter(PROPERTY_PREFFEREDSIZE, ENABLED),

@@ -15,7 +15,7 @@
 //You should have received a copy of the GNU Affero General Public License
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 
-package org.nuclos.client.layout.wysiwyg.editor.ui.panels;
+package org.nuclos.client.layout.wysiwyg.editor.ui.panels.editor;
 
 import java.awt.Component;
 import java.util.ArrayList;
@@ -38,7 +38,7 @@ import org.nuclos.common.collection.Transformer;
 import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.LocaleInfo;
 
-public class TranslationPanel extends JPanel {
+public class TranslationEditor extends JPanel {
 
 	private final List<LocaleInfo> localeList;
 	private final Map<String, String> translations;
@@ -46,7 +46,7 @@ public class TranslationPanel extends JPanel {
 
 	private final JTable table;
 
-	public TranslationPanel(Map<String, String> translations, String defaultText) {
+	public TranslationEditor(Map<String, String> translations, String defaultText) {
 		this.translations = new HashMap<String, String>(translations);
 		this.defaultText = (defaultText != null) ? defaultText : translations.get(LocaleInfo.I_DEFAULT_TAG);
 
@@ -161,7 +161,7 @@ public class TranslationPanel extends JPanel {
 	}
 
 	public static Map<String, String> showDialog(Component parent, Map<String, String> translations, String defaultText) {
-		TranslationPanel translationPanel = new TranslationPanel(translations, defaultText);
+		TranslationEditor translationPanel = new TranslationEditor(translations, defaultText);
 		int option =JOptionPane.showConfirmDialog(
 			parent,
 			translationPanel,

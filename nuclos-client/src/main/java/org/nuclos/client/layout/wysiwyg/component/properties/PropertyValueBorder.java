@@ -43,7 +43,7 @@ import org.nuclos.client.layout.wysiwyg.WYSIWYGStringsAndLabels;
 import org.nuclos.client.layout.wysiwyg.WYSIWYGStringsAndLabels.BORDER_EDITOR;
 import org.nuclos.client.layout.wysiwyg.component.TitledBorderWithTranslations;
 import org.nuclos.client.layout.wysiwyg.component.WYSIWYGComponent;
-import org.nuclos.client.layout.wysiwyg.editor.ui.panels.bordereditor.BorderEditor;
+import org.nuclos.client.layout.wysiwyg.editor.ui.panels.editor.BorderEditor;
 import org.nuclos.client.layout.wysiwyg.editor.util.InterfaceGuidelines;
 import org.xml.sax.Attributes;
 

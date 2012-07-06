@@ -972,6 +972,7 @@ public class WYSIWYGStringsAndLabels {
 		/** static button */
 		public static final String ACTIONCOMMAND = "Befehlstyp";
 		public static final String ACTIONCOMMAND_PROPERTIES = "Argumente";
+		public static final String ACTIONKEYSTROKE = "Tastenkürzel";
 		public static final String LABEL = "Beschriftung";
 		public static final String TOOLTIP = "Tooltip";
 		/** static combobox */
@@ -1104,6 +1105,24 @@ public class WYSIWYGStringsAndLabels {
 
 		public static final String ERROR_INCOMPLETE_OPTION = "Bei Optionen muss der Name und der Wert angegeben werden.";
 		public static final String ERROR_DEFAULTVALUE_OPTIONS = "Bitte geben Sie einen Standardwert an.";
+	}
+
+	/**
+	 * @deprecated Should be done with the help of SpringLocaleDelegate and localeresource.json.
+	 */
+	public static class KEYSTROKE_EDITOR {
+		public static final String LABEL_TITEL = "Tastenkürzel";
+		
+		public static final String LABEL_TITELEDBORDER = "Tastenkombination definieren:";
+		
+		public static final String LABEL_MODIFIERS = "Modifizierer:";
+		public static final String LABEL_MODIFIER_SHIFT = "Umschalt";
+		public static final String LABEL_MODIFIER_ALT = "Alt";
+		public static final String LABEL_MODIFIER_CTRL = "Strg";
+
+		public static final String LABEL_KEY = "Taste:";
+
+		public static final String ERROR_INCOMPLETE_KEY = "Ungültige Tastenkombination!\nBei Tastenkürzel können nur die F-Tasten belegt werden. Bitte geben Sie eine Wert von F1-F12 an.";
 	}
 
 	/**

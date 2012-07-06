@@ -42,7 +42,7 @@ import org.nuclos.client.layout.wysiwyg.component.WYSIWYGStaticButton;
 import org.nuclos.client.layout.wysiwyg.component.WYSIWYGStaticLabel;
 import org.nuclos.client.layout.wysiwyg.component.WYSIWYGStaticTitledSeparator;
 import org.nuclos.client.layout.wysiwyg.component.WYSIWYGSubFormColumn;
-import org.nuclos.client.layout.wysiwyg.editor.ui.panels.TranslationPanel;
+import org.nuclos.client.layout.wysiwyg.editor.ui.panels.editor.TranslationEditor;
 import org.nuclos.client.layout.wysiwyg.editor.util.InterfaceGuidelines;
 import org.nuclos.common.NuclosTranslationMap;
 import org.xml.sax.Attributes;
@@ -160,7 +160,7 @@ public class PropertyValueTranslations implements PropertyValue<TranslationMap> 
 				button.addActionListener(new ActionListener() {
 					@Override
 					public void actionPerformed(ActionEvent e) {
-						Map<String, String> res = TranslationPanel.showDialog(c.getParentEditor(), value, getDefaultText());
+						Map<String, String> res = TranslationEditor.showDialog(null, value, getDefaultText());
 						if (res != null) {
 							value.merge(res);
 							configureLabelText(label);

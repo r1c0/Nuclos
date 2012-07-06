@@ -298,6 +298,7 @@ public class WYSIWYGLayoutControllingPanel extends JPanel implements WYSIWYGTool
 	 * Displays the WYISWYG Editor
 	 */
 	public void showPaletteAndEditorPanel() {
+		this.remove(jpnWaitingForMeta);
 		showComponent(jpnPaletteAndEditor);
 		//NUCLEUSINT-976
 		((JTabbedPane)this.getParent().getParent()).setSelectedIndex(0);

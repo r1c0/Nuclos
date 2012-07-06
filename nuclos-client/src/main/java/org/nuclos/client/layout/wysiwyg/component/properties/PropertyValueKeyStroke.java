@@ -30,20 +30,20 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTable;
+import javax.swing.KeyStroke;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 
-import org.xml.sax.Attributes;
-
-import org.nuclos.common2.layoutml.LayoutMLConstants;
-import org.nuclos.client.layout.wysiwyg.WYSIWYGStringsAndLabels;
-import org.nuclos.client.layout.wysiwyg.WYSIWYGStringsAndLabels.COLLECTABLE_COMPONENT_PROPERTY_EDITOR;
 import org.nuclos.client.layout.wysiwyg.component.WYSIWYGComponent;
 import org.nuclos.client.layout.wysiwyg.component.WYSIWYGUniversalComponent;
+import org.nuclos.client.layout.wysiwyg.editor.ui.panels.editor.KeyStrokeEditor;
+import org.nuclos.client.layout.wysiwyg.editor.ui.panels.editor.OptionsEditor;
 import org.nuclos.client.layout.wysiwyg.editor.ui.panels.editor.PropertyEditor;
 import org.nuclos.client.layout.wysiwyg.editor.util.InterfaceGuidelines;
+import org.nuclos.client.layout.wysiwyg.editor.util.valueobjects.WYSIWYGOptions;
 import org.nuclos.client.layout.wysiwyg.editor.util.valueobjects.WYSIYWYGProperty;
-import org.nuclos.client.layout.wysiwyg.editor.util.valueobjects.WYSIYWYGPropertySet;
+import org.nuclos.common2.LangUtils;
+import org.xml.sax.Attributes;
 
 /**
  * This Class is for editing the {@link WYSIYWYGProperty} used for {@link WYSIWYGUniversalComponent}.
@@ -53,18 +53,23 @@ import org.nuclos.client.layout.wysiwyg.editor.util.valueobjects.WYSIYWYGPropert
  * Created by Novabit Informationssysteme GmbH <br>
  * Please visit <a href="http://www.novabit.de">www.novabit.de</a>
  * 
- * @author <a href="mailto:hartmut.beckschulze@novabit.de">hartmut.beckschulze</a>
+ * @author <a href="mailto:stefan.geiling@novabit.de">stefan.geiling</a>
  * @version 01.00.00
  */
-public class PropertyCollectableComponentProperty implements PropertyValue<WYSIYWYGProperty>, LayoutMLConstants {
+public class PropertyValueKeyStroke extends PropertyValueString {
 
-	private WYSIYWYGProperty wysiwygProperty = null;
+	private KeyStroke value = null;
 
 	/**
 	 * Constructor
 	 */
-	public PropertyCollectableComponentProperty() {
-		this.wysiwygProperty = new WYSIYWYGProperty();
+	public PropertyValueKeyStroke() {
+	}
+	/**
+	 * Constructor
+	 */
+	private PropertyValueKeyStroke(KeyStroke value) {
+		this.value = value;
 	}
 
 	/*
@@ -73,7 +78,7 @@ public class PropertyCollectableComponentProperty implements PropertyValue<WYSIY
 	 */
 	@Override
 	public TableCellEditor getTableCellEditor(WYSIWYGComponent c, String property, PropertiesPanel dialog) {
-		return new PropertyEditorCollectableComponentProperty();
+		return new PropertyEditorKeyStrokeProperty(dialog);
 	}
 
 	/*
@@ -82,7 +87,7 @@ public class PropertyCollectableComponentProperty implements PropertyValue<WYSIY
 	 */
 	@Override
 	public TableCellRenderer getTableCellRenderer(WYSIWYGComponent c, String property, PropertiesPanel dialog) {
-		return new PropertyEditorCollectableComponentProperty();
+		return new PropertyEditorKeyStrokeProperty(dialog);
 	}
 
 	/*
@@ -90,8 +95,8 @@ public class PropertyCollectableComponentProperty implements PropertyValue<WYSIY
 	 * @see org.nuclos.client.layout.wysiwyg.component.properties.PropertyValue#getValue()
 	 */
 	@Override
-	public WYSIYWYGProperty getValue() {
-		return wysiwygProperty;
+	public String getValue() {
+		return value == null ? "" : value.toString();
 	}
 
 	/*
@@ -100,7 +105,7 @@ public class PropertyCollectableComponentProperty implements PropertyValue<WYSIY
 	 */
 	@Override
 	public Object getValue(Class<?> cls, WYSIWYGComponent c) {
-		return null;
+		return this;
 	}
 
 	/*
@@ -108,8 +113,8 @@ public class PropertyCollectableComponentProperty implements PropertyValue<WYSIY
 	 * @see org.nuclos.client.layout.wysiwyg.component.properties.PropertyValue#setValue(java.lang.Object)
 	 */
 	@Override
-	public void setValue(WYSIYWYGProperty value) {
-		this.wysiwygProperty = value;
+	public void setValue(String value) {
+		this.value = KeyStroke.getKeyStroke(value);
 	}
 
 	/*
@@ -118,25 +123,25 @@ public class PropertyCollectableComponentProperty implements PropertyValue<WYSIY
 	 */
 	@Override
 	public void setValue(String attributeName, Attributes attributes) {
-		if (ELEMENT_PROPERTY.equals(attributeName)){
-			String propertyName = attributes.getValue(ATTRIBUTE_NAME);
-			String propertyValue = attributes.getValue(ATTRIBUTE_VALUE);
-			WYSIYWYGPropertySet newPropertySet = new WYSIYWYGPropertySet(propertyName, propertyValue);
-			wysiwygProperty.addWYSIYWYGPropertySet(newPropertySet);
-		}
+		this.value = KeyStroke.getKeyStroke(attributes.getValue(attributeName));
 	}
-
+	/*
+	 * (non-Javadoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (!(obj instanceof PropertyValueKeyStroke))
+			return false;
+		return LangUtils.equals(this.value, ((PropertyValueKeyStroke)obj).value); 
+	}
 	/*
 	 * (non-Javadoc)
 	 * @see java.lang.Object#clone()
 	 */
 	@Override
 	public Object clone() throws CloneNotSupportedException {
-		PropertyCollectableComponentProperty clonedPropertyCollectableComponentProperty = new PropertyCollectableComponentProperty();
-		if (wysiwygProperty != null) {
-			clonedPropertyCollectableComponentProperty.setValue((WYSIYWYGProperty) wysiwygProperty.clone());
-		}
-		return clonedPropertyCollectableComponentProperty;
+		return new PropertyValueKeyStroke(value);
 	}
 	
 	/**
@@ -147,11 +152,16 @@ public class PropertyCollectableComponentProperty implements PropertyValue<WYSIY
 	 * Created by Novabit Informationssysteme GmbH <br>
 	 * Please visit <a href="http://www.novabit.de">www.novabit.de</a>
 	 * 
-	 * @author <a href="mailto:hartmut.beckschulze@novabit.de">hartmut.beckschulze</a>
+	 * @author <a href="mailto:stefan.geiling@novabit.de">stefan.geiling</a>
 	 * @version 01.00.00
 	 */
-	class PropertyEditorCollectableComponentProperty extends AbstractCellEditor implements TableCellEditor, TableCellRenderer {
+	class PropertyEditorKeyStrokeProperty extends AbstractCellEditor implements TableCellEditor, TableCellRenderer {
 
+		private final PropertiesPanel dialog;
+		public PropertyEditorKeyStrokeProperty(PropertiesPanel dialog) {
+			this.dialog = dialog;
+		}
+		
 		@Override
 		public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
 			return getComponent(true);
@@ -183,6 +193,9 @@ public class PropertyCollectableComponentProperty implements PropertyValue<WYSIY
 			setLabel(label,	getValue());
 
 			JButton launchEditor = new JButton("...");
+			
+			launchEditor.setEnabled(true);
+		
 			launchEditor.setPreferredSize(new Dimension(30, InterfaceGuidelines.CELL_BUTTON_MAXHEIGHT));
 			launchEditor.addActionListener(new ActionListener() {
 				@Override
@@ -201,12 +214,11 @@ public class PropertyCollectableComponentProperty implements PropertyValue<WYSIY
 		 * @param label
 		 * @param property
 		 */
-		private void setLabel(JLabel label, WYSIYWYGProperty property) {
-			if (property != null && property.getSize() > 0) {
-				label.setText(WYSIWYGStringsAndLabels.partedString(COLLECTABLE_COMPONENT_PROPERTY_EDITOR.PROPERTIES_DEFINED, String.valueOf(property.getSize())));
-			}
-			else {
-				label.setText(COLLECTABLE_COMPONENT_PROPERTY_EDITOR.NO_PROPERTIES_DEFINED);
+		private void setLabel(JLabel label, String property) {
+			if (property != null) {
+				label.setText(property);
+			} else {
+				label.setText("");
 			}
 		}
 		
@@ -214,13 +226,9 @@ public class PropertyCollectableComponentProperty implements PropertyValue<WYSIY
 		 * This Method launches the {@link PropertyEditor}
 		 * @param label
 		 */
-		private final void launchEditor(JLabel label){
-			if (getValue() == null) {
-				setValue(new WYSIYWYGProperty());
-			}
-			WYSIYWYGProperty returnWYSIWYGProperty = PropertyEditor.showEditor(wysiwygProperty);
-			wysiwygProperty = returnWYSIWYGProperty;
-			setLabel(label, returnWYSIWYGProperty);
+		public final void launchEditor(JLabel label){
+			setValue(KeyStrokeEditor.showEditor(getValue()));
+			setLabel(label, getValue());
 		}
 
 		/*
@@ -229,7 +237,7 @@ public class PropertyCollectableComponentProperty implements PropertyValue<WYSIY
 		 */
 		@Override
 		public Object getCellEditorValue() {
-			return PropertyCollectableComponentProperty.this;
+			return PropertyValueKeyStroke.this;
 		}
 
 		/*
@@ -240,6 +248,5 @@ public class PropertyCollectableComponentProperty implements PropertyValue<WYSIY
 		public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
 			return getComponent(false);
 		}
-
 	}
 }

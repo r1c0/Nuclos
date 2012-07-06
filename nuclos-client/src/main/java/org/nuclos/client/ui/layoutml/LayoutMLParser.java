@@ -33,6 +33,9 @@ import java.awt.dnd.DropTargetDragEvent;
 import java.awt.dnd.DropTargetDropEvent;
 import java.awt.dnd.DropTargetEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -2709,7 +2712,16 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 
 		public static class LayoutMLButton extends JButton {
 
+			private String sActionkey;
+			
 			private LayoutMLButton() {
+			}
+			
+			public void setActionKey(String sActionkey) {
+				this.sActionkey = sActionkey;
+			}
+			public String getActionKey() {
+				return sActionkey;
 			}
 
 			@Override
@@ -2755,7 +2767,7 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 			 */
 			@Override
             public void startElement(String sUriNameSpace, String sSimpleName, String sQualifiedName, Attributes attributes) {
-				final JButton btn = new LayoutMLButton();
+				final LayoutMLButton btn = new LayoutMLButton();
 
 				// name:
 				final String sName = attributes.getValue(ATTRIBUTE_NAME);
@@ -2782,6 +2794,9 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 				btn.setToolTipText(sToolTip);
 
 				btn.setActionCommand(sActionCommand);
+				
+				final String sActionkey = attributes.getValue(ATTRIBUTE_ACTIONKEYSTROKE);
+				btn.setActionKey(sActionkey);
 
 				final String sIcon = attributes.getValue(ATTRIBUTE_ICON);
 				if (!StringUtils.isNullOrEmpty(sIcon)) {

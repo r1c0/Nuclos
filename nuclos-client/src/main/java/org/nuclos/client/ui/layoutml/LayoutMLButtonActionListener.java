@@ -16,11 +16,20 @@
 // along with Nuclos. If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.ui.layoutml;
 
+import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Map;
 import java.util.WeakHashMap;
 
+import javax.swing.AbstractAction;
+import javax.swing.Action;
 import javax.swing.JComponent;
+import javax.swing.KeyStroke;
+
+import org.nuclos.client.common.KeyBinding;
+import org.nuclos.client.common.KeyBindingProvider;
+import org.nuclos.client.ui.layoutml.LayoutMLParser.BuildFormHandler.LayoutMLButton;
+import org.nuclos.common2.StringUtils;
 
 /**
  * LayoutMLButtonActionListener are used to allow enabling/disabling parent button from the action listener
@@ -35,6 +44,29 @@ public abstract class LayoutMLButtonActionListener implements ActionListener {
 	
 	public void setParentComponent(JComponent parent, String sActionCommand) {
 		this.mpParentComps.put(parent, sActionCommand);
+	}
+	
+	public void setInputMapForParentPanel(JComponent rootComponent) {
+		for (final JComponent parent : this.mpParentComps.keySet()) {
+			final String sActionKey = ((LayoutMLButton)parent).getActionKey();
+			if (!StringUtils.isNullOrEmpty(sActionKey)) {
+				final String sActionCommand = ((LayoutMLButton)parent).getActionCommand();
+				
+				final Action action = new AbstractAction() {
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						if (parent.isEnabled())
+							LayoutMLButtonActionListener.this.actionPerformed(
+									new ActionEvent(e.getSource(), e.getID(), sActionCommand, e.getWhen(), e.getModifiers()));
+					}
+				};
+				
+				KeyBinding keybinding = new KeyBinding(sActionCommand);
+				keybinding.setKeystroke(KeyStroke.getKeyStroke(sActionKey));
+				
+				KeyBindingProvider.bindActionToComponent(keybinding, action, rootComponent);
+			}
+		}
 	}
 	
 	public void setComponentsEnabled(boolean enabled) {

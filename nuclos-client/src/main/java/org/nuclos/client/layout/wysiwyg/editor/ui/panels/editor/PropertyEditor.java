@@ -14,7 +14,7 @@
 //
 //You should have received a copy of the GNU Affero General Public License
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
-package org.nuclos.client.layout.wysiwyg.editor.ui.panels.propertyeditor;
+package org.nuclos.client.layout.wysiwyg.editor.ui.panels.editor;
 
 import info.clearthought.layout.TableLayout;
 import info.clearthought.layout.TableLayoutConstraints;
@@ -58,7 +58,7 @@ import org.nuclos.common2.layoutml.LayoutMLConstants;
  * @author <a href="mailto:hartmut.beckschulze@novabit.de">hartmut.beckschulze</a>
  * @version 01.00.00
  */
-public class CollectableComponentPropertyEditor extends JDialog implements SaveAndCancelButtonPanelControllable {
+public class PropertyEditor extends JDialog implements SaveAndCancelButtonPanelControllable {
 
 	private int height = 300;
 	private int width = 350;
@@ -75,7 +75,7 @@ public class CollectableComponentPropertyEditor extends JDialog implements SaveA
 	 * Constructor
 	 * @param wysiwygProperty the {@link WYSIYWYGProperty} to be edited by this Editor
 	 */
-	private CollectableComponentPropertyEditor(WYSIYWYGProperty wysiwygProperty) {
+	private PropertyEditor(WYSIYWYGProperty wysiwygProperty) {
 		this.setIconImage(NuclosIcons.getInstance().getScaledDialogIcon(48).getImage());
 		//NUCLEUSINT-283
 		this.setTitle(COLLECTABLE_COMPONENT_PROPERTY_EDITOR.TITLE_PROPERTY_EDITOR);
@@ -153,7 +153,7 @@ public class CollectableComponentPropertyEditor extends JDialog implements SaveA
 	 * @return the edited {@link WYSIYWYGProperty}
 	 */
 	public static WYSIYWYGProperty showEditor(WYSIYWYGProperty wysiwygProperty) {
-		new CollectableComponentPropertyEditor(wysiwygProperty);
+		new PropertyEditor(wysiwygProperty);
 
 		return returnWYSIWYGProperty;
 	}
@@ -248,7 +248,7 @@ public class CollectableComponentPropertyEditor extends JDialog implements SaveA
 
 	/**
 	 * This Class wraps a {@link WYSIYWYGPropertySet}.<br>
-	 * Its used by the {@link CollectableComponentPropertyEditor} to store:
+	 * Its used by the {@link PropertyEditor} to store:
 	 * <ul>
 	 * <li> the Name of the Property</li>
 	 * <li> the Value of the Property</li>
@@ -335,7 +335,7 @@ public class CollectableComponentPropertyEditor extends JDialog implements SaveA
 		 */
 		@Override
 		public void performAddAction() {
-			CollectableComponentPropertyEditor.this.addPropertyPanelIntoPanel(null);
+			PropertyEditor.this.addPropertyPanelIntoPanel(null);
 		}
 
 		/*
@@ -344,7 +344,7 @@ public class CollectableComponentPropertyEditor extends JDialog implements SaveA
 		 */
 		@Override
 		public void performRemoveAction() {
-			CollectableComponentPropertyEditor.this.removePropertyFromPanel(this);
+			PropertyEditor.this.removePropertyFromPanel(this);
 		}
 
 		/**

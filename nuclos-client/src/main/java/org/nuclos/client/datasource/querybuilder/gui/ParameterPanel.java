@@ -51,7 +51,7 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 
-import org.nuclos.client.layout.wysiwyg.editor.ui.panels.valuelistprovidereditor.ValueListProviderEditor;
+import org.nuclos.client.layout.wysiwyg.editor.ui.panels.editor.ValueListProviderEditor;
 import org.nuclos.client.layout.wysiwyg.editor.util.InterfaceGuidelines;
 import org.nuclos.client.layout.wysiwyg.editor.util.valueobjects.WYSIWYGValuelistProvider;
 import org.nuclos.client.layout.wysiwyg.editor.util.valueobjects.WYSIYWYGParameter;

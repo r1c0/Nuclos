@@ -82,8 +82,8 @@ import org.nuclos.client.layout.wysiwyg.WYSIWYGStringsAndLabels.PROPERTY_LABELS;
 import org.nuclos.client.layout.wysiwyg.component.properties.ComponentProperties;
 import org.nuclos.client.layout.wysiwyg.component.properties.PropertyValue;
 import org.nuclos.client.layout.wysiwyg.datatransfer.TransferableComponent;
-import org.nuclos.client.layout.wysiwyg.editor.ui.panels.TranslationPanel;
 import org.nuclos.client.layout.wysiwyg.editor.ui.panels.WYSIWYGLayoutEditorPanel;
+import org.nuclos.client.layout.wysiwyg.editor.ui.panels.editor.TranslationEditor;
 import org.nuclos.client.layout.wysiwyg.editor.util.InterfaceGuidelines;
 import org.nuclos.client.layout.wysiwyg.editor.util.valueobjects.PropertiesSorter;
 import org.nuclos.client.layout.wysiwyg.editor.util.valueobjects.TableLayoutPanel;
@@ -260,7 +260,7 @@ public class WYSIWYGTabbedPane extends DnDTabbedPane implements WYSIWYGComponent
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				Map<String, String> res = TranslationPanel.showDialog(
+				Map<String, String> res = TranslationEditor.showDialog(
 					WYSIWYGTabbedPane.this, translations, titleTextField.getText());
 				if (res != null) {
 					translations.merge(res);

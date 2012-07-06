@@ -524,6 +524,8 @@ public class PropertyUtils implements LayoutMLConstants {
 			return new PropertyValueScript();
 		} else if (propertyClass.equals(PropertyChartProperty.class)) {
 			return new PropertyChartProperty(c);
+		} else if (propertyClass.equals(PropertyValueKeyStroke.class)) {
+			return new PropertyValueKeyStroke();
 		}
 		throw new NuclosFatalException(WYSIWYGStringsAndLabels.partedString(PROPERTYUTILS.ERRORMESSAGE_NO_PROPERTYVALUE_FOR_PROPERTY, property,c.getClass().toString()));
 	}

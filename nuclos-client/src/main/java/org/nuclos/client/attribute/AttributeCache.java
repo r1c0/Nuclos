@@ -184,10 +184,11 @@ public class AttributeCache implements AttributeProvider {
 			throw new NullArgumentException("attrcvo");
 		}
 		if (mpAttributesByIds.containsKey(attrcvo.getId())) {
-			throw new NuclosFatalException("attributecache.uniquekey.id.error");
+			//throw new NuclosFatalException("attributecache.uniquekey.id.error");
 				//"Ein Attribut mit dieser Id ist schon im Cache vorhanden.");
+		} else {
+			mpAttributesByIds.put(attrcvo.getId(), attrcvo);
 		}
-		mpAttributesByIds.put(attrcvo.getId(), attrcvo);
 		// old entry (attribute which has the same id) is overwritten
 	}
 

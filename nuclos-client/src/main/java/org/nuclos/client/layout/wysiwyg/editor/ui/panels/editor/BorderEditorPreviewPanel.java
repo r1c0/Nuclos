@@ -14,7 +14,7 @@
 //
 //You should have received a copy of the GNU Affero General Public License
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
-package org.nuclos.client.layout.wysiwyg.editor.ui.panels.bordereditor;
+package org.nuclos.client.layout.wysiwyg.editor.ui.panels.editor;
 
 import info.clearthought.layout.TableLayout;
 import info.clearthought.layout.TableLayoutConstraints;
@@ -40,7 +40,7 @@ import org.nuclos.client.layout.wysiwyg.editor.util.InterfaceGuidelines;
  * @author <a href="mailto:hartmut.beckschulze@novabit.de">hartmut.beckschulze</a>
  * @version 01.00.00
  */
-public class BorderPreviewPanel extends JPanel {
+public class BorderEditorPreviewPanel extends JPanel {
 
 	private JTextField toDecorate = null;
 
@@ -51,7 +51,7 @@ public class BorderPreviewPanel extends JPanel {
 	/**
 	 * Constructor for the preview Panel
 	 */
-	public BorderPreviewPanel() {
+	public BorderEditorPreviewPanel() {
 		this.toDecorate = new JTextField();
 		this.toDecorate.setEditable(false);
 		this.toDecorate.setPreferredSize(new Dimension(PREVIEW_BORDER_SIZE, PREVIEW_BORDER_SIZE));

@@ -209,7 +209,8 @@ editable (%boolean;) #REQUIRED
 <!ELEMENT button ((%layoutconstraints;)?,(%borders;),(%sizes;),font?,description?,property*,translations?)>
 <!ATTLIST button
 name CDATA #IMPLIED
-actioncommand CDATA #REQUIRED
+actioncommand CDATA #REQUIRED 
+actionkeystroke CDATA #IMPLIED
 label CDATA #IMPLIED
 tooltip CDATA #IMPLIED
 enabled (%boolean;) #IMPLIED

@@ -4880,6 +4880,10 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		}
 		// iterate through the component tree and clear the keymaps of all JSplitPanes
 		UIUtils.clearJComponentKeymap(layoutroot.getRootComponent(), JSplitPane.class);
+		
+		if (collectstate.isDetailsMode()) {
+			getLayoutMLButtonsActionListener().setInputMapForParentPanel(layoutroot.getRootComponent());
+		}
 	}
 
 	/**

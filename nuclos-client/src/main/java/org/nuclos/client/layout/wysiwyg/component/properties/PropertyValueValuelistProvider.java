@@ -36,7 +36,7 @@ import javax.swing.table.TableCellRenderer;
 import org.nuclos.api.ui.LayoutComponent;
 import org.nuclos.client.layout.wysiwyg.WYSIWYGStringsAndLabels.VALUELIST_PROVIDER_EDITOR;
 import org.nuclos.client.layout.wysiwyg.component.WYSIWYGComponent;
-import org.nuclos.client.layout.wysiwyg.editor.ui.panels.valuelistprovidereditor.ValueListProviderEditor;
+import org.nuclos.client.layout.wysiwyg.editor.ui.panels.editor.ValueListProviderEditor;
 import org.nuclos.client.layout.wysiwyg.editor.util.InterfaceGuidelines;
 import org.nuclos.client.layout.wysiwyg.editor.util.valueobjects.WYSIWYGValuelistProvider;
 import org.nuclos.common.NuclosEOField;

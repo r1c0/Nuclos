@@ -858,6 +858,7 @@ public class LayoutMLGenerator implements LayoutMLConstants {
 		block.append(getLayoutMLPreferredSizeFromProperty(c.getProperties(), blockDeep + 1));
 		block.append(getLayoutMLFontFromProperty(c.getProperties(), blockDeep + 1));
 		block.append(getLayoutMLDescription(c.getProperties(), blockDeep + 1));
+		
 		//NUCLOSINT-743 if a rule is set generate a property for it
 		String actionCommand = (String)c.getProperties().getProperty(WYSIWYGStaticButton.PROPERTY_ACTIONCOMMAND).getValue();
 		if (STATIC_BUTTON.EXECUTE_RULE_ACTION_LABEL.equals(actionCommand)) {
@@ -932,6 +933,7 @@ public class LayoutMLGenerator implements LayoutMLConstants {
 				LOG.warn("getLayoutMLForStaticButton failed: " + e, e);
 			}
 		}
+		
 		//NUCLEUSINT-1159
 		WYSIYWYGProperty collectableComponentProperties = (WYSIYWYGProperty) c.getProperties().getProperty(WYSIWYGCollectableComponent.PROPERTY_COLLECTABLECOMPONENTPROPERTY).getValue();
 		if (collectableComponentProperties != null) {
@@ -939,7 +941,7 @@ public class LayoutMLGenerator implements LayoutMLConstants {
 				block.append(getLayoutMLCollectableComponentProperty(collectableComponentProperties, blockDeep + 1));
 			}
 		}
-
+		
 		block.append(getLayoutMLTranslationsFromProperty(c.getProperties(), blockDeep + 1));
 		block.linebreak();
 		block.append("</" + ELEMENT_BUTTON + ">");

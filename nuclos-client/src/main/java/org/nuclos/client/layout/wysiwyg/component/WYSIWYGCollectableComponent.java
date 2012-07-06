@@ -80,7 +80,7 @@ public abstract class WYSIWYGCollectableComponent extends JPanel implements WYSI
 	public static final String PROPERTY_LABEL = PROPERTY_LABELS.LABEL;
 	public static final String PROPERTY_FILL_CONTROL_HORIZONTALLY = PROPERTY_LABELS.FILL_HORIZONTALLY;
 	public static final String PROPERTY_COLLECTABLECOMPONENTPROPERTY = PROPERTY_LABELS.COLLECTABLECOMPONENTPROPERTY;
-	public static final String PROPERTY_OPTIONS = "options";
+	public static final String PROPERTY_OPTIONS = "Auswahlwerte";
 	public static final String PROPERTY_NEXTFOCUSCOMPONENT = PROPERTY_LABELS.NEXTFOCUSCOMPONENT;
 
 	protected ComponentProperties properties;
