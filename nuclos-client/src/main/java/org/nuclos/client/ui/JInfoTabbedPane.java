@@ -144,6 +144,9 @@ public class JInfoTabbedPane extends JTabbedPane {
 	}
 
 	private void updateTab(int tab) {
+		if (tab >= getTabCount())
+			return;
+		
 		final JLabel label = (JLabel) getTabComponentAt(tab);
 		final String title = tabTitles.get(tab);
 		String text;

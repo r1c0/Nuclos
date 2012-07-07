@@ -2396,7 +2396,9 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 					break;
 				}
 
-		for(JTabbedPane tabPane : lst)
+		
+		for(JTabbedPane tabPane : lst) {
+			List<Component> lstTabToRemove = new ArrayList<Component>(tabPane.getTabCount());
 			for(int i = 0; i < tabPane.getTabCount(); i++) {
 				Component c = tabPane.getComponentAt(i);
 				if(c instanceof JComponent) {
@@ -2404,6 +2406,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 					collectComponents((JComponent)c, lstComponents);
 					if(lstComponents.size() == 0) {
 						tabPane.setEnabledAt(i, false);
+						lstTabToRemove.add(c);
 						break;
 					}
 
@@ -2421,9 +2424,14 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 							break;
 					}
 					tabPane.setEnabledAt(i, blnVisible);
+					if (!blnVisible)
+						lstTabToRemove.add(c);
 				}
 			}
-
+			for (Component c : lstTabToRemove) {
+				tabPane.remove(c);
+			}
+		}
 	}
 
 	private void searchTabbedPanes(JComponent comp, List<JTabbedPane> lst) {
@@ -4528,8 +4536,11 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		@Override
 		public void stateChanged(ChangeEvent e) {
 			JTabbedPane pane = (JTabbedPane)e.getSource();
-			String sTitle = pane.getTitleAt(pane.getSelectedIndex());
-			preferences.put(GenericObjectCollectController.TABSELECTED, sTitle);
+			int idx = pane.getSelectedIndex();
+			if (idx != -1) {
+				String sTitle = pane.getTitleAt(idx);
+				preferences.put(GenericObjectCollectController.TABSELECTED, sTitle);
+			}
 		}
 	}
 
