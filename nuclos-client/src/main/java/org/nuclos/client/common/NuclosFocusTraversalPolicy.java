@@ -27,7 +27,6 @@ import javax.swing.AbstractButton;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 import javax.swing.JToolBar;
@@ -40,6 +39,7 @@ import org.nuclos.client.ui.JInfoTabbedPane;
 import org.nuclos.client.ui.OptionGroup;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.client.ui.collect.SubForm;
+import org.nuclos.client.ui.collect.SubForm.SubFormTable;
 import org.nuclos.client.ui.collect.component.CollectableComponent;
 import org.nuclos.client.ui.collect.model.CollectableTableModel;
 import org.nuclos.client.ui.labeled.LabeledComponent;
@@ -93,6 +93,8 @@ public class NuclosFocusTraversalPolicy extends	LayoutFocusTraversalPolicy {
 	public Component getComponentAfter(Container aContainer, Component aComponent) {
 		if(aComponent instanceof JComponent) {
 			JComponent jComponent = (JComponent)aComponent;
+			if (UIUtils.findFirstParentJComponent(jComponent, SubFormTable.class) != null)
+				return aComponent; // we do not want to cycle inside a subform with this focustraversal policy.
 			Object obj = jComponent.getClientProperty(LayoutMLConstants.ATTRIBUTE_NEXTFOCUSCOMPONENT);
 			if (obj == null && jComponent.getParent() != null && jComponent.getParent() instanceof JComponent)
 				if (jComponent.getParent() instanceof OptionGroup) {
@@ -168,7 +170,7 @@ public class NuclosFocusTraversalPolicy extends	LayoutFocusTraversalPolicy {
 				for (int i = 0; i < tabbedPane.getTabCount(); i++) {
 					// find contained subform.
 					//JTable subform_tmp = (JTable)UIUtils.findFirstJComponent((JComponent)tabbedPane.getComponentAt(i), JScrollPane.class); {
-					for (JTable subform_tmp : UIUtils.findAllInstancesOf(tabbedPane.getComponentAt(i), JTable.class)) {
+					for (JTable subform_tmp : UIUtils.findAllInstancesOf(tabbedPane.getComponentAt(i), SubFormTable.class)) {
 						if (subform_tmp == subform.getSubformTable()) {
 							tabbedPane.setSelectedIndex(i);
 							bSelected = true;

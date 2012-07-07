@@ -2139,6 +2139,9 @@ public class SubForm extends JPanel
 		public void changeSelection(final int rwIndex, final int clIndex, boolean toggle, boolean extend, final boolean fixed) {
 			boolean bChange = true;
 
+			if (getColumnCount() <= getSelectedColumn())
+				return;
+			
 			String sNextColumn = getSelectedColumn() == -1 || fixed ? null : getSubForm().getColumnNextFocusComponent((String)getColumnModel().getColumn(getSelectedColumn()).getIdentifier());
 
 			final AWTEvent event = EventQueue.getCurrentEvent();
