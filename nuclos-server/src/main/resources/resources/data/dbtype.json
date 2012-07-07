@@ -11,4 +11,7 @@
   {
     "name": "SYBASE",
   }
+  {
+    "name": "DB2",
+  }
 ]
