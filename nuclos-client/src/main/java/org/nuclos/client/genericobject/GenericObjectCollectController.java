@@ -112,6 +112,7 @@ import org.nuclos.client.main.Main;
 import org.nuclos.client.main.mainframe.MainFrameTab;
 import org.nuclos.client.masterdata.CollectableMasterData;
 import org.nuclos.client.masterdata.MasterDataCache;
+import org.nuclos.client.masterdata.MasterDataCollectController;
 import org.nuclos.client.masterdata.MasterDataDelegate;
 import org.nuclos.client.masterdata.MasterDataSubFormController;
 import org.nuclos.client.masterdata.valuelistprovider.MasterDataCollectableFieldsProviderFactory;
@@ -5240,35 +5241,37 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 
 	@Override
 	protected void restoreInstanceStateFromPreferences(Map<String, String> inheritControllerPreferences) {
-		RestorePreferences rp = fromXML(inheritControllerPreferences.get(GenericObjectCollectController.class.getName()));
-
-		// Restore the settings for the chosen search result template in this module window
-		if (rp.resultTemplateName == null)
-			searchResultTemplatesController.selectDefaultTemplate();
-		else
-			// find search result template by name:
-			searchResultTemplatesController.setSelectedSearchResultTemplate(rp.resultTemplateName);
-
-		// Restore the settings for the chosen search filter in this module window (may override the global settings)
-		if (rp.searchFilterName == null)
-			selectDefaultFilter();
-		else
-			// find filter by name:
-			for (int i = 1; i < getSearchFilterComboBox().getItemCount(); ++i)
-				if (((SearchFilter) getSearchFilterComboBox().getItemAt(i)).getName().equals(rp.searchFilterName)) {
-					getSearchFilterComboBox().setSelectedIndex(i);
-					break;
+		String prefXml = inheritControllerPreferences.get(GenericObjectCollectController.class.getName());
+		if (prefXml != null) {
+			RestorePreferences rp = fromXML(prefXml);
+	
+			// Restore the settings for the chosen search result template in this module window
+			if (rp.resultTemplateName == null)
+				searchResultTemplatesController.selectDefaultTemplate();
+			else
+				// find search result template by name:
+				searchResultTemplatesController.setSelectedSearchResultTemplate(rp.resultTemplateName);
+	
+			// Restore the settings for the chosen search filter in this module window (may override the global settings)
+			if (rp.searchFilterName == null)
+				selectDefaultFilter();
+			else
+				// find filter by name:
+				for (int i = 1; i < getSearchFilterComboBox().getItemCount(); ++i)
+					if (((SearchFilter) getSearchFilterComboBox().getItemAt(i)).getName().equals(rp.searchFilterName)) {
+						getSearchFilterComboBox().setSelectedIndex(i);
+						break;
+					}
+	
+			if (rp.processId != null) {
+				try {
+					process = new CollectableValueIdField(rp.processId.intValue(), MasterDataCache.getInstance().get(NuclosEntity.PROCESS.getEntityName(), rp.processId.intValue()).getField("name"));
 				}
-
-		if (rp.processId != null) {
-			try {
-				process = new CollectableValueIdField(rp.processId.intValue(), MasterDataCache.getInstance().get(NuclosEntity.PROCESS.getEntityName(), rp.processId.intValue()).getField("name"));
-			}
-			catch (CommonFinderException e) {
-				LOG.warn("Could not restore process setting because process could not be found.", e);
+				catch (CommonFinderException e) {
+					LOG.warn("Could not restore process setting because process could not be found.", e);
+				}
 			}
 		}
-
 		super.restoreInstanceStateFromPreferences(inheritControllerPreferences);
 	}
 

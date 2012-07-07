@@ -24,6 +24,7 @@ import java.awt.event.ActionListener;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Reader;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -31,6 +32,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.prefs.Preferences;
 
 import javax.swing.DefaultBoundedRangeModel;
 import javax.swing.JButton;
@@ -72,6 +74,7 @@ import org.nuclos.client.masterdata.valuelistprovider.MasterDataCollectableField
 import org.nuclos.client.rule.RuleDelegate;
 import org.nuclos.client.scripting.context.CollectControllerScriptContext;
 import org.nuclos.client.searchfilter.EntitySearchFilter;
+import org.nuclos.client.searchfilter.SearchFilter;
 import org.nuclos.client.ui.Errors;
 import org.nuclos.client.ui.Icons;
 import org.nuclos.client.ui.LayoutComponentUtils;
@@ -147,6 +150,9 @@ import org.nuclos.server.ruleengine.valueobject.RuleEventUsageVO;
 import org.nuclos.server.ruleengine.valueobject.RuleVO;
 import org.xml.sax.InputSource;
 
+import com.thoughtworks.xstream.XStream;
+import com.thoughtworks.xstream.io.xml.DomDriver;
+
 /**
  * Controller for collecting master data. <br>
  * <br>
@@ -161,6 +167,8 @@ public class MasterDataCollectController extends EntityCollectController<Collect
 	private static final Logger LOG = Logger.getLogger(MasterDataCollectController.class);
 
 	private static int iFilter;
+
+	private static final String PREFS_KEY_FILTERNAME = "filterName";
 
 	public static final String FIELDNAME_ACTIVE = "active";
 	public static final String FIELDNAME_VALIDFROM = "validFrom";
@@ -397,6 +405,17 @@ public class MasterDataCollectController extends EntityCollectController<Collect
 
 		// this.getSearchPanel().setCustomToolBarArea(result);
 	}
+	
+	/**
+	 * This method is called by <code>cmdClearSearchFields</code>, that is when the user clicks
+	 * the "Clear Search Fields" button. This implementation selects the default search filter.
+	 */
+	@Override
+	protected void clearSearchCondition() {
+		super.clearSearchCondition();
+		// select the default filter (the first entry):
+		selectDefaultFilter();
+	}
 
 	@Override
 	protected String getTitle(int iTab, int iMode) {
@@ -591,6 +610,85 @@ public class MasterDataCollectController extends EntityCollectController<Collect
 		}
 
 		this.getDetailsPanel().addToolBarComponents(toolbarCustomActionsDetails, toolbarCustomActionsDetailsIndex);
+	}
+
+	private static class RestorePreferences implements Serializable {
+		private static final long serialVersionUID = 6637996725938917463L;
+
+		String searchFilterName;
+	}
+
+	private static String toXML(RestorePreferences rp) {
+		XStream xstream = new XStream(new DomDriver());
+		return xstream.toXML(rp);
+	}
+
+	private static RestorePreferences fromXML(String xml) {
+		XStream xstream = new XStream(new DomDriver());
+		return (RestorePreferences) xstream.fromXML(xml);
+	}
+
+	@Override
+	protected void storeInstanceStateToPreferences(Map<String, String> inheritControllerPreferences) {
+		RestorePreferences rp = new RestorePreferences();
+
+		SearchFilter filter = getSelectedSearchFilter();
+		rp.searchFilterName = (filter == null || filter.isDefaultFilter()) ? null : filter.getName();
+
+		inheritControllerPreferences.put(MasterDataCollectController.class.getName(), toXML(rp));
+		super.storeInstanceStateToPreferences(inheritControllerPreferences);
+	}
+	
+	@Override
+	protected void restoreInstanceStateFromPreferences(Map<String, String> inheritControllerPreferences) {
+		String prefXml = inheritControllerPreferences.get(MasterDataCollectController.class.getName());
+		if (prefXml != null) {
+			RestorePreferences rp = fromXML(prefXml);
+	
+			// Restore the settings for the chosen search filter in this module window (may override the global settings)
+			if (rp.searchFilterName == null)
+				selectDefaultFilter();
+			else
+				// find filter by name:
+				for (int i = 1; i < getSearchFilterComboBox().getItemCount(); ++i)
+					if (((SearchFilter) getSearchFilterComboBox().getItemAt(i)).getName().equals(rp.searchFilterName)) {
+						getSearchFilterComboBox().setSelectedIndex(i);
+						break;
+					}
+		}
+		super.restoreInstanceStateFromPreferences(inheritControllerPreferences);
+	}
+
+	/**
+	 * @param prefs
+	 * @throws CommonBusinessException
+	 * @precondition this.isSearchPanelVisible()
+	 */
+	@Override
+	@Deprecated
+	protected void restoreSearchCriteriaFromPreferences(Preferences prefs) throws CommonBusinessException {
+		if (!isSearchPanelAvailable())
+			throw new IllegalStateException("!isSearchPanelVisible()");
+
+		// Restore the settings for the chosen search filter in this module window (may override the global settings)
+		restoreSelectedSearchFilterFromPreferences(prefs);
+
+		super.restoreSearchCriteriaFromPreferences(prefs);
+	}
+
+	@Deprecated
+	private void restoreSelectedSearchFilterFromPreferences(Preferences prefs) {
+		// restore search filter:
+		final String sFilterName = prefs.get(PREFS_KEY_FILTERNAME, null);
+		if (sFilterName == null)
+			selectDefaultFilter();
+		else
+			// find filter by name:
+			for (int i = 1; i < getSearchFilterComboBox().getItemCount(); ++i)
+				if (((SearchFilter) getSearchFilterComboBox().getItemAt(i)).getName().equals(sFilterName)) {
+					getSearchFilterComboBox().setSelectedIndex(i);
+					break;
+				}
 	}
 
 	@Override
