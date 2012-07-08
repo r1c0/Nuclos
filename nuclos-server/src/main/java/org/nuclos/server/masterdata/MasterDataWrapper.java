@@ -67,6 +67,7 @@ import org.nuclos.server.report.valueobject.ReportVO;
 import org.nuclos.server.report.valueobject.ReportVO.ReportType;
 import org.nuclos.server.report.valueobject.SubreportVO;
 import org.nuclos.server.report.valueobject.ValuelistProviderVO;
+import org.nuclos.server.resource.ResourceCache;
 import org.nuclos.server.ruleengine.valueobject.RuleEngineGenerationVO;
 import org.nuclos.server.ruleengine.valueobject.RuleEngineTransitionVO;
 import org.nuclos.server.ruleengine.valueobject.RuleEventUsageVO;
@@ -177,6 +178,7 @@ public class MasterDataWrapper {
 			mdVO.getIntId(),
 			(String)mdVO.getField("name"),
 			(String)mdVO.getField("label"),
+			mdVO.getField("buttonIconId")==null?null:ResourceCache.getInstance().getResourceById(mdVO.getField("buttonIconId", Integer.class)),
 			(Integer)mdVO.getField("sourceModuleId"),
 			(Integer)mdVO.getField("targetModuleId"),
 			(Integer)mdVO.getField("targetProcessId"),
@@ -464,6 +466,8 @@ public class MasterDataWrapper {
 			(NuclosImage)mdVO.getField("icon"),
 			(Integer)mdVO.getField("modelId"));
 		vo.setTabbedPaneName((String)mdVO.getField("tab"));
+		vo.setButtonIcon(ResourceCache.getInstance().getResourceById((Integer) mdVO.getField("buttonIconId")));
+		vo.setColor((String) mdVO.getField("color"));
 
 		return vo;
 	}
@@ -476,6 +480,8 @@ public class MasterDataWrapper {
 		mpFields.put("icon", vo.getIcon());
 		mpFields.put("modelId", vo.getModelId());
 		mpFields.put("tab", vo.getTabbedPaneName());
+		mpFields.put("color", vo.getColor());
+		mpFields.put("buttonIconId", vo.getButtonIcon()==null?null:vo.getButtonIcon().getId());
 
 		return new MasterDataVO(vo.getId(), vo.getChangedAt(), vo.getCreatedBy(), vo.getChangedAt(), vo.getChangedBy(), vo.getVersion(), mpFields);
 	}

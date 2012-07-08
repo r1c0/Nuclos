@@ -329,6 +329,45 @@ public class StateModelEditor extends JPanel implements ShapeModelListener, Focu
 			// ...			
 		}
 	}
+	
+	
+	private class ButtonIconChangeListener implements CollectableComponentModelListener {
+		@Override
+		public void collectableFieldChangedInModel(CollectableComponentModelEvent ev) {
+			StateModelEditor.this.changeButtonIcon();
+		}
+
+		@Override
+		public void searchConditionChangedInModel(SearchComponentModelEvent ev) {
+			// ...
+			
+		}
+
+		@Override
+		public void valueToBeChanged(DetailsComponentModelEvent ev) {
+			// ...			
+		}
+	}
+	
+	
+	private class ColorChangeListener implements CollectableComponentModelListener {
+		@Override
+		public void collectableFieldChangedInModel(CollectableComponentModelEvent ev) {
+			StateModelEditor.this.changeColor();
+		}
+
+		@Override
+		public void searchConditionChangedInModel(SearchComponentModelEvent ev) {
+			// ...
+			
+		}
+
+		@Override
+		public void valueToBeChanged(DetailsComponentModelEvent ev) {
+			// ...			
+		}
+	}
+	
 
 	private class DescriptionDocumentListener implements DocumentListener {
 		@Override
@@ -426,6 +465,8 @@ public class StateModelEditor extends JPanel implements ShapeModelListener, Focu
 	private final DescriptionDocumentListener descriptionDocumentListener = new DescriptionDocumentListener();
 	private final NoteDocumentListener noteDocumentListener = new NoteDocumentListener();
 	private final TabDataListener tabDataListener = new TabDataListener();
+	private final ColorChangeListener colorChangeListener = new ColorChangeListener();
+	private final ButtonIconChangeListener buttonIconChangeListener = new ButtonIconChangeListener();
 
 //	private StateRoleSubFormController ctlsubformRole;
 //	private StateRoleAttributeGroupSubFormController ctlsubformAttributeGroup;
@@ -565,6 +606,8 @@ public class StateModelEditor extends JPanel implements ShapeModelListener, Focu
 		pnlProperties.getStatePropertiesPanel().getModel().clctImage.getModel().addCollectableComponentModelListener(iconDocumentListener);
 		pnlProperties.getStatePropertiesPanel().getModel().docDescription.addDocumentListener(descriptionDocumentListener);
 		pnlProperties.getStatePropertiesPanel().getModel().modelTab.addListDataListener(tabDataListener);
+		pnlProperties.getStatePropertiesPanel().getModel().clctColor.getModel().addCollectableComponentModelListener(colorChangeListener);
+		pnlProperties.getStatePropertiesPanel().getModel().clctButtonIcon.getModel().addCollectableComponentModelListener(buttonIconChangeListener);
 	}
 
 	/**
@@ -575,6 +618,8 @@ public class StateModelEditor extends JPanel implements ShapeModelListener, Focu
 		pnlProperties.getStatePropertiesPanel().getModel().docMnemonic.removeDocumentListener(mnemonicDocumentListener);
 		pnlProperties.getStatePropertiesPanel().getModel().clctImage.getModel().removeCollectableComponentModelListener(iconDocumentListener);
 		pnlProperties.getStatePropertiesPanel().getModel().docDescription.removeDocumentListener(descriptionDocumentListener);
+		pnlProperties.getStatePropertiesPanel().getModel().clctColor.getModel().removeCollectableComponentModelListener(colorChangeListener);
+		pnlProperties.getStatePropertiesPanel().getModel().clctButtonIcon.getModel().removeCollectableComponentModelListener(buttonIconChangeListener);
 	}
 
 	/**
@@ -651,6 +696,8 @@ public class StateModelEditor extends JPanel implements ShapeModelListener, Focu
 			model.setIcon(stateshapeSelected.getIcon());
 			model.setDescription(stateshapeSelected.getDescription());
 			model.setTab(stateshapeSelected.getStateVO().getTabbedPaneName());
+			model.setColor(stateshapeSelected.getStateVO().getColor());
+			model.setButtonIcon(stateshapeSelected.getStateVO().getButtonIcon());
 
 			this.addStatePanelListeners();
 			this.setupRightsPanel(stateshapeSelected.getStateVO());
@@ -824,6 +871,22 @@ public class StateModelEditor extends JPanel implements ShapeModelListener, Focu
 	public void changeStateIcon() {
 		if (shapeSelected != null && shapeSelected instanceof StateShape) {
 			((StateShape) shapeSelected).setIcon(pnlProperties.getStatePropertiesPanel().getModel().getIcon());
+			pnlShapeViewer.getModel().fireModelChanged();
+			pnlShapeViewer.repaint();
+		}
+	}
+	
+	public void changeButtonIcon() {
+		if (shapeSelected != null && shapeSelected instanceof StateShape) {
+			((StateShape) shapeSelected).getStateVO().setButtonIcon(pnlProperties.getStatePropertiesPanel().getModel().getButtonIcon());
+			pnlShapeViewer.getModel().fireModelChanged();
+			pnlShapeViewer.repaint();
+		}
+	}
+	
+	public void changeColor() {
+		if (shapeSelected != null && shapeSelected instanceof StateShape) {
+			((StateShape) shapeSelected).setStateColor(pnlProperties.getStatePropertiesPanel().getModel().getColor());
 			pnlShapeViewer.getModel().fireModelChanged();
 			pnlShapeViewer.repaint();
 		}

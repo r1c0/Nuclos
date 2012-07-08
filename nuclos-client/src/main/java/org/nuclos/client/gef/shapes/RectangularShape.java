@@ -28,6 +28,7 @@ package org.nuclos.client.gef.shapes;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.GradientPaint;
 import java.awt.Graphics2D;
 import java.awt.Stroke;
 import java.awt.geom.Rectangle2D;
@@ -55,6 +56,10 @@ public class RectangularShape extends AbstractShape {
 		setDimension(new Rectangle2D.Double(left, top, width, height));
 		bgColor = Color.GRAY;
 	}
+	
+	protected Color getBackground() {
+		return bgColor;
+	}
 
 	/**
 	 *
@@ -62,7 +67,12 @@ public class RectangularShape extends AbstractShape {
 	 */
 	@Override
 	public void paint(Graphics2D gfx) {
-		gfx.setPaint(bgColor);
+//		Color second = getSecondBackgroundColor();
+//		if (second != null) {
+//			gfx.setPaint(new GradientPaint(new Double(left).intValue(), new Double(top+height/2).intValue(), bgColor, new Double(left).intValue(), new Double(top+height).intValue(), second));
+//		} else {
+			gfx.setPaint(getBackground());
+//		}
 		gfx.fill(dimension);
 		if (paintBorder) {
 			Stroke borderStroke = new BasicStroke((float) borderSize);

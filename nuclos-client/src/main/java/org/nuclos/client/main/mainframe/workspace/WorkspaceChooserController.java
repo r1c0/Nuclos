@@ -38,6 +38,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
@@ -71,6 +72,8 @@ import org.nuclos.client.ui.Bubble;
 import org.nuclos.client.ui.DefaultSelectObjectsPanel;
 import org.nuclos.client.ui.Errors;
 import org.nuclos.client.ui.Icons;
+import org.nuclos.client.ui.ResultListener;
+import org.nuclos.client.ui.ResultListenerX;
 import org.nuclos.client.ui.SelectObjectsController;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.client.ui.model.ChoiceList;
@@ -371,14 +374,19 @@ public class WorkspaceChooserController implements InitializingBean {
 					Errors.getInstance().showExceptionDialog(mf, e1);
 				}
 			}
+			
 			try {
-				restoreUtils.clearAndRestoreWorkspace(preferencesFacadeRemote.getWorkspace(wovo.getId()));
-			} catch (CommonBusinessException e1) {
-				if ("Workspace.not.found".equals(e1.getMessage())) {
-					workspaces.remove(wovo);
-					refreshWorkspaces();
-				}
-				Errors.getInstance().showExceptionDialog(mf, e1);
+				restoreUtils.clearAndRestoreWorkspace(preferencesFacadeRemote.getWorkspace(wovo.getId()), 
+						new ResultListenerX<Boolean, CommonBusinessException>() {
+					@Override
+					public void done(Boolean result, CommonBusinessException exception) {
+						if (exception != null) {
+							Errors.getInstance().showExceptionDialog(mf, exception);
+						}
+					}
+				});
+			} catch (CommonBusinessException e) {
+				Errors.getInstance().showExceptionDialog(mf, e);
 			}
 		}
 	}
@@ -589,24 +597,37 @@ public class WorkspaceChooserController implements InitializingBean {
 
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					if (!restoreUtils.closeTabs(true)) {
-						return;
-					}
 					final MainFrame mf = Main.getInstance().getMainFrame();
-					try {
-						WorkspaceVO wovo = new WorkspaceVO(); // only for header information
-						WorkspaceEditor we = new WorkspaceEditor(wovo);
-						if (we.isSaved()) {
-							try {
-								restoreUtils.storeWorkspace(getSelectedWorkspace());
-							} catch (Exception e2) {
-								Errors.getInstance().showExceptionDialog(mf, e2);
+					
+					restoreUtils.closeTabs(true, new ResultListener<Boolean>() {
+						@Override
+						public void done(Boolean result) {
+							if (Boolean.TRUE.equals(result)) {
+								WorkspaceVO wovo = new WorkspaceVO(); // only for header information
+								WorkspaceEditor we = new WorkspaceEditor(wovo);
+								if (we.isSaved()) {
+									try {
+										restoreUtils.storeWorkspace(getSelectedWorkspace());
+									} catch (Exception e2) {
+										Errors.getInstance().showExceptionDialog(mf, e2);
+									}
+									
+									restoreUtils.clearAndRestoreToDefaultWorkspace(new ResultListenerX<WorkspaceVO, CommonBusinessException>() {
+										@Override
+										public void done(WorkspaceVO result, CommonBusinessException exception) {
+											if (result != null) {
+												addWorkspace(result, true);
+											} else
+											if (exception != null) {
+												Errors.getInstance().showExceptionDialog(mf, exception);
+											}
+										}
+									});
+								}
 							}
-							addWorkspace(restoreUtils.clearAndRestoreToDefaultWorkspace(wovo.getWoDesc()), true);
 						}
-					} catch (Exception e1) {
-						Errors.getInstance().showExceptionDialog(mf, e1);
-					} 
+					});
+					
 				}
 			};
 	}
@@ -694,50 +715,111 @@ public class WorkspaceChooserController implements InitializingBean {
 
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					if (wovo.equals(getSelectedWorkspace()) && !restoreUtils.closeTabs(true)) {
-						return;
-					}
 					final MainFrame mf = Main.getInstance().getMainFrame();
-					if (JOptionPane.YES_OPTION == 
-						JOptionPane.showConfirmDialog(mf, 
-							SpringLocaleDelegate.getInstance().getMessage(
-									"WorkspaceChooserController.8","Möchten Sie wirklich die Arbeitsumgebung \"{0}\" löschen?",
-									wovo.getWoDesc().getName()), 
-							SpringLocaleDelegate.getInstance().getMessage("WorkspaceChooserController.9","Sind Sie sicher?"), 
-							JOptionPane.YES_NO_OPTION)) {
-						
-						if (wovo.equals(getSelectedWorkspace()) && !restoreUtils.clearWorkspace()) {
-							return;
+					
+					/*
+					 * Helper
+					 */
+					class Helper {
+						/**
+						 * 
+						 */
+						public void remove() {
+							preferencesFacadeRemote.removeWorkspace(wovo.getAssignedWorkspace()==null?
+									wovo.getId():
+										wovo.getAssignedWorkspace());
+							workspaces.remove(wovo);
+							
+							if (wovo.equals(getSelectedWorkspace())) {
+								restoreNext(); 
+							} else {
+								refreshWorkspaces();
+							}
 						}
 						
-						preferencesFacadeRemote.removeWorkspace(wovo.getAssignedWorkspace()==null?
-								wovo.getId():
-									wovo.getAssignedWorkspace());
-						workspaces.remove(wovo);
+						private Iterator<WorkspaceVO> iter;
 						
-						if (wovo.equals(getSelectedWorkspace())) {
-							for (WorkspaceVO wovo : workspaces) {
-								try {
-									restoreUtils.clearAndRestoreWorkspace(preferencesFacadeRemote.getWorkspace(wovo.getId()));
-									setSelectedWorkspace(wovo);
-									refreshWorkspaces();
-									return;
-								} catch (Exception ex) {
-									// deleted workspaces
-								}
+						/**
+						 * 
+						 */
+						public void restoreNext() {
+							if (iter == null) {
+								iter = workspaces.iterator();
 							}
 							
-							if (workspaces.isEmpty()) {
+							if (iter.hasNext()) {
+								final WorkspaceVO wovo = iter.next();
 								try {
-									addWorkspace(restoreUtils.clearAndRestoreToDefaultWorkspace(), true);
-								} catch (CommonBusinessException e1) {
-									Errors.getInstance().showExceptionDialog(mf, e1);
+									restoreUtils.clearAndRestoreWorkspace(preferencesFacadeRemote.getWorkspace(wovo.getId()), 
+											new ResultListenerX<Boolean, CommonBusinessException>() {
+										@Override
+										public void done(Boolean result, CommonBusinessException exception) {
+											if (Boolean.TRUE.equals(result)) {
+												setSelectedWorkspace(wovo);
+												refreshWorkspaces();
+											} else {
+												restoreNext();
+											}
+										}
+									});
+								} catch (CommonBusinessException e) {
+									// workspace removed
+									restoreNext();
 								}
-							} 
-						} else {
-							refreshWorkspaces();
+							} else {	
+								restoreUtils.clearAndRestoreToDefaultWorkspace(new ResultListenerX<WorkspaceVO, CommonBusinessException>() {
+									@Override
+									public void done(WorkspaceVO result, CommonBusinessException exception) {
+										if (result != null) {
+											addWorkspace(result, true);
+										} else
+										if (exception != null) {
+											Errors.getInstance().showExceptionDialog(mf, exception);
+										}
+									}
+								});
+							}
+						}
+						
+						public void start() {
+							if (JOptionPane.YES_OPTION == 
+								JOptionPane.showConfirmDialog(mf, 
+									SpringLocaleDelegate.getInstance().getMessage(
+											"WorkspaceChooserController.8","Möchten Sie wirklich die Arbeitsumgebung \"{0}\" löschen?",
+											wovo.getWoDesc().getName()), 
+									SpringLocaleDelegate.getInstance().getMessage("WorkspaceChooserController.9","Sind Sie sicher?"), 
+									JOptionPane.YES_NO_OPTION)) {
+								
+								if (wovo.equals(getSelectedWorkspace())) {
+									restoreUtils.clearWorkspace(new ResultListener<Boolean>() {
+										@Override
+										public void done(Boolean result) {
+											if (Boolean.TRUE.equals(result)) {
+												remove();
+											}
+										}
+									});
+								} else {
+									remove();
+								}
+								
+							}
 						}
 					}
+					
+					if (wovo.equals(getSelectedWorkspace())) {
+						restoreUtils.closeTabs(true, new ResultListener<Boolean>() {
+							@Override
+							public void done(Boolean result) {
+								if (Boolean.TRUE.equals(result)) {
+									new Helper().start();
+								}
+							}
+						});
+					} else {
+						new Helper().start();
+					}
+					
 				}
 			};
 	}
@@ -913,29 +995,45 @@ public class WorkspaceChooserController implements InitializingBean {
 	public void restoreSelectedWorkspace() {
 		if (!restoreUtils.isRestoreRunning()) {
 			if (getSelectedWorkspace().getAssignedWorkspace() == null) {
-				if (!restoreUtils.closeTabs(true)) {
-					return;
-				}
-				final MainFrame mf = Main.getInstance().getMainFrame();
-				if (JOptionPane.YES_OPTION == JOptionPane.showConfirmDialog(mf,
-					SpringLocaleDelegate.getInstance().getMessage(
-							"MainFrame.restoreDefaultWorkspace.2","Möchten Sie wirklich die Arbeitsumgebung auf den Ausgangszustand zurücksetzen?"),
-					SpringLocaleDelegate.getInstance().getMessage(
-							"MainFrame.restoreDefaultWorkspace.1","Arbeitsumgebung zurücksetzen"),
-					JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE)) {
-					try {
-						WorkspaceDescription wdBackup = getSelectedWorkspace().getWoDesc();
-						getSelectedWorkspace().setWoDesc(WorkspaceDescriptionDefaultsFactory.createOldMdiStyle());
-						getSelectedWorkspace().getWoDesc().importHeader(wdBackup);
-						
-						restoreUtils.clearAndRestoreWorkspace(getSelectedWorkspace());
-						restoreUtils.storeWorkspace(getSelectedWorkspace());
-						
-						getSelectedWorkspace().getWoDesc().getFrames().clear();
-					} catch (CommonBusinessException e) {
-						Errors.getInstance().showExceptionDialog(mf, e);
+				
+				restoreUtils.closeTabs(true, new ResultListener<Boolean>() {
+					@Override
+					public void done(Boolean result) {
+						if (Boolean.TRUE.equals(result)) {
+							final MainFrame mf = Main.getInstance().getMainFrame();
+							if (JOptionPane.YES_OPTION == JOptionPane.showConfirmDialog(mf,
+								SpringLocaleDelegate.getInstance().getMessage(
+										"MainFrame.restoreDefaultWorkspace.2","Möchten Sie wirklich die Arbeitsumgebung auf den Ausgangszustand zurücksetzen?"),
+								SpringLocaleDelegate.getInstance().getMessage(
+										"MainFrame.restoreDefaultWorkspace.1","Arbeitsumgebung zurücksetzen"),
+								JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE)) {
+								
+								WorkspaceDescription wdBackup = getSelectedWorkspace().getWoDesc();
+								getSelectedWorkspace().setWoDesc(WorkspaceDescriptionDefaultsFactory.createOldMdiStyle());
+								getSelectedWorkspace().getWoDesc().importHeader(wdBackup);
+								
+								restoreUtils.clearAndRestoreWorkspace(getSelectedWorkspace(), 
+										new ResultListenerX<Boolean, CommonBusinessException>() {
+									@Override
+									public void done(Boolean result, CommonBusinessException exception) {
+										if (Boolean.TRUE.equals(result)) {
+											try {
+												restoreUtils.storeWorkspace(getSelectedWorkspace());
+												getSelectedWorkspace().getWoDesc().getFrames().clear();
+											} catch (CommonBusinessException e) {
+												exception = e;
+											}
+										}
+										if (exception != null) {
+											Errors.getInstance().showExceptionDialog(mf, exception);
+										}
+									}
+								});
+							}
+						}
 					}
-				}
+				});
+				
 			} else {
 				restoreToAssigned(getSelectedWorkspace());
 			}
@@ -946,30 +1044,51 @@ public class WorkspaceChooserController implements InitializingBean {
 	 * 
 	 * @param wovo
 	 */
-	private void restoreToAssigned(WorkspaceVO wovo) {
-		if (getSelectedWorkspace().equals(wovo)) {
-			if (!restoreUtils.closeTabs(true)) {
-				return;
-			}
-		}
+	private void restoreToAssigned(final WorkspaceVO wovo) {
 		final MainFrame mf = Main.getInstance().getMainFrame();
-		if (JOptionPane.YES_OPTION == JOptionPane.showConfirmDialog(mf,
-				SpringLocaleDelegate.getInstance().getMessage(
-						"MainFrame.restoreDefaultWorkspace.2","Möchten Sie wirklich die Arbeitsumgebung auf den Ausgangszustand zurücksetzen?"),
-				SpringLocaleDelegate.getInstance().getMessage(
-						"MainFrame.restoreDefaultWorkspace.1","Arbeitsumgebung zurücksetzen"),
-				JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE)) {
-			try {
-				WorkspaceVO restoredWovo = preferencesFacadeRemote.restoreWorkspace(wovo);
-				wovo.importHeader(restoredWovo.getWoDesc());
-				refreshWorkspaces();
-				if (getSelectedWorkspace().equals(wovo)) {
-					restoreUtils.clearAndRestoreWorkspace(restoredWovo);
+		
+		class Helper {
+			public void start() {
+				if (JOptionPane.YES_OPTION == JOptionPane.showConfirmDialog(mf,
+						SpringLocaleDelegate.getInstance().getMessage(
+								"MainFrame.restoreDefaultWorkspace.2","Möchten Sie wirklich die Arbeitsumgebung auf den Ausgangszustand zurücksetzen?"),
+						SpringLocaleDelegate.getInstance().getMessage(
+								"MainFrame.restoreDefaultWorkspace.1","Arbeitsumgebung zurücksetzen"),
+						JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE)) {
+					try {
+						WorkspaceVO restoredWovo = preferencesFacadeRemote.restoreWorkspace(wovo);
+						wovo.importHeader(restoredWovo.getWoDesc());
+						refreshWorkspaces();
+						if (getSelectedWorkspace().equals(wovo)) {
+							restoreUtils.clearAndRestoreWorkspace(restoredWovo, new ResultListenerX<Boolean, CommonBusinessException>() {
+								@Override
+								public void done(Boolean result, CommonBusinessException exception) {
+									if (exception != null) {
+										Errors.getInstance().showExceptionDialog(mf, exception);
+									}
+								}
+							});
+						}
+					} catch (Exception e1) {
+						Errors.getInstance().showExceptionDialog(mf, e1);
+					}
 				}
-			} catch (Exception e1) {
-				Errors.getInstance().showExceptionDialog(mf, e1);
 			}
 		}
+		
+		if (getSelectedWorkspace().equals(wovo)) {
+			restoreUtils.closeTabs(true, new ResultListener<Boolean>() {
+				@Override
+				public void done(Boolean result) {
+					if (Boolean.TRUE.equals(result)) {
+						new Helper().start();
+					}
+				}
+			});
+		} else {
+			new Helper().start();
+		}
+		
 	}
 	
 	private static class ContentPanel extends JPanel {

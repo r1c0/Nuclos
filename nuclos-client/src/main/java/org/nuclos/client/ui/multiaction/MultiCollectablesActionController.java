@@ -43,6 +43,7 @@ import org.nuclos.client.main.mainframe.MainFrameTab;
 import org.nuclos.client.ui.Errors;
 import org.nuclos.client.ui.MainFrameTabAdapter;
 import org.nuclos.client.ui.MainFrameTabController;
+import org.nuclos.client.ui.ResultListener;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.client.ui.collect.CollectController;
 import org.nuclos.client.ui.popupmenu.JPopupMenuFactory;
@@ -153,8 +154,8 @@ public class MultiCollectablesActionController <T,R> extends MainFrameTabControl
 		final MainFrameTab overlayTab = new MainFrameTab(sTitle);
 		overlayTab.addMainFrameTabListener(new MainFrameTabAdapter() {
 			@Override
-			public boolean tabClosing(MainFrameTab tab)	throws CommonBusinessException {
-				return closable;
+			public void tabClosing(MainFrameTab tab, ResultListener<Boolean> rl) {
+				rl.done(closable);
 			}
 			@Override
 			public void tabClosed(MainFrameTab tab) {

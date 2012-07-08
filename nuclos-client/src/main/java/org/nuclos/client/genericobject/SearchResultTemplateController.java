@@ -41,7 +41,7 @@ import org.nuclos.client.genericobject.resulttemplate.ResultTemplates;
 import org.nuclos.client.genericobject.resulttemplate.SaveSearchResultTemplateController;
 import org.nuclos.client.genericobject.resulttemplate.SearchResultTemplate;
 import org.nuclos.client.main.mainframe.MainFrameTab;
-import org.nuclos.client.ui.BlackLabel;
+import org.nuclos.client.ui.ColoredLabel;
 import org.nuclos.client.ui.CommonAbstractAction;
 import org.nuclos.client.ui.Errors;
 import org.nuclos.client.ui.Icons;
@@ -111,7 +111,7 @@ public class SearchResultTemplateController {
 		//toolbar.add(getSearchResultTemplateComboBox());
 		///*btnSaveTemplate =*/ toolbar.add(actSaveTemplate);
 		///*btnRemoveTemplate =*/ toolbar.add(actRemoveTemplate);
-		resultPanel.addToolBarComponent(new BlackLabel(getSearchResultTemplateComboBox(),
+		resultPanel.addToolBarComponent(new ColoredLabel(getSearchResultTemplateComboBox(),
 				SpringLocaleDelegate.getInstance().getMessage("R00016434","Suchergebnisvorlage")));
 		resultPanel.addPopupExtraSeparator();
 		resultPanel.addPopupExtraMenuItem(new JMenuItem(actSaveTemplate));

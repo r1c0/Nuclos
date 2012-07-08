@@ -116,6 +116,7 @@ import org.nuclos.client.masterdata.MasterDataCollectController;
 import org.nuclos.client.masterdata.MasterDataDelegate;
 import org.nuclos.client.masterdata.MasterDataSubFormController;
 import org.nuclos.client.masterdata.valuelistprovider.MasterDataCollectableFieldsProviderFactory;
+import org.nuclos.client.resource.ResourceCache;
 import org.nuclos.client.rule.RuleDelegate;
 import org.nuclos.client.scripting.context.CollectControllerScriptContext;
 import org.nuclos.client.searchfilter.EntitySearchFilter;
@@ -124,7 +125,7 @@ import org.nuclos.client.searchfilter.SearchFilters;
 import org.nuclos.client.statemodel.StateDelegate;
 import org.nuclos.client.statemodel.StateViewComponent;
 import org.nuclos.client.statemodel.StateWrapper;
-import org.nuclos.client.ui.BlackLabel;
+import org.nuclos.client.ui.ColoredLabel;
 import org.nuclos.client.ui.CommonAbstractAction;
 import org.nuclos.client.ui.CommonClientWorkerAdapter;
 import org.nuclos.client.ui.CommonMultiThreader;
@@ -132,6 +133,8 @@ import org.nuclos.client.ui.DateChooser;
 import org.nuclos.client.ui.Errors;
 import org.nuclos.client.ui.Icons;
 import org.nuclos.client.ui.LayoutComponentUtils;
+import org.nuclos.client.ui.OvOpAdapter;
+import org.nuclos.client.ui.OverlayOptionPane;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.client.ui.collect.CollectController;
 import org.nuclos.client.ui.collect.CollectPanel;
@@ -254,6 +257,7 @@ import org.nuclos.server.genericobject.valueobject.LogbookVO;
 import org.nuclos.server.masterdata.valueobject.DependantMasterDataMap;
 import org.nuclos.server.navigation.treenode.EntitySearchResultTreeNode;
 import org.nuclos.server.navigation.treenode.GenericObjectTreeNode;
+import org.nuclos.server.resource.valueobject.ResourceVO;
 import org.nuclos.server.ruleengine.valueobject.RuleEventUsageVO;
 import org.nuclos.server.ruleengine.valueobject.RuleVO;
 import org.nuclos.server.statemodel.valueobject.MandatoryFieldVO;
@@ -440,7 +444,19 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 
 	// end of Menu Items
 
-	private final JComboBox cmbbxCurrentState = new JComboBox();
+	private final JComboBox cmbbxCurrentState = new JComboBox() {
+		@Override
+		protected void selectedItemChanged() {
+			super.selectedItemChanged();
+			Object oSelected = getSelectedItem();
+			if (oSelected != null) {
+				StateWrapper sw = (StateWrapper) oSelected;
+				lbCurrentState.setColoredBackground(sw.getColor());
+			}
+		}
+	};
+	private final ColoredLabel lbCurrentState = new ColoredLabel(cmbbxCurrentState,
+			getSpringLocaleDelegate().getMessage("GenericObjectCollectController.106","Status"));
 	private final StateViewComponent cmpStateStandardView = new StateViewComponent();
 	private final List<Component> toolbarCustomActionsDetails = new ArrayList<Component>();
 	private int toolbarCustomActionsDetailsIndex = -1;
@@ -769,7 +785,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		//cpSearchState.setOpaque(false);
 		//toolSearchState.add(cpSearchState);
 		//toolSearchState.add(Box.createHorizontalStrut(5));
-		this.getSearchPanel().addToolBarComponent(new BlackLabel(jComboBox,
+		this.getSearchPanel().addToolBarComponent(new ColoredLabel(jComboBox,
 				getSpringLocaleDelegate().getMessage("nuclos.entityfield.eo.state.label","Status")), 6);
 
 		//pnlCustomToolBarAreaSearch.add(toolSearchState, gbc);
@@ -1697,7 +1713,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 			final DateChooser datechooserHistorical = clctdatechooserHistorical.getDateChooser();
 			datechooserHistorical.setHistoricalState(true);
 
-			this.getDetailsPanel().addPopupExtraComponent(new BlackLabel(datechooserHistorical,
+			this.getDetailsPanel().addPopupExtraComponent(new ColoredLabel(datechooserHistorical,
 					getSpringLocaleDelegate().getMessage("GenericObjectCollectController.7","Aktueller/historischer Zustand")));
 			registerHistoricalDateChooserListener();
 		}
@@ -3195,6 +3211,51 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 			}
 		return result;
 	}
+	
+	/**
+	 * @return the state color of the selected entity object, if any.
+	 */
+	private String getSelectedGenericObjectStateColor() {
+		final String result;
+		final Collectable clct = getSelectedCollectable();
+		if (clct == null)
+			result = null;
+		else
+			try {
+				result = StateDelegate.getInstance().getState(getModuleId(), (Integer) clct.getValueId(NuclosEOField.STATE.getMetaData().getField())).getColor();
+			} catch (CommonFatalException e) {
+				// ignore here.
+				return null;
+			}
+		return result;
+	}
+	
+	private StateWrapper getStateWrapperFromSelectedGenericObject() {
+		Integer id = null;
+		Integer iNumeral = null;
+		String sName = null;
+		String sDescription = null;
+		NuclosImage icon = null;
+		String color = null;
+		ResourceVO resButtonIcon = null;
+		
+		final Collectable clct = getSelectedCollectable();
+		if (clct != null)
+			try {
+				StateVO statevo = StateDelegate.getInstance().getState(getModuleId(), (Integer) clct.getValueId(NuclosEOField.STATE.getMetaData().getField()));
+				id = statevo.getId();
+				iNumeral = statevo.getNumeral();
+				sName = statevo.getStatename();
+				sDescription = statevo.getDescription();
+				icon = statevo.getIcon();
+				color = statevo.getColor();
+				resButtonIcon = statevo.getButtonIcon();
+			} catch (CommonFatalException e) {
+				// ignore here.
+			}
+		
+		return new StateWrapper(id, iNumeral, sName, icon, sDescription, color, resButtonIcon);
+	}
 
 	/**
 	 * Delete the selected object physically.
@@ -3422,8 +3483,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 				// Create a temporary list for sorting the entries before entering into combo box
 				final List<StateWrapper> lstComboEntries = new ArrayList<StateWrapper>();
 
-				final StateWrapper stateCurrent = new StateWrapper(null, getSelectedGenericObjectStateNumeral(),
-					getSelectedGenericObjectStateName(), getSelectedGenericObjectStateIcon(), "");
+				final StateWrapper stateCurrent = getStateWrapperFromSelectedGenericObject();
 				lstComboEntries.add(stateCurrent);
 
 				UsageCriteria uc = getUsageCriteria(getSelectedCollectable());
@@ -3435,11 +3495,11 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 					if (statevo == null)
 						// we don't want to throw an exception here, so we just log the error:
 						LOG.error("Die Liste der Folgestati enth\u00e4lt ein null-Objekt.");
-					else if (!lstComboEntries.contains(new StateWrapper(statevo.getId(), statevo.getNumeral(), statevo.getStatename(), statevo.getIcon(), statevo.getDescription())))
+					else if (!lstComboEntries.contains(new StateWrapper(statevo.getId(), statevo.getNumeral(), statevo.getStatename(), statevo.getIcon(), statevo.getDescription(), null, null)))
 						lstComboEntries.add(new StateWrapper(statevo.getId(), statevo.getNumeral(),
 								getSpringLocaleDelegate().getResource(/*StateDelegate.getInstance().getResourceSIdForName(statevo.getId()*/
 								StateDelegate.getInstance().getStatemodelClosure(getModuleId()).getResourceSIdForLabel(statevo.getId()),
-								statevo.getStatename()), statevo.getIcon(), statevo.getDescription(), statevo.isFromAutomatic(),
+								statevo.getStatename()), statevo.getIcon(), statevo.getDescription(), statevo.getColor(), statevo.getButtonIcon(), statevo.isFromAutomatic(),
 								getSelectedCollectable() != null ? 
 										StateDelegate.getInstance().getStatemodel(uc).isStateReachableInDefaultPath(stateCurrent.getId(), statevo)
 											: StateDelegate.getInstance().getStatemodel(uc).isStateReachableInDefaultPathByNumeral(stateCurrent.getNumeral(), statevo)));
@@ -3459,9 +3519,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 							public void run() {
 								final StateWrapper state = (StateWrapper) cmbbxCurrentState.getSelectedItem();
 								if (state != stateCurrent && state != null && state.getId() != null) {
-									final boolean bUserPressedOk = cmdChangeState(state);
-									if (!bUserPressedOk)
-										cmbbxCurrentState.setSelectedItem(stateCurrent);
+									cmdChangeState(state);
 								}
 							}
 						});
@@ -3497,15 +3555,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 			// Create a temporary list for sorting the entries before entering into combo box
 			final List<StateWrapper> lstDefaultPathEntries = new ArrayList<StateWrapper>();
 
-			final StateWrapper stateCurrent;
-			if (getSelectedCollectable() == null) {
-				stateCurrent = new StateWrapper(null, getSelectedGenericObjectStateNumeral(),
-						getSelectedGenericObjectStateName(), getSelectedGenericObjectStateIcon(), "");
-			} else {
-				DynamicAttributeVO av = getSelectedCollectable().getGenericObjectCVO().getAttribute(NuclosEOField.STATE.getMetaData().getId().intValue());
-				stateCurrent = new StateWrapper(av.getValueId(), getSelectedGenericObjectStateNumeral(),
-						getSelectedGenericObjectStateName(), getSelectedGenericObjectStateIcon(), "");
-			}
+			final StateWrapper stateCurrent = getStateWrapperFromSelectedGenericObject();
 			
 			UsageCriteria uc = null;
 			List<StateVO> lstDefaultPathStates = new ArrayList<StateVO>();
@@ -3522,11 +3572,11 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 				if (statevo == null)
 					// we don't want to throw an exception here, so we just log the error:
 					LOG.error("Die Liste der Folgestati enth\u00e4lt ein null-Objekt.");
-				else if (!lstDefaultPathEntries.contains(new StateWrapper(statevo.getId(), statevo.getNumeral(), statevo.getStatename(), statevo.getIcon(), statevo.getDescription())))
+				else if (!lstDefaultPathEntries.contains(new StateWrapper(statevo.getId(), statevo.getNumeral(), statevo.getStatename(), statevo.getIcon(), statevo.getDescription(), null, null)))
 					lstDefaultPathEntries.add(new StateWrapper(statevo.getId(), statevo.getNumeral(),
 							getSpringLocaleDelegate().getResource(/*StateDelegate.getInstance().getResourceSIdForName(statevo.getId()*/
 							StateDelegate.getInstance().getStatemodelClosure(getModuleId()).getResourceSIdForLabel(statevo.getId()),
-							statevo.getStatename()), statevo.getIcon(), statevo.getDescription(), statevo.isFromAutomatic(),
+							statevo.getStatename()), statevo.getIcon(), statevo.getDescription(), statevo.getColor(), statevo.getButtonIcon(), statevo.isFromAutomatic(),
 							getSelectedCollectable() == null ? Collections.EMPTY_LIST : 
 								!StateDelegate.getInstance().checkTargetState(getModuleId(), getSelectedCollectable().getId(), statevo.getId()) ? Collections.EMPTY_LIST :
 									getSelectedCollectable() != null ?
@@ -3545,9 +3595,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 							@Override
 							public void run() {
 								if (item != stateCurrent && item != null && item.getId() != null) {
-									final boolean bUserPressedOk = cmdChangeStates(item, item.getStatesBefore());
-									if (!bUserPressedOk)
-										cmpStateStandardView.setSelectedItem(stateCurrent);
+									cmdChangeStates(stateCurrent, item, item.getStatesBefore());
 								}
 							}
 						});
@@ -3564,11 +3612,11 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 						if (statevo == null)
 							// we don't want to throw an exception here, so we just log the error:
 							LOG.error("Die Liste der Folgestati enth\u00e4lt ein null-Objekt.");
-						else if (!lstSubsequentEntries.contains(new StateWrapper(statevo.getId(), statevo.getNumeral(), statevo.getStatename(), statevo.getIcon(), statevo.getDescription())))
+						else if (!lstSubsequentEntries.contains(new StateWrapper(statevo.getId(), statevo.getNumeral(), statevo.getStatename(), statevo.getIcon(), statevo.getDescription(), null, null)))
 							lstSubsequentEntries.add(new StateWrapper(statevo.getId(), statevo.getNumeral(),
 									getSpringLocaleDelegate().getResource(/*StateDelegate.getInstance().getResourceSIdForName(statevo.getId()*/
 									StateDelegate.getInstance().getStatemodelClosure(getModuleId()).getResourceSIdForLabel(statevo.getId()),
-									statevo.getStatename()), statevo.getIcon(), statevo.getDescription()));
+									statevo.getStatename()), statevo.getIcon(), statevo.getDescription(), statevo.getColor(), statevo.getButtonIcon()));
 
 					Map<StateWrapper, Action> mpSubsequentStatesAction = new HashMap<StateWrapper, Action>();
 					for (Iterator<StateWrapper> iterator2 = lstSubsequentEntries.iterator(); iterator2.hasNext();) {
@@ -3578,9 +3626,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 
 								@Override
 								public void actionPerformed(ActionEvent e) {
-									final boolean bUserPressedOk = cmdChangeState(subsequentState);
-									if (!bUserPressedOk)
-										cmpStateStandardView.setSelectedItem(stateCurrent);
+									cmdChangeState(subsequentState);
 								}
 							};
 							mpSubsequentStatesAction.put(subsequentState, act);
@@ -3614,13 +3660,11 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		}
 
 		if (!bViewOrEdit) {
-			toolbarCustomActionsDetails.add(new BlackLabel(cmbbxCurrentState,
-					getSpringLocaleDelegate().getMessage("GenericObjectCollectController.106","Status")));
+			toolbarCustomActionsDetails.add(lbCurrentState);
 		} else {
 			// button: "print details":
 			if (isHistoricalView())
-				toolbarCustomActionsDetails.add(new BlackLabel(cmbbxCurrentState,
-						getSpringLocaleDelegate().getMessage("GenericObjectCollectController.106","Status")));
+				toolbarCustomActionsDetails.add(lbCurrentState);
 			else {
 				if (bSingle) {
 					/** @todo print historical order */
@@ -3628,8 +3672,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 					btnPrintDetails.setEnabled(bView && hasFormsAssigned(getSelectedCollectable()));
 				}
 
-				toolbarCustomActionsDetails.add(new BlackLabel(cmbbxCurrentState,
-						getSpringLocaleDelegate().getMessage("GenericObjectCollectController.106","Status")));
+				toolbarCustomActionsDetails.add(lbCurrentState);
 
 				// buttons/actions for "generate leased object":
 				if (!isSelectedCollectableMarkedAsDeleted()) {
@@ -3720,49 +3763,68 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	 * @precondition this.getCollectState().isDetailsMode()
 	 * NUCLEUSINT-1159 needed for accessing the statechange for status button
 	 */
-	public boolean cmdChangeState(final StateWrapper stateNew) {
+	public void cmdChangeState(final StateWrapper stateNew) {
 		if (isHistoricalView())
 			throw new IllegalStateException(getSpringLocaleDelegate().getMessage("GenericObjectCollectController.90","Statuswechsel ist in historischer Ansicht nicht m\u00f6glich."));
 		if (!getCollectState().isDetailsMode())
 			throw new IllegalStateException(getSpringLocaleDelegate().getMessage("GenericObjectCollectController.91","Statuswechsel ist nur in Detailmodus m\u00f6glich."));
 
-		final boolean bMultiEdit = getCollectState().isDetailsModeMultiViewOrEdit();
+//		final boolean bMultiEdit = getCollectState().isDetailsModeMultiViewOrEdit();
+//
+//		String sQuestion = bMultiEdit
+//		? getSpringLocaleDelegate().getMessage("GenericObjectCollectController.79","Soll der Wechsel in den Status \"{0}\" f\u00fcr die ausgew\u00e4hlten Objekte wirklich durchgef\u00fchrt werden?\nDie vorgenommenen \u00c4nderungen an dem Objekt werden gespeichert.", stateNew.getStatusText())
+//			: getSpringLocaleDelegate().getMessage("GenericObjectCollectController.80","Soll der Wechsel in den Status \"{0}\" wirklich durchgef\u00fchrt werden?", stateNew.getStatusText());
+//
+//		Object[] argsOptionPane = new Object[] {sQuestion};
+//		if (stateNew.getDescription() != null && !stateNew.getDescription().isEmpty()) {
+//			JTextArea ta = new JTextArea();
+//			ta.setEnabled(true);
+//			ta.setEditable(false);
+//			ta.setText(stateNew.getDescription());
+//			ta.setCaretPosition(0);
+//			argsOptionPane = new Object[] {
+//					sQuestion,
+//					"\n",
+//					ta
+//			};
+//		}
+//
+//		final int btn = JOptionPane.showConfirmDialog(getTab(), argsOptionPane,
+//				getSpringLocaleDelegate().getMessage("GenericObjectCollectController.85","Statuswechsel durchf\u00fchren"),
+//			JOptionPane.OK_CANCEL_OPTION);
+//
+//		// repaint directly:
+//		//getFrame().repaint();
+//
+//		final boolean result = (btn == JOptionPane.OK_OPTION);
+//
+//		stopEditingInDetails();
+//
+		final StateWrapper stateCurrent = getStateWrapperFromSelectedGenericObject();
+//
+//		if (result)	{
+//			changeState(stateNew);
+//		}
+		
+		OverlayOptionPane.showConfirmDialog(getTab(), new ChangeStatePanel(stateCurrent, stateNew),
+				getSpringLocaleDelegate().getMessage("GenericObjectCollectController.85","Statuswechsel durchf\u00fchren")+"?", 
+				JOptionPane.YES_NO_OPTION,
+				new OvOpAdapter() {
+					public void done(int result) {
+						final boolean ok = (result == JOptionPane.YES_OPTION);
 
-		String sQuestion = bMultiEdit
-		? getSpringLocaleDelegate().getMessage("GenericObjectCollectController.79","Soll der Wechsel in den Status \"{0}\" f\u00fcr die ausgew\u00e4hlten Objekte wirklich durchgef\u00fchrt werden?\nDie vorgenommenen \u00c4nderungen an dem Objekt werden gespeichert.", stateNew.getStatusText())
-			: getSpringLocaleDelegate().getMessage("GenericObjectCollectController.80","Soll der Wechsel in den Status \"{0}\" wirklich durchgef\u00fchrt werden?", stateNew.getStatusText());
+						stopEditingInDetails();
 
-		Object[] argsOptionPane = new Object[] {sQuestion};
-		if (stateNew.getDescription() != null && !stateNew.getDescription().isEmpty()) {
-			JTextArea ta = new JTextArea();
-			ta.setEnabled(true);
-			ta.setEditable(false);
-			ta.setText(stateNew.getDescription());
-			ta.setCaretPosition(0);
-			argsOptionPane = new Object[] {
-					sQuestion,
-					"\n",
-					ta
-			};
-		}
-
-		final int btn = JOptionPane.showConfirmDialog(getTab(), argsOptionPane,
-				getSpringLocaleDelegate().getMessage("GenericObjectCollectController.85","Statuswechsel durchf\u00fchren"),
-			JOptionPane.OK_CANCEL_OPTION);
-
-		// repaint directly:
-		//getFrame().repaint();
-
-		final boolean result = (btn == JOptionPane.OK_OPTION);
-
-		stopEditingInDetails();
-
-		final StateWrapper stateCurrent = new StateWrapper(null, getSelectedGenericObjectStateNumeral(), getSelectedGenericObjectStateName(), getSelectedGenericObjectStateIcon(), "");
-
-		if (result)	{
-			changeState(stateNew);
-		}
-		return result;
+						if (ok)	{
+							changeState(stateNew);
+						} else {
+							if (stateCurrent != null) {
+								cmbbxCurrentState.setSelectedItem(stateCurrent);
+								cmpStateStandardView.setSelectedItem(stateCurrent);
+							}
+						}
+					}
+				});
 	}
 
 	/**
@@ -3772,7 +3834,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	 * @precondition this.getCollectState().isDetailsMode()
 	 * NUCLEUSINT-1159 needed for accessing the statechange for status button
 	 */
-	private boolean cmdChangeStates(final StateWrapper stateFinal, final List<Integer> statesNew) {
+	private void cmdChangeStates(final StateWrapper stateSource, final StateWrapper stateFinal, final List<Integer> statesNew) {
 		if (isHistoricalView())
 			throw new IllegalStateException(getSpringLocaleDelegate().getMessage("GenericObjectCollectController.90","Statuswechsel ist in historischer Ansicht nicht m\u00f6glich."));			
 		
@@ -3785,47 +3847,51 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 			throw new IllegalStateException(getSpringLocaleDelegate().getMessage("GenericObjectCollectController.91","Statuswechsel ist nur in Detail- order Ergebnisansicht m\u00f6glich."));
 		}
 
-		String sQuestion;
-		if (bMultiEdit) {
-			if (getCollectState().isDetailsMode()) {
-				sQuestion = getSpringLocaleDelegate().getMessage("GenericObjectCollectController.79","Soll der Wechsel in den Status \"{0}\" f\u00fcr die ausgew\u00e4hlten Objekte wirklich durchgef\u00fchrt werden?", stateFinal.getStatusText()) 
-						+ getSpringLocaleDelegate().getMessage("GenericObjectCollectController.79b","\nDie vorgenommenen \u00c4nderungen an dem Objekt werden gespeichert.", stateFinal.getStatusText());
-			} else {
-				sQuestion = getSpringLocaleDelegate().getMessage("GenericObjectCollectController.79","Soll der Wechsel in den Status \"{0}\" f\u00fcr die ausgew\u00e4hlten Objekte wirklich durchgef\u00fchrt werden?", stateFinal.getStatusText());
-			}
-		} else {
-			sQuestion = getSpringLocaleDelegate().getMessage("GenericObjectCollectController.80","Soll der Wechsel in den Status \"{0}\" wirklich durchgef\u00fchrt werden?", stateFinal.getStatusText());
-		}
+//		String sQuestion;
+//		if (bMultiEdit) {
+//			if (getCollectState().isDetailsMode()) {
+//				sQuestion = getSpringLocaleDelegate().getMessage("GenericObjectCollectController.79","Soll der Wechsel in den Status \"{0}\" f\u00fcr die ausgew\u00e4hlten Objekte wirklich durchgef\u00fchrt werden?", stateFinal.getStatusText()) 
+//						+ getSpringLocaleDelegate().getMessage("GenericObjectCollectController.79b","\nDie vorgenommenen \u00c4nderungen an dem Objekt werden gespeichert.", stateFinal.getStatusText());
+//			} else {
+//				sQuestion = getSpringLocaleDelegate().getMessage("GenericObjectCollectController.79","Soll der Wechsel in den Status \"{0}\" f\u00fcr die ausgew\u00e4hlten Objekte wirklich durchgef\u00fchrt werden?", stateFinal.getStatusText());
+//			}
+//		} else {
+//			sQuestion = getSpringLocaleDelegate().getMessage("GenericObjectCollectController.80","Soll der Wechsel in den Status \"{0}\" wirklich durchgef\u00fchrt werden?", stateFinal.getStatusText());
+//		}
+//
+//		Object[] argsOptionPane = new Object[] {sQuestion};
+//		if (stateFinal.getDescription() != null && !stateFinal.getDescription().isEmpty()) {
+//			JTextArea ta = new JTextArea();
+//			ta.setEnabled(true);
+//			ta.setEditable(false);
+//			ta.setText(stateFinal.getDescription());
+//			ta.setCaretPosition(0);
+//			argsOptionPane = new Object[] {
+//					sQuestion,
+//					"\n",
+//					ta
+//			};
+//		}
 
-		Object[] argsOptionPane = new Object[] {sQuestion};
-		if (stateFinal.getDescription() != null && !stateFinal.getDescription().isEmpty()) {
-			JTextArea ta = new JTextArea();
-			ta.setEnabled(true);
-			ta.setEditable(false);
-			ta.setText(stateFinal.getDescription());
-			ta.setCaretPosition(0);
-			argsOptionPane = new Object[] {
-					sQuestion,
-					"\n",
-					ta
-			};
-		}
+		OverlayOptionPane.showConfirmDialog(getTab(), new ChangeStatePanel(stateSource, stateFinal),
+				getSpringLocaleDelegate().getMessage("GenericObjectCollectController.85","Statuswechsel durchf\u00fchren")+"?", 
+				JOptionPane.YES_NO_OPTION,
+				new OvOpAdapter() {
+					public void done(int result) {
+						final boolean ok = (result == JOptionPane.YES_OPTION);
 
-		final int btn = JOptionPane.showConfirmDialog(getTab(), argsOptionPane,
-				getSpringLocaleDelegate().getMessage("GenericObjectCollectController.85","Statuswechsel durchf\u00fchren"),
-			JOptionPane.OK_CANCEL_OPTION);
+						stopEditingInDetails();
 
-		// repaint directly:
-		//getFrame().repaint();
+						if (ok)	{
+							changeStates(stateFinal, statesNew);
+						} else {
+							if (stateSource != null) {
+								cmpStateStandardView.setSelectedItem(stateSource);
+							}
+						}
+					}
+				});
 
-		final boolean result = (btn == JOptionPane.OK_OPTION);
-
-		stopEditingInDetails();
-
-		if (result)	{
-			changeStates(stateFinal, statesNew);
-		}
-		return result;
 	}
 
 	/**
@@ -3839,7 +3905,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 
 		stopEditingInDetails();
 
-		final StateWrapper stateCurrent = new StateWrapper(null, getSelectedGenericObjectStateNumeral(), getSelectedGenericObjectStateName(), getSelectedGenericObjectStateIcon(), "");
+		final StateWrapper stateCurrent = getStateWrapperFromSelectedGenericObject();
 
 		class ChangeStateWorker1 implements CommonRunnable {
 
@@ -3904,7 +3970,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 
 		stopEditingInDetails();
 
-		final StateWrapper stateCurrent = new StateWrapper(null, getSelectedGenericObjectStateNumeral(), getSelectedGenericObjectStateName(), getSelectedGenericObjectStateIcon(), "");
+		final StateWrapper stateCurrent = getStateWrapperFromSelectedGenericObject();
 
 		class ChangeStateWorker2 implements CommonRunnable {
 
@@ -3977,7 +4043,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 				iModuleId = getSelectedCollectableModuleId();
 				assert iGenericObjectId != null;
 
-				stateCurrent = new StateWrapper(null, getSelectedGenericObjectStateNumeral(), getSelectedGenericObjectStateName(), getSelectedGenericObjectStateIcon(), "");
+				stateCurrent = getStateWrapperFromSelectedGenericObject();
 				clct = GenericObjectCollectController.this.getCompleteSelectedCollectable();
 			}
 
@@ -4071,7 +4137,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 				iModuleId = getSelectedCollectableModuleId();
 				assert iGenericObjectId != null;
 
-				stateCurrent = new StateWrapper(null, getSelectedGenericObjectStateNumeral(), getSelectedGenericObjectStateName(), getSelectedGenericObjectStateIcon(), "");
+				stateCurrent = getStateWrapperFromSelectedGenericObject();
 				clct = GenericObjectCollectController.this.getCompleteSelectedCollectable();
 			}
 
@@ -6304,8 +6370,14 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 							final List<StateVO> lstSubsequenteStates = getSubsequentStates(getSelectedCollectables());
 							JMenu mi = getResultPanel().miStates;
 							mi.setVisible(lstSubsequenteStates.size() != 0);
-							for(final StateVO stateVO : lstSubsequenteStates) {
-								mi.add(new JMenuItem(new StateChangeAction(stateVO)));
+							
+							// try to find single soruce state...
+							StateVO statevoSource = getSingleSourceStateIfAny(getSelectedCollectables());
+							
+							for(final StateVO statevoTarget : lstSubsequenteStates) {
+								final JMenuItem miStateChange = new JMenuItem(new StateChangeAction(statevoSource, statevoTarget));
+								miStateChange.setIcon(null);
+								mi.add(miStateChange);
 							}
 						}
 						catch (Exception e1) {
@@ -6334,23 +6406,37 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 	
 	protected class StateChangeAction extends AbstractAction {
 		
-		private final StateVO statevo;
+		private final StateVO statevoSource;
+		private final StateVO statevoTarget;
 
-		public StateChangeAction(StateVO statevo) {
-			super(statevo.getStatename());
-			this.statevo = statevo;
+		public StateChangeAction(StateVO statevoSource, StateVO statevoTarget) {
+			super(statevoTarget.getStatename(), statevoTarget.getButtonIcon()==null?null:ResourceCache.getInstance().getIconResource(statevoTarget.getButtonIcon().getId()));
+			this.statevoSource = statevoSource;
+			this.statevoTarget = statevoTarget;
+			putValue("Color", statevoTarget.getColor());
 		}
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
+			StateWrapper swSource = null;
+			if (statevoSource != null) {
+				swSource = new StateWrapper(statevoSource.getId(), statevoSource.getNumeral(),
+						getSpringLocaleDelegate().getResource(/*StateDelegate.getInstance().getResourceSIdForName(statevo.getId()*/
+						StateDelegate.getInstance().getStatemodelClosure(getModuleId()).getResourceSIdForLabel(statevoSource.getId()),
+						statevoSource.getStatename()), statevoSource.getIcon(), statevoSource.getDescription(), statevoSource.getColor(), 
+						statevoSource.getButtonIcon(), statevoSource.isFromAutomatic(),
+						Collections.singletonList(statevoSource.getId()));
+			}
+			
 			List<Integer> newStates = new ArrayList<Integer>(1);
-			newStates.add(statevo.getId());
-			StateWrapper sw = new StateWrapper(statevo.getId(), statevo.getNumeral(),
+			newStates.add(statevoTarget.getId());
+			StateWrapper swTarget = new StateWrapper(statevoTarget.getId(), statevoTarget.getNumeral(),
 					getSpringLocaleDelegate().getResource(/*StateDelegate.getInstance().getResourceSIdForName(statevo.getId()*/
-					StateDelegate.getInstance().getStatemodelClosure(getModuleId()).getResourceSIdForLabel(statevo.getId()),
-					statevo.getStatename()), statevo.getIcon(), statevo.getDescription(), statevo.isFromAutomatic(),
+					StateDelegate.getInstance().getStatemodelClosure(getModuleId()).getResourceSIdForLabel(statevoTarget.getId()),
+					statevoTarget.getStatename()), statevoTarget.getIcon(), statevoTarget.getDescription(), statevoTarget.getColor(), 
+					statevoTarget.getButtonIcon(), statevoTarget.isFromAutomatic(),
 					newStates);
-			cmdChangeStates(sw, sw.getStatesBefore());
+			cmdChangeStates(swSource, swTarget, swTarget.getStatesBefore());
 		}
 		
 	}
@@ -6362,11 +6448,32 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 			result = new ArrayList<ResultActionCollection>();
 		}
 		ResultActionCollection rac = new ResultActionCollection(SpringLocaleDelegate.getInstance().getMessage("ResultPanel.15","Statuswechsel"));
-		for (StateVO statevo : getSubsequentStates(selectedCollectablesFromResult)) {
-			rac.addAction(new StateChangeAction(statevo));
+		
+		// try to find single soruce state...
+		StateVO statevoSource = getSingleSourceStateIfAny(selectedCollectablesFromResult);
+		
+		for (StateVO statevoTarget : getSubsequentStates(selectedCollectablesFromResult)) {
+			
+			rac.addAction(new StateChangeAction(statevoSource, statevoTarget));
 		}
 		result.add(0, rac);
 		return result;
+	}
+	
+	private StateVO getSingleSourceStateIfAny(Collection<CollectableGenericObjectWithDependants> selectedCollectables) {
+		Integer sourceStateId = null;
+		for (CollectableGenericObjectWithDependants go : selectedCollectables) {
+			Integer currentStateId = (Integer) go.getValueId(NuclosEOField.STATE.getName()); 
+			if (sourceStateId == null) {
+				sourceStateId = currentStateId;
+			} else {
+				if (!sourceStateId.equals(currentStateId)) {
+					sourceStateId = null;
+					break;
+				}
+			}
+		}
+		return sourceStateId==null?null:StateDelegate.getInstance().getState(getModuleId(), sourceStateId);
 	}
 	
 	

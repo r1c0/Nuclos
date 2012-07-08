@@ -16,11 +16,13 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.statemodel;
 
+import java.awt.Color;
 import java.util.LinkedList;
 import java.util.List;
 
 import org.nuclos.common.NuclosImage;
 import org.nuclos.common2.LangUtils;
+import org.nuclos.server.resource.valueobject.ResourceVO;
 
 public class StateWrapper implements Comparable<StateWrapper> {
 	private final Integer iId;
@@ -30,11 +32,13 @@ public class StateWrapper implements Comparable<StateWrapper> {
 	private final NuclosImage icon;
 	private final boolean bFromAutomatic;
 	private final List<Integer> lstReachable;
+	private Color color;
+	private final ResourceVO resButtonIcon;
 	
-	public StateWrapper(Integer iId, Integer iNumeral, String sName, NuclosImage icon, String sDescription) {
-		this(iId, iNumeral, sName, icon, sDescription, false, new LinkedList<Integer>());
+	public StateWrapper(Integer iId, Integer iNumeral, String sName, NuclosImage icon, String sDescription, String color, ResourceVO resButtonIcon) {
+		this(iId, iNumeral, sName, icon, sDescription, color, resButtonIcon, false, new LinkedList<Integer>());
 	}
-	public StateWrapper(Integer iId, Integer iNumeral, String sName, NuclosImage icon, String sDescription, boolean bFromAutomatic, List<Integer> lstReachable) {
+	public StateWrapper(Integer iId, Integer iNumeral, String sName, NuclosImage icon, String sDescription, String color, ResourceVO resButtonIcon, boolean bFromAutomatic, List<Integer> lstReachable) {
 		this.iId = iId;
 		this.iNumeral = iNumeral;
 		this.sName = sName;
@@ -42,6 +46,14 @@ public class StateWrapper implements Comparable<StateWrapper> {
 		this.sDescription = sDescription;
 		this.bFromAutomatic = bFromAutomatic;
 		this.lstReachable = lstReachable;
+		this.resButtonIcon = resButtonIcon;
+		if (color != null) {
+			try {
+				this.color = Color.decode(color);
+			} catch (Exception ex) {
+				// ignore
+			}
+		}
 	}
 
 	public Integer getId() {
@@ -63,7 +75,15 @@ public class StateWrapper implements Comparable<StateWrapper> {
 	public NuclosImage getIcon() {
 		return icon;
 	}
+	
+	public Color getColor() {
+		return color;
+	}
 
+	public ResourceVO getResButtonIcon() {
+		return resButtonIcon;
+	}
+	
 	@Override
 	public boolean equals(Object o) {
 		if (o == this)

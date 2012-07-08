@@ -140,6 +140,7 @@ import org.nuclos.client.ui.Controller;
 import org.nuclos.client.ui.Errors;
 import org.nuclos.client.ui.Icons;
 import org.nuclos.client.ui.MainFrameTabAdapter;
+import org.nuclos.client.ui.ResultListener;
 import org.nuclos.client.ui.TopController;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.client.ui.collect.CollectController;
@@ -435,7 +436,10 @@ public class MainController {
 			frm.addWindowListener(new WindowAdapter() {
 				@Override
 				public void windowClosing(WindowEvent ev) {
-					cmdWindowClosing();
+					cmdWindowClosing(new ResultListener<Boolean>() {
+						@Override
+						public void done(Boolean result) {}
+					});
 				}
 			});
 			loginController.increaseLoginProgressBar(StartUp.PROGRESS_CREATE_MAINFRAME);
@@ -813,7 +817,10 @@ public class MainController {
 
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					cmdWindowClosing();
+					cmdWindowClosing(new ResultListener<Boolean>() {
+						@Override
+						public void done(Boolean result) {}
+					});
 				}
 			};
 			cmdLogoutExit = new AbstractAction() {
@@ -873,7 +880,10 @@ public class MainController {
 		LocalUserProperties props = LocalUserProperties.getInstance();
 		props.setUserPasswd("");
 		props.store();
-		cmdWindowClosing();
+		cmdWindowClosing(new ResultListener<Boolean>() {
+			@Override
+			public void done(Boolean result) {}
+		});
 	}
 
 	public static void cmdOpenSettings() {
@@ -1714,43 +1724,48 @@ public class MainController {
 	/**
 	 * the main frame is about to close
 	 */
-	public boolean cmdWindowClosing() {
-		if (allControllersMayBeClosed()) {
-			try {
+	public void cmdWindowClosing(final ResultListener<Boolean> rl) {
+		allControllersMayBeClosed(new ResultListener<Boolean>() {
+			@Override
+			public void done(Boolean result) {
+				if (Boolean.TRUE.equals(result)) {
+					try {
 
-				frm.writeMainFramePreferences(prefs);
-				restoreUtils.storeWorkspace(frm.getWorkspace());
+						frm.writeMainFramePreferences(prefs);
+						restoreUtils.storeWorkspace(frm.getWorkspace());
 
-				if (this.ctlTasks != null)	{
-					this.ctlTasks.close();
+						if (ctlTasks != null)	{
+							ctlTasks.close();
+						} else {
+							LOG.debug("TaskController is null!");
+						}
+
+						LOG.debug("removes unused preferences...");
+						removeUnusedPreferences();
+						
+						closeAllControllers();
+					}
+					catch (Exception ex) {
+						final String sMessage = localeDelegate.getMessage("MainController.20","Die Sitzungsdaten, die Informationen \u00fcber die zuletzt ge\u00f6ffneten Fenster enthalten,\n" +
+								"konnten nicht geschrieben werden. Bei der n\u00e4chsten Sitzung k\u00f6nnen nicht alle Fenster\n" +
+								"wiederhergestellt werden. Bitte \u00f6ffnen Sie diese Fenster in der n\u00e4chsten Sitzung erneut.");
+						Errors.getInstance().showExceptionDialog(frm, sMessage, ex);
+					}
+					catch (Error error) {
+						LOG.error("Beim Beenden des Clients ist ein fataler Fehler aufgetreten.", error);
+					}
+					finally {
+						// exit even on <code>Error</code>s, especially <code>NoClassDefFoundError</code>s,
+						// which may result from installing a different version while a client is running.
+						cmdExit();
+					}
+
+					rl.done(true);
 				} else {
-					LOG.debug("TaskController is null!");
+					rl.done(false);
 				}
-
-				LOG.debug("removes unused preferences...");
-				removeUnusedPreferences();
-				
-				closeAllControllers();
 			}
-			catch (Exception ex) {
-				final String sMessage = localeDelegate.getMessage("MainController.20","Die Sitzungsdaten, die Informationen \u00fcber die zuletzt ge\u00f6ffneten Fenster enthalten,\n" +
-						"konnten nicht geschrieben werden. Bei der n\u00e4chsten Sitzung k\u00f6nnen nicht alle Fenster\n" +
-						"wiederhergestellt werden. Bitte \u00f6ffnen Sie diese Fenster in der n\u00e4chsten Sitzung erneut.");
-				Errors.getInstance().showExceptionDialog(frm, sMessage, ex);
-			}
-			catch (Error error) {
-				LOG.error("Beim Beenden des Clients ist ein fataler Fehler aufgetreten.", error);
-			}
-			finally {
-				// exit even on <code>Error</code>s, especially <code>NoClassDefFoundError</code>s,
-				// which may result from installing a different version while a client is running.
-				this.cmdExit();
-			}
-
-			return true;
-		} else {
-			return false;
-		}
+		});
 	}
 
 	public static void cmdCycleThroughWindows(boolean forward) {
@@ -1798,18 +1813,34 @@ public class MainController {
 		this.ctlTasks.refreshAllTaskViews();
 	}
 
-	protected boolean allControllersMayBeClosed() {
-		boolean result = true;
-		final Iterator<TopController> iter = mpActiveControllers.values().iterator();
-		while (result && iter.hasNext()) {
-			final TopController ctl = iter.next();
-			try {
-				result = ctl.askAndSaveIfNecessary(true);
-			} catch (NuclosCancelException e) {
-				result = false;
+	protected void allControllersMayBeClosed(final ResultListener<Boolean> rl) {
+		final Pair<Integer, Integer> counts = new Pair<Integer, Integer>(0,0);
+		
+		final int targetCount = mpActiveControllers.values().size();
+		if (targetCount == 0) {
+			rl.done(true);
+		} else {
+			final Iterator<TopController> iter = mpActiveControllers.values().iterator();
+			while (iter.hasNext()) {
+				try {
+					final TopController ctl = iter.next();
+					ctl.askAndSaveIfNecessary(true, new ResultListener<Boolean>() {
+						@Override
+						public void done(Boolean result) {
+							counts.x++;
+							if (Boolean.TRUE.equals(result)) {
+								counts.y++;
+							}
+							if (counts.x == targetCount) {
+								rl.done(counts.y == targetCount);
+							}
+						}
+					});
+				} catch (Exception ex) {
+					counts.x++;
+				}
 			}
 		}
-		return result;
 	}
 
 	private void closeAllControllers() throws IOException {
@@ -1920,7 +1951,7 @@ public class MainController {
 			new IsCollectControllerDisplayingDetails(sEntityName));
 	}
 
-	public void showDetails(String entityName, Long id) throws CommonBusinessException {
+	public void showDetails(String entityName, Long id) {
 		showDetails(entityName, id.intValue());
 	}
 
@@ -1931,11 +1962,11 @@ public class MainController {
 	 * @precondition sEntityName != null
 	 * @precondition oId != null
 	 */
-	public void showDetails(String sEntityName, Object oId) throws CommonBusinessException {
+	public void showDetails(String sEntityName, Object oId) {
 		showDetails(sEntityName, oId, true);
 	}
 
-	public void showDetails(String sEntityName, Object oId, boolean newTab) throws CommonBusinessException {
+	public void showDetails(String sEntityName, Object oId, boolean newTab) {
 		showDetails(sEntityName, oId, newTab, null);
 	}
 
@@ -1947,18 +1978,26 @@ public class MainController {
 	 * @precondition sEntityName != null
 	 * @precondition oId != null
 	 */
-	public void showDetails(String sEntityName, Object oId, boolean newTab, CollectController<?> listeningController, CollectableEventListener... componentListener) throws CommonBusinessException {
+	public void showDetails(final String sEntityName, final Object oId, final boolean newTab, final CollectController<?> listeningController, final CollectableEventListener... componentListener) {
 		CollectController<?> ctl = null;
 		boolean activateOnly = false;
+		boolean stop = false;
 		if (!newTab) {
 			ctl = this.findCollectControllerDisplaying(sEntityName, oId);
 			if (ctl == null) {
 				ctl = this.findCollectControllerDisplayingDetails(sEntityName);
 				if (ctl != null) {
-					if (!ctl.askAndSaveIfNecessary()) {
-						// action was cancelled
-						return;
-					}
+					stop = true;
+					final CollectController<?> ctlFinal = ctl;
+					final boolean activateOnlyFinal = activateOnly;
+					ctl.askAndSaveIfNecessary(new ResultListener<Boolean>() {
+						@Override
+						public void done(Boolean result) {
+							if (Boolean.TRUE.equals(result)) {
+								_showDetails(ctlFinal, activateOnlyFinal, sEntityName, oId, newTab, listeningController, componentListener);
+							}
+						}
+					});
 				}
 				else {
 					ctl = this.findCollectControllerDisplaying(sEntityName);
@@ -1968,26 +2007,38 @@ public class MainController {
 				activateOnly = true;
 			}
 		}
-		if (ctl == null) {
-			ctl = NuclosCollectControllerFactory.getInstance().newCollectController(sEntityName, null);
+		if (stop) {
+			return; 
+		} else {
+			_showDetails(ctl, activateOnly, sEntityName, oId, newTab, listeningController, componentListener);
 		}
-
-		if (listeningController != null) {
-			ctl.addCollectableEventListener(new DetailsCollectableEventListener(listeningController, ctl));
-		}
-
-		for (CollectableEventListener l : componentListener) {
-			ctl.addCollectableEventListener(l);
-		}
-
-		if (!activateOnly) {
-			ctl.runViewSingleCollectableWithId(oId);
-		}
-
-		MainFrame.setSelectedTab(ctl.getTab());
-
-		if (activateOnly) {
-			ctl.getCollectStateModel().performVersionCheck();
+	}
+	
+	private void _showDetails(CollectController<?> ctl, boolean activateOnly, String sEntityName, Object oId, boolean newTab, CollectController<?> listeningController, CollectableEventListener... componentListener) {
+		try {
+			if (ctl == null) {
+				ctl = NuclosCollectControllerFactory.getInstance().newCollectController(sEntityName, null);
+			}
+	
+			if (listeningController != null) {
+				ctl.addCollectableEventListener(new DetailsCollectableEventListener(listeningController, ctl));
+			}
+	
+			for (CollectableEventListener l : componentListener) {
+				ctl.addCollectableEventListener(l);
+			}
+	
+			if (!activateOnly) {
+				ctl.runViewSingleCollectableWithId(oId);
+			}
+	
+			MainFrame.setSelectedTab(ctl.getTab());
+	
+			if (activateOnly) {
+				ctl.getCollectStateModel().performVersionCheck();
+			}
+		} catch (Exception ex) {
+			Errors.getInstance().showExceptionDialog(getFrame(), ex);
 		}
 	}
 
@@ -1996,26 +2047,41 @@ public class MainController {
 		controller.runViewResults(ids);
 	}
 
-	public void showDetails(String entity, List<Object> ids) throws CommonBusinessException {
-		showDetails(entity, ids, false);
-	}
-
-	public void showDetails(String entity, List<Object> ids, boolean newTab) throws CommonBusinessException {
-		CollectController<?> ctl = null;
-		if (!newTab) {
-			ctl = this.findCollectControllerDisplayingDetails(entity);
-			if (ctl != null) {
-				if (!ctl.askAndSaveIfNecessary()) {
-					// action was cancelled
-					return;
-				}
-			}
-		}
-		if (ctl == null) {
-			ctl = NuclosCollectControllerFactory.getInstance().newCollectController(entity, null);
-		}
-		ctl.runViewMultipleCollectablesWithIds(ids);
-	}
+//	public void showDetails(String entity, List<Object> ids) throws CommonBusinessException {
+//		showDetails(entity, ids, false);
+//	}
+//
+//	public void showDetails(final String entity, final List<Object> ids, boolean newTab) throws CommonBusinessException {
+//		CollectController<?> ctl = null;
+//		
+//		boolean askAndWait = false;
+//		if (!newTab) {
+//			ctl = this.findCollectControllerDisplayingDetails(entity);
+//			if (ctl != null) {
+//				askAndWait = true;
+//				final CollectController<?> ctlFinal = ctl;
+//				ctl.askAndSaveIfNecessary(new ResultListener<Boolean>() {
+//					@Override
+//					public void done(Boolean result) {
+//						if (Boolean.TRUE.equals(result)) {
+//							CollectController<?> ctl2 = ctlFinal;
+//							if (ctl2 == null) {
+//								ctl2 = NuclosCollectControllerFactory.getInstance().newCollectController(entity, null);
+//							}
+//							ctl2.runViewMultipleCollectablesWithIds(ids);
+//						}
+//					}
+//				});
+//			}
+//		}
+//		
+//		if (!askAndWait) {
+//			if (ctl == null) {
+//				ctl = NuclosCollectControllerFactory.getInstance().newCollectController(entity, null);
+//			}
+//			ctl.runViewMultipleCollectablesWithIds(ids);
+//		}
+//	}
 
 	/**
 	 * Open a new embedded (not in separate tab) dialog to create a new collectable.

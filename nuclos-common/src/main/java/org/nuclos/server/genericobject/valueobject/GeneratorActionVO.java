@@ -19,6 +19,7 @@ package org.nuclos.server.genericobject.valueobject;
 import java.util.Collection;
 
 import org.nuclos.common.PropertiesMap;
+import org.nuclos.server.resource.valueobject.ResourceVO;
 
 /**
  * Value object representing a leased object generator action.
@@ -34,6 +35,7 @@ public class GeneratorActionVO implements java.io.Serializable {
 	private Integer iId;
 	private String sName;
 	private String sLabel;
+	private ResourceVO resButtonIcon;
 	private Integer iSourceModuleId;
 	private Integer iTargetModuleId;
 	private Integer iTargetProcessId;
@@ -64,6 +66,7 @@ public class GeneratorActionVO implements java.io.Serializable {
 			Integer iId,
 			String sName,
 			String sLabel,
+			ResourceVO resButtonIcon,
 			Integer iSourceModuleId,
 			Integer iTargetModuleId,
 			Integer iTargetProcessId,
@@ -73,6 +76,7 @@ public class GeneratorActionVO implements java.io.Serializable {
 		this.iId = iId;
 		this.sName = sName;
 		this.sLabel = sLabel;
+		this.resButtonIcon = resButtonIcon;
 		this.iSourceModuleId = iSourceModuleId;
 		this.iTargetModuleId = iTargetModuleId;
 		this.iTargetProcessId = iTargetProcessId;
@@ -143,6 +147,14 @@ public class GeneratorActionVO implements java.io.Serializable {
 	 */
 	public String getLabel() {
 		return sLabel;
+	}
+	
+	/**
+	 * get button icon for generator action
+	 * @return button icon for generator action
+	 */
+	public ResourceVO getButtonIcon() {
+		return resButtonIcon;
 	}
 
 	/**

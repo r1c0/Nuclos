@@ -54,6 +54,7 @@ import org.nuclos.client.login.LoginListener;
 import org.nuclos.client.login.LoginPanel;
 import org.nuclos.client.synthetica.NuclosSyntheticaUtils;
 import org.nuclos.client.ui.Errors;
+import org.nuclos.client.ui.ResultListener;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.client.ui.collect.component.CollectableComponentFactory;
 import org.nuclos.common.ApplicationProperties;
@@ -578,17 +579,26 @@ public class StartUp  {
 
             Object macQuitHandler = Proxy.newProxyInstance(Main.class.getClassLoader(), new Class[] { macQuitHandlerClass }, new InvocationHandler() {
 				@Override
-				public Object invoke(Object proxy, Method method, Object[] args)	throws Throwable {
+				public Object invoke(Object proxy, Method method, final Object[] args)	throws Throwable {
 					if (method != null && "handleQuitRequestWith".equals(method.getName()) && args.length == 2) {
 						Class<?> macQuitResponseClass = Class.forName("com.apple.eawt.QuitResponse");
-						Method macQuitResponsePerformQuitMethod = macQuitResponseClass.getDeclaredMethod("performQuit");
-						Method macQuitResponseCancelQuitMethod = macQuitResponseClass.getDeclaredMethod("cancelQuit");
+						final Method macQuitResponsePerformQuitMethod = macQuitResponseClass.getDeclaredMethod("performQuit");
+						final Method macQuitResponseCancelQuitMethod = macQuitResponseClass.getDeclaredMethod("cancelQuit");
 
-						if (Main.getInstance().getMainController().cmdWindowClosing()) {
-							macQuitResponsePerformQuitMethod.invoke(args[1]);
-						} else {
-							macQuitResponseCancelQuitMethod.invoke(args[1]);
-						}
+						Main.getInstance().getMainController().cmdWindowClosing(new ResultListener<Boolean>() {
+							@Override
+							public void done(Boolean result) {
+								try {
+									if (Boolean.TRUE.equals(result)) {
+										macQuitResponsePerformQuitMethod.invoke(args[1]);
+									} else {
+										macQuitResponseCancelQuitMethod.invoke(args[1]);
+									}
+								} catch (Exception ex) {
+									LOG.error(ex.getMessage(), ex);
+								}
+							}
+						});
 					}
 					return null;
 				}

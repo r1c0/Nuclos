@@ -109,12 +109,7 @@ public class RuleEditPanel extends JPanel {
 								}
 							}
 							else {
-								try {
-									Main.getInstance().getMainController().showDetails(error.getEntityname(), error.getId());
-								}
-								catch(CommonBusinessException e) {
-									Errors.getInstance().showExceptionDialog(RuleEditPanel.this, e);
-								}
+								Main.getInstance().getMainController().showDetails(error.getEntityname(), error.getId());
 							}
 						}
 					}

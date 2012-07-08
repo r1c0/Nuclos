@@ -253,6 +253,44 @@ public class Utils {
 		}
 		return result;
 	}
+	
+	public static String colorToHexString(Color c) {
+		char[] buf = new char[7];
+		buf[0] = '#';
+		String s = Integer.toHexString(c.getRed());
+		if (s.length() == 1) {
+			buf[1] = '0';
+			buf[2] = s.charAt(0);
+		}
+		else {
+			buf[1] = s.charAt(0);
+			buf[2] = s.charAt(1);
+		}
+		s = Integer.toHexString(c.getGreen());
+		if (s.length() == 1) {
+			buf[3] = '0';
+			buf[4] = s.charAt(0);
+		}
+		else {
+			buf[3] = s.charAt(0);
+			buf[4] = s.charAt(1);
+		}
+		s = Integer.toHexString(c.getBlue());
+		if (s.length() == 1) {
+			buf[5] = '0';
+			buf[6] = s.charAt(0);
+		}
+		else {
+			buf[5] = s.charAt(0);
+			buf[6] = s.charAt(1);
+		}
+		return String.valueOf(buf);
+	}
+	
+	public static Color getBestForegroundColor(Color background) {
+		int backgroundBrightness = (background.getBlue() + background.getRed()*2 + background.getGreen()*3) / 6;
+		return backgroundBrightness > 160 ? Color.BLACK: Color.WHITE;
+	}
 
 	public static void setInitialComponentFocus(EditView editView, Map<String, ? extends SubFormController> mpsubformctl) {
 		if ((editView instanceof DefaultEditView) && ((DefaultEditView) editView).getInitialFocusField() != null) {

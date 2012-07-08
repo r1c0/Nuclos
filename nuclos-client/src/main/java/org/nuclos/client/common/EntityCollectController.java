@@ -63,6 +63,7 @@ import org.nuclos.client.genericobject.GenerationController;
 import org.nuclos.client.main.mainframe.MainFrameTab;
 import org.nuclos.client.masterdata.MasterDataSubFormController;
 import org.nuclos.client.masterdata.valuelistprovider.MasterDataCollectableFieldsProviderFactory;
+import org.nuclos.client.resource.ResourceCache;
 import org.nuclos.client.scripting.context.CollectControllerScriptContext;
 import org.nuclos.client.ui.Bubble;
 import org.nuclos.client.ui.CommonClientWorker;
@@ -301,13 +302,14 @@ public abstract class EntityCollectController<Clct extends Collectable> extends 
 		List<GeneratorActionVO> actions = getGeneratorActions(selectedCollectablesFromResult);
 		if (actions!=null && !actions.isEmpty()) {
 			for(final GeneratorActionVO actionVO : getGeneratorActions(selectedCollectablesFromResult)) {
-				rac.addAction(new AbstractAction(actionVO.toString()) {
-					@Override
-					public void actionPerformed(ActionEvent e) {
-						cmdGenerateObject(actionVO);
-					}
-
-				});
+				AbstractAction act = new AbstractAction(actionVO.toString(), 
+						actionVO.getButtonIcon()==null?null:ResourceCache.getInstance().getIconResource(actionVO.getButtonIcon().getId())) {
+							@Override
+							public void actionPerformed(ActionEvent e) {
+								cmdGenerateObject(actionVO);
+							}
+						};
+				rac.addAction(act);
 			}
 		}
 		return result;

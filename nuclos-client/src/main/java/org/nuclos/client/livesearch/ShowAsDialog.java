@@ -138,14 +138,9 @@ public class ShowAsDialog extends JDialog {
 			for(JCheckBox b : openAsList)
 				if(b.isSelected()) {
 					EntityFieldMetaDataVO fm = (EntityFieldMetaDataVO) b.getClientProperty(META_VO);
-					try {
-	                    Main.getInstance().getMainController().showDetails(
-	                    	fm.getForeignEntity(),
-	                    	object.getFieldIds().get(fm.getField()));
-                    }
-                    catch(CommonBusinessException ex) {
-                    	Errors.getInstance().showExceptionDialog(getOwner(), ex);
-                    }
+                    Main.getInstance().getMainController().showDetails(
+                    	fm.getForeignEntity(),
+                    	object.getFieldIds().get(fm.getField()));
 				}
 			dispose();
 		}

@@ -41,6 +41,8 @@ public abstract class MainFrameTabAdapter implements MainFrameTabListener {
 	public void tabClosed(MainFrameTab tab) {}
 
 	@Override
-	public boolean tabClosing(MainFrameTab tab) throws CommonBusinessException {return true;}
+	public void tabClosing(MainFrameTab tab, ResultListener<Boolean> rl) {
+		rl.done(true);
+	}
 
 }

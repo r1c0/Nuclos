@@ -69,7 +69,7 @@ import org.nuclos.client.searchfilter.SaveFilterController;
 import org.nuclos.client.searchfilter.SearchFilter;
 import org.nuclos.client.searchfilter.SearchFilterCache;
 import org.nuclos.client.searchfilter.SearchFilters;
-import org.nuclos.client.ui.BlackLabel;
+import org.nuclos.client.ui.ColoredLabel;
 import org.nuclos.client.ui.CenteringPanel;
 import org.nuclos.client.ui.CommonAbstractAction;
 import org.nuclos.client.ui.DefaultSelectObjectsPanel;
@@ -997,7 +997,7 @@ public abstract class NuclosCollectController<Clct extends Collectable> extends 
 
 		};
 		cpSearchFilter.setOpaque(false);
-		BlackLabel bl = new BlackLabel(cpSearchFilter, getSpringLocaleDelegate().getMessage("CollectController.Search.Filter","Filter"));
+		ColoredLabel bl = new ColoredLabel(cpSearchFilter, getSpringLocaleDelegate().getMessage("CollectController.Search.Filter","Filter"));
 		bl.setName("blChooseFilter");
 		this.getSearchPanel().addToolBarComponent(bl);
 

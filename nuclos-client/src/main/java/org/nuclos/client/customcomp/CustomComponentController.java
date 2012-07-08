@@ -37,6 +37,7 @@ import org.nuclos.client.ui.CommonClientWorker;
 import org.nuclos.client.ui.CommonMultiThreader;
 import org.nuclos.client.ui.Errors;
 import org.nuclos.client.ui.MainFrameTabAdapter;
+import org.nuclos.client.ui.ResultListener;
 import org.nuclos.client.ui.TopController;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.client.ui.UIUtils.CommandHandler;
@@ -221,7 +222,7 @@ public abstract class CustomComponentController extends TopController {
 		}
 		mainFrameTab.addMainFrameTabListener(new MainFrameTabAdapter() {
 			@Override
-			public boolean tabClosing(MainFrameTab tab) {
+			public void tabClosing(MainFrameTab tab, ResultListener<Boolean> rl) {
 				UIUtils.runShortCommand(mainFrameTab, new CommonRunnable() {
 					@Override
 					public void run() throws CommonBusinessException {
@@ -233,7 +234,7 @@ public abstract class CustomComponentController extends TopController {
 						controller.storeSharedState();
 					}
 				});
-				return true;
+				rl.done(true);
 			}
 			@Override
 			public void tabClosed(MainFrameTab tab) {

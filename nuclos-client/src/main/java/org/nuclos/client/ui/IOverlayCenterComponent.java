@@ -18,17 +18,7 @@ package org.nuclos.client.ui;
 
 import java.awt.Dimension;
 
-import org.nuclos.common2.exception.CommonBusinessException;
-
-public interface IOverlayComponent {
+public interface IOverlayCenterComponent extends IOverlayComponent {
 	
-	public void transferSize(Dimension size);
-	
-	public void addOverlayFrameChangeListener(IOverlayFrameChangeListener listener);
-	
-	public void removeOverlayFrameChangeListener(IOverlayFrameChangeListener listener);
-	
-	public boolean isClosable();
-
-	public void notifyClosing(ResultListener<Boolean> rl);
+	public Dimension getCenterSize();
 }

@@ -48,8 +48,9 @@ public abstract class TopController extends MainFrameTabController implements Cl
 	
 	/**
 	 * asks the user to save the current record if necessary, so that it can be abandoned afterwards.
-	 * @return can the action be performed?
+	 * @param rl
+	 * 		returns: can the action be performed? null=canceled
 	 */
-	public abstract boolean askAndSaveIfNecessary(boolean throwCancelException) throws NuclosCancelException;
+	public abstract void askAndSaveIfNecessary(boolean throwCancelException, ResultListener<Boolean> rl);
 	
 }

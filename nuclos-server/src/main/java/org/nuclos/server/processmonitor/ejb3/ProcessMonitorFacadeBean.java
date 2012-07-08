@@ -392,6 +392,7 @@ public class ProcessMonitorFacadeBean extends NuclosFacadeBean implements Proces
 									null,
 									statemodelvo.getName()+"_"+processStateSource.getField("guarantor")+"_"+processStateTarget.getField("guarantor"),
 									statemodelvo.getName()+"_"+processStateSource.getField("guarantor")+"_"+processStateTarget.getField("guarantor"),
+									null,
 //									statemodelvo.getName()+"_"+stateModelSource.getName()+"_"+stateModelTarget.getName(),
 //									statemodelvo.getName()+"_"+stateModelSource.getName()+"_"+stateModelTarget.getName(),
 									(Integer) stateModelUsageSource.getField("moduleId"),

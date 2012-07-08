@@ -24,6 +24,7 @@ import java.awt.GraphicsEnvironment;
 import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.swing.JFrame;
@@ -43,8 +44,9 @@ import org.nuclos.client.main.mainframe.MainFrameSpringComponent;
 import org.nuclos.client.main.mainframe.MainFrameTab;
 import org.nuclos.client.main.mainframe.MainFrameTabbedPane;
 import org.nuclos.client.ui.CommonJFrame;
-import org.nuclos.client.ui.Errors;
 import org.nuclos.client.ui.MainFrameTabAdapter;
+import org.nuclos.client.ui.ResultListener;
+import org.nuclos.client.ui.ResultListenerX;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.common.Actions;
 import org.nuclos.common.WorkspaceDescription;
@@ -580,106 +582,154 @@ public class RestoreUtils {
 	/**
 	 *
 	 * @param name
-	 * @throws CommonBusinessException
 	 */
-	public synchronized boolean clearAndRestoreWorkspace(WorkspaceVO wovo) throws CommonBusinessException {
-		if (clearWorkspace()) {
-			restoreWorkspaceThreaded(wovo);
-			return true;
-		}
-		return false;
+	public synchronized void clearAndRestoreWorkspace(final WorkspaceVO wovo, final ResultListenerX<Boolean, CommonBusinessException> rl) {
+		clearWorkspace(new ResultListener<Boolean>() {
+			@Override
+			public void done(Boolean result) {
+				if (Boolean.TRUE.equals(result)) {
+					try {
+						restoreWorkspaceThreaded(wovo);
+						rl.done(true, null);
+					} catch (CommonBusinessException x) {
+						rl.done(null, x);
+					}
+				} else {
+					rl.done(false, null);
+				}
+			}
+		});
 	}
 
 	/**
 	 *
 	 * @param name
-	 * @throws CommonBusinessException
 	 */
-	public synchronized WorkspaceVO clearAndRestoreToDefaultWorkspace() throws CommonBusinessException {
-		return clearAndRestoreToDefaultWorkspace(createDefaultWorkspace());
+	public synchronized void clearAndRestoreToDefaultWorkspace(final ResultListenerX<WorkspaceVO, CommonBusinessException> rl) {
+		try {
+			clearAndRestoreToDefaultWorkspace(createDefaultWorkspace(), rl);
+		} catch (CommonBusinessException e) {
+			rl.done(null, e);
+		}
 	}
 
 	/**
 	 *
 	 * @param wd
-	 * @throws CommonBusinessException
 	 */
-	public synchronized WorkspaceVO clearAndRestoreToDefaultWorkspace(WorkspaceDescription wd) throws CommonBusinessException {
-		WorkspaceVO wovo = createDefaultWorkspace(wd);
-		if (clearWorkspace()) {
-			restoreWorkspaceThreaded(wovo);
-
-			if (SecurityCache.getInstance().isActionAllowed(Actions.ACTION_TASKLIST))
-				Main.getInstance().getMainController().getTaskController().getPersonalTaskController().cmdShowPersonalTasks();
-			if (SecurityCache.getInstance().isActionAllowed(Actions.ACTION_TIMELIMIT_LIST))
-				Main.getInstance().getMainController().getTaskController().getTimelimitTaskController().cmdShowTimelimitTasks();
-
-			Main.getInstance().getMainController().getExplorerController().cmdShowPersonalSearchFilters();
-
-			//arrangeTabsOnDefaultWorkspace(removeTabsFromWorkspace());
-
-			for (MainFrameTabbedPane tabbedPane : MainFrame.getAllTabbedPanes()) {
-				if (tabbedPane.getTabCount() > 1) {
-					tabbedPane.setSelectedIndex(1);
-				}
-			}
-			return wovo;
-		} else {
-			preferencesFacadeRemote.removeWorkspace(wovo.getId());
+	public synchronized void clearAndRestoreToDefaultWorkspace(WorkspaceDescription wd, final ResultListenerX<WorkspaceVO, CommonBusinessException> rl) {
+		final WorkspaceVO wovo;
+		try {
+			wovo = createDefaultWorkspace(wd);
+		} catch (CommonBusinessException e) {
+			rl.done(null, e);
+			return;
 		}
-		return null;
-	}
+		
+		clearWorkspace(new ResultListener<Boolean>() {
+			@Override
+			public void done(Boolean result) {
+				if (Boolean.TRUE.equals(result)) {
+					try {
+						restoreWorkspaceThreaded(wovo);
+					} catch (CommonBusinessException e) {
+						rl.done(null, e);
+						return;
+					}
 
-	/**
-	 *
-	 * @return
-	 */
-	public synchronized boolean closeTabs(boolean notifyOnly) {
-		List<MainFrameTab> allTabs = MainFrame.getAllTabs();
+					if (SecurityCache.getInstance().isActionAllowed(Actions.ACTION_TASKLIST))
+						Main.getInstance().getMainController().getTaskController().getPersonalTaskController().cmdShowPersonalTasks();
+					if (SecurityCache.getInstance().isActionAllowed(Actions.ACTION_TIMELIMIT_LIST))
+						Main.getInstance().getMainController().getTaskController().getTimelimitTaskController().cmdShowTimelimitTasks();
 
-		for (MainFrameTab tab : allTabs) {
-			try {
-				if (tab.notifyClosing()) {
-					if (!notifyOnly)
-						tab.notifyClosed();
+					Main.getInstance().getMainController().getExplorerController().cmdShowPersonalSearchFilters();
+
+					//arrangeTabsOnDefaultWorkspace(removeTabsFromWorkspace());
+
+					for (MainFrameTabbedPane tabbedPane : MainFrame.getAllTabbedPanes()) {
+						if (tabbedPane.getTabCount() > 1) {
+							tabbedPane.setSelectedIndex(1);
+						}
+					}
+					
+					rl.done(wovo, null);
 				} else {
-					return false;
+					preferencesFacadeRemote.removeWorkspace(wovo.getId());
+					rl.done(null, null);
 				}
-
-			} catch(CommonBusinessException e) {
-				Errors.getInstance().showExceptionDialog(Main.getInstance().getMainFrame(), e);
-				return false;
 			}
-		}
-
-		return true;
+		});
 	}
 
 	/**
 	 *
 	 * @return
 	 */
-	public synchronized boolean clearWorkspace() {
+	public synchronized void closeTabs(final boolean notifyOnly, final ResultListener<Boolean> rl) {
+		final List<MainFrameTab> allTabs = MainFrame.getAllTabs();
+		if (allTabs.isEmpty()) {
+			rl.done(true);
+			return;
+		}
+		
+		final Iterator<MainFrameTab> iter = allTabs.iterator();
+		
+		class Helper {
+			public void next() {
+				if (iter.hasNext()) {
+					final MainFrameTab tab = iter.next();
+					tab.notifyClosing(new ResultListener<Boolean>() {
+						@Override
+						public void done(Boolean result) {
+							if (Boolean.TRUE.equals(result)) {
+								if (!notifyOnly) {
+									tab.notifyClosed();
+								}
+								new Helper().next();
+							} else {
+								rl.done(false);
+							}
+						}
+					});
+				} else {
+					rl.done(true);
+				}		
+			}
+		}
+		
+		new Helper().next();
+	}
+
+	/**
+	 *
+	 * @return
+	 */
+	public synchronized void clearWorkspace(final ResultListener<Boolean> rl) {
 		checkRestoreRunning();
 
-		if (!closeTabs(false)) {
-			return false;
-		}
+		closeTabs(false, new ResultListener<Boolean>() {
+			@Override
+			public void done(Boolean result) {
+				if (Boolean.FALSE.equals(result)) {
+					rl.done(false);
+				} else {
+					for (JFrame frame : new ArrayList<JFrame>(MainFrame.getAllFrames())) {
+						if (frame instanceof ExternalFrame) {
+							frame.dispose();
+						} else if (frame instanceof MainFrame) {
+							Main.getInstance().getMainFrame().showSwitchingWorkspace(true);
+							((MainFrame) frame).clearFrame();
+						}
+					}
 
-		for (JFrame frame : new ArrayList<JFrame>(MainFrame.getAllFrames())) {
-			if (frame instanceof ExternalFrame) {
-				frame.dispose();
-			} else if (frame instanceof MainFrame) {
-				Main.getInstance().getMainFrame().showSwitchingWorkspace(true);
-				((MainFrame) frame).clearFrame();
+					for (MainFrameTabbedPane tabbedPane : new ArrayList<MainFrameTabbedPane>(MainFrame.getAllTabbedPanes())) {
+						Main.getInstance().getMainFrame().removeTabbedPane(tabbedPane, true, false);
+					}
+					
+					rl.done(true);
+				}
 			}
-		}
-
-		for (MainFrameTabbedPane tabbedPane : new ArrayList<MainFrameTabbedPane>(MainFrame.getAllTabbedPanes())) {
-			Main.getInstance().getMainFrame().removeTabbedPane(tabbedPane, true, false);
-		}
-
-		return true;
+		});
 	}
 
 	private class TabbedRestorer implements ContentRestorer {
@@ -788,13 +838,13 @@ public class RestoreUtils {
 					t.setDaemon(true);
 					tab.addMainFrameTabListener(new MainFrameTabAdapter() {
 						@Override
-						public boolean tabClosing(MainFrameTab tab) {
+						public void tabClosing(MainFrameTab tab, ResultListener<Boolean> rl) {
 							if (!t.isAlive()) {
 								threadList.remove(t);
 								Main.getInstance().getMainFrame().continueProgress();
 							}
 							tab.removeMainFrameTabListener(this);
-							return true;
+							rl.done(true);
 						}
 					});
 	

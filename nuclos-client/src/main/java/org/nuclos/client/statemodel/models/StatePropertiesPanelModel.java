@@ -28,12 +28,19 @@ import javax.swing.text.PlainDocument;
 
 import org.apache.log4j.Logger;
 import org.nuclos.client.common.NuclosCollectableImage;
+import org.nuclos.client.entityobject.CollectableEOEntityClientProvider;
+import org.nuclos.client.resource.ResourceCache;
+import org.nuclos.client.ui.collect.component.CollectableColorChooserButton;
+import org.nuclos.client.ui.collect.component.CollectableResourceIconChooserButton;
+import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.collect.collectable.AbstractCollectableEntityField;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
 import org.nuclos.common.collect.collectable.CollectableValueField;
+import org.nuclos.common.collect.collectable.CollectableValueIdField;
 import org.nuclos.common.collect.exception.CollectableFieldFormatException;
 import org.nuclos.common2.StringUtils;
+import org.nuclos.server.resource.valueobject.ResourceVO;
 
 /**
  * Model for the panel displaying the state models.
@@ -131,6 +138,8 @@ public class StatePropertiesPanelModel implements Serializable {
 	public Document docDescription = new PlainDocument();
 	public ComboBoxModel modelTab = new DefaultComboBoxModel();
 	public final NuclosCollectableImage clctImage;
+	public CollectableResourceIconChooserButton clctButtonIcon;
+	public CollectableColorChooserButton clctColor;
 
 	protected static final Logger log = Logger.getLogger(StatePropertiesPanelModel.class);
 	
@@ -138,6 +147,10 @@ public class StatePropertiesPanelModel implements Serializable {
 	
 	public StatePropertiesPanelModel() {
 		this.clctImage = new NuclosCollectableImage(new CollectableImageEntityField());
+		this.clctButtonIcon = new CollectableResourceIconChooserButton(
+				CollectableEOEntityClientProvider.getInstance().getCollectableEntity(NuclosEntity.STATE.getEntityName()).getEntityField("buttonIcon"));
+		this.clctColor = new CollectableColorChooserButton(
+				CollectableEOEntityClientProvider.getInstance().getCollectableEntity(NuclosEntity.STATE.getEntityName()).getEntityField("color"));
 	}
 
 	public String getName() {
@@ -203,6 +216,33 @@ public class StatePropertiesPanelModel implements Serializable {
 		catch (CollectableFieldFormatException ex) {
 			throw new NuclosFatalException(ex);
 		}		
+	}
+	
+	public void setButtonIcon(ResourceVO resButtonIcon) {
+		clctButtonIcon.setField(new CollectableValueIdField(resButtonIcon==null?null:resButtonIcon.getId(), resButtonIcon==null?null:resButtonIcon.getName()));
+	}
+	
+	public ResourceVO getButtonIcon() {
+		try {
+			CollectableValueIdField clctef = (CollectableValueIdField) clctButtonIcon.getField();
+			return ResourceCache.getInstance().getResourceById((Integer) clctef.getValueId());
+		}
+		catch (CollectableFieldFormatException ex) {
+			throw new NuclosFatalException(ex);
+		}	
+	}
+	
+	public void setColor(String color) {
+		clctColor.setField(new CollectableValueField(color));
+	}
+	
+	public String getColor() {
+		try {
+			return (String) clctColor.getField().getValue();
+		}
+		catch (CollectableFieldFormatException ex) {
+			throw new NuclosFatalException(ex);
+		}	
 	}
 
 	public String getDescription() {

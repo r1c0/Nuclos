@@ -16,19 +16,11 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.ui;
 
-import java.awt.Dimension;
+import javax.swing.Icon;
 
-import org.nuclos.common2.exception.CommonBusinessException;
+public interface IOverlayFrameChangeListener {
 
-public interface IOverlayComponent {
+	public void titleChanged(String newTitle, Icon newIcon);
 	
-	public void transferSize(Dimension size);
-	
-	public void addOverlayFrameChangeListener(IOverlayFrameChangeListener listener);
-	
-	public void removeOverlayFrameChangeListener(IOverlayFrameChangeListener listener);
-	
-	public boolean isClosable();
-
-	public void notifyClosing(ResultListener<Boolean> rl);
+	public void closeOverlay();
 }

@@ -28,6 +28,7 @@ import org.apache.log4j.Logger;
 import org.nuclos.client.ui.CommonAbstractAction;
 import org.nuclos.client.ui.Errors;
 import org.nuclos.client.ui.Icons;
+import org.nuclos.client.ui.ResultListener;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.client.ui.collect.CollectController;
 import org.nuclos.client.ui.collect.CollectPanel;
@@ -140,9 +141,14 @@ public class SearchController<Clct extends Collectable> extends CommonController
 		@Override
         public void actionPerformed(ActionEvent ev) {
 			final CollectController<Clct> cc = getCollectController();
-			if (cc.askAndSaveIfNecessary()) {
-				cc.cmdEnterNewModeWithSearchValues();
-			}
+			cc.askAndSaveIfNecessary(new ResultListener<Boolean>() {
+				@Override
+				public void done(Boolean result) {
+					if (Boolean.TRUE.equals(result)) {
+						cc.cmdEnterNewModeWithSearchValues();
+					}
+				}
+			});
 		}
 	};
 

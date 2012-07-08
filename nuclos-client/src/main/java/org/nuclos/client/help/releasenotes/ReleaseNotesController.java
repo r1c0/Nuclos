@@ -38,6 +38,7 @@ import org.nuclos.client.main.mainframe.MainFrameTab;
 import org.nuclos.client.main.mainframe.MainFrameTabbedPane;
 import org.nuclos.client.ui.Controller;
 import org.nuclos.client.ui.MainFrameTabAdapter;
+import org.nuclos.client.ui.ResultListener;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.common.ApplicationProperties;
 import org.nuclos.common.ApplicationProperties.Version;
@@ -133,11 +134,11 @@ public class ReleaseNotesController extends Controller<MainFrameTabbedPane> {
 		
 		ifrm.addMainFrameTabListener(new MainFrameTabAdapter() {
 			@Override
-			public boolean tabClosing(MainFrameTab tab) {
+			public void tabClosing(MainFrameTab tab, ResultListener<Boolean> rl) {
 				// write current application version to properties so the release notes are not shown
 				// on startup unless there is a newer version:
 				prefs.put(PREFS_KEY_VERSION, ApplicationProperties.getInstance().getCurrentVersion().getVersionNumber());
-				return true;
+				rl.done(true);
 			}
 			@Override
 			public void tabClosed(MainFrameTab tab) {
@@ -198,11 +199,11 @@ public class ReleaseNotesController extends Controller<MainFrameTabbedPane> {
 
 					ifrm.addMainFrameTabListener(new MainFrameTabAdapter() {
 						@Override
-						public boolean tabClosing(MainFrameTab tab) {
+						public void tabClosing(MainFrameTab tab, ResultListener<Boolean> rl) {
 							// write current application version to properties so the release notes are not shown
 							// on startup unless there is a newer version:
 							prefs.put(PREFS_KEY_VERSION, ApplicationProperties.getInstance().getCurrentVersion().getVersionNumber());
-							return true;
+							rl.done(true);
 						}
 						@Override
 						public void tabClosed(MainFrameTab tab) {

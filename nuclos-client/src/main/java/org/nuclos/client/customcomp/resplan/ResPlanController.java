@@ -53,6 +53,7 @@ import org.nuclos.client.scripting.GroovySupport;
 import org.nuclos.client.searchfilter.EntitySearchFilter;
 import org.nuclos.client.searchfilter.SearchFilters;
 import org.nuclos.client.ui.Errors;
+import org.nuclos.client.ui.ResultListener;
 import org.nuclos.client.ui.resplan.Interval;
 import org.nuclos.client.ui.resplan.TimeModel;
 import org.nuclos.client.ui.resplan.header.GroupMapper;
@@ -109,8 +110,7 @@ public class ResPlanController extends CustomComponentController {
 	}
 	
 	@Override
-	public boolean askAndSaveIfNecessary(boolean throwCancelException) {
-		return true;
+	public void askAndSaveIfNecessary(boolean throwCancelException, ResultListener<Boolean> rl) {
 	}
 
 	void init(CustomComponentVO vo) {

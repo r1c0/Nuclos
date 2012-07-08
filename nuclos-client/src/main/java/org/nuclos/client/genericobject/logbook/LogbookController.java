@@ -56,6 +56,7 @@ import org.nuclos.client.ui.Errors;
 import org.nuclos.client.ui.Icons;
 import org.nuclos.client.ui.MainFrameTabAdapter;
 import org.nuclos.client.ui.MainFrameTabController;
+import org.nuclos.client.ui.ResultListener;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common2.StringUtils;
@@ -437,9 +438,9 @@ public class LogbookController extends MainFrameTabController {
 	private void setupTab() {
 		newTab.addMainFrameTabListener(new MainFrameTabAdapter() {
 			@Override
-			public boolean tabClosing(MainFrameTab tab) {
+			public void tabClosing(MainFrameTab tab, ResultListener<Boolean> rl) {
 				writeToPreferences();
-				return true;
+				rl.done(true);
 			}
 			@Override
 			public void tabClosed(MainFrameTab tab) {

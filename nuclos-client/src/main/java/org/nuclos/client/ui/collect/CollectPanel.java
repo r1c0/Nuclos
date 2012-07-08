@@ -476,6 +476,10 @@ public class CollectPanel<Clct extends Collectable> extends JPanel {
 	public void setVisible(boolean aFlag) {
 		super.setVisible(aFlag);
 	}
+
+	public boolean isDetailsInOverlay() {
+		return bDetailsInOverlay;
+	}
 	
 	
 

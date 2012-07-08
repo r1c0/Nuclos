@@ -83,12 +83,14 @@ import org.nuclos.client.main.mainframe.MainFrame.SplitRange;
 import org.nuclos.client.main.mainframe.desktop.DesktopBackgroundPainter;
 import org.nuclos.client.main.mainframe.desktop.DesktopListener;
 import org.nuclos.client.synthetica.NuclosThemeSettings;
-import org.nuclos.client.ui.BlackLabel;
+import org.nuclos.client.ui.ColoredLabel;
 import org.nuclos.client.ui.Errors;
 import org.nuclos.client.ui.Icons;
 import org.nuclos.client.ui.PopupButton;
+import org.nuclos.client.ui.ResultListener;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.common.WorkspaceDescription.Desktop;
+import org.nuclos.common.collection.Pair;
 import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -855,7 +857,7 @@ public class MainFrameTabbedPane {
 			jpnTabbedPaneControl.add(lbClose);
 		}
 
-		final BlackLabel bl = new BlackLabel(jpnTabbedPaneControl, 
+		final ColoredLabel bl = new ColoredLabel(jpnTabbedPaneControl, 
 				localeDelegate.getMessage("MainFrameTabbedPane.3","Tableiste"));
 		bl.setGradientPaint(false);
 		startTabToolBar.add(bl);
@@ -1013,34 +1015,17 @@ public class MainFrameTabbedPane {
 	 * close tabs without adjusting width
 	 * @return not closable tabs
 	 */
-	public List<MainFrameTab> closeAllTabs() {
-		return closeAllTabs(null);
+	public void closeAllTabs(final ResultListener<List<MainFrameTab>> rl) {
+		closeAllTabs(null, rl);
 	}
 
 	/**
 	 * close tabs without adjusting width
 	 * @return not closable tabs
 	 */
-	public List<MainFrameTab> closeAllTabs(MainFrameTab ignoreTab) {
-		List<MainFrameTab> notClosableTabs = new ArrayList<MainFrameTab>();
+	public void closeAllTabs(final MainFrameTab ignoreTab, final ResultListener<List<MainFrameTab>> rl) {
+		final List<MainFrameTab> notClosableTabs = new ArrayList<MainFrameTab>();
 
-		for (MainFrameTab tab : startTab.getHiddenTabs()) {
-			if (tab == ignoreTab) {
-				continue;
-			}
-			if (tab.isClosable()) {
-				try {
-					tab.notifyClosing();
-					startTab.removeHiddenTab(tab);
-					tab.notifyClosed();
-				} catch(CommonBusinessException e) {
-					LOG.debug("Treat tab " + tab + " as non-closable because of " + e);
-					notClosableTabs.add(tab);
-				}
-			} else {
-				notClosableTabs.add(tab);
-			}
-		}
 		List<MainFrameTab> tabsToRemove = new ArrayList<MainFrameTab>();
 		for (int i = 1; i < mfTabbed.getTabCount(); i++) {
 			if (mfTabbed.getComponentAt(i) instanceof MainFrameTab) {
@@ -1055,17 +1040,53 @@ public class MainFrameTabbedPane {
 				}
 			}
 		}
-		for (MainFrameTab tab : tabsToRemove) {
-			try {
-				tab.notifyClosing();
-				mfTabbed.remove(tab);
-				tab.notifyClosed();
-			} catch(CommonBusinessException e) {
-				LOG.debug("Treat tab " + tab + " as non-closable because of " + e);
+		
+		final Pair<Integer, Integer> counts = new Pair<Integer, Integer>(0,0);
+		final int targetCount = startTab.getHiddenTabs().size() + tabsToRemove.size();
+		
+		for (final MainFrameTab tab : startTab.getHiddenTabs()) {
+			if (tab == ignoreTab) {
+				counts.x++;
+				continue;
+			}
+			if (tab.isClosable()) {
+					tab.notifyClosing(new ResultListener<Boolean>() {
+						@Override
+						public void done(Boolean result) {
+							counts.x++;
+							if (Boolean.TRUE.equals(result)) {
+								startTab.removeHiddenTab(tab);
+								tab.notifyClosed();
+							} else {
+								notClosableTabs.add(tab);
+							}
+							if (counts.x == targetCount) {
+								rl.done(notClosableTabs);
+							}
+						}
+					});
+			} else {
+				counts.x++;
 				notClosableTabs.add(tab);
 			}
 		}
-		return notClosableTabs;
+		for (final MainFrameTab tab : tabsToRemove) {
+			tab.notifyClosing(new ResultListener<Boolean>() {
+				@Override
+				public void done(Boolean result) {
+					counts.x++;
+					if (Boolean.TRUE.equals(result)) {
+						mfTabbed.remove(tab);
+						tab.notifyClosed();	
+					} else {
+						notClosableTabs.add(tab);
+					}
+					if (counts.x == targetCount) {
+						rl.done(notClosableTabs);
+					}
+				}
+			});
+		}
 	}
 
 	/**
@@ -1088,54 +1109,65 @@ public class MainFrameTabbedPane {
 	 *
 	 * @param tab
 	 * @param mousePosition
-	 * @throws CommonBusinessException if tab is not closable
 	 */
-	public void closeTab(MainFrameTab tab, Point mousePosition) throws CommonBusinessException {
-		if (!tab.isClosable() || !tab.notifyClosing()) {
+	public void closeTab(final MainFrameTab tab, final Point mousePosition, final ResultListener<Boolean> rl) {
+		if (!tab.isClosable()) {
 			return;
 		}
-
-		final int index = mfTabbed.indexOfComponent(tab);
-		final int selected = mfTabbed.getSelectedIndex();
-
-		if (mousePosition == null) {
-			// try to get MousePosition from current tab
-			final Component tabComponent = mfTabbed.getTabComponentAt(index);
-			if (tabComponent != null) {
-				mousePosition = tabComponent.getMousePosition();
-			}
-		}
-
-		if (index < 0) {
-			startTab.removeHiddenTab(tab);
-		} else {
-			mfTabbed.removeTabAt(index, false);
-		}
-		tab.notifyClosed();
-		adjustTabs(false);
-
-		if (index == selected) {
-			tabClosing = -1;
-			if (mfTabbed.getTabCount() > 0) {
-				if (mfTabbed.getTabCount() == index) {
-					mfTabbed.setSelectedIndex(index-1, true);
-				} else {
-					mfTabbed.setSelectedIndex(index, true);
-				}
-			}
-		}
 		
-		if (mfTabbed.getTabCount() > index) {
-			// setMouseOver on tab at same index
-			 if (mousePosition != null) {
-				final Component tabComponent = mfTabbed.getTabComponentAt(index);
-				if (tabComponent instanceof MainFrameTab.TabTitle) {
-					final MainFrameTab.TabTitle tabTitle = (MainFrameTab.TabTitle) tabComponent;
-					tabTitle.setMouseOverPosition(mousePosition);
+		tab.notifyClosing(new ResultListener<Boolean>() {
+			@Override
+			public void done(Boolean result) {
+				if (Boolean.TRUE.equals(result)) {
+					final int index = mfTabbed.indexOfComponent(tab);
+					final int selected = mfTabbed.getSelectedIndex();
+					
+					Point mp = mousePosition; 
+					if (mp == null) {
+						// try to get MousePosition from current tab
+						final Component tabComponent = mfTabbed.getTabComponentAt(index);
+						if (tabComponent != null) {
+							mp = tabComponent.getMousePosition();
+						}
+					}
+
+					if (index < 0) {
+						startTab.removeHiddenTab(tab);
+					} else {
+						mfTabbed.removeTabAt(index, false);
+					}
+					tab.notifyClosed();
+					adjustTabs(false);
+
+					if (index == selected) {
+						tabClosing = -1;
+						if (mfTabbed.getTabCount() > 0) {
+							if (mfTabbed.getTabCount() == index) {
+								mfTabbed.setSelectedIndex(index-1, true);
+							} else {
+								mfTabbed.setSelectedIndex(index, true);
+							}
+						}
+					}
+					
+					if (mfTabbed.getTabCount() > index) {
+						// setMouseOver on tab at same index
+						 if (mp != null) {
+							final Component tabComponent = mfTabbed.getTabComponentAt(index);
+							if (tabComponent instanceof MainFrameTab.TabTitle) {
+								final MainFrameTab.TabTitle tabTitle = (MainFrameTab.TabTitle) tabComponent;
+								tabTitle.setMouseOverPosition(mp);
+							}
+						}
+					}
+					scheduleAdjustTabs(1250);
+					
+					rl.done(true);
+				} else {
+					rl.done(false);
 				}
 			}
-		}
-		scheduleAdjustTabs(1250);
+		});
 	}
 
 	/**

@@ -17,6 +17,7 @@
 package org.nuclos.client.ui.collect.result;
 
 import info.clearthought.layout.TableLayout;
+import info.clearthought.layout.TableLayoutConstraints;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -24,14 +25,17 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
+import java.awt.GradientPaint;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Insets;
 import java.awt.Polygon;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
@@ -46,6 +50,7 @@ import javax.swing.AbstractButton;
 import javax.swing.Action;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
+import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComponent;
@@ -78,7 +83,6 @@ import org.nuclos.client.ui.PopupButton;
 import org.nuclos.client.ui.StatusBarTextField;
 import org.nuclos.client.ui.TableRowMouseOverAdapter;
 import org.nuclos.client.ui.UIUtils;
-import org.nuclos.client.ui.WrapLayout;
 import org.nuclos.client.ui.collect.CollectController;
 import org.nuclos.client.ui.collect.CollectPanel;
 import org.nuclos.client.ui.collect.CollectableTableHelper;
@@ -989,17 +993,66 @@ public class ResultPanel<Clct extends Collectable> extends JPanel {
 			for (int i = 0; i < actions.size(); i++) {
 				cols[i] = TableLayout.FILL;
 			}
-			TableLayoutBuilder tbllay = new TableLayoutBuilder(this.pnlActions).columns(cols);
-			tbllay.newRow();
+			TableLayout tbllay = new TableLayout();
+			tbllay.setColumn(cols);
+			tbllay.setRow(new double[] {TableLayout.PREFERRED});
+			pnlActions.setLayout(tbllay);
+			
+			final List<JPanel> heightCalc = new ArrayList<JPanel>(actions.size());
 			for (int i = 0; i < actions.size(); i++) {
 				ResultActionCollection rac = actions.get(i);
-				JPanel pnlCol = new JPanel(new WrapLayout(WrapLayout.LEFT));
-				pnlCol.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEmptyBorder(5, 0, 0, 0), rac.getLabel()));
+				JPanel jTitle = new JPanel(new BorderLayout());
+				jTitle.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0), rac.getLabel()));
 				
-				for (Action act : rac.getActions()) {
-					pnlCol.add(new ActionButton(act));
+				double[] cols2 = new double[Math.max(0, rac.getActions().size()*2 -1)];
+				for (int j = 0; j < rac.getActions().size()*2; j=j+2) {
+					cols2[j] = TableLayout.PREFERRED;
+					if (j+1 < cols2.length) {
+						cols2[j+1] = 5d;
+					}
 				}
-				tbllay.add(pnlCol);
+				
+				TableLayout tbllayCol = new TableLayout();
+				tbllayCol.setColumn(cols2);
+				tbllayCol.setRow(new double[] {TableLayout.FILL, TableLayout.PREFERRED, 16d});
+				JPanel pnlCol = new JPanel(tbllayCol);
+				heightCalc.add(pnlCol);
+				final JScrollPane scrollCol = new JScrollPane(pnlCol, JScrollPane.VERTICAL_SCROLLBAR_NEVER, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED) {
+					@Override
+					public Dimension getPreferredSize() {
+						Dimension result = super.getPreferredSize();
+						result.height = 0;
+						for (JPanel jpn : heightCalc) {
+							result.height = Math.max(result.height, jpn.getPreferredSize().height);
+						}
+						return result;
+					}
+				};
+				
+				scrollCol.setBorder(BorderFactory.createEmptyBorder());
+				
+				for (int k = 0; k < rac.getActions().size(); k++) {
+					final Action act = rac.getActions().get(k);
+//					pnlCol.add(new ActionButton(act));
+					
+					int row = k*2;
+					JButton jbtLabel = new ResultActionButton(act);
+					jbtLabel.setIcon(null);
+					
+					JLabel jlbIcon = new JLabel((Icon) act.getValue(Action.SMALL_ICON));
+					jlbIcon.addMouseListener(new MouseAdapter() {
+						@Override
+						public void mouseClicked(MouseEvent e) {
+							act.actionPerformed(new ActionEvent(e.getComponent(), e.getID(), "dummy"));
+						}
+					});
+					
+					pnlCol.add(jlbIcon, new TableLayoutConstraints(row, 0, row, 0, TableLayout.CENTER, TableLayout.BOTTOM));
+					pnlCol.add(jbtLabel, new TableLayoutConstraints(row, 1, row, 1, TableLayout.CENTER, TableLayout.BOTTOM));
+				}
+				jTitle.add(scrollCol);
+				
+				pnlActions.add(jTitle, new TableLayoutConstraints(i, 0, i, 0, TableLayout.FULL, TableLayout.TOP));
 			}
 		} else {
 			setActionsPanelEmpty(MIN_ACTIONS_HEIGHT).addLabel("");
@@ -1021,6 +1074,42 @@ public class ResultPanel<Clct extends Collectable> extends JPanel {
 	private TableLayoutBuilder setActionsPanelEmpty(int height) {
 		TableLayoutBuilder tbllay = new TableLayoutBuilder(pnlActions).columns(TableLayout.FILL, TableLayout.PREFERRED, TableLayout.FILL);
 		return tbllay.newRow(height).skip();
+	}
+	
+	private class ResultActionButton extends JButton {
+
+		public ResultActionButton(Action a) {
+			super(a);
+			setFocusable(false);
+		}
+		
+		@Override
+		protected void paintComponent(Graphics g) {
+			Graphics2D g2 = (Graphics2D) g;
+			Object antialiasing = g2.getRenderingHint(RenderingHints.KEY_ANTIALIASING);
+	        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+	        
+	        super.paintComponent(g2);
+	        
+	        if (getAction().getValue(Action.SMALL_ICON) == null) {
+		        Object oColor = getAction().getValue("Color");
+		        try {
+		        	Color color = null;
+			        if (oColor != null && oColor instanceof String) {
+			        	color = Color.decode((String) oColor);
+			        }
+			        if (color != null) {
+			        	g2.setPaint(new GradientPaint(4, 4, new Color(color.getRed(), color.getGreen(), color.getBlue(), 200), 6, 6, new Color(0,0,0,0), false));
+			        	g2.fillRoundRect(1, 2, 20, 20, 8, 8);
+			        }
+		        } catch (Exception ex) {
+		        	Log.error("Error during rendering of color in result action button", ex);
+		        }
+	        }
+	        
+	        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, antialiasing);
+		}
+		
 	}
 	
 	private class UpDownButton extends JButton implements MouseListener {

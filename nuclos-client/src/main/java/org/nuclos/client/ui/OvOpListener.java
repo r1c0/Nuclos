@@ -16,11 +16,18 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.ui;
 
-import javax.swing.Icon;
 
-public interface IOverlayChangeListener {
+/**
+ * Listener for <code>OverlayOptionPane</code>
+ * <br>
+ * <br>Created by Novabit Informationssysteme GmbH
+ * <br>Please visit <a href="http://www.novabit.de">www.novabit.de</a>
+ *
+ * @author	<a href="mailto:maik.stueker@nuclos.de">Maik Stueker</a>
+ * @version 01.00.00
+ */
+public interface OvOpListener {
 
-	public void titleChanged(String newTitle, Icon newIcon);
+	public void done(int result); 
 	
-	public void closeOverlay();
 }

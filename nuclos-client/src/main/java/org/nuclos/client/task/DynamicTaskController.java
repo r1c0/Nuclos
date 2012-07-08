@@ -316,12 +316,7 @@ public class DynamicTaskController extends RefreshableTaskController {
 					UIUtils.runCommandLater(Main.getInstance().getMainController().getTaskController().getTabFor(view), new Runnable() {
 						@Override
 						public void run() {
-							try {
-								Main.getInstance().getMainController().showDetails(_entity, id);
-							}
-							catch (CommonBusinessException e) {
-								Errors.getInstance().showExceptionDialog(view, e);
-							}
+							Main.getInstance().getMainController().showDetails(_entity, id);
 						};
 					});
 				}

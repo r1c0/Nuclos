@@ -48,6 +48,7 @@ import org.nuclos.client.ui.CommonMultiThreader;
 import org.nuclos.client.ui.Controller;
 import org.nuclos.client.ui.Errors;
 import org.nuclos.client.ui.MainFrameTabAdapter;
+import org.nuclos.client.ui.ResultListener;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.collect.collectable.Collectable;
@@ -167,9 +168,9 @@ public class ExplorerController extends Controller<MainFrameTabbedPane> {
 	private void setupMainFrameTab(MainFrameTab tab, final TreeNode treenodeRoot, final ExplorerView view, String sLabel) {
 		tab.addMainFrameTabListener(new MainFrameTabAdapter() {
 			@Override
-			public boolean tabClosing(MainFrameTab tab) {
+			public void tabClosing(MainFrameTab tab, ResultListener<Boolean> rl) {
 				removeExplorerView(view);
-				return true;
+				rl.done(true);
 			}
 			@Override
 			public void tabClosed(MainFrameTab tab) {
@@ -260,14 +261,16 @@ public class ExplorerController extends Controller<MainFrameTabbedPane> {
 		explorerTabs.remove(view);
 	}
 
-	public void closeExplorerView(ExplorerView view) {
-		final MainFrameTab tab = getTabFor(view);
-		try {
-			MainFrame.closeTab(tab);
-			explorerTabs.remove(view);
-		} catch(CommonBusinessException e) {
-			Errors.getInstance().showExceptionDialog(view.getViewComponent(), e);
-		}
+	public void closeExplorerView(final ExplorerView view) {
+		final MainFrameTab tab = getTabFor(view);	
+		MainFrame.closeTab(tab, new ResultListener<Boolean>() {
+			@Override
+			public void done(Boolean result) {
+				if (Boolean.TRUE.equals(result)) {
+					explorerTabs.remove(view);
+				}
+			}
+		});
 	}
 
 	/**

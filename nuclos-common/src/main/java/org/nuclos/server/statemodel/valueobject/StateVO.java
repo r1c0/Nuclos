@@ -23,6 +23,7 @@ import org.apache.commons.lang.NullArgumentException;
 import org.nuclos.common.NuclosImage;
 import org.nuclos.common.collection.multimap.MultiListHashMap;
 import org.nuclos.server.common.valueobject.NuclosValueObject;
+import org.nuclos.server.resource.valueobject.ResourceVO;
 
 /**
  * Value object representing a state.
@@ -41,6 +42,8 @@ public class StateVO extends NuclosValueObject {
 	private String sDescription;
 	private Integer iModelId;
 	private NuclosImage bIcon;
+	private ResourceVO resButtonIcon;
+	private String sColor;
 	private String sTab;
 	private boolean bAuto;
 	private UserRights userrights = new UserRights();
@@ -127,6 +130,42 @@ public class StateVO extends NuclosValueObject {
 	 */
 	public void setIcon(NuclosImage bIcon) {
 		this.bIcon = bIcon;
+	}
+	
+	/**
+	 * get button icon of underlying database record
+	 *
+	 * @return button icon of underlying database record
+	 */
+	public ResourceVO getButtonIcon() {
+		return resButtonIcon;
+	}
+
+	/**
+	 * set button icon of underlying database record
+	 *
+	 * @param resButtonIcon button icon of underlying database record
+	 */
+	public void setButtonIcon(ResourceVO resButtonIcon) {
+		this.resButtonIcon = resButtonIcon;
+	}
+
+	/**
+	 * get color of underlying database record
+	 *
+	 * @return color of underlying database record
+	 */
+	public String getColor() {
+		return sColor;
+	}
+
+	/**
+	 * set color of underlying database record
+	 *
+	 * @param sColor color of underlying database record
+	 */
+	public void setColor(String sColor) {
+		this.sColor = sColor;
 	}
 
 	/**

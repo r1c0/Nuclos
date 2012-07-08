@@ -6345,6 +6345,21 @@
     "text": "Status"
   },
   {
+    "resourceID": "nuclos.entityfield.state.buttonicon.label",
+    "locale": "i-default",
+    "text": "Button Icon"
+  },
+  {
+    "resourceID": "nuclos.entityfield.state.buttonicon.label",
+    "locale": "en",
+    "text": "Button Icon"
+  },
+  {
+    "resourceID": "nuclos.entityfield.state.buttonicon.label",
+    "locale": "de",
+    "text": "Button Icon"
+  },
+  {
     "resourceID": "R00012359",
     "locale": "i-default",
     "text": "Interface reserve 1"
@@ -65349,6 +65364,36 @@
     "text": "Valuelistprovider zur Konfiguration der möglichen Parameterobjekte"
   },
   {
+    "resourceID": "nuclos.entityfield.generation.buttonicon.label",
+    "locale": "i-default",
+    "text": "Button Icon"
+  },
+  {
+    "resourceID": "nuclos.entityfield.generation.buttonicon.label",
+    "locale": "en",
+    "text": "Button Icon"
+  },
+  {
+    "resourceID": "nuclos.entityfield.generation.buttonicon.label",
+    "locale": "de",
+    "text": "Button Icon"
+  },
+  {
+    "resourceID": "nuclos.entityfield.generation.color.label",
+    "locale": "i-default",
+    "text": "Color"
+  },
+  {
+    "resourceID": "nuclos.entityfield.generation.color.label",
+    "locale": "en",
+    "text": "Color"
+  },
+  {
+    "resourceID": "nuclos.entityfield.generation.color.label",
+    "locale": "de",
+    "text": "Farbe"
+  },
+  {
     "resourceID": "wysiwg.metainformation.picker.freeexpr",
     "locale": "i-default",
     "text": "Allow arbitrary expression"
@@ -66377,7 +66422,7 @@
     "resourceID": "import.validation.structure.column.or.script",
     "locale": "de",
     "text": "Eine Attributdefinition benötigt entweder eine Spaltennummer oder einen Berechnungsausdruck."
-  }
+  },
   {
     "resourceID": "filenameextensionfilter.1",
     "locale": "i-default",
@@ -66392,5 +66437,65 @@
     "resourceID": "filenameextensionfilter.1",
     "locale": "de",
     "text": "Bildformate"
+  },
+  {
+    "resourceID": "OverlayOptionPane.OK",
+    "locale": "i-default",
+    "text": "OK"
+  },
+  {
+    "resourceID": "OverlayOptionPane.OK",
+    "locale": "en",
+    "text": "OK"
+  },
+  {
+    "resourceID": "OverlayOptionPane.OK",
+    "locale": "de",
+    "text": "OK"
+  },
+  {
+    "resourceID": "OverlayOptionPane.Cancel",
+    "locale": "i-default",
+    "text": "Cancel"
+  },
+  {
+    "resourceID": "OverlayOptionPane.Cancel",
+    "locale": "en",
+    "text": "Cancel"
+  },
+  {
+    "resourceID": "OverlayOptionPane.Cancel",
+    "locale": "de",
+    "text": "Abbrechen"
+  },
+  {
+    "resourceID": "OverlayOptionPane.Yes",
+    "locale": "i-default",
+    "text": "Yes"
+  },
+  {
+    "resourceID": "OverlayOptionPane.Yes",
+    "locale": "en",
+    "text": "Yes"
+  },
+  {
+    "resourceID": "OverlayOptionPane.Yes",
+    "locale": "de",
+    "text": "Ja"
+  },
+  {
+    "resourceID": "OverlayOptionPane.No",
+    "locale": "i-default",
+    "text": "No"
+  },
+  {
+    "resourceID": "OverlayOptionPane.No",
+    "locale": "en",
+    "text": "No"
+  },
+  {
+    "resourceID": "OverlayOptionPane.No",
+    "locale": "de",
+    "text": "Nein"
   }
 ]

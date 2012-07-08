@@ -25,6 +25,8 @@ import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.AbstractAction;
 import javax.swing.JButton;
@@ -41,6 +43,10 @@ import org.nuclos.common2.SpringLocaleDelegate;
 public class ColorChooserButton extends JButton {
 
 	private Color color;
+	
+	private final JMenuItem miDelete;
+	
+	private final List<ColorChangeListener> colorChangeListeners = new ArrayList<ColorChangeListener>();
 	
 	@SuppressWarnings("serial")
 	public ColorChooserButton(String text, Color color, final JDialog parent) {
@@ -80,6 +86,7 @@ public class ColorChooserButton extends JButton {
 					public void actionPerformed(ActionEvent e) {
 						setColor(colorChooser.getColor());
 						dialog.dispose();
+						fireColorChanged();
 					}
 				});
 				
@@ -95,10 +102,11 @@ public class ColorChooserButton extends JButton {
 		});
 		
 		final JPopupMenu popup = new JPopupMenu();
-		final JMenuItem miDelete = new JMenuItem(new AbstractAction(SpringLocaleDelegate.getInstance().getMessage("ColorChooserButton.4", "Löschen"), Icons.getInstance().getIconRealDelete16()) {
+		miDelete = new JMenuItem(new AbstractAction(SpringLocaleDelegate.getInstance().getMessage("ColorChooserButton.4", "Löschen"), Icons.getInstance().getIconRealDelete16()) {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				ColorChooserButton.this.color = null;
+				setColor(null);
+				fireColorChanged();
 			}
 		});
 		miDelete.setEnabled(color != null);
@@ -112,6 +120,7 @@ public class ColorChooserButton extends JButton {
 	
 	public void setColor(Color color) {
 		this.color = color;
+		miDelete.setEnabled(color != null);
 		repaint();
 	}
 
@@ -144,5 +153,21 @@ public class ColorChooserButton extends JButton {
 				renderingHint);
 	}
 	
+	public void addColorChangeListener(ColorChangeListener ccl) {
+		this.colorChangeListeners.add(ccl);
+	}
 	
+	public void removeColorChangeListener(ColorChangeListener ccl) {
+		this.colorChangeListeners.remove(ccl);
+	}
+	
+	private void fireColorChanged() {
+		for (ColorChangeListener ccl : colorChangeListeners) {
+			ccl.colorChanged(color);
+		}
+	}
+	
+	public static interface ColorChangeListener {
+		public void colorChanged(Color newColor);
+	}
 }

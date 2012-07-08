@@ -833,6 +833,10 @@ public class Icons {
 	public ImageIcon getIconListOrdered() {
 		return this.getIconByName("list-ordered");
 	}
+	
+	public ImageIcon getIconStateChangeArrow() {
+		return this.getIconByName("state-change-arrow");
+	}
 
 	public ImageIcon getBarChartIcon() {
 		return getCachedImageIcon("org/nuclos/client/layout/wysiwyg/editor/ui/charts/barchart.png");

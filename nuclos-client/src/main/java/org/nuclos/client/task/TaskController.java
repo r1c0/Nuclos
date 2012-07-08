@@ -52,6 +52,7 @@ import org.nuclos.client.timelimit.TimelimitTaskDelegate;
 import org.nuclos.client.ui.Controller;
 import org.nuclos.client.ui.Errors;
 import org.nuclos.client.ui.MainFrameTabAdapter;
+import org.nuclos.client.ui.ResultListener;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.client.ui.collect.CollectableTableHelper;
 import org.nuclos.client.ui.table.TableUtils;
@@ -474,9 +475,9 @@ public class TaskController extends Controller<MainFrameTabbedPane> {
 			final String sLabel = StringUtils.isNullOrEmpty(tasklist.getLabelResourceId()) ? tasklist.getName() : getSpringLocaleDelegate().getTextFallback(tasklist.getLabelResourceId(), tasklist.getName());
 			tab.addMainFrameTabListener(new MainFrameTabAdapter() {
 				@Override
-				public boolean tabClosing(MainFrameTab tab) {
+				public void tabClosing(MainFrameTab tab, ResultListener<Boolean> rl) {
 					removeDynamicTaskView(newView);
-					return true;
+					rl.done(true);
 				}
 				@Override
 				public void tabClosed(MainFrameTab tab) {
@@ -521,9 +522,9 @@ public class TaskController extends Controller<MainFrameTabbedPane> {
 					: getSpringLocaleDelegate().getTextFallback(filter.getLabelResourceId(), filter.getName());
 			tab.addMainFrameTabListener(new MainFrameTabAdapter() {
 				@Override
-				public boolean tabClosing(MainFrameTab tab) {
+				public void tabClosing(MainFrameTab tab, ResultListener<Boolean> rl) {
 					removeGenericObjectTaskView(newView);
-					return true;
+					rl.done(true);
 				}
 				@Override
 				public void tabClosed(MainFrameTab tab) {
@@ -603,9 +604,15 @@ public class TaskController extends Controller<MainFrameTabbedPane> {
 	 *
 	 * @param view
 	 */
-	private void closeGenericObjectTaskView(GenericObjectTaskView view)	throws PreferencesException, CommonBusinessException {
-		MainFrame.closeTab(getTabFor(view));
-		ctlGenericObjectTasks.removeGenericObjectTaskView(view);
+	private void closeGenericObjectTaskView(final GenericObjectTaskView view) {
+		MainFrame.closeTab(getTabFor(view), new ResultListener<Boolean>() {
+			@Override
+			public void done(Boolean result) {
+				if (Boolean.TRUE.equals(result)) {
+					ctlGenericObjectTasks.removeGenericObjectTaskView(view);
+				}
+			}
+		});
 	}
 
 	/**
@@ -703,13 +710,7 @@ public class TaskController extends Controller<MainFrameTabbedPane> {
 	public void hideFilterInTaskPanel(EntitySearchFilter searchFilter) throws CommonBusinessException {
 		final GenericObjectTaskView view = getTaskViewFor(searchFilter);
 		if (view != null) {
-			try {
-				closeGenericObjectTaskView(view);
-			}
-			catch (PreferencesException ex) {
-				throw new NuclosFatalException(getSpringLocaleDelegate().getMessage(
-						"tasklist.error.delete.searchfilter", "Der Suchfilter {0} konnte nicht aus der Aufgabenleiste entfernt werden.", searchFilter.getName()), ex);
-			}
+			closeGenericObjectTaskView(view);	
 		}
 	}
 

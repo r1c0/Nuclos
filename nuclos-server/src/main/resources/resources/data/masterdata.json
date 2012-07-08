@@ -5913,6 +5913,30 @@
         "labelres": "nuclos.entityfield.state.icon.label",
         "descriptionres": "nuclos.entityfield.state.icon.description"
       },
+      {
+        "name": "buttonIcon",
+        "dbfield": "INTID_BUTTONICON",
+        "foreignentity": "nuclos_resource",
+        "foreignentityfield": "name",
+        "datatype": "java.lang.String",
+        "datascale": 255,
+        "nullable": true,
+        "searchable": true,
+        "logbook": false,
+        "unique": false,
+        "labelres": "nuclos.entityfield.state.buttonicon.label"
+      },
+      {
+        "name": "color",
+        "dbfield": "STRCOLOR",
+        "datatype": "java.lang.String",
+        "datascale": 10,
+        "nullable": true,
+        "searchable": false,
+        "logbook": false,
+        "unique": false,
+        "labelres": "nuclos.entityfield.generation.color.label"
+      }
     ]
   },
   {
@@ -8996,6 +9020,19 @@
         "unique": false,
         "labelres": "nuclos.entityfield.generation.parameterValuelist.label",
         "descriptionres": "nuclos.entityfield.generation.parameterValuelist.description"
+      },
+      {
+        "name": "buttonIcon",
+        "dbfield": "STRVALUE_BUTTONICON",
+        "foreignentity": "nuclos_resource",
+        "foreignentityfield": "name",
+        "datatype": "java.lang.String",
+        "datascale": 255,
+        "nullable": true,
+        "searchable": true,
+        "logbook": false,
+        "unique": false,
+        "labelres": "nuclos.entityfield.generation.buttonicon.label"
       }
     ]
   },

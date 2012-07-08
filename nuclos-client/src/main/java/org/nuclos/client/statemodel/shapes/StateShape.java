@@ -39,6 +39,7 @@ import javax.swing.JComponent;
 
 import org.nuclos.common.NuclosImage;
 import org.nuclos.common2.SpringLocaleDelegate;
+import org.nuclos.client.common.Utils;
 import org.nuclos.client.gef.AbstractShapeViewer;
 import org.nuclos.client.gef.shapes.AbstractConnector;
 import org.nuclos.client.gef.shapes.ContainerShape;
@@ -102,6 +103,15 @@ public class StateShape extends ContainerShape implements ImageObserver {
 	}
 
 	@Override
+	protected Color getBackground() {
+		String sColor = statevo.getColor();
+		if (sColor != null) {
+			return Color.decode(sColor);
+		}
+		return bgColor;
+	}
+
+	@Override
 	public void paint(Graphics2D gfx) {
 		final Shape oldClip = gfx.getClip();
 
@@ -119,7 +129,8 @@ public class StateShape extends ContainerShape implements ImageObserver {
 		} else {
 			gfx.drawImage(new ImageIcon(getIcon().getContent()).getImage(), (int) dimension.getX() + 2, (int) dimension.getY() + 3, this);
 		}
-		gfx.setColor(Color.BLACK);
+		
+		gfx.setColor(Utils.getBestForegroundColor(getBackground()));
 		if (statevo.getStatename() != null) {
 			gfx.setFont(new Font("Arial", Font.BOLD, 12));
 			gfx.drawString((statevo.getNumeral() == null ? statevo.getStatename() : statevo.getNumeral() + " " + statevo.getStatename()), (float) dimension.getX() + 19, (float) dimension.getY() + 14);
@@ -220,6 +231,10 @@ public class StateShape extends ContainerShape implements ImageObserver {
 	public void setIcon(NuclosImage bIcon) {
 		statevo.setIcon(bIcon);
 	}
+	
+	public void setStateColor(String color) {
+		statevo.setColor(color);
+	}
 
 	/**
 	 * {@inheritDoc}
@@ -291,15 +306,15 @@ public class StateShape extends ContainerShape implements ImageObserver {
 
 		if (isStart) {
 			newIcon = Icons.getInstance().getIconStateStart();
-			bgColor = new Color(220, 255, 220);
+			bgColor = new Color(230, 230, 230); //new Color(220, 255, 220);
 		}
 		else if (isOutgoing) {
 			newIcon = Icons.getInstance().getIconStateIntermediate();
-			bgColor = new Color(220, 235, 250);
+			bgColor = new Color(230, 230, 230); //new Color(220, 235, 250);
 		}
 		else {
 			newIcon = Icons.getInstance().getIconStateEnd();
-			bgColor = new Color(255, 255, 190);
+			bgColor = new Color(230, 230, 230); //new Color(255, 255, 190);
 		}
 
 		if (icon != newIcon) {

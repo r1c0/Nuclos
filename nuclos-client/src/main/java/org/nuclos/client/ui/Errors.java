@@ -225,6 +225,7 @@ public class Errors {
 
 		sErrorText = formatErrorMessage(sErrorText);
 		JOptionPane.showMessageDialog(parent, sErrorText, sTitle, iMessageType);
+		
 	}
 
 	protected void showDetailedExceptionDialog(Component parent, String sErrorMsg, final Throwable t, String sTitle,

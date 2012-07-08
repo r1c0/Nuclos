@@ -606,6 +606,8 @@ public class StateFacadeBean extends NuclosFacadeBean implements StateFacadeRemo
 		dbStateVO.setDescription(clientStateVO.getDescription());
 		dbStateVO.setModelId(modelVO.getId());
 		dbStateVO.setTabbedPaneName(clientStateVO.getTabbedPaneName());
+		dbStateVO.setColor(clientStateVO.getColor());
+		dbStateVO.setButtonIcon(clientStateVO.getButtonIcon());
 		
 		String labelResId = LocaleUtils.getResourceIdForField(STATE_TABLE, dbStateVO.getId(), LocaleUtils.FIELD_LABEL);
 		String descriptionResId = LocaleUtils.getResourceIdForField(STATE_TABLE, dbStateVO.getId(), LocaleUtils.FIELD_DESCRIPTION);

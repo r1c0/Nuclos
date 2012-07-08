@@ -27,6 +27,7 @@ import org.apache.log4j.spi.LoggingEvent;
 import org.nuclos.client.main.mainframe.MainFrameTab;
 import org.nuclos.client.ui.MainFrameTabAdapter;
 import org.nuclos.client.ui.MainFrameTabController;
+import org.nuclos.client.ui.ResultListener;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.springframework.beans.factory.annotation.Configurable;
 
@@ -86,9 +87,9 @@ public class ScriptLoggerController extends MainFrameTabController {
 
 		parent.addMainFrameTabListener(new MainFrameTabAdapter() {
 			@Override
-			public boolean tabClosing(MainFrameTab tab) throws CommonBusinessException {
+			public void tabClosing(MainFrameTab tab, ResultListener<Boolean> rl) {
 				LOG.removeAppender(appender);
-				return true;
+				rl.done(true);
 			}
 		});
 

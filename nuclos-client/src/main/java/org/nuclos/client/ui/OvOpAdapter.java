@@ -16,19 +16,19 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.ui;
 
-import java.awt.Dimension;
 
-import org.nuclos.common2.exception.CommonBusinessException;
+/**
+ * Adapter for <code>OvOpListener</code>
+ * <br>
+ * <br>Created by Novabit Informationssysteme GmbH
+ * <br>Please visit <a href="http://www.novabit.de">www.novabit.de</a>
+ *
+ * @author	<a href="mailto:maik.stueker@nuclos.de">Maik Stueker</a>
+ * @version 01.00.00
+ */
+public abstract class OvOpAdapter implements OvOpListener {
 
-public interface IOverlayComponent {
+	@Override
+	public void done(int result) {} 
 	
-	public void transferSize(Dimension size);
-	
-	public void addOverlayFrameChangeListener(IOverlayFrameChangeListener listener);
-	
-	public void removeOverlayFrameChangeListener(IOverlayFrameChangeListener listener);
-	
-	public boolean isClosable();
-
-	public void notifyClosing(ResultListener<Boolean> rl);
 }

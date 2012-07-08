@@ -63,8 +63,6 @@ public interface MainFrameTabListener {
 	 * - throw CommonBusinessException if you want to show a message.
 	 * 
 	 * @param tab
-	 * @return true
-	 * @throws CommonBusinessException
 	 */
-	public boolean tabClosing(MainFrameTab tab) throws CommonBusinessException;
+	public void tabClosing(MainFrameTab tab, ResultListener<Boolean> rl);
 }

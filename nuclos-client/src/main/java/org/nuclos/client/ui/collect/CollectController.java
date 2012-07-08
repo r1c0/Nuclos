@@ -74,6 +74,7 @@ import org.apache.commons.lang.NullArgumentException;
 import org.apache.log4j.Logger;
 import org.nuclos.client.common.ClientParameterProvider;
 import org.nuclos.client.common.DatasourceBasedCollectableFieldsProvider;
+import org.nuclos.client.common.EnabledListener;
 import org.nuclos.client.common.KeyBindingProvider;
 import org.nuclos.client.common.MetaDataClientProvider;
 import org.nuclos.client.common.NuclosCollectController;
@@ -100,6 +101,9 @@ import org.nuclos.client.ui.FrameUtils;
 import org.nuclos.client.ui.Icons;
 import org.nuclos.client.ui.ListOfValues;
 import org.nuclos.client.ui.MainFrameTabAdapter;
+import org.nuclos.client.ui.OvOpAdapter;
+import org.nuclos.client.ui.OverlayOptionPane;
+import org.nuclos.client.ui.ResultListener;
 import org.nuclos.client.ui.SimpleDocumentListener;
 import org.nuclos.client.ui.TopController;
 import org.nuclos.client.ui.UIUtils;
@@ -352,9 +356,14 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 
 		@Override
         public void actionPerformed(ActionEvent ev) {
-			if (askAndSaveIfNecessary()) {
-				cmdEnterNewMode();
-			}
+			askAndSaveIfNecessary(new ResultListener<Boolean>() {
+				@Override
+				public void done(Boolean result) {
+					if (Boolean.TRUE.equals(result)) {
+						cmdEnterNewMode();
+					}
+				}
+			});
 		}
 	};
 
@@ -447,9 +456,14 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 
 		@Override
         public void actionPerformed(ActionEvent ev) {
-			if (askAndSaveIfNecessary()) {
-				cmdCloneSelectedCollectable();
-			}
+			askAndSaveIfNecessary(new ResultListener<Boolean>() {
+				@Override
+				public void done(Boolean result) {
+					if (Boolean.TRUE.equals(result)) {
+						cmdCloneSelectedCollectable();
+					}
+				}
+			});
 		}
 	};
 
@@ -706,12 +720,13 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 		getCollectPanel().getDetailsPanel().addMainFrameTabListener(new MainFrameTabAdapter() {
 
 			@Override
-			public boolean tabClosing(MainFrameTab tab)	throws CommonBusinessException {
-				try {
-					return askAndSaveIfNecessary(true);
-				} catch (NuclosCancelException nce) {
-					return false;
-				}
+			public void tabClosing(MainFrameTab tab, final ResultListener<Boolean> rl) {
+				askAndSaveIfNecessary(true, new ResultListener<Boolean>() {
+					@Override
+					public void done(Boolean result) {
+						rl.done(Boolean.TRUE.equals(result));
+					}
+				});
 			}
 			
 		});
@@ -1087,8 +1102,13 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 				setDefaultButton();
 			}
 			@Override
-			public boolean tabClosing(MainFrameTab tab) throws CommonBusinessException {
-				return askAndSaveIfNecessary();
+			public void tabClosing(MainFrameTab tab, final ResultListener<Boolean> rl) {
+				askAndSaveIfNecessary(new ResultListener<Boolean>() {
+					@Override
+					public void done(Boolean result) {
+						rl.done(Boolean.TRUE.equals(result));
+					}
+				});
 			}
 			@Override
 			public void tabClosed(MainFrameTab tab) {
@@ -2200,10 +2220,15 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	 */
 	protected void cmdFrameClosing() {
 		if (this.stopEditingInDetails()) {
-			this.bFrameMayBeClosed = this.askAndSaveIfNecessary();
-			if (this.bFrameMayBeClosed) {
-				this.getTab().dispose();
-			}
+			this.askAndSaveIfNecessary(new ResultListener<Boolean>() {
+				@Override
+				public void done(Boolean result) {
+					bFrameMayBeClosed = Boolean.TRUE.equals(result);
+					if (bFrameMayBeClosed) {
+						getTab().dispose();
+					}
+				}
+			});
 		}
 	}
 
@@ -2528,23 +2553,49 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 							break;
 
 						case CollectState.DETAILSMODE_EDIT:
-							if (askAndSaveIfNecessary()) {
-								refreshCurrentCollectable();
-								broadcastCollectableEvent(getSelectedCollectable(), MessageType.REFRESH_DONE_DIRECTLY);
-							}
+							askAndSaveIfNecessary(new ResultListener<Boolean>() {
+								@Override
+								public void done(Boolean result) {
+									if (Boolean.TRUE.equals(result)) {
+										try {
+											refreshCurrentCollectable();
+											broadcastCollectableEvent(getSelectedCollectable(), MessageType.REFRESH_DONE_DIRECTLY);
+										} catch (CommonBusinessException e) {
+											final String sErrorMsg = "Der Datensatz konnte nicht neu geladen werden.";
+											Errors.getInstance().showExceptionDialog(getTab(), sErrorMsg, e);
+										}
+										
+									}
+								}
+							});
 							break;
 
 						case CollectState.DETAILSMODE_NEW_CHANGED:
-							if (askAndSaveIfNecessary()) {
-								enterNewMode();
-							}
+							askAndSaveIfNecessary(new ResultListener<Boolean>() {
+								@Override
+								public void done(Boolean result) {
+									if (Boolean.TRUE.equals(result)) {
+										enterNewMode();
+									}
+								}
+							});
 							break;
 
 						case CollectState.DETAILSMODE_MULTIVIEW:
 						case CollectState.DETAILSMODE_MULTIEDIT:
-							if (askAndSaveIfNecessary()) {
-								enterMultiViewMode();
-							}
+							askAndSaveIfNecessary(new ResultListener<Boolean>() {
+								@Override
+								public void done(Boolean result) {
+									if (Boolean.TRUE.equals(result)) {
+										try {
+											enterMultiViewMode();
+										} catch (CommonBusinessException e) {
+											final String sErrorMsg = "Der Datensatz konnte nicht neu geladen werden.";
+											Errors.getInstance().showExceptionDialog(getTab(), sErrorMsg, e);
+										}
+									}
+								}
+							});
 							break;
 
 						default:
@@ -3126,17 +3177,21 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 					final String sMessage = sMessage1 + ", " + "da er zwischenzeitlich von einem anderen Benutzer ge\u00e4ndert wurde.\n" +
 							"Sie m\u00fcssen den Datensatz neu laden und Ihre \u00c4nderungen dann erneut durchf\u00fchren.\n\n" +
 							getSpringLocaleDelegate().getMessage("CollectController.25","Soll der Datensatz jetzt neu geladen werden?");
-					final int iBtn = JOptionPane.showConfirmDialog(this.getTab(), sMessage,
+					OverlayOptionPane.showConfirmDialog(getTab(), sMessage,
 							getSpringLocaleDelegate().getMessage("CollectController.9","Datensatz ge\u00e4ndert"),
-							JOptionPane.OK_CANCEL_OPTION);
-					if (iBtn == JOptionPane.OK_OPTION) {
-						try {
-							this.refreshCurrentCollectable();
-						}
-						catch (CommonBusinessException ex2) {
-							Errors.getInstance().showExceptionDialog(this.getTab(), ex2);
-						}
-					}
+							OverlayOptionPane.OK_CANCEL_OPTION, new OvOpAdapter() {
+								@Override
+								public void done(int result) {
+									if (result == OverlayOptionPane.OK_OPTION) {
+										try {
+											refreshCurrentCollectable();
+										}
+										catch (CommonBusinessException ex2) {
+											Errors.getInstance().showExceptionDialog(getTab(), ex2);
+										}
+									}
+								}
+					});
 				}
 				catch (CommonBusinessException ex) {
 					try {
@@ -3533,44 +3588,64 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	}
 
 	private void cmdFirst() {
-		if (this.askAndSaveIfNecessary()) {
-			CollectController.this.getCollectNavigationModel().selectFirstElement();
-			this.cmdEnterViewMode();
-		}
+		this.askAndSaveIfNecessary(new ResultListener<Boolean>() {
+			@Override
+			public void done(Boolean result) {
+				if (Boolean.TRUE.equals(result)) {
+					CollectController.this.getCollectNavigationModel().selectFirstElement();
+					cmdEnterViewMode();
+				}
+			}
+		});
 	}
 
 	private void cmdLast() {
-		if (this.askAndSaveIfNecessary()) {
-			CollectController.this.getCollectNavigationModel().selectLastElement();
-			this.cmdEnterViewMode();
-		}
+		this.askAndSaveIfNecessary(new ResultListener<Boolean>() {
+			@Override
+			public void done(Boolean result) {
+				if (Boolean.TRUE.equals(result)) {
+					CollectController.this.getCollectNavigationModel().selectLastElement();
+					cmdEnterViewMode();
+				}
+			}
+		});
 	}
 
 	private void cmdPrevious() {
-		if (this.askAndSaveIfNecessary()) {
-			CollectController.this.getCollectNavigationModel().selectPreviousElement();
-			this.cmdEnterViewMode();
-		}
+		this.askAndSaveIfNecessary(new ResultListener<Boolean>() {
+			@Override
+			public void done(Boolean result) {
+				if (Boolean.TRUE.equals(result)) {
+					CollectController.this.getCollectNavigationModel().selectPreviousElement();
+					cmdEnterViewMode();
+				}
+			}
+		});
 	}
 
 	private void cmdNext() {
-		if (this.askAndSaveIfNecessary()) {
-			CollectController.this.getCollectNavigationModel().selectNextElement();
-			this.cmdEnterViewMode();
-		}
+		this.askAndSaveIfNecessary(new ResultListener<Boolean>() {
+			@Override
+			public void done(Boolean result) {
+				if (Boolean.TRUE.equals(result)) {
+					CollectController.this.getCollectNavigationModel().selectNextElement();
+					cmdEnterViewMode();
+				}
+			}
+		});
 	}
 	
 	/**
 	 * asks the user to save the current record if necessary, so that it can be abandoned afterwards.
 	 * @return can the action be performed?
 	 */
-	public boolean askAndSaveIfNecessary() {
-		try {
-			return askAndSaveIfNecessary(false);
-		} catch (NuclosCancelException e) {
-			// not possible
-			throw new NuclosFatalException(e);
-		}
+	public void askAndSaveIfNecessary(final ResultListener<Boolean> rl) {
+		askAndSaveIfNecessary(false, new ResultListener<Boolean>() {
+			@Override
+			public void done(Boolean result) {
+				rl.done(Boolean.TRUE.equals(result));
+			}
+		});
 	}
 
 	/**
@@ -3578,8 +3653,7 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	 * @return can the action be performed?
 	 */
 	@Override
-	public boolean askAndSaveIfNecessary(boolean throwCancelException) throws NuclosCancelException {
-		boolean result = true;
+	public void askAndSaveIfNecessary(final boolean returnNullIfCancel, final ResultListener<Boolean> rl) {
 
 		if (this.changesArePending()) {
 			try {
@@ -3593,55 +3667,65 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 							"CollectController.32","Wenn Sie jetzt nicht speichern, werden diese \u00c4nderungen verloren gehen.") + "\n" +
 							getSpringLocaleDelegate().getMessage("CollectController.20","Jetzt speichern?");
 
-			final int iBtn = JOptionPane.showConfirmDialog(this.getTab(), sMsg, getSpringLocaleDelegate().getMessage(
+			OverlayOptionPane.showConfirmDialog(this.getTab(), sMsg, getSpringLocaleDelegate().getMessage(
 					"CollectController.10","Datensatz ge\u00e4ndert"),
-					JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
+					JOptionPane.YES_NO_CANCEL_OPTION, new OvOpAdapter() {
+						@Override
+						public void done(int result) {
+							
+							boolean bResult = true;
+							
+							if (returnNullIfCancel && result == OverlayOptionPane.CANCEL_OPTION) {
+								rl.done(null);
+								return;
+							}
+							bResult = (result != OverlayOptionPane.CANCEL_OPTION && result != OverlayOptionPane.CLOSED_OPTION);
 
-			if (throwCancelException && iBtn == JOptionPane.CANCEL_OPTION) {
-				throw new NuclosCancelException();
-			}
-			result = (iBtn != JOptionPane.CANCEL_OPTION);
-
-			if (iBtn == JOptionPane.YES_OPTION) {
-				try {
-					// cmdSave cannot be used here, because it does not throw any non-fatal exceptions, which can be used to prevent closing of the window.
-					// To solve the problem otherwise, handleSaveExeption is called here, which could provide additional behaviour like focus faulty fields...
-					this.save();
-				}
-				catch (CommonPermissionException ex) {
-					result = false;
-					final String sMessage = getSpringLocaleDelegate().getMessage(
-							"CollectController.24","Sie verf\u00fcgen nicht \u00fcber die ausreichenden Rechte, um dieses Objekt zu speichern.");
-					Errors.getInstance().showExceptionDialog(this.getTab(), sMessage, ex);
-				}
-				catch (CommonBusinessException ex) {
-					result = false;
-					final String sMessage1 = getSpringLocaleDelegate().getMessage(
-							"CollectController.13","Der Datensatz konnte nicht gespeichert werden");
-					try {
-						handleSaveException(ex, sMessage1);
-					}
-					catch (CommonFinderException ex2) {
-						final String sErrorMsg = getSpringLocaleDelegate().getMessage(
-								"CollectController.1",", da er zwischenzeitlich von einem anderen Benutzer gel\u00f6scht wurde.");
-						Errors.getInstance().showExceptionDialog(this.getTab(), sErrorMsg, ex2);
-					}
-					catch (CommonBusinessException ex2) {
-						Errors.getInstance().showExceptionDialog(this.getTab(), sMessage1 + ".", ex2);
-					}
-					//final String sMessage = "Der Datensatz konnte nicht gespeichert werden.";
-					//Errors.getInstance().showExceptionDialog(this.getFrame(), sMessage, ex);
-				}
-				catch (CommonFatalException ex) {
-					result = false;
-					final String sMessage = getSpringLocaleDelegate().getMessage(
-							"CollectController.11","Der Datensatz konnte nicht gespeichert werden.");
-					Errors.getInstance().showExceptionDialog(this.getTab(), sMessage, ex);
-				}
-			}
+							if (result == OverlayOptionPane.YES_OPTION) {
+								try {
+									// cmdSave cannot be used here, because it does not throw any non-fatal exceptions, which can be used to prevent closing of the window.
+									// To solve the problem otherwise, handleSaveExeption is called here, which could provide additional behaviour like focus faulty fields...
+									save();
+								}
+								catch (CommonPermissionException ex) {
+									bResult = false;
+									final String sMessage = getSpringLocaleDelegate().getMessage(
+											"CollectController.24","Sie verf\u00fcgen nicht \u00fcber die ausreichenden Rechte, um dieses Objekt zu speichern.");
+									Errors.getInstance().showExceptionDialog(getTab(), sMessage, ex);
+								}
+								catch (CommonBusinessException ex) {
+									bResult = false;
+									final String sMessage1 = getSpringLocaleDelegate().getMessage(
+											"CollectController.13","Der Datensatz konnte nicht gespeichert werden");
+									try {
+										handleSaveException(ex, sMessage1);
+									}
+									catch (CommonFinderException ex2) {
+										final String sErrorMsg = getSpringLocaleDelegate().getMessage(
+												"CollectController.1",", da er zwischenzeitlich von einem anderen Benutzer gel\u00f6scht wurde.");
+										Errors.getInstance().showExceptionDialog(getTab(), sErrorMsg, ex2);
+									}
+									catch (CommonBusinessException ex2) {
+										Errors.getInstance().showExceptionDialog(getTab(), sMessage1 + ".", ex2);
+									}
+									//final String sMessage = "Der Datensatz konnte nicht gespeichert werden.";
+									//Errors.getInstance().showExceptionDialog(this.getFrame(), sMessage, ex);
+								}
+								catch (CommonFatalException ex) {
+									bResult = false;
+									final String sMessage = getSpringLocaleDelegate().getMessage(
+											"CollectController.11","Der Datensatz konnte nicht gespeichert werden.");
+									Errors.getInstance().showExceptionDialog(getTab(), sMessage, ex);
+								}
+							}
+							
+							rl.done(bResult);
+						}
+			});
+		} else {
+			rl.done(true);
 		}
 
-		return result;
 	}	// askAndSaveIfNecessary
 
 	/**
@@ -4579,6 +4663,5 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	private void cmdResetMainFilter() {
 		getResultPanel().getSearchFilterBar().setSelected(null);
 	}
-	
 
 }	// class CollectController

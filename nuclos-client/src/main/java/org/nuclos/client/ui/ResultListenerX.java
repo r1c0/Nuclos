@@ -16,19 +16,17 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.ui;
 
-import java.awt.Dimension;
+/**
+ * Listener for Results
+ * <br>
+ * <br>Created by Novabit Informationssysteme GmbH
+ * <br>Please visit <a href="http://www.novabit.de">www.novabit.de</a>
+ *
+ * @author	<a href="mailto:maik.stueker@nuclos.de">Maik Stueker</a>
+ * @version 01.00.00
+ */
+public interface ResultListenerX <R, X extends Exception> {
 
-import org.nuclos.common2.exception.CommonBusinessException;
-
-public interface IOverlayComponent {
+	public void done(R result, X exception); 
 	
-	public void transferSize(Dimension size);
-	
-	public void addOverlayFrameChangeListener(IOverlayFrameChangeListener listener);
-	
-	public void removeOverlayFrameChangeListener(IOverlayFrameChangeListener listener);
-	
-	public boolean isClosable();
-
-	public void notifyClosing(ResultListener<Boolean> rl);
 }

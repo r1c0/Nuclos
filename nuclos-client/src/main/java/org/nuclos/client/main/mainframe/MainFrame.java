@@ -108,6 +108,7 @@ import org.nuclos.client.synthetica.NuclosThemeSettings;
 import org.nuclos.client.ui.Bubble;
 import org.nuclos.client.ui.CommonJFrame;
 import org.nuclos.client.ui.Icons;
+import org.nuclos.client.ui.ResultListener;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.client.ui.ValidationLayerFactory;
 import org.nuclos.client.ui.gc.IReferenceHolder;
@@ -828,7 +829,11 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 
 	public void closeAllTabs() {
 		for (MainFrameTabbedPane tabbedPane : frameContent.getAllValues()) {
-			tabbedPane.closeAllTabs();
+			tabbedPane.closeAllTabs(new ResultListener<List<MainFrameTab>>() {
+				@Override
+				public void done(List<MainFrameTab> result) {	
+				}
+			});
 		}
 	}
 
@@ -1510,22 +1515,20 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 	 *
 	 * @param tab
 	 * @param mousePosition
-	 * @throws CommonBusinessException if tab is not closable
 	 */
-	static void closeTab(MainFrameTab tab, Point mousePosition) throws CommonBusinessException {
+	static void closeTab(MainFrameTab tab, Point mousePosition, final ResultListener<Boolean> rl) {
 		final MainFrameTabbedPane mtab = getTabbedPane(tab);
 		if (mtab != null) {
-			mtab.closeTab(tab, mousePosition);
+			mtab.closeTab(tab, mousePosition, rl);
 		}
 	}
 
 	/**
 	 *
 	 * @param tab
-	 * @throws CommonBusinessException
 	 */
-	public static void closeTab(MainFrameTab tab) throws CommonBusinessException {
-		closeTab(tab, null);
+	public static void closeTab(MainFrameTab tab, final ResultListener<Boolean> rl) {
+		closeTab(tab, null, rl);
 	}
 
 	/**
@@ -1625,7 +1628,7 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 	 * @param forcedFromFrameClose
 	 * @param addNotClosableToHome
 	 */
-	public void removeTabbedPane(MainFrameTabbedPane tabbedPane, boolean forcedFromFrameClose, boolean addNotClosableToHome) {
+	public void removeTabbedPane(final MainFrameTabbedPane tabbedPane, final boolean forcedFromFrameClose, final boolean addNotClosableToHome) {
 		final JFrame frame = getJFrame(tabbedPane);
 		final int countTabbedsOnFrame = countTabbedPanes(frame);
 
@@ -1644,86 +1647,88 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 
 			restoreTabbedPaneContainingArea(tabbedPane);
 
-			List<MainFrameTab> notClosableTabs = tabbedPane.closeAllTabs();
-
-
-			if (forcedFromFrameClose) {
-				frameContent.removeValue(frame, tabbedPane);
-			} else {
-				final JSplitPane splitPane = (JSplitPane) tabbedPane.getComponentPanel().getParent();
-				Component otherComp = splitPane.getLeftComponent() == tabbedPane.getComponentPanel() ? splitPane.getRightComponent() : splitPane.getLeftComponent();
-				splitPane.removeAll();
-				frameContent.removeValue(frame, tabbedPane);
-
-				if (splitPane.getParent() instanceof JSplitPane){
-					JSplitPane splitPaneParent = (JSplitPane) splitPane.getParent();
-					int dividerLocation = splitPaneParent.getDividerLocation();
-
-					if (splitPaneParent.getLeftComponent() == splitPane) {
-						splitPaneParent.remove(splitPane);
-						splitPaneParent.setLeftComponent(otherComp);
+			tabbedPane.closeAllTabs(new ResultListener<List<MainFrameTab>>() {
+				@Override
+				public void done(final List<MainFrameTab> notClosableTabs) {
+					if (forcedFromFrameClose) {
+						frameContent.removeValue(frame, tabbedPane);
 					} else {
-						splitPaneParent.remove(splitPane);
-						splitPaneParent.setRightComponent(otherComp);
-					}
-					splitPaneParent.setDividerLocation(dividerLocation);
-					splitPaneParent.validate();
-					splitPaneParent.repaint();
+						final JSplitPane splitPane = (JSplitPane) tabbedPane.getComponentPanel().getParent();
+						Component otherComp = splitPane.getLeftComponent() == tabbedPane.getComponentPanel() ? splitPane.getRightComponent() : splitPane.getLeftComponent();
+						splitPane.removeAll();
+						frameContent.removeValue(frame, tabbedPane);
 
-				} else if (frame == this) {
-					pnlDesktop.remove(splitPane);
-					pnlDesktop.add(otherComp, BorderLayout.CENTER);
-					pnlDesktop.validate();
-					pnlDesktop.repaint();
+						if (splitPane.getParent() instanceof JSplitPane){
+							JSplitPane splitPaneParent = (JSplitPane) splitPane.getParent();
+							int dividerLocation = splitPaneParent.getDividerLocation();
 
-				} else if (frame instanceof ExternalFrame) {
-					((ExternalFrame) frame).clearFrameContent();
-					((ExternalFrame) frame).setFrameContent(otherComp);
-					frame.validate();
-					frame.repaint();
+							if (splitPaneParent.getLeftComponent() == splitPane) {
+								splitPaneParent.remove(splitPane);
+								splitPaneParent.setLeftComponent(otherComp);
+							} else {
+								splitPaneParent.remove(splitPane);
+								splitPaneParent.setRightComponent(otherComp);
+							}
+							splitPaneParent.setDividerLocation(dividerLocation);
+							splitPaneParent.validate();
+							splitPaneParent.repaint();
 
-				} else {
-					throw new IllegalArgumentException("Unknown parent: " + splitPane.getParent().getClass().getName());
-				}
-			}
+						} else if (frame == MainFrame.this) {
+							pnlDesktop.remove(splitPane);
+							pnlDesktop.add(otherComp, BorderLayout.CENTER);
+							pnlDesktop.validate();
+							pnlDesktop.repaint();
 
-			if (homeTabbedPane == tabbedPane || homeTreeTabbedPane == tabbedPane) {
-				if (homeTabbedPane == tabbedPane) {
-					try {
-						homeTabbedPane = frameContent.getAllValues().iterator().next();
-					} catch (NoSuchElementException ex) {
-						// clearing workspace...
-						homeTabbedPane = null;
-					}
-				}
-				if (homeTreeTabbedPane == tabbedPane) {
-					try {
-						homeTreeTabbedPane = frameContent.getAllValues().iterator().next();
-					} catch (NoSuchElementException ex) {
-						// clearing workspace...
-						homeTreeTabbedPane = null;
+						} else if (frame instanceof ExternalFrame) {
+							((ExternalFrame) frame).clearFrameContent();
+							((ExternalFrame) frame).setFrameContent(otherComp);
+							frame.validate();
+							frame.repaint();
+
+						} else {
+							throw new IllegalArgumentException("Unknown parent: " + splitPane.getParent().getClass().getName());
+						}
 					}
 
-				}
-				for (MainFrameTabbedPane cursor : frameContent.getAllValues()) {
-					cursor.updateHomes();
-				}
-			}
+					if (homeTabbedPane == tabbedPane || homeTreeTabbedPane == tabbedPane) {
+						if (homeTabbedPane == tabbedPane) {
+							try {
+								homeTabbedPane = frameContent.getAllValues().iterator().next();
+							} catch (NoSuchElementException ex) {
+								// clearing workspace...
+								homeTabbedPane = null;
+							}
+						}
+						if (homeTreeTabbedPane == tabbedPane) {
+							try {
+								homeTreeTabbedPane = frameContent.getAllValues().iterator().next();
+							} catch (NoSuchElementException ex) {
+								// clearing workspace...
+								homeTreeTabbedPane = null;
+							}
 
-			if (predefinedEntityOpenLocation.containsKey(tabbedPane)) {
-				predefinedEntityOpenLocation.removeKey(tabbedPane);
-				setupStartmenu();
-			}
+						}
+						for (MainFrameTabbedPane cursor : frameContent.getAllValues()) {
+							cursor.updateHomes();
+						}
+					}
 
-			if (addNotClosableToHome) {
-				for (MainFrameTab notClosed : notClosableTabs) {
-					addTab(notClosed);
+					if (predefinedEntityOpenLocation.containsKey(tabbedPane)) {
+						predefinedEntityOpenLocation.removeKey(tabbedPane);
+						setupStartmenu();
+					}
+
+					if (addNotClosableToHome) {
+						for (MainFrameTab notClosed : notClosableTabs) {
+							addTab(notClosed);
+						}
+					}
+
+					if (!forcedFromFrameClose) {
+						updateTabbedPaneActions(frame);
+					}
 				}
-			}
-
-			if (!forcedFromFrameClose) {
-				updateTabbedPaneActions(frame);
-			}
+			});
 		}
 	}
 

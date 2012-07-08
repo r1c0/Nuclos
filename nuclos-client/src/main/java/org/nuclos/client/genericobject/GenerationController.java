@@ -51,6 +51,9 @@ import org.nuclos.client.ui.CommonMultiThreader;
 import org.nuclos.client.ui.Errors;
 import org.nuclos.client.ui.MainFrameTabAdapter;
 import org.nuclos.client.ui.MainFrameTabListener;
+import org.nuclos.client.ui.OvOpAdapter;
+import org.nuclos.client.ui.OvOpListener;
+import org.nuclos.client.ui.OverlayOptionPane;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.client.ui.collect.CollectController;
 import org.nuclos.client.ui.collect.CollectState;
@@ -176,12 +179,12 @@ public class GenerationController {
 	 */
 	public void generateGenericObject() {
 		try {
-			SwingUtilities.invokeLater(new Runnable() {
-				@Override
-				public void run() {
-					parent.lockLayerBusy();
-				}
-			});
+//			SwingUtilities.invokeLater(new Runnable() {
+//				@Override
+//				public void run() {
+//					parent.lockLayer();
+//				}
+//			});
 
 			final String sTargetModuleName = getModuleLabel(action.getTargetModuleId());
 			final String sSourceModuleName = getModuleLabel(action.getSourceModuleId());
@@ -217,76 +220,86 @@ public class GenerationController {
 				vlp = null;
 			}
 
-			final int iBtn = isConfirmationEnabled() ? confirmGenerationType(bMulti, sSourceModuleName, sTargetModuleName, action) : JOptionPane.OK_OPTION;
-
-			if (iBtn != JOptionPane.CANCEL_OPTION && iBtn != JOptionPane.CLOSED_OPTION) {
-				final AtomicReference<List<Long>> parameterObjectIdRef = new AtomicReference<List<Long>>();
-				final CommonRunnable generateRunnable = new CommonRunnable() {
+			if (isConfirmationEnabled()) {
+				confirmGenerationType(bMulti, sSourceModuleName, sTargetModuleName, action, new OvOpAdapter() {
 					@Override
-					public void run() throws CommonBusinessException {
-						List<Long> parameterObjectId = parameterObjectIdRef.get();
-						generate(parameterObjectId);
-					}
-				};
-
-				if (action.getParameterEntityId() != null) {
-					UIUtils.runShortCommand(parent, new CommonRunnable() {
-						@Override
-						public void run() throws CommonBusinessException {
-							final EntityMetaDataVO parameterEntity =
-								MetaDataClientProvider.getInstance().getEntity(action.getParameterEntityId().longValue());
-							final String pEntityStr = parameterEntity.getEntity();
-
-							final MainFrameTab lookupParent = getParentForLookup() != null ? getParentForLookup() : parent;
-							final ICollectableListOfValues lov = new EntityListOfValues(lookupParent);
-							final CollectController<?> ctl = NuclosCollectControllerFactory.getInstance().newCollectController(pEntityStr, null);
-							if (vlp != null) {
-								ctl.getSearchStrategy().setValueListProviderDatasource(vlp);
-								ctl.getSearchStrategy().setValueListProviderDatasourceParameter(params);
-							}
-							ctl.getTab().addMainFrameTabListener(tabListener);
-
-							lov.addLookupListener(new LookupListener() {
-								@Override
-								public void lookupSuccessful(LookupEvent ev) {
-									if (ev.getAdditionalCollectables() != null && ev.getAdditionalCollectables().size() > 0) {
-										List<Long> parameterIds = CollectionUtils.transform(ev.getAdditionalCollectables(), new Transformer<Collectable, Long>() {
-											@Override
-											public Long transform(Collectable i) {
-												return IdUtils.toLongId(i.getId());
-											}
-										});
-										parameterIds.add(IdUtils.toLongId(ev.getSelectedCollectable().getId()));
-										parameterObjectIdRef.set(parameterIds);
-									}
-									else {
-										Collectable clct = ev.getSelectedCollectable();
-										if (clct != null) {
-											parameterObjectIdRef.set(Collections.singletonList(IdUtils.toLongId((Integer) clct.getId())));
-										}
-									}
-									UIUtils.runShortCommand(parent, generateRunnable);
-								}
-								@Override
-								public int getPriority() {
-									return 1;
-								}
-							});
-							ctl.runLookupCollectable(lov);
+					public void done(int result) {
+						if (result == OverlayOptionPane.OK_OPTION) {
+							run(vlp, params);
+						} else {
+//							unlock(parent);
 						}
-					});
-				}
-				else {
-					UIUtils.runShortCommand(parent, generateRunnable);
-				}
-			}
-			else {
-				unlock(parent);
+					}
+				});
+			} else {
+				run(vlp, params);
 			}
 		}
 		catch (Exception ex) {
 			Errors.getInstance().showExceptionDialog(parent, ex);
-			unlock(parent);
+//			unlock(parent);
+		}
+	}
+	
+	private void run(final ValuelistProviderVO vlp, final Map<String, Object> params) {
+		final AtomicReference<List<Long>> parameterObjectIdRef = new AtomicReference<List<Long>>();
+		final CommonRunnable generateRunnable = new CommonRunnable() {
+			@Override
+			public void run() throws CommonBusinessException {
+				List<Long> parameterObjectId = parameterObjectIdRef.get();
+				generate(parameterObjectId);
+			}
+		};
+
+		if (action.getParameterEntityId() != null) {
+			UIUtils.runShortCommand(parent, new CommonRunnable() {
+				@Override
+				public void run() throws CommonBusinessException {
+					final EntityMetaDataVO parameterEntity =
+						MetaDataClientProvider.getInstance().getEntity(action.getParameterEntityId().longValue());
+					final String pEntityStr = parameterEntity.getEntity();
+
+					final MainFrameTab lookupParent = getParentForLookup() != null ? getParentForLookup() : parent;
+					final ICollectableListOfValues lov = new EntityListOfValues(lookupParent);
+					final CollectController<?> ctl = NuclosCollectControllerFactory.getInstance().newCollectController(pEntityStr, null);
+					if (vlp != null) {
+						ctl.getSearchStrategy().setValueListProviderDatasource(vlp);
+						ctl.getSearchStrategy().setValueListProviderDatasourceParameter(params);
+					}
+					ctl.getTab().addMainFrameTabListener(tabListener);
+
+					lov.addLookupListener(new LookupListener() {
+						@Override
+						public void lookupSuccessful(LookupEvent ev) {
+							if (ev.getAdditionalCollectables() != null && ev.getAdditionalCollectables().size() > 0) {
+								List<Long> parameterIds = CollectionUtils.transform(ev.getAdditionalCollectables(), new Transformer<Collectable, Long>() {
+									@Override
+									public Long transform(Collectable i) {
+										return IdUtils.toLongId(i.getId());
+									}
+								});
+								parameterIds.add(IdUtils.toLongId(ev.getSelectedCollectable().getId()));
+								parameterObjectIdRef.set(parameterIds);
+							}
+							else {
+								Collectable clct = ev.getSelectedCollectable();
+								if (clct != null) {
+									parameterObjectIdRef.set(Collections.singletonList(IdUtils.toLongId((Integer) clct.getId())));
+								}
+							}
+							UIUtils.runShortCommand(parent, generateRunnable);
+						}
+						@Override
+						public int getPriority() {
+							return 1;
+						}
+					});
+					ctl.runLookupCollectable(lov);
+				}
+			});
+		}
+		else {
+			UIUtils.runShortCommand(parent, generateRunnable);
 		}
 	}
 	
@@ -312,8 +325,7 @@ public class GenerationController {
 	 * @param generatoractionvo
 	 * @return selected option
 	 */
-	private int confirmGenerationType(boolean bMulti, String sSourceModuleName, String sTargetModuleName, GeneratorActionVO generatoractionvo) {
-		final int iBtn;
+	private void confirmGenerationType(boolean bMulti, String sSourceModuleName, String sTargetModuleName, GeneratorActionVO generatoractionvo, OvOpListener listener) {
 		if (generatoractionvo.getTargetProcessId() != null) {
 			try {
 				sTargetModuleName = MessageFormat.format("{0} ({1})", sTargetModuleName, MasterDataCache.getInstance().get(NuclosEntity.PROCESS.getEntityName(), generatoractionvo.getTargetProcessId()).getField("name", String.class));
@@ -331,9 +343,9 @@ public class GenerationController {
 				message = SpringLocaleDelegate.getInstance().getMessage(
 						"GenericObjectCollectController.72","Soll aus den markierten Objekten vom Typ \"{0}\" jeweils ein Objekt vom Typ \"{1}\" erzeugt werden?", sSourceModuleName, sTargetModuleName);
 			}
-			iBtn = JOptionPane.showConfirmDialog(parent, message, 
+			OverlayOptionPane.showConfirmDialog(parent, message, 
 					SpringLocaleDelegate.getInstance().getMessage(
-							"GenericObjectCollectController.5","{0} erzeugen", sTargetModuleName), JOptionPane.OK_CANCEL_OPTION);
+							"GenericObjectCollectController.5","{0} erzeugen", sTargetModuleName), JOptionPane.OK_CANCEL_OPTION, listener);
 		}
 		else {
 			UsageCriteria uc = sources.values().iterator().next();
@@ -349,11 +361,11 @@ public class GenerationController {
 			}
 			final String sMessage = SpringLocaleDelegate.getInstance().getMessage(
 					"GenericObjectCollectController.71","Soll aus dem/der aktuellen {0} ein(e) {1} erzeugt werden?", sSourceModuleName, sTargetModuleName);
-			iBtn = JOptionPane.showConfirmDialog(parent, sMessage, 
+			OverlayOptionPane.showConfirmDialog(parent, sMessage, 
 					SpringLocaleDelegate.getInstance().getMessage(
-							"GenericObjectCollectController.5","{0} erzeugen", sTargetModuleName), JOptionPane.OK_CANCEL_OPTION);
+							"GenericObjectCollectController.5","{0} erzeugen", sTargetModuleName), JOptionPane.OK_CANCEL_OPTION, listener);
 		}
-		return iBtn;
+		
 	}
 
 	/**

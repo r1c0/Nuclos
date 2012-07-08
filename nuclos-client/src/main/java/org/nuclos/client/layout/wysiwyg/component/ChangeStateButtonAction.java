@@ -32,6 +32,7 @@ import org.nuclos.client.ui.collect.CollectController;
 import org.nuclos.common.NuclosBusinessException;
 import org.nuclos.common.NuclosImage;
 import org.nuclos.common.collect.collectable.Collectable;
+import org.nuclos.server.resource.valueobject.ResourceVO;
 import org.nuclos.server.statemodel.valueobject.StateVO;
 
 /**
@@ -75,6 +76,8 @@ public class ChangeStateButtonAction<Clct extends Collectable> implements Collec
 			Integer stateNumeral = null;
 			String stateDescription = null;
 			NuclosImage stateIcon = null;
+			String stateColor = null;
+			ResourceVO stateButtonIcon = null;
 			for(StateVO possibleState : possibleStates) {
 				if(possibleState.getId().equals(targetState)) {
 					stateName = possibleState.getStatename();
@@ -82,6 +85,8 @@ public class ChangeStateButtonAction<Clct extends Collectable> implements Collec
 					stateNumeral = possibleState.getNumeral();
 					stateIcon = possibleState.getIcon();
 					stateDescription = possibleState.getDescription();
+					stateColor = possibleState.getColor();
+					stateButtonIcon = possibleState.getButtonIcon();
 					break;
 				}
 				// for compatibility to old fashioned way to set target state via other properties.
@@ -91,11 +96,13 @@ public class ChangeStateButtonAction<Clct extends Collectable> implements Collec
 					stateNumeral = possibleState.getNumeral();
 					stateIcon = possibleState.getIcon();
 					stateDescription = possibleState.getDescription();
+					stateColor = possibleState.getColor();
+					stateButtonIcon = possibleState.getButtonIcon();
 					break;
 				}
 			}
 			
-			StateWrapper newState = new StateWrapper(stateID, stateNumeral, stateName, stateIcon, stateDescription);
+			StateWrapper newState = new StateWrapper(stateID, stateNumeral, stateName, stateIcon, stateDescription, stateColor, stateButtonIcon);
 			gController.cmdChangeState(newState);
 		}
 		else {

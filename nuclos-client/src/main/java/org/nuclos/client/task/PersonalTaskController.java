@@ -88,6 +88,7 @@ import org.nuclos.client.ui.CommonAbstractAction;
 import org.nuclos.client.ui.Errors;
 import org.nuclos.client.ui.Icons;
 import org.nuclos.client.ui.MainFrameTabAdapter;
+import org.nuclos.client.ui.ResultListener;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.client.ui.collect.CollectController;
 import org.nuclos.client.ui.collect.CollectController.CollectableEventListener;
@@ -653,9 +654,9 @@ public class PersonalTaskController extends RefreshableTaskController implements
 		}
 		tab.addMainFrameTabListener(new MainFrameTabAdapter() {
 			@Override
-			public boolean tabClosing(MainFrameTab tab) {
+			public void tabClosing(MainFrameTab tab, ResultListener<Boolean> rl) {
 				removePersonalTaskTab();
-				return true;
+				rl.done(true);
 			}
 			@Override
 			public void tabClosed(MainFrameTab tab) {

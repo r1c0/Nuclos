@@ -22,6 +22,8 @@ import java.awt.Graphics2D;
 import java.awt.MultipleGradientPaint.CycleMethod;
 import java.awt.RadialGradientPaint;
 import java.awt.RenderingHints;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
 import java.awt.geom.Point2D;
 
 import javax.swing.BorderFactory;
@@ -30,9 +32,10 @@ import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import org.nuclos.client.common.Utils;
 import org.nuclos.client.synthetica.NuclosThemeSettings;
 
-public class BlackLabel extends JPanel {
+public class ColoredLabel extends JPanel {
 	
 
 	public static final int BORDER_DEFAULT_LEFT = 6;
@@ -42,10 +45,32 @@ public class BlackLabel extends JPanel {
 	private final JLabel label;
 	private final JComponent content;
 	
+	private Color background = NuclosThemeSettings.BACKGROUND_COLOR3;
+	
 	private boolean gradientPaint = true;
 	
-	public BlackLabel(JComponent content, String label) {
+	public ColoredLabel(JComponent content, String label) {
 		this(content, createJLabel(label));
+		content.addComponentListener(new ComponentListener() {
+			
+			@Override
+			public void componentShown(ComponentEvent e) {
+				ColoredLabel.this.setVisible(true);
+			}
+			
+			@Override
+			public void componentResized(ComponentEvent e) {
+			}
+			
+			@Override
+			public void componentMoved(ComponentEvent e) {
+			}
+			
+			@Override
+			public void componentHidden(ComponentEvent e) {
+				ColoredLabel.this.setVisible(false);
+			}
+		});
 	}
 	
 	protected static JLabel createJLabel(String label) {
@@ -54,7 +79,7 @@ public class BlackLabel extends JPanel {
 		return result;
 	}
 	
-	public BlackLabel(JComponent content, JLabel label) {
+	public ColoredLabel(JComponent content, JLabel label) {
 		super();
 		this.content = content;
 		
@@ -81,6 +106,16 @@ public class BlackLabel extends JPanel {
 	public void setGradientPaint(boolean gradientPaint) {
 		this.gradientPaint = gradientPaint;
 	}
+	
+	public void setColoredBackground(Color background) {
+		if (background == null) {
+			this.background = NuclosThemeSettings.BACKGROUND_COLOR3;
+		} else {
+			this.background = background;
+		}
+		label.setForeground(Utils.getBestForegroundColor(this.background));
+		repaint();
+	}
 
 	@Override
 	public void paint(Graphics g) {
@@ -99,11 +134,11 @@ public class BlackLabel extends JPanel {
 				final float radius = (width-contentWidth)/2;
 			    final Point2D focus = new Point2D.Float((width-contentWidth)/2*3, (height/2));
 			    final float[] dist = {0.0f, 1.0f};
-			    final Color[] colors = {NuclosThemeSettings.BACKGROUND_COLOR4, NuclosThemeSettings.BACKGROUND_COLOR3};
+			    final Color[] colors = {NuclosThemeSettings.BACKGROUND_PANEL, background};
 			    g2.setPaint(new RadialGradientPaint(center, radius, focus,
 			                                        dist, colors, CycleMethod.NO_CYCLE));
 	        } else {
-	        	g2.setColor(NuclosThemeSettings.BACKGROUND_COLOR3);
+	        	g2.setColor(background);
 	        }
 		    g2.fillRoundRect(0, 0, width, height, 6, 6);
 		    
