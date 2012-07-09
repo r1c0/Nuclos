@@ -1821,24 +1821,26 @@ public class MainController {
 			class Counter {
 				boolean readyToReturn = false;
 				int targetCount = 0;
-				int answers = 0;
-				int results = 0;
+				Map<TopController, Boolean> results = new HashMap<TopController, Boolean>();
 				synchronized void addCount() {
 					targetCount++;
 				}
-				synchronized void answered(boolean result) {
-					answers++;
-					if (Boolean.TRUE.equals(result)) {
-						results++;
-					}
-					if (readyToReturn && targetCount == answers) {
-						rl.done(results == answers);
+				synchronized void answered(TopController tc, boolean result) {
+					results.put(tc, result);
+					if (readyToReturn) {
+						readyToReturn();
 					}
 				}
 				synchronized void readyToReturn() {
 					this.readyToReturn = true;
-					if (targetCount == answers) {
-						rl.done(results == answers);
+					if (targetCount == results.size()) {
+						int trueCount = 0;
+						for (TopController tcIter : results.keySet()) {
+							if (results.get(tcIter)) {
+								trueCount++;
+							}
+						}
+						rl.done(targetCount == trueCount);
 					}
 				}
 			}
@@ -1847,17 +1849,17 @@ public class MainController {
 			final Iterator<TopController> iter = mpActiveControllers.values().iterator();
 			while (iter.hasNext()) {
 				counter.addCount();
+				final TopController ctl = iter.next();
 				try {
-					final TopController ctl = iter.next();
 					ctl.askAndSaveIfNecessary(true, new ResultListener<Boolean>() {
 						@Override
 						public void done(Boolean result) {
-							counter.answered(Boolean.TRUE.equals(result));
+							counter.answered(ctl, Boolean.TRUE.equals(result));
 						}
 					});
 				} catch (Exception ex) {
 					LOG.error("Error during askAndSaveIfNecessary: + " + ex.getMessage(), ex);
-					counter.answered(false);
+					counter.answered(ctl, false);
 				}
 			}
 			counter.readyToReturn();
