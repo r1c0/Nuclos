@@ -44,6 +44,7 @@ import java.awt.geom.Ellipse2D;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import javax.jms.JMSException;
 import javax.jms.Message;
@@ -64,7 +65,9 @@ import javax.swing.JPopupMenu;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 
+import org.apache.commons.collections.map.HashedMap;
 import org.apache.log4j.Logger;
+import org.codehaus.groovy.tools.shell.AnsiDetector;
 import org.jdesktop.jxlayer.JXLayer;
 import org.jdesktop.jxlayer.plaf.LayerUI;
 import org.jdesktop.jxlayer.plaf.ext.LockableUI;
@@ -78,12 +81,12 @@ import org.nuclos.client.main.Main;
 import org.nuclos.client.main.mainframe.workspace.ITabRestoreController;
 import org.nuclos.client.main.mainframe.workspace.ITabStoreController;
 import org.nuclos.client.synthetica.NuclosThemeSettings;
-import org.nuclos.client.ui.Errors;
 import org.nuclos.client.ui.IMainFrameTabClosableController;
 import org.nuclos.client.ui.IOverlayCenterComponent;
 import org.nuclos.client.ui.IOverlayComponent;
 import org.nuclos.client.ui.IOverlayFrameChangeListener;
 import org.nuclos.client.ui.Icons;
+import org.nuclos.client.ui.MainFrameTabAdapter;
 import org.nuclos.client.ui.MainFrameTabListener;
 import org.nuclos.client.ui.ResultListener;
 import org.nuclos.client.ui.UIUtils;
@@ -147,9 +150,31 @@ public class MainFrameTab extends JPanel implements IOverlayComponent, NuclosDro
 		200);
 
 	private final JLayeredPane layered = new JLayeredPane();
-	private OverlayFrame overlay;
-
+	protected OverlayFrame overlay;
+	private final MainFrameTabListener overlayCloseListener = new MainFrameTabAdapter() {
+		@Override
+		public void tabClosing(MainFrameTab tab, final ResultListener<Boolean> rl) {
+			if (overlay != null) {
+				removeOverlayComponent(overlay.oc, new ResultListener<Boolean>() {
+					@Override
+					public void done(Boolean result) {
+						rl.done(result);
+					}
+				});
+			} else {
+				LOG.error("overlay is null");
+				// fallback...
+				rl.done(true);
+			}
+		}
+		@Override
+		public void tabClosed(MainFrameTab tab) {
+			removeMainFrameTabListener(this);
+		}
+	};
 	private final List<IOverlayFrameChangeListener> overlayFrameChangeListeners = new ArrayList<IOverlayFrameChangeListener>(1);
+	
+	private boolean notifyClosing = false;
 	
 	private SpringLocaleDelegate localeDelegate;
 
@@ -516,8 +541,9 @@ public class MainFrameTab extends JPanel implements IOverlayComponent, NuclosDro
 
 		final Component c = (Component) oc;
 
-		overlay = new OverlayFrame(oc);
+		overlay = new OverlayFrame(oc, layered);
 		oc.addOverlayFrameChangeListener(overlay);
+		addMainFrameTabListener(overlayCloseListener);
 
 		overlay.setSizes(getSize());
 
@@ -547,6 +573,7 @@ public class MainFrameTab extends JPanel implements IOverlayComponent, NuclosDro
 						@Override
 						public void run() {
 							oc.removeOverlayFrameChangeListener(overlay);
+							removeMainFrameTabListener(overlayCloseListener);
 							layered.remove(overlay.getLockPanel());
 							layered.remove(overlay);
 							overlay = null;
@@ -563,7 +590,7 @@ public class MainFrameTab extends JPanel implements IOverlayComponent, NuclosDro
 			}
 		}
 		
-		if (oc instanceof MainFrameTab) {
+		if (oc instanceof IOverlayComponent) {
 			oc.notifyClosing(new ResultListener<Boolean>() {
 				@Override
 				public void done(Boolean result) {
@@ -623,15 +650,19 @@ public class MainFrameTab extends JPanel implements IOverlayComponent, NuclosDro
 				g.fillRect(0, 0, getWidth(), getHeight());
 			}
 		};
+		
+		private final JLayeredPane layered;
 
 		/**
 		 *
 		 * @param oc
+		 * @param layered 
 		 */
-		public OverlayFrame(final IOverlayComponent oc) {
+		public OverlayFrame(final IOverlayComponent oc, JLayeredPane layered) {
 			super(new BorderLayout());
 			this.oc = oc;
 			this.c = (Component) oc;
+			this.layered = layered;
 
 			setOpaque(false);
 			setBorder(BorderFactory.createEmptyBorder(BORDER_SIZE, BORDER_SIZE, BORDER_SIZE, BORDER_SIZE));
@@ -1020,30 +1051,65 @@ public class MainFrameTab extends JPanel implements IOverlayComponent, NuclosDro
 	 */
 	@Override
 	public void notifyClosing(final ResultListener<Boolean> rl) {
-		final Pair<Integer, Integer> counts = new Pair<Integer, Integer>(0,0);
+		notifyClosing = true;
 		List<MainFrameTabListener> listeners = new ArrayList<MainFrameTabListener>(mainFrameTabListeners);
-		final int targetCount = listeners.size();
-		if (targetCount == 0) {
+		
+		class Counter {
+			int targetCount = 0;
+			boolean[] answers;
+			boolean[] results;
+			boolean isComplete() {
+				for (Boolean b : answers) {
+					if (!Boolean.TRUE.equals(b)) {
+						return false;
+					}
+				}
+				return true;
+			}
+			boolean isTrue() {
+				for (Boolean b : results) {
+					if (!Boolean.TRUE.equals(b)) {
+						return false;
+					}
+				}
+				return true;
+			}
+			void setAnswer(int answer, boolean result) {
+				answers[answer] = true;
+				if (Boolean.TRUE.equals(result)) {
+					results[answer] = true;
+				}
+				if (isComplete()) {
+					rl.done(isTrue());
+				}
+			}
+		}
+		final Counter counter = new Counter();
+		
+		counter.answers = new boolean[listeners.size()];
+		counter.results = new boolean[listeners.size()];
+		counter.targetCount = listeners.size();
+		
+		if (counter.targetCount == 0) {
 			rl.done(true);
 		} else {
-			for (MainFrameTabListener listener : listeners) {
+			for (int i = 0; i < listeners.size(); i++) {
+				final int lis = i;
+				MainFrameTabListener listener = listeners.get(i);
 				try {
 					listener.tabClosing(MainFrameTab.this, new ResultListener<Boolean>() {
 						@Override
 						public void done(Boolean result) {
-							counts.x++;
-							if (Boolean.TRUE.equals(result)) {
-								counts.y++;
-							}
-							if (targetCount == counts.x) {
-								rl.done(targetCount == counts.y);
-							}
+							counter.setAnswer(lis, Boolean.TRUE.equals(result));
 						}});
 				} catch (Exception ex) {
-					counts.x++;
+					LOG.error("Error during tab closing: " + ex.getMessage(), ex);
+					counter.setAnswer(lis, false);
 				}
 			}
 		}
+		
+		notifyClosing = false;
 	}
 
 	/**
@@ -1636,6 +1702,8 @@ public class MainFrameTab extends JPanel implements IOverlayComponent, NuclosDro
             return null;
         if(parentComponent instanceof MainFrameTab)
             return (MainFrameTab)parentComponent;
+        if(parentComponent instanceof OverlayFrame)
+        	return getMainFrameTabForComponent(((OverlayFrame) parentComponent).layered);
         return getMainFrameTabForComponent(parentComponent.getParent());
     }
 
@@ -1667,6 +1735,16 @@ public class MainFrameTab extends JPanel implements IOverlayComponent, NuclosDro
 	public void removeOverlayFrameChangeListener(
 			IOverlayFrameChangeListener listener) {
 		overlayFrameChangeListeners.remove(listener);
+	}
+	
+	public boolean isParentTabNotifyClosing() {
+		MainFrameTab parentTab = getMainFrameTabForComponent(getParent());
+		if (parentTab != null) {
+			return parentTab.notifyClosing;
+		} else {
+			LOG.warn("No parent tab found");
+			return false;
+		}
 	}
 
 }  // class CommonJInternalFrame

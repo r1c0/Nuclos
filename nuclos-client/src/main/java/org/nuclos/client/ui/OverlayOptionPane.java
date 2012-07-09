@@ -87,9 +87,11 @@ public class OverlayOptionPane extends JScrollPane implements IOverlayCenterComp
     
     private final JPanel main;
     
+    private final List<IOverlayFrameChangeListener> overlayFrameChangeListeners = new ArrayList<IOverlayFrameChangeListener>(1);
+    
     private final OvOpListener listener;
     
-    private final List<IOverlayFrameChangeListener> overlayFrameChangeListeners = new ArrayList<IOverlayFrameChangeListener>(1);
+    private int result = CLOSED_OPTION;
     
     public static void showConfirmDialog(MainFrameTab tab, Object message, String title, int optionType, OvOpListener listener) {
     	new OverlayOptionPane(tab, message, title, optionType, listener);
@@ -163,19 +165,25 @@ public class OverlayOptionPane extends JScrollPane implements IOverlayCenterComp
 		OverlayOptionPaneButton oopb = new OverlayOptionPaneButton(new AbstractAction(SpringLocaleDelegate.getInstance().getMessage(resource,resource)) {
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				OverlayOptionPane.this.result = result;
 				close();
-				if (listener != null) {
-					listener.done(result);
-				}
 			}
-		}, listener);
+		});
 		return oopb;
 	}
 	
 	private JPanel createPanel(final int focusOwner, final Component...components) {
 		JPanel result = new JPanel(new FlowLayout());
+		int maxWidth = 0;
 		for (Component c : components) {
 			result.add(c);
+			maxWidth = Math.max(c.getPreferredSize().width, maxWidth);
+		}
+		
+		for (Component c : components) {
+			Dimension prefSize = c.getPreferredSize();
+			prefSize.width = maxWidth;
+			c.setPreferredSize(prefSize);
 		}
 		
 		result.setFocusTraversalPolicy(new OverlayOptionPaneFocusTraversalPolicy(components));
@@ -209,11 +217,10 @@ public class OverlayOptionPane extends JScrollPane implements IOverlayCenterComp
 
 	@Override
 	public void notifyClosing(ResultListener<Boolean> rl) {
-		boolean result = isClosable();
-		if (result && listener != null) {
-			listener.done(CLOSED_OPTION);
+		if (isClosable() && listener != null) {
+			listener.done(result);
 		}
-		rl.done(result);
+		rl.done(isClosable());
 	}
 
 	@Override
@@ -235,11 +242,8 @@ public class OverlayOptionPane extends JScrollPane implements IOverlayCenterComp
 	
 	private class OverlayOptionPaneButton extends JButton {
 		
-		private final OvOpListener listener;
-		
-		public OverlayOptionPaneButton(Action act, OvOpListener listener) {
+		public OverlayOptionPaneButton(Action act) {
 			super(act);
-			this.listener = listener;
 		}
 
 		@Override
@@ -259,15 +263,7 @@ public class OverlayOptionPane extends JScrollPane implements IOverlayCenterComp
 				}
 			}
 			return false;
-		}
-
-		@Override
-		public Dimension getPreferredSize() {
-			final Dimension result = super.getPreferredSize();
-			result.width = Math.max(75, result.width);
-			return result;
-		}
-		
+		}	
 		
 	}
 	

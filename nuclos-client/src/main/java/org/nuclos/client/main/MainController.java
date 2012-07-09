@@ -1813,33 +1813,54 @@ public class MainController {
 		this.ctlTasks.refreshAllTaskViews();
 	}
 
-	protected void allControllersMayBeClosed(final ResultListener<Boolean> rl) {
-		final Pair<Integer, Integer> counts = new Pair<Integer, Integer>(0,0);
-		
-		final int targetCount = mpActiveControllers.values().size();
-		if (targetCount == 0) {
+	protected void allControllersMayBeClosed(final ResultListener<Boolean> rl) {		
+		if (mpActiveControllers.isEmpty()) {
 			rl.done(true);
 		} else {
+			
+			class Counter {
+				boolean readyToReturn = false;
+				int targetCount = 0;
+				int answers = 0;
+				int results = 0;
+				synchronized void addCount() {
+					targetCount++;
+				}
+				synchronized void answered(boolean result) {
+					answers++;
+					if (Boolean.TRUE.equals(result)) {
+						results++;
+					}
+					if (readyToReturn && targetCount == answers) {
+						rl.done(results == answers);
+					}
+				}
+				synchronized void readyToReturn() {
+					this.readyToReturn = true;
+					if (targetCount == answers) {
+						rl.done(results == answers);
+					}
+				}
+			}
+			final Counter counter = new Counter();
+			
 			final Iterator<TopController> iter = mpActiveControllers.values().iterator();
 			while (iter.hasNext()) {
+				counter.addCount();
 				try {
 					final TopController ctl = iter.next();
 					ctl.askAndSaveIfNecessary(true, new ResultListener<Boolean>() {
 						@Override
 						public void done(Boolean result) {
-							counts.x++;
-							if (Boolean.TRUE.equals(result)) {
-								counts.y++;
-							}
-							if (counts.x == targetCount) {
-								rl.done(counts.y == targetCount);
-							}
+							counter.answered(Boolean.TRUE.equals(result));
 						}
 					});
 				} catch (Exception ex) {
-					counts.x++;
+					LOG.error("Error during askAndSaveIfNecessary: + " + ex.getMessage(), ex);
+					counter.answered(false);
 				}
 			}
+			counter.readyToReturn();
 		}
 	}
 

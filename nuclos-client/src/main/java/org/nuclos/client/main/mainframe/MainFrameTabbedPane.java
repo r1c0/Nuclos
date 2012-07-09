@@ -1041,49 +1041,57 @@ public class MainFrameTabbedPane {
 			}
 		}
 		
-		final Pair<Integer, Integer> counts = new Pair<Integer, Integer>(0,0);
-		final int targetCount = startTab.getHiddenTabs().size() + tabsToRemove.size();
+		class Counter {
+			int targetCount = 0;
+			int answers = 0;
+			boolean isComplete() {
+				return targetCount == answers;
+			}
+			void answered() {
+				answers++;
+				if (isComplete()) {
+					rl.done(notClosableTabs);
+				}
+			}
+		}
+		final Counter counter = new Counter();
+		
+		counter.targetCount = startTab.getHiddenTabs().size() + tabsToRemove.size();
 		
 		for (final MainFrameTab tab : startTab.getHiddenTabs()) {
 			if (tab == ignoreTab) {
-				counts.x++;
+				counter.answered();
 				continue;
 			}
 			if (tab.isClosable()) {
 					tab.notifyClosing(new ResultListener<Boolean>() {
 						@Override
 						public void done(Boolean result) {
-							counts.x++;
 							if (Boolean.TRUE.equals(result)) {
 								startTab.removeHiddenTab(tab);
 								tab.notifyClosed();
 							} else {
 								notClosableTabs.add(tab);
 							}
-							if (counts.x == targetCount) {
-								rl.done(notClosableTabs);
-							}
+							counter.answered();
 						}
 					});
 			} else {
-				counts.x++;
 				notClosableTabs.add(tab);
+				counter.answered();
 			}
 		}
 		for (final MainFrameTab tab : tabsToRemove) {
 			tab.notifyClosing(new ResultListener<Boolean>() {
 				@Override
 				public void done(Boolean result) {
-					counts.x++;
 					if (Boolean.TRUE.equals(result)) {
 						mfTabbed.remove(tab);
 						tab.notifyClosed();	
 					} else {
 						notClosableTabs.add(tab);
 					}
-					if (counts.x == targetCount) {
-						rl.done(notClosableTabs);
-					}
+					counter.answered();
 				}
 			});
 		}

@@ -131,9 +131,11 @@ public class CollectPanel<Clct extends Collectable> extends JPanel {
 			
 			@Override
 			public void tabClosed(MainFrameTab tab) {
-				CollectPanel.this.setTabbedPaneSelectedIndex(TAB_RESULT);
-				for (ChangeListener chgListener : chgListeners) {
-					chgListener.stateChanged(new ChangeEvent(layer));
+				if (!tab.isParentTabNotifyClosing()) {
+					CollectPanel.this.setTabbedPaneSelectedIndex(TAB_RESULT, false);
+					for (ChangeListener chgListener : chgListeners) {
+						chgListener.stateChanged(new ChangeEvent(layer));
+					}
 				}
 			}
 			
@@ -386,12 +388,16 @@ public class CollectPanel<Clct extends Collectable> extends JPanel {
 			throw new IllegalArgumentException("No panel is at position 0");
 		
 	}
-
+	
 	/**
 	 * wrapper for JTabbedPane.setSelectedIndex
 	 * @param iExternalIndex
 	 */
 	public void setTabbedPaneSelectedIndex(int iExternalIndex) {
+		setTabbedPaneSelectedIndex(iExternalIndex, true);
+	}
+	
+	protected void setTabbedPaneSelectedIndex(int iExternalIndex, boolean disposeDetails) {		
 		/*final int iIndex = CollectPanel.this.getTabIndexOf(iExternalIndex);
 		if (iIndex >= 0) {
 			this.tabpn.setSelectedIndex(iIndex);
@@ -400,11 +406,9 @@ public class CollectPanel<Clct extends Collectable> extends JPanel {
 		pnlSearch.setVisible(TAB_SEARCH == iExternalIndex);
 		
 		if (bDetailsInOverlay && TAB_RESULT == iExternalIndex) {
-			MainFrameTab tab1 = UIUtils.getTabForComponent(layer);
-			MainFrameTab tab2 = UIUtils.getTabForComponent(pnlDetails);
-			if (tab1 != null && tab2 != null && tab1 != tab2) {
+			if (pnlDetails.isVisible() && disposeDetails) {
 				// details showing in overlay tab
-				tab2.dispose();
+				pnlDetails.dispose();
 			}
 			pnlResult.setVisible(true);
 		} else {

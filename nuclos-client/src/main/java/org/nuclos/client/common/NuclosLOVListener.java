@@ -99,8 +99,14 @@ public class NuclosLOVListener implements CollectableListOfValues.LOVListener {
 				final Main main = Main.getInstance();
 				final MainController mc = main.getMainController();
 				final String sReferencedEntityName = clctcomp.getEntityField().getReferencedEntityName();
-				CollectController<?> controller = mc.getControllerForTab((MainFrameTab) 
-						main.getMainFrame().getHomePane().getSelectedComponent());
+				
+//				CollectController<?> controller = mc.getControllerForTab((MainFrameTab) 
+//						main.getMainFrame().getHomePane().getSelectedComponent());
+				// Not good! Can result in assertion error if source is not on home pane ;-(
+				// But new solution currently not works with source fields out of subform. How we can solv a parent from a cell editor?
+				// Or add Parent to CollectableComponent / CollectableComponentEvent?
+				CollectController<?> controller = mc.getControllerForTab(UIUtils.getTabForComponent(clctcomp.getJComponent()));
+				
 				Object oId = clctcomp.getField().getValueId();
 				if(oId instanceof Long) {
 					Long l = (Long)oId;

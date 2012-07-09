@@ -27,6 +27,7 @@ import java.io.Reader;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -1876,6 +1877,9 @@ public class MasterDataCollectController extends EntityCollectController<Collect
 
 	@Override
 	public List<GeneratorActionVO> getGeneratorActions() {
+		if (getSelectedCollectableId() == null) {
+			return Collections.emptyList();
+		}
 		Integer entityId = IdUtils.unsafeToId(MetaDataClientProvider.getInstance().getEntity(getEntity()).getId());
 		return GeneratorActions.getActions(entityId, null, null);
 	}

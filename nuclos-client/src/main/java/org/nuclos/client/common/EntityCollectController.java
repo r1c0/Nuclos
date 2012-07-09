@@ -1339,7 +1339,7 @@ public abstract class EntityCollectController<Clct extends Collectable> extends 
 				return getResultActionsMultiThreaded(selectedCollectablesFromResult);
 			}
 			catch (Exception ex) {
-				LOG.error("ResultActionsWorker failed: " + ex, ex);
+				// it's okay here?!
 			}
 			return null;
  		}
