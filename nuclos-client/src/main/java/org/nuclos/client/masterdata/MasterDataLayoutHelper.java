@@ -16,14 +16,30 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.masterdata;
 
+import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
 import java.util.EnumSet;
 import java.util.Set;
 
+import javax.swing.JSplitPane;
+
+import org.nuclos.client.masterdata.valuelistprovider.MasterDataCollectableFieldsProviderFactory;
+import org.nuclos.client.ui.Errors;
+import org.nuclos.client.ui.UIUtils;
+import org.nuclos.client.ui.collect.component.CollectableComponent;
+import org.nuclos.client.ui.collect.component.CollectableComponentFactory;
+import org.nuclos.client.ui.layoutml.LayoutMLParser;
+import org.nuclos.client.ui.layoutml.LayoutRoot;
+import org.nuclos.client.valuelistprovider.cache.CollectableFieldsProviderCache;
+import org.nuclos.common.masterdata.CollectableMasterDataEntity;
 import org.nuclos.common2.SpringLocaleDelegate;
+import org.nuclos.common2.layoutml.exception.LayoutMLException;
 import org.nuclos.common.NuclosBusinessException;
 import org.nuclos.common.NuclosEntity;
+import org.nuclos.common.NuclosFatalException;
+import org.xml.sax.InputSource;
 
 /**
  * Helper class for master data layouts.
@@ -57,6 +73,30 @@ public class MasterDataLayoutHelper {
 	public static Reader getLayoutMLReader(String sEntityName, boolean bSearch) throws NuclosBusinessException {
 		checkLayoutMLExistence(sEntityName);
 		return new StringReader(MasterDataDelegate.getInstance().getLayoutML(sEntityName, bSearch));
+	}
+
+	public static LayoutRoot newLayoutRoot(String sEntityName, boolean bSearch) throws NuclosBusinessException {
+		final LayoutMLParser parser = new LayoutMLParser();
+
+		final CollectableMasterDataEntity clcte = new CollectableMasterDataEntity(
+				MetaDataCache.getInstance().getMetaData(sEntityName));
+		LayoutRoot result;
+
+		final Reader reader = MasterDataLayoutHelper.getLayoutMLReader(sEntityName, bSearch);
+
+		final InputSource isrc = new InputSource(new BufferedReader(reader));
+
+		try {
+			result = parser.getResult(isrc, clcte, bSearch, null, MasterDataCollectableFieldsProviderFactory.newFactory(sEntityName, new CollectableFieldsProviderCache()), CollectableComponentFactory.getInstance());
+		}
+		catch (LayoutMLException ex) {
+			throw new NuclosFatalException(ex);
+		}
+		catch (IOException ex) {
+			throw new NuclosFatalException(ex);
+		}
+
+		return result;
 	}
 
 	public static boolean isLayoutMLAvailable(String sEntityName, boolean bSearch) {

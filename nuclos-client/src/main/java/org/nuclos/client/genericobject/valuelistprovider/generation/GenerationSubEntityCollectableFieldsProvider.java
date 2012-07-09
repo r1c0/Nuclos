@@ -20,11 +20,20 @@ import java.util.Collections;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.nuclos.client.common.MetaDataClientProvider;
+import org.nuclos.client.genericobject.GenericObjectLayoutCache;
+import org.nuclos.client.genericobject.Modules;
+import org.nuclos.client.layout.LayoutDelegate;
 import org.nuclos.client.masterdata.MasterDataDelegate;
+import org.nuclos.client.masterdata.MasterDataLayoutHelper;
+import org.nuclos.client.ui.layoutml.LayoutRoot;
 import org.nuclos.common.collect.collectable.CollectableField;
 import org.nuclos.common.collect.collectable.CollectableFieldsProvider;
+import org.nuclos.common.collect.collectable.CollectableValueIdField;
+import org.nuclos.common.dal.vo.EntityMetaDataVO;
+import org.nuclos.common2.EntityAndFieldName;
+import org.nuclos.common2.IdUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
-
 /**
  * Value list provider to get subentities of a module.
  * <br>
@@ -69,6 +78,24 @@ public class GenerationSubEntityCollectableFieldsProvider implements Collectable
 			return Collections.<CollectableField>emptyList();
 		} else {
 			List<CollectableField> result = MasterDataDelegate.getInstance().getSubEntities(entityId);
+			String sEntityName = MetaDataClientProvider.getInstance().getEntity(IdUtils.toLongId(entityId)).getEntity();
+			if(Modules.getInstance().isModuleEntity(sEntityName)) {
+				for (EntityAndFieldName entityAndFieldName : GenericObjectLayoutCache.getInstance().getSubFormEntities(entityId)) {
+					EntityMetaDataVO metaDataVO = MetaDataClientProvider.getInstance().getEntity(entityAndFieldName.getEntityName());
+					CollectableValueIdField cIdField = new CollectableValueIdField(new Integer(metaDataVO.getId().intValue()), metaDataVO.getEntity());		
+					if (!result.contains(cIdField)) {
+						result.add(cIdField);
+					}
+				}
+			} else {
+				for (String entityFieldName : MasterDataLayoutHelper.newLayoutRoot(sEntityName, false).getMapOfSubForms().keySet()) {
+					EntityMetaDataVO metaDataVO = MetaDataClientProvider.getInstance().getEntity(entityFieldName);
+					CollectableValueIdField cIdField = new CollectableValueIdField(new Integer(metaDataVO.getId().intValue()), metaDataVO.getEntity());		
+					if (!result.contains(cIdField)) {
+						result.add(cIdField);
+					}
+				}				
+			}
 			Collections.sort(result);
 			return result;
 		}
