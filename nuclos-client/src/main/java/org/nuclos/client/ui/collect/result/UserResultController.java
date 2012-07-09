@@ -16,12 +16,18 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.ui.collect.result;
 
+import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.nuclos.client.masterdata.CollectableMasterDataWithDependants;
 import org.nuclos.client.masterdata.user.UserCollectController;
+import org.nuclos.client.ui.collect.component.model.ChoiceEntityFieldList;
 import org.nuclos.common.collect.collectable.CollectableEntity;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
 
@@ -56,5 +62,48 @@ public class UserResultController<Clct extends CollectableMasterDataWithDependan
 			}
 		}
 		return result;
+	}
+	
+	/**
+	 * reads the previously selected fields from the user preferences, ignoring unknown fields that might occur when
+	 * the database schema has changed from one software release to another. This method tries to avoid throwing exceptions.
+	 * @param clcte
+	 * @return List<CollectableEntityField> the previously selected fields from the user preferences.
+	 * @see #writeSelectedFieldsToPreferences(List)
+	 * TODO: make private?
+	 */
+	protected List<? extends CollectableEntityField> readSelectedFieldsFromPreferences() {
+		final List<CollectableEntityField> result = new ArrayList<CollectableEntityField>();
+		for (CollectableEntityField cef : super.readSelectedFieldsFromPreferences()) {
+			if (!UserCollectController.FIELD_PREFERENCES.equals(cef.getName()) && !UserCollectController.FIELD_PASSWORD.equals(cef.getName())) {
+				result.add(cef);
+			}
+		}
+		return result;
+	}
+
+	protected void setSelectColumns(final ChoiceEntityFieldList fields, 
+			final SortedSet<CollectableEntityField> lstAvailableObjects, final List<CollectableEntityField> lstSelectedObjects, 
+			final Set<CollectableEntityField> stFixedObjects, final boolean restoreWidthsFromPreferences, final Map<String, Integer> mpWidths, final boolean restoreOrder) {
+		//just to be sure.
+		SortedSet<CollectableEntityField> lst2AvailableObjects = new TreeSet<CollectableEntityField>(new CollectableEntityField.LabelComparator());
+		for (CollectableEntityField cef : lstAvailableObjects) {
+			if (!UserCollectController.FIELD_PREFERENCES.equals(cef.getName()) && !UserCollectController.FIELD_PASSWORD.equals(cef.getName())) {
+				lst2AvailableObjects.add(cef);
+			}
+		}
+		final List<CollectableEntityField> lst2SelectedObjects = new ArrayList<CollectableEntityField>();
+		for (CollectableEntityField cef : lstSelectedObjects) {
+			if (!UserCollectController.FIELD_PREFERENCES.equals(cef.getName()) && !UserCollectController.FIELD_PASSWORD.equals(cef.getName())) {
+				lst2SelectedObjects.add(cef);
+			}
+		}
+		final Set<CollectableEntityField> st2FixedObjects = new HashSet<CollectableEntityField>();
+		for (CollectableEntityField cef : stFixedObjects) {
+			if (!UserCollectController.FIELD_PREFERENCES.equals(cef.getName()) && !UserCollectController.FIELD_PASSWORD.equals(cef.getName())) {
+				stFixedObjects.add(cef);
+			}
+		}
+		super.setSelectColumns(fields, lst2AvailableObjects, lst2SelectedObjects, st2FixedObjects, restoreWidthsFromPreferences, mpWidths, restoreOrder);
 	}
 }

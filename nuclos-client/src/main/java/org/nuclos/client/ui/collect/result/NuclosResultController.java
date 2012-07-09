@@ -259,7 +259,7 @@ public class NuclosResultController<Clct extends Collectable> extends ResultCont
 		}
 	}
 
-	protected final void setSelectColumns(final ChoiceEntityFieldList fields, 
+	protected void setSelectColumns(final ChoiceEntityFieldList fields, 
 			final SortedSet<CollectableEntityField> lstAvailableObjects, final List<CollectableEntityField> lstSelectedObjects, 
 			final Set<CollectableEntityField> stFixedObjects, final boolean restoreWidthsFromPreferences, final Map<String, Integer> mpWidths, final boolean restoreOrder) 
 	{
