@@ -50,6 +50,7 @@ import javax.swing.AbstractButton;
 import javax.swing.Action;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -193,7 +194,7 @@ public class ResultPanel<Clct extends Collectable> extends JPanel {
 	public final JButton btnResetMainFilter = new JButton();
 	
 	public final ToggleSelectionModeButton btnToggleSelectionMode = new ToggleSelectionModeButton(
-			Main.isMacOSXSnowLeopardOrBetter()?"\uf8ff":localeDelegate.getMessage("ResultPanel.18","Strg"),
+			Main.getInstance().isMacOSX()?"\uf8ff":localeDelegate.getMessage("ResultPanel.18","Strg"),
 			Icons.getInstance().getIconDeSelectAll12(), Icons.getInstance().getIconDeSelectAllHover12(),
 			Icons.getInstance().getIconSelectAll12(), Icons.getInstance().getIconSelectAllHover12());
 	public final IResultButton btnSelectAllRows;
@@ -210,8 +211,12 @@ public class ResultPanel<Clct extends Collectable> extends JPanel {
 	private final JScrollPane scrlpnResult = new JScrollPane();
 	private final JTable tblResult;
 	
-	protected final JPanel pnlTopButtons;
-	protected final JPanel pnlSouth;
+	protected int dynActionsFixedHeight = ClientParameterProvider.getInstance().getIntValue(ParameterProvider.NUCLOS_UI_RESULT_DYNAMIC_ACTIONS_FIXED_HEIGHT, -1);
+	protected boolean dynActionsOnTop = "top".equalsIgnoreCase(ClientParameterProvider.getInstance().getValue(ParameterProvider.NUCLOS_UI_RESULT_DYNAMIC_ACTIONS_POSITION));
+	protected boolean selectionButtonsOnTop = "top".equalsIgnoreCase(ClientParameterProvider.getInstance().getValue(ParameterProvider.NUCLOS_UI_RESULT_SELECTION_BUTTONS_POSITION));
+	
+	protected final JPanel pnlTopResult;
+	protected final JPanel pnlDynamicActions;
 	private final JPanel pnlActions;
 	private final JPanel pnlShowActions;
 	private final JPanel pnlHideActions;
@@ -256,15 +261,60 @@ public class ResultPanel<Clct extends Collectable> extends JPanel {
 	public ResultPanel() {
 		super(new BorderLayout());
 		
-		this.pnlTopButtons = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+		this.pnlTopResult = new JPanel();
+		this.pnlTopResult.setLayout(new BoxLayout(this.pnlTopResult, BoxLayout.X_AXIS));
 		
-		if ("top".equalsIgnoreCase(ClientParameterProvider.getInstance().getValue(ParameterProvider.NUCLOS_UI_RESULT_SELECTION_BUTTONS_POSITION))) {
+		this.pnlShowActions = new JPanel(new BorderLayout());
+		this.pnlShowActions.setLayout(new BoxLayout(this.pnlShowActions, BoxLayout.Y_AXIS));
+		this.btnShowActions = new UpDownButton(dynActionsOnTop?false:true);
+		if (dynActionsOnTop) this.pnlShowActions.add(Box.createVerticalGlue());
+		this.pnlShowActions.add(btnShowActions);
+		if (!dynActionsOnTop) this.pnlShowActions.add(Box.createVerticalGlue());
+		
+		this.pnlHideActions = new JPanel(new BorderLayout());
+		this.pnlHideActions.setLayout(new BoxLayout(this.pnlHideActions, BoxLayout.Y_AXIS));
+		this.btnHideActions = new UpDownButton(dynActionsOnTop?true:false);
+		if (dynActionsOnTop) this.pnlHideActions.add(Box.createVerticalGlue());
+		this.pnlHideActions.add(btnHideActions);
+		if (!dynActionsOnTop) this.pnlHideActions.add(Box.createVerticalGlue());
+		
+		this.pnlActions = new JPanel(new FlowLayout());
+		
+		this.pnlDynamicActions = new JPanel(new BorderLayout()) {
+			@Override
+			public Dimension getPreferredSize() {
+				Dimension result = super.getPreferredSize();
+				if (isActionsEnabled && isActionsVisible) {
+					result.height = dynActionsFixedHeight<0?0:dynActionsFixedHeight;
+				}
+				return result;
+			}
+		};
+		
+		if (dynActionsOnTop) {
+			this.pnlDynamicActions.add(pnlActions, BorderLayout.CENTER);
+			if (selectionButtonsOnTop) {
+				this.pnlTopResult.add(pnlShowActions);
+				this.pnlTopResult.add(pnlHideActions);
+			} else {
+				this.pnlDynamicActions.add(pnlShowActions, BorderLayout.NORTH);
+				this.pnlDynamicActions.add(pnlHideActions, BorderLayout.SOUTH);
+			}
+		} else {
+			this.pnlDynamicActions.add(pnlHideActions, BorderLayout.NORTH);
+			this.pnlDynamicActions.add(pnlActions, BorderLayout.CENTER);
+			this.pnlDynamicActions.add(pnlShowActions, BorderLayout.SOUTH);
+		}
+		
+		if (selectionButtonsOnTop) {
 			btnSelectAllRows = new ResultButton(localeDelegate.getMessage("ResultPanel.16","Alles auswählen"));
 			btnDeSelectAllRows = new ResultButton(localeDelegate.getMessage("ResultPanel.17","Auswahl aufheben"));
+			JPanel pnlTopButtons = new JPanel(new FlowLayout(FlowLayout.RIGHT));
 			pnlTopButtons.add((Component) btnSelectAllRows);
 			pnlTopButtons.add((Component) btnDeSelectAllRows);
+			pnlTopResult.add(Box.createHorizontalGlue());
+			pnlTopResult.add(pnlTopButtons);
 			this.setSouthComponent(UIUtils.newStatusBar(btnToggleSelectionMode, Box.createHorizontalStrut(10), tfStatusBar));
-
 		} else {
 			btnSelectAllRows = new StatusBarButton(localeDelegate.getMessage("ResultPanel.16","Alles auswählen"));
 			btnDeSelectAllRows = new StatusBarButton(localeDelegate.getMessage("ResultPanel.17","Auswahl aufheben"));
@@ -272,22 +322,6 @@ public class ResultPanel<Clct extends Collectable> extends JPanel {
 		}
 
 		this.btnDelete = getDeleteButton();
-
-		this.pnlShowActions = new JPanel(new BorderLayout());
-		this.btnShowActions = new UpDownButton(true);
-		this.pnlShowActions.add(btnShowActions, BorderLayout.CENTER);
-		
-		this.pnlHideActions = new JPanel(new BorderLayout());
-		this.btnHideActions = new UpDownButton(false);
-		this.pnlHideActions.add(btnHideActions, BorderLayout.CENTER);
-		
-		this.pnlActions = new JPanel(new FlowLayout());
-		
-		this.pnlSouth = new JPanel(new BorderLayout());
-		this.pnlSouth.add(pnlHideActions, BorderLayout.NORTH);
-		this.pnlSouth.add(pnlActions, BorderLayout.CENTER);
-		this.pnlSouth.add(pnlShowActions, BorderLayout.SOUTH);
-		
 
 		this.tblResult = newResultTable();
 		this.searchFilterBar = new SearchFilterBar();
@@ -664,18 +698,22 @@ public class ResultPanel<Clct extends Collectable> extends JPanel {
 		this.tblResult.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 
 		final JPanel result = new JPanel(new BorderLayout());
+		final JPanel resultNorth = new JPanel(new BorderLayout());
 		result.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+		result.add(resultNorth, BorderLayout.NORTH);
 		result.add(scrlpnResult, BorderLayout.CENTER);
 		
-		if (pnlTopButtons.getComponentCount() > 0) {
-			JPanel top = new JPanel(new BorderLayout());
-			top.add(searchFilterBar.getJComponent(), BorderLayout.CENTER);
-			top.add(pnlTopButtons, BorderLayout.SOUTH);
-			result.add(top, BorderLayout.NORTH);
+		resultNorth.add(searchFilterBar.getJComponent(), BorderLayout.NORTH);
+		
+		if (pnlTopResult.getComponentCount() > 0) {
+			resultNorth.add(pnlTopResult, BorderLayout.SOUTH);
+		} 
+		
+		if (dynActionsOnTop) {
+			resultNorth.add(pnlDynamicActions, BorderLayout.CENTER);
 		} else {
-			result.add(searchFilterBar.getJComponent(), BorderLayout.NORTH);
+			result.add(pnlDynamicActions, BorderLayout.SOUTH);
 		}
-		result.add(pnlSouth, BorderLayout.SOUTH);
 		
 		return result;
 	}
@@ -1097,7 +1135,12 @@ public class ResultPanel<Clct extends Collectable> extends JPanel {
 	}
 	
 	public void loadingResultActions() {
-		int height = Math.max(MIN_ACTIONS_HEIGHT, this.pnlActions.getPreferredSize().height);
+		final int height;
+		if (dynActionsFixedHeight<0) {
+			height = Math.max(MIN_ACTIONS_HEIGHT, this.pnlActions.getPreferredSize().height);
+		} else {
+			height = dynActionsFixedHeight;
+		}
 		this.pnlActions.removeAll();
 		setActionsPanelEmpty(height).add(busyActions);
 		busyActions.setBusy(true);
@@ -1237,7 +1280,8 @@ public class ResultPanel<Clct extends Collectable> extends JPanel {
 
 		private final boolean up;
 		
-		private final int width = 16;
+		private final int arrowWidth = 16;
+		private final int width = 32;
 		private final int height = 8;
 		private final int border = 4;
 		
@@ -1260,7 +1304,7 @@ public class ResultPanel<Clct extends Collectable> extends JPanel {
 			
 			final Rectangle bounds = getBounds();
 			
-			final int w = width;
+			final int w = arrowWidth;
 			final int h = height;
 			final int thickness = h/2;
 			
@@ -1268,7 +1312,14 @@ public class ResultPanel<Clct extends Collectable> extends JPanel {
 			final int y = border;
 			
 			if (hover) {
-				g2.setColor(NuclosThemeSettings.BACKGROUND_COLOR3);
+//				g2.setColor(NuclosThemeSettings.BACKGROUND_COLOR3);
+				Color transparentBGC3 = new Color(NuclosThemeSettings.BACKGROUND_COLOR3.getRed(),
+						NuclosThemeSettings.BACKGROUND_COLOR3.getGreen(),
+						NuclosThemeSettings.BACKGROUND_COLOR3.getBlue(), 0);
+				g2.setPaint(new GradientPaint(0, 0, 
+						dynActionsOnTop?transparentBGC3:NuclosThemeSettings.BACKGROUND_COLOR3, 
+								0, bounds.height, 
+						dynActionsOnTop?NuclosThemeSettings.BACKGROUND_COLOR3:transparentBGC3, false));
 				g2.fillRect(0, 0, bounds.width, bounds.height);
 			}
 			

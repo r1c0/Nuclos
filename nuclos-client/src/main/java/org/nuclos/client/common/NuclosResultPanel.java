@@ -81,6 +81,7 @@ import org.nuclos.client.ui.util.SwingUtils;
 import org.nuclos.common.CollectableEntityFieldWithEntityForExternal;
 import org.nuclos.common.NuclosEOField;
 import org.nuclos.common.NuclosFatalException;
+import org.nuclos.common.ParameterProvider;
 import org.nuclos.common.WorkspaceDescription.EntityPreferences;
 import org.nuclos.common.collect.collectable.Collectable;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
@@ -126,19 +127,23 @@ public class NuclosResultPanel<Clct extends Collectable> extends ResultPanel<Clc
 		setupCopyAction();
 
 		final JPanel result = new JPanel(new BorderLayout());
+		final JPanel resultNorth = new JPanel(new BorderLayout());
 		result.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+		result.add(resultNorth, BorderLayout.NORTH);
 		result.add(getResultTableScrollPane(), BorderLayout.CENTER);
 		
-		if (pnlTopButtons.getComponentCount() > 0) {
-			JPanel top = new JPanel(new BorderLayout());
-			top.add(searchFilterBar.getJComponent(), BorderLayout.CENTER);
-			top.add(pnlTopButtons, BorderLayout.SOUTH);
-			result.add(top, BorderLayout.NORTH);
+		resultNorth.add(searchFilterBar.getJComponent(), BorderLayout.NORTH);
+		
+		if (pnlTopResult.getComponentCount() > 0) {
+			resultNorth.add(pnlTopResult, BorderLayout.SOUTH);
+		} 
+		
+		if (dynActionsOnTop) {
+			resultNorth.add(pnlDynamicActions, BorderLayout.CENTER);
 		} else {
-			result.add(searchFilterBar.getJComponent(), BorderLayout.NORTH);
+			result.add(pnlDynamicActions, BorderLayout.SOUTH);
 		}
-		result.add(pnlSouth, BorderLayout.SOUTH);
-
+		
 		tblFixedResult.getColumnModel().addColumnModelListener(new TableColumnModelListener() {
 			@Override
 			public void columnAdded(TableColumnModelEvent e) {

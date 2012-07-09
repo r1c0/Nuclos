@@ -135,6 +135,8 @@ public interface ParameterProvider {
 	public static final String NUCLOS_UI_DETAILS_OVERLAY = "Nuclos UI Details Overlay";
 	public static final String NUCLOS_UI_DETAILS_OVERLAY_IGNORE_LIST = "Nuclos UI Details Overlay Ignore List";
 	public static final String NUCLOS_UI_RESULT_SELECTION_BUTTONS_POSITION = "Nuclos UI Result Selection Buttons Position";
+	public static final String NUCLOS_UI_RESULT_DYNAMIC_ACTIONS_POSITION = "Nuclos UI Result Dynamic Actions Position";
+	public static final String NUCLOS_UI_RESULT_DYNAMIC_ACTIONS_FIXED_HEIGHT = "Nuclos UI Result Dynamic Actions Fixed Height";
 
 	/**
 	 * @param sParameterName

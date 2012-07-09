@@ -20,6 +20,7 @@ import java.awt.EventQueue;
 import java.awt.MenuItem;
 import java.awt.PopupMenu;
 import java.awt.Toolkit;
+import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
@@ -618,6 +619,26 @@ public class StartUp  {
 
             Method macAppSetDockMenuMethod = macAppClass.getDeclaredMethod("setDockMenu", PopupMenu.class);
             macAppSetDockMenuMethod.invoke(macAppObject, macDockMenu);
+		}
+		
+		if (Main.getInstance().isMacOSXLionOrBetter()) {
+			//register Mac OS X Lion Fullscreen Support
+            try {
+                Class util = Class.forName("com.apple.eawt.FullScreenUtilities");
+                Class params[] = new Class[2];
+                params[0] = Window.class;
+                params[1] = Boolean.TYPE;
+                Method method = util.getMethod("setWindowCanFullScreen", params);
+                method.invoke(util, Main.getInstance().getMainFrame(), true);
+            } catch (ClassNotFoundException e) {
+            	LOG.warn("Mac OS X Lion Fullscreen Support not activ. Java Update necesary...", e);
+            } catch (NoSuchMethodException e) {
+                LOG.error(e.getMessage(), e);
+            } catch (InvocationTargetException e) {
+            	LOG.error(e.getMessage(), e);
+            } catch (IllegalAccessException e) {
+            	LOG.error(e.getMessage(), e);
+            }
 		}
 	}
 

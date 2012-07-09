@@ -243,6 +243,14 @@ public class Main {
 	}
 
 	public static boolean isMacOSXSnowLeopardOrBetter() {
+		return isMacOSXVersionOrBetter(6);
+	}
+	
+	public static boolean isMacOSXLionOrBetter() {
+	    return isMacOSXVersionOrBetter(7);
+	}
+	
+	private static boolean isMacOSXVersionOrBetter(int version) {
 	    String osName = System.getProperty("os.name");
 	    if (!osName.startsWith("Mac OS X")) return false;
 
@@ -254,10 +262,10 @@ public class Main {
 	    if (!fragments[0].equals("10")) return false;
 	    if (fragments.length < 2) return false;
 
-	    // check if Mac OS X 10.6(.y)
+	    // check if Mac OS X 10.version
 	    try {
 	        int minorVers = Integer.parseInt(fragments[1]);
-	        if (minorVers >= 6) return true;
+	        if (minorVers >= version) return true;
 	    } catch (NumberFormatException e) {
 	        // was not an integer
 	    }
