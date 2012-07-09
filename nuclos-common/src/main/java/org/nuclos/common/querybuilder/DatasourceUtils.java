@@ -147,12 +147,16 @@ public class DatasourceUtils {
 	}
 	
 	public static void validateRecordGrantSQL(String entity, String sql) throws CommonValidationException {
+		if (StringUtils.looksEmpty(sql)) {
+			throw new CommonValidationException("datasource.validation.recordgrant.sql.3");
+		}
+
 		if (entity != null && !StringUtils.looksEmpty(sql)) {
 			
 			boolean foundIntid = false;
 			boolean foundMoreIntid = false;
 			for (String column : getColumns(sql)) {
-				if (column.equals("\"intid\"")) {
+				if (column.toUpperCase().equals("INTID") || column.toUpperCase().equals("\"INTID\"")) {
 					if (foundIntid)
 						foundMoreIntid = true;
 					foundIntid = true;

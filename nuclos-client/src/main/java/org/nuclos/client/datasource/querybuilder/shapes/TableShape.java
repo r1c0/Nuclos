@@ -160,7 +160,7 @@ public class TableShape extends ComponentAdapter implements Comparable<TableShap
 	 */
 	protected void initColumns() {
 		for (Column column : table.getColumns()) {
-			final ConstraintColumn constraintcolumn = new ConstraintColumn(column.getTable(), column.getName(),
+			final ConstraintColumn constraintcolumn = new ConstraintColumn(table, column.getName(),
 					column.getType(), column.getLength(), column.getPrecision(), column.getScale(), column.isNullable());
 			columnMap.put(constraintcolumn.getName(), constraintcolumn);
 			columns.add(constraintcolumn);

@@ -56159,6 +56159,16 @@
     "text": "Eine Datensatzfreigabe darf nur eine INTID Spalte ausgeben, wenn sie einer Entität zugewiesen ist."
   },
   {
+    "resourceID": "datasource.validation.recordgrant.sql.3",
+    "locale": "i-default",
+    "text": "Contents of this datasource should not be empty, if you want to provide it as record grant."
+  },
+  {
+    "resourceID": "datasource.validation.recordgrant.sql.3",
+    "locale": "de",
+    "text": "Wenn eine Datenquelle als Datensatzfreigabe zur Verfügung gestellt werden soll, so darf der Inhalt nicht leer sein."
+  },
+  {
     "resourceID": "datasource.error.recordgrant.invalid",
     "locale": "i-default",
     "text": "Could not determine record grant."
