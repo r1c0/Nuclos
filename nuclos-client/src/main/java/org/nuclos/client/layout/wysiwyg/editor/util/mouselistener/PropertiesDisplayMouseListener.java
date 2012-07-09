@@ -44,7 +44,8 @@ public class PropertiesDisplayMouseListener implements MouseListener {
 
 	@Override
 	public void mouseClicked(MouseEvent e) {
-		if(e.getClickCount() == 1 && e.getButton() == MouseEvent.BUTTON1) {
+		if(e.getClickCount() == 1 && 
+				(e.getButton() == MouseEvent.BUTTON1 || e.getButton() == MouseEvent.BUTTON3)) {
 			// NUCLOSINT-681
 			if (!PropertiesPanel.checkIfAlreadyShowingForComponent(component))
 				PropertiesPanel.showPropertiesForComponent(component, tableLayoutUtil);

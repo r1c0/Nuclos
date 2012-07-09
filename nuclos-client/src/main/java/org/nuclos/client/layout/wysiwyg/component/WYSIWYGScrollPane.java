@@ -18,6 +18,8 @@ package org.nuclos.client.layout.wysiwyg.component;
 
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,6 +27,8 @@ import java.util.Map;
 import javax.swing.JMenuItem;
 import javax.swing.JScrollPane;
 import javax.swing.border.Border;
+import javax.swing.event.EventListenerList;
+import javax.swing.plaf.basic.BasicScrollPaneUI;
 
 import org.nuclos.client.layout.wysiwyg.CollectableWYSIWYGLayoutEditor.WYSIWYGLayoutEditorChangeDescriptor;
 import org.nuclos.client.layout.wysiwyg.WYSIWYGStringsAndLabels.ERROR_MESSAGES;
@@ -52,7 +56,7 @@ import org.nuclos.common2.exception.CommonFatalException;
  * @author <a href="mailto:maik.stueker@novabit.de">maik.stueker</a>
  * @version 01.00.00
  */
-public class WYSIWYGScrollPane extends JScrollPane implements WYSIWYGComponent {
+public class WYSIWYGScrollPane extends JScrollPane implements WYSIWYGComponent, MouseListener {
 
 	public static String PROPERTY_NAME = PROPERTY_LABELS.NAME;
 	public static String PROPERTY_PREFFEREDSIZE = PROPERTY_LABELS.PREFFEREDSIZE;
@@ -121,8 +125,12 @@ public class WYSIWYGScrollPane extends JScrollPane implements WYSIWYGComponent {
 	private WYSIWYGLayoutEditorPanel wysiwygLayoutEditorPanel = null;
 	
 	private WYSIWYGLayoutEditorChangeDescriptor wysiwygLayoutEditorChangeDescriptor = null;
+	
+	private EventListenerList listenerList = new EventListenerList();
 
 	public WYSIWYGScrollPane() {
+		getVerticalScrollBar().addMouseListener(this);
+		getHorizontalScrollBar().addMouseListener(this);
 	}
 	
 	@Override
@@ -136,6 +144,80 @@ public class WYSIWYGScrollPane extends JScrollPane implements WYSIWYGComponent {
 	public void setWYSIWYGLayoutEditorChangeDescriptor(WYSIWYGLayoutEditorChangeDescriptor wysiwygLayoutEditorChangeDescriptor) {
 		this.wysiwygLayoutEditorChangeDescriptor = wysiwygLayoutEditorChangeDescriptor;
 	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see java.awt.Component#addMouseListener(java.awt.event.MouseListener)
+	 */
+	@Override
+	public synchronized void addMouseListener(MouseListener l) {
+		listenerList.add(MouseListener.class, l);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see java.awt.Component#removeMouseListener(java.awt.event.MouseListener)
+	 */
+	@Override
+	public synchronized void removeMouseListener(MouseListener l) {
+		listenerList.remove(MouseListener.class, l);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see java.awt.event.MouseListener#mouseClicked(java.awt.event.MouseEvent)
+	 */
+	@Override
+	public synchronized void mouseClicked(MouseEvent e) {
+		for(MouseListener l : listenerList.getListeners(MouseListener.class)) {
+			l.mouseClicked(e);
+		}
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see java.awt.event.MouseListener#mouseEntered(java.awt.event.MouseEvent)
+	 */
+	@Override
+	public void mouseEntered(MouseEvent e) {
+		for (MouseListener l : listenerList.getListeners(MouseListener.class)) {
+			l.mouseEntered(e);
+		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see java.awt.event.MouseListener#mouseExited(java.awt.event.MouseEvent)
+	 */
+	@Override
+	public void mouseExited(MouseEvent e) {
+		for (MouseListener l : listenerList.getListeners(MouseListener.class)) {
+			l.mouseExited(e);
+		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see java.awt.event.MouseListener#mousePressed(java.awt.event.MouseEvent)
+	 */
+	@Override
+	public void mousePressed(MouseEvent e) {
+		for (MouseListener l : listenerList.getListeners(MouseListener.class)) {
+			l.mousePressed(e);
+		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see java.awt.event.MouseListener#mouseReleased(java.awt.event.MouseEvent)
+	 */
+	@Override
+	public void mouseReleased(MouseEvent e) {
+		for (MouseListener l : listenerList.getListeners(MouseListener.class)) {
+			l.mouseReleased(e);
+		}
+	}
+
 
 	/*
 	 * (non-Javadoc)

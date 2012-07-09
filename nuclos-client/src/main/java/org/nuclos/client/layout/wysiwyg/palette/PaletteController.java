@@ -140,6 +140,7 @@ public class PaletteController implements DragGestureListener, LayoutMLConstants
 		palettePanel.add(paletteLabel, new GridBagConstraints(0, 1, 1, 1, 1, 0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 5, 0, 5), 0, 0));
 
 		paletteList = new JList(setupModel());
+		paletteList.putClientProperty("List.isFileList", Boolean.TRUE); // Dragging should not select it. so we misuse this property here. @see BasicListUI.mouseDragged()
 		paletteList.setCellRenderer(new PaletteItemListCellRenderer());
 
 		dragsource.createDefaultDragGestureRecognizer(paletteList, DnDConstants.ACTION_COPY, this);
