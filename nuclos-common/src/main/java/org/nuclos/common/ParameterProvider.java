@@ -129,9 +129,12 @@ public interface ParameterProvider {
 	
 	public static final String KEY_NUCLOS_INSTANCE_NAME = "NUCLOS_INSTANCE_NAME";
 	
+	/**
+	 *  Nuclos UI Parameter
+	 */
 	public static final String NUCLOS_UI_DETAILS_OVERLAY = "Nuclos UI Details Overlay";
-	
 	public static final String NUCLOS_UI_DETAILS_OVERLAY_IGNORE_LIST = "Nuclos UI Details Overlay Ignore List";
+	public static final String NUCLOS_UI_RESULT_SELECTION_BUTTONS_POSITION = "Nuclos UI Result Selection Buttons Position";
 
 	/**
 	 * @param sParameterName

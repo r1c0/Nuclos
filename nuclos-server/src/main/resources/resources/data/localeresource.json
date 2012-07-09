@@ -31800,6 +31800,16 @@
     "text": "Auswahl aufheben"
   },
   {
+    "resourceID": "ResultPanel.18",
+    "locale": "en",
+    "text": "Ctrl"
+  },
+  {
+    "resourceID": "ResultPanel.18",
+    "locale": "de",
+    "text": "Strg"
+  },
+  {
     "resourceID": "ResultPanel.11",
     "locale": "i-default",
     "text": "Show\/hide columns"

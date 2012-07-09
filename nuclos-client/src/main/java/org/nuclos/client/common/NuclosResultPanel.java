@@ -129,7 +129,14 @@ public class NuclosResultPanel<Clct extends Collectable> extends ResultPanel<Clc
 		result.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 		result.add(getResultTableScrollPane(), BorderLayout.CENTER);
 		
-		result.add(searchFilterBar.getJComponent(), BorderLayout.NORTH);
+		if (pnlTopButtons.getComponentCount() > 0) {
+			JPanel top = new JPanel(new BorderLayout());
+			top.add(searchFilterBar.getJComponent(), BorderLayout.CENTER);
+			top.add(pnlTopButtons, BorderLayout.SOUTH);
+			result.add(top, BorderLayout.NORTH);
+		} else {
+			result.add(searchFilterBar.getJComponent(), BorderLayout.NORTH);
+		}
 		result.add(pnlSouth, BorderLayout.SOUTH);
 
 		tblFixedResult.getColumnModel().addColumnModelListener(new TableColumnModelListener() {

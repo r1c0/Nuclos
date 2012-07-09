@@ -335,6 +335,12 @@ public class ResultController<Clct extends Collectable> {
 		tblResult.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 		tblResult.getSelectionModel().addListSelectionListener(newListSelectionListener(tblResult));
 		
+		this.getResultPanel().btnToggleSelectionMode.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				getResultPanel().setToggleSelection(!getResultPanel().isToggleSelection());
+			}
+		});
 		this.getResultPanel().btnSelectAllRows.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {

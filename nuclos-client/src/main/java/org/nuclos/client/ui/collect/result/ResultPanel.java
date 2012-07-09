@@ -74,9 +74,11 @@ import javax.swing.table.TableColumn;
 import org.apache.log4j.Logger;
 import org.jdesktop.swingx.JXBusyLabel;
 import org.jfree.util.Log;
+import org.nuclos.client.common.ClientParameterProvider;
 import org.nuclos.client.common.EnabledListener;
 import org.nuclos.client.common.WorkspaceUtils;
 import org.nuclos.client.common.security.SecurityCache;
+import org.nuclos.client.main.Main;
 import org.nuclos.client.synthetica.NuclosThemeSettings;
 import org.nuclos.client.ui.Icons;
 import org.nuclos.client.ui.PopupButton;
@@ -99,6 +101,7 @@ import org.nuclos.client.ui.table.CommonJTable;
 import org.nuclos.client.ui.table.TableUtils;
 import org.nuclos.client.ui.util.TableLayoutBuilder;
 import org.nuclos.common.Actions;
+import org.nuclos.common.ParameterProvider;
 import org.nuclos.common.WorkspaceDescription.EntityPreferences;
 import org.nuclos.common.collect.collectable.Collectable;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
@@ -189,11 +192,12 @@ public class ResultPanel<Clct extends Collectable> extends JPanel {
 	
 	public final JButton btnResetMainFilter = new JButton();
 	
-	public final JButton btnSelectAllRows = new StatusBarButton(Icons.getInstance().getIconSelectAll12(), Icons.getInstance().getIconSelectAllHover12(),
-			localeDelegate.getMessage("ResultPanel.16","Alles auswählen"));
-	
-	public final JButton btnDeSelectAllRows = new StatusBarButton(Icons.getInstance().getIconDeSelectAll12(), Icons.getInstance().getIconDeSelectAllHover12(),
-			localeDelegate.getMessage("ResultPanel.17","Auswahl aufheben"));
+	public final ToggleSelectionModeButton btnToggleSelectionMode = new ToggleSelectionModeButton(
+			Main.isMacOSXSnowLeopardOrBetter()?"\uf8ff":localeDelegate.getMessage("ResultPanel.18","Strg"),
+			Icons.getInstance().getIconDeSelectAll12(), Icons.getInstance().getIconDeSelectAllHover12(),
+			Icons.getInstance().getIconSelectAll12(), Icons.getInstance().getIconSelectAllHover12());
+	public final IResultButton btnSelectAllRows;
+	public final IResultButton btnDeSelectAllRows;
 
 	protected static final String EXPORT_IMPORT_EXTENSION = ".zip";
 	
@@ -206,6 +210,7 @@ public class ResultPanel<Clct extends Collectable> extends JPanel {
 	private final JScrollPane scrlpnResult = new JScrollPane();
 	private final JTable tblResult;
 	
+	protected final JPanel pnlTopButtons;
 	protected final JPanel pnlSouth;
 	private final JPanel pnlActions;
 	private final JPanel pnlShowActions;
@@ -217,6 +222,7 @@ public class ResultPanel<Clct extends Collectable> extends JPanel {
 	
 	private final JXBusyLabel busyActions = new JXBusyLabel(new Dimension(16, 16));
 	
+	private boolean toggleSelection = false;
 	private boolean alternateSelectionToggle = true;
 	private boolean isActionsVisible = true;
 	private boolean isActionsEnabled = true;
@@ -249,6 +255,21 @@ public class ResultPanel<Clct extends Collectable> extends JPanel {
 
 	public ResultPanel() {
 		super(new BorderLayout());
+		
+		this.pnlTopButtons = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+		
+		if ("top".equalsIgnoreCase(ClientParameterProvider.getInstance().getValue(ParameterProvider.NUCLOS_UI_RESULT_SELECTION_BUTTONS_POSITION))) {
+			btnSelectAllRows = new ResultButton(localeDelegate.getMessage("ResultPanel.16","Alles auswählen"));
+			btnDeSelectAllRows = new ResultButton(localeDelegate.getMessage("ResultPanel.17","Auswahl aufheben"));
+			pnlTopButtons.add((Component) btnSelectAllRows);
+			pnlTopButtons.add((Component) btnDeSelectAllRows);
+			this.setSouthComponent(UIUtils.newStatusBar(btnToggleSelectionMode, Box.createHorizontalStrut(10), tfStatusBar));
+
+		} else {
+			btnSelectAllRows = new StatusBarButton(localeDelegate.getMessage("ResultPanel.16","Alles auswählen"));
+			btnDeSelectAllRows = new StatusBarButton(localeDelegate.getMessage("ResultPanel.17","Auswahl aufheben"));
+			this.setSouthComponent(UIUtils.newStatusBar(btnToggleSelectionMode, Box.createHorizontalStrut(10), tfStatusBar, Box.createHorizontalGlue(), (Component)btnSelectAllRows, (Component)btnDeSelectAllRows));
+		}
 
 		this.btnDelete = getDeleteButton();
 
@@ -278,8 +299,7 @@ public class ResultPanel<Clct extends Collectable> extends JPanel {
 		//this.add(compCenter, BorderLayout.CENTER);
 		//this.add(UIUtils.newStatusBar(tfStatusBar), BorderLayout.SOUTH);
 		this.setCenterComponent(compCenter);
-		this.setSouthComponent(UIUtils.newStatusBar(btnSelectAllRows, btnDeSelectAllRows, Box.createHorizontalStrut(10), tfStatusBar));
-
+		
 		this.popupmenuRow.setName("popupmenuRow");
 		this.popupmenuRow.add(this.miPopupEdit);
 		this.popupmenuRow.add(this.miPopupClone);
@@ -577,6 +597,15 @@ public class ResultPanel<Clct extends Collectable> extends JPanel {
 		UIUtils.cleanUpToolBar(this.toolBar);
 	}
 	
+	public boolean isToggleSelection() {
+		return toggleSelection;
+	}
+
+	public void setToggleSelection(boolean toggleSelection) {
+		this.toggleSelection = toggleSelection;
+		this.btnToggleSelectionMode.setSelected(toggleSelection);
+	}
+
 	public void setAlternateSelectionToggle(boolean toggle) {
 		this.alternateSelectionToggle = toggle;
 	}
@@ -590,7 +619,7 @@ public class ResultPanel<Clct extends Collectable> extends JPanel {
 			@Override
 			public void changeSelection(int rowIndex, int columnIndex, boolean toggle, boolean extend) {
 //				System.out.println("row="+rowIndex+" ,col="+columnIndex+" ,toggle="+toggle+" ,extend="+extend);
-				super.changeSelection(rowIndex, columnIndex, alternateSelectionToggle? !toggle: toggle, extend);
+				super.changeSelection(rowIndex, columnIndex, toggleSelection&&alternateSelectionToggle? !toggle: toggle, extend);
 			}
 			
 			@Override
@@ -637,8 +666,15 @@ public class ResultPanel<Clct extends Collectable> extends JPanel {
 		final JPanel result = new JPanel(new BorderLayout());
 		result.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 		result.add(scrlpnResult, BorderLayout.CENTER);
-
-		result.add(searchFilterBar.getJComponent(), BorderLayout.NORTH);
+		
+		if (pnlTopButtons.getComponentCount() > 0) {
+			JPanel top = new JPanel(new BorderLayout());
+			top.add(searchFilterBar.getJComponent(), BorderLayout.CENTER);
+			top.add(pnlTopButtons, BorderLayout.SOUTH);
+			result.add(top, BorderLayout.NORTH);
+		} else {
+			result.add(searchFilterBar.getJComponent(), BorderLayout.NORTH);
+		}
 		result.add(pnlSouth, BorderLayout.SOUTH);
 		
 		return result;
@@ -932,42 +968,127 @@ public class ResultPanel<Clct extends Collectable> extends JPanel {
 		return searchFilterBar;
 	}
 	
-	private static class StatusBarButton extends JButton implements MouseListener {
+	public interface IResultButton {
+		public void addActionListener(ActionListener actionListener);
+		public void removeActionListener(ActionListener actionListener);
+	}
+	
+	public static class ResultButton extends JButton implements IResultButton {
+		public ResultButton(String text) {
+			super(text);
+		}
+		@Override
+		public Dimension getPreferredSize() {
+			Dimension result = super.getPreferredSize();
+			result.height = 20;
+			return result;
+		}
+	}
+	
+	public static class ToggleSelectionModeButton extends StatusBarButton {
 		
 		private final ImageIcon icon;
 		private final ImageIcon iconHover;
+		private final ImageIcon iconSelected;
+		private final ImageIcon iconSelectedHover;
 		
-		public StatusBarButton(ImageIcon icon, ImageIcon iconHover, String tooltip) {
-			super(icon);
+		private boolean selected = false;
+		
+		public ToggleSelectionModeButton(String text, final ImageIcon icon, final ImageIcon iconHover, final ImageIcon iconSelected, final ImageIcon iconSelectedHover) {
+			super(text, icon);
 			this.icon = icon;
 			this.iconHover = iconHover;
-			this.setToolTipText(tooltip);
-			this.addMouseListener(this);
-			this.setBorderPainted(false);
-			this.setBorder(BorderFactory.createEmptyBorder(4, 2, 2, 2));
+			this.iconSelected = iconSelected;
+			this.iconSelectedHover = iconSelectedHover;
+			this.addMouseListener(new MouseAdapter() {
+				@Override
+				public void mouseEntered(MouseEvent e) {
+					setIcon(isSelected()?iconSelectedHover:iconHover);
+				}
+
+				@Override
+				public void mouseExited(MouseEvent e) {
+					setIcon(isSelected()?iconSelected:icon);
+				}
+			});
+			this.setBorder(BorderFactory.createEmptyBorder(4, 5, 2, 5));
+		}
+
+		public boolean isSelected() {
+			return selected;
+		}
+
+		public void setSelected(boolean selected) {
+			this.selected = selected;
+			if (selected) {
+				this.setIcon(iconHover.equals(getIcon())?iconSelectedHover:iconSelected);
+			} else {
+				this.setIcon(iconSelectedHover.equals(getIcon())?iconHover:icon);
+			}
+		}
+
+	}
+	
+	public static class StatusBarButton extends JLabel implements IResultButton {
+		
+		protected boolean mouseOver = false;
+		
+		private Collection<ActionListener> listeners = new ArrayList<ActionListener>(1);
+		
+		public StatusBarButton(String text) {
+			this(text, null);
+		}
+		
+		public StatusBarButton(String text, Icon icon) {
+			super(text, icon, JLabel.LEFT);
+			this.setForeground(Color.WHITE);
+			this.addMouseListener(new MouseAdapter() {
+				@Override
+				public void mouseClicked(MouseEvent e) {
+					for (ActionListener al : listeners) {
+						al.actionPerformed(new ActionEvent(StatusBarButton.this, 1, "click"));
+					}
+				}
+				@Override
+				public void mouseEntered(MouseEvent e) {
+					mouseOver = true;
+					repaint();
+//					setForeground(NuclosThemeSettings.ICON_BLUE_LIGHTER);
+				}
+				@Override
+				public void mouseExited(MouseEvent e) {
+					mouseOver = false;
+					repaint();
+//					setForeground(Color.WHITE);
+				}
+			});
+			this.setBorder(BorderFactory.createEmptyBorder(4, 5, 2, 5));
+		}
+
+		public void addActionListener(ActionListener actionListener) {
+			listeners.add(actionListener);
+		}
+		
+		public void removeActionListener(ActionListener actionListener) {
+			listeners.remove(actionListener);
 		}
 
 		@Override
-		public void mouseClicked(MouseEvent e) {
+		protected void paintComponent(Graphics g) {
+			Graphics2D g2 = (Graphics2D) g;
+			Object antialiasing = g2.getRenderingHint(RenderingHints.KEY_ANTIALIASING);
+	        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+	        
+	        Rectangle bounds = getBounds();
+	        if (mouseOver && bounds.width>0 && bounds.height>0) {
+	        	g2.setPaint(new GradientPaint(0, bounds.height/2, new Color(255, 255, 255, 0), 0, bounds.height, new Color(255, 255, 255, 100)));
+	        	g2.fillRoundRect(0, 0, bounds.width, bounds.height, 8, 8);
+	        }
+			super.paintComponent(g);
+			
+			g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, antialiasing);
 		}
-
-		@Override
-		public void mousePressed(MouseEvent e) {
-		}
-
-		@Override
-		public void mouseReleased(MouseEvent e) {
-		}
-
-		@Override
-		public void mouseEntered(MouseEvent e) {
-			this.setIcon(iconHover);
-		}
-
-		@Override
-		public void mouseExited(MouseEvent e) {
-			this.setIcon(icon);
-		}
+		
 		
 	}
 
