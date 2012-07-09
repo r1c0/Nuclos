@@ -43,6 +43,7 @@ import org.nuclos.client.ui.collect.SubForm.SubFormTable;
 import org.nuclos.client.ui.collect.component.CollectableComponent;
 import org.nuclos.client.ui.collect.model.CollectableTableModel;
 import org.nuclos.client.ui.labeled.LabeledComponent;
+import org.nuclos.client.ui.labeled.LabeledTextComponent;
 import org.nuclos.client.ui.layoutml.LayoutRoot;
 import org.nuclos.common2.layoutml.LayoutMLConstants;
 
@@ -117,6 +118,9 @@ public class NuclosFocusTraversalPolicy extends	LayoutFocusTraversalPolicy {
 						getFocusableSubFormComponent(((String)obj));
 					}
 					mpComponentsBackwards.put((String)obj, (JComponent)aComponent);
+					if(jFound instanceof LabeledTextComponent){
+						return ((LabeledTextComponent)jFound).getJTextComponent();
+					}
 					if(jFound instanceof LabeledComponent){
 						return ((LabeledComponent)jFound).getControlComponent();
 					}
