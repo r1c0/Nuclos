@@ -603,7 +603,7 @@ public class DB2DBAccess extends StandardSqlDBAccess {
 
 		@Override
 		protected void initMetaData() throws SQLException {
-			supportsJDBC4getFunction = false;
+			supportsJDBC4getFunction = true;
 			super.initMetaData();
 		}
 

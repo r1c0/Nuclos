@@ -1616,7 +1616,10 @@ public class MasterDataCollectController extends EntityCollectController<Collect
 				chkbxHideInvalid.addActionListener(new ActionListener() {
 					@Override
 					public void actionPerformed(ActionEvent ev) {
-						filterByValidity(((JCheckBox) ev.getSource()).isSelected());
+						if (ev.getSource() instanceof JCheckBox)
+							filterByValidity(((JCheckBox) ev.getSource()).isSelected());
+						if (ev.getSource() instanceof JCheckBoxMenuItem)
+							filterByValidity(((JCheckBoxMenuItem) ev.getSource()).isSelected());
 
 						cmdDisplayCurrentSearchConditionInSearchPanelStatusBar();
 					}
