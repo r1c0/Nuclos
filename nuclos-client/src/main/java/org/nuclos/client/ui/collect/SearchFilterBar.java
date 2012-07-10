@@ -300,6 +300,7 @@ public class SearchFilterBar implements ItemSelectable {
 				selected = sf;
 				mouseOver = false;
 				fireItemStateChanged();
+				pnl.repaint();
 			}
 		}
 
