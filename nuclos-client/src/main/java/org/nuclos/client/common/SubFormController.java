@@ -737,7 +737,7 @@ public abstract class SubFormController extends MainFrameTabController
 	            	return;
 	            int rowIndex = e.getFirstIndex();
 	            int columnIndex = tbl.getSelectedColumn() == tbl.getColumnCount() -1 ? 0 : tbl.getSelectedColumn();
-	            if(((rowIndex == 1 && columnIndex == -1) || (rowIndex == 0 && columnIndex == 0)) && e.getLastIndex() > 0) {
+	            if(((rowIndex >= 0) || (rowIndex == 0 && columnIndex == 0)) && e.getLastIndex() > 0) {
 		            ke.consume();
 		            int colIndex = 0;
 					final String sNextColumn = tbl.getSelectedColumn() == -1 ? null : getSubForm().getColumnNextFocusComponent((String)tbl.getColumnModel().getColumn(tbl.getSelectedColumn()).getIdentifier());
@@ -745,7 +745,7 @@ public abstract class SubFormController extends MainFrameTabController
 						colIndex = sNextColumn == null ? colIndex : tbl.getColumnModel().getColumnIndex(sNextColumn);
 					}
 		            int idxRow = e.getLastIndex(); 
-		            if (rowIndex == 0 && columnIndex == 0 && e.getLastIndex() > 0) {
+		            if (e.getLastIndex() > 0) {
 		            	SubFormController.this.cmdInsert();
 		            	idxRow = idxRow + 1;
 		            }

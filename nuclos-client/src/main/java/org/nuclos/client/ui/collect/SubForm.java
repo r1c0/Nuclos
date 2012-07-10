@@ -2135,6 +2135,22 @@ public class SubForm extends JPanel
 					newRowOnNext = true;
 			} else if (event instanceof MouseEvent)
             	newRowOnNext = false;
+			
+			String sNextColumn = getSelectedColumn() == -1 ? null : getSubForm().getColumnNextFocusComponent((String)getColumnModel().getColumn(getSelectedColumn()).getIdentifier());
+			if (sNextColumn != null) {
+				int colIndex = sNextColumn == null ? -1 : getColumnModel().getColumnIndex(sNextColumn);
+				if (colIndex != -1) {
+					if (colIndex <= getSelectedColumn() &&
+							rowIndex == getRowCount() - 1)
+						newRowOnNext = true;
+					else
+						newRowOnNext = false;
+				}
+				else
+					newRowOnNext = false;
+			}
+			else
+				newRowOnNext = false;
 		}
 		public void changeSelection(final int rwIndex, final int clIndex, boolean toggle, boolean extend, final boolean fixed) {
 			boolean bChange = true;
@@ -2146,7 +2162,7 @@ public class SubForm extends JPanel
 
 			final AWTEvent event = EventQueue.getCurrentEvent();
 
-			final int rowIndex = rwIndex;
+			int rowIndex = rwIndex;
 			int colIndex;
 			try {
 				if (event instanceof KeyEvent && !fixed) {
@@ -2216,8 +2232,16 @@ public class SubForm extends JPanel
 				}
 			}
 
-			if (bChange)
+			if (bChange) {
+				if (sNextColumn != null) {
+					int cIndex = sNextColumn == null ? -1 : getColumnModel().getColumnIndex(sNextColumn);
+					if (cIndex != -1) {
+						if (cIndex <= getSelectedColumn())
+							rowIndex = rowIndex + 1;
+					}
+				}
 				super.changeSelection(rowIndex, columnIndex, toggle, extend);
+			}
 
 			if(event instanceof KeyEvent || event instanceof InvocationEvent) {
 				if(newRowOnNext) {
@@ -2226,15 +2250,16 @@ public class SubForm extends JPanel
 			            if(!ke.isShiftDown() && !ke.isControlDown()) {
 							for(FocusActionListener fal : subform.getFocusActionLister()) {
 								fal.focusAction(new EventObject(this));
+								final int row = rowIndex;
 								final int col[] = getNextEditableCell(this, rowIndex, columnIndex, false);
 								SwingUtilities.invokeLater(new Runnable() {
 									@Override
 									public void run() {
-										if (editCellAt(rowIndex + 1, col[1])) {
+										if (editCellAt(row + 1, col[1])) {
 											Component editor = getEditorComponent();
 											if(editor != null)
 												editor.requestFocusInWindow();
-											changeSelection(rowIndex + 1, col[1], false, false);
+											changeSelection(row + 1, col[1], false, false);
 										}
 									}
 								});
@@ -2298,25 +2323,26 @@ public class SubForm extends JPanel
 					}
 				}
 
+				final int row = rowIndex;
 				final boolean bHasNextComponent = sNextColumn != null;
 				if (isCellEditable(rowIndex, columnIndex)) {
 					SwingUtilities.invokeLater(new Runnable() {
 						@Override
 						public void run() {
-							int rIndex = rowIndex;
+							int rIndex = row;
 							if (event instanceof KeyEvent) {
 								final KeyEvent ke = (KeyEvent)event;
 					            if(!ke.isShiftDown() && !ke.isControlDown()) {
-									if (rowIndex == 0 && columnIndex == 0
+									if (row == 0 && columnIndex == 0
 											&& !fixed)
 										return;
 					            } else {
 					            	if (getColumnCount() -1 == columnIndex && bHasNextComponent) {
-					            		rIndex = rowIndex - 1 == -1 ? 0 : rowIndex - 1;
+					            		rIndex = row - 1 == -1 ? 0 : row - 1;
 					            	}
 					            }
 							} else {
-								if (rowIndex == 0 && columnIndex == 0
+								if (row == 0 && columnIndex == 0
 										&& !fixed)
 									return;
 							}
