@@ -29,6 +29,8 @@ import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.InvocationEvent;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -101,11 +103,13 @@ import org.nuclos.client.ui.SizeKnownListener;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.client.ui.URIMouseAdapter;
 import org.nuclos.client.ui.collect.FixedColumnRowHeader.HeaderTable;
+import org.nuclos.client.ui.collect.component.CollectableCheckBox;
 import org.nuclos.client.ui.collect.component.CollectableComponent;
 import org.nuclos.client.ui.collect.component.CollectableComponentFactory;
 import org.nuclos.client.ui.collect.component.CollectableComponentTableCellEditor;
 import org.nuclos.client.ui.collect.component.CollectableComponentType;
 import org.nuclos.client.ui.collect.component.CollectableListOfValues;
+import org.nuclos.client.ui.collect.component.CollectableOptionGroup;
 import org.nuclos.client.ui.collect.component.DefaultCollectableComponentFactory;
 import org.nuclos.client.ui.collect.component.LabeledCollectableComponentWithVLP;
 import org.nuclos.client.ui.collect.component.LookupEvent;
@@ -116,6 +120,7 @@ import org.nuclos.client.ui.collect.component.model.CollectableComponentModelLis
 import org.nuclos.client.ui.collect.component.model.DetailsComponentModelEvent;
 import org.nuclos.client.ui.collect.component.model.SearchComponentModelEvent;
 import org.nuclos.client.ui.collect.model.CollectableEntityFieldBasedTableModel;
+import org.nuclos.client.ui.collect.model.CollectableTableModel;
 import org.nuclos.client.ui.event.PopupMenuMouseAdapter;
 import org.nuclos.client.ui.event.TableColumnModelAdapter;
 import org.nuclos.client.ui.labeled.LabeledComponent;
@@ -1724,7 +1729,47 @@ public class SubForm extends JPanel
 		final CollectableComponentTableCellEditor result = new CollectableComponentTableCellEditor(clctcomp, clctcomp.isSearchComponent());
 
 		result.addCollectableComponentModelListener(getCollectableTableCellEditorChangeListener());
-
+		
+		// @see NUCLOS-603. checkboxes and options should setvalue directly.
+		if (clctcomp instanceof CollectableCheckBox) {
+			((CollectableCheckBox) clctcomp).getJCheckBox().addItemListener(new ItemListener() {
+				@Override
+				public void itemStateChanged(ItemEvent e) {
+					try {
+						if (getSubformTable().getModel() instanceof SubFormTableModel) {
+							int row  = getSubformTable().getSelectedRow();
+							int column = ((SubFormTableModel)getSubformTable().getModel()).findColumnByFieldName(clctcomp.getFieldName());
+							if (row != -1 && column != -1)
+								getSubformTable().setValueAt(clctcomp.getField(), row, column);
+						}
+						
+					} catch (CollectableFieldFormatException e1) {
+						LOG.warn("could not set value for " + clctcomp.getFieldName(), e1);
+					}		
+				}
+			});
+		}
+		if (clctcomp instanceof CollectableOptionGroup) {
+			((CollectableOptionGroup) clctcomp).getOptionGroup().addActionListener(new ActionListener() {
+				
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					try {
+						if (getSubformTable().getModel() instanceof SubFormTableModel) {
+							int row  = getSubformTable().getSelectedRow();
+							int column = ((SubFormTableModel)getSubformTable().getModel()).findColumnByFieldName(clctcomp.getFieldName());
+							if (row != -1 && column != -1)
+								getSubformTable().setValueAt(clctcomp.getField(), row, column);
+						}
+						
+					} catch (CollectableFieldFormatException e1) {
+						LOG.warn("could not set value for " + clctcomp.getFieldName(), e1);
+					}	
+				}
+			});
+		}
+		
+		// textarea have to handle Tab in an subform differently.
 		if (clctcomp instanceof NuclosCollectableTextArea) {
 			((NuclosCollectableTextArea) clctcomp).overrideActionMap(new AbstractAction() {
 				@Override
