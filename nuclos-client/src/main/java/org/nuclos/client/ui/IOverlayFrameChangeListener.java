@@ -16,9 +16,13 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.ui;
 
+import java.awt.Dimension;
+
 import javax.swing.Icon;
 
 public interface IOverlayFrameChangeListener {
+	
+	public void sizeChanged(Dimension newSize);
 
 	public void titleChanged(String newTitle, Icon newIcon);
 	

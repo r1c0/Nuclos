@@ -16,6 +16,7 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.ui.multiaction;
 
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.BufferedWriter;
@@ -23,6 +24,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -41,11 +43,14 @@ import org.nuclos.client.common.MetaDataClientProvider;
 import org.nuclos.client.main.Main;
 import org.nuclos.client.main.mainframe.MainFrameTab;
 import org.nuclos.client.ui.Errors;
+import org.nuclos.client.ui.IOverlayCenterComponent;
+import org.nuclos.client.ui.IOverlayFrameChangeListener;
 import org.nuclos.client.ui.MainFrameTabAdapter;
 import org.nuclos.client.ui.MainFrameTabController;
 import org.nuclos.client.ui.ResultListener;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.client.ui.collect.CollectController;
+import org.nuclos.client.ui.multiaction.MultiActionProgressPanel.CloseHandler;
 import org.nuclos.client.ui.popupmenu.JPopupMenuFactory;
 import org.nuclos.client.ui.popupmenu.JTableJPopupMenuListener;
 import org.nuclos.common.collect.collectable.Collectable;
@@ -151,15 +156,13 @@ public class MultiCollectablesActionController <T,R> extends MainFrameTabControl
 	}
 
 	public void run(final MultiActionProgressPanel pnl) {
-		final MainFrameTab overlayTab = new MainFrameTab(sTitle);
-		overlayTab.addMainFrameTabListener(new MainFrameTabAdapter() {
+		pnl.setCloseHandler(new CloseHandler() {
 			@Override
-			public void tabClosing(MainFrameTab tab, ResultListener<Boolean> rl) {
-				rl.done(closable);
+			public boolean isClosable() {
+				return closable;
 			}
 			@Override
-			public void tabClosed(MainFrameTab tab) {
-				tab.removeMainFrameTabListener(this);
+			public void closed() {
 				try {
 					action.executeFinalAction();
 				} catch (CommonBusinessException ex) {
@@ -168,15 +171,11 @@ public class MultiCollectablesActionController <T,R> extends MainFrameTabControl
 					Errors.getInstance().showExceptionDialog(getTabbedPane().getComponentPanel(), sMessage, ex);
 				}
 			}
-
 		});
-
-		//ifrm.setContentPane(pnl);
-		overlayTab.setLayeredComponent(pnl);
-		overlayTab.setTabIconUnsafe(this.iconFrame);
+		
 		pnl.setStatus(getSpringLocaleDelegate().getMessage("MultiCollectablesActionController.1","Vorgang l\u00e4uft..."));
 
-		final MultiObjectsActionRunnable runnable = new MultiObjectsActionRunnable(this.coll.size(), overlayTab, pnl);
+		final MultiObjectsActionRunnable runnable = new MultiObjectsActionRunnable(this.coll.size(), pnl);
 
 //		if (getParent() instanceof CommonJInternalFrame) {
 //			Main.getMainController().getControllerForInternalFrame((CommonJInternalFrame)getParent()).lockFrame(true);
@@ -185,7 +184,7 @@ public class MultiCollectablesActionController <T,R> extends MainFrameTabControl
 		pnl.btnProtocol.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				pnl.showProtocol(pnl.btnProtocol.isSelected());
+				pnl.showProtocol(!pnl.btnProtocol.isSelected());
 			}
 		});
 
@@ -194,9 +193,6 @@ public class MultiCollectablesActionController <T,R> extends MainFrameTabControl
 			public void actionPerformed(ActionEvent ev) {
 				if (pnl.btnPause.isSelected()) {
 					pnl.setStatus(getSpringLocaleDelegate().getMessage("MultiCollectablesActionController.2","Wird angehalten..."));
-					// disallow input:
-					//setModalGlassPane(ifrm);
-					overlayTab.lockLayer();
 					runnable.pause();
 				}
 				else {
@@ -211,7 +207,7 @@ public class MultiCollectablesActionController <T,R> extends MainFrameTabControl
 			public void actionPerformed(ActionEvent ev) {
 				// pause the action while the user thinks about it...
 				runnable.pause();
-				final int iBtn = JOptionPane.showConfirmDialog(overlayTab, action.getConfirmStopMessage(), 
+				final int iBtn = JOptionPane.showConfirmDialog(pnl, action.getConfirmStopMessage(), 
 						getSpringLocaleDelegate().getMessage("MultiCollectablesActionController.3","Operation beenden"),
 						JOptionPane.YES_NO_OPTION);
 				if (iBtn == JOptionPane.YES_OPTION) {
@@ -229,7 +225,7 @@ public class MultiCollectablesActionController <T,R> extends MainFrameTabControl
 		pnl.btnClose.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent ev) {
-				overlayTab.dispose();
+				pnl.close();
 //				UIUtils.runCommand(MultiCollectablesActionController.this.getParent(), new Runnable() {
 //					@Override
 //					public void run() {
@@ -329,8 +325,7 @@ public class MultiCollectablesActionController <T,R> extends MainFrameTabControl
 			}
 		}));
 
-		getTab().add(overlayTab);
-		overlayTab.setVisible(true);
+		getTab().add(pnl);
 
 		new Thread(runnable).start();
 	}
@@ -351,14 +346,12 @@ public class MultiCollectablesActionController <T,R> extends MainFrameTabControl
 	private class MultiObjectsActionRunnable implements Runnable {
 		private final int iCount;
 		private final MultiActionProgressPanel pnl;
-		private final MainFrameTab ifrm;
 		private volatile boolean bStopped;
 		private volatile boolean bPaused;
 
-		private MultiObjectsActionRunnable(int iCount, MainFrameTab ifrm, MultiActionProgressPanel pnl) {
+		private MultiObjectsActionRunnable(int iCount, MultiActionProgressPanel pnl) {
 			this.iCount = iCount;
 			this.pnl = pnl;
-			this.ifrm = ifrm;
 		}
 
 		@Override
@@ -372,7 +365,6 @@ public class MultiCollectablesActionController <T,R> extends MainFrameTabControl
 							@Override
 							public void run() {
 								try {
-								ifrm.unlockLayer();
 								pnl.setStatus(getSpringLocaleDelegate().getMessage("MultiCollectablesActionController.5","Angehalten."));
 								}
 								catch (Exception e) {
@@ -443,16 +435,18 @@ public class MultiCollectablesActionController <T,R> extends MainFrameTabControl
 					@Override
 					public void run() {
 						try {
-							if (MultiCollectablesActionController.this.error) {
-								pnl.showProtocol(true);
-								JOptionPane.showMessageDialog(MultiCollectablesActionController.this.getTabbedPane().getComponentPanel(), 
-										getSpringLocaleDelegate().getMessageFromResource("MultiCollectablesActionController.erroroccurred"), 
-										Errors.getInstance().getAppName(), JOptionPane.ERROR_MESSAGE);
-							}
 							closable = true;
 							pnl.setActionText(" ");
 							pnl.setCloseButton();
 							pnl.setStatus(getSpringLocaleDelegate().getMessage("MultiCollectablesActionController.6","Beendet."));
+							if (MultiCollectablesActionController.this.error) {
+								pnl.showProtocol(true);
+//								JOptionPane.showMessageDialog(MultiCollectablesActionController.this.getTabbedPane().getComponentPanel(), 
+//										getSpringLocaleDelegate().getMessageFromResource("MultiCollectablesActionController.erroroccurred"), 
+//										Errors.getInstance().getAppName(), JOptionPane.ERROR_MESSAGE);
+							} else {
+								pnl.close();
+							}
 						}
 						catch (Exception e) {
 							LOG.error("MultiObjectsActionRunnable.run failed: " + e, e);

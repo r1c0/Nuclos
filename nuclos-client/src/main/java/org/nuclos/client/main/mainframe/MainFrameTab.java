@@ -810,6 +810,19 @@ public class MainFrameTab extends JPanel implements IOverlayComponent, NuclosDro
 				}
 			});
 		}
+
+		/**
+		 * 
+		 */
+		@Override
+		public void sizeChanged(Dimension newSize) {
+			if (oc instanceof IOverlayCenterComponent) {
+				Dimension centerSize = ((IOverlayCenterComponent)oc).getCenterSize();
+				setBounds(getOverlayOuterCenterBounds(lockPanel.getSize(), centerSize));
+			} else {
+				setBounds(getOverlayOuterFullBounds(newSize));	
+			}
+		}
 	}
 
 	// class TranslucentLockableUI --->

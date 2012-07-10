@@ -28,8 +28,6 @@ import java.awt.Font;
 import java.awt.GradientPaint;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.Insets;
-import java.awt.Polygon;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.event.ActionEvent;
@@ -86,6 +84,7 @@ import org.nuclos.client.ui.PopupButton;
 import org.nuclos.client.ui.StatusBarTextField;
 import org.nuclos.client.ui.TableRowMouseOverAdapter;
 import org.nuclos.client.ui.UIUtils;
+import org.nuclos.client.ui.UpDownButton;
 import org.nuclos.client.ui.collect.CollectController;
 import org.nuclos.client.ui.collect.CollectPanel;
 import org.nuclos.client.ui.collect.CollectableTableHelper;
@@ -220,8 +219,8 @@ public class ResultPanel<Clct extends Collectable> extends JPanel {
 	private final JPanel pnlActions;
 	private final JPanel pnlShowActions;
 	private final JPanel pnlHideActions;
-	private final AbstractButton btnShowActions;
-	private final AbstractButton btnHideActions;
+	private final UpDownButton btnShowActions;
+	private final UpDownButton btnHideActions;
 	
 	private final static int MIN_ACTIONS_HEIGHT = 30;
 	
@@ -267,6 +266,7 @@ public class ResultPanel<Clct extends Collectable> extends JPanel {
 		this.pnlShowActions = new JPanel(new BorderLayout());
 		this.pnlShowActions.setLayout(new BoxLayout(this.pnlShowActions, BoxLayout.Y_AXIS));
 		this.btnShowActions = new UpDownButton(dynActionsOnTop?false:true);
+		this.btnShowActions.setGradientUp(dynActionsOnTop);
 		if (dynActionsOnTop) this.pnlShowActions.add(Box.createVerticalGlue());
 		this.pnlShowActions.add(btnShowActions);
 		if (!dynActionsOnTop) this.pnlShowActions.add(Box.createVerticalGlue());
@@ -274,6 +274,7 @@ public class ResultPanel<Clct extends Collectable> extends JPanel {
 		this.pnlHideActions = new JPanel(new BorderLayout());
 		this.pnlHideActions.setLayout(new BoxLayout(this.pnlHideActions, BoxLayout.Y_AXIS));
 		this.btnHideActions = new UpDownButton(dynActionsOnTop?true:false);
+		this.btnHideActions.setGradientUp(dynActionsOnTop);
 		if (dynActionsOnTop) this.pnlHideActions.add(Box.createVerticalGlue());
 		this.pnlHideActions.add(btnHideActions);
 		if (!dynActionsOnTop) this.pnlHideActions.add(Box.createVerticalGlue());
@@ -1280,110 +1281,6 @@ public class ResultPanel<Clct extends Collectable> extends JPanel {
 	        }
 	        
 	        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, antialiasing);
-		}
-		
-	}
-	
-	private class UpDownButton extends JButton implements MouseListener {
-
-		private final boolean up;
-		
-		private final int arrowWidth = 16;
-		private final int width = 32;
-		private final int height = 8;
-		private final int border = 4;
-		
-		private boolean hover;
-		
-		public UpDownButton(boolean up) {
-			this.up = up;
-			this.setSize(width, border+height+border);
-			this.setPreferredSize(new Dimension(width, border+height+border));
-			this.addMouseListener(this);
-		}
-		
-		@Override
-		protected void paintComponent(Graphics g) {
-			Graphics2D g2 = (Graphics2D) g;
-			Object renderingHint = g2
-					.getRenderingHint(RenderingHints.KEY_ANTIALIASING);
-			g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-					RenderingHints.VALUE_ANTIALIAS_ON);
-			
-			final Rectangle bounds = getBounds();
-			
-			final int w = arrowWidth;
-			final int h = height;
-			final int thickness = h/2;
-			
-			final int x = bounds.width/2-w/2;
-			final int y = border;
-			
-			if (hover) {
-//				g2.setColor(NuclosThemeSettings.BACKGROUND_COLOR3);
-				Color transparentBGC3 = new Color(NuclosThemeSettings.BACKGROUND_COLOR3.getRed(),
-						NuclosThemeSettings.BACKGROUND_COLOR3.getGreen(),
-						NuclosThemeSettings.BACKGROUND_COLOR3.getBlue(), 0);
-				g2.setPaint(new GradientPaint(0, 0, 
-						dynActionsOnTop?transparentBGC3:NuclosThemeSettings.BACKGROUND_COLOR3, 
-								0, bounds.height, 
-						dynActionsOnTop?NuclosThemeSettings.BACKGROUND_COLOR3:transparentBGC3, false));
-				g2.fillRect(0, 0, bounds.width, bounds.height);
-			}
-			
-			final Polygon p = new Polygon();
-			
-			if (up) {
-				p.addPoint(x+ 0, 	y+ h-thickness);
-				p.addPoint(x+ w/2, 	y+ 0);
-				p.addPoint(x+ w, 	y+ h-thickness);
-				p.addPoint(x+ w, 	y+ h);
-				p.addPoint(x+ w/2, 	y+ thickness);
-				p.addPoint(x+ 0, 	y+ h);
-			} else {
-				p.addPoint(x+ 0, 	y+ 0);
-				p.addPoint(x+ w/2, 	y+ h-thickness);
-				p.addPoint(x+ w, 	y+ 0);
-				p.addPoint(x+ w, 	y+ thickness);
-				p.addPoint(x+ w/2, 	y+ h);
-				p.addPoint(x+ 0, 	y+ h-thickness);
-			}
-			
-			if (hover) {
-				g2.setColor(NuclosThemeSettings.BACKGROUND_PANEL);
-			} else {
-				g2.setColor(NuclosThemeSettings.BACKGROUND_COLOR3);
-			}
-			g2.fillPolygon(p);
-			
-			g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-					renderingHint);
-		}
-
-		@Override
-		public void mouseClicked(MouseEvent e) {
-			hover=false;
-			repaint();
-		}
-
-		@Override
-		public void mousePressed(MouseEvent e) {
-		}
-
-		@Override
-		public void mouseReleased(MouseEvent e) {
-		}
-
-		@Override
-		public void mouseEntered(MouseEvent e) {
-			hover=true;
-			repaint();
-		}
-
-		@Override
-		public void mouseExited(MouseEvent e) {
-			hover=false;
-			repaint();
 		}
 		
 	}
