@@ -97,7 +97,7 @@ public class OverlayOptionPane extends JScrollPane implements IOverlayCenterComp
     	new OverlayOptionPane(tab, message, title, optionType, listener);
     }
 	
-	private OverlayOptionPane(final MainFrameTab tab, Object message, String title, int optionType, final OvOpListener listener) {
+	public OverlayOptionPane(final MainFrameTab tab, Object message, String title, int optionType, final OvOpListener listener) {
 		super();
 		this.listener = listener;
 		final MainFrameTab parentTab = tab.getLastOverlayTab();
@@ -217,10 +217,10 @@ public class OverlayOptionPane extends JScrollPane implements IOverlayCenterComp
 
 	@Override
 	public void notifyClosing(ResultListener<Boolean> rl) {
+		rl.done(isClosable());
 		if (isClosable() && listener != null) {
 			listener.done(result);
 		}
-		rl.done(isClosable());
 	}
 
 	@Override

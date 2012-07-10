@@ -532,7 +532,7 @@ public class MainFrameTab extends JPanel implements IOverlayComponent, NuclosDro
 	 */
 	public void setOverlayComponent(IOverlayComponent oc, boolean removeBeforeAdd) {
 		if (removeBeforeAdd) {
-			removeOverlayComponent(oc, false, new ResultListener<Boolean>() {
+			removeOverlayComponent(oc, false, false, new ResultListener<Boolean>() {
 				@Override
 				public void done(Boolean result) {
 				}
@@ -554,17 +554,16 @@ public class MainFrameTab extends JPanel implements IOverlayComponent, NuclosDro
 	/**
 	 *
 	 * @param oc
-	 * @throws CommonBusinessException
 	 */
 	public void removeOverlayComponent(final IOverlayComponent oc, final ResultListener<Boolean> rl) {
-		removeOverlayComponent(oc, true, rl);
+		removeOverlayComponent(oc, true, true, rl);
 	}
 
 	/**
 	 *
 	 * @param oc
 	 */
-	public void removeOverlayComponent(final IOverlayComponent oc, final boolean notifyCanCancel, final ResultListener<Boolean> rl) {
+	private void removeOverlayComponent(final IOverlayComponent oc, final boolean notify, final boolean notifyCanCancel, final ResultListener<Boolean> rl) {
 		class Helper {
 			public void done() {
 				if (overlay != null) {
@@ -580,8 +579,10 @@ public class MainFrameTab extends JPanel implements IOverlayComponent, NuclosDro
 							layered.revalidate();
 							layered.repaint();
 
-							if (oc instanceof MainFrameTab) {
-								((MainFrameTab)oc).notifyClosed();
+							if (notify) {
+								if (oc instanceof MainFrameTab) {
+									((MainFrameTab)oc).notifyClosed();
+								}
 							}
 						}
 					});
@@ -590,7 +591,7 @@ public class MainFrameTab extends JPanel implements IOverlayComponent, NuclosDro
 			}
 		}
 		
-		if (oc instanceof IOverlayComponent) {
+		if (notify && oc instanceof IOverlayComponent) {
 			oc.notifyClosing(new ResultListener<Boolean>() {
 				@Override
 				public void done(Boolean result) {
