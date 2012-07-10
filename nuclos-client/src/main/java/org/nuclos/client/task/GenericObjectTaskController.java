@@ -411,7 +411,7 @@ public class GenericObjectTaskController extends RefreshableTaskController {
 			// check permission for subforms
 			DependantMasterDataMap mpDependants = clctgowd.getGenericObjectWithDependantsCVO().getDependants();
 			if (mpDependants != null) {
-				for (String sEntityName : mpDependants.getEntityNames()) {
+				for (String sEntityName : new ArrayList<String>(mpDependants.getEntityNames())) {
 					Map<Integer, Permission> mpPermission = SecurityCache.getInstance().getSubFormPermission(sEntityName);
 
 					if (mpPermission.get(iStatus) == null) {
