@@ -21,6 +21,7 @@ import java.io.Serializable;
 import javax.print.DocFlavor;
 import javax.print.DocPrintJob;
 import javax.print.PrintService;
+import javax.print.PrintServiceLookup;
 import javax.print.ServiceUIFactory;
 import javax.print.attribute.Attribute;
 import javax.print.attribute.AttributeSet;
@@ -52,12 +53,11 @@ public class NuclosReportRemotePrintService implements PrintService, Serializabl
     private DocFlavor[] supportedDocFlavors =SUPPORTED_FLAVORS;
     private Class<?>[] supportedAttributeCategories = new Class<?>[0];
  
-    private final DocPrintJob printJob = null;
-
+    private final transient PrintService ps;
     public NuclosReportRemotePrintService(PrintService ps) {
     	name = ps.getName();
     	attributeSet.addAll(ps.getAttributes());
-    	//printJob = ps.createPrintJob();
+    	this.ps= ps;
     	supportedDocFlavors = ps.getSupportedDocFlavors();
     	supportedAttributeCategories = ps.getSupportedAttributeCategories();
     }
@@ -78,8 +78,31 @@ public class NuclosReportRemotePrintService implements PrintService, Serializabl
     	return getName().hashCode();
     }
     public DocPrintJob createPrintJob() {
-        return printJob;
+    	if (ps != null)
+    		return ps.createPrintJob();
+    	else {
+    		for (int i = 0; i < getSupportedDocFlavors().length; i++) {
+        		PrintService[] printServices = lookupPrintServices(getSupportedDocFlavors()[i], getAttributes());
+        		for (int j = 0; j < printServices.length; j++) {
+    				if (printServices[j].getName().equals(getName()))
+    					return printServices[j].createPrintJob();
+    			}
+			}
+    	}
+    	return null;
     }
+    
+	private PrintService[] lookupPrintServices(DocFlavor flavor, AttributeSet as) {
+		PrintService prservDflt = PrintServiceLookup.lookupDefaultPrintService();
+		PrintService[] prservices = PrintServiceLookup.lookupPrintServices(flavor, as);
+		if (null == prservices || 0 >= prservices.length) {
+			if (null != prservDflt) {
+				prservices = new PrintService[] { prservDflt };
+			}
+		}
+		return prservices;
+	}
+
 
     public void addPrintServiceAttributeListener(PrintServiceAttributeListener pl) {
         //throw new UnsupportedOperationException("Not supported yet.");
