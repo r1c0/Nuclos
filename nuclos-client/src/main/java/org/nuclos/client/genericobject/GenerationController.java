@@ -45,6 +45,7 @@ import org.nuclos.client.masterdata.CollectableMasterDataWithDependants;
 import org.nuclos.client.masterdata.MasterDataCache;
 import org.nuclos.client.masterdata.MasterDataCollectController;
 import org.nuclos.client.masterdata.MasterDataDelegate;
+import org.nuclos.client.resource.ResourceCache;
 import org.nuclos.client.statemodel.StateDelegate;
 import org.nuclos.client.ui.CommonClientWorkerAdapter;
 import org.nuclos.client.ui.CommonMultiThreader;
@@ -345,7 +346,7 @@ public class GenerationController {
 			}
 			OverlayOptionPane.showConfirmDialog(parent, message, 
 					SpringLocaleDelegate.getInstance().getMessage(
-							"GenericObjectCollectController.5","{0} erzeugen", sTargetModuleName), JOptionPane.OK_CANCEL_OPTION, listener);
+							"GenericObjectCollectController.5","{0} erzeugen", sTargetModuleName), JOptionPane.OK_CANCEL_OPTION, generatoractionvo.getButtonIcon()==null?null:ResourceCache.getInstance().getIconResource(generatoractionvo.getButtonIcon().getId()), listener);
 		}
 		else {
 			UsageCriteria uc = sources.values().iterator().next();
@@ -363,7 +364,7 @@ public class GenerationController {
 					"GenericObjectCollectController.71","Soll aus dem/der aktuellen {0} ein(e) {1} erzeugt werden?", sSourceModuleName, sTargetModuleName);
 			OverlayOptionPane.showConfirmDialog(parent, sMessage, 
 					SpringLocaleDelegate.getInstance().getMessage(
-							"GenericObjectCollectController.5","{0} erzeugen", sTargetModuleName), JOptionPane.OK_CANCEL_OPTION, listener);
+							"GenericObjectCollectController.5","{0} erzeugen", sTargetModuleName), JOptionPane.OK_CANCEL_OPTION, generatoractionvo.getButtonIcon()==null?null:ResourceCache.getInstance().getIconResource(generatoractionvo.getButtonIcon().getId()), listener);
 		}
 		
 	}

@@ -17,7 +17,9 @@
 package org.nuclos.client.ui;
 
 import info.clearthought.layout.TableLayout;
+import info.clearthought.layout.TableLayoutConstraints;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
@@ -37,22 +39,19 @@ import java.util.Vector;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.BorderFactory;
+import javax.swing.Icon;
 import javax.swing.JButton;
-import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 
 import org.nuclos.client.main.mainframe.MainFrameTab;
 import org.nuclos.client.synthetica.NuclosThemeSettings;
 import org.nuclos.client.ui.util.TableLayoutBuilder;
 import org.nuclos.common2.SpringLocaleDelegate;
-import org.nuclos.common2.exception.CommonBusinessException;
 
 public class OverlayOptionPane extends JScrollPane implements IOverlayCenterComponent {
 	
@@ -94,10 +93,14 @@ public class OverlayOptionPane extends JScrollPane implements IOverlayCenterComp
     private int result = CLOSED_OPTION;
     
     public static void showConfirmDialog(MainFrameTab tab, Object message, String title, int optionType, OvOpListener listener) {
-    	new OverlayOptionPane(tab, message, title, optionType, listener);
+    	new OverlayOptionPane(tab, message, title, optionType, null, listener);
+    }
+    
+    public static void showConfirmDialog(MainFrameTab tab, Object message, String title, int optionType, Icon icon, OvOpListener listener) {
+    	new OverlayOptionPane(tab, message, title, optionType, icon, listener);
     }
 	
-	public OverlayOptionPane(final MainFrameTab tab, Object message, String title, int optionType, final OvOpListener listener) {
+	public OverlayOptionPane(final MainFrameTab tab, Object message, String title, int optionType, Icon icon, final OvOpListener listener) {
 		super();
 		this.listener = listener;
 		final MainFrameTab parentTab = tab.getLastOverlayTab();
@@ -108,7 +111,7 @@ public class OverlayOptionPane extends JScrollPane implements IOverlayCenterComp
 		setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
 		setBorder(BorderFactory.createEmptyBorder());
 				
-		TableLayoutBuilder tbllay = new TableLayoutBuilder(main).columns(TableLayout.PREFERRED);
+		TableLayoutBuilder tbllay = new TableLayoutBuilder(main).columns(TableLayout.PREFERRED, TableLayout.PREFERRED, TableLayout.FILL);
 		tbllay.newRow();
 		JLabel jlbTitle = new JLabel(title, JLabel.CENTER);
 		Map<TextAttribute, Object> fontAttributes = new HashMap<TextAttribute, Object>(jlbTitle.getFont().getAttributes());
@@ -124,17 +127,26 @@ public class OverlayOptionPane extends JScrollPane implements IOverlayCenterComp
 		
 		JPanel jpnOptions = createOptions(optionType);
 		
+		if (icon != null) {
+			final JPanel labHolder = new JPanel(new TableLayout(new double[] {TableLayout.PREFERRED}, new double[] {TableLayout.FILL}));
+			labHolder.add(new JLabel(icon), new TableLayoutConstraints(0, 0, 0, 0, TableLayout.LEFT, TableLayout.CENTER));
+			labHolder.setBorder(BorderFactory.createEmptyBorder(10, 20, 0, 0));
+//			labHolder.setBackground(Color.BLUE);
+			tbllay.add(labHolder);
+		}
+		
 		if (message instanceof Component) {
-			tbllay.add((Component)message);
+			tbllay.addFullSpan((Component)message);
 		} else {
 			final JLabel label = new LineBreakLabel(message==null?"":message.toString(), jpnOptions.getPreferredSize().width + 60);
 			final JPanel labHolder = new JPanel();
 			labHolder.add(label);
-			labHolder.setBorder(BorderFactory.createEmptyBorder(20, 20, 10, 20));
-			tbllay.add(labHolder);
+			labHolder.setBorder(BorderFactory.createEmptyBorder(20, icon==null?20:10, 10, 20));
+//			labHolder.setBackground(Color.GREEN);
+			tbllay.addFullSpan(labHolder);
 		}
 		
-		tbllay.newRow().add(jpnOptions);
+		tbllay.newRow().addFullSpan(jpnOptions);
 		
 		parentTab.add(this);
 	}
