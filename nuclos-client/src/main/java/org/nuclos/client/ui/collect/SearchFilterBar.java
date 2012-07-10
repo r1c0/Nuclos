@@ -88,7 +88,7 @@ public class SearchFilterBar implements ItemSelectable {
 			@Override
 			public Dimension getPreferredSize() {
 				final Dimension result = pnl.getPreferredSize();
-				result.height = result.height +BORDER_BOTTOM + 16; //ScrollBar.thumbHeight
+				result.height = result.height +BORDER_BOTTOM + 10 + 16; //ScrollBar.thumbHeight
 				return result;
 			}
 		};
@@ -404,17 +404,26 @@ public class SearchFilterBar implements ItemSelectable {
 			}
 				
 			if (sf == selected) {
-				final int w = 12;
-				final int h = 6;
-				final int x = bounds.width/2-w/2;
-				final int y = bounds.height;
-				final Polygon p = new Polygon();
+				final int w = 24;
+				final int h = 12;
+				int x = bounds.width/2-w/2;
+				int y = bounds.height;
+				Polygon p = new Polygon();
 				
 				p.addPoint(x, 		y);
 				p.addPoint(x+w/2, 	y-h);
 				p.addPoint(x+w, 	y);
 				
 				g2.setColor(NuclosThemeSettings.BACKGROUND_PANEL);
+				g2.fillPolygon(p);
+				
+				x = bounds.width/2-w/2;
+				y = bounds.height;
+				p = new Polygon();
+				
+				p.addPoint(x, 		0);
+				p.addPoint(x+w/2, 	h);
+				p.addPoint(x+w, 	0);
 				g2.fillPolygon(p);
 			}
 			
