@@ -4655,8 +4655,13 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 			if (e.getItem() != null && !(e.getItem() instanceof SearchFilter)) {
 				throw new IllegalArgumentException(e.getItem().getClass().getName());
 			}
-			setMainFilter((SearchFilter) e.getItem());
-			actResetMainFilter.setEnabled(e.getItem() != null);
+			SearchFilter changedItem = (SearchFilter) e.getItem();
+			if (changedItem == mainFilter) {
+				cmdResetMainFilter();
+			} else {
+				setMainFilter((SearchFilter) e.getItem());
+			}
+			actResetMainFilter.setEnabled(mainFilter != null);
 		}
 	}
 	

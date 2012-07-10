@@ -128,7 +128,7 @@ public class NuclosResultPanel<Clct extends Collectable> extends ResultPanel<Clc
 
 		final JPanel result = new JPanel(new BorderLayout());
 		final JPanel resultNorth = new JPanel(new BorderLayout());
-		result.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+		result.setBorder(BorderFactory.createEmptyBorder(5, 0, 0, 0));
 		result.add(resultNorth, BorderLayout.NORTH);
 		result.add(getResultTableScrollPane(), BorderLayout.CENTER);
 		

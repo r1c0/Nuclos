@@ -278,18 +278,20 @@ public class ResultPanel<Clct extends Collectable> extends JPanel {
 		this.pnlHideActions.add(btnHideActions);
 		if (!dynActionsOnTop) this.pnlHideActions.add(Box.createVerticalGlue());
 		
-		this.pnlActions = new JPanel(new FlowLayout());
-		
-		this.pnlDynamicActions = new JPanel(new BorderLayout()) {
+		this.pnlActions = new JPanel(new FlowLayout()) {
 			@Override
 			public Dimension getPreferredSize() {
 				Dimension result = super.getPreferredSize();
 				if (isActionsEnabled && isActionsVisible) {
-					result.height = dynActionsFixedHeight<0?0:dynActionsFixedHeight;
+					result.height = dynActionsFixedHeight<0?result.height:dynActionsFixedHeight;
 				}
 				return result;
 			}
 		};
+		this.pnlActions.setOpaque(false);
+		
+		this.pnlDynamicActions = new JPanel(new BorderLayout());
+		this.pnlDynamicActions.setOpaque(false);
 		
 		if (dynActionsOnTop) {
 			this.pnlDynamicActions.add(pnlActions, BorderLayout.CENTER);
@@ -483,7 +485,7 @@ public class ResultPanel<Clct extends Collectable> extends JPanel {
 		toolBar.add(btnRefresh, null);
 		toolBar.add(btnNew, null);
 		toolBar.add(btnDelete, null);
-		toolBar.add(btnResetMainFilter, null);
+//		toolBar.add(btnResetMainFilter, null);
 
 		addPopupExtraMenuItem(btnBookmark);
 
@@ -699,7 +701,7 @@ public class ResultPanel<Clct extends Collectable> extends JPanel {
 
 		final JPanel result = new JPanel(new BorderLayout());
 		final JPanel resultNorth = new JPanel(new BorderLayout());
-		result.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+		result.setBorder(BorderFactory.createEmptyBorder(5, 0, 0, 0));
 		result.add(resultNorth, BorderLayout.NORTH);
 		result.add(scrlpnResult, BorderLayout.CENTER);
 		
@@ -1164,9 +1166,12 @@ public class ResultPanel<Clct extends Collectable> extends JPanel {
 			
 			final List<JPanel> heightCalc = new ArrayList<JPanel>(actions.size());
 			for (int i = 0; i < actions.size(); i++) {
-				ResultActionCollection rac = actions.get(i);
+				final ResultActionCollection rac = actions.get(i);
+				final boolean isEmpty = rac.getActions().isEmpty();
+				
 				JPanel jTitle = new JPanel(new BorderLayout());
-				jTitle.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0), rac.getLabel()));
+				jTitle.setOpaque(false);
+				jTitle.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0), isEmpty?"":rac.getLabel()));
 				
 				double[] cols2 = new double[Math.max(0, rac.getActions().size()*2 -1)];
 				for (int j = 0; j < rac.getActions().size()*2; j=j+2) {
@@ -1180,6 +1185,7 @@ public class ResultPanel<Clct extends Collectable> extends JPanel {
 				tbllayCol.setColumn(cols2);
 				tbllayCol.setRow(new double[] {TableLayout.FILL, TableLayout.PREFERRED, 16d});
 				JPanel pnlCol = new JPanel(tbllayCol);
+				pnlCol.setOpaque(false);
 				heightCalc.add(pnlCol);
 				final JScrollPane scrollCol = new JScrollPane(pnlCol, JScrollPane.VERTICAL_SCROLLBAR_NEVER, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED) {
 					@Override
@@ -1194,6 +1200,8 @@ public class ResultPanel<Clct extends Collectable> extends JPanel {
 				};
 				
 				scrollCol.setBorder(BorderFactory.createEmptyBorder());
+				scrollCol.setOpaque(false);
+				scrollCol.getViewport().setOpaque(false);
 				
 				for (int k = 0; k < rac.getActions().size(); k++) {
 					final Action act = rac.getActions().get(k);
