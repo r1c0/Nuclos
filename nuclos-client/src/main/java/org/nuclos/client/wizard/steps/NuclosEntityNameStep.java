@@ -154,11 +154,13 @@ public class NuclosEntityNameStep extends NuclosEntityAbstractStep {
 				"wizard.step.entityname.1", "Bitte geben Sie den Namen der neuen Entit\u00e4t ein")+": ");
 		tfName = new JTextField();
 		tfName.setToolTipText(localeDelegate.getMessage(
-				"wizard.step.entityname.tooltip.1", "Bitte geben Sie den Namen der neuen Entit\u00e4t ein"));
+				"wizard.step.entityname.tooltip.1", "Namen der neuen Entit\u00e4t"));
 		tfName.addFocusListener(NuclosWizardUtils.createWizardFocusAdapter());
 		lbChoice = new JLabel(localeDelegate.getMessage(
 				"wizard.step.entityname.2", "oder w\u00e4hlen Sie eine Entit\u00e4t die Sie ver\u00e4ndern m\u00f6chten")+": ");
 		cmbEntity = new JComboBox();
+		cmbEntity.setToolTipText(localeDelegate.getMessage(
+				"wizard.step.entityname.tooltip.2", "Namen der Entit\u00e4t die Sie ver\u00e4ndern m\u00f6chten"));
 		this.fillEntityCombobox();
 
 		lbInfo = new JLabel();

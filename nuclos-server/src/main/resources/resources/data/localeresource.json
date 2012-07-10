@@ -48764,6 +48764,16 @@
     "text": "Bitte geben Sie den Namen der neuen Entität ein"
   },
   {
+    "resourceID": "wizard.step.entityname.tooltip.1",
+    "locale": "i-default",
+    "text": "name of the new entity"
+  },
+  {
+    "resourceID": "wizard.step.entityname.tooltip.1",
+    "locale": "de",
+    "text": "Namen der neuen Entität"
+  },
+  {
     "resourceID": "wizard.step.entityname.2",
     "locale": "i-default",
     "text": "or select an entity you would like to change"
@@ -48772,6 +48782,16 @@
     "resourceID": "wizard.step.entityname.2",
     "locale": "de",
     "text": "oder wählen Sie eine Entität die Sie verändern möchten"
+  },
+  {
+    "resourceID": "wizard.step.entityname.tooltip.2",
+    "locale": "i-default",
+    "text": "name of the entity you would like to change"
+  },
+  {
+    "resourceID": "wizard.step.entityname.tooltip.2",
+    "locale": "de",
+    "text": "Namen der Entität die Sie verändern möchten"
   },
   {
     "resourceID": "wizard.step.entityname.3",
