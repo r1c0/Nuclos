@@ -62,6 +62,7 @@ import org.nuclos.common.collect.collectable.CollectableEntityField;
 import org.nuclos.common.collect.collectable.CollectableField;
 import org.nuclos.common.collect.collectable.CollectableFieldComparatorFactory;
 import org.nuclos.common.collect.collectable.CollectableUtils;
+import org.nuclos.common.collect.collectable.CollectableValueField;
 import org.nuclos.common.collect.collectable.CollectableValueIdField;
 import org.nuclos.common.collect.collectable.searchcondition.AbstractCollectableSearchCondition;
 import org.nuclos.common.collect.collectable.searchcondition.AtomicCollectableSearchCondition;
@@ -424,6 +425,14 @@ public class CollectableComboBox extends LabeledCollectableComponentWithVLP impl
 				model.addElement(getEntityField().getNullField());
 
 				for (CollectableField clctf : lst) {
+					Object value = clctf.getValue();
+					if (value instanceof String) {
+						value = value.toString().replaceAll("\\p{Cntrl}", "");
+						if (clctf instanceof CollectableValueField)
+							clctf = new CollectableValueField(value);
+						if (clctf instanceof CollectableValueIdField)
+							clctf = new CollectableValueIdField(((CollectableValueIdField)clctf).getValueId(), value);
+					}
 					model.addElement(clctf);
 				}
 
@@ -448,7 +457,7 @@ public class CollectableComboBox extends LabeledCollectableComponentWithVLP impl
 
 		final CollectableField result;
 		if (isInsertable() && (oCurrentItem instanceof String)) {
-			final String sText = (String) oCurrentItem;
+			final String sText = ((String) oCurrentItem).replaceAll("\\p{Cntrl}", "");
 			if (!blnIsLookupEntity)
 				result = CollectableTextComponentHelper.write(sText, getEntityField());
 			else
