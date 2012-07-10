@@ -16,6 +16,7 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.common.collect.collectable;
 
+import org.nuclos.common2.IdUtils;
 import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.StringUtils;
 
@@ -84,7 +85,7 @@ public abstract class AbstractCollectableField implements CollectableField {
 			case CollectableField.TYPE_VALUEFIELD:
 				return LangUtils.equals(this.getValue(), that.getValue());
 			case CollectableField.TYPE_VALUEIDFIELD:
-				boolean eq = LangUtils.equals(this.getValueId(), that.getValueId());
+				boolean eq = LangUtils.equals(IdUtils.toLongId(this.getValueId()), IdUtils.toLongId(that.getValueId()));
 				if (strict) {
 					eq &= LangUtils.equals(this.getValue(), that.getValue());
 				}
