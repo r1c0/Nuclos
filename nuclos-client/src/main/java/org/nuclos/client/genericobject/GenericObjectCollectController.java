@@ -2440,7 +2440,8 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 						if(blnVisible)
 							break;
 					}
-					tabPane.setEnabledAt(i, blnVisible);
+
+					tabPane.setEnabledAt(i, !blnVisible ? blnVisible : blnVisible && tabPane.isEnabledAt(i));
 					if (!blnVisible)
 						lstTabToRemove.add(c);
 				}
