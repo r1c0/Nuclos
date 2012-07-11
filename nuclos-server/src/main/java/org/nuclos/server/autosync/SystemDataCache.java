@@ -234,18 +234,18 @@ public class SystemDataCache {
 
 	private static class FieldIdListPredicate implements Predicate<MasterDataVO> {
 
-		private final List<? extends Object> ids;
+		private final Collection<? extends Object> ids;
 
 		/**
 		 * TODO: Argument should be List<Long>.
 		 */
-		public FieldIdListPredicate(List<? extends Object> ids) {
+		public FieldIdListPredicate(Collection<? extends Object> ids) {
 			this.ids = ids;
 		}
 
 		@Override
 		public boolean evaluate(MasterDataVO mdvo) {
-			return ids.indexOf(mdvo.getId()) > -1;
+			return ids.contains(mdvo.getId());
 		}
 	}
 

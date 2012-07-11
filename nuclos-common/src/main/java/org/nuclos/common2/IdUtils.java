@@ -33,6 +33,11 @@ public class IdUtils {
 		if (i == null) return null;
 		return Long.valueOf(i.longValue());
 	}
+	
+	public static Long toLongId(Number i) {
+		if (i == null) return null;
+		return Long.valueOf(i.longValue());
+	}
 
 	public static Long toLongId(int i) {
 		return Long.valueOf(i);
@@ -57,6 +62,11 @@ public class IdUtils {
 		return Integer.valueOf(id.intValue());
 	}
 
+	public static Integer unsafeToId(Number id) {
+		if (id == null) return null;
+		return Integer.valueOf(id.intValue());
+	}
+
 	public static Integer unsafeToId(long id) {
 		return Integer.valueOf((int) id);
 	}
@@ -67,6 +77,11 @@ public class IdUtils {
 	}
 
 	public static boolean equals(Integer i1, Object i2) {
+		if (i1 == null) return i2 == null;
+		return toLongId(i1).equals(toLongId(i2));
+	}
+
+	public static boolean equals(Number i1, Number i2) {
 		if (i1 == null) return i2 == null;
 		return toLongId(i1).equals(toLongId(i2));
 	}
