@@ -34,6 +34,8 @@ public class SpringApplicationSubContextsHolder {
 	private static SpringApplicationSubContextsHolder INSTANCE;
 
 	//
+	
+	private AbstractXmlApplicationContext clientContext;
 
 	private final ArrayList<AbstractXmlApplicationContext> subContexts = new ArrayList<AbstractXmlApplicationContext>();
 
@@ -47,6 +49,10 @@ public class SpringApplicationSubContextsHolder {
 
 	public static SpringApplicationSubContextsHolder getInstance() {
 		return INSTANCE;
+	}
+	
+	public void setClientContext(AbstractXmlApplicationContext ctx) {
+		this.clientContext = ctx;
 	}
 
 	public synchronized void registerSubContext(AbstractXmlApplicationContext ctx) {
@@ -66,10 +72,17 @@ public class SpringApplicationSubContextsHolder {
 			synchronized (this) {
 				subs = (List<AbstractXmlApplicationContext>) subContexts.clone();
 			}
-			for (AbstractXmlApplicationContext c : subs) {
-				if (c.containsBean(strBean)) {
-					bean = c.getBean(strBean);
-					break;
+			if (subs.isEmpty()) {
+				if (clientContext.containsBean(strBean)) {
+					bean = clientContext.getBean(strBean);
+				}
+			}
+			else {
+				for (AbstractXmlApplicationContext c : subs) {
+					if (c.containsBean(strBean)) {
+						bean = c.getBean(strBean);
+						break;
+					}
 				}
 			}
 			if (bean == null) {
