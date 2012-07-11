@@ -32,6 +32,7 @@ import java.lang.reflect.Proxy;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Locale;
 import java.util.Properties;
 import java.util.TimeZone;
@@ -44,6 +45,7 @@ import javax.swing.UIManager;
 
 import org.apache.log4j.Logger;
 import org.apache.log4j.helpers.LogLog;
+import org.apache.xbean.spring.context.ResourceXmlApplicationContext;
 import org.nuclos.api.ui.annotation.NucletComponent;
 import org.nuclos.client.NuclosIcons;
 import org.nuclos.client.common.NuclosCollectableComponentFactory;
@@ -76,6 +78,7 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.util.Log4jConfigurer;
 import org.springframework.util.SystemPropertyUtils;
 
@@ -146,7 +149,7 @@ public class StartUp  {
 		"META-INF/nuclos/client-beans.xml"
 	};
 	
-	private static final String EXTENSION_SPRING_BEANS = "classpath:META-INF/nuclos/nuclos-extension-client-beans.xml";
+	private static final String EXTENSION_SPRING_BEANS = "classpath*:META-INF/nuclos/nuclos-extension-client-beans.xml";
 	
 	//
 
@@ -220,7 +223,7 @@ public class StartUp  {
 					log.info("@NucletComponents within spring context: " + clientContext.getBeansWithAnnotation(NucletComponent.class));
 
 					Thread.yield();
-					final Resource[] themes = clientContext.getResources("classpath:META-INF/nuclos/nuclos-theme.properties");
+					final Resource[] themes = clientContext.getResources("classpath*:META-INF/nuclos/nuclos-theme.properties");
 					log.info("loading themes properties from the following files: " + Arrays.asList(themes));
 
 					for (Resource r : themes) {
@@ -262,6 +265,9 @@ public class StartUp  {
 						final AbstractXmlApplicationContext ctx;
 						if (r instanceof ClassPathResource) {
 							ctx = new ClassPathXmlApplicationContext(new String[] { ((ClassPathResource)r).getPath() }, false, clientContext);
+						} 
+						else if (r instanceof UrlResource) {
+							ctx = new ResourceXmlApplicationContext(r, Collections.EMPTY_LIST, clientContext, Collections.EMPTY_LIST, false);
 						}
 						else {
 							ctx = new FileSystemXmlApplicationContext(new String[] { r.getFile().getPath() }, false, clientContext);
