@@ -495,6 +495,9 @@ public abstract class AbstractDatasourceCollectController<T extends DatasourceVO
 				final List<DatasourceParameterVO> lstParams = datasourcedelegate.getParametersFromXML(datasourceVO.getSource());
 				pnlEdit.getQueryEditor().setParameter(lstParams);
 
+				pnlEdit.setDatasourceName(datasourceVO.getName());
+				pnlEdit.setDatasourceDescription(datasourceVO.getDescription());
+
 				final Set<String> stColumnParameters = new HashSet<String>(DatasourceUtils.getParametersFromString(datasourceVO.getSource()));
 				final Set<String> stDefinedParameters = new HashSet<String>();
 
