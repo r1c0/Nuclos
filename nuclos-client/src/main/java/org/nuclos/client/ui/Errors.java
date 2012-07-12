@@ -290,7 +290,8 @@ public class Errors {
 		while (result.getCause() != null) {
 			result = result.getCause();
 		}
-		return result.toString();
+		final String resMessage = SpringLocaleDelegate.getInstance().getMessageFromResource(result.getMessage());
+		return resMessage != null ? resMessage : result.toString();
 	}
 
 	/**
