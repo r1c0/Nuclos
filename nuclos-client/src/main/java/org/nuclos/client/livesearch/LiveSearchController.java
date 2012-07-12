@@ -1022,7 +1022,8 @@ public class LiveSearchController implements LiveSearchSearchPaneListener, LiveS
     private void hideResultPane() {
         if(resultPane.getParent() != null)
             resultPane.getParent().remove(resultPane);
-        parentFrame.repaint();
+        if (parentFrame != null)
+        	parentFrame.repaint();
         if(searchComponent.getButtonSelection())
         	searchComponent.setButtonSelection(false);
     }
