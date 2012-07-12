@@ -611,8 +611,7 @@ public class WorkspaceChooserController implements InitializingBean {
 									} catch (Exception e2) {
 										Errors.getInstance().showExceptionDialog(mf, e2);
 									}
-									
-									restoreUtils.clearAndRestoreToDefaultWorkspace(new ResultListenerX<WorkspaceVO, CommonBusinessException>() {
+									restoreUtils.clearAndRestoreToDefaultWorkspace(wovo.getWoDesc(), new ResultListenerX<WorkspaceVO, CommonBusinessException>() {
 										@Override
 										public void done(WorkspaceVO result, CommonBusinessException exception) {
 											if (result != null) {
