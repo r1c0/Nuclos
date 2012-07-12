@@ -24,6 +24,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
+import java.nio.charset.UnsupportedCharsetException;
 import java.text.FieldPosition;
 import java.text.Format;
 import java.text.MessageFormat;
@@ -35,9 +37,11 @@ import java.util.regex.Pattern;
 
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.NuclosFile;
+import org.nuclos.common.ParameterProvider;
 import org.nuclos.common.csvparser.ExcelCSVPrinter;
 import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.exception.CommonBusinessException;
+import org.nuclos.server.common.ServerParameterProvider;
 import org.nuclos.server.report.Export;
 import org.nuclos.server.report.NuclosReportException;
 import org.nuclos.server.report.ReportFieldDefinition;
@@ -107,10 +111,19 @@ public class CsvExport implements Export {
 	
 	public NuclosFile export(ResultVO result, List<ReportFieldDefinition> fields) throws NuclosReportException {
 		String sFileName = null;
+		String encoding = ServerParameterProvider.getInstance().getValue(ParameterProvider.KEY_DEFAULT_ENCODING);
+		if (encoding == null) 
+			encoding = "Cp1252";
+		// test encoding.
+		try {
+			Charset.forName(encoding);
+		} catch (UnsupportedCharsetException e) {
+			encoding = "Cp1252";
+		}
 
 		ByteArrayOutputStream baos = new ByteArrayOutputStream(1024);
 		try {
-			OutputStreamWriter writer = new OutputStreamWriter(baos, "UTF-8");
+			OutputStreamWriter writer = new OutputStreamWriter(baos, encoding);
 			final ExcelCSVPrinter excelCSVPrinter = new ExcelCSVPrinter(writer, iQuoteLevel, cDelimiter, cQuote, false);
 			excelCSVPrinter.changeDelimiter(cDelimiter);
 

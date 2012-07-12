@@ -79,6 +79,7 @@ public interface ParameterProvider {
 	public static final String KEY_WIKI_STARTPAGE = "Wiki startpage";
 
 	public static final String KEY_DEFAULT_LOCALE = "Default Locale";
+	public static final String KEY_DEFAULT_ENCODING = "Default Encoding";
 
 	/**
 	 * @deprecated Get rid of this!
