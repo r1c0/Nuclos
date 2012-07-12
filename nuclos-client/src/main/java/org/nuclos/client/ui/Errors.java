@@ -251,7 +251,17 @@ public class Errors {
 			sErrorText += "\n" + sReasonableMessage;
 		}
 		// Also give the root cause
-		sErrorText += "\n\n" + getRootCause(t);
+		Throwable rootCause = getRootCause(t);
+		if (rootCause != null) {
+			final String resMessageRoot = SpringLocaleDelegate.getInstance().getMessageFromResource(rootCause.getMessage());
+			if (sReasonableMessage != null) {
+				if (!sReasonableMessage.equals(resMessageRoot))
+					sErrorText += "\n\n" + resMessageRoot;
+				else
+					sErrorText += "\n\n" + rootCause.toString();
+			}	
+		}
+		//sErrorText += "\n\n" + getRootCause(t);
 
 		sErrorText = formatErrorMessage(sErrorText);
 		pnl.taMessage.setText(sErrorText);
@@ -285,13 +295,12 @@ public class Errors {
 		dlg.setVisible(true);
 	}
 
-	private String getRootCause(Throwable t) {
+	private Throwable getRootCause(Throwable t) {
 		Throwable result = t;
 		while (result.getCause() != null) {
 			result = result.getCause();
 		}
-		final String resMessage = SpringLocaleDelegate.getInstance().getMessageFromResource(result.getMessage());
-		return resMessage != null ? resMessage : result.toString();
+		return result;
 	}
 
 	/**
