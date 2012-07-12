@@ -1349,8 +1349,10 @@ public class MainController {
 	public List<GenericAction> getGenericActions() {
 		List<GenericAction> result = new ArrayList<GenericAction>();
 
+		getFileMenuActions(result);
 		getAdministrationMenuActions(result);
 		getConfigurationMenuActions(result);
+		//getHelpMenuActions(result);
 
 		List<GenericAction> sortedResult = new ArrayList<GenericAction>();
 		getEntityMenuActions(sortedResult);
@@ -1385,6 +1387,76 @@ public class MainController {
 			wa.putStringParameter("command", command);
 			genericActions.add(new GenericAction(wa, new ActionWithMenuPath(menuPath, act)));
 		}
+	}	
+	
+	private List<Pair<String[], Action>> getFileMenuActions(List<GenericAction> genericActions) {
+		List<Pair<String[], Action>> menuActions = new ArrayList<Pair<String[],Action>>();
+
+		final String[] menuPath = new String[] {getMainMenuFile()};
+
+		if (securityCache.isActionAllowed(Actions.ACTION_EXECUTE_REPORTS)) {
+			menuActions.add(new Pair<String[], Action>(menuPath, cmdExecuteRport));
+			addGenericCommandAction(genericActions, Actions.ACTION_EXECUTE_REPORTS, cmdExecuteRport, menuPath);
+		}
+		if (cmdShowPersonalSearchFilters.isEnabled()) { // no Security
+			menuActions.add(new Pair<String[], Action>(menuPath, cmdShowPersonalSearchFilters));
+			addGenericCommandAction(genericActions, "", cmdShowPersonalSearchFilters, menuPath);
+		}
+		if (securityCache.isActionAllowed(Actions.ACTION_TASKLIST)) {
+			menuActions.add(new Pair<String[], Action>(menuPath, cmdShowPersonalTasks));
+			addGenericCommandAction(genericActions, Actions.ACTION_TASKLIST, cmdShowPersonalTasks, menuPath);
+		}
+		if (securityCache.isActionAllowed(Actions.ACTION_TIMELIMIT_LIST)) {
+			menuActions.add(new Pair<String[], Action>(menuPath, cmdShowTimelimitTasks));
+			addGenericCommandAction(genericActions, Actions.ACTION_TIMELIMIT_LIST, cmdShowTimelimitTasks, menuPath);
+		}
+		/*if (cmdChangePassword.isEnabled()) { // no Security
+			menuActions.add(new Pair<String[], Action>(menuPath, cmdChangePassword));
+			addGenericCommandAction(genericActions, "", cmdChangePassword, menuPath);
+		}
+		if (cmdOpenSettings.isEnabled()) { // no Security
+			menuActions.add(new Pair<String[], Action>(menuPath, cmdOpenSettings));
+			addGenericCommandAction(genericActions, "", cmdOpenSettings, menuPath);
+		}
+		if (cmdLogoutExit.isEnabled()) { // no Security
+			menuActions.add(new Pair<String[], Action>(menuPath, cmdLogoutExit));
+			addGenericCommandAction(genericActions, "", cmdLogoutExit, menuPath);
+		}
+		if (cmdWindowClosing.isEnabled()) { // no Security
+			menuActions.add(new Pair<String[], Action>(menuPath, cmdWindowClosing));
+			addGenericCommandAction(genericActions, "", cmdWindowClosing, menuPath);
+		}*/
+		
+		return menuActions;
+	}
+
+	private List<Pair<String[], Action>> getHelpMenuActions(List<GenericAction> genericActions) {
+		List<Pair<String[], Action>> menuActions = new ArrayList<Pair<String[],Action>>();
+
+		final String[] menuPath = new String[] {getMainMenuHelp()};
+
+		/*if (cmdDirectHelp.isEnabled()) { // no Security
+			menuActions.add(new Pair<String[], Action>(menuPath, cmdDirectHelp));
+			addGenericCommandAction(genericActions, "", cmdDirectHelp, menuPath);
+		}*/
+		if (cmdHelpContents.isEnabled()) { // no Security
+			menuActions.add(new Pair<String[], Action>(menuPath, cmdHelpContents));
+			addGenericCommandAction(genericActions, "", cmdHelpContents, menuPath);
+		}
+		if (cmdShowAboutDialog.isEnabled()) { // no Security
+			menuActions.add(new Pair<String[], Action>(menuPath, cmdShowAboutDialog));
+			addGenericCommandAction(genericActions, "", cmdShowAboutDialog, menuPath);
+		}
+		/*if (cmdShowProjectReleaseNotes.isEnabled()) { // no Security
+			menuActions.add(new Pair<String[], Action>(menuPath, cmdShowProjectReleaseNotes));
+			addGenericCommandAction(genericActions, "", cmdShowProjectReleaseNotes, menuPath);
+		}*/
+		if (cmdShowNuclosReleaseNotes.isEnabled()) { // no Security
+			menuActions.add(new Pair<String[], Action>(menuPath, cmdShowNuclosReleaseNotes));
+			addGenericCommandAction(genericActions, "", cmdShowNuclosReleaseNotes, menuPath);
+		}		
+
+		return menuActions;
 	}
 
 	public List<Pair<String[], Action>> getAdministrationMenuActions() {
@@ -2533,6 +2605,14 @@ public class MainController {
 		} catch(BackingStoreException e) {
 			LOG.error("removeUnusedPreferences failed: " + e, e);
 		}
+	}
+
+	public String getMainMenuFile() {
+		return localeDelegate.getMessage("miFile", "Datei").replace("^", "");
+	}
+	
+	public String getMainMenuHelp() {
+		return localeDelegate.getMessage("miHelp", "Hilfe").replace("^", "");
 	}
 
 	public String getMainMenuAdministration() {
