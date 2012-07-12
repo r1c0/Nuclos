@@ -1057,6 +1057,10 @@ public class MainFrameTabbedPane {
 		final Counter counter = new Counter();
 		
 		counter.targetCount = startTab.getHiddenTabs().size() + tabsToRemove.size();
+		if (counter.targetCount == 0) {
+			rl.done(notClosableTabs);
+			return;
+		}
 		
 		for (final MainFrameTab tab : startTab.getHiddenTabs()) {
 			if (tab == ignoreTab) {
