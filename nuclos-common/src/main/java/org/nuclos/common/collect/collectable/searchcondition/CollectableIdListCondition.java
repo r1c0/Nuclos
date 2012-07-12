@@ -16,6 +16,7 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.common.collect.collectable.searchcondition;
 
+import java.util.Collection;
 import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -34,20 +35,20 @@ import org.nuclos.common2.LangUtils;
  */
 public final class CollectableIdListCondition extends AbstractCollectableSearchCondition {
 
-	private final List<? extends Object> oIds;
+	private final Collection<? extends Object> oIds;
 
 	/**
 	 * TODO: Argument should be List<Long>.
 	 */
-	public CollectableIdListCondition(List<? extends Object> oIds) {
+	public CollectableIdListCondition(Collection<? extends Object> oIds) {
 		this.oIds = oIds;
 	}
 
-	public List<? extends Object> getIds() {
+	public Collection<? extends Object> getIds() {
 		return this.oIds;
 	}
 	
-	public List<Long> getLongIds() {
+	public Collection<Long> getLongIds() {
 		return org.nuclos.common.collection.CollectionUtils.transform(getIds(), new Transformer<Object, Long>() {
 			@Override
             public Long transform(Object i) {

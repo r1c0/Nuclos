@@ -16,25 +16,24 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.ui.collect.search;
 
-import java.util.List;
+import java.util.Collection;
 
 import org.nuclos.common.collect.collectable.Collectable;
 import org.nuclos.common.collection.Predicate;
 
 public class CollectableIdPredicate implements Predicate<Collectable> {
 
-	private final List<? extends Object> ids;
+	private final Collection<? extends Object> ids;
 
 	/**
 	 * TODO: Argument should be List<Long>.
 	 */
-	public CollectableIdPredicate(List<? extends Object> ids) {
-		super();
+	public CollectableIdPredicate(Collection<? extends Object> ids) {
 		this.ids = ids;
 	}
 
 	@Override
 	public boolean evaluate(Collectable t) {
-		return ids.indexOf(t.getId()) > -1;
+		return ids.contains(t.getId());
 	}
 }
