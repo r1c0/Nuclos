@@ -584,7 +584,8 @@ public abstract class AbstractCollectableComponent
 		}
 		// :22.01.04
 		else {
-			getModel().setField(clctfView);
+			if (!getModel().getField().equals(clctfView))
+				getModel().setField(clctfView);
 			// We need to adjust the appearance of the view here, as viewToModel is not (and must not be)
 			// called from here:
 			adjustAppearance();
