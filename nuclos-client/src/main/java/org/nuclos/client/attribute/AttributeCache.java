@@ -184,8 +184,8 @@ public class AttributeCache implements AttributeProvider {
 			throw new NullArgumentException("attrcvo");
 		}
 		if (mpAttributesByIds.containsKey(attrcvo.getId())) {
+			//"Ein Attribut mit dieser Id ist schon im Cache vorhanden.");
 			//throw new NuclosFatalException("attributecache.uniquekey.id.error");
-				//"Ein Attribut mit dieser Id ist schon im Cache vorhanden.");
 		} else {
 			mpAttributesByIds.put(attrcvo.getId(), attrcvo);
 		}
