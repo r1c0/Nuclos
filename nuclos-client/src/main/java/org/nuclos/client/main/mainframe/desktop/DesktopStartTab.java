@@ -99,97 +99,111 @@ public abstract class DesktopStartTab {
 	
 	// end of Spring injection
 	
-	private final Action actAddMenubutton = new AbstractAction(
-			localeDelegate.getMessage("DesktopStartTab.1", "Menu Button hinzufügen"), 
-			Icons.getInstance().getIconPlus16()) {
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			final WorkspaceDescription.MenuButton mbPrefs = new WorkspaceDescription.MenuButton();
-			_getDesktop();
-			cmdAddButton(mbPrefs);
-		}
-	};
+	private Action actAddMenubutton;
 	
-	private final Action actEditDesktop = new AbstractAction(
-			localeDelegate.getMessage("DesktopStartTab.2", "Desktop Eigenschaften"), 
-			Icons.getInstance().getIconEdit16()) {
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			DesktopStartTabEditor editor = new DesktopStartTabEditor(desktopPrefs);
-			if (editor.isSaved()) {
-				desktopPrefs.setLayout(editor.getLayout());
-				desktopPrefs.setHorizontalGap(editor.getHorizontalGap());
-				desktopPrefs.setVerticalGap(editor.getVerticalGap());
-				desktopPrefs.setMenuItemTextSize(editor.getMenuItemTextSize());
-				desktopPrefs.setMenuItemTextHorizontalAlignment(editor.getMenuItemTextHorizontalAlignment());
-				desktopPrefs.setMenuItemTextHorizontalPadding(editor.getMenuItemTextHorizontalPadding());
-				desktopPrefs.setMenuItemTextColor(editor.getColorMenuItemText());
-				desktopPrefs.setMenuItemTextHoverColor(editor.getColorMenuItemTextHover());
-				desktopPrefs.setResourceMenuBackground(editor.getResourceMenuBackground());
-				desktopPrefs.setResourceMenuBackgroundHover(editor.getResourceMenuBackgroundHover());
-				desktopPrefs.setResourceBackground(editor.getResourceBackground());
-				desktopPrefs.setRootpaneBackgroundColor(editor.isRootpaneBackgroundColor());
-				desktopPrefs.setStaticMenu(editor.isStaticMenu());
-				setupDesktop(Main.getInstance().getMainController().getGenericActions());
-				jpnMain.revalidate();
-				jpnMain.repaint();
-			}
-		}
-	};
+	private Action actEditDesktop;
 	
-	private final Action actHideDesktop = new AbstractAction(
-			localeDelegate.getMessage("DesktopStartTab.3", "Desktop ausblenden"), 
-			Icons.getInstance().getIconEmpty16()) {
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			hide();
-		}
-	};
+	private Action actHideDesktop;
 	
-	private final Action actHideToolBar = new AbstractAction(
-			localeDelegate.getMessage("DesktopStartTab.4", "Symbolleiste ausblenden",
-			Icons.getInstance().getIconEmpty16())) {
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			showToolBar(!MainFrameUtils.isActionSelected(this));
-			_getDesktop().setHideToolBar(MainFrameUtils.isActionSelected(this));
-		}
-	};
+	private Action actHideToolBar;
 	
-	private final Action actHideTabBar = new AbstractAction(
-			localeDelegate.getMessage("DesktopStartTab.6", "Tableiste ausblenden",
-			Icons.getInstance().getIconEmpty16())) {
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			showTabBar(!MainFrameUtils.isActionSelected(this));
-			actHideDesktop.setEnabled(!MainFrameUtils.isActionSelected(this));
-			actHideToolBar.setEnabled(!MainFrameUtils.isActionSelected(this));
-			_getDesktop().setHideTabBar(MainFrameUtils.isActionSelected(this));
-		}
-	};
+	private Action actHideTabBar;
 	
-	private final Action actRestoreDesktop = new AbstractAction(
-			localeDelegate.getMessage("DesktopStartTab.5", "Auf Vorlage zurücksetzen"), 
-			Icons.getInstance().getIconUndo16()) {
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			restoreDesktop();
-		}
-	};
+	private Action actRestoreDesktop;
 	
-	private final Action actRemoveSplitPaneFixations = new AbstractAction(
-			localeDelegate.getMessage("DesktopStartTab.7", "Bereichsfixierungen aufheben")) {
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			StartTabPanel.removeSplitPaneFixations(jpnMain);
-		}
-	};
+	private Action actRemoveSplitPaneFixations;
 	
 	public DesktopStartTab() {
 	}
 	
 	@PostConstruct
 	final void init() {
+		actAddMenubutton = new AbstractAction(
+				localeDelegate.getMessage("DesktopStartTab.1", "Menu Button hinzufügen"), 
+				Icons.getInstance().getIconPlus16()) {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				final WorkspaceDescription.MenuButton mbPrefs = new WorkspaceDescription.MenuButton();
+				_getDesktop();
+				cmdAddButton(mbPrefs);
+			}
+		};
+		
+		actEditDesktop = new AbstractAction(
+				localeDelegate.getMessage("DesktopStartTab.2", "Desktop Eigenschaften"), 
+				Icons.getInstance().getIconEdit16()) {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				DesktopStartTabEditor editor = new DesktopStartTabEditor(desktopPrefs);
+				if (editor.isSaved()) {
+					desktopPrefs.setLayout(editor.getLayout());
+					desktopPrefs.setHorizontalGap(editor.getHorizontalGap());
+					desktopPrefs.setVerticalGap(editor.getVerticalGap());
+					desktopPrefs.setMenuItemTextSize(editor.getMenuItemTextSize());
+					desktopPrefs.setMenuItemTextHorizontalAlignment(editor.getMenuItemTextHorizontalAlignment());
+					desktopPrefs.setMenuItemTextHorizontalPadding(editor.getMenuItemTextHorizontalPadding());
+					desktopPrefs.setMenuItemTextColor(editor.getColorMenuItemText());
+					desktopPrefs.setMenuItemTextHoverColor(editor.getColorMenuItemTextHover());
+					desktopPrefs.setResourceMenuBackground(editor.getResourceMenuBackground());
+					desktopPrefs.setResourceMenuBackgroundHover(editor.getResourceMenuBackgroundHover());
+					desktopPrefs.setResourceBackground(editor.getResourceBackground());
+					desktopPrefs.setRootpaneBackgroundColor(editor.isRootpaneBackgroundColor());
+					desktopPrefs.setStaticMenu(editor.isStaticMenu());
+					setupDesktop(Main.getInstance().getMainController().getGenericActions());
+					jpnMain.revalidate();
+					jpnMain.repaint();
+				}
+			}
+		};
+		
+		actHideDesktop = new AbstractAction(
+				localeDelegate.getMessage("DesktopStartTab.3", "Desktop ausblenden"), 
+				Icons.getInstance().getIconEmpty16()) {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				hide();
+			}
+		};
+		
+		actHideToolBar = new AbstractAction(
+				localeDelegate.getMessage("DesktopStartTab.4", "Symbolleiste ausblenden",
+				Icons.getInstance().getIconEmpty16())) {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				showToolBar(!MainFrameUtils.isActionSelected(this));
+				_getDesktop().setHideToolBar(MainFrameUtils.isActionSelected(this));
+			}
+		};
+		
+		actHideTabBar = new AbstractAction(
+				localeDelegate.getMessage("DesktopStartTab.6", "Tableiste ausblenden",
+				Icons.getInstance().getIconEmpty16())) {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				showTabBar(!MainFrameUtils.isActionSelected(this));
+				actHideDesktop.setEnabled(!MainFrameUtils.isActionSelected(this));
+				actHideToolBar.setEnabled(!MainFrameUtils.isActionSelected(this));
+				_getDesktop().setHideTabBar(MainFrameUtils.isActionSelected(this));
+			}
+		};
+		
+		actRestoreDesktop = new AbstractAction(
+				localeDelegate.getMessage("DesktopStartTab.5", "Auf Vorlage zurücksetzen"), 
+				Icons.getInstance().getIconUndo16()) {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				restoreDesktop();
+			}
+		};
+		
+		actRemoveSplitPaneFixations = new AbstractAction(
+				localeDelegate.getMessage("DesktopStartTab.7", "Bereichsfixierungen aufheben")) {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				StartTabPanel.removeSplitPaneFixations(jpnMain);
+			}
+		};
+		
 		this.jpnMain = new JPanel(new BorderLayout(0, 0)){
 			@Override
 			public void paint(Graphics g) {
