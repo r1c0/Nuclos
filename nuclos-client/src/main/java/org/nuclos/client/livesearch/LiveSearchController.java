@@ -143,7 +143,7 @@ public class LiveSearchController implements LiveSearchSearchPaneListener, LiveS
     
     // @Autowired
     public final void setParentFrame(MainFrame parentFrame) {
-    	this.parentFrame = parentFrame;
+    	this.parentFrame = parentFrame; // @see 	NUCLOSINT-1615 spring will set null as main frame. so we do it @wireing livesearch controller in main frame
     }
 	
 	// @Autowired
@@ -990,7 +990,7 @@ public class LiveSearchController implements LiveSearchSearchPaneListener, LiveS
 
     // in AWT-Thread
     private void showResultPane() {
-        JLayeredPane layeredPane = parentFrame.getLayeredPane();
+    	JLayeredPane layeredPane = parentFrame.getLayeredPane();
 
         if(resultPane.getParent() == null)
             layeredPane.add(resultPane, JLayeredPane.PALETTE_LAYER);

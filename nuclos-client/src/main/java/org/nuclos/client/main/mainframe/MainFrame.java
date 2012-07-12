@@ -306,6 +306,7 @@ public class MainFrame extends CommonJFrame implements WorkspaceFrame, Component
 	// @Autowired
 	final void setLiveSearchController(LiveSearchController lsc) {
 		this.liveSearchController = lsc;
+		lsc.setParentFrame(this); // @see 	NUCLOSINT-1615
 	}
 
 	public final void postConstruct()
