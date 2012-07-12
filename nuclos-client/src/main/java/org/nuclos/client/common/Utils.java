@@ -464,19 +464,21 @@ public class Utils {
 		Collectable clct = null;
 		if (id != null) {
 			EntityObjectVO eo = EntityObjectDelegate.getInstance().getReferenced(referencingEntity, referencingEntityField, id);
-			EntityFieldMetaDataVO field = MetaDataClientProvider.getInstance().getEntityField(referencingEntity, referencingEntityField);
-			EntityMetaDataVO referencedMeta = MetaDataClientProvider.getInstance().getEntity(field.getForeignEntity() != null ? field.getForeignEntity() : field.getLookupEntity());
-			if (referencedMeta.isStateModel()) {
-				Map<String, EntityFieldMetaDataVO> fields = MetaDataClientProvider.getInstance().getAllEntityFieldsByEntity(referencedMeta.getEntity());
-				CollectableEOEntity clcte = new CollectableEOEntity(referencedMeta, fields);
-				GenericObjectVO govo = DalSupportForGO.getGenericObjectVO(eo, clcte);
-				clct = CollectableGenericObjectWithDependants.newCollectableGenericObjectWithDependants(govo);
-			}
-			else {
-				MasterDataMetaVO metaData = MasterDataDelegate.getInstance().getMetaData(referencedMeta.getEntity());
-				CollectableMasterDataEntity clcte = new CollectableMasterDataEntity(metaData);
-				MasterDataVO mdvo = DalSupportForMD.wrapEntityObjectVO(eo);
-				clct = new CollectableMasterData(clcte, mdvo);
+			if (eo != null) {
+				EntityFieldMetaDataVO field = MetaDataClientProvider.getInstance().getEntityField(referencingEntity, referencingEntityField);
+				EntityMetaDataVO referencedMeta = MetaDataClientProvider.getInstance().getEntity(field.getForeignEntity() != null ? field.getForeignEntity() : field.getLookupEntity());
+				if (referencedMeta.isStateModel()) {
+					Map<String, EntityFieldMetaDataVO> fields = MetaDataClientProvider.getInstance().getAllEntityFieldsByEntity(referencedMeta.getEntity());
+					CollectableEOEntity clcte = new CollectableEOEntity(referencedMeta, fields);
+					GenericObjectVO govo = DalSupportForGO.getGenericObjectVO(eo, clcte);
+					clct = CollectableGenericObjectWithDependants.newCollectableGenericObjectWithDependants(govo);
+				}
+				else {
+					MasterDataMetaVO metaData = MasterDataDelegate.getInstance().getMetaData(referencedMeta.getEntity());
+					CollectableMasterDataEntity clcte = new CollectableMasterDataEntity(metaData);
+					MasterDataVO mdvo = DalSupportForMD.wrapEntityObjectVO(eo);
+					clct = new CollectableMasterData(clcte, mdvo);
+				}
 			}
 		}
 		return clct;
