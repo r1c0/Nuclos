@@ -123,6 +123,9 @@ public class NuclosWizardUtils {
 			}
 		}
 		if(typ == null) {
+			//if (scale != null && scale.equals(Integer.MAX_VALUE))
+			if (scale != null && scale.toString().length() > 9) // scale must be smaller than 10^9 
+				scale = null;
 			 typ = new DataTyp(SpringLocaleDelegate.getInstance().getText("wizard.datatype.individual"), 
 					 inputFormat, outputFormat, null, scale, precision, javaType, defaultComponentType);
 		}
