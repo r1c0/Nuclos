@@ -16,6 +16,9 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.ui.collect;
 
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
@@ -39,6 +42,8 @@ import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JToggleButton;
 import javax.swing.RowFilter;
@@ -52,6 +57,7 @@ import javax.swing.table.TableRowSorter;
 import org.apache.log4j.Logger;
 import org.nuclos.client.ui.Icons;
 import org.nuclos.client.ui.ListOfValues;
+import org.nuclos.client.ui.UIUtils;
 import org.nuclos.client.ui.collect.FixedColumnRowHeader.FixedRowIndicatorTableModel;
 import org.nuclos.client.ui.collect.SubForm.SubFormTable;
 import org.nuclos.client.ui.collect.SubForm.SubFormTableModel;
@@ -104,7 +110,7 @@ public class SubFormFilter implements Closeable, IReferenceHolder {
 	private SubFormFilterPanel fixedSubFormFilter;
 	private SubFormFilterPanel externalSubFormFilter;
 	private CollectableFieldsProviderFactory collectableFieldsProviderFactory;
-
+	
 	private JTable fixedTable;
 	private SubFormTable externalTable;
 
@@ -696,5 +702,26 @@ public class SubFormFilter implements Closeable, IReferenceHolder {
 	        LOG.info("loadTableFilter failed: " + e, e);
    		}
    	}
+   }
+   
+   public void setupTableHeaderForScrollPane(JScrollPane scrollPane) {
+	   if (UIUtils.findJComponent(scrollPane, "CornerPanel") == null) {
+			// add subformfilter for fixed columns
+			Component corner = scrollPane.getCorner(JScrollPane.UPPER_LEFT_CORNER );
+			JPanel panel2 = new JPanel(new BorderLayout());
+			panel2.setName("CornerPanel");
+			panel2.add(corner, BorderLayout.CENTER);
+			panel2.add(getFixedSubFormFilter(), BorderLayout.NORTH);
+			scrollPane.setCorner(JScrollPane.UPPER_LEFT_CORNER, panel2);
+	   }
+	   if (UIUtils.findJComponent(scrollPane, "ColumnHeader") == null) {
+			// add subformfilter for external table
+			Component origColumnHeader = scrollPane.getColumnHeader().getView();
+			JPanel panel1 = new JPanel(new BorderLayout());
+			panel1.setName("ColumnHeader");
+			panel1.add(origColumnHeader, BorderLayout.CENTER);
+			panel1.add(getExternalSubFormFilter(), BorderLayout.NORTH);
+			scrollPane.setColumnHeaderView(panel1);
+	   }
    }
 }

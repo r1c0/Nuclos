@@ -120,7 +120,6 @@ import org.nuclos.client.ui.collect.component.model.CollectableComponentModelLis
 import org.nuclos.client.ui.collect.component.model.DetailsComponentModelEvent;
 import org.nuclos.client.ui.collect.component.model.SearchComponentModelEvent;
 import org.nuclos.client.ui.collect.model.CollectableEntityFieldBasedTableModel;
-import org.nuclos.client.ui.collect.model.CollectableTableModel;
 import org.nuclos.client.ui.event.PopupMenuMouseAdapter;
 import org.nuclos.client.ui.event.TableColumnModelAdapter;
 import org.nuclos.client.ui.labeled.LabeledComponent;
@@ -490,7 +489,14 @@ public class SubForm extends JPanel
 		this.toolbar = UIUtils.createNonFloatableToolBar(toolBarOrientation);
 
 		this.listeners = new ArrayList<SubFormToolListener>();
-		subformtbl = new SubFormTable(this);
+		subformtbl = new SubFormTable(this) {
+		    protected void configureEnclosingScrollPane() {
+		    	super.configureEnclosingScrollPane();
+		    	if (getSubFormFilter() != null) {
+		    		getSubFormFilter().setupTableHeaderForScrollPane(scrollPane);
+		    	}
+		    }
+		};
 		subformtbl.addMouseListener(new SubFormPopupMenuMouseAdapter(subformtbl));
 		subformtbl.addMouseListener(new DoubleClickMouseAdapter());
 		subformtbl.addMouseMotionListener(new URIMouseAdapter());
@@ -797,21 +803,7 @@ public class SubForm extends JPanel
 				(JToggleButton) toolbarButtons.get(ToolbarFunction.FILTER.name()),
 				(JCheckBoxMenuItem) toolbarMenuItems.get(ToolbarFunction.FILTER.name()), collectableFieldsProviderFactory);
 
-		// add subformfilter for fixed columns
-		Component corner = scrollPane.getCorner(JScrollPane.UPPER_LEFT_CORNER );
-		JPanel panel2 = new JPanel(new BorderLayout());
-		panel2.setName("CornerPanel");
-		panel2.add(corner, BorderLayout.CENTER);
-		panel2.add(subformfilter.getFixedSubFormFilter(), BorderLayout.NORTH);
-		scrollPane.setCorner(JScrollPane.UPPER_LEFT_CORNER, panel2);
-
-		// add subformfilter for external table
-		Component origColumnHeader = scrollPane.getColumnHeader().getView();
-		JPanel panel1 = new JPanel(new BorderLayout());
-		panel1.setName("ColumnHeader");
-		panel1.add(origColumnHeader, BorderLayout.CENTER);
-		panel1.add(subformfilter.getExternalSubFormFilter(), BorderLayout.NORTH);
-		scrollPane.setColumnHeaderView(panel1);
+		subformfilter.setupTableHeaderForScrollPane(scrollPane);
 	}
 
 	/**
