@@ -584,7 +584,7 @@ public abstract class AbstractCollectableComponent
 		}
 		// :22.01.04
 		else {
-			if (!getModel().getField().equals(clctfView)) //@see NUCLOS-592
+			if (!getModel().getField().equals(clctfView, false)) //@see NUCLOS-592
 				getModel().setField(clctfView);
 			// We need to adjust the appearance of the view here, as viewToModel is not (and must not be)
 			// called from here:
