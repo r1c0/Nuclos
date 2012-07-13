@@ -2666,6 +2666,110 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 	}
 
 	/**
+	 * Get the currently viewed collectable again from the database and display it.
+	 * This is done in a background thread.
+	 * @throws CommonBusinessException
+	 */
+	public final void refreshCurrentCollectableInResult() throws CommonBusinessException {
+		refreshCurrentCollectableInResult(true);
+	}
+	
+	/**
+	 * Get the currently viewed collectable again from the database and display it.
+	 * This is done in a background thread.
+	 * @throws CommonBusinessException
+	 */
+	public final void refreshCurrentCollectableInResult(boolean withMultiThreader) throws CommonBusinessException {
+		assert this.statemodel.getOuterState() == CollectState.OUTERSTATE_RESULT;
+		assert CollectState.isResultModeSelected(statemodel.getResultMode());
+
+		final CommonClientWorkerSelfExecutable clientWorker = new CommonClientWorkerAdapter<Clct>(CollectController.this) {
+			private Clct clct;
+
+			@Override
+			public void init() throws CommonBusinessException {
+				if (!CollectController.this.isRefreshSelectedCollectableAllowed()) {
+					throw new CommonPermissionException("Aktualisieren ist nicht erlaubt.");
+				}
+			}
+			@Override
+			public void work() throws CommonBusinessException {
+				// clear cache before refreshing
+				valueListProviderCache.clear();
+				// reread the selected object from the database:
+				clct = CollectController.this.readSelectedCollectable();
+			}
+			@Override
+			public void paint() throws CommonBusinessException {
+				if(clct == null) return;
+
+				// replace the selected object in the result list:
+				getResultController().replaceSelectedCollectableInTableModel(clct);
+
+				broadcastCollectableEvent(clct, MessageType.REFRESH_DONE);
+			}
+		};
+
+		if (withMultiThreader) {
+			CommonMultiThreader.getInstance().execute(clientWorker);
+		} else {
+			clientWorker.runInCallerThread();
+		}
+	}
+	
+	/**
+	 * Get the currently viewed collectable again from the database and display it.
+	 * This is done in a background thread.
+	 * @throws CommonBusinessException
+	 */
+	public final void refreshSelectedCollectablesInResult() throws CommonBusinessException {
+		refreshSelectedCollectablesInResult(true);
+	}
+
+	/**
+	 * Get the currently viewed collectable again from the database and display it.
+	 * This is done in a background thread.
+	 * @throws CommonBusinessException
+	 */
+	public final void refreshSelectedCollectablesInResult(boolean withMultiThreader) throws CommonBusinessException {
+		assert this.statemodel.getOuterState() == CollectState.OUTERSTATE_RESULT;
+		assert CollectState.isResultModeSelected(statemodel.getResultMode());
+
+		final CommonClientWorkerSelfExecutable clientWorker = new CommonClientWorkerAdapter<Clct>(CollectController.this) {
+			private List<Clct> clcts;
+
+			@Override
+			public void init() throws CommonBusinessException {
+				if (!CollectController.this.isRefreshSelectedCollectableAllowed()) {
+					throw new CommonPermissionException("Aktualisieren ist nicht erlaubt.");
+				}
+			}
+			@Override
+			public void work() throws CommonBusinessException {
+				// clear cache before refreshing
+				valueListProviderCache.clear();
+				// reread the selected object from the database:
+				clcts = CollectController.this.readSelectedCollectables();
+			}
+			@Override
+			public void paint() throws CommonBusinessException {
+				if(clcts == null || clcts.isEmpty()) return;
+
+				// replace the selected object in the result list:
+				getResultController().replaceCollectablesInTableModel(clcts);
+				
+				//broadcastCollectableEvent(clct, MessageType.REFRESH_DONE);
+			}
+		};
+
+		if (withMultiThreader) {
+			CommonMultiThreader.getInstance().execute(clientWorker);
+		} else {
+			clientWorker.runInCallerThread();
+		}
+	}
+
+	/**
 	 * registers a CollectableEventListener
 	 * @param CollectableEventListener
 	 */
@@ -2710,6 +2814,30 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 		final Clct result = this.readCollectable(clct);
 		assert result != null;
 		assert ss.isCollectableComplete(result);
+		return result;
+	}
+
+	/**
+	 * (re)reads the <code>Collectable</code> that is selected in the result list from its "data source"
+	 * (typically the server). Nothing else.
+	 * @return the current value of the selected Collectable, as returned by the server.
+	 * TODO make this final when readCollectable is refactored.
+	 * @postcondition result != null
+	 * @postcondition isCollectableComplete(result)
+	 */
+	protected List<Clct> readSelectedCollectables() throws CommonBusinessException {
+		final List<Clct> clcts = this.getSelectedCollectables();
+		if (clcts == null || clcts.isEmpty()) {
+			throw new IllegalStateException("Kein Objekt ausgew\u00e4hlt.");
+		}
+		
+		final List<Clct> result = new ArrayList<Clct>(clcts.size());
+		for (Clct clct : clcts) {
+			clct = this.readCollectable(clct);
+			assert clct != null;
+			assert ss.isCollectableComplete(clct);
+			result.add(clct);
+		}
 		return result;
 	}
 

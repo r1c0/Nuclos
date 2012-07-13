@@ -428,8 +428,15 @@ public class GenerationController {
 							fireGenerationSucessfulEvent(result.get());
 							if (!isHeadless()) {
 								showGenerationSucessfulResult(result.get());
-								if (action.isRefreshSrcObject())
-									parentController.refreshCurrentCollectable();
+								try {
+									if (parentController.getCollectState().getOuterState() == CollectState.OUTERSTATE_DETAILS)
+										parentController.refreshCurrentCollectable();
+									if (parentController.getCollectState().getOuterState() == CollectState.OUTERSTATE_RESULT)
+										parentController.refreshCurrentCollectableInResult();
+								}
+								catch (CommonBusinessException e2) {
+									Errors.getInstance().showExceptionDialog(parent, e2);
+								}
 							}
 						}
 						catch (GeneratorFailedException e) {
@@ -438,7 +445,10 @@ public class GenerationController {
 								showGenerationWithExceptionResult(e);
 								if (action.isRefreshSrcObject()) {
 									try {
-										parentController.refreshCurrentCollectable();
+										if (parentController.getCollectState().getOuterState() == CollectState.OUTERSTATE_DETAILS)
+											parentController.refreshCurrentCollectable();
+										if (parentController.getCollectState().getOuterState() == CollectState.OUTERSTATE_RESULT)
+											parentController.refreshCurrentCollectableInResult();
 									}
 									catch (CommonBusinessException e2) {
 										Errors.getInstance().showExceptionDialog(parent, e2);
@@ -487,11 +497,24 @@ public class GenerationController {
 					}
 				}
 			});
+			MultiGenerateAction multiGenerateAction = new MultiGenerateAction(parent, action) {
+				public void executeFinalAction() throws CommonBusinessException {
+					//@todo add open objects if action.isShowObject()
+					if (action.isRefreshSrcObject()) {
+						try {
+							if (parentController.getCollectState().getOuterState() == CollectState.OUTERSTATE_RESULT)
+								parentController.refreshSelectedCollectablesInResult();
+						}
+						catch (CommonBusinessException e2) {
+							Errors.getInstance().showExceptionDialog(parent, e2);
+						}
+					}
+				}
+			};
 			new MultiCollectablesActionController<Pair<Collection<EntityObjectVO>, Long>, GenerationResult>(
 				parent, sourceWithParameters, 
 				SpringLocaleDelegate.getInstance().getMessage("R00022892", "Objektgenerierung"), parent.getTabIcon(),
-				new MultiGenerateAction(parent, action)
-			).run(panel);
+				multiGenerateAction).run(panel);
 		}
 	}
 
