@@ -1799,10 +1799,11 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 				}
 
 				// enabled:
+				boolean bEnabled = false;
 				final String sEnabled = attributes.getValue(ATTRIBUTE_ENABLED);
 				if (sEnabled != null) {
 					// override default:
-					final boolean bEnabled = sEnabled.equals(ATTRIBUTEVALUE_YES);
+					bEnabled = sEnabled.equals(ATTRIBUTEVALUE_YES);
 					clctcomp.setEnabled(bEnabled);
 				}
 
@@ -1818,7 +1819,7 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 				if (!BuildFormHandler.this.bCreateSearchableComponents && sInsertable != null) {
 					// override:
 					// NUCLOSINT-442 only disable, but never allow to insert a new value! We need a new concept for insertable...
-					clctcomp.setInsertable(sInsertable.equals(ATTRIBUTEVALUE_YES));
+					clctcomp.setInsertable(bEnabled && sInsertable.equals(ATTRIBUTEVALUE_YES));
 					if (sInsertable.equals(ATTRIBUTEVALUE_NO)) {
 						clctcomp.setInsertable(false);
 					}
