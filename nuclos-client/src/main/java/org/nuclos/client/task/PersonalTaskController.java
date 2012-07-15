@@ -866,6 +866,8 @@ public class PersonalTaskController extends RefreshableTaskController implements
 			tblmdl.setCollectables(lstclct);
 			tblmdl.sort();
 
+			//	NUCLOS-642
+			setupRenderers(personaltaskview.getTable());
 			List<Integer> columnWidthsFromPreferences = readColumnWidthsFromPreferences();
 			if(columnWidthsFromPreferences.size() == tblmdl.getColumnCount()){
 				TaskController.setColumnWidths(columnWidthsFromPreferences, this.personaltaskview.getTable());

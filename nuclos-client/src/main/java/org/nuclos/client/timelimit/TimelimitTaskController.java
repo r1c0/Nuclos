@@ -651,6 +651,9 @@ public class TimelimitTaskController extends RefreshableTaskController {
 		// todo: sorting order? / UA
 //		final int iColumnScheduled = tblmdl.findColumnByFieldName(CollectableTimelimitTask.FIELDNAME_SCHEDULED);
 //		tblmdl.setSortingOrder(iColumnScheduled, true, true);
+		
+		//	NUCLOS-642
+		setupRenderers(timelimittaskview.getTable());
 	}
 	
 	private List<Integer> readColumnWidthsFromPreferences() {
