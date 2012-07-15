@@ -552,7 +552,7 @@ public class CollectableComboBox extends LabeledCollectableComponentWithVLP impl
 		else {
 			assert iIndex == -1;
 
-			final Long vid = IdUtils.toLongId(clctfValue.getValueId());
+			final Long vid = !clctfValue.isIdField() ? null : IdUtils.toLongId(clctfValue.getValueId());
 			Long oValueId = null;
 			if (clctfValue.isIdField()) {
 				oValueId = vid;
