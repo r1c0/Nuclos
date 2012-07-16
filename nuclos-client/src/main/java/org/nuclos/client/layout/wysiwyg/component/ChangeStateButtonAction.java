@@ -63,7 +63,6 @@ public class ChangeStateButtonAction<Clct extends Collectable> implements Collec
 			try {
 				 targetState = Integer.parseInt(sTargetState);
 			} catch (NumberFormatException e) {
-				Errors.getInstance().showExceptionDialog(controller.getCollectPanel(), e);
 				return;
 			}
 			

@@ -2736,6 +2736,21 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 						((LayoutMLButtonActionListener)al).setParentComponent(this, actionCommand);
 				}
 			}
+			
+			@Override
+			public void addActionListener(ActionListener l) {
+				boolean added = false;
+				ActionListener[] als = getActionListeners();
+				for (int i = 0; i < als.length; i++) {
+					if (als[i] == l) {
+						added = true;
+						break;
+					}
+				}
+				if (!added) {
+					super.addActionListener(l);
+				}
+			}
 
 		}
 
@@ -2769,7 +2784,8 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 			@Override
             public void startElement(String sUriNameSpace, String sSimpleName, String sQualifiedName, Attributes attributes) {
 				final LayoutMLButton btn = new LayoutMLButton();
-
+				btn.addActionListener(BuildFormHandler.this.alButtons);
+				
 				// name:
 				final String sName = attributes.getValue(ATTRIBUTE_NAME);
 				if (sName != null) {
