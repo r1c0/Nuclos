@@ -180,6 +180,11 @@ public class DatasourceUtils {
 			if (column.length()>2 && column.charAt(0)=='"' && column.charAt(column.length()-1)=='"') {
 				result.add(column.substring(1, column.length()-1));
 			} else {
+				// extract label if no alias is set. we strip something like T1."strname" @see NUCLOS-645
+				int idxDot = column.indexOf(".");
+				if (idxDot != -1)
+					column = column.substring(idxDot + 1);
+				column = column.replaceAll("\"", "");				
 				result.add(column);
 			}
 		}

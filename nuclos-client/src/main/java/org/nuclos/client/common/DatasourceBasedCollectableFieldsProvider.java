@@ -132,15 +132,15 @@ public class DatasourceBasedCollectableFieldsProvider implements CacheableCollec
 
 		if(sName.equals("fieldname")) {
 			// TODO: validate existence
-			sValueFieldName = (String) oValue;
+			sValueFieldName = extractFieldName((String) oValue);
 		}
 		else if(sName.equals("id-fieldname")) {
 			// TODO: validate existence
-			sIdFieldName = (String) oValue;
+			sIdFieldName = extractFieldName((String) oValue);
 		}
 		else if(sName.equals("default-fieldname")) {
 			// TODO: validate existence
-			sDefaultMarkerFieldName = (String) oValue;
+			sDefaultMarkerFieldName = extractFieldName((String) oValue);
 		}
 		else if(sName.equals("_searchmode")) {
 			bSearchmode = (Boolean) oValue;
@@ -149,6 +149,17 @@ public class DatasourceBasedCollectableFieldsProvider implements CacheableCollec
 		else {
 			mpParameters.put(sName, parseParameter(sName, oValue));
 		}
+	}
+	
+	private static String extractFieldName(String value) {
+		// extract label if no alias is set. we strip something like T1."strname" @see NUCLOS-645
+		if (value != null) {
+			int idxDot = value.indexOf(".");
+			if (idxDot != -1)
+				value = value.substring(idxDot + 1);
+			value = value.replaceAll("\"", "");				
+		}
+		return value;
 	}
 
 	private Object parseParameter(String sName, Object oValue) {

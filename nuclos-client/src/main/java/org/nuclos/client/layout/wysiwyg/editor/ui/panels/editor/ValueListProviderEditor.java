@@ -365,11 +365,11 @@ public class ValueListProviderEditor extends JDialog implements SaveAndCancelBut
 				List<WYSIYWYGParameter> lstWYSIYWYGParameterToRemove = new ArrayList<WYSIYWYGParameter>();
 				for (WYSIYWYGParameter wysiwygParameter : wysiwygStaticValuelistProvider.getAllWYSIYWYGParameter()) {
 					if (DATASOURCE_IDFIELD.equals(wysiwygParameter.getParameterName())) {
-						cbxIdField.setSelectedItem(wysiwygParameter.getParameterValue());
+						cbxIdField.setSelectedItem(extractFieldName(wysiwygParameter.getParameterValue()));
 					} else if (DATASOURCE_NAMEFIELD.equals(wysiwygParameter.getParameterName())) {
-						cbxNameField.setSelectedItem(wysiwygParameter.getParameterValue());
+						cbxNameField.setSelectedItem(extractFieldName(wysiwygParameter.getParameterValue()));
 					} else if (DATASOURCE_DEFAULTMARKERFIELD.equals(wysiwygParameter.getParameterName())) {
-						cbxDefaultMarkerField.setSelectedItem(wysiwygParameter.getParameterValue());
+						cbxDefaultMarkerField.setSelectedItem(extractFieldName(wysiwygParameter.getParameterValue()));
 					} else if (DATASOURCE_VALUELISTPROVIDER.equals(wysiwygParameter.getParameterName())) {
 						/* do not show in editor */
 					} else {
@@ -446,6 +446,17 @@ public class ValueListProviderEditor extends JDialog implements SaveAndCancelBut
 
 		parameterContainer.updateUI();
 		valuecontainer.updateUI();
+	}
+	
+	private static String extractFieldName(String value) {
+		// extract label if no alias is set. we strip something like T1."strname" @see NUCLOS-645
+		if (value != null) {
+			int idxDot = value.indexOf(".");
+			if (idxDot != -1)
+				value = value.substring(idxDot + 1);
+			value = value.replaceAll("\"", "");				
+		}
+		return value;
 	}
 
 	/**
