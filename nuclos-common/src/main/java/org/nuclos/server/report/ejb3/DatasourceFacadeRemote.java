@@ -23,6 +23,7 @@ import java.util.Set;
 
 import javax.annotation.security.RolesAllowed;
 
+import org.nuclos.common.NuclosBusinessException;
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.collect.collectable.CollectableField;
 import org.nuclos.common.database.query.definition.Schema;
@@ -422,4 +423,10 @@ public interface DatasourceFacadeRemote {
 	ResultVO getDynamicTasklistData(Integer dtlId) throws CommonPermissionException, NuclosDatasourceException;
 
 	CollectableField getDefaultValue(String datasource, String valuefield, String idfield, String defaultfield, Map<String, Object> params) throws CommonBusinessException;
+	
+	@RolesAllowed("Login")
+	public List<String> getColumns(String sql);
+	
+	@RolesAllowed("Login")
+	List<String> getColumnsFromXml(String sDatasourceXML) throws NuclosBusinessException;
 }

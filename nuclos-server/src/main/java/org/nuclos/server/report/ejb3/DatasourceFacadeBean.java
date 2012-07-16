@@ -28,6 +28,7 @@ import java.util.Set;
 import javax.annotation.security.RolesAllowed;
 
 import org.apache.log4j.Logger;
+import org.nuclos.common.NuclosBusinessException;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.SearchConditionUtils;
@@ -322,7 +323,8 @@ public class DatasourceFacadeBean extends NuclosFacadeBean implements Datasource
 			RecordGrantVO rg = (RecordGrantVO) datasourcevo;
 			try {
 				if (rg.getValid()) {
-					DatasourceUtils.validateRecordGrantSQL(rg.getEntity(), createSQL(rg.getSource()));
+					String sqlSelect = createSQL(rg.getSource());
+					DatasourceUtils.validateRecordGrantSQL(rg.getEntity(), sqlSelect, getColumns(sqlSelect));
 				}
 			}
 			catch (NuclosDatasourceException e1) {
@@ -404,6 +406,19 @@ public class DatasourceFacadeBean extends NuclosFacadeBean implements Datasource
 			if (NuclosEntity.DATASOURCE.getEntityName().equals(entity)) {
 				if (DatasourceCache.getInstance().getPermission(dsAsMd.getIntId(), getCurrentUserName()) != DatasourceVO.PERMISSION_READWRITE) {
 					throw new CommonPermissionException();
+				}
+			}
+			
+			if (NuclosEntity.RECORDGRANT.getEntityName().equals(entity)) {
+				RecordGrantVO rg = (RecordGrantVO) datasourcevo;
+				try {
+					if (rg.getValid()) {
+						String sqlSelect = createSQL(rg.getSource());
+						DatasourceUtils.validateRecordGrantSQL(rg.getEntity(), sqlSelect, getColumns(sqlSelect));
+					}
+				}
+				catch (NuclosDatasourceException e1) {
+					throw new CommonFatalException(e1);
 				}
 			}
 
@@ -500,7 +515,7 @@ public class DatasourceFacadeBean extends NuclosFacadeBean implements Datasource
 					DatasourceUtils.validateDynEntityName(newDEVO.getName());
 					sqlSelect = createSQL(newDEVO.getSource());
 					LOG.debug("validate dynamic entity sql <SQL>" + sqlSelect + "</SQL>");
-					DatasourceUtils.validateDynEntitySQL(sqlSelect);
+					DatasourceUtils.validateDynEntitySQL(sqlSelect, getColumns(sqlSelect));
 				}
 				catch (NuclosDatasourceException e) {
 					throw new CommonFatalException(e);
@@ -599,7 +614,7 @@ public class DatasourceFacadeBean extends NuclosFacadeBean implements Datasource
 					DatasourceUtils.validateChartEntityName(newDEVO.getName());
 					sqlSelect = createSQL(newDEVO.getSource());
 					LOG.debug("validate chart entity sql <SQL>" + sqlSelect + "</SQL>");
-					DatasourceUtils.validateChartEntitySQL(sqlSelect);
+					DatasourceUtils.validateChartEntitySQL(sqlSelect, getColumns(sqlSelect));
 					DatasourceUtils.validateChartEntitySQLWithParameters(createSQL(newDEVO.getSource(), getTestParameters(newDEVO.getSource())));
 				}
 				catch (NuclosDatasourceException e) {
@@ -1264,5 +1279,30 @@ public class DatasourceFacadeBean extends NuclosFacadeBean implements Datasource
 			}
 		}
 		return iIndexId != -1 ? CollectableValueIdField.NULL : CollectableValueField.NULL;
+	}
+	
+	public List<String> getColumnsFromXml(String sDatasourceXML) throws NuclosBusinessException {
+		return getColumns(createSQL(sDatasourceXML));
+	}
+	
+	public List<String> getColumns(String sql) {
+		try {
+			if (StringUtils.isNullOrEmpty(sql))
+				return null;
+			
+			List<String> result = new ArrayList<String>();
+			ResultVO resultVO = dataBaseHelper.getDbAccess().executePlainQueryAsResultVO(sql, 0);
+			for (ResultColumnVO column : resultVO.getColumns()) {
+				result.add(column.getColumnLabel());
+			}
+			
+			// fallback
+			if (result.isEmpty()) {
+				result.addAll(DatasourceUtils.getColumns(sql));
+			}
+			return result;
+		} catch (Exception e) {
+			return null;
+		}
 	}
 }

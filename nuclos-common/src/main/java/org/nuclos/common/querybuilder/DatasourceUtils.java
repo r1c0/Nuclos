@@ -32,6 +32,7 @@ import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonValidationException;
 import org.nuclos.server.masterdata.valueobject.MasterDataMetaVO;
 import org.nuclos.server.report.ejb3.DatasourceFacadeRemote;
+import org.nuclos.server.report.valueobject.ResultColumnVO;
 
 public class DatasourceUtils {
 	
@@ -55,7 +56,7 @@ public class DatasourceUtils {
 		}
 	}
 	
-	public static void validateDynEntitySQL(String sql) throws CommonValidationException {
+	public static void validateDynEntitySQL(String sql, List<String> columns) throws CommonValidationException {
 		if (StringUtils.looksEmpty(sql)) {
 			throw new CommonValidationException("datasource.validation.dynamic.entity.sql.1");
 		}
@@ -63,11 +64,13 @@ public class DatasourceUtils {
 		boolean foundIntid1 = false;
 		boolean foundIntid2 = false;
 		
-		for (String column : getColumns(sql)) {
-			if (column.toUpperCase().equals("INTID") || column.toUpperCase().equals("\"INTID\""))
-				foundIntid1 = true;
-			if (column.toUpperCase().equals("INTID_T_UD_GENERICOBJECT") || column.toUpperCase().equals("\"INTID_T_UD_GENERICOBJECT\""))
-				foundIntid2 = true;
+		if (columns != null) {
+			for (String column : columns) {
+				if (column.toUpperCase().equals("INTID") || column.toUpperCase().equals("\"INTID\""))
+					foundIntid1 = true;
+				if (column.toUpperCase().equals("INTID_T_UD_GENERICOBJECT") || column.toUpperCase().equals("\"INTID_T_UD_GENERICOBJECT\""))
+					foundIntid2 = true;
+			}
 		}
 		
 		if (!foundIntid1) {
@@ -102,7 +105,7 @@ public class DatasourceUtils {
 		}
 	}
 
-	public static void validateChartEntitySQL(String sql) throws CommonValidationException {
+	public static void validateChartEntitySQL(String sql, List<String> columns) throws CommonValidationException {
 		if (StringUtils.looksEmpty(sql)) {
 			throw new CommonValidationException("datasource.validation.chart.entity.sql.1");
 		}
@@ -110,11 +113,13 @@ public class DatasourceUtils {
 		boolean foundIntid1 = false;
 		boolean foundIntid2 = false;
 		
-		for (String column : getColumns(sql)) {
-			if (column.toUpperCase().equals("INTID") || column.toUpperCase().equals("\"INTID\""))
-				foundIntid1 = true;
-			if (column.toUpperCase().equals("INTID_T_UD_GENERICOBJECT") || column.toUpperCase().equals("\"INTID_T_UD_GENERICOBJECT\""))
-				foundIntid2 = true;
+		if (columns != null) {
+			for (String column : columns) {
+				if (column.toUpperCase().equals("INTID") || column.toUpperCase().equals("\"INTID\""))
+					foundIntid1 = true;
+				if (column.toUpperCase().equals("INTID_T_UD_GENERICOBJECT") || column.toUpperCase().equals("\"INTID_T_UD_GENERICOBJECT\""))
+					foundIntid2 = true;
+			}
 		}
 		
 		boolean foundParam1 = false;
@@ -146,7 +151,7 @@ public class DatasourceUtils {
 		}
 	}
 	
-	public static void validateRecordGrantSQL(String entity, String sql) throws CommonValidationException {
+	public static void validateRecordGrantSQL(String entity, String sql, List<String> columns) throws CommonValidationException {
 		if (StringUtils.looksEmpty(sql)) {
 			throw new CommonValidationException("datasource.validation.recordgrant.sql.3");
 		}
@@ -155,11 +160,14 @@ public class DatasourceUtils {
 			
 			boolean foundIntid = false;
 			boolean foundMoreIntid = false;
-			for (String column : getColumns(sql)) {
-				if (column.toUpperCase().equals("INTID") || column.toUpperCase().equals("\"INTID\"")) {
-					if (foundIntid)
-						foundMoreIntid = true;
-					foundIntid = true;
+			
+			if (columns != null) {
+				for (String column : columns) {
+					if (column.toUpperCase().equals("INTID") || column.toUpperCase().equals("\"INTID\"")) {
+						if (foundIntid)
+							foundMoreIntid = true;
+						foundIntid = true;
+					}
 				}
 			}
 			
@@ -173,10 +181,10 @@ public class DatasourceUtils {
 	}
 	
 	/** @TODO Find a better way: Don't extract them by parsing the plain SQL (may be user-defined and using DB-specific extensions). */
-	public static List<String> getColumnsWithoutQuotes(final String sql) {
+	public static List<String> getColumnsWithoutQuotes(List<String> columns) {
 		List<String> result = new ArrayList<String>();
 		
-		for (String column : getColumns(sql)) {
+		for (String column : columns) {
 			if (column.length()>2 && column.charAt(0)=='"' && column.charAt(column.length()-1)=='"') {
 				result.add(column.substring(1, column.length()-1));
 			} else {

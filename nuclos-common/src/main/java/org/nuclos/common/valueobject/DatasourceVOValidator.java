@@ -16,13 +16,14 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.common.valueobject;
 
-import org.apache.log4j.Logger;
+import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.querybuilder.DatasourceUtils;
 import org.nuclos.common.querybuilder.DatasourceXMLParser;
-import org.nuclos.common.querybuilder.NuclosDatasourceException;
 import org.nuclos.common.querybuilder.DatasourceXMLParser.XMLColumn;
+import org.nuclos.common.querybuilder.NuclosDatasourceException;
 import org.nuclos.server.report.valueobject.DatasourceVO;
 
 /**
@@ -58,12 +59,12 @@ public class DatasourceVOValidator {
 	 * 
 	 * @return true if the configured datasource returns only an intid column.
 	 */
-	public boolean isValidIntIdSubSelect(){
+	public boolean isValidIntIdSubSelect(List<String> columns) {
 		boolean isValidResult = false;
 		if(parseresult.isModelUsed()){
 			isValidResult = hasSingleIntIdColumn() && !hasParameters();
 		} else {
-			isValidResult = isValidIntIdStringSubSelect();
+			isValidResult = isValidIntIdStringSubSelect(columns);
 		}
 		return isValidResult;
 	}
@@ -81,17 +82,16 @@ public class DatasourceVOValidator {
 		return parseresult.getLstParameters() != null && parseresult.getLstParameters().size() > 0;
 	}
 	
-	private boolean isValidIntIdStringSubSelect() {
+	public String getQueryString() {
+		return parseresult.getQueryStringFromXml();
+	}
+	
+	private boolean isValidIntIdStringSubSelect(List<String> columns) {
 		boolean result = false; 
-		String sql = parseresult.getQueryStringFromXml();
-		if(sql != null){
-			log.debug("check QueryStringFromXml : " + sql);
-			
-			for (String column : DatasourceUtils.getColumnsWithoutQuotes(sql)) {
-				if (column.toLowerCase().contains(this.intidAlias)) {
-					result = true;
-					break;
-				}
+		for (String column : DatasourceUtils.getColumnsWithoutQuotes(columns)) {
+			if (column.toLowerCase().contains(this.intidAlias)) {
+				result = true;
+				break;
 			}
 		}
 		return result;

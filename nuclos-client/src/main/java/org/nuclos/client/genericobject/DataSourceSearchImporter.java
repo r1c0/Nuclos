@@ -213,7 +213,8 @@ public class DataSourceSearchImporter implements ExtSourceSearchImporter {
 	
 	private boolean isValidDatasource(DatasourceVO dvo) {
 		try {
-			return new DatasourceVOValidator(dvo).isValidIntIdSubSelect();
+			DatasourceVOValidator validator = new DatasourceVOValidator(dvo);
+			return validator.isValidIntIdSubSelect(DatasourceDelegate.getInstance().getColumns(validator.getQueryString()));
 		} catch (NuclosFatalException e) {
 			LOG.warn("isValidDatasource failed: " + e, e);
 		} catch (NuclosDatasourceException e) {

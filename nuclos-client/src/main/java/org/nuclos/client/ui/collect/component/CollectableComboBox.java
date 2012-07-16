@@ -400,7 +400,10 @@ public class CollectableComboBox extends LabeledCollectableComponentWithVLP impl
 	 * @todo make private
 	 */
 	public synchronized void setComboBoxModel(Collection<? extends CollectableField> collEnumeratedFields, boolean bSort) {
-		final List<CollectableField> lst = new ArrayList<CollectableField>(collEnumeratedFields);
+		final List<CollectableField> lst = new ArrayList<CollectableField>();
+		if (collEnumeratedFields != null) {
+			lst.addAll(collEnumeratedFields);
+		}
 
 		if (bSort) {
 			Collections.sort(lst, CollectableFieldComparatorFactory.getInstance().newCollectableFieldComparator(getEntityField()));

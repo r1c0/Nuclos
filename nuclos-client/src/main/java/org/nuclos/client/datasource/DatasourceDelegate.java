@@ -388,6 +388,24 @@ public class DatasourceDelegate {
 			throw new CommonFatalException(ex);
 		}
 	}
+	
+	public List<String> getColumns(String sql) {
+		try {
+			return getDatasourceFacade().getColumns(sql);
+		}
+		catch (RuntimeException ex) {
+			throw new CommonFatalException(ex);
+		}
+	}
+	public List<String> getColumnsFromXml(String sDatasourceXML) throws NuclosBusinessException {
+		try {
+			return getDatasourceFacade().getColumnsFromXml(sDatasourceXML);
+		}
+		catch (RuntimeException ex) {
+			throw new CommonFatalException(ex);
+		}
+	}
+
 
 	public String createSQL(String sDatasourceXML) throws NuclosBusinessException {
 		try {

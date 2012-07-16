@@ -347,7 +347,7 @@ public class ValueListProviderEditor extends JDialog implements SaveAndCancelBut
 				cbxIdField.addItem("");
 				// add id fiels and name fields
 				for (String sColumn : DatasourceUtils.getColumnsWithoutQuotes(
-					DatasourceDelegate.getInstance().createSQL(vpVO.getSource()))) {
+					DatasourceDelegate.getInstance().getColumnsFromXml(vpVO.getSource()))) {
 					cbxIdField.addItem(sColumn);
 					cbxNameField.addItem(sColumn);
 					cbxDefaultMarkerField.addItem(sColumn);
