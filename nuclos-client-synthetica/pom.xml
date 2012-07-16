@@ -3,7 +3,7 @@
 	<parent>
 		<artifactId>nuclos</artifactId>
 		<groupId>org.nuclos</groupId>
-		<version>3.5-SNAPSHOT</version>
+		<version>3.6-SNAPSHOT</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
