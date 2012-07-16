@@ -448,7 +448,7 @@ public class NuclosEntityAttributePropertiesStep extends NuclosEntityAttributeAb
 				}
 				cbxDatatyp.removeAllItems();
 				for(DataTyp typ : DataTyp.getAllDataTyps()) {
-					if(!typ.getJavaType().equals("org.nuclos.server.genericobject.valueobject.GenericObjectDocumentFile"))
+					if(typ.getJavaType() == null || !typ.getJavaType().equals("org.nuclos.server.genericobject.valueobject.GenericObjectDocumentFile"))
 					cbxDatatyp.addItem(typ);
 				}
 				for(ItemListener l : listerner){
