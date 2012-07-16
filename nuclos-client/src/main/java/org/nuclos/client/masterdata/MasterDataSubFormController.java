@@ -652,7 +652,7 @@ public class MasterDataSubFormController extends DetailsSubFormController<Collec
 						else {
 							// multi-selection
 							controller.fillAsSubFormChild(MasterDataSubFormController.this, null);
-							controller.getSubForm().setEnabled(false);
+							//controller.getSubForm().setEnabled(false);
 						}
 					}
 				}
