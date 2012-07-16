@@ -644,7 +644,7 @@ public class MasterDataSubFormController extends DetailsSubFormController<Collec
 					for (MasterDataSubFormController controller : getChildSubFormController()) {
 						if (getJTable().getSelectedRows() != null && getJTable().getSelectedRows().length == 1) {
 							// single selection
-							controller.getSubForm().setEnabled(true);
+							//controller.getSubForm().setEnabled(true);
 							CollectableEntityObject clct = getSelectedCollectable();
 							controller.fillAsSubFormChild(MasterDataSubFormController.this, clct);
 							controller.selectFirstRow();
