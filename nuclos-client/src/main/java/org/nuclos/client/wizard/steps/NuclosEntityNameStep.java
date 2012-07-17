@@ -45,8 +45,10 @@ import javax.swing.event.DocumentListener;
 import javax.swing.text.BadLocationException;
 
 import org.apache.log4j.Logger;
+import org.jdesktop.swingx.autocomplete.AutoCompleteDecorator;
 import org.nuclos.client.common.LocaleDelegate;
 import org.nuclos.client.common.MetaDataClientProvider;
+import org.nuclos.client.common.NuclosCollectableComboBox;
 import org.nuclos.client.genericobject.Modules;
 import org.nuclos.client.masterdata.MasterDataCache;
 import org.nuclos.client.masterdata.MasterDataDelegate;
@@ -162,6 +164,8 @@ public class NuclosEntityNameStep extends NuclosEntityAbstractStep {
 		cmbEntity.setToolTipText(localeDelegate.getMessage(
 				"wizard.step.entityname.tooltip.2", "Namen der Entit\u00e4t die Sie ver\u00e4ndern m\u00f6chten"));
 		this.fillEntityCombobox();
+		cmbEntity.setEditable(true);
+		AutoCompleteDecorator.decorate(cmbEntity);
 
 		lbInfo = new JLabel();
 		lbInfo.setVisible(false);
@@ -265,97 +269,12 @@ public class NuclosEntityNameStep extends NuclosEntityAbstractStep {
 				if(e.getStateChange() == ItemEvent.SELECTED) {
 					final Object obj = e.getItem();
 					if(obj instanceof EntityWrapper) {
-						try {
-							EntityMetaDataVO vo = ((EntityWrapper)obj).getWrappedEntity();
-							NuclosEntityNameStep.this.model.resetModel();
-							if (!vo.isVirtual()) {
-								NuclosEntityNameStep.this.model.setHasRows(hasEntityRows(vo));
-							}
-							else {
-								NuclosEntityNameStep.this.model.setHasRows(true);
-							}
-							NuclosEntityNameStep.this.model.setEditMode(true);
-							NuclosEntityNameStep.this.model.setEntityName(vo.getEntity());
-							NuclosEntityNameStep.this.model.setLabelSingular(localeDelegate.getResource(
-									vo.getLocaleResourceIdForLabel(), ""));
-							NuclosEntityNameStep.this.model.setEditable(vo.isEditable());
-							NuclosEntityNameStep.this.model.setSearchable(vo.isSearchable());
-							NuclosEntityNameStep.this.model.setLogbook(vo.isLogBookTracking());
-							NuclosEntityNameStep.this.model.setMenuPath(localeDelegate.getResource(
-									vo.getLocaleResourceIdForMenuPath(), ""));
-							NuclosEntityNameStep.this.model.setCachable(vo.isCacheable());
-							NuclosEntityNameStep.this.model.setImExport(vo.isImportExport());
-							NuclosEntityNameStep.this.model.setShowRelation(vo.isTreeRelation());
-							NuclosEntityNameStep.this.model.setShowGroups(vo.isTreeGroup());
-							NuclosEntityNameStep.this.model.setStateModel(vo.isStateModel());
-							NuclosEntityNameStep.this.model.setTableOrViewName(vo.getDbEntity());
-							NuclosEntityNameStep.this.model.setNodeLabel(localeDelegate.getTextForStaticLabel(
-									vo.getLocaleResourceIdForTreeView()));
-							NuclosEntityNameStep.this.model.setNodeTooltip(localeDelegate.getTextForStaticLabel(
-									vo.getLocaleResourceIdForTreeViewDescription()));
-							NuclosEntityNameStep.this.model.setMultiEditEquation(vo.getFieldsForEquality());
-							NuclosEntityNameStep.this.model.setLabelSingularResource(vo.getLocaleResourceIdForLabel());
-							NuclosEntityNameStep.this.model.setMenuPathResource(vo.getLocaleResourceIdForMenuPath());
-							NuclosEntityNameStep.this.model.setNodeLabelResource(vo.getLocaleResourceIdForTreeView());
-							NuclosEntityNameStep.this.model.setNodeTooltipResource(vo.getLocaleResourceIdForTreeViewDescription());
-							NuclosEntityNameStep.this.model.setDocumentPath(vo.getDocumentPath());
-							NuclosEntityNameStep.this.model.setReportFilename(vo.getReportFilename());
-							NuclosEntityNameStep.this.model.setVirtualentity(vo.getVirtualentity());
-							NuclosEntityNameStep.this.model.setIdFactory(vo.getIdFactory());
-							NuclosEntityNameStep.this.model.setRowColorScript(vo.getRowColorScript());
-
-							if(vo.getResourceId() != null) {
-								NuclosEntityNameStep.this.model.setResourceName(
-										ResourceCache.getInstance().getResourceById(vo.getResourceId()).getName());
-							}
-
-							NuclosEntityNameStep.this.model.setSystemIdPrefix(vo.getSystemIdPrefix());
-
-
-							NuclosEntityNameStep.this.model.setAccelerator(vo.getAccelerator());
-							NuclosEntityNameStep.this.model.setModifier(vo.getAcceleratorModifier());
-
-						   NuclosEntityNameStep.this.model.setResourceId(vo.getResourceId());
-						   NuclosEntityNameStep.this.model.setNuclosResourceName(vo.getNuclosResource());
-
-						   loadUserRights(vo);
-						   loadTreeView();
-						   if (model.isStateModel()) {
-							   loadProcesses(vo.getId());
-						   }
-						   loadEntityMenus(vo.getId());
-
-							EntityAttributeTableModel attributeModel = new EntityAttributeTableModel();
-							Collection<EntityFieldMetaDataVO> lstFields = MetaDataClientProvider.getInstance().getAllEntityFieldsByEntity(vo.getEntity()).values();
-							for(EntityFieldMetaDataVO fieldVO : CollectionUtils.sorted(lstFields,
-										new Comparator<EntityFieldMetaDataVO>() {
-									@Override
-									public int compare(EntityFieldMetaDataVO o1, EntityFieldMetaDataVO o2) {
-										Integer order1 = (o1.getOrder()==null)?0:o1.getOrder();
-										Integer order2 = (o2.getOrder()==null)?0:o2.getOrder();
-										return order1.compareTo(order2);
-									}
-								})) {
-								if(fieldVO.getEntityId() == -100)
-									continue;
-								Attribute attr = new Attribute();
-
-								attr = wrapEntityMetaFieldVO(fieldVO);
-
-								attributeModel.addAttribute(attr);
-							}
-							NuclosEntityNameStep.this.model.setAttributeModel(attributeModel);
-							NuclosEntityNameStep.this.setComplete(true);
-						}
-						catch(CommonFinderException e1) {
-							Errors.getInstance().showExceptionDialog(NuclosEntityNameStep.this, e1);
-						}
-						catch(CommonPermissionException e1) {
-							Errors.getInstance().showExceptionDialog(NuclosEntityNameStep.this, e1);
-						}
+						EntityMetaDataVO vo = ((EntityWrapper)obj).getWrappedEntity();
+						NuclosEntityNameStep.this.model.setEditMode(true);
+						NuclosEntityNameStep.this.model.resetModel();
+						NuclosEntityNameStep.this.setComplete(true);
 						btnRemove.setVisible(true);
-					}
-					else if(obj instanceof String) {
+					} else if(obj instanceof String) {
 						NuclosEntityNameStep.this.model.setEditMode(false);
 						NuclosEntityNameStep.this.model.resetModel();
 						tfName.setEnabled(true);
@@ -548,6 +467,97 @@ public class NuclosEntityNameStep extends NuclosEntityAbstractStep {
 				"wizard.step.entityname.5", "Nucleus Entit\u00e4tenwizard") 
 				+ " " + model.getEntityName());
 		
+		Object obj = cmbEntity.getSelectedItem();
+		if(obj instanceof EntityWrapper) {
+			try {
+				EntityMetaDataVO vo = ((EntityWrapper)obj).getWrappedEntity();
+				NuclosEntityNameStep.this.model.resetModel();
+				if (!vo.isVirtual()) {
+					NuclosEntityNameStep.this.model.setHasRows(hasEntityRows(vo));
+				}
+				else {
+					NuclosEntityNameStep.this.model.setHasRows(true);
+				}
+				NuclosEntityNameStep.this.model.setEditMode(true);
+				NuclosEntityNameStep.this.model.setEntityName(vo.getEntity());
+				NuclosEntityNameStep.this.model.setLabelSingular(localeDelegate.getResource(
+						vo.getLocaleResourceIdForLabel(), ""));
+				NuclosEntityNameStep.this.model.setEditable(vo.isEditable());
+				NuclosEntityNameStep.this.model.setSearchable(vo.isSearchable());
+				NuclosEntityNameStep.this.model.setLogbook(vo.isLogBookTracking());
+				NuclosEntityNameStep.this.model.setMenuPath(localeDelegate.getResource(
+						vo.getLocaleResourceIdForMenuPath(), ""));
+				NuclosEntityNameStep.this.model.setCachable(vo.isCacheable());
+				NuclosEntityNameStep.this.model.setImExport(vo.isImportExport());
+				NuclosEntityNameStep.this.model.setShowRelation(vo.isTreeRelation());
+				NuclosEntityNameStep.this.model.setShowGroups(vo.isTreeGroup());
+				NuclosEntityNameStep.this.model.setStateModel(vo.isStateModel());
+				NuclosEntityNameStep.this.model.setTableOrViewName(vo.getDbEntity());
+				NuclosEntityNameStep.this.model.setNodeLabel(localeDelegate.getTextForStaticLabel(
+						vo.getLocaleResourceIdForTreeView()));
+				NuclosEntityNameStep.this.model.setNodeTooltip(localeDelegate.getTextForStaticLabel(
+						vo.getLocaleResourceIdForTreeViewDescription()));
+				NuclosEntityNameStep.this.model.setMultiEditEquation(vo.getFieldsForEquality());
+				NuclosEntityNameStep.this.model.setLabelSingularResource(vo.getLocaleResourceIdForLabel());
+				NuclosEntityNameStep.this.model.setMenuPathResource(vo.getLocaleResourceIdForMenuPath());
+				NuclosEntityNameStep.this.model.setNodeLabelResource(vo.getLocaleResourceIdForTreeView());
+				NuclosEntityNameStep.this.model.setNodeTooltipResource(vo.getLocaleResourceIdForTreeViewDescription());
+				NuclosEntityNameStep.this.model.setDocumentPath(vo.getDocumentPath());
+				NuclosEntityNameStep.this.model.setReportFilename(vo.getReportFilename());
+				NuclosEntityNameStep.this.model.setVirtualentity(vo.getVirtualentity());
+				NuclosEntityNameStep.this.model.setIdFactory(vo.getIdFactory());
+				NuclosEntityNameStep.this.model.setRowColorScript(vo.getRowColorScript());
+		
+				if(vo.getResourceId() != null) {
+					NuclosEntityNameStep.this.model.setResourceName(
+							ResourceCache.getInstance().getResourceById(vo.getResourceId()).getName());
+				}
+		
+				NuclosEntityNameStep.this.model.setSystemIdPrefix(vo.getSystemIdPrefix());
+		
+		
+				NuclosEntityNameStep.this.model.setAccelerator(vo.getAccelerator());
+				NuclosEntityNameStep.this.model.setModifier(vo.getAcceleratorModifier());
+		
+			   NuclosEntityNameStep.this.model.setResourceId(vo.getResourceId());
+			   NuclosEntityNameStep.this.model.setNuclosResourceName(vo.getNuclosResource());
+		
+			   loadUserRights(vo);
+			   loadTreeView();
+			   if (model.isStateModel()) {
+				   loadProcesses(vo.getId());
+			   }
+			   loadEntityMenus(vo.getId());
+		
+				EntityAttributeTableModel attributeModel = new EntityAttributeTableModel();
+				Collection<EntityFieldMetaDataVO> lstFields = MetaDataClientProvider.getInstance().getAllEntityFieldsByEntity(vo.getEntity()).values();
+				for(EntityFieldMetaDataVO fieldVO : CollectionUtils.sorted(lstFields,
+							new Comparator<EntityFieldMetaDataVO>() {
+						@Override
+						public int compare(EntityFieldMetaDataVO o1, EntityFieldMetaDataVO o2) {
+							Integer order1 = (o1.getOrder()==null)?0:o1.getOrder();
+							Integer order2 = (o2.getOrder()==null)?0:o2.getOrder();
+							return order1.compareTo(order2);
+						}
+					})) {
+					if(fieldVO.getEntityId() == -100)
+						continue;
+					Attribute attr = new Attribute();
+		
+					attr = wrapEntityMetaFieldVO(fieldVO);
+		
+					attributeModel.addAttribute(attr);
+				}
+				NuclosEntityNameStep.this.model.setAttributeModel(attributeModel);
+			}
+			catch(CommonFinderException e1) {
+				Errors.getInstance().showExceptionDialog(NuclosEntityNameStep.this, e1);
+			}
+			catch(CommonPermissionException e1) {
+				Errors.getInstance().showExceptionDialog(NuclosEntityNameStep.this, e1);
+			}
+		}
+
 		super.applyState();
 	}
 
