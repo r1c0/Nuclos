@@ -463,9 +463,6 @@ public class NuclosEntityNameStep extends NuclosEntityAbstractStep {
 		if(this.model.getUserRights().size() < 1) {
 			loadUserRights(null);
 		}
-		model.getParentFrame().setTitle(localeDelegate.getMessage(
-				"wizard.step.entityname.5", "Nucleus Entit\u00e4tenwizard") 
-				+ " " + model.getEntityName());
 		
 		Object obj = cmbEntity.getSelectedItem();
 		if(obj instanceof EntityWrapper) {
@@ -558,6 +555,9 @@ public class NuclosEntityNameStep extends NuclosEntityAbstractStep {
 			}
 		}
 
+		model.getParentFrame().setTitle(localeDelegate.getMessage(
+				"wizard.step.entityname.5", "Nucleus Entit\u00e4tenwizard") 
+				+ " " + model.getEntityName());
 		super.applyState();
 	}
 
