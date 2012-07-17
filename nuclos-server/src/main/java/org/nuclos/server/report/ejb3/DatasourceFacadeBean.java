@@ -989,7 +989,6 @@ public class DatasourceFacadeBean extends NuclosFacadeBean implements Datasource
 		}
 		catch (NuclosDatasourceException e) {
 			// No parameters defined?
-			LOG.info("getTestParameters: " + e);
 			return result;
 		}
 
@@ -1282,15 +1281,15 @@ public class DatasourceFacadeBean extends NuclosFacadeBean implements Datasource
 	}
 	
 	public List<String> getColumnsFromXml(String sDatasourceXML) throws NuclosBusinessException {
-		return getColumns(createSQL(sDatasourceXML));
+		return getColumns(createSQL(sDatasourceXML, getTestParameters(sDatasourceXML)));
 	}
 	
 	public List<String> getColumns(String sql) {
+		List<String> result = new ArrayList<String>();
 		try {
 			if (StringUtils.isNullOrEmpty(sql))
-				return null;
+				return result;
 			
-			List<String> result = new ArrayList<String>();
 			ResultVO resultVO = dataBaseHelper.getDbAccess().executePlainQueryAsResultVO(sql, 0);
 			for (ResultColumnVO column : resultVO.getColumns()) {
 				result.add(column.getColumnLabel());
@@ -1302,7 +1301,12 @@ public class DatasourceFacadeBean extends NuclosFacadeBean implements Datasource
 			}
 			return result;
 		} catch (Exception e) {
-			return null;
+			// fallback
+			if (result.isEmpty()) {
+				result.addAll(DatasourceUtils.getColumns(sql));
+			}
 		}
+		return result;
+
 	}
 }

@@ -174,6 +174,7 @@ public abstract class AbstractCollectableComponent
 	private final boolean bSearchable;
 	private boolean bViewLocked;
 
+	private DataTyp dataTyp;
 	private String sNextFocusComponent;
 
 	private ReferencingListener reflistener;
@@ -236,6 +237,17 @@ public abstract class AbstractCollectableComponent
 		}
 		this.clctef = clctef;
 		this.comp = comp;
+		
+		try {
+			dataTyp = getDataTyp(clctef.getJavaClass().getName(), clctef.getDefaultComponentType(), 
+					clctef.getMaxLength(), clctef.getPrecision(), clctef.getFormatInput(),
+					clctef.getFormatOutput());
+		} catch (CommonPermissionException e) {
+			throw new NuclosFatalException(e);
+		} catch (CommonFinderException e) {
+			throw new NuclosFatalException(e);
+		}
+
 		// set the name of the JComponent so it can be identified by GUI testing tools:
 		comp.setName(getFieldName());
 		this.bSearchable = bSearchable;
@@ -679,21 +691,11 @@ public abstract class AbstractCollectableComponent
 	 * @todo move to CollectableComponent interface?
 	 */
 	public boolean canDisplayComparisonWithOtherField() {
-		try {
-			DataTyp dataTyp = getDataTyp(clctef.getJavaClass().getName(), clctef.getDefaultComponentType(), 
-					clctef.getMaxLength(), clctef.getPrecision(), clctef.getFormatInput(),
-					clctef.getFormatOutput());
-			if (dataTyp != null) {
-				if (dataTyp.getDatabaseTyp().equals("blob")
-						|| dataTyp.getDatabaseTyp().equals("clob"))
-				return false;
-			}
-		} catch (CommonPermissionException e) {
-			throw new NuclosFatalException(e);
-		} catch (CommonFinderException e) {
-			throw new NuclosFatalException(e);
-		}
-	
+		if (dataTyp != null) {
+			if (dataTyp.getDatabaseTyp().equals("blob")
+					|| dataTyp.getDatabaseTyp().equals("clob"))
+			return false;
+		}	
 		return clcte != null;
 	}
 
@@ -743,21 +745,12 @@ public abstract class AbstractCollectableComponent
     public final void setEnabled(boolean bEnabled) {
 		this.enabled = bEnabled;
 		if (isSearchComponent()) {
-			try {
-				DataTyp dataTyp = getDataTyp(clctef.getJavaClass().getName(), clctef.getDefaultComponentType(), 
-						clctef.getMaxLength(), clctef.getPrecision(), clctef.getFormatInput(),
-						clctef.getFormatOutput());
-				if (dataTyp != null) {
-					if (dataTyp.getDatabaseTyp().equals("blob")
-							|| dataTyp.getDatabaseTyp().equals("clob")) {
-						enabled = false;
-						getControlComponent().setEnabled(false);
-					}
+			if (dataTyp != null) {
+				if (dataTyp.getDatabaseTyp().equals("blob")
+						|| dataTyp.getDatabaseTyp().equals("clob")) {
+					enabled = false;
+					getControlComponent().setEnabled(false);
 				}
-			} catch (CommonPermissionException e) {
-				throw new NuclosFatalException(e);
-			} catch (CommonFinderException e) {
-				throw new NuclosFatalException(e);
 			}
 		}
 		setEnabledState(enabled && !readOnly && dynamicallyEnabled);
@@ -1216,19 +1209,10 @@ public abstract class AbstractCollectableComponent
 	}
 
 	protected ComparisonOperator[] getSupportedComparisonOperators() {
-		try {
-			DataTyp dataTyp = getDataTyp(clctef.getJavaClass().getName(), clctef.getDefaultComponentType(), 
-					clctef.getMaxLength(), clctef.getPrecision(), clctef.getFormatInput(),
-					clctef.getFormatOutput());
-			if (dataTyp != null) {
-				if (dataTyp.getDatabaseTyp().equals("blob")
-						|| dataTyp.getDatabaseTyp().equals("clob"))
-				return new ComparisonOperator[0];
-			}
-		} catch (CommonPermissionException e) {
-			throw new NuclosFatalException(e);
-		} catch (CommonFinderException e) {
-			throw new NuclosFatalException(e);
+		if (dataTyp != null) {
+			if (dataTyp.getDatabaseTyp().equals("blob")
+					|| dataTyp.getDatabaseTyp().equals("clob"))
+			return new ComparisonOperator[0];
 		}
 		return ComparisonOperator.getComparisonOperators();
 	}
@@ -1266,17 +1250,19 @@ public abstract class AbstractCollectableComponent
 			if(strName.equals("Nachschlagefeld"))
 				continue;
 
-			if(StringUtils.equals(javaType, strJavaTyp) && StringUtils.equals(outputFormat, strOutputFormat) &&
-				/*StringUtils.equals(inputFormat, strInputFormat) &&*/ ObjectUtils.equals(scale, iScale) &&
-				ObjectUtils.equals(precision, iPrecision) && StringUtils.equals(defaultComponentType, strDefaultComponentType)) {
-				typ = new DataTyp(strName, strInputFormat, strOutputFormat, strDatabaseTyp, iScale, iPrecision, strJavaTyp, strDefaultComponentType);
-				break;
+			try {
+				if(StringUtils.equals(javaType, strJavaTyp) && StringUtils.equals(outputFormat, strOutputFormat) &&
+					/*StringUtils.equals(inputFormat, strInputFormat) &&*/ ObjectUtils.equals(scale, iScale) &&
+					ObjectUtils.equals(precision, iPrecision) && StringUtils.equals(defaultComponentType, strDefaultComponentType)) {
+					typ = new DataTyp(strName, strInputFormat, strOutputFormat, strDatabaseTyp, iScale, iPrecision, strJavaTyp, strDefaultComponentType);
+					break;
+				}
+			} catch (Exception e) {
+				// ignore
 			}
 		}
 		return typ;
 	}
-
-
 
 	/**
 	 * @param result
