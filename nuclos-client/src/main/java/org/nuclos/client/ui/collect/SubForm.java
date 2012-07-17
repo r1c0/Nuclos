@@ -806,6 +806,10 @@ public class SubForm extends JPanel
 
 		subformfilter.setupTableHeaderForScrollPane(scrollPane);
 	}
+	
+	public void setSubFormParameterProviderForSubFormFilter(SubFormParameterProvider parameterProvider) {
+		this.subformfilter.setSubFormParameterProvider(parameterProvider);
+	}
 
 	/**
 	 * do not store items permanent!

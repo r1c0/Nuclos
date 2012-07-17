@@ -21,12 +21,16 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.Closeable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.EventListener;
 import java.util.HashMap;
@@ -37,6 +41,7 @@ import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
 import javax.swing.Icon;
+import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JComboBox;
@@ -59,6 +64,7 @@ import org.nuclos.client.ui.Icons;
 import org.nuclos.client.ui.ListOfValues;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.client.ui.collect.FixedColumnRowHeader.FixedRowIndicatorTableModel;
+import org.nuclos.client.ui.collect.SubForm.RefreshValueListAction;
 import org.nuclos.client.ui.collect.SubForm.SubFormTable;
 import org.nuclos.client.ui.collect.SubForm.SubFormTableModel;
 import org.nuclos.client.ui.collect.component.CollectableCheckBox;
@@ -103,6 +109,8 @@ public class SubFormFilter implements Closeable, IReferenceHolder {
 
 	private JToggleButton filterButton;
 	private JCheckBoxMenuItem miFilter;
+	
+	private SubFormParameterProvider parameterProvider;
 
 	private Map<String, CollectableComponent> column2component = new HashMap<String, CollectableComponent>();
 
@@ -191,6 +199,10 @@ public class SubFormFilter implements Closeable, IReferenceHolder {
 		ref.add(o);
 	}
 	
+	public void setSubFormParameterProvider(SubFormParameterProvider parameterProvider) {
+		this.parameterProvider = parameterProvider;
+	}
+	
    /**
     * create collectablecomponents as search components and assign them to the corresponding column
     */
@@ -204,7 +216,7 @@ public class SubFormFilter implements Closeable, IReferenceHolder {
 
          if (clctcomp instanceof LabeledCollectableComponentWithVLP) {
          	// handle valuelistprovider
-        	 LabeledCollectableComponentWithVLP clctWithVLP = (LabeledCollectableComponentWithVLP)clctcomp;
+        	final LabeledCollectableComponentWithVLP clctWithVLP = (LabeledCollectableComponentWithVLP)clctcomp;
             CollectableFieldsProvider valuelistprovider = subform.getValueListProvider(columnName);
             if (valuelistprovider == null && cef.isReferencing()) {
                valuelistprovider = collectableFieldsProviderFactory.newDefaultCollectableFieldsProvider(subform.getEntityName(), clctWithVLP.getFieldName());
@@ -213,6 +225,44 @@ public class SubFormFilter implements Closeable, IReferenceHolder {
             if (!subform.isLayout())
             	clctWithVLP.refreshValueList(true);
 
+            final FocusAdapter refreshVLPAdapter = new FocusAdapter() {
+            	@Override
+            	public void focusGained(FocusEvent e) {
+    				final Collection<RefreshValueListAction> collRefreshValueListActions = subform.getRefreshValueListActions(clctWithVLP.getFieldName());
+    				if (!collRefreshValueListActions.isEmpty()) {
+	    				// set the value list provider (dynamically):
+	    				CollectableFieldsProvider valuelistprovider = subform.getValueListProvider(clctWithVLP.getFieldName());
+	    				if (valuelistprovider != null) {
+		    				clctWithVLP.setValueListProvider(valuelistprovider);
+		
+		    				// set parameters:
+		    				for (RefreshValueListAction rvlact : collRefreshValueListActions) {
+		    					SubForm.setParameterForRefreshValueListAction(rvlact, -1, clctWithVLP, (SubFormTableModel)subform.getSubformTable().getModel(), parameterProvider);					
+		    				}
+		
+		    				// refresh value list:
+							clctWithVLP.refreshValueList(false);
+	    				}
+    				}
+            	}
+			};
+            JComponent comp = clctcomp.getControlComponent();
+            if (comp instanceof ListOfValues) {
+            	((ListOfValues)comp).getJTextField().addFocusListener(refreshVLPAdapter);
+            } else if (comp instanceof JComboBox) {
+            	for (Component c : ((JComboBox)comp).getComponents())
+            	{
+            		if (c instanceof JButton)
+            			((JButton)c).addMouseListener(new MouseAdapter() {
+            				@Override
+            				public void mouseEntered(MouseEvent e) {
+            					refreshVLPAdapter.focusGained(null);
+            				}
+						});
+            	}
+            	((JComboBox)comp).getEditor().getEditorComponent().addFocusListener(refreshVLPAdapter);
+            }   
+            
             // handle listener
             if (clctcomp instanceof CollectableComboBox) {
 	            ((JComboBox)clctcomp.getControlComponent()).addItemListener(new ItemListener() {
@@ -240,28 +290,21 @@ public class SubFormFilter implements Closeable, IReferenceHolder {
             clctcomp.clear();
          }
          else if (clctcomp instanceof CollectableDateChooser) {
-         	((CollectableDateChooser)clctcomp).getDateChooser().getJTextField().addFocusListener( new FocusListener() {
-
+         	((CollectableDateChooser)clctcomp).getDateChooser().getJTextField().addFocusListener(new FocusAdapter() {
 					@Override
 					public void focusLost(FocusEvent e) {
 						if (!closed) {
 							filter();
 						}
 					}
-
-					@Override
-					public void focusGained(FocusEvent e) {
-					}
 				});
-         }
-
-         else {
+         } else {
          	JComponent comp = clctcomp.getControlComponent();
             if (comp instanceof ListOfValues) {
                comp = ((ListOfValues)comp).getJTextField();
             }
 
-            comp.addFocusListener(new FocusListener() {
+            comp.addFocusListener(new FocusAdapter() {
                //NUCLEUSINT-789 i
                @Override
                public void focusLost(FocusEvent e) {
@@ -270,9 +313,6 @@ public class SubFormFilter implements Closeable, IReferenceHolder {
                 	  filter();
                   }
                }
-
-               @Override
-               public void focusGained(FocusEvent e) {}
             });
          }
 

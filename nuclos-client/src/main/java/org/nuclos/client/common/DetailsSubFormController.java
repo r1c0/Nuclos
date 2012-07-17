@@ -207,6 +207,7 @@ public abstract class DetailsSubFormController<Clct extends Collectable>
 
 		if (this.getSubForm().getSubFormFilter() == null) {
 			this.getSubForm().setupTableFilter(this.getCollectableFieldsProviderFactory());
+			this.getSubForm().setSubFormParameterProviderForSubFormFilter(this);
 		}
 
 		this.getSubForm().loadTableFilter(getParentEntityName());
