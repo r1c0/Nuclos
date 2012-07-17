@@ -648,7 +648,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 			final CollectableEntityField clctefSearchState = new DefaultCollectableEntityField("[status_num_plus_name]", String.class,
 				getSpringLocaleDelegate().getLabelFromAttributeCVO(AttributeCache.getInstance().getAttribute(
 						NuclosEOField.STATE.getMetaData().getId().intValue())),
-				null, null, null, true, CollectableField.TYPE_VALUEIDFIELD, null, null, getCollectableEntity().getName(), null);
+				null, 255, null, true, CollectableField.TYPE_VALUEIDFIELD, null, null, getCollectableEntity().getName(), null);
 			clctSearchState = new NuclosCollectableStateComboBox(clctefSearchState, true);
 		}
 		return clctSearchState;

@@ -82,7 +82,7 @@ class OtherRelationPanel extends JPanel {
 		final CollectableEntityField clctef = new DefaultCollectableEntityField(NuclosEntity.RELATIONTYPE.getEntityName(), String.class, 
 				SpringLocaleDelegate.getInstance().getMessage("OtherRelationPanel.1", "Beziehungsart"),
 				SpringLocaleDelegate.getInstance().getMessage("OtherRelationPanel.1", "Beziehungsart"), 
-				null, null, false, CollectableEntityField.TYPE_VALUEIDFIELD, null, null, NuclosEntity.RELATIONTYPE.getEntityName(), null);
+				255, null, false, CollectableEntityField.TYPE_VALUEIDFIELD, null, null, NuclosEntity.RELATIONTYPE.getEntityName(), null);
 		final CollectableComboBox result = new NuclosCollectableComboBox(clctef, false);
 		// restrict value list to user-defined relation types:
 		final CollectableComparison cond = SearchConditionUtils.newComparison(NuclosEntity.RELATIONTYPE.getEntityName(), "system", ComparisonOperator.EQUAL, false);

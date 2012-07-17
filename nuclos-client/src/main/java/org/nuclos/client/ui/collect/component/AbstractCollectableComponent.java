@@ -22,7 +22,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -50,6 +53,7 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.JTextComponent;
 
 import org.apache.commons.lang.NullArgumentException;
+import org.apache.commons.lang.ObjectUtils;
 import org.apache.log4j.Logger;
 import org.jdesktop.jxlayer.JXLayer;
 import org.jdesktop.jxlayer.plaf.BufferedLayerUI;
@@ -62,6 +66,7 @@ import org.nuclos.client.common.Utils;
 import org.nuclos.client.common.security.SecurityCache;
 import org.nuclos.client.genericobject.GenericObjectClientUtils;
 import org.nuclos.client.genericobject.Modules;
+import org.nuclos.client.masterdata.MasterDataCache;
 import org.nuclos.client.masterdata.MasterDataLayoutHelper;
 import org.nuclos.client.scripting.ScriptEvaluator;
 import org.nuclos.client.scripting.context.CollectableScriptContext;
@@ -91,6 +96,9 @@ import org.nuclos.client.ui.labeled.LabeledComboBox;
 import org.nuclos.client.ui.popupmenu.DefaultJPopupMenuListener;
 import org.nuclos.client.ui.popupmenu.JPopupMenuFactory;
 import org.nuclos.client.ui.popupmenu.JPopupMenuListener;
+import org.nuclos.client.wizard.model.DataTyp;
+import org.nuclos.common.NuclosEntity;
+import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.NuclosScript;
 import org.nuclos.common.ParameterProvider;
 import org.nuclos.common.collect.collectable.Collectable;
@@ -117,6 +125,9 @@ import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonFatalException;
+import org.nuclos.common2.exception.CommonFinderException;
+import org.nuclos.common2.exception.CommonPermissionException;
+import org.nuclos.server.masterdata.valueobject.MasterDataVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
@@ -668,6 +679,21 @@ public abstract class AbstractCollectableComponent
 	 * @todo move to CollectableComponent interface?
 	 */
 	public boolean canDisplayComparisonWithOtherField() {
+		try {
+			DataTyp dataTyp = getDataTyp(clctef.getJavaClass().getName(), clctef.getDefaultComponentType(), 
+					clctef.getMaxLength(), clctef.getPrecision(), clctef.getFormatInput(),
+					clctef.getFormatOutput());
+			if (dataTyp != null) {
+				if (dataTyp.getDatabaseTyp().equals("blob")
+						|| dataTyp.getDatabaseTyp().equals("clob"))
+				return false;
+			}
+		} catch (CommonPermissionException e) {
+			throw new NuclosFatalException(e);
+		} catch (CommonFinderException e) {
+			throw new NuclosFatalException(e);
+		}
+	
 		return clcte != null;
 	}
 
@@ -716,6 +742,24 @@ public abstract class AbstractCollectableComponent
 	@Override
     public final void setEnabled(boolean bEnabled) {
 		this.enabled = bEnabled;
+		if (isSearchComponent()) {
+			try {
+				DataTyp dataTyp = getDataTyp(clctef.getJavaClass().getName(), clctef.getDefaultComponentType(), 
+						clctef.getMaxLength(), clctef.getPrecision(), clctef.getFormatInput(),
+						clctef.getFormatOutput());
+				if (dataTyp != null) {
+					if (dataTyp.getDatabaseTyp().equals("blob")
+							|| dataTyp.getDatabaseTyp().equals("clob")) {
+						enabled = false;
+						getControlComponent().setEnabled(false);
+					}
+				}
+			} catch (CommonPermissionException e) {
+				throw new NuclosFatalException(e);
+			} catch (CommonFinderException e) {
+				throw new NuclosFatalException(e);
+			}
+		}
 		setEnabledState(enabled && !readOnly && dynamicallyEnabled);
 	}
 
@@ -1171,10 +1215,67 @@ public abstract class AbstractCollectableComponent
 		return result;
 	}
 
-
 	protected ComparisonOperator[] getSupportedComparisonOperators() {
+		try {
+			DataTyp dataTyp = getDataTyp(clctef.getJavaClass().getName(), clctef.getDefaultComponentType(), 
+					clctef.getMaxLength(), clctef.getPrecision(), clctef.getFormatInput(),
+					clctef.getFormatOutput());
+			if (dataTyp != null) {
+				if (dataTyp.getDatabaseTyp().equals("blob")
+						|| dataTyp.getDatabaseTyp().equals("clob"))
+				return new ComparisonOperator[0];
+			}
+		} catch (CommonPermissionException e) {
+			throw new NuclosFatalException(e);
+		} catch (CommonFinderException e) {
+			throw new NuclosFatalException(e);
+		}
 		return ComparisonOperator.getComparisonOperators();
 	}
+	
+	protected static DataTyp getDataTyp(String javaType, String defaultComponentType, Integer scale, Integer precision, String inputFormat, String outputFormat) throws CommonFinderException, CommonPermissionException{
+		DataTyp typ = null;
+		Collection<MasterDataVO> colMasterData = MasterDataCache.getInstance().get(NuclosEntity.DATATYP.getEntityName());
+
+		List<MasterDataVO> lstVO = new ArrayList<MasterDataVO>(colMasterData);
+		Collections.sort(lstVO, new Comparator<MasterDataVO>() {
+
+			@Override
+			public int compare(MasterDataVO o1, MasterDataVO o2) {
+				return ((String)o1.getField("name")).compareTo((String)o2.getField("name"));
+			}
+
+		});
+
+		for(MasterDataVO vo : lstVO) {
+			String strJavaTyp = (String)vo.getField("javatyp");
+			String strDefaultComponentType = (String)vo.getField("defaultcomponenttype");
+			String strOutputFormat = (String)vo.getField("outputformat");
+			String strInputFormat = (String)vo.getField("inputformat");
+			Integer iScale = (Integer)vo.getField("scale");
+			if(iScale != null && iScale.intValue() == 0)
+				iScale = null;
+			Integer iPrecision = (Integer)vo.getField("precision");
+			if(iPrecision != null && iPrecision.intValue() == 0)
+				iPrecision = null;
+
+			String strDatabaseTyp = (String)vo.getField("databasetyp");
+			String strName = (String)vo.getField("name");
+			if(strName.equals("Referenzfeld"))
+				continue;
+			if(strName.equals("Nachschlagefeld"))
+				continue;
+
+			if(StringUtils.equals(javaType, strJavaTyp) && StringUtils.equals(outputFormat, strOutputFormat) &&
+				/*StringUtils.equals(inputFormat, strInputFormat) &&*/ ObjectUtils.equals(scale, iScale) &&
+				ObjectUtils.equals(precision, iPrecision) && StringUtils.equals(defaultComponentType, strDefaultComponentType)) {
+				typ = new DataTyp(strName, strInputFormat, strOutputFormat, strDatabaseTyp, iScale, iPrecision, strJavaTyp, strDefaultComponentType);
+				break;
+			}
+		}
+		return typ;
+	}
+
 
 
 	/**

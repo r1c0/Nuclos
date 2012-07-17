@@ -57,17 +57,17 @@ public class CollectableRule extends AbstractCollectableBean<RuleVO> {
 			super(RULE_ENTITY, "Regel");
 
 			this.addCollectableEntityField(new DefaultCollectableEntityField(FIELDNAME_NAME, String.class, "Name",
-					"Name der Regel", null, null, false, CollectableField.TYPE_VALUEFIELD, null, null, RULE_ENTITY, null));
+					"Name der Regel", 255, null, false, CollectableField.TYPE_VALUEFIELD, null, null, RULE_ENTITY, null));
 			this.addCollectableEntityField(new DefaultCollectableEntityField(FIELDNAME_DESCRIPTION, String.class,
-					"Beschreibung", "Beschreibung der Regel", null, null, true, CollectableField.TYPE_VALUEFIELD, null, null, RULE_ENTITY, null));
+					"Beschreibung", "Beschreibung der Regel", 4000, null, true, CollectableField.TYPE_VALUEFIELD, null, null, RULE_ENTITY, null));
 			this.addCollectableEntityField(new DefaultCollectableEntityField(FIELDNAME_RULESOURCE, String.class, "Code",
-					"Quellcode der Regel", null, null, false, CollectableField.TYPE_VALUEFIELD, null, null, RULE_ENTITY, null));
+					"Quellcode der Regel", 255, null, false, CollectableField.TYPE_VALUEFIELD, null, null, RULE_ENTITY, null));
 			this.addCollectableEntityField(new DefaultCollectableEntityField(FIELDNAME_ACTIVE, Boolean.class,
 					"Aktiv?", "Aktivkennzeichen der Regel", null, null, false, CollectableField.TYPE_VALUEFIELD, null, null, RULE_ENTITY, null));
 			this.addCollectableEntityField(new DefaultCollectableEntityField(FIELDNAME_DEBUG, Boolean.class,
 					"Debug?", "Debug-Flag der Regel", null, null, false, CollectableField.TYPE_VALUEFIELD, null, null, RULE_ENTITY, null));
 			this.addCollectableEntityField(new DefaultCollectableEntityField(FIELDNAME_NUCLET, String.class,
-					"Nuclet", "", null, null, true, CollectableField.TYPE_VALUEIDFIELD, null, null, RULE_ENTITY, null));
+					"Nuclet", "", 255, null, true, CollectableField.TYPE_VALUEIDFIELD, null, null, RULE_ENTITY, null));
 		}
 	}	// inner class Entity
 

@@ -54,12 +54,12 @@ public class CollectableStateRoleAttributeGroup extends AbstractCollectable {
 			this.addCollectableEntityField(new DefaultCollectableEntityField(FIELDNAME_ROLE, String.class, 
 					getSpringLocaleDelegate().getMessage("CollectableStateRoleAttributeGroup.4","Benutzergruppe"),
 					getSpringLocaleDelegate().getMessage("CollectableStateRoleAttributeGroup.9","\u00dcbergeordnete Benutzergruppe (Rolle)"), 
-					null, null, false, CollectableField.TYPE_VALUEIDFIELD, "staterole",
+					255, null, false, CollectableField.TYPE_VALUEIDFIELD, "staterole",
 					CollectableValueIdField.NULL, null, null, entity, null));
 			this.addCollectableEntityField(new DefaultCollectableEntityField(FIELDNAME_ATTRIBUTEGROUP, String.class, 
 					getSpringLocaleDelegate().getMessage("CollectableStateRoleAttributeGroup.1","Attributgruppe"), 
 					getSpringLocaleDelegate().getMessage("CollectableStateRoleAttributeGroup.2","Attributgruppe"), 
-					null, null, false, CollectableField.TYPE_VALUEIDFIELD, NuclosEntity.ENTITYFIELDGROUP.getEntityName(),
+					255, null, false, CollectableField.TYPE_VALUEIDFIELD, NuclosEntity.ENTITYFIELDGROUP.getEntityName(),
 					CollectableValueIdField.NULL, null, null, entity, null));
 			this.addCollectableEntityField(new DefaultCollectableEntityField(FIELDNAME_WRITEABLE, Boolean.class, 
 					getSpringLocaleDelegate().getMessage("CollectableStateRoleAttributeGroup.8","Schreibrecht?"), 

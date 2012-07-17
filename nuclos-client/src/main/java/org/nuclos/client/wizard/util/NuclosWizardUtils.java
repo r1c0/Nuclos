@@ -35,6 +35,7 @@ import org.apache.log4j.Logger;
 import org.nuclos.client.common.LocaleDelegate;
 import org.nuclos.client.common.MetaDataClientProvider;
 import org.nuclos.client.masterdata.CollectableMasterData;
+import org.nuclos.client.masterdata.MasterDataCache;
 import org.nuclos.client.masterdata.MasterDataDelegate;
 import org.nuclos.client.masterdata.MetaDataCache;
 import org.nuclos.client.masterdata.MetaDataDelegate;
@@ -84,7 +85,7 @@ public class NuclosWizardUtils {
 
 	public static DataTyp getDataTyp(String javaType, String defaultComponentType, Integer scale, Integer precision, String inputFormat, String outputFormat) throws CommonFinderException, CommonPermissionException{
 		DataTyp typ = null;
-		Collection<MasterDataVO> colMasterData = MasterDataDelegate.getInstance().getMasterData(NuclosEntity.DATATYP.getEntityName());
+		Collection<MasterDataVO> colMasterData = MasterDataCache.getInstance().get(NuclosEntity.DATATYP.getEntityName());
 
 		List<MasterDataVO> lstVO = new ArrayList<MasterDataVO>(colMasterData);
 		Collections.sort(lstVO, new Comparator<MasterDataVO>() {

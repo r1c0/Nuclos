@@ -54,11 +54,11 @@ public class CollectableStateModel extends AbstractCollectableBean<StateModelVO>
 			this.addCollectableEntityField(new DefaultCollectableEntityField(FIELDNAME_NAME, String.class, 
 					getSpringLocaleDelegate().getMessage("CollectableStateModel.3","Name"),
 					getSpringLocaleDelegate().getMessage("CollectableStateModel.4","Name des Statusmodells"), 
-					null, null, false, CollectableField.TYPE_VALUEFIELD, null, null, entity, null));
+					255, null, false, CollectableField.TYPE_VALUEFIELD, null, null, entity, null));
 			this.addCollectableEntityField(new DefaultCollectableEntityField(FIELDNAME_DESCRIPTION, String.class,
 					getSpringLocaleDelegate().getMessage("CollectableStateModel.1","Beschreibung"), 
 					getSpringLocaleDelegate().getMessage("CollectableStateModel.2","Beschreibung des Statusmodells"), 
-					null, null, true, CollectableField.TYPE_VALUEFIELD, null, null, entity, null));
+					4000, null, true, CollectableField.TYPE_VALUEFIELD, null, null, entity, null));
 		}
 
 	}	// inner class Entity

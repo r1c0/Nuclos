@@ -59,7 +59,7 @@ public class CollectableInstanceModel extends AbstractCollectableBean<InstanceVO
 			super(mdMetaVO.getEntityName(), mdMetaVO.getLabel());
 			final String entity = mdMetaVO.getEntityName();
 			this.addCollectableEntityField(new DefaultCollectableEntityField(FIELDNAME_NAME, String.class, mdMetaVO.getField(FIELDNAME_NAME).getLabel(),
-					mdMetaVO.getField(FIELDNAME_NAME).getDescription(), null, null, false, CollectableField.TYPE_VALUEFIELD, null, null, entity, null));
+					mdMetaVO.getField(FIELDNAME_NAME).getDescription(), 255, null, false, CollectableField.TYPE_VALUEFIELD, null, null, entity, null));
 			this.addCollectableEntityField(new CollectableMasterDataForeignKeyEntityField(mdMetaVO.getField(FIELDNAME_PROCESSMODEL), entity));
 			this.addCollectableEntityField(new DefaultCollectableEntityField(FIELDNAME_PLANSTART, DateTime.class, mdMetaVO.getField(FIELDNAME_PLANSTART).getLabel(),
 					mdMetaVO.getField(FIELDNAME_PLANSTART).getDescription(), null, null, false, CollectableField.TYPE_VALUEFIELD, null, null, entity, null));
