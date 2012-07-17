@@ -644,7 +644,7 @@ public class MasterDataSubFormController extends DetailsSubFormController<Collec
 					for (MasterDataSubFormController controller : getChildSubFormController()) {
 						if (getJTable().getSelectedRows() != null && getJTable().getSelectedRows().length == 1) {
 							// single selection
-							//controller.getSubForm().setEnabled(true);
+							controller.getSubForm().setEnabled(true); // enabled or disabled from Layout is respected via setEnabledByLayout
 							CollectableEntityObject clct = getSelectedCollectable();
 							controller.fillAsSubFormChild(MasterDataSubFormController.this, clct);
 							controller.selectFirstRow();
@@ -652,7 +652,7 @@ public class MasterDataSubFormController extends DetailsSubFormController<Collec
 						else {
 							// multi-selection
 							controller.fillAsSubFormChild(MasterDataSubFormController.this, null);
-							//controller.getSubForm().setEnabled(false);
+							controller.getSubForm().setEnabled(false);  // enabled or disabled from Layout is respected via setEnabledByLayout
 						}
 					}
 				}

@@ -2185,6 +2185,7 @@ public class LayoutMLParser extends org.nuclos.common2.layoutml.LayoutMLParser {
 						sForeignKeyFieldToParent);
 
 				subform.setEnabled(bEnabled || bCreateSearchableComponents);
+				subform.setEnabledByLayout(bEnabled || bCreateSearchableComponents);
 
 				final String sControllerType = attributes.getValue(ATTRIBUTE_CONTROLLERTYPE);
 				subform.setControllerType(sControllerType);

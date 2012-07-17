@@ -439,6 +439,7 @@ public class SubForm extends JPanel
 	private boolean closed = false;
 
 	private boolean enabled = true;
+	private boolean enabledByLayout = true;
 
 	private boolean readonly = false;
 
@@ -934,9 +935,13 @@ public class SubForm extends JPanel
 	@Override
 	public void setEnabled(boolean enabled) {
 		this.enabled = enabled;
-		setEnabledState(enabled && !readonly);
+		setEnabledState(enabled && !readonly && enabledByLayout);
 	}
 
+	public void setEnabledByLayout(boolean enabled) {
+		this.enabledByLayout = enabled;
+	}
+	
 	private void setEnabledState(boolean enabled) {
 		super.setEnabled(enabled);
 		setToolbarFunctionState(ToolbarFunction.NEW,
@@ -956,7 +961,7 @@ public class SubForm extends JPanel
 	}
 
 	public void setNewEnabled(ScriptContext sc) {
-		boolean enabled = this.enabled && !readonly;
+		boolean enabled = this.enabled && !readonly && enabledByLayout;
 		if (enabled && getNewEnabledScript() != null) {
 			Object o = ScriptEvaluator.getInstance().eval(getNewEnabledScript(), sc, enabled);
 			if (o instanceof Boolean) {
