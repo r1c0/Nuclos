@@ -476,12 +476,14 @@ public class ExplorerNode<TN extends TreeNode> extends DefaultMutableTreeNode {
 
 	protected TreeNodeAction newShowListAction(JTree tree) {
 		final TreeNodeAction result = new ShowListAction(tree);
-		boolean enabled = CollectionUtils.applyFilter(getTreeNode().getSubNodes(), new Predicate<TreeNode>() {
+		/*boolean enabled = CollectionUtils.applyFilter(getTreeNode().getSubNodes(), new Predicate<TreeNode>() {
 			@Override
 			public boolean evaluate(TreeNode t) {
 				return !StringUtils.isNullOrEmpty(t.getEntityName()) && t.getId() != null;
 			}
-		}).size() > 0;
+		}).size() > 0;*/
+		// performance issue. if subnodes are not loaded yet. deaktivate this action.
+		boolean enabled = getTreeNode().hasSubNodes() == null ? false : getTreeNode().hasSubNodes();
 		result.setEnabled(enabled);
 		return result;
 	}

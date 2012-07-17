@@ -78,8 +78,10 @@ public class SearchFilterExplorerNode extends ExplorerNode<SearchFilterTreeNode>
 		result.add(actShowInTab);
 
 		result.add(new RemoveFilterAction(tree));
-		result.add(TreeNodeAction.newSeparatorAction());
-		result.add(newShowListAction(tree));
+		if (getTreeNode().hasSubNodes() != null) {// only add if subnodes are loaded.
+			result.add(TreeNodeAction.newSeparatorAction());
+			result.add(newShowListAction(tree));
+		}
 
 		return result;
 	}

@@ -112,7 +112,8 @@ public class GenericObjectExplorerNode extends ExplorerNode<GenericObjectTreeNod
 
 		result.add(newShowDetailsAction(tree, false));
 		result.add(newShowDetailsAction(tree, true));
-		result.add(newShowListAction(tree));
+		if (getTreeNode().hasSubNodes() != null) // only add if subnodes are loaded.
+			result.add(newShowListAction(tree));
 
 		if (this.isRelated()) {
 			result.add(new RemoveRelationAction(tree));

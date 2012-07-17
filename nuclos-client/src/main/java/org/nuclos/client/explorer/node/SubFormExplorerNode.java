@@ -63,8 +63,10 @@ public class SubFormExplorerNode<TN extends SubFormTreeNode<Integer>> extends Ex
 	@Override
 	public List<TreeNodeAction> getTreeNodeActions(JTree tree) {
 		final List<TreeNodeAction> result = new LinkedList<TreeNodeAction>(super.getTreeNodeActions(tree));
-		result.add(TreeNodeAction.newSeparatorAction());
-		result.add(newShowListAction(tree));
+		if (getTreeNode().hasSubNodes() != null) {// only add if subnodes are loaded.
+			result.add(TreeNodeAction.newSeparatorAction());
+			result.add(newShowListAction(tree));
+		}
 		return result;
 	}
 

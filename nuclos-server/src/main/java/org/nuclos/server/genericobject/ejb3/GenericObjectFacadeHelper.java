@@ -345,7 +345,7 @@ public class GenericObjectFacadeHelper {
 		for (EntityAndFieldName eafn : collSubEntities.keySet()) {
 			String sSubEntityName = eafn.getEntityName();
 			// care only about subforms which are on the highest level and in the given set of entity names
-			if (collSubEntities.get(eafn) == null) { //&& stRequiredSubEntityNames.contains(sSubEntityName)) {
+			if (collSubEntities.get(eafn) == null && stRequiredSubEntityNames != null &&  (stRequiredSubEntityNames.isEmpty() || stRequiredSubEntityNames.contains(sSubEntityName))) {
 				String sForeignKeyField = eafn.getFieldName();
 				if (sForeignKeyField == null) {
 					sForeignKeyField = ModuleConstants.DEFAULT_FOREIGNKEYFIELDNAME;

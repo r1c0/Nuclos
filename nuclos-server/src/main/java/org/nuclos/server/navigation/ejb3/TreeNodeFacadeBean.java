@@ -209,7 +209,7 @@ public class TreeNodeFacadeBean extends NuclosFacadeBean implements TreeNodeFaca
 
 		final GenericObjectTreeNode result = GenericObjectTreeNodeFactory.getInstance().newTreeNode(gowdvo, AttributeCache.getInstance(), 
 				serverParameterProvider, iRelationId, relationtype, direction, getCurrentUserName(), parentId);
-
+		
 		assert result != null;
 		return result;
 	}
@@ -275,7 +275,18 @@ public class TreeNodeFacadeBean extends NuclosFacadeBean implements TreeNodeFaca
 	}
 
 	private static Set<String> getSubEntityNamesRequiredForGenericObjectTreeNode(Integer iModuleId) {
-		return Collections.emptySet();
+		// we need no dependend subforms here. get them on demand as child subnode.
+		/*final Set<String> result = new HashSet<String>();
+		final MasterDataVO mdcvoModule = Modules.getInstance().getModuleById(iModuleId);
+		
+		final String base = (String)mdcvoModule.getField("entity");
+		final Collection<EntityTreeViewVO> etvs = Modules.getInstance().getSubnodesETV(base);
+		for (EntityTreeViewVO etv : etvs) {
+			if (etv.isActive())
+				result.add(etv.getEntity());
+		}
+		return result;*/
+		return Collections.EMPTY_SET;
 	}
 
 	/**

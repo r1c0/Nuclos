@@ -527,7 +527,8 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 		for (EntityObjectVO eo : NucletDalProvider.getInstance().getEntityObjectProcessor(eMeta.getEntity()).getBySearchExpression(appendRecordGrants(clctexpr, eMeta), iMaxRowCount + 1, true)) {
 			final GenericObjectWithDependantsVO go = new GenericObjectWithDependantsVO(DalSupportForGO.getGenericObjectVO(eo), new DependantMasterDataMap());
 			try {
-				_fillDependants(go, go.getUsageCriteria(getAttributeCache()), stRequiredSubEntityNames);
+				if (!stRequiredSubEntityNames.isEmpty())
+					_fillDependants(go, go.getUsageCriteria(getAttributeCache()), stRequiredSubEntityNames);
 			}
 			catch(CommonFinderException e) {
 				throw new NuclosFatalException(e);

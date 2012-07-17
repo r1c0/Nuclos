@@ -72,7 +72,8 @@ public class MasterDataExplorerNode<TN extends MasterDataTreeNode<Integer>> exte
 		result.add(TreeNodeAction.newSeparatorAction());
 		result.add(this.newShowDetailsAction(tree, false));
 		result.add(this.newShowDetailsAction(tree, true));
-		result.add(this.newShowListAction(tree));
+		if (getTreeNode().hasSubNodes() != null) // only add if subnodes are loaded.
+			result.add(this.newShowListAction(tree));
 		result.add(this.newRemoveAction(tree));
 
 		// add generator actions here.
