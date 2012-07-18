@@ -31,6 +31,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 
 import javax.swing.JComponent;
 import javax.swing.JSplitPane;
@@ -317,22 +318,25 @@ public class StateModelCollectController extends NuclosCollectController<Collect
 
 			Integer iProcess = (md.getEntityObjectVO().getFieldId("process") == null) ? null : md.getEntityObjectVO().getFieldId("process").intValue();
 			Integer iStatus = (md.getEntityObjectVO().getFieldId("state") == null) ? null : md.getEntityObjectVO().getFieldId("state").intValue();
-			String sModuleName = Modules.getInstance().getEntityNameByModuleId(iModule);
-
-			CollectableGenericObjectEntity e = new CollectableGenericObjectEntity(sModuleName, sModuleName, Collections.singletonList(""));
-			LayoutRoot lRoot = GenericObjectLayoutCache.getInstance().getLayout(e
-				, new UsageCriteria(iModule, iProcess, iStatus), false, null, valueListProviderCache);
-
-			JComponent jcomp = lRoot.getRootComponent();
-
-			List<JTabbedPane> lst = new ArrayList<JTabbedPane>();
-
-			searchTabbedPanes(jcomp, lst);
-
-			Map<String, String> mp = getTabbedPaneNames(lst);
-
-			this.pnlEdit.getStateModelEditor().getStateModelEditorPropertiesPanel().getStatePropertiesPanel().getModel().setTabModelList(mp);
-
+			try {
+				String sModuleName = Modules.getInstance().getEntityNameByModuleId(iModule);
+	
+				CollectableGenericObjectEntity e = new CollectableGenericObjectEntity(sModuleName, sModuleName, Collections.singletonList(""));
+				LayoutRoot lRoot = GenericObjectLayoutCache.getInstance().getLayout(e
+					, new UsageCriteria(iModule, iProcess, iStatus), false, null, valueListProviderCache);
+	
+				JComponent jcomp = lRoot.getRootComponent();
+	
+				List<JTabbedPane> lst = new ArrayList<JTabbedPane>();
+	
+				searchTabbedPanes(jcomp, lst);
+	
+				Map<String, String> mp = getTabbedPaneNames(lst);
+	
+				this.pnlEdit.getStateModelEditor().getStateModelEditorPropertiesPanel().getStatePropertiesPanel().getModel().setTabModelList(mp);
+			} catch (NoSuchElementException e) {
+				// ignore.
+			}
 			break;
 
 		}

@@ -6877,7 +6877,8 @@
         "logbook": false,
         "unique": false,
         "labelres": "nuclos.entityfield.statemodelUsage.module.label",
-        "descriptionres": "nuclos.entityfield.statemodelUsage.module.description"
+        "descriptionres": "nuclos.entityfield.statemodelUsage.module.description",
+        "ondeletecascade": true
       },
       {
         "name": "process",
@@ -6892,7 +6893,8 @@
         "logbook": false,
         "unique": false,
         "labelres": "nuclos.entityfield.statemodelUsage.process.label",
-        "descriptionres": "nuclos.entityfield.statemodelUsage.process.description"
+        "descriptionres": "nuclos.entityfield.statemodelUsage.process.description",
+        "ondeletecascade": true
       }
     ]
   },

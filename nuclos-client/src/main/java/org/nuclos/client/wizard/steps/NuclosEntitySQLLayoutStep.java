@@ -74,6 +74,7 @@ import org.nuclos.client.masterdata.MasterDataDelegate;
 import org.nuclos.client.masterdata.MetaDataDelegate;
 import org.nuclos.client.scripting.ScriptEditor;
 import org.nuclos.client.statemodel.RoleRepository;
+import org.nuclos.client.statemodel.StateDelegate;
 import org.nuclos.client.ui.Bubble;
 import org.nuclos.client.ui.Bubble.Position;
 import org.nuclos.client.ui.Errors;
@@ -98,9 +99,11 @@ import org.nuclos.common.collect.collectable.searchcondition.ComparisonOperator;
 import org.nuclos.common.dal.DalSupportForMD;
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
+import org.nuclos.common.dal.vo.EntityObjectVO;
 import org.nuclos.common.masterdata.CollectableMasterDataEntity;
 import org.nuclos.common.transport.vo.EntityFieldMetaDataTO;
 import org.nuclos.common.transport.vo.EntityMetaDataTO;
+import org.nuclos.common2.IdUtils;
 import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonFatalException;
@@ -114,6 +117,7 @@ import org.nuclos.server.masterdata.ejb3.MasterDataFacadeRemote;
 import org.nuclos.server.masterdata.valueobject.DependantMasterDataMap;
 import org.nuclos.server.masterdata.valueobject.MasterDataMetaVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
+import org.nuclos.server.statemodel.valueobject.StateGraphVO;
 import org.pietschy.wizard.InvalidStateException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
@@ -818,53 +822,53 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 				 if(wizardModel.isStateModel()) {
 					Integer iRoleId = (Integer)vo.getField("roleId");
 					MasterDataVO voRole = null;
- 					try {
-	 					voRole = RoleRepository.getInstance().getRole(iRoleId);
-	 				}
-	 				catch(Exception e) {
-	 					throw new NuclosFatalException(e);
-	 				}
-
+					try {
+						voRole = RoleRepository.getInstance().getRole(iRoleId);
+					}
+					catch(Exception e) {
+						throw new NuclosFatalException(e);
+					}
+		
 					 Integer permission = (Integer)vo.getField("modulepermission");
-
+		
 					 if(permission == null)
 						 vo.remove();
 					 else
 						 vo.setField("modulepermission", permission);
-
+		
 					 vo.setField("module", metaVO.getEntity());
 					 vo.setField("moduleId", iEntityId);
-
+		
 					 final String entity = NuclosEntity.ROLEMODULE.getEntityName();
 					 DependantMasterDataMap mp = new DependantMasterDataMap(entity,
 						 Collections.singletonList(DalSupportForMD.getEntityObjectVO(entity, vo)));
-
+		
 					 MasterDataDelegate.getInstance().update(NuclosEntity.ROLE.getEntityName(), voRole, mp);
 				 }
 				 else {
 					 MasterDataVO voRole = null;
 					 Integer iRoleId = (Integer)vo.getField("roleId");
- 					 try {
- 						 voRole = RoleRepository.getInstance().getRole(iRoleId);
-	 				 }
-	 				 catch(Exception e) {
-	 					 throw new NuclosFatalException(e);
-	 				 }
+					 try {
+						 voRole = RoleRepository.getInstance().getRole(iRoleId);
+					 }
+					 catch(Exception e) {
+						 throw new NuclosFatalException(e);
+					 }
 					 Integer permission = (Integer)vo.getField("masterdatapermission");
 					 vo.setField("entity", metaVO.getEntity());
-
+		
 					 vo.setField("masterdatapermission", permission);
 					 if(permission == null)
 						 vo.remove();
 					 else
 						 vo.setField("masterdatapermission", permission);
-
+		
 					 final String entity = NuclosEntity.ROLEMASTERDATA.getEntityName();
 					 DependantMasterDataMap mp = new DependantMasterDataMap(
 							 entity, 
 							 Collections.singletonList(DalSupportForMD.getEntityObjectVO(entity, vo)));
 					 MasterDataDelegate.getInstance().update(NuclosEntity.ROLE.getEntityName(), voRole, mp);
-
+		
 				 }
 				 try {
 						RoleRepository.getInstance().updateRoles();
@@ -877,8 +881,22 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 		catch(CommonBusinessException bex) {
 			// do nothing here
 			LOG.warn("createOrModifyEntity: " + bex);
-      }
-
+		}
+	
+		try {
+			 if (wizardModel.isEditMode()) {
+				 Collection<EntityObjectVO> colVo = MasterDataDelegate.getInstance().getDependantMasterData(NuclosEntity.STATEMODELUSAGE.getEntityName(), "nuclos_module", iEntityId);
+				 if (!wizardModel.isStateModel()) {
+					 for(EntityObjectVO vo : colVo) {
+						 MasterDataDelegate.getInstance().remove(NuclosEntity.STATEMODELUSAGE.getEntityName(), DalSupportForMD.wrapEntityObjectVO(vo));
+					 }
+				 }
+			 }
+		}
+		catch(Exception bex) {
+			// do nothing here
+			LOG.warn("createOrModifyEntity: " + bex);
+	    }
 
 		if(wizardModel.isImportTable()) {
 			MetaDataDelegate.getInstance().transferTable(wizardModel.getJdbcUrl(), wizardModel.getExternalUser(),
