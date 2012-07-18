@@ -66479,6 +66479,21 @@
     "text": "Bildformate"
   },
   {
+    "resourceID": "OverlayOptionPane.copy",
+    "locale": "i-default",
+    "text": "Copy"
+  },
+  {
+    "resourceID": "OverlayOptionPane.copy",
+    "locale": "en",
+    "text": "Copy"
+  },
+  {
+    "resourceID": "OverlayOptionPane.copy",
+    "locale": "de",
+    "text": "Kopieren"
+  },
+  {
     "resourceID": "OverlayOptionPane.OK",
     "locale": "i-default",
     "text": "OK"

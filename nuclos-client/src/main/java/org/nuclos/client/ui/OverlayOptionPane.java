@@ -19,7 +19,6 @@ package org.nuclos.client.ui;
 import info.clearthought.layout.TableLayout;
 import info.clearthought.layout.TableLayoutConstraints;
 
-import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
@@ -27,6 +26,8 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.FocusTraversalPolicy;
 import java.awt.Font;
+import java.awt.Toolkit;
+import java.awt.datatransfer.StringSelection;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.awt.font.TextAttribute;
@@ -44,6 +45,7 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
@@ -66,6 +68,8 @@ public class OverlayOptionPane extends JScrollPane implements IOverlayCenterComp
     public static final int         YES_NO_CANCEL_OPTION = JOptionPane.YES_NO_CANCEL_OPTION;
     /** Type used for <code>showConfirmDialog</code>. */
 	public static final int         OK_CANCEL_OPTION = JOptionPane.OK_CANCEL_OPTION;
+	
+	private static final int		OK_ONLY_OPTION = 21;
 	
 	/** Return value from class method if YES is chosen. */
     public static final int         YES_OPTION = JOptionPane.YES_OPTION;
@@ -91,6 +95,14 @@ public class OverlayOptionPane extends JScrollPane implements IOverlayCenterComp
     private final OvOpListener listener;
     
     private int result = CLOSED_OPTION;
+    
+    public static void showMessageDialog(MainFrameTab tab, Object message, String title, OvOpListener listener) {
+    	new OverlayOptionPane(tab, message, title, OK_ONLY_OPTION, null, listener);
+    }
+    
+    public static void showMessageDialog(MainFrameTab tab, Object message, String title, Icon icon, OvOpListener listener) {
+    	new OverlayOptionPane(tab, message, title, OK_ONLY_OPTION, icon, listener);
+    }
     
     public static void showConfirmDialog(MainFrameTab tab, Object message, String title, int optionType, OvOpListener listener) {
     	new OverlayOptionPane(tab, message, title, optionType, null, listener);
@@ -138,7 +150,15 @@ public class OverlayOptionPane extends JScrollPane implements IOverlayCenterComp
 		if (message instanceof Component) {
 			tbllay.addFullSpan((Component)message);
 		} else {
-			final JLabel label = new LineBreakLabel(message==null?"":message.toString(), jpnOptions.getPreferredSize().width + 60);
+			final JLabel label = new LineBreakLabel(message==null?"":message.toString(), Math.max(300, jpnOptions.getPreferredSize().width + 60));
+			JPopupMenu context = new JPopupMenu();
+			context.add(new AbstractAction(SpringLocaleDelegate.getInstance().getMessage("OverlayOptionPane.copy","Kopieren"), Icons.getInstance().getIconCopy16()) {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new StringSelection(label.getText()), null);
+				}
+			});
+			label.setComponentPopupMenu(context);
 			final JPanel labHolder = new JPanel();
 			labHolder.add(label);
 			labHolder.setBorder(BorderFactory.createEmptyBorder(20, icon==null?20:10, 10, 20));
@@ -154,6 +174,10 @@ public class OverlayOptionPane extends JScrollPane implements IOverlayCenterComp
 	private JPanel createOptions(int optionType) {
 		
 		switch (optionType) {
+		case OK_ONLY_OPTION: {
+			JButton jbtnOK = createButton("OverlayOptionPane.OK", OK_OPTION);
+			
+			return createPanel(0, jbtnOK); }
 		case YES_NO_OPTION: {
 			JButton jbtnYES = createButton("OverlayOptionPane.Yes", YES_OPTION);
 			JButton jbtnNO = createButton("OverlayOptionPane.No", NO_OPTION);
