@@ -176,22 +176,21 @@ public class RecordGrantUtils {
 		try {
 			if(rgVO.getValid()) {
 				ResultVO queryResult = dataBaseHelper.getDbAccess().executePlainQueryAsResultVO(
-						datasourceServerUtils.createSQL(rgVO.getSource(), getParameter()), 1);
+						datasourceServerUtils.getSqlQueryForId(rgVO.getSource(), getParameter(), id), 1);
 				boolean canWrite = true;
 				boolean canDelete = true;
 
 				if (queryResult.getRowCount() == 0)
 					return RecordGrantRight.NO_RIGHTS;
-
+				
 				for (int col = 0 ; col < queryResult.getColumns().size(); col++) {
-
 					if (queryResult.getColumns().get(col).getColumnLabel().equalsIgnoreCase("CANWRITE"))
 						canWrite = isTrue(queryResult.getRows().get(0)[col]);
 
 					if (queryResult.getColumns().get(col).getColumnLabel().equalsIgnoreCase("CANDELETE"))
 						canDelete = isTrue(queryResult.getRows().get(0)[col]);
 				}
-
+					
 				return new RecordGrantRight(canWrite, canDelete);
 
 			} else {
