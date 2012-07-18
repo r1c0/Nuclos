@@ -25,6 +25,7 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.nuclos.common.MetaDataProvider;
+import org.nuclos.common.NuclosEOField;
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
 import org.nuclos.common.collect.collectable.CollectableField;
@@ -57,6 +58,7 @@ import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.dal.vo.EntityMetaDataVO;
 import org.nuclos.common.dal.vo.PivotInfo;
 import org.nuclos.common.dblayer.JoinType;
+import org.nuclos.common2.InternalTimestamp;
 import org.nuclos.common2.RelativeDate;
 import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.StringUtils;
@@ -358,6 +360,14 @@ public class EOSearchExpressionUnparser {
 				if (x.getJavaType() == String.class) {
 					x = queryBuilder.upper(x.as(String.class));
 					y = queryBuilder.upper(y.as(String.class));
+				}
+
+				// @see NUCLOS-630 datcreated and datchange should not be interpreted with time, so do not truncate time!
+				if (x instanceof DbColumnExpression<?>) {
+					String column = ((DbColumnExpression<?>)x).getColumnName();
+					if (column.equals(NuclosEOField.CREATEDAT.getMetaData().getDbColumn())
+							|| column.equals(NuclosEOField.CHANGEDAT.getMetaData().getDbColumn()))
+						x = queryBuilder.convertInternalTimestampToDate(x.as(InternalTimestamp.class));
 				}
 
 				// InternalTimestamp should be interpreted with time, so do not truncate time!
