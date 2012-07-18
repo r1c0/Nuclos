@@ -176,7 +176,7 @@ public class RecordGrantUtils {
 		try {
 			if(rgVO.getValid()) {
 				ResultVO queryResult = dataBaseHelper.getDbAccess().executePlainQueryAsResultVO(
-						datasourceServerUtils.createSQL(rgVO.getSource(), getParameter()), 1);
+						datasourceServerUtils.getSqlQueryForId(rgVO.getSource(), getParameter(), id), 1);
 				boolean canWrite = true;
 				boolean canDelete = true;
 

@@ -147,7 +147,7 @@ public class DatasourceServerUtils {
 	 * @throws NuclosDatasourceException
 	 */
 	public String getSqlQueryForId(String sDatasourceXML, Map<String, Object> mpParams, Long id) throws NuclosDatasourceException {
-		return MessageFormat.format("SELECT ds.{0} FROM ({1}) ds WHERE ds.{0} = {2}", "\"intid\"", createSQL(sDatasourceXML, mpParams), String.valueOf(id));
+		return MessageFormat.format("SELECT * FROM ({1}) ds WHERE ds.{0} = {2}", "\"intid\"", createSQL(sDatasourceXML, mpParams), String.valueOf(id));
 	}
 
 	/**
