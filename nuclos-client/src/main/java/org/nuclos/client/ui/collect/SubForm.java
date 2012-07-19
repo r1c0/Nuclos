@@ -2182,6 +2182,11 @@ public class SubForm extends JPanel
 			} else if (event instanceof MouseEvent)
             	newRowOnNext = false;
 			
+			if (getSubForm() == null) {
+				super.changeSelection(rowIndex, columnIndex, toggle, extend);
+				return;
+			}
+			
 			String sNextColumn = getSelectedColumn() == -1 ? null : getSubForm().getColumnNextFocusComponent((String)getColumnModel().getColumn(getSelectedColumn()).getIdentifier());
 			if (sNextColumn != null) {
 				int colIndex = sNextColumn == null ? -1 : getColumnModel().getColumnIndex(sNextColumn);
