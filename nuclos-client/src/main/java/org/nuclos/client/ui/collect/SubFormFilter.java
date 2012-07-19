@@ -18,12 +18,10 @@ package org.nuclos.client.ui.collect;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
-import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.MouseAdapter;
@@ -58,6 +56,7 @@ import javax.swing.event.ChangeListener;
 import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
+import javax.swing.text.JTextComponent;
 
 import org.apache.log4j.Logger;
 import org.nuclos.client.ui.Icons;
@@ -72,6 +71,7 @@ import org.nuclos.client.ui.collect.component.CollectableComboBox;
 import org.nuclos.client.ui.collect.component.CollectableComponent;
 import org.nuclos.client.ui.collect.component.CollectableComponentFactory;
 import org.nuclos.client.ui.collect.component.CollectableDateChooser;
+import org.nuclos.client.ui.collect.component.CollectableListOfValues;
 import org.nuclos.client.ui.collect.component.CollectableTextField;
 import org.nuclos.client.ui.collect.component.LabeledCollectableComponentWithVLP;
 import org.nuclos.client.ui.gc.IReferenceHolder;
@@ -88,8 +88,8 @@ import org.nuclos.common.collect.collectable.searchcondition.CollectableSearchCo
 import org.nuclos.common.collect.collectable.searchcondition.ComparisonOperator;
 import org.nuclos.common.collect.exception.CollectableFieldFormatException;
 import org.nuclos.common2.ClientPreferences;
-import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.PreferencesUtils;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.common2.exception.PreferencesException;
 
@@ -239,9 +239,20 @@ public class SubFormFilter implements Closeable, IReferenceHolder {
 		    				for (RefreshValueListAction rvlact : collRefreshValueListActions) {
 		    					SubForm.setParameterForRefreshValueListAction(rvlact, -1, clctWithVLP, (SubFormTableModel)subform.getSubformTable().getModel(), parameterProvider);					
 		    				}
-		
+
+		    	            JTextComponent compText = null;
+		    	            JComponent comp = clctcomp.getControlComponent();
+		    	            if (comp instanceof ListOfValues) {
+		    	            	compText = ((ListOfValues)comp).getJTextField();
+		    	            } else if (comp instanceof JComboBox) {
+		    	            	compText = (JTextComponent)((JComboBox)comp).getEditor().getEditorComponent();
+		    	            }   
+
+		    	            // remember old value here. 
+		    				String clctfValue = compText.getText();
 		    				// refresh value list:
 							clctWithVLP.refreshValueList(false);
+		    				compText.setText(clctfValue);
 	    				}
     				}
             	}
@@ -275,6 +286,18 @@ public class SubFormFilter implements Closeable, IReferenceHolder {
 	               }
 	            });
             }
+            if (clctcomp instanceof CollectableListOfValues) {
+            	((ListOfValues)clctcomp.getControlComponent()).getJTextField().addFocusListener(new FocusAdapter() {
+	               //NUCLEUSINT-789 
+	               @Override
+	               public void focusLost(FocusEvent e) {
+	                  saveSearchTerm(subform.getEntityName(), cef.getName(), clctcomp);
+	                  if (!closed) {
+	                	  filter();
+	                  }
+	               }
+	            });
+	            }
          }
          else if (clctcomp instanceof CollectableCheckBox) {
             ((JCheckBox)clctcomp.getControlComponent()).addChangeListener(new ChangeListener() {
@@ -300,12 +323,8 @@ public class SubFormFilter implements Closeable, IReferenceHolder {
 				});
          } else {
          	JComponent comp = clctcomp.getControlComponent();
-            if (comp instanceof ListOfValues) {
-               comp = ((ListOfValues)comp).getJTextField();
-            }
-
             comp.addFocusListener(new FocusAdapter() {
-               //NUCLEUSINT-789 i
+               //NUCLEUSINT-789 
                @Override
                public void focusLost(FocusEvent e) {
                   saveSearchTerm(subform.getEntityName(), cef.getName(), clctcomp);
