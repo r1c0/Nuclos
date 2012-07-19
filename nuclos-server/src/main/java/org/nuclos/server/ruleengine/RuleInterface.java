@@ -1394,6 +1394,14 @@ public class RuleInterface extends CustomCodeInterface {
 	 * @param iNumeral requested subsequent state
 	 */
 	public void changeState(int iNumeral) throws NuclosBusinessRuleException, CommonFinderException {
+		this.changeState(iNumeral, true);
+	}
+	
+	/**
+	 * changes the state for the current generic object
+	 * @param iNumeral requested subsequent state
+	 */
+	public void changeState(int iNumeral, boolean bReloadDependants) throws NuclosBusinessRuleException, CommonFinderException {
 		if (this.getMasterData() != null) {
 			throw new NuclosFatalException("rule.interface.error.6");
 				//"Statuswecksel innerhalb der Stammdaten ist unzul\u00e4ssig. Die Stammdaten haben kein Statusmodell.");
@@ -1406,13 +1414,15 @@ public class RuleInterface extends CustomCodeInterface {
 		final GenericObjectVO govo = getRuleInterface().changeState(this.getGenericObject(), this.getObjectId(), iNumeral);
 		this.getRuleObjectContainerCVO().setGenericObject(govo);
 
-		/* reload the dependant data - this is necessary, because the version id
-		 * of the dependant data was changed while changing the status
-		 */
-		DependantMasterDataMap mpDependants = this.getRuleObjectContainerCVO().getDependants();
-		getGenericObjectFacade().reloadDependants(new GenericObjectWithDependantsVO(this.getRuleObjectContainerCVO()), mpDependants, false);
-		for(String sEntity : mpDependants.getEntityNames()) {
-			this.getRuleObjectContainerCVO().setDependants(sEntity, mpDependants.getValues(sEntity));
+		if (bReloadDependants) {
+			/* reload the dependant data - this is necessary, because the version id
+			 * of the dependant data was changed while changing the status
+			 */
+			DependantMasterDataMap mpDependants = this.getRuleObjectContainerCVO().getDependants();
+			getGenericObjectFacade().reloadDependants(new GenericObjectWithDependantsVO(this.getRuleObjectContainerCVO()), mpDependants, false);
+			for(String sEntity : mpDependants.getEntityNames()) {
+				this.getRuleObjectContainerCVO().setDependants(sEntity, mpDependants.getValues(sEntity));
+			}
 		}
 	}
 
@@ -1422,6 +1432,15 @@ public class RuleInterface extends CustomCodeInterface {
 	 * @param iNumeral requested subsequent state
 	 */
 	public void changeState(Integer iGenericObjectId, int iNumeral) throws NuclosBusinessRuleException, CommonFinderException {
+		this.changeState(iGenericObjectId, iNumeral, true);
+	}
+
+	/**
+	 * changes the state for generic object with intid <code>iGenericObjectId</code>
+	 * @param iGenericObjectId generic object value object
+	 * @param iNumeral requested subsequent state
+	 */
+	public void changeState(Integer iGenericObjectId, int iNumeral, boolean bReloadDependants) throws NuclosBusinessRuleException, CommonFinderException {
 		try {
 			this.getGenericObject(iGenericObjectId);
 		}
@@ -1441,15 +1460,17 @@ public class RuleInterface extends CustomCodeInterface {
 			final GenericObjectVO govo = this.getRuleInterface().changeState(this.getGenericObject(), iGenericObjectId, iNumeral);
 			if (govo != null && this.getGenericObject() != null && LangUtils.equals(iGenericObjectId, this.getGenericObject().getId())) {
 				this.getRuleObjectContainerCVO().setGenericObject(govo);
-				/*
-				 * reload the dependant data - this is necessary, because the version id
-				 * of the dependant data was changed while changing the status
-				 * (but only if the affected object is the containers object)
-				 */
-				DependantMasterDataMap mpDependants = this.getRuleObjectContainerCVO().getDependants();
-				getGenericObjectFacade().reloadDependants(new GenericObjectWithDependantsVO(this.getRuleObjectContainerCVO()), mpDependants, false);
-				for(String sEntity : mpDependants.getEntityNames()) {
-					this.getRuleObjectContainerCVO().setDependants(sEntity, mpDependants.getValues(sEntity));
+				if (bReloadDependants) {
+					/*
+					 * reload the dependant data - this is necessary, because the version id
+					 * of the dependant data was changed while changing the status
+					 * (but only if the affected object is the containers object)
+					 */
+					DependantMasterDataMap mpDependants = this.getRuleObjectContainerCVO().getDependants();
+					getGenericObjectFacade().reloadDependants(new GenericObjectWithDependantsVO(this.getRuleObjectContainerCVO()), mpDependants, false);
+					for(String sEntity : mpDependants.getEntityNames()) {
+						this.getRuleObjectContainerCVO().setDependants(sEntity, mpDependants.getValues(sEntity));
+					}
 				}
 			}
 		}
