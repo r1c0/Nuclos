@@ -56,6 +56,7 @@ import javax.swing.event.ChangeListener;
 import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
+import javax.swing.text.JTextComponent;
 
 import org.apache.log4j.Logger;
 import org.nuclos.client.ui.Icons;
@@ -70,6 +71,7 @@ import org.nuclos.client.ui.collect.component.CollectableComboBox;
 import org.nuclos.client.ui.collect.component.CollectableComponent;
 import org.nuclos.client.ui.collect.component.CollectableComponentFactory;
 import org.nuclos.client.ui.collect.component.CollectableDateChooser;
+import org.nuclos.client.ui.collect.component.CollectableListOfValues;
 import org.nuclos.client.ui.collect.component.CollectableTextField;
 import org.nuclos.client.ui.collect.component.LabeledCollectableComponentWithVLP;
 import org.nuclos.client.ui.gc.IReferenceHolder;
@@ -205,105 +207,88 @@ public class SubFormFilter implements Closeable, IReferenceHolder {
     * create collectablecomponents as search components and assign them to the corresponding column
     */
    private void initSearchFilterComponents() {
-	   	SubFormTableModel tableModel = (SubFormTableModel)externalTable.getModel();
+   	SubFormTableModel tableModel = (SubFormTableModel)externalTable.getModel();
 
-	      for (int index=0 ; index < tableModel.getColumnCount(); index++) {
-	         final CollectableEntityField cef = tableModel.getCollectableEntityField(index);
-	         final String columnName = tableModel.getColumnFieldName(index);
-	         final CollectableComponent clctcomp = CollectableComponentFactory.getInstance().newCollectableComponent(cef, subform.getCollectableComponentType(cef.getName(), true), true);
+      for (int index=0 ; index < tableModel.getColumnCount(); index++) {
+         final CollectableEntityField cef = tableModel.getCollectableEntityField(index);
+         final String columnName = tableModel.getColumnFieldName(index);
+         final CollectableComponent clctcomp = CollectableComponentFactory.getInstance().newCollectableComponent(cef, subform.getCollectableComponentType(cef.getName(), true), true);
 
-	         if (clctcomp instanceof LabeledCollectableComponentWithVLP) {
-	         	// handle valuelistprovider
-	        	final LabeledCollectableComponentWithVLP clctWithVLP = (LabeledCollectableComponentWithVLP)clctcomp;
-	            CollectableFieldsProvider valuelistprovider = subform.getValueListProvider(columnName);
-	            if (valuelistprovider == null && cef.isReferencing()) {
-	               valuelistprovider = collectableFieldsProviderFactory.newDefaultCollectableFieldsProvider(subform.getEntityName(), clctWithVLP.getFieldName());
-	            }
-	            clctWithVLP.setValueListProvider(valuelistprovider);
-	            if (!subform.isLayout())
-	            	clctWithVLP.refreshValueList(true);
+         if (clctcomp instanceof LabeledCollectableComponentWithVLP) {
+         	// handle valuelistprovider
+        	final LabeledCollectableComponentWithVLP clctWithVLP = (LabeledCollectableComponentWithVLP)clctcomp;
+            CollectableFieldsProvider valuelistprovider = subform.getValueListProvider(columnName);
+            if (valuelistprovider == null && cef.isReferencing()) {
+               valuelistprovider = collectableFieldsProviderFactory.newDefaultCollectableFieldsProvider(subform.getEntityName(), clctWithVLP.getFieldName());
+            }
+            clctWithVLP.setValueListProvider(valuelistprovider);
+            if (!subform.isLayout())
+            	clctWithVLP.refreshValueList(true);
 
-	            final FocusAdapter refreshVLPAdapter = new FocusAdapter() {
-	            	@Override
-	            	public void focusGained(FocusEvent e) {
-	    				final Collection<RefreshValueListAction> collRefreshValueListActions = subform.getRefreshValueListActions(clctWithVLP.getFieldName());
-	    				if (!collRefreshValueListActions.isEmpty()) {
-		    				// set the value list provider (dynamically):
-		    				CollectableFieldsProvider valuelistprovider = subform.getValueListProvider(clctWithVLP.getFieldName());
-		    				if (valuelistprovider != null) {
-			    				clctWithVLP.setValueListProvider(valuelistprovider);
-			
-			    				// set parameters:
-			    				for (RefreshValueListAction rvlact : collRefreshValueListActions) {
-			    					SubForm.setParameterForRefreshValueListAction(rvlact, -1, clctWithVLP, (SubFormTableModel)subform.getSubformTable().getModel(), parameterProvider);					
-			    				}
-			
-			    				// refresh value list:
-								clctWithVLP.refreshValueList(false);
+            final FocusAdapter refreshVLPAdapter = new FocusAdapter() {
+            	@Override
+            	public void focusGained(FocusEvent e) {
+    				final Collection<RefreshValueListAction> collRefreshValueListActions = subform.getRefreshValueListActions(clctWithVLP.getFieldName());
+    				if (!collRefreshValueListActions.isEmpty()) {
+	    				// set the value list provider (dynamically):
+	    				CollectableFieldsProvider valuelistprovider = subform.getValueListProvider(clctWithVLP.getFieldName());
+	    				if (valuelistprovider != null) {
+		    				clctWithVLP.setValueListProvider(valuelistprovider);
+		
+		    				// set parameters:
+		    				for (RefreshValueListAction rvlact : collRefreshValueListActions) {
+		    					SubForm.setParameterForRefreshValueListAction(rvlact, -1, clctWithVLP, (SubFormTableModel)subform.getSubformTable().getModel(), parameterProvider);					
 		    				}
+
+		    	            JTextComponent compText = null;
+		    	            JComponent comp = clctcomp.getControlComponent();
+		    	            if (comp instanceof ListOfValues) {
+		    	            	compText = ((ListOfValues)comp).getJTextField();
+		    	            } else if (comp instanceof JComboBox) {
+		    	            	compText = (JTextComponent)((JComboBox)comp).getEditor().getEditorComponent();
+		    	            }   
+
+		    	            // remember old value here. 
+		    				String clctfValue = compText.getText();
+		    				// refresh value list:
+							clctWithVLP.refreshValueList(false);
+		    				compText.setText(clctfValue);
 	    				}
-	            	}
-				};
-	            JComponent comp = clctcomp.getControlComponent();
-	            if (comp instanceof ListOfValues) {
-	            	((ListOfValues)comp).getJTextField().addFocusListener(refreshVLPAdapter);
-	            } else if (comp instanceof JComboBox) {
-	            	for (Component c : ((JComboBox)comp).getComponents())
-	            	{
-	            		if (c instanceof JButton)
-	            			((JButton)c).addMouseListener(new MouseAdapter() {
-	            				@Override
-	            				public void mouseEntered(MouseEvent e) {
-	            					refreshVLPAdapter.focusGained(null);
-	            				}
-							});
-	            	}
-	            	((JComboBox)comp).getEditor().getEditorComponent().addFocusListener(refreshVLPAdapter);
-	            }   
-	            
-	            // handle listener
-	            if (clctcomp instanceof CollectableComboBox) {
-		            ((JComboBox)clctcomp.getControlComponent()).addItemListener(new ItemListener() {
-		               //NUCLEUSINT-789 i
-		               @Override
-		               public void itemStateChanged(ItemEvent e) {
-		            	   if (!closed) {
-		            		   filter();
-		            	   }
-		               }
-		            });
-	            }
-	         }
-	         else if (clctcomp instanceof CollectableCheckBox) {
-	            ((JCheckBox)clctcomp.getControlComponent()).addChangeListener(new ChangeListener() {
+    				}
+            	}
+			};
+            JComponent comp = clctcomp.getControlComponent();
+            if (comp instanceof ListOfValues) {
+            	((ListOfValues)comp).getJTextField().addFocusListener(refreshVLPAdapter);
+            } else if (comp instanceof JComboBox) {
+            	for (Component c : ((JComboBox)comp).getComponents())
+            	{
+            		if (c instanceof JButton)
+            			((JButton)c).addMouseListener(new MouseAdapter() {
+            				@Override
+            				public void mouseEntered(MouseEvent e) {
+            					refreshVLPAdapter.focusGained(null);
+            				}
+						});
+            	}
+            	((JComboBox)comp).getEditor().getEditorComponent().addFocusListener(refreshVLPAdapter);
+            }   
+            
+            // handle listener
+            if (clctcomp instanceof CollectableComboBox) {
+	            ((JComboBox)clctcomp.getControlComponent()).addItemListener(new ItemListener() {
 	               //NUCLEUSINT-789 i
 	               @Override
-	               public void stateChanged(ChangeEvent e) {
+	               public void itemStateChanged(ItemEvent e) {
 	            	   if (!closed) {
 	            		   filter();
 	            	   }
 	               }
 	            });
-
-	            clctcomp.clear();
-	         }
-	         else if (clctcomp instanceof CollectableDateChooser) {
-	         	((CollectableDateChooser)clctcomp).getDateChooser().getJTextField().addFocusListener(new FocusAdapter() {
-						@Override
-						public void focusLost(FocusEvent e) {
-							if (!closed) {
-								filter();
-							}
-						}
-					});
-	         } else {
-	         	JComponent comp = clctcomp.getControlComponent();
-	            if (comp instanceof ListOfValues) {
-	               comp = ((ListOfValues)comp).getJTextField();
-	            }
-
-	            comp.addFocusListener(new FocusAdapter() {
-	               //NUCLEUSINT-789 i
+            }
+            if (clctcomp instanceof CollectableListOfValues) {
+            	((ListOfValues)clctcomp.getControlComponent()).getJTextField().addFocusListener(new FocusAdapter() {
+	               //NUCLEUSINT-789 
 	               @Override
 	               public void focusLost(FocusEvent e) {
 	                  saveSearchTerm(subform.getEntityName(), cef.getName(), clctcomp);
@@ -312,18 +297,54 @@ public class SubFormFilter implements Closeable, IReferenceHolder {
 	                  }
 	               }
 	            });
-	         }
+	            }
+         }
+         else if (clctcomp instanceof CollectableCheckBox) {
+            ((JCheckBox)clctcomp.getControlComponent()).addChangeListener(new ChangeListener() {
+               //NUCLEUSINT-789 i
+               @Override
+               public void stateChanged(ChangeEvent e) {
+            	   if (!closed) {
+            		   filter();
+            	   }
+               }
+            });
 
-	         if (clctcomp != null) {
-	            column2component.put(cef.getName()/*tableModel.getColumnFieldName(index)*/, clctcomp);
-	         }
+            clctcomp.clear();
+         }
+         else if (clctcomp instanceof CollectableDateChooser) {
+         	((CollectableDateChooser)clctcomp).getDateChooser().getJTextField().addFocusListener(new FocusAdapter() {
+					@Override
+					public void focusLost(FocusEvent e) {
+						if (!closed) {
+							filter();
+						}
+					}
+				});
+         } else {
+         	JComponent comp = clctcomp.getControlComponent();
+            comp.addFocusListener(new FocusAdapter() {
+               //NUCLEUSINT-789 
+               @Override
+               public void focusLost(FocusEvent e) {
+                  saveSearchTerm(subform.getEntityName(), cef.getName(), clctcomp);
+                  if (!closed) {
+                	  filter();
+                  }
+               }
+            });
+         }
 
-	         // autocompletion for text fields
-	         if (clctcomp instanceof CollectableTextField) {
-	         	CollectableTextField.addAutoComplete(cef, ((CollectableTextField)clctcomp).getJTextField(), getAutoCompletePreferences(cef.getCollectableEntity().getName()));
-	         }
-	      }
-	   }
+         if (clctcomp != null) {
+            column2component.put(cef.getName()/*tableModel.getColumnFieldName(index)*/, clctcomp);
+         }
+
+         // autocompletion for text fields
+         if (clctcomp instanceof CollectableTextField) {
+         	CollectableTextField.addAutoComplete(cef, ((CollectableTextField)clctcomp).getJTextField(), getAutoCompletePreferences(cef.getCollectableEntity().getName()));
+         }
+      }
+   }
 
    // saves the search term for autocompletion functionality
    private void saveSearchTerm(String entityName, String fieldName, CollectableComponent clctcomp) {
