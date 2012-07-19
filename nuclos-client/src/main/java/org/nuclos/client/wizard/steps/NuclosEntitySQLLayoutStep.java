@@ -1172,8 +1172,7 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 
 			 final List<EntityFieldMetaDataVO> metaFields = new ArrayList<EntityFieldMetaDataVO>(MetaDataDelegate.getInstance().getAllEntityFieldsByEntity(wizardModel.getEntityName()).values());
 
-			 // @see NUCLOS-573
-			 /*final List<EntityFieldMetaDataVO> fields = new ArrayList<EntityFieldMetaDataVO>();
+			 final List<EntityFieldMetaDataVO> fields = new ArrayList<EntityFieldMetaDataVO>();
 
 			 for(int i = 0; i < listAttributeOrder.getModel().getSize(); i++) {
 				 Attribute attr = (Attribute)listAttributeOrder.getModel().getElementAt(i);
@@ -1183,7 +1182,13 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 						 break;
 					 }
 				 }
-			 }*/
+			 }
+			 // add system fields.
+			 for(EntityFieldMetaDataVO voField : metaFields) {
+				 if (!fields.contains(voField))
+					 fields.add(voField);
+			 }
+			 
 			 
 			 final Map<Long, String> attributeGroups = new HashMap<Long, String>();
 			 for(String sGroup : getAttributeGroups()) {
@@ -1193,7 +1198,7 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 			 }
 			 
 			 final DefaultLayoutMLFactory mlFactory = new DefaultLayoutMLFactory(attributeGroups);
-			 mlFactory.createLayout(wizardModel.getEntityName(), metaFields, cbAttributeGroup.isSelected(), cbSubforms.isSelected(), cbEditFields.isSelected());
+			 mlFactory.createLayout(wizardModel.getEntityName(), fields, cbAttributeGroup.isSelected(), cbSubforms.isSelected(), cbEditFields.isSelected());
 		}
 		catch(CommonValidationException e) {
 			Errors.getInstance().showExceptionDialog(this, e);
