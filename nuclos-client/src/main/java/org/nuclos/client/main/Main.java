@@ -17,6 +17,7 @@
 package org.nuclos.client.main;
 
 import java.awt.Frame;
+import java.net.HttpURLConnection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TimeZone;
@@ -58,6 +59,12 @@ public class Main {
 	private static final boolean MAC_OSX = System.getProperty("os.name").toLowerCase().startsWith("mac os x");
 
 	private static Main INSTANCE;
+	
+	/**
+	 * Disable following redirections cause of bug with security dialogs, otherwise Client freezes when dialog appears from EventDispatcherThread.
+	 * Only the security manager from webstart will bring up this dialogs (see Sun Bug #7177349) 
+	 */
+	public static final boolean HTTP_CONNECTION_FOLLOW_REDIRECTIONS_ENABLED = false;
 
 	/**
 	 * @deprecated Workaround
@@ -192,6 +199,8 @@ public class Main {
 			System.out.println(msg);
 			LOG.info(msg);
 		}
+		
+		HttpURLConnection.setFollowRedirects(HTTP_CONNECTION_FOLLOW_REDIRECTIONS_ENABLED);
 
 		try {
 			final StartUp startUp = new StartUp(asArgs);
