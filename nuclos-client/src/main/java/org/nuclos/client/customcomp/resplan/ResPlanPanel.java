@@ -841,7 +841,7 @@ public class ResPlanPanel extends JPanel {
 			public void run() throws CommonBusinessException {
 				final MainFrameTab tabIfAny = new MainFrameTab();
 				final NuclosCollectController<?> cntrl = NuclosCollectControllerFactory.getInstance().newCollectController(
-						entityName, null);
+						entityName, tabIfAny);
 				
 				Main.getInstance().getMainController().initMainFrameTab(cntrl, tabIfAny);
 				controller.getTab().add(tabIfAny);
