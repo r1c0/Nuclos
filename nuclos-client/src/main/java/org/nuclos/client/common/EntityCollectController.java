@@ -621,8 +621,10 @@ public abstract class EntityCollectController<Clct extends Collectable> extends 
 						@Override
 						public void run() {
 							ScriptContext ctx = new CollectControllerScriptContext(EntityCollectController.this, new ArrayList<DetailsSubFormController<?>>(getSubFormControllersInDetails()));
-							for (CollectableComponent c : getDetailsPanel().getEditView().getCollectableComponents()) {
-								c.setComponentState(ctx, null);
+							if (getDetailsPanel() != null) {
+								for (CollectableComponent c : getDetailsPanel().getEditView().getCollectableComponents()) {
+									c.setComponentState(ctx, null);
+								}
 							}
 						}
 					});
