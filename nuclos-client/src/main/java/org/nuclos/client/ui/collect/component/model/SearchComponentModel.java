@@ -16,9 +16,12 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.ui.collect.component.model;
 
+import org.nuclos.common.NuclosEOField;
 import org.nuclos.common.collect.collectable.CollectableEntityField;
 import org.nuclos.common.collect.collectable.CollectableField;
 import org.nuclos.common.collect.collectable.CollectableUtils;
+import org.nuclos.common.collect.collectable.CollectableValueField;
+import org.nuclos.common.collect.collectable.CollectableValueIdField;
 import org.nuclos.common.collect.collectable.searchcondition.AtomicCollectableSearchCondition;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableComparison;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableSearchCondition;
@@ -68,8 +71,15 @@ public class SearchComponentModel extends CollectableComponentModel {
 
 		final CollectableField clctfComparand = getComparand(cond);
 
-		final CollectableField clctfNewValue = (clctfComparand != null) ? clctfComparand : this.getEntityField().getNullField();
+		CollectableField clctfNewValue = (clctfComparand != null) ? clctfComparand : this.getEntityField().getNullField();
 
+		// checking strict field type is not needed here. a searchcondition can although have only a value. @see  	NUCLOSINT-1470
+		if (clctfNewValue.getFieldType() != getEntityField().getFieldType() && !NuclosEOField.isEOFieldWithForceValueSearch(getEntityField().getName())) {
+			if (getEntityField().getFieldType() == CollectableField.TYPE_VALUEFIELD)
+				clctfNewValue = new CollectableValueField(clctfNewValue.getValue());
+			if (getEntityField().getFieldType() == CollectableField.TYPE_VALUEIDFIELD)
+				clctfNewValue = new CollectableValueIdField(null, clctfNewValue.getValue());
+		}
 		super.setField(clctfNewValue, false);
 
 		this.fireSearchConditionChanged();
