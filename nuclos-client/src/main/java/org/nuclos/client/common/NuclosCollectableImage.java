@@ -28,6 +28,8 @@ import java.awt.dnd.DropTargetDropEvent;
 import java.awt.dnd.DropTargetEvent;
 import java.awt.dnd.DropTargetListener;
 import java.awt.event.ActionEvent;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.io.BufferedInputStream;
@@ -101,6 +103,18 @@ public class NuclosCollectableImage extends CollectableMediaComponent implements
 		this.nuclosImage = new NuclosImage();
 		MessageExchange.addListener(this);
 		setupDragDrop();
+		
+		getLabeledComponent().addComponentListener(new ComponentAdapter() {
+			@Override
+			public void componentResized(ComponentEvent e) {
+				try {
+					// this is needed because labeled component can have size 0 on init.
+					updateView(getField());
+				} catch (Exception e2) {
+					// ignore.
+				}
+			}
+		});
 	}
 
 	protected void setupDragDrop() {
