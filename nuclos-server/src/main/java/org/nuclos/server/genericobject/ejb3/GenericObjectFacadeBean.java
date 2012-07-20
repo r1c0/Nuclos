@@ -1544,26 +1544,6 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 	}
 
 	/**
-	 * changes a specific attribute of a specific generic object
-	 * @param iGenericObjectId generic object id of object with attribute to change
-	 * @param sAttribute			attribute name of attribute to change
-	 * @param oValue					new value to set for attribute
-	 */
-	public void setAttribute(Integer iGenericObjectId, String sAttribute, Integer iValueId, Object oValue)
-			throws NuclosFatalException, CommonValidationException, NuclosBusinessException {
-
-		// @todo get rid of this method - it doesn't belong to the facade
-		// @todo ensure that oValue is not set for non editable attributes and iValue is only set for non editable attributes (throw CommonValidationException)
-		// @todo Note that writing to the logbook is always enabled here
-		// @todo Replace with LOFB.modify(..., false)?
-
-		final Integer iAttributeId = getAttributeCache().getAttribute(
-				DalSupportForGO.getGenericObject(iGenericObjectId).getModuleId(), sAttribute).getId();
-		final DynamicAttributeVO attrvo = new DynamicAttributeVO(iAttributeId, iValueId, oValue);
-		updateGenericObjectAttribute(attrvo, iGenericObjectId, true);
-	}
-
-	/**
 	 * checks if a given generic object belongs to a given module.
 	 * @param iModuleId			 id of module to validate generic object for
 	 * @param iGenericObjectId id of generic object to check

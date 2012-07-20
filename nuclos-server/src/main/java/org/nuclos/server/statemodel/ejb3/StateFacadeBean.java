@@ -35,6 +35,7 @@ import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.SearchConditionUtils;
 import org.nuclos.common.UsageCriteria;
+import org.nuclos.common.attribute.DynamicAttributeVO;
 import org.nuclos.common.collect.collectable.CollectableEntity;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableComparison;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableIsNullCondition;
@@ -74,6 +75,7 @@ import org.nuclos.server.dal.DalSupportForGO;
 import org.nuclos.server.dblayer.query.DbFrom;
 import org.nuclos.server.dblayer.query.DbQuery;
 import org.nuclos.server.dblayer.query.DbQueryBuilder;
+import org.nuclos.server.genericobject.GenericObjectMetaDataCache;
 import org.nuclos.server.genericobject.ejb3.GenericObjectFacadeLocal;
 import org.nuclos.server.genericobject.valueobject.GenericObjectVO;
 import org.nuclos.server.genericobject.valueobject.GenericObjectWithDependantsVO;
@@ -1255,12 +1257,28 @@ public class StateFacadeBean extends NuclosFacadeBean implements StateFacadeRemo
 
 		// copy status name to leased object attributes:
 		try {
-			GenericObjectFacadeLocal goFacade = ServerServiceLocator.getInstance().getFacade(GenericObjectFacadeLocal.class);
-			goFacade.setAttribute(iGenericObjectId, NuclosEOField.STATE.getMetaData().getField(), stateVO.getId(), stateVO.getStatename());
-			goFacade.setAttribute(iGenericObjectId, NuclosEOField.STATENUMBER.getMetaData().getField(), stateVO.getId(), stateVO.getNumeral());
-			//goFacade.setAttribute(iGenericObjectId, NuclosEOField.STATEICON.getMetaData().getField(), stateVO.getId(), stateVO.getIcon());
+			final GenericObjectVO go = genericObjectFacade.get(iGenericObjectId);
+			final GenericObjectMetaDataCache prov = GenericObjectMetaDataCache.getInstance();
+			
+			final DynamicAttributeVO state = go.getAttribute(NuclosEOField.STATE.getMetaData().getField(), prov);
+			state.setCanonicalValue(stateVO.getStatename(), prov);
+			state.setValueId(stateVO.getId());
+			// goFacade.setAttribute(iGenericObjectId, NuclosEOField.STATE.getMetaData().getField(), stateVO.getId(), stateVO.getStatename());
+			
+			final DynamicAttributeVO statenumber = go.getAttribute(NuclosEOField.STATENUMBER.getMetaData().getField(), prov);
+			state.setCanonicalValue(String.valueOf(stateVO.getNumeral()), prov);
+			state.setValueId(stateVO.getId());
+			// goFacade.setAttribute(iGenericObjectId, NuclosEOField.STATENUMBER.getMetaData().getField(), stateVO.getId(), stateVO.getNumeral());
+			
+			genericObjectFacade.modify(go, null, false);
 		}
 		catch (CommonValidationException ex) {
+			throw new NuclosFatalException(ex);
+		}
+		catch (CommonStaleVersionException ex) {
+			throw new NuclosFatalException(ex);
+		}
+		catch (CommonRemoveException ex) {
 			throw new NuclosFatalException(ex);
 		}
 

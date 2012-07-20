@@ -69,6 +69,7 @@ import org.nuclos.server.dblayer.incubator.DbExecutor.ResultSetRunner;
 import org.nuclos.server.dblayer.query.DbFrom;
 import org.nuclos.server.dblayer.query.DbQuery;
 import org.nuclos.server.dblayer.query.DbQueryBuilder;
+import org.nuclos.server.genericobject.GenericObjectMetaDataCache;
 import org.nuclos.server.genericobject.ejb3.GeneratorFacadeLocal;
 import org.nuclos.server.genericobject.ejb3.GenericObjectFacadeLocal;
 import org.nuclos.server.genericobject.searchcondition.CollectableGenericObjectSearchExpression;
@@ -311,6 +312,7 @@ public class RuleInterfaceFacadeBean extends NuclosFacadeBean {
 	 * sets the attribute with the given name in the leased object with the given id to the given value id and value.
 	 * The leased object is read from the database and stored later (after the change).
 	 * @precondition iGenericObjectId != null
+	 * @deprecated
 	 */
 	public void setAttribute(RuleVO ruleVO, Integer iGenericObjectId, String sAttribute, Integer iValueId, Object oValue) throws NuclosBusinessRuleException {
 		if (iGenericObjectId == null) {
@@ -325,7 +327,15 @@ public class RuleInterfaceFacadeBean extends NuclosFacadeBean {
 			//logging will be dropped
 		}
 		try {
-			getGenericObjectFacade().setAttribute(iGenericObjectId, sAttribute, iValueId, oValue);
+			final GenericObjectFacadeLocal gofl = getGenericObjectFacade();
+			final GenericObjectVO go = gofl.get(iGenericObjectId);
+			final GenericObjectMetaDataCache prov = GenericObjectMetaDataCache.getInstance();
+			final DynamicAttributeVO attr = go.getAttribute(sAttribute, prov);
+			attr.setCanonicalValue(String.valueOf(oValue), prov);
+			attr.setValueId(iValueId);
+			gofl.modify(go, null, false);
+			
+			// getGenericObjectFacade().setAttribute(iGenericObjectId, sAttribute, iValueId, oValue);
 		}
 		catch (CommonBusinessException ex) {
 			throw new NuclosBusinessRuleException(ex);
@@ -368,6 +378,7 @@ public class RuleInterfaceFacadeBean extends NuclosFacadeBean {
 	 * sets the field with the given name in the masterdata object with the given id to the given value id and value.
 	 * The masterdata object is read from the database and stored later (after the change).
 	 * @precondition iId != null
+	 * @deprecated
 	 */
 	public void setMasterDataField(String sEntityName, Integer iId, String sFieldName, Integer iValueId, Object oValue) {
 		if (iId == null) {
