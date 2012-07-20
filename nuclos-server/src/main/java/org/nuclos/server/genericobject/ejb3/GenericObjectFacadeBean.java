@@ -214,8 +214,14 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 	public GenericObjectVO get(Integer iGenericObjectId, boolean bCheckPermission) throws CommonFinderException, CommonPermissionException {
 //		GenericObjectVO govo = MasterDataWrapper.getGenericObjectVO(getMasterDataFacade().get(ENTITY_NAME_GENERICOBJECT, iGenericObjectId));
 //		govo = helper.getValueObject(govo);
-		final GenericObjectVO govo = DalSupportForGO.getGenericObject(iGenericObjectId);
-
+		
+		final GenericObjectVO govo;
+		try {
+			govo = DalSupportForGO.getGenericObject(iGenericObjectId);
+		} catch (Exception e) {
+			throw new CommonFinderException();
+		}
+		
 		if (bCheckPermission){
 			checkReadAllowedForModule(govo.getModuleId(), iGenericObjectId);
 			getRecordGrantUtils().checkInternal(MetaDataServerProvider.getInstance().getEntity(
