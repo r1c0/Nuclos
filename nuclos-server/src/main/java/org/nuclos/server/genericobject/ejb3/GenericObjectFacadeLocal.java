@@ -376,17 +376,6 @@ public interface GenericObjectFacadeLocal {
 		CommonPermissionException;
 
 	/**
-	 * changes a specific attribute of a specific generic object
-	 * @param iGenericObjectId generic object id of object with attribute to change
-	 * @param sAttribute			attribute name of attribute to change
-	 * @param oValue					new value to set for attribute
-	 */
-	void setAttribute(Integer iGenericObjectId,
-		String sAttribute, Integer iValueId, Object oValue)
-		throws NuclosFatalException, CommonValidationException,
-		NuclosBusinessException;
-
-	/**
 	 * checks if a given generic object belongs to a given module.
 	 * @param iModuleId			 id of module to validate generic object for
 	 * @param iGenericObjectId id of generic object to check
