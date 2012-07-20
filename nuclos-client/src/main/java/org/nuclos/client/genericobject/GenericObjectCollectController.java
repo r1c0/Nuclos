@@ -2282,7 +2282,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 
 	@Override
 	protected void unsafeFillDetailsPanel(CollectableGenericObjectWithDependants clct) throws CommonBusinessException {
-		this.unsafeFillDetailsPanel(clct, getCollectState().isDetailsModeNew() && getProcess() != null);
+		this.unsafeFillDetailsPanel(clct, getCollectState().isDetailsModeNew() /*&& getProcess() != null*/); //@see NUCLOS-656 respecting getProcess is not needed here. if process is not null, it will set via newCollectableWithDefaultValues
 	}
 
 
