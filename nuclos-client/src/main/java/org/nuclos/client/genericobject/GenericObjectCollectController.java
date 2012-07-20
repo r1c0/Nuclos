@@ -4560,11 +4560,13 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 
 	private Integer getProcessIdFromUsageCriteriaField(Map<String, CollectableField> mpFields) {
 		final CollectableField clctfField = mpFields.get(NuclosEOField.PROCESS.getMetaData().getField());
+		if (clctfField != null && !clctfField.isIdField()) return null;
 		return (clctfField == null) ? null : (Integer) clctfField.getValueId();
 	}
 
 	private Integer getStatusIdFromUsageCriteriaField(Map<String, CollectableField> mpFields) {
 		final CollectableField clctfField = mpFields.get(NuclosEOField.STATE.getMetaData().getField());
+		if (clctfField != null && !clctfField.isIdField()) return null;
 		return (clctfField == null) ? null : (Integer) clctfField.getValueId();
 	}
 
