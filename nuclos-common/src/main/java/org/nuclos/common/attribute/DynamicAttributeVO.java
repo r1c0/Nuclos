@@ -197,11 +197,58 @@ public class DynamicAttributeVO implements Serializable, Cloneable {
 
 	/**
 	 * We don't demand the attributecvo here, but we should maybe...
+	 * <p>
+	 * Attention: This method normally does not do what you expect as it needs very special
+	 * formatted values (e.g. 'ja' and 'nein' String for Boolean, special formatted String for 
+	 * Date etc.). I recommend to use {@link #setParsedValue}. (tp)
+	 * </p>
 	 * @todo adjust comment
 	 * @param oValue
 	 */
 	public void setValue(Object oValue) {
 		this.oValue = oValue;
+	}
+	
+	/**
+	 * This is a more save alternative to {@link #setValue(Object)} as it honours the strange 
+	 * conversion requirements of {@link DynamicAttributeVO}.
+	 * 
+	 * @see #setValue(Object)
+	 * @param o - value to set
+	 * @param prov - attribute provider to use
+	 * @throws CommonValidationException
+	 */
+	public void setParsedValue(Object o, AttributeProvider prov) throws CommonValidationException {
+		final AttributeCVO attrcvo = prov.getAttribute(getAttributeId());
+		if (getAttributeId() == null) {
+			throw new IllegalStateException("attributeId");
+		}
+		if (attrcvo == null || !getAttributeId().equals(attrcvo.getId())) {
+			throw new IllegalArgumentException("attrcvo");
+		}
+		final CanonicalAttributeFormat format = getCanonicalFormat(attrcvo.getJavaClass());
+		String formatted = null;
+		try {
+			formatted = format.format(o);
+		}
+		catch (ClassCastException e) {
+			// We must catch here as there are defects in s = format.parse(format.format(s'))
+			// I consider this as design flaw. (tp)
+			// 
+			// Example: StringFormat defines:
+			// public String format(Object oValue) {
+			// 	return (String) oValue;
+			// }
+			// But is seems to get Integer as input ...
+
+			if (o == null) {
+				formatted = null;
+			}
+			else {
+				formatted = String.valueOf(o);
+			}
+		}
+		this.oValue = format.parse(formatted);
 	}
 
 	public Object getValue() {

@@ -331,7 +331,7 @@ public class RuleInterfaceFacadeBean extends NuclosFacadeBean {
 			final GenericObjectVO go = gofl.get(iGenericObjectId);
 			final GenericObjectMetaDataCache prov = GenericObjectMetaDataCache.getInstance();
 			final DynamicAttributeVO attr = go.getAttribute(sAttribute, prov);
-			attr.setCanonicalValue(String.valueOf(oValue), prov);
+			attr.setParsedValue(oValue, prov);
 			attr.setValueId(iValueId);
 			gofl.modify(go, null, false);
 			

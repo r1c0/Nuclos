@@ -1261,12 +1261,12 @@ public class StateFacadeBean extends NuclosFacadeBean implements StateFacadeRemo
 			final GenericObjectMetaDataCache prov = GenericObjectMetaDataCache.getInstance();
 			
 			final DynamicAttributeVO state = go.getAttribute(NuclosEOField.STATE.getMetaData().getField(), prov);
-			state.setCanonicalValue(stateVO.getStatename(), prov);
+			state.setParsedValue(stateVO.getStatename(), prov);
 			state.setValueId(stateVO.getId());
 			// goFacade.setAttribute(iGenericObjectId, NuclosEOField.STATE.getMetaData().getField(), stateVO.getId(), stateVO.getStatename());
 			
 			final DynamicAttributeVO statenumber = go.getAttribute(NuclosEOField.STATENUMBER.getMetaData().getField(), prov);
-			state.setCanonicalValue(String.valueOf(stateVO.getNumeral()), prov);
+			state.setParsedValue(stateVO.getNumeral(), prov);
 			state.setValueId(stateVO.getId());
 			// goFacade.setAttribute(iGenericObjectId, NuclosEOField.STATENUMBER.getMetaData().getField(), stateVO.getId(), stateVO.getNumeral());
 			
