@@ -51,6 +51,7 @@ import javax.swing.JTable;
 import javax.swing.JToggleButton;
 import javax.swing.RowFilter;
 import javax.swing.RowSorter;
+import javax.swing.SwingUtilities;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.table.TableColumnModel;
@@ -445,7 +446,11 @@ public class SubFormFilter implements Closeable, IReferenceHolder {
     * filters the tablemodel using the entered data in the filter components located above the columns
     */
    private void filter() {
-      Map<String, CollectableComponent> columnFilters = getAllFilterComponents();
+	  // subformFilterPanel is invisible by default. @see NUCLOSINT-1630
+	  fixedSubFormFilter.setVisible(true);
+	  externalSubFormFilter.setVisible(true);
+	  
+	  Map<String, CollectableComponent> columnFilters = getAllFilterComponents();
 
       ArrayList<RowFilter<TableModel, Integer>> filters = new ArrayList<RowFilter<TableModel,Integer>>();
       SubFormTableModel subformtablemodel = externalTable.getSubFormModel();
@@ -751,9 +756,12 @@ public class SubFormFilter implements Closeable, IReferenceHolder {
    				CollectableField field = (CollectableField)PreferencesUtils.getSerializableObject(prefs, comp.getFieldName());
    				if (field != null) {
    					comp.setField(field);
-   					getFixedSubFormFilter().setCollapsed(false);
-   					getExternalSubFormFilter().setCollapsed(false);
-   					filterButton.setSelected(true);
+   					SwingUtilities.invokeLater(new Runnable() {
+						@Override
+						public void run() {
+		   					filterButton.doClick();
+						}
+					});
    				}
    			}
    		}

@@ -96,6 +96,8 @@ public class SubFormFilterPanel extends JXCollapsiblePane implements Closeable {
 		arrangeFilterComponents();
 		
 		addListener();
+        // subformFilterPanel is invisible by default. @see NUCLOSINT-1630
+		setVisible(false);
 	}
 	
 	@Override
