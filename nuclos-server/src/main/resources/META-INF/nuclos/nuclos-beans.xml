@@ -105,10 +105,12 @@
 	<!-- for transaction manager annotation based -->
 	<tx:annotation-driven mode="aspectj" transaction-manager="transactionManager"/>
 
-	<!-- Avoid scanning for nuclos-common (this is important for *client* performance -->
+	<!-- Avoid scanning for nuclos-common (this is important for *client* performance) -->
 	<bean class="org.nuclos.common.ApplicationProperties">
 	</bean>
-	<bean class="org.nuclos.common.collect.collectable.DefaultCollectableEntityProvider"/>
+	<bean id="defaultCollectableEntityProvider" class="org.nuclos.common.collect.collectable.DefaultCollectableEntityProvider">
+		<property name="collectableEOEntityProvider" ref="collectableEOEntityProvider"/>
+	</bean>
 	<bean class="org.nuclos.common2.SpringLocaleDelegate">
 		<property name="lookupService" ref="lookupService"/>
 	</bean>
