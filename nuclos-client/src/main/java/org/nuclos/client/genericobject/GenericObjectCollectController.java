@@ -3477,6 +3477,7 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 		if (!bVisible)
 			cmbbxCurrentState.setVisible(false);
 		else {
+			lbCurrentState.setVisible(true); // label although needed to be visible. otherwise nothing is shown if this is a new collectable (without previuos editing an existing record.)
 			cmbbxCurrentState.setVisible(true);
 			cmbbxCurrentState.setEnabled(bEnableButtons);
 			final Integer iGenericObjectId = getSelectedGenericObjectId();
@@ -5555,8 +5556,8 @@ public class GenericObjectCollectController extends EntityCollectController<Coll
 			case CollectState.DETAILSMODE_EDIT:
 				final boolean bWritable = ctl.isCurrentRecordWritable();
 				// show subsequent state buttons only in current (non-historical) view and only if the current record is writable:
-				setSubsequentStatesVisible(true, bWritable && bViewingExistingRecord);
-				setStatesDefaultPathVisible(true, bWritable && bViewingExistingRecord);
+				setSubsequentStatesVisible(true, bWritable);
+				setStatesDefaultPathVisible(true, bWritable);
 				getLayoutMLButtonsActionListener().fireComponentEnabledStateUpdate();
 				break;
 
