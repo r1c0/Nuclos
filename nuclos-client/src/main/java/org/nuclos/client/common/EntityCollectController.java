@@ -1149,6 +1149,7 @@ public abstract class EntityCollectController<Clct extends Collectable> extends 
 				}
 			}
 
+			final PointerCollection pointerCollection = new PointerCollection("");
 			if (cve.getFieldErrors() != null) {
 				for (FieldValidationError error : cve.getFieldErrors()) {
 					if (!getEntityName().equals(error.getEntity())) {
@@ -1156,6 +1157,7 @@ public abstract class EntityCollectController<Clct extends Collectable> extends 
 								+ getSpringLocaleDelegate().getMessageFromResource(error.getMessage()));
 					}
 					else {
+						pointerCollection.addEmptyFieldPointer(error.getField());
 						messages.add(getSpringLocaleDelegate().getMessageFromResource(error.getMessage()));
 					}
 				}
@@ -1166,7 +1168,8 @@ public abstract class EntityCollectController<Clct extends Collectable> extends 
 			}
 
 			String message = StringUtils.concatHtml(messages.toArray(new String[messages.size()]));
-			setPointerInformation(new PointerCollection(message), null);
+			pointerCollection.setMainPointer(message);
+			setPointerInformation(pointerCollection, null);
 			return true;
 		}
 		else {
