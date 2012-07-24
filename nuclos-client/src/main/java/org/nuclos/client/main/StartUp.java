@@ -145,6 +145,23 @@ public class StartUp  {
 		
 	}
 	
+	private static class StartUpApplicationListener implements ApplicationListener<ContextRefreshedEvent> {
+		
+		private final ClientContextCondition contextCondition;
+		
+		private StartUpApplicationListener(ClientContextCondition contextCondition) {
+			this.contextCondition = contextCondition;
+		}
+		
+		@Override
+		public void onApplicationEvent(ContextRefreshedEvent event) {
+			synchronized (contextCondition) {
+				contextCondition.refreshed();
+				contextCondition.notify();
+			}
+		}
+	}
+	
 	private static final String[] CLIENT_SPRING_BEANS = new String[] {
 		"META-INF/nuclos/client-beans.xml"
 	};
@@ -159,19 +176,9 @@ public class StartUp  {
 	
 	private ClassPathXmlApplicationContext clientContext;
 	
-	private ClientContextCondition clientContextCondition = new ClientContextCondition();
+	private final ClientContextCondition clientContextCondition = new ClientContextCondition();
 	
-	private final ApplicationListener<ContextRefreshedEvent> refreshListener = new ApplicationListener<ContextRefreshedEvent>() {
-		
-		@Override
-		public void onApplicationEvent(ContextRefreshedEvent event) {
-			synchronized (clientContextCondition) {
-				clientContextCondition.refreshed();
-				clientContextCondition.notify();
-			}
-		}
-		
-	};
+	private ClientContextCondition lastContextCondition = new ClientContextCondition();
 	
 	//
 	
@@ -212,24 +219,27 @@ public class StartUp  {
 					
 					// Scanning context
 					clientContext = new ClassPathXmlApplicationContext(CLIENT_SPRING_BEANS, false, startupContext);
+					final StartUpApplicationListener clientListener = new StartUpApplicationListener(clientContextCondition);
+					clientContext.addApplicationListener(clientListener);
 					// see http://fitw.wordpress.com/2009/03/14/web-start-and-spring/ why this is needed (tp)
-					clientContext.addApplicationListener(refreshListener);
 					clientContext.setClassLoader(cl);
 					Thread.yield();					
 					clientContext.refresh();
 					clientContext.registerShutdownHook();
 					
-					Thread.yield();
 					log.info("@NucletComponents within spring context: " + clientContext.getBeansWithAnnotation(NucletComponent.class));
-
-					Thread.yield();
 					final Resource[] themes = clientContext.getResources("classpath*:META-INF/nuclos/nuclos-theme.properties");
 					log.info("loading themes properties from the following files: " + Arrays.asList(themes));
-
+					final Resource[] extensions = clientContext.getResources(EXTENSION_SPRING_BEANS);
+					log.info("loading extensions spring sub contexts from the following xml files: " + Arrays.asList(extensions));
+					Thread.yield();
+					
 					for (Resource r : themes) {
 						if (!r.exists()) {
+							log.error("theme properties not found: " + r);
 							continue;
 						}
+						log.info("Processing theme properties: " + r);
 						Properties p = new Properties();
 						p.load(r.getInputStream());
 
@@ -254,34 +264,56 @@ public class StartUp  {
 					
 					final SpringApplicationSubContextsHolder holder = SpringApplicationSubContextsHolder.getInstance();
 					holder.setClientContext(clientContext);
-					final Resource[] extensions = clientContext.getResources(EXTENSION_SPRING_BEANS);
-					log.info("loading extensions spring sub contexts from the following xml files: " + Arrays.asList(extensions));
 
-					for (Resource r : extensions) {
-						if (!r.exists()) {
-							log.info("spring sub context xml not found: " + r);
-							continue;
+					final int size = extensions.length;
+					if (size == 0) {
+						// propagate clientContextCondition to lastContextCondition
+						synchronized (clientContextCondition) {
+							clientContextCondition.waitFor();
 						}
-						final AbstractXmlApplicationContext ctx;
-						if (r instanceof ClassPathResource) {
-							ctx = new ClassPathXmlApplicationContext(new String[] { ((ClassPathResource)r).getPath() }, false, clientContext);
-						} 
-						else if (r instanceof UrlResource) {
-							ctx = new ResourceXmlApplicationContext(r, Collections.EMPTY_LIST, clientContext, Collections.EMPTY_LIST, false);
+						synchronized (lastContextCondition) {
+							lastContextCondition.refreshed();
 						}
-						else {
-							ctx = new FileSystemXmlApplicationContext(new String[] { r.getFile().getPath() }, false, clientContext);
-						}
-						// see http://fitw.wordpress.com/2009/03/14/web-start-and-spring/ why this is needed (tp)
-						ctx.setClassLoader(cl);
-						// clientContext.addApplicationListener(refreshListener);
-						log.info("before refreshing spring context " + r);
-						ctx.refresh();
-						holder.registerSubContext(ctx);
-						
-						log.info("after refreshing spring context " + r);
+						log.info("no extension contexts found, all spring contexts refreshed");
 					}
-					// MetaDataClientProvider.initialize();
+					else {
+						Thread.yield();
+						for (int i = 0; i < size; ++i) {
+							final Resource r = extensions[i];
+							final boolean last = (i + 1 == size);
+							if (!r.exists()) {
+								log.error("spring sub context xml not found: " + r);
+								if (last) {
+									throw new IllegalStateException();
+								}
+								continue;
+							}
+							log.info("Processing sub context xml: " + r);
+							final AbstractXmlApplicationContext ctx;
+							if (r instanceof ClassPathResource) {
+								ctx = new ClassPathXmlApplicationContext(new String[] { ((ClassPathResource)r).getPath() }, false, clientContext);
+							} 
+							else if (r instanceof UrlResource) {
+								ctx = new ResourceXmlApplicationContext(r, Collections.EMPTY_LIST, clientContext, Collections.EMPTY_LIST, false);
+							}
+							else {
+								ctx = new FileSystemXmlApplicationContext(new String[] { r.getFile().getPath() }, false, clientContext);
+							}
+							if (last) {
+								final StartUpApplicationListener lastListener = new StartUpApplicationListener(clientContextCondition);
+								ctx.addApplicationListener(lastListener);
+								log.info("last extension context " + r + " used as condition variable");
+							}
+							// see http://fitw.wordpress.com/2009/03/14/web-start-and-spring/ why this is needed (tp)
+							ctx.setClassLoader(cl);
+							// clientContext.addApplicationListener(refreshListener);
+							log.info("before refreshing spring context " + r);
+							ctx.refresh();
+							holder.registerSubContext(ctx);
+							
+							log.info("after refreshing spring context " + r);
+						}
+					}
 				}
 				catch (IOException e1) {
 					log.error(e1.getMessage(), e1);
@@ -406,7 +438,7 @@ public class StartUp  {
 	 * 		y = date pattern
 	 */
 	public static Pair<String, String> getLogFile() {
-		Pair<String, String> result = new Pair("<not avaiable>", "");
+		Pair<String, String> result = new Pair<String,String>("<not avaiable>", "");
 		try {
 			java.util.Properties clientLog4jProperties = new Properties();
 			clientLog4jProperties.load(StartUp.getLog4jConfigurationFile().openStream());
@@ -447,9 +479,9 @@ public class StartUp  {
 						@Override
                         public void run() {
 							try {
-								Main.getInstance().getMainFrame().postConstruct();
+								main.getMainFrame().postConstruct();
 								// ???
-								Main.getInstance().getMainFrame().init("", "");
+								main.getMainFrame().init("", "");
 								
 								compareClientAndServerVersions();
 								ctlLogin.increaseLoginProgressBar(PROGRESS_COMPARE_VERSIONS);
@@ -458,11 +490,11 @@ public class StartUp  {
 								try {
 									// notify LaunchListeners
 									ServiceManager.lookup("javax.jnlp.SingleInstanceService");
-									Main.getInstance().notifyListeners(StartUp.this.args);
+									main.notifyListeners(StartUp.this.args);
 							    }
 								catch (UnavailableServiceException ex) {
 							    	// no webstart context
-									Main.getInstance().notifyListeners(StartUp.this.args);
+									main.notifyListeners(StartUp.this.args);
 							    }
 
 								// After successful initialization, set the strict version of the critical error handler:
@@ -541,7 +573,8 @@ public class StartUp  {
 			throws ClassNotFoundException, IllegalArgumentException, SecurityException, InstantiationException, IllegalAccessException, 
 			InvocationTargetException, NoSuchMethodException 
 	{
-		if (Main.getInstance().isMacOSX()) {
+		final Main main = Main.getInstance();
+		if (main.isMacOSX()) {
 			Class<?> macAppClass = Class.forName("com.apple.eawt.Application");
 			Object macAppObject = macAppClass.getConstructor().newInstance();
 
@@ -553,7 +586,7 @@ public class StartUp  {
 				@Override
 				public Object invoke(Object proxy, Method method, Object[] args)	throws Throwable {
 					if (method != null && "handleAbout".equals(method.getName()) && args.length == 1) {
-						Main.getInstance().getMainController().cmdShowAboutDialog();
+						main.getMainController().cmdShowAboutDialog();
 					}
 
 					return null;
@@ -569,7 +602,7 @@ public class StartUp  {
 				@Override
 				public Object invoke(Object proxy, Method method, Object[] args)	throws Throwable {
 					if (method != null && "handlePreferences".equals(method.getName()) && args.length == 1) {
-						Main.getInstance().getMainController().cmdOpenSettings();
+						main.getMainController().cmdOpenSettings();
 					}
 
 					return null;
@@ -615,7 +648,7 @@ public class StartUp  {
             miDockLogoutExit.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					Main.getInstance().getMainController().cmdLogoutExit();
+					main.getMainController().cmdLogoutExit();
 				}
 			});
             macDockMenu.add(miDockLogoutExit);
@@ -624,11 +657,11 @@ public class StartUp  {
             macAppSetDockMenuMethod.invoke(macAppObject, macDockMenu);
 		}
 		
-		if (Main.getInstance().isMacOSXLionOrBetter()) {
+		if (main.isMacOSXLionOrBetter()) {
 			//register Mac OS X Lion Fullscreen Support
             try {
-                Class util = Class.forName("com.apple.eawt.FullScreenUtilities");
-                Class params[] = new Class[2];
+                Class<?> util = Class.forName("com.apple.eawt.FullScreenUtilities");
+                Class<?> params[] = new Class[2];
                 params[0] = Window.class;
                 params[1] = Boolean.TYPE;
                 Method method = util.getMethod("setWindowCanFullScreen", params);
@@ -647,9 +680,11 @@ public class StartUp  {
 
 	private void createMainController(String sUserName, String sNucleusServerName, LoginController lc)
 			throws CommonPermissionException {
-		synchronized (clientContextCondition) {
-			clientContextCondition.waitFor();
+		log.info("waiting for lastContextCondition in createMainController");
+		synchronized (lastContextCondition) {
+			lastContextCondition.waitFor();
 		}
+		log.info("beginning of createMainController processing");
 		try {
 			final String sClassName = LangUtils.defaultIfNull(
 					ApplicationProperties.getInstance().getMainControllerClassName(),
