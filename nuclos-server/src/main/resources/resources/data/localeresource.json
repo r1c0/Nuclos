@@ -55186,7 +55186,7 @@
   {
     "resourceID": "wizard.step.attributeproperties.20",
     "locale": "de",
-    "text": "Berechungsvorschrift"
+    "text": "Berechnungsvorschrift"
   },
   {
     "resourceID": "wizard.step.attributeproperties.21",
@@ -55276,7 +55276,7 @@
   {
     "resourceID": "wizard.step.attributeproperties.tooltip.20",
     "locale": "de",
-    "text": "Hinterlegen Sie eine Berechungsvorschrift für das Attribut."
+    "text": "Hinterlegen Sie eine Berechnungsvorschrift für das Attribut."
   },
   {
     "resourceID": "wizard.step.attributeproperties.tooltip.21",
