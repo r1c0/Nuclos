@@ -30,6 +30,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 
 import javax.annotation.PostConstruct;
 import javax.tools.Diagnostic;
@@ -112,7 +113,7 @@ class NuclosJavaCompiler implements Closeable {
 		}
 	}
 
-	synchronized Map<String, byte[]> javac(List<CodeGenerator> generators, boolean saveSrc) throws NuclosCompileException {
+	synchronized Map<String, byte[]> javac(Set<CodeGenerator> generators, boolean saveSrc) throws NuclosCompileException {
 		LOG.debug("Compiler Classpath: " + stdFileManager.getLocation(StandardLocation.CLASS_PATH));
 		final Map<JavaFileObject,CodeGenerator> sources = new HashMap<JavaFileObject,CodeGenerator>();
 		for (CodeGenerator generator : generators) {
@@ -179,7 +180,7 @@ class NuclosJavaCompiler implements Closeable {
 		}
 	}
 
-	private synchronized void saveSrc(List<CodeGenerator> generators) throws IOException {
+	private synchronized void saveSrc(Set<CodeGenerator> generators) throws IOException {
 		for (CodeGenerator generator : generators) {
 			saveSrc(generator, false);
 		}
