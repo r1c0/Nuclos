@@ -479,10 +479,15 @@ public class CollectableComboBox extends LabeledCollectableComponentWithVLP impl
 	 * @return the current item. That is the edited text, if this is insertable, or the selected item otherwise.
 	 */
 	private Object getCurrentItem() {
-		final Object result;
+		Object result;
 		if (isInsertable()) {
 			// Insertable: If the edited text differs from the selected item, the edited text is the master.
 			result = getJComboBox().getEditor().getItem();
+			if (result == null) {
+				Component editor = getJComboBox().getEditor().getEditorComponent();
+				if (editor instanceof JTextComponent)
+					result = ((JTextComponent)editor).getText();
+			}
 		}
 		else {
 			// Default: use the selected item.
