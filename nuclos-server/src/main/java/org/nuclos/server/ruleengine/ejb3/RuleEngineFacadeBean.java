@@ -32,6 +32,7 @@ import org.apache.commons.lang.NullArgumentException;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.nuclos.common.Actions;
+import org.nuclos.common.ApplicationProperties;
 import org.nuclos.common.JMSConstants;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.NuclosFatalException;
@@ -1217,13 +1218,20 @@ public class RuleEngineFacadeBean extends NuclosFacadeBean implements RuleEngine
 		
 		private ServerParameterProvider serverParameterProvider;
 
+		private ApplicationProperties applicationProperties;
+
 		public RuleTemplateType() {
 			super("Rule", NuclosRule.class);
 		}
 		
 		@Autowired
-		void setServerParameterProvider(ServerParameterProvider serverParameterProvider) {
+		final void setServerParameterProvider(ServerParameterProvider serverParameterProvider) {
 			this.serverParameterProvider = serverParameterProvider;
+		}
+		
+		@Autowired
+		final void setApplicationProperties(ApplicationProperties applicationProperties) {
+			this.applicationProperties = applicationProperties;
 		}
 
 		@Override
@@ -1248,6 +1256,7 @@ public class RuleEngineFacadeBean extends NuclosFacadeBean implements RuleEngine
 			sb.append("public ");
 			sb.append(ruleName);
 			sb.append("() {\n\t}\n\n");
+			sb.append("\n// BEGIN RULE\n");
 			return sb.toString();
 		}
 

@@ -29,6 +29,7 @@ import java.util.Map;
 import javax.annotation.security.RolesAllowed;
 
 import org.apache.log4j.Logger;
+import org.nuclos.common.ApplicationProperties;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.ParameterProvider;
@@ -70,6 +71,7 @@ import org.nuclos.server.ruleengine.NuclosCompileException;
 import org.nuclos.server.ruleengine.RuleInterface;
 import org.nuclos.server.ruleengine.valueobject.RuleVO;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
@@ -533,10 +535,18 @@ public class TimelimitRuleFacadeBean extends NuclosFacadeBean implements Timelim
 		"org.apache.log4j.*"
 	};
 
+	@Configurable
 	public static class TimelimitRuleCodeTemplate extends AbstractRuleTemplateType<NuclosTimelimitRule> {
+
+		private ApplicationProperties applicationProperties;
 
 		public TimelimitRuleCodeTemplate() {
 			super("TimelimitRule", NuclosTimelimitRule.class);
+		}
+
+		@Autowired
+		final void setApplicationProperties(ApplicationProperties applicationProperties) {
+			this.applicationProperties = applicationProperties;
 		}
 
 		@Override
@@ -561,6 +571,7 @@ public class TimelimitRuleFacadeBean extends NuclosFacadeBean implements Timelim
 			sb.append("public ");
 			sb.append(ruleName);
 			sb.append("() {\n\t}\n\n");
+			sb.append("\n// BEGIN RULE\n");
 			return sb.toString();
 		}
 
