@@ -458,7 +458,8 @@ public class MasterDataSubFormController extends DetailsSubFormController<Collec
 		@Override
 		public void toolbarAction(String actionCommand) {
 			if(actionCommand.equals(TB_CLONE)) {
-				if (getJTable().getSelectedRow() != -1) {
+				int selRow = getJTable().getSelectedRow();
+				if (selRow != -1) {
 					stopEditing();
 
 					// clone selected record
@@ -498,6 +499,8 @@ public class MasterDataSubFormController extends DetailsSubFormController<Collec
 					catch (NuclosBusinessException e) {
 						throw new CommonFatalException(e);
 					}
+					
+					getSubForm().getJTable().setRowSelectionInterval(selRow, selRow);
 				}
 			}
 		}
