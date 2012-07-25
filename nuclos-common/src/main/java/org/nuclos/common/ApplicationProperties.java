@@ -390,6 +390,10 @@ public class ApplicationProperties implements Serializable, InitializingBean {
 	public boolean isFunctionBlockDev() {
 		return bFunctionBlockDev;
 	}
+	
+	public boolean isSourceCodeScanning() {
+		return isFunctionBlockDev();
+	}
 
 	public boolean isThisClientWebstart() {
 		return bWebstart;

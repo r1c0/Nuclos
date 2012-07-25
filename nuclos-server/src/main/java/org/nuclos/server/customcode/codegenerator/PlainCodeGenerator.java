@@ -22,6 +22,9 @@ import java.io.Writer;
 import java.util.Collections;
 import java.util.Date;
 
+import javax.annotation.PostConstruct;
+
+import org.nuclos.common.ApplicationProperties;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.server.customcode.valueobject.CodeVO;
@@ -35,14 +38,20 @@ public class PlainCodeGenerator implements CodeGenerator {
 
 	private NuclosJavaCompilerComponent nuclosJavaCompilerComponent;
 	
+	private ApplicationProperties applicationProperties;
+
 	// End of Spring injection
 	
 	private final CodeVO codeVO;
 	
-	private final JavaSourceAsString src;
+	private JavaSourceAsString src;
 
 	public PlainCodeGenerator(CodeVO codevo) {
 		this.codeVO = codevo;
+	}
+	
+	@PostConstruct
+	final void init() {
 		this.src = new JavaSourceAsString(
 				codeVO.getName(), getPrefix(), codeVO.getSource(), 
 				NuclosEntity.CODE.getEntityName(), codeVO.getId() == null ? null : codeVO.getId().longValue(),
@@ -54,6 +63,11 @@ public class PlainCodeGenerator implements CodeGenerator {
 		this.nuclosJavaCompilerComponent = nuclosJavaCompilerComponent;
 	}
 	
+	@Autowired
+	final void setApplicationProperties(ApplicationProperties applicationProperties) {
+		this.applicationProperties = applicationProperties;
+	}
+
 	@Override
 	public boolean isRecompileNecessary() {
 		return true;
@@ -62,27 +76,29 @@ public class PlainCodeGenerator implements CodeGenerator {
 	@Override
 	public String getPrefix() {
 		final StringBuilder writer = new StringBuilder();
-		writer.append("// DO NOT REMOVE THIS COMMENT (UP TO PACKAGE DECLARATION)");
-		writer.append("\n// class=org.nuclos.server.customcode.codegenerator.PlainCodeGenerator");
-		writer.append("\n// type=org.nuclos.server.customcode.valueobject.CodeVO");
-		writer.append("\n// name=");
-		writer.append(codeVO.getName());
-		writer.append("\n// id=");
-		if (codeVO.getId() != null) {
-			writer.append(codeVO.getId().toString());
+		if (applicationProperties.isSourceCodeScanning()) {
+			writer.append("// DO NOT REMOVE THIS COMMENT (UP TO PACKAGE DECLARATION)");
+			writer.append("\n// class=org.nuclos.server.customcode.codegenerator.PlainCodeGenerator");
+			writer.append("\n// type=org.nuclos.server.customcode.valueobject.CodeVO");
+			writer.append("\n// name=");
+			writer.append(codeVO.getName());
+			writer.append("\n// id=");
+			if (codeVO.getId() != null) {
+				writer.append(codeVO.getId().toString());
+			}
+			writer.append("\n// version=");
+			writer.append(Integer.toString(codeVO.getVersion()));
+			writer.append("\n// modified=");
+			final Date changed = codeVO.getChangedAt();
+			if (changed != null) {
+				writer.append(Long.toString(changed.getTime()));
+			}
+			writer.append("\n// date=");
+			if (changed != null) {
+				writer.append(changed.toString());
+			}
+			writer.append("\n// END\n");
 		}
-		writer.append("\n// version=");
-		writer.append(Integer.toString(codeVO.getVersion()));
-		writer.append("\n// modified=");
-		final Date changed = codeVO.getChangedAt();
-		if (changed != null) {
-			writer.append(Long.toString(changed.getTime()));
-		}
-		writer.append("\n// date=");
-		if (changed != null) {
-			writer.append(changed.toString());
-		}
-		writer.append("\n// END\n");
 		return writer.toString();
 	}
 

@@ -31,6 +31,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
+import org.nuclos.common.ApplicationProperties;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common2.exception.CommonCreateException;
 import org.nuclos.common2.exception.CommonFinderException;
@@ -61,6 +62,8 @@ class SourceScannerTask extends TimerTask {
 	
 	//
 	
+	// Spring injection
+	
 	private CodeFacadeLocal codeFacadeLocal;
 	
 	private MasterDataFacadeLocal masterDataFacade;
@@ -70,6 +73,10 @@ class SourceScannerTask extends TimerTask {
 	private NuclosLocalServerSession nuclosLocalServerSession;
 	
 	private NuclosJavaCompilerComponent nuclosJavaCompilerComponent;
+	
+	private ApplicationProperties applicationProperties;
+
+	// End of Spring injection
 	
 	private String currentField;
 	
@@ -104,6 +111,11 @@ class SourceScannerTask extends TimerTask {
 		this.nuclosJavaCompilerComponent = nuclosJavaCompilerComponent;
 	}
 	
+	@Autowired
+	final void setApplicationProperties(ApplicationProperties applicationProperties) {
+		this.applicationProperties = applicationProperties;
+	}
+
 	@Override
 	public void run() {
 		try {
@@ -309,7 +321,7 @@ class SourceScannerTask extends TimerTask {
 		currentField = null;
 		currentValue = null;
 		
-		final GeneratedFile result = new GeneratedFile();
+		final GeneratedFile result = new GeneratedFile(applicationProperties.isSourceCodeScanning());
 		result.setFile(file);
 		final BufferedReader reader = new BufferedReader(new InputStreamReader(
 				new FileInputStream(file), NuclosJavaCompilerComponent.JAVA_SRC_ENCODING));
@@ -320,7 +332,7 @@ class SourceScannerTask extends TimerTask {
 				currentField = null;
 				currentValue = null;
 				line = line.trim();
-				if (line.equals("// END")) {
+				if (line.equals("// END") || !line.startsWith("//")) {
 					prefixEnd = true;
 					break;
 				}
