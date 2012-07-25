@@ -82,7 +82,7 @@ public class CollectableEOEntityField extends AbstractCollectableEntityField {
 
 	@Override
 	public int getFieldType() {
-		return efMeta.getForeignEntity()!=null ? CollectableEntityField.TYPE_VALUEIDFIELD: CollectableEntityField.TYPE_VALUEFIELD;
+		return isReferencing() ? CollectableEntityField.TYPE_VALUEIDFIELD: CollectableEntityField.TYPE_VALUEFIELD;
 	}
 
 	@Override

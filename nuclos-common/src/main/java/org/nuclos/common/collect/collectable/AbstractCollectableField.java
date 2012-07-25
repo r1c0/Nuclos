@@ -86,7 +86,7 @@ public abstract class AbstractCollectableField implements CollectableField {
 				return LangUtils.equals(this.getValue(), that.getValue());
 			case CollectableField.TYPE_VALUEIDFIELD:
 				boolean eq = LangUtils.equals(IdUtils.toLongId(this.getValueId()), IdUtils.toLongId(that.getValueId()));
-				if (strict) {
+				if (strict || this.getValueId() == null) {
 					eq &= LangUtils.equals(this.getValue(), that.getValue());
 				}
 				return eq;
