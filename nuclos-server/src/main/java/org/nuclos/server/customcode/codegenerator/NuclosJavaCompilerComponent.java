@@ -172,7 +172,7 @@ public class NuclosJavaCompilerComponent {
 		return oldExists;
 	}
 
-	private synchronized void jar(Map<String, byte[]> javacresult, Set<CodeGenerator> generators) {
+	private synchronized void jar(Map<String, byte[]> javacresult, List<CodeGenerator> generators) {
 		try {
 			final boolean oldExists = moveJarToOld();
 			if (javacresult.size() > 0) {
@@ -250,11 +250,11 @@ public class NuclosJavaCompilerComponent {
 	}
 
 	public void compile() throws NuclosCompileException {
-		final Set<CodeGenerator> generators = getAllCurrentGenerators();
+		final List<CodeGenerator> generators = getAllCurrentGenerators();
 		compile(generators);
 	}
 
-	private synchronized NuclosJavaCompiler compile(Set<CodeGenerator> generators) throws NuclosCompileException {
+	private synchronized NuclosJavaCompiler compile(List<CodeGenerator> generators) throws NuclosCompileException {
 		final NuclosJavaCompiler c = new NuclosJavaCompiler();
 		try {
 			jar(c.javac(generators, true), generators);
@@ -271,12 +271,15 @@ public class NuclosJavaCompilerComponent {
 	}
 
 	public synchronized void check(CodeGenerator modified, boolean remove) throws NuclosCompileException {
-		final Set<CodeGenerator> generators = getAllCurrentGenerators();
-		final boolean override = generators.contains(modified);
-		if (override) {
-			// really replace element in set
-			generators.remove(modified);
-			generators.add(modified);
+		final List<CodeGenerator> generators = getAllCurrentGenerators();
+		int index = generators.indexOf(modified);
+		if (index > -1) {
+			if (remove) {
+				generators.remove(index);
+			}
+			else {
+				generators.set(index, modified);
+			}
 		}
 		else {
 			generators.add(modified);
@@ -292,7 +295,7 @@ public class NuclosJavaCompilerComponent {
 		}
 	}
 
-	private synchronized NuclosJavaCompiler check(Set<CodeGenerator> generators) throws NuclosCompileException {
+	private synchronized NuclosJavaCompiler check(List<CodeGenerator> generators) throws NuclosCompileException {
 		final NuclosJavaCompiler c;
 		if (JARFILE.exists()) {
 			c = new NuclosJavaCompiler();
@@ -315,14 +318,12 @@ public class NuclosJavaCompilerComponent {
 	}
 
 	synchronized void checkSrcOnDisk(List<OnDiskCodeGenerator> modified) throws NuclosCompileException {
-		final Set<CodeGenerator> generators = getAllCurrentGenerators();
+		final List<CodeGenerator> generators = getAllCurrentGenerators();
 		for (OnDiskCodeGenerator cg: modified) {
-			final boolean override = generators.contains(cg);
-			if (override) {
+			int index = generators.indexOf(cg);
+			if (index > -1) {
 				LOG.info("Check/compile java source that changed on disk: " + cg);
-				// really replace element in set
-				generators.remove(cg);
-				generators.add(cg);
+				generators.set(index, cg);
 			}
 			else {
 				LOG.warn("Unknown java source on disk: " + cg);
@@ -369,9 +370,9 @@ public class NuclosJavaCompilerComponent {
 		return files;
 	}
 
-	private Set<CodeGenerator> getAllCurrentGenerators() {
+	private List<CodeGenerator> getAllCurrentGenerators() {
 		final RuleCache ruleCache = RuleCache.getInstance();
-		final Set<CodeGenerator> result = new HashSet<CodeGenerator>();
+		final List<CodeGenerator> result = new ArrayList<CodeGenerator>();
 
 		if (ruleCache.getWebservices().size() > 0) {
 			for (MasterDataVO ws : ruleCache.getWebservices()) {
