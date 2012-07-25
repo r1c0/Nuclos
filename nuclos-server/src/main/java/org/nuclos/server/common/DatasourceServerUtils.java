@@ -136,7 +136,17 @@ public class DatasourceServerUtils {
 	 * @throws NuclosDatasourceException
 	 */
 	public String getSqlWithIdForInClause(String sDatasourceXML, Map<String, Object> mpParams) throws NuclosDatasourceException {
-		return "(SELECT \"intid\" FROM (" + createSQL(sDatasourceXML, mpParams) + ") ds )";
+		//@see NUCLOSINT-1347
+		String sql = createSQL(sDatasourceXML, mpParams);
+		if (sql.indexOf(" \"intid\"") != -1)
+			return "(SELECT \"intid\" FROM (" + sql + ") ds )";
+		else if (sql.indexOf(" \"INTID\"") != -1)
+			return "(SELECT \"INTID\" FROM (" + sql + ") ds )";
+		else if (sql.indexOf(" intid") != -1)
+			return "(SELECT intid FROM (" + sql + ") ds )";
+		else if (sql.indexOf(" INTID") != -1)
+			return "(SELECT INTID FROM (" + sql + ") ds )";
+		return "(SELECT \"intid\" FROM (" + sql + ") ds )"; // as it was before...
 	}
 
 	/**
