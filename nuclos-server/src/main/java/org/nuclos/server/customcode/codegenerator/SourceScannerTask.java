@@ -249,7 +249,7 @@ class SourceScannerTask extends TimerTask {
 			throw new IllegalStateException();
 		}
 		
-		vo.setField("version", Integer.valueOf(gf.getVersion()));
+		vo.setVersion(gf.getVersion());
 		vo.setField("source", new String(gf.getContent()));
 		masterDataFacade.modify(entity, vo, null);
 		
@@ -264,7 +264,7 @@ class SourceScannerTask extends TimerTask {
 		if (!gf.getName().equals((String) vo.getField("name"))) {
 			throw new IllegalStateException();
 		}
-		vo.setField("version", Integer.valueOf(gf.getVersion()));
+		vo.setVersion(gf.getVersion());
 		vo.setField("source", new String(gf.getContent()));
 		masterDataFacade.modify(NuclosEntity.CODE.getEntityName(), vo, null);
 		
@@ -279,7 +279,7 @@ class SourceScannerTask extends TimerTask {
 		if (!gf.getName().equals((String) vo.getField("name"))) {
 			throw new IllegalStateException();
 		}
-		vo.setField("version", Integer.valueOf(gf.getVersion()));
+		vo.setVersion(gf.getVersion());
 		
 		final GenericObjectDocumentFile oldDoc = vo.getField("wsdl", GenericObjectDocumentFile.class);
 		final GenericObjectDocumentFile newDoc = new GenericObjectDocumentFile(

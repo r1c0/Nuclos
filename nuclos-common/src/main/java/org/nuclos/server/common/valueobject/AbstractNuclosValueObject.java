@@ -39,7 +39,7 @@ public abstract class AbstractNuclosValueObject<Id> implements Serializable, Clo
 	private final String sCreatedBy;
 	private Date dateChangedAt;
 	private final String sChangedBy;
-	private final int iVersion;
+	private int iVersion;
 	private boolean bRemoved;
 
 	/**
@@ -157,6 +157,14 @@ public abstract class AbstractNuclosValueObject<Id> implements Serializable, Clo
 	 */
 	public int getVersion() {
 		return this.iVersion;
+	}
+	
+	/**
+	 * @since Nuclos 3.5
+	 * @author Thomas Pasch
+	 */
+	public void setVersion(int version) {
+		this.iVersion = version;
 	}
 
 }	// class AbstractNuclosValueObject
