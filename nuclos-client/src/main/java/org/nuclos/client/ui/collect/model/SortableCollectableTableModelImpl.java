@@ -101,8 +101,9 @@ public class SortableCollectableTableModelImpl <Clct extends Collectable>
 				DataTyp dataTyp = getDataTyp(cef.getJavaClass().getName(), cef.getDefaultComponentType(), 
 						cef.getMaxLength(), cef.getPrecision(), cef.getFormatInput(),
 						cef.getFormatOutput());
-				if (dataTyp != null && (dataTyp.getDatabaseTyp().equals("blob") ||
-						dataTyp.getDatabaseTyp().equals("clob")))
+				if (dataTyp != null && dataTyp.getDatabaseTyp() != null
+						&& (dataTyp.getDatabaseTyp().equals("blob") ||
+								dataTyp.getDatabaseTyp().equals("clob")))
 					return false;
 			} catch (CommonPermissionException e) {
 				throw new NuclosFatalException(e);

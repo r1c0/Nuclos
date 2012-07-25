@@ -692,8 +692,9 @@ public abstract class AbstractCollectableComponent
 	 */
 	public boolean canDisplayComparisonWithOtherField() {
 		if (dataTyp != null) {
-			if (dataTyp.getDatabaseTyp().equals("blob")
-					|| dataTyp.getDatabaseTyp().equals("clob"))
+			if (dataTyp.getDatabaseTyp() != null && 
+					(dataTyp.getDatabaseTyp().equals("blob")
+					|| dataTyp.getDatabaseTyp().equals("clob")))
 			return false;
 		}	
 		return clcte != null;
@@ -746,8 +747,9 @@ public abstract class AbstractCollectableComponent
 		this.enabled = bEnabled;
 		if (isSearchComponent()) {
 			if (dataTyp != null) {
-				if (dataTyp.getDatabaseTyp().equals("blob")
-						|| dataTyp.getDatabaseTyp().equals("clob")) {
+				if (dataTyp.getDatabaseTyp() != null &&
+						(dataTyp.getDatabaseTyp().equals("blob")
+						|| dataTyp.getDatabaseTyp().equals("clob"))) {
 					enabled = false;
 					getControlComponent().setEnabled(false);
 				}
@@ -1210,8 +1212,9 @@ public abstract class AbstractCollectableComponent
 
 	protected ComparisonOperator[] getSupportedComparisonOperators() {
 		if (dataTyp != null) {
-			if (dataTyp.getDatabaseTyp().equals("blob")
-					|| dataTyp.getDatabaseTyp().equals("clob"))
+			if (dataTyp.getDatabaseTyp() != null &&
+					(dataTyp.getDatabaseTyp().equals("blob")
+					|| dataTyp.getDatabaseTyp().equals("clob")))
 			return new ComparisonOperator[0];
 		}
 		return ComparisonOperator.getComparisonOperators();
