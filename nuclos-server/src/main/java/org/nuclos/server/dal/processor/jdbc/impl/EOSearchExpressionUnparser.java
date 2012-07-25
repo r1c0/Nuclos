@@ -228,13 +228,21 @@ public class EOSearchExpressionUnparser {
 			DbFrom subTable = subQuery.from(subEntityMeta.getDbEntity()).alias("sub");
 			subQuery.distinct(true);
 			if(subEntityMeta.isDynamic())
-				subQuery.select(subTable.baseColumnCaseSensitive(DalUtils.getDbIdFieldName(MetaDataServerProvider.getInstance().getEntityField(subEntityMeta.getEntity(), subcond.getForeignKeyFieldName()).getDbColumn()), Integer.class, true));
+				subQuery.select(StringUtils.looksEmpty(subcond.getForeignKeyFieldName()) ?
+						subTable.baseColumn("INTID", Integer.class) :
+						subTable.baseColumnCaseSensitive(DalUtils.getDbIdFieldName(MetaDataServerProvider.getInstance().getEntityField(subEntityMeta.getEntity(), subcond.getForeignKeyFieldName()).getDbColumn()), Integer.class, true));
 			else
-				subQuery.select(subTable.baseColumn(DalUtils.getDbIdFieldName(MetaDataServerProvider.getInstance().getEntityField(subEntityMeta.getEntity(), subcond.getForeignKeyFieldName()).getDbColumn()), Integer.class));
+				subQuery.select(StringUtils.looksEmpty(subcond.getForeignKeyFieldName()) ?
+						subTable.baseColumn("INTID", Integer.class) :
+						subTable.baseColumn(DalUtils.getDbIdFieldName(MetaDataServerProvider.getInstance().getEntityField(subEntityMeta.getEntity(), subcond.getForeignKeyFieldName()).getDbColumn()), Integer.class));
 			EOSearchExpressionUnparser subUnparser = new EOSearchExpressionUnparser(subQuery, subEntityMeta);
 			subUnparser.unparseSearchCondition(subcond.getSubCondition());
 
-			return table.baseColumn("INTID", Integer.class).in(subQuery);
+			if (StringUtils.looksEmpty(subcond.getFieldName())) {
+				return table.baseColumn("INTID", Integer.class).in(subQuery);
+			} else {
+				return table.baseColumn(DalUtils.getDbIdFieldName(MetaDataServerProvider.getInstance().getEntityField(entity.getEntity(), subcond.getFieldName()).getDbColumn()), Integer.class).in(subQuery);
+			}
 		}
 
 		@Override

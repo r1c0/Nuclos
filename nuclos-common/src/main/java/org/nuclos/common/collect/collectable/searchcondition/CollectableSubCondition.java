@@ -34,10 +34,22 @@ import org.nuclos.common2.LangUtils;
  * @version	01.00.00
  */
 public final class CollectableSubCondition extends AbstractCollectableSearchCondition {
+	
+	public static final String INTID = "";
+	
+	private String sFieldName;
 
 	private final String sSubEntityName;
 	private final String sForeignKeyFieldName;
 	private final CollectableSearchCondition condSub;
+	
+	public CollectableSubCondition(String sFieldName, String sSubEntityName, String sForeignKeyFieldName, CollectableSearchCondition condSub) {
+		this(sSubEntityName, sForeignKeyFieldName, condSub);
+		if(sFieldName == null) {
+			throw new NullArgumentException("sFieldName");
+		}
+		this.sFieldName = sFieldName;
+	}
 
 	/**
 	 * @param sSubEntityName
@@ -55,6 +67,7 @@ public final class CollectableSubCondition extends AbstractCollectableSearchCond
 		}
 		this.sSubEntityName = sSubEntityName;
 		this.sForeignKeyFieldName = sForeignKeyFieldName;
+		this.sFieldName = null;
 		this.condSub = condSub;
 	}
 
@@ -76,6 +89,14 @@ public final class CollectableSubCondition extends AbstractCollectableSearchCond
 	 */
 	public String getForeignKeyFieldName() {
 		return this.sForeignKeyFieldName;
+	}
+	
+	/**
+	 * 
+	 * @return
+	 */
+	public String getFieldName() {
+		return sFieldName;
 	}
 
 	/**

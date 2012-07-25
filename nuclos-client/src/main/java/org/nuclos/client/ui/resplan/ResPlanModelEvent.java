@@ -24,8 +24,9 @@ public class ResPlanModelEvent extends EventObject {
 	private Object resource;
 	private Object entry;
 	private Interval<?> interval;
+	private Object relation;
 	
-	public <R, T extends Comparable<? super T>, E> ResPlanModelEvent(ResPlanModel<R, T, E> source, R resource, E entry, Interval<T> interval) {
+	public <R, T extends Comparable<? super T>, E, L> ResPlanModelEvent(ResPlanModel<R, T, E, L> source, R resource, E entry, Interval<T> interval, L relation) {
 		super(source);
 		this.resource = resource;
 		this.entry = entry;

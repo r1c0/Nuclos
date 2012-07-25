@@ -65,14 +65,14 @@ public class ResPlanTransferHandler extends TransferHandler{
 	
 	@Override
 	protected Transferable createTransferable(JComponent c) {
-		if (c instanceof JResPlanComponent<?, ?, ?>) {
+		if (c instanceof JResPlanComponent<?, ?, ?, ?>) {
 			return createResPlanTransferable((JResPlanComponent) c);
 		} else {
 			return super.createTransferable(c);
 		}
 	}
 	
-	protected <R, T extends Comparable<T>, E> Transferable createResPlanTransferable(JResPlanComponent<R, T, E> resPlan) {
+	protected <R, T extends Comparable<T>, E, L> Transferable createResPlanTransferable(JResPlanComponent<R, T, E, L> resPlan) {
 		E entry = CollectionUtils.getFirst(resPlan.getSelectedEntries());
 		if (entry != null) {
 			// TODO_RESPLAN: should interval/duration part of the wrapper ???
@@ -106,7 +106,7 @@ public class ResPlanTransferHandler extends TransferHandler{
 	@Override
 	public boolean canImport(TransferSupport support) {
 		if (support.isDataFlavorSupported(RESPLAN_ENTRY_FLAVOR)) {
-			JResPlanComponent<?, ?, ?> resPlan = (JResPlanComponent<?, ?, ?>) support.getComponent();
+			JResPlanComponent<?, ?, ?, ?> resPlan = (JResPlanComponent<?, ?, ?, ?>) support.getComponent();
 			return getTargetResource(resPlan, support) != null && getTargetInterval(resPlan, support) != null;
 		} else {
 			return super.importData(support);
@@ -116,18 +116,18 @@ public class ResPlanTransferHandler extends TransferHandler{
 	@Override
 	public boolean importData(TransferSupport support) {
 		if (support.isDataFlavorSupported(RESPLAN_ENTRY_FLAVOR)) {
-			JResPlanComponent<?, ?, ?> resPlan = (JResPlanComponent<?, ?, ?>) support.getComponent();
+			JResPlanComponent<?, ?, ?, ?> resPlan = (JResPlanComponent<?, ?, ?, ?>) support.getComponent();
 			return importData(resPlan, support);
 		} else {
 			return super.importData(support);
 		}
 	}
 	
-	protected <R, T extends Comparable<? super T>, E> boolean importData(JResPlanComponent<R, T, E> resPlan, TransferSupport support) {
+	protected <R, T extends Comparable<? super T>, E, L> boolean importData(JResPlanComponent<R, T, E, L> resPlan, TransferSupport support) {
 		R resource = getTargetResource(resPlan, support);
 		Interval<T> interval = getTargetInterval(resPlan, support);
 		if (resource != null && interval != null) {
-			ResPlanModel<R, T, E> resPlanModel = resPlan.getModel();
+			ResPlanModel<R, T, E, L> resPlanModel = resPlan.getModel();
 			try {
 				EntryWrapper wrapper = RESPLAN_ENTRY_FLAVOR.extractTransferData(support.getTransferable());
 				E entry = wrapper.unwrap(resPlanModel.getEntryType());
@@ -155,14 +155,14 @@ public class ResPlanTransferHandler extends TransferHandler{
 		return false;
 	}
 
-	protected <R> R getTargetResource(JResPlanComponent<R, ?, ?> resPlan, TransferSupport support) {
+	protected <R> R getTargetResource(JResPlanComponent<R, ?, ?, ?> resPlan, TransferSupport support) {
 		if (support.isDrop()) {
 			return resPlan.getResourceAt(support.getDropLocation().getDropPoint());
 		}
 		return null;
 	}
 	
-	protected <T extends Comparable<? super T>> Interval<T> getTargetInterval(JResPlanComponent<?, T, ?> resPlan, TransferSupport support) {
+	protected <T extends Comparable<? super T>> Interval<T> getTargetInterval(JResPlanComponent<?, T, ?, ?> resPlan, TransferSupport support) {
 		if (support.isDrop()) {
 			Interval<T> interval = resPlan.getDropInterval();
 			if (interval == null) {

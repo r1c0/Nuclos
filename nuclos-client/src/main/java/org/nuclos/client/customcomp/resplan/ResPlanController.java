@@ -67,9 +67,11 @@ import org.nuclos.common.collect.collectable.CollectableValueField;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableComparison;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableIdListCondition;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableSearchCondition;
+import org.nuclos.common.collect.collectable.searchcondition.CollectableSubCondition;
 import org.nuclos.common.collect.collectable.searchcondition.ComparisonOperator;
 import org.nuclos.common.collect.collectable.searchcondition.CompositeCollectableSearchCondition;
 import org.nuclos.common.collect.collectable.searchcondition.LogicalOperator;
+import org.nuclos.common.collect.collectable.searchcondition.SearchConditionUtils;
 import org.nuclos.common.collection.Pair;
 import org.nuclos.common.dal.vo.SystemFields;
 import org.nuclos.common.time.LocalTime;
@@ -101,6 +103,7 @@ public class ResPlanController extends CustomComponentController {
 
 	private CollectableHelper<?> resEntity;
 	private CollectableHelper<?> entryEntity;
+	private CollectableHelper<?> relationEntity;
 
 	private Rectangle viewRectFromPreferences;
 
@@ -111,6 +114,7 @@ public class ResPlanController extends CustomComponentController {
 	
 	@Override
 	public void askAndSaveIfNecessary(boolean throwCancelException, ResultListener<Boolean> rl) {
+		rl.done(true);
 	}
 
 	void init(CustomComponentVO vo) {
@@ -120,6 +124,9 @@ public class ResPlanController extends CustomComponentController {
 
 		resEntity = CollectableHelper.getForEntity(configVO.getResourceEntity());
 		entryEntity = CollectableHelper.getForEntity(configVO.getEntryEntity());
+		if (configVO.getRelationEntity() != null) {
+			relationEntity = CollectableHelper.getForEntity(configVO.getRelationEntity());
+		}
 
 		CollectableLabelProvider resourceLabelProvider = new CollectableLabelProvider();
 		resourceLabelProvider.setLabelTemplate(resourceVO.getResourceLabel());
@@ -175,6 +182,9 @@ public class ResPlanController extends CustomComponentController {
 		component.setEntryRenderer(entryLabelProvider);
 		component.setBackgroundPainter(backgroundPainter);
 		component.setCaptionComponent(captionPanel);
+		component.setRelationPresentation(configVO.getRelationPresentation());
+		component.setRelationFromPresentation(configVO.getRelationFromPresentation());
+		component.setRelationToPresentation(configVO.getRelationToPresentation());
 	}
 
 	/**
@@ -267,6 +277,14 @@ public class ResPlanController extends CustomComponentController {
 		return new CompositeCollectableSearchCondition(LogicalOperator.AND, Arrays.asList(
 			new CollectableComparison(dateFromField, ComparisonOperator.LESS_OR_EQUAL, new CollectableValueField(interval.getEnd())),
 			new CollectableComparison(dateUntilField, ComparisonOperator.GREATER_OR_EQUAL, new CollectableValueField(interval.getStart()))));
+	}
+	
+	private CollectableSearchCondition getRelationSearchCondition(CollectableSearchCondition entrySearch) {
+		return SearchConditionUtils.and(
+				new CollectableSubCondition(configVO.getRelationEntity(), CollectableSubCondition.INTID, 
+						new CollectableSubCondition(configVO.getRelationFromField(), configVO.getEntryEntity(), CollectableSubCondition.INTID, entrySearch)),
+				new CollectableSubCondition(configVO.getRelationEntity(), CollectableSubCondition.INTID, 
+						new CollectableSubCondition(configVO.getRelationToField(), configVO.getEntryEntity(), CollectableSubCondition.INTID, entrySearch)));
 	}
 
 	public void refresh() {
@@ -423,6 +441,7 @@ public class ResPlanController extends CustomComponentController {
 
 		volatile List<? extends Collectable> resources;
 		volatile List<? extends Collectable> entries;
+		volatile List<? extends Collectable> relations;
 		volatile boolean truncated;
 
 		List<EntitySearchFilter> searchFilters;
@@ -444,6 +463,9 @@ public class ResPlanController extends CustomComponentController {
 			resources = resEntity.get(resourceIds);
 			entries = entryEntity.get(entryEntity.getIds(entryCond));
 			searchFilters = getSearchFilters();
+			if (relationEntity != null) {
+				relations = relationEntity.get(relationEntity.getIds(getRelationSearchCondition(entryCond)));
+			}
 		}
 
 		@Override
@@ -458,7 +480,7 @@ public class ResPlanController extends CustomComponentController {
 					messages.add(getSpringLocaleDelegate().getMessage("nuclos.resplan.invalidEntry", null, entry.getIdentifierLabel()));
 				}
 			}
-			resPlanModel.setData(resources, entries);
+			resPlanModel.setData(resources, entries, relations);
 			if (truncated) {
 				messages.add(getSpringLocaleDelegate().getMessage("nuclos.resplan.limitSearchResult", null, resourceLimit));
 			}

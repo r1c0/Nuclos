@@ -44,7 +44,7 @@ import org.w3c.dom.svg.SVGPolygonElement;
 import org.w3c.dom.svg.SVGRectElement;
 import org.w3c.dom.svg.SVGTextElement;
 
-public abstract class AbstractResPlanExporter<R,E> implements IResPlanExporter<R, E> {
+public abstract class AbstractResPlanExporter<R,E,L> implements IResPlanExporter<R, E, L> {
 	
 	private static final Logger LOG = Logger.getLogger(AbstractResPlanExporter.class);
 	
@@ -65,7 +65,7 @@ public abstract class AbstractResPlanExporter<R,E> implements IResPlanExporter<R
 	
 	private final GranularityType granularity;
 	private final Interval<Date> horizon; 
-	private final ResPlanModel<R, Date, E> model;
+	private final ResPlanModel<R, Date, E, L> model;
 	private final TimeModel<Date> time;
 	
 	//
@@ -112,7 +112,7 @@ public abstract class AbstractResPlanExporter<R,E> implements IResPlanExporter<R
 	private int entryNumber = 0;
 	
 	protected AbstractResPlanExporter(GranularityType granularity, 
-			Interval<Date> horizon, ResPlanModel<R, Date, E> model, TimeModel<Date> time) {
+			Interval<Date> horizon, ResPlanModel<R, Date, E, L> model, TimeModel<Date> time) {
 		this.granularity = granularity;
 		this.horizon = horizon;
 		this.model = model;
@@ -173,7 +173,7 @@ public abstract class AbstractResPlanExporter<R,E> implements IResPlanExporter<R
 		return sdds;
 	}
 	
-	protected final ResPlanModel<R, Date, E> getModel() {
+	protected final ResPlanModel<R, Date, E, L> getModel() {
 		return model;
 	}
 	

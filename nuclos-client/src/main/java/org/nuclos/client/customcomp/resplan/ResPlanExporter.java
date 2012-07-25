@@ -26,14 +26,14 @@ import org.nuclos.client.ui.resplan.TimeModel;
 import org.nuclos.common.collect.collectable.Collectable;
 import org.nuclos.common.dblayer.CollectableNameProducer;
 
-public class ResPlanExporter extends AbstractResPlanExporter<Collectable,Collectable>{
+public class ResPlanExporter extends AbstractResPlanExporter<Collectable,Collectable,Collectable>{
 	
 	private static final Logger LOG = Logger.getLogger(ResPlanExporter.class);
 	
 	// 
 	
 	public ResPlanExporter(ResPlanResourceVO vo, GranularityType granularity, 
-			Interval<Date> horizon, ResPlanModel<Collectable, Date, Collectable> model, TimeModel<Date> time) {
+			Interval<Date> horizon, ResPlanModel<Collectable, Date, Collectable, Collectable> model, TimeModel<Date> time) {
 		super(granularity, horizon, model, time);
 		setResourceNameProducer(new CollectableNameProducer(vo.getResourceLabel()));
 		setEntryNameProducer(new CollectableNameProducer(vo.getBookingLabel()));

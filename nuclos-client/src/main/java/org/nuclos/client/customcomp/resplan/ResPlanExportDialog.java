@@ -56,7 +56,7 @@ public class ResPlanExportDialog extends AbstractResPlanExportDialog {
 
 			@Override
 			protected Void doInBackground() throws Exception {
-				final JResPlanComponent<Collectable, Date, Collectable> resPlan = panel.getResPlan();
+				final JResPlanComponent<Collectable, Date, Collectable, Collectable> resPlan = panel.getResPlan();
 				final ImageType imageType = ImageType.getFromFileExtension((String) fileTypes.getSelectedItem());
 				final ResPlanExporter exporter = new ResPlanExporter(
 						panel.getController().getResourceVO(), panel.getTimeGranularity(), 

@@ -38,13 +38,14 @@ import org.nuclos.common2.StringUtils;
 
 @XmlType
 @XmlRootElement(name="resplan")
-public class ResPlanConfigVO implements Serializable {
+public class ResPlanConfigVO implements Serializable, ResPlanConstants {
 
 	@XmlAttribute(name="version", required=true)
 	static final String VERSION = "0.1";
 
 	private String resourceEntity;
 	private String resourceSortField;
+	private String milestoneField;
 	private String entryEntity;
 	private String referenceField;
 
@@ -70,6 +71,14 @@ public class ResPlanConfigVO implements Serializable {
 	private List<ResPlanResourceVO> resources;
 	private String defaultViewFrom;
 	private String defaultViewUntil;
+	
+	private String relationEntity;
+	private String relationFromField;
+	private String relationToField;
+	
+	private int relationPresentation;
+	private int relationFromPresentation;
+	private int relationToPresentation;
 
 	public ResPlanConfigVO() {
 	}
@@ -278,6 +287,69 @@ public class ResPlanConfigVO implements Serializable {
 
 	public void setDefaultViewUntil(String defaultViewUntil) {
 		this.defaultViewUntil = defaultViewUntil;
+	}
+
+	@XmlElement(name="milestoneField")
+	public String getMilestoneField() {
+		return milestoneField;
+	}
+
+	public void setMilestoneField(String milestoneField) {
+		this.milestoneField = milestoneField;
+	}
+
+	@XmlElement(name="relationEntity")
+	public String getRelationEntity() {
+		return relationEntity;
+	}
+
+	public void setRelationEntity(String relationEntity) {
+		this.relationEntity = relationEntity;
+	}
+
+	@XmlElement(name="relationFromField")
+	public String getRelationFromField() {
+		return relationFromField;
+	}
+
+	public void setRelationFromField(String relationFromField) {
+		this.relationFromField = relationFromField;
+	}
+
+	@XmlElement(name="relationToField")
+	public String getRelationToField() {
+		return relationToField;
+	}
+
+	public void setRelationToField(String relationToField) {
+		this.relationToField = relationToField;
+	}
+
+	@XmlElement(name="relationPresentation")
+	public int getRelationPresentation() {
+		return relationPresentation;
+	}
+
+	public void setRelationPresentation(int relationPresentation) {
+		this.relationPresentation = relationPresentation;
+	}
+
+	@XmlElement(name="relationFromPresentation")
+	public int getRelationFromPresentation() {
+		return relationFromPresentation;
+	}
+
+	public void setRelationFromPresentation(int relationFromPresentation) {
+		this.relationFromPresentation = relationFromPresentation;
+	}
+
+	@XmlElement(name="relationToPresentation")
+	public int getRelationToPresentation() {
+		return relationToPresentation;
+	}
+
+	public void setRelationToPresentation(int relationToPresentation) {
+		this.relationToPresentation = relationToPresentation;
 	}
 
 	public ResPlanResourceVO getResources(LocaleInfo li) {

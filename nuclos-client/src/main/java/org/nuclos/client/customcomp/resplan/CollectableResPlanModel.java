@@ -43,7 +43,7 @@ import org.nuclos.common2.DateUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
 
 
-public class CollectableResPlanModel extends AbstractResPlanModel<Collectable, Date, Collectable> {
+public class CollectableResPlanModel extends AbstractResPlanModel<Collectable, Date, Collectable, Collectable> {
 
 	protected static final Logger log = Logger.getLogger(CollectableResPlanModel.class);
 
@@ -55,6 +55,8 @@ public class CollectableResPlanModel extends AbstractResPlanModel<Collectable, D
 	private boolean hasTime;
 	private List<Collectable> resources = new ArrayList<Collectable>();
 	private Map<Object, List<Collectable>> entryMap = new HashMap<Object, List<Collectable>>();
+	private Map<Object, List<Collectable>> relationMap = new HashMap<Object, List<Collectable>>();
+	private List<Collectable> relations = new ArrayList<Collectable>();
 
 	public CollectableResPlanModel(ResPlanController controller) {
 		this.controller = controller;
@@ -81,11 +83,17 @@ public class CollectableResPlanModel extends AbstractResPlanModel<Collectable, D
 		return entryEntity.getCollectableEntity().getEntityField(configVO.getReferenceField());
 	}
 	
-	public void setData(Collection<? extends Collectable> resources, Collection<? extends Collectable> entries) {
+	public void setData(Collection<? extends Collectable> resources, Collection<? extends Collectable> entries, Collection<? extends Collectable> relations) {
 		this.resources = new ArrayList<Collectable>(resources);
 		this.entryMap = new HashMap<Object, List<Collectable>>();
 		for (Collectable clct : entries) {
 			addEntryToMap(clct);
+		}
+		if (relations != null) {
+			this.relations.addAll(relations);
+			for (Collectable clct : relations) {
+				addRelationToMap(clct);
+			}
 		}
 		fireResourcesChanged();
 	}
@@ -98,6 +106,23 @@ public class CollectableResPlanModel extends AbstractResPlanModel<Collectable, D
 			entryMap.put(parentId, parentEntries);
 		}
 		parentEntries.add(clct);
+	}
+	
+	private void addRelationToMap(Collectable clct) {
+		Object fromId = clct.getValueId(configVO.getRelationFromField());
+		Object toId = clct.getValueId(configVO.getRelationToField());
+		List<Collectable> fromRelations = relationMap.get(fromId);
+		if (fromRelations == null) {
+			fromRelations = new ArrayList<Collectable>();
+			relationMap.put(fromId, fromRelations);
+		}
+		fromRelations.add(clct);
+		List<Collectable> toRelations = relationMap.get(toId);
+		if (toRelations == null) {
+			toRelations = new ArrayList<Collectable>();
+			relationMap.put(toId, toRelations);
+		}
+		toRelations.add(clct);
 	}
 
 	private void removeEntryFromMap(Collectable entry) {
@@ -298,4 +323,42 @@ public class CollectableResPlanModel extends AbstractResPlanModel<Collectable, D
 		}
 		clct.setField(dateFieldName, new CollectableValueField(datePart));
 	}
+
+	@Override
+	public List<? extends Collectable> getRelations(Collectable entry) {
+		List<Collectable> list = relationMap.get(entry.getId());
+		return (list != null) ? list : Collections.<Collectable>emptyList();
+	}
+
+	@Override
+	public List<? extends Collectable> getAllRelations() {
+		return relations;
+	}
+
+	@Override
+	public Object getRelationFromId(Collectable relation) {
+		Object fromId = relation.getValueId(configVO.getRelationFromField());
+		return fromId;
+	}
+
+	@Override
+	public Object getRelationToId(Collectable relation) {
+		Object toId = relation.getValueId(configVO.getRelationToField());
+		return toId;
+	}
+
+	@Override
+	public Object getEntryId(Collectable entry) {
+		return entry.getId();
+	}
+
+	@Override
+	public boolean isMilestone(Collectable entry) {
+		String field = configVO.getMilestoneField();
+		if (field != null) {
+			return Boolean.TRUE.equals(entry.getValue(field));
+		}
+		return false;
+	}
+		
 }

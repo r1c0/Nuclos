@@ -23,8 +23,9 @@ import java.util.List;
  * @param <R> resource
  * @param <T> time unit
  * @param <V> value
+ * @param <L> relation
  */
-public interface ResPlanModel<R, T extends Comparable<? super T>, E> {
+public interface ResPlanModel<R, T extends Comparable<? super T>, E, L> {
 
 	/**
 	 * Returns the concrete entry type of this model. 
@@ -63,11 +64,23 @@ public interface ResPlanModel<R, T extends Comparable<? super T>, E> {
 	 */
 	public abstract void removeEntry(E entry);
 
+	public abstract Object getEntryId(E entry);
+	
+	public abstract boolean isMilestone(E entry);
+	
 	public abstract boolean isCreateAllowed();
 
 	public abstract boolean isUpdateAllowed(E entry);
 	
 	public abstract boolean isRemoveAllowed(E entry);
+	
+	public abstract List<? extends L> getAllRelations();
+	
+	public abstract List<? extends L> getRelations(E entry);
+	
+	public abstract Object getRelationFromId(L relation);
+	
+	public abstract Object getRelationToId(L relation);
 	
 	public abstract void addResPlanModelListener(ResPlanModelListener listener);
 	

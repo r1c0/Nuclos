@@ -52,6 +52,7 @@ import org.w3c.dom.Document;
 
 import com.mxgraph.io.mxCodec;
 import com.mxgraph.util.mxUtils;
+import com.mxgraph.util.mxXmlUtils;
 
 /**
  * Controller for collecting state models.
@@ -257,7 +258,7 @@ public class EntityRelationShipCollectController extends NuclosCollectController
 		super.unsafeFillDetailsPanel(clct);
 		
 		if(clct.getXMLModel() != null) {
-			Document document = mxUtils.parse(clct.getXMLModel());
+			Document document = mxXmlUtils.parseXml(clct.getXMLModel());
 	
 			mxCodec codec = new mxCodec(document);
 			codec.decode(document.getDocumentElement(), pnlEdit.getGraphComponent().getGraph().getModel());

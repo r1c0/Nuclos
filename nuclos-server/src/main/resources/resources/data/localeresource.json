@@ -59044,6 +59044,21 @@
     "text": "Beziehungsfeld"
   },
   {
+    "resourceID": "nuclos.resplan.wizard.step3.milestoneField",
+    "locale": "i-default",
+    "text": "Milestone field"
+  },
+  {
+    "resourceID": "nuclos.resplan.wizard.step3.milestoneField",
+    "locale": "en",
+    "text": "Milestone field"
+  },
+  {
+    "resourceID": "nuclos.resplan.wizard.step3.milestoneField",
+    "locale": "de",
+    "text": "Meilensteinfeld"
+  },
+  {
     "resourceID": "nuclos.resplan.wizard.step3.dateFromField",
     "locale": "i-default",
     "text": "Field 'Date from'"
@@ -59132,6 +59147,66 @@
     "resourceID": "nuclos.resplan.wizard.step3.timeSpans",
     "locale": "de",
     "text": "Zeitabschnitte"
+  },
+  {
+    "resourceID": "nuclos.resplan.wizard.step3.withRelation",
+    "locale": "i-default",
+    "text": "With relation"
+  },
+  {
+    "resourceID": "nuclos.resplan.wizard.step3.withRelation",
+    "locale": "en",
+    "text": "With relation"
+  },
+  {
+    "resourceID": "nuclos.resplan.wizard.step3.withRelation",
+    "locale": "de",
+    "text": "Mit Relationen"
+  },
+  {
+    "resourceID": "nuclos.resplan.wizard.step3.relationEntity",
+    "locale": "i-default",
+    "text": "Relation entity"
+  },
+  {
+    "resourceID": "nuclos.resplan.wizard.step3.relationEntity",
+    "locale": "en",
+    "text": "Relation entity"
+  },
+  {
+    "resourceID": "nuclos.resplan.wizard.step3.relationEntity",
+    "locale": "de",
+    "text": "Entität für Relationen"
+  },
+  {
+    "resourceID": "nuclos.resplan.wizard.step3.relationFromField",
+    "locale": "i-default",
+    "text": "Relation from field"
+  },
+  {
+    "resourceID": "nuclos.resplan.wizard.step3.relationFromField",
+    "locale": "en",
+    "text": "Relation from field"
+  },
+  {
+    "resourceID": "nuclos.resplan.wizard.step3.relationFromField",
+    "locale": "de",
+    "text": "Relationsfeld von"
+  },
+  {
+    "resourceID": "nuclos.resplan.wizard.step3.relationToField",
+    "locale": "i-default",
+    "text": "Relation to field"
+  },
+  {
+    "resourceID": "nuclos.resplan.wizard.step3.relationToField",
+    "locale": "en",
+    "text": "Relation to field"
+  },
+  {
+    "resourceID": "nuclos.resplan.wizard.step3.relationToField",
+    "locale": "de",
+    "text": "Relationsfeld nach"
   },
   {
     "resourceID": "nuclos.resplan.wizard.step3.timeSpans.description",
@@ -59417,6 +59492,141 @@
     "resourceID": "nuclos.resplan.wizard.step4.defaultViewUntil2",
     "locale": "de",
     "text": ") z.B. \".j]\" für den 31.12. des aktuellen Jahres"
+  },
+  {
+    "resourceID": "nuclos.resplan.wizard.step4.relation",
+    "locale": "i-default",
+    "text": "Relation"
+  },
+  {
+    "resourceID": "nuclos.resplan.wizard.step4.relation",
+    "locale": "en",
+    "text": "Relation"
+  },
+  {
+    "resourceID": "nuclos.resplan.wizard.step4.relation",
+    "locale": "de",
+    "text": "Relation"
+  },
+  {
+    "resourceID": "nuclos.resplan.wizard.step4.relationPresentation",
+    "locale": "i-default",
+    "text": "Presentation"
+  },
+  {
+    "resourceID": "nuclos.resplan.wizard.step4.relationPresentation",
+    "locale": "en",
+    "text": "Presentation"
+  },
+  {
+    "resourceID": "nuclos.resplan.wizard.step4.relationPresentation",
+    "locale": "de",
+    "text": "Darstellung"
+  },
+  {
+    "resourceID": "nuclos.resplan.wizard.step4.relationPresentationStraight",
+    "locale": "i-default",
+    "text": "Straight"
+  },
+  {
+    "resourceID": "nuclos.resplan.wizard.step4.relationPresentationStraight",
+    "locale": "en",
+    "text": "Straight"
+  },
+  {
+    "resourceID": "nuclos.resplan.wizard.step4.relationPresentationStraight",
+    "locale": "de",
+    "text": "Gerade"
+  },
+  {
+    "resourceID": "nuclos.resplan.wizard.step4.relationPresentationOrthogonal",
+    "locale": "i-default",
+    "text": "Orthogonal"
+  },
+  {
+    "resourceID": "nuclos.resplan.wizard.step4.relationPresentationOrthogonal",
+    "locale": "en",
+    "text": "Orthogonal"
+  },
+  {
+    "resourceID": "nuclos.resplan.wizard.step4.relationPresentationOrthogonal",
+    "locale": "de",
+    "text": "Orthogonal"
+  },
+  {
+    "resourceID": "nuclos.resplan.wizard.step4.relationFrom",
+    "locale": "i-default",
+    "text": "From"
+  },
+  {
+    "resourceID": "nuclos.resplan.wizard.step4.relationFrom",
+    "locale": "en",
+    "text": "From"
+  },
+  {
+    "resourceID": "nuclos.resplan.wizard.step4.relationFrom",
+    "locale": "de",
+    "text": "Von"
+  },
+  {
+    "resourceID": "nuclos.resplan.wizard.step4.relationTo",
+    "locale": "i-default",
+    "text": "To"
+  },
+  {
+    "resourceID": "nuclos.resplan.wizard.step4.relationTo",
+    "locale": "en",
+    "text": "To"
+  },
+  {
+    "resourceID": "nuclos.resplan.wizard.step4.relationTo",
+    "locale": "de",
+    "text": "Nach"
+  },
+  {
+    "resourceID": "nuclos.resplan.wizard.step4.relationEndpointPlain",
+    "locale": "i-default",
+    "text": "Nothing"
+  },
+  {
+    "resourceID": "nuclos.resplan.wizard.step4.relationEndpointPlain",
+    "locale": "en",
+    "text": "Nothing"
+  },
+  {
+    "resourceID": "nuclos.resplan.wizard.step4.relationEndpointPlain",
+    "locale": "de",
+    "text": "Nichts"
+  },
+  {
+    "resourceID": "nuclos.resplan.wizard.step4.relationEndpointDot",
+    "locale": "i-default",
+    "text": "Dot"
+  },
+  {
+    "resourceID": "nuclos.resplan.wizard.step4.relationEndpointDot",
+    "locale": "en",
+    "text": "Dot"
+  },
+  {
+    "resourceID": "nuclos.resplan.wizard.step4.relationEndpointDot",
+    "locale": "de",
+    "text": "Punkt"
+  },
+  {
+    "resourceID": "nuclos.resplan.wizard.step4.relationEndpointArrow",
+    "locale": "i-default",
+    "text": "Arrow"
+  },
+  {
+    "resourceID": "nuclos.resplan.wizard.step4.relationEndpointArrow",
+    "locale": "en",
+    "text": "Arrow"
+  },
+  {
+    "resourceID": "nuclos.resplan.wizard.step4.relationEndpointArrow",
+    "locale": "de",
+    "text": "Pfeil"
   },
   {
     "resourceID": "nuclos.resplan.wizard.step5.title",

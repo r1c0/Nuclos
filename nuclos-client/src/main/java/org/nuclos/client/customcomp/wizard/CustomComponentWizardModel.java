@@ -53,7 +53,9 @@ import java.util.regex.Pattern;
 import javax.swing.AbstractAction;
 import javax.swing.AbstractCellEditor;
 import javax.swing.BorderFactory;
+import javax.swing.ButtonGroup;
 import javax.swing.DefaultCellEditor;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
@@ -62,6 +64,7 @@ import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 import javax.swing.JSpinner;
@@ -452,6 +455,7 @@ public class CustomComponentWizardModel extends StaticModel {
 		JComboBox resSortFieldComboBox;
 		JComboBox entryEntityComboBox;
 		JComboBox referenceFieldComboBox;
+		JComboBox milestoneFieldComboBox;
 
 		JComboBox dateFromFieldComboBox;
 		JComboBox dateUntilFieldComboBox;
@@ -460,12 +464,18 @@ public class CustomComponentWizardModel extends StaticModel {
 		JComboBox timeFromFieldComboBox;
 		JComboBox timeUntilFieldComboBox;
 		LocalTimeSpanPane timeSpanPane;
+		
+		JCheckBox withRelationCheckBox;
+		JComboBox relationEntityComboBox;
+		JComboBox relationFromFieldComboBox;
+		JComboBox relationToFieldComboBox;
 
 		CustomComponentWizardStep3() {
 			super("nuclos.resplan.wizard.step3.title", "nuclos.resplan.wizard.step3.summary");
 
 			resEntityComboBox = createJComboBox(30);
 			resSortFieldComboBox = createJComboBox(30);
+			milestoneFieldComboBox = createJComboBox(30);
 			entryEntityComboBox = createJComboBox(30);
 			referenceFieldComboBox = createJComboBox(30);
 
@@ -478,6 +488,12 @@ public class CustomComponentWizardModel extends StaticModel {
 			withTimeCheckBox.addItemListener(this);
 			timeSpanPane = new LocalTimeSpanPane();
 			timeSpanPane.addChangeListener(this);
+			
+			withRelationCheckBox = new JCheckBox(localeDelegate.getText("nuclos.resplan.wizard.step3.withRelation", null));
+			withRelationCheckBox.addItemListener(this);
+			relationEntityComboBox = createJComboBox(30);
+			relationFromFieldComboBox = createJComboBox(30);
+			relationToFieldComboBox = createJComboBox(30);
 
 			new TableLayoutBuilder(this)
 				.columns(PREFERRED, PREFERRED, 5, PREFERRED, PREFERRED, FILL).gaps(5, 5)
@@ -485,6 +501,7 @@ public class CustomComponentWizardModel extends StaticModel {
 				.newRow().addLocalizedLabel("nuclos.resplan.wizard.step3.resourceSortField").add(resSortFieldComboBox, 3)
 				.newRow().addLocalizedLabel("nuclos.resplan.wizard.step3.entryEntity").add(entryEntityComboBox, 3)
 				.newRow().addLocalizedLabel("nuclos.resplan.wizard.step3.referenceField").add(referenceFieldComboBox, 3)
+				.newRow().addLocalizedLabel("nuclos.resplan.wizard.step3.milestoneField").add(milestoneFieldComboBox, 3)
 				.newRow(5)
 				.newRow().addLocalizedLabel("nuclos.resplan.wizard.step3.dateFromField").add(dateFromFieldComboBox)
 					.skip().addLocalizedLabel("nuclos.resplan.wizard.step3.dateUntilField").add(dateUntilFieldComboBox)
@@ -494,7 +511,12 @@ public class CustomComponentWizardModel extends StaticModel {
 					.skip().addLocalizedLabel("nuclos.resplan.wizard.step3.timeUntilField").add(timeUntilFieldComboBox)
 				.newRow(5)
 				.newRow().addLocalizedLabel("nuclos.resplan.wizard.step3.timeSpans", "nuclos.resplan.wizard.step3.description", TOP)
-					.add(timeSpanPane, 3, LEFT, FULL);
+					.add(timeSpanPane, 3, LEFT, FULL)
+				.newRow(5)
+				.newRow().add(withRelationCheckBox)
+				.newRow().addLocalizedLabel("nuclos.resplan.wizard.step3.relationEntity").add(relationEntityComboBox, 3)
+				.newRow().addLocalizedLabel("nuclos.resplan.wizard.step3.relationFromField").add(relationFromFieldComboBox, 3)
+				.newRow().addLocalizedLabel("nuclos.resplan.wizard.step3.relationToField").add(relationToFieldComboBox, 3);
 			;
 		}
 
@@ -518,6 +540,9 @@ public class CustomComponentWizardModel extends StaticModel {
 
 			configureResourceSortFieldComboBox();
 			resSortFieldComboBox.setSelectedItem(model.configVO.getResourceSortField());
+			
+			configureMilestoneFieldComboBox();
+			milestoneFieldComboBox.setSelectedItem(model.configVO.getMilestoneField());
 
 			configureReferenceFieldComboBox();
 			referenceFieldComboBox.setSelectedItem(model.configVO.getReferenceField());
@@ -529,6 +554,13 @@ public class CustomComponentWizardModel extends StaticModel {
 			timeFromFieldComboBox.setSelectedItem(model.configVO.getTimeFromField());
 			timeUntilFieldComboBox.setSelectedItem(model.configVO.getTimeUntilField());
 			timeSpanPane.setText(model.configVO.getTimePeriodsString());
+			
+			withRelationCheckBox.setSelected(!StringUtils.looksEmpty(model.configVO.getRelationEntity()));
+			configureRelationEntityComboBox();
+			configureRelationFieldComboBoxes();
+			relationEntityComboBox.setSelectedItem(model.configVO.getRelationEntity());
+			relationFromFieldComboBox.setSelectedItem(model.configVO.getRelationFromField());
+			relationToFieldComboBox.setSelectedItem(model.configVO.getRelationToField());
 
 			updateState();
 		}
@@ -544,6 +576,21 @@ public class CustomComponentWizardModel extends StaticModel {
 			Collections.sort(fieldNames);
 			fieldNames.add(0, null);
 			resSortFieldComboBox.setModel(new ListComboBoxModel<String>(fieldNames));
+		}
+		
+		private void configureMilestoneFieldComboBox() {
+			final String entryEntity = (String) entryEntityComboBox.getSelectedItem();
+			List<String> fieldNames = new ArrayList<String>();
+			if (entryEntity != null) {
+				for (EntityFieldMetaDataVO field : MetaDataClientProvider.getInstance().getAllEntityFieldsByEntity(entryEntity).values()) {
+					if (Boolean.class.getName().equals(field.getDataType())) {
+						fieldNames.add(field.getField());
+					}
+				}
+			}
+			Collections.sort(fieldNames);
+			fieldNames.add(0, null);
+			milestoneFieldComboBox.setModel(new ListComboBoxModel<String>(fieldNames));
 		}
 
 		private void configureReferenceFieldComboBox() {
@@ -595,6 +642,72 @@ public class CustomComponentWizardModel extends StaticModel {
 				timeSpanPane.setText("");
 			}
 		}
+		
+		private void configureRelationEntityComboBox() {
+			final boolean withRelation = withRelationCheckBox.isSelected();
+			final String entryEntity = (String) entryEntityComboBox.getSelectedItem();
+			List<String> relationEntities = new ArrayList<String>();
+			relationEntities.add(null);
+			if (withRelation) {
+				relationEntities.addAll(getRelationEntityNames(entryEntity));
+			}
+			relationEntityComboBox.setModel(new ListComboBoxModel<String>(relationEntities));
+			relationEntityComboBox.setEnabled(withRelation);
+		}
+		
+		private void configureRelationFieldComboBoxes() {
+			final boolean withRelation = withRelationCheckBox.isSelected();
+			final String entryEntity = (String) entryEntityComboBox.getSelectedItem();
+			final String relEntity = (String) relationEntityComboBox.getSelectedItem();
+			List<String> fieldNames = new ArrayList<String>();
+			if (withRelation) {
+				if (relEntity != null) {
+					for (EntityFieldMetaDataVO field : MetaDataClientProvider.getInstance().getAllEntityFieldsByEntity(relEntity).values()) {
+						if (LangUtils.equals(entryEntity, field.getForeignEntity())) {
+							fieldNames.add(field.getField());
+						}
+					}
+				}
+				Collections.sort(fieldNames);
+			}
+			fieldNames.add(0, null);
+			relationFromFieldComboBox.setModel(new ListComboBoxModel<String>(fieldNames));
+			relationToFieldComboBox.setModel(new ListComboBoxModel<String>(fieldNames));
+			relationFromFieldComboBox.setEnabled(withRelation);
+			relationToFieldComboBox.setEnabled(withRelation);
+		}
+		
+		private void updateRelationFromFieldComboBox() {
+			final String relToField = (String) relationToFieldComboBox.getSelectedItem();
+			final String relFromField = (String) relationFromFieldComboBox.getSelectedItem();
+			if (relToField == null && relFromField == null) {
+				if (relationFromFieldComboBox.getItemCount() > 1) {
+					relationFromFieldComboBox.setSelectedIndex(1);
+				}
+			} else if (LangUtils.equals(relToField, relFromField)) {
+				relationFromFieldComboBox.setSelectedIndex(0);
+			} else if (relFromField == null) {
+				for (int i = 1; i < relationFromFieldComboBox.getModel().getSize(); i++) {
+					if (!LangUtils.equals(relToField, relationFromFieldComboBox.getModel().getElementAt(i))) {
+						relationFromFieldComboBox.setSelectedIndex(i);
+					}
+				}
+			}
+		}
+		
+		private void updateRelationToFieldComboBox() {
+			final String relToField = (String) relationToFieldComboBox.getSelectedItem();
+			final String relFromField = (String) relationFromFieldComboBox.getSelectedItem();
+			if (LangUtils.equals(relToField, relFromField)) {
+				relationToFieldComboBox.setSelectedIndex(0);
+			} else if (relToField == null) {
+				for (int i = 1; i < relationToFieldComboBox.getModel().getSize(); i++) {
+					if (!LangUtils.equals(relFromField, relationToFieldComboBox.getModel().getElementAt(i))) {
+						relationToFieldComboBox.setSelectedIndex(i);
+					}
+				}
+			}
+		}
 
 		List<String> getEntityNames() {
 			List<String> entityNames = new ArrayList<String>();
@@ -606,18 +719,59 @@ public class CustomComponentWizardModel extends StaticModel {
 			Collections.sort(entityNames);
 			return entityNames;
 		}
+		
+		List<String> getRelationEntityNames(String entryEntity) {
+			List<String> entityNames = new ArrayList<String>();
+				if (entryEntity != null) {
+				for (EntityMetaDataVO entity : MetaDataClientProvider.getInstance().getAllEntities()) {
+					if (entity.getEntity().startsWith("nuclos_"))
+						continue;
+					
+					int countFieldsToResource = 0;
+					for (EntityFieldMetaDataVO efMeta : MetaDataClientProvider.getInstance().getAllEntityFieldsByEntity(entity.getEntity()).values()) {
+						if (LangUtils.equals(entryEntity, efMeta.getForeignEntity())) {
+							countFieldsToResource++;
+						}
+					}
+					
+					if (countFieldsToResource >= 2) {
+						entityNames.add(entity.getEntity());
+					}
+				}
+				Collections.sort(entityNames);
+			}
+			return entityNames;
+		}
 
 		@Override
 		public void itemStateChanged(ItemEvent e) {
 			ItemSelectable source = e.getItemSelectable();
 			if (source == resEntityComboBox) {
 				configureResourceSortFieldComboBox();
+				configureRelationEntityComboBox();
+				configureRelationFieldComboBoxes();
 			}
 			if (source == resEntityComboBox || source == entryEntityComboBox) {
 				configureReferenceFieldComboBox();
+				configureMilestoneFieldComboBox();
 			}
 			if (source == entryEntityComboBox || source == withTimeCheckBox) {
 				configureDateTimeComboBoxes(source == withTimeCheckBox);
+			}
+			if (source == withRelationCheckBox) {
+				configureRelationEntityComboBox();
+				configureRelationFieldComboBoxes();
+			}
+			if (source == relationEntityComboBox) {
+				configureRelationFieldComboBoxes();
+				updateRelationFromFieldComboBox();
+				updateRelationToFieldComboBox();
+			}
+			if (source == relationFromFieldComboBox) {
+				updateRelationToFieldComboBox();
+			}
+			if (source == relationToFieldComboBox) {
+				updateRelationFromFieldComboBox();
 			}
 			updateState();
 		}
@@ -638,7 +792,11 @@ public class CustomComponentWizardModel extends StaticModel {
 				complete &= !timeSpanPane.getText().isEmpty()
 					&& timeFromFieldComboBox.getSelectedItem() != null
 					&& timeUntilFieldComboBox.getSelectedItem() != null;
-
+			if (withRelationCheckBox.isSelected()) {
+				complete &= relationEntityComboBox.getSelectedItem() != null
+					&& relationFromFieldComboBox.getSelectedItem() != null
+					&& relationToFieldComboBox.getSelectedItem() != null;
+			}
 			}
 			setComplete(complete);
 		}
@@ -682,6 +840,7 @@ public class CustomComponentWizardModel extends StaticModel {
 			model.configVO.setResourceSortField((String) resSortFieldComboBox.getSelectedItem());
 			model.configVO.setEntryEntity((String) entryEntityComboBox.getSelectedItem());
 			model.configVO.setReferenceField((String) referenceFieldComboBox.getSelectedItem());
+			model.configVO.setMilestoneField((String) milestoneFieldComboBox.getSelectedItem());
 
 			model.configVO.setDateFromField((String) dateFromFieldComboBox.getSelectedItem());
 			model.configVO.setDateUntilField((String) dateUntilFieldComboBox.getSelectedItem());
@@ -693,6 +852,16 @@ public class CustomComponentWizardModel extends StaticModel {
 				model.configVO.setTimePeriodsString(null);
 				model.configVO.setTimeFromField(null);
 				model.configVO.setTimeUntilField(null);
+			}
+			
+			if (withRelationCheckBox.isSelected()) {
+				model.configVO.setRelationEntity((String) relationEntityComboBox.getSelectedItem());
+				model.configVO.setRelationFromField((String) relationFromFieldComboBox.getSelectedItem());
+				model.configVO.setRelationToField((String) relationToFieldComboBox.getSelectedItem());
+			} else {
+				model.configVO.setRelationEntity(null);
+				model.configVO.setRelationFromField(null);
+				model.configVO.setRelationToField(null);
 			}
 		}
 	}
@@ -706,6 +875,17 @@ public class CustomComponentWizardModel extends StaticModel {
 
 		Collection<LocaleInfo> locales;
 		ResPlanTranslationTableModel tablemodel;
+		
+		JRadioButton relationPresentationOrthogonal;
+		JRadioButton relationPresentationStraight;
+		
+		JRadioButton relationFromPlain;
+		JRadioButton relationFromDot;
+		JRadioButton relationFromArrow;
+		
+		JRadioButton relationToPlain;
+		JRadioButton relationToDot;
+		JRadioButton relationToArrow;
 
 		CustomComponentWizardStep4() {
 			super("nuclos.resplan.wizard.step4.title", "nuclos.resplan.wizard.step4.summary");
@@ -733,6 +913,28 @@ public class CustomComponentWizardModel extends StaticModel {
 			
 			tfDefaultViewFrom = new JTextField(10);
 			tfDefaultViewUntil = new JTextField(10);
+			
+			relationPresentationOrthogonal = new JRadioButton(localeDelegate.getText("nuclos.resplan.wizard.step4.relationPresentationOrthogonal"));
+			relationPresentationStraight = new JRadioButton(localeDelegate.getText("nuclos.resplan.wizard.step4.relationPresentationStraight"));
+			ButtonGroup bgRelationPresentation = new ButtonGroup();
+			bgRelationPresentation.add(relationPresentationOrthogonal);
+			bgRelationPresentation.add(relationPresentationStraight);
+			
+			relationFromPlain = new JRadioButton(localeDelegate.getText("nuclos.resplan.wizard.step4.relationEndpointPlain"));
+			relationFromDot = new JRadioButton(localeDelegate.getText("nuclos.resplan.wizard.step4.relationEndpointDot"));
+			relationFromArrow = new JRadioButton(localeDelegate.getText("nuclos.resplan.wizard.step4.relationEndpointArrow"));
+			ButtonGroup bgRelationFrom = new ButtonGroup();
+			bgRelationFrom.add(relationFromPlain);
+			bgRelationFrom.add(relationFromDot);
+			bgRelationFrom.add(relationFromArrow);
+			
+			relationToPlain = new JRadioButton(localeDelegate.getText("nuclos.resplan.wizard.step4.relationEndpointPlain"));
+			relationToDot = new JRadioButton(localeDelegate.getText("nuclos.resplan.wizard.step4.relationEndpointDot"));
+			relationToArrow = new JRadioButton(localeDelegate.getText("nuclos.resplan.wizard.step4.relationEndpointArrow"));
+			ButtonGroup bgRelationTo = new ButtonGroup();
+			bgRelationTo.add(relationToPlain);
+			bgRelationTo.add(relationToDot);
+			bgRelationTo.add(relationToArrow);
 
 			TableLayoutBuilder tlb = new TableLayoutBuilder(this).columns(PREFERRED, PREFERRED, PREFERRED, FILL).gaps(5, 5);
 			tlb.newRow(PREFERRED).
@@ -746,6 +948,35 @@ public class CustomComponentWizardModel extends StaticModel {
 			tlb.newRow(PREFERRED).add(new JLabel("          " + localeDelegate.getMessage("nuclos.resplan.wizard.step4.defaultView", "t=Tag,w=Woche,m=Monat,j=Jahr")), 4);
 			tlb.newRow(10).add(new JSeparator(), 4);
 			tlb.newRow(FILL).add(scrollPane, 4);
+			
+			JPanel jpnRelation = new JPanel();
+			TableLayoutBuilder tbllayRelation = new TableLayoutBuilder(jpnRelation).columns(PREFERRED, PREFERRED, PREFERRED, FILL).gaps(5, 5);
+			tbllayRelation.newRow();
+			
+			JPanel jpnRelationFrom = new JPanel();
+			jpnRelationFrom.setBorder(BorderFactory.createTitledBorder(localeDelegate.getText("nuclos.resplan.wizard.step4.relationFrom")));
+			TableLayoutBuilder tbllayRelationFrom = new TableLayoutBuilder(jpnRelationFrom).columns(PREFERRED, PREFERRED);
+			tbllayRelationFrom.newRow().add(relationFromPlain);
+			tbllayRelationFrom.newRow().add(relationFromDot).add(new JLabel(new ImageIcon(getClass().getResource("/org/nuclos/client/relation/images/oval_start.gif"))));
+			tbllayRelationFrom.newRow().add(relationFromArrow).add(new JLabel(new ImageIcon(getClass().getResource("/org/nuclos/client/relation/images/classic_start.gif"))));
+			tbllayRelation.add(jpnRelationFrom);
+			
+			JPanel jpnRelationPresentation = new JPanel();
+			jpnRelationPresentation.setBorder(BorderFactory.createTitledBorder(localeDelegate.getText("nuclos.resplan.wizard.step4.relationPresentation")));
+			TableLayoutBuilder tbllayRelationPresentation = new TableLayoutBuilder(jpnRelationPresentation).columns(PREFERRED, PREFERRED);
+			tbllayRelationPresentation.newRow().add(relationPresentationStraight).add(new JLabel(new ImageIcon(getClass().getResource("/org/nuclos/client/relation/images/straight.png"))));
+			tbllayRelationPresentation.newRow().add(relationPresentationOrthogonal).add(new JLabel(new ImageIcon(getClass().getResource("/org/nuclos/client/relation/images/vertical.png"))));
+			tbllayRelation.add(jpnRelationPresentation);
+			
+			JPanel jpnRelationTo = new JPanel();
+			jpnRelationTo.setBorder(BorderFactory.createTitledBorder(localeDelegate.getText("nuclos.resplan.wizard.step4.relationTo")));
+			TableLayoutBuilder tbllayRelationTo = new TableLayoutBuilder(jpnRelationTo).columns(PREFERRED, PREFERRED);
+			tbllayRelationTo.newRow().add(relationToPlain);
+			tbllayRelationTo.newRow().add(relationToDot).add(new JLabel(new ImageIcon(getClass().getResource("/org/nuclos/client/relation/images/oval_end.gif"))));
+			tbllayRelationTo.newRow().add(relationToArrow).add(new JLabel(new ImageIcon(getClass().getResource("/org/nuclos/client/relation/images/classic_end.gif"))));
+			tbllayRelation.add(jpnRelationTo);
+			
+			tlb.newRow().addLocalizedLabel("nuclos.resplan.wizard.step4.relation", TOP).addFullSpan(jpnRelation);
 		}
 
 		private void stopCellEditing() {
@@ -780,12 +1011,38 @@ public class CustomComponentWizardModel extends StaticModel {
 			
 			tfDefaultViewFrom.setText(model.configVO.getDefaultViewFrom());
 			tfDefaultViewUntil.setText(model.configVO.getDefaultViewUntil());
+			
+			switch (model.configVO.getRelationPresentation()) {
+				case ResPlanConfigVO.RELATION_PRESENTATION_STRAIGHT: relationPresentationStraight.setSelected(true); break;
+				default: relationPresentationOrthogonal.setSelected(true);
+			}
+			
+			switch (model.configVO.getRelationFromPresentation()) {
+				case ResPlanConfigVO.RELATION_ENDPOINT_PRESENTATION_PLAIN: relationFromPlain.setSelected(true); break;
+				case ResPlanConfigVO.RELATION_ENDPOINT_PRESENTATION_ARROW: relationFromArrow.setSelected(true); break;
+				default: relationFromDot.setSelected(true);
+			}
+			
+			switch (model.configVO.getRelationToPresentation()) {
+				case ResPlanConfigVO.RELATION_ENDPOINT_PRESENTATION_PLAIN: relationToPlain.setSelected(true); break;
+				case ResPlanConfigVO.RELATION_ENDPOINT_PRESENTATION_DOT: relationToDot.setSelected(true); break;
+				default: relationToArrow.setSelected(true);
+			}
 
 			updateState();
 		}
 
 		@Override
 		protected void updateState() {
+			final boolean withRelation = !StringUtils.looksEmpty(model.configVO.getRelationEntity());
+			relationPresentationOrthogonal.setEnabled(withRelation);
+			relationPresentationStraight.setEnabled(withRelation);
+			relationFromPlain.setEnabled(withRelation);
+			relationFromDot.setEnabled(withRelation);
+			relationFromArrow.setEnabled(withRelation);
+			relationToPlain.setEnabled(withRelation);
+			relationToDot.setEnabled(withRelation);
+			relationToArrow.setEnabled(withRelation);
 			setComplete(true);
 		}
 
@@ -795,6 +1052,28 @@ public class CustomComponentWizardModel extends StaticModel {
 			model.configVO.setResources(tablemodel.getRows());
 			model.configVO.setDefaultViewFrom(tfDefaultViewFrom.getText());
 			model.configVO.setDefaultViewUntil(tfDefaultViewUntil.getText());
+			
+			if (relationPresentationStraight.isSelected()) {
+				model.configVO.setRelationPresentation(ResPlanConfigVO.RELATION_PRESENTATION_STRAIGHT);
+			} else if (relationPresentationOrthogonal.isSelected()) {
+				model.configVO.setRelationPresentation(ResPlanConfigVO.RELATION_PRESENTATION_ORTHOGONAL);
+			} 
+			
+			if (relationFromPlain.isSelected()) {
+				model.configVO.setRelationFromPresentation(ResPlanConfigVO.RELATION_ENDPOINT_PRESENTATION_PLAIN);
+			} else if (relationFromDot.isSelected()) {
+				model.configVO.setRelationFromPresentation(ResPlanConfigVO.RELATION_ENDPOINT_PRESENTATION_DOT);
+			} else if (relationFromArrow.isSelected()) {
+				model.configVO.setRelationFromPresentation(ResPlanConfigVO.RELATION_ENDPOINT_PRESENTATION_ARROW);
+			}
+			
+			if (relationToPlain.isSelected()) {
+				model.configVO.setRelationToPresentation(ResPlanConfigVO.RELATION_ENDPOINT_PRESENTATION_PLAIN);
+			} else if (relationToDot.isSelected()) {
+				model.configVO.setRelationToPresentation(ResPlanConfigVO.RELATION_ENDPOINT_PRESENTATION_DOT);
+			} else if (relationToArrow.isSelected()) {
+				model.configVO.setRelationToPresentation(ResPlanConfigVO.RELATION_ENDPOINT_PRESENTATION_ARROW);
+			}
 		}
 	}
 

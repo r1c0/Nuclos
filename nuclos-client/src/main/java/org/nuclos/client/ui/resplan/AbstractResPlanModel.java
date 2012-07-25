@@ -20,7 +20,7 @@ package org.nuclos.client.ui.resplan;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class AbstractResPlanModel<R, T extends Comparable<? super T>, E> implements ResPlanModel<R, T, E> {
+public abstract class AbstractResPlanModel<R, T extends Comparable<? super T>, E, L> implements ResPlanModel<R, T, E, L> {
 
 	protected final List<ResPlanModelListener> listeners;
 	
@@ -45,25 +45,25 @@ public abstract class AbstractResPlanModel<R, T extends Comparable<? super T>, E
 
 	protected void fireResourcesChanged() {
 		for (ResPlanModelListener listener : listeners) {
-			listener.resourcesChanged(new ResPlanModelEvent(this, null, null, null));
+			listener.resourcesChanged(new ResPlanModelEvent(this, null, null, null, null));
 		}
 	}
 
 	protected void fireResourceEntriesChanged() {
 		for (ResPlanModelListener listener : listeners) {
-			listener.resourceEntriesChanged(new ResPlanModelEvent(this, null, null, null));
+			listener.resourceEntriesChanged(new ResPlanModelEvent(this, null, null, null, null));
 		}
 	}
 	
 	protected void fireEntryChanged(R resource) {
 		for (ResPlanModelListener listener : listeners) {
-			listener.entryChanged(new ResPlanModelEvent(this, resource, null, null));
+			listener.entryChanged(new ResPlanModelEvent(this, resource, null, null, null));
 		}
 	}
 
 	protected void fireEntryChanged(R resource, E entry, Interval<T> interval) {
 		for (ResPlanModelListener listener : listeners) {
-			listener.entryChanged(new ResPlanModelEvent(this, resource, entry, interval));
+			listener.entryChanged(new ResPlanModelEvent(this, resource, entry, interval, null));
 		}
 	}
 }

@@ -48,6 +48,9 @@ public class ResPlanAction extends AbstractAction {
 			ResPlanConfigVO configVO = ResPlanConfigVO.fromBytes(componentVO.getData());
 			enabled = SecurityCache.getInstance().isReadAllowedForEntity(configVO.getResourceEntity())
 				&& SecurityCache.getInstance().isReadAllowedForEntity(configVO.getEntryEntity());
+			if (configVO.getRelationEntity() != null) {
+				enabled &= SecurityCache.getInstance().isReadAllowedForEntity(configVO.getRelationEntity());
+			}
 		} catch (Exception e) {
 			LOG.warn("ResPlanAction failed: " + e, e);
 		}

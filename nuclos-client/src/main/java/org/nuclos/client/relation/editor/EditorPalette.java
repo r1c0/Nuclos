@@ -42,6 +42,7 @@ import javax.swing.JPanel;
 import javax.swing.TransferHandler;
 
 import org.nuclos.client.image.ImageScaler;
+import org.nuclos.client.ui.Icons;
 
 import com.mxgraph.model.mxCell;
 import com.mxgraph.model.mxGeometry;
@@ -371,7 +372,7 @@ public class EditorPalette extends JPanel
 			 */
 			@Override
 			public void dragGestureRecognized(DragGestureEvent e)	{
-				e.startDrag(null, mxConstants.EMPTY_IMAGE, new Point(), t, null);
+				e.startDrag(null, Icons.getInstance().getIconEmpty16().getImage(), new Point(), t, null);
 			}
 
 		};

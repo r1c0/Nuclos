@@ -95,6 +95,7 @@ import com.mxgraph.util.mxEvent;
 import com.mxgraph.util.mxEventObject;
 import com.mxgraph.util.mxPoint;
 import com.mxgraph.util.mxUtils;
+import com.mxgraph.util.mxXmlUtils;
 import com.mxgraph.util.mxEventSource.mxIEventListener;
 import com.mxgraph.view.mxGraph;
 
@@ -493,7 +494,7 @@ public class StateModelEditor2 extends JPanel {
 		mxGraphModel model =  (mxGraphModel)graphComponent.getGraph().getModel();
 		mxGraphModel loadedModel = new mxGraphModel();
 		if(stateModelVO.getXMLLayout() != null && stateModelVO.getXMLLayout().length() > 0) {
-			Document document = mxUtils.parse(stateModelVO.getXMLLayout());
+			Document document = mxXmlUtils.parseXml(stateModelVO.getXMLLayout());
 			
 			mxCodec codec = new mxCodec(document);
 			codec.decode(document.getDocumentElement(), loadedModel);			

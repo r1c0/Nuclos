@@ -114,7 +114,7 @@ public class ResPlanPanel extends JPanel {
 	private DateChooser startDateChooser;
 	private DateChooser endDateChooser;
 
-	private JResPlanComponent<Collectable, Date, Collectable> resPlan;
+	private JResPlanComponent<Collectable, Date, Collectable, Collectable> resPlan;
 	private CollectableResPlanModel resPlanModel;
 	private DateTimeModel timeModel;
 
@@ -133,7 +133,7 @@ public class ResPlanPanel extends JPanel {
 	// Last known user-specified extents
 	private Dimension userResourceCellExtent = new Dimension(-1, -1);
 //	private Dimension userTimelineCellExtent = new Dimension(-1, -1);
-
+	
 	public ResPlanPanel(ResPlanController cntrl, CollectableResPlanModel model, DateTimeModel timeModel) {
 		final SpringLocaleDelegate localeDelegate = SpringLocaleDelegate.getInstance();
 		
@@ -254,7 +254,7 @@ public class ResPlanPanel extends JPanel {
 		KeyBindingProvider.bindActionToComponent(KeyBindingProvider.ACTIVATE_SEARCH_PANEL_2, findAction, this);
 	}
 	
-	JResPlanComponent<Collectable, Date, Collectable> getResPlan() {
+	JResPlanComponent<Collectable, Date, Collectable, Collectable> getResPlan() {
 		return resPlan;
 	}
 	
@@ -390,7 +390,7 @@ public class ResPlanPanel extends JPanel {
 	}
 
 	private void initJResPlan() {
-		resPlan = new JResPlanComponent<Collectable, Date, Collectable>(resPlanModel, timeModel);
+		resPlan = new JResPlanComponent<Collectable, Date, Collectable, Collectable>(resPlanModel, timeModel);
 		resPlan.getTimelineHeader().setCategoryModel(timeGranularityModel.getSelectedItem());
 		resPlan.addMouseListener(new AbstractJPopupMenuListener() {
 			@Override
@@ -472,7 +472,7 @@ public class ResPlanPanel extends JPanel {
 		});
 		Date start = DateUtils.addDays(DateUtils.getPureDate(new Date()), -5);
 		Date end = DateUtils.addDays(start, 30);
-		resPlan.setTimeHorizon(new Interval<Date>(start, end));
+		resPlan.setTimeHorizon(new Interval<Date>(start, end));		
 	}
 
 	public void setResourceRenderer(ComponentProvider<?> renderer) {
@@ -653,7 +653,7 @@ public class ResPlanPanel extends JPanel {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			final SpringLocaleDelegate localeDelegate = SpringLocaleDelegate.getInstance();
-			ResPlanModel<Collectable, Date, Collectable> model = resPlan.getModel();
+			ResPlanModel<Collectable, Date, Collectable, Collectable> model = resPlan.getModel();
 			final List<Collectable> selectedEntries = resPlan.getSelectedEntries();
 			String title, message;
 			if (selectedEntries.isEmpty()) {
@@ -775,7 +775,7 @@ public class ResPlanPanel extends JPanel {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			final SpringLocaleDelegate localeDelegate = SpringLocaleDelegate.getInstance();
-			ResPlanModel<Collectable, Date, Collectable> model = resPlan.getModel();
+			ResPlanModel<Collectable, Date, Collectable, Collectable> model = resPlan.getModel();
 			final List<Collectable> selectedEntries = resPlan.getSelectedEntries();
 			String title, message;
 			if (selectedEntries.isEmpty()) {
@@ -926,6 +926,18 @@ public class ResPlanPanel extends JPanel {
 			result.add(timeGranularityModel.getElementAt(i));
 		}
 		return result;
+	}
+
+	public void setRelationPresentation(int relationPresentation) {
+		resPlan.setRelationPresentation(relationPresentation);
+	}
+
+	public void setRelationFromPresentation(int relationFromPresentation) {
+		resPlan.setRelationFromPresentation(relationFromPresentation);
+	}
+
+	public void setRelationToPresentation(int relationToPresentation) {
+		resPlan.setRelationToPresentation(relationToPresentation);
 	}
 }
 
