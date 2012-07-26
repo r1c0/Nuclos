@@ -239,8 +239,12 @@ public class MasterDataFacadeHelper {
 		LOG.info("JMS send: notify clients that master data changed:" + this);
 		NuclosJMSUtils.sendOnceAfterCommitDelayed(sCachedEntityName, JMSConstants.TOPICNAME_MASTERDATACACHE);
 	}
-
+	
 	public MasterDataVO getMasterDataCVOById(final MasterDataMetaVO mdmetavo, final Object oId) throws CommonFinderException {
+		return getMasterDataCVOById(mdmetavo, oId, true);
+	}
+
+	public MasterDataVO getMasterDataCVOById(final MasterDataMetaVO mdmetavo, final Object oId, boolean checkRecordGrant) throws CommonFinderException {
 		MasterDataVO mdVO = XMLEntities.getSystemObjectById(mdmetavo.getEntityName(), oId);
 		if (mdVO != null) {
 			return mdVO;
@@ -248,12 +252,14 @@ public class MasterDataFacadeHelper {
 
 		JdbcEntityObjectProcessor eoProcessor = nucletDalProvider.getEntityObjectProcessor(mdmetavo.getEntityName());
 		EntityObjectVO eoResult = eoProcessor.getByPrimaryKey(IdUtils.toLongId(oId));
-		try {
-			grantUtils.checkInternal(mdmetavo.getEntityName(), IdUtils.toLongId(oId));
-        }
-        catch(CommonPermissionException e) {
-        	throw new CommonFinderException(e);
-        }
+		if (checkRecordGrant) {
+			try {
+				grantUtils.checkInternal(mdmetavo.getEntityName(), IdUtils.toLongId(oId));
+	        }
+	        catch(CommonPermissionException e) {
+	        	throw new CommonFinderException(e);
+	        }
+		}
 		if (eoResult != null) {
 			mdVO = DalSupportForMD.wrapEntityObjectVO(eoResult);
 		}

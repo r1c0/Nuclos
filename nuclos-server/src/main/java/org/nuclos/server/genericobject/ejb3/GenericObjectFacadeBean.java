@@ -599,7 +599,7 @@ public class GenericObjectFacadeBean extends NuclosFacadeBean implements Generic
 
 		final EntityMetaDataVO eMeta = MetaDataServerProvider.getInstance().getEntity(IdUtils.toLongId(iModuleId));
 
-		final List<EntityObjectVO> eos = NucletDalProvider.getInstance().getEntityObjectProcessor(eMeta.getEntity()).getBySearchExpressionAndPrimaryKeys(appendRecordGrants(new CollectableSearchExpression(), eMeta), DalUtils.convertIntegerIdList(lstIds));
+		final List<EntityObjectVO> eos = NucletDalProvider.getInstance().getEntityObjectProcessor(eMeta.getEntity()).getBySearchExpressionAndPrimaryKeys(new CollectableSearchExpression() /*appendRecordGrants(new CollectableSearchExpression(), eMeta) - No check of recordgrants here*/, DalUtils.convertIntegerIdList(lstIds));
 		List<GenericObjectWithDependantsVO> result = new ArrayList<GenericObjectWithDependantsVO>(eos.size());
 
 		for (EntityObjectVO eo : eos) {

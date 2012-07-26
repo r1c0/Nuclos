@@ -514,7 +514,7 @@ public class MasterDataFacadeBean extends NuclosFacadeBean implements MasterData
 										new MasterDataToEntityObjectTransformer(entity)));
 							}
 						}
-						return new MasterDataWithDependantsVO(helper.getMasterDataCVOById(mdmetavo, oId), dmdm);
+						return new MasterDataWithDependantsVO(helper.getMasterDataCVOById(mdmetavo, oId, false /*No check of recordgrants here*/), dmdm);
 					}
 					catch(CommonFinderException ex) {
 						// This may never occur inside of a "repeatable read"
