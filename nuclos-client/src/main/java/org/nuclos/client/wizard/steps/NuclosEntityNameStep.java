@@ -490,12 +490,12 @@ public class NuclosEntityNameStep extends NuclosEntityAbstractStep {
 				NuclosEntityNameStep.this.model.setShowGroups(vo.isTreeGroup());
 				NuclosEntityNameStep.this.model.setStateModel(vo.isStateModel());
 				NuclosEntityNameStep.this.model.setTableOrViewName(vo.getDbEntity());
-				NuclosEntityNameStep.this.model.setNodeLabel(
-						vo.getLocaleResourceIdForTreeView() == null ? ""
-								: localeDelegate.getTextForStaticLabel(vo.getLocaleResourceIdForTreeView()));
-				NuclosEntityNameStep.this.model.setNodeTooltip(
-						vo.getLocaleResourceIdForTreeViewDescription() == null ? ""
-								: localeDelegate.getTextForStaticLabel(vo.getLocaleResourceIdForTreeViewDescription()));
+				String sNodeLabel = vo.getLocaleResourceIdForTreeView() == null ? ""
+						: localeDelegate.getTextForStaticLabel(vo.getLocaleResourceIdForTreeView());
+				NuclosEntityNameStep.this.model.setNodeLabel(sNodeLabel.startsWith("[Missing resource id=null, locale") ? null : sNodeLabel);
+				String sNodeTooltip = vo.getLocaleResourceIdForTreeViewDescription() == null ? ""
+						: localeDelegate.getTextForStaticLabel(vo.getLocaleResourceIdForTreeViewDescription());
+				NuclosEntityNameStep.this.model.setNodeTooltip(sNodeTooltip.startsWith("[Missing resource id=null, locale") ? null : sNodeTooltip);
 				NuclosEntityNameStep.this.model.setMultiEditEquation(vo.getFieldsForEquality());
 				NuclosEntityNameStep.this.model.setLabelSingularResource(vo.getLocaleResourceIdForLabel());
 				NuclosEntityNameStep.this.model.setMenuPathResource(vo.getLocaleResourceIdForMenuPath());
