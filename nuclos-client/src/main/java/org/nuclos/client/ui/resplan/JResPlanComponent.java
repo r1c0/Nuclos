@@ -1479,19 +1479,19 @@ public class JResPlanComponent<R, T extends Comparable<? super T>, E, L> extends
 			if (relationPresentation == ResPlanConstants.RELATION_PRESENTATION_ORTHOGONAL) {
 				if (orientation == Orientation.HORIZONTAL) {
 					if (yStart <= yEnd) {
-						addPoint(xStart +10, yStart + start.height/2 +5);
-						addPoint(xEnd -10, yStart + start.height/2 +5);
+						addPoint(xStart +10, yStart + start.height/2 +3);
+						addPoint(xEnd -10, yStart + start.height/2 +3);
 					} else {
-						addPoint(xStart +10, yStart - start.height/2 -5);
-						addPoint(xEnd -10, yStart - start.height/2 -5);
+						addPoint(xStart +10, yStart - start.height/2 -3);
+						addPoint(xEnd -10, yStart - start.height/2 -3);
 					}
 				} else {
 					if (xStart <= xEnd) {
-						addPoint(xStart + start.width/2 +5, yStart +10);
-						addPoint(xStart + start.width/2 +5, yEnd -10);
+						addPoint(xStart + start.width/2 +3, yStart +10);
+						addPoint(xStart + start.width/2 +3, yEnd -10);
 					} else {
-						addPoint(xStart - start.width/2 -5, yStart +10);
-						addPoint(xStart - start.width/2 -5, yEnd -10);
+						addPoint(xStart - start.width/2 -3, yStart +10);
+						addPoint(xStart - start.width/2 -3, yEnd -10);
 					}
 				}
 			}
