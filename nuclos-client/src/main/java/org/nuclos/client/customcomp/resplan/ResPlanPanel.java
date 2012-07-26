@@ -432,7 +432,7 @@ public class ResPlanPanel extends JPanel {
 					popupMenu.add(detailsAction);
 				}
 				
-				if (selectedEntries.size() == 1 && resPlanModel.getRelationEntity() != null) {
+				if (selectedEntries.size() == 1 && resPlanModel.getRelationEntity() != null && resPlanModel.isCreateRelationAllowed()) {
 					popupMenu.addSeparator();
 					if (resPlan.getRelateBegin() != null) {
 						Collectable to = selectedEntries.get(0);
