@@ -17,13 +17,17 @@
 
 package org.nuclos.client.livesearch;
 
+import java.awt.AWTEvent;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Rectangle;
+import java.awt.Toolkit;
+import java.awt.event.AWTEventListener;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.event.MouseEvent;
 import java.rmi.RemoteException;
 import java.text.DateFormat;
 import java.util.ArrayList;
@@ -144,6 +148,30 @@ public class LiveSearchController implements LiveSearchSearchPaneListener, LiveS
     // @Autowired
     public final void setParentFrame(MainFrame parentFrame) {
     	this.parentFrame = parentFrame; // @see 	NUCLOSINT-1615 spring will set null as main frame. so we do it @wireing livesearch controller in main frame
+    	if (parentFrame != null) {
+    		Toolkit.getDefaultToolkit().addAWTEventListener(new AWTEventListener() {
+				
+				@Override
+				public void eventDispatched(AWTEvent event) {
+	//				 if(searchComponent.getButtonSelection()) {
+						 if (event instanceof MouseEvent) {
+							 MouseEvent me = (MouseEvent)event;
+							 if (me.getID() == MouseEvent.MOUSE_CLICKED
+									 && !me.getComponent().equals(resultPane)
+									 && !me.getComponent().equals(resultPane.getTable())
+									 && !me.getComponent().equals(searchComponent)
+									 && !me.getComponent().equals(searchComponent.getButton())) {
+				            	searchComponent.setButtonSelection(false);
+					            if(overflowMessage != null) {
+					            	overflowMessage.dispose();
+					            	overflowMessage = null;
+					            }
+							 }
+						 }
+	//				 }	
+				}
+			}, AWTEvent.MOUSE_EVENT_MASK);
+    	}
     }
 	
 	// @Autowired
@@ -156,7 +184,7 @@ public class LiveSearchController implements LiveSearchSearchPaneListener, LiveS
     }
     
     public final void init() {
-        // this.parentFrame = parentFrame;
+    	// this.parentFrame = parentFrame;
         searchComponent = new SearchComponent();
         searchComponent.setMaximumSize(searchComponent.getPreferredSize());
 

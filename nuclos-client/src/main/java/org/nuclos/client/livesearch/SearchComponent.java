@@ -118,6 +118,10 @@ public class SearchComponent extends JPanel {
 		broadcastButtonSelectionChanged();
 	}
 	
+	public JToggleButton getButton() {
+		return arrowButton;
+	}
+	
 	public boolean getButtonSelection() {
 		return arrowButton.isSelected();
 	}
