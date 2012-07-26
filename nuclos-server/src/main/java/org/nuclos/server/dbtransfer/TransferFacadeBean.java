@@ -1544,7 +1544,16 @@ public class TransferFacadeBean extends NuclosFacadeBean implements TransferFaca
 		}
 		
 		for (NucletContentProcessor ncp : checkLogicalUniqueAgain) {
-			ncp.getNC().checkLogicalUnique(result, ncp.getNcObject());
+			try {
+				// no update of version information here
+				ncp.getNC().insertOrUpdateNcObject(result, ncp.getNcObject(), t.isNuclon());
+			}
+			catch (DbException e) {
+				result.addBusinessException(e);
+			} 
+			catch (SQLIntegrityConstraintViolationException e) {
+				ncp.getNC().checkLogicalUnique(result, ncp.getNcObject()); //for error logging
+			}
 		}
 		
 		logDalCallResult(result, t.result.sbWarning);
@@ -1592,21 +1601,21 @@ public class TransferFacadeBean extends NuclosFacadeBean implements TransferFaca
 					NucletContentUID existingUID = uidExistingMap.getUID(existingEO);
 					LOG.debug("existing UID: " + existingUID);
 
-					if (t.getTransferOptions().containsKey(TransferOption.IS_NUCLOS_INSTANCE)) {
-						if (existingUID == null) {
-							LOG.debug("existing UID not found and \"is nuclos instance\" import --> check if in use and validate");
-						} else {
-							contentUntouched.add(existingEO);
-							continue;
-						}
-					} else {
+//					if (t.getTransferOptions().containsKey(TransferOption.IS_NUCLOS_INSTANCE)) {
+//						if (existingUID == null) {
+//							LOG.debug("existing UID not found and \"is nuclos instance\" import --> check if in use and validate");
+//						} else {
+//							contentUntouched.add(existingEO);
+//							continue;
+//						}
+//					} else {
 						if ((existingUID != null && !uidImportMap.containsUID(existingUID, nc.getEntity()))) {
 							LOG.debug("existing UID found, but not in UID import map --> check if in use and validate");
 						} else {
 							contentUntouched.add(existingEO);
 							continue;
 						}
-					}
+//					}
 
 					boolean isInUse = false;
 					// check if in use by user entity
