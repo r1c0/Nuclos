@@ -155,7 +155,7 @@ public class EntityObjectFacadeBean extends NuclosFacadeBean implements EntityOb
 
 		final CollectableSearchExpression search = new CollectableSearchExpression(getSearchCondition(null, fields));
 		final List<EntityObjectVO> eos = eop.getBySearchExpressionAndPrimaryKeys(
-				appendRecordGrants(search, eMeta), lstIds);
+				search /*appendRecordGrants(search, eMeta) - No check of recordgrants here*/, lstIds);
 
 		final Set<String> subforms = new HashSet<String>();
 		// final Collection<EntityFieldMetaDataVO> pivots = new ArrayList<EntityFieldMetaDataVO>();
