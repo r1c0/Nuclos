@@ -63,16 +63,28 @@ public interface ResPlanModel<R, T extends Comparable<? super T>, E, L> {
 	 * Removes the given entry.
 	 */
 	public abstract void removeEntry(E entry);
+	
+	public abstract void createRelation(E entryFrom, E entryTo);
+	
+	public abstract void removeRelation(L relation);
 
 	public abstract Object getEntryId(E entry);
 	
+	public abstract Object getRelationId(L relation);
+	
 	public abstract boolean isMilestone(E entry);
 	
-	public abstract boolean isCreateAllowed();
+	public abstract boolean isCreateEntryAllowed();
 
-	public abstract boolean isUpdateAllowed(E entry);
+	public abstract boolean isUpdateEntryAllowed(E entry);
 	
-	public abstract boolean isRemoveAllowed(E entry);
+	public abstract boolean isRemoveEntryAllowed(E entry);
+	
+	public abstract boolean isCreateRelationAllowed();
+
+	public abstract boolean isUpdateRelationAllowed(L relation);
+	
+	public abstract boolean isRemoveRelationAllowed(L relation);
 	
 	public abstract List<? extends L> getAllRelations();
 	
@@ -81,6 +93,8 @@ public interface ResPlanModel<R, T extends Comparable<? super T>, E, L> {
 	public abstract Object getRelationFromId(L relation);
 	
 	public abstract Object getRelationToId(L relation);
+	
+	public abstract R getResourceFromEntry(E entry);
 	
 	public abstract void addResPlanModelListener(ResPlanModelListener listener);
 	

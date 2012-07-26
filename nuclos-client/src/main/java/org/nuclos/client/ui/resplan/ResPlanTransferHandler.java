@@ -133,14 +133,14 @@ public class ResPlanTransferHandler extends TransferHandler{
 				E entry = wrapper.unwrap(resPlanModel.getEntryType());
 				switch (support.getUserDropAction()) {
 				case MOVE:
-					if (resPlanModel.isUpdateAllowed(entry)) {
+					if (resPlanModel.isUpdateEntryAllowed(entry)) {
 						resPlanModel.updateEntry(entry, resource, interval);
 						// Return false because we just update the entry internally (it's not a real Transferable import).
 						return false;
 					}
 					break;
 				case COPY:
-					if (resPlanModel.isCreateAllowed()) {
+					if (resPlanModel.isCreateEntryAllowed()) {
 						resPlan.getModel().createEntry(resource, interval, entry);
 						return true;
 					}

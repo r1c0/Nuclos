@@ -242,6 +242,10 @@ public class ResPlanController extends CustomComponentController {
 	CollectableHelper<?> getEntryEntity() {
 		return entryEntity;
 	}
+	
+	CollectableHelper<?> getRelationEntity() {
+		return relationEntity;
+	}
 
 	ResPlanConfigVO getConfigVO() {
 		return configVO;

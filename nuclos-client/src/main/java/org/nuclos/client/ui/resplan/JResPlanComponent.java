@@ -51,7 +51,6 @@ import java.util.TooManyListenersException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.swing.BorderFactory;
 import javax.swing.CellRendererPane;
 import javax.swing.DropMode;
 import javax.swing.JComponent;
@@ -66,7 +65,6 @@ import javax.swing.event.ChangeListener;
 import javax.swing.event.MouseInputAdapter;
 import javax.swing.event.MouseInputListener;
 
-import org.apache.commons.digester.SetTopRule;
 import org.apache.log4j.Logger;
 import org.jdesktop.swingx.decorator.Highlighter;
 import org.jdesktop.swingx.painter.Painter;
@@ -154,13 +152,18 @@ public class JResPlanComponent<R, T extends Comparable<? super T>, E, L> extends
 	private Map<Object, CellView> cellViewMap = new HashMap<Object, CellView>();
 	
 	/** All existing relation views. */
-	private List<RelationView> relViews = new ArrayList<RelationView>();
+	private List<RelationView> relViewList = new ArrayList<RelationView>();
+	private Map<Object, RelationView> relViewMap = new HashMap<Object, RelationView>();
 
 	/** Selected cell views (also members of the overall cellViews list). */
 	private List<CellView> selectedCellViews = new ArrayList<CellView>();
 	
+	private List<RelationView> selectedRelationViews = new ArrayList<RelationView>();
+	private E relateBegin;
+	
 	/** Decorated views. */
 	private EnumMap<DecoratedView, CellView> decoratedViewMap = new EnumMap<DecoratedView, CellView>(DecoratedView.class);
+	private EnumMap<DecoratedView, RelationView> decoratedRelationViewMap = new EnumMap<JResPlanComponent.DecoratedView, JResPlanComponent<R,T,E,L>.RelationView>(DecoratedView.class);
 	
 	private CellRendererPane cellRendererPane;
 	private ComponentProvider<?> cellRendererProvider = new DefaultResPlanRendererProvider();
@@ -348,9 +351,11 @@ public class JResPlanComponent<R, T extends Comparable<? super T>, E, L> extends
 	//
 	
 	private void initCellViews() {
+		relateBegin = null;
 		cellViewList.clear();
 		cellViewMap.clear();
-		relViews.clear();
+		relViewList.clear();
+		relViewMap.clear();
 		if (timeModel == null || model == null)
 			return;
 		
@@ -420,7 +425,9 @@ public class JResPlanComponent<R, T extends Comparable<? super T>, E, L> extends
 				EntryCellView from = (EntryCellView) cellViewMap.get(model.getRelationFromId(relation));
 				EntryCellView to = (EntryCellView) cellViewMap.get(model.getRelationToId(relation));
 				if (from != null && to != null) {
-					relViews.add(new RelationView(from,to));
+					RelationView relView = new RelationView(relation,from,to,false);
+					relViewList.add(relView);
+					relViewMap.put(model.getRelationId(relation), relView);
 				}
 			}
 		}
@@ -478,6 +485,15 @@ public class JResPlanComponent<R, T extends Comparable<? super T>, E, L> extends
 		repaint(newView);
 	}
 	
+	private RelationView getDecoratedRelationView(DecoratedView deco) {
+		return decoratedRelationViewMap.get(deco);
+	}
+	
+	private void setDecoratedRelationView(DecoratedView deco, RelationView newView) {
+		RelationView oldView = decoratedRelationViewMap.put(deco, newView);
+		repaint(oldView);
+		repaint(newView);
+	}
 	
 	//
 	// Overridden standard methods
@@ -656,6 +672,34 @@ public class JResPlanComponent<R, T extends Comparable<? super T>, E, L> extends
 		return getDecoratedView(DecoratedView.BLANK);
 	}
 	
+	public L getRelationAt(Point p) {
+		RelationView relView = getRelationViewAt(p);
+		if (relView != null) {
+			return relView.getRelation();
+		}
+		return null;
+	}
+	
+	public List<L> getSelectedRelations() {
+		List<L> relations = new ArrayList<L>();
+		for (RelationView relView : selectedRelationViews) {
+			relations.add(relView.getRelation());
+		}
+		return relations;
+	}
+	
+	public void setSelectedRelations(List<L> relations) {
+		for (RelationView relView : selectedRelationViews) {
+			relView.invalidate();
+		}
+		selectedRelationViews.clear();
+		for (L rel : relations) {
+			RelationView relView = findRelationView(rel);
+			if (relView != null)
+				select(relView, true);
+		}
+	}
+	
 	public E getEntryAt(Point p) {
 		CellView cellView = getCellViewAt(p);
 		if (cellView != null) {
@@ -699,6 +743,25 @@ public class JResPlanComponent<R, T extends Comparable<? super T>, E, L> extends
 				return cellView;
 		}
 		// TODO_RESPLAN: include dummy ?!?
+		return null;
+	}
+	
+	private RelationView findRelationView(L relation) {
+		if (relation != null) {
+			return relViewMap.get(model.getRelationId(relation));
+		}
+		return null;
+	}
+	
+	private RelationView getRelationViewAt(Point p) {
+		if (p == null) {
+			return null;
+		}
+		for (RelationView relView : relViewList) {
+			if (relView.contains(p)) {
+				return relView;
+			}
+		}
 		return null;
 	}
 	
@@ -831,17 +894,20 @@ public class JResPlanComponent<R, T extends Comparable<? super T>, E, L> extends
 			paintCell(g2d, clipBounds, cellView);
 		}
 		
-		for (RelationView relView : relViews) {
+		for (RelationView relView : relViewList) {
 			paintRelation(g2d, clipBounds, relView);
 		}
 
 		paintCell(g2d, clipBounds, decoratedViewMap.get(DecoratedView.MOUSE_OVER));
+		paintRelation(g2d, clipBounds, decoratedRelationViewMap.get(DecoratedView.MOUSE_OVER));
 
 		g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_ATOP, 0.75f));
 
 		paintCell(g2d, clipBounds, decoratedViewMap.get(DecoratedView.BLANK));
 		paintCell(g2d, clipBounds, decoratedViewMap.get(DecoratedView.RESIZING));
 		paintCell(g2d, clipBounds, decoratedViewMap.get(DecoratedView.DROP_LOCATION));
+		
+		paintRelation(g2d, clipBounds, decoratedRelationViewMap.get(DecoratedView.DROP_LOCATION));
 		
 		g2d.dispose();
 	}
@@ -925,15 +991,21 @@ public class JResPlanComponent<R, T extends Comparable<? super T>, E, L> extends
 		}
 	}
 
-	// TODO_RESPLAN:
-	private void repaint(CellView cv) {
-		if (cv == null)
+	private void repaint(RectView rv) {
+		repaint(rv, null);
+	}
+	
+	private void repaint(RectView rv, Rectangle add) {
+		if (rv == null)
 			return;
-		Rectangle r = cv.getRect();
-		repaint(r.x-3, r.y-3, r.width+6, r.height+6);
+		Rectangle r = rv.getRect();
+		if (add != null) {
+			r = r.union(add);
+		}
+		super.repaint(r.x-3, r.y-3, r.width+6, r.height+6);
 	}
 
-	void selectForEvent(CellView cellView, MouseEvent evt) {
+	void selectForEvent(CellView cellView, RelationView relView, MouseEvent evt) {
 		int button = evt.getButton();
 		if (evt.getButton() == MouseEvent.BUTTON1 || button == MouseEvent.BUTTON3) {
 			CellView blankView = getDecoratedView(DecoratedView.BLANK);
@@ -942,6 +1014,9 @@ public class JResPlanComponent<R, T extends Comparable<? super T>, E, L> extends
 				for (CellView v : selectedCellViews)
 					repaint(v);
 				selectedCellViews.clear();
+				for (RelationView v : selectedRelationViews)
+					repaint(v);
+				selectedRelationViews.clear();
 			}
 			if (cellView != null) {
 				boolean removed = selectedCellViews.remove(cellView);
@@ -949,6 +1024,11 @@ public class JResPlanComponent<R, T extends Comparable<? super T>, E, L> extends
 					selectedCellViews.add(0, cellView);
 				repaint(cellView);
 				blankView = null;
+			} else if (relView != null) {
+				boolean removed = selectedRelationViews.remove(relView);
+				if (!multiSelection || !removed)
+					selectedRelationViews.add(0, relView);
+				repaint(relView);
 			} else {
 				R resource = getResourceAt(evt.getPoint());
 				Interval<T> interval = getTimeIntervalAt(evt.getPoint());
@@ -975,9 +1055,28 @@ public class JResPlanComponent<R, T extends Comparable<? super T>, E, L> extends
 			repaint(cellView);
 		}
 	}
+	
+	void select(RelationView relView, boolean selected) {
+		boolean modified = false;
+		if (selected) {
+			if (!selectedRelationViews.contains(relView)) {
+				selectedRelationViews.add(relView);
+				modified = true;
+			}
+		} else {
+			modified  = selectedRelationViews.remove(relView);
+		}
+		if (modified ) {
+			repaint(relView);
+		}
+	}
 
 	void setMouseOverCellView(CellView newMouseOverCellView) {
 		setDecoratedView(DecoratedView.MOUSE_OVER, newMouseOverCellView);
+	}
+	
+	void setMouseOverRelationView(RelationView newMouseOverRelationView) {
+		setDecoratedRelationView(DecoratedView.MOUSE_OVER, newMouseOverRelationView);
 	}
 	
 	@Override
@@ -991,8 +1090,12 @@ public class JResPlanComponent<R, T extends Comparable<? super T>, E, L> extends
 	}
 
 	private static final Insets RESIZE_INSETS = new Insets(5, 5, 5, 5);
+	
+	private interface RectView {
+		public Rectangle getRect();
+	}
 
-	private abstract class CellView implements Area<R, T> {
+	private abstract class CellView implements Area<R, T>, RectView {
 
 		final R resource;
 		final Interval<T> interval;
@@ -1057,23 +1160,34 @@ public class JResPlanComponent<R, T extends Comparable<? super T>, E, L> extends
 	
 	private static class JMilestone extends JComponent {
 		
+		private final Color mouseOverColor = new Color(0xcc9999);
+		
+		private final Color selectionBackgroundColor = new Color(0xccccff);
+		private final Color selectionBorderColor = new Color(0x8080ff);
+		
 		private Point start;
 		private Point end;
 		private int thickness;
+		private boolean mouseOver;
+		private boolean selected;
 		
 		public JMilestone() {
 			super();
 			setOpaque(true);
 		}
 		
-		public void setValues(Point start, Point end, int thickness) {
+		public void setValues(Point start, Point end, int thickness, boolean mouseOver, boolean selected) {
 			this.start = start;
 			this.end = end;
 			this.thickness = thickness;
+			this.mouseOver = mouseOver;
+			this.selected = selected;
 		}
 		
 		@Override
-		public void paint(Graphics g) {			
+		public void paint(Graphics g) {	
+			Graphics2D g2 = (Graphics2D) g;
+			
 			Polygon p = new Polygon();
 			p.addPoint(start.x, start.y);
 			if (start.x != end.x) {
@@ -1089,14 +1203,31 @@ public class JResPlanComponent<R, T extends Comparable<? super T>, E, L> extends
 				p.addPoint(end.x - thickness/2, end.y - thickness/2);
 				p.addPoint(end.x - thickness/2, start.y + thickness/2);
 			}
-			g.setColor(Color.GRAY);
-			g.fillPolygon(p);
-			g.setColor(Color.BLACK);
-			g.drawPolygon(p);
+			g2.setColor(selected?selectionBackgroundColor:Color.GRAY);
+			g2.fillPolygon(p);
+			if (mouseOver || selected) {
+				g2.setColor(selected?selectionBorderColor:mouseOverColor);
+				g2.drawPolygon(p);
+				p.translate(-1, -1);
+				g2.drawPolygon(p);
+				p.translate(0, 2);
+				g2.drawPolygon(p);
+				p.translate(2, 0);
+				g2.drawPolygon(p);
+				p.translate(0, -2);
+				g2.drawPolygon(p);
+			} else {
+				g2.setColor(Color.BLACK);
+				g2.drawPolygon(p);
+			}
 		}
 	}
 	
 	private static class JRelation extends JComponent {
+		
+		private final Color mouseOverColor = new Color(0xcc9999);
+		
+		private final Color selectionColor = new Color(0x8080ff);
 
 		private List<Point> points = new ArrayList<Point>();
 		private List<Point> dots = new ArrayList<Point>();
@@ -1104,6 +1235,10 @@ public class JResPlanComponent<R, T extends Comparable<? super T>, E, L> extends
 		private Point rightArrow = null;
 		private Point topArrow = null;
 		private Point bottomArrow = null;
+		
+		private boolean dnd = false;
+		private boolean selected = false;
+		private boolean mouseOver = false;
 		
 		public JRelation() {
 			super();
@@ -1117,50 +1252,42 @@ public class JResPlanComponent<R, T extends Comparable<? super T>, E, L> extends
 			rightArrow = null;
 			topArrow = null;
 			bottomArrow = null;
+			
+			dnd = false;
+			selected = false;
+			mouseOver = false;
 		}
 		
-		public void addPoint(int x, int y) {
-			addPoint(new Point(x, y));
+		public void setDragAndDrop(boolean dnd) {
+			this.dnd = dnd;
+		}
+		
+		public void setSelected(boolean selected) {
+			this.selected = selected;
+		}
+		
+		public void setMouseOver(boolean mouseOver) {
+			this.mouseOver = mouseOver;
 		}
 		
 		public void addPoint(Point p) {
 			this.points.add(p);
 		}
 		
-		public void addDot(int x, int y) {
-			addDot(new Point(x, y));
-		}
-		
 		public void addDot(Point p) {
 			this.dots.add(p);
-		}
-		
-		public void setLeftArrow(int x, int y) {
-			setLeftArrow(new Point(x, y));
 		}
 		
 		public void setLeftArrow(Point p) {
 			this.leftArrow = p;
 		}
 		
-		public void setRightArrow(int x, int y) {
-			setRightArrow(new Point(x, y));
-		}
-		
 		public void setRightArrow(Point p) {
 			this.rightArrow = p;
 		}
 		
-		public void setTopArrow(int x, int y) {
-			setTopArrow(new Point(x, y));
-		}
-		
 		public void setTopArrow(Point p) {
 			this.topArrow = p;
-		}
-		
-		public void setBottomArrow(int x, int y) {
-			setBottomArrow(new Point(x, y));
 		}
 		
 		public void setBottomArrow(Point p) {
@@ -1173,11 +1300,11 @@ public class JResPlanComponent<R, T extends Comparable<? super T>, E, L> extends
 				return;
 			}
 			
-			g.setColor(Color.BLUE);
+			g.setColor(dnd?Color.MAGENTA:mouseOver?mouseOverColor:selected?selectionColor:Color.BLUE);
 			Point p1 = points.get(0);
 			for (int i = 1; i < points.size(); i++) {
 				Point p2 = points.get(i);
-				drawThickLine(g, p1.x, p1.y, p2.x, p2.y, 2);
+				drawThickLine(g, p1.x, p1.y, p2.x, p2.y, selected?3:2);
 				p1 = p2;
 			}
 			
@@ -1215,6 +1342,10 @@ public class JResPlanComponent<R, T extends Comparable<? super T>, E, L> extends
 		}
 
 		public void drawThickLine(Graphics g, int x1, int y1, int x2, int y2, int thickness) {
+			g.fillPolygon(getThickLine(x1, y1, x2, y2, thickness));
+		}	
+		
+		static Polygon getThickLine(int x1, int y1, int x2, int y2, int thickness) {
 			int dX = x2 - x1;
 			int dY = y2 - y1;
 			double lineLength = Math.sqrt(dX * dX + dY * dY);
@@ -1237,22 +1368,39 @@ public class JResPlanComponent<R, T extends Comparable<? super T>, E, L> extends
 			yPoints[2] = y2 - dy;
 			xPoints[3] = x2 + dx;
 			yPoints[3] = y2 + dy;
-
-			g.fillPolygon(xPoints, yPoints, 4);
+			
+			return new Polygon(xPoints, yPoints, 4);
 		}
-				
-		
 	}
 	
-	private class RelationView {
+	private void growRelationRectangle(Rectangle origin) {
+		if (orientation == Orientation.HORIZONTAL)
+			origin.grow(20, 10);
+		else
+			origin.grow(10, 20);
+	}
+	
+	private class RelationView implements RectView {
 		
-		private final EntryCellView from;
+		private final L relation;
 		
-		private final EntryCellView to;
+		private final RectView from;
+		private final RectView to;
+		private final boolean dnd;
 		
-		public RelationView (EntryCellView from, EntryCellView to) {
+		private final List<Polygon> selectionArea = new ArrayList<Polygon>();
+		private Point lastPoint = null;
+		private Rectangle rect;
+		
+		public RelationView (L relation, RectView from, RectView to, boolean dnd) {
+			this.relation = relation;
 			this.from = from;
 			this.to = to;
+			this.dnd = dnd;
+		}
+		
+		public L getRelation() {
+			return relation;
 		}
 		
 		public Rectangle getRect() {
@@ -1260,16 +1408,22 @@ public class JResPlanComponent<R, T extends Comparable<? super T>, E, L> extends
 			Rectangle end = to.getRect();
 			
 			Rectangle result = start.union(end);
-			if (orientation == Orientation.HORIZONTAL)
-				result.grow(20, 10);
-			else
-				result.grow(10, 20);
+			growRelationRectangle(result);
 			
 			return result;
 		}
 
-		private JComponent setupRenderer() {
+		private JComponent setupRenderer(Rectangle rect) {
+			this.rect = rect;
+			boolean selected = selectedRelationViews.contains(this);
+			boolean mouseOver = getDecoratedRelationView(DecoratedView.MOUSE_OVER) == this;
+			
+			lastPoint = null;
+			selectionArea.clear();
 			relationRenderer.clear();
+			relationRenderer.setDragAndDrop(dnd);
+			relationRenderer.setSelected(selected);
+			relationRenderer.setMouseOver(mouseOver);
 			Rectangle start = from.getRect();
 			Rectangle end = to.getRect();
 			
@@ -1324,18 +1478,20 @@ public class JResPlanComponent<R, T extends Comparable<? super T>, E, L> extends
 			
 			if (relationPresentation == ResPlanConstants.RELATION_PRESENTATION_ORTHOGONAL) {
 				if (orientation == Orientation.HORIZONTAL) {
-					if (xStart+10 > xEnd) {
-						addPoint(xStart +10, yStart + (yEnd-yStart)/2);
-						addPoint(xEnd -10, yStart + (yEnd-yStart)/2);
+					if (yStart <= yEnd) {
+						addPoint(xStart +10, yStart + start.height/2 +5);
+						addPoint(xEnd -10, yStart + start.height/2 +5);
 					} else {
-						addPoint(xStart +10, yEnd);
-					} 
+						addPoint(xStart +10, yStart - start.height/2 -5);
+						addPoint(xEnd -10, yStart - start.height/2 -5);
+					}
 				} else {
-					if (yStart+10 > yEnd) {
-						addPoint(xStart + (xEnd-xStart)/2, yStart +10);
-						addPoint(xStart + (xEnd-xStart)/2, yEnd -10);
+					if (xStart <= xEnd) {
+						addPoint(xStart + start.width/2 +5, yStart +10);
+						addPoint(xStart + start.width/2 +5, yEnd -10);
 					} else {
-						addPoint(xEnd, yStart +10);
+						addPoint(xStart - start.width/2 -5, yStart +10);
+						addPoint(xStart - start.width/2 -5, yEnd -10);
 					}
 				}
 			}
@@ -1361,7 +1517,13 @@ public class JResPlanComponent<R, T extends Comparable<? super T>, E, L> extends
 		}
 		
 		private void addPoint(int x, int y) {
-			relationRenderer.addPoint(adjustPoint(x, y));
+			Point p = adjustPoint(x, y);
+			relationRenderer.addPoint(new Point(p));
+			p.translate(rect.x, rect.y);
+			if (lastPoint != null) {
+				selectionArea.add(JRelation.getThickLine(lastPoint.x, lastPoint.y, p.x, p.y, 6));
+			}
+			lastPoint = p;
 		}
 		
 		private void addDot(int x, int y) {
@@ -1392,9 +1554,22 @@ public class JResPlanComponent<R, T extends Comparable<? super T>, E, L> extends
 		}
 
 		public void paintRelation(Graphics2D g2d, Rectangle rect) {
-			JComponent renderer = setupRenderer();
+			JComponent renderer = setupRenderer(rect);
 			JResPlanComponent.this.cellRendererPane.paintComponent(g2d, renderer, JResPlanComponent.this, rect);
 			cellRendererPane.remove(renderer);
+		}
+		
+		public boolean contains(Point p) {
+			for (Polygon pol : selectionArea) {
+				if (pol.contains(p)) {
+					return true;
+				}
+			}
+			return false;
+		}
+		
+		public void invalidate() {
+			// revalidates always
 		}
 		
 	}
@@ -1488,9 +1663,9 @@ public class JResPlanComponent<R, T extends Comparable<? super T>, E, L> extends
 			if (model.isMilestone(entry)) {
 				Rectangle r = getRect();
 				if (orientation == Orientation.HORIZONTAL)
-					milestoneRenderer.setValues(new Point(0, 0 + r.height/2), new Point(0 + r.width, 0 + r.height/2), Math.min(30, Math.min(r.height, r.width))-2);
+					milestoneRenderer.setValues(new Point(0, 0 + r.height/2), new Point(0 + r.width, 0 + r.height/2), Math.min(30, Math.min(r.height, r.width))-2, mouseOver, selected);
 				else
-					milestoneRenderer.setValues(new Point(0 + r.width/2, 0), new Point(0 + r.width/2, 0 + r.height), Math.min(30, Math.min(r.height, r.width))-2);
+					milestoneRenderer.setValues(new Point(0 + r.width/2, 0), new Point(0 + r.width/2, 0 + r.height), Math.min(30, Math.min(r.height, r.width))-2, mouseOver, selected);
 				return milestoneRenderer;
 			} else {
 				JComponent renderer = cellRendererProvider.getRendererComponent(context);
@@ -1529,6 +1704,14 @@ public class JResPlanComponent<R, T extends Comparable<? super T>, E, L> extends
 			JComponent renderer = setupCellRenderer();
 			return renderer.getToolTipText();
 		}
+	}
+	
+	public String getEntryAsText(E entry) {
+		CellView cellView = findCellView(entry);
+		if (cellView != null) {
+			return cellView.getAsText();
+		}
+		return null;
 	}
 	
 	class BlankView extends CellView {
@@ -1581,6 +1764,7 @@ public class JResPlanComponent<R, T extends Comparable<? super T>, E, L> extends
 		private MouseActionHandler currentHandler = null;
 		private Point pressedPosition = null;
 		private CellView pressedCellView = null;
+		private RelationView pressedRelationView = null;
 		private boolean dragReady;
 		
 		@Override
@@ -1600,7 +1784,8 @@ public class JResPlanComponent<R, T extends Comparable<? super T>, E, L> extends
 			dragReady = isEditable() && getDragEnabled();
 			pressedPosition = evt.getPoint();
 			pressedCellView = getCellViewAt(pressedPosition);
-			selectForEvent(pressedCellView, evt);
+			pressedRelationView = getRelationViewAt(pressedPosition);
+			selectForEvent(pressedCellView, pressedRelationView, evt);
 		}
 		
 		@Override
@@ -1616,7 +1801,9 @@ public class JResPlanComponent<R, T extends Comparable<? super T>, E, L> extends
 				double distance = evt.getPoint().distance(pressedPosition);
 				if (distance > 0) {
 					if (leftShift && pressedCellView != null && pressedCellView.getEntry() != null) {
-						startHandler(new RelateMouseActionHandler(), evt);
+						if (model.isCreateRelationAllowed()) {
+							startHandler(new RelateMouseActionHandler(pressedCellView), evt);
+						}
 					} else if (leftButton && pressedCellView != null && pressedCellView.getEntry() != null) {
 						int compass = GeomUtils.findInsetDirection(pressedCellView.getRect(), pressedPosition, RESIZE_INSETS);
 						int direction = orientation.testCompassDirection(compass);
@@ -1627,7 +1814,7 @@ public class JResPlanComponent<R, T extends Comparable<? super T>, E, L> extends
 								JComponent source = (JComponent) evt.getSource();
 								getTransferHandler().exportAsDrag(source, evt, TransferHandler.MOVE);
 							}
-						} else if (model.isUpdateAllowed(pressedCellView.getEntry())) {
+						} else if (model.isUpdateEntryAllowed(pressedCellView.getEntry())) {
 							startHandler(new ResizeMouseActionHandler(pressedCellView, pressedPosition, direction), evt);
 						}
 					} else if (rightButton || pressedCellView == null) {
@@ -1689,8 +1876,14 @@ public class JResPlanComponent<R, T extends Comparable<? super T>, E, L> extends
 		
 		void setMouseOverPosition(Point p) {
 			CellView mouseOverCellView = getCellViewAt(p);
-
 			setMouseOverCellView(mouseOverCellView);
+			
+			if (mouseOverCellView == null) {
+				RelationView mouserOverRelationView = getRelationViewAt(p);
+				setMouseOverRelationView(mouserOverRelationView);
+			} else {
+				setMouseOverRelationView(null);
+			}
 
 			int compass = -1;
 			if (mouseOverCellView != null) {
@@ -1705,13 +1898,76 @@ public class JResPlanComponent<R, T extends Comparable<? super T>, E, L> extends
 		}
 	}
 	
+	private class RectangleViewImpl implements RectView {
+		private Rectangle rect;
+		@Override
+		public Rectangle getRect() {
+			return rect;
+		}
+		public void setRect(Rectangle rect) {
+			this.rect = rect;
+		}
+	}
+	
 	private class RelateMouseActionHandler extends MouseActionHandler {
 		
+		protected final CellView relatingCellView;
+		protected CellView dragOverCellView;
+		protected final RectangleViewImpl dragView;
+		protected Rectangle rectLastDrag;
+		
+		public RelateMouseActionHandler(CellView relatingCellView) {
+			super();
+			this.relatingCellView = relatingCellView;
+			this.dragView = new RectangleViewImpl();
+			decoratedRelationViewMap.put(DecoratedView.DROP_LOCATION, new RelationView(null, relatingCellView, dragView, true));
+		}
+		
+		@Override
+		public void mouseDragged(MouseEvent evt) {
+			evt.consume();
+			dragOverCellView = getCellViewAt(evt.getPoint());
+			if (relatingCellView == dragOverCellView) {
+				dragOverCellView = null;
+			}
+			if (dragOverCellView != null) {
+				dragView.setRect(new Rectangle(dragOverCellView.getRect()));
+			} else {
+				dragView.setRect(new Rectangle(evt.getPoint()));
+			}
+			repaint(decoratedRelationViewMap.get(DecoratedView.DROP_LOCATION), rectLastDrag);
+			rectLastDrag = new Rectangle(dragView.getRect());
+			growRelationRectangle(rectLastDrag);
+		}
+
+		@Override
+		public void mouseReleased(MouseEvent evt) {
+			evt.consume();
+			commit();
+			stop();
+		}
+		
+		protected void commit() {
+			if (model.isCreateEntryAllowed() && dragOverCellView != null) {
+				model.createRelation(relatingCellView.getEntry(), dragOverCellView.getEntry());
+			}
+		}
+		
+		protected void release() {
+			setDecoratedRelationView(DecoratedView.DROP_LOCATION, null);
+		}
+		
+		@Override
+		public void stop() {
+			release();
+			super.stop();
+		}
 	}
 	
 	private abstract class SpanMouseActionHandler extends MouseActionHandler {
 		
 		protected final CellView resizingCellView;
+		protected final Collection<RelationView> relationViews;
 		protected final int direction;
 		protected T start;
 		protected T end;
@@ -1722,12 +1978,29 @@ public class JResPlanComponent<R, T extends Comparable<? super T>, E, L> extends
 			this.direction = direction;
 			this.start = span.getStart();
 			this.end = span.getEnd();
+			
+			this.relationViews = new ArrayList<JResPlanComponent<R,T,E,L>.RelationView>();
+			for (L relation : model.getRelations(cellView.getEntry())) {
+				RelationView relView = relViewMap.get(model.getRelationId(relation));
+				if (relView != null) {
+					relationViews.add(relView);
+				}
+			}
+		}
+		
+		private Rectangle getRelationRectangle() {
+			Rectangle rect = new Rectangle();
+			for (RelationView relView : relationViews) {
+				rect = rect.union(relView.getRect());
+			}
+			return rect;
 		}
 		
 		@Override
 		public void mouseDragged(MouseEvent evt) {
 			evt.consume();
 			repaint(resizingCellView);
+			Rectangle relRectBefore = getRelationRectangle();
 
 			Interval<T> interval = null;
 			if (direction == -1) {
@@ -1748,6 +2021,9 @@ public class JResPlanComponent<R, T extends Comparable<? super T>, E, L> extends
 				resizingCellView.setRect(cellRect);
 				repaint(resizingCellView);
 			}
+			
+			Rectangle relRectAfter = getRelationRectangle();
+			repaint(relRectBefore.union(relRectAfter));
 		}
 		
 		@Override
@@ -1963,5 +2239,13 @@ public class JResPlanComponent<R, T extends Comparable<? super T>, E, L> extends
 
 	public void setRelationToPresentation(int relationToPresentation) {
 		this.relationToPresentation = relationToPresentation;
+	}
+
+	public E getRelateBegin() {
+		return relateBegin;
+	}
+
+	public void setRelateBegin(E relateBegin) {
+		this.relateBegin = relateBegin;
 	}
 }

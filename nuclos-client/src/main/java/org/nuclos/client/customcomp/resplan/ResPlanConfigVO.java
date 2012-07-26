@@ -79,6 +79,8 @@ public class ResPlanConfigVO implements Serializable, ResPlanConstants {
 	private int relationPresentation;
 	private int relationFromPresentation;
 	private int relationToPresentation;
+	
+	private boolean newRelationFromController;
 
 	public ResPlanConfigVO() {
 	}
@@ -350,6 +352,15 @@ public class ResPlanConfigVO implements Serializable, ResPlanConstants {
 
 	public void setRelationToPresentation(int relationToPresentation) {
 		this.relationToPresentation = relationToPresentation;
+	}
+	
+	@XmlElement(name="newRelationFromController")
+	public boolean isNewRelationFromController() {
+		return newRelationFromController;
+	}
+
+	public void setNewRelationFromController(boolean newRelationFromController) {
+		this.newRelationFromController = newRelationFromController;
 	}
 
 	public ResPlanResourceVO getResources(LocaleInfo li) {

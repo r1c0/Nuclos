@@ -469,6 +469,7 @@ public class CustomComponentWizardModel extends StaticModel {
 		JComboBox relationEntityComboBox;
 		JComboBox relationFromFieldComboBox;
 		JComboBox relationToFieldComboBox;
+		JCheckBox newRelationFromControllerCheckBox;
 
 		CustomComponentWizardStep3() {
 			super("nuclos.resplan.wizard.step3.title", "nuclos.resplan.wizard.step3.summary");
@@ -494,6 +495,7 @@ public class CustomComponentWizardModel extends StaticModel {
 			relationEntityComboBox = createJComboBox(30);
 			relationFromFieldComboBox = createJComboBox(30);
 			relationToFieldComboBox = createJComboBox(30);
+			newRelationFromControllerCheckBox = new JCheckBox(localeDelegate.getText("nuclos.resplan.wizard.step3.newRelationFromController", null));
 
 			new TableLayoutBuilder(this)
 				.columns(PREFERRED, PREFERRED, 5, PREFERRED, PREFERRED, FILL).gaps(5, 5)
@@ -516,7 +518,8 @@ public class CustomComponentWizardModel extends StaticModel {
 				.newRow().add(withRelationCheckBox)
 				.newRow().addLocalizedLabel("nuclos.resplan.wizard.step3.relationEntity").add(relationEntityComboBox, 3)
 				.newRow().addLocalizedLabel("nuclos.resplan.wizard.step3.relationFromField").add(relationFromFieldComboBox, 3)
-				.newRow().addLocalizedLabel("nuclos.resplan.wizard.step3.relationToField").add(relationToFieldComboBox, 3);
+				.newRow().addLocalizedLabel("nuclos.resplan.wizard.step3.relationToField").add(relationToFieldComboBox, 3)
+				.newRow().add(newRelationFromControllerCheckBox);
 			;
 		}
 
@@ -561,6 +564,7 @@ public class CustomComponentWizardModel extends StaticModel {
 			relationEntityComboBox.setSelectedItem(model.configVO.getRelationEntity());
 			relationFromFieldComboBox.setSelectedItem(model.configVO.getRelationFromField());
 			relationToFieldComboBox.setSelectedItem(model.configVO.getRelationToField());
+			newRelationFromControllerCheckBox.setSelected(model.configVO.isNewRelationFromController());
 
 			updateState();
 		}
@@ -653,6 +657,7 @@ public class CustomComponentWizardModel extends StaticModel {
 			}
 			relationEntityComboBox.setModel(new ListComboBoxModel<String>(relationEntities));
 			relationEntityComboBox.setEnabled(withRelation);
+			newRelationFromControllerCheckBox.setEnabled(withRelation);
 		}
 		
 		private void configureRelationFieldComboBoxes() {
@@ -858,10 +863,12 @@ public class CustomComponentWizardModel extends StaticModel {
 				model.configVO.setRelationEntity((String) relationEntityComboBox.getSelectedItem());
 				model.configVO.setRelationFromField((String) relationFromFieldComboBox.getSelectedItem());
 				model.configVO.setRelationToField((String) relationToFieldComboBox.getSelectedItem());
+				model.configVO.setNewRelationFromController(newRelationFromControllerCheckBox.isSelected());
 			} else {
 				model.configVO.setRelationEntity(null);
 				model.configVO.setRelationFromField(null);
 				model.configVO.setRelationToField(null);
+				model.configVO.setNewRelationFromController(false);
 			}
 		}
 	}

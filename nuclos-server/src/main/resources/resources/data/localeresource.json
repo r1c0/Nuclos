@@ -59209,6 +59209,21 @@
     "text": "Relationsfeld nach"
   },
   {
+    "resourceID": "nuclos.resplan.wizard.step3.newRelationFromController",
+    "locale": "i-default",
+    "text": "Confirm new relations in mask."
+  },
+  {
+    "resourceID": "nuclos.resplan.wizard.step3.newRelationFromController",
+    "locale": "en",
+    "text": "Confirm new relations in mask."
+  },
+  {
+    "resourceID": "nuclos.resplan.wizard.step3.newRelationFromController",
+    "locale": "de",
+    "text": "Neue Relationen in Maske anzeigen und bestätigen."
+  },
+  {
     "resourceID": "nuclos.resplan.wizard.step3.timeSpans.description",
     "locale": "i-default",
     "text": "<html>Time spans which are used for the time presentation.<br>The span must be in chronological order and must not exceed a period of 24 hours."
@@ -60122,6 +60137,36 @@
     "resourceID": "nuclos.resplan.action.customSearch",
     "locale": "de",
     "text": "Benutzerdefinierte Suche"
+  },
+  {
+    "resourceID": "nuclos.resplan.action.relateBegin",
+    "locale": "i-default",
+    "text": "New relation from here"
+  },
+  {
+    "resourceID": "nuclos.resplan.action.relateBegin",
+    "locale": "en",
+    "text": "New relation from here"
+  },
+  {
+    "resourceID": "nuclos.resplan.action.relateBegin",
+    "locale": "de",
+    "text": "Neue Relation von hier"
+  },
+  {
+    "resourceID": "nuclos.resplan.action.relateFinish",
+    "locale": "i-default",
+    "text": "Create relation (From: %s)"
+  },
+  {
+    "resourceID": "nuclos.resplan.action.relateFinish",
+    "locale": "en",
+    "text": "Create relation (From: %s)"
+  },
+  {
+    "resourceID": "nuclos.resplan.action.relateFinish",
+    "locale": "de",
+    "text": "Relation herstellen (Von: %s)"
   },
   {
     "resourceID": "nuclos.resplan.granularity.calendarWeek",

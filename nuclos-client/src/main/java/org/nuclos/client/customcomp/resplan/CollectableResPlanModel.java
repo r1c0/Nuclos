@@ -29,6 +29,12 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 import org.jfree.util.Log;
 import org.nuclos.client.common.MetaDataClientProvider;
+import org.nuclos.client.common.NuclosCollectController;
+import org.nuclos.client.common.NuclosCollectControllerFactory;
+import org.nuclos.client.main.Main;
+import org.nuclos.client.main.mainframe.MainFrameTab;
+import org.nuclos.client.ui.collect.CollectController.CollectableEventListener;
+import org.nuclos.client.ui.collect.CollectController.MessageType;
 import org.nuclos.client.ui.resplan.AbstractResPlanModel;
 import org.nuclos.client.ui.resplan.Interval;
 import org.nuclos.common.collect.collectable.Collectable;
@@ -52,8 +58,10 @@ public class CollectableResPlanModel extends AbstractResPlanModel<Collectable, D
 	private ResPlanConfigVO configVO;
 	private CollectableHelper<?> resEntity;
 	private CollectableHelper<?> entryEntity;
+	private CollectableHelper<?> relationEntity;
 	private boolean hasTime;
 	private List<Collectable> resources = new ArrayList<Collectable>();
+	private Map<Object, Collectable> resourceMap = new HashMap<Object, Collectable>();
 	private Map<Object, List<Collectable>> entryMap = new HashMap<Object, List<Collectable>>();
 	private Map<Object, List<Collectable>> relationMap = new HashMap<Object, List<Collectable>>();
 	private List<Collectable> relations = new ArrayList<Collectable>();
@@ -63,6 +71,7 @@ public class CollectableResPlanModel extends AbstractResPlanModel<Collectable, D
 		this.configVO = controller.getConfigVO();
 		this.resEntity = controller.getResEntity();
 		this.entryEntity = controller.getEntryEntity();
+		this.relationEntity = controller.getRelationEntity();
 		this.hasTime = configVO.getTimeFromField() != null && configVO.getTimeUntilField() != null;
 	}
 
@@ -79,18 +88,27 @@ public class CollectableResPlanModel extends AbstractResPlanModel<Collectable, D
 		return entryEntity;
 	}
 	
+	public CollectableHelper<?> getRelationEntity() {
+		return relationEntity;
+	}
+	
 	public CollectableEntityField getReferenceEntityField() {
 		return entryEntity.getCollectableEntity().getEntityField(configVO.getReferenceField());
 	}
 	
 	public void setData(Collection<? extends Collectable> resources, Collection<? extends Collectable> entries, Collection<? extends Collectable> relations) {
 		this.resources = new ArrayList<Collectable>(resources);
+		this.resourceMap = new HashMap<Object, Collectable>();
+		for (Collectable res : this.resources) {
+			resourceMap.put(res.getId(), res);
+		}
 		this.entryMap = new HashMap<Object, List<Collectable>>();
 		for (Collectable clct : entries) {
 			addEntryToMap(clct);
 		}
 		if (relations != null) {
-			this.relations.addAll(relations);
+			this.relationMap = new HashMap<Object, List<Collectable>>();
+			this.relations = new ArrayList<Collectable>(relations);
 			for (Collectable clct : relations) {
 				addRelationToMap(clct);
 			}
@@ -129,6 +147,14 @@ public class CollectableResPlanModel extends AbstractResPlanModel<Collectable, D
 		List<Collectable> list = entryMap.get(entry.getValueId(configVO.getReferenceField()));
 		if (list != null) {
 			list.remove(entry);
+		}
+	}
+	
+	private void removeRelationFromMap(Collectable relation) {
+		for (List<Collectable> list : relationMap.values()) {
+			if (list != null) {
+				list.remove(relation);
+			}
 		}
 	}
 
@@ -219,14 +245,37 @@ public class CollectableResPlanModel extends AbstractResPlanModel<Collectable, D
 	}
 	
 	@Override
-	public boolean isCreateAllowed() {
+	public boolean isCreateRelationAllowed() {
+		if (readOnly || relationEntity == null)
+			return false;
+		return relationEntity.isNewAllowed();
+	}
+	
+	@Override
+	public boolean isRemoveRelationAllowed(Collectable relation) {
+		if (readOnly || relationEntity == null)
+			return false;
+		relation = relationEntity.check(relation);
+		return relation != null && relationEntity.isRemoveAllowed(relation);
+	}
+	
+	@Override
+	public boolean isUpdateRelationAllowed(Collectable relation) {
+		if (readOnly || relationEntity == null)
+			return false;
+		relation = relationEntity.check(relation);
+		return relation != null && relationEntity.isModifyAllowed(relation);
+	}
+	
+	@Override
+	public boolean isCreateEntryAllowed() {
 		if (readOnly)
 			return false;
 		return entryEntity.isNewAllowed();
 	}
 	
 	@Override
-	public boolean isRemoveAllowed(Collectable entry) {
+	public boolean isRemoveEntryAllowed(Collectable entry) {
 		if (readOnly)
 			return false;
 		entry = entryEntity.check(entry);
@@ -234,7 +283,7 @@ public class CollectableResPlanModel extends AbstractResPlanModel<Collectable, D
 	}
 	
 	@Override
-	public boolean isUpdateAllowed(Collectable entry) {
+	public boolean isUpdateEntryAllowed(Collectable entry) {
 		if (readOnly)
 			return false;
 		entry = entryEntity.check(entry);
@@ -280,11 +329,16 @@ public class CollectableResPlanModel extends AbstractResPlanModel<Collectable, D
 		setDateTime(entry, configVO.getDateFromField(), configVO.getTimeFromField(), interval.getStart(), false);
 		setDateTime(entry, configVO.getDateUntilField(), configVO.getTimeUntilField(), interval.getEnd(), true);
 		if (resource != null) {
-			EntityFieldMetaDataVO entityField = MetaDataClientProvider.getInstance().getEntityField(entryEntity.getEntityName(), configVO.getReferenceField());
-			String resourceLabel = CollectableUtils.formatFieldExpression(entityField.getForeignEntityField(), resource);
+			String resourceLabel = getResourceLabel(resource);
 			entry.setField(configVO.getReferenceField(), new CollectableValueIdField(resource.getId(), resourceLabel));
 		}
 		return entry;
+	}
+	
+	public String getResourceLabel(Collectable resource) {
+		EntityFieldMetaDataVO entityField = MetaDataClientProvider.getInstance().getEntityField(entryEntity.getEntityName(), configVO.getReferenceField());
+		String resourceLabel = CollectableUtils.formatFieldExpression(entityField.getForeignEntityField(), resource);
+		return resourceLabel;
 	}
 	
 	private Date getDateTime(Collectable clct, String dateFieldName, String timeFieldName, boolean end) {
@@ -326,6 +380,9 @@ public class CollectableResPlanModel extends AbstractResPlanModel<Collectable, D
 
 	@Override
 	public List<? extends Collectable> getRelations(Collectable entry) {
+		if (entry == null) {
+			return Collections.<Collectable>emptyList();
+		}
 		List<Collectable> list = relationMap.get(entry.getId());
 		return (list != null) ? list : Collections.<Collectable>emptyList();
 	}
@@ -359,6 +416,100 @@ public class CollectableResPlanModel extends AbstractResPlanModel<Collectable, D
 			return Boolean.TRUE.equals(entry.getValue(field));
 		}
 		return false;
+	}
+
+	@Override
+	public Object getRelationId(Collectable relation) {
+		return relation.getId();
+	}
+
+	@Override
+	public void removeRelation(final Collectable relation) {
+		controller.runCommandWithSpecialHandler(new CommonRunnable() {
+			@Override
+			public void run() throws CommonBusinessException {
+				relationEntity.remove(relation);
+				relations.remove(relation);
+				removeRelationFromMap(relation);
+				fireResourcesChanged();
+			}
+		});
+	}
+
+	@Override
+	public void createRelation(Collectable entryFrom, Collectable entryTo) {
+		final Collectable clctFrom = entryEntity.check(entryFrom);
+		final Collectable clctTo = entryEntity.check(entryTo);
+		
+		if (clctFrom != null && clctTo != null) {
+			controller.runCommandWithSpecialHandler(new CommonRunnable() {
+				@Override
+				public void run() throws CommonBusinessException {
+					if (configVO.isNewRelationFromController()) {
+						Collectable clctRelation = relationEntity.newCollectable(true);
+						prepareCollectableRelation(clctRelation, clctFrom, clctTo);
+						final MainFrameTab tabIfAny = new MainFrameTab();
+						final NuclosCollectController cntrl = NuclosCollectControllerFactory.getInstance().newCollectController(
+								relationEntity.getCollectableEntity().getName(), tabIfAny);
+						Main.getInstance().getMainController().initMainFrameTab(controller, tabIfAny);
+						cntrl.addCollectableEventListener(new CollectControllerEventHandler(cntrl));
+						controller.getTab().add(tabIfAny);
+						cntrl.runNewWith(clctRelation);
+					} else {
+						Collectable clctRelation = relationEntity.newCollectable(true);
+						prepareCollectableRelation(clctRelation, clctFrom, clctTo);
+						clctRelation = relationEntity.create(clctRelation);
+						relations.add(clctRelation);
+						addRelationToMap(clctRelation);
+						fireResourcesChanged();
+					}
+				}
+			});
+		}
+	}
+	
+	private final class CollectControllerEventHandler implements CollectableEventListener {
+
+		private final NuclosCollectController<?> collectController;
+
+		public CollectControllerEventHandler(NuclosCollectController<?> clctCntrl) {
+			this.collectController = clctCntrl;
+		}
+
+		@Override
+		public void handleCollectableEvent(Collectable collectable, MessageType messageType) {
+			switch (messageType) {
+			case EDIT_DONE:
+			case NEW_DONE :
+			case DELETE_DONE:
+				try {
+					collectController.getTab().dispose();
+				} finally {
+					controller.refresh();
+				}
+			}
+		}
+	}
+
+	private Collectable prepareCollectableRelation(Collectable relation, Collectable from, Collectable to) {
+		EntityFieldMetaDataVO ef = MetaDataClientProvider.getInstance().getEntityField(relationEntity.getEntityName(), configVO.getRelationFromField());
+		String label = CollectableUtils.formatFieldExpression(ef.getForeignEntityField(), from);
+		relation.setField(configVO.getRelationFromField(), new CollectableValueIdField(getEntryId(from), label));
+		
+		ef = MetaDataClientProvider.getInstance().getEntityField(relationEntity.getEntityName(), configVO.getRelationToField());
+		label = CollectableUtils.formatFieldExpression(ef.getForeignEntityField(), to);
+		relation.setField(configVO.getRelationToField(), new CollectableValueIdField(getEntryId(to), label));
+		
+		return relation;
+	}
+
+	@Override
+	public Collectable getResourceFromEntry(Collectable entry) {
+		Object resId = entry.getValueId(configVO.getReferenceField());
+		if (resId != null) {
+			return resourceMap.get(resId);
+		}
+		return null;
 	}
 		
 }

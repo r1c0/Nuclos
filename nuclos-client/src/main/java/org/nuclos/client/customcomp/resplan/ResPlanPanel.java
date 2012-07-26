@@ -61,6 +61,7 @@ import org.jdesktop.swingx.painter.Painter;
 import org.jdesktop.swingx.renderer.ComponentProvider;
 import org.jdesktop.swingx.search.SearchFactory;
 import org.nuclos.client.common.KeyBindingProvider;
+import org.nuclos.client.common.MetaDataClientProvider;
 import org.nuclos.client.common.NuclosCollectController;
 import org.nuclos.client.common.NuclosCollectControllerFactory;
 import org.nuclos.client.customcomp.resplan.ResPlanController.GranularityType;
@@ -88,8 +89,10 @@ import org.nuclos.client.ui.resplan.header.JHeaderGrid;
 import org.nuclos.client.ui.util.Orientation;
 import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.collect.collectable.Collectable;
+import org.nuclos.common.collect.collectable.CollectableUtils;
 import org.nuclos.common.collect.collectable.searchcondition.CollectableSearchCondition;
 import org.nuclos.common.collect.exception.CollectableFieldFormatException;
+import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common2.CommonRunnable;
 import org.nuclos.common2.DateUtils;
 import org.nuclos.common2.LangUtils;
@@ -405,27 +408,45 @@ public class ResPlanPanel extends JPanel {
 					popupMenu.add(new AddAction(resPlan.getResourceAt(pt), resPlan.getTimeIntervalAt(pt)));
 				}
 
-				List<Collectable> selection = selectForEvent(pt);
-				if (resPlan.isEditable() && !selection.isEmpty()) {
+				List<Collectable> selectedEntries = selectEntriesForEvent(pt);
+				List<Collectable> selectedRelations = selectRelationsForEvent(pt);
+				if (resPlan.isEditable() && (!selectedEntries.isEmpty() || !selectedRelations.isEmpty())) {
 					JMenuItem menuItem = popupMenu.add(removeAction);
-					boolean enabled = false;
-					for (Collectable clct : selection) {
-						if (resPlanModel.isRemoveAllowed(clct)) {
-							enabled = true;
+					boolean enabled = true;
+					for (Collectable clct : selectedEntries) {
+						if (!resPlanModel.isRemoveEntryAllowed(clct)) {
+							enabled = false;
+							break;
+						}
+					}
+					for (Collectable clct : selectedRelations) {
+						if (!resPlanModel.isRemoveRelationAllowed(clct)) {
+							enabled = false;
 							break;
 						}
 					}
 					// Note: just change the state of the menu item (and leave the action as is)
 					menuItem.setEnabled(enabled);
 				}
-				if (!selection.isEmpty()) {
+				if (!selectedEntries.isEmpty() || !selectedRelations.isEmpty()) {
 					popupMenu.add(detailsAction);
+				}
+				
+				if (selectedEntries.size() == 1 && resPlanModel.getRelationEntity() != null) {
+					popupMenu.addSeparator();
+					if (resPlan.getRelateBegin() != null) {
+						Collectable to = selectedEntries.get(0);
+						if (to != resPlan.getRelateBegin()) {
+							popupMenu.add(relateFinishAction);
+						}
+					}
+					popupMenu.add(relateBeginAction);
 				}
 
 				return popupMenu;
 			}
 
-			private List<Collectable> selectForEvent(Point pt) {
+			private List<Collectable> selectEntriesForEvent(Point pt) {
 				List<Collectable> selection = resPlan.getSelectedEntries();
 				Collectable entryAt = resPlan.getEntryAt(pt);
 				if (entryAt != null && (selection.isEmpty() || !selection.contains(entryAt))) {
@@ -434,12 +455,29 @@ public class ResPlanPanel extends JPanel {
 				}
 				return selection;
 			}
+			
+			private List<Collectable> selectRelationsForEvent(Point pt) {
+				List<Collectable> selection = resPlan.getSelectedRelations();
+				Collectable relAt = resPlan.getRelationAt(pt);
+				if (relAt != null && (selection.isEmpty() || !selection.contains(relAt))) {
+					selection = Collections.singletonList(relAt);
+					resPlan.setSelectedRelations(selection);
+				}
+				return selection;
+			}
 
 			@Override
 			public void mouseClicked(MouseEvent evt) {
 				if (evt.getClickCount() == 2) {
 					Collectable clct = resPlan.getEntryAt(evt.getPoint());
-					runDetailsCollectable(resPlanModel.getEntryEntity().getEntityName(), clct);
+					if (clct == null) {
+						clct = resPlan.getRelationAt(evt.getPoint());
+						if (clct != null) {
+							runDetailsCollectable(resPlanModel.getRelationEntity().getEntityName(), clct);
+						}
+					} else {
+						runDetailsCollectable(resPlanModel.getEntryEntity().getEntityName(), clct);
+					}
 					evt.consume();
 				}
 			}
@@ -655,20 +693,29 @@ public class ResPlanPanel extends JPanel {
 			final SpringLocaleDelegate localeDelegate = SpringLocaleDelegate.getInstance();
 			ResPlanModel<Collectable, Date, Collectable, Collectable> model = resPlan.getModel();
 			final List<Collectable> selectedEntries = resPlan.getSelectedEntries();
+			final List<Collectable> selectedRelations = resPlan.getSelectedRelations();
 			String title, message;
-			if (selectedEntries.isEmpty()) {
+			if (selectedEntries.isEmpty() && selectedRelations.isEmpty()) {
 				return;
-			} else if (selectedEntries.size() == 1) {
+			} else if (selectedEntries.size() == 1 && selectedRelations.isEmpty()) {
 				title = localeDelegate.getMessage("ResultController.8", null);
 				message = localeDelegate.getMessage("ResultController.12", null, selectedEntries.get(0).getIdentifierLabel());
+			} if (selectedRelations.size() == 1 && selectedEntries.isEmpty()) {
+				title = localeDelegate.getMessage("ResultController.8", null);
+				message = localeDelegate.getMessage("ResultController.12", null, selectedRelations.get(0).getIdentifierLabel());
 			} else { // selectedEntries.size() > 1
 				title = localeDelegate.getMessage("ResultController.7", null);
-				message = localeDelegate.getMessage("ResultController.13", null, selectedEntries.size());
+				message = localeDelegate.getMessage("ResultController.13", null, selectedEntries.size() + selectedRelations.size());
 			}
 			int opt = JOptionPane.showConfirmDialog(ResPlanPanel.this, message, title,JOptionPane.YES_NO_OPTION);
 			if (opt == JOptionPane.YES_OPTION) {
+				for (Collectable clct : selectedRelations) {
+					if (model.isRemoveRelationAllowed(clct)) {
+						model.removeRelation(clct);
+					}
+				}
 				for (Collectable clct : selectedEntries) {
-					if (model.isRemoveAllowed(clct)) {
+					if (model.isRemoveEntryAllowed(clct)) {
 						model.removeEntry(clct);
 					}
 				}
@@ -683,6 +730,50 @@ public class ResPlanPanel extends JPanel {
 			for (Collectable clct : selectedEntries) {
 				runDetailsCollectable(resPlanModel.getEntryEntity().getEntityName(), clct);
 			}
+			final List<Collectable> selectedRelations = resPlan.getSelectedRelations();
+			for (Collectable clct : selectedRelations) {
+				runDetailsCollectable(resPlanModel.getRelationEntity().getEntityName(), clct);
+			}
+		}
+	};
+	
+	private Action relateBeginAction = new AbstractAction(SpringLocaleDelegate.getInstance().getText("nuclos.resplan.action.relateBegin")) {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			final List<Collectable> selectedEntries = resPlan.getSelectedEntries();
+			if (selectedEntries.size() == 1) {
+				resPlan.setRelateBegin(selectedEntries.get(0));
+			}
+		}
+	};
+	
+	private Action relateFinishAction = new AbstractAction() {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			if (resPlan.getRelateBegin() != null) {
+				final List<Collectable> selectedEntries = resPlan.getSelectedEntries();
+				if (selectedEntries.size() == 1) {
+					Collectable to = selectedEntries.get(0);
+					if (to != resPlan.getRelateBegin()) {
+						resPlanModel.createRelation(resPlan.getRelateBegin(), selectedEntries.get(0));
+						resPlan.setRelateBegin(null);
+					}
+				}
+			}
+		}
+		@Override
+		public Object getValue(String key) {
+			if (Action.NAME.equals(key)) {
+				String resourceLabel = "";
+				if (resPlan.getRelateBegin() != null) {
+					resourceLabel = resPlan.getEntryAsText(resPlan.getRelateBegin());
+					if (resourceLabel != null && resourceLabel.length() > 130) {
+						resourceLabel = resourceLabel.substring(0, 128)+ "...";
+					}
+				}
+				return String.format(SpringLocaleDelegate.getInstance().getText("nuclos.resplan.action.relateFinish"), resourceLabel);
+			}
+			return super.getValue(key);
 		}
 	};
 
@@ -790,7 +881,7 @@ public class ResPlanPanel extends JPanel {
 			int opt = JOptionPane.showConfirmDialog(ResPlanPanel.this, message, title,JOptionPane.YES_NO_OPTION);
 			if (opt == JOptionPane.YES_OPTION) {
 				for (Collectable clct : selectedEntries) {
-					if (model.isRemoveAllowed(clct)) {
+					if (model.isRemoveEntryAllowed(clct)) {
 						model.removeEntry(clct);
 					}
 				}
@@ -805,7 +896,7 @@ public class ResPlanPanel extends JPanel {
 
 		public AddAction(Collectable resource, Interval<Date> interval) {
 			super(SpringLocaleDelegate.getInstance().getText("nuclos.resplan.action.add"));
-			setEnabled(resPlanModel.isCreateAllowed());
+			setEnabled(resPlanModel.isCreateEntryAllowed());
 			this.resource = resource;
 			this.interval = interval;
 		}
