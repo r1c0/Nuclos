@@ -24,6 +24,8 @@ import java.util.Date;
  */
 class GeneratedFile {
 	
+	private final boolean prefix;
+	
 	private File file;
 	
 	private String name;
@@ -42,7 +44,8 @@ class GeneratedFile {
 	
 	private char[] content;
 	
-	GeneratedFile() {
+	GeneratedFile(boolean prefix) {
+		this.prefix = prefix;
 	}
 
 	String getName() {
@@ -119,18 +122,20 @@ class GeneratedFile {
 
 	String getPrefix() {
 		final StringBuilder writer = new StringBuilder();
-		writer.append("// DO NOT REMOVE THIS COMMENT (UP TO PACKAGE DECLARATION)");
-		writer.append("\n// class=").append(getGeneratorClass());
-		writer.append("\n// type=").append(getType());
-		writer.append("\n// name=").append(getName());
-		if (getTargetClassName() != null) {
-			writer.append("\n// classname=").append(getTargetClassName());
+		if (prefix) {
+			writer.append("// DO NOT REMOVE THIS COMMENT (UP TO PACKAGE DECLARATION)");
+			writer.append("\n// class=").append(getGeneratorClass());
+			writer.append("\n// type=").append(getType());
+			writer.append("\n// name=").append(getName());
+			if (getTargetClassName() != null) {
+				writer.append("\n// classname=").append(getTargetClassName());
+			}
+			writer.append("\n// id=").append(getId());
+			writer.append("\n// version=").append(getVersion());
+			writer.append("\n// modified=").append(getModified());
+			writer.append("\n// date=").append(new Date(getModified()));
+			writer.append("\n// END\n");
 		}
-		writer.append("\n// id=").append(getId());
-		writer.append("\n// version=").append(getVersion());
-		writer.append("\n// modified=").append(getModified());
-		writer.append("\n// date=").append(new Date(getModified()));
-		writer.append("\n// END\n");
 		return writer.toString();
 	}
 

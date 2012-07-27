@@ -34,9 +34,13 @@ public class SourceScannerComponent {
 	
 	//
 	
+	// Spring injection
+	
 	private ApplicationProperties applicationProperties;
 
 	private Timer timer;
+	
+	// End of Spring injection
 	
 	SourceScannerComponent() {
 	}
@@ -53,7 +57,7 @@ public class SourceScannerComponent {
 	
 	@PostConstruct
 	final void init() {
-		if (applicationProperties.isFunctionBlockDev()) {
+		if (applicationProperties.isSourceCodeScanning()) {
 			timer.schedule(new SourceScannerTask(), INTERVAL_MILLIS, INTERVAL_MILLIS);
 		}
 	}

@@ -26,6 +26,9 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
+import javax.annotation.PostConstruct;
+
+import org.nuclos.common.ApplicationProperties;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.server.common.RuleCache;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
@@ -67,7 +70,6 @@ public class RuleCodeGenerator<T> implements CodeGenerator {
 				sb.append("import ").append(s).append(";\n");
 			}
 			sb.append(getHeaderImpl(ruleVO));
-			sb.append("\n// BEGIN RULE\n");
 			return sb.toString();
 		}
 
@@ -94,19 +96,25 @@ public class RuleCodeGenerator<T> implements CodeGenerator {
 
 	private NuclosJavaCompilerComponent nuclosJavaCompilerComponent;
 	
+	private ApplicationProperties applicationProperties;
+
 	// End of Spring injection
 	
 	private final AbstractRuleTemplateType<T> type;
 	
 	private final RuleVO ruleVO;
 	
-	private final RuleSourceAsString src;
+	private RuleSourceAsString src;
 	
 	private String cachedHeader;
 
 	public RuleCodeGenerator(AbstractRuleTemplateType<T> type, RuleVO ruleVO) {
 		this.type = type;
 		this.ruleVO = ruleVO;
+	}
+	
+	@PostConstruct
+	final void init() {
 		this.src = new RuleSourceAsString(getClassName(), 
 				getPrefix(), getHeader(), ruleVO.getSource(), type.getFooter(), 
 				type.getEntityname(), ruleVO.getId().longValue(), 
@@ -118,6 +126,11 @@ public class RuleCodeGenerator<T> implements CodeGenerator {
 		this.nuclosJavaCompilerComponent = nuclosJavaCompilerComponent;
 	}
 	
+	@Autowired
+	final void setApplicationProperties(ApplicationProperties applicationProperties) {
+		this.applicationProperties = applicationProperties;
+	}
+
 	@Override
 	public boolean isRecompileNecessary() {
 		return true;
@@ -126,29 +139,31 @@ public class RuleCodeGenerator<T> implements CodeGenerator {
 	@Override
 	public String getPrefix() {
 		final StringBuilder writer = new StringBuilder();
-		writer.append("// DO NOT REMOVE THIS COMMENT (UP TO PACKAGE DECLARATION)");
-		writer.append("\n// class=org.nuclos.server.customcode.codegenerator.RuleCodeGenerator");
-		writer.append("\n// type=org.nuclos.server.ruleengine.valueobject.RuleVO");
-		writer.append("\n// name=");
-		writer.append(ruleVO.getRule());
-		writer.append("\n// classname=");
-		writer.append(getClassName());
-		writer.append("\n// id=");
-		if (ruleVO.getId() != null) {
-			writer.append(ruleVO.getId().toString());
+		if (applicationProperties.isSourceCodeScanning()) {
+			writer.append("// DO NOT REMOVE THIS COMMENT (UP TO PACKAGE DECLARATION)");
+			writer.append("\n// class=org.nuclos.server.customcode.codegenerator.RuleCodeGenerator");
+			writer.append("\n// type=org.nuclos.server.ruleengine.valueobject.RuleVO");
+			writer.append("\n// name=");
+			writer.append(ruleVO.getRule());
+			writer.append("\n// classname=");
+			writer.append(getClassName());
+			writer.append("\n// id=");
+			if (ruleVO.getId() != null) {
+				writer.append(ruleVO.getId().toString());
+			}
+			writer.append("\n// version=");
+			writer.append(Integer.toString(ruleVO.getVersion()));
+			writer.append("\n// modified=");
+			final Date changed = ruleVO.getChangedAt();
+			if (changed != null) {
+				writer.append(Long.toString(changed.getTime()));
+			}
+			writer.append("\n// date=");
+			if (changed != null) {
+				writer.append(changed.toString());
+			}
+			writer.append("\n// END\n");
 		}
-		writer.append("\n// version=");
-		writer.append(Integer.toString(ruleVO.getVersion()));
-		writer.append("\n// modified=");
-		final Date changed = ruleVO.getChangedAt();
-		if (changed != null) {
-			writer.append(Long.toString(changed.getTime()));
-		}
-		writer.append("\n// date=");
-		if (changed != null) {
-			writer.append(changed.toString());
-		}
-		writer.append("\n// END\n");
 		return writer.toString();
 	}
 

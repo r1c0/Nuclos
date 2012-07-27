@@ -38,6 +38,7 @@ import java.util.List;
 import java.util.Scanner;
 
 import org.apache.log4j.Logger;
+import org.nuclos.common.ApplicationProperties;
 import org.nuclos.common.CryptUtil;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.NuclosFatalException;
@@ -65,6 +66,8 @@ public class WsdlCodeGenerator implements CodeGenerator {
 
 	private NuclosJavaCompilerComponent nuclosJavaCompilerComponent;
 
+	private ApplicationProperties applicationProperties;
+
 	// End of Spring injection
 
 	private final MasterDataVO webservice;
@@ -90,6 +93,11 @@ public class WsdlCodeGenerator implements CodeGenerator {
 	@Autowired
 	final void setNuclosJavaCompilerComponent(NuclosJavaCompilerComponent nuclosJavaCompilerComponent) {
 		this.nuclosJavaCompilerComponent = nuclosJavaCompilerComponent;
+	}
+
+	@Autowired
+	final void setApplicationProperties(ApplicationProperties applicationProperties) {
+		this.applicationProperties = applicationProperties;
 	}
 
 	private void checkWsdl() throws IOException {
@@ -180,27 +188,29 @@ public class WsdlCodeGenerator implements CodeGenerator {
 	@Override
 	public String getPrefix() {
 		final StringBuilder writer = new StringBuilder();
-		writer.append("// DO NOT REMOVE THIS COMMENT (UP TO PACKAGE DECLARATION)");
-		writer.append("\n// class=org.nuclos.server.customcode.codegenerator.WsdlCodeGenerator");
-		writer.append("\n// type=org.nuclos.server.masterdata.valueobject.MasterDataVO");
-		writer.append("\n// name=");
-		writer.append(wsdl.getName());
-		writer.append("\n// id=");
-		if (webservice.getId() != null) {
-			writer.append(webservice.getId().toString());
+		if (applicationProperties.isSourceCodeScanning()) {
+			writer.append("// DO NOT REMOVE THIS COMMENT (UP TO PACKAGE DECLARATION)");
+			writer.append("\n// class=org.nuclos.server.customcode.codegenerator.WsdlCodeGenerator");
+			writer.append("\n// type=org.nuclos.server.masterdata.valueobject.MasterDataVO");
+			writer.append("\n// name=");
+			writer.append(wsdl.getName());
+			writer.append("\n// id=");
+			if (webservice.getId() != null) {
+				writer.append(webservice.getId().toString());
+			}
+			writer.append("\n// version=");
+			writer.append(Integer.toString(webservice.getVersion()));
+			writer.append("\n// modified=");
+			final Date changed = webservice.getChangedAt();
+			if (changed != null) {
+				writer.append(Long.toString(changed.getTime()));
+			}
+			writer.append("\n// date=");
+			if (changed != null) {
+				writer.append(changed.toString());
+			}
+			writer.append("\n// END\n");
 		}
-		writer.append("\n// version=");
-		writer.append(Integer.toString(webservice.getVersion()));
-		writer.append("\n// modified=");
-		final Date changed = webservice.getChangedAt();
-		if (changed != null) {
-			writer.append(Long.toString(changed.getTime()));
-		}
-		writer.append("\n// date=");
-		if (changed != null) {
-			writer.append(changed.toString());
-		}
-		writer.append("\n// END\n");
 		return writer.toString();
 	}
 
