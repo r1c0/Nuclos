@@ -7,7 +7,7 @@
                 <goal>org.codehaus.mojo:exec-maven-plugin:1.2:exec</goal>
             </goals>
             <properties>
-                <exec.args>-ea -ms128m -mx192m -Dcom.sun.management.jmxremote="true" -Durl.jms=http://localhost:8080/nuclos-war/jmsbroker -Durl.remoting=http://localhost:8080/nuclos-war/remoting -Dfunctionblock.dev=true -Dsun.awt.disablegrab=true -classpath %classpath org.nuclos.client.main.Main</exec.args>
+                <exec.args>-ea -ms128m -mx192m -Dcom.sun.management.jmxremote="true" -Durl.jms=http://localhost:8080/nuclos-war/jmsbroker -Durl.remoting=http://localhost:8080/nuclos-war/remoting -Dfunctionblock.dev=true -Dsun.awt.disablegrab=true -XX:PermSize=128M -XX:MaxPermSize=256M -XX:+UseThreadPriorities -classpath %classpath org.nuclos.client.main.Main</exec.args>
                 <exec.executable>java</exec.executable>
                 <exec.classpathScope>runtime</exec.classpathScope>
             </properties>
@@ -19,7 +19,7 @@
                 <goal>org.codehaus.mojo:exec-maven-plugin:1.2:exec</goal>
             </goals>
             <properties>
-                <exec.args>-Xdebug -Xrunjdwp:transport=dt_socket,server=n,address=${jpda.address} -ea -ms128m -mx192m -Dcom.sun.management.jmxremote="true" -Durl.jms=http://localhost:8080/nuclos-war/jmsbroker -Durl.remoting=http://localhost:8080/nuclos-war/remoting -Dfunctionblock.dev=true -Dsun.awt.disablegrab=true -classpath %classpath org.nuclos.client.main.Main</exec.args>
+                <exec.args>-Xdebug -Xrunjdwp:transport=dt_socket,server=n,address=${jpda.address} -ea -ms128m -mx192m -Dcom.sun.management.jmxremote="true" -Durl.jms=http://localhost:8080/nuclos-war/jmsbroker -Durl.remoting=http://localhost:8080/nuclos-war/remoting -Dfunctionblock.dev=true -Dsun.awt.disablegrab=true -XX:PermSize=128M -XX:MaxPermSize=256M -XX:+UseThreadPriorities -classpath %classpath org.nuclos.client.main.Main</exec.args>
                 <exec.executable>java</exec.executable>
                 <exec.classpathScope>runtime</exec.classpathScope>
                 <jpda.listen>true</jpda.listen>
@@ -32,7 +32,7 @@
                 <goal>org.codehaus.mojo:exec-maven-plugin:1.2:exec</goal>
             </goals>
             <properties>
-                <exec.args>${profiler.args} -ea -ms128m -mx192m -Dcom.sun.management.jmxremote="true" -Durl.jms=http://localhost:8080/nuclos-war/jmsbroker -Durl.remoting=http://localhost:8080/nuclos-war/remoting -Dfunctionblock.dev=true -Dsun.awt.disablegrab=true -classpath %classpath org.nuclos.client.main.Main</exec.args>
+                <exec.args>${profiler.args} -ea -ms128m -mx192m -Dcom.sun.management.jmxremote="true" -Durl.jms=http://localhost:8080/nuclos-war/jmsbroker -Durl.remoting=http://localhost:8080/nuclos-war/remoting -Dfunctionblock.dev=true -Dsun.awt.disablegrab=true -XX:PermSize=128M -XX:MaxPermSize=256M -XX:+UseThreadPriorities -classpath %classpath org.nuclos.client.main.Main</exec.args>
                 <exec.executable>${profiler.java}</exec.executable>
                 <profiler.action>profile</profiler.action>
             </properties>
@@ -45,7 +45,7 @@
                 <goal>org.codehaus.mojo:exec-maven-plugin:1.2:exec</goal>
             </goals>
             <properties>
-                <exec.args>-javaagent:/home/tpasch/Downloads/spring-instrument-3.1.1.RELEASE.jar -ea -ms128m -mx192m -Dcom.sun.management.jmxremote="true" -Durl.jms=http://localhost:8080/nuclos-war/jmsbroker -Durl.remoting=http://localhost:8080/nuclos-war/remoting -Dfunctionblock.dev=true -Dsun.awt.disablegrab=true -classpath %classpath org.nuclos.client.main.Main</exec.args>
+                <exec.args>-javaagent:/home/tpasch/Downloads/spring-instrument-3.1.1.RELEASE.jar -ea -ms128m -mx192m -Dcom.sun.management.jmxremote="true" -Durl.jms=http://localhost:8080/nuclos-war/jmsbroker -Durl.remoting=http://localhost:8080/nuclos-war/remoting -Dfunctionblock.dev=true -Dsun.awt.disablegrab=true -XX:PermSize=128M -XX:MaxPermSize=256M -XX:+UseThreadPriorities -classpath %classpath org.nuclos.client.main.Main</exec.args>
                 <exec.executable>java</exec.executable>
                 <exec.classpathScope>runtime</exec.classpathScope>
             </properties>
