@@ -308,7 +308,7 @@ public class StartUp  {
 								ctx = new FileSystemXmlApplicationContext(new String[] { r.getFile().getPath() }, false, clientContext);
 							}
 							if (last) {
-								final StartUpApplicationListener lastListener = new StartUpApplicationListener(clientContextCondition);
+								final StartUpApplicationListener lastListener = new StartUpApplicationListener(lastContextCondition);
 								ctx.addApplicationListener(lastListener);
 								log.info("last extension context " + r + " used as condition variable");
 							}
