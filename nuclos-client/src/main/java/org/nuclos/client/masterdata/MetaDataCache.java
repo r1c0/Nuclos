@@ -26,6 +26,7 @@ import javax.jms.MessageListener;
 import javax.jms.TextMessage;
 
 import org.apache.log4j.Logger;
+import org.nuclos.client.LocalUserCaches.AbstractLocalUserCache;
 import org.nuclos.client.jms.TopicNotificationReceiver;
 import org.nuclos.client.main.Main;
 import org.nuclos.common.JMSConstants;
@@ -47,7 +48,7 @@ import org.springframework.beans.factory.InitializingBean;
  *
  */
 // @Component
-public class MetaDataCache implements InitializingBean {
+public class MetaDataCache extends AbstractLocalUserCache implements InitializingBean {
 
 	private static final Logger LOG = Logger.getLogger(MetaDataCache.class);
 
@@ -57,36 +58,10 @@ public class MetaDataCache implements InitializingBean {
 	
 	private Map<String, MasterDataMetaVO> mp;
 	
-	private TopicNotificationReceiver tnr;
+	private transient TopicNotificationReceiver tnr;
+	private transient MessageListener messageListener;
 	
-	private MasterDataDelegate masterDataDelegate;
-	
-	/**
-	 * Subscribed to TOPICNAME_METADATACACHE.
-	 * 
-	 * @see #init()
-	 */
-	private final MessageListener messagelistener = new MessageListener() {
-		@Override
-		public void onMessage(Message msg) {
-			LOG.info("onMessage: Received notification from server: meta data changed.");
-			MetaDataCache.this.invalidate();
-			if (msg instanceof TextMessage) {
-				try {
-					NuclosEntity entity = NuclosEntity.getByName(((TextMessage)msg).getText());
-					if (!(entity == NuclosEntity.DYNAMICENTITY || entity == NuclosEntity.LAYOUT)) {
-						Main.getInstance().getMainController().refreshMenusLater();
-					}
-				}
-				catch (JMSException ex) {
-					LOG.warn("onMessage: Exception thrown in JMS message listener.", ex);
-				}
-			}
-			else {
-				LOG.warn("onMessage: Message of type " + msg.getClass().getName() + " received, while a TextMessage was expected.");
-			}			
-		}
-	};
+	private transient MasterDataDelegate masterDataDelegate;
 	
 
 	public MetaDataCache() {
@@ -97,7 +72,7 @@ public class MetaDataCache implements InitializingBean {
 		if (INSTANCE == null) {
 			// throw new IllegalStateException("too early");
 			// lazy support
-			SpringApplicationContextHolder.getBean(MetaDataCache.class);
+			INSTANCE = (MetaDataCache)SpringApplicationContextHolder.getBean("metaDataCache");
 		}
 		return INSTANCE;
 	}
@@ -107,13 +82,36 @@ public class MetaDataCache implements InitializingBean {
 		final Runnable run = new Runnable() {
 			@Override
 			public void run() {
-				LOG.debug("Initializing metadata cache");
-				final Collection<MasterDataMetaVO> coll = masterDataDelegate.getMetaData();
-				mp = new ConcurrentHashMap<String, MasterDataMetaVO>(coll.size());
-				for (MasterDataMetaVO mdmetavo : coll) {
-					mp.put(mdmetavo.getEntityName(), mdmetavo);
+				if (!wasDeserialized() || !isValid()) {
+					LOG.debug("Initializing metadata cache");
+					final Collection<MasterDataMetaVO> coll = masterDataDelegate.getMetaData();
+					mp = new ConcurrentHashMap<String, MasterDataMetaVO>(coll.size());
+					for (MasterDataMetaVO mdmetavo : coll) {
+						mp.put(mdmetavo.getEntityName(), mdmetavo);
+					}
 				}
-				tnr.subscribe(JMSConstants.TOPICNAME_METADATACACHE, messagelistener);
+				messageListener = new MessageListener() {
+					@Override
+					public void onMessage(Message msg) {
+						LOG.info("onMessage: Received notification from server: meta data changed.");
+						MetaDataCache.this.invalidate();
+						if (msg instanceof TextMessage) {
+							try {
+								NuclosEntity entity = NuclosEntity.getByName(((TextMessage)msg).getText());
+								if (!(entity == NuclosEntity.DYNAMICENTITY || entity == NuclosEntity.LAYOUT)) {
+									Main.getInstance().getMainController().refreshMenusLater();
+								}
+							}
+							catch (JMSException ex) {
+								LOG.warn("onMessage: Exception thrown in JMS message listener.", ex);
+							}
+						}
+						else {
+							LOG.warn("onMessage: Message of type " + msg.getClass().getName() + " received, while a TextMessage was expected.");
+						}			
+					}
+				};
+				tnr.subscribe(getCachingTopic(), messageListener);
 			}
 		};
 		// new Thread(run, "MetaDataCache.init").start();
@@ -128,6 +126,11 @@ public class MetaDataCache implements InitializingBean {
 	// @Autowired
 	public final void setMasterDataDelegate(MasterDataDelegate masterDataDelegate) {
 		this.masterDataDelegate = masterDataDelegate;
+	}
+	
+	@Override
+	public String getCachingTopic() {
+		return JMSConstants.TOPICNAME_METADATACACHE;
 	}
 	
 	/**

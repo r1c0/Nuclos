@@ -23,8 +23,11 @@ import javax.jms.MessageListener;
 import javax.swing.ImageIcon;
 
 import org.apache.log4j.Logger;
+import org.nuclos.client.LocalUserCaches.AbstractLocalUserCache;
+import org.nuclos.client.attribute.AttributeCache;
 import org.nuclos.client.jms.TopicNotificationReceiver;
 import org.nuclos.common.JMSConstants;
+import org.nuclos.common.SpringApplicationContextHolder;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Pair;
 import org.nuclos.server.resource.valueobject.ResourceVO;
@@ -40,7 +43,7 @@ import org.springframework.beans.factory.InitializingBean;
  * @version 00.01.000
  */
 // @Component
-public class ResourceCache implements InitializingBean {
+public class ResourceCache extends AbstractLocalUserCache implements InitializingBean {
 	
 	private static final Logger LOG = Logger.getLogger(ResourceCache.class);
 	
@@ -49,26 +52,14 @@ public class ResourceCache implements InitializingBean {
 	
 	private static ResourceCache INSTANCE;
 	
-	/**
-	 * Subscribed to TOPICNAME_RESOURCECACHE.
-	 * 
-	 * @see #init()
-	 */
-	private MessageListener messagelistener = new MessageListener() {
-		@Override
-		public void onMessage(Message msg) {
-			LOG.info("onMessage " + this + " invalidate...");
-			invalidate();			
-		}
-	};
-
-	private ResourceDelegate         delegate;
+	private transient ResourceDelegate delegate;
 	private Map<String, Object>      resources;
 	private Map<Integer, Object>     resourcesById;
 	private Map<String, ResourceVO>  voByName;
 	private Map<Integer, ResourceVO> voById;
 	
-	private TopicNotificationReceiver tnr;
+	private transient TopicNotificationReceiver tnr;
+	private transient MessageListener messageListener;
 	
 	private ResourceCache() {
 		resources = CollectionUtils.newHashMap();
@@ -81,7 +72,21 @@ public class ResourceCache implements InitializingBean {
 	
 	// @PostConstruct
 	public final void afterPropertiesSet() {
-		tnr.subscribe(JMSConstants.TOPICNAME_RESOURCECACHE, messagelistener);
+		if (!wasDeserialized() || !isValid())
+			invalidate();
+		messageListener = new MessageListener() {
+			@Override
+			public void onMessage(Message msg) {
+				LOG.info("onMessage " + this + " invalidate...");
+				invalidate();			
+			}
+		};
+		tnr.subscribe(getCachingTopic(), messageListener);
+	}
+	
+	@Override
+	public String getCachingTopic() {
+		return JMSConstants.TOPICNAME_RESOURCECACHE;
 	}
 	
 	// @Autowired
@@ -95,6 +100,11 @@ public class ResourceCache implements InitializingBean {
 	}
 	
 	public static ResourceCache getInstance() {
+		if (INSTANCE == null) {
+			// throw new IllegalStateException("too early");
+			// lazy support
+			INSTANCE = SpringApplicationContextHolder.getBean(ResourceCache.class);
+		}
 		return INSTANCE;
 	}
 	

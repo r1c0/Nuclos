@@ -33,6 +33,7 @@ import org.nuclos.common.collection.Transformer;
 import org.nuclos.common.dal.vo.SystemFields;
 import org.nuclos.common2.IOUtils;
 import org.nuclos.common2.exception.CommonFatalException;
+import org.nuclos.server.common.LocalCachesUtil;
 import org.nuclos.server.common.NuclosSystemParameters;
 import org.nuclos.server.database.SpringDataBaseHelper;
 import org.nuclos.server.dblayer.DbTuple;
@@ -216,6 +217,7 @@ public class ResourceCache {
 	
 	private void notifyClients() {
 		LOG.info("JMS send: notify clients that resources changed:" + this);
+		LocalCachesUtil.getInstance().updateLocalCacheRevalidation(JMSConstants.TOPICNAME_RESOURCECACHE);
 		NuclosJMSUtils.sendOnceAfterCommitDelayed(null, JMSConstants.TOPICNAME_RESOURCECACHE);
 	}
 }

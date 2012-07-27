@@ -76,6 +76,7 @@ import org.nuclos.common2.exception.CommonValidationException;
 import org.nuclos.server.attribute.ejb3.AttributeFacadeLocal;
 import org.nuclos.server.attribute.ejb3.LayoutFacadeBean;
 import org.nuclos.server.autosync.XMLEntities;
+import org.nuclos.server.common.LocalCachesUtil;
 import org.nuclos.server.common.MasterDataMetaCache;
 import org.nuclos.server.common.MetaDataServerProvider;
 import org.nuclos.server.common.ModuleConstants;
@@ -237,6 +238,7 @@ public class MasterDataFacadeHelper {
 			throw new NullArgumentException("sCachedEntityName");
 		}
 		LOG.info("JMS send: notify clients that master data changed:" + this);
+		LocalCachesUtil.getInstance().updateLocalCacheRevalidation(JMSConstants.TOPICNAME_MASTERDATACACHE);
 		NuclosJMSUtils.sendOnceAfterCommitDelayed(sCachedEntityName, JMSConstants.TOPICNAME_MASTERDATACACHE);
 	}
 	

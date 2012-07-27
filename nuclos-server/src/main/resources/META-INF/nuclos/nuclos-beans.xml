@@ -203,6 +203,8 @@
 
 	<bean id="localeService" class="org.nuclos.server.common.ejb3.LocaleFacadeBean"/>
 
+	<bean id="localUserCachesService" class="org.nuclos.server.common.ejb3.LocalUserCachesFacadeBean"/>
+
 	<bean id="preferencesService" class="org.nuclos.server.common.ejb3.PreferencesFacadeBean"/>
 
 	<bean id="securityService" class="org.nuclos.server.common.ejb3.SecurityFacadeBean"/>

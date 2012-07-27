@@ -295,6 +295,7 @@ public class MetaDataServerProvider implements MetaDataProvider<EntityMetaDataVO
 		}
 
 		LOG.info("JMS send: notify clients that meta data changed: " + this);
+		LocalCachesUtil.getInstance().updateLocalCacheRevalidation(JMSConstants.TOPICNAME_METADATACACHE);
 		NuclosJMSUtils.sendOnceAfterCommitDelayed("Meta data changed.", JMSConstants.TOPICNAME_METADATACACHE);
 	}
 

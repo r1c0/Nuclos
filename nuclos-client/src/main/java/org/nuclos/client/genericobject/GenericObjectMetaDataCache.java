@@ -26,6 +26,7 @@ import javax.jms.Message;
 import javax.jms.MessageListener;
 
 import org.apache.log4j.Logger;
+import org.nuclos.client.LocalUserCaches.AbstractLocalUserCache;
 import org.nuclos.client.attribute.AttributeCache;
 import org.nuclos.client.common.MetaDataClientProvider;
 import org.nuclos.client.jms.TopicNotificationReceiver;
@@ -52,7 +53,7 @@ import org.nuclos.server.attribute.valueobject.AttributeCVO;
  * @version 01.00.00
  */
 // @Component
-public class GenericObjectMetaDataCache implements GenericObjectMetaDataProvider {
+public class GenericObjectMetaDataCache extends AbstractLocalUserCache implements GenericObjectMetaDataProvider {
 
 	private static final Logger LOG = Logger.getLogger(GenericObjectMetaDataCache.class);
 	
@@ -60,13 +61,14 @@ public class GenericObjectMetaDataCache implements GenericObjectMetaDataProvider
 
 	//
 	
-	private GenericObjectDelegate genericObjectDelegate;
+	private transient GenericObjectDelegate genericObjectDelegate;
 
 	private GenericObjectMetaDataVO lometacvo;
 
 	private List<CacheableListener> lstCacheableListeners;
 	
-	private TopicNotificationReceiver tnr; 
+	private transient TopicNotificationReceiver tnr;
+	private transient MessageListener messageListener; 
 
 	private GenericObjectMetaDataCache() {
 		INSTANCE = this;
@@ -77,8 +79,16 @@ public class GenericObjectMetaDataCache implements GenericObjectMetaDataProvider
 		final Runnable run = new Runnable() {
 			@Override
 			public void run() {
-				setup();
-				tnr.subscribe(JMSConstants.TOPICNAME_METADATACACHE, messagelistener);
+				if (!wasDeserialized() || !isValid())
+					setup();
+				messageListener = new MessageListener() {
+					@Override
+					public void onMessage(Message msg) {
+						LOG.info("onMessage: Received notification from server: meta data changed, revalidate...");
+						GenericObjectMetaDataCache.this.revalidate();
+					}
+				};
+				tnr.subscribe(getCachingTopic(), messageListener);
 			}
 		};
 		new Thread(run, "GenericObjectMetaDataCache.init").start();
@@ -98,9 +108,14 @@ public class GenericObjectMetaDataCache implements GenericObjectMetaDataProvider
 		if (INSTANCE == null) {
 			// throw new IllegalStateException("too early");
 			// lazy support
-			SpringApplicationContextHolder.getBean(GenericObjectMetaDataCache.class);
+			INSTANCE = SpringApplicationContextHolder.getBean(GenericObjectMetaDataCache.class);
 		}
 		return INSTANCE;
+	}
+	
+	@Override
+	public String getCachingTopic() {
+		return JMSConstants.TOPICNAME_METADATACACHE;
 	}
 
 	private GenericObjectMetaDataVO getMetaDataCVO() {
@@ -221,18 +236,5 @@ public class GenericObjectMetaDataCache implements GenericObjectMetaDataProvider
 			listener.cacheableChanged();
 		}
 	}
-	
-	/**
-	 * Subscribed to TOPICNAME_METADATACACHE.
-	 * 
-	 * @see #init()
-	 */
-	private final MessageListener messagelistener = new MessageListener() {
-		@Override
-		public void onMessage(Message msg) {
-			LOG.info("onMessage: Received notification from server: meta data changed, revalidate...");
-			GenericObjectMetaDataCache.this.revalidate();
-		}
-	};
 
 }	// class GenericObjectMetaDataCache

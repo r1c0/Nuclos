@@ -98,6 +98,13 @@
     </context:component-scan -->
 	
 	<!-- Avoid scanning for the base component in nuclos-client -->
+	<bean id="applicationProperties" class="org.nuclos.common.ApplicationProperties">
+	</bean>
+	<bean id="localUserCaches" class="org.nuclos.client.LocalUserCaches">
+		<property name="localUserCachesService" ref="localUserCachesService"/>
+	</bean>
+	<bean id="deserializingFactoryBean" class="org.nuclos.client.DeserializingFactoryBean" lazy-init="true">
+	</bean>
 	<!-- must be lazy -->
 	<bean id="securityCache" class="org.nuclos.client.common.security.SecurityCache">
 		<property name="topicNotificationReceiver" ref="topicNotificationReceiver"/>
@@ -110,11 +117,15 @@
 	<!-- other -->
 	<bean id="nuclosHttpInvokerAttributeContext" class="org.nuclos.client.NuclosHttpInvokerAttributeContext">
 	</bean>
-	<bean id="attributeProvider" class="org.nuclos.client.attribute.AttributeCache" lazy-init="true">
+	<bean id="attributeProvider" class="org.nuclos.client.attribute.AttributeCache" lazy-init="true"
+			factory-bean="deserializingFactoryBean" factory-method="createInstance">
+		<constructor-arg type="java.lang.Class" value="org.nuclos.client.attribute.AttributeCache" />
 		<qualifier value="attributeCache" />
 		<property name="attributeDelegate" ref="attributeDelegate"/>
 	</bean>
-	<bean id="parameterProvider" class="org.nuclos.client.common.ClientParameterProvider">
+	<bean id="parameterProvider" class="org.nuclos.client.common.ClientParameterProvider"
+		factory-bean="deserializingFactoryBean" factory-method="createInstance">
+		<constructor-arg type="java.lang.Class" value="org.nuclos.client.common.ClientParameterProvider" />
 		<property name="topicNotificationReceiver" ref="topicNotificationReceiver"/>
 		<property name="parameterService" ref="parameterService"/>
 	</bean>
@@ -132,7 +143,9 @@
 	<bean id="collectableEOEntityProvider" class="org.nuclos.client.entityobject.CollectableEOEntityClientProvider" lazy-init="true">
 		<constructor-arg><ref bean="metaDataProvider"/></constructor-arg>
 	</bean>
-	<bean id="metaDataProvider" class="org.nuclos.client.common.MetaDataClientProvider" lazy-init="true">
+	<bean id="metaDataProvider" class="org.nuclos.client.common.MetaDataClientProvider" lazy-init="true"
+		factory-bean="deserializingFactoryBean" factory-method="createInstance">
+		<constructor-arg type="java.lang.Class" value="org.nuclos.client.common.MetaDataClientProvider" />
 		<property name="topicNotificationReceiver" ref="topicNotificationReceiver"/>
 	</bean>
 	<bean id="entityFacadeDelegate" class="org.nuclos.client.entityobject.EntityFacadeDelegate" lazy-init="true">
@@ -141,18 +154,39 @@
 	<bean id="genericObjectDelegate" class="org.nuclos.client.genericobject.GenericObjectDelegate" lazy-init="true">
 		<property name="genericObjectFacadeRemote" ref="genericObjectService"/>
 	</bean>
-	<bean id="genericObjectMetaDataCache" class="org.nuclos.client.genericobject.GenericObjectMetaDataCache" lazy-init="true">
+	<bean id="genericObjectMetaDataCache" class="org.nuclos.client.genericobject.GenericObjectMetaDataCache" lazy-init="true"
+			factory-bean="deserializingFactoryBean" factory-method="createInstance">
+		<constructor-arg type="java.lang.Class" value="org.nuclos.client.genericobject.GenericObjectMetaDataCache" />
 		<property name="topicNotificationReceiver" ref="topicNotificationReceiver"/>
 		<property name="genericObjectDelegate" ref="genericObjectDelegate"/>
 	</bean>
 	<bean id="invokeWithInputRequiredSupport" class="org.nuclos.client.ui.collect.InvokeWithInputRequiredSupport" lazy-init="true">
 		<property name="nuclosHttpInvokerAttributeContext" ref="nuclosHttpInvokerAttributeContext"/>
 	</bean>
-	<bean id="localeDelegate" class="org.nuclos.client.common.LocaleDelegate">
+	<bean id="searchFilterCache" class="org.nuclos.client.searchfilter.SearchFilterCache" lazy-init="true"
+		factory-bean="deserializingFactoryBean" factory-method="createInstance">
+		<constructor-arg type="java.lang.Class" value="org.nuclos.client.searchfilter.SearchFilterCache" />
+		<property name="topicNotificationReceiver" ref="topicNotificationReceiver"/>
+	</bean>
+	<bean id="customComponentCache" class="org.nuclos.client.customcomp.CustomComponentCache" lazy-init="true"
+		factory-bean="deserializingFactoryBean" factory-method="createInstance">
+		<constructor-arg type="java.lang.Class" value="org.nuclos.client.customcomp.CustomComponentCache" />
+		<property name="topicNotificationReceiver" ref="topicNotificationReceiver"/>
+	</bean>
+	<bean id="tasklistCache" class="org.nuclos.client.tasklist.TasklistCache" lazy-init="true"
+		factory-bean="deserializingFactoryBean" factory-method="createInstance">
+		<constructor-arg type="java.lang.Class" value="org.nuclos.client.tasklist.TasklistCache" />
+		<property name="topicNotificationReceiver" ref="topicNotificationReceiver"/>
+	</bean>
+	<bean id="localeDelegate" class="org.nuclos.client.common.LocaleDelegate"
+		factory-bean="deserializingFactoryBean" factory-method="createInstance">
+		<constructor-arg type="java.lang.Class" value="org.nuclos.client.common.LocaleDelegate" />
 		<property name="topicNotificationReceiver" ref="topicNotificationReceiver"/>
 		<property name="localeService" ref="localeService"/>
 	</bean>
-	<bean id="masterDataCache" class="org.nuclos.client.masterdata.MasterDataCache" lazy-init="true">
+	<bean id="masterDataCache" class="org.nuclos.client.masterdata.MasterDataCache" lazy-init="true"
+			factory-bean="deserializingFactoryBean" factory-method="createInstance">
+		<constructor-arg type="java.lang.Class" value="org.nuclos.client.masterdata.MasterDataCache" />
 		<property name="topicNotificationReceiver" ref="topicNotificationReceiver"/>
 		<property name="masterDataDelegate" ref="masterDataDelegate"/>
 		<property name="entityFacadeDelegate" ref="entityFacadeDelegate"/>
@@ -162,14 +196,18 @@
 		<property name="springLocaleDelegate" ref="springLocaleDelegate"/>
 		<property name="masterDataCache" ref="masterDataCache"/>
 	</bean>
-	<bean id="metaDataCache" class="org.nuclos.client.masterdata.MetaDataCache" lazy-init="true">
+	<bean id="metaDataCache" class="org.nuclos.client.masterdata.MetaDataCache" lazy-init="true"
+			factory-bean="deserializingFactoryBean" factory-method="createInstance">
+		<constructor-arg type="java.lang.Class" value="org.nuclos.client.masterdata.MetaDataCache" />
 		<property name="topicNotificationReceiver" ref="topicNotificationReceiver"/>
 		<property name="masterDataDelegate" ref="masterDataDelegate"/>
 	</bean>
 	<bean id="nuclosIcons" class="org.nuclos.client.NuclosIcons">
 		<property name="resourceCache" ref="resourceCache"/>
 	</bean>
-	<bean id="resourceCache" class="org.nuclos.client.resource.ResourceCache">
+	<bean id="resourceCache" class="org.nuclos.client.resource.ResourceCache"
+			factory-bean="deserializingFactoryBean" factory-method="createInstance">
+		<constructor-arg type="java.lang.Class" value="org.nuclos.client.resource.ResourceCache" />
 		<property name="topicNotificationReceiver" ref="topicNotificationReceiver"/>
 		<property name="resourceDelegate" ref="resourceDelegate"/>
 	</bean>
@@ -190,8 +228,6 @@
 	</bean>
 
 	<!-- Avoid scanning for nuclos-common -->
-	<bean id="applicationProperties" class="org.nuclos.common.ApplicationProperties">
-	</bean>
 	<bean id="defaultCollectableEntityProvider" class="org.nuclos.common.collect.collectable.DefaultCollectableEntityProvider">
 		<property name="collectableEOEntityProvider" ref="collectableEOEntityProvider"/>
 	</bean>
@@ -397,6 +433,13 @@
 		<property name="serviceUrl" value="${url.remoting}/LocaleService" />
 		<property name="serviceInterface"
 			value="org.nuclos.server.common.ejb3.LocaleFacadeRemote" />
+	</bean>
+
+	<bean id="localUserCachesService" parent="httpInvokerProxyFactoryBean">
+		<qualifier value="localUserCachesService" />
+		<property name="serviceUrl" value="${url.remoting}/LocalUserCachesService" />
+		<property name="serviceInterface"
+			value="org.nuclos.server.common.ejb3.LocalUserCachesFacadeRemote" />
 	</bean>
 
 	<bean id="preferencesService" parent="httpInvokerProxyFactoryBean">

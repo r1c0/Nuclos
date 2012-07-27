@@ -18,6 +18,7 @@ package org.nuclos.client.genericobject;
 
 import java.awt.event.ActionListener;
 import java.io.IOException;
+import java.io.Serializable;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -26,6 +27,7 @@ import java.util.Map;
 import org.apache.commons.collections.map.LRUMap;
 import org.apache.commons.lang.NullArgumentException;
 import org.apache.log4j.Logger;
+import org.nuclos.client.LocalUserCaches.AbstractLocalUserCache;
 import org.nuclos.client.genericobject.valuelistprovider.GenericObjectCollectableFieldsProviderFactory;
 import org.nuclos.client.genericobject.valuelistprovider.ProcessCollectableFieldsProvider;
 import org.nuclos.client.ui.collect.component.CollectableComponent;
@@ -34,8 +36,10 @@ import org.nuclos.client.ui.collect.component.CollectableComponentWithValueListP
 import org.nuclos.client.ui.layoutml.LayoutMLParser;
 import org.nuclos.client.ui.layoutml.LayoutRoot;
 import org.nuclos.client.valuelistprovider.cache.CollectableFieldsProviderCache;
+import org.nuclos.common.JMSConstants;
 import org.nuclos.common.NuclosEOField;
 import org.nuclos.common.NuclosFatalException;
+import org.nuclos.common.SpringApplicationContextHolder;
 import org.nuclos.common.UsageCriteria;
 import org.nuclos.common.collect.collectable.CollectableEntity;
 import org.nuclos.common.collection.BinaryPredicate;
@@ -45,6 +49,7 @@ import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.exception.CommonFinderException;
 import org.nuclos.common2.layoutml.exception.LayoutMLException;
+import org.springframework.beans.factory.InitializingBean;
 import org.xml.sax.InputSource;
 
 /**
@@ -58,7 +63,7 @@ import org.xml.sax.InputSource;
  * @todo check if this cache is still needed
  */
 // @Component
-public class GenericObjectLayoutCache {
+public class GenericObjectLayoutCache extends AbstractLocalUserCache implements InitializingBean {
 	
 	private static final Logger LOG = Logger.getLogger(GenericObjectLayoutCache.class);
 
@@ -73,7 +78,7 @@ public class GenericObjectLayoutCache {
 	
 	// end of Spring injection
 
-	private static class Key {
+	private static class Key implements Serializable {
 		private final UsageCriteria usagecriteria;
 		private final boolean bSearchScreen;
 
@@ -113,7 +118,7 @@ public class GenericObjectLayoutCache {
 	// This ReferenceMap does not work as expected. The soft references are freed far to early.
 //		private final Map mpLayoutIds = new ReferenceMap(ReferenceMap.HARD, ReferenceMap.SOFT);
 
-	private final LayoutMLParser parser = new LayoutMLParser();
+	private transient LayoutMLParser parser;
 
 	private GenericObjectLayoutCache() {
 		 mpLayoutIds = new LRUMap(100);
@@ -122,13 +127,25 @@ public class GenericObjectLayoutCache {
 
 	public static GenericObjectLayoutCache getInstance() {
 		if (INSTANCE == null) {
-			throw new IllegalStateException("too early");
+			// throw new IllegalStateException("too early");
+			// lazy support
+			INSTANCE = SpringApplicationContextHolder.getBean(GenericObjectLayoutCache.class);
 		}
 		return INSTANCE;
 	}
 	
+	@Override
+	public void afterPropertiesSet() throws Exception {
+		 parser = new LayoutMLParser();
+	}
+	
 	public final void setGenericObjectMetaDataCache(GenericObjectMetaDataCache genericObjectMetaDataCache) {
 		gometa = genericObjectMetaDataCache;
+	}
+	
+	@Override
+	public String getCachingTopic() {
+		return JMSConstants.TOPICNAME_METADATACACHE; // @todo. is this right?
 	}
 	
 	/**

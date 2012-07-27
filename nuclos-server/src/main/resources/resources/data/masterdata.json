@@ -10839,5 +10839,45 @@
         "nullable": false,
       }
     ]
+  },
+  {    
+    "name": "localeCaches",
+    "entity": "nuclos_localecaches",
+    "searchable": false,
+    "editable": false,
+    "cacheable": false,
+    "dbentity": "T_AD_LOCALCACHES",
+    "importexport": false,
+    "systementity": true,
+    "labelres": "nuclos.entity.localcaches.label",
+    "nuclos_entityfield": [
+      {
+        "name": "cachingTopic",
+        "dbfield": "STRFIELD_CACHINGTOPIC",
+        "label": "Caching Topic",
+        "description": "Caching Topic",
+        "datatype": "java.lang.String",
+        "datascale": 100,
+        "nullable": false,
+        "searchable": false,
+        "logbook": false,
+        "unique": true,
+        "labelres": "nuclos.entityfield.localecaches.cachingTopic.label",
+        "descriptionres": "nuclos.entityfield.localecaches.cachingTopic.description"
+      },
+      {
+        "name": "revalidation",
+        "dbfield": "STRFIELD_REVALIDATION",
+        "label": "Cache Revalidation",
+        "description": "Cache Revalidation",
+        "datatype": "org.nuclos.common2.DateTime",
+        "nullable": false,
+        "searchable": false,
+        "logbook": false,
+        "unique": true,
+        "labelres": "nuclos.entityfield.localecaches.revalidation.label",
+        "descriptionres": "nuclos.entityfield.localecaches.revalidation.description"
+      }
+    ]
   }
 ]

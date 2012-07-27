@@ -66837,5 +66837,80 @@
     "resourceID": "OverlayOptionPane.No",
     "locale": "de",
     "text": "Nein"
+  },
+  {
+    "resourceID": "nuclos.entity.localcaches.label",
+    "locale": "i-default",
+    "text": "Local Caches"
+  },
+  {
+    "resourceID": "nuclos.entity.localcaches.label",
+    "locale": "en",
+    "text": "Local Caches"
+  },
+  {
+    "resourceID": "nuclos.entity.localcaches.label",
+    "locale": "de",
+    "text": "Lokale Caches"
+  },
+  {
+    "resourceID": "nuclos.entityfield.localcaches.cachingTopic.label",
+    "locale": "i-default",
+    "text": "Caching Topic"
+  },
+  {
+    "resourceID": "nuclos.entityfield.localcaches.cachingTopic.label",
+    "locale": "en",
+    "text": "Caching Topic"
+  },
+  {
+    "resourceID": "nuclos.entityfield.localcaches.cachingTopic.label",
+    "locale": "de",
+    "text": "Caching Topic"
+  },
+  {
+    "resourceID": "nuclos.entityfield.localcaches.cachingTopic.description",
+    "locale": "i-default",
+    "text": "Caching Topic"
+  },
+  {
+    "resourceID": "nuclos.entityfield.localcaches.cachingTopic.description",
+    "locale": "en",
+    "text": "Caching Topic"
+  },
+  {
+    "resourceID": "nuclos.entityfield.localcaches.cachingTopic.description",
+    "locale": "de",
+    "text": "Caching Topic"
+  },
+  {
+    "resourceID": "nuclos.entityfield.localcaches.revalidation.label",
+    "locale": "i-default",
+    "text": "Revalidation"
+  },
+  {
+    "resourceID": "nuclos.entityfield.localcaches.revalidation.label",
+    "locale": "en",
+    "text": "Revalidation"
+  },
+  {
+    "resourceID": "nuclos.entityfield.localcaches.revalidation.label",
+    "locale": "de",
+    "text": "Revalidation"
+  },
+  {
+    "resourceID": "nuclos.entityfield.localcaches.revalidation.description",
+    "locale": "i-default",
+    "text": "Revalidation"
+  },
+  {
+    "resourceID": "nuclos.entityfield.localcaches.revalidation.description",
+    "locale": "en",
+    "text": "Revalidation"
+  },
+  {
+    "resourceID": "nuclos.entityfield.localcaches.revalidation.description",
+    "locale": "de",
+    "text": "Revalidation"
   }
 ]

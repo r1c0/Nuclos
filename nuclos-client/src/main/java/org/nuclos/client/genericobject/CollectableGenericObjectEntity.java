@@ -16,6 +16,7 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.genericobject;
 
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -41,12 +42,12 @@ import org.nuclos.common.genericobject.CollectableGenericObjectEntityField;
  * @author	<a href="mailto:Christoph.Radig@novabit.de">Christoph.Radig</a>
  * @version 01.00.00
  */
-public class CollectableGenericObjectEntity implements CollectableEntity {
+public class CollectableGenericObjectEntity implements CollectableEntity, Serializable {
 
 	/**
 	 * Caches CollectableGenericObjectEntities by module.
 	 */
-	private static class Cache implements CacheableListener {
+	private static class Cache implements CacheableListener, Serializable {
 		private static Cache singleton;
 
 		private Map<Integer, CollectableGenericObjectEntity> mpByModuleId =

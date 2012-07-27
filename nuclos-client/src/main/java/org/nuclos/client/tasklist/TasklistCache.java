@@ -21,7 +21,6 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import javax.annotation.PostConstruct;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageListener;
@@ -29,18 +28,18 @@ import javax.jms.TextMessage;
 import javax.swing.SwingUtilities;
 
 import org.apache.log4j.Logger;
+import org.nuclos.client.LocalUserCaches.AbstractLocalUserCache;
 import org.nuclos.client.jms.TopicNotificationReceiver;
 import org.nuclos.client.main.Main;
 import org.nuclos.common.JMSConstants;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.NuclosFatalException;
+import org.nuclos.common.SpringApplicationContextHolder;
 import org.nuclos.common.tasklist.TasklistDefinition;
-import org.nuclos.common2.exception.CommonFatalException;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Configurable;
+import org.springframework.beans.factory.InitializingBean;
 
-@Configurable
-public class TasklistCache {
+//@Configurable
+public class TasklistCache extends AbstractLocalUserCache implements InitializingBean {
 	
 	private static final Logger LOG = Logger.getLogger(TasklistCache.class);
 
@@ -48,12 +47,9 @@ public class TasklistCache {
 
 	public static synchronized TasklistCache getInstance() {
 		if (INSTANCE == null) {
-			try {
-				INSTANCE = new TasklistCache();
-			}
-			catch (RuntimeException ex) {
-				throw new CommonFatalException(ex);
-			}
+			// throw new IllegalStateException("too early");
+			// lazy support
+			INSTANCE =  (TasklistCache) SpringApplicationContextHolder.getBean("tasklistCache");
 		}
 		return INSTANCE;
 	}
@@ -61,49 +57,56 @@ public class TasklistCache {
 	private Map<String, TasklistDefinition> tasklists;
 	private Map<Integer, TasklistDefinition> tasklistsById;
 	
-	private TopicNotificationReceiver tnr;
+	private transient TopicNotificationReceiver tnr;
+	private transient MessageListener messageListener;
 	
-	private final MessageListener messagelistener = new MessageListener() {
-		@Override
-		public void onMessage(Message msg) {
-			LOG.info("onMessage " + this + " revalidate cache...");
-			if (msg instanceof TextMessage) {
-				TextMessage tmsg = (TextMessage) msg;
-				try {
-					if (NuclosEntity.TASKLIST.getEntityName().equals(tmsg.getText())) {
-						revalidate();
-						SwingUtilities.invokeLater(new Runnable() {
-							@Override
-							public void run() {
-								try {
-									LOG.info("onMessage " + this + " refreshMenus...");
-									Main.getInstance().getMainController().refreshMenus();
+	private TasklistCache() {
+		INSTANCE = this;
+	}
+	
+	@Override
+	public void afterPropertiesSet() throws Exception {
+		messageListener = new MessageListener() {
+			@Override
+			public void onMessage(Message msg) {
+				LOG.info("onMessage " + this + " revalidate cache...");
+				if (msg instanceof TextMessage) {
+					TextMessage tmsg = (TextMessage) msg;
+					try {
+						if (NuclosEntity.TASKLIST.getEntityName().equals(tmsg.getText())) {
+							revalidate();
+							SwingUtilities.invokeLater(new Runnable() {
+								@Override
+								public void run() {
+									try {
+										LOG.info("onMessage " + this + " refreshMenus...");
+										Main.getInstance().getMainController().refreshMenus();
+									}
+									catch (Exception e) {
+										LOG.error("onMessage failed: " + e, e);
+									}
 								}
-								catch (Exception e) {
-									LOG.error("onMessage failed: " + e, e);
-								}
-							}
-						});
+							});
+						}
+					}
+					catch (JMSException e) {
+						LOG.error(e);
 					}
 				}
-				catch (JMSException e) {
-					LOG.error(e);
-				}
 			}
-		}
-	};
-
-	private TasklistCache() {
+		};
+		tnr.subscribe(getCachingTopic(), messageListener);
+		if (!wasDeserialized() || !isValid())
+			revalidate();
 	}
 	
-	@PostConstruct
-	void init() {
-		tnr.subscribe(JMSConstants.TOPICNAME_MASTERDATACACHE, messagelistener);
-		revalidate();
+	@Override
+	public String getCachingTopic() {
+		return JMSConstants.TOPICNAME_MASTERDATACACHE;
 	}
 	
-	@Autowired
-	void setTopicNotificationReceiver(TopicNotificationReceiver tnr) {
+	//@Autowired
+	public void setTopicNotificationReceiver(TopicNotificationReceiver tnr) {
 		this.tnr = tnr;
 	}
 	

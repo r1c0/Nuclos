@@ -62,6 +62,7 @@ import org.nuclos.common2.exception.CommonRemoveException;
 import org.nuclos.common2.exception.CommonStaleVersionException;
 import org.nuclos.common2.exception.CommonValidationException;
 import org.nuclos.server.common.AttributeCache;
+import org.nuclos.server.common.LocalCachesUtil;
 import org.nuclos.server.common.LocaleUtils;
 import org.nuclos.server.common.MasterDataMetaCache;
 import org.nuclos.server.common.SecurityCache;
@@ -1488,6 +1489,7 @@ public class StateFacadeBean extends NuclosFacadeBean implements StateFacadeRemo
 		StateModelUsagesCache.getInstance().revalidate();
 
 		LOG.info("JMS send: notify clients that state models changed:" + this);
+		LocalCachesUtil.getInstance().updateLocalCacheRevalidation(JMSConstants.TOPICNAME_STATEMODEL);
 		NuclosJMSUtils.sendOnceAfterCommitDelayed(null, JMSConstants.TOPICNAME_STATEMODEL);
 	}
 

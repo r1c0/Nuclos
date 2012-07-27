@@ -16,6 +16,7 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.searchfilter;
 
+import java.io.Serializable;
 import java.util.Date;
 
 import org.nuclos.common.collect.collectable.searchcondition.CollectableSearchCondition;
@@ -35,7 +36,7 @@ import org.nuclos.server.searchfilter.valueobject.SearchFilterVO;
  * @author	<a href="mailto:Christoph.Radig@novabit.de">Christoph.Radig</a>
  * @version 01.00.00
  */
-public abstract class SearchFilter {
+public abstract class SearchFilter implements Serializable {
 
 	private boolean bValid = true;
 

@@ -139,6 +139,7 @@
 		<property name="timer" ref="timer"/>
 	</bean>
 	<bean id="nuclosCollectableEntityProvider" class="org.nuclos.client.common.NuclosCollectableEntityProvider">
+		<!-- this is needed. otherwise attribute cache fills to early. -->
 		<property name="attributeCache" ref="attributeProvider"/>
 	</bean>
 		
@@ -250,7 +251,9 @@
 	<bean id="preferencesMigration" class="org.nuclos.client.common.prefs.PreferencesMigration">
 		<property name="mainFrameSpringComponent" ref="mainFrameSpringComponent"/>
 	</bean>
-	<bean id="genericObjectLayoutCache" class="org.nuclos.client.genericobject.GenericObjectLayoutCache">
+	<bean id="genericObjectLayoutCache" class="org.nuclos.client.genericobject.GenericObjectLayoutCache"
+			factory-bean="deserializingFactoryBean" factory-method="createInstance">
+		<constructor-arg type="java.lang.Class" value="org.nuclos.client.genericobject.GenericObjectLayoutCache" />
 		<property name="genericObjectMetaDataCache" ref="genericObjectMetaDataCache"/>
 	</bean>
 	

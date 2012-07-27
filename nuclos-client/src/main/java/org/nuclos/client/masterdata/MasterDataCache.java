@@ -27,6 +27,7 @@ import javax.jms.MessageListener;
 import javax.jms.TextMessage;
 
 import org.apache.log4j.Logger;
+import org.nuclos.client.LocalUserCaches.AbstractLocalUserCache;
 import org.nuclos.client.entityobject.EntityFacadeDelegate;
 import org.nuclos.client.jms.TopicNotificationReceiver;
 import org.nuclos.common.JMSConstants;
@@ -54,7 +55,7 @@ import org.springframework.beans.factory.InitializingBean;
  * @todo the caller has to decide whether an entity is cacheable or not. This is bad.
  */
 // @Component
-public class MasterDataCache implements InitializingBean {
+public class MasterDataCache extends AbstractLocalUserCache implements InitializingBean {
 	
 	private static final Logger LOG = Logger.getLogger(MasterDataCache.class);
 
@@ -69,44 +70,18 @@ public class MasterDataCache implements InitializingBean {
 	private final Map<CollectableFieldsByNameKey, List<CollectableField>> mpCollectableFieldsByName 
 		= new ConcurrentHashMap<MasterDataCache.CollectableFieldsByNameKey, List<CollectableField>>();
 	
-	private TopicNotificationReceiver tnr;
+	private transient TopicNotificationReceiver tnr;
+	private transient MessageListener messageListener;
 	
-	private MasterDataDelegate masterDataDelegate;
+	private transient MasterDataDelegate masterDataDelegate;
 	
-	private EntityFacadeDelegate entityFacadeDelegate;
+	private transient EntityFacadeDelegate entityFacadeDelegate;
 
-	/**
-	 * Subscribed to TOPICNAME_MASTERDATACACHE.
-	 * 
-	 * @see #init()
-	 */
-	private final MessageListener messagelistener = new MessageListener() {
-		@Override
-		public void onMessage(Message msg) {
-			String sEntity;
-			if (msg instanceof TextMessage) {
-				try {
-					sEntity = ((TextMessage) msg).getText();
-					LOG.info("onMessage: JMS message is of type TextMessage, text is: " + sEntity);
-				}
-				catch (JMSException ex) {
-					LOG.warn("onMessage: Exception thrown in JMS message listener.", ex);
-					sEntity = null;
-				}
-			}
-			else {
-				LOG.warn("onMessage: Message of type " + msg.getClass().getName() + " received, while a TextMessage was expected.");
-				sEntity = null;
-			}
-
-			MasterDataCache.this.invalidate(sEntity);
-		}
-	};
 
 	public static MasterDataCache getInstance() {
 		if (INSTANCE == null) {
 			// lazy support
-			SpringApplicationContextHolder.getBean(MasterDataCache.class);
+			INSTANCE = SpringApplicationContextHolder.getBean(MasterDataCache.class);
 		}
 		return INSTANCE;
 	}
@@ -117,7 +92,31 @@ public class MasterDataCache implements InitializingBean {
 	
 	// @PostConstruct
 	public final void afterPropertiesSet() {
-		tnr.subscribe(JMSConstants.TOPICNAME_MASTERDATACACHE, messagelistener);
+		if (!wasDeserialized() || !isValid())
+			invalidate(null);
+		messageListener = new MessageListener() {
+			@Override
+			public void onMessage(Message msg) {
+				String sEntity;
+				if (msg instanceof TextMessage) {
+					try {
+						sEntity = ((TextMessage) msg).getText();
+						LOG.info("onMessage: JMS message is of type TextMessage, text is: " + sEntity);
+					}
+					catch (JMSException ex) {
+						LOG.warn("onMessage: Exception thrown in JMS message listener.", ex);
+						sEntity = null;
+					}
+				}
+				else {
+					LOG.warn("onMessage: Message of type " + msg.getClass().getName() + " received, while a TextMessage was expected.");
+					sEntity = null;
+				}
+
+				MasterDataCache.this.invalidate(sEntity);
+			}
+		};
+		tnr.subscribe(getCachingTopic(), messageListener);
 	}
 	
 	// @Autowired
@@ -133,6 +132,11 @@ public class MasterDataCache implements InitializingBean {
 	// @Autowired
 	public final void setEntityFacadeDelegate(EntityFacadeDelegate entityFacadeDelegate) {
 		this.entityFacadeDelegate = entityFacadeDelegate;
+	}
+	
+	@Override
+	public String getCachingTopic() {
+		return JMSConstants.TOPICNAME_MASTERDATACACHE;
 	}
 
 	/**

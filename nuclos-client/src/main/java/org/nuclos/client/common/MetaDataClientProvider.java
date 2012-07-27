@@ -16,6 +16,7 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.common;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -30,6 +31,7 @@ import javax.jms.Message;
 import javax.jms.MessageListener;
 
 import org.apache.log4j.Logger;
+import org.nuclos.client.LocalUserCaches.AbstractLocalUserCache;
 import org.nuclos.client.datasource.DatasourceDelegate;
 import org.nuclos.client.jms.TopicNotificationReceiver;
 import org.nuclos.client.masterdata.MetaDataDelegate;
@@ -60,7 +62,7 @@ import org.springframework.beans.factory.InitializingBean;
  * </p>
  */
 // @Component("metaDataProvider")
-public class MetaDataClientProvider implements MetaDataProvider<EntityMetaDataVO, EntityFieldMetaDataVO>, CommonMetaDataClientProvider<EntityMetaDataVO, EntityFieldMetaDataVO>, InitializingBean {
+public class MetaDataClientProvider extends AbstractLocalUserCache implements MetaDataProvider<EntityMetaDataVO, EntityFieldMetaDataVO>, CommonMetaDataClientProvider<EntityMetaDataVO, EntityFieldMetaDataVO>, InitializingBean {
 
 	private static final Logger LOG = Logger.getLogger(MetaDataClientProvider.class);
 	
@@ -68,7 +70,8 @@ public class MetaDataClientProvider implements MetaDataProvider<EntityMetaDataVO
 
 	private final DataCache dataCache = new DataCache();
 	
-	private TopicNotificationReceiver tnr;
+	private transient TopicNotificationReceiver tnr;
+	private transient MessageListener messageListener;
 
 	MetaDataClientProvider() {
 		INSTANCE = this;
@@ -89,15 +92,28 @@ public class MetaDataClientProvider implements MetaDataProvider<EntityMetaDataVO
 		if (INSTANCE == null) {
 			// throw new IllegalStateException("too early");
 			// lazy support
-			SpringApplicationContextHolder.getBean(MetaDataClientProvider.class);
+			INSTANCE = SpringApplicationContextHolder.getBean(MetaDataClientProvider.class);
 		}
 		return INSTANCE;
 	}
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		dataCache.buildMaps();
-		tnr.subscribe(JMSConstants.TOPICNAME_METADATACACHE, messagelistener);
+		if (!wasDeserialized() || !isValid())
+			dataCache.buildMaps();
+		messageListener = new MessageListener() {
+			@Override
+	        public void onMessage(Message msg) {
+				LOG.info("onMessage " + this + " revalidate cache...");
+				MetaDataClientProvider.this.revalidate();
+			}
+		};
+		tnr.subscribe(getCachingTopic(), messageListener);
+	}
+	
+	@Override
+	public String getCachingTopic() {
+		return JMSConstants.TOPICNAME_METADATACACHE;
 	}
 
 	/**
@@ -311,23 +327,10 @@ public class MetaDataClientProvider implements MetaDataProvider<EntityMetaDataVO
 	}
 
 	/**
-	 * Subscribed to TOPICNAME_METADATACACHE.
-	 * 
-	 * @see #afterPropertiesSet()
-	 */
-	private final MessageListener messagelistener = new MessageListener() {
-		@Override
-        public void onMessage(Message msg) {
-			LOG.info("onMessage " + this + " revalidate cache...");
-			MetaDataClientProvider.this.revalidate();
-		}
-	};
-
-	/**
 	 *
 	 *
 	 */
-	class DataCache {
+	class DataCache implements Serializable {
 		private boolean revalidating = false;
 
 		private long startRevalidating;

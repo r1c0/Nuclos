@@ -35,11 +35,13 @@ import javax.jms.Message;
 import javax.jms.MessageListener;
 
 import org.apache.log4j.Logger;
+import org.nuclos.client.LocalUserCaches.AbstractLocalUserCache;
 import org.nuclos.client.LocalUserProperties;
 import org.nuclos.client.jms.TopicNotificationReceiver;
 import org.nuclos.client.main.SwingLocaleSwitcher;
 import org.nuclos.common.ApplicationProperties;
 import org.nuclos.common.JMSConstants;
+import org.nuclos.common.SpringApplicationContextHolder;
 import org.nuclos.common.TranslationVO;
 import org.nuclos.common2.ClientPreferences;
 import org.nuclos.common2.LocaleInfo;
@@ -55,7 +57,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.i18n.LocaleContextHolder;
 
 // @Component
-public class LocaleDelegate implements SpringLocaleDelegate.LookupService, MessageListener, InitializingBean, DisposableBean {
+public class LocaleDelegate extends AbstractLocalUserCache implements SpringLocaleDelegate.LookupService, MessageListener, InitializingBean, DisposableBean {
 
 	private static final Logger LOG = Logger.getLogger(LocaleDelegate.class);
 	
@@ -76,9 +78,9 @@ public class LocaleDelegate implements SpringLocaleDelegate.LookupService, Messa
 	
 	// 
 
-	private LocaleFacadeRemote remoteInterface;
+	private transient LocaleFacadeRemote remoteInterface;
 	
-	private TopicNotificationReceiver tnr;
+	private transient TopicNotificationReceiver tnr;
 	
 	public LocaleDelegate() {
 		INSTANCE = this;
@@ -96,11 +98,22 @@ public class LocaleDelegate implements SpringLocaleDelegate.LookupService, Messa
 
 	@Override
 	public void afterPropertiesSet() {
-		tnr.subscribe(JMSConstants.TOPICNAME_LOCALE, this);
+		if (!wasDeserialized() || !isValid())
+			flush();
+		tnr.subscribe(getCachingTopic(), this);
+	}
+	
+	@Override
+	public String getCachingTopic() {
+		return JMSConstants.TOPICNAME_LOCALE;
 	}
 
 	public static LocaleDelegate getInstance() {
-		// return (LocaleDelegate) SpringApplicationContextHolder.getBean("lookupService");
+		if (INSTANCE == null) {
+			// throw new IllegalStateException("too early");
+			// lazy support
+			INSTANCE =  (LocaleDelegate) SpringApplicationContextHolder.getBean("localeDelegate");
+		}
 		return INSTANCE;
 	}
 

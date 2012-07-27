@@ -1161,6 +1161,7 @@ public class SecurityCache implements SecurityCacheMBean {
 	 */
 	private void notifyUser(String username) {
 		LOG.info("JMS send: notify user " + username + " that security data has changed: " + this);
+		LocalCachesUtil.getInstance().updateLocalCacheRevalidation(JMSConstants.TOPICNAME_SECURITYCACHE);
 		NuclosJMSUtils.sendOnceAfterCommitDelayed(username, JMSConstants.TOPICNAME_SECURITYCACHE);
 	}
 	

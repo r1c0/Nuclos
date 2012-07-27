@@ -23,14 +23,18 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.lang.NullArgumentException;
 import org.apache.log4j.Logger;
+import org.nuclos.client.LocalUserCaches.AbstractLocalUserCache;
 import org.nuclos.client.common.MetaDataClientProvider;
 import org.nuclos.client.genericobject.Modules;
 import org.nuclos.common.AttributeProvider;
 import org.nuclos.common.CacheableListener;
+import org.nuclos.common.JMSConstants;
 import org.nuclos.common.NuclosAttributeNotFoundException;
 import org.nuclos.common.NuclosFatalException;
+import org.nuclos.common.SpringApplicationContextHolder;
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.server.attribute.valueobject.AttributeCVO;
+import org.springframework.beans.factory.InitializingBean;
 
 /**
  * Client cache for all attributes (Singleton pattern).
@@ -46,7 +50,7 @@ import org.nuclos.server.attribute.valueobject.AttributeCVO;
  * @version 01.00.00
  */
 // @Component
-public class AttributeCache implements AttributeProvider {
+public class AttributeCache extends AbstractLocalUserCache implements AttributeProvider, InitializingBean {
 	
 	private static final Logger LOG = Logger.getLogger(AttributeCache.class);
 	
@@ -55,7 +59,7 @@ public class AttributeCache implements AttributeProvider {
 	 */
 	private static AttributeCache INSTANCE;
 	
-	private AttributeDelegate attributeDelegate;
+	private transient AttributeDelegate attributeDelegate;
 	
 	//
 
@@ -67,7 +71,11 @@ public class AttributeCache implements AttributeProvider {
 	 * @return the one (and only) instance of AttributeCache
 	 */
 	public static AttributeCache getInstance() {
-		// return (AttributeCache) SpringApplicationContextHolder.getBean("attributeProvider");
+		if (INSTANCE == null) {
+			// throw new IllegalStateException("too early");
+			// lazy support
+			INSTANCE =  (AttributeCache) SpringApplicationContextHolder.getBean("attributeProvider");
+		}
 		return INSTANCE;
 	}
 
@@ -82,6 +90,19 @@ public class AttributeCache implements AttributeProvider {
 	// @Autowired
 	public final void setAttributeDelegate(AttributeDelegate attributeDelegate) {
 		this.attributeDelegate = attributeDelegate;
+	}
+	
+	@Override
+	public void afterPropertiesSet() throws Exception {
+		// we can not do this here. attribute cache fills to early.
+		/*if (!wasDeserialized())
+			fill();
+		*/
+	}
+	
+	@Override
+	public String getCachingTopic() {
+		return JMSConstants.TOPICNAME_METADATACACHE; // @todo. is this right?
 	}
 
 	/**

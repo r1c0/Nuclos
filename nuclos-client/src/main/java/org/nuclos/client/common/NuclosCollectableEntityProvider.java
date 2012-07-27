@@ -70,7 +70,9 @@ public class NuclosCollectableEntityProvider implements CollectableEntityProvide
 	}
 	
 	public final void init() {
-		attributeCache.fill();
+		// this is needed. otherwise attribute cache fills to early.
+		if (!attributeCache.wasDeserialized() || !attributeCache.isValid())
+			attributeCache.fill();
 
 		this.mpSpecialEntities.put(CollectableRule.clcte.getName(), CollectableRule.clcte);
 		this.mpSpecialEntities.put(CollectableRuleEventUsage.clcte.getName(), CollectableRuleEventUsage.clcte);

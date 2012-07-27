@@ -87,6 +87,7 @@ import org.apache.commons.lang.NotImplementedException;
 import org.apache.log4j.Logger;
 import org.jfree.util.Log;
 import org.nuclos.api.ui.MenuItem;
+import org.nuclos.client.LocalUserCaches;
 import org.nuclos.client.LocalUserProperties;
 import org.nuclos.client.attribute.AttributeCache;
 import org.nuclos.client.common.ClientParameterProvider;
@@ -1805,6 +1806,8 @@ public class MainController {
 
 						frm.writeMainFramePreferences(prefs);
 						restoreUtils.storeWorkspace(frm.getWorkspace());
+						
+						LocalUserCaches.getInstance().store();
 
 						if (ctlTasks != null)	{
 							ctlTasks.close();

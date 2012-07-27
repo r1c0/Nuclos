@@ -22,22 +22,21 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import javax.annotation.PostConstruct;
 import javax.jms.Message;
 import javax.jms.MessageListener;
 
 import org.apache.log4j.Logger;
+import org.nuclos.client.LocalUserCaches.AbstractLocalUserCache;
 import org.nuclos.client.jms.TopicNotificationReceiver;
 import org.nuclos.client.main.Main;
 import org.nuclos.common.JMSConstants;
 import org.nuclos.common.NuclosFatalException;
-import org.nuclos.common2.exception.CommonFatalException;
+import org.nuclos.common.SpringApplicationContextHolder;
 import org.nuclos.server.customcomp.valueobject.CustomComponentVO;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Configurable;
+import org.springframework.beans.factory.InitializingBean;
 
-@Configurable
-public class CustomComponentCache {
+//@Configurable
+public class CustomComponentCache extends AbstractLocalUserCache implements InitializingBean {
 	
 	private static final Logger LOG = Logger.getLogger(CustomComponentCache.class);
 
@@ -45,12 +44,8 @@ public class CustomComponentCache {
 
 	public static synchronized CustomComponentCache getInstance() {
 		if (INSTANCE == null) {
-			try {
-				INSTANCE = new CustomComponentCache();
-			}
-			catch (RuntimeException ex) {
-				throw new CommonFatalException(ex);
-			}
+			// lazy support
+			INSTANCE = (CustomComponentCache)SpringApplicationContextHolder.getBean("customComponentCache");
 		}
 		return INSTANCE;
 	}
@@ -59,34 +54,38 @@ public class CustomComponentCache {
 
 	private Map<String, CustomComponentVO> customComponents;
 	
-	private TopicNotificationReceiver tnr;
+	private transient TopicNotificationReceiver tnr;
+	private transient MessageListener messageListener;
 	
-	/**
-	 * Subscribed to TOPICNAME_CUSTOMCOMPONENTCACHE.
-	 * 
-	 * @see #init()
-	 */
-	private final MessageListener messagelistener = new MessageListener() {
-		@Override
-		public void onMessage(Message msg) {
-			LOG.info("onMessage " + this + " revalidate cache...");
-			revalidate();
-			Main.getInstance().getMainController().refreshMenusLater();
-		}
-	};
 
 	private CustomComponentCache() {
+		INSTANCE = this;
 	}
 	
-	@PostConstruct
-	void init() {
-		tnr.subscribe(JMSConstants.TOPICNAME_CUSTOMCOMPONENTCACHE, messagelistener);
-		revalidate();
+	public void afterPropertiesSet() throws Exception {
+		if (!wasDeserialized() || !isValid())
+			customComponents = new ConcurrentHashMap<String, CustomComponentVO>();
+		messageListener = new MessageListener() {
+			@Override
+			public void onMessage(Message msg) {
+				LOG.info("onMessage " + this + " revalidate cache...");
+				revalidate();
+				Main.getInstance().getMainController().refreshMenusLater();
+			}
+		};
+		tnr.subscribe(getCachingTopic(), messageListener);
+		if (!wasDeserialized() || !isValid())
+			revalidate();
 	}
 	
-	@Autowired
-	void setTopicNotificationReceiver(TopicNotificationReceiver tnr) {
+	//@Autowired
+	public void setTopicNotificationReceiver(TopicNotificationReceiver tnr) {
 		this.tnr = tnr;
+	}
+	
+	@Override
+	public String getCachingTopic() {
+		return JMSConstants.TOPICNAME_CUSTOMCOMPONENTCACHE;
 	}
 	
 	public Collection<CustomComponentVO> getAll() {

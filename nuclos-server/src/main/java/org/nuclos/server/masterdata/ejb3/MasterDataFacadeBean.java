@@ -81,6 +81,7 @@ import org.nuclos.common2.exception.CommonStaleVersionException;
 import org.nuclos.common2.exception.CommonValidationException;
 import org.nuclos.server.attribute.ejb3.LayoutFacadeLocal;
 import org.nuclos.server.autosync.XMLEntities;
+import org.nuclos.server.common.LocalCachesUtil;
 import org.nuclos.server.common.MasterDataMetaCache;
 import org.nuclos.server.common.NuclosSystemParameters;
 import org.nuclos.server.common.RuleCache;
@@ -925,6 +926,7 @@ public class MasterDataFacadeBean extends NuclosFacadeBean implements MasterData
 	 */
 	protected void notifyClients(NuclosEntity entity) {
 		LOG.info("JMS send: notify clients that entity " + entity.getEntityName() + " changed:" + this);
+		LocalCachesUtil.getInstance().updateLocalCacheRevalidation(JMSConstants.TOPICNAME_METADATACACHE);
 		NuclosJMSUtils.sendOnceAfterCommitDelayed(entity.getEntityName(), JMSConstants.TOPICNAME_METADATACACHE);
 	}
 

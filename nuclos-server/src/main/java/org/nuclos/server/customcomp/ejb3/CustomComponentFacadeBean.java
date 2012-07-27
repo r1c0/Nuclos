@@ -31,6 +31,7 @@ import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Transformer;
 import org.nuclos.common2.LocaleInfo;
 import org.nuclos.common2.exception.CommonBusinessException;
+import org.nuclos.server.common.LocalCachesUtil;
 import org.nuclos.server.common.ServerServiceLocator;
 import org.nuclos.server.common.ejb3.LocaleFacadeLocal;
 import org.nuclos.server.common.ejb3.NuclosFacadeBean;
@@ -75,6 +76,7 @@ public class CustomComponentFacadeBean extends NuclosFacadeBean implements Custo
 	}
 
 	private void notifyClients() {
+		LocalCachesUtil.getInstance().updateLocalCacheRevalidation(JMSConstants.TOPICNAME_CUSTOMCOMPONENTCACHE);
 		NuclosJMSUtils.sendOnceAfterCommitDelayed(null, JMSConstants.TOPICNAME_CUSTOMCOMPONENTCACHE);
 	}
 

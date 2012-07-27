@@ -44,6 +44,7 @@ import org.nuclos.common2.exception.CommonPermissionException;
 import org.nuclos.common2.exception.CommonRemoveException;
 import org.nuclos.common2.exception.CommonStaleVersionException;
 import org.nuclos.common2.exception.CommonValidationException;
+import org.nuclos.server.common.LocalCachesUtil;
 import org.nuclos.server.common.LocaleUtils;
 import org.nuclos.server.common.MasterDataMetaCache;
 import org.nuclos.server.common.SecurityCache;
@@ -257,6 +258,7 @@ public class SearchFilterFacadeBean extends MasterDataFacadeBean implements Sear
 
 	private void notifyClients(String[] asUsers) {
 		LOG.info("JMS send notify clients: " + Arrays.asList(asUsers) + ": " + this);
+		LocalCachesUtil.getInstance().updateLocalCacheRevalidation(JMSConstants.TOPICNAME_SEARCHFILTERCACHE);
 		NuclosJMSUtils.sendObjectMessageAfterCommit(asUsers, JMSConstants.TOPICNAME_SEARCHFILTERCACHE, null);
 		//clientnotifier.notifyClientsByUsers(asUsers);
 	}

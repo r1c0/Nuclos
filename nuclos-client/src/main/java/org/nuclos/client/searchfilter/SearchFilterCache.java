@@ -24,19 +24,20 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.annotation.PostConstruct;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.jms.ObjectMessage;
 
 import org.apache.log4j.Logger;
+import org.nuclos.client.LocalUserCaches.AbstractLocalUserCache;
 import org.nuclos.client.jms.TopicNotificationReceiver;
 import org.nuclos.client.main.Main;
 import org.nuclos.client.main.MainController;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.common.JMSConstants;
 import org.nuclos.common.NuclosFatalException;
+import org.nuclos.common.SpringApplicationContextHolder;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Pair;
 import org.nuclos.common.collection.Predicate;
@@ -44,8 +45,7 @@ import org.nuclos.common2.CommonRunnable;
 import org.nuclos.common2.DateUtils;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonBusinessException;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Configurable;
+import org.springframework.beans.factory.InitializingBean;
 
 /**
  * SearchFilterCache containing all searchfilters (entity + global searchfilters)
@@ -57,74 +57,76 @@ import org.springframework.beans.factory.annotation.Configurable;
  * @author	<a href="mailto:martin.weber@novabit.de">Martin Weber</a>
  * @version 00.01.000
  */
-@Configurable
-public class SearchFilterCache {
+//@Configurable
+public class SearchFilterCache extends AbstractLocalUserCache implements InitializingBean {
 
 	private static final Logger LOG = Logger.getLogger(SearchFilterCache.class);
 
-	private static SearchFilterCache singleton;
+	private static SearchFilterCache INSTANCE;
 	
 	//
 
 	private Map<Pair<String, String>, EntitySearchFilter> mpEntitySearchFilter = new HashMap<Pair<String, String>, EntitySearchFilter>();
 	
-	private TopicNotificationReceiver tnr;
-
-	/**
-	 * Subscribed to TOPICNAME_SEARCHFILTERCACHE.
-	 * 
-	 * @see #init()
-	 */
-	private final MessageListener messagelistener = new MessageListener() {
-		@Override
-        public void onMessage(Message msg) {
-			LOG.info("onMessage: Received notification from server: search filter cache changed.");
-			SearchFilterCache.this.validate();
-			if (msg instanceof ObjectMessage) {
-				try {
-					final String[] asUsers = (String[])((ObjectMessage)msg).getObject();
-					final Main main = Main.getInstance();
-					final MainController mc = main.getMainController();
-					final String userName = mc.getUserName();
-					
-					boolean refresh = true;
-					for (String sUser : asUsers) {
-						if (userName.equals(sUser)) {
-							refresh = false;
-						}
-					}
-					
-					if (refresh) {
-						UIUtils.runCommandLater(main.getMainFrame(), new CommonRunnable() {			
-							@Override
-                            public void run() throws CommonBusinessException {
-								LOG.info("onMessage " + this + " refreshTaskController...");
-								mc.refreshTaskController();
-							}
-						});	
-					}
-				}
-				catch (JMSException ex) {
-					LOG.warn("onMessage: Exception thrown in JMS message listener.", ex);
-				}
-			}
-			else {
-				LOG.warn("onMessage: Message of type " + msg.getClass().getName() + " received, while a TextMessage was expected.");
-			}			
-		}
-	};
+	private transient TopicNotificationReceiver tnr;
+	private transient MessageListener messageListener;
 	
 	private SearchFilterCache() {
+		INSTANCE = this;
 	}
 	
-	@PostConstruct
-	void init() {
-		tnr.subscribe(JMSConstants.TOPICNAME_SEARCHFILTERCACHE, messagelistener);
-		loadSearchFilters();		
+	@Override
+	public void afterPropertiesSet() throws Exception {
+		if (!wasDeserialized() || !isValid())
+			loadSearchFilters();	
+		messageListener = new MessageListener() {
+			@Override
+	        public void onMessage(Message msg) {
+				LOG.info("onMessage: Received notification from server: search filter cache changed.");
+				SearchFilterCache.this.validate();
+				if (msg instanceof ObjectMessage) {
+					try {
+						final String[] asUsers = (String[])((ObjectMessage)msg).getObject();
+						final Main main = Main.getInstance();
+						final MainController mc = main.getMainController();
+						final String userName = mc.getUserName();
+						
+						boolean refresh = true;
+						for (String sUser : asUsers) {
+							if (userName.equals(sUser)) {
+								refresh = false;
+							}
+						}
+						
+						if (refresh) {
+							UIUtils.runCommandLater(main.getMainFrame(), new CommonRunnable() {			
+								@Override
+	                            public void run() throws CommonBusinessException {
+									LOG.info("onMessage " + this + " refreshTaskController...");
+									mc.refreshTaskController();
+								}
+							});	
+						}
+					}
+					catch (JMSException ex) {
+						LOG.warn("onMessage: Exception thrown in JMS message listener.", ex);
+					}
+				}
+				else {
+					LOG.warn("onMessage: Message of type " + msg.getClass().getName() + " received, while a TextMessage was expected.");
+				}			
+			}
+		};
+		tnr.subscribe(getCachingTopic(), messageListener);	
 	}
 	
-	@Autowired
-	void setTopicNotificationReceiver(TopicNotificationReceiver tnr) {
+	@Override
+	public String getCachingTopic() {
+		return JMSConstants.TOPICNAME_SEARCHFILTERCACHE;
+	}
+	
+	// @Autowired
+	public void setTopicNotificationReceiver(TopicNotificationReceiver tnr) {
 		this.tnr = tnr;
 	}
 
@@ -132,10 +134,11 @@ public class SearchFilterCache {
 	 * @return the one (and only) instance of SearchFilterCache
 	 */
 	public static synchronized SearchFilterCache getInstance() {
-		if (singleton == null) {
-			singleton = new SearchFilterCache();
+		if (INSTANCE == null) {
+			// lazy support
+			INSTANCE = (SearchFilterCache)SpringApplicationContextHolder.getBean("searchFilterCache");
 		}
-		return singleton;
+		return INSTANCE;
 	}
 
 	/**

@@ -27,10 +27,13 @@ import javax.jms.MessageListener;
 import javax.jms.TextMessage;
 
 import org.apache.log4j.Logger;
+import org.nuclos.client.LocalUserCaches;
+import org.nuclos.client.LocalUserCaches.LocalUserCache;
 import org.nuclos.client.jms.TopicNotificationReceiver;
 import org.nuclos.client.main.Main;
 import org.nuclos.common.AbstractParameterProvider;
 import org.nuclos.common.JMSConstants;
+import org.nuclos.common.SpringApplicationContextHolder;
 import org.nuclos.common2.exception.CommonFatalException;
 import org.nuclos.common2.exception.CommonRemoteException;
 import org.nuclos.server.common.ejb3.ParameterFacadeRemote;
@@ -47,7 +50,7 @@ import org.springframework.beans.factory.InitializingBean;
  * @version 01.00.00
  */
 // @Component("parameterProvider")
-public class ClientParameterProvider extends AbstractParameterProvider implements MessageListener, InitializingBean {
+public class ClientParameterProvider extends AbstractParameterProvider implements MessageListener, LocalUserCache, InitializingBean {
 	
 	private static final Logger LOG = Logger.getLogger(ClientParameterProvider.class);
 	
@@ -55,35 +58,22 @@ public class ClientParameterProvider extends AbstractParameterProvider implement
 	
 	//
 
-	private final MessageListener serverListener = new MessageListener() {
-		@Override
-		public void onMessage(Message message) {
-			TextMessage txtMessage = (TextMessage) message;
-			try {
-				LOG.debug("serverListener.onMessage(..) " + txtMessage.getText());
-				if (JMS_MESSAGE_ALL_PARAMETERS_ARE_REVALIDATED.equals(txtMessage.getText())) {
-					LOG.info("onMessage " + this + " pattern matches, revalidate cache...");
-					ClientParameterProvider.this.revalidate();
-					Main.getInstance().getMainFrame().setTitle();
-				}
-			}
-			catch(JMSException e) {
-				throw new CommonFatalException(e);
-			}
-		}
-	};
 
 	/**
 	 * Map<String sName, String sValue>
 	 */
 	private final Map<String, String> mpParams = new ConcurrentHashMap<String, String>();
 	
-	private TopicNotificationReceiver tnr;
+	private transient TopicNotificationReceiver tnr;
+	private transient MessageListener messageListener;
 	
-	private ParameterFacadeRemote parameterFacadeRemote;
+	private transient ParameterFacadeRemote parameterFacadeRemote;
 
 	public static ClientParameterProvider getInstance() {
-		// return (ClientParameterProvider) SpringApplicationContextHolder.getBean("parameterProvider");
+		if (INSTANCE == null) {
+			// lazy support
+			INSTANCE = (ClientParameterProvider)SpringApplicationContextHolder.getBean("parameterProvider");
+		}
 		return INSTANCE;
 	}
 
@@ -109,11 +99,50 @@ public class ClientParameterProvider extends AbstractParameterProvider implement
 		final Runnable run = new Runnable() {
 			@Override
 			public void run() {
-				revalidate();
-				tnr.subscribe(JMSConstants.TOPICNAME_PARAMETERPROVIDER, serverListener);
+				if (!wasDeserialized() || !isValid())
+					revalidate();
+				messageListener = new MessageListener() {
+					@Override
+					public void onMessage(Message message) {
+						TextMessage txtMessage = (TextMessage) message;
+						try {
+							LOG.debug("serverListener.onMessage(..) " + txtMessage.getText());
+							if (JMS_MESSAGE_ALL_PARAMETERS_ARE_REVALIDATED.equals(txtMessage.getText())) {
+								LOG.info("onMessage " + this + " pattern matches, revalidate cache...");
+								ClientParameterProvider.this.revalidate();
+								Main.getInstance().getMainFrame().setTitle();
+							}
+						}
+						catch(JMSException e) {
+							throw new CommonFatalException(e);
+						}
+					}
+				};
+				tnr.subscribe(getCachingTopic(), messageListener);
 			}
 		};
 		new Thread(run, "ClientParameterProvider.init").start();
+	}
+	
+	private transient boolean blnDeserialized = false;
+	
+	@Override
+	public String getCachingTopic() {
+		return JMSConstants.TOPICNAME_PARAMETERPROVIDER;
+	}
+	@Override
+	public void setDeserialized(boolean blnDeserialized) {
+		this.blnDeserialized = blnDeserialized;		
+	}
+	
+	@Override
+	public boolean wasDeserialized() {
+		return blnDeserialized;
+	}
+	
+	@Override
+	public boolean isValid() {
+		return wasDeserialized() && LocalUserCaches.getInstance().checkValid(this);
 	}
 
 	private void revalidate() {
