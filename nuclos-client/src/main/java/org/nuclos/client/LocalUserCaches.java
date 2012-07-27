@@ -221,7 +221,7 @@ public class LocalUserCaches extends java.util.Properties {
         	else
         		out = new BufferedOutputStream(new FileOutputStream(this.getCachesFile()));
             	
-        		try {
+        	try {
             	storeObject(MetaDataClientProvider.getInstance());
             	storeObject(AttributeCache.getInstance());
             	storeObject(ResourceCache.getInstance());
