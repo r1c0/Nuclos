@@ -4167,6 +4167,18 @@
         "unique": false,
         "labelres": "nuclos.entityfield.Nuclet.package.label",
         "descriptionres": "nuclos.entityfield.Nuclet.package.description"
+      },
+      {
+        "name": "nucletVersion",
+        "dbfield": "INTNUCLETVERSION",
+        "datatype": "java.lang.Integer",
+        "datascale": 9,
+        "nullable": true,
+        "searchable": false,
+        "logbook": false,
+        "unique": false,
+        "labelres": "nuclos.entityfield.Nuclet.version.label",
+        "descriptionres": "nuclos.entityfield.Nuclet.version.description"
       }
     ]
   },

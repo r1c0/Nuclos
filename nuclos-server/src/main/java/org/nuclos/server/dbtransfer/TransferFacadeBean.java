@@ -327,7 +327,7 @@ public class TransferFacadeBean extends NuclosFacadeBean implements TransferFaca
 	public List<TransferNuclet> getAvaiableNuclets() {
 		List<TransferNuclet> result = new ArrayList<TransferNuclet>();
 		for (EntityObjectVO nucletObject : nucletDalProvider.getEntityObjectProcessor(NuclosEntity.NUCLET).getAll()) {
-			result.add(new TransferNuclet(nucletObject.getId(), nucletObject.getField("name", String.class)));
+			result.add(new TransferNuclet(nucletObject.getId(), nucletObject.getField("name", String.class), nucletObject.getField("nucletVersion", Integer.class)));
 		}
 
 		return CollectionUtils.sorted(result, new Comparator<TransferNuclet>() {
@@ -472,23 +472,7 @@ public class TransferFacadeBean extends NuclosFacadeBean implements TransferFaca
 
 		jmsNotifier.notify("read file", 0);
 		MetaDataRoot root = readBytes(bytes, parameter, false, null, importData, uidImportMap);
-
-		if (isNuclon && !root.exportOptions.containsKey(TransferOption.IS_NUCLON_IMPORT_ALLOWED))
-			throw new IllegalArgumentException("isNuclon");
-
-		jmsNotifier.notify("load existing nuclets and UIDs", 10);
-		LOG.info("get nuclet content instances");
-		List<INucletContent> contentTypes = getNucletContentInstances(root.exportOptions, Process.PREPARE);
-		Set<Long> existingNucletIds = isNuclon?new HashSet<Long>():getExistingNucletIds(root.nucletUID);
-		LOG.info("existing nuclet ids: " + existingNucletIds);
-		NucletContentUID.Map uidExistingMap;
-		LOG.info("get new user count");
-		int newUserCount = getNewUserCount(importData.get(NuclosEntity.USER.getEntityName()));
-		List<PreviewPart> previewParts = new ArrayList<PreviewPart>();
-		NucletContentUID.Map uidLocalizedMap;
-
-		Transfer t = new Transfer(isNuclon, bytes, newUserCount, parameter, root.exportOptions, previewParts);
-
+		
 		// TODO remove importData
 		NucletContentMap importContentMap = new NucletContentHashMap();
 		for (String sEntity : importData.keySet()) {
@@ -497,58 +481,86 @@ public class TransferFacadeBean extends NuclosFacadeBean implements TransferFaca
 				importContentMap.addAllValues(entity, importData.get(sEntity));
 			}
 		}
-
-		DbAccess dbAccess = dataBaseHelper.getDbAccess();
-		LOG.info("get all constraints and drop");
-		final List<DbConstraint> constraints = getConstraints(getEntities(contentTypes), new EntityObjectMetaDbHelper(dbAccess, MetaDataServerProvider.getInstance()));
 		
-		Object savepoint = null;
-		try {
-			dbAccess.execute(SchemaUtils.drop(constraints));
-			savepoint = TransactionAspectSupport.currentTransactionStatus().createSavepoint();
-			LOG.info("prepare content");
-			prepareContent(existingNucletIds, importContentMap, contentTypes, t, true, t.getTransferOptions(), 
-				new TransferNotifierHelper(jmsNotifier, "prepare existing content", 30, 35));
-			
-			LOG.info("get UID map");
-			uidExistingMap = getUIDMap(existingNucletIds, contentTypes, root.exportOptions); // read after prepareContent(...)
-			
-			LOG.info("delete content");
-			deleteContent(existingNucletIds, uidExistingMap, uidImportMap, importContentMap, contentTypes, t, true,
-				new TransferNotifierHelper(jmsNotifier, "prepare delete obsolete content", 35, 50));
-			LOG.info("localize content");
-			uidLocalizedMap = localizeContent(uidExistingMap, uidImportMap, importContentMap, contentTypes, t,
-				new TransferNotifierHelper(jmsNotifier, "prepare localize content", 50, 55));
-			LOG.info("localize new content for insert");
-			localizeNewContentForInsert(importContentMap, uidLocalizedMap, contentTypes, true,
-				new TransferNotifierHelper(jmsNotifier, "prepare localize new content for insert", 55, 60));
-			LOG.info("insert or update content");
-			insertOrUpdateContent(existingNucletIds, uidLocalizedMap, importContentMap, contentTypes, t,
-				new TransferNotifierHelper(jmsNotifier, "prepare insert or update content", 60, 80));
-		} catch (Exception ex) {
-			LOG.error(ex);
-			if (ex instanceof NuclosBusinessException)
-				throw (NuclosBusinessException)ex;
-			throw new NuclosFatalException(ex);
-		} finally {
-			if (savepoint != null) {
-				TransactionAspectSupport.currentTransactionStatus().rollbackToSavepoint(savepoint);
-			}
-			LOG.info("recreate constraints");
-			dbAccess.execute(SchemaUtils.create(constraints));
+		Set<NucletContentUID> nucletUIDs = new HashSet<NucletContentUID>();
+		for (EntityObjectVO nucletEO : importContentMap.getValues(NuclosEntity.NUCLET)) {
+			String nucletName = nucletEO.getField("name", String.class);
+			NucletContentUID nucletUID = uidImportMap.getUID(nucletEO);
+			LOG.info(String.format("file includes nuclet \"%s\" with UID \"%s\"", nucletName, nucletUID.uid) + (LangUtils.equals(root.nucletUID, nucletUID.uid)?" [root]":""));
+			nucletUIDs.add(nucletUID);
 		}
 
-		try {
-			LOG.info("preview changes");
-			final String notifyPreviewString = "creating preview of db changes";
-			jmsNotifier.notify(notifyPreviewString, 80);
-			previewParts.addAll(previewChanges(dataBaseHelper.getDbAccess(), existingNucletIds, contentTypes, importContentMap, importData, uidLocalizedMap, root.exportOptions,
-				new TransferNotifierHelper(jmsNotifier, notifyPreviewString, 80, 100)));
-		} catch (Exception ex) {
-			if (t.result.hasCriticals()) t.result.sbCritical.append("<br />");
-			t.result.sbCritical.append("Preview of Changes impossible: ");
-			t.result.sbCritical.append(ex.toString());
-			LOG.error("Nuclet import preview failed: " + ex, ex);
+		if (isNuclon && !root.exportOptions.containsKey(TransferOption.IS_NUCLON_IMPORT_ALLOWED))
+			throw new IllegalArgumentException("isNuclon");
+
+		jmsNotifier.notify("load existing nuclets and UIDs", 10);
+		LOG.info("get nuclet content instances");
+		List<INucletContent> contentTypes = getNucletContentInstances(root.exportOptions, Process.PREPARE);
+		Set<Long> existingNucletIds = isNuclon?new HashSet<Long>():getExistingNucletIds(root.nucletUID, nucletUIDs);
+		LOG.info("existing nuclet ids: " + existingNucletIds);
+		NucletContentUID.Map uidExistingMap = new NucletContentUID.HashMap();
+		LOG.info("get new user count");
+		int newUserCount = getNewUserCount(importData.get(NuclosEntity.USER.getEntityName()));
+		List<PreviewPart> previewParts = new ArrayList<PreviewPart>();
+		NucletContentUID.Map uidLocalizedMap = new NucletContentUID.HashMap();
+
+		Transfer t = new Transfer(isNuclon, bytes, newUserCount, parameter, root.exportOptions, previewParts);
+
+		DbAccess dbAccess = dataBaseHelper.getDbAccess();
+		
+		boolean checkOkay = checkNucletVersions(uidImportMap, importContentMap, contentTypes, t);
+		
+		if (checkOkay) {
+			LOG.info("get all constraints and drop");
+			final List<DbConstraint> constraints = getConstraints(getEntities(contentTypes), new EntityObjectMetaDbHelper(dbAccess, MetaDataServerProvider.getInstance()));
+			Object savepoint = null;
+			try {
+				dbAccess.execute(SchemaUtils.drop(constraints));
+				savepoint = TransactionAspectSupport.currentTransactionStatus().createSavepoint();
+				LOG.info("prepare content");
+				prepareContent(existingNucletIds, importContentMap, contentTypes, t, true, t.getTransferOptions(), 
+					new TransferNotifierHelper(jmsNotifier, "prepare existing content", 30, 35));
+				
+				LOG.info("get UID map");
+				uidExistingMap = getUIDMap(existingNucletIds, contentTypes, root.exportOptions); // read after prepareContent(...)
+				
+				LOG.info("delete content");
+				deleteContent(existingNucletIds, uidExistingMap, uidImportMap, importContentMap, contentTypes, t, true,
+					new TransferNotifierHelper(jmsNotifier, "prepare delete obsolete content", 35, 50));
+				LOG.info("localize content");
+				uidLocalizedMap = localizeContent(uidExistingMap, uidImportMap, importContentMap, contentTypes, t,
+					new TransferNotifierHelper(jmsNotifier, "prepare localize content", 50, 55));
+				LOG.info("localize new content for insert");
+				localizeNewContentForInsert(importContentMap, uidLocalizedMap, contentTypes, true,
+					new TransferNotifierHelper(jmsNotifier, "prepare localize new content for insert", 55, 60));
+				LOG.info("insert or update content");
+				insertOrUpdateContent(existingNucletIds, uidLocalizedMap, importContentMap, contentTypes, t,
+					new TransferNotifierHelper(jmsNotifier, "prepare insert or update content", 60, 80));
+			} catch (Exception ex) {
+				LOG.error(ex);
+				if (ex instanceof NuclosBusinessException)
+					throw (NuclosBusinessException)ex;
+				throw new NuclosFatalException(ex);
+			} finally {
+				if (savepoint != null) {
+					TransactionAspectSupport.currentTransactionStatus().rollbackToSavepoint(savepoint);
+				}
+				LOG.info("recreate constraints");
+				dbAccess.execute(SchemaUtils.create(constraints));
+			}
+
+			try {
+				LOG.info("preview changes");
+				final String notifyPreviewString = "creating preview of db changes";
+				jmsNotifier.notify(notifyPreviewString, 80);
+				previewParts.addAll(previewChanges(dataBaseHelper.getDbAccess(), existingNucletIds, contentTypes, importContentMap, importData, uidLocalizedMap, root.exportOptions,
+					new TransferNotifierHelper(jmsNotifier, notifyPreviewString, 80, 100)));
+			} catch (Exception ex) {
+				if (t.result.hasCriticals()) t.result.sbCritical.append("<br />");
+				t.result.sbCritical.append("Preview of Changes impossible: ");
+				t.result.sbCritical.append(ex.toString());
+				LOG.error("Nuclet import preview failed: " + ex, ex);
+			}
 		}
 
 		t.setImportData(importData);
@@ -598,6 +610,46 @@ public class TransferFacadeBean extends NuclosFacadeBean implements TransferFaca
 		
 		notifierHelper.notifyNextStep();
 		
+	}
+	
+	private boolean checkNucletVersions(
+			NucletContentUID.Map uidImportMap, 
+			NucletContentMap importContentMap, 
+			List<INucletContent> contentTypes, 
+			Transfer t) {
+		
+		boolean result = true;
+		
+		for (EntityObjectVO importEO : importContentMap.getValues(NuclosEntity.NUCLET)) {
+			String importName = importEO.getField("name", String.class);
+			NucletContentUID importUID = uidImportMap.getUID(importEO);
+			Long existingId = getNcObjectIdFromNucletContentUID(NuclosEntity.NUCLET, importUID.uid);
+			if (existingId != null) {
+				EntityObjectVO existingEO = NucletDalProvider.getInstance().getEntityObjectProcessor(NuclosEntity.NUCLET).getByPrimaryKey(existingId);
+				String existingName = importEO.getField("name", String.class);
+				
+				Integer importVersion = importEO.getField("nucletVersion", Integer.class);
+				Integer existingVersion = existingEO.getField("nucletVersion", Integer.class);
+				LOG.info(String.format("check nuclet version: [existing=%s, version=%s, id=%s] --> [importing=%s, version=%s, uid=%s]",
+						existingName, existingVersion, existingId, importName, importVersion, importUID.uid));
+				
+				if (existingVersion != null && importVersion == null) {
+					// do not update versioned with unversioned nuclet
+					result = false;
+					String s = String.format("Version conflict: Existing Nuclet \"%s\" v%s --> Importing Nuclet \"%s\" unversioned", existingName, existingVersion, importName);
+					LOG.warn(s);
+					t.result.addCritical(new StringBuffer(s));
+				} else if (existingVersion != null && importVersion != null && existingVersion > importVersion) {
+					// do not downgrade
+					result = false;
+					String s = String.format("Version conflict: Existing Nuclet \"%s\" v%s --> Importing Nuclet \"%s\" v%s", existingName, existingVersion, importName, importVersion);
+					LOG.warn(s);
+					t.result.addCritical(new StringBuffer(s));
+				}
+			}
+		}
+		
+		return result;
 	}
 
 	private StaticMetaDataProvider getMetaDataProvider(List<EntityObjectVO> entities, List<EntityObjectVO> fields) {
@@ -1832,14 +1884,55 @@ public class TransferFacadeBean extends NuclosFacadeBean implements TransferFaca
 		return false;
 	}
 
-	private Set<Long> getExistingNucletIds(String nucletUID) {
+	private Set<Long> getExistingNucletIds(String rootNucletUID, Set<NucletContentUID> nucletUIDs) {
+		Set<Long> existingByRoot = new HashSet<Long>();
+		Long nucletId = getNcObjectIdFromNucletContentUID(NuclosEntity.NUCLET, rootNucletUID);
+		if (nucletId != null) {
+			LOG.info("existing root nuclet id: " + nucletId);
+			existingByRoot.addAll(getExistingNucletIds(nucletId));
+		}
+		LOG.info("existing nuclet ids by root: " + existingByRoot);
+		
+		Set<Long> existingByUID = new HashSet<Long>();
+		for (NucletContentUID nucletUID : nucletUIDs) {
+			nucletId = getNcObjectIdFromNucletContentUID(NuclosEntity.NUCLET, nucletUID.uid);
+			if (nucletId != null) {
+				existingByUID.add(nucletId);
+			}
+		}
+		LOG.info("existing nuclet ids by uid: " + existingByUID);
+		
+		Set<Long> rootParents = getParentNucletIds(nucletId);
+		LOG.info("existing root parent nuclet ids: " + rootParents);
+		
+		Set<Long> doNotRemove = new HashSet<Long>();
+		for (Long id : existingByRoot) {
+			if (existingByUID.contains(id)) { 
+				LOG.info(String.format("existing by root nuclet id %s should not be removed, exist in \"by uid\" set", id));
+			} else {
+				// could be removed if not dependence by other nuclet...
+				LOG.info(String.format("existing by root nuclet id %s could be removed, if not used by other nuclet... check -->", id));
+				
+				Set<Long> parentNuclets = getParentNucletIds(id);
+				LOG.info("parent nuclet ids: " + parentNuclets);
+				parentNuclets.removeAll(existingByRoot);
+				parentNuclets.removeAll(existingByUID);
+				parentNuclets.removeAll(rootParents); // necessary for nuclets in dependence hierarchy, and removing unused depence nuclets.
+				
+				if (parentNuclets.isEmpty()) {
+					LOG.info("remove nuclet, parent nuclet ids is empty: " + parentNuclets);
+				} else {
+					// do not remove! -> hide it
+					LOG.info("do NOT remove nuclet, parent nuclet ids still contains elements: " + parentNuclets);
+					doNotRemove.add(id);
+				}
+			}
+		}
+		
 		Set<Long> result = new HashSet<Long>();
-		if (nucletUID == null)
-			return result;
-		Long nucletId = getNcObjectIdFromNucletContentUID(NuclosEntity.NUCLET, nucletUID);
-		if (nucletId == null)
-			return result;
-		result.addAll(getExistingNucletIds(nucletId));
+		result.addAll(existingByRoot);
+		result.addAll(existingByUID);
+		result.removeAll(doNotRemove);
 		return result;
 	}
 
@@ -1855,6 +1948,22 @@ public class TransferFacadeBean extends NuclosFacadeBean implements TransferFaca
 				result.addAll(getExistingNucletIds(dependenceNucletId));
 			}
 			result.add(nucletId);
+		}
+		return result;
+	}
+	
+	private Set<Long> getParentNucletIds(Long nucletId) {
+		Set<Long> result = new HashSet<Long>();
+		if (nucletId != null) {
+			for (Long parentNucletId : CollectionUtils.transformIntoSet(nucletDalProvider.getEntityObjectProcessor(NuclosEntity.NUCLETDEPENDENCE).getBySearchExpression(
+					new CollectableSearchExpression(SearchConditionUtils.newEOidComparison(
+							NuclosEntity.NUCLETDEPENDENCE.getEntityName(), "nucletDependence",
+							ComparisonOperator.EQUAL, nucletId,
+							MetaDataServerProvider.getInstance()))),
+						new TransferUtils.NucletParentTransformer())) {
+				result.addAll(getParentNucletIds(parentNucletId));
+				result.add(parentNucletId);
+			}
 		}
 		return result;
 	}

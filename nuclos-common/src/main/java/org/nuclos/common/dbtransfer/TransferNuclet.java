@@ -24,11 +24,13 @@ public class TransferNuclet implements Serializable {
 	
 	private Long id;
 	private String label;
+	private Integer version;
 	
-	public TransferNuclet(Long id, String label) {
+	public TransferNuclet(Long id, String label,Integer version) {
 		super();
 		this.id = id;
 		this.label = label;
+		this.version = version;
 	}	
 	
 	public Long getId() {
@@ -42,6 +44,15 @@ public class TransferNuclet implements Serializable {
 	}
 	public void setLabel(String label) {
 		this.label = label;
+	}
+
+
+	public Integer getVersion() {
+		return version;
+	}
+
+	public void setVersion(Integer version) {
+		this.version = version;
 	}
 
 	@Override

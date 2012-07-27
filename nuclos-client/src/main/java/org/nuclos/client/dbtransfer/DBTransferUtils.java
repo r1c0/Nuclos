@@ -136,7 +136,7 @@ public class DBTransferUtils {
 	protected TransferNuclet[] getAvaiableNuclets() {
 		List<TransferNuclet> result = transferFacadeRemote.getAvaiableNuclets();
 		result.add(0, new TransferNuclet(null, "<" + SpringLocaleDelegate.getInstance().getMessage(
-				"configuration.transfer.utils.fullinstance", "komplette Nuclos Instanz") + ">"));
+				"configuration.transfer.utils.fullinstance", "komplette Nuclos Instanz") + ">", null));
 		return result.toArray(new TransferNuclet[0]);
 	}
 

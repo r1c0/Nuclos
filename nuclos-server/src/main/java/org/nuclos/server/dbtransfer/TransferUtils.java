@@ -437,6 +437,13 @@ public class TransferUtils {
 		}
 	}
 	
+	public static class NucletParentTransformer implements Transformer<EntityObjectVO, Long> {
+		@Override
+		public Long transform(EntityObjectVO i) {
+			return i.getFieldId("nuclet");
+		}
+	}
+	
 	public static EntityObjectVO getUID(NuclosEntity entity, Long objectId) {
 		for (EntityObjectVO uidObject : NucletDalProvider.getInstance().getEntityObjectProcessor(NuclosEntity.NUCLETCONTENTUID).getBySearchExpression(
 				new CollectableSearchExpression(SearchConditionUtils.and(

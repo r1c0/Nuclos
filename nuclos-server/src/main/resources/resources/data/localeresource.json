@@ -66629,6 +66629,36 @@
     "text": "Base package for java classes."
   },
   {
+    "resourceID": "nuclos.entityfield.Nuclet.version.label",
+    "locale": "i-default",
+    "text": "Version"
+  },
+  {
+    "resourceID": "nuclos.entityfield.Nuclet.version.label",
+    "locale": "en",
+    "text": "Version"
+  },
+  {
+    "resourceID": "nuclos.entityfield.Nuclet.version.label",
+    "locale": "de",
+    "text": "Version"
+  },
+  {
+    "resourceID": "nuclos.entityfield.Nuclet.version.description",
+    "locale": "i-default",
+    "text": "Nuclet Version"
+  },
+  {
+    "resourceID": "nuclos.entityfield.Nuclet.version.description",
+    "locale": "en",
+    "text": "Nuclet Version"
+  },
+  {
+    "resourceID": "nuclos.entityfield.Nuclet.version.description",
+    "locale": "de",
+    "text": "Nuclet Version"
+  },
+  {
     "resourceID": "nuclet.validation.package.org.nuclos",
     "locale": "i-default",
     "text": "The package name must not begijn with \"org.nuclos\"."

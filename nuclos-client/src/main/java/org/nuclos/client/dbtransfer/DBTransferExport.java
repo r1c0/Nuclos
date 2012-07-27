@@ -217,7 +217,7 @@ public class DBTransferExport {
 		if (nucletId == null) {
 			comboNuclet.setSelectedIndex(0);
 		} else {
-			comboNuclet.setSelectedItem(new TransferNuclet(nucletId, null));
+			comboNuclet.setSelectedItem(new TransferNuclet(nucletId, null, null));
 		}
 		al.actionPerformed(new ActionEvent(comboNuclet, 0, "init"));
 		comboNuclet.addActionListener(al);
@@ -228,7 +228,7 @@ public class DBTransferExport {
 				final JFileChooser filechooser = utils.getFileChooser(localeDelegate.getMessage(
 						"configuration.transfer.file.nuclet", "Nuclet-Dateien"), ".nuclet");
 				TransferNuclet tn = (TransferNuclet) comboNuclet.getSelectedItem();
-				final String filename = tn.getId()==null ? "Nuclos.instance" : tn.getLabel();
+				final String filename = tn.getId()==null ? "Nuclos.instance" : (tn.getLabel() + (tn.getVersion()==null?"":String.format("-v%s", tn.getVersion())));
 				filechooser.setSelectedFile(new File(filename + ".nuclet"));
 				final int iBtn = filechooser.showSaveDialog(ifrm);
 
