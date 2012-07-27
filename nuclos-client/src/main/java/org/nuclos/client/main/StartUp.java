@@ -190,6 +190,14 @@ public class StartUp  {
 	public final void init() {
 		// setup client side logging:
 		setupClientLogging();
+		
+		final NuclosCriticalErrorHandler criticalErrorHandler = new NuclosCriticalErrorHandler(false);
+		if (Boolean.getBoolean("nuclos.client.webstart")) {
+			final JnlpVersionChecker jvc = new JnlpVersionChecker(criticalErrorHandler);
+			final Thread thread = new Thread(jvc, "JnlpVersionChecker");
+			thread.start();
+		}
+		
 		final ClassLoader cl = this.getClass().getClassLoader();
 
 		startupContext = new ClassPathXmlApplicationContext(
@@ -335,7 +343,7 @@ public class StartUp  {
 		Errors.getInstance().setAppName(ApplicationProperties.getInstance().getName());
 		// first, set the non-strict version of the critical error handler to avoid locking-out on initialization errors.
 		// on successful initialization, the strict version of the critical error handler will be set.
-		Errors.getInstance().setCriticalErrorHandler(new NuclosCriticalErrorHandler(false));
+		Errors.getInstance().setCriticalErrorHandler(criticalErrorHandler);
 
 		// from here, we can issue error messages using the Errors class.
 
