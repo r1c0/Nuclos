@@ -28,6 +28,8 @@ public class NuclosThemeSettings {
 	
 	public static final Color ICON_BLUE = new Color(97, 171, 215);
 	public static final Color ICON_BLUE_LIGHTER = new Color(130, 200, 255);
+	
+	public static final Color ALTERNATIVEFORDARKBG_TREE_SELECTION_BACKGROUND = new Color(186, 220, 251);
 
 	/**
 	 * Default for all panels:
