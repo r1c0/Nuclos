@@ -96,4 +96,11 @@ public class SpringApplicationContextHolder implements ApplicationContextAware {
 		return bean;
 	}
 	
+	/*
+	 * 
+	 */
+	public static boolean containsBean(Class<?> c) {
+		return !applicationContext.getBeansOfType(c).isEmpty();
+	}
+	
 }

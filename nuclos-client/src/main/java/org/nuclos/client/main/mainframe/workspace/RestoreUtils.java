@@ -49,6 +49,8 @@ import org.nuclos.client.ui.ResultListener;
 import org.nuclos.client.ui.ResultListenerX;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.common.Actions;
+import org.nuclos.common.SpringApplicationContextHolder;
+import org.nuclos.common.SpringApplicationSubContextsHolder;
 import org.nuclos.common.WorkspaceDescription;
 import org.nuclos.common.WorkspaceDescription.Frame;
 import org.nuclos.common.WorkspaceDescription.MutableContent;
@@ -60,6 +62,7 @@ import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Predicate;
 import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.PreferencesUtils;
+import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.server.common.ejb3.PreferencesFacadeRemote;
 
@@ -121,8 +124,19 @@ public class RestoreUtils {
 	private synchronized boolean restoreTab(WorkspaceDescription.Tab wdTab, MainFrameTab tab, boolean onDemand) {
 		try {
 			final ClassLoader cl = Thread.currentThread().getContextClassLoader();
-			final ITabRestoreController restoreController = (ITabRestoreController) cl.loadClass(
-					wdTab.getRestoreController()).getConstructor().newInstance();
+			Class<?> c = cl.loadClass(wdTab.getRestoreController());
+			
+			final ITabRestoreController restoreController;
+			if (c.isAnnotationPresent(org.springframework.stereotype.Component.class)) {
+				if (SpringApplicationContextHolder.containsBean(c)) {
+					restoreController = (ITabRestoreController) SpringApplicationContextHolder.getBean(c);
+				} else {
+					restoreController = (ITabRestoreController) SpringApplicationSubContextsHolder.getInstance().getBean(c);
+				}
+			} else {
+				restoreController = (ITabRestoreController) c.getConstructor().newInstance();
+			}
+			
 			if (onDemand) {
 				tab.setTabRestoreController(restoreController);
 				tab.setTabRestorePreferencesXML(wdTab.getPreferencesXML());

@@ -94,5 +94,34 @@ public class SpringApplicationSubContextsHolder {
 		}
 		return bean;
 	}
+	
+	public <T> T getBean(Class<T> c) {		
+		T bean = null;
+		try{
+			final List<AbstractXmlApplicationContext> subs;
+			synchronized (this) {
+				subs = (List<AbstractXmlApplicationContext>) subContexts.clone();
+			}
+			if (subs.isEmpty()) {
+				if (!clientContext.getBeansOfType(c).isEmpty()) {
+					bean = clientContext.getBean(c);
+				}
+			}
+			else {
+				for (AbstractXmlApplicationContext sub : subs) {
+					if (!sub.getBeansOfType(c).isEmpty()) {
+						bean = sub.getBean(c);
+						break;
+					}
+				}
+			}
+			if (bean == null) {
+				throw new NoSuchBeanDefinitionException(c.getName());
+			}
+		} catch (BeansException e) {
+			throw new NuclosFatalException(e);
+		} 
+		return bean;
+	}
 
 }
