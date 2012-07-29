@@ -408,6 +408,16 @@ public class MainFrameTab extends JPanel implements IOverlayComponent, NuclosDro
 			layered.add(layer, new Integer(1));
 		}
 	}
+	
+	/**
+	 * 
+	 */
+	public void removeLayeredComponent() {
+		if (layer != null) {
+			layered.remove(layer);
+			layer = null;
+		}
+	}
 
 	/**
 	 *
@@ -1204,6 +1214,17 @@ public class MainFrameTab extends JPanel implements IOverlayComponent, NuclosDro
 	
 	/**
 	 * 
+	 */
+	public void removeTabIcon() {
+		this.icon = null;
+		this.iconName = null;
+		this.iconResolver = null;
+		tabTitle.updateIcon(this.icon);
+		notifyTitleChanged();
+	}
+	
+	/**
+	 * 
 	 * @param resolver
 	 * @param icon
 	 */
@@ -1218,6 +1239,8 @@ public class MainFrameTab extends JPanel implements IOverlayComponent, NuclosDro
 					tabTitle.updateIcon(this.icon);
 					notifyTitleChanged();
 				}
+			} else {
+				removeTabIcon();
 			}
 		} catch (Exception ex) {
 			LOG.warn(String.format("Icon could not be set (Resolver=%s, Icon=%s)", resolver, icon), ex);
@@ -1364,7 +1387,7 @@ public class MainFrameTab extends JPanel implements IOverlayComponent, NuclosDro
 	 * @return
 	 */
 	public Component getContent() {
-		if (layer != null) {
+		if (layer != null && layer.getComponentCount() > 0) {
 			return layer.getComponent(1);
 		}
 		return null;
