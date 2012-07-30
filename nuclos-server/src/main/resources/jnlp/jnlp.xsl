@@ -14,7 +14,7 @@
 
 	<xsl:template match="/">
 		<!-- JNLP File for webstart client -->
-		<jnlp spec="6.0+" codebase="{$codebase}">
+		<jnlp spec="1.0+" codebase="{$codebase}">
 			<information>
 				<title>Nuclos</title>
 				<vendor>Novabit Informationssysteme GmbH</vendor>
@@ -22,12 +22,10 @@
 				<description>Nuclos Webstart Client</description>
 				<icon href="customer-icon.gif" />
 				<icon href="splash-screen.gif" kind="splash" />
-				<offline-allowed/>
 			</information>
 			<security>
 				<all-permissions />
 			</security>
-			<update check="background" policy="prompt-run"/>
 			<resources>
 				<!--
 					-XX:+HeapDumpOnOutOfMemoryError
@@ -37,7 +35,7 @@
 					See also:
 					http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6664424
 				-->
-				<java version="1.6+" initial-heap-size="256m" max-heap-size="512m" java-vm-args="-XX:+HeapDumpOnOutOfMemoryError -XX:+UseThreadPriorities -verbose:gc -ea"/>
+				<j2se version="1.6+" initial-heap-size="256m" max-heap-size="512m" java-vm-args="-XX:+HeapDumpOnOutOfMemoryError -verbose:gc -ea"/>
 				<jar href="nuclos-client-{$nuclos.version}.jar" main="true" />
 				<xsl:for-each select="jnlp/jars/jar">
 					<jar href="{text()}" download="{@download}" />
