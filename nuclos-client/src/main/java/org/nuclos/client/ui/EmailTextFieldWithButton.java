@@ -78,6 +78,8 @@ public class EmailTextFieldWithButton extends HyperlinkTextFieldWithButton {
 		try {	
 			String url = "mailto:" + getText();
 			Desktop.getDesktop().mail(URI.create(url));	
+		} catch (IllegalArgumentException e) {
+			// ignore.
 		} catch (IOException e) {
 			log.info(e.getMessage());
 		}

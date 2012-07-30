@@ -137,6 +137,8 @@ public class HyperlinkTextFieldWithButton extends TextFieldWithButton {
 				}
 				Desktop.getDesktop().browse(URI.create(url));
 			}
+		} catch (IllegalArgumentException e) {
+			// ignore.
 		} catch (IOException e) {
 			log.info(e.getMessage());
 		}
