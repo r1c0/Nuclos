@@ -849,6 +849,10 @@ public class SearchConditionSubFormController extends SubFormController {
 					}
 				}
 
+				//@see NUCLOSINT-1357
+				if (model.getRowCount() == 1 && model.getCollectableSearchCondition() == null) {
+					model.remove(0);
+				}
 				// 2. iterate through the selected objects and add a row for each that is not contained in the table model already:
 				for (Object oSelected : lstNewSelectedObjects) {
 					if (!isContainedInTableModel(oSelected, model, colIndex)) {
