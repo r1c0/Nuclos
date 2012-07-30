@@ -332,6 +332,7 @@ public class MasterDataCollectController extends EntityCollectController<Collect
 				// current state, subsequent states and custom actions:
 
 				switch (iDetailsMode) {
+				case CollectState.DETAILSMODE_VIEW:
 				case CollectState.DETAILSMODE_EDIT:
 					getLayoutMLButtonsActionListener().fireComponentEnabledStateUpdate();
 					break;
