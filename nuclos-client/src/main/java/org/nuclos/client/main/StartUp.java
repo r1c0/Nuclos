@@ -36,6 +36,7 @@ import java.util.Collections;
 import java.util.Locale;
 import java.util.Properties;
 import java.util.TimeZone;
+import java.util.Timer;
 
 import javax.jnlp.ServiceManager;
 import javax.jnlp.UnavailableServiceException;
@@ -193,9 +194,11 @@ public class StartUp  {
 		
 		final NuclosCriticalErrorHandler criticalErrorHandler = new NuclosCriticalErrorHandler(false);
 		if (Boolean.getBoolean("nuclos.client.webstart")) {
-			final JnlpVersionChecker jvc = new JnlpVersionChecker(criticalErrorHandler);
+			/*
 			final Thread thread = new Thread(jvc, "JnlpVersionChecker");
 			thread.start();
+			 */
+			final JnlpVersionChecker jvc = new JnlpVersionChecker();
 		}
 		
 		final ClassLoader cl = this.getClass().getClassLoader();
