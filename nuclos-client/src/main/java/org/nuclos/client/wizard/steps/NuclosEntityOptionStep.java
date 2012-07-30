@@ -464,10 +464,11 @@ public class NuclosEntityOptionStep extends NuclosEntityAbstractStep {
 								String sForeignEntity = field.getForeignEntity();
 								String sLookupEntity = field.getLookupEntity();
 								if(sForeignEntity != null) {
-									attr.setMetaVO(MetaDataClientProvider.getInstance().getEntity(sForeignEntity));
+									EntityMetaDataVO voForeignEntity = MetaDataClientProvider.getInstance().getEntity(sForeignEntity);
+									attr.setMetaVO(voForeignEntity);
 									attr.setOnDeleteCascade(field.isOnDeleteCascade());
 									attr.setField(field.getForeignEntityField());
-									attr.setDatatyp(DataTyp.getReferenzTyp());
+					        		attr.setDatatyp(DataTyp.getReferenzTyp());
 									if(!Modules.getInstance().isModuleEntity(sForeignEntity) && field.getForeignEntityField() != null) {
 										String sForeignField = field.getForeignEntityField();
 										if(sForeignField.indexOf("${") >= 0) {
@@ -475,7 +476,7 @@ public class NuclosEntityOptionStep extends NuclosEntityAbstractStep {
 										}
 										else {
 											EntityFieldMetaDataVO voField = MetaDataClientProvider.getInstance().getEntityField(sForeignEntity, field.getForeignEntityField());
-
+											
 											attr.getDatatyp().setJavaType(voField.getDataType());
 											if(voField.getPrecision() != null)
 												attr.getDatatyp().setPrecision(voField.getPrecision());
@@ -484,6 +485,11 @@ public class NuclosEntityOptionStep extends NuclosEntityAbstractStep {
 											if(voField.getFormatOutput() != null)
 												attr.getDatatyp().setOutputFormat(voField.getFormatOutput());
 										}
+									}
+									if(voForeignEntity.isFieldValueEntity()) {
+						        		attr.setDatatyp(DataTyp.getDefaultStringTyp());
+						        		attr.setValueListNew(false);
+						        		NuclosEntityNameStep.loadValueList(attr);
 									}
 								} else if(sLookupEntity != null) {
 									attr.setLookupMetaVO(MetaDataClientProvider.getInstance().getEntity(sLookupEntity));

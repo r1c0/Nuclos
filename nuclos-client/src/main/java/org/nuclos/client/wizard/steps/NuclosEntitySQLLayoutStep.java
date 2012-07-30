@@ -74,7 +74,6 @@ import org.nuclos.client.masterdata.MasterDataDelegate;
 import org.nuclos.client.masterdata.MetaDataDelegate;
 import org.nuclos.client.scripting.ScriptEditor;
 import org.nuclos.client.statemodel.RoleRepository;
-import org.nuclos.client.statemodel.StateDelegate;
 import org.nuclos.client.ui.Bubble;
 import org.nuclos.client.ui.Bubble.Position;
 import org.nuclos.client.ui.Errors;
@@ -103,7 +102,6 @@ import org.nuclos.common.dal.vo.EntityObjectVO;
 import org.nuclos.common.masterdata.CollectableMasterDataEntity;
 import org.nuclos.common.transport.vo.EntityFieldMetaDataTO;
 import org.nuclos.common.transport.vo.EntityMetaDataTO;
-import org.nuclos.common2.IdUtils;
 import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.common2.exception.CommonFatalException;
@@ -117,7 +115,6 @@ import org.nuclos.server.masterdata.ejb3.MasterDataFacadeRemote;
 import org.nuclos.server.masterdata.valueobject.DependantMasterDataMap;
 import org.nuclos.server.masterdata.valueobject.MasterDataMetaVO;
 import org.nuclos.server.masterdata.valueobject.MasterDataVO;
-import org.nuclos.server.statemodel.valueobject.StateGraphVO;
 import org.pietschy.wizard.InvalidStateException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
@@ -796,6 +793,8 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 				throw new CommonFatalException(sResult);
 			}
 			this.model.setResultText(sResult);
+			
+			removeValueListIfNotNeeded();
 		}
 		catch(CommonBusinessException bex) {
 			 Errors.getInstance().showExceptionDialog(this, bex);
@@ -1474,10 +1473,25 @@ public class NuclosEntitySQLLayoutStep extends NuclosEntityAbstractStep {
 		return (MasterDataDelegate.getInstance().getLayoutId(model.getEntityName(), false) != null) ? true : false;
 	}
 
+	private void removeValueListIfNotNeeded() {
+		// check to remove first.
+		for(Attribute attr : getModel().getAttributeModel().getRemoveAttributes()) {
+			if(!attr.isValueList() || attr.isValueListNew())
+				continue;
+			
+			try {
+				EntityMetaDataVO voForeignEntity = MetaDataClientProvider.getInstance().getEntity(attr.getMetaVO().getEntity());
+				MetaDataDelegate.getInstance().removeEntity(voForeignEntity, false);
+			} catch (Exception e) {
+				// ignore. @todo catch a better exception than pure exception. 
+				// (in case the entity is currently used a DBException is thrown.)
+				// or we have to iterate through the entityfields if valuelist is used elsewhere.
+				LOG.warn("can not remove entity " + attr.getMetaVO().getEntity() + ". maybe it is used elsewhere. " + e.getMessage());
+			}
+		}
+	}
 	private void buildValueListIfNeeded() {
-
 		List<EntityFieldMetaDataTO> lstFields = new ArrayList<EntityFieldMetaDataTO>();
-
 		for(Attribute attr : getModel().getAttributeModel().getAttributes()) {
 
 			if(!attr.isValueList())

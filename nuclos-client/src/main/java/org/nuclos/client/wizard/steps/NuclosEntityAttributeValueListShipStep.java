@@ -207,6 +207,15 @@ public class NuclosEntityAttributeValueListShipStep extends NuclosEntityAttribut
 		}
 		else {
 			model.getAttribute().setValueListNew(true);
+			String sValueListName = model.getAttribute().getValueListName();
+			if (sValueListName != null) {
+				for(EntityMetaDataVO voEntity : MetaDataClientProvider.getInstance().getAllEntities()) {
+                	if(sValueListName.equals(voEntity.getEntity()) || ("V_EO_"+sValueListName).equalsIgnoreCase(voEntity.getDbEntity())) {
+            			model.getAttribute().setValueListNew(false);
+                		break;
+                	}		           
+                }
+			}
 		}
 		
 		tfName.setText(model.getAttribute().getValueListName());

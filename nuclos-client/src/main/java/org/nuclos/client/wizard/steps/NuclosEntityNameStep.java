@@ -359,7 +359,7 @@ public class NuclosEntityNameStep extends NuclosEntityAbstractStep {
 
 	}
 
-	private static void loadValueList(Attribute attr) {
+	static void loadValueList(Attribute attr) {
 		if(attr.getMetaVO() == null)
 			return;
 
