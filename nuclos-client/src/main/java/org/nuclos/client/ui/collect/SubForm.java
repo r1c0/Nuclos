@@ -103,6 +103,7 @@ import org.nuclos.client.ui.SizeKnownListener;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.client.ui.URIMouseAdapter;
 import org.nuclos.client.ui.collect.FixedColumnRowHeader.HeaderTable;
+import org.nuclos.client.ui.collect.SubForm.SubFormTableModel;
 import org.nuclos.client.ui.collect.component.CollectableCheckBox;
 import org.nuclos.client.ui.collect.component.CollectableComponent;
 import org.nuclos.client.ui.collect.component.CollectableComponentFactory;
@@ -1731,17 +1732,20 @@ public class SubForm extends JPanel
 			((CollectableCheckBox) clctcomp).getJCheckBox().addItemListener(new ItemListener() {
 				@Override
 				public void itemStateChanged(ItemEvent e) {
-					try {
-						if (getSubformTable().getModel() instanceof SubFormTableModel) {
-							int row  = getSubformTable().getSelectedRow();
-							int column = ((SubFormTableModel)getSubformTable().getModel()).findColumnByFieldName(clctcomp.getFieldName());
-							if (row != -1 && column != -1)
-								getSubformTable().setValueAt(clctcomp.getField(), row, column);
+					SwingUtilities.invokeLater(new Runnable() { //@see NUCLOSINT-1635
+						public void run() {
+							try {
+								if (getSubformTable().getModel() instanceof SubFormTableModel) {
+									int row  = getSubformTable().getSelectedRow();
+									int column = ((SubFormTableModel)getSubformTable().getModel()).findColumnByFieldName(clctcomp.getFieldName());
+									if (row != -1 && column != -1)
+										getSubformTable().setValueAt(clctcomp.getField(), row, column);
+								}
+							} catch (CollectableFieldFormatException e1) {
+								LOG.warn("could not set value for " + clctcomp.getFieldName(), e1);
+							}
 						}
-						
-					} catch (CollectableFieldFormatException e1) {
-						LOG.warn("could not set value for " + clctcomp.getFieldName(), e1);
-					}		
+					});
 				}
 			});
 		}
