@@ -100,6 +100,9 @@
 	<!-- Avoid scanning for the base component in nuclos-client -->
 	<bean id="applicationProperties" class="org.nuclos.common.ApplicationProperties">
 	</bean>
+	<bean id="securityDelegate" class="org.nuclos.client.common.security.SecurityDelegate">
+		<property name="securityFacadeRemote" ref="securityService"/>
+	</bean>
 	<bean id="localUserCaches" class="org.nuclos.client.LocalUserCaches">
 		<property name="localUserCachesService" ref="localUserCachesService"/>
 	</bean>
@@ -214,9 +217,6 @@
 	<bean id="resourceDelegate" class="org.nuclos.client.resource.ResourceDelegate">
 		<property name="resourceCache" ref="resourceCache"/>
 		<property name="resourceFacadeRemote" ref="resourceService"/>
-	</bean>
-	<bean id="securityDelegate" class="org.nuclos.client.common.security.SecurityDelegate">
-		<property name="securityFacadeRemote" ref="securityService"/>
 	</bean>
 	<bean id="nuclosRemoteServerSession" class="org.nuclos.client.security.NuclosRemoteServerSession">
 		<property name="securityFacadeRemote" ref="securityService"/>

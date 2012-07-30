@@ -47,6 +47,7 @@ import org.nuclos.client.attribute.AttributeCache;
 import org.nuclos.client.common.ClientParameterProvider;
 import org.nuclos.client.common.LocaleDelegate;
 import org.nuclos.client.common.MetaDataClientProvider;
+import org.nuclos.client.common.security.SecurityDelegate;
 import org.nuclos.client.customcomp.CustomComponentCache;
 import org.nuclos.client.genericobject.GenericObjectLayoutCache;
 import org.nuclos.client.genericobject.GenericObjectMetaDataCache;
@@ -72,8 +73,9 @@ import org.nuclos.server.common.ejb3.LocalUserCachesFacadeRemote;
  */
 public class LocalUserCaches extends java.util.Properties {
 	private static final Logger LOG = Logger.getLogger(LocalUserCaches.class);
-	
-	private static final boolean bUseEncryption = false;
+
+	private static final boolean bUseHashing = false;
+	private static final boolean bUseEncryption = true;
 	private static final String LOCALUSERCACHES_HASH = "localusercaches.hash";
 	private static final String LOCALUSERCACHES_APP_VERSION = "localusercaches.app.version";
 
@@ -113,13 +115,13 @@ public class LocalUserCaches extends java.util.Properties {
     	try {
 	        InputStream in = null;
 	        try {
-	        	if (!LangUtils.equals(LocalUserProperties.getInstance().get(LOCALUSERCACHES_HASH), getHash())) {
+	        	if (bUseHashing && !LangUtils.equals(LocalUserProperties.getInstance().get(LOCALUSERCACHES_HASH), getHash())) {
 	        		LOG.info("hash missmatch. skipping.");
 	        	} else {
 		        	if (bUseEncryption)
 			        	in = new BufferedInputStream(new CipherInputStream(
 			        			new FileInputStream(this.getCachesFile()), createCipher(
-			        					Cipher.DECRYPT_MODE, System.getProperty("user.home"))));
+			        					Cipher.DECRYPT_MODE, SecurityDelegate.getInstance().getCurrentApplicationInfoOnServer())));
 		        	else
 			        	in = new BufferedInputStream(new FileInputStream(this.getCachesFile()));
 		            load(in);
@@ -217,7 +219,7 @@ public class LocalUserCaches extends java.util.Properties {
         	if (bUseEncryption)
         		out = new BufferedOutputStream(
             		new CipherOutputStream(new FileOutputStream(this.getCachesFile()),
-            				createCipher(Cipher.ENCRYPT_MODE, System.getProperty("user.home"))));
+            				createCipher(Cipher.ENCRYPT_MODE, SecurityDelegate.getInstance().getCurrentApplicationInfoOnServer())));
         	else
         		out = new BufferedOutputStream(new FileOutputStream(this.getCachesFile()));
             	
@@ -242,14 +244,16 @@ public class LocalUserCaches extends java.util.Properties {
             	out.close();
             }
             
-            // get sha hash.
-            try {
-            	LocalUserProperties.getInstance().put(LOCALUSERCACHES_HASH, getHash());
-            	LocalUserProperties.getInstance().store();
-			} catch (Exception e) {
-				// do nothing just log.
-				LOG.warn("Hash für Lokale Caches konnten nicht gespeichert werden. " + e.getMessage());
-			}
+        	if (bUseHashing) {
+	            // get sha hash.
+	            try {
+	            	LocalUserProperties.getInstance().put(LOCALUSERCACHES_HASH, getHash());
+	            	LocalUserProperties.getInstance().store();
+				} catch (Exception e) {
+					// do nothing just log.
+					LOG.warn("Hash für Lokale Caches konnten nicht gespeichert werden. " + e.getMessage());
+				}
+        	}
         }
         catch (Exception ex) {
             final String sMessage = "Lokale Caches konnten nicht gespeichert werden.";

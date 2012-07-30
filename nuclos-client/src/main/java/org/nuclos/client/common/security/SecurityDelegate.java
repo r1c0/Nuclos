@@ -77,6 +77,15 @@ public class SecurityDelegate {
 		}
 	}
 
+	public String getCurrentApplicationInfoOnServer() {
+		try {
+			return this.getSecurityFacade().getCurrentApplicationInfoOnServer();
+		}
+		catch (RuntimeException ex) {
+			throw new CommonFatalException(ex);
+		}
+	}
+
 	/**
 	 * @return the allowed actions for the current user
 	 */

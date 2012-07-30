@@ -16,6 +16,7 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.server.common.ejb3;
 
+import java.security.MessageDigest;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -28,6 +29,7 @@ import javax.security.auth.login.LoginException;
 
 import org.apache.log4j.Logger;
 import org.nuclos.common.ApplicationProperties;
+import org.nuclos.common.NuclosFatalException;
 import org.nuclos.common.ParameterProvider;
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.dal.vo.SystemFields;
@@ -52,6 +54,7 @@ import org.nuclos.server.dblayer.query.DbQuery;
 import org.nuclos.server.dblayer.query.DbQueryBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.codec.Hex;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -120,6 +123,16 @@ public class SecurityFacadeBean implements SecurityFacadeRemote {
 		return ApplicationProperties.getInstance().getNuclosVersion();
 	}
 
+    public String getCurrentApplicationInfoOnServer() {
+    	try {
+        	//@todo mixup ip of current server. - not only database.
+        	String info = SpringDataBaseHelper.getInstance().getCurrentConnectionInfo();
+        	return new String(Hex.encode(MessageDigest.getInstance("MD5").digest(info.getBytes())));
+		} catch (Exception e) {
+			throw new NuclosFatalException(e);
+		}
+    }
+    
 	/**
 	 * @return information about the current version of the application installed on the server.
 	 */

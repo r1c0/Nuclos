@@ -130,4 +130,7 @@ public interface SecurityFacadeRemote {
 	Boolean isLdapAuthenticationActive();
 
 	Boolean isLdapSynchronizationActive();
+	
+    String getCurrentApplicationInfoOnServer();
+
 }

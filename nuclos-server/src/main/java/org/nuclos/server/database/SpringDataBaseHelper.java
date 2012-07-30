@@ -240,6 +240,22 @@ public class SpringDataBaseHelper {
 		}
 	}
 
+	/**
+	 * @return a connection from the given datasource. Must be closed by the caller in a finally block.
+	 * @precondition datasource != null
+	 */
+	public String getCurrentConnectionInfo() {
+		if (dataSource == null) {
+			throw new NullArgumentException("datasource");
+		}
+		try {
+			return dataSource.getConnection().toString() + " @schema=" + getDbAccess().getSchemaName();
+		}
+		catch (SQLException ex) {
+			throw new CommonFatalException("Connection to datasource could not be initialized.", ex);
+		}
+	}
+
 	public Integer getNextIdAsInteger(String sSequenceName) {
 		try {
 			return getDbAccess().getDbExecutor().getNextId(sSequenceName).intValue();
