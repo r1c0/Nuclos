@@ -78,6 +78,7 @@ import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonValidationException;
 import org.nuclos.server.common.DatasourceCache;
+import org.nuclos.server.common.LocalCachesUtil;
 import org.nuclos.server.common.LockedTabProgressNotifier;
 import org.nuclos.server.common.MetaDataServerProvider;
 import org.nuclos.server.common.RuleCache;
@@ -1176,7 +1177,14 @@ public class TransferFacadeBean extends NuclosFacadeBean implements TransferFaca
 			throw new NuclosFatalException(ex);
 		} finally {
 			LOG.info("recreate constraints");
-			dbAccess.execute(SchemaUtils.create(constraints));
+			//@see  	NUCLOSINT-1625.
+			for (DbStructureChange dbStructureChange : SchemaUtils.create(constraints)) {
+				try {
+					dbAccess.execute(dbStructureChange);
+				} catch (Exception e) {
+					LOG.error("error recreating constraint." + e.getMessage());
+				}
+			}
 		}
 	}
 
@@ -1194,6 +1202,7 @@ public class TransferFacadeBean extends NuclosFacadeBean implements TransferFaca
 		StateModelUsagesCache.getInstance().revalidate();
 
 		LOG.info("JMS send: notify clients that custom components changed:" + this);
+		LocalCachesUtil.getInstance().updateLocalCacheRevalidation(JMSConstants.TOPICNAME_CUSTOMCOMPONENTCACHE);
 		NuclosJMSUtils.sendOnceAfterCommitDelayed(null, JMSConstants.TOPICNAME_CUSTOMCOMPONENTCACHE);
 	}
 
