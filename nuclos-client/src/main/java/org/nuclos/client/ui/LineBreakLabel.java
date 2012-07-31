@@ -29,7 +29,6 @@ import java.text.AttributedString;
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 
-import org.nuclos.client.synthetica.NuclosThemeSettings;
 import org.nuclos.common2.StringUtils;
 
 public class LineBreakLabel extends JLabel {

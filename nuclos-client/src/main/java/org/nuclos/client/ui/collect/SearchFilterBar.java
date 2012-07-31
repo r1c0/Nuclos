@@ -17,12 +17,10 @@
 package org.nuclos.client.ui.collect;
 
 import info.clearthought.layout.TableLayout;
-import info.clearthought.layout.TableLayoutConstraints;
 
 import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.GradientPaint;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -42,8 +40,6 @@ import java.util.List;
 
 import javax.annotation.PostConstruct;
 import javax.swing.BorderFactory;
-import javax.swing.Box;
-import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JLabel;

@@ -18,7 +18,6 @@
 package org.nuclos.client.ui;
 
 import org.nuclos.client.main.mainframe.MainFrameTab;
-import org.nuclos.common2.exception.CommonBusinessException;
 
 public abstract class MainFrameTabAdapter implements MainFrameTabListener {
 	

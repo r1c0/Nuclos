@@ -44,7 +44,6 @@ import javax.swing.border.LineBorder;
 import org.apache.log4j.Logger;
 import org.nuclos.client.common.MetaDataClientProvider;
 import org.nuclos.client.main.Main;
-import org.nuclos.client.ui.Errors;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Pair;
@@ -52,7 +51,6 @@ import org.nuclos.common.collection.Transformer;
 import org.nuclos.common.dal.vo.EntityFieldMetaDataVO;
 import org.nuclos.common.dal.vo.EntityObjectVO;
 import org.nuclos.common2.SpringLocaleDelegate;
-import org.nuclos.common2.exception.CommonBusinessException;
 
 /**
  * This dialog gets shown, when a live search result can be displayed in more

@@ -24,7 +24,6 @@ import javax.swing.ImageIcon;
 
 import org.apache.log4j.Logger;
 import org.nuclos.client.LocalUserCaches.AbstractLocalUserCache;
-import org.nuclos.client.attribute.AttributeCache;
 import org.nuclos.client.jms.TopicNotificationReceiver;
 import org.nuclos.common.JMSConstants;
 import org.nuclos.common.SpringApplicationContextHolder;

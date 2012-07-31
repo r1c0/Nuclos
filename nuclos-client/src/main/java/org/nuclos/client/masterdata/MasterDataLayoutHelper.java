@@ -23,22 +23,17 @@ import java.io.StringReader;
 import java.util.EnumSet;
 import java.util.Set;
 
-import javax.swing.JSplitPane;
-
 import org.nuclos.client.masterdata.valuelistprovider.MasterDataCollectableFieldsProviderFactory;
-import org.nuclos.client.ui.Errors;
-import org.nuclos.client.ui.UIUtils;
-import org.nuclos.client.ui.collect.component.CollectableComponent;
 import org.nuclos.client.ui.collect.component.CollectableComponentFactory;
 import org.nuclos.client.ui.layoutml.LayoutMLParser;
 import org.nuclos.client.ui.layoutml.LayoutRoot;
 import org.nuclos.client.valuelistprovider.cache.CollectableFieldsProviderCache;
-import org.nuclos.common.masterdata.CollectableMasterDataEntity;
-import org.nuclos.common2.SpringLocaleDelegate;
-import org.nuclos.common2.layoutml.exception.LayoutMLException;
 import org.nuclos.common.NuclosBusinessException;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.NuclosFatalException;
+import org.nuclos.common.masterdata.CollectableMasterDataEntity;
+import org.nuclos.common2.SpringLocaleDelegate;
+import org.nuclos.common2.layoutml.exception.LayoutMLException;
 import org.xml.sax.InputSource;
 
 /**

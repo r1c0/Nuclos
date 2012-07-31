@@ -158,7 +158,6 @@ import org.nuclos.common.ApplicationProperties;
 import org.nuclos.common.CommandInformationMessage;
 import org.nuclos.common.CommandMessage;
 import org.nuclos.common.JMSConstants;
-import org.nuclos.common.NuclosCancelException;
 import org.nuclos.common.NuclosEntity;
 import org.nuclos.common.Priority;
 import org.nuclos.common.RuleNotification;

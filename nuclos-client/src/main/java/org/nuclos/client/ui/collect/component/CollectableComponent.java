@@ -16,7 +16,6 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.ui.collect.component;
 
-import java.awt.Component;
 import java.util.Map;
 import java.util.prefs.Preferences;
 

@@ -32,7 +32,6 @@ import org.nuclos.common2.StringUtils;
 import org.nuclos.common2.exception.CommonValidationException;
 import org.nuclos.server.masterdata.valueobject.MasterDataMetaVO;
 import org.nuclos.server.report.ejb3.DatasourceFacadeRemote;
-import org.nuclos.server.report.valueobject.ResultColumnVO;
 
 public class DatasourceUtils {
 	

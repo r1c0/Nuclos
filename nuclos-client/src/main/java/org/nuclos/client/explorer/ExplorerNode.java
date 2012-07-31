@@ -66,7 +66,6 @@ import org.nuclos.client.ui.tree.TreeNodeAction;
 import org.nuclos.common.UsageCriteria;
 import org.nuclos.common.collect.collectable.Collectable;
 import org.nuclos.common.collection.CollectionUtils;
-import org.nuclos.common.collection.Predicate;
 import org.nuclos.common.collection.multimap.MultiListHashMap;
 import org.nuclos.common.collection.multimap.MultiListMap;
 import org.nuclos.common2.CommonRunnable;

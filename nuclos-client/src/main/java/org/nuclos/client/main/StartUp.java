@@ -36,7 +36,6 @@ import java.util.Collections;
 import java.util.Locale;
 import java.util.Properties;
 import java.util.TimeZone;
-import java.util.Timer;
 
 import javax.jnlp.ServiceManager;
 import javax.jnlp.UnavailableServiceException;

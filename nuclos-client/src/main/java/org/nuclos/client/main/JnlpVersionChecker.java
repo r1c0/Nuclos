@@ -32,7 +32,6 @@
 // along with Nuclos. If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.main;
 
-import java.awt.event.WindowEvent;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -41,17 +40,16 @@ import java.text.DateFormat;
 import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.logging.Level;
+
 import javax.jnlp.DownloadService;
 import javax.jnlp.DownloadService2;
 import javax.jnlp.DownloadServiceListener;
 import javax.jnlp.ServiceManager;
 import javax.jnlp.UnavailableServiceException;
 import javax.swing.JOptionPane;
+
 import org.apache.log4j.Logger;
 import org.apache.log4j.Priority;
-import org.jdesktop.swingx.JXErrorPane;
-import org.jdesktop.swingx.error.ErrorInfo;
 
 /**
  * @author Thomas Pasch

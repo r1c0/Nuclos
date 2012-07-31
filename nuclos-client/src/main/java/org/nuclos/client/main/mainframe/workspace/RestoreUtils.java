@@ -62,7 +62,6 @@ import org.nuclos.common.collection.CollectionUtils;
 import org.nuclos.common.collection.Predicate;
 import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.PreferencesUtils;
-import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.nuclos.server.common.ejb3.PreferencesFacadeRemote;
 

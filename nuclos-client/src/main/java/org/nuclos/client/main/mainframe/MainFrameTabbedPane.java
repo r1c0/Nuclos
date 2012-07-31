@@ -90,7 +90,6 @@ import org.nuclos.client.ui.PopupButton;
 import org.nuclos.client.ui.ResultListener;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.common.WorkspaceDescription.Desktop;
-import org.nuclos.common.collection.Pair;
 import org.nuclos.common2.SpringLocaleDelegate;
 import org.nuclos.common2.exception.CommonBusinessException;
 import org.springframework.beans.factory.annotation.Autowired;

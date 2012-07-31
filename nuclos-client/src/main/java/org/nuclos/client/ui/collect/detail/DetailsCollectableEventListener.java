@@ -22,11 +22,10 @@ import javax.swing.SwingUtilities;
 
 import org.apache.log4j.Logger;
 import org.nuclos.client.ui.collect.CollectController;
-import org.nuclos.client.ui.collect.CollectState;
-import org.nuclos.client.ui.collect.CollectStateAdapter;
-import org.nuclos.client.ui.collect.CollectStateEvent;
 import org.nuclos.client.ui.collect.CollectController.CollectableEventListener;
 import org.nuclos.client.ui.collect.CollectController.MessageType;
+import org.nuclos.client.ui.collect.CollectStateAdapter;
+import org.nuclos.client.ui.collect.CollectStateEvent;
 import org.nuclos.common.collect.collectable.Collectable;
 import org.nuclos.common2.LangUtils;
 import org.nuclos.common2.exception.CommonBusinessException;

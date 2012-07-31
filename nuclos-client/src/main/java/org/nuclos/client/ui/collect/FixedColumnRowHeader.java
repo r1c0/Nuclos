@@ -65,7 +65,6 @@ import org.apache.log4j.Logger;
 import org.nuclos.client.common.WorkspaceUtils;
 import org.nuclos.client.common.security.SecurityCache;
 import org.nuclos.client.main.mainframe.MainFrame;
-import org.nuclos.client.synthetica.NuclosThemeSettings;
 import org.nuclos.client.ui.Icons;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.client.ui.collect.SubForm.Column;

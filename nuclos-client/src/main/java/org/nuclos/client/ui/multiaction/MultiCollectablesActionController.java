@@ -16,7 +16,6 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.ui.multiaction;
 
-import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.BufferedWriter;
@@ -24,7 +23,6 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -43,11 +41,7 @@ import org.nuclos.client.common.MetaDataClientProvider;
 import org.nuclos.client.main.Main;
 import org.nuclos.client.main.mainframe.MainFrameTab;
 import org.nuclos.client.ui.Errors;
-import org.nuclos.client.ui.IOverlayCenterComponent;
-import org.nuclos.client.ui.IOverlayFrameChangeListener;
-import org.nuclos.client.ui.MainFrameTabAdapter;
 import org.nuclos.client.ui.MainFrameTabController;
-import org.nuclos.client.ui.ResultListener;
 import org.nuclos.client.ui.UIUtils;
 import org.nuclos.client.ui.collect.CollectController;
 import org.nuclos.client.ui.multiaction.MultiActionProgressPanel.CloseHandler;

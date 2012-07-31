@@ -18,8 +18,6 @@ package org.nuclos.client.ui;
 
 import java.awt.Dimension;
 
-import org.nuclos.common2.exception.CommonBusinessException;
-
 public interface IOverlayComponent {
 	
 	public void transferSize(Dimension size);
