@@ -95,6 +95,7 @@ import org.jdesktop.swingx.event.TableColumnModelExtListener;
 import org.nuclos.api.context.ScriptContext;
 import org.nuclos.client.common.FocusActionListener;
 import org.nuclos.client.common.NuclosCollectableTextArea;
+import org.nuclos.client.common.SearchConditionSubFormController.SearchConditionTableModel;
 import org.nuclos.client.common.SubFormController.FocusListSelectionListener;
 import org.nuclos.client.common.Utils;
 import org.nuclos.client.scripting.ScriptEvaluator;
@@ -1742,8 +1743,12 @@ public class SubForm extends JPanel
 								if (getSubformTable().getModel() instanceof SubFormTableModel) {
 									int row  = getSubformTable().getSelectedRow();
 									int column = ((SubFormTableModel)getSubformTable().getModel()).findColumnByFieldName(clctcomp.getFieldName());
-									if (row != -1 && column != -1)
-										getSubformTable().setValueAt(clctcomp.getField(), row, column);
+									if (row != -1 && column != -1) {
+										if (getSubformTable().getModel() instanceof SearchConditionTableModel)
+											getSubformTable().setValueAt(clctcomp.getSearchCondition(), row, column);
+										else
+											getSubformTable().setValueAt(clctcomp.getField(), row, column);
+									}
 								}
 							} catch (CollectableFieldFormatException e1) {
 								LOG.warn("could not set value for " + clctcomp.getFieldName(), e1);

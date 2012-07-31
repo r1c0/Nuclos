@@ -17,6 +17,8 @@
 package org.nuclos.client.ui.collect.component;
 
 import java.awt.Component;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.MouseEvent;
@@ -155,6 +157,18 @@ public class CollectableCheckBox extends AbstractCollectableComponent {
 		if (CollectableCheckBox.this.isSearchComponent()) {
 			miClear.setText(getSpringLocaleDelegate().getMessage("RootNode.2", "<Alle>"));
 		}
+		miClear.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+
+				ItemListener[] listeners = CollectableCheckBox.this.getJCheckBox().getItemListeners();
+				for (int i = 0; i < listeners.length; i++) {
+					ItemListener itemListener = listeners[i];
+					itemListener.itemStateChanged(new ItemEvent(CollectableCheckBox.this.getJCheckBox(), ItemEvent.ITEM_STATE_CHANGED,
+                          CollectableCheckBox.this.getJCheckBox().getLabel(), -1));					
+				}
+			}
+		});
 		result.add(miClear);
 		return result;
 	}

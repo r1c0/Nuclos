@@ -89,7 +89,7 @@ public class SearchConditionSubFormController extends SubFormController {
 	/**
 	 * A <code>TableModel</code> representing a <code>CollectableSearchCondition</code>.
 	 */
-	private static interface SearchConditionTableModel extends SubForm.SubFormTableModel {
+	public static interface SearchConditionTableModel extends SubForm.SubFormTableModel {
 		/**
 		 * @return the search condition represented by this table model. May be <code>null</code>.
 		 */
