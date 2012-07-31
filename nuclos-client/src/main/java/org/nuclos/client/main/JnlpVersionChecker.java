@@ -176,28 +176,30 @@ public class JnlpVersionChecker extends TimerTask {
 				updateNeeded = true;
 				LOG.info("Webstart update needed for: " + toString(upd));
 				total += upd.getSize();
+				
+				// remove resource/jar that must be updated from cache
+				final URL resUrl = new URL(upd.getUrl());
+				service.removeResource(resUrl, null);
 			}
+			/*
 			final DownloadServiceListenerWrapper wrapper = new DownloadServiceListenerWrapper(listener, total);
 			final int size = updates.length;
 			for (int i = 0; i < size; ++i) {
 				final DownloadService2.ResourceSpec upd = updates[i];
 				LOG.info("Updating: " + toString(upd));
 				final URL resUrl = new URL(upd.getUrl());
-				service.removeResource(resUrl, null);
-				// service.loadResource(resUrl, null, wrapper);
+				service.loadResource(resUrl, null, wrapper);
 				wrapper.addToReadSoFar(upd.getSize());
 				if (i + 1 == size) {
 					wrapper.progress(resUrl, null, total, total, 100);
-					Thread.sleep(500);
-					wrapper.disposeWindow();
+					// Thread.sleep(500);
+					// wrapper.disposeWindow();
 				}
 			}
+			 */
 		}
 		catch (NullPointerException e) {
 			LOG.warn("NPE in getUpdateAvailableResources", e);
-		}
-		catch (InterruptedException e) {
-			LOG.warn("Interrupted in getUpdateAvailableResources", e);
 		}
 		
 		return updateNeeded;
