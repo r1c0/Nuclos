@@ -16,7 +16,9 @@
 //along with Nuclos.  If not, see <http://www.gnu.org/licenses/>.
 package org.nuclos.client.image;
 
+import java.awt.AlphaComposite;
 import java.awt.Color;
+import java.awt.Composite;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.io.BufferedOutputStream;
@@ -115,7 +117,16 @@ public class SVGDOMDocumentSupport extends SVGDOMImplementation {
 	}
 	
 	public SVGGraphics2D asGraphics2D() {
-		return new SVGGraphics2D(doc);
+		return new SVGGraphics2D(doc) {
+			@Override
+			public void setComposite(Composite composite) {
+				// because of https://issues.apache.org/bugzilla/show_bug.cgi?format=multiple&id=26466
+				// we can't use composite with SVG exports.
+				if (!(composite instanceof AlphaComposite)) {
+					super.setComposite(composite);
+				}
+			}
+		};
 	}
 	
 	public void fromGraphics2D(SVGGraphics2D g2d, boolean setDimension) {
