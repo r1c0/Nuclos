@@ -37,7 +37,6 @@ import javax.swing.table.TableColumnModel;
 import org.apache.log4j.Logger;
 import org.jdesktop.swingx.HorizontalLayout;
 import org.jdesktop.swingx.JXCollapsiblePane;
-
 import org.nuclos.client.ui.Icons;
 import org.nuclos.client.ui.collect.component.CollectableComponent;
 import org.nuclos.common.collection.CollectionUtils;
@@ -99,7 +98,7 @@ public class SubFormFilterPanel extends JXCollapsiblePane implements Closeable {
         // subformFilterPanel is invisible by default. @see NUCLOSINT-1630
 		setVisible(false);
 	}
-	
+
 	@Override
 	public void close() {
 		// Close is needed for avoiding memory leaks
@@ -179,13 +178,12 @@ public class SubFormFilterPanel extends JXCollapsiblePane implements Closeable {
 					p.add(comp);
 					comp = p;
 				}
-					
+
 				comp.setPreferredSize(new Dimension(tc.getWidth(), 20));
 				filterPanel.add(comp);
 				index++;
 			}
 		}
-
 		filterPanel.repaint();
 		repaint();
 	}

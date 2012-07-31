@@ -113,14 +113,11 @@ public class SubFormFilter implements Closeable, IReferenceHolder {
 	
 	private SubFormParameterProvider parameterProvider;
 
-	private Map<String, CollectableComponent> column2component = new HashMap<String, CollectableComponent>();
-
 	private SubForm subform;
 	private SubFormFilterPanel fixedSubFormFilter;
 	private SubFormFilterPanel externalSubFormFilter;
 	private CollectableFieldsProviderFactory collectableFieldsProviderFactory;
 	
-	private JTable fixedTable;
 	private SubFormTable externalTable;
 
 	private boolean filteringActive = false;
@@ -132,7 +129,6 @@ public class SubFormFilter implements Closeable, IReferenceHolder {
    public SubFormFilter(SubForm subform, JTable fixedTable, TableColumnModel fixedColumnModel, SubFormTable externalTable, TableColumnModel externalColumnModel, 
 		   JToggleButton filterButton, JCheckBoxMenuItem miFilter, CollectableFieldsProviderFactory collectableFieldsProviderFactory) {
       this.subform = subform;
-      this.fixedTable = fixedTable;
       this.externalTable = externalTable;
       this.filterButton = filterButton;
       this.miFilter = miFilter;
@@ -140,7 +136,6 @@ public class SubFormFilter implements Closeable, IReferenceHolder {
 
       setFixedSubFormFilter(fixedTable, fixedColumnModel);
       setExternalSubFormFilter(externalTable, externalColumnModel);
-      initSearchFilterComponents();
 
       addActionListener();
    }
@@ -151,11 +146,8 @@ public class SubFormFilter implements Closeable, IReferenceHolder {
 		// If you want to change something here, please consult me (tp).
 		if (!closed) {
 			LOG.debug("close(): " + this);
-			column2component.clear();
-			column2component = null;
 			subform = null;
 			fixedSubFormFilter = null;
-			fixedTable = null;
 			externalTable = null;
 			
 			if (externalSubFormFilter != null) {
@@ -207,10 +199,12 @@ public class SubFormFilter implements Closeable, IReferenceHolder {
    /**
     * create collectablecomponents as search components and assign them to the corresponding column
     */
-   private void initSearchFilterComponents() {
-   	SubFormTableModel tableModel = (SubFormTableModel)externalTable.getModel();
+   private Map<String, CollectableComponent> getSearchFilterComponents() {
+	   Map<String, CollectableComponent> column2component = new HashMap<String, CollectableComponent>();
 
-      for (int index=0 ; index < tableModel.getColumnCount(); index++) {
+   	   SubFormTableModel tableModel = (SubFormTableModel)externalTable.getModel();
+
+       for (int index=0 ; index < tableModel.getColumnCount(); index++) {
          final CollectableEntityField cef = tableModel.getCollectableEntityField(index);
          final String columnName = tableModel.getColumnFieldName(index);
          final CollectableComponent clctcomp = CollectableComponentFactory.getInstance().newCollectableComponent(cef, subform.getCollectableComponentType(cef.getName(), true), true);
@@ -345,6 +339,7 @@ public class SubFormFilter implements Closeable, IReferenceHolder {
          	CollectableTextField.addAutoComplete(cef, ((CollectableTextField)clctcomp).getJTextField(), getAutoCompletePreferences(cef.getCollectableEntity().getName()));
          }
       }
+      return column2component;
    }
 
    // saves the search term for autocompletion functionality
@@ -384,7 +379,7 @@ public class SubFormFilter implements Closeable, IReferenceHolder {
    }
 
    private void setFixedSubFormFilter(JTable table, TableColumnModel columnModel) {
-      this.fixedSubFormFilter = new SubFormFilterPanel(columnModel, column2component, true);
+      this.fixedSubFormFilter = new SubFormFilterPanel(columnModel, getSearchFilterComponents(), true);
       setupResetFilterAction();
    }
 
@@ -393,7 +388,7 @@ public class SubFormFilter implements Closeable, IReferenceHolder {
    }
 
    private void setExternalSubFormFilter(JTable table, TableColumnModel columnModel) {
-      this.externalSubFormFilter = new SubFormFilterPanel(columnModel, column2component, false);
+      this.externalSubFormFilter = new SubFormFilterPanel(columnModel, getSearchFilterComponents(), false);
    }
 
    public SubFormFilterPanel getExternalSubFormFilter() {
