@@ -497,9 +497,11 @@ public class MasterDataDelegate {
 			 return this.getMasterDataFacade().create(sEntityName, mdvo, mpDependants);
 		 }
 		 catch (RuntimeException ex) {
-			 throw new CommonFatalException(ex);
+			// RuntimeException has the BAD habit to include its cause' message in its own message.
+			// the default message of NuclosUpdateException is not always correct ("duplicate key").
+			// cause of the exception will be added at Errors.java
+			throw new CommonFatalException("MasterDataDelegate.7", ex);
 		 }
-
 		 catch (CommonCreateException ex) {
 			 throw new NuclosBusinessException(ex.getMessage(), ex);
 		 }
@@ -534,7 +536,10 @@ public class MasterDataDelegate {
 			 return this.getMasterDataFacade().modify(sEntityName, mdvo, mpDependants);
 		 }
 		 catch (RuntimeException ex) {
-			 throw new NuclosUpdateException(ex);
+			// RuntimeException has the BAD habit to include its cause' message in its own message.
+			// the default message of NuclosUpdateException is not always correct ("duplicate key").
+			// cause of the exception will be added at Errors.java
+			throw new NuclosUpdateException("MasterDataDelegate.6", ex);
 		 }
 	 }
 

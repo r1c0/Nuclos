@@ -256,7 +256,7 @@ public class Errors {
 			final String resMessageRoot = SpringLocaleDelegate.getInstance().getMessageFromResource(rootCause.getMessage());
 			if (sReasonableMessage != null) {
 				if (!sReasonableMessage.equals(resMessageRoot))
-					sErrorText += "\n\n" + resMessageRoot;
+					sErrorText += "\n\n" + (resMessageRoot != null ? resMessageRoot : rootCause.toString());
 				else
 					sErrorText += "\n\n" + rootCause.toString();
 			}	

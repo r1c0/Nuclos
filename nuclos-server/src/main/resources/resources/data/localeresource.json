@@ -40198,17 +40198,17 @@
   {
     "resourceID": "GenericObjectDelegate.2",
     "locale": "i-default",
-    "text": "The entry could not be created."
+    "text": "The entry could not be saved."
   },
   {
     "resourceID": "GenericObjectDelegate.2",
     "locale": "en",
-    "text": "The entry could not be created."
+    "text": "The entry could not be saved."
   },
   {
     "resourceID": "GenericObjectDelegate.2",
     "locale": "de",
-    "text": "Der Datensatz konnte nicht erzeugt werden."
+    "text": "Der Datensatz konnte nicht gespeichert werden."
   },
   {
     "resourceID": "GenericObjectImportCollectController.1",
@@ -42908,6 +42908,36 @@
     "resourceID": "MasterDataDelegate.5",
     "locale": "de",
     "text": "Fehler beim Ermitteln der verfügbaren Unterentitäten für die Entität {0}."
+  },
+  {
+    "resourceID": "MasterDataDelegate.6",
+    "locale": "i-default",
+    "text": "The entry could not be saved."
+  },
+  {
+    "resourceID": "MasterDataDelegate.6",
+    "locale": "en",
+    "text": "The entry could not be saved."
+  },
+  {
+    "resourceID": "MasterDataDelegate.6",
+    "locale": "de",
+    "text": "Der Datensatz konnte nicht gespeichert werden."
+  },
+  {
+    "resourceID": "MasterDataDelegate.7",
+    "locale": "i-default",
+    "text": "The entry could not be saved."
+  },
+  {
+    "resourceID": "MasterDataDelegate.7",
+    "locale": "en",
+    "text": "The entry could not be saved."
+  },
+  {
+    "resourceID": "MasterDataDelegate.7",
+    "locale": "de",
+    "text": "Der Datensatz konnte nicht gespeichert werden."
   },
   {
     "resourceID": "MasterDataSubFormController.1",

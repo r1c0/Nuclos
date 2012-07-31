@@ -3328,7 +3328,7 @@ public abstract class CollectController<Clct extends Collectable> extends TopCon
 						Errors.getInstance().showExceptionDialog(this.getTab(), sErrorMsg, ex2);
 					}
 					catch (CommonBusinessException ex2) {
-						Errors.getInstance().showExceptionDialog(this.getTab(), sMessage1 + ".", ex2);
+						Errors.getInstance().showExceptionDialog(this.getTab(), null, ex2);
 					}
 				}
 				catch (Exception ex) {
