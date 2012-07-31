@@ -545,6 +545,8 @@ public class CollectableComboBox extends LabeledCollectableComponentWithVLP impl
 		if(iIndex < 0 && clctfValue.isIdField() && clctfValue.getValueId() != null) {
 			for(int i=0; i < cbm.getSize(); i++) {
 				final CollectableField cf = (CollectableField) cbm.getElementAt(i);
+				if (!cf.isIdField())
+					continue;
 				final Long valueId = IdUtils.toLongId(cf.getValueId());
 				final Long vid = IdUtils.toLongId(clctfValue.getValueId());
 				if(LangUtils.equals(vid, valueId)) {
