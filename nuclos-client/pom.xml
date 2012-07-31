@@ -62,7 +62,7 @@
 		<dependency>
 			<artifactId>svg2emf</artifactId>
 			<groupId>svg2emf</groupId>
-			<version>1</version>
+			<version>2</version>
 		</dependency>
 		<!-- dependency>
 			<artifactId>freehep-graphicsio-emf</artifactId>
