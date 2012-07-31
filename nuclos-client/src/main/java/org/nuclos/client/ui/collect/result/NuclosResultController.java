@@ -385,13 +385,17 @@ public class NuclosResultController<Clct extends Collectable> extends ResultCont
 		panel.getResultTable().getTableHeader().addMouseListener(new TableHeaderColumnPopupListener() {
 			@Override
 			protected void removeColumnVisibility(TableColumn column) {
-				final CollectController<Clct>  clctctl = getCollectController();
-				final Map<String, Integer> mpWidths = panel.getVisibleColumnWidth(clctctl.getFields().getSelectedFields());
-				final CollectableEntityField clctef = ((CollectableEntityFieldBasedTableModel) panel.getResultTable().getModel()).getCollectableEntityField(column.getModelIndex());
-				cmdRemoveColumn(clctctl.getFields(), clctef);
-				isIgnorePreferencesUpdate = true;
-				panel.restoreColumnWidths(clctctl.getFields().getSelectedFields(), mpWidths);
-				isIgnorePreferencesUpdate = false;
+				try {
+					final CollectController<Clct>  clctctl = getCollectController();
+					final Map<String, Integer> mpWidths = panel.getVisibleColumnWidth(clctctl.getFields().getSelectedFields());
+					final CollectableEntityField clctef = ((CollectableEntityFieldBasedTableModel) panel.getResultTable().getModel()).getCollectableEntityField(column.getModelIndex());
+					cmdRemoveColumn(clctctl.getFields(), clctef);
+					isIgnorePreferencesUpdate = true;
+					panel.restoreColumnWidths(clctctl.getFields().getSelectedFields(), mpWidths);
+					isIgnorePreferencesUpdate = false;
+				} catch (ArrayIndexOutOfBoundsException e) {
+					// ignore @see NUCLOS-590
+				}
 			}
 		});
 	}
