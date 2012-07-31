@@ -836,7 +836,7 @@ public class ResPlanPanel extends JPanel {
 				@Override
 				protected Void doInBackground() throws Exception {
 					try {
-						final ResPlanExportDialog d = new ResPlanExportDialog(ResPlanPanel.this, controller.getTab());
+						final ResPlanExportDialog2 d = new ResPlanExportDialog2(ResPlanPanel.this, controller.getTab());
 					}
 					catch (Exception ex) {
 						Errors.getInstance().showExceptionDialog(ResPlanPanel.this, ex);

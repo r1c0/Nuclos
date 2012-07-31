@@ -17,6 +17,8 @@
 package org.nuclos.client.image;
 
 import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Graphics2D;
 import java.io.BufferedOutputStream;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -39,6 +41,7 @@ import javax.xml.transform.stream.StreamResult;
 import org.apache.batik.dom.AbstractDocument;
 import org.apache.batik.dom.svg.SAXSVGDocumentFactory;
 import org.apache.batik.dom.svg.SVGDOMImplementation;
+import org.apache.batik.svggen.SVGGraphics2D;
 import org.apache.batik.transcoder.Transcoder;
 import org.apache.batik.transcoder.TranscoderException;
 import org.apache.batik.transcoder.TranscoderInput;
@@ -95,20 +98,41 @@ public class SVGDOMDocumentSupport extends SVGDOMImplementation {
         Document doc = DOM_IMPL.createDocument(SVGDOMImplementation.SVG_NAMESPACE_URI, "svg", null);
 
         // Create a 'g' element and append it to the root 'svg' element
-        Element e = doc.createElementNS("http://www.w3.org/2000/svg", "g");
-        doc.getDocumentElement().appendChild(e);
+        // Element e = doc.createElementNS("http://www.w3.org/2000/svg", "g");
+        // doc.getDocumentElement().appendChild(e);
 
         // Cast the document object to org.apache.batik.dom.AbstractDocument,
         // so that DOM 3 methods will be guaranteed to be visible
-        AbstractDocument document = (AbstractDocument) doc;
+        final AbstractDocument document = (AbstractDocument) doc;
 
         // Now a DOM 3 method can be used
-        document.renameNode(e, "http://www.w3.org/2000/svg", "text");
+        // document.renameNode(e, "http://www.w3.org/2000/svg", "text");
         return document;
 	}
 	
 	public SVGDocument getDocument() {
 		return (SVGDocument) doc;
+	}
+	
+	public SVGGraphics2D asGraphics2D() {
+		return new SVGGraphics2D(doc);
+	}
+	
+	public void fromGraphics2D(SVGGraphics2D g2d, boolean setDimension) {
+		// see http://xmlgraphics.apache.org/batik/using/svg-generator.html
+        // Populate the document root with the generated SVG content.
+		
+        final Element svg = doc.getDocumentElement();
+        g2d.getRoot(svg);
+		
+        if (setDimension) {
+        	final Dimension dim = g2d.getSVGCanvasSize();
+        	if (dim != null) {
+        		svg.setAttribute("width", Integer.toString(dim.width + 20));
+        		svg.setAttribute("height", Integer.toString(dim.height + 20));
+        	}
+        }
+		// doc.getDocumentElement().appendChild(g2d.getRoot());
 	}
 	
 	public Float getHeight() {

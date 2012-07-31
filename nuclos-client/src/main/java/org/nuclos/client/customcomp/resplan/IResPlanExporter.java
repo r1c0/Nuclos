@@ -11,14 +11,6 @@ import org.nuclos.common.dblayer.INameProducer;
 
 public interface IResPlanExporter<R, E, L> {
 
-	void setResourceNameProducer(INameProducer<R> rnp);
-
-	void setEntryNameProducer(INameProducer<E> enp);
-
-	INameProducer<R> getResourceNameProducer();
-
-	INameProducer<E> getEntryNameProducer();
-
 	SVGDOMDocumentSupport getSVGDOMDocumentSupport();
 
 	void run(String template, int startCategory) throws IOException, XPathExpressionException;

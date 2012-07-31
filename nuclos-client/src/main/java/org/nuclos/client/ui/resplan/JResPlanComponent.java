@@ -81,6 +81,15 @@ import org.nuclos.client.ui.util.Orientation;
 import org.nuclos.client.ui.util.PainterUtils;
 import org.nuclos.common2.LangUtils;
 
+/**
+ * @author Maik Stüker
+ * @since Nuclos 3.6
+ *
+ * @param <R>
+ * @param <T>
+ * @param <E>
+ * @param <L>
+ */
 public class JResPlanComponent<R, T extends Comparable<? super T>, E, L> extends JComponent implements ResPlanModelListener, ChangeListener, Scrollable {
 
 	private static final Logger LOG = Logger.getLogger(JResPlanComponent.class);
@@ -869,7 +878,7 @@ public class JResPlanComponent<R, T extends Comparable<? super T>, E, L> extends
 	}
 	
 	@Override
-	protected void paintComponent(Graphics g) {
+	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
 
 		Graphics2D g2d = (Graphics2D) g.create();

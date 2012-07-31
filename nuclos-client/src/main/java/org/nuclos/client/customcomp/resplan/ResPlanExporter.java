@@ -26,6 +26,12 @@ import org.nuclos.client.ui.resplan.TimeModel;
 import org.nuclos.common.collect.collectable.Collectable;
 import org.nuclos.common.dblayer.CollectableNameProducer;
 
+/**
+ * A SVG (and more) exporter for {@link ResPlanModel}s.
+ * 
+ * @author Thomas Pasch
+ * @deprecated JResPlanComponent is now directly exported as {@link org.apache.batik.svggen.SVGGraphics2D}.
+ */
 public class ResPlanExporter extends AbstractResPlanExporter<Collectable,Collectable,Collectable>{
 	
 	private static final Logger LOG = Logger.getLogger(ResPlanExporter.class);

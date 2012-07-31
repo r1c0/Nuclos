@@ -48,6 +48,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
 /**
+ * An abstract base class for SVG (and more) export dialogs.
+ * 
  * @author Thomas Pasch
  */
 @Configurable

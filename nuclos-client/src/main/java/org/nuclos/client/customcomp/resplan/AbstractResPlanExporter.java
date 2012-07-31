@@ -44,7 +44,12 @@ import org.w3c.dom.svg.SVGPolygonElement;
 import org.w3c.dom.svg.SVGRectElement;
 import org.w3c.dom.svg.SVGTextElement;
 
-public abstract class AbstractResPlanExporter<R,E,L> implements IResPlanExporter<R, E, L> {
+/**
+ * An abstract base class for SVG (and more) exporter using {@link ResPlanModel}s.
+ * 
+ * @author Thomas Pasch
+ */
+public abstract class AbstractResPlanExporter<R,E,L> implements IResPlanExporterWithNameProducer<R, E, L> {
 	
 	private static final Logger LOG = Logger.getLogger(AbstractResPlanExporter.class);
 	
